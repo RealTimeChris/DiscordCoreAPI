@@ -136,7 +136,7 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll Channel : public ChannelData {
 	public:
 
-		Channel();
+		Channel() = default;
 
 		Channel(ChannelData dataNew);
 	};

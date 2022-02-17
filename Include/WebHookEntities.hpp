@@ -328,7 +328,8 @@ namespace DiscordCoreAPI {
 	/// A single WebHook. \brief A single WebHook.
 	class DiscordCoreAPI_Dll WebHook : public WebHookData {
 	public:
-		WebHook();
+
+		WebHook() = default;
 
 		WebHook(WebHookData dataNew);
 	};

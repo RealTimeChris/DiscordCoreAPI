@@ -9,8 +9,6 @@
 
 namespace DiscordCoreAPI {
 
-	Role::Role() {};
-
 	Role::Role(RoleData dataNew) {
 		this->unicodeEmoji = dataNew.unicodeEmoji;
 		this->permissions = dataNew.permissions;

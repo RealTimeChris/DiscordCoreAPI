@@ -115,7 +115,7 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll Reaction : public ReactionData {
 	public:
 
-		Reaction();
+		Reaction() = default;
 
 		Reaction(ReactionData dataNew);
 	};

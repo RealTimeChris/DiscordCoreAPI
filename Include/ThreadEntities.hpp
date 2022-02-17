@@ -102,7 +102,7 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll Thread : public ChannelData {
 	public:
 
-		Thread();
+		Thread() = default;
 
 		Thread(ChannelData dataNew);
 	};

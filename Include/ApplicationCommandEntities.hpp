@@ -137,7 +137,7 @@ namespace DiscordCoreAPI {
     class DiscordCoreAPI_Dll ApplicationCommand : public ApplicationCommandData {
     public:
 
-        ApplicationCommand();
+        ApplicationCommand() = default;
 
         ApplicationCommand(ApplicationCommandData dataNew);
     };

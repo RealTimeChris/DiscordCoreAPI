@@ -168,7 +168,7 @@ namespace DiscordCoreAPI {
 		std::string content{ "" };
 		bool tts{ false };
 
-		CreateMessageData() {};
+		CreateMessageData() = default;
 	};
 
 	/// For sending a direct-message. \brief For sending a direct-message.
@@ -338,7 +338,7 @@ namespace DiscordCoreAPI {
 		int32_t flags{ 0 };
 		bool tts{ false };
 
-		EditMessageData() {};
+		EditMessageData() = default;
 
 	};
 
@@ -380,7 +380,7 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll Message : public MessageData {
 	public:
 
-		Message();
+		Message() = default;
 
 		Message(MessageData dataNew);
 	};
@@ -403,7 +403,7 @@ namespace DiscordCoreAPI {
 
 		friend DiscordCoreClient;
 
-		MessageCollector();
+		MessageCollector() = default;
 
 		/// Begin waiting for Messages. \brief Begin waiting for Messages.
 		/// \param quantityToCollect Maximum quantity of Messages to collect before returning the results.

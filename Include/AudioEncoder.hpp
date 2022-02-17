@@ -39,11 +39,11 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll AudioEncoder {
 	public:
 
-		AudioEncoder();
+        AudioEncoder();
 
-		std::vector<AudioFrameData> encodeFrames(std::vector<RawFrameData>& rawFrames);
+        std::vector<AudioFrameData> encodeFrames(std::vector<RawFrameData>& rawFrames);
 
-		EncodedFrameData encodeSingleAudioFrame(RawFrameData& inputFrame);
+        EncodedFrameData encodeSingleAudioFrame(RawFrameData& inputFrame);
 
 	protected:
 

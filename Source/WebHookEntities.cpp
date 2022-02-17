@@ -10,8 +10,6 @@
 
 namespace DiscordCoreAPI {
 
-	WebHook::WebHook() {}
-
 	WebHook::WebHook(WebHookData dataNew) {
 		this->sourceChannel = dataNew.sourceChannel;
 		this->applicationId = dataNew.applicationId;

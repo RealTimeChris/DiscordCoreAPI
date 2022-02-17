@@ -72,23 +72,10 @@ namespace DiscordCoreAPI {
 	};
 
 	/// A single User. \brief A single User.
-	class DiscordCoreAPI_Dll User : public DiscordEntity {
+	class DiscordCoreAPI_Dll User : public UserData{
 	public:
-		std::string discriminator{ "" };///< The # next to their User name.
-		std::string createdAt{ "" };///< When the User was created.
-		std::string userName{ "" };///< Their username.
-		bool mfaEnabled{ false };///< MFA enabled?
-		int32_t premiumType{ 0 };///< Their premium nitro status.
-		int32_t publicFlags{ 0 };///< Public flags.
-		std::string avatar{ "" };///< Their avatar url.
-		std::string locale{ "" };///< The region they are from/in.
-		std::string email{ "" };///< Their email address.
-		bool verified{ false };///< Verified?
-		bool system{ false };///< Are they a partof the system?
-		int32_t flags{ 0 };///< Flags.
-		bool bot{ false };///< Are they a bot?
 
-		User();
+		User() = default;
 
 		User(UserData dataNew);
 	};
@@ -109,7 +96,7 @@ namespace DiscordCoreAPI {
 
 	protected:
 
-		BotUser();
+		BotUser() = default;
 
 		DiscordCoreInternal::BaseSocketAgent* baseSocketAgent{ nullptr };
 	};

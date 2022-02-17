@@ -9,8 +9,6 @@
 
 namespace DiscordCoreAPI {
 
-	GuildScheduledEvent::GuildScheduledEvent() {}
-
 	GuildScheduledEvent::GuildScheduledEvent(GuildScheduledEventData dataNew) {
 		this->scheduledStartTime = dataNew.scheduledStartTime;
 		this->scheduledEndTime = dataNew.scheduledEndTime;

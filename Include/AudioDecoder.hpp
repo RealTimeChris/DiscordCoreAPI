@@ -82,7 +82,7 @@ namespace DiscordCoreAPI {
 
     struct DiscordCoreAPI_Dll AVFormatContextWrapper01 {
 
-        AVFormatContextWrapper01() {};
+        AVFormatContextWrapper01() = default;
 
         AVFormatContext* theContext{ nullptr };
         bool didItInitialize{ false };

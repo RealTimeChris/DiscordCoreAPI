@@ -9,8 +9,6 @@
 
 namespace DiscordCoreAPI {
 
-	StageInstance::StageInstance() {}
-
 	StageInstance::StageInstance(StageInstanceData dataNew) {
 		this->discoverableDisabled = dataNew.discoverableDisabled;
 		this->privacyLevel = dataNew.privacyLevel;

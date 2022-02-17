@@ -10,8 +10,6 @@
 
 namespace DiscordCoreAPI {
 
-	Channel::Channel() {};
-
 	Channel::Channel(ChannelData dataNew) {
 		this->permissionOverwrites = dataNew.permissionOverwrites;
 		this->rateLimitPerUser = dataNew.rateLimitPerUser;

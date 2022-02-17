@@ -40,7 +40,7 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll StageInstance : public StageInstanceData {
 	public:
 
-		StageInstance();
+		StageInstance() = default;
 
 		StageInstance(StageInstanceData dataNew);
 

@@ -76,8 +76,6 @@ namespace DiscordCoreAPI {
 		return false;
 	}
 
-	Guild::Guild() {};
-
 	Guild::Guild(GuildData dataNew, DiscordCoreClient* discordCoreClientNew) {
 		this->defaultMessageNotifications = dataNew.defaultMessageNotifications;
 		this->premiumSubscriptionCount = dataNew.premiumSubscriptionCount;

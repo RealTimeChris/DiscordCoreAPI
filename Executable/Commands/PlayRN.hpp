@@ -372,7 +372,7 @@ namespace DiscordCoreAPI {
 			}
 
 		};
-		virtual ~PlayRN() {};
+		virtual ~PlayRN() = default;
 	};
 
 	int64_t PlayRN::timeOfLastPlay{};

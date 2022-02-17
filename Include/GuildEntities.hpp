@@ -276,7 +276,7 @@ namespace DiscordCoreAPI {
 
 		friend Guilds;
 
-		Guild();
+		Guild() = default;
 
 		Guild(GuildData dataNew, DiscordCoreClient*);
 

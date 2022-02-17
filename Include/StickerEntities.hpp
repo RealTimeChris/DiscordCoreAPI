@@ -55,7 +55,7 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll Sticker : public StickerData {
 	public:
 
-		Sticker();
+		Sticker() = default;
 
 		Sticker(StickerData dataNew);
 	};

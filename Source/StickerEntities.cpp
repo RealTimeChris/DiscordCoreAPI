@@ -9,8 +9,6 @@
 
 namespace DiscordCoreAPI {
 
-	Sticker::Sticker() {};
-
 	Sticker::Sticker(StickerData dataNew) {
 		this->description = dataNew.description;
 		this->formatType = dataNew.formatType;

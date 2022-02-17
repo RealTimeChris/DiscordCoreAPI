@@ -12,8 +12,6 @@
 
 namespace DiscordCoreAPI {
 
-	GuildMember::GuildMember() {};
-
 	GuildMember::GuildMember(GuildMemberData dataNew) {
 		this->premiumSince = dataNew.premiumSince;
 		this->permissions = dataNew.permissions;

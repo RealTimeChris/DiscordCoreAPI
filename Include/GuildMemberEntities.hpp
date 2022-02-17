@@ -76,7 +76,7 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll GuildMember : public GuildMemberData {
 	public:
 
-		GuildMember();
+		GuildMember() = default;
 
 		GuildMember(GuildMemberData dataNew);
 	};

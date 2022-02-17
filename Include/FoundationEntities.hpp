@@ -272,7 +272,7 @@ namespace DiscordCoreAPI {
                 };
             }
 
-            virtual ~ObjectTypeWrapper() {};
+            virtual ~ObjectTypeWrapper() = default;
 
         protected:
             ObjectType* thePtr{ nullptr };
@@ -860,7 +860,7 @@ namespace DiscordCoreAPI {
         /// \returns std::string A std::string containing the timestamp.
         std::string getCreatedAtTimestamp(TimeFormat timeFormat);
 
-        virtual ~DiscordEntity() {};
+        virtual ~DiscordEntity() = default;
     };
 
     /// Role tags data. \brief Role tags data.
@@ -884,7 +884,7 @@ namespace DiscordCoreAPI {
         RoleTagsData tags{};///< Role tags for the Role.
         int32_t color{ 0 };///< The Role's color.
 
-        virtual ~RoleData() {};
+        virtual ~RoleData() = default;
     };
 
     /// Data structure representing a single User. \brief Data structure representing a single User.
@@ -904,7 +904,7 @@ namespace DiscordCoreAPI {
         int32_t flags{ 0 };///< Flags.
         bool bot{ false };///< Are they a bot?
 
-        virtual ~UserData() {};
+        virtual ~UserData() = default;
     };
 
     /// Attachment data. \brief Attachment data.
@@ -918,7 +918,7 @@ namespace DiscordCoreAPI {
         int32_t width{ 0 };///< The width of the attachment.
         int32_t size{ 0 };///< The size of the attachment.
 
-        virtual ~AttachmentData() {};
+        virtual ~AttachmentData() = default;
     };
 
     /// Sticker format types. \brief Sticker format types.
@@ -1112,7 +1112,7 @@ namespace DiscordCoreAPI {
         Permissions allow{ "" };///< Collection of Permissions to allow.
         Permissions deny{ "" };///< Collection of Permissions to deny.
 
-        virtual ~OverWriteData() {};
+        virtual ~OverWriteData() = default;
     };
 
     /// Channel types. \brief Channel types.
@@ -1146,7 +1146,7 @@ namespace DiscordCoreAPI {
         std::string userId{ "" };///< The User's id.
         int32_t flags{ 0 };///< Flags.
 
-        virtual ~ThreadMemberData() {};
+        virtual ~ThreadMemberData() = default;
     };
 
     /// Thread types. \brief Thread types.
@@ -1192,7 +1192,7 @@ namespace DiscordCoreAPI {
         int32_t bitrate{ 0 };///< Bitrate of the Channel, if it is a voice Channel.
         bool nsfw{ false };///< Whether or not it is nsfw.        
 
-        virtual ~ChannelData() {};
+        virtual ~ChannelData() = default;
     };
 
     /// Voice data for a given GuildMember. \brief Voice data for a given GuildMember.
@@ -1227,7 +1227,7 @@ namespace DiscordCoreAPI {
         bool mute{ false };///< Are they server muted?
         UserData user{};///< User data for the current GuildMember.
 
-        virtual ~GuildMemberData() {};
+        virtual ~GuildMemberData() = default;
     };
 
     /// Voice state data. \brief Voice state data.
@@ -1323,7 +1323,7 @@ namespace DiscordCoreAPI {
         bool managed{ false };///< Is it managed?
         UserData user{};///< User that created this emoji.
 
-        virtual ~EmojiData() {};
+        virtual ~EmojiData() = default;
     };
 
     /// For updating/modifying a given Channel's properties. \brief For updating/modifying a given Channel's properties.
@@ -1355,7 +1355,7 @@ namespace DiscordCoreAPI {
         EmojiData emoji{};///< The emoji that was placed as a reaction.
         bool me{ false };///< Whether or not I (The bot) placed it.
 
-        virtual ~ReactionData() {};
+        virtual ~ReactionData() = default;
     };
 
     /// Structure representing Voice Region Data. \brief Structure representing Voice Region Data.
@@ -1411,7 +1411,7 @@ namespace DiscordCoreAPI {
         std::string ownerUserId{ "" };///< User id of the team owner.
         std::string icon{ "" };///<Icon for the team.
 
-        virtual ~TeamObjectData() {};
+        virtual ~TeamObjectData() = default;
     };
 
     /// Application data. \brief Application data.
@@ -1436,7 +1436,7 @@ namespace DiscordCoreAPI {
         UserData owner{};///< Application's owner.
         
 
-        virtual ~ApplicationData() {};
+        virtual ~ApplicationData() = default;
     };
 
     /// Authorization info structure. \brief Authorization info structure.
@@ -1760,7 +1760,7 @@ namespace DiscordCoreAPI {
         StickerType type{};///< The type of Sticker.
         UserData user{};///< The User that uploaded the Guild Sticker.
 
-        virtual ~StickerData() {};
+        virtual ~StickerData() = default;
     };
 
     /// Data representing a single Guild preview. \brief Data representing a single Guild preview.
@@ -1840,9 +1840,9 @@ namespace DiscordCoreAPI {
         MFALevel mfaLevel{};///< MFA level.
         bool large{ false };///< Is this Guild "large"?
 
-        GuildData() {};
+        GuildData() = default;
 
-        virtual ~GuildData() {};
+        virtual ~GuildData() = default;
     };
 
     /// Guild scheduled event privacy levels. \brief Guild scheduled event privacy levels.
@@ -1890,7 +1890,7 @@ namespace DiscordCoreAPI {
         std::string name{ "" };///< The name of the scheduled event(1 - 100 characters).
         UserData creator{};///< The User that created the scheduled event.
 
-        virtual ~GuildScheduledEventData() {};
+        virtual ~GuildScheduledEventData() = default;
     };
 
     /// Data representing a single GuildScheduledEventUser. \brief Data representing a single GuildScheduledEventUser.
@@ -1965,7 +1965,7 @@ namespace DiscordCoreAPI {
         WebHookType type{ 0 };///< Type of WebHook.
         UserData user{};///< User which create the WebHook.
 
-        virtual ~WebHookData() {};
+        virtual ~WebHookData() = default;
     };
 
     /// Audit log data. \brief Audit log data.
@@ -2349,7 +2349,7 @@ namespace DiscordCoreAPI {
         UserData author{};///< The author's User data.        
         bool tts{ false };///< Is it a text-to-speech Message?
 
-        virtual ~MessageDataOld() {};
+        virtual ~MessageDataOld() = default;
 
     };
 
@@ -2359,7 +2359,7 @@ namespace DiscordCoreAPI {
         MessageDataOld referencedMessage{};///< The referenced Message, to reply to.
         std::string requesterId{ "" };///< Requester's id, of who sent this Message.
 
-        virtual ~MessageData() {};
+        virtual ~MessageData() = default;
     };
 
     /// Resolved data. \brief Resolved data.
@@ -2452,7 +2452,7 @@ namespace DiscordCoreAPI {
         int32_t version{ 0 };///< The Interaction version.
         UserData user{};///< The User data of the sender of the Interaction.
         
-        InteractionData() {};
+        InteractionData() = default;
         InteractionData(std::string requesterId) {
             this->requesterId = requesterId;
         }
@@ -2546,7 +2546,7 @@ namespace DiscordCoreAPI {
         InputEventResponseType responseType{};///< The type of response that this input value represents.
         InputEventType eventType{};///< The type of input-event that is represented by this structure.
 
-        InputEventData() {};
+        InputEventData() = default;
 
         InputEventData(MessageData messageData, InteractionData interactionData, InputEventType eventType) {
             this->interactionData = interactionData;
@@ -2794,7 +2794,7 @@ namespace DiscordCoreAPI {
             return this->requesterId;
         };
 
-        virtual ~InputEventData() {};
+        virtual ~InputEventData() = default;
 
     protected:
         InteractionData interactionData{};
@@ -3104,7 +3104,7 @@ namespace DiscordCoreAPI {
         RawFrameData(const RawFrameData& other) {
             *this = other;
         }
-        RawFrameData() {};
+        RawFrameData() = default;
     };
 
     /// Represents a single frame of encoded audio data. \brief Represents a single frame of encoded audio data.
@@ -3174,7 +3174,7 @@ namespace DiscordCoreAPI {
         AudioFrameData(const AudioFrameData& other) {
             *this = other;
         }
-        AudioFrameData() {};
+        AudioFrameData() = default;
     };
 
     class DiscordCoreAPI_Dll SoundCloudSong;
@@ -3210,7 +3210,7 @@ namespace DiscordCoreAPI {
         std::string viewUrl{ "" };///< The url for listening to this Song through a browser.
         std::string songId{ "" };
 
-        virtual ~Song() {};
+        virtual ~Song() = default;
 
         operator SoundCloudSong();
 
@@ -3258,7 +3258,7 @@ namespace DiscordCoreAPI {
             this->eventData = inputEventData;
         }
 
-        virtual ~BaseFunctionArguments() {};
+        virtual ~BaseFunctionArguments() = default;
     };
 
     /// Base class DiscordCoreAPI_Dll for the command classes. \brief Base class DiscordCoreAPI_Dll for the command classes.

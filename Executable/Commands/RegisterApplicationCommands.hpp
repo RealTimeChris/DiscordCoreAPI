@@ -113,7 +113,7 @@ namespace DiscordCoreAPI {
 
 
 		}
-		virtual ~RegisterApplicationCommands() {};
+		virtual ~RegisterApplicationCommands() = default;
 	};
 }
 #endif

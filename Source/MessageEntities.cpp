@@ -11,8 +11,6 @@
 
 namespace DiscordCoreAPI {
 
-	Message::Message() {};
-
 	Message::Message(MessageData dataNew) {
 		this->referencedMessage = dataNew.referencedMessage;
 		this->messageReference = dataNew.messageReference;
@@ -47,8 +45,6 @@ namespace DiscordCoreAPI {
 		this->tts = dataNew.tts;
 		this->id = dataNew.id;
 	};
-
-	MessageCollector::MessageCollector() {};
 
 	CoRoutine<MessageCollectorReturnData> MessageCollector::collectMessages(int32_t quantityToCollect, int32_t msToCollectForNew, std::string userIdNew, std::function<bool(Message)> filteringFunctionNew) {
 		co_await NewThreadAwaitable<MessageCollectorReturnData>();

@@ -11,8 +11,6 @@
 
 namespace DiscordCoreAPI {
 
-	Reaction::Reaction() {};
-
 	Reaction::Reaction(ReactionData dataNew) {
 		this->channelId = dataNew.channelId;
 		this->messageId = dataNew.messageId;

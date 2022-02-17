@@ -13,8 +13,6 @@
 
 namespace DiscordCoreAPI {
 
-    ApplicationCommand::ApplicationCommand() {};
-
     ApplicationCommand::ApplicationCommand(ApplicationCommandData dataNew) {
         this->defaultPermission = dataNew.defaultPermission;
         this->description = dataNew.description;

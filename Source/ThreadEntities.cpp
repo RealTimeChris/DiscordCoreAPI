@@ -9,8 +9,6 @@
 
 namespace DiscordCoreAPI {
 
-	Thread::Thread() {};
-
 	Thread::Thread(ChannelData dataNew) {
 		this->permissionOverwrites = dataNew.permissionOverwrites;
 		this->rateLimitPerUser = dataNew.rateLimitPerUser;

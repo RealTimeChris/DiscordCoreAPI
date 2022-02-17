@@ -120,7 +120,7 @@ namespace DiscordCoreAPI {
             this->data.data.tts = enabledTTs;
         }
 
-        virtual ~InteractionResponse() {};
+        virtual ~InteractionResponse() = default;
 
     protected:
 
@@ -142,7 +142,7 @@ namespace DiscordCoreAPI {
             this->interactionPackage.interactionId = dataPackage.interactionId;
             this->type = InteractionCallbackType::DeferredUpdateMessage;
         }
-        virtual ~DeferComponentResponseData() {};
+        virtual ~DeferComponentResponseData() = default;
     protected:
         InputEventResponseType responseType{};
         InteractionCallbackType type{};
@@ -172,7 +172,7 @@ namespace DiscordCoreAPI {
             this->data.data.tts = dataPackage.tts;
             this->data.data.flags = 64;
         }
-        virtual ~CreateEphemeralInteractionResponseData() {};
+        virtual ~CreateEphemeralInteractionResponseData() = default;
     };
 
     /// For creating an Interaction response. \brief For creating an Interaction response.
@@ -242,7 +242,7 @@ namespace DiscordCoreAPI {
                 this->requesterId = dataPackage.user.id;
             }
         }
-        virtual ~CreateInteractionResponseData() {};
+        virtual ~CreateInteractionResponseData() = default;
     };
 
     /// For creating a deferred Interaction response. \brief For creating a deferred Interaction response.
@@ -269,7 +269,7 @@ namespace DiscordCoreAPI {
             this->data.data.flags = dataPackage.flags;
             this->data.data.tts = dataPackage.tts;
         }
-        virtual ~CreateDeferredInteractionResponseData() {};
+        virtual ~CreateDeferredInteractionResponseData() = default;
     protected:
         std::string channelId{ "" };
     };
@@ -298,7 +298,7 @@ namespace DiscordCoreAPI {
             this->data.data.flags = dataPackage.flags;
             this->data.data.tts = dataPackage.tts;
         }
-        virtual ~EditInteractionResponseData() {};
+        virtual ~EditInteractionResponseData() = default;
     };
 
     /// For deleting an Interaction response. \brief For deleting an Interaction response.
@@ -340,7 +340,7 @@ namespace DiscordCoreAPI {
             this->data.data.tts = dataPackage.tts;
             this->data.data.flags = 64;
         }
-        virtual ~CreateEphemeralFollowUpMessageData() {};
+        virtual ~CreateEphemeralFollowUpMessageData() = default;
     };
 
     /// For creating a follow up Message. \brief For creating a follow up Message.
@@ -374,7 +374,7 @@ namespace DiscordCoreAPI {
             this->data.data.flags = dataPackage.flags;
             this->data.data.tts = dataPackage.tts;
         }
-        virtual ~CreateFollowUpMessageData() {};
+        virtual ~CreateFollowUpMessageData() = default;
     };
 
     /// For getting a follow-up Message. \brief For getting a follow-up Message.
@@ -410,7 +410,7 @@ namespace DiscordCoreAPI {
             this->data.data.flags = dataPackage.flags;
             this->data.data.tts = dataPackage.tts;
         }
-        virtual ~EditFollowUpMessageData() {};
+        virtual ~EditFollowUpMessageData() = default;
     };
 
     /// For deleting a follow up Message. \brief For deleting a follow up Message.
@@ -436,7 +436,8 @@ namespace DiscordCoreAPI {
     public:
 
         Interaction(InteractionData dataPackage);
-        virtual ~Interaction() {};
+
+        virtual ~Interaction() = default;
     };
 
     /**@}*/

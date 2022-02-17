@@ -11,8 +11,6 @@
 #include <Http.hpp>
 
 namespace DiscordCoreAPI {
-
-	User::User() {};
 	
 	User::User(UserData dataNew) {
 		this->discriminator = dataNew.discriminator;
@@ -30,8 +28,6 @@ namespace DiscordCoreAPI {
 		this->bot = dataNew.bot;
 		this->id = dataNew.id;
 	}
-
-	BotUser::BotUser() {};
 
 	void BotUser::updateVoiceStatus(UpdateVoiceStateData dataPackage) {
 		nlohmann::json payload = DiscordCoreInternal::JSONIFY(dataPackage);

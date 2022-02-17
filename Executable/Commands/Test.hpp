@@ -53,7 +53,7 @@ namespace DiscordCoreAPI {
 			InputEvents::respondToEvent(dataResponse);
 			return;			
 		}
-		virtual ~Test() {};
+		virtual ~Test() = default;
 	};
 }
 #endif

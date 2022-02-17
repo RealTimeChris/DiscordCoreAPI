@@ -52,7 +52,7 @@ namespace DiscordCoreAPI {
 				reportException("Test::executeAsync Error: ");
 			}
 		}
-		virtual ~Test() {};
+		virtual ~Test() = default;
 	};
 }
 

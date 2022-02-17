@@ -103,7 +103,7 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll Role : public RoleData {
 	public:
 
-		Role();
+		Role() = default;
 
 		Role(RoleData dataNew);
 	};

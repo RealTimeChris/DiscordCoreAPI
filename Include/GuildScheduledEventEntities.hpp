@@ -75,7 +75,7 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll GuildScheduledEvent : public GuildScheduledEventData {
 	public:
 
-		GuildScheduledEvent();
+		GuildScheduledEvent() = default;
 
 		GuildScheduledEvent(GuildScheduledEventData dataNew);
 	};
