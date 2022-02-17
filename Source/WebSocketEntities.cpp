@@ -693,6 +693,7 @@ namespace DiscordCoreInternal {
 		this->baseSocketAgent->getVoiceConnectionData(this->voiceConnectInitData);
 		this->doWeQuit.store(false, std::memory_order_seq_cst);
 		this->doWeReconnect.set();
+		this->areWeConnected.reset();
 		this->theTask = std::make_unique<DiscordCoreAPI::CoRoutine<void>>(this->run());
 	}
 
@@ -855,6 +856,7 @@ namespace DiscordCoreInternal {
 					for (uint32_t x = 0; x < payload.at("d").at("secret_key").size(); x += 1) {
 						this->voiceConnectionData.secretKey.push_back(payload.at("d").at("secret_key").at(x).get<uint8_t>());
 					}
+					this->areWeConnected.set();
 				}
 				if (payload.at("op") == 9) {};
 				if (payload.at("op") == 8) {

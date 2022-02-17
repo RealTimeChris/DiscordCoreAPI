@@ -218,7 +218,6 @@ namespace DiscordCoreAPI {
 			}
 			workload.relativePath = "/guilds/" + dataPackage.guildId + "/emojis";
 			workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
-			std::cout<< "THE DATA: "<< workload.content<< std::endl;
 			workload.callStack = "Reactions::createGuildEmojiAsync";
 			if (dataPackage.reason != "") {
 				workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));

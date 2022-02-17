@@ -61,20 +61,20 @@ namespace DiscordCoreAPI {
 		TSUnboundedMessageBlock<AudioFrameData> audioBuffer{};
 		std::unique_ptr<CoRoutine<void>> theTask{ nullptr };
 		std::unique_ptr<AudioEncoder> encoder{ nullptr };
+		std::atomic<bool> areWeStopping{ false };
+		std::atomic<bool> areWePlaying{ false };
 		std::string currentGuildMemberId{ "" };
+		std::atomic<bool> areWePaused{ false };
 		EventWaiter* doWeReconnect{ nullptr };
 		const int32_t maxBufferSize{ 1276 };
 		std::atomic<bool> doWeQuit{ false };
 		bool areWeConnectedBool{ false };
 		AudioEncrypter audioEncrypter{};
 		bool didWeJustConnect{ true };
-		bool areWeStopping{ false };
 		uint16_t sequenceIndex{ 0 };
 		EventWaiter playSetEvent{};
 		EventWaiter stopSetEvent{};
-		bool areWePlaying{ false };
 		AudioFrameData audioData{};
-		bool areWePaused{ false };
 		EventWaiter pauseEvent{};
 		uint32_t timestamp{ 0 };
 

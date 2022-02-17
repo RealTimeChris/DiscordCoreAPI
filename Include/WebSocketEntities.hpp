@@ -226,6 +226,7 @@ namespace DiscordCoreInternal {
 		const unsigned char webSocketFinishBit{ (1u << 7u) };
 		const uint8_t maxHeaderSize{ sizeof(uint64_t) + 2 };
 		const unsigned char webSocketMaskBit{ (1u << 7u) };
+		DiscordCoreAPI::EventWaiter areWeConnected{};
 		DiscordCoreAPI::EventWaiter doWeReconnect{};
 		VoiceConnectInitData voiceConnectInitData{};
 		BaseSocketAgent* baseSocketAgent{ nullptr };
