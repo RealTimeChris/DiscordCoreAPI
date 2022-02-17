@@ -568,7 +568,7 @@ namespace DiscordCoreInternal {
 			else {
 				switch (static_cast<WebSocketOpCode>(this->inputBuffer[0] & ~this->webSocketMaskBit))
 				{
-				case WebSocketOpCode::Ws_Op_Continuation:
+				case WebSocketOpCode::Op_Continuation:
 				case WebSocketOpCode::Op_Text:
 				case WebSocketOpCode::Op_Binary:
 				case WebSocketOpCode::Op_Ping:
@@ -989,7 +989,7 @@ namespace DiscordCoreInternal {
 			else {
 				switch (static_cast<WebSocketOpCode>(this->inputBuffer00[0] & ~this->webSocketMaskBit))
 				{
-				case WebSocketOpCode::Ws_Op_Continuation:
+				case WebSocketOpCode::Op_Continuation:
 				case WebSocketOpCode::Op_Text:
 				case WebSocketOpCode::Op_Binary:
 				case WebSocketOpCode::Op_Ping:

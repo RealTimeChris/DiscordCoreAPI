@@ -350,6 +350,4 @@ namespace DiscordCoreAPI {
 		return this->requestBuilder.collectSearchResults(searchQuery);
 	}
 
-	SoundCloudAPI::~SoundCloudAPI() {}
-
 };

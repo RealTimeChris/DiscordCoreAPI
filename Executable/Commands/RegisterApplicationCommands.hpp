@@ -11,7 +11,7 @@
 
 namespace DiscordCoreAPI {
 
-	class RegisterApplicationCommands :public BaseFunction {
+	class RegisterApplicationCommands : public BaseFunction {
 	public:
 		RegisterApplicationCommands() {
 			this->commandName = "registerapplicationcommands";

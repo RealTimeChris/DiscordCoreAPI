@@ -75,7 +75,7 @@ namespace DiscordCoreInternal {
 	};
 
 	enum class WebSocketOpCode : uint8_t {
-		Ws_Op_Continuation = 0x00,
+		Op_Continuation = 0x00,
 		Op_Text = 0x01,
 		Op_Binary = 0x02,
 		Op_Close = 0x08,
@@ -86,7 +86,7 @@ namespace DiscordCoreInternal {
 	struct DiscordCoreAPI_Dll WebSocketWorkload {
 		WebSocketEventType eventType{ WebSocketEventType::Unset };
 		nlohmann::json payLoad{};
-		WebSocketWorkload() {}
+		WebSocketWorkload() = default;
 		WebSocketWorkload& operator=(WebSocketWorkload&& other) noexcept {
 			if (this != &other) {
 				this->payLoad = std::move(other.payLoad);

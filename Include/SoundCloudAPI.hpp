@@ -54,7 +54,7 @@ namespace DiscordCoreAPI {
 
 		void stop();
 
-		~SoundCloudAPI();
+		~SoundCloudAPI() = default;
 
 	protected:
 

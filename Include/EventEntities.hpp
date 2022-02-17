@@ -168,7 +168,7 @@ namespace DiscordCoreAPI {
 
         UniEvent(UniEvent<ReturnType, ArgTypes...>&) = delete;
 
-        UniEvent() {};
+        UniEvent() = default;
 
         UniEvent(std::function<ReturnType(ArgTypes...)> theFunctionNew) {
             this->theFunction = theFunctionNew;

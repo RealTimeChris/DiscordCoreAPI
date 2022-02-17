@@ -1299,7 +1299,7 @@ namespace DiscordCoreAPI {
         ApplicationCommandPermissionType type{ ApplicationCommandPermissionType::Role };///< The type of Permission.
         bool permission{ false };///< Whether the Permission is active or not.
 
-        virtual ~ApplicationCommandPermissionData() {}
+        virtual ~ApplicationCommandPermissionData() = default;
     };
 
     /// Represents the Permissions for accessing an ApplicationCommand from within a Guild. \brief Represents the Permissions for accessing an ApplicationCommand from within a Guild.
@@ -1309,7 +1309,7 @@ namespace DiscordCoreAPI {
         std::string applicationId{ "" };///< The application's id.
         std::string guildId{ "" };///< The Guild's id.
 
-        virtual ~GuildApplicationCommandPermissionsData() {}
+        virtual ~GuildApplicationCommandPermissionsData() = default;
     };
 
     /// Data structure representing a single emoji. \brief Data structure representing a single emoji.
@@ -1451,7 +1451,7 @@ namespace DiscordCoreAPI {
     class DiscordCoreAPI_Dll AccountData : public DiscordEntity {
     public:
         std::string name{ "" };///< Name of the account.
-        virtual ~AccountData() {}
+        virtual ~AccountData() = default;
     };
 
     /// Guild Widget Data. \brief Guild Widget Data.
@@ -1492,7 +1492,7 @@ namespace DiscordCoreAPI {
         bool revoked{ false };///< Has it been revoked?
         UserData user{};///< User data for the integration.
 
-        virtual ~IntegrationData() {}
+        virtual ~IntegrationData() = default;
     };
 
     /// Audit log events. \brief Audit log events.
@@ -1557,7 +1557,7 @@ namespace DiscordCoreAPI {
         std::string count{ "" };///<Count.
         std::string type{ "" };///< Type.
 
-        virtual ~AuditLogEntryInfoData() {}
+        virtual ~AuditLogEntryInfoData() = default;
     };
 
     /// Audit log change data. \brief Audit log change data.
@@ -1587,7 +1587,7 @@ namespace DiscordCoreAPI {
         std::string userId{ "" };///< Id of the executing User.
         std::string reason{ "" };///< The reason that was entered for the given change.
 
-        virtual ~AuditLogEntryData() {}
+        virtual ~AuditLogEntryData() = default;
     };
 
     /// Party data. \brief Party data.
@@ -1595,7 +1595,7 @@ namespace DiscordCoreAPI {
     public:
         std::vector<int32_t> size{ 0, 0 };///< The size of the party.
 
-        virtual ~PartyData() {}
+        virtual ~PartyData() = default;
     };
 
     /// Assets data. \brief Party data.
@@ -1735,7 +1735,7 @@ namespace DiscordCoreAPI {
         std::string guildId{ "" };///< The Guild id for which the Channel exists in.
         std::string topic{ "" };///< The topic of the StageInstance.
 
-        virtual ~StageInstanceData() {}
+        virtual ~StageInstanceData() = default;
     };
 
     /// Sticker types. \brief Sticker types.
@@ -2205,7 +2205,7 @@ namespace DiscordCoreAPI {
         std::string version{ "" };///< An autoincremented version.
         std::string name{ "" };///< Name of the current ApplicationCommand.
 
-        virtual ~ApplicationCommandData() {}
+        virtual ~ApplicationCommandData() = default;
     };
 
     /// Function data for repeated functions to be loaded. \brief Function data for repeated functions to be loaded.
@@ -2222,7 +2222,7 @@ namespace DiscordCoreAPI {
         std::string name{ "" };///< The name of the Channel that was mentioned.
         ChannelType type{};///< The type of Channel that was mentioned.
 
-        virtual ~ChannelMentionData() {}
+        virtual ~ChannelMentionData() = default;
     };
 
     /// Data for when some Channel pins are updated. \brief Data for when some Channel pins are updated.
@@ -2248,7 +2248,7 @@ namespace DiscordCoreAPI {
         std::string guildId{ "" };///< Guild id of the Thread.
         int32_t memberCount{ 0 };///< Number of Guild-members in the Thread.
 
-        virtual ~ThreadMembersUpdateData() {}
+        virtual ~ThreadMembersUpdateData() = default;
     };
 
     /// Message Interaction data. \brief Message Interaction data.
@@ -2258,7 +2258,7 @@ namespace DiscordCoreAPI {
         std::string name{ "" };
         UserData user{};
 
-        virtual ~MessageInteractionData() {}
+        virtual ~MessageInteractionData() = default;
     };
 
     /// Message types. \brief Message types.
@@ -2313,7 +2313,7 @@ namespace DiscordCoreAPI {
         StickerItemType formatType{};///< Message Sticker item type.
         std::string name{ "" };///< The name of the Sticker.
 
-        virtual ~StickerItemData() {}
+        virtual ~StickerItemData() = default;
     };
 
     /// The core of a Message's data structure. \brief The core of a Message's data structure.
@@ -2424,7 +2424,7 @@ namespace DiscordCoreAPI {
         ResolvedData resolved{};///< Resolved data.
         std::string name{ "" };///< The name of the command.
 
-        virtual ~ApplicationCommandInteractionData() {}
+        virtual ~ApplicationCommandInteractionData() = default;
     };
 
     /// Interaction data data. \brief Interaction data data.
@@ -2457,7 +2457,7 @@ namespace DiscordCoreAPI {
             this->requesterId = requesterId;
         }
 
-        virtual ~InteractionData() {}
+        virtual ~InteractionData() = default;
     };
 
     /// Data from the SessionStart info. \brief Data from the SessionStart info.
@@ -3057,7 +3057,7 @@ namespace DiscordCoreAPI {
         std::string applicationId{ "" };
         std::string guildId{ "" };
 
-        virtual ~GuildApplicationCommandPermissionData() {}
+        virtual ~GuildApplicationCommandPermissionData() = default;
     };
 
     /**@}*/
@@ -3131,7 +3131,7 @@ namespace DiscordCoreAPI {
         EncodedFrameData(const EncodedFrameData& other) {
             *this = other;
         }
-        EncodedFrameData() {}
+        EncodedFrameData() = default;
     };
 
     /// Audio frame types. \brief Audio frame types.
