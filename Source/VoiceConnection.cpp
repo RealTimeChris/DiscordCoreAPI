@@ -221,21 +221,16 @@ namespace DiscordCoreAPI {
 		std::vector<EncodedFrameData> frameData{};
 		for (uint32_t x = 0; x < 5; x += 1) {
 			EncodedFrameData newFrame{};
-			for (uint8_t x = 0; x < 3; x += 1) {
-				if (x == 0) {
-					newFrame.data.push_back(0xF8);
-				}
-				else if (x == 1) {
-					newFrame.data.push_back(0xFF);
-				}
-				else {
-					newFrame.data.push_back(0xFE);
-				}
-			}
+			newFrame.data.push_back(0xF8);
+			newFrame.data.push_back(0xFF);
+			newFrame.data.push_back(0xFE);
 			newFrame.sampleCount = 3;
 			frameData.push_back(newFrame);
 		}
 		for (auto& value : frameData) {
+			DiscordCoreAPI::EventWaiter frameWaiter{};
+			frameWaiter.reset();
+			frameWaiter.wait(20);
 			auto newerFrame = this->audioEncrypter.encryptSingleAudioFrame(value, this->voiceConnectionData->audioSSRC, this->voiceConnectionData->secretKey);
 			this->sendSingleAudioFrame(newerFrame);
 		}
@@ -331,7 +326,6 @@ namespace DiscordCoreAPI {
 							newFrame = this->audioEncrypter.encryptSingleAudioFrame(this->audioData.encodedFrameData, this->voiceConnectionData->audioSSRC, this->voiceConnectionData->secretKey);
 						}
 						if (newFrame.size() == 0) {
-							//this->clearAudioData();
 							continue;
 						}
 						nanoSleep(18000000);

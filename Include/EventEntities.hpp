@@ -168,7 +168,7 @@ namespace DiscordCoreAPI {
 
         UniEvent(UniEvent<ReturnType, ArgTypes...>&) = delete;
 
-        UniEvent() = default;
+        UniEvent() {};
 
         UniEvent(std::function<ReturnType(ArgTypes...)> theFunctionNew) {
             this->theFunction = theFunctionNew;
@@ -200,7 +200,7 @@ namespace DiscordCoreAPI {
         ReferenceCountingPtr<std::atomic<bool>> theEventState{ nullptr };
 
         EventWaiter() {
-            this->theEventState = new std::atomic<bool>{ true };
+            this->theEventState = new std::atomic<bool>{};
         }
 
         bool wait(int64_t millisecondsMaxToWait = INT64_MAX) {
