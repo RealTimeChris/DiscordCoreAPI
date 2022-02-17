@@ -150,9 +150,6 @@ namespace DiscordCoreAPI {
 			this->doWeQuit.store(false, std::memory_order_seq_cst);
 			this->stopSetEvent.set();
 			this->voiceConnectInitData = voiceConnectInitDataNew;
-			if (!this->baseSocketAgent->voiceConnectionDataBufferMap.contains(this->voiceConnectInitData.guildId)) {
-				this->baseSocketAgent->voiceConnectionDataBufferMap.insert(std::make_pair(this->voiceConnectInitData.guildId, &this->voiceConnectionBuffer));
-			}
 			if (this->voiceSocketAgent != nullptr) {
 				this->voiceSocketAgent->doWeQuit.store(true, std::memory_order_seq_cst);
 				this->voiceSocketAgent->theTask->cancel();

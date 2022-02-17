@@ -669,10 +669,10 @@ namespace DiscordCoreInternal {
 			this->webSocket = std::make_unique<WebSocketSSLClient>(this->baseUrl, this->port, &this->inputBuffer);
 			this->state = WebSocketState::Initializing;
 			this->doWeReconnect.set();
-			std::string sendVector = "GET " + this->relativePath + " HTTP/1.1\r\nHost: " + this->baseUrl +
+			std::string sendString = "GET " + this->relativePath + " HTTP/1.1\r\nHost: " + this->baseUrl +
 				"\r\nPragma: no-cache\r\nUser-Agent: DiscordCoreAPI/1.0\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Key: " +
 				this->authKey + "\r\nSec-WebSocket-Version: 13\r\n\r\n";
-			this->sendMessage(sendVector);
+			this->sendMessage(sendString);
 		}
 		catch (...) {
 			DiscordCoreAPI::reportException("BaseSocketAgent::connect()");
@@ -690,6 +690,7 @@ namespace DiscordCoreInternal {
 		this->authKey = DiscordCoreAPI::generateX64BaseEncodedKey();
 		this->baseSocketAgent = baseBaseSocketAgentNew;
 		this->voiceConnectInitData = initDataNew;
+		this->baseSocketAgent->voiceConnectionDataBufferMap.insert(std::make_pair(this->voiceConnectInitData.guildId, &this->voiceConnectionDataBuffer));
 		this->baseSocketAgent->getVoiceConnectionData(this->voiceConnectInitData);
 		this->doWeQuit.store(false, std::memory_order_seq_cst);
 		this->doWeReconnect.set();
@@ -1075,7 +1076,7 @@ namespace DiscordCoreInternal {
 	void VoiceSocketAgent::connect() {
 		try {
 			this->authKey = DiscordCoreAPI::generateX64BaseEncodedKey();
-			DiscordCoreAPI::waitForTimeToPass(*this->baseSocketAgent->voiceConnectionDataBufferMap.at(this->voiceConnectInitData.guildId), this->voiceConnectionData, 20000);
+			DiscordCoreAPI::waitForTimeToPass(this->voiceConnectionDataBuffer, this->voiceConnectionData, 20000);
 			this->baseUrl = this->voiceConnectionData.endPoint.substr(0, this->voiceConnectionData.endPoint.find(":"));
 			this->relativePath = "/?v=4";
 			this->heartbeatTimer.cancel();

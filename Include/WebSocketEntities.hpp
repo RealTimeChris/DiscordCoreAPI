@@ -213,6 +213,7 @@ namespace DiscordCoreInternal {
 
 	protected:
 
+		DiscordCoreAPI::UnboundedMessageBlock<DiscordCoreInternal::VoiceConnectionData> voiceConnectionDataBuffer{};
 		std::unique_ptr<DiscordCoreAPI::CoRoutine<void>> theTask{ nullptr };
 		std::unique_ptr<DatagramSocketSSLClient> voiceSocket{ nullptr };
 		const unsigned char webSocketPayloadLengthMagicLarge{ 126 };
