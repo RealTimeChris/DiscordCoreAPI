@@ -1587,8 +1587,7 @@ namespace DiscordCoreInternal {
 			rolesArray.push_back(value);
 		}
 
-		data = { {"name", dataPackage.name},
-			{dataPackage.imageDataFinal, dataPackage.imageData},
+		data = { {"name", dataPackage.name},{"image", dataPackage.imageDataFinal},
 			{"roles", rolesArray} };
 
 		return data.dump();

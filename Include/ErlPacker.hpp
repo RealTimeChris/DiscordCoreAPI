@@ -86,7 +86,7 @@ namespace DiscordCoreInternal {
 
 		void singleValueJsonToETF(ErlPackBuffer&, nlohmann::json&);
 
-		void writeToBuffer(ErlPackBuffer&, std::vector<uint8_t>);
+		void writeToBuffer(ErlPackBuffer&, std::vector<uint8_t>&);
 
 		void appendVersion(ErlPackBuffer&);
 

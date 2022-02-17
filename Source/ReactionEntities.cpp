@@ -4,8 +4,10 @@
 // https://github.com/RealTimeChris
 
 #include <ReactionEntities.hpp>
+#include <cpp-base64/base64.h>
 #include <CoRoutine.hpp>
 #include <Http.hpp>
+#include <fstream>
 
 namespace DiscordCoreAPI {
 
@@ -192,27 +194,34 @@ namespace DiscordCoreAPI {
 			DiscordCoreInternal::HttpWorkloadData workload{};
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Post_Guild_Emoji;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Post;
-			workload.relativePath = "/guilds/" + dataPackage.guildId + "/emojis";
-			workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
-			workload.content = workload.content.erase(workload.content.find(":responseData:") - 2, 1);
-			workload.content = workload.content.insert(workload.content.find("responseData:"), "\"");
-			workload.content = workload.content.erase(workload.content.find("base64,\"") + std::string("base64,\"").length() - 1, 2);
-			workload.content = workload.content.insert(workload.content.find(",\"name\":"), "\"");
-			workload.callStack = "Reactions::createGuildEmojiAsync";
+			std::fstream newFile{ dataPackage.imageFilePath };
+			std::string theFile{};
+			char theChar{};
+			while (newFile.get(theChar)) {
+				theFile.push_back(theChar);
+			}
+			std::string newerFile = base64_encode_pem(theFile);
 			switch (dataPackage.type) {
 			case ImageType::Jpg: {
-				dataPackage.imageDataFinal = "image\":responseData:image/jpeg;base64,";
+				dataPackage.imageDataFinal = "data:image/jpeg;base64,";
+				dataPackage.imageDataFinal.insert(dataPackage.imageDataFinal.end(), newerFile.begin() + 3, newerFile.end() - 3);
 				break;
 			}
 			case ImageType::Png: {
-				dataPackage.imageDataFinal = "image\":responseData:image/png;base64,";
+				dataPackage.imageDataFinal = "data:image/png;base64,";
+				dataPackage.imageDataFinal.insert(dataPackage.imageDataFinal.end(), newerFile.begin(), newerFile.end());
 				break;
 			}
 			case ImageType::Gif: {
-				dataPackage.imageDataFinal = "image\":responseData:image/gif;base64,";
+				dataPackage.imageDataFinal = "data:image/gif;base64,";
+				dataPackage.imageDataFinal.insert(dataPackage.imageDataFinal.end(), newerFile.begin(), newerFile.end());
 				break;
 			}
 			}
+			workload.relativePath = "/guilds/" + dataPackage.guildId + "/emojis";
+			workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
+			std::cout<< "THE DATA: "<< workload.content<< std::endl;
+			workload.callStack = "Reactions::createGuildEmojiAsync";
 			if (dataPackage.reason != "") {
 				workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));
 			}

@@ -199,24 +199,6 @@ namespace DiscordCoreAPI {
 
         ReferenceCountingPtr<std::atomic<bool>> theEventState{ nullptr };
 
-        EventWaiter& operator=(const EventWaiter& other) {
-            this->theEventState = other.theEventState;
-            return *this;
-        }
-
-        EventWaiter(const EventWaiter& other) {
-            *this = other;
-        }
-
-        EventWaiter& operator=(EventWaiter& other) {
-            this->theEventState = other.theEventState;
-            return *this;
-        }
-
-        EventWaiter(EventWaiter& other) {
-            *this = other;
-        }
-
         EventWaiter() {
             this->theEventState = new std::atomic<bool>{ true };
         }

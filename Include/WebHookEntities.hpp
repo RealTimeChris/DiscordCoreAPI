@@ -206,7 +206,7 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll EditWebHookMessageData {
 	public:
 		 
-		friend std::string DiscordCoreInternal::JSONIFY(EditWebHookMessageData dataPackage);
+		friend std::string DiscordCoreInternal::JSONIFY(DiscordCoreAPI::EditWebHookMessageData dataPackage);
 		friend WebHooks;
 
 		std::string messageId{ "" };///< The Message Id to collect.
