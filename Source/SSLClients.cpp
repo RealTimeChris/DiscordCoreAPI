@@ -365,7 +365,7 @@ namespace DiscordCoreInternal {
 			nfds = this->theSocket > nfds ? this->theSocket : nfds;
 		}
 
-		timeval checkTime{ .tv_usec = 600000 };
+		timeval checkTime{ .tv_usec = waitTimeInMicroSeconds };
 		if (auto resultValue = select(nfds + 1, &readSet, &writeSet, nullptr, &checkTime); resultValue == SOCKET_ERROR) {
 			reportError("select() Error: ", resultValue);
 			return false;
