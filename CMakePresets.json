@@ -4,7 +4,7 @@
     {
       "name": "linux-default",
       "displayName": "Linux Release",
-      "description": "Target the Windows Subsystem for Linux (WSL) or a remote Linux system",
+      "description": "Target Linux with the g++ C++ compiler.",
       "generator": "Unix Makefiles",
       "binaryDir": "${sourceDir}/Output Files/Release",
       "cacheVariables": {
@@ -20,7 +20,7 @@
     {
       "name": "linux-dbg-default",
       "displayName": "Linux Debug",
-      "description": "Target the Windows Subsystem for Linux (WSL) or a remote Linux system.",
+      "description": "Target Linux with the g++ C++ compiler.",
       "generator": "Unix Makefiles",
       "binaryDir": "${sourceDir}/Output Files/Debug",
       "cacheVariables": {
