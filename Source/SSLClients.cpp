@@ -163,8 +163,7 @@ namespace DiscordCoreInternal {
 
 	bool HttpSSLClient::processIO() {
 #ifdef _WIN32
-		fd_set writeSet{};
-		fd_set readSet{};
+		fd_set writeSet{}, readSet{};
 		int32_t nfds{ 0 };
 		FD_ZERO(&writeSet);
 		FD_ZERO(&readSet);
@@ -367,8 +366,7 @@ namespace DiscordCoreInternal {
 
 	bool WebSocketSSLClient::processIO(int32_t waitTimeInMicroSeconds) {
 #ifdef _WIN32
-		fd_set writeSet{};
-		fd_set readSet{};
+		fd_set writeSet{}, readSet{};
 		int32_t nfds{ 0 };
 		FD_ZERO(&writeSet);
 		FD_ZERO(&readSet);
@@ -504,7 +502,6 @@ namespace DiscordCoreInternal {
 		inputBufferPtr(theInputBuffer)
 	{
 		addrinfoWrapper  resultAddress{ nullptr }, hints{ nullptr };
-
 		hints->ai_family = AF_INET;
 		hints->ai_socktype = SOCK_DGRAM;
 		hints->ai_protocol = IPPROTO_UDP;
