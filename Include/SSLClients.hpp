@@ -227,7 +227,7 @@ namespace DiscordCoreInternal {
 		SOCKETWrapper(nullptr_t) {}
 
 	protected:
-		std::unique_ptr<SOCKET, SOCKETDeleter> socketPtr{ new SOCKET{}, SOCKETDeleter{} };
+		std::unique_ptr<SOCKET, SOCKETDeleter> socketPtr{ new SOCKET{INVALID_SOCKET}, SOCKETDeleter{} };
 	};
 
 	struct X509Deleter {
