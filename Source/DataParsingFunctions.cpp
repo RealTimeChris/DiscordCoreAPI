@@ -808,11 +808,11 @@ namespace DiscordCoreInternal {
             DataParser::parseObject(jsonObjectData["user"], pDataStructure.user);
         }
 
-        if (jsonObjectData.contains("nick") && !jsonObjectData["nick"].is_null()) {
+        if (jsonObjectData.contains("nick") && !jsonObjectData["nick"].is_null() && jsonObjectData["nick"] != "") {
             pDataStructure.nick = jsonObjectData["nick"].get<std::string>();
         }
         else {
-            pDataStructure.nick = pDataStructure.user.userName;
+            pDataStructure.nick = "";
         }
 
         if (pDataStructure.nick == "") {
@@ -861,11 +861,11 @@ namespace DiscordCoreInternal {
             DataParser::parseObject(jsonObjectData["user"], pDataStructure.user);
         }
 
-        if (jsonObjectData.contains("nick") && !jsonObjectData["nick"].is_null()) {
+        if (jsonObjectData.contains("nick") && !jsonObjectData["nick"].is_null() && jsonObjectData["nick"] != "") {
             pDataStructure.nick = jsonObjectData["nick"].get<std::string>();
         }
         else {
-            pDataStructure.nick = pDataStructure.user.userName;
+            pDataStructure.nick = "";
         }
 
         if (pDataStructure.nick == "") {

@@ -40,9 +40,6 @@ namespace DiscordCoreAPI {
 		this->roles = dataNew.roles;
 		this->user = dataNew.user;
 		this->nick = dataNew.nick;
-		if (this->nick == "") {
-			this->nick = this->user.userName;
-		}
 		this->deaf = dataNew.deaf;
 		this->mute = dataNew.mute;
 	};
