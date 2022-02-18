@@ -72,7 +72,7 @@ if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
 else {
 	dataPackage.type = DesiredInputEventResponseType::EphemeralInteractionResponse;
 }
-newEvent = InputEvents::respondToEvent(dataPackage);
+InputEventData newEvent = InputEvents::respondToEvent(dataPackage);
 InputEvents::deleteInputEventResponseAsync(newEvent, 20000).get();
 ```
 ## Supported Platforms
