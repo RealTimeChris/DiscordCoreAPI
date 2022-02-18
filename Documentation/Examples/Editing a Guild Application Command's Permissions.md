@@ -5,8 +5,8 @@
 - Select, from the `ApplicationCommands` class, the `editApplicationCommandPermissions()` function and execute it, while passing in a data structure of type `EditApplicationCommandPermissionsData`, with a return value of type `auto` or `GuildApplicationCommandPermissionsData`.
 
 ```cpp
-// Test.hpp - Header for the "test" command.
-// https://github.com/RealTimeChris
+/// Test.hpp - Header for the "test" command.
+/// https://github.com/RealTimeChris/DiscordCoreAPI
 
 #pragma once
 

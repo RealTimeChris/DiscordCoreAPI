@@ -8,8 +8,8 @@
 - Do this with as many functions as you would like!
 
 ```cpp
-// main.cpp - Main entry point.
-// https://github.com/RealTimeChris
+/// main.cpp - Main entry point.
+/// https://github.com/RealTimeChris/DiscordCoreAPI
 
 #include <pch.h"
 #include <./DiscordCoreAPI/DiscordCoreClient02.hpp>

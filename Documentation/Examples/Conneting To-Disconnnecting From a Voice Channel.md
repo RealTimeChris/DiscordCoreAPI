@@ -5,8 +5,8 @@
 - Call, from the Guild object the `connectToVoice` function, while passing in the channel id of the channel to which you would like to connect.
 - To disconnect from the channel, call the `disconnect` function on the `Guild` object.
 ```cpp
-// Test.hpp - Header for the "test" command.
-// https://github.com/RealTimeChris
+/// Test.hpp - Header for the "test" command.
+/// https://github.com/RealTimeChris/DiscordCoreAPI
 
 #pragma once
 

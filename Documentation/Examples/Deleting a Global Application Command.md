@@ -5,8 +5,8 @@
 - Select, from the `ApplicationCommands` class, the `deleteGlobalApplicationCommand()` function and execute it, while passing in a data structure of type `DeleteApplicationCommandData`, with no return value.
 
 ```cpp
-// Test.hpp - Header for the "test" command.
-// https://github.com/RealTimeChris
+/// Test.hpp - Header for the "test" command.
+/// https://github.com/RealTimeChris/DiscordCoreAPI
 
 #pragma once
 

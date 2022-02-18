@@ -1,7 +1,7 @@
-// RegisterApplicationCommands.hpp - Registers the slash commands of this bot.
-// May 27, 2021
-// Chris M.
-// https://github.com/RealTimeChris
+/// RegisterApplicationCommands.hpp - Registers the slash commands of this bot.
+/// May 27, 2021
+/// Chris M.
+/// https://github.com/RealTimeChris/DiscordCoreAPI
 
 #ifndef REGISTER_APPLICATION_COMMANDS
 #define REGISTER_APPLICATION_COMMANDS

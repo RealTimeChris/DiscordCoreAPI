@@ -5,8 +5,8 @@
 - Select, from the `Channels` class, the `createChannelInviteAsync()` function and execute it, while passing in a data structure of type `DiscordCoreAPI::CreateChannelInviteData`, with a return value of `auto` or `InviteData`.
 
 ```cpp
-// Test.hpp - Header for the "test" command.
-// https://github.com/RealTimeChris
+/// Test.hpp - Header for the "test" command.
+/// https://github.com/RealTimeChris/DiscordCoreAPI
 
 #pragma once
 

@@ -3,8 +3,8 @@
 - In a new header for the command (that is stored within the Commands folder) #include the `Index.hpp` file.
 - Add this header to the `Commands/CommandsList.hpp` header.
 ```cpp
-// CommandsList.hpp - Commands! All of them!
-// https://github.com/RealTimeChris
+/// CommandsList.hpp - Commands! All of them!
+/// https://github.com/RealTimeChris/DiscordCoreAPI
 
 #pragma once
 
@@ -18,8 +18,8 @@
 - CONTINUED FURTHER DOWN.
 
 ```cpp
-// Test.hpp - Header for the "test" command.
-// https://github.com/RealTimeChris
+/// Test.hpp - Header for the "test" command.
+/// https://github.com/RealTimeChris/DiscordCoreAPI
 
 #pragma once
 
@@ -82,8 +82,8 @@ namespace DiscordCoreAPI {
 - Add the command to the library's command list by using the `DiscordCoreAPI::DiscordCoreClient::registerFunction()` function.
 
 ```cpp
-// Main.cpp - Main source file, for "the framework".
-// https://github.com/RealTimeChris
+/// Main.cpp - Main source file, for "the framework".
+/// https://github.com/RealTimeChris/DiscordCoreAPI
 
 #include <Index.hpp>
 

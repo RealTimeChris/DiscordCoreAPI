@@ -1,7 +1,7 @@
-// main.cpp - Main entry point.
-// Jun 17, 2021
-// Chris M.
-// https://github.com/RealTimeChris
+/// main.cpp - Main entry point.
+/// Jun 17, 2021
+/// Chris M.
+/// https://github.com/RealTimeChris/DiscordCoreAPI
 
 #include <../Include/Index.hpp>
 #include "Commands/CommandsList.hpp"

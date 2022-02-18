@@ -1,7 +1,7 @@
-// PlayRN.hpp - Header for the "play right now" command.
-// Sep 9, 2021
-// Chris M.
-// https://github.com/RealTimeChris
+/// PlayRN.hpp - Header for the "play right now" command.
+/// Sep 9, 2021
+/// Chris M.
+/// https://github.com/RealTimeChris/DiscordCoreAPI
 
 #pragma once
 

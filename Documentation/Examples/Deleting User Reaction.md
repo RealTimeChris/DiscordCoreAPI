@@ -6,8 +6,8 @@
 - Call the function with `.get()` added to the end in order to wait for its return value now.
 
 ```cpp
-// Test.hpp - Header for the "test" command.
-// https://github.com/RealTimeChris
+/// Test.hpp - Header for the "test" command.
+/// https://github.com/RealTimeChris/DiscordCoreAPI
 
 #pragma once
 

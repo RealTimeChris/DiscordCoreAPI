@@ -6,8 +6,8 @@
 - Run the `DiscordCoreAPI::DiscordCoreClient::runBot()` function.
 
 ```cpp
-// main.cpp - Main entry point.
-// https://github.com/RealTimeChris
+/// main.cpp - Main entry point.
+/// https://github.com/RealTimeChris/DiscordCoreAPI
 
 #include <Index.hpp>
 

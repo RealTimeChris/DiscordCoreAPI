@@ -5,8 +5,8 @@
 - Select, from the `ApplicationCommands` class, the `bulkOverwriteApplicationCommandsAsync()` function and execute it, while passing in a data structure of type `BulkOverwriteApplicationCommandsData`, with a return value of `auto` or `vector<ApplicationCommand>`.
 
 ```cpp
-// Test.hpp - Header for the "test" command.
-// https://github.com/RealTimeChris
+/// Test.hpp - Header for the "test" command.
+/// https://github.com/RealTimeChris/DiscordCoreAPI
 
 #pragma once
 

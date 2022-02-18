@@ -5,8 +5,8 @@
 - Select, from the `Channels` class, the `followNewsChannelAsync()` function and execute it, while passing in a data structure of type `DiscordCoreAPI::FollowNewsChannelData` with a return value of `auto` or `Channel`.
 
 ```cpp
-// Test.hpp - Header for the "test" command.
-// https://github.com/RealTimeChris
+/// Test.hpp - Header for the "test" command.
+/// https://github.com/RealTimeChris/DiscordCoreAPI
 
 #pragma once
 

@@ -4,8 +4,8 @@
 - Add one or more buttons by using the `addButton` function of the `DiscordCoreAPI::RespondToInputEventData` structure.
 - Call the `InputEvents::respondToEvent` function, passing it the `DiscordCoreAPI::RespondToInputEventData` structure.
 ```cpp
-// Test.hpp - Header for the "test" command.
-// https://github.com/RealTimeChris
+/// Test.hpp - Header for the "test" command.
+/// https://github.com/RealTimeChris/DiscordCoreAPI
 
 #pragma once
 

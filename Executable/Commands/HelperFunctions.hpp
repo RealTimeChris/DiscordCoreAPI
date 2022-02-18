@@ -1,7 +1,7 @@
-// HelperFunctions.hpp - Header for some helper functions.
-// May 28, 2021
-// Chris M.
-// https://github.com/RealTimeChris
+/// HelperFunctions.hpp - Header for some helper functions.
+/// May 28, 2021
+/// Chris M.
+/// https://github.com/RealTimeChris/DiscordCoreAPI
 
 #pragma once
 

@@ -4,8 +4,8 @@
 - Select, from the `ApplicationCommands` class, the `batchEditApplicationCommandPermissions()` function and execute it, while passing in a data structure of type `BatchEditGuildApplicationCommandPermissionsData`, with a return value of type `auto` or `vector<GuildApplicationCommandPermissionsData>`.
 
 ```cpp
-// Test.hpp - Header for the "test" command.
-// https://github.com/RealTimeChris
+/// Test.hpp - Header for the "test" command.
+/// https://github.com/RealTimeChris/DiscordCoreAPI
 
 #pragma once
 

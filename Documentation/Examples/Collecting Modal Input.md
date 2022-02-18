@@ -5,8 +5,8 @@
 - Call, from the `DiscordCoreAPI::ModalCollector` class, the `collectModalData` function.
 - Collect a result of type `ModalResponseData` and deal with the modal response as you see fit!
 ```cpp
-// Test.hpp - Header for the "test" command.
-// https://github.com/RealTimeChris
+/// Test.hpp - Header for the "test" command.
+/// https://github.com/RealTimeChris/DiscordCoreAPI
 
 #pragma once
 

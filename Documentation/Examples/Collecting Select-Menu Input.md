@@ -5,8 +5,8 @@
 - Call, from the `DiscordCoreAPI::ButtonCollector` class, the `collectSelectMenuData` function. NOTE: The arguments for this function are as follows: `getSelectMenuDataForAllNew` = Whether or not it accepts select-menu entries from everyone or just the individual selected with the `targetUser` argument. `maxWaitTimeInMsNew` = The maximum number of milliseconds that the collector will wait for select-menu entries. `maxCollectSelectMenuCountNew` = The maximum number of select-menu entries that the collector will collect. `targetUser` = The target user, if `getSelectMenuDataForAllNew` is enabled.
 - Collect a result of type `vector<SelectMenuResponseData>` and deal with the button responses as you see fit! Keep in mind that you could set up a voting message by using `getSelectMenuDataForAllNew` and having multiple entries allowed.
 ```cpp
-// Test.hpp - Header for the "test" command.
-// https://github.com/RealTimeChris
+/// Test.hpp - Header for the "test" command.
+/// https://github.com/RealTimeChris/DiscordCoreAPI
 
 #pragma once
 

@@ -5,8 +5,8 @@
 - The list of events can be found by dereferencing `DiscordCoreAPI::DiscordCoreClient::eventManager->`, where you pass into the function found here, a pointer to your own created function.
 
 ```cpp
-// main.cpp - Main entry point.
-// https://github.com/RealTimeChris
+/// main.cpp - Main entry point.
+/// https://github.com/RealTimeChris/DiscordCoreAPI
 
 #include <pch.h"
 #include <./DiscordCoreAPI-main/DiscordCoreClient02.hpp>

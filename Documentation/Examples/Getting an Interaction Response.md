@@ -5,8 +5,8 @@
 - Select, from the `Interactions` class, the `getInteractionResponseAsync()` function and execute it, while passing in a data structure of type `DiscordCoreAPI::GetInteractionResponseData`.
 
 ```cpp
-// Test.hpp - Header for the "test" command.
-// https://github.com/RealTimeChris
+/// Test.hpp - Header for the "test" command.
+/// https://github.com/RealTimeChris/DiscordCoreAPI
 
 #pragma once
 

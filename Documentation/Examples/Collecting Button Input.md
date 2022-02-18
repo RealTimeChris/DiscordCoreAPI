@@ -5,8 +5,8 @@
 - Call, from the `DiscordCoreAPI::ButtonCollector` class, the `collectButtonData` function. NOTE: The arguments for this function are as follows: `getButtonDataForAllNew` = Whether or not it accepts button presses from everyone or just the individual selected with the `targetUser` argument. `maxWaitTimeInMsNew` = The maximum number of milliseconds that the collector will wait for button presses. `maxNumberOfPressesNew` = The maximum number of button presses that the collector will collect. `targetUser` = The target user, if `collectFromAllUsers` is enabled.
 - Collect a result of type `vector<ButtonResponseData>` and deal with the button responses as you see fit! Keep in mind that you could set up a voting message by using `getButtonDataForAllNew` and having multiple presses allowed.
 ```cpp
-// Test.hpp - Header for the "test" command.
-// https://github.com/RealTimeChris
+/// Test.hpp - Header for the "test" command.
+/// https://github.com/RealTimeChris/DiscordCoreAPI
 
 #pragma once
 
