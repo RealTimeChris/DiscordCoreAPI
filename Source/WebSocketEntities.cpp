@@ -206,7 +206,9 @@ namespace DiscordCoreInternal {
 				else {
 					this->voiceConnectionData.endPoint = payload.at("d").at("endpoint").get<std::string>();
 					this->voiceConnectionData.token = payload.at("d").at("token").get<std::string>();
-					this->voiceConnectionDataBufferMap.at(payload.at("d").at("guild_id"))->send(this->voiceConnectionData);
+					if (this->voiceConnectionDataBufferMap.contains(payload.at("d").at("guild_id"))) {
+						this->voiceConnectionDataBufferMap.at(payload.at("d").at("guild_id"))->send(this->voiceConnectionData);
+					}
 					this->serverUpdateCollected = false;
 					this->stateUpdateCollected = false;
 					this->areWeCollectingData = false;
@@ -221,7 +223,9 @@ namespace DiscordCoreInternal {
 				}
 				else {
 					this->voiceConnectionData.sessionId = payload.at("d").at("session_id").get<std::string>();
-					this->voiceConnectionDataBufferMap.at(payload.at("d").at("guild_id"))->send(this->voiceConnectionData);
+					if (this->voiceConnectionDataBufferMap.contains(payload.at("d").at("guild_id"))) {
+						this->voiceConnectionDataBufferMap.at(payload.at("d").at("guild_id"))->send(this->voiceConnectionData);
+					}
 					this->serverUpdateCollected = false;
 					this->stateUpdateCollected = false;
 					this->areWeCollectingData = false;
