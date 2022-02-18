@@ -46,7 +46,7 @@ namespace DiscordCoreInternal {
 #define SOCKET_ERROR	(-1)
 #endif
 
-	void reportError(std::string errorPosition, int32_t errorValue);
+	DiscordCoreAPI_Dll void reportError(std::string errorPosition, int32_t errorValue);
 
 #ifndef _WIN32
 	struct DiscordCoreAPI_Dll epollWrapper {
