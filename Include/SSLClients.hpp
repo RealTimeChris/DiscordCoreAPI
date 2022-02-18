@@ -36,7 +36,7 @@
 
 namespace DiscordCoreInternal {
 
-	using UINT_PTR = unsigned __int64;
+	using UINT_PTR = uint64_t;
 	using SOCKET = UINT_PTR;
 
 #ifndef INVALID_SOCKET
