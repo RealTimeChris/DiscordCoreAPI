@@ -79,7 +79,7 @@ InputEvents::deleteInputEventResponseAsync(newEvent, 20000).get();
 - This library currently supports being built within Visual Studio 2022/MSVC on the Windows platform as well as g++-11 on the Linux platform.
 
 ## Dependencies
-- [CMake](https://cmake.org/)
+- [CMake](https://cmake.org/) (Version CMake 3.21.2 or greater)
 - NOTE: I installed these using the [vcpkg](https://github.com/microsoft/vcpkg) installer.
 - [OpenSSL](https://wiki.openssl.org/index.php/Compilation_and_Installation#W64) (.\vcpkg install openssl:x64-windows/x64-linux)
 - [Nlohmann Json](https://github.com/nlohmann/json) (.\vcpkg install nlohmann-json:x64-windows/x64-linux)
