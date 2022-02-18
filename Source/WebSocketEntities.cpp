@@ -169,7 +169,7 @@ namespace DiscordCoreInternal {
 					this->onClosedInternal();
 				}
 				if (this->webSocket != nullptr) {
-					if (!this->webSocket->processIO()) {
+					if (!this->webSocket->processIO(60000)) {
 						this->onClosedExternal();
 					}
 					this->handleBuffer();
@@ -707,7 +707,7 @@ namespace DiscordCoreInternal {
 		this->authKey = DiscordCoreAPI::generateX64BaseEncodedKey();
 		this->baseSocketAgent = baseBaseSocketAgentNew;
 		this->voiceConnectInitData = initDataNew;
-		this->baseSocketAgent->voiceConnectionDataBufferMap.insert(std::make_pair(this->voiceConnectInitData.guildId, &this->voiceConnectionDataBuffer));
+		this->baseSocketAgent->voiceConnectionDataBufferMap.insert_or_assign(this->voiceConnectInitData.guildId, &this->voiceConnectionDataBuffer);
 		this->baseSocketAgent->getVoiceConnectionData(this->voiceConnectInitData);
 		this->doWeQuit.store(false, std::memory_order_seq_cst);
 		this->doWeReconnect.set();
@@ -826,7 +826,7 @@ namespace DiscordCoreInternal {
 					co_return;
 				}
 				if (this->webSocket != nullptr) {
-					if (!this->webSocket->processIO()) {
+					if (!this->webSocket->processIO(180000)) {
 						this->onClosedExternal();
 					}
 				}
