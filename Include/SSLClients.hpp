@@ -341,7 +341,7 @@ namespace DiscordCoreInternal {
 
 		const int32_t maxBufferSize{ 1024 * 16 };
 		std::vector<uint8_t>* inputBufferPtr{};
-		BIOWrapper connectionBio{ nullptr };
+		BIOWrapper datagramBio{ nullptr };
 		SOCKETWrapper theSocket{ nullptr };
 	};
 }

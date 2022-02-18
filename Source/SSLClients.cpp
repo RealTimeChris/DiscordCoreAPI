@@ -536,12 +536,12 @@ namespace DiscordCoreInternal {
 			return;
 		}
 #endif
-		if (this->connectionBio = BIO_new_dgram(this->theSocket, BIO_CLOSE); this->connectionBio == nullptr) {
+		if (this->datagramBio = BIO_new_dgram(this->theSocket, BIO_CLOSE); this->datagramBio == nullptr) {
 			reportSSLError("BIO_new_dgram() Error: ");
 			return;
 		}
 
-		if (auto returnValue = BIO_ctrl(this->connectionBio, BIO_CTRL_DGRAM_SET_CONNECTED, 0, &resultAddress); returnValue == 0) {
+		if (auto returnValue = BIO_ctrl(this->datagramBio, BIO_CTRL_DGRAM_SET_CONNECTED, 0, &resultAddress); returnValue == 0) {
 			reportSSLError("BIO_ctrl() Error: ");
 			return;
 		}
@@ -554,7 +554,7 @@ namespace DiscordCoreInternal {
 	bool DatagramSocketSSLClient::writeData(std::vector<uint8_t>& data) {
 		size_t writtenBytes{ 0 };
 
-		if (!BIO_write_ex(this->connectionBio, data.data(), data.size(), &writtenBytes)) {
+		if (!BIO_write_ex(this->datagramBio, data.data(), data.size(), &writtenBytes)) {
 			reportSSLError("BIO_write_ex() Error: ");
 			return false;
 		};
@@ -573,7 +573,7 @@ namespace DiscordCoreInternal {
 		std::vector<uint8_t>  serverToClientBuffer{};
 		serverToClientBuffer.resize(this->maxBufferSize);
 		size_t readBytes{ 0 };
-		if (auto returnValue = BIO_read_ex(this->connectionBio, serverToClientBuffer.data(), this->maxBufferSize, &readBytes); returnValue == 1) {
+		if (auto returnValue = BIO_read_ex(this->datagramBio, serverToClientBuffer.data(), this->maxBufferSize, &readBytes); returnValue == 1) {
 			if (readBytes > 0) {
 				this->inputBufferPtr->insert(this->inputBufferPtr->end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
 				if (doWeClear) {
