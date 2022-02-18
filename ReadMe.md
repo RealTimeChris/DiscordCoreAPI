@@ -64,7 +64,6 @@ newEmbed.setDescription("------\n__**Sorry, but there's already something playin
 newEmbed.setTimeStamp(getTimeAndDate());
 newEmbed.setTitle("__**Playing Issue:**__");
 newEmbed.setColor(discordGuild.data.borderColor);
-embedsFromSearch.push_back(newEmbed);
 RespondToInputEventData dataPackage(args->eventData);
 dataPackage.addMessageEmbed(newEmbed);
 if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
