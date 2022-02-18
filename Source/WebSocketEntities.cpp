@@ -826,7 +826,7 @@ namespace DiscordCoreInternal {
 					co_return;
 				}
 				if (this->webSocket != nullptr) {
-					if (!this->webSocket->processIO(180000)) {
+					if (!this->webSocket->processIO(60000)) {
 						this->onClosedExternal();
 					}
 				}
