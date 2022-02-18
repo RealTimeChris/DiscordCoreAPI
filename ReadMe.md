@@ -57,6 +57,7 @@
 ----
 - Both user messages and user interactions are accepted via the `onInputEventCreation` event.
 - They can all be responded to using the `DiscordCoreAPI::InputEvents::respondToEvent()` function.
+- Alternatively you can implement your own input-event handling by using the raw `onInteractionCreation` or `onMessageCreation` events.
 ```cpp
 EmbedData newEmbed;
 newEmbed.setAuthor(args->eventData.getUserName(), args->eventData.getAvatarURL());
