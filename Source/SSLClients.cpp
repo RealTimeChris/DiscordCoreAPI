@@ -44,7 +44,7 @@ namespace DiscordCoreInternal {
 #endif
 	}
 
-	HttpSSLClient::HttpSSLClient(nullptr_t other) {};
+	HttpSSLClient::HttpSSLClient(nullptr_t) {};
 
 	HttpSSLClient::HttpSSLClient(std::string* theInputBuffer) :
 		inputBufferPtr(theInputBuffer) {
