@@ -102,7 +102,7 @@ namespace DiscordCoreAPI {
 
         ThreadPoolTimer();
 
-        static CoRoutine<void> run(int64_t theInterval, TimeElapsedHandler theFunction, bool repeating);
+        CoRoutine<void> run(int64_t theInterval, TimeElapsedHandler theFunction, bool repeating);
 
     };
 }
