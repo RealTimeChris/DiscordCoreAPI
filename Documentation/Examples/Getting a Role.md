@@ -14,7 +14,7 @@
 #ifndef _TEST_
 #define _TEST_
 
-#include <../DiscordCoreClient02.hpp>
+#include "Index.hpp"
 
 namespace DiscordCoreAPI {
 
@@ -35,15 +35,15 @@ namespace DiscordCoreAPI {
 			return make_unique<Test>();
 		}
 
-		virtual  task<void> execute(BaseFunctionArguments args) {
+		virtual void execute(unique_ptr<BaseFunctionArguments> args) {
 
 			GetRoleData dataPackage{};
-      dataPackage.guildId = args.eventData.getGuildId();
-      dataPackage.roleId = "YOUR_ROLE_ID_HERE";
+			dataPackage.guildId = args.eventData.getGuildId();
+			dataPackage.roleId = "YOUR_ROLE_ID_HERE";
 
 			Role role = Roles::getRoleAsync(dataPackage).get();
       
-      Role role = Roles::getCachedRoleAsync(dataPackage).get();
+			Role role = Roles::getCachedRoleAsync(dataPackage).get();
 
 			co_return;
 

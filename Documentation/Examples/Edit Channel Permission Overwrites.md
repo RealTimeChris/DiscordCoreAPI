@@ -11,7 +11,7 @@
 #ifndef _TEST_
 #define _TEST_
 
-#include <../DiscordCoreClient02.hpp>
+#include "Index.hpp"
 
 namespace DiscordCoreAPI {
 
@@ -32,7 +32,7 @@ namespace DiscordCoreAPI {
 			return std::make_unique<Test>();
 		}
 
-		virtual  task<void> execute(shared_ptr<BaseFunctionArguments> args) {
+		virtual void execute(unique_ptr<BaseFunctionArguments> args) {
 
 			EditChannelPermissionOverwritesData dataPackage;
 			dataPackage.allow = PermissionsConverter::addPermissionsToString(dataPackage.allow, vector<Permissions>{Permissions::ADD_REACTIONS, Permissions::MANAGE_MESSAGES});
