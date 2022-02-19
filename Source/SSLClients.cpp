@@ -134,7 +134,7 @@ namespace DiscordCoreInternal {
 				return false;
 			}
 
-			if (std::unique_ptr<X509, X509Deleter> cert = std::unique_ptr<X509, X509Deleter>(SSL_get_peer_certificate(this->ssl)); cert == nullptr) {
+			if (std::unique_ptr<X509, X509Deleter> cert{ SSL_get_peer_certificate(this->ssl) }; cert == nullptr) {
 				reportSSLError("SSL_get_peer_certificate() Error: ", 0, this->ssl);
 				return false;
 			}
