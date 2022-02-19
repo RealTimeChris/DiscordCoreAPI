@@ -50,7 +50,7 @@ namespace DiscordCoreAPI {
 				int64_t currentTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 
 				if (currentTime - PlayRN::timeOfLastPlay < 5000) {
-					EmbedData newEmbed;
+					EmbedData newEmbed{};
 					newEmbed.setAuthor(args->eventData.getUserName(), args->eventData.getAvatarUrl());
 					newEmbed.setDescription("------\n__**Sorry, but please wait a total of 5 seconds in between plays!**__\n------");
 					newEmbed.setTimeStamp(getTimeAndDate());
@@ -88,7 +88,7 @@ namespace DiscordCoreAPI {
 				VoiceConnection* voiceConnection = guild.connectToVoice(guildMember.voiceData.channelId, false, false);
 
 				if (voiceConnection == nullptr) {
-					EmbedData newEmbed;
+					EmbedData newEmbed{};
 					newEmbed.setAuthor(args->eventData.getUserName(), args->eventData.getAvatarUrl());
 					newEmbed.setDescription("------\n__**Sorry, but there is no voice connection that is currently held by me!**__\n------");
 					newEmbed.setTimeStamp(getTimeAndDate());
@@ -111,7 +111,7 @@ namespace DiscordCoreAPI {
 				}
 
 				if (guildMember.voiceData.channelId == "" || guildMember.voiceData.channelId != voiceConnection->getChannelId()) {
-					EmbedData newEmbed;
+					EmbedData newEmbed{};
 					newEmbed.setAuthor(args->eventData.getUserName(), args->eventData.getAvatarUrl());
 					newEmbed.setDescription("------\n__**Sorry, but you need to be in a correct voice channel to issue those commands!**__\n------");
 					newEmbed.setTimeStamp(getTimeAndDate());
@@ -134,7 +134,7 @@ namespace DiscordCoreAPI {
 				}
 
 				if (args->argumentsArray.size() == 0 && !SongAPI::isThereAnySongs(guild.id)) {
-					EmbedData newEmbed;
+					EmbedData newEmbed{};
 					newEmbed.setAuthor(args->eventData.getUserName(), args->eventData.getAvatarUrl());
 					newEmbed.setDescription("------\n__**Sorry, but there's nothing to play!**__\n------");
 					newEmbed.setTimeStamp(getTimeAndDate());
@@ -156,7 +156,7 @@ namespace DiscordCoreAPI {
 					return;
 				}
 				else if (args->argumentsArray.size() == 0 && SongAPI::areWeCurrentlyPlaying(guild.id)) {
-					EmbedData newEmbed;
+					EmbedData newEmbed{};
 					newEmbed.setAuthor(args->eventData.getUserName(), args->eventData.getAvatarUrl());
 					newEmbed.setDescription("------\n__**Sorry, but there's already something playing!**__\n------");
 					newEmbed.setTimeStamp(getTimeAndDate());
@@ -182,7 +182,7 @@ namespace DiscordCoreAPI {
 				uint32_t x = 0;
 				for (Song& value : searchResults) {
 					x += 1;
-					EmbedData newEmbed;
+					EmbedData newEmbed{};
 					newEmbed.setAuthor(args->eventData.getUserName(), args->eventData.getAvatarUrl());
 					newEmbed.setDescription("__**Title:**__ [" + value.songTitle + "](" + value.viewUrl + ")" + "\n__**Description:**__ " + value.description + "\n__**Duration:**__ " + value.duration);
 					newEmbed.setTimeStamp(getTimeAndDate());
@@ -212,7 +212,7 @@ namespace DiscordCoreAPI {
 					std::function<CoRoutine<void>(SongCompletionEventData)>theTask = [=](SongCompletionEventData eventData) -> CoRoutine<void> {
 						co_await NewThreadAwaitable<void>();
 						if (SongAPI::isThereAnySongs(guild.id)) {
-							EmbedData newEmbed;
+							EmbedData newEmbed{};
 							if (!eventData.wasItAFail) {
 								if (!SongAPI::sendNextSong(guildMember)) {
 									InputEvents::deleteInputEventResponseAsync(*newEvent);
@@ -298,7 +298,7 @@ namespace DiscordCoreAPI {
 							SongAPI::play(guild.id);
 						}
 						else {
-							EmbedData newEmbed;
+							EmbedData newEmbed{};
 							newEmbed.setAuthor(guildMember.user.userName, guildMember.user.avatar);
 							newEmbed.setDescription("------\n__**Sorry, but there's nothing left to play here!**__\n------");
 							newEmbed.setTimeStamp(getTimeAndDate());
@@ -331,7 +331,7 @@ namespace DiscordCoreAPI {
 						return;
 					}
 
-					EmbedData newEmbed;
+					EmbedData newEmbed{};
 					newEmbed.setAuthor(args->eventData.getUserName(), args->eventData.getAvatarUrl());
 					newEmbed.setDescription("__**Title:**__ [" + SongAPI::getCurrentSong(guild.id).songTitle + "](" + SongAPI::getCurrentSong(guild.id).viewUrl + ")" + "\n__**Description:**__ " + SongAPI::getCurrentSong(guild.id).description + "\n__**Duration:**__ " +
 						SongAPI::getCurrentSong(guild.id).duration + "\n__**Added By:**__ <@!" + SongAPI::getCurrentSong(guild.id).addedByUserId + "> (" + SongAPI::getCurrentSong(guild.id).addedByUserName + ")");

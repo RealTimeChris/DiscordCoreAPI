@@ -59,7 +59,7 @@
 - They can all be responded to using the `DiscordCoreAPI::InputEvents::respondToEvent()` function.
 - Alternatively you can implement your own input-event handling by using the raw `onInteractionCreation` or `onMessageCreation` events.
 ```cpp
-EmbedData newEmbed;
+EmbedData newEmbed{};
 newEmbed.setAuthor(args->eventData.getUserName(), args->eventData.getAvatarURL());
 newEmbed.setDescription("------\n__**Sorry, but there's already something playing!**__\n------");
 newEmbed.setTimeStamp(getTimeAndDate());
