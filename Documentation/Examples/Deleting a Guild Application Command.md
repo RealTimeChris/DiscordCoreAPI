@@ -30,8 +30,8 @@ namespace DiscordCoreAPI {
 			this->helpEmbed = msgEmbed;
 		}
 
-		Test* create() {
-			return new Test;
+		std::unique_ptr<BaseFunction> create() {
+			return std::make_unique<Test>();
 		}
 
 		virtual  task<void> execute(shared_ptr<DiscordCoreAPI::BaseFunctionArguments> args) {
