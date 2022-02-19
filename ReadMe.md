@@ -68,10 +68,10 @@ newEmbed.setColor(discordGuild.data.borderColor);
 RespondToInputEventData dataPackage(args->eventData);
 dataPackage.addMessageEmbed(newEmbed);
 if (args->eventData.eventType == InputEventType::REGULAR_MESSAGE) {
-	dataPackage.type = DesiredInputEventResponseType::RegularMessage;
+	dataPackage.type = InputEventResponseType::RegularMessage;
 }
 else {
-	dataPackage.type = DesiredInputEventResponseType::EphemeralInteractionResponse;
+	dataPackage.type = InputEventResponseType::EphemeralInteractionResponse;
 }
 InputEventData newEvent = InputEvents::respondToEvent(dataPackage);
 InputEvents::deleteInputEventResponseAsync(newEvent, 20000).get();

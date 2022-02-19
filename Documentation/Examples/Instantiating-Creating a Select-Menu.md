@@ -38,7 +38,7 @@ namespace DiscordCoreAPI {
 			InputEvents::deleteInputEventResponseAsync(args->eventData).get();
 
 			RespondToInputEventData dataPackage{ args->eventData };
-			dataPackage.type = DesiredInputEventResponseType::InteractionResponse;
+			dataPackage.type = InputEventResponseType::InteractionResponse;
 			SelectOptionData selectOption{  };
 			selectOption.description = "Select Menu";
 			selectOption.emoji.name = "🏁";

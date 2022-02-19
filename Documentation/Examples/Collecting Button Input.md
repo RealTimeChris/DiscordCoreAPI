@@ -39,7 +39,7 @@ namespace DiscordCoreAPI {
 			InputEvents::deleteInputEventResponseAsync(args->eventData).get();
 
 			RespondToInputEventData dataPackage{ args->eventData };
-			dataPackage.type = DesiredInputEventResponseType::InteractionResponse;
+			dataPackage.type = InputEventResponseType::InteractionResponse;
 			dataPackage.addButton(false, "test_button", "Test Button", "✅", ButtonStyle::Danger);
 			dataPackage.addContent("Test Response");
 			dataPackage.addMessageEmbed(EmbedData{ .description = "TESTING!",.title = "Test Title" });

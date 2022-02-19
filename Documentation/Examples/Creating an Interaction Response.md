@@ -39,16 +39,16 @@ namespace DiscordCoreAPI {
 			InputEvents::deleteInputEventResponseAsync(args->eventData).get();
 
 			RespondToInputEventData dataPackage{ args->eventData };
-			dataPackage.type = DesiredInputEventResponseType::DeferredResponse;
+			dataPackage.type = InputEventResponseType::DeferredResponse;
 			InputEvents::respondToEvent(dataPackage);
 
 			RespondToInputEventData dataPackage01{ args->eventData };
-			dataPackage01.type = DesiredInputEventResponseType::InteractionResponse;
+			dataPackage01.type = InputEventResponseType::InteractionResponse;
 			dataPackage01.addContent("Test Response");
 			InputEvents::respondToEvent(dataPackage01);
 
 			RespondToInputEventData dataPackage02{ args->eventData };
-			dataPackage02.type = DesiredInputEventResponseType::EphemeralInteractionResponse;
+			dataPackage02.type = InputEventResponseType::EphemeralInteractionResponse;
 			dataPackage02.addContent("Test Response");
 			InputEvents::respondToEvent(dataPackage02);
 

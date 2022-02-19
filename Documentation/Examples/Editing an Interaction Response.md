@@ -39,12 +39,12 @@ namespace DiscordCoreAPI {
 			InputEvents::deleteInputEventResponseAsync(args->eventData).get();
 
 			RespondToInputEventData dataPackage02{ args->eventData };
-			dataPackage02.type = DesiredInputEventResponseType::EphemeralInteractionResponse;
+			dataPackage02.type = InputEventResponseType::EphemeralInteractionResponse;
 			dataPackage02.addContent("Test Response");
 			auto inputEventData = InputEvents::respondToEvent(dataPackage02);
 
 			RespondToInputEventData dataPackage03{ inputEventData };
-			dataPackage03.type = DesiredInputEventResponseType::InteractionResponseEdit;
+			dataPackage03.type = InputEventResponseType::InteractionResponseEdit;
 			dataPackage03.addContent("Test Response, Edited!");
 			InputEvents::respondToEvent(dataPackage03);
 

@@ -40,7 +40,7 @@ namespace DiscordCoreAPI {
 			InputEvents::deleteInputEventResponseAsync(args->eventData).get();
 
 			RespondToInputEventData dataPackage02{ args->eventData };
-			dataPackage02.type = DesiredInputEventResponseType::InteractionResponse;
+			dataPackage02.type = InputEventResponseType::InteractionResponse;
 			dataPackage02.addContent("Test Response");
 			auto inputEventData = InputEvents::respondToEvent(dataPackage02);
 
