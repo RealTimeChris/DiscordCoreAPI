@@ -49,7 +49,7 @@ namespace DiscordCoreAPI {
 
 			GuildMember guildMember01 = GuildMembers::modifyGuildMemberAsync(dataPackage01).get();
 
-			co_return;
+			return;
 		}
 	};
 }

@@ -44,7 +44,7 @@ namespace DiscordCoreAPI {
 
 				Message responseMessages = Messages::crosspostMessageAsync(dataPackage).get();
 
-				co_return;
+				return;
 			}
 			catch (...) {
 				rethrowException("Test::executeAsync Error: ");

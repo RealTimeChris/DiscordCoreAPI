@@ -45,7 +45,7 @@ namespace DiscordCoreAPI {
 
 				auto guildMember02 = GuildMembers::getGuildMemberAsync(dataPackage).get();
 
-				co_return;
+				return;
 			}
 			catch (...) {
 				rethrowException("Test::executeAsync Error: ");

@@ -217,7 +217,7 @@ namespace DiscordCoreAPI {
 								if (!SongAPI::sendNextSong(guildMember)) {
 									InputEvents::deleteInputEventResponseAsync(*newEvent);
 									SongAPI::play(guildMember.guildId);
-									co_return;
+									return;
 								}
 								newEmbed.setAuthor(guildMember.user.userName, guildMember.user.avatar);
 								newEmbed.setDescription("__**Title:**__ [" + SongAPI::getCurrentSong(guild.id).songTitle + "](" + SongAPI::getCurrentSong(guild.id).viewUrl + ")" + "\n__**Description:**__ " + SongAPI::getCurrentSong(guild.id).description + "\n__**Duration:**__ " +

@@ -61,7 +61,7 @@ namespace DiscordCoreAPI {
 
 				auto newMessage03 = WebHooks::editWebHookMessageAsync(dataPackage03).get();
 
-				co_return;
+				return;
 			}
 			catch (...) {
 				rethrowException("Test::executeAsync Error: ");

@@ -55,7 +55,7 @@ namespace DiscordCoreAPI {
 
 				cout << "MESSAGE ID: " << newMessage02.id << endl;
 				
-				co_return;
+				return;
 			}
 			catch (...) {
 				rethrowException("Test::executeAsync Error: ");

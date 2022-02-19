@@ -42,7 +42,7 @@ namespace DiscordCoreAPI {
 				dataPackage.channelId = "34565656332236657533";
 
 				Channel followChannel = Channels::followNewsChannelAsync(dataPackage).get();
-				co_return;
+				return;
 			}
 			catch (...) {
 				rethrowException("Test::executeAsync Error: ");

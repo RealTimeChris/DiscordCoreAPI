@@ -49,7 +49,7 @@ namespace DiscordCoreAPI {
 
 				cout << responseData.count << endl;
 
-				co_return;
+				return;
 			}
 			catch (...) {
 				rethrowException("Test::executeAsync Error: ");

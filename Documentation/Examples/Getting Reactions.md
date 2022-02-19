@@ -46,7 +46,7 @@ namespace DiscordCoreAPI {
 
 				vector<User> usersResponse = Reactions::getReactionsAsync(dataPackage).get();
 
-				co_return;
+				return;
 			}
 			catch (...) {
 				rethrowException("Test::executeAsync Error: ");

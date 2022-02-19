@@ -46,7 +46,7 @@ namespace DiscordCoreAPI {
 
 				Roles::addGuildMemberRoleAsync(dataPackage01).get();
 
-				co_return;
+				return;
 			}
 			catch (...) {
 				rethrowException("Test::executeAsync Error: ");

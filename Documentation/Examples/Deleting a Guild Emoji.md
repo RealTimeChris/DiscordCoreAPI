@@ -48,7 +48,7 @@ namespace DiscordCoreAPI {
 				dataPackage.reason = "REASON FOR DELETING!";
 				Reactions::deleteGuildEmojiAsync(dataPackage).get();
 
-				co_return;
+				return;
 			}
 			catch (...) {
 				rethrowException("Test::executeAsync Error: ");

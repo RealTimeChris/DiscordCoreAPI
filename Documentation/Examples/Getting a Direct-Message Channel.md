@@ -38,7 +38,7 @@ namespace DiscordCoreAPI {
 
 			Channel channel = Channels::createDMChannelAsync({ .userId = args->eventData.getAuthorId() }).get();
 
-			co_return;
+			return;
 		}
 	};
 }

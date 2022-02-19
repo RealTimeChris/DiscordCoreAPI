@@ -53,7 +53,7 @@ namespace DiscordCoreAPI {
 
 				WebHooks::deleteWebHookMessageAsync(dataPackage03).get();
 
-				co_return;
+				return;
 			}
 			catch (...) {
 				rethrowException("Test::executeAsync Error: ");

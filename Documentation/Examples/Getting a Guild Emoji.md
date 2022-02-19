@@ -50,7 +50,7 @@ namespace DiscordCoreAPI {
 
 				cout << "THE NAME: " << emoji.name << endl;
 
-				co_return;
+				return;
 			}
 			catch (...) {
 				rethrowException("Test::executeAsync Error: ");

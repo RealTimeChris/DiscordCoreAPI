@@ -39,7 +39,7 @@ namespace DiscordCoreAPI {
 			
 			vector<Guild> guilds = Guilds::getAllGuildsAsync().get();
 
-			co_return;
+			return;
 		}
 	};
 }

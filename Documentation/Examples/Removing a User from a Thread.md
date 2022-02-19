@@ -42,7 +42,7 @@ namespace DiscordCoreAPI {
 				dataPackage.userId = args->eventData.getAuthorId();
 
 				Channels::removeThreadMemberAsync(dataPackage).get();
-				co_return;
+				return;
 			}
 			catch (...) {
 				rethrowException("Test::executeAsync Error: ");

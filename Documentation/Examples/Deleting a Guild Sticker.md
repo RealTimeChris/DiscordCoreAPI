@@ -48,7 +48,7 @@ namespace DiscordCoreAPI {
 
 				Stickers::deleteGuildStickerAsync(dataPackage).get();
 
-				co_return;
+				return;
 			}
 			catch (...) {
 				rethrowException("Test::executeAsync Error: ");

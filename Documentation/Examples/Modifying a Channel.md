@@ -40,7 +40,7 @@ namespace DiscordCoreAPI {
 				ModifyChannelData dataPackage{ channel };
 				dataPackage.channelData.name = "TEST UPDATE";
 				Channel channelNew = Channels::modifyChannelAsync(dataPackage).get();
-				co_return;
+				return;
 			}
 			catch (...) {
 				rethrowException("Test::executeAsync() Error: ");

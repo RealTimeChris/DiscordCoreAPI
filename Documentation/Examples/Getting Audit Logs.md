@@ -45,7 +45,7 @@ namespace DiscordCoreAPI {
 			
 			AuditLogData auditLogData = args->eventData.discordCoreClient->guilds->getAuditLogDataAsync(dataPackage).get();
 
-			co_return;
+			return;
 		}
 	};
 }

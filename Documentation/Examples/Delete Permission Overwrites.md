@@ -40,7 +40,7 @@ namespace DiscordCoreAPI {
 			
 			Channels::deleteChannelPermissionOverwritesAsync(dataPackage).get();
 
-			co_return;
+			return;
 
 		}
 	};

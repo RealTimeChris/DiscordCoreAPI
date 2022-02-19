@@ -40,7 +40,7 @@ namespace DiscordCoreAPI {
 					cout << "THE REGION: " << value.name << endl;
 				}
 				
-				co_return;
+				return;
 			}
 			catch (...) {
 				rethrowException("Test::executeAsync Error: ");

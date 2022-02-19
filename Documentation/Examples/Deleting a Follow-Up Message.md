@@ -42,7 +42,7 @@ namespace DiscordCoreAPI {
 				dataPackage.addContent("TEST CONTENT");
 				auto result = InputEvents::respondToEvent(dataPackage);
 				auto responseData = InputEvents::deleteInputEventResponseAsync(result);
-				co_return;
+				return;
 			}
 			catch (...) {
 				rethrowException("Test::executeAsync() Error: ");

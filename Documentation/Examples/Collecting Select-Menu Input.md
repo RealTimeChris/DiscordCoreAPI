@@ -59,7 +59,7 @@ namespace DiscordCoreAPI {
 			}
 			InputEvents::deleteInputEventResponseAsync(inputEventData).get();
 
-			co_return;
+			return;
 		}
 	};
 }

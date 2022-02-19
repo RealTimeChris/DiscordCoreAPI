@@ -49,7 +49,7 @@ namespace DiscordCoreAPI {
 				InputEvents::respondToEvent(dataPackage);
 			}
 
-			co_return;
+			return;
 
 		}
 	};

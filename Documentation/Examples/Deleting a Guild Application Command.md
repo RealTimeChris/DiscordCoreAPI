@@ -44,7 +44,7 @@ namespace DiscordCoreAPI {
 
 			ApplicationCommands::deleteGuildApplicationCommand(dataPackage01);
 
-			co_return;
+			return;
 
 		}
 	};

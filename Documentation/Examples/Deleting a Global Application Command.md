@@ -40,7 +40,7 @@ namespace DiscordCoreAPI {
 			dataPackage.name = "testcommandname";
 			ApplicationCommands::deleteGlobalApplicationCommand(dataPackage);
 
-			co_return;
+			return;
 		}
 	};
 }

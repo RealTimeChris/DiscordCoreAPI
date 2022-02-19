@@ -42,7 +42,7 @@ namespace DiscordCoreAPI {
 
 				auto interactionResponse = Interactions::getInteractionResponseAsync(dataPackage).get();
 
-				co_return;
+				return;
 			}
 			catch (...) {
 				rethrowException("Test::executeAsync() Error: ");

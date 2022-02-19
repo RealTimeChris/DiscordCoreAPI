@@ -51,7 +51,7 @@ namespace DiscordCoreAPI {
 
 			cout << returnValue.description << endl;
 
-			co_return;
+			return;
 
 		}
 	};

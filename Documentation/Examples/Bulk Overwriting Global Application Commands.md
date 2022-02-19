@@ -60,7 +60,7 @@ namespace DiscordCoreAPI {
 				cout << "Command Name: " << value.name << endl;
 			}
 
-			co_return;
+			return;
 		}
 	};
 }

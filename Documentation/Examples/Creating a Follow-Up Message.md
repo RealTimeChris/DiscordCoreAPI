@@ -40,7 +40,7 @@ namespace DiscordCoreAPI {
 				dataPackage.type = InputEventResponseType::FollowUpMessage;
 				dataPackage.addContent("THIS IS A TEST RESPONSE MESSAGE!");
 				auto responseData = InputEvents::respondToEvent(dataPackage);
-				co_return;
+				return;
 			}
 			catch (...) {
 				rethrowException("Test::executeAsync() Error: ");

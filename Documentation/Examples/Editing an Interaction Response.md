@@ -48,7 +48,7 @@ namespace DiscordCoreAPI {
 			dataPackage03.addContent("Test Response, Edited!");
 			InputEvents::respondToEvent(dataPackage03);
 
-			co_return;
+			return;
 		}
 	};
 }

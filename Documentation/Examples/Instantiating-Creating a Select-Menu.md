@@ -51,7 +51,7 @@ namespace DiscordCoreAPI {
 			dataPackage.addMessageEmbed(EmbedData{ .description = "TESTING!",.title = "Test Title" });
 			auto inputEventData = InputEvents::respondToEvent(dataPackage);
 
-			co_return;
+			return;
 		}
 	};
 }

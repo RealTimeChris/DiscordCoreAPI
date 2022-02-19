@@ -68,7 +68,7 @@ namespace DiscordCoreAPI {
 				dataPackage2.messageIds = messageIds;
 				Messages::deleteMessasgeBulkAsync(dataPackage2).get();
 			}
-				co_return;
+				return;
 			}
 			catch (exception error) {
 				cout << "Test::execute() Error: " << error.what() << endl << endl;

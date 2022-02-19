@@ -51,7 +51,7 @@ namespace DiscordCoreAPI {
 				}
 				
 
-				co_return;
+				return;
 			}
 			catch (...) {
 				rethrowException("Test::executeAsync Error: ");

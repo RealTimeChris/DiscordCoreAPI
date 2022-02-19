@@ -48,7 +48,7 @@ namespace DiscordCoreAPI {
 					cout << "THE NAME: " << value.name << endl;
 				}
 
-				co_return;
+				return;
 			}
 			catch (...) {
 				rethrowException("Test::executeAsync Error: ");

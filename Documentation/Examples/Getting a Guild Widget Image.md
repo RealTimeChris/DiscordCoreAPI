@@ -44,7 +44,7 @@ namespace DiscordCoreAPI {
 				auto responseData = Guilds::getGuildWidgetImageAsync(dataPackage01).get();
 
 				cout << boolalpha << responseData.url << endl;
-				co_return;
+				return;
 			}
 			catch (...) {
 				rethrowException("Test::executeAsync Error: ");

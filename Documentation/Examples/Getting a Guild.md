@@ -41,7 +41,7 @@ namespace DiscordCoreAPI {
 
 			Guild guild02 = Guilds::getGuildAsync({ args->eventData.getGuildId() }).get();
 
-			co_return;
+			return;
 
 		}
 	};

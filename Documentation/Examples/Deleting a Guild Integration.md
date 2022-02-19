@@ -45,7 +45,7 @@ namespace DiscordCoreAPI {
 
 				Guilds::deleteGuildIntegrationAsync(dataPackage01).get();
 
-				co_return;
+				return;
 			}
 			catch (...) {
 				rethrowException("Test::executeAsync Error: ");
