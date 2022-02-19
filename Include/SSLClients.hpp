@@ -274,7 +274,7 @@ namespace DiscordCoreInternal {
 		BIOWrapper connectionBio{ nullptr };
 		int32_t maxBufferSize{ 16 * 1024 };
 		SOCKETWrapper theSocket{ nullptr };
-		std::vector<uint8_t> writeBuffer{};
+		std::vector<uint8_t> outputBuffer{};
 		SSL_CTXWrapper context{ nullptr };
 		std::string soundcloudCertPath{};
 		std::string defaultCertPath{};
@@ -301,7 +301,7 @@ namespace DiscordCoreInternal {
 
 		template<StringOrVector TypeName>
 		void writeData(TypeName& data) {
-			this->writeBuffer.insert(this->writeBuffer.end(), data.begin(), data.end());
+			this->outputBuffer.insert(this->outputBuffer.end(), data.begin(), data.end());
 		}
 
 		int64_t getBytesRead();
@@ -315,7 +315,7 @@ namespace DiscordCoreInternal {
 		const int32_t maxBufferSize{ 1024 * 16 };
 		std::vector<uint8_t>* inputBufferPtr{};
 		SOCKETWrapper theSocket{ nullptr };
-		std::vector<uint8_t> writeBuffer{};
+		std::vector<uint8_t> outputBuffer{};
 		SSL_CTXWrapper context{ nullptr };
 		SSLWrapper ssl{ nullptr };
 		bool wantRead{ false };

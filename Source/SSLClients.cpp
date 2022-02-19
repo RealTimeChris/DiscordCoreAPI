@@ -157,7 +157,7 @@ namespace DiscordCoreInternal {
 	}
 
 	void HttpSSLClient::writeData(std::string& data) {
-		this->writeBuffer.insert(this->writeBuffer.end(), data.begin(), data.end());
+		this->outputBuffer.insert(this->outputBuffer.end(), data.begin(), data.end());
 		data.clear();
 	}
 
@@ -168,7 +168,7 @@ namespace DiscordCoreInternal {
 		FD_ZERO(&writeSet);
 		FD_ZERO(&readSet);
 
-		if (this->writeBuffer.size() > 0 && !this->wantRead) {
+		if (this->outputBuffer.size() > 0 && !this->wantRead) {
 			FD_SET(this->theSocket, &writeSet);
 			nfds = this->theSocket > nfds ? this->theSocket : nfds;
 		}
@@ -190,7 +190,7 @@ namespace DiscordCoreInternal {
 		epollWrapper epoll{ nullptr };
 		bool writing{ false };
 
-		if (this->writeBuffer.size() > 0 && !this->wantRead) {
+		if (this->outputBuffer.size() > 0 && !this->wantRead) {
 			writing = true;
 			writeEvent.events = EPOLLOUT;
 			writeEvent.data.fd = this->theSocket;
@@ -224,11 +224,11 @@ namespace DiscordCoreInternal {
 		if (writing) {
 #endif
 			size_t writtenBytes{ 0 };
-			auto returnValue{ SSL_write_ex(this->ssl, this->writeBuffer.data(), this->writeBuffer.size(), &writtenBytes) };
+			auto returnValue{ SSL_write_ex(this->ssl, this->outputBuffer.data(), this->outputBuffer.size(), &writtenBytes) };
 			auto errorValue{ SSL_get_error(this->ssl, returnValue) };
 			switch (errorValue) {
 			case SSL_ERROR_NONE: {
-				this->writeBuffer.clear();
+				this->outputBuffer.clear();
 				return true;
 			}
 			case SSL_ERROR_SYSCALL: {
@@ -371,7 +371,7 @@ namespace DiscordCoreInternal {
 		FD_ZERO(&writeSet);
 		FD_ZERO(&readSet);
 
-		if (this->writeBuffer.size() > 0 && !this->wantRead) {
+		if (this->outputBuffer.size() > 0 && !this->wantRead) {
 			FD_SET(this->theSocket, &writeSet);
 			nfds = this->theSocket > nfds ? this->theSocket : nfds;
 		}
@@ -393,7 +393,7 @@ namespace DiscordCoreInternal {
 		epollWrapper epoll{ nullptr };
 		bool writing{ false };
 
-		if (this->writeBuffer.size() > 0 && !this->wantRead) {
+		if (this->outputBuffer.size() > 0 && !this->wantRead) {
 			writing = true;
 			writeEvent.events = EPOLLOUT;
 			writeEvent.data.fd = this->theSocket;
@@ -427,11 +427,11 @@ namespace DiscordCoreInternal {
 		if (writing) {
 #endif
 			size_t writtenBytes{ 0 };
-			auto returnValue{ SSL_write_ex(this->ssl, this->writeBuffer.data(), this->writeBuffer.size(), &writtenBytes) };
+			auto returnValue{ SSL_write_ex(this->ssl, this->outputBuffer.data(), this->outputBuffer.size(), &writtenBytes) };
 			auto errorValue{ SSL_get_error(this->ssl, returnValue) };
 			switch (errorValue) {
 			case SSL_ERROR_NONE: {
-				this->writeBuffer.clear();
+				this->outputBuffer.clear();
 				return true;
 			}
 			case SSL_ERROR_SYSCALL: {
