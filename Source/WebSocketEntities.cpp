@@ -162,9 +162,9 @@ namespace DiscordCoreInternal {
 
 	DiscordCoreAPI::CoRoutine<void> BaseSocketAgent::run() {
 		try {
-			co_await DiscordCoreAPI::NewThreadAwaitable<void>();
+			auto cancelHandle = co_await DiscordCoreAPI::NewThreadAwaitable<void>();
 			this->connect();
-			while (!this->doWeQuit.load(std::memory_order_seq_cst)) {
+			while (!this->doWeQuit.load(std::memory_order_seq_cst) && !cancelHandle.promise().isItStopped()) {
 				if (!this->doWeReconnect.wait(0)) {
 					this->onClosedInternal();
 				}
@@ -824,7 +824,7 @@ namespace DiscordCoreInternal {
 		try {
 			auto cancelHandle = co_await DiscordCoreAPI::NewThreadAwaitable<void>();
 			this->connect();
-			while (!this->doWeQuit.load(std::memory_order_seq_cst)) {
+			while (!this->doWeQuit.load(std::memory_order_seq_cst) && !cancelHandle.promise().isItStopped()) {
 				if (!this->doWeReconnect.wait(0)) {
 					this->onClosedInternal();
 					co_return;
