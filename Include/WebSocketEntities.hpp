@@ -171,7 +171,6 @@ namespace DiscordCoreInternal {
 		std::recursive_mutex accessorMutex01{};
 		const int32_t maxReconnectTries{ 10 };
 		bool serverUpdateCollected{ false };
-		std::atomic<bool> doWeQuit{ false };
 		std::vector<uint8_t> inputBuffer{};
 		bool stateUpdateCollected{ false };
 		int32_t currentReconnectTries{ 0 };
@@ -252,7 +251,6 @@ namespace DiscordCoreInternal {
 		bool haveWeReceivedHeartbeatAck{ true };
 		std::vector<uint8_t> inputBuffer00{};
 		std::vector<uint8_t> inputBuffer01{};
-		std::atomic<bool> doWeQuit{ false };
 		int32_t lastNumberReceived{ 0 };
 		int32_t heartbeatInterval{ 0 };
 		std::string relativePath{ "" };

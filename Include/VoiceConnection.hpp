@@ -83,7 +83,6 @@ namespace DiscordCoreAPI {
 		std::atomic<bool> areWePaused{ false };
 		EventWaiter* doWeReconnect{ nullptr };
 		const int32_t maxBufferSize{ 1276 };
-		std::atomic<bool> doWeQuit{ false };
 		bool areWeConnectedBool{ false };
 		AudioEncrypter audioEncrypter{};
 		bool didWeJustConnect{ true };
