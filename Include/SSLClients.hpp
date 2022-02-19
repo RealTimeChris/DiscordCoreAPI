@@ -45,7 +45,6 @@
 #endif
 
 #include <FoundationEntities.hpp>
-#include <openssl/x509v3.h>
 #include <openssl/ssl.h>
 #include <openssl/err.h>
 #include <algorithm>
@@ -53,8 +52,7 @@
 
 namespace DiscordCoreInternal {
 
-	using UINT_PTR = uint64_t;
-	using SOCKET = UINT_PTR;
+	using SOCKET = uint64_t;
 
 #ifndef INVALID_SOCKET
 #define INVALID_SOCKET	static_cast<SOCKET>(~0)
