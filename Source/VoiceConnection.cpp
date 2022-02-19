@@ -373,7 +373,7 @@ namespace DiscordCoreAPI {
 					this->areWeStopping.store(false, std::memory_order_seq_cst);
 				}
 				
-				if (cancelHandle.promise().isItStopped() || cancelHandle.promise().isItStopped()) {
+				if (cancelHandle.promise().isItStopped()) {
 					co_return;
 				}
 			}
