@@ -351,9 +351,9 @@ namespace DiscordCoreAPI {
         CoRoutineStatus currentStatus{ CoRoutineStatus::Idle };
     };
 
-   /// For launching the CoRoutine onto a new CPU thread, as well as returning the CoRoutine's handle to the inside of the function itself, for handling cancellation. \brief For launching the CoRoutine onto a new CPU thread, as well as returning the CoRoutine's handle to the inside of the function itself, for handling cancellation.
-   /// \param ReturnType The type of the value returned by the containing CoRoutine.
-   /// \returns A std::coroutine_handle<CoRoutine<ReturnType>::promise_type> object, which contains the NewThread, which contains a Stop_Token and Stop_Source.
+    /// For launching the CoRoutine onto a new CPU thread, as well as returning the CoRoutine's handle to the inside of the function itself, for handling cancellation. \brief For launching the CoRoutine onto a new CPU thread, as well as returning the CoRoutine's handle to the inside of the function itself, for handling cancellation.
+    /// \param ReturnType The type of the value returned by the containing CoRoutine.
+    /// \returns A std::coroutine_handle<CoRoutine<ReturnType>::promise_type> object, which contains the NewThread, which contains a Stop_Token and Stop_Source.
     template<typename ReturnType>
     auto NewThreadAwaitable() {
 
