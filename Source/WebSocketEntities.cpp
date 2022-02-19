@@ -142,17 +142,16 @@ namespace DiscordCoreInternal {
 			dataPackage.guildId = this->voiceConnectInitData.guildId;
 			dataPackage.selfDeaf = this->voiceConnectInitData.selfDeaf;
 			dataPackage.selfMute = this->voiceConnectInitData.selfMute;
-			nlohmann::json newString = JSONIFY(dataPackage);
-			this->sendMessage(newString);
+			nlohmann::json newData = JSONIFY(dataPackage);
+			this->sendMessage(newData);
 			std::this_thread::sleep_for(std::chrono::milliseconds(500));
-			DiscordCoreAPI::UpdateVoiceStateData dataPackage01{};
-			dataPackage01.channelId = doWeCollect.channelId;
-			dataPackage01.guildId = doWeCollect.guildId;
-			dataPackage01.selfDeaf = this->voiceConnectInitData.selfDeaf;
-			dataPackage01.selfMute = this->voiceConnectInitData.selfMute;
-			nlohmann::json newString01 = JSONIFY(dataPackage01);
+			dataPackage.channelId = this->voiceConnectInitData.channelId;
+			dataPackage.guildId = this->voiceConnectInitData.guildId;
+			dataPackage.selfDeaf = this->voiceConnectInitData.selfDeaf;
+			dataPackage.selfMute = this->voiceConnectInitData.selfMute;
+			newData = JSONIFY(dataPackage);
 			this->areWeCollectingData = true;
-			this->sendMessage(newString01);
+			this->sendMessage(newData);
 		}
 		catch (...) {
 			DiscordCoreAPI::reportException("BaseSocketAgent::getVoiceConnectionData()");
