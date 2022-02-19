@@ -31,7 +31,7 @@ namespace DiscordCoreAPI {
     * @{
     */
 
-   /// The current status of the associated CoRoutine. \brief The current status of the associated CoRoutine.
+    /// The current status of the associated CoRoutine. \brief The current status of the associated CoRoutine.
     enum class CoRoutineStatus {
         Idle = 0,///< Idle.
         Running = 1,///< Running.
@@ -39,8 +39,8 @@ namespace DiscordCoreAPI {
         Cancelled = 3///< Cancelled.
     };
 
-   /// A CoRoutine - representing a potentially asynchronous operation/function. \brief A CoRoutine - representing a potentially asynchronous operation/function.
-   /// \param ReturnType The type of parameter that is returned by the CoRoutine.
+    /// A CoRoutine - representing a potentially asynchronous operation/function. \brief A CoRoutine - representing a potentially asynchronous operation/function.
+    /// \param ReturnType The type of parameter that is returned by the CoRoutine.
     template<typename ReturnType>
     class CoRoutine {
     public:
@@ -133,15 +133,15 @@ namespace DiscordCoreAPI {
             }
         }
 
-       /// Detaches the thread from the calling thread's context. \brief Detaches the thread from the calling thread's context.
+        /// Detaches the thread from the calling thread's context. \brief Detaches the thread from the calling thread's context.
         void detachThread() {
             if (this != nullptr && this->coroutineHandle) {
                 this->coroutineHandle.promise().newThread.detach();
             }
         }
 
-       /// Collects the status of the CoRoutine. \brief Collects the status of the CoRoutine.
-       /// \returns CoRoutineStatus The status of the CoRoutine.
+        /// Collects the status of the CoRoutine. \brief Collects the status of the CoRoutine.
+        /// \returns CoRoutineStatus The status of the CoRoutine.
         CoRoutineStatus getStatus() {
             if (this != nullptr && this->coroutineHandle) {
                 this->currentStatus = coroutineHandle.promise().currentStatus;
@@ -150,8 +150,8 @@ namespace DiscordCoreAPI {
             return CoRoutineStatus();
         }
 
-       /// Gets the resulting value of the CoRoutine. \brief Gets the resulting value of the CoRoutine.
-       /// \returns ReturnType The return value of the CoRoutine.
+        /// Gets the resulting value of the CoRoutine. \brief Gets the resulting value of the CoRoutine.
+        /// \returns ReturnType The return value of the CoRoutine.
         ReturnType get() {
             if (this != nullptr) {
                 if (this->coroutineHandle.promise().newThread.joinable()) {
@@ -168,8 +168,8 @@ namespace DiscordCoreAPI {
             return ReturnType{};
         }
 
-       /// Cancels the CoRoutine, and returns the currently held value of the result. \brief Cancels the CoRoutine, and returns the currently held value of the result.
-       /// \returns ReturnType The object to be returned.
+        /// Cancels the CoRoutine, and returns the currently held value of the result. \brief Cancels the CoRoutine, and returns the currently held value of the result.
+        /// \returns ReturnType The object to be returned.
         ReturnType cancel() {
             if (this != nullptr && this->coroutineHandle) {
                 if (this->coroutineHandle.promise().newThread.joinable()) {
@@ -197,8 +197,8 @@ namespace DiscordCoreAPI {
         CoRoutineStatus currentStatus{ CoRoutineStatus::Idle };
     };
 
-   /// A CoRoutine - representing a potentially asynchronous operation/function (The void specialization). \brief A CoRoutine - representing a potentially asynchronous operation/function (The void specialization).
-   /// \param void The type of parameter that is returned by the CoRoutine.
+    /// A CoRoutine - representing a potentially asynchronous operation/function (The void specialization). \brief A CoRoutine - representing a potentially asynchronous operation/function (The void specialization).
+    /// \param void The type of parameter that is returned by the CoRoutine.
     template<>
     class CoRoutine<void> {
     public:
@@ -290,15 +290,15 @@ namespace DiscordCoreAPI {
             }
         }
 
-       /// Detaches the thread from the calling thread's context. \brief Detaches the thread from the calling thread's context.
+        /// Detaches the thread from the calling thread's context. \brief Detaches the thread from the calling thread's context.
         void detachThread() {
             if (this != nullptr && this->coroutineHandle) {
                 this->coroutineHandle.promise().newThread.detach();
             }
         }
 
-       /// Collects the status of the CoRoutine. \brief Collects the status of the CoRoutine.
-       /// \returns CoRoutineStatus The status of the CoRoutine.
+        /// Collects the status of the CoRoutine. \brief Collects the status of the CoRoutine.
+        /// \returns CoRoutineStatus The status of the CoRoutine.
         CoRoutineStatus getStatus() {
             if (this != nullptr && this->coroutineHandle) {
                 this->currentStatus = coroutineHandle.promise().currentStatus;
@@ -307,7 +307,7 @@ namespace DiscordCoreAPI {
             return CoRoutineStatus();
         }
 
-       /// Gets the resulting value of the CoRoutine. \brief Gets the resulting value of the CoRoutine.
+        /// Gets the resulting value of the CoRoutine. \brief Gets the resulting value of the CoRoutine.
         void get() {
             if (this != nullptr) {
                 if (this->coroutineHandle.promise().newThread.joinable()) {
@@ -324,7 +324,7 @@ namespace DiscordCoreAPI {
             return;
         }
 
-       /// Cancels the CoRoutine, and returns the currently held value of the result. \brief Cancels the CoRoutine, and returns the currently held value of the result.
+        /// Cancels the CoRoutine, and returns the currently held value of the result. \brief Cancels the CoRoutine, and returns the currently held value of the result.
         void cancel() {
             if (this != nullptr && this->coroutineHandle) {
                 if (this->coroutineHandle.promise().newThread.joinable()) {
@@ -378,4 +378,4 @@ namespace DiscordCoreAPI {
     }
 
     /**@}*/
-};
+    };
