@@ -146,9 +146,6 @@ namespace DiscordCoreInternal {
 			this->sendMessage(newData);
 			std::this_thread::sleep_for(std::chrono::milliseconds(500));
 			dataPackage.channelId = this->voiceConnectInitData.channelId;
-			dataPackage.guildId = this->voiceConnectInitData.guildId;
-			dataPackage.selfDeaf = this->voiceConnectInitData.selfDeaf;
-			dataPackage.selfMute = this->voiceConnectInitData.selfMute;
 			newData = JSONIFY(dataPackage);
 			this->areWeCollectingData = true;
 			this->sendMessage(newData);
