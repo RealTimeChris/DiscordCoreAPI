@@ -315,8 +315,8 @@ namespace DiscordCoreInternal {
 		}
 
 #ifdef _WIN32
-		char optionValue{ true };
-		if (auto returnValue = setsockopt(this->theSocket, IPPROTO_TCP, TCP_NODELAY, &optionValue, sizeof(bool)); returnValue == SOCKET_ERROR) {
+		bool optionValue{ true };
+		if (auto returnValue = setsockopt(this->theSocket, IPPROTO_TCP, TCP_NODELAY, std::bit_cast<const char*>(&optionValue), sizeof(optionValue)); returnValue == SOCKET_ERROR) {
 			reportError("setsockopt() Error: ", returnValue);
 			return;
 		}
