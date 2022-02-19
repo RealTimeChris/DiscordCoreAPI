@@ -115,7 +115,7 @@ namespace DiscordCoreInternal {
 			}
 
 			if (!BIO_set_conn_hostname(this->connectionBio, std::string(baseUrl + ":" + portNew).c_str())) {
-				reportSSLError("BIO_set_connt_hostname() Error: ");
+				reportSSLError("BIO_set_conn_hostname() Error: ");
 				return false;
 			}
 
