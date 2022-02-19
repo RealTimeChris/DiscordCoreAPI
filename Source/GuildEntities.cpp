@@ -173,7 +173,7 @@ namespace DiscordCoreAPI {
 				std::cout << "Caching channels for Guild: " << this->name << std::endl;
 				for (auto& [key, value] : channels) {
 					value.guildId = this->id;
-					Channels::insertChannel(std::move(value));
+					Channels::insertChannel(value);
 				}
 			}
 			if (this->discordCoreClient->cacheOptions.cacheGuildMembers) {
@@ -187,19 +187,19 @@ namespace DiscordCoreAPI {
 							value00.voiceData = value01;
 						}
 					}
-					GuildMembers::insertGuildMember(std::move(value00));
+					GuildMembers::insertGuildMember(value00);
 				}
 			}
 			if (this->discordCoreClient->cacheOptions.cacheRoles) {
 				std::cout << "Caching roles for Guild: " << this->name << std::endl;
 				for (auto& [key, value] : roles) {
-					Roles::insertRole(std::move(value));
+					Roles::insertRole(value);
 				}
 			}
 			if (this->discordCoreClient->cacheOptions.cacheUsers) {
 				std::cout << "Caching users for Guild: " << this->name << std::endl << std::endl;
 				for (auto& [key, value] : members) {
-					Users::insertUser(std::move(value.user));
+					Users::insertUser(value.user);
 				}
 			}
 
