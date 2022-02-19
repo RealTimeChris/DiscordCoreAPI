@@ -10,7 +10,7 @@
        http://www.apache.org/licenses/LICENSE-2.0
 
    Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
+   distributed under the License is distributed so an "AS IS" BASIS,
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
@@ -3244,9 +3244,8 @@ namespace DiscordCoreAPI {
 
    /// Song completion event data. \brief Song completion event data.
     struct DiscordCoreAPI_Dll SongCompletionEventData {
-        VoiceConnection* voiceConnection{};///< A pointer to the current VoiceConnection.
-        bool wasItAFail{ false };///< Is this a replay? (Did a track recently fail to play?)
         GuildMemberData guildMember{};///< The sending GuildMember.
+        bool wasItAFail{ false };///< Is this a replay? (Did a track recently fail to play?)
         Song previousSong{};///< The previously played Song.
         GuildData guild{};///< The sending Guild.
     };

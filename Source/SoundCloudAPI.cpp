@@ -260,7 +260,6 @@ namespace DiscordCoreAPI {
 				if (resultValue != nullptr) {
 					eventData.previousSong = resultValue->getCurrentSong(soundCloudAPI->guildId);
 				}
-				eventData.voiceConnection = getVoiceConnectionMap()->at(soundCloudAPI->guildId).get();
 				eventData.wasItAFail = true;
 				eventData.guildMember = GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = newSong.addedByUserId, .guildId = soundCloudAPI->guildId }).get();
 				eventData.guild = Guilds::getGuildAsync({ .guildId = soundCloudAPI->guildId }).get();

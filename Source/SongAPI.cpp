@@ -316,7 +316,7 @@ namespace DiscordCoreAPI {
 		}
 		catch (...) {
 			reportException("SongAPI::sendNextSong()");
-			SongCompletionEventData eventData{ .voiceConnection = getVoiceConnectionMap()->at(guildMember.guildId).get(), .wasItAFail = true, .previousSong = getSongAPIMap()->at(guildMember.guildId)->playlist.currentSong };
+			SongCompletionEventData eventData{ .wasItAFail = true, .previousSong = getSongAPIMap()->at(guildMember.guildId)->playlist.currentSong };
 			SongAPI::setCurrentSong(Song(), guildMember.guildId);
 			if (!getSongAPIMap()->at(guildMember.guildId)->sendNextSong(guildMember.guildId)) {
 				return false;

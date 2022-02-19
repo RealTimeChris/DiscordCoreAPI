@@ -111,7 +111,7 @@ namespace DiscordCoreInternal {
 		bool doWeConnect{ true };
 		std::mutex accessMutex{};
 
-		HttpConnection() : HttpSSLClient(&this->inputBuffer) {};
+		HttpConnection() :HttpSSLClient(&this->inputBuffer) {};
 
 	};
 

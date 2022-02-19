@@ -489,7 +489,6 @@ namespace DiscordCoreAPI {
 				if (resultValue != nullptr) {
 					eventData.previousSong = resultValue->getCurrentSong(youtubeAPI->guildId);
 				}
-				eventData.voiceConnection = getVoiceConnectionMap()->at(youtubeAPI->guildId).get();
 				eventData.wasItAFail = true;
 				eventData.guildMember = GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = newSong.addedByUserId, .guildId = youtubeAPI->guildId }).get();
 				eventData.guild = Guilds::getGuildAsync({ .guildId = youtubeAPI->guildId }).get();

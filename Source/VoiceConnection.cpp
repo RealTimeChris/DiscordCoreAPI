@@ -360,7 +360,6 @@ namespace DiscordCoreAPI {
 					}
 					else if (this->audioData.type == AudioFrameType::Skip && !this->areWeStopping) {
 						SongCompletionEventData completionEventData{};
-						completionEventData.voiceConnection = this;
 						completionEventData.guild = Guilds::getCachedGuildAsync({ .guildId = this->voiceConnectInitData.guildId }).get();
 						completionEventData.guildMember = GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = this->currentGuildMemberId,.guildId = this->voiceConnectInitData.guildId }).get();
 						completionEventData.wasItAFail = false;
