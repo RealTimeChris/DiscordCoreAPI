@@ -57,8 +57,6 @@ namespace DiscordCoreAPI {
 
     using TimeElapsedHandler = std::function<void(void)>;
 
-    using TimeElapsedHandlerTwo = void(*)(void);
-
     class DiscordCoreAPI_Dll ThreadPoolTimer {
     public:
 
@@ -75,8 +73,6 @@ namespace DiscordCoreAPI {
         ThreadPoolTimer(ThreadPoolTimer&) = delete;
 
         ThreadPoolTimer(nullptr_t);
-
-        static ThreadPoolTimer createPeriodicTimer(TimeElapsedHandlerTwo timeElapsedHandler, int64_t timeInterval);
 
         static ThreadPoolTimer createPeriodicTimer(TimeElapsedHandler timeElapsedHandler, int64_t timeInterval);
 
@@ -107,8 +103,6 @@ namespace DiscordCoreAPI {
         ThreadPoolTimer();
 
         static CoRoutine<void> run(int64_t theInterval, TimeElapsedHandler theFunction, bool repeating);
-
-        static CoRoutine<void> run(int64_t theInterval, TimeElapsedHandlerTwo theFunction, bool repeating);
 
     };
 }

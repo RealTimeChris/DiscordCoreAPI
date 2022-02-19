@@ -31,7 +31,6 @@ namespace DiscordCoreAPI {
     void ThreadPool::stopThread(std::string theKey) {
         if (this->threads.contains(theKey)) {
             this->threads.at(theKey).cancel();
-            this->threads.at(theKey).get();
             this->threads.erase(theKey);
         }
     }
@@ -62,12 +61,6 @@ namespace DiscordCoreAPI {
     }
 
     ThreadPoolTimer::ThreadPoolTimer(nullptr_t) {}
-
-    ThreadPoolTimer ThreadPoolTimer::createPeriodicTimer(TimeElapsedHandlerTwo timeElapsedHandler, int64_t timeInterval) {
-        ThreadPoolTimer threadPoolTimer{};
-        ThreadPoolTimer::threads.storeThread(threadPoolTimer.threadId, threadPoolTimer.run(timeInterval, timeElapsedHandler, true));;
-        return threadPoolTimer;
-    }
 
     ThreadPoolTimer ThreadPoolTimer::createPeriodicTimer(TimeElapsedHandler timeElapsedHandler, int64_t timeInterval) {
         ThreadPoolTimer threadPoolTimer{};
@@ -102,27 +95,7 @@ namespace DiscordCoreAPI {
                 if (cancelHandle.promise().isItStopped()) {
                     co_return;
                 }
-                std::this_thread::sleep_for(std::chrono::milliseconds{1});
-            }
-            theFunction();
-            if (cancelHandle.promise().isItStopped() || !repeating) {
-                co_return;
-            }
-        }
-        co_return;
-    }
-
-    CoRoutine<void> ThreadPoolTimer::run(int64_t theInterval, TimeElapsedHandlerTwo theFunction, bool repeating) {
-        auto cancelHandle = co_await NewThreadAwaitable<void>();
-        StopWatch<std::chrono::milliseconds> stopWatch{ std::chrono::milliseconds{theInterval} };
-        while (true) {
-            stopWatch.resetTimer();
-            cancelHandle.promise().waitForTime(static_cast<int64_t>(ceil(static_cast<double>(theInterval) * 99.0f / 100.0f)));
-            while (!stopWatch.hasTimePassed()) {
-                if (cancelHandle.promise().isItStopped()) {
-                    co_return;
-                }
-                std::this_thread::sleep_for(std::chrono::milliseconds{1});
+                std::this_thread::sleep_for(std::chrono::milliseconds{ 1 });
             }
             theFunction();
             if (cancelHandle.promise().isItStopped() || !repeating) {
@@ -135,7 +108,6 @@ namespace DiscordCoreAPI {
     ThreadPoolTimer::~ThreadPoolTimer() {
         this->cancel();
     };
-    
 
     ThreadPool ThreadPoolTimer::threads{};
     
