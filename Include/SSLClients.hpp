@@ -292,15 +292,13 @@ namespace DiscordCoreInternal {
 
 		WebSocketSSLClient(nullptr_t);
 
+		bool processIO(int32_t waitTimeInMicroSeconds);
+
 		void writeData(std::string& data);
 
 		std::string& getInputBuffer();
 
 		int64_t getBytesRead();
-
-		std::string getData();
-
-		bool processIO(int32_t waitTimeInMicroSeconds);
 
 	protected:
 
@@ -326,8 +324,6 @@ namespace DiscordCoreInternal {
 		std::string& getInputBuffer();
 
 		void readData(bool doWeClear);
-
-		std::string getData();
 
 	protected:
 

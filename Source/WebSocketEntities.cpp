@@ -185,7 +185,8 @@ namespace DiscordCoreInternal {
 
 	void BaseSocketAgent::onMessageReceived() {
 		try {
-			std::string messageNew = this->webSocket->getData();
+			std::string messageNew = this->webSocket->getInputBuffer();
+			this->webSocket->getInputBuffer().clear();
 			nlohmann::json payload{};
 
 			try {
@@ -843,7 +844,8 @@ namespace DiscordCoreInternal {
 
 	void VoiceSocketAgent::onMessageReceived() {
 		try {
-			std::string message = this->webSocket->getData();
+			std::string message = this->webSocket->getInputBuffer();
+			this->webSocket->getInputBuffer().clear();
 			nlohmann::json payload = payload.parse(message);
 			std::cout << "Message received from Voice WebSocket: " << message << std::endl << std::endl;
 			if (payload.contains("op")) {
