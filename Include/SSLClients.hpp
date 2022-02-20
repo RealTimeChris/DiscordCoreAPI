@@ -273,13 +273,13 @@ namespace DiscordCoreInternal {
 	protected:
 
 		BIOWrapper connectionBio{ nullptr };
-		std::vector<uint8_t> outputBuffer{};
 		int32_t maxBufferSize{ 16 * 1024 };
 		SOCKETWrapper theSocket{ nullptr };
 		SSL_CTXWrapper context{ nullptr };
 		std::string soundcloudCertPath{};
 		std::string defaultCertPath{};
 		std::string googleCertPath{};
+		std::string outputBuffer{};
 		std::string inputBuffer{};
 		SSLWrapper ssl{ nullptr };
 		bool wantRead{ false };
