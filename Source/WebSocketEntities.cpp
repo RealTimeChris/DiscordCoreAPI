@@ -144,7 +144,7 @@ namespace DiscordCoreInternal {
 			dataPackage.selfMute = this->voiceConnectInitData.selfMute;
 			nlohmann::json newData = JSONIFY(dataPackage);
 			this->sendMessage(newData);
-			std::this_thread::sleep_for(std::chrono::milliseconds(500));
+			std::this_thread::sleep_for(std::chrono::milliseconds{ 500 });
 			dataPackage.channelId = this->voiceConnectInitData.channelId;
 			newData = JSONIFY(dataPackage);
 			this->areWeCollectingData = true;
@@ -266,7 +266,7 @@ namespace DiscordCoreInternal {
 				this->areWeConnected.store(false, std::memory_order_seq_cst);
 				this->currentReconnectTries += 1;
 				int32_t numOfMsToWait = static_cast<int32_t>(1000.0f + ((static_cast<float>(rand()) / static_cast<float>(RAND_MAX)) * static_cast<float>(4000.0f)));
-				std::this_thread::sleep_for(std::chrono::milliseconds(numOfMsToWait));
+				std::this_thread::sleep_for(std::chrono::milliseconds{ numOfMsToWait });
 				if (payload.at("d") == true) {
 					nlohmann::json identityJson = JSONIFY(this->botToken, this->intentsValue);
 					this->sendMessage(identityJson);

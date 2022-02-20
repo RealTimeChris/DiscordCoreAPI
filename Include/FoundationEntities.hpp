@@ -646,7 +646,7 @@ namespace DiscordCoreAPI {
 
     template <typename ObjectType>
     bool waitForTimeToPass(UnboundedMessageBlock<ObjectType>& outBuffer, ObjectType& argOne, int32_t timeInMsNew) {
-        StopWatch<std::chrono::milliseconds> stopWatch{ std::chrono::milliseconds(timeInMsNew) };
+        StopWatch<std::chrono::milliseconds> stopWatch{ std::chrono::milliseconds{timeInMsNew} };
         bool doWeBreak{ false };
         while (!outBuffer.tryReceive(argOne)) {
             std::this_thread::sleep_for(std::chrono::milliseconds{ 1 });
@@ -660,7 +660,7 @@ namespace DiscordCoreAPI {
 
     template <typename ObjectType>
     bool waitForTimeToPass(TSUnboundedMessageBlock<ObjectType>& outBuffer, ObjectType& argOne, int32_t timeInMsNew) {
-        StopWatch<std::chrono::milliseconds> stopWatch{ std::chrono::milliseconds(timeInMsNew) };
+        StopWatch<std::chrono::milliseconds> stopWatch{ std::chrono::milliseconds{timeInMsNew} };
         bool doWeBreak{ false };
         while (!outBuffer.tryReceive(argOne)) {
             std::this_thread::sleep_for(std::chrono::milliseconds{ 1 });
@@ -674,12 +674,12 @@ namespace DiscordCoreAPI {
 
     /// Time formatting methods. \brief Time formatting methods.
     enum class TimeFormat {
-        LongDate = 'D',		/// "20 April 2021" - Long Date
-        LongDateTime = 'F',		/// "Tuesday, 20 April 2021 16:20" - Long Date/Time
-        LongTime = 'T',		/// "16:20:30" - Long Time
-        ShortDate = 'd',		/// "20/04/2021" - Short Date
-        ShortDateTime = 'f',		/// "20 April 2021 16:20" - Short Date/Time
-        ShortTime = 't',		/// "16:20" - Short Time
+        LongDate = 'D',///< "20 April 2021" - Long Date
+        LongDateTime = 'F',///< "Tuesday, 20 April 2021 16:20" - Long Date/Time
+        LongTime = 'T',///< "16:20:30" - Long Time
+        ShortDate = 'd',///< "20/04/2021" - Short Date
+        ShortDateTime = 'f',///< "20 April 2021 16:20" - Short Date/Time
+        ShortTime = 't',///< "16:20" - Short Time
     };
 
     DiscordCoreAPI_Dll std::string getISO8601TimeStamp(std::string year, std::string month, std::string day, std::string hour, std::string minute, std::string second);
@@ -694,7 +694,7 @@ namespace DiscordCoreAPI {
 
     DiscordCoreAPI_Dll std::string convertToLowerCase(std::string stringToConvert);
 
-    DiscordCoreAPI_Dll int64_t convertTimestampToInteger(std::string timeStamp);
+    DiscordCoreAPI_Dll int64_t convertTimestampToMsInteger(std::string timeStamp);
 
     DiscordCoreAPI_Dll std::string urlDecode(std::string inputString);
 
@@ -706,7 +706,7 @@ namespace DiscordCoreAPI {
 
     DiscordCoreAPI_Dll std::string getTimeAndDate();
 
-    DiscordCoreAPI_Dll bool nanoSleep(int64_t ns);    
+    DiscordCoreAPI_Dll bool nanoSleep(int64_t ns);
 
     class DiscordCoreAPI_Dll TimeStamp {
     public:
@@ -716,7 +716,7 @@ namespace DiscordCoreAPI {
         }
 
         std::string getDateTimeStamp(TimeFormat timeFormat) {
-            this->timeStampInMs = convertTimestampToInteger(this->originalTimeStamp);
+            this->timeStampInMs = convertTimestampToMsInteger(this->originalTimeStamp);
             std::string newString = convertTimeInMsToDateTimeString(this->timeStampInMs, timeFormat);
             return newString;
         }

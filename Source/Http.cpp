@@ -349,7 +349,7 @@ namespace DiscordCoreInternal {
 
 						}
 						else {
-							std::this_thread::sleep_for(std::chrono::milliseconds(static_cast<int64_t>(ceil(timeRemaining * 80.0f / 100.0f))));
+							std::this_thread::sleep_for(std::chrono::milliseconds{ static_cast<int64_t>(ceil(timeRemaining * 80.0f / 100.0f)) });
 						}
 					}
 				}

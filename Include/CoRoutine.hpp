@@ -63,7 +63,7 @@ namespace DiscordCoreAPI {
 
             void waitForTime(uint64_t timeToWaitForInMs) {
                 std::unique_lock<std::mutex> timedLock{ this->lockMutex };
-                this->condVar.wait_for(timedLock, std::chrono::milliseconds(timeToWaitForInMs));
+                this->condVar.wait_for(timedLock, std::chrono::milliseconds{ timeToWaitForInMs });
             }
 
             void return_value(ReturnType at) {
@@ -221,7 +221,7 @@ namespace DiscordCoreAPI {
 
             void waitForTime(uint64_t timeToWaitForInMs) {
                 std::unique_lock<std::mutex> timedLock{ this->lockMutex };
-                this->condVar.wait_for(timedLock, std::chrono::milliseconds(timeToWaitForInMs));
+                this->condVar.wait_for(timedLock, std::chrono::milliseconds{ timeToWaitForInMs });
             }
 
             void return_void() {

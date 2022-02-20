@@ -231,7 +231,7 @@ namespace DiscordCoreAPI {
 
                 }
                 else {
-                    std::this_thread::sleep_for(std::chrono::milliseconds(1));
+                    std::this_thread::sleep_for(std::chrono::milliseconds{ 1 });
                 }
                 int64_t currentTime = std::chrono::duration_cast<std::chrono::milliseconds, int64_t>(std::chrono::system_clock::now().time_since_epoch()).count();
                 millisecondsWaited = currentTime - startTime;

@@ -63,9 +63,9 @@ namespace DiscordCoreAPI {
              if (dataPackage.data.type == InteractionCallbackType::ChannelMessageWithSource) {
                  if (Interactions::collectMessageDataBuffers.contains(dataPackage.interactionPackage.interactionId)) {
                      Message messageData{};
-                     StopWatch<std::chrono::milliseconds> stopWatch(std::chrono::milliseconds(1500));
+                     StopWatch<std::chrono::milliseconds> stopWatch(std::chrono::milliseconds{ 1500 });
                      while (!Interactions::collectMessageDataBuffers.at(dataPackage.interactionPackage.interactionId)->tryReceive(messageData)) {
-                         std::this_thread::sleep_for(std::chrono::milliseconds{1});
+                         std::this_thread::sleep_for(std::chrono::milliseconds{ 1 });
                          if (stopWatch.hasTimePassed()) {
                              break;
                          }
