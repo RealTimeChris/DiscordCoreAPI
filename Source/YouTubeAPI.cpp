@@ -463,8 +463,7 @@ namespace DiscordCoreAPI {
 	CoRoutine<void> YouTubeAPI::downloadAndStreamAudio(Song newSong, YouTubeAPI* youtubeAPI) {
 		try {
 			auto coroutineHandle = co_await NewThreadAwaitable<void>();
-			std::vector<uint8_t> theVector{};
-			DiscordCoreInternal::WebSocketSSLClient streamSocket{ newSong.finalDownloadUrls[0].urlPath,"443", &theVector, this->maxBufferSize };
+			DiscordCoreInternal::WebSocketSSLClient streamSocket{ newSong.finalDownloadUrls[0].urlPath,"443",  this->maxBufferSize };
 			bool areWeDoneHeaders{ false };
 			bool haveWeFailed{ false };
 			int64_t remainingDownloadContentLength{ newSong.contentLength };

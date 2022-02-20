@@ -109,7 +109,7 @@ namespace DiscordCoreInternal {
 		return std::string{};
 	}
 
-	void HttpRnRBuilder::resetValues() {
+	void HttpRnRBuilder::resetValues(std::string&) {
 		this->headers = std::multimap<std::string, std::string>{};
 		this->doWeHaveContentSize = false;
 		this->doWeHaveHeaders = false;
@@ -117,11 +117,10 @@ namespace DiscordCoreInternal {
 		this->contentFinal = "";
 		this->responseCode = -1;
 		this->contentSize = 0;
-		this->inputBuffer = "";
 	}
 
-	bool HttpRnRBuilder::checkForHeadersToParse() {
-		if (this->inputBuffer.find("HTTP/1.") != std::string::npos) {
+	bool HttpRnRBuilder::checkForHeadersToParse(std::string& other) {
+		if (other.find("HTTP/1.") != std::string::npos) {
 			return true;
 		}
 		else {
@@ -129,15 +128,15 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void HttpRnRBuilder::parseHeaders() {
+	void HttpRnRBuilder::parseHeaders(std::string& other) {
 		try {
-			if (this->inputBuffer.find("\r\n\r\n") != std::string::npos) {
+			if (other.find("\r\n\r\n") != std::string::npos) {
 				if (this->responseCode == -1) {
-					this->parseCode();
+					this->parseCode(other);
 				}
 				std::string newString{ "" };
-				newString.insert(newString.begin(), this->inputBuffer.begin(), this->inputBuffer.begin() + this->inputBuffer.find("\r\n\r\n") + std::string("\r\n\r\n").size());
-				this->inputBuffer.erase(this->inputBuffer.begin(), this->inputBuffer.begin() + newString.size());
+				newString.insert(newString.begin(), other.begin(), other.begin() + other.find("\r\n\r\n") + std::string("\r\n\r\n").size());
+				other.erase(other.begin(), other.begin() + newString.size());
 				while (newString.size() > 0 && newString.find(":") != std::string::npos && newString.find("\r\n") != std::string::npos) {
 					int64_t currentOffset{ 0 };
 					std::string lineString = newString.substr(0, newString.find("\r\n") + 2);
@@ -167,26 +166,26 @@ namespace DiscordCoreInternal {
 		return;
 	}
 
-	bool HttpRnRBuilder::parseChunk() {
+	bool HttpRnRBuilder::parseChunk(std::string& other) {
 		try {
 			if (this->doWeHaveHeaders) {
 				if (this->isItChunked) {
 					if (!this->doWeHaveContentSize) {
-						this->clearCRLF();
-						this->parseSize();
-						this->clearCRLF();
+						this->clearCRLF(other);
+						this->parseSize(other);
+						this->clearCRLF(other);
 					}
-					if (this->inputBuffer.find("\r\n0\r\n\r\n") != std::string::npos) {
-						while (this->inputBuffer.find("\r\n") != this->inputBuffer.find("\r\n0\r\n\r\n")) {
-							this->clearCRLF();
-							this->parseSize();
-							this->clearCRLF();
-							if (this->inputBuffer.find("\r\n") != this->inputBuffer.find("\r\n0\r\n\r\n")) {
-								this->contentFinal.insert(this->contentFinal.end(), this->inputBuffer.begin(), this->inputBuffer.begin() + this->inputBuffer.find("\r\n"));
-								this->inputBuffer.erase(this->inputBuffer.begin(), this->inputBuffer.begin() + this->inputBuffer.find("\r\n") + 2);
+					if (other.find("\r\n0\r\n\r\n") != std::string::npos) {
+						while (other.find("\r\n") != other.find("\r\n0\r\n\r\n")) {
+							this->clearCRLF(other);
+							this->parseSize(other);
+							this->clearCRLF(other);
+							if (other.find("\r\n") != other.find("\r\n0\r\n\r\n")) {
+								this->contentFinal.insert(this->contentFinal.end(), other.begin(), other.begin() + other.find("\r\n"));
+								other.erase(other.begin(), other.begin() + other.find("\r\n") + 2);
 							}
 						}
-						this->contentFinal.insert(this->contentFinal.end(), this->inputBuffer.begin(), this->inputBuffer.begin() + this->inputBuffer.find("\r\n0\r\n\r\n"));
+						this->contentFinal.insert(this->contentFinal.end(), other.begin(), other.begin() + other.find("\r\n0\r\n\r\n"));
 						return false;
 					}
 					else {
@@ -196,14 +195,14 @@ namespace DiscordCoreInternal {
 				else {
 
 					if (!this->doWeHaveContentSize) {
-						this->parseSize();
+						this->parseSize(other);
 					}
 
 					if (this->contentSize == 0) {
 						return false;
 					}
-					if (this->inputBuffer.size() >= static_cast<size_t>(this->contentSize)) {
-						this->contentFinal.insert(this->contentFinal.end(), this->inputBuffer.begin(), this->inputBuffer.begin() + this->contentSize);
+					if (other.size() >= static_cast<size_t>(this->contentSize)) {
+						this->contentFinal.insert(this->contentFinal.end(), other.begin(), other.begin() + this->contentSize);
 						return false;
 					}
 					else {
@@ -221,7 +220,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void HttpRnRBuilder::parseSize() {
+	void HttpRnRBuilder::parseSize(std::string& other) {
 		try {
 			if (this->headers.contains("Content-Length")) {
 				this->contentSize = stoll(this->headers.find("Content-Length")->second);
@@ -231,10 +230,10 @@ namespace DiscordCoreInternal {
 			std::string theValueString{};
 			uint64_t hexIndex{ 0 };
 			bool isThereHexValues{ false };
-			for (uint64_t x = 0; x < this->inputBuffer.size(); x += 1) {
-				if (isxdigit(this->inputBuffer[x]) != 0 && static_cast<int32_t>(this->inputBuffer[x]) != EOF) {
+			for (uint64_t x = 0; x < other.size(); x += 1) {
+				if (isxdigit(other[x]) != 0 && static_cast<int32_t>(other[x]) != EOF) {
 					isThereHexValues = true;
-					theValueString.push_back(this->inputBuffer[x]);
+					theValueString.push_back(other[x]);
 				}
 				else {
 					hexIndex = x;
@@ -248,7 +247,7 @@ namespace DiscordCoreInternal {
 			}
 			else {
 				this->contentSize += stoll(theValueString, nullptr, 16);
-				this->inputBuffer.erase(this->inputBuffer.begin(), this->inputBuffer.begin() + hexIndex);
+				other.erase(other.begin(), other.begin() + hexIndex);
 				this->doWeHaveContentSize = true;
 			}
 		}
@@ -258,41 +257,41 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void HttpRnRBuilder::clearCRLF() {
+	void HttpRnRBuilder::clearCRLF(std::string&other) {
 		uint64_t theCount{ 0 };
-		for (uint64_t x = 0; x < this->inputBuffer.size(); x += 1) {
-			if (isspace(static_cast<unsigned char>(this->inputBuffer[x])) != 0) {
+		for (uint64_t x = 0; x < other.size(); x += 1) {
+			if (isspace(static_cast<unsigned char>(other[x])) != 0) {
 				theCount += 1;
 			}
 			else {
 				break;
 			}
 		}
-		this->inputBuffer.erase(this->inputBuffer.begin(), this->inputBuffer.begin() + theCount);
+		other.erase(other.begin(), other.begin() + theCount);
 	}
  
-	void HttpRnRBuilder::parseCode() {
+	void HttpRnRBuilder::parseCode(std::string& other) {
 		try {
-			if (this->inputBuffer.find("HTTP/1.") != std::string::npos) {
+			if (other.find("HTTP/1.") != std::string::npos) {
 				uint64_t firstNumberIndex{ 0 };
 				uint64_t lastNumberIndex{ 0 };
 				bool haveWeStarted{ false };
-				for (uint64_t x = this->inputBuffer.find("HTTP/1.") + std::string("HTTP/1.").size() + 1; x < this->inputBuffer.size(); x += 1) {
-					if (!haveWeStarted && (isalnum(static_cast<unsigned char>(this->inputBuffer[x])) != 0)) {
+				for (uint64_t x = other.find("HTTP/1.") + std::string("HTTP/1.").size() + 1; x < other.size(); x += 1) {
+					if (!haveWeStarted && (isalnum(static_cast<unsigned char>(other[x])) != 0)) {
 						firstNumberIndex = x;
 						haveWeStarted = true;
 
 					}
-					else if (haveWeStarted && (isalnum(static_cast<unsigned char>(this->inputBuffer[x])) == 0)) {
+					else if (haveWeStarted && (isalnum(static_cast<unsigned char>(other[x])) == 0)) {
 						lastNumberIndex = x;
 						break;
 					}
 				}
-				this->responseCode = stoll(this->inputBuffer.substr(firstNumberIndex, lastNumberIndex - firstNumberIndex));
-				std::string tempString = this->inputBuffer.substr(0, this->inputBuffer.find("\r\n", lastNumberIndex) + 2);
-				this->inputBuffer.erase(this->inputBuffer.begin(), this->inputBuffer.begin() + tempString.size());
+				this->responseCode = stoll(other.substr(firstNumberIndex, lastNumberIndex - firstNumberIndex));
+				std::string tempString = other.substr(0, other.find("\r\n", lastNumberIndex) + 2);
+				other.erase(other.begin(), other.begin() + tempString.size());
 			}
-			else if (this->inputBuffer.size() <= 5) {
+			else if (other.size() <= 5) {
 
 			}
 			else {
@@ -391,7 +390,7 @@ namespace DiscordCoreInternal {
 
 	HttpData HttpClient::executeHttpRequest(HttpWorkloadData& workload, HttpConnection& theConnection) {
 		try {
-			theConnection.resetValues();
+			theConnection.resetValues(theConnection.getInputBuffer());
 			if (theConnection.doWeConnect) {
 				std::string stringNew{};
 				if (workload.baseUrl.find(".com") != std::string::npos) {
@@ -424,15 +423,15 @@ namespace DiscordCoreInternal {
 
 	HttpData HttpClient::getResponse(HttpWorkloadData& workload, HttpConnection& theConnection) {
 		DiscordCoreAPI::StopWatch stopWatch{ std::chrono::milliseconds{3500} };
-		theConnection.inputBuffer.resize(0);
+		theConnection.getInputBuffer().resize(0);
 		while (true) {
 			if (!theConnection.processIO()) {
 				break;
 			}
-			if (theConnection.checkForHeadersToParse() && !theConnection.doWeHaveHeaders && !stopWatch.hasTimePassed()) {
-				theConnection.parseHeaders();
+			if (theConnection.checkForHeadersToParse(theConnection.getInputBuffer()) && !theConnection.doWeHaveHeaders && !stopWatch.hasTimePassed()) {
+				theConnection.parseHeaders(theConnection.getInputBuffer());
 			}
-			if (stopWatch.hasTimePassed() || (theConnection.responseCode == -5 && theConnection.contentSize == -5) || !theConnection.parseChunk()) {
+			if (stopWatch.hasTimePassed() || (theConnection.responseCode == -5 && theConnection.contentSize == -5) || !theConnection.parseChunk(theConnection.getInputBuffer())) {
 				break;
 			}
 		};
@@ -503,7 +502,7 @@ namespace DiscordCoreInternal {
 				resultData.responseData = nlohmann::json::parse(resultData.responseMessage);
 				std::cout << workload.callStack + "::httpRequest(), We've hit rate limit! Time Remaining: " << std::to_string(this->connectionManager.rateLimitValues.at(theConnectionNew.bucket)->msRemain) << std::endl << std::endl;
 				this->connectionManager.rateLimitValues.at(theConnectionNew.bucket)->msRemain = static_cast<int64_t>(1000.0f * resultData.responseData.at("retry_after").get<float>());
-				theConnectionNew.resetValues();
+				theConnectionNew.resetValues(theConnectionNew.getInputBuffer());
 				resultData = this->httpRequest(workload, printResult);
 			}
 			return resultData;

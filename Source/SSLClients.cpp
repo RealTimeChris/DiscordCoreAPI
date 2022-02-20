@@ -46,8 +46,7 @@ namespace DiscordCoreInternal {
 
 	HttpSSLClient::HttpSSLClient(nullptr_t) {};
 
-	HttpSSLClient::HttpSSLClient(std::string* theInputBuffer) :
-		inputBufferPtr(theInputBuffer) {
+	HttpSSLClient::HttpSSLClient(std::string* theInputBuffer) {
 #ifdef _WIN32
 		this->soundcloudCertPath = "C:/SSL/Certs/SoundCloudCert.pem";
 		this->defaultCertPath = "C:/SSL/Certs/DiscordCert.pem";
@@ -161,6 +160,10 @@ namespace DiscordCoreInternal {
 		data.clear();
 	}
 
+	std::string& HttpSSLClient::getInputBuffer() {
+		return this->inputBuffer;
+	}
+
 	bool HttpSSLClient::processIO() {
 #ifdef _WIN32
 		fd_set writeSet{}, readSet{};
@@ -264,7 +267,7 @@ namespace DiscordCoreInternal {
 			switch (errorValue) {
 			case SSL_ERROR_NONE: {
 				if (readBytes > 0) {
-					this->inputBufferPtr->insert(this->inputBufferPtr->end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
+					this->inputBuffer.insert(this->inputBuffer.end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
 				}
 				return true;
 			}
@@ -290,8 +293,7 @@ namespace DiscordCoreInternal {
 		return true;
 	}
 
-	WebSocketSSLClient::WebSocketSSLClient(std::string baseUrlNew, std::string portNew, std::vector<uint8_t>* theInputBuffer, int64_t maxBufferSizeNew) :
-		inputBufferPtr(theInputBuffer),
+	WebSocketSSLClient::WebSocketSSLClient(std::string baseUrlNew, std::string portNew,  int64_t maxBufferSizeNew) :
 		maxBufferSize(maxBufferSizeNew)
 	{
 		addrinfoWrapper  resultAddress{ nullptr }, hints{ nullptr };
@@ -359,9 +361,13 @@ namespace DiscordCoreInternal {
 
 	std::string WebSocketSSLClient::getData() {
 		std::string newVector{};
-		newVector.insert(newVector.begin(), this->inputBufferPtr->begin(), this->inputBufferPtr->end());
-		this->inputBufferPtr->clear();
+		newVector.insert(newVector.begin(), this->inputBuffer.begin(), this->inputBuffer.end());
+		this->inputBuffer.clear();
 		return newVector;
+	}
+
+	std::vector<uint8_t>& WebSocketSSLClient::getInputBuffer() {
+		return this->inputBuffer;
 	}
 
 	bool WebSocketSSLClient::processIO(int32_t waitTimeInMicroSeconds) {
@@ -467,7 +473,7 @@ namespace DiscordCoreInternal {
 			switch (errorValue) {
 			case SSL_ERROR_NONE: {
 				if (readBytes > 0) {
-					this->inputBufferPtr->insert(this->inputBufferPtr->end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
+					this->inputBuffer.insert(this->inputBuffer.end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
 					this->bytesRead += readBytes;
 				}
 				return true;
@@ -498,9 +504,7 @@ namespace DiscordCoreInternal {
 		return this->bytesRead;
 	}
 	
-	DatagramSocketSSLClient::DatagramSocketSSLClient(std::string baseUrlNew, std::string portNew, std::vector<uint8_t>* theInputBuffer) :
-		inputBufferPtr(theInputBuffer)
-	{
+	DatagramSocketSSLClient::DatagramSocketSSLClient(std::string baseUrlNew, std::string portNew) {
 		addrinfoWrapper  resultAddress{ nullptr }, hints{ nullptr };
 		hints->ai_family = AF_INET;
 		hints->ai_socktype = SOCK_DGRAM;
@@ -561,9 +565,13 @@ namespace DiscordCoreInternal {
 
 	std::vector<uint8_t> DatagramSocketSSLClient::getData() {
 		std::vector<uint8_t> newVector{};
-		newVector.insert(newVector.begin(), this->inputBufferPtr->begin(), this->inputBufferPtr->end());
-		this->inputBufferPtr->clear();
+		newVector.insert(newVector.begin(), this->inputBuffer.begin(), this->inputBuffer.end());
+		this->inputBuffer.clear();
 		return newVector;
+	}
+
+	std::vector<uint8_t>& DatagramSocketSSLClient::getInputBuffer() {
+		return this->inputBuffer;
 	}
 
 	void DatagramSocketSSLClient::readData(bool doWeClear) {
@@ -572,9 +580,9 @@ namespace DiscordCoreInternal {
 		size_t readBytes{ 0 };
 		if (auto returnValue = BIO_read_ex(this->datagramBio, serverToClientBuffer.data(), this->maxBufferSize, &readBytes); returnValue == 1) {
 			if (readBytes > 0) {
-				this->inputBufferPtr->insert(this->inputBufferPtr->end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
+				this->inputBuffer.insert(this->inputBuffer.end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
 				if (doWeClear) {
-					this->inputBufferPtr->clear();
+					this->inputBuffer.clear();
 				}
 			}
 		}
