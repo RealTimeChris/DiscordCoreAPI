@@ -229,10 +229,12 @@ namespace DiscordCoreAPI {
 	}
 
 	void SoundCloudAPI::cancelCurrentSong() {
-		if (getSongAPIMap()->at(this->guildId) != nullptr) {
-			if (getSongAPIMap()->at(this->guildId)->theTask != nullptr) {
-				getSongAPIMap()->at(this->guildId)->theTask->cancel();
-				getSongAPIMap()->at(this->guildId)->theTask.reset(nullptr);
+		if (getSongAPIMap()->contains(this->guildId)) {
+			if (getSongAPIMap()->at(this->guildId) != nullptr) {
+				if (getSongAPIMap()->at(this->guildId)->theTask != nullptr) {
+					getSongAPIMap()->at(this->guildId)->theTask->cancel();
+					getSongAPIMap()->at(this->guildId)->theTask.reset(nullptr);
+				}
 			}
 		}
 	}
@@ -364,6 +366,10 @@ namespace DiscordCoreAPI {
 
 	std::vector<SoundCloudSong> SoundCloudAPI::searchForSong(std::string searchQuery, std::string guildId) {
 		return this->requestBuilder.collectSearchResults(searchQuery);
+	}
+
+	SoundCloudAPI::~SoundCloudAPI() {
+		this->cancelCurrentSong();
 	}
 
 };

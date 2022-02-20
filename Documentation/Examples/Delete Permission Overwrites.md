@@ -32,7 +32,7 @@ namespace DiscordCoreAPI {
 			return std::make_unique<Test>();
 		}
 
-		virtual  CoRoutine<void> execute(shared_ptr<BaseFunctionArguments> args) {
+		virtual void execute(unique_ptr<BaseFunctionArguments> args) {
 
 			DeleteChannelPermissionOverwritesData dataPackage;
 			dataPackage.channelId = args->eventData.getChannelId();

@@ -334,7 +334,9 @@ namespace DiscordCoreAPI {
                         std::lock_guard<std::mutex> accessLock{ this->coroutineHandle.promise().lockMutex };
                         this->coroutineHandle.promise().condVar.notify_all();
                     }
-                    //this->coroutineHandle.promise().newThread.join();
+                    std::cout << "WERE HERE THIS IS IT023023023023" << std::endl;
+                    this->coroutineHandle.promise().newThread.join();
+                    std::cout << "WERE HERE THIS IS IT02240240240240" << std::endl;
                 }
                 std::exception_ptr exceptionPtr{};
                 while (this->coroutineHandle.promise().exceptionBuffer.tryReceive(exceptionPtr)) {

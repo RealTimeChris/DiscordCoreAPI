@@ -383,11 +383,12 @@ namespace DiscordCoreAPI {
 	};
 
 	VoiceConnection::~VoiceConnection() {
-		auto thePtr = getSongAPIMap()->at(this->voiceConnectInitData.guildId).get();
-		if (thePtr != nullptr) {
+		if (getSongAPIMap()->contains(this->voiceConnectInitData.guildId)) {
 			getSongAPIMap()->at(this->voiceConnectInitData.guildId)->onSongCompletionEvent = std::function<CoRoutine<void>(SongCompletionEventData)>{};
+			if (this->baseSocketAgent->voiceConnectionDataBufferMap.contains(this->voiceConnectInitData.guildId)) {
+				this->baseSocketAgent->voiceConnectionDataBufferMap.erase(this->voiceConnectInitData.guildId);
+			}
 		}
-		this->baseSocketAgent->voiceConnectionDataBufferMap.erase(this->voiceConnectInitData.guildId);
 	}
 
 }

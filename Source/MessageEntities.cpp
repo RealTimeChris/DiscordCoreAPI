@@ -92,7 +92,9 @@ namespace DiscordCoreAPI {
 	}
 
 	MessageCollector::~MessageCollector() {
-		MessageCollector::messagesBufferMap.erase(this->userId);
+		if (MessageCollector::messagesBufferMap.contains(this->userId)) {
+			MessageCollector::messagesBufferMap.erase(this->userId);
+		}
 	}
 
 	void Messages::initialize(DiscordCoreInternal::HttpClient*theClient) {

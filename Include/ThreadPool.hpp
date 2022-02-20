@@ -90,6 +90,7 @@ namespace DiscordCoreAPI {
             else {
                 throw std::runtime_error("Please enter a valid delay time!");
             }
+            co_return;
         };
 
         ~ThreadPoolTimer();
