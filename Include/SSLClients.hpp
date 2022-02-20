@@ -222,7 +222,7 @@ namespace DiscordCoreInternal {
 			void operator()(SOCKET* other) {
 				if (other != nullptr) {
 #ifdef _WIN32
-					shutdown(*other, 2);
+					shutdown(*other, SD_BOTH);
 					closesocket(*other);
 #else
 					close(*other);
