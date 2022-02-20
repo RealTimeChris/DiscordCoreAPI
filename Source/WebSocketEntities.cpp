@@ -149,6 +149,9 @@ namespace DiscordCoreInternal {
 			newData = JSONIFY(dataPackage);
 			this->areWeCollectingData = true;
 			this->sendMessage(newData);
+			while (this->areWeCollectingData) {
+				std::this_thread::sleep_for(std::chrono::milliseconds{ 1 });
+			}
 		}
 		catch (...) {
 			DiscordCoreAPI::reportException("BaseSocketAgent::getVoiceConnectionData()");
