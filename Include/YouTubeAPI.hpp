@@ -87,8 +87,6 @@ namespace DiscordCoreAPI {
 
 		void stop();
 
-		~YouTubeAPI();
-
 	protected:
 
 		YouTubeRequestBuilder requestBuilder{};

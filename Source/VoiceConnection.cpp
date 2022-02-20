@@ -382,6 +382,8 @@ namespace DiscordCoreAPI {
 		co_return;
 	};
 
-	VoiceConnection::~VoiceConnection() {}
+	VoiceConnection::~VoiceConnection() {
+		this->theTask->cancel();
+	}
 
 }

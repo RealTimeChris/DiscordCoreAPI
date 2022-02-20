@@ -71,8 +71,6 @@ namespace DiscordCoreAPI {
 
 		void stop();
 
-		~SoundCloudAPI();
-
 	protected:
 
 		DiscordCoreInternal::HttpClient* httpClient{ nullptr };

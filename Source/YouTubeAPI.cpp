@@ -625,7 +625,4 @@ namespace DiscordCoreAPI {
 	std::vector<YouTubeSong> YouTubeAPI::searchForSong(std::string searchQuery, std::string guildId) {
 		return this->requestBuilder.collectSearchResults(searchQuery);
 	}
-
-	YouTubeAPI::~YouTubeAPI() {}
-
 };
