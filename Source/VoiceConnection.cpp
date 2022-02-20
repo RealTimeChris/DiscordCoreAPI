@@ -164,6 +164,7 @@ namespace DiscordCoreAPI {
 			this->areWeConnectedBool = true;
 			this->areWeStopping.store(false, std::memory_order_seq_cst);
 			this->stopSetEvent.set();
+			this->pauseEvent.set();
 			this->voiceConnectInitData = voiceConnectInitDataNew;
 			if (this->voiceSocketAgent != nullptr) {
 				this->voiceSocketAgent->theTask->cancel();
