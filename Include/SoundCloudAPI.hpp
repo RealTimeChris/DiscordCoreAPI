@@ -22,10 +22,10 @@
 
 #pragma once
 
-#include <CoRoutine.hpp>
-#include <AudioEncoder.hpp>
-#include <Http.hpp>
-#include <AudioDecoder.hpp>
+#include <CoRoutine>
+#include <AudioEncoder>
+#include <Http>
+#include <AudioDecoder>
 
 namespace DiscordCoreAPI {
 

@@ -22,11 +22,11 @@
 
 #pragma once
 
-#include <FoundationEntities.hpp>
-#include <CoRoutine.hpp>
-#include <SongAPI.hpp>
-#include <InputEvents.hpp>
-#include <VoiceConnection.hpp>
+#include <FoundationEntities>
+#include <CoRoutine>
+#include <SongAPI>
+#include <InputEvents>
+#include <VoiceConnection>
 
 namespace DiscordCoreAPI {
 

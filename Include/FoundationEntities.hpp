@@ -48,7 +48,7 @@
 
 #include <cpp-base64/base64.h>
 #include <condition_variable>
-#include <nlohmann/json.hpp>
+#include <nlohmann/json>
 #include <unordered_map>
 #include <curl/curl.h>
 #include <functional>

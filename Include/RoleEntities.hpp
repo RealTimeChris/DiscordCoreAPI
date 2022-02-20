@@ -22,8 +22,8 @@
 
 #pragma once
 
-#include <GuildMemberEntities.hpp>
-#include <JSONIfier.hpp>
+#include <GuildMemberEntities>
+#include <JSONIfier>
 
 namespace DiscordCoreAPI {
 

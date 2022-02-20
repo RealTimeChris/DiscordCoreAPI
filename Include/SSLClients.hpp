@@ -44,7 +44,7 @@
 #include <netdb.h>
 #endif
 
-#include <FoundationEntities.hpp>
+#include <FoundationEntities>
 #include <openssl/ssl.h>
 #include <openssl/err.h>
 #include <algorithm>

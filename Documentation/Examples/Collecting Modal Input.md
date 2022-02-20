@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include "Index.hpp"
+#include <Index>
 
 namespace DiscordCoreAPI {
 
