@@ -44,13 +44,13 @@ namespace DiscordCoreInternal {
 
 		std::string buildRequest(HttpWorkloadData& workload);
 
-		bool checkForHeadersToParse(std::string&);
+		bool checkForHeadersToParse();
 
-		void parseHeaders(std::string&);
+		void parseHeaders();
 
-		void resetValues(std::string&);
+		void resetValues();
 
-		bool parseChunk(std::string&);
+		bool parseChunk();
 
 		virtual ~HttpRnRBuilder() = default;
 
@@ -62,13 +62,14 @@ namespace DiscordCoreInternal {
 		bool doWeHaveHeaders{ false };
 		int64_t responseCode{ -1 };
 		int64_t contentSize{ -1 };
+		std::string inputBuffer{};
 		bool isItChunked{ false };
 
-		void parseSize(std::string&);
+		void parseSize();
 
-		void clearCRLF(std::string&);
+		void clearCRLF();
 
-		void parseCode(std::string&);
+		void parseCode();
 	};
 
 	struct DiscordCoreAPI_Dll RateLimitData {

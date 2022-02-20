@@ -264,23 +264,21 @@ namespace DiscordCoreInternal {
 
 		void writeData(std::string& theData);
 
-		std::string& getInputBuffer();
-
 		bool processIO();
 
 		virtual ~HttpSSLClient() = default;
 
 	protected:
 
+		std::string* inputBufferPtr{ nullptr };
 		BIOWrapper connectionBio{ nullptr };
-		std::vector<uint8_t> outputBuffer{};
 		int32_t maxBufferSize{ 16 * 1024 };
 		SOCKETWrapper theSocket{ nullptr };
+		std::vector<uint8_t> outputBuffer{};
 		SSL_CTXWrapper context{ nullptr };
 		std::string soundcloudCertPath{};
 		std::string defaultCertPath{};
 		std::string googleCertPath{};
-		std::string inputBuffer{};
 		SSLWrapper ssl{ nullptr };
 		bool wantRead{ false };
 	};
@@ -297,7 +295,7 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll WebSocketSSLClient {
 	public:
 
-		WebSocketSSLClient(std::string baseUrl, std::string port, int64_t maxBufferSize = 16 * 1024);
+		WebSocketSSLClient(std::string baseUrl, std::string port, std::vector<uint8_t>* inputBuffer, int64_t maxBufferSize = 16 * 1024);
 
 		WebSocketSSLClient(nullptr_t);
 
@@ -305,8 +303,6 @@ namespace DiscordCoreInternal {
 		void writeData(TypeName& data) {
 			this->outputBuffer.insert(this->outputBuffer.end(), data.begin(), data.end());
 		}
-
-		std::vector<uint8_t>& getInputBuffer();
 
 		int64_t getBytesRead();
 
@@ -317,9 +313,9 @@ namespace DiscordCoreInternal {
 	protected:
 
 		const int32_t maxBufferSize{ 1024 * 16 };
-		std::vector<uint8_t> outputBuffer{};
+		std::vector<uint8_t>* inputBufferPtr{};
 		SOCKETWrapper theSocket{ nullptr };
-		std::vector<uint8_t> inputBuffer{};
+		std::vector<uint8_t> outputBuffer{};
 		SSL_CTXWrapper context{ nullptr };
 		SSLWrapper ssl{ nullptr };
 		bool wantRead{ false };
@@ -329,13 +325,11 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll DatagramSocketSSLClient {
 	public:
 
-		DatagramSocketSSLClient(std::string hostName, std::string port);
+		DatagramSocketSSLClient(std::string hostName, std::string port, std::vector<uint8_t>*);
 
 		DatagramSocketSSLClient(nullptr_t);
 
 		bool writeData(std::vector<uint8_t>& dataToWrite);
-
-		std::vector<uint8_t>& getInputBuffer();
 
 		std::vector<uint8_t> getData();
 
@@ -344,8 +338,8 @@ namespace DiscordCoreInternal {
 	protected:
 
 		const int32_t maxBufferSize{ 1024 * 16 };
+		std::vector<uint8_t>* inputBufferPtr{};
 		SOCKETWrapper theSocket{ nullptr };
-		std::vector<uint8_t> inputBuffer{};
 		BIOWrapper datagramBio{ nullptr };
 	};
 }
