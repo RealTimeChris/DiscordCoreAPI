@@ -297,30 +297,22 @@ namespace DiscordCoreAPI {
 				std::vector<DiscordCoreInternal::HttpWorkloadData> workloadVector{};
 				workloadVector.push_back(dataPackage03);
 				auto result = this->requestBuilder.submitWorkloadAndGetResult(workloadVector);
-				std::vector<uint8_t> newVector{};
-				for (uint64_t x = 0; x < result[0].responseMessage.size(); x += 1) {
-					newVector.push_back(result[0].responseMessage[x]);
-				}
 				int64_t totalAmountToSubmit{ static_cast<int64_t>(result[0].responseMessage.size()) };
 				int64_t amountToSubmitRemaining{ static_cast<int64_t>(result[0].responseMessage.size()) };
 				int64_t amountToSubmitRemainingFinal{ 0 };
 				int64_t amountSubmitted{ 0 };
 				while (amountToSubmitRemaining > 0) {
-					auto newerVector = std::string();
+					std::string newerVector{};
 					if (amountToSubmitRemaining >= 8192) {
-						for (int64_t x = 0; x < 8192; x += 1) {
-							newerVector.push_back(newVector[amountSubmitted]);
-							amountSubmitted += 1;
-							amountToSubmitRemaining -= 1;
-						}
+						newerVector.insert(newerVector.begin(), result[0].responseMessage.begin(), result[0].responseMessage.begin() + 8192);
+						amountSubmitted += 8192;
+						amountToSubmitRemaining -= 8192;
 					}
 					else {
 						amountToSubmitRemainingFinal = amountToSubmitRemaining;
-						for (int64_t x = 0; x < amountToSubmitRemainingFinal; x += 1) {
-							newerVector.push_back(newVector[amountSubmitted]);
-							amountSubmitted += 1;
-							amountToSubmitRemaining -= 1;
-						}
+						newerVector.insert(newerVector.begin(), result[0].responseMessage.begin(), result[0].responseMessage.begin() + amountToSubmitRemainingFinal);
+						amountSubmitted += amountToSubmitRemainingFinal;
+						amountToSubmitRemaining -= amountToSubmitRemainingFinal;
 					}
 					audioDecoder->submitDataForDecoding(newerVector);
 				}
