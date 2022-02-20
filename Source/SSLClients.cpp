@@ -180,7 +180,7 @@ namespace DiscordCoreInternal {
 			nfds = this->theSocket > nfds ? this->theSocket : nfds;
 		}
 
-		timeval checkTime{ .tv_usec = 60000 };
+		timeval checkTime{ .tv_usec = 1000 };
 		if (auto resultValue = select(nfds + 1, &readSet, &writeSet, nullptr, &checkTime); resultValue == SOCKET_ERROR) {
 			reportError("select() Error: ", resultValue);
 			return false;
@@ -211,7 +211,7 @@ namespace DiscordCoreInternal {
 			}
 		}
 
-		if (auto resultValue = epoll_wait(epoll, events, 1, 60); resultValue == SOCKET_ERROR) {
+		if (auto resultValue = epoll_wait(epoll, events, 1, 1); resultValue == SOCKET_ERROR) {
 			reportError("epoll_wait() Error: ", resultValue);
 			return false;
 		}

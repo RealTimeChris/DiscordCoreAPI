@@ -165,7 +165,7 @@ namespace DiscordCoreInternal {
 					this->onClosedInternal();
 				}
 				if (this->webSocket != nullptr) {
-					if (!this->webSocket->processIO(60000)) {
+					if (!this->webSocket->processIO(1000)) {
 						this->onClosedExternal();
 					}
 					this->handleBuffer();
@@ -823,7 +823,7 @@ namespace DiscordCoreInternal {
 					co_return;
 				}
 				if (this->webSocket != nullptr) {
-					if (!this->webSocket->processIO(60000)) {
+					if (!this->webSocket->processIO(1000)) {
 						this->onClosedExternal();
 					}
 				}
