@@ -259,7 +259,7 @@ namespace DiscordCoreInternal {
 		else {
 #endif
 			this->wantRead = false;
-			std::vector<uint8_t>  serverToClientBuffer{};
+			std::vector<uint8_t> serverToClientBuffer{};
 			serverToClientBuffer.resize(this->maxBufferSize);
 			size_t readBytes{ 0 };
 			auto returnValue{ SSL_read_ex(this->ssl, serverToClientBuffer.data(), this->maxBufferSize, &readBytes) };
@@ -465,7 +465,7 @@ namespace DiscordCoreInternal {
 		else {
 #endif
 			this->wantRead = false;
-			std::vector<uint8_t>  serverToClientBuffer{};
+			std::vector<uint8_t> serverToClientBuffer{};
 			serverToClientBuffer.resize(this->maxBufferSize);
 			size_t readBytes{ 0 };
 			auto returnValue{ SSL_read_ex(this->ssl, serverToClientBuffer.data(), this->maxBufferSize, &readBytes) };
@@ -575,7 +575,7 @@ namespace DiscordCoreInternal {
 	}
 
 	void DatagramSocketSSLClient::readData(bool doWeClear) {
-		std::vector<uint8_t>  serverToClientBuffer{};
+		std::vector<uint8_t> serverToClientBuffer{};
 		serverToClientBuffer.resize(this->maxBufferSize);
 		size_t readBytes{ 0 };
 		if (auto returnValue = BIO_read_ex(this->datagramBio, serverToClientBuffer.data(), this->maxBufferSize, &readBytes); returnValue == 1) {

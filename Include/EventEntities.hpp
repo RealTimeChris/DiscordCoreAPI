@@ -217,7 +217,7 @@ namespace DiscordCoreAPI {
         ReferenceCountingPtr<std::atomic<bool>> theEventState{ nullptr };
 
         EventWaiter() {
-            this->theEventState = new std::atomic<bool>{};
+            this->theEventState = new std::atomic<bool>{ true };
         }
 
         bool wait(int64_t millisecondsMaxToWait = INT64_MAX) {
@@ -239,6 +239,10 @@ namespace DiscordCoreAPI {
                     return false;
                 }
             }
+        }
+
+        bool checkStatus() {
+            return this->theEventState->load(std::memory_order_seq_cst);
         }
 
         void set() {

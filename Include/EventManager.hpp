@@ -450,7 +450,7 @@ namespace DiscordCoreAPI {
 		/// For adding a std::function to handle this event. \brief For adding a std::function to handle this event.
 		/// \param handler A delegate taking an OnGuildCreationData structure as an argument.
 		/// \returns An event_token for later de-registering the event.
-		EventDelegateToken onGuildCreation(EventDelegate<void, OnGuildCreationData>  handler);
+		EventDelegateToken onGuildCreation(EventDelegate<void, OnGuildCreationData> handler);
 		/// For removing a std::function from handling this event. \brief For removing a std::function from handling this event.
 		/// \param token An EventDelegateToken<void, from the original event registration.
 		void onGuildCreation(EventDelegateToken token);

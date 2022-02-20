@@ -80,7 +80,6 @@ namespace DiscordCoreAPI {
 		std::atomic<bool> areWeStopping{ false };
 		std::atomic<bool> areWePlaying{ false };
 		std::string currentGuildMemberId{ "" };
-		std::atomic<bool> areWePaused{ false };
 		EventWaiter* doWeReconnect{ nullptr };
 		const int32_t maxBufferSize{ 1276 };
 		bool areWeConnectedBool{ false };

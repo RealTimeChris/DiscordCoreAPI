@@ -115,7 +115,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	std::vector<std::string>  BaseSocketAgent::tokenize(std::string& dataIn, std::string separator) {
+	std::vector<std::string> BaseSocketAgent::tokenize(std::string& dataIn, std::string separator) {
 		try {
 			std::string::size_type value{ 0 };
 			std::vector<std::string> dataOut{};

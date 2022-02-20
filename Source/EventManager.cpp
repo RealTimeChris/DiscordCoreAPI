@@ -139,7 +139,7 @@ namespace DiscordCoreAPI {
 		return onThreadMembersUpdateEvent.remove(token);
 	}
 
-	EventDelegateToken EventManager::onGuildCreation(EventDelegate<void, OnGuildCreationData>  handler) {
+	EventDelegateToken EventManager::onGuildCreation(EventDelegate<void, OnGuildCreationData> handler) {
 		return onGuildCreationEvent.add(std::move(handler));
 	}
 

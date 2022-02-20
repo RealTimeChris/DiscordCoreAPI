@@ -143,14 +143,13 @@ namespace DiscordCoreAPI {
 
 	void VoiceConnection::pauseToggle() {
 		if (this != nullptr) {
-			if (!this->areWePaused.load(std::memory_order_seq_cst)) {
+			if (this->pauseEvent.checkStatus()) {
 				sendSpeakingMessage(false);
-				this->areWePaused.store(true, std::memory_order_seq_cst);
+				this->pauseEvent.reset();
 			}
 			else {
 				sendSpeakingMessage(true);
 				this->pauseEvent.set();
-				this->areWePaused.store(false, std::memory_order_seq_cst);
 			}
 		}
 	}
@@ -307,11 +306,7 @@ namespace DiscordCoreAPI {
 						this->areWePlaying.store(false, std::memory_order_seq_cst);
 						break;
 					}
-					if (this->areWePaused.load(std::memory_order_seq_cst)) {
-						this->pauseEvent.wait(240000);
-						this->pauseEvent.reset();
-						this->areWePaused.store(false, std::memory_order_seq_cst);
-					}
+					this->pauseEvent.wait(240000);
 					if (cancelHandle.promise().isItStopped()) {
 						this->areWePlaying.store(false, std::memory_order_seq_cst);
 						co_return;
