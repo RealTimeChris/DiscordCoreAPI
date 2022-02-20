@@ -22,12 +22,12 @@
 
 #pragma once
 
-#include <AudioDecoder>
-#include <FoundationEntities>
-#include <ErlPacker>
-#include <SSLClients>
-#include <EventEntities>
-#include <ThreadPool>
+#include <AudioDecoder.hpp>
+#include <FoundationEntities.hpp>
+#include <ErlPacker.hpp>
+#include <SSLClients.hpp>
+#include <EventEntities.hpp>
+#include <ThreadPool.hpp>
 
 namespace DiscordCoreInternal {
 

@@ -22,8 +22,8 @@
 
 #pragma once
 
-#include <FoundationEntities>
-#include <VoiceConnection>
+#include <FoundationEntities.hpp>
+#include <VoiceConnection.hpp>
 
 namespace DiscordCoreAPI {
 

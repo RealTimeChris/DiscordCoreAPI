@@ -22,7 +22,7 @@
 
 #pragma once
 
-#include <JSONIfier>
+#include <JSONIfier.hpp>
 
 namespace DiscordCoreAPI {
 

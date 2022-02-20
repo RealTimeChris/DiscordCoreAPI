@@ -5,8 +5,8 @@
 
 #pragma once
 
-#include <Index>
-#include "HelperFunctions"
+#include "Index.hpp"
+#include "HelperFunctions.hpp"
 
 namespace DiscordCoreAPI {
 

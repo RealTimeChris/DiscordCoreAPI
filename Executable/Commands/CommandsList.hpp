@@ -6,8 +6,8 @@
 #ifndef COMMANDS_LIST
 #define COMMANDS_LIST
 
-#include "PlayRN"
-#include "RegisterApplicationCommands"
-#include "Test"
+#include "PlayRN.hpp"
+#include "RegisterApplicationCommands.hpp"
+#include "Test.hpp"
 
 #endif

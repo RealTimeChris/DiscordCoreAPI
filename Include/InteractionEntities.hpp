@@ -22,9 +22,9 @@
 
 #pragma once
 
-#include <FoundationEntities>
-#include <JSONIfier>
-#include <MessageEntities>
+#include <FoundationEntities.hpp>
+#include <JSONIfier.hpp>
+#include <MessageEntities.hpp>
 #include <iostream>
 
 namespace DiscordCoreAPI {

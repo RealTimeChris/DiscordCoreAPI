@@ -22,8 +22,8 @@
 
 #pragma once
 
-#include <FoundationEntities>
-#include <WebSocketEntities>
+#include <FoundationEntities.hpp>
+#include <WebSocketEntities.hpp>
 
 namespace DiscordCoreAPI {
 

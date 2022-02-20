@@ -22,8 +22,8 @@
 
 #pragma once
 
-#include <FoundationEntities>
-#include <CoRoutine>
+#include <FoundationEntities.hpp>
+#include <CoRoutine.hpp>
 
 namespace DiscordCoreAPI {
 

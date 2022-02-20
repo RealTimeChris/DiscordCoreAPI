@@ -22,9 +22,9 @@
 
 #pragma once
 
-#include <FoundationEntities>
-#include <GuildMemberEntities>
-#include <EventEntities>
+#include <FoundationEntities.hpp>
+#include <GuildMemberEntities.hpp>
+#include <EventEntities.hpp>
 
 namespace DiscordCoreAPI {
 

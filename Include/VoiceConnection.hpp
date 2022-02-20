@@ -24,10 +24,10 @@
 
 #pragma comment(lib, "libsodium.lib")
 
-#include <FoundationEntities>
-#include <WebSocketEntities>
-#include <AudioEncoder>
-#include <CoRoutine>
+#include <FoundationEntities.hpp>
+#include <WebSocketEntities.hpp>
+#include <AudioEncoder.hpp>
+#include <CoRoutine.hpp>
 #include <sodium.h>
 
 namespace DiscordCoreAPI {

@@ -31,7 +31,7 @@ if (UNIX)
 		file(RENAME "${VCPKG_INSTALLED_DIR}/share/ffmpeg/FindFFMPEG.cmake" "${VCPKG_INSTALLED_DIR}/share/ffmpeg/FFMPEGConfig.cmake")
 	endif()
 	find_package(FFMPEG REQUIRED)
-	add_executable(DiscordCoreAPI-Bot "main.cpp" "${VCPKG_INSTALLED_DIR}/include/cpp-base64/base64.cpp" "../Include/Index" "../Source/ApplicationCommandEntities.cpp" "../Source/AudioDecoder.cpp"
+	add_executable(DiscordCoreAPI-Bot "main.cpp" "${VCPKG_INSTALLED_DIR}/include/cpp-base64/base64.cpp" "../Include/Index.hpp" "../Source/ApplicationCommandEntities.cpp" "../Source/AudioDecoder.cpp"
 		"../Source/AudioEncoder.cpp" "../Source/ChannelEntities.cpp"
 		"../Source/CommandController.cpp" "../Source/DataParsingFunctions.cpp"
 		"../Source/DiscordCoreClient.cpp" "../Source/DiscordCoreClient.cpp"

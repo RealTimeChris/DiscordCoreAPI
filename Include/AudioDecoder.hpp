@@ -28,8 +28,8 @@ extern "C"
 #include <libavformat/avformat.h>
 }
 
-#include <FoundationEntities>
-#include <EventEntities>
+#include <FoundationEntities.hpp>
+#include <EventEntities.hpp>
 #include <iostream>
 
 namespace DiscordCoreAPI {

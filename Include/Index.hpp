@@ -22,4 +22,4 @@
 
 #pragma once
 
-#include <DiscordCoreClient>
+#include <DiscordCoreClient.hpp>

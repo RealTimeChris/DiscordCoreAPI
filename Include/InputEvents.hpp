@@ -22,8 +22,8 @@
 
 #pragma once
 
-#include <FoundationEntities>
-#include <MessageEntities>
+#include <FoundationEntities.hpp>
+#include <MessageEntities.hpp>
 
 namespace DiscordCoreAPI {
 

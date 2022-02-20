@@ -22,9 +22,9 @@
 
 #pragma once
 
-#include <FoundationEntities>
-#include <DataParsingFunctions>
-#include <SSLClients>
+#include <FoundationEntities.hpp>
+#include <DataParsingFunctions.hpp>
+#include <SSLClients.hpp>
 #include <semaphore>
 
 namespace DiscordCoreInternal {

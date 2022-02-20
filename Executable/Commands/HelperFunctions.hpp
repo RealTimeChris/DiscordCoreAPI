@@ -8,7 +8,7 @@
 #ifndef HELPER_FUNCTIONS
 #define HELPER_FUNCTIONS
 
-#include "../Include/Index"
+#include "../Include/Index.hpp"
 
 namespace DiscordCoreAPI {
 
