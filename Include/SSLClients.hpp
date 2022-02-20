@@ -88,8 +88,8 @@ namespace DiscordCoreInternal {
 	protected:
 		std::unique_ptr<int32_t, epollDeleter> thePtr{ new int32_t{-1}, epollDeleter{} };
 	};
-
 #endif
+
 	struct DiscordCoreAPI_Dll BIOWrapper {
 
 		struct DiscordCoreAPI_Dll BIODeleter {
@@ -325,9 +325,9 @@ namespace DiscordCoreInternal {
 
 		std::string& getInputBuffer();
 
-		std::string getData();
-
 		void readData(bool doWeClear);
+
+		std::string getData();
 
 	protected:
 

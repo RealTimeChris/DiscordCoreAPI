@@ -363,14 +363,14 @@ namespace DiscordCoreInternal {
 		this->outputBuffer.insert(this->outputBuffer.end(), data.begin(), data.end());
 	}
 
+	std::string& WebSocketSSLClient::getInputBuffer() {
+		return this->inputBuffer;
+	}
+
 	std::string WebSocketSSLClient::getData() {
 		std::string newVector = this->inputBuffer;
 		this->inputBuffer.clear();
 		return newVector;
-	}
-
-	std::string& WebSocketSSLClient::getInputBuffer() {
-		return this->inputBuffer;
 	}
 
 	bool WebSocketSSLClient::processIO(int32_t waitTimeInMicroSeconds) {
@@ -566,12 +566,6 @@ namespace DiscordCoreInternal {
 		return true;
 	}
 
-	std::string DatagramSocketSSLClient::getData() {
-		std::string newVector = this->inputBuffer;
-		this->inputBuffer.clear();
-		return newVector;
-	}
-
 	std::string& DatagramSocketSSLClient::getInputBuffer() {
 		return this->inputBuffer;
 	}
@@ -588,5 +582,11 @@ namespace DiscordCoreInternal {
 				}
 			}
 		}
+	}
+
+	std::string DatagramSocketSSLClient::getData() {
+		std::string newVector = this->inputBuffer;
+		this->inputBuffer.clear();
+		return newVector;
 	}
 }
