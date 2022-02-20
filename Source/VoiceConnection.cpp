@@ -382,13 +382,6 @@ namespace DiscordCoreAPI {
 		co_return;
 	};
 
-	VoiceConnection::~VoiceConnection() {
-		if (getSongAPIMap()->contains(this->voiceConnectInitData.guildId)) {
-			getSongAPIMap()->at(this->voiceConnectInitData.guildId)->onSongCompletionEvent = std::function<CoRoutine<void>(SongCompletionEventData)>{};
-			if (this->baseSocketAgent->voiceConnectionDataBufferMap.contains(this->voiceConnectInitData.guildId)) {
-				this->baseSocketAgent->voiceConnectionDataBufferMap.erase(this->voiceConnectInitData.guildId);
-			}
-		}
-	}
+	VoiceConnection::~VoiceConnection() {}
 
 }

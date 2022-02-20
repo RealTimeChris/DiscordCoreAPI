@@ -100,7 +100,6 @@ namespace DiscordCoreAPI {
 		this->baseSocketAgent = std::make_unique<DiscordCoreInternal::BaseSocketAgent>(this->botToken, this->getGateWayBot());
 		this->currentUser = std::make_unique<BotUser>(Users::getCurrentUserAsync().get(), this->baseSocketAgent.get());
 		for (auto& value : this->functionsToExecute) {
-			auto thePtr = this;
 			if (value.repeated) {
 				TimeElapsedHandler onSend = [&](void)->void {
 					value.function(this);
@@ -108,7 +107,7 @@ namespace DiscordCoreAPI {
 				this->threadPoolTimers.push_back(ThreadPoolTimer::createPeriodicTimer(onSend, value.intervalInMs));
 			}
 			else {
-				ThreadPoolTimer::executeFunctionAfterTimePeriod(value.function, static_cast<int32_t>(value.intervalInMs), thePtr);
+				ThreadPoolTimer::executeFunctionAfterTimePeriod(value.function, value.intervalInMs, this);
 			}
 		}
 	}
@@ -148,7 +147,6 @@ namespace DiscordCoreAPI {
 		while (!doWeQuit) {
 			try {
 				if (doWeQuit) {
-					std::cout << "THIS IS NOT IT!" << std::endl;
 					return;
 				}
 				std::unique_ptr<DiscordCoreInternal::WebSocketWorkload> workload{ std::make_unique<DiscordCoreInternal::WebSocketWorkload>() };
@@ -783,7 +781,6 @@ namespace DiscordCoreAPI {
 					}
 					}
 					if (doWeQuit) {
-						std::cout << "WERE HERE THIS IS IT!0202" << std::endl;
 						return;
 					}
 				}
@@ -793,14 +790,10 @@ namespace DiscordCoreAPI {
 				reportException("DiscordCoreClient::run()");
 			}
 		}
-		std::cout << "THIS IS NOT IT!" << std::endl;
-		std::cout << "WERE HERE THIS IS IT!0303" << std::endl;
 	}
 
 	DiscordCoreClient::~DiscordCoreClient() {
-		std::cout << "WERE HERE THIS IS IT!050505" << std::endl;
 		if (this != nullptr) {
-			std::cout << "WERE HERE THIS IS IT!040404" << std::endl;
 			curl_global_cleanup();
 		}
 	}
@@ -813,12 +806,10 @@ BOOL WINAPI CtrlHandler(DWORD fdwCtrlType)
 	switch (fdwCtrlType)
 	{
 	case CTRL_C_EVENT: {
-		std::cout << "WERE HERE THIS IS IT!060606" << std::endl;
 		DiscordCoreAPI::doWeQuit = true;
 		return TRUE;
 	}
 	case CTRL_CLOSE_EVENT: {
-		std::cout << "WERE HERE THIS IS IT!070707" << std::endl;
 		DiscordCoreAPI::doWeQuit = true;
 		return TRUE;
 	}

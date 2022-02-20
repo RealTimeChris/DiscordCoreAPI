@@ -35,7 +35,7 @@ namespace DiscordCoreInternal {
 		this->dataOpcode = opCode;
 		this->baseUrl = baseUrl;
 		this->doWeReconnect.set();
-		this->theTask = this->run();
+		this->theTask = std::make_unique<DiscordCoreAPI::CoRoutine<void>>(this->run());
 	}
 
 	BaseSocketAgent::BaseSocketAgent(nullptr_t nullPtr) {};
@@ -162,7 +162,6 @@ namespace DiscordCoreInternal {
 	DiscordCoreAPI::CoRoutine<void> BaseSocketAgent::run() {
 		try {
 			auto cancelHandle = co_await DiscordCoreAPI::NewThreadAwaitable<void>();
-			std::cout << "WERE HERE ISERI3423424234234IT!" << std::endl;
 			this->connect();
 			while (!cancelHandle.promise().isItStopped()) {
 				if (!this->doWeReconnect.wait(0)) {
@@ -175,7 +174,6 @@ namespace DiscordCoreInternal {
 					this->handleBuffer();
 				}
 			}
-			std::cout << "WERE HERE THIS IS IT!023023" << std::endl;
 			co_return;
 		}
 		catch (...) {
@@ -260,7 +258,7 @@ namespace DiscordCoreInternal {
 				this->areWeResuming = true;
 				this->currentReconnectTries += 1;
 				this->areWeConnected.store(false, std::memory_order_seq_cst);
-				this->heartbeatTimer.cancel();
+				this->heartbeatTimer->cancel();
 				this->webSocket.reset(nullptr);
 				this->connect();
 			}
@@ -277,7 +275,7 @@ namespace DiscordCoreInternal {
 					this->sendMessage(identityJson);
 				}
 				else {
-					this->heartbeatTimer.cancel();
+					this->heartbeatTimer->cancel();
 					this->webSocket.reset(nullptr);
 					this->areWeResuming = false;
 					this->areWeAuthenticated = false;
@@ -290,7 +288,7 @@ namespace DiscordCoreInternal {
 				DiscordCoreAPI::TimeElapsedHandler onHeartBeat = [this]() {
 					BaseSocketAgent::sendHeartBeat();
 				};
-				this->heartbeatTimer = DiscordCoreAPI::ThreadPoolTimer::createPeriodicTimer(onHeartBeat, this->heartbeatInterval);
+				this->heartbeatTimer = std::make_unique<DiscordCoreAPI::ThreadPoolTimer>(DiscordCoreAPI::ThreadPoolTimer::createPeriodicTimer(onHeartBeat, this->heartbeatInterval));
 				if (!this->areWeAuthenticated) {
 					nlohmann::json identityJson = JSONIFY(this->botToken, this->intentsValue);
 					this->sendMessage(identityJson);
@@ -670,14 +668,14 @@ namespace DiscordCoreInternal {
 			this->currentReconnectTries += 1;
 			this->webSocket.reset(nullptr);
 			this->areWeAuthenticated = false;
-			if (this->heartbeatTimer.running()) {
-				this->heartbeatTimer.cancel();
+			if (this->heartbeatTimer->running()) {
+				this->heartbeatTimer->cancel();
 			}
 			this->haveWeReceivedHeartbeatAck = true;
 			this->connect();
 		}
 		else if (this->maxReconnectTries <= this->currentReconnectTries) {
-			this->theTask.cancel();
+			this->theTask->cancel();
 		}
 	}
 
@@ -699,9 +697,8 @@ namespace DiscordCoreInternal {
 	}
 
 	BaseSocketAgent::~BaseSocketAgent() {
-		std::cout << "WERE NOT HERE THIS IS NOT IT!0101" << std::endl;
-		this->theTask.cancel();
-		this->heartbeatTimer.cancel();
+		this->theTask->cancel();
+		this->heartbeatTimer->cancel();
 	}
 
 	VoiceSocketAgent::VoiceSocketAgent(VoiceConnectInitData initDataNew, BaseSocketAgent* baseBaseSocketAgentNew) {

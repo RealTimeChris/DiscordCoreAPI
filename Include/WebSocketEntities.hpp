@@ -151,7 +151,8 @@ namespace DiscordCoreInternal {
 		const int32_t intentsValue{ ((1 << 0) + (1 << 1) + (1 << 2) + (1 << 3) + (1 << 4) + (1 << 5) + (1 << 6) + (1 << 7) + (1 << 8) + (1 << 9) + (1 << 10) + (1 << 11) + (1 << 12) + (1 << 13) + (1 << 14)) };
 		std::unordered_map<std::string, DiscordCoreAPI::UnboundedMessageBlock<VoiceConnectionData>*> voiceConnectionDataBufferMap{};
 		DiscordCoreAPI::TSUnboundedMessageBlock<WebSocketWorkload> webSocketWorkloadTarget{};
-		DiscordCoreAPI::ThreadPoolTimer heartbeatTimer{ nullptr };
+		std::unique_ptr<DiscordCoreAPI::ThreadPoolTimer> heartbeatTimer{ nullptr };
+		std::unique_ptr<DiscordCoreAPI::CoRoutine<void>> theTask{ nullptr };
 		std::unique_ptr<WebSocketSSLClient> webSocket{ nullptr };
 		const uint64_t webSocketMaxPayloadLengthLarge{ 65535 };
 		DiscordCoreAPI::EventWaiter areWeReadyToConnectEvent{};
@@ -161,7 +162,6 @@ namespace DiscordCoreInternal {
 		const unsigned char webSocketFinishBit{ (1u << 7u) };
 		const uint8_t maxHeaderSize{ sizeof(uint64_t) + 2 };
 		const unsigned char webSocketMaskBit{ (1u << 7u) };
-		DiscordCoreAPI::CoRoutine<void> theTask{ nullptr };
 		std::string relativePath{ "/?v=9&encoding=etf" };
 		DiscordCoreAPI::EventWaiter doWeReconnect{};
 		VoiceConnectInitData voiceConnectInitData{};

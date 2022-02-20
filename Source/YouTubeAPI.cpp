@@ -626,8 +626,6 @@ namespace DiscordCoreAPI {
 		return this->requestBuilder.collectSearchResults(searchQuery);
 	}
 
-	YouTubeAPI::~YouTubeAPI() {
-		this->cancelCurrentSong();
-	}
+	YouTubeAPI::~YouTubeAPI() {}
 
 };

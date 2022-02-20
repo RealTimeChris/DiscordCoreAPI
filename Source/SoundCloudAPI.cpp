@@ -368,8 +368,6 @@ namespace DiscordCoreAPI {
 		return this->requestBuilder.collectSearchResults(searchQuery);
 	}
 
-	SoundCloudAPI::~SoundCloudAPI() {
-		this->cancelCurrentSong();
-	}
+	SoundCloudAPI::~SoundCloudAPI() {}
 
 };
