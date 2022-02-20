@@ -71,7 +71,7 @@ namespace DiscordCoreAPI {
     }
 
     bool hasTimeElapsed(std::string timeStamp, int64_t days, int64_t hours, int64_t minutes) {
-        int64_t startTimeRaw = convertTimestampToInteger(timeStamp);
+        int64_t startTimeRaw = convertTimestampToMsInteger(timeStamp);
         auto currentTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
         int64_t secondsPerMinute = 60;
         int64_t secondsPerHour = secondsPerMinute * 60;
@@ -165,13 +165,9 @@ namespace DiscordCoreAPI {
         return newString;
     }
 
-    int64_t convertTimestampToInteger(std::string timeStamp) {
-        int32_t hours = stoi(timeStamp.substr(11, 12));
-        if (hours < 0) {
-            hours = 24 + hours;
-        }
+    int64_t convertTimestampToMsInteger(std::string timeStamp) {
         Time timeValue = Time(stoi(timeStamp.substr(0, 4)), stoi(timeStamp.substr(5, 6)), stoi(timeStamp.substr(8, 9)),
-            hours, stoi(timeStamp.substr(14, 15)), stoi(timeStamp.substr(17, 18)));
+            stoi(timeStamp.substr(11, 12)), stoi(timeStamp.substr(14, 15)), stoi(timeStamp.substr(17, 18)));
         return timeValue.getTime() * 1000;
     }
 
