@@ -59,7 +59,7 @@ namespace DiscordCoreInternal {
 	void BaseSocketAgent::sendMessage(nlohmann::json& dataToSend) {
 		try {
 			std::lock_guard<std::recursive_mutex> accessLock{ this->accessorMutex01 };
-			DiscordCoreAPI::StopWatch<std::chrono::milliseconds> stopWatch{ std::chrono::milliseconds{3500} };
+			DiscordCoreAPI::StopWatch stopWatch{ std::chrono::milliseconds{5500} };
 			while (!this->areWeConnected.load(std::memory_order_seq_cst) && !(dataToSend.contains("op") && (dataToSend.at("op") == 2 || dataToSend.at("op") == 6))) {
 				if (stopWatch.hasTimePassed()) {
 					return;
