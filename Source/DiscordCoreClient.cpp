@@ -37,6 +37,8 @@
 
 namespace DiscordCoreAPI {
 
+	bool doWeQuit{ false };
+
 	std::unordered_map<std::string, TSUnboundedMessageBlock<AudioFrameData>*>* getAudioBufferMap() {
 		return &Statics::audioBufferMap;
 	}
@@ -58,29 +60,47 @@ namespace DiscordCoreAPI {
 	}
 
 	DiscordCoreClient::DiscordCoreClient(std::string botTokenNew, std::string commandPrefixNew, std::vector<RepeatedFunctionData> functionsToExecuteNew,  CacheOptions cacheOptionsNew) {
+#ifdef _WIN32
+		SetConsoleCtrlHandler(CtrlHandler, true);
+#endif
 		this->functionsToExecute = functionsToExecuteNew;
 		this->commandPrefix = commandPrefixNew;
 		this->botToken = botTokenNew;
-		this->thisPointer = std::make_unique<DiscordCoreClient>(nullptr);
-		this->thisPointer.reset(this);
-		this->thisPointer->cacheOptions = cacheOptionsNew;
-		this->thisPointer->eventManager = std::make_unique<EventManager>();
-		this->thisPointer->eventManager->onChannelCreation(&EventHandler::onChannelCreation);
-		this->thisPointer->eventManager->onChannelUpdate(&EventHandler::onChannelUpdate);
-		this->thisPointer->eventManager->onChannelDeletion(&EventHandler::onChannelDeletion);
-		this->thisPointer->eventManager->onGuildCreation(&EventHandler::onGuildCreation);
-		this->thisPointer->eventManager->onGuildUpdate(&EventHandler::onGuildUpdate);
-		this->thisPointer->eventManager->onGuildDeletion(&EventHandler::onGuildDeletion);
-		this->thisPointer->eventManager->onGuildMemberAdd(&EventHandler::onGuildMemberAdd);
-		this->thisPointer->eventManager->onGuildMemberRemove(&EventHandler::onGuildMemberRemove);
-		this->thisPointer->eventManager->onGuildMemberUpdate(&EventHandler::onGuildMemberUpdate);
-		this->thisPointer->eventManager->onRoleCreation(&EventHandler::onRoleCreation);
-		this->thisPointer->eventManager->onRoleUpdate(&EventHandler::onRoleUpdate);
-		this->thisPointer->eventManager->onRoleDeletion(&EventHandler::onRoleDeletion);
-		this->thisPointer->eventManager->onVoiceStateUpdate(&EventHandler::onVoiceStateUpdate);
-		this->thisPointer->initialize();
+		this->cacheOptions = cacheOptionsNew;
+		this->eventManager = std::make_unique<EventManager>();
+		this->eventManager->onChannelCreation(&EventHandler::onChannelCreation);
+		this->eventManager->onChannelUpdate(&EventHandler::onChannelUpdate);
+		this->eventManager->onChannelDeletion(&EventHandler::onChannelDeletion);
+		this->eventManager->onGuildCreation(&EventHandler::onGuildCreation);
+		this->eventManager->onGuildUpdate(&EventHandler::onGuildUpdate);
+		this->eventManager->onGuildDeletion(&EventHandler::onGuildDeletion);
+		this->eventManager->onGuildMemberAdd(&EventHandler::onGuildMemberAdd);
+		this->eventManager->onGuildMemberRemove(&EventHandler::onGuildMemberRemove);
+		this->eventManager->onGuildMemberUpdate(&EventHandler::onGuildMemberUpdate);
+		this->eventManager->onRoleCreation(&EventHandler::onRoleCreation);
+		this->eventManager->onRoleUpdate(&EventHandler::onRoleUpdate);
+		this->eventManager->onRoleDeletion(&EventHandler::onRoleDeletion);
+		this->eventManager->onVoiceStateUpdate(&EventHandler::onVoiceStateUpdate);
+		this->httpClient = std::make_unique<DiscordCoreInternal::HttpClient>(this->botToken);
+		ApplicationCommands::initialize(this->httpClient.get());
+		Channels::initialize(this->httpClient.get());
+		Guilds::initialize(this->httpClient.get(), this);
+		GuildMembers::initialize(this->httpClient.get());
+		GuildScheduledEvents::initialize(this->httpClient.get());
+		Interactions::initialize(this->httpClient.get());
+		Messages::initialize(this->httpClient.get());
+		Reactions::initialize(this->httpClient.get());
+		Roles::initialize(this->httpClient.get());
+		StageInstances::initialize(this->httpClient.get());
+		Stickers::initialize(this->httpClient.get());
+		Threads::initialize(this->httpClient.get());
+		Users::initialize(this->httpClient.get());
+		WebHooks::initialize(this->httpClient.get());
+		this->commandController = CommandController(this->commandPrefix, this);
+		this->baseSocketAgent = std::make_unique<DiscordCoreInternal::BaseSocketAgent>(this->botToken, this->getGateWayBot());
+		this->currentUser = std::make_unique<BotUser>(Users::getCurrentUserAsync().get(), this->baseSocketAgent.get());
 		for (auto& value : this->functionsToExecute) {
-			auto thePtr = this->thisPointer.get();
+			auto thePtr = this;
 			if (value.repeated) {
 				TimeElapsedHandler onSend = [&](void)->void {
 					value.function(this);
@@ -104,7 +124,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void DiscordCoreClient::runBot() {
-		this->thisPointer->run();
+		this->run();
 	}
 
 	std::string DiscordCoreClient::getGateWayBot() {
@@ -124,40 +144,15 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	void DiscordCoreClient::initialize() {
-		try {
-			this->httpClient = std::make_unique<DiscordCoreInternal::HttpClient>(this->botToken);
-			ApplicationCommands::initialize(this->httpClient.get());
-			Channels::initialize(this->httpClient.get());
-			Guilds::initialize(this->httpClient.get(), this->thisPointer.get());
-			GuildMembers::initialize(this->httpClient.get());
-			GuildScheduledEvents::initialize(this->httpClient.get());
-			Interactions::initialize(this->httpClient.get());
-			Messages::initialize(this->httpClient.get());
-			Reactions::initialize(this->httpClient.get());
-			Roles::initialize(this->httpClient.get());
-			StageInstances::initialize(this->httpClient.get());
-			Stickers::initialize(this->httpClient.get());
-			Threads::initialize(this->httpClient.get());
-			Users::initialize(this->httpClient.get());
-			WebHooks::initialize(this->httpClient.get());
-			this->commandController = CommandController(this->commandPrefix, this->thisPointer.get());
-			this->baseSocketAgent = std::make_unique<DiscordCoreInternal::BaseSocketAgent>(this->botToken, this->getGateWayBot());
-			this->currentUser = std::make_unique<BotUser>(Users::getCurrentUserAsync().get(), this->baseSocketAgent.get());
-		}
-		catch (...) {
-			reportException("DiscordCoreClient::initialize()");
-		}
-	}
-
 	void DiscordCoreClient::run() {
-		while (!this->doWeQuit) {
+		while (!doWeQuit) {
 			try {
-				if (this->doWeQuit) {
+				if (doWeQuit) {
+					std::cout << "THIS IS NOT IT!" << std::endl;
 					return;
 				}
 				std::unique_ptr<DiscordCoreInternal::WebSocketWorkload> workload{ std::make_unique<DiscordCoreInternal::WebSocketWorkload>() };
-				while (!this->baseSocketAgent->getWorkloadTarget().tryReceive(*workload) && !this->doWeQuit) { 
+				while (!this->baseSocketAgent->getWorkloadTarget().tryReceive(*workload) && !doWeQuit) {
 					std::this_thread::sleep_for(std::chrono::milliseconds{ 1 });
 				};
 				if (workload->eventType != DiscordCoreInternal::WebSocketEventType::Unset) {
@@ -262,7 +257,7 @@ namespace DiscordCoreAPI {
 						GuildData guildDataNew{};
 						std::unique_ptr<OnGuildCreationData> dataPackage{ std::make_unique<OnGuildCreationData>() };
 						DiscordCoreInternal::DataParser::parseObject(workload->payLoad, guildDataNew);
-						Guild guildNew{ guildDataNew, this->thisPointer.get() };
+						Guild guildNew{ guildDataNew, this };
 						dataPackage->guild = guildNew;
 						this->eventManager->onGuildCreationEvent(std::move(*dataPackage));
 						break;
@@ -343,7 +338,7 @@ namespace DiscordCoreAPI {
 						if (workload->payLoad.contains("guild_id")) {
 							dataPackage->guildMember.guildId = workload->payLoad.at("guild_id");
 						}
-						dataPackage->discordCoreClient = this->thisPointer.get();
+						dataPackage->discordCoreClient = this;
 						this->eventManager->onGuildMemberAddEvent(std::move(*dataPackage));
 						break;
 					}
@@ -787,21 +782,61 @@ namespace DiscordCoreAPI {
 						break;
 					}
 					}
-					if (this->doWeQuit) {
+					if (doWeQuit) {
+						std::cout << "WERE HERE THIS IS IT!0202" << std::endl;
 						return;
 					}
 				}
+				
 			}
 			catch (...) {
 				reportException("DiscordCoreClient::run()");
 			}
 		}
+		std::cout << "THIS IS NOT IT!" << std::endl;
+		std::cout << "WERE HERE THIS IS IT!0303" << std::endl;
 	}
 
 	DiscordCoreClient::~DiscordCoreClient() {
+		std::cout << "WERE HERE THIS IS IT!050505" << std::endl;
 		if (this != nullptr) {
-			this->doWeQuit = true;
+			std::cout << "WERE HERE THIS IS IT!040404" << std::endl;
 			curl_global_cleanup();
 		}
 	}
+
 }
+
+#ifdef _WIN32
+BOOL WINAPI CtrlHandler(DWORD fdwCtrlType)
+{
+	switch (fdwCtrlType)
+	{
+	case CTRL_C_EVENT: {
+		std::cout << "WERE HERE THIS IS IT!060606" << std::endl;
+		DiscordCoreAPI::doWeQuit = true;
+		return TRUE;
+	}
+	case CTRL_CLOSE_EVENT: {
+		std::cout << "WERE HERE THIS IS IT!070707" << std::endl;
+		DiscordCoreAPI::doWeQuit = true;
+		return TRUE;
+	}
+	case CTRL_BREAK_EVENT: {
+		DiscordCoreAPI::doWeQuit = true;
+		return FALSE;
+	}
+	case CTRL_LOGOFF_EVENT: {
+		DiscordCoreAPI::doWeQuit = true;
+		return FALSE;
+	}
+	case CTRL_SHUTDOWN_EVENT: {
+		DiscordCoreAPI::doWeQuit = true;
+		return FALSE;
+	}
+	default: {
+		return FALSE;
+	}		
+	}
+}
+#endif

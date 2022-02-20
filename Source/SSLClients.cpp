@@ -46,7 +46,7 @@ namespace DiscordCoreInternal {
 
 	HttpSSLClient::HttpSSLClient(nullptr_t) {};
 
-	HttpSSLClient::HttpSSLClient(std::string* theInputBuffer) {
+	HttpSSLClient::HttpSSLClient() {
 #ifdef _WIN32
 		this->soundcloudCertPath = "C:/SSL/Certs/SoundCloudCert.pem";
 		this->defaultCertPath = "C:/SSL/Certs/DiscordCert.pem";
@@ -359,14 +359,17 @@ namespace DiscordCoreInternal {
 
 	WebSocketSSLClient::WebSocketSSLClient(nullptr_t other) {};
 
+	void WebSocketSSLClient::writeData(std::string& data) {
+		this->outputBuffer.insert(this->outputBuffer.end(), data.begin(), data.end());
+	}
+
 	std::string WebSocketSSLClient::getData() {
-		std::string newVector{};
-		newVector.insert(newVector.begin(), this->inputBuffer.begin(), this->inputBuffer.end());
+		std::string newVector = this->inputBuffer;
 		this->inputBuffer.clear();
 		return newVector;
 	}
 
-	std::vector<uint8_t>& WebSocketSSLClient::getInputBuffer() {
+	std::string& WebSocketSSLClient::getInputBuffer() {
 		return this->inputBuffer;
 	}
 
@@ -552,7 +555,7 @@ namespace DiscordCoreInternal {
 
 	DatagramSocketSSLClient::DatagramSocketSSLClient(nullptr_t) {};
 
-	bool DatagramSocketSSLClient::writeData(std::vector<uint8_t>& data) {
+	bool DatagramSocketSSLClient::writeData(std::string& data) {
 		size_t writtenBytes{ 0 };
 
 		if (!BIO_write_ex(this->datagramBio, data.data(), data.size(), &writtenBytes)) {
@@ -563,14 +566,13 @@ namespace DiscordCoreInternal {
 		return true;
 	}
 
-	std::vector<uint8_t> DatagramSocketSSLClient::getData() {
-		std::vector<uint8_t> newVector{};
-		newVector.insert(newVector.begin(), this->inputBuffer.begin(), this->inputBuffer.end());
+	std::string DatagramSocketSSLClient::getData() {
+		std::string newVector = this->inputBuffer;
 		this->inputBuffer.clear();
 		return newVector;
 	}
 
-	std::vector<uint8_t>& DatagramSocketSSLClient::getInputBuffer() {
+	std::string& DatagramSocketSSLClient::getInputBuffer() {
 		return this->inputBuffer;
 	}
 

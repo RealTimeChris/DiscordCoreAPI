@@ -53,6 +53,7 @@
 #include <curl/curl.h>
 #include <functional>
 #include <concepts>
+#include <iostream>
 #include <thread>
 #include <memory>
 #include <string>
@@ -503,9 +504,8 @@ namespace DiscordCoreAPI {
 
     protected:
 
-        std::mutex accessMutex{ std::mutex() };
         std::queue<ObjectType> theArray{};
-
+        std::mutex accessMutex{};
     };
 
     class DiscordCoreAPI_Dll Time {

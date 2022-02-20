@@ -34,7 +34,7 @@ namespace DiscordCoreAPI {
 		}
 	};
 
-	std::vector<uint8_t> AudioEncrypter::encryptSingleAudioFrame(EncodedFrameData bufferToSend, int32_t audioSSRC, std::string keys) {
+	std::string AudioEncrypter::encryptSingleAudioFrame(EncodedFrameData bufferToSend, int32_t audioSSRC, std::string keys) {
 		if (keys.size() > 0) {
 			const int32_t nonceSize{ crypto_secretbox_NONCEBYTES };
 			const int32_t headerSize{ 12 };
@@ -78,9 +78,11 @@ namespace DiscordCoreAPI {
 			this->sequenceIndex += 1;
 			this->timeStamp += static_cast<int32_t>(bufferToSend.sampleCount);
 			audioDataPacket.shrink_to_fit();
-			return audioDataPacket;
+			std::string audioDataPacketNew{};
+			audioDataPacketNew.insert(audioDataPacketNew.begin(), audioDataPacket.begin(), audioDataPacket.end());
+			return audioDataPacketNew;
 		}
-		return std::vector<uint8_t>{};
+		return std::string{};
 	}
 
 	VoiceConnection::VoiceConnection(DiscordCoreInternal::BaseSocketAgent* BaseSocketAgentNew) {
@@ -219,7 +221,7 @@ namespace DiscordCoreAPI {
 		while (this->audioBuffer.tryReceive(frameData)) {};
 	}
 
-	void VoiceConnection::sendSingleAudioFrame(std::vector<uint8_t>& audioDataPacketNew) {
+	void VoiceConnection::sendSingleAudioFrame(std::string& audioDataPacketNew) {
 		if (this->voiceSocketAgent != nullptr) {
 			if (this->voiceSocketAgent->voiceSocket != nullptr) {
 				this->voiceSocketAgent->sendVoiceData(audioDataPacketNew);
@@ -323,7 +325,7 @@ namespace DiscordCoreAPI {
 						co_return;
 					}
 					if (this->audioData.type != AudioFrameType::Unset && this->audioData.type != AudioFrameType::Skip && !this->areWeStopping) {
-						std::vector<uint8_t> newFrame{};
+						std::string newFrame{};
 						if (this->audioData.type == AudioFrameType::RawPCM) {
 							auto encodedFrameData = this->encoder->encodeSingleAudioFrame(this->audioData.rawFrameData);
 							newFrame = this->audioEncrypter.encryptSingleAudioFrame(encodedFrameData, this->voiceConnectionData->audioSSRC, this->voiceConnectionData->secretKey);

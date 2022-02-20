@@ -565,11 +565,7 @@ namespace DiscordCoreAPI {
 								haveWeFailed = true;
 								goto breakOutPlayMore;
 							};
-							auto streamBuffer = streamSocket.getData();
-							std::string newVector{};
-							for (uint32_t x = 0; x < streamBuffer.size(); x += 1) {
-								newVector.push_back(streamBuffer.data()[x]);
-							}
+							std::string newVector = streamSocket.getData();
 							if (newVector.size() == 0) {
 								counter += 1;
 								continue;

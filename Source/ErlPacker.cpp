@@ -31,7 +31,7 @@ namespace DiscordCoreInternal {
 	ErlPackBuffer& ErlPackBuffer::operator=(ErlPackBuffer&& other) noexcept {
 		if (this != &other) {
 			this->buffer = std::move(other.buffer);
-			other.buffer = std::vector<uint8_t>{};
+			other.buffer = std::string{};
 			this->offSet = other.offSet;
 			other.offSet = 0;
 		}
@@ -42,7 +42,7 @@ namespace DiscordCoreInternal {
 		*this = std::move(other);
 	}
 
-	std::vector<uint8_t> ErlPacker::parseJsonToEtf(nlohmann::json& dataToParse) {
+	std::string ErlPacker::parseJsonToEtf(nlohmann::json& dataToParse) {
 		try {
 			ErlPackBuffer buffer{};
 			ErlPacker::appendVersion(buffer);
@@ -52,7 +52,7 @@ namespace DiscordCoreInternal {
 		catch (...) {
 			DiscordCoreAPI::reportException("ErlPacker::parseJsonToEtf()");
 		}
-		return std::vector<uint8_t>();
+		return std::string{};
 	}
 
 	nlohmann::json ErlPacker::parseEtfToJson(std::string* dataToParse) {

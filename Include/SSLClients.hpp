@@ -256,9 +256,9 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll HttpSSLClient {
 	public:
 
-		HttpSSLClient(std::string* theVector);
-
 		HttpSSLClient(nullptr_t);
+
+		HttpSSLClient();
 
 		bool connect(std::string baseUrl, std::string portNew = "443");
 
@@ -285,15 +285,6 @@ namespace DiscordCoreInternal {
 		bool wantRead{ false };
 	};
 
-	template <typename ObjectType>
-	concept StringOrVector = requires(ObjectType v)
-	{
-		{v.data() }->std::convertible_to<char*>;
-	} || requires(ObjectType v)
-	{
-		{v.data()}->std::convertible_to<uint8_t*>;
-	};
-
 	class DiscordCoreAPI_Dll WebSocketSSLClient {
 	public:
 
@@ -301,12 +292,9 @@ namespace DiscordCoreInternal {
 
 		WebSocketSSLClient(nullptr_t);
 
-		template<StringOrVector TypeName>
-		void writeData(TypeName& data) {
-			this->outputBuffer.insert(this->outputBuffer.end(), data.begin(), data.end());
-		}
+		void writeData(std::string& data);
 
-		std::vector<uint8_t>& getInputBuffer();
+		std::string& getInputBuffer();
 
 		int64_t getBytesRead();
 
@@ -317,11 +305,11 @@ namespace DiscordCoreInternal {
 	protected:
 
 		const int32_t maxBufferSize{ 1024 * 16 };
-		std::vector<uint8_t> outputBuffer{};
 		SOCKETWrapper theSocket{ nullptr };
-		std::vector<uint8_t> inputBuffer{};
 		SSL_CTXWrapper context{ nullptr };
+		std::string outputBuffer{};
 		SSLWrapper ssl{ nullptr };
+		std::string inputBuffer{};
 		bool wantRead{ false };
 		int64_t bytesRead{ 0 };
 	};
@@ -333,11 +321,11 @@ namespace DiscordCoreInternal {
 
 		DatagramSocketSSLClient(nullptr_t);
 
-		bool writeData(std::vector<uint8_t>& dataToWrite);
+		bool writeData(std::string& dataToWrite);
 
-		std::vector<uint8_t>& getInputBuffer();
+		std::string& getInputBuffer();
 
-		std::vector<uint8_t> getData();
+		std::string getData();
 
 		void readData(bool doWeClear);
 
@@ -345,7 +333,7 @@ namespace DiscordCoreInternal {
 
 		const int32_t maxBufferSize{ 1024 * 16 };
 		SOCKETWrapper theSocket{ nullptr };
-		std::vector<uint8_t> inputBuffer{};
 		BIOWrapper datagramBio{ nullptr };
+		std::string inputBuffer{};
 	};
 }

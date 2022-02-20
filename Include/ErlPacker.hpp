@@ -65,7 +65,7 @@ namespace DiscordCoreInternal {
 	struct DiscordCoreAPI_Dll ErlPackBuffer {
 	public:
 
-		std::vector<uint8_t> buffer{};
+		std::string buffer{};
 
 		uint32_t offSet{};
 
@@ -89,7 +89,7 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll ErlPacker {
 	public:
 
-		std::vector<uint8_t> parseJsonToEtf(nlohmann::json&);
+		std::string parseJsonToEtf(nlohmann::json&);
 
 		nlohmann::json parseEtfToJson(std::string*);
 

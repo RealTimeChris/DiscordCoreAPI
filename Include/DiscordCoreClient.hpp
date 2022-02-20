@@ -50,6 +50,10 @@
 #include <WebHookEntities.hpp>
 #include <SongAPI.hpp>
 
+#ifdef _WIN32
+BOOL WINAPI CtrlHandler(DWORD fdwCtrlType);
+#endif
+
 namespace DiscordCoreAPI {
 
 	namespace Statics {
@@ -81,7 +85,6 @@ namespace DiscordCoreAPI {
 
 		friend Guild;
 
-		std::unique_ptr<DiscordCoreClient> thisPointer{ nullptr };
 		std::unique_ptr<EventManager> eventManager{ nullptr };
 		CommandController commandController{ "" , nullptr };
 		std::string commandPrefix{};
@@ -108,11 +111,8 @@ namespace DiscordCoreAPI {
 		std::unique_ptr<BotUser> currentUser{ nullptr };
 		CacheOptions cacheOptions{};
 		std::string botToken{ "" };
-		bool doWeQuit{ false };
 
 		std::string getGateWayBot();
-
-		void initialize();
 
 		void run();
 	};

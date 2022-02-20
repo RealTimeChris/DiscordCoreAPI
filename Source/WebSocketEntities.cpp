@@ -66,12 +66,12 @@ namespace DiscordCoreInternal {
 				}
 			}
 			std::cout << "Sending WebSocket Message: " << dataToSend.dump() << std::endl << std::endl;
-			std::vector<uint8_t> theVector = this->erlPacker.parseJsonToEtf(dataToSend);
+			std::string theVector = this->erlPacker.parseJsonToEtf(dataToSend);
 			std::string out{};
 			out.resize(this->maxHeaderSize);
 			size_t size = this->createHeader(out.data(), theVector.size(), this->dataOpcode);
 			std::string header(out.data(), size);
-			std::vector<uint8_t> theVectorNew{};
+			std::string theVectorNew{};
 			theVectorNew.insert(theVectorNew.begin(), header.begin(), header.end());
 			theVectorNew.insert(theVectorNew.begin() + header.size(), theVector.begin(), theVector.end());
 			this->webSocket->writeData(theVectorNew);
@@ -162,6 +162,7 @@ namespace DiscordCoreInternal {
 	DiscordCoreAPI::CoRoutine<void> BaseSocketAgent::run() {
 		try {
 			auto cancelHandle = co_await DiscordCoreAPI::NewThreadAwaitable<void>();
+			std::cout << "WERE HERE ISERI3423424234234IT!" << std::endl;
 			this->connect();
 			while (!cancelHandle.promise().isItStopped()) {
 				if (!this->doWeReconnect.wait(0)) {
@@ -174,6 +175,7 @@ namespace DiscordCoreInternal {
 					this->handleBuffer();
 				}
 			}
+			std::cout << "WERE HERE THIS IS IT!023023" << std::endl;
 			co_return;
 		}
 		catch (...) {
@@ -581,7 +583,7 @@ namespace DiscordCoreInternal {
 
 	bool BaseSocketAgent::parseHeader() {
 		try {
-			std::vector<uint8_t> newVector = this->webSocket->getInputBuffer();
+			std::string newVector = this->webSocket->getInputBuffer();
 			if (this->webSocket->getInputBuffer().size() < 4) {
 				return false;
 			}
@@ -624,11 +626,8 @@ namespace DiscordCoreInternal {
 						return false;
 					}
 					else {
-						std::vector<uint8_t> newerVector{};
-						newerVector.reserve(length02);
-						for (uint32_t x = payloadStartOffset; x < payloadStartOffset + length02; x += 1) {
-							newerVector.push_back(this->webSocket->getInputBuffer()[x]);
-						}
+						std::string newerVector{};
+						newerVector.insert(newerVector.begin(), this->webSocket->getInputBuffer().begin() + payloadStartOffset, this->webSocket->getInputBuffer().begin() + payloadStartOffset + length02);
 						this->webSocket->getInputBuffer() = std::move(newerVector);
 						this->onMessageReceived();
 						this->webSocket->getInputBuffer().insert(this->webSocket->getInputBuffer().begin(), newVector.begin() + payloadStartOffset + length02, newVector.end());
@@ -700,6 +699,7 @@ namespace DiscordCoreInternal {
 	}
 
 	BaseSocketAgent::~BaseSocketAgent() {
+		std::cout << "WERE NOT HERE THIS IS NOT IT!0101" << std::endl;
 		this->theTask.cancel();
 		this->heartbeatTimer.cancel();
 	}
@@ -715,7 +715,7 @@ namespace DiscordCoreInternal {
 		this->theTask = std::make_unique<DiscordCoreAPI::CoRoutine<void>>(this->run());
 	}
 
-	void VoiceSocketAgent::sendVoiceData(std::vector<uint8_t>& responseData) {
+	void VoiceSocketAgent::sendVoiceData(std::string& responseData) {
 		try {
 			if (responseData.size() == 0) {
 				std::cout << "Please specify voice data to send" << std::endl << std::endl;
@@ -740,7 +740,7 @@ namespace DiscordCoreInternal {
 			out.resize(this->maxHeaderSize);
 			size_t size = this->createHeader(out.data(), dataToSend.size(), this->dataOpcode);
 			std::string header(out.data(), size);
-			std::vector<uint8_t> theVectorNew{};
+			std::string theVectorNew{};
 			theVectorNew.insert(theVectorNew.begin(), header.begin(), header.end());
 			theVectorNew.insert(theVectorNew.begin() + header.size(), dataToSend.begin(), dataToSend.end());
 			this->webSocket->writeData(theVectorNew);
@@ -901,7 +901,7 @@ namespace DiscordCoreInternal {
 
 	void VoiceSocketAgent::collectExternalIP() {
 		try {
-			std::vector<uint8_t> packet{};
+			std::string packet{};
 			packet.resize(74);
 			uint16_t val1601{ 0x01 };
 			uint16_t val1602{ 70 };
@@ -999,7 +999,7 @@ namespace DiscordCoreInternal {
 
 	bool VoiceSocketAgent::parseHeader() {
 		try {
-			std::vector<uint8_t> newVector = this->webSocket->getInputBuffer();
+			std::string newVector = this->webSocket->getInputBuffer();
 			if (this->webSocket->getInputBuffer().size() < 4) {
 				return false;
 			}
@@ -1042,11 +1042,8 @@ namespace DiscordCoreInternal {
 						return false;
 					}
 					else {
-						std::vector<uint8_t> newerVector{};
-						newerVector.reserve(length02);
-						for (uint32_t x = payloadStartOffset; x < payloadStartOffset + length02; x += 1) {
-							newerVector.push_back(this->webSocket->getInputBuffer()[x]);
-						}
+						std::string newerVector{};
+						newerVector.insert(newerVector.begin(), this->webSocket->getInputBuffer().begin() + payloadStartOffset, this->webSocket->getInputBuffer().begin() + payloadStartOffset + length02);
 						this->webSocket->getInputBuffer() = std::move(newerVector);
 						this->onMessageReceived();
 						this->webSocket->getInputBuffer().insert(this->webSocket->getInputBuffer().begin(), newVector.begin() + payloadStartOffset + length02, newVector.end());

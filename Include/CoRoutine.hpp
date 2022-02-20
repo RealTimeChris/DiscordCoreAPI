@@ -327,13 +327,14 @@ namespace DiscordCoreAPI {
          /// Cancels the CoRoutine, and returns the currently held value of the result. \brief Cancels the CoRoutine, and returns the currently held value of the result.
         void cancel() {
             if (this != nullptr && this->coroutineHandle) {
+                std::cout << "WERE HERE THIS IS IT!0101" << std::endl;
                 if (this->coroutineHandle.promise().newThread.joinable()) {
                     this->coroutineHandle.promise().requestStop();
                     {
                         std::lock_guard<std::mutex> accessLock{ this->coroutineHandle.promise().lockMutex };
                         this->coroutineHandle.promise().condVar.notify_all();
                     }
-                    this->coroutineHandle.promise().newThread.join();
+                    //this->coroutineHandle.promise().newThread.join();
                 }
                 std::exception_ptr exceptionPtr{};
                 while (this->coroutineHandle.promise().exceptionBuffer.tryReceive(exceptionPtr)) {
