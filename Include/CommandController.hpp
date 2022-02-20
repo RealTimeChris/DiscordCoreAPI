@@ -41,8 +41,6 @@ namespace DiscordCoreAPI {
 
 		CoRoutine<void> checkForAndRunCommand(std::unique_ptr<CommandData> commandData);
 
-		~CommandController();
-
 	protected:
 
 		DiscordCoreClient* discordCoreClient{ nullptr };

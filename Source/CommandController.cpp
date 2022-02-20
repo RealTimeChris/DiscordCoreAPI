@@ -221,19 +221,4 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	CommandController::~CommandController() {
-		
-		std::vector<std::vector<std::string>> functionKeys{};
-		for (auto& [key, value] : this->functions) {
-			std::vector<std::string> newVector{};
-			for (auto& value : key) {
-				newVector.push_back(value);
-			}
-			functionKeys.push_back(newVector);
-		}
-		for (auto& value : functionKeys) {
-			this->functions.erase(value);
-		}
-		
-	}
 }
