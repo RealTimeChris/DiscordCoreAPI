@@ -30,7 +30,7 @@ namespace DiscordCoreAPI {
 			return  std::make_unique<Test>();
 		}
 
-		virtual void execute( std::unique_ptr<BaseFunctionArguments> args) {
+		virtual void execute(std::unique_ptr<BaseFunctionArguments> args) {
 			try {
 
 				RespondToInputEventData dataPackage{ args->eventData };

@@ -123,7 +123,7 @@ namespace DiscordCoreAPI {
                     &AudioDecoder::FileStreamRead,
                     0,
                     0
-                );
+               );
 
                 if (this->ioContext == nullptr) {
                     this->haveWeFailedBool.store(true, std::memory_order_seq_cst);
