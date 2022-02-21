@@ -326,5 +326,10 @@ namespace DiscordCoreAPI {
 		return false;		
 	}
 
+	SongAPI::~SongAPI() {
+		this->theTask->cancel();
+		this->theTask.reset(nullptr);
+	}
+
 	std::mutex SongAPI::accessMutex{};
 };

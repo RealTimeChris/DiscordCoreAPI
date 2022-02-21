@@ -140,6 +140,8 @@ namespace DiscordCoreAPI {
 		/// \param guildId The id for which Guild to set the current Song of.
 		static void setCurrentSong(Song song, std::string guildId);
 
+		~SongAPI();
+
 	protected:
 
 		static std::mutex accessMutex;
