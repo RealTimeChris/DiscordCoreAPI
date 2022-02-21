@@ -42,7 +42,7 @@ namespace DiscordCoreAPI {
       
 			Role role = Roles::getCachedRoleAsync(dataPackage).get();
 
-			return;
+			
 
 		}
 	};

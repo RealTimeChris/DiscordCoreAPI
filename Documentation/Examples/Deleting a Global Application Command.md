@@ -37,7 +37,7 @@ namespace DiscordCoreAPI {
 			dataPackage.name = "testcommandname";
 			ApplicationCommands::deleteGlobalApplicationCommand(dataPackage);
 
-			return;
+			
 		}
 	};
 }

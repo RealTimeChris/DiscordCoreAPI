@@ -42,7 +42,7 @@ namespace DiscordCoreAPI {
 
 				Users::removeRecipientFromGroupDMAsync(dataPackage).get();
 
-				return;
+				
 			}
 			catch (...) {
 				rethrowException("Test::executeAsync Error: ");

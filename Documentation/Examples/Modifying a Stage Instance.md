@@ -44,7 +44,7 @@ namespace DiscordCoreAPI {
 
 				cout << "THE TOPIC: " << responseData.topic << endl;
 
-				return;
+				
 			}
 			catch (...) {
 				rethrowException("Test::executeAsync Error: ");

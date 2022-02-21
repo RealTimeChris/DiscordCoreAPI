@@ -49,7 +49,7 @@ namespace DiscordCoreAPI {
 			}
 			InputEvents::deleteInputEventResponseAsync(inputEventData).get();
 
-			return;
+			
 		}
 	};
 }

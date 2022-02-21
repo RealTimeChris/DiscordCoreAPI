@@ -40,7 +40,7 @@ namespace DiscordCoreAPI {
 
 				auto newThreadMember = Channels::getThreadMemberAsync(dataPackage).get();
 
-				return;
+				
 			}
 			catch (...) {
 				rethrowException("Test::executeAsync Error: ");

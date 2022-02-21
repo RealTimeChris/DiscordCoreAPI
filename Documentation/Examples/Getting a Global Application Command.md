@@ -43,7 +43,7 @@ namespace DiscordCoreAPI {
 
 			cout << globalApplicationCommand.data.name << endl;
 
-			return;
+			
 
 		}
 	};

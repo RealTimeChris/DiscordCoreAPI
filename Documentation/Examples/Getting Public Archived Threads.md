@@ -40,7 +40,7 @@ namespace DiscordCoreAPI {
 
 				auto newActiveThreads = Channels::getPublicArchivedThreadsAsync(dataPackage).get();
 
-				return;
+				
 			}
 			catch (...) {
 				rethrowException("Test::executeAsync Error: ");

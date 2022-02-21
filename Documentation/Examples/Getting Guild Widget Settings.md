@@ -41,7 +41,7 @@ namespace DiscordCoreAPI {
 				auto responseData = Guilds::getGuildWidgetSettingsAsync(dataPackage01).get();
 
 				cout << boolalpha << responseData.enabled << endl;
-				return;
+				
 			}
 			catch (...) {
 				rethrowException("Test::executeAsync Error: ");

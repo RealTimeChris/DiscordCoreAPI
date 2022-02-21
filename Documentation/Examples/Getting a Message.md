@@ -41,7 +41,7 @@ namespace DiscordCoreAPI {
 
 				Message responseMessages = Messages::getMessageAsync(dataPackage).get();
 
-				return;
+				
 			}
 			catch (...) {
 				rethrowException("Test::executeAsync Error: ");

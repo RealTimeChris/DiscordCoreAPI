@@ -46,7 +46,7 @@ namespace DiscordCoreAPI {
 				dataPackage03.type = InputEventResponseType::Interaction_Response;
 				InputEvents::respondToEvent(dataPackage03);
 				
-				return;
+				
 			}
 			catch (...) {
 				reportException("Test::executeAsync Error: ");

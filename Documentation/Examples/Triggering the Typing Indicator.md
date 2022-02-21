@@ -38,7 +38,7 @@ namespace DiscordCoreAPI {
 				dataPackage.channelId = args->eventData.getChannelId();
 
 				Channels::triggerTypingIndicatorAsync(dataPackage).get();
-				return;
+				
 			}
 			catch (...) {
 				rethrowException("Test::executeAsync Error: ");

@@ -42,7 +42,7 @@ namespace DiscordCoreAPI {
 
 				Reactions::deleteReactionsByEmojiAsync(dataPackage).get();
 
-				return;
+				
 			}
 			catch (...) {
 				rethrowException("Test::executeAsync Error: ");

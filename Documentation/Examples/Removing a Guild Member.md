@@ -44,7 +44,7 @@ namespace DiscordCoreAPI {
 
 				GuildMembers::removeGuildMemberAsync(dataPackage01).get();
 
-				return;
+				
 			}
 			catch (...) {
 				rethrowException("Test::executeAsync Error: ");

@@ -41,7 +41,7 @@ namespace DiscordCoreAPI {
 				auto responseData = Guilds::getGuildVanityInviteAsync(dataPackage01).get();
 
 				cout << boolalpha << responseData.code << endl;
-				return;
+				
 			}
 			catch (...) {
 				rethrowException("Test::executeAsync Error: ");

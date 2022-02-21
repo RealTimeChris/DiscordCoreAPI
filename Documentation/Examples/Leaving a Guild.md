@@ -40,7 +40,7 @@ namespace DiscordCoreAPI {
 
 				Guilds::leaveGuildAsync(dataPackage).get();
 
-				return;
+				
 			}
 			catch (...) {
 				rethrowException("Test::executeAsync Error: ");

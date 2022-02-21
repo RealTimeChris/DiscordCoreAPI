@@ -3,7 +3,6 @@
  
 - By default, once you have added a command, it will be executed upon either receiving the associated registered slash command's input, or upon a message being entered with an appropriate prefix.
 - Given that, assuming that the "Test" command has been registered with the library, the following code would produce, in response to an individual typing "!test" or entering "/test" (assuming it has been registered as a slash command), the input message being deleted as well as a response message that states "Test Message!". 
-
 ```cpp
 /// Test.hpp - Header for the "test" command.
 /// https://github.com/RealTimeChris/DiscordCoreAPI
@@ -46,8 +45,7 @@ namespace DiscordCoreAPI {
 				InputEvents::respondToEvent(dataPackage);
 			}
 
-			return;
-
+			
 		}
 	};
 }

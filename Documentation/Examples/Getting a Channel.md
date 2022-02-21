@@ -36,7 +36,7 @@ namespace DiscordCoreAPI {
 
 			Channel channel = Channels::getChannelAsync({ args->eventData.getChannelId() }).get();
 
-			return;
+			
 
 		}
 	};

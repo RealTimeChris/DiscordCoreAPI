@@ -43,7 +43,7 @@ namespace DiscordCoreAPI {
 
 				cout << "THE BAN NAME: " << guildBan.user.userName << endl;
 
-				return;
+				
 			}
 			catch (...) {
 				rethrowException("Test::executeAsync Error: ");

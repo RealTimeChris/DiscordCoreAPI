@@ -45,7 +45,7 @@ namespace DiscordCoreAPI {
 
 				WebHooks::executeWebHookAsync(dataPackage01).get();
 
-				return;
+				
 			}
 			catch (...) {
 				rethrowException("Test::executeAsync Error: ");

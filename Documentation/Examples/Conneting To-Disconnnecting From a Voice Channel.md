@@ -43,7 +43,7 @@ namespace DiscordCoreAPI {
 
 			guild.disconnect();
 
-			return;
+			
 
 		}
 	};

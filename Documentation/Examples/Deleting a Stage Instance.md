@@ -40,7 +40,7 @@ namespace DiscordCoreAPI {
 
 				StageInstances::deleteStageInstanceAsync(dataPackage).get();
 
-				return;
+				
 			}
 			catch (...) {
 				rethrowException("Test::executeAsync Error: ");

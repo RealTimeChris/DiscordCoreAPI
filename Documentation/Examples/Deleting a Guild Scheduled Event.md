@@ -45,7 +45,7 @@ namespace DiscordCoreAPI {
 
 				GuildScheduledEvents::deleteGuildScheduledEventAsync(dataPackage).get();
 
-				return;
+				
 			}
 			catch (...) {
 				rethrowException("Test::executeAsync Error: ");

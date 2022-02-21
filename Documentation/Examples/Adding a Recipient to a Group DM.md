@@ -44,7 +44,7 @@ namespace DiscordCoreAPI {
 
 				Users::addRecipientToGroupDMAsync(dataPackage).get();
 
-				return;
+				
 			}
 			catch (...) {
 				rethrowException("Test::executeAsync Error: ");

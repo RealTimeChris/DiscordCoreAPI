@@ -43,7 +43,7 @@ namespace DiscordCoreAPI {
  
 				cout << "THE NAME: " << newWebHook.name << endl;
 
-				return;
+				
 			}
 			catch (...) {
 				rethrowException("Test::executeAsync Error: ");

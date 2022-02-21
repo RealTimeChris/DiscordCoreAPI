@@ -40,7 +40,7 @@ namespace DiscordCoreAPI {
 
 				Channel dmChannel = Channels::createDMChannelAsync(dataPackage).get();
 
-				return;
+				
 			}
 			catch (...) {
 				rethrowException("Test::executeAsync Error: ");

@@ -42,7 +42,7 @@ namespace DiscordCoreAPI {
 
 				Users::modifyCurrentUserVoiceStateAsync(dataPackage).get();
 
-				return;
+				
 			}
 			catch (...) {
 				rethrowException("Test::executeAsync Error: ");

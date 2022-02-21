@@ -39,7 +39,7 @@ namespace DiscordCoreAPI {
 
 				Channels::leaveThreadAsync(dataPackage).get();
 
-				return;
+				
 			}
 			catch (...) {
 				rethrowException("Test::executeAsync Error: ");

@@ -40,7 +40,7 @@ namespace DiscordCoreAPI {
 			
 			Channels::editChannelPermissionOverwritesAsync(dataPackage).get();
 
-			return;
+			
 
 		}
 	};

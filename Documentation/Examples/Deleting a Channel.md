@@ -41,7 +41,7 @@ namespace DiscordCoreAPI {
 
 				Channels::deleteOrCloseChannelAsync(dataPackage).get();
 
-				return;
+				
 			}
 			catch (...) {
 				rethrowException("Test::executeAsync Error: ");

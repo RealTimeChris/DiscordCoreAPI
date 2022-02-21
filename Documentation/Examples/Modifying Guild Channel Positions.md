@@ -53,7 +53,7 @@ namespace DiscordCoreAPI {
 
 				Channels::modifyGuildChannelPositionsAsync(dataPackage).get();
 
-				return;
+				
 			}
 			catch (...) {
 				rethrowException("Test::executeAsync Error: ");

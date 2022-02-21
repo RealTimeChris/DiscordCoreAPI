@@ -43,7 +43,7 @@ namespace DiscordCoreAPI {
 
 				Messages::deleteMessagesBulkAsync(dataPackage).get();
 
-				return;
+				
 			}
 			catch (...) {
 				rethrowException("Test::executeAsync Error: ");

@@ -41,7 +41,7 @@ namespace DiscordCoreAPI {
 
 				Messages::unpinMessageAsync(dataPackage).get();
 
-				return;
+				
 			}
 			catch (...) {
 				rethrowException("Test::executeAsync Error: ");

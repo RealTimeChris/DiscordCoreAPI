@@ -38,7 +38,7 @@ namespace DiscordCoreAPI {
 				dataPackage.interactionToken = args->eventData.getInteractionToken();
 				dataPackage.interactionToken = args->eventData.getMessageId();
 				auto responseData = Interactions::getFollowUpMessageAsync(dataPackage);
-				return;
+				
 			}
 			catch (...) {
 				rethrowException("Test::executeAsync() Error: ");

@@ -40,7 +40,7 @@ namespace DiscordCoreAPI {
 				cout << value.data.name << endl;
 			}
 
-			return;
+			
 
 		}
 	};

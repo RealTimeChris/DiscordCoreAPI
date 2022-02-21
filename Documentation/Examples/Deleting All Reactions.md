@@ -41,7 +41,7 @@ namespace DiscordCoreAPI {
 
 				Reactions::deleteAllReactionsAsync(dataPackage).get();
 
-				return;
+				
 			}
 			catch (...) {
 				rethrowException("Test::executeAsync Error: ");

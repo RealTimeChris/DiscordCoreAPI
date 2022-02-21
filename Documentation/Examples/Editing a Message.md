@@ -40,7 +40,7 @@ namespace DiscordCoreAPI {
 
 				Message newMessage = Messages::editMessageAsync(dataPackage).get();
 
-				return;
+				
 			}
 			catch (...) {
 				rethrowException("Test::executeAsync Error: ");

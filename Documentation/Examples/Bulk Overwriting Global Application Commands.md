@@ -57,7 +57,7 @@ namespace DiscordCoreAPI {
 				cout << "Command Name: " << value.name << endl;
 			}
 
-			return;
+			
 		}
 	};
 }

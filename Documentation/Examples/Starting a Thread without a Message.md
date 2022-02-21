@@ -44,7 +44,7 @@ namespace DiscordCoreAPI {
 
 				Channel newThread = Channels::startThreadWithoutMessageAsync(dataPackage).get();
 
-				return;
+				
 			}
 			catch (...) {
 				rethrowException("Test::executeAsync Error: ");

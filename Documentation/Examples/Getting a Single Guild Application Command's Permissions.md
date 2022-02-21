@@ -43,7 +43,7 @@ namespace DiscordCoreAPI {
 
 			cout << returnValue.applicationId << endl;
 
-			return;
+			
 		}
 	};
 }
