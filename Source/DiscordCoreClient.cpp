@@ -34,6 +34,7 @@
 #include <ReactionEntities.hpp>
 #include <ApplicationCommandEntities.hpp>
 #include <CommandController.hpp>
+#include <csignal>
 
 namespace DiscordCoreAPI {
 
@@ -60,9 +61,11 @@ namespace DiscordCoreAPI {
 	}
 
 	DiscordCoreClient::DiscordCoreClient(std::string botTokenNew, std::string commandPrefixNew, std::vector<RepeatedFunctionData> functionsToExecuteNew,  CacheOptions cacheOptionsNew) {
-#ifdef _WIN32
-		SetConsoleCtrlHandler(CtrlHandler, true);
-#endif
+		_crt_signal_t signalHandler{ &signalHandle };
+		std::signal(SIGTERM, signalHandler);
+		std::signal(SIGILL, signalHandler);
+		std::signal(SIGINT, signalHandler);
+		std::signal(SIGABRT, signalHandler);
 		this->functionsToExecute = functionsToExecuteNew;
 		this->commandPrefix = commandPrefixNew;
 		this->botToken = botTokenNew;
@@ -800,34 +803,7 @@ namespace DiscordCoreAPI {
 
 }
 
-#ifdef _WIN32
-BOOL WINAPI CtrlHandler(DWORD fdwCtrlType)
+void  signalHandle(int32_t)
 {
-	switch (fdwCtrlType)
-	{
-	case CTRL_C_EVENT: {
-		DiscordCoreAPI::doWeQuit = true;
-		return TRUE;
-	}
-	case CTRL_CLOSE_EVENT: {
-		DiscordCoreAPI::doWeQuit = true;
-		return TRUE;
-	}
-	case CTRL_BREAK_EVENT: {
-		DiscordCoreAPI::doWeQuit = true;
-		return FALSE;
-	}
-	case CTRL_LOGOFF_EVENT: {
-		DiscordCoreAPI::doWeQuit = true;
-		return FALSE;
-	}
-	case CTRL_SHUTDOWN_EVENT: {
-		DiscordCoreAPI::doWeQuit = true;
-		return FALSE;
-	}
-	default: {
-		return FALSE;
-	}		
-	}
+	DiscordCoreAPI::doWeQuit = true;
 }
-#endif

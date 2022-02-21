@@ -50,9 +50,7 @@
 #include <WebHookEntities.hpp>
 #include <SongAPI.hpp>
 
-#ifdef _WIN32
-BOOL WINAPI CtrlHandler(DWORD fdwCtrlType);
-#endif
+void signalHandle(int32_t);
 
 namespace DiscordCoreAPI {
 
