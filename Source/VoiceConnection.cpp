@@ -384,6 +384,7 @@ namespace DiscordCoreAPI {
 
 	VoiceConnection::~VoiceConnection() {
 		this->theTask->cancel();
+		this->theTask.reset(nullptr);
 	}
 
 }
