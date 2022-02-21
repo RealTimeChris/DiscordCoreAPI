@@ -38,7 +38,7 @@
 
 namespace DiscordCoreAPI {
 
-	bool doWeQuit{ false };
+	std::atomic<bool> doWeQuit{ false };
 
 	std::unordered_map<std::string, TSUnboundedMessageBlock<AudioFrameData>*>* getAudioBufferMap() {
 		return &Statics::audioBufferMap;
@@ -147,13 +147,13 @@ namespace DiscordCoreAPI {
 	}
 
 	void DiscordCoreClient::run() {
-		while (!doWeQuit) {
+		while (!doWeQuit.load(std::memory_order_seq_cst)) {
 			try {
-				if (doWeQuit) {
+				if (doWeQuit.load(std::memory_order_seq_cst)) {
 					return;
 				}
 				std::unique_ptr<DiscordCoreInternal::WebSocketWorkload> workload{ std::make_unique<DiscordCoreInternal::WebSocketWorkload>() };
-				while (!this->baseSocketAgent->getWorkloadTarget().tryReceive(*workload) && !doWeQuit) {
+				while (!this->baseSocketAgent->getWorkloadTarget().tryReceive(*workload) && !doWeQuit.load(std::memory_order_seq_cst)) {
 					std::this_thread::sleep_for(std::chrono::milliseconds{ 1 });
 				};
 				if (workload->eventType != DiscordCoreInternal::WebSocketEventType::Unset) {
@@ -783,7 +783,7 @@ namespace DiscordCoreAPI {
 						break;
 					}
 					}
-					if (doWeQuit) {
+					if (doWeQuit.load(std::memory_order_seq_cst)) {
 						return;
 					}
 				}
@@ -807,5 +807,5 @@ namespace DiscordCoreAPI {
 
 void  signalHandle(int32_t)
 {
-	DiscordCoreAPI::doWeQuit = true;
+	DiscordCoreAPI::doWeQuit.store(true, std::memory_order_seq_cst);
 }
