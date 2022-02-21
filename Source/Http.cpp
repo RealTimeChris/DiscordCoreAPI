@@ -26,16 +26,16 @@
 
 namespace DiscordCoreInternal {
 
-	void HttpRnRBuilder::constructHeaderValues(std::multimap<std::string, std::string>& headersNew, RateLimitData* theConnection) {
+	void HttpRnRBuilder::constructHeaderValues(std::unordered_map<std::string, std::string>& headersNew, RateLimitData* theConnection) {
 		if (headersNew.contains("x-ratelimit-remaining")) {
-			theConnection->getsRemaining = stol(headersNew.find("x-ratelimit-remaining")->second);
+			theConnection->getsRemaining = stol(headersNew["x-ratelimit-remaining"]);
 		}
 		if (headersNew.contains("x-ratelimit-reset-after")) {
 			theConnection->sampledTimeInMs = std::chrono::duration_cast<std::chrono::milliseconds, int64_t>(std::chrono::system_clock::now().time_since_epoch()).count();
-			theConnection->msRemain = static_cast<int64_t>(stod(headersNew.find("x-ratelimit-reset-after")->second) * 1000.0f);
+			theConnection->msRemain = static_cast<int64_t>(stod(headersNew["x-ratelimit-reset-after"]) * 1000.0f);
 		}
 		if (headersNew.contains("x-ratelimit-bucket")) {
-			theConnection->bucket = headersNew.find("x-ratelimit-bucket")->second;
+			theConnection->bucket = headersNew["x-ratelimit-bucket"];
 		}
 	};
 
@@ -110,7 +110,7 @@ namespace DiscordCoreInternal {
 	}
 
 	void HttpRnRBuilder::resetValues(std::string&) {
-		this->headers = std::multimap<std::string, std::string>{};
+		this->headers = std::unordered_map<std::string, std::string>{};
 		this->doWeHaveContentSize = false;
 		this->doWeHaveHeaders = false;
 		this->isItChunked = false;
@@ -144,12 +144,12 @@ namespace DiscordCoreInternal {
 					std::string key = lineString.substr(0, lineString.find(":"));
 					std::string value = lineString.substr(lineString.find(":") + 2, lineString.size() - key.size() - 2);
 					value = value.substr(0, value.find("\r\n"));
-					this->headers.insert(std::make_pair(key, value));
+					this->headers.insert_or_assign(key, value);
 					std::string tempString{};
 					tempString.insert(tempString.begin(), newString.begin() + currentOffset, newString.end());
 					newString = tempString;
 				}
-				if (this->headers.contains("Transfer-Encoding") && this->headers.find("Transfer-Encoding")->second == "chunked") {
+				if (this->headers.contains("Transfer-Encoding") && this->headers["Transfer-Encoding"] == "chunked") {
 					this->isItChunked = true;
 				}
 				this->doWeHaveHeaders = true;
@@ -223,7 +223,7 @@ namespace DiscordCoreInternal {
 	void HttpRnRBuilder::parseSize(std::string& other) {
 		try {
 			if (this->headers.contains("Content-Length")) {
-				this->contentSize = stoll(this->headers.find("Content-Length")->second);
+				this->contentSize = stoll(this->headers["Content-Length"]);
 				this->doWeHaveContentSize = true;
 				return;
 			}
@@ -356,6 +356,7 @@ namespace DiscordCoreInternal {
 				returnData = HttpClient::executeHttpRequest(workload, theConnection);
 				if (workload.workloadType == HttpWorkloadType::Delete_Message_Old) {
 					theConnection.rateLimitDataPtr->getsRemaining = 0;
+					theConnection.rateLimitDataPtr->msRemain = 4000;
 				}
 				if (!this->connectionManager.rateLimitValues.contains(theConnection.bucket)) {
 					std::unique_ptr<RateLimitData> tempRateLimitData{ std::make_unique<RateLimitData>() };
