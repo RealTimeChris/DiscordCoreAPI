@@ -40,7 +40,7 @@ namespace DiscordCoreInternal {
 
 		void constructHeaderValues(std::multimap<std::string, std::string>& headers, RateLimitData* theConnection);
 
-		HttpData handleHeaders(HttpWorkloadData& workload, HttpConnection& theConnection);
+		HttpData handleHeaders(HttpConnection& theConnection);
 
 		std::string buildRequest(HttpWorkloadData& workload);
 
@@ -154,9 +154,9 @@ namespace DiscordCoreInternal {
 
 		std::vector<HttpData> executeHttpRequest(std::vector<HttpWorkloadData>&);
 
-		HttpData getResponse(HttpWorkloadData&, HttpConnection& theConnection);
-
 		std::vector<HttpData> httpRequest(std::vector<HttpWorkloadData>&);
+
+		HttpData getResponse(HttpConnection& theConnection);
 
 		HttpData httpRequest(HttpWorkloadData&, bool);
 	};

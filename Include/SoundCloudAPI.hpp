@@ -65,9 +65,9 @@ namespace DiscordCoreAPI {
 
 		SoundCloudSong collectFinalSong(GuildMemberData addedByGuildMember, SoundCloudSong newSong);
 
-		std::vector<SoundCloudSong> searchForSong(std::string searchQuery, std::string guildId);
-
 		CoRoutine<void> downloadAndStreamAudio(Song newSong, SoundCloudAPI* soundCloudAPI);
+
+		std::vector<SoundCloudSong> searchForSong(std::string searchQuery);
 
 		void stop();
 

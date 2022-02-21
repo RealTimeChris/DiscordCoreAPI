@@ -38,7 +38,7 @@ namespace DiscordCoreInternal {
 		this->theTask = std::make_unique<DiscordCoreAPI::CoRoutine<void>>(this->run());
 	}
 
-	BaseSocketAgent::BaseSocketAgent(nullptr_t nullPtr) {};
+	BaseSocketAgent::BaseSocketAgent(nullptr_t) {};
 
 	void BaseSocketAgent::sendMessage(std::string& dataToSend) {
 		try {
@@ -267,7 +267,6 @@ namespace DiscordCoreInternal {
 			if (payload.at("op") == 9) {
 				std::cout << "Reconnecting (Type 9)!" << std::endl << std::endl;
 				srand(static_cast<uint32_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count()));
-				this->areWeConnected.store(false, std::memory_order_seq_cst);
 				this->currentReconnectTries += 1;
 				int32_t numOfMsToWait = static_cast<int32_t>(1000.0f + ((static_cast<float>(rand()) / static_cast<float>(RAND_MAX)) * static_cast<float>(4000.0f)));
 				std::this_thread::sleep_for(std::chrono::milliseconds{ numOfMsToWait });
@@ -276,6 +275,7 @@ namespace DiscordCoreInternal {
 					this->sendMessage(identityJson);
 				}
 				else {
+					this->areWeConnected.store(false, std::memory_order_seq_cst);
 					this->heartbeatTimer->cancel();
 					this->webSocket.reset(nullptr);
 					this->areWeResuming = false;
@@ -863,7 +863,6 @@ namespace DiscordCoreInternal {
 					}
 					this->voiceConnect();
 					this->collectExternalIP();
-					int32_t counterValue{ 0 };
 					std::vector<uint8_t> protocolPayloadSelectString = JSONIFY(this->voiceConnectionData.voicePort, this->voiceConnectionData.externalIp, this->voiceConnectionData.voiceEncryptionMode, 0);
 					if (this->webSocket != nullptr) {
 						this->sendMessage(protocolPayloadSelectString);
@@ -875,7 +874,6 @@ namespace DiscordCoreInternal {
 					}
 					this->areWeConnected.set();
 				}
-				if (payload.at("op") == 9) {};
 				if (payload.at("op") == 8) {
 					if (payload.at("d").contains("heartbeat_interval")) {
 						this->heartbeatInterval = static_cast<int32_t>(payload.at("d").at("heartbeat_interval").get<float>());

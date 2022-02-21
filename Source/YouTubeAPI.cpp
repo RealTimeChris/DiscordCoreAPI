@@ -63,11 +63,11 @@ namespace DiscordCoreAPI {
 					searchResult.type = SongType::YouTube;
 					searchResult.viewUrl = YouTubeRequestBuilder::baseUrl + "/watch?v=" + searchResult.songId + "&hl=en";
 					searchResults.push_back(searchResult);
-					DiscordCoreInternal::HttpWorkloadData dataPackage{};
-					dataPackage.baseUrl = YouTubeRequestBuilder::baseUrl;
-					dataPackage.relativePath = "/watch?v=" + searchResult.songId + "&hl=en";
-					dataPackage.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
-					workloadVector.push_back(dataPackage);
+					DiscordCoreInternal::HttpWorkloadData dataPackage02{};
+					dataPackage02.baseUrl = YouTubeRequestBuilder::baseUrl;
+					dataPackage02.relativePath = "/watch?v=" + searchResult.songId + "&hl=en";
+					dataPackage02.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
+					workloadVector.push_back(dataPackage02);
 				}
 
 			}
@@ -535,7 +535,6 @@ namespace DiscordCoreAPI {
 						};
 						auto newData = streamSocket.getInputBuffer();
 						streamSocket.getInputBuffer().clear();
-						int64_t headerLength = newData.size();
 						if (!coroutineHandle.promise().isItStopped()) {
 							bytesReadTotal01 = streamSocket.getBytesRead();
 						}
@@ -609,7 +608,6 @@ namespace DiscordCoreAPI {
 				}
 				counter += 1;
 			}
-			end:
 			RawFrameData frameData01{};
 			while (audioDecoder->getFrame(frameData01)) {};
 			audioDecoder.reset(nullptr);
@@ -625,7 +623,7 @@ namespace DiscordCoreAPI {
 		}
 	};
 
-	std::vector<YouTubeSong> YouTubeAPI::searchForSong(std::string searchQuery, std::string guildId) {
+	std::vector<YouTubeSong> YouTubeAPI::searchForSong(std::string searchQuery) {
 		return this->requestBuilder.collectSearchResults(searchQuery);
 	}
 };

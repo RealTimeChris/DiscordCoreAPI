@@ -112,7 +112,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	DiscordCoreClient::DiscordCoreClient(nullptr_t other) {}
+	DiscordCoreClient::DiscordCoreClient(nullptr_t) {};
 
 	void DiscordCoreClient::registerFunction(std::vector<std::string> functionNames, std::unique_ptr<BaseFunction> baseFunction) {
 		this->commandController.registerFunction(functionNames, std::move(baseFunction));

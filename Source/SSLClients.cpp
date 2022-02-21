@@ -144,7 +144,7 @@ namespace DiscordCoreInternal {
 			}
 
 			if (this->theSocket = SSL_get_fd(this->ssl); this->theSocket == INVALID_SOCKET) {
-				reportSSLError("SSL_get_fd() Error: ", this->theSocket, this->ssl);
+				reportSSLError("SSL_get_fd() Error: ", static_cast<int32_t>(this->theSocket), this->ssl);
 				return false;
 			}
 			return true;
@@ -167,7 +167,7 @@ namespace DiscordCoreInternal {
 	bool HttpSSLClient::processIO() {
 #ifdef _WIN32
 		fd_set writeSet{}, readSet{};
-		int32_t nfds{ 0 };
+		uint64_t nfds{ 0 };
 		FD_ZERO(&writeSet);
 		FD_ZERO(&readSet);
 
@@ -181,7 +181,7 @@ namespace DiscordCoreInternal {
 		}
 
 		timeval checkTime{ .tv_usec = 1000 };
-		if (auto resultValue = select(nfds + 1, &readSet, &writeSet, nullptr, &checkTime); resultValue == SOCKET_ERROR) {
+		if (auto resultValue = select(static_cast<int32_t>(nfds + 1), &readSet, &writeSet, nullptr, &checkTime); resultValue == SOCKET_ERROR) {
 			reportError("select() Error: ", resultValue);
 			return false;
 		}
@@ -307,7 +307,7 @@ namespace DiscordCoreInternal {
 		}
 
 		if (this->theSocket = socket(resultAddress->ai_family, resultAddress->ai_socktype, resultAddress->ai_protocol); this->theSocket == INVALID_SOCKET) {
-			reportError("socket() Error: ", this->theSocket);
+			reportError("socket() Error: ", static_cast<int32_t>(this->theSocket));
 			return;
 		}
 
@@ -340,7 +340,7 @@ namespace DiscordCoreInternal {
 			return;
 		}
 
-		if (auto returnValue = SSL_set_fd(this->ssl, this->theSocket); !returnValue) {
+		if (auto returnValue = SSL_set_fd(this->ssl, static_cast<int32_t>(this->theSocket)); !returnValue) {
 			reportSSLError("SSL_set_fd() Error: ", returnValue, this->ssl);
 			return;
 		}
@@ -357,12 +357,12 @@ namespace DiscordCoreInternal {
 		}
 	};
 
-	WebSocketSSLClient::WebSocketSSLClient(nullptr_t other) {};
+	WebSocketSSLClient::WebSocketSSLClient(nullptr_t) {};
 
 	bool WebSocketSSLClient::processIO(int32_t waitTimeInMicroSeconds) {
 #ifdef _WIN32
 		fd_set writeSet{}, readSet{};
-		int32_t nfds{ 0 };
+		uint64_t nfds{ 0 };
 		FD_ZERO(&writeSet);
 		FD_ZERO(&readSet);
 
@@ -376,7 +376,7 @@ namespace DiscordCoreInternal {
 		}
 
 		timeval checkTime{ .tv_usec = waitTimeInMicroSeconds };
-		if (auto resultValue = select(nfds + 1, &readSet, &writeSet, nullptr, &checkTime); resultValue == SOCKET_ERROR) {
+		if (auto resultValue = select(static_cast<int32_t>(nfds + 1), &readSet, &writeSet, nullptr, &checkTime); resultValue == SOCKET_ERROR) {
 			reportError("select() Error: ", resultValue);
 			return false;
 		}
@@ -534,7 +534,7 @@ namespace DiscordCoreInternal {
 			return;
 		}
 #endif
-		if (this->datagramBio = BIO_new_dgram(this->theSocket, BIO_CLOSE); this->datagramBio == nullptr) {
+		if (this->datagramBio = BIO_new_dgram(static_cast<int32_t>(this->theSocket), BIO_CLOSE); this->datagramBio == nullptr) {
 			reportSSLError("BIO_new_dgram() Error: ");
 			return;
 		}

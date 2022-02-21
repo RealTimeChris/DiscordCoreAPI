@@ -353,7 +353,7 @@ namespace DiscordCoreInternal {
 			return ErlPacker::parseLargeTuple(buffer);
 		}
 		case ETFTokenType::Nil: {
-			return ErlPacker::parseNil(buffer);
+			return ErlPacker::parseNil();
 		}
 		case ETFTokenType::String: {
 			return ErlPacker::parseStringAsList(buffer);
@@ -379,7 +379,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	nlohmann::json ErlPacker::processAtom(ErlPackBuffer& buffer, std::vector<char>& atom, uint32_t& length) {
+	nlohmann::json ErlPacker::processAtom(std::vector<char>& atom, uint32_t& length) {
 		nlohmann::json jsonData{};
 		if (atom.size() == 0) {
 			return jsonData;
@@ -410,7 +410,7 @@ namespace DiscordCoreInternal {
 		uint32_t lengthNew = length;
 		std::vector<char> atom{};
 		readString(buffer, lengthNew, atom);
-		return processAtom(buffer, atom, lengthNew);
+		return processAtom(atom, lengthNew);
 	}
 
 	nlohmann::json ErlPacker::parseSmallAtom(ErlPackBuffer& buffer) {
@@ -419,7 +419,7 @@ namespace DiscordCoreInternal {
 		uint32_t lengthNew = length;
 		std::vector<char> atom{};
 		readString(buffer, lengthNew, atom);
-		return processAtom(buffer, atom, lengthNew);
+		return processAtom(atom, lengthNew);
 	}
 
 	nlohmann::json ErlPacker::parseSmallInteger(ErlPackBuffer& buffer) {
@@ -461,7 +461,7 @@ namespace DiscordCoreInternal {
 		return parseArray(buffer, length);
 	}
 
-	nlohmann::json ErlPacker::parseNil(ErlPackBuffer& buffer) {
+	nlohmann::json ErlPacker::parseNil() {
 		return nlohmann::json();
 	}
 

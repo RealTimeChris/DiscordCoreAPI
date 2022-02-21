@@ -26,20 +26,20 @@
 
 namespace DiscordCoreInternal {
 
-	void HttpRnRBuilder::constructHeaderValues(std::multimap<std::string, std::string>& headers, RateLimitData* theConnection) {
-		if (headers.contains("x-ratelimit-remaining")) {
-			theConnection->getsRemaining = stol(headers.find("x-ratelimit-remaining")->second);
+	void HttpRnRBuilder::constructHeaderValues(std::multimap<std::string, std::string>& headersNew, RateLimitData* theConnection) {
+		if (headersNew.contains("x-ratelimit-remaining")) {
+			theConnection->getsRemaining = stol(headersNew.find("x-ratelimit-remaining")->second);
 		}
-		if (headers.contains("x-ratelimit-reset-after")) {
+		if (headersNew.contains("x-ratelimit-reset-after")) {
 			theConnection->sampledTimeInMs = std::chrono::duration_cast<std::chrono::milliseconds, int64_t>(std::chrono::system_clock::now().time_since_epoch()).count();
-			theConnection->msRemain = static_cast<int64_t>(stod(headers.find("x-ratelimit-reset-after")->second) * 1000.0f);
+			theConnection->msRemain = static_cast<int64_t>(stod(headersNew.find("x-ratelimit-reset-after")->second) * 1000.0f);
 		}
-		if (headers.contains("x-ratelimit-bucket")) {
-			theConnection->bucket = headers.find("x-ratelimit-bucket")->second;
+		if (headersNew.contains("x-ratelimit-bucket")) {
+			theConnection->bucket = headersNew.find("x-ratelimit-bucket")->second;
 		}
 	};
 
-	HttpData HttpRnRBuilder::handleHeaders(HttpWorkloadData& workload, HttpConnection& theConnection) {
+	HttpData HttpRnRBuilder::handleHeaders(HttpConnection& theConnection) {
 		try {
 			HttpData httpData{ .responseMessage = this->contentFinal,.responseCode = this->responseCode };
 			if (this->contentFinal.size() > 0) {
@@ -406,7 +406,7 @@ namespace DiscordCoreInternal {
 			}
 			auto theRequest = theConnection.buildRequest(workload);
 			theConnection.writeData(theRequest);
-			auto result = this->getResponse(workload, theConnection);
+			auto result = this->getResponse(theConnection);
 			if (result.responseCode == -1) {
 				theConnection.doWeConnect = true;
 				return this->executeHttpRequest(workload, theConnection);
@@ -419,23 +419,6 @@ namespace DiscordCoreInternal {
 			theConnection.doWeConnect = true;
 			return this->executeHttpRequest(workload, theConnection);
 		}
-	}
-
-	HttpData HttpClient::getResponse(HttpWorkloadData& workload, HttpConnection& theConnection) {
-		DiscordCoreAPI::StopWatch stopWatch{ std::chrono::milliseconds{3500} };
-		theConnection.getInputBuffer().resize(0);
-		while (true) {
-			if (!theConnection.processIO()) {
-				break;
-			}
-			if (theConnection.checkForHeadersToParse(theConnection.getInputBuffer()) && !theConnection.doWeHaveHeaders && !stopWatch.hasTimePassed()) {
-				theConnection.parseHeaders(theConnection.getInputBuffer());
-			}
-			if (stopWatch.hasTimePassed() || (theConnection.responseCode == -5 && theConnection.contentSize == -5) || !theConnection.parseChunk(theConnection.getInputBuffer())) {
-				break;
-			}
-		};
-		return theConnection.handleHeaders(workload, theConnection);
 	}
 
 	std::vector<HttpData> HttpClient::executeHttpRequest(std::vector<HttpWorkloadData>& workload) {
@@ -466,7 +449,7 @@ namespace DiscordCoreInternal {
 				catch (...) {
 					return std::vector<HttpData>{};
 				}
-				HttpData returnData = this->getResponse(value, theConnection);
+				HttpData returnData = this->getResponse(theConnection);
 				returnVector.push_back(returnData);
 				currentBaseUrl = value.baseUrl;
 			}
@@ -477,6 +460,23 @@ namespace DiscordCoreInternal {
 			DiscordCoreAPI::reportException("HttpClient::executehttpRequest()");
 		}
 		return std::vector<HttpData>{};
+	}
+
+	HttpData HttpClient::getResponse(HttpConnection& theConnection) {
+		DiscordCoreAPI::StopWatch stopWatch{ std::chrono::milliseconds{3500} };
+		theConnection.getInputBuffer().resize(0);
+		while (true) {
+			if (!theConnection.processIO()) {
+				break;
+			}
+			if (theConnection.checkForHeadersToParse(theConnection.getInputBuffer()) && !theConnection.doWeHaveHeaders && !stopWatch.hasTimePassed()) {
+				theConnection.parseHeaders(theConnection.getInputBuffer());
+			}
+			if (stopWatch.hasTimePassed() || (theConnection.responseCode == -5 && theConnection.contentSize == -5) || !theConnection.parseChunk(theConnection.getInputBuffer())) {
+				break;
+			}
+		};
+		return theConnection.handleHeaders(theConnection);
 	}
 
 	std::vector<HttpData> HttpClient::httpRequest(std::vector<HttpWorkloadData>& workload) {

@@ -23,8 +23,7 @@
 #include <Index.hpp>
 
 #ifdef _WIN32
-BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved)
-{
+BOOL WINAPI DllMain(HINSTANCE, DWORD fdwReason, LPVOID) {
     switch (fdwReason)
     {
     case DLL_PROCESS_ATTACH: {

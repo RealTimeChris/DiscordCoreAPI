@@ -81,9 +81,9 @@ namespace DiscordCoreAPI {
 
 		YouTubeSong collectFinalSong(GuildMemberData addedByGuildMember, YouTubeSong newSong);
 
-		std::vector<YouTubeSong> searchForSong(std::string searchQuery, std::string guildId);
-
 		CoRoutine<void> downloadAndStreamAudio(Song newSong, YouTubeAPI* youtubeAPI);
+
+		std::vector<YouTubeSong> searchForSong(std::string searchQuery);
 
 		void stop();
 

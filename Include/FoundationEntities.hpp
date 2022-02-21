@@ -22,6 +22,10 @@
 
 #pragma once
 
+#pragma warning(push)
+#pragma warning(disable:4251)
+#pragma warning(disable:4996)
+
 #ifdef _WIN32
 #ifdef DISCORDCOREAPIDLL_EXPORTS
 #define DiscordCoreAPI_Dll __declspec(dllexport)
@@ -2444,7 +2448,6 @@ namespace DiscordCoreAPI {
 
         virtual ~ApplicationCommandInteractionData() = default;
     };
-
     /// Interaction data data. \brief Interaction data data.
     struct DiscordCoreAPI_Dll InteractionDataData {
         ApplicationCommandInteractionData applicationCommanddata{};///< ApplicationCommand Interaction data.

@@ -22,11 +22,14 @@
 
 #pragma once
 
+#pragma warning(push)
+#pragma warning(disable:4251)
+
 #include <FoundationEntities.hpp>
 
 namespace DiscordCoreInternal {
 
-	struct DiscordCoreAPI_Dll ErlPackError : public std::runtime_error {
+	struct ErlPackError : public std::runtime_error {
 	public:
 		explicit ErlPackError(const std::string& message) : std::runtime_error(message.c_str()) {};
 	};
@@ -140,7 +143,7 @@ namespace DiscordCoreInternal {
 
 		nlohmann::json singleValueETFToJson(ErlPackBuffer&);
 
-		nlohmann::json processAtom(ErlPackBuffer&, std::vector<char>&, uint32_t&);
+		nlohmann::json processAtom(std::vector<char>&, uint32_t&);
 
 		nlohmann::json parseAtom(ErlPackBuffer&);
 
@@ -156,7 +159,7 @@ namespace DiscordCoreInternal {
 
 		nlohmann::json parseTuple(ErlPackBuffer&, uint32_t&);
 
-		nlohmann::json parseNil(ErlPackBuffer&);
+		nlohmann::json parseNil();
 
 		nlohmann::json parseMap(ErlPackBuffer&);
 

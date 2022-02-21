@@ -302,7 +302,7 @@ namespace DiscordCoreInternal {
 
 	protected:
 
-		const int32_t maxBufferSize{ 1024 * 16 };
+		const int64_t maxBufferSize{ 1024 * 16 };
 		SOCKETWrapper theSocket{ nullptr };
 		SSL_CTXWrapper context{ nullptr };
 		std::string outputBuffer{};

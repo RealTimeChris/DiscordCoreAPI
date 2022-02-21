@@ -3821,7 +3821,7 @@ namespace DiscordCoreInternal {
                     }
 
                     if (value.contains("contentLength") && !value["contentLength"].is_null()) {
-                        newData.contentLength = stoll(value["contentLength"].get<std::string>());
+                        newData.contentLength = stol(value["contentLength"].get<std::string>());
                     }
 
                     if (value.contains("fps") && !value["fps"].is_null()) {
@@ -3895,7 +3895,7 @@ namespace DiscordCoreInternal {
                     }
 
                     if (value.contains("contentLength") && !value["contentLength"].is_null()) {
-                        newData.contentLength = stoll(value["contentLength"].get<std::string>());
+                        newData.contentLength = stol(value["contentLength"].get<std::string>());
                     }
 
                     if (value.contains("fps") && !value["fps"].is_null()) {

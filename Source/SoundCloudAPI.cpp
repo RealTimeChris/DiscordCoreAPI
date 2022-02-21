@@ -301,7 +301,6 @@ namespace DiscordCoreAPI {
 				for (uint64_t x = 0; x < result[0].responseMessage.size(); x += 1) {
 					newVector.push_back(result[0].responseMessage[x]);
 				}
-				int64_t totalAmountToSubmit{ static_cast<int64_t>(result[0].responseMessage.size()) };
 				int64_t amountToSubmitRemaining{ static_cast<int64_t>(result[0].responseMessage.size()) };
 				int64_t amountToSubmitRemainingFinal{ 0 };
 				int64_t amountSubmitted{ 0 };
@@ -364,7 +363,7 @@ namespace DiscordCoreAPI {
 		}
 	};
 
-	std::vector<SoundCloudSong> SoundCloudAPI::searchForSong(std::string searchQuery, std::string guildId) {
+	std::vector<SoundCloudSong> SoundCloudAPI::searchForSong(std::string searchQuery) {
 		return this->requestBuilder.collectSearchResults(searchQuery);
 	}
 

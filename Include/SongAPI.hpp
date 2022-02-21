@@ -150,7 +150,7 @@ namespace DiscordCoreAPI {
 
 		void sendNextSongFinal(GuildMember guildMember);
 
-		bool sendNextSong(std::string);
+		bool sendNextSong();
 		
 	};
 	/**@}*/

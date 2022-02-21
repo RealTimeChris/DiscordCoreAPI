@@ -37,7 +37,7 @@ namespace DiscordCoreAPI {
 		returnValue->onSongCompletionEvent = handler;
 	}
 
-	bool SongAPI::sendNextSong(std::string guildId) {
+	bool SongAPI::sendNextSong() {
 		if (this->playlist.isLoopSongEnabled) {
 			if (this->playlist.songQueue.size() > 1 && this->playlist.currentSong.songId == "") {
 				this->playlist.currentSong = this->playlist.songQueue.at(0);
@@ -180,8 +180,8 @@ namespace DiscordCoreAPI {
 	}
 
 	std::vector<Song> SongAPI::searchForSong(std::string searchQuery, std::string guildId) {
-		auto vector01 = getSoundCloudAPIMap()->at(guildId)->searchForSong(searchQuery, guildId);
-		auto vector02 = getYouTubeAPIMap()->at(guildId)->searchForSong(searchQuery, guildId);
+		auto vector01 = getSoundCloudAPIMap()->at(guildId)->searchForSong(searchQuery);
+		auto vector02 = getYouTubeAPIMap()->at(guildId)->searchForSong(searchQuery);
 		int32_t totalLength = static_cast<int32_t>(vector01.size() + vector02.size());
 		std::vector<Song> newVector{};
 		int32_t vector01Used{ 0 };
@@ -306,9 +306,9 @@ namespace DiscordCoreAPI {
 		if (!getSongAPIMap()->contains(guildMember.guildId)) {
 			getSongAPIMap()->insert_or_assign(guildMember.guildId, std::make_unique<SongAPI>(guildMember.guildId));
 		}
-		getSongAPIMap()->at(guildMember.guildId)->sendNextSong(guildMember.guildId);
+		getSongAPIMap()->at(guildMember.guildId)->sendNextSong();
 		if (getSongAPIMap()->at(guildMember.guildId)->playlist.currentSong.songId == "") {
-			getSongAPIMap()->at(guildMember.guildId)->sendNextSong(guildMember.guildId);
+			getSongAPIMap()->at(guildMember.guildId)->sendNextSong();
 		}
 		try {
 			getSongAPIMap()->at(guildMember.guildId)->sendNextSongFinal(guildMember);
@@ -318,7 +318,7 @@ namespace DiscordCoreAPI {
 			reportException("SongAPI::sendNextSong()");
 			SongCompletionEventData eventData{ .wasItAFail = true, .previousSong = getSongAPIMap()->at(guildMember.guildId)->playlist.currentSong };
 			SongAPI::setCurrentSong(Song(), guildMember.guildId);
-			if (!getSongAPIMap()->at(guildMember.guildId)->sendNextSong(guildMember.guildId)) {
+			if (!getSongAPIMap()->at(guildMember.guildId)->sendNextSong()) {
 				return false;
 			};
 			getSongAPIMap()->at(guildMember.guildId)->onSongCompletionEvent(eventData);

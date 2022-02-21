@@ -82,6 +82,7 @@ namespace DiscordCoreInternal {
 		};
 		return data;
 	};
+
 	std::string JSONIFY(DiscordCoreAPI::CreateGuildBanData dataPackage) {
 		nlohmann::json data;
 		if (dataPackage.deleteMessageDays != 0) {
@@ -94,6 +95,7 @@ namespace DiscordCoreInternal {
 		}
 		return data.dump();
 	}
+
 	std::vector<uint8_t> JSONIFY(bool isSpeaking, int32_t ssrc, int32_t delay) {
 		nlohmann::json data;
 		if (isSpeaking) {
@@ -117,6 +119,7 @@ namespace DiscordCoreInternal {
 		newVector.insert(newVector.begin(), newString.begin(), newString.end());
 		return newVector;
 	};
+
 	nlohmann::json JSONIFY(int32_t lastReceivedNumber) {
 		nlohmann::json data = {
 			{"d", lastReceivedNumber},
@@ -124,6 +127,7 @@ namespace DiscordCoreInternal {
 		};
 		return data;
 	};
+
 	std::vector<uint8_t> JSONIFY(int64_t nonce) {
 		nlohmann::json data = {
 			{"d", nonce},
@@ -196,7 +200,8 @@ namespace DiscordCoreInternal {
 		newVector.insert(newVector.begin(), newString.begin(), newString.end());
 		return newVector;
 	}
-	nlohmann::json JSONIFY(std::string serverId, std::string sessionId, std::string token, std::string testString) {
+
+	nlohmann::json JSONIFY(std::string serverId, std::string sessionId, std::string token, std::string) {
 		nlohmann::json data = { {"op", 7},
 			{"d" , {{
 				"server_id", serverId},
@@ -206,7 +211,8 @@ namespace DiscordCoreInternal {
 		};
 		return data;
 	}
-	std::vector<uint8_t> JSONIFY(std::string localPort, std::string localIp, std::string encryptionMode, int32_t testValue) {
+
+	std::vector<uint8_t> JSONIFY(std::string localPort, std::string localIp, std::string encryptionMode, int32_t) {
 		nlohmann::json data = {
 			{"op", 1},
 			{"d" , {
@@ -269,6 +275,7 @@ namespace DiscordCoreInternal {
 		};
 		return data;
 	};
+
 	int32_t JSONIFY(std::string initialPayload) {
 		nlohmann::json jsonVal = nlohmann::json::parse(initialPayload);
 		int32_t finalValue = 0;
