@@ -720,7 +720,9 @@ namespace DiscordCoreInternal {
 				return;
 			}
 			else {
-				this->voiceSocket->writeData(responseData);
+				if (!this->voiceSocket->writeData(responseData)) {
+					this->onClosedExternal();
+				}
 			}
 		}
 		catch (...) {

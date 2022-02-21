@@ -355,7 +355,7 @@ namespace DiscordCoreInternal {
 				}
 				returnData = HttpClient::executeHttpRequest(workload, theConnection);
 				if (workload.workloadType == HttpWorkloadType::Delete_Message_Old) {
-					theConnection.rateLimitDataPtr->getsRemaining -= 2;
+					theConnection.rateLimitDataPtr->getsRemaining = 0;
 				}
 				if (!this->connectionManager.rateLimitValues.contains(theConnection.bucket)) {
 					std::unique_ptr<RateLimitData> tempRateLimitData{ std::make_unique<RateLimitData>() };

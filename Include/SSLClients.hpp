@@ -61,7 +61,7 @@ namespace DiscordCoreInternal {
 #define SOCKET_ERROR	(-1)
 #endif
 
-	DiscordCoreAPI_Dll void reportError(std::string errorPosition, int32_t errorValue);
+	DiscordCoreAPI_Dll void reportError(std::string errorPosition, int32_t errorValue) noexcept;
 
 #ifndef _WIN32
 	struct DiscordCoreAPI_Dll epollWrapper {
@@ -256,17 +256,17 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll HttpSSLClient {
 	public:
 
-		HttpSSLClient(nullptr_t);
+		HttpSSLClient(nullptr_t) noexcept;
 
-		HttpSSLClient();
+		HttpSSLClient() noexcept;
 
-		bool connect(std::string baseUrl, std::string portNew = "443");
+		bool connect(std::string baseUrl, std::string portNew = "443") noexcept;
 
-		void writeData(std::string& theData);
+		void writeData(std::string& theData) noexcept;
 
-		std::string& getInputBuffer();
+		std::string& getInputBuffer() noexcept;
 
-		bool processIO();
+		bool processIO() noexcept;
 
 		virtual ~HttpSSLClient() = default;
 
@@ -288,17 +288,17 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll WebSocketSSLClient {
 	public:
 
-		WebSocketSSLClient(std::string baseUrl, std::string port, int64_t maxBufferSize = 16 * 1024);
+		WebSocketSSLClient(std::string baseUrl, std::string port, int64_t maxBufferSize = 16 * 1024) noexcept;
 
-		WebSocketSSLClient(nullptr_t);
+		WebSocketSSLClient(nullptr_t) noexcept;
 
-		bool processIO(int32_t waitTimeInMicroSeconds);
+		bool processIO(int32_t waitTimeInMicroSeconds) noexcept;
 
-		void writeData(std::string& data);
+		void writeData(std::string& data) noexcept;
 
-		std::string& getInputBuffer();
+		std::string& getInputBuffer() noexcept;
 
-		int64_t getBytesRead();
+		int64_t getBytesRead() noexcept;
 
 	protected:
 
@@ -315,15 +315,15 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll DatagramSocketSSLClient {
 	public:
 
-		DatagramSocketSSLClient(std::string hostName, std::string port);
+		DatagramSocketSSLClient(std::string hostName, std::string port) noexcept;
 
-		DatagramSocketSSLClient(nullptr_t);
+		DatagramSocketSSLClient(nullptr_t) noexcept;
 
-		bool writeData(std::string& dataToWrite);
+		bool writeData(std::string& dataToWrite) noexcept;
 
-		std::string& getInputBuffer();
+		std::string& getInputBuffer() noexcept;
 
-		void readData(bool doWeClear);
+		void readData(bool doWeClear) noexcept;
 
 	protected:
 
