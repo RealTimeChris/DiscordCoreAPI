@@ -4008,6 +4008,17 @@ namespace DiscordCoreInternal {
 
         if (jsonObjectData.contains("resolved") && !jsonObjectData["resolved"].is_null()) {
             auto& value = jsonObjectData["resolved"];
+
+            if (value.contains("attachments") && !value["attachments"].is_null()) {
+                pDataStructure.resolved.attachments.clear();
+                auto newMap = value["attachments"].get<std::unordered_map<std::string, nlohmann::json>>();
+                for (auto& [key, newValue] : newMap) {
+                    DiscordCoreAPI::AttachmentData newData{};
+                    DataParser::parseObject(newValue, newData);
+                    pDataStructure.resolved.attachments.insert(std::make_pair(key, std::move(newData)));
+                }
+            }
+
             if (value.contains("users") && !value["users"].is_null()) {
                 pDataStructure.resolved.users.clear();
                 auto newMap = value["users"].get<std::unordered_map<std::string, nlohmann::json>>();

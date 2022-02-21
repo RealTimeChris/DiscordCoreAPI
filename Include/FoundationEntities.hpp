@@ -2381,6 +2381,7 @@ namespace DiscordCoreAPI {
 
     /// Resolved data. \brief Resolved data.
     struct DiscordCoreAPI_Dll ResolvedData {
+        std::unordered_map<std::string, AttachmentData> attachments{};///< Map of Snowflakes to attachment objects the ids and attachment objects.
         std::unordered_map<std::string, GuildMemberData> members{};///< Map full of GuildMemeberData.
         std::unordered_map<std::string, MessageData> messages{};///< Map full of MessageData.
         std::unordered_map<std::string, ChannelData> channels{};///< Map full of ChannelData.
