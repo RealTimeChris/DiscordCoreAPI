@@ -132,7 +132,7 @@ namespace DiscordCoreInternal {
 		friend class DiscordCoreAPI::VoiceConnection;
 		friend VoiceSocketAgent;
 
-		BaseSocketAgent(std::string botToken, std::string baseUrl, WebSocketOpCode opCode = WebSocketOpCode::Op_Binary);
+		BaseSocketAgent(std::string botToken, std::string baseUrl);
 
 		BaseSocketAgent(nullptr_t);
 
@@ -153,6 +153,7 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::TSUnboundedMessageBlock<WebSocketWorkload> webSocketWorkloadTarget{};
 		std::unique_ptr<DiscordCoreAPI::ThreadPoolTimer> heartbeatTimer{ nullptr };
 		std::unique_ptr<DiscordCoreAPI::CoRoutine<void>> theTask{ nullptr };
+		WebSocketOpCode dataOpcode{ WebSocketOpCode::Op_Binary };
 		std::unique_ptr<WebSocketSSLClient> webSocket{ nullptr };
 		const uint64_t webSocketMaxPayloadLengthLarge{ 65535 };
 		DiscordCoreAPI::EventWaiter areWeReadyToConnectEvent{};
@@ -177,7 +178,6 @@ namespace DiscordCoreInternal {
 		bool areWeAuthenticated{ false };
 		int32_t lastNumberReceived{ 0 };
 		int32_t heartbeatInterval{ 0 };
-		WebSocketOpCode dataOpcode{};
 		std::string sessionId{ "" };
 		bool areWeResuming{ false };
 		std::string botToken{ "" };

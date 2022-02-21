@@ -28,11 +28,10 @@
 
 namespace DiscordCoreInternal {
 
-	BaseSocketAgent::BaseSocketAgent(std::string botToken, std::string baseUrl, WebSocketOpCode opCode) {
+	BaseSocketAgent::BaseSocketAgent(std::string botToken, std::string baseUrl) {
 		this->authKey = DiscordCoreAPI::generateX64BaseEncodedKey();
 		this->state = WebSocketState::Initializing;
 		this->botToken = botToken;
-		this->dataOpcode = opCode;
 		this->baseUrl = baseUrl;
 		this->doWeReconnect.set();
 		this->theTask = std::make_unique<DiscordCoreAPI::CoRoutine<void>>(this->run());
@@ -675,7 +674,6 @@ namespace DiscordCoreInternal {
 			if (this->heartbeatTimer->running()) {
 				this->heartbeatTimer->cancel();
 			}
-			this->webSocket->getInputBuffer().clear();
 			this->haveWeReceivedHeartbeatAck = true;
 			this->connect();
 		}
@@ -1089,8 +1087,6 @@ namespace DiscordCoreInternal {
 		this->voiceSocket.reset(nullptr);
 		this->webSocket.reset(nullptr);
 		this->heartbeatTimer.cancel();
-		this->webSocket->getInputBuffer().clear();
-		this->voiceSocket->getInputBuffer().clear();
 	}
 
 	void VoiceSocketAgent::connect() {
