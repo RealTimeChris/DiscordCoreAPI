@@ -277,11 +277,11 @@ namespace DiscordCoreInternal {
 			case SSL_ERROR_ZERO_RETURN: {
 				return false;
 			}
-			case SSL_ERROR_WANT_WRITE: {
-				[[fallthrough]];
-			}
 			case SSL_ERROR_WANT_READ: {
 				this->wantRead = true;
+				[[fallthrough]];
+			}
+			case SSL_ERROR_WANT_WRITE: {
 				return true;
 			}
 			default: {
@@ -473,11 +473,11 @@ namespace DiscordCoreInternal {
 			case SSL_ERROR_ZERO_RETURN: {
 				return false;
 			}
-			case SSL_ERROR_WANT_WRITE: {
-				[[fallthrough]];
-			}
 			case SSL_ERROR_WANT_READ: {
 				this->wantRead = true;
+				[[fallthrough]];
+			}
+			case SSL_ERROR_WANT_WRITE: {
 				return true;
 			}
 			default: {
