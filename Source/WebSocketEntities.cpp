@@ -41,7 +41,7 @@ namespace DiscordCoreInternal {
 
 	void BaseSocketAgent::sendMessage(std::string& dataToSend) {
 		try {
-			std::lock_guard<std::recursive_mutex> accessLock{ this->accessorMutex01 };
+			std::lock_guard<std::mutex> accessLock{ this->accessorMutex01 };
 			std::cout << "Sending WebSocket Message: " << std::endl << dataToSend;
 			this->webSocket->writeData(dataToSend);
 		}
@@ -63,7 +63,7 @@ namespace DiscordCoreInternal {
 					return;
 				}
 			}
-			std::lock_guard<std::recursive_mutex> accessLock{ this->accessorMutex01 };
+			std::lock_guard<std::mutex> accessLock{ this->accessorMutex01 };
 			std::cout << "Sending WebSocket Message: " << dataToSend.dump() << std::endl << std::endl;
 			std::string theVector = this->erlPacker.parseJsonToEtf(dataToSend);
 			std::string out{};
@@ -134,7 +134,7 @@ namespace DiscordCoreInternal {
 
 	void BaseSocketAgent::getVoiceConnectionData(VoiceConnectInitData doWeCollect) {
 		try {
-			std::lock_guard<std::recursive_mutex> getVoiceConnectionDataLock{ this->accessorMutex01 };
+			this->semaphore.acquire();
 			this->voiceConnectInitData = doWeCollect;
 			DiscordCoreAPI::UpdateVoiceStateData dataPackage{};
 			dataPackage.channelId = "";
@@ -151,6 +151,7 @@ namespace DiscordCoreInternal {
 			while (this->areWeCollectingData) {
 				std::this_thread::sleep_for(std::chrono::milliseconds{ 1 });
 			}
+			this->semaphore.release();
 		}
 		catch (...) {
 			DiscordCoreAPI::reportException("BaseSocketAgent::getVoiceConnectionData()");
@@ -526,7 +527,6 @@ namespace DiscordCoreInternal {
 
 	void BaseSocketAgent::sendHeartBeat() {
 		try {
-			std::lock_guard<std::recursive_mutex> accesLock{ this->accessorMutex01 };
 			if (this->haveWeReceivedHeartbeatAck) {
 				nlohmann::json heartbeat = JSONIFY(this->lastNumberReceived);
 				this->sendMessage(heartbeat);

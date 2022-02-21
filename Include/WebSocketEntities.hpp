@@ -169,8 +169,8 @@ namespace DiscordCoreInternal {
 		std::atomic<bool> areWeConnected{ false };
 		VoiceConnectionData voiceConnectionData{};
 		bool haveWeReceivedHeartbeatAck{ true };
-		std::recursive_mutex accessorMutex01{};
 		const int32_t maxReconnectTries{ 10 };
+		std::binary_semaphore semaphore{ 1 };
 		bool serverUpdateCollected{ false };
 		bool stateUpdateCollected{ false };
 		int32_t currentReconnectTries{ 0 };
@@ -178,6 +178,7 @@ namespace DiscordCoreInternal {
 		bool areWeAuthenticated{ false };
 		int32_t lastNumberReceived{ 0 };
 		int32_t heartbeatInterval{ 0 };
+		std::mutex accessorMutex01{};
 		std::string sessionId{ "" };
 		bool areWeResuming{ false };
 		std::string botToken{ "" };

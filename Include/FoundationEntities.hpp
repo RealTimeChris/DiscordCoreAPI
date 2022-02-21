@@ -56,6 +56,7 @@
 #include <unordered_map>
 #include <curl/curl.h>
 #include <functional>
+#include <semaphore>
 #include <concepts>
 #include <iostream>
 #include <thread>

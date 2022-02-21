@@ -36,36 +36,37 @@
 
 namespace DiscordCoreInternal {
 
-	std::string JSONIFY(DiscordCoreAPI::ModifyChannelData channelData) {
+	std::string JSONIFY(DiscordCoreAPI::ModifyChannelData dataPackage) {
 		auto permOws = nlohmann::json::array();
-		for (auto& [key, value] : channelData.channelData.permissionOverwrites) {
+		for (auto& [key, value] : dataPackage.channelData.permissionOverwrites) {
 			nlohmann::json newData = { {"type", value.type},{"id", value.id}, {"deny", static_cast<std::string>(value.deny.getCurrentPermissionString())}, {"allow", static_cast<std::string>(value.allow.getCurrentPermissionString())}, {"channel_id",value.channelId} };
 			permOws.push_back(newData);
 		}
 
 		nlohmann::json data = {
 				{"permission_overwrites", permOws},
-				{"video_quality_mode",channelData.channelData.videoQualityMode},
-				{"rate_limit_per_user",channelData.channelData.rateLimitPerUser},
-			{"user_limit",channelData.channelData.userLimit},
-			{"position", channelData.channelData.position},
-			{"parent_id", channelData.channelData.parentId},
-			{"bitrate", channelData.channelData.bitrate},
-			{"topic",channelData.channelData.topic},
-			{"nsfw", channelData.channelData.nsfw},
-			{"name", channelData.channelData.name},
-			{"parent_id", channelData.channelData.parentId},
-			{"rtc_region", channelData.channelData.rtcRgion},
-			{"type", channelData.channelData.type},
-			{"default_auto_archive_duration", channelData.channelData.defaultAutoArchiveDuration}
+				{"video_quality_mode",dataPackage.channelData.videoQualityMode},
+				{"rate_limit_per_user",dataPackage.channelData.rateLimitPerUser},
+			{"user_limit",dataPackage.channelData.userLimit},
+			{"position", dataPackage.channelData.position},
+			{"parent_id", dataPackage.channelData.parentId},
+			{"bitrate", dataPackage.channelData.bitrate},
+			{"topic",dataPackage.channelData.topic},
+			{"nsfw", dataPackage.channelData.nsfw},
+			{"name", dataPackage.channelData.name},
+			{"parent_id", dataPackage.channelData.parentId},
+			{"rtc_region", dataPackage.channelData.rtcRgion},
+			{"type", dataPackage.channelData.type},
+			{"default_auto_archive_duration", dataPackage.channelData.defaultAutoArchiveDuration}
 		};
 
 		return data.dump();
 	}
 
 	nlohmann::json JSONIFY(std::string botToken, int32_t intents) {
-		nlohmann::json data;
-		data = {
+		
+#ifdef _WIN32
+		nlohmann::json data = {
 				{"op", 2},
 					{"d", {
 					{"token", botToken},
@@ -80,6 +81,23 @@ namespace DiscordCoreInternal {
 				{"intents", intents}
 				}}
 		};
+#else
+		nlohmann::json data = {
+				{"op", 2},
+					{"d", {
+					{"token", botToken},
+					{"properties", {
+					{"$os", "Linux"},
+					{"$browser", "DiscordCoreAPI"},
+					{"$device", "DiscordCoreAPI"}
+				}},
+				{"compress", false},
+				{"large_threshold", 250},
+				{"shard", {0, 1}},
+				{"intents", intents}
+				}}
+		};
+#endif
 		return data;
 	};
 
