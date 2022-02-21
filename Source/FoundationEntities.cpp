@@ -87,7 +87,7 @@ namespace DiscordCoreAPI {
     }
 
     std::string convertTimeInMsToDateTimeString(int64_t timeInMs, TimeFormat timeFormat) {
-        int64_t timeValue = timeInMs / 100;
+        int64_t timeValue = timeInMs / 1000;
         time_t rawTime(timeValue);
         tm timeInfo = *localtime(&rawTime);
         std::string timeStamp{};
