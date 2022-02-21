@@ -636,13 +636,14 @@ namespace DiscordCoreInternal {
 					return true;
 				}
 				case WebSocketOpCode::Op_Close: {
-					uint16_t close = this->webSocket->getInputBuffer()[2];
+					uint16_t close = this->webSocket->getInputBuffer()[2] & 0xff;
 					close <<= 8;
-					close |= (this->webSocket->getInputBuffer()[3]);
+					close |= this->webSocket->getInputBuffer()[3] & 0xff;
 					this->closeCode = close;
 					std::cout << "WebSocket Closed; Code: " << this->closeCode << std::endl;
 					this->onClosedExternal();
 					return false;
+					
 				}
 				default: {
 					this->closeCode = 0;
@@ -1055,9 +1056,9 @@ namespace DiscordCoreInternal {
 					return true;
 				}
 				case WebSocketOpCode::Op_Close: {
-					uint16_t close = this->webSocket->getInputBuffer()[2];
+					uint16_t close = this->webSocket->getInputBuffer()[2] & 0xff;
 					close <<= 8;
-					close |= this->webSocket->getInputBuffer()[3];
+					close |= this->webSocket->getInputBuffer()[3] & 0xff;
 					this->closeCode = close;
 					std::cout << "Voice WebSocket Closed; Code: " << this->closeCode << std::endl;
 					this->onClosedExternal();
