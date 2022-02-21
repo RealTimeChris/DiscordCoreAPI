@@ -50,7 +50,7 @@
 #include <WebHookEntities.hpp>
 #include <SongAPI.hpp>
 
-void signalHandle(int32_t);
+void signalHandler(int32_t);
 
 namespace DiscordCoreAPI {
 

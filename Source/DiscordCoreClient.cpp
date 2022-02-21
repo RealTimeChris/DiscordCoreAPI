@@ -61,11 +61,10 @@ namespace DiscordCoreAPI {
 	}
 
 	DiscordCoreClient::DiscordCoreClient(std::string botTokenNew, std::string commandPrefixNew, std::vector<RepeatedFunctionData> functionsToExecuteNew,  CacheOptions cacheOptionsNew) {
-		_crt_signal_t signalHandler{ &signalHandle };
-		std::signal(SIGTERM, signalHandler);
-		std::signal(SIGILL, signalHandler);
-		std::signal(SIGINT, signalHandler);
-		std::signal(SIGABRT, signalHandler);
+		std::signal(SIGTERM, &signalHandler);
+		std::signal(SIGILL, &signalHandler);
+		std::signal(SIGINT, &signalHandler);
+		std::signal(SIGABRT, &signalHandler);
 		this->functionsToExecute = functionsToExecuteNew;
 		this->commandPrefix = commandPrefixNew;
 		this->botToken = botTokenNew;
@@ -805,7 +804,7 @@ namespace DiscordCoreAPI {
 	}
 }
 
-void  signalHandle(int32_t)
+void signalHandler(int32_t)
 {
 	DiscordCoreAPI::doWeQuit.store(true, std::memory_order_seq_cst);
 }
