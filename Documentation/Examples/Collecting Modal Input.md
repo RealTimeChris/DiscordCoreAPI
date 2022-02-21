@@ -55,5 +55,4 @@ namespace DiscordCoreAPI {
 		virtual ~Test() = default;
 	};
 }
-
 ```

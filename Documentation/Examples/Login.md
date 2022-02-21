@@ -18,5 +18,4 @@ int32_t main()
     thePtr->runBot();
     return 0;
 }
-
 ```

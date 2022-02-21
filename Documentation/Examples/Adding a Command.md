@@ -23,9 +23,6 @@
 
 #pragma once
 
-#ifndef _TEST_
-#define _TEST_
-
 #include <Index.hpp>
 
 namespace DiscordCoreAPI {
@@ -77,7 +74,6 @@ namespace DiscordCoreAPI {
 		}
 	};
 }
-#endif
 ```
 - Add the command to the library's command list by using the `DiscordCoreAPI::DiscordCoreClient::registerFunction()` function.
 

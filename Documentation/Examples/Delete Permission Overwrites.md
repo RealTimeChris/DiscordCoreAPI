@@ -8,9 +8,6 @@
 
 #pragma once
 
-#ifndef _TEST_
-#define _TEST_
-
 #include <Index.hpp>
 
 namespace DiscordCoreAPI {
@@ -45,5 +42,4 @@ namespace DiscordCoreAPI {
 		}
 	};
 }
-#endif
 ```

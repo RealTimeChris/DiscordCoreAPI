@@ -40,5 +40,4 @@ int32_t main()
     DiscordCoreAPI::DiscordCoreClient::runBot();
     return 0;
 }
-
 ```
