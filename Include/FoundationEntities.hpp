@@ -743,7 +743,7 @@ namespace DiscordCoreAPI {
 
     /// Gateway intents. \brief Gateway intents.
     enum class GatewayIntents : int32_t {
-        Guilds = (1 << 0),/// Intent for receipt of guild information.
+        Guilds = (1 << 0),///< Intent for receipt of guild information.
         GuildMembers = (1 << 1),///< Intent for receipt of guild members.
         GuildBans = (1 << 2),///< Intent for receipt of guild bans.
         GuildEmojis = (1 << 3),///< Intent for receipt of guild emojis.
