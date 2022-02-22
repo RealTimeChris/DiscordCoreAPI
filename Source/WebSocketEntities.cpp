@@ -446,7 +446,7 @@ namespace DiscordCoreInternal {
 					this->webSocketWorkloadTarget.send(std::move(webSocketWorkload));
 				}
 				else if (payload.at("t") == "MESSAGE_CREATE") {
-					webSocketWorkload.eventType = WebSocketEventType::Message_Create;
+					webSocketWorkload.eventType = WebSocketEventType::Message_Create;	
 					this->webSocketWorkloadTarget.send(std::move(webSocketWorkload));
 				}
 				else if (payload.at("t") == "MESSAGE_UPDATE") {

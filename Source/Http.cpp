@@ -495,7 +495,7 @@ namespace DiscordCoreInternal {
 	HttpData HttpClient::httpRequest(HttpWorkloadData& workload, bool printResult) {
 		try {
 			if (workload.baseUrl == "") {
-				workload.baseUrl = "https://discord.com/api/v9";
+				workload.baseUrl = "https://discord.com/api/v10";
 			}
 			HttpConnection& theConnectionNew = this->connectionManager.getConnection(workload.workloadType);
 			HttpData resultData = this->executeByRateLimitData(workload, printResult, theConnectionNew);

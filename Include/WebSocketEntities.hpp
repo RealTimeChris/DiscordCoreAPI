@@ -148,7 +148,7 @@ namespace DiscordCoreInternal {
 
 	protected:
 
-		const int32_t intentsValue{ ((1 << 0) + (1 << 1) + (1 << 2) + (1 << 3) + (1 << 4) + (1 << 5) + (1 << 6) + (1 << 7) + (1 << 8) + (1 << 9) + (1 << 10) + (1 << 11) + (1 << 12) + (1 << 13) + (1 << 14)) };
+		const int32_t intentsValue{ (1 << 0) + (1 << 1) + (1 << 2) + (1 << 3) + (1 << 4) + (1 << 5) + (1 << 6) + (1 << 7) + (1 << 8) + (1 << 9) + (1 << 10) + (1 << 11) + (1 << 12) + (1 << 13) + (1 << 14) + (1 << 15) + (1 << 16) };
 		std::unordered_map<std::string, DiscordCoreAPI::UnboundedMessageBlock<VoiceConnectionData>*> voiceConnectionDataBufferMap{};
 		DiscordCoreAPI::TSUnboundedMessageBlock<WebSocketWorkload> webSocketWorkloadTarget{};
 		std::unique_ptr<DiscordCoreAPI::ThreadPoolTimer> heartbeatTimer{ nullptr };
@@ -163,7 +163,7 @@ namespace DiscordCoreInternal {
 		const unsigned char webSocketFinishBit{ (1u << 7u) };
 		const uint8_t maxHeaderSize{ sizeof(uint64_t) + 2 };
 		const unsigned char webSocketMaskBit{ (1u << 7u) };
-		std::string relativePath{ "/?v=9&encoding=etf" };
+		std::string relativePath{ "/?v=10&encoding=etf" };
 		DiscordCoreAPI::EventWaiter doWeReconnect{};
 		VoiceConnectInitData voiceConnectInitData{};
 		std::atomic<bool> areWeConnected{ false };
