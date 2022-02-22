@@ -760,7 +760,7 @@ namespace DiscordCoreAPI {
         DirectMessageTyping = (1 << 14),///< Intent for receipt of direct message typing notifications.
         MessageContent = (1 << 15),///< Intent for receipt of message content.
         GuildScheduledEvents = (1 << 16),///< Scheduled events.
-        DefaultIntents = Guilds | GuildBans | GuildEmojis | GuildIntegrations | GuildWebhooks | GuildInvites | GuildVoiceStates | GuildMessages | GuildMessageReactions | GuildMessageTyping | DirectMessages | DirectMessageReactions | DirectMessageTyping | GuildScheduledEvents,///< Default D++ intents (all non-privileged intents).
+        DefaultIntents = Guilds | GuildBans | GuildEmojis | GuildIntegrations | GuildWebhooks | GuildInvites | GuildVoiceStates | GuildMessages | GuildMessageReactions | GuildMessageTyping | DirectMessages | DirectMessageReactions | DirectMessageTyping | GuildScheduledEvents,///< Default intents (all non-privileged intents).
         PrivilegedIntents = GuildMembers | GuildPresences | MessageContent,///< Privileged intents requiring ID.
         AllIntents = DefaultIntents | PrivilegedIntents///< Every single intent.
     };
