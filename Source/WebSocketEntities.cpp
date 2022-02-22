@@ -271,7 +271,7 @@ namespace DiscordCoreInternal {
 				int32_t numOfMsToWait = static_cast<int32_t>(1000.0f + ((static_cast<float>(rand()) / static_cast<float>(RAND_MAX)) * static_cast<float>(4000.0f)));
 				std::this_thread::sleep_for(std::chrono::milliseconds{ numOfMsToWait });
 				if (payload.at("d") == true) {
-					nlohmann::json identityJson = JSONIFY(this->botToken, this->intentsValue);
+					nlohmann::json identityJson = JSONIFY(this->botToken, static_cast<int32_t>(this->intentsValue));
 					this->sendMessage(identityJson);
 				}
 				else {
@@ -291,7 +291,7 @@ namespace DiscordCoreInternal {
 				};
 				this->heartbeatTimer = std::make_unique<DiscordCoreAPI::ThreadPoolTimer>(DiscordCoreAPI::ThreadPoolTimer::createPeriodicTimer(onHeartBeat, this->heartbeatInterval));
 				if (!this->areWeAuthenticated) {
-					nlohmann::json identityJson = JSONIFY(this->botToken, this->intentsValue);
+					nlohmann::json identityJson = JSONIFY(this->botToken, static_cast<int32_t>(this->intentsValue));
 					this->sendMessage(identityJson);
 				}
 				if (this->areWeResuming) {
