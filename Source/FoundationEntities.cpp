@@ -557,7 +557,7 @@ namespace DiscordCoreAPI {
 
         int64_t permissions = stoll(basePermissions);
         if (channel.permissionOverwrites.contains(guildMember.guildId)) {
-            OverWriteData overWritesEveryone = channel.permissionOverwrites.at(guildMember.guildId);
+            OverWriteData overWritesEveryone = channel.permissionOverwrites[guildMember.guildId];
             permissions &= ~stoll(overWritesEveryone.deny);
             permissions |= stoll(overWritesEveryone.allow);
         }
@@ -567,7 +567,7 @@ namespace DiscordCoreAPI {
         int64_t deny{ 0 };
         for (auto& value : guildMemberRoles) {
             if (channel.permissionOverwrites.contains(value.id)) {
-                OverWriteData currentChannelOverwrites = channel.permissionOverwrites.at(value.id);
+                OverWriteData currentChannelOverwrites = channel.permissionOverwrites[value.id];
                 allow |= stoll(currentChannelOverwrites.allow);
                 deny |= stoll(currentChannelOverwrites.deny);
             }
@@ -575,7 +575,7 @@ namespace DiscordCoreAPI {
         permissions &= ~deny;
         permissions |= allow;
         if (channel.permissionOverwrites.contains(guildMember.user.id)) {
-            OverWriteData currentOverWrites = channel.permissionOverwrites.at(guildMember.user.id);
+            OverWriteData currentOverWrites = channel.permissionOverwrites[guildMember.user.id];
             permissions &= ~stoll(currentOverWrites.deny);
             permissions |= stoll(currentOverWrites.allow);
 

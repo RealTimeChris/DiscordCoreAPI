@@ -19,7 +19,7 @@ function<bool(Message)> messageFilter = [=](Message message)-> bool {
                     auto returnedMessages = messageCollector.collectMessages();
                     if (returnedMessages.messages.size() == 0) {
                         msgEmbeds.erase(msgEmbeds.begin() + currentPageIndex, msgEmbeds.begin() + currentPageIndex + 1);
-                        msgEmbeds = updateMessageEmbeds(*YouTubeAPI::getQueue(guild.id), discordGuild, newEvent, args->eventData, currentPageIndex);
+                        msgEmbeds = Update_MessageEmbeds(*YouTubeAPI::getQueue(guild.id), discordGuild, newEvent, args->eventData, currentPageIndex);
                         doWeQuit = true;
                         break;
                     }

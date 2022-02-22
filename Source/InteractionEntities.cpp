@@ -60,11 +60,11 @@ namespace DiscordCoreAPI {
              workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
              workload.callStack = "Interactions::createInteractionResponseAsync";
              DiscordCoreInternal::submitWorkloadAndGetResult<void>(*Interactions::httpClient, workload);
-             if (dataPackage.data.type == InteractionCallbackType::ChannelMessageWithSource) {
+             if (dataPackage.data.type == InteractionCallbackType::Channel_Message_With_Source) {
                  if (Interactions::collectMessageDataBuffers.contains(dataPackage.interactionPackage.interactionId)) {
                      Message messageData{};
                      StopWatch<std::chrono::milliseconds> stopWatch(std::chrono::milliseconds{ 1500 });
-                     while (!Interactions::collectMessageDataBuffers.at(dataPackage.interactionPackage.interactionId)->tryReceive(messageData)) {
+                     while (!Interactions::collectMessageDataBuffers[dataPackage.interactionPackage.interactionId]->tryReceive(messageData)) {
                          std::this_thread::sleep_for(std::chrono::milliseconds{ 1 });
                          if (stopWatch.hasTimePassed()) {
                              break;
@@ -293,7 +293,7 @@ namespace DiscordCoreAPI {
                         embedData->setDescription("Sorry, but that menu can only be selected by <@!" + this->userId + ">!");
                         createResponseData->addMessageEmbed(*embedData);
                         createResponseData->data.data.flags = 64;
-                        createResponseData->data.type = InteractionCallbackType::ChannelMessageWithSource;
+                        createResponseData->data.type = InteractionCallbackType::Channel_Message_With_Source;
                         Interactions::createInteractionResponseAsync(*createResponseData).get();
                     }
                     else {
@@ -403,7 +403,7 @@ namespace DiscordCoreAPI {
                         embedData->setDescription("Sorry, but that button can only be pressed by <@!" + this->userId + ">!");
                         createResponseData->addMessageEmbed(*embedData);
                         createResponseData->data.data.flags = 64;
-                        createResponseData->data.type = InteractionCallbackType::ChannelMessageWithSource;
+                        createResponseData->data.type = InteractionCallbackType::Channel_Message_With_Source;
                         Interactions::createInteractionResponseAsync(*createResponseData).get();
                     }
                     else {

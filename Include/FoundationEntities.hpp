@@ -741,30 +741,6 @@ namespace DiscordCoreAPI {
     * @{
     */
 
-    /// Gateway intents. \brief Gateway intents.
-    enum class GatewayIntents : int32_t {
-        Guilds = (1 << 0),///< Intent for receipt of guild information.
-        GuildMembers = (1 << 1),///< Intent for receipt of guild members.
-        GuildBans = (1 << 2),///< Intent for receipt of guild bans.
-        GuildEmojis = (1 << 3),///< Intent for receipt of guild emojis.
-        GuildIntegrations = (1 << 4),///< Intent for receipt of guild integrations.
-        GuildWebhooks = (1 << 5),///< Intent for receipt of guild webhooks.
-        GuildInvites = (1 << 6),///< Intent for receipt of guild invites.
-        GuildVoiceStates = (1 << 7),///< Intent for receipt of guild voice states.
-        GuildPresences = (1 << 8),///< Intent for receipt of guild presences.
-        GuildMessages = (1 << 9),///< Intent for receipt of guild messages.
-        GuildMessageReactions = (1 << 10),///< Intent for receipt of guild message reactions.
-        GuildMessageTyping = (1 << 11),///< Intent for receipt of guild message typing notifications.
-        DirectMessages = (1 << 12),///< Intent for receipt of direct messages (DMs).
-        DirectMessageReactions = (1 << 13),///< Intent for receipt of direct message reactions.
-        DirectMessageTyping = (1 << 14),///< Intent for receipt of direct message typing notifications.
-        MessageContent = (1 << 15),///< Intent for receipt of message content.
-        GuildScheduledEvents = (1 << 16),///< Scheduled events.
-        DefaultIntents = Guilds | GuildBans | GuildEmojis | GuildIntegrations | GuildWebhooks | GuildInvites | GuildVoiceStates | GuildMessages | GuildMessageReactions | GuildMessageTyping | DirectMessages | DirectMessageReactions | DirectMessageTyping | GuildScheduledEvents,///< Default intents (all non-privileged intents).
-        PrivilegedIntents = GuildMembers | GuildPresences | MessageContent,///< Privileged intents requiring ID.
-        AllIntents = DefaultIntents | PrivilegedIntents///< Every single intent.
-    };
-
     /// Permission values, for a given Channel, by Role or GuildMember. \brief Permission values, for a given Channel, by Role or GuildMember.
     enum class Permission : int64_t {
         Create_Instant_Invite = 0x0000000000000001,///< Create Instant Invite.
@@ -894,6 +870,30 @@ namespace DiscordCoreAPI {
     * \addtogroup foundation_entities
     * @{
     */
+
+    /// Gateway intents. \brief Gateway intents.
+    enum class GatewayIntents : int32_t {
+        Guilds = (1 << 0),///< Intent for receipt of guild information.
+        Guild_Members = (1 << 1),///< Intent for receipt of guild members.
+        Guild_Bans = (1 << 2),///< Intent for receipt of guild bans.
+        Guild_Emojis = (1 << 3),///< Intent for receipt of guild emojis.
+        Guild_Integrations = (1 << 4),///< Intent for receipt of guild integrations.
+        Guild_Webhooks = (1 << 5),///< Intent for receipt of guild webhooks.
+        Guild_Invites = (1 << 6),///< Intent for receipt of guild invites.
+        Guild_VoiceStates = (1 << 7),///< Intent for receipt of guild voice states.
+        Guild_Presences = (1 << 8),///< Intent for receipt of guild presences.
+        Guild_Messages = (1 << 9),///< Intent for receipt of guild messages.
+        Guild_Message_Reactions = (1 << 10),///< Intent for receipt of guild message reactions.
+        Guild_Message_Typing = (1 << 11),///< Intent for receipt of guild message typing notifications.
+        Direct_Messages = (1 << 12),///< Intent for receipt of direct messages (DMs).
+        Direct_Message_Reactions = (1 << 13),///< Intent for receipt of direct message reactions.
+        Direct_Message_Typing = (1 << 14),///< Intent for receipt of direct message typing notifications.
+        Message_Content = (1 << 15),///< Intent for receipt of message content.
+        Guild_Scheduled_Events = (1 << 16),///< Scheduled events.
+        Default_Intents = Guilds | Guild_Bans | Guild_Emojis | Guild_Integrations | Guild_Webhooks | Guild_Invites | Guild_VoiceStates | Guild_Messages | Guild_Message_Reactions | Guild_Message_Typing | Direct_Messages | Direct_Message_Reactions | Direct_Message_Typing | Guild_Scheduled_Events,///< Default intents (all non-privileged intents).
+        Privileged_Intents = Guild_Members | Guild_Presences | Message_Content,///< Privileged intents requiring ID.
+        All_Intents = Default_Intents | Privileged_Intents///< Every single intent.
+    };
 
     /// For ids of DiscordEntities. \brief For ids of DiscordEntities.
     using Snowflake = std::string;
@@ -2212,11 +2212,11 @@ namespace DiscordCoreAPI {
     /// Interaction callback types. \brief Interaction callback types.
     enum class InteractionCallbackType {
         Pong = 1,///<	ACK a Ping
-        ChannelMessageWithSource = 4,///< Respond to an interaction with a message.
-        DeferredChannelMessageWithSource = 5,///< ACK an interaction and edit a response later, the user sees a loading state.
-        DeferredUpdateMessage = 6,///< For components, ACK an interactionand edit the original message later; the user does not see a loading state.
-        UpdateMessage = 7,///< For components, edit the message the component was attached to.
-        ApplicationCommandAutocompleteResult = 8,///< Respond to an autocomplete interaction with suggested choices.
+        Channel_Message_With_Source = 4,///< Respond to an interaction with a message.
+        Deferred_Channel_Message_With_Source = 5,///< ACK an interaction and edit a response later, the user sees a loading state.
+        Deferred_Update_Message = 6,///< For components, ACK an interactionand edit the original message later; the user does not see a loading state.
+        Update_Message = 7,///< For components, edit the message the component was attached to.
+        Application_Command_Autocomplete_Result = 8,///< Respond to an autocomplete interaction with suggested choices.
         Modal = 9///<	Respond to an interaction with a popup modal.
     };
 

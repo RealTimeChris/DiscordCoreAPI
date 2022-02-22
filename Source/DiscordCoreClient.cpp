@@ -3,7 +3,7 @@
 
    Copyright 2021 Chris M.
 
-   Licensed under the Apache License, Version 2.0 (the "License");
+   Licensed under the Apache License, Version 2.0 (the "License"];
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
 
@@ -40,24 +40,24 @@ namespace DiscordCoreAPI {
 
 	std::atomic<bool> doWeQuit{ false };
 
-	std::unordered_map<std::string, TSUnboundedMessageBlock<AudioFrameData>*>* getAudioBufferMap() {
-		return &Statics::audioBufferMap;
+	std::unordered_map<std::string, TSUnboundedMessageBlock<AudioFrameData>*>& getAudioBufferMap() {
+		return Statics::audioBufferMap;
 	}
 	
-	std::unordered_map<std::string, std::unique_ptr<VoiceConnection>>* getVoiceConnectionMap() {
-		return &Statics::voiceConnectionMap;
+	std::unordered_map<std::string, std::unique_ptr<VoiceConnection>>& getVoiceConnectionMap() {
+		return Statics::voiceConnectionMap;
 	}
 
-	std::unordered_map<std::string, std::unique_ptr<SoundCloudAPI>>* getSoundCloudAPIMap() {
-		return &Statics::soundCloudAPIMap;
+	std::unordered_map<std::string, std::unique_ptr<SoundCloudAPI>>& getSoundCloudAPIMap() {
+		return Statics::soundCloudAPIMap;
 	}
 
-	std::unordered_map<std::string, std::unique_ptr<YouTubeAPI>>* getYouTubeAPIMap() {
-		return &Statics::youtubeAPIMap;
+	std::unordered_map<std::string, std::unique_ptr<YouTubeAPI>>& getYouTubeAPIMap() {
+		return Statics::youtubeAPIMap;
 	}
 
-	std::unordered_map<std::string, std::unique_ptr<SongAPI>>* getSongAPIMap() {
-		return &Statics::songAPIMap;
+	std::unordered_map<std::string, std::unique_ptr<SongAPI>>& getSongAPIMap() {
+		return Statics::songAPIMap;
 	}
 
 	DiscordCoreClient::DiscordCoreClient(std::string botTokenNew, std::string commandPrefixNew, std::vector<RepeatedFunctionData> functionsToExecuteNew,  CacheOptions cacheOptionsNew) {
@@ -189,7 +189,7 @@ namespace DiscordCoreAPI {
 					{
 						std::unique_ptr<OnChannelUpdateData> dataPackage{ std::make_unique<OnChannelUpdateData>() };
 						if (workload->payLoad.contains("id")) {
-							dataPackage->channelOld = Channels::getCachedChannelAsync({ .channelId = workload->payLoad.at("id") }).get();
+							dataPackage->channelOld = Channels::getCachedChannelAsync({ .channelId = workload->payLoad["id"] }).get();
 							dataPackage->channelNew = dataPackage->channelOld;
 						}
 						DiscordCoreInternal::DataParser::parseObject(workload->payLoad, dataPackage->channelNew);
@@ -266,7 +266,7 @@ namespace DiscordCoreAPI {
 					{
 						std::unique_ptr<OnGuildUpdateData> dataPackage{ std::make_unique<OnGuildUpdateData>() };
 						if (workload->payLoad.contains("id")) {
-							dataPackage->guildOld = Guilds::getCachedGuildAsync({ .guildId = workload->payLoad.at("id") }).get();
+							dataPackage->guildOld = Guilds::getCachedGuildAsync({ .guildId = workload->payLoad["id"] }).get();
 							dataPackage->guildNew = dataPackage->guildOld;
 						}
 						DiscordCoreInternal::DataParser::parseObject(workload->payLoad, dataPackage->guildNew);
@@ -285,11 +285,11 @@ namespace DiscordCoreAPI {
 						std::unique_ptr<OnGuildBanAddData> dataPackage{ std::make_unique<OnGuildBanAddData>() };
 						if (workload->payLoad.contains("user")) {
 							UserData newData{};
-							DiscordCoreInternal::DataParser::parseObject(workload->payLoad.at("user"), newData);
+							DiscordCoreInternal::DataParser::parseObject(workload->payLoad["user"], newData);
 							dataPackage->user = newData;
 						}
 						if (workload->payLoad.contains("guild_id")) {
-							dataPackage->guildId = workload->payLoad.at("guild_id");
+							dataPackage->guildId = workload->payLoad["guild_id"];
 						}
 						this->eventManager->onGuildBanAddEvent(std::move(*dataPackage));
 						break;
@@ -299,11 +299,11 @@ namespace DiscordCoreAPI {
 						std::unique_ptr<OnGuildBanRemoveData> dataPackage{ std::make_unique<OnGuildBanRemoveData>() };
 						if (workload->payLoad.contains("user")) {
 							UserData newData{};
-							DiscordCoreInternal::DataParser::parseObject(workload->payLoad.at("user"), newData);
+							DiscordCoreInternal::DataParser::parseObject(workload->payLoad["user"], newData);
 							dataPackage->user = newData;
 						}
 						if (workload->payLoad.contains("guild_id")) {
-							dataPackage->guildId = workload->payLoad.at("guild_id");
+							dataPackage->guildId = workload->payLoad["guild_id"];
 						}
 						this->eventManager->onGuildBanRemoveEvent(std::move(*dataPackage));
 						break;
@@ -326,7 +326,7 @@ namespace DiscordCoreAPI {
 					{
 						std::unique_ptr<OnGuildIntegrationsUpdateData> dataPackage{ std::make_unique<OnGuildIntegrationsUpdateData>() };
 						if (workload->payLoad.contains("guild_id")) {
-							dataPackage->guildId = workload->payLoad.at("guild_id");
+							dataPackage->guildId = workload->payLoad["guild_id"];
 						}
 						this->eventManager->onGuildIntegrationsUpdateEvent(std::move(*dataPackage));
 						break;
@@ -336,7 +336,7 @@ namespace DiscordCoreAPI {
 						std::unique_ptr<OnGuildMemberAddData> dataPackage{ std::make_unique<OnGuildMemberAddData>() };
 						DiscordCoreInternal::DataParser::parseObject(workload->payLoad, dataPackage->guildMember);
 						if (workload->payLoad.contains("guild_id")) {
-							dataPackage->guildMember.guildId = workload->payLoad.at("guild_id");
+							dataPackage->guildMember.guildId = workload->payLoad["guild_id"];
 						}
 						dataPackage->discordCoreClient = this;
 						this->eventManager->onGuildMemberAddEvent(std::move(*dataPackage));
@@ -347,11 +347,11 @@ namespace DiscordCoreAPI {
 						std::unique_ptr<OnGuildMemberRemoveData> dataPackage{ std::make_unique<OnGuildMemberRemoveData>() };
 						if (workload->payLoad.contains("user")) {
 							UserData newData{};
-							DiscordCoreInternal::DataParser::parseObject(workload->payLoad.at("user"), newData);
+							DiscordCoreInternal::DataParser::parseObject(workload->payLoad["user"], newData);
 							dataPackage->user = newData;
 						}
 						if (workload->payLoad.contains("guild_id")) {
-							dataPackage->guildId = workload->payLoad.at("guild_id");
+							dataPackage->guildId = workload->payLoad["guild_id"];
 						}
 						this->eventManager->onGuildMemberRemoveEvent(std::move(*dataPackage));
 						break;
@@ -359,12 +359,12 @@ namespace DiscordCoreAPI {
 					case DiscordCoreInternal::WebSocketEventType::Guild_Member_Update:
 					{
 						std::unique_ptr<OnGuildMemberUpdateData> dataPackage{ std::make_unique<OnGuildMemberUpdateData>() };
-						if (workload->payLoad.contains("user") && workload->payLoad.at("user").contains("id")) {
-							dataPackage->guildMemberOld = GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = workload->payLoad.at("user").at("id"),.guildId = workload->payLoad.at("guild_id") }).get();
+						if (workload->payLoad.contains("user") && workload->payLoad["user"].contains("id")) {
+							dataPackage->guildMemberOld = GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = workload->payLoad["user"].at("id"),.guildId = workload->payLoad["guild_id"] }).get();
 							dataPackage->guildMemberNew = dataPackage->guildMemberOld;
 						}
 						if (workload->payLoad.contains("guild_id")) {
-							dataPackage->guildMemberNew.guildId = workload->payLoad.at("guild_id");
+							dataPackage->guildMemberNew.guildId = workload->payLoad["guild_id"];
 						}
 						DiscordCoreInternal::DataParser::parseObject(workload->payLoad, dataPackage->guildMemberNew);
 						this->eventManager->onGuildMemberUpdateEvent(std::move(*dataPackage));
@@ -381,10 +381,10 @@ namespace DiscordCoreAPI {
 					{
 						std::unique_ptr<OnRoleCreationData> dataPackage{ std::make_unique<OnRoleCreationData>() };
 						if (workload->payLoad.contains("role")) {
-							DiscordCoreInternal::DataParser::parseObject(workload->payLoad.at("role"), dataPackage->role);
+							DiscordCoreInternal::DataParser::parseObject(workload->payLoad["role"], dataPackage->role);
 						}
 						if (workload->payLoad.contains("guild_id")) {
-							dataPackage->guildId = workload->payLoad.at("guild_id");
+							dataPackage->guildId = workload->payLoad["guild_id"];
 						}
 						this->eventManager->onRoleCreationEvent(std::move(*dataPackage));
 						break;
@@ -393,12 +393,12 @@ namespace DiscordCoreAPI {
 					{
 						std::unique_ptr<OnRoleUpdateData> dataPackage{ std::make_unique<OnRoleUpdateData>() };
 						if (workload->payLoad.contains("role")) {
-							dataPackage->roleOld = Roles::getCachedRoleAsync({ .roleId = workload->payLoad.at("role").at("id") }).get();
+							dataPackage->roleOld = Roles::getCachedRoleAsync({ .roleId = workload->payLoad["role"].at("id") }).get();
 							dataPackage->roleNew = dataPackage->roleOld;
 						}
-						DiscordCoreInternal::DataParser::parseObject(workload->payLoad.at("role"), dataPackage->roleNew);
+						DiscordCoreInternal::DataParser::parseObject(workload->payLoad["role"], dataPackage->roleNew);
 						if (workload->payLoad.contains("guild_id")) {
-							dataPackage->guildId = workload->payLoad.at("guild_id");
+							dataPackage->guildId = workload->payLoad["guild_id"];
 						}
 						this->eventManager->onRoleUpdateEvent(std::move(*dataPackage));
 						break;
@@ -407,10 +407,10 @@ namespace DiscordCoreAPI {
 					{
 						std::unique_ptr<OnRoleDeletionData> dataPackage{ std::make_unique<OnRoleDeletionData>() };
 						if (workload->payLoad.contains("guild_id")) {
-							dataPackage->guildId = workload->payLoad.at("guild_id");
+							dataPackage->guildId = workload->payLoad["guild_id"];
 						}
 						if (workload->payLoad.contains("role_id")) {
-							dataPackage->roleOld = Roles::getCachedRoleAsync({ .roleId = workload->payLoad.at("role_id") }).get();
+							dataPackage->roleOld = Roles::getCachedRoleAsync({ .roleId = workload->payLoad["role_id"] }).get();
 						}
 						this->eventManager->onRoleDeletionEvent(std::move(*dataPackage));
 						break;
@@ -419,10 +419,10 @@ namespace DiscordCoreAPI {
 					{
 						std::unique_ptr<OnIntegrationCreationData> dataPackage{ std::make_unique<OnIntegrationCreationData>() };
 						if (workload->payLoad.contains("guild_id")) {
-							dataPackage->guildId = workload->payLoad.at("guild_id");
+							dataPackage->guildId = workload->payLoad["guild_id"];
 						}
 						if (workload->payLoad.contains("integration")) {
-							DiscordCoreInternal::DataParser::parseObject(workload->payLoad.at("integration"), dataPackage->integrationData);
+							DiscordCoreInternal::DataParser::parseObject(workload->payLoad["integration"], dataPackage->integrationData);
 						}
 						this->eventManager->onIntegrationCreationEvent(std::move(*dataPackage));
 						break;
@@ -431,10 +431,10 @@ namespace DiscordCoreAPI {
 					{
 						std::unique_ptr<OnIntegrationUpdateData> dataPackage{ std::make_unique<OnIntegrationUpdateData>() };
 						if (workload->payLoad.contains("guild_id")) {
-							dataPackage->guildId = workload->payLoad.at("guild_id");
+							dataPackage->guildId = workload->payLoad["guild_id"];
 						}
 						if (workload->payLoad.contains("integration")) {
-							DiscordCoreInternal::DataParser::parseObject(workload->payLoad.at("integration"), dataPackage->integrationData);
+							DiscordCoreInternal::DataParser::parseObject(workload->payLoad["integration"], dataPackage->integrationData);
 						}
 						this->eventManager->onIntegrationUpdateEvent(std::move(*dataPackage));
 						break;
@@ -443,13 +443,13 @@ namespace DiscordCoreAPI {
 					{
 						std::unique_ptr<OnIntegrationDeletionData> dataPackage{ std::make_unique<OnIntegrationDeletionData>() };
 						if (workload->payLoad.contains("guild_id")) {
-							dataPackage->guildId = workload->payLoad.at("guild_id");
+							dataPackage->guildId = workload->payLoad["guild_id"];
 						}
 						if (workload->payLoad.contains("application_id")) {
-							dataPackage->applicationId = workload->payLoad.at("application_id");
+							dataPackage->applicationId = workload->payLoad["application_id"];
 						}
 						if (workload->payLoad.contains("id")) {
-							dataPackage->id = workload->payLoad.at("id");
+							dataPackage->id = workload->payLoad["id"];
 						}
 						this->eventManager->onIntegrationDeletionEvent(std::move(*dataPackage));
 						break;
@@ -458,10 +458,10 @@ namespace DiscordCoreAPI {
 					{
 						std::unique_ptr<InteractionData> interactionData{ std::make_unique<InteractionData>() };
 						if (workload->payLoad.contains("user")) {
-							*interactionData = InteractionData(workload->payLoad.at("user").at("id").get<std::string>());
+							*interactionData = InteractionData(workload->payLoad["user"].at("id").get<std::string>());
 						}
 						else if (workload->payLoad.contains("member")) {
-							*interactionData = InteractionData(workload->payLoad.at("member").at("user").at("id").get<std::string>());
+							*interactionData = InteractionData(workload->payLoad["member"].at("user").at("id").get<std::string>());
 						}
 						DiscordCoreInternal::DataParser::parseObject(workload->payLoad, *interactionData.get());
 						std::unique_ptr<InputEventData> eventData{ std::make_unique<InputEventData>(MessageData(), *interactionData, InputEventType::Unset) };
@@ -520,7 +520,7 @@ namespace DiscordCoreAPI {
 								std::unique_ptr<OnInputEventCreationData> eventCreationData{ std::make_unique<OnInputEventCreationData>() };
 								eventCreationData->inputEventData = *eventData;
 								if (ButtonCollector::buttonInteractionBufferMap.contains(eventData->getChannelId() + eventData->getMessageId())) {
-									ButtonCollector::buttonInteractionBufferMap.at(eventData->getChannelId() + eventData->getMessageId())->send(eventData->getInteractionData());
+									ButtonCollector::buttonInteractionBufferMap[eventData->getChannelId() + eventData->getMessageId()]->send(eventData->getInteractionData());
 								}
 								this->eventManager->onInputEventCreationEvent(*eventCreationData);
 								this->eventManager->onInteractionCreationEvent(std::move(*dataPackage));
@@ -535,7 +535,7 @@ namespace DiscordCoreAPI {
 								std::unique_ptr<OnInputEventCreationData> eventCreationData{ std::make_unique<OnInputEventCreationData>() };
 								eventCreationData->inputEventData = *eventData;
 								if (SelectMenuCollector::selectMenuInteractionBufferMap.contains(eventData->getChannelId() + eventData->getMessageId())) {
-									SelectMenuCollector::selectMenuInteractionBufferMap.at(eventData->getChannelId() + eventData->getMessageId())->send(eventData->getInteractionData());
+									SelectMenuCollector::selectMenuInteractionBufferMap[eventData->getChannelId() + eventData->getMessageId()]->send(eventData->getInteractionData());
 								}
 								this->eventManager->onInputEventCreationEvent(*eventCreationData);
 								this->eventManager->onInteractionCreationEvent(std::move(*dataPackage));
@@ -551,14 +551,14 @@ namespace DiscordCoreAPI {
 							std::unique_ptr<OnInputEventCreationData> eventCreationData{ std::make_unique<OnInputEventCreationData>() };
 							eventCreationData->inputEventData = *eventData;
 							if (ModalCollector::modalInteractionBufferMap.contains(eventData->getChannelId())) {
-								ModalCollector::modalInteractionBufferMap.at(eventData->getChannelId())->send(eventData->getInteractionData());
+								ModalCollector::modalInteractionBufferMap[eventData->getChannelId()]->send(eventData->getInteractionData());
 							}
 							this->eventManager->onInputEventCreationEvent(*eventCreationData);
 							this->eventManager->onInteractionCreationEvent(std::move(*dataPackage));
 						}
 						if (Interactions::collectMessageDataBuffers.contains(interactionData->id)) {
 							std::unique_ptr<MessageData> messageData{ std::make_unique<MessageData>(interactionData->message) };
-							Interactions::collectMessageDataBuffers.at(eventData->getInteractionId())->send(*messageData);
+							Interactions::collectMessageDataBuffers[eventData->getInteractionId()]->send(*messageData);
 						}
 						break;
 					}
@@ -573,13 +573,13 @@ namespace DiscordCoreAPI {
 					{
 						std::unique_ptr<OnInviteDeletionData> dataPackage{ std::make_unique<OnInviteDeletionData>() };
 						if (workload->payLoad.contains("channel_id")) {
-							dataPackage->channelId = workload->payLoad.at("channel_id");
+							dataPackage->channelId = workload->payLoad["channel_id"];
 						}
 						if (workload->payLoad.contains("guild_id")) {
-							dataPackage->guildId = workload->payLoad.at("guild_id");
+							dataPackage->guildId = workload->payLoad["guild_id"];
 						}
 						if (workload->payLoad.contains("code")) {
-							dataPackage->code = workload->payLoad.at("code");
+							dataPackage->code = workload->payLoad["code"];
 						}
 						this->eventManager->onInviteDeletionEvent(std::move(*dataPackage));
 						break;
@@ -590,7 +590,7 @@ namespace DiscordCoreAPI {
 						DiscordCoreInternal::DataParser::parseObject(workload->payLoad, *message.get());
 						if (message->interaction.id != "") {
 							if (Interactions::collectMessageDataBuffers.contains(message->interaction.id)) {
-								Interactions::collectMessageDataBuffers.at(message->interaction.id)->send(*message);
+								Interactions::collectMessageDataBuffers[message->interaction.id]->send(*message);
 							}
 						}
 						std::unique_ptr<InputEventData> eventData{ std::make_unique<InputEventData>(*message, InteractionData(), InputEventType::Regular_Message) };
@@ -615,7 +615,7 @@ namespace DiscordCoreAPI {
 						DiscordCoreInternal::DataParser::parseObject(workload->payLoad, dataPackage->messageNew);
 						if (dataPackage->messageNew.interaction.id != "") {
 							if (Interactions::collectMessageDataBuffers.contains(dataPackage->messageNew.interaction.id)) {
-								Interactions::collectMessageDataBuffers.at(dataPackage->messageNew.interaction.id)->send(dataPackage->messageNew);
+								Interactions::collectMessageDataBuffers[dataPackage->messageNew.interaction.id]->send(dataPackage->messageNew);
 							}
 						}
 						this->eventManager->onMessageUpdateEvent(std::move(*dataPackage));
@@ -625,13 +625,13 @@ namespace DiscordCoreAPI {
 					{
 						std::unique_ptr<OnMessageDeletionData> dataPackage{ std::make_unique<OnMessageDeletionData>() };
 						if (workload->payLoad.contains("guild_id")) {
-							dataPackage->guildId = workload->payLoad.at("guild_id");
+							dataPackage->guildId = workload->payLoad["guild_id"];
 						}
 						if (workload->payLoad.contains("channel_id")) {
-							dataPackage->channelId = workload->payLoad.at("channel_id");
+							dataPackage->channelId = workload->payLoad["channel_id"];
 						}
 						if (workload->payLoad.contains("id")) {
-							dataPackage->messageId = workload->payLoad.at("id");
+							dataPackage->messageId = workload->payLoad["id"];
 						}
 						this->eventManager->onMessageDeletionEvent(std::move(*dataPackage));
 						break;
@@ -640,13 +640,13 @@ namespace DiscordCoreAPI {
 					{
 						std::unique_ptr<OnMessageDeleteBulkData> dataPackage{ std::make_unique<OnMessageDeleteBulkData>() };
 						if (workload->payLoad.contains("channel_id")) {
-							dataPackage->channelId = workload->payLoad.at("channel_id");
+							dataPackage->channelId = workload->payLoad["channel_id"];
 						}
 						if (workload->payLoad.contains("guild_id")) {
-							dataPackage->guildId = workload->payLoad.at("guild_id");
+							dataPackage->guildId = workload->payLoad["guild_id"];
 						}
 						if (workload->payLoad.contains("ids")) {
-							for (auto& value : workload->payLoad.at("ids")) {
+							for (auto& value : workload->payLoad["ids"]) {
 								dataPackage->ids.push_back(value);
 							}
 						}
@@ -671,13 +671,13 @@ namespace DiscordCoreAPI {
 					{
 						std::unique_ptr<OnReactionRemoveAllData> dataPackage{ std::make_unique<OnReactionRemoveAllData>() };
 						if (workload->payLoad.contains("channel_id")) {
-							dataPackage->channelId = workload->payLoad.at("channel_id");
+							dataPackage->channelId = workload->payLoad["channel_id"];
 						}
 						if (workload->payLoad.contains("message_id")) {
-							dataPackage->messageId = workload->payLoad.at("message_id");
+							dataPackage->messageId = workload->payLoad["message_id"];
 						}
 						if (workload->payLoad.contains("guild_id")) {
-							dataPackage->guildId = workload->payLoad.at("guild_id");
+							dataPackage->guildId = workload->payLoad["guild_id"];
 						}
 						this->eventManager->onReactionRemoveAllEvent(std::move(*dataPackage));
 						break;
@@ -686,15 +686,15 @@ namespace DiscordCoreAPI {
 					{
 						std::unique_ptr<OnReactionRemoveEmojiData> dataPackage{ std::make_unique<OnReactionRemoveEmojiData>() };
 						if (workload->payLoad.contains("channel_id")) {
-							dataPackage->channelId = workload->payLoad.at("channel_id");
+							dataPackage->channelId = workload->payLoad["channel_id"];
 						}
 						if (workload->payLoad.contains("message_id")) {
-							dataPackage->messageId = workload->payLoad.at("message_id");
+							dataPackage->messageId = workload->payLoad["message_id"];
 						}
 						if (workload->payLoad.contains("guild_id")) {
-							dataPackage->guildId = workload->payLoad.at("guild_id");
+							dataPackage->guildId = workload->payLoad["guild_id"];
 						}
-						DiscordCoreInternal::DataParser::parseObject(workload->payLoad.at("emoji"), dataPackage->emoji);
+						DiscordCoreInternal::DataParser::parseObject(workload->payLoad["emoji"], dataPackage->emoji);
 						this->eventManager->onReactionRemoveEmojiEvent(std::move(*dataPackage));
 						break;
 					}
@@ -737,7 +737,7 @@ namespace DiscordCoreAPI {
 					{
 						std::unique_ptr<OnUserUpdateData> dataPackage{ std::make_unique<OnUserUpdateData>() };
 						UserData newData{};
-						DiscordCoreInternal::DataParser::parseObject(workload->payLoad.at("user"), newData);
+						DiscordCoreInternal::DataParser::parseObject(workload->payLoad["user"], newData);
 						dataPackage->userNew = newData;
 						dataPackage->userOld = Users::getCachedUserAsync({ .userId = dataPackage->userNew.id }).get();
 						this->eventManager->onUserUpdateEvent(std::move(*dataPackage));
@@ -754,13 +754,13 @@ namespace DiscordCoreAPI {
 					{
 						std::unique_ptr<OnVoiceServerUpdateData> dataPackage{ std::make_unique<OnVoiceServerUpdateData>() };
 						if (workload->payLoad.contains("endpoint")) {
-							dataPackage->endpoint = workload->payLoad.at("endpoint");
+							dataPackage->endpoint = workload->payLoad["endpoint"];
 						}
 						if (workload->payLoad.contains("guild_id")) {
-							dataPackage->guildId = workload->payLoad.at("guild_id");
+							dataPackage->guildId = workload->payLoad["guild_id"];
 						}
 						if (workload->payLoad.contains("token")) {
-							dataPackage->token = workload->payLoad.at("token");
+							dataPackage->token = workload->payLoad["token"];
 						}
 						this->eventManager->onVoiceServerUpdateEvent(std::move(*dataPackage));
 						break;
@@ -769,10 +769,10 @@ namespace DiscordCoreAPI {
 					{
 						std::unique_ptr<OnWebhookUpdateData> dataPackage{ std::make_unique<OnWebhookUpdateData>() };
 						if (workload->payLoad.contains("channel_id")) {
-							dataPackage->channelId = workload->payLoad.at("channel_id");
+							dataPackage->channelId = workload->payLoad["channel_id"];
 						}
 						if (workload->payLoad.contains("guild_id")) {
-							dataPackage->guildId = workload->payLoad.at("guild_id");
+							dataPackage->guildId = workload->payLoad["guild_id"];
 						}
 						this->eventManager->onWebhookUpdateEvent(std::move(*dataPackage));
 						break;
@@ -797,7 +797,7 @@ namespace DiscordCoreAPI {
 	DiscordCoreClient::~DiscordCoreClient() {
 		if (this != nullptr) {
 			curl_global_cleanup();
-			for (auto& [key, value] : *getVoiceConnectionMap()) {
+			for (auto& [key, value] : getVoiceConnectionMap()) {
 				value.reset(nullptr);
 			}
 		}

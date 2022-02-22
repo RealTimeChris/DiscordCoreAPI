@@ -71,7 +71,7 @@ namespace DiscordCoreAPI {
 			co_await NewThreadAwaitable<GuildMember>();
 			GuildMember guildMember{};
 			if (GuildMembers::cache.contains(dataPackage.guildId + " + " + dataPackage.guildMemberId)) {
-				guildMember = GuildMembers::cache.at(dataPackage.guildId + " + " + dataPackage.guildMemberId);
+				guildMember = GuildMembers::cache[dataPackage.guildId + " + " + dataPackage.guildMemberId];
 				guildMember.guildId = dataPackage.guildId;
 				co_return guildMember;
 			}

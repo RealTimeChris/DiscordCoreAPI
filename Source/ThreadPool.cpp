@@ -30,14 +30,14 @@ namespace DiscordCoreAPI {
 
     void ThreadPool::stopThread(std::string theKey) {
         if (this->threads.contains(theKey)) {
-            this->threads.at(theKey).cancel();
+            this->threads[theKey].cancel();
             this->threads.erase(theKey);
         }
     }
 
     CoRoutineStatus ThreadPool::getThreadStatus(std::string theKey) {
         if (this->threads.contains(theKey)) {
-            return this->threads.at(theKey).getStatus();
+            return this->threads[theKey].getStatus();
         }
         else {
             return CoRoutineStatus{};

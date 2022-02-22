@@ -80,7 +80,7 @@ namespace DiscordCoreAPI {
 			co_await NewThreadAwaitable<Channel>();
 			Channel channel{};
 			if (Channels::cache.contains(dataPackage.channelId)) {
-				channel = Channels::cache.at(dataPackage.channelId);
+				channel = Channels::cache[dataPackage.channelId];
 			}
 			else {
 				channel = Channels::getChannelAsync(dataPackage).get();
