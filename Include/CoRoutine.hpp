@@ -15,7 +15,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-/// CoRoutine.hpp - Header for the coroutine class DiscordCoreAPI_Dll.
+/// CoRoutine.hpp - Header for the coroutine class.
 /// Oct 23, 2021
 /// Chris M.
 /// https://github.com/RealTimeChris/DiscordCoreAPI

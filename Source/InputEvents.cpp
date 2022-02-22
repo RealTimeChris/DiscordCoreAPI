@@ -15,7 +15,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-/// InputEvents.cpp - Source file for the input-event handler class DiscordCoreAPI_Dll.
+/// InputEvents.cpp - Source file for the input-event handler class.
 /// Aug 18, 2021
 /// Chris M.
 /// https://github.com/RealTimeChris/DiscordCoreAPI

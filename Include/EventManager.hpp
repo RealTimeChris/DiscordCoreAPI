@@ -15,7 +15,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-/// EventManager.hpp - Header for the event manager class DiscordCoreAPI_Dll.
+/// EventManager.hpp - Header for the event manager class.
 /// Apr 26, 2021
 /// Chris M.
 /// https://github.com/RealTimeChris/DiscordCoreAPI
@@ -331,7 +331,7 @@ namespace DiscordCoreAPI {
 		std::string guildId{ "" };///< Id of the Guild for which the WebHook Update is occurring.
 	};
 
-	/// class DiscordCoreAPI_Dll for handling the assignment of event-handling functions. \brief class DiscordCoreAPI_Dll for handling the assignment of event-handling functions.int32_t
+	/// Class for handling the assignment of event-handling functions. \brief Class for handling the assignment of event-handling functions.int32_t
 	class DiscordCoreAPI_Dll EventManager {
 	public:
 

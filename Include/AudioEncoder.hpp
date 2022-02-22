@@ -15,7 +15,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-/// AudioEncoder.hpp - Header for the audio encoder class DiscordCoreAPI_Dll.
+/// AudioEncoder.hpp - Header for the audio encoder class.
 /// Aug 22, 2021
 /// Chris M.
 /// https://github.com/RealTimeChris/DiscordCoreAPI

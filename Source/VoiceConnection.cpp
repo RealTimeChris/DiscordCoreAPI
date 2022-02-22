@@ -15,7 +15,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-/// VoiceConnection.cpp - Source file for the voice connection class DiscordCoreAPI_Dll.
+/// VoiceConnection.cpp - Source file for the voice connection class.
 /// Jul 15, 2021
 /// Chris M.
 /// https://github.com/RealTimeChris/DiscordCoreAPI

@@ -15,7 +15,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-/// AudioDecoder.cpp - Source file for the audio decoder class DiscordCoreAPI_Dll.
+/// AudioDecoder.cpp - Source file for the audio decoder class.
 /// Jul 29, 2021
 /// Chris M.
 /// https://github.com/RealTimeChris/DiscordCoreAPI

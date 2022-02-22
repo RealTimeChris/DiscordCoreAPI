@@ -786,7 +786,7 @@ namespace DiscordCoreAPI {
         Moderate_Members = 0x0000010000000000///< Moderate Members. 0x0000010000000000///< Moderate Members.
     };
 
-    /// Permissions class DiscordCoreAPI_Dll, for representing and manipulating Permission values. \brief Permissions class DiscordCoreAPI_Dll, for representing and manipulating Permission values.
+    /// Permissions class, for representing and manipulating Permission values. \brief Permissions class, for representing and manipulating Permission values.
     class DiscordCoreAPI_Dll Permissions : public std::string {
     public:
 
@@ -898,7 +898,7 @@ namespace DiscordCoreAPI {
     /// For ids of DiscordEntities. \brief For ids of DiscordEntities.
     using Snowflake = std::string;
 
-    /// Base class DiscordCoreAPI_Dll for all Discord entities. \brief Base class DiscordCoreAPI_Dll for all Discord entities.
+    /// Base class for all Discord entities. \brief Base class for all Discord entities.
     class DiscordCoreAPI_Dll DiscordEntity {
     public:
         Snowflake id{ "" };///< The identifier "snowflake" of the given entity.
@@ -3306,7 +3306,7 @@ namespace DiscordCoreAPI {
         virtual ~BaseFunctionArguments() = default;
     };
 
-    /// Base class DiscordCoreAPI_Dll for the command classes. \brief Base class DiscordCoreAPI_Dll for the command classes.
+    /// Base class for the command classes. \brief Base class for the command classes.
     class DiscordCoreAPI_Dll BaseFunction {
     public:
         std::string helpDescription{ "" };///< Description of the command for the Help command.

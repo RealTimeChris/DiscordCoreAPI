@@ -15,7 +15,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-/// DiscordCoreClient01.cpp - Source file for the main/exposed DiscordCoreClient class DiscordCoreAPI_Dll.
+/// DiscordCoreClient01.cpp - Source file for the main/exposed DiscordCoreClient class.
 /// May 12, 2021
 /// Chris M.
 /// https://github.com/RealTimeChris/DiscordCoreAPI

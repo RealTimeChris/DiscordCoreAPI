@@ -32,7 +32,7 @@ namespace DiscordCoreAPI {
 	* \addtogroup voice_connection
 	* @{
 	*/
-	/// A class DiscordCoreAPI_Dll representing the Song APIs. \brief A class DiscordCoreAPI_Dll representing the Song APIs.
+	/// A class representing the Song APIs. \brief A class representing the Song APIs.
 	class DiscordCoreAPI_Dll SongAPI {
 	public:
 

@@ -15,7 +15,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-/// VoiceConnection.hpp - Header for the voice connection class DiscordCoreAPI_Dll.
+/// VoiceConnection.hpp - Header for the voice connection class.
 /// Jul 15, 2021
 /// Chris M.
 /// https://github.com/RealTimeChris/DiscordCoreAPI
@@ -49,7 +49,7 @@ namespace DiscordCoreAPI {
 	* \addtogroup voice_connection
 	* @{
 	*/
-	/// VoiceConnection class DiscordCoreAPI_Dll - represents the connection to a given voice channel. \brief VoiceConnection class DiscordCoreAPI_Dll - represents the connection to a given voice channel.
+	/// VoiceConnection class - represents the connection to a given voice channel. \brief VoiceConnection class - represents the connection to a given voice channel.
 	class DiscordCoreAPI_Dll VoiceConnection {
 	public:
 		

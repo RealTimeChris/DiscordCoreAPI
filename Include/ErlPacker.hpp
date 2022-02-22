@@ -15,7 +15,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-/// ErlPacker.hpp - Header for the erlpacking class DiscordCoreAPI_Dll.
+/// ErlPacker.hpp - Header for the erlpacking class.
 /// Nov 8, 2021
 /// Chris M.
 /// https://github.com/RealTimeChris/DiscordCoreAPI

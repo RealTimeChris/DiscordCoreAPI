@@ -15,7 +15,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-/// EventManager.hpp - Header for the event manager class DiscordCoreAPI_Dll.
+/// EventManager.hpp - Header for the event manager class.
 /// Jun 7, 2021
 /// Chris M.
 /// https://github.com/RealTimeChris/DiscordCoreAPI

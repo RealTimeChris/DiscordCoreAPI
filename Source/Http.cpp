@@ -15,7 +15,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-/// Http.cpp - Source file for the Http class DiscordCoreAPI_Dll.
+/// Http.cpp - Source file for the Http class.
 /// May 12, 2021
 /// Chris M.
 /// https://github.com/RealTimeChris/DiscordCoreAPI
