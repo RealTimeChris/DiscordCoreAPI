@@ -741,6 +741,30 @@ namespace DiscordCoreAPI {
     * @{
     */
 
+    /// Gateway intents. \brief Gateway intents.
+    enum class GatewayIntents : int32_t {
+        Guilds = (1 << 0),/// Intent for receipt of guild information.
+        GuildMembers = (1 << 1),///< Intent for receipt of guild members.
+        GuildBans = (1 << 2),///< Intent for receipt of guild bans.
+        GuildEmojis = (1 << 3),///< Intent for receipt of guild emojis.
+        GuildIntegrations = (1 << 4),///< Intent for receipt of guild integrations.
+        GuildWebhooks = (1 << 5),///< Intent for receipt of guild webhooks.
+        GuildInvites = (1 << 6),///< Intent for receipt of guild invites.
+        GuildVoiceStates = (1 << 7),///< Intent for receipt of guild voice states.
+        GuildPresences = (1 << 8),///< Intent for receipt of guild presences.
+        GuildMessages = (1 << 9),///< Intent for receipt of guild messages.
+        GuildMessageReactions = (1 << 10),///< Intent for receipt of guild message reactions.
+        GuildMessageTyping = (1 << 11),///< Intent for receipt of guild message typing notifications.
+        DirectMessages = (1 << 12),///< Intent for receipt of direct messages (DMs).
+        DirectMessageReactions = (1 << 13),///< Intent for receipt of direct message reactions.
+        DirectMessageTyping = (1 << 14),///< Intent for receipt of direct message typing notifications.
+        MessageContent = (1 << 15),///< Intent for receipt of message content.
+        GuildScheduledEvents = (1 << 16),///< Scheduled events.
+        DefaultIntents = Guilds | GuildBans | GuildEmojis | GuildIntegrations | GuildWebhooks | GuildInvites | GuildVoiceStates | GuildMessages | GuildMessageReactions | GuildMessageTyping | DirectMessages | DirectMessageReactions | DirectMessageTyping | GuildScheduledEvents,///< Default D++ intents (all non-privileged intents).
+        PrivilegedIntents = GuildMembers | GuildPresences | MessageContent,///< Privileged intents requiring ID.
+        AllIntents = DefaultIntents | PrivilegedIntents///< Every single intent.
+    };
+
     /// Permission values, for a given Channel, by Role or GuildMember. \brief Permission values, for a given Channel, by Role or GuildMember.
     enum class Permission : int64_t {
         Create_Instant_Invite = 0x0000000000000001,///< Create Instant Invite.
