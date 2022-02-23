@@ -753,6 +753,7 @@ namespace DiscordCoreInternal {
 			this->onClosedExternal();
 		}
 	}
+
 	void VoiceSocketAgent::sendMessage(std::string& dataToSend) {
 		try {
 			std::cout << "Sending Voice WebSocket Message: " << std::endl << dataToSend;
@@ -763,6 +764,7 @@ namespace DiscordCoreInternal {
 			this->onClosedExternal();
 		}
 	}
+
 	uint64_t VoiceSocketAgent::createHeader(char* outBuffer, uint64_t sendlength, WebSocketOpCode opCode) {
 		try {
 			size_t position = 0;
@@ -798,6 +800,7 @@ namespace DiscordCoreInternal {
 			return size_t{};
 		}
 	}
+
 	std::vector<std::string> VoiceSocketAgent::tokenize(std::string& dataIn, std::string separator) {
 		try {
 			std::string::size_type value{ 0 };
@@ -815,6 +818,7 @@ namespace DiscordCoreInternal {
 			return std::vector<std::string>{};
 		}
 	}
+
 	DiscordCoreAPI::CoRoutine<void> VoiceSocketAgent::run() {
 		try {
 			auto cancelHandle = co_await DiscordCoreAPI::NewThreadAwaitable<void>();
