@@ -21,7 +21,6 @@
 /// https://github.com/RealTimeChris/DiscordCoreAPI
 
 #include <ReactionEntities.hpp>
-#include <cpp-base64/base64.h>
 #include <CoRoutine.hpp>
 #include <Http.hpp>
 #include <fstream>
@@ -209,18 +208,17 @@ namespace DiscordCoreAPI {
 			DiscordCoreInternal::HttpWorkloadData workload{};
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Post_Guild_Emoji;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Post;
-			std::fstream newFile{ dataPackage.imageFilePath };
-			std::string theFile{};
-			char theChar{};
-			while (newFile.getline(theChar)) {
-				theFile.push_back(theChar);
-			}
-			std::string newerFile = base64_encode(theFile);
+			std::ifstream fin(dataPackage.imageFilePath, std::ios::binary);
+			fin.seekg(0, std::ios::end);
+			std::string data{};
+			data.resize(fin.tellg());
+			fin.seekg(0, std::ios::beg);
+			fin.read(data.data(), data.size());
+			std::string newerFile = base64Encode(data);
 			switch (dataPackage.type) {
 			case ImageType::Jpg: {
 				dataPackage.imageDataFinal = "data:image/jpeg;base64,";
 				dataPackage.imageDataFinal.insert(dataPackage.imageDataFinal.end(), newerFile.begin(), newerFile.end());
-				std::cout << "WERE HERE THIS IS IT!: " << dataPackage.imageDataFinal << std::endl;
 				break;
 			}
 			case ImageType::Png: {

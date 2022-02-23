@@ -10,7 +10,7 @@ if (WIN32)
 	set(OPENSSL_ROOT_DIR "${VCPKG_INSTALLED_DIR}")
 	find_package(OpenSSL REQUIRED)
 
-	add_library(DiscordCoreAPI-DLL SHARED "../../Source/DllMain.cpp" "${VCPKG_INSTALLED_DIR}/include/cpp-base64/base64.cpp" "../../Include/Index.hpp" "../../Source/ApplicationCommandEntities.cpp" "../../Source/AudioDecoder.cpp"
+	add_library(DiscordCoreAPI-DLL SHARED "../../Source/DllMain.cpp" "../../Include/Index.hpp" "../../Source/ApplicationCommandEntities.cpp" "../../Source/AudioDecoder.cpp"
 		"../../Source/AudioEncoder.cpp" "../../Source/ChannelEntities.cpp"
 		"../../Source/CommandController.cpp" "../../Source/DataParsingFunctions.cpp"
 		"../../Source/DiscordCoreClient.cpp" "../../Source/DiscordCoreClient.cpp"

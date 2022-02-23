@@ -202,11 +202,58 @@ namespace DiscordCoreAPI {
         for (uint32_t x = 0; x < 16; x += 1) {
             returnString[x] = static_cast<uint8_t>((static_cast<float>((rand()) / static_cast<float>(RAND_MAX))) * 255.0f);
         }
-        std::unique_ptr<unsigned char[]> theBuffer = std::make_unique<unsigned char[]>(returnString.size());
-        for (uint32_t x = 0; x < returnString.size(); x += 1) {
-            theBuffer[x] = returnString[x];
+        returnString = base64Encode(returnString, false);
+        return returnString;
+    }
+
+    std::string base64Encode(std::string theString, bool url) {
+        const char* base64_chars[2] = {
+             "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+             "abcdefghijklmnopqrstuvwxyz"
+             "0123456789"
+             "+/",
+
+             "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+             "abcdefghijklmnopqrstuvwxyz"
+             "0123456789"
+             "-_" };
+
+        size_t len_encoded = (theString.size() + 2) / 3 * 4;
+
+        unsigned char trailing_char = url ? '.' : '=';
+
+        const char* base64_chars_ = base64_chars[url];
+
+        std::string returnString{};
+        returnString.reserve(len_encoded);
+
+        unsigned int pos = 0;
+
+        while (pos < theString.size()) {
+            returnString.push_back(base64_chars_[(theString[pos + 0] & 0xfc) >> 2]);
+
+            if (pos + 1 < theString.size()) {
+                returnString.push_back(base64_chars_[((theString[pos + 0] & 0x03) << 4) + ((theString[pos + 1] & 0xf0) >> 4)]);
+
+                if (pos + 2 < theString.size()) {
+                    returnString.push_back(base64_chars_[((theString[pos + 1] & 0x0f) << 2) + ((theString[pos + 2] & 0xc0) >> 6)]);
+                    returnString.push_back(base64_chars_[theString[pos + 2] & 0x3f]);
+                }
+                else {
+                    returnString.push_back(base64_chars_[(theString[pos + 1] & 0x0f) << 2]);
+                    returnString.push_back(trailing_char);
+                }
+            }
+            else {
+
+                returnString.push_back(base64_chars_[(theString[pos + 0] & 0x03) << 4]);
+                returnString.push_back(trailing_char);
+                returnString.push_back(trailing_char);
+            }
+
+            pos += 3;
         }
-        returnString = base64_encode(theBuffer.get(), returnString.size(), false);
+
         return returnString;
     }
 
@@ -607,7 +654,7 @@ namespace DiscordCoreAPI {
             else if (originalEvent->eventType == InputEventType::Application_Command_Interaction) {
                 dataPackage->type = InputEventResponseType::Interaction_Response_Edit;
             }
-            *originalEvent = InputEvents::respondToEvent(*dataPackage);
+            *originalEvent = InputEvents::respondToEvent(*dataPackage.get());
             while (true) {
                 std::unique_ptr<ButtonCollector> button{ std::make_unique<ButtonCollector>(*originalEvent) };
                 std::unique_ptr<std::vector<ButtonResponseData>> buttonIntData{ std::make_unique<std::vector<ButtonResponseData>>(button->collectButtonData(false, waitForMaxMs, 1, originalEvent->getRequesterId()).get()) };
@@ -636,7 +683,7 @@ namespace DiscordCoreAPI {
                         else {
                             dataPackage->type = InputEventResponseType::Interaction_Response_Edit;
                         }
-                        InputEvents::respondToEvent(*dataPackage);
+                        InputEvents::respondToEvent(*dataPackage.get());
                     }
                     std::unique_ptr<RecurseThroughMessagePagesData> dataPackage02{ std::make_unique<RecurseThroughMessagePagesData>() };
                     dataPackage02->inputEventData = *originalEvent;
@@ -667,7 +714,7 @@ namespace DiscordCoreAPI {
                         dataPackage->addComponentRow(value);
                     }
                     dataPackage->addMessageEmbed(messageEmbeds[newCurrentPageIndex]);
-                    InputEvents::respondToEvent(*dataPackage);
+                    InputEvents::respondToEvent(*dataPackage.get());
                 }
                 else if (buttonIntData->at(0).buttonId == "select") {
                     if (deleteAfter == true) {
@@ -688,7 +735,7 @@ namespace DiscordCoreAPI {
                             }
                             dataPackage->addComponentRow(value);
                         }
-                        InputEvents::respondToEvent(*dataPackage);
+                        InputEvents::respondToEvent(*dataPackage.get());
                     }
                     returnData->currentPageIndex = newCurrentPageIndex;
                     returnData->inputEventData = *originalEvent;

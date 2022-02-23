@@ -50,7 +50,6 @@
 #include <ctime>
 #endif
 
-#include <cpp-base64/base64.h>
 #include <condition_variable>
 #include <nlohmann/json.hpp>
 #include <unordered_map>
@@ -63,6 +62,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <bitset>
 #include <queue>
 #include <mutex>
 
@@ -701,6 +701,8 @@ namespace DiscordCoreAPI {
 
     DiscordCoreAPI_Dll int64_t convertTimestampToMsInteger(std::string timeStamp);
 
+    DiscordCoreAPI_Dll std::string base64Encode(std::string, bool = false);
+
     DiscordCoreAPI_Dll std::string urlDecode(std::string inputString);
 
     DiscordCoreAPI_Dll std::string urlEncode(std::string inputString);
@@ -710,7 +712,7 @@ namespace DiscordCoreAPI {
     DiscordCoreAPI_Dll std::string generateX64BaseEncodedKey();
 
     DiscordCoreAPI_Dll std::string getTimeAndDate();
-
+    
     DiscordCoreAPI_Dll bool nanoSleep(int64_t ns);
 
     class DiscordCoreAPI_Dll TimeStamp {
