@@ -212,10 +212,10 @@ namespace DiscordCoreAPI {
 			std::fstream newFile{ dataPackage.imageFilePath };
 			std::string theFile{};
 			char theChar{};
-			while (newFile.get(theChar)) {
+			while (newFile.getline(theChar)) {
 				theFile.push_back(theChar);
 			}
-			std::string newerFile = base64_encode_mime(theFile);
+			std::string newerFile = base64_encode(theFile);
 			switch (dataPackage.type) {
 			case ImageType::Jpg: {
 				dataPackage.imageDataFinal = "data:image/jpeg;base64,";
