@@ -48,7 +48,7 @@ namespace DiscordCoreAPI {
         std::string applicationId{ "" };///< Application id.
         bool defaultPermission{ true };///< Whether the command is enabled by default when the bot is added to a Guild.
         ApplicationCommandType type{};///< The type of ApplicationCommand.
-        std::string description{ "" };   ///< A description of the command.
+        std::string description{ "" };///< A description of the command.
         std::string name{ "" };///< A name for the new command.
     };
 
@@ -57,7 +57,7 @@ namespace DiscordCoreAPI {
         std::vector<ApplicationCommandOptionData> options{};///< The options for the ApplicationCommand.
         bool defaultPermission{ false };///< Whether the command is enabled by default when the bot is added to a Guild.
         std::string applicationId{ "" };///< The current application's Id (The Bot's User Id).
-        std::string description{ "" };   ///< A description of the command.
+        std::string description{ "" };///< A description of the command.
         std::string name{ "" };///< A name for the new command.
     };
 
@@ -84,7 +84,7 @@ namespace DiscordCoreAPI {
         std::vector<ApplicationCommandOptionData> options{};///< The options for the ApplicationCommand.
         std::string applicationId{ "" };///< Application Id.
         bool defaultPermission{ true };///< Whether the command is enabled by default when the bot is added to a Guild.
-        std::string description{ "" };   ///< A description of the command.
+        std::string description{ "" };///< A description of the command.
         ApplicationCommandType type{};///< The type of ApplicationCommand.
         std::string guildId{ "" };///< The id of the Guild which you would like to add the new command to.
         std::string name{ "" };///< A name for the new command.
@@ -102,7 +102,7 @@ namespace DiscordCoreAPI {
         std::vector<ApplicationCommandOptionData> options{};///< The options for the ApplicationCommand.
         std::string applicationId{ "" };///< The current application's Id (The Bot's User Id).
         bool defaultPermission{ true };///< Whether the command is enabled by default when the bot is added to a Guild.
-        std::string description{ "" };   ///< A description of the command.
+        std::string description{ "" };///< A description of the command.
         std::string guildId{ "" };///< The id of the Guild which you would like to add the new command to.
         std::string name{ "" };///< A name for the new command.
     };
@@ -116,9 +116,9 @@ namespace DiscordCoreAPI {
 
     /// For bulk-overwriting a collection of Guild ApplicationCommands. \brief For bulk-overwriting a collection of Guild ApplicationCommands.
     struct DiscordCoreAPI_Dll BulkOverwriteGuildApplicationCommandsData {
-        std::vector<CreateGuildApplicationCommandData> responseData{};   ///< A std::vector of the options for the ApplicationCommands.
+        std::vector<CreateGuildApplicationCommandData> responseData{};///< A std::vector of the options for the ApplicationCommands.
         std::string applicationId{ "" };///< The current application's Id (The Bot's User Id).
-        std::string guildId{ "" };   ///< The id of the Guild which you would like to overwrite the commands of.
+        std::string guildId{ "" };///< The id of the Guild which you would like to overwrite the commands of.
     };
 
     /// For acquiring the permissions of a collection of Guild ApplicationCommands. \brief For acquiring the permissions of a collection of Guild ApplicationCommands.
