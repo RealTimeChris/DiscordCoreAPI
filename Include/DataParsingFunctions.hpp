@@ -31,5 +31,4 @@ namespace DiscordCoreInternal {
         template<typename Type>
         static void parseObject(nlohmann::json const&, Type&);
     };
-
 }
