@@ -106,8 +106,15 @@ namespace DiscordCoreInternal {
     class DataParser;
 }
 
+/**
+* \addtogroup foundation_entities
+* @{
+*/
+
+/// The main namespace for this library. \brief The main namespace for this library.
 namespace DiscordCoreAPI {
 
+    
     struct RecurseThroughMessagePagesData;
     struct DeleteInteractionResponseData;
     struct DeleteFollowUpMessageData;
@@ -676,6 +683,11 @@ namespace DiscordCoreAPI {
         return doWeBreak;
     }
 
+    /**
+    * \addtogroup utilities
+    * @{
+    */
+
     /// Time formatting methods. \brief Time formatting methods.
     enum class TimeFormat {
         LongDate = 'D',///< "20 April 2021" - Long Date
@@ -685,6 +697,8 @@ namespace DiscordCoreAPI {
         ShortDateTime = 'f',///< "20 April 2021 16:20" - Short Date/Time
         ShortTime = 't',///< "16:20" - Short Time
     };
+
+    /**@}*/
 
     DiscordCoreAPI_Dll std::string getISO8601TimeStamp(std::string year, std::string month, std::string day, std::string hour, std::string minute, std::string second);
 
@@ -714,6 +728,12 @@ namespace DiscordCoreAPI {
     
     DiscordCoreAPI_Dll bool nanoSleep(int64_t ns);
 
+    /**
+    * \addtogroup utilities
+    * @{
+    */
+
+    /// Class for representing a timestamp. \brief Class for representing a timestamp.
     class DiscordCoreAPI_Dll TimeStamp {
     public:
 
@@ -721,12 +741,17 @@ namespace DiscordCoreAPI {
             this->originalTimeStamp = originalTimeStampNew;
         }
 
+        /// Collects a timestamp using the format TimeFormat, as a string. \brief Collects a timestamp using the format TimeFormat, as a string.
+        /// \param timeFormat A TimeFormat value, for selecting the output type.
+        /// \returns string A string containing the returned timestamp.
         std::string getDateTimeStamp(TimeFormat timeFormat) {
             this->timeStampInMs = convertTimestampToMsInteger(this->originalTimeStamp);
             std::string newString = convertTimeInMsToDateTimeString(this->timeStampInMs, timeFormat);
             return newString;
         }
 
+        /// Returns the original timestamp, from a Discord entity. \brief Returns the original timestamp, from a Discord entity.
+        /// \returns string A string containing the returned timestamp.
         std::string getOriginalTimeStamp() {
             return this->originalTimeStamp;
         }
@@ -736,11 +761,6 @@ namespace DiscordCoreAPI {
         std::string originalTimeStamp{ "" };
         int64_t timeStampInMs{ 0 };
     };
-
-    /**
-    * \addtogroup utilities
-    * @{
-    */
 
     /// Permission values, for a given Channel, by Role or GuildMember. \brief Permission values, for a given Channel, by Role or GuildMember.
     enum class Permission : int64_t {
@@ -3345,7 +3365,7 @@ namespace DiscordCoreAPI {
     /**@}*/
 
 };
-
+/**@}*/
 namespace  DiscordCoreInternal {
 
     enum class HttpWorkloadClass {
