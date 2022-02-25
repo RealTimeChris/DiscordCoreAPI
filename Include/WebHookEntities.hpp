@@ -19,6 +19,7 @@
 /// Dec 1, 2021
 /// Chris M.
 /// https://github.com/RealTimeChris/DiscordCoreAPI
+/// \file WebHookEntities.hpp
 
 #pragma once
 

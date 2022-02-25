@@ -19,6 +19,7 @@
 /// Feb 18, 2022
 /// Chris M.
 /// https://github.com/RealTimeChris/DiscordCoreAPI
+/// \file DllMain.cpp
 
 #include <Index.hpp>
 

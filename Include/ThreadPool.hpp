@@ -19,6 +19,7 @@
 /// Dec 18, 2021
 /// Chris M.
 /// https://github.com/RealTimeChris/DiscordCoreAPI
+/// \file ThreadPool.hpp
 
 #pragma once
 

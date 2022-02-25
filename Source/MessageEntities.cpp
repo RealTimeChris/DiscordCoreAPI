@@ -19,6 +19,7 @@
 /// May 13, 2021
 /// Chris M.
 /// https://github.com/RealTimeChris/DiscordCoreAPI
+/// \file MessageEntities.cpp
 
 #include <MessageEntities.hpp>
 #include <DiscordCoreClient.hpp>
@@ -76,18 +77,19 @@ namespace DiscordCoreAPI {
 	}
 
 	void MessageCollector::run() {
-		this->startingTime = static_cast<int32_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
-		while (this->elapsedTime < this->msToCollectFor) {
+		int64_t startingTime = static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
+		int64_t elapsedTime{ 0 };
+		while (elapsedTime < this->msToCollectFor) {
 			Message message{};
-			waitForTimeToPass<Message>(*this->messagesBuffer.get(), message, this->msToCollectFor - this->elapsedTime);
+			waitForTimeToPass<Message>(*this->messagesBuffer.get(), message, static_cast<int32_t>(this->msToCollectFor - elapsedTime));
 			if (this->filteringFunction(message)) {
 				this->messageReturnData.messages.push_back(message);
 			}
-			if (this->messageReturnData.messages.size() >= this->quantityOfMessageToCollect) {
+			if (static_cast<int32_t>(this->messageReturnData.messages.size()) >= this->quantityOfMessageToCollect) {
 				break;
 			}
 
-			this->elapsedTime = static_cast<int32_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - this->startingTime);
+			elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - startingTime;
 		}
 	}
 

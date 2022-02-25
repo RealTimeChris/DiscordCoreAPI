@@ -19,6 +19,7 @@
 /// Apr 21, 2021
 /// Chris M.
 /// https://github.com/RealTimeChris/DiscordCoreAPI
+/// \file DataParsingFunctions.hpp
 
 #pragma once
 

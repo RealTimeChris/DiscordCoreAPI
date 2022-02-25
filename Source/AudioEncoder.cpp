@@ -19,6 +19,7 @@
 /// Aug 22, 2021
 /// Chris M.
 /// https://github.com/RealTimeChris/DiscordCoreAPI
+/// \file AudioEncoder.cpp
 
 #include <AudioEncoder.hpp>
 

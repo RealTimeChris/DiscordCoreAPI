@@ -19,6 +19,7 @@
 /// Aug 25, 2021
 /// Chris M.
 /// https://github.com/RealTimeChris/DiscordCoreAPI
+/// \file ApplicationCommandEntities.cpp
 
 #include <ApplicationCommandEntities.hpp>
 #include <DiscordCoreClient.hpp>

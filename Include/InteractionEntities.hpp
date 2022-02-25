@@ -19,6 +19,7 @@
 /// May 28, 2021
 /// Chris M.
 /// https://github.com/RealTimeChris/DiscordCoreAPI
+/// \file InteractionEntities.hpp
 
 #pragma once
 
@@ -320,9 +321,10 @@ namespace DiscordCoreAPI {
 
     /// For deleting an Interaction response. \brief For deleting an Interaction response.
     struct DiscordCoreAPI_Dll DeleteInteractionResponseData {
-        friend void deleteInteractionResponseToBeWrapped(DeleteInteractionResponseData dataPackage);
-        friend InputEvents;
+
         friend Interactions;
+        friend InputEvents;
+
         DeleteInteractionResponseData(RespondToInputEventData dataPackage) {
             this->interactionPackage.interactionToken = dataPackage.interactionToken;
             this->interactionPackage.applicationId = dataPackage.applicationId;
@@ -432,9 +434,9 @@ namespace DiscordCoreAPI {
 
     /// For deleting a follow up Message. \brief For deleting a follow up Message.
     struct DiscordCoreAPI_Dll DeleteFollowUpMessageData {
-        friend void deleteFollowUpMessageToBeWrapped(DeleteFollowUpMessageData dataPackage);
-        friend InputEvents;
+
         friend Interactions;
+        friend InputEvents;
 
         DeleteFollowUpMessageData(RespondToInputEventData dataPackage) {
             this->interactionPackage.interactionToken = dataPackage.interactionToken;
@@ -567,6 +569,7 @@ namespace DiscordCoreAPI {
         ~SelectMenuCollector();
 
     protected:
+
         std::unique_ptr<UnboundedMessageBlock<InteractionData>> selectMenuIncomingInteractionBuffer{ nullptr };
         std::vector<SelectMenuResponseData> responseVector{};
         int32_t currentCollectedSelectMenuCount{ 0 };
@@ -619,6 +622,7 @@ namespace DiscordCoreAPI {
         ~ButtonCollector();
 
     protected:
+
         std::unique_ptr<UnboundedMessageBlock<InteractionData>> buttonIncomingInteractionBuffer{ nullptr };
         std::vector<ButtonResponseData> responseVector{};
         int32_t currentCollectedButtonCount{ 0 };

@@ -19,6 +19,7 @@
 /// May 28, 2021
 /// Chris M.
 /// https://github.com/RealTimeChris/DiscordCoreAPI
+/// \file InteractionEntities.cpp
 
 #include <InteractionEntities.hpp>
 #include <CoRoutine.hpp>

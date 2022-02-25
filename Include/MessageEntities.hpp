@@ -19,6 +19,7 @@
 /// May 13, 2021
 /// Chris M.
 /// https://github.com/RealTimeChris/DiscordCoreAPI
+/// \file MessageEntities.hpp
 
 #pragma once
 
@@ -440,8 +441,6 @@ namespace DiscordCoreAPI {
 		MessageCollectorReturnData messageReturnData{};
 		int32_t quantityOfMessageToCollect{ 0 };
 		int32_t msToCollectFor{ 0 };
-		int32_t startingTime{ 0 };
-		int32_t elapsedTime{ 0 };
 		std::string userId{ "" };
 
 		void run();

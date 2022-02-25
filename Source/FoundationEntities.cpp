@@ -19,6 +19,7 @@
 /// Oct 1, 2021
 /// Chris M.
 /// https://github.com/RealTimeChris/DiscordCoreAPI
+/// \file FoundationEntities.cpp
 
 #include <FoundationEntities.hpp>
 #include <GuildEntities.hpp>

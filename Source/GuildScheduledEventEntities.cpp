@@ -19,6 +19,7 @@
 /// Nov 27, 2021
 /// Chris M.
 /// https://github.com/RealTimeChris/DiscordCoreAPI
+/// \file GuildScheduledEventEntities.cpp
 
 #include <GuildScheduledEventEntities.hpp>
 #include <Http.hpp>

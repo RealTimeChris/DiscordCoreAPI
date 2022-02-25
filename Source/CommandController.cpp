@@ -19,6 +19,7 @@
 /// May 20, 2021
 /// Chris M.
 /// https://github.com/RealTimeChris/DiscordCoreAPI
+/// \file CommandController.cpp
 
 #include <CommandController.hpp>
 #include <DataParsingFunctions.hpp>

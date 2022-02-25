@@ -19,6 +19,7 @@
 /// Sep 17, 2021
 /// Chris M.
 /// https://github.com/RealTimeChris/DiscordCoreAPI
+/// \file SongAPI.cpp
 
 #include <SongAPI.hpp>
 #include <DiscordCoreClient.hpp>

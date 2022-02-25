@@ -19,6 +19,7 @@
 /// Nov 8, 2021
 /// Chris M.
 /// https://github.com/RealTimeChris/DiscordCoreAPI
+/// \file ErlPacker.cpp
 
 #include <ErlPacker.hpp>
 

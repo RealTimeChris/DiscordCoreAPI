@@ -19,6 +19,7 @@
 /// May 12, 2021
 /// Chris M.
 /// https://github.com/RealTimeChris/DiscordCoreAPI
+/// \file DiscordCoreClient.hpp
 
 #pragma once
 
@@ -84,6 +85,7 @@ namespace DiscordCoreAPI {
 
 		friend Guild;
 
+		/// An EventManager. \brief /// An EventManager.
 		std::unique_ptr<EventManager> eventManager{ nullptr };
 		CommandController commandController{ "" , nullptr };
 		std::string commandPrefix{};

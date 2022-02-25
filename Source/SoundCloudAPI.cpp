@@ -19,6 +19,7 @@
 /// Aug 25, 2021
 /// Chris M.
 /// https://github.com/RealTimeChris/DiscordCoreAPI
+/// \file SoundCloudAPI.cpp
 
 #include <SoundCloudAPI.hpp>
 #include <Http.hpp>

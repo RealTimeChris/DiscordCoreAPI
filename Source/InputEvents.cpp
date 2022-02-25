@@ -19,6 +19,7 @@
 /// Aug 18, 2021
 /// Chris M.
 /// https://github.com/RealTimeChris/DiscordCoreAPI
+/// \file InputEvents.cpp
 
 #include <InputEvents.hpp>
 #include <InteractionEntities.hpp>

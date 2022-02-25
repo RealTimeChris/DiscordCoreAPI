@@ -19,6 +19,7 @@
 /// May 12, 2021
 /// Chris M.
 /// https://github.com/RealTimeChris/DiscordCoreAPI
+/// \file Http.cpp
 
 #include <Http.hpp>
 #include <CoRoutine.hpp>

@@ -19,6 +19,7 @@
 /// Nov 29, 2021
 /// Chris M.
 /// https://github.com/RealTimeChris/DiscordCoreAPI
+/// \file ThreadEntities.hpp
 
 #pragma once
 

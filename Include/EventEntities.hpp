@@ -19,6 +19,7 @@
 /// Dec 12, 2021
 /// Chris M.
 /// https://github.com/RealTimeChris/DiscordCoreAPI
+/// \file EventEntities.hpp
 
 #pragma once
 

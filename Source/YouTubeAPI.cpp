@@ -19,6 +19,7 @@
 /// Jun 30, 2021
 /// Chris M.
 /// https://github.com/RealTimeChris/DiscordCoreAPI
+/// \file YouTubeAPI.cpp
 
 #include <YouTubeAPI.hpp>
 #include <Http.hpp>

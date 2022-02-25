@@ -19,6 +19,7 @@
 /// May 12, 2021
 /// Chris M.
 /// https://github.com/RealTimeChris/DiscordCoreAPI
+/// \file GuildEntities.hpp
 
 #pragma once
 

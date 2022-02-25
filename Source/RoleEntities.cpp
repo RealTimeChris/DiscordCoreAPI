@@ -19,6 +19,7 @@
 /// May 13, 2021
 /// Chris M.
 /// https://github.com/RealTimeChris/DiscordCoreAPI
+/// \file RoleEntities.cpp
 
 #include <RoleEntities.hpp>
 #include <CoRoutine.hpp>
