@@ -28,8 +28,8 @@
 
 namespace DiscordCoreInternal {
 
-	BaseSocketAgent::BaseSocketAgent(std::string botToken, std::string baseUrl) {
-		this->authKey = DiscordCoreAPI::generateX64BaseEncodedKey();
+	BaseSocketAgent::BaseSocketAgent(std::string botToken, std::string baseUrl) noexcept {
+		this->authKey = DiscordCoreAPI::generate64BaseEncodedKey();
 		this->state = WebSocketState::Initializing;
 		this->botToken = botToken;
 		this->baseUrl = baseUrl;
@@ -37,9 +37,9 @@ namespace DiscordCoreInternal {
 		this->theTask = std::make_unique<DiscordCoreAPI::CoRoutine<void>>(this->run());
 	}
 
-	BaseSocketAgent::BaseSocketAgent(nullptr_t) {};
+	BaseSocketAgent::BaseSocketAgent(nullptr_t) noexcept {};
 
-	void BaseSocketAgent::sendMessage(std::string& dataToSend) {
+	void BaseSocketAgent::sendMessage(std::string& dataToSend) noexcept {
 		try {
 			std::lock_guard<std::mutex> accessLock{ this->accessorMutex01 };
 			std::cout << "Sending WebSocket Message: " << std::endl << dataToSend;
@@ -51,11 +51,11 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	DiscordCoreAPI::TSUnboundedMessageBlock<WebSocketWorkload>& BaseSocketAgent::getWorkloadTarget() {
+	DiscordCoreAPI::TSUnboundedMessageBlock<WebSocketWorkload>& BaseSocketAgent::getWorkloadTarget() noexcept {
 		return this->webSocketWorkloadTarget;
 	}
 
-	void BaseSocketAgent::sendMessage(nlohmann::json& dataToSend) {
+	void BaseSocketAgent::sendMessage(nlohmann::json& dataToSend) noexcept {
 		try {
 			DiscordCoreAPI::StopWatch stopWatch{ std::chrono::milliseconds{5500} };
 			while (!this->areWeConnected.load(std::memory_order_seq_cst) && !(dataToSend.contains("op") && (dataToSend.at("op") == 2 || dataToSend.at("op") == 6))) {
@@ -81,7 +81,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	uint64_t BaseSocketAgent::createHeader(char* outBuffer, uint64_t sendlength, WebSocketOpCode opCode) {
+	uint64_t BaseSocketAgent::createHeader(char* outBuffer, uint64_t sendlength, WebSocketOpCode opCode) noexcept {
 		try {
 			size_t position{ 0 };
 			int32_t indexCount{ 0 };
@@ -114,7 +114,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	std::vector<std::string> BaseSocketAgent::tokenize(std::string& dataIn, std::string separator) {
+	std::vector<std::string> BaseSocketAgent::tokenize(std::string& dataIn, std::string separator) noexcept {
 		try {
 			std::string::size_type value{ 0 };
 			std::vector<std::string> dataOut{};
@@ -132,7 +132,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void BaseSocketAgent::getVoiceConnectionData(VoiceConnectInitData doWeCollect) {
+	void BaseSocketAgent::getVoiceConnectionData(VoiceConnectInitData doWeCollect) noexcept {
 		try {
 			this->semaphore.acquire();
 			this->voiceConnectInitData = doWeCollect;
@@ -159,7 +159,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	DiscordCoreAPI::CoRoutine<void> BaseSocketAgent::run() {
+	DiscordCoreAPI::CoRoutine<void> BaseSocketAgent::run() noexcept {
 		try {
 			auto cancelHandle = co_await DiscordCoreAPI::NewThreadAwaitable<void>();
 			this->connect();
@@ -183,7 +183,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void BaseSocketAgent::onMessageReceived() {
+	void BaseSocketAgent::onMessageReceived() noexcept {
 		try {
 			std::string messageNew = this->webSocket->getInputBuffer();
 			this->webSocket->getInputBuffer().clear();
@@ -525,7 +525,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void BaseSocketAgent::sendHeartBeat() {
+	void BaseSocketAgent::sendHeartBeat() noexcept {
 		try {
 			if (this->haveWeReceivedHeartbeatAck) {
 				nlohmann::json heartbeat = JSONIFY(this->lastNumberReceived);
@@ -542,7 +542,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void BaseSocketAgent::handleBuffer() {
+	void BaseSocketAgent::handleBuffer() noexcept {
 		try {
 			std::string newVector{};
 			switch (this->state) {
@@ -579,7 +579,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	bool BaseSocketAgent::parseHeader() {
+	bool BaseSocketAgent::parseHeader() noexcept {
 		try {
 			std::string newVector = this->webSocket->getInputBuffer();
 			if (this->webSocket->getInputBuffer().size() < 4) {
@@ -660,32 +660,37 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void BaseSocketAgent::onClosedExternal() {
+	void BaseSocketAgent::onClosedExternal() noexcept {
 		this->doWeReconnect.reset();
 	}
 
-	void BaseSocketAgent::onClosedInternal() {
-		this->areWeReadyToConnectEvent.reset();
-		if (this->maxReconnectTries > this->currentReconnectTries) {
-			this->areWeConnected.store(false, std::memory_order_seq_cst);
-			this->closeCode = 1000;
-			this->currentReconnectTries += 1;
-			this->webSocket.reset(nullptr);
-			this->areWeAuthenticated = false;
-			if (this->heartbeatTimer->running()) {
-				this->heartbeatTimer->cancel();
+	void BaseSocketAgent::onClosedInternal() noexcept {
+		try {
+			this->areWeReadyToConnectEvent.reset();
+			if (this->maxReconnectTries > this->currentReconnectTries) {
+				this->areWeConnected.store(false, std::memory_order_seq_cst);
+				this->closeCode = 1000;
+				this->currentReconnectTries += 1;
+				this->webSocket.reset(nullptr);
+				this->areWeAuthenticated = false;
+				if (this->heartbeatTimer->running()) {
+					this->heartbeatTimer->cancel();
+				}
+				this->haveWeReceivedHeartbeatAck = true;
+				this->connect();
 			}
-			this->haveWeReceivedHeartbeatAck = true;
-			this->connect();
+			else if (this->maxReconnectTries <= this->currentReconnectTries) {
+				this->theTask->cancel();
+			}
 		}
-		else if (this->maxReconnectTries <= this->currentReconnectTries) {
-			this->theTask->cancel();
+		catch (...) {
+			DiscordCoreAPI::reportException("BaseSocketAgent::onClosedInternal()");
 		}
 	}
 
-	void BaseSocketAgent::connect() {
+	void BaseSocketAgent::connect() noexcept {
 		try {
-			this->authKey = DiscordCoreAPI::generateX64BaseEncodedKey();
+			this->authKey = DiscordCoreAPI::generate64BaseEncodedKey();
 			this->webSocket = std::make_unique<WebSocketSSLClient>(this->baseUrl, this->port);
 			this->state = WebSocketState::Initializing;
 			this->doWeReconnect.set();
@@ -700,13 +705,13 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	BaseSocketAgent::~BaseSocketAgent() {
+	BaseSocketAgent::~BaseSocketAgent() noexcept {
 		this->theTask->cancel();
 		this->heartbeatTimer->cancel();
 	}
 
-	VoiceSocketAgent::VoiceSocketAgent(VoiceConnectInitData initDataNew, BaseSocketAgent* baseBaseSocketAgentNew) {
-		this->authKey = DiscordCoreAPI::generateX64BaseEncodedKey();
+	VoiceSocketAgent::VoiceSocketAgent(VoiceConnectInitData initDataNew, BaseSocketAgent* baseBaseSocketAgentNew) noexcept {
+		this->authKey = DiscordCoreAPI::generate64BaseEncodedKey();
 		this->baseSocketAgent = baseBaseSocketAgentNew;
 		this->voiceConnectInitData = initDataNew;
 		this->baseSocketAgent->voiceConnectionDataBufferMap.insert_or_assign(this->voiceConnectInitData.guildId, &this->voiceConnectionDataBuffer);
@@ -716,7 +721,7 @@ namespace DiscordCoreInternal {
 		this->theTask = std::make_unique<DiscordCoreAPI::CoRoutine<void>>(this->run());
 	}
 
-	void VoiceSocketAgent::sendVoiceData(std::string& responseData) {
+	void VoiceSocketAgent::sendVoiceData(std::string& responseData) noexcept {
 		try {
 			if (responseData.size() == 0) {
 				std::cout << "Please specify voice data to send" << std::endl << std::endl;
@@ -734,7 +739,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void VoiceSocketAgent::sendMessage(std::vector<uint8_t>& dataToSend) {
+	void VoiceSocketAgent::sendMessage(std::vector<uint8_t>& dataToSend) noexcept {
 		try {
 			std::string newString{};
 			newString.insert(newString.begin(), dataToSend.begin(), dataToSend.end());
@@ -754,7 +759,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void VoiceSocketAgent::sendMessage(std::string& dataToSend) {
+	void VoiceSocketAgent::sendMessage(std::string& dataToSend) noexcept {
 		try {
 			std::cout << "Sending Voice WebSocket Message: " << std::endl << dataToSend;
 			this->webSocket->writeData(dataToSend);
@@ -765,7 +770,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	uint64_t VoiceSocketAgent::createHeader(char* outBuffer, uint64_t sendlength, WebSocketOpCode opCode) {
+	uint64_t VoiceSocketAgent::createHeader(char* outBuffer, uint64_t sendlength, WebSocketOpCode opCode) noexcept {
 		try {
 			size_t position = 0;
 			outBuffer[position++] = this->webSocketFinishBit | static_cast<unsigned char>(opCode);
@@ -801,7 +806,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	std::vector<std::string> VoiceSocketAgent::tokenize(std::string& dataIn, std::string separator) {
+	std::vector<std::string> VoiceSocketAgent::tokenize(std::string& dataIn, std::string separator) noexcept {
 		try {
 			std::string::size_type value{ 0 };
 			std::vector<std::string> dataOut{};
@@ -819,7 +824,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	DiscordCoreAPI::CoRoutine<void> VoiceSocketAgent::run() {
+	DiscordCoreAPI::CoRoutine<void> VoiceSocketAgent::run() noexcept {
 		try {
 			auto cancelHandle = co_await DiscordCoreAPI::NewThreadAwaitable<void>();
 			this->connect();
@@ -847,7 +852,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void VoiceSocketAgent::onMessageReceived() {
+	void VoiceSocketAgent::onMessageReceived() noexcept {
 		try {
 			std::string message = this->webSocket->getInputBuffer();
 			this->webSocket->getInputBuffer().clear();
@@ -902,7 +907,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void VoiceSocketAgent::collectExternalIP() {
+	void VoiceSocketAgent::collectExternalIP() noexcept {
 		try {
 			std::string packet{};
 			packet.resize(74);
@@ -937,7 +942,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void VoiceSocketAgent::sendHeartBeat() {
+	void VoiceSocketAgent::sendHeartBeat() noexcept {
 		try {
 			if (this->haveWeReceivedHeartbeatAck) {
 				std::vector<uint8_t> heartbeatPayload = JSONIFY(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
@@ -956,7 +961,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void VoiceSocketAgent::voiceConnect() {
+	void VoiceSocketAgent::voiceConnect() noexcept {
 		try {
 			this->voiceSocket = std::make_unique<DatagramSocketSSLClient>(this->voiceConnectionData.voiceIp, this->voiceConnectionData.voicePort);
 		}
@@ -966,7 +971,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void VoiceSocketAgent::handleBuffer() {
+	void VoiceSocketAgent::handleBuffer() noexcept {
 		try {
 			std::string newVector{};
 			switch (this->state) {
@@ -1003,7 +1008,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	bool VoiceSocketAgent::parseHeader() {
+	bool VoiceSocketAgent::parseHeader() noexcept {
 		try {
 			std::string newVector = this->webSocket->getInputBuffer();
 			if (this->webSocket->getInputBuffer().size() < 4) {
@@ -1083,20 +1088,25 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void VoiceSocketAgent::onClosedExternal() {
+	void VoiceSocketAgent::onClosedExternal() noexcept {
 		this->doWeReconnect.reset();
 	}
 
-	void VoiceSocketAgent::onClosedInternal() {
-		this->closeCode = 1000;
-		this->voiceSocket.reset(nullptr);
-		this->webSocket.reset(nullptr);
-		this->heartbeatTimer.cancel();
+	void VoiceSocketAgent::onClosedInternal() noexcept {
+		try {
+			this->closeCode = 1000;
+			this->voiceSocket.reset(nullptr);
+			this->webSocket.reset(nullptr);
+			this->heartbeatTimer.cancel();
+		}
+		catch (...) {
+			DiscordCoreAPI::reportException("VoiceSocketAgent::onClosedInternal()");
+		}
 	}
 
-	void VoiceSocketAgent::connect() {
+	void VoiceSocketAgent::connect() noexcept {
 		try {
-			this->authKey = DiscordCoreAPI::generateX64BaseEncodedKey();
+			this->authKey = DiscordCoreAPI::generate64BaseEncodedKey();
 			DiscordCoreAPI::waitForTimeToPass(this->voiceConnectionDataBuffer, this->voiceConnectionData, 20000);
 			this->baseUrl = this->voiceConnectionData.endPoint.substr(0, this->voiceConnectionData.endPoint.find(":"));
 			this->relativePath = "/?v=4";
@@ -1114,7 +1124,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	VoiceSocketAgent::~VoiceSocketAgent() {
+	VoiceSocketAgent::~VoiceSocketAgent() noexcept {
 		this->theTask->cancel();
 		this->theTask.reset(nullptr);
 		this->heartbeatTimer.cancel();

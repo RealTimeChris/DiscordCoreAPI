@@ -38,8 +38,6 @@
 #ifndef WINRT_LEAN_AND_MEAN
 #define WINRT_LEAN_AND_MEAN
 #endif
-#pragma comment(lib, "libcurl.lib")
-#pragma comment(lib, "glib-2.0.lib")
 #else
 #ifndef DiscordCoreAPI_Dll
 #define DiscordCoreAPI_Dll
@@ -709,7 +707,7 @@ namespace DiscordCoreAPI {
 
     DiscordCoreAPI_Dll void spinLock(int64_t timeInNsToSpinLockFor);
 
-    DiscordCoreAPI_Dll std::string generateX64BaseEncodedKey();
+    DiscordCoreAPI_Dll std::string generate64BaseEncodedKey();
 
     DiscordCoreAPI_Dll std::string getTimeAndDate();
     

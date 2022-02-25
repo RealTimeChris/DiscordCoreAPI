@@ -148,9 +148,6 @@ namespace DiscordCoreAPI {
 	void DiscordCoreClient::run() {
 		while (!doWeQuit.load(std::memory_order_seq_cst)) {
 			try {
-				if (doWeQuit.load(std::memory_order_seq_cst)) {
-					return;
-				}
 				std::unique_ptr<DiscordCoreInternal::WebSocketWorkload> workload{ std::make_unique<DiscordCoreInternal::WebSocketWorkload>() };
 				while (!this->baseSocketAgent->getWorkloadTarget().tryReceive(*workload) && !doWeQuit.load(std::memory_order_seq_cst)) {
 					std::this_thread::sleep_for(std::chrono::milliseconds{ 1 });

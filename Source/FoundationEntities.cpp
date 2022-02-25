@@ -195,7 +195,7 @@ namespace DiscordCoreAPI {
         }
     }
 
-    std::string generateX64BaseEncodedKey() {
+    std::string generate64BaseEncodedKey() {
         std::string returnString{};
         srand(static_cast<uint32_t>(std::chrono::system_clock::now().time_since_epoch().count()));
         returnString.resize(16);

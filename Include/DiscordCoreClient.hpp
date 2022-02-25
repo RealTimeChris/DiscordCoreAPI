@@ -78,6 +78,7 @@ namespace DiscordCoreAPI {
 	* \addtogroup main_endpoints
 	* @{
 	*/
+	/// DiscordCoreClient - The main class for this library. \brief DiscordCoreClient - The main class for this library.
 	class DiscordCoreAPI_Dll DiscordCoreClient {
 	public:
 

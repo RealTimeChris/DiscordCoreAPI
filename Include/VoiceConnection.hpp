@@ -22,8 +22,6 @@
 
 #pragma once
 
-#pragma comment(lib, "libsodium.lib")
-
 #include <FoundationEntities.hpp>
 #include <WebSocketEntities.hpp>
 #include <AudioEncoder.hpp>

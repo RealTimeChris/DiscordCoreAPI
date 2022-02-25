@@ -132,19 +132,19 @@ namespace DiscordCoreInternal {
 		friend class DiscordCoreAPI::VoiceConnection;
 		friend VoiceSocketAgent;
 
-		BaseSocketAgent(std::string botToken, std::string baseUrl);
+		BaseSocketAgent(std::string botToken, std::string baseUrl) noexcept;
 
-		BaseSocketAgent(nullptr_t);
+		BaseSocketAgent(nullptr_t) noexcept;
 
-		DiscordCoreAPI::TSUnboundedMessageBlock<WebSocketWorkload>& getWorkloadTarget();
+		DiscordCoreAPI::TSUnboundedMessageBlock<WebSocketWorkload>& getWorkloadTarget() noexcept;
 
-		void sendMessage(nlohmann::json& dataToSend);
+		void sendMessage(nlohmann::json& dataToSend) noexcept;
 
-		void sendMessage(std::string& dataToSend);
+		void sendMessage(std::string& dataToSend) noexcept;
 
-		void onClosedExternal();
+		void onClosedExternal() noexcept;
 
-		~BaseSocketAgent();
+		~BaseSocketAgent() noexcept;
 
 	protected:
 
@@ -189,25 +189,25 @@ namespace DiscordCoreInternal {
 		WebSocketState state{};
 		ErlPacker erlPacker{};
 
-		uint64_t createHeader(char* outbuf, uint64_t sendlength, WebSocketOpCode opCode);
+		uint64_t createHeader(char* outbuf, uint64_t sendlength, WebSocketOpCode opCode) noexcept;
 
-		std::vector<std::string> tokenize(std::string&, std::string = "\r\n");
+		std::vector<std::string> tokenize(std::string&, std::string = "\r\n") noexcept;
 
-		void getVoiceConnectionData(VoiceConnectInitData doWeCollect);
+		void getVoiceConnectionData(VoiceConnectInitData doWeCollect) noexcept;
 
-		DiscordCoreAPI::CoRoutine<void> run();
+		DiscordCoreAPI::CoRoutine<void> run() noexcept;
 
-		void onMessageReceived();
+		void onMessageReceived() noexcept;
 
-		void onClosedInternal();
+		void onClosedInternal() noexcept;
 
-		void sendHeartBeat();
+		void sendHeartBeat() noexcept;
 
-		void handleBuffer();
+		void handleBuffer() noexcept;
 
-		bool parseHeader();
+		bool parseHeader() noexcept;
 
-		void connect();
+		void connect() noexcept;
 	};
 
 	class DiscordCoreAPI_Dll VoiceSocketAgent {
@@ -215,17 +215,17 @@ namespace DiscordCoreInternal {
 
 		friend class DiscordCoreAPI::VoiceConnection;
 
-		VoiceSocketAgent(VoiceConnectInitData initDataNew, BaseSocketAgent* baseBaseSocketAgentNew);
+		VoiceSocketAgent(VoiceConnectInitData initDataNew, BaseSocketAgent* baseBaseSocketAgentNew) noexcept;
 
-		void sendMessage(std::vector<uint8_t>& responseData);
+		void sendMessage(std::vector<uint8_t>& responseData) noexcept;
 
-		void sendVoiceData(std::string& responseData);
+		void sendVoiceData(std::string& responseData) noexcept;
 
-		void sendMessage(std::string& dataToSend);
+		void sendMessage(std::string& dataToSend) noexcept;
 
-		void onClosedExternal();
+		void onClosedExternal() noexcept;
 
-		~VoiceSocketAgent();
+		~VoiceSocketAgent() noexcept;
 
 	protected:
 
@@ -257,26 +257,26 @@ namespace DiscordCoreInternal {
 		std::string hostIp{ "" };
 		uint32_t closeCode{ 0 };
 
-		uint64_t createHeader(char* outbuf, uint64_t sendlength, WebSocketOpCode opCode);
+		uint64_t createHeader(char* outbuf, uint64_t sendlength, WebSocketOpCode opCode) noexcept;
 
-		std::vector<std::string> tokenize(std::string&, std::string = "\r\n");
+		std::vector<std::string> tokenize(std::string&, std::string = "\r\n") noexcept;
 
-		DiscordCoreAPI::CoRoutine<void> run();
+		DiscordCoreAPI::CoRoutine<void> run() noexcept;
 
-		void collectExternalIP();
+		void collectExternalIP() noexcept;
 
-		void onMessageReceived();
+		void onMessageReceived() noexcept;
 
-		void onClosedInternal();
+		void onClosedInternal() noexcept;
 
-		void sendHeartBeat();
+		void sendHeartBeat() noexcept;
 
-		void voiceConnect();
+		void voiceConnect() noexcept;
 
-		void handleBuffer();
+		void handleBuffer() noexcept;
 
-		bool parseHeader();
+		bool parseHeader() noexcept;
 
-		void connect();
+		void connect() noexcept;
 	};
 }
