@@ -75,12 +75,12 @@ namespace DiscordCoreAPI {
 		std::string newVoiceChannelId{ "" };///< The new voice channel to std::move them into.
 		std::string currentChannelId{ "" };///< The current voice channel, if applicaple.
 		std::vector<std::string> roleIds{};///<A collection of role id's to be applied to them.
-		std::string guildMemberId{ "" };	///< The user id of the desired Guild memeber.
+		std::string guildMemberId{ "" };///< The user id of the desired Guild memeber.
 		std::string guildId{ "" };///< The id of the Guild for which you would like to modify a member.
 		std::string reason{ "" };///< Reason for modifying this GuildMember.
-		std::string nick{ "" };	///< Their new display/nick name.
+		std::string nick{ "" };///< Their new display/nick name.
 		bool mute{ false };///< Whether or not to mute them in voice.
-		bool deaf{ false };	///< Whether or not to deafen them, in voice.
+		bool deaf{ false };///< Whether or not to deafen them, in voice.
 	};
 
 	/// For removing a GuildMember from a chosen Guild. \brief For removing a GuildMember from a chosen Guild.

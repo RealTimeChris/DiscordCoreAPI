@@ -1676,8 +1676,8 @@ namespace DiscordCoreAPI {
     /// Secrets data. \brief Secrets data.
     struct DiscordCoreAPI_Dll SecretsData {
         std::string spectate{ "" };///< Unique hash for the given match context.
-        std::string match{ "" };	///< Unique hash for Spectate button.
-        std::string join{ "" };	///< Unique hash for chat invitesand Ask to Join.
+        std::string match{ "" };///< Unique hash for Spectate button.
+        std::string join{ "" };///< Unique hash for chat invitesand Ask to Join.
     };
 
     /// Timestamp data. \brief Timestamp data.

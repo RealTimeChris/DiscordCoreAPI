@@ -70,7 +70,7 @@ namespace DiscordCoreAPI {
 	/// Data that is received as part of a Channel update event. \brief Data that is received as part of a Channel update event.
 	struct DiscordCoreAPI_Dll OnChannelUpdateData {
 		Channel channelOld{};///< The old Channel.
-		Channel channelNew{};	///< The new Channel.
+		Channel channelNew{};///< The new Channel.
 	};
 
 	/// Data that is received as part of a Channel deletion event. \brief Data that is received as part of a Channel deletion event.
@@ -121,7 +121,7 @@ namespace DiscordCoreAPI {
 	/// Data that is received as part of a Guild update event. \brief Data that is received as part of a Guild update event.
 	struct DiscordCoreAPI_Dll OnGuildUpdateData {
 		Guild guildOld{};///< The old Guild.
-		Guild guildNew{};	///< The new, updated Guild.
+		Guild guildNew{};///< The new, updated Guild.
 	};
 
 	/// Data that is received as part of a Guild deletion event. \brief Data that is received as part of a Guild deletion event.
@@ -132,7 +132,7 @@ namespace DiscordCoreAPI {
 	/// Data that is received as part of a Guild ban add event. \brief Data that is received as part of a Guild ban add event.
 	struct DiscordCoreAPI_Dll OnGuildBanAddData {
 		std::string guildId{ "" };///< The Guild they were banned from.
-		User user{};	///< The User id of the person who was banned.
+		User user{};///< The User id of the person who was banned.
 	};
 
 	/// Data that is received as part of a Guild ban remove event. \brief Data that is received as part of a Guild ban add event.
@@ -189,7 +189,7 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll OnRoleUpdateData {
 		std::string guildId{ "" };///< The id of the Guild within which the Role was updated.
 		Role roleOld{};///< The old Role.
-		Role roleNew{};	///< The new Role.
+		Role roleNew{};///< The new Role.
 	};
 
 	/// Data that is received as part of a Role deletion event. \brief Data that is received as part of a Role deletion event.
@@ -225,7 +225,7 @@ namespace DiscordCoreAPI {
 	/// Data that is received as part of an Invite deletion event. \brief Data that is received as part of an Invite deletion event.
 	struct DiscordCoreAPI_Dll OnInviteDeletionData {
 		std::string channelId{ "" };///< The id of the Channel for which the Invite existed.
-		std::string guildId{ "" };	///< The id of the Guild for which the Invite existed.
+		std::string guildId{ "" };///< The id of the Guild for which the Invite existed.
 		std::string code{ "" };///< The code of the Invite.
 	};
 
