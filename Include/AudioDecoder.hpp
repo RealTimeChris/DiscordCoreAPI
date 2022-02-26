@@ -272,7 +272,7 @@ namespace DiscordCoreAPI {
     struct DiscordCoreAPI_Dll BuildAudioDecoderData {
     public:
         int64_t totalFileSize{ 0 };
-        int32_t bufferMaxSize{ 0 };
+        int64_t bufferMaxSize{ 0 };
     };
 
     class DiscordCoreAPI_Dll AudioDecoder {
@@ -292,18 +292,18 @@ namespace DiscordCoreAPI {
 
     protected:
 
-        int32_t audioStreamIndex{ 0 }, bufferMaxSize{ 0 }, bytesRead{ 0 };
+        int64_t audioStreamIndex{ 0 }, bufferMaxSize{ 0 }, bytesRead{ 0 };
         TSUnboundedMessageBlock<std::string> inputDataBuffer{};
         TSUnboundedMessageBlock<RawFrameData> outDataBuffer{};
         AVFrameWrapper frame{ nullptr }, newFrame{ nullptr };
         AVCodecContextWrapper audioDecodeContext{ nullptr };
         std::unique_ptr<CoRoutine<void>> theTask{ nullptr };
+        std::atomic<int32_t> refreshTimeForBuffer{ 10000 };
         AVFormatContextWrapper formatContext{ nullptr };
         std::atomic<bool> haveWeFailedBool{ false };
         AVIOContextWrapper ioContext{ nullptr };
         SwrContextWrapper swrContext{ nullptr };
         AVStreamWrapper audioStream{ nullptr };
-        int32_t refreshTimeForBuffer{ 10000 };
         AVPacketWrapper packet{ nullptr };
         AVCodecWrapper codec{ nullptr };
         std::string currentBuffer{};

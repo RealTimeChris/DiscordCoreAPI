@@ -46,7 +46,7 @@ namespace DiscordCoreAPI {
     }
 
     void AudioDecoder::cancelMe() {
-        this->refreshTimeForBuffer = 10;
+        this->refreshTimeForBuffer.store(10, std::memory_order_seq_cst);
         this->inputDataBuffer.clearContents();
         this->inputDataBuffer.send(std::string());
         this->inputDataBuffer.send(std::string());
@@ -76,7 +76,7 @@ namespace DiscordCoreAPI {
             stream->areWeQuitting = true;
             return AVERROR_EOF;
         }
-        if (waitForTimeToPass(stream->inputDataBuffer, stream->currentBuffer, stream->refreshTimeForBuffer)){
+        if (waitForTimeToPass(stream->inputDataBuffer, stream->currentBuffer, stream->refreshTimeForBuffer.load(std::memory_order_seq_cst))){
             RawFrameData frameData{};
             frameData.sampleCount = 0;
             stream->outDataBuffer.send(std::move(frameData));
@@ -84,7 +84,7 @@ namespace DiscordCoreAPI {
             return AVERROR_EOF;
         }
         if (stream->currentBuffer.size() > 0) {
-            stream->bytesRead = static_cast<int32_t>(stream->currentBuffer.size());
+            stream->bytesRead = stream->currentBuffer.size();
         }
         else {
             RawFrameData frameData{};
@@ -103,7 +103,7 @@ namespace DiscordCoreAPI {
             stream->areWeQuitting = true;
             return AVERROR_EOF;
         }
-        return stream->bytesRead;
+        return static_cast<int32_t>(stream->bytesRead);
     }
 
     CoRoutine<void> AudioDecoder::run() {
@@ -124,7 +124,7 @@ namespace DiscordCoreAPI {
                     &AudioDecoder::FileStreamRead,
                     0,
                     0
-               );
+                );
 
                 if (this->ioContext == nullptr) {
                     this->haveWeFailedBool.store(true, std::memory_order_seq_cst);
