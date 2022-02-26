@@ -519,7 +519,7 @@ namespace DiscordCoreInternal {
 	void submitWorkloadAndGetResult<void>(HttpClient& httpClient, HttpWorkloadData& workload) {
 		try {
 			workload.headersToInsert.insert(std::make_pair("Authorization", "Bot " + httpClient.botToken));
-			workload.headersToInsert.insert(std::make_pair("User-Agent", "DiscordBot (https://discordcoreapi.com/ , 1.0)");
+			workload.headersToInsert.insert(std::make_pair("User-Agent", "DiscordBot (https://discordcoreapi.com/ , 1.0)"));
 			workload.headersToInsert.insert(std::make_pair("Content-Type", "application/json"));
 			httpClient.httpRequest(workload, true);
 			return;
