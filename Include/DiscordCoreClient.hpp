@@ -50,6 +50,7 @@
 #include <SSLClients.hpp>
 #include <WebHookEntities.hpp>
 #include <SongAPI.hpp>
+#include <unordered_map>
 
 void signalHandler(int32_t);
 
@@ -90,7 +91,7 @@ namespace DiscordCoreAPI {
 		CommandController commandController{ "" , nullptr };
 		std::string commandPrefix{};
 
-		DiscordCoreClient(std::string botTokenNew, std::string commandPrefixNew, std::vector<RepeatedFunctionData> functionsToExecuteNew = std::vector<RepeatedFunctionData>{}, CacheOptions cacheOptionsNew = CacheOptions{});
+		DiscordCoreClient(std::string botTokenNew, std::string commandPrefixNew, std::vector<RepeatedFunctionData> functionsToExecuteNew = std::vector<RepeatedFunctionData>{}, CacheOptions cacheOptionsNew = CacheOptions{}, int32_t numberOfShards = 01);
 
 		DiscordCoreClient(nullptr_t);
 
@@ -105,11 +106,14 @@ namespace DiscordCoreAPI {
 
 	protected:
 
-		std::unique_ptr<DiscordCoreInternal::BaseSocketAgent> baseSocketAgent{ nullptr };
+		std::unordered_map<std::string, std::unique_ptr<DiscordCoreInternal::BaseSocketAgent>> theWebSockets{};
 		std::unique_ptr<DiscordCoreInternal::HttpClient> httpClient{ nullptr };
 		std::vector<RepeatedFunctionData> functionsToExecute{};
 		std::vector<ThreadPoolTimer> threadPoolTimers{};
 		std::unique_ptr<BotUser> currentUser{ nullptr };
+		std::string gatewayUrl{ "" };
+		int32_t numberOfShards{ 0 };
+		int32_t maxConcurrency{ 0 };
 		CacheOptions cacheOptions{};
 		std::string botToken{ "" };
 

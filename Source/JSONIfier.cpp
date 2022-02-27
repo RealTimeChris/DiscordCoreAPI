@@ -64,7 +64,7 @@ namespace DiscordCoreInternal {
 		return data.dump();
 	}
 
-	nlohmann::json JSONIFY(std::string botToken, int32_t intents) {
+	nlohmann::json JSONIFY(std::string botToken, int32_t intents, int32_t currentShard, int32_t numberOfShards) {
 		
 #ifdef _WIN32
 		nlohmann::json data = {
@@ -78,7 +78,7 @@ namespace DiscordCoreInternal {
 				}},
 				{"compress", false},
 				{"large_threshold", 250},
-				{"shard", {0, 1}},
+				{"shard", {currentShard,numberOfShards}},
 				{"intents", intents}
 				}}
 		};

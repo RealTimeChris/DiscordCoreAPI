@@ -133,7 +133,7 @@ namespace DiscordCoreInternal {
 		friend class DiscordCoreAPI::VoiceConnection;
 		friend VoiceSocketAgent;
 
-		BaseSocketAgent(std::string botToken, std::string baseUrl) noexcept;
+		BaseSocketAgent(std::string botToken, std::string baseUrl, int32_t shardNumber = 0, int32_t numberOfShards = 1) noexcept;
 
 		BaseSocketAgent(nullptr_t) noexcept;
 
@@ -186,6 +186,8 @@ namespace DiscordCoreInternal {
 		std::string baseUrl{ "" };
 		std::string authKey{ "" };
 		std::string port{ "443" };
+		int32_t currentShard{ 0 };
+		int32_t numOfShards{ 0 };
 		uint32_t closeCode{ 0 };
 		WebSocketState state{};
 		ErlPacker erlPacker{};

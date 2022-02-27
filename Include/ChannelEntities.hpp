@@ -59,8 +59,8 @@ namespace DiscordCoreAPI {
 
 	/// For deleting or closing a Channel. \brief For deleting or closing a Channel.
 	struct DiscordCoreAPI_Dll DeleteOrCloseChannelData {
-		std::string channelId{ "" };
-		std::string reason{ "" };
+		std::string channelId{ "" };///< The id of the Channel to close/delete.
+		std::string reason{ "" };///< The reason for deleting/closing the Channel.
 	};
 
 	/// For editing the Permission overwrites of a given Channel, for a given role or User. \brief For editing the Permission overwrites of a given Channel, for a given role or User.

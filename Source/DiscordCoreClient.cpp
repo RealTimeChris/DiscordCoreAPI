@@ -61,11 +61,12 @@ namespace DiscordCoreAPI {
 		return Statics::songAPIMap;
 	}
 
-	DiscordCoreClient::DiscordCoreClient(std::string botTokenNew, std::string commandPrefixNew, std::vector<RepeatedFunctionData> functionsToExecuteNew,  CacheOptions cacheOptionsNew) {
+	DiscordCoreClient::DiscordCoreClient(std::string botTokenNew, std::string commandPrefixNew, std::vector<RepeatedFunctionData> functionsToExecuteNew, CacheOptions cacheOptionsNew, int32_t numberOfShardsNew) {
 		std::signal(SIGTERM, &signalHandler);
 		std::signal(SIGILL, &signalHandler);
 		std::signal(SIGINT, &signalHandler);
 		std::signal(SIGABRT, &signalHandler);
+		this->numberOfShards = numberOfShardsNew;
 		this->functionsToExecute = functionsToExecuteNew;
 		this->commandPrefix = commandPrefixNew;
 		this->botToken = botTokenNew;
@@ -100,8 +101,20 @@ namespace DiscordCoreAPI {
 		Users::initialize(this->httpClient.get());
 		WebHooks::initialize(this->httpClient.get());
 		this->commandController = CommandController(this->commandPrefix, this);
-		this->baseSocketAgent = std::make_unique<DiscordCoreInternal::BaseSocketAgent>(this->botToken, this->getGateWayBot());
-		this->currentUser = std::make_unique<BotUser>(Users::getCurrentUserAsync().get(), this->baseSocketAgent.get());
+		this->gatewayUrl = this->getGateWayBot();
+		int32_t shardGroupCount{ this->maxConcurrency / this->numberOfShards };
+		int32_t shardsPerGroup{ this->maxConcurrency / shardGroupCount };
+		for (int32_t x = 0; x < shardGroupCount; x += 1) {
+			for (int32_t y = 0; y < shardsPerGroup; y += 1) {
+				std::cout << "Connecting Shard " + std::to_string(x * y + 1) << " of " << this->numberOfShards << " shards." << std::endl;
+				this->theWebSockets.insert_or_assign(std::to_string(x * y), std::make_unique<DiscordCoreInternal::BaseSocketAgent>(this->botToken, this->gatewayUrl, x * y, this->numberOfShards));
+			}
+			if (shardGroupCount > 1) {
+				std::cout << "Waiting to connect the subsequent group of shards..." << std::endl << std::endl;
+			}
+			std::this_thread::sleep_for(std::chrono::seconds{ 20 });
+		}
+		this->currentUser = std::make_unique<BotUser>(Users::getCurrentUserAsync().get(), this->theWebSockets.at("0").get());
 		for (auto& value : this->functionsToExecute) {
 			if (value.repeated) {
 				TimeElapsedHandler onSend = [&](void)->void {
@@ -138,6 +151,7 @@ namespace DiscordCoreAPI {
 			workload.callStack = "DiscordCoreClient::getGateWayBot";
 			auto result = DiscordCoreInternal::submitWorkloadAndGetResult<GatewayBotData>(*this->httpClient.get(), workload);
 			std::string newString = result.url.substr(result.url.find("wss://") + std::string("wss://").size());
+			this->maxConcurrency = result.sessionStartLimit.maxConcurrency;
 			return newString;
 		}
 		catch (...) {
@@ -150,7 +164,13 @@ namespace DiscordCoreAPI {
 		while (!doWeQuit.load(std::memory_order_seq_cst)) {
 			try {
 				std::unique_ptr<DiscordCoreInternal::WebSocketWorkload> workload{ std::make_unique<DiscordCoreInternal::WebSocketWorkload>() };
-				while (!this->baseSocketAgent->getWorkloadTarget().tryReceive(*workload) && !doWeQuit.load(std::memory_order_seq_cst)) {
+				bool doWeHaveAWorkload{ false };
+				while (!doWeHaveAWorkload) {
+					for (auto& [key, value] : this->theWebSockets) {
+						if (value->getWorkloadTarget().tryReceive(*workload) && !doWeQuit.load(std::memory_order_seq_cst)) {
+							doWeHaveAWorkload = true;
+						};
+					}
 					std::this_thread::sleep_for(std::chrono::milliseconds{ 1 });
 				};
 				if (workload->eventType != DiscordCoreInternal::WebSocketEventType::Unset) {
