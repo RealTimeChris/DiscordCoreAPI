@@ -95,15 +95,16 @@ namespace DiscordCoreAPI {
 		Messages::initialize(this->httpClient.get());
 		Reactions::initialize(this->httpClient.get());
 		Roles::initialize(this->httpClient.get());
-		StageInstances::initialize(this->httpClient.get());
 		Stickers::initialize(this->httpClient.get());
+		StageInstances::initialize(this->httpClient.get());
 		Threads::initialize(this->httpClient.get());
 		Users::initialize(this->httpClient.get());
 		WebHooks::initialize(this->httpClient.get());
 		this->commandController = CommandController(this->commandPrefix, this);
 		this->gatewayUrl = this->getGateWayBot();
-		int32_t shardGroupCount{ this->maxConcurrency / this->numberOfShards };
-		int32_t shardsPerGroup{ this->maxConcurrency / shardGroupCount };
+		int32_t shardGroupCount{ static_cast<int32_t>(ceil(static_cast<double>(this->maxConcurrency / this->numberOfShards))) };
+		std::cout << "THE VALUE01: " << this->maxConcurrency << " THE VALUE02: " << this->numberOfShards << "THE FINAL VALUE: " << static_cast<int32_t>(ceil(static_cast<double>(this->maxConcurrency / this->numberOfShards))) << std::endl;
+		int32_t shardsPerGroup{ static_cast<int32_t>(ceil(static_cast<double>(this->maxConcurrency / shardGroupCount))) };
 		for (int32_t x = 0; x < shardGroupCount; x += 1) {
 			for (int32_t y = 0; y < shardsPerGroup; y += 1) {
 				std::cout << "Connecting Shard " + std::to_string(x * y + 1) << " of " << this->numberOfShards << " shards." << std::endl;
