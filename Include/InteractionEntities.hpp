@@ -26,7 +26,6 @@
 #include <FoundationEntities.hpp>
 #include <JSONIfier.hpp>
 #include <MessageEntities.hpp>
-#include <CoRoutine.hpp>
 #include <iostream>
 
 namespace DiscordCoreAPI {
@@ -479,55 +478,55 @@ namespace DiscordCoreAPI {
 
         /// Creates a deferred response to an input Interaction. \brief Creates a deferred response to an input Interaction.
         /// \param dataPackage A CreateDeferredInteractionResponseData structure.
-        /// \returns A HttpCoRoutine containing void.
-        static HttpCoRoutine<void> createDeferredInteractionResponseAsync(CreateDeferredInteractionResponseData dataPackage);
+        /// \returns A CoRoutine containing void.
+        static CoRoutine<void> createDeferredInteractionResponseAsync(CreateDeferredInteractionResponseData dataPackage);
 
         /// Creates a response to an input Interaction. \brief Creates a response to an input Interaction.
         /// \param dataPackage A CreateInteractionResponseData structure.
-        /// \returns A HttpCoRoutine containing a MessageData.
-        static HttpCoRoutine<Message> createInteractionResponseAsync(CreateInteractionResponseData dataPackage);
+        /// \returns A CoRoutine containing a MessageData.
+        static CoRoutine<Message> createInteractionResponseAsync(CreateInteractionResponseData dataPackage);
 
         /// Collects an Interaction response. \brief Collects an Interaction response.
         /// \param dataPackage A GetInteractionResponseData structure.
-        /// \returns A HttpCoRoutine containing an InteractionResponseData.
-        static HttpCoRoutine<InteractionResponseData> getInteractionResponseAsync(GetInteractionResponseData dataPackage);
+        /// \returns A CoRoutine containing an InteractionResponseData.
+        static CoRoutine<InteractionResponseData> getInteractionResponseAsync(GetInteractionResponseData dataPackage);
 
         /// Edits an Interaction response. \brief Edits an Interaction response.
         /// \param dataPackage A EditInteractionResponseData structure.
-        /// \returns A HttpCoRoutine containing a MessageData.
-        static HttpCoRoutine<Message> editInteractionResponseAsync(EditInteractionResponseData dataPackage);
+        /// \returns A CoRoutine containing a MessageData.
+        static CoRoutine<Message> editInteractionResponseAsync(EditInteractionResponseData dataPackage);
 
         /// Deletes an Interaction respnose. \brief Deletes an Interaction respnose.
         /// \param dataPackage A DeleteInteractionResponseData structure.
-        /// \returns A HttpCoRoutine containing void.
-        static HttpCoRoutine<void> deleteInteractionResponseAsync(DeleteInteractionResponseData dataPackage);
+        /// \returns A CoRoutine containing void.
+        static CoRoutine<void> deleteInteractionResponseAsync(DeleteInteractionResponseData dataPackage);
 
         /// Creates a follow up Message to an input Interaction. \brief Creates a follow up Message to an input Interaction.
         /// \param dataPackage A CreateFollowUpMessageData structure.
-        /// \returns A HttpCoRoutine containing a MessageData.
-        static HttpCoRoutine<Message> createFollowUpMessageAsync(CreateFollowUpMessageData dataPackage);
+        /// \returns A CoRoutine containing a MessageData.
+        static CoRoutine<Message> createFollowUpMessageAsync(CreateFollowUpMessageData dataPackage);
 
         /// Creates a follow up Message to an input Interaction. \brief Creates a follow up Message to an input Interaction.
         /// \param dataPackage A CreateFollowUpMessageData structure.
-        /// \returns A HttpCoRoutine containing a MessageData.
-        static HttpCoRoutine<Message> getFollowUpMessageAsync(GetFollowUpMessageData dataPackage);
+        /// \returns A CoRoutine containing a MessageData.
+        static CoRoutine<Message> getFollowUpMessageAsync(GetFollowUpMessageData dataPackage);
 
         /// Edits a follow up Message. \brief Edits a follow up Message.
         /// \param dataPackage A EditFollowUpMessageData structure.
-        /// \returns A HttpCoRoutine containing a MessageData.
-        static HttpCoRoutine<Message> editFollowUpMessageAsync(EditFollowUpMessageData dataPackage);
+        /// \returns A CoRoutine containing a MessageData.
+        static CoRoutine<Message> editFollowUpMessageAsync(EditFollowUpMessageData dataPackage);
 
         /// Deletes a follow up Message. \brief Deletes a follow up Message.
         /// \param dataPackage A DeleteFollowUpMessageData structure.
-        /// \returns A HttpCoRoutine containing void.
-        static HttpCoRoutine<void> deleteFollowUpMessageAsync(DeleteFollowUpMessageData dataPackage);
+        /// \returns A CoRoutine containing void.
+        static CoRoutine<void> deleteFollowUpMessageAsync(DeleteFollowUpMessageData dataPackage);
 
     protected:
 
         static std::unordered_map<std::string, std::unique_ptr<UnboundedMessageBlock<MessageData>>> collectMessageDataBuffers;
         static DiscordCoreInternal::HttpClient* httpClient;
-        static HttpCoRoutine<void> deleteInteractionResponseToBeWrapped(DeleteInteractionResponseData dataPackage);
-        static HttpCoRoutine<void> deleteFollowUpMessageToBeWrapped(DeleteFollowUpMessageData dataPackage);
+        static void deleteInteractionResponseToBeWrapped(DeleteInteractionResponseData dataPackage);
+        static void deleteFollowUpMessageToBeWrapped(DeleteFollowUpMessageData dataPackage);
     };
 
     /**@}*/
