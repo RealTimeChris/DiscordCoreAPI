@@ -1175,7 +1175,7 @@ namespace DiscordCoreAPI {
     class DiscordCoreAPI_Dll OverWriteData : public DiscordEntity {
     public:
         PermissionOverwritesType type{};///< Role or User type.
-        std::string channelId{ "" };///< Channel id for which Channel this overwrite beint64_ts to.
+        std::string channelId{ "" };///< Channel id for which Channel this overwrite belongs to.
         Permissions allow{ "" };///< Collection of Permissions to allow.
         Permissions deny{ "" };///< Collection of Permissions to deny.
 
@@ -3309,6 +3309,17 @@ namespace DiscordCoreAPI {
         Song currentSong{};///< The current Song that is playing.
     };
 
+    /**@}*/
+
+    class DiscordCoreAPI_Dll YouTubeSong : public Song {};
+
+    class DiscordCoreAPI_Dll SoundCloudSong : public Song {};
+
+    /**
+    * \addtogroup utilities
+    * @{
+    */
+
     /// Base arguments for the command classes. \brief Base arguments for the command classes.
     struct DiscordCoreAPI_Dll BaseFunctionArguments {
     public:
@@ -3330,6 +3341,7 @@ namespace DiscordCoreAPI {
     /// Base class for the command classes. \brief Base class for the command classes.
     class DiscordCoreAPI_Dll BaseFunction {
     public:
+
         std::string helpDescription{ "" };///< Description of the command for the Help command.
         std::string commandName{ "" };///< Name of the command for calling purposes.
         EmbedData helpEmbed{};///< A Message embed for displaying the command via the Help command.
@@ -3343,17 +3355,6 @@ namespace DiscordCoreAPI {
         virtual std::unique_ptr<BaseFunction> create() = 0;
         virtual ~BaseFunction() = default;
     };
-
-    /**@}*/
-
-    class DiscordCoreAPI_Dll YouTubeSong : public Song {};
-
-    class DiscordCoreAPI_Dll SoundCloudSong : public Song {};
-
-    /**
-    * \addtogroup utilities
-    * @{
-    */
 
     struct DiscordCoreAPI_Dll RecurseThroughMessagePagesData {
         InputEventData inputEventData{};

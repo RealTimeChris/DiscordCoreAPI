@@ -37,7 +37,6 @@ namespace DiscordCoreAPI {
 		try {
 			if (getVoiceConnectionMap()[this->id]->areWeConnected()) {
 				this->voiceConnectionPtr = getVoiceConnectionMap()[this->id].get();
-				this->areWeConnectedBool = true;
 				return this->voiceConnectionPtr;
 			}
 			else if (channelId != "") {
@@ -48,7 +47,6 @@ namespace DiscordCoreAPI {
 				voiceConnectInitData.userId = this->discordCoreClient->getBotUser().id;
 				voiceConnectInitData.selfDeaf = selfDeaf;
 				voiceConnectInitData.selfMute = selfMute;
-				this->areWeConnectedBool = true;
 				this->voiceConnectionPtr->connect(voiceConnectInitData);
 				return this->voiceConnectionPtr;
 			}
@@ -73,7 +71,6 @@ namespace DiscordCoreAPI {
 				updateVoiceData.selfMute = false;
 				updateVoiceData.guildId = this->id;
 				this->discordCoreClient->getBotUser().updateVoiceStatus(updateVoiceData);
-				this->areWeConnectedBool = false;
 				this->voiceConnectionPtr = nullptr;
 			}
 		}
@@ -84,7 +81,7 @@ namespace DiscordCoreAPI {
 
 	bool Guild::areWeConnected() {
 		try {
-			return this->areWeConnectedBool;
+			return this->voiceConnectionPtr->areWeConnected();
 		}
 		catch (...) {
 			reportException("Guild::areWeConnected()");
