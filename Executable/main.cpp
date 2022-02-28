@@ -3,7 +3,7 @@
 /// Chris M.
 /// https://github.com/RealTimeChris/DiscordCoreAPI
 
-#include <../Include/Index.hpp>
+#include <Index.hpp>
 #include "Commands/CommandsList.hpp"
 
 void onBoot02(DiscordCoreAPI::DiscordCoreClient* thePtr) {
