@@ -101,7 +101,7 @@ namespace DiscordCoreAPI {
 		Users::initialize(this->httpClient.get());
 		WebHooks::initialize(this->httpClient.get());
 		this->commandController = CommandController(this->commandPrefix, this);
-		this->gatewayUrl = this->getGateWayBot();
+		this->getGateWayBot();
 		int32_t shardGroupCount{ static_cast<int32_t>(ceil(static_cast<double>(this->numberOfShards) / static_cast<double>(this->maxConcurrency))) };
 		int32_t shardsPerGroup{ static_cast<int32_t>(ceil(static_cast<double>(this->numberOfShards) / static_cast<double>(shardGroupCount))) };
 		for (int32_t x = 0; x < shardGroupCount; x += 1) {
@@ -142,7 +142,7 @@ namespace DiscordCoreAPI {
 		this->run();
 	}
 
-	std::string DiscordCoreClient::getGateWayBot() {
+	void DiscordCoreClient::getGateWayBot() {
 		try {
 			DiscordCoreInternal::HttpWorkloadData workload{};
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Gateway_Bot;
@@ -150,13 +150,11 @@ namespace DiscordCoreAPI {
 			workload.relativePath = "/gateway/bot";
 			workload.callStack = "DiscordCoreClient::getGateWayBot";
 			auto result = DiscordCoreInternal::submitWorkloadAndGetResult<GatewayBotData>(*this->httpClient.get(), workload);
-			std::string newString = result.url.substr(result.url.find("wss://") + std::string("wss://").size());
 			this->maxConcurrency = result.sessionStartLimit.maxConcurrency;
-			return newString;
+			this->gatewayUrl = result.url.substr(result.url.find("wss://") + std::string("wss://").size());
 		}
 		catch (...) {
 			reportException("DiscordCoreClient::getGateWayBot()");
-			return std::string{};
 		}
 	}
 
@@ -169,6 +167,7 @@ namespace DiscordCoreAPI {
 					for (auto& [key, value] : this->theWebSockets) {
 						if (value->getWorkloadTarget().tryReceive(*workload) && !doWeQuit.load(std::memory_order_seq_cst)) {
 							doWeHaveAWorkload = true;
+							break;
 						};
 					}
 					std::this_thread::sleep_for(std::chrono::milliseconds{ 1 });

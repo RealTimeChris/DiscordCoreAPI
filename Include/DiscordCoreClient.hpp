@@ -117,7 +117,7 @@ namespace DiscordCoreAPI {
 		CacheOptions cacheOptions{};
 		std::string botToken{ "" };
 
-		std::string getGateWayBot();
+		void getGateWayBot();
 
 		void run();
 	};
