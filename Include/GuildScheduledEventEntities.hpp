@@ -46,7 +46,7 @@ namespace DiscordCoreAPI {
 		std::string scheduledStartTime{ "" };///< The time to schedule the scheduled event.
 		std::string scheduledEndTime{ "" };///< The time when the scheduled event is scheduled to end.
 		std::string description{ "" };///< The description of the scheduled event.
-		std::string channelId{ "" };///< The channel id of the scheduled event.
+		std::string channelId{ "" };///< The Channel id of the scheduled event.
 		std::string guildId{ "" };///< The Guild within which to create the event.
 		std::string name{ "" };///< The name of the scheduled event.
 	};
@@ -68,7 +68,7 @@ namespace DiscordCoreAPI {
 		std::string scheduledStartTime{ "" };///< The time to schedule the scheduled event.
 		std::string scheduledEndTime{ "" };///< The time when the scheduled event is scheduled to end.
 		std::string description{ "" };///< The description of the scheduled event.
-		std::string channelId{ "" };///< The channel id of the scheduled event, set to null if changing entity type to External.
+		std::string channelId{ "" };///< The Channel id of the scheduled event, set to null if changing entity type to External.
 		std::string guildId{ "" };///< The Guild within which to modify the event.
 		std::string name{ "" };///< The name of the scheduled event.
 	};

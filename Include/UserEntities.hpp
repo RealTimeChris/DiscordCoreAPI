@@ -43,7 +43,7 @@ namespace DiscordCoreAPI {
 
 	/// For adding a user to a group Dm. \brief For adding a user to a group Dm.
 	struct DiscordCoreAPI_Dll AddRecipientToGroupDMData {
-		std::string channelId{ "" };///< The channel Id of the Dm.
+		std::string channelId{ "" };///< The Channel Id of the Dm.
 		std::string userId{ "" };///< The user's Id.
 		std::string token{ "" };///< The user's access token.
 		std::string nick{ "" };///< The user's nickname.
@@ -51,21 +51,21 @@ namespace DiscordCoreAPI {
 
 	/// For removing a User from a group Dm. \brief For removing a User from a group Dm.
 	struct DiscordCoreAPI_Dll RemoveRecipientFromGroupDMData {
-		std::string channelId{ "" };///< The channel Id of the Dm.
+		std::string channelId{ "" };///< The Channel Id of the Dm.
 		std::string userId{ "" };///< The user's Id.
 	};
 
 	/// For updating the bot's current voice state. \brief For updating the bot's current voice state.
 	struct DiscordCoreAPI_Dll ModifyCurrentUserVoiceStateData {
 		std::string requestToSpeakTimestamp{ "" };///< ISO8601 timestamp.
-		std::string channelId{ "" };///< The id of the channel the user is currently in.
+		std::string channelId{ "" };///< The id of the Channel the user is currently in.
 		std::string guildId{ "" };///< The Guild within which to update the bot's voice state.
 		bool suppress{ false };///< Toggles the user's suppress state.
 	};
 
 	/// For modifying a User's voice state. \brief For modifying a User's voice state.
 	struct DiscordCoreAPI_Dll ModifyUserVoiceStateData {
-		std::string channelId{ "" };///< The id of the channel the user is currently in.
+		std::string channelId{ "" };///< The id of the Channel the user is currently in.
 		std::string guildId{ "" };///< The Guild within which you would like to modify their voice state.
 		std::string userId{ "" };///< The user for which you would like to modify the voice state of.
 		bool suppress{ false };///< Toggles the user's suppress state.
@@ -106,7 +106,7 @@ namespace DiscordCoreAPI {
 
 		BotUser(UserData dataPackage, DiscordCoreInternal::BaseSocketAgent* pBaseBaseSocketAgentNew);
 
-		/// Updates the bot's current voice-status. Joins/leaves a channel, and/or self deafens/mutes. \brief Updates the bot's current voice-status. Joins/leaves a channel, and/or self deafens/mutes.
+		/// Updates the bot's current voice-status. Joins/leaves a Channel, and/or self deafens/mutes. \brief Updates the bot's current voice-status. Joins/leaves a Channel, and/or self deafens/mutes.
 		void updateVoiceStatus(UpdateVoiceStateData datdataPackageaPackage);
 
 		/// Updates the bot's current activity status, to be viewed by others in the same server as the bot. \brief Updates the bot's current activity status, to be viewed by others in the same server as the bot.

@@ -683,9 +683,8 @@ namespace DiscordCoreAPI {
         return doWeBreak;
     }
 
-
     /**
-    * \addtogroup main_endpoints
+    * \addtogroup utilities
     * @{
     */
 
@@ -695,13 +694,6 @@ namespace DiscordCoreAPI {
         int32_t totalNumberOfShards{ 1 };///< The total number of shards that will be launched across all processes.
         int32_t startingShard{ 0 };///< The first shard to start on this process.
     };
-
-    /**@}*/
-
-    /**
-    * \addtogroup utilities
-    * @{
-    */
 
     /// Time formatting methods. \brief Time formatting methods.
     enum class TimeFormat {
@@ -874,30 +866,30 @@ namespace DiscordCoreAPI {
         std::string getCurrentPermissionString();
 
         /// Returns a std::string containing the currently held Permissions in a given Guild. \brief Returns a std::string containing the currently held Permissions in a given Guild.
-        /// \param guildMember The GuildMember who's Permissions are to be evaluated.
+        /// \param GuildMember The GuildMember who's Permissions are to be evaluated.
         /// \returns A std::string containing the current Permissions.
-        static std::string getCurrentGuildPermissions(GuildMember guildMember);
+        static std::string getCurrentGuildPermissions(GuildMember GuildMember);
 
         /// Returns a std::string containing all of a given User's Permissions for a given Channel. \brief Returns a std::string containing all of a given User's Permissions for a given Channel.
-        /// \param guildMember The GuildMember who's Permissions to analyze.
-        /// \param channel The Channel withint which to check for Permissions.
+        /// \param GuildMember The GuildMember who's Permissions to analyze.
+        /// \param Channel The Channel withint which to check for Permissions.
         /// \returns A std::string containing the final Permission's value for a given Channel.
-        static std::string getCurrentChannelPermissions(GuildMember guildMember, ChannelData channel);
+        static std::string getCurrentChannelPermissions(GuildMember GuildMember, ChannelData channel);
 
         /// Checks for a given Permission in a chosen Channel, for a specific User. \brief Checks for a given Permission in a chosen Channel, for a specific User.
-        /// \param guildMember The GuildMember who to check the Permissions of.
-        /// \param channel The Channel within which to check for the Permission's presence.
+        /// \param GuildMember The GuildMember who to check the Permissions of.
+        /// \param Channel The Channel within which to check for the Permission's presence.
         /// \param permission A Permission to check the current Channel for.
         /// \returns A bool suggesting the presence of the chosen Permission.
-        bool checkForPermission(GuildMember guildMember, ChannelData channel, Permission permission);
+        bool checkForPermission(GuildMember GuildMember, ChannelData channel, Permission permission);
 
     protected:
 
-        static std::string computeBasePermissions(GuildMember guildMember);
+        static std::string computeBasePermissions(GuildMember GuildMember);
 
-        static std::string computeOverwrites(std::string basePermissions, GuildMember guildMember, ChannelData channel);
+        static std::string computeOverwrites(std::string basePermissions, GuildMember GuildMember, ChannelData channel);
 
-        static std::string computePermissions(GuildMember guildMember, ChannelData channel);
+        static std::string computePermissions(GuildMember GuildMember, ChannelData channel);
     };
 
     /**@}*/
@@ -909,18 +901,18 @@ namespace DiscordCoreAPI {
 
     /// Gateway intents. \brief Gateway intents.
     enum class GatewayIntents : int32_t {
-        Guilds = (1 << 0),///< Intent for receipt of guild information.
-        Guild_Members = (1 << 1),///< Intent for receipt of guild members.
-        Guild_Bans = (1 << 2),///< Intent for receipt of guild bans.
-        Guild_Emojis = (1 << 3),///< Intent for receipt of guild emojis.
-        Guild_Integrations = (1 << 4),///< Intent for receipt of guild integrations.
-        Guild_Webhooks = (1 << 5),///< Intent for receipt of guild webhooks.
-        Guild_Invites = (1 << 6),///< Intent for receipt of guild invites.
-        Guild_VoiceStates = (1 << 7),///< Intent for receipt of guild voice states.
-        Guild_Presences = (1 << 8),///< Intent for receipt of guild presences.
-        Guild_Messages = (1 << 9),///< Intent for receipt of guild messages.
-        Guild_Message_Reactions = (1 << 10),///< Intent for receipt of guild message reactions.
-        Guild_Message_Typing = (1 << 11),///< Intent for receipt of guild message typing notifications.
+        Guilds = (1 << 0),///< Intent for receipt of Guild information.
+        Guild_Members = (1 << 1),///< Intent for receipt of Guild members.
+        Guild_Bans = (1 << 2),///< Intent for receipt of Guild bans.
+        Guild_Emojis = (1 << 3),///< Intent for receipt of Guild emojis.
+        Guild_Integrations = (1 << 4),///< Intent for receipt of Guild integrations.
+        Guild_Webhooks = (1 << 5),///< Intent for receipt of Guild webhooks.
+        Guild_Invites = (1 << 6),///< Intent for receipt of Guild invites.
+        Guild_VoiceStates = (1 << 7),///< Intent for receipt of Guild voice states.
+        Guild_Presences = (1 << 8),///< Intent for receipt of Guild presences.
+        Guild_Messages = (1 << 9),///< Intent for receipt of Guild messages.
+        Guild_Message_Reactions = (1 << 10),///< Intent for receipt of Guild message reactions.
+        Guild_Message_Typing = (1 << 11),///< Intent for receipt of Guild message typing notifications.
         Direct_Messages = (1 << 12),///< Intent for receipt of direct messages (DMs).
         Direct_Message_Reactions = (1 << 13),///< Intent for receipt of direct message reactions.
         Direct_Message_Typing = (1 << 14),///< Intent for receipt of direct message typing notifications.
@@ -1579,53 +1571,53 @@ namespace DiscordCoreAPI {
 
     /// Audit log events. \brief Audit log events.
     enum class AuditLogEvent {
-        Guild_Update = 1,
-        Channel_Create = 10,
-        Channel_Update = 11,
-        Channel_Delete = 12,
-        Channel_Overwrite_Create = 13,
-        Channel_Overwrite_Update = 14,
-        Channel_Overwrite_Delete = 15,
-        Member_Kick = 20,
-        Member_Prune = 21,
-        Member_Ban_Add = 22,
-        Member_Ban_Remove = 23,
-        Member_Update = 24,
-        Member_Role_Update = 25,
-        Member_Move = 26,
-        Member_Disconnect = 27,
-        Bot_Add = 28,
-        Role_Create = 30,
-        Role_Update = 31,
-        Role_Delete = 32,
-        Invite_Create = 40,
-        Invite_Update = 41,
-        Invite_Delete = 42,
-        Webhook_Create = 50,
-        Webhook_Update = 51,
-        Webhook_Delete = 52,
-        Emoji_Create = 60,
-        Emoji_Update = 61,
-        Emoji_Delete = 62,
-        Message_Delete = 72,
-        Message_Bulk_Delete = 73,
-        Message_Pin = 74,
-        Message_Unpin = 75,
-        Integration_Create = 80,
-        Integration_Update = 81,
-        Integration_Delete = 82,
-        Stage_Instance_Create = 83,
-        Stage_Instance_Update = 84,
-        Stage_Instance_Delete = 85,
-        Sticker_Create = 90,
-        Sticker_Update = 91,
-        Sticker_Delete = 92,
-        Guild_Scheduled_Event_Create = 100,
-        Guild_Scheduled_Event_Update = 101,
-        Guild_Scheduled_Event_Delete = 102,
-        Thread_Create = 110,
-        Thread_Update = 111,
-        Thread_Delete = 112
+        Guild_Update = 1,///< Guild update.
+        Channel_Create = 10,///< Channel create.
+        Channel_Update = 11,///< Channel update.
+        Channel_Delete = 12,///< Channel delete.
+        Channel_Overwrite_Create = 13,///< Channel overwrite create.
+        Channel_Overwrite_Update = 14,///< Channel overwrite update.
+        Channel_Overwrite_Delete = 15,///< Channel overwrite delete.
+        Member_Kick = 20,///< Member kick.
+        Member_Prune = 21,///< Member prune.
+        Member_Ban_Add = 22,///< Member ban add.
+        Member_Ban_Remove = 23,///< Member ban remove.
+        Member_Update = 24,///< Member update.
+        Member_Role_Update = 25,///< Member role update.
+        Member_Move = 26,///< Member move.
+        Member_Disconnect = 27,///< Member disconnect.
+        Bot_Add = 28,///< Bot add.
+        Role_Create = 30,///< Role create.
+        Role_Update = 31,///< Role update.
+        Role_Delete = 32,///< Role delete.
+        Invite_Create = 40,///< Invite create.
+        Invite_Update = 41,///< Invite update.
+        Invite_Delete = 42,///< Invite delete.
+        Webhook_Create = 50,///< Webhook create.
+        Webhook_Update = 51,///< Webhook update.
+        Webhook_Delete = 52,///< Webhook delete.
+        Emoji_Create = 60,///< Emoji create.
+        Emoji_Update = 61,///< Emoji update.
+        Emoji_Delete = 62,///< Emoji delete.
+        Message_Delete = 72,///< Message delete.
+        Message_Bulk_Delete = 73,///< Message bulk delete.
+        Message_Pin = 74,///< Message pin.
+        Message_Unpin = 75,///< Message unpin.
+        Integration_Create = 80,///< Integration create.
+        Integration_Update = 81,///< Integration update.
+        Integration_Delete = 82,///< Integration delete.
+        Stage_Instance_Create = 83,///< Stage-Instance create.
+        Stage_Instance_Update = 84,///< Stage-Instance update.
+        Stage_Instance_Delete = 85,///< Stage-Instance delete.
+        Sticker_Create = 90,///< Sticker create.
+        Sticker_Update = 91,///< Sticker update.
+        Sticker_Delete = 92,///< Sticker delete.
+        Guild_Scheduled_Event_Create = 100,///< Guild-scheduled-event create.
+        Guild_Scheduled_Event_Update = 101,///< Guild-scheduled-event update.
+        Guild_Scheduled_Event_Delete = 102,///< Guild-scheduled-event delete.
+        Thread_Create = 110,///< Thread create.
+        Thread_Update = 111,///< Thread update.
+        Thread_Delete = 112///< Thread delete.
     };
 
     /// Audit log entry info data \brief Audit log entry info data.

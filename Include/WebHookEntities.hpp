@@ -65,7 +65,7 @@ namespace DiscordCoreAPI {
 	/// For modifying a WebHook. \brief For modifying a WebHook.
 	struct DiscordCoreAPI_Dll ModifyWebHookData {
 		std::vector<uint8_t> avatar{};///< Image responseData for the default webhook avatar.
-		std::string channelId{ "" };///< The new channel id this webhook should be moved to.
+		std::string channelId{ "" };///< The new Channel id this webhook should be moved to.
 		std::string webhookId{ "" };///< The WebHook to be modified.
 		std::string name{ "" };///< The default name of the webhook.
 	};
@@ -74,7 +74,7 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll ModifyWebHookWithTokenData {
 		std::string webhookToken{ "" };///< Token of the desired WebHook.
 		std::vector<uint8_t> avatar{};///< Image responseData for the default webhook avatar.
-		std::string channelId{ "" };///< The new channel id this webhook should be moved to.
+		std::string channelId{ "" };///< The new Channel id this webhook should be moved to.
 		std::string webhookId{ "" };///< The WebHook to be modified.
 		std::string name{ "" };///< The default name of the webhook.
 	};
@@ -97,7 +97,7 @@ namespace DiscordCoreAPI {
 		friend std::string DiscordCoreInternal::JSONIFY(ExecuteWebHookData dataPackage);
 		friend WebHooks;
 
-		std::string threadId{ "" };///< Send a message to the specified thread within a webhook's channel. The thread will automatically be unarchived.
+		std::string threadId{ "" };///< Send a message to the specified thread within a webhook's Channel. The thread will automatically be unarchived.
 		bool wait{ false };///< Waits for server confirmation of message send before response, and returns the created message body(defaults to false; when false a message that is not saved does not return an error).
 
 		ExecuteWebHookData(WebHookData dataNew) {
@@ -228,7 +228,7 @@ namespace DiscordCoreAPI {
 		friend WebHooks;
 
 		std::string messageId{ "" };///< The Message Id to collect.
-		std::string threadId{ "" };///< Send a message to the specified thread within a webhook's channel. The thread will automatically be unarchived.
+		std::string threadId{ "" };///< Send a message to the specified thread within a webhook's Channel. The thread will automatically be unarchived.
 		bool wait{ false };///< Waits for server confirmation of message send before response, and returns the created message body(defaults to false; when false a message that is not saved does not return an error).
 
 		EditWebHookMessageData(WebHookData dataNew) {
@@ -340,7 +340,7 @@ namespace DiscordCoreAPI {
 		std::string webhookToken{ "" };///< The WebHook token you would like to collect.
 		std::string webhookId{ "" };///< The WebHook you would like to collect.
 		std::string messageId{ "" };///< The Message Id to collect.
-		std::string threadId{ "" };///< Send a message to the specified thread within a webhook's channel. The thread will automatically be unarchived.
+		std::string threadId{ "" };///< Send a message to the specified thread within a webhook's Channel. The thread will automatically be unarchived.
 	};
 
 	/// A single WebHook. \brief A single WebHook.

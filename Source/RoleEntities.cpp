@@ -15,7 +15,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-/// RoleEntities.cpp - Source file for the role related classes and structs.
+/// RoleEntities.cpp - Source file for the Role related classes and structs.
 /// May 13, 2021
 /// Chris M.
 /// https://github.com/RealTimeChris/DiscordCoreAPI

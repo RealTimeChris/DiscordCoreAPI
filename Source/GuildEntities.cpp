@@ -901,7 +901,7 @@ namespace DiscordCoreAPI {
 
 	void Guilds::insertGuild(Guild guild) {
 		try {
-			Guild guildNew(guild);
+			Guild guildNew{ guild };
 			if (guild.id == "") {
 				return;
 			}

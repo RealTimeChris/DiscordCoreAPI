@@ -46,12 +46,12 @@ namespace DiscordCoreAPI {
 		AfkTimeOutDurations afkTimeout{ AfkTimeOutDurations::Shortest };///< Afk timeout in seconds.
 		DefaultMessageNotificationLevel defaultMessageNotifications{};///< Default message notification level.
 		ExplicitContentFilterLevel explicitContentFilter{};///< Explicit content filter level.
-		std::vector<ChannelData> channels{};///< Array of partial channel objects.
-		std::string systemChannelId{ "" };///< The id of the channel where Guild notices such as welcome messages and boost events are posted.
-		int32_t systemChannelFlags{ 0 };///< System channel flags.
+		std::vector<ChannelData> channels{};///< Array of partial Channel objects.
+		std::string systemChannelId{ "" };///< The id of the Channel where Guild notices such as welcome messages and boost events are posted.
+		int32_t systemChannelFlags{ 0 };///< System Channel flags.
 		int32_t verificationLevel{ 0 };///< Verification level.
-		std::string afkChannelId{ "" };///< Id for afk channel.
-		std::vector<RoleData> roles{};///< Array of role objects.
+		std::string afkChannelId{ "" };///< Id for afk Channel.
+		std::vector<RoleData> roles{};///< Array of Role objects.
 		std::vector<uint8_t> icon{};///< base64 128x128 image for the Guild icon.
 		std::string name{ "" };///< The name of the new Guild.
 	};
@@ -87,15 +87,15 @@ namespace DiscordCoreAPI {
 		}
 		DefaultMessageNotificationLevel defaultMessageNotifications{};///< Default message notification level.
 		ExplicitContentFilterLevel explicitContentFilter{};///< Explicit content filter level.
-		std::string publicUpdatesChannelId{ "" };///< The id of the channel where admins and moderators of Community guilds receive notices from Discord.
+		std::string publicUpdatesChannelId{ "" };///< The id of the Channel where admins and moderators of Community guilds receive notices from Discord.
 		std::vector<uint8_t> discoverySplash{};/// Base64 16 : 9 png / jpeg image for the Guild discovery splash(when the server has the DISCOVERABLE feature).
 		VerificationLevel verificationLevel{};///< Verification level.
 		std::vector<std::string> features{};///< Array of Guild feature strings enabled Guild features.
 		std::string preferredLocale{ "" };///< The preferred locale of a Community Guild used in server discovery and notices from Discord; defaults to "en-US".
-		std::string systemChannelId{ "" };///< The id of the channel where Guild notices such as welcome messages and boost events are posted.
-		std::string rulesChannelId{ "" };///< The id of the channel where Community guilds display rules and /or guidelines.
+		std::string systemChannelId{ "" };///< The id of the Channel where Guild notices such as welcome messages and boost events are posted.
+		std::string rulesChannelId{ "" };///< The id of the Channel where Community guilds display rules and /or guidelines.
 		AfkTimeOutDurations afkTimeout{};///< Afk timeout in seconds.
-		int32_t systemChannelFlags{ 0 };///< System channel flags.
+		int32_t systemChannelFlags{ 0 };///< System Channel flags.
 		std::string afkChannelId{ "" };///< Id for afk channels.
 		std::vector<uint8_t> splash{};///< Base64 16 : 9 png / jpeg image for the Guild splash(when the server has the INVITE_SPLASH feature).
 		std::string description{ "" };///< The description for the Guild, if the Guild is discoverable.
@@ -520,7 +520,7 @@ namespace DiscordCoreAPI {
 		static std::unordered_map<std::string, Guild> cache;
 		static DiscordCoreInternal::HttpClient* httpClient;
 
-		static void insertGuild(Guild Guild);
+		static void insertGuild(Guild guild);
 
 		static void removeGuild(std::string GuildId);
 	};

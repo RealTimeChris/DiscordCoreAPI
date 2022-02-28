@@ -48,205 +48,8 @@ namespace DiscordCoreAPI {
 		std::string id{ "" };///< The id of the Message to collect.
 	};
 
-	/// For creating a Message. \brief For creating a Message.
-	class DiscordCoreAPI_Dll CreateMessageData {
+	class DiscordCoreAPI_Dll MessageResponseBase {
 	public:
-
-		friend std::string DiscordCoreInternal::JSONIFY(CreateMessageData dataPackage);
-		friend InputEvents;
-		friend Messages;
-
-		CreateMessageData(std::string channelIdNew) {
-			this->channelId = channelIdNew;
-		}
-
-		CreateMessageData(RespondToInputEventData dataPackage) {
-			this->channelId = dataPackage.channelId;
-			this->addAllowedMentions(dataPackage.allowedMentions);
-			this->requesterId = dataPackage.requesterId;
-			for (auto& value : dataPackage.components) {
-				this->components.push_back(value);
-			}
-			this->addContent(dataPackage.content);
-			for (auto& value : dataPackage.embeds) {
-				this->embeds.push_back(value);
-			}
-			this->tts = dataPackage.tts;
-		}
-
-		CreateMessageData(InputEventData dataPackage) {
-			this->requesterId = dataPackage.getRequesterId();
-			this->channelId = dataPackage.getChannelId();
-		}
-
-		/// Adds a button to the response Message. \brief Adds a button to the response Message.
-		/// \param disabled Whether the button is active or not.
-		/// \param customIdNew A custom id to give for identifying the button.
-		/// \param buttonLabel A visible label for the button.
-		/// \param buttonStyle The style of the button.
-		/// \param emojiName An emoji name, if desired.        
-		/// \param emojiId An emoji id, if desired.
-		/// \param url A url, if applicable.
-		void addButton(bool disabled, std::string customIdNew, std::string buttonLabel, ButtonStyle buttonStyle, std::string emojiName = "", std::string emojiId = "", std::string url = "") {
-			if (this->components.size() == 0) {
-				ActionRowData actionRowData;
-				this->components.push_back(actionRowData);
-			}
-			if (this->components.size() < 5) {
-				if (this->components.at(this->components.size() - 1).components.size() < 5) {
-					ComponentData component;
-					component.type = ComponentType::Button;
-					component.emoji.name = emojiName;
-					component.label = buttonLabel;
-					component.style = static_cast<int32_t>(buttonStyle);
-					component.customId = customIdNew;
-					component.disabled = disabled;
-					component.emoji.id = emojiId;
-					component.url = url;
-					this->components.at(this->components.size() - 1).components.push_back(component);
-				}
-				else if (this->components.at(this->components.size() - 1).components.size() == 5) {
-					ActionRowData actionRowData;
-					this->components.push_back(actionRowData);
-				}
-			}
-		}
-
-		/// Adds a select-menu to the response Message. \brief Adds a select-menu to the response Message.
-		/// \param disabled Whether the select-menu is active or not.
-		/// \param customIdNew A custom id to give for identifying the select-menu.
-		/// \param options A std::vector of select-menu-options to offer.
-		/// \param placeholder Custom placeholder text if nothing is selected, max 100 characters.
-		/// \param maxValues Maximum number of selections that are possible.
-		/// \param minValues Minimum required number of selections that are required.
-		void addSelectMenu(bool disabled, std::string customIdNew, std::vector<SelectOptionData> options, std::string placeholder, int32_t maxValues, int32_t minValues) {
-			if (this->components.size() == 0) {
-				ActionRowData actionRowData;
-				this->components.push_back(actionRowData);
-			}
-			if (this->components.size() < 5) {
-				if (this->components.at(this->components.size() - 1).components.size() < 5) {
-					ComponentData componentData;
-					componentData.type = ComponentType::SelectMenu;
-					componentData.placeholder = placeholder;
-					componentData.maxValues = maxValues;
-					componentData.minValues = minValues;
-					componentData.disabled = disabled;
-					componentData.customId = customIdNew;
-					componentData.options = options;
-					this->components.at(this->components.size() - 1).components.push_back(componentData);
-				}
-				else if (this->components.at(this->components.size() - 1).components.size() == 5) {
-					ActionRowData actionRowData;
-					this->components.push_back(actionRowData);
-				}
-
-			}
-		}
-
-		/// For setting the allowable mentions in a response. \brief For setting the allowable mentions in a response.
-		/// \param dataPackage An AllowedMentionsData structure.
-		void addAllowedMentions(AllowedMentionsData dataPackage) {
-			this->allowedMentions = dataPackage;
-		}
-
-		/// For setting the components in a response. \brief For setting the components in a response. 
-		/// \param dataPackage An ActionRowData structure.
-		void addComponentRow(ActionRowData dataPackage) {
-			this->components.push_back(dataPackage);
-		}
-
-		/// For setting the embeds in a response. \brief For setting the embeds in a response.
-		/// \param dataPackage An EmbedData structure.
-		void addMessageEmbed(EmbedData dataPackage) {
-			this->embeds.push_back(dataPackage);
-		}
-
-		/// For setting the Message content in a response. \brief For setting the Message content in a response.
-		/// \param dataPackage A std::string, containing the content.
-		void addContent(std::string dataPackage) {
-			this->content = dataPackage;
-		}
-
-		/// For setting the tts status of a response. \brief For setting the tts status of a response.
-		/// \param enabledTTs A bool.
-		void setTTSStatus(bool enabledTTs) {
-			this->tts = enabledTTs;
-		}
-
-	protected:
-
-		MessageReferenceData messageReference{};
-		std::vector<ActionRowData> components{};
-		AllowedMentionsData allowedMentions{};
-		std::vector<std::string> stickerIds{};
-		std::vector<EmbedData> embeds{};
-		std::string requesterId{ "" };
-		std::string channelId{ "" };
-		std::string content{ "" };
-		bool tts{ false };
-
-		CreateMessageData() = default;
-	};
-
-	/// For sending a direct-message. \brief For sending a direct-message.
-	class DiscordCoreAPI_Dll SendDMData : public CreateMessageData {
-	public:
-		friend InputEvents;
-
-		SendDMData(RespondToInputEventData dataPackage) {
-			this->targetUserId = dataPackage.targetUserId;
-			this->addAllowedMentions(dataPackage.allowedMentions);
-			this->requesterId = dataPackage.requesterId;
-			for (auto& value : dataPackage.components) {
-				this->components.push_back(value);
-			}
-			this->addContent(dataPackage.content);
-			for (auto& value : dataPackage.embeds) {
-				this->embeds.push_back(value);
-			}
-			this->tts = dataPackage.tts;
-		}
-
-	protected:
-
-		std::string targetUserId{ "" };
-
-	};
-
-	/// For crossposting a Message. \brief For crossposting a Message.
-	struct DiscordCoreAPI_Dll CrosspostMessageData {
-		std::string messageId{ "" };///< Id of the message to be crossposted.
-		std::string channelId{ "" };///< Channel within which to crosspost the Message from.
-	};
-
-	/// For editing a Message. \brief For editing a Message.
-	class DiscordCoreAPI_Dll EditMessageData {
-	public:
-
-		friend std::string DiscordCoreInternal::JSONIFY(EditMessageData dataPackage);
-		friend InputEvents;
-		friend Messages;
-
-		EditMessageData(InputEventData dataPackage) {
-			this->requesterId = dataPackage.getRequesterId();
-			this->channelId = dataPackage.getChannelId();
-			this->messageId = dataPackage.getMessageId();
-		}
-
-		EditMessageData(RespondToInputEventData dataPackage) {
-			this->channelId = dataPackage.channelId;
-			this->messageId = dataPackage.messageId;
-			this->addAllowedMentions(dataPackage.allowedMentions);
-			this->requesterId = dataPackage.requesterId;
-			for (auto& value : dataPackage.components) {
-				this->components.push_back(value);
-			}
-			this->addContent(dataPackage.content);
-			for (auto& value : dataPackage.embeds) {
-				this->embeds.push_back(value);
-			}
-		}
 
 		/// Adds a button to the response Message. \brief Adds a button to the response Message.
 		/// \param disabled Whether the button is active or not.
@@ -346,15 +149,119 @@ namespace DiscordCoreAPI {
 	protected:
 
 		std::vector<AttachmentData> attachments{};
+		MessageReferenceData messageReference{};
 		std::vector<ActionRowData> components{};
 		AllowedMentionsData allowedMentions{};
+		std::vector<std::string> stickerIds{};
 		std::vector<EmbedData> embeds{};
+		std::string content{ "" };
+		bool tts{ false };
+	};
+
+	/// For creating a Message. \brief For creating a Message.
+	class DiscordCoreAPI_Dll CreateMessageData : public MessageResponseBase {
+	public:
+
+		friend std::string DiscordCoreInternal::JSONIFY(CreateMessageData dataPackage);
+		friend InputEvents;
+		friend Messages;
+
+		CreateMessageData(std::string channelIdNew) {
+			this->channelId = channelIdNew;
+		}
+
+		CreateMessageData(RespondToInputEventData dataPackage) {
+			this->channelId = dataPackage.channelId;
+			this->addAllowedMentions(dataPackage.allowedMentions);
+			this->requesterId = dataPackage.requesterId;
+			for (auto& value : dataPackage.components) {
+				this->components.push_back(value);
+			}
+			this->addContent(dataPackage.content);
+			for (auto& value : dataPackage.embeds) {
+				this->embeds.push_back(value);
+			}
+			this->tts = dataPackage.tts;
+		}
+
+		CreateMessageData(InputEventData dataPackage) {
+			this->requesterId = dataPackage.getRequesterId();
+			this->channelId = dataPackage.getChannelId();
+		}
+		
+		std::string requesterId{ "" };
+		std::string channelId{ "" };	
+
+		CreateMessageData() = default;
+	};
+
+	/// For sending a direct-message. \brief For sending a direct-message.
+	class DiscordCoreAPI_Dll SendDMData : public CreateMessageData {
+	public:
+		friend InputEvents;
+
+		SendDMData(RespondToInputEventData dataPackage) {
+			this->targetUserId = dataPackage.targetUserId;
+			this->addAllowedMentions(dataPackage.allowedMentions);
+			this->requesterId = dataPackage.requesterId;
+			for (auto& value : dataPackage.components) {
+				this->components.push_back(value);
+			}
+			this->addContent(dataPackage.content);
+			for (auto& value : dataPackage.embeds) {
+				this->embeds.push_back(value);
+			}
+			this->tts = dataPackage.tts;
+		}
+
+	protected:
+
+		std::string targetUserId{ "" };
+		std::string requesterId{ "" };
+		std::string channelId{ "" };
+
+	};
+
+	/// For crossposting a Message. \brief For crossposting a Message.
+	struct DiscordCoreAPI_Dll CrosspostMessageData : public MessageResponseBase {
+		std::string messageId{ "" };///< Id of the message to be crossposted.
+		std::string channelId{ "" };///< Channel within which to crosspost the Message from.
+	};
+
+	/// For editing a Message. \brief For editing a Message.
+	class DiscordCoreAPI_Dll EditMessageData : public MessageResponseBase {
+	public:
+
+		friend std::string DiscordCoreInternal::JSONIFY(EditMessageData dataPackage);
+		friend InputEvents;
+		friend Messages;
+
+		EditMessageData(InputEventData dataPackage) {
+			this->requesterId = dataPackage.getRequesterId();
+			this->channelId = dataPackage.getChannelId();
+			this->messageId = dataPackage.getMessageId();
+		}
+
+		EditMessageData(RespondToInputEventData dataPackage) {
+			this->channelId = dataPackage.channelId;
+			this->messageId = dataPackage.messageId;
+			this->addAllowedMentions(dataPackage.allowedMentions);
+			this->requesterId = dataPackage.requesterId;
+			for (auto& value : dataPackage.components) {
+				this->components.push_back(value);
+			}
+			this->addContent(dataPackage.content);
+			for (auto& value : dataPackage.embeds) {
+				this->embeds.push_back(value);
+			}
+		}
+
+	protected:
+
 		std::string requesterId{ "" };
 		std::string channelId{ "" };
 		std::string messageId{ "" };
-		std::string content{ "" };
 		int32_t flags{ 0 };
-		bool tts{ false };
 
 		EditMessageData() = default;
 

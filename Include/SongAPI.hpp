@@ -48,7 +48,7 @@ namespace DiscordCoreAPI {
 
 		/// For setting up behavior in response to a completed song. \brief For setting up behavior in response to a completed song.
 		/// \param handler A delegate taking a SongCompletionEventData structure as an argument.
-		/// \param guildId The id of the guild for which you would like to instantiate this event.
+		/// \param guildId The id of the Guild for which you would like to instantiate this event.
 		static void onSongCompletion(std::function<CoRoutine<void>(SongCompletionEventData)> handler, std::string guildId);
 
 		/// Search for a Song to play. \brief Search for a Song to play.
@@ -79,7 +79,7 @@ namespace DiscordCoreAPI {
 		static bool play(std::string guildId);
 
 		/// Skips to the next Song in the UnboundedMessageBlock, if applicable. \brief Skips to the next Song in the UnboundedMessageBlock, if applicable.
-		/// \param guildMember The GuildMember structure of the individual who is skipping the Song.
+		/// \param GuildMember The GuildMember structure of the individual who is skipping the Song.
 		static void skip(GuildMember guildMember);
 
 		/// Stops the currently playing Song. \brief Stops the currently playing Song.

@@ -5169,12 +5169,12 @@ namespace DiscordCoreInternal {
             pDataStructure.code = std::to_string(jsonObjectData["code"].get<int32_t>());
         }
 
-        if (jsonObjectData.contains("guild") && !jsonObjectData["guild"].is_null()) {
-            DataParser::parseObject(jsonObjectData["guild"], pDataStructure.guild);
+        if (jsonObjectData.contains("Guild") && !jsonObjectData["Guild"].is_null()) {
+            DataParser::parseObject(jsonObjectData["Guild"], pDataStructure.guild);
         }
 
-        if (jsonObjectData.contains("channel") && !jsonObjectData["channel"].is_null()) {
-            DataParser::parseObject(jsonObjectData["channel"], pDataStructure.channel);
+        if (jsonObjectData.contains("Channel") && !jsonObjectData["Channel"].is_null()) {
+            DataParser::parseObject(jsonObjectData["Channel"], pDataStructure.channel);
         }
 
         if (jsonObjectData.contains("inviter") && !jsonObjectData["inviter"].is_null()) {

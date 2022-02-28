@@ -38,7 +38,7 @@ namespace DiscordCoreAPI {
 		std::string channelId{ "" };///< The id of the Channel to acquire.
 	};
 
-	/// For modifying a channel's properties. \brief For modifying a channel's properties.
+	/// For modifying a Channel's properties. \brief For modifying a Channel's properties.
 	struct DiscordCoreAPI_Dll ModifyChannelData {
 		ModifyChannelData(ChannelData newData) {
 			this->channelData.permissionOverwrites = newData.permissionOverwrites;
@@ -52,7 +52,7 @@ namespace DiscordCoreAPI {
 			this->channelData.nsfw = newData.nsfw;
 			this->channelData.type = newData.type;
 		};
-		UpdateChannelData channelData{};///< The responseData of the channel to be updated.
+		UpdateChannelData channelData{};///< The responseData of the Channel to be updated.
 		std::string channelId{ "" };///< The id of the Channel to modify.
 		std::string reason{ "" };///< A reason for modifying the Channel.
 	};
@@ -63,17 +63,17 @@ namespace DiscordCoreAPI {
 		std::string reason{ "" };///< The reason for deleting/closing the Channel.
 	};
 
-	/// For editing the Permission overwrites of a given Channel, for a given role or User. \brief For editing the Permission overwrites of a given Channel, for a given role or User.
+	/// For editing the Permission overwrites of a given Channel, for a given Role or User. \brief For editing the Permission overwrites of a given Channel, for a given Role or User.
 	struct DiscordCoreAPI_Dll EditChannelPermissionOverwritesData {
 		PermissionOverwritesType type{};///< The type of overwrite.
-		std::string roleOrUserId{ "" };///< The role or User Id to modify the permissions for.
+		std::string roleOrUserId{ "" };///< The Role or User Id to modify the permissions for.
 		std::string channelId{ "" };///< The Channel id of the desired Channel to modify the permissions for.
 		std::string reason{ "" };///< Reason for editing the permission overwrites.
 		std::string allow{ "" };///< The permissions to list as "allowed".
 		std::string deny{ "" };///< The permissions to list as "deny".
 	};
 
-	/// For collecting the invites to a given channel. \brief For collecting the invites to a given channel.
+	/// For collecting the invites to a given Channel. \brief For collecting the invites to a given Channel.
 	struct DiscordCoreAPI_Dll GetChannelInvitesData {
 		std::string channelId{ "" };
 	};
@@ -81,8 +81,8 @@ namespace DiscordCoreAPI {
 	/// For creating an invite to a given Channel. \brief For creating an invite to a given Channel.
 	struct DiscordCoreAPI_Dll CreateChannelInviteData {
 		std::string targetApplicationId{ "" };///< The id of the embedded application to open for this invite, required if target_type is 2, the application must have the EMBEDDED flag.
-		InviteTargetTypes targetType{};///<	The type of target for this voice channel invite.
-		std::string targetUserId{ "" };///< Id of the user whose stream to display for this invite, required if target_type is 1, the user must be streaming in the channel.
+		InviteTargetTypes targetType{};///<	The type of target for this voice Channel invite.
+		std::string targetUserId{ "" };///< Id of the user whose stream to display for this invite, required if target_type is 1, the user must be streaming in the Channel.
 		std::string channelId{ "" };///< The id of the Channel to create the invite for.
 		std::string reason{ "" };///< Reason for creating the invite.
 		bool temporary{ false };///< Whether this invite only grants temporary membership.
@@ -91,9 +91,9 @@ namespace DiscordCoreAPI {
 		int32_t maxAge{ 0 };///< Duration of invite in seconds before expiry, or 0 for never.between 0 and 604800 (7 days)	86400 (24 hours).
 	};
 
-	/// For deleting the Permission overwrites of a given Channel for a given role or User. \brief For deleting the Permission overwrites of a given Channel for a given role or User.
+	/// For deleting the Permission overwrites of a given Channel for a given Role or User. \brief For deleting the Permission overwrites of a given Channel for a given Role or User.
 	struct DiscordCoreAPI_Dll DeleteChannelPermissionOverwritesData {
-		std::string roleOrUserId{ "" };///< The role or User id for whom to delete the Permission overwrites.
+		std::string roleOrUserId{ "" };///< The Role or User id for whom to delete the Permission overwrites.
 		std::string channelId{ "" };///< The id of the Channel to modify permissions for.
 		std::string reason{ "" };///< Reason for deleting these permission overwrites.
 	};
@@ -116,25 +116,25 @@ namespace DiscordCoreAPI {
 
 	/// For creating a new Channel within a chosen Guild. \brief For creating a new Channel within a chosen Guild.
 	struct DiscordCoreAPI_Dll CreateGuildChannelData {
-		std::vector<OverWriteData> permissionOverwrites{};///< Array of overwrite objects	the channel's permission overwrites.
+		std::vector<OverWriteData> permissionOverwrites{};///< Array of overwrite objects	the Channel's permission overwrites.
 		int32_t rateLimitPerUser{ 0 };///< Amount of seconds a user has to wait before sending another message(0 - 21600); bots, as well as users with the permission manage_messages or manage_channel, are unaffected.
-		std::string parentId{ "" };///< Id of the parent category for a channel.
+		std::string parentId{ "" };///< Id of the parent category for a Channel.
 		std::string guildId{ "" };///< The Guild within which to create the Channel.
-		std::string reason{ "" };///< Reason for creating the channel.
+		std::string reason{ "" };///< Reason for creating the Channel.
 		std::string topic{ "" };///< Channel topic(0 - 1024 characters).
-		int32_t userLimit{ 0 };///< The user limit of the voice channel(voice only).
+		int32_t userLimit{ 0 };///< The user limit of the voice Channel(voice only).
 		std::string name{ "" };///< The name of the Channel.
-		int32_t position{ 0 };///< Sorting position of the channel.
-		int32_t bitrate{ 0 };///< The bitrate(in bits) of the voice channel(voice only).		
-		ChannelType type{};///< The type of channel.
-		bool nsfw{ false };///<  Whether the channel is nsfw.
+		int32_t position{ 0 };///< Sorting position of the Channel.
+		int32_t bitrate{ 0 };///< The bitrate(in bits) of the voice Channel(voice only).		
+		ChannelType type{};///< The type of Channel.
+		bool nsfw{ false };///<  Whether the Channel is nsfw.
 	};
 
 	/// For modifying the Channel position responseData of a single Channel. \brief For modifying the Channel position responseData of a single Channel.
 	struct DiscordCoreAPI_Dll ModifyGuildChannelPositionData {
 		bool lockPermissions{ false };///< Syncs the permission overwrites with the new parent, if moving to a new category.
-		std::string parentId{ "" };///< The new parent ID for the channel that is moved.
-		int32_t position{ 0 };///< Sorting position of the channel.
+		std::string parentId{ "" };///< The new parent ID for the Channel that is moved.
+		int32_t position{ 0 };///< Sorting position of the Channel.
 		std::string id{ "" };///< Channel id.
 	};
 
@@ -190,7 +190,7 @@ namespace DiscordCoreAPI {
 		/// \returns A CoRoutine containing a Channel.
 		static CoRoutine<Channel> modifyChannelAsync(ModifyChannelData dataPackage);
 
-		/// Delete a channel, or close a private message. \brief Delete a channel, or close a private message.
+		/// Delete a Channel, or close a private message. \brief Delete a Channel, or close a private message.
 		/// \param dataPackage A DeleteOrCloseChannelData structure.
 		/// \returns A CoRoutine containing a Channel.
 		static CoRoutine<void> deleteOrCloseChannelAsync(DeleteOrCloseChannelData dataPackage);

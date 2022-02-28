@@ -1,4 +1,4 @@
-﻿{
+{
   "version": 2,
   "configurePresets": [
     {
@@ -44,6 +44,7 @@
         "strategy": "external"
       },
       "cacheVariables": {
+        "CMAKE_CXX_COMPILER":"C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Auxiliary/Build/vcvarsall.bat",
         "CMAKE_BUILD_TYPE": "Release",
         "CMAKE_INSTALL_PREFIX": "${sourceDir}/Output Files/Release"
       },

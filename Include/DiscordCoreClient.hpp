@@ -101,6 +101,9 @@ namespace DiscordCoreAPI {
 
 		DiscordCoreClient(nullptr_t);
 
+		/// For registering a function with the CommandController. \brief For registering a function with the CommandController.
+		/// \param functionNames A vector containing the possible names for activating this command/function.
+		/// \baseFunction A unique_ptr to the command to be registered.
 		void registerFunction(std::vector<std::string> functionNames, std::unique_ptr<BaseFunction> baseFunction);
 
 		BotUser getBotUser();

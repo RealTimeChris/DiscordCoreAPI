@@ -22,19 +22,6 @@
 /// \file DiscordCoreClient.cpp
 
 #include <DiscordCoreClient.hpp>
-#include <CoRoutine.hpp>
-#include <Http.hpp>
-#include <UserEntities.hpp>
-#include <DataParsingFunctions.hpp>
-#include <RoleEntities.hpp>
-#include <InteractionEntities.hpp>
-#include <ReactionEntities.hpp>
-#include <MessageEntities.hpp>
-#include <InputEvents.hpp>
-#include <StickerEntities.hpp>
-#include <ReactionEntities.hpp>
-#include <ApplicationCommandEntities.hpp>
-#include <CommandController.hpp>
 #include <csignal>
 
 namespace DiscordCoreAPI {
@@ -390,8 +377,8 @@ namespace DiscordCoreAPI {
 					case DiscordCoreInternal::WebSocketEventType::Guild_Role_Create:
 					{
 						std::unique_ptr<OnRoleCreationData> dataPackage{ std::make_unique<OnRoleCreationData>() };
-						if (workload->payLoad.contains("role")) {
-							DiscordCoreInternal::DataParser::parseObject(workload->payLoad["role"], dataPackage->role);
+						if (workload->payLoad.contains("Role")) {
+							DiscordCoreInternal::DataParser::parseObject(workload->payLoad["Role"], dataPackage->role);
 						}
 						if (workload->payLoad.contains("guild_id")) {
 							dataPackage->guildId = workload->payLoad["guild_id"];
@@ -402,11 +389,11 @@ namespace DiscordCoreAPI {
 					case DiscordCoreInternal::WebSocketEventType::Guild_Role_Update:
 					{
 						std::unique_ptr<OnRoleUpdateData> dataPackage{ std::make_unique<OnRoleUpdateData>() };
-						if (workload->payLoad.contains("role")) {
-							dataPackage->roleOld = Roles::getCachedRoleAsync({ .roleId = workload->payLoad["role"].at("id") }).get();
+						if (workload->payLoad.contains("Role")) {
+							dataPackage->roleOld = Roles::getCachedRoleAsync({ .roleId = workload->payLoad["Role"].at("id") }).get();
 							dataPackage->roleNew = dataPackage->roleOld;
 						}
-						DiscordCoreInternal::DataParser::parseObject(workload->payLoad["role"], dataPackage->roleNew);
+						DiscordCoreInternal::DataParser::parseObject(workload->payLoad["Role"], dataPackage->roleNew);
 						if (workload->payLoad.contains("guild_id")) {
 							dataPackage->guildId = workload->payLoad["guild_id"];
 						}

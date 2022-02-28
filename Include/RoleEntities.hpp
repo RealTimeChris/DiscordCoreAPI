@@ -15,7 +15,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-/// RoleEntities.hpp - Header for the role related classes and structs.
+/// RoleEntities.hpp - Header for the Role related classes and structs.
 /// May 13, 2021
 /// Chris M.
 /// https://github.com/RealTimeChris/DiscordCoreAPI
@@ -142,7 +142,7 @@ namespace DiscordCoreAPI {
 
 		static void initialize(DiscordCoreInternal::HttpClient*);
 
-		/// Adds a role to a chosen Guild member. \brief Adds a Role to a chosen Guild member.
+		/// Adds a Role to a chosen Guild member. \brief Adds a Role to a chosen Guild member.
 		/// \param dataPackage An AddGuildMemberRoleData structure.
 		/// \returns A CoRoutine containing void.
 		static CoRoutine<void> addGuildMemberRoleAsync(AddGuildMemberRoleData dataPackage);

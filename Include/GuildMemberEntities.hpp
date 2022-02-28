@@ -54,7 +54,7 @@ namespace DiscordCoreAPI {
 
 	/// For adding a new GuildMember to a chosen Guild. \brief For adding a new GuildMember to a chosen Guild.
 	struct DiscordCoreAPI_Dll AddGuildMemberData {
-		std::vector<std::string>roles{};///< Array of role ids the member is assigned.
+		std::vector<std::string>roles{};///< Array of Role ids the member is assigned.
 		std::string accessToken{ "" };///< An oauth2 access token granted with the guilds.join to the bot's application for the user you want to add to the Guild.
 		std::string guildId{ "" };///< The Guild to add the new GuildMember to.
 		std::string userId{ "" };///< The User id of the user you wish to add.
@@ -72,9 +72,9 @@ namespace DiscordCoreAPI {
 
 	/// For modifying a GuildMember's values. \brief For modifying a GuildMember's values.
 	struct DiscordCoreAPI_Dll ModifyGuildMemberData {
-		std::string newVoiceChannelId{ "" };///< The new voice channel to std::move them into.
-		std::string currentChannelId{ "" };///< The current voice channel, if applicaple.
-		std::vector<std::string> roleIds{};///<A collection of role id's to be applied to them.
+		std::string newVoiceChannelId{ "" };///< The new voice Channel to std::move them into.
+		std::string currentChannelId{ "" };///< The current voice Channel, if applicaple.
+		std::vector<std::string> roleIds{};///<A collection of Role id's to be applied to them.
 		std::string guildMemberId{ "" };///< The user id of the desired Guild memeber.
 		std::string guildId{ "" };///< The id of the Guild for which you would like to modify a member.
 		std::string reason{ "" };///< Reason for modifying this GuildMember.
