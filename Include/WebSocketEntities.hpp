@@ -137,8 +137,6 @@ namespace DiscordCoreInternal {
 
 		BaseSocketAgent(nullptr_t) noexcept;
 
-		DiscordCoreAPI::TSUnboundedMessageBlock<WebSocketWorkload>& getWorkloadTarget() noexcept;
-
 		void sendMessage(nlohmann::json& dataToSend) noexcept;
 
 		void sendMessage(std::string& dataToSend) noexcept;

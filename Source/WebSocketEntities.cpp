@@ -55,10 +55,6 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	DiscordCoreAPI::TSUnboundedMessageBlock<WebSocketWorkload>& BaseSocketAgent::getWorkloadTarget() noexcept {
-		return this->webSocketWorkloadTarget;
-	}
-
 	void BaseSocketAgent::sendMessage(nlohmann::json& dataToSend) noexcept {
 		try {
 			DiscordCoreAPI::StopWatch stopWatch{ std::chrono::milliseconds{5500} };
