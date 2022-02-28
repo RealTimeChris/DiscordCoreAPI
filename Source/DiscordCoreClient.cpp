@@ -102,18 +102,17 @@ namespace DiscordCoreAPI {
 		WebHooks::initialize(this->httpClient.get());
 		this->commandController = CommandController(this->commandPrefix, this);
 		this->gatewayUrl = this->getGateWayBot();
-		int32_t shardGroupCount{ static_cast<int32_t>(ceil(static_cast<double>(this->maxConcurrency / this->numberOfShards))) };
-		std::cout << "THE VALUE01: " << this->maxConcurrency << " THE VALUE02: " << this->numberOfShards << "THE FINAL VALUE: " << static_cast<int32_t>(ceil(static_cast<double>(this->maxConcurrency / this->numberOfShards))) << std::endl;
-		int32_t shardsPerGroup{ static_cast<int32_t>(ceil(static_cast<double>(this->maxConcurrency / shardGroupCount))) };
+		int32_t shardGroupCount{ static_cast<int32_t>(ceil(static_cast<double>(this->numberOfShards) / static_cast<double>(this->maxConcurrency))) };
+		int32_t shardsPerGroup{ static_cast<int32_t>(ceil(static_cast<double>(this->numberOfShards) / static_cast<double>(shardGroupCount))) };
 		for (int32_t x = 0; x < shardGroupCount; x += 1) {
 			for (int32_t y = 0; y < shardsPerGroup; y += 1) {
-				std::cout << "Connecting Shard " + std::to_string(x * y + 1) << " of " << this->numberOfShards << " shards." << std::endl;
-				this->theWebSockets.insert_or_assign(std::to_string(x * y), std::make_unique<DiscordCoreInternal::BaseSocketAgent>(this->botToken, this->gatewayUrl, x * y, this->numberOfShards));
+				std::cout << "Connecting Shard " + std::to_string(x * shardsPerGroup + y + 1) << " of " << this->numberOfShards << " shards." << std::endl;
+				this->theWebSockets.insert_or_assign(std::to_string(x * shardsPerGroup + y), std::make_unique<DiscordCoreInternal::BaseSocketAgent>(this->botToken, this->gatewayUrl, x * shardsPerGroup + y, this->numberOfShards));
 			}
-			if (shardGroupCount > 1) {
+			if (shardGroupCount > 1 && x <  shardGroupCount - 1) {
 				std::cout << "Waiting to connect the subsequent group of shards..." << std::endl << std::endl;
-			}
-			std::this_thread::sleep_for(std::chrono::seconds{ 20 });
+				std::this_thread::sleep_for(std::chrono::seconds{ 20 });
+			}			
 		}
 		this->currentUser = std::make_unique<BotUser>(Users::getCurrentUserAsync().get(), this->theWebSockets.at("0").get());
 		for (auto& value : this->functionsToExecute) {
