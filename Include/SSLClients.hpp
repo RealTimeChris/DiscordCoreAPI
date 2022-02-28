@@ -287,6 +287,8 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll WebSocketSSLClient {
 	public:
 
+		friend std::ostream& operator<<(std::ostream, WebSocketSSLClient);
+
 		WebSocketSSLClient(std::string baseUrl, std::string port, int64_t maxBufferSize = 16 * 1024) noexcept;
 
 		WebSocketSSLClient(nullptr_t) noexcept;
@@ -294,8 +296,6 @@ namespace DiscordCoreInternal {
 		bool processIO(int32_t waitTimeInMicroSeconds) noexcept;
 
 		void writeData(std::string& data) noexcept;
-
-		std::string& getInputBuffer() noexcept;
 
 		int64_t getBytesRead() noexcept;
 
@@ -310,6 +310,8 @@ namespace DiscordCoreInternal {
 		bool wantRead{ false };
 		int64_t bytesRead{ 0 };
 	};
+
+	std::ostream& operator<<(std::ostream, WebSocketSSLClient);
 
 	class DiscordCoreAPI_Dll DatagramSocketSSLClient {
 	public:

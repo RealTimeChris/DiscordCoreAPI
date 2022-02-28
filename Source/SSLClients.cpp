@@ -394,6 +394,16 @@ namespace DiscordCoreInternal {
 		}
 	};
 
+	std::ostream& operator<<(std::ostream lhs, WebSocketSSLClient rhs) {
+		try {
+			return lhs.write(rhs.inputBuffer.data(), rhs.inputBuffer.size());
+		}
+		catch (...) {
+			DiscordCoreAPI::reportException("WebSocketSSLClient::getInputBuffer()");
+			return std::ostream{};
+		}
+	}
+
 	WebSocketSSLClient::WebSocketSSLClient(nullptr_t) noexcept {};
 
 	bool WebSocketSSLClient::processIO(int32_t waitTimeInMicroSeconds) noexcept {
@@ -538,15 +548,6 @@ namespace DiscordCoreInternal {
 		}
 		catch (...) {
 			DiscordCoreAPI::reportException("WebSocketSSLClient::writeData()");
-		}
-	}
-
-	std::string& WebSocketSSLClient::getInputBuffer() noexcept {
-		try {
-			return this->inputBuffer;
-		}
-		catch (...) {
-			DiscordCoreAPI::reportException("WebSocketSSLClient::getInputBuffer()");
 		}
 	}
 

@@ -534,8 +534,10 @@ namespace DiscordCoreAPI {
 							haveWeFailed = true;
 							goto breakOutPlayMore; 
 						};
-						auto newData = streamSocket.getInputBuffer();
-						streamSocket.getInputBuffer().clear();
+						std::string& newerData << streamSocket;
+						std::string newData = newerData;
+						std::string& newDataRef << streamSocket;
+						newDataRef.clear();
 						if (!coroutineHandle.promise().isItStopped()) {
 							bytesReadTotal01 = streamSocket.getBytesRead();
 						}
@@ -553,8 +555,10 @@ namespace DiscordCoreAPI {
 							haveWeFailed = true;
 							goto breakOutPlayMore;
 						};
-						auto streamBuffer = streamSocket.getInputBuffer();
-						streamSocket.getInputBuffer().clear();
+						std::string& streamBufferNew << streamSocket;
+						std::string streamBuffer = streamBufferNew;
+						std::string& streamBufferRef << streamSocket;
+						streamBufferRef.clear();
 						audioDecoder->submitDataForDecoding(streamBuffer);
 						audioDecoder->startMe();
 					}
@@ -569,8 +573,10 @@ namespace DiscordCoreAPI {
 								haveWeFailed = true;
 								goto breakOutPlayMore;
 							};
-							std::string newVector = streamSocket.getInputBuffer();
-							streamSocket.getInputBuffer().clear();
+							std::string newerVector << streamSocket;
+							std::string newVector = newerVector;
+							std::string& newVector << streamSocket;
+							newVector.clear();
 							if (newVector.size() == 0) {
 								counter += 1;
 								continue;
