@@ -133,7 +133,7 @@ namespace DiscordCoreInternal {
 		friend class DiscordCoreAPI::VoiceConnection;
 		friend VoiceSocketAgent;
 
-		BaseSocketAgent(std::string botToken, std::string baseUrl, int32_t shardNumber = 0, int32_t numberOfShards = 1) noexcept;
+		BaseSocketAgent(std::string botToken, std::string baseUrl, DiscordCoreAPI::TSUnboundedMessageBlock<WebSocketWorkload>* webSocketWorkloadTarget, int32_t shardNumber = 0, int32_t numberOfShards = 1) noexcept;
 
 		BaseSocketAgent(nullptr_t) noexcept;
 
@@ -151,7 +151,7 @@ namespace DiscordCoreInternal {
 
 		std::unordered_map<std::string, DiscordCoreAPI::UnboundedMessageBlock<VoiceConnectionData>*> voiceConnectionDataBufferMap{};
 		const DiscordCoreAPI::GatewayIntents intentsValue{ DiscordCoreAPI::GatewayIntents::All_Intents };
-		DiscordCoreAPI::TSUnboundedMessageBlock<WebSocketWorkload> webSocketWorkloadTarget{};
+		DiscordCoreAPI::TSUnboundedMessageBlock<WebSocketWorkload>* webSocketWorkloadTarget{};
 		std::unique_ptr<DiscordCoreAPI::ThreadPoolTimer> heartbeatTimer{ nullptr };
 		std::unique_ptr<DiscordCoreAPI::CoRoutine<void>> theTask{ nullptr };
 		WebSocketOpCode dataOpcode{ WebSocketOpCode::Op_Binary };

@@ -29,8 +29,9 @@
 
 namespace DiscordCoreInternal {
 
-	BaseSocketAgent::BaseSocketAgent(std::string botToken, std::string baseUrl, int32_t currentShardNew, int32_t numberOfShardsNew) noexcept {
+	BaseSocketAgent::BaseSocketAgent(std::string botToken, std::string baseUrl, DiscordCoreAPI::TSUnboundedMessageBlock<WebSocketWorkload>* webSocketWorkloadTargetNew, int32_t currentShardNew, int32_t numberOfShardsNew) noexcept {
 		this->authKey = DiscordCoreAPI::generate64BaseEncodedKey();
+		this->webSocketWorkloadTarget = webSocketWorkloadTargetNew;
 		this->currentShard = currentShardNew;
 		this->numOfShards = numberOfShardsNew;
 		this->state = WebSocketState::Initializing;
@@ -313,209 +314,209 @@ namespace DiscordCoreInternal {
 				webSocketWorkload.payLoad.update(std::move(payload.at("d")));
 				if (payload.at("t") == "APPLICATION_COMMAND_CREATE") {
 					webSocketWorkload.eventType = WebSocketEventType::Application_Command_Create;
-					this->webSocketWorkloadTarget.send(std::move(webSocketWorkload));
+					this->webSocketWorkloadTarget->send(std::move(webSocketWorkload));
 				}
 				else if (payload.at("t") == "APPLICATION_COMMAND_UPDATE") {
 					webSocketWorkload.eventType = WebSocketEventType::Application_Command_Update;
-					this->webSocketWorkloadTarget.send(std::move(webSocketWorkload));
+					this->webSocketWorkloadTarget->send(std::move(webSocketWorkload));
 				}
 				else if (payload.at("t") == "APPLICATION_COMMAND_DELETE") {
 					webSocketWorkload.eventType = WebSocketEventType::Application_Command_Delete;
-					this->webSocketWorkloadTarget.send(std::move(webSocketWorkload));
+					this->webSocketWorkloadTarget->send(std::move(webSocketWorkload));
 				}
 				else if (payload.at("t") == "CHANNEL_CREATE") {
 					webSocketWorkload.eventType = WebSocketEventType::Channel_Create;
-					this->webSocketWorkloadTarget.send(std::move(webSocketWorkload));
+					this->webSocketWorkloadTarget->send(std::move(webSocketWorkload));
 				}
 				else if (payload.at("t") == "CHANNEL_UPDATE") {
 					webSocketWorkload.eventType = WebSocketEventType::Channel_Update;
-					this->webSocketWorkloadTarget.send(std::move(webSocketWorkload));
+					this->webSocketWorkloadTarget->send(std::move(webSocketWorkload));
 				}
 				else if (payload.at("t") == "CHANNEL_DELETE") {
 					webSocketWorkload.eventType = WebSocketEventType::Channel_Delete;
-					this->webSocketWorkloadTarget.send(std::move(webSocketWorkload));
+					this->webSocketWorkloadTarget->send(std::move(webSocketWorkload));
 				}
 				else if (payload.at("t") == "CHANNEL_PINS_UPDATE") {
 					webSocketWorkload.eventType = WebSocketEventType::Channel_Pins_Update;
-					this->webSocketWorkloadTarget.send(std::move(webSocketWorkload));
+					this->webSocketWorkloadTarget->send(std::move(webSocketWorkload));
 				}
 				else if (payload.at("t") == "THREAD_CREATE") {
 					webSocketWorkload.eventType = WebSocketEventType::Thread_Create;
-					this->webSocketWorkloadTarget.send(std::move(webSocketWorkload));
+					this->webSocketWorkloadTarget->send(std::move(webSocketWorkload));
 				}
 				else if (payload.at("t") == "THREAD_UPDATE") {
 					webSocketWorkload.eventType = WebSocketEventType::Thread_Update;
-					this->webSocketWorkloadTarget.send(std::move(webSocketWorkload));
+					this->webSocketWorkloadTarget->send(std::move(webSocketWorkload));
 				}
 				else if (payload.at("t") == "THREAD_DELETE") {
 					webSocketWorkload.eventType = WebSocketEventType::Thread_Delete;
-					this->webSocketWorkloadTarget.send(std::move(webSocketWorkload));
+					this->webSocketWorkloadTarget->send(std::move(webSocketWorkload));
 				}
 				else if (payload.at("t") == "THREAD_LIST_SYNC") {
 					webSocketWorkload.eventType = WebSocketEventType::Thread_List_Sync;
-					this->webSocketWorkloadTarget.send(std::move(webSocketWorkload));
+					this->webSocketWorkloadTarget->send(std::move(webSocketWorkload));
 				}
 				else if (payload.at("t") == "THREAD_MEMBER_UPDATE") {
 					webSocketWorkload.eventType = WebSocketEventType::Thread_Member_Update;
-					this->webSocketWorkloadTarget.send(std::move(webSocketWorkload));
+					this->webSocketWorkloadTarget->send(std::move(webSocketWorkload));
 				}
 				else if (payload.at("t") == "THREAD_MEMBERS_UPDATE") {
 					webSocketWorkload.eventType = WebSocketEventType::Thread_Members_Update;
-					this->webSocketWorkloadTarget.send(std::move(webSocketWorkload));
+					this->webSocketWorkloadTarget->send(std::move(webSocketWorkload));
 				}
 				else if (payload.at("t") == "GUILD_CREATE") {
 					webSocketWorkload.eventType = WebSocketEventType::Guild_Create;
-					this->webSocketWorkloadTarget.send(std::move(webSocketWorkload));
+					this->webSocketWorkloadTarget->send(std::move(webSocketWorkload));
 					return;
 				}
 				else if (payload.at("t") == "GUILD_UPDATE") {
 					webSocketWorkload.eventType = WebSocketEventType::Guild_Update;
-					this->webSocketWorkloadTarget.send(std::move(webSocketWorkload));
+					this->webSocketWorkloadTarget->send(std::move(webSocketWorkload));
 				}
 				else if (payload.at("t") == "GUILD_DELETE") {
 					webSocketWorkload.eventType = WebSocketEventType::Guild_Delete;
-					this->webSocketWorkloadTarget.send(std::move(webSocketWorkload));
+					this->webSocketWorkloadTarget->send(std::move(webSocketWorkload));
 				}
 				else if (payload.at("t") == "GUILD_BAN_ADD") {
 					webSocketWorkload.eventType = WebSocketEventType::Guild_Ban_Add;
-					this->webSocketWorkloadTarget.send(std::move(webSocketWorkload));
+					this->webSocketWorkloadTarget->send(std::move(webSocketWorkload));
 				}
 				else if (payload.at("t") == "GUILD_BAN_REMOVE") {
 					webSocketWorkload.eventType = WebSocketEventType::Guild_Ban_Remove;
-					this->webSocketWorkloadTarget.send(std::move(webSocketWorkload));
+					this->webSocketWorkloadTarget->send(std::move(webSocketWorkload));
 				}
 				else if (payload.at("t") == "GUILD_EMOJIS_UPDATE") {
 					webSocketWorkload.eventType = WebSocketEventType::Guild_Emojis_Update;
-					this->webSocketWorkloadTarget.send(std::move(webSocketWorkload));
+					this->webSocketWorkloadTarget->send(std::move(webSocketWorkload));
 				}
 				else if (payload.at("t") == "GUILD_STICKERS_UPDATE") {
 					webSocketWorkload.eventType = WebSocketEventType::Guild_Stickers_Update;
-					this->webSocketWorkloadTarget.send(std::move(webSocketWorkload));
+					this->webSocketWorkloadTarget->send(std::move(webSocketWorkload));
 				}
 				else if (payload.at("t") == "GUILD_INTEGRATIONS_UPDATE") {
 					webSocketWorkload.eventType = WebSocketEventType::Guild_Integrations_Update;
-					this->webSocketWorkloadTarget.send(std::move(webSocketWorkload));
+					this->webSocketWorkloadTarget->send(std::move(webSocketWorkload));
 				}
 				else if (payload.at("t") == "GUILD_MEMBER_ADD") {
 					webSocketWorkload.eventType = WebSocketEventType::Guild_Member_Add;
-					this->webSocketWorkloadTarget.send(std::move(webSocketWorkload));
+					this->webSocketWorkloadTarget->send(std::move(webSocketWorkload));
 				}
 				else if (payload.at("t") == "GUILD_MEMBER_REMOVE") {
 					webSocketWorkload.eventType = WebSocketEventType::Guild_Member_Remove;
-					this->webSocketWorkloadTarget.send(std::move(webSocketWorkload));
+					this->webSocketWorkloadTarget->send(std::move(webSocketWorkload));
 				}
 				else if (payload.at("t") == "GUILD_MEMBER_UPDATE") {
 					webSocketWorkload.eventType = WebSocketEventType::Guild_Member_Update;
-					this->webSocketWorkloadTarget.send(std::move(webSocketWorkload));
+					this->webSocketWorkloadTarget->send(std::move(webSocketWorkload));
 				}
 				else if (payload.at("t") == "GUILD_MEMBERS_CHUNK") {
 					webSocketWorkload.eventType = WebSocketEventType::Guild_Members_Chunk;
-					this->webSocketWorkloadTarget.send(std::move(webSocketWorkload));
+					this->webSocketWorkloadTarget->send(std::move(webSocketWorkload));
 				}
 				else if (payload.at("t") == "GUILD_ROLE_CREATE") {
 					webSocketWorkload.eventType = WebSocketEventType::Guild_Role_Create;
-					this->webSocketWorkloadTarget.send(std::move(webSocketWorkload));
+					this->webSocketWorkloadTarget->send(std::move(webSocketWorkload));
 				}
 				else if (payload.at("t") == "GUILD_ROLE_UPDATE") {
 					webSocketWorkload.eventType = WebSocketEventType::Guild_Role_Update;
-					this->webSocketWorkloadTarget.send(std::move(webSocketWorkload));
+					this->webSocketWorkloadTarget->send(std::move(webSocketWorkload));
 				}
 				else if (payload.at("t") == "GUILD_ROLE_DELETE") {
 					webSocketWorkload.eventType = WebSocketEventType::Guild_Role_Delete;
-					this->webSocketWorkloadTarget.send(std::move(webSocketWorkload));
+					this->webSocketWorkloadTarget->send(std::move(webSocketWorkload));
 				}
 				else if (payload.at("t") == "INTEGRATION_ROLE_CREATE") {
 					webSocketWorkload.eventType = WebSocketEventType::Integration_Create;
-					this->webSocketWorkloadTarget.send(std::move(webSocketWorkload));
+					this->webSocketWorkloadTarget->send(std::move(webSocketWorkload));
 				}
 				else if (payload.at("t") == "INTEGRATION_ROLE_UPDATE") {
 					webSocketWorkload.eventType = WebSocketEventType::Integration_Update;
-					this->webSocketWorkloadTarget.send(std::move(webSocketWorkload));
+					this->webSocketWorkloadTarget->send(std::move(webSocketWorkload));
 				}
 				else if (payload.at("t") == "INTEGRATION_ROLE_DELETE") {
 					webSocketWorkload.eventType = WebSocketEventType::Integration_Delete;
-					this->webSocketWorkloadTarget.send(std::move(webSocketWorkload));
+					this->webSocketWorkloadTarget->send(std::move(webSocketWorkload));
 				}
 				else if (payload.at("t") == "INTERACTION_CREATE") {
 					webSocketWorkload.eventType = WebSocketEventType::Interaction_Create;
-					this->webSocketWorkloadTarget.send(std::move(webSocketWorkload));
+					this->webSocketWorkloadTarget->send(std::move(webSocketWorkload));
 				}
 				else if (payload.at("t") == "INVITE_CREATE") {
 					webSocketWorkload.eventType = WebSocketEventType::Invite_Create;
-					this->webSocketWorkloadTarget.send(std::move(webSocketWorkload));
+					this->webSocketWorkloadTarget->send(std::move(webSocketWorkload));
 				}
 				else if (payload.at("t") == "INVITE_DELETE") {
 					webSocketWorkload.eventType = WebSocketEventType::Invite_Delete;
-					this->webSocketWorkloadTarget.send(std::move(webSocketWorkload));
+					this->webSocketWorkloadTarget->send(std::move(webSocketWorkload));
 				}
 				else if (payload.at("t") == "MESSAGE_CREATE") {
 					webSocketWorkload.eventType = WebSocketEventType::Message_Create;	
-					this->webSocketWorkloadTarget.send(std::move(webSocketWorkload));
+					this->webSocketWorkloadTarget->send(std::move(webSocketWorkload));
 				}
 				else if (payload.at("t") == "MESSAGE_UPDATE") {
 					webSocketWorkload.eventType = WebSocketEventType::Message_Update;
-					this->webSocketWorkloadTarget.send(std::move(webSocketWorkload));
+					this->webSocketWorkloadTarget->send(std::move(webSocketWorkload));
 				}
 				else if (payload.at("t") == "MESSAGE_DELETE") {
 					webSocketWorkload.eventType = WebSocketEventType::Message_Delete;
-					this->webSocketWorkloadTarget.send(std::move(webSocketWorkload));
+					this->webSocketWorkloadTarget->send(std::move(webSocketWorkload));
 				}
 				else if (payload.at("t") == "MESSAGE_DELETE_BULK") {
 					webSocketWorkload.eventType = WebSocketEventType::Message_Delete_Bulk;
-					this->webSocketWorkloadTarget.send(std::move(webSocketWorkload));
+					this->webSocketWorkloadTarget->send(std::move(webSocketWorkload));
 				}
 				else if (payload.at("t") == "MESSAGE_REACTION_ADD") {
 					webSocketWorkload.eventType = WebSocketEventType::Message_Reaction_Add;
-					this->webSocketWorkloadTarget.send(std::move(webSocketWorkload));
+					this->webSocketWorkloadTarget->send(std::move(webSocketWorkload));
 				}
 				else if (payload.at("t") == "MESSAGE_REACTION_REMOVE") {
 					webSocketWorkload.eventType = WebSocketEventType::Message_Reaction_Remove;
-					this->webSocketWorkloadTarget.send(std::move(webSocketWorkload));
+					this->webSocketWorkloadTarget->send(std::move(webSocketWorkload));
 				}
 				else if (payload.at("t") == "MESSAGE_REACTION_REMOVE_ALL") {
 					webSocketWorkload.eventType = WebSocketEventType::Message_Reaction_Remove_All;
-					this->webSocketWorkloadTarget.send(std::move(webSocketWorkload));
+					this->webSocketWorkloadTarget->send(std::move(webSocketWorkload));
 				}
 				else if (payload.at("t") == "MESSAGE_REACTION_REMOVE_EMOJI") {
 					webSocketWorkload.eventType = WebSocketEventType::Message_Reaction_Remove_Emoji;
-					this->webSocketWorkloadTarget.send(std::move(webSocketWorkload));
+					this->webSocketWorkloadTarget->send(std::move(webSocketWorkload));
 				}
 				else if (payload.at("t") == "PRESENCE_UPDATE") {
 					webSocketWorkload.eventType = WebSocketEventType::Presence_Update;
-					this->webSocketWorkloadTarget.send(std::move(webSocketWorkload));
+					this->webSocketWorkloadTarget->send(std::move(webSocketWorkload));
 					return;
 				}
 				else if (payload.at("t") == "STAGE_INSTANCE_CREATE") {
 					webSocketWorkload.eventType = WebSocketEventType::Stage_Instance_Create;
-					this->webSocketWorkloadTarget.send(std::move(webSocketWorkload));
+					this->webSocketWorkloadTarget->send(std::move(webSocketWorkload));
 				}
 				else if (payload.at("t") == "STAGE_INSTANCE_DELETE") {
 					webSocketWorkload.eventType = WebSocketEventType::Stage_Instance_Delete;
-					this->webSocketWorkloadTarget.send(std::move(webSocketWorkload));
+					this->webSocketWorkloadTarget->send(std::move(webSocketWorkload));
 				}
 				else if (payload.at("t") == "STAGE_INSTANCE_UPDATE") {
 					webSocketWorkload.eventType = WebSocketEventType::Stage_Instance_Update;
-					this->webSocketWorkloadTarget.send(std::move(webSocketWorkload));
+					this->webSocketWorkloadTarget->send(std::move(webSocketWorkload));
 				}
 				else if (payload.at("t") == "TYPING_START") {
 					webSocketWorkload.eventType = WebSocketEventType::Typing_Start;
-					this->webSocketWorkloadTarget.send(std::move(webSocketWorkload));
+					this->webSocketWorkloadTarget->send(std::move(webSocketWorkload));
 				}
 				else if (payload.at("t") == "USER_UPDATE") {
 					webSocketWorkload.eventType = WebSocketEventType::User_Update;
-					this->webSocketWorkloadTarget.send(std::move(webSocketWorkload));
+					this->webSocketWorkloadTarget->send(std::move(webSocketWorkload));
 				}
 				else if (payload.at("t") == "VOICE_STATE_UPDATE") {
 					webSocketWorkload.eventType = WebSocketEventType::Voice_State_Update;
-					this->webSocketWorkloadTarget.send(std::move(webSocketWorkload));
+					this->webSocketWorkloadTarget->send(std::move(webSocketWorkload));
 				}
 				else if (payload.at("t") == "VOICE_SERVER_UPDATE") {
 					webSocketWorkload.eventType = WebSocketEventType::Voice_Server_Update;
-					this->webSocketWorkloadTarget.send(std::move(webSocketWorkload));
+					this->webSocketWorkloadTarget->send(std::move(webSocketWorkload));
 				}
 				else if (payload.at("t") == "WEBHOOKS_UPDATE") {
 					webSocketWorkload.eventType = WebSocketEventType::Webhooks_Update;
-					this->webSocketWorkloadTarget.send(std::move(webSocketWorkload));
+					this->webSocketWorkloadTarget->send(std::move(webSocketWorkload));
 				}
 			}
 			std::cout << "Message received from WebSocket: " << payload.dump() << std::endl << std::endl;

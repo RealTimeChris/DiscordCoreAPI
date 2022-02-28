@@ -105,8 +105,9 @@ namespace DiscordCoreAPI {
 		~DiscordCoreClient();
 
 	protected:
-
+		
 		std::unordered_map<std::string, std::unique_ptr<DiscordCoreInternal::BaseSocketAgent>> theWebSockets{};
+		TSUnboundedMessageBlock<DiscordCoreInternal::WebSocketWorkload> webSocketWorkloadTarget{};
 		std::unique_ptr<DiscordCoreInternal::HttpClient> httpClient{ nullptr };
 		std::vector<RepeatedFunctionData> functionsToExecute{};
 		std::vector<ThreadPoolTimer> threadPoolTimers{};

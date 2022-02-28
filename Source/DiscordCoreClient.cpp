@@ -106,8 +106,8 @@ namespace DiscordCoreAPI {
 		int32_t shardsPerGroup{ static_cast<int32_t>(ceil(static_cast<double>(this->numberOfShards) / static_cast<double>(shardGroupCount))) };
 		for (int32_t x = 0; x < shardGroupCount; x += 1) {
 			for (int32_t y = 0; y < shardsPerGroup; y += 1) {
-				std::cout << "Connecting Shard " + std::to_string(x * shardsPerGroup + y + 1) << " of " << this->numberOfShards << " shards." << std::endl;
-				this->theWebSockets.insert_or_assign(std::to_string(x * shardsPerGroup + y), std::make_unique<DiscordCoreInternal::BaseSocketAgent>(this->botToken, this->gatewayUrl, x * shardsPerGroup + y, this->numberOfShards));
+				std::cout << "Connecting Shard " + std::to_string(x * shardsPerGroup + y + 1) << " of " << this->numberOfShards << " Shards." << std::endl;
+				this->theWebSockets.insert_or_assign(std::to_string(x * shardsPerGroup + y), std::make_unique<DiscordCoreInternal::BaseSocketAgent>(this->botToken, this->gatewayUrl, &this->webSocketWorkloadTarget, x * shardsPerGroup + y, this->numberOfShards));
 			}
 			if (shardGroupCount > 1 && x <  shardGroupCount - 1) {
 				std::cout << "Waiting to connect the subsequent group of shards..." << std::endl << std::endl;
@@ -162,14 +162,7 @@ namespace DiscordCoreAPI {
 		while (!doWeQuit.load(std::memory_order_seq_cst)) {
 			try {
 				std::unique_ptr<DiscordCoreInternal::WebSocketWorkload> workload{ std::make_unique<DiscordCoreInternal::WebSocketWorkload>() };
-				bool doWeHaveAWorkload{ false };
-				while (!doWeHaveAWorkload) {
-					for (auto& [key, value] : this->theWebSockets) {
-						if (value->getWorkloadTarget().tryReceive(*workload) && !doWeQuit.load(std::memory_order_seq_cst)) {
-							doWeHaveAWorkload = true;
-							break;
-						};
-					}
+				while (!this->webSocketWorkloadTarget.tryReceive(*workload) && !doWeQuit.load(std::memory_order_seq_cst)) {
 					std::this_thread::sleep_for(std::chrono::milliseconds{ 1 });
 				};
 				if (workload->eventType != DiscordCoreInternal::WebSocketEventType::Unset) {
