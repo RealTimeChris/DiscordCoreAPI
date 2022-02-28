@@ -96,8 +96,8 @@ namespace DiscordCoreAPI {
 		/// \param commandPrefixNew A command prefix to use for the command handler.
 		/// \param functionsToExecuteNew A vector of DiscordCoreAPI::RepeatedFunctionData, for potentially repeated functions.
 		/// \param cacheOptionsNew A DiscordCoreAPI::CacheOptions structure for cache settings.
-		/// \param numberOfShards The number of shards to launch for this current process.
-		DiscordCoreClient(std::string botTokenNew, std::string commandPrefixNew, std::vector<RepeatedFunctionData> functionsToExecuteNew = std::vector<RepeatedFunctionData>{}, CacheOptions cacheOptionsNew = CacheOptions{}, int32_t numberOfShards = 1);
+		/// \param shardOptions A DiscordCoreAPI::ShardingOptions structure to select the shard configuration for this given process.
+		DiscordCoreClient(std::string botTokenNew, std::string commandPrefixNew, std::vector<RepeatedFunctionData> functionsToExecuteNew = std::vector<RepeatedFunctionData>{}, CacheOptions cacheOptionsNew = CacheOptions{}, ShardingOptions shardOptions = ShardingOptions{});
 
 		DiscordCoreClient(nullptr_t);
 
@@ -118,8 +118,8 @@ namespace DiscordCoreAPI {
 		std::vector<RepeatedFunctionData> functionsToExecute{};
 		std::vector<ThreadPoolTimer> threadPoolTimers{};
 		std::unique_ptr<BotUser> currentUser{ nullptr };
+		ShardingOptions shardingOptions{};
 		std::string gatewayUrl{ "" };
-		int32_t numberOfShards{ 0 };
 		int32_t maxConcurrency{ 0 };
 		CacheOptions cacheOptions{};
 		std::string botToken{ "" };

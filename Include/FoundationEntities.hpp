@@ -683,6 +683,21 @@ namespace DiscordCoreAPI {
         return doWeBreak;
     }
 
+
+    /**
+    * \addtogroup main_endpoints
+    * @{
+    */
+
+    /// Sharding options for the library. \brief
+    struct ShardingOptions {
+        int32_t numberOfShardsForThisProcess{ 0 };///< the number of shards to launch on the current process.
+        int32_t totalNumberOfShards{ 0 };///< The total number of shards that will be launched across all processes.
+        int32_t startingShard{ 0 };///< The first shard to start on this process.
+    };
+
+    /**@}*/
+
     /**
     * \addtogroup utilities
     * @{
