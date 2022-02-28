@@ -256,7 +256,7 @@ namespace DiscordCoreInternal {
 			roleIdArray.push_back(value);
 		}
 
-		nlohmann::json data = { {"nick",dataPackage.nick} };
+		nlohmann::json data = { {"nick",dataPackage.nick},{"communication_disabled_until",std::string(dataPackage.communicationDisabledUntil)} };
 
 		if (roleIdArray.size() == 0) {
 			nlohmann::json dataNew = { { "roles", nullptr } };
@@ -271,12 +271,6 @@ namespace DiscordCoreInternal {
 			nlohmann::json dataNew = { {"mute", dataPackage.mute},
 				{"deaf", dataPackage.deaf},
 				{"channel_id", dataPackage.newVoiceChannelId} };
-			data.update(dataNew);
-		}
-		else {
-			nlohmann::json dataNew = { {"mute", dataPackage.mute},
-				{"deaf", dataPackage.deaf},
-				{"channel_id", nullptr} };
 			data.update(dataNew);
 		}
 

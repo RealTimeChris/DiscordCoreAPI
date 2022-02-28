@@ -721,6 +721,8 @@ namespace DiscordCoreAPI {
 
     DiscordCoreAPI_Dll int64_t convertTimestampToMsInteger(std::string timeStamp);
 
+    DiscordCoreAPI_Dll std::string getFutureISO8601TimeStamp(int32_t minutesToAdd);
+
     DiscordCoreAPI_Dll std::string base64Encode(std::string, bool = false);
 
     DiscordCoreAPI_Dll std::string urlDecode(std::string inputString);
@@ -728,6 +730,8 @@ namespace DiscordCoreAPI {
     DiscordCoreAPI_Dll std::string urlEncode(std::string inputString);
 
     DiscordCoreAPI_Dll void spinLock(int64_t timeInNsToSpinLockFor);
+
+    DiscordCoreAPI_Dll std::string getCurrentISO8601TimeStamp();
 
     DiscordCoreAPI_Dll std::string generate64BaseEncodedKey();
 
@@ -743,6 +747,10 @@ namespace DiscordCoreAPI {
     /// Class for representing a timestamp. \brief Class for representing a timestamp.
     class DiscordCoreAPI_Dll TimeStamp {
     public:
+
+        operator std::string() {
+            return this->originalTimeStamp;
+        }
 
         TimeStamp(std::string originalTimeStampNew) {
             this->originalTimeStamp = originalTimeStampNew;
@@ -1300,6 +1308,7 @@ namespace DiscordCoreAPI {
         bool deaf{ false };///< Are they server deafened?
         bool mute{ false };///< Are they server muted?
         UserData user{};///< User data for the current GuildMember.
+        TimeStamp communicationDisabledUntil{ "" };///< When the user's timeout will expire and the user will be able to communicate in the guild again, null or a time in the past if the user is not timed out.
 
         virtual ~GuildMemberData() = default;
     };

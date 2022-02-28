@@ -40,14 +40,68 @@ namespace DiscordCoreAPI {
         }
     }
 
+    std::string getFutureISO8601TimeStamp(int32_t minutesToAdd) {
+        std::time_t result = std::time(nullptr);
+        auto resultTwo = std::localtime(&result);
+        int32_t newMinuteValue{ 0 };
+        int32_t newHourValue{ resultTwo->tm_hour };
+        if (resultTwo->tm_min + minutesToAdd > 60) {
+            newMinuteValue = resultTwo->tm_min + minutesToAdd - 60;
+            newHourValue += 1;
+        }
+        else {
+            newMinuteValue = resultTwo->tm_min + minutesToAdd;
+        }
+        std::string resultString{};
+        if (!resultTwo->tm_isdst) {
+            resultString = getISO8601TimeStamp(std::to_string(resultTwo->tm_year + 1900), std::to_string(resultTwo->tm_mon + 1), std::to_string(resultTwo->tm_mday), std::to_string(newHourValue + 5), std::to_string(newMinuteValue), std::to_string(resultTwo->tm_sec));
+        }
+        else {
+            resultString = getISO8601TimeStamp(std::to_string(resultTwo->tm_year + 1900), std::to_string(resultTwo->tm_mon + 1), std::to_string(resultTwo->tm_mday), std::to_string(newHourValue + 4), std::to_string(newMinuteValue), std::to_string(resultTwo->tm_sec));
+        }
+        return resultString;
+    }
+
+    std::string getCurrentISO8601TimeStamp() {
+        std::time_t result = std::time(nullptr);
+        auto resultTwo = std::localtime(&result);
+        std::string resultString = getISO8601TimeStamp(std::to_string(resultTwo->tm_year + 1900), std::to_string(resultTwo->tm_mon), std::to_string(resultTwo->tm_mday), std::to_string(resultTwo->tm_hour), std::to_string(resultTwo->tm_min), std::to_string(resultTwo->tm_sec));
+        return resultString;
+    }
+
     std::string getISO8601TimeStamp(std::string year, std::string month, std::string day, std::string hour, std::string minute, std::string second) {
         std::string theTimeStamp{};
         theTimeStamp += year + "-";
-        theTimeStamp += month + "-";
-        theTimeStamp += day;
-        theTimeStamp += "T" + hour;
-        theTimeStamp += ":" + minute;
-        theTimeStamp += ":" + second;
+        if (month.size() < 2) {
+            theTimeStamp += "0" + month + "-";
+        }
+        else {
+            theTimeStamp += month + "-";
+        }
+        if (day.size() < 2) {
+            theTimeStamp += "0" + day;
+        }
+        else {
+            theTimeStamp += day;
+        }
+        if (hour.size() < 2) {
+            theTimeStamp += "T0" + hour;
+        }
+        else {
+            theTimeStamp += "T" + hour;
+        }
+        if (minute.size() < 2) {
+            theTimeStamp += ":0" + minute;
+        }
+        else {
+            theTimeStamp += ":" + minute;
+        }
+        if (second.size() < 2) {
+            theTimeStamp += ":0" + second;
+        }
+        else {
+            theTimeStamp += ":" + second;
+        }
         return theTimeStamp;
     }
 

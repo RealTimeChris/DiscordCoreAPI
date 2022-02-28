@@ -72,6 +72,7 @@ namespace DiscordCoreAPI {
 
 	/// For modifying a GuildMember's values. \brief For modifying a GuildMember's values.
 	struct DiscordCoreAPI_Dll ModifyGuildMemberData {
+		TimeStamp communicationDisabledUntil{ "" };///< When the user's timeout will expire and the user will be able to communicate in the guild again, null or a time in the past if the user is not timed out.
 		std::string newVoiceChannelId{ "" };///< The new voice Channel to std::move them into.
 		std::string currentChannelId{ "" };///< The current voice Channel, if applicaple.
 		std::vector<std::string> roleIds{};///<A collection of Role id's to be applied to them.
@@ -88,6 +89,14 @@ namespace DiscordCoreAPI {
 		std::string guildMemberId{ "" };///< Id of the chosen GuildMember to kick.
 		std::string guildId{ "" };///< Guild from which to kick the chosen GuildMember.
 		std::string reason{ "" };///< Reason for kicking the GuildMember.
+	};
+
+	/// For timing out a GuildMember. \brief For timing out a GuildMember.
+	struct DiscordCoreAPI_Dll TimeoutGuildMemberData {
+		int32_t numOfMinutesToTimeoutFor{ 0 };///< The number of minutes to time-out the GuildMember for.
+		std::string guildMemberId{ "" };///< The id of the GuildMember to be timed-out.
+		std::string guildId{ "" };///< The id of the Guild from which you would like to acquire a member.
+		std::string reason{ "" };///< Reason for timing them out.
 	};
 
 	/// A single GuildMember. \brief A single GuildMember.
@@ -153,6 +162,11 @@ namespace DiscordCoreAPI {
 		/// \param dataPackage A RemoveGuildMemberData structure.
 		/// \returns A CoRoutine containing void.
 		static CoRoutine<void> removeGuildMemberAsync(RemoveGuildMemberData dataPackage);
+
+		/// Times-out a chosen GuildMember from a chosen Guild. \brief Times-out a chosen GuildMember from a chosen Guild.
+		/// \param dataPackage A TimeoutGuildMemberData structure.
+		/// \returns A CoRoutine containing GuildMember.
+		static CoRoutine<GuildMember> timeoutGuildMemberAsync(TimeoutGuildMemberData dataPackage);
 
 	protected:
 

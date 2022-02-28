@@ -807,6 +807,7 @@ namespace DiscordCoreInternal {
     void DataParser::parseObject(nlohmann::json const& jsonObjectData, DiscordCoreAPI::GuildMember& pDataStructure) {
         if (jsonObjectData.contains("user") && !jsonObjectData["user"].is_null()) {
             DataParser::parseObject(jsonObjectData["user"], pDataStructure.user);
+            pDataStructure.id = pDataStructure.user.id;
         }
 
         if (jsonObjectData.contains("nick") && !jsonObjectData["nick"].is_null() && jsonObjectData["nick"] != "") {
@@ -822,6 +823,10 @@ namespace DiscordCoreInternal {
         else {
             pDataStructure.userMention = "<@!" + pDataStructure.user.id + ">";
         }
+
+        if (jsonObjectData.contains("communication_disabled_until") && !jsonObjectData["communication_disabled_until"].is_null()) {
+            pDataStructure.communicationDisabledUntil = jsonObjectData["communication_disabled_until"].get<std::string>();
+        }        
 
         if (jsonObjectData.contains("roles") && !jsonObjectData["roles"].is_null()) {
             DataParser::parseObject(jsonObjectData["roles"], pDataStructure.roles);
@@ -860,6 +865,7 @@ namespace DiscordCoreInternal {
     void DataParser::parseObject(nlohmann::json const& jsonObjectData, DiscordCoreAPI::GuildMemberData& pDataStructure) {
         if (jsonObjectData.contains("user") && !jsonObjectData["user"].is_null()) {
             DataParser::parseObject(jsonObjectData["user"], pDataStructure.user);
+            pDataStructure.id = pDataStructure.user.id;
         }
 
         if (jsonObjectData.contains("nick") && !jsonObjectData["nick"].is_null() && jsonObjectData["nick"] != "") {
@@ -874,6 +880,10 @@ namespace DiscordCoreInternal {
         }
         else {
             pDataStructure.userMention = "<@!" + pDataStructure.user.id + ">";
+        }
+
+        if (jsonObjectData.contains("communication_disabled_until") && !jsonObjectData["communication_disabled_until"].is_null()) {
+            pDataStructure.communicationDisabledUntil = jsonObjectData["communication_disabled_until"].get<std::string>();
         }
 
         if (jsonObjectData.contains("roles") && !jsonObjectData["roles"].is_null()) {

@@ -209,6 +209,27 @@ namespace DiscordCoreAPI {
 		}
 	}
 
+	CoRoutine<GuildMember> GuildMembers::timeoutGuildMemberAsync(TimeoutGuildMemberData dataPackage) {
+		try {
+			co_await NewThreadAwaitable<GuildMember>();
+			GuildMember guildMember = GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = dataPackage.guildMemberId, .guildId = dataPackage.guildId }).get();
+			ModifyGuildMemberData dataPackage01{};
+			dataPackage01.currentChannelId = guildMember.voiceData.channelId;
+			dataPackage01.deaf = guildMember.deaf;
+			dataPackage01.guildId = guildMember.guildId;
+			dataPackage01.guildMemberId = guildMember.user.id;
+			dataPackage01.mute = guildMember.mute;
+			dataPackage01.nick = guildMember.nick;
+			dataPackage01.roleIds = guildMember.roles;
+			dataPackage01.reason = dataPackage.reason;
+			dataPackage01.communicationDisabledUntil = getFutureISO8601TimeStamp(dataPackage.numOfMinutesToTimeoutFor);
+			co_return GuildMembers::modifyGuildMemberAsync(dataPackage01).get();;
+		}
+		catch (...) {
+			reportException("GuildMembers::modifyGuildMemberAsync()");
+		}
+	}
+
 	void GuildMembers::insertGuildMember(GuildMember guildMember) {
 		try {
 			if (guildMember.user.id == "") {
