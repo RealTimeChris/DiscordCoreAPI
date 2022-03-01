@@ -43,7 +43,7 @@ namespace DiscordCoreAPI {
 		workloadVector01.push_back(dataPackage);
 		std::vector<DiscordCoreInternal::HttpData> returnData = DiscordCoreInternal::submitWorkloadAndGetResult(*this->httpClient, workloadVector01);
 		if (returnData[0].responseCode != 200) {
-			std::cout << "YouTubeSong::searchForSong Error: " << returnData[0].responseCode << returnData[0].responseMessage.c_str() << std::endl;
+			std::cout << shiftToBrightRed() << "YouTubeSong::searchForSong Error: " << returnData[0].responseCode << returnData[0].responseMessage.c_str() << reset() << std::endl;
 		}
 		nlohmann::json partialSearchResultsJson{};
 		if (returnData[0].responseMessage.find("var ytInitialData = ") != std::string::npos) {
@@ -77,7 +77,7 @@ namespace DiscordCoreAPI {
 		for (uint32_t x = 0; x < responseData.size(); x += 1) {
 			std::string resultStringHTMLBody{};
 			if (responseData[x].responseCode != 204 && responseData[x].responseCode != 201 && responseData[x].responseCode != 200) {
-				std::cout << "YouTubeSong::collectDownloadInfo() 01 Error: " << responseData[x].responseCode << ", " << responseData[x].responseMessage << std::endl << std::endl;
+				std::cout << shiftToBrightRed() << "YouTubeSong::collectDownloadInfo() 01 Error: " << responseData[x].responseCode << ", " << responseData[x].responseMessage << std::endl << reset() << std::endl;
 			}
 			resultStringHTMLBody.insert(resultStringHTMLBody.begin(), responseData[x].responseMessage.begin(), responseData[x].responseMessage.end());
 			std::string resultStringStringHTMLBody = resultStringHTMLBody;
@@ -128,7 +128,7 @@ namespace DiscordCoreAPI {
 		auto resultHTMLBody = DiscordCoreInternal::submitWorkloadAndGetResult(*this->httpClient, workloadVector01);
 		std::string resultStringHTMLBody{};
 		if (resultHTMLBody[0].responseCode != 204 && resultHTMLBody[0].responseCode != 201 && resultHTMLBody[0].responseCode != 200) {
-			std::cout << "YouTubeSong::collectDownloadInfo() 01 Error: " << resultHTMLBody[0].responseCode << ", " << resultHTMLBody[0].responseMessage << std::endl << std::endl;
+			std::cout << shiftToBrightRed() << "YouTubeSong::collectDownloadInfo() 01 Error: " << resultHTMLBody[0].responseCode << ", " << resultHTMLBody[0].responseMessage << std::endl << reset() << std::endl;
 		}
 		resultStringHTMLBody.insert(resultStringHTMLBody.begin(), resultHTMLBody[0].responseMessage.begin(), resultHTMLBody[0].responseMessage.end());
 		std::string resultStringStringHTMLBody = resultStringHTMLBody;
@@ -172,7 +172,7 @@ namespace DiscordCoreAPI {
 		auto responseMessage02 = DiscordCoreInternal::submitWorkloadAndGetResult(*this->httpClient, workloadVector);
 		std::string responseToPlayerGet02{};
 		if (responseMessage02[0].responseCode != 204 && responseMessage02[0].responseCode != 201 && responseMessage02[0].responseCode != 200) {
-			std::cout << "YouTubeSong::collectDownloadInfo() 02 Error: " << responseMessage02[0].responseCode << ", " << responseMessage02[0].responseMessage << std::endl << std::endl;
+			std::cout << shiftToBrightRed() << "YouTubeSong::collectDownloadInfo() 02 Error: " << responseMessage02[0].responseCode << ", " << responseMessage02[0].responseMessage << std::endl << reset() << std::endl;
 		}
 		responseToPlayerGet02.insert(responseToPlayerGet02.begin(), responseMessage02[0].responseMessage.begin(), responseMessage02[0].responseMessage.end());
 		newSong.html5PlayerFile = responseToPlayerGet02;

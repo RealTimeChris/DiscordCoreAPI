@@ -343,7 +343,7 @@ namespace DiscordCoreInternal {
 
 				if (timeRemaining > 0) {
 					if (this->doWePrintHttp) {
-						std::cout << "We're waiting on rate-limit: " << timeRemaining << std::endl << std::endl;
+						std::cout << DiscordCoreAPI::shiftToBrightBlue() << "We're waiting on rate-limit: " << timeRemaining << std::endl << DiscordCoreAPI::reset() << std::endl;
 					}
 					int64_t targetTime = currentTime + timeRemaining;
 					while (targetTime > currentTime) {
@@ -379,10 +379,10 @@ namespace DiscordCoreInternal {
 
 			if (printResult) {
 				if (returnData.responseCode != 204 && returnData.responseCode != 201 && returnData.responseCode != 200) {
-					std::cout << workload.callStack + " Error: " << returnData.responseCode << ", " << returnData.responseMessage << std::endl << std::endl;					
+					std::cout << DiscordCoreAPI::shiftToBrightRed() << workload.callStack + " Error: " << returnData.responseCode << ", " << returnData.responseMessage << std::endl << DiscordCoreAPI::reset() << std::endl;
 				}
 				else if (this->doWePrintHttp) {
-					std::cout << workload.callStack + " Success: " << returnData.responseCode << ", " << returnData.responseMessage << std::endl << std::endl;
+					std::cout << DiscordCoreAPI::shiftToBrightGreen() << workload.callStack + " Success: " << returnData.responseCode << ", " << returnData.responseMessage << std::endl << DiscordCoreAPI::reset() << std::endl;
 				}
 			}
 			return returnData;
@@ -506,7 +506,7 @@ namespace DiscordCoreInternal {
 			HttpData resultData = this->executeByRateLimitData(workload, printResult, theConnectionNew);
 			if (resultData.responseCode == 429) {
 				resultData.responseData = nlohmann::json::parse(resultData.responseMessage);
-				std::cout << workload.callStack + "::httpRequest(), We've hit rate limit! Time Remaining: " << std::to_string(this->connectionManager.rateLimitValues.at(theConnectionNew.bucket)->msRemain) << std::endl << std::endl;
+				std::cout << DiscordCoreAPI::shiftToBrightRed() << workload.callStack + "::httpRequest(), We've hit rate limit! Time Remaining: " << std::to_string(this->connectionManager.rateLimitValues.at(theConnectionNew.bucket)->msRemain) << std::endl << DiscordCoreAPI::reset() << std::endl;
 				this->connectionManager.rateLimitValues.at(theConnectionNew.bucket)->msRemain = static_cast<int64_t>(1000.0f * resultData.responseData.at("retry_after").get<float>());
 				theConnectionNew.resetValues(theConnectionNew.getInputBuffer());
 				resultData = this->httpRequest(workload, printResult);

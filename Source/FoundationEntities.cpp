@@ -117,7 +117,7 @@ namespace DiscordCoreAPI {
                 sendBuffer->send(e);
             }
             else {
-                std::cout << stackTrace + " Error: " << e.what() << "\n\n";
+                std::cout << shiftToBrightRed() << stackTrace + " Error: " << e.what() << reset() << "\n\n";
             }
             if (rethrow) {
                 std::rethrow_exception(std::current_exception());
@@ -432,11 +432,11 @@ namespace DiscordCoreAPI {
     }
 
     std::string shiftToBrightGreen() {
-        return std::string("\033[1;40;32m");
+        return std::string("\033[1;40;92m");
     }
 
     std::string shiftToBrightRed() {
-        return std::string("\033[1;40;31m");
+        return std::string("\033[1;40;91m");
     }
 
     std::string reset() {

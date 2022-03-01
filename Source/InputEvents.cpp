@@ -75,7 +75,7 @@ namespace DiscordCoreAPI {
 			return InputEvents::respondToEvent(*dataPackage02);
 		}
 		case InputEventResponseType::Unset: {
-			std::cout << "Failed to set input event response type!" << std::endl;
+			std::cout << shiftToBrightRed() << "Failed to set input event response type!" << reset() << std::endl;
 			break;
 		}
 		default: {

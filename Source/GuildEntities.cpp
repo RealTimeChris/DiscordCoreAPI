@@ -162,17 +162,17 @@ namespace DiscordCoreAPI {
 		try {
 
 			if (this->discordCoreClient->cacheOptions.cacheGuilds) {
-				std::cout << "Caching Guild: " << this->name << std::endl;
+				std::cout << shiftToBrightBlue() << "Caching Guild: " << this->name << reset() << std::endl;
 			}
 			if (this->discordCoreClient->cacheOptions.cacheChannels) {
-				std::cout << "Caching Channels for Guild: " << this->name << std::endl;
+				std::cout << shiftToBrightBlue() << "Caching Channels for Guild: " << this->name << reset() << std::endl;
 				for (auto& [key, value] : channels) {
 					value.guildId = this->id;
 					Channels::insertChannel(value);
 				}
 			}
 			if (this->discordCoreClient->cacheOptions.cacheGuildMembers) {
-				std::cout << "Caching GuildMembers for Guild: " << this->name << std::endl;
+				std::cout << shiftToBrightBlue() << "Caching GuildMembers for Guild: " << this->name << reset() << std::endl;
 				for (auto& [key00, value00] : this->members) {
 					value00.guildId = this->id;
 					value00.voiceData.guildId = this->id;
@@ -186,13 +186,13 @@ namespace DiscordCoreAPI {
 				}
 			}
 			if (this->discordCoreClient->cacheOptions.cacheRoles) {
-				std::cout << "Caching Roles for Guild: " << this->name << std::endl;
+				std::cout << shiftToBrightBlue() << "Caching Roles for Guild: " << this->name << reset() << std::endl;
 				for (auto& [key, value] : roles) {
 					Roles::insertRole(value);
 				}
 			}
 			if (this->discordCoreClient->cacheOptions.cacheUsers) {
-				std::cout << "Caching Users for Guild: " << this->name << std::endl << std::endl;
+				std::cout << shiftToBrightBlue() << "Caching Users for Guild: " << this->name << reset() << std::endl << std::endl;
 				for (auto& [key, value] : members) {
 					Users::insertUser(value.user);
 				}

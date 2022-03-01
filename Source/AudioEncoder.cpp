@@ -29,7 +29,7 @@ namespace DiscordCoreAPI {
 		int32_t error;
 		this->encoder = opus_encoder_create(this->sampleRate, this->nChannels, OPUS_APPLICATION_AUDIO, &error);
 		if (error != OPUS_OK) {
-			std::cout << "Failed to create Opus encoder!";
+			std::cout << shiftToBrightRed() << "Failed to create Opus encoder!" << reset() << std::endl << std::endl;
 		}
 	}
 

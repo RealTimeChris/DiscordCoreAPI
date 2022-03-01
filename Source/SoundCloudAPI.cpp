@@ -193,7 +193,7 @@ namespace DiscordCoreAPI {
 			std::string newString03 = newerString02.substr(newerString02.find("?client_id=") + newString00.size());
 			std::string clientIdNew = newString03.substr(0, newString03.find("&"));
 			if (returnData[0].responseCode != 200) {
-				std::cout << "SoundCloudAPI::searchForSong Error: " << returnData[0].responseCode << newerString02.c_str() << std::endl;
+				std::cout << shiftToBrightRed() << "SoundCloudAPI::searchForSong Error: " << returnData[0].responseCode << newerString02.c_str() << reset() << std::endl;
 			}
 			return clientIdNew;
 		}

@@ -48,7 +48,7 @@ namespace DiscordCoreInternal {
 		try {
 			std::lock_guard<std::mutex> accessLock{ this->accessorMutex01 };
 			if (this->printMessages) {
-				std::cout << "Sending WebSocket Message: " << std::endl << dataToSend;
+				std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Sending WebSocket Message: " << std::endl << dataToSend << DiscordCoreAPI::reset();
 			}
 			this->webSocket->writeData(dataToSend);
 		}
@@ -68,7 +68,7 @@ namespace DiscordCoreInternal {
 			}
 			std::lock_guard<std::mutex> accessLock{ this->accessorMutex01 };
 			if (this->printMessages) {
-				std::cout << "Sending WebSocket Message: " << dataToSend.dump() << std::endl << std::endl;
+				std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Sending WebSocket Message: " << dataToSend.dump() << std::endl << DiscordCoreAPI::reset() << std::endl;
 			}
 			std::string theVector = this->erlPacker.parseJsonToEtf(dataToSend);
 			std::string out{};
@@ -260,7 +260,7 @@ namespace DiscordCoreInternal {
 			}
 
 			if (payload.at("op") == 7) {
-				std::cout << "Shard [" + std::to_string(this->currentShard) + ", " + std::to_string(this->numOfShards) + "] - Reconnecting (Type 7)!" << std::endl << std::endl;
+				std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Shard [" + std::to_string(this->currentShard) + ", " + std::to_string(this->numOfShards) + "] - Reconnecting (Type 7)!" << std::endl << DiscordCoreAPI::reset() << std::endl;
 				this->areWeResuming = true;
 				this->currentReconnectTries += 1;
 				this->areWeConnected.store(false, std::memory_order_seq_cst);
@@ -270,7 +270,7 @@ namespace DiscordCoreInternal {
 			}
 
 			if (payload.at("op") == 9) {
-				std::cout << "Shard [" + std::to_string(this->currentShard) + ", " + std::to_string(this->numOfShards) + "] - Reconnecting (Type 9)!" << std::endl << std::endl;
+				std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Shard [" + std::to_string(this->currentShard) + ", " + std::to_string(this->numOfShards) + "] - Reconnecting (Type 9)!" << std::endl << DiscordCoreAPI::reset() << std::endl;
 				srand(static_cast<uint32_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count()));
 				this->currentReconnectTries += 1;
 				int32_t numOfMsToWait = static_cast<int32_t>(1000.0f + ((static_cast<float>(rand()) / static_cast<float>(RAND_MAX)) * static_cast<float>(4000.0f)));
@@ -521,7 +521,7 @@ namespace DiscordCoreInternal {
 				}
 			}
 			if (this->printMessages) {
-				std::cout << "Message received from WebSocket: " << payload.dump() << std::endl << std::endl;
+				std::cout << DiscordCoreAPI::shiftToBrightGreen() << "Message received from WebSocket: " << payload.dump() << std::endl << DiscordCoreAPI::reset() << std::endl;
 			}
 			return;
 		}
@@ -647,7 +647,7 @@ namespace DiscordCoreInternal {
 					close <<= 8;
 					close |= this->webSocket->getInputBuffer()[3] & 0xff;
 					this->closeCode = close;
-					std::cout << "WebSocket Closed; Code: " << this->closeCode << std::endl;
+					std::cout << DiscordCoreAPI::shiftToBrightRed() << "WebSocket Closed; Code: " << this->closeCode << DiscordCoreAPI::reset() << std::endl;
 					this->onClosedExternal();
 					return false;
 					
@@ -732,7 +732,7 @@ namespace DiscordCoreInternal {
 	void VoiceSocketAgent::sendVoiceData(std::string& responseData) noexcept {
 		try {
 			if (responseData.size() == 0) {
-				std::cout << "Please specify voice data to send" << std::endl << std::endl;
+				std::cout << DiscordCoreAPI::shiftToBrightRed() << "Please specify voice data to send" << std::endl << DiscordCoreAPI::reset() << std::endl;
 				return;
 			}
 			else {
@@ -752,7 +752,7 @@ namespace DiscordCoreInternal {
 			std::string newString{};
 			newString.insert(newString.begin(), dataToSend.begin(), dataToSend.end());
 			if (this->printMessages) {
-				std::cout << "Sending Voice WebSocket Message: " << newString << std::endl << std::endl;
+				std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Sending Voice WebSocket Message: " << newString << std::endl << DiscordCoreAPI::reset() << std::endl;
 			}
 			std::vector<char> out{};
 			out.resize(this->maxHeaderSize);
@@ -772,7 +772,7 @@ namespace DiscordCoreInternal {
 	void VoiceSocketAgent::sendMessage(std::string& dataToSend) noexcept {
 		try {
 			if (this->printMessages) {
-				std::cout << "Sending Voice WebSocket Message: " << std::endl << dataToSend;
+				std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Sending Voice WebSocket Message: " << std::endl << dataToSend << DiscordCoreAPI::reset();
 			}
 			this->webSocket->writeData(dataToSend);
 		}
@@ -870,7 +870,7 @@ namespace DiscordCoreInternal {
 			this->webSocket->getInputBuffer().clear();
 			nlohmann::json payload = payload.parse(message);
 			if (this->printMessages) {
-				std::cout << "Message received from Voice WebSocket: " << message << std::endl << std::endl;
+				std::cout << DiscordCoreAPI::shiftToBrightGreen() << "Message received from Voice WebSocket: " << message << std::endl << DiscordCoreAPI::reset() << std::endl;
 			}
 			if (payload.contains("op")) {
 				if (payload.at("op") == 6) {
@@ -1083,7 +1083,7 @@ namespace DiscordCoreInternal {
 					close <<= 8;
 					close |= this->webSocket->getInputBuffer()[3] & 0xff;
 					this->closeCode = close;
-					std::cout << "Voice WebSocket Closed; Code: " << this->closeCode << std::endl;
+					std::cout << DiscordCoreAPI::shiftToBrightRed() << "Voice WebSocket Closed; Code: " << this->closeCode << DiscordCoreAPI::reset() << std::endl;
 					this->onClosedExternal();
 					return false;
 				}

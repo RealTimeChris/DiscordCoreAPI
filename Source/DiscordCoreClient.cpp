@@ -98,7 +98,7 @@ namespace DiscordCoreAPI {
 		int32_t shardsPerGroup{ static_cast<int32_t>(ceil(static_cast<double>(this->shardingOptions.numberOfShardsForThisProcess) / static_cast<double>(shardGroupCount))) };
 		for (int32_t x = 0; x < shardGroupCount; x += 1) {
 			for (int32_t y = 0; y < shardsPerGroup; y += 1) {
-				std::cout << shiftToBrightBlue()<<"Connecting Shard " + std::to_string(x * shardsPerGroup + y + 1) << " of " << this->shardingOptions.numberOfShardsForThisProcess << std::string(" Shards for this process. (") + std::to_string(x * shardsPerGroup + y + 1 + this->shardingOptions.startingShard) + " of " + std::to_string(this->shardingOptions.totalNumberOfShards) + std::string(" Shards total across all processes.)") << std::endl;
+				std::cout << shiftToBrightBlue() << "Connecting Shard " + std::to_string(x * shardsPerGroup + y + 1) << " of " << this->shardingOptions.numberOfShardsForThisProcess << std::string(" Shards for this process. (") + std::to_string(x * shardsPerGroup + y + 1 + this->shardingOptions.startingShard) + " of " + std::to_string(this->shardingOptions.totalNumberOfShards) + std::string(" Shards total across all processes.)") << std::endl;
 				this->theWebSockets.insert_or_assign(std::to_string(x * shardsPerGroup + y + this->shardingOptions.startingShard), std::make_unique<DiscordCoreInternal::BaseSocketAgent>(this->botToken, this->gatewayUrl, &this->webSocketWorkloadTarget, this->loggingOptions.logWebSocketMessages, x * shardsPerGroup + y + this->shardingOptions.startingShard, this->shardingOptions.totalNumberOfShards));
 			}
 			if (shardGroupCount > 1 && x <  shardGroupCount - 1) {

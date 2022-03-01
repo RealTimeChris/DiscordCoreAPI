@@ -31,7 +31,7 @@ namespace DiscordCoreAPI {
 
 	AudioEncrypter::AudioEncrypter() {
 		if (sodium_init() == -1) {
-			std::cout << "LibSodium failed to initialize!" << std::endl << std::endl;
+			std::cout << DiscordCoreAPI::shiftToBrightRed() << "LibSodium failed to initialize!" << std::endl << std::endl << reset();
 		}
 	};
 

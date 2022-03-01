@@ -28,13 +28,13 @@ namespace DiscordCoreInternal {
 	void reportSSLError(std::string errorPosition, int32_t errorValue = 0, SSL* ssl = nullptr) noexcept {
 		try {
 			if (ssl != nullptr) {
-				std::cout << errorPosition << SSL_get_error(ssl, errorValue) << std::endl;
+				std::cout << DiscordCoreAPI::shiftToBrightRed() << errorPosition << SSL_get_error(ssl, errorValue) << std::endl;
 			}
 			else {
-				std::cout << errorPosition << std::endl;
+				std::cout << DiscordCoreAPI::shiftToBrightRed() << errorPosition << std::endl;
 			}
 			ERR_print_errors_fp(stdout);
-			std::cout << std::endl;
+			std::cout << std::endl << DiscordCoreAPI::reset();
 		}
 		catch (...) {
 			DiscordCoreAPI::reportException("reportSSLError()");
@@ -43,11 +43,11 @@ namespace DiscordCoreInternal {
 
 	void reportError(std::string errorPosition, int32_t errorValue) noexcept {
 		try {
-			std::cout << errorPosition << errorValue << ", ";
+			std::cout << DiscordCoreAPI::shiftToBrightRed() << errorPosition << errorValue << ", ";
 #ifdef _WIN32
-			std::cout << WSAGetLastError() << std::endl;
+			std::cout << WSAGetLastError() << std::endl << DiscordCoreAPI::reset();
 #else
-			std::cout << strerror(errno) << std::endl;
+			std::cout << strerror(errno) << std::endl << DiscordCoreAPI::reset();
 #endif
 		}
 		catch (...) {

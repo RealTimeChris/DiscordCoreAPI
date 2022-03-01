@@ -308,7 +308,7 @@ namespace DiscordCoreAPI {
                     }
                 }
                 if (this->doWePrint) {
-                    std::cout << "Completed decoding!" << std::endl << std::endl;
+                    std::cout << shiftToBrightGreen() << "Completed decoding!" << std::endl << reset() << std::endl;
                 }
                 co_return;
             }
