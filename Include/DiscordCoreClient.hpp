@@ -97,7 +97,7 @@ namespace DiscordCoreAPI {
 		/// \param functionsToExecuteNew A vector of DiscordCoreAPI::RepeatedFunctionData, for potentially repeated functions.
 		/// \param cacheOptionsNew A DiscordCoreAPI::CacheOptions structure for cache settings.
 		/// \param shardOptions A DiscordCoreAPI::ShardingOptions structure to select the shard configuration for this given process.
-		/// \param doWePrintMessages Whether or not to print incoming websocket messages, and HTTP response messages.
+		/// \param doWePrintMessages Whether or not to print incoming/outgoing websocket messages, and HTTP response messages.
 		DiscordCoreClient(std::string botTokenNew, std::string commandPrefixNew, std::vector<RepeatedFunctionData> functionsToExecuteNew = std::vector<RepeatedFunctionData>{}, CacheOptions cacheOptionsNew = CacheOptions{}, ShardingOptions shardOptions = ShardingOptions{}, bool doWePrintMessages = false);
 
 		DiscordCoreClient(nullptr_t);
@@ -123,6 +123,7 @@ namespace DiscordCoreAPI {
 		std::vector<ThreadPoolTimer> threadPoolTimers{};
 		std::unique_ptr<BotUser> currentUser{ nullptr };
 		ShardingOptions shardingOptions{};
+		bool didWeStartFine{ false };
 		std::string gatewayUrl{ "" };
 		int32_t maxConcurrency{ 0 };
 		CacheOptions cacheOptions{};

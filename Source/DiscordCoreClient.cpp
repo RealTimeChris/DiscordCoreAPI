@@ -89,11 +89,15 @@ namespace DiscordCoreAPI {
 		WebHooks::initialize(this->httpClient.get());
 		this->commandController = CommandController(this->commandPrefix, this);
 		this->getGateWayBot();
+		if (this->shardingOptions.startingShard + this->shardingOptions.numberOfShardsForThisProcess > this->shardingOptions.totalNumberOfShards) {
+			std::cout << "Your sharding options are incorrect! Please fix it!" << std::endl;
+			return;
+		}
 		int32_t shardGroupCount{ static_cast<int32_t>(ceil(static_cast<double>(this->shardingOptions.numberOfShardsForThisProcess) / static_cast<double>(this->maxConcurrency))) };
 		int32_t shardsPerGroup{ static_cast<int32_t>(ceil(static_cast<double>(this->shardingOptions.numberOfShardsForThisProcess) / static_cast<double>(shardGroupCount))) };
 		for (int32_t x = 0; x < shardGroupCount; x += 1) {
 			for (int32_t y = 0; y < shardsPerGroup; y += 1) {
-				std::cout << "Connecting Shard " + std::to_string(x * shardsPerGroup + y + 1 + this->shardingOptions.startingShard) << " of " << this->shardingOptions.numberOfShardsForThisProcess << std::string(" Shards for this process. (") + std::to_string(this->shardingOptions.totalNumberOfShards) + std::string(" Shards total across all processes.)") << std::endl;
+				std::cout << "Connecting Shard " + std::to_string(x * shardsPerGroup + y + 1) << " of " << this->shardingOptions.numberOfShardsForThisProcess << std::string(" Shards for this process. (") + std::to_string(x * shardsPerGroup + y + 1 + this->shardingOptions.startingShard) + " of " + std::to_string(this->shardingOptions.totalNumberOfShards) + std::string(" Shards total across all processes.)") << std::endl;
 				this->theWebSockets.insert_or_assign(std::to_string(x * shardsPerGroup + y + this->shardingOptions.startingShard), std::make_unique<DiscordCoreInternal::BaseSocketAgent>(this->botToken, this->gatewayUrl, &this->webSocketWorkloadTarget, doWePrintNew, x * shardsPerGroup + y + this->shardingOptions.startingShard, this->shardingOptions.totalNumberOfShards));
 			}
 			if (shardGroupCount > 1 && x <  shardGroupCount - 1) {
@@ -114,6 +118,7 @@ namespace DiscordCoreAPI {
 				ThreadPoolTimer::executeFunctionAfterTimePeriod(value.function, value.intervalInMs, this);
 			}
 		}
+		this->didWeStartFine = true;
 	}
 
 	DiscordCoreClient::DiscordCoreClient(nullptr_t) {};
@@ -127,6 +132,9 @@ namespace DiscordCoreAPI {
 	}
 
 	void DiscordCoreClient::runBot() {
+		if (!this->didWeStartFine) {
+			return;
+		}
 		this->run();
 	}
 
