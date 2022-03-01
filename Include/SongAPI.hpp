@@ -79,7 +79,7 @@ namespace DiscordCoreAPI {
 		static bool play(std::string guildId);
 
 		/// Skips to the next Song in the UnboundedMessageBlock, if applicable. \brief Skips to the next Song in the UnboundedMessageBlock, if applicable.
-		/// \param GuildMember The GuildMember structure of the individual who is skipping the Song.
+		/// \param guildMember The GuildMember structure of the individual who is skipping the Song.
 		static void skip(GuildMember guildMember);
 
 		/// Stops the currently playing Song. \brief Stops the currently playing Song.

@@ -192,7 +192,6 @@ namespace DiscordCoreAPI {
 			newerString02.insert(newerString02.begin(), returnData02[0].responseMessage.begin(), returnData02[0].responseMessage.end());
 			std::string newString03 = newerString02.substr(newerString02.find("?client_id=") + newString00.size());
 			std::string clientIdNew = newString03.substr(0, newString03.find("&"));
-			SoundCloudRequestBuilder::clientId = clientIdNew;
 			if (returnData[0].responseCode != 200) {
 				std::cout << "SoundCloudAPI::searchForSong Error: " << returnData[0].responseCode << newerString02.c_str() << std::endl;
 			}
@@ -205,8 +204,10 @@ namespace DiscordCoreAPI {
 	}
 
 	SoundCloudRequestBuilder::SoundCloudRequestBuilder(DiscordCoreInternal::HttpClient*httpClient) {
-		this->clientId = SoundCloudRequestBuilder::collectClientId();
 		this->httpClient = httpClient;
+		if (SoundCloudRequestBuilder::clientId == "") {
+			SoundCloudRequestBuilder::clientId = this->collectClientId();
+		}
 	}
 
 	SoundCloudAPI::SoundCloudAPI(std::string guildIdNew, DiscordCoreInternal::HttpClient* httpClient):requestBuilder(httpClient) {

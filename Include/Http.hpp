@@ -137,16 +137,16 @@ namespace DiscordCoreInternal {
 
 		template<typename ReturnType>
 		friend ReturnType submitWorkloadAndGetResult(HttpClient& httpClient, HttpWorkloadData& workload);
-		friend void submitWorkloadAndGetResult(HttpWorkloadData& workload, HttpClient& httpClient);
 		friend std::vector<HttpData> submitWorkloadAndGetResult(HttpClient& httpClient, std::vector<HttpWorkloadData>& workload);
 		friend HttpData submitWorkloadAndGetResult(HttpClient& httpClient, HttpWorkloadData& workload);
 
-		HttpClient(std::string);
+		HttpClient(std::string, bool doWePrint);
 
 	protected:
 
 		HttpConnectionManager connectionManager{};
 		const std::string botToken{};
+		bool doWePrint{ false };
 
 		HttpData executeByRateLimitData(HttpWorkloadData&, bool, HttpConnection& theConnection);
 

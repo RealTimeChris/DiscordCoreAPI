@@ -177,7 +177,7 @@ namespace DiscordCoreAPI {
 			if (!this->baseSocketAgent->areWeReadyToConnectEvent.wait(10000)) {
 				return;
 			}
-			this->voiceSocketAgent = std::make_unique<DiscordCoreInternal::VoiceSocketAgent>(this->voiceConnectInitData, this->baseSocketAgent);
+			this->voiceSocketAgent = std::make_unique<DiscordCoreInternal::VoiceSocketAgent>(this->voiceConnectInitData, this->baseSocketAgent, this->baseSocketAgent->printMessages);
 			this->doWeReconnect = &this->voiceSocketAgent->doWeReconnect;
 			if (!this->voiceSocketAgent->areWeConnected.wait(10000)){
 				return;

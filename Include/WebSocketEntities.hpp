@@ -133,7 +133,7 @@ namespace DiscordCoreInternal {
 		friend class DiscordCoreAPI::VoiceConnection;
 		friend VoiceSocketAgent;
 
-		BaseSocketAgent(std::string botToken, std::string baseUrl, DiscordCoreAPI::TSUnboundedMessageBlock<WebSocketWorkload>* webSocketWorkloadTarget, int32_t shardNumber = 0, int32_t numberOfShards = 1) noexcept;
+		BaseSocketAgent(std::string botToken, std::string baseUrl, DiscordCoreAPI::TSUnboundedMessageBlock<WebSocketWorkload>* webSocketWorkloadTarget, bool doWePrintMessages = false, int32_t shardNumber = 0, int32_t numberOfShards = 1) noexcept;
 
 		BaseSocketAgent(nullptr_t) noexcept;
 
@@ -180,6 +180,7 @@ namespace DiscordCoreInternal {
 		std::mutex accessorMutex01{};
 		std::string sessionId{ "" };
 		bool areWeResuming{ false };
+		bool printMessages{ false };
 		std::string botToken{ "" };
 		std::string baseUrl{ "" };
 		std::string authKey{ "" };
@@ -216,7 +217,7 @@ namespace DiscordCoreInternal {
 
 		friend class DiscordCoreAPI::VoiceConnection;
 
-		VoiceSocketAgent(VoiceConnectInitData initDataNew, BaseSocketAgent* baseBaseSocketAgentNew) noexcept;
+		VoiceSocketAgent(VoiceConnectInitData initDataNew, BaseSocketAgent* baseBaseSocketAgentNew, bool doWePrintMessages = false) noexcept;
 
 		void sendMessage(std::vector<uint8_t>& responseData) noexcept;
 
@@ -253,6 +254,7 @@ namespace DiscordCoreInternal {
 		int32_t lastNumberReceived{ 0 };
 		int32_t heartbeatInterval{ 0 };
 		std::string relativePath{ "" };
+		bool printMessages{ false };
 		std::string baseUrl{ "" };
 		std::string authKey{ "" };
 		std::string hostIp{ "" };

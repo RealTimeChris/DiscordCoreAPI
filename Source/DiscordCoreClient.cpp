@@ -48,11 +48,11 @@ namespace DiscordCoreAPI {
 		return Statics::songAPIMap;
 	}
 
-	DiscordCoreClient::DiscordCoreClient(std::string botTokenNew, std::string commandPrefixNew, std::vector<RepeatedFunctionData> functionsToExecuteNew, CacheOptions cacheOptionsNew, ShardingOptions shardingOptionsNew) {
+	DiscordCoreClient::DiscordCoreClient(std::string botTokenNew, std::string commandPrefixNew, std::vector<RepeatedFunctionData> functionsToExecuteNew, CacheOptions cacheOptionsNew, ShardingOptions shardingOptionsNew, bool doWePrintNew) {
 		std::signal(SIGTERM, &signalHandler);
+		std::signal(SIGABRT, &signalHandler);
 		std::signal(SIGILL, &signalHandler);
 		std::signal(SIGINT, &signalHandler);
-		std::signal(SIGABRT, &signalHandler);
 		this->shardingOptions = shardingOptionsNew;
 		this->functionsToExecute = functionsToExecuteNew;
 		this->commandPrefix = commandPrefixNew;
@@ -72,7 +72,7 @@ namespace DiscordCoreAPI {
 		this->eventManager->onRoleUpdate(&EventHandler::onRoleUpdate);
 		this->eventManager->onRoleDeletion(&EventHandler::onRoleDeletion);
 		this->eventManager->onVoiceStateUpdate(&EventHandler::onVoiceStateUpdate);
-		this->httpClient = std::make_unique<DiscordCoreInternal::HttpClient>(this->botToken);
+		this->httpClient = std::make_unique<DiscordCoreInternal::HttpClient>(this->botToken, doWePrintNew);
 		ApplicationCommands::initialize(this->httpClient.get());
 		Channels::initialize(this->httpClient.get());
 		Guilds::initialize(this->httpClient.get(), this);
@@ -93,14 +93,15 @@ namespace DiscordCoreAPI {
 		int32_t shardsPerGroup{ static_cast<int32_t>(ceil(static_cast<double>(this->shardingOptions.numberOfShardsForThisProcess) / static_cast<double>(shardGroupCount))) };
 		for (int32_t x = 0; x < shardGroupCount; x += 1) {
 			for (int32_t y = 0; y < shardsPerGroup; y += 1) {
-				std::cout << "Connecting Shard " + std::to_string(x * shardsPerGroup + y + 1 + this->shardingOptions.startingShard) << " of " << this->shardingOptions.totalNumberOfShards << " Shards." << std::endl;
-				this->theWebSockets.insert_or_assign(std::to_string(x * shardsPerGroup + y + this->shardingOptions.startingShard), std::make_unique<DiscordCoreInternal::BaseSocketAgent>(this->botToken, this->gatewayUrl, &this->webSocketWorkloadTarget, x * shardsPerGroup + y + this->shardingOptions.startingShard, this->shardingOptions.totalNumberOfShards));
+				std::cout << "Connecting Shard " + std::to_string(x * shardsPerGroup + y + 1 + this->shardingOptions.startingShard) << " of " << this->shardingOptions.numberOfShardsForThisProcess << std::string(" Shards for this process. (") + std::to_string(this->shardingOptions.totalNumberOfShards) + std::string(" Shards total across all processes.)") << std::endl;
+				this->theWebSockets.insert_or_assign(std::to_string(x * shardsPerGroup + y + this->shardingOptions.startingShard), std::make_unique<DiscordCoreInternal::BaseSocketAgent>(this->botToken, this->gatewayUrl, &this->webSocketWorkloadTarget, doWePrintNew, x * shardsPerGroup + y + this->shardingOptions.startingShard, this->shardingOptions.totalNumberOfShards));
 			}
 			if (shardGroupCount > 1 && x <  shardGroupCount - 1) {
 				std::cout << "Waiting to connect the subsequent group of shards..." << std::endl << std::endl;
-				std::this_thread::sleep_for(std::chrono::seconds{ 20 });
+				std::this_thread::sleep_for(std::chrono::milliseconds{ 20000 });
 			}			
 		}
+		std::cout << "All of the shards are connected for the current process!" << std::endl << std::endl;
 		this->currentUser = std::make_unique<BotUser>(Users::getCurrentUserAsync().get(), this->theWebSockets.at(std::to_string(this->shardingOptions.startingShard)).get());
 		for (auto& value : this->functionsToExecute) {
 			if (value.repeated) {

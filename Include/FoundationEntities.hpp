@@ -874,30 +874,30 @@ namespace DiscordCoreAPI {
         std::string getCurrentPermissionString();
 
         /// Returns a std::string containing the currently held Permissions in a given Guild. \brief Returns a std::string containing the currently held Permissions in a given Guild.
-        /// \param GuildMember The GuildMember who's Permissions are to be evaluated.
+        /// \param guildMember The GuildMember who's Permissions are to be evaluated.
         /// \returns A std::string containing the current Permissions.
-        static std::string getCurrentGuildPermissions(GuildMember GuildMember);
+        static std::string getCurrentGuildPermissions(GuildMember guildMember);
 
         /// Returns a std::string containing all of a given User's Permissions for a given Channel. \brief Returns a std::string containing all of a given User's Permissions for a given Channel.
-        /// \param GuildMember The GuildMember who's Permissions to analyze.
-        /// \param Channel The Channel withint which to check for Permissions.
+        /// \param guildMember The GuildMember who's Permissions to analyze.
+        /// \param channel The Channel withint which to check for Permissions.
         /// \returns A std::string containing the final Permission's value for a given Channel.
-        static std::string getCurrentChannelPermissions(GuildMember GuildMember, ChannelData channel);
+        static std::string getCurrentChannelPermissions(GuildMember guildMember, ChannelData channel);
 
         /// Checks for a given Permission in a chosen Channel, for a specific User. \brief Checks for a given Permission in a chosen Channel, for a specific User.
-        /// \param GuildMember The GuildMember who to check the Permissions of.
-        /// \param Channel The Channel within which to check for the Permission's presence.
+        /// \param guildMember The GuildMember who to check the Permissions of.
+        /// \param channel The Channel within which to check for the Permission's presence.
         /// \param permission A Permission to check the current Channel for.
         /// \returns A bool suggesting the presence of the chosen Permission.
-        bool checkForPermission(GuildMember GuildMember, ChannelData channel, Permission permission);
+        bool checkForPermission(GuildMember guildMember, ChannelData channel, Permission permission);
 
     protected:
 
-        static std::string computeBasePermissions(GuildMember GuildMember);
+        static std::string computeBasePermissions(GuildMember guildMember);
 
-        static std::string computeOverwrites(std::string basePermissions, GuildMember GuildMember, ChannelData channel);
+        static std::string computeOverwrites(std::string basePermissions, GuildMember guildMember, ChannelData channel);
 
-        static std::string computePermissions(GuildMember GuildMember, ChannelData channel);
+        static std::string computePermissions(GuildMember guildMember, ChannelData channel);
     };
 
     /**@}*/

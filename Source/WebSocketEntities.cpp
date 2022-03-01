@@ -29,9 +29,10 @@
 
 namespace DiscordCoreInternal {
 
-	BaseSocketAgent::BaseSocketAgent(std::string botToken, std::string baseUrl, DiscordCoreAPI::TSUnboundedMessageBlock<WebSocketWorkload>* webSocketWorkloadTargetNew, int32_t currentShardNew, int32_t numberOfShardsNew) noexcept {
+	BaseSocketAgent::BaseSocketAgent(std::string botToken, std::string baseUrl, DiscordCoreAPI::TSUnboundedMessageBlock<WebSocketWorkload>* webSocketWorkloadTargetNew, bool printMessagesNew, int32_t currentShardNew, int32_t numberOfShardsNew) noexcept {
 		this->authKey = DiscordCoreAPI::generate64BaseEncodedKey();
 		this->webSocketWorkloadTarget = webSocketWorkloadTargetNew;
+		this->printMessages = printMessagesNew;
 		this->currentShard = currentShardNew;
 		this->numOfShards = numberOfShardsNew;
 		this->state = WebSocketState::Initializing;
@@ -46,7 +47,9 @@ namespace DiscordCoreInternal {
 	void BaseSocketAgent::sendMessage(std::string& dataToSend) noexcept {
 		try {
 			std::lock_guard<std::mutex> accessLock{ this->accessorMutex01 };
-			std::cout << "Sending WebSocket Message: " << std::endl << dataToSend;
+			if (this->printMessages) {
+				std::cout << "Sending WebSocket Message: " << std::endl << dataToSend;
+			}
 			this->webSocket->writeData(dataToSend);
 		}
 		catch (...) {
@@ -64,7 +67,9 @@ namespace DiscordCoreInternal {
 				}
 			}
 			std::lock_guard<std::mutex> accessLock{ this->accessorMutex01 };
-			std::cout << "Sending WebSocket Message: " << dataToSend.dump() << std::endl << std::endl;
+			if (this->printMessages) {
+				std::cout << "Sending WebSocket Message: " << dataToSend.dump() << std::endl << std::endl;
+			}
 			std::string theVector = this->erlPacker.parseJsonToEtf(dataToSend);
 			std::string out{};
 			out.resize(this->maxHeaderSize);
@@ -515,7 +520,9 @@ namespace DiscordCoreInternal {
 					this->webSocketWorkloadTarget->send(std::move(webSocketWorkload));
 				}
 			}
-			std::cout << "Message received from WebSocket: " << payload.dump() << std::endl << std::endl;
+			if (this->printMessages) {
+				std::cout << "Message received from WebSocket: " << payload.dump() << std::endl << std::endl;
+			}
 			return;
 		}
 		catch (...) {
@@ -710,7 +717,8 @@ namespace DiscordCoreInternal {
 		this->heartbeatTimer->cancel();
 	}
 
-	VoiceSocketAgent::VoiceSocketAgent(VoiceConnectInitData initDataNew, BaseSocketAgent* baseBaseSocketAgentNew) noexcept {
+	VoiceSocketAgent::VoiceSocketAgent(VoiceConnectInitData initDataNew, BaseSocketAgent* baseBaseSocketAgentNew, bool printMessagesNew) noexcept {
+		this->printMessages = printMessagesNew;
 		this->authKey = DiscordCoreAPI::generate64BaseEncodedKey();
 		this->baseSocketAgent = baseBaseSocketAgentNew;
 		this->voiceConnectInitData = initDataNew;
@@ -743,7 +751,9 @@ namespace DiscordCoreInternal {
 		try {
 			std::string newString{};
 			newString.insert(newString.begin(), dataToSend.begin(), dataToSend.end());
-			std::cout << "Sending Voice WebSocket Message: " << newString << std::endl << std::endl;
+			if (this->printMessages) {
+				std::cout << "Sending Voice WebSocket Message: " << newString << std::endl << std::endl;
+			}
 			std::vector<char> out{};
 			out.resize(this->maxHeaderSize);
 			size_t size = this->createHeader(out.data(), newString.size(), this->dataOpcode);
@@ -761,7 +771,9 @@ namespace DiscordCoreInternal {
 
 	void VoiceSocketAgent::sendMessage(std::string& dataToSend) noexcept {
 		try {
-			std::cout << "Sending Voice WebSocket Message: " << std::endl << dataToSend;
+			if (this->printMessages) {
+				std::cout << "Sending Voice WebSocket Message: " << std::endl << dataToSend;
+			}
 			this->webSocket->writeData(dataToSend);
 		}
 		catch (...) {
@@ -857,7 +869,9 @@ namespace DiscordCoreInternal {
 			std::string message = this->webSocket->getInputBuffer();
 			this->webSocket->getInputBuffer().clear();
 			nlohmann::json payload = payload.parse(message);
-			std::cout << "Message received from Voice WebSocket: " << message << std::endl << std::endl;
+			if (this->printMessages) {
+				std::cout << "Message received from Voice WebSocket: " << message << std::endl << std::endl;
+			}
 			if (payload.contains("op")) {
 				if (payload.at("op") == 6) {
 					this->haveWeReceivedHeartbeatAck = true;

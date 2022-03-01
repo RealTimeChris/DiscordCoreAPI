@@ -44,12 +44,13 @@ namespace DiscordCoreAPI {
 		std::vector<SoundCloudSong> collectSearchResults(std::string theString);
 
 	protected:
-		
-		std::string baseUrl02{ "https://api-v2.soundcloud.com" };
+
+		inline static std::string clientId{ "" };
+
+		const std::string baseUrl02{ "https://api-v2.soundcloud.com" };
 		DiscordCoreInternal::HttpClient* httpClient{ nullptr };
-		std::string baseUrl{ "https://soundcloud.com" };
-		std::string appVersion{ "1631696495" };
-		std::string clientId{ "" };
+		const std::string baseUrl{ "https://soundcloud.com" };
+		const std::string appVersion{ "1631696495" };
 
 		SoundCloudSong constructSecondDownloadUrl(SoundCloudSong newSong);
 

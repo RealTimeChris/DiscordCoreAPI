@@ -319,8 +319,9 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	HttpClient::HttpClient(std::string botTokenNew) :botToken(botTokenNew) {
+	HttpClient::HttpClient(std::string botTokenNew, bool doWePrintNew) :botToken(botTokenNew) {
 		this->connectionManager.initialize();
+		this->doWePrint = doWePrintNew;
 	};
 
 	HttpData HttpClient::executeByRateLimitData(HttpWorkloadData& workload, bool printResult, HttpConnection& theConnection) {
@@ -373,7 +374,7 @@ namespace DiscordCoreInternal {
 				this->connectionManager.rateLimitValues.insert_or_assign(theConnection.bucket, std::move(tempRateLimitData));
 			}
 
-			if (printResult) {
+			if (printResult && this->doWePrint) {
 				if (returnData.responseCode != 204 && returnData.responseCode != 201 && returnData.responseCode != 200) {
 					std::cout << workload.callStack + " Error: " << returnData.responseCode << ", " << returnData.responseMessage << std::endl << std::endl;
 				}

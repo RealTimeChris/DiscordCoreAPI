@@ -24,7 +24,7 @@ int32_t main()
     function01.intervalInMs = 500;
     function01.repeated = false;
     functionVector.push_back(function01);
-    auto thePtr = std::make_unique<DiscordCoreAPI::DiscordCoreClient>(botToken, "!", functionVector, DiscordCoreAPI::CacheOptions{ .cacheGuildMembers = true, .cacheChannels = true, .cacheGuilds = true, .cacheRoles = true, .cacheUsers = true });
+    auto thePtr = std::make_unique<DiscordCoreAPI::DiscordCoreClient>(botToken, "!", functionVector, DiscordCoreAPI::CacheOptions{ .cacheGuildMembers = true, .cacheChannels = true, .cacheGuilds = true, .cacheRoles = true, .cacheUsers = true }, DiscordCoreAPI::ShardingOptions{}, false);
     thePtr->registerFunction(std::vector<std::string>{"registerapplicationcommands"}, std::make_unique<DiscordCoreAPI::RegisterApplicationCommands>());
     thePtr->registerFunction(std::vector<std::string>{"playrn"}, std::make_unique<DiscordCoreAPI::PlayRN>());
     thePtr->registerFunction(std::vector<std::string>{"test"}, std::make_unique<DiscordCoreAPI::Test>());
