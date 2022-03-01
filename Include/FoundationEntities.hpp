@@ -731,6 +731,14 @@ namespace DiscordCoreAPI {
     
     DiscordCoreAPI_Dll bool nanoSleep(int64_t ns);
 
+    DiscordCoreAPI_Dll std::string shiftToBrightBlue();
+
+    DiscordCoreAPI_Dll std::string shiftToBrightGreen();
+
+    DiscordCoreAPI_Dll std::string shiftToBrightRed();
+
+    DiscordCoreAPI_Dll std::string reset();
+
     /**
     * \addtogroup utilities
     * @{
@@ -1101,7 +1109,7 @@ namespace DiscordCoreAPI {
         /// Sets the author's name and avatar for the embed. \brief Sets the author's name and avatar for the embed.
         /// \param authorName The author's name.
         /// \param authorAvatarUrl The url to their avatar.
-        /// \returns A pointer to this embed.
+        /// \returns A reference to this embed.
         EmbedData& setAuthor(std::string authorName, std::string authorAvatarUrl = "") {
             this->author.name = authorName;
             this->author.iconUrl = authorAvatarUrl;
@@ -1111,7 +1119,7 @@ namespace DiscordCoreAPI {
         /// Sets the footer's values for the embed. \brief Sets the footer's values for the embed.
         /// \param footerText The footer's text.
         /// \param footerIconUrlText Url to the footer's icon.
-        /// \returns A pointer to this embed.
+        /// \returns A reference to this embed.
         EmbedData& setFooter(std::string footerText, std::string footerIconUrlText = "") {
             this->footer.text = footerText;
             this->footer.iconUrl = footerIconUrlText;
@@ -1120,7 +1128,7 @@ namespace DiscordCoreAPI {
 
         /// Sets the timestamp on the embed. \brief Sets the timestamp on the embed.
         /// \param timeStamp The timestamp to be set.
-        /// \returns A pointer to this embed.
+        /// \returns A reference to this embed.
         EmbedData& setTimeStamp(std::string timeStamp) {
             this->timestamp = timeStamp;
             return *this;
@@ -1130,19 +1138,15 @@ namespace DiscordCoreAPI {
         /// \param name The title of the embed field.
         /// \param value The contents of the embed field.
         /// \param Inline Is it inline with the rest of the fields on the embed?
-        /// \returns A pointer to this embed.
+        /// \returns A reference to this embed.
         EmbedData& addField(std::string name, std::string value, bool Inline = true) {
-            EmbedFieldData embedFieldData;
-            embedFieldData.name = name;
-            embedFieldData.Inline = Inline;
-            embedFieldData.value = value;
-            this->fields.push_back(embedFieldData);
+            this->fields.push_back(EmbedFieldData{ .value = value,.name = name, .Inline = Inline });
             return *this;
         }
 
         /// Sets the description (the main contents) of the embed. \brief Sets the description (the main contents) of the embed.
         /// \param descriptionNew The contents of the description to set.
-        /// \returns A pointer to this embed.
+        /// \returns A reference to this embed.
         EmbedData& setDescription(std::string descriptionNew) {
             this->description = descriptionNew;
             return *this;
@@ -1150,7 +1154,7 @@ namespace DiscordCoreAPI {
 
         /// Sets the color of the embed, by applying a hex-color value. \brief Sets the color of the embed, by applying a hex-color value.
         /// \param hexColorValueNew A std::string containing a hex-number value (Between 0x00 and 0xFFFFFF).
-        /// \returns A pointer to this embed.
+        /// \returns A reference to this embed.
         EmbedData& setColor(std::string hexColorValueNew) {
             this->hexColorValue = hexColorValueNew;
             return *this;
@@ -1158,7 +1162,7 @@ namespace DiscordCoreAPI {
 
         /// Sets the thumbnail of the embed. \brief Sets the thumbnail of the embed.
         /// \param thumbnailUrl The url to the thumbnail to be used.
-        /// \returns A pointer to this embed.
+        /// \returns A reference to this embed.
         EmbedData& setThumbnail(std::string thumbnailUrl) {
             this->thumbnail.url = thumbnailUrl;
             return *this;
@@ -1166,7 +1170,7 @@ namespace DiscordCoreAPI {
 
         /// Sets the title of the embed. \brief Sets the title of the embed.
         /// \param titleNew A std::string containing the desired title.
-        /// \returns A pointer to this embed.
+        /// \returns A reference to this embed.
         EmbedData& setTitle(std::string titleNew) {
             this->title = titleNew;
             return *this;
@@ -1174,7 +1178,7 @@ namespace DiscordCoreAPI {
 
         /// Sets the image of the embed. \brief Sets the image of the embed.
         /// \param imageUrl The url of the image to be set on the embed.
-        /// \returns A pointer to this embed.
+        /// \returns A reference to this embed.
         EmbedData& setImage(std::string imageUrl) {
             this->image.url = imageUrl;
             return *this;

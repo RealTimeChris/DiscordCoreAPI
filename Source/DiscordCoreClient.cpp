@@ -91,14 +91,14 @@ namespace DiscordCoreAPI {
 		this->commandController = CommandController(this->commandPrefix, this);
 		this->getGateWayBot();
 		if (this->shardingOptions.startingShard + this->shardingOptions.numberOfShardsForThisProcess > this->shardingOptions.totalNumberOfShards) {
-			std::cout << "Your sharding options are incorrect! Please fix it!" << std::endl;
+			std::cout << shiftToBrightRed() << "Your sharding options are incorrect! Please fix it!" << reset() << std::endl;
 			return;
 		}
 		int32_t shardGroupCount{ static_cast<int32_t>(ceil(static_cast<double>(this->shardingOptions.numberOfShardsForThisProcess) / static_cast<double>(this->maxConcurrency))) };
 		int32_t shardsPerGroup{ static_cast<int32_t>(ceil(static_cast<double>(this->shardingOptions.numberOfShardsForThisProcess) / static_cast<double>(shardGroupCount))) };
 		for (int32_t x = 0; x < shardGroupCount; x += 1) {
 			for (int32_t y = 0; y < shardsPerGroup; y += 1) {
-				std::cout << "Connecting Shard " + std::to_string(x * shardsPerGroup + y + 1) << " of " << this->shardingOptions.numberOfShardsForThisProcess << std::string(" Shards for this process. (") + std::to_string(x * shardsPerGroup + y + 1 + this->shardingOptions.startingShard) + " of " + std::to_string(this->shardingOptions.totalNumberOfShards) + std::string(" Shards total across all processes.)") << std::endl;
+				std::cout << shiftToBrightBlue()<<"Connecting Shard " + std::to_string(x * shardsPerGroup + y + 1) << " of " << this->shardingOptions.numberOfShardsForThisProcess << std::string(" Shards for this process. (") + std::to_string(x * shardsPerGroup + y + 1 + this->shardingOptions.startingShard) + " of " + std::to_string(this->shardingOptions.totalNumberOfShards) + std::string(" Shards total across all processes.)") << std::endl;
 				this->theWebSockets.insert_or_assign(std::to_string(x * shardsPerGroup + y + this->shardingOptions.startingShard), std::make_unique<DiscordCoreInternal::BaseSocketAgent>(this->botToken, this->gatewayUrl, &this->webSocketWorkloadTarget, this->loggingOptions.logWebSocketMessages, x * shardsPerGroup + y + this->shardingOptions.startingShard, this->shardingOptions.totalNumberOfShards));
 			}
 			if (shardGroupCount > 1 && x <  shardGroupCount - 1) {
@@ -106,7 +106,7 @@ namespace DiscordCoreAPI {
 				std::this_thread::sleep_for(std::chrono::milliseconds{ 20000 });
 			}			
 		}
-		std::cout << "All of the shards are connected for the current process!" << std::endl << std::endl;
+		std::cout << shiftToBrightGreen() << "All of the shards are connected for the current process!" << reset() << std::endl << std::endl;
 		this->currentUser = std::make_unique<BotUser>(Users::getCurrentUserAsync().get(), this->theWebSockets.at(std::to_string(this->shardingOptions.startingShard)).get());
 		for (auto& value : this->functionsToExecute) {
 			if (value.repeated) {

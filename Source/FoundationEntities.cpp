@@ -427,6 +427,22 @@ namespace DiscordCoreAPI {
         return newData;
     }
 
+    std::string shiftToBrightBlue() {
+        return std::string("\033[1;40;34m");
+    }
+
+    std::string shiftToBrightGreen() {
+        return std::string("\033[1;40;32m");
+    }
+
+    std::string shiftToBrightRed() {
+        return std::string("\033[1;40;31m");
+    }
+
+    std::string reset() {
+        return std::string("\033[0m");
+    }
+
     void Permissions::addPermissions(std::vector<Permission> permissionsToAdd) {
         if (*this == "") {
             this->push_back('0');
