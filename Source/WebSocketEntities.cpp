@@ -260,7 +260,7 @@ namespace DiscordCoreInternal {
 			}
 
 			if (payload.at("op") == 7) {
-				std::cout << "Reconnecting (Type 7)!" << std::endl << std::endl;
+				std::cout << "Shard [" + std::to_string(this->currentShard) + ", " + std::to_string(this->numOfShards) + "] - Reconnecting (Type 7)!" << std::endl << std::endl;
 				this->areWeResuming = true;
 				this->currentReconnectTries += 1;
 				this->areWeConnected.store(false, std::memory_order_seq_cst);
@@ -270,7 +270,7 @@ namespace DiscordCoreInternal {
 			}
 
 			if (payload.at("op") == 9) {
-				std::cout << "Reconnecting (Type 9)!" << std::endl << std::endl;
+				std::cout << "Shard [" + std::to_string(this->currentShard) + ", " + std::to_string(this->numOfShards) + "] - Reconnecting (Type 9)!" << std::endl << std::endl;
 				srand(static_cast<uint32_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count()));
 				this->currentReconnectTries += 1;
 				int32_t numOfMsToWait = static_cast<int32_t>(1000.0f + ((static_cast<float>(rand()) / static_cast<float>(RAND_MAX)) * static_cast<float>(4000.0f)));

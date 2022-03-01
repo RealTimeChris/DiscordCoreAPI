@@ -57,10 +57,10 @@ namespace DiscordCoreAPI {
 		/// \returns A std::vector of Song objects representing the search results.
 		static std::vector<Song> searchForSong(std::string searchQuery, std::string guildId);
 
-		/// Adds a Song to the current Playlist's UnboundedMessageBlock. \brief Adds a Song to the current Playlist's UnboundedMessageBlock.
-		/// \param guildMember The GuildMember that is adding the Song to the UnboundedMessageBlock.
-		/// \param song The Song to be added to the UnboundedMessageBlock.
-		/// \returns The Song that was added to the UnboundedMessageBlock.
+		/// Adds a Song to the current Playlist's queue. \brief Adds a Song to the current Playlist's queue.
+		/// \param guildMember The GuildMember that is adding the Song to the queue.
+		/// \param song The Song to be added to the queue.
+		/// \returns The Song that was added to the queue.
 		static Song addSongToQueue(GuildMember guildMember, Song song);
 
 		/// Checks to see if there are any playable Songs in the current Playlist. \brief Checks to see if there are any playable Songs in the current Playlist.
@@ -78,7 +78,7 @@ namespace DiscordCoreAPI {
 		/// \returns A bool suggesting the success or failure of the play command.
 		static bool play(std::string guildId);
 
-		/// Skips to the next Song in the UnboundedMessageBlock, if applicable. \brief Skips to the next Song in the UnboundedMessageBlock, if applicable.
+		/// Skips to the next Song in the queue, if applicable. \brief Skips to the next Song in the queue, if applicable.
 		/// \param guildMember The GuildMember structure of the individual who is skipping the Song.
 		static void skip(GuildMember guildMember);
 
@@ -125,7 +125,7 @@ namespace DiscordCoreAPI {
 		/// \param guildId The Guild id for which Guild to update this status in.
 		static void setLoopSongStatus(bool enabled, std::string guildId);		
 
-		/// Sets the position of a Song in the current Playlist's song UnboundedMessageBlock. \brief Sets the position of a Song in the current Playlist's song UnboundedMessageBlock.
+		/// Sets the position of a Song in the current Playlist's song queue. \brief Sets the position of a Song in the current Playlist's song queue.
 		/// \param firstSongPosition The first Song's initial position.
 		/// \param secondSongPosition The first Song's final position.
 		/// \param guildId The id of the desired Guild to update the Song positions in.
