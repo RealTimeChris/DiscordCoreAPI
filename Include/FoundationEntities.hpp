@@ -753,20 +753,6 @@ namespace DiscordCoreAPI {
     /// \returns std::string A String containing the current date-time stamp.
     DiscordCoreAPI_Dll std::string getTimeAndDate();
 
-    /// Sharding options for the library. \brief Sharding options for the library.
-    struct ShardingOptions {
-        int32_t numberOfShardsForThisProcess{ 1 };///< The number of shards to launch on the current process.
-        int32_t totalNumberOfShards{ 1 };///< The total number of shards that will be launched across all processes.
-        int32_t startingShard{ 0 };///< The first shard to start on this process.
-    };
-
-    /// Logging options for the library. \brief Loggin options for the library.
-    struct LoggingOptions {
-        bool logWebSocketMessages{ false };///< Do we log the websocket messages?
-        bool logFFMPEGMessages{ false};///< Do we log FFMPEG messages?
-        bool logHttpMessages{ false };///< Do we log Http response messages?
-    };
-
     /// Class for representing a timestamp. \brief Class for representing a timestamp.
     class DiscordCoreAPI_Dll TimeStamp {
     public:
@@ -3145,6 +3131,20 @@ namespace DiscordCoreAPI {
                 this->optionsArgs.push_back(inputEventData.interactionData.data.userInteractionData.targetId);
             }
         }
+    };
+
+    /// Sharding options for the library. \brief Sharding options for the library.
+    struct DiscordCoreAPI_Dll ShardingOptions {
+        int32_t numberOfShardsForThisProcess{ 1 };///< The number of shards to launch on the current process.
+        int32_t totalNumberOfShards{ 1 };///< The total number of shards that will be launched across all processes.
+        int32_t startingShard{ 0 };///< The first shard to start on this process.
+    };
+
+    /// Logging options for the library. \brief Loggin options for the library.
+    struct DiscordCoreAPI_Dll LoggingOptions {
+        bool logWebSocketMessages{ false };///< Do we log the websocket messages?
+        bool logFFMPEGMessages{ false };///< Do we log FFMPEG messages?
+        bool logHttpMessages{ false };///< Do we log Http response messages?
     };
 
     /// For selecting the caching style of the library. \brief For selecting the caching style of the library.
