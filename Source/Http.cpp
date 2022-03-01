@@ -376,12 +376,12 @@ namespace DiscordCoreInternal {
 				this->connectionManager.rateLimitValues.insert_or_assign(theConnection.bucket, std::move(tempRateLimitData));
 			}
 
-			if (printResult && this->doWePrint) {
+			if (printResult) {
 				if (returnData.responseCode != 204 && returnData.responseCode != 201 && returnData.responseCode != 200) {
-					std::cout << workload.callStack + " Error: " << returnData.responseCode << ", " << returnData.responseMessage << std::endl << std::endl;
+					std::cout << workload.callStack + " Error: " << returnData.responseCode << ", " << returnData.responseMessage << std::endl << std::endl;					
 				}
-				else {
-					std::cout << workload.callStack + " Success: " << returnData.responseCode << ", " << returnData.responseMessage << std::endl << std::endl;
+				else if (this->doWePrint) {
+					std::cout << workload.callStack + " Success: " << returnData.responseCode << ", " << returnData.responseMessage << std::endl << std::endl;					
 				}
 			}
 			return returnData;

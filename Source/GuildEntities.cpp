@@ -167,7 +167,7 @@ namespace DiscordCoreAPI {
 				std::cout << "Caching Guild: " << this->name << std::endl;
 			}
 			if (this->discordCoreClient->cacheOptions.cacheChannels) {
-				std::cout << "Caching channels for Guild: " << this->name << std::endl;
+				std::cout << "Caching Channels for Guild: " << this->name << std::endl;
 				for (auto& [key, value] : channels) {
 					value.guildId = this->id;
 					Channels::insertChannel(value);
@@ -188,13 +188,13 @@ namespace DiscordCoreAPI {
 				}
 			}
 			if (this->discordCoreClient->cacheOptions.cacheRoles) {
-				std::cout << "Caching roles for Guild: " << this->name << std::endl;
+				std::cout << "Caching Roles for Guild: " << this->name << std::endl;
 				for (auto& [key, value] : roles) {
 					Roles::insertRole(value);
 				}
 			}
 			if (this->discordCoreClient->cacheOptions.cacheUsers) {
-				std::cout << "Caching users for Guild: " << this->name << std::endl << std::endl;
+				std::cout << "Caching Users for Guild: " << this->name << std::endl << std::endl;
 				for (auto& [key, value] : members) {
 					Users::insertUser(value.user);
 				}
