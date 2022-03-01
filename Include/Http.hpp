@@ -139,14 +139,17 @@ namespace DiscordCoreInternal {
 		friend ReturnType submitWorkloadAndGetResult(HttpClient& httpClient, HttpWorkloadData& workload);
 		friend std::vector<HttpData> submitWorkloadAndGetResult(HttpClient& httpClient, std::vector<HttpWorkloadData>& workload);
 		friend HttpData submitWorkloadAndGetResult(HttpClient& httpClient, HttpWorkloadData& workload);
+		friend class DiscordCoreAPI::SoundCloudAPI;
+		friend class DiscordCoreAPI::YouTubeAPI;
 
-		HttpClient(std::string, bool doWePrint);
-
+		HttpClient(std::string, bool doWePrintHttp, bool doWePrintFFMPEG);
+		
 	protected:
 
 		HttpConnectionManager connectionManager{};
+		bool doWePrintFFmpeg{ false };
 		const std::string botToken{};
-		bool doWePrint{ false };
+		bool doWePrintHttp{ false };
 
 		HttpData executeByRateLimitData(HttpWorkloadData&, bool, HttpConnection& theConnection);
 

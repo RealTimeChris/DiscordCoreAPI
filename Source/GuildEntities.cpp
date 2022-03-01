@@ -63,8 +63,6 @@ namespace DiscordCoreAPI {
 			if (getVoiceConnectionMap().contains(this->id) && getVoiceConnectionMap()[this->id] != nullptr) {
 				getVoiceConnectionMap()[this->id]->disconnect();
 				SongAPI::stop(this->id);
-				getSoundCloudAPIMap()[this->id]->stop();
-				getYouTubeAPIMap()[this->id]->stop();
 				UpdateVoiceStateData updateVoiceData{};
 				updateVoiceData.channelId = "";
 				updateVoiceData.selfDeaf = false;
@@ -240,7 +238,7 @@ namespace DiscordCoreAPI {
 			co_return DiscordCoreInternal::submitWorkloadAndGetResult<AuditLogData>(*Guilds::httpClient, workload);
 		}
 		catch (...) {
-			reportException("Guilds::getAuditLogDataAsync()");
+			reportException("Guilds::getGuildAuditLogsAsync()");
 		}
 	}
 

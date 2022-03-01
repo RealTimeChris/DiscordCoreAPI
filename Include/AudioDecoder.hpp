@@ -278,7 +278,7 @@ namespace DiscordCoreAPI {
     class DiscordCoreAPI_Dll AudioDecoder {
     public:
 
-        AudioDecoder(BuildAudioDecoderData dataPackage);
+        AudioDecoder(BuildAudioDecoderData dataPackage, bool doWePrint);
 
         void submitDataForDecoding(std::string dataToDecode);
 
@@ -292,7 +292,7 @@ namespace DiscordCoreAPI {
 
     protected:
 
-        int64_t audioStreamIndex{ 0 }, bufferMaxSize{ 0 }, bytesRead{ 0 };
+        int64_t audioStreamIndex{ 0 }, bufferMaxSize{ 0 }, bytesRead{ 0 }, totalFileSize{ 0 };
         TSUnboundedMessageBlock<std::string> inputDataBuffer{};
         TSUnboundedMessageBlock<RawFrameData> outDataBuffer{};
         AVFrameWrapper frame{ nullptr }, newFrame{ nullptr };
@@ -309,7 +309,7 @@ namespace DiscordCoreAPI {
         std::string currentBuffer{};
         bool areWeQuitting{ false };
         bool haveWeBooted{ false };
-        int64_t totalFileSize{ 0 };
+        bool doWePrint{ false };
 
         static int32_t FileStreamRead(void* opaque, uint8_t* buf, int32_t);
 

@@ -200,8 +200,11 @@ namespace DiscordCoreAPI {
             newString += std::to_string(minutesLeft) + " Minutes, ";
             newString += std::to_string(secondsLeft) + " Seconds.";
         }
-        else {
+        else if (minutesLeft >= 1) {
             newString += std::to_string(minutesLeft) + " Minutes, ";
+            newString += std::to_string(secondsLeft) + " Seconds.";
+        }
+        else {
             newString += std::to_string(secondsLeft) + " Seconds.";
         }
         return newString;

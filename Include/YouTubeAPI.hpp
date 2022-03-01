@@ -94,6 +94,7 @@ namespace DiscordCoreAPI {
 		YouTubeRequestBuilder requestBuilder{};
 		const int32_t maxBufferSize{ 8192 };
 		std::string guildId{ "" };
+		bool doWePrint{ false };
 		YouTubeSong theSong{};
 
 		void cancelCurrentSong();		

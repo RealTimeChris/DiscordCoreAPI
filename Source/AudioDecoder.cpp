@@ -25,9 +25,10 @@
 
 namespace DiscordCoreAPI {
 
-    AudioDecoder::AudioDecoder(BuildAudioDecoderData dataPackage) {
+    AudioDecoder::AudioDecoder(BuildAudioDecoderData dataPackage, bool doWePrintNew) {
         this->bufferMaxSize = dataPackage.bufferMaxSize;
         this->totalFileSize = dataPackage.totalFileSize;
+        this->doWePrint = doWePrintNew;
     }
 
     void AudioDecoder::submitDataForDecoding(std::string dataToDecode) {
@@ -204,7 +205,9 @@ namespace DiscordCoreAPI {
 
                     this->swrContext = swr_alloc_set_opts(NULL, AV_CH_LAYOUT_STEREO, AVSampleFormat::AV_SAMPLE_FMT_S16, 48000, AV_CH_LAYOUT_STEREO, this->audioDecodeContext->sample_fmt, this->audioDecodeContext->sample_rate, 0, nullptr);
                     swr_init(this->swrContext);
-                    av_dump_format(this->formatContext, 0, "memory", 0);
+                    if (this->doWePrint) {
+                        av_dump_format(this->formatContext, 0, "memory", 0);
+                    }
                 }
 
                 this->haveWeBooted = true;
@@ -304,7 +307,9 @@ namespace DiscordCoreAPI {
                         break;
                     }
                 }
-                std::cout << "Completed decoding!" << std::endl << std::endl;
+                if (this->doWePrint) {
+                    std::cout << "Completed decoding!" << std::endl << std::endl;
+                }
                 co_return;
             }
             co_return;

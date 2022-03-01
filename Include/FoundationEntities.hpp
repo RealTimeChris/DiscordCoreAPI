@@ -275,9 +275,6 @@ namespace DiscordCoreAPI {
         class DiscordCoreAPI_Dll ObjectTypeWrapper {
         public:
 
-            template<typename ObjectType02>
-            friend class ReferenceCountingPtr;
-
             ObjectTypeWrapper& operator=(ObjectType* other) {
                 this->thePtr = other;
                 return *this;
@@ -287,7 +284,15 @@ namespace DiscordCoreAPI {
                 *this = other;
             }
 
+            operator ObjectType*(){
+                return this->thePtr;
+            }
+
             ObjectTypeWrapper() = default;
+
+            ObjectType* get() {
+                return this->thePtr;
+            }
 
             void incrementCount() const {
                 this->refCount += 1;
@@ -329,20 +334,20 @@ namespace DiscordCoreAPI {
         }
 
         ReferenceCountingPtr& operator=(const ReferenceCountingPtr& ptr) {
-            *this = ptr.thePtr->thePtr;
+            this->thePtr = ptr.thePtr;
             return *this;
         }
 
         ObjectType* operator->() const {
-            return this->thePtr->thePtr;
+            return this->thePtr->get();
         }
 
         ObjectType& operator*() const {
-            return *this->thePtr->thePtr;
+            return *this->thePtr->get();
         }
 
         ObjectType* get() const {
-            return this->thePtr->thePtr;
+            return this->thePtr->get();
         }
 
         ~ReferenceCountingPtr() {
@@ -411,7 +416,7 @@ namespace DiscordCoreAPI {
     concept Copyable = std::copyable<ObjectType>;
 
     /// A messaging block for data-structures. \brief A messaging block for data-structures.
-  /// \param ObjectType The type of object that will be sent over the message block.
+    /// \param ObjectType The type of object that will be sent over the message block.
     template<Copyable ObjectType>
     class UnboundedMessageBlock {
     public:
@@ -688,13 +693,6 @@ namespace DiscordCoreAPI {
     * @{
     */
 
-    /// Sharding options for the library. \brief Sharding options for the library.
-    struct ShardingOptions {
-        int32_t numberOfShardsForThisProcess{ 1 };///< The number of shards to launch on the current process.
-        int32_t totalNumberOfShards{ 1 };///< The total number of shards that will be launched across all processes.
-        int32_t startingShard{ 0 };///< The first shard to start on this process.
-    };
-
     /// Time formatting methods. \brief Time formatting methods.
     enum class TimeFormat {
         LongDate = 'D',///< "20 April 2021" - Long Date
@@ -711,8 +709,6 @@ namespace DiscordCoreAPI {
 
     DiscordCoreAPI_Dll void reportException(std::string stackTrace, UnboundedMessageBlock<std::exception>* sendBuffer = nullptr, bool rethrow = false);
 
-    DiscordCoreAPI_Dll bool hasTimeElapsed(std::string timeStamp, int64_t days = 0, int64_t hours = 0, int64_t minutes = 0);
-
     DiscordCoreAPI_Dll std::string convertTimeInMsToDateTimeString(int64_t timeInMs, TimeFormat timeFormat);
 
     DiscordCoreAPI_Dll std::string convertMsToDurationString(int32_t durationInMs);
@@ -720,8 +716,6 @@ namespace DiscordCoreAPI {
     DiscordCoreAPI_Dll std::string convertToLowerCase(std::string stringToConvert);
 
     DiscordCoreAPI_Dll int64_t convertTimestampToMsInteger(std::string timeStamp);
-
-    DiscordCoreAPI_Dll std::string getFutureISO8601TimeStamp(int32_t minutesToAdd);
 
     DiscordCoreAPI_Dll std::string base64Encode(std::string, bool = false);
 
@@ -734,8 +728,6 @@ namespace DiscordCoreAPI {
     DiscordCoreAPI_Dll std::string getCurrentISO8601TimeStamp();
 
     DiscordCoreAPI_Dll std::string generate64BaseEncodedKey();
-
-    DiscordCoreAPI_Dll std::string getTimeAndDate();
     
     DiscordCoreAPI_Dll bool nanoSleep(int64_t ns);
 
@@ -743,6 +735,37 @@ namespace DiscordCoreAPI {
     * \addtogroup utilities
     * @{
     */
+
+    /// Deduces whether or not a chosen period of time has passed, for a chosen timestamp. \brief Deduces whether or not a chosen period of time has passed, for a chosen timestamp.
+    /// \param timeStamp A std::string representing the timestamp that you would like to check for time-elapsement.
+    /// \param days An int64_t representing the number of days to check for.
+    /// \param hours An int64_t representing the number of hours to check for.
+    /// \param minutes An int64_t representing the number of minutes to check for.
+    /// \returns bool A bool denoting whether or not the input period of time has elapsed since the supplied timestamp.
+    DiscordCoreAPI_Dll bool hasTimeElapsed(std::string timeStamp, int64_t days = 0, int64_t hours = 0, int64_t minutes = 0);
+
+    /// Collects a timestamp that is a chosen number of minutes ahead of the current time. \brief Collects a timestamp that is a chosen number of minutes ahead of the current time.
+    /// \param minutesToAdd An int32_t containing the number of minutes to increment the timestamp forward for.
+    /// \returns std::string A string containing the new ISO8601 timestamp.
+    DiscordCoreAPI_Dll std::string getFutureISO8601TimeStamp(int32_t minutesToAdd);
+
+    /// Acquires a timestamp with the current time and date - suitable for use in message-embeds. \brief Acquires a timestamp with the current time and date - suitable for use in message-embeds.
+    /// \returns std::string A String containing the current date-time stamp.
+    DiscordCoreAPI_Dll std::string getTimeAndDate();
+
+    /// Sharding options for the library. \brief Sharding options for the library.
+    struct ShardingOptions {
+        int32_t numberOfShardsForThisProcess{ 1 };///< The number of shards to launch on the current process.
+        int32_t totalNumberOfShards{ 1 };///< The total number of shards that will be launched across all processes.
+        int32_t startingShard{ 0 };///< The first shard to start on this process.
+    };
+
+    /// Logging options for the library. \brief Loggin options for the library.
+    struct LoggingOptions {
+        bool logWebSocketMessages{ false };///< Do we log the websocket messages?
+        bool logFFMPEGMessages{ false};///< Do we log FFMPEG messages?
+        bool logHttpMessages{ false };///< Do we log Http response messages?
+    };
 
     /// Class for representing a timestamp. \brief Class for representing a timestamp.
     class DiscordCoreAPI_Dll TimeStamp {

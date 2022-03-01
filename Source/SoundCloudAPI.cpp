@@ -252,7 +252,7 @@ namespace DiscordCoreAPI {
 			BuildAudioDecoderData dataPackage{};
 			dataPackage.totalFileSize = newSong.contentLength;
 			dataPackage.bufferMaxSize = soundCloudAPI->maxBufferSize;
-			std::unique_ptr<AudioDecoder> audioDecoder = std::make_unique<AudioDecoder>(dataPackage);
+			std::unique_ptr<AudioDecoder> audioDecoder = std::make_unique<AudioDecoder>(dataPackage, soundCloudAPI->httpClient->doWePrintFFmpeg);
 			AudioEncoder audioEncoder = AudioEncoder();
 		breakOutPlayMore:
 			if (counter > 45 && !getVoiceConnectionMap()[soundCloudAPI->guildId]->areWeCurrentlyPlaying()) {

@@ -434,6 +434,7 @@ namespace DiscordCoreAPI {
 	}
 
 	YouTubeAPI::YouTubeAPI(std::string guildIdNew, DiscordCoreInternal::HttpClient* httpClient) : requestBuilder(httpClient) {
+		this->doWePrint = httpClient->doWePrintFFmpeg;
 		this->guildId = guildIdNew;
 	}
 
@@ -476,7 +477,7 @@ namespace DiscordCoreAPI {
 			BuildAudioDecoderData dataPackage{};
 			dataPackage.totalFileSize = static_cast<uint64_t>(newSong.contentLength) - static_cast<int64_t>(581);
 			dataPackage.bufferMaxSize = youtubeAPI->maxBufferSize;
-			std::unique_ptr<AudioDecoder> audioDecoder = std::make_unique<AudioDecoder>(dataPackage);
+			std::unique_ptr<AudioDecoder> audioDecoder = std::make_unique<AudioDecoder>(dataPackage, youtubeAPI->doWePrint);
 			AudioEncoder audioEncoder = AudioEncoder();
 			if (!streamSocket.processIO(600000)) { goto breakOutPlayMore; };
 			streamSocket.writeData(newSong.finalDownloadUrls[1].urlPath);

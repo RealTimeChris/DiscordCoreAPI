@@ -319,9 +319,10 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	HttpClient::HttpClient(std::string botTokenNew, bool doWePrintNew) :botToken(botTokenNew) {
+	HttpClient::HttpClient(std::string botTokenNew, bool doWePrintNew, bool doWePrintFFMPEGNew) :botToken(botTokenNew) {
 		this->connectionManager.initialize();
-		this->doWePrint = doWePrintNew;
+		this->doWePrintFFmpeg = doWePrintFFMPEGNew;
+		this->doWePrintHttp = doWePrintNew;
 	};
 
 	HttpData HttpClient::executeByRateLimitData(HttpWorkloadData& workload, bool printResult, HttpConnection& theConnection) {
@@ -341,7 +342,7 @@ namespace DiscordCoreInternal {
 				}
 
 				if (timeRemaining > 0) {
-					if (this->doWePrint) {
+					if (this->doWePrintHttp) {
 						std::cout << "We're waiting on rate-limit: " << timeRemaining << std::endl << std::endl;
 					}
 					int64_t targetTime = currentTime + timeRemaining;
@@ -380,8 +381,8 @@ namespace DiscordCoreInternal {
 				if (returnData.responseCode != 204 && returnData.responseCode != 201 && returnData.responseCode != 200) {
 					std::cout << workload.callStack + " Error: " << returnData.responseCode << ", " << returnData.responseMessage << std::endl << std::endl;					
 				}
-				else if (this->doWePrint) {
-					std::cout << workload.callStack + " Success: " << returnData.responseCode << ", " << returnData.responseMessage << std::endl << std::endl;					
+				else if (this->doWePrintHttp) {
+					std::cout << workload.callStack + " Success: " << returnData.responseCode << ", " << returnData.responseMessage << std::endl << std::endl;
 				}
 			}
 			return returnData;
