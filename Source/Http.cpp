@@ -341,7 +341,9 @@ namespace DiscordCoreInternal {
 				}
 
 				if (timeRemaining > 0) {
-					std::cout << "We're waiting on rate-limit: " << timeRemaining << std::endl << std::endl;
+					if (this->doWePrint) {
+						std::cout << "We're waiting on rate-limit: " << timeRemaining << std::endl << std::endl;
+					}
 					int64_t targetTime = currentTime + timeRemaining;
 					while (targetTime > currentTime) {
 						currentTime = std::chrono::duration_cast<std::chrono::milliseconds, int64_t>(std::chrono::system_clock::now().time_since_epoch()).count();
