@@ -1,4 +1,4 @@
-Getting a Guild Template {#gettingaguildtemplate}
+Getting a Guild Template
 ============
 - Execute the, `DiscordCoreAPI::Guilds::getGuildTemplateAsync()` function, while passing in a value of type `DiscordCoreAPI::GetGuildTemplateData`, with a return value of type `auto` or `DiscordCoreAPI::GuildTemplateData`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
