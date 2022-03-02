@@ -59,6 +59,7 @@
 #include <iostream>
 #include <thread>
 #include <memory>
+#include <random>
 #include <string>
 #include <vector>
 #include <bitset>
@@ -2015,7 +2016,7 @@ namespace DiscordCoreAPI {
         int32_t maxAge{ 0 };///< Maximum age of the invite.
         UserData inviter{};///< The User who created the invite.
         GuildData guild{};///< Guild data of the Channel that the invite is for.
-        int32_t uses{ 0 };///< Maximum nunmber of uses.
+        int32_t uses{ 0 };///< The current number of uses.
     };
 
     /// Represents a Guild Template. \brief Represents a Guild Template.

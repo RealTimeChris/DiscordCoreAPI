@@ -271,9 +271,10 @@ namespace DiscordCoreInternal {
 
 			if (payload.at("op") == 9) {
 				std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Shard [" + std::to_string(this->currentShard) + ", " + std::to_string(this->numOfShards) + "] - Reconnecting (Type 9)!" << std::endl << DiscordCoreAPI::reset() << std::endl;
-				srand(static_cast<uint32_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count()));
+				std::mt19937_64 randomEngine{};
+				randomEngine.seed(static_cast<int32_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count()));
 				this->currentReconnectTries += 1;
-				int32_t numOfMsToWait = static_cast<int32_t>(1000.0f + ((static_cast<float>(rand()) / static_cast<float>(RAND_MAX)) * static_cast<float>(4000.0f)));
+				int32_t numOfMsToWait = static_cast<int32_t>(1000.0f + ((static_cast<float>(randomEngine()) / static_cast<float>(randomEngine.max())) * static_cast<float>(4000.0f)));
 				std::this_thread::sleep_for(std::chrono::milliseconds{ numOfMsToWait });
 				if (payload.at("d") == true) {
 					nlohmann::json identityJson = JSONIFY(this->botToken, static_cast<int32_t>(this->intentsValue), this->currentShard, this->numOfShards);

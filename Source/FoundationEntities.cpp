@@ -255,10 +255,11 @@ namespace DiscordCoreAPI {
 
     std::string generate64BaseEncodedKey() {
         std::string returnString{};
-        srand(static_cast<uint32_t>(std::chrono::system_clock::now().time_since_epoch().count()));
         returnString.resize(16);
+        std::mt19937_64 randomEngine{};
+        randomEngine.seed(static_cast<uint32_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count()));
         for (uint32_t x = 0; x < 16; x += 1) {
-            returnString[x] = static_cast<uint8_t>((static_cast<float>((rand()) / static_cast<float>(RAND_MAX))) * 255.0f);
+            returnString[x] = static_cast<uint8_t>((static_cast<float>(randomEngine()) / static_cast<float>(randomEngine.max())) * 255.0f);
         }
         returnString = base64Encode(returnString, false);
         return returnString;
