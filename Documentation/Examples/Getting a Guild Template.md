@@ -1,8 +1,6 @@
-### **Getting a Guild Template:**
----
-- Access within the `DiscordCoreAPI` namespace, the `Guilds` class.
-- Populate a data structure of type `DiscordCoreAPI::GetGuildTemplateData`
-- Select, from the `Guilds` class, the `getGuildTemplateAsync()` function and execute it, with a return value of type `auto` or `GuildTemplateData`, while passing it the created data structure.
+Getting a Guild Template {#gettingaguildtemplate}
+============
+- Execute the, `DiscordCoreAPI::Guilds::getGuildTemplateAsync()` function, while passing in a value of type `DiscordCoreAPI::GetGuildTemplateData`, with a return value of type `auto` or `DiscordCoreAPI::GuildTemplateData`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -15,12 +13,12 @@
 
 namespace DiscordCoreAPI {
 
-	class Test : public BaseFunction {
+	class Test : public DiscordCoreAPI::BaseFunction {
 	public:
 		Test() {
 			this->commandName = "test";
 			this->helpDescription = "Testing purposes!";
-			EmbedData msgEmbed{};
+			DiscordCoreAPI::EmbedData msgEmbed{};
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -28,16 +26,16 @@ namespace DiscordCoreAPI {
 			this->helpEmbed = msgEmbed;
 		}
 
-		unique_ptr<BaseFunction> create() {
+		unique_ptr<DiscordCoreAPI::BaseFunction> create() {
 			return make_unique<Test>();
 		}
 
-		virtual CoRoutine<void> executeAsync(BaseFunctionArguments args) {
+		virtual void executeAsync(std::unique_ptr<DiscordCoreAPI::BaseFunctionArguments> args) {
 			try {
-				GetGuildTemplateData dataPackage01{};
+				DiscordCoreAPI::GetGuildTemplateData dataPackage01{};
 				dataPackage01.templateCode = "YmRr2bj5NyYX";
 
-				auto responseData = Guilds::getGuildTemplateAsync(dataPackage01).get();
+				auto responseData = DiscordCoreAPI::Guilds::getGuildTemplateAsync(dataPackage01).get();
 
 				cout << "USER NAME: " << responseData.creator.userName << endl;
 
