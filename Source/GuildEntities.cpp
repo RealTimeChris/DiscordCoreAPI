@@ -175,14 +175,15 @@ namespace DiscordCoreAPI {
 				std::cout << shiftToBrightBlue() << "Caching GuildMembers for Guild: " << this->name << reset() << std::endl;
 				for (auto& [key00, value00] : this->members) {
 					value00.guildId = this->id;
-					value00.voiceData.guildId = this->id;
+					GuildMember guildMember{ value00 };
+					guildMember.voiceData.guildId = this->id;
 					for (auto& [key01, value01] : this->voiceStates) {
 						if (key01 == value00.user.id) {
 							value01.guildId = this->id;
-							value00.voiceData = value01;
+							guildMember.voiceData = value01;
 						}
 					}
-					GuildMembers::insertGuildMember(value00);
+					GuildMembers::insertGuildMember(guildMember);
 				}
 			}
 			if (this->discordCoreClient->cacheOptions.cacheRoles) {

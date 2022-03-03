@@ -103,6 +103,8 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll GuildMember : public GuildMemberData {
 	public:
 
+		VoiceStateData voiceData{};
+
 		GuildMember() = default;
 
 		GuildMember(GuildMemberData dataNew);

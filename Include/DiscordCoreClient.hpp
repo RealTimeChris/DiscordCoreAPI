@@ -116,6 +116,9 @@ namespace DiscordCoreAPI {
 
 	protected:
 		
+		std::unordered_map<std::string, std::unique_ptr<DiscordCoreInternal::RateLimitData>> rateLimitValues{};
+		std::unordered_map<int32_t, std::unique_ptr<DiscordCoreInternal::HttpConnection>> httpConnections{};
+
 		std::unordered_map<std::string, std::unique_ptr<DiscordCoreInternal::BaseSocketAgent>> theWebSockets{};
 		TSUnboundedMessageBlock<DiscordCoreInternal::WebSocketWorkload> webSocketWorkloadTarget{};
 		std::unique_ptr<DiscordCoreInternal::HttpClient> httpClient{ nullptr };

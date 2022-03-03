@@ -29,10 +29,10 @@
 
 namespace DiscordCoreInternal {
 
-	class DiscordCoreAPI_Dll HttpConnectionManager;
-	struct DiscordCoreAPI_Dll HttpConnection;
-	struct DiscordCoreAPI_Dll RateLimitData;
-	struct DiscordCoreAPI_Dll HttpData;
+	class HttpConnectionManager;
+	struct HttpConnection;
+	struct RateLimitData;
+	struct HttpData;
 
 	class DiscordCoreAPI_Dll HttpRnRBuilder {
 	public:
@@ -114,9 +114,6 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll HttpConnectionManager {
 	public:
-
-		std::unordered_map<HttpWorkloadType, DiscordCoreAPI::UniquePtrWrapper<HttpConnection>> httpConnections{};
-		std::unordered_map<std::string, DiscordCoreAPI::UniquePtrWrapper<RateLimitData>> rateLimitValues{};
 
 		HttpConnection& getConnection(HttpWorkloadType type);
 

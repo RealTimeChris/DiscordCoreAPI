@@ -30,7 +30,6 @@
 namespace DiscordCoreInternal {
 
 	BaseSocketAgent::BaseSocketAgent(std::string botToken, std::string baseUrl, DiscordCoreAPI::TSUnboundedMessageBlock<WebSocketWorkload>* webSocketWorkloadTargetNew, bool printMessagesNew, int32_t currentShardNew, int32_t numberOfShardsNew) noexcept {
-		this->authKey = DiscordCoreAPI::generate64BaseEncodedKey();
 		this->webSocketWorkloadTarget = webSocketWorkloadTargetNew;
 		this->printMessages = printMessagesNew;
 		this->currentShard = currentShardNew;
@@ -271,9 +270,8 @@ namespace DiscordCoreInternal {
 
 			if (payload.at("op") == 9) {
 				std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Shard [" + std::to_string(this->currentShard) + ", " + std::to_string(this->numOfShards) + "] - Reconnecting (Type 9)!" << std::endl << DiscordCoreAPI::reset() << std::endl;
-				std::mt19937_64 randomEngine{};
-				randomEngine.seed(static_cast<int32_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count()));
 				this->currentReconnectTries += 1;
+				std::mt19937_64 randomEngine{ static_cast<uint64_t>(std::chrono::system_clock::now().time_since_epoch().count()) };
 				int32_t numOfMsToWait = static_cast<int32_t>(1000.0f + ((static_cast<float>(randomEngine()) / static_cast<float>(randomEngine.max())) * static_cast<float>(4000.0f)));
 				std::this_thread::sleep_for(std::chrono::milliseconds{ numOfMsToWait });
 				if (payload.at("d") == true) {

@@ -729,16 +729,68 @@ namespace DiscordCoreAPI {
     DiscordCoreAPI_Dll std::string getCurrentISO8601TimeStamp();
 
     DiscordCoreAPI_Dll std::string generate64BaseEncodedKey();
-    
-    DiscordCoreAPI_Dll bool nanoSleep(int64_t ns);
-
-    DiscordCoreAPI_Dll std::string shiftToBrightBlue();
 
     DiscordCoreAPI_Dll std::string shiftToBrightGreen();
 
+    DiscordCoreAPI_Dll std::string shiftToBrightBlue();
+
     DiscordCoreAPI_Dll std::string shiftToBrightRed();
 
+    DiscordCoreAPI_Dll bool nanoSleep(int64_t ns);
+
     DiscordCoreAPI_Dll std::string reset();
+
+    /**
+    * \addtogroup foundation_entities
+    * @{
+    */
+
+    /// Permission values, for a given Channel, by Role or GuildMember. \brief Permission values, for a given Channel, by Role or GuildMember.
+    enum class Permission : int64_t {
+        Create_Instant_Invite = 0x0000000000000001,///< Create Instant Invite.
+        Kick_Members = 0x0000000000000002,///< Kick Members.
+        Ban_Members = 0x0000000000000004,///< Ban Members.
+        Administrator = 0x0000000000000008,///< Administrator.
+        Manage_Channels = 0x0000000000000010,///< Manage Channels.
+        Manage_Guild = 0x0000000000000020,///< Manage Guild.
+        Add_Reactions = 0x0000000000000040,///< Add Reactions.
+        View_Audit_Log = 0x0000000000000080,///< View Audit Log.
+        Priority_Speaker = 0x0000000000000100,///< Priority Speaker.
+        Stream = 0x0000000000000200,///< Stream.
+        View_Channel = 0x0000000000000400,///< View Channel.
+        Send_Messages = 0x0000000000000800,///< Send Messages.
+        Send_Tts_Messages = 0x0000000000001000,///< Send TTS Messages.
+        Manage_Messages = 0x0000000000002000,///< Manage Messages.
+        Embed_Links = 0x0000000000004000,///< Embed Links.
+        Attach_Files = 0x0000000000008000,///< Attach Files.
+        Read_Message_History = 0x0000000000010000,///< Read Message History.
+        Mention_Everyone = 0x0000000000020000,///< Mention Everyone.
+        Use_External_Emojis = 0x0000000000040000,///< Use External Emoji.
+        View_Guild_Insights = 0x0000000000080000,///< View Guild Insights.
+        Connect = 0x0000000000100000,///< Connect.
+        Speak = 0x0000000000200000,///< Speak.
+        Mute_Members = 0x0000000000400000,///< Mute Members.
+        Deafen_Members = 0x0000000000800000,///< Deafen Members.
+        Move_Members = 0x0000000001000000,///< Move Members.
+        Use_Vad = 0x0000000002000000,///< Use VAD.
+        Change_Nickname = 0x0000000004000000,///< Change Nickname.
+        Manage_Nicknames = 0x0000000008000000,///< Manage Nicknames.
+        Manage_Roles = 0x0000000010000000,///< Manage Roles.
+        Manage_Webhooks = 0x0000000020000000,///< Manage Webhooks.
+        Manage_Emojis_And_Stickers = 0x0000000040000000,///< Manage Emojis And Stickers.
+        Use_Application_Commands = 0x0000000080000000,///< Use Application Commands.
+        Request_To_Speak = 0x0000000100000000,///< Request To Speak.
+        Manage_Events = 0x0000000200000000,///< Manage Events.
+        Manage_Threads = 0x0000000400000000,///< Manage Threads.
+        Create_Public_Threads = 0x0000000800000000,///< Create Public Threads.
+        Create_Private_Threads = 0x0000001000000000,///< Create Private Threads.
+        Use_External_Stickers = 0x0000002000000000,///< Use External Stickers.
+        Send_Messages_In_Threads = 0x0000004000000000,///< Send Messages In Threads.
+        Start_Embedded_Activities = 0x0000008000000000,///< Start Embedded Activities.
+        Moderate_Members = 0x0000010000000000///< Moderate Members. 0x0000010000000000///< Moderate Members.
+    };
+
+    /**@}*/
 
     /**
     * \addtogroup utilities
@@ -793,51 +845,6 @@ namespace DiscordCoreAPI {
 
         std::string originalTimeStamp{ "" };
         int64_t timeStampInMs{ 0 };
-    };
-
-    /// Permission values, for a given Channel, by Role or GuildMember. \brief Permission values, for a given Channel, by Role or GuildMember.
-    enum class Permission : int64_t {
-        Create_Instant_Invite = 0x0000000000000001,///< Create Instant Invite.
-        Kick_Members = 0x0000000000000002,///< Kick Members.
-        Ban_Members = 0x0000000000000004,///< Ban Members.
-        Administrator = 0x0000000000000008,///< Administrator.
-        Manage_Channels = 0x0000000000000010,///< Manage Channels.
-        Manage_Guild = 0x0000000000000020,///< Manage Guild.
-        Add_Reactions = 0x0000000000000040,///< Add Reactions.
-        View_Audit_Log = 0x0000000000000080,///< View Audit Log.
-        Priority_Speaker = 0x0000000000000100,///< Priority Speaker.
-        Stream = 0x0000000000000200,///< Stream.
-        View_Channel = 0x0000000000000400,///< View Channel.
-        Send_Messages = 0x0000000000000800,///< Send Messages.
-        Send_Tts_Messages = 0x0000000000001000,///< Send TTS Messages.
-        Manage_Messages = 0x0000000000002000,///< Manage Messages.
-        Embed_Links = 0x0000000000004000,///< Embed Links.
-        Attach_Files = 0x0000000000008000,///< Attach Files.
-        Read_Message_History = 0x0000000000010000,///< Read Message History.
-        Mention_Everyone = 0x0000000000020000,///< Mention Everyone.
-        Use_External_Emojis = 0x0000000000040000,///< Use External Emoji.
-        View_Guild_Insights = 0x0000000000080000,///< View Guild Insights.
-        Connect = 0x0000000000100000,///< Connect.
-        Speak = 0x0000000000200000,///< Speak.
-        Mute_Members = 0x0000000000400000,///< Mute Members.
-        Deafen_Members = 0x0000000000800000,///< Deafen Members.
-        Move_Members = 0x0000000001000000,///< Move Members.
-        Use_Vad = 0x0000000002000000,///< Use VAD.
-        Change_Nickname = 0x0000000004000000,///< Change Nickname.
-        Manage_Nicknames = 0x0000000008000000,///< Manage Nicknames.
-        Manage_Roles = 0x0000000010000000,///< Manage Roles.
-        Manage_Webhooks = 0x0000000020000000,///< Manage Webhooks.
-        Manage_Emojis_And_Stickers = 0x0000000040000000,///< Manage Emojis And Stickers.
-        Use_Application_Commands = 0x0000000080000000,///< Use Application Commands.
-        Request_To_Speak = 0x0000000100000000,///< Request To Speak.
-        Manage_Events = 0x0000000200000000,///< Manage Events.
-        Manage_Threads = 0x0000000400000000,///< Manage Threads.
-        Create_Public_Threads = 0x0000000800000000,///< Create Public Threads.
-        Create_Private_Threads = 0x0000001000000000,///< Create Private Threads.
-        Use_External_Stickers = 0x0000002000000000,///< Use External Stickers.
-        Send_Messages_In_Threads = 0x0000004000000000,///< Send Messages In Threads.
-        Start_Embedded_Activities = 0x0000008000000000,///< Start Embedded Activities.
-        Moderate_Members = 0x0000010000000000///< Moderate Members. 0x0000010000000000///< Moderate Members.
     };
 
     /// Permissions class, for representing and manipulating Permission values. \brief Permissions class, for representing and manipulating Permission values.
@@ -1291,21 +1298,7 @@ namespace DiscordCoreAPI {
         virtual ~ChannelData() = default;
     };
 
-    /// Voice data for a given GuildMember. \brief Voice data for a given GuildMember.
-    struct DiscordCoreAPI_Dll VoiceData {
-        TimeStamp requestToSpeakTimestamp{ "" };///< The time at which the User requested to speak.
-        std::string channelId{ "" };///< The Channel id this User is connected to.
-        std::string sessionId{ "" };///< The session id for this voice state.
-        std::string guildId{ "" };///< The Guild id this voice state is for.
-        std::string userId{ "" };///< The User id this voice state is for.
-        bool selfStream{ false };///< Whether this User is streaming using "Go Live".
-        bool selfVideo{ false };///< Whether this User's camera is enabled.
-        bool selfDeaf{ false };///< Whether this User is locally deafened.
-        bool selfMute{ false };///< Whether this User is locally muted.
-        bool suppress{ false };///< Whether this User is muted by the current User.
-        bool deaf{ false };///< Whether this User is deafened by the server.
-        bool mute{ false };///< Whether this User is muted by the server.
-    };
+    struct VoiceStateData;
 
     /// Data structure representing a single GuildMember. \brief Data structure representing a single GuildMember.
     class DiscordCoreAPI_Dll GuildMemberData : public DiscordEntity {
@@ -1318,7 +1311,6 @@ namespace DiscordCoreAPI {
         TimeStamp joinedAt{ "" };///< When they joined the Guild.
         std::string nick{ "" };///< Their nick/display name.
         bool pending{ false };///< Are they waiting at the entry screen?
-        VoiceData voiceData{};///< Info about this GuildMember's voice state.
         bool deaf{ false };///< Are they server deafened?
         bool mute{ false };///< Are they server muted?
         UserData user{};///< User data for the current GuildMember.
@@ -1342,22 +1334,6 @@ namespace DiscordCoreAPI {
         bool suppress{ false };///< Whether this User is muted by the current User.
         bool deaf{ false };///< Whether this User is deafened by the server.
         bool mute{ false };///< Whether this User is muted by the server.
-        operator VoiceData() {
-            VoiceData newData{};
-            newData.requestToSpeakTimestamp = this->requestToSpeakTimestamp;
-            newData.selfStream = this->selfStream;
-            newData.selfVideo = this->selfVideo;
-            newData.sessionId = this->sessionId;
-            newData.channelId = this->channelId;
-            newData.suppress = this->suppress;
-            newData.selfDeaf = this->selfDeaf;
-            newData.selfMute = this->selfMute;
-            newData.guildId = this->guildId;
-            newData.userId = this->userId;
-            newData.deaf = this->deaf;
-            newData.mute = this->mute;
-            return newData;
-        }
     };
 
     /// Data representing an active Thread. \brief Data representing an active Thread.

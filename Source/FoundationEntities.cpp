@@ -40,35 +40,6 @@ namespace DiscordCoreAPI {
         }
     }
 
-    std::string getFutureISO8601TimeStamp(int32_t minutesToAdd) {
-        std::time_t result = std::time(nullptr);
-        auto resultTwo = std::localtime(&result);
-        int32_t newMinuteValue{ 0 };
-        int32_t newHourValue{ resultTwo->tm_hour };
-        if (resultTwo->tm_min + minutesToAdd > 60) {
-            newMinuteValue = resultTwo->tm_min + minutesToAdd - 60;
-            newHourValue += 1;
-        }
-        else {
-            newMinuteValue = resultTwo->tm_min + minutesToAdd;
-        }
-        std::string resultString{};
-        if (!resultTwo->tm_isdst) {
-            resultString = getISO8601TimeStamp(std::to_string(resultTwo->tm_year + 1900), std::to_string(resultTwo->tm_mon + 1), std::to_string(resultTwo->tm_mday), std::to_string(newHourValue + 5), std::to_string(newMinuteValue), std::to_string(resultTwo->tm_sec));
-        }
-        else {
-            resultString = getISO8601TimeStamp(std::to_string(resultTwo->tm_year + 1900), std::to_string(resultTwo->tm_mon + 1), std::to_string(resultTwo->tm_mday), std::to_string(newHourValue + 4), std::to_string(newMinuteValue), std::to_string(resultTwo->tm_sec));
-        }
-        return resultString;
-    }
-
-    std::string getCurrentISO8601TimeStamp() {
-        std::time_t result = std::time(nullptr);
-        auto resultTwo = std::localtime(&result);
-        std::string resultString = getISO8601TimeStamp(std::to_string(resultTwo->tm_year + 1900), std::to_string(resultTwo->tm_mon), std::to_string(resultTwo->tm_mday), std::to_string(resultTwo->tm_hour), std::to_string(resultTwo->tm_min), std::to_string(resultTwo->tm_sec));
-        return resultString;
-    }
-
     std::string getISO8601TimeStamp(std::string year, std::string month, std::string day, std::string hour, std::string minute, std::string second) {
         std::string theTimeStamp{};
         theTimeStamp += year + "-";
@@ -122,22 +93,6 @@ namespace DiscordCoreAPI {
             if (rethrow) {
                 std::rethrow_exception(std::current_exception());
             }
-        }
-    }
-
-    bool hasTimeElapsed(std::string timeStamp, int64_t days, int64_t hours, int64_t minutes) {
-        int64_t startTimeRaw = convertTimestampToMsInteger(timeStamp);
-        auto currentTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-        int64_t secondsPerMinute = 60;
-        int64_t secondsPerHour = secondsPerMinute * 60;
-        int64_t secondsPerDay = secondsPerHour * 24;
-        auto targetElapsedTime = ((days * secondsPerDay) + ((hours - 4) * secondsPerHour) + (minutes * secondsPerMinute)) * 1000;
-        auto actualElapsedTime = currentTime - startTimeRaw;
-        if (actualElapsedTime >= targetElapsedTime) {
-            return true;
-        }
-        else {
-            return false;
         }
     }
 
@@ -229,42 +184,6 @@ namespace DiscordCoreAPI {
         return timeValue.getTime() * 1000;
     }
 
-    std::string urlDecode(std::string inputString) {
-        CURLUWrapper urlHandle = curl_url();
-        int32_t outLength{ 0 };
-        CURLCharWrapper charString = curl_easy_unescape(urlHandle, inputString.c_str(), static_cast<int32_t>(inputString.length()), &outLength);
-        std::string returnString = charString;
-        return returnString;
-    }
-
-    std::string urlEncode(std::string inputString) {
-        CURLWrapper curl = curl_easy_init();
-        CURLCharWrapper output{ nullptr };
-        output = curl_easy_escape(curl, inputString.c_str(), 0);
-        std::string returnString = output;
-        return returnString;
-    }
-
-    void spinLock(int64_t timeInNsToSpinLockFor) {
-        int64_t startTime = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-        int64_t timePassed{ 0 };
-        while (timePassed < timeInNsToSpinLockFor) {
-            timePassed = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - startTime;
-        }
-    }
-
-    std::string generate64BaseEncodedKey() {
-        std::string returnString{};
-        returnString.resize(16);
-        std::mt19937_64 randomEngine{};
-        randomEngine.seed(static_cast<uint32_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count()));
-        for (uint32_t x = 0; x < 16; x += 1) {
-            returnString[x] = static_cast<uint8_t>((static_cast<float>(randomEngine()) / static_cast<float>(randomEngine.max())) * 255.0f);
-        }
-        returnString = base64Encode(returnString, false);
-        return returnString;
-    }
-
     std::string base64Encode(std::string theString, bool url) {
         const char* base64_chars[2] = {
              "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -316,6 +235,122 @@ namespace DiscordCoreAPI {
         return returnString;
     }
 
+    std::string urlDecode(std::string inputString) {
+        CURLUWrapper urlHandle = curl_url();
+        int32_t outLength{ 0 };
+        CURLCharWrapper charString = curl_easy_unescape(urlHandle, inputString.c_str(), static_cast<int32_t>(inputString.length()), &outLength);
+        std::string returnString = charString;
+        return returnString;
+    }
+
+    std::string urlEncode(std::string inputString) {
+        CURLWrapper curl = curl_easy_init();
+        CURLCharWrapper output{ nullptr };
+        output = curl_easy_escape(curl, inputString.c_str(), 0);
+        std::string returnString = output;
+        return returnString;
+    }
+
+    void spinLock(int64_t timeInNsToSpinLockFor) {
+        int64_t startTime = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+        int64_t timePassed{ 0 };
+        while (timePassed < timeInNsToSpinLockFor) {
+            timePassed = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - startTime;
+        }
+    }
+
+    std::string getCurrentISO8601TimeStamp() {
+        std::time_t result = std::time(nullptr);
+        auto resultTwo = std::localtime(&result);
+        std::string resultString = getISO8601TimeStamp(std::to_string(resultTwo->tm_year + 1900), std::to_string(resultTwo->tm_mon), std::to_string(resultTwo->tm_mday), std::to_string(resultTwo->tm_hour), std::to_string(resultTwo->tm_min), std::to_string(resultTwo->tm_sec));
+        return resultString;
+    }
+
+    std::string generate64BaseEncodedKey() {
+        std::string returnString{};
+        returnString.resize(16);
+        std::mt19937_64 randomEngine{ static_cast<uint64_t>(std::chrono::system_clock::now().time_since_epoch().count()) };
+        for (uint32_t x = 0; x < 16; x += 1) {
+            returnString[x] = static_cast<uint8_t>((static_cast<float>(randomEngine()) / static_cast<float>(randomEngine.max())) * 255.0f);
+        }
+        returnString = base64Encode(returnString, false);
+        return returnString;
+    }
+
+    std::string shiftToBrightGreen() {
+        return std::string("\033[1;40;92m");
+    }
+
+    std::string shiftToBrightBlue() {
+        return std::string("\033[1;40;94m");
+    }
+
+    std::string shiftToBrightRed() {
+        return std::string("\033[1;40;91m");
+    }
+
+    bool nanoSleep(int64_t ns) {
+#ifdef _WIN32
+        HANDLE timer = CreateWaitableTimerExW(NULL, NULL, CREATE_WAITABLE_TIMER_HIGH_RESOLUTION, TIMER_ALL_ACCESS);
+        LARGE_INTEGER largeInt{ .QuadPart = -ns / 100 };
+        if (!timer) {
+            return false;
+        }
+
+        if (!SetWaitableTimerEx(timer, &largeInt, 0, NULL, NULL, NULL, 0)) {
+            CloseHandle(timer);
+            return false;
+        }
+        WaitForSingleObjectEx(timer, INFINITE, false);
+        CloseHandle(timer);
+#else
+        std::this_thread::sleep_for(std::chrono::nanoseconds{ ns });
+#endif
+        return true;
+    }
+
+    std::string reset() {
+        return std::string("\033[0m");
+    }
+
+    bool hasTimeElapsed(std::string timeStamp, int64_t days, int64_t hours, int64_t minutes) {
+        int64_t startTimeRaw = convertTimestampToMsInteger(timeStamp);
+        auto currentTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+        int64_t secondsPerMinute = 60;
+        int64_t secondsPerHour = secondsPerMinute * 60;
+        int64_t secondsPerDay = secondsPerHour * 24;
+        auto targetElapsedTime = ((days * secondsPerDay) + ((hours - 4) * secondsPerHour) + (minutes * secondsPerMinute)) * 1000;
+        auto actualElapsedTime = currentTime - startTimeRaw;
+        if (actualElapsedTime >= targetElapsedTime) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    std::string getFutureISO8601TimeStamp(int32_t minutesToAdd) {
+        std::time_t result = std::time(nullptr);
+        auto resultTwo = std::localtime(&result);
+        int32_t newMinuteValue{ 0 };
+        int32_t newHourValue{ resultTwo->tm_hour };
+        if (resultTwo->tm_min + minutesToAdd > 60) {
+            newMinuteValue = resultTwo->tm_min + minutesToAdd - 60;
+            newHourValue += 1;
+        }
+        else {
+            newMinuteValue = resultTwo->tm_min + minutesToAdd;
+        }
+        std::string resultString{};
+        if (!resultTwo->tm_isdst) {
+            resultString = getISO8601TimeStamp(std::to_string(resultTwo->tm_year + 1900), std::to_string(resultTwo->tm_mon + 1), std::to_string(resultTwo->tm_mday), std::to_string(newHourValue + 5), std::to_string(newMinuteValue), std::to_string(resultTwo->tm_sec));
+        }
+        else {
+            resultString = getISO8601TimeStamp(std::to_string(resultTwo->tm_year + 1900), std::to_string(resultTwo->tm_mon + 1), std::to_string(resultTwo->tm_mday), std::to_string(newHourValue + 4), std::to_string(newMinuteValue), std::to_string(resultTwo->tm_sec));
+        }
+        return resultString;
+    }
+
     std::string getTimeAndDate() {
         const time_t now = std::time(nullptr);
         tm time = *std::localtime(&now);
@@ -341,26 +376,6 @@ namespace DiscordCoreAPI {
         size_t size = strftime(timeStamp.data(), 48, "%F %R", &time);
         timeStamp.resize(size);
         return timeStamp;
-    }
-
-    bool nanoSleep(int64_t ns) {
-#ifdef _WIN32
-        HANDLE timer = CreateWaitableTimerExW(NULL, NULL, CREATE_WAITABLE_TIMER_HIGH_RESOLUTION, TIMER_ALL_ACCESS);
-        LARGE_INTEGER largeInt{ .QuadPart = -ns / 100 };
-        if (!timer) {
-            return false;
-        }
-
-        if (!SetWaitableTimerEx(timer, &largeInt, 0, NULL, NULL, NULL, 0)) {
-            CloseHandle(timer);
-            return false;
-        }
-        WaitForSingleObjectEx(timer, INFINITE, false);
-        CloseHandle(timer);
-#else
-        std::this_thread::sleep_for(std::chrono::nanoseconds{ ns });
-#endif
-        return true;
     }
 
     std::string DiscordEntity::getCreatedAtTimestamp(TimeFormat timeFormat) {
@@ -426,22 +441,6 @@ namespace DiscordCoreAPI {
         newData.songId = this->songId;
         newData.type = this->type;
         return newData;
-    }
-
-    std::string shiftToBrightBlue() {
-        return std::string("\033[1;40;94m");
-    }
-
-    std::string shiftToBrightGreen() {
-        return std::string("\033[1;40;92m");
-    }
-
-    std::string shiftToBrightRed() {
-        return std::string("\033[1;40;91m");
-    }
-
-    std::string reset() {
-        return std::string("\033[0m");
     }
 
     void Permissions::addPermissions(std::vector<Permission> permissionsToAdd) {

@@ -34,7 +34,6 @@ namespace DiscordCoreAPI {
 		this->premiumSince = dataNew.premiumSince;
 		this->permissions = dataNew.permissions;
 		this->userMention = dataNew.userMention;
-		this->voiceData = dataNew.voiceData;
 		this->joinedAt = dataNew.joinedAt;
 		this->pending = dataNew.pending;
 		this->guildId = dataNew.guildId;
@@ -223,7 +222,7 @@ namespace DiscordCoreAPI {
 			dataPackage01.roleIds = guildMember.roles;
 			dataPackage01.reason = dataPackage.reason;
 			dataPackage01.communicationDisabledUntil = getFutureISO8601TimeStamp(dataPackage.numOfMinutesToTimeoutFor);
-			co_return GuildMembers::modifyGuildMemberAsync(dataPackage01).get();;
+			co_return GuildMembers::modifyGuildMemberAsync(dataPackage01).get();
 		}
 		catch (...) {
 			reportException("GuildMembers::modifyGuildMemberAsync()");
