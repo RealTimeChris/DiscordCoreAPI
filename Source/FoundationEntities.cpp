@@ -459,7 +459,7 @@ namespace DiscordCoreAPI {
         for (auto value : permissionsToAdd) {
             permissionsInteger |= static_cast<int64_t>(value);
         }
-        std::stringstream sstream;
+        std::stringstream sstream{};
         sstream << permissionsInteger;
         *this = sstream.str();
     }
@@ -472,7 +472,7 @@ namespace DiscordCoreAPI {
         for (auto value : permissionsToRemove) {
             permissionsInteger &= ~static_cast<int64_t>(value);
         }
-        std::stringstream sstream;
+        std::stringstream sstream{};
         sstream << permissionsInteger;
         *this = sstream.str();
     }
