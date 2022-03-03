@@ -807,7 +807,6 @@ namespace DiscordCoreInternal {
     void DataParser::parseObject(nlohmann::json const& jsonObjectData, DiscordCoreAPI::GuildMember& pDataStructure) {
         if (jsonObjectData.contains("user") && !jsonObjectData["user"].is_null()) {
             DataParser::parseObject(jsonObjectData["user"], pDataStructure.user);
-            pDataStructure.id = pDataStructure.user.id;
         }
 
         if (jsonObjectData.contains("nick") && !jsonObjectData["nick"].is_null() && jsonObjectData["nick"] != "") {
@@ -865,7 +864,6 @@ namespace DiscordCoreInternal {
     void DataParser::parseObject(nlohmann::json const& jsonObjectData, DiscordCoreAPI::GuildMemberData& pDataStructure) {
         if (jsonObjectData.contains("user") && !jsonObjectData["user"].is_null()) {
             DataParser::parseObject(jsonObjectData["user"], pDataStructure.user);
-            pDataStructure.id = pDataStructure.user.id;
         }
 
         if (jsonObjectData.contains("nick") && !jsonObjectData["nick"].is_null() && jsonObjectData["nick"] != "") {

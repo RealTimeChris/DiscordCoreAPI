@@ -1317,7 +1317,7 @@ namespace DiscordCoreAPI {
     struct VoiceStateData;
 
     /// Data structure representing a single GuildMember. \brief Data structure representing a single GuildMember.
-    class DiscordCoreAPI_Dll GuildMemberData : public DiscordEntity {
+    class DiscordCoreAPI_Dll GuildMemberData {
     public:
         std::vector<std::string> roles{};///< The Guild roles that they have.
         std::string premiumSince{ "" };///< If applicable, when they first boosted the server.
