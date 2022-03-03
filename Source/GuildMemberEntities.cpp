@@ -46,7 +46,6 @@ namespace DiscordCoreAPI {
 
 	void GuildMembers::initialize(DiscordCoreInternal::HttpClient*theClient) {
 		GuildMembers::httpClient = theClient;
-		std::cout << "WERE NOT HERE: " << GuildMembers::httpClient->botToken << std::endl;
 	}
 
 	CoRoutine<GuildMember> GuildMembers::getGuildMemberAsync(GetGuildMemberData dataPackage) {

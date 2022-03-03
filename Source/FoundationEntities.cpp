@@ -356,7 +356,6 @@ namespace DiscordCoreAPI {
         else {
             resultString = getISO8601TimeStamp(std::to_string(newYearValue), std::to_string(newMonthValue + 1), std::to_string(newDayValue), std::to_string(newHourValue + 4), std::to_string(newMinuteValue), std::to_string(resultTwo->tm_sec));
         }
-        std::cout << "THE STRING: " << resultString << std::endl;
         return resultString;
     }
 
