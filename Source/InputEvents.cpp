@@ -204,7 +204,6 @@ namespace DiscordCoreAPI {
 
 	InputEventData InputEvents::respondToEvent(SendDMData dataPackage) {
 		auto channel = Channels::createDMChannelAsync({ .userId = dataPackage.targetUserId }).get();
-		std::cout << channel.id << std::endl;
 		dataPackage.channelId = channel.id;
 		Message message = Messages::createMessageAsync(dataPackage).get();
 		std::unique_ptr<InputEventData> dataPackageNewer = std::make_unique<InputEventData>();
