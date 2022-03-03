@@ -246,6 +246,10 @@ namespace DiscordCoreAPI {
 				dataPackage01.communicationDisabledUntil = getFutureISO8601TimeStamp(1, 0, 0, 0, 0);
 				break;
 			}
+			case TimeoutDurations::None: {
+				dataPackage01.communicationDisabledUntil = getFutureISO8601TimeStamp(0, 0, 0, 0, 0);
+				break;
+			}
 			}
 			co_return GuildMembers::modifyGuildMemberAsync(dataPackage01).get();
 		}

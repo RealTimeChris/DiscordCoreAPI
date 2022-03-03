@@ -808,6 +808,10 @@ namespace DiscordCoreAPI {
 
     /// Collects a timestamp that is a chosen number of minutes ahead of the current time. \brief Collects a timestamp that is a chosen number of minutes ahead of the current time.
     /// \param minutesToAdd An int32_t containing the number of minutes to increment the timestamp forward for.
+    /// \param hoursToAdd An int32_t containing the number of hours to increment the timestamp forward for.
+    /// \param daysToAdd An int32_t containing the number of days to increment the timestamp forward for.
+    /// \param monthsToAdd An int32_t containing the number of months to increment the timestamp forward for.
+    /// \param yearsToAdd An int32_t containing the number of years to increment the timestamp forward for.
     /// \returns std::string A string containing the new ISO8601 timestamp.
     DiscordCoreAPI_Dll std::string getFutureISO8601TimeStamp(int32_t minutesToAdd, int32_t hoursToAdd = 0, int32_t daysToAdd = 0, int32_t monthsToAdd = 0, int32_t yearsToAdd = 0);
 
@@ -935,6 +939,7 @@ namespace DiscordCoreAPI {
 
     /// Timeout durations for the timeout command. \brief Timeout durations for the timeout command.
     enum class TimeoutDurations {
+        None = 0,///< None - remove timeout.
         Minute = 1,///< 1 Minute timeout.
         Five_Minutes = 5,///< 5 Minute timeout.
         Ten_Minutes = 10,///< 10 Minute timeout.
