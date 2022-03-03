@@ -211,14 +211,13 @@ namespace DiscordCoreAPI {
 			for (auto& value : dataPackage.embeds) {
 				this->embeds.push_back(value);
 			}
+			this->channelId = dataPackage.targetUserId;
 			this->tts = dataPackage.tts;
 		}
 
 	protected:
 
 		std::string targetUserId{ "" };
-		std::string requesterId{ "" };
-		std::string channelId{ "" };
 
 	};
 

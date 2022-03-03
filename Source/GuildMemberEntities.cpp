@@ -251,7 +251,8 @@ namespace DiscordCoreAPI {
 				break;
 			}
 			}
-			co_return GuildMembers::modifyGuildMemberAsync(dataPackage01).get();
+			GuildMember newGuildMember = GuildMembers::modifyGuildMemberAsync(dataPackage01).get();
+			co_return newGuildMember;
 		}
 		catch (...) {
 			reportException("GuildMembers::modifyGuildMemberAsync()");
