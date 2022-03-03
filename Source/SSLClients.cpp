@@ -75,7 +75,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	bool HttpSSLClient::connect(std::string& baseUrl, std::string& portNew) noexcept {
+	bool HttpSSLClient::connect(std::string& baseUrl, std::string portNew) noexcept {
 		try {
 			std::string certPath{};
 			if (baseUrl.find("soundcloud") != std::string::npos || baseUrl.find("sndcdn") != std::string::npos) {
@@ -325,7 +325,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	WebSocketSSLClient::WebSocketSSLClient(std::string& baseUrlNew, std::string& portNew,  int64_t maxBufferSizeNew) noexcept :
+	WebSocketSSLClient::WebSocketSSLClient(std::string& baseUrlNew, std::string portNew,  int64_t maxBufferSizeNew) noexcept :
 		maxBufferSize(maxBufferSizeNew)
 	{
 		try {
