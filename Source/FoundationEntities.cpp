@@ -329,25 +329,34 @@ namespace DiscordCoreAPI {
         }
     }
 
-    std::string getFutureISO8601TimeStamp(int32_t minutesToAdd) {
+    std::string getFutureISO8601TimeStamp(int32_t minutesToAdd, int32_t hoursToAdd, int32_t daysToAdd, int32_t monthsToAdd, int32_t yearsToAdd) {
         std::time_t result = std::time(nullptr);
         auto resultTwo = std::localtime(&result);
-        int32_t newMinuteValue{ 0 };
-        int32_t newHourValue{ resultTwo->tm_hour };
-        if (resultTwo->tm_min + minutesToAdd > 60) {
-            newMinuteValue = resultTwo->tm_min + minutesToAdd - 60;
-            newHourValue += 1;
+        int32_t newYearValue{ resultTwo->tm_year + yearsToAdd + 1900 };
+        int32_t newMonthValue{ resultTwo->tm_mon + monthsToAdd };
+        if (newMonthValue > 12) {
+            newMonthValue -= 12;
         }
-        else {
-            newMinuteValue = resultTwo->tm_min + minutesToAdd;
+        int32_t newDayValue{ resultTwo->tm_mday + daysToAdd };
+        if (newDayValue > 28) {
+            newDayValue -= 28;
+        }
+        int32_t newHourValue{ resultTwo->tm_hour + hoursToAdd };
+        if (newHourValue > 24) {
+            newHourValue -= 24;
+        }
+        int32_t newMinuteValue{ resultTwo->tm_min + minutesToAdd };
+        if (newMinuteValue > 60) {
+            newMinuteValue -= 60;
         }
         std::string resultString{};
         if (!resultTwo->tm_isdst) {
-            resultString = getISO8601TimeStamp(std::to_string(resultTwo->tm_year + 1900), std::to_string(resultTwo->tm_mon + 1), std::to_string(resultTwo->tm_mday), std::to_string(newHourValue + 5), std::to_string(newMinuteValue), std::to_string(resultTwo->tm_sec));
+            resultString = getISO8601TimeStamp(std::to_string(newYearValue), std::to_string(newMonthValue + 1), std::to_string(newDayValue), std::to_string(newHourValue + 5), std::to_string(newMinuteValue), std::to_string(resultTwo->tm_sec));
         }
         else {
-            resultString = getISO8601TimeStamp(std::to_string(resultTwo->tm_year + 1900), std::to_string(resultTwo->tm_mon + 1), std::to_string(resultTwo->tm_mday), std::to_string(newHourValue + 4), std::to_string(newMinuteValue), std::to_string(resultTwo->tm_sec));
+            resultString = getISO8601TimeStamp(std::to_string(newYearValue), std::to_string(newMonthValue + 1), std::to_string(newDayValue), std::to_string(newHourValue + 4), std::to_string(newMinuteValue), std::to_string(resultTwo->tm_sec));
         }
+        std::cout << "THE STRING: " << resultString << std::endl;
         return resultString;
     }
 

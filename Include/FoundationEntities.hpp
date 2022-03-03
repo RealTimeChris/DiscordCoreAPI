@@ -115,7 +115,7 @@ namespace DiscordCoreInternal {
 /// The main namespace for this library. \brief The main namespace for this library.
 namespace DiscordCoreAPI {
 
-    
+
     struct RecurseThroughMessagePagesData;
     struct DeleteInteractionResponseData;
     struct DeleteFollowUpMessageData;
@@ -147,6 +147,7 @@ namespace DiscordCoreAPI {
     class Interactions;
     class EventManager;
     class EventHandler;
+    class GuildMembers;
     class GuildMember;
     class ChannelData;
     class InputEvents;
@@ -190,7 +191,7 @@ namespace DiscordCoreAPI {
             *this = other;
         }
 
-        operator CURL*() {
+        operator CURL* () {
             return this->thePtr.get();
         }
 
@@ -222,7 +223,7 @@ namespace DiscordCoreAPI {
             *this = other;
         }
 
-        operator CURLU*() {
+        operator CURLU* () {
             return this->thePtr.get();
         }
 
@@ -259,7 +260,7 @@ namespace DiscordCoreAPI {
             return returnValue;
         }
 
-        CURLCharWrapper(nullptr_t other) { 
+        CURLCharWrapper(nullptr_t other) {
             *this = other;
         }
 
@@ -285,7 +286,7 @@ namespace DiscordCoreAPI {
                 *this = other;
             }
 
-            operator ObjectType*(){
+            operator ObjectType* () {
                 return this->thePtr;
             }
 
@@ -808,7 +809,7 @@ namespace DiscordCoreAPI {
     /// Collects a timestamp that is a chosen number of minutes ahead of the current time. \brief Collects a timestamp that is a chosen number of minutes ahead of the current time.
     /// \param minutesToAdd An int32_t containing the number of minutes to increment the timestamp forward for.
     /// \returns std::string A string containing the new ISO8601 timestamp.
-    DiscordCoreAPI_Dll std::string getFutureISO8601TimeStamp(int32_t minutesToAdd);
+    DiscordCoreAPI_Dll std::string getFutureISO8601TimeStamp(int32_t minutesToAdd, int32_t hoursToAdd = 0, int32_t daysToAdd = 0, int32_t monthsToAdd = 0, int32_t yearsToAdd = 0);
 
     /// Acquires a timestamp with the current time and date - suitable for use in message-embeds. \brief Acquires a timestamp with the current time and date - suitable for use in message-embeds.
     /// \returns std::string A String containing the current date-time stamp.
@@ -874,7 +875,7 @@ namespace DiscordCoreAPI {
             }
         }
 
-        operator const char*() {
+        operator const char* () {
             return this->data();
         }
 
@@ -932,6 +933,16 @@ namespace DiscordCoreAPI {
     * @{
     */
 
+    /// Timeout durations for the timeout command. \brief Timeout durations for the timeout command.
+    enum class TimeoutDurations {
+        Minute = 1,///< 1 Minute timeout.
+        Five_Minutes = 5,///< 5 Minute timeout.
+        Ten_Minutes = 10,///< 10 Minute timeout.
+        Hour = 60,///< 1 Hour timeout.
+        Day = 1440,///< 1 Day timeout.
+        Week = 10080///< 1 Week timeout.
+    };
+
     /// Gateway intents. \brief Gateway intents.
     enum class GatewayIntents : int32_t {
         Guilds = (1 << 0),///< Intent for receipt of Guild information.
@@ -951,9 +962,9 @@ namespace DiscordCoreAPI {
         Direct_Message_Typing = (1 << 14),///< Intent for receipt of direct message typing notifications.
         Message_Content = (1 << 15),///< Intent for receipt of message content.
         Guild_Scheduled_Events = (1 << 16),///< Scheduled events.
-        Default_Intents = Guilds | Guild_Bans | Guild_Emojis | Guild_Integrations | Guild_Webhooks | Guild_Invites | Guild_VoiceStates | Guild_Messages | Guild_Message_Reactions | Guild_Message_Typing | Direct_Messages | Direct_Message_Reactions | Direct_Message_Typing | Guild_Scheduled_Events,///< Default intents (all non-privileged intents).
-        Privileged_Intents = Guild_Members | Guild_Presences | Message_Content,///< Privileged intents requiring ID.
-        All_Intents = Default_Intents | Privileged_Intents///< Every single intent.
+        Default_Intents = GatewayIntents::Guilds | GatewayIntents::Guild_Bans | GatewayIntents::Guild_Emojis | GatewayIntents::Guild_Integrations | GatewayIntents::Guild_Webhooks | GatewayIntents::Guild_Invites | GatewayIntents::Guild_VoiceStates | GatewayIntents::Guild_Messages | GatewayIntents::Guild_Message_Reactions | GatewayIntents::Guild_Message_Typing | GatewayIntents::Direct_Messages | GatewayIntents::Direct_Message_Reactions | GatewayIntents::Direct_Message_Typing | GatewayIntents::Guild_Scheduled_Events,///< Default intents (all non-privileged intents).
+        Privileged_Intents = GatewayIntents::Guild_Members | GatewayIntents::Guild_Presences | GatewayIntents::Message_Content,///< Privileged intents requiring ID.
+        All_Intents = GatewayIntents::Default_Intents | GatewayIntents::Privileged_Intents///< Every single intent.
     };
 
     /// For ids of DiscordEntities. \brief For ids of DiscordEntities.

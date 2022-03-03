@@ -93,7 +93,7 @@ namespace DiscordCoreAPI {
 
 	/// For timing out a GuildMember. \brief For timing out a GuildMember.
 	struct DiscordCoreAPI_Dll TimeoutGuildMemberData {
-		int32_t numOfMinutesToTimeoutFor{ 0 };///< The number of minutes to time-out the GuildMember for.
+		TimeoutDurations numOfMinutesToTimeoutFor{};///< The number of minutes to time-out the GuildMember for.
 		std::string guildMemberId{ "" };///< The id of the GuildMember to be timed-out.
 		std::string guildId{ "" };///< The id of the Guild from which you would like to acquire a member.
 		std::string reason{ "" };///< Reason for timing them out.

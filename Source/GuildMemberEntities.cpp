@@ -46,6 +46,7 @@ namespace DiscordCoreAPI {
 
 	void GuildMembers::initialize(DiscordCoreInternal::HttpClient*theClient) {
 		GuildMembers::httpClient = theClient;
+		std::cout << "WERE NOT HERE: " << GuildMembers::httpClient->botToken << std::endl;
 	}
 
 	CoRoutine<GuildMember> GuildMembers::getGuildMemberAsync(GetGuildMemberData dataPackage) {
@@ -221,7 +222,32 @@ namespace DiscordCoreAPI {
 			dataPackage01.nick = guildMember.nick;
 			dataPackage01.roleIds = guildMember.roles;
 			dataPackage01.reason = dataPackage.reason;
-			dataPackage01.communicationDisabledUntil = getFutureISO8601TimeStamp(dataPackage.numOfMinutesToTimeoutFor);
+			switch (dataPackage.numOfMinutesToTimeoutFor) {
+			case TimeoutDurations::Day: {
+				dataPackage01.communicationDisabledUntil = getFutureISO8601TimeStamp(0, 0, 1, 0, 0);
+				break;
+			}
+			case TimeoutDurations::Five_Minutes: {
+				dataPackage01.communicationDisabledUntil = getFutureISO8601TimeStamp(5, 0, 0, 0, 0);
+				break;
+			}
+			case TimeoutDurations::Hour: {
+				dataPackage01.communicationDisabledUntil = getFutureISO8601TimeStamp(0, 1, 0, 0, 0);
+				break;
+			}
+			case TimeoutDurations::Ten_Minutes: {
+				dataPackage01.communicationDisabledUntil = getFutureISO8601TimeStamp(10, 0, 0, 0, 0);
+				break;
+			}
+			case TimeoutDurations::Week: {
+				dataPackage01.communicationDisabledUntil = getFutureISO8601TimeStamp(0, 0, 7, 0, 0);
+				break;
+			}
+			case TimeoutDurations::Minute: {
+				dataPackage01.communicationDisabledUntil = getFutureISO8601TimeStamp(1, 0, 0, 0, 0);
+				break;
+			}
+			}
 			co_return GuildMembers::modifyGuildMemberAsync(dataPackage01).get();
 		}
 		catch (...) {

@@ -28,7 +28,7 @@
 #include <SSLClients.hpp>
 
 namespace DiscordCoreInternal {
-
+	
 	class HttpConnectionManager;
 	struct HttpConnection;
 	struct RateLimitData;
@@ -138,6 +138,7 @@ namespace DiscordCoreInternal {
 		friend HttpData submitWorkloadAndGetResult(HttpClient& httpClient, HttpWorkloadData& workload);
 		friend class DiscordCoreAPI::SoundCloudAPI;
 		friend class DiscordCoreAPI::YouTubeAPI;
+		friend class DiscordCoreAPI::GuildMembers;
 
 		HttpClient(std::string, bool doWePrintHttp, bool doWePrintFFMPEG);
 		

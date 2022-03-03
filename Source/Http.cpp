@@ -83,6 +83,7 @@ namespace DiscordCoreInternal {
 					returnString += "DELETE " + workload.baseUrl + workload.relativePath + " HTTP/1.1\r\n";
 				}
 				for (auto& [key, value] : workload.headersToInsert) {
+					std::cout << "WERE HERE: " << value << std::endl;
 					returnString += key + ": " + value + "\r\n";
 				}
 				returnString += "Connection: Keep-Alive\r\n";
