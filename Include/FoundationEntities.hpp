@@ -1134,50 +1134,79 @@ namespace DiscordCoreAPI {
         /// \param authorName The author's name.
         /// \param authorAvatarUrl The url to their avatar.
         /// \returns A reference to this embed.
-        EmbedData& setAuthor(std::string authorName, std::string authorAvatarUrl = "");
+        EmbedData& setAuthor(std::string authorName, std::string authorAvatarUrl = "") {
+            this->author.name = authorName;
+            this->author.iconUrl = authorAvatarUrl;
+            return *this;
+        }
 
         /// Sets the footer's values for the embed. \brief Sets the footer's values for the embed.
         /// \param footerText The footer's text.
         /// \param footerIconUrlText Url to the footer's icon.
         /// \returns A reference to this embed.
-        EmbedData& setFooter(std::string footerText, std::string footerIconUrlText = "");
+        EmbedData& setFooter(std::string footerText, std::string footerIconUrlText = "") {
+            this->footer.text = footerText;
+            this->footer.iconUrl = footerIconUrlText;
+            return *this;
+        }
 
         /// Sets the timestamp on the embed. \brief Sets the timestamp on the embed.
         /// \param timeStamp The timestamp to be set.
         /// \returns A reference to this embed.
-        EmbedData& setTimeStamp(std::string timeStamp);
+        EmbedData& setTimeStamp(std::string timeStamp) {
+            this->timestamp = timeStamp;
+            return *this;
+        }
 
         /// Adds a field to the embed. \brief Adds a field to the embed.
         /// \param name The title of the embed field.
         /// \param value The contents of the embed field.
         /// \param Inline Is it inline with the rest of the fields on the embed?
         /// \returns A reference to this embed.
-        EmbedData& addField(std::string name, std::string value, bool Inline = true);
+        EmbedData& addField(std::string name, std::string value, bool Inline = true) {
+            this->fields.push_back(EmbedFieldData{ .value = value,.name = name, .Inline = Inline });
+            return *this;
+        }
 
         /// Sets the description (the main contents) of the embed. \brief Sets the description (the main contents) of the embed.
         /// \param descriptionNew The contents of the description to set.
         /// \returns A reference to this embed.
-        EmbedData& setDescription(std::string descriptionNew);
+        EmbedData& setDescription(std::string descriptionNew) {
+            this->description = descriptionNew;
+            return *this;
+        }
 
         /// Sets the color of the embed, by applying a hex-color value. \brief Sets the color of the embed, by applying a hex-color value.
         /// \param hexColorValueNew A std::string containing a hex-number value (Between 0x00 and 0xFFFFFF).
         /// \returns A reference to this embed.
-        EmbedData& setColor(std::string hexColorValueNew);
+        EmbedData& setColor(std::string hexColorValueNew) {
+            this->hexColorValue = hexColorValueNew;
+            return *this;
+        }
 
         /// Sets the thumbnail of the embed. \brief Sets the thumbnail of the embed.
         /// \param thumbnailUrl The url to the thumbnail to be used.
         /// \returns A reference to this embed.
-        EmbedData& setThumbnail(std::string thumbnailUrl);
+        EmbedData& setThumbnail(std::string thumbnailUrl) {
+            this->thumbnail.url = thumbnailUrl;
+            return *this;
+        }
 
         /// Sets the title of the embed. \brief Sets the title of the embed.
         /// \param titleNew A std::string containing the desired title.
         /// \returns A reference to this embed.
-        EmbedData& setTitle(std::string titleNew);
+        EmbedData& setTitle(std::string titleNew) {
+            this->title = titleNew;
+            return *this;
+        }
 
         /// Sets the image of the embed. \brief Sets the image of the embed.
         /// \param imageUrl The url of the image to be set on the embed.
         /// \returns A reference to this embed.
-        EmbedData& setImage(std::string imageUrl);
+        EmbedData& setImage(std::string imageUrl) {
+            this->image.url = imageUrl;
+            return *this;
+        }
     };
 
     /// Message reference data.\brief Message reference data.
@@ -2883,11 +2912,31 @@ namespace DiscordCoreAPI {
 
         InputEventResponseType type{};///< The type of response to make.
 
-        RespondToInputEventData(std::string channelIdNew);
+        RespondToInputEventData(std::string channelIdNew) {
+            this->channelId = channelIdNew;
+            this->type = InputEventResponseType::Regular_Message;
+        }
 
-        RespondToInputEventData(InteractionData dataPackage);
+        RespondToInputEventData(InteractionData dataPackage) {
+            this->type = InputEventResponseType::Interaction_Response;
+            this->applicationId = dataPackage.applicationId;
+            this->requesterId = dataPackage.requesterId;
+            this->interactionToken = dataPackage.token;
+            this->messageId = dataPackage.message.id;
+            this->channelId = dataPackage.channelId;
+            this->interactionId = dataPackage.id;
+            this->eventType = dataPackage.type;
+        };
 
-        RespondToInputEventData(InputEventData dataPackage);
+        RespondToInputEventData(InputEventData dataPackage) {
+            this->interactionToken = dataPackage.getInteractionToken();
+            this->applicationId = dataPackage.getApplicationId();
+            this->interactionId = dataPackage.getInteractionId();
+            this->requesterId = dataPackage.getRequesterId();
+            this->channelId = dataPackage.getChannelId();
+            this->messageId = dataPackage.getMessageId();
+            this->type = InputEventResponseType::Interaction_Response;
+        }
 
         /// Adds a button to the response Message. \brief Adds a button to the response Message.
         /// \param disabled Whether the button is active or not.
@@ -2897,8 +2946,31 @@ namespace DiscordCoreAPI {
         /// \param emojiName An emoji name, if desired.        
         /// \param emojiId An emoji id, if desired.
         /// \param url A url, if applicable.
-        /// \returns RespondToInputEventData& A reference to this current data structure.
-        RespondToInputEventData& addButton(bool disabled, std::string customIdNew, std::string buttonLabel, ButtonStyle buttonStyle, std::string emojiName = "", std::string emojiId = "", std::string url = "");
+        RespondToInputEventData& addButton(bool disabled, std::string customIdNew, std::string buttonLabel, ButtonStyle buttonStyle, std::string emojiName = "", std::string emojiId = "", std::string url = "") {
+            if (this->components.size() == 0) {
+                ActionRowData actionRowData;
+                this->components.push_back(actionRowData);
+            }
+            if (this->components.size() < 5) {
+                if (this->components.at(this->components.size() - 1).components.size() < 5) {
+                    ComponentData component;
+                    component.type = ComponentType::Button;
+                    component.emoji.name = emojiName;
+                    component.label = buttonLabel;
+                    component.style = static_cast<int32_t>(buttonStyle);
+                    component.customId = customIdNew;
+                    component.disabled = disabled;
+                    component.emoji.id = emojiId;
+                    component.url = url;
+                    this->components.at(this->components.size() - 1).components.push_back(component);
+                }
+                else if (this->components.at(this->components.size() - 1).components.size() == 5) {
+                    ActionRowData actionRowData;
+                    this->components.push_back(actionRowData);
+                }
+            }
+            return *this;
+        }
 
         /// Adds a select-menu to the response Message. \brief Adds a select-menu to the response Message.
         /// \param disabled Whether the select-menu is active or not.
@@ -2907,8 +2979,31 @@ namespace DiscordCoreAPI {
         /// \param placeholder Custom placeholder text if nothing is selected, max 100 characters.
         /// \param maxValues Maximum number of selections that are possible.
         /// \param minValues Minimum required number of selections that are required.
-        /// \returns RespondToInputEventData& A reference to this current data structure.
-        RespondToInputEventData& addSelectMenu(bool disabled, std::string customIdNew, std::vector<SelectOptionData> options, std::string placeholder, int32_t maxValues, int32_t minValues);
+        RespondToInputEventData& addSelectMenu(bool disabled, std::string customIdNew, std::vector<SelectOptionData> options, std::string placeholder, int32_t maxValues, int32_t minValues) {
+            if (this->components.size() == 0) {
+                ActionRowData actionRowData;
+                this->components.push_back(actionRowData);
+            }
+            if (this->components.size() < 5) {
+                if (this->components.at(this->components.size() - 1).components.size() < 5) {
+                    ComponentData componentData;
+                    componentData.type = ComponentType::SelectMenu;
+                    componentData.placeholder = placeholder;
+                    componentData.maxValues = maxValues;
+                    componentData.minValues = minValues;
+                    componentData.disabled = disabled;
+                    componentData.customId = customIdNew;
+                    componentData.options = options;
+                    this->components.at(this->components.size() - 1).components.push_back(componentData);
+                }
+                else if (this->components.at(this->components.size() - 1).components.size() == 5) {
+                    ActionRowData actionRowData;
+                    this->components.push_back(actionRowData);
+                }
+
+            }
+            return *this;
+        }
 
         /// Adds a modal to the response Message. \brief Adds a modal to the response Message.
         /// \param topTitleNew A title for the modal.
@@ -2921,38 +3016,76 @@ namespace DiscordCoreAPI {
         /// \param inputStyle The input style.
         /// \param label A label for the modal.
         /// \param placeholder A placeholder for the modal.
-        /// \returns RespondToInputEventData& A reference to this current data structure.
-        RespondToInputEventData& addModal(std::string topTitleNew, std::string topCustomIdNew, std::string titleNew, std::string customIdNew, bool required, int32_t minLength, int32_t maxLength, TextInputStyle inputStyle, std::string label = "", std::string placeholder = "");
+        RespondToInputEventData& addModal(std::string topTitleNew, std::string topCustomIdNew, std::string titleNew, std::string customIdNew, bool required, int32_t minLength, int32_t maxLength, TextInputStyle inputStyle, std::string label = "", std::string placeholder = "") {
+            this->title = topTitleNew;
+            this->customId = topCustomIdNew;
+            if (this->components.size() == 0) {
+                ActionRowData actionRowData;
+                this->components.push_back(actionRowData);
+            }
+            if (this->components.size() < 5) {
+                if (this->components.at(this->components.size() - 1).components.size() < 5) {
+                    ComponentData component{};
+                    component.type = ComponentType::TextInput;
+                    component.customId = customIdNew;
+                    component.style = static_cast<int32_t>(inputStyle);
+                    component.title = titleNew;
+                    component.maxLength = maxLength;
+                    component.minLength = minLength;
+                    component.label = label;
+                    component.required = required;
+                    component.placeholder = placeholder;
+                    this->components.at(this->components.size() - 1).components.push_back(component);
+                }
+                else if (this->components.at(this->components.size() - 1).components.size() == 5) {
+                    ActionRowData actionRowData;
+                    this->components.push_back(actionRowData);
+                }
+            }
+            return *this;
+        }
 
         /// For setting the allowable mentions in a response. \brief For setting the allowable mentions in a response.
         /// \param dataPackage An AllowedMentionsData structure.
-        /// \returns RespondToInputEventData& A reference to this current data structure.
-        RespondToInputEventData& addAllowedMentions(AllowedMentionsData dataPackage);
+        RespondToInputEventData& addAllowedMentions(AllowedMentionsData dataPackage) {
+            this->allowedMentions = dataPackage;
+            return *this;
+        }
 
         /// For setting the components in a response. \brief For setting the components in a response. 
         /// \param dataPackage An ActionRowData structure.
-        /// \returns RespondToInputEventData& A reference to this current data structure.
-        RespondToInputEventData& addComponentRow(ActionRowData dataPackage);
+        RespondToInputEventData& addComponentRow(ActionRowData dataPackage) {
+            this->components.push_back(dataPackage);
+            return *this;
+        }
 
         /// For setting the embeds in a response. \brief For setting the embeds in a response.
         /// \param dataPackage An EmbedData structure.
-        /// \returns RespondToInputEventData& A reference to this current data structure.
-        RespondToInputEventData& addMessageEmbed(EmbedData dataPackage);
+        RespondToInputEventData& addMessageEmbed(EmbedData dataPackage) {
+            this->embeds.push_back(dataPackage);
+            return *this;
+        }
 
         /// For setting the Message content in a response. \brief For setting the Message content in a response.
         /// \param dataPackage A std::string, containing the content.
-        /// \returns RespondToInputEventData& A reference to this current data structure.
-        RespondToInputEventData& addContent(std::string dataPackage);
+        RespondToInputEventData& addContent(std::string dataPackage) {
+            this->content = dataPackage;
+            return *this;
+        }
 
         /// For setting the tts status of a response. \brief For setting the tts status of a response.
         /// \param enabledTTs A bool.
-        /// \returns RespondToInputEventData& A reference to this current data structure.
-        RespondToInputEventData& setTTSStatus(bool enabledTTs);
+        RespondToInputEventData& setTTSStatus(bool enabledTTs) {
+            this->tts = enabledTTs;
+            return *this;
+        }
 
         /// For setting the direct-Message User target of a response. \brief For setting the direct-Message User target of a response.
         /// \param targetUserIdNew A std::string, containging the target User's id.
-        /// \returns RespondToInputEventData& A reference to this current data structure.
-        RespondToInputEventData& setTargetUserID(std::string targetUserIdNew);
+        RespondToInputEventData& setTargetUserID(std::string targetUserIdNew) {
+            this->targetUserId = targetUserIdNew;
+            return *this;
+        }
 
     protected:
 
