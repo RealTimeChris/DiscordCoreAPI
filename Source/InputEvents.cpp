@@ -93,13 +93,12 @@ namespace DiscordCoreAPI {
 			deleteData->timeDelay = timeDelayNew;
 			Messages::deleteMessageAsync(*deleteData).get();
 		}
-		else if (dataPackage.responseType == InputEventResponseType::Follow_Up_Message || dataPackage.responseType == InputEventResponseType::Follow_Up_Message_Edit || dataPackage.responseType == InputEventResponseType::Ephemeral_Follow_Up_Message) {
+		else if (dataPackage.responseType == InputEventResponseType::Follow_Up_Message || dataPackage.responseType == InputEventResponseType::Follow_Up_Message_Edit) {
 			std::unique_ptr<DeleteFollowUpMessageData> dataPackageNewer = std::make_unique<DeleteFollowUpMessageData>(dataPackage);
 			dataPackageNewer->timeDelay = timeDelayNew;
 			Interactions::deleteFollowUpMessageAsync(*dataPackageNewer).get();
 		}
-		else if (dataPackage.responseType == InputEventResponseType::Interaction_Response || dataPackage.responseType == InputEventResponseType::Interaction_Response_Edit || dataPackage.responseType == InputEventResponseType::Ephemeral_Interaction_Response
-			|| dataPackage.responseType == InputEventResponseType::Deferred_Response) {
+		else if (dataPackage.responseType == InputEventResponseType::Interaction_Response || dataPackage.responseType == InputEventResponseType::Interaction_Response_Edit || dataPackage.responseType == InputEventResponseType::Deferred_Response) {
 			std::unique_ptr<DeleteInteractionResponseData> dataPackageNewer = std::make_unique<DeleteInteractionResponseData>(dataPackage);
 			dataPackageNewer->timeDelay = timeDelayNew;
 			Interactions::deleteInteractionResponseAsync(*dataPackageNewer).get();

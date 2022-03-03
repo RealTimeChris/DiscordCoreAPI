@@ -252,6 +252,9 @@ namespace DiscordCoreAPI {
 
     CoRoutine<std::vector<SelectMenuResponseData>> SelectMenuCollector::collectSelectMenuData(bool getSelectMenuDataForAllNew,  int32_t maxWaitTimeInMsNew, int32_t maxCollectedSelectMenuCountNew, std::string targetUser) {
         co_await NewThreadAwaitable<std::vector<SelectMenuResponseData>>();
+        if (targetUser == "" && !getSelectMenuDataForAllNew) {
+            throw std::runtime_error("Sorry, but you've failed to properly set the collectSelectMenuData() parameters!");
+        }
         if (targetUser != "") {
             this->userId = targetUser;
         }
@@ -272,21 +275,21 @@ namespace DiscordCoreAPI {
             while (!this->doWeQuit) {
                 try {
                 if (this->getSelectMenuDataForAll == false) {
-                    auto buttonInteractionData = std::make_unique<InteractionData>();
-                    if (waitForTimeToPass(*this->selectMenuIncomingInteractionBuffer.get(), *buttonInteractionData.get(), this->maxTimeInMs)) {
+                    auto selectMenuInteractionData = std::make_unique<InteractionData>();
+                    if (waitForTimeToPass(*this->selectMenuIncomingInteractionBuffer.get(), *selectMenuInteractionData.get(), this->maxTimeInMs)) {
                         this->selectMenuId = "empty";
                         auto response = std::make_unique<SelectMenuResponseData>();
                         response->selectionId = this->selectMenuId;
                         response->channelId = this->channelId;
                         response->messageId = this->messageId;
-                        response->userId = buttonInteractionData->user.id;
-                        response->interactionData = *buttonInteractionData;
+                        response->userId = selectMenuInteractionData->user.id;
+                        response->interactionData = *selectMenuInteractionData;
                         response->values = this->interactionData.data.componentData.values;
                         this->responseVector.push_back(*response);
                         break;
                     }
-                    if (buttonInteractionData->user.id != this->userId) {
-                        auto createResponseData = std::make_unique<CreateInteractionResponseData>(*buttonInteractionData);
+                    if (selectMenuInteractionData->user.id != this->userId) {
+                        auto createResponseData = std::make_unique<CreateInteractionResponseData>(*selectMenuInteractionData);
                         auto embedData = std::make_unique<EmbedData>();
                         embedData->setColor("FEFEFE");
                         embedData->setTitle("__**Permission Issue:**__");
@@ -298,49 +301,65 @@ namespace DiscordCoreAPI {
                         Interactions::createInteractionResponseAsync(*createResponseData).get();
                     }
                     else {
-                        this->interactionData = *buttonInteractionData;
-                        this->selectMenuId = buttonInteractionData->data.componentData.customId;
+                        this->interactionData = *selectMenuInteractionData;
+                        this->selectMenuId = selectMenuInteractionData->data.componentData.customId;
                         auto response = std::make_unique<SelectMenuResponseData>();
                         response->selectionId = this->selectMenuId;
                         response->channelId = this->channelId;
                         response->messageId = this->messageId;
-                        response->userId = buttonInteractionData->user.id;
+                        response->userId = selectMenuInteractionData->user.id;
                         response->values = this->interactionData.data.componentData.values;
-                        response->interactionData = *buttonInteractionData;
+                        response->interactionData = *selectMenuInteractionData;
                         this->responseVector.push_back(*response);
                         this->currentCollectedSelectMenuCount += 1;
+                        if (this->maxCollectedSelectMenuCount > 1 && this->currentCollectedSelectMenuCount < this->maxCollectedSelectMenuCount - 1) {
+                            auto createResponseData = std::make_unique<CreateInteractionResponseData>(*selectMenuInteractionData);
+                            createResponseData->data.type = InteractionCallbackType::Deferred_Update_Message;
+                            Interactions::createInteractionResponseAsync(*createResponseData).get();
+                        }
                         if (this->currentCollectedSelectMenuCount >= this->maxCollectedSelectMenuCount) {
                             doWeQuit = true;
+                            for (auto& value : this->responseVector) {
+                                value.interactionData = *selectMenuInteractionData;
+                            }
                         }
                     }
                 }
                 else {
-                    auto buttonInteractionData = std::make_unique<InteractionData>();
-                    if (waitForTimeToPass(*this->selectMenuIncomingInteractionBuffer.get(), *buttonInteractionData.get(), this->maxTimeInMs)) {
+                    auto selectMenuInteractionData = std::make_unique<InteractionData>();
+                    if (waitForTimeToPass(*this->selectMenuIncomingInteractionBuffer.get(), *selectMenuInteractionData.get(), this->maxTimeInMs)) {
                         this->selectMenuId = "empty";
                         auto response = std::make_unique<SelectMenuResponseData>();
                         response->selectionId = this->selectMenuId;
                         response->channelId = this->channelId;
                         response->messageId = this->messageId;
-                        response->userId = buttonInteractionData->user.id;
-                        response->interactionData = *buttonInteractionData;
+                        response->userId = selectMenuInteractionData->user.id;
+                        response->interactionData = *selectMenuInteractionData;
                         response->values = this->interactionData.data.componentData.values;
                         this->responseVector.push_back(*response);
                         break;
                     }
-                    this->interactionData = *buttonInteractionData;
-                    this->selectMenuId = buttonInteractionData->data.componentData.customId;
+                    this->interactionData = *selectMenuInteractionData;
+                    this->selectMenuId = selectMenuInteractionData->data.componentData.customId;
                     auto response = std::make_unique<SelectMenuResponseData>();
                     response->selectionId = this->selectMenuId;
                     response->channelId = this->channelId;
                     response->messageId = this->messageId;
-                    response->userId = buttonInteractionData->user.id;
-                    response->interactionData = *buttonInteractionData;
+                    response->userId = selectMenuInteractionData->user.id;
+                    response->interactionData = *selectMenuInteractionData;
                     response->values = this->interactionData.data.componentData.values;
                     this->responseVector.push_back(*response);
                     this->currentCollectedSelectMenuCount += 1;
+                    if (this->maxCollectedSelectMenuCount > 1 && this->currentCollectedSelectMenuCount < this->maxCollectedSelectMenuCount - 1) {
+                        auto createResponseData = std::make_unique<CreateInteractionResponseData>(*selectMenuInteractionData);
+                        createResponseData->data.type = InteractionCallbackType::Deferred_Update_Message;
+                        Interactions::createInteractionResponseAsync(*createResponseData).get();
+                    }
                     if (this->currentCollectedSelectMenuCount >= this->maxCollectedSelectMenuCount) {
                         this->doWeQuit = true;
+                        for (auto& value : this->responseVector) {
+                            value.interactionData = *selectMenuInteractionData;
+                        }
                     }
                 }
             }
@@ -363,6 +382,9 @@ namespace DiscordCoreAPI {
 
     CoRoutine<std::vector<ButtonResponseData>> ButtonCollector::collectButtonData(bool getButtonDataForAllNew,  int32_t maxWaitTimeInMsNew, int32_t maxNumberOfPressesNew, std::string targetUser) {
         co_await NewThreadAwaitable<std::vector<ButtonResponseData>>();
+        if (targetUser == "" && !getButtonDataForAllNew) {
+            throw std::runtime_error("You've failed to properly set the collectButtonData() parameters!");
+        }
         if (targetUser != "") {
             this->userId = targetUser;
         }
@@ -418,7 +440,15 @@ namespace DiscordCoreAPI {
                         response->interactionData = *buttonInteractionData;
                         this->responseVector.push_back(*response);
                         this->currentCollectedButtonCount += 1;
+                        if (this->maxCollectedButtonCount > 1 && this->currentCollectedButtonCount < this->maxCollectedButtonCount) {
+                            auto createResponseData = std::make_unique<CreateInteractionResponseData>(*buttonInteractionData);
+                            createResponseData->data.type = InteractionCallbackType::Deferred_Update_Message;
+                            Interactions::createInteractionResponseAsync(*createResponseData).get();
+                        }
                         if (this->currentCollectedButtonCount >= this->maxCollectedButtonCount) {
+                            for (auto& value : this->responseVector) {
+                                value.interactionData = *buttonInteractionData;
+                            }
                             doWeQuit = true;
                         }
                     }
@@ -446,7 +476,15 @@ namespace DiscordCoreAPI {
                     response->interactionData = *buttonInteractionData;
                     this->responseVector.push_back(*response);
                     this->currentCollectedButtonCount += 1;
+                    if (this->maxCollectedButtonCount > 1 && this->currentCollectedButtonCount < this->maxCollectedButtonCount ) {
+                        auto createResponseData = std::make_unique<CreateInteractionResponseData>(*buttonInteractionData);
+                        createResponseData->data.type = InteractionCallbackType::Deferred_Update_Message;
+                        Interactions::createInteractionResponseAsync(*createResponseData).get();
+                    }
                     if (this->currentCollectedButtonCount >= this->maxCollectedButtonCount) {
+                        for (auto& value : this->responseVector) {
+                            value.interactionData = *buttonInteractionData;
+                        }
                         this->doWeQuit = true;
                     }
                 }
