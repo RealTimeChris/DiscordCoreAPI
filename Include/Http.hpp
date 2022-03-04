@@ -29,6 +29,46 @@
 
 namespace DiscordCoreInternal {
 	
+	template<typename ObjectType>
+	class AtomicWrapper {
+	public:
+
+		AtomicWrapper() = default;
+
+		AtomicWrapper(ObjectType* thePtr) {
+			this->theAtomic.store(thePtr, std::memory_order_seq_cst);
+		}
+
+		AtomicWrapper& operator=(const AtomicWrapper& other) {
+			this->theAtomic.store(other.theAtomic.load(std::memory_order_seq_cst));
+			return *this;
+		}
+
+		AtomicWrapper(const AtomicWrapper& other) {
+			*this = other;
+		}
+
+		AtomicWrapper& operator=(AtomicWrapper& other) {
+			this->theAtomic.store(other.theAtomic.load(std::memory_order_seq_cst));
+			return *this;
+		}
+
+		AtomicWrapper(AtomicWrapper& other) {
+			*this = other;
+		}
+
+		ObjectType* load() {
+			return this->theAtomic.load(std::memory_order_seq_cst);
+		}
+
+		void store(ObjectType* other) {
+			this->theAtomic.store(other, std::memory_order_seq_cst);
+		}
+
+	protected:
+		std::atomic<ObjectType*> theAtomic{ nullptr };
+	};
+
 	class HttpConnectionManager;
 	struct HttpConnection;
 	struct RateLimitData;
@@ -40,7 +80,7 @@ namespace DiscordCoreInternal {
 
 		void constructHeaderValues(std::unordered_map<std::string, std::string>& headers, RateLimitData* theConnection);
 
-		HttpData handleHeaders(HttpConnection& theConnection);
+		HttpData handleHeaders(HttpConnection* theConnection);
 
 		std::string buildRequest(HttpWorkloadData& workload);
 
@@ -81,9 +121,8 @@ namespace DiscordCoreInternal {
 
 	protected:
 
-		std::binary_semaphore semaphore{ 1 };
+		bool haveWeCollectedCoolDown{ false };
 		int64_t sampledTimeInMs{ 0 };
-		std::string tempBucket{ "" };
 		int32_t getsRemaining{ 0 };
 		std::string bucket{ "" };
 		int64_t msRemain{ 0 };
@@ -93,18 +132,17 @@ namespace DiscordCoreInternal {
 	public:
 
 		RateLimitData* rateLimitDataPtr{ nullptr };
+		std::recursive_mutex accessMutex{};
 		std::string bucket{ "" };
 		bool doWeConnect{ true };
-		std::mutex accessMutex{};
-
 	};
 
 	class DiscordCoreAPI_Dll HttpConnectionManager {
 	public:
 
-		HttpConnection& getConnection(HttpWorkloadType type);
+		HttpConnection* getConnection(int64_t type);
 
-		void storeConnection(HttpWorkloadType type);
+		void storeConnection(int64_t type);
 
 		void initialize();
 	};
@@ -136,15 +174,15 @@ namespace DiscordCoreInternal {
 		const std::string botToken{};
 		bool doWePrintHttp{ false };
 
-		HttpData executeByRateLimitData(HttpWorkloadData&, bool, HttpConnection& theConnection);
+		HttpData executeByRateLimitData(HttpWorkloadData&, bool, HttpConnection* theConnection);
 
-		HttpData executeHttpRequest(HttpWorkloadData&, HttpConnection& theConnection);
+		HttpData executeHttpRequest(HttpWorkloadData&, HttpConnection* theConnection);
 
 		std::vector<HttpData> executeHttpRequest(std::vector<HttpWorkloadData>&);
 
 		std::vector<HttpData> httpRequest(std::vector<HttpWorkloadData>&);
 
-		HttpData getResponse(HttpConnection& theConnection);
+		HttpData getResponse(HttpConnection* theConnection);
 
 		HttpData httpRequest(HttpWorkloadData&, bool);
 	};

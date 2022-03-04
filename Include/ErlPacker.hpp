@@ -184,5 +184,5 @@ namespace DiscordCoreInternal {
 
 		nlohmann::json parseLargeTuple(ErlPackBuffer&);
 
-	}; 
+	};
 }

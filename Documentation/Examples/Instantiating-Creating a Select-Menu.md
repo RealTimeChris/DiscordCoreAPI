@@ -39,7 +39,7 @@ namespace DiscordCoreAPI {
 			SelectOptionData selectOption{  };
 			selectOption.description = "Select Menu";
 			selectOption.emoji.name = "🏁";
-			selectOption.label = "Select Menu"; 
+			selectOption.label = "Select Menu";
 			selectOption.value = "select_menu";
 			selectOption._default = true;
 			vector<SelectOptionData> selectMenuOptions{ selectOption };
