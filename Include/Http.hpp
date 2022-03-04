@@ -77,19 +77,6 @@ namespace DiscordCoreInternal {
 		friend HttpRnRBuilder;
 		friend HttpClient;
 
-		RateLimitData& operator=(RateLimitData& other) {
-			this->sampledTimeInMs = other.sampledTimeInMs;
-			this->getsRemaining = other.getsRemaining;
-			this->tempBucket = other.tempBucket;
-			this->msRemain = other.msRemain;
-			this->bucket = other.bucket;
-			return *this;
-		}
-
-		RateLimitData(RateLimitData& other) {
-			*this = other;
-		}
-
 		RateLimitData() = default;
 
 	protected:

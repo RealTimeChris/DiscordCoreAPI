@@ -281,7 +281,7 @@ namespace DiscordCoreInternal {
 				uint64_t firstNumberIndex{ 0 };
 				uint64_t lastNumberIndex{ 0 };
 				bool haveWeStarted{ false };
-				for (uint64_t x = other.find("HTTP/1.") + std::string("HTTP/1.").size() + 1; x < other.size(); x += 1) {
+				for (size_t x = other.find("HTTP/1.") + std::string("HTTP/1.").size() + 1; x < other.size(); x += 1) {
 					if (!haveWeStarted && (isalnum(static_cast<unsigned char>(other[x])) != 0)) {
 						firstNumberIndex = x;
 						haveWeStarted = true;
@@ -336,9 +336,9 @@ namespace DiscordCoreInternal {
 			int64_t timeRemaining{};
 			int64_t currentTime = static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
 			if (theConnection.bucket != "" && rateLimitValues.contains(theConnection.bucket)) {
-				auto semaphorePtr = &theConnection.rateLimitDataPtr->semaphore;
-				semaphorePtr->acquire();
 				theConnection.rateLimitDataPtr = rateLimitValues[theConnection.bucket].get();
+				auto semaphorePtr = &rateLimitValues[theConnection.bucket]->semaphore;
+				semaphorePtr->acquire();
 				if (rateLimitValues[theConnection.bucket]->getsRemaining <= 0) {
 					int64_t targetTime = rateLimitValues[theConnection.bucket]->msRemain + rateLimitValues[theConnection.bucket]->sampledTimeInMs;
 					timeRemaining = targetTime - currentTime;
@@ -369,7 +369,7 @@ namespace DiscordCoreInternal {
 				}
 				if (!rateLimitValues.contains(theConnection.rateLimitDataPtr->bucket)) {
 					std::unique_ptr<RateLimitData> tempRateLimitData{ std::make_unique<RateLimitData>() };
-					*tempRateLimitData = *theConnection.rateLimitDataPtr;
+					tempRateLimitData.reset(theConnection.rateLimitDataPtr);
 					rateLimitValues.insert_or_assign(theConnection.rateLimitDataPtr->bucket, std::move(tempRateLimitData));
 				}
 				semaphorePtr->release();

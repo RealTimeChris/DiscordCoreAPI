@@ -67,6 +67,7 @@ namespace DiscordCoreAPI {
 					DiscordCoreInternal::HttpWorkloadData dataPackage02{};
 					dataPackage02.baseUrl = YouTubeRequestBuilder::baseUrl;
 					dataPackage02.relativePath = "/watch?v=" + searchResult.songId + "&hl=en";
+					std::cout << dataPackage02.baseUrl + dataPackage02.relativePath << std::endl;
 					dataPackage02.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
 					workloadVector.push_back(dataPackage02);
 				}
@@ -87,6 +88,7 @@ namespace DiscordCoreAPI {
 			searchResults[x].playerResponse = between(resultStringHTMLBody, "ytInitialPlayerResponse = ", "</script>");
 			searchResults[x].playerResponse = searchResults[x].playerResponse.substr(0, searchResults[x].playerResponse.length() - 1);
 			searchResults[x].firstDownloadUrl = YouTubeRequestBuilder::baseUrl + "/watch?v=" + searchResults[x].songId + "&hl=en";
+			std::cout << searchResults[x].firstDownloadUrl << std::endl;
 			searchResults[x].type = SongType::YouTube;
 			nlohmann::json jsonObject;
 			if (searchResults[x].playerResponse != "") {
@@ -385,7 +387,7 @@ namespace DiscordCoreAPI {
 	}
 
 	std::string YouTubeRequestBuilder::between(std::string body, std::string left, std::string right) {
-		int64_t positionStart = body.find(left) + left.length();
+		int64_t positionStart = static_cast<int64_t>(body.find(left) + left.length());
 		int64_t positionEnd = body.find(right, positionStart);
 		std::string newString = body.substr(positionStart, positionEnd - positionStart);
 		return newString;
@@ -535,7 +537,7 @@ namespace DiscordCoreAPI {
 							haveWeFailed = true;
 							goto breakOutPlayMore; 
 						};
-						auto newData = streamSocket.getInputBuffer();
+						streamSocket.getInputBuffer();
 						streamSocket.getInputBuffer().clear();
 						if (!coroutineHandle.promise().isItStopped()) {
 							bytesReadTotal01 = streamSocket.getBytesRead();
@@ -554,7 +556,7 @@ namespace DiscordCoreAPI {
 							haveWeFailed = true;
 							goto breakOutPlayMore;
 						};
-						auto streamBuffer = streamSocket.getInputBuffer();
+						auto& streamBuffer = streamSocket.getInputBuffer();
 						streamSocket.getInputBuffer().clear();
 						audioDecoder->submitDataForDecoding(streamBuffer);
 						audioDecoder->startMe();

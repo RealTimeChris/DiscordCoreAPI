@@ -483,7 +483,7 @@ namespace DiscordCoreAPI {
             this->push_back('0');
         }
         int64_t permissionsInteger = stoll(*this);
-        if (permissionsInteger & 1 << 3) {
+        if ((permissionsInteger & 1) << 3) {
             for (int64_t x = 0; x < 41; x += 1) {
                 permissionsInteger |= 1ll << x;
             }

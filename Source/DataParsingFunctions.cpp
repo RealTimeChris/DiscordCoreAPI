@@ -2315,7 +2315,7 @@ namespace DiscordCoreInternal {
 
         if (jsonObjectData.contains("color") && !jsonObjectData["color"].is_null()) {
             int32_t colorValInt = jsonObjectData["color"].get<int32_t>();
-            std::stringstream stream;
+            std::stringstream stream{};
             stream << std::setbase(16) << colorValInt;
             pDataStructure.hexColorValue = stream.str();
         }
@@ -3978,8 +3978,11 @@ namespace DiscordCoreInternal {
                     if (newValueNew.is_string()) {
                         pDataStructure.optionsArgs.push_back(std::move(newValueNew));
                     }
-                    else {
+                    else if (newValueNew.is_number()) {
                         pDataStructure.optionsArgs.push_back(std::move(std::to_string(newValueNew.get<int64_t>())));
+                    }
+                    else if (newValueNew.is_boolean()) {
+                        pDataStructure.optionsArgs.push_back(std::move(std::to_string(newValueNew.get<bool>())));
                     }
                 }
             }
