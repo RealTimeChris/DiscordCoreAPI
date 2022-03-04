@@ -28,7 +28,7 @@
 #pragma warning(disable:4996)
 
 #ifdef _WIN32
-#ifdef DISCORDCOREAPIDLL_EXPORTS
+#ifdef DiscordCoreAPI_DLL_EXPORTS
 #define DiscordCoreAPI_Dll __declspec(dllexport)
 #else
 #define DiscordCoreAPI_Dll __declspec(dllimport)
@@ -2141,8 +2141,8 @@ namespace DiscordCoreAPI {
         std::string downloadUrl{ "" };
         std::string signature{ "" };
         int32_t averageBitrate{ 0 };
-        std::string mimeType{ "" };        
-        int32_t contentLength{ 0 };
+        std::string mimeType{ "" };
+        int64_t contentLength{ 0 };
         bool doWeGetSaved{ false };
         std::string quality{ "" };
         std::string codecs{ "" };

@@ -1,5 +1,4 @@
 if (WIN32)
-	add_compile_definitions(DISCORDCOREAPIDLL_EXPORTS)
 	add_compile_options(/bigobj)
 	set(CURL_INCLUDE_DIR "${VCPKG_INSTALLED_DIR}/include/curl")
 	set(CURL_LIBRARY "${VCPKG_INSTALLED_DIR}/bin/curl.dll")
