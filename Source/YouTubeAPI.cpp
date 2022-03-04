@@ -1,14 +1,10 @@
 /*
 *    # License
-
    Copyright 2021 Chris M.
-
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
-
 	   http://www.apache.org/licenses/LICENSE-2.0
-
    Unless required by applicable law or agreed to in writing, software
    distributed under the License is distributed on an "AS IS" BASIS,
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -67,11 +63,9 @@ namespace DiscordCoreAPI {
 					DiscordCoreInternal::HttpWorkloadData dataPackage02{};
 					dataPackage02.baseUrl = YouTubeRequestBuilder::baseUrl;
 					dataPackage02.relativePath = "/watch?v=" + searchResult.songId + "&hl=en";
-					std::cout << dataPackage02.baseUrl + dataPackage02.relativePath << std::endl;
 					dataPackage02.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
 					workloadVector.push_back(dataPackage02);
 				}
-
 			}
 			responseData = DiscordCoreInternal::submitWorkloadAndGetResult(*this->httpClient, workloadVector);
 		}
@@ -88,7 +82,6 @@ namespace DiscordCoreAPI {
 			searchResults[x].playerResponse = between(resultStringHTMLBody, "ytInitialPlayerResponse = ", "</script>");
 			searchResults[x].playerResponse = searchResults[x].playerResponse.substr(0, searchResults[x].playerResponse.length() - 1);
 			searchResults[x].firstDownloadUrl = YouTubeRequestBuilder::baseUrl + "/watch?v=" + searchResults[x].songId + "&hl=en";
-			std::cout << searchResults[x].firstDownloadUrl << std::endl;
 			searchResults[x].type = SongType::YouTube;
 			nlohmann::json jsonObject;
 			if (searchResults[x].playerResponse != "") {
@@ -241,7 +234,6 @@ namespace DiscordCoreAPI {
 		decipheredFormat.downloadUrl = YouTubeRequestBuilder::setDownloadUrl(decipheredFormat);
 		return decipheredFormat;
 	}
-
 	std::string YouTubeRequestBuilder::decipher(std::vector<std::string> tokens, std::string cipherSignature) {
 		std::vector<char> signatureNew = YouTubeRequestBuilder::splitString(cipherSignature);
 		for (int32_t x = 0, len = static_cast<int32_t>(tokens.size()); x < len; x += 1) {
@@ -296,7 +288,6 @@ namespace DiscordCoreAPI {
 				tokenActions.push_back(actionsObjectResult);
 			}
 		}
-
 		std::regex actionsFuncRegexp("function(?:[a-zA-Z_\\$][a-zA-Z_0-9]*)?\\(a\\)\\{a=a\\.split\\((?:''|\"\")\\);\\s*((?:(?:a=)?[a-zA-Z_\\$][a-zA-Z_0-9]*(?:\\.[a-zA-Z_\\$][a-zA-Z_0-9]*|\\[(?:'[^'\\\\]*(:?\\\\[\\s\\S][^'\\\\]*)*'|\"[^\"\\\\]*(:?\\\\[\\s\\S][^\"\\\\]*)*\")\\])\\(a,\\d+\\);)+)return a\\.join\\((?:''|\"\")\\)\\}", std::regex_constants::ECMAScript);
 		std::smatch actionFuncRegexMatch;
 		regex_search(newString, actionFuncRegexMatch, actionsFuncRegexp, std::regex_constants::match_any | std::regex_constants::match_not_null);
@@ -326,7 +317,6 @@ namespace DiscordCoreAPI {
 		std::smatch matchResultsNew03;
 		std::string spliceKey;
 		regex_search(objectBody, matchResultsNew03, spliceRegexp, std::regex_constants::match_not_null);
-
 		if (!matchResultsNew03.empty() && matchResultsNew03.size() > 0) {
 			spliceKey = regex_replace(matchResultsNew03[0].str().substr(0, matchResultsNew03[0].str().find(":")), std::regex("/g,'\\$"), "");
 			spliceKey = regex_replace(spliceKey, std::regex("\\$|^'|^\"|'$|\"$"), "");
@@ -387,7 +377,7 @@ namespace DiscordCoreAPI {
 	}
 
 	std::string YouTubeRequestBuilder::between(std::string body, std::string left, std::string right) {
-		int64_t positionStart = static_cast<int64_t>(body.find(left) + left.length());
+		int64_t positionStart = body.find(left) + left.length();
 		int64_t positionEnd = body.find(right, positionStart);
 		std::string newString = body.substr(positionStart, positionEnd - positionStart);
 		return newString;
@@ -533,11 +523,11 @@ namespace DiscordCoreAPI {
 							goto breakOut;
 						}
 						remainingDownloadContentLength = newSong.contentLength - bytesReadTotal01;
-						if (!streamSocket.processIO(600000)) { 
+						if (!streamSocket.processIO(600000)) {
 							haveWeFailed = true;
-							goto breakOutPlayMore; 
+							goto breakOutPlayMore;
 						};
-						streamSocket.getInputBuffer();
+						auto newData = streamSocket.getInputBuffer();
 						streamSocket.getInputBuffer().clear();
 						if (!coroutineHandle.promise().isItStopped()) {
 							bytesReadTotal01 = streamSocket.getBytesRead();
@@ -556,7 +546,7 @@ namespace DiscordCoreAPI {
 							haveWeFailed = true;
 							goto breakOutPlayMore;
 						};
-						auto& streamBuffer = streamSocket.getInputBuffer();
+						auto streamBuffer = streamSocket.getInputBuffer();
 						streamSocket.getInputBuffer().clear();
 						audioDecoder->submitDataForDecoding(streamBuffer);
 						audioDecoder->startMe();
@@ -630,4 +620,5 @@ namespace DiscordCoreAPI {
 	std::vector<YouTubeSong> YouTubeAPI::searchForSong(std::string searchQuery) {
 		return this->requestBuilder.collectSearchResults(searchQuery);
 	}
+
 };
