@@ -9,7 +9,7 @@ if (WIN32)
 	set(OPENSSL_ROOT_DIR "${VCPKG_INSTALLED_DIR}")
 	find_package(OpenSSL REQUIRED)
 
-	add_library(DiscordCoreAPI-DLL SHARED "../../Source/DllMain.cpp" "../../Include/Index.hpp" "../../Source/ApplicationCommandEntities.cpp" "../../Source/AudioDecoder.cpp"
+	add_library(DiscordCoreAPI SHARED "../../Source/DllMain.cpp" "../../Include/Index.hpp" "../../Source/ApplicationCommandEntities.cpp" "../../Source/AudioDecoder.cpp"
 		"../../Source/AudioEncoder.cpp" "../../Source/ChannelEntities.cpp"
 		"../../Source/CommandController.cpp" "../../Source/DataParsingFunctions.cpp"
 		"../../Source/DiscordCoreClient.cpp" "../../Source/DiscordCoreClient.cpp"
@@ -28,10 +28,10 @@ if (WIN32)
 		"../../Source/YouTubeAPI.cpp"
 	)
 
-	target_link_libraries(DiscordCoreAPI-DLL PUBLIC OpenSSL::SSL OpenSSL::Crypto)
-	target_link_libraries(DiscordCoreAPI-DLL PUBLIC ${FFMPEG_LIBRARIES})
-	target_link_libraries(DiscordCoreAPI-DLL PUBLIC "${VCPKG_INSTALLED_DIR}/lib/libcurl.lib")
-	target_link_libraries(DiscordCoreAPI-DLL PUBLIC "${VCPKG_INSTALLED_DIR}/lib/libsodium.lib")
-	target_link_libraries(DiscordCoreAPI-DLL PUBLIC "${VCPKG_INSTALLED_DIR}/lib/glib-2.0.lib")
-	target_link_libraries(DiscordCoreAPI-DLL PUBLIC "${VCPKG_INSTALLED_DIR}/lib/opus.lib")
+	target_link_libraries(DiscordCoreAPI PUBLIC OpenSSL::SSL OpenSSL::Crypto)
+	target_link_libraries(DiscordCoreAPI PUBLIC ${FFMPEG_LIBRARIES})
+	target_link_libraries(DiscordCoreAPI PUBLIC "${VCPKG_INSTALLED_DIR}/lib/libcurl.lib")
+	target_link_libraries(DiscordCoreAPI PUBLIC "${VCPKG_INSTALLED_DIR}/lib/libsodium.lib")
+	target_link_libraries(DiscordCoreAPI PUBLIC "${VCPKG_INSTALLED_DIR}/lib/glib-2.0.lib")
+	target_link_libraries(DiscordCoreAPI PUBLIC "${VCPKG_INSTALLED_DIR}/lib/opus.lib")
 endif()

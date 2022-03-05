@@ -28,7 +28,7 @@
 #pragma warning(disable:4996)
 
 #ifdef _WIN32
-#ifdef DiscordCoreAPI_DLL_EXPORTS
+#ifdef DiscordCoreAPI_EXPORTS
 #define DiscordCoreAPI_Dll __declspec(dllexport)
 #else
 #define DiscordCoreAPI_Dll __declspec(dllimport)
