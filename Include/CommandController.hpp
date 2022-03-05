@@ -32,9 +32,7 @@
 namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll CommandController {
-	public:
-
-		std::map<std::vector<std::string>, UniquePtrWrapper<BaseFunction>> functions{};
+	public:		
 		
 		CommandController(std::string, DiscordCoreClient*);
 

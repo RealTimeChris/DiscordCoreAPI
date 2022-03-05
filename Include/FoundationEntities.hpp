@@ -363,58 +363,6 @@ namespace DiscordCoreAPI {
     };
 
     template <typename ObjectType>
-    class UniquePtrWrapper {
-    public:
-
-        UniquePtrWrapper<ObjectType>& operator=(const UniquePtrWrapper<ObjectType>& other) {
-            this->thePtr.reset(other.thePtr.get());
-            other.thePtr.~unique_ptr();
-            return *this;
-        }
-
-        UniquePtrWrapper(const UniquePtrWrapper<ObjectType>& other) {
-            *this = other;
-        }
-
-        UniquePtrWrapper<ObjectType>& operator=(UniquePtrWrapper<ObjectType>& other) {
-            this->thePtr.reset(other.thePtr.release());
-            return *this;
-        }
-
-        UniquePtrWrapper(UniquePtrWrapper<ObjectType>& other) {
-            *this = other;
-        }
-
-        UniquePtrWrapper<ObjectType>& operator=(std::unique_ptr<ObjectType> other) {
-            this->thePtr.reset(other.release());
-            return *this;
-        }
-
-        UniquePtrWrapper(std::unique_ptr<ObjectType> other) {
-            *this = std::move(other);
-        }
-
-        UniquePtrWrapper() = default;
-
-        ObjectType* operator->() {
-            return this->thePtr.get();
-        }
-
-        ObjectType* operator*() {
-            return this->thePtr.get();
-        }
-
-        ObjectType* get() {
-            return this->thePtr.get();
-        }
-
-    protected:
-
-        std::unique_ptr<ObjectType> thePtr{ nullptr };
-
-    };
-
-    template <typename ObjectType>
     concept Copyable = std::copyable<ObjectType>;
 
     /**
