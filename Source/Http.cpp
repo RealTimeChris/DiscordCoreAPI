@@ -355,12 +355,10 @@ namespace DiscordCoreInternal {
 					theConnection.rateLimitDataPtr->msRemain = 4000;
 				}
 				else if (theConnection.rateLimitDataPtr->areWeASpecialBucket) {
-					std::cout << "WERE HERE THIS IS IT" << std::endl;
 					if (theConnection.rateLimitDataPtr->getsRemainingTotal == 0) {
-						std::cout << "WERE HERE THIS IS IT 010101" << std::endl;
 						theConnection.rateLimitDataPtr->getsRemainingTotal = 4;
 						theConnection.rateLimitDataPtr->msRemainTotal = 5000;
-						theConnection.rateLimitDataPtr->getsRemaining = 4;
+						theConnection.rateLimitDataPtr->getsRemaining = 5;
 					}
 					theConnection.rateLimitDataPtr->sampledTimeInMs = static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
 					theConnection.rateLimitDataPtr->msRemain = theConnection.rateLimitDataPtr->msRemainTotal / theConnection.rateLimitDataPtr->getsRemainingTotal;
@@ -394,7 +392,6 @@ namespace DiscordCoreInternal {
 						}
 					}
 				}
-				std::cout << "WORKLOAD TYPE: " << static_cast<int64_t>(workload.workloadType) << " GETS REMAIN: " << theConnection.rateLimitDataPtr->getsRemaining << " MS REMAIN: " << theConnection.rateLimitDataPtr->msRemain << " BUCKET: " << theConnection.bucket << std::endl;
 				returnData = HttpClient::executeHttpRequest(workload, theConnection);
 				if (!rateLimitValues.contains(theConnection.rateLimitDataPtr->bucket)) {
 					std::unique_ptr<RateLimitData> tempRateLimitData{ std::make_unique<RateLimitData>() };
@@ -549,7 +546,6 @@ namespace DiscordCoreInternal {
 						theConnectionNew.rateLimitDataPtr = value.get();
 					}
 				}
-				std::cout << "WORKLOAD TYPE 010101: " << static_cast<int64_t>(workload.workloadType) << " GETS REMAIN: " << theConnectionNew.rateLimitDataPtr->getsRemaining << " MS REMAIN: " << theConnectionNew.rateLimitDataPtr->msRemain << " BUCKET: " << theConnectionNew.bucket << std::endl;
 			}
 			HttpData resultData = this->executeByRateLimitData(workload, printResult, theConnectionNew);
 			if (resultData.responseCode == 429) {

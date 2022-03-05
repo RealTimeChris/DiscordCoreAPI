@@ -417,12 +417,17 @@ namespace DiscordCoreAPI {
     template <typename ObjectType>
     concept Copyable = std::copyable<ObjectType>;
 
+    /**
+    * \addtogroup utilities
+    * @{
+    */
+
     /// A messaging block for data-structures. \brief A messaging block for data-structures.
     /// \tparam ObjectType The type of object that will be sent over the message block.
     template <Copyable ObjectType>
     class UnboundedMessageBlock {
     public:
-
+        
         UnboundedMessageBlock<ObjectType>& operator=(UnboundedMessageBlock<ObjectType>&& other) {
             if (this != &other) {
                 this->theArray = std::move(other.theArray);
@@ -445,14 +450,20 @@ namespace DiscordCoreAPI {
 
         UnboundedMessageBlock() = default;
 
+        /// Sends an object of type ObjectType to the "recipient". \brief Sends a object of type ObjectType to the "recipient".
+        /// \param theObject An object of ObjectType.
         void send(ObjectType theObject) {
             this->theArray.push(theObject);
         }
 
+        /// Clears the contents of the messaging block. \brief Clears the contents of the messaging block.
         void clearContents() {
             this->theArray = std::queue<ObjectType>{};
         }
 
+        /// Tries to receive an object of type ObjectType to be placed into a reference. \brief Tries to receive an object of type ObjectType to be placed into a reference.
+        /// \param theObject A reference of type ObjectType for placing the potentially received object.
+        /// \returns A bool, denoting whether or not we received an object.
         bool tryReceive(ObjectType& theObject) {
             if (this->theArray.size() == 0) {
                 return false;
@@ -497,17 +508,23 @@ namespace DiscordCoreAPI {
         TSUnboundedMessageBlock(TSUnboundedMessageBlock<ObjectType>&) = delete;
 
         TSUnboundedMessageBlock() = default;
-
+        
+        /// Sends an object of type ObjectType to the "recipient". \brief Sends a object of type ObjectType to the "recipient".
+        /// \param theObject An object of ObjectType.
         void send(ObjectType theObject) {
             std::lock_guard<std::mutex> accessLock{ this->accessMutex };
             this->theArray.push(theObject);
         }
 
+        /// Clears the contents of the messaging block. \brief Clears the contents of the messaging block.
         void clearContents() {
             std::lock_guard<std::mutex> accessLock{ this->accessMutex };
             this->theArray = std::queue<ObjectType>{};
         }
 
+        /// Tries to receive an object of type ObjectType to be placed into a reference. \brief Tries to receive an object of type ObjectType to be placed into a reference.
+        /// \param theObject A reference of type ObjectType for placing the potentially received object.
+        /// \returns A bool, denoting whether or not we received an object.
         bool tryReceive(ObjectType& theObject) {
             std::lock_guard<std::mutex> accessLock{ this->accessMutex };
             if (this->theArray.size() == 0) {
@@ -525,6 +542,8 @@ namespace DiscordCoreAPI {
         std::queue<ObjectType> theArray{};
         std::mutex accessMutex{};
     };
+
+    /**@}*/
 
     class DiscordCoreAPI_Dll Time {
     public:
@@ -967,9 +986,9 @@ namespace DiscordCoreAPI {
         Direct_Message_Typing = (1 << 14),///< Intent for receipt of direct message typing notifications.
         Message_Content = (1 << 15),///< Intent for receipt of message content.
         Guild_Scheduled_Events = (1 << 16),///< Scheduled events.
-        Default_Intents = GatewayIntents::Guilds | GatewayIntents::Guild_Bans | GatewayIntents::Guild_Emojis | GatewayIntents::Guild_Integrations | GatewayIntents::Guild_Webhooks | GatewayIntents::Guild_Invites | GatewayIntents::Guild_VoiceStates | GatewayIntents::Guild_Messages | GatewayIntents::Guild_Message_Reactions | GatewayIntents::Guild_Message_Typing | GatewayIntents::Direct_Messages | GatewayIntents::Direct_Message_Reactions | GatewayIntents::Direct_Message_Typing | GatewayIntents::Guild_Scheduled_Events,///< Default intents (all non-privileged intents).
-        Privileged_Intents = GatewayIntents::Guild_Members | GatewayIntents::Guild_Presences | GatewayIntents::Message_Content,///< Privileged intents requiring ID.
-        All_Intents = GatewayIntents::Default_Intents | GatewayIntents::Privileged_Intents///< Every single intent.
+        Default_Intents = Guilds | Guild_Bans | Guild_Emojis | Guild_Integrations | Guild_Webhooks | Guild_Invites | Guild_VoiceStates | Guild_Messages | Guild_Message_Reactions | Guild_Message_Typing | Direct_Messages | Direct_Message_Reactions | Direct_Message_Typing | Guild_Scheduled_Events,///< Default intents (all non-privileged intents).
+        Privileged_Intents = Guild_Members | Guild_Presences | Message_Content,///< Privileged intents requiring ID.
+        All_Intents = Default_Intents | Privileged_Intents///< Every single intent.
     };
 
     /// For ids of DiscordEntities. \brief For ids of DiscordEntities.
