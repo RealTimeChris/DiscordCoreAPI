@@ -116,7 +116,7 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll HttpConnectionManager {
 	public:
 
-		HttpConnection& getConnection(int64_t type);
+		HttpConnection* getConnection(int64_t type);
 
 		void storeConnection(int64_t type);
 

@@ -322,8 +322,8 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	HttpConnection& HttpConnectionManager::getConnection(int64_t type) {
-		return *Statics::httpConnections[type].get();
+	HttpConnection* HttpConnectionManager::getConnection(int64_t type) {
+		return Statics::httpConnections[type].get();
 	}
 
 	void HttpConnectionManager::storeConnection(int64_t type) {
@@ -546,16 +546,16 @@ namespace DiscordCoreInternal {
 			if (workload.baseUrl == "") {
 				workload.baseUrl = "https://discord.com/api/v10";
 			}
-			HttpConnection& theConnectionNew = this->connectionManager.getConnection(static_cast<int64_t>(workload.workloadType));
-			std::lock_guard<std::recursive_mutex>theAccessLock{ theConnectionNew.accessMutex };
-			HttpData resultData = this->executeByRateLimitData(workload, printResult, theConnectionNew);
+			HttpConnection* theConnectionNew = this->connectionManager.getConnection(static_cast<int64_t>(workload.workloadType));
+			std::unique_lock<std::recursive_mutex>theAccessLock{ theConnectionNew->accessMutex };
+			HttpData resultData = this->executeByRateLimitData(workload, printResult, *theConnectionNew);
 			if (resultData.responseCode == 429) {
 				resultData.responseData = nlohmann::json::parse(resultData.responseMessage);
-				Statics::rateLimitValues[theConnectionNew.bucket]->msRemain = static_cast<int64_t>(1000.0f * stod(resultData.responseHeaders["x-ratelimit-reset-after"]));
-				Statics::rateLimitValues[theConnectionNew.bucket]->getsRemaining = -1;
-				Statics::rateLimitValues[theConnectionNew.bucket]->sampledTimeInMs = static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
-				std::cout << DiscordCoreAPI::shiftToBrightRed() << workload.callStack + "::httpRequest(), We've hit rate limit! Time Remaining: " << std::to_string(Statics::rateLimitValues[theConnectionNew.bucket]->msRemain) << std::endl << DiscordCoreAPI::reset() << std::endl;
-				theConnectionNew.resetValues();
+				Statics::rateLimitValues[theConnectionNew->bucket]->msRemain = static_cast<int64_t>(1000.0f * stod(resultData.responseHeaders["x-ratelimit-reset-after"]));
+				Statics::rateLimitValues[theConnectionNew->bucket]->getsRemaining = -1;
+				Statics::rateLimitValues[theConnectionNew->bucket]->sampledTimeInMs = static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
+				std::cout << DiscordCoreAPI::shiftToBrightRed() << workload.callStack + "::httpRequest(), We've hit rate limit! Time Remaining: " << std::to_string(Statics::rateLimitValues[theConnectionNew->bucket]->msRemain) << std::endl << DiscordCoreAPI::reset() << std::endl;
+				theConnectionNew->resetValues();
 				resultData = this->httpRequest(workload, printResult);
 			}
 			return resultData;
