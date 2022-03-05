@@ -38,6 +38,8 @@ namespace DiscordCoreAPI {
 
 		void registerFunction(std::vector<std::string> functionNames, std::unique_ptr<BaseFunction> baseFunction);
 
+		std::map<std::vector<std::string>, std::unique_ptr<BaseFunction>>& getFunctions();
+
 		CoRoutine<void> checkForAndRunCommand(std::unique_ptr<CommandData> commandData);
 
 	protected:

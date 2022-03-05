@@ -44,6 +44,10 @@ namespace DiscordCoreAPI {
 		}
 	}
 
+	std::map<std::vector<std::string>, std::unique_ptr<BaseFunction>>& CommandController::getFunctions() {
+		return Statics::functions;
+	};
+
 	CoRoutine<void> CommandController::checkForAndRunCommand(std::unique_ptr<CommandData> commandData) {
 		try {
 			co_await NewThreadAwaitable<void>();
