@@ -278,11 +278,11 @@ namespace DiscordCoreAPI {
     }
 
     std::string shiftToBrightGreen() {
-        return std::string("\033[5;40;36m");
+        return std::string("\033[1;40;92m");
     }
 
     std::string shiftToBrightBlue() {
-        return std::string("\033[1;40;94m");
+        return std::string("\033[1;40;36m");
     }
 
     std::string shiftToBrightRed() {
