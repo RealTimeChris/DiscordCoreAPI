@@ -362,13 +362,13 @@ namespace DiscordCoreAPI {
         ObjectTypeWrapper* thePtr{ nullptr };
     };
 
-    template <typename ObjectType>
-    concept Copyable = std::copyable<ObjectType>;
-
     /**
     * \addtogroup utilities
     * @{
     */
+
+    template <typename ObjectType>
+    concept Copyable = std::copyable<ObjectType>;
 
     /// A messaging block for data-structures. \brief A messaging block for data-structures.
     /// \tparam ObjectType The type of object that will be sent over the message block.

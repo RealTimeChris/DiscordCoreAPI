@@ -33,7 +33,7 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll CommandController {
 	public:		
-		
+
 		CommandController(std::string, DiscordCoreClient*);
 
 		void registerFunction(std::vector<std::string> functionNames, std::unique_ptr<BaseFunction> baseFunction);

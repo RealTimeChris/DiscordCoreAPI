@@ -56,16 +56,6 @@ void signalHandler(int32_t);
 
 namespace DiscordCoreAPI {
 
-	namespace Statics {
-		namespace {
-			std::unordered_map<std::string, TSUnboundedMessageBlock<AudioFrameData>*> audioBufferMap{};
-			std::unordered_map<std::string, std::unique_ptr<VoiceConnection>> voiceConnectionMap{};
-			std::unordered_map<std::string, std::unique_ptr<SoundCloudAPI>> soundCloudAPIMap{};
-			std::unordered_map<std::string, std::unique_ptr<YouTubeAPI>> youtubeAPIMap{};
-			std::unordered_map<std::string, std::unique_ptr<SongAPI>> songAPIMap{};
-		}
-	}
-
 	DiscordCoreAPI_Dll std::unordered_map<std::string, TSUnboundedMessageBlock<AudioFrameData>*>& getAudioBufferMap();
 
 	DiscordCoreAPI_Dll std::unordered_map<std::string, std::unique_ptr<VoiceConnection>>& getVoiceConnectionMap();

@@ -26,7 +26,9 @@
 
 namespace DiscordCoreAPI {
 
-	std::map<std::vector<std::string>, std::unique_ptr<BaseFunction>> functions{};
+	namespace Statics {
+		std::map<std::vector<std::string>, std::unique_ptr<BaseFunction>> functions{};
+	}	
 
 	CommandController::CommandController(std::string commandPrefix, DiscordCoreClient* discordCoreClientNew) {
 		this->commandPrefix = commandPrefix;
@@ -35,7 +37,7 @@ namespace DiscordCoreAPI {
 
 	void CommandController::registerFunction(std::vector<std::string> functionNames, std::unique_ptr<BaseFunction> baseFunction) {
 		try {
-			functions.insert(std::make_pair(functionNames, std::move(baseFunction)));
+			Statics::functions.insert(std::make_pair(functionNames, std::move(baseFunction)));
 		}
 		catch (...) {
 			reportException("CommandController::registerFunction()");
@@ -88,7 +90,7 @@ namespace DiscordCoreAPI {
 			std::string functionName{ "" };
 			bool isItFound{ false };
 			if (commandName.size() > 0) {
-				for (auto const& [keyFirst, value] : functions) {
+				for (auto const& [keyFirst, value] : Statics::functions) {
 					if (commandName[0] == this->commandPrefix[0]) {
 						for (auto &key : keyFirst) {
 							if (key.find(convertToLowerCase(commandName.substr(1, commandName.size() - 1))) != std::string::npos) {
@@ -114,7 +116,7 @@ namespace DiscordCoreAPI {
 		try {
 			if (messageContents.size() > 0) {
 				if (messageContents[0] == this->commandPrefix[0]) {
-					for (auto& [keyFirst, value] : functions) {
+					for (auto& [keyFirst, value] : Statics::functions) {
 						for (std::string key : keyFirst) {
 							if (messageContents.find(key) != std::string::npos) {
 								if (messageContents.find_first_of(" ") == std::string::npos) {
@@ -144,10 +146,10 @@ namespace DiscordCoreAPI {
 
 	std::unique_ptr<BaseFunction> CommandController::createFunction(std::string functionName) {
 		try {
-			for (auto& [key01, value01] : functions) {
+			for (auto& [key01, value01] : Statics::functions) {
 				for (auto& value02 : key01) {
 					if (functionName == value02) {
-						return std::move(functions.at(key01))->create();
+						return std::move(Statics::functions.at(key01))->create();
 					}
 				}
 			}
