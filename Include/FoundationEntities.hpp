@@ -164,11 +164,11 @@ namespace DiscordCoreAPI {
     class Guild;
     class Test;
 
-    template<typename ReturnType, typename ...ArgTypes>
+    template <typename ReturnType, typename ...ArgTypes>
     class Event;
-    template<typename ReturnType, typename ...ArgTypes>
+    template <typename ReturnType, typename ...ArgTypes>
     class EventDelegate;
-    template<typename ReturnType>
+    template <typename ReturnType>
     class CoRoutine;
 
     struct DiscordCoreAPI_Dll CURLWrapper {
@@ -270,7 +270,7 @@ namespace DiscordCoreAPI {
 
     bool operator==(CURLCharWrapper& lhs, const  std::string& rhs);
 
-    template<typename ObjectType>
+    template <typename ObjectType>
     class ReferenceCountingPtr {
     public:
 
@@ -362,7 +362,7 @@ namespace DiscordCoreAPI {
         ObjectTypeWrapper* thePtr{ nullptr };
     };
 
-    template<typename ObjectType>
+    template <typename ObjectType>
     class UniquePtrWrapper {
     public:
 
@@ -414,12 +414,12 @@ namespace DiscordCoreAPI {
 
     };
 
-    template<typename ObjectType>
+    template <typename ObjectType>
     concept Copyable = std::copyable<ObjectType>;
 
     /// A messaging block for data-structures. \brief A messaging block for data-structures.
-    /// \param ObjectType The type of object that will be sent over the message block.
-    template<Copyable ObjectType>
+    /// \tparam ObjectType The type of object that will be sent over the message block.
+    template <Copyable ObjectType>
     class UnboundedMessageBlock {
     public:
 
@@ -471,8 +471,8 @@ namespace DiscordCoreAPI {
     };
 
     /// A thread-safe messaging block for data-structures. \brief A thread-safe messaging block for data-structures.
-    /// \param ObjectType The type of object that will be sent over the message block.
-    template<Copyable ObjectType>
+    /// \tparam ObjectType The type of object that will be sent over the message block.
+    template <Copyable ObjectType>
     class TSUnboundedMessageBlock {
     public:
 
@@ -623,7 +623,7 @@ namespace DiscordCoreAPI {
         const int32_t secondsPerDay{ 60 * 60 * 24 };
     };
 
-    template<typename TimeType>
+    template <typename TimeType>
     class StopWatch {
     public:
 
@@ -3413,7 +3413,7 @@ namespace  DiscordCoreInternal {
         Delete = 4
     };
 
-    enum class HttpWorkloadType {
+    enum class HttpWorkloadType : int64_t {
         Unset = 0,
         Get_Global_Application_Commands = 1,
         Post_Global_Application_Command = 2,

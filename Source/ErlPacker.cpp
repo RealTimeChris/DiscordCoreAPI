@@ -69,7 +69,7 @@ namespace DiscordCoreInternal {
 		return nlohmann::json();
 	}
 
-	template<typename ReturnType>
+	template <typename ReturnType>
 	void ErlPacker::etfByteOrder(ReturnType x, ReturnType& theValue) {
 		const uint8_t byteSize{ 8 };
 		for (uint32_t y = 0; y < sizeof(ReturnType); y += 1) {
@@ -77,7 +77,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	template<typename ReturnType>
+	template <typename ReturnType>
 	void ErlPacker::storeBits(std::vector<uint8_t>& to, ReturnType& num, uint32_t& offSet) {
 		const uint8_t byteSize{ 8 };
 		ReturnType newVal{};
@@ -296,7 +296,7 @@ namespace DiscordCoreInternal {
 		ErlPacker::writeToBuffer(buffer, bufferNew);
 	}
 
-	template<typename ReturnType>
+	template <typename ReturnType>
 	void ErlPacker::readBits(ErlPackBuffer& buffer, ReturnType& theValue) {
 		const uint8_t byteSize{ 8 };
 		if (buffer.offSet + sizeof(ReturnType) > buffer.buffer.size()) {

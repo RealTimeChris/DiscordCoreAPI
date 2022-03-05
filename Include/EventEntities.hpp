@@ -31,10 +31,10 @@ namespace DiscordCoreAPI {
 
    struct DiscordCoreAPI_Dll EventDelegateToken {
 
-        template<typename ReturnType, typename ...ArgTypes>
+        template <typename ReturnType, typename ...ArgTypes>
         friend class EventDelegate;
 
-        template<typename ReturnType, typename ...ArgTypes>
+        template <typename ReturnType, typename ...ArgTypes>
         friend class Event;
 
         friend inline bool operator==(const EventDelegateToken& lhs, const EventDelegateToken& rhs);
@@ -68,11 +68,11 @@ namespace DiscordCoreAPI {
         }
     }
 
-    template<typename ReturnType, typename ...ArgTypes>
+    template <typename ReturnType, typename ...ArgTypes>
     class EventDelegate {
     public:
 
-        template<typename ReturnType02, typename... ArgTypes02>
+        template <typename ReturnType02, typename... ArgTypes02>
         friend class Event;
 
         EventDelegate<ReturnType, ArgTypes...>& operator=(EventDelegate<ReturnType, ArgTypes...>&& other) noexcept {
@@ -107,7 +107,7 @@ namespace DiscordCoreAPI {
         std::function<ReturnType(ArgTypes...)>theFunction{};
     };
 
-    template<typename ReturnType, typename  ...ArgTypes>
+    template <typename ReturnType, typename  ...ArgTypes>
     class Event {
     public:
 
@@ -162,7 +162,7 @@ namespace DiscordCoreAPI {
         std::string eventId{ "" };
     };
 
-    template<typename ReturnType, typename  ...ArgTypes>
+    template <typename ReturnType, typename  ...ArgTypes>
     class UniEvent {
     public:
 

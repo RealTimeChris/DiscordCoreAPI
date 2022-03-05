@@ -41,17 +41,17 @@ namespace DiscordCoreAPI {
     };
 
      /// A CoRoutine - representing a potentially asynchronous operation/function. \brief A CoRoutine - representing a potentially asynchronous operation/function.
-     /// \param ReturnType The type of parameter that is returned by the CoRoutine.
-    template<typename ReturnType>
+     /// \tparam ReturnType The type of parameter that is returned by the CoRoutine.
+    template <typename ReturnType>
     class CoRoutine {
     public:
 
         class DiscordCoreAPI_Dll promise_type {
         public:
 
-            template<typename ReturnType02>
+            template <typename ReturnType02>
             friend auto NewThreadAwaitable();
-            template<typename ReturnType02>
+            template <typename ReturnType02>
             friend class CoRoutine;
 
             void requestStop() {
@@ -199,17 +199,17 @@ namespace DiscordCoreAPI {
     };
 
      /// A CoRoutine - representing a potentially asynchronous operation/function (The void specialization). \brief A CoRoutine - representing a potentially asynchronous operation/function (The void specialization).
-     /// \param void The type of parameter that is returned by the CoRoutine.
-    template<>
+     /// \tparam void The type of parameter that is returned by the CoRoutine.
+    template <>
     class CoRoutine<void> {
     public:
 
         class DiscordCoreAPI_Dll promise_type {
         public:
 
-            template<typename void02>
+            template <typename void02>
             friend auto NewThreadAwaitable();
-            template<typename void02>
+            template <typename void02>
             friend class CoRoutine;
 
             void requestStop() {
@@ -353,9 +353,9 @@ namespace DiscordCoreAPI {
     };
 
      /// For launching the CoRoutine onto a new CPU thread, as well as returning the CoRoutine's handle to the inside of the function itself, for handling cancellation. \brief For launching the CoRoutine onto a new CPU thread, as well as returning the CoRoutine's handle to the inside of the function itself, for handling cancellation.
-     /// \param ReturnType The type of the value returned by the containing CoRoutine.
+     /// \tparam ReturnType The type of the value returned by the containing CoRoutine.
      /// \returns A std::coroutine_handle<CoRoutine<ReturnType>::promise_type> object, which contains the NewThread, which contains a Stop_Token and Stop_Source.
-    template<typename ReturnType>
+    template <typename ReturnType>
     auto NewThreadAwaitable() {
 
         struct DiscordCoreAPI_Dll NewThreadAwaitableClass {

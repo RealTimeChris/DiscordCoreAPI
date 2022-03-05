@@ -77,14 +77,29 @@ namespace DiscordCoreInternal {
 		friend HttpRnRBuilder;
 		friend HttpClient;
 
+		RateLimitData& operator=(RateLimitData& other) {
+			this->areWeASpecialBucket = other.areWeASpecialBucket;
+			this->haveWeCollectedTime = other.haveWeCollectedTime;
+			this->getsRemainingTotal = other.getsRemainingTotal;
+			this->sampledTimeInMs = other.sampledTimeInMs;
+			this->getsRemaining = other.getsRemaining;
+			this->msRemainTotal = other.msRemainTotal;
+			this->msRemain = other.msRemain;
+			this->bucket = other.bucket;
+			return *this;
+		}
+
 		RateLimitData() = default;
 
 	protected:
 
-		std::binary_semaphore semaphore{ 1 };
+		bool haveWeCollectedTime{ false };
+		bool areWeASpecialBucket{ false };
+		int64_t getsRemainingTotal{ 0 };
 		int64_t sampledTimeInMs{ 0 };
-		std::string tempBucket{ "" };
 		int32_t getsRemaining{ 0 };
+		int64_t msRemainTotal{ 0 };
+		std::mutex accessMutex{};
 		std::string bucket{ "" };
 		int64_t msRemain{ 0 };
 	};
@@ -93,18 +108,17 @@ namespace DiscordCoreInternal {
 	public:
 
 		RateLimitData* rateLimitDataPtr{ nullptr };
+		std::recursive_mutex accessMutex{};
 		std::string bucket{ "" };
 		bool doWeConnect{ true };
-		std::mutex accessMutex{};
-
 	};
 
 	class DiscordCoreAPI_Dll HttpConnectionManager {
 	public:
 
-		HttpConnection& getConnection(HttpWorkloadType type);
+		HttpConnection& getConnection(int64_t type);
 
-		void storeConnection(HttpWorkloadType type);
+		void storeConnection(int64_t type);
 
 		void initialize();
 	};
@@ -119,7 +133,7 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll HttpClient {
 	public:
 
-		template<typename ReturnType>
+		template <typename ReturnType>
 		friend ReturnType submitWorkloadAndGetResult(HttpClient& httpClient, HttpWorkloadData& workload);
 		friend std::vector<HttpData> submitWorkloadAndGetResult(HttpClient& httpClient, std::vector<HttpWorkloadData>& workload);
 		friend HttpData submitWorkloadAndGetResult(HttpClient& httpClient, HttpWorkloadData& workload);
@@ -149,7 +163,7 @@ namespace DiscordCoreInternal {
 		HttpData httpRequest(HttpWorkloadData&, bool);
 	};
 
-	template<typename ReturnType>
+	template <typename ReturnType>
 	ReturnType submitWorkloadAndGetResult(HttpClient& httpClient, HttpWorkloadData& workload) {
 		try {
 			workload.headersToInsert.insert(std::make_pair("Authorization", "Bot " + httpClient.botToken));
@@ -167,7 +181,7 @@ namespace DiscordCoreInternal {
 		return returnObject;
 	}
 
-	template<>
+	template <>
 	void submitWorkloadAndGetResult<void>(HttpClient& httpClient, HttpWorkloadData& workload);
 
 	HttpData submitWorkloadAndGetResult(HttpClient& httpClient, HttpWorkloadData& workload);

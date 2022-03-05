@@ -182,7 +182,7 @@ namespace DiscordCoreAPI {
 			DiscordCoreInternal::HttpWorkloadData workload{};
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Crosspost_Message;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Post;
-			 workload.relativePath = "/channels/" + dataPackage.channelId + "/messages/" + dataPackage.messageId + "/crosspost";
+			workload.relativePath = "/channels/" + dataPackage.channelId + "/messages/" + dataPackage.messageId + "/crosspost";
 			workload.callStack = "Messages::crosspostMessageAsync";
 			co_return DiscordCoreInternal::submitWorkloadAndGetResult<Message>(*Messages::httpClient, workload);
 		}
