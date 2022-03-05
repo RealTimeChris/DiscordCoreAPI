@@ -28,6 +28,11 @@
 
 namespace DiscordCoreAPI {
 
+    /**
+    * \addtogroup utilities
+    * @{
+    */
+
     class DiscordCoreAPI_Dll ThreadPool {
     public:
 
@@ -58,6 +63,7 @@ namespace DiscordCoreAPI {
 
     using TimeElapsedHandler = std::function<void(void)>;
 
+    /// A threadpool-timer class, for timing function executions. \brief A threadpool-timer class, for timing function executions.
     class DiscordCoreAPI_Dll ThreadPoolTimer {
     public:
 
@@ -75,12 +81,24 @@ namespace DiscordCoreAPI {
 
         ThreadPoolTimer(nullptr_t);
 
+        /// For creating a periodic timer to periodically execute a given function. \brief For creating a periodic timer to periodically execute a given function.
+        /// \param timeElapsedHandler A std::function<void(void)> function to be executed.
+        /// \param timeInterval The time interval at which to execute the provided function.
+        /// \returns A ThreadPoolTimer object that will be executing the passed-in function.
         static ThreadPoolTimer createPeriodicTimer(TimeElapsedHandler timeElapsedHandler, int64_t timeInterval);
 
+        /// For checking whether or not the current ThreadPoolTimer is currently running or not. \brief For checking whether or not the current ThreadPoolTimer is currently running or not.
+        /// \returns A bool denoting whether or not the ThreadPoolTimer is currently running.
         bool running();
 
+        /// For cancelling the ThreadPoolTimer's executing function. \brief For cancelling the ThreadPoolTimer's executing function.
         void cancel();
 
+        /// For executing a chosen function of type std::function<void(ArgTypes...)> after a chosen time delay. \brief For executing a chosen function of type std::function<void(ArgTypes...)> after a chosen time delay.
+        /// \tparam ArgTypes The types of arguments that will be passed into the function.
+        /// \param theFunction A pointer to the chosen function to be executed.
+        /// \param timeDelayInMs The number of milliseconds to wait before executing the function.
+        /// \param args The set of arguments to be passed into the executing function.
         template <typename ...ArgTypes>
         static CoRoutine<void> executeFunctionAfterTimePeriod(std::function<void(ArgTypes...)>theFunction, int32_t timeDelayInMs, ArgTypes... args) {
             co_await NewThreadAwaitable<void>();
@@ -107,4 +125,6 @@ namespace DiscordCoreAPI {
         CoRoutine<void> run(int64_t theInterval, TimeElapsedHandler theFunction, bool repeating);
 
     };
+
+    /**@}*/
 }

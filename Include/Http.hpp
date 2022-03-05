@@ -48,9 +48,9 @@ namespace DiscordCoreInternal {
 
 		void parseHeaders(std::string&);
 
-		void resetValues(std::string&);
-
 		bool parseChunk(std::string&);
+
+		void resetValues();
 
 		virtual ~HttpRnRBuilder() = default;
 
@@ -93,13 +93,13 @@ namespace DiscordCoreInternal {
 
 	protected:
 
+		std::unique_ptr<std::mutex> accessMutex{ std::make_unique<std::mutex>() };
 		bool haveWeCollectedTime{ false };
 		bool areWeASpecialBucket{ false };
 		int64_t getsRemainingTotal{ 0 };
 		int64_t sampledTimeInMs{ 0 };
 		int32_t getsRemaining{ 0 };
 		int64_t msRemainTotal{ 0 };
-		std::mutex accessMutex{};
 		std::string bucket{ "" };
 		int64_t msRemain{ 0 };
 	};

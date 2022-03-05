@@ -126,7 +126,7 @@ namespace DiscordCoreInternal {
 		return std::string{};
 	}
 
-	void HttpRnRBuilder::resetValues(std::string&) {
+	void HttpRnRBuilder::resetValues() {
 		this->headers = std::unordered_map<std::string, std::string>{};
 		this->doWeHaveContentSize = false;
 		this->doWeHaveHeaders = false;
@@ -348,7 +348,7 @@ namespace DiscordCoreInternal {
 			int64_t currentTime = static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
 			if (theConnection.bucket != "" && rateLimitValues.contains(theConnection.bucket)) {
 				theConnection.rateLimitDataPtr = rateLimitValues[theConnection.bucket].get();
-				std::lock_guard<std::mutex> accessLock{ theConnection.rateLimitDataPtr->accessMutex };
+				std::lock_guard<std::mutex> accessLock{ *theConnection.rateLimitDataPtr->accessMutex };
 
 				if (workload.workloadType == HttpWorkloadType::Delete_Message_Old) {
 					theConnection.rateLimitDataPtr->getsRemaining = 0;
@@ -393,6 +393,11 @@ namespace DiscordCoreInternal {
 					}
 				}
 				returnData = HttpClient::executeHttpRequest(workload, theConnection);
+				for (auto& [key, value] : rateLimitValues) {
+					if (theConnection.rateLimitDataPtr->bucket == key && value.get() != theConnection.rateLimitDataPtr) {
+						value.reset(theConnection.rateLimitDataPtr);
+					}
+				}
 				if (!rateLimitValues.contains(theConnection.rateLimitDataPtr->bucket)) {
 					std::unique_ptr<RateLimitData> tempRateLimitData{ std::make_unique<RateLimitData>() };
 					*tempRateLimitData = *theConnection.rateLimitDataPtr;
@@ -405,6 +410,7 @@ namespace DiscordCoreInternal {
 			else {
 				std::unique_ptr<RateLimitData> tempRateLimitData{ std::make_unique<RateLimitData>() };
 				theConnection.rateLimitDataPtr = tempRateLimitData.get();
+				std::lock_guard<std::mutex> theLock{ *theConnection.rateLimitDataPtr->accessMutex };
 				if (workload.workloadType == HttpWorkloadType::Delete_Message) {
 					theConnection.rateLimitDataPtr->areWeASpecialBucket = true;
 				}
@@ -432,7 +438,7 @@ namespace DiscordCoreInternal {
 
 	HttpData HttpClient::executeHttpRequest(HttpWorkloadData& workload, HttpConnection& theConnection) {
 		try {
-			theConnection.resetValues(theConnection.getInputBuffer());
+			theConnection.resetValues();
 			if (theConnection.doWeConnect) {
 				std::string stringNew{};
 				if (workload.baseUrl.find(".com") != std::string::npos) {
@@ -540,13 +546,6 @@ namespace DiscordCoreInternal {
 			}
 			HttpConnection& theConnectionNew = this->connectionManager.getConnection(static_cast<int64_t>(workload.workloadType));
 			std::lock_guard<std::recursive_mutex>theAccessLock{ theConnectionNew.accessMutex };
-			if (theConnectionNew.rateLimitDataPtr != nullptr) {
-				for (auto& [key, value] : rateLimitValues) {
-					if (theConnectionNew.rateLimitDataPtr->bucket == key) {
-						theConnectionNew.rateLimitDataPtr = value.get();
-					}
-				}
-			}
 			HttpData resultData = this->executeByRateLimitData(workload, printResult, theConnectionNew);
 			if (resultData.responseCode == 429) {
 				resultData.responseData = nlohmann::json::parse(resultData.responseMessage);
@@ -554,7 +553,7 @@ namespace DiscordCoreInternal {
 				rateLimitValues[theConnectionNew.bucket]->getsRemaining = -1;
 				rateLimitValues[theConnectionNew.bucket]->sampledTimeInMs = static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
 				std::cout << DiscordCoreAPI::shiftToBrightRed() << workload.callStack + "::httpRequest(), We've hit rate limit! Time Remaining: " << std::to_string(rateLimitValues[theConnectionNew.bucket]->msRemain) << std::endl << DiscordCoreAPI::reset() << std::endl;
-				theConnectionNew.resetValues(theConnectionNew.getInputBuffer());
+				theConnectionNew.resetValues();
 				resultData = this->httpRequest(workload, printResult);
 			}
 			return resultData;
