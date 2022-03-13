@@ -1,0 +1,69 @@
+{
+  "version": 2,
+  "configurePresets": [
+    {
+      "name": "linux-default",
+      "displayName": "Linux Release",
+      "description": "Target Linux with the g++ C++ compiler.",
+      "generator": "Unix Makefiles",
+      "binaryDir": "${sourceDir}/Output Files/Release",
+      "cacheVariables": {
+        "CMAKE_CXX_COMPILER": "/usr/bin/g++-11",
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_INSTALL_PREFIX": "${sourceDir}/Output Files/Release",
+        "CMAKE_TOOLCHAIN_FILE": "$env{HOME}/vcpkg/scripts/buildsystems/vcpkg.cmake"
+      },
+      "vendor": {
+        "microsoft.com/VisualStudioSettings/CMake/1.0": { "hostOS": [ "Linux" ] }
+      }
+    },
+    {
+      "name": "linux-dbg-default",
+      "displayName": "Linux Debug",
+      "description": "Target Linux with the g++ C++ compiler.",
+      "generator": "Unix Makefiles",
+      "binaryDir": "${sourceDir}/Output Files/Debug",
+      "cacheVariables": {
+        "CMAKE_CXX_COMPILER": "/usr/bin/g++-11",
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_INSTALL_PREFIX": "${sourceDir}/Output Files/Debug",
+        "CMAKE_TOOLCHAIN_FILE": "$env{HOME}/vcpkg/scripts/buildsystems/vcpkg.cmake"
+      },
+      "vendor": {
+        "microsoft.com/VisualStudioSettings/CMake/1.0": { "hostOS": [ "Linux" ] }
+      }
+    },
+    {
+      "name": "windows-default",
+      "displayName": "Windows x64 Release",
+      "description": "Target Windows with the Visual Studio development environment.",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/Output Files/Release",
+      "architecture": {
+        "value": "x64",
+        "strategy": "external"
+      },
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_INSTALL_PREFIX": "${sourceDir}/Output Files/Release"
+      },
+      "vendor": { "microsoft.com/VisualStudioSettings/CMake/1.0": { "hostOS": [ "Windows" ] } }
+    },
+    {
+      "name": "windows-dbg-default",
+      "displayName": "Windows x64 Debug",
+      "description": "Target Windows with the Visual Studio development environment.",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/Output Files/Debug",
+      "architecture": {
+        "value": "x64",
+        "strategy": "external"
+      },
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_INSTALL_PREFIX": "${sourceDir}/Output Files/Debug"
+      },
+      "vendor": { "microsoft.com/VisualStudioSettings/CMake/1.0": { "hostOS": [ "Windows" ] } }
+    }
+  ]
+}
