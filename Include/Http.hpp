@@ -148,8 +148,8 @@ namespace DiscordCoreInternal {
 		friend ReturnType submitWorkloadAndGetResult(HttpClient& httpClient, HttpWorkloadData& workload);
 		friend std::vector<HttpData> submitWorkloadAndGetResult(HttpClient& httpClient, std::vector<HttpWorkloadData>& workload);
 		friend HttpData submitWorkloadAndGetResult(HttpClient& httpClient, HttpWorkloadData& workload);
-		friend DiscordCoreAPI::SoundCloudAPI;
-		friend DiscordCoreAPI::YouTubeAPI;
+		friend class DiscordCoreAPI::SoundCloudAPI;
+		friend class DiscordCoreAPI::YouTubeAPI;
 
 		HttpClient() = default;
 

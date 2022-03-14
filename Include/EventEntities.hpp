@@ -24,7 +24,12 @@
 #include <CoRoutine.hpp>
 
 namespace DiscordCoreAPI {
+    /**
+    * \addtogroup discord_events
+    * @{
+    */
 
+   /// Event-delegate token, representing an event. \brief Event-delegate token, representing an event.
    struct DiscordCoreAPI_Dll EventDelegateToken {
 
         template <typename ReturnType, typename ...ArgTypes>
@@ -45,7 +50,7 @@ namespace DiscordCoreAPI {
         std::string eventId{ "" };
 
     };
-
+   
     bool operator==(const EventDelegateToken& lhs, const EventDelegateToken& rhs) {
         if (lhs.eventId == rhs.eventId && lhs.handlerId == rhs.handlerId) {
             return true;
@@ -63,7 +68,7 @@ namespace DiscordCoreAPI {
             return false;
         }
     }
-
+    /// Event-delegate, for representing an event-function to be executed. \brief Event-delegate, for representing an event-function to be executed.
     template <typename ReturnType, typename ...ArgTypes>
     class EventDelegate {
     public:
@@ -102,7 +107,7 @@ namespace DiscordCoreAPI {
     protected:
         std::function<ReturnType(ArgTypes...)>theFunction{};
     };
-
+    /**@}*/
     template <typename ReturnType, typename  ...ArgTypes>
     class Event {
     public:
@@ -207,7 +212,7 @@ namespace DiscordCoreAPI {
         std::function<ReturnType(ArgTypes...)> theFunction{ nullptr };
         CoRoutine<void> theTask{ nullptr };
     };
-
+    
     class DiscordCoreAPI_Dll EventWaiter {
     public:
 

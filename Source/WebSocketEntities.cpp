@@ -863,10 +863,9 @@ namespace DiscordCoreInternal {
 
 	void BaseSocketAgent::handleBuffer() noexcept {
 		try {
-			std::string newVector{};
+			std::string newVector = this->webSocket->getInputBuffer();
 			switch (this->state) {
 			case WebSocketState::Initializing:
-				newVector.insert(newVector.begin(), this->webSocket->getInputBuffer().begin(), this->webSocket->getInputBuffer().end());
 				if (newVector.find("\r\n\r\n") != std::string::npos) {
 					std::string headers = newVector.substr(0, newVector.find("\r\n\r\n"));
 					newVector.erase(0, newVector.find("\r\n\r\n") + 4);
