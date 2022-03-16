@@ -30,26 +30,26 @@ namespace DiscordCoreAPI {
 
 		virtual void execute(std::unique_ptr<BaseFunctionArguments> args) {
 			try {
-				Channel channel = Channels::getCachedChannelAsync({ .channelId = args->eventData.getChannelId() }).get();
+				Channel channel = Channels::getCachedChannelAsync({ .channelId = args->eventData->getChannelId() }).get();
 
-				bool areWeInADm = areWeInADM(args->eventData, channel);
+				bool areWeInADm = areWeInADM(*args->eventData, channel);
 
 				if (areWeInADm) {
 					return;
 				}
 
-				InputEvents::deleteInputEventResponseAsync(std::make_unique<InputEventData>(args->eventData)).get();
+				InputEvents::deleteInputEventResponseAsync(std::make_unique<InputEventData>(*args->eventData)).get();
 
-				InputEventData newEvent = args->eventData;
+				InputEventData newEvent = *args->eventData;
 
-				RespondToInputEventData dataPackage(args->eventData);
+				RespondToInputEventData dataPackage(*args->eventData);
 				dataPackage.type = InputEventResponseType::Deferred_Response;
-				if (args->eventData.eventType == InputEventType::Application_Command_Interaction) {
+				if (args->eventData->eventType == InputEventType::Application_Command_Interaction) {
 					newEvent = *InputEvents::respondToEvent(dataPackage);
 				}
 
-				Guild guild = Guilds::getCachedGuildAsync({ args->eventData.getGuildId() }).get();
-				GuildMember guildMember = GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = args->eventData.getAuthorId() ,.guildId = args->eventData.getGuildId() }).get();
+				Guild guild = Guilds::getCachedGuildAsync({ args->eventData->getGuildId() }).get();
+				GuildMember guildMember = GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = args->eventData->getAuthorId() ,.guildId = args->eventData->getGuildId() }).get();
 
 				CreateGlobalApplicationCommandData testCommandData{};
 				testCommandData.applicationId = args->discordCoreClient->getBotUser().id;
@@ -88,19 +88,19 @@ namespace DiscordCoreAPI {
 				ApplicationCommands::createGlobalApplicationCommandAsync(playRNCommandData);
 
 				EmbedData msgEmbed{};
-				msgEmbed.setAuthor(args->eventData.getUserName(), args->eventData.getAvatarUrl());
+				msgEmbed.setAuthor(args->eventData->getUserName(), args->eventData->getAvatarUrl());
 				msgEmbed.setColor("FeFeFe");
 				msgEmbed.setDescription("------\nNicely done, you've registered some commands!\n------");
 				msgEmbed.setTimeStamp(getTimeAndDate());
 				msgEmbed.setTitle("__**Register Application Commands Complete:**__");
-				if (args->eventData.eventType == InputEventType::Regular_Message) {
-					RespondToInputEventData responseData(args->eventData);
+				if (args->eventData->eventType == InputEventType::Regular_Message) {
+					RespondToInputEventData responseData(*args->eventData);
 					responseData.type = InputEventResponseType::Regular_Message;
 					responseData.addMessageEmbed(msgEmbed);
 					InputEventData  event01 = *InputEvents::respondToEvent(responseData);
 				}
-				else if (args->eventData.eventType == InputEventType::Application_Command_Interaction) {
-					RespondToInputEventData responseData(args->eventData);
+				else if (args->eventData->eventType == InputEventType::Application_Command_Interaction) {
+					RespondToInputEventData responseData(*args->eventData);
 					responseData.type = InputEventResponseType::Interaction_Response_Edit;
 					responseData.addMessageEmbed(msgEmbed);
 					auto event = InputEvents::respondToEvent(responseData);

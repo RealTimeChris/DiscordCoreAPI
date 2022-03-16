@@ -28,8 +28,8 @@ namespace DiscordCoreAPI {
 		virtual void execute(std::unique_ptr<BaseFunctionArguments> args) {
 			EmbedData msgEmbed{};
 			GetGuildMemberData getData{};
-			getData.guildId = args->eventData.getGuildId();
-			getData.guildMemberId = args->eventData.getAuthorId();
+			getData.guildId = args->eventData->getGuildId();
+			getData.guildMemberId = args->eventData->getAuthorId();
 			GuildMember guildMember = GuildMembers::getGuildMemberAsync(getData).get();
 			msgEmbed.setAuthor(guildMember.nick, guildMember.user.avatar);
 			msgEmbed.setColor("FeFeFe");
@@ -41,15 +41,15 @@ namespace DiscordCoreAPI {
 			}
 			msgEmbed.setTimeStamp(getTimeAndDate());
 			msgEmbed.setTitle("__**Test Embed**__");
-			RespondToInputEventData dataResponse{ args->eventData };
-			if (args->eventData.eventType == InputEventType::Regular_Message) {
+			RespondToInputEventData dataResponse{ *args->eventData };
+			if (args->eventData->eventType == InputEventType::Regular_Message) {
 				dataResponse.type = InputEventResponseType::Regular_Message;
 			}
 			else {
 				dataResponse.type = InputEventResponseType::Interaction_Response;
 			}
 			dataResponse.addMessageEmbed(msgEmbed);
-			InputEvents::deleteInputEventResponseAsync(std::make_unique<InputEventData>(args->eventData));
+			InputEvents::deleteInputEventResponseAsync(std::make_unique<InputEventData>(*args->eventData));
 			InputEvents::respondToEvent(dataResponse);
 			return;			
 		}
