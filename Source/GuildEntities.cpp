@@ -163,6 +163,79 @@ namespace DiscordCoreAPI {
 		*this = dataNew;
 	}
 
+	Guild& Guild::operator=(const Guild& dataNew) {
+		this->defaultMessageNotifications = dataNew.defaultMessageNotifications;
+		this->premiumSubscriptionCount = dataNew.premiumSubscriptionCount;
+		this->approximatePresenceCount = dataNew.approximatePresenceCount;
+		this->publicUpdatesChannelId = dataNew.publicUpdatesChannelId;
+		this->approximateMemberCount = dataNew.approximateMemberCount;
+		this->explicitContentFilter = dataNew.explicitContentFilter;
+		this->maxVideoChannelUsers = dataNew.maxVideoChannelUsers;
+		this->systemChannelFlags = dataNew.systemChannelFlags;
+		this->verificationLevel = dataNew.verificationLevel;
+		this->discoverySplash = dataNew.discoverySplash;
+		this->preferredLocale = dataNew.preferredLocale;
+		this->widgetChannelId = dataNew.widgetChannelId;
+		this->systemChannelId = dataNew.systemChannelId;
+		this->rulesChannelId = dataNew.rulesChannelId;
+		this->stageInstances = dataNew.stageInstances;
+		this->welcomeScreen = dataNew.welcomeScreen;
+		this->widgetEnabled = dataNew.widgetEnabled;
+		this->vanityUrlCode = dataNew.vanityUrlCode;
+		this->applicationId = dataNew.applicationId;
+		this->maxPresences = dataNew.maxPresences;
+		this->afkChannelId = dataNew.afkChannelId;
+		this->description = dataNew.description;
+		this->voiceStates = dataNew.voiceStates;
+		this->premiumTier = dataNew.premiumTier;
+		this->unavailable = dataNew.unavailable;
+		this->memberCount = dataNew.memberCount;
+		this->permissions = dataNew.permissions;
+		this->afkTimeOut = dataNew.afkTimeOut;
+		this->maxMembers = dataNew.maxMembers;
+		this->nsfwLevel = dataNew.nsfwLevel;
+		this->createdAt = dataNew.createdAt;
+		this->presences = dataNew.presences;
+		this->features = dataNew.features;
+		this->mfaLevel = dataNew.mfaLevel;
+		this->joinedAt = dataNew.joinedAt;
+		this->iconHash = dataNew.iconHash;
+		this->channels = dataNew.channels;
+		this->ownerId = dataNew.ownerId;
+		this->threads = dataNew.threads;
+		this->members = dataNew.members;
+		this->splash = dataNew.splash;
+		this->banner = dataNew.banner;
+		this->region = dataNew.region;
+		this->large = dataNew.large;
+		this->owner = dataNew.owner;
+		this->emoji = dataNew.emoji;
+		this->roles = dataNew.roles;
+		this->icon = dataNew.icon;
+		this->name = dataNew.name;
+		this->id = dataNew.id;
+		this->discordCoreClient = dataNew.discordCoreClient;
+		if (!getVoiceConnectionMap().contains(this->id)) {
+			std::string theShardId{ std::to_string((stoll(this->id) >> 22) % this->discordCoreClient->shardingOptions.totalNumberOfShards) };
+			getVoiceConnectionMap().insert(std::make_pair(this->id, std::make_unique<VoiceConnection>(this->discordCoreClient->theWebSockets.at(theShardId).get())));
+		}
+		this->voiceConnectionPtr = getVoiceConnectionMap()[this->id].get();
+		if (!getYouTubeAPIMap().contains(this->id)) {
+			getYouTubeAPIMap().insert(std::make_pair(this->id, std::make_unique<YouTubeAPI>(this->id, this->discordCoreClient->httpClient.get())));
+		}
+		if (!getSoundCloudAPIMap().contains(this->id)) {
+			getSoundCloudAPIMap().insert(std::make_pair(this->id, std::make_unique<SoundCloudAPI>(this->id, this->discordCoreClient->httpClient.get())));
+		}
+		if (!getSongAPIMap().contains(this->id)) {
+			getSongAPIMap().insert(std::make_pair(this->id, std::make_unique<SongAPI>(this->id)));
+		}
+		return *this;
+	}
+
+	Guild::Guild(const Guild& other) {
+		*this = other;
+	}
+
 	void Guild::initialize() {
 		try {
 

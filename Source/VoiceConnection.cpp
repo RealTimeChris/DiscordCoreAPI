@@ -56,7 +56,7 @@ namespace DiscordCoreAPI {
 				nonceForLibSodium[x] = 0;
 			}
 			uint64_t numOfBytes{ headerSize + bufferToSend.data.size() + crypto_secretbox_MACBYTES };
-			std::unique_ptr<uint8_t[]> audioDataPacket{ std::make_unique<uint8_t[]>(numOfBytes)};
+			std::unique_ptr<uint8_t[]> audioDataPacket{ std::make_unique<uint8_t[]>(numOfBytes) };
 			for (uint32_t x = 0; x < headerSize; x += 1) {
 				audioDataPacket[x] = headerFinal[x];
 			}

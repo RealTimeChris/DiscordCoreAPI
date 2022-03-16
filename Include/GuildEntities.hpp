@@ -297,6 +297,10 @@ namespace DiscordCoreAPI {
 
 		Guild(GuildData& dataNew);
 
+		Guild& operator=(const Guild& dataNew);
+
+		Guild(const Guild& other);
+
 		/// Connects to a given voice Channel. \brief Connects to a given voice Channel.
 		/// \param channelId The voice Channel's id to connect to.
 		/// \param selfDeaf Self-deafen the bot?

@@ -2060,8 +2060,8 @@ namespace DiscordCoreInternal {
     void DataParser::parseObject(nlohmann::json const& jsonObjectData, std::vector<DiscordCoreAPI::Guild>& pDataStructure) {
         pDataStructure.reserve(jsonObjectData.size());
         for (auto& value : jsonObjectData) {
-            DiscordCoreAPI::GuildData newData{};
-            DataParser::parseObject(value, newData);
+            DiscordCoreAPI::Guild newData{};
+            DataParser::parseObject<DiscordCoreAPI::Guild>(value, newData);
             DiscordCoreAPI::Guild newGuild{ newData };
             pDataStructure.push_back(std::move(newGuild));
         }
