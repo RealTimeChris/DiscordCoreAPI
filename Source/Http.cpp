@@ -419,16 +419,15 @@ namespace DiscordCoreInternal {
 				}
 			}
 			else {
+				if (returnData.responseCode == 429) {
+					Globals::rateLimitValues[Globals::rateLimitValueBuckets[workload.workloadType]]->msRemain = static_cast<int64_t>(1000.0f * nlohmann::json::parse(returnData.responseMessage).at("retry_after").get<float>());
+					Globals::rateLimitValues[Globals::rateLimitValueBuckets[workload.workloadType]]->getsRemaining = -1;
+					Globals::rateLimitValues[Globals::rateLimitValueBuckets[workload.workloadType]]->sampledTimeInMs = static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
+					std::cout << DiscordCoreAPI::shiftToBrightRed() << workload.callStack + "::httpRequest(), We've hit rate limit! Time Remaining: " << std::to_string(Globals::rateLimitValues[Globals::rateLimitValueBuckets[workload.workloadType]]->msRemain) << std::endl << DiscordCoreAPI::reset() << std::endl;
+					theConnection->resetValues();
+					returnData = this->executeByRateLimitData(workload, theConnection);
+				}
 				throw HttpError(std::string(std::to_string(returnData.responseCode) + ", " + returnData.responseMessage));
-			}
-
-			if (returnData.responseCode == 429) {
-				Globals::rateLimitValues[Globals::rateLimitValueBuckets[workload.workloadType]]->msRemain = static_cast<int64_t>(1000.0f * nlohmann::json::parse(returnData.responseMessage).at("retry_after").get<float>());
-				Globals::rateLimitValues[Globals::rateLimitValueBuckets[workload.workloadType]]->getsRemaining = -1;
-				Globals::rateLimitValues[Globals::rateLimitValueBuckets[workload.workloadType]]->sampledTimeInMs = static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
-				std::cout << DiscordCoreAPI::shiftToBrightRed() << workload.callStack + "::httpRequest(), We've hit rate limit! Time Remaining: " << std::to_string(Globals::rateLimitValues[Globals::rateLimitValueBuckets[workload.workloadType]]->msRemain) << std::endl << DiscordCoreAPI::reset() << std::endl;
-				theConnection->resetValues();
-				returnData = this->executeByRateLimitData(workload, theConnection);
 			}
 
 			return returnData;

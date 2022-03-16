@@ -1139,10 +1139,9 @@ namespace DiscordCoreInternal {
 
 	std::vector<std::string> VoiceSocketAgent::tokenize(std::string& dataIn, std::string separator) noexcept {
 		try {
-			std::string::size_type value{ 0 };
 			std::vector<std::string> dataOut{};
-			while ((value = dataIn.find_first_not_of(separator, value)) != std::string::npos) {
-				auto output = dataIn.find(separator, value);
+			for (auto value = 0; value != std::string::npos; value = static_cast<int32_t>(dataIn.find_first_not_of(separator, value))) {
+				auto output = static_cast<int32_t>(dataIn.find(separator, value));
 				dataOut.push_back(dataIn.substr(value, output - value));
 				value = output;
 			}

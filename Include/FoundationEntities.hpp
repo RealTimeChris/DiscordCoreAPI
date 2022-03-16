@@ -3366,13 +3366,28 @@ namespace DiscordCoreAPI {
 
         DiscordCoreClient* discordCoreClient{ nullptr };
         std::vector<std::string> argumentsArray{};///< A std::vector of std::string arguments.
-        InputEventData eventData{};///< InputEventData representing the input event that triggered the command.
+        std::unique_ptr<InputEventData> eventData{};///< InputEventData representing the input event that triggered the command.
 
-        BaseFunctionArguments() = default;
+        BaseFunctionArguments& operator=(BaseFunctionArguments& other) {
+            this->eventData = std::make_unique<InputEventData>();
+            this->discordCoreClient = other.discordCoreClient;
+            this->argumentsArray = other.argumentsArray;
+            *this->eventData = *other.eventData;            
+            return *this;
+        }
+
+        BaseFunctionArguments(BaseFunctionArguments& other) {
+            *this = other;
+        }
+
+        BaseFunctionArguments() {
+            this->eventData = std::make_unique<InputEventData>();
+        };
 
         BaseFunctionArguments(InputEventData inputEventData, DiscordCoreClient* discordCoreClientNew) {
             this->discordCoreClient = discordCoreClientNew;
-            this->eventData = inputEventData;
+            this->eventData = std::make_unique<InputEventData>();
+            *this->eventData = inputEventData;
         }
 
         virtual ~BaseFunctionArguments() = default;
