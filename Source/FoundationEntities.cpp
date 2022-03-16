@@ -275,6 +275,11 @@ namespace DiscordCoreAPI {
         returnString = base64Encode(returnString, false);
         return returnString;
     }
+    
+    std::ostream& operator<<(std::ostream& outputSttream, std::string(*theFunction)(void)) {
+        outputSttream << theFunction();
+        return outputSttream;
+    }
 
     std::string shiftToBrightGreen() {
         return std::string("\033[1;40;92m");
@@ -318,7 +323,7 @@ namespace DiscordCoreAPI {
         int64_t secondsPerMinute = 60;
         int64_t secondsPerHour = secondsPerMinute * 60;
         int64_t secondsPerDay = secondsPerHour * 24;
-        auto targetElapsedTime = ((days * secondsPerDay) + ((hours - 4) * secondsPerHour) + (minutes * secondsPerMinute)) * 1000;
+        auto targetElapsedTime = ((days * secondsPerDay) + ((hours)*secondsPerHour) + (minutes * secondsPerMinute)) * 1000;
         auto actualElapsedTime = currentTime - startTimeRaw;
         if (actualElapsedTime >= targetElapsedTime) {
             return true;

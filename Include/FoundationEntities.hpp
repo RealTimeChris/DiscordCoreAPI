@@ -762,6 +762,8 @@ namespace DiscordCoreAPI {
 
     /**@}*/
 
+    std::ostream& operator<<(std::ostream& outputSttream, std::string(*theFunction)(void));
+
     /**
     * \addtogroup utilities
     * @{

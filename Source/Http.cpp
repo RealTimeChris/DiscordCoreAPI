@@ -337,6 +337,7 @@ namespace DiscordCoreInternal {
 	HttpData HttpClient::executeByRateLimitData(HttpWorkloadData& workload, HttpConnection* theConnection) {
 		HttpData returnData{};
 		try {
+			theConnection->resetValues();
 			std::unique_ptr<std::recursive_mutex> theMutexTemp{ nullptr };
 			RateLimitData* rateLimitDataPtr = Globals::rateLimitValues[Globals::rateLimitValueBuckets[workload.workloadType]].get();
 			std::lock_guard<std::recursive_mutex> accessLock{ *rateLimitDataPtr->accessMutex };
@@ -424,7 +425,6 @@ namespace DiscordCoreInternal {
 					Globals::rateLimitValues[Globals::rateLimitValueBuckets[workload.workloadType]]->getsRemaining = -1;
 					Globals::rateLimitValues[Globals::rateLimitValueBuckets[workload.workloadType]]->sampledTimeInMs = static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
 					std::cout << DiscordCoreAPI::shiftToBrightRed() << workload.callStack + "::httpRequest(), We've hit rate limit! Time Remaining: " << std::to_string(Globals::rateLimitValues[Globals::rateLimitValueBuckets[workload.workloadType]]->msRemain) << std::endl << DiscordCoreAPI::reset() << std::endl;
-					theConnection->resetValues();
 					returnData = this->executeByRateLimitData(workload, theConnection);
 				}
 				throw HttpError(std::string(std::to_string(returnData.responseCode) + ", " + returnData.responseMessage));
@@ -503,6 +503,7 @@ namespace DiscordCoreInternal {
 	HttpData HttpClient::getResponse(HttpConnection* theConnection, RateLimitData* rateLimitDataPtr) {
 		DiscordCoreAPI::StopWatch stopWatch{ std::chrono::milliseconds{3500} };
 		theConnection->getInputBuffer().resize(0);
+		theConnection->resetValues();
 		while (true) {
 			if (!theConnection->processIO()) {
 				break;
