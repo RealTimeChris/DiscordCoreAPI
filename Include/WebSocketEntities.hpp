@@ -75,15 +75,7 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::CommandController* commandController{ nullptr };
 		WebSocketOpCode dataOpcode{ WebSocketOpCode::Op_Binary };
 		std::unique_ptr<WebSocketSSLClient> webSocket{ nullptr };
-		const uint64_t webSocketMaxPayloadLengthLarge{ 65535 };
 		DiscordCoreAPI::EventWaiter areWeReadyToConnectEvent{};
-		unsigned char webSocketPayloadLengthMagicLarge{ 126 };
-		unsigned char webSocketPayloadLengthMagicHuge{ 127 };
-		const uint64_t webSocketMaxPayloadLengthSmall{ 125 };
-		const unsigned char webSocketFinishBit{ (1u << 7u) };
-		const uint8_t maxHeaderSize{ sizeof(uint64_t) + 2 };
-		const unsigned char webSocketMaskBit{ (1u << 7u) };
-		std::string relativePath{ "/?v=10&encoding=etf" };
 		DiscordCoreAPI::EventManager* eventManager{};
 		DiscordCoreAPI::EventWaiter doWeReconnect{};
 		VoiceConnectInitData voiceConnectInitData{};
@@ -106,7 +98,6 @@ namespace DiscordCoreInternal {
 		bool printMessages{ false };
 		std::string botToken{ "" };
 		std::string baseUrl{ "" };
-		std::string authKey{ "" };
 		std::string port{ "443" };
 		int32_t currentShard{ 0 };
 		int32_t numOfShards{ 0 };
@@ -155,17 +146,10 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::UnboundedMessageBlock<DiscordCoreInternal::VoiceConnectionData> voiceConnectionDataBuffer{};
 		std::unique_ptr<DiscordCoreAPI::CoRoutine<void>> theTask{ nullptr };
 		std::unique_ptr<DatagramSocketSSLClient> voiceSocket{ nullptr };
-		const unsigned char webSocketPayloadLengthMagicLarge{ 126 };
-		const unsigned char webSocketPayloadLengthMagicHuge{ 127 };
 		DiscordCoreAPI::ThreadPoolTimer heartbeatTimer{ nullptr };
 		std::unique_ptr<WebSocketSSLClient> webSocket{ nullptr };
 		WebSocketOpCode dataOpcode{ WebSocketOpCode::Op_Text };
-		const uint64_t webSocketMaxPayloadLengthLarge{ 65535 };
-		const uint64_t webSocketMaxPayloadLengthSmall{ 125 };
 		WebSocketState state{ WebSocketState::Initializing };
-		const unsigned char webSocketFinishBit{ (1u << 7u) };
-		const uint8_t maxHeaderSize{ sizeof(uint64_t) + 2 };
-		const unsigned char webSocketMaskBit{ (1u << 7u) };
 		DiscordCoreAPI::EventWaiter areWeConnected{};
 		DiscordCoreAPI::EventWaiter doWeReconnect{};
 		VoiceConnectInitData voiceConnectInitData{};
@@ -174,10 +158,8 @@ namespace DiscordCoreInternal {
 		bool haveWeReceivedHeartbeatAck{ true };
 		int32_t lastNumberReceived{ 0 };
 		int32_t heartbeatInterval{ 0 };
-		std::string relativePath{ "" };
 		bool printMessages{ false };
 		std::string baseUrl{ "" };
-		std::string authKey{ "" };
 		std::string hostIp{ "" };
 		uint32_t closeCode{ 0 };
 

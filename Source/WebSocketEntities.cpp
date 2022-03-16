@@ -25,6 +25,14 @@
 
 namespace DiscordCoreInternal {
 
+	constexpr unsigned char webSocketPayloadLengthMagicLarge{ 126 };
+	constexpr unsigned char webSocketPayloadLengthMagicHuge{ 127 };
+	constexpr uint64_t webSocketMaxPayloadLengthLarge{ 65535 };
+	constexpr unsigned char webSocketFinishBit{ (1u << 7u) };
+	constexpr uint64_t webSocketMaxPayloadLengthSmall{ 125 };
+	constexpr uint8_t maxHeaderSize{ sizeof(uint64_t) + 2 };
+	constexpr unsigned char webSocketMaskBit{ (1u << 7u) };
+
 	BaseSocketAgent::BaseSocketAgent(std::string botTokenNew, std::string baseUrl, DiscordCoreAPI::EventManager* eventManager, DiscordCoreAPI::DiscordCoreClient* discordCoreClient, DiscordCoreAPI::CommandController* commandController, std::atomic_bool* doWeQuitNew, bool doWePrintMessages , int32_t shardNumber , int32_t numberOfShards ) noexcept{
 		this->doWeQuit = doWeQuitNew;
 		this->commandController = commandController;
@@ -70,7 +78,7 @@ namespace DiscordCoreInternal {
 			}
 			std::string theVector = this->erlPacker.parseJsonToEtf(dataToSend);
 			std::string out{};
-			out.resize(this->maxHeaderSize);
+			out.resize(maxHeaderSize);
 			size_t size = this->createHeader(out.data(), theVector.size(), this->dataOpcode);
 			std::string header(out.data(), size);
 			std::string theVectorNew{};
@@ -88,22 +96,22 @@ namespace DiscordCoreInternal {
 		try {
 			size_t position{ 0 };
 			int32_t indexCount{ 0 };
-			outBuffer[position++] = this->webSocketFinishBit | static_cast<unsigned char>(opCode);
-			if (sendlength <= this->webSocketMaxPayloadLengthSmall) {
+			outBuffer[position++] = webSocketFinishBit | static_cast<unsigned char>(opCode);
+			if (sendlength <=webSocketMaxPayloadLengthSmall) {
 				outBuffer[position++] = static_cast<unsigned char>(sendlength);
 			}
-			else if (sendlength <= this->webSocketMaxPayloadLengthLarge) {
-				outBuffer[position++] = static_cast<unsigned char>(this->webSocketPayloadLengthMagicLarge);
+			else if (sendlength <= webSocketMaxPayloadLengthLarge) {
+				outBuffer[position++] = static_cast<unsigned char>(webSocketPayloadLengthMagicLarge);
 				indexCount = 2;
 			}
 			else {
-				outBuffer[position++] = this->webSocketPayloadLengthMagicHuge;
+				outBuffer[position++] = webSocketPayloadLengthMagicHuge;
 				indexCount = 8;
 			}
 			for (int32_t x = indexCount - 1; x >= 0; x--) {
 				outBuffer[position++] = static_cast<unsigned char>(sendlength >> x * 8);
 			}
-			outBuffer[1] |= this->webSocketMaskBit;
+			outBuffer[1] |= webSocketMaskBit;
 			outBuffer[position++] = 0;
 			outBuffer[position++] = 0;
 			outBuffer[position++] = 0;
@@ -290,7 +298,10 @@ namespace DiscordCoreInternal {
 			if (payload.at("op") == 10) {
 				this->heartbeatInterval = std::move(payload.at("d")).at("heartbeat_interval");
 				DiscordCoreAPI::TimeElapsedHandler onHeartBeat = [this]() {
-					BaseSocketAgent::sendHeartBeat();
+					this->sendHeartBeat();
+				};
+				DiscordCoreAPI::TimeElapsedHandler onReconnect = [this]() {
+					this->onClosedExternal();
 				};
 				this->heartbeatTimer = std::make_unique<DiscordCoreAPI::ThreadPoolTimer>(DiscordCoreAPI::ThreadPoolTimer::createPeriodicTimer(onHeartBeat, this->heartbeatInterval));
 				if (!this->areWeAuthenticated) {
@@ -904,7 +915,7 @@ namespace DiscordCoreInternal {
 				return false;
 			}
 			else {
-				switch (static_cast<WebSocketOpCode>(this->webSocket->getInputBuffer()[0] & ~this->webSocketMaskBit))
+				switch (static_cast<WebSocketOpCode>(this->webSocket->getInputBuffer()[0] & ~webSocketMaskBit))
 				{
 				case WebSocketOpCode::Op_Continuation:
 				case WebSocketOpCode::Op_Text:
@@ -914,11 +925,11 @@ namespace DiscordCoreInternal {
 				{
 					uint8_t length01 = this->webSocket->getInputBuffer()[1];
 					int32_t payloadStartOffset = 2;
-					if (length01 & this->webSocketMaskBit) {
+					if (length01 & webSocketMaskBit) {
 						return false;
 					}
 					uint64_t length02 = length01;
-					if (length01 == this->webSocketPayloadLengthMagicLarge) {
+					if (length01 == webSocketPayloadLengthMagicLarge) {
 						if (this->webSocket->getInputBuffer().size() < 8) {
 							return false;
 						}
@@ -927,7 +938,7 @@ namespace DiscordCoreInternal {
 						length02 = static_cast<uint64_t>((length03 << 8) | length04);
 						payloadStartOffset += 2;
 					}
-					else if (length01 == this->webSocketPayloadLengthMagicHuge) {
+					else if (length01 == webSocketPayloadLengthMagicHuge) {
 						if (this->webSocket->getInputBuffer().size() < 10) {
 							return false;
 						}
@@ -958,10 +969,8 @@ namespace DiscordCoreInternal {
 					close <<= 8;
 					close |= this->webSocket->getInputBuffer()[3] & 0xff;
 					this->closeCode = close;
-					std::cout << DiscordCoreAPI::shiftToBrightRed() << "WebSocket Closed; Code: " << this->closeCode << DiscordCoreAPI::reset() << std::endl;
 					this->onClosedExternal();
 					return false;
-					
 				}
 				default: {
 					this->closeCode = 0;
@@ -986,8 +995,9 @@ namespace DiscordCoreInternal {
 		try {
 			this->areWeReadyToConnectEvent.reset();
 			if (this->maxReconnectTries > this->currentReconnectTries) {
+				std::cout << DiscordCoreAPI::shiftToBrightRed() << "WebSocket Closed; Code: " << this->closeCode << DiscordCoreAPI::reset() << std::endl;
+				this->closeCode = 0;
 				this->areWeConnected.store(false, std::memory_order_seq_cst);
-				this->closeCode = 1000;
 				this->currentReconnectTries += 1;
 				this->webSocket.reset(nullptr);
 				this->areWeAuthenticated = false;
@@ -1008,13 +1018,12 @@ namespace DiscordCoreInternal {
 
 	void BaseSocketAgent::connect() noexcept {
 		try {
-			this->authKey = DiscordCoreAPI::generate64BaseEncodedKey();
 			this->webSocket = std::make_unique<WebSocketSSLClient>(this->baseUrl, this->port);
 			this->state = WebSocketState::Initializing;
 			this->doWeReconnect.set();
-			std::string sendString = "GET " + this->relativePath + " HTTP/1.1\r\nHost: " + this->baseUrl +
+			std::string sendString = "GET /?v=10&encoding=etf HTTP/1.1\r\nHost: " + this->baseUrl +
 				"\r\nPragma: no-cache\r\nUser-Agent: DiscordCoreAPI/1.0\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Key: " +
-				this->authKey + "\r\nSec-WebSocket-Version: 13\r\n\r\n";
+				DiscordCoreAPI::generate64BaseEncodedKey() + "\r\nSec-WebSocket-Version: 13\r\n\r\n";
 			this->sendMessage(sendString);
 		}
 		catch (...) {
@@ -1030,7 +1039,6 @@ namespace DiscordCoreInternal {
 
 	VoiceSocketAgent::VoiceSocketAgent(VoiceConnectInitData initDataNew, BaseSocketAgent* baseBaseSocketAgentNew, bool printMessagesNew) noexcept {
 		this->printMessages = printMessagesNew;
-		this->authKey = DiscordCoreAPI::generate64BaseEncodedKey();
 		this->baseSocketAgent = baseBaseSocketAgentNew;
 		this->voiceConnectInitData = initDataNew;
 		this->baseSocketAgent->voiceConnectionDataBufferMap.insert_or_assign(this->voiceConnectInitData.guildId, &this->voiceConnectionDataBuffer);
@@ -1066,7 +1074,7 @@ namespace DiscordCoreInternal {
 				std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Sending Voice WebSocket DiscordCoreAPIMessage: " << newString << std::endl << DiscordCoreAPI::reset() << std::endl;
 			}
 			std::vector<char> out{};
-			out.resize(this->maxHeaderSize);
+			out.resize(maxHeaderSize);
 			size_t size = this->createHeader(out.data(), newString.size(), this->dataOpcode);
 			std::string header(out.data(), size);
 			std::string theVectorNew{};
@@ -1096,26 +1104,26 @@ namespace DiscordCoreInternal {
 	uint64_t VoiceSocketAgent::createHeader(char* outBuffer, uint64_t sendlength, WebSocketOpCode opCode) noexcept {
 		try {
 			size_t position = 0;
-			outBuffer[position++] = this->webSocketFinishBit | static_cast<unsigned char>(opCode);
-			if (sendlength <= this->webSocketMaxPayloadLengthSmall)
+			outBuffer[position++] = webSocketFinishBit | static_cast<unsigned char>(opCode);
+			if (sendlength <=webSocketMaxPayloadLengthSmall)
 			{
 				outBuffer[position++] = static_cast<unsigned char>(sendlength);
 			}
-			else if (sendlength <= this->webSocketMaxPayloadLengthLarge)
+			else if (sendlength <= webSocketMaxPayloadLengthLarge)
 			{
-				outBuffer[position++] = static_cast<unsigned char>(this->webSocketPayloadLengthMagicLarge);
+				outBuffer[position++] = static_cast<unsigned char>(webSocketPayloadLengthMagicLarge);
 				outBuffer[position++] = static_cast<unsigned char>(sendlength >> 8);
 				outBuffer[position++] = static_cast<unsigned char>(sendlength);
 			}
 			else
 			{
-				outBuffer[position++] = this->webSocketPayloadLengthMagicHuge;
+				outBuffer[position++] = webSocketPayloadLengthMagicHuge;
 				const uint64_t length02 = sendlength;
 				for (int32_t x = sizeof(uint64_t) - 1; x >= 0; x--) {
 					outBuffer[position++] = static_cast<unsigned char>(length02 >> x * 8);
 				}
 			}
-			outBuffer[1] |= this->webSocketMaskBit;
+			outBuffer[1] |= webSocketMaskBit;
 			outBuffer[position++] = 0;
 			outBuffer[position++] = 0;
 			outBuffer[position++] = 0;
@@ -1215,7 +1223,7 @@ namespace DiscordCoreInternal {
 						this->heartbeatInterval = static_cast<int32_t>(std::move(payload.at("d")).at("heartbeat_interval").get<float>());
 					}
 					DiscordCoreAPI::TimeElapsedHandler onHeartBeat{ [&, this]() ->void {
-						VoiceSocketAgent::sendHeartBeat();
+						this->sendHeartBeat();
 					} };
 					this->heartbeatTimer = DiscordCoreAPI::ThreadPoolTimer{ DiscordCoreAPI::ThreadPoolTimer::createPeriodicTimer(onHeartBeat, this->heartbeatInterval) };
 					this->haveWeReceivedHeartbeatAck = true;
@@ -1340,7 +1348,7 @@ namespace DiscordCoreInternal {
 				return false;
 			}
 			else {
-				switch (static_cast<WebSocketOpCode>(this->webSocket->getInputBuffer()[0] & ~this->webSocketMaskBit))
+				switch (static_cast<WebSocketOpCode>(this->webSocket->getInputBuffer()[0] & ~webSocketMaskBit))
 				{
 				case WebSocketOpCode::Op_Continuation:
 				case WebSocketOpCode::Op_Text:
@@ -1350,11 +1358,11 @@ namespace DiscordCoreInternal {
 				{
 					uint8_t length01 = this->webSocket->getInputBuffer()[1];
 					int32_t payloadStartOffset = 2;
-					if (length01 & this->webSocketMaskBit) {
+					if (length01 & webSocketMaskBit) {
 						return false;
 					}
 					uint64_t length02 = length01;
-					if (length01 == this->webSocketPayloadLengthMagicLarge) {
+					if (length01 == webSocketPayloadLengthMagicLarge) {
 						if (this->webSocket->getInputBuffer().size() < 8) {
 							return false;
 						}
@@ -1363,7 +1371,7 @@ namespace DiscordCoreInternal {
 						length02 = static_cast<uint64_t>((length03 << 8) | length04);
 						payloadStartOffset += 2;
 					}
-					else if (length01 == this->webSocketPayloadLengthMagicHuge) {
+					else if (length01 == webSocketPayloadLengthMagicHuge) {
 						if (this->webSocket->getInputBuffer().size() < 10) {
 							return false;
 						}
@@ -1394,7 +1402,6 @@ namespace DiscordCoreInternal {
 					close <<= 8;
 					close |= this->webSocket->getInputBuffer()[3] & 0xff;
 					this->closeCode = close;
-					std::cout << DiscordCoreAPI::shiftToBrightRed() << "Voice WebSocket Closed; Code: " << this->closeCode << DiscordCoreAPI::reset() << std::endl;
 					this->onClosedExternal();
 					return false;
 				}
@@ -1419,7 +1426,8 @@ namespace DiscordCoreInternal {
 
 	void VoiceSocketAgent::onClosedInternal() noexcept {
 		try {
-			this->closeCode = 1000;
+			std::cout << DiscordCoreAPI::shiftToBrightRed() << "Voice WebSocket Closed; Code: " << this->closeCode << DiscordCoreAPI::reset() << std::endl;
+			this->closeCode = 0;
 			this->voiceSocket.reset(nullptr);
 			this->webSocket.reset(nullptr);
 			this->heartbeatTimer.cancel();
@@ -1431,16 +1439,14 @@ namespace DiscordCoreInternal {
 
 	void VoiceSocketAgent::connect() noexcept {
 		try {
-			this->authKey = DiscordCoreAPI::generate64BaseEncodedKey();
 			DiscordCoreAPI::waitForTimeToPass(this->voiceConnectionDataBuffer, this->voiceConnectionData, 20000);
 			this->baseUrl = this->voiceConnectionData.endPoint.substr(0, this->voiceConnectionData.endPoint.find(":"));
-			this->relativePath = "/?v=4";
 			this->heartbeatTimer.cancel();
 			this->webSocket = std::make_unique<WebSocketSSLClient>(this->baseUrl, "443");
 			this->state = WebSocketState::Initializing;
-			std::string sendVector = "GET " + this->relativePath + " HTTP/1.1\r\nHost: " + this->baseUrl +
+			std::string sendVector = "GET /?v=4 HTTP/1.1\r\nHost: " + this->baseUrl +
 				"\r\nPragma: no-cache\r\nUser-Agent: DiscordCoreAPI/1.0\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Key: " +
-				this->authKey + "\r\nSec-WebSocket-Version: 13\r\n\r\n";
+				DiscordCoreAPI::generate64BaseEncodedKey() + "\r\nSec-WebSocket-Version: 13\r\n\r\n";
 			this->sendMessage(sendVector);
 		}
 		catch (...) {

@@ -80,7 +80,8 @@ namespace DiscordCoreAPI {
     }
 
     ThreadPoolTimer::ThreadPoolTimer() {
-        this->threadId = std::to_string(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
+        std::this_thread::sleep_for(std::chrono::milliseconds{ 1 });
+        this->threadId = std::to_string(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
     }
 
     CoRoutine<void> ThreadPoolTimer::run(int64_t theInterval, TimeElapsedHandler theFunction, bool repeating) {
