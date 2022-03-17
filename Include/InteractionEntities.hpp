@@ -273,12 +273,7 @@ namespace DiscordCoreAPI {
         friend Interactions;
         friend InputEvents;
         CreateDeferredInteractionResponseData(RespondToInputEventData dataPackage) {
-            if (dataPackage.type == InputEventResponseType::Deferred_Response) {
-                this->data.type = InteractionCallbackType::Deferred_Update_Message;
-            }
-            else if (dataPackage.type == InputEventResponseType::Deferred_Response_With_Source) {
-                this->data.type = InteractionCallbackType::Deferred_Channel_Message_With_Source;
-            }
+            this->data.type = InteractionCallbackType::Deferred_Channel_Message_With_Source;
             this->interactionPackage.interactionToken = dataPackage.interactionToken;
             this->interactionPackage.applicationId = dataPackage.applicationId;
             this->interactionPackage.interactionId = dataPackage.interactionId;
