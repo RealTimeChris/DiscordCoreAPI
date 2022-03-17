@@ -49,13 +49,13 @@ namespace DiscordCoreAPI {
 	public:
 
 		/// Adds a button to the response Message. \brief Adds a button to the response Message.
-		/// \param disabled Whether the button is active or not.
-		/// \param customIdNew A custom id to give for identifying the button.
-		/// \param buttonLabel A visible label for the button.
-		/// \param buttonStyle The style of the button.
-		/// \param emojiName An emoji name, if desired.        
-		/// \param emojiId An emoji id, if desired.
-		/// \param url A url, if applicable.
+	   /// \param disabled Whether the button is active or not.
+	   /// \param customIdNew A custom id to give for identifying the button.
+	   /// \param buttonLabel A visible label for the button.
+	   /// \param buttonStyle The style of the button.
+	   /// \param emojiName An emoji name, if desired.        
+	   /// \param emojiId An emoji id, if desired.
+	   /// \param url A url, if applicable.
 		void addButton(bool disabled, std::string customIdNew, std::string buttonLabel, ButtonStyle buttonStyle, std::string emojiName = "", std::string emojiId = "", std::string url = "") {
 			if (this->components.size() == 0) {
 				ActionRowData actionRowData;
@@ -109,7 +109,6 @@ namespace DiscordCoreAPI {
 					ActionRowData actionRowData;
 					this->components.push_back(actionRowData);
 				}
-
 			}
 		}
 
@@ -142,6 +141,8 @@ namespace DiscordCoreAPI {
 		void setTTSStatus(bool enabledTTs) {
 			this->tts = enabledTTs;
 		}
+
+		virtual ~MessageResponseBase() = default;
 
 	protected:
 

@@ -2557,16 +2557,17 @@ namespace DiscordCoreAPI {
     /// Input event response types. \brief Input event response types.
     enum class InputEventResponseType {
         Unset = 0,///< Unset.
-        Deferred_Response = 1,///< Deferred response.
-        Interaction_Response = 2,///< Interaction response.
-        Interaction_Response_Edit = 3,///< Interaction response edit.
-        Ephemeral_Interaction_Response = 4,///< Ephemeral Interaction response.
-        Regular_Message = 5,///< Regular Message.
-        Regular_Message_Edit = 6,///< Regular Message edit.
-        Follow_Up_Message = 7,///< Follow-up Message.
-        Follow_Up_Message_Edit = 8,///< Follow-up Message edit.
-        Ephemeral_Follow_Up_Message = 9,///< Ephemeral follow-up Message.
-        Send_Dm = 10///< Send Dm.
+        Deferred_Response_With_Source = 1,///< Deferred response, with source.
+        Deferred_Response = 2,///< Deferred response.
+        Interaction_Response = 3,///< Interaction response.
+        Interaction_Response_Edit = 4,///< Interaction response edit.
+        Ephemeral_Interaction_Response = 5,///< Ephemeral Interaction response.
+        Regular_Message = 6,///< Regular Message.
+        Regular_Message_Edit = 7,///< Regular Message edit.
+        Follow_Up_Message = 8,///< Follow-up Message.
+        Follow_Up_Message_Edit = 9,///< Follow-up Message edit.
+        Ephemeral_Follow_Up_Message = 10,///< Ephemeral follow-up Message.
+        Send_Dm = 11///< Send Dm.
     };
 
     /// Input event types. \brief Input event types.

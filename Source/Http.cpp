@@ -427,7 +427,9 @@ namespace DiscordCoreInternal {
 					std::cout << DiscordCoreAPI::shiftToBrightRed() << workload.callStack + "::httpRequest(), We've hit rate limit! Time Remaining: " << std::to_string(Globals::rateLimitValues[Globals::rateLimitValueBuckets[workload.workloadType]]->msRemain) << std::endl << DiscordCoreAPI::reset() << std::endl;
 					returnData = this->executeByRateLimitData(workload, theConnection);
 				}
-				throw HttpError(std::string(std::to_string(returnData.responseCode) + ", " + returnData.responseMessage));
+				else {
+					throw HttpError(std::string(std::to_string(returnData.responseCode) + ", " + returnData.responseMessage));
+				}
 			}
 
 			return returnData;

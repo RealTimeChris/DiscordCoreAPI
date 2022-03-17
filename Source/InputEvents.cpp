@@ -32,6 +32,9 @@ namespace DiscordCoreAPI {
 		}
 		switch (dataPackage.type) {
 		case InputEventResponseType::Deferred_Response: {
+			[[fallthrough]];
+		}
+		case InputEventResponseType::Deferred_Response_With_Source: {
 			std::unique_ptr<CreateDeferredInteractionResponseData>dataPackage02{ std::make_unique<CreateDeferredInteractionResponseData>(dataPackage) };
 			return std::make_unique<InputEventData>(InputEvents::respondToEvent(*dataPackage02));
 		}

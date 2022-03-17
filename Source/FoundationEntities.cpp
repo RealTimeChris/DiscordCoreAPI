@@ -178,9 +178,15 @@ namespace DiscordCoreAPI {
     }
 
     int64_t convertTimestampToMsInteger(std::string timeStamp) {
-        Time timeValue = Time(stoi(timeStamp.substr(0, 4)), stoi(timeStamp.substr(5, 6)), stoi(timeStamp.substr(8, 9)),
-            stoi(timeStamp.substr(11, 12)), stoi(timeStamp.substr(14, 15)), stoi(timeStamp.substr(17, 18)));
-        return timeValue.getTime() * 1000;
+        try {
+            Time timeValue = Time(stoi(timeStamp.substr(0, 4)), stoi(timeStamp.substr(5, 6)), stoi(timeStamp.substr(8, 9)),
+                stoi(timeStamp.substr(11, 12)), stoi(timeStamp.substr(14, 15)), stoi(timeStamp.substr(17, 18)));
+            return timeValue.getTime() * 1000;
+        }
+        catch (...) {
+            reportException("convertTimestampToMsInteger()");
+        }
+        return 0;
     }
 
     std::string base64Encode(std::string theString, bool url) {
@@ -318,19 +324,25 @@ namespace DiscordCoreAPI {
     }
 
     bool hasTimeElapsed(std::string timeStamp, int64_t days, int64_t hours, int64_t minutes) {
-        int64_t startTimeRaw = convertTimestampToMsInteger(timeStamp);
-        auto currentTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-        int64_t secondsPerMinute = 60;
-        int64_t secondsPerHour = secondsPerMinute * 60;
-        int64_t secondsPerDay = secondsPerHour * 24;
-        auto targetElapsedTime = ((days * secondsPerDay) + ((hours)*secondsPerHour) + (minutes * secondsPerMinute)) * 1000;
-        auto actualElapsedTime = currentTime - startTimeRaw;
-        if (actualElapsedTime >= targetElapsedTime) {
-            return true;
+        try {
+            int64_t startTimeRaw = convertTimestampToMsInteger(timeStamp);
+            auto currentTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+            int64_t secondsPerMinute = 60;
+            int64_t secondsPerHour = secondsPerMinute * 60;
+            int64_t secondsPerDay = secondsPerHour * 24;
+            auto targetElapsedTime = (((days * secondsPerDay) + ((hours)*secondsPerHour) + (minutes * secondsPerMinute))) * 1000;
+            auto actualElapsedTime = currentTime - startTimeRaw;
+            if (actualElapsedTime >= targetElapsedTime) {
+                return true;
+            }
+            else {
+                return false;
+            }
         }
-        else {
-            return false;
+        catch (...) {
+            reportException("hasTimeElapsed()");
         }
+        return false;
     }
 
     std::string getFutureISO8601TimeStamp(int32_t minutesToAdd, int32_t hoursToAdd, int32_t daysToAdd, int32_t monthsToAdd, int32_t yearsToAdd) {
