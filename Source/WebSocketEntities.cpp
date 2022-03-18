@@ -642,6 +642,9 @@ namespace DiscordCoreInternal {
 							if (DiscordCoreAPI::SelectMenuCollector::selectMenuInteractionBufferMap.contains(eventData->getChannelId() + eventData->getMessageId())) {
 								DiscordCoreAPI::SelectMenuCollector::selectMenuInteractionBufferMap[eventData->getChannelId() + eventData->getMessageId()]->send(eventData->getInteractionData());
 							}
+							else if (DiscordCoreAPI::SelectMenuCollector::selectMenuInteractionBufferMap.contains(eventData->getAuthorId())) {
+								DiscordCoreAPI::SelectMenuCollector::selectMenuInteractionBufferMap[eventData->getAuthorId()]->send(eventData->getInteractionData());
+							}
 							this->eventManager->onInputEventCreationEvent(*eventCreationData);
 							this->eventManager->onInteractionCreationEvent(std::move(*dataPackage));
 						}

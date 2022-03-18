@@ -244,13 +244,17 @@ namespace DiscordCoreAPI {
         this->messageId = dataPackage.getMessageId();
         this->userId = dataPackage.getRequesterId();
         this->interactionData = dataPackage.getInteractionData();
-        SelectMenuCollector::selectMenuInteractionBufferMap.insert(std::make_pair(this->channelId + this->messageId, &this->selectMenuIncomingInteractionBuffer));
+        this->bufferMapKey = this->userId;
+        SelectMenuCollector::selectMenuInteractionBufferMap.insert(std::make_pair(this->bufferMapKey, &this->selectMenuIncomingInteractionBuffer));
     }
 
     CoRoutine<std::vector<SelectMenuResponseData>> SelectMenuCollector::collectSelectMenuData(bool getSelectMenuDataForAllNew,  int32_t maxWaitTimeInMsNew, int32_t maxCollectedSelectMenuCountNew, std::string targetUser) {
         co_await NewThreadAwaitable<std::vector<SelectMenuResponseData>>();
         if (targetUser == "" && !getSelectMenuDataForAllNew) {
-            throw std::runtime_error("Sorry, but you've failed to properly set the collectSelectMenuData() parameters!");
+            this->getSelectMenuDataForAll = true;
+        }
+        else {
+            this->getSelectMenuDataForAll = getSelectMenuDataForAllNew;
         }
         if (targetUser != "") {
             this->userId = targetUser;
@@ -263,17 +267,20 @@ namespace DiscordCoreAPI {
     }
 
     SelectMenuCollector::~SelectMenuCollector() {
-        if (SelectMenuCollector::selectMenuInteractionBufferMap.contains(this->channelId + this->messageId)) {
-            SelectMenuCollector::selectMenuInteractionBufferMap.erase(this->channelId + this->messageId);
+        if (SelectMenuCollector::selectMenuInteractionBufferMap.contains(this->bufferMapKey)) {
+            SelectMenuCollector::selectMenuInteractionBufferMap.erase(this->bufferMapKey);
         }
     }
     
     void SelectMenuCollector::run() {
             while (!this->doWeQuit) {
                 try {
+                    std::cout << "THIS HAS TO BE IT 010101" << std::endl;
                 if (this->getSelectMenuDataForAll == false) {
+                    std::cout << "THIS HAS TO BE IT 020202" << std::endl;
                     auto selectMenuInteractionData = std::make_unique<InteractionData>();
                     if (waitForTimeToPass(this->selectMenuIncomingInteractionBuffer, *selectMenuInteractionData.get(), this->maxTimeInMs)) {
+                        std::cout << "THIS HAS TO BE IT 0303030" << std::endl;
                         this->selectMenuId = "empty";
                         auto response = std::make_unique<SelectMenuResponseData>();
                         response->selectionId = this->selectMenuId;
@@ -286,6 +293,7 @@ namespace DiscordCoreAPI {
                         break;
                     }
                     if (selectMenuInteractionData->user.id != this->userId) {
+                        std::cout << "THIS HAS TO BE IT 040404" << std::endl;
                         auto createResponseData = std::make_unique<CreateInteractionResponseData>(*selectMenuInteractionData);
                         auto embedData = std::make_unique<EmbedData>();
                         embedData->setColor("FEFEFE");
@@ -298,6 +306,7 @@ namespace DiscordCoreAPI {
                         Interactions::createInteractionResponseAsync(*createResponseData).get();
                     }
                     else {
+                        std::cout << "THIS HAS TO BE IT 050505" << std::endl;
                         this->interactionData = *selectMenuInteractionData;
                         this->selectMenuId = selectMenuInteractionData->data.componentData.customId;
                         auto response = std::make_unique<SelectMenuResponseData>();
@@ -315,10 +324,10 @@ namespace DiscordCoreAPI {
                             Interactions::createInteractionResponseAsync(*createResponseData).get();
                         }
                         if (this->currentCollectedSelectMenuCount >= this->maxCollectedSelectMenuCount) {
-                            doWeQuit = true;
                             for (auto& value : this->responseVector) {
                                 value.interactionData = *selectMenuInteractionData;
                             }
+                            doWeQuit = true;
                         }
                     }
                 }
@@ -362,10 +371,10 @@ namespace DiscordCoreAPI {
             }
             catch (...) {
                 reportException("SelectMenuCollector::run()");
-                SelectMenuCollector::selectMenuInteractionBufferMap.erase(this->channelId + this->messageId);
+                SelectMenuCollector::selectMenuInteractionBufferMap.erase(this->bufferMapKey);
             }
         }        
-            SelectMenuCollector::selectMenuInteractionBufferMap.erase(this->channelId + this->messageId);
+        SelectMenuCollector::selectMenuInteractionBufferMap.erase(this->bufferMapKey);
     }
 
     ButtonCollector::ButtonCollector(InputEventData dataPackage) {
