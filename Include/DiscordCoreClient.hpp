@@ -73,17 +73,16 @@ namespace DiscordCoreAPI {
 		friend Guild;
 
 		/// An EventManager. \brief An EventManager.
-		CommandController commandController{ "" , nullptr };
+		CommandController commandController{ nullptr };
 		EventManager eventManager{};
 
 		/// DiscordCoreClient constructor. \brief DiscordCoreClient constructor.
 		/// \param botTokenNew A string containing your bot's token.
-		/// \param commandPrefixNew A command prefix to use for the command handler.
 		/// \param functionsToExecuteNew A vector of DiscordCoreAPI::RepeatedFunctionData, for potentially repeated functions.
 		/// \param cacheOptionsNew A DiscordCoreAPI::CacheOptions structure for cache settings.
 		/// \param shardOptionsNew A DiscordCoreAPI::ShardingOptions structure to select the shard configuration for this given process.
 		/// \param loggingOptionsNew A DiscordCoreAPI::LoggingOptions structure to select logging configuration options.
-		DiscordCoreClient(std::string botTokenNew, std::string commandPrefixNew, std::vector<RepeatedFunctionData> functionsToExecuteNew = std::vector<RepeatedFunctionData>{}, CacheOptions cacheOptionsNew = CacheOptions{}, ShardingOptions shardOptionsNew = ShardingOptions{}, LoggingOptions loggingOptionsNew = LoggingOptions{});
+		DiscordCoreClient(std::string botTokenNew, std::vector<RepeatedFunctionData> functionsToExecuteNew = std::vector<RepeatedFunctionData>{}, CacheOptions cacheOptionsNew = CacheOptions{}, ShardingOptions shardOptionsNew = ShardingOptions{}, LoggingOptions loggingOptionsNew = LoggingOptions{});
 
 		DiscordCoreClient(nullptr_t);
 

@@ -28,7 +28,7 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll CommandController {
 	public:		
 
-		CommandController(std::string, DiscordCoreClient*);
+		CommandController(DiscordCoreClient*);
 
 		void registerFunction(std::vector<std::string> functionNames, std::unique_ptr<BaseFunction> baseFunction);
 
@@ -39,15 +39,10 @@ namespace DiscordCoreAPI {
 	protected:
 
 		DiscordCoreClient* discordCoreClient{ nullptr };
-		std::string commandPrefix{ "" };
 
 		std::unique_ptr<BaseFunction> createFunction(std::string functionName);
 
 		std::unique_ptr<BaseFunction> getCommand(std::string commandName);
-
-		std::vector<std::string> parseArguments(std::string messageContents);
-
-		std::string parseCommandName(std::string messageContents);
 		
 	};
 

@@ -275,12 +275,9 @@ namespace DiscordCoreAPI {
     void SelectMenuCollector::run() {
             while (!this->doWeQuit) {
                 try {
-                    std::cout << "THIS HAS TO BE IT 010101" << std::endl;
                 if (this->getSelectMenuDataForAll == false) {
-                    std::cout << "THIS HAS TO BE IT 020202" << std::endl;
                     auto selectMenuInteractionData = std::make_unique<InteractionData>();
                     if (waitForTimeToPass(this->selectMenuIncomingInteractionBuffer, *selectMenuInteractionData.get(), this->maxTimeInMs)) {
-                        std::cout << "THIS HAS TO BE IT 0303030" << std::endl;
                         this->selectMenuId = "empty";
                         auto response = std::make_unique<SelectMenuResponseData>();
                         response->selectionId = this->selectMenuId;
@@ -293,7 +290,6 @@ namespace DiscordCoreAPI {
                         break;
                     }
                     if (selectMenuInteractionData->user.id != this->userId) {
-                        std::cout << "THIS HAS TO BE IT 040404" << std::endl;
                         auto createResponseData = std::make_unique<CreateInteractionResponseData>(*selectMenuInteractionData);
                         auto embedData = std::make_unique<EmbedData>();
                         embedData->setColor("FEFEFE");
@@ -306,7 +302,7 @@ namespace DiscordCoreAPI {
                         Interactions::createInteractionResponseAsync(*createResponseData).get();
                     }
                     else {
-                        std::cout << "THIS HAS TO BE IT 050505" << std::endl;
+
                         this->interactionData = *selectMenuInteractionData;
                         this->selectMenuId = selectMenuInteractionData->data.componentData.customId;
                         auto response = std::make_unique<SelectMenuResponseData>();

@@ -47,7 +47,7 @@ namespace DiscordCoreAPI {
 		return Globals::songAPIMap;
 	}
 
-	DiscordCoreClient::DiscordCoreClient(std::string botTokenNew, std::string commandPrefixNew, std::vector<RepeatedFunctionData> functionsToExecuteNew, CacheOptions cacheOptionsNew, ShardingOptions shardingOptionsNew, LoggingOptions loggingOptionsNew) {
+	DiscordCoreClient::DiscordCoreClient(std::string botTokenNew, std::vector<RepeatedFunctionData> functionsToExecuteNew, CacheOptions cacheOptionsNew, ShardingOptions shardingOptionsNew, LoggingOptions loggingOptionsNew) {
 		std::signal(SIGTERM, &signalHandler);
 		std::signal(SIGABRT, &signalHandler);
 		std::signal(SIGILL, &signalHandler);
@@ -57,7 +57,7 @@ namespace DiscordCoreAPI {
 		this->cacheOptions = cacheOptionsNew;
 		this->functionsToExecute = functionsToExecuteNew;
 		this->eventManager = EventManager{};
-		this->commandController = CommandController{ commandPrefixNew, this };
+		this->commandController = CommandController{ this };
 		this->eventManager.onChannelCreation(&EventHandler::onChannelCreation);
 		this->eventManager.onChannelUpdate(&EventHandler::onChannelUpdate);
 		this->eventManager.onChannelDeletion(&EventHandler::onChannelDeletion);
