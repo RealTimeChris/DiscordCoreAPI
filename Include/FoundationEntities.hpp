@@ -3155,6 +3155,7 @@ namespace DiscordCoreAPI {
             else if (inputEventData.interactionData.data.userInteractionData.targetId != "") {
                 this->optionsArgs.push_back(inputEventData.interactionData.data.userInteractionData.targetId);
             }
+            DiscordCoreInternal::DataParser::parseObject(inputEventData.getInteractionData().rawData, *this);
         }
     };
 

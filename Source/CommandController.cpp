@@ -49,9 +49,7 @@ namespace DiscordCoreAPI {
 			co_await NewThreadAwaitable<void>();
 			std::unique_ptr<BaseFunction> functionPointer{ nullptr };
 			 if (commandData->eventData.eventType == InputEventType::Application_Command_Interaction) {
-				nlohmann::json jsonValue = commandData->eventData.getInteractionData().rawData;
-				DiscordCoreInternal::DataParser::parseObject(jsonValue, *commandData.get());
-				functionPointer = this->getCommand(convertToLowerCase(commandData->commandName));
+				 functionPointer = this->getCommand(convertToLowerCase(commandData->commandName));
 			}
 			else {
 				 functionPointer = this->getCommand(convertToLowerCase(commandData->commandName));
