@@ -174,7 +174,16 @@ namespace DiscordCoreInternal {
 		try {
 			auto cancelHandle = co_await DiscordCoreAPI::NewThreadAwaitable<void>();
 			this->connect();
-			while (!cancelHandle.promise().isItStopped() && !this->doWeQuit->load(std::memory_order_seq_cst)) {
+			DiscordCoreAPI::StopWatch<std::chrono::milliseconds> stopWatch{ std::chrono::milliseconds{0} };
+			while (!cancelHandle.promise().isItStopped() && !this->doWeQuit->load(std::memory_order_seq_cst)) {				
+					if (this->heartbeatInterval != 0 && !this->areWeHeartBeating) {
+						this->areWeHeartBeating = true;
+						stopWatch = DiscordCoreAPI::StopWatch{ std::chrono::milliseconds{this->heartbeatInterval} };
+					}
+					if (stopWatch.hasTimePassed() && this->areWeHeartBeating) {
+						stopWatch.resetTimer();
+						this->sendHeartBeat();
+					}
 				if (!this->doWeReconnect.wait(0)) {
 					this->onClosedInternal();
 				}
@@ -270,7 +279,6 @@ namespace DiscordCoreInternal {
 				this->areWeResuming = true;
 				this->currentReconnectTries += 1;
 				this->areWeConnected.store(false, std::memory_order_seq_cst);
-				this->heartbeatTimer->cancel();
 				this->webSocket.reset(nullptr);
 				this->connect();
 			}
@@ -287,7 +295,6 @@ namespace DiscordCoreInternal {
 				}
 				else {
 					this->areWeConnected.store(false, std::memory_order_seq_cst);
-					this->heartbeatTimer->cancel();
 					this->webSocket.reset(nullptr);
 					this->areWeResuming = false;
 					this->areWeAuthenticated = false;
@@ -297,13 +304,7 @@ namespace DiscordCoreInternal {
 
 			if (payload.at("op") == 10) {
 				this->heartbeatInterval = std::move(payload.at("d")).at("heartbeat_interval");
-				DiscordCoreAPI::TimeElapsedHandler onHeartBeat = [this]() {
-					this->sendHeartBeat();
-				};
-				DiscordCoreAPI::TimeElapsedHandler onReconnect = [this]() {
-					this->onClosedExternal();
-				};
-				this->heartbeatTimer = std::make_unique<DiscordCoreAPI::ThreadPoolTimer>(DiscordCoreAPI::ThreadPoolTimer::createPeriodicTimer(onHeartBeat, this->heartbeatInterval));
+				this->areWeHeartBeating = false;
 				if (!this->areWeAuthenticated) {
 					nlohmann::json identityJson = JSONIFY(this->botToken, static_cast<int32_t>(this->intentsValue), this->currentShard, this->numOfShards);
 					this->sendMessage(identityJson);
@@ -1004,9 +1005,6 @@ namespace DiscordCoreInternal {
 				this->currentReconnectTries += 1;
 				this->webSocket.reset(nullptr);
 				this->areWeAuthenticated = false;
-				if (this->heartbeatTimer->running()) {
-					this->heartbeatTimer->cancel();
-				}
 				this->haveWeReceivedHeartbeatAck = true;
 				this->connect();
 			}
@@ -1037,7 +1035,6 @@ namespace DiscordCoreInternal {
 
 	BaseSocketAgent::~BaseSocketAgent() noexcept {
 		this->theTask->cancel();
-		this->heartbeatTimer->cancel();
 	}
 
 	VoiceSocketAgent::VoiceSocketAgent(VoiceConnectInitData initDataNew, BaseSocketAgent* baseBaseSocketAgentNew, bool printMessagesNew) noexcept {
@@ -1161,7 +1158,16 @@ namespace DiscordCoreInternal {
 		try {
 			auto cancelHandle = co_await DiscordCoreAPI::NewThreadAwaitable<void>();
 			this->connect();
+			DiscordCoreAPI::StopWatch<std::chrono::milliseconds> stopWatch{ std::chrono::milliseconds{0} };
 			while (!cancelHandle.promise().isItStopped()) {
+				if (this->heartbeatInterval != 0 && !this->areWeHeartBeating) {
+					this->areWeHeartBeating = true;
+					stopWatch = DiscordCoreAPI::StopWatch{ std::chrono::milliseconds{this->heartbeatInterval} };
+				}
+				if (stopWatch.hasTimePassed() && this->areWeHeartBeating) {
+					stopWatch.resetTimer();
+					this->sendHeartBeat();
+				}
 				if (!this->doWeReconnect.wait(0)) {
 					this->onClosedInternal();
 					co_return;
@@ -1223,11 +1229,8 @@ namespace DiscordCoreInternal {
 				if (payload.at("op") == 8) {
 					if (std::move(payload.at("d")).contains("heartbeat_interval")) {
 						this->heartbeatInterval = static_cast<int32_t>(std::move(payload.at("d")).at("heartbeat_interval").get<float>());
+						this->areWeHeartBeating = false;
 					}
-					DiscordCoreAPI::TimeElapsedHandler onHeartBeat{ [&, this]() ->void {
-						this->sendHeartBeat();
-					} };
-					this->heartbeatTimer = DiscordCoreAPI::ThreadPoolTimer{ DiscordCoreAPI::ThreadPoolTimer::createPeriodicTimer(onHeartBeat, this->heartbeatInterval) };
 					this->haveWeReceivedHeartbeatAck = true;
 					std::vector<uint8_t> identifyPayload = JSONIFY(this->voiceConnectionData, this->voiceConnectInitData);
 					if (this->webSocket != nullptr) {
@@ -1432,7 +1435,6 @@ namespace DiscordCoreInternal {
 			this->closeCode = 0;
 			this->voiceSocket.reset(nullptr);
 			this->webSocket.reset(nullptr);
-			this->heartbeatTimer.cancel();
 		}
 		catch (...) {
 			DiscordCoreAPI::reportException("VoiceSocketAgent::onClosedInternal()");
@@ -1443,7 +1445,6 @@ namespace DiscordCoreInternal {
 		try {
 			DiscordCoreAPI::waitForTimeToPass(this->voiceConnectionDataBuffer, this->voiceConnectionData, 20000);
 			this->baseUrl = this->voiceConnectionData.endPoint.substr(0, this->voiceConnectionData.endPoint.find(":"));
-			this->heartbeatTimer.cancel();
 			this->webSocket = std::make_unique<WebSocketSSLClient>(this->baseUrl, "443");
 			this->state = WebSocketState::Initializing;
 			std::string sendVector = "GET /?v=4 HTTP/1.1\r\nHost: " + this->baseUrl +
@@ -1460,6 +1461,5 @@ namespace DiscordCoreInternal {
 	VoiceSocketAgent::~VoiceSocketAgent() noexcept {
 		this->theTask->cancel();
 		this->theTask.reset(nullptr);
-		this->heartbeatTimer.cancel();
 	};
 }

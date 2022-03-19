@@ -69,7 +69,6 @@ namespace DiscordCoreInternal {
 		
 		std::unordered_map<std::string, DiscordCoreAPI::UnboundedMessageBlock<VoiceConnectionData>*> voiceConnectionDataBufferMap{};
 		const DiscordCoreAPI::GatewayIntents intentsValue{ DiscordCoreAPI::GatewayIntents::All_Intents };
-		std::unique_ptr<DiscordCoreAPI::ThreadPoolTimer> heartbeatTimer{ nullptr };
 		std::unique_ptr<DiscordCoreAPI::CoRoutine<void>> theTask{ nullptr };
 		DiscordCoreAPI::DiscordCoreClient* discordCoreClient{ nullptr };
 		DiscordCoreAPI::CommandController* commandController{ nullptr };
@@ -90,6 +89,7 @@ namespace DiscordCoreInternal {
 		int32_t currentReconnectTries{ 0 };
 		bool areWeCollectingData{ false };
 		bool areWeAuthenticated{ false };
+		bool areWeHeartBeating{ false };
 		int32_t lastNumberReceived{ 0 };
 		int32_t heartbeatInterval{ 0 };
 		std::mutex accessorMutex01{};
@@ -146,7 +146,6 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::UnboundedMessageBlock<DiscordCoreInternal::VoiceConnectionData> voiceConnectionDataBuffer{};
 		std::unique_ptr<DiscordCoreAPI::CoRoutine<void>> theTask{ nullptr };
 		std::unique_ptr<DatagramSocketSSLClient> voiceSocket{ nullptr };
-		DiscordCoreAPI::ThreadPoolTimer heartbeatTimer{ nullptr };
 		std::unique_ptr<WebSocketSSLClient> webSocket{ nullptr };
 		WebSocketOpCode dataOpcode{ WebSocketOpCode::Op_Text };
 		WebSocketState state{ WebSocketState::Initializing };
@@ -157,6 +156,7 @@ namespace DiscordCoreInternal {
 		VoiceConnectionData voiceConnectionData{};
 		bool haveWeReceivedHeartbeatAck{ true };
 		int32_t lastNumberReceived{ 0 };
+		bool areWeHeartBeating{ false };
 		int32_t heartbeatInterval{ 0 };
 		bool printMessages{ false };
 		std::string baseUrl{ "" };
