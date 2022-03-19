@@ -42,7 +42,12 @@ namespace DiscordCoreAPI {
 			msgEmbed.setTimeStamp(getTimeAndDate());
 			msgEmbed.setTitle("__**Test Embed**__");
 			RespondToInputEventData dataResponse{ *args->eventData };
-			dataResponse.type = InputEventResponseType::Interaction_Response;
+			if (args->eventData->eventType == InputEventType::Regular_Message) {
+				dataResponse.type = InputEventResponseType::Regular_Message;
+			}
+			else {
+				dataResponse.type = InputEventResponseType::Interaction_Response;
+			}
 			dataResponse.addMessageEmbed(msgEmbed);
 			InputEvents::deleteInputEventResponseAsync(std::make_unique<InputEventData>(*args->eventData));
 			InputEvents::respondToEvent(dataResponse);

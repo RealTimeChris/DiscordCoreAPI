@@ -48,11 +48,11 @@ namespace DiscordCoreAPI {
 		try {
 			co_await NewThreadAwaitable<void>();
 			std::unique_ptr<BaseFunction> functionPointer{ nullptr };
-			if (commandData->eventData.eventType == InteractionType::Application_Command) {
-				functionPointer = this->getCommand(convertToLowerCase(commandData->commandName));
+			 if (commandData->eventData.eventType == InputEventType::Application_Command_Interaction) {
+				 functionPointer = this->getCommand(convertToLowerCase(commandData->commandName));
 			}
 			else {
-				functionPointer = this->getCommand(convertToLowerCase(commandData->commandName));
+				 functionPointer = this->getCommand(convertToLowerCase(commandData->commandName));
 			}
 			if (functionPointer == nullptr) {
 				co_return;

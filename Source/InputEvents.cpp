@@ -50,6 +50,14 @@ namespace DiscordCoreAPI {
 			std::unique_ptr<CreateEphemeralInteractionResponseData> dataPackage02{ std::make_unique<CreateEphemeralInteractionResponseData>(dataPackage) };
 			return std::make_unique<InputEventData>(InputEvents::respondToEvent(*dataPackage02));
 		}
+		case InputEventResponseType::Regular_Message: {
+			std::unique_ptr<CreateMessageData> dataPackage02{ std::make_unique<CreateMessageData>(dataPackage) };
+			return std::make_unique<InputEventData>(InputEvents::respondToEvent(*dataPackage02));
+		}
+		case InputEventResponseType::Regular_Message_Edit: {
+			std::unique_ptr<EditMessageData> dataPackage02{ std::make_unique<EditMessageData>(dataPackage) };
+			return std::make_unique<InputEventData>(InputEvents::respondToEvent(*dataPackage02));
+		}
 		case InputEventResponseType::Follow_Up_Message: {
 			std::unique_ptr<CreateFollowUpMessageData> dataPackage02{ std::make_unique<CreateFollowUpMessageData>(dataPackage) };
 			return std::make_unique<InputEventData>(InputEvents::respondToEvent(*dataPackage02));
@@ -79,7 +87,13 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<void> InputEvents::deleteInputEventResponseAsync(std::unique_ptr<InputEventData> dataPackage,  int32_t timeDelayNew) {
 		co_await NewThreadAwaitable<void>();
-		if (dataPackage->responseType == InputEventResponseType::Follow_Up_Message || dataPackage->responseType == InputEventResponseType::Follow_Up_Message_Edit) {
+		if (dataPackage->eventType == InputEventType::Regular_Message || dataPackage->responseType == InputEventResponseType::Regular_Message || dataPackage->responseType == InputEventResponseType::Regular_Message_Edit) {
+			std::unique_ptr<DeleteMessageData> deleteData = std::make_unique<DeleteMessageData>();
+			deleteData->messageData = dataPackage->getMessageData();
+			deleteData->timeDelay = timeDelayNew;
+			Messages::deleteMessageAsync(*deleteData).get();
+		}
+		else if (dataPackage->responseType == InputEventResponseType::Follow_Up_Message || dataPackage->responseType == InputEventResponseType::Follow_Up_Message_Edit) {
 			std::unique_ptr<DeleteFollowUpMessageData> dataPackageNewer = std::make_unique<DeleteFollowUpMessageData>(*dataPackage);
 			dataPackageNewer->timeDelay = timeDelayNew;
 			Interactions::deleteFollowUpMessageAsync(*dataPackageNewer).get();
@@ -99,7 +113,7 @@ namespace DiscordCoreAPI {
 		dataPackageNewer->interactionData.applicationId = dataPackage.interactionPackage.applicationId;
 		dataPackageNewer->interactionData.token = dataPackage.interactionPackage.interactionToken;
 		dataPackageNewer->interactionData.id = dataPackage.interactionPackage.interactionId;
-		dataPackageNewer->eventType = InteractionType::Application_Command;
+		dataPackageNewer->eventType = InputEventType::Application_Command_Interaction;
 		dataPackageNewer->interactionData.channelId = dataPackage.channelId;
 		dataPackageNewer->requesterId = dataPackage.requesterId;
 		return *dataPackageNewer;
@@ -114,7 +128,7 @@ namespace DiscordCoreAPI {
 		dataPackageNewer->responseType = InputEventResponseType::Interaction_Response;
 		dataPackageNewer->interactionData.message.components = dataPackage.data.data.components;
 		dataPackageNewer->interactionData.id = dataPackage.interactionPackage.interactionId;
-		dataPackageNewer->eventType = InteractionType::Application_Command;
+		dataPackageNewer->eventType = InputEventType::Application_Command_Interaction;
 		dataPackageNewer->requesterId = dataPackage.requesterId;
 		dataPackageNewer->messageData = messageData;
 		return *dataPackageNewer;
@@ -127,7 +141,7 @@ namespace DiscordCoreAPI {
 		dataPackageNewer->responseType = InputEventResponseType::Interaction_Response_Edit;
 		dataPackageNewer->interactionData.token = dataPackage.interactionPackage.interactionToken;
 		dataPackageNewer->interactionData.id = dataPackage.interactionPackage.interactionId;
-		dataPackageNewer->eventType = InteractionType::Application_Command;
+		dataPackageNewer->eventType = InputEventType::Application_Command_Interaction;
 		dataPackageNewer->requesterId = dataPackage.requesterId;
 		dataPackageNewer->messageData = messageData;
 		return *dataPackageNewer;
@@ -140,7 +154,7 @@ namespace DiscordCoreAPI {
 		dataPackageNewer->interactionData.applicationId = dataPackage.interactionPackage.applicationId;
 		dataPackageNewer->interactionData.token = dataPackage.interactionPackage.interactionToken;
 		dataPackageNewer->interactionData.id = dataPackage.interactionPackage.interactionId;
-		dataPackageNewer->eventType = InteractionType::Application_Command;
+		dataPackageNewer->eventType = InputEventType::Application_Command_Interaction;
 		dataPackageNewer->requesterId = dataPackage.requesterId;
 		dataPackageNewer->messageData = messageData;
 		return *dataPackageNewer;
@@ -153,7 +167,7 @@ namespace DiscordCoreAPI {
 		dataPackageNewer->interactionData.applicationId = dataPackage.interactionPackage.applicationId;
 		dataPackageNewer->interactionData.token = dataPackage.interactionPackage.interactionToken;
 		dataPackageNewer->interactionData.id = dataPackage.interactionPackage.interactionId;
-		dataPackageNewer->eventType = InteractionType::Application_Command;
+		dataPackageNewer->eventType = InputEventType::Application_Command_Interaction;
 		dataPackageNewer->requesterId = dataPackage.requesterId;
 		dataPackageNewer->messageData = messageData;
 		return *dataPackageNewer;
@@ -167,7 +181,7 @@ namespace DiscordCoreAPI {
 		dataPackageNewer->interactionData.applicationId = dataPackage.interactionPackage.applicationId;
 		dataPackageNewer->interactionData.token = dataPackage.interactionPackage.interactionToken;
 		dataPackageNewer->interactionData.id = dataPackage.interactionPackage.interactionId;
-		dataPackageNewer->eventType = InteractionType::Application_Command;
+		dataPackageNewer->eventType = InputEventType::Application_Command_Interaction;
 		dataPackageNewer->messageData = newMessage;
 		dataPackageNewer->requesterId = dataPackage.requesterId;
 		return *dataPackageNewer;
@@ -181,7 +195,7 @@ namespace DiscordCoreAPI {
 		dataPackageNewer->interactionData.applicationId = dataPackage.interactionPackage.applicationId;
 		dataPackageNewer->interactionData.token = dataPackage.interactionPackage.interactionToken;
 		dataPackageNewer->interactionData.id = dataPackage.interactionPackage.interactionId;
-		dataPackageNewer->eventType = InteractionType::Application_Command;
+		dataPackageNewer->eventType = InputEventType::Application_Command_Interaction;
 		dataPackageNewer->requesterId = dataPackage.requesterId;
 		dataPackageNewer->messageData = messageData;
 		return *dataPackageNewer;
@@ -192,9 +206,30 @@ namespace DiscordCoreAPI {
 		dataPackage.channelId = channel.id;
 		Message message = Messages::createMessageAsync(dataPackage).get();
 		std::unique_ptr<InputEventData> dataPackageNewer = std::make_unique<InputEventData>();
-		dataPackageNewer->responseType = InputEventResponseType::Send_Dm;
+		dataPackageNewer->responseType = InputEventResponseType::Regular_Message;
+		dataPackageNewer->eventType = InputEventType::Regular_Message;
 		dataPackageNewer->messageData = message;
 		dataPackageNewer->requesterId = dataPackage.requesterId;
+		return *dataPackageNewer;
+	}
+
+	InputEventData InputEvents::respondToEvent(CreateMessageData dataPackage) {
+		Message message = Messages::createMessageAsync(dataPackage).get();
+		std::unique_ptr<InputEventData> dataPackageNewer = std::make_unique<InputEventData>();
+		dataPackageNewer->responseType = InputEventResponseType::Regular_Message;
+		dataPackageNewer->eventType = InputEventType::Regular_Message;
+		dataPackageNewer->messageData = message;
+		dataPackageNewer->requesterId = dataPackage.requesterId;
+		return *dataPackageNewer;
+	}
+	
+	InputEventData InputEvents::respondToEvent(EditMessageData dataPackage) {
+		Message message = Messages::editMessageAsync(dataPackage).get();
+		std::unique_ptr<InputEventData> dataPackageNewer = std::make_unique<InputEventData>();
+		dataPackageNewer->responseType = InputEventResponseType::Regular_Message_Edit;
+		dataPackageNewer->eventType = InputEventType::Regular_Message;
+		dataPackageNewer->requesterId = dataPackage.requesterId;
+		dataPackageNewer->messageData = message;
 		return *dataPackageNewer;
 	}
 

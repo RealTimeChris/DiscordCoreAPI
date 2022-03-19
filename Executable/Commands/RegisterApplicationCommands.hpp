@@ -44,7 +44,9 @@ namespace DiscordCoreAPI {
 
 				RespondToInputEventData dataPackage(*args->eventData);
 				dataPackage.type = InputEventResponseType::Deferred_Response;
-				newEvent = *InputEvents::respondToEvent(dataPackage);
+				if (args->eventData->eventType == InputEventType::Application_Command_Interaction) {
+					newEvent = *InputEvents::respondToEvent(dataPackage);
+				}
 
 				Guild guild = Guilds::getCachedGuildAsync({ args->eventData->getGuildId() }).get();
 				GuildMember guildMember = GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = args->eventData->getAuthorId() ,.guildId = args->eventData->getGuildId() }).get();
@@ -91,10 +93,18 @@ namespace DiscordCoreAPI {
 				msgEmbed.setDescription("------\nNicely done, you've registered some commands!\n------");
 				msgEmbed.setTimeStamp(getTimeAndDate());
 				msgEmbed.setTitle("__**Register Application Commands Complete:**__");
-				RespondToInputEventData responseData(*args->eventData);
-				responseData.type = InputEventResponseType::Interaction_Response_Edit;
-				responseData.addMessageEmbed(msgEmbed);
-				auto event = InputEvents::respondToEvent(responseData);
+				if (args->eventData->eventType == InputEventType::Regular_Message) {
+					RespondToInputEventData responseData(*args->eventData);
+					responseData.type = InputEventResponseType::Regular_Message;
+					responseData.addMessageEmbed(msgEmbed);
+					InputEventData  event01 = *InputEvents::respondToEvent(responseData);
+				}
+				else if (args->eventData->eventType == InputEventType::Application_Command_Interaction) {
+					RespondToInputEventData responseData(*args->eventData);
+					responseData.type = InputEventResponseType::Interaction_Response_Edit;
+					responseData.addMessageEmbed(msgEmbed);
+					auto event = InputEvents::respondToEvent(responseData);
+				}
 				return;
 			}
 			catch (...) {
