@@ -577,7 +577,6 @@ namespace DiscordCoreAPI {
         InteractionData interactionData{};
         std::vector<std::string> values{};
         std::string selectMenuId{ "" };
-        std::string bufferMapKey{ "" };
         std::string channelId{ "" };
         std::string messageId{ "" };
         uint32_t maxTimeInMs{ 0 };

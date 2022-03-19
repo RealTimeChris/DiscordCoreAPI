@@ -798,8 +798,13 @@ namespace DiscordCoreAPI {
             return this->originalTimeStamp;
         }
 
-        TimeStamp(std::string originalTimeStampNew) {
+        TimeStamp& operator=(std::string originalTimeStampNew) {
             this->originalTimeStamp = originalTimeStampNew;
+            return *this;
+        }
+
+        TimeStamp(std::string originalTimeStampNew) {
+            *this = originalTimeStampNew;
         }
 
         /// Collects a timestamp using the format TimeFormat, as a string. \brief Collects a timestamp using the format TimeFormat, as a string.

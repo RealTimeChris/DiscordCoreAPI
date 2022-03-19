@@ -244,8 +244,7 @@ namespace DiscordCoreAPI {
         this->messageId = dataPackage.getMessageId();
         this->userId = dataPackage.getRequesterId();
         this->interactionData = dataPackage.getInteractionData();
-        this->bufferMapKey = this->userId;
-        SelectMenuCollector::selectMenuInteractionBufferMap.insert(std::make_pair(this->bufferMapKey, &this->selectMenuIncomingInteractionBuffer));
+        SelectMenuCollector::selectMenuInteractionBufferMap.insert(std::make_pair(this->userId, &this->selectMenuIncomingInteractionBuffer));
     }
 
     CoRoutine<std::vector<SelectMenuResponseData>> SelectMenuCollector::collectSelectMenuData(bool getSelectMenuDataForAllNew,  int32_t maxWaitTimeInMsNew, int32_t maxCollectedSelectMenuCountNew, std::string targetUser) {
@@ -267,8 +266,8 @@ namespace DiscordCoreAPI {
     }
 
     SelectMenuCollector::~SelectMenuCollector() {
-        if (SelectMenuCollector::selectMenuInteractionBufferMap.contains(this->bufferMapKey)) {
-            SelectMenuCollector::selectMenuInteractionBufferMap.erase(this->bufferMapKey);
+        if (SelectMenuCollector::selectMenuInteractionBufferMap.contains(this->userId)) {
+            SelectMenuCollector::selectMenuInteractionBufferMap.erase(this->userId);
         }
     }
     
@@ -367,10 +366,10 @@ namespace DiscordCoreAPI {
             }
             catch (...) {
                 reportException("SelectMenuCollector::run()");
-                SelectMenuCollector::selectMenuInteractionBufferMap.erase(this->bufferMapKey);
+                SelectMenuCollector::selectMenuInteractionBufferMap.erase(this->userId);
             }
         }        
-        SelectMenuCollector::selectMenuInteractionBufferMap.erase(this->bufferMapKey);
+            SelectMenuCollector::selectMenuInteractionBufferMap.erase(this->userId);
     }
 
     ButtonCollector::ButtonCollector(InputEventData dataPackage) {
