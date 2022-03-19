@@ -2567,24 +2567,12 @@ namespace DiscordCoreAPI {
         Interaction_Response = 3,///< Interaction response.
         Interaction_Response_Edit = 4,///< Interaction response edit.
         Ephemeral_Interaction_Response = 5,///< Ephemeral Interaction response.
-        Regular_Message = 6,///< Regular Message.
-        Regular_Message_Edit = 7,///< Regular Message edit.
+        Edit_Ephemeral_Interaction_Response = 5,///< Ephemeral Interaction response.
         Follow_Up_Message = 8,///< Follow-up Message.
         Follow_Up_Message_Edit = 9,///< Follow-up Message edit.
         Ephemeral_Follow_Up_Message = 10,///< Ephemeral follow-up Message.
+        Edit_Ephemeral_Follow_Up_Message = 10,///< Ephemeral follow-up Message.
         Send_Dm = 11///< Send Dm.
-    };
-
-    /// Input event types. \brief Input event types.
-    enum class InputEventType {
-        Unset = 0,///< Unset.
-        Application_Command_Interaction = 1,///< Slash-command Interaction.
-        Button_Interaction = 2,///< Button Interaction.
-        Regular_Message = 3,///< Regular Message.
-        Select_Menu_Interaction = 4,///< Select-menu Interaction.
-        Message_Command_Interaction = 5,///< Message-command Interaction.
-        User_Command_Interaction = 6,///< User-command Interaction.
-        Modal_Interaction = 7///< Modal Interaction.
     };
 
     /// Data representing a Guild Emoji Update event. \brief Data representing a Guild Emoji Update event.
@@ -2616,12 +2604,16 @@ namespace DiscordCoreAPI {
         friend class DiscordCoreInternal::BaseSocketAgent;
         friend RecurseThroughMessagePagesData;
         friend OnInteractionCreationData;
+        friend class CommandController;
         friend RespondToInputEventData;
         friend BaseFunctionArguments;
         friend DiscordCoreClient;
         friend EventHandler;
         friend CommandData;
         friend InputEvents;
+
+        InputEventResponseType responseType{};///< The type of response that this input value represents.
+        InteractionType eventType{};///< The type of input-event that is represented by this structure.
 
         InputEventData& operator=(InputEventData&& other) noexcept {
             this->interactionData = other.interactionData;
@@ -2658,12 +2650,9 @@ namespace DiscordCoreAPI {
             *this = other;
         }
 
-        InputEventResponseType responseType{};///< The type of response that this input value represents.
-        InputEventType eventType{};///< The type of input-event that is represented by this structure.
-
         InputEventData() = default;
 
-        InputEventData(MessageData messageData, InteractionData interactionData, InputEventType eventType) {
+        InputEventData(MessageData messageData, InteractionData interactionData, InteractionType eventType) {
             this->interactionData = interactionData;
             this->messageData = messageData;
             this->eventType = eventType;
@@ -2912,6 +2901,7 @@ namespace DiscordCoreAPI {
         virtual ~InputEventData() = default;
 
     protected:
+
         InteractionData interactionData{};
         std::string requesterId{ "" };
         MessageData messageData{};
@@ -2937,22 +2927,16 @@ namespace DiscordCoreAPI {
         friend SendDMData;
 
         InputEventResponseType type{};///< The type of response to make.
-
-        RespondToInputEventData(std::string channelIdNew) {
-            this->channelId = channelIdNew;
-            this->type = InputEventResponseType::Regular_Message;
-        }
+        InteractionType eventType{};
 
         RespondToInputEventData(InteractionData dataPackage) {
-            this->type = InputEventResponseType::Interaction_Response;
-            this->applicationId = dataPackage.applicationId;
-            this->requesterId = dataPackage.requesterId;
             this->interactionToken = dataPackage.token;
-            this->messageId = dataPackage.message.id;
-            this->channelId = dataPackage.channelId;
+            this->applicationId = dataPackage.applicationId;
             this->interactionId = dataPackage.id;
-            this->eventType = dataPackage.type;
-        };
+            this->requesterId = dataPackage.requesterId;
+            this->channelId = dataPackage.channelId;
+            this->messageId = dataPackage.message.id;
+        }
 
         RespondToInputEventData(InputEventData dataPackage) {
             this->interactionToken = dataPackage.getInteractionToken();
@@ -2961,7 +2945,11 @@ namespace DiscordCoreAPI {
             this->requesterId = dataPackage.getRequesterId();
             this->channelId = dataPackage.getChannelId();
             this->messageId = dataPackage.getMessageId();
-            this->type = InputEventResponseType::Interaction_Response;
+        }
+
+        RespondToInputEventData& setResponseType(InputEventResponseType typeNew) {
+            this->type = typeNew;
+            return *this;
         }
 
         /// Adds a button to the response Message. \brief Adds a button to the response Message.
@@ -3114,7 +3102,7 @@ namespace DiscordCoreAPI {
         }
 
     protected:
-
+        
         std::vector<ActionRowData> components{};
         AllowedMentionsData allowedMentions{};
         std::string interactionToken{ "" };
@@ -3123,7 +3111,6 @@ namespace DiscordCoreAPI {
         std::string applicationId{ "" };
         std::string targetUserId{ "" };
         std::string requesterId{ "" };
-        InteractionType eventType{};
         std::string channelId{ "" };
         std::string messageId{ "" };
         std::string customId{ "" };
@@ -3367,6 +3354,18 @@ namespace DiscordCoreAPI {
         std::unique_ptr<InputEventData> eventData{};///< InputEventData representing the input event that triggered the command.
         CommandData commandData{};///< The input command's data.
 
+        BaseFunctionArguments& operator=(const BaseFunctionArguments& other) {
+            this->eventData = std::make_unique<InputEventData>();
+            this->discordCoreClient = other.discordCoreClient;
+            this->commandData = other.commandData;
+            *this->eventData = *other.eventData;
+            return *this;
+        }
+
+        BaseFunctionArguments(const BaseFunctionArguments& other) {
+            *this = other;
+        }
+
         BaseFunctionArguments& operator=(BaseFunctionArguments& other) {
             this->eventData = std::make_unique<InputEventData>();
             this->discordCoreClient = other.discordCoreClient;
@@ -3416,7 +3415,9 @@ namespace DiscordCoreAPI {
         std::string buttonId{};
     };
 
+    //DiscordCoreAPI_Dll MoveThroughMessagePagesData moveThroughMessagePages(std::string userID, std::unique_ptr<InputEventData> originalEvent, uint32_t currentPageIndex, std::vector<EmbedData> messageEmbeds, bool deleteAfter, uint32_t waitForMaxMs, bool returnResult = false);
     DiscordCoreAPI_Dll MoveThroughMessagePagesData moveThroughMessagePages(std::string userID, std::unique_ptr<InputEventData> originalEvent, uint32_t currentPageIndex, std::vector<EmbedData> messageEmbeds, bool deleteAfter, uint32_t waitForMaxMs, bool returnResult = false);
+
     /**@}*/
 
 };

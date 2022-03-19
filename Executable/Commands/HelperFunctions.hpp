@@ -18,14 +18,7 @@ namespace DiscordCoreAPI {
                 msgEmbed->setDescription(msgString);
                 msgEmbed->setTimeStamp(getTimeAndDate());
                 msgEmbed->setTitle("__**Direct Message Issue:**__");
-                if (eventData.eventType == InputEventType::Regular_Message) {
-                    std::unique_ptr<RespondToInputEventData> responseData(new RespondToInputEventData(eventData));
-                    responseData->type = InputEventResponseType::Regular_Message;
-                    responseData->addMessageEmbed(*msgEmbed);
-                    auto event01 = InputEvents::respondToEvent(*responseData);
-                    InputEvents::deleteInputEventResponseAsync(std::move(event01), 20000);
-                }
-                else if (eventData.eventType == InputEventType::Application_Command_Interaction) {
+                if (eventData.eventType== InteractionType::Application_Command) {
                     std::unique_ptr<RespondToInputEventData> responseData(new RespondToInputEventData(eventData));
                     responseData->type = InputEventResponseType::Ephemeral_Interaction_Response;
                     responseData->addMessageEmbed(*msgEmbed);

@@ -179,7 +179,6 @@ namespace DiscordCoreAPI {
 
     int64_t convertTimestampToMsInteger(std::string timeStamp) {
         try {
-            std::cout << "THE TIMESTAMP: " << timeStamp << std::endl;
             Time timeValue = Time(stoi(timeStamp.substr(0, 4)), stoi(timeStamp.substr(5, 6)), stoi(timeStamp.substr(8, 9)),
                 stoi(timeStamp.substr(11, 12)), stoi(timeStamp.substr(14, 15)), stoi(timeStamp.substr(17, 18)));
             return timeValue.getTime() * 1000;
@@ -699,10 +698,7 @@ namespace DiscordCoreAPI {
             dataPackage->addButton(false, "backwards", "Prev Page", ButtonStyle::Primary, "◀️");
             dataPackage->addButton(false, "forwards", "Next Page", ButtonStyle::Primary, "▶️");
             dataPackage->addButton(false, "exit", "Exit", ButtonStyle::Danger, "❌");
-            if (originalEvent->eventType == InputEventType::Regular_Message) {
-                dataPackage->type = InputEventResponseType::Regular_Message_Edit;
-            }
-            else if (originalEvent->eventType == InputEventType::Application_Command_Interaction) {
+            if (originalEvent->eventType == InteractionType::Application_Command) {
                 dataPackage->type = InputEventResponseType::Interaction_Response_Edit;
             }
             *originalEvent = *InputEvents::respondToEvent(*dataPackage.get());
@@ -714,7 +710,8 @@ namespace DiscordCoreAPI {
                         dataPackage = std::make_unique<RespondToInputEventData>(*originalEvent);
                     }
                     else {
-                        dataPackage = std::make_unique<RespondToInputEventData>(buttonIntData->at(0));
+                        InputEventData newInput{ MessageData{},buttonIntData->at(0).interactionData,InteractionType::Message_Component };
+                        dataPackage = std::make_unique<RespondToInputEventData>(newInput);
                     }
 
                     dataPackage->addMessageEmbed(messageEmbeds[newCurrentPageIndex]);
@@ -728,10 +725,7 @@ namespace DiscordCoreAPI {
                         InputEvents::deleteInputEventResponseAsync(std::move(std::unique_ptr<InputEventData>{std::make_unique<InputEventData>(*originalEvent)}));
                     }
                     else {
-                        if (originalEvent->eventType == InputEventType::Regular_Message) {
-                            dataPackage->type = InputEventResponseType::Regular_Message_Edit;
-                        }
-                        else {
+                        if (originalEvent->eventType == InteractionType::Application_Command) {
                             dataPackage->type = InputEventResponseType::Interaction_Response_Edit;
                         }
                         InputEvents::respondToEvent(*dataPackage.get());
@@ -754,11 +748,9 @@ namespace DiscordCoreAPI {
                     else if (buttonIntData->at(0).buttonId == "backwards" && (newCurrentPageIndex == 0)) {
                         newCurrentPageIndex = static_cast<uint8_t>(messageEmbeds.size()) - 1;
                     }
-                    dataPackage = std::make_unique<RespondToInputEventData>(buttonIntData->at(0));
-                    if (originalEvent->eventType == InputEventType::Regular_Message) {
-                        dataPackage->type = InputEventResponseType::Regular_Message_Edit;
-                    }
-                    else if (originalEvent->eventType == InputEventType::Application_Command_Interaction) {
+                    InputEventData newInput{ MessageData{},buttonIntData->at(0).interactionData,InteractionType::Message_Component };
+                    dataPackage = std::make_unique<RespondToInputEventData>(newInput);
+                    if (originalEvent->eventType == InteractionType::Application_Command) {
                         dataPackage->type = InputEventResponseType::Interaction_Response_Edit;
                     }
                     for (auto& value : originalEvent->getComponents()) {
@@ -772,11 +764,9 @@ namespace DiscordCoreAPI {
                         InputEvents::deleteInputEventResponseAsync(std::move(std::unique_ptr<InputEventData>{std::make_unique<InputEventData>(*originalEvent)}));
                     }
                     else {
-                        dataPackage = std::make_unique<RespondToInputEventData>(buttonIntData->at(0));
-                        if (originalEvent->eventType == InputEventType::Regular_Message) {
-                            dataPackage->type = InputEventResponseType::Regular_Message_Edit;
-                        }
-                        else if (originalEvent->eventType == InputEventType::Application_Command_Interaction) {
+                        InputEventData newInput{ MessageData{},buttonIntData->at(0).interactionData,InteractionType::Message_Component };
+                        dataPackage = std::make_unique<RespondToInputEventData>(newInput);
+                        if (originalEvent->eventType == InteractionType::Application_Command) {
                             dataPackage->type = InputEventResponseType::Interaction_Response_Edit;
                         }
                         dataPackage->addMessageEmbed(messageEmbeds[newCurrentPageIndex]);
