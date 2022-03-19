@@ -40,7 +40,7 @@ namespace DiscordCoreAPI {
 
 		virtual void execute(BaseFunctionArguments args) {
 			try {
-			if(args->argumentsArray[0] == "test"){
+			if(args->commandData.optionsArgs[0] == "test"){
 			
 				DiscordCoreAPI::GetAuditLogData dataPackage;
 				dataPackage.actionType = DiscordCoreAPI::AuditLogEvent::ROLE_UPDATE;

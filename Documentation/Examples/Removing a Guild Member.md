@@ -37,8 +37,8 @@ namespace DiscordCoreAPI {
 
 				RemoveGuildMemberData dataPackage01{};
 				dataPackage01.guildId = args->eventData.getGuildId();
-				if (args->argumentsArray.size() > 0) {
-					dataPackage01.guildMemberId = args->argumentsArray[0];
+				if (args->commandData.optionsArgs.size() > 0) {
+					dataPackage01.guildMemberId = args->commandData.optionsArgs[0];
 				}				
 				dataPackage01.reason = "TESTING PURPOSES!";
 

@@ -33,8 +33,8 @@ namespace DiscordCoreAPI {
 			GuildMember guildMember = GuildMembers::getGuildMemberAsync(getData).get();
 			msgEmbed.setAuthor(guildMember.nick, guildMember.user.avatar);
 			msgEmbed.setColor("FeFeFe");
-			if (args->argumentsArray.size() > 0) {
-				msgEmbed.setDescription(args->argumentsArray[0]);
+			if (args->commandData.optionsArgs.size() > 0) {
+				msgEmbed.setDescription(args->commandData.optionsArgs[0]);
 			}
 			else {
 				msgEmbed.setDescription("THIS IS A TEST MESSAGE!");

@@ -79,8 +79,8 @@ namespace DiscordCoreAPI {
 				}
 
 				std::vector<Song> searchResults{};
-				if (args->argumentsArray.size() > 0) {
-					searchResults = SongAPI::searchForSong(args->argumentsArray[0], guild.id);
+				if (args->commandData.optionsArgs.size() > 0) {
+					searchResults = SongAPI::searchForSong(args->commandData.optionsArgs[0], guild.id);
 				}
 
 				previousPlayedTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
@@ -131,7 +131,7 @@ namespace DiscordCoreAPI {
 					return;
 				}
 
-				if (args->argumentsArray.size() == 0 && !SongAPI::isThereAnySongs(guild.id)) {
+				if (args->commandData.optionsArgs.size() == 0 && !SongAPI::isThereAnySongs(guild.id)) {
 					EmbedData newEmbed;
 					newEmbed.setAuthor(args->eventData->getUserName(), args->eventData->getAvatarUrl());
 					newEmbed.setDescription("------\n__**Sorry, but there's nothing to play!**__\n------");
@@ -152,7 +152,7 @@ namespace DiscordCoreAPI {
 					}
 					return;
 				}
-				else if (args->argumentsArray.size() == 0 && SongAPI::areWeCurrentlyPlaying(guild.id)) {
+				else if (args->commandData.optionsArgs.size() == 0 && SongAPI::areWeCurrentlyPlaying(guild.id)) {
 					EmbedData newEmbed;
 					newEmbed.setAuthor(args->eventData->getUserName(), args->eventData->getAvatarUrl());
 					newEmbed.setDescription("------\n__**Sorry, but there's already something playing!**__\n------");
