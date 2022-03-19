@@ -72,9 +72,8 @@ namespace DiscordCoreAPI {
 
 		friend Guild;
 
-		/// An EventManager. \brief An EventManager.
-		CommandController commandController{ nullptr };
-		EventManager eventManager{};
+		CommandController commandController{ nullptr };///< A command controller.
+		EventManager eventManager{};///< An EventManager.
 
 		/// DiscordCoreClient constructor. \brief DiscordCoreClient constructor.
 		/// \param botTokenNew A string containing your bot's token.
@@ -91,6 +90,8 @@ namespace DiscordCoreAPI {
 		/// \param baseFunction A unique_ptr to the command to be registered.
 		void registerFunction(std::vector<std::string> functionNames, std::unique_ptr<BaseFunction> baseFunction);
 
+		/// For collecting a copy of the current bot's User.
+		/// \returns BotUser An instance of BotUser.
 		BotUser getBotUser();
 
 		/// Executes the library, and waits for completion. \brief Executes the library, and waits for completion.

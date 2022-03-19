@@ -3971,7 +3971,12 @@ namespace DiscordCoreInternal {
             for (auto& value : jsonObjectData["options"]) {
                 if (value.contains("type") && value["type"] == 1) {
                     if (value.contains("name")) {
-                        pDataStructure.optionsArgs.push_back(std::move(value["name"]));
+                        pDataStructure.subCommandName = value["name"];
+                    }
+                }
+                else if (value.contains("type") && value["type"] == 2) {
+                    if (value.contains("name")) {
+                        pDataStructure.subCommandGroupName = value["name"];
                     }
                 }
                 if (value.contains("options")) {

@@ -3132,6 +3132,8 @@ namespace DiscordCoreAPI {
     public:
 
         std::vector<std::string> optionsArgs{};
+        std::string subCommandGroupName{ "" };
+        std::string subCommandName{ "" };
         std::string commandName{ "" };
         InputEventData eventData{};
 
@@ -3367,15 +3369,15 @@ namespace DiscordCoreAPI {
     struct DiscordCoreAPI_Dll BaseFunctionArguments {
     public:
 
-        DiscordCoreClient* discordCoreClient{ nullptr };
-        std::vector<std::string> argumentsArray{};///< A std::vector of std::string arguments.
+        DiscordCoreClient* discordCoreClient{ nullptr };///< A pointer to the instance of DiscordCoreClient.
         std::unique_ptr<InputEventData> eventData{};///< InputEventData representing the input event that triggered the command.
+        CommandData commandData{};///< The input command's data.
 
         BaseFunctionArguments& operator=(BaseFunctionArguments& other) {
             this->eventData = std::make_unique<InputEventData>();
             this->discordCoreClient = other.discordCoreClient;
-            this->argumentsArray = other.argumentsArray;
-            *this->eventData = *other.eventData;            
+            this->commandData = other.commandData;
+            *this->eventData = *other.eventData;
             return *this;
         }
 

@@ -51,12 +51,10 @@ namespace DiscordCoreAPI {
 			 if (commandData->eventData.eventType == InputEventType::Application_Command_Interaction) {
 				nlohmann::json jsonValue = commandData->eventData.getInteractionData().rawData;
 				DiscordCoreInternal::DataParser::parseObject(jsonValue, *commandData.get());
-				std::string newCommandName = commandData->commandName;
-				functionPointer = this->getCommand(convertToLowerCase(newCommandName));
+				functionPointer = this->getCommand(convertToLowerCase(commandData->commandName));
 			}
 			else {
-				 std::string newCommandName = commandData->commandName;
-				 functionPointer = this->getCommand(newCommandName);
+				 functionPointer = this->getCommand(convertToLowerCase(commandData->commandName));
 			}
 			if (functionPointer == nullptr) {
 				co_return;
@@ -64,7 +62,7 @@ namespace DiscordCoreAPI {
 
 			std::unique_ptr<BaseFunctionArguments> args{ std::make_unique<BaseFunctionArguments>(commandData->eventData,this->discordCoreClient) };
 
-			args->argumentsArray = commandData->optionsArgs;
+			args->commandData = *commandData;
 			functionPointer->execute(std::move(args));
 			co_return;
 		}
@@ -80,9 +78,10 @@ namespace DiscordCoreAPI {
 			if (commandName.size() > 0) {
 				for (auto const& [keyFirst, value] : Globals::functions) {
 					for (auto& key : keyFirst) {
-						if (key.find(convertToLowerCase(commandName.substr(0, commandName.size() - 1))) != std::string::npos) {
+						if (key.find(convertToLowerCase(commandName)) != std::string::npos) {
 							isItFound = true;
-							functionName = convertToLowerCase(commandName.substr(0, key.length() - 1));
+							functionName = convertToLowerCase(commandName.substr(0, key.length()));
+							break;
 						}
 					}
 				}
