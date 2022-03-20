@@ -577,7 +577,6 @@ namespace DiscordCoreInternal {
 							std::unique_ptr<DiscordCoreAPI::OnInteractionCreationData> dataPackage{ std::make_unique<DiscordCoreAPI::OnInteractionCreationData>() };
 							dataPackage->interactionData = *interactionData;
 							std::unique_ptr<DiscordCoreAPI::CommandData> commandData{ std::make_unique<DiscordCoreAPI::CommandData>(*eventData) };
-							std::string threadId{ std::to_string(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count()) };
 							this->commandController->checkForAndRunCommand(std::move(commandData));
 							this->eventManager->onInteractionCreationEvent(std::move(*dataPackage));
 							std::unique_ptr<DiscordCoreAPI::OnInputEventCreationData> eventCreationData{ std::make_unique<DiscordCoreAPI::OnInputEventCreationData>() };
@@ -592,7 +591,6 @@ namespace DiscordCoreInternal {
 							std::unique_ptr<DiscordCoreAPI::OnInteractionCreationData> dataPackage{ std::make_unique<DiscordCoreAPI::OnInteractionCreationData>() };
 							dataPackage->interactionData = *interactionData;
 							std::unique_ptr<DiscordCoreAPI::CommandData> commandData{ std::make_unique<DiscordCoreAPI::CommandData>(*eventData) };
-							std::string threadId{ std::to_string(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count()) };
 							this->commandController->checkForAndRunCommand(std::move(commandData));
 							this->eventManager->onInteractionCreationEvent(std::move(*dataPackage));
 							std::unique_ptr<DiscordCoreAPI::OnInputEventCreationData> eventCreationData{ std::make_unique<DiscordCoreAPI::OnInputEventCreationData>() };
@@ -607,7 +605,6 @@ namespace DiscordCoreInternal {
 							std::unique_ptr<DiscordCoreAPI::OnInteractionCreationData> dataPackage{ std::make_unique<DiscordCoreAPI::OnInteractionCreationData>() };
 							dataPackage->interactionData = *interactionData;
 							std::unique_ptr<DiscordCoreAPI::CommandData> commandData{ std::make_unique<DiscordCoreAPI::CommandData>(*eventData) };
-							std::string threadId{ std::to_string(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count()) };
 							this->commandController->checkForAndRunCommand(std::move(commandData));
 							this->eventManager->onInteractionCreationEvent(std::move(*dataPackage));
 							std::unique_ptr<DiscordCoreAPI::OnInputEventCreationData> eventCreationData{ std::make_unique<DiscordCoreAPI::OnInputEventCreationData>() };
@@ -643,9 +640,6 @@ namespace DiscordCoreInternal {
 							if (DiscordCoreAPI::SelectMenuCollector::selectMenuInteractionBufferMap.contains(eventData->getChannelId() + eventData->getMessageId())) {
 								DiscordCoreAPI::SelectMenuCollector::selectMenuInteractionBufferMap[eventData->getChannelId() + eventData->getMessageId()]->send(eventData->getInteractionData());
 							}
-							else if (DiscordCoreAPI::SelectMenuCollector::selectMenuInteractionBufferMap.contains(eventData->getAuthorId())) {
-								DiscordCoreAPI::SelectMenuCollector::selectMenuInteractionBufferMap[eventData->getAuthorId()]->send(eventData->getInteractionData());
-							}
 							this->eventManager->onInputEventCreationEvent(*eventCreationData);
 							this->eventManager->onInteractionCreationEvent(std::move(*dataPackage));
 						}
@@ -664,10 +658,6 @@ namespace DiscordCoreInternal {
 						}
 						this->eventManager->onInputEventCreationEvent(*eventCreationData);
 						this->eventManager->onInteractionCreationEvent(std::move(*dataPackage));
-					}
-					if (DiscordCoreAPI::Interactions::collectMessageDataBuffers.contains(interactionData->id)) {
-						std::unique_ptr<DiscordCoreAPI::MessageData> messageData{ std::make_unique<DiscordCoreAPI::MessageData>(interactionData->message) };
-						DiscordCoreAPI::Interactions::collectMessageDataBuffers[eventData->getInteractionId()]->send(*messageData);
 					}
 				}
 				else if (payload.at("t") == "INVITE_CREATE") {
@@ -691,11 +681,6 @@ namespace DiscordCoreInternal {
 				else if (payload.at("t") == "MESSAGE_CREATE") {
 					std::unique_ptr<DiscordCoreAPI::Message> message{ std::make_unique<DiscordCoreAPI::Message>() };
 					DiscordCoreInternal::DataParser::parseObject(std::move(payload.at("d")), *message);
-					if (message->interaction.id != "") {
-						if (DiscordCoreAPI::Interactions::collectMessageDataBuffers.contains(message->interaction.id)) {
-							DiscordCoreAPI::Interactions::collectMessageDataBuffers[message->interaction.id]->send(*message);
-						}
-					}
 					std::unique_ptr<DiscordCoreAPI::InputEventData> eventData{ std::make_unique<DiscordCoreAPI::InputEventData>(*message, DiscordCoreAPI::InteractionData(), DiscordCoreAPI::InputEventType::Regular_Message) };
 					std::unique_ptr<DiscordCoreAPI::CommandData> commandData{ std::make_unique<DiscordCoreAPI::CommandData>(*eventData) };
 					std::string threadId{ std::to_string(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count()) };
@@ -713,11 +698,6 @@ namespace DiscordCoreInternal {
 				else if (payload.at("t") == "MESSAGE_UPDATE") {
 					std::unique_ptr<DiscordCoreAPI::OnMessageUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnMessageUpdateData>() };
 					DiscordCoreInternal::DataParser::parseObject(std::move(payload.at("d")), dataPackage->messageNew);
-					if (dataPackage->messageNew.interaction.id != "") {
-						if (DiscordCoreAPI::Interactions::collectMessageDataBuffers.contains(dataPackage->messageNew.interaction.id)) {
-							DiscordCoreAPI::Interactions::collectMessageDataBuffers[dataPackage->messageNew.interaction.id]->send(dataPackage->messageNew);
-						}
-					}
 					this->eventManager->onMessageUpdateEvent(std::move(*dataPackage));
 				}
 				else if (payload.at("t") == "MESSAGE_DELETE") {

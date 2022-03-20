@@ -488,7 +488,7 @@ namespace DiscordCoreAPI {
         /// Collects an Interaction response. \brief Collects an Interaction response.
         /// \param dataPackage A GetInteractionResponseData structure.
         /// \returns A CoRoutine containing an InteractionResponseData.
-        static CoRoutine<InteractionResponseData> getInteractionResponseAsync(GetInteractionResponseData dataPackage);
+        static CoRoutine<Message> getInteractionResponseAsync(GetInteractionResponseData dataPackage);
 
         /// Edits an Interaction response. \brief Edits an Interaction response.
         /// \param dataPackage A EditInteractionResponseData structure.
@@ -522,7 +522,6 @@ namespace DiscordCoreAPI {
 
     protected:
 
-        static std::unordered_map<std::string, UnboundedMessageBlock<MessageData>*> collectMessageDataBuffers;
         static DiscordCoreInternal::HttpClient* httpClient;
         static void deleteInteractionResponseToBeWrapped(DeleteInteractionResponseData dataPackage);
         static void deleteFollowUpMessageToBeWrapped(DeleteFollowUpMessageData dataPackage);
@@ -576,6 +575,7 @@ namespace DiscordCoreAPI {
         bool getSelectMenuDataForAll{ false };
         InteractionData interactionData{};
         std::vector<std::string> values{};
+        std::string bufferMapKey{ "" };
         std::string selectMenuId{ "" };
         std::string channelId{ "" };
         std::string messageId{ "" };
