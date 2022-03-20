@@ -415,7 +415,6 @@ namespace DiscordCoreAPI {
 
 		static DiscordCoreInternal::HttpClient* httpClient;
 
-		static void deleteMessageToBeWrapped(DeleteMessageData dataPackage);
 	};
 	/**@}*/
 

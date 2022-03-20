@@ -216,9 +216,11 @@ namespace DiscordCoreAPI {
 			reportException("Messages::editMessageAsync()");
 		}
 	}
-	
-	void Messages::deleteMessageToBeWrapped(DeleteMessageData dataPackage) {
+	 
+	CoRoutine<void> Messages::deleteMessageAsync(DeleteMessageData dataPackage) {
 		try {
+			co_await NewThreadAwaitable<void>();
+			std::this_thread::sleep_for(std::chrono::milliseconds{ dataPackage.timeDelay });
 			DiscordCoreInternal::HttpWorkloadData workload{};
 			bool hasTimeElapsedNew = hasTimeElapsed(dataPackage.messageData.timestamp.getOriginalTimeStamp(), 14);
 			if (hasTimeElapsedNew) {
@@ -229,30 +231,11 @@ namespace DiscordCoreAPI {
 			}
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Delete;
 			workload.relativePath = "/channels/" + dataPackage.messageData.channelId + "/messages/" + dataPackage.messageData.id;
-			workload.callStack = "Messages::deleteMessageToBeWrapped";
+			workload.callStack = "Messages::deleteMessageAsync";
 			if (dataPackage.reason != "") {
 				workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));
 			}
-			return DiscordCoreInternal::submitWorkloadAndGetResult<void>(*Messages::httpClient, workload);
-		}
-		catch (...) {
-			reportException("Messages::deleteMessageToBeWrapped()");
-		}
-	}
-	 
-	CoRoutine<void> Messages::deleteMessageAsync(DeleteMessageData dataPackage) {
-		try {
-			co_await NewThreadAwaitable<void>();
-			if (dataPackage.timeDelay > 0) {
-				TimeElapsedHandler onSend = [=]() {
-					Messages::deleteMessageToBeWrapped(dataPackage);
-				};
-				ThreadPoolTimer::executeFunctionAfterTimePeriod(onSend, dataPackage.timeDelay);
-			}
-			else {
-				Messages::deleteMessageToBeWrapped(dataPackage);
-			}
-			co_return;
+			co_return DiscordCoreInternal::submitWorkloadAndGetResult<void>(*Messages::httpClient, workload);
 		}
 		catch (...) {
 			reportException("Messages::deleteMessageAsync()");

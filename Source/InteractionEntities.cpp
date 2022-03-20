@@ -114,33 +114,16 @@ namespace DiscordCoreAPI {
         }
     }
 
-    void Interactions::deleteInteractionResponseToBeWrapped(DeleteInteractionResponseData dataPackage) {
+    CoRoutine<void> Interactions::deleteInteractionResponseAsync(DeleteInteractionResponseData dataPackage) {
         try {
+            co_await NewThreadAwaitable<void>();
+            std::this_thread::sleep_for(std::chrono::milliseconds{ dataPackage.timeDelay });
             DiscordCoreInternal::HttpWorkloadData workload{};
             workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Delete_Interaction_Response;
             workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Delete;
             workload.relativePath = "/webhooks/" + dataPackage.interactionPackage.applicationId + "/" + dataPackage.interactionPackage.interactionToken + "/messages/@original";
             workload.callStack = "Interactions::deleteInteractionResponseAsync";
-            return DiscordCoreInternal::submitWorkloadAndGetResult<void>(*Interactions::httpClient, workload);
-        }
-        catch (...) {
-            reportException("Interactions::deleteInteractionResponseToBeWrapped()");
-        }
-    }
-
-    CoRoutine<void> Interactions::deleteInteractionResponseAsync(DeleteInteractionResponseData dataPackage) {
-        try {
-            co_await NewThreadAwaitable<void>();
-            if (dataPackage.timeDelay > 0) {
-                TimeElapsedHandler onSend = [=]() {
-                    Interactions::deleteInteractionResponseToBeWrapped(dataPackage);
-                };
-                ThreadPoolTimer::executeFunctionAfterTimePeriod(onSend, dataPackage.timeDelay);
-            }
-            else {
-                Interactions::deleteInteractionResponseToBeWrapped(dataPackage);
-            }
-            co_return;
+            co_return DiscordCoreInternal::submitWorkloadAndGetResult<void>(*Interactions::httpClient, workload);
         }
         catch (...) {
             reportException("Interactions::deleteInteractionResponseAsync()");
@@ -194,33 +177,16 @@ namespace DiscordCoreAPI {
         }
     }
 
-    void Interactions::deleteFollowUpMessageToBeWrapped(DeleteFollowUpMessageData dataPackage) {
+    CoRoutine<void> Interactions::deleteFollowUpMessageAsync(DeleteFollowUpMessageData dataPackage) {
         try {
+            co_await NewThreadAwaitable<void>();
+            std::this_thread::sleep_for(std::chrono::milliseconds{ dataPackage.timeDelay });
             DiscordCoreInternal::HttpWorkloadData workload{};
             workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Delete_Followup_Message;
             workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Delete;
             workload.relativePath = "/webhooks/" + dataPackage.interactionPackage.applicationId + "/" + dataPackage.interactionPackage.interactionToken + "/messages/" + dataPackage.messagePackage.messageId;
             workload.callStack = "Interactions::deleteFollowUpMessageToBeWrappe";
-            return DiscordCoreInternal::submitWorkloadAndGetResult<void>(*Interactions::httpClient, workload);
-        }
-        catch (...) {
-            reportException("Interactions::deleteFollowUpMessageToBeWrapped()");
-        }
-    }
-
-    CoRoutine<void> Interactions::deleteFollowUpMessageAsync(DeleteFollowUpMessageData dataPackage) {
-        try {
-            co_await NewThreadAwaitable<void>();
-            if (dataPackage.timeDelay > 0) {
-                TimeElapsedHandler onSend = [=]() {
-                    Interactions::deleteFollowUpMessageToBeWrapped(dataPackage);
-                };
-                ThreadPoolTimer::executeFunctionAfterTimePeriod(onSend, dataPackage.timeDelay);
-            }
-            else {
-                Interactions::deleteFollowUpMessageToBeWrapped(dataPackage);
-            }
-            co_return;
+            co_return DiscordCoreInternal::submitWorkloadAndGetResult<void>(*Interactions::httpClient, workload);
         }
         catch (...) {
             reportException("Interactions::deleteFollowUpMessageAsync()");

@@ -550,8 +550,6 @@ namespace DiscordCoreAPI {
     protected:
 
         static DiscordCoreInternal::HttpClient* httpClient;
-        static void deleteInteractionResponseToBeWrapped(DeleteInteractionResponseData dataPackage);
-        static void deleteFollowUpMessageToBeWrapped(DeleteFollowUpMessageData dataPackage);
     };
 
     /**@}*/
