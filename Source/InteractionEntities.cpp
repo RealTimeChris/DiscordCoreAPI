@@ -56,10 +56,7 @@ namespace DiscordCoreAPI {
              workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
              workload.callStack = "Interactions::createInteractionResponseAsync";
              DiscordCoreInternal::submitWorkloadAndGetResult<void>(*Interactions::httpClient, workload);
-             if (dataPackage.data.type == InteractionCallbackType::Channel_Message_With_Source) {
-                 Message messageData = Interactions::getInteractionResponseAsync({ .interactionToken = dataPackage.interactionPackage.interactionToken,.applicationId = dataPackage.interactionPackage.applicationId }).get();
-                 co_return messageData;
-             }
+             co_return Interactions::getInteractionResponseAsync({ .interactionToken = dataPackage.interactionPackage.interactionToken,.applicationId = dataPackage.interactionPackage.applicationId }).get();
          }
          catch (...) {
              reportException("Interactions::createInteractionResponseAsync()");

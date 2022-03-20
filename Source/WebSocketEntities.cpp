@@ -683,12 +683,18 @@ namespace DiscordCoreInternal {
 					DiscordCoreInternal::DataParser::parseObject(std::move(payload.at("d")), *message);
 					std::unique_ptr<DiscordCoreAPI::OnMessageCreationData> dataPackage{ std::make_unique<DiscordCoreAPI::OnMessageCreationData>() };
 					dataPackage->message = *message;
+					for (auto& [key, value] : DiscordCoreAPI::MessageCollector::messagesBufferMap) {
+						value->send(*message);
+					}
 					this->eventManager->onMessageCreationEvent(std::move(*dataPackage));
 					std::unique_ptr<DiscordCoreAPI::OnInputEventCreationData> eventCreationData{ std::make_unique<DiscordCoreAPI::OnInputEventCreationData>() };
 				}
 				else if (payload.at("t") == "MESSAGE_UPDATE") {
 					std::unique_ptr<DiscordCoreAPI::OnMessageUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnMessageUpdateData>() };
 					DiscordCoreInternal::DataParser::parseObject(std::move(payload.at("d")), dataPackage->messageNew);
+					for (auto& [key, value] : DiscordCoreAPI::MessageCollector::messagesBufferMap) {
+						value->send(dataPackage->messageNew);
+					}
 					this->eventManager->onMessageUpdateEvent(std::move(*dataPackage));
 				}
 				else if (payload.at("t") == "MESSAGE_DELETE") {

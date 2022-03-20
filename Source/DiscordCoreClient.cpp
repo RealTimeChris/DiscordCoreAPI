@@ -155,9 +155,6 @@ namespace DiscordCoreAPI {
 	DiscordCoreClient::~DiscordCoreClient() {
 		if (this != nullptr) {
 			curl_global_cleanup();
-			for (auto& [key, value] : getVoiceConnectionMap()) {
-				value.reset(nullptr);
-			}
 		}
 	}
 }
