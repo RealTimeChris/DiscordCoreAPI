@@ -691,6 +691,7 @@ namespace DiscordCoreAPI {
         try {
             uint32_t newCurrentPageIndex = currentPageIndex;
             std::unique_ptr<RespondToInputEventData> dataPackage{ std::make_unique<RespondToInputEventData>(*originalEvent) };
+
             dataPackage->addMessageEmbed(messageEmbeds[currentPageIndex]);
             if (returnResult) {
                 dataPackage->addButton(false, "select", "Select", ButtonStyle::Success, "✅");
