@@ -693,7 +693,7 @@ namespace DiscordCoreInternal {
 					std::unique_ptr<DiscordCoreAPI::OnMessageUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnMessageUpdateData>() };
 					DiscordCoreInternal::DataParser::parseObject(std::move(payload.at("d")), dataPackage->messageNew);
 					for (auto& [key, value] : DiscordCoreAPI::MessageCollector::messagesBufferMap) {
-						value->send(dataPackage->messageNew);
+						value->send(dataPackage->messageNew)
 					}
 					this->eventManager->onMessageUpdateEvent(std::move(*dataPackage));
 				}
