@@ -147,26 +147,28 @@ namespace DiscordCoreAPI {
     /// For deferring a component response. \brief For deferring a component response.
     class DiscordCoreAPI_Dll DeferComponentResponseData : public InteractionResponse {
     public:
+        
         friend CreateInteractionResponseData;
         friend InputEvents;
+
         DeferComponentResponseData(RespondToInputEventData dataPackage) {
             this->interactionPackage.interactionToken = dataPackage.interactionToken;
             if (dataPackage.type == InputEventResponseType::Deferred_Response) {
                 this->responseType = dataPackage.type;
-                this->type = InteractionCallbackType::Deferred_Update_Message;
+                this->data.type = InteractionCallbackType::Deferred_Update_Message;
             }
             else if (dataPackage.type == InputEventResponseType::Deferred_Response_With_Source) {
                 this->responseType = dataPackage.type;
-                this->type = InteractionCallbackType::Deferred_Channel_Message_With_Source;
+                this->data.type = InteractionCallbackType::Deferred_Channel_Message_With_Source;
             }
             this->interactionPackage.applicationId = dataPackage.applicationId;
             this->interactionPackage.interactionId = dataPackage.interactionId;
-            
         }
+
         virtual ~DeferComponentResponseData() = default;
+
     protected:
         InputEventResponseType responseType{};
-        InteractionCallbackType type{};
     };
 
     /// For creating an ephemeral Interaction response. \brief For creating an ephemeral Interaction response.
@@ -199,6 +201,7 @@ namespace DiscordCoreAPI {
     /// For creating an Interaction response. \brief For creating an Interaction response.
     class DiscordCoreAPI_Dll CreateInteractionResponseData : public InteractionResponse {
     public:
+
         friend std::string DiscordCoreInternal::JSONIFY(CreateInteractionResponseData dataPackage);
         friend SelectMenuCollector;
         friend ButtonCollector;
@@ -210,8 +213,9 @@ namespace DiscordCoreAPI {
             this->interactionPackage.interactionToken = dataPackage.interactionPackage.interactionToken;
             this->interactionPackage.interactionId = dataPackage.interactionPackage.interactionId;
             this->interactionPackage.applicationId = dataPackage.interactionPackage.applicationId;
-            this->data.type = dataPackage.type;
+            this->data.type = dataPackage.data.type;
         }
+
         CreateInteractionResponseData(CreateEphemeralInteractionResponseData dataPackage) {
             this->interactionPackage.interactionToken = dataPackage.interactionPackage.interactionToken;
             this->interactionPackage.applicationId = dataPackage.interactionPackage.applicationId;
@@ -222,6 +226,7 @@ namespace DiscordCoreAPI {
             this->data = dataPackage.data;
             this->data.data.flags = 64;
         }
+
         CreateInteractionResponseData(RespondToInputEventData dataPackage) {
             this->interactionPackage.interactionToken = dataPackage.interactionToken;
             if (dataPackage.eventType == InteractionType::Message_Component) {
@@ -246,6 +251,7 @@ namespace DiscordCoreAPI {
             this->data.data.flags = dataPackage.flags;
             this->data.data.tts = dataPackage.tts;
         }
+
         CreateInteractionResponseData(InteractionData dataPackage) {
             if (dataPackage.type == InteractionType::Message_Component) {
                 this->data.type = InteractionCallbackType::Update_Message;
@@ -263,15 +269,18 @@ namespace DiscordCoreAPI {
                 this->requesterId = dataPackage.user.id;
             }
         }
+
         virtual ~CreateInteractionResponseData() = default;
     };
 
     /// For creating a deferred Interaction response. \brief For creating a deferred Interaction response.
     class DiscordCoreAPI_Dll CreateDeferredInteractionResponseData : public InteractionResponse {
     public:
+
         friend std::string DiscordCoreInternal::JSONIFY(CreateDeferredInteractionResponseData dataPackage);
         friend Interactions;
         friend InputEvents;
+
         CreateDeferredInteractionResponseData(RespondToInputEventData dataPackage) {
             this->data.type = InteractionCallbackType::Deferred_Channel_Message_With_Source;
             this->interactionPackage.interactionToken = dataPackage.interactionToken;
@@ -285,7 +294,9 @@ namespace DiscordCoreAPI {
             this->data.data.flags = dataPackage.flags;
             this->data.data.tts = dataPackage.tts;
         }
+
         virtual ~CreateDeferredInteractionResponseData() = default;
+
     protected:
         std::string channelId{ "" };
     };
@@ -295,12 +306,15 @@ namespace DiscordCoreAPI {
         std::string interactionToken{ "" };///< Interaction token.
         std::string applicationId{ "" };///< application id.
     };
+
     /// For editing an Interaction response. \brief For editing an Interaction response.
     class DiscordCoreAPI_Dll EditInteractionResponseData : public InteractionResponse {
     public:
+
         friend std::string DiscordCoreInternal::JSONIFY(EditInteractionResponseData dataPackage);
         friend Interactions;
         friend InputEvents;
+
         EditInteractionResponseData(RespondToInputEventData dataPackage) {
             this->interactionPackage.interactionToken = dataPackage.interactionToken;
             this->interactionPackage.applicationId = dataPackage.applicationId;
@@ -314,6 +328,7 @@ namespace DiscordCoreAPI {
             this->data.data.flags = dataPackage.flags;
             this->data.data.tts = dataPackage.tts;
         }
+
         virtual ~EditInteractionResponseData() = default;
     };
 
@@ -328,6 +343,7 @@ namespace DiscordCoreAPI {
             this->interactionPackage.applicationId = dataPackage.applicationId;
             this->interactionPackage.interactionId = dataPackage.interactionId;
         }
+
     protected:
         InteractionPackageData interactionPackage{};
         uint32_t timeDelay{ 0 };
@@ -336,9 +352,11 @@ namespace DiscordCoreAPI {
     /// For creating an ephemeral follow up Message. \brief For creating an ephemeral follow up Message.
     class DiscordCoreAPI_Dll CreateEphemeralFollowUpMessageData : public InteractionResponse {
     public:
+
         friend CreateFollowUpMessageData;
         friend Interactions;
         friend InputEvents;
+
         CreateEphemeralFollowUpMessageData(RespondToInputEventData dataPackage) {
             this->interactionPackage.interactionToken = dataPackage.interactionToken;
             if (dataPackage.eventType == InteractionType::Message_Component) {
@@ -357,22 +375,26 @@ namespace DiscordCoreAPI {
             this->data.data.tts = dataPackage.tts;
             this->data.data.flags = 64;
         }
+
         virtual ~CreateEphemeralFollowUpMessageData() = default;
     };
 
     /// For creating a follow up Message. \brief For creating a follow up Message.
     class DiscordCoreAPI_Dll CreateFollowUpMessageData : public InteractionResponse {
     public:
+
         friend std::string DiscordCoreInternal::JSONIFY(CreateFollowUpMessageData dataPackage);
         friend SelectMenuCollector;
         friend ButtonCollector;
         friend Interactions;
         friend InputEvents;
+
         CreateFollowUpMessageData(CreateEphemeralFollowUpMessageData dataPackage) {
             this->interactionPackage = dataPackage.interactionPackage;
             this->requesterId = dataPackage.requesterId;
             this->data = dataPackage.data;
         }
+
         CreateFollowUpMessageData(RespondToInputEventData dataPackage) {
             this->interactionPackage.interactionToken = dataPackage.interactionToken;
             if (dataPackage.eventType == InteractionType::Message_Component) {
@@ -391,6 +413,7 @@ namespace DiscordCoreAPI {
             this->data.data.flags = dataPackage.flags;
             this->data.data.tts = dataPackage.tts;
         }
+
         virtual ~CreateFollowUpMessageData() = default;
     };
 
@@ -404,9 +427,11 @@ namespace DiscordCoreAPI {
     /// For editing a follow up Message. \brief For editing a follow up Message.
     class DiscordCoreAPI_Dll EditFollowUpMessageData : public InteractionResponse {
     public:
+
         friend std::string DiscordCoreInternal::JSONIFY(EditFollowUpMessageData dataPackage);
         friend Interactions;
         friend InputEvents;
+
         EditFollowUpMessageData(RespondToInputEventData dataPackage) {
             this->interactionPackage.interactionToken = dataPackage.interactionToken;
             this->interactionPackage.applicationId = dataPackage.applicationId;
@@ -427,6 +452,7 @@ namespace DiscordCoreAPI {
             this->data.data.flags = dataPackage.flags;
             this->data.data.tts = dataPackage.tts;
         }
+        
         virtual ~EditFollowUpMessageData() = default;
     };
 
@@ -442,6 +468,7 @@ namespace DiscordCoreAPI {
             this->interactionPackage.interactionId = dataPackage.interactionId;
             this->messagePackage.messageId = dataPackage.messageId;
         }
+
     protected:
         InteractionPackageData interactionPackage{};
         MessagePackageData messagePackage{};
@@ -582,6 +609,7 @@ namespace DiscordCoreAPI {
         uint32_t maxTimeInMs{ 0 };
         std::string userId{ "" };
         bool doWeQuit{ false };
+
         void run();
     };
 

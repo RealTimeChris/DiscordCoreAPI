@@ -698,11 +698,8 @@ namespace DiscordCoreAPI {
             dataPackage->addButton(false, "backwards", "Prev Page", ButtonStyle::Primary, "◀️");
             dataPackage->addButton(false, "forwards", "Next Page", ButtonStyle::Primary, "▶️");
             dataPackage->addButton(false, "exit", "Exit", ButtonStyle::Danger, "❌");
-            if (originalEvent->eventType == InputEventType::Regular_Message) {
-                dataPackage->type = InputEventResponseType::Regular_Message_Edit;
-            }
-            else if (originalEvent->eventType == InputEventType::Application_Command_Interaction) {
-                dataPackage->type = InputEventResponseType::Interaction_Response_Edit;
+            if (originalEvent->eventType == InputEventType::Application_Command_Interaction) {
+                dataPackage->setResponseType(InputEventResponseType::Edit_Interaction_Response);
             }
             *originalEvent = *InputEvents::respondToEvent(*dataPackage.get());
             while (true) {
@@ -727,12 +724,7 @@ namespace DiscordCoreAPI {
                         InputEvents::deleteInputEventResponseAsync(std::move(std::unique_ptr<InputEventData>{std::make_unique<InputEventData>(*originalEvent)}));
                     }
                     else {
-                        if (originalEvent->eventType == InputEventType::Regular_Message) {
-                            dataPackage->type = InputEventResponseType::Regular_Message_Edit;
-                        }
-                        else {
-                            dataPackage->type = InputEventResponseType::Interaction_Response_Edit;
-                        }
+                        dataPackage->setResponseType(InputEventResponseType::Edit_Interaction_Response);
                         InputEvents::respondToEvent(*dataPackage.get());
                     }
                     std::unique_ptr<MoveThroughMessagePagesData> dataPackage02{ std::make_unique<MoveThroughMessagePagesData>() };
@@ -754,12 +746,7 @@ namespace DiscordCoreAPI {
                         newCurrentPageIndex = static_cast<uint8_t>(messageEmbeds.size()) - 1;
                     }
                     dataPackage = std::make_unique<RespondToInputEventData>(buttonIntData->at(0));
-                    if (originalEvent->eventType == InputEventType::Regular_Message) {
-                        dataPackage->type = InputEventResponseType::Regular_Message_Edit;
-                    }
-                    else if (originalEvent->eventType == InputEventType::Application_Command_Interaction) {
-                        dataPackage->type = InputEventResponseType::Interaction_Response_Edit;
-                    }
+                    dataPackage->setResponseType(InputEventResponseType::Edit_Interaction_Response);
                     for (auto& value : originalEvent->getComponents()) {
                         dataPackage->addComponentRow(value);
                     }
@@ -772,12 +759,7 @@ namespace DiscordCoreAPI {
                     }
                     else {
                         dataPackage = std::make_unique<RespondToInputEventData>(buttonIntData->at(0));
-                        if (originalEvent->eventType == InputEventType::Regular_Message) {
-                            dataPackage->type = InputEventResponseType::Regular_Message_Edit;
-                        }
-                        else if (originalEvent->eventType == InputEventType::Application_Command_Interaction) {
-                            dataPackage->type = InputEventResponseType::Interaction_Response_Edit;
-                        }
+                        dataPackage->setResponseType(InputEventResponseType::Edit_Interaction_Response);
                         dataPackage->addMessageEmbed(messageEmbeds[newCurrentPageIndex]);
                         for (auto& value : originalEvent->getComponents()) {
                             for (auto& value02 : value.components) {

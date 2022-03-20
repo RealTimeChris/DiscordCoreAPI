@@ -681,19 +681,10 @@ namespace DiscordCoreInternal {
 				else if (payload.at("t") == "MESSAGE_CREATE") {
 					std::unique_ptr<DiscordCoreAPI::Message> message{ std::make_unique<DiscordCoreAPI::Message>() };
 					DiscordCoreInternal::DataParser::parseObject(std::move(payload.at("d")), *message);
-					std::unique_ptr<DiscordCoreAPI::InputEventData> eventData{ std::make_unique<DiscordCoreAPI::InputEventData>(*message, DiscordCoreAPI::InteractionData(), DiscordCoreAPI::InputEventType::Regular_Message) };
-					std::unique_ptr<DiscordCoreAPI::CommandData> commandData{ std::make_unique<DiscordCoreAPI::CommandData>(*eventData) };
-					std::string threadId{ std::to_string(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count()) };
-					this->commandController->checkForAndRunCommand(std::move(commandData));
-					for (auto& [key, value] : DiscordCoreAPI::MessageCollector::messagesBufferMap) {
-						value->send(*message);
-					}
 					std::unique_ptr<DiscordCoreAPI::OnMessageCreationData> dataPackage{ std::make_unique<DiscordCoreAPI::OnMessageCreationData>() };
 					dataPackage->message = *message;
 					this->eventManager->onMessageCreationEvent(std::move(*dataPackage));
 					std::unique_ptr<DiscordCoreAPI::OnInputEventCreationData> eventCreationData{ std::make_unique<DiscordCoreAPI::OnInputEventCreationData>() };
-					eventCreationData->inputEventData = *eventData;
-					this->eventManager->onInputEventCreationEvent(*eventCreationData);
 				}
 				else if (payload.at("t") == "MESSAGE_UPDATE") {
 					std::unique_ptr<DiscordCoreAPI::OnMessageUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnMessageUpdateData>() };

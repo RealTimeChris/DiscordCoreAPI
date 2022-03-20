@@ -56,25 +56,16 @@ namespace DiscordCoreAPI {
 					newEmbed.setDescription("------\n__**Sorry, but please wait a total of 5 seconds in between plays!**__\n------");
 					newEmbed.setTimeStamp(getTimeAndDate());
 					newEmbed.setTitle("__**Timing Issue:**__");
-					if (args->eventData->eventType == InputEventType::Regular_Message) {
-						RespondToInputEventData dataPackage(*args->eventData);
-						dataPackage.type = InputEventResponseType::Regular_Message;
-						dataPackage.addMessageEmbed(newEmbed);
-						newEvent = InputEvents::respondToEvent(dataPackage);
-						InputEvents::deleteInputEventResponseAsync(std::move(newEvent), 20000).get();
-					}
-					else {
-						RespondToInputEventData dataPackage(*args->eventData);
-						dataPackage.type = InputEventResponseType::Ephemeral_Interaction_Response;
-						dataPackage.addMessageEmbed(newEmbed);
-						newEvent = InputEvents::respondToEvent(dataPackage);
-					}
+					RespondToInputEventData dataPackage(*args->eventData);
+					dataPackage.setResponseType(InputEventResponseType::Ephemeral_Interaction_Response);
+					dataPackage.addMessageEmbed(newEmbed);
+					newEvent = InputEvents::respondToEvent(dataPackage);
 					return;
 				}
 
 				if (args->eventData->eventType == InputEventType::Application_Command_Interaction) {
 					RespondToInputEventData dataPackage(*args->eventData);
-					dataPackage.type = InputEventResponseType::Deferred_Response;
+					dataPackage.setResponseType(InputEventResponseType::Deferred_Response);
 					newEvent = InputEvents::respondToEvent(dataPackage);
 				}
 
@@ -93,19 +84,10 @@ namespace DiscordCoreAPI {
 					newEmbed.setDescription("------\n__**Sorry, but there is no voice connection that is currently held by me!**__\n------");
 					newEmbed.setTimeStamp(getTimeAndDate());
 					newEmbed.setTitle("__**Connection Issue:**__");
-					if (args->eventData->eventType == InputEventType::Regular_Message) {
-						RespondToInputEventData dataPackage(*args->eventData);
-						dataPackage.type = InputEventResponseType::Regular_Message;
-						dataPackage.addMessageEmbed(newEmbed);
-						newEvent = InputEvents::respondToEvent(dataPackage);
-						InputEvents::deleteInputEventResponseAsync(std::move(newEvent), 20000).get();
-					}
-					else {
-						RespondToInputEventData dataPackage(*args->eventData);
-						dataPackage.type = InputEventResponseType::Interaction_Response_Edit;
-						dataPackage.addMessageEmbed(newEmbed);
-						newEvent = InputEvents::respondToEvent(dataPackage);
-					}
+					RespondToInputEventData dataPackage(*args->eventData);
+					dataPackage.setResponseType(InputEventResponseType::Edit_Interaction_Response);
+					dataPackage.addMessageEmbed(newEmbed);
+					newEvent = InputEvents::respondToEvent(dataPackage);
 					return;
 				}
 
@@ -115,19 +97,10 @@ namespace DiscordCoreAPI {
 					newEmbed.setDescription("------\n__**Sorry, but you need to be in a correct voice channel to issue those commands!**__\n------");
 					newEmbed.setTimeStamp(getTimeAndDate());
 					newEmbed.setTitle("__**Playing Issue:**__");
-					if (args->eventData->eventType == InputEventType::Regular_Message) {
-						RespondToInputEventData dataPackage(*args->eventData);
-						dataPackage.type = InputEventResponseType::Regular_Message;
-						dataPackage.addMessageEmbed(newEmbed);
-						newEvent = InputEvents::respondToEvent(dataPackage);
-						InputEvents::deleteInputEventResponseAsync(std::move(newEvent), 20000).get();
-					}
-					else {
-						RespondToInputEventData dataPackage(*args->eventData);
-						dataPackage.type = InputEventResponseType::Interaction_Response_Edit;
-						dataPackage.addMessageEmbed(newEmbed);
-						newEvent = InputEvents::respondToEvent(dataPackage);
-					}
+					RespondToInputEventData dataPackage(*args->eventData);
+					dataPackage.setResponseType(InputEventResponseType::Edit_Interaction_Response);
+					dataPackage.addMessageEmbed(newEmbed);
+					newEvent = InputEvents::respondToEvent(dataPackage);
 					return;
 				}
 
@@ -137,19 +110,10 @@ namespace DiscordCoreAPI {
 					newEmbed.setDescription("------\n__**Sorry, but there's nothing to play!**__\n------");
 					newEmbed.setTimeStamp(getTimeAndDate());
 					newEmbed.setTitle("__**Playing Issue:**__");
-					if (args->eventData->eventType == InputEventType::Regular_Message) {
-						RespondToInputEventData dataPackage(*newEvent);
-						dataPackage.type = InputEventResponseType::Regular_Message;
-						dataPackage.addMessageEmbed(newEmbed);
-						newEvent = InputEvents::respondToEvent(dataPackage);
-						InputEvents::deleteInputEventResponseAsync(std::move(newEvent), 20000).get();
-					}
-					else {
-						RespondToInputEventData dataPackage(*newEvent);
-						dataPackage.type = InputEventResponseType::Interaction_Response_Edit;
-						dataPackage.addMessageEmbed(newEmbed);
-						newEvent = InputEvents::respondToEvent(dataPackage);
-					}
+					RespondToInputEventData dataPackage(*newEvent);
+					dataPackage.setResponseType(InputEventResponseType::Edit_Interaction_Response);
+					dataPackage.addMessageEmbed(newEmbed);
+					newEvent = InputEvents::respondToEvent(dataPackage);
 					return;
 				}
 				else if (args->commandData.optionsArgs.size() == 0 && SongAPI::areWeCurrentlyPlaying(guild.id)) {
@@ -158,19 +122,10 @@ namespace DiscordCoreAPI {
 					newEmbed.setDescription("------\n__**Sorry, but there's already something playing!**__\n------");
 					newEmbed.setTimeStamp(getTimeAndDate());
 					newEmbed.setTitle("__**Playing Issue:**__");
-					if (args->eventData->eventType == InputEventType::Regular_Message) {
-						RespondToInputEventData dataPackage(*newEvent);
-						dataPackage.type = InputEventResponseType::Regular_Message;
-						dataPackage.addMessageEmbed(newEmbed);
-						newEvent = InputEvents::respondToEvent(dataPackage);
-						InputEvents::deleteInputEventResponseAsync(std::move(newEvent), 20000).get();
-					}
-					else {
-						RespondToInputEventData dataPackage(*newEvent);
-						dataPackage.type = InputEventResponseType::Interaction_Response_Edit;
-						dataPackage.addMessageEmbed(newEmbed);
-						newEvent = InputEvents::respondToEvent(dataPackage);
-					}
+					RespondToInputEventData dataPackage(*newEvent);
+					dataPackage.setResponseType(InputEventResponseType::Edit_Interaction_Response);
+					dataPackage.addMessageEmbed(newEmbed);
+					newEvent = InputEvents::respondToEvent(dataPackage);
 					return;
 				}
 
@@ -235,10 +190,9 @@ namespace DiscordCoreAPI {
 								if (!SongAPI::isLoopAllEnabled(eventData.guild.id) && !SongAPI::isLoopSongEnabled(eventData.guild.id)) {
 									newEmbed.setFooter("❌ Loop-All, ❌ Loop-Song");
 								}
-								RespondToInputEventData dataPackage(channelId);
-								dataPackage.type = InputEventResponseType::Regular_Message;
+								CreateMessageData dataPackage(channelId);
 								dataPackage.addMessageEmbed(newEmbed);
-								auto newEvent02 = InputEvents::respondToEvent(dataPackage);
+								auto newEvent02 = Messages::createMessageAsync(dataPackage).get();
 							}
 							else {
 								SongAPI::sendNextSong(eventData.guildMember);
@@ -261,10 +215,9 @@ namespace DiscordCoreAPI {
 								if (!SongAPI::isLoopAllEnabled(eventData.guild.id) && !SongAPI::isLoopSongEnabled(eventData.guild.id)) {
 									newEmbed.setFooter("❌ Loop-All, ❌ Loop-Song");
 								}
-								RespondToInputEventData dataPackage(channelId);
-								dataPackage.type = InputEventResponseType::Regular_Message;
+								CreateMessageData dataPackage(channelId);
 								dataPackage.addMessageEmbed(newEmbed);
-								auto newEvent02 = InputEvents::respondToEvent(dataPackage);
+								auto newEvent02 = Messages::createMessageAsync(dataPackage).get();
 
 								if (!SongAPI::areWeCurrentlyPlaying(eventData.guild.id)) {
 									newEmbed.setAuthor(eventData.guildMember.user.userName, eventData.guildMember.user.avatar);
@@ -285,10 +238,9 @@ namespace DiscordCoreAPI {
 									if (!SongAPI::isLoopAllEnabled(eventData.guild.id) && !SongAPI::isLoopSongEnabled(eventData.guild.id)) {
 										newEmbed.setFooter("❌ Loop-All, ❌ Loop-Song");
 									}
-									RespondToInputEventData dataPackage02(channelId);
-									dataPackage02.type = InputEventResponseType::Regular_Message;
-									dataPackage02.addMessageEmbed(newEmbed);
-									InputEvents::respondToEvent(dataPackage02);
+									CreateMessageData dataPackage01(channelId);
+									dataPackage01.addMessageEmbed(newEmbed);
+									newEvent02 = Messages::createMessageAsync(dataPackage01).get();
 								}
 							}
 							SongAPI::play(eventData.guild.id);
@@ -311,10 +263,9 @@ namespace DiscordCoreAPI {
 							else if (!SongAPI::isLoopAllEnabled(eventData.guild.id) && !SongAPI::isLoopSongEnabled(eventData.guild.id)) {
 								newEmbed.setFooter("❌ Loop-All, ❌ Loop-Song");
 							}
-							RespondToInputEventData dataPackage(channelId);
-							dataPackage.type = InputEventResponseType::Regular_Message;
+							CreateMessageData dataPackage(channelId);
 							dataPackage.addMessageEmbed(newEmbed);
-							auto newEvent02 = InputEvents::respondToEvent(dataPackage);
+							auto newEvent02 = Messages::createMessageAsync(dataPackage).get();
 						}
 						};
 						SongAPI::onSongCompletion(theTask, guild.id);
@@ -345,18 +296,10 @@ namespace DiscordCoreAPI {
 					else if (!SongAPI::isLoopAllEnabled(guild.id) && !SongAPI::isLoopSongEnabled(guild.id)) {
 						newEmbed.setFooter("❌ Loop-All, ❌ Loop-Song");
 					}
-					if (newEvent->eventType == InputEventType::Regular_Message) {
-						RespondToInputEventData dataPackage(*newEvent);
-						dataPackage.type = InputEventResponseType::Regular_Message;
-						dataPackage.addMessageEmbed(newEmbed);
-						newEvent = InputEvents::respondToEvent(dataPackage);
-					}
-					else {
-						RespondToInputEventData dataPackage(*newEvent);
-						dataPackage.type = InputEventResponseType::Interaction_Response_Edit;
-						dataPackage.addMessageEmbed(newEmbed);
-						newEvent = InputEvents::respondToEvent(dataPackage);
-					}
+					RespondToInputEventData dataPackage(*newEvent);
+					dataPackage.setResponseType(InputEventResponseType::Edit_Interaction_Response);
+					dataPackage.addMessageEmbed(newEmbed);
+					newEvent = InputEvents::respondToEvent(dataPackage);
 					SongAPI::play(guild.id);
 				}
 				return;

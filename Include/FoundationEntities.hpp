@@ -2505,6 +2505,7 @@ namespace DiscordCoreAPI {
 
         virtual ~ApplicationCommandInteractionData() = default;
     };
+
     /// Interaction data data. \brief Interaction data data.
     struct DiscordCoreAPI_Dll InteractionDataData {
         ApplicationCommandInteractionData applicationCommanddata{};///< ApplicationCommand Interaction data.
@@ -2565,14 +2566,13 @@ namespace DiscordCoreAPI {
         Deferred_Response_With_Source = 1,///< Deferred response, with source.
         Deferred_Response = 2,///< Deferred response.
         Interaction_Response = 3,///< Interaction response.
-        Interaction_Response_Edit = 4,///< Interaction response edit.
+        Edit_Interaction_Response = 4,///< Interaction response edit.
         Ephemeral_Interaction_Response = 5,///< Ephemeral Interaction response.
-        Regular_Message = 6,///< Regular Message.
-        Regular_Message_Edit = 7,///< Regular Message edit.
-        Follow_Up_Message = 8,///< Follow-up Message.
-        Follow_Up_Message_Edit = 9,///< Follow-up Message edit.
-        Ephemeral_Follow_Up_Message = 10,///< Ephemeral follow-up Message.
-        Send_Dm = 11///< Send Dm.
+        Edit_Ephemeral_Interaction_Response = 6,///< Ephemeral Interaction response.
+        Follow_Up_Message = 7,///< Follow-up Message.
+        Edit_Follow_Up_Message = 8,///< Follow-up Message edit.
+        Ephemeral_Follow_Up_Message = 9,///< Ephemeral follow-up Message.
+        Edit_Ephemeral_Follow_Up_Message = 10,///< Ephemeral follow-up Message.
     };
 
     /// Input event types. \brief Input event types.
@@ -2580,11 +2580,10 @@ namespace DiscordCoreAPI {
         Unset = 0,///< Unset.
         Application_Command_Interaction = 1,///< Slash-command Interaction.
         Button_Interaction = 2,///< Button Interaction.
-        Regular_Message = 3,///< Regular Message.
-        Select_Menu_Interaction = 4,///< Select-menu Interaction.
-        Message_Command_Interaction = 5,///< Message-command Interaction.
-        User_Command_Interaction = 6,///< User-command Interaction.
-        Modal_Interaction = 7///< Modal Interaction.
+        Select_Menu_Interaction = 3,///< Select-menu Interaction.
+        Message_Command_Interaction = 4,///< Message-command Interaction.
+        User_Command_Interaction = 5,///< User-command Interaction.
+        Modal_Interaction = 6///< Modal Interaction.
     };
 
     /// Data representing a Guild Emoji Update event. \brief Data representing a Guild Emoji Update event.
@@ -2936,11 +2935,8 @@ namespace DiscordCoreAPI {
         friend InputEvents;
         friend SendDMData;
 
-        InputEventResponseType type{};///< The type of response to make.
-
-        RespondToInputEventData(std::string channelIdNew) {
-            this->channelId = channelIdNew;
-            this->type = InputEventResponseType::Regular_Message;
+        void setResponseType(InputEventResponseType typeNew) {
+            this->type = typeNew;
         }
 
         RespondToInputEventData(InteractionData dataPackage) {
@@ -3123,6 +3119,7 @@ namespace DiscordCoreAPI {
         std::string applicationId{ "" };
         std::string targetUserId{ "" };
         std::string requesterId{ "" };
+        InputEventResponseType type{};///< The type of response to make.
         InteractionType eventType{};
         std::string channelId{ "" };
         std::string messageId{ "" };
