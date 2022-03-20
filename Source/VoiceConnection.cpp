@@ -319,8 +319,10 @@ namespace DiscordCoreAPI {
 					if (this->audioData.type != AudioFrameType::Unset && this->audioData.type != AudioFrameType::Skip && !this->areWeStopping) {
 						std::string newFrame{};
 						if (this->audioData.type == AudioFrameType::RawPCM) {
-							auto encodedFrameData = this->encoder->encodeSingleAudioFrame(this->audioData.rawFrameData);
-							newFrame = this->audioEncrypter.encryptSingleAudioFrame(encodedFrameData, this->voiceConnectionData->audioSSRC, this->voiceConnectionData->secretKey);
+							std::vector<RawFrameData> rawFrames{};
+							rawFrames.push_back(this->audioData.rawFrameData);
+							auto encodedFrameData = this->encoder->encodeFrames(rawFrames);
+							newFrame = this->audioEncrypter.encryptSingleAudioFrame(encodedFrameData[0].encodedFrameData, this->voiceConnectionData->audioSSRC, this->voiceConnectionData->secretKey);
 						}
 						else {
 							newFrame = this->audioEncrypter.encryptSingleAudioFrame(this->audioData.encodedFrameData, this->voiceConnectionData->audioSSRC, this->voiceConnectionData->secretKey);

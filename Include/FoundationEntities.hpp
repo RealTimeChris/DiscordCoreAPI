@@ -377,7 +377,7 @@ namespace DiscordCoreAPI {
     template <Copyable ObjectType>
     class UnboundedMessageBlock {
     public:
-        
+
         UnboundedMessageBlock<ObjectType>& operator=(UnboundedMessageBlock<ObjectType>&& other) {
             if (this != &other) {
                 this->theArray = std::move(other.theArray);
@@ -2623,11 +2623,13 @@ namespace DiscordCoreAPI {
         friend InputEvents;
 
         InputEventData& operator=(InputEventData&& other) noexcept {
-            this->interactionData = other.interactionData;
-            this->responseType = other.responseType;
-            this->messageData = other.messageData;
-            this->requesterId = other.requesterId;
-            this->eventType = other.eventType;
+            if (this != &other) {
+                this->interactionData = other.interactionData;
+                this->responseType = other.responseType;
+                this->messageData = other.messageData;
+                this->requesterId = other.requesterId;
+                this->eventType = other.eventType;
+            }
             return *this;
         }
 
@@ -2656,8 +2658,8 @@ namespace DiscordCoreAPI {
         InputEventData(InputEventData& other) {
             *this = other;
         }
-
         InputEventResponseType responseType{};///< The type of response that this input value represents.
+
         InputEventType eventType{};///< The type of input-event that is represented by this structure.
 
         InputEventData() = default;
