@@ -179,7 +179,6 @@ namespace DiscordCoreAPI {
 
     int64_t convertTimestampToMsInteger(std::string timeStamp) {
         try {
-            std::cout << "THE TIMESTAMP: " << timeStamp << std::endl;
             Time timeValue = Time(stoi(timeStamp.substr(0, 4)), stoi(timeStamp.substr(5, 6)), stoi(timeStamp.substr(8, 9)),
                 stoi(timeStamp.substr(11, 12)), stoi(timeStamp.substr(14, 15)), stoi(timeStamp.substr(17, 18)));
             return timeValue.getTime() * 1000;
