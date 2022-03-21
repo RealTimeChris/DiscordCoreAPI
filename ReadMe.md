@@ -6,7 +6,7 @@
  
 ## A bot library for Discord, written in C++, and featuring explicit multithreading through the usage of custom, asynchronous C++ CoRoutines.
 ## [Build Instructions](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Build%20Instructions.md)
-## [Documentation / Examples](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation-Examples.md)
+## [Documentation / Examples](https://discordcoreapi.com/d8/d87/a05397.html)
 ## [Doxygen-Generated Documentation](https://discordcoreapi.com/modules.html)
 ## [Discord Server (Where I can be found! As well as some demonstration bots that were built using the DiscordCoreAPI Library.)](https://discord.gg/u6Zh3UFqrz)
 ## [Example "Music" Bot Written Using This Library](https://github.com/RealTimeChris/MBot-MusicHouse-Cpp)
