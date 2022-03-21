@@ -114,7 +114,7 @@ namespace DiscordCoreAPI {
 				this->threadPoolTimers.push_back(ThreadPoolTimer::createPeriodicTimer(onSend, value.intervalInMs));
 			}
 			else {
-				ThreadPoolTimer::executeFunctionAfterTimePeriod(value.function, value.intervalInMs, this);
+				ThreadPoolTimer::executeFunctionAfterTimePeriod(value.function, value.intervalInMs, this).detachThread();
 			}
 		}
 		this->didWeStartFine = true;

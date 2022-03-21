@@ -24,6 +24,7 @@ namespace DiscordCoreAPI {
 
     void ThreadPool::storeThread(std::string theKey, CoRoutine<void> thread) {
         this->threads.insert(std::make_pair(theKey, std::move(thread)));
+        this->threads.at(theKey).detachThread();
     }
 
     void ThreadPool::stopThread(std::string theKey) {
