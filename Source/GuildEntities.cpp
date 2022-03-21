@@ -448,9 +448,7 @@ namespace DiscordCoreAPI {
 	CoRoutine<Guild> Guilds::getCachedGuildAsync(GetGuildData dataPackage) {
 		try {
 			co_await NewThreadAwaitable<Guild>();
-			std::cout << "THE ID: " << dataPackage.guildId << std::endl;
 			if (Guilds::cache.contains(dataPackage.guildId)) {
-				std::cout << "THE ID: " << Guilds::cache[dataPackage.guildId].id << std::endl;
 				co_return Guilds::cache[dataPackage.guildId];
 				
 			}

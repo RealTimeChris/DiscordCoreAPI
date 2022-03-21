@@ -397,7 +397,6 @@ namespace DiscordCoreInternal {
 					DiscordCoreInternal::DataParser::parseObject(std::move(payload.at("d")), guildNew);
 					guildNew.discordCoreClient = this->discordCoreClient;
 					dataPackage->guild = guildNew;
-					std::cout << "THE GUILD NAME: " << dataPackage->guild.name << " GUILD MEMBER COUNT: " << dataPackage->guild.memberCount << std::endl;
 					this->eventManager->onGuildCreationEvent(std::move(*dataPackage));
 				}
 				else if (payload.at("t") == "GUILD_UPDATE") {
