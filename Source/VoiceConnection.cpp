@@ -48,6 +48,7 @@ namespace DiscordCoreAPI {
 			headerFinal[9] = static_cast<uint8_t>(audioSSRC >> (byteSize * 2));
 			headerFinal[10] = static_cast<uint8_t>(audioSSRC >> (byteSize * 1));
 			headerFinal[11] = static_cast<uint8_t>(audioSSRC >> (byteSize * 0));
+
 			std::unique_ptr<uint8_t[]> nonceForLibSodium{ std::make_unique<uint8_t[]>(nonceSize) };
 			for (uint32_t x = 0; x < headerSize; x += 1) {
 				nonceForLibSodium[x] = headerFinal[x];
