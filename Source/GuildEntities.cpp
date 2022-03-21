@@ -436,9 +436,8 @@ namespace DiscordCoreAPI {
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
 			workload.relativePath = "/guilds/" + dataPackage.guildId + "?with_counts=true";
 			workload.callStack = "Guilds::getGuildAsync";
-			auto guildNew = DiscordCoreInternal::submitWorkloadAndGetResult<GuildData>(*Guilds::httpClient, workload);
+			auto guildNew = DiscordCoreInternal::submitWorkloadAndGetResult<Guild>(*Guilds::httpClient, workload);
 			guildNew.discordCoreClient = Guilds::discordCoreClient;
-			Guilds::insertGuild(guildNew);
 			co_return guildNew;
 		}
 		catch (...) {
@@ -449,13 +448,15 @@ namespace DiscordCoreAPI {
 	CoRoutine<Guild> Guilds::getCachedGuildAsync(GetGuildData dataPackage) {
 		try {
 			co_await NewThreadAwaitable<Guild>();
-
+			std::cout << "THE ID: " << dataPackage.guildId << std::endl;
 			if (Guilds::cache.contains(dataPackage.guildId)) {
-				Guild guildNew = Guilds::cache[dataPackage.guildId];
-				co_return guildNew;
+				std::cout << "THE ID: " << Guilds::cache[dataPackage.guildId].id << std::endl;
+				co_return Guilds::cache[dataPackage.guildId];
+				
 			}
 			else {
-				Guild guildNew = Guilds::cache[dataPackage.guildId];
+				auto guildNew = Guilds::getGuildAsync({ .guildId = dataPackage.guildId }).get();
+				Guilds::insertGuild(guildNew);
 				co_return guildNew;
 			}
 		}
@@ -491,9 +492,7 @@ namespace DiscordCoreAPI {
 			if (dataPackage.reason != "") {
 				workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));
 			}
-			auto guildNew = DiscordCoreInternal::submitWorkloadAndGetResult<GuildData>(*Guilds::httpClient, workload);
-			Guilds::insertGuild(guildNew);
-			co_return guildNew;
+			co_return DiscordCoreInternal::submitWorkloadAndGetResult<Guild>(*Guilds::httpClient, workload);
 		}
 		catch (...) {
 			reportException("Guilds::modifyGuildAsync()");
