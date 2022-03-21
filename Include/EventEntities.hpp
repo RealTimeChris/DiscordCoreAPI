@@ -24,6 +24,7 @@
 #include <CoRoutine.hpp>
 
 namespace DiscordCoreAPI {
+
     /**
     * \addtogroup discord_events
     * @{
@@ -68,6 +69,7 @@ namespace DiscordCoreAPI {
             return false;
         }
     }
+
     /// Event-delegate, for representing an event-function to be executed. \brief Event-delegate, for representing an event-function to be executed.
     template <typename ReturnType, typename ...ArgTypes>
     class EventDelegate {
@@ -107,7 +109,9 @@ namespace DiscordCoreAPI {
     protected:
         std::function<ReturnType(ArgTypes...)>theFunction{};
     };
+
     /**@}*/
+
     template <typename ReturnType, typename  ...ArgTypes>
     class Event {
     public:

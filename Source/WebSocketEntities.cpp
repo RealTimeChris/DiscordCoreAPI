@@ -392,11 +392,10 @@ namespace DiscordCoreInternal {
 					this->eventManager->onThreadMembersUpdateEvent(std::move(*dataPackage));
 				}
 				else if (payload.at("t") == "GUILD_CREATE") {
-					DiscordCoreAPI::GuildData guildDataNew{};
+					DiscordCoreAPI::Guild guildNew{};
 					std::unique_ptr<DiscordCoreAPI::OnGuildCreationData> dataPackage{ std::make_unique<DiscordCoreAPI::OnGuildCreationData>() };
-					DiscordCoreInternal::DataParser::parseObject(std::move(payload.at("d")), guildDataNew);
-					guildDataNew.discordCoreClient = this->discordCoreClient;
-					DiscordCoreAPI::Guild guildNew{ guildDataNew };
+					DiscordCoreInternal::DataParser::parseObject(std::move(payload.at("d")), guildNew);
+					guildNew.discordCoreClient = this->discordCoreClient;
 					dataPackage->guild = guildNew;
 					this->eventManager->onGuildCreationEvent(std::move(*dataPackage));
 				}
