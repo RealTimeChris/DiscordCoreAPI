@@ -441,6 +441,10 @@ namespace DiscordCoreAPI {
 		onWebhookUpdateEvent.remove(token);
 	}
 
+	void EventHandler::initialize(CacheOptions newOptions) {
+		EventHandler::options = newOptions;
+	}
+
 	void EventHandler::onChannelCreation(OnChannelCreationData dataPackage) {
 		try {
 			if (EventHandler::options.cacheChannels) {
