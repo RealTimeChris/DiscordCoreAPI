@@ -23,7 +23,6 @@
 #include <FoundationEntities.hpp>
 #include <DataParsingFunctions.hpp>
 #include <SSLClients.hpp>
-#include <shared_mutex>
 
 namespace DiscordCoreInternal {
 	
