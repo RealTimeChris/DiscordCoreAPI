@@ -893,6 +893,8 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll EventHandler {
 	public:
 		
+		static void initialize(CacheOptions options);
+
 		static void onChannelCreation(OnChannelCreationData dataPackage);
 
 		static void onChannelUpdate(OnChannelUpdateData dataPackage);
@@ -920,6 +922,10 @@ namespace DiscordCoreAPI {
 		static void onUserUpdate(OnUserUpdateData dataPackage);
 
 		static void onVoiceStateUpdate(OnVoiceStateUpdateData dataPackage);
-		
+
+	protected:
+
+		static CacheOptions options;
+
 	};
 }

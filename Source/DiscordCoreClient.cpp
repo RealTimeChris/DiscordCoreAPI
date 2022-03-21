@@ -72,6 +72,7 @@ namespace DiscordCoreAPI {
 		this->eventManager.onRoleDeletion(&EventHandler::onRoleDeletion);
 		this->eventManager.onUserUpdate(&EventHandler::onUserUpdate);
 		this->eventManager.onVoiceStateUpdate(&EventHandler::onVoiceStateUpdate);
+		EventHandler::initialize(this->cacheOptions);
 		this->httpClient = std::make_unique<DiscordCoreInternal::HttpClient>(botTokenNew, this->loggingOptions.logHttpMessages, this->loggingOptions.logFFMPEGMessages);
 		ApplicationCommands::initialize(this->httpClient.get());
 		Channels::initialize(this->httpClient.get());

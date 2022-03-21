@@ -443,10 +443,12 @@ namespace DiscordCoreAPI {
 
 	void EventHandler::onChannelCreation(OnChannelCreationData dataPackage) {
 		try {
-			Channels::insertChannel(dataPackage.channel);
-			Guild guild = Guilds::getCachedGuildAsync({ dataPackage.channel.guildId }).get();
-			guild.channels.insert_or_assign(dataPackage.channel.id, dataPackage.channel);
-			Guilds::insertGuild(guild);
+			if (EventHandler::options.cacheChannels) {
+				Channels::insertChannel(dataPackage.channel);
+				Guild guild = Guilds::getCachedGuildAsync({ dataPackage.channel.guildId }).get();
+				guild.channels.insert_or_assign(dataPackage.channel.id, dataPackage.channel);
+				Guilds::insertGuild(guild);
+			}
 		}
 		catch (...) {
 			reportException("EventHandler::onChannelCreation()");
@@ -455,10 +457,12 @@ namespace DiscordCoreAPI {
 
 	void EventHandler::onChannelUpdate(OnChannelUpdateData dataPackage) {
 		try {
-			Channels::insertChannel(dataPackage.channelNew);
-			Guild guild = Guilds::getCachedGuildAsync({ dataPackage.channelNew.guildId }).get();
-			guild.channels.insert_or_assign(dataPackage.channelNew.id, dataPackage.channelNew);
-			Guilds::insertGuild(guild);
+			if (EventHandler::options.cacheChannels) {
+				Channels::insertChannel(dataPackage.channelNew);
+				Guild guild = Guilds::getCachedGuildAsync({ dataPackage.channelNew.guildId }).get();
+				guild.channels.insert_or_assign(dataPackage.channelNew.id, dataPackage.channelNew);
+				Guilds::insertGuild(guild);
+			}
 		}
 		catch (...) {
 			reportException("EventHandler::onChannelUpdate()");
@@ -467,10 +471,12 @@ namespace DiscordCoreAPI {
 
 	void EventHandler::onChannelDeletion(OnChannelDeletionData dataPackage) {
 		try {
-			Channels::removeChannel(dataPackage.channel.id);
-			Guild guild = Guilds::getCachedGuildAsync({ dataPackage.channel.guildId }).get();
-			guild.channels.erase(dataPackage.channel.id);
-			Guilds::insertGuild(guild);
+			if (EventHandler::options.cacheChannels) {
+				Channels::removeChannel(dataPackage.channel.id);
+				Guild guild = Guilds::getCachedGuildAsync({ dataPackage.channel.guildId }).get();
+				guild.channels.erase(dataPackage.channel.id);
+				Guilds::insertGuild(guild);
+			}
 		}
 		catch (...) {
 			reportException("EventHandler::onChannelDeletion()");
@@ -479,7 +485,9 @@ namespace DiscordCoreAPI {
 
 	void EventHandler::onGuildCreation(OnGuildCreationData dataPackage) {
 		try {
-			Guilds::insertGuild(dataPackage.guild);
+			if (EventHandler::options.cacheGuilds) {
+				Guilds::insertGuild(dataPackage.guild);
+			}
 		}
 		catch (...) {
 			reportException("EventHandler::onGuildCreation()");
@@ -488,7 +496,9 @@ namespace DiscordCoreAPI {
 
 	void EventHandler::onGuildUpdate(OnGuildUpdateData dataPackage) {
 		try {
-			Guilds::insertGuild(dataPackage.guildNew);
+			if (EventHandler::options.cacheGuilds) {
+				Guilds::insertGuild(dataPackage.guildNew);
+			}
 		}
 		catch (...) {
 			reportException("EventHandler::onGuildUpdate()");
@@ -497,16 +507,18 @@ namespace DiscordCoreAPI {
 
 	void EventHandler::onGuildDeletion(OnGuildDeletionData dataPackage) {
 		try {
-			for (auto& [key,value] : dataPackage.guild.members) {
-				GuildMembers::removeGuildMember(value);
+			if (EventHandler::options.cacheGuilds) {
+				for (auto& [key, value] : dataPackage.guild.members) {
+					GuildMembers::removeGuildMember(value);
+				}
+				for (auto& [key, value] : dataPackage.guild.channels) {
+					Channels::removeChannel(value.id);
+				}
+				for (auto& [key, value] : dataPackage.guild.roles) {
+					Roles::removeRole(value.id);
+				}
+				Guilds::removeGuild(dataPackage.guild.id);
 			}
-			for (auto& [key, value] : dataPackage.guild.channels) {
-				Channels::removeChannel(value.id);
-			}
-			for (auto& [key, value] : dataPackage.guild.roles) {
-				Roles::removeRole(value.id);
-			}
-			Guilds::removeGuild(dataPackage.guild.id);
 		}
 		catch (...) {
 			reportException("EventHandler::onGuildDeletion()");
@@ -515,11 +527,13 @@ namespace DiscordCoreAPI {
 
 	void EventHandler::onGuildMemberAdd(OnGuildMemberAddData dataPackage) {
 		try {
-			GuildMembers::insertGuildMember(dataPackage.guildMember);
-			Guild guild = Guilds::getCachedGuildAsync({ dataPackage.guildMember.guildId }).get();
-			guild.members.insert_or_assign(dataPackage.guildMember.user.id, dataPackage.guildMember);
-			guild.memberCount += 1;
-			Guilds::insertGuild(guild);
+			if (EventHandler::options.cacheGuildMembers) {
+				GuildMembers::insertGuildMember(dataPackage.guildMember);
+				Guild guild = Guilds::getCachedGuildAsync({ dataPackage.guildMember.guildId }).get();
+				guild.members.insert_or_assign(dataPackage.guildMember.user.id, dataPackage.guildMember);
+				guild.memberCount += 1;
+				Guilds::insertGuild(guild);
+			}
 		}
 		catch (...) {
 			reportException("EventHandler::onGuildMemberAdd()");
@@ -528,12 +542,14 @@ namespace DiscordCoreAPI {
 
 	void EventHandler::onGuildMemberRemove(OnGuildMemberRemoveData dataPackage) {
 		try {
-			GuildMember guildMember = GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = dataPackage.user.id, .guildId = dataPackage.guildId }).get();
-			GuildMembers::removeGuildMember(guildMember);
-			Guild guild = Guilds::getCachedGuildAsync({ dataPackage.guildId }).get();
-			guild.members.erase(guildMember.user.id);
-			guild.memberCount -= 1;
-			Guilds::insertGuild(guild);
+			if (EventHandler::options.cacheGuildMembers) {
+				GuildMember guildMember = GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = dataPackage.user.id, .guildId = dataPackage.guildId }).get();
+				GuildMembers::removeGuildMember(guildMember);
+				Guild guild = Guilds::getCachedGuildAsync({ dataPackage.guildId }).get();
+				guild.members.erase(guildMember.user.id);
+				guild.memberCount -= 1;
+				Guilds::insertGuild(guild);
+			}
 		}
 		catch (...) {
 			reportException("EventHandler::onGuildMemberRemove()");
@@ -542,10 +558,12 @@ namespace DiscordCoreAPI {
 
 	void EventHandler::onGuildMemberUpdate(OnGuildMemberUpdateData dataPackage) {
 		try {
-			GuildMembers::insertGuildMember(dataPackage.guildMemberNew);
-			Guild guild = Guilds::getCachedGuildAsync({ dataPackage.guildMemberNew.guildId }).get();
-			guild.members.insert_or_assign(dataPackage.guildMemberNew.user.id, dataPackage.guildMemberNew);
-			Guilds::insertGuild(guild);
+			if (EventHandler::options.cacheGuildMembers) {
+				GuildMembers::insertGuildMember(dataPackage.guildMemberNew);
+				Guild guild = Guilds::getCachedGuildAsync({ dataPackage.guildMemberNew.guildId }).get();
+				guild.members.insert_or_assign(dataPackage.guildMemberNew.user.id, dataPackage.guildMemberNew);
+				Guilds::insertGuild(guild);
+			}
 		}
 		catch (...) {
 			reportException("EventHandler::onGuildMemberUpdate()");
@@ -554,10 +572,12 @@ namespace DiscordCoreAPI {
 
 	void EventHandler::onRoleCreation(OnRoleCreationData dataPackage) {
 		try {
-			Roles::insertRole(dataPackage.role);
-			Guild guild = Guilds::getCachedGuildAsync({ dataPackage.guildId }).get();
-			guild.roles.insert_or_assign(dataPackage.role.id, dataPackage.role);
-			Guilds::insertGuild(guild);
+			if (EventHandler::options.cacheRoles) {
+				Roles::insertRole(dataPackage.role);
+				Guild guild = Guilds::getCachedGuildAsync({ dataPackage.guildId }).get();
+				guild.roles.insert_or_assign(dataPackage.role.id, dataPackage.role);
+				Guilds::insertGuild(guild);
+			}
 		}
 		catch (...) {
 			reportException("EventHandler::onRoleCreation()");
@@ -566,10 +586,12 @@ namespace DiscordCoreAPI {
 
 	void EventHandler::onRoleUpdate(OnRoleUpdateData dataPackage) {
 		try {
-			Roles::insertRole(dataPackage.roleNew);
-			Guild guild = Guilds::getCachedGuildAsync({ dataPackage.guildId }).get();
-			guild.roles.insert_or_assign(dataPackage.roleNew.id, dataPackage.roleNew);
-			Guilds::insertGuild(guild);
+			if (EventHandler::options.cacheRoles) {
+				Roles::insertRole(dataPackage.roleNew);
+				Guild guild = Guilds::getCachedGuildAsync({ dataPackage.guildId }).get();
+				guild.roles.insert_or_assign(dataPackage.roleNew.id, dataPackage.roleNew);
+				Guilds::insertGuild(guild);
+			}
 		}
 		catch (...) {
 			reportException("EventHandler::onRoleUpdate()");
@@ -578,10 +600,12 @@ namespace DiscordCoreAPI {
 
 	void EventHandler::onRoleDeletion(OnRoleDeletionData dataPackage) {
 		try {
-			Roles::removeRole(dataPackage.roleOld.id);
-			Guild guild = Guilds::getCachedGuildAsync({ dataPackage.guildId }).get();
-			guild.roles.erase(dataPackage.roleOld.id);
-			Guilds::insertGuild(guild);
+			if (EventHandler::options.cacheRoles) {
+				Roles::removeRole(dataPackage.roleOld.id);
+				Guild guild = Guilds::getCachedGuildAsync({ dataPackage.guildId }).get();
+				guild.roles.erase(dataPackage.roleOld.id);
+				Guilds::insertGuild(guild);
+			}
 		}
 		catch (...) {
 			reportException("EventHandler::onRoleDeletion()");
@@ -589,21 +613,26 @@ namespace DiscordCoreAPI {
 	}
 
 	void EventHandler::onUserUpdate(OnUserUpdateData dataPackage) {
-		Users::insertUser(dataPackage.userNew);
+		if (EventHandler::options.cacheUsers) {
+			Users::insertUser(dataPackage.userNew);
+		}
 	}
 
 	void EventHandler::onVoiceStateUpdate(OnVoiceStateUpdateData dataPackage) {
 		try {
-			GuildMember guildMember = GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = dataPackage.voiceStateData.userId,.guildId = dataPackage.voiceStateData.guildId }).get();
-			guildMember.voiceData = dataPackage.voiceStateData;
-			GuildMembers::insertGuildMember(guildMember);
-			Guild guild = Guilds::getCachedGuildAsync({ .guildId = dataPackage.voiceStateData.guildId }).get();
-			guild.voiceStates.insert_or_assign(dataPackage.voiceStateData.userId, dataPackage.voiceStateData);
-			Guilds::insertGuild(guild);
-			return;
+			if (EventHandler::options.cacheGuildMembers && EventHandler::options.cacheGuilds) {
+				GuildMember guildMember = GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = dataPackage.voiceStateData.userId,.guildId = dataPackage.voiceStateData.guildId }).get();
+				guildMember.voiceData = dataPackage.voiceStateData;
+				GuildMembers::insertGuildMember(guildMember);
+				Guild guild = Guilds::getCachedGuildAsync({ .guildId = dataPackage.voiceStateData.guildId }).get();
+				guild.voiceStates.insert_or_assign(dataPackage.voiceStateData.userId, dataPackage.voiceStateData);
+				Guilds::insertGuild(guild);
+			}
 		}
 		catch (...) {
 			reportException("EventHandler::onVoiceStateUpdate()");
 		}
 	}
+
+	CacheOptions EventHandler::options{};
 };
