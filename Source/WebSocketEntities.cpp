@@ -577,7 +577,7 @@ namespace DiscordCoreInternal {
 							std::unique_ptr<DiscordCoreAPI::OnInteractionCreationData> dataPackage{ std::make_unique<DiscordCoreAPI::OnInteractionCreationData>() };
 							dataPackage->interactionData = *interactionData;
 							std::unique_ptr<DiscordCoreAPI::CommandData> commandData{ std::make_unique<DiscordCoreAPI::CommandData>(*eventData) };
-							this->commandController->checkForAndRunCommand(std::move(commandData));
+							this->commandController->checkForAndRunCommand(std::move(commandData)).detachThread();
 							this->eventManager->onInteractionCreationEvent(std::move(*dataPackage));
 							std::unique_ptr<DiscordCoreAPI::OnInputEventCreationData> eventCreationData{ std::make_unique<DiscordCoreAPI::OnInputEventCreationData>() };
 							eventCreationData->inputEventData = *eventData;
@@ -591,7 +591,7 @@ namespace DiscordCoreInternal {
 							std::unique_ptr<DiscordCoreAPI::OnInteractionCreationData> dataPackage{ std::make_unique<DiscordCoreAPI::OnInteractionCreationData>() };
 							dataPackage->interactionData = *interactionData;
 							std::unique_ptr<DiscordCoreAPI::CommandData> commandData{ std::make_unique<DiscordCoreAPI::CommandData>(*eventData) };
-							this->commandController->checkForAndRunCommand(std::move(commandData));
+							this->commandController->checkForAndRunCommand(std::move(commandData)).detachThread();
 							this->eventManager->onInteractionCreationEvent(std::move(*dataPackage));
 							std::unique_ptr<DiscordCoreAPI::OnInputEventCreationData> eventCreationData{ std::make_unique<DiscordCoreAPI::OnInputEventCreationData>() };
 							eventCreationData->inputEventData = *eventData;
@@ -605,7 +605,7 @@ namespace DiscordCoreInternal {
 							std::unique_ptr<DiscordCoreAPI::OnInteractionCreationData> dataPackage{ std::make_unique<DiscordCoreAPI::OnInteractionCreationData>() };
 							dataPackage->interactionData = *interactionData;
 							std::unique_ptr<DiscordCoreAPI::CommandData> commandData{ std::make_unique<DiscordCoreAPI::CommandData>(*eventData) };
-							this->commandController->checkForAndRunCommand(std::move(commandData));
+							this->commandController->checkForAndRunCommand(std::move(commandData)).detachThread();
 							this->eventManager->onInteractionCreationEvent(std::move(*dataPackage));
 							std::unique_ptr<DiscordCoreAPI::OnInputEventCreationData> eventCreationData{ std::make_unique<DiscordCoreAPI::OnInputEventCreationData>() };
 							eventCreationData->inputEventData = *eventData;
