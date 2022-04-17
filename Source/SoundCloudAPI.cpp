@@ -46,10 +46,6 @@ namespace DiscordCoreAPI {
 			};
 			DiscordCoreInternal::HttpWorkloadData dataPackage{};
 			dataPackage.baseUrl = SoundCloudRequestBuilder::baseUrl02;
-			std::cout << "BASEURL: " << SoundCloudRequestBuilder::baseUrl02 << std::endl;
-			std::cout << "CLIENT ID: " << SoundCloudRequestBuilder::clientId << std::endl;
-			std::cout << "APP VERSION: " << SoundCloudRequestBuilder::appVersion << std::endl; 
-			std::cout << "THE QUERY: " << urlEncode(songQuery.c_str()) << std::endl; 
 			dataPackage.relativePath = "/search?q=" + urlEncode(songQuery.c_str()) + "&facet=model&client_id=" + SoundCloudRequestBuilder::clientId +
 				"&limit=20&offset=0&linked_partitioning=1&app_version=" + SoundCloudRequestBuilder::appVersion + "&app_locale=en";
 			dataPackage.headersToInsert = theHeaders;
@@ -200,7 +196,7 @@ namespace DiscordCoreAPI {
 			std::string newerString02{};
 			newerString02.insert(newerString02.begin(), returnData02[0].responseMessage.begin(), returnData02[0].responseMessage.end());
 			std::string newString03 = newerString02.substr(newerString02.find("client_id=") + newString00.size());
-			std::string clientIdNew = "0" + newString03.substr(0, newString03.find("\"),n.push"));
+			std::string clientIdNew = "0" + newString03.substr(0, newString03.find("\"),o.push"));
 			if (returnData[0].responseCode != 200) {
 				std::cout << shiftToBrightRed() << "SoundCloudAPI::searchForSong Error: " << returnData[0].responseCode << newerString02.c_str() << reset()
 						  << std::endl;
