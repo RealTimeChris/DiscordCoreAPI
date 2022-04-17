@@ -10,21 +10,23 @@
 #	INTL_LIBRARY and in the case of SHARED LIBRARIES - 
 #	INTL_RUNTIME_FILE. Which each points to the respective files of each kind.
 #
-function(find_intl ROOT_DIR)
-	if (WIN32)
-		find_file(
-			INTL_LIBRARY
-			NAMES "libintl.dll.a" "libintl.lib" "libintl.a"
-			PATHS "${ROOT_DIR}" NO_DEFAULT_PATH
-		)
-		if (NOT INTL_LIBRARY)
-			message(WARNING "Couldn't find Intl!")
-			return()
-		endif()
+function(find_intl ROOT_DIR SHARED)
+	find_file(
+		INTL_LIBRARY
+		NAMES "libintl.dll.a" "libintl.lib" "libintl.a"
+		PATHS "${ROOT_DIR}" NO_DEFAULT_PATH
+	)
+	if(INTL_LIBRARY)
 		list(APPEND RELEASE_LIBRARIES_RAW "${INTL_LIBRARY}")
 		list(APPEND DEBUG_LIBRARIES_RAW  "${INTL_LIBRARY}")
 		set(RELEASE_LIBRARIES_RAW "${RELEASE_LIBRARIES_RAW}" PARENT_SCOPE)
 		set(DEBUG_LIBRARIES_RAW  "${DEBUG_LIBRARIES_RAW}" PARENT_SCOPE)
+		message(STATUS "Found Intl library!")
+	else()
+		message(STATUS "Couldn't find Intl!")
+		return()
+	endif()
+	if ("${SHARED}")
 		set(INTL_FILE_PATH "${ROOT_DIR}")
 		cmake_path(GET INTL_LIBRARY PARENT_PATH INTL_FILE_PATH)
 		find_file(
@@ -33,16 +35,17 @@ function(find_intl ROOT_DIR)
 			PATHS "${INTL_FILE_PATH}/" "${INTL_FILE_PATH}/../bin/"
 			NO_DEFAULT_PATH
 		)
-		if (NOT INTL_RUNTIME_FILE)
-			message(FATAL_ERROR "Couldn't find Intl Dll!")
-		else()
+		if (INTL_RUNTIME_FILE)
 			list(APPEND LIBRARY_NAMES "INTL")				
 			list(APPEND RELEASE_RUNTIMES_RAW "${INTL_RUNTIME_FILE}")
 			list(APPEND DEBUG_RUNTIMES_RAW  "${INTL_RUNTIME_FILE}")
 			set(LIBRARY_NAMES "${LIBRARY_NAMES}" PARENT_SCOPE)
 			set(RELEASE_RUNTIMES_RAW "${RELEASE_RUNTIMES_RAW}" PARENT_SCOPE)
 			set(DEBUG_RUNTIMES_RAW  "${DEBUG_RUNTIMES_RAW}" PARENT_SCOPE)
+			message(STATUS "Found Intl Dll!")
+		else()
+			message(STATUS "Couldn't find Intl Dll!")
+			unset(INTL_RUNTIME_FILE CACHE)
 		endif()
-		message(STATUS "Found Intl!")
 	endif()
 endfunction()
