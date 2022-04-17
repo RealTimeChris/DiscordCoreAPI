@@ -191,11 +191,13 @@ namespace DiscordCoreAPI {
 			this->voiceSocketAgent.reset(nullptr);
 		}
 		this->sendSpeakingMessage(false);
-		this->theTask->request_stop();
-		if (this->theTask->joinable()) {
-			this->theTask->join();
+		if (this->theTask != nullptr) {
+			this->theTask->request_stop();
+			if (this->theTask->joinable()) {
+				this->theTask->join();
+			}
+			this->theTask.reset(nullptr);
 		}
-		this->theTask.reset(nullptr);
 		auto thePtr = getSongAPIMap()[this->voiceConnectInitData.guildId].get();
 		if (thePtr != nullptr) {
 			getSongAPIMap()[this->voiceConnectInitData.guildId]->onSongCompletionEvent = std::function<CoRoutine<void>(SongCompletionEventData)>{};

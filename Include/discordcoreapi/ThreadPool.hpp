@@ -15,7 +15,7 @@
 /// Chris M.
 /// https://discordcoreapi.com
 /// \file ThreadPool.hpp
- 
+
 #pragma once
 
 #include <discordcoreapi/FoundationEntities.hpp>
@@ -30,7 +30,6 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll ThreadPool {
 	  public:
-
 		ThreadPool& operator=(const ThreadPool&) = delete;
 
 		ThreadPool(const ThreadPool&) = delete;
@@ -71,7 +70,6 @@ namespace DiscordCoreAPI {
 	};
 
 	struct DiscordCoreAPI_Dll WorkloadStatus {
-
 		WorkloadStatus& operator=(WorkloadStatus& other) {
 			this->theCurrentStatus.store(other.doWeQuit.load(std::memory_order::seq_cst), std::memory_order::seq_cst);
 			this->doWeQuit.store(other.doWeQuit.load(std::memory_order::seq_cst), std::memory_order::seq_cst);
@@ -90,7 +88,6 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll CoRoutineThreadPool {
 	  public:
-
 		CoRoutineThreadPool() {
 			for (uint32_t x = 0; x < std::jthread::hardware_concurrency(); ++x) {
 				std::jthread workerThread([this]() {
@@ -174,9 +171,13 @@ namespace DiscordCoreAPI {
 				auto coroHandle = this->coroutineHandles.front();
 				this->coroutineHandles.pop();
 				theLock02.unlock();
-				theAtomicBoolPtr->store(true, std::memory_order::seq_cst);
+				if (theAtomicBoolPtr != nullptr) {
+					theAtomicBoolPtr->store(true, std::memory_order::seq_cst);
+				}
 				coroHandle.resume();
-				theAtomicBoolPtr->store(false, std::memory_order::seq_cst);
+				if (theAtomicBoolPtr != nullptr) {
+					theAtomicBoolPtr->store(false, std::memory_order::seq_cst);
+				}
 				if (this->theWorkingStatuses[std::this_thread::get_id()].doWeQuit.load(std::memory_order::seq_cst)) {
 					this->theWorkingStatuses.erase(std::this_thread::get_id());
 					break;
