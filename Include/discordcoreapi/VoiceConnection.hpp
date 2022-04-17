@@ -69,8 +69,8 @@ namespace DiscordCoreAPI {
 		TSUnboundedMessageBlock<AudioFrameData> audioBuffer{};
 		std::unique_ptr<std::jthread> theTask{ nullptr };
 		std::unique_ptr<AudioEncoder> encoder{ nullptr };
-		std::atomic<bool> areWeStopping{ false };
-		std::atomic<bool> areWePlaying{ false };
+		std::atomic_bool areWeStopping{ false };
+		std::atomic_bool areWePlaying{ false };
 		std::string currentGuildMemberId{ "" };
 		EventWaiter* doWeReconnect{ nullptr };
 		const int32_t maxBufferSize{ 1276 };

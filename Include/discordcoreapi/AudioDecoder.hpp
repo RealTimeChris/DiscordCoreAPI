@@ -283,7 +283,7 @@ namespace DiscordCoreAPI {
 		std::atomic<int32_t> refreshTimeForBuffer{ 10000 };
 		std::unique_ptr<std::jthread> theTask{ nullptr };
 		AVFormatContextWrapper formatContext{ nullptr };
-		std::atomic<bool> haveWeFailedBool{ false };
+		std::atomic_bool haveWeFailedBool{ false };
 		AVIOContextWrapper ioContext{ nullptr };
 		SwrContextWrapper swrContext{ nullptr };
 		AVStreamWrapper audioStream{ nullptr };

@@ -210,10 +210,10 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll EventWaiter {
 	  public:
-		ReferenceCountingPtr<std::atomic<bool>> theEventState{ nullptr };
+		ReferenceCountingPtr<std::atomic_bool> theEventState{ nullptr };
 
 		EventWaiter() {
-			this->theEventState = new std::atomic<bool>{};
+			this->theEventState = new std::atomic_bool{};
 		}
 
 		bool wait(int64_t millisecondsMaxToWait = INT64_MAX) {

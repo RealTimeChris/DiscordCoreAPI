@@ -28,7 +28,7 @@ namespace DiscordCoreAPI {
 		SoundCloudAPIMap soundCloudAPIMap{};
 		YouTubeAPIMap youtubeAPIMap{};
 		SongAPIMap songAPIMap{};
-		std::atomic<bool> doWeQuit{ false };
+		std::atomic_bool doWeQuit{ false };
 	}
 
 	VoiceConnectionMap& getVoiceConnectionMap() {

@@ -65,8 +65,8 @@ namespace DiscordCoreInternal {
 		std::unique_ptr<std::jthread> theTask{ nullptr };
 		DiscordCoreAPI::EventManager* eventManager{};
 		DiscordCoreAPI::EventWaiter doWeReconnect{};
-		std::atomic<bool> areWeConnected{ false };
 		VoiceConnectionData voiceConnectionData{};
+		std::atomic_bool areWeConnected{ false };
 		bool haveWeReceivedHeartbeatAck{ true };
 		std::atomic_bool* doWeQuit{ nullptr };
 		const int32_t maxReconnectTries{ 10 };
