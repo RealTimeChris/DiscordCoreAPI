@@ -1,9 +1,3 @@
-set(LIBRARY_NAMES "")
-set(RELEASE_RUNTIMES_RAW "")
-set(DEBUG_RUNTIMES_RAW "")
-set(RELEASE_LIBRARIES_RAW "")
-set(DEBUG_LIBRARIES_RAW "")
-
 if (WIN32)
 	set(LIBRARY_SUFFIX ".lib")
 	set(LIBRARY_PREFIX "")
@@ -52,7 +46,7 @@ install(FILES "${CMAKE_SOURCE_DIR}/Certs/GoogleCert.pem" DESTINATION "share/disc
 message(STATUS "Copying a file...")
 install(FILES "${CMAKE_SOURCE_DIR}/Certs/DiscordCert.pem" DESTINATION "share/discordcoreapi/data")
 
-foreach (LIBRARY "${RELEASE_LIBRARIES_RAW}") 
+foreach (LIBRARY "${RELEASE_LIBRARIES}") 
 	if (LIBRARY)
 		target_link_libraries(
 			DiscordCoreAPI PUBLIC
@@ -61,7 +55,7 @@ foreach (LIBRARY "${RELEASE_LIBRARIES_RAW}")
 	endif()
 endforeach()
 
-foreach (LIBRARY "${DEBUG_LIBRARIES_RAW}")
+foreach (LIBRARY "${DEBUG_LIBRARIES}")
 	if (LIBRARY)
 		target_link_libraries(
 			DiscordCoreAPI PUBLIC
@@ -165,7 +159,7 @@ install(
 	DESTINATION "${CMAKE_INSTALL_PREFIX}/share/discordcoreapi"
 )
 
-if (RELEASE_RUNTIMES_RAW AND DEBUG_RUNTIMES_RAW)
+if (RELEASE_RUNTIMES AND DEBUG_RUNTIMES)
 	configure_package_config_file(
 		"CMake/${CONFIG_FILENAME}.in"
 		"${CONFIG_FILENAME}"
@@ -173,10 +167,10 @@ if (RELEASE_RUNTIMES_RAW AND DEBUG_RUNTIMES_RAW)
 		PATH_VARS
 		DISCORDCOREAPI_INCLUDE_DIR
 		DISCORDCOREAPI_SOURCE_DIR
-		RELEASE_RUNTIMES_RAW
-		DEBUG_RUNTIMES_RAW
-		RELEASE_LIBRARIES_RAW
-		DEBUG_LIBRARIES_RAW
+		RELEASE_RUNTIMES
+		DEBUG_RUNTIMES
+		RELEASE_LIBRARIES
+		DEBUG_LIBRARIES
 		LIBRARY_NAMES
 	)
 else()
