@@ -46,6 +46,10 @@ namespace DiscordCoreAPI {
 			};
 			DiscordCoreInternal::HttpWorkloadData dataPackage{};
 			dataPackage.baseUrl = SoundCloudRequestBuilder::baseUrl02;
+			std::cout << "BASEURL: " << SoundCloudRequestBuilder::baseUrl02 << std::endl;
+			std::cout << "CLIENT ID: " << SoundCloudRequestBuilder::clientId << std::endl;
+			std::cout << "APP VERSION: " << SoundCloudRequestBuilder::appVersion << std::endl; 
+			std::cout << "THE QUERY: " << urlEncode(songQuery.c_str()) << std::endl; 
 			dataPackage.relativePath = "/search?q=" + urlEncode(songQuery.c_str()) + "&facet=model&client_id=" + SoundCloudRequestBuilder::clientId +
 				"&limit=20&offset=0&linked_partitioning=1&app_version=" + SoundCloudRequestBuilder::appVersion + "&app_locale=en";
 			dataPackage.headersToInsert = theHeaders;
