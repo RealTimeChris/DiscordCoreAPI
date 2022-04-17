@@ -18,6 +18,7 @@ function(find_intl ROOT_DIR)
 			PATHS "${ROOT_DIR}" NO_DEFAULT_PATH
 		)
 		if (NOT INTL_LIBRARY)
+			message(WARNING "Couldn't find Intl!")
 			return()
 		endif()
 		list(APPEND RELEASE_LIBRARIES_RAW "${INTL_LIBRARY}")

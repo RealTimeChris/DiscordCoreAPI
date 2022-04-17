@@ -19,8 +19,7 @@ find_libz("${LIBZ_RELEASE_ROOT}" "${LIBZ_DEBUG_ROOT}")
 find_openssl("${OPENSSL_RELEASE_ROOT}" "${OPENSSL_DEBUG_ROOT}")
 find_opus("${OPUS_RELEASE_ROOT}" "${OPUS_DEBUG_ROOT}")
 find_sodium("${SODIUM_RELEASE_ROOT}" "${SODIUM_DEBUG_ROOT}")
-message("RAW LIBRARIES ${RELEASE_LIBRARIES_RAW}")
-message("RAW LIBRARIES ${DEBUG_LIBRARIES_RAW}")
+
 generate_product_version(
    PRODUCT_INFO_VARIABLE
    NAME "DiscordCoreAPI"
