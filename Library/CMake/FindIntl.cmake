@@ -17,6 +17,9 @@ function(find_intl ROOT_DIR)
 			NAMES "libintl.dll.a" "libintl.lib" "libintl.a"
 			PATHS "${ROOT_DIR}" NO_DEFAULT_PATH
 		)
+		if (NOT INTL_LIBRARY)
+			return()
+		endif()
 		list(APPEND RELEASE_LIBRARIES_RAW "${INTL_LIBRARY}")
 		list(APPEND DEBUG_LIBRARIES_RAW  "${INTL_LIBRARY}")
 		set(RELEASE_LIBRARIES_RAW "${RELEASE_LIBRARIES_RAW}" PARENT_SCOPE)
