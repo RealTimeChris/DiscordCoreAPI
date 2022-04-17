@@ -19,7 +19,8 @@ find_libz("${LIBZ_RELEASE_ROOT}" "${LIBZ_DEBUG_ROOT}")
 find_openssl("${OPENSSL_RELEASE_ROOT}" "${OPENSSL_DEBUG_ROOT}")
 find_opus("${OPUS_RELEASE_ROOT}" "${OPUS_DEBUG_ROOT}")
 find_sodium("${SODIUM_RELEASE_ROOT}" "${SODIUM_DEBUG_ROOT}")
-
+message("RAW LIBRARIES ${RELEASE_LIBRARIES_RAW}")
+message("RAW LIBRARIES ${DEBUG_LIBRARIES_RAW}")
 generate_product_version(
    PRODUCT_INFO_VARIABLE
    NAME "DiscordCoreAPI"
@@ -50,17 +51,21 @@ message(STATUS "Copying a file...")
 install(FILES "${CMAKE_SOURCE_DIR}/Certs/DiscordCert.pem" DESTINATION "share/discordcoreapi/data")
 
 foreach (LIBRARY "${RELEASE_LIBRARIES_RAW}") 
-	target_link_libraries(
-		DiscordCoreAPI PUBLIC
-		"$<$<CONFIG:Release>:${LIBRARY}>"
-	)
+	if (LIBRARY)
+		target_link_libraries(
+			DiscordCoreAPI PUBLIC
+			"$<$<CONFIG:Release>:${LIBRARY}>"
+		)
+	endif()
 endforeach()
 
 foreach (LIBRARY "${DEBUG_LIBRARIES_RAW}")
-	target_link_libraries(
-		DiscordCoreAPI PUBLIC
-		"$<$<CONFIG:Debug>:${LIBRARY}>"
-	)
+	if (LIBRARY)
+		target_link_libraries(
+			DiscordCoreAPI PUBLIC
+			"$<$<CONFIG:Debug>:${LIBRARY}>"
+		)
+	endif()
 endforeach()
 
 if (VCPKG_INSTALLED_DIR)
