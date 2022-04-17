@@ -1,0 +1,112 @@
+{
+  "buildPresets": [
+    {
+      "name": "Windows-Release",
+      "displayName": "Windows x64 Release - Build",
+      "description": "Target Windows with the Visual Studio development environment.",
+      "configurePreset": "Windows-Release",
+      "configuration": "Release",
+      "verbose": true,
+      "inheritConfigureEnvironment": true
+    },
+    {
+      "name": "Windows-Debug",
+      "displayName": "Windows x64 Debug - Build",
+      "description": "Target Windows with the Visual Studio development environment.",
+      "configurePreset": "Windows-Debug",
+      "configuration": "Debug",
+      "verbose": true,
+      "inheritConfigureEnvironment": true
+    },
+    {
+      "name": "Linux-Release",
+      "displayName": "Linux x64 Release - Build",
+      "description": "Target Linux with the g++-11 compiler.",
+      "configurePreset": "Linux-Release",
+      "configuration": "Release",
+      "verbose": true,
+      "inheritConfigureEnvironment": true
+    },
+    {
+      "name": "Linux-Debug",
+      "displayName": "Linux x64 Debug - Build",
+      "description": "Target Linux with the g++-11 compiler.",
+      "configurePreset": "Linux-Debug",
+      "configuration": "Debug",
+      "verbose": true,
+      "inheritConfigureEnvironment": true
+    }
+  ],
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 2,
+    "patch": 2
+  },
+  "configurePresets": [
+    {
+      "name": "Windows-Release",
+      "displayName": "Windows x64 Release - Config",
+      "description": "Target Windows with the Visual Studio development environment.",
+      "generator": "Visual Studio 17 2022",
+      "binaryDir": "${sourceDir}/Build/Release",
+      "vendor": { "microsoft.com/VisualStudioSettings/CMake/1.0": { "hostOS": [ "Windows" ] } },
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "Release" },
+      "architecture": {
+        "value": "x64",
+        "strategy": "set"
+      },
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      }
+    },
+    {
+      "name": "Windows-Debug",
+      "displayName": "Windows x64 Debug - Config",
+      "description": "Target Windows with the Visual Studio development environment.",
+      "generator": "Visual Studio 17 2022",
+      "binaryDir": "${sourceDir}/Build/Debug",
+      "vendor": { "microsoft.com/VisualStudioSettings/CMake/1.0": { "hostOS": [ "Windows" ] } },
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "Debug" },
+      "architecture": {
+        "value": "x64",
+        "strategy": "set"
+      },
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      }
+    },
+    {
+      "name": "Linux-Release",
+      "displayName": "Linux x64 Release - Config",
+      "description": "Target Linux with the g++-11 compiler.",
+      "generator": "Ninja Multi-Config",
+      "binaryDir": "${sourceDir}/Build/Release",
+      "vendor": { "microsoft.com/VisualStudioSettings/CMake/1.0": { "hostOS": [ "Linux" ] } },
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "Release" },
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      }
+    },
+    {
+      "name": "Linux-Debug",
+      "displayName": "Linux x64 Debug - Config",
+      "description": "Target Linux with the g++-11 compiler.",
+      "generator": "Ninja Multi-Config",
+      "binaryDir": "${sourceDir}/Build/Debug",
+      "vendor": { "microsoft.com/VisualStudioSettings/CMake/1.0": { "hostOS": [ "Linux" ] } },
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "Debug" },
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      }
+    }
+  ],
+  "version": 3
+}
