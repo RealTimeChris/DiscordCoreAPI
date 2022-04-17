@@ -107,7 +107,7 @@ DiscordCoreAPI::InputEvents::deleteInputEventResponseAsync(newEvent, 20000).get(
 # The CMAKE Package
 - By running `cmake --install ./Build/Debug_OR_Release`, you will be given a cmake package, which can be used to build from this library, using other cmake projects.
 - It is used by setting `DiscordCoreAPI_DIR` to wherever the DiscordCoreAPIConfig.cmake file is installed to on your system by running the `cmake --install` command, and then using `find_package()` on `DiscordCoreAPI`.
-- When found, you will be granted the following cmake "variables"; `DiscordCoreAPI::DiscordCoreAPI` - this is the library target which can be linked to from other targets in cmake, and on Windows; `RUNTIME_RELEASE_LIBRARIES` - which is a list of dll files to be copied into your executable's final location after building, and `RUNTIME_DEBUG_LIBRARIES`, which is the same but for debug builds.
+- When found, you will be granted the following cmake "variables"; `DiscordCoreAPI::DiscordCoreAPI` - this is the library target which can be linked to from other targets in cmake, and on Windows; `$<TARGET_RUNTIME_DLLS:DiscordCoreAPI-Bot>` - which is a list of dll files to be copied into your executable's final location after building.
 - [Here](https://github.com/RealTimeChris/Bot-Template-for-DiscordCoreAPI/blob/main/CMakeLists.txt) is an example of building an executable from this library with this method.
 
 # Build Instructions (Non-Vcpkg) - The Executable
