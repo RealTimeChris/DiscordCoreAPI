@@ -49,8 +49,8 @@ install(FILES "${CMAKE_SOURCE_DIR}/Certs/DiscordCert.pem" DESTINATION "share/dis
 foreach (LIBRARY "${RELEASE_LIBRARIES}") 
 	if (LIBRARY)
 		target_link_libraries(
-			DiscordCoreAPI PRIVATE
-			"$<$<CONFIG:Release>:${LIBRARY}>"
+			DiscordCoreAPI PUBLIC
+			"$<BUILD_INTERFACE:$<$<CONFIG:Release>:${LIBRARY}>>"
 		)
 	endif()
 endforeach()
@@ -58,8 +58,8 @@ endforeach()
 foreach (LIBRARY "${DEBUG_LIBRARIES}")
 	if (LIBRARY)
 		target_link_libraries(
-			DiscordCoreAPI PRIVATE
-			"$<$<CONFIG:Debug>:${LIBRARY}>"
+			DiscordCoreAPI PUBLIC
+			"$<BUILD_INTERFACE:$<$<CONFIG:Debug>:${LIBRARY}>>"
 		)
 	endif()
 endforeach()
