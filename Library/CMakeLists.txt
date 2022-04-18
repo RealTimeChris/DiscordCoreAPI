@@ -152,6 +152,12 @@ install(
 	DESTINATION "${CMAKE_INSTALL_PREFIX}/share/discordcoreapi"
 )
 
+if (_VCPKG_INSTALLED_DIR)
+	set(DO_WE_LINK false)
+else()
+	set(DO_WE_LINK true)
+endif()
+
 if (RELEASE_RUNTIMES AND DEBUG_RUNTIMES)
 	configure_package_config_file(
 		"CMake/${CONFIG_FILENAME}.in"
@@ -165,6 +171,7 @@ if (RELEASE_RUNTIMES AND DEBUG_RUNTIMES)
 		RELEASE_LIBRARIES
 		DEBUG_LIBRARIES
 		LIBRARY_NAMES
+		DO_WE_LINK
 	)
 else()
 	configure_package_config_file(
@@ -174,6 +181,7 @@ else()
 		PATH_VARS
 		DISCORDCOREAPI_INCLUDE_DIR
 		DISCORDCOREAPI_SOURCE_DIR
+		DO_WE_LINK
 	)
 endif()
 
