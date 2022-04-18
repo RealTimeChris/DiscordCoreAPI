@@ -116,6 +116,8 @@ namespace DiscordCoreAPI {
 		ThreadPool threadPool{};
 		BotUser currentUser{};
 
+		void instantiateWebSockets(std::vector<RepeatedFunctionData> functionsToExecuteNew, std::string botTokenNew);
+
 		GatewayBotData getGateWayBot();
 
 		void run();

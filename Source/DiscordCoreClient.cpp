@@ -90,6 +90,10 @@ namespace DiscordCoreAPI {
 		Threads::initialize(this->httpClient.get());
 		Users::initialize(this->httpClient.get());
 		WebHooks::initialize(this->httpClient.get());
+		this->instantiateWebSockets(functionsToExecuteNew, botTokenNew);
+	}
+
+	void DiscordCoreClient::instantiateWebSockets(std::vector<RepeatedFunctionData> functionsToExecuteNew, std::string botTokenNew) {
 		GatewayBotData gatewayData = this->getGateWayBot();
 		if (this->shardingOptions.startingShard + this->shardingOptions.numberOfShardsForThisProcess > this->shardingOptions.totalNumberOfShards) {
 			std::cout << shiftToBrightRed() << "Your sharding options are incorrect! Please fix it!" << reset() << std::endl;
