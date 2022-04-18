@@ -50,7 +50,8 @@ foreach (LIBRARY "${RELEASE_LIBRARIES}")
 	if (LIBRARY)
 		target_link_libraries(
 			DiscordCoreAPI PUBLIC
-			"$<BUILD_INTERFACE:$<$<CONFIG:Release>:${LIBRARY}>>"
+			"$<$<PLATFORM_ID:Linux>:$<$<CONFIG:Release>:${LIBRARY}>>"
+			"$<$<PLATFORM_ID:Windows>:$<BUILD_INTERFACE:$<$<CONFIG:Release>:${LIBRARY}>>>"
 		)
 	endif()
 endforeach()
@@ -59,7 +60,8 @@ foreach (LIBRARY "${DEBUG_LIBRARIES}")
 	if (LIBRARY)
 		target_link_libraries(
 			DiscordCoreAPI PUBLIC
-			"$<BUILD_INTERFACE:$<$<CONFIG:Debug>:${LIBRARY}>>"
+			"$<$<PLATFORM_ID:Linux>:$<$<CONFIG:Debug>:${LIBRARY}>>"
+			"$<$<PLATFORM_ID:Windows>:$<BUILD_INTERFACE:$<$<CONFIG:Debug>:${LIBRARY}>>>"
 		)
 	endif()
 endforeach()
