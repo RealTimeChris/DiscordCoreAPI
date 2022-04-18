@@ -164,8 +164,8 @@ namespace DiscordCoreAPI {
 			if (!this->baseSocketAgent->areWeReadyToConnectEvent.wait(10000)) {
 				return;
 			}
-			this->voiceSocketAgent = std::make_unique<DiscordCoreInternal::VoiceSocketAgent>(this->voiceConnectInitData, this->baseSocketAgent,
-				this->baseSocketAgent->printMessages);
+			this->voiceSocketAgent = std::make_unique<DiscordCoreInternal::VoiceSocketAgent>(
+				this->voiceConnectInitData, this->baseSocketAgent, this->baseSocketAgent->printMessages);
 			this->doWeReconnect = &this->voiceSocketAgent->doWeReconnect;
 			if (!this->voiceSocketAgent->areWeConnected.wait(10000)) {
 				return;
@@ -327,11 +327,11 @@ namespace DiscordCoreAPI {
 							std::vector<RawFrameData> rawFrames{};
 							rawFrames.push_back(this->audioData.rawFrameData);
 							auto encodedFrameData = this->encoder->encodeFrames(rawFrames);
-							newFrame = this->audioEncrypter.encryptSingleAudioFrame(encodedFrameData[0].encodedFrameData, this->voiceConnectionData->audioSSRC,
-								this->voiceConnectionData->secretKey);
+							newFrame = this->audioEncrypter.encryptSingleAudioFrame(
+								encodedFrameData[0].encodedFrameData, this->voiceConnectionData->audioSSRC, this->voiceConnectionData->secretKey);
 						} else {
-							newFrame = this->audioEncrypter.encryptSingleAudioFrame(this->audioData.encodedFrameData, this->voiceConnectionData->audioSSRC,
-								this->voiceConnectionData->secretKey);
+							newFrame = this->audioEncrypter.encryptSingleAudioFrame(
+								this->audioData.encodedFrameData, this->voiceConnectionData->audioSSRC, this->voiceConnectionData->secretKey);
 						}
 						if (newFrame.size() == 0) {
 							continue;

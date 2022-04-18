@@ -12,7 +12,7 @@
 	If not, see <https://www.gnu.org/licenses/>.
 
 */
-/// StageInstanceEntities.hpp - Source file for the Stage Instance related stuff. 
+/// StageInstanceEntities.hpp - Source file for the Stage Instance related stuff.
 /// Nov 29, 2021 Chris M.
 /// https://discordcoreapi.com
 /// \file StageInstanceEntities.hpp

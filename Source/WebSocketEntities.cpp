@@ -568,7 +568,7 @@ namespace DiscordCoreInternal {
 						dataPackage->interactionData = *interactionData;
 						std::unique_ptr<DiscordCoreAPI::CommandData> commandData{ std::make_unique<DiscordCoreAPI::CommandData>(*eventData) };
 						auto commandDataNew = *commandData;
-						std::jthread theThread{ [=, this]() {							
+						std::jthread theThread{ [=, this]() {
 							this->commandController->checkForAndRunCommand(std::make_unique<DiscordCoreAPI::CommandData>(commandDataNew));
 						} };
 						theThread.detach();

@@ -13,7 +13,7 @@
 
 */
 /// GuildScheduledEventEntities.hpp - Header for the Guild Scheduled Events stuff.
-/// Nov 27, 2021 Chris M. 
+/// Nov 27, 2021 Chris M.
 /// https://discordcoreapi.com
 /// \file GuildScheduledEventEntities.hpp
 
