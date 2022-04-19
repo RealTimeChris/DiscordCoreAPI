@@ -280,7 +280,7 @@ namespace DiscordCoreAPI {
 		TSUnboundedMessageBlock<RawFrameData> outDataBuffer{};
 		AVFrameWrapper frame{ nullptr }, newFrame{ nullptr };
 		AVCodecContextWrapper audioDecodeContext{ nullptr };
-		std::atomic<int32_t> refreshTimeForBuffer{ 10000 };
+		std::atomic_int32_t refreshTimeForBuffer{ 10000 };
 		std::unique_ptr<std::jthread> theTask{ nullptr };
 		AVFormatContextWrapper formatContext{ nullptr };
 		std::atomic_bool haveWeFailedBool{ false };
