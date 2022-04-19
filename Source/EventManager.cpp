@@ -1,6 +1,6 @@
 /*
 *
-	Copyright 2021, 2022 Chris M (RealTimeChris).
+	Copyright 2021, 2022 Chris M. (RealTimeChris).
 
 	This file is part of DiscordCoreAPI.
 	DiscordCoreAPI is free software: you can redistribute it and/or modify it under the terms of the GNU
