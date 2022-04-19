@@ -204,8 +204,7 @@ namespace DiscordCoreAPI {
 				newSong.finalDownloadUrls[0].urlPath.find("/videoplayback?") - newString00.length());
 		}
 		std::string request = "GET " + newSong.finalDownloadUrls[0].urlPath +
-			" HTTP/1.1\n\rUser-Agent: Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.54 Mobile "
-			"Safari/537.36\n\r" +
+			" HTTP/1.1\n\rUser-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.88 Safari/537.36\n\r" +
 			"Host: " + newSong.finalDownloadUrls[0].urlPath.substr(0, newSong.finalDownloadUrls[0].urlPath.find(".com") + 4) + "\n\r\n\r";
 		DownloadUrl downloadUrl01{};
 		downloadUrl01.contentSize = 0;

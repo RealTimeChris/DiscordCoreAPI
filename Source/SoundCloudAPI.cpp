@@ -42,7 +42,7 @@ namespace DiscordCoreAPI {
 			std::vector<Song> results{};
 			std::unordered_map<std::string, std::string> theHeaders{
 				std::make_pair(
-					"User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36"),
+					"User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.88 Safari/537.36"),
 			};
 			DiscordCoreInternal::HttpWorkloadData dataPackage{};
 			dataPackage.baseUrl = SoundCloudRequestBuilder::baseUrl02;
@@ -134,7 +134,7 @@ namespace DiscordCoreAPI {
 			} else {
 				std::unordered_map<std::string, std::string> theHeaders{
 					std::make_pair(
-						"User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36"),
+						"User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.88 Safari/537.36"),
 					std::make_pair("Path", newSong.secondDownloadUrl)
 				};
 				DiscordCoreInternal::HttpWorkloadData dataPackage02{};
@@ -163,7 +163,7 @@ namespace DiscordCoreAPI {
 		try {
 			std::unordered_map<std::string, std::string> theHeaders{
 				std::make_pair(
-					"User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36"),
+					"User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.88 Safari/537.36"),
 				std::make_pair("Path", "/search?q=testValue")
 			};
 			DiscordCoreInternal::HttpWorkloadData dataPackage02{};
@@ -192,11 +192,10 @@ namespace DiscordCoreAPI {
 			std::vector<DiscordCoreInternal::HttpWorkloadData> workloadVector01{};
 			workloadVector01.push_back(dataPackage03);
 			std::vector<DiscordCoreInternal::HttpData> returnData02 = DiscordCoreInternal::submitWorkloadAndGetResult(*this->httpClient, workloadVector01);
-			std::string newString00 = "?client_id=";
 			std::string newerString02{};
 			newerString02.insert(newerString02.begin(), returnData02[0].responseMessage.begin(), returnData02[0].responseMessage.end());
-			std::string newString03 = newerString02.substr(newerString02.find("client_id=") + newString00.size());
-			std::string clientIdNew = "0" + newString03.substr(0, newString03.find("\"),o.push"));
+			std::string newString03 = newerString02.substr(newerString02.find("client_id=") + std::string{ "client_id=" }.size());
+			std::string clientIdNew = newString03.substr(0, newString03.find("\"),o.push"));
 			if (returnData[0].responseCode != 200) {
 				std::cout << shiftToBrightRed() << "SoundCloudAPI::searchForSong Error: " << returnData[0].responseCode << newerString02.c_str() << reset()
 						  << std::endl;

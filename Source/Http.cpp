@@ -309,10 +309,10 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	HttpClient::HttpClient(std::string botTokenNew, bool doWePrintNew, bool doWePrintFFMPEGNew) : botToken(botTokenNew) {
+	HttpClient::HttpClient(std::string botTokenNew, bool doWePrintFFMPEGNew, bool doWePrintHttpNew) : botToken(botTokenNew) {
 		this->connectionManager.initialize();
 		this->doWePrintFFmpeg = doWePrintFFMPEGNew;
-		this->doWePrintHttp = doWePrintNew;
+		this->doWePrintHttp = doWePrintHttpNew;
 	};
 
 	HttpData HttpClient::executeByRateLimitData(HttpWorkloadData& workload, HttpConnection* theConnection) {
@@ -470,7 +470,7 @@ namespace DiscordCoreInternal {
 					theConnection.writeData(theRequest);
 				} catch (...) {
 					return std::vector<HttpData>{};
-				}
+				}				
 				HttpData returnData = this->getResponse(&theConnection, rateLimitDataPtr.get());
 				returnVector.push_back(returnData);
 				currentBaseUrl = value.baseUrl;
@@ -498,14 +498,22 @@ namespace DiscordCoreInternal {
 				break;
 			}
 		};
-		return theConnection->handleHeaders(rateLimitDataPtr);
+		auto returnData = theConnection->handleHeaders(rateLimitDataPtr);
+		if (returnData.responseCode == 204 || returnData.responseCode == 201 || returnData.responseCode == 200) {
+			if (this->doWePrintHttp) {
+				std::cout << DiscordCoreAPI::shiftToBrightGreen() << " Success: " << returnData.responseCode << ", "
+						  << returnData.responseMessage << std::endl
+						  << DiscordCoreAPI::reset() << std::endl;
+			}
+		} else {
+			throw HttpError(std::string(std::to_string(returnData.responseCode) + ", " + returnData.responseMessage));
+		}
+		return returnData;
 	}
 
 	std::vector<HttpData> HttpClient::httpRequest(std::vector<HttpWorkloadData>& workload) {
 		try {
-			std::vector<HttpData> resultData = this->executeHttpRequest(workload);
-
-			return resultData;
+			return this->executeHttpRequest(workload);
 		} catch (...) {
 			DiscordCoreAPI::reportException("HttpClient::httpRequest()", nullptr, true);
 		}
