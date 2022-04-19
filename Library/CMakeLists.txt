@@ -154,7 +154,7 @@ install(
 	DESTINATION "${CMAKE_INSTALL_PREFIX}/share/discordcoreapi"
 )
 
-if (RELEASE_RUNTIMES AND DEBUG_RUNTIMES)
+if (RELEASE_DLLS AND DEBUG_DLLS)
 	configure_package_config_file(
 		"CMake/${CONFIG_FILENAME}.in"
 		"${CONFIG_FILENAME}"
