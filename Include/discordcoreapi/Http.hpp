@@ -148,7 +148,7 @@ namespace DiscordCoreInternal {
 
 	  protected:
 		HttpConnectionManager connectionManager{};
-		std::binary_semaphore theSemaphore{ 0 };
+		std::binary_semaphore theSemaphore{ 1 };
 		bool doWePrintFFmpeg{ false };
 		const std::string botToken{};
 		bool doWePrintHttp{ false };
