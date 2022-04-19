@@ -96,8 +96,10 @@ namespace DiscordCoreAPI {
 	void DiscordCoreClient::instantiateWebSockets(std::vector<RepeatedFunctionData> functionsToExecuteNew, std::string botTokenNew) {
 		GatewayBotData gatewayData = this->getGateWayBot();
 		if (gatewayData.url == "") {
+			std::string theValue{};
 			std::cout << "Failed to collect the connection URL! Closing!" << std::endl;
 			std::this_thread::sleep_for(std::chrono::seconds{ 5 });
+			std::cin >> theValue;
 			return;
 		}
 		if (this->shardingOptions.startingShard + this->shardingOptions.numberOfShardsForThisProcess > this->shardingOptions.totalNumberOfShards) {
