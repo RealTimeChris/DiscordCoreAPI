@@ -315,22 +315,13 @@ namespace DiscordCoreInternal {
 		this->doWePrintHttp = doWePrintNew;
 	};
 
-	RateLimitData* HttpClient::acquireRateLimitDataPtr(HttpWorkloadData& workload) {
-		this->theSemaphore.acquire();
-		while (Globals::rateLimitValues[Globals::rateLimitValueBuckets[workload.workloadType]] == nullptr) {
-			std::this_thread::sleep_for(std::chrono::milliseconds{ 1 });
-		}
-		auto rateLimitDataPtr = Globals::rateLimitValues[Globals::rateLimitValueBuckets[workload.workloadType]].release();
-		this->theSemaphore.release();
-		return rateLimitDataPtr;
-	}
-
 	HttpData HttpClient::executeByRateLimitData(HttpWorkloadData& workload, HttpConnection* theConnection) {
 		HttpData returnData{};
 		try {
 			theConnection->resetValues();
 			std::unique_ptr<std::recursive_mutex> theMutexTemp{ nullptr };
-			RateLimitData* rateLimitDataPtr = HttpClient::acquireRateLimitDataPtr(workload);
+			RateLimitData* rateLimitDataPtr = Globals::rateLimitValues[Globals::rateLimitValueBuckets[workload.workloadType]].get();
+			
 			std::lock_guard<std::recursive_mutex> accessLock{ *rateLimitDataPtr->accessMutex };
 			int64_t timeRemaining{};
 			int64_t currentTime =
@@ -383,7 +374,8 @@ namespace DiscordCoreInternal {
 				Globals::rateLimitValueBuckets[workload.workloadType] = rateLimitDataPtr->bucket;
 				if (!Globals::rateLimitValues.contains(Globals::rateLimitValueBuckets[workload.workloadType])) {
 					Globals::rateLimitValues[Globals::rateLimitValueBuckets[workload.workloadType]] = std::move(thePtrNew);
-					Globals::rateLimitValues[Globals::rateLimitValueBuckets[workload.workloadType]].reset(rateLimitDataPtr);
+					Globals::rateLimitValues[Globals::rateLimitValueBuckets[workload.workloadType]].reset(
+						Globals::rateLimitValues[Globals::rateLimitValueBuckets[workload.workloadType]].release());
 				} else {
 					*Globals::rateLimitValues[Globals::rateLimitValueBuckets[workload.workloadType]] = *rateLimitDataPtr;
 				}
@@ -395,9 +387,11 @@ namespace DiscordCoreInternal {
 					std::unique_ptr<RateLimitData> thePtrNew{ std::make_unique<RateLimitData>() };
 					if (!Globals::rateLimitValues.contains(Globals::rateLimitValueBuckets[workload.workloadType])) {
 						Globals::rateLimitValues[Globals::rateLimitValueBuckets[workload.workloadType]] = std::move(thePtrNew);
-						Globals::rateLimitValues[Globals::rateLimitValueBuckets[workload.workloadType]].reset(rateLimitDataPtr);
+						Globals::rateLimitValues[Globals::rateLimitValueBuckets[workload.workloadType]].reset(
+							Globals::rateLimitValues[Globals::rateLimitValueBuckets[workload.workloadType]].release());
 					} else {
-						Globals::rateLimitValues[Globals::rateLimitValueBuckets[workload.workloadType]].reset(rateLimitDataPtr);
+						Globals::rateLimitValues[Globals::rateLimitValueBuckets[workload.workloadType]].reset(
+							Globals::rateLimitValues[Globals::rateLimitValueBuckets[workload.workloadType]].release());
 					}
 				}
 			}

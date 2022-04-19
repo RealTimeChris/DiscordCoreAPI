@@ -148,12 +148,9 @@ namespace DiscordCoreInternal {
 
 	  protected:
 		HttpConnectionManager connectionManager{};
-		std::binary_semaphore theSemaphore{ 1 };
 		bool doWePrintFFmpeg{ false };
 		const std::string botToken{};
 		bool doWePrintHttp{ false };
-
-		RateLimitData* acquireRateLimitDataPtr(HttpWorkloadData& workload);
 
 		HttpData executeHttpRequest(HttpWorkloadData& workload, HttpConnection* theConnection, RateLimitData* rateLimitDatPtr);
 
