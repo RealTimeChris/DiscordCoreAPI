@@ -97,6 +97,7 @@ namespace DiscordCoreInternal {
 
 	  protected:
 		std::unique_ptr<std::recursive_mutex> accessMutex{ std::make_unique<std::recursive_mutex>() };
+		std::binary_semaphore theSemaphore{ 0 };
 		bool haveWeCollectedTime{ false };
 		bool areWeASpecialBucket{ false };
 		int64_t getsRemainingTotal{ 0 };
