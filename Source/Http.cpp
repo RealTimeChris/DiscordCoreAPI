@@ -435,10 +435,10 @@ namespace DiscordCoreInternal {
 			}
 			auto theRequest = theConnection->buildRequest(workload);
 			theConnection->writeData(theRequest);
-			auto result = this->getResponse(theConnection, rateLimitDatPtr);
 			if (theConnection->currentRecursionDepth >= theConnection->maxRecursion) {
 				return HttpData{};
 			}
+			auto result = this->getResponse(theConnection, rateLimitDatPtr);
 			if (result.responseCode == -1) {
 				theConnection->currentRecursionDepth += 1;
 				theConnection->doWeConnect = true;
@@ -449,6 +449,8 @@ namespace DiscordCoreInternal {
 			}
 		} catch (...) {
 			theConnection->doWeConnect = true;
+			theConnection->currentRecursionDepth += 1;
+			DiscordCoreAPI::reportException("HttpClient::executeHttpRequest()", nullptr);
 			return this->executeHttpRequest(workload, theConnection, rateLimitDatPtr);
 		}
 	}
@@ -498,17 +500,7 @@ namespace DiscordCoreInternal {
 				break;
 			}
 		};
-		auto returnData = theConnection->handleHeaders(rateLimitDataPtr);
-		if (returnData.responseCode == 204 || returnData.responseCode == 201 || returnData.responseCode == 200) {
-			if (this->doWePrintHttp) {
-				std::cout << DiscordCoreAPI::shiftToBrightGreen() << " Success: " << returnData.responseCode << ", "
-						  << returnData.responseMessage << std::endl
-						  << DiscordCoreAPI::reset() << std::endl;
-			}
-		} else {
-			throw HttpError(std::string(std::to_string(returnData.responseCode) + ", " + returnData.responseMessage));
-		}
-		return returnData;
+		return theConnection->handleHeaders(rateLimitDataPtr);
 	}
 
 	std::vector<HttpData> HttpClient::httpRequest(std::vector<HttpWorkloadData>& workload) {
