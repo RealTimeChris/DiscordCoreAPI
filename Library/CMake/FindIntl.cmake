@@ -1,25 +1,26 @@
-# find_intl(ROOT_DIR)
+# find_intl(RELEASE_ROOT_DIR DEBUG_ROOT_DIR SHARED)
 #
-# This function locates the Opus library, using a couple of provided paths for searching.
+# This function locates the Libz library, using a couple of provided paths for searching.
 #
 # Usage:
-#	find_intl(ROOT_DIR)
+#	find_intl(RELEASE_ROOT_DIR DEBUG_ROOT_DIR SHARED)
 # Where:
-#	ROOT_DIR = The directory containing the library, or library's linker file.
+#	RELEASE_ROOT_DIR = The directory containing the RELEASE version of the library, or library's linker file.
+#	DEBUG_ROOT_DIR = The directory containing the DEBUG version of the library, or library's linker file.
 # What it produces:
 #	INTL_LIBRARY_RELEASE, INTL_LIBRARY_DEBUG and in the case of SHARED LIBRARIES - 
 #	INTL_RUNTIME_RELEASE, and INTL_RUNTIME_DEBUG. Which each points to the respective files of each kind. 
 #
-function(find_intl ROOT_DIR SHARED)
+function(find_intl RELEASE_ROOT_DIR DEBUG_ROOT_DIR SHARED)
 	find_file(
 		INTL_LIBRARY_RELEASE
 		NAMES "libintl.dll.a" "libintl.lib" "libintl.a"
-		PATHS "${ROOT_DIR}" NO_DEFAULT_PATH
+		PATHS "${RELEASE_ROOT_DIR}" NO_DEFAULT_PATH
 	)
 	find_file(
 		INTL_LIBRARY_DEBUG 
 		NAMES "libintl.dll.a" "libintl.lib" "libintl.a"
-		PATHS "${ROOT_DIR}" NO_DEFAULT_PATH
+		PATHS "${DEBUG_ROOT_DIR}" NO_DEFAULT_PATH
 	)
 	if(INTL_LIBRARY_RELEASE AND INTL_LIBRARY_DEBUG)
 		list(APPEND RELEASE_LIBRARIES "${INTL_LIBRARY_RELEASE}")

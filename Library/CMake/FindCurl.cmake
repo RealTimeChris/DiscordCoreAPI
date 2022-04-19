@@ -1,9 +1,9 @@
-# find_curl(RELEASE_ROOT_DIR DEBUG_ROOT_DIR)
+# find_curl(RELEASE_ROOT_DIR DEBUG_ROOT_DIR SHARED)
 #
-# This function locates the Curl library, using a couple of provided paths for searching.
+# This function locates the Libz library, using a couple of provided paths for searching.
 #
 # Usage:
-#	find_curl(RELEASE_ROOT_DIR DEBUG_ROOT_DIR)
+#	find_curl(RELEASE_ROOT_DIR DEBUG_ROOT_DIR SHARED)
 # Where:
 #	RELEASE_ROOT_DIR = The directory containing the RELEASE version of the library, or library's linker file.
 #	DEBUG_ROOT_DIR = The directory containing the DEBUG version of the library, or library's linker file.
