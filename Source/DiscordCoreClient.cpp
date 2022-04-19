@@ -96,7 +96,8 @@ namespace DiscordCoreAPI {
 	void DiscordCoreClient::instantiateWebSockets(std::vector<RepeatedFunctionData> functionsToExecuteNew, std::string botTokenNew) {
 		GatewayBotData gatewayData = this->getGateWayBot();
 		if (gatewayData.url == "") {
-			std::cout << shiftToBrightRed << "Failed to collect the connection URL! Closing!" << reset << std::endl;
+			std::cout << shiftToBrightRed << "Failed to collect the connection URL! Closing! Did you remember to properly set your bot token?" << reset
+					  << std::endl;
 			std::this_thread::sleep_for(std::chrono::seconds{ 5 });
 			return;
 		}
