@@ -315,14 +315,21 @@ namespace DiscordCoreInternal {
 		this->doWePrintHttp = doWePrintNew;
 	};
 
+	RateLimitData* HttpClient::acquireRateLimitDataPtr(HttpWorkloadData& workload) {
+		this->theSemaphore.acquire();
+		while (Globals::rateLimitValues[Globals::rateLimitValueBuckets[workload.workloadType]] == nullptr) {
+		}
+		auto rateLimitDataPtr = Globals::rateLimitValues[Globals::rateLimitValueBuckets[workload.workloadType]].release();
+		this->theSemaphore.release();
+		return rateLimitDataPtr;
+	}
+
 	HttpData HttpClient::executeByRateLimitData(HttpWorkloadData& workload, HttpConnection* theConnection) {
 		HttpData returnData{};
 		try {
 			theConnection->resetValues();
 			std::unique_ptr<std::recursive_mutex> theMutexTemp{ nullptr };
-			RateLimitData* rateLimitDataPtr = Globals::rateLimitValues[Globals::rateLimitValueBuckets[workload.workloadType]].release();
-			auto theSemaphore = &rateLimitDataPtr->theSemaphore;
-			theSemaphore->acquire();
+			RateLimitData* rateLimitDataPtr = HttpClient::acquireRateLimitDataPtr(workload);
 			std::lock_guard<std::recursive_mutex> accessLock{ *rateLimitDataPtr->accessMutex };
 			int64_t timeRemaining{};
 			int64_t currentTime =
@@ -412,11 +419,9 @@ namespace DiscordCoreInternal {
 							  << DiscordCoreAPI::reset() << std::endl;
 					returnData = this->executeByRateLimitData(workload, theConnection);
 				} else {
-					theSemaphore->release();
 					throw HttpError(std::string(std::to_string(returnData.responseCode) + ", " + returnData.responseMessage));
 				}
 			}
-			theSemaphore->release();
 			return returnData;
 		} catch (...) {
 			DiscordCoreAPI::reportException("HttpClient::executeByRateLimitData()", nullptr, true);

@@ -97,7 +97,6 @@ namespace DiscordCoreInternal {
 
 	  protected:
 		std::unique_ptr<std::recursive_mutex> accessMutex{ std::make_unique<std::recursive_mutex>() };
-		std::binary_semaphore theSemaphore{ 0 };
 		bool haveWeCollectedTime{ false };
 		bool areWeASpecialBucket{ false };
 		int64_t getsRemainingTotal{ 0 };
@@ -149,9 +148,12 @@ namespace DiscordCoreInternal {
 
 	  protected:
 		HttpConnectionManager connectionManager{};
+		std::binary_semaphore theSemaphore{ 0 };
 		bool doWePrintFFmpeg{ false };
 		const std::string botToken{};
 		bool doWePrintHttp{ false };
+
+		RateLimitData* acquireRateLimitDataPtr(HttpWorkloadData& workload);
 
 		HttpData executeHttpRequest(HttpWorkloadData& workload, HttpConnection* theConnection, RateLimitData* rateLimitDatPtr);
 
