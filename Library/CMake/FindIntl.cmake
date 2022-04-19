@@ -7,8 +7,8 @@
 # Where:
 #	ROOT_DIR = The directory containing the library, or library's linker file.
 # What it produces:
-#	INTL_LIBRARY and in the case of SHARED LIBRARIES - 
-#	INTL_RUNTIME_FILE. Which each points to the respective files of each kind.
+#	INTL_LIBRARY_RELEASE, INTL_LIBRARY_DEBUG and in the case of SHARED LIBRARIES - 
+#	INTL_RUNTIME_RELEASE, and INTL_RUNTIME_DEBUG. Which each points to the respective files of each kind. 
 #
 function(find_intl ROOT_DIR SHARED)
 	find_file(
