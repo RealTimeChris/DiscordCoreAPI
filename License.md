@@ -1,4 +1,4 @@
-Copyright 2021, 2022 Chris M. (RealTimeChris).
+Copyright 2021, 2022 Chris M. (RealTimeChris)
 
                     GNU AFFERO GENERAL PUBLIC LICENSE
                        Version 3, 19 November 2007
