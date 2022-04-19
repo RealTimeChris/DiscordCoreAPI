@@ -27,15 +27,14 @@
 namespace DiscordCoreInternal {
 
 	class HttpConnectionManager;
-	struct HttpConnection;
 	struct RateLimitData;
 	struct HttpData;
 
 	struct HttpError : public std::runtime_error {
 	  public:
-		HttpError(std::string&& message) : std::runtime_error(message.c_str()){};
+		explicit HttpError(std::string&& message) : std::runtime_error(message.c_str()){};
 
-		HttpError(std::string& message) : std::runtime_error(message.c_str()){};
+		explicit HttpError(std::string& message) : std::runtime_error(message.c_str()){};
 	};
 
 	class DiscordCoreAPI_Dll HttpRnRBuilder {
