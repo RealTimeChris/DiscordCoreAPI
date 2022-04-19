@@ -318,6 +318,7 @@ namespace DiscordCoreInternal {
 	RateLimitData* HttpClient::acquireRateLimitDataPtr(HttpWorkloadData& workload) {
 		this->theSemaphore.acquire();
 		while (Globals::rateLimitValues[Globals::rateLimitValueBuckets[workload.workloadType]] == nullptr) {
+			std::this_thread::sleep_for(std::chrono::milliseconds{ 1 });
 		}
 		auto rateLimitDataPtr = Globals::rateLimitValues[Globals::rateLimitValueBuckets[workload.workloadType]].release();
 		this->theSemaphore.release();
