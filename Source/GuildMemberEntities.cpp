@@ -198,10 +198,10 @@ namespace DiscordCoreAPI {
 				GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = dataPackage.guildMemberId, .guildId = dataPackage.guildId }).get();
 			ModifyGuildMemberData dataPackage01{};
 			dataPackage01.currentChannelId = guildMember.voiceData.channelId;
-			dataPackage01.deaf = guildMember.deaf;
+			dataPackage01.deaf = guildMember.getDeaf();
 			dataPackage01.guildId = guildMember.guildId;
 			dataPackage01.guildMemberId = guildMember.user.id;
-			dataPackage01.mute = guildMember.mute;
+			dataPackage01.mute = guildMember.getMute();
 			dataPackage01.nick = guildMember.nick;
 			dataPackage01.roleIds = guildMember.roles;
 			dataPackage01.reason = dataPackage.reason;
