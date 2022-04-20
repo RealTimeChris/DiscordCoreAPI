@@ -133,7 +133,7 @@ namespace DiscordCoreInternal {
 			}
 
 			auto options{ SSL_CTX_get_options(this->context) };
-			if (SSL_CTX_set_options(this->context, SSL_OP_NO_COMPRESSION) != (options | SSL_OP_NO_COMPRESSION)) {
+			if (SSL_CTX_set_options(this->context, SSL_OP_NO_COMPRESSION|SSL_OP_IGNORE_UNEXPECTED_EOF) != (options | SSL_OP_NO_COMPRESSION|SSL_OP_IGNORE_UNEXPECTED_EOF)) {
 				reportSSLError("SSL_CTX_set_options() Error: ");
 				return false;
 			}
@@ -396,6 +396,13 @@ namespace DiscordCoreInternal {
 
 			if (this->context = SSL_CTX_new(TLS_client_method()); this->context == nullptr) {
 				reportSSLError("SSL_CTX_new() Error: ");
+				return;
+			}
+
+			auto options{ SSL_CTX_get_options(this->context) };
+			if (SSL_CTX_set_options(this->context, SSL_OP_NO_COMPRESSION | SSL_OP_IGNORE_UNEXPECTED_EOF) !=
+				(options | SSL_OP_NO_COMPRESSION | SSL_OP_IGNORE_UNEXPECTED_EOF)) {
+				reportSSLError("SSL_CTX_set_options() Error: ");
 				return;
 			}
 

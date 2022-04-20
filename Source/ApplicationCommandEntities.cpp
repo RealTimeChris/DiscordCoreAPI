@@ -60,7 +60,7 @@ namespace DiscordCoreAPI {
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Post_Global_Application_Command;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Post;
 			workload.relativePath = "/applications/" + dataPackage.applicationId + "/commands";
-			workload.content = DiscordCoreInternal::JSONIFY(dataPackage).dump().dump();
+			workload.content = DiscordCoreInternal::JSONIFY(dataPackage).dump();
 			workload.callStack = "ApplicationCommands::createGlobalApplicationCommandAsync";
 			co_return DiscordCoreInternal::submitWorkloadAndGetResult<ApplicationCommand>(*ApplicationCommands::httpClient, workload);
 		} catch (...) {
@@ -192,7 +192,7 @@ namespace DiscordCoreAPI {
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Post_Guild_Application_Command;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Post;
 			workload.relativePath = "/applications/" + dataPackage.applicationId + "/guilds/" + dataPackage.guildId + "/commands";
-			workload.content = DiscordCoreInternal::JSONIFY(dataPackage).dump().dump();
+			workload.content = DiscordCoreInternal::JSONIFY(dataPackage).dump();
 			workload.callStack = "ApplicationCommands::createGuildApplicationCommandAsync";
 			co_return DiscordCoreInternal::submitWorkloadAndGetResult<ApplicationCommand>(*ApplicationCommands::httpClient, workload);
 		} catch (...) {
