@@ -365,7 +365,7 @@ namespace DiscordCoreAPI {
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Put_Guild_Application_Command_Permissions;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Put;
 			workload.relativePath = "/applications/" + dataPackage.applicationId + "/guilds/" + dataPackage.guildId + "/commands/" + commandId + "/permissions";
-			nlohmann::json newData = { { "permissions", nlohmann::json::parse(DiscordCoreInternal::JSONIFY(dataPackage)) } };
+			nlohmann::json newData = { { "permissions", DiscordCoreInternal::JSONIFY(dataPackage) } };
 			workload.content = newData.dump();
 			workload.callStack = "ApplicationCommands::editGuildApplicationCommandPermissionsAsync";
 			co_return DiscordCoreInternal::submitWorkloadAndGetResult<GuildApplicationCommandPermissionsData>(*ApplicationCommands::httpClient, workload);
