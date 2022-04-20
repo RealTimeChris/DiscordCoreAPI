@@ -192,20 +192,14 @@ namespace DiscordCoreAPI {
 			this->theFunction = theFunctionNew;
 		}
 
-		void operator()(ArgTypes... args) {
-			if (this->theTask.getStatus() == CoRoutineStatus::Running) {
-				this->theTask.cancel();
-			}
-			this->theTask = this->theFunction(args...);
+		ReturnType operator()(ArgTypes... args) {
+			return this->theFunction(args...);
 		}
 
-		~UniEvent() {
-			this->theTask.cancel();
-		}
+		~UniEvent() {}
 
 	  protected:
 		std::function<ReturnType(ArgTypes...)> theFunction{ nullptr };
-		CoRoutine<void> theTask{ nullptr };
 	};
 
 	class DiscordCoreAPI_Dll EventWaiter {

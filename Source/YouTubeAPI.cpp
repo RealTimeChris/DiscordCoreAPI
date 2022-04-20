@@ -468,12 +468,13 @@ namespace DiscordCoreAPI {
 			int32_t sameCounter{ 0 };
 			int32_t counter{ 0 };
 			BuildAudioDecoderData dataPackage{};
-			dataPackage.totalFileSize = static_cast<uint64_t>(newSong.contentLength) - static_cast<int64_t>(581);
+			dataPackage.totalFileSize = static_cast<uint64_t>(newSong.contentLength);
 			dataPackage.bufferMaxSize = youtubeAPI->maxBufferSize;
 			std::unique_ptr<AudioDecoder> audioDecoder = std::make_unique<AudioDecoder>(dataPackage, youtubeAPI->doWePrint);
 			AudioEncoder audioEncoder = AudioEncoder();
 			streamSocket.writeData(newSong.finalDownloadUrls[1].urlPath);
 			if (!streamSocket.processIO(600000)) {
+				haveWeFailed = true;
 				goto breakOutPlayMore;
 			};
 		breakOutPlayMore:
@@ -505,6 +506,7 @@ namespace DiscordCoreAPI {
 				if (sameCounter > 9 && counter >= 20) {
 					break;
 				} else if (sameCounter > 9) {
+					haveWeFailed = true;
 					goto breakOutPlayMore;
 				}
 				bytesReadLastIteration = bytesReadTotal01;
