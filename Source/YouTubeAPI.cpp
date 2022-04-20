@@ -463,7 +463,9 @@ namespace DiscordCoreAPI {
 			bool haveWeFailed{ false };
 			int64_t remainingDownloadContentLength{ newSong.contentLength };
 			int64_t contentLengthCurrent{ youtubeAPI->maxBufferSize };
+			int64_t bytesReadLastIteration{ 1 };
 			int64_t bytesReadTotal01{ 0 };
+			int32_t sameCounter{ 0 };
 			int32_t counter{ 0 };
 			BuildAudioDecoderData dataPackage{};
 			dataPackage.totalFileSize = static_cast<uint64_t>(newSong.contentLength) - static_cast<int64_t>(581);
@@ -478,7 +480,7 @@ namespace DiscordCoreAPI {
 				goto breakOutPlayMore;
 			};
 		breakOutPlayMore:
-			if (haveWeFailed) {
+			if (haveWeFailed && !getVoiceConnectionMap()[youtubeAPI->guildId]->areWeCurrentlyPlaying()) {
 				audioDecoder.reset(nullptr);
 				YouTubeAPI::weFailedToDownloadOrDecode(newSong, youtubeAPI, theToken, currentRecursionDepth);
 				return;
@@ -498,6 +500,17 @@ namespace DiscordCoreAPI {
 				return;
 			}
 			while (newSong.contentLength > bytesReadTotal01) {
+				if (bytesReadLastIteration == bytesReadTotal01) {
+					sameCounter += 1;
+				} else {
+					sameCounter = 0;
+				}
+				if (sameCounter > 9 && counter >= 40) {
+					break;
+				} else if (sameCounter > 9) {
+					goto breakOutPlayMore;
+				}
+				bytesReadLastIteration = bytesReadTotal01;
 				if (theToken.stop_requested()) {
 					goto breakOut;
 				}

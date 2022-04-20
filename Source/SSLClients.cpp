@@ -20,37 +20,37 @@
 
 #include <discordcoreapi/SSLClients.hpp>
 
-auto getFilePath(std::string fileName, std::string pathPrefix, std::string searchRoot = "") {
-	{
-		if (searchRoot == "") {
-#ifdef _WIN32
-			searchRoot = "C:\\";
-#else
-			searchRoot = "/";
-#endif
-		}
-		try {
-			for (const auto& entry: std::filesystem::recursive_directory_iterator(searchRoot, std::filesystem::directory_options::skip_permission_denied)) {
-				try {
-					if (entry.path().string().find(pathPrefix) == std::string::npos) {
-						continue;
-					} else if (entry.path().string().find(pathPrefix) != std::string::npos) {
-						if (entry.path().string().find(fileName) != std::string::npos) {
-							return entry.path().string();
-						}
-					}
-				} catch (std::exception& e) {
-					std::cout << e.what() << std::endl;
-				}
-			}
-		} catch (std::exception& e) {
-			std::cout << e.what() << std::endl;
-		}
-	}
-	return std::string{};
-}
-
 namespace DiscordCoreInternal {
+
+	auto getFilePath(std::string fileName, std::string pathPrefix, std::string searchRoot = "") {
+		{
+			if (searchRoot == "") {
+#ifdef _WIN32
+				searchRoot = "C:\\";
+#else
+				searchRoot = "/";
+#endif
+			}
+			try {
+				for (const auto& entry: std::filesystem::recursive_directory_iterator(searchRoot, std::filesystem::directory_options::skip_permission_denied)) {
+					try {
+						if (entry.path().string().find(pathPrefix) == std::string::npos) {
+							continue;
+						} else if (entry.path().string().find(pathPrefix) != std::string::npos) {
+							if (entry.path().string().find(fileName) != std::string::npos) {
+								return entry.path().string();
+							}
+						}
+					} catch (std::exception& e) {
+						std::cout << e.what() << std::endl;
+					}
+				}
+			} catch (std::exception& e) {
+				std::cout << e.what() << std::endl;
+			}
+		}
+		return std::string{};
+	}
 
 	void reportSSLError(std::string errorPosition, int32_t errorValue = 0, SSL* ssl = nullptr) noexcept {
 		try {
@@ -133,7 +133,7 @@ namespace DiscordCoreInternal {
 			}
 
 			auto options{ SSL_CTX_get_options(this->context) };
-			if (SSL_CTX_set_options(this->context, SSL_OP_NO_COMPRESSION|SSL_OP_IGNORE_UNEXPECTED_EOF) != (options | SSL_OP_NO_COMPRESSION|SSL_OP_IGNORE_UNEXPECTED_EOF)) {
+			if (SSL_CTX_set_options(this->context, SSL_OP_NO_COMPRESSION) != (options | SSL_OP_NO_COMPRESSION)) {
 				reportSSLError("SSL_CTX_set_options() Error: ");
 				return false;
 			}
@@ -396,13 +396,6 @@ namespace DiscordCoreInternal {
 
 			if (this->context = SSL_CTX_new(TLS_client_method()); this->context == nullptr) {
 				reportSSLError("SSL_CTX_new() Error: ");
-				return;
-			}
-
-			auto options{ SSL_CTX_get_options(this->context) };
-			if (SSL_CTX_set_options(this->context, SSL_OP_NO_COMPRESSION | SSL_OP_IGNORE_UNEXPECTED_EOF) !=
-				(options | SSL_OP_NO_COMPRESSION | SSL_OP_IGNORE_UNEXPECTED_EOF)) {
-				reportSSLError("SSL_CTX_set_options() Error: ");
 				return;
 			}
 

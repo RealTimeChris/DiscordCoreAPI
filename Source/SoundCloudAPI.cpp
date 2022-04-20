@@ -284,8 +284,9 @@ namespace DiscordCoreAPI {
 			dataPackage.bufferMaxSize = soundCloudAPI->maxBufferSize;
 			std::unique_ptr<AudioDecoder> audioDecoder = std::make_unique<AudioDecoder>(dataPackage, soundCloudAPI->httpClient->getDoWePrintFFMPEG());
 			AudioEncoder audioEncoder = AudioEncoder();
+			bool haveWeFailed{ false };
 		breakOutPlayMore:
-			if (counter > 45 && !getVoiceConnectionMap()[soundCloudAPI->guildId]->areWeCurrentlyPlaying()) {
+			if (haveWeFailed && counter > 45 && !getVoiceConnectionMap()[soundCloudAPI->guildId]->areWeCurrentlyPlaying()) {
 				audioDecoder.reset(nullptr);
 				SoundCloudAPI::weFailedToDownloadOrDecode(newSong, soundCloudAPI, theToken, currentRecursionDepth);
 				return;
@@ -309,6 +310,7 @@ namespace DiscordCoreAPI {
 					goto breakOut;
 				}
 				if (audioDecoder->haveWeFailed()) {
+					haveWeFailed = true;
 					goto breakOutPlayMore;
 				}
 				if (theToken.stop_requested()) {
