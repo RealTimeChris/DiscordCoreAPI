@@ -814,15 +814,15 @@ namespace DiscordCoreInternal {
 		}
 
 		if (jsonObjectData.contains("deaf") && !jsonObjectData["deaf"].is_null()) {
-			pDataStructure.deaf = jsonObjectData["deaf"].get<bool>();
+			pDataStructure.setDeaf(jsonObjectData["deaf"].get<bool>());
 		}
 
 		if (jsonObjectData.contains("mute") && !jsonObjectData["mute"].is_null()) {
-			pDataStructure.mute = jsonObjectData["mute"].get<bool>();
+			pDataStructure.setMute(jsonObjectData["mute"].get<bool>());
 		}
 
 		if (jsonObjectData.contains("pending") && !jsonObjectData["pending"].is_null()) {
-			pDataStructure.pending = jsonObjectData["pending"].get<bool>();
+			pDataStructure.setPending(jsonObjectData["pending"].get<bool>());
 		}
 
 		if (jsonObjectData.contains("permissions") && !jsonObjectData["permissions"].is_null()) {
@@ -870,15 +870,15 @@ namespace DiscordCoreInternal {
 		}
 
 		if (jsonObjectData.contains("deaf") && !jsonObjectData["deaf"].is_null()) {
-			pDataStructure.deaf = jsonObjectData["deaf"].get<bool>();
+			pDataStructure.setDeaf(jsonObjectData["deaf"].get<bool>());
 		}
 
 		if (jsonObjectData.contains("mute") && !jsonObjectData["mute"].is_null()) {
-			pDataStructure.mute = jsonObjectData["mute"].get<bool>();
+			pDataStructure.setMute(jsonObjectData["mute"].get<bool>());
 		}
 
 		if (jsonObjectData.contains("pending") && !jsonObjectData["pending"].is_null()) {
-			pDataStructure.pending = jsonObjectData["pending"].get<bool>();
+			pDataStructure.setPending(jsonObjectData["pending"].get<bool>());
 		}
 
 		if (jsonObjectData.contains("permissions") && !jsonObjectData["permissions"].is_null()) {

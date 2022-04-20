@@ -27,17 +27,15 @@
 namespace DiscordCoreAPI {
 
 	GuildMember::GuildMember(GuildMemberData dataNew) {
+		this->guildMemberFlags = dataNew.guildMemberFlags;
 		this->premiumSince = dataNew.premiumSince;
 		this->permissions = dataNew.permissions;
 		this->userMention = dataNew.userMention;
 		this->joinedAt = dataNew.joinedAt;
-		this->pending = dataNew.pending;
 		this->guildId = dataNew.guildId;
 		this->roles = dataNew.roles;
 		this->user = dataNew.user;
 		this->nick = dataNew.nick;
-		this->deaf = dataNew.deaf;
-		this->mute = dataNew.mute;
 	};
 
 	void GuildMembers::initialize(DiscordCoreInternal::HttpClient* theClient) {

@@ -1342,19 +1342,56 @@ namespace DiscordCoreAPI {
 
 	struct VoiceStateData;
 
+	enum class GuildMemberFlags { Pending = 0b00000001, Deaf = 0b00000010, Mute = 0b00000100 };
+
 	/// Data structure representing a single GuildMember. \brief Data structure representing a single GuildMember.
 	class DiscordCoreAPI_Dll GuildMemberData {
 	  public:
+
+		void setPending(bool enabled) {
+			if (enabled) {
+				this->guildMemberFlags |= static_cast<uint8_t>(GuildMemberFlags::Pending);
+			} else {
+				this->guildMemberFlags &= ~static_cast<uint8_t>(GuildMemberFlags::Pending);
+			}
+		}
+
+		void setDeaf(bool enabled) {
+			if (enabled) {
+				this->guildMemberFlags |= static_cast<uint8_t>(GuildMemberFlags::Deaf);
+			} else {
+				this->guildMemberFlags &= ~static_cast<uint8_t>(GuildMemberFlags::Deaf);
+			}
+		}
+
+		void setMute(bool enabled) {
+			if (enabled) {
+				this->guildMemberFlags |= static_cast<uint8_t>(GuildMemberFlags::Mute);
+			} else {
+				this->guildMemberFlags &= ~static_cast<uint8_t>(GuildMemberFlags::Mute);
+			}
+		}
+		
+		bool getPending() {
+			return this->guildMemberFlags & static_cast<uint8_t>(GuildMemberFlags::Pending);
+		}
+
+		bool getDeaf() {
+			return this->guildMemberFlags & static_cast<uint8_t>(GuildMemberFlags::Deaf);
+		}
+
+		bool getMute() {
+			return this->guildMemberFlags & static_cast<uint8_t>(GuildMemberFlags::Mute);
+		}
+
 		std::vector<std::string> roles{};///< The Guild roles that they have.
 		std::string premiumSince{ "" };///< If applicable, when they first boosted the server.
 		std::string userMention{ "" };///< What to enter to get them mentioned in a Message.
+		int8_t guildMemberFlags{ 0 };///< GuildMember flags.
 		Permissions permissions{};///< Their base-level Permissions in the Guild.
 		std::string guildId{ "" };///< The current Guild's id.
 		TimeStamp joinedAt{ "" };///< When they joined the Guild.
 		std::string nick{ "" };///< Their nick/display name.
-		bool pending{ false };///< Are they waiting at the entry screen?
-		bool deaf{ false };///< Are they server deafened?
-		bool mute{ false };///< Are they server muted?
 		UserData user{};///< User data for the current GuildMember.
 		TimeStamp communicationDisabledUntil{ "" };///< When the user's timeout will expire and the user will be able to communicate in the guild again.
 
