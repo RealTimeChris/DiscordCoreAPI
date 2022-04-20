@@ -1018,7 +1018,7 @@ namespace DiscordCoreInternal {
 			}
 
 			int32_t colorValInt = stol(value.hexColorValue, 0, 16);
-			std::stringstream stream;
+			std::stringstream stream{};
 			stream << std::setbase(10) << colorValInt;
 			std::string realColorVal = stream.str();
 
@@ -1222,8 +1222,8 @@ namespace DiscordCoreInternal {
 		nlohmann::json rolesArray = nlohmann::json::array();
 
 		for (auto& value: dataPackage.roles) {
-			nlohmann::json newData = { { "mentionable", value.mentionable }, { "permissions", value.permissions.getCurrentPermissionString() },
-				{ "position", value.position }, { "managed", value.managed }, { "hoist", value.hoist },
+			nlohmann::json newData = { { "mentionable", value.getMentionable() }, { "permissions", value.permissions.getCurrentPermissionString() },
+				{ "position", value.position }, { "managed", value.getManaged() }, { "hoist", value.getHoist() },
 				{ "tags",
 					{ { "bot_id", value.tags.botId }, { "integration_id", value.tags.integrationId },
 						{ "premium_subscriber", value.tags.premiumSubscriber } } },

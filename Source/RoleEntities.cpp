@@ -26,11 +26,9 @@ namespace DiscordCoreAPI {
 	Role::Role(RoleData dataNew) {
 		this->unicodeEmoji = dataNew.unicodeEmoji;
 		this->permissions = dataNew.permissions;
-		this->mentionable = dataNew.mentionable;
+		this->roleFlags= dataNew.roleFlags;
 		this->position = dataNew.position;
-		this->managed = dataNew.managed;
 		this->color = dataNew.color;
-		this->hoist = dataNew.hoist;
 		this->name = dataNew.name;
 		this->icon = dataNew.icon;
 		this->tags = dataNew.tags;

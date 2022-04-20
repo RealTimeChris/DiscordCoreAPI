@@ -295,7 +295,7 @@ namespace DiscordCoreInternal {
 		}
 
 		if (jsonObjectData.contains("nsfw") && !jsonObjectData["nsfw"].is_null()) {
-			pDataStructure.nsfw = jsonObjectData["nsfw"].get<bool>();
+			pDataStructure.setNSFW(jsonObjectData["nsfw"].get<bool>());
 		}
 
 		if (jsonObjectData.contains("last_message_id") && !jsonObjectData["last_message_id"].is_null()) {
@@ -413,7 +413,7 @@ namespace DiscordCoreInternal {
 		}
 
 		if (jsonObjectData.contains("nsfw") && !jsonObjectData["nsfw"].is_null()) {
-			pDataStructure.nsfw = jsonObjectData["nsfw"].get<bool>();
+			pDataStructure.setNSFW(jsonObjectData["nsfw"].get<bool>());
 		}
 
 		if (jsonObjectData.contains("last_message_id") && !jsonObjectData["last_message_id"].is_null()) {
@@ -531,7 +531,7 @@ namespace DiscordCoreInternal {
 		}
 
 		if (jsonObjectData.contains("nsfw") && !jsonObjectData["nsfw"].is_null()) {
-			pDataStructure.nsfw = jsonObjectData["nsfw"].get<bool>();
+			pDataStructure.setNSFW(jsonObjectData["nsfw"].get<bool>());
 		}
 
 		if (jsonObjectData.contains("last_message_id") && !jsonObjectData["last_message_id"].is_null()) {
@@ -670,7 +670,7 @@ namespace DiscordCoreInternal {
 		}
 
 		if (jsonObjectData.contains("hoist") && !jsonObjectData["hoist"].is_null()) {
-			pDataStructure.hoist = jsonObjectData["hoist"].get<bool>();
+			pDataStructure.setHoist(jsonObjectData["hoist"].get<bool>());
 		}
 
 		if (jsonObjectData.contains("position") && !jsonObjectData["position"].is_null()) {
@@ -682,11 +682,11 @@ namespace DiscordCoreInternal {
 		}
 
 		if (jsonObjectData.contains("managed") && !jsonObjectData["managed"].is_null()) {
-			pDataStructure.managed = jsonObjectData["managed"].get<bool>();
+			pDataStructure.setManaged(jsonObjectData["managed"].get<bool>());
 		}
 
 		if (jsonObjectData.contains("mentionable") && !jsonObjectData["mentionable"].is_null()) {
-			pDataStructure.mentionable = jsonObjectData["mentionable"].get<bool>();
+			pDataStructure.setMentionable(jsonObjectData["mentionable"].get<bool>());
 		}
 
 		if (jsonObjectData.contains("tags") && !jsonObjectData["tags"].is_null()) {
@@ -725,7 +725,7 @@ namespace DiscordCoreInternal {
 		}
 
 		if (jsonObjectData.contains("hoist") && !jsonObjectData["hoist"].is_null()) {
-			pDataStructure.hoist = jsonObjectData["hoist"].get<bool>();
+			pDataStructure.setHoist(jsonObjectData["hoist"].get<bool>());
 		}
 
 		if (jsonObjectData.contains("position") && !jsonObjectData["position"].is_null()) {
@@ -737,11 +737,11 @@ namespace DiscordCoreInternal {
 		}
 
 		if (jsonObjectData.contains("managed") && !jsonObjectData["managed"].is_null()) {
-			pDataStructure.managed = jsonObjectData["managed"].get<bool>();
+			pDataStructure.setManaged(jsonObjectData["managed"].get<bool>());
 		}
 
 		if (jsonObjectData.contains("mentionable") && !jsonObjectData["mentionable"].is_null()) {
-			pDataStructure.mentionable = jsonObjectData["mentionable"].get<bool>();
+			pDataStructure.setMentionable(jsonObjectData["mentionable"].get<bool>());
 		}
 
 		if (jsonObjectData.contains("tags") && !jsonObjectData["tags"].is_null()) {
@@ -1479,7 +1479,7 @@ namespace DiscordCoreInternal {
 		}
 
 		if (jsonObjectData.contains("owner") && !jsonObjectData["owner"].is_null()) {
-			pDataStructure.owner = jsonObjectData["owner"].get<bool>();
+			pDataStructure.setOwner(jsonObjectData["owner"].get<bool>());
 		}
 
 		if (jsonObjectData.contains("owner_id") && !jsonObjectData["owner_id"].is_null()) {
@@ -1569,7 +1569,7 @@ namespace DiscordCoreInternal {
 		}
 
 		if (jsonObjectData.contains("owner") && !jsonObjectData["owner"].is_null()) {
-			pDataStructure.owner = jsonObjectData["owner"].get<bool>();
+			pDataStructure.setOwner(jsonObjectData["owner"].get<bool>());
 		}
 
 		if (jsonObjectData.contains("afk_timeout") && !jsonObjectData["afk_timeout"].is_null()) {
@@ -1577,7 +1577,7 @@ namespace DiscordCoreInternal {
 		}
 
 		if (jsonObjectData.contains("widget_enabled") && !jsonObjectData["widget_enabled"].is_null()) {
-			pDataStructure.widgetEnabled = jsonObjectData["widget_enabled"].get<bool>();
+			pDataStructure.setWidgetEnabled(jsonObjectData["widget_enabled"].get<bool>());
 		}
 
 		if (jsonObjectData.contains("verification_level") && !jsonObjectData["verification_level"].is_null()) {
@@ -1612,11 +1612,11 @@ namespace DiscordCoreInternal {
 		}
 
 		if (jsonObjectData.contains("large") && !jsonObjectData["large"].is_null()) {
-			pDataStructure.large = jsonObjectData["large"].get<bool>();
+			pDataStructure.setLarge(jsonObjectData["large"].get<bool>());
 		}
 
 		if (jsonObjectData.contains("unavailable") && !jsonObjectData["unavailable"].is_null()) {
-			pDataStructure.unavailable = jsonObjectData["unavailable"].get<bool>();
+			pDataStructure.setUnavailable(jsonObjectData["unavailable"].get<bool>());
 		}
 
 		if (jsonObjectData.contains("member_count") && !jsonObjectData["member_count"].is_null()) {
@@ -1760,7 +1760,7 @@ namespace DiscordCoreInternal {
 		}
 
 		if (jsonObjectData.contains("owner") && !jsonObjectData["owner"].is_null()) {
-			pDataStructure.owner = jsonObjectData["owner"].get<bool>();
+			pDataStructure.setOwner(jsonObjectData["owner"].get<bool>());
 		}
 
 		if (jsonObjectData.contains("owner_id") && !jsonObjectData["owner_id"].is_null()) {
@@ -1850,7 +1850,7 @@ namespace DiscordCoreInternal {
 		}
 
 		if (jsonObjectData.contains("owner") && !jsonObjectData["owner"].is_null()) {
-			pDataStructure.owner = jsonObjectData["owner"].get<bool>();
+			pDataStructure.setOwner(jsonObjectData["owner"].get<bool>());
 		}
 
 		if (jsonObjectData.contains("afk_timeout") && !jsonObjectData["afk_timeout"].is_null()) {
@@ -1858,7 +1858,7 @@ namespace DiscordCoreInternal {
 		}
 
 		if (jsonObjectData.contains("widget_enabled") && !jsonObjectData["widget_enabled"].is_null()) {
-			pDataStructure.widgetEnabled = jsonObjectData["widget_enabled"].get<bool>();
+			pDataStructure.setWidgetEnabled(jsonObjectData["widget_enabled"].get<bool>());
 		}
 
 		if (jsonObjectData.contains("verification_level") && !jsonObjectData["verification_level"].is_null()) {
@@ -1893,11 +1893,11 @@ namespace DiscordCoreInternal {
 		}
 
 		if (jsonObjectData.contains("large") && !jsonObjectData["large"].is_null()) {
-			pDataStructure.large = jsonObjectData["large"].get<bool>();
+			pDataStructure.setLarge(jsonObjectData["large"].get<bool>());
 		}
 
 		if (jsonObjectData.contains("unavailable") && !jsonObjectData["unavailable"].is_null()) {
-			pDataStructure.unavailable = jsonObjectData["unavailable"].get<bool>();
+			pDataStructure.setUnavailable(jsonObjectData["unavailable"].get<bool>());
 		}
 
 		if (jsonObjectData.contains("member_count") && !jsonObjectData["member_count"].is_null()) {

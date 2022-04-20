@@ -44,9 +44,9 @@ namespace DiscordCoreAPI {
 			this->channelData.rtcRgion = newData.rtcRegion;
 			this->channelData.parentId = newData.parentId;
 			this->channelData.position = newData.position;
+			this->channelData.nsfw = newData.getNSFW();
 			this->channelData.topic = newData.topic;
 			this->channelData.name = newData.name;
-			this->channelData.nsfw = newData.nsfw;
 			this->channelData.type = newData.type;
 		};
 		UpdateChannelData channelData{};///< The responseData of the Channel to be updated.

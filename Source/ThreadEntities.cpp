@@ -33,6 +33,7 @@ namespace DiscordCoreAPI {
 		this->lastMessageId = dataNew.lastMessageId;
 		this->applicationId = dataNew.applicationId;
 		this->messageCount = dataNew.messageCount;
+		this->channelFlags = dataNew.channelFlags;
 		this->memberCount = dataNew.memberCount;
 		this->recipients = dataNew.recipients;
 		this->userLimit = dataNew.userLimit;
@@ -46,7 +47,6 @@ namespace DiscordCoreAPI {
 		this->topic = dataNew.topic;
 		this->type = dataNew.type;
 		this->name = dataNew.name;
-		this->nsfw = dataNew.nsfw;
 		this->icon = dataNew.icon;
 		this->id = dataNew.id;
 	}
