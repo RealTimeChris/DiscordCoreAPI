@@ -1897,14 +1897,29 @@ namespace DiscordCoreAPI {
 		Guild = 2///< Guild.
 	};
 
+	enum class StickerFlags { Available = 0b00000001 };
+
 	/// Data representing a single Sticker. \brief Data representing a single Sticker.
 	class DiscordCoreAPI_Dll StickerData : public DiscordEntity {
 	  public:
+
+		void setAvailable(bool enabled) {
+			if (enabled) {
+				this->stickerFlags |= static_cast<uint8_t>(StickerFlags::Available);
+			} else {
+				this->stickerFlags &= ~static_cast<uint8_t>(StickerFlags::Available);
+			}
+		}
+
+		bool getAvailable() {
+			return this->stickerFlags & static_cast<uint8_t>(StickerFlags::Available);
+		}
+
 		StickerFormatType formatType{};///< Format type.
 		std::string description{ "" };///< Description of the Sticker.
 		std::string guildId{ "" };///< The Guild id for which the Sticker exists in.
 		std::string packId{ "" };///< Pack id of the Sticker.
-		bool available{ false };///< Is it available for use?
+		int8_t stickerFlags{ 0 };///< Sticker flags.
 		std::string asset{ "" };///< Asset value for the Sticker.
 		int32_t nsfwLevel{ 0 };///< NSFW warning level.
 		int32_t sortValue{ 0 };///< Where in the stack of stickers it resides.

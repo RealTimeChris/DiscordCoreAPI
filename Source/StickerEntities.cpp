@@ -24,10 +24,10 @@
 namespace DiscordCoreAPI {
 
 	Sticker::Sticker(StickerData dataNew) {
+		this->stickerFlags = dataNew.stickerFlags;
 		this->description = dataNew.description;
 		this->formatType = dataNew.formatType;
 		this->sortValue = dataNew.sortValue;
-		this->available = dataNew.available;
 		this->guildId = dataNew.guildId;
 		this->packId = dataNew.packId;
 		this->asset = dataNew.asset;

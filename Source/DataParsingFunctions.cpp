@@ -1306,7 +1306,7 @@ namespace DiscordCoreInternal {
 		}
 
 		if (jsonObjectData.contains("available") && !jsonObjectData["available"].is_null()) {
-			pDataStructure.available = jsonObjectData["available"].get<bool>();
+			pDataStructure.setAvailable(jsonObjectData["available"].get<bool>());
 		}
 
 		if (jsonObjectData.contains("guild_id") && !jsonObjectData["guild_id"].is_null()) {
@@ -1352,7 +1352,7 @@ namespace DiscordCoreInternal {
 		}
 
 		if (jsonObjectData.contains("available") && !jsonObjectData["available"].is_null()) {
-			pDataStructure.available = jsonObjectData["available"].get<bool>();
+			pDataStructure.setAvailable(jsonObjectData["available"].get<bool>());
 		}
 
 		if (jsonObjectData.contains("guild_id") && !jsonObjectData["guild_id"].is_null()) {
