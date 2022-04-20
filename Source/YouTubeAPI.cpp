@@ -40,7 +40,7 @@ namespace DiscordCoreAPI {
 		workloadVector01.push_back(dataPackage);
 		std::vector<DiscordCoreInternal::HttpData> returnData = DiscordCoreInternal::submitWorkloadAndGetResult(*this->httpClient, workloadVector01);
 		if (returnData[0].responseCode != 200) {
-			std::cout << shiftToBrightRed() << "YouTubeRequestBuilder::collectSearchResults Error: " << returnData[0].responseCode
+			std::cout << shiftToBrightRed() << "YouTubeRequestBuilder::collectSearchResults() Error: " << returnData[0].responseCode
 					  << returnData[0].responseMessage.c_str() << reset() << std::endl;
 		}
 		nlohmann::json partialSearchResultsJson{};
@@ -77,7 +77,6 @@ namespace DiscordCoreAPI {
 		dataPackage02.relativePath = "/watch?v=" + newSong.songId + "&hl=en";
 		dataPackage02.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
 		dataPackageWorkload.push_back(dataPackage02);
-		std::cout << "THE PATH 0101: " << dataPackage02.baseUrl + dataPackage02.relativePath << std::endl;
 		std::vector<DiscordCoreInternal::HttpData> responseData = DiscordCoreInternal::submitWorkloadAndGetResult(*this->httpClient, dataPackageWorkload);
 
 		std::string resultStringHTMLBody{};
@@ -131,7 +130,6 @@ namespace DiscordCoreAPI {
 		dataPackage03.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
 		dataPackageWorkload02.push_back(dataPackage03);
 		auto responseMessage02 = DiscordCoreInternal::submitWorkloadAndGetResult(*this->httpClient, dataPackageWorkload02);
-		std::cout << "THE PATH 0343434: " << dataPackage03.baseUrl + dataPackage03.relativePath << std::endl;
 		std::string responseToPlayerGet02{};
 		if (responseMessage02[0].responseCode != 204 && responseMessage02[0].responseCode != 201 && responseMessage02[0].responseCode != 200) {
 			std::cout << shiftToBrightRed() << "YouTubeRequestBuilder::constructDownloadInfo() 02 Error: " << responseMessage02[0].responseCode << ", "
@@ -142,7 +140,6 @@ namespace DiscordCoreAPI {
 		newSong.html5PlayerFile = responseToPlayerGet02;
 		newSong.format = decipherFormat(newSong.format, newSong.html5PlayerFile);
 		DownloadUrl downloadUrl{ .urlPath = newSong.format.downloadUrl, .contentSize = newSong.contentLength };
-		std::cout << "THE PATH 0202: " << downloadUrl.urlPath << std::endl;
 		newSong.viewUrl = newSong.firstDownloadUrl;
 		newSong.addedByUserName = guildMember.user.userName;
 		newSong.contentLength = static_cast<int32_t>(newSong.format.contentLength);
@@ -173,8 +170,6 @@ namespace DiscordCoreAPI {
 		downloadUrl02.urlPath = request;
 		newSong.finalDownloadUrls[0] = downloadUrl01;
 		newSong.finalDownloadUrls.push_back(downloadUrl02);
-		std::cout << "THE PATH 0303: " << newSong.finalDownloadUrls[0].urlPath << std::endl;
-		std::cout << "THE PATH 0404: " << newSong.finalDownloadUrls[1].urlPath << std::endl;
 		return newSong;
 	}
 
@@ -463,7 +458,6 @@ namespace DiscordCoreAPI {
 
 	void YouTubeAPI::downloadAndStreamAudio(Song newSong, YouTubeAPI* youtubeAPI, std::stop_token theToken, int32_t currentRecursionDepth) {
 		try {
-			std::cout << "THE PATH 05: " << newSong.finalDownloadUrls[0].urlPath << std::endl;
 			DiscordCoreInternal::WebSocketSSLClient streamSocket{ newSong.finalDownloadUrls[0].urlPath, "443", this->maxBufferSize };
 			bool areWeDoneHeaders{ false };
 			bool haveWeFailed{ false };
