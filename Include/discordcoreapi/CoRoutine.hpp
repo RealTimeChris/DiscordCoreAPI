@@ -194,15 +194,15 @@ namespace DiscordCoreAPI {
 		  public:
 			template<typename ReturnType> friend class CoRoutine;
 
-			void return_void() {
-			}
-
 			void requestStop() {
 				this->areWeStopped.store(true, std::memory_order::seq_cst);
 			}
 
 			bool isItStopped() {
 				return this->areWeStopped.load(std::memory_order::seq_cst);
+			}
+
+			void return_void() {
 			}
 
 			auto get_return_object() {

@@ -183,8 +183,10 @@ namespace DiscordCoreAPI {
 			}
 		}
 	}
+
+	void signalHandler(int32_t) {
+		DiscordCoreAPI::Globals::doWeQuit.store(true, std::memory_order_seq_cst);
+	}
 }
 
-void signalHandler(int32_t) {
-	DiscordCoreAPI::Globals::doWeQuit.store(true, std::memory_order_seq_cst);
-}
+

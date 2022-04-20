@@ -48,9 +48,9 @@
 #include <discordcoreapi/WebSocketEntities.hpp>
 #include <discordcoreapi/YouTubeAPI.hpp>
 
-void signalHandler(int32_t);
-
 namespace DiscordCoreAPI {
+
+	void signalHandler(int32_t);
 
 	using VoiceConnectionMap = std::unordered_map<std::string, std::unique_ptr<VoiceConnection>>;
 
