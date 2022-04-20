@@ -130,7 +130,7 @@ namespace DiscordCoreAPI {
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Put_Guild_Member;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Put;
 			workload.relativePath = "/guilds/" + dataPackage.guildId + "/members/" + dataPackage.userId;
-			workload.content = DiscordCoreInternal::JSONIFY(dataPackage).dump();
+			workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
 			workload.callStack = "GuildMembers::addGuildMemberAsync";
 			co_return DiscordCoreInternal::submitWorkloadAndGetResult<GuildMember>(*GuildMembers::httpClient, workload);
 		} catch (...) {
@@ -163,7 +163,7 @@ namespace DiscordCoreAPI {
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Patch_Guild_Member;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Patch;
 			workload.relativePath = "/guilds/" + dataPackage.guildId + "/members/" + dataPackage.guildMemberId;
-			workload.content = DiscordCoreInternal::JSONIFY(dataPackage).dump();
+			workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
 			workload.callStack = "GuildMembers::modifyGuildMemberAsync";
 			if (dataPackage.reason != "") {
 				workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));

@@ -67,7 +67,7 @@ namespace DiscordCoreAPI {
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Post_Guild_Scheduled_Event;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Post;
 			workload.relativePath = "/guilds/" + dataPackage.guildId + "/scheduled-events";
-			workload.content = DiscordCoreInternal::JSONIFY(dataPackage).dump();
+			workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
 			workload.callStack = "GuildScheduledEvents::createGuildScheduledEventAsync";
 			co_return DiscordCoreInternal::submitWorkloadAndGetResult<GuildScheduledEvent>(*GuildScheduledEvents::httpClient, workload);
 		} catch (...) {
@@ -100,7 +100,7 @@ namespace DiscordCoreAPI {
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Patch_Guild_Scheduled_Event;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Patch;
 			workload.relativePath = "/guilds/" + dataPackage.guildId + "/scheduled-events/" + dataPackage.guildScheduledEventId;
-			workload.content = DiscordCoreInternal::JSONIFY(dataPackage).dump();
+			workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
 			workload.callStack = "GuildScheduledEvents::modifyGuildScheduledEventAsync";
 			co_return DiscordCoreInternal::submitWorkloadAndGetResult<GuildScheduledEvent>(*GuildScheduledEvents::httpClient, workload);
 		} catch (...) {

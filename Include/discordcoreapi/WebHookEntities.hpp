@@ -90,7 +90,7 @@ namespace DiscordCoreAPI {
 	/// For executing a WebHook. \brief For executing a WebHook.
 	class DiscordCoreAPI_Dll ExecuteWebHookData {
 	  public:
-		friend nlohmann::json DiscordCoreInternal::JSONIFY(ExecuteWebHookData dataPackage);
+		friend std::string DiscordCoreInternal::JSONIFY(ExecuteWebHookData dataPackage);
 		friend WebHooks;
 
 		std::string threadId{ "" };///< Send a message to the specified thread within a webhook's Channel. The thread will automatically be unarchived.
@@ -218,7 +218,7 @@ namespace DiscordCoreAPI {
 	/// For editing a WebHook Message. \brief For editing a WebHook Message.
 	class DiscordCoreAPI_Dll EditWebHookMessageData {
 	  public:
-		friend nlohmann::json DiscordCoreInternal::JSONIFY(DiscordCoreAPI::EditWebHookMessageData dataPackage);
+		friend std::string DiscordCoreInternal::JSONIFY(DiscordCoreAPI::EditWebHookMessageData dataPackage);
 		friend WebHooks;
 
 		std::string messageId{ "" };///< The Message Id to collect.

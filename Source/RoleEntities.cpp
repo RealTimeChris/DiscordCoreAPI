@@ -100,7 +100,7 @@ namespace DiscordCoreAPI {
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Post_Guild_Role;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Post;
 			workload.relativePath = "/guilds/" + dataPackage.guildId + "/roles";
-			workload.content = DiscordCoreInternal::JSONIFY(dataPackage).dump();
+			workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
 			workload.callStack = "Roles::createGuildRoleAsync";
 			if (dataPackage.reason != "") {
 				workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));
@@ -150,7 +150,7 @@ namespace DiscordCoreAPI {
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Patch_Guild_Role_Positions;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Patch;
 			workload.relativePath = "/guilds/" + dataPackage.guildId + "/roles";
-			workload.content = DiscordCoreInternal::JSONIFY(dataPackage).dump();
+			workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
 			workload.callStack = "Roles::modifyGuildRolePositionsAsync";
 			if (dataPackage.reason != "") {
 				workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));
@@ -168,7 +168,7 @@ namespace DiscordCoreAPI {
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Patch_Guild_Role;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Patch;
 			workload.relativePath = "/guilds/" + dataPackage.guildId + "/roles/" + dataPackage.roleId;
-			workload.content = DiscordCoreInternal::JSONIFY(dataPackage).dump();
+			workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
 			workload.callStack = "Roles::modifyGuildRoleAsync";
 			if (dataPackage.reason != "") {
 				workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));

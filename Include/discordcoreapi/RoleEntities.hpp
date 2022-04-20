@@ -73,7 +73,7 @@ namespace DiscordCoreAPI {
 
 	/// For updating the Role positions. \brief For updating the Role positions.
 	struct DiscordCoreAPI_Dll ModifyGuildRolePositionsData {
-		friend nlohmann::json DiscordCoreInternal::JSONIFY(ModifyGuildRolePositionsData dataPackage);
+		friend std::string DiscordCoreInternal::JSONIFY(ModifyGuildRolePositionsData dataPackage);
 		friend Roles;
 
 		std::string guildId{ "" };///< The Guild within which to move the Role.

@@ -185,7 +185,7 @@ namespace DiscordCoreAPI {
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Post_Guild;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Post;
 			workload.relativePath = "/guilds";
-			workload.content = DiscordCoreInternal::JSONIFY(dataPackage).dump();
+			workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
 			workload.callStack = "Guilds::createGuildAsync";
 			auto guildNew = DiscordCoreInternal::submitWorkloadAndGetResult<Guild>(*Guilds::httpClient, workload);
 			guildNew.discordCoreClient = Guilds::discordCoreClient;
@@ -263,7 +263,7 @@ namespace DiscordCoreAPI {
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Patch_Guild;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Patch;
 			workload.relativePath = "/guilds/" + dataPackage.guildId;
-			workload.content = DiscordCoreInternal::JSONIFY(dataPackage).dump();
+			workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
 			workload.callStack = "Guilds::modifyGuildAsync";
 			if (dataPackage.reason != "") {
 				workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));
@@ -325,7 +325,7 @@ namespace DiscordCoreAPI {
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Put_Guild_Ban;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Put;
 			workload.relativePath = "/guilds/" + dataPackage.guildId + "/bans/" + dataPackage.guildMemberId;
-			workload.content = DiscordCoreInternal::JSONIFY(dataPackage).dump();
+			workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
 			workload.callStack = "Guilds::createGuildBanAsync";
 			if (dataPackage.reason != "") {
 				workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));
@@ -394,7 +394,7 @@ namespace DiscordCoreAPI {
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Post_Guild_Prune;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Post;
 			workload.relativePath = "/guilds/" + dataPackage.guildId + "/prune";
-			workload.content = DiscordCoreInternal::JSONIFY(dataPackage).dump();
+			workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
 			workload.callStack = "Guilds::beginGuildPruneAsync";
 			if (dataPackage.reason != "") {
 				workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));
@@ -582,7 +582,7 @@ namespace DiscordCoreAPI {
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Patch_Guild_Welcome_Screen;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Patch;
 			workload.relativePath = "/guilds/" + dataPackage.guildId + "/welcome-screen";
-			workload.content = DiscordCoreInternal::JSONIFY(dataPackage).dump();
+			workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
 			workload.callStack = "Guilds::modifyGuildWelcomeScreenAsync";
 			if (dataPackage.reason != "") {
 				workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));
