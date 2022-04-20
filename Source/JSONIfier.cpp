@@ -34,7 +34,7 @@
 
 namespace DiscordCoreInternal {
 
-	std::string JSONIFY(DiscordCoreAPI::ModifyChannelData dataPackage) {
+	nlohmann::json JSONIFY(DiscordCoreAPI::ModifyChannelData dataPackage) {
 		auto permOws = nlohmann::json::array();
 		for (auto& [key, value]: dataPackage.channelData.permissionOverwrites) {
 			nlohmann::json newData = { { "type", value.type }, { "id", value.id },
@@ -68,7 +68,7 @@ namespace DiscordCoreInternal {
 		return data;
 	};
 
-	std::string JSONIFY(DiscordCoreAPI::CreateGuildBanData dataPackage) {
+	nlohmann::json JSONIFY(DiscordCoreAPI::CreateGuildBanData dataPackage) {
 		nlohmann::json data;
 		if (dataPackage.deleteMessageDays != 0) {
 			nlohmann::json dataNew = { { "delete_message_days", dataPackage.deleteMessageDays } };
@@ -81,7 +81,7 @@ namespace DiscordCoreInternal {
 		return data.dump();
 	}
 
-	std::vector<uint8_t> JSONIFY(bool isSpeaking, int32_t ssrc, int32_t delay) {
+	nlohmann::json JSONIFY(bool isSpeaking, int32_t ssrc, int32_t delay) {
 		nlohmann::json data;
 		if (isSpeaking) {
 			data = { {
@@ -108,13 +108,9 @@ namespace DiscordCoreInternal {
 		return data;
 	};
 
-	std::vector<uint8_t> JSONIFY(int64_t nonce) {
+	nlohmann::json JSONIFY(int64_t nonce) {
 		nlohmann::json data = { { "d", nonce }, { "op", int32_t(3) } };
-		std::vector<uint8_t> newVector{};
-		std::string newString = data.dump();
-		newString.shrink_to_fit();
-		newVector.insert(newVector.begin(), newString.begin(), newString.end());
-		return newVector;
+		return data;
 	};
 
 	nlohmann::json JSONIFY(DiscordCoreAPI::UpdatePresenceData dataPackage) {
@@ -148,7 +144,7 @@ namespace DiscordCoreInternal {
 		return data;
 	}
 
-	std::vector<uint8_t> JSONIFY(DiscordCoreInternal::VoiceConnectionData dataPackage, VoiceConnectInitData dataPackage02) {
+	nlohmann::json JSONIFY(DiscordCoreInternal::VoiceConnectionData dataPackage, VoiceConnectInitData dataPackage02) {
 		nlohmann::json data = { { "d",
 									{ { "user_id", dataPackage02.userId }, { "server_id", dataPackage02.guildId }, { "session_id", dataPackage.sessionId },
 										{ "token", dataPackage.token } } },
@@ -165,7 +161,7 @@ namespace DiscordCoreInternal {
 		return data;
 	}
 
-	std::vector<uint8_t> JSONIFY(std::string localPort, std::string localIp, std::string encryptionMode, int32_t) {
+	nlohmann::json JSONIFY(std::string localPort, std::string localIp, std::string encryptionMode, int32_t) {
 		nlohmann::json data = { { "op", 1 },
 			{ "d",
 				{ { "protocol", "udp" },
@@ -180,7 +176,7 @@ namespace DiscordCoreInternal {
 		return newVector;
 	}
 
-	std::string JSONIFY(DiscordCoreAPI::ModifyGuildMemberData dataPackage) {
+	nlohmann::json JSONIFY(DiscordCoreAPI::ModifyGuildMemberData dataPackage) {
 		nlohmann::json roleIdArray = nlohmann::json::array();
 
 		for (auto& value: dataPackage.roleIds) {
@@ -210,16 +206,7 @@ namespace DiscordCoreInternal {
 		return data;
 	};
 
-	int32_t JSONIFY(std::string initialPayload) {
-		nlohmann::json jsonVal = nlohmann::json::parse(initialPayload);
-		int32_t finalValue = 0;
-		if (jsonVal.contains("heartbeat_interval")) {
-			finalValue = jsonVal["heartbeat_interval"];
-		}
-		return finalValue;
-	};
-
-	std::string JSONIFY(DiscordCoreAPI::CreateMessageData dataPackage) {
+	nlohmann::json JSONIFY(DiscordCoreAPI::CreateMessageData dataPackage) {
 		auto componentsActionRow = nlohmann::json::array();
 
 		for (auto& value: dataPackage.components) {
@@ -326,7 +313,7 @@ namespace DiscordCoreInternal {
 		return data.dump();
 	}
 
-	std::string JSONIFY(DiscordCoreAPI::EditMessageData dataPackage) {
+	nlohmann::json JSONIFY(DiscordCoreAPI::EditMessageData dataPackage) {
 		auto componentsActionRow = nlohmann::json::array();
 
 		for (auto& value: dataPackage.components) {
@@ -426,7 +413,7 @@ namespace DiscordCoreInternal {
 		return data.dump();
 	}
 
-	std::string JSONIFY(DiscordCoreAPI::ModifyGuildRoleData dataPackage) {
+	nlohmann::json JSONIFY(DiscordCoreAPI::ModifyGuildRoleData dataPackage) {
 		std::stringstream stream;
 		int32_t roleColorInt = stol(dataPackage.hexColorValue, 0, 16);
 		stream << std::setbase(10) << roleColorInt;
@@ -474,7 +461,7 @@ namespace DiscordCoreInternal {
 		return;
 	}
 
-	std::string JSONIFY(DiscordCoreAPI::EditGuildApplicationCommandPermissionsData dataPackage) {
+	nlohmann::json JSONIFY(DiscordCoreAPI::EditGuildApplicationCommandPermissionsData dataPackage) {
 		nlohmann::json newDataArray = nlohmann::json::array();
 
 		for (auto& value: dataPackage.permissions) {
@@ -485,7 +472,7 @@ namespace DiscordCoreInternal {
 		return newDataArray.dump();
 	}
 
-	std::string JSONIFY(DiscordCoreAPI::BatchEditGuildApplicationCommandPermissionsData dataPackage) {
+	nlohmann::json JSONIFY(DiscordCoreAPI::BatchEditGuildApplicationCommandPermissionsData dataPackage) {
 		nlohmann::json newDataArray = nlohmann::json();
 
 		for (auto& value: dataPackage.permissions) {
@@ -499,7 +486,7 @@ namespace DiscordCoreInternal {
 		return newDataArray.dump();
 	}
 
-	std::string JSONIFY(DiscordCoreAPI::CreateGlobalApplicationCommandData dataPackage) {
+	nlohmann::json JSONIFY(DiscordCoreAPI::CreateGlobalApplicationCommandData dataPackage) {
 		nlohmann::json data;
 		if (dataPackage.type == DiscordCoreAPI::ApplicationCommandType::Message || dataPackage.type == DiscordCoreAPI::ApplicationCommandType::User) {
 			data = { { "name", dataPackage.name }, { "type", dataPackage.type } };
@@ -518,10 +505,10 @@ namespace DiscordCoreInternal {
 			}
 		}
 
-		return data.dump();
+		return data;
 	}
 
-	std::string JSONIFY(DiscordCoreAPI::CreateGuildApplicationCommandData dataPackage) {
+	nlohmann::json JSONIFY(DiscordCoreAPI::CreateGuildApplicationCommandData dataPackage) {
 		nlohmann::json data;
 		if (dataPackage.type == DiscordCoreAPI::ApplicationCommandType::Message || dataPackage.type == DiscordCoreAPI::ApplicationCommandType::User) {
 			data = { { "name", dataPackage.name }, { "type", dataPackage.type } };
@@ -540,10 +527,10 @@ namespace DiscordCoreInternal {
 			}
 		}
 
-		return data.dump();
+		return data;
 	}
 
-	std::string JSONIFY(DiscordCoreAPI::EditGlobalApplicationCommandData dataPackage) {
+	nlohmann::json JSONIFY(DiscordCoreAPI::EditGlobalApplicationCommandData dataPackage) {
 		nlohmann::json data = { { "name", dataPackage.name }, { "description", dataPackage.description },
 			{ "default_permission", dataPackage.defaultPermission } };
 
@@ -560,7 +547,7 @@ namespace DiscordCoreInternal {
 		return data.dump();
 	}
 
-	std::string JSONIFY(DiscordCoreAPI::EditGuildApplicationCommandData dataPackage) {
+	nlohmann::json JSONIFY(DiscordCoreAPI::EditGuildApplicationCommandData dataPackage) {
 		nlohmann::json data = { { "name", dataPackage.name }, { "description", dataPackage.description },
 			{ "default_permission", dataPackage.defaultPermission } };
 
@@ -577,7 +564,7 @@ namespace DiscordCoreInternal {
 		return data.dump();
 	}
 
-	std::string JSONIFY(DiscordCoreAPI::EditFollowUpMessageData dataPackage) {
+	nlohmann::json JSONIFY(DiscordCoreAPI::EditFollowUpMessageData dataPackage) {
 		auto embedsArray = nlohmann::json::array();
 
 		for (auto& value: dataPackage.data.data.embeds) {
@@ -706,7 +693,7 @@ namespace DiscordCoreInternal {
 		};
 	}
 
-	std::string JSONIFY(DiscordCoreAPI::EditInteractionResponseData dataPackage) {
+	nlohmann::json JSONIFY(DiscordCoreAPI::EditInteractionResponseData dataPackage) {
 		auto embedsArray = nlohmann::json::array();
 
 		for (auto& value: dataPackage.data.data.embeds) {
@@ -819,12 +806,12 @@ namespace DiscordCoreInternal {
 		return data.dump();
 	};
 
-	std::string JSONIFY(DiscordCoreAPI::CreateDeferredInteractionResponseData dataPackage) {
+	nlohmann::json JSONIFY(DiscordCoreAPI::CreateDeferredInteractionResponseData dataPackage) {
 		nlohmann::json data = { { "type", dataPackage.data.type }, { "flags", dataPackage.data.data.flags } };
 		return data.dump();
 	}
 
-	std::string JSONIFY(DiscordCoreAPI::CreateInteractionResponseData dataPackage) {
+	nlohmann::json JSONIFY(DiscordCoreAPI::CreateInteractionResponseData dataPackage) {
 		auto embedsArray = nlohmann::json::array();
 
 		for (auto& value: dataPackage.data.data.embeds) {
@@ -977,7 +964,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	std::string JSONIFY(DiscordCoreAPI::CreateGuildRoleData dataPackage) {
+	nlohmann::json JSONIFY(DiscordCoreAPI::CreateGuildRoleData dataPackage) {
 		int32_t roleColorInt = stol(dataPackage.hexColorValue, 0, 16);
 		std::stringstream stream;
 		stream << std::setbase(10) << roleColorInt;
@@ -991,7 +978,7 @@ namespace DiscordCoreInternal {
 		return data.dump();
 	};
 
-	std::string JSONIFY(DiscordCoreAPI::ModifyGuildRolePositionsData dataPackage) {
+	nlohmann::json JSONIFY(DiscordCoreAPI::ModifyGuildRolePositionsData dataPackage) {
 		nlohmann::json dataArray = nlohmann::json::array();
 
 		for (auto& value: dataPackage.rolePositions) {
@@ -1000,13 +987,13 @@ namespace DiscordCoreInternal {
 		}
 		return dataArray.dump();
 	};
-	std::string JSONIFY(DiscordCoreAPI::EditChannelPermissionOverwritesData dataPackage) {
+	nlohmann::json JSONIFY(DiscordCoreAPI::EditChannelPermissionOverwritesData dataPackage) {
 		nlohmann::json data = { { "allow", stoll(dataPackage.allow) }, { "deny", stoll(dataPackage.deny) }, { "type", dataPackage.type } };
 
 		return data.dump();
 	}
 
-	std::string JSONIFY(DiscordCoreAPI::CreateFollowUpMessageData dataPackage) {
+	nlohmann::json JSONIFY(DiscordCoreAPI::CreateFollowUpMessageData dataPackage) {
 		auto embedsArray = nlohmann::json::array();
 
 		for (auto& value: dataPackage.data.data.embeds) {
@@ -1131,7 +1118,7 @@ namespace DiscordCoreInternal {
 		return data.dump();
 	}
 
-	std::string JSONIFY(DiscordCoreAPI::DeleteMessagesBulkData dataPackage) {
+	nlohmann::json JSONIFY(DiscordCoreAPI::DeleteMessagesBulkData dataPackage) {
 		auto messageIdArray = nlohmann::json::array();
 
 		for (auto& value: dataPackage.messageIds) {
@@ -1142,7 +1129,7 @@ namespace DiscordCoreInternal {
 		return data.dump();
 	}
 
-	std::string JSONIFY(DiscordCoreAPI::CreateChannelInviteData dataPackage) {
+	nlohmann::json JSONIFY(DiscordCoreAPI::CreateChannelInviteData dataPackage) {
 		nlohmann::json data{};
 		if (dataPackage.targetUserId != "") {
 			data = { { "target_application_id", dataPackage.targetApplicationId }, { "target_type", dataPackage.targetType },
@@ -1155,27 +1142,27 @@ namespace DiscordCoreInternal {
 		return data.dump();
 	};
 
-	std::string JSONIFY(DiscordCoreAPI::FollowNewsChannelData dataPackage) {
+	nlohmann::json JSONIFY(DiscordCoreAPI::FollowNewsChannelData dataPackage) {
 		nlohmann::json data{};
 		data = { { "webhook_channel_id", dataPackage.targetChannelId } };
 
 		return data.dump();
 	}
 
-	std::string JSONIFY(DiscordCoreAPI::AddRecipientToGroupDMData dataPackage) {
+	nlohmann::json JSONIFY(DiscordCoreAPI::AddRecipientToGroupDMData dataPackage) {
 		nlohmann::json data{};
 		data = { { "access_token", dataPackage.token }, { "nick", dataPackage.nick } };
 
 		return data.dump();
 	}
 
-	std::string JSONIFY(DiscordCoreAPI::StartThreadWithMessageData dataPackage) {
+	nlohmann::json JSONIFY(DiscordCoreAPI::StartThreadWithMessageData dataPackage) {
 		nlohmann::json data{};
 		data = { { "name", dataPackage.threadName }, { "auto_archive_duration", dataPackage.autoArchiveDuration } };
 		return data.dump();
 	}
 
-	std::string JSONIFY(DiscordCoreAPI::StartThreadWithoutMessageData dataPackage) {
+	nlohmann::json JSONIFY(DiscordCoreAPI::StartThreadWithoutMessageData dataPackage) {
 		nlohmann::json data{};
 
 		data = { { "invitable", dataPackage.invitable }, { "auto_archive_duration", dataPackage.autoArchiveDuration }, { "name", dataPackage.threadName },
@@ -1183,7 +1170,7 @@ namespace DiscordCoreInternal {
 		return data.dump();
 	}
 
-	std::string JSONIFY(DiscordCoreAPI::CreateGuildEmojiData dataPackage) {
+	nlohmann::json JSONIFY(DiscordCoreAPI::CreateGuildEmojiData dataPackage) {
 		nlohmann::json data{};
 
 		nlohmann::json rolesArray = nlohmann::json::array();
@@ -1196,7 +1183,7 @@ namespace DiscordCoreInternal {
 		return data.dump();
 	}
 
-	std::string JSONIFY(DiscordCoreAPI::ModifyGuildEmojiData dataPackage) {
+	nlohmann::json JSONIFY(DiscordCoreAPI::ModifyGuildEmojiData dataPackage) {
 		nlohmann::json data{};
 
 		nlohmann::json rolesArray = nlohmann::json::array();
@@ -1209,7 +1196,7 @@ namespace DiscordCoreInternal {
 		return data.dump();
 	}
 
-	std::string JSONIFY(DiscordCoreAPI::CreateGuildData dataPackage) {
+	nlohmann::json JSONIFY(DiscordCoreAPI::CreateGuildData dataPackage) {
 		nlohmann::json data{};
 
 		nlohmann::json channelsArray = nlohmann::json::array();
@@ -1242,7 +1229,7 @@ namespace DiscordCoreInternal {
 		return data.dump();
 	}
 
-	std::string JSONIFY(DiscordCoreAPI::ModifyGuildData dataPackage) {
+	nlohmann::json JSONIFY(DiscordCoreAPI::ModifyGuildData dataPackage) {
 		nlohmann::json data{};
 
 		data = { { "default_message_notifications", dataPackage.defaultMessageNotifications }, { "explicit_content_filter", dataPackage.explicitContentFilter },
@@ -1272,7 +1259,7 @@ namespace DiscordCoreInternal {
 		return data.dump();
 	}
 
-	std::string JSONIFY(DiscordCoreAPI::CreateGuildChannelData dataPackage) {
+	nlohmann::json JSONIFY(DiscordCoreAPI::CreateGuildChannelData dataPackage) {
 		nlohmann::json data{};
 
 		nlohmann::json overwrites{};
@@ -1298,7 +1285,7 @@ namespace DiscordCoreInternal {
 		return data.dump();
 	}
 
-	std::string JSONIFY(DiscordCoreAPI::ModifyGuildChannelPositionsData dataPackage) {
+	nlohmann::json JSONIFY(DiscordCoreAPI::ModifyGuildChannelPositionsData dataPackage) {
 		nlohmann::json data{};
 
 		for (auto& value: dataPackage.modifyChannelData) {
@@ -1313,7 +1300,7 @@ namespace DiscordCoreInternal {
 		return data.dump();
 	}
 
-	std::string JSONIFY(DiscordCoreAPI::AddGuildMemberData dataPackage) {
+	nlohmann::json JSONIFY(DiscordCoreAPI::AddGuildMemberData dataPackage) {
 		nlohmann::json data{};
 
 		data = { { "access_token", dataPackage.accessToken }, { "deaf", dataPackage.deaf }, { "mute", dataPackage.mute }, { "nick", dataPackage.nick },
@@ -1323,7 +1310,7 @@ namespace DiscordCoreInternal {
 	}
 
 
-	std::string JSONIFY(DiscordCoreAPI::BeginGuildPruneData dataPackage) {
+	nlohmann::json JSONIFY(DiscordCoreAPI::BeginGuildPruneData dataPackage) {
 		nlohmann::json data{};
 
 		data["days"] = dataPackage.days;
@@ -1333,7 +1320,7 @@ namespace DiscordCoreInternal {
 		return data.dump();
 	}
 
-	std::string JSONIFY(DiscordCoreAPI::ModifyGuildWelcomeScreenData dataPackage) {
+	nlohmann::json JSONIFY(DiscordCoreAPI::ModifyGuildWelcomeScreenData dataPackage) {
 		nlohmann::json channelsArray = nlohmann::json::array();
 
 		for (auto& value: dataPackage.welcomeChannels) {
@@ -1353,7 +1340,7 @@ namespace DiscordCoreInternal {
 		return data.dump();
 	}
 
-	std::string JSONIFY(DiscordCoreAPI::CreateGuildScheduledEventData dataPackage) {
+	nlohmann::json JSONIFY(DiscordCoreAPI::CreateGuildScheduledEventData dataPackage) {
 		nlohmann::json data{};
 
 		data = { { "description", dataPackage.description }, { "entity_metadata", { { "location", dataPackage.entityMetadata.location } } },
@@ -1368,7 +1355,7 @@ namespace DiscordCoreInternal {
 		return data.dump();
 	}
 
-	std::string JSONIFY(DiscordCoreAPI::ModifyGuildScheduledEventData dataPackage) {
+	nlohmann::json JSONIFY(DiscordCoreAPI::ModifyGuildScheduledEventData dataPackage) {
 		nlohmann::json data{};
 
 		data = { { "description", dataPackage.description }, { "entity_metadata", { { "location", dataPackage.entityMetadata.location } } },
@@ -1385,7 +1372,7 @@ namespace DiscordCoreInternal {
 		return data.dump();
 	}
 
-	std::string JSONIFY(DiscordCoreAPI::ExecuteWebHookData dataPackage) {
+	nlohmann::json JSONIFY(DiscordCoreAPI::ExecuteWebHookData dataPackage) {
 		nlohmann::json componentsActionRow{};
 		for (auto& value: dataPackage.components) {
 			auto components = nlohmann::json::array();
@@ -1487,7 +1474,7 @@ namespace DiscordCoreInternal {
 		return data.dump();
 	};
 
-	std::string JSONIFY(DiscordCoreAPI::EditWebHookMessageData dataPackage) {
+	nlohmann::json JSONIFY(DiscordCoreAPI::EditWebHookMessageData dataPackage) {
 		nlohmann::json componentsActionRow{};
 		for (auto& value: dataPackage.components) {
 			auto components = nlohmann::json::array();

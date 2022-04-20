@@ -214,7 +214,7 @@ namespace DiscordCoreAPI {
 			if (dataPackage.threadId != "") {
 				workload.relativePath += "?thread_id=" + dataPackage.threadId;
 			}
-			workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
+			workload.content = DiscordCoreInternal::JSONIFY(dataPackage).dump();
 			co_return DiscordCoreInternal::submitWorkloadAndGetResult<Message>(*WebHooks::httpClient, workload);
 		} catch (...) {
 			reportException("WebHooks::executeWebHookAsync()");
@@ -249,7 +249,7 @@ namespace DiscordCoreAPI {
 				workload.relativePath += "?thread_id=" + dataPackage.threadId;
 			}
 			workload.callStack = "WebHooks::editWebHookMessageAsync";
-			workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
+			workload.content = DiscordCoreInternal::JSONIFY(dataPackage).dump();
 			co_return DiscordCoreInternal::submitWorkloadAndGetResult<Message>(*WebHooks::httpClient, workload);
 		} catch (...) {
 			reportException("WebHooks::editWebHookMessageAsync()");

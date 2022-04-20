@@ -166,7 +166,7 @@ namespace DiscordCoreAPI {
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Post_Message;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Post;
 			workload.relativePath = "/channels/" + dataPackage.channelId + "/messages";
-			workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
+			workload.content = DiscordCoreInternal::JSONIFY(dataPackage).dump();
 			workload.callStack = "Messages::createMessageAsync";
 			auto result = DiscordCoreInternal::submitWorkloadAndGetResult<Message>(*Messages::httpClient, workload);
 			result.requesterId = dataPackage.requesterId;
@@ -197,7 +197,7 @@ namespace DiscordCoreAPI {
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Patch_Message;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Patch;
 			workload.relativePath = "/channels/" + dataPackage.channelId + "/messages/" + dataPackage.messageId;
-			workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
+			workload.content = DiscordCoreInternal::JSONIFY(dataPackage).dump();
 			workload.callStack = "Messages::editMessageAsync";
 			auto result = DiscordCoreInternal::submitWorkloadAndGetResult<Message>(*Messages::httpClient, workload);
 			result.requesterId = dataPackage.requesterId;
@@ -237,7 +237,7 @@ namespace DiscordCoreAPI {
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Bulk_Delete_Messages;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Post;
 			workload.relativePath = "/channels/" + dataPackage.channelId + "/messages/bulk-delete";
-			workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
+			workload.content = DiscordCoreInternal::JSONIFY(dataPackage).dump();
 			workload.callStack = "Messages::deleteMessagesBulkAsync";
 			if (dataPackage.reason != "") {
 				workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));

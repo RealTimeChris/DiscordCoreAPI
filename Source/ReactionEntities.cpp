@@ -219,7 +219,7 @@ namespace DiscordCoreAPI {
 				}
 			}
 			workload.relativePath = "/guilds/" + dataPackage.guildId + "/emojis";
-			workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
+			workload.content = DiscordCoreInternal::JSONIFY(dataPackage).dump();
 			workload.callStack = "Reactions::createGuildEmojiAsync";
 			if (dataPackage.reason != "") {
 				workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));
@@ -237,7 +237,7 @@ namespace DiscordCoreAPI {
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Patch_Guild_Emoji;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Patch;
 			workload.relativePath = "/guilds/" + dataPackage.guildId + "/emojis/" + dataPackage.emojiId;
-			workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
+			workload.content = DiscordCoreInternal::JSONIFY(dataPackage).dump();
 			workload.callStack = "Reactions::modifyGuildEmojiAsync";
 			if (dataPackage.reason != "") {
 				workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));

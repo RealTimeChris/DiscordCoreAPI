@@ -172,7 +172,7 @@ namespace DiscordCoreAPI {
 	/// For creating a deferred Interaction response. \brief For creating a deferred Interaction response.
 	class DiscordCoreAPI_Dll CreateDeferredInteractionResponseData : public InteractionResponse {
 	  public:
-		friend std::string DiscordCoreInternal::JSONIFY(CreateDeferredInteractionResponseData dataPackage);
+		friend nlohmann::json DiscordCoreInternal::JSONIFY(CreateDeferredInteractionResponseData dataPackage);
 		friend CreateInteractionResponseData;
 		friend Interactions;
 		friend InputEvents;
@@ -204,7 +204,7 @@ namespace DiscordCoreAPI {
 	/// For creating an Interaction response. \brief For creating an Interaction response.
 	class DiscordCoreAPI_Dll CreateInteractionResponseData : public InteractionResponse {
 	  public:
-		friend std::string DiscordCoreInternal::JSONIFY(CreateInteractionResponseData dataPackage);
+		friend nlohmann::json DiscordCoreInternal::JSONIFY(CreateInteractionResponseData dataPackage);
 		friend SelectMenuCollector;
 		friend ButtonCollector;
 		friend ModalCollector;
@@ -286,7 +286,7 @@ namespace DiscordCoreAPI {
 	/// For editing an Interaction response. \brief For editing an Interaction response.
 	class DiscordCoreAPI_Dll EditInteractionResponseData : public InteractionResponse {
 	  public:
-		friend std::string DiscordCoreInternal::JSONIFY(EditInteractionResponseData dataPackage);
+		friend nlohmann::json DiscordCoreInternal::JSONIFY(EditInteractionResponseData dataPackage);
 		friend Interactions;
 		friend InputEvents;
 
@@ -310,7 +310,7 @@ namespace DiscordCoreAPI {
 	/// For editing an ephemeral Interaction response. \brief For editing an Interaction response.
 	class DiscordCoreAPI_Dll EditEphemeralInteractionResponseData : public EditInteractionResponseData {
 	  public:
-		friend std::string DiscordCoreInternal::JSONIFY(EditInteractionResponseData dataPackage);
+		friend nlohmann::json DiscordCoreInternal::JSONIFY(EditInteractionResponseData dataPackage);
 		friend Interactions;
 		friend InputEvents;
 
@@ -366,7 +366,7 @@ namespace DiscordCoreAPI {
 	/// For creating a follow up Message. \brief For creating a follow up Message.
 	class DiscordCoreAPI_Dll CreateFollowUpMessageData : public InteractionResponse {
 	  public:
-		friend std::string DiscordCoreInternal::JSONIFY(CreateFollowUpMessageData dataPackage);
+		friend nlohmann::json DiscordCoreInternal::JSONIFY(CreateFollowUpMessageData dataPackage);
 		friend SelectMenuCollector;
 		friend ButtonCollector;
 		friend Interactions;
@@ -409,7 +409,7 @@ namespace DiscordCoreAPI {
 	/// For editing a follow up Message. \brief For editing a follow up Message.
 	class DiscordCoreAPI_Dll EditFollowUpMessageData : public InteractionResponse {
 	  public:
-		friend std::string DiscordCoreInternal::JSONIFY(EditFollowUpMessageData dataPackage);
+		friend nlohmann::json DiscordCoreInternal::JSONIFY(EditFollowUpMessageData dataPackage);
 		friend Interactions;
 		friend InputEvents;
 
@@ -439,7 +439,7 @@ namespace DiscordCoreAPI {
 	/// For editing an ephemeral follow up Message. \brief For editing a follow up Message.
 	class DiscordCoreAPI_Dll EditEphemeralFollowUpMessageData : public EditFollowUpMessageData {
 	  public:
-		friend std::string DiscordCoreInternal::JSONIFY(EditFollowUpMessageData dataPackage);
+		friend nlohmann::json DiscordCoreInternal::JSONIFY(EditFollowUpMessageData dataPackage);
 		friend Interactions;
 		friend InputEvents;
 

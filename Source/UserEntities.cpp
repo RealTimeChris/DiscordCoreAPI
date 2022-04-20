@@ -67,7 +67,7 @@ namespace DiscordCoreAPI {
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Put_Recipient_To_Group_Dm;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Put;
 			workload.relativePath = "/channels/" + dataPackage.channelId + "/recipients/" + dataPackage.userId;
-			workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
+			workload.content = DiscordCoreInternal::JSONIFY(dataPackage).dump();
 			workload.callStack = "Users::addRecipientToGroupDMAsync";
 			co_return DiscordCoreInternal::submitWorkloadAndGetResult<void>(*Users::httpClient, workload);
 		} catch (...) {

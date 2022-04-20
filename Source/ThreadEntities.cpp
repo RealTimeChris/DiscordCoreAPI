@@ -62,7 +62,7 @@ namespace DiscordCoreAPI {
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Post_Thread_With_Message;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Post;
 			workload.relativePath = "/channels/" + dataPackage.channelId + "/messages/" + dataPackage.messageId + "/threads";
-			workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
+			workload.content = DiscordCoreInternal::JSONIFY(dataPackage).dump();
 			workload.callStack = "Threads::startThreadWithMessageAsync";
 			if (dataPackage.reason != "") {
 				workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));
@@ -80,7 +80,7 @@ namespace DiscordCoreAPI {
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Post_Thread_Without_Message;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Post;
 			workload.relativePath = "/channels/" + dataPackage.channelId + "/threads";
-			workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
+			workload.content = DiscordCoreInternal::JSONIFY(dataPackage).dump();
 			workload.callStack = "Threads::startThreadWithoutMessageAsync";
 			if (dataPackage.reason != "") {
 				workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));
