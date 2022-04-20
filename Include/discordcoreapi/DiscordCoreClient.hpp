@@ -47,7 +47,6 @@
 #include <discordcoreapi/WebHookEntities.hpp>
 #include <discordcoreapi/WebSocketEntities.hpp>
 #include <discordcoreapi/YouTubeAPI.hpp>
-#include <unordered_map>
 
 void signalHandler(int32_t);
 

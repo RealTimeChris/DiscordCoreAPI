@@ -101,11 +101,7 @@ namespace DiscordCoreInternal {
 
 	HttpSSLClient::HttpSSLClient(nullptr_t) noexcept {};
 
-	HttpSSLClient::HttpSSLClient() noexcept {
-		this->googleCertPath = HttpSSLClient::googleCertPathStatic;
-		this->defaultCertPath = HttpSSLClient::defaultCertPathStatic;
-		this->soundcloudCertPath = HttpSSLClient::soundcloudCertPathStatic;
-	}
+	HttpSSLClient::HttpSSLClient() noexcept {}
 
 	bool HttpSSLClient::connect(std::string& baseUrl, std::string portNew) noexcept {
 		try {
@@ -120,11 +116,11 @@ namespace DiscordCoreInternal {
 
 			std::string certPath{};
 			if (stringNew.find("soundcloud") != std::string::npos || stringNew.find("sndcdn") != std::string::npos) {
-				certPath = this->soundcloudCertPath;
+				certPath = HttpSSLClient::soundcloudCertPathStatic;
 			} else if (stringNew.find("youtube") != std::string::npos || stringNew.find("google") != std::string::npos) {
-				certPath = this->googleCertPath;
+				certPath = HttpSSLClient::googleCertPathStatic;
 			} else {
-				certPath = this->defaultCertPath;
+				certPath = HttpSSLClient::defaultCertPathStatic;
 			}
 
 			if (this->context = SSL_CTX_new(TLS_client_method()); this->context == nullptr) {
@@ -133,7 +129,8 @@ namespace DiscordCoreInternal {
 			}
 
 			auto options{ SSL_CTX_get_options(this->context) };
-			if (SSL_CTX_set_options(this->context, SSL_OP_NO_COMPRESSION) != (options | SSL_OP_NO_COMPRESSION)) {
+			if (SSL_CTX_set_options(this->context, SSL_OP_NO_COMPRESSION | SSL_OP_IGNORE_UNEXPECTED_EOF) !=
+				(options | SSL_OP_NO_COMPRESSION | SSL_OP_IGNORE_UNEXPECTED_EOF)) {
 				reportSSLError("SSL_CTX_set_options() Error: ");
 				return false;
 			}
@@ -396,6 +393,13 @@ namespace DiscordCoreInternal {
 
 			if (this->context = SSL_CTX_new(TLS_client_method()); this->context == nullptr) {
 				reportSSLError("SSL_CTX_new() Error: ");
+				return;
+			}
+
+			auto options{ SSL_CTX_get_options(this->context) };
+			if (SSL_CTX_set_options(this->context, SSL_OP_NO_COMPRESSION | SSL_OP_IGNORE_UNEXPECTED_EOF) !=
+				(options | SSL_OP_NO_COMPRESSION | SSL_OP_IGNORE_UNEXPECTED_EOF)) {
+				reportSSLError("SSL_CTX_set_options() Error: ");
 				return;
 			}
 
