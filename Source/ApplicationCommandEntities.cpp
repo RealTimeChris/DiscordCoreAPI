@@ -60,7 +60,7 @@ namespace DiscordCoreAPI {
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Post_Global_Application_Command;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Post;
 			workload.relativePath = "/applications/" + dataPackage.applicationId + "/commands";
-			workload.content = DiscordCoreInternal::JSONIFY(dataPackage).dump();
+			workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
 			workload.callStack = "ApplicationCommands::createGlobalApplicationCommandAsync";
 			co_return DiscordCoreInternal::submitWorkloadAndGetResult<ApplicationCommand>(*ApplicationCommands::httpClient, workload);
 		} catch (...) {
@@ -101,7 +101,7 @@ namespace DiscordCoreAPI {
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Patch_Global_Application_Command;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Patch;
 			workload.relativePath = "/applications/" + dataPackage.applicationId + "/commands/" + appCommandId;
-			workload.content = DiscordCoreInternal::JSONIFY(dataPackage).dump();
+			workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
 			workload.callStack = "ApplicationCommands::editGlobalApplicationCommandAsync";
 			co_return DiscordCoreInternal::submitWorkloadAndGetResult<ApplicationCommand>(*ApplicationCommands::httpClient, workload);
 		} catch (...) {
@@ -154,7 +154,7 @@ namespace DiscordCoreAPI {
 				newVector.push_back(dataPackageNew);
 			}
 			for (auto& value: newVector) {
-				nlohmann::json newData = DiscordCoreInternal::JSONIFY(value);
+				nlohmann::json newData = nlohmann::json::parse(DiscordCoreInternal::JSONIFY(value));
 				newDataArray.push_back(newData);
 			}
 			nlohmann::json dataNew = newDataArray;
@@ -192,7 +192,7 @@ namespace DiscordCoreAPI {
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Post_Guild_Application_Command;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Post;
 			workload.relativePath = "/applications/" + dataPackage.applicationId + "/guilds/" + dataPackage.guildId + "/commands";
-			workload.content = DiscordCoreInternal::JSONIFY(dataPackage).dump();
+			workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
 			workload.callStack = "ApplicationCommands::createGuildApplicationCommandAsync";
 			co_return DiscordCoreInternal::submitWorkloadAndGetResult<ApplicationCommand>(*ApplicationCommands::httpClient, workload);
 		} catch (...) {
@@ -233,7 +233,7 @@ namespace DiscordCoreAPI {
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Patch;
 			workload.relativePath = "/applications/" + dataPackage.applicationId + "/guilds/" + dataPackage.guildId + "/commands/" + appCommandId;
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Patch_Guild_Application_Command;
-			workload.content = DiscordCoreInternal::JSONIFY(dataPackage).dump();
+			workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
 			workload.callStack = "ApplicationCommands::editGuildApplicationCommandAsync";
 			co_return DiscordCoreInternal::submitWorkloadAndGetResult<ApplicationCommand>(*ApplicationCommands::httpClient, workload);
 		} catch (...) {
@@ -286,7 +286,7 @@ namespace DiscordCoreAPI {
 				newVector.push_back(dataPackageNew);
 			}
 			for (auto& value: newVector) {
-				nlohmann::json newData = DiscordCoreInternal::JSONIFY(value);
+				nlohmann::json newData = nlohmann::json::parse(DiscordCoreInternal::JSONIFY(value));
 				newDataArray.push_back(newData);
 			}
 			nlohmann::json dataNew = newDataArray;
@@ -383,7 +383,7 @@ namespace DiscordCoreAPI {
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Batch_Put_Guild_Application_Command_Permissions;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Put;
 			workload.relativePath = "/applications/" + dataPackage.applicationId + "/guilds/" + dataPackage.guildId + "/commands/permissions";
-			workload.content = DiscordCoreInternal::JSONIFY(dataPackage).dump();
+			workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
 			workload.callStack = "ApplicationCommands::batchEditGuildApplicationCommandPermissionsAsync";
 			co_return DiscordCoreInternal::submitWorkloadAndGetResult<std::vector<GuildApplicationCommandPermissionsData>>(
 				*ApplicationCommands::httpClient, workload);
