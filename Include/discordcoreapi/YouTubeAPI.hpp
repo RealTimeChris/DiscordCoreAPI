@@ -74,9 +74,11 @@ namespace DiscordCoreAPI {
 	  public:
 		YouTubeAPI(std::string guildId, DiscordCoreInternal::HttpClient* httpClient);
 
-		Song collectFinalSong(GuildMemberData addedByGuildMember, Song newSong);
+		void weFailedToDownloadOrDecode(Song newSong, YouTubeAPI* youtubeAPI, std::stop_token theToken, int32_t currentRecursionDepth);
 
-		void downloadAndStreamAudio(Song newSong, YouTubeAPI* youtubeAPI, std::stop_token theToken);
+		void downloadAndStreamAudio(Song newSong, YouTubeAPI* youtubeAPI, std::stop_token theToken, int32_t currentRecursionDepth);
+
+		Song collectFinalSong(GuildMemberData addedByGuildMember, Song newSong);
 
 		std::vector<Song> searchForSong(std::string searchQuery);
 

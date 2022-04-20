@@ -253,7 +253,29 @@ namespace DiscordCoreAPI {
 		return DiscordCoreInternal::submitWorkloadAndGetResult(*this->httpClient, workload);
 	}
 
-	void SoundCloudAPI::downloadAndStreamAudio(Song newSong, SoundCloudAPI* soundCloudAPI, std::stop_token theToken) {
+	void SoundCloudAPI::weFailedToDownloadOrDecode(Song newSong, SoundCloudAPI* soundCloudAPI, std::stop_token theToken, int32_t currentRecursionDepth) {
+		currentRecursionDepth += 1;
+		if (currentRecursionDepth > 9) {
+			AudioFrameData frameData{};
+			while (getVoiceConnectionMap()[soundCloudAPI->guildId]->audioBuffer.tryReceive(frameData)) {
+			};
+			SongCompletionEventData eventData{};
+			auto resultValue = getSongAPIMap()[soundCloudAPI->guildId].get();
+			if (resultValue != nullptr) {
+				eventData.previousSong = resultValue->getCurrentSong(soundCloudAPI->guildId);
+			}
+			eventData.wasItAFail = true;
+			eventData.guildMember = GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = newSong.addedByUserId, .guildId = soundCloudAPI->guildId }).get();
+			eventData.guild = Guilds::getGuildAsync({ .guildId = soundCloudAPI->guildId }).get();
+			getSongAPIMap()[soundCloudAPI->guildId]->onSongCompletionEvent(eventData);
+			return;
+		}
+		GuildMember guildMember = GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = newSong.addedByUserId, .guildId = soundCloudAPI->guildId }).get();
+		auto newerSong = soundCloudAPI->requestBuilder.collectFinalSong(guildMember, newSong);
+		SoundCloudAPI::downloadAndStreamAudio(newerSong, soundCloudAPI, theToken, currentRecursionDepth);
+	}
+
+	void SoundCloudAPI::downloadAndStreamAudio(Song newSong, SoundCloudAPI* soundCloudAPI, std::stop_token theToken, int32_t currentRecursionDepth) {
 		try {
 			int32_t counter{ 0 };
 			BuildAudioDecoderData dataPackage{};
@@ -264,19 +286,7 @@ namespace DiscordCoreAPI {
 		breakOutPlayMore:
 			if (counter > 45 && !getVoiceConnectionMap()[soundCloudAPI->guildId]->areWeCurrentlyPlaying()) {
 				audioDecoder.reset(nullptr);
-				AudioFrameData frameData{};
-				while (getVoiceConnectionMap()[soundCloudAPI->guildId]->audioBuffer.tryReceive(frameData)) {
-				};
-				SongCompletionEventData eventData{};
-				auto resultValue = getSongAPIMap()[soundCloudAPI->guildId].get();
-				if (resultValue != nullptr) {
-					eventData.previousSong = resultValue->getCurrentSong(soundCloudAPI->guildId);
-				}
-				eventData.wasItAFail = true;
-				eventData.guildMember =
-					GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = newSong.addedByUserId, .guildId = soundCloudAPI->guildId }).get();
-				eventData.guild = Guilds::getGuildAsync({ .guildId = soundCloudAPI->guildId }).get();
-				getSongAPIMap()[soundCloudAPI->guildId]->onSongCompletionEvent(eventData);
+				SoundCloudAPI::weFailedToDownloadOrDecode(newSong, soundCloudAPI, theToken, currentRecursionDepth);
 				return;
 			}
 		breakOut:

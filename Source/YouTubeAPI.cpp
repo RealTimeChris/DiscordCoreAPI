@@ -480,7 +480,29 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	void YouTubeAPI::downloadAndStreamAudio(Song newSong, YouTubeAPI* youtubeAPI, std::stop_token theToken) {
+	void YouTubeAPI::weFailedToDownloadOrDecode(Song newSong, YouTubeAPI* youtubeAPI, std::stop_token theToken, int32_t currentRecursionDepth) {
+		currentRecursionDepth += 1;
+		if (currentRecursionDepth > 9) {
+			AudioFrameData frameData{};
+			while (getVoiceConnectionMap()[youtubeAPI->guildId]->audioBuffer.tryReceive(frameData)) {
+			};
+			SongCompletionEventData eventData{};
+			auto resultValue = getSongAPIMap()[youtubeAPI->guildId].get();
+			if (resultValue != nullptr) {
+				eventData.previousSong = resultValue->getCurrentSong(youtubeAPI->guildId);
+			}
+			eventData.wasItAFail = true;
+			eventData.guildMember = GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = newSong.addedByUserId, .guildId = youtubeAPI->guildId }).get();
+			eventData.guild = Guilds::getGuildAsync({ .guildId = youtubeAPI->guildId }).get();
+			getSongAPIMap()[youtubeAPI->guildId]->onSongCompletionEvent(eventData);
+			return;
+		}
+		GuildMember guildMember = GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = newSong.addedByUserId, .guildId = youtubeAPI->guildId }).get();
+		auto newerSong = youtubeAPI->requestBuilder.collectFinalSong(guildMember, newSong);
+		YouTubeAPI::downloadAndStreamAudio(newerSong, youtubeAPI, theToken, currentRecursionDepth);
+	}
+
+	void YouTubeAPI::downloadAndStreamAudio(Song newSong, YouTubeAPI* youtubeAPI, std::stop_token theToken, int32_t currentRecursionDepth) {
 		try {
 			DiscordCoreInternal::WebSocketSSLClient streamSocket{ newSong.finalDownloadUrls[0].urlPath, "443", this->maxBufferSize };
 			bool areWeDoneHeaders{ false };
@@ -504,19 +526,7 @@ namespace DiscordCoreAPI {
 		breakOutPlayMore:
 			if (haveWeFailed) {
 				audioDecoder.reset(nullptr);
-				AudioFrameData frameData{};
-				while (getVoiceConnectionMap()[youtubeAPI->guildId]->audioBuffer.tryReceive(frameData)) {
-				};
-				SongCompletionEventData eventData{};
-				auto resultValue = getSongAPIMap()[youtubeAPI->guildId].get();
-				if (resultValue != nullptr) {
-					eventData.previousSong = resultValue->getCurrentSong(youtubeAPI->guildId);
-				}
-				eventData.wasItAFail = true;
-				eventData.guildMember =
-					GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = newSong.addedByUserId, .guildId = youtubeAPI->guildId }).get();
-				eventData.guild = Guilds::getGuildAsync({ .guildId = youtubeAPI->guildId }).get();
-				getSongAPIMap()[youtubeAPI->guildId]->onSongCompletionEvent(eventData);
+				YouTubeAPI::weFailedToDownloadOrDecode(newSong, youtubeAPI, theToken, currentRecursionDepth);
 				return;
 			}
 		breakOut:
