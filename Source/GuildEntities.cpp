@@ -57,7 +57,7 @@ namespace DiscordCoreAPI {
 
 	void Guild::disconnect() {
 		try {
-			if (getVoiceConnectionMap().contains(this->id) && getVoiceConnectionMap()[this->id] != nullptr) {
+			if (getVoiceConnectionMap().contains(this->id) && getVoiceConnectionMap()[this->id]) {
 				getVoiceConnectionMap()[this->id]->disconnect();
 				SongAPI::stop(this->id);
 				UpdateVoiceStateData updateVoiceData{};
@@ -199,7 +199,7 @@ namespace DiscordCoreAPI {
 	CoRoutine<std::vector<Guild>> Guilds::getAllGuildsAsync() {
 		try {
 			co_await NewThreadAwaitable<std::vector<Guild>>();
-			std::vector<Guild> guildVector;
+			std::vector<Guild> guildVector{};
 			for (auto [key, value]: Guilds::cache) {
 				value.discordCoreClient = Guilds::discordCoreClient;
 				guildVector.push_back(value);

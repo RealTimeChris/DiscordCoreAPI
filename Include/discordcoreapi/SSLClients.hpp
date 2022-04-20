@@ -88,7 +88,7 @@ namespace DiscordCoreInternal {
 	struct DiscordCoreAPI_Dll BIOWrapper {
 		struct DiscordCoreAPI_Dll BIODeleter {
 			void operator()(BIO* other) {
-				if (other != nullptr) {
+				if (other) {
 					BIO_free(other);
 					other = nullptr;
 				}
@@ -118,7 +118,7 @@ namespace DiscordCoreInternal {
 	struct DiscordCoreAPI_Dll addrinfoWrapper {
 		struct DiscordCoreAPI_Dll addrinfoDeleter {
 			void operator()(addrinfo* other) {
-				if (other != nullptr) {
+				if (other) {
 #ifndef _DEBUG
 					freeaddrinfo(other);
 					other = nullptr;
@@ -151,7 +151,7 @@ namespace DiscordCoreInternal {
 	struct DiscordCoreAPI_Dll SSL_CTXWrapper {
 		struct DiscordCoreAPI_Dll SSL_CTXDeleter {
 			void operator()(SSL_CTX* other) {
-				if (other != nullptr) {
+				if (other) {
 					SSL_CTX_free(other);
 					other = nullptr;
 				}
@@ -181,7 +181,7 @@ namespace DiscordCoreInternal {
 	struct DiscordCoreAPI_Dll SSLWrapper {
 		struct DiscordCoreAPI_Dll SSLDeleter {
 			void operator()(SSL* other) {
-				if (other != nullptr) {
+				if (other) {
 					SSL_shutdown(other);
 					SSL_free(other);
 					other = nullptr;
@@ -212,7 +212,7 @@ namespace DiscordCoreInternal {
 	struct DiscordCoreAPI_Dll SOCKETWrapper {
 		struct DiscordCoreAPI_Dll SOCKETDeleter {
 			void operator()(SOCKET* other) {
-				if (other != nullptr) {
+				if (other) {
 #ifdef _WIN32
 					shutdown(*other, SD_BOTH);
 					closesocket(*other);

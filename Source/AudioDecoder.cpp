@@ -52,7 +52,7 @@ namespace DiscordCoreAPI {
 		this->inputDataBuffer.send(std::string());
 		this->inputDataBuffer.send(std::string());
 		this->areWeQuitting = true;
-		if (this->theTask != nullptr) {
+		if (this->theTask) {
 			this->theTask->request_stop();
 			if (this->theTask->joinable()) {
 				this->theTask->join();

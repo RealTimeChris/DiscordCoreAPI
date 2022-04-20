@@ -130,7 +130,7 @@ namespace DiscordCoreAPI {
 		CoRoutine(std::coroutine_handle<CoRoutine<ReturnType>::promise_type> coroutineHandleNew) : coroutineHandle(coroutineHandleNew){};
 
 		~CoRoutine() {
-			if (this != nullptr && this->coroutineHandle != nullptr) {
+			if (this && this->coroutineHandle) {
 				if (this->coroutineHandle.done()) {
 					this->coroutineHandle.destroy();
 				}
@@ -140,7 +140,7 @@ namespace DiscordCoreAPI {
 		/// Collects the status of the CoRoutine. \brief Collects the status of the CoRoutine.
 		/// \returns CoRoutineStatus The status of the CoRoutine.
 		CoRoutineStatus getStatus() {
-			if (this != nullptr && this->coroutineHandle != nullptr) {
+			if (this && this->coroutineHandle) {
 				this->currentStatus = this->coroutineHandle.promise().currentStatus;
 			}
 			return this->currentStatus;
@@ -149,7 +149,7 @@ namespace DiscordCoreAPI {
 		/// Gets the resulting value of the CoRoutine. \brief Gets the resulting value of the CoRoutine.
 		/// \returns ReturnType The return value of the CoRoutine.
 		ReturnType get() {
-			if (this != nullptr && this->coroutineHandle != nullptr) {
+			if (this && this->coroutineHandle) {
 				this->coroutineHandle.promise().theFlag.wait(false, std::memory_order::seq_cst);
 				std::exception_ptr exceptionPtr{};
 				while (this->coroutineHandle.promise().exceptionBuffer.tryReceive(exceptionPtr)) {
@@ -166,7 +166,7 @@ namespace DiscordCoreAPI {
 		/// Cancels the currently executing CoRoutine and returns the current result. \brief Cancels the currently executing CoRoutine and returns the current result.
 		/// \returns ReturnType The return value of the CoRoutine.
 		ReturnType cancel() {
-			if (this != nullptr && this->coroutineHandle != nullptr) {
+			if (this && this->coroutineHandle) {
 				if (!this->coroutineHandle.done()) {
 					this->coroutineHandle.promise().requestStop();
 					this->coroutineHandle.promise().theFlag.wait(false, std::memory_order::seq_cst);
@@ -263,7 +263,7 @@ namespace DiscordCoreAPI {
 		CoRoutine(std::coroutine_handle<CoRoutine<void>::promise_type> coroutineHandleNew) : coroutineHandle(coroutineHandleNew){};
 
 		~CoRoutine() {
-			if (this != nullptr && this->coroutineHandle != nullptr) {
+			if (this && this->coroutineHandle) {
 				if (this->coroutineHandle.done()) {
 					this->coroutineHandle.destroy();
 				}
@@ -273,7 +273,7 @@ namespace DiscordCoreAPI {
 		/// Collects the status of the CoRoutine. \brief Collects the status of the CoRoutine.
 		/// \returns CoRoutineStatus The status of the CoRoutine.
 		CoRoutineStatus getStatus() {
-			if (this != nullptr && this->coroutineHandle != nullptr) {
+			if (this && this->coroutineHandle) {
 				this->currentStatus = this->coroutineHandle.promise().currentStatus;
 			}
 			return this->currentStatus;
@@ -281,7 +281,7 @@ namespace DiscordCoreAPI {
 
 		/// Gets the resulting value of the CoRoutine. \brief Gets the resulting value of the CoRoutine.
 		void get() {
-			if (this != nullptr && this->coroutineHandle != nullptr) {
+			if (this && this->coroutineHandle) {
 				this->coroutineHandle.promise().theFlag.wait(false, std::memory_order::seq_cst);
 				std::exception_ptr exceptionPtr{};
 				while (this->coroutineHandle.promise().exceptionBuffer.tryReceive(exceptionPtr)) {
@@ -297,7 +297,7 @@ namespace DiscordCoreAPI {
 
 		/// Cancels the currently executing CoRoutine and returns the current result. \brief Cancels the currently executing CoRoutine and returns the current result.
 		void cancel() {
-			if (this != nullptr && this->coroutineHandle != nullptr) {
+			if (this && this->coroutineHandle) {
 				if (!this->coroutineHandle.done()) {
 					this->coroutineHandle.promise().requestStop();
 					this->coroutineHandle.promise().theFlag.wait(false, std::memory_order::seq_cst);

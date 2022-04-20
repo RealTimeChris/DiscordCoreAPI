@@ -84,7 +84,7 @@ namespace DiscordCoreAPI {
 	}
 
 	std::string VoiceConnection::getChannelId() {
-		if (this != nullptr && this->voiceConnectInitData.channelId != "") {
+		if (this && this->voiceConnectInitData.channelId != "") {
 			return this->voiceConnectInitData.channelId;
 		} else {
 			return std::string();
@@ -127,7 +127,7 @@ namespace DiscordCoreAPI {
 	}
 
 	bool VoiceConnection::play() {
-		if (this != nullptr) {
+		if (this) {
 			this->playSetEvent.set();
 			return true;
 		}
@@ -135,7 +135,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::pauseToggle() {
-		if (this != nullptr) {
+		if (this) {
 			if (this->pauseEvent.checkStatus()) {
 				sendSpeakingMessage(false);
 				this->pauseEvent.reset();
@@ -158,7 +158,7 @@ namespace DiscordCoreAPI {
 			this->stopSetEvent.set();
 			this->pauseEvent.set();
 			this->voiceConnectInitData = voiceConnectInitDataNew;
-			if (this->voiceSocketAgent != nullptr) {
+			if (this->voiceSocketAgent) {
 				this->voiceSocketAgent.reset(nullptr);
 			}
 			if (!this->baseSocketAgent->areWeReadyToConnectEvent.wait(10000)) {
@@ -187,11 +187,11 @@ namespace DiscordCoreAPI {
 		this->areWeConnectedBool = false;
 		this->areWePlaying.store(false, std::memory_order_seq_cst);
 		this->areWeStopping.store(true, std::memory_order_seq_cst);
-		if (this->voiceSocketAgent != nullptr) {
+		if (this->voiceSocketAgent) {
 			this->voiceSocketAgent.reset(nullptr);
 		}
 		this->sendSpeakingMessage(false);
-		if (this->theTask != nullptr) {
+		if (this->theTask) {
 			this->theTask->request_stop();
 			if (this->theTask->joinable()) {
 				this->theTask->join();
@@ -199,7 +199,7 @@ namespace DiscordCoreAPI {
 			this->theTask.reset(nullptr);
 		}
 		auto thePtr = getSongAPIMap()[this->voiceConnectInitData.guildId].get();
-		if (thePtr != nullptr) {
+		if (thePtr) {
 			getSongAPIMap()[this->voiceConnectInitData.guildId]->onSongCompletionEvent = std::function<CoRoutine<void>(SongCompletionEventData)>{};
 		}
 	}
@@ -216,8 +216,8 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::sendSingleAudioFrame(std::string& audioDataPacketNew) {
-		if (this->voiceSocketAgent != nullptr) {
-			if (this->voiceSocketAgent->voiceSocket != nullptr) {
+		if (this->voiceSocketAgent) {
+			if (this->voiceSocketAgent->voiceSocket) {
 				this->voiceSocketAgent->sendVoiceData(audioDataPacketNew);
 			}
 		}
@@ -243,10 +243,10 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::sendSpeakingMessage(bool isSpeaking) {
-		if (this->voiceSocketAgent != nullptr) {
+		if (this->voiceSocketAgent) {
 			this->voiceConnectionData->audioSSRC = this->voiceSocketAgent->voiceConnectionData.audioSSRC;
 			std::vector<uint8_t> newString = DiscordCoreInternal::JSONIFY(isSpeaking, this->voiceConnectionData->audioSSRC, 0);
-			if (this->voiceSocketAgent->webSocket != nullptr) {
+			if (this->voiceSocketAgent->webSocket) {
 				this->voiceSocketAgent->sendMessage(newString);
 			}
 		}
@@ -386,7 +386,7 @@ namespace DiscordCoreAPI {
 	};
 
 	VoiceConnection::~VoiceConnection() {
-		if (this->theTask != nullptr) {
+		if (this->theTask) {
 			this->theTask->request_stop();
 			if (this->theTask->joinable()) {
 				this->theTask->join();

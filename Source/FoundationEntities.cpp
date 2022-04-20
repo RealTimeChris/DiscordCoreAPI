@@ -70,7 +70,7 @@ namespace DiscordCoreAPI {
 				std::rethrow_exception(std::current_exception());
 				return;
 			}
-			if (sendBuffer != nullptr) {
+			if (sendBuffer) {
 				sendBuffer->send(e);
 			} else {
 				std::cout << shiftToBrightRed() << stackTrace + " Error: " << e.what() << reset() << "\n\n";
@@ -393,7 +393,7 @@ namespace DiscordCoreAPI {
 
 	std::vector<ApplicationCommandInteractionDataOption> convertAppCommandInteractionDataOptions(
 		std::vector<ApplicationCommandInteractionDataOption> originalOptions) {
-		std::vector<ApplicationCommandInteractionDataOption> newVector;
+		std::vector<ApplicationCommandInteractionDataOption> newVector{};
 		for (auto& value: originalOptions) {
 			ApplicationCommandInteractionDataOption newItem = value;
 			newItem.options = convertAppCommandInteractionDataOptions(value.options);

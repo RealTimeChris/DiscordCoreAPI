@@ -171,11 +171,11 @@ namespace DiscordCoreAPI {
 				auto coroHandle = this->coroutineHandles.front();
 				this->coroutineHandles.pop();
 				theLock02.unlock();
-				if (theAtomicBoolPtr != nullptr) {
+				if (theAtomicBoolPtr) {
 					theAtomicBoolPtr->store(true, std::memory_order::seq_cst);
 				}
 				coroHandle.resume();
-				if (theAtomicBoolPtr != nullptr) {
+				if (theAtomicBoolPtr) {
 					theAtomicBoolPtr->store(false, std::memory_order::seq_cst);
 				}
 				if (this->theWorkingStatuses[std::this_thread::get_id()].doWeQuit.load(std::memory_order::seq_cst)) {

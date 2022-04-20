@@ -68,76 +68,26 @@ namespace DiscordCoreAPI {
 	}
 
 	Song YouTubeRequestBuilder::constructDownloadInfo(GuildMemberData guildMember, Song newSong) {
-
+		if (newSong.firstDownloadUrl != "") {
+			std::this_thread::sleep_for(std::chrono::milliseconds{ 500 });
+		}
+		std::vector<DiscordCoreInternal::HttpWorkloadData> dataPackageWorkload{};
 		DiscordCoreInternal::HttpWorkloadData dataPackage02{};
-		std::vector<DiscordCoreInternal::HttpWorkloadData> workloadVector{};
 		dataPackage02.baseUrl = YouTubeRequestBuilder::baseUrl;
 		dataPackage02.relativePath = "/watch?v=" + newSong.songId + "&hl=en";
 		dataPackage02.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
-		workloadVector.push_back(dataPackage02);
-		std::vector<DiscordCoreInternal::HttpData> responseData{};
-		responseData = DiscordCoreInternal::submitWorkloadAndGetResult(*this->httpClient, workloadVector);
+		dataPackageWorkload.push_back(dataPackage02);
+		std::cout << "THE PATH 0101: " << dataPackage02.baseUrl + dataPackage02.relativePath << std::endl;
+		std::vector<DiscordCoreInternal::HttpData> responseData = DiscordCoreInternal::submitWorkloadAndGetResult(*this->httpClient, dataPackageWorkload);
 
-		for (uint32_t x = 0; x < responseData.size(); x += 1) {
-			std::string resultStringHTMLBody{};
-			if (responseData[x].responseCode != 204 && responseData[x].responseCode != 201 && responseData[x].responseCode != 200) {
-				std::cout << shiftToBrightRed() << "Song::collectDownloadInfo() 01 Error: " << responseData[x].responseCode << ", "
-						  << responseData[x].responseMessage << std::endl
-						  << reset() << std::endl;
-			}
-			resultStringHTMLBody.insert(resultStringHTMLBody.begin(), responseData[x].responseMessage.begin(), responseData[x].responseMessage.end());
-			std::string resultStringStringHTMLBody = resultStringHTMLBody;
-			std::string newString00 = "/player_ias.vflset/en_US/base.js";
-			newSong.html5Player = YouTubeRequestBuilder::baseUrl +
-				resultStringStringHTMLBody.substr(resultStringStringHTMLBody.find("/s/player/"),
-					resultStringStringHTMLBody.find(newString00) + newString00.length());
-			newSong.html5Player = newSong.html5Player.substr(0, 73);
-			newSong.playerResponse = between(resultStringHTMLBody, "ytInitialPlayerResponse = ", "</script>");
-			newSong.playerResponse = newSong.playerResponse.substr(0, newSong.playerResponse.length() - 1);
-			newSong.firstDownloadUrl = YouTubeRequestBuilder::baseUrl + "/watch?v=" + newSong.songId + "&hl=en";
-			newSong.type = SongType::YouTube;
-			nlohmann::json jsonObject;
-			if (newSong.playerResponse != "") {
-				jsonObject = nlohmann::json::parse(newSong.playerResponse);
-			}
-			std::vector<YouTubeFormat> theVector{};
-			DiscordCoreInternal::DataParser::parseObject(jsonObject, theVector);
-			YouTubeFormat format{};
-			bool isOpusFound{ false };
-			for (auto& value: theVector) {
-				if (value.mimeType.find("opus") != std::string::npos) {
-					if (value.audioQuality == "AUDIO_QUALITY_LOW") {
-						isOpusFound = true;
-						format = value;
-					}
-					if (value.audioQuality == "AUDIO_QUALITY_MEDIUM") {
-						isOpusFound = true;
-						format = value;
-					}
-					if (value.audioQuality == "AUDIO_QUALITY_HIGH") {
-						isOpusFound = true;
-						format = value;
-					}
-				}
-			}
-			if (isOpusFound) {
-				newSong.format = format;
-			}
-		}
-
-		DiscordCoreInternal::HttpWorkloadData dataPackage{};
-		dataPackage.baseUrl = newSong.firstDownloadUrl;
-		dataPackage.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
-		std::vector<DiscordCoreInternal::HttpWorkloadData> workloadVector01{};
-		workloadVector01.push_back(dataPackage);
-		auto resultHTMLBody = DiscordCoreInternal::submitWorkloadAndGetResult(*this->httpClient, workloadVector01);
 		std::string resultStringHTMLBody{};
-		if (resultHTMLBody[0].responseCode != 204 && resultHTMLBody[0].responseCode != 201 && resultHTMLBody[0].responseCode != 200) {
-			std::cout << shiftToBrightRed() << "Song::collectDownloadInfo() 01 Error: " << resultHTMLBody[0].responseCode << ", "
-					  << resultHTMLBody[0].responseMessage << std::endl
+		if (responseData[0].responseCode != 204 && responseData[0].responseCode != 201 && responseData[0].responseCode != 200) {
+			std::cout << shiftToBrightRed() << "YouTubeRequestBuilder::constructDownloadInfo() 01 Error: " << responseData[0].responseCode << ", "
+					  << responseData[0].responseMessage
+					  << std::endl
 					  << reset() << std::endl;
 		}
-		resultStringHTMLBody.insert(resultStringHTMLBody.begin(), resultHTMLBody[0].responseMessage.begin(), resultHTMLBody[0].responseMessage.end());
+		resultStringHTMLBody.insert(resultStringHTMLBody.begin(), responseData[0].responseMessage.begin(), responseData[0].responseMessage.end());
 		std::string resultStringStringHTMLBody = resultStringHTMLBody;
 		std::string newString00 = "/player_ias.vflset/en_US/base.js";
 		newSong.html5Player = YouTubeRequestBuilder::baseUrl +
@@ -146,6 +96,8 @@ namespace DiscordCoreAPI {
 		newSong.html5Player = newSong.html5Player.substr(0, 73);
 		newSong.playerResponse = between(resultStringHTMLBody, "ytInitialPlayerResponse = ", "</script>");
 		newSong.playerResponse = newSong.playerResponse.substr(0, newSong.playerResponse.length() - 1);
+		newSong.firstDownloadUrl = YouTubeRequestBuilder::baseUrl + "/watch?v=" + newSong.songId + "&hl=en";
+		newSong.type = SongType::YouTube;
 		nlohmann::json jsonObject;
 		if (newSong.playerResponse != "") {
 			jsonObject = nlohmann::json::parse(newSong.playerResponse);
@@ -173,15 +125,16 @@ namespace DiscordCoreAPI {
 		if (isOpusFound) {
 			newSong.format = format;
 		}
+		std::vector<DiscordCoreInternal::HttpWorkloadData> dataPackageWorkload02{};
 		DiscordCoreInternal::HttpWorkloadData dataPackage03{};
 		dataPackage03.baseUrl = newSong.html5Player;
 		dataPackage03.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
-		std::vector<DiscordCoreInternal::HttpWorkloadData> workloadVector02{};
-		workloadVector02.push_back(dataPackage03);
-		auto responseMessage02 = DiscordCoreInternal::submitWorkloadAndGetResult(*this->httpClient, workloadVector02);
+		dataPackageWorkload02.push_back(dataPackage03);
+		auto responseMessage02 = DiscordCoreInternal::submitWorkloadAndGetResult(*this->httpClient, dataPackageWorkload02);
+		std::cout << "THE PATH 0343434: " << dataPackage03.baseUrl + dataPackage03.relativePath << std::endl;
 		std::string responseToPlayerGet02{};
 		if (responseMessage02[0].responseCode != 204 && responseMessage02[0].responseCode != 201 && responseMessage02[0].responseCode != 200) {
-			std::cout << shiftToBrightRed() << "Song::collectDownloadInfo() 02 Error: " << responseMessage02[0].responseCode << ", "
+			std::cout << shiftToBrightRed() << "YouTubeRequestBuilder::constructDownloadInfo() 02 Error: " << responseMessage02[0].responseCode << ", "
 					  << responseMessage02[0].responseMessage << std::endl
 					  << reset() << std::endl;
 		}
@@ -189,9 +142,12 @@ namespace DiscordCoreAPI {
 		newSong.html5PlayerFile = responseToPlayerGet02;
 		newSong.format = decipherFormat(newSong.format, newSong.html5PlayerFile);
 		DownloadUrl downloadUrl{ .urlPath = newSong.format.downloadUrl, .contentSize = newSong.contentLength };
+		std::cout << "THE PATH 0202: " << downloadUrl.urlPath << std::endl;
 		newSong.viewUrl = newSong.firstDownloadUrl;
 		newSong.addedByUserName = guildMember.user.userName;
 		newSong.contentLength = static_cast<int32_t>(newSong.format.contentLength);
+		std::vector<DownloadUrl> theUrls{};
+		newSong.finalDownloadUrls = theUrls;
 		newSong.finalDownloadUrls.push_back(downloadUrl);
 		newSong.addedByUserId = guildMember.user.id;
 		newSong.type = SongType::YouTube;
@@ -217,11 +173,13 @@ namespace DiscordCoreAPI {
 		downloadUrl02.urlPath = request;
 		newSong.finalDownloadUrls[0] = downloadUrl01;
 		newSong.finalDownloadUrls.push_back(downloadUrl02);
+		std::cout << "THE PATH 0303: " << newSong.finalDownloadUrls[0].urlPath << std::endl;
+		std::cout << "THE PATH 0404: " << newSong.finalDownloadUrls[1].urlPath << std::endl;
 		return newSong;
 	}
 
 	std::vector<char> YouTubeRequestBuilder::sliceVector(std::vector<char> vectorToSlice, int32_t firstElement, int32_t lastElement) {
-		std::vector<char> newVector;
+		std::vector<char> newVector{};
 		if (lastElement == 0) {
 			lastElement = static_cast<int32_t>(vectorToSlice.size());
 		}
@@ -413,7 +371,7 @@ namespace DiscordCoreAPI {
 	}
 
 	std::vector<char> YouTubeRequestBuilder::splitString(std::string stringToSplit) {
-		std::vector<char> charVector;
+		std::vector<char> charVector{};
 		for (auto value: stringToSplit) {
 			charVector.push_back(value);
 		};
@@ -468,8 +426,8 @@ namespace DiscordCoreAPI {
 
 	void YouTubeAPI::cancelCurrentSong() {
 		if (getSongAPIMap().contains(this->guildId)) {
-			if (getSongAPIMap()[this->guildId] != nullptr) {
-				if (getSongAPIMap()[this->guildId]->theTask != nullptr) {
+			if (getSongAPIMap()[this->guildId]) {
+				if (getSongAPIMap()[this->guildId]->theTask) {
 					getSongAPIMap()[this->guildId]->theTask->request_stop();
 					if (getSongAPIMap()[this->guildId]->theTask->joinable()) {
 						getSongAPIMap()[this->guildId]->theTask->join();
@@ -482,28 +440,30 @@ namespace DiscordCoreAPI {
 
 	void YouTubeAPI::weFailedToDownloadOrDecode(Song newSong, YouTubeAPI* youtubeAPI, std::stop_token theToken, int32_t currentRecursionDepth) {
 		currentRecursionDepth += 1;
+		GuildMember guildMember = GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = newSong.addedByUserId, .guildId = youtubeAPI->guildId }).get();
 		if (currentRecursionDepth > 9) {
 			AudioFrameData frameData{};
 			while (getVoiceConnectionMap()[youtubeAPI->guildId]->audioBuffer.tryReceive(frameData)) {
 			};
 			SongCompletionEventData eventData{};
 			auto resultValue = getSongAPIMap()[youtubeAPI->guildId].get();
-			if (resultValue != nullptr) {
+			if (resultValue) {
 				eventData.previousSong = resultValue->getCurrentSong(youtubeAPI->guildId);
 			}
 			eventData.wasItAFail = true;
-			eventData.guildMember = GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = newSong.addedByUserId, .guildId = youtubeAPI->guildId }).get();
+			eventData.guildMember = guildMember;
 			eventData.guild = Guilds::getGuildAsync({ .guildId = youtubeAPI->guildId }).get();
 			getSongAPIMap()[youtubeAPI->guildId]->onSongCompletionEvent(eventData);
 			return;
+		} else {
+			auto newerSong = youtubeAPI->requestBuilder.collectFinalSong(guildMember, newSong);
+			YouTubeAPI::downloadAndStreamAudio(newerSong, youtubeAPI, theToken, currentRecursionDepth);
 		}
-		GuildMember guildMember = GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = newSong.addedByUserId, .guildId = youtubeAPI->guildId }).get();
-		auto newerSong = youtubeAPI->requestBuilder.collectFinalSong(guildMember, newSong);
-		YouTubeAPI::downloadAndStreamAudio(newerSong, youtubeAPI, theToken, currentRecursionDepth);
 	}
 
 	void YouTubeAPI::downloadAndStreamAudio(Song newSong, YouTubeAPI* youtubeAPI, std::stop_token theToken, int32_t currentRecursionDepth) {
 		try {
+			std::cout << "THE PATH 05: " << newSong.finalDownloadUrls[0].urlPath << std::endl;
 			DiscordCoreInternal::WebSocketSSLClient streamSocket{ newSong.finalDownloadUrls[0].urlPath, "443", this->maxBufferSize };
 			bool areWeDoneHeaders{ false };
 			bool haveWeFailed{ false };

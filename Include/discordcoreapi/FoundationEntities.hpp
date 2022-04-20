@@ -170,7 +170,7 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll CURLWrapper {
 		struct DiscordCoreAPI_Dll CURLDeleter {
 			void operator()(CURL* other) {
-				if (other != nullptr) {
+				if (other) {
 					curl_easy_cleanup(other);
 					other = nullptr;
 				}
@@ -201,7 +201,7 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll CURLUWrapper {
 		struct DiscordCoreAPI_Dll CURLUDeleter {
 			void operator()(CURLU* other) {
-				if (other != nullptr) {
+				if (other) {
 					curl_url_cleanup(other);
 					other = nullptr;
 				}
@@ -275,10 +275,10 @@ namespace DiscordCoreAPI {
 
 		ReferenceCountingPtr& operator=(ObjectType* ptr) {
 			ObjectTypeWrapper* newObject{ new ObjectTypeWrapper{ ptr } };
-			if (newObject != nullptr) {
+			if (newObject) {
 				newObject->incrementCount();
 			}
-			if (this->thePtr != nullptr) {
+			if (this->thePtr) {
 				this->thePtr->release();
 			}
 			this->thePtr = newObject;
@@ -287,7 +287,7 @@ namespace DiscordCoreAPI {
 
 		ReferenceCountingPtr(ObjectType* ptr = nullptr) {
 			ObjectTypeWrapper* newObject{ new ObjectTypeWrapper{ ptr } };
-			if (newObject != nullptr) {
+			if (newObject) {
 				this->thePtr = newObject;
 				newObject->incrementCount();
 			}
@@ -313,7 +313,7 @@ namespace DiscordCoreAPI {
 		}
 
 		~ReferenceCountingPtr() {
-			if (this->thePtr != nullptr) {
+			if (this->thePtr) {
 				this->thePtr->release();
 			}
 		}

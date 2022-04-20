@@ -236,8 +236,8 @@ namespace DiscordCoreAPI {
 
 	void SoundCloudAPI::cancelCurrentSong() {
 		if (getSongAPIMap().contains(this->guildId)) {
-			if (getSongAPIMap()[this->guildId] != nullptr) {
-				if (getSongAPIMap()[this->guildId]->theTask != nullptr) {
+			if (getSongAPIMap()[this->guildId]) {
+				if (getSongAPIMap()[this->guildId]->theTask) {
 					getSongAPIMap()[this->guildId]->theTask->request_stop();
 					if (getSongAPIMap()[this->guildId]->theTask->joinable()) {
 						getSongAPIMap()[this->guildId]->theTask->join();
@@ -255,24 +255,25 @@ namespace DiscordCoreAPI {
 
 	void SoundCloudAPI::weFailedToDownloadOrDecode(Song newSong, SoundCloudAPI* soundCloudAPI, std::stop_token theToken, int32_t currentRecursionDepth) {
 		currentRecursionDepth += 1;
+		GuildMember guildMember = GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = newSong.addedByUserId, .guildId = soundCloudAPI->guildId }).get();
 		if (currentRecursionDepth > 9) {
 			AudioFrameData frameData{};
 			while (getVoiceConnectionMap()[soundCloudAPI->guildId]->audioBuffer.tryReceive(frameData)) {
 			};
 			SongCompletionEventData eventData{};
 			auto resultValue = getSongAPIMap()[soundCloudAPI->guildId].get();
-			if (resultValue != nullptr) {
+			if (resultValue) {
 				eventData.previousSong = resultValue->getCurrentSong(soundCloudAPI->guildId);
 			}
 			eventData.wasItAFail = true;
-			eventData.guildMember = GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = newSong.addedByUserId, .guildId = soundCloudAPI->guildId }).get();
+			eventData.guildMember = guildMember;
 			eventData.guild = Guilds::getGuildAsync({ .guildId = soundCloudAPI->guildId }).get();
 			getSongAPIMap()[soundCloudAPI->guildId]->onSongCompletionEvent(eventData);
 			return;
+		} else {			
+			auto newerSong = soundCloudAPI->requestBuilder.collectFinalSong(guildMember, newSong);
+			SoundCloudAPI::downloadAndStreamAudio(newerSong, soundCloudAPI, theToken, currentRecursionDepth);
 		}
-		GuildMember guildMember = GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = newSong.addedByUserId, .guildId = soundCloudAPI->guildId }).get();
-		auto newerSong = soundCloudAPI->requestBuilder.collectFinalSong(guildMember, newSong);
-		SoundCloudAPI::downloadAndStreamAudio(newerSong, soundCloudAPI, theToken, currentRecursionDepth);
 	}
 
 	void SoundCloudAPI::downloadAndStreamAudio(Song newSong, SoundCloudAPI* soundCloudAPI, std::stop_token theToken, int32_t currentRecursionDepth) {

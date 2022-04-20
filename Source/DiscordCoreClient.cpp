@@ -176,7 +176,7 @@ namespace DiscordCoreAPI {
 	}
 
 	DiscordCoreClient::~DiscordCoreClient() {
-		if (this != nullptr) {
+		if (this) {
 			curl_global_cleanup();
 			for (auto& value: this->threadIds) {
 				this->threadPool.stopThread(value);

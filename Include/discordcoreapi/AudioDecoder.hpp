@@ -33,7 +33,7 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll AVFrameWrapper {
 		struct DiscordCoreAPI_Dll AVFrameDeleter {
 			void operator()(AVFrame* other) {
-				if (other != nullptr) {
+				if (other) {
 					av_frame_unref(other);
 					av_frame_free(&other);
 				}
@@ -62,7 +62,7 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll AVCodecContextWrapper {
 		struct DiscordCoreAPI_Dll AVCodecContextDeleter {
 			void operator()(AVCodecContext* other) {
-				if (other != nullptr) {
+				if (other) {
 					avcodec_free_context(&other);
 				}
 			}
@@ -133,7 +133,7 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll SwrContextWrapper {
 		struct DiscordCoreAPI_Dll SwrContextDeleter {
 			void operator()(SwrContext* other) {
-				if (other != nullptr) {
+				if (other) {
 					swr_free(&other);
 				}
 			}
@@ -157,7 +157,7 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll AVIOContextWrapper {
 		struct DiscordCoreAPI_Dll AVIOContextDeleter {
 			void operator()(AVIOContext* other) {
-				if (other != nullptr) {
+				if (other) {
 					av_freep(&other);
 				}
 			}
@@ -185,7 +185,7 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll AVPacketWrapper {
 		struct DiscordCoreAPI_Dll AVPacketDeleter {
 			void operator()(AVPacket* other) {
-				if (other != nullptr) {
+				if (other) {
 					av_packet_free(&other);
 				}
 			}

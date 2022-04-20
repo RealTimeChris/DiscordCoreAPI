@@ -54,7 +54,7 @@ namespace DiscordCoreInternal {
 
 	void reportSSLError(std::string errorPosition, int32_t errorValue = 0, SSL* ssl = nullptr) noexcept {
 		try {
-			if (ssl != nullptr) {
+			if (ssl) {
 				std::cout << DiscordCoreAPI::shiftToBrightRed() << errorPosition << SSL_get_error(ssl, errorValue) << std::endl;
 			} else {
 				std::cout << DiscordCoreAPI::shiftToBrightRed() << errorPosition << std::endl;

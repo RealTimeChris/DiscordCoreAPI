@@ -193,7 +193,7 @@ namespace DiscordCoreInternal {
 				if (!this->doWeReconnect.wait(0)) {
 					this->onClosedInternal();
 				}
-				if (this->webSocket != nullptr) {
+				if (this->webSocket) {
 					if (!this->webSocket->processIO(1000)) {
 						this->onClosedExternal();
 					}
@@ -1100,12 +1100,12 @@ namespace DiscordCoreInternal {
 					this->onClosedInternal();
 					return;
 				}
-				if (this->webSocket != nullptr) {
+				if (this->webSocket) {
 					if (!this->webSocket->processIO(1000)) {
 						this->onClosedExternal();
 					}
 				}
-				if (this->voiceSocket != nullptr) {
+				if (this->voiceSocket) {
 					this->voiceSocket->readData(true);
 				}
 				this->handleBuffer();
@@ -1142,7 +1142,7 @@ namespace DiscordCoreInternal {
 					this->collectExternalIP();
 					std::vector<uint8_t> protocolPayloadSelectString =
 						JSONIFY(this->voiceConnectionData.voicePort, this->voiceConnectionData.externalIp, this->voiceConnectionData.voiceEncryptionMode, 0);
-					if (this->webSocket != nullptr) {
+					if (this->webSocket) {
 						this->sendMessage(protocolPayloadSelectString);
 					}
 				}
@@ -1161,7 +1161,7 @@ namespace DiscordCoreInternal {
 					}
 					this->haveWeReceivedHeartbeatAck = true;
 					std::vector<uint8_t> identifyPayload = JSONIFY(this->voiceConnectionData, this->voiceConnectInitData);
-					if (this->webSocket != nullptr) {
+					if (this->webSocket) {
 						this->sendMessage(identifyPayload);
 					}
 				}
@@ -1211,7 +1211,7 @@ namespace DiscordCoreInternal {
 			if (this->haveWeReceivedHeartbeatAck) {
 				std::vector<uint8_t> heartbeatPayload =
 					JSONIFY(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
-				if (this->webSocket != nullptr) {
+				if (this->webSocket) {
 					this->sendMessage(heartbeatPayload);
 				}
 				this->haveWeReceivedHeartbeatAck = false;

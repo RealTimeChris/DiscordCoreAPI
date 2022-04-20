@@ -158,7 +158,7 @@ namespace DiscordCoreAPI {
 		}
 		getSongAPIMap()[guildId]->playlist.songQueue = newVector02;
 		auto resultValue = getSongAPIMap()[guildId].get();
-		if (resultValue != nullptr) {
+		if (resultValue) {
 			getSongAPIMap()[guildId]->onSongCompletionEvent = std::function<CoRoutine<void>(SongCompletionEventData)>{};
 		}
 	}
@@ -309,7 +309,7 @@ namespace DiscordCoreAPI {
 	}
 
 	SongAPI::~SongAPI() {
-		if (this->theTask != nullptr) {
+		if (this->theTask) {
 			this->theTask->request_stop();
 			if (this->theTask->joinable()) {
 				this->theTask->join();
