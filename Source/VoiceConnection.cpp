@@ -227,16 +227,16 @@ namespace DiscordCoreAPI {
 		this->sendSingleAudioFrame(encryptedFrame);
 	}
 
-	void VoiceConnection::sendSpeakingMessage(bool isSpeaking) {
-		this->sendSilence();
-		if (isSpeaking) {
-			this->sequenceIndex = 0;
-			this->timeStamp = 0;
-			if (this->voiceSocketAgent) {
-				std::vector<uint8_t> newString = DiscordCoreInternal::JSONIFY(this->voiceSocketAgent->voiceConnectionData.audioSSRC, 0);
-				if (this->voiceSocketAgent->webSocket) {
-					this->voiceSocketAgent->sendMessage(newString);
-				}
+	void VoiceConnection::sendSpeakingMessage(bool isSpeaking) {		
+		if (!isSpeaking) {
+			this->sendSilence();
+		}
+		this->timeStamp = 0;
+		this->sequenceIndex = 0;
+		if (this->voiceSocketAgent) {
+			std::vector<uint8_t> newString = DiscordCoreInternal::JSONIFY(this->voiceSocketAgent->voiceConnectionData.audioSSRC, 0);
+			if (this->voiceSocketAgent->webSocket) {
+				this->voiceSocketAgent->sendMessage(newString);
 			}
 		}
 	}
