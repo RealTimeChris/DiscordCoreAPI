@@ -230,6 +230,8 @@ namespace DiscordCoreAPI {
 	void VoiceConnection::sendSpeakingMessage(bool isSpeaking) {
 		this->sendSilence();
 		if (isSpeaking) {
+			this->sequenceIndex = 0;
+			this->timeStamp = 0;
 			if (this->voiceSocketAgent) {
 				std::vector<uint8_t> newString = DiscordCoreInternal::JSONIFY(this->voiceSocketAgent->voiceConnectionData.audioSSRC, 0);
 				if (this->voiceSocketAgent->webSocket) {
