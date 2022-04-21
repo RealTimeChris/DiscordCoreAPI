@@ -37,7 +37,7 @@ namespace DiscordCoreAPI {
 		void resetValues();
 
 	  protected:
-		int32_t sequenceIndex{ 0 };
+		int16_t sequenceIndex{ 0 };
 		int32_t timeStamp{ 0 };
 	};
 
