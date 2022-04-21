@@ -99,7 +99,7 @@ namespace DiscordCoreAPI {
 				}
 				this->playlist.songQueue.erase(this->playlist.songQueue.end() - 1, this->playlist.songQueue.end());
 				return true;
-			} else if (this->playlist.currentSong.description != "" && this->playlist.songQueue.size() == 0) {
+			} else if (this->playlist.currentSong.songId != "" && this->playlist.songQueue.size() == 0) {
 				this->playlist.currentSong = Song();
 				return true;
 			} else if (this->playlist.currentSong.songId == "") {
