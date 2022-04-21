@@ -49,6 +49,9 @@ namespace DiscordCoreAPI {
 
 	DiscordCoreClient::DiscordCoreClient(std::string botTokenNew, std::vector<RepeatedFunctionData> functionsToExecuteNew, CacheOptions cacheOptionsNew,
 		ShardingOptions shardingOptionsNew, LoggingOptions loggingOptionsNew) {
+		if (sodium_init() == -1) {
+			std::cout << DiscordCoreAPI::shiftToBrightRed() << "LibSodium failed to initialize!" << std::endl << std::endl << reset();
+		}
 		std::signal(SIGTERM, &signalHandler);
 		std::signal(SIGSEGV, &signalHandler);
 		std::signal(SIGINT, &signalHandler);

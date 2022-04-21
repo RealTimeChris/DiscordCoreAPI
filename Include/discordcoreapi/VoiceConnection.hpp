@@ -28,19 +28,6 @@
 
 namespace DiscordCoreAPI {
 
-	class DiscordCoreAPI_Dll AudioEncrypter {
-	  public:
-		AudioEncrypter();
-
-		std::string encryptSingleAudioFrame(EncodedFrameData bufferToSend, int32_t audioSSRC, std::string keys);
-
-		void resetValues();
-
-	  protected:
-		int16_t sequenceIndex{ 0 };
-		int32_t timeStamp{ 0 };
-	};
-
 	/**
 	 * \addtogroup voice_connection
 	 * @{
@@ -77,14 +64,16 @@ namespace DiscordCoreAPI {
 		EventWaiter* doWeReconnect{ nullptr };
 		const int32_t maxBufferSize{ 1276 };
 		bool areWeConnectedBool{ false };
-		AudioEncrypter audioEncrypter{};
 		bool didWeJustConnect{ true };
-		uint16_t sequenceIndex{ 0 };
 		EventWaiter playSetEvent{};
 		EventWaiter stopSetEvent{};
 		AudioFrameData audioData{};
+		int16_t sequenceIndex{ 0 };
 		EventWaiter pauseEvent{};
-		uint32_t timestamp{ 0 };
+		int32_t timeStamp{ 0 };
+		int64_t startTime{ 0 };
+
+		std::string encryptSingleAudioFrame(EncodedFrameData bufferToSend, int32_t audioSSRC, std::string keys);
 
 		void connect(DiscordCoreInternal::VoiceConnectInitData voiceConnectInitDataNew);
 

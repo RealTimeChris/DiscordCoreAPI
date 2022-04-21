@@ -24,18 +24,13 @@
 
 namespace DiscordCoreAPI {
 
-	AudioEncrypter::AudioEncrypter() {
-		if (sodium_init() == -1) {
-			std::cout << DiscordCoreAPI::shiftToBrightRed() << "LibSodium failed to initialize!" << std::endl << std::endl << reset();
-		}
-	};
-
-	std::string AudioEncrypter::encryptSingleAudioFrame(EncodedFrameData bufferToSend, int32_t audioSSRC, std::string keys) {
+	std::string VoiceConnection::encryptSingleAudioFrame(EncodedFrameData bufferToSend, int32_t audioSSRC, std::string keys) {
 		if (keys.size() > 0) {
+			this->sequenceIndex += 1;
 			const int32_t nonceSize{ crypto_secretbox_NONCEBYTES };
 			const int32_t headerSize{ 12 };
 			const uint8_t byteSize{ 8 };
-			std::unique_ptr<uint8_t[]> headerFinal{ std::make_unique<uint8_t[]>(headerSize) };
+			uint8_t headerFinal[headerSize]{};
 			headerFinal[0] = 0x80;
 			headerFinal[1] = 0x78;
 			headerFinal[2] = static_cast<uint8_t>(this->sequenceIndex >> (byteSize * 1));
@@ -48,8 +43,7 @@ namespace DiscordCoreAPI {
 			headerFinal[9] = static_cast<uint8_t>(audioSSRC >> (byteSize * 2));
 			headerFinal[10] = static_cast<uint8_t>(audioSSRC >> (byteSize * 1));
 			headerFinal[11] = static_cast<uint8_t>(audioSSRC >> (byteSize * 0));
-
-			std::unique_ptr<uint8_t[]> nonceForLibSodium{ std::make_unique<uint8_t[]>(nonceSize) };
+			uint8_t nonceForLibSodium[nonceSize]{};
 			for (uint32_t x = 0; x < headerSize; x += 1) {
 				nonceForLibSodium[x] = headerFinal[x];
 			}
@@ -65,13 +59,12 @@ namespace DiscordCoreAPI {
 			for (uint32_t x = 0; x < keys.size(); x += 1) {
 				encryptionKeys[x] = keys[x];
 			}
-			if (crypto_secretbox_easy(audioDataPacket.get() + headerSize, bufferToSend.data.data(), bufferToSend.data.size(), nonceForLibSodium.get(),
-					encryptionKeys.get()) != 0) {
+			if (crypto_secretbox_easy(
+					audioDataPacket.get() + headerSize, bufferToSend.data.data(), bufferToSend.data.size(), nonceForLibSodium, encryptionKeys.get()) != 0) {
 				throw std::runtime_error("ENCRYPTION FAILED!");
 			};
 			bufferToSend.data.clear();
-			this->sequenceIndex += 1;
-			this->timeStamp += static_cast<int32_t>(bufferToSend.sampleCount);
+			this->timeStamp += bufferToSend.sampleCount;
 			std::string audioDataPacketNew{};
 			audioDataPacketNew.insert(audioDataPacketNew.begin(), audioDataPacket.get(), audioDataPacket.get() + numOfBytes);
 			return audioDataPacketNew;
@@ -79,12 +72,10 @@ namespace DiscordCoreAPI {
 		return std::string{};
 	}
 
-	void AudioEncrypter::resetValues() {
-		this->timeStamp = 0;
-	}
-
 	VoiceConnection::VoiceConnection(DiscordCoreInternal::BaseSocketAgent* BaseSocketAgentNew) {
 		this->baseSocketAgent = BaseSocketAgentNew;
+		this->startTime =
+			static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
 	}
 
 	std::string VoiceConnection::getChannelId() {
@@ -234,13 +225,12 @@ namespace DiscordCoreAPI {
 		newFrame.data.push_back(0xfe);
 		newFrame.sampleCount = 960;
 
-		auto encryptedFrame =
-			this->audioEncrypter.encryptSingleAudioFrame(newFrame, this->voiceConnectionData->audioSSRC, this->voiceConnectionData->secretKey);
+		auto encryptedFrame = this->encryptSingleAudioFrame(newFrame, this->voiceConnectionData->audioSSRC, this->voiceConnectionData->secretKey);
 		this->sendSingleAudioFrame(encryptedFrame);
 	}
 
 	void VoiceConnection::sendSpeakingMessage(bool isSpeaking) {
-		this->audioEncrypter.resetValues();		
+		this->timeStamp = 0;
 		if (this->voiceSocketAgent) {
 			this->voiceConnectionData->audioSSRC = this->voiceSocketAgent->voiceConnectionData.audioSSRC;
 			std::vector<uint8_t> newString = DiscordCoreInternal::JSONIFY(isSpeaking, this->voiceConnectionData->audioSSRC, 0);
@@ -325,10 +315,10 @@ namespace DiscordCoreAPI {
 							std::vector<RawFrameData> rawFrames{};
 							rawFrames.push_back(this->audioData.rawFrameData);
 							auto encodedFrameData = this->encoder->encodeFrames(rawFrames);
-							newFrame = this->audioEncrypter.encryptSingleAudioFrame(
+							newFrame = this->encryptSingleAudioFrame(
 								encodedFrameData[0].encodedFrameData, this->voiceConnectionData->audioSSRC, this->voiceConnectionData->secretKey);
 						} else {
-							newFrame = this->audioEncrypter.encryptSingleAudioFrame(
+							newFrame = this->encryptSingleAudioFrame(
 								this->audioData.encodedFrameData, this->voiceConnectionData->audioSSRC, this->voiceConnectionData->secretKey);
 						}
 						if (newFrame.size() == 0) {
