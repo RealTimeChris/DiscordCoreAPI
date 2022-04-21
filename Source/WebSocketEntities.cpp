@@ -58,7 +58,7 @@ namespace DiscordCoreInternal {
 		try {
 			std::lock_guard<std::mutex> accessLock{ this->accessorMutex01 };
 			if (this->printMessages) {
-				std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Sending WebSocket DiscordCoreAPIMessage: " << std::endl
+				std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Sending WebSocket Message: " << std::endl
 						  << dataToSend << DiscordCoreAPI::reset();
 			}
 			this->webSocket->writeData(dataToSend);
@@ -86,7 +86,7 @@ namespace DiscordCoreInternal {
 			}
 			std::lock_guard<std::mutex> accessLock{ this->accessorMutex01 };
 			if (this->printMessages) {
-				std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Sending WebSocket DiscordCoreAPIMessage: " << dataToSend.dump() << std::endl
+				std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Sending WebSocket Message: " << dataToSend.dump() << std::endl
 						  << DiscordCoreAPI::reset() << std::endl;
 			}
 			std::string theVector = this->erlPacker.parseJsonToEtf(dataToSend);
@@ -792,7 +792,7 @@ namespace DiscordCoreInternal {
 				}
 			}
 			if (this->printMessages) {
-				std::cout << DiscordCoreAPI::shiftToBrightGreen() << "DiscordCoreAPIMessage received from WebSocket: " << payload.dump() << std::endl
+				std::cout << DiscordCoreAPI::shiftToBrightGreen() << "Message received from WebSocket: " << payload.dump() << std::endl
 						  << DiscordCoreAPI::reset() << std::endl;
 			}
 			return;
@@ -1007,7 +1007,7 @@ namespace DiscordCoreInternal {
 			std::string newString{};
 			newString.insert(newString.begin(), dataToSend.begin(), dataToSend.end());
 			if (this->printMessages) {
-				std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Sending Voice WebSocket DiscordCoreAPIMessage: " << newString << std::endl
+				std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Sending Voice WebSocket Message: " << newString << std::endl
 						  << DiscordCoreAPI::reset() << std::endl;
 			}
 			std::vector<char> out{};
@@ -1027,7 +1027,7 @@ namespace DiscordCoreInternal {
 	void VoiceSocketAgent::sendMessage(std::string& dataToSend) noexcept {
 		try {
 			if (this->printMessages) {
-				std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Sending Voice WebSocket DiscordCoreAPIMessage: " << std::endl
+				std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Sending Voice WebSocket Message: " << std::endl
 						  << dataToSend << DiscordCoreAPI::reset();
 			}
 			this->webSocket->writeData(dataToSend);
@@ -1122,7 +1122,7 @@ namespace DiscordCoreInternal {
 			this->webSocket->getInputBuffer().clear();
 			nlohmann::json payload = payload.parse(message);
 			if (this->printMessages) {
-				std::cout << DiscordCoreAPI::shiftToBrightGreen() << "DiscordCoreAPIMessage received from Voice WebSocket: " << message << std::endl
+				std::cout << DiscordCoreAPI::shiftToBrightGreen() << "Message received from Voice WebSocket: " << message << std::endl
 						  << DiscordCoreAPI::reset() << std::endl;
 			}
 			if (payload.contains("op")) {
