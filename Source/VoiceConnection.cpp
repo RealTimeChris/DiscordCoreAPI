@@ -231,6 +231,7 @@ namespace DiscordCoreAPI {
 
 	void VoiceConnection::sendSpeakingMessage(bool isSpeaking) {
 		this->timeStamp = 0;
+		this->sequenceIndex = 0;
 		if (this->voiceSocketAgent) {
 			this->voiceConnectionData->audioSSRC = this->voiceSocketAgent->voiceConnectionData.audioSSRC;
 			std::vector<uint8_t> newString = DiscordCoreInternal::JSONIFY(isSpeaking, this->voiceConnectionData->audioSSRC, 0);

@@ -71,7 +71,6 @@ namespace DiscordCoreAPI {
 		int16_t sequenceIndex{ 0 };
 		EventWaiter pauseEvent{};
 		int32_t timeStamp{ 0 };
-		int64_t startTime{ 0 };
 
 		std::string encryptSingleAudioFrame(EncodedFrameData bufferToSend, int32_t audioSSRC, std::string keys);
 
