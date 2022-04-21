@@ -82,7 +82,7 @@ namespace DiscordCoreAPI {
 
 		std::vector<Song> searchForSong(std::string searchQuery);
 
-		void stop();
+		void cancelCurrentSong();
 
 	  protected:
 		YouTubeRequestBuilder requestBuilder{};
@@ -90,8 +90,6 @@ namespace DiscordCoreAPI {
 		std::string guildId{ "" };
 		bool doWePrint{ false };
 		Song theSong{};
-
-		void cancelCurrentSong();
 	};
 
 };// namespace DiscordCoreAPI

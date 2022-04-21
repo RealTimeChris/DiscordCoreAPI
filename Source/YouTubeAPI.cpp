@@ -408,17 +408,6 @@ namespace DiscordCoreAPI {
 		return this->requestBuilder.collectFinalSong(addedByGuildMember, newSong);
 	}
 
-	void YouTubeAPI::stop() {
-		try {
-			this->cancelCurrentSong();
-			AudioFrameData dataFrame{};
-			while (getVoiceConnectionMap()[this->guildId]->audioBuffer.tryReceive(dataFrame)) {
-			};
-		} catch (...) {
-			reportException("YouTubeAPI::stop()");
-		}
-	}
-
 	void YouTubeAPI::cancelCurrentSong() {
 		if (getSongAPIMap().contains(this->guildId)) {
 			if (getSongAPIMap()[this->guildId]) {
@@ -431,6 +420,9 @@ namespace DiscordCoreAPI {
 				}
 			}
 		}
+		AudioFrameData dataFrame{};
+		while (getVoiceConnectionMap()[this->guildId]->audioBuffer.tryReceive(dataFrame)) {
+		};
 	}
 
 	void YouTubeAPI::weFailedToDownloadOrDecode(Song newSong, YouTubeAPI* youtubeAPI, std::stop_token theToken, int32_t currentRecursionDepth) {

@@ -123,9 +123,9 @@ namespace DiscordCoreAPI {
 
 	void SongAPI::skip(GuildMember guildMember) {
 		if (SongAPI::getCurrentSong(guildMember.guildId).type == SongType::SoundCloud) {
-			getSoundCloudAPIMap()[guildMember.guildId]->stop();
+			getSoundCloudAPIMap()[guildMember.guildId]->cancelCurrentSong();
 		} else {
-			getYouTubeAPIMap()[guildMember.guildId]->stop();
+			getYouTubeAPIMap()[guildMember.guildId]->cancelCurrentSong();
 		}
 		if (SongAPI::isLoopAllEnabled(guildMember.guildId) || SongAPI::isLoopSongEnabled(guildMember.guildId)) {
 			getSongAPIMap()[guildMember.guildId]->playlist.songQueue.push_back(getSongAPIMap()[guildMember.guildId]->playlist.currentSong);
@@ -144,9 +144,9 @@ namespace DiscordCoreAPI {
 	void SongAPI::stop(std::string guildId) {
 		getVoiceConnectionMap()[guildId]->stop();
 		if (SongAPI::getCurrentSong(guildId).type == SongType::SoundCloud) {
-			getSoundCloudAPIMap()[guildId]->stop();
+			getSoundCloudAPIMap()[guildId]->cancelCurrentSong();
 		} else {
-			getYouTubeAPIMap()[guildId]->stop();
+			getYouTubeAPIMap()[guildId]->cancelCurrentSong();
 		}
 		std::vector<Song> newVector02;
 		if (getSongAPIMap()[guildId]->playlist.currentSong.description != "") {
@@ -261,7 +261,7 @@ namespace DiscordCoreAPI {
 	void SongAPI::sendNextSongFinal(GuildMember guildMember) {
 		try {
 			if (getSongAPIMap()[guildMember.guildId]->playlist.currentSong.type == SongType::SoundCloud) {
-				getSoundCloudAPIMap()[guildMember.guildId]->stop();
+				getSoundCloudAPIMap()[guildMember.guildId]->cancelCurrentSong();
 				auto newerSong =
 					getSoundCloudAPIMap()[guildMember.guildId]->collectFinalSong(guildMember, getSongAPIMap()[guildMember.guildId]->playlist.currentSong);
 				newerSong.addedByUserId = guildMember.user.id;
@@ -270,7 +270,7 @@ namespace DiscordCoreAPI {
 				});
 
 			} else if (getSongAPIMap()[guildMember.guildId]->playlist.currentSong.type == SongType::YouTube) {
-				getYouTubeAPIMap()[guildMember.guildId]->stop();
+				getYouTubeAPIMap()[guildMember.guildId]->cancelCurrentSong();
 				auto newerSong =
 					getYouTubeAPIMap()[guildMember.guildId]->collectFinalSong(guildMember, getSongAPIMap()[guildMember.guildId]->playlist.currentSong);
 				newerSong.addedByUserId = guildMember.user.id;

@@ -34,6 +34,8 @@ namespace DiscordCoreAPI {
 
 		std::string encryptSingleAudioFrame(EncodedFrameData bufferToSend, int32_t audioSSRC, std::string keys);
 
+		void resetValues();
+
 	  protected:
 		int32_t sequenceIndex{ 0 };
 		int32_t timeStamp{ 0 };

@@ -79,6 +79,10 @@ namespace DiscordCoreAPI {
 		return std::string{};
 	}
 
+	void AudioEncrypter::resetValues() {
+		this->timeStamp = 0;
+	}
+
 	VoiceConnection::VoiceConnection(DiscordCoreInternal::BaseSocketAgent* BaseSocketAgentNew) {
 		this->baseSocketAgent = BaseSocketAgentNew;
 	}
@@ -224,25 +228,19 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::sendSilence() {
-		std::vector<EncodedFrameData> frameData{};
-		for (uint32_t x = 0; x < 5; x += 1) {
-			EncodedFrameData newFrame{};
-			newFrame.data.push_back(0xF8);
-			newFrame.data.push_back(0xFF);
-			newFrame.data.push_back(0xFE);
-			newFrame.sampleCount = 3;
-			frameData.push_back(newFrame);
-		}
-		for (auto& value: frameData) {
-			DiscordCoreAPI::EventWaiter frameWaiter{};
-			frameWaiter.reset();
-			frameWaiter.wait(20);
-			auto newerFrame = this->audioEncrypter.encryptSingleAudioFrame(value, this->voiceConnectionData->audioSSRC, this->voiceConnectionData->secretKey);
-			this->sendSingleAudioFrame(newerFrame);
-		}
+		EncodedFrameData newFrame{};
+		newFrame.data.push_back(0xf8);
+		newFrame.data.push_back(0xff);
+		newFrame.data.push_back(0xfe);
+		newFrame.sampleCount = 960;
+
+		auto encryptedFrame =
+			this->audioEncrypter.encryptSingleAudioFrame(newFrame, this->voiceConnectionData->audioSSRC, this->voiceConnectionData->secretKey);
+		this->sendSingleAudioFrame(encryptedFrame);
 	}
 
 	void VoiceConnection::sendSpeakingMessage(bool isSpeaking) {
+		this->audioEncrypter.resetValues();		
 		if (this->voiceSocketAgent) {
 			this->voiceConnectionData->audioSSRC = this->voiceSocketAgent->voiceConnectionData.audioSSRC;
 			std::vector<uint8_t> newString = DiscordCoreInternal::JSONIFY(isSpeaking, this->voiceConnectionData->audioSSRC, 0);
@@ -366,9 +364,9 @@ namespace DiscordCoreAPI {
 					}
 				}
 				this->areWePlaying.store(false, std::memory_order_seq_cst);
+				this->sendSilence();
 				this->sendSpeakingMessage(false);
 				this->clearAudioData();
-
 				if (this->areWeStopping.load(std::memory_order_seq_cst)) {
 					this->stopSetEvent.wait(5000);
 					this->stopSetEvent.reset();

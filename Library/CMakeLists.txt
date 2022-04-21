@@ -24,10 +24,10 @@ generate_product_version(
    FILE_DESCRIPTION "A Discord bot library written in C++, using asynchronous coroutines."
    ORIGINAL_FILENAME "discordcoreapi.dll"
    COMPANY_NAME "RealTimeChris Inc."
-   VERSION_MAJOR 1
-   VERSION_MINOR 0
-   VERSION_PATCH 0
-   VERSION_REVISION 0
+   VERSION_MAJOR "1"
+   VERSION_MINOR "0"
+   VERSION_PATCH "0"
+   VERSION_REVISION "0"
 )
 
 file(GLOB SOURCES "${CMAKE_SOURCE_DIR}/Source/*.cpp")

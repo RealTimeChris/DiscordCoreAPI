@@ -223,17 +223,6 @@ namespace DiscordCoreAPI {
 		return this->requestBuilder.collectFinalSong(addedByGuildMember, newSong);
 	}
 
-	void SoundCloudAPI::stop() {
-		try {
-			this->cancelCurrentSong();
-			AudioFrameData dataFrame{};
-			while (getVoiceConnectionMap()[this->guildId]->audioBuffer.tryReceive(dataFrame)) {
-			};
-		} catch (...) {
-			reportException("SoundCloudAPI::stop()");
-		}
-	}
-
 	void SoundCloudAPI::cancelCurrentSong() {
 		if (getSongAPIMap().contains(this->guildId)) {
 			if (getSongAPIMap()[this->guildId]) {
@@ -246,6 +235,9 @@ namespace DiscordCoreAPI {
 				}
 			}
 		}
+		AudioFrameData dataFrame{};
+		while (getVoiceConnectionMap()[this->guildId]->audioBuffer.tryReceive(dataFrame)) {
+		};
 	}
 
 	std::vector<DiscordCoreInternal::HttpData> SoundCloudRequestBuilder::submitWorkloadAndGetResult(

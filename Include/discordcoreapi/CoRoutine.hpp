@@ -192,7 +192,7 @@ namespace DiscordCoreAPI {
 	  public:
 		class promise_type {
 		  public:
-			template<typename ReturnType> friend class CoRoutine;
+			template<typename ReturnType02> friend class CoRoutine;
 
 			void requestStop() {
 				this->areWeStopped.store(true, std::memory_order::seq_cst);
@@ -202,8 +202,7 @@ namespace DiscordCoreAPI {
 				return this->areWeStopped.load(std::memory_order::seq_cst);
 			}
 
-			void return_void() {
-			}
+			void return_void(){};
 
 			auto get_return_object() {
 				return CoRoutine<void>{ std::coroutine_handle<CoRoutine<void>::promise_type>::from_promise(*this) };
@@ -280,6 +279,7 @@ namespace DiscordCoreAPI {
 		}
 
 		/// Gets the resulting value of the CoRoutine. \brief Gets the resulting value of the CoRoutine.
+		/// \returns void The return value of the CoRoutine.
 		void get() {
 			if (this && this->coroutineHandle) {
 				this->coroutineHandle.promise().theFlag.wait(false, std::memory_order::seq_cst);
@@ -289,13 +289,13 @@ namespace DiscordCoreAPI {
 				}
 				this->coroutineHandle.promise().currentStatus = CoRoutineStatus::Complete;
 				this->currentStatus = this->coroutineHandle.promise().currentStatus;
-				return;
 			} else {
 				throw CoRoutineError("You called get() on a CoRoutine that is not in a valid state.");
 			}
 		}
 
 		/// Cancels the currently executing CoRoutine and returns the current result. \brief Cancels the currently executing CoRoutine and returns the current result.
+		/// \returns void The return value of the CoRoutine.
 		void cancel() {
 			if (this && this->coroutineHandle) {
 				if (!this->coroutineHandle.done()) {

@@ -66,7 +66,7 @@ namespace DiscordCoreAPI {
 
 		std::vector<Song> searchForSong(std::string searchQuery);
 
-		void stop();
+		void cancelCurrentSong();
 
 	  protected:
 		DiscordCoreInternal::HttpClient* httpClient{ nullptr };
@@ -74,8 +74,6 @@ namespace DiscordCoreAPI {
 		const int32_t maxBufferSize{ 8192 };
 		Song theSong{};
 		std::string guildId{ "" };
-
-		void cancelCurrentSong();
 	};
 
 };// namespace DiscordCoreAPI
