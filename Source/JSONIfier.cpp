@@ -81,21 +81,12 @@ namespace DiscordCoreInternal {
 		return data.dump();
 	}
 
-	std::vector<uint8_t> JSONIFY(bool isSpeaking, int32_t ssrc, int32_t delay) {
-		nlohmann::json data;
-		if (isSpeaking) {
-			data = { {
-						 "op",
-						 5,
-					 },
-				{ "d", { { "speaking", 1 }, { "delay", delay }, { "ssrc", ssrc } } } };
-		} else {
-			data = { {
-						 "op",
-						 5,
-					 },
-				{ "d", { { "speaking", 0 }, { "delay", delay }, { "ssrc", ssrc } } } };
-		}
+	std::vector<uint8_t> JSONIFY(int32_t ssrc, int32_t delay) {
+		nlohmann::json data = { {
+									"op",
+									5,
+								},
+			{ "d", { { "speaking", 1 << 0 }, { "delay", delay }, { "ssrc", ssrc } } } };
 		std::vector<uint8_t> newVector{};
 		std::string newString = data.dump();
 		newString.shrink_to_fit();

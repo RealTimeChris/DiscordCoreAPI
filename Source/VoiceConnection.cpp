@@ -74,8 +74,6 @@ namespace DiscordCoreAPI {
 
 	VoiceConnection::VoiceConnection(DiscordCoreInternal::BaseSocketAgent* BaseSocketAgentNew) {
 		this->baseSocketAgent = BaseSocketAgentNew;
-		this->startTime =
-			static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
 	}
 
 	std::string VoiceConnection::getChannelId() {
@@ -230,13 +228,13 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::sendSpeakingMessage(bool isSpeaking) {
-		this->timeStamp = 0;
-		this->sequenceIndex = 0;
-		if (this->voiceSocketAgent) {
-			this->voiceConnectionData->audioSSRC = this->voiceSocketAgent->voiceConnectionData.audioSSRC;
-			std::vector<uint8_t> newString = DiscordCoreInternal::JSONIFY(isSpeaking, this->voiceConnectionData->audioSSRC, 0);
-			if (this->voiceSocketAgent->webSocket) {
-				this->voiceSocketAgent->sendMessage(newString);
+		this->sendSilence();
+		if (isSpeaking) {
+			if (this->voiceSocketAgent) {
+				std::vector<uint8_t> newString = DiscordCoreInternal::JSONIFY(this->voiceSocketAgent->voiceConnectionData.audioSSRC, 0);
+				if (this->voiceSocketAgent->webSocket) {
+					this->voiceSocketAgent->sendMessage(newString);
+				}
 			}
 		}
 	}
@@ -284,7 +282,6 @@ namespace DiscordCoreAPI {
 					this->areWePlaying.store(true, std::memory_order_seq_cst);
 					if (!this->doWeReconnect->wait(0)) {
 						this->areWeConnectedBool = false;
-						this->sendSilence();
 						this->sendSpeakingMessage(false);
 						this->reconnect();
 						this->sendSpeakingMessage(true);
@@ -355,7 +352,6 @@ namespace DiscordCoreAPI {
 					}
 				}
 				this->areWePlaying.store(false, std::memory_order_seq_cst);
-				this->sendSilence();
 				this->sendSpeakingMessage(false);
 				this->clearAudioData();
 				if (this->areWeStopping.load(std::memory_order_seq_cst)) {
