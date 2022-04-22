@@ -27,6 +27,7 @@ namespace DiscordCoreAPI {
 	std::string VoiceConnection::encryptSingleAudioFrame(EncodedFrameData bufferToSend, int32_t audioSSRC, std::string keys) {
 		if (keys.size() > 0) {
 			this->sequenceIndex += 1;
+			this->timeStamp += 960;
 			const int32_t nonceSize{ crypto_secretbox_NONCEBYTES };
 			const int32_t headerSize{ 12 };
 			const uint8_t byteSize{ 8 };
@@ -64,7 +65,6 @@ namespace DiscordCoreAPI {
 				throw std::runtime_error("ENCRYPTION FAILED!");
 			};
 			bufferToSend.data.clear();
-			this->timeStamp += bufferToSend.sampleCount;
 			std::string audioDataPacketNew{};
 			audioDataPacketNew.insert(audioDataPacketNew.begin(), audioDataPacket.get(), audioDataPacket.get() + numOfBytes);
 			return audioDataPacketNew;
@@ -222,31 +222,17 @@ namespace DiscordCoreAPI {
 		newFrame.data.push_back(0xff);
 		newFrame.data.push_back(0xfe);
 		newFrame.sampleCount = 960;
-
-		auto encryptedFrame = this->encryptSingleAudioFrame(newFrame, this->voiceConnectionData->audioSSRC, this->voiceConnectionData->secretKey);
-		this->sendSingleAudioFrame(encryptedFrame);
+		for (uint8_t x = 0; x < 5; x += 1) {
+			auto encryptedFrame = this->encryptSingleAudioFrame(newFrame, this->voiceConnectionData->audioSSRC, this->voiceConnectionData->secretKey);
+			this->sendSingleAudioFrame(encryptedFrame);
+		}
 	}
 
-	void VoiceConnection::sendSpeakingMessage(bool isSpeaking) {		
+	void VoiceConnection::sendSpeakingMessage(bool isSpeaking) {
 		if (!isSpeaking) {
 			this->sendSilence();
-		} else {
-			//this->timeStamp = 0;
-			//this->sequenceIndex = 0;
-			if (this->voiceSocketAgent) {
-				std::vector<uint8_t> newString = DiscordCoreInternal::JSONIFY(this->voiceSocketAgent->voiceConnectionData.audioSSRC, 0);
-				if (this->voiceSocketAgent->webSocket) {
-					this->voiceSocketAgent->sendMessage(newString);
-				}
-			}
-			std::this_thread::sleep_for(std::chrono::milliseconds{ 150 });
-			if (this->voiceSocketAgent) {
-				std::vector<uint8_t> newString = DiscordCoreInternal::JSONIFY(this->voiceSocketAgent->voiceConnectionData.audioSSRC, 0);
-				if (this->voiceSocketAgent->webSocket) {
-					this->voiceSocketAgent->sendMessage(newString);
-				}
-			}
-			std::this_thread::sleep_for(std::chrono::milliseconds{ 150 });
+		}
+		else {
 			if (this->voiceSocketAgent) {
 				std::vector<uint8_t> newString = DiscordCoreInternal::JSONIFY(this->voiceSocketAgent->voiceConnectionData.audioSSRC, 0);
 				if (this->voiceSocketAgent->webSocket) {
@@ -293,6 +279,13 @@ namespace DiscordCoreAPI {
 				int64_t intervalCount{ 20000000 };
 				int32_t frameCounter{ 0 };
 				int64_t totalTime{ 0 };
+				if (this->disconnectStartTime != 0) {
+					int64_t currentTime = static_cast<int64_t>(
+						std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
+					if (currentTime - this->disconnectStartTime >= 120000) {
+						this->reconnect();
+					}
+				}
 				this->sendSpeakingMessage(true);
 				while ((this->audioData.rawFrameData.sampleCount != 0 || this->audioData.encodedFrameData.sampleCount != 0) && !this->areWeStopping &&
 					!theToken.stop_requested()) {
@@ -369,6 +362,8 @@ namespace DiscordCoreAPI {
 					}
 				}
 				this->areWePlaying.store(false, std::memory_order_seq_cst);
+				this->disconnectStartTime =
+					static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
 				this->sendSpeakingMessage(false);
 				this->clearAudioData();
 				if (this->areWeStopping.load(std::memory_order_seq_cst)) {

@@ -63,6 +63,7 @@ namespace DiscordCoreAPI {
 		std::string currentGuildMemberId{ "" };
 		EventWaiter* doWeReconnect{ nullptr };
 		const int32_t maxBufferSize{ 1276 };
+		int64_t disconnectStartTime{ 0 };
 		bool areWeConnectedBool{ false };
 		bool didWeJustConnect{ true };
 		EventWaiter playSetEvent{};

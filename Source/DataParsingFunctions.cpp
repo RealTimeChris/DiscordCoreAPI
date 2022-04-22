@@ -4894,10 +4894,6 @@ namespace DiscordCoreInternal {
 			pDataStructure.thumbnailUrl = jsonObjectData["thumbnail"]["thumbnails"][0]["url"].get<std::string>();
 		}
 
-		if (jsonObjectData.contains("videoId") && !jsonObjectData["videoId"].is_null()) {
-			pDataStructure.songId = "https://www.youtube.com/watch?v=" + jsonObjectData["videoId"].get<std::string>();
-		}
-
 		if (jsonObjectData.contains("title") && !jsonObjectData["title"].is_null()) {
 			if (jsonObjectData["title"].contains("runs")) {
 				std::string newString = jsonObjectData["title"]["runs"][0]["text"].get<std::string>();

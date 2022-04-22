@@ -129,8 +129,7 @@ namespace DiscordCoreInternal {
 			}
 
 			auto options{ SSL_CTX_get_options(this->context) };
-			if (SSL_CTX_set_options(this->context, SSL_OP_NO_COMPRESSION | SSL_OP_IGNORE_UNEXPECTED_EOF) !=
-				(options | SSL_OP_NO_COMPRESSION | SSL_OP_IGNORE_UNEXPECTED_EOF)) {
+			if (SSL_CTX_set_options(this->context, SSL_OP_IGNORE_UNEXPECTED_EOF) != (options | SSL_OP_IGNORE_UNEXPECTED_EOF)) {
 				reportSSLError("SSL_CTX_set_options() Error: ");
 				return false;
 			}
@@ -291,6 +290,7 @@ namespace DiscordCoreInternal {
 						return true;
 					}
 					case SSL_ERROR_SYSCALL: {
+						reportSSLError("SSL_write_ex() Error: ", returnValue, this->ssl);
 						[[fallthrough]];
 					}
 					case SSL_ERROR_ZERO_RETURN: {
@@ -328,6 +328,7 @@ namespace DiscordCoreInternal {
 						return true;
 					}
 					case SSL_ERROR_SYSCALL: {
+						reportSSLError("SSL_write_ex() Error: ", returnValue, this->ssl);
 						[[fallthrough]];
 					}
 					case SSL_ERROR_ZERO_RETURN: {
@@ -397,8 +398,7 @@ namespace DiscordCoreInternal {
 			}
 
 			auto options{ SSL_CTX_get_options(this->context) };
-			if (SSL_CTX_set_options(this->context, SSL_OP_NO_COMPRESSION | SSL_OP_IGNORE_UNEXPECTED_EOF) !=
-				(options | SSL_OP_NO_COMPRESSION | SSL_OP_IGNORE_UNEXPECTED_EOF)) {
+			if (SSL_CTX_set_options(this->context, SSL_OP_IGNORE_UNEXPECTED_EOF) != (options | SSL_OP_IGNORE_UNEXPECTED_EOF)) {
 				reportSSLError("SSL_CTX_set_options() Error: ");
 				return;
 			}
@@ -498,6 +498,7 @@ namespace DiscordCoreInternal {
 						return true;
 					}
 					case SSL_ERROR_SYSCALL: {
+						reportSSLError("SSL_write_ex() Error: ", returnValue, this->ssl);
 						[[fallthrough]];
 					}
 					case SSL_ERROR_ZERO_RETURN: {
@@ -536,6 +537,7 @@ namespace DiscordCoreInternal {
 						return true;
 					}
 					case SSL_ERROR_SYSCALL: {
+						reportSSLError("SSL_write_ex() Error: ", returnValue, this->ssl);
 						[[fallthrough]];
 					}
 					case SSL_ERROR_ZERO_RETURN: {
@@ -645,7 +647,7 @@ namespace DiscordCoreInternal {
 			if (!BIO_write_ex(this->datagramBio, data.data(), data.size(), &writtenBytes)) {
 				reportSSLError("BIO_write_ex() Error: ");
 				return false;
-			};
+			}
 			data.clear();
 			return true;
 		} catch (...) {
