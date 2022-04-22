@@ -16,7 +16,7 @@ find_opus("${OPUS_RELEASE_ROOT}" "${OPUS_DEBUG_ROOT}")
 find_sodium("${SODIUM_RELEASE_ROOT}" "${SODIUM_DEBUG_ROOT}")
 
 generate_product_version(
-	PRODUCT_INFO_VARIABLE
+	PRODUCT_INFO
 	NAME "DiscordCoreAPI"
 	ICON "${CMAKE_SOURCE_DIR}/Documentation/Images/TheLogo.ico"
 	FILE_DESCRIPTION "A Discord bot library written in C++, using asynchronous coroutines."
@@ -32,9 +32,9 @@ file(GLOB HEADERS "${CMAKE_SOURCE_DIR}/Include/discordcoreapi/*.hpp")
 file(GLOB SOURCES "${CMAKE_SOURCE_DIR}/Source/*.cpp")
 
 if (WIN32)
-	add_library(DiscordCoreAPI SHARED "${SOURCES}" "${PRODUCT_INFO_VARIABLE}")
+	add_library(DiscordCoreAPI SHARED "${SOURCES}" "${PRODUCT_INFO}")
 elseif (UNIX)
-	add_library(DiscordCoreAPI STATIC "${SOURCES}" "${PRODUCT_INFO_VARIABLE}")
+	add_library(DiscordCoreAPI STATIC "${SOURCES}" "${PRODUCT_INFO}")
 endif()
 
 add_library(DiscordCoreAPI::DiscordCoreAPI ALIAS DiscordCoreAPI)
