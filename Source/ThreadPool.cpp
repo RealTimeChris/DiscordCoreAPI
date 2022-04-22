@@ -25,7 +25,7 @@ namespace DiscordCoreAPI {
 			std::to_string(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
 
 		this->threads.insert(std::make_pair(threadId, std::jthread([=](std::stop_token stopToken) {
-			StopWatch<std::chrono::milliseconds> stopWatch{ std::chrono::milliseconds{ timeInterval } };
+			StopWatch stopWatch{ std::chrono::milliseconds{ timeInterval } };
 			while (true) {
 				stopWatch.resetTimer();
 				std::this_thread::sleep_for(std::chrono::milliseconds{ static_cast<int32_t>(std::ceil(static_cast<float>(timeInterval) * 90.0f / 100.0f)) });

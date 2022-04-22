@@ -180,7 +180,7 @@ namespace DiscordCoreInternal {
 	void BaseSocketAgent::run(std::stop_token theToken) noexcept {
 		try {
 			this->connect();
-			DiscordCoreAPI::StopWatch<std::chrono::milliseconds> stopWatch{ std::chrono::milliseconds{ 0 } };
+			DiscordCoreAPI::StopWatch stopWatch{ std::chrono::milliseconds{ 0 } };
 			while (!theToken.stop_requested() && !this->doWeQuit->load(std::memory_order_seq_cst)) {
 				if (this->heartbeatInterval != 0 && !this->areWeHeartBeating) {
 					this->areWeHeartBeating = true;
@@ -1086,7 +1086,7 @@ namespace DiscordCoreInternal {
 	void VoiceSocketAgent::run(std::stop_token theToken) noexcept {
 		try {
 			this->connect();
-			DiscordCoreAPI::StopWatch<std::chrono::milliseconds> stopWatch{ std::chrono::milliseconds{ 0 } };
+			DiscordCoreAPI::StopWatch stopWatch{ std::chrono::milliseconds{ 0 } };
 			while (!theToken.stop_requested()) {
 				if (this->heartbeatInterval != 0 && !this->areWeHeartBeating) {
 					this->areWeHeartBeating = true;
