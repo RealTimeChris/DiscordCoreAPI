@@ -70,6 +70,7 @@ endif()
 target_include_directories(
 	DiscordCoreAPI PUBLIC
 	"$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Include/>"
+	"$<INSTALL_INTERFACE:$<INSTALL_PREFIX>/include>"
 	"$<$<NOT:$<STREQUAL:${VCPKG_INSTALLED_DIR}/include,/include>>:${VCPKG_INSTALLED_DIR}/include>"
 	"$<$<NOT:$<STREQUAL:${NLOHMANN_INCLUDE_DIR},${VCPKG_INSTALLED_DIR}/include>>:${NLOHMANN_INCLUDE_DIR}>"
 	"$<$<NOT:$<STREQUAL:${CURL_INCLUDE_DIR},${VCPKG_INSTALLED_DIR}/include>>:${CURL_INCLUDE_DIR}>"
@@ -126,7 +127,7 @@ set_target_properties(
 set(EXPORTED_TARGETS_NAME "DiscordCoreAPITargets")
 set(EXPORTED_TARGETS_FILENAME "${EXPORTED_TARGETS_NAME}.cmake")
 set(CONFIG_FILENAME "DiscordCoreAPIConfig.cmake")
-set(DISCORDCOREAPI_INCLUDE_DIR "${CMAKE_INSTALL_PREFIX}/include/discordcoreapi")
+set(DISCORDCOREAPI_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/Include/discordcoreapi")
 set(DISCORDCOREAPI_SOURCE_DIR "${CMAKE_SOURCE_DIR}/Source")
 
 install(
