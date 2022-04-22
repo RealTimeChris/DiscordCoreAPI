@@ -96,6 +96,25 @@ namespace DiscordCoreAPI {
 		this->instantiateWebSockets(functionsToExecuteNew, botTokenNew);
 	}
 
+	void DiscordCoreClient::registerFunction(std::vector<std::string> functionNames, std::unique_ptr<BaseFunction> baseFunction) {
+		this->commandController.registerFunction(functionNames, std::move(baseFunction));
+	}
+
+	BotUser DiscordCoreClient::getBotUser() {
+		return this->currentUser;
+	}
+
+	void DiscordCoreClient::runBot() {
+		try {
+			if (!this->didWeStartFine) {
+				return;
+			}
+			this->theWebSockets[std::to_string(this->shardingOptions.startingShard)]->getTheTask()->join();
+		} catch (...) {
+			reportException("DiscordCoreClient::runBot()");
+		}
+	}
+
 	void DiscordCoreClient::instantiateWebSockets(std::vector<RepeatedFunctionData> functionsToExecuteNew, std::string botTokenNew) {
 		GatewayBotData gatewayData = this->getGateWayBot();
 		if (gatewayData.url == "") {
@@ -143,25 +162,6 @@ namespace DiscordCoreAPI {
 			}
 		}
 		this->didWeStartFine = true;
-	}
-
-	void DiscordCoreClient::registerFunction(std::vector<std::string> functionNames, std::unique_ptr<BaseFunction> baseFunction) {
-		this->commandController.registerFunction(functionNames, std::move(baseFunction));
-	}
-
-	BotUser DiscordCoreClient::getBotUser() {
-		return this->currentUser;
-	}
-
-	void DiscordCoreClient::runBot() {
-		try {
-			if (!this->didWeStartFine) {
-				return;
-			}
-			this->theWebSockets[std::to_string(this->shardingOptions.startingShard)]->getTheTask()->join();
-		} catch (...) {
-			reportException("DiscordCoreClient::runBot()");
-		}
 	}
 
 	GatewayBotData DiscordCoreClient::getGateWayBot() {
