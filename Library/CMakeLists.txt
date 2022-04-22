@@ -16,16 +16,16 @@ find_opus("${OPUS_RELEASE_ROOT}" "${OPUS_DEBUG_ROOT}")
 find_sodium("${SODIUM_RELEASE_ROOT}" "${SODIUM_DEBUG_ROOT}")
 
 generate_product_version(
-   PRODUCT_INFO_VARIABLE
-   NAME "DiscordCoreAPI"
-   ICON "${CMAKE_SOURCE_DIR}/Documentation/Images/TheLogo.ico"
-   FILE_DESCRIPTION "A Discord bot library written in C++, using asynchronous coroutines."
-   ORIGINAL_FILENAME "discordcoreapi.dll"
-   COMPANY_NAME "RealTimeChris Inc."
-   VERSION_MAJOR "1"
-   VERSION_MINOR "0"
-   VERSION_PATCH "0"
-   VERSION_REVISION "0"
+	PRODUCT_INFO_VARIABLE
+	NAME "DiscordCoreAPI"
+	ICON "${CMAKE_SOURCE_DIR}/Documentation/Images/TheLogo.ico"
+	FILE_DESCRIPTION "A Discord bot library written in C++, using asynchronous coroutines."
+	ORIGINAL_FILENAME "discordcoreapi.dll"
+	COMPANY_NAME "RealTimeChris Inc."
+	VERSION_MAJOR "1"
+	VERSION_MINOR "0"
+	VERSION_PATCH "0"
+	VERSION_REVISION "0"
 )
 
 file(GLOB HEADERS "${CMAKE_SOURCE_DIR}/Include/discordcoreapi/*.hpp")
