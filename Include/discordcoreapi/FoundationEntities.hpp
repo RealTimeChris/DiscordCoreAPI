@@ -733,14 +733,14 @@ namespace DiscordCoreAPI {
 	DiscordCoreAPI_Dll std::string getTimeAndDate();
 
 	/// Class for representing a timestamp. \brief Class for representing a timestamp.
-	class DiscordCoreAPI_Dll TimeStamp {
+	class DiscordCoreAPI_Dll TimeStamp : public std::string {
 	  public:
 		operator std::string() {
-			return this->originalTimeStamp;
+			return *this;
 		}
 
 		TimeStamp& operator=(std::string originalTimeStampNew) {
-			this->originalTimeStamp = originalTimeStampNew;
+			*this = originalTimeStampNew;
 			return *this;
 		}
 
@@ -752,20 +752,15 @@ namespace DiscordCoreAPI {
 		/// \param timeFormat A TimeFormat value, for selecting the output type.
 		/// \returns string A string containing the returned timestamp.
 		std::string getDateTimeStamp(TimeFormat timeFormat) {
-			this->timeStampInMs = convertTimestampToMsInteger(this->originalTimeStamp);
-			std::string newString = convertTimeInMsToDateTimeString(this->timeStampInMs, timeFormat);
+			std::string newString = convertTimeInMsToDateTimeString(convertTimestampToMsInteger(*this), timeFormat);
 			return newString;
 		}
 
 		/// Returns the original timestamp, from a Discord entity. \brief Returns the original timestamp, from a Discord entity.
 		/// \returns string A string containing the returned timestamp.
 		std::string getOriginalTimeStamp() {
-			return this->originalTimeStamp;
+			return *this;
 		}
-
-	  protected:
-		std::string originalTimeStamp{ "" };
-		int64_t timeStampInMs{ 0 };
 	};
 
 	/// Permissions class, for representing and manipulating Permission values. \brief Permissions class, for representing and manipulating Permission values.
