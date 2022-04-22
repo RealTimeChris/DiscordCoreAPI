@@ -11,7 +11,7 @@
 #	CURL_RELEASE_LIBRARY, CURL_DEBUG_LIBRARY and in the case of SHARED LIBRARIES - 
 #	CURL_RELEASE_DLL, and CURL_DEBUG_DLL. Which each points to the respective files of each kind. 
 #
-function(find_curl RELEASE_ROOT_DIR DEBUG_ROOT_DIRSHARED)
+function(find_curl RELEASE_ROOT_DIR DEBUG_ROOT_DIR)
 	find_library(
 		CURL_RELEASE_LIBRARY
 		NAMES "libcurl${LIBRARY_SUFFIX}" "libcurl_imp${LIBRARY_SUFFIX}" "curl${LIBRARY_SUFFIX}" "curl_imp${LIBRARY_SUFFIX}"
