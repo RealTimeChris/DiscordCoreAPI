@@ -736,15 +736,6 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll TimeStamp : public std::string {
 	  public:
 
-		TimeStamp& operator=(std::string originalTimeStampNew) {
-			*this = originalTimeStampNew;
-			return *this;
-		}
-
-		TimeStamp(std::string originalTimeStampNew) {
-			*this = originalTimeStampNew;
-		}
-
 		/// Collects a timestamp using the format TimeFormat, as a string. \brief Collects a timestamp using the format TimeFormat, as a string.
 		/// \param timeFormat A TimeFormat value, for selecting the output type.
 		/// \returns string A string containing the returned timestamp.
