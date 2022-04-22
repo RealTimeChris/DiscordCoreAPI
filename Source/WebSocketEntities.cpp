@@ -1123,7 +1123,7 @@ namespace DiscordCoreInternal {
 			nlohmann::json payload = payload.parse(message);
 			if (this->printMessages) {
 				std::cout << DiscordCoreAPI::shiftToBrightGreen() << "Message received from Voice WebSocket: " << message << std::endl
-						  << DiscordCoreAPI::reset() << std::endl;
+					<< DiscordCoreAPI::reset() << std::endl;
 			}
 			if (payload.contains("op")) {
 				if (payload["op"] == 6) {
