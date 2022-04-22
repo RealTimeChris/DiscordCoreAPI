@@ -735,9 +735,6 @@ namespace DiscordCoreAPI {
 	/// Class for representing a timestamp. \brief Class for representing a timestamp.
 	class DiscordCoreAPI_Dll TimeStamp : public std::string {
 	  public:
-		operator std::string() {
-			return *this;
-		}
 
 		TimeStamp& operator=(std::string originalTimeStampNew) {
 			*this = originalTimeStampNew;
