@@ -1,9 +1,9 @@
-# find_openssl(RELEASE_ROOT_DIR DEBUG_ROOT_DIR SHARED)
+# find_openssl(RELEASE_ROOT_DIR DEBUG_ROOT_DIR)
 #
 # This function locates the Libz library, using a couple of provided paths for searching.
 #
 # Usage:
-#	find_openssl(RELEASE_ROOT_DIR DEBUG_ROOT_DIR SHARED)
+#	find_openssl(RELEASE_ROOT_DIR DEBUG_ROOT_DIR)
 # Where:
 #	RELEASE_ROOT_DIR = The directory containing the RELEASE version of the library, or library's linker file.
 #	DEBUG_ROOT_DIR = The directory containing the DEBUG version of the library, or library's linker file.
@@ -13,7 +13,7 @@
 #	LIBCRYPTO_RELEASE_LIBRARY, LIBCRYPTO_DEBUG_LIBRARY and in the case of SHARED LIBRARIES - 
 #	LIBCRYPTO_RELEASE_DLL, and LIBCRYPTO_DEBUG_DLL. Which each points to the respective files of each kind. 
 #
-function(find_openssl RELEASE_ROOT_DIR DEBUG_ROOT_DIR SHARED)
+function(find_openssl RELEASE_ROOT_DIR DEBUG_ROOT_DIR)
 	find_library(
 		LIBCRYPTO_RELEASE_LIBRARY 
 		NAMES "libcrypto${LIBRARY_SUFFIX}" 
@@ -46,7 +46,7 @@ function(find_openssl RELEASE_ROOT_DIR DEBUG_ROOT_DIR SHARED)
 		message(FATAL_ERROR "Couldn't find OpenSSL!")
 		return()
 	endif()
-	if ("${SHARED}")
+	if (WIN32)
 		cmake_path(GET LIBSSL_RELEASE_LIBRARY PARENT_PATH LIBSSL_RELEASE_FILE_PATH)
 		find_file(
 			LIBSSL_RELEASE_DLL

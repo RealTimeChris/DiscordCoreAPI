@@ -1,9 +1,9 @@
-# find_libz(RELEASE_ROOT_DIR DEBUG_ROOT_DIR SHARED)
+# find_libz(RELEASE_ROOT_DIR DEBUG_ROOT_DIR)
 #
 # This function locates the Libz library, using a couple of provided paths for searching.
 #
 # Usage:
-#	find_libz(RELEASE_ROOT_DIR DEBUG_ROOT_DIR SHARED)
+#	find_libz(RELEASE_ROOT_DIR DEBUG_ROOT_DIR)
 # Where:
 #	RELEASE_ROOT_DIR = The directory containing the RELEASE version of the library, or library's linker file.
 #	DEBUG_ROOT_DIR = The directory containing the DEBUG version of the library, or library's linker file.
@@ -11,7 +11,7 @@
 #	LIBZ_RELEASE_LIBRARY, LIBZ_DEBUG_LIBRARY and in the case of SHARED LIBRARIES - 
 #	LIBZ_RELEASE_DLL, and LIBZ_DEBUG_DLL. Which each points to the respective files of each kind. 
 #
-function(find_libz RELEASE_ROOT_DIR DEBUG_ROOT_DIR SHARED)
+function(find_libz RELEASE_ROOT_DIR DEBUG_ROOT_DIR)
 	if (UNIX)
 		find_library(
 			LIBZ_RELEASE_LIBRARY
@@ -33,7 +33,7 @@ function(find_libz RELEASE_ROOT_DIR DEBUG_ROOT_DIR SHARED)
 			message(STATUS "Couldn't find Libz!")
 			return()
 		endif()
-		if ("${SHARED}")
+		if (WIN32)
 			cmake_path(GET LIBZ_RELEASE_LIBRARY PARENT_PATH LIBZ_RELEASE_FILE_PATH)
 			find_file(
 				LIBZ_RELEASE_DLL

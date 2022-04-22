@@ -1,9 +1,9 @@
-# find_ffmpeg(RELEASE_ROOT_DIR DEBUG_ROOT_DIR SHARED)
+# find_ffmpeg(RELEASE_ROOT_DIR DEBUG_ROOT_DIR)
 #
 # This function locates the Libz library, using a couple of provided paths for searching.
 #
 # Usage:
-#	find_ffmpeg(RELEASE_ROOT_DIR DEBUG_ROOT_DIR SHARED)
+#	find_ffmpeg(RELEASE_ROOT_DIR DEBUG_ROOT_DIR)
 # Where:
 #	RELEASE_ROOT_DIR = The directory containing the RELEASE version of the library, or library's linker file.
 #	DEBUG_ROOT_DIR = The directory containing the DEBUG version of the library, or library's linker file.
@@ -17,7 +17,7 @@
 #	SWRESAMPLE_RELEASE_LIBRARY, SWRESAMPLE_DEBUG_LIBRARY and in the case of SHARED LIBRARIES - 
 #	SWRESAMPLE_RELEASE_DLL, and SWRESAMPLE_DEBUG_DLL. Which each points to the respective files of each kind.
 #
-function(find_ffmpeg RELEASE_ROOT_DIR DEBUG_ROOT_DIR SHARED)
+function(find_ffmpeg RELEASE_ROOT_DIR DEBUG_ROOT_DIR)
 	find_library(
 		AVCODEC_RELEASE_LIBRARY 
 		NAMES "${LIBRARY_PREFIX}avcodec${LIBRARY_SUFFIX}" 
@@ -75,7 +75,7 @@ function(find_ffmpeg RELEASE_ROOT_DIR DEBUG_ROOT_DIR SHARED)
 		message(FATAL_ERROR "Couldn't find FFMPEG!")
 		return()
 	endif()
-	if ("${SHARED}")
+	if (WIN32)
 		cmake_path(GET AVCODEC_RELEASE_LIBRARY PARENT_PATH AVCODEC_RELEASE_FILE_PATH)
 		find_file(
 			AVCODEC_RELEASE_DLL

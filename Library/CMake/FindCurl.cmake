@@ -1,9 +1,9 @@
-# find_curl(RELEASE_ROOT_DIR DEBUG_ROOT_DIR SHARED)
+# find_curl(RELEASE_ROOT_DIR DEBUG_ROOT_DIR)
 #
 # This function locates the Libz library, using a couple of provided paths for searching.
 #
 # Usage:
-#	find_curl(RELEASE_ROOT_DIR DEBUG_ROOT_DIR SHARED)
+#	find_curl(RELEASE_ROOT_DIR DEBUG_ROOT_DIR)
 # Where:
 #	RELEASE_ROOT_DIR = The directory containing the RELEASE version of the library, or library's linker file.
 #	DEBUG_ROOT_DIR = The directory containing the DEBUG version of the library, or library's linker file.
@@ -11,7 +11,7 @@
 #	CURL_RELEASE_LIBRARY, CURL_DEBUG_LIBRARY and in the case of SHARED LIBRARIES - 
 #	CURL_RELEASE_DLL, and CURL_DEBUG_DLL. Which each points to the respective files of each kind. 
 #
-function(find_curl RELEASE_ROOT_DIR DEBUG_ROOT_DIR SHARED)
+function(find_curl RELEASE_ROOT_DIR DEBUG_ROOT_DIRSHARED)
 	find_library(
 		CURL_RELEASE_LIBRARY
 		NAMES "libcurl${LIBRARY_SUFFIX}" "libcurl_imp${LIBRARY_SUFFIX}" "curl${LIBRARY_SUFFIX}" "curl_imp${LIBRARY_SUFFIX}"
@@ -32,7 +32,7 @@ function(find_curl RELEASE_ROOT_DIR DEBUG_ROOT_DIR SHARED)
 		message(FATAL_ERROR "Couldn't find Curl!")
 		return()
 	endif()
-	if ("${SHARED}")
+	if (WIN32)
 		cmake_path(GET CURL_RELEASE_LIBRARY PARENT_PATH CURL_RELEASE_FILE_PATH)
 		find_file(
 			CURL_RELEASE_DLL

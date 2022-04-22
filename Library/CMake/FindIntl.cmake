@@ -1,9 +1,9 @@
-# find_intl(RELEASE_ROOT_DIR DEBUG_ROOT_DIR SHARED)
+# find_intl(RELEASE_ROOT_DIR DEBUG_ROOT_DIR)
 #
 # This function locates the Libz library, using a couple of provided paths for searching.
 #
 # Usage:
-#	find_intl(RELEASE_ROOT_DIR DEBUG_ROOT_DIR SHARED)
+#	find_intl(RELEASE_ROOT_DIR DEBUG_ROOT_DIR)
 # Where:
 #	RELEASE_ROOT_DIR = The directory containing the RELEASE version of the library, or library's linker file.
 #	DEBUG_ROOT_DIR = The directory containing the DEBUG version of the library, or library's linker file.
@@ -11,7 +11,7 @@
 #	INTL_RELEASE_LIBRARY, INTL_DEBUG_LIBRARY and in the case of SHARED LIBRARIES - 
 #	INTL_RELEASE_DLL, and INTL_DEBUG_DLL. Which each points to the respective files of each kind. 
 #
-function(find_intl RELEASE_ROOT_DIR DEBUG_ROOT_DIR SHARED)
+function(find_intl RELEASE_ROOT_DIR DEBUG_ROOT_DIR)
 	find_file(
 		INTL_RELEASE_LIBRARY
 		NAMES "libintl.dll.a" "libintl.lib" "libintl.a"
@@ -34,7 +34,7 @@ function(find_intl RELEASE_ROOT_DIR DEBUG_ROOT_DIR SHARED)
 		unset(INTL_DEBUG_LIBRARY CACHE)
 		return()
 	endif()
-	if ("${SHARED}")
+	if (WIN32)
 		cmake_path(GET INTL_RELEASE_LIBRARY PARENT_PATH INTL_RELEASE_FILE_PATH)
 		find_file(
 			INTL_RELEASE_DLL

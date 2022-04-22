@@ -1,9 +1,9 @@
-# find_glib(RELEASE_ROOT_DIR DEBUG_ROOT_DIR SHARED)
+# find_glib(RELEASE_ROOT_DIR DEBUG_ROOT_DIR)
 #
 # This function locates the Libz library, using a couple of provided paths for searching.
 #
 # Usage:
-#	find_glib(RELEASE_ROOT_DIR DEBUG_ROOT_DIR SHARED)
+#	find_glib(RELEASE_ROOT_DIR DEBUG_ROOT_DIR)
 # Where:
 #	RELEASE_ROOT_DIR = The directory containing the RELEASE version of the library, or library's linker file.
 #	DEBUG_ROOT_DIR = The directory containing the DEBUG version of the library, or library's linker file.
@@ -11,7 +11,7 @@
 #	GLIB_RELEASE_LIBRARY, GLIB_DEBUG_LIBRARY and in the case of SHARED LIBRARIES - 
 #	GLIB_RELEASE_DLL, and GLIB_DEBUG_DLL. Which each points to the respective files of each kind. 
 #
-function(find_glib RELEASE_ROOT_DIR DEBUG_ROOT_DIR SHARED)
+function(find_glib RELEASE_ROOT_DIR DEBUG_ROOT_DIR)
 	find_library(
 		GLIB_RELEASE_LIBRARY
 		NAMES "${LIBRARY_PREFIX}glib-2.0${LIBRARY_SUFFIX}" 
@@ -32,7 +32,7 @@ function(find_glib RELEASE_ROOT_DIR DEBUG_ROOT_DIR SHARED)
 		message(FATAL_ERROR "Couldn't find Glib!")
 		return()
 	endif()
-	if ("${SHARED}")
+	if (WIN32)
 		cmake_path(GET GLIB_RELEASE_LIBRARY PARENT_PATH GLIB_RELEASE_FILE_PATH)
 		find_file(
 			GLIB_RELEASE_DLL
