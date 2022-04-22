@@ -575,28 +575,28 @@ namespace DiscordCoreAPI {
 
 	template<typename ObjectType> bool waitForTimeToPass(UnboundedMessageBlock<ObjectType>& outBuffer, ObjectType& argOne, int32_t timeInMsNew) {
 		StopWatch stopWatch{ std::chrono::milliseconds{ timeInMsNew } };
-		bool doWeBreak{ false };
+		bool didTimePass{ false };
 		while (!outBuffer.tryReceive(argOne)) {
 			std::this_thread::sleep_for(std::chrono::milliseconds{ 1 });
 			if (stopWatch.hasTimePassed()) {
-				doWeBreak = true;
+				didTimePass = true;
 				break;
 			}
 		};
-		return doWeBreak;
+		return didTimePass;
 	}
 
 	template<typename ObjectType> bool waitForTimeToPass(TSUnboundedMessageBlock<ObjectType>& outBuffer, ObjectType& argOne, int32_t timeInMsNew) {
 		StopWatch stopWatch{ std::chrono::milliseconds{ timeInMsNew } };
-		bool doWeBreak{ false };
+		bool didTimePass{ false };
 		while (!outBuffer.tryReceive(argOne)) {
 			std::this_thread::sleep_for(std::chrono::milliseconds{ 1 });
 			if (stopWatch.hasTimePassed()) {
-				doWeBreak = true;
+				didTimePass = true;
 				break;
 			}
 		};
-		return doWeBreak;
+		return didTimePass;
 	}
 
 	/**
