@@ -30,21 +30,16 @@ generate_product_version(
    VERSION_REVISION "0"
 )
 
-file(GLOB SOURCES "${CMAKE_SOURCE_DIR}/Source/*.cpp")
 file(GLOB HEADERS "${CMAKE_SOURCE_DIR}/Include/discordcoreapi/*.hpp")
+file(GLOB SOURCES "${CMAKE_SOURCE_DIR}/Source/*.cpp")
 
-if (UNIX)
-	add_library(DiscordCoreAPI STATIC "${SOURCES}" "${PRODUCT_INFO_VARIABLE}")
-elseif (WIN32)
+if (WIN32)
 	add_library(DiscordCoreAPI SHARED "${SOURCES}" "${PRODUCT_INFO_VARIABLE}")
+elseif (UNIX)
+	add_library(DiscordCoreAPI STATIC "${SOURCES}" "${PRODUCT_INFO_VARIABLE}")
 endif()
 
-message(STATUS "Copying a file...")
-install(FILES "${CMAKE_SOURCE_DIR}/Certs/SoundCloudCert.pem" DESTINATION "share/discordcoreapi/data")
-message(STATUS "Copying a file...")
-install(FILES "${CMAKE_SOURCE_DIR}/Certs/GoogleCert.pem" DESTINATION "share/discordcoreapi/data")
-message(STATUS "Copying a file...")
-install(FILES "${CMAKE_SOURCE_DIR}/Certs/DiscordCert.pem" DESTINATION "share/discordcoreapi/data")
+add_library(DiscordCoreAPI::DiscordCoreAPI ALIAS DiscordCoreAPI)
 
 foreach (LIBRARY "${RELEASE_LIBRARIES}") 
 	if (LIBRARY)
@@ -75,7 +70,6 @@ endif()
 target_include_directories(
 	DiscordCoreAPI PUBLIC
 	"$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Include/>"
-	"$<INSTALL_INTERFACE:$<INSTALL_PREFIX>/include>"
 	"$<$<NOT:$<STREQUAL:${VCPKG_INSTALLED_DIR}/include,/include>>:${VCPKG_INSTALLED_DIR}/include>"
 	"$<$<NOT:$<STREQUAL:${NLOHMANN_INCLUDE_DIR},${VCPKG_INSTALLED_DIR}/include>>:${NLOHMANN_INCLUDE_DIR}>"
 	"$<$<NOT:$<STREQUAL:${CURL_INCLUDE_DIR},${VCPKG_INSTALLED_DIR}/include>>:${CURL_INCLUDE_DIR}>"
@@ -86,7 +80,7 @@ target_include_directories(
 	"$<$<NOT:$<STREQUAL:${OPUS_INCLUDE_DIR},${VCPKG_INSTALLED_DIR}/include>>:${OPUS_INCLUDE_DIR}>"
 	"$<$<NOT:$<STREQUAL:${SODIUM_INCLUDE_DIR},${VCPKG_INSTALLED_DIR}/include>>:${SODIUM_INCLUDE_DIR}>"
 	PRIVATE	
-	"$<BUILD_INTERFACE:${CMAKE_INSTALL_PREFIX}/include>"
+	"${CMAKE_INSTALL_PREFIX}/include"
 	"${GLIB_BASE_DIR}/lib/glib-2.0/include"
 	"${GLIB_BASE_DIR}/glib-2.0/"
 	"${GLIB_BASE_DIR}/lib/glib-2.0/"
@@ -120,21 +114,18 @@ set_target_properties(
 	CXX_STANDARD_REQUIRED ON
 	CXX_EXTENSIONS OFF
 	LINKER_LANGUAGE CXX
-	IMPORTED_LOCATION_RELEASE "$<INSTALL_INTERFACE:$<$<PLATFORM_ID:Windows>:$<INSTALL_PREFIX>/bin/discordcoreapi.dll>>"
-	IMPORTED_LOCATION_RELEASE "$<INSTALL_INTERFACE:$<$<PLATFORM_ID:Linux>:$<INSTALL_PREFIX>/lib/libdiscordcoreapi.a>>"
 	IMPORTED_IMPLIB_RELEASE "$<INSTALL_INTERFACE:$<$<PLATFORM_ID:Windows>:$<INSTALL_PREFIX>/lib/discordcoreapi.lib>>"
-	IMPORTED_LOCATION_DEBUG "$<INSTALL_INTERFACE:$<$<PLATFORM_ID:Windows>:$<INSTALL_PREFIX>/debug/bin/discordcoreapi.dll>>"
-	IMPORTED_LOCATION_DEBUG "$<INSTALL_INTERFACE:$<$<PLATFORM_ID:Linux>:$<INSTALL_PREFIX>/debug/lib/discordcoreapi.a>>"
 	IMPORTED_IMPLIB_DEBUG "$<INSTALL_INTERFACE:$<$<PLATFORM_ID:Windows>:$<INSTALL_PREFIX>/debug/lib/discordcoreapi.lib>>"
+	IMPORTED_LOCATION_RELEASE "$<INSTALL_INTERFACE:$<$<PLATFORM_ID:Windows>:$<INSTALL_PREFIX>/bin/discordcoreapi.dll>>"
+	IMPORTED_LOCATION_DEBUG "$<INSTALL_INTERFACE:$<$<PLATFORM_ID:Windows>:$<INSTALL_PREFIX>/debug/bin/discordcoreapi.dll>>"
+	IMPORTED_LOCATION_RELEASE "$<INSTALL_INTERFACE:$<$<PLATFORM_ID:Linux>:$<INSTALL_PREFIX>/lib/libdiscordcoreapi.a>>"
+	IMPORTED_LOCATION_DEBUG "$<INSTALL_INTERFACE:$<$<PLATFORM_ID:Linux>:$<INSTALL_PREFIX>/debug/lib/discordcoreapi.a>>"
 	IMPORTED_CONFIGURATIONS "Release;Debug"
 )
 
-add_library(DiscordCoreAPI::DiscordCoreAPI ALIAS DiscordCoreAPI)
-
 set(EXPORTED_TARGETS_NAME "DiscordCoreAPITargets")
 set(EXPORTED_TARGETS_FILENAME "${EXPORTED_TARGETS_NAME}.cmake")
-set(CONFIG_NAME "DiscordCoreAPIConfig")
-set(CONFIG_FILENAME "${CONFIG_NAME}.cmake")
+set(CONFIG_FILENAME "DiscordCoreAPIConfig.cmake")
 set(DISCORDCOREAPI_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/Include/discordcoreapi")
 set(DISCORDCOREAPI_SOURCE_DIR "${CMAKE_SOURCE_DIR}/Source")
 
@@ -174,3 +165,10 @@ install(
 	DESTINATION "$<BUILD_INTERFACE:$<IF:$<CONFIG:Debug>,$<IF:$<STREQUAL:${_VCPKG_INSTALLED_DIR},>,${CMAKE_INSTALL_PREFIX}/debug/bin,${CMAKE_INSTALL_PREFIX}/bin>,${CMAKE_INSTALL_PREFIX}/bin>>"
 	OPTIONAL
 )
+
+message(STATUS "Copying a file...")
+install(FILES "${CMAKE_SOURCE_DIR}/Certs/SoundCloudCert.pem" DESTINATION "share/discordcoreapi/data")
+message(STATUS "Copying a file...")
+install(FILES "${CMAKE_SOURCE_DIR}/Certs/GoogleCert.pem" DESTINATION "share/discordcoreapi/data")
+message(STATUS "Copying a file...")
+install(FILES "${CMAKE_SOURCE_DIR}/Certs/DiscordCert.pem" DESTINATION "share/discordcoreapi/data")
