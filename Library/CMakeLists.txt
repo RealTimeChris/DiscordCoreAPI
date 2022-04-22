@@ -123,7 +123,7 @@ set_target_properties(
 set(EXPORTED_TARGETS_NAME "DiscordCoreAPITargets")
 set(EXPORTED_TARGETS_FILENAME "${EXPORTED_TARGETS_NAME}.cmake")
 set(CONFIG_FILENAME "DiscordCoreAPIConfig.cmake")
-set(DISCORDCOREAPI_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/Include/discordcoreapi")
+set(DISCORDCOREAPI_INCLUDE_DIR "${CMAKE_INSTALL_PREFIX}/include/discordcoreapi")
 set(DISCORDCOREAPI_SOURCE_DIR "${CMAKE_SOURCE_DIR}/Source")
 
 install(
