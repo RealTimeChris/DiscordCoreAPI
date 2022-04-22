@@ -876,29 +876,29 @@ WARN_LOGFILE           =
 
 
 INPUT                  =./html/Documentation-Examples \
-				./html/Documentation-Examples/Application-Command-Stuff \
-				./html/Documentation-Examples/Button-Stuff \
-				./html/Documentation-Examples/Channel-Stuff \
-				./html/Documentation-Examples/Guild-Stuff \
-				./html/Documentation-Examples/General-Usage \
-				./html/Documentation-Examples/Login-Setup \
-				./html/Documentation-Examples/Modal-Stuff \
-				./html/Documentation-Examples/Music-Bot \
-				./html/Documentation-Examples/Select-Menu-Stuff \
-				./html/Documentation-Examples/Voice-Connection-Stuff \
-				./html/Documentation-Examples/Guild-Scheduled-Event-Stuff \
-				./html/Documentation-Examples/Guild-Member-Stuff \
-				./html/Documentation-Examples/Input-Event-Stuff \
-				./html/Documentation-Examples/Interaction-Stuff \
-				./html/Documentation-Examples/Message-Stuff \
-				./html/Documentation-Examples/Reaction-Stuff \
-				./html/Documentation-Examples/Role-Stuff \
-				./html/Documentation-Examples/Stage-Instance-Stuff \
-				./html/Documentation-Examples/Sticker-Stuff \
-				./html/Documentation-Examples/Thread-Stuff \
-				./html/Documentation-Examples/User-Stuff \
-				./html/Documentation-Examples/Webhook-Stuff \
-				../Include/discordcoreapi \
+				        ./html/Documentation-Examples/Application-Command-Stuff \
+				        ./html/Documentation-Examples/Button-Stuff \
+				        ./html/Documentation-Examples/Channel-Stuff \
+				        ./html/Documentation-Examples/Guild-Stuff \
+				        ./html/Documentation-Examples/General-Usage \
+				        ./html/Documentation-Examples/Login-Setup \
+				        ./html/Documentation-Examples/Modal-Stuff \
+				        ./html/Documentation-Examples/Music-Bot \
+				        ./html/Documentation-Examples/Select-Menu-Stuff \
+				        ./html/Documentation-Examples/Voice-Connection-Stuff \
+				        ./html/Documentation-Examples/Guild-Scheduled-Event-Stuff \
+				        ./html/Documentation-Examples/Guild-Member-Stuff \
+				        ./html/Documentation-Examples/Input-Event-Stuff \
+				        ./html/Documentation-Examples/Interaction-Stuff \
+				        ./html/Documentation-Examples/Message-Stuff \
+				        ./html/Documentation-Examples/Reaction-Stuff \
+				        ./html/Documentation-Examples/Role-Stuff \
+				        ./html/Documentation-Examples/Stage-Instance-Stuff \
+				        ./html/Documentation-Examples/Sticker-Stuff \
+				        ./html/Documentation-Examples/Thread-Stuff \
+				        ./html/Documentation-Examples/User-Stuff \
+				        ./html/Documentation-Examples/Webhook-Stuff \
+				        ../Include/discordcoreapi \
                         ../Source \
 
 
