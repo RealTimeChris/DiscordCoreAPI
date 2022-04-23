@@ -290,7 +290,7 @@ namespace DiscordCoreInternal {
 						return true;
 					}
 					case SSL_ERROR_SYSCALL: {
-						reportSSLError("SSL_write_ex() Error: ", returnValue, this->ssl);
+						reportSSLError("HttpSSLClient::processIO::SSL_write_ex() Error: ", returnValue, this->ssl);
 						[[fallthrough]];
 					}
 					case SSL_ERROR_ZERO_RETURN: {
@@ -304,7 +304,7 @@ namespace DiscordCoreInternal {
 						return true;
 					}
 					default: {
-						reportSSLError("SSL_write_ex() Error: ", returnValue, this->ssl);
+						reportSSLError("HttpSSLClient::processIO::SSL_write_ex() Error: ", returnValue, this->ssl);
 						return false;
 					}
 				}
@@ -328,7 +328,7 @@ namespace DiscordCoreInternal {
 						return true;
 					}
 					case SSL_ERROR_SYSCALL: {
-						reportSSLError("SSL_write_ex() Error: ", returnValue, this->ssl);
+						reportSSLError("HttpSSLClient::processIO::SSL_read_ex() Error: ", returnValue, this->ssl);
 						[[fallthrough]];
 					}
 					case SSL_ERROR_ZERO_RETURN: {
@@ -342,7 +342,7 @@ namespace DiscordCoreInternal {
 						return true;
 					}
 					default: {
-						reportSSLError("WebSocketSSLClient::processIO::SSL_read_ex() Error: ", returnValue, this->ssl);
+						reportSSLError("HttpSSLClient::processIO::SSL_read_ex() Error: ", returnValue, this->ssl);
 						return false;
 					}
 				}
@@ -498,7 +498,7 @@ namespace DiscordCoreInternal {
 						return true;
 					}
 					case SSL_ERROR_SYSCALL: {
-						reportSSLError("SSL_write_ex() Error: ", returnValue, this->ssl);
+						reportSSLError("WebSocketSSLClient::processIO::SSL_write_ex() Error: ", returnValue, this->ssl);
 						[[fallthrough]];
 					}
 					case SSL_ERROR_ZERO_RETURN: {
@@ -512,7 +512,7 @@ namespace DiscordCoreInternal {
 						return true;
 					}
 					default: {
-						reportSSLError("SSL_write_ex() Error: ", returnValue, this->ssl);
+						reportSSLError("WebSocketSSLClient::processIO::SSL_write_ex() Error: ", returnValue, this->ssl);
 						return false;
 					}
 				}
@@ -537,7 +537,7 @@ namespace DiscordCoreInternal {
 						return true;
 					}
 					case SSL_ERROR_SYSCALL: {
-						reportSSLError("SSL_write_ex() Error: ", returnValue, this->ssl);
+						reportSSLError("WebSocketSSLClient::processIO::SSL_read_ex() Error: ", returnValue, this->ssl);
 						[[fallthrough]];
 					}
 					case SSL_ERROR_ZERO_RETURN: {
