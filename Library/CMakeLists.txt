@@ -39,11 +39,7 @@ endif()
 
 add_library(DiscordCoreAPI::DiscordCoreAPI ALIAS DiscordCoreAPI)
 
-foreach (LIBRARY ${RELEASE_LIBRARIES}) 
-	cmake_path(GET LIBRARY FILENAME LIBRARY_NAME)
-	cmake_path(GET LIBRARY PARENT_PATH RELEASE_FILE_PATH)
-	cmake_path(RELATIVE_PATH RELEASE_FILE_PATH OUTPUT_VARIABLE LIBRARY_NEW)
-	message("WERE HERE THIS IS IT ${LIBRARY_NEW}/${LIBRARY_NAME}")
+foreach (LIBRARY ${RELEASE_LIBRARIES})
 	if (LIBRARY)
 		target_link_libraries(
 			DiscordCoreAPI PUBLIC
@@ -53,10 +49,13 @@ foreach (LIBRARY ${RELEASE_LIBRARIES})
 endforeach()
 
 foreach (LIBRARY "${DEBUG_LIBRARIES}")
+	cmake_path(GET LIBRARY FILENAME LIBRARY_NAME)
+	cmake_path(GET LIBRARY PARENT_PATH DEBUG_FILE_PATH)
+	cmake_path(RELATIVE_PATH DEBUG_FILE_PATH OUTPUT_VARIABLE LIBRARY_NEW)
 	if (LIBRARY)
 		target_link_libraries(
 			DiscordCoreAPI PUBLIC
-			"$<BUILD_INTERFACE:$<$<CONFIG:Debug>:${LIBRARY}>>"
+			"$<BUILD_INTERFACE:$<$<CONFIG:DEBUG>:${LIBRARY_NEW}/${LIBRARY_NAME}>>"
 		)
 	endif()
 endforeach()
