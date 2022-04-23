@@ -53,10 +53,6 @@
         "CMAKE_BUILD_TYPE": {
           "type": "string",
           "value": "Release"
-        },
-        "CMAKE_TOOLCHAIN_FILE": {
-          "type": "FILEPATH",
-          "value": "$env{_VCPKG_ROOT_DIR}/scripts/buildsystems/vcpkg.cmake"
         }
       },
       "condition": {
@@ -80,10 +76,6 @@
         "CMAKE_BUILD_TYPE": {
           "type": "string",
           "value": "Debug"
-        },
-        "CMAKE_TOOLCHAIN_FILE": {
-          "type": "FILEPATH",
-          "value": "$env{_VCPKG_ROOT_DIR}/scripts/buildsystems/vcpkg.cmake"
         }
       },
       "condition": {
@@ -103,10 +95,6 @@
         "CMAKE_BUILD_TYPE": {
           "type": "string",
           "value": "Release"
-        },
-        "CMAKE_TOOLCHAIN_FILE": {
-          "type": "FILEPATH",
-          "value": "$env{_VCPKG_ROOT_DIR}/scripts/buildsystems/vcpkg.cmake"
         }
       },
       "condition": {
@@ -126,10 +114,6 @@
         "CMAKE_BUILD_TYPE": {
           "type": "string",
           "value": "Debug"
-        },
-        "CMAKE_TOOLCHAIN_FILE": {
-          "type": "FILEPATH",
-          "value": "$env{_VCPKG_ROOT_DIR}/scripts/buildsystems/vcpkg.cmake"
         }
       },
       "condition": {
