@@ -76,8 +76,7 @@ target_include_directories(
 	"$<$<NOT:$<STREQUAL:${OPENSSL_INCLUDE_DIR},${VCPKG_INSTALLED_DIR}/include>>:${OPENSSL_INCLUDE_DIR}>"
 	"$<$<NOT:$<STREQUAL:${OPUS_INCLUDE_DIR},${VCPKG_INSTALLED_DIR}/include>>:${OPUS_INCLUDE_DIR}>"
 	"$<$<NOT:$<STREQUAL:${SODIUM_INCLUDE_DIR},${VCPKG_INSTALLED_DIR}/include>>:${SODIUM_INCLUDE_DIR}>"
-	PRIVATE	
-	"${CMAKE_INSTALL_PREFIX}/include"
+	PRIVATE
 	"${GLIB_BASE_DIR}/lib/glib-2.0/include"
 	"${GLIB_BASE_DIR}/glib-2.0/"
 	"${GLIB_BASE_DIR}/lib/glib-2.0/"
