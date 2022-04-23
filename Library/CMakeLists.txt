@@ -72,7 +72,7 @@ target_include_directories(
 	"$<$<NOT:$<STREQUAL:${OPUS_INCLUDE_DIR},${VCPKG_INSTALLED_DIR}/include>>:${OPUS_INCLUDE_DIR}>"
 	"$<$<NOT:$<STREQUAL:${SODIUM_INCLUDE_DIR},${VCPKG_INSTALLED_DIR}/include>>:${SODIUM_INCLUDE_DIR}>"
 	PRIVATE
-	"$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Include/discordcoreapi/>"
+	"$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Include/>"
 	"$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Source/>"
 	"${GLIB_BASE_DIR}/lib/glib-2.0/include"
 	"${GLIB_BASE_DIR}/include/glib-2.0"
