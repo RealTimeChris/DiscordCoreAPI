@@ -158,6 +158,7 @@ configure_package_config_file(
 	PATH_VARS
 	DISCORDCOREAPI_INCLUDE_DIR
 )
+
 install(
 	FILES "${CMAKE_CURRENT_BINARY_DIR}/${CONFIG_FILENAME}" 
 	DESTINATION "${CMAKE_INSTALL_PREFIX}/share/discordcoreapi"
