@@ -28,6 +28,9 @@ generate_product_version(
 	VERSION_REVISION "0"
 )
 
+file(GLOB HEADERS "${CMAKE_SOURCE_DIR}/Include/discordcoreapi/*.hpp")
+file(GLOB SOURCES "${CMAKE_SOURCE_DIR}/Source/*.cpp")
+
 if (WIN32)
 	add_library(DiscordCoreAPI SHARED "${SOURCES}" "${PRODUCT_INFO}")
 elseif (UNIX)
@@ -73,9 +76,6 @@ target_include_directories(
 	"$<$<NOT:$<STREQUAL:${SODIUM_INCLUDE_DIR},${VCPKG_INSTALLED_DIR}/include>>:${SODIUM_INCLUDE_DIR}>"
 	PRIVATE
 	"$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Include/>"
-	"$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Source/>"
-	"$<INSTALL_INTERFACE:${CMAKE_SOURCE_DIR}/Include/>"
-	"$<INSTALL_INTERFACE:${CMAKE_SOURCE_DIR}/Source/>"
 	"${GLIB_BASE_DIR}/lib/glib-2.0/include"
 	"${GLIB_BASE_DIR}/include/glib-2.0"
 	"${GLIB_BASE_DIR}/lib/glib-2.0/"
@@ -103,7 +103,7 @@ target_compile_features(
 
 set_target_properties(
 	DiscordCoreAPI PROPERTIES
-	PUBLIC_HEADER "${CMAKE_SOURCE_DIR}/Include/discordcoreapi/Index.hpp"
+	PUBLIC_HEADER "${HEADERS}"
 	OUTPUT_NAME "discordcoreapi"
 	CXX_STANDARD_REQUIRED ON
 	CXX_EXTENSIONS OFF
