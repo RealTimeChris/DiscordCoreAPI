@@ -44,11 +44,11 @@ namespace DiscordCoreInternal {
 
 		BaseSocketAgent(nullptr_t) noexcept;
 
-		std::jthread* getTheTask();
-
 		void sendMessage(nlohmann::json& dataToSend) noexcept;
 
 		void sendMessage(std::string& dataToSend) noexcept;
+
+		std::jthread* getTheTask() noexcept;
 
 		void onClosedExternal() noexcept;
 
