@@ -45,7 +45,7 @@ include(FindLibz)
 include(FindOpenSSL)
 include(FindOpus)
 include(FindSodium)
-
+set(_VCPKG_INSTALLED_DIR "C:/vcpkg/installed")
 set(CMAKE_CONFIGURATION_TYPES "$CACHE{CMAKE_BUILD_TYPE}")
 
 if (NOT _VCPKG_INSTALLED_DIR)

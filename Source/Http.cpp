@@ -309,7 +309,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	HttpClient::HttpClient(std::string botTokenNew, bool doWePrintFFMPEGNew, bool doWePrintHttpNew) : botToken(botTokenNew) {
+	HttpClient::HttpClient(std::string botTokenNew, bool doWePrintHttpNew, bool doWePrintFFMPEGNew) : botToken(botTokenNew) {
 		this->connectionManager.initialize();
 		this->doWePrintFFmpeg = doWePrintFFMPEGNew;
 		this->doWePrintHttp = doWePrintHttpNew;
@@ -395,7 +395,6 @@ namespace DiscordCoreInternal {
 					}
 				}
 			}
-
 			if (returnData.responseCode == 204 || returnData.responseCode == 201 || returnData.responseCode == 200) {
 				if (this->doWePrintHttp) {
 					std::cout << DiscordCoreAPI::shiftToBrightGreen() << workload.callStack + " Success: " << returnData.responseCode << ", "

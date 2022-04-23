@@ -21,7 +21,7 @@
 #include <discordcoreapi/Index.hpp>
 
 #ifdef _WIN32
-DiscordCoreAPI_Dll BOOL WINAPI DllMain(HINSTANCE, DWORD fdwReason, LPVOID) {
+BOOL WINAPI DllMain(HINSTANCE, DWORD fdwReason, LPVOID) {
 	switch (fdwReason) {
 		case DLL_PROCESS_ATTACH: {
 			break;
