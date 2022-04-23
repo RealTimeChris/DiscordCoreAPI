@@ -49,7 +49,16 @@
         "value": "x64"
       },
       "binaryDir": "${sourceDir}/Build/Release",
-      "cacheVariables": { "CMAKE_BUILD_TYPE": "Release" },
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": {
+          "type": "string",
+          "value": "Release"
+        },
+        "CMAKE_TOOLCHAIN_FILE": {
+          "value": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
+          "type": "FILEPATH"
+        }
+      },
       "condition": {
         "lhs": "${hostSystemName}",
         "rhs": "Windows",
@@ -67,7 +76,16 @@
         "value": "x64"
       },
       "binaryDir": "${sourceDir}/Build/Debug",
-      "cacheVariables": { "CMAKE_BUILD_TYPE": "Debug" },
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": {
+          "type": "string",
+          "value": "Debug"
+        },
+        "CMAKE_TOOLCHAIN_FILE": {
+          "value": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
+          "type": "FILEPATH"
+        }
+      },
       "condition": {
         "lhs": "${hostSystemName}",
         "rhs": "Windows",
@@ -81,7 +99,16 @@
     },
     {
       "binaryDir": "${sourceDir}/Build/Release",
-      "cacheVariables": { "CMAKE_BUILD_TYPE": "Release" },
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": {
+          "type": "string",
+          "value": "Release"
+        },
+        "CMAKE_TOOLCHAIN_FILE": {
+          "value": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
+          "type": "FILEPATH"
+        }
+      },
       "condition": {
         "lhs": "${hostSystemName}",
         "rhs": "Linux",
@@ -95,7 +122,16 @@
     },
     {
       "binaryDir": "${sourceDir}/Build/Debug",
-      "cacheVariables": { "CMAKE_BUILD_TYPE": "Debug" },
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": {
+          "type": "string",
+          "value": "Debug"
+        },
+        "CMAKE_TOOLCHAIN_FILE": {
+          "value": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
+          "type": "FILEPATH"
+        }
+      },
       "condition": {
         "lhs": "${hostSystemName}",
         "rhs": "Linux",
