@@ -74,6 +74,8 @@ target_include_directories(
 	PRIVATE
 	"$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Include/>"
 	"$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Source/>"
+	"$<INSTALL_INTERFACE:${CMAKE_SOURCE_DIR}/Include/>"
+	"$<INSTALL_INTERFACE:${CMAKE_SOURCE_DIR}/Source/>"
 	"${GLIB_BASE_DIR}/lib/glib-2.0/include"
 	"${GLIB_BASE_DIR}/include/glib-2.0"
 	"${GLIB_BASE_DIR}/lib/glib-2.0/"
