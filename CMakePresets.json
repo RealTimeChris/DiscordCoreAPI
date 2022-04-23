@@ -80,9 +80,6 @@
       "vendor": { "microsoft.com/VisualStudioSettings/CMake/1.0": { "hostOS": [ "Windows" ] } }
     },
     {
-      "architecture": {
-        "strategy": "set"
-      },
       "binaryDir": "${sourceDir}/Build/Release",
       "cacheVariables": { "CMAKE_BUILD_TYPE": "Release" },
       "condition": {
@@ -97,9 +94,6 @@
       "vendor": { "microsoft.com/VisualStudioSettings/CMake/1.0": { "hostOS": [ "Linux" ] } }
     },
     {
-      "architecture": {
-        "strategy": "set"
-      },
       "binaryDir": "${sourceDir}/Build/Debug",
       "cacheVariables": { "CMAKE_BUILD_TYPE": "Debug" },
       "condition": {
