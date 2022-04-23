@@ -78,6 +78,7 @@ namespace DiscordCoreInternal {
 		} catch (...) {
 			DiscordCoreAPI::reportException("BaseSocketAgent::getTheTask()");
 		}
+		return nullptr;
 	}
 
 	void BaseSocketAgent::sendMessage(nlohmann::json& dataToSend) noexcept {
