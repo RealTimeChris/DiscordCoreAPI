@@ -39,7 +39,7 @@ endif()
 
 add_library(DiscordCoreAPI::DiscordCoreAPI ALIAS DiscordCoreAPI)
 
-foreach (LIBRARY "${RELEASE_LIBRARIES}")
+foreach (LIBRARY ${RELEASE_LIBRARIES})
 	if (LIBRARY)
 		target_link_libraries(
 			DiscordCoreAPI PUBLIC
@@ -48,7 +48,7 @@ foreach (LIBRARY "${RELEASE_LIBRARIES}")
 	endif()
 endforeach()
 
-foreach (LIBRARY "${DEBUG_LIBRARIES}")
+foreach (LIBRARY ${DEBUG_LIBRARIES})
 	if (LIBRARY)
 		target_link_libraries(
 			DiscordCoreAPI PUBLIC
