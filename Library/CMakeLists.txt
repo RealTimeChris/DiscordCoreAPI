@@ -43,19 +43,16 @@ foreach (LIBRARY ${RELEASE_LIBRARIES})
 	if (LIBRARY)
 		target_link_libraries(
 			DiscordCoreAPI PUBLIC
-			"$<BUILD_INTERFACE:$<$<CONFIG:Release>:${LIBRARY_NEW}/${LIBRARY_NAME}>>"
+			"$<BUILD_INTERFACE:$<$<CONFIG:Release>:${LIBRARY}>>"
 		)
 	endif()
 endforeach()
 
 foreach (LIBRARY "${DEBUG_LIBRARIES}")
-	cmake_path(GET LIBRARY FILENAME LIBRARY_NAME)
-	cmake_path(GET LIBRARY PARENT_PATH DEBUG_FILE_PATH)
-	cmake_path(RELATIVE_PATH DEBUG_FILE_PATH OUTPUT_VARIABLE LIBRARY_NEW)
 	if (LIBRARY)
 		target_link_libraries(
 			DiscordCoreAPI PUBLIC
-			"$<BUILD_INTERFACE:$<$<CONFIG:DEBUG>:${LIBRARY_NEW}/${LIBRARY_NAME}>>"
+			"$<BUILD_INTERFACE:$<$<CONFIG:DEBUG>:${LIBRARY}>>"
 		)
 	endif()
 endforeach()
