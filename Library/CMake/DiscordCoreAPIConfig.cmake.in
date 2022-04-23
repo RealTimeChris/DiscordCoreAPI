@@ -32,5 +32,4 @@ foreach(LIBRARY_NAME ${LIBRARY_NAMES_NEW})
 	endif()
 endforeach()
 
-
 check_required_components(DiscordCoreAPI)
