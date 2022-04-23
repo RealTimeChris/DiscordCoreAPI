@@ -101,7 +101,8 @@ namespace DiscordCoreInternal {
 
 	HttpSSLClient::HttpSSLClient(nullptr_t) noexcept {};
 
-	HttpSSLClient::HttpSSLClient() noexcept {}
+	HttpSSLClient::HttpSSLClient() noexcept {
+	}
 
 	bool HttpSSLClient::connect(std::string& baseUrl, std::string portNew) noexcept {
 		try {
@@ -290,6 +291,7 @@ namespace DiscordCoreInternal {
 						return true;
 					}
 					case SSL_ERROR_SYSCALL: {
+						reportSSLError("HttpSSLClient::processIO::SSL_write_ex() Error: ", returnValue, this->ssl);
 						[[fallthrough]];
 					}
 					case SSL_ERROR_ZERO_RETURN: {
@@ -327,6 +329,7 @@ namespace DiscordCoreInternal {
 						return true;
 					}
 					case SSL_ERROR_SYSCALL: {
+						reportSSLError("HttpSSLClient::processIO::SSL_read_ex() Error: ", returnValue, this->ssl);
 						[[fallthrough]];
 					}
 					case SSL_ERROR_ZERO_RETURN: {
