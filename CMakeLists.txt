@@ -45,10 +45,10 @@ include(FindLibz)
 include(FindOpenSSL)
 include(FindOpus)
 include(FindSodium)
-set(_VCPKG_INSTALLED_DIR "C:/vcpkg/installed")
+
 set(CMAKE_CONFIGURATION_TYPES "$CACHE{CMAKE_BUILD_TYPE}")
-message("$ENV{VCPKG_ROOT}")
-if (NOT _VCPKG_INSTALLED_DIR)
+
+if (NOT VCPKG_ROOT)
 	set(LINUX_OK TRUE)
 	if (UNIX)	
 		if (NOT LIBZ_INCLUDE_DIR OR NOT LIBZ_RELEASE_ROOT OR NOT LIBZ_DEBUG_ROOT)
