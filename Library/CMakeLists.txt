@@ -77,9 +77,9 @@ target_include_directories(
 	"$<$<NOT:$<STREQUAL:${SODIUM_INCLUDE_DIR},${VCPKG_INSTALLED_DIR}/include>>:${SODIUM_INCLUDE_DIR}>"
 	PRIVATE
 	"${GLIB_BASE_DIR}/lib/glib-2.0/include"
-	"${GLIB_BASE_DIR}/glib-2.0/"
-	"${GLIB_BASE_DIR}/lib/glib-2.0/"
 	"${GLIB_BASE_DIR}/include/glib-2.0"
+	"${GLIB_BASE_DIR}/lib/glib-2.0/"
+	"${GLIB_BASE_DIR}/glib-2.0/"
 )
 
 target_compile_options(
