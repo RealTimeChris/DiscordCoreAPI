@@ -101,7 +101,7 @@ target_compile_features(
 
 set_target_properties(
 	DiscordCoreAPI PROPERTIES
-	PUBLIC_HEADER "${HEADERS}"
+	PUBLIC_HEADER "${CMAKE_SOURCE_DIR}/Include/discordcoreapi/Index.hpp"
 	OUTPUT_NAME "discordcoreapi"
 	CXX_STANDARD_REQUIRED ON
 	CXX_EXTENSIONS OFF
