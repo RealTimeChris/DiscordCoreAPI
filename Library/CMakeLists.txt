@@ -80,7 +80,6 @@ target_include_directories(
 	"${GLIB_BASE_DIR}/glib-2.0/"
 	"${GLIB_BASE_DIR}/lib/glib-2.0/"
 	"${GLIB_BASE_DIR}/include/glib-2.0"
-	"${GLIB_BASE_DIR}/include/"
 )
 
 target_compile_options(
