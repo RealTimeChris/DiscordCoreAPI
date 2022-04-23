@@ -43,7 +43,7 @@ foreach (LIBRARY "${RELEASE_LIBRARIES}")
 	if (LIBRARY)
 		target_link_libraries(
 			DiscordCoreAPI PUBLIC
-			"$<$<CONFIG:Release>:${LIBRARY}>"
+			"$<BUILD_INTERFACE:$<$<CONFIG:Release>:${LIBRARY}>>"
 		)
 	endif()
 endforeach()
@@ -52,7 +52,7 @@ foreach (LIBRARY "${DEBUG_LIBRARIES}")
 	if (LIBRARY)
 		target_link_libraries(
 			DiscordCoreAPI PUBLIC
-			"$<$<CONFIG:Debug>:${LIBRARY}>"
+			"$<BUILD_INTERFACE:$<$<CONFIG:Debug>:${LIBRARY}>>"
 		)
 	endif()
 endforeach()
