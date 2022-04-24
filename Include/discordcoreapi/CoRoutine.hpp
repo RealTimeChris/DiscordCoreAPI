@@ -279,7 +279,6 @@ namespace DiscordCoreAPI {
 		}
 
 		/// Gets the resulting value of the CoRoutine. \brief Gets the resulting value of the CoRoutine.
-		/// \returns void The return value of the CoRoutine.
 		void get() {
 			if (this && this->coroutineHandle) {
 				this->coroutineHandle.promise().theFlag.wait(false, std::memory_order::seq_cst);
@@ -295,7 +294,6 @@ namespace DiscordCoreAPI {
 		}
 
 		/// Cancels the currently executing CoRoutine and returns the current result. \brief Cancels the currently executing CoRoutine and returns the current result.
-		/// \returns void The return value of the CoRoutine.
 		void cancel() {
 			if (this && this->coroutineHandle) {
 				if (!this->coroutineHandle.done()) {
