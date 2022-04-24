@@ -2,6 +2,15 @@
   "buildPresets": [
     {
       "configuration": "Release",
+      "configurePreset": "Windows-Release-With-ASAN",
+      "description": "Target Windows with the Visual Studio development environment.",
+      "displayName": "Windows x64 Release With ASAN - Build",
+      "inheritConfigureEnvironment": true,
+      "name": "Windows-Release-With-ASAN",
+      "verbose": true
+    },
+    {
+      "configuration": "Release",
       "configurePreset": "Windows-Release",
       "description": "Target Windows with the Visual Studio development environment.",
       "displayName": "Windows x64 Release - Build",
@@ -43,6 +52,30 @@
     "patch": 2
   },
   "configurePresets": [
+    {
+      "architecture": {
+        "strategy": "set",
+        "value": "x64"
+      },
+      "binaryDir": "${sourceDir}/Build/Release",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": {
+          "type": "string",
+          "value": "Release"
+        }
+      },
+      "condition": {
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows",
+        "type": "equals"
+      },
+      "description": "Target Windows with the Visual Studio development environment.",
+      "displayName": "Windows x64 Release With ASAN - Config",
+      "environment": { "EnableASAN": "true" },
+      "generator": "Visual Studio 17 2022",
+      "name": "Windows-Release-With-ASAN",
+      "vendor": { "microsoft.com/VisualStudioSettings/CMake/1.0": { "hostOS": [ "Windows" ] } }
+    },
     {
       "architecture": {
         "strategy": "set",
