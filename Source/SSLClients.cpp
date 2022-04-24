@@ -99,8 +99,6 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	HttpSSLClient::HttpSSLClient(nullptr_t) noexcept {};
-
 	HttpSSLClient::HttpSSLClient() noexcept {
 	}
 

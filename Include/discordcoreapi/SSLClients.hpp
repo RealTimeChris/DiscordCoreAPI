@@ -263,8 +263,6 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll HttpSSLClient {
 	  public:
-		HttpSSLClient(nullptr_t) noexcept;
-
 		HttpSSLClient() noexcept;
 
 		bool connect(std::string& baseUrl, std::string portNew = "443") noexcept;

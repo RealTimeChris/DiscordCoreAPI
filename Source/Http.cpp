@@ -418,7 +418,7 @@ namespace DiscordCoreInternal {
 			}
 			return returnData;
 		} catch (...) {
-			DiscordCoreAPI::reportException("HttpClient::executeByRateLimitData()", nullptr, true);
+			DiscordCoreAPI::reportException("HttpClient::executeByRateLimitData()");
 		}
 		return returnData;
 	}
@@ -449,7 +449,7 @@ namespace DiscordCoreInternal {
 		} catch (...) {
 			theConnection->doWeConnect = true;
 			theConnection->currentRecursionDepth += 1;
-			DiscordCoreAPI::reportException("HttpClient::executeHttpRequest()", nullptr);
+			DiscordCoreAPI::reportException("HttpClient::executeHttpRequest()");
 			return this->executeHttpRequest(workload, theConnection, rateLimitDatPtr);
 		}
 	}
@@ -493,6 +493,10 @@ namespace DiscordCoreInternal {
 			}
 			if (theConnection->checkForHeadersToParse(theConnection->getInputBuffer()) && !theConnection->doWeHaveHeaders && !stopWatch.hasTimePassed()) {
 				theConnection->parseHeaders(theConnection->getInputBuffer());
+			}
+			if (static_cast<int64_t>(theConnection->getInputBuffer().size()) >= theConnection->contentSize &&
+				!theConnection->parseChunk(theConnection->getInputBuffer())) {
+				break;
 			}
 			if (stopWatch.hasTimePassed() || (theConnection->responseCode == -5 && theConnection->contentSize == -5) ||
 				!theConnection->parseChunk(theConnection->getInputBuffer())) {
