@@ -39,23 +39,21 @@ endif()
 
 add_library(DiscordCoreAPI::DiscordCoreAPI ALIAS DiscordCoreAPI)
 
-foreach (LIBRARY "${RELEASE_LIBRARIES}") 
-	if (LIBRARY)
-		target_link_libraries(
-			DiscordCoreAPI PUBLIC
-			"$<BUILD_INTERFACE:$<$<CONFIG:Release>:${LIBRARY}>>"
-		)
-	endif()
-endforeach()
-
-foreach (LIBRARY "${DEBUG_LIBRARIES}")
-	if (LIBRARY)
-		target_link_libraries(
-			DiscordCoreAPI PUBLIC
-			"$<BUILD_INTERFACE:$<$<CONFIG:Debug>:${LIBRARY}>>"
-		)
-	endif()
-endforeach()
+target_link_libraries(
+	DiscordCoreAPI PUBLIC
+	$<$<TARGET_EXISTS:CURL::Curl>:CURL::Curl>
+	$<$<TARGET_EXISTS:FFMPEG::AVCodec>:FFMPEG::AVCodec>
+	$<$<TARGET_EXISTS:FFMPEG::AVFormat>:FFMPEG::AVFormat>
+	$<$<TARGET_EXISTS:FFMPEG::AVUtil>:FFMPEG::AVUtil>
+	$<$<TARGET_EXISTS:FFMPEG::SWResample>:FFMPEG::SWResample>
+	$<$<TARGET_EXISTS:GLIB::Glib>:GLIB::Glib>
+	$<$<TARGET_EXISTS:INTL::Intl>:INTL::Intl>
+	$<$<TARGET_EXISTS:LIBZ::Libz>:LIBZ::Libz>
+	$<$<TARGET_EXISTS:OPENSSL::Crypto>:OPENSSL::Crypto>
+	$<$<TARGET_EXISTS:OPENSSL::Ssl>:OPENSSL::Ssl>
+	$<$<TARGET_EXISTS:OPUS::Opus>:OPUS::Opus>
+	$<$<TARGET_EXISTS:SODIUM::Sodium>:SODIUM::Sodium>
+)
 
 if (VCPKG_INSTALLED_DIR)
 	set(GLIB_BASE_DIR "${VCPKG_INSTALLED_DIR}")	

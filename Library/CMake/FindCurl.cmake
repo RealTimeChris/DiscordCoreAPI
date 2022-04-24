@@ -8,8 +8,7 @@
 #	RELEASE_ROOT_DIR = The directory containing the RELEASE version of the library, or library's linker file.
 #	DEBUG_ROOT_DIR = The directory containing the DEBUG version of the library, or library's linker file.
 # What it produces:
-#	CURL_RELEASE_LIBRARY, CURL_DEBUG_LIBRARY and in the case of SHARED LIBRARIES - 
-#	CURL_RELEASE_DLL, and CURL_DEBUG_DLL. Which each points to the respective files of each kind. 
+#	CURL::Curl
 #
 function(find_curl RELEASE_ROOT_DIR DEBUG_ROOT_DIR)
 	find_library(
@@ -23,48 +22,41 @@ function(find_curl RELEASE_ROOT_DIR DEBUG_ROOT_DIR)
 		PATHS "${DEBUG_ROOT_DIR}" NO_DEFAULT_PATH
 	)
 	if(CURL_RELEASE_LIBRARY AND CURL_DEBUG_LIBRARY)
-		list(APPEND RELEASE_LIBRARIES "${CURL_RELEASE_LIBRARY}")
-		list(APPEND DEBUG_LIBRARIES  "${CURL_DEBUG_LIBRARY}")
-		set(RELEASE_LIBRARIES "${RELEASE_LIBRARIES}" PARENT_SCOPE)
-		set(DEBUG_LIBRARIES  "${DEBUG_LIBRARIES}" PARENT_SCOPE)
 		message(STATUS "Found Curl libraries!")
 	else()
 		message(FATAL_ERROR "Couldn't find Curl!")
 		return()
 	endif()
-	if (WIN32)
-		cmake_path(GET CURL_RELEASE_LIBRARY PARENT_PATH CURL_RELEASE_FILE_PATH)
-		find_file(
-			CURL_RELEASE_DLL
-			NAMES "libcurl.dll" "libcurl.dll" "curl.dll" "libcurl-x64.dll" 
-			PATHS "${CURL_RELEASE_FILE_PATH}/" "${CURL_RELEASE_FILE_PATH}/../bin/"
-			NO_DEFAULT_PATH
+	cmake_path(GET CURL_RELEASE_LIBRARY PARENT_PATH CURL_RELEASE_FILE_PATH)
+	find_file(
+		CURL_RELEASE_DLL
+		NAMES "libcurl.dll" "libcurl.dll" "curl.dll" "libcurl-x64.dll" 
+		PATHS "${CURL_RELEASE_FILE_PATH}/" "${CURL_RELEASE_FILE_PATH}/../bin/"
+		NO_DEFAULT_PATH
+	)
+	cmake_path(GET CURL_DEBUG_LIBRARY PARENT_PATH CURL_DEBUG_FILE_PATH)
+	find_file(
+		CURL_DEBUG_DLL
+		NAMES "libcurl-d.dll" "libcurl.dll" "curl-d.dll" "libcurl-x64.dll"
+		PATHS "${CURL_DEBUG_FILE_PATH}/" "${CURL_DEBUG_FILE_PATH}/../bin/"
+		NO_DEFAULT_PATH
+	)
+	if (CURL_RELEASE_DLL AND CURL_DEBUG_DLL)
+		add_library(CURL::Curl SHARED IMPORTED GLOBAL)
+		set_target_properties(
+			CURL::Curl PROPERTIES 
+			IMPORTED_LOCATION_RELEASE "${CURL_RELEASE_DLL}" IMPORTED_LOCATION_DEBUG "${CURL_DEBUG_DLL}"
+			IMPORTED_IMPLIB_RELEASE "${CURL_RELEASE_LIBRARY}" IMPORTED_IMPLIB_DEBUG "${CURL_DEBUG_LIBRARY}"
 		)
-		cmake_path(GET CURL_DEBUG_LIBRARY PARENT_PATH CURL_DEBUG_FILE_PATH)
-		find_file(
-			CURL_DEBUG_DLL
-			NAMES "libcurl-d.dll" "libcurl.dll" "curl-d.dll" "libcurl-x64.dll"
-			PATHS "${CURL_DEBUG_FILE_PATH}/" "${CURL_DEBUG_FILE_PATH}/../bin/"
-			NO_DEFAULT_PATH
+		message(STATUS "Found Curl Dlls!")
+	else()
+		add_library(CURL::Curl STATIC IMPORTED GLOBAL)
+		set_target_properties(
+			CURL::Curl PROPERTIES 
+			IMPORTED_LOCATION_RELEASE "${CURL_RELEASE_LIBRARY}" IMPORTED_LOCATION_DEBUG "${CURL_DEBUG_LIBRARY}"
 		)
-		if (CURL_RELEASE_DLL AND CURL_DEBUG_DLL)
-			list(APPEND LIBRARY_NAMES "CURL")
-			set(LIBRARY_NAMES "${LIBRARY_NAMES}" PARENT_SCOPE)
-			list(APPEND RELEASE_DLLS "${CURL_RELEASE_DLL}")
-			list(APPEND DEBUG_DLLS  "${CURL_DEBUG_DLL}")
-			set(RELEASE_DLLS "${RELEASE_DLLS}" PARENT_SCOPE)
-			set(DEBUG_DLLS  "${DEBUG_DLLS}" PARENT_SCOPE)
-			message(STATUS "Found Curl Dlls!")
-		else()
-			list(APPEND LIBRARY_NAMES "CURL")
-			set(LIBRARY_NAMES "${LIBRARY_NAMES}" PARENT_SCOPE)
-			list(APPEND RELEASE_DLLS "NOTFOUND")
-			list(APPEND DEBUG_DLLS  "NOTFOUND")
-			set(RELEASE_DLLS "${RELEASE_DLLS}" PARENT_SCOPE)
-			set(DEBUG_DLLS  "${DEBUG_DLLS}" PARENT_SCOPE)
-			unset(CURL_RELEASE_DLL CACHE)
-			unset(CURL_DEBUG_DLL CACHE)
-			message(STATUS "Couldn't find Curl Dlls - linking statically!")
-		endif()
+		unset(CURL_RELEASE_DLL CACHE)
+		unset(CURL_DEBUG_DLL CACHE)
+		message(STATUS "Couldn't find Curl Dlls - linking statically!")
 	endif()
 endfunction()
