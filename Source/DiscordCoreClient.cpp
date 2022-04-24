@@ -153,7 +153,7 @@ namespace DiscordCoreAPI {
 		std::cout << shiftToBrightGreen() << "All of the shards are connected for the current process!" << reset() << std::endl << std::endl;
 		for (auto& value: functionsToExecuteNew) {
 			if (value.repeated) {
-				TimeElapsedHandler onSend = [=, this](void) -> void {
+				TimeElapsedHandler onSend = [=, &value, this](void) -> void {
 					value.function(this);
 				};
 				this->threadIds.push_back(this->threadPool.storeThread(onSend, value.intervalInMs));
