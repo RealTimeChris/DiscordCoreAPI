@@ -168,7 +168,7 @@ namespace DiscordCoreAPI {
 				if (this->areWeQuitting.load(std::memory_order::seq_cst)) {
 					break;
 				}
-				auto coroHandle = this->coroutineHandles.front();
+				auto& coroHandle = this->coroutineHandles.front();
 				this->coroutineHandles.pop();
 				theLock02.unlock();
 				if (theAtomicBoolPtr) {
