@@ -25,7 +25,7 @@
 #endif
 
 #ifdef _WIN32
-	#pragma comment(lib, "ws2_32")
+	#pragma comment(lib, "Ws2_32.lib")
 	#include <WS2tcpip.h>
 	#include <WinSock2.h>
 #else
@@ -58,6 +58,21 @@ namespace DiscordCoreInternal {
 #endif
 
 	DiscordCoreAPI_Dll void reportError(std::string errorPosition, int32_t errorValue) noexcept;
+
+	struct DiscordCoreAPI_Dll WSADataWrapper {
+		struct DiscordCoreAPI_Dll WSADataDeleter {
+			void operator()(WSADATA* other) {
+				WSACleanup();
+				delete other;
+			}
+		};
+
+		WSADataWrapper() {
+			WSAStartup(MAKEWORD(2, 2), this->thePtr.get());
+		}
+	  protected:
+		std::unique_ptr<WSADATA, WSADataDeleter> thePtr{ new WSADATA{}, WSADataDeleter{} };
+	};
 
 #ifndef _WIN32
 	struct DiscordCoreAPI_Dll epollWrapper {
