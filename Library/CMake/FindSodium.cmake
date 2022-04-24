@@ -8,8 +8,7 @@
 #	RELEASE_ROOT_DIR = The directory containing the RELEASE version of the library, or library's linker file.
 #	DEBUG_ROOT_DIR = The directory containing the DEBUG version of the library, or library's linker file.
 # What it produces:
-#	SODIUM_RELEASE_LIBRARY, SODIUM_DEBUG_LIBRARY and in the case of SHARED LIBRARIES - 
-#	SODIUM_RELEASE_DLL, and SODIUM_DEBUG_DLL. Which each points to the respective files of each kind. 
+#	SODIUM::Sodium
 #
 function(find_sodium RELEASE_ROOT_DIR DEBUG_ROOT_DIR)
 	find_library(

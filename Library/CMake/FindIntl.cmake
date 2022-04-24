@@ -8,8 +8,7 @@
 #	RELEASE_ROOT_DIR = The directory containing the RELEASE version of the library, or library's linker file.
 #	DEBUG_ROOT_DIR = The directory containing the DEBUG version of the library, or library's linker file.
 # What it produces:
-#	INTL_RELEASE_LIBRARY, INTL_DEBUG_LIBRARY and in the case of SHARED LIBRARIES - 
-#	INTL_RELEASE_DLL, and INTL_DEBUG_DLL. Which each points to the respective files of each kind. 
+#	INTL::Intl
 #
 function(find_intl RELEASE_ROOT_DIR DEBUG_ROOT_DIR)
 	find_file(

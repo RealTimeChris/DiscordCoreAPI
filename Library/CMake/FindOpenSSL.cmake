@@ -8,10 +8,7 @@
 #	RELEASE_ROOT_DIR = The directory containing the RELEASE version of the library, or library's linker file.
 #	DEBUG_ROOT_DIR = The directory containing the DEBUG version of the library, or library's linker file.
 # What it produces:
-#	LIBSSL_RELEASE_LIBRARY, LIBSSL_DEBUG_LIBRARY and in the case of STATIC LIBRARIES - 
-#	LIBSSL_RELEASE_DLL, and LIBSSL_DEBUG_DLL. Which each points to the respective files of each kind. 
-#	LIBCRYPTO_RELEASE_LIBRARY, LIBCRYPTO_DEBUG_LIBRARY and in the case of STATIC LIBRARIES - 
-#	LIBCRYPTO_RELEASE_DLL, and LIBCRYPTO_DEBUG_DLL. Which each points to the respective files of each kind. 
+#	OPENSSL::Crypto and OPENSLL::Ssl
 #
 function(find_openssl RELEASE_ROOT_DIR DEBUG_ROOT_DIR)
 	find_library(

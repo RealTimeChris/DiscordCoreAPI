@@ -8,8 +8,7 @@
 #	RELEASE_ROOT_DIR = The directory containing the RELEASE version of the library, or library's linker file.
 #	DEBUG_ROOT_DIR = The directory containing the DEBUG version of the library, or library's linker file.
 # What it produces:
-#	LIBZ_RELEASE_LIBRARY, LIBZ_DEBUG_LIBRARY and in the case of SHARED LIBRARIES - 
-#	LIBZ_RELEASE_DLL, and LIBZ_DEBUG_DLL. Which each points to the respective files of each kind. 
+#	LIBZ::Libz
 #
 function(find_libz RELEASE_ROOT_DIR DEBUG_ROOT_DIR)
 	if (UNIX)
