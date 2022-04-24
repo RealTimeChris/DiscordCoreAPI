@@ -37,7 +37,6 @@ set(CMAKE_PDB_OUTPUT_DIRECTORY_DEBUG "${CMAKE_SOURCE_DIR}/Output Files/Debug")
 
 include(CMakePackageConfigHelpers)
 include(GenerateProductVersion)
-include(CollectRelativePath)
 include(FindCurl)
 include(FindFFMPEG)
 include(FindGlib)

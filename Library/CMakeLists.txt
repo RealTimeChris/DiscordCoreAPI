@@ -39,29 +39,8 @@ endif()
 
 add_library(DiscordCoreAPI::DiscordCoreAPI ALIAS DiscordCoreAPI)
 
-set(RELEASE_DLLS_NEW "" PARENT_SCOPE)
-foreach(LIBRARY ${RELEASE_DLLS})
-if (LIBRARY)
-		collect_relative_path("${LIBRARY}")
-		list(APPEND RELEASE_DLLS_NEW "${LIBRARY}")
-	endif()
-endforeach()
-message("RELEASE DLLS: ${RELEASE_DLLS_NEW}")
-set(DEBUG_DLLS_NEW "" PARENT_SCOPE)
-foreach(LIBRARY ${DEBUG_DLLS})
+foreach (LIBRARY "${RELEASE_LIBRARIES}") 
 	if (LIBRARY)
-		collect_relative_path("${LIBRARY}")
-		list(APPEND DEBUG_DLLS_NEW "${LIBRARY}")
-	endif()
-endforeach()
-message("DEBUG DLLS: ${DEBUG_DLLS_NEW}")
-set(RELEASE_LIBRARIES_NEW "" PARENT_SCOPE)
-foreach (LIBRARY ${RELEASE_LIBRARIES}) 
-	if (LIBRARY)
-		collect_relative_path("${LIBRARY}")
-		list(APPEND RELEASE_LIBRARIES_NEW "${LIBRARY}")
-		cmake_path(GET OUTPUT_RELATIVE_PATH PARENT_PATH ROOT_PATH_NEW)
-		cmake_path(GET OUTPUT_RELATIVE_PATH FILENAME NEW_FILENAME)
 		target_link_libraries(
 			DiscordCoreAPI PUBLIC
 			"$<BUILD_INTERFACE:$<$<CONFIG:Release>:${LIBRARY}>>"
@@ -69,13 +48,8 @@ foreach (LIBRARY ${RELEASE_LIBRARIES})
 	endif()
 endforeach()
 
-set(DEBUG_LIBRARIES_NEW "" PARENT_SCOPE)
-foreach (LIBRARY ${DEBUG_LIBRARIES}) 
+foreach (LIBRARY "${DEBUG_LIBRARIES}")
 	if (LIBRARY)
-		collect_relative_path("${LIBRARY}")
-		list(APPEND DEBUG_LIBRARIES_NEW "${LIBRARY}")
-		cmake_path(GET OUTPUT_RELATIVE_PATH PARENT_PATH ROOT_PATH_NEW)
-		cmake_path(GET OUTPUT_RELATIVE_PATH FILENAME NEW_FILENAME)
 		target_link_libraries(
 			DiscordCoreAPI PUBLIC
 			"$<BUILD_INTERFACE:$<$<CONFIG:Debug>:${LIBRARY}>>"
