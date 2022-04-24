@@ -7,10 +7,11 @@
 # Where:
 #	RELEASE_ROOT_DIR = The directory containing the RELEASE version of the library, or library's linker file.
 #	DEBUG_ROOT_DIR = The directory containing the DEBUG version of the library, or library's linker file.
+#	INCLUDE_DIR = The directory containing the public headers.
 # What it produces:
 #	LIBZ::Libz
 #
-function(find_libz RELEASE_ROOT_DIR DEBUG_ROOT_DIR)
+function(find_libz RELEASE_ROOT_DIR DEBUG_ROOT_DIR INCLUDE_DIR)
 	if (UNIX)
 		find_library(
 			LIBZ_RELEASE_LIBRARY
@@ -28,6 +29,7 @@ function(find_libz RELEASE_ROOT_DIR DEBUG_ROOT_DIR)
 			set_target_properties(
 				LIBZ::Libz PROPERTIES 
 				IMPORTED_LOCATION_RELEASE "${LIBZ_RELEASE_LIBRARY}" IMPORTED_LOCATION_DEBUG "${LIBZ_DEBUG_LIBRARY}"
+				PUBLIC_HEADER "${INCLUDE_DIR}"
 			)
 		else()
 			message(STATUS "Couldn't find Libz!")

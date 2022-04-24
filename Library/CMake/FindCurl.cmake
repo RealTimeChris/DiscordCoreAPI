@@ -7,10 +7,11 @@
 # Where:
 #	RELEASE_ROOT_DIR = The directory containing the RELEASE version of the library, or library's linker file.
 #	DEBUG_ROOT_DIR = The directory containing the DEBUG version of the library, or library's linker file.
+#	INCLUDE_DIR = The directory containing the public headers.
 # What it produces:
 #	CURL::Curl
 #
-function(find_curl RELEASE_ROOT_DIR DEBUG_ROOT_DIR)
+function(find_curl RELEASE_ROOT_DIR DEBUG_ROOT_DIR INCLUDE_DIR)
 	find_library(
 		CURL_RELEASE_LIBRARY
 		NAMES "libcurl${LIBRARY_SUFFIX}" "libcurl_imp${LIBRARY_SUFFIX}" "curl${LIBRARY_SUFFIX}" "curl_imp${LIBRARY_SUFFIX}"
@@ -47,6 +48,7 @@ function(find_curl RELEASE_ROOT_DIR DEBUG_ROOT_DIR)
 			CURL::Curl PROPERTIES 
 			IMPORTED_LOCATION_RELEASE "${CURL_RELEASE_DLL}" IMPORTED_LOCATION_DEBUG "${CURL_DEBUG_DLL}"
 			IMPORTED_IMPLIB_RELEASE "${CURL_RELEASE_LIBRARY}" IMPORTED_IMPLIB_DEBUG "${CURL_DEBUG_LIBRARY}"
+			PUBLIC_HEADER "${INCLUDE_DIR}"
 		)
 		message(STATUS "Found Curl Dlls!")
 	else()
@@ -54,6 +56,7 @@ function(find_curl RELEASE_ROOT_DIR DEBUG_ROOT_DIR)
 		set_target_properties(
 			CURL::Curl PROPERTIES 
 			IMPORTED_LOCATION_RELEASE "${CURL_RELEASE_LIBRARY}" IMPORTED_LOCATION_DEBUG "${CURL_DEBUG_LIBRARY}"
+			PUBLIC_HEADER "${INCLUDE_DIR}"
 		)
 		unset(CURL_RELEASE_DLL CACHE)
 		unset(CURL_DEBUG_DLL CACHE)

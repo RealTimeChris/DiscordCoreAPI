@@ -7,10 +7,11 @@
 # Where:
 #	RELEASE_ROOT_DIR = The directory containing the RELEASE version of the library, or library's linker file.
 #	DEBUG_ROOT_DIR = The directory containing the DEBUG version of the library, or library's linker file.
+#	INCLUDE_DIR = The directory containing the public headers.
 # What it produces:
 #	GLIB::Glib
 #
-function(find_glib RELEASE_ROOT_DIR DEBUG_ROOT_DIR)
+function(find_glib RELEASE_ROOT_DIR DEBUG_ROOT_DIR INCLUDE_DIR)
 	find_library(
 		GLIB_RELEASE_LIBRARY
 		NAMES "${LIBRARY_PREFIX}glib-2.0${LIBRARY_SUFFIX}" 
@@ -48,6 +49,7 @@ function(find_glib RELEASE_ROOT_DIR DEBUG_ROOT_DIR)
 				GLIB::Glib PROPERTIES 
 				IMPORTED_LOCATION_RELEASE "${GLIB_RELEASE_DLL}" IMPORTED_LOCATION_DEBUG "${GLIB_DEBUG_DLL}"
 				IMPORTED_IMPLIB_RELEASE "${GLIB_RELEASE_LIBRARY}" IMPORTED_IMPLIB_DEBUG "${GLIB_DEBUG_LIBRARY}"
+				PUBLIC_HEADER "${INCLUDE_DIR}"
 			)
 			message(STATUS "Found Glib Dlls!")
 		else()
@@ -55,6 +57,7 @@ function(find_glib RELEASE_ROOT_DIR DEBUG_ROOT_DIR)
 			set_target_properties(
 				GLIB::Glib PROPERTIES 
 				IMPORTED_LOCATION_RELEASE "${GLIB_RELEASE_LIBRARY}" IMPORTED_LOCATION_DEBUG "${GLIB_DEBUG_LIBRARY}"
+				PUBLIC_HEADER "${INCLUDE_DIR}"
 			)
 			unset(GLIB_RELEASE_DLL CACHE)
 			unset(GLIB_DEBUG_DLL CACHE)

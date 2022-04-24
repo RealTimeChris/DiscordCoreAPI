@@ -7,10 +7,11 @@
 # Where:
 #	RELEASE_ROOT_DIR = The directory containing the RELEASE version of the library, or library's linker file.
 #	DEBUG_ROOT_DIR = The directory containing the DEBUG version of the library, or library's linker file.
+#	INCLUDE_DIR = The directory containing the public headers.
 # What it produces:
 #	OPUS::Opus
 #
-function(find_opus RELEASE_ROOT_DIR DEBUG_ROOT_DIR)
+function(find_opus RELEASE_ROOT_DIR DEBUG_ROOT_DIR INCLUDE_DIR)
 	find_library(
 		OPUS_RELEASE_LIBRARY
 		NAMES "${LIBRARY_PREFIX}opus${LIBRARY_SUFFIX}" 
@@ -48,6 +49,7 @@ function(find_opus RELEASE_ROOT_DIR DEBUG_ROOT_DIR)
 				OPUS::Opus PROPERTIES 
 				IMPORTED_LOCATION_RELEASE "${OPUS_RELEASE_DLL}" IMPORTED_LOCATION_DEBUG "${OPUS_DEBUG_DLL}"
 				IMPORTED_IMPLIB_RELEASE "${OPUS_RELEASE_LIBRARY}" IMPORTED_IMPLIB_DEBUG "${OPUS_DEBUG_LIBRARY}"
+				PUBLIC_HEADER "${INCLUDE_DIR}"
 			)
 			message(STATUS "Found Opus Dlls!")
 		else()
@@ -55,6 +57,7 @@ function(find_opus RELEASE_ROOT_DIR DEBUG_ROOT_DIR)
 			set_target_properties(
 				OPUS::Opus PROPERTIES 
 				IMPORTED_LOCATION_RELEASE "${OPUS_RELEASE_LIBRARY}" IMPORTED_LOCATION_DEBUG "${OPUS_DEBUG_LIBRARY}"
+				PUBLIC_HEADER "${INCLUDE_DIR}"
 			)
 			unset(OPUS_RELEASE_DLL CACHE)
 			unset(OPUS_DEBUG_DLL CACHE)

@@ -7,10 +7,11 @@
 # Where:
 #	RELEASE_ROOT_DIR = The directory containing the RELEASE version of the library, or library's linker file.
 #	DEBUG_ROOT_DIR = The directory containing the DEBUG version of the library, or library's linker file.
+#	INCLUDE_DIR = The directory containing the public headers.
 # What it produces:
 #	INTL::Intl
 #
-function(find_intl RELEASE_ROOT_DIR DEBUG_ROOT_DIR)
+function(find_intl RELEASE_ROOT_DIR DEBUG_ROOT_DIR INCLUDE_DIR)
 	find_file(
 		INTL_RELEASE_LIBRARY
 		NAMES "libintl.dll.a" "libintl.lib" "libintl.a"
@@ -50,6 +51,7 @@ function(find_intl RELEASE_ROOT_DIR DEBUG_ROOT_DIR)
 				INTL::Intl PROPERTIES 
 				IMPORTED_LOCATION_RELEASE "${INTL_RELEASE_DLL}" IMPORTED_LOCATION_DEBUG "${INTL_DEBUG_DLL}"
 				IMPORTED_IMPLIB_RELEASE "${INTL_RELEASE_LIBRARY}" IMPORTED_IMPLIB_DEBUG "${INTL_DEBUG_LIBRARY}"
+				PUBLIC_HEADER "${INCLUDE_DIR}"
 			)
 			message(STATUS "Found Intl Dlls!")
 		else()
@@ -57,6 +59,7 @@ function(find_intl RELEASE_ROOT_DIR DEBUG_ROOT_DIR)
 			set_target_properties(
 				INTL::Intl PROPERTIES 
 				IMPORTED_LOCATION_RELEASE "${INTL_RELEASE_LIBRARY}" IMPORTED_LOCATION_DEBUG "${INTL_DEBUG_LIBRARY}"
+				PUBLIC_HEADER "${INCLUDE_DIR}"
 			)
 			unset(INTL_RELEASE_DLL CACHE)
 			unset(INTL_DEBUG_DLL CACHE)
