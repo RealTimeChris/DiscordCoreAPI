@@ -1,5 +1,12 @@
 @PACKAGE_INIT@ 
 include(CMakeFindDependencyMacro)
+
 @DiscordCoreAPI_FIND_DEPENDENCY_CALLS@
-include ( "${CMAKE_CURRENT_LIST_DIR}/DiscordCoreAPITargets.cmake" )
+
+set(EXPORTED_TARGETS_FILENAME "@PACKAGE_EXPORTED_TARGETS_FILENAME@")
+
+set_and_check(EXPORT_TARGETS_NAME "${CMAKE_CURRENT_LIST_DIR}/${EXPORT_TARGETS_FILENAME}")
+
+include("${EXPORT_TARGETS_NAME}")
+
 check_required_components(DiscordCoreAPI)
