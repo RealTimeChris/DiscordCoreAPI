@@ -23,7 +23,7 @@ set(SODIUM_DEBUG_ROOT "C:/Users/Chris/Downloads/libsodium/bin/x64/Debug/v143/dyn
 set(NLOHMANN_INCLUDE_DIR "C:/Users/Chris/Downloads/json/include")
 
 cmake_minimum_required(VERSION 3.22)
-project(discordcoreapi_proj VERSION 1.00 LANGUAGES CXX)
+project(DiscordCoreAPI_CMake VERSION 1.00 LANGUAGES CXX)
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/CMake;${CMAKE_SOURCE_DIR}/CMake/Find-Scripts")
 set(CMAKE_CONFIGURATION_TYPES "$CACHE{CMAKE_BUILD_TYPE}")
 
