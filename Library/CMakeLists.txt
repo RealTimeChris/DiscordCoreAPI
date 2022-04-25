@@ -41,24 +41,7 @@ endif()
 add_library(DiscordCoreAPI::DiscordCoreAPI ALIAS DiscordCoreAPI)
 
 target_link_libraries(
-	DiscordCoreAPI PRIVATE
-	$<$<TARGET_EXISTS:CURL::Curl>:CURL::Curl>
-	$<$<TARGET_EXISTS:FFMPEG::AVCodec>:FFMPEG::AVCodec>
-	$<$<TARGET_EXISTS:FFMPEG::AVFormat>:FFMPEG::AVFormat>
-	$<$<TARGET_EXISTS:FFMPEG::AVUtil>:FFMPEG::AVUtil>
-	$<$<TARGET_EXISTS:FFMPEG::SWResample>:FFMPEG::SWResample>
-	$<$<TARGET_EXISTS:GLIB::Glib>:GLIB::Glib>
-	$<$<TARGET_EXISTS:INTL::Intl>:INTL::Intl>
-	$<$<TARGET_EXISTS:LIBZ::Libz>:LIBZ::Libz>
-	$<$<TARGET_EXISTS:OPENSSL::Crypto>:OPENSSL::Crypto>
-	$<$<TARGET_EXISTS:OPENSSL::Ssl>:OPENSSL::Ssl>
-	$<$<TARGET_EXISTS:OPUS::Opus>:OPUS::Opus>
-	$<$<TARGET_EXISTS:SODIUM::Sodium>:SODIUM::Sodium>
-	$<$<TARGET_EXISTS:NLOHMANN::Json>:NLOHMANN::Json>
-)
-
-target_link_libraries(
-	DiscordCoreAPI INTERFACE
+	DiscordCoreAPI PUBLIC
 	$<$<TARGET_EXISTS:CURL::Curl>:CURL::Curl>
 	$<$<TARGET_EXISTS:FFMPEG::AVCodec>:FFMPEG::AVCodec>
 	$<$<TARGET_EXISTS:FFMPEG::AVFormat>:FFMPEG::AVFormat>
@@ -83,6 +66,7 @@ endif()
 target_include_directories(
 	DiscordCoreAPI PUBLIC
 	"$<$<NOT:$<STREQUAL:$<INSTALL_INTERFACE:$<INSTALL_PREFIX>/include>,${VCPKG_INSTALLED_DIR}/include>>:$<INSTALL_INTERFACE:$<INSTALL_PREFIX>/include>>"
+	"$<$<NOT:$<STREQUAL:$<BUILD_INTERFACE:${CMAKE_INSTALL_PREFIX}/include>,${VCPKG_INSTALLED_DIR}/include>>:$<BUILD_INTERFACE:${CMAKE_INSTALL_PREFIX}/include>>"
 	PRIVATE
 	"$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Include/>"
 	"${GLIB_BASE_DIR}/lib/glib-2.0/include"
