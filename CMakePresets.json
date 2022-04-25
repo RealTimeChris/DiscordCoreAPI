@@ -67,6 +67,7 @@
         "value": "x64"
       },
       "binaryDir": "${sourceDir}/Build/Release",
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "Release" },
       "condition": {
         "lhs": "${hostSystemName}",
         "rhs": "Windows",
@@ -85,6 +86,7 @@
         "value": "x64"
       },
       "binaryDir": "${sourceDir}/Build/Debug",
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "Debug" },
       "condition": {
         "lhs": "${hostSystemName}",
         "rhs": "Windows",
@@ -103,6 +105,7 @@
         "value": "x64"
       },
       "binaryDir": "${sourceDir}/Build/Release",
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "Release" },
       "condition": {
         "lhs": "${hostSystemName}",
         "rhs": "Windows",
@@ -120,6 +123,7 @@
         "value": "x64"
       },
       "binaryDir": "${sourceDir}/Build/Debug",
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "Debug" },
       "condition": {
         "lhs": "${hostSystemName}",
         "rhs": "Windows",
@@ -133,6 +137,7 @@
     },
     {
       "binaryDir": "${sourceDir}/Build/Release",
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "Release" },
       "condition": {
         "lhs": "${hostSystemName}",
         "rhs": "Linux",
@@ -146,6 +151,7 @@
     },
     {
       "binaryDir": "${sourceDir}/Build/Debug",
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "Debug" },
       "condition": {
         "lhs": "${hostSystemName}",
         "rhs": "Linux",
