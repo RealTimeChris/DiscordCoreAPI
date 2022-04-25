@@ -489,6 +489,7 @@ namespace DiscordCoreInternal {
 		theConnection->resetValues();
 		while (true) {
 			if (!theConnection->processIO()) {
+				theConnection->doWeConnect = true;
 				break;
 			}
 			if (theConnection->checkForHeadersToParse(theConnection->getInputBuffer()) && !theConnection->doWeHaveHeaders && !stopWatch.hasTimePassed()) {
