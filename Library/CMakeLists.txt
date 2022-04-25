@@ -6,17 +6,6 @@ elseif(UNIX)
 	set(LIBRARY_PREFIX "lib")
 endif()
 
-macro(apply_global_cxx_flags_to_all_targets)
-    separate_arguments(_global_cxx_flags_list UNIX_COMMAND ${CMAKE_CXX_FLAGS})
-    get_property(_targets DIRECTORY PROPERTY BUILDSYSTEM_TARGETS)
-    foreach(_target ${_targets})
-		message("${_target}")
-        target_compile_options(${_target} PUBLIC "")
-    endforeach()
-    unset(CMAKE_CXX_FLAGS)
-    set(_flag_sync_required TRUE)
-endmacro()
-
 find_curl("${CURL_RELEASE_ROOT}" "${CURL_DEBUG_ROOT}" "${CURL_INCLUDE_DIR}")
 find_ffmpeg("${FFMPEG_RELEASE_ROOT}" "${FFMPEG_DEBUG_ROOT}" "${FFMPEG_INCLUDE_DIR}")
 find_glib("${GLIB_RELEASE_ROOT}" "${GLIB_DEBUG_ROOT}" "${GLIB_INCLUDE_DIR}")
@@ -48,8 +37,6 @@ if (WIN32)
 elseif (UNIX)
 	add_library(DiscordCoreAPI STATIC "${SOURCES}" "${PRODUCT_INFO}")
 endif()
-
-apply_global_cxx_flags_to_all_targets()
 
 add_library(DiscordCoreAPI::DiscordCoreAPI ALIAS DiscordCoreAPI)
 
@@ -89,26 +76,11 @@ target_include_directories(
 
 target_compile_options(
 	DiscordCoreAPI PUBLIC
-	"$<$<PLATFORM_ID:Windows>:$<$<CONFIG:Release>:/O2>>"
-	"$<$<PLATFORM_ID:Windows>:$<$<CONFIG:Release>:/MD>>"
-	"$<$<PLATFORM_ID:Windows>:$<$<CONFIG:Release>:/GR>>"
-	"$<$<PLATFORM_ID:Windows>:$<$<CONFIG:Release>:/Oi>>"
-	"$<$<PLATFORM_ID:Windows>:$<$<CONFIG:Release>:/Gy>>"
-	"$<$<PLATFORM_ID:Windows>:$<$<CONFIG:Debug>:/RTC1>>"
-	"$<$<PLATFORM_ID:Windows>:$<$<CONFIG:Debug>:/MDd>>"
-	"$<$<PLATFORM_ID:Windows>:$<$<CONFIG:Debug>:/Ob0>>"
-	"$<$<PLATFORM_ID:Windows>:$<$<CONFIG:Debug>:-MDd>>"
-	"$<$<PLATFORM_ID:Windows>:$<$<CONFIG:Debug>:/Od>>"
-	"$<$<PLATFORM_ID:Windows>:$<$<CONFIG:Debug>:/GR>>"
 	"$<$<PLATFORM_ID:Linux>:-std=c++2a>"
 	"$<$<PLATFORM_ID:Windows>:/bigobj>"
-	"$<$<PLATFORM_ID:Windows>:/utf-8>"
 	"$<$<PLATFORM_ID:Linux>:-pthread>"
-	"$<$<PLATFORM_ID:Windows>:/EHsc>"
 	"$<$<PLATFORM_ID:Windows>:/W4>"
 	"$<$<PLATFORM_ID:Windows>:/WX>"
-	"$<$<PLATFORM_ID:Windows>:/MP>"
-	"$<$<PLATFORM_ID:Windows>:/Z7>"
 	"$<$<PLATFORM_ID:Linux>:-O3>"
 )
 
