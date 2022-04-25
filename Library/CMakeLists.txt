@@ -65,7 +65,7 @@ endif()
 
 target_include_directories(
 	DiscordCoreAPI PUBLIC
-	"$<$<NOT:$<STREQUAL:$<INSTALL_INTERFACE:$<INSTALL_PREFIX>/include>,${VCPKG_INSTALLED_DIR}/include>>:$<INSTALL_INTERFACE:$<INSTALL_PREFIX>/include>>"
+	"$<INSTALL_INTERFACE:$<INSTALL_PREFIX>/include>"
 	PRIVATE
 	"$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Include/>"
 	"${GLIB_BASE_DIR}/lib/glib-2.0/include"
