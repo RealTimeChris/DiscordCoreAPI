@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.22)
 project(discordcoreapi_proj VERSION 1.00 LANGUAGES CXX)
-set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/CMake")
+set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/CMake;${CMAKE_SOURCE_DIR}/CMake/Find-Scripts")
 
 #SET THESE VALUES.
 set(CURL_INCLUDE_DIR "C:/Users/Chris/Downloads/curlNew/include")
