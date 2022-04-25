@@ -1,9 +1,9 @@
-# find_opus(RELEASE_ROOT_DIR DEBUG_ROOT_DIR)
+# find_opus(RELEASE_ROOT_DIR DEBUG_ROOT_DIR INCLUDE_DIR)
 #
 # This function locates the Libz library, using a couple of provided paths for searching.
 #
 # Usage:
-#	find_opus(RELEASE_ROOT_DIR DEBUG_ROOT_DIR)
+#	find_opus(RELEASE_ROOT_DIR DEBUG_ROOT_DIR INCLUDE_DIR)
 # Where:
 #	RELEASE_ROOT_DIR = The directory containing the RELEASE version of the library, or library's linker file.
 #	DEBUG_ROOT_DIR = The directory containing the DEBUG version of the library, or library's linker file.
