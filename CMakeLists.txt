@@ -26,15 +26,6 @@ set(SODIUM_RELEASE_ROOT "C:/Users/Chris/Downloads/libsodium/bin/x64/Release/v143
 set(SODIUM_DEBUG_ROOT "C:/Users/Chris/Downloads/libsodium/bin/x64/Debug/v143/dynamic")
 set(NLOHMANN_INCLUDE_DIR "C:/Users/Chris/Downloads/json/include")
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_SOURCE_DIR}/Output Files/Release")
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE "${CMAKE_SOURCE_DIR}/Output Files/Release")
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELEASE "${CMAKE_SOURCE_DIR}/Output Files/Release")
-set(CMAKE_PDB_OUTPUT_DIRECTORY_RELEASE "${CMAKE_SOURCE_DIR}/Output Files/Release")
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG "${CMAKE_SOURCE_DIR}/Output Files/Debug")
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG "${CMAKE_SOURCE_DIR}/Output Files/Debug")
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_DEBUG "${CMAKE_SOURCE_DIR}/Output Files/Debug")
-set(CMAKE_PDB_OUTPUT_DIRECTORY_DEBUG "${CMAKE_SOURCE_DIR}/Output Files/Debug")
-
 include(CMakePackageConfigHelpers)
 include(GenerateProductVersion)
 include(Find-Scripts/FindCurl)
