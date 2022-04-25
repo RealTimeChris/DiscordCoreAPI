@@ -111,6 +111,7 @@ namespace DiscordCoreInternal {
 	  public:
 		int32_t currentRecursionDepth{ 0 };
 		int32_t maxRecursion{ 10 };
+		int64_t lastTimeUsed{ 0 };
 		std::mutex accessMutex{};
 		bool doWeConnect{ true };
 	};
