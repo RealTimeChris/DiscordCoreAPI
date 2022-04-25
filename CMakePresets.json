@@ -2,11 +2,20 @@
   "buildPresets": [
     {
       "configuration": "Release",
-      "configurePreset": "Windows-Release-With-ASAN",
+      "configurePreset": "Windows-Release-With-ASAN-Config",
       "description": "Target Windows with the Visual Studio development environment.",
       "displayName": "Windows x64 Release With ASAN - Build",
       "inheritConfigureEnvironment": true,
-      "name": "Windows-Release-With-ASAN",
+      "name": "Windows-Release-With-ASAN-Build",
+      "verbose": true
+    },
+    {
+      "configuration": "Debug",
+      "configurePreset": "Windows-Debug-With-ASAN-Config",
+      "description": "Target Windows with the Visual Studio development environment.",
+      "displayName": "Windows x64 Debug With ASAN - Build",
+      "inheritConfigureEnvironment": true,
+      "name": "Windows-Debug-With-ASAN-Build",
       "verbose": true
     },
     {
@@ -58,12 +67,6 @@
         "value": "x64"
       },
       "binaryDir": "${sourceDir}/Build/Release",
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": {
-          "type": "string",
-          "value": "Release"
-        }
-      },
       "condition": {
         "lhs": "${hostSystemName}",
         "rhs": "Windows",
@@ -73,7 +76,25 @@
       "displayName": "Windows x64 Release With ASAN - Config",
       "environment": { "EnableASAN": "true" },
       "generator": "Visual Studio 17 2022",
-      "name": "Windows-Release-With-ASAN",
+      "name": "Windows-Release-With-ASAN-Config",
+      "vendor": { "microsoft.com/VisualStudioSettings/CMake/1.0": { "hostOS": [ "Windows" ] } }
+    },
+    {
+      "architecture": {
+        "strategy": "set",
+        "value": "x64"
+      },
+      "binaryDir": "${sourceDir}/Build/Debug",
+      "condition": {
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows",
+        "type": "equals"
+      },
+      "description": "Target Windows with the Visual Studio development environment.",
+      "displayName": "Windows x64 Debug With ASAN - Config",
+      "environment": { "EnableASAN": "true" },
+      "generator": "Visual Studio 17 2022",
+      "name": "Windows-Debug-With-ASAN-Config",
       "vendor": { "microsoft.com/VisualStudioSettings/CMake/1.0": { "hostOS": [ "Windows" ] } }
     },
     {
@@ -82,12 +103,6 @@
         "value": "x64"
       },
       "binaryDir": "${sourceDir}/Build/Release",
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": {
-          "type": "string",
-          "value": "Release"
-        }
-      },
       "condition": {
         "lhs": "${hostSystemName}",
         "rhs": "Windows",
@@ -105,12 +120,6 @@
         "value": "x64"
       },
       "binaryDir": "${sourceDir}/Build/Debug",
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": {
-          "type": "string",
-          "value": "Debug"
-        }
-      },
       "condition": {
         "lhs": "${hostSystemName}",
         "rhs": "Windows",
@@ -124,12 +133,6 @@
     },
     {
       "binaryDir": "${sourceDir}/Build/Release",
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": {
-          "type": "string",
-          "value": "Release"
-        }
-      },
       "condition": {
         "lhs": "${hostSystemName}",
         "rhs": "Linux",
@@ -143,12 +146,6 @@
     },
     {
       "binaryDir": "${sourceDir}/Build/Debug",
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": {
-          "type": "string",
-          "value": "Debug"
-        }
-      },
       "condition": {
         "lhs": "${hostSystemName}",
         "rhs": "Linux",
