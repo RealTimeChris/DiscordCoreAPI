@@ -80,6 +80,7 @@ target_compile_options(
 	"$<$<PLATFORM_ID:Windows>:/bigobj>"
 	"$<$<PLATFORM_ID:Linux>:-pthread>"
 	"$<$<PLATFORM_ID:Windows>:/W4>"
+	"$<$<PLATFORM_ID:Windows>:/MP>"
 	"$<$<PLATFORM_ID:Windows>:/WX>"
 	"$<$<PLATFORM_ID:Linux>:-O3>"
 )
@@ -118,7 +119,8 @@ set_target_properties(
 	IMPORTED_IMPLIB_DEBUG "$<INSTALL_INTERFACE:$<$<PLATFORM_ID:Windows>:$<INSTALL_PREFIX>/debug/lib/discordcoreapi.lib>>"
 	IMPORTED_CONFIGURATIONS "Release;Debug"
 )
-
+set(RELEASE_PDB_FILE "${CMAKE_SOURCE_DIR}/Output Files/Release/discordcoreapi.pdb")
+set(DEBUG_PDB_FILE "${CMAKE_SOURCE_DIR}/Output Files/Debug/discordcoreapi.pdb")
 set(EXPORTED_TARGETS_NAME "DiscordCoreAPITargets")
 set(EXPORTED_TARGETS_FILENAME "${EXPORTED_TARGETS_NAME}.cmake")
 set(CONFIG_FILENAME "DiscordCoreAPIConfig.cmake")
@@ -147,6 +149,8 @@ configure_package_config_file(
 	INSTALL_DESTINATION "${CMAKE_CURRENT_BINARY_DIR}"
 	PATH_VARS
 	EXPORTED_TARGETS_FILENAME
+	RELEASE_PDB_FILE
+	DEBUG_PDB_FILE
 )
 
 install(
