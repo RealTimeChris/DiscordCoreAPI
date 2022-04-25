@@ -163,8 +163,8 @@ install(
 )
 
 message(STATUS "Copying a file...")
-install(FILES "${CMAKE_SOURCE_DIR}/Certs/SoundCloudCert.pem" DESTINATION "share/discordcoreapi/data")
+install(FILES "${CMAKE_SOURCE_DIR}/Certs/DiscordCert.pem" DESTINATION "share/discordcoreapi/data")
 message(STATUS "Copying a file...")
 install(FILES "${CMAKE_SOURCE_DIR}/Certs/GoogleCert.pem" DESTINATION "share/discordcoreapi/data")
 message(STATUS "Copying a file...")
-install(FILES "${CMAKE_SOURCE_DIR}/Certs/DiscordCert.pem" DESTINATION "share/discordcoreapi/data")
+install(FILES "${CMAKE_SOURCE_DIR}/Certs/SoundCloudCert.pem" DESTINATION "share/discordcoreapi/data")
