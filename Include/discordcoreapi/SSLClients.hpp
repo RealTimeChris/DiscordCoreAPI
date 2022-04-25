@@ -58,7 +58,7 @@ namespace DiscordCoreInternal {
 #endif
 
 	DiscordCoreAPI_Dll void reportError(std::string errorPosition, int32_t errorValue) noexcept;
-
+#ifdef _WIN32
 	struct DiscordCoreAPI_Dll WSADataWrapper {
 		struct DiscordCoreAPI_Dll WSADataDeleter {
 			void operator()(WSADATA* other) {
@@ -73,7 +73,7 @@ namespace DiscordCoreInternal {
 	  protected:
 		std::unique_ptr<WSADATA, WSADataDeleter> thePtr{ new WSADATA{}, WSADataDeleter{} };
 	};
-
+#endif
 #ifndef _WIN32
 	struct DiscordCoreAPI_Dll epollWrapper {
 		struct DiscordCoreAPI_Dll epollDeleter {

@@ -107,7 +107,9 @@ namespace DiscordCoreAPI {
 	  protected:
 		std::unordered_map<std::string, std::unique_ptr<DiscordCoreInternal::BaseSocketAgent>> theWebSockets{};
 		std::unique_ptr<DiscordCoreInternal::HttpClient> httpClient{};
+#ifdef _WIN32
 		DiscordCoreInternal::WSADataWrapper theWSAData{};
+#endif
 		std::vector<std::string> threadIds{};
 		ShardingOptions shardingOptions{};
 		LoggingOptions loggingOptions{};
