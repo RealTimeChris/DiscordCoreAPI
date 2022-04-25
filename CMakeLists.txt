@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.22)
 project(discordcoreapi_proj VERSION 1.00 LANGUAGES CXX)
-set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/Library/CMake")
+set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/CMake")
 
 #SET THESE VALUES.
 set(CURL_INCLUDE_DIR "C:/Users/Chris/Downloads/curlNew/include")
@@ -28,15 +28,15 @@ set(NLOHMANN_INCLUDE_DIR "C:/Users/Chris/Downloads/json/include")
 
 include(CMakePackageConfigHelpers)
 include(GenerateProductVersion)
-include(Find-Scripts/FindCurl)
-include(Find-Scripts/FindFFMPEG)
-include(Find-Scripts/FindGlib)
-include(Find-Scripts/FindIntl)
-include(Find-Scripts/FindLibz)
-include(Find-Scripts/FindOpenSSL)
-include(Find-Scripts/FindOpus)
-include(Find-Scripts/FindSodium)
-include(Find-Scripts/FindNlohmannJson)
+include(FindCurl)
+include(FindFFMPEG)
+include(FindGlib)
+include(FindIntl)
+include(FindLibz)
+include(FindOpenSSL)
+include(FindOpus)
+include(FindSodium)
+include(FindNlohmannJson)
 
 set(CMAKE_CONFIGURATION_TYPES "$CACHE{CMAKE_BUILD_TYPE}")
 

@@ -22,7 +22,7 @@ function(find_intl RELEASE_ROOT_DIR DEBUG_ROOT_DIR INCLUDE_DIR)
 		NAMES "libintl.dll.a" "libintl.lib" "libintl.a"
 		PATHS "${DEBUG_ROOT_DIR}" NO_DEFAULT_PATH
 	)
-	if(INTL_RELEASE_LIBRARY AND INTL_DEBUG_LIBRARY)
+	if(EXISTS "${INTL_RELEASE_LIBRARY}" AND EXISTS "${INTL_DEBUG_LIBRARY}" AND EXISTS "${INCLUDE_DIR}")
 		message(STATUS "Found Intl libraries!")
 	else()
 		message(STATUS "Couldn't find Intl!")
@@ -44,7 +44,7 @@ function(find_intl RELEASE_ROOT_DIR DEBUG_ROOT_DIR INCLUDE_DIR)
 		PATHS "${INTL_DEBUG_FILE_PATH}/" "${INTL_DEBUG_FILE_PATH}/../bin/"
 		NO_DEFAULT_PATH
 	)
-	if (INTL_RELEASE_DLL AND INTL_DEBUG_DLL)
+	if (EXISTS "${INTL_RELEASE_DLL}" AND EXISTS "${INTL_DEBUG_DLL}")
 		add_library(INTL::Intl SHARED IMPORTED GLOBAL)
 		set_target_properties(
 			INTL::Intl PROPERTIES 

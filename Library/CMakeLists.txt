@@ -136,7 +136,7 @@ install(
 )
 
 configure_package_config_file(
-	"CMake/${CONFIG_FILENAME}.in"
+	"${CMAKE_SOURCE_DIR}/CMake/${CONFIG_FILENAME}.in"
 	"${CONFIG_FILENAME}"
 	INSTALL_DESTINATION "${CMAKE_CURRENT_BINARY_DIR}"
 )
