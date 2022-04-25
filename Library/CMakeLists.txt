@@ -183,6 +183,13 @@ install(
 	CONFIGURATIONS Release | Debug
 )
 
+install(
+	FILES "$<$<PLATFORM_ID:Windows>:$<TARGET_PDB_FILE:DiscordCoreAPI>>"
+	DESTINATION "$<IF:$<CONFIG:Debug>,$<IF:$<STREQUAL:${_VCPKG_INSTALLED_DIR},>,debug/bin,bin>,bin>"
+	CONFIGURATIONS Release | Debug
+	OPTIONAL
+)
+
 message(STATUS "Copying a file...")
 install(FILES "${CMAKE_SOURCE_DIR}/Certs/SoundCloudCert.pem" DESTINATION "share/discordcoreapi/data")
 message(STATUS "Copying a file...")
