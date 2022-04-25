@@ -77,6 +77,11 @@ target_include_directories(
 target_compile_options(
 	DiscordCoreAPI PUBLIC
 	"$<$<PLATFORM_ID:Windows>:$<$<CONFIG:Release>:/O2>>"
+	"$<$<PLATFORM_ID:Windows>:$<$<CONFIG:Release>:/MD>>"
+	"$<$<PLATFORM_ID:Windows>:$<$<CONFIG:Release>:/GR>>"
+	"$<$<PLATFORM_ID:Windows>:$<$<CONFIG:Release>:/EHsc>>"
+	"$<$<PLATFORM_ID:Windows>:$<$<CONFIG:Release>:/Oi>>"
+	"$<$<PLATFORM_ID:Windows>:$<$<CONFIG:Release>:/Gy>>"
 	"$<$<PLATFORM_ID:Windows>:$<$<CONFIG:Debug>:/MDd>>"
 	"$<$<PLATFORM_ID:Linux>:-std=c++2a>"
 	"$<$<PLATFORM_ID:Windows>:/bigobj>"
@@ -84,7 +89,13 @@ target_compile_options(
 	"$<$<PLATFORM_ID:Windows>:/W4>"
 	"$<$<PLATFORM_ID:Windows>:/WX>"
 	"$<$<PLATFORM_ID:Windows>:/MP>"
+	"$<$<PLATFORM_ID:Windows>:/Z7>"
 	"$<$<PLATFORM_ID:Linux>:-O3>"
+)
+
+target_link_options(
+	DiscordCoreAPI PUBLIC 
+	"$<$<PLATFORM_ID:Windows>:/DEBUG>"
 )
 
 target_compile_features(
@@ -102,10 +113,10 @@ set_target_properties(
 	LINKER_LANGUAGE CXX
 	RUNTIME_OUTPUT_DIRECTORY_RELEASE "$<INSTALL_INTERFACE:$<$<PLATFORM_ID:Windows>:$<INSTALL_PREFIX>/bin/>>$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Output Files/Release>"
 	ARCHIVE_OUTPUT_DIRECTORY_RELEASE "$<INSTALL_INTERFACE:$<INSTALL_PREFIX>/lib/>$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Output Files/Release>"
-	PDB_OUTPUT_DIRECTORY_RELEASE "$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Output Files/Release>"
+	PDB_OUTPUT_DIRECTORY_RELEASE "$<INSTALL_INTERFACE:$<$<PLATFORM_ID:Windows>:$<INSTALL_PREFIX>/bin/>>$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Output Files/Release>"
 	RUNTIME_OUTPUT_DIRECTORY_DEBUG "$<INSTALL_INTERFACE:$<$<PLATFORM_ID:Windows>:$<INSTALL_PREFIX>/debug/bin/>>$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Output Files/Debug>"	
 	ARCHIVE_OUTPUT_DIRECTORY_DEBUG "$<INSTALL_INTERFACE:$<INSTALL_PREFIX>/debug/lib/>$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Output Files/Debug>"
-	PDB_OUTPUT_DIRECTORY_DEBUG "$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Output Files/Debug>"
+	PDB_OUTPUT_DIRECTORY_DEBUG "$<INSTALL_INTERFACE:$<$<PLATFORM_ID:Windows>:$<INSTALL_PREFIX>/debug/bin/>>$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Output Files/Debug>"
 	IMPORTED_LOCATION_RELEASE "$<INSTALL_INTERFACE:$<$<PLATFORM_ID:Windows>:$<INSTALL_PREFIX>/bin/discordcoreapi.dll>$<$<PLATFORM_ID:Linux>:$<INSTALL_PREFIX>/lib/libdiscordcoreapi.a>>"
 	IMPORTED_IMPLIB_RELEASE "$<INSTALL_INTERFACE:$<$<PLATFORM_ID:Windows>:$<INSTALL_PREFIX>/lib/discordcoreapi.lib>>"
 	IMPORTED_LOCATION_DEBUG "$<INSTALL_INTERFACE:$<$<PLATFORM_ID:Windows>:$<INSTALL_PREFIX>/debug/bin/discordcoreapi.dll>$<$<PLATFORM_ID:Linux>:$<INSTALL_PREFIX>/debug/lib/discordcoreapi.a>>"
@@ -147,13 +158,6 @@ install(
 	FILES "${CMAKE_CURRENT_BINARY_DIR}/${CONFIG_FILENAME}" 
 	DESTINATION "share/discordcoreapi"
 	CONFIGURATIONS Release | Debug
-)
-
-install(
-	FILES "$<$<PLATFORM_ID:Windows>:$<TARGET_PDB_FILE:DiscordCoreAPI>>"
-	DESTINATION "$<IF:$<CONFIG:Debug>,$<IF:$<STREQUAL:${_VCPKG_INSTALLED_DIR},>,debug/bin,bin>,bin>"
-	CONFIGURATIONS Release | Debug
-	OPTIONAL
 )
 
 message(STATUS "Copying a file...")
