@@ -25,7 +25,7 @@ set(NLOHMANN_INCLUDE_DIR "C:/Users/Chris/Downloads/json/include")
 cmake_minimum_required(VERSION 3.22)
 project(DiscordCoreAPI_CMake VERSION 1.00 LANGUAGES CXX)
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/CMake;${CMAKE_SOURCE_DIR}/CMake/Find-Scripts")
-set(CMAKE_CONFIGURATION_TYPES "Release;Debug")
+set(CMAKE_CONFIGURATION_TYPES "$CACHE{CMAKE_BUILD_TYPE}")
 
 include(CMakePackageConfigHelpers)
 include(GenerateProductVersion)
