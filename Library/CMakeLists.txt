@@ -119,6 +119,7 @@ set_target_properties(
 	IMPORTED_IMPLIB_DEBUG "$<INSTALL_INTERFACE:$<$<PLATFORM_ID:Windows>:$<INSTALL_PREFIX>/debug/lib/discordcoreapi.lib>>"
 	IMPORTED_CONFIGURATIONS "Release;Debug"
 )
+
 set(RELEASE_PDB_FILE "${CMAKE_SOURCE_DIR}/Output Files/Release/discordcoreapi.pdb")
 set(DEBUG_PDB_FILE "${CMAKE_SOURCE_DIR}/Output Files/Debug/discordcoreapi.pdb")
 set(EXPORTED_TARGETS_NAME "DiscordCoreAPITargets")

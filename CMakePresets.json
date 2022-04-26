@@ -2,7 +2,7 @@
   "buildPresets": [
     {
       "configuration": "Release",
-      "configurePreset": "Windows-Release-With-ASAN-Config",
+      "configurePreset": "Windows-Release-With-ASAN",
       "description": "Target Windows with the Visual Studio development environment.",
       "displayName": "Windows x64 Release With ASAN - Build",
       "inheritConfigureEnvironment": true,
@@ -11,7 +11,7 @@
     },
     {
       "configuration": "Debug",
-      "configurePreset": "Windows-Debug-With-ASAN-Config",
+      "configurePreset": "Windows-Debug-With-ASAN",
       "description": "Target Windows with the Visual Studio development environment.",
       "displayName": "Windows x64 Debug With ASAN - Build",
       "inheritConfigureEnvironment": true,
@@ -77,7 +77,7 @@
       "displayName": "Windows x64 Release With ASAN - Config",
       "environment": { "EnableASAN": "true" },
       "generator": "Visual Studio 17 2022",
-      "name": "Windows-Release-With-ASAN-Config",
+      "name": "Windows-Release-With-ASAN",
       "vendor": { "microsoft.com/VisualStudioSettings/CMake/1.0": { "hostOS": [ "Windows" ] } }
     },
     {
@@ -96,7 +96,7 @@
       "displayName": "Windows x64 Debug With ASAN - Config",
       "environment": { "EnableASAN": "true" },
       "generator": "Visual Studio 17 2022",
-      "name": "Windows-Debug-With-ASAN-Config",
+      "name": "Windows-Debug-With-ASAN",
       "vendor": { "microsoft.com/VisualStudioSettings/CMake/1.0": { "hostOS": [ "Windows" ] } }
     },
     {
