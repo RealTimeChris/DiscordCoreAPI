@@ -363,15 +363,15 @@ namespace DiscordCoreAPI {
 
 		/// Sends an object of type ObjectType to the "recipient". \brief Sends a object of type ObjectType to the "recipient".
 		/// \param theObject An object of ObjectType.
-		void send(const ObjectType& theObject) {
-			ObjectType newValue = theObject;
-			this->theArray.push(newValue);
+		void send(ObjectType&& theObject) {
+			this->theArray.push(std::move(theObject));
 		}
 
 		/// Sends an object of type ObjectType to the "recipient". \brief Sends a object of type ObjectType to the "recipient".
 		/// \param theObject An object of ObjectType.
-		void send(ObjectType&& theObject) {
-			this->theArray.push(std::move(theObject));
+		void send(const ObjectType& theObject) {
+			ObjectType newValue = theObject;
+			this->theArray.push(newValue);
 		}
 
 		/// Sends an object of type ObjectType to the "recipient". \brief Sends a object of type ObjectType to the "recipient".
