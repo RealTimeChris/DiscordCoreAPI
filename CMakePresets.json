@@ -6,7 +6,7 @@
       "description": "Target Windows with the Visual Studio development environment.",
       "displayName": "Windows x64 Release With ASAN - Build",
       "inheritConfigureEnvironment": true,
-      "name": "Windows-Release-With-ASAN-Build",
+      "name": "Windows-Release-With-ASAN",
       "verbose": true
     },
     {
@@ -15,7 +15,7 @@
       "description": "Target Windows with the Visual Studio development environment.",
       "displayName": "Windows x64 Debug With ASAN - Build",
       "inheritConfigureEnvironment": true,
-      "name": "Windows-Debug-With-ASAN-Build",
+      "name": "Windows-Debug-With-ASAN",
       "verbose": true
     },
     {
