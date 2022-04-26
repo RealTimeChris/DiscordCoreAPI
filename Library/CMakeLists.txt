@@ -76,6 +76,7 @@ target_include_directories(
 
 target_compile_options(
 	DiscordCoreAPI PUBLIC
+	"$<$<PLATFORM_ID:Windows>:$<$<CONFIG:Debug>:/Zi>>"
 	"$<$<PLATFORM_ID:Linux>:-std=c++2a>"
 	"$<$<PLATFORM_ID:Windows>:/bigobj>"
 	"$<$<PLATFORM_ID:Linux>:-pthread>"
