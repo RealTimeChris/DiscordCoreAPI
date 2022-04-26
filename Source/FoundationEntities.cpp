@@ -71,7 +71,8 @@ namespace DiscordCoreAPI {
 				return;
 			}
 			if (sendBuffer) {
-				sendBuffer->send(e);
+				const std::exception eNew = e;
+				sendBuffer->send(eNew);
 			} else {
 				std::cout << shiftToBrightRed() << stackTrace + " Error: " << e.what() << reset() << "\n\n";
 			}

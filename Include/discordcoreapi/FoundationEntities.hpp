@@ -357,8 +357,28 @@ namespace DiscordCoreAPI {
 
 		/// Sends an object of type ObjectType to the "recipient". \brief Sends a object of type ObjectType to the "recipient".
 		/// \param theObject An object of ObjectType.
-		void send(ObjectType theObject) {
-			this->theArray.push(theObject);
+		void send(const ObjectType&& theObject) {
+			this->theArray.push(std::move(theObject));
+		}
+
+		/// Sends an object of type ObjectType to the "recipient". \brief Sends a object of type ObjectType to the "recipient".
+		/// \param theObject An object of ObjectType.
+		void send(const ObjectType& theObject) {
+			ObjectType newValue = theObject;
+			this->theArray.push(newValue);
+		}
+
+		/// Sends an object of type ObjectType to the "recipient". \brief Sends a object of type ObjectType to the "recipient".
+		/// \param theObject An object of ObjectType.
+		void send(ObjectType&& theObject) {
+			this->theArray.push(std::move(theObject));
+		}
+
+		/// Sends an object of type ObjectType to the "recipient". \brief Sends a object of type ObjectType to the "recipient".
+		/// \param theObject An object of ObjectType.
+		void send(ObjectType& theObject) {
+			ObjectType newValue = theObject;
+			this->theArray.push(newValue);
 		}
 
 		/// Clears the contents of the messaging block. \brief Clears the contents of the messaging block.
@@ -369,11 +389,24 @@ namespace DiscordCoreAPI {
 		/// Tries to receive an object of type ObjectType to be placed into a reference. \brief Tries to receive an object of type ObjectType to be placed into a reference.
 		/// \param theObject A reference of type ObjectType for placing the potentially received object.
 		/// \returns A bool, denoting whether or not we received an object.
+		bool tryReceive(const ObjectType& theObject) {
+			if (this->theArray.size() == 0) {
+				return false;
+			} else {
+				theObject = std::move(this->theArray.front());
+				this->theArray.pop();
+				return true;
+			}
+		}
+
+		/// Tries to receive an object of type ObjectType to be placed into a reference. \brief Tries to receive an object of type ObjectType to be placed into a reference.
+		/// \param theObject A reference of type ObjectType for placing the potentially received object.
+		/// \returns A bool, denoting whether or not we received an object.
 		bool tryReceive(ObjectType& theObject) {
 			if (this->theArray.size() == 0) {
 				return false;
 			} else {
-				theObject = this->theArray.front();
+				theObject = std::move(this->theArray.front());
 				this->theArray.pop();
 				return true;
 			}
