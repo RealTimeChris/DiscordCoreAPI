@@ -15,7 +15,6 @@ function(find_nlohmann_json INCLUDE_DIR)
 		NAMES "nlohmann/json.hpp" 
 		PATHS "${INCLUDE_DIR}" NO_DEFAULT_PATH
 	)
-	cmake_path(GET NLOHMANN_JSON_LIBRARY PARENT_PATH INCLUDE_DIR_NEW)
 	if(EXISTS "${NLOHMANN_JSON_LIBRARY}" AND EXISTS "${INCLUDE_DIR}")
 		message(STATUS "Found Nlohmann-Json library!")
 		add_library(NLOHMANN::Json INTERFACE IMPORTED GLOBAL)
@@ -24,7 +23,7 @@ function(find_nlohmann_json INCLUDE_DIR)
 			PUBLIC_HEADER "${INCLUDE_DIR}"
 			INTERFACE_INCLUDE_DIRECTORIES "${INCLUDE_DIR}"
 		)
-		target_include_directories(NLOHMANN::Json INTERFACE "${INCLUDE_DIR_NEW}")
+		target_include_directories(NLOHMANN::Json INTERFACE "${INCLUDE_DIR}")
 	else()
 		message(FATAL_ERROR "Couldn't find Nlohmann-Json!")
 		return()
