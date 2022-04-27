@@ -53,48 +53,6 @@ target_link_libraries(
 	$<$<TARGET_EXISTS:NLOHMANN::Json>:NLOHMANN::Json>
 )
 
-if (VCPKG_INSTALLED_DIR)
-	set(GLIB_INCLUDE_DIR "${VCPKG_INSTALLED_DIR}")
-endif()
-
-target_include_directories(
-	DiscordCoreAPI PUBLIC
-	"$<INSTALL_INTERFACE:$<INSTALL_PREFIX>/include>"
-	PRIVATE
-	"$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Include/>"
-	"${GLIB_INCLUDE_DIR}/lib/glib-2.0/include"
-	"${GLIB_INCLUDE_DIR}/include/glib-2.0"
-	"${GLIB_INCLUDE_DIR}/lib/glib-2.0/"
-	"${GLIB_INCLUDE_DIR}/include/"
-)
-
-target_compile_options(
-	DiscordCoreAPI PUBLIC
-	"$<$<PLATFORM_ID:Windows>:$<$<CONFIG:Debug>:/Zi>>"
-	"$<$<PLATFORM_ID:Linux>:-std=c++2a>"
-	"$<$<PLATFORM_ID:Windows>:/bigobj>"
-	"$<$<PLATFORM_ID:Linux>:-pthread>"
-	"$<$<PLATFORM_ID:Windows>:/W4>"
-	"$<$<PLATFORM_ID:Windows>:/MP>"
-	"$<$<PLATFORM_ID:Windows>:/WX>"
-	"$<$<PLATFORM_ID:Linux>:-O3>"
-)
-
-target_link_options(
-	DiscordCoreAPI PUBLIC
-	"$<$<PLATFORM_ID:Windows>:$<$<CONFIG:Release>:/INCREMENTAL:NO>>"
-	"$<$<PLATFORM_ID:Windows>:$<$<CONFIG:Release>:/OPT:REF>>"
-	"$<$<PLATFORM_ID:Windows>:$<$<CONFIG:Release>:/OPT:ICF>>"
-	"$<$<PLATFORM_ID:Windows>:/nologo>"
-	"$<$<PLATFORM_ID:Windows>:/DEBUG>"
-)
-
-target_compile_features(
-	DiscordCoreAPI PUBLIC
-	"$<$<PLATFORM_ID:Windows>:cxx_std_23>"
-	"$<$<PLATFORM_ID:Linux>:cxx_std_20>"
-)
-
 set_target_properties(
 	DiscordCoreAPI PROPERTIES
 	PUBLIC_HEADER "${HEADERS}"
@@ -113,6 +71,48 @@ set_target_properties(
 	IMPORTED_LOCATION_DEBUG "$<INSTALL_INTERFACE:$<$<PLATFORM_ID:Windows>:$<INSTALL_PREFIX>/debug/bin/discordcoreapi.dll>$<$<PLATFORM_ID:Linux>:$<INSTALL_PREFIX>/debug/lib/discordcoreapi.a>>"
 	IMPORTED_IMPLIB_DEBUG "$<INSTALL_INTERFACE:$<$<PLATFORM_ID:Windows>:$<INSTALL_PREFIX>/debug/lib/discordcoreapi.lib>>"
 	IMPORTED_CONFIGURATIONS "Release;Debug"
+)
+
+if (VCPKG_INSTALLED_DIR)
+	set(GLIB_INCLUDE_DIR "${VCPKG_INSTALLED_DIR}")
+endif()
+
+target_include_directories(
+	DiscordCoreAPI PUBLIC
+	"$<INSTALL_INTERFACE:$<INSTALL_PREFIX>/include>"
+	PRIVATE
+	"$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Include/>"
+	"${GLIB_INCLUDE_DIR}/lib/glib-2.0/include"
+	"${GLIB_INCLUDE_DIR}/include/glib-2.0"
+	"${GLIB_INCLUDE_DIR}/lib/glib-2.0/"
+	"${GLIB_INCLUDE_DIR}/include/"
+)
+
+target_link_options(
+	DiscordCoreAPI PUBLIC
+	"$<$<PLATFORM_ID:Windows>:$<$<CONFIG:Release>:/INCREMENTAL:NO>>"
+	"$<$<PLATFORM_ID:Windows>:$<$<CONFIG:Release>:/OPT:REF>>"
+	"$<$<PLATFORM_ID:Windows>:$<$<CONFIG:Release>:/OPT:ICF>>"
+	"$<$<PLATFORM_ID:Windows>:/nologo>"
+	"$<$<PLATFORM_ID:Windows>:/DEBUG>"
+)
+
+target_compile_options(
+	DiscordCoreAPI PUBLIC
+	"$<$<PLATFORM_ID:Windows>:$<$<CONFIG:Debug>:/Zi>>"
+	"$<$<PLATFORM_ID:Linux>:-std=c++2a>"
+	"$<$<PLATFORM_ID:Windows>:/bigobj>"
+	"$<$<PLATFORM_ID:Linux>:-pthread>"
+	"$<$<PLATFORM_ID:Windows>:/W4>"
+	"$<$<PLATFORM_ID:Windows>:/MP>"
+	"$<$<PLATFORM_ID:Windows>:/WX>"
+	"$<$<PLATFORM_ID:Linux>:-O3>"
+)
+
+target_compile_features(
+	DiscordCoreAPI PUBLIC
+	"$<$<PLATFORM_ID:Windows>:cxx_std_23>"
+	"$<$<PLATFORM_ID:Linux>:cxx_std_20>"
 )
 
 set(RELEASE_PDB_FILEPATH "${CMAKE_INSTALL_PREFIX}/bin/discordcoreapi.pdb")
