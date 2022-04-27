@@ -196,7 +196,8 @@ namespace DiscordCoreAPI {
 			return this->theFunction(args...);
 		}
 
-		~UniEvent() {}
+		~UniEvent() {
+		}
 
 	  protected:
 		std::function<ReturnType(ArgTypes...)> theFunction{ nullptr };

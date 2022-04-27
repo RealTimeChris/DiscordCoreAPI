@@ -262,7 +262,7 @@ namespace DiscordCoreAPI {
 			eventData.guild = Guilds::getGuildAsync({ .guildId = soundCloudAPI->guildId }).get();
 			getSongAPIMap()[soundCloudAPI->guildId]->onSongCompletionEvent(eventData);
 			return;
-		} else {			
+		} else {
 			auto newerSong = soundCloudAPI->requestBuilder.collectFinalSong(guildMember, newSong);
 			SoundCloudAPI::downloadAndStreamAudio(newerSong, soundCloudAPI, theToken, currentRecursionDepth);
 		}

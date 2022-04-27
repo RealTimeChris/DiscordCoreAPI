@@ -70,6 +70,7 @@ namespace DiscordCoreInternal {
 		WSADataWrapper() {
 			WSAStartup(MAKEWORD(2, 2), this->thePtr.get());
 		}
+
 	  protected:
 		std::unique_ptr<WSADATA, WSADataDeleter> thePtr{ new WSADATA{}, WSADataDeleter{} };
 	};

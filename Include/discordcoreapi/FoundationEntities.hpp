@@ -958,7 +958,6 @@ namespace DiscordCoreAPI {
 	/// Data structure representing a single Role. \brief Data structure representing a single Role.
 	class DiscordCoreAPI_Dll RoleData : public DiscordEntity {
 	  public:
-
 		void setMentionable(bool enabled) {
 			if (enabled) {
 				this->roleFlags |= static_cast<uint8_t>(RoleFlags::Mentionable);
@@ -1332,8 +1331,7 @@ namespace DiscordCoreAPI {
 	/// Data structure representing a single Channel. \brief Data structure representing a single Channel.
 	class DiscordCoreAPI_Dll ChannelData : public DiscordEntity {
 	  public:
-
-	    void setNSFW(bool enabled) {
+		void setNSFW(bool enabled) {
 			if (enabled) {
 				this->channelFlags |= static_cast<uint8_t>(ChannelFlags::NSFW);
 			} else {
@@ -1380,7 +1378,6 @@ namespace DiscordCoreAPI {
 	/// Data structure representing a single GuildMember. \brief Data structure representing a single GuildMember.
 	class DiscordCoreAPI_Dll GuildMemberData {
 	  public:
-
 		void setPending(bool enabled) {
 			if (enabled) {
 				this->guildMemberFlags |= static_cast<uint8_t>(GuildMemberFlags::Pending);
@@ -1404,7 +1401,7 @@ namespace DiscordCoreAPI {
 				this->guildMemberFlags &= ~static_cast<uint8_t>(GuildMemberFlags::Mute);
 			}
 		}
-		
+
 		bool getPending() {
 			return this->guildMemberFlags & static_cast<uint8_t>(GuildMemberFlags::Pending);
 		}
@@ -1935,7 +1932,6 @@ namespace DiscordCoreAPI {
 	/// Data representing a single Sticker. \brief Data representing a single Sticker.
 	class DiscordCoreAPI_Dll StickerData : public DiscordEntity {
 	  public:
-
 		void setAvailable(bool enabled) {
 			if (enabled) {
 				this->stickerFlags |= static_cast<uint8_t>(StickerFlags::Available);
@@ -1992,8 +1988,7 @@ namespace DiscordCoreAPI {
 	/// Data structure representing a single Guild. \brief Data structure representing a single Guild.
 	class DiscordCoreAPI_Dll GuildData : public DiscordEntity {
 	  public:
-
-	    void setWidgetEnabled(bool enabled) {
+		void setWidgetEnabled(bool enabled) {
 			if (enabled) {
 				this->guildFlags |= static_cast<uint8_t>(GuildFlags::WidgetEnabled);
 			} else {

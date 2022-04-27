@@ -82,8 +82,7 @@ namespace DiscordCoreAPI {
 		std::string resultStringHTMLBody{};
 		if (responseData[0].responseCode != 204 && responseData[0].responseCode != 201 && responseData[0].responseCode != 200) {
 			std::cout << shiftToBrightRed() << "YouTubeRequestBuilder::constructDownloadInfo() 01 Error: " << responseData[0].responseCode << ", "
-					  << responseData[0].responseMessage
-					  << std::endl
+					  << responseData[0].responseMessage << std::endl
 					  << reset() << std::endl;
 		}
 		resultStringHTMLBody.insert(resultStringHTMLBody.begin(), responseData[0].responseMessage.begin(), responseData[0].responseMessage.end());

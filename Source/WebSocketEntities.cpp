@@ -58,8 +58,7 @@ namespace DiscordCoreInternal {
 		try {
 			std::lock_guard<std::mutex> accessLock{ this->accessorMutex01 };
 			if (this->printMessages) {
-				std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Sending WebSocket Message: " << std::endl
-						  << dataToSend << DiscordCoreAPI::reset();
+				std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Sending WebSocket Message: " << std::endl << dataToSend << DiscordCoreAPI::reset();
 			}
 			this->webSocket->writeData(dataToSend);
 		} catch (...) {
@@ -1032,8 +1031,7 @@ namespace DiscordCoreInternal {
 	void VoiceSocketAgent::sendMessage(std::string& dataToSend) noexcept {
 		try {
 			if (this->printMessages) {
-				std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Sending Voice WebSocket Message: " << std::endl
-						  << dataToSend << DiscordCoreAPI::reset();
+				std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Sending Voice WebSocket Message: " << std::endl << dataToSend << DiscordCoreAPI::reset();
 			}
 			this->webSocket->writeData(dataToSend);
 		} catch (...) {
@@ -1128,7 +1126,7 @@ namespace DiscordCoreInternal {
 			nlohmann::json payload = payload.parse(message);
 			if (this->printMessages) {
 				std::cout << DiscordCoreAPI::shiftToBrightGreen() << "Message received from Voice WebSocket: " << message << std::endl
-					<< DiscordCoreAPI::reset() << std::endl;
+						  << DiscordCoreAPI::reset() << std::endl;
 			}
 			if (payload.contains("op")) {
 				if (payload["op"] == 6) {

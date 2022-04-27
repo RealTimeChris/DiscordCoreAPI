@@ -191,5 +191,3 @@ namespace DiscordCoreAPI {
 		DiscordCoreAPI::Globals::doWeQuit.store(true, std::memory_order_seq_cst);
 	}
 }
-
-

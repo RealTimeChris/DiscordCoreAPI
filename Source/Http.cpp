@@ -321,7 +321,7 @@ namespace DiscordCoreInternal {
 			theConnection->resetValues();
 			std::unique_ptr<std::recursive_mutex> theMutexTemp{ nullptr };
 			RateLimitData* rateLimitDataPtr = Globals::rateLimitValues[Globals::rateLimitValueBuckets[workload.workloadType]].get();
-			
+
 			std::lock_guard<std::recursive_mutex> accessLock{ *rateLimitDataPtr->accessMutex };
 			int64_t timeRemaining{};
 			int64_t currentTime =
@@ -474,7 +474,7 @@ namespace DiscordCoreInternal {
 					theConnection.writeData(theRequest);
 				} catch (...) {
 					return std::vector<HttpData>{};
-				}				
+				}
 				HttpData returnData = this->getResponse(&theConnection, rateLimitDataPtr.get());
 				returnVector.push_back(returnData);
 				currentBaseUrl = value.baseUrl;
