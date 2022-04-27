@@ -152,7 +152,7 @@ write_basic_package_version_file(
 )
 
 install(
-	FILES "${CMAKE_CURRENT_BINARY_DIR}/${CONFIG_FILENAME}" "${CMAKE_CURRENT_BINARY_DIR}/discordcoreapi-version.cmake"
+	FILES "${CMAKE_CURRENT_BINARY_DIR}/${CONFIG_FILENAME}" "${CMAKE_CURRENT_BINARY_DIR}/${VERSION_FILENAME}"
 	DESTINATION "share/discordcoreapi"
 	CONFIGURATIONS Release | Debug
 )
