@@ -369,17 +369,16 @@ namespace DiscordCoreInternal {
 			rateLimitDataPtr->sampledTimeInMs =
 				static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
 
-			std::unique_ptr<RateLimitData> thePtrNew{ std::make_unique<RateLimitData>() };
+			
 			if (!Globals::rateLimitValues.contains(Globals::rateLimitValueBuckets[workload.workloadType])) {
+				std::unique_ptr<RateLimitData> thePtrNew{ std::make_unique<RateLimitData>() };
 				Globals::rateLimitValues[Globals::rateLimitValueBuckets[workload.workloadType]] = std::move(thePtrNew);
-				Globals::rateLimitValues[Globals::rateLimitValueBuckets[workload.workloadType]].reset(
-					Globals::rateLimitValues[Globals::rateLimitValueBuckets[workload.workloadType]].release());
 			}
-			Globals::rateLimitValueBuckets[workload.workloadType] = rateLimitDataPtr->bucket;
 			if (rateLimitDataPtr->tempBucket != "") {
 				*Globals::rateLimitValues[Globals::rateLimitValueBuckets[workload.workloadType]] = *rateLimitDataPtr;
 				Globals::rateLimitValues[Globals::rateLimitValueBuckets[workload.workloadType]]->tempBucket = "";
 			}
+			Globals::rateLimitValueBuckets[workload.workloadType] = rateLimitDataPtr->bucket;
 			if (returnData.responseCode == 204 || returnData.responseCode == 201 || returnData.responseCode == 200) {
 				if (this->doWePrintHttp) {
 					std::cout << DiscordCoreAPI::shiftToBrightGreen() << workload.callStack + " Success: " << returnData.responseCode << ", "
