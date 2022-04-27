@@ -104,7 +104,7 @@ target_compile_features(
 	"cxx_std_20"
 )
 
-set(EXPORTED_TARGETS_NAME "discordcoreapi_targets")
+set(EXPORTED_TARGETS_NAME "discordcoreapi-targets")
 set(DISCORDCOREAPI_INCLUDE_DIR "${CMAKE_INSTALL_PREFIX}/include/discordcoreapi")
 
 install(
