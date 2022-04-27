@@ -319,9 +319,7 @@ namespace DiscordCoreInternal {
 		HttpData returnData{};
 		try {
 			theConnection->resetValues();
-			std::unique_ptr<std::recursive_mutex> theMutexTemp{ nullptr };
 			RateLimitData* rateLimitDataPtr = Globals::rateLimitValues[Globals::rateLimitValueBuckets[workload.workloadType]].get();
-
 			std::lock_guard<std::recursive_mutex> accessLock{ rateLimitDataPtr->accessMutex };
 			int64_t timeRemaining{};
 			int64_t currentTime =
@@ -368,17 +366,33 @@ namespace DiscordCoreInternal {
 			returnData = HttpClient::executeHttpRequest(workload, theConnection, rateLimitDataPtr);
 			rateLimitDataPtr->sampledTimeInMs =
 				static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
-
-			
-			if (!Globals::rateLimitValues.contains(Globals::rateLimitValueBuckets[workload.workloadType])) {
-				std::unique_ptr<RateLimitData> thePtrNew{ std::make_unique<RateLimitData>() };
-				Globals::rateLimitValues[Globals::rateLimitValueBuckets[workload.workloadType]] = std::move(thePtrNew);
-			}
 			if (rateLimitDataPtr->tempBucket != "") {
-				*Globals::rateLimitValues[Globals::rateLimitValueBuckets[workload.workloadType]] = *rateLimitDataPtr;
+				std::unique_ptr<RateLimitData> thePtrNew{ std::make_unique<RateLimitData>() };
+				std::string tempBucket = rateLimitDataPtr->tempBucket;
+				Globals::rateLimitValueBuckets[workload.workloadType] = rateLimitDataPtr->bucket;
+				if (!Globals::rateLimitValues.contains(Globals::rateLimitValueBuckets[workload.workloadType])) {
+					Globals::rateLimitValues[Globals::rateLimitValueBuckets[workload.workloadType]] = std::move(thePtrNew);
+					Globals::rateLimitValues[Globals::rateLimitValueBuckets[workload.workloadType]].reset(
+						Globals::rateLimitValues[Globals::rateLimitValueBuckets[workload.workloadType]].release());
+				} else {
+					*Globals::rateLimitValues[Globals::rateLimitValueBuckets[workload.workloadType]] = *rateLimitDataPtr;
+				}
 				Globals::rateLimitValues[Globals::rateLimitValueBuckets[workload.workloadType]]->tempBucket = "";
+			} else {
+				Globals::rateLimitValueBuckets[workload.workloadType] = rateLimitDataPtr->bucket;
+				std::string tempBucket = rateLimitDataPtr->bucket;
+				if (Globals::rateLimitValues[Globals::rateLimitValueBuckets[workload.workloadType]].get() != rateLimitDataPtr) {
+					std::unique_ptr<RateLimitData> thePtrNew{ std::make_unique<RateLimitData>() };
+					if (!Globals::rateLimitValues.contains(Globals::rateLimitValueBuckets[workload.workloadType])) {
+						Globals::rateLimitValues[Globals::rateLimitValueBuckets[workload.workloadType]] = std::move(thePtrNew);
+						Globals::rateLimitValues[Globals::rateLimitValueBuckets[workload.workloadType]].reset(
+							Globals::rateLimitValues[Globals::rateLimitValueBuckets[workload.workloadType]].release());
+					} else {
+						Globals::rateLimitValues[Globals::rateLimitValueBuckets[workload.workloadType]].reset(
+							Globals::rateLimitValues[Globals::rateLimitValueBuckets[workload.workloadType]].release());
+					}
+				}
 			}
-			Globals::rateLimitValueBuckets[workload.workloadType] = rateLimitDataPtr->bucket;
 			if (returnData.responseCode == 204 || returnData.responseCode == 201 || returnData.responseCode == 200) {
 				if (this->doWePrintHttp) {
 					std::cout << DiscordCoreAPI::shiftToBrightGreen() << workload.callStack + " Success: " << returnData.responseCode << ", "
