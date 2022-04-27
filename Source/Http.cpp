@@ -375,15 +375,10 @@ namespace DiscordCoreInternal {
 				Globals::rateLimitValues[Globals::rateLimitValueBuckets[workload.workloadType]].reset(
 					Globals::rateLimitValues[Globals::rateLimitValueBuckets[workload.workloadType]].release());
 			}
-
+			Globals::rateLimitValueBuckets[workload.workloadType] = rateLimitDataPtr->bucket;
 			if (rateLimitDataPtr->tempBucket != "") {
-				Globals::rateLimitValueBuckets[workload.workloadType] = rateLimitDataPtr->bucket;
-				if (Globals::rateLimitValues.contains(Globals::rateLimitValueBuckets[workload.workloadType])) {
-					*Globals::rateLimitValues[Globals::rateLimitValueBuckets[workload.workloadType]] = *rateLimitDataPtr;
-				}
+				*Globals::rateLimitValues[Globals::rateLimitValueBuckets[workload.workloadType]] = *rateLimitDataPtr;
 				Globals::rateLimitValues[Globals::rateLimitValueBuckets[workload.workloadType]]->tempBucket = "";
-			} else {
-				Globals::rateLimitValueBuckets[workload.workloadType] = rateLimitDataPtr->bucket;
 			}
 			if (returnData.responseCode == 204 || returnData.responseCode == 201 || returnData.responseCode == 200) {
 				if (this->doWePrintHttp) {
