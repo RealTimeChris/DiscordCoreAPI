@@ -58,9 +58,7 @@ target_link_libraries(
 )
 
 if (VCPKG_INSTALLED_DIR)
-	set(GLIB_BASE_DIR "${VCPKG_INSTALLED_DIR}")	
-else()
-	set(GLIB_BASE_DIR "${GLIB_INCLUDE_DIR}")
+	set(GLIB_INCLUDE_DIR "${VCPKG_INSTALLED_DIR}")
 endif()
 
 target_include_directories(
@@ -68,10 +66,10 @@ target_include_directories(
 	"$<INSTALL_INTERFACE:$<INSTALL_PREFIX>/include>"
 	PRIVATE
 	"$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Include/>"
-	"${GLIB_BASE_DIR}/lib/glib-2.0/include"
-	"${GLIB_BASE_DIR}/include/glib-2.0"
-	"${GLIB_BASE_DIR}/lib/glib-2.0/"
-	"${GLIB_BASE_DIR}/include/"
+	"${GLIB_INCLUDE_DIR}/lib/glib-2.0/include"
+	"${GLIB_INCLUDE_DIR}/include/glib-2.0"
+	"${GLIB_INCLUDE_DIR}/lib/glib-2.0/"
+	"${GLIB_INCLUDE_DIR}/include/"
 )
 
 target_compile_options(
