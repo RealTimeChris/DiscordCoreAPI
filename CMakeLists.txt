@@ -80,8 +80,6 @@ elseif(_VCPKG_ROOT_DIR)
 	set(SODIUM_RELEASE_ROOT "${VCPKG_INSTALLED_DIR}/lib")
 	set(SODIUM_DEBUG_ROOT "${VCPKG_INSTALLED_DIR}/debug/lib")
 	set(NLOHMANN_INCLUDE_DIR "${VCPKG_INSTALLED_DIR}/include")
-else()
-	message(FATAL_ERROR "Sorry, but please either build this via VCPKG, or properly set the _DEBUG_ROOT, _RELEASE_ROOT AND _INCLUDE_DIR values in CMakeLists.txt!")
 endif()
 
 add_subdirectory(Library)
