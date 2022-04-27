@@ -11,8 +11,8 @@ generate_product_version(
 	VERSION_REVISION "0"
 )
 
-file(GLOB HEADERS "${CMAKE_SOURCE_DIR}/Include/discordcoreapi/*.hpp")
-file(GLOB SOURCES "${CMAKE_SOURCE_DIR}/Source/*.cpp")
+file(GLOB HEADERS CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/Include/discordcoreapi/*.hpp")
+file(GLOB SOURCES CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/Source/*.cpp")
 
 if (WIN32)
 	add_library(DiscordCoreAPI SHARED "${SOURCES}" "${PRODUCT_INFO}")
