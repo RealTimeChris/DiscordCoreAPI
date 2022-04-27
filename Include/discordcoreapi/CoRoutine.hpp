@@ -317,7 +317,7 @@ namespace DiscordCoreAPI {
 	/// An awaitable that can be used to launch the CoRoutine onto a new thread - as well as return the handle for stoppping its execution. \brief An awaitable that can be used to launch the CoRoutine onto a new thread - as well as return the handle for stoppping its execution.
 	/// \tparam ReturnType The type of value returned by the containing CoRoutine.
 	template<typename ReturnType> class NewThreadAwaiter {
-		std::coroutine_handle<typename CoRoutine<ReturnType>::promise_type> coroHandle{};
+	  public:
 
 		bool await_ready() const noexcept {
 			return false;
@@ -331,6 +331,9 @@ namespace DiscordCoreAPI {
 		auto await_resume() noexcept {
 			return this->coroHandle;
 		}
+
+	  protected:
+		std::coroutine_handle<typename CoRoutine<ReturnType>::promise_type> coroHandle{};
 	};
 
 	/// An awaitable that can be used to launch the CoRoutine onto a new thread - as well as return the handle for stoppping its execution. \brief An awaitable that can be used to launch the CoRoutine onto a new thread - as well as return the handle for stoppping its execution.
