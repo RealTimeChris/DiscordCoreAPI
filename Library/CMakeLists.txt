@@ -104,7 +104,7 @@ target_compile_features(
 	"cxx_std_20"
 )
 
-set(EXPORTED_TARGETS_NAME "DiscordCoreAPITargets")
+set(EXPORTED_TARGETS_NAME "discordcoreapi_targets")
 set(DISCORDCOREAPI_INCLUDE_DIR "${CMAKE_INSTALL_PREFIX}/include/discordcoreapi")
 
 install(
@@ -126,8 +126,8 @@ install(
 	CONFIGURATIONS Release | Debug
 )
 
-set(CONFIG_FILENAME "DiscordCoreAPIConfig.cmake")
-set(VERSION_FILENAME "DiscordCoreAPI-version.cmake")
+set(CONFIG_FILENAME "discordcoreapi-config.cmake")
+set(VERSION_FILENAME "discordcoreapi-config-version.cmake")
 set(RELEASE_PDB_FILEPATH "${CMAKE_INSTALL_PREFIX}/bin/discordcoreapi.pdb")
 set(DEBUG_PDB_FILEPATH "${CMAKE_INSTALL_PREFIX}/debug/bin/discordcoreapi.pdb")
 
