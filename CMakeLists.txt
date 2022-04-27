@@ -54,7 +54,7 @@ if(NOT EXISTS "${_VCPKG_ROOT_DIR}")
 		
 		message(FATAL_ERROR "Sorry - but please set the _DEBUG_ROOT, _RELEASE_ROOT AND _INCLUDE_DIR values in CMakeLists.txt!")
 	endif()
-elseif(_VCPKG_ROOT_DIR)		
+elseif(EXISTS "${_VCPKG_ROOT_DIR}")		
 	set(VCPKG_BASE_DIR "${_VCPKG_ROOT_DIR}/installed")
 	string(TOLOWER "${CMAKE_HOST_SYSTEM_NAME}" OS_NAME)
 	set(VCPKG_INSTALLED_DIR "${VCPKG_BASE_DIR}/x64-${OS_NAME}")
