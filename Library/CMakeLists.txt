@@ -1,21 +1,3 @@
-if (WIN32)
-	set(LIBRARY_SUFFIX ".lib")
-	set(LIBRARY_PREFIX "")
-elseif(UNIX)
-	set(LIBRARY_SUFFIX ".a")
-	set(LIBRARY_PREFIX "lib")
-endif()
-
-find_curl("${CURL_RELEASE_ROOT}" "${CURL_DEBUG_ROOT}" "${CURL_INCLUDE_DIR}")
-find_ffmpeg("${FFMPEG_RELEASE_ROOT}" "${FFMPEG_DEBUG_ROOT}" "${FFMPEG_INCLUDE_DIR}")
-find_glib("${GLIB_RELEASE_ROOT}" "${GLIB_DEBUG_ROOT}" "${GLIB_INCLUDE_DIR}")
-find_intl("${GLIB_RELEASE_ROOT}" "${GLIB_DEBUG_ROOT}" "${GLIB_INCLUDE_DIR}")
-find_libz("${LIBZ_RELEASE_ROOT}" "${LIBZ_DEBUG_ROOT}" "${LIBZ_INCLUDE_DIR}")
-find_openssl("${OPENSSL_RELEASE_ROOT}" "${OPENSSL_DEBUG_ROOT}" "${OPENSSL_INCLUDE_DIR}")
-find_opus("${OPUS_RELEASE_ROOT}" "${OPUS_DEBUG_ROOT}" "${OPUS_INCLUDE_DIR}")
-find_sodium("${SODIUM_RELEASE_ROOT}" "${SODIUM_DEBUG_ROOT}" "${SODIUM_INCLUDE_DIR}")
-find_nlohmann_json("${NLOHMANN_INCLUDE_DIR}")
-
 generate_product_version(
 	PRODUCT_INFO
 	NAME "DiscordCoreAPI"
@@ -34,11 +16,25 @@ file(GLOB SOURCES "${CMAKE_SOURCE_DIR}/Source/*.cpp")
 
 if (WIN32)
 	add_library(DiscordCoreAPI SHARED "${SOURCES}" "${PRODUCT_INFO}")
+	set(LIBRARY_SUFFIX ".lib")
+	set(LIBRARY_PREFIX "")
 elseif (UNIX)
 	add_library(DiscordCoreAPI STATIC "${SOURCES}" "${PRODUCT_INFO}")
+	set(LIBRARY_SUFFIX ".a")
+	set(LIBRARY_PREFIX "lib")
 endif()
 
 add_library(DiscordCoreAPI::DiscordCoreAPI ALIAS DiscordCoreAPI)
+
+find_curl("${CURL_RELEASE_ROOT}" "${CURL_DEBUG_ROOT}" "${CURL_INCLUDE_DIR}")
+find_ffmpeg("${FFMPEG_RELEASE_ROOT}" "${FFMPEG_DEBUG_ROOT}" "${FFMPEG_INCLUDE_DIR}")
+find_glib("${GLIB_RELEASE_ROOT}" "${GLIB_DEBUG_ROOT}" "${GLIB_INCLUDE_DIR}")
+find_intl("${GLIB_RELEASE_ROOT}" "${GLIB_DEBUG_ROOT}" "${GLIB_INCLUDE_DIR}")
+find_libz("${LIBZ_RELEASE_ROOT}" "${LIBZ_DEBUG_ROOT}" "${LIBZ_INCLUDE_DIR}")
+find_openssl("${OPENSSL_RELEASE_ROOT}" "${OPENSSL_DEBUG_ROOT}" "${OPENSSL_INCLUDE_DIR}")
+find_opus("${OPUS_RELEASE_ROOT}" "${OPUS_DEBUG_ROOT}" "${OPUS_INCLUDE_DIR}")
+find_sodium("${SODIUM_RELEASE_ROOT}" "${SODIUM_DEBUG_ROOT}" "${SODIUM_INCLUDE_DIR}")
+find_nlohmann_json("${NLOHMANN_INCLUDE_DIR}")
 
 target_link_libraries(
 	DiscordCoreAPI PUBLIC
