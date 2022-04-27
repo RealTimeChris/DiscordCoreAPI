@@ -18,11 +18,6 @@ function(find_nlohmann_json INCLUDE_DIR)
 	if(EXISTS "${NLOHMANN_JSON_LIBRARY}" AND EXISTS "${INCLUDE_DIR}")
 		message(STATUS "Found Nlohmann-Json library!")
 		add_library(NLOHMANN::Json INTERFACE IMPORTED GLOBAL)
-		set_target_properties(
-			NLOHMANN::Json PROPERTIES
-			PUBLIC_HEADER "${INCLUDE_DIR}"
-			INTERFACE_INCLUDE_DIRECTORIES "${INCLUDE_DIR}"
-		)
 		target_include_directories(NLOHMANN::Json INTERFACE "${INCLUDE_DIR}")
 	else()
 		message(FATAL_ERROR "Couldn't find Nlohmann-Json!")
