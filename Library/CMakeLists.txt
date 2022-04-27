@@ -20,6 +20,7 @@ if (WIN32)
 	set(LIBRARY_PREFIX "")
 elseif (UNIX)
 	add_library(DiscordCoreAPI STATIC "${SOURCES}" "${PRODUCT_INFO}")
+	find_package(Threads CONFIG REQUIRED)
 	set(LIBRARY_SUFFIX ".a")
 	set(LIBRARY_PREFIX "lib")
 endif()
@@ -39,6 +40,7 @@ find_nlohmann_json("${NLOHMANN_INCLUDE_DIR}")
 target_link_libraries(
 	DiscordCoreAPI PUBLIC
 	$<$<TARGET_EXISTS:CURL::Curl>:CURL::Curl>
+	$<$<TARGET_EXISTS:Threads::Threads>:Threads::Threads>
 	$<$<TARGET_EXISTS:FFMPEG::AVFormat>:FFMPEG::AVFormat>
 	$<$<TARGET_EXISTS:FFMPEG::AVCodec>:FFMPEG::AVCodec>
 	$<$<TARGET_EXISTS:FFMPEG::AVUtil>:FFMPEG::AVUtil>
@@ -88,16 +90,12 @@ target_link_options(
 	"$<$<PLATFORM_ID:Windows>:$<$<CONFIG:Release>:/INCREMENTAL:NO>>"
 	"$<$<PLATFORM_ID:Windows>:$<$<CONFIG:Release>:/OPT:REF>>"
 	"$<$<PLATFORM_ID:Windows>:$<$<CONFIG:Release>:/OPT:ICF>>"
-	"$<$<PLATFORM_ID:Windows>:/nologo>"
 	"$<$<PLATFORM_ID:Windows>:/DEBUG>"
 )
 
 target_compile_options(
 	DiscordCoreAPI PUBLIC
-	"$<$<PLATFORM_ID:Windows>:$<$<CONFIG:Debug>:/Zi>>"
-	"$<$<PLATFORM_ID:Linux>:-std=c++2a>"
 	"$<$<PLATFORM_ID:Windows>:/bigobj>"
-	"$<$<PLATFORM_ID:Linux>:-pthread>"
 	"$<$<PLATFORM_ID:Windows>:/W4>"
 	"$<$<PLATFORM_ID:Windows>:/MP>"
 	"$<$<PLATFORM_ID:Windows>:/WX>"
