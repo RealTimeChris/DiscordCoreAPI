@@ -153,10 +153,10 @@ namespace DiscordCoreAPI {
 										this->theThreads[x].detach();
 										this->theThreads.erase(this->theThreads.begin() + x);
 										doWeBreak = true;
+										value.doWeQuit.store(true, std::memory_order::seq_cst);
 										break;
 									}
 								}
-								value.doWeQuit.store(true, std::memory_order::seq_cst);
 								if (doWeBreak) {
 									break;
 								}
