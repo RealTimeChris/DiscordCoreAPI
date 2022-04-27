@@ -95,7 +95,7 @@ namespace DiscordCoreInternal {
 		RateLimitData() = default;
 
 	  protected:
-		std::unique_ptr<std::recursive_mutex> accessMutex{ std::make_unique<std::recursive_mutex>() };
+		std::recursive_mutex accessMutex{};
 		bool haveWeCollectedTime{ false };
 		bool areWeASpecialBucket{ false };
 		int64_t getsRemainingTotal{ 0 };

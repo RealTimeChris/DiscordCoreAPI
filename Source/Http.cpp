@@ -322,7 +322,7 @@ namespace DiscordCoreInternal {
 			std::unique_ptr<std::recursive_mutex> theMutexTemp{ nullptr };
 			RateLimitData* rateLimitDataPtr = Globals::rateLimitValues[Globals::rateLimitValueBuckets[workload.workloadType]].get();
 
-			std::lock_guard<std::recursive_mutex> accessLock{ *rateLimitDataPtr->accessMutex };
+			std::lock_guard<std::recursive_mutex> accessLock{ rateLimitDataPtr->accessMutex };
 			int64_t timeRemaining{};
 			int64_t currentTime =
 				static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
