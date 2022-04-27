@@ -349,10 +349,18 @@ namespace DiscordCoreAPI {
 		auto resultTwo = std::localtime(&result);
 		std::string resultString{};
 		if (resultTwo->tm_isdst) {
+			if (resultTwo->tm_hour + 4 >= 24) {
+				resultTwo->tm_hour = 0;
+				resultTwo->tm_mday += 1;
+			}
 			resultString =
 				getISO8601TimeStamp(std::to_string(resultTwo->tm_year + 1900), std::to_string(resultTwo->tm_mon + 1), std::to_string(resultTwo->tm_mday),
 					std::to_string(resultTwo->tm_hour + 4), std::to_string(resultTwo->tm_min), std::to_string(resultTwo->tm_sec));
 		} else {
+			if (resultTwo->tm_hour + 5 >= 24) {
+				resultTwo->tm_hour = 0;
+				resultTwo->tm_mday += 1;
+			}
 			resultString =
 				getISO8601TimeStamp(std::to_string(resultTwo->tm_year + 1900), std::to_string(resultTwo->tm_mon + 1), std::to_string(resultTwo->tm_mday),
 					std::to_string(resultTwo->tm_hour + 5), std::to_string(resultTwo->tm_min), std::to_string(resultTwo->tm_sec));
