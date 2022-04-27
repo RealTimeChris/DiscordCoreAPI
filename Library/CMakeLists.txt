@@ -94,8 +94,8 @@ target_link_options(
 target_compile_options(
 	DiscordCoreAPI PUBLIC
 	"$<$<PLATFORM_ID:Windows>:/bigobj>"
-	"$<$<PLATFORM_ID:Windows>:/MP>"
 	"$<$<PLATFORM_ID:Linux>:-pthread>"
+	"$<$<PLATFORM_ID:Windows>:/MP>"
 	"$<$<PLATFORM_ID:Linux>:-O3>"
 )
 
