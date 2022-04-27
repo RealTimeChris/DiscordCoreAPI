@@ -96,16 +96,13 @@ target_link_options(
 target_compile_options(
 	DiscordCoreAPI PUBLIC
 	"$<$<PLATFORM_ID:Windows>:/bigobj>"
-	"$<$<PLATFORM_ID:Windows>:/W4>"
 	"$<$<PLATFORM_ID:Windows>:/MP>"
-	"$<$<PLATFORM_ID:Windows>:/WX>"
 	"$<$<PLATFORM_ID:Linux>:-O3>"
 )
 
 target_compile_features(
 	DiscordCoreAPI PUBLIC
-	"$<$<PLATFORM_ID:Windows>:cxx_std_23>"
-	"$<$<PLATFORM_ID:Linux>:cxx_std_20>"
+	"cxx_std_20"
 )
 
 set(EXPORTED_TARGETS_NAME "DiscordCoreAPITargets")
