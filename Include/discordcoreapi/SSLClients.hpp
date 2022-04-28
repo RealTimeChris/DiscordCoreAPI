@@ -68,7 +68,7 @@ namespace DiscordCoreInternal {
 		};
 
 		WSADataWrapper() {
-			auto newInt = WSAStartup(MAKEWORD(2, 2), this->thePtr.get());
+			WSAStartup(MAKEWORD(2, 2), this->thePtr.get());
 		}
 
 	  protected:
@@ -113,6 +113,11 @@ namespace DiscordCoreInternal {
 
 		BIOWrapper& operator=(BIO* other) {
 			this->bioPtr.reset(other);
+			if (!BIO_up_ref(other)) {
+				std::cout << DiscordCoreAPI::shiftToBrightRed() << "BIO_up_ref() Error: ";
+				ERR_print_errors_fp(stdout);
+				std::cout << std::endl << DiscordCoreAPI::reset();
+			};
 			return *this;
 		}
 
@@ -171,6 +176,11 @@ namespace DiscordCoreInternal {
 
 		SSL_CTXWrapper& operator=(SSL_CTX* other) {
 			this->sslCTXPtr.reset(other);
+			if (!SSL_CTX_up_ref(other)) {
+				std::cout << DiscordCoreAPI::shiftToBrightRed() << "SSL_CTX_up_ref() Error: ";
+				ERR_print_errors_fp(stdout);
+				std::cout << std::endl << DiscordCoreAPI::reset();
+			}
 			return *this;
 		}
 
@@ -197,6 +207,11 @@ namespace DiscordCoreInternal {
 
 		SSLWrapper& operator=(SSL* other) {
 			this->sslPtr.reset(other);
+			if (!SSL_up_ref(other)) {
+				std::cout << DiscordCoreAPI::shiftToBrightRed() << "SSL_up_ref() Error: ";
+				ERR_print_errors_fp(stdout);
+				std::cout << std::endl << DiscordCoreAPI::reset();
+			}
 			return *this;
 		}
 
