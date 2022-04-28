@@ -94,7 +94,7 @@ target_compile_options(
 	"$<$<PLATFORM_ID:Windows>:/bigobj>"
 	"$<$<PLATFORM_ID:Linux>:-pthread>"
 	"$<$<PLATFORM_ID:Windows>:/MP>"
-	"$<$<PLATFORM_ID:Linux>:/O3>"
+	"$<$<PLATFORM_ID:Linux>:-O3>"
 )
 
 target_compile_features(
