@@ -14,12 +14,12 @@
 function(find_intl RELEASE_ROOT_DIR DEBUG_ROOT_DIR INCLUDE_DIR)
 	find_file(
 		INTL_RELEASE_LIBRARY
-		NAMES "libintl.dll.a" "libintl.lib" "libintl.a"
+		NAMES "libintl.dll.a" "libintl.lib" "libintl.a" "intl.lib" "intl.a"
 		PATHS "${RELEASE_ROOT_DIR}" NO_DEFAULT_PATH
 	)
 	find_file(
 		INTL_DEBUG_LIBRARY 
-		NAMES "libintl.dll.a" "libintl.lib" "libintl.a"
+		NAMES "libintl.dll.a" "libintl.lib" "libintl.a" "intl.lib" "intl.a"
 		PATHS "${DEBUG_ROOT_DIR}" NO_DEFAULT_PATH
 	)
 	if(EXISTS "${INTL_RELEASE_LIBRARY}" AND EXISTS "${INTL_DEBUG_LIBRARY}" AND EXISTS "${INCLUDE_DIR}")
