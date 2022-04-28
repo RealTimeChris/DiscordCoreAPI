@@ -84,6 +84,7 @@ target_include_directories(
 
 target_link_options(
 	DiscordCoreAPI PUBLIC
+	"$<$<PLATFORM_ID:Windows>:/bigobj>"
 	"$<$<PLATFORM_ID:Windows>:/DEBUG>"
 )
 
