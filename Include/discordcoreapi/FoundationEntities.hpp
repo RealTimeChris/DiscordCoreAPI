@@ -3270,7 +3270,7 @@ namespace DiscordCoreAPI {
 			this->subCommandName = other.subCommandName;
 			this->commandName = other.commandName;
 			this->optionsArgs = other.optionsArgs;
-			*this->eventData = *other.eventData;
+			this->eventData = other.eventData;
 			return *this;
 		}
 
@@ -3280,7 +3280,7 @@ namespace DiscordCoreAPI {
 
 		CommandData& operator=(CommandData& other) {
 			this->subCommandGroupName = other.subCommandGroupName;
-			this->eventData.reset(other.eventData.release());
+			this->eventData = other.eventData;
 			this->subCommandName = other.subCommandName;
 			this->commandName = other.commandName;
 			this->optionsArgs = other.optionsArgs;
@@ -3291,12 +3291,13 @@ namespace DiscordCoreAPI {
 			*this = other;
 		}
 
-		CommandData() = default;
-
 		CommandData(InputEventData inputEventData);
 
+		CommandData() = default;
+
 	  protected:
-		std::unique_ptr<InputEventData> eventData{ std::make_unique<InputEventData>() };
+		InputEventData eventData{};
+		
 	};
 
 	/// Sharding options for the library. \brief Sharding options for the library.
@@ -3512,26 +3513,24 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll BaseFunctionArguments {
 	  public:
 		DiscordCoreClient* discordCoreClient{ nullptr };///< A pointer to the instance of DiscordCoreClient.
-		std::unique_ptr<InputEventData> eventData{};///< InputEventData representing the input event that triggered the command.
+		InputEventData eventData{};///< InputEventData representing the input event that triggered the command.
 		CommandData commandData{};///< The input command's data.
 
-		BaseFunctionArguments& operator=(BaseFunctionArguments&& other) {
-			this->eventData = std::make_unique<InputEventData>();
+		BaseFunctionArguments& operator=(BaseFunctionArguments&& other) noexcept {
 			this->discordCoreClient = other.discordCoreClient;
 			this->commandData = other.commandData;
-			*this->eventData = *other.eventData;
+			this->eventData = other.eventData;
 			return *this;
 		}
 
-		BaseFunctionArguments(BaseFunctionArguments&& other) {
+		BaseFunctionArguments(BaseFunctionArguments&& other) noexcept {
 			*this = std::move(other);
 		}
 
 		BaseFunctionArguments& operator=(BaseFunctionArguments& other) {
-			this->eventData = std::make_unique<InputEventData>();
 			this->discordCoreClient = other.discordCoreClient;
 			this->commandData = other.commandData;
-			*this->eventData = *other.eventData;
+			this->eventData = other.eventData;
 			return *this;
 		}
 
@@ -3539,14 +3538,11 @@ namespace DiscordCoreAPI {
 			*this = other;
 		}
 
-		BaseFunctionArguments() {
-			this->eventData = std::make_unique<InputEventData>();
-		};
+		BaseFunctionArguments() = default;
 
 		BaseFunctionArguments(CommandData commandData, DiscordCoreClient* discordCoreClientNew) {
 			this->discordCoreClient = discordCoreClientNew;
-			this->eventData = std::make_unique<InputEventData>();
-			*this->eventData = *commandData.eventData;
+			this->eventData = commandData.eventData;
 			this->commandData = commandData;
 		}
 

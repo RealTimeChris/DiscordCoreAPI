@@ -132,22 +132,13 @@ namespace DiscordCoreInternal {
 	};
 
 	struct DiscordCoreAPI_Dll addrinfoWrapper {
-		struct DiscordCoreAPI_Dll addrinfoDeleter {
-			void operator()(addrinfo* other) {
-				if (other) {
-#ifndef _DEBUG
-					freeaddrinfo(other);
-					other = nullptr;
-#endif
-				}
-			}
-		};
-
+		
 		addrinfo* operator->() {
 			return this->addrinfoPtrTwo;
 		}
 
 		operator addrinfo* *() {
+			this->doWeClearAddrInfo = true;
 			return &this->addrinfoPtrTwo;
 		}
 
@@ -156,12 +147,20 @@ namespace DiscordCoreInternal {
 		}
 
 		addrinfoWrapper(nullptr_t) {
-			this->addrinfoPtrTwo = this->addrinfoPtr.get();
+			ZeroMemory(this->addrinfoPtrTwo, sizeof(*this->addrinfoPtrTwo));
 		};
 
+		~addrinfoWrapper() {
+			if (this->doWeClearAddrInfo) {
+				freeaddrinfo(this->addrinfoPtrTwo);
+			} else {
+				delete this->addrinfoPtrTwo;
+			}
+		}
+
 	  protected:
-		std::unique_ptr<addrinfo, addrinfoDeleter> addrinfoPtr{ nullptr, addrinfoDeleter{} };
-		addrinfo* addrinfoPtrTwo{ nullptr };
+		addrinfo* addrinfoPtrTwo{ new addrinfo{} };
+		bool doWeClearAddrInfo{ false };
 	};
 
 	struct DiscordCoreAPI_Dll SSL_CTXWrapper {

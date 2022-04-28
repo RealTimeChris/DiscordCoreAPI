@@ -768,7 +768,6 @@ namespace DiscordCoreAPI {
 	};
 
 	CommandData::CommandData(InputEventData inputEventData) {
-		this->eventData = std::make_unique<InputEventData>(inputEventData);
 		if (inputEventData.interactionData->data.applicationCommanddata.name != "") {
 			this->commandName = inputEventData.interactionData->data.applicationCommanddata.name;
 		}
