@@ -22,6 +22,7 @@ elseif (UNIX)
 	add_library(DiscordCoreAPI STATIC "${SOURCES}" "${PRODUCT_INFO}")
 	set(LIBRARY_SUFFIX ".a")
 	set(LIBRARY_PREFIX "lib")
+	find_package(Threads REQUIRED)
 endif()
 
 add_library(DiscordCoreAPI::DiscordCoreAPI ALIAS DiscordCoreAPI)
@@ -51,6 +52,7 @@ target_link_libraries(
 	$<$<TARGET_EXISTS:OPUS::Opus>:OPUS::Opus>
 	$<$<TARGET_EXISTS:SODIUM::Sodium>:SODIUM::Sodium>
 	$<$<TARGET_EXISTS:NLOHMANN::Json>:NLOHMANN::Json>
+	$<$<TARGET_EXISTS:Threads::Threads>:Threads::Threads>
 )
 
 set_target_properties(
@@ -90,7 +92,6 @@ target_link_options(
 target_compile_options(
 	DiscordCoreAPI PUBLIC
 	"$<$<PLATFORM_ID:Windows>:/bigobj>"
-	"$<$<PLATFORM_ID:Linux>:-pthread>"
 	"$<$<PLATFORM_ID:Windows>:/MP>"
 	"$<$<PLATFORM_ID:Linux>:-O3>"
 )
