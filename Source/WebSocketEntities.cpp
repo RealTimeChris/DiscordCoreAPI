@@ -1378,6 +1378,7 @@ namespace DiscordCoreInternal {
 	}
 
 	VoiceSocketAgent::~VoiceSocketAgent() noexcept {
+		this->baseSocketAgent->voiceConnectionDataBufferMap.erase(this->voiceConnectInitData.guildId);
 		this->theTask->request_stop();
 		if (this->theTask->joinable()) {
 			this->theTask->join();

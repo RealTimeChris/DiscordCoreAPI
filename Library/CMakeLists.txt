@@ -27,6 +27,15 @@ endif()
 
 add_library(DiscordCoreAPI::DiscordCoreAPI ALIAS DiscordCoreAPI)
 
+if (DEFINED ENV{EnableASAN})
+	if(MSVC)
+		target_compile_options(DiscordCoreAPI PUBLIC /fsanitize=address /Zi)
+	else()
+		target_compile_options(DiscordCoreAPI PUBLIC -fsanitize=address)
+		target_link_options(DiscordCoreAPI PUBLIC -fsanitize=address -libasan-static)
+	endif()
+endif()
+
 find_curl("${CURL_RELEASE_ROOT}" "${CURL_DEBUG_ROOT}" "${CURL_INCLUDE_DIR}")
 find_ffmpeg("${FFMPEG_RELEASE_ROOT}" "${FFMPEG_DEBUG_ROOT}" "${FFMPEG_INCLUDE_DIR}")
 find_glib("${GLIB_RELEASE_ROOT}" "${GLIB_DEBUG_ROOT}" "${GLIB_INCLUDE_DIR}")
