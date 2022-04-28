@@ -104,8 +104,8 @@ set(DISCORDCOREAPI_INCLUDE_DIR "${CMAKE_INSTALL_PREFIX}/include/discordcoreapi")
 install(
 	TARGETS DiscordCoreAPI
 	EXPORT "${EXPORTED_TARGETS_NAME}"
-	RUNTIME DESTINATION "$<IF:$<CONFIG:Debug>,$<IF:$<STREQUAL:${_VCPKG_INSTALLED_DIR},>,debug/bin,bin>,bin>"
-	ARCHIVE DESTINATION "$<IF:$<CONFIG:Debug>,$<IF:$<STREQUAL:${_VCPKG_INSTALLED_DIR},>,debug/lib,lib>,lib>"
+	RUNTIME DESTINATION "$<IF:$<CONFIG:Release>,bin,debug/bin>"
+	ARCHIVE DESTINATION "$<IF:$<CONFIG:Release>,lib,debug/lib>"
 	PUBLIC_HEADER DESTINATION "${DISCORDCOREAPI_INCLUDE_DIR}"
 )
 
@@ -146,7 +146,7 @@ install(
 
 install(
 	FILES "$<$<PLATFORM_ID:Windows>:$<TARGET_PDB_FILE:DiscordCoreAPI>>"
-	DESTINATION "$<IF:$<CONFIG:Debug>,$<IF:$<STREQUAL:${_VCPKG_INSTALLED_DIR},>,debug/bin,bin>,bin>"
+	DESTINATION "$<IF:$<CONFIG:Release>,bin,debug/bin>"
 	OPTIONAL
 )
 
