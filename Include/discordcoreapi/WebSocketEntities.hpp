@@ -55,7 +55,7 @@ namespace DiscordCoreInternal {
 		~BaseSocketAgent() noexcept;
 
 	  protected:
-		std::unordered_map<std::string, DiscordCoreAPI::UnboundedMessageBlock<VoiceConnectionData>*> voiceConnectionDataBufferMap{};
+		std::unordered_map<std::string, DiscordCoreAPI::TSUnboundedMessageBlock<VoiceConnectionData>*> voiceConnectionDataBufferMap{};
 		const DiscordCoreAPI::GatewayIntents intentsValue{ DiscordCoreAPI::GatewayIntents::All_Intents };
 		DiscordCoreAPI::DiscordCoreClient* discordCoreClient{ nullptr };
 		DiscordCoreAPI::CommandController* commandController{ nullptr };
@@ -130,7 +130,7 @@ namespace DiscordCoreInternal {
 		~VoiceSocketAgent() noexcept;
 
 	  protected:
-		DiscordCoreAPI::UnboundedMessageBlock<DiscordCoreInternal::VoiceConnectionData> voiceConnectionDataBuffer{};
+		DiscordCoreAPI::TSUnboundedMessageBlock<DiscordCoreInternal::VoiceConnectionData> voiceConnectionDataBuffer{};
 		std::unique_ptr<DatagramSocketSSLClient> voiceSocket{ nullptr };
 		std::unique_ptr<WebSocketSSLClient> webSocket{ nullptr };
 		WebSocketOpCode dataOpcode{ WebSocketOpCode::Op_Text };

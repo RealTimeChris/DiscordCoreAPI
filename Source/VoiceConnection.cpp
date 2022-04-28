@@ -180,10 +180,10 @@ namespace DiscordCoreAPI {
 		this->areWeConnectedBool = false;
 		this->areWePlaying.store(false, std::memory_order_seq_cst);
 		this->areWeStopping.store(true, std::memory_order_seq_cst);
+		this->sendSpeakingMessage(false);
 		if (this->voiceSocketAgent) {
 			this->voiceSocketAgent.reset(nullptr);
 		}
-		this->sendSpeakingMessage(false);
 		if (this->theTask) {
 			this->theTask->request_stop();
 			if (this->theTask->joinable()) {
@@ -382,12 +382,14 @@ namespace DiscordCoreAPI {
 	};
 
 	VoiceConnection::~VoiceConnection() {
-		if (this->theTask) {
-			this->theTask->request_stop();
-			if (this->theTask->joinable()) {
-				this->theTask->join();
+		if (this != nullptr) {
+			if (this->theTask) {
+				this->theTask->request_stop();
+				if (this->theTask->joinable()) {
+					this->theTask->join();
+					this->theTask.reset(nullptr);
+				}
 			}
-			this->theTask.reset(nullptr);
 		}
 	}
 

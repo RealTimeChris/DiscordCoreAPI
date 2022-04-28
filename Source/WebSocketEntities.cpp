@@ -554,8 +554,9 @@ namespace DiscordCoreInternal {
 						*interactionData = DiscordCoreAPI::InteractionData(payload["d"]["member"]["user"]["id"].get<std::string>());
 					}
 					DiscordCoreInternal::DataParser::parseObject(payload["d"], *interactionData.get());
+					std::unique_ptr<DiscordCoreAPI::MessageData> messageDataNew{ std::make_unique<DiscordCoreAPI::MessageData>() };
 					std::unique_ptr<DiscordCoreAPI::InputEventData> eventData{ std::make_unique<DiscordCoreAPI::InputEventData>(
-						DiscordCoreAPI::MessageData(), *interactionData, DiscordCoreAPI::InteractionType::Ping) };
+						*messageDataNew, *interactionData, DiscordCoreAPI::InteractionType::Ping) };
 					if (interactionData->type == DiscordCoreAPI::InteractionType::Application_Command) {
 						if (interactionData->data.applicationCommanddata.type == DiscordCoreAPI::ApplicationCommandType::Chat_Input) {
 							eventData->eventType = DiscordCoreAPI::InteractionType::Application_Command;
@@ -567,7 +568,7 @@ namespace DiscordCoreInternal {
 						}
 						eventData->responseType = DiscordCoreAPI::InputEventResponseType::Unset;
 						eventData->requesterId = interactionData->requesterId;
-						eventData->interactionData = *interactionData;
+						*eventData->interactionData = *interactionData;
 						std::unique_ptr<DiscordCoreAPI::OnInteractionCreationData> dataPackage{ std::make_unique<DiscordCoreAPI::OnInteractionCreationData>() };
 						dataPackage->interactionData = *interactionData;
 						std::unique_ptr<DiscordCoreAPI::CommandData> commandData{ std::make_unique<DiscordCoreAPI::CommandData>(*eventData) };
@@ -587,7 +588,7 @@ namespace DiscordCoreInternal {
 							eventData->eventType = DiscordCoreAPI::InteractionType::Message_Component;
 							eventData->responseType = DiscordCoreAPI::InputEventResponseType::Unset;
 							eventData->requesterId = interactionData->requesterId;
-							eventData->interactionData = *interactionData;
+							*eventData->interactionData = *interactionData;
 							std::unique_ptr<DiscordCoreAPI::OnInteractionCreationData> dataPackage{
 								std::make_unique<DiscordCoreAPI::OnInteractionCreationData>()
 							};
@@ -606,7 +607,7 @@ namespace DiscordCoreInternal {
 							eventData->eventType = DiscordCoreAPI::InteractionType::Message_Component;
 							eventData->responseType = DiscordCoreAPI::InputEventResponseType::Unset;
 							eventData->requesterId = interactionData->requesterId;
-							eventData->interactionData = *interactionData;
+							*eventData->interactionData = *interactionData;
 							std::unique_ptr<DiscordCoreAPI::OnInteractionCreationData> dataPackage{
 								std::make_unique<DiscordCoreAPI::OnInteractionCreationData>()
 							};
@@ -627,7 +628,7 @@ namespace DiscordCoreInternal {
 						eventData->eventType = DiscordCoreAPI::InteractionType::Modal_Submit;
 						eventData->responseType = DiscordCoreAPI::InputEventResponseType::Unset;
 						eventData->requesterId = interactionData->requesterId;
-						eventData->interactionData = *interactionData;
+						*eventData->interactionData = *interactionData;
 						std::unique_ptr<DiscordCoreAPI::OnInteractionCreationData> dataPackage{ std::make_unique<DiscordCoreAPI::OnInteractionCreationData>() };
 						dataPackage->interactionData = *interactionData;
 						std::unique_ptr<DiscordCoreAPI::OnInputEventCreationData> eventCreationData{
@@ -1075,7 +1076,8 @@ namespace DiscordCoreInternal {
 			std::vector<std::string> dataOut{};
 			for (auto value = 0; value != std::string::npos; value = static_cast<int32_t>(dataIn.find_first_not_of(separator, value))) {
 				auto output = static_cast<int32_t>(dataIn.find(separator, value));
-				dataOut.push_back(dataIn.substr(value, output - value));
+				dataOut.push_back(
+					dataIn.substr(value, static_cast<std::basic_string<char, std::char_traits<char>, std::allocator<char>>::size_type>(output) - value));
 				value = output;
 			}
 			return dataOut;
@@ -1378,11 +1380,15 @@ namespace DiscordCoreInternal {
 	}
 
 	VoiceSocketAgent::~VoiceSocketAgent() noexcept {
-		this->baseSocketAgent->voiceConnectionDataBufferMap.erase(this->voiceConnectInitData.guildId);
-		this->theTask->request_stop();
-		if (this->theTask->joinable()) {
-			this->theTask->join();
+		if (this != nullptr) {
+			if (this->baseSocketAgent->voiceConnectionDataBufferMap.contains(this->voiceConnectInitData.guildId)) {
+				this->baseSocketAgent->voiceConnectionDataBufferMap.erase(this->voiceConnectInitData.guildId);
+			}
+			this->theTask->request_stop();
+			if (this->theTask->joinable()) {
+				this->theTask->join();
+				this->theTask.reset(nullptr);
+			}
 		}
-		this->theTask.reset(nullptr);
 	};
 }

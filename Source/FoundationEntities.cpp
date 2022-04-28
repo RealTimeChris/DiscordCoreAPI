@@ -769,13 +769,13 @@ namespace DiscordCoreAPI {
 
 	CommandData::CommandData(InputEventData inputEventData) {
 		this->eventData = std::make_unique<InputEventData>(inputEventData);
-		if (inputEventData.interactionData.data.applicationCommanddata.name != "") {
-			this->commandName = inputEventData.interactionData.data.applicationCommanddata.name;
+		if (inputEventData.interactionData->data.applicationCommanddata.name != "") {
+			this->commandName = inputEventData.interactionData->data.applicationCommanddata.name;
 		}
-		if (inputEventData.interactionData.data.messageInteractionData.targetId != "") {
-			this->optionsArgs.push_back(inputEventData.interactionData.data.messageInteractionData.targetId);
-		} else if (inputEventData.interactionData.data.userInteractionData.targetId != "") {
-			this->optionsArgs.push_back(inputEventData.interactionData.data.userInteractionData.targetId);
+		if (inputEventData.interactionData->data.messageInteractionData.targetId != "") {
+			this->optionsArgs.push_back(inputEventData.interactionData->data.messageInteractionData.targetId);
+		} else if (inputEventData.interactionData->data.userInteractionData.targetId != "") {
+			this->optionsArgs.push_back(inputEventData.interactionData->data.userInteractionData.targetId);
 		}
 		DiscordCoreInternal::DataParser::parseObject(inputEventData.getInteractionData().rawData, *this);
 	}

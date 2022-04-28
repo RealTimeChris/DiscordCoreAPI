@@ -160,7 +160,7 @@ namespace DiscordCoreInternal {
 		};
 
 	  protected:
-		std::unique_ptr<addrinfo, addrinfoDeleter> addrinfoPtr{ new addrinfo{}, addrinfoDeleter{} };
+		std::unique_ptr<addrinfo, addrinfoDeleter> addrinfoPtr{ nullptr, addrinfoDeleter{} };
 		addrinfo* addrinfoPtrTwo{ nullptr };
 	};
 

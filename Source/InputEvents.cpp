@@ -35,7 +35,7 @@ namespace DiscordCoreAPI {
 			} else {
 				dataPackage02->data.type = InteractionCallbackType::Update_Message;
 			}
-			auto newEvent = std::make_unique<InputEventData>(InputEvents::respondToEvent(*dataPackage02));
+			std::unique_ptr<InputEventData> newEvent = std::make_unique<InputEventData>(InputEvents::respondToEvent(*dataPackage02));
 			if (dataPackage.type == InputEventResponseType::Ephemeral_Interaction_Response ||
 				dataPackage.type == InputEventResponseType::Edit_Ephemeral_Interaction_Response) {
 				newEvent->responseType = InputEventResponseType::Edit_Ephemeral_Interaction_Response;
@@ -55,39 +55,48 @@ namespace DiscordCoreAPI {
 			}
 			case InputEventResponseType::Deferred_Response_With_Source: {
 				std::unique_ptr<CreateDeferredInteractionResponseData> dataPackage02{ std::make_unique<CreateDeferredInteractionResponseData>(dataPackage) };
-				return std::make_unique<InputEventData>(InputEvents::respondToEvent(*dataPackage02));
+				std::unique_ptr<InputEventData> thePtrNew = std::make_unique<InputEventData>(InputEvents::respondToEvent(*dataPackage02));
+				return thePtrNew;
 			}
 			case InputEventResponseType::Interaction_Response: {
 				std::unique_ptr<CreateInteractionResponseData> dataPackage02{ std::make_unique<CreateInteractionResponseData>(dataPackage) };
-				return std::make_unique<InputEventData>(InputEvents::respondToEvent(*dataPackage02));
+				std::unique_ptr<InputEventData> thePtrNew = std::make_unique<InputEventData>(InputEvents::respondToEvent(*dataPackage02));
+				return thePtrNew;
 			}
 			case InputEventResponseType::Edit_Ephemeral_Interaction_Response: {
 				std::unique_ptr<EditEphemeralInteractionResponseData> dataPackage02{ std::make_unique<EditEphemeralInteractionResponseData>(dataPackage) };
-				return std::make_unique<InputEventData>(InputEvents::respondToEvent(*dataPackage02));
+				std::unique_ptr<InputEventData> thePtrNew = std::make_unique<InputEventData>(InputEvents::respondToEvent(*dataPackage02));
+				return thePtrNew;
 			}
 			case InputEventResponseType::Edit_Interaction_Response: {
 				std::unique_ptr<EditInteractionResponseData> dataPackage02{ std::make_unique<EditInteractionResponseData>(dataPackage) };
-				return std::make_unique<InputEventData>(InputEvents::respondToEvent(*dataPackage02));
+				std::unique_ptr<InputEventData> thePtrNew = std::make_unique<InputEventData>(InputEvents::respondToEvent(*dataPackage02));
+				return thePtrNew;
 			}
 			case InputEventResponseType::Ephemeral_Interaction_Response: {
 				std::unique_ptr<CreateEphemeralInteractionResponseData> dataPackage02{ std::make_unique<CreateEphemeralInteractionResponseData>(dataPackage) };
-				return std::make_unique<InputEventData>(InputEvents::respondToEvent(*dataPackage02));
+				std::unique_ptr<InputEventData> thePtrNew = std::make_unique<InputEventData>(InputEvents::respondToEvent(*dataPackage02));
+				return thePtrNew;
 			}
 			case InputEventResponseType::Follow_Up_Message: {
 				std::unique_ptr<CreateFollowUpMessageData> dataPackage02{ std::make_unique<CreateFollowUpMessageData>(dataPackage) };
-				return std::make_unique<InputEventData>(InputEvents::respondToEvent(*dataPackage02));
+				std::unique_ptr<InputEventData> thePtrNew = std::make_unique<InputEventData>(InputEvents::respondToEvent(*dataPackage02));
+				return thePtrNew;
 			}
 			case InputEventResponseType::Edit_Ephemeral_Follow_Up_Message: {
 				std::unique_ptr<EditEphemeralFollowUpMessageData> dataPackage02{ std::make_unique<EditEphemeralFollowUpMessageData>(dataPackage) };
-				return std::make_unique<InputEventData>(InputEvents::respondToEvent(*dataPackage02));
+				std::unique_ptr<InputEventData> thePtrNew = std::make_unique<InputEventData>(InputEvents::respondToEvent(*dataPackage02));
+				return thePtrNew;
 			}
 			case InputEventResponseType::Edit_Follow_Up_Message: {
 				std::unique_ptr<EditFollowUpMessageData> dataPackage02{ std::make_unique<EditFollowUpMessageData>(dataPackage) };
-				return std::make_unique<InputEventData>(InputEvents::respondToEvent(*dataPackage02));
+				std::unique_ptr<InputEventData> thePtrNew = std::make_unique<InputEventData>(InputEvents::respondToEvent(*dataPackage02));
+				return thePtrNew;
 			}
 			case InputEventResponseType::Ephemeral_Follow_Up_Message: {
 				std::unique_ptr<CreateEphemeralFollowUpMessageData> dataPackage02{ std::make_unique<CreateEphemeralFollowUpMessageData>(dataPackage) };
-				return std::make_unique<InputEventData>(InputEvents::respondToEvent(*dataPackage02));
+				std::unique_ptr<InputEventData> thePtrNew = std::make_unique<InputEventData>(InputEvents::respondToEvent(*dataPackage02));
+				return thePtrNew;
 			}
 			case InputEventResponseType::Unset: {
 				std::cout << shiftToBrightRed() << "Failed to set input event response type!" << reset() << std::endl;
@@ -104,15 +113,15 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<void>();
 		if (dataPackage->responseType == InputEventResponseType::Follow_Up_Message ||
 			dataPackage->responseType == InputEventResponseType::Edit_Follow_Up_Message) {
-			std::unique_ptr<DeleteFollowUpMessageData> dataPackageNewer = std::make_unique<DeleteFollowUpMessageData>(*dataPackage);
-			dataPackageNewer->timeDelay = timeDelayNew;
-			Interactions::deleteFollowUpMessageAsync(*dataPackageNewer).get();
+			DeleteFollowUpMessageData dataPackageNewer{ *dataPackage };
+			dataPackageNewer.timeDelay = timeDelayNew;
+			Interactions::deleteFollowUpMessageAsync(dataPackageNewer).get();
 		} else if (dataPackage->responseType == InputEventResponseType::Interaction_Response ||
 			dataPackage->responseType == InputEventResponseType::Edit_Interaction_Response ||
 			dataPackage->responseType == InputEventResponseType::Deferred_Response) {
-			std::unique_ptr<DeleteInteractionResponseData> dataPackageNewer = std::make_unique<DeleteInteractionResponseData>(*dataPackage);
-			dataPackageNewer->timeDelay = timeDelayNew;
-			Interactions::deleteInteractionResponseAsync(*dataPackageNewer).get();
+			DeleteInteractionResponseData dataPackageNewer{ *dataPackage };
+			dataPackageNewer.timeDelay = timeDelayNew;
+			Interactions::deleteInteractionResponseAsync(dataPackageNewer).get();
 		}
 		co_return;
 	}
@@ -120,122 +129,122 @@ namespace DiscordCoreAPI {
 	InputEventData InputEvents::respondToEvent(CreateDeferredInteractionResponseData dataPackage) {
 		CreateInteractionResponseData dataPackage02{ dataPackage };
 		Interactions::createInteractionResponseAsync(dataPackage02).get();
-		std::unique_ptr<InputEventData> dataPackageNewer = std::make_unique<InputEventData>();
-		dataPackageNewer->responseType = InputEventResponseType::Deferred_Response;
-		dataPackageNewer->interactionData.applicationId = dataPackage.interactionPackage.applicationId;
-		dataPackageNewer->interactionData.token = dataPackage.interactionPackage.interactionToken;
-		dataPackageNewer->interactionData.id = dataPackage.interactionPackage.interactionId;
-		dataPackageNewer->eventType = InteractionType::Application_Command;
-		dataPackageNewer->interactionData.channelId = dataPackage.channelId;
-		dataPackageNewer->requesterId = dataPackage.requesterId;
-		return *dataPackageNewer;
+		InputEventData dataPackageNewer{};		
+		dataPackageNewer.responseType = InputEventResponseType::Deferred_Response;
+		dataPackageNewer.interactionData->applicationId = dataPackage.interactionPackage.applicationId;
+		dataPackageNewer.interactionData->token = dataPackage.interactionPackage.interactionToken;
+		dataPackageNewer.interactionData->id = dataPackage.interactionPackage.interactionId;
+		dataPackageNewer.eventType = InteractionType::Application_Command;
+		dataPackageNewer.interactionData->channelId = dataPackage.channelId;
+		dataPackageNewer.requesterId = dataPackage.requesterId;
+		return dataPackageNewer;
 	}
 
 	InputEventData InputEvents::respondToEvent(CreateInteractionResponseData dataPackage) {
 		Message messageData = Interactions::createInteractionResponseAsync(dataPackage).get();
-		std::unique_ptr<InputEventData> dataPackageNewer = std::make_unique<InputEventData>();
-		dataPackageNewer->interactionData.applicationId = dataPackage.interactionPackage.applicationId;
-		dataPackageNewer->interactionData.channelId = dataPackage.messagePackage.channelId;
-		dataPackageNewer->interactionData.token = dataPackage.interactionPackage.interactionToken;
-		dataPackageNewer->responseType = InputEventResponseType::Interaction_Response;
-		dataPackageNewer->interactionData.message.components = dataPackage.data.data.components;
-		dataPackageNewer->interactionData.id = dataPackage.interactionPackage.interactionId;
-		dataPackageNewer->eventType = InteractionType::Application_Command;
-		dataPackageNewer->requesterId = dataPackage.requesterId;
-		dataPackageNewer->messageData = messageData;
-		return *dataPackageNewer;
+		InputEventData dataPackageNewer{};		
+		dataPackageNewer.interactionData->applicationId = dataPackage.interactionPackage.applicationId;
+		dataPackageNewer.interactionData->channelId = dataPackage.messagePackage.channelId;
+		dataPackageNewer.interactionData->token = dataPackage.interactionPackage.interactionToken;
+		dataPackageNewer.responseType = InputEventResponseType::Interaction_Response;
+		dataPackageNewer.interactionData->message.components = dataPackage.data.data.components;
+		dataPackageNewer.interactionData->id = dataPackage.interactionPackage.interactionId;
+		dataPackageNewer.eventType = InteractionType::Application_Command;
+		dataPackageNewer.requesterId = dataPackage.requesterId;
+		*dataPackageNewer.messageData = messageData;
+		return dataPackageNewer;
 	}
 
 	InputEventData InputEvents::respondToEvent(EditInteractionResponseData dataPackage) {
 		Message messageData = Interactions::editInteractionResponseAsync(dataPackage).get();
-		std::unique_ptr<InputEventData> dataPackageNewer = std::make_unique<InputEventData>();
-		dataPackageNewer->interactionData.applicationId = dataPackage.interactionPackage.applicationId;
-		dataPackageNewer->responseType = InputEventResponseType::Edit_Interaction_Response;
-		dataPackageNewer->interactionData.token = dataPackage.interactionPackage.interactionToken;
-		dataPackageNewer->interactionData.id = dataPackage.interactionPackage.interactionId;
-		dataPackageNewer->eventType = InteractionType::Application_Command;
-		dataPackageNewer->requesterId = dataPackage.requesterId;
-		dataPackageNewer->messageData = messageData;
-		return *dataPackageNewer;
+		InputEventData dataPackageNewer{};		
+		dataPackageNewer.interactionData->applicationId = dataPackage.interactionPackage.applicationId;
+		dataPackageNewer.responseType = InputEventResponseType::Edit_Interaction_Response;
+		dataPackageNewer.interactionData->token = dataPackage.interactionPackage.interactionToken;
+		dataPackageNewer.interactionData->id = dataPackage.interactionPackage.interactionId;
+		dataPackageNewer.eventType = InteractionType::Application_Command;
+		dataPackageNewer.requesterId = dataPackage.requesterId;
+		*dataPackageNewer.messageData = messageData;
+		return dataPackageNewer;
 	}
 
 	InputEventData InputEvents::respondToEvent(EditEphemeralInteractionResponseData dataPackage) {
 		Message messageData = Interactions::editInteractionResponseAsync(dataPackage).get();
-		std::unique_ptr<InputEventData> dataPackageNewer = std::make_unique<InputEventData>();
-		dataPackageNewer->interactionData.applicationId = dataPackage.interactionPackage.applicationId;
-		dataPackageNewer->responseType = InputEventResponseType::Edit_Ephemeral_Interaction_Response;
-		dataPackageNewer->interactionData.token = dataPackage.interactionPackage.interactionToken;
-		dataPackageNewer->interactionData.id = dataPackage.interactionPackage.interactionId;
-		dataPackageNewer->eventType = InteractionType::Application_Command;
-		dataPackageNewer->requesterId = dataPackage.requesterId;
-		dataPackageNewer->messageData = messageData;
-		return *dataPackageNewer;
+		InputEventData dataPackageNewer{};		
+		dataPackageNewer.interactionData->applicationId = dataPackage.interactionPackage.applicationId;
+		dataPackageNewer.responseType = InputEventResponseType::Edit_Ephemeral_Interaction_Response;
+		dataPackageNewer.interactionData->token = dataPackage.interactionPackage.interactionToken;
+		dataPackageNewer.interactionData->id = dataPackage.interactionPackage.interactionId;
+		dataPackageNewer.eventType = InteractionType::Application_Command;
+		dataPackageNewer.requesterId = dataPackage.requesterId;
+		*dataPackageNewer.messageData = messageData;
+		return dataPackageNewer;
 	}
 
 	InputEventData InputEvents::respondToEvent(EditEphemeralFollowUpMessageData dataPackage) {
 		Message messageData = Interactions::editFollowUpMessageAsync(dataPackage).get();
-		std::unique_ptr<InputEventData> dataPackageNewer = std::make_unique<InputEventData>();
-		dataPackageNewer->interactionData.applicationId = dataPackage.interactionPackage.applicationId;
-		dataPackageNewer->responseType = InputEventResponseType::Edit_Ephemeral_Follow_Up_Message;
-		dataPackageNewer->interactionData.token = dataPackage.interactionPackage.interactionToken;
-		dataPackageNewer->interactionData.id = dataPackage.interactionPackage.interactionId;
-		dataPackageNewer->eventType = InteractionType::Application_Command;
-		dataPackageNewer->requesterId = dataPackage.requesterId;
-		dataPackageNewer->messageData = messageData;
-		return *dataPackageNewer;
+		InputEventData dataPackageNewer{};		
+		dataPackageNewer.interactionData->applicationId = dataPackage.interactionPackage.applicationId;
+		dataPackageNewer.responseType = InputEventResponseType::Edit_Ephemeral_Follow_Up_Message;
+		dataPackageNewer.interactionData->token = dataPackage.interactionPackage.interactionToken;
+		dataPackageNewer.interactionData->id = dataPackage.interactionPackage.interactionId;
+		dataPackageNewer.eventType = InteractionType::Application_Command;
+		dataPackageNewer.requesterId = dataPackage.requesterId;
+		*dataPackageNewer.messageData = messageData;
+		return dataPackageNewer;
 	}
 
 	InputEventData InputEvents::respondToEvent(CreateFollowUpMessageData dataPackage) {
 		Message messageData = Interactions::createFollowUpMessageAsync(dataPackage).get();
-		std::unique_ptr<InputEventData> dataPackageNewer = std::make_unique<InputEventData>();
-		dataPackageNewer->responseType = InputEventResponseType::Follow_Up_Message;
-		dataPackageNewer->interactionData.applicationId = dataPackage.interactionPackage.applicationId;
-		dataPackageNewer->interactionData.token = dataPackage.interactionPackage.interactionToken;
-		dataPackageNewer->interactionData.id = dataPackage.interactionPackage.interactionId;
-		dataPackageNewer->eventType = InteractionType::Application_Command;
-		dataPackageNewer->requesterId = dataPackage.requesterId;
-		dataPackageNewer->messageData = messageData;
-		return *dataPackageNewer;
+		InputEventData dataPackageNewer{};		
+		dataPackageNewer.responseType = InputEventResponseType::Follow_Up_Message;
+		dataPackageNewer.interactionData->applicationId = dataPackage.interactionPackage.applicationId;
+		dataPackageNewer.interactionData->token = dataPackage.interactionPackage.interactionToken;
+		dataPackageNewer.interactionData->id = dataPackage.interactionPackage.interactionId;
+		dataPackageNewer.eventType = InteractionType::Application_Command;
+		dataPackageNewer.requesterId = dataPackage.requesterId;
+		*dataPackageNewer.messageData = messageData;
+		return dataPackageNewer;
 	}
 
 	InputEventData InputEvents::respondToEvent(EditFollowUpMessageData dataPackage) {
 		Message messageData = Interactions::editFollowUpMessageAsync(dataPackage).get();
-		std::unique_ptr<InputEventData> dataPackageNewer = std::make_unique<InputEventData>();
-		dataPackageNewer->responseType = InputEventResponseType::Edit_Follow_Up_Message;
-		dataPackageNewer->interactionData.applicationId = dataPackage.interactionPackage.applicationId;
-		dataPackageNewer->interactionData.token = dataPackage.interactionPackage.interactionToken;
-		dataPackageNewer->interactionData.id = dataPackage.interactionPackage.interactionId;
-		dataPackageNewer->eventType = InteractionType::Application_Command;
-		dataPackageNewer->requesterId = dataPackage.requesterId;
-		dataPackageNewer->messageData = messageData;
-		return *dataPackageNewer;
+		InputEventData dataPackageNewer{};		
+		dataPackageNewer.responseType = InputEventResponseType::Edit_Follow_Up_Message;
+		dataPackageNewer.interactionData->applicationId = dataPackage.interactionPackage.applicationId;
+		dataPackageNewer.interactionData->token = dataPackage.interactionPackage.interactionToken;
+		dataPackageNewer.interactionData->id = dataPackage.interactionPackage.interactionId;
+		dataPackageNewer.eventType = InteractionType::Application_Command;
+		dataPackageNewer.requesterId = dataPackage.requesterId;
+		*dataPackageNewer.messageData = messageData;
+		return dataPackageNewer;
 	}
 
 	InputEventData InputEvents::respondToEvent(CreateEphemeralInteractionResponseData dataPackage) {
 		std::unique_ptr<CreateInteractionResponseData> newData = std::make_unique<CreateInteractionResponseData>(dataPackage);
 		Message newMessage = Interactions::createInteractionResponseAsync(*newData).get();
-		std::unique_ptr<InputEventData> dataPackageNewer = std::make_unique<InputEventData>();
-		dataPackageNewer->responseType = InputEventResponseType::Ephemeral_Interaction_Response;
-		dataPackageNewer->interactionData.applicationId = dataPackage.interactionPackage.applicationId;
-		dataPackageNewer->interactionData.token = dataPackage.interactionPackage.interactionToken;
-		dataPackageNewer->interactionData.id = dataPackage.interactionPackage.interactionId;
-		dataPackageNewer->eventType = InteractionType::Application_Command;
-		dataPackageNewer->messageData = newMessage;
-		dataPackageNewer->requesterId = dataPackage.requesterId;
-		return *dataPackageNewer;
+		InputEventData dataPackageNewer{};		
+		dataPackageNewer.responseType = InputEventResponseType::Ephemeral_Interaction_Response;
+		dataPackageNewer.interactionData->applicationId = dataPackage.interactionPackage.applicationId;
+		dataPackageNewer.interactionData->token = dataPackage.interactionPackage.interactionToken;
+		dataPackageNewer.interactionData->id = dataPackage.interactionPackage.interactionId;
+		dataPackageNewer.eventType = InteractionType::Application_Command;
+		*dataPackageNewer.messageData = newMessage;
+		dataPackageNewer.requesterId = dataPackage.requesterId;
+		return dataPackageNewer;
 	}
 
 	InputEventData InputEvents::respondToEvent(CreateEphemeralFollowUpMessageData dataPackage) {
 		std::unique_ptr<CreateFollowUpMessageData> dataPackageNew = std::make_unique<CreateFollowUpMessageData>(dataPackage);
 		Message messageData = Interactions::createFollowUpMessageAsync(*dataPackageNew).get();
-		std::unique_ptr<InputEventData> dataPackageNewer = std::make_unique<InputEventData>();
-		dataPackageNewer->responseType = InputEventResponseType::Ephemeral_Follow_Up_Message;
-		dataPackageNewer->interactionData.applicationId = dataPackage.interactionPackage.applicationId;
-		dataPackageNewer->interactionData.token = dataPackage.interactionPackage.interactionToken;
-		dataPackageNewer->interactionData.id = dataPackage.interactionPackage.interactionId;
-		dataPackageNewer->eventType = InteractionType::Application_Command;
-		dataPackageNewer->requesterId = dataPackage.requesterId;
-		dataPackageNewer->messageData = messageData;
-		return *dataPackageNewer;
+		InputEventData dataPackageNewer{};		
+		dataPackageNewer.responseType = InputEventResponseType::Ephemeral_Follow_Up_Message;
+		dataPackageNewer.interactionData->applicationId = dataPackage.interactionPackage.applicationId;
+		dataPackageNewer.interactionData->token = dataPackage.interactionPackage.interactionToken;
+		dataPackageNewer.interactionData->id = dataPackage.interactionPackage.interactionId;
+		dataPackageNewer.eventType = InteractionType::Application_Command;
+		dataPackageNewer.requesterId = dataPackage.requesterId;
+		*dataPackageNewer.messageData = messageData;
+		return dataPackageNewer;
 	}
 }

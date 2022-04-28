@@ -2610,7 +2610,7 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll ResolvedData {
 		std::unordered_map<std::string, AttachmentData> attachments{};///< Map of Snowflakes to attachment objects the ids and attachment objects.
 		std::unordered_map<std::string, GuildMemberData> members{};///< Map full of GuildMemeberData.
-		std::unordered_map<std::string, MessageData> messages{};///< Map full of MessageData.
+		std::unordered_map<std::string, MessageData> messages{};///< Map full of messageData->
 		std::unordered_map<std::string, ChannelData> channels{};///< Map full of ChannelData.
 		std::unordered_map<std::string, UserData> users{};///< Map full of UserData.
 		std::unordered_map<std::string, RoleData> roles{};///< Map full of RoleData.
@@ -2779,9 +2779,9 @@ namespace DiscordCoreAPI {
 
 		InputEventData& operator=(InputEventData&& other) noexcept {
 			if (this != &other) {
-				this->interactionData = other.interactionData;
+				*this->interactionData = *other.interactionData;
 				this->responseType = other.responseType;
-				this->messageData = other.messageData;
+				*this->messageData = *other.messageData;
 				this->requesterId = other.requesterId;
 				this->eventType = other.eventType;
 			}
@@ -2789,9 +2789,9 @@ namespace DiscordCoreAPI {
 		}
 
 		InputEventData& operator=(const InputEventData& other) {
-			this->interactionData = other.interactionData;
+			*this->interactionData = *other.interactionData;
 			this->responseType = other.responseType;
-			this->messageData = other.messageData;
+			*this->messageData = *other.messageData;
 			this->requesterId = other.requesterId;
 			this->eventType = other.eventType;
 			return *this;
@@ -2802,9 +2802,9 @@ namespace DiscordCoreAPI {
 		}
 
 		InputEventData& operator=(InputEventData& other) {
-			this->interactionData = other.interactionData;
+			*this->interactionData = *other.interactionData;
 			this->responseType = other.responseType;
-			this->messageData = other.messageData;
+			*this->messageData = *other.messageData;
 			this->requesterId = other.requesterId;
 			this->eventType = other.eventType;
 			return *this;
@@ -2819,54 +2819,54 @@ namespace DiscordCoreAPI {
 
 		InputEventData() = default;
 
-		InputEventData(MessageData messageData, InteractionData interactionData, InteractionType eventType) {
-			this->interactionData = interactionData;
-			this->messageData = messageData;
+		InputEventData(MessageData& messageData, InteractionData& interactionData, InteractionType eventType) {
+			*this->interactionData = interactionData;
+			*this->messageData = messageData;
 			this->eventType = eventType;
-			if (this->messageData.channelId == "") {
-				this->messageData.channelId = this->interactionData.channelId;
+			if (this->messageData->channelId == "") {
+				this->messageData->channelId = this->interactionData->channelId;
 			} else {
-				this->interactionData.channelId = this->messageData.channelId;
+				this->interactionData->channelId = this->messageData->channelId;
 			}
-			if (this->interactionData.id == "") {
-				this->interactionData.id = this->messageData.interaction.id;
+			if (this->interactionData->id == "") {
+				this->interactionData->id = this->messageData->interaction.id;
 			}
-			if (this->messageData.guildId == "") {
-				this->messageData.guildId = this->interactionData.guildId;
+			if (this->messageData->guildId == "") {
+				this->messageData->guildId = this->interactionData->guildId;
 			} else {
-				this->interactionData.guildId = this->messageData.guildId;
+				this->interactionData->guildId = this->messageData->guildId;
 			}
-			if (this->messageData.id == "") {
-				this->messageData.id = this->interactionData.message.id;
+			if (this->messageData->id == "") {
+				this->messageData->id = this->interactionData->message.id;
 			} else {
-				this->interactionData.message.id = this->messageData.id;
+				this->interactionData->message.id = this->messageData->id;
 			}
-			if (this->messageData.member.user.id == "") {
-				this->messageData.member = this->interactionData.member;
+			if (this->messageData->member.user.id == "") {
+				this->messageData->member = this->interactionData->member;
 			} else {
-				this->interactionData.member = this->messageData.member;
+				this->interactionData->member = this->messageData->member;
 			}
-			if (this->interactionData.user.id != "") {
-				this->messageData.author = this->interactionData.user;
+			if (this->interactionData->user.id != "") {
+				this->messageData->author = this->interactionData->user;
 			} else {
-				this->interactionData.user = this->messageData.author;
+				this->interactionData->user = this->messageData->author;
 			}
-			if (this->messageData.requesterId != "") {
-				this->requesterId = this->messageData.requesterId;
+			if (this->messageData->requesterId != "") {
+				this->requesterId = this->messageData->requesterId;
 			} else {
-				this->requesterId = this->interactionData.requesterId;
+				this->requesterId = this->interactionData->requesterId;
 			}
 		}
 
 		/// Returns the username of the last User to trigger this input-event. \brief Returns the username of the last User to trigger this input-event.
 		/// \returns A std::string containing the User name.
 		std::string getUserName() {
-			if (this->messageData.author.userName == "" && this->interactionData.member.user.userName != "") {
-				return this->interactionData.member.user.userName;
-			} else if (this->interactionData.member.user.userName == "" && this->interactionData.user.userName != "") {
-				return this->interactionData.user.userName;
-			} else if (this->messageData.author.userName != "") {
-				return this->messageData.author.userName;
+			if (this->messageData->author.userName == "" && this->interactionData->member.user.userName != "") {
+				return this->interactionData->member.user.userName;
+			} else if (this->interactionData->member.user.userName == "" && this->interactionData->user.userName != "") {
+				return this->interactionData->user.userName;
+			} else if (this->messageData->author.userName != "") {
+				return this->messageData->author.userName;
 			} else {
 				return std::string();
 			}
@@ -2875,12 +2875,12 @@ namespace DiscordCoreAPI {
 		/// Gets the avatar Url of the last User to trigger this input-event. \brief Gets the avatar Url of the last User to trigger this input-event.
 		/// \returns A std::string containing the avatar Url.
 		std::string getAvatarUrl() {
-			if (this->messageData.author.avatar == "" && this->interactionData.member.user.avatar != "") {
-				return this->interactionData.member.user.avatar;
-			} else if (this->interactionData.member.user.avatar == "" && this->interactionData.user.avatar != "") {
-				return this->interactionData.user.avatar;
-			} else if (this->messageData.author.avatar != "") {
-				return this->messageData.author.avatar;
+			if (this->messageData->author.avatar == "" && this->interactionData->member.user.avatar != "") {
+				return this->interactionData->member.user.avatar;
+			} else if (this->interactionData->member.user.avatar == "" && this->interactionData->user.avatar != "") {
+				return this->interactionData->user.avatar;
+			} else if (this->messageData->author.avatar != "") {
+				return this->messageData->author.avatar;
 			} else {
 				return std::string();
 			}
@@ -2889,16 +2889,16 @@ namespace DiscordCoreAPI {
 		/// Returns the Message embeds that are on the Message, if applicable. \brief Returns the Message embeds that are on the Message, if applicable.
 		/// \returns A std::vector containing the EmbedData.
 		std::vector<EmbedData> getEmbeds() {
-			if (this->interactionData.message.embeds.size() > 0) {
-				if (this->interactionData.message.embeds[0].description != "") {
-					return this->interactionData.message.embeds;
-				} else if (this->interactionData.message.embeds[0].fields.size() > 0) {
-					if (this->interactionData.message.embeds[0].fields[0].value != "") {
-						return this->interactionData.message.embeds;
+			if (this->interactionData->message.embeds.size() > 0) {
+				if (this->interactionData->message.embeds[0].description != "") {
+					return this->interactionData->message.embeds;
+				} else if (this->interactionData->message.embeds[0].fields.size() > 0) {
+					if (this->interactionData->message.embeds[0].fields[0].value != "") {
+						return this->interactionData->message.embeds;
 					}
 				}
 			} else {
-				return this->messageData.embeds;
+				return this->messageData->embeds;
 			}
 			return std::vector<EmbedData>();
 		}
@@ -2906,12 +2906,12 @@ namespace DiscordCoreAPI {
 		/// Returns the Message components that are on the Message, if applicable. \brief Returns the Message components that are on the Message, if applicable.
 		/// \returns A std::vector containing ActionRowData.
 		std::vector<ActionRowData> getComponents() {
-			if (this->interactionData.message.components.size() > 0) {
-				if (this->interactionData.message.components[0].components[0].customId != "") {
-					return this->interactionData.message.components;
+			if (this->interactionData->message.components.size() > 0) {
+				if (this->interactionData->message.components[0].components[0].customId != "") {
+					return this->interactionData->message.components;
 				}
 			} else {
-				return this->messageData.components;
+				return this->messageData->components;
 			}
 			return std::vector<ActionRowData>();
 		}
@@ -2919,10 +2919,10 @@ namespace DiscordCoreAPI {
 		/// Returns the User id of the last requester of this input-event. \brief Returns the User id of the last requester of this input-event.
 		/// \returns A std::string containing the author's id.
 		std::string getAuthorId() {
-			if (this->messageData.author.id == "") {
-				return this->interactionData.user.id;
-			} else if (this->messageData.author.id != "") {
-				return this->messageData.author.id;
+			if (this->messageData->author.id == "") {
+				return this->interactionData->user.id;
+			} else if (this->messageData->author.id != "") {
+				return this->messageData->author.id;
 			} else {
 				return std::string();
 			}
@@ -2931,12 +2931,12 @@ namespace DiscordCoreAPI {
 		/// Returns the Interaction id, if appplicable, of this input-event. \brief Returns the Interaction id, if appplicable, of this input-event.
 		/// \returns A std::string containing the Interaction id.
 		std::string getInteractionId() {
-			if (this->interactionData.id == "") {
-				return this->messageData.interaction.id;
-			} else if (this->interactionData.id != "") {
-				return this->interactionData.id;
-			} else if (this->interactionData.message.interaction.id != "") {
-				return this->interactionData.message.interaction.id;
+			if (this->interactionData->id == "") {
+				return this->messageData->interaction.id;
+			} else if (this->interactionData->id != "") {
+				return this->interactionData->id;
+			} else if (this->interactionData->message.interaction.id != "") {
+				return this->interactionData->message.interaction.id;
 			} else {
 				return std::string();
 			}
@@ -2945,10 +2945,10 @@ namespace DiscordCoreAPI {
 		/// Returns the application id. \brief Returns the application id.
 		/// \returns A std::string containing the application id.
 		std::string getApplicationId() {
-			if (this->interactionData.applicationId == "") {
-				return this->messageData.application.id;
-			} else if (this->interactionData.applicationId != "") {
-				return this->interactionData.applicationId;
+			if (this->interactionData->applicationId == "") {
+				return this->messageData->application.id;
+			} else if (this->interactionData->applicationId != "") {
+				return this->interactionData->applicationId;
 			} else {
 				return std::string();
 			}
@@ -2957,10 +2957,10 @@ namespace DiscordCoreAPI {
 		/// Returns the Channel id of this input-event. \brief Returns the Channel id of this input-event.
 		/// \returns A std::string containing the Channel id.
 		std::string getChannelId() {
-			if (this->interactionData.channelId == "") {
-				return this->messageData.channelId;
-			} else if (this->interactionData.channelId != "") {
-				return this->interactionData.channelId;
+			if (this->interactionData->channelId == "") {
+				return this->messageData->channelId;
+			} else if (this->interactionData->channelId != "") {
+				return this->interactionData->channelId;
 			} else {
 				return std::string();
 			}
@@ -2969,8 +2969,8 @@ namespace DiscordCoreAPI {
 		/// Returns the Interaction token, if applicable, of this input-event. \brief Returns the Interaction token, if applicable, of this input-event.
 		/// \returns A std::string containing the Interaction token.
 		std::string getInteractionToken() {
-			if (this->interactionData.token != "") {
-				return this->interactionData.token;
+			if (this->interactionData->token != "") {
+				return this->interactionData->token;
 			} else {
 				return std::string();
 			}
@@ -2979,10 +2979,10 @@ namespace DiscordCoreAPI {
 		/// Returns the Guild id, of this input-event. \brief Returns the Guild id, of this input-event.
 		/// \returns A std::string containing the Guild id.
 		std::string getGuildId() {
-			if (this->messageData.guildId == "") {
-				return this->interactionData.guildId;
-			} else if (this->messageData.guildId != "") {
-				return this->messageData.guildId;
+			if (this->messageData->guildId == "") {
+				return this->interactionData->guildId;
+			} else if (this->messageData->guildId != "") {
+				return this->messageData->guildId;
 			} else {
 				return std::string();
 			}
@@ -2991,21 +2991,21 @@ namespace DiscordCoreAPI {
 		/// Returns the Message content, if applicable, of this input-event. \brief Returns the Message content, if applicable, of this input-event.
 		/// \returns A std::string containing the Message's content.
 		std::string getMessageContent() {
-			if (this->interactionData.message.content != "") {
-				return this->interactionData.message.content;
+			if (this->interactionData->message.content != "") {
+				return this->interactionData->message.content;
 			} else {
-				return this->messageData.content;
+				return this->messageData->content;
 			}
 		}
 
 		/// Returns the Message id, if applicable, of this input-event. \brief Returns the Message id, if applicable, of this input-event.
 		/// \returns A std::string containing the Message id.
 		std::string getMessageId() {
-			if (this->messageData.id != "") {
-				return this->messageData.id;
+			if (this->messageData->id != "") {
+				return this->messageData->id;
 
-			} else if (this->interactionData.message.id != "") {
-				return this->interactionData.message.id;
+			} else if (this->interactionData->message.id != "") {
+				return this->interactionData->message.id;
 			} else {
 				return std::string();
 			}
@@ -3014,17 +3014,17 @@ namespace DiscordCoreAPI {
 		/// Returns the Interaction data, if applicable, of this input-event. \brief Returns the InteractionData, if applicable, of this input-event.
 		/// \returns An InteractionData structure.
 		InteractionData getInteractionData() {
-			return this->interactionData;
+			return *this->interactionData;
 		}
 
 		/// Returns the Message data, if applicable, of this input-event. \brief Returns the Message data, if applicable, of this input-event.
 		/// \returns A MessageData structure.
 		MessageData getMessageData() {
-			if (this->messageData.id != "") {
-				return this->messageData;
+			if (this->messageData->id != "") {
+				return *this->messageData;
 
 			} else {
-				return this->interactionData.message;
+				return this->interactionData->message;
 			}
 		}
 
@@ -3037,9 +3037,9 @@ namespace DiscordCoreAPI {
 		virtual ~InputEventData() = default;
 
 	  protected:
-		InteractionData interactionData{};
+		std::unique_ptr<InteractionData> interactionData{ std::make_unique<InteractionData>() };
+		std::unique_ptr<MessageData> messageData{ std::make_unique<MessageData>() };
 		std::string requesterId{ "" };
-		MessageData messageData{};
 	};
 
 	/// \brief Data for responding to an input-event.

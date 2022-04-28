@@ -164,7 +164,7 @@ namespace DiscordCoreInternal {
 	template<typename ReturnType> ReturnType submitWorkloadAndGetResult(HttpClient& httpClient, HttpWorkloadData& workload) {
 		try {
 			workload.headersToInsert.insert(std::make_pair("Authorization", "Bot " + httpClient.getBotToken()));
-			workload.headersToInsert.insert(std::make_pair("User-Agent", "DiscordBot (https://github.com/RealTimeChris/DiscordCoreAPI, 1.0)"));
+			workload.headersToInsert.insert(std::make_pair("User-Agent", "DiscordBot (https://discordcoreapi.com 1.0)"));
 			workload.headersToInsert.insert(std::make_pair("Content-Type", "application/json"));
 			HttpData returnData = httpClient.httpRequest(workload);
 			ReturnType returnObject{};

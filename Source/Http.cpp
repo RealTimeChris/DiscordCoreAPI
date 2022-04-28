@@ -375,6 +375,7 @@ namespace DiscordCoreInternal {
 					Globals::rateLimitValues[Globals::rateLimitValueBuckets[workload.workloadType]].reset(
 						Globals::rateLimitValues[Globals::rateLimitValueBuckets[workload.workloadType]].release());
 				} else {
+					Globals::rateLimitValues[Globals::rateLimitValueBuckets[workload.workloadType]] = std::move(thePtrNew);
 					*Globals::rateLimitValues[Globals::rateLimitValueBuckets[workload.workloadType]] = *rateLimitDataPtr;
 				}
 				Globals::rateLimitValues[Globals::rateLimitValueBuckets[workload.workloadType]]->tempBucket = "";

@@ -28,11 +28,13 @@ endif()
 add_library(DiscordCoreAPI::DiscordCoreAPI ALIAS DiscordCoreAPI)
 
 if (DEFINED ENV{EnableASAN})
+	target_compile_options(DiscordCoreAPI PUBLIC "/fsanitize=address" "/Zi" "/Debug")
+	target_link_options(DiscordCoreAPI PUBLIC "/incremental:no" "/Debug")
 	if(MSVC)
-		target_compile_options(DiscordCoreAPI PUBLIC /fsanitize=address /Zi)
+		
 	else()
-		target_compile_options(DiscordCoreAPI PUBLIC -fsanitize=address)
-		target_link_options(DiscordCoreAPI PUBLIC -fsanitize=address -libasan-static)
+		target_compile_options(DiscordCoreAPI PUBLIC "-fsanitize=address")
+		target_link_options(DiscordCoreAPI PUBLIC "-fsanitize=address" "-libasan-static")
 	endif()
 endif()
 
@@ -99,6 +101,7 @@ target_compile_options(
 	DiscordCoreAPI PUBLIC
 	"$<$<PLATFORM_ID:Windows>:/bigobj>"
 	"$<$<PLATFORM_ID:Windows>:/MP>"
+	"$<$<PLATFORM_ID:Windows>:/Zi>"
 	"$<$<PLATFORM_ID:Linux>:-O3>"
 )
 
