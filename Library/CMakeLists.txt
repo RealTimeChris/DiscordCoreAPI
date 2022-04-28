@@ -59,7 +59,6 @@ set_target_properties(
 	OUTPUT_NAME "discordcoreapi"
 	CXX_STANDARD_REQUIRED ON
 	CXX_EXTENSIONS OFF
-	LINKER_LANGUAGE CXX
 	RUNTIME_OUTPUT_DIRECTORY_RELEASE "$<INSTALL_INTERFACE:$<$<PLATFORM_ID:Windows>:$<INSTALL_PREFIX>/bin/>>$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Output Files/Release>"
 	ARCHIVE_OUTPUT_DIRECTORY_RELEASE "$<INSTALL_INTERFACE:$<INSTALL_PREFIX>/lib/>$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Output Files/Release>"
 	PDB_OUTPUT_DIRECTORY_RELEASE "$<INSTALL_INTERFACE:$<$<PLATFORM_ID:Windows>:$<INSTALL_PREFIX>/bin/>>$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Output Files/Release>"
@@ -85,15 +84,11 @@ target_include_directories(
 
 target_link_options(
 	DiscordCoreAPI PUBLIC
-	"$<$<PLATFORM_ID:Windows>:$<$<CONFIG:Release>:/INCREMENTAL:NO>>"
-	"$<$<PLATFORM_ID:Windows>:$<$<CONFIG:Release>:/OPT:REF>>"
-	"$<$<PLATFORM_ID:Windows>:$<$<CONFIG:Release>:/OPT:ICF>>"
 	"$<$<PLATFORM_ID:Windows>:/DEBUG>"
 )
 
 target_compile_options(
 	DiscordCoreAPI PUBLIC
-	"$<$<PLATFORM_ID:Windows>:/bigobj>"
 	"$<$<PLATFORM_ID:Linux>:-pthread>"
 	"$<$<PLATFORM_ID:Windows>:/MP>"
 	"$<$<PLATFORM_ID:Linux>:-O3>"
@@ -113,7 +108,6 @@ install(
 	RUNTIME DESTINATION "$<IF:$<CONFIG:Debug>,$<IF:$<STREQUAL:${_VCPKG_INSTALLED_DIR},>,debug/bin,bin>,bin>"
 	ARCHIVE DESTINATION "$<IF:$<CONFIG:Debug>,$<IF:$<STREQUAL:${_VCPKG_INSTALLED_DIR},>,debug/lib,lib>,lib>"
 	PUBLIC_HEADER DESTINATION "${DISCORDCOREAPI_INCLUDE_DIR}"
-	CONFIGURATIONS Release | Debug
 )
 
 set(EXPORTED_TARGETS_FILENAME "${EXPORTED_TARGETS_NAME}.cmake")
@@ -123,7 +117,6 @@ install(
 	FILE "${EXPORTED_TARGETS_FILENAME}"
 	NAMESPACE DiscordCoreAPI::
 	DESTINATION "share/discordcoreapi"
-	CONFIGURATIONS Release | Debug
 )
 
 set(CONFIG_FILENAME "discordcoreapi-config.cmake")
@@ -144,19 +137,17 @@ configure_package_config_file(
 write_basic_package_version_file(
 	"${CMAKE_CURRENT_BINARY_DIR}/${VERSION_FILENAME}"
 	VERSION "1.0.0"
-	COMPATIBILITY SameMajorVersion
+	COMPATIBILITY AnyNewerVersion
 )
 
 install(
 	FILES "${CMAKE_CURRENT_BINARY_DIR}/${CONFIG_FILENAME}" "${CMAKE_CURRENT_BINARY_DIR}/${VERSION_FILENAME}"
 	DESTINATION "share/discordcoreapi"
-	CONFIGURATIONS Release | Debug
 )
 
 install(
 	FILES "$<$<PLATFORM_ID:Windows>:$<TARGET_PDB_FILE:DiscordCoreAPI>>"
 	DESTINATION "$<IF:$<CONFIG:Debug>,$<IF:$<STREQUAL:${_VCPKG_INSTALLED_DIR},>,debug/bin,bin>,bin>"
-	CONFIGURATIONS Release | Debug
 	OPTIONAL
 )
 
