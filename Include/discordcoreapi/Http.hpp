@@ -79,6 +79,24 @@ namespace DiscordCoreInternal {
 		friend HttpRnRBuilder;
 		friend HttpClient;
 
+		RateLimitData& operator=(RateLimitData&& other) {
+			this->areWeASpecialBucket = other.areWeASpecialBucket;
+			this->haveWeCollectedTime = other.haveWeCollectedTime;
+			this->getsRemainingTotal = other.getsRemainingTotal;
+			this->sampledTimeInMs = other.sampledTimeInMs;
+			this->getsRemaining = other.getsRemaining;
+			this->msRemainTotal = other.msRemainTotal;
+			this->accessMutex.swap(other.accessMutex);
+			this->tempBucket = other.tempBucket;
+			this->msRemain = other.msRemain;
+			this->bucket = other.bucket;
+			return *this;
+		}
+
+		RateLimitData(RateLimitData&& other) {
+			*this = std::move(other);
+		}
+
 		RateLimitData& operator=(RateLimitData& other) {
 			this->areWeASpecialBucket = other.areWeASpecialBucket;
 			this->haveWeCollectedTime = other.haveWeCollectedTime;
@@ -92,10 +110,14 @@ namespace DiscordCoreInternal {
 			return *this;
 		}
 
+		RateLimitData(RateLimitData& other) {
+			*this = other;
+		}
+
 		RateLimitData() = default;
 
 	  protected:
-		std::recursive_mutex accessMutex{};
+		std::unique_ptr<std::recursive_mutex> accessMutex{ std::make_unique<std::recursive_mutex>() };
 		bool haveWeCollectedTime{ false };
 		bool areWeASpecialBucket{ false };
 		int64_t getsRemainingTotal{ 0 };
