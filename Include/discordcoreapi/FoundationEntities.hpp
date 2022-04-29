@@ -2779,26 +2779,17 @@ namespace DiscordCoreAPI {
 
 		InputEventData& operator=(InputEventData&& other) noexcept {
 			if (this != &other) {
-				*this->interactionData = *other.interactionData;
+				this->interactionData.swap(other.interactionData);
+				this->messageData.swap(other.messageData);
 				this->responseType = other.responseType;
-				*this->messageData = *other.messageData;
 				this->requesterId = other.requesterId;
 				this->eventType = other.eventType;
 			}
 			return *this;
 		}
 
-		InputEventData& operator=(const InputEventData& other) {
-			*this->interactionData = *other.interactionData;
-			this->responseType = other.responseType;
-			*this->messageData = *other.messageData;
-			this->requesterId = other.requesterId;
-			this->eventType = other.eventType;
-			return *this;
-		}
-
-		InputEventData(const InputEventData& other) {
-			*this = other;
+		InputEventData(InputEventData&& other) noexcept {
+			*this = std::move(other);
 		}
 
 		InputEventData& operator=(InputEventData& other) {
@@ -3229,7 +3220,7 @@ namespace DiscordCoreAPI {
 		}
 
 		/// For setting the direct-Message User target of a response. \brief For setting the direct-Message User target of a response.
-		/// \param targetUserIdNew A std::string, containging the target User's id.
+		/// \param targetUserIdNew A std::string, containing the target User's id.
 		RespondToInputEventData& setTargetUserID(std::string targetUserIdNew) {
 			this->targetUserId = targetUserIdNew;
 			return *this;
@@ -3266,11 +3257,11 @@ namespace DiscordCoreAPI {
 		std::string commandName{ "" };
 
 		CommandData& operator=(const CommandData& other) {
+			this->eventData = *const_cast<InputEventData*>(&other.eventData);
 			this->subCommandGroupName = other.subCommandGroupName;
 			this->subCommandName = other.subCommandName;
-			this->commandName = other.commandName;
 			this->optionsArgs = other.optionsArgs;
-			this->eventData = other.eventData;
+			this->commandName = other.commandName;
 			return *this;
 		}
 
@@ -3280,10 +3271,10 @@ namespace DiscordCoreAPI {
 
 		CommandData& operator=(CommandData& other) {
 			this->subCommandGroupName = other.subCommandGroupName;
-			this->eventData = other.eventData;
 			this->subCommandName = other.subCommandName;
-			this->commandName = other.commandName;
 			this->optionsArgs = other.optionsArgs;
+			this->commandName = other.commandName;
+			this->eventData = other.eventData;
 			return *this;
 		}
 
