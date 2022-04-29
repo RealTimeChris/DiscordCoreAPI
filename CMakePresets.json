@@ -44,7 +44,7 @@
       "inheritConfigureEnvironment": true,
       "name": "Linux-Release-With-ASAN",
       "verbose": true
-    },
+     },
     {
       "configuration": "Debug",
       "configurePreset": "Linux-Debug-With-ASAN",
@@ -84,7 +84,7 @@
         "strategy": "set",
         "value": "x64"
       },
-      "binaryDir": "${sourceDir}/Build/Release",
+      "binaryDir": "${sourceDir}/Build/Release-With-ASAN",
       "cacheVariables": { "CMAKE_BUILD_TYPE": "Release" },
       "condition": {
         "lhs": "${hostSystemName}",
@@ -103,7 +103,7 @@
         "strategy": "set",
         "value": "x64"
       },
-      "binaryDir": "${sourceDir}/Build/Debug",
+      "binaryDir": "${sourceDir}/Build/Debug-With-ASAN",
       "cacheVariables": { "CMAKE_BUILD_TYPE": "Debug" },
       "condition": {
         "lhs": "${hostSystemName}",
@@ -154,7 +154,7 @@
       "vendor": { "microsoft.com/VisualStudioSettings/CMake/1.0": { "hostOS": [ "Windows" ] } }
     },
     {
-      "binaryDir": "${sourceDir}/Build/Release",
+      "binaryDir": "${sourceDir}/Build/Release-With-ASAN",
       "cacheVariables": { "CMAKE_BUILD_TYPE": "Release" },
       "condition": {
         "lhs": "${hostSystemName}",
@@ -169,7 +169,7 @@
       "vendor": { "microsoft.com/VisualStudioSettings/CMake/1.0": { "hostOS": [ "Linux" ] } }
     },
     {
-      "binaryDir": "${sourceDir}/Build/Debug",
+      "binaryDir": "${sourceDir}/Build/Debug-With-ASAN",
       "cacheVariables": { "CMAKE_BUILD_TYPE": "Debug" },
       "condition": {
         "lhs": "${hostSystemName}",
