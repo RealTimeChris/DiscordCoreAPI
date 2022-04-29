@@ -692,7 +692,7 @@ namespace DiscordCoreAPI {
 			if (originalEvent->eventType == InteractionType::Application_Command) {
 				dataPackage->setResponseType(InputEventResponseType::Edit_Interaction_Response);
 			}
-			*originalEvent = *InputEvents::respondToEvent(*dataPackage.get());
+			*originalEvent = InputEvents::respondToEvent(*dataPackage.get());
 			while (true) {
 				std::unique_ptr<ButtonCollector> button{ std::make_unique<ButtonCollector>(*originalEvent) };
 				std::unique_ptr<std::vector<ButtonResponseData>> buttonIntData{ std::make_unique<std::vector<ButtonResponseData>>(
@@ -712,8 +712,7 @@ namespace DiscordCoreAPI {
 						dataPackage->addComponentRow(value);
 					}
 					if (deleteAfter == true) {
-						InputEvents::deleteInputEventResponseAsync(
-							std::move(std::unique_ptr<InputEventData>{ std::make_unique<InputEventData>(*originalEvent) }));
+						InputEvents::deleteInputEventResponseAsync(InputEventData{ InputEventData(*originalEvent) });
 					} else {
 						dataPackage->setResponseType(InputEventResponseType::Edit_Interaction_Response);
 						InputEvents::respondToEvent(*dataPackage.get());
@@ -741,8 +740,7 @@ namespace DiscordCoreAPI {
 					InputEvents::respondToEvent(*dataPackage.get());
 				} else if (buttonIntData->at(0).buttonId == "select") {
 					if (deleteAfter == true) {
-						InputEvents::deleteInputEventResponseAsync(
-							std::move(std::unique_ptr<InputEventData>{ std::make_unique<InputEventData>(*originalEvent) }));
+						InputEvents::deleteInputEventResponseAsync(InputEventData{ InputEventData(*originalEvent) });
 					} else {
 						dataPackage = std::make_unique<RespondToInputEventData>(buttonIntData->at(0));
 						dataPackage->setResponseType(InputEventResponseType::Edit_Interaction_Response);
