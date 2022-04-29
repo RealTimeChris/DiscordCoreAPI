@@ -2792,6 +2792,19 @@ namespace DiscordCoreAPI {
 			*this = std::move(other);
 		}
 
+		InputEventData& operator=(const InputEventData& other) {
+			*this->interactionData = *other.interactionData;
+			this->responseType = other.responseType;
+			*this->messageData = *other.messageData;
+			this->requesterId = other.requesterId;
+			this->eventType = other.eventType;
+			return *this;
+		}
+
+		InputEventData(const InputEventData& other) {
+			*this = other;
+		}
+
 		InputEventData& operator=(InputEventData& other) {
 			*this->interactionData = *other.interactionData;
 			this->responseType = other.responseType;
@@ -2804,6 +2817,7 @@ namespace DiscordCoreAPI {
 		InputEventData(InputEventData& other) {
 			*this = other;
 		}
+
 		InputEventResponseType responseType{};///< The type of response that this input value represents.
 
 		InteractionType eventType{};///< The type of input-event that is represented by this structure.
@@ -3256,35 +3270,20 @@ namespace DiscordCoreAPI {
 		std::string subCommandName{ "" };
 		std::string commandName{ "" };
 
-		CommandData& operator=(const CommandData& other) {
-			this->eventData = *const_cast<InputEventData*>(&other.eventData);
-			this->subCommandGroupName = other.subCommandGroupName;
-			this->subCommandName = other.subCommandName;
-			this->optionsArgs = other.optionsArgs;
-			this->commandName = other.commandName;
-			return *this;
-		}
-
-		CommandData(const CommandData& other) {
-			*this = other;
-		}
-
-		CommandData& operator=(CommandData& other) {
-			this->subCommandGroupName = other.subCommandGroupName;
-			this->subCommandName = other.subCommandName;
-			this->optionsArgs = other.optionsArgs;
-			this->commandName = other.commandName;
-			this->eventData = other.eventData;
-			return *this;
-		}
-
-		CommandData(CommandData& other) {
-			*this = other;
-		}
-
-		CommandData(InputEventData inputEventData);
-
 		CommandData() = default;
+
+		CommandData(InputEventData inputEventData) {
+			if (inputEventData.interactionData->data.applicationCommanddata.name != "") {
+				this->commandName = inputEventData.interactionData->data.applicationCommanddata.name;
+			}
+			if (inputEventData.interactionData->data.messageInteractionData.targetId != "") {
+				this->optionsArgs.push_back(inputEventData.interactionData->data.messageInteractionData.targetId);
+			} else if (inputEventData.interactionData->data.userInteractionData.targetId != "") {
+				this->optionsArgs.push_back(inputEventData.interactionData->data.userInteractionData.targetId);
+			}
+			this->eventData = inputEventData;
+			DiscordCoreInternal::DataParser::parseObject(inputEventData.getInteractionData().rawData, *this);
+		}
 
 	  protected:
 		InputEventData eventData{};
@@ -3505,28 +3504,6 @@ namespace DiscordCoreAPI {
 		DiscordCoreClient* discordCoreClient{ nullptr };///< A pointer to the instance of DiscordCoreClient.
 		InputEventData eventData{};///< InputEventData representing the input event that triggered the command.
 		CommandData commandData{};///< The input command's data.
-
-		BaseFunctionArguments& operator=(BaseFunctionArguments&& other) noexcept {
-			this->discordCoreClient = other.discordCoreClient;
-			this->commandData = other.commandData;
-			this->eventData = other.eventData;
-			return *this;
-		}
-
-		BaseFunctionArguments(BaseFunctionArguments&& other) noexcept {
-			*this = std::move(other);
-		}
-
-		BaseFunctionArguments& operator=(BaseFunctionArguments& other) {
-			this->discordCoreClient = other.discordCoreClient;
-			this->commandData = other.commandData;
-			this->eventData = other.eventData;
-			return *this;
-		}
-
-		BaseFunctionArguments(BaseFunctionArguments& other) {
-			*this = other;
-		}
 
 		BaseFunctionArguments() = default;
 

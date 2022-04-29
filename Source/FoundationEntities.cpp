@@ -765,16 +765,4 @@ namespace DiscordCoreAPI {
 		return *returnData;
 	};
 
-	CommandData::CommandData(InputEventData inputEventData) {
-		if (inputEventData.interactionData->data.applicationCommanddata.name != "") {
-			this->commandName = inputEventData.interactionData->data.applicationCommanddata.name;
-		}
-		if (inputEventData.interactionData->data.messageInteractionData.targetId != "") {
-			this->optionsArgs.push_back(inputEventData.interactionData->data.messageInteractionData.targetId);
-		} else if (inputEventData.interactionData->data.userInteractionData.targetId != "") {
-			this->optionsArgs.push_back(inputEventData.interactionData->data.userInteractionData.targetId);
-		}
-		this->eventData = inputEventData;
-		DiscordCoreInternal::DataParser::parseObject(inputEventData.getInteractionData().rawData, *this);
-	}
 };
