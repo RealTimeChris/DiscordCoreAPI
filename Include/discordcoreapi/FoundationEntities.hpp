@@ -3288,7 +3288,6 @@ namespace DiscordCoreAPI {
 
 	  protected:
 		InputEventData eventData{};
-		
 	};
 
 	/// Sharding options for the library. \brief Sharding options for the library.

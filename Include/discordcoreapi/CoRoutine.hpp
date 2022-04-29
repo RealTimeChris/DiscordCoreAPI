@@ -318,7 +318,6 @@ namespace DiscordCoreAPI {
 	/// \tparam ReturnType The type of value returned by the containing CoRoutine.
 	template<typename ReturnType> class NewThreadAwaiter {
 	  public:
-
 		bool await_ready() const noexcept {
 			return false;
 		}

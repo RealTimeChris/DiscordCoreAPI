@@ -135,7 +135,6 @@ namespace DiscordCoreInternal {
 	};
 
 	struct DiscordCoreAPI_Dll addrinfoWrapper {
-		
 		addrinfo* operator->() {
 			return this->addrinfoPtrTwo;
 		}

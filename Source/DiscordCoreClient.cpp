@@ -24,7 +24,7 @@
 namespace DiscordCoreAPI {
 
 	namespace Globals {
-		
+
 		VoiceConnectionMap voiceConnectionMap{};
 		SoundCloudAPIMap soundCloudAPIMap{};
 		YouTubeAPIMap youtubeAPIMap{};
