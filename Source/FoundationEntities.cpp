@@ -675,12 +675,12 @@ namespace DiscordCoreAPI {
 		return permissions;
 	}
 
-	MoveThroughMessagePagesData moveThroughMessagePages(std::string userID, std::unique_ptr<InputEventData> originalEvent, uint32_t currentPageIndex,
+	MoveThroughMessagePagesData moveThroughMessagePages(std::string userID, InputEventData originalEvent, uint32_t currentPageIndex,
 		std::vector<EmbedData> messageEmbeds, bool deleteAfter, uint32_t waitForMaxMs, bool returnResult) {
 		std::unique_ptr<MoveThroughMessagePagesData> returnData{ std::make_unique<MoveThroughMessagePagesData>() };
 		try {
 			uint32_t newCurrentPageIndex = currentPageIndex;
-			std::unique_ptr<RespondToInputEventData> dataPackage{ std::make_unique<RespondToInputEventData>(*originalEvent) };
+			std::unique_ptr<RespondToInputEventData> dataPackage{ std::make_unique<RespondToInputEventData>(originalEvent) };
 
 			dataPackage->addMessageEmbed(messageEmbeds[currentPageIndex]);
 			if (returnResult) {
@@ -689,36 +689,36 @@ namespace DiscordCoreAPI {
 			dataPackage->addButton(false, "backwards", "Prev Page", ButtonStyle::Primary, "◀️");
 			dataPackage->addButton(false, "forwards", "Next Page", ButtonStyle::Primary, "▶️");
 			dataPackage->addButton(false, "exit", "Exit", ButtonStyle::Danger, "❌");
-			if (originalEvent->eventType == InteractionType::Application_Command) {
+			if (originalEvent.eventType == InteractionType::Application_Command) {
 				dataPackage->setResponseType(InputEventResponseType::Edit_Interaction_Response);
 			}
-			*originalEvent = InputEvents::respondToEvent(*dataPackage.get());
+			originalEvent = InputEvents::respondToEvent(*dataPackage.get());
 			while (true) {
-				std::unique_ptr<ButtonCollector> button{ std::make_unique<ButtonCollector>(*originalEvent) };
+				std::unique_ptr<ButtonCollector> button{ std::make_unique<ButtonCollector>(originalEvent) };
 				std::unique_ptr<std::vector<ButtonResponseData>> buttonIntData{ std::make_unique<std::vector<ButtonResponseData>>(
-					button->collectButtonData(false, waitForMaxMs, 1, originalEvent->getRequesterId()).get()) };
+					button->collectButtonData(false, waitForMaxMs, 1, originalEvent.getRequesterId()).get()) };
 				if (buttonIntData->size() == 0 || buttonIntData->at(0).buttonId == "empty" || buttonIntData->at(0).buttonId == "exit") {
 					if (buttonIntData->at(0).buttonId == "empty") {
-						dataPackage = std::make_unique<RespondToInputEventData>(*originalEvent);
+						dataPackage = std::make_unique<RespondToInputEventData>(originalEvent);
 					} else {
 						dataPackage = std::make_unique<RespondToInputEventData>(buttonIntData->at(0));
 					}
 
 					dataPackage->addMessageEmbed(messageEmbeds[newCurrentPageIndex]);
-					for (auto& value: originalEvent->getComponents()) {
+					for (auto& value: originalEvent.getComponents()) {
 						for (auto& value02: value.components) {
 							value02.disabled = true;
 						}
 						dataPackage->addComponentRow(value);
 					}
 					if (deleteAfter == true) {
-						InputEvents::deleteInputEventResponseAsync(InputEventData{ InputEventData(*originalEvent) });
+						InputEvents::deleteInputEventResponseAsync(InputEventData{ InputEventData(originalEvent) });
 					} else {
 						dataPackage->setResponseType(InputEventResponseType::Edit_Interaction_Response);
 						InputEvents::respondToEvent(*dataPackage.get());
 					}
 					std::unique_ptr<MoveThroughMessagePagesData> dataPackage02{ std::make_unique<MoveThroughMessagePagesData>() };
-					dataPackage02->inputEventData = *originalEvent;
+					dataPackage02->inputEventData = originalEvent;
 					dataPackage02->buttonId = "exit";
 					return *dataPackage02;
 				} else if (buttonIntData->at(0).buttonId == "forwards" || buttonIntData->at(0).buttonId == "backwards") {
@@ -733,19 +733,19 @@ namespace DiscordCoreAPI {
 					}
 					dataPackage = std::make_unique<RespondToInputEventData>(buttonIntData->at(0));
 					dataPackage->setResponseType(InputEventResponseType::Edit_Interaction_Response);
-					for (auto& value: originalEvent->getComponents()) {
+					for (auto& value: originalEvent.getComponents()) {
 						dataPackage->addComponentRow(value);
 					}
 					dataPackage->addMessageEmbed(messageEmbeds[newCurrentPageIndex]);
 					InputEvents::respondToEvent(*dataPackage.get());
 				} else if (buttonIntData->at(0).buttonId == "select") {
 					if (deleteAfter == true) {
-						InputEvents::deleteInputEventResponseAsync(InputEventData{ InputEventData(*originalEvent) });
+						InputEvents::deleteInputEventResponseAsync(InputEventData{ InputEventData(originalEvent) });
 					} else {
 						dataPackage = std::make_unique<RespondToInputEventData>(buttonIntData->at(0));
 						dataPackage->setResponseType(InputEventResponseType::Edit_Interaction_Response);
 						dataPackage->addMessageEmbed(messageEmbeds[newCurrentPageIndex]);
-						for (auto& value: originalEvent->getComponents()) {
+						for (auto& value: originalEvent.getComponents()) {
 							for (auto& value02: value.components) {
 								value02.disabled = true;
 							}
@@ -754,7 +754,7 @@ namespace DiscordCoreAPI {
 						InputEvents::respondToEvent(*dataPackage.get());
 					}
 					returnData->currentPageIndex = newCurrentPageIndex;
-					returnData->inputEventData = *originalEvent;
+					returnData->inputEventData = originalEvent;
 					returnData->buttonId = buttonIntData->at(0).buttonId;
 					return *returnData;
 				}

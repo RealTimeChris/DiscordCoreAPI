@@ -3563,8 +3563,8 @@ namespace DiscordCoreAPI {
 		std::string buttonId{};
 	};
 
-	DiscordCoreAPI_Dll MoveThroughMessagePagesData moveThroughMessagePages(std::string userID, std::unique_ptr<InputEventData> originalEvent,
-		uint32_t currentPageIndex, std::vector<EmbedData> messageEmbeds, bool deleteAfter, uint32_t waitForMaxMs, bool returnResult = false);
+	DiscordCoreAPI_Dll MoveThroughMessagePagesData moveThroughMessagePages(std::string userID, InputEventData originalEvent, uint32_t currentPageIndex,
+		std::vector<EmbedData> messageEmbeds, bool deleteAfter, uint32_t waitForMaxMs, bool returnResult = false);
 	/**@}*/
 
 };// namespace DiscordCoreAPI
