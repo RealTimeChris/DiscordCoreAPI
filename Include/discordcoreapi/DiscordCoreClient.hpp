@@ -119,6 +119,7 @@ namespace DiscordCoreAPI {
 
 	  protected:
 		std::unique_ptr<DiscordCoreInternal::HttpClient> httpClient{};
+		std::vector<RepeatedFunctionData> functionsToExecute{};
 #ifdef _WIN32
 		DiscordCoreInternal::WSADataWrapper theWSAData{};
 #endif
@@ -130,7 +131,7 @@ namespace DiscordCoreAPI {
 		ThreadPool threadPool{};
 		BotUser currentUser{};
 
-		void instantiateWebSockets(std::vector<RepeatedFunctionData> functionsToExecuteNew, std::string botTokenNew);
+		void instantiateWebSockets(std::string botTokenNew);
 
 		GatewayBotData getGateWayBot();
 

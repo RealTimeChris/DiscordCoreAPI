@@ -64,6 +64,7 @@ namespace DiscordCoreAPI {
 		std::signal(SIGILL, &signalHandler);
 		std::signal(SIGABRT, &signalHandler);
 		std::signal(SIGFPE, &signalHandler);
+		this->functionsToExecute = functionsToExecuteNew;
 		DiscordCoreInternal::HttpSSLClient::initialize();
 		this->loggingOptions = loggingOptionsNew;
 		this->shardingOptions = shardingOptionsNew;
@@ -99,7 +100,7 @@ namespace DiscordCoreAPI {
 		Threads::initialize(this->httpClient.get());
 		Users::initialize(this->httpClient.get());
 		WebHooks::initialize(this->httpClient.get());
-		this->instantiateWebSockets(functionsToExecuteNew, botTokenNew);
+		this->instantiateWebSockets(botTokenNew);
 	}
 
 	void DiscordCoreClient::registerFunction(std::vector<std::string> functionNames, std::unique_ptr<BaseFunction> baseFunction) {
@@ -121,7 +122,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	void DiscordCoreClient::instantiateWebSockets(std::vector<RepeatedFunctionData> functionsToExecuteNew, std::string botTokenNew) {
+	void DiscordCoreClient::instantiateWebSockets(std::string botTokenNew) {
 		GatewayBotData gatewayData = this->getGateWayBot();
 		if (gatewayData.url == "") {
 			std::cout << shiftToBrightRed << "Failed to collect the connection URL! Closing! Did you remember to properly set your bot token?" << reset
@@ -159,7 +160,7 @@ namespace DiscordCoreAPI {
 		}
 		this->currentUser = BotUser{ Users::getCurrentUserAsync().get(), Globals::webSocketMap[std::to_string(this->shardingOptions.startingShard)].get() };
 		std::cout << shiftToBrightGreen() << "All of the shards are connected for the current process!" << reset() << std::endl << std::endl;
-		for (auto& value: functionsToExecuteNew) {
+		for (auto& value: this->functionsToExecute) {
 			if (value.repeated) {
 				TimeElapsedHandler onSend = [=, this](void) -> void {
 					value.function(this);
