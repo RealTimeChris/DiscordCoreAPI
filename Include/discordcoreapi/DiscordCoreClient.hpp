@@ -54,6 +54,10 @@ namespace DiscordCoreAPI {
 
 	struct WebSocketDeleter {
 		void operator()(DiscordCoreInternal::BaseSocketAgent* other) {
+			if (other != nullptr) {
+				delete other;
+				other = nullptr;
+			}
 		}
 	};
 

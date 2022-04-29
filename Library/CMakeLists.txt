@@ -28,10 +28,9 @@ endif()
 add_library(DiscordCoreAPI::DiscordCoreAPI ALIAS DiscordCoreAPI)
 
 if (DEFINED ENV{EnableASAN})
-	target_compile_options(DiscordCoreAPI PUBLIC "/fsanitize=address" "/Zi" "/Debug")
-	target_link_options(DiscordCoreAPI PUBLIC "/incremental:no" "/Debug")
 	if(MSVC)
-		
+		target_compile_options(DiscordCoreAPI PUBLIC "/fsanitize=address" "/Zi" "/Debug")
+		target_link_options(DiscordCoreAPI PUBLIC "/incremental:no" "/Debug")	
 	else()
 		target_compile_options(DiscordCoreAPI PUBLIC "-fsanitize=address")
 		target_link_options(DiscordCoreAPI PUBLIC "-fsanitize=address" "-libasan-static")
