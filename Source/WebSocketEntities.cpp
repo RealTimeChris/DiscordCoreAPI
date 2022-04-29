@@ -572,7 +572,7 @@ namespace DiscordCoreInternal {
 						std::unique_ptr<DiscordCoreAPI::OnInteractionCreationData> dataPackage{ std::make_unique<DiscordCoreAPI::OnInteractionCreationData>() };
 						dataPackage->interactionData = *interactionData;
 						std::unique_ptr<DiscordCoreAPI::CommandData> commandData{ std::make_unique<DiscordCoreAPI::CommandData>(*eventData) };
-						auto commandDataNew = *commandData;
+						DiscordCoreAPI::CommandData commandDataNew = *commandData;
 						std::jthread theThread{ [=, this]() {
 							this->commandController->checkForAndRunCommand(std::make_unique<DiscordCoreAPI::CommandData>(commandDataNew));
 						} };
@@ -669,7 +669,7 @@ namespace DiscordCoreInternal {
 					if (message->content.find("!registerapplicationcommands") != std::string::npos) {
 						std::unique_ptr<DiscordCoreAPI::CommandData> commandData{ std::make_unique<DiscordCoreAPI::CommandData>() };
 						commandData->commandName = "registerapplicationcommands";
-						auto commandDataNew = *commandData;
+						DiscordCoreAPI::CommandData commandDataNew = *commandData;
 						std::jthread theThread{ [=, this]() {
 							this->commandController->checkForAndRunCommand(std::make_unique<DiscordCoreAPI::CommandData>(commandDataNew));
 						} };
