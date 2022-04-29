@@ -160,7 +160,7 @@ namespace DiscordCoreAPI {
 		}
 		this->currentUser = BotUser{ Users::getCurrentUserAsync().get(), Globals::webSocketMap[std::to_string(this->shardingOptions.startingShard)].get() };
 		std::cout << shiftToBrightGreen() << "All of the shards are connected for the current process!" << reset() << std::endl << std::endl;
-		for (auto value: this->functionsToExecute) {
+		for (auto& value: this->functionsToExecute) {
 			if (value.repeated) {
 				TimeElapsedHandler onSend = [=, this](void) -> void {
 					value.function(this);
