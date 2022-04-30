@@ -732,7 +732,7 @@ namespace DiscordCoreAPI {
 					} else if (buttonIntData.at(0).buttonId == "backwards" && (newCurrentPageIndex == 0)) {
 						newCurrentPageIndex = static_cast<uint8_t>(messageEmbeds.size()) - 1;
 					}
-					dataPackage = buttonIntData.at(0);
+					dataPackage = RespondToInputEventData{ static_cast<InteractionData>(buttonIntData.at(0)) };
 					dataPackage.setResponseType(InputEventResponseType::Edit_Interaction_Response);
 					for (auto& value: originalEvent.getComponents()) {
 						dataPackage.addComponentRow(value);
