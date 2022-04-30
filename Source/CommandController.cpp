@@ -89,7 +89,7 @@ namespace DiscordCoreAPI {
 			for (auto& [key01, value01]: Globals::functions) {
 				for (auto& value02: key01) {
 					if (functionName == value02) {
-						return std::move(Globals::functions[key01])->create();
+						return Globals::functions[key01]->create();
 					}
 				}
 			}

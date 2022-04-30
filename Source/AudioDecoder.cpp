@@ -77,14 +77,14 @@ namespace DiscordCoreAPI {
 		if (stream->areWeQuitting) {
 			RawFrameData frameData{};
 			frameData.sampleCount = 0;
-			stream->outDataBuffer.send(std::move(frameData));
+			stream->outDataBuffer.send(frameData);
 			stream->areWeQuitting = true;
 			return AVERROR_EOF;
 		}
 		if (waitForTimeToPass(stream->inputDataBuffer, stream->currentBuffer, stream->refreshTimeForBuffer.load(std::memory_order_seq_cst))) {
 			RawFrameData frameData{};
 			frameData.sampleCount = 0;
-			stream->outDataBuffer.send(std::move(frameData));
+			stream->outDataBuffer.send(frameData);
 			stream->areWeQuitting = true;
 			return AVERROR_EOF;
 		}
@@ -93,7 +93,7 @@ namespace DiscordCoreAPI {
 		} else {
 			RawFrameData frameData{};
 			frameData.sampleCount = 0;
-			stream->outDataBuffer.send(std::move(frameData));
+			stream->outDataBuffer.send(frameData);
 			stream->areWeQuitting = true;
 			return AVERROR_EOF;
 		}
@@ -103,7 +103,7 @@ namespace DiscordCoreAPI {
 		if (stream->ioContext->buf_ptr - stream->ioContext->buffer >= stream->totalFileSize) {
 			RawFrameData frameData{};
 			frameData.sampleCount = 0;
-			stream->outDataBuffer.send(std::move(frameData));
+			stream->outDataBuffer.send(frameData);
 			stream->areWeQuitting = true;
 			return AVERROR_EOF;
 		}
@@ -265,7 +265,7 @@ namespace DiscordCoreAPI {
 								rawFrame.data[x] = this->newFrame->extended_data[0][x];
 							}
 							rawFrame.sampleCount = newFrame->nb_samples;
-							this->outDataBuffer.send(std::move(rawFrame));
+							this->outDataBuffer.send(rawFrame);
 							int64_t sampleCount = swr_get_delay(this->swrContext, this->newFrame->sample_rate);
 							if (sampleCount > 0) {
 								if (!swr_is_initialized(this->swrContext)) {
@@ -278,7 +278,7 @@ namespace DiscordCoreAPI {
 									rawFrame02.data[x] = this->newFrame->extended_data[0][x];
 								}
 								rawFrame02.sampleCount = newFrame->nb_samples;
-								this->outDataBuffer.send(std::move(rawFrame02));
+								this->outDataBuffer.send(rawFrame02);
 							}
 							if (ret < 0 || newFrame->nb_samples == 0) {
 								this->haveWeFailedBool.store(true, std::memory_order_seq_cst);

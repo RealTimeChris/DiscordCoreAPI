@@ -89,7 +89,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::sendSingleFrame(AudioFrameData frameData) {
-		this->audioBuffer.send(std::move(frameData));
+		this->audioBuffer.send(frameData);
 	}
 
 	bool VoiceConnection::areWeConnected() {

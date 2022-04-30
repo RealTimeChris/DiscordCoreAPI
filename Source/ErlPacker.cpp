@@ -187,7 +187,7 @@ namespace DiscordCoreInternal {
 
 	void ErlPacker::appendUnsignedLongLong(ErlPackBuffer& buffer, uint64_t& value) {
 		std::vector<uint8_t> bufferNew{};
-		bufferNew.resize(1 + 2 + sizeof(uint64_t));
+		bufferNew.resize(static_cast<uint64_t>(1) + 2 + sizeof(uint64_t));
 		bufferNew[0] = static_cast<uint8_t>(ETFTokenType::Small_BigInt);
 		uint8_t bytesToEncode = 0;
 		while (value > 0) {
@@ -202,7 +202,7 @@ namespace DiscordCoreInternal {
 
 	void ErlPacker::appendDouble(ErlPackBuffer& buffer, double& value) {
 		std::vector<uint8_t> bufferNew{};
-		bufferNew.resize(1 + 8);
+		bufferNew.resize(static_cast<uint64_t>(1 + 8));
 		bufferNew[0] = static_cast<uint8_t>(ETFTokenType::New_Float);
 		void* doubleValue{ &value };
 		uint32_t newValue{ 1 };

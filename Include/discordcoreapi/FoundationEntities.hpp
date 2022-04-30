@@ -3347,54 +3347,12 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll RawFrameData {
 		std::vector<uint8_t> data{};///< The audio data.
 		int32_t sampleCount{ -1 };///< The number of samples per this frame.
-		RawFrameData& operator=(RawFrameData&& other) noexcept {
-			if (this != &other) {
-				this->sampleCount = other.sampleCount;
-				other.sampleCount = -1;
-				this->data = std::move(other.data);
-				other.data = std::vector<uint8_t>{};
-			}
-			return *this;
-		}
-		RawFrameData(RawFrameData&& other) noexcept {
-			*this = std::move(other);
-		}
-		RawFrameData& operator=(const RawFrameData& other) {
-			this->sampleCount = other.sampleCount;
-			this->data = other.data;
-			return *this;
-		}
-		RawFrameData(const RawFrameData& other) {
-			*this = other;
-		}
-		RawFrameData() = default;
 	};
 
 	/// Represents a single frame of encoded audio data. \brief Represents a single frame of encoded audio data.
 	struct DiscordCoreAPI_Dll EncodedFrameData {
 		std::vector<uint8_t> data{};///< The audio data.
 		int32_t sampleCount{ -1 };///< The number of samples per this frame.
-		EncodedFrameData& operator=(EncodedFrameData&& other) noexcept {
-			if (this != &other) {
-				this->sampleCount = other.sampleCount;
-				other.sampleCount = -1;
-				this->data = std::move(other.data);
-				other.data = std::vector<uint8_t>{};
-			}
-			return *this;
-		}
-		EncodedFrameData(EncodedFrameData&& other) noexcept {
-			*this = std::move(other);
-		}
-		EncodedFrameData& operator=(const EncodedFrameData& other) {
-			this->sampleCount = other.sampleCount;
-			this->data = other.data;
-			return *this;
-		}
-		EncodedFrameData(const EncodedFrameData& other) {
-			*this = other;
-		}
-		EncodedFrameData() = default;
 	};
 
 	/// Audio frame types. \brief Audio frame types.
@@ -3411,33 +3369,6 @@ namespace DiscordCoreAPI {
 		EncodedFrameData encodedFrameData{};///< To be filled if it's already encoded.
 		std::string guildMemberId{ "" };///< The Id of the GuildMember from which it was sent.
 		RawFrameData rawFrameData{};///< To be filled if it's raw audio data.
-		AudioFrameData& operator=(AudioFrameData&& other) noexcept {
-			if (this != &other) {
-				this->guildMemberId = std::move(other.guildMemberId);
-				other.guildMemberId = "";
-				this->encodedFrameData = std::move(other.encodedFrameData);
-				other.encodedFrameData = EncodedFrameData{};
-				this->rawFrameData = std::move(other.rawFrameData);
-				other.rawFrameData = RawFrameData{};
-				this->type = other.type;
-				other.type = AudioFrameType::Unset;
-			}
-			return *this;
-		}
-		AudioFrameData(AudioFrameData&& other) noexcept {
-			*this = std::move(other);
-		}
-		AudioFrameData& operator=(const AudioFrameData& other) {
-			this->encodedFrameData = other.encodedFrameData;
-			this->guildMemberId = other.guildMemberId;
-			this->rawFrameData = other.rawFrameData;
-			this->type = other.type;
-			return *this;
-		}
-		AudioFrameData(const AudioFrameData& other) {
-			*this = other;
-		}
-		AudioFrameData() = default;
 	};
 
 	/// A song from the various platforms. \brief A song from the various platforms.

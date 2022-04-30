@@ -485,7 +485,7 @@ namespace DiscordCoreAPI {
 				frameData.rawFrameData.data.clear();
 				frameData.encodedFrameData.sampleCount = 0;
 				frameData.encodedFrameData.data.clear();
-				getVoiceConnectionMap()[youtubeAPI->guildId]->audioBuffer.send(std::move(frameData));
+				getVoiceConnectionMap()[youtubeAPI->guildId]->audioBuffer.send(frameData);
 				return;
 			}
 			while (newSong.contentLength > bytesReadTotal01) {
@@ -586,7 +586,7 @@ namespace DiscordCoreAPI {
 						auto encodedFrames = audioEncoder.encodeFrames(frames);
 						for (auto& value: encodedFrames) {
 							value.guildMemberId = newSong.addedByUserId;
-							getVoiceConnectionMap()[youtubeAPI->guildId]->audioBuffer.send(std::move(value));
+							getVoiceConnectionMap()[youtubeAPI->guildId]->audioBuffer.send(value);
 						}
 					}
 					if (remainingDownloadContentLength >= youtubeAPI->maxBufferSize) {
@@ -605,7 +605,7 @@ namespace DiscordCoreAPI {
 			frameData.type = AudioFrameType::Skip;
 			frameData.rawFrameData.sampleCount = 0;
 			frameData.encodedFrameData.sampleCount = 0;
-			getVoiceConnectionMap()[youtubeAPI->guildId]->audioBuffer.send(std::move(frameData));
+			getVoiceConnectionMap()[youtubeAPI->guildId]->audioBuffer.send(frameData);
 			return;
 		} catch (...) {
 			reportException("YouTubeAPI::downloadAndStreamAudio()");

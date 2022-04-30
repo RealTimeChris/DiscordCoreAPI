@@ -293,7 +293,7 @@ namespace DiscordCoreAPI {
 				frameData.rawFrameData.data.clear();
 				frameData.encodedFrameData.sampleCount = 0;
 				frameData.encodedFrameData.data.clear();
-				getVoiceConnectionMap()[soundCloudAPI->guildId]->audioBuffer.send(std::move(frameData));
+				getVoiceConnectionMap()[soundCloudAPI->guildId]->audioBuffer.send(frameData);
 				return;
 			}
 			while (counter < newSong.finalDownloadUrls.size()) {
@@ -354,7 +354,7 @@ namespace DiscordCoreAPI {
 					auto encodedFrames = audioEncoder.encodeFrames(frames);
 					for (auto& value: encodedFrames) {
 						value.guildMemberId = newSong.addedByUserId;
-						getVoiceConnectionMap()[soundCloudAPI->guildId]->audioBuffer.send(std::move(value));
+						getVoiceConnectionMap()[soundCloudAPI->guildId]->audioBuffer.send(value);
 					}
 				}
 				if (theToken.stop_requested()) {
