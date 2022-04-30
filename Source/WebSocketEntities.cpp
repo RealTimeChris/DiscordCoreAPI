@@ -313,7 +313,7 @@ namespace DiscordCoreInternal {
 				}
 			}
 
-						if (payload["op"] == 10) {
+			if (payload["op"] == 10) {
 				this->heartbeatInterval = payload["d"]["heartbeat_interval"];
 				this->areWeHeartBeating = false;
 				if (!this->areWeAuthenticated) {
