@@ -135,7 +135,7 @@ namespace DiscordCoreInternal {
 
 	  protected:
 		HttpConnectionManager connectionManager{};
-		bool doWePrintFFmpeg{ false };
+		bool doWePrintFFMPEG{ false };
 		const std::string botToken{};
 		bool doWePrintHttp{ false };
 
@@ -149,18 +149,17 @@ namespace DiscordCoreInternal {
 	};
 
 	template<typename ReturnType> ReturnType submitWorkloadAndGetResult(HttpClient& httpClient, HttpWorkloadData& workload) {
+		ReturnType returnObject{};
 		try {
 			workload.headersToInsert.insert(std::make_pair("Authorization", "Bot " + httpClient.getBotToken()));
 			workload.headersToInsert.insert(std::make_pair("User-Agent", "DiscordBot (https://discordcoreapi.com 1.0)"));
 			workload.headersToInsert.insert(std::make_pair("Content-Type", "application/json"));
 			HttpData returnData = httpClient.httpRequest(workload);
-			ReturnType returnObject{};
 			DataParser::parseObject(returnData.responseData, returnObject);
 			return returnObject;
 		} catch (...) {
 			DiscordCoreAPI::reportException(workload.callStack + "::HttpClient::submitWorkloadAndGetResult()", nullptr, true);
 		}
-		ReturnType returnObject{};
 		return returnObject;
 	}
 

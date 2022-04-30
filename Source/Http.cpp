@@ -311,7 +311,7 @@ namespace DiscordCoreInternal {
 
 	HttpClient::HttpClient(std::string botTokenNew, bool doWePrintHttpNew, bool doWePrintFFMPEGNew) : botToken(botTokenNew) {
 		this->connectionManager.initialize();
-		this->doWePrintFFmpeg = doWePrintFFMPEGNew;
+		this->doWePrintFFMPEG = doWePrintFFMPEGNew;
 		this->doWePrintHttp = doWePrintHttpNew;
 	};
 
@@ -518,7 +518,7 @@ namespace DiscordCoreInternal {
 	}
 
 	bool HttpClient::getDoWePrintFFMPEG() {
-		return this->doWePrintFFmpeg;
+		return this->doWePrintFFMPEG;
 	}
 
 	std::string HttpClient::getBotToken() {
