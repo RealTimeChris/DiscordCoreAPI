@@ -148,9 +148,7 @@ namespace DiscordCoreInternal {
 			return this->addrinfoPtrTwo;
 		}
 
-		addrinfoWrapper(nullptr_t) {
-			ZeroMemory(this->addrinfoPtrTwo, sizeof(*this->addrinfoPtrTwo));
-		};
+		addrinfoWrapper(nullptr_t){};
 
 		~addrinfoWrapper() {
 			if (this->doWeClearAddrInfo) {
