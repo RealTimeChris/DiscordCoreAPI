@@ -130,7 +130,6 @@ install(
 )
 
 set(CONFIG_FILENAME "discordcoreapi-config.cmake")
-set(VERSION_FILENAME "discordcoreapi-config-version.cmake")
 set(RELEASE_PDB_FILEPATH "${CMAKE_INSTALL_PREFIX}/bin/discordcoreapi.pdb")
 set(DEBUG_PDB_FILEPATH "${CMAKE_INSTALL_PREFIX}/debug/bin/discordcoreapi.pdb")
 
@@ -143,6 +142,8 @@ configure_package_config_file(
 	RELEASE_PDB_FILEPATH
 	DEBUG_PDB_FILEPATH
 )
+
+set(VERSION_FILENAME "discordcoreapi-config-version.cmake")
 
 write_basic_package_version_file(
 	"${CMAKE_CURRENT_BINARY_DIR}/${VERSION_FILENAME}"
