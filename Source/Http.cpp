@@ -372,7 +372,7 @@ namespace DiscordCoreInternal {
 			if (!Globals::rateLimitValues.contains(rateLimitDataPtr->bucket)) {
 				std::unique_ptr<RateLimitData> rateLimitData{ std::make_unique<RateLimitData>() };
 				Globals::rateLimitValues[Globals::rateLimitValueBuckets[workload.workloadType]].swap(rateLimitData);
-				Globals::rateLimitValueBuckets[workload.workloadType] = rateLimitDataPtr->bucket;
+				Globals::rateLimitValueBuckets[workload.workloadType] = rateLimitData->bucket;
 				Globals::rateLimitValues[rateLimitDataPtr->bucket] = std::move(rateLimitData);
 			}
 			if (returnData.responseCode == 204 || returnData.responseCode == 201 || returnData.responseCode == 200) {
