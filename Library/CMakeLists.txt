@@ -151,12 +151,15 @@ write_basic_package_version_file(
 )
 
 install(
-	FILES "${CMAKE_CURRENT_BINARY_DIR}/${CONFIG_FILENAME}" "${CMAKE_CURRENT_BINARY_DIR}/${VERSION_FILENAME}"
+	FILES
+	"${CMAKE_CURRENT_BINARY_DIR}/${CONFIG_FILENAME}"
+	"${CMAKE_CURRENT_BINARY_DIR}/${VERSION_FILENAME}"
 	DESTINATION "share/discordcoreapi"
 )
 
 install(
-	FILES "$<$<PLATFORM_ID:Windows>:$<TARGET_PDB_FILE:DiscordCoreAPI>>"
+	FILES 
+	"$<$<PLATFORM_ID:Windows>:$<TARGET_PDB_FILE:DiscordCoreAPI>>"
 	DESTINATION "$<IF:$<CONFIG:Debug>,$<IF:$<STREQUAL:${_VCPKG_INSTALLED_DIR},>,debug/bin,bin>,bin>"
 	OPTIONAL
 )
