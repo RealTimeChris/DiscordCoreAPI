@@ -3084,7 +3084,7 @@ namespace DiscordCoreAPI {
 			return *this;
 		};
 
-		RespondToInputEventData(InteractionData& dataPackage) {
+		RespondToInputEventData(InteractionData dataPackage) {
 			*this = dataPackage;
 		};
 

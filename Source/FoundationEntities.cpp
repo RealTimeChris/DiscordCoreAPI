@@ -680,7 +680,7 @@ namespace DiscordCoreAPI {
 		MoveThroughMessagePagesData returnData{};
 		try {
 			uint32_t newCurrentPageIndex = currentPageIndex;
-			RespondToInputEventData dataPackage{ originalEvent };
+			RespondToInputEventData dataPackage{ originalEvent };			
 
 			dataPackage.addMessageEmbed(messageEmbeds[currentPageIndex]);
 			if (returnResult) {
@@ -695,7 +695,9 @@ namespace DiscordCoreAPI {
 			originalEvent = InputEvents::respondToEvent(dataPackage);
 			while (true) {
 				ButtonCollector button{ originalEvent };
+				
 				std::vector<ButtonResponseData> buttonIntData{ button.collectButtonData(false, waitForMaxMs, 1, originalEvent.getRequesterId()).get() };
+				
 				if (buttonIntData.size() == 0 || buttonIntData.at(0).buttonId == "empty" || buttonIntData.at(0).buttonId == "exit") {
 					if (buttonIntData.at(0).buttonId == "empty") {
 						dataPackage = originalEvent;
