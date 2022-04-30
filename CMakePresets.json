@@ -37,15 +37,6 @@
       "verbose": true
      },
     {
-      "configuration": "Debug",
-      "configurePreset": "Linux-Debug-With-ASAN",
-      "description": "Target Linux with the g++-11 compiler.",
-      "displayName": "Linux x64 Debug With ASAN - Build",
-      "inheritConfigureEnvironment": true,
-      "name": "Linux-Debug-With-ASAN",
-      "verbose": true
-    },
-    {
       "configuration": "Release",
       "configurePreset": "Linux-Release",
       "description": "Target Linux with the g++-11 compiler.",
@@ -138,21 +129,6 @@
       "environment": { "EnableASAN": "true" },
       "generator": "Ninja Multi-Config",
       "name": "Linux-Release-With-ASAN",
-      "vendor": { "microsoft.com/VisualStudioSettings/CMake/1.0": { "hostOS": [ "Linux" ] } }
-    },
-    {
-      "binaryDir": "${sourceDir}/Build/Debug-With-ASAN",
-      "cacheVariables": { "CMAKE_BUILD_TYPE": "Debug" },
-      "condition": {
-        "lhs": "${hostSystemName}",
-        "rhs": "Linux",
-        "type": "equals"
-      },
-      "description": "Target Linux with the g++-11 compiler.",
-      "displayName": "Linux x64 Debug - Config",
-      "environment": { "EnableASAN": "true" },
-      "generator": "Ninja Multi-Config",
-      "name": "Linux-Debug-With-ASAN",
       "vendor": { "microsoft.com/VisualStudioSettings/CMake/1.0": { "hostOS": [ "Linux" ] } }
     },
     {
