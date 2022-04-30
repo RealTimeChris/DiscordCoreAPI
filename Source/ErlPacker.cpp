@@ -252,7 +252,7 @@ namespace DiscordCoreInternal {
 		}
 		ReturnType newValue{ 0 };
 		for (uint32_t x = 0; x < sizeof(ReturnType); x += 1) {
-			newValue |= static_cast<ReturnType>(buffer.buffer.data()[buffer.offSet + x] << (x * byteSize));
+			newValue |= static_cast<ReturnType>(buffer.buffer.data()[static_cast<uint64_t>(buffer.offSet + x)] << (x * byteSize));
 		}
 		buffer.offSet += sizeof(ReturnType);
 		ErlPacker::etfByteOrder(newValue, theValue);

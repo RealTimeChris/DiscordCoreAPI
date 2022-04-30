@@ -559,12 +559,12 @@ namespace DiscordCoreAPI {
 		}
 
 	  protected:
-		int32_t year{ 0 };
-		int32_t month{ 0 };
-		int32_t day{ 0 };
-		int32_t hour{ 0 };
-		int32_t minute{ 0 };
-		int32_t second{ 0 };
+		int64_t year{ 0 };
+		int64_t month{ 0 };
+		int64_t day{ 0 };
+		int64_t hour{ 0 };
+		int64_t minute{ 0 };
+		int64_t second{ 0 };
 		const int32_t secondsInJan{ 31 * 24 * 60 * 60 };
 		const int32_t secondsInFeb{ 28 * 24 * 60 * 60 };
 		const int32_t secondsInMar{ 31 * 24 * 60 * 60 };

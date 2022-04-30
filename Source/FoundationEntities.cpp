@@ -188,7 +188,7 @@ namespace DiscordCoreAPI {
 		std::string returnString{};
 		returnString.reserve(len_encoded);
 
-		unsigned int pos = 0;
+		uint64_t pos = 0;
 
 		while (pos < theString.size()) {
 			returnString.push_back(base64_chars_[(theString[static_cast<int64_t>(pos + 0)] & 0xfc) >> 2]);

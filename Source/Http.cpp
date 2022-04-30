@@ -384,7 +384,7 @@ namespace DiscordCoreInternal {
 			} else {
 				if (returnData.responseCode == 429) {
 					Globals::rateLimitValues[Globals::rateLimitValueBuckets[workload.workloadType]]->msRemain =
-						static_cast<int64_t>(1000.0f * nlohmann::json::parse(returnData.responseMessage)["retry_after"].get<float>());
+						static_cast<int64_t>(1000.0f * nlohmann::json::parse(returnData.responseMessage)["retry_after"].get<double>());
 					Globals::rateLimitValues[Globals::rateLimitValueBuckets[workload.workloadType]]->getsRemaining = -1;
 					Globals::rateLimitValues[Globals::rateLimitValueBuckets[workload.workloadType]]->sampledTimeInMs = static_cast<int64_t>(
 						std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
