@@ -33,7 +33,7 @@ namespace DiscordCoreAPI {
 
 		std::map<std::vector<std::string>, std::unique_ptr<BaseFunction>>& getFunctions();
 
-		void checkForAndRunCommand(std::unique_ptr<CommandData> commandData);
+		void checkForAndRunCommand(CommandData commandData);
 
 	  protected:
 		DiscordCoreClient* discordCoreClient{ nullptr };

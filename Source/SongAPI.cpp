@@ -163,7 +163,7 @@ namespace DiscordCoreAPI {
 		auto resultValue = getSongAPIMap()[guildId].get();
 		if (resultValue) {
 			getSongAPIMap()[guildId]->onSongCompletionEvent.remove(getSongAPIMap()[guildId]->theToken);
-			getSongAPIMap()[guildId]->theToken = EventDelegateToken{};			
+			getSongAPIMap()[guildId]->theToken = EventDelegateToken{};
 		}
 	}
 

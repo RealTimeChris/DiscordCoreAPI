@@ -43,15 +43,15 @@ namespace DiscordCoreAPI {
 		return Globals::functions;
 	};
 
-	void CommandController::checkForAndRunCommand(std::unique_ptr<CommandData> commandData) {
+	void CommandController::checkForAndRunCommand(CommandData commandData) {
 		try {
 			std::unique_ptr<BaseFunction> functionPointer{ nullptr };
-			functionPointer = this->getCommand(convertToLowerCase(commandData->commandName));
+			functionPointer = this->getCommand(convertToLowerCase(commandData.commandName));
 			if (functionPointer == nullptr) {
 				return;
 			}
 
-			functionPointer->args = BaseFunctionArguments{ *commandData, this->discordCoreClient };
+			functionPointer->args = BaseFunctionArguments{ commandData, this->discordCoreClient };
 			functionPointer->execute(functionPointer->args);
 			return;
 		} catch (...) {

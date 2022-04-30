@@ -101,15 +101,14 @@ namespace DiscordCoreAPI {
 	Song SoundCloudRequestBuilder::constructFinalDownloadUrl(Song newSong) {
 		try {
 			if (newSong.secondDownloadUrl.find("/playlist") != std::string::npos) {
-				std::unique_ptr<DiscordCoreInternal::HttpWorkloadData> dataPackage{ std::make_unique<DiscordCoreInternal::HttpWorkloadData>() };
-				dataPackage->baseUrl = newSong.secondDownloadUrl;
-				dataPackage->workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
+				DiscordCoreInternal::HttpWorkloadData dataPackage{};
+				dataPackage.baseUrl = newSong.secondDownloadUrl;
+				dataPackage.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
 				std::vector<DiscordCoreInternal::HttpWorkloadData> workloadVector01{};
-				workloadVector01.push_back(*dataPackage);
-				std::unique_ptr<std::vector<DiscordCoreInternal::HttpData>> results = std::make_unique<std::vector<DiscordCoreInternal::HttpData>>(
-					DiscordCoreInternal::submitWorkloadAndGetResult(*this->httpClient, workloadVector01));
+				workloadVector01.push_back(dataPackage);
+				std::vector<DiscordCoreInternal::HttpData> results{ DiscordCoreInternal::submitWorkloadAndGetResult(*this->httpClient, workloadVector01) };
 				std::string newString{};
-				newString.insert(newString.begin(), (*results)[0].responseMessage.begin(), (*results)[0].responseMessage.end());
+				newString.insert(newString.begin(), (results)[0].responseMessage.begin(), (results)[0].responseMessage.end());
 				while (newString.find("#EXTINF:") != std::string::npos) {
 					std::string newString01 = "#EXTINF:";
 					std::string newString02 = newString.substr(newString.find("#EXTINF:") + newString01.size());

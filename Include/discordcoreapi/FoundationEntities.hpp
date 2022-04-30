@@ -2780,9 +2780,12 @@ namespace DiscordCoreAPI {
 		InputEventData& operator=(InputEventData&& other) noexcept {
 			if (this != &other) {
 				this->interactionData.swap(other.interactionData);
+				other.interactionData = nullptr;
 				this->messageData.swap(other.messageData);
+				other.messageData = nullptr;
 				this->responseType = other.responseType;
-				this->requesterId = other.requesterId;
+				this->requesterId = std::move(other.requesterId);
+				other.requesterId = "";
 				this->eventType = other.eventType;
 			}
 			return *this;
@@ -3066,13 +3069,7 @@ namespace DiscordCoreAPI {
 		friend InputEvents;
 		friend SendDMData;
 
-		/// For setting the type of response to make. \brief For setting the type of response to make.
-		/// \param typeNew An InputEventResponseType.
-		void setResponseType(InputEventResponseType typeNew) {
-			this->type = typeNew;
-		}
-
-		RespondToInputEventData(InteractionData dataPackage) {
+		RespondToInputEventData& operator=(InteractionData dataPackage) {
 			this->applicationId = dataPackage.applicationId;
 			this->requesterId = dataPackage.requesterId;
 			this->interactionToken = dataPackage.token;
@@ -3080,9 +3077,14 @@ namespace DiscordCoreAPI {
 			this->channelId = dataPackage.channelId;
 			this->interactionId = dataPackage.id;
 			this->eventType = dataPackage.type;
+			return *this;
 		};
 
-		RespondToInputEventData(InputEventData dataPackage) {
+		RespondToInputEventData(InteractionData& dataPackage) {
+			*this = dataPackage;
+		};
+
+		RespondToInputEventData(InputEventData& dataPackage) {
 			this->interactionToken = dataPackage.getInteractionToken();
 			this->applicationId = dataPackage.getApplicationId();
 			this->interactionId = dataPackage.getInteractionId();
@@ -3202,6 +3204,13 @@ namespace DiscordCoreAPI {
 		/// \param dataPackage An AllowedMentionsData structure.
 		RespondToInputEventData& addAllowedMentions(AllowedMentionsData dataPackage) {
 			this->allowedMentions = dataPackage;
+			return *this;
+		}
+
+		/// For setting the type of response to make. \brief For setting the type of response to make.
+		/// \param typeNew An InputEventResponseType.
+		RespondToInputEventData& setResponseType(InputEventResponseType typeNew) {
+			this->type = typeNew;
 			return *this;
 		}
 
