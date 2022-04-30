@@ -702,7 +702,7 @@ namespace DiscordCoreAPI {
 					if (buttonIntData.at(0).buttonId == "empty") {
 						dataPackage = originalEvent;
 					} else {
-						dataPackage = buttonIntData.at(0);
+						dataPackage = RespondToInputEventData{ static_cast<InteractionData>(buttonIntData.at(0)) };
 					}
 
 					dataPackage.addMessageEmbed(messageEmbeds[newCurrentPageIndex]);
@@ -743,7 +743,7 @@ namespace DiscordCoreAPI {
 					if (deleteAfter == true) {
 						InputEvents::deleteInputEventResponseAsync(InputEventData{ InputEventData(originalEvent) });
 					} else {
-						dataPackage = buttonIntData.at(0);
+						dataPackage = RespondToInputEventData{ static_cast<InteractionData>(buttonIntData.at(0)) };
 						dataPackage.setResponseType(InputEventResponseType::Edit_Interaction_Response);
 						dataPackage.addMessageEmbed(messageEmbeds[newCurrentPageIndex]);
 						for (auto& value: originalEvent.getComponents()) {
