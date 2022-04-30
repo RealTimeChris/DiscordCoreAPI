@@ -393,7 +393,7 @@ namespace DiscordCoreAPI {
 			if (this->theArray.size() == 0) {
 				return false;
 			} else {
-				theObject = std::move(this->theArray.front());
+				theObject = this->theArray.front();
 				this->theArray.pop();
 				return true;
 			}
