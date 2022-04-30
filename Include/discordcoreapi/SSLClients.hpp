@@ -265,7 +265,7 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll HttpSSLClient {
 	  public:
-		HttpSSLClient() noexcept;
+		HttpSSLClient() noexcept = default;
 
 		bool connect(std::string& baseUrl, std::string portNew = "443") noexcept;
 
@@ -298,7 +298,7 @@ namespace DiscordCoreInternal {
 	  public:
 		WebSocketSSLClient(std::string& baseUrl, std::string port, int64_t maxBufferSize = 16 * 1024) noexcept;
 
-		WebSocketSSLClient(nullptr_t) noexcept;
+		WebSocketSSLClient() noexcept = default;
 
 		bool processIO(int32_t waitTimeInMicroSeconds) noexcept;
 
@@ -323,7 +323,7 @@ namespace DiscordCoreInternal {
 	  public:
 		DatagramSocketSSLClient(std::string& hostName, std::string& port) noexcept;
 
-		DatagramSocketSSLClient(nullptr_t) noexcept;
+		DatagramSocketSSLClient() noexcept = default;
 
 		bool writeData(std::string& dataToWrite) noexcept;
 

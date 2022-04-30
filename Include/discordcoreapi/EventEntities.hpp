@@ -109,7 +109,7 @@ namespace DiscordCoreAPI {
 		Event<ReturnType, ArgTypes...>& operator=(Event<ReturnType, ArgTypes...>&& other) noexcept {
 			if (this != &other) {
 				this->theFunctions.swap(other.theFunctions);
-				other.theFunctions = std::make_unique<std::map<EventDelegateToken, EventDelegate<ReturnType, ArgTypes...>>>();
+				other.theFunctions = std::map<EventDelegateToken, EventDelegate<ReturnType, ArgTypes...>>{};
 				this->eventId = std::move(other.eventId);
 				other.eventId = std::string{};
 			}
@@ -137,70 +137,25 @@ namespace DiscordCoreAPI {
 			eventToken.handlerId =
 				std::to_string(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
 			eventToken.eventId = this->eventId;
-			this->theFunctions->insert_or_assign(eventToken, std::move(eventDelegate));
+			this->theFunctions.insert_or_assign(eventToken, std::move(eventDelegate));
 			return eventToken;
 		}
 
 		void remove(EventDelegateToken eventToken) {
-			if (this->theFunctions->contains(eventToken)) {
-				this->theFunctions->erase(eventToken);
+			if (this->theFunctions.contains(eventToken)) {
+				this->theFunctions.erase(eventToken);
 			}
 		}
 
 		void operator()(ArgTypes... args) {
-			for (auto& [key, value]: *this->theFunctions) {
+			for (auto& [key, value]: this->theFunctions) {
 				value.theFunction(args...);
 			}
 		}
 
 	  protected:
-		std::unique_ptr<std::map<EventDelegateToken, EventDelegate<ReturnType, ArgTypes...>>> theFunctions{
-			std::make_unique<std::map<EventDelegateToken, EventDelegate<ReturnType, ArgTypes...>>>()
-		};
+		std::map<EventDelegateToken, EventDelegate<ReturnType, ArgTypes...>> theFunctions{};
 		std::string eventId{ "" };
-	};
-
-	template<typename ReturnType, typename... ArgTypes> class UniEvent {
-	  public:
-		UniEvent<ReturnType, ArgTypes...>& operator=(UniEvent<ReturnType, ArgTypes...>&& other) noexcept {
-			if (this != &other) {
-				this->theFunction.swap(other.theFunction);
-				other.theFunction = std::function<ReturnType(ArgTypes...)>{};
-			}
-			return *this;
-		}
-
-		UniEvent(UniEvent<ReturnType, ArgTypes...>&& other) noexcept {
-			*this = std::move(other);
-		}
-
-		UniEvent<ReturnType, ArgTypes...>& operator=(const UniEvent<ReturnType, ArgTypes...>&) = delete;
-
-		UniEvent(const UniEvent<ReturnType, ArgTypes...>&) = delete;
-
-		UniEvent<ReturnType, ArgTypes...>& operator=(UniEvent<ReturnType, ArgTypes...>&) = delete;
-
-		UniEvent(UniEvent<ReturnType, ArgTypes...>&) = delete;
-
-		UniEvent() = default;
-
-		UniEvent(std::function<ReturnType(ArgTypes...)> theFunctionNew) {
-			this->theFunction = theFunctionNew;
-		}
-
-		UniEvent(ReturnType (*theFunctionNew)(ArgTypes...)) {
-			this->theFunction = theFunctionNew;
-		}
-
-		ReturnType operator()(ArgTypes... args) {
-			return this->theFunction(args...);
-		}
-
-		~UniEvent() {
-		}
-
-	  protected:
-		std::function<ReturnType(ArgTypes...)> theFunction{ nullptr };
 	};
 
 	class DiscordCoreAPI_Dll EventWaiter {

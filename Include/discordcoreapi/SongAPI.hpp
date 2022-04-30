@@ -37,7 +37,8 @@ namespace DiscordCoreAPI {
 		friend class SoundCloudAPI;
 		friend class YouTubeAPI;
 
-		UniEvent<CoRoutine<void>, SongCompletionEventData> onSongCompletionEvent{};
+		Event<CoRoutine<void>, SongCompletionEventData> onSongCompletionEvent{};
+		EventDelegateToken theToken{};
 		Playlist playlist{};
 
 		SongAPI(std::string guildId);

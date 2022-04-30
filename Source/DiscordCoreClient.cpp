@@ -24,7 +24,6 @@
 namespace DiscordCoreAPI {
 
 	namespace Globals {
-
 		VoiceConnectionMap voiceConnectionMap{};
 		SoundCloudAPIMap soundCloudAPIMap{};
 		YouTubeAPIMap youtubeAPIMap{};
@@ -55,6 +54,7 @@ namespace DiscordCoreAPI {
 
 	DiscordCoreClient::DiscordCoreClient(std::string botTokenNew, std::vector<RepeatedFunctionData> functionsToExecuteNew, CacheOptions cacheOptionsNew,
 		ShardingOptions shardingOptionsNew, LoggingOptions loggingOptionsNew) {
+		curl_global_init(CURL_GLOBAL_NOTHING);
 		if (sodium_init() == -1) {
 			std::cout << DiscordCoreAPI::shiftToBrightRed() << "LibSodium failed to initialize!" << std::endl << std::endl << reset();
 		}

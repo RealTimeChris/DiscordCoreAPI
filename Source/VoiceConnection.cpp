@@ -193,7 +193,7 @@ namespace DiscordCoreAPI {
 		}
 		auto thePtr = getSongAPIMap()[this->voiceConnectInitData.guildId].get();
 		if (thePtr) {
-			getSongAPIMap()[this->voiceConnectInitData.guildId]->onSongCompletionEvent = std::function<CoRoutine<void>(SongCompletionEventData)>{};
+			thePtr->onSongCompletionEvent.remove(thePtr->theToken);
 		}
 	}
 

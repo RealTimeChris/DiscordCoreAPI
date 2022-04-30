@@ -99,9 +99,6 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	HttpSSLClient::HttpSSLClient() noexcept {
-	}
-
 	bool HttpSSLClient::connect(std::string& baseUrl, std::string portNew) noexcept {
 		try {
 			std::string stringNew{};
@@ -427,8 +424,6 @@ namespace DiscordCoreInternal {
 		}
 	};
 
-	WebSocketSSLClient::WebSocketSSLClient(nullptr_t) noexcept {};
-
 	bool WebSocketSSLClient::processIO(int32_t waitTimeInMicroSeconds) noexcept {
 		try {
 #ifdef _WIN32
@@ -636,8 +631,6 @@ namespace DiscordCoreInternal {
 			DiscordCoreAPI::reportException("DatagramSocketSSLClient::DatagramSocketSSLClient()");
 		}
 	}
-
-	DatagramSocketSSLClient::DatagramSocketSSLClient(nullptr_t) noexcept {};
 
 	bool DatagramSocketSSLClient::writeData(std::string& data) noexcept {
 		try {
