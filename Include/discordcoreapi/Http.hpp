@@ -105,6 +105,7 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll HttpConnectionManager {
 	  public:
+		std::counting_semaphore<1> theSemaphore{ 1 };
 		int64_t currentIndex{ 0 };
 
 		HttpConnection* getConnection();

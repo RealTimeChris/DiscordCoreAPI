@@ -291,7 +291,9 @@ namespace DiscordCoreInternal {
 	}
 
 	HttpConnection* HttpConnectionManager::getConnection() {
+		this->theSemaphore.acquire();
 		this->currentIndex += 1;
+		this->theSemaphore.release();
 		return Globals::httpConnections[this->currentIndex % std::thread::hardware_concurrency()].get();
 	}
 
