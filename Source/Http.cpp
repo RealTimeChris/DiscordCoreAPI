@@ -508,8 +508,9 @@ namespace DiscordCoreInternal {
 				workload.baseUrl = "https://discord.com/api/v10";
 			}
 			HttpConnection* theConnectionNew = this->connectionManager.getConnection();
-			std::lock_guard<std::mutex> theLock{ theConnectionNew->accessMutex };
+			theConnectionNew->theSemaphore.acquire();
 			HttpData resultData = this->executeByRateLimitData(workload, theConnectionNew);
+			theConnectionNew->theSemaphore.release();
 			return resultData;
 		} catch (...) {
 			DiscordCoreAPI::reportException("HttpClient::httpRequest()", nullptr, true);
@@ -528,7 +529,7 @@ namespace DiscordCoreInternal {
 	template<> void submitWorkloadAndGetResult<void>(HttpClient& httpClient, HttpWorkloadData& workload) {
 		try {
 			workload.headersToInsert.insert(std::make_pair("Authorization", "Bot " + httpClient.getBotToken()));
-			workload.headersToInsert.insert(std::make_pair("User-Agent", "DiscordBot (https://discordcoreapi.com/ , 1.0)"));
+			workload.headersToInsert.insert(std::make_pair("User-Agent", "DiscordBot (https://discordcoreapi.com/ 1.0)"));
 			workload.headersToInsert.insert(std::make_pair("Content-Type", "application/json"));
 			httpClient.httpRequest(workload);
 			return;
@@ -550,7 +551,7 @@ namespace DiscordCoreInternal {
 	HttpData submitWorkloadAndGetResult(HttpClient& httpClient, HttpWorkloadData& workload) {
 		try {
 			workload.headersToInsert.insert(std::make_pair("Authorization", "Bot " + httpClient.getBotToken()));
-			workload.headersToInsert.insert(std::make_pair("User-Agent", "DiscordBot (https://discordcoreapi.com/ , 1.0)"));
+			workload.headersToInsert.insert(std::make_pair("User-Agent", "DiscordBot (https://discordcoreapi.com/ 1.0)"));
 			workload.headersToInsert.insert(std::make_pair("Content-Type", "application/json"));
 			return httpClient.httpRequest(workload);
 		} catch (...) {

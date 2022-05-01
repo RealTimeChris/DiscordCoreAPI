@@ -23,6 +23,7 @@
 #include <discordcoreapi/DataParsingFunctions.hpp>
 #include <discordcoreapi/FoundationEntities.hpp>
 #include <discordcoreapi/SSLClients.hpp>
+#include <semaphore>
 
 namespace DiscordCoreInternal {
 
@@ -96,10 +97,10 @@ namespace DiscordCoreInternal {
 
 	struct DiscordCoreAPI_Dll HttpConnection : public HttpSSLClient, public HttpRnRBuilder {
 	  public:
+		std::counting_semaphore<1> theSemaphore{ 1 };
 		int32_t currentRecursionDepth{ 0 };
 		int32_t maxRecursion{ 10 };
 		int64_t lastTimeUsed{ 0 };
-		std::mutex accessMutex{};
 		bool doWeConnect{ true };
 	};
 
