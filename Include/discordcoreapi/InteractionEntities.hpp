@@ -544,7 +544,7 @@ namespace DiscordCoreAPI {
 
 	/// Select menu response data. \brief Select menu response data.
 	struct DiscordCoreAPI_Dll SelectMenuResponseData {
-
+		
 		operator InteractionData() {
 			return *this->interactionData;
 		}
@@ -562,6 +562,8 @@ namespace DiscordCoreAPI {
 		SelectMenuResponseData(SelectMenuResponseData& other) {
 			*this = other;
 		}
+
+		SelectMenuResponseData() = default;
 
 		std::unique_ptr<InteractionData> interactionData{ std::make_unique<InteractionData>() };///< Interaction data.
 		std::vector<std::string> values{};///< A std::vector of the chosen values.
@@ -638,6 +640,8 @@ namespace DiscordCoreAPI {
 			*this = other;
 		}
 
+		ButtonResponseData() = default;
+
 		std::unique_ptr<InteractionData> interactionData{ std::make_unique<InteractionData>() };///< Interaction data.
 		std::string emojiName{ "" };///< The emoji name, if applicable.
 		std::string channelId{ "" };///< The Channel id where it took place.
@@ -712,6 +716,8 @@ namespace DiscordCoreAPI {
 		ModalResponseData(ModalResponseData& other) {
 			*this = other;
 		}
+
+		ModalResponseData() = default;
 
 		std::unique_ptr<InteractionData> interactionData{ std::make_unique<InteractionData>() };///< Interaction data.
 		std::string customIdSmall{ "" };///< The customId of the particular input.
