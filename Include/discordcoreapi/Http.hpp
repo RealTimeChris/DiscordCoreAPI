@@ -104,6 +104,10 @@ namespace DiscordCoreInternal {
 		bool doWeConnect{ true };
 	};
 
+	namespace Globals {
+		static std::unordered_map<std::thread::id, std::unique_ptr<HttpConnection>> httpConnections;
+	}
+
 	class DiscordCoreAPI_Dll HttpConnectionManager {
 	  public:
 		int64_t currentIndex{ 0 };

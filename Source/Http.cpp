@@ -24,7 +24,6 @@ namespace DiscordCoreInternal {
 
 	namespace Globals {
 		std::unordered_map<std::string, std::unique_ptr<RateLimitData>> rateLimitValues{};
-		std::unordered_map<int64_t, std::unique_ptr<HttpConnection>> httpConnections{};
 		std::unordered_map<HttpWorkloadType, std::string> rateLimitValueBuckets{};
 	}
 
@@ -293,13 +292,14 @@ namespace DiscordCoreInternal {
 	HttpConnection* HttpConnectionManager::getConnection() {
 		std::lock_guard<std::mutex> theLock{ this->theMutex };
 		this->currentIndex += 1;
-		return Globals::httpConnections[this->currentIndex % std::thread::hardware_concurrency()].get();
+		if (!Globals::httpConnections.contains(std::this_thread::get_id())) {
+			DiscordCoreInternal::Globals::httpConnections.insert(
+				std::make_pair(std::this_thread::get_id(), std::make_unique<DiscordCoreInternal::HttpConnection>()));
+		}
+		return Globals::httpConnections[std::this_thread::get_id()].get();
 	}
 
 	void HttpConnectionManager::initialize() {
-		for (int64_t x = 0; x < std::thread::hardware_concurrency(); x += 1) {
-			Globals::httpConnections.insert(std::make_pair(x, std::make_unique<HttpConnection>()));
-		}
 		for (int64_t enumOne = static_cast<int64_t>(HttpWorkloadType::Unset); enumOne != static_cast<int64_t>(HttpWorkloadType::LAST); enumOne++) {
 			std::unique_ptr<RateLimitData> rateLimitData{ std::make_unique<RateLimitData>() };
 			rateLimitData->tempBucket =

@@ -19,12 +19,14 @@
 #pragma once
 
 #include <discordcoreapi/FoundationEntities.hpp>
+#include <discordcoreapi/Http.hpp>
 
 namespace DiscordCoreAPI {
 	/**
 	 * \addtogroup utilities
 	 * @{
 	 */
+	extern std::unordered_map<std::thread::id, std::unique_ptr<DiscordCoreInternal::HttpConnection>> httpConnections;
 
 	using TimeElapsedHandler = std::function<void(void)>;
 
@@ -82,8 +84,17 @@ namespace DiscordCoreAPI {
 
 		WorkloadStatus() = default;
 
+		WorkloadStatus(std::thread::id threadIdNew){
+			this->threadId = threadIdNew;
+		} 
+		
+		~WorkloadStatus() {
+			DiscordCoreInternal::Globals::httpConnections.erase(this->threadId);
+		}
+
 		std::atomic_bool theCurrentStatus{ false };
 		std::atomic_bool doWeQuit{ false };
+		std::thread::id threadId{};
 	};
 
 	class DiscordCoreAPI_Dll CoRoutineThreadPool {
@@ -91,6 +102,8 @@ namespace DiscordCoreAPI {
 		CoRoutineThreadPool() {
 			for (uint32_t x = 0; x < std::jthread::hardware_concurrency(); ++x) {
 				std::jthread workerThread([this]() {
+					DiscordCoreInternal::Globals::httpConnections.insert(
+						std::make_pair(std::this_thread::get_id(), std::make_unique<DiscordCoreInternal::HttpConnection>()));
 					this->threadFunction();
 				});
 				this->theThreads.push_back(std::move(workerThread));
@@ -107,6 +120,8 @@ namespace DiscordCoreAPI {
 			}
 			if (areWeAllBusy) {
 				std::jthread workerThread([this]() {
+					DiscordCoreInternal::Globals::httpConnections.insert(
+						std::make_pair(std::this_thread::get_id(), std::make_unique<DiscordCoreInternal::HttpConnection>()));
 					this->threadFunction();
 				});
 				theThreads.push_back(std::move(workerThread));
@@ -136,7 +151,7 @@ namespace DiscordCoreAPI {
 
 		void threadFunction() {
 			std::unique_lock<std::mutex> theLock00{ this->theMutex };
-			WorkloadStatus theStatus{};
+			WorkloadStatus theStatus{ std::this_thread::get_id() };
 			this->theWorkingStatuses.insert_or_assign(std::this_thread::get_id(), theStatus);
 			auto theAtomicBoolPtr = &this->theWorkingStatuses[std::this_thread::get_id()].theCurrentStatus;
 			theLock00.unlock();
