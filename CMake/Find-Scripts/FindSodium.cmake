@@ -26,7 +26,6 @@ function(find_sodium RELEASE_ROOT_DIR DEBUG_ROOT_DIR INCLUDE_DIR)
 		message(STATUS "Found Sodium libraries!")
 	else()
 		message(FATAL_ERROR "Couldn't find Sodium!")
-		return()
 	endif()
 	cmake_path(GET SODIUM_RELEASE_LIBRARY PARENT_PATH SODIUM_RELEASE_FILE_PATH)
 	find_file(

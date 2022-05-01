@@ -58,7 +58,6 @@ function(find_ffmpeg RELEASE_ROOT_DIR DEBUG_ROOT_DIR INCLUDE_DIR)
 		message(STATUS "Found FFMPEG libraries!")
 	else()
 		message(FATAL_ERROR "Couldn't find FFMPEG!")
-		return()
 	endif()
 	cmake_path(GET AVCODEC_RELEASE_LIBRARY PARENT_PATH AVCODEC_RELEASE_FILE_PATH)
 	find_file(

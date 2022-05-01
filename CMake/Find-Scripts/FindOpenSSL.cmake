@@ -37,7 +37,6 @@ function(find_openssl RELEASE_ROOT_DIR DEBUG_ROOT_DIR INCLUDE_DIR)
 		message(STATUS "Found OpenSSL libraries!")
 	else()
 		message(FATAL_ERROR "Couldn't find OpenSSL!")
-		return()
 	endif()
 	cmake_path(GET LIBSSL_RELEASE_LIBRARY PARENT_PATH LIBSSL_RELEASE_FILE_PATH)
 	find_file(

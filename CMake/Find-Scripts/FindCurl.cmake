@@ -26,7 +26,6 @@ function(find_curl RELEASE_ROOT_DIR DEBUG_ROOT_DIR INCLUDE_DIR)
 		message(STATUS "Found Curl libraries!")
 	else()
 		message(FATAL_ERROR "Couldn't find Curl!")
-		return()
 	endif()
 	cmake_path(GET CURL_RELEASE_LIBRARY PARENT_PATH CURL_RELEASE_FILE_PATH)
 	find_file(

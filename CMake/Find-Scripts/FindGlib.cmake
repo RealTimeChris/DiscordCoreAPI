@@ -26,7 +26,6 @@ function(find_glib RELEASE_ROOT_DIR DEBUG_ROOT_DIR INCLUDE_DIR)
 		message(STATUS "Found Glib libraries!")
 	else()
 		message(FATAL_ERROR "Couldn't find Glib!")
-		return()
 	endif()
 	cmake_path(GET GLIB_RELEASE_LIBRARY PARENT_PATH GLIB_RELEASE_FILE_PATH)
 	find_file(

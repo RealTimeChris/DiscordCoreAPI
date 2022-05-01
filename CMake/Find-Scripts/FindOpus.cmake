@@ -26,7 +26,6 @@ function(find_opus RELEASE_ROOT_DIR DEBUG_ROOT_DIR INCLUDE_DIR)
 		message(STATUS "Found Opus libraries!")
 	else()
 		message(FATAL_ERROR "Couldn't find Opus!")
-		return()
 	endif()
 	cmake_path(GET OPUS_RELEASE_LIBRARY PARENT_PATH OPUS_RELEASE_FILE_PATH)
 	find_file(
