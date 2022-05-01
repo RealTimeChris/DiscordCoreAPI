@@ -549,6 +549,20 @@ namespace DiscordCoreAPI {
 			return *this->interactionData;
 		}
 
+		SelectMenuResponseData& operator=(const SelectMenuResponseData& other) {
+			*this->interactionData = *other.interactionData;
+			this->selectionId = other.selectionId;
+			this->messageId = other.messageId;
+			this->channelId = other.channelId;
+			this->values = other.values;
+			this->userId = other.userId;
+			return *this;
+		}
+
+		SelectMenuResponseData(const SelectMenuResponseData& other) {
+			*this = other;
+		}
+
 		SelectMenuResponseData& operator=(SelectMenuResponseData& other) {
 			*this->interactionData = *other.interactionData;
 			this->selectionId = other.selectionId;
@@ -626,6 +640,20 @@ namespace DiscordCoreAPI {
 			return *this->interactionData;
 		}
 
+		ButtonResponseData& operator=(const ButtonResponseData& other) {
+			*this->interactionData = *other.interactionData;
+			this->messageId = other.messageId;
+			this->channelId = other.channelId;
+			this->emojiName = other.emojiName;
+			this->buttonId = other.buttonId;
+			this->userId = other.userId;
+			return *this;
+		}
+
+		ButtonResponseData(const ButtonResponseData& other) {
+			*this = other;
+		}
+
 		ButtonResponseData& operator=(ButtonResponseData& other) {
 			*this->interactionData = *other.interactionData;
 			this->messageId = other.messageId;
@@ -701,6 +729,20 @@ namespace DiscordCoreAPI {
 
 		operator InteractionData() {
 			return *this->interactionData;
+		}
+
+		ModalResponseData& operator=(const ModalResponseData& other) {
+			*this->interactionData = *other.interactionData;
+			this->customIdSmall = other.customIdSmall;
+			this->channelId = other.channelId;
+			this->customId = other.customId;
+			this->userId = other.userId;
+			this->value = other.value;
+			return *this;
+		}
+
+		ModalResponseData(const ModalResponseData& other) {
+			*this = other;
 		}
 
 		ModalResponseData& operator=(ModalResponseData& other) {
