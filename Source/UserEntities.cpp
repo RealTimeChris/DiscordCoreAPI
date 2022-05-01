@@ -62,8 +62,11 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<void> Users::addRecipientToGroupDMAsync(AddRecipientToGroupDMData dataPackage) {
 		try {
-			co_await NewThreadAwaitable<void>();
 			DiscordCoreInternal::HttpWorkloadData workload{};
+			workload.thisWorkerId =
+				DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Put_Recipient_To_Group_Dm];
+			DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Put_Recipient_To_Group_Dm] += 1;
+			co_await NewThreadAwaitable<void>();
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Put_Recipient_To_Group_Dm;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Put;
 			workload.relativePath = "/channels/" + dataPackage.channelId + "/recipients/" + dataPackage.userId;
@@ -77,8 +80,11 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<void> Users::removeRecipientFromGroupDMAsync(RemoveRecipientFromGroupDMData dataPackage) {
 		try {
-			co_await NewThreadAwaitable<void>();
 			DiscordCoreInternal::HttpWorkloadData workload{};
+			workload.thisWorkerId =
+				DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Delete_Recipient_From_Group_Dm];
+			DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Delete_Recipient_From_Group_Dm] += 1;
+			co_await NewThreadAwaitable<void>();
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Delete_Recipient_From_Group_Dm;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Delete;
 			workload.relativePath = "/channels/" + dataPackage.channelId + "/recipients/" + dataPackage.userId;
@@ -91,8 +97,11 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<void> Users::modifyCurrentUserVoiceStateAsync(ModifyCurrentUserVoiceStateData dataPackage) {
 		try {
-			co_await NewThreadAwaitable<void>();
 			DiscordCoreInternal::HttpWorkloadData workload{};
+			workload.thisWorkerId =
+				DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Patch_Current_User_Voice_State];
+			DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Patch_Current_User_Voice_State] += 1;
+			co_await NewThreadAwaitable<void>();
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Patch_Current_User_Voice_State;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Patch;
 			workload.relativePath = "/guilds/" + dataPackage.guildId + "/voice-states/@me";
@@ -105,8 +114,10 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<void> Users::modifyUserVoiceStateAsync(ModifyUserVoiceStateData dataPackage) {
 		try {
-			co_await NewThreadAwaitable<void>();
 			DiscordCoreInternal::HttpWorkloadData workload{};
+			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Patch_User_Voice_State];
+			DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Patch_User_Voice_State] += 1;
+			co_await NewThreadAwaitable<void>();
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Patch_User_Voice_State;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Patch;
 			workload.relativePath = "/guilds/" + dataPackage.guildId + "/voice-states/" + dataPackage.userId;
@@ -119,8 +130,10 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<UserData> Users::getCurrentUserAsync() {
 		try {
-			co_await NewThreadAwaitable<UserData>();
 			DiscordCoreInternal::HttpWorkloadData workload{};
+			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Get_Current_User];
+			DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Get_Current_User] += 1;
+			co_await NewThreadAwaitable<UserData>();
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Current_User;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
 			workload.relativePath = "/users/@me";
@@ -148,8 +161,10 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<User> Users::getUserAsync(GetUserData dataPackage) {
 		try {
-			co_await NewThreadAwaitable<User>();
 			DiscordCoreInternal::HttpWorkloadData workload{};
+			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Get_User];
+			DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Get_User] += 1;
+			co_await NewThreadAwaitable<User>();
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_User;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
 			workload.relativePath = "/users/" + dataPackage.userId;
@@ -162,8 +177,10 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<User> Users::modifyCurrentUserAsync(ModifyCurrentUserData dataPackage) {
 		try {
-			co_await NewThreadAwaitable<User>();
 			DiscordCoreInternal::HttpWorkloadData workload{};
+			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Patch_Current_User];
+			DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Patch_Current_User] += 1;
+			co_await NewThreadAwaitable<User>();
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Patch_Current_User;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Patch;
 			workload.relativePath = "/users/@me";
@@ -183,8 +200,10 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<std::vector<ConnectionData>> Users::getUserConnectionsAsync() {
 		try {
-			co_await NewThreadAwaitable<std::vector<ConnectionData>>();
 			DiscordCoreInternal::HttpWorkloadData workload{};
+			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Get_User_Connections];
+			DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Get_User_Connections] += 1;
+			co_await NewThreadAwaitable<std::vector<ConnectionData>>();
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_User_Connections;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
 			workload.relativePath = "/users/@me/connections";
@@ -197,8 +216,10 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<ApplicationData> Users::getCurrentUserApplicationInfoAsync() {
 		try {
-			co_await NewThreadAwaitable<ApplicationData>();
 			DiscordCoreInternal::HttpWorkloadData workload{};
+			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Get_Application_Info];
+			DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Get_Application_Info] += 1;
+			co_await NewThreadAwaitable<ApplicationData>();
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Application_Info;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
 			workload.relativePath = "/oauth2/applications/@me";
@@ -211,8 +232,10 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<AuthorizationInfoData> Users::getCurrentUserAuthorizationInfoAsync() {
 		try {
-			co_await NewThreadAwaitable<AuthorizationInfoData>();
 			DiscordCoreInternal::HttpWorkloadData workload{};
+			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Get_Authorization_Info];
+			DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Get_Authorization_Info] += 1;
+			co_await NewThreadAwaitable<AuthorizationInfoData>();
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Authorization_Info;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
 			workload.relativePath = "/oauth2/@me";

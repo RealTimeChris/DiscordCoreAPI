@@ -44,8 +44,10 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<Sticker> Stickers::getStickerAsync(GetStickerData dataPackage) {
 		try {
-			co_await NewThreadAwaitable<Sticker>();
 			DiscordCoreInternal::HttpWorkloadData workload{};
+			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Get_Sticker];
+			DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Get_Sticker] += 1;
+			co_await NewThreadAwaitable<Sticker>();
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Sticker;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
 			workload.relativePath = "/stickers/" + dataPackage.stickerId;
@@ -58,8 +60,10 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<std::vector<StickerPackData>> Stickers::getNitroStickerPacksAsync() {
 		try {
-			co_await NewThreadAwaitable<std::vector<StickerPackData>>();
 			DiscordCoreInternal::HttpWorkloadData workload{};
+			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Get_Nitro_Sticker_Packs];
+			DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Get_Nitro_Sticker_Packs] += 1;
+			co_await NewThreadAwaitable<std::vector<StickerPackData>>();
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Nitro_Sticker_Packs;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
 			workload.relativePath = "/sticker-packs";
@@ -72,8 +76,10 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<std::vector<Sticker>> Stickers::getGuildStickersAsync(GetGuildStickersData dataPackage) {
 		try {
-			co_await NewThreadAwaitable<std::vector<Sticker>>();
 			DiscordCoreInternal::HttpWorkloadData workload{};
+			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Get_Guild_Stickers];
+			DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Get_Guild_Stickers] += 1;
+			co_await NewThreadAwaitable<std::vector<Sticker>>();
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Guild_Stickers;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
 			workload.relativePath = "/guilds/" + dataPackage.guildId + "/stickers";
@@ -86,8 +92,10 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<Sticker> Stickers::createGuildStickerAsync(CreateGuildStickerData dataPackage) {
 		try {
-			co_await NewThreadAwaitable<Sticker>();
 			DiscordCoreInternal::HttpWorkloadData workload{};
+			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Post_Guild_Sticker];
+			DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Post_Guild_Sticker] += 1;
+			co_await NewThreadAwaitable<Sticker>();
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Post_Guild_Sticker;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Post;
 			workload.relativePath = "/guilds/" + dataPackage.guildId + "/stickers";
@@ -106,8 +114,10 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<Sticker> Stickers::modifyGuildStickerAsync(ModifyGuildStickerData dataPackage) {
 		try {
-			co_await NewThreadAwaitable<Sticker>();
 			DiscordCoreInternal::HttpWorkloadData workload{};
+			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Patch_Guild_Sticker];
+			DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Patch_Guild_Sticker] += 1;
+			co_await NewThreadAwaitable<Sticker>();
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Patch_Guild_Sticker;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Patch;
 			workload.relativePath = "/guilds/" + dataPackage.guildId + "/stickers/" + dataPackage.stickerId;
@@ -125,8 +135,10 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<void> Stickers::deleteGuildStickerAsync(DeleteGuildStickerData dataPackage) {
 		try {
-			co_await NewThreadAwaitable<void>();
 			DiscordCoreInternal::HttpWorkloadData workload{};
+			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Delete_Guild_Sticker];
+			DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Delete_Guild_Sticker] += 1;
+			co_await NewThreadAwaitable<void>();
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Delete_Guild_Sticker;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Delete;
 			workload.relativePath = "/guilds/" + dataPackage.guildId + "/stickers/" + dataPackage.stickerId;

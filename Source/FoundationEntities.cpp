@@ -778,5 +778,12 @@ namespace DiscordCoreAPI {
 		this->eventData = inputEventData;
 		DiscordCoreInternal::DataParser::parseObject(inputEventData.getInteractionData().rawData, *this);
 	}
-
+	
 };
+
+namespace DiscordCoreInternal {
+
+	std::unordered_map<HttpWorkloadType, int64_t> HttpWorkloadData::workloadIdsExternal{};
+	std::unordered_map<HttpWorkloadType, int64_t> HttpWorkloadData::workloadIdsInternal{};
+
+}

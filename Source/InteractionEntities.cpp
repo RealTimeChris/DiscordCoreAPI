@@ -48,8 +48,11 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<Message> Interactions::createInteractionResponseAsync(CreateInteractionResponseData dataPackage) {
 		try {
-			co_await NewThreadAwaitable<Message>();
 			DiscordCoreInternal::HttpWorkloadData workload{};
+			workload.thisWorkerId =
+				DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Post_Interaction_Response];
+			DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Post_Interaction_Response] += 1;
+			co_await NewThreadAwaitable<Message>();
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Post_Interaction_Response;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Post;
 			workload.relativePath =
@@ -67,8 +70,10 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<Message> Interactions::getInteractionResponseAsync(GetInteractionResponseData dataPackage) {
 		try {
-			co_await NewThreadAwaitable<Message>();
 			DiscordCoreInternal::HttpWorkloadData workload{};
+			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Get_Interaction_Response];
+			DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Get_Interaction_Response] += 1;
+			co_await NewThreadAwaitable<Message>();
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Interaction_Response;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
 			workload.relativePath = "/webhooks/" + dataPackage.applicationId + "/" + dataPackage.interactionToken + "/messages/@original";
@@ -81,8 +86,11 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<Message> Interactions::editInteractionResponseAsync(EditInteractionResponseData dataPackage) {
 		try {
-			co_await NewThreadAwaitable<Message>();
 			DiscordCoreInternal::HttpWorkloadData workload{};
+			workload.thisWorkerId =
+				DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Patch_Interaction_Response];
+			DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Patch_Interaction_Response] += 1;
+			co_await NewThreadAwaitable<Message>();
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Patch_Interaction_Response;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Patch;
 			workload.relativePath =
@@ -97,9 +105,12 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<void> Interactions::deleteInteractionResponseAsync(DeleteInteractionResponseData dataPackage) {
 		try {
+			DiscordCoreInternal::HttpWorkloadData workload{};
+			workload.thisWorkerId =
+				DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Delete_Interaction_Response];
+			DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Delete_Interaction_Response] += 1;
 			co_await NewThreadAwaitable<void>();
 			std::this_thread::sleep_for(std::chrono::milliseconds{ dataPackage.timeDelay });
-			DiscordCoreInternal::HttpWorkloadData workload{};
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Delete_Interaction_Response;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Delete;
 			workload.relativePath =
@@ -113,8 +124,10 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<Message> Interactions::createFollowUpMessageAsync(CreateFollowUpMessageData dataPackage) {
 		try {
-			co_await NewThreadAwaitable<Message>();
 			DiscordCoreInternal::HttpWorkloadData workload{};
+			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Post_Followup_Message];
+			DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Post_Followup_Message] += 1;
+			co_await NewThreadAwaitable<Message>();
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Post_Followup_Message;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Post;
 			workload.relativePath = "/webhooks/" + dataPackage.interactionPackage.applicationId + "/" + dataPackage.interactionPackage.interactionToken;
@@ -128,8 +141,10 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<Message> Interactions::getFollowUpMessageAsync(GetFollowUpMessageData dataPackage) {
 		try {
-			co_await NewThreadAwaitable<Message>();
 			DiscordCoreInternal::HttpWorkloadData workload{};
+			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Get_Followup_Message];
+			DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Get_Followup_Message] += 1;
+			co_await NewThreadAwaitable<Message>();
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Followup_Message;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
 			workload.relativePath = "/webhooks/" + dataPackage.applicationId + "/" + dataPackage.interactionToken + "/messages/" + dataPackage.messageId;
@@ -142,8 +157,10 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<Message> Interactions::editFollowUpMessageAsync(EditFollowUpMessageData dataPackage) {
 		try {
-			co_await NewThreadAwaitable<Message>();
 			DiscordCoreInternal::HttpWorkloadData workload{};
+			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Patch_Followup_Message];
+			DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Patch_Followup_Message] += 1;
+			co_await NewThreadAwaitable<Message>();
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Patch_Followup_Message;
 			;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Patch;
@@ -159,9 +176,11 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<void> Interactions::deleteFollowUpMessageAsync(DeleteFollowUpMessageData dataPackage) {
 		try {
+			DiscordCoreInternal::HttpWorkloadData workload{};
+			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Delete_Followup_Message];
+			DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Delete_Followup_Message] += 1;
 			co_await NewThreadAwaitable<void>();
 			std::this_thread::sleep_for(std::chrono::milliseconds{ dataPackage.timeDelay });
-			DiscordCoreInternal::HttpWorkloadData workload{};
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Delete_Followup_Message;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Delete;
 			workload.relativePath = "/webhooks/" + dataPackage.interactionPackage.applicationId + "/" + dataPackage.interactionPackage.interactionToken +

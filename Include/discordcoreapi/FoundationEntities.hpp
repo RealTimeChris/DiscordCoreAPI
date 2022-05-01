@@ -3657,11 +3657,14 @@ namespace DiscordCoreInternal {
 	};
 
 	struct DiscordCoreAPI_Dll HttpWorkloadData {
+		static std::unordered_map<HttpWorkloadType, int64_t> workloadIdsExternal;
+		static std::unordered_map<HttpWorkloadType, int64_t> workloadIdsInternal;
 		std::unordered_map<std::string, std::string> headersToInsert{};
 		HttpWorkloadClass workloadClass{};
 		HttpWorkloadType workloadType{};
 		std::string relativePath{ "" };
 		std::string callStack{ "" };
+		int64_t thisWorkerId{ 0 };
 		std::string content{ "" };
 		std::string baseUrl{ "" };
 	};

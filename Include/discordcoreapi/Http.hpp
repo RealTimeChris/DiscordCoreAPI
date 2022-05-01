@@ -84,6 +84,7 @@ namespace DiscordCoreInternal {
 
 	  protected:
 		std::counting_semaphore<1> theSemaphore{ 1 };
+		std::atomic_int32_t currentWorkloadId{ 0 };
 		bool haveWeCollectedTime{ false };
 		bool areWeASpecialBucket{ false };
 		int64_t getsRemainingTotal{ 0 };
@@ -105,7 +106,6 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll HttpConnectionManager {
 	  public:
-		std::counting_semaphore<1> theSemaphore{ 1 };
 		int64_t currentIndex{ 0 };
 
 		HttpConnection* getConnection();
@@ -140,11 +140,11 @@ namespace DiscordCoreInternal {
 		const std::string botToken{};
 		bool doWePrintHttp{ false };
 
-		HttpData executeHttpRequest(HttpWorkloadData& workload, HttpConnection* theConnection, RateLimitData* rateLimitDatPtr);
+		HttpData executeHttpRequest(HttpWorkloadData& workload, HttpConnection& theConnection, RateLimitData* rateLimitDatPtr);
 
-		HttpData executeByRateLimitData(HttpWorkloadData& workload, HttpConnection* theConnection);
+		HttpData executeByRateLimitData(HttpWorkloadData& workload, HttpConnection& theConnection);
 
-		HttpData getResponse(HttpConnection* theConnection, RateLimitData* rateLimitDataPtr);
+		HttpData getResponse(HttpConnection& theConnection, RateLimitData* rateLimitDataPtr);
 
 		std::vector<HttpData> executeHttpRequest(std::vector<HttpWorkloadData>&);
 	};

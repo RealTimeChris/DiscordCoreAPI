@@ -39,8 +39,10 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<StageInstance> StageInstances::createStageInstanceAsync(CreateStageInstanceData dataPackage) {
 		try {
-			co_await NewThreadAwaitable<StageInstance>();
 			DiscordCoreInternal::HttpWorkloadData workload{};
+			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Post_Stage_Instance];
+			DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Post_Stage_Instance] += 1;
+			co_await NewThreadAwaitable<StageInstance>();
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Post_Stage_Instance;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Post;
 			workload.relativePath = "/stage-instances";
@@ -59,8 +61,10 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<StageInstance> StageInstances::getStageInstanceAsync(GetStageInstanceData dataPackage) {
 		try {
-			co_await NewThreadAwaitable<StageInstance>();
 			DiscordCoreInternal::HttpWorkloadData workload{};
+			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Get_Stage_Instance];
+			DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Get_Stage_Instance] += 1;
+			co_await NewThreadAwaitable<StageInstance>();
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Stage_Instance;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
 			workload.relativePath = "/stage-instances/" + dataPackage.channelId;
@@ -73,8 +77,10 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<StageInstance> StageInstances::modifyStageInstanceAsync(ModifyStageInstanceData dataPackage) {
 		try {
-			co_await NewThreadAwaitable<StageInstance>();
 			DiscordCoreInternal::HttpWorkloadData workload{};
+			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Patch_Stage_Instance];
+			DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Patch_Stage_Instance] += 1;
+			co_await NewThreadAwaitable<StageInstance>();
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Patch_Stage_Instance;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Patch;
 			workload.relativePath = "/stage-instances/" + dataPackage.channelId;
@@ -92,8 +98,10 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<void> StageInstances::deleteStageInstanceAsync(DeleteStageInstanceData dataPackage) {
 		try {
-			co_await NewThreadAwaitable<void>();
 			DiscordCoreInternal::HttpWorkloadData workload{};
+			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Delete_Stage_Instance];
+			DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Delete_Stage_Instance] += 1;
+			co_await NewThreadAwaitable<void>();
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Delete_Stage_Instance;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Delete;
 			workload.relativePath = "/stage-instances/" + dataPackage.channelId;
