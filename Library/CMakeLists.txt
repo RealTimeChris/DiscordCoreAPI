@@ -11,7 +11,6 @@ generate_product_version(
 	VERSION_REVISION "0"
 )
 
-file(GLOB HEADERS CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/Include/discordcoreapi/*.hpp")
 file(GLOB SOURCES CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/Source/*.cpp")
 
 if (WIN32)
@@ -64,6 +63,8 @@ target_link_libraries(
 	$<$<TARGET_EXISTS:NLOHMANN::Json>:NLOHMANN::Json>
 	$<$<TARGET_EXISTS:Threads::Threads>:Threads::Threads>
 )
+
+file(GLOB HEADERS CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/Include/discordcoreapi/*.hpp")
 
 set_target_properties(
 	DiscordCoreAPI PROPERTIES
