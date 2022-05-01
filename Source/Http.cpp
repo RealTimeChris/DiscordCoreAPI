@@ -291,6 +291,7 @@ namespace DiscordCoreInternal {
 	}
 
 	HttpConnection* HttpConnectionManager::getConnection() {
+		std::lock_guard<std::mutex> theLock{ this->theMutex };
 		this->currentIndex += 1;
 		return Globals::httpConnections[this->currentIndex % std::thread::hardware_concurrency()].get();
 	}

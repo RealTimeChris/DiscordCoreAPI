@@ -281,6 +281,7 @@ namespace DiscordCoreInternal {
 		static std::string soundcloudCertPathStatic;
 		static std::string defaultCertPathStatic;
 		static std::string googleCertPathStatic;
+		static std::mutex theMutex;
 
 		BIOWrapper connectionBio{ nullptr };
 		int32_t maxBufferSize{ 16 * 1024 };

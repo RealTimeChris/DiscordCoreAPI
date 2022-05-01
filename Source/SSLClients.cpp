@@ -129,13 +129,14 @@ namespace DiscordCoreInternal {
 				reportSSLError("SSL_CTX_set_options() Error: ");
 				return false;
 			}
-
+			std::unique_lock<std::mutex> theLock{ HttpSSLClient::theMutex };
 			SSL_CTX_set_verify(this->context, SSL_VERIFY_PEER, nullptr);
 			SSL_CTX_set_verify_depth(this->context, 4);
 			if (!SSL_CTX_load_verify_locations(this->context, certPath.c_str(), NULL)) {
 				reportSSLError("SSL_CTX_load_verify_locations() Error: ");
 				return false;
 			}
+			theLock.unlock();
 
 			if (!SSL_CTX_set_cipher_list(this->context, "ALL")) {
 				reportSSLError("SSL_CTX_set_cipher_list() Error: ");
@@ -677,5 +678,5 @@ namespace DiscordCoreInternal {
 	std::string HttpSSLClient::soundcloudCertPathStatic{ "" };
 	std::string HttpSSLClient::defaultCertPathStatic{ "" };
 	std::string HttpSSLClient::googleCertPathStatic{ "" };
-
+	std::mutex HttpSSLClient::theMutex{};
 }
