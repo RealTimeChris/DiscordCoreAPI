@@ -544,6 +544,25 @@ namespace DiscordCoreAPI {
 
 	/// Select menu response data. \brief Select menu response data.
 	struct DiscordCoreAPI_Dll SelectMenuResponseData {
+
+		operator InteractionData() {
+			return *this->interactionData;
+		}
+
+		SelectMenuResponseData& operator=(SelectMenuResponseData& other) {
+			*this->interactionData = *other.interactionData;
+			this->selectionId = other.selectionId;
+			this->messageId = other.messageId;
+			this->channelId = other.channelId;
+			this->values = other.values;
+			this->userId = other.userId;
+			return *this;
+		}
+
+		SelectMenuResponseData(SelectMenuResponseData& other) {
+			*this = other;
+		}
+
 		std::unique_ptr<InteractionData> interactionData{ std::make_unique<InteractionData>() };///< Interaction data.
 		std::vector<std::string> values{};///< A std::vector of the chosen values.
 		std::string selectionId{ "" };///< Selection id.
@@ -604,6 +623,21 @@ namespace DiscordCoreAPI {
 		operator InteractionData() {
 			return *this->interactionData;
 		}
+
+		ButtonResponseData& operator=(ButtonResponseData& other) {
+			*this->interactionData = *other.interactionData;
+			this->messageId = other.messageId;
+			this->channelId = other.channelId;
+			this->emojiName = other.emojiName;
+			this->buttonId = other.buttonId;
+			this->userId = other.userId;
+			return *this;
+		}
+
+		ButtonResponseData(ButtonResponseData& other) {
+			*this = other;
+		}
+
 		std::unique_ptr<InteractionData> interactionData{ std::make_unique<InteractionData>() };///< Interaction data.
 		std::string emojiName{ "" };///< The emoji name, if applicable.
 		std::string channelId{ "" };///< The Channel id where it took place.
@@ -660,8 +694,23 @@ namespace DiscordCoreAPI {
 
 	/// Button response data. \brief Button response data.
 	struct DiscordCoreAPI_Dll ModalResponseData {
+
 		operator InteractionData() {
 			return *this->interactionData;
+		}
+
+		ModalResponseData& operator=(ModalResponseData& other) {
+			*this->interactionData = *other.interactionData;
+			this->customIdSmall = other.customIdSmall;
+			this->channelId = other.channelId;
+			this->customId = other.customId;
+			this->userId = other.userId;
+			this->value = other.value;
+			return *this;
+		}
+
+		ModalResponseData(ModalResponseData& other) {
+			*this = other;
 		}
 
 		std::unique_ptr<InteractionData> interactionData{ std::make_unique<InteractionData>() };///< Interaction data.
