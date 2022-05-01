@@ -84,10 +84,10 @@ namespace DiscordCoreAPI {
 
 		WorkloadStatus() = default;
 
-		WorkloadStatus(std::thread::id threadIdNew){
+		WorkloadStatus(std::thread::id threadIdNew) {
 			this->threadId = threadIdNew;
-		} 
-		
+		}
+
 		~WorkloadStatus() {
 			DiscordCoreInternal::Globals::httpConnections.erase(this->threadId);
 		}
@@ -194,10 +194,10 @@ namespace DiscordCoreAPI {
 					theAtomicBoolPtr->store(false, std::memory_order::seq_cst);
 				}
 				if (this->theWorkingStatuses[std::this_thread::get_id()].doWeQuit.load(std::memory_order::seq_cst)) {
-					this->theWorkingStatuses.erase(std::this_thread::get_id());
 					break;
 				}
 			}
+			this->theWorkingStatuses.erase(std::this_thread::get_id());
 		}
 	};
 
