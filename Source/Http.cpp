@@ -320,7 +320,6 @@ namespace DiscordCoreInternal {
 		try {
 			theConnection->resetValues();
 			RateLimitData* rateLimitDataPtr = Globals::rateLimitValues[Globals::rateLimitValueBuckets[workload.workloadType]].get();
-			std::lock_guard<std::recursive_mutex> accessLock{ rateLimitDataPtr->accessMutex };
 			int64_t timeRemaining{};
 			int64_t currentTime =
 				static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
@@ -369,11 +368,12 @@ namespace DiscordCoreInternal {
 			if (rateLimitDataPtr->tempBucket != "") {
 				rateLimitDataPtr->tempBucket = "";
 			}
+			std::string currentBucket = rateLimitDataPtr->bucket;
 			if (!Globals::rateLimitValues.contains(rateLimitDataPtr->bucket)) {
 				std::unique_ptr<RateLimitData> rateLimitData{ std::make_unique<RateLimitData>() };
 				Globals::rateLimitValues[Globals::rateLimitValueBuckets[workload.workloadType]].swap(rateLimitData);
-				Globals::rateLimitValueBuckets[workload.workloadType] = rateLimitData->bucket;
-				Globals::rateLimitValues[rateLimitData->bucket] = std::move(rateLimitData);
+				Globals::rateLimitValueBuckets[workload.workloadType] = currentBucket;
+				Globals::rateLimitValues[currentBucket] = std::move(rateLimitData);
 			}
 			if (returnData.responseCode == 204 || returnData.responseCode == 201 || returnData.responseCode == 200) {
 				if (this->doWePrintHttp) {
@@ -507,10 +507,11 @@ namespace DiscordCoreInternal {
 			if (workload.baseUrl == "") {
 				workload.baseUrl = "https://discord.com/api/v10";
 			}
+			RateLimitData* rateLimitDataPtr = Globals::rateLimitValues[Globals::rateLimitValueBuckets[workload.workloadType]].get();
+			rateLimitDataPtr->theSemaphore.acquire();
 			HttpConnection* theConnectionNew = this->connectionManager.getConnection();
-			theConnectionNew->theSemaphore.acquire();
 			HttpData resultData = this->executeByRateLimitData(workload, theConnectionNew);
-			theConnectionNew->theSemaphore.release();
+			rateLimitDataPtr->theSemaphore.release();
 			return resultData;
 		} catch (...) {
 			DiscordCoreAPI::reportException("HttpClient::httpRequest()", nullptr, true);
