@@ -177,7 +177,7 @@ namespace DiscordCoreAPI {
 		this->channelId = dataPackage.getChannelId();
 		this->messageId = dataPackage.getMessageId();
 		this->userId = dataPackage.getRequesterId();
-		this->interactionData = dataPackage.getInteractionData();
+		*this->interactionData = dataPackage.getInteractionData();
 		this->bufferMapKey = this->channelId + this->messageId;
 		SelectMenuCollector::selectMenuInteractionBufferMap.insert(std::make_pair(this->bufferMapKey, &this->selectMenuIncomingInteractionBuffer));
 	}
@@ -218,7 +218,7 @@ namespace DiscordCoreAPI {
 						response->channelId = this->channelId;
 						response->messageId = this->messageId;
 						response->userId = selectMenuInteractionData->user.id;
-						response->interactionData = this->interactionData;
+						*response->interactionData = *this->interactionData;
 						response->values = std::vector<std::string>{ "empty" };
 						this->responseVector.push_back(*response);
 						break;
@@ -235,15 +235,15 @@ namespace DiscordCoreAPI {
 						createResponseData->data.type = InteractionCallbackType::Channel_Message_With_Source;
 						Interactions::createInteractionResponseAsync(*createResponseData).get();
 					} else {
-						this->interactionData = *selectMenuInteractionData;
+						*this->interactionData = *selectMenuInteractionData;
 						this->selectMenuId = selectMenuInteractionData->data.componentData.customId;
 						auto response = std::make_unique<SelectMenuResponseData>();
 						response->selectionId = this->selectMenuId;
 						response->channelId = this->channelId;
 						response->messageId = this->messageId;
 						response->userId = selectMenuInteractionData->user.id;
-						response->values = this->interactionData.data.componentData.values;
-						response->interactionData = *selectMenuInteractionData;
+						response->values = this->interactionData->data.componentData.values;
+						*response->interactionData = *selectMenuInteractionData;
 						this->responseVector.push_back(*response);
 						this->currentCollectedSelectMenuCount += 1;
 						if (this->maxCollectedSelectMenuCount > 1 && this->currentCollectedSelectMenuCount < this->maxCollectedSelectMenuCount - 1) {
@@ -253,7 +253,7 @@ namespace DiscordCoreAPI {
 						}
 						if (this->currentCollectedSelectMenuCount >= this->maxCollectedSelectMenuCount) {
 							for (auto& value: this->responseVector) {
-								value.interactionData = *selectMenuInteractionData;
+								*value.interactionData = *selectMenuInteractionData;
 							}
 							doWeQuit = true;
 						}
@@ -267,20 +267,20 @@ namespace DiscordCoreAPI {
 						response->channelId = this->channelId;
 						response->messageId = this->messageId;
 						response->userId = selectMenuInteractionData->user.id;
-						response->interactionData = this->interactionData;
+						*response->interactionData = *this->interactionData;
 						response->values = std::vector<std::string>{ "empty" };
 						this->responseVector.push_back(*response);
 						break;
 					}
-					this->interactionData = *selectMenuInteractionData;
+					*this->interactionData = *selectMenuInteractionData;
 					this->selectMenuId = selectMenuInteractionData->data.componentData.customId;
 					auto response = std::make_unique<SelectMenuResponseData>();
 					response->selectionId = this->selectMenuId;
 					response->channelId = this->channelId;
 					response->messageId = this->messageId;
 					response->userId = selectMenuInteractionData->user.id;
-					response->interactionData = *selectMenuInteractionData;
-					response->values = this->interactionData.data.componentData.values;
+					*response->interactionData = *selectMenuInteractionData;
+					response->values = this->interactionData->data.componentData.values;
 					this->responseVector.push_back(*response);
 					this->currentCollectedSelectMenuCount += 1;
 					if (this->maxCollectedSelectMenuCount > 1 && this->currentCollectedSelectMenuCount < this->maxCollectedSelectMenuCount - 1) {
@@ -291,7 +291,7 @@ namespace DiscordCoreAPI {
 					if (this->currentCollectedSelectMenuCount >= this->maxCollectedSelectMenuCount) {
 						this->doWeQuit = true;
 						for (auto& value: this->responseVector) {
-							value.interactionData = *selectMenuInteractionData;
+							*value.interactionData = *selectMenuInteractionData;
 						}
 					}
 				}
@@ -307,7 +307,7 @@ namespace DiscordCoreAPI {
 		this->channelId = dataPackage.getChannelId();
 		this->messageId = dataPackage.getMessageId();
 		this->userId = dataPackage.getRequesterId();
-		this->interactionData = dataPackage.getInteractionData();
+		*this->interactionData = dataPackage.getInteractionData();
 		ButtonCollector::buttonInteractionBufferMap.insert_or_assign(this->channelId + this->messageId, &this->buttonIncomingInteractionBuffer);
 	}
 
@@ -345,7 +345,7 @@ namespace DiscordCoreAPI {
 						response->channelId = this->channelId;
 						response->messageId = this->messageId;
 						response->userId = buttonInteractionData->user.id;
-						response->interactionData = this->interactionData;
+						*response->interactionData = *this->interactionData;
 						this->responseVector.push_back(*response);
 						break;
 					}
@@ -361,14 +361,14 @@ namespace DiscordCoreAPI {
 						createResponseData->data.type = InteractionCallbackType::Channel_Message_With_Source;
 						Interactions::createInteractionResponseAsync(*createResponseData).get();
 					} else {
-						this->interactionData = *buttonInteractionData;
+						*this->interactionData = *buttonInteractionData;
 						this->buttonId = buttonInteractionData->data.componentData.customId;
 						auto response = std::make_unique<ButtonResponseData>();
 						response->buttonId = this->buttonId;
 						response->channelId = this->channelId;
 						response->messageId = this->messageId;
 						response->userId = buttonInteractionData->user.id;
-						response->interactionData = *buttonInteractionData;
+						*response->interactionData = *buttonInteractionData;
 						this->responseVector.push_back(*response);
 						this->currentCollectedButtonCount += 1;
 						if (this->maxCollectedButtonCount > 1 && this->currentCollectedButtonCount < this->maxCollectedButtonCount) {
@@ -378,7 +378,7 @@ namespace DiscordCoreAPI {
 						}
 						if (this->currentCollectedButtonCount >= this->maxCollectedButtonCount) {
 							for (auto& value: this->responseVector) {
-								value.interactionData = *buttonInteractionData;
+								*value.interactionData = *buttonInteractionData;
 							}
 							doWeQuit = true;
 						}
@@ -392,18 +392,18 @@ namespace DiscordCoreAPI {
 						response->channelId = this->channelId;
 						response->messageId = this->messageId;
 						response->userId = buttonInteractionData->user.id;
-						response->interactionData = *buttonInteractionData;
+						*response->interactionData = *buttonInteractionData;
 						this->responseVector.push_back(*response);
 						break;
 					}
-					this->interactionData = *buttonInteractionData;
+					*this->interactionData = *buttonInteractionData;
 					this->buttonId = buttonInteractionData->data.componentData.customId;
 					auto response = std::make_unique<ButtonResponseData>();
 					response->buttonId = this->buttonId;
 					response->channelId = this->channelId;
 					response->messageId = this->messageId;
 					response->userId = buttonInteractionData->user.id;
-					response->interactionData = *buttonInteractionData;
+					*response->interactionData = *buttonInteractionData;
 					this->responseVector.push_back(*response);
 					this->currentCollectedButtonCount += 1;
 					if (this->maxCollectedButtonCount > 1 && this->currentCollectedButtonCount < this->maxCollectedButtonCount) {
@@ -413,7 +413,7 @@ namespace DiscordCoreAPI {
 					}
 					if (this->currentCollectedButtonCount >= this->maxCollectedButtonCount) {
 						for (auto& value: this->responseVector) {
-							value.interactionData = *buttonInteractionData;
+							*value.interactionData = *buttonInteractionData;
 						}
 						this->doWeQuit = true;
 					}
@@ -450,7 +450,7 @@ namespace DiscordCoreAPI {
 			try {
 				auto buttonInteractionData = std::make_unique<InteractionData>();
 				if (waitForTimeToPass(this->modalIncomingInteractionBuffer, *buttonInteractionData.get(), this->maxTimeInMs)) {
-					this->responseData.interactionData = *buttonInteractionData;
+					*this->responseData.interactionData = *buttonInteractionData;
 					this->responseData.channelId = buttonInteractionData->channelId;
 					this->responseData.customId = buttonInteractionData->data.modalData.customId;
 					this->responseData.customIdSmall = buttonInteractionData->data.modalData.customIdSmall;
@@ -458,7 +458,7 @@ namespace DiscordCoreAPI {
 					this->responseData.value = buttonInteractionData->data.modalData.value;
 					break;
 				} else {
-					this->responseData.interactionData = *buttonInteractionData;
+					*this->responseData.interactionData = *buttonInteractionData;
 					this->responseData.channelId = buttonInteractionData->channelId;
 					this->responseData.customId = buttonInteractionData->data.modalData.customId;
 					this->responseData.customIdSmall = buttonInteractionData->data.modalData.customIdSmall;

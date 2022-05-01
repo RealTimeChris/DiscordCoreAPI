@@ -544,9 +544,9 @@ namespace DiscordCoreAPI {
 
 	/// Select menu response data. \brief Select menu response data.
 	struct DiscordCoreAPI_Dll SelectMenuResponseData {
-		InteractionData interactionData{};///< Interaction data.
-		std::string selectionId{ "" };///< Selection id.
+		std::unique_ptr<InteractionData> interactionData{ std::make_unique<InteractionData>() };///< Interaction data.
 		std::vector<std::string> values{};///< A std::vector of the chosen values.
+		std::string selectionId{ "" };///< Selection id.
 		std::string channelId{ "" };///< The Channel id where it took place.
 		std::string messageId{ "" };///< The Message id where it took place.
 		std::string userId{ "" };///< The User id who selected the menu options.
@@ -581,12 +581,12 @@ namespace DiscordCoreAPI {
 		~SelectMenuCollector();
 
 	  protected:
+		std::unique_ptr<InteractionData> interactionData{ std::make_unique<InteractionData>() };
 		UnboundedMessageBlock<InteractionData> selectMenuIncomingInteractionBuffer{};
 		std::vector<SelectMenuResponseData> responseVector{};
 		int32_t currentCollectedSelectMenuCount{ 0 };
 		int32_t maxCollectedSelectMenuCount{ 0 };
-		bool getSelectMenuDataForAll{ false };
-		InteractionData interactionData{};
+		bool getSelectMenuDataForAll{ false };		
 		std::vector<std::string> values{};
 		std::string bufferMapKey{ "" };
 		std::string selectMenuId{ "" };
@@ -602,9 +602,9 @@ namespace DiscordCoreAPI {
 	/// Button response data. \brief Button response data.
 	struct DiscordCoreAPI_Dll ButtonResponseData {
 		operator InteractionData() {
-			return this->interactionData;
+			return *this->interactionData;
 		}
-		InteractionData interactionData{};///< Interaction data.
+		std::unique_ptr<InteractionData> interactionData{ std::make_unique<InteractionData>() };///< Interaction data.
 		std::string emojiName{ "" };///< The emoji name, if applicable.
 		std::string channelId{ "" };///< The Channel id where it took place.
 		std::string messageId{ "" };///< The Message id where it took place.
@@ -640,11 +640,11 @@ namespace DiscordCoreAPI {
 		~ButtonCollector();
 
 	  protected:
+		std::unique_ptr<InteractionData> interactionData{ std::make_unique<InteractionData>() };
 		UnboundedMessageBlock<InteractionData> buttonIncomingInteractionBuffer{};
 		std::vector<ButtonResponseData> responseVector{};
 		int32_t currentCollectedButtonCount{ 0 };
 		int32_t maxCollectedButtonCount{ 0 };
-		InteractionData interactionData{};
 		std::vector<std::string> values{};
 		bool getButtonDataForAll{ false };
 		std::string bufferMapKey{ "" };
@@ -661,10 +661,10 @@ namespace DiscordCoreAPI {
 	/// Button response data. \brief Button response data.
 	struct DiscordCoreAPI_Dll ModalResponseData {
 		operator InteractionData() {
-			return this->interactionData;
+			return *this->interactionData;
 		}
 
-		InteractionData interactionData{};///< Interaction data.
+		std::unique_ptr<InteractionData> interactionData{ std::make_unique<InteractionData>() };///< Interaction data.
 		std::string customIdSmall{ "" };///< The customId of the particular input.
 		std::string channelId{ "" };///< The Channel id where it took place.
 		std::string customId{ "" };///< The customId of the modal component.
