@@ -190,7 +190,6 @@ namespace DiscordCoreAPI {
 					theAtomicBoolPtr->store(true, std::memory_order::seq_cst);
 				}
 				coroHandle.resume();
-				coroHandle.destroy();
 				if (theAtomicBoolPtr) {
 					theAtomicBoolPtr->store(false, std::memory_order::seq_cst);
 				}
