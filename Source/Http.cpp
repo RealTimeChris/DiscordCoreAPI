@@ -59,10 +59,6 @@ namespace DiscordCoreInternal {
 			}
 			this->collectHeaderValues(this->headers, rateLimitDataPtr);
 			httpData.responseHeaders = this->headers;
-			std::cout << "THE HEADERS: " << std::endl;
-			for (auto& [key, value]: this->headers) {
-				std::cout << "THE KEY: " << key << " THE VALUE: " << value << std::endl;
-	        }
 			return httpData;
 		} catch (...) {
 			DiscordCoreAPI::reportException("HttpRnRBuilder::handleHeaders()");
