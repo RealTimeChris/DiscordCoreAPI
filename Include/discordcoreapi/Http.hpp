@@ -87,13 +87,14 @@ namespace DiscordCoreInternal {
 		std::atomic_int32_t currentWorkloadId{ 0 };
 		bool haveWeCollectedTime{ false };
 		bool areWeASpecialBucket{ false };
+		bool didWeHitRateLimit{ false };
 		int64_t getsRemainingTotal{ 0 };
 		std::string tempBucket{ "" };
 		int64_t sampledTimeInMs{ 0 };
 		bool haveWeGoneYet{ false };
-		int32_t getsRemaining{ 0 };
 		int64_t msRemainTotal{ 0 };
 		std::string bucket{ "" };
+		int64_t msPerTick{ 0 };
 		int64_t msRemain{ 0 };
 	};
 

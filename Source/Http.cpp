@@ -27,29 +27,24 @@ namespace DiscordCoreInternal {
 		std::unordered_map<HttpWorkloadType, std::string> rateLimitValueBuckets{};
 	}
 
-	void HttpRnRBuilder::constructHeaderValues(std::unordered_map<std::string, std::string>& headersNew, RateLimitData* theConnection) {
-		if (headersNew.contains("x-ratelimit-remaining") && !theConnection->areWeASpecialBucket) {
-			if (!theConnection->haveWeCollectedTime) {
-				theConnection->getsRemainingTotal = stol(headersNew["x-ratelimit-remaining"]);
-			}
-			theConnection->getsRemaining = stol(headersNew["x-ratelimit-remaining"]);
-		}
-		if (headersNew.contains("x-rateLimit-reset-after") && !theConnection->areWeASpecialBucket) {
-			if (theConnection->getsRemaining == theConnection->getsRemainingTotal) {
-				theConnection->sampledTimeInMs =
-					static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
-			}
-			if (!theConnection->haveWeCollectedTime) {
-				theConnection->msRemainTotal = static_cast<int64_t>(stod(headersNew["x-rateLimit-reset-after"]) * 1000.0f);
-				theConnection->haveWeCollectedTime = true;
-			}
-			if (theConnection->getsRemainingTotal != 0) {
-				theConnection->msRemain =
-					(theConnection->getsRemainingTotal - theConnection->getsRemaining) * theConnection->msRemainTotal / theConnection->getsRemainingTotal;
-			}
-		}
+	void HttpRnRBuilder::constructHeaderValues(std::unordered_map<std::string, std::string>& headersNew, RateLimitData* rateLimitData) {
+		rateLimitData->sampledTimeInMs =
+			static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
 		if (headersNew.contains("x-ratelimit-bucket")) {
-			theConnection->bucket = headersNew["x-ratelimit-bucket"];
+			rateLimitData->bucket = headersNew["x-ratelimit-bucket"];
+		}
+		if (headersNew.contains("x-ratelimit-limit") && !rateLimitData->areWeASpecialBucket) {
+			if (!rateLimitData->haveWeCollectedTime) {
+				rateLimitData->getsRemainingTotal = stol(headersNew["x-ratelimit-limit"]);
+			}
+		}
+		if (headersNew.contains("x-ratelimit-reset-after") && !rateLimitData->areWeASpecialBucket) {
+			if (!rateLimitData->haveWeCollectedTime) {
+				rateLimitData->msRemainTotal = static_cast<int64_t>(stod(headersNew["x-ratelimit-reset-after"]) * 1000.0f);
+				rateLimitData->msPerTick = rateLimitData->msRemainTotal / rateLimitData->getsRemainingTotal;
+				rateLimitData->haveWeCollectedTime = true;
+				rateLimitData->sampledTimeInMs += 500;
+			}
 		}
 	};
 
@@ -325,7 +320,6 @@ namespace DiscordCoreInternal {
 			int64_t currentTime =
 				static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
 			if (workload.workloadType == HttpWorkloadType::Delete_Message_Old) {
-				rateLimitDataPtr->getsRemaining = 0;
 				rateLimitDataPtr->msRemain = 4000;
 			} else if (workload.workloadType == HttpWorkloadType::Delete_Message || workload.workloadType == HttpWorkloadType::Patch_Message) {
 				rateLimitDataPtr->areWeASpecialBucket = true;
@@ -334,17 +328,16 @@ namespace DiscordCoreInternal {
 				if (rateLimitDataPtr->getsRemainingTotal == 0) {
 					rateLimitDataPtr->getsRemainingTotal = 4;
 					rateLimitDataPtr->msRemainTotal = 5000;
-					rateLimitDataPtr->getsRemaining = 5;
 				}
 				rateLimitDataPtr->msRemain = rateLimitDataPtr->msRemainTotal / rateLimitDataPtr->getsRemainingTotal;
-				rateLimitDataPtr->getsRemaining -= 1;
 				int64_t targetTime = rateLimitDataPtr->msRemain + rateLimitDataPtr->sampledTimeInMs;
 				timeRemaining = targetTime - currentTime;
-				if (rateLimitDataPtr->getsRemaining <= 0) {
-					rateLimitDataPtr->getsRemaining = 4;
-				}
-			} else if (rateLimitDataPtr->getsRemaining <= 1) {
-				int64_t targetTime = rateLimitDataPtr->msRemain + rateLimitDataPtr->sampledTimeInMs;
+			} else if (rateLimitDataPtr->didWeHitRateLimit) {
+				int64_t targetTime = rateLimitDataPtr->sampledTimeInMs + rateLimitDataPtr->msRemain;
+				timeRemaining = targetTime - currentTime;
+				rateLimitDataPtr->didWeHitRateLimit = false;
+			} else {
+				int64_t targetTime = rateLimitDataPtr->sampledTimeInMs + rateLimitDataPtr->msPerTick;
 				timeRemaining = targetTime - currentTime;
 			}
 			if (timeRemaining > 0) {
@@ -383,10 +376,9 @@ namespace DiscordCoreInternal {
 				}
 			} else {
 				if (returnData.responseCode == 429) {
-					Globals::rateLimitValues[Globals::rateLimitValueBuckets[workload.workloadType]]->msRemain =
-						static_cast<int64_t>(1000.0f * nlohmann::json::parse(returnData.responseMessage)["retry_after"].get<double>());
-					Globals::rateLimitValues[Globals::rateLimitValueBuckets[workload.workloadType]]->getsRemaining = -1;
-					Globals::rateLimitValues[Globals::rateLimitValueBuckets[workload.workloadType]]->sampledTimeInMs = static_cast<int64_t>(
+					rateLimitDataPtr->msRemain = static_cast<int64_t>(1000.0f * nlohmann::json::parse(returnData.responseMessage)["retry_after"].get<double>());
+					rateLimitDataPtr->didWeHitRateLimit = true;
+					rateLimitDataPtr->sampledTimeInMs = static_cast<int64_t>(
 						std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
 					std::cout << DiscordCoreAPI::shiftToBrightRed() << workload.callStack + "::httpRequest(), We've hit rate limit! Time Remaining: "
 							  << std::to_string(Globals::rateLimitValues[Globals::rateLimitValueBuckets[workload.workloadType]]->msRemain) << std::endl
