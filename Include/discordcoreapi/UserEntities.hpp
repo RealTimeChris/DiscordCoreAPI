@@ -84,7 +84,9 @@ namespace DiscordCoreAPI {
 	  public:
 		User() = default;
 
-		User(UserData dataNew);
+		User& operator=(UserData& other);
+
+		User(UserData& dataNew);
 	};
 
 	/// A type of User, to represent the Bot and some of its associated endpoints. \brief A type of User, to represent the Bot and some of its associated endpoints.

@@ -1069,6 +1069,8 @@ namespace DiscordCoreAPI {
 			return this->userFlags & static_cast<uint8_t>(UserFlags::Verified);
 		}
 
+		UserData() = default;
+
 		std::string discriminator{ "" };///< The # next to their User name.
 		std::string createdAt{ "" };///< When the User was created.
 		std::string userName{ "" };///< Their username.

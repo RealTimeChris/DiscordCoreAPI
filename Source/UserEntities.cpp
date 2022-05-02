@@ -26,18 +26,23 @@
 
 namespace DiscordCoreAPI {
 
-	User::User(UserData dataNew) {
-		this->discriminator = dataNew.discriminator;
-		this->publicFlags = dataNew.publicFlags;
-		this->premiumType = dataNew.premiumType;
-		this->createdAt = dataNew.createdAt;
-		this->userFlags = dataNew.userFlags;
-		this->userName = dataNew.userName;
-		this->locale = dataNew.locale;
-		this->avatar = dataNew.avatar;
-		this->email = dataNew.email;
-		this->flags = dataNew.flags;
-		this->id = dataNew.id;
+	User& User::operator=(UserData& other) {
+		this->discriminator = other.discriminator;
+		this->publicFlags = other.publicFlags;
+		this->premiumType = other.premiumType;
+		this->createdAt = other.createdAt;
+		this->userFlags = other.userFlags;
+		this->userName = other.userName;
+		this->locale = other.locale;
+		this->avatar = other.avatar;
+		this->email = other.email;
+		this->flags = other.flags;
+		this->id = other.id;
+		return *this;
+	}
+
+	User::User(UserData& dataNew) {
+		*this = dataNew;
 	}
 
 	void BotUser::updateVoiceStatus(UpdateVoiceStateData dataPackage) {
@@ -169,7 +174,7 @@ namespace DiscordCoreAPI {
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
 			workload.relativePath = "/users/" + dataPackage.userId;
 			workload.callStack = "Users::getUserAsync";
-			co_return DiscordCoreInternal::submitWorkloadAndGetResult<UserData>(*Users::httpClient, workload);
+			co_return DiscordCoreInternal::submitWorkloadAndGetResult<User>(*Users::httpClient, workload);
 		} catch (...) {
 			reportException("Users::getUserAsync()");
 		}
@@ -192,7 +197,7 @@ namespace DiscordCoreAPI {
 				nlohmann::json responseData = { { "username", dataPackage.username } };
 				workload.content = responseData.dump();
 			}
-			co_return DiscordCoreInternal::submitWorkloadAndGetResult<UserData>(*Users::httpClient, workload);
+			co_return DiscordCoreInternal::submitWorkloadAndGetResult<User>(*Users::httpClient, workload);
 		} catch (...) {
 			reportException("Users::modifyCurrentUserAsync()");
 		}

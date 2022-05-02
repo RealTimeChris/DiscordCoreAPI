@@ -129,13 +129,7 @@ namespace DiscordCoreAPI {
 
 		CoRoutine(std::coroutine_handle<CoRoutine<ReturnType>::promise_type> coroutineHandleNew) : coroutineHandle(coroutineHandleNew){};
 
-		~CoRoutine() {
-			if (this && this->coroutineHandle) {
-				if (this->coroutineHandle.done()) {
-					this->coroutineHandle.destroy();
-				}
-			}
-		}
+		~CoRoutine() {}
 
 		/// Collects the status of the CoRoutine. \brief Collects the status of the CoRoutine.
 		/// \returns CoRoutineStatus The status of the CoRoutine.
@@ -261,13 +255,7 @@ namespace DiscordCoreAPI {
 
 		CoRoutine(std::coroutine_handle<CoRoutine<void>::promise_type> coroutineHandleNew) : coroutineHandle(coroutineHandleNew){};
 
-		~CoRoutine() {
-			if (this && this->coroutineHandle) {
-				if (this->coroutineHandle.done()) {
-					this->coroutineHandle.destroy();
-				}
-			}
-		}
+		~CoRoutine() {}
 
 		/// Collects the status of the CoRoutine. \brief Collects the status of the CoRoutine.
 		/// \returns CoRoutineStatus The status of the CoRoutine.

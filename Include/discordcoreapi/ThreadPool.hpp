@@ -151,9 +151,9 @@ namespace DiscordCoreAPI {
 
 		void threadFunction() {
 			std::unique_lock<std::mutex> theLock00{ this->theMutex };
-			thread_local WorkloadStatus theStatus{ std::this_thread::get_id() };
+			WorkloadStatus theStatus{ std::this_thread::get_id() };
 			this->theWorkingStatuses.insert_or_assign(std::this_thread::get_id(), theStatus);
-			thread_local auto theAtomicBoolPtr = &this->theWorkingStatuses[std::this_thread::get_id()].theCurrentStatus;
+			auto theAtomicBoolPtr = &this->theWorkingStatuses[std::this_thread::get_id()].theCurrentStatus;
 			theLock00.unlock();
 			while (!this->areWeQuitting.load(std::memory_order::seq_cst)) {
 				std::unique_lock<std::mutex> theLock01{ this->theMutex };
