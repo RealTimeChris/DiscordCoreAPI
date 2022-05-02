@@ -103,10 +103,7 @@ namespace DiscordCoreAPI {
 	  public:
 
 		CoRoutineThreadPool() {
-			std::cout << "THE SIZE REALEST: " << std::thread::hardware_concurrency() << std::endl;
-			std::cout << "THE SIZE: " << this->theCoroutineHandles.size() << std::endl;
 			for (uint32_t x = 0; x < std::thread::hardware_concurrency(); ++x) {
-				std::cout << "THE SIZE (REAL): " << this->theThreads.size() << std::endl;
 				std::jthread workerThread([this]() {
 					auto thePtr = std::make_unique<DiscordCoreInternal::HttpConnection>();
 					DiscordCoreInternal::Globals::httpConnections.insert(std::make_pair(std::this_thread::get_id(), std::move(thePtr)));
@@ -160,7 +157,6 @@ namespace DiscordCoreAPI {
 			WorkloadStatus theStatus{ std::this_thread::get_id() };
 			this->theWorkingStatuses.insert_or_assign(std::this_thread::get_id(), theStatus);
 			auto theAtomicBoolPtr = &this->theWorkingStatuses[std::this_thread::get_id()].theCurrentStatus;
-			std::cout << "THE SIZE0101: " << this->theCoroutineHandles.size() << std::endl;
 			theLock00.unlock();
 			while (!this->areWeQuitting.load(std::memory_order::seq_cst)) {
 				std::unique_lock<std::mutex> theLock01{ this->theMutex01 };
@@ -189,7 +185,6 @@ namespace DiscordCoreAPI {
 				if (this->areWeQuitting.load(std::memory_order::seq_cst)) {
 					break;
 				}
-				std::cout << "THE SIZE0202: " << this->theThreads.size() << std::endl;
 				auto& coroHandle = this->theCoroutineHandles.front();
 				this->theCoroutineHandles.pop();
 				theLock01.unlock();
