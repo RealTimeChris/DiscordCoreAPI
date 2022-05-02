@@ -434,19 +434,6 @@ namespace DiscordCoreInternal {
 		newOption.emplace(std::make_pair("description", dataPackage.description));
 		newOption.emplace(std::make_pair("name", dataPackage.name));
 		newOption.emplace(std::make_pair("type", dataPackage.type));
-		newOption.emplace(std::make_pair("required", dataPackage.required));
-		newOption.emplace(std::make_pair("autocomplete", dataPackage.autocomplete));
-		newOption.emplace(std::make_pair("min_value", dataPackage.minValue));
-		newOption.emplace(std::make_pair("max_value", dataPackage.maxValue));
-		if (dataPackage.type == DiscordCoreAPI::ApplicationCommandOptionType::Channel) {
-			nlohmann::json newArray01{};
-			newOption.emplace(std::make_pair("channel_types", newArray01));
-			for (auto& value: dataPackage.channelTypes) {
-				newOption["channel_types"].emplace_back(value);
-			}
-		}
-		std::unordered_map<std::string, std::string> descriptionLocalizations{};///< Dictionary for the description field. Values follow the same restrictions as description.
-		std::unordered_map<std::string, std::string> nameLocalizations{};///< Dictionary for the name field. Values follow the same restrictions as name.
 		if (dataPackage.type != DiscordCoreAPI::ApplicationCommandOptionType::Sub_Command &&
 			dataPackage.type != DiscordCoreAPI::ApplicationCommandOptionType::Sub_Command_Group) {
 			newOption.emplace(std::make_pair("required", dataPackage.required));
