@@ -32,7 +32,7 @@ if (DEFINED ENV{EnableASAN})
 		target_link_options(DiscordCoreAPI PUBLIC "/incremental:no" "/Debug")	
 	else()
 		target_compile_options(DiscordCoreAPI PUBLIC "-fsanitize=address")
-		target_link_options(DiscordCoreAPI PUBLIC "-fsanitize=address" "-libasan-static")
+		target_link_options(DiscordCoreAPI PUBLIC "-fsanitize=address")
 	endif()
 endif()
 
