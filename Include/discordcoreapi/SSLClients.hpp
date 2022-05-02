@@ -275,7 +275,7 @@ namespace DiscordCoreInternal {
 
 		static void initialize();
 
-		virtual ~HttpSSLClient() = default;
+		virtual ~HttpSSLClient(){};
 
 	  protected:
 		static std::string soundcloudCertPathStatic;

@@ -508,6 +508,10 @@ namespace DiscordCoreInternal {
 				workload.baseUrl = "https://discord.com/api/v10";
 			}
 			RateLimitData* rateLimitDataPtr = Globals::rateLimitValues[Globals::rateLimitValueBuckets[workload.workloadType]].get();
+			if (!rateLimitDataPtr->haveWeGoneYet) {
+				std::this_thread::sleep_for(std::chrono::milliseconds{ 500 });
+				rateLimitDataPtr->haveWeGoneYet = true;
+			}
 			while (HttpWorkloadData::workloadIdsInternal[workload.workloadType] < workload.thisWorkerId && workload.thisWorkerId != 0) {
 				std::this_thread::sleep_for(std::chrono::milliseconds{ 1 });
 			}
@@ -520,7 +524,7 @@ namespace DiscordCoreInternal {
 
 			HttpData resultData = this->executeByRateLimitData(workload, *theConnectionNew);
 			rateLimitDataPtr->sampledTimeInMs =
-				static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
+				static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count()) + 100;
 			HttpWorkloadData::workloadIdsInternal[workload.workloadType] += 1;
 			rateLimitDataPtr->theSemaphore.release();
 			return resultData;

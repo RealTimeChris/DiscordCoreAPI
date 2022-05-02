@@ -56,7 +56,7 @@ namespace DiscordCoreInternal {
 
 		void resetValues();
 
-		virtual ~HttpRnRBuilder() = default;
+		virtual ~HttpRnRBuilder(){};
 
 	  protected:
 		std::unordered_map<std::string, std::string> headers{};
@@ -90,6 +90,7 @@ namespace DiscordCoreInternal {
 		int64_t getsRemainingTotal{ 0 };
 		std::string tempBucket{ "" };
 		int64_t sampledTimeInMs{ 0 };
+		bool haveWeGoneYet{ false };
 		int32_t getsRemaining{ 0 };
 		int64_t msRemainTotal{ 0 };
 		std::string bucket{ "" };
@@ -102,7 +103,8 @@ namespace DiscordCoreInternal {
 		int32_t maxRecursion{ 10 };
 		int64_t lastTimeUsed{ 0 };
 		bool doWeConnect{ true };
-		virtual ~HttpConnection() = default;
+
+		virtual ~HttpConnection(){};
 	};
 
 	namespace Globals {
