@@ -89,7 +89,9 @@ namespace DiscordCoreAPI {
 		}
 
 		~WorkloadStatus() {
-			DiscordCoreInternal::Globals::httpConnections.erase(this->threadId);
+			if (DiscordCoreInternal::Globals::httpConnections[this->threadId] != nullptr) {
+				DiscordCoreInternal::Globals::httpConnections.erase(this->threadId);
+			}
 		}
 
 		std::atomic_bool theCurrentStatus{ false };
@@ -101,10 +103,13 @@ namespace DiscordCoreAPI {
 	  public:
 
 		CoRoutineThreadPool() {
-			for (uint32_t x = 0; x < std::jthread::hardware_concurrency(); ++x) {
+			std::cout << "THE SIZE REALEST: " << std::thread::hardware_concurrency() << std::endl;
+			std::cout << "THE SIZE: " << this->theCoroutineHandles.size() << std::endl;
+			for (uint32_t x = 0; x < std::thread::hardware_concurrency(); ++x) {
+				std::cout << "THE SIZE (REAL): " << this->theThreads.size() << std::endl;
 				std::jthread workerThread([this]() {
-					DiscordCoreInternal::Globals::httpConnections.insert(
-						std::make_pair(std::this_thread::get_id(), std::make_unique<DiscordCoreInternal::HttpConnection>()));
+					auto thePtr = std::make_unique<DiscordCoreInternal::HttpConnection>();
+					DiscordCoreInternal::Globals::httpConnections.insert(std::make_pair(std::this_thread::get_id(), std::move(thePtr)));
 					this->threadFunction();
 				});
 				this->theThreads.push_back(std::move(workerThread));
@@ -112,7 +117,7 @@ namespace DiscordCoreAPI {
 		}
 
 		void submitTask(std::coroutine_handle<> coro) noexcept {
-			std::unique_lock<std::mutex> theLock(this->theMutex);
+			std::unique_lock<std::mutex> theLock(this->theMutex01);
 			bool areWeAllBusy{ true };
 			for (auto& [key, value]: this->theWorkingStatuses) {
 				if (!value.theCurrentStatus.load(std::memory_order::seq_cst)) {
@@ -121,8 +126,8 @@ namespace DiscordCoreAPI {
 			}
 			if (areWeAllBusy) {
 				std::jthread workerThread([this]() {
-					DiscordCoreInternal::Globals::httpConnections.insert(
-						std::make_pair(std::this_thread::get_id(), std::make_unique<DiscordCoreInternal::HttpConnection>()));
+					auto thePtr = std::make_unique<DiscordCoreInternal::HttpConnection>();
+					DiscordCoreInternal::Globals::httpConnections.insert(std::make_pair(std::this_thread::get_id(), std::move(thePtr)));
 					this->threadFunction();
 				});
 				theThreads.push_back(std::move(workerThread));
@@ -148,15 +153,17 @@ namespace DiscordCoreAPI {
 		std::atomic_bool areWeQuitting{ false };
 		std::vector<std::jthread> theThreads{};
 		std::condition_variable theCondVar{};
-		std::mutex theMutex{};
+		std::mutex theMutex01{};
+		std::mutex theMutex02{};
 		void threadFunction() {
-			std::unique_lock<std::mutex> theLock00{ this->theMutex };
+			std::unique_lock<std::mutex> theLock00{ this->theMutex02 };
 			WorkloadStatus theStatus{ std::this_thread::get_id() };
 			this->theWorkingStatuses.insert_or_assign(std::this_thread::get_id(), theStatus);
 			auto theAtomicBoolPtr = &this->theWorkingStatuses[std::this_thread::get_id()].theCurrentStatus;
+			std::cout << "THE SIZE0101: " << this->theCoroutineHandles.size() << std::endl;
 			theLock00.unlock();
 			while (!this->areWeQuitting.load(std::memory_order::seq_cst)) {
-				std::unique_lock<std::mutex> theLock01{ this->theMutex };
+				std::unique_lock<std::mutex> theLock01{ this->theMutex01 };
 				while (!this->areWeQuitting.load(std::memory_order::seq_cst) && this->theCoroutineHandles.size() == 0) {
 					if (this->theThreads.size() > std::thread::hardware_concurrency()) {
 						for (auto& [key, value]: this->theWorkingStatuses) {
@@ -182,6 +189,7 @@ namespace DiscordCoreAPI {
 				if (this->areWeQuitting.load(std::memory_order::seq_cst)) {
 					break;
 				}
+				std::cout << "THE SIZE0202: " << this->theThreads.size() << std::endl;
 				auto& coroHandle = this->theCoroutineHandles.front();
 				this->theCoroutineHandles.pop();
 				theLock01.unlock();
@@ -196,7 +204,9 @@ namespace DiscordCoreAPI {
 					break;
 				}
 			}
+			std::unique_lock<std::mutex> theLock02{ this->theMutex02 };
 			this->theWorkingStatuses.erase(std::this_thread::get_id());
+			theLock02.unlock();
 		}
 	};
 	/**@}*/
