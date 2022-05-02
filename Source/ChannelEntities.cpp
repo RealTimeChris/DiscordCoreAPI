@@ -76,13 +76,11 @@ namespace DiscordCoreAPI {
 	CoRoutine<Channel> Channels::getCachedChannelAsync(GetChannelData dataPackage) {
 		try {
 			co_await NewThreadAwaitable<Channel>();
-			Channel channel{};
 			if (Channels::cache.contains(dataPackage.channelId)) {
-				channel = Channels::cache[dataPackage.channelId];
+				co_return Channels::cache[dataPackage.channelId];
 			} else {
-				channel = Channels::getChannelAsync(dataPackage).get();
+				co_return Channels::getChannelAsync(dataPackage).get();
 			}
-			co_return channel;
 		} catch (...) {
 			reportException("Channels::getCachedChannelAsync()");
 		}

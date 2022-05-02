@@ -253,13 +253,11 @@ namespace DiscordCoreAPI {
 	CoRoutine<Role> Roles::getCachedRoleAsync(GetRoleData dataPackage) {
 		try {
 			co_await NewThreadAwaitable<Role>();
-			Role role{};
 			if (Roles::cache.contains(dataPackage.roleId)) {
-				role = Roles::cache[dataPackage.roleId];
+				co_return Roles::cache[dataPackage.roleId];
 			} else {
-				role = Roles::getRoleAsync(dataPackage).get();
+				co_return Roles::getRoleAsync(dataPackage).get();
 			}
-			co_return role;
 		} catch (...) {
 			reportException("Roles::getCachedRoleAsync()");
 		}

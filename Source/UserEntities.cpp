@@ -152,13 +152,11 @@ namespace DiscordCoreAPI {
 	CoRoutine<User> Users::getCachedUserAsync(GetUserData dataPackage) {
 		try {
 			co_await NewThreadAwaitable<User>();
-			User user{};
 			if (Users::cache.contains(dataPackage.userId)) {
-				user = Users::cache[dataPackage.userId];
+				co_return Users::cache[dataPackage.userId];
 			} else {
-				user = getUserAsync(dataPackage).get();
+				co_return getUserAsync(dataPackage).get();
 			}
-			co_return user;
 		} catch (...) {
 			reportException("Users::getCachedUserAsync()");
 		}

@@ -126,7 +126,7 @@ namespace DiscordCoreAPI {
 				});
 				theThreads.push_back(std::move(workerThread));
 			}
-			this->theCoroutineHandles.emplace(coro);
+			this->theCoroutineHandles.emplace(&coro);
 			this->theCondVar.notify_one();
 		}
 
@@ -143,7 +143,7 @@ namespace DiscordCoreAPI {
 
 	  private:
 		std::unordered_map<std::thread::id, WorkloadStatus> theWorkingStatuses{};
-		std::queue<std::coroutine_handle<>> theCoroutineHandles{};
+		std::queue<std::coroutine_handle<>*> theCoroutineHandles{};
 		std::atomic_bool areWeQuitting{ false };
 		std::vector<std::jthread> theThreads{};
 		std::condition_variable theCondVar{};
@@ -189,7 +189,7 @@ namespace DiscordCoreAPI {
 				if (theAtomicBoolPtr) {
 					theAtomicBoolPtr->store(true, std::memory_order::seq_cst);
 				}
-				coroHandle.resume();
+				coroHandle->resume();
 				if (theAtomicBoolPtr) {
 					theAtomicBoolPtr->store(false, std::memory_order::seq_cst);
 				}
