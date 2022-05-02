@@ -407,8 +407,8 @@ namespace DiscordCoreInternal {
 	HttpData HttpClient::executeHttpRequest(HttpWorkloadData& workload, HttpConnection& theConnection, RateLimitData* rateLimitDatPtr) {
 		try {
 			theConnection.resetValues();
-			int64_t currentTimeDistance = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count() -
-				theConnection.lastTimeUsed;
+			int64_t currentTimeDistance =
+				std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - theConnection.lastTimeUsed;
 			if (theConnection.doWeConnect || (theConnection.lastTimeUsed != 0 && currentTimeDistance >= 30000)) {
 				if (!theConnection.connect(workload.baseUrl)) {
 					return HttpData{};
@@ -509,16 +509,16 @@ namespace DiscordCoreInternal {
 				workload.baseUrl = "https://discord.com/api/v10";
 			}
 			RateLimitData* rateLimitDataPtr = Globals::rateLimitValues[Globals::rateLimitValueBuckets[workload.workloadType]].get();
-			while (HttpWorkloadData::workloadIdsInternal[workload.workloadType] < workload.thisWorkerId  && workload.thisWorkerId != 0) {
+			while (HttpWorkloadData::workloadIdsInternal[workload.workloadType] < workload.thisWorkerId && workload.thisWorkerId != 0) {
 				std::this_thread::sleep_for(std::chrono::milliseconds{ 1 });
 			}
-		
+
 			HttpConnection* theConnectionNew = this->connectionManager.getConnection();
 
 			while (!rateLimitDataPtr->theSemaphore.try_acquire()) {
 				std::this_thread::sleep_for(std::chrono::milliseconds{ 1 });
 			}
-			
+
 			HttpData resultData = this->executeByRateLimitData(workload, *theConnectionNew);
 			HttpWorkloadData::workloadIdsInternal[workload.workloadType] += 1;
 			rateLimitDataPtr->theSemaphore.release();

@@ -544,7 +544,6 @@ namespace DiscordCoreAPI {
 
 	/// Select menu response data. \brief Select menu response data.
 	struct DiscordCoreAPI_Dll SelectMenuResponseData {
-		
 		operator InteractionData() {
 			return *this->interactionData;
 		}
@@ -621,7 +620,7 @@ namespace DiscordCoreAPI {
 		std::vector<SelectMenuResponseData> responseVector{};
 		int32_t currentCollectedSelectMenuCount{ 0 };
 		int32_t maxCollectedSelectMenuCount{ 0 };
-		bool getSelectMenuDataForAll{ false };		
+		bool getSelectMenuDataForAll{ false };
 		std::vector<std::string> values{};
 		std::string bufferMapKey{ "" };
 		std::string selectMenuId{ "" };
@@ -726,7 +725,6 @@ namespace DiscordCoreAPI {
 
 	/// Button response data. \brief Button response data.
 	struct DiscordCoreAPI_Dll ModalResponseData {
-
 		operator InteractionData() {
 			return *this->interactionData;
 		}

@@ -247,8 +247,7 @@ namespace DiscordCoreAPI {
 	CoRoutine<void> Messages::deleteMessagesBulkAsync(DeleteMessagesBulkData dataPackage) {
 		try {
 			DiscordCoreInternal::HttpWorkloadData workload{};
-			workload.thisWorkerId =
-				DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Bulk_Delete_Messages];
+			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Bulk_Delete_Messages];
 			DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Bulk_Delete_Messages] += 1;
 			co_await NewThreadAwaitable<void>();
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Bulk_Delete_Messages;

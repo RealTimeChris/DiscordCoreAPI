@@ -778,7 +778,7 @@ namespace DiscordCoreAPI {
 		this->eventData = inputEventData;
 		DiscordCoreInternal::DataParser::parseObject(inputEventData.getInteractionData().rawData, *this);
 	}
-	
+
 };
 
 namespace DiscordCoreInternal {
