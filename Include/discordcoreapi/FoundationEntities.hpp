@@ -1478,14 +1478,14 @@ namespace DiscordCoreAPI {
 		Channel = 7,///< Channel.
 		Role = 8,///< Role.
 		Mentionable = 9,///< Mentionable.
-		Number = 10///< Number.
+		Number = 10,///< Number.
 		Attachment = 11///< Attachment.
 	};
 
 	/// Application command permission-types. \brief Application command permission-types.
 	enum class ApplicationCommandPermissionType {
 		Role = 1,///< Role.
-		User = 2///< User.
+		User = 2,///< User.
 		Channel = 3///< Channel.
 	};
 
@@ -2460,11 +2460,15 @@ namespace DiscordCoreAPI {
 	/// Data structure representing an ApplicationCommand. \brief Data structure representing an ApplicationCommand.
 	class DiscordCoreAPI_Dll ApplicationCommandData : public DiscordEntity {
 	  public:
+		std::unordered_map<std::string, std::string> descriptionLocalizations{};///< Dictionary with keys in available locales Localization dictionary for name field.Values follow the same restrictions as name all.
+		std::unordered_map<std::string, std::string>nameLocalizations{};///< Dictionary with keys in available locales Localization dictionary for name field.Values follow the same restrictions as name all.
 		std::vector<ApplicationCommandOptionData> options{};///< A std::vector of possible options for the current ApplicationCommand.
+		std::string defaultMemberPermissions{ "" };///< Set of permissions represented as a bit set all
 		bool defaultPermission{ false };///< Whether or not the default Permission in the Guild is to have access to this command or not.
 		std::string applicationId{ "" };///< The current application id.
 		std::string description{ "" };///< A description of the current ApplicationCommand.
 		ApplicationCommandType type{};///< The type of ApplicationCommand.
+		bool dmPermission{ false };///< Indicates whether the command is available in DMs with the app, only for globally - scoped commands.
 		std::string guildId{ "" };///< (Where applicable) a Guild id for which guild to assign this ApplicationCommand to.
 		std::string version{ "" };///< An autoincremented version.
 		std::string name{ "" };///< Name of the current ApplicationCommand.
