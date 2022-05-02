@@ -129,19 +129,19 @@ install(
 	DESTINATION "share/discordcoreapi"
 )
 
-set(EXPORTED_TARGETS_FILEPATH "share/discordcoreapi/${EXPORTED_TARGETS_FILENAME}")
+set(EXPORTED_TARGETS_FILE_PATH "share/discordcoreapi/${EXPORTED_TARGETS_FILENAME}")
 set(CONFIG_FILENAME "discordcoreapi-config.cmake")
-set(RELEASE_PDB_FILEPATH "${CMAKE_INSTALL_PREFIX}/bin/discordcoreapi.pdb")
-set(DEBUG_PDB_FILEPATH "${CMAKE_INSTALL_PREFIX}/debug/bin/discordcoreapi.pdb")
+set(RELEASE_PDB_FILE_PATH "${CMAKE_INSTALL_PREFIX}/bin/discordcoreapi.pdb")
+set(DEBUG_PDB_FILE_PATH "${CMAKE_INSTALL_PREFIX}/debug/bin/discordcoreapi.pdb")
 
 configure_package_config_file(
 	"${CMAKE_SOURCE_DIR}/CMake/${CONFIG_FILENAME}.in"
 	"${CMAKE_INSTALL_PREFIX}/share/discordcoreapi/${CONFIG_FILENAME}"
 	INSTALL_DESTINATION "share/discordcoreapi"
 	PATH_VARS
-	EXPORTED_TARGETS_FILEPATH
-	RELEASE_PDB_FILEPATH
-	DEBUG_PDB_FILEPATH
+	EXPORTED_TARGETS_FILE_PATH
+	RELEASE_PDB_FILE_PATH
+	DEBUG_PDB_FILE_PATH
 )
 
 set(VERSION_FILENAME "discordcoreapi-config-version.cmake")
