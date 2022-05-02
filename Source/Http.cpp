@@ -403,7 +403,7 @@ namespace DiscordCoreInternal {
 		return returnData;
 	}
 
-	HttpData HttpClient::executeHttpRequest(HttpWorkloadData& workload, HttpConnection& theConnection, RateLimitData* rateLimitDatPtr) {
+	HttpData HttpClient::executeHttpRequest(HttpWorkloadData& workload, HttpConnection& theConnection, RateLimitData* rateLimitDataPtr) {
 		try {
 			theConnection.resetValues();
 			int64_t currentTimeDistance =
@@ -416,20 +416,18 @@ namespace DiscordCoreInternal {
 			}
 			theConnection.lastTimeUsed = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 			auto theRequest = theConnection.buildRequest(workload);
-			rateLimitDatPtr->sampledTimeInMs =
-				static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
 			theConnection.writeData(theRequest);
 			if (theConnection.currentRecursionDepth >= theConnection.maxRecursion) {
 				return HttpData{};
 			}
-			auto result = this->getResponse(theConnection, rateLimitDatPtr);
+			auto result = this->getResponse(theConnection, rateLimitDataPtr);
 			if (result.responseCode == -1) {
 				if (theConnection.currentRecursionDepth >= 10) {
 					return HttpData{};
 				}
 				theConnection.currentRecursionDepth += 1;
 				theConnection.doWeConnect = true;
-				return this->executeHttpRequest(workload, theConnection, rateLimitDatPtr);
+				return this->executeHttpRequest(workload, theConnection, rateLimitDataPtr);
 			} else {
 				theConnection.currentRecursionDepth = 0;
 				return result;
@@ -438,7 +436,7 @@ namespace DiscordCoreInternal {
 			theConnection.doWeConnect = true;
 			theConnection.currentRecursionDepth += 1;
 			DiscordCoreAPI::reportException("HttpClient::executeHttpRequest()");
-			return this->executeHttpRequest(workload, theConnection, rateLimitDatPtr);
+			return this->executeHttpRequest(workload, theConnection, rateLimitDataPtr);
 		}
 	}
 
@@ -521,6 +519,8 @@ namespace DiscordCoreInternal {
 			}
 
 			HttpData resultData = this->executeByRateLimitData(workload, *theConnectionNew);
+			rateLimitDataPtr->sampledTimeInMs =
+				static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
 			HttpWorkloadData::workloadIdsInternal[workload.workloadType] += 1;
 			rateLimitDataPtr->theSemaphore.release();
 			return resultData;
