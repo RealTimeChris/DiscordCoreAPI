@@ -146,7 +146,7 @@ namespace DiscordCoreInternal {
 		const std::string botToken{};
 		bool doWePrintHttp{ false };
 
-		HttpData executeHttpRequest(HttpWorkloadData& workload, HttpConnection& theConnection, RateLimitData* rateLimitDatPtr);
+		HttpData executeHttpRequest(HttpWorkloadData& workload, HttpConnection& theConnection, RateLimitData* rateLimitDataPtr);
 
 		HttpData executeByRateLimitData(HttpWorkloadData& workload, HttpConnection& theConnection);
 
