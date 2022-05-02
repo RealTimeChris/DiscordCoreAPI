@@ -32,6 +32,7 @@ namespace DiscordCoreAPI {
 			CreateInteractionResponseData dataPackage02{ dataPackage };
 			if (dataPackage.type == InputEventResponseType::Deferred_Response) {
 				dataPackage02.data.type = InteractionCallbackType::Deferred_Update_Message;
+				dataPackage02.data.data.flags = 64;
 			} else {
 				dataPackage02.data.type = InteractionCallbackType::Update_Message;
 			}
@@ -54,20 +55,18 @@ namespace DiscordCoreAPI {
 				[[fallthrough]];
 			}
 			case InputEventResponseType::Deferred_Response_With_Source: {
-				CreateDeferredInteractionResponseData dataPackage02{ dataPackage };
-				return InputEventData(InputEvents::respondToEvent(dataPackage02));
+				auto dataPackage02 = CreateDeferredInteractionResponseData{ dataPackage };
+				dataPackage02.data.data.flags = 64;
+				return InputEvents::respondToEvent(dataPackage02);
 			}
 			case InputEventResponseType::Interaction_Response: {
-				CreateInteractionResponseData dataPackage02{ dataPackage };
-				return InputEventData(InputEvents::respondToEvent(dataPackage02));
+				return InputEvents::respondToEvent(CreateInteractionResponseData{ dataPackage });
 			}
 			case InputEventResponseType::Edit_Ephemeral_Interaction_Response: {
-				EditEphemeralInteractionResponseData dataPackage02{ dataPackage };
-				return InputEventData(InputEvents::respondToEvent(dataPackage02));
+				return InputEvents::respondToEvent(EditEphemeralInteractionResponseData{ dataPackage });
 			}
 			case InputEventResponseType::Edit_Interaction_Response: {
-				EditInteractionResponseData dataPackage02{ dataPackage };
-				return InputEventData(InputEvents::respondToEvent(dataPackage02));
+				return InputEvents::respondToEvent(EditInteractionResponseData{ dataPackage });
 			}
 			case InputEventResponseType::Ephemeral_Interaction_Response: {
 				CreateEphemeralInteractionResponseData dataPackage02{ dataPackage };

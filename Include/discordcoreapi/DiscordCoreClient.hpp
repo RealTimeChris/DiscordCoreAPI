@@ -61,8 +61,6 @@ namespace DiscordCoreAPI {
 		}
 	};
 
-	using WebSocketMap = std::unordered_map<std::string, std::unique_ptr<DiscordCoreInternal::BaseSocketAgent, WebSocketDeleter>>;
-
 	using VoiceConnectionMap = std::unordered_map<std::string, std::unique_ptr<VoiceConnection>>;
 
 	using SoundCloudAPIMap = std::unordered_map<std::string, std::unique_ptr<SoundCloudAPI>>;
@@ -76,8 +74,6 @@ namespace DiscordCoreAPI {
 	DiscordCoreAPI_Dll SoundCloudAPIMap& getSoundCloudAPIMap();
 
 	DiscordCoreAPI_Dll YouTubeAPIMap& getYouTubeAPIMap();
-
-	DiscordCoreAPI_Dll WebSocketMap& getWebSocketMap();
 
 	DiscordCoreAPI_Dll SongAPIMap& getSongAPIMap();
 
@@ -118,6 +114,7 @@ namespace DiscordCoreAPI {
 		~DiscordCoreClient();
 
 	  protected:
+		std::unordered_map<std::string, std::unique_ptr<DiscordCoreInternal::BaseSocketAgent, WebSocketDeleter>> webSocketMap{};
 		std::unique_ptr<DiscordCoreInternal::HttpClient> httpClient{};
 		std::vector<RepeatedFunctionData> functionsToExecute{};
 #ifdef _WIN32

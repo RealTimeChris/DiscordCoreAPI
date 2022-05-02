@@ -27,7 +27,6 @@ namespace DiscordCoreAPI {
 		VoiceConnectionMap voiceConnectionMap{};
 		SoundCloudAPIMap soundCloudAPIMap{};
 		YouTubeAPIMap youtubeAPIMap{};
-		WebSocketMap webSocketMap{};
 		SongAPIMap songAPIMap{};
 		std::atomic_bool doWeQuit{ false };
 	}
@@ -42,10 +41,6 @@ namespace DiscordCoreAPI {
 
 	YouTubeAPIMap& getYouTubeAPIMap() {
 		return Globals::youtubeAPIMap;
-	}
-
-	WebSocketMap& getWebSocketMap() {
-		return Globals::webSocketMap;
 	}
 
 	SongAPIMap& getSongAPIMap() {
@@ -116,7 +111,7 @@ namespace DiscordCoreAPI {
 			if (!this->didWeStartFine) {
 				return;
 			}
-			Globals::webSocketMap[std::to_string(this->shardingOptions.startingShard)]->getTheTask()->join();
+			this->webSocketMap[std::to_string(this->shardingOptions.startingShard)]->getTheTask()->join();
 		} catch (...) {
 			reportException("DiscordCoreClient::runBot()");
 		}
@@ -151,14 +146,14 @@ namespace DiscordCoreAPI {
 						&this->commandController, &Globals::doWeQuit, this->loggingOptions.logWebSocketMessages,
 						x * shardsPerGroup + y + this->shardingOptions.startingShard, this->shardingOptions.totalNumberOfShards },
 					WebSocketDeleter{});
-				Globals::webSocketMap.insert_or_assign(std::to_string(x * shardsPerGroup + y + this->shardingOptions.startingShard), std::move(thePtr));
+				this->webSocketMap.insert_or_assign(std::to_string(x * shardsPerGroup + y + this->shardingOptions.startingShard), std::move(thePtr));
 			}
 			if (shardGroupCount > 1 && x < shardGroupCount - 1) {
 				std::cout << "Waiting to connect the subsequent group of shards..." << std::endl << std::endl;
 				std::this_thread::sleep_for(std::chrono::milliseconds{ 20000 });
 			}
 		}
-		this->currentUser = BotUser{ Users::getCurrentUserAsync().get(), Globals::webSocketMap[std::to_string(this->shardingOptions.startingShard)].get() };
+		this->currentUser = BotUser{ Users::getCurrentUserAsync().get(), this->webSocketMap[std::to_string(this->shardingOptions.startingShard)].get() };
 		std::cout << shiftToBrightGreen() << "All of the shards are connected for the current process!" << reset() << std::endl << std::endl;
 		for (auto& value: this->functionsToExecute) {
 			if (value.repeated) {

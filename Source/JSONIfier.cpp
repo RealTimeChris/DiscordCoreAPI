@@ -811,7 +811,11 @@ namespace DiscordCoreInternal {
 	};
 
 	std::string JSONIFY(DiscordCoreAPI::CreateDeferredInteractionResponseData dataPackage) {
-		nlohmann::json data = { { "type", dataPackage.data.type }, { "flags", dataPackage.data.data.flags } };
+		nlohmann::json data = { { "type", dataPackage.data.type },
+			{ "data",
+				{
+					{ "flags", dataPackage.data.data.flags },
+				} } };
 		return data.dump();
 	}
 

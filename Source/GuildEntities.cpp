@@ -36,7 +36,7 @@ namespace DiscordCoreAPI {
 				return this->voiceConnectionPtr;
 			} else if (channelId != "") {
 				std::string theShardId{ std::to_string((stoll(this->id) >> 22) % this->discordCoreClient->shardingOptions.totalNumberOfShards) };
-				getVoiceConnectionMap()[this->id] = std::make_unique<VoiceConnection>(getWebSocketMap()[theShardId].get());
+				getVoiceConnectionMap()[this->id] = std::make_unique<VoiceConnection>(this->discordCoreClient->webSocketMap[theShardId].get());
 				this->voiceConnectionPtr = getVoiceConnectionMap()[this->id].get();
 				DiscordCoreInternal::VoiceConnectInitData voiceConnectInitData{};
 				voiceConnectInitData.channelId = channelId;
@@ -125,7 +125,7 @@ namespace DiscordCoreAPI {
 			}
 			if (!getVoiceConnectionMap().contains(this->id)) {
 				std::string theShardId{ std::to_string((stoll(this->id) >> 22) % this->discordCoreClient->shardingOptions.totalNumberOfShards) };
-				getVoiceConnectionMap().insert(std::make_pair(this->id, std::make_unique<VoiceConnection>(getWebSocketMap()[theShardId].get())));
+				getVoiceConnectionMap().insert(std::make_pair(this->id, std::make_unique<VoiceConnection>(this->discordCoreClient->webSocketMap[theShardId].get())));
 			}
 			this->voiceConnectionPtr = getVoiceConnectionMap()[this->id].get();
 			if (!getYouTubeAPIMap().contains(this->id)) {

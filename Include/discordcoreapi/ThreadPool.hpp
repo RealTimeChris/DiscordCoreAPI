@@ -99,6 +99,7 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll CoRoutineThreadPool {
 	  public:
+
 		CoRoutineThreadPool() {
 			for (uint32_t x = 0; x < std::jthread::hardware_concurrency(); ++x) {
 				std::jthread workerThread([this]() {
@@ -126,7 +127,7 @@ namespace DiscordCoreAPI {
 				});
 				theThreads.push_back(std::move(workerThread));
 			}
-			this->theCoroutineHandles.emplace(&coro);
+			this->theCoroutineHandles.emplace(coro);
 			this->theCondVar.notify_one();
 		}
 
@@ -143,12 +144,11 @@ namespace DiscordCoreAPI {
 
 	  private:
 		std::unordered_map<std::thread::id, WorkloadStatus> theWorkingStatuses{};
-		std::queue<std::coroutine_handle<>*> theCoroutineHandles{};
+		std::queue<std::coroutine_handle<>> theCoroutineHandles{};
 		std::atomic_bool areWeQuitting{ false };
 		std::vector<std::jthread> theThreads{};
 		std::condition_variable theCondVar{};
 		std::mutex theMutex{};
-
 		void threadFunction() {
 			std::unique_lock<std::mutex> theLock00{ this->theMutex };
 			WorkloadStatus theStatus{ std::this_thread::get_id() };
@@ -157,7 +157,6 @@ namespace DiscordCoreAPI {
 			theLock00.unlock();
 			while (!this->areWeQuitting.load(std::memory_order::seq_cst)) {
 				std::unique_lock<std::mutex> theLock01{ this->theMutex };
-
 				while (!this->areWeQuitting.load(std::memory_order::seq_cst) && this->theCoroutineHandles.size() == 0) {
 					if (this->theThreads.size() > std::thread::hardware_concurrency()) {
 						for (auto& [key, value]: this->theWorkingStatuses) {
@@ -189,7 +188,7 @@ namespace DiscordCoreAPI {
 				if (theAtomicBoolPtr) {
 					theAtomicBoolPtr->store(true, std::memory_order::seq_cst);
 				}
-				coroHandle->resume();
+				coroHandle.resume();
 				if (theAtomicBoolPtr) {
 					theAtomicBoolPtr->store(false, std::memory_order::seq_cst);
 				}
@@ -200,6 +199,5 @@ namespace DiscordCoreAPI {
 			this->theWorkingStatuses.erase(std::this_thread::get_id());
 		}
 	};
-
 	/**@}*/
 }// namespace DiscordCoreAPI
