@@ -27,7 +27,7 @@ namespace DiscordCoreInternal {
 		std::unordered_map<HttpWorkloadType, std::string> rateLimitValueBuckets{};
 	}
 
-	void HttpRnRBuilder::constructHeaderValues(std::unordered_map<std::string, std::string>& headersNew, RateLimitData* rateLimitData) {
+	void HttpRnRBuilder::collectHeaderValues(std::unordered_map<std::string, std::string>& headersNew, RateLimitData* rateLimitData) {
 		rateLimitData->sampledTimeInMs =
 			static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
 		if (headersNew.contains("x-ratelimit-bucket")) {
@@ -57,8 +57,12 @@ namespace DiscordCoreInternal {
 					httpData.responseData = nlohmann::json::parse(this->contentFinal);
 				}
 			}
-			this->constructHeaderValues(this->headers, rateLimitDataPtr);
+			this->collectHeaderValues(this->headers, rateLimitDataPtr);
 			httpData.responseHeaders = this->headers;
+			std::cout << "THE HEADERS: " << std::endl;
+			for (auto& [key, value]: this->headers) {
+				std::cout << "THE KEY: " << key << " THE VALUE: " << value << std::endl;
+	        }
 			return httpData;
 		} catch (...) {
 			DiscordCoreAPI::reportException("HttpRnRBuilder::handleHeaders()");

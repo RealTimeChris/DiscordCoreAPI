@@ -42,7 +42,7 @@ namespace DiscordCoreInternal {
 	  public:
 		friend HttpClient;
 
-		void constructHeaderValues(std::unordered_map<std::string, std::string>& headers, RateLimitData* theConnection);
+		void collectHeaderValues(std::unordered_map<std::string, std::string>& headers, RateLimitData* theConnection);
 
 		HttpData handleHeaders(RateLimitData* rateLimitDataPtr);
 
