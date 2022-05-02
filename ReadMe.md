@@ -85,7 +85,7 @@ DiscordCoreAPI::InputEvents::deleteInputEventResponseAsync(newEvent, 20000).get(
 - Build and run!
 
 # Dependencies
-- [CMake](https://cmake.org/) (Version CMake 3.20 or greater)
+- [CMake](https://cmake.org/) (Version 3.20 or greater)
 - NOTE: I installed these using the [vcpkg](https://github.com/microsoft/vcpkg) installer.
 - [Curl](https://github.com/curl/curl) (.\\vcpkg install curl:x64-windows_OR_linux)
 - [FFMPEG](http://ffmpeg.org/) (.\\vcpkg install ffmpeg:x64-windows_OR_linux)
