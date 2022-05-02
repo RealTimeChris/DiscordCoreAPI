@@ -364,8 +364,7 @@ namespace DiscordCoreInternal {
 				}
 			}
 			returnData = HttpClient::executeHttpRequest(workload, theConnection, rateLimitDataPtr);
-			rateLimitDataPtr->sampledTimeInMs =
-				static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
+				
 			if (rateLimitDataPtr->tempBucket != "") {
 				rateLimitDataPtr->tempBucket = "";
 			}
@@ -417,6 +416,8 @@ namespace DiscordCoreInternal {
 			}
 			theConnection.lastTimeUsed = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 			auto theRequest = theConnection.buildRequest(workload);
+			rateLimitDatPtr->sampledTimeInMs =
+				static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
 			theConnection.writeData(theRequest);
 			if (theConnection.currentRecursionDepth >= theConnection.maxRecursion) {
 				return HttpData{};
