@@ -2742,16 +2742,17 @@ namespace DiscordCoreAPI {
 	/// Input event response types. \brief Input event response types.
 	enum class InputEventResponseType {
 		Unset = 0,///< Unset.
-		Deferred_Response_With_Source = 1,///< Deferred response, with source.
-		Deferred_Response = 2,///< Deferred response.
-		Interaction_Response = 3,///< Interaction response.
-		Edit_Interaction_Response = 4,///< Interaction response edit.
-		Ephemeral_Interaction_Response = 5,///< Ephemeral Interaction response.
-		Edit_Ephemeral_Interaction_Response = 6,///< Ephemeral Interaction response.
-		Follow_Up_Message = 7,///< Follow-up Message.
-		Edit_Follow_Up_Message = 8,///< Follow-up Message edit.
-		Ephemeral_Follow_Up_Message = 9,///< Ephemeral follow-up Message.
-		Edit_Ephemeral_Follow_Up_Message = 10,///< Ephemeral follow-up Message.
+		Ephemeral_Deferred_Response = 1,///< Deferred ephemeral response.
+		Deferred_Response_With_Source = 2,///< Deferred response, with source.
+		Deferred_Response = 3,///< Deferred response.
+		Interaction_Response = 4,///< Interaction response.
+		Edit_Interaction_Response = 5,///< Interaction response edit.
+		Ephemeral_Interaction_Response = 6,///< Ephemeral Interaction response.
+		Edit_Ephemeral_Interaction_Response = 7,///< Ephemeral Interaction response.
+		Follow_Up_Message = 8,///< Follow-up Message.
+		Edit_Follow_Up_Message = 9,///< Follow-up Message edit.
+		Ephemeral_Follow_Up_Message = 10,///< Ephemeral follow-up Message.
+		Edit_Ephemeral_Follow_Up_Message = 11,///< Ephemeral follow-up Message.
 	};
 
 	/// Data representing a Guild Emoji Update event. \brief Data representing a Guild Emoji Update event.

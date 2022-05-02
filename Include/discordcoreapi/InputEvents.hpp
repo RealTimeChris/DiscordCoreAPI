@@ -36,7 +36,7 @@ namespace DiscordCoreAPI {
 		/// Responds to one of a number of types of "InputEvents". \brief Responds to one of a number of types of "InputEvents".
 		/// \param dataPackage A RespondToInputEventData structure.
 		/// \returns An std::unique_ptr containing an InputEventData structure.
-		static InputEventData respondToEvent(RespondToInputEventData dataPackage);
+		static CoRoutine<InputEventData> respondToEventAsync(RespondToInputEventData dataPackage);
 
 		/// Deletes a previously sent "input-event-response". \brief Deletes a previously sent "input-event-response".
 		/// \param dataPackage A std::unique_ptr containing an InputEventData structure.

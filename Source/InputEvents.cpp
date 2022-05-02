@@ -24,7 +24,8 @@
 
 namespace DiscordCoreAPI {
 
-	InputEventData InputEvents::respondToEvent(RespondToInputEventData dataPackage) {
+	CoRoutine<InputEventData> InputEvents::respondToEventAsync(RespondToInputEventData dataPackage) {
+		co_await NewThreadAwaitable<InputEventData>();
 		if (dataPackage.type == InputEventResponseType::Unset) {
 			throw std::runtime_error("Please set an input-event-response-type!");
 		}
@@ -48,55 +49,53 @@ namespace DiscordCoreAPI {
 			} else if (dataPackage.type == InputEventResponseType::Follow_Up_Message) {
 				newEvent.responseType = InputEventResponseType::Edit_Follow_Up_Message;
 			}
-			return newEvent;
+			co_return newEvent;
 		}
 		switch (dataPackage.type) {
+			case InputEventResponseType::Ephemeral_Deferred_Response: {
+				auto dataPackage02 = CreateDeferredInteractionResponseData{ dataPackage };
+				dataPackage02.data.data.flags = 64;
+				co_return InputEvents::respondToEvent(dataPackage02);
+			}
 			case InputEventResponseType::Deferred_Response: {
 				[[fallthrough]];
 			}
 			case InputEventResponseType::Deferred_Response_With_Source: {
-				auto dataPackage02 = CreateDeferredInteractionResponseData{ dataPackage };
-				dataPackage02.data.data.flags = 64;
-				return InputEvents::respondToEvent(dataPackage02);
+				co_return InputEvents::respondToEvent(CreateDeferredInteractionResponseData{ dataPackage });
 			}
 			case InputEventResponseType::Interaction_Response: {
-				return InputEvents::respondToEvent(CreateInteractionResponseData{ dataPackage });
+				co_return InputEvents::respondToEvent(CreateInteractionResponseData{ dataPackage });
 			}
 			case InputEventResponseType::Edit_Ephemeral_Interaction_Response: {
-				return InputEvents::respondToEvent(EditEphemeralInteractionResponseData{ dataPackage });
+				co_return InputEvents::respondToEvent(EditEphemeralInteractionResponseData{ dataPackage });
 			}
 			case InputEventResponseType::Edit_Interaction_Response: {
-				return InputEvents::respondToEvent(EditInteractionResponseData{ dataPackage });
+				co_return InputEvents::respondToEvent(EditInteractionResponseData{ dataPackage });
 			}
 			case InputEventResponseType::Ephemeral_Interaction_Response: {
-				CreateEphemeralInteractionResponseData dataPackage02{ dataPackage };
-				return InputEventData(InputEvents::respondToEvent(dataPackage02));
+				co_return InputEvents::respondToEvent(CreateEphemeralInteractionResponseData{ dataPackage });
 			}
 			case InputEventResponseType::Follow_Up_Message: {
-				CreateFollowUpMessageData dataPackage02{ dataPackage };
-				return InputEventData(InputEvents::respondToEvent(dataPackage02));
+				co_return InputEvents::respondToEvent(CreateFollowUpMessageData{ dataPackage });
 			}
 			case InputEventResponseType::Edit_Ephemeral_Follow_Up_Message: {
-				EditEphemeralFollowUpMessageData dataPackage02{ dataPackage };
-				return InputEventData(InputEvents::respondToEvent(dataPackage02));
+				co_return InputEvents::respondToEvent(EditEphemeralFollowUpMessageData{ dataPackage });
 			}
 			case InputEventResponseType::Edit_Follow_Up_Message: {
-				EditFollowUpMessageData dataPackage02{ dataPackage };
-				return InputEventData(InputEvents::respondToEvent(dataPackage02));
+				co_return InputEvents::respondToEvent(EditFollowUpMessageData{ dataPackage });
 			}
 			case InputEventResponseType::Ephemeral_Follow_Up_Message: {
-				CreateEphemeralFollowUpMessageData dataPackage02{ dataPackage };
-				return InputEventData(InputEvents::respondToEvent(dataPackage02));
+				co_return InputEvents::respondToEvent(CreateEphemeralFollowUpMessageData{ dataPackage });
 			}
 			case InputEventResponseType::Unset: {
 				std::cout << shiftToBrightRed() << "Failed to set input event response type!" << reset() << std::endl;
 				break;
 			}
 			default: {
-				return InputEventData();
+				co_return InputEventData();
 			}
 		}
-		return InputEventData();
+		co_return InputEventData();
 	}
 
 	CoRoutine<void> InputEvents::deleteInputEventResponseAsync(InputEventData dataPackage, int32_t timeDelayNew) {

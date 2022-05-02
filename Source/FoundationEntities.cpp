@@ -692,7 +692,7 @@ namespace DiscordCoreAPI {
 			if (originalEvent.eventType == InteractionType::Application_Command) {
 				dataPackage.setResponseType(InputEventResponseType::Edit_Interaction_Response);
 			}
-			originalEvent = InputEvents::respondToEvent(dataPackage);
+			originalEvent = InputEvents::respondToEventAsync(dataPackage).get();
 			while (true) {
 				ButtonCollector button{ originalEvent };
 
@@ -716,7 +716,7 @@ namespace DiscordCoreAPI {
 						InputEvents::deleteInputEventResponseAsync(InputEventData{ InputEventData(originalEvent) });
 					} else {
 						dataPackage.setResponseType(InputEventResponseType::Edit_Interaction_Response);
-						InputEvents::respondToEvent(dataPackage);
+						InputEvents::respondToEventAsync(dataPackage).get();
 					}
 					MoveThroughMessagePagesData dataPackage02{};
 					dataPackage02.inputEventData = originalEvent;
@@ -738,7 +738,7 @@ namespace DiscordCoreAPI {
 						dataPackage.addComponentRow(value);
 					}
 					dataPackage.addMessageEmbed(messageEmbeds[newCurrentPageIndex]);
-					InputEvents::respondToEvent(dataPackage);
+					InputEvents::respondToEventAsync(dataPackage).get();
 				} else if (buttonIntData.at(0).buttonId == "select") {
 					if (deleteAfter == true) {
 						InputEvents::deleteInputEventResponseAsync(InputEventData{ InputEventData(originalEvent) });
@@ -752,7 +752,7 @@ namespace DiscordCoreAPI {
 							}
 							dataPackage.addComponentRow(value);
 						}
-						InputEvents::respondToEvent(dataPackage);
+						InputEvents::respondToEventAsync(dataPackage).get();
 					}
 					returnData.currentPageIndex = newCurrentPageIndex;
 					returnData.inputEventData = originalEvent;
