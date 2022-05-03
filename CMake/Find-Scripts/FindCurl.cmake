@@ -38,15 +38,17 @@ The following cache variables may also be set:
 include(FindPackageHandleStandardArgs)
 
 find_path(CURL_INCLUDE_DIR
-  NAMES "curl/curl.h"
+  NAMES "sodium/sodium.h"
   PATHS ${CURL_INCLUDE_DIR}
 )
 
-find_library(CURL_RELEASE_LIBRARY
+find_library(
+	CURL_RELEASE_LIBRARY
 	NAMES "libcurl${LIBRARY_SUFFIX}" "libcurl_imp${LIBRARY_SUFFIX}" "curl${LIBRARY_SUFFIX}" "curl_imp${LIBRARY_SUFFIX}"
 	PATHS "${CURL_ROOT_DIR}/release" "${CURL_ROOT_DIR}/lib" NO_DEFAULT_PATH
 )
-find_library(CURL_DEBUG_LIBRARY
+find_library(
+	CURL_DEBUG_LIBRARY
 	NAMES "libcurl-d${LIBRARY_SUFFIX}" "libcurl-d_imp${LIBRARY_SUFFIX}" "curl${LIBRARY_SUFFIX}" 
 	PATHS "${CURL_ROOT_DIR}/debug" "${CURL_ROOT_DIR}/debug/lib" NO_DEFAULT_PATH
 )
