@@ -56,11 +56,11 @@ target_link_libraries(
 	$<$<TARGET_EXISTS:GLIB::Glib>:GLIB::Glib>
 	$<$<TARGET_EXISTS:INTL::Intl>:INTL::Intl>
 	$<$<TARGET_EXISTS:LIBZ::Libz>:LIBZ::Libz>
+	$<$<TARGET_EXISTS:NLOHMANN::Json>:NLOHMANN::Json>
 	$<$<TARGET_EXISTS:OPENSSL::Ssl>:OPENSSL::Ssl>
 	$<$<TARGET_EXISTS:OPENSSL::Crypto>:OPENSSL::Crypto>
 	$<$<TARGET_EXISTS:OPUS::Opus>:OPUS::Opus>
 	$<$<TARGET_EXISTS:SODIUM::Sodium>:SODIUM::Sodium>
-	$<$<TARGET_EXISTS:NLOHMANN::Json>:NLOHMANN::Json>
 	$<$<TARGET_EXISTS:Threads::Threads>:Threads::Threads>
 )
 
