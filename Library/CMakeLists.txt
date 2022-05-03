@@ -1,7 +1,6 @@
 generate_product_version(
 	PRODUCT_INFO
 	NAME "DiscordCoreAPI"
-	ICON "${CMAKE_SOURCE_DIR}/Documentation/Images/TheLogo.ico"
 	FILE_DESCRIPTION "A Discord bot library written in C++, using asynchronous coroutines."
 	ORIGINAL_FILENAME "discordcoreapi.dll"
 	COMPANY_NAME "RealTimeChris Inc."
