@@ -26,7 +26,7 @@ set(SODIUM_RELEASE_ROOT "C:/Users/Chris/Downloads/libsodium/bin/x64/Release/v143
 set(SODIUM_DEBUG_ROOT "C:/Users/Chris/Downloads/libsodium/bin/x64/Debug/v143/dynamic")
 
 cmake_minimum_required(VERSION 3.20)
-set(PROJECT_NAME "DISCORDCOREAPI")
+set(PROJECT_NAME "DiscordCoreAPI")
 set(LIB_NAME "DiscordCoreAPI")
 project("${PROJECT_NAME}" VERSION 1.00 LANGUAGES CXX)
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/CMake;${CMAKE_SOURCE_DIR}/CMake/Find-Scripts")
@@ -47,12 +47,9 @@ include(FindSodium)
 if(NOT EXISTS "${_VCPKG_ROOT_DIR}")
 	set(LINUX_OK TRUE)
 	if (UNIX)
-		set(CMAKE_INSTALL_PREFIX "/usr/local/DiscordCoreAPI")
 		if (NOT EXISTS "${LIBZ_INCLUDE_DIR}" OR NOT EXISTS "${LIBZ_RELEASE_ROOT}" OR NOT EXISTS "${LIBZ_DEBUG_ROOT}")
 			set(LINUX_OK FALSE)
-		endif()
-	else()
-		set(CMAKE_INSTALL_PREFIX "C:/Program Files/DiscordCoreAPI")
+		endif()		
 	endif()
 	if (NOT EXISTS "${CURL_INCLUDE_DIR}" OR NOT EXISTS "${CURL_RELEASE_ROOT}" OR NOT EXISTS "${CURL_DEBUG_ROOT}"
 		OR NOT EXISTS "${FFMPEG_INCLUDE_DIR}" OR NOT EXISTS "${FFMPEG_RELEASE_ROOT}" OR NOT EXISTS "${FFMPEG_DEBUG_ROOT}"
