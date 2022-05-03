@@ -30,7 +30,7 @@ Cache Variables
 The following cache variables may also be set:
 
 ``GLIB_INCLUDE_DIR``
-  The directory containing ``curl.h``.
+  The directory containing ``glib.h``.
 ``GLIB_ROOT_DIR``
   The root path to the GLIB libraries.
 

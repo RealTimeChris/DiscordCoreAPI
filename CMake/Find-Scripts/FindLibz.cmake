@@ -30,7 +30,7 @@ Cache Variables
 The following cache variables may also be set:
 
 ``LIBZ_INCLUDE_DIR``
-  The directory containing ``curl.h``.
+  The directory containing ``libz.h``.
 ``LIBZ_ROOT_DIR``
   The root path to the LIBZ libraries.
 

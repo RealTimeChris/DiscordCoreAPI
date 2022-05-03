@@ -31,7 +31,7 @@ Cache Variables
 The following cache variables may also be set:
 
 ``OPENSSL_INCLUDE_DIR``
-  The directory containing ``curl.h``.
+  The directory containing ``ssl.h``.
 ``OPENSSL_ROOT_DIR``
   The root path to the OPENSSL libraries.
 

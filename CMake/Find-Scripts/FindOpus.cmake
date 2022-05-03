@@ -30,7 +30,7 @@ Cache Variables
 The following cache variables may also be set:
 
 ``OPUS_INCLUDE_DIR``
-  The directory containing ``curl.h``.
+  The directory containing ``opus.h``.
 ``OPUS_ROOT_DIR``
   The root path to the OPUS libraries.
 
