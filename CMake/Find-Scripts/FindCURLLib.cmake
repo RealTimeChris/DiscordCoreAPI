@@ -67,6 +67,7 @@ find_file(
 	PATHS "${CURL_DEBUG_FILE_PATH}/" "${CURL_DEBUG_FILE_PATH}/../bin/"
 	NO_DEFAULT_PATH
 )
+message("THE CURL DLL: ${CURL_DEBUG_DLL}")
 if (EXISTS "${CURL_RELEASE_DLL}" AND EXISTS "${CURL_DEBUG_DLL}")
 	find_package_handle_standard_args(
 		CURLLib
