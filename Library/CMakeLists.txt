@@ -17,10 +17,6 @@ if (WIN32)
 	add_library(DiscordCoreAPI SHARED "${SOURCES}" "${PRODUCT_INFO}")
 	set(LIBRARY_SUFFIX ".lib")
 	set(LIBRARY_PREFIX "")
-	if (DEFINED CACHE{EnableASAN})
-		target_compile_options(DiscordCoreAPI PUBLIC "/fsanitize=address" "/Zi" "/Debug")
-		target_link_options(DiscordCoreAPI PUBLIC "/incremental:no" "/Debug")	
-	endif()
 elseif (UNIX)
 	add_library(DiscordCoreAPI STATIC "${SOURCES}" "${PRODUCT_INFO}")
 	set(LIBRARY_SUFFIX ".a")
@@ -29,6 +25,16 @@ elseif (UNIX)
 endif()
 
 add_library(DiscordCoreAPI::DiscordCoreAPI ALIAS DiscordCoreAPI)
+
+if (DEFINED ENV{EnableASAN})
+	if(MSVC)
+		target_compile_options(DiscordCoreAPI PUBLIC "/fsanitize=address" "/Zi" "/Debug")
+		target_link_options(DiscordCoreAPI PUBLIC "/incremental:no" "/Debug")	
+	else()
+		target_compile_options(DiscordCoreAPI PUBLIC "-fsanitize=address")
+		target_link_options(DiscordCoreAPI PUBLIC "-fsanitize=address")
+	endif()
+endif()
 
 find_curl("${CURL_RELEASE_ROOT}" "${CURL_DEBUG_ROOT}" "${CURL_INCLUDE_DIR}")
 find_ffmpeg("${FFMPEG_RELEASE_ROOT}" "${FFMPEG_DEBUG_ROOT}" "${FFMPEG_INCLUDE_DIR}")
@@ -103,7 +109,7 @@ target_compile_features(
 	"cxx_std_20"
 )
 
-set(EXPORTED_TARGETS_NAME "DiscordCoreAPI-targets")
+set(EXPORTED_TARGETS_NAME "DiscordCoreAPITargets")
 set(DISCORDCOREAPI_INCLUDE_DIR "${CMAKE_INSTALL_PREFIX}/include/discordcoreapi")
 
 install(
@@ -124,7 +130,7 @@ install(
 )
 
 set(EXPORTED_TARGETS_FILE_PATH "share/discordcoreapi/${EXPORTED_TARGETS_FILE_NAME}")
-set(CONFIG_FILE_NAME "DiscordCoreAPI-config.cmake")
+set(CONFIG_FILE_NAME "DiscordCoreAPIConfig.cmake")
 set(RELEASE_PDB_FILE_PATH "${CMAKE_INSTALL_PREFIX}/bin/discordcoreapi.pdb")
 set(DEBUG_PDB_FILE_PATH "${CMAKE_INSTALL_PREFIX}/debug/bin/discordcoreapi.pdb")
 
@@ -138,7 +144,7 @@ configure_package_config_file(
 	DEBUG_PDB_FILE_PATH
 )
 
-set(VERSION_FILE_NAME "DiscordCoreAPI-config-version.cmake")
+set(VERSION_FILE_NAME "DiscordCoreAPIConfigVersion.cmake")
 
 write_basic_package_version_file(
 	"${CMAKE_INSTALL_PREFIX}/share/discordcoreapi/${VERSION_FILE_NAME}"
