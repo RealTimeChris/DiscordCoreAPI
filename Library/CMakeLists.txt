@@ -36,19 +36,19 @@ if (DEFINED ENV{EnableASAN})
 	endif()
 endif()
 
-find_package(CURLLib REQUIRED)
-find_package(FFMPEG REQUIRED)
-find_package(GLIB REQUIRED)
-find_package(INTL REQUIRED)
-find_package(LIBZ)
-find_package(NLOHMANNJSON REQUIRED)
-find_package(OPENSSL REQUIRED)
-find_package(OPUS REQUIRED)
-find_package(SODIUM REQUIRED)
+find_curl("${CURL_RELEASE_ROOT}" "${CURL_DEBUG_ROOT}" "${CURL_INCLUDE_DIR}")
+find_ffmpeg("${FFMPEG_RELEASE_ROOT}" "${FFMPEG_DEBUG_ROOT}" "${FFMPEG_INCLUDE_DIR}")
+find_glib("${GLIB_RELEASE_ROOT}" "${GLIB_DEBUG_ROOT}" "${GLIB_INCLUDE_DIR}")
+find_intl("${GLIB_RELEASE_ROOT}" "${GLIB_DEBUG_ROOT}" "${GLIB_INCLUDE_DIR}")
+find_libz("${LIBZ_RELEASE_ROOT}" "${LIBZ_DEBUG_ROOT}" "${LIBZ_INCLUDE_DIR}")
+find_nlohmann_json("${NLOHMANN_INCLUDE_DIR}")
+find_openssl("${OPENSSL_RELEASE_ROOT}" "${OPENSSL_DEBUG_ROOT}" "${OPENSSL_INCLUDE_DIR}")
+find_opus("${OPUS_RELEASE_ROOT}" "${OPUS_DEBUG_ROOT}" "${OPUS_INCLUDE_DIR}")
+find_sodium("${SODIUM_RELEASE_ROOT}" "${SODIUM_DEBUG_ROOT}" "${SODIUM_INCLUDE_DIR}")
 
 target_link_libraries(
 	DiscordCoreAPI PUBLIC
-	$<$<TARGET_EXISTS:CURLLib::Curl>:CURLLib::Curl>
+	$<$<TARGET_EXISTS:CURL::Curl>:CURL::Curl>
 	$<$<TARGET_EXISTS:FFMPEG::AVFormat>:FFMPEG::AVFormat>
 	$<$<TARGET_EXISTS:FFMPEG::AVCodec>:FFMPEG::AVCodec>
 	$<$<TARGET_EXISTS:FFMPEG::AVUtil>:FFMPEG::AVUtil>
