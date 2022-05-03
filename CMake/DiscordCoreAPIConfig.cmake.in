@@ -15,4 +15,4 @@ if (WIN32)
 	endif()	
 endif()
 
-check_required_components(DiscordCoreAPI_CMake)
+check_required_components("@PROJECT_NAME@")

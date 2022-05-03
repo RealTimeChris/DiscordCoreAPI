@@ -23,7 +23,9 @@ set(SODIUM_RELEASE_ROOT "C:/Users/Chris/Downloads/libsodium/bin/x64/Release/v143
 set(SODIUM_DEBUG_ROOT "C:/Users/Chris/Downloads/libsodium/bin/x64/Debug/v143/dynamic")
 
 cmake_minimum_required(VERSION 3.20)
-project(DiscordCoreAPI_CMake VERSION 1.00 LANGUAGES CXX)
+set(PROJECT_NAME "DISCORDCOREAPI")
+set(LIB_NAME "DiscordCoreAPI")
+project("${PROJECT_NAME}" VERSION 1.00 LANGUAGES CXX)
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/CMake;${CMAKE_SOURCE_DIR}/CMake/Find-Scripts")
 set(CMAKE_CONFIGURATION_TYPES "${CMAKE_BUILD_TYPE}")
 
