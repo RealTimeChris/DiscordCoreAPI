@@ -48,7 +48,7 @@ find_package(SODIUM REQUIRED)
 
 target_link_libraries(
 	DiscordCoreAPI PUBLIC
-	$<$<TARGET_EXISTS:CURL::Curl>:CURL::Curl>
+	$<$<TARGET_EXISTS:CURLLib::Curl>:CURLLib::Curl>
 	$<$<TARGET_EXISTS:FFMPEG::AVFormat>:FFMPEG::AVFormat>
 	$<$<TARGET_EXISTS:FFMPEG::AVCodec>:FFMPEG::AVCodec>
 	$<$<TARGET_EXISTS:FFMPEG::AVUtil>:FFMPEG::AVUtil>
