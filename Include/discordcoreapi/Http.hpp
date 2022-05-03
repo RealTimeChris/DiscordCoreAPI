@@ -88,13 +88,12 @@ namespace DiscordCoreInternal {
 		bool haveWeCollectedTime{ false };
 		bool areWeASpecialBucket{ false };
 		bool didWeHitRateLimit{ false };
-		int64_t getsRemainingTotal{ 0 };
 		std::string tempBucket{ "" };
 		int64_t sampledTimeInMs{ 0 };
 		bool haveWeGoneYet{ false };
-		int64_t msRemainTotal{ 0 };
+		int64_t getsRemaining{ 0 };
 		std::string bucket{ "" };
-		int64_t msPerTick{ 0 };
+		bool doWeWait{ false };
 		int64_t msRemain{ 0 };
 	};
 
@@ -109,7 +108,7 @@ namespace DiscordCoreInternal {
 	};
 
 	namespace Globals {
-		static std::unordered_map<std::thread::id, std::unique_ptr<HttpConnection>> httpConnections;
+		static std::unordered_map<std::thread::id, std::unique_ptr<HttpConnection>> httpConnections{};
 	}
 
 	class DiscordCoreAPI_Dll HttpConnectionManager {
