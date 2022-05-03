@@ -33,7 +33,7 @@ The following cache variables may also be set:
 #]=======================================================================]
 include(FindPackageHandleStandardArgs)
 
-find_file(
+find_path(
 	NLOHMANN_JSON_LIBRARY
 	NAMES "nlohmann/json.hpp" 
 	PATHS "${NLOHMANNJSON_INCLUDE_DIR}" NO_DEFAULT_PATH
