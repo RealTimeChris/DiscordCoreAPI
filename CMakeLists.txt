@@ -1,26 +1,20 @@
 # SET THESE VALUES.
 set(CURL_INCLUDE_DIR "C:/Users/Chris/Downloads/curlNew/include")
-set(CURL_RELEASE_ROOT "C:/Users/Chris/Downloads/curlNew/Build/lib/Release")
-set(CURL_DEBUG_ROOT "C:/Users/Chris/Downloads/curlNew/Build/lib/Debug")
+set(CURL_ROOT_DIR "C:/Users/Chris/Downloads/curlNew/Build/lib/")
 set(FFMPEG_INCLUDE_DIR "C:/Users/Chris/Downloads/ffmpeg/include")
-set(FFMPEG_RELEASE_ROOT "C:/Users/Chris/Downloads/ffmpeg/lib")
-set(FFMPEG_DEBUG_ROOT "C:/Users/Chris/Downloads/ffmpeg/lib")
+set(FFMPEG_ROOT_DIR "C:/Users/Chris/Downloads/ffmpeg/")
 set(GLIB_INCLUDE_DIR "C:/Users/Chris/Downloads/glib/Prefix")
-set(GLIB_RELEASE_ROOT "C:/Users/Chris/Downloads/glib/Prefix/lib")
-set(GLIB_DEBUG_ROOT "C:/Users/Chris/Downloads/glib/Prefix/lib")
+set(GLIB_ROOT_DIR "C:/Users/Chris/Downloads/glib/Prefix/")
+set(INTL_ROOT_DIR "C:/Users/Chris/Downloads/glib/Prefix/")
 set(LIBZ_INCLUDE_DIR "C:/Users/Chris/Downloads/glib/Prefix")
-set(LIBZ_RELEASE_ROOT "C:/Users/Chris/Downloads/glib/Prefix/lib")
-set(LIBZ_DEBUG_ROOT "C:/Users/Chris/Downloads/glib/Prefix/lib")
-set(NLOHMANN_INCLUDE_DIR "C:/Users/Chris/Downloads/json/include")
+set(LIBZ_ROOT_DIR "C:/Users/Chris/Downloads/glib/Prefix/")
+set(NLOHMANNJSON_INCLUDE_DIR "C:/Users/Chris/Downloads/json/include")
 set(OPENSSL_INCLUDE_DIR "C:/Users/Chris/Downloads/openssl/include")
-set(OPENSSL_RELEASE_ROOT "C:/Users/Chris/Downloads/openssl")
-set(OPENSSL_DEBUG_ROOT "C:/Users/Chris/Downloads/openssl")
+set(OPENSSL_ROOT_DIR "C:/Users/Chris/Downloads/openssl")
 set(OPUS_INCLUDE_DIR "C:/Users/Chris/Downloads/newopus/include")
-set(OPUS_RELEASE_ROOT "C:/Users/Chris/Downloads/newopus/Build/Release")
-set(OPUS_DEBUG_ROOT "C:/Users/Chris/Downloads/newopus/Build/Debug")
+set(OPUS_ROOT_DIR "C:/Users/Chris/Downloads/newopus/Build")
 set(SODIUM_INCLUDE_DIR "C:/Users/Chris/Downloads/libsodium/src/libsodium/include")
-set(SODIUM_RELEASE_ROOT "C:/Users/Chris/Downloads/libsodium/bin/x64/Release/v143/dynamic")
-set(SODIUM_DEBUG_ROOT "C:/Users/Chris/Downloads/libsodium/bin/x64/Debug/v143/dynamic")
+set(SODIUM_ROOT_DIR "C:/Users/Chris/Downloads/libsodium/bin/x64/Release/v143/dynamic")
 
 cmake_minimum_required(VERSION 3.20)
 project(DiscordCoreAPI_CMake VERSION 1.00 LANGUAGES CXX)
@@ -29,15 +23,6 @@ set(CMAKE_CONFIGURATION_TYPES "${CMAKE_BUILD_TYPE}")
 
 include(CMakePackageConfigHelpers)
 include(GenerateProductVersion)
-include(FindCurl)
-include(FindFFMPEG)
-include(FindGlib)
-include(FindIntl)
-include(FindLibz)
-include(FindNlohmannJson)
-include(FindOpenSSL)
-include(FindOpus)
-include(FindSodium)
 
 if(NOT EXISTS "${_VCPKG_ROOT_DIR}")
 	set(LINUX_OK TRUE)
@@ -46,11 +31,10 @@ if(NOT EXISTS "${_VCPKG_ROOT_DIR}")
 			set(LINUX_OK FALSE)
 		endif()
 	endif()
-	if (NOT EXISTS "${CURL_INCLUDE_DIR}" OR NOT EXISTS "${CURL_RELEASE_ROOT}" OR NOT EXISTS "${CURL_DEBUG_ROOT}"
-		OR NOT EXISTS "${FFMPEG_INCLUDE_DIR}" OR NOT EXISTS "${FFMPEG_RELEASE_ROOT}" OR NOT EXISTS "${FFMPEG_DEBUG_ROOT}" OR NOT EXISTS "${GLIB_INCLUDE_DIR}"
-		OR NOT EXISTS "${GLIB_RELEASE_ROOT}" OR NOT EXISTS "${GLIB_DEBUG_ROOT}"  OR NOT EXISTS "${NLOHMANN_INCLUDE_DIR}" OR NOT EXISTS "${OPENSSL_INCLUDE_DIR}" OR NOT EXISTS "${OPENSSL_RELEASE_ROOT}"
-		OR NOT EXISTS "${OPENSSL_DEBUG_ROOT}" OR NOT EXISTS "${OPUS_INCLUDE_DIR}" OR NOT EXISTS "${OPUS_RELEASE_ROOT}" OR NOT EXISTS "${OPUS_DEBUG_ROOT}"
-		OR NOT EXISTS "${SODIUM_INCLUDE_DIR}" OR NOT EXISTS "${SODIUM_RELEASE_ROOT}" OR NOT EXISTS "${SODIUM_DEBUG_ROOT}" OR NOT LINUX_OK)
+	if (NOT EXISTS "${CURL_INCLUDE_DIR}" OR NOT EXISTS "${CURL_ROOT_DIR}" 
+		OR NOT EXISTS "${FFMPEG_INCLUDE_DIR}" OR NOT EXISTS "${FFMPEG_ROOT_DIR}" OR NOT EXISTS "${GLIB_INCLUDE_DIR}"
+		OR NOT EXISTS "${GLIB_ROOT_DIR}" OR NOT EXISTS "${NLOHMANNJSON_INCLUDE_DIR}" OR NOT EXISTS "${OPENSSL_INCLUDE_DIR}" OR NOT EXISTS "${OPENSSL_ROOT_DIR}"
+		OR NOT EXISTS "${OPUS_INCLUDE_DIR}" OR NOT EXISTS "${OPUS_ROOT_DIR}" OR NOT EXISTS "${SODIUM_INCLUDE_DIR}" OR NOT EXISTS "${SODIUM_ROOT_DIR}" OR NOT LINUX_OK)
 		
 		message(FATAL_ERROR "Sorry - but please set the _DEBUG_ROOT, _RELEASE_ROOT AND _INCLUDE_DIR values in CMakeLists.txt!")
 	endif()
