@@ -28,6 +28,12 @@ Hello, and welcome to DiscordCoreAPI! This is a Discord bot library that leverag
 ## Concurrent Discord API Access   
 - As a result of using [custom asynchronous coroutines](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Include/discordcoreapi/CoRoutine.hpp), this library has the ability to make fully    asynchronous/concurrent requests to the Discord API.   
 
+## Advanced Rate-Limiting System
+- Guarantees that the order in which HTTP requests are executed is the same that they were submitted in - despite being launched across difference threads.
+<p align="left">
+	<img src="https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Images/Rate-Limit.png?raw=true" width="700">
+</p>
+
 ## Slash Commands and Buttons
 <p align="left">
  	<img src="https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Images/Slash-Commands and Buttons.png?raw=true"  width="700">   
