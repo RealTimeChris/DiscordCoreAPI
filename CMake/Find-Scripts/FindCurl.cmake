@@ -9,7 +9,7 @@ Imported Targets
 
 This module provides the following imported targets, if found:
 
-``CURL::CURL``
+``CURL::Curl``
   The CURL library
 
 Result Variables
@@ -75,13 +75,13 @@ if (EXISTS "${CURL_RELEASE_DLL}" AND EXISTS "${CURL_DEBUG_DLL}")
 	if (CURL_FOUND)
 		set(CURL_LIBRARIES "${CURL_RELEASE_LIBRARY}" "${CURL_DEBUG_LIBRARY}" "${CURL_RELEASE_DLL}" "${CURL_DEBUG_DLL}")
 		set(CURL_INCLUDE_DIRS "${CURL_INCLUDE_DIR}")
-		add_library(CURL::CURL SHARED IMPORTED GLOBAL)
+		add_library(CURL::Curl SHARED IMPORTED GLOBAL)
 		set_target_properties(
-			CURL::CURL PROPERTIES 
+			CURL::Curl PROPERTIES 
 			IMPORTED_LOCATION_RELEASE "${CURL_RELEASE_DLL}" IMPORTED_LOCATION_DEBUG "${CURL_DEBUG_DLL}"
 			IMPORTED_IMPLIB_RELEASE "${CURL_RELEASE_LIBRARY}" IMPORTED_IMPLIB_DEBUG "${CURL_DEBUG_LIBRARY}"
 		)
-		target_include_directories(CURL::CURL INTERFACE "${INCLUDE_DIR}")
+		target_include_directories(CURL::Curl INTERFACE "${INCLUDE_DIR}")
 	endif()
 else()
 	find_package_handle_standard_args(
@@ -93,12 +93,12 @@ else()
 	if (CURL_FOUND)
 		set(CURL_LIBRARIES "${CURL_RELEASE_LIBRARY}" "${CURL_DEBUG_LIBRARY}")
 		set(CURL_INCLUDE_DIRS "${CURL_INCLUDE_DIR}")
-		add_library(CURL::CURL STATIC IMPORTED GLOBAL)
+		add_library(CURL::Curl STATIC IMPORTED GLOBAL)
 		set_target_properties(
-			CURL::CURL PROPERTIES 
+			CURL::Curl PROPERTIES 
 			IMPORTED_LOCATION_RELEASE "${CURL_RELEASE_LIBRARY}" IMPORTED_LOCATION_DEBUG "${CURL_DEBUG_LIBRARY}"
 		)
-		target_include_directories(CURL::CURL INTERFACE "${INCLUDE_DIR}")
+		target_include_directories(CURL::Curl INTERFACE "${INCLUDE_DIR}")
 		unset(CURL_RELEASE_DLL CACHE)
 		unset(CURL_DEBUG_DLL CACHE)
 	endif()
