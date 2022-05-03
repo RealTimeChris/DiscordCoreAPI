@@ -45,6 +45,7 @@ include(FindOpus)
 include(FindSodium)
 
 if(NOT EXISTS "${_VCPKG_ROOT_DIR}")
+	set(CMAKE_INSTALL_PREFIX "C:/Program Files/DiscordCoreAPI")
 	set(LINUX_OK TRUE)
 	if (UNIX)	
 		if (NOT EXISTS "${LIBZ_INCLUDE_DIR}" OR NOT EXISTS "${LIBZ_RELEASE_ROOT}" OR NOT EXISTS "${LIBZ_DEBUG_ROOT}")
