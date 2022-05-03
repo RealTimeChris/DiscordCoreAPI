@@ -332,7 +332,7 @@ namespace DiscordCoreInternal {
 				rateLimitDataPtr->doWeWait = false;
 			}
 			if (timeRemaining > 0) {
-				if (true) {
+				if (this->doWePrintHttp) {
 					std::cout << DiscordCoreAPI::shiftToBrightBlue() << "We're waiting on rate-limit: " << timeRemaining << std::endl
 							  << DiscordCoreAPI::reset() << std::endl;
 				}
