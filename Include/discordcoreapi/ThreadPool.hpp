@@ -152,6 +152,7 @@ namespace DiscordCoreAPI {
 		std::condition_variable theCondVar{};
 		std::mutex theMutex01{};
 		std::mutex theMutex02{};
+
 		void threadFunction() {
 			std::unique_lock<std::mutex> theLock00{ this->theMutex02 };
 			WorkloadStatus theStatus{ std::this_thread::get_id() };
@@ -199,6 +200,7 @@ namespace DiscordCoreAPI {
 					break;
 				}
 			}
+			std::cout << "THREAD COUNT0101: " << this->theThreads.size() << std::endl;
 			std::unique_lock<std::mutex> theLock02{ this->theMutex02 };
 			this->theWorkingStatuses.erase(std::this_thread::get_id());
 			theLock02.unlock();

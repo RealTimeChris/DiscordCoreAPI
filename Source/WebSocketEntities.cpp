@@ -572,10 +572,7 @@ namespace DiscordCoreInternal {
 						dataPackage->interactionData = *interactionData;
 						std::unique_ptr<DiscordCoreAPI::CommandData> commandData{ std::make_unique<DiscordCoreAPI::CommandData>(*eventData) };
 						DiscordCoreAPI::CommandData commandDataNew = *commandData;
-						std::jthread theThread{ [=, this]() {
-							this->commandController->checkForAndRunCommand(commandDataNew);
-						} };
-						theThread.detach();
+						this->commandController->checkForAndRunCommand(commandDataNew);
 						this->eventManager->onInteractionCreationEvent(*dataPackage);
 						std::unique_ptr<DiscordCoreAPI::OnInputEventCreationData> eventCreationData{
 							std::make_unique<DiscordCoreAPI::OnInputEventCreationData>()
@@ -669,10 +666,7 @@ namespace DiscordCoreInternal {
 						std::unique_ptr<DiscordCoreAPI::CommandData> commandData{ std::make_unique<DiscordCoreAPI::CommandData>() };
 						commandData->commandName = "registerapplicationcommands";
 						DiscordCoreAPI::CommandData commandDataNew = *commandData;
-						std::jthread theThread{ [=, this]() {
-							this->commandController->checkForAndRunCommand(commandDataNew);
-						} };
-						theThread.detach();
+						this->commandController->checkForAndRunCommand(commandDataNew);
 					}
 					std::unique_ptr<DiscordCoreAPI::OnInputEventCreationData> eventCreationData{ std::make_unique<DiscordCoreAPI::OnInputEventCreationData>() };
 				} else if (payload["t"] == "MESSAGE_UPDATE") {
