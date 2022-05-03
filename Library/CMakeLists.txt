@@ -36,7 +36,7 @@ if (DEFINED ENV{EnableASAN})
 	endif()
 endif()
 
-find_package(CURL REQUIRED)
+find_package(CURLLib REQUIRED)
 find_package(FFMPEG REQUIRED)
 find_package(GLIB REQUIRED)
 find_package(INTL REQUIRED)
@@ -48,7 +48,7 @@ find_package(SODIUM REQUIRED)
 
 target_link_libraries(
 	DiscordCoreAPI PUBLIC
-	$<$<TARGET_EXISTS:CURL::Curl>:CURL::Curl>
+	$<$<TARGET_EXISTS:CURLLib::Curl>:CURLLib::Curl>
 	$<$<TARGET_EXISTS:FFMPEG::AVFormat>:FFMPEG::AVFormat>
 	$<$<TARGET_EXISTS:FFMPEG::AVCodec>:FFMPEG::AVCodec>
 	$<$<TARGET_EXISTS:FFMPEG::AVUtil>:FFMPEG::AVUtil>
