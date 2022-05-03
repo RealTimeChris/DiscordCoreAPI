@@ -793,9 +793,7 @@ namespace DiscordCoreInternal {
 
 		if (pDataStructure.nick == "") {
 			pDataStructure.userMention = "<@" + pDataStructure.user.id + ">";
-		} else {
-			pDataStructure.userMention = "<@!" + pDataStructure.user.id + ">";
-		}
+		} 
 
 		if (jsonObjectData.contains("communication_disabled_until") && !jsonObjectData["communication_disabled_until"].is_null()) {
 			pDataStructure.communicationDisabledUntil = jsonObjectData["communication_disabled_until"].get<std::string>();
@@ -849,8 +847,6 @@ namespace DiscordCoreInternal {
 
 		if (pDataStructure.nick == "") {
 			pDataStructure.userMention = "<@" + pDataStructure.user.id + ">";
-		} else {
-			pDataStructure.userMention = "<@!" + pDataStructure.user.id + ">";
 		}
 
 		if (jsonObjectData.contains("communication_disabled_until") && !jsonObjectData["communication_disabled_until"].is_null()) {
@@ -2096,6 +2092,14 @@ namespace DiscordCoreInternal {
 
 		if (jsonObjectData.contains("content_type") && !jsonObjectData["content_type"].is_null()) {
 			pDataStructure.contentType = jsonObjectData["content_type"].get<std::string>();
+		}
+
+		if (jsonObjectData.contains("ephemeral") && !jsonObjectData["ephemeral"].is_null()) {
+			pDataStructure.ephemeral = jsonObjectData["ephemeral"].get<bool>();
+		}
+
+		if (jsonObjectData.contains("description") && !jsonObjectData["description"].is_null()) {
+			pDataStructure.description = jsonObjectData["description"].get<std::string>();
 		}
 
 		if (jsonObjectData.contains("size") && !jsonObjectData["size"].is_null()) {
@@ -3522,11 +3526,35 @@ namespace DiscordCoreInternal {
 		if (jsonObjectData.contains("value") && !jsonObjectData["value"].is_null() && jsonObjectData["value"].is_number_integer()) {
 			pDataStructure.valueInt = jsonObjectData["value"].get<int32_t>();
 		}
+
+		if (jsonObjectData.contains("name_localizations") && !jsonObjectData["name_localizations"].is_null()) {
+			pDataStructure.nameLocalizations.clear();
+			auto newMap = jsonObjectData["name_localizations"].get<std::unordered_map<std::string, std::string>>();
+			for (auto& [key, newValue]: newMap) {
+				pDataStructure.nameLocalizations.insert(std::make_pair(key, newValue));
+			}
+		}
 	}
 
 	template<> void DataParser::parseObject(nlohmann::json const& jsonObjectData, DiscordCoreAPI::ApplicationCommandOptionData& pDataStructure) {
 		if (jsonObjectData.contains("name") && !jsonObjectData["name"].is_null()) {
 			pDataStructure.name = jsonObjectData["name"].get<std::string>();
+		}
+
+		if (jsonObjectData.contains("name_localizations") && !jsonObjectData["name_localizations"].is_null()) {
+			pDataStructure.nameLocalizations.clear();
+			auto newMap = jsonObjectData["name_localizations"].get<std::unordered_map<std::string, std::string>>();
+			for (auto& [key, newValue]: newMap) {
+				pDataStructure.nameLocalizations.insert(std::make_pair(key, newValue));
+			}
+		}
+
+		if (jsonObjectData.contains("description_localizations") && !jsonObjectData["description_localizations"].is_null()) {
+			pDataStructure.nameLocalizations.clear();
+			auto newMap = jsonObjectData["description_localizations"].get<std::unordered_map<std::string, std::string>>();
+			for (auto& [key, newValue]: newMap) {
+				pDataStructure.descriptionLocalizations.insert(std::make_pair(key, newValue));
+			}
 		}
 
 		if (jsonObjectData.contains("description") && !jsonObjectData["description"].is_null()) {
@@ -3542,8 +3570,20 @@ namespace DiscordCoreInternal {
 			pDataStructure.channelTypes.shrink_to_fit();
 		}
 
+		if (jsonObjectData.contains("min_value") && !jsonObjectData["min_value"].is_null()) {
+			pDataStructure.minValue = jsonObjectData["min_value"].get<int32_t>();
+		}
+
+		if (jsonObjectData.contains("max_value") && !jsonObjectData["max_value"].is_null()) {
+			pDataStructure.maxValue = jsonObjectData["max_value"].get<int32_t>();
+		}
+
 		if (jsonObjectData.contains("required") && !jsonObjectData["required"].is_null()) {
 			pDataStructure.required = jsonObjectData["required"].get<bool>();
+		}
+
+		if (jsonObjectData.contains("autocomplete") && !jsonObjectData["autocomplete"].is_null()) {
+			pDataStructure.autocomplete = jsonObjectData["autocomplete"].get<bool>();
 		}
 
 		if (jsonObjectData.contains("type") && !jsonObjectData["type"].is_null()) {
@@ -3580,6 +3620,38 @@ namespace DiscordCoreInternal {
 			pDataStructure.id = jsonObjectData["id"].get<std::string>();
 		}
 
+		if (jsonObjectData.contains("default_member_permissions") && !jsonObjectData["default_member_permissions"].is_null()) {
+			pDataStructure.defaultMemberPermissions = jsonObjectData["default_member_permissions"].get<std::string>();
+		}
+
+		if (jsonObjectData.contains("dm_permission") && !jsonObjectData["dm_permission"].is_null()) {
+			pDataStructure.dmPermission = jsonObjectData["dm_permission"].get<bool>();
+		}
+
+		if (jsonObjectData.contains("version") && !jsonObjectData["version"].is_null()) {
+			pDataStructure.version = jsonObjectData["version"].get<std::string>();
+		}
+
+		if (jsonObjectData.contains("type") && !jsonObjectData["type"].is_null()) {
+			pDataStructure.type = jsonObjectData["type"].get<DiscordCoreAPI::ApplicationCommandType>();
+		}		
+
+		if (jsonObjectData.contains("name_localizations") && !jsonObjectData["name_localizations"].is_null()) {
+			pDataStructure.nameLocalizations.clear();
+			auto newMap = jsonObjectData["name_localizations"].get<std::unordered_map<std::string, std::string>>();
+			for (auto& [key, newValue]: newMap) {
+				pDataStructure.nameLocalizations.insert(std::make_pair(key, newValue));
+			}
+		}
+
+		if (jsonObjectData.contains("description_localizations") && !jsonObjectData["description_localizations"].is_null()) {
+			pDataStructure.nameLocalizations.clear();
+			auto newMap = jsonObjectData["description_localizations"].get<std::unordered_map<std::string, std::string>>();
+			for (auto& [key, newValue]: newMap) {
+				pDataStructure.descriptionLocalizations.insert(std::make_pair(key, newValue));
+			}
+		}
+
 		if (jsonObjectData.contains("application_id") && !jsonObjectData["application_id"].is_null()) {
 			pDataStructure.applicationId = jsonObjectData["application_id"].get<std::string>();
 		}
@@ -3614,6 +3686,38 @@ namespace DiscordCoreInternal {
 	template<> void DataParser::parseObject(nlohmann::json const& jsonObjectData, DiscordCoreAPI::ApplicationCommandData& pDataStructure) {
 		if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
 			pDataStructure.id = jsonObjectData["id"].get<std::string>();
+		}
+
+		if (jsonObjectData.contains("default_member_permissions") && !jsonObjectData["default_member_permissions"].is_null()) {
+			pDataStructure.defaultMemberPermissions = jsonObjectData["default_member_permissions"].get<std::string>();
+		}
+
+		if (jsonObjectData.contains("dm_permission") && !jsonObjectData["dm_permission"].is_null()) {
+			pDataStructure.dmPermission = jsonObjectData["dm_permission"].get<bool>();
+		}
+
+		if (jsonObjectData.contains("version") && !jsonObjectData["version"].is_null()) {
+			pDataStructure.version = jsonObjectData["version"].get<std::string>();
+		}
+
+		if (jsonObjectData.contains("type") && !jsonObjectData["type"].is_null()) {
+			pDataStructure.type = jsonObjectData["type"].get<DiscordCoreAPI::ApplicationCommandType>();
+		}
+
+		if (jsonObjectData.contains("name_localizations") && !jsonObjectData["name_localizations"].is_null()) {
+			pDataStructure.nameLocalizations.clear();
+			auto newMap = jsonObjectData["name_localizations"].get<std::unordered_map<std::string, std::string>>();
+			for (auto& [key, newValue]: newMap) {
+				pDataStructure.nameLocalizations.insert(std::make_pair(key, newValue));
+			}
+		}
+
+		if (jsonObjectData.contains("description_localizations") && !jsonObjectData["description_localizations"].is_null()) {
+			pDataStructure.nameLocalizations.clear();
+			auto newMap = jsonObjectData["description_localizations"].get<std::unordered_map<std::string, std::string>>();
+			for (auto& [key, newValue]: newMap) {
+				pDataStructure.descriptionLocalizations.insert(std::make_pair(key, newValue));
+			}
 		}
 
 		if (jsonObjectData.contains("application_id") && !jsonObjectData["application_id"].is_null()) {
@@ -3896,6 +4000,20 @@ namespace DiscordCoreInternal {
 
 		if (jsonObjectData.contains("name") && !jsonObjectData["name"].is_null()) {
 			pDataStructure.name = jsonObjectData["name"].get<std::string>();
+		}
+
+		if (jsonObjectData.contains("value") && !jsonObjectData["value"].is_null()) {
+			if (jsonObjectData["value"].is_number()) {
+				pDataStructure.intValue = jsonObjectData["value"].get<int32_t>();
+			} else if (jsonObjectData["value"].is_string()) {
+				pDataStructure.stringValue = jsonObjectData["value"].get<std::string>();
+			} else if (jsonObjectData["value"].is_number_float()) {
+				pDataStructure.doubleValue = jsonObjectData["value"].get<double>();
+			}
+		}
+
+		if (jsonObjectData.contains("focused") && !jsonObjectData["focused"].is_null()) {
+			pDataStructure.focused = jsonObjectData["focused"].get<bool>();
 		}
 
 		if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {

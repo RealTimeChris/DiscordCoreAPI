@@ -1089,8 +1089,10 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll AttachmentData : public DiscordEntity {
 	  public:
 		std::string contentType{ "" };///< Type of content for the attachment.
+		std::string description{ "" };///< A description of the attachment.
 		std::string filename{ "" };///< The file name of the attachment.
 		std::string proxyUrl{ "" };///< The proxy url for the attachment.
+		bool ephemeral{ false };///< Whether it was an ephemeral response.
 		std::string url{ "" };///< The url for the attachment.
 		int32_t height{ 0 };///< The height of the attachment.
 		int32_t width{ 0 };///< The width of the attachment.
@@ -2277,6 +2279,7 @@ namespace DiscordCoreAPI {
 
 	/// Data structure representing an ApplicationCommand's option choice. \brief Data structure representing an ApplicationCommand's option choice.
 	struct DiscordCoreAPI_Dll ApplicationCommandOptionChoiceData {
+		std::unordered_map<std::string, std::string> nameLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the name field. Values follow the same restrictions as name.
 		std::string valueString{ "" };///< The value, if the given choice is a std::string.
 		float valueFloat{ 0.0f };///< The value, if the given choice is a float.
 		std::string name{ "" };///< The name of the current choice.
@@ -2689,9 +2692,13 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll ApplicationCommandInteractionData : public DiscordEntity {
 	  public:
 		std::vector<ApplicationCommandInteractionDataOption> options{};///< ApplicationCommand Interaction data options.
+		std::string stringValue{ "" };///< Value of application command option type.
 		ApplicationCommandType type{};///< The type of ApplicationCommand.
+		double doubleValue{ 0.0f };///< Value of application command option type.
 		ResolvedData resolved{};///< Resolved data.
 		std::string name{ "" };///< The name of the command.
+		int32_t intValue{ 0 };///< Value of application command option type.
+		bool focused{ false };///< True if this option is the currently focused option for autocomplete.
 
 		virtual ~ApplicationCommandInteractionData() = default;
 	};

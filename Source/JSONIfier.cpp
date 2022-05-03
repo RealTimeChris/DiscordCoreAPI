@@ -430,6 +430,9 @@ namespace DiscordCoreInternal {
 	}
 
 	void JSONIFY(DiscordCoreAPI::ApplicationCommandOptionData dataPackage, nlohmann::json* pJSONData) {
+		nlohmann::json descriptionLocalizations = { "description_localizations", dataPackage.descriptionLocalizations };
+		nlohmann::json nameLocalizations = { "name_localizations", dataPackage.nameLocalizations };
+		nlohmann::json channelTypes = { "channel_types", dataPackage.channelTypes };
 		nlohmann::json newOption;
 		newOption.emplace(std::make_pair("description", dataPackage.description));
 		newOption.emplace(std::make_pair("name", dataPackage.name));
@@ -438,15 +441,11 @@ namespace DiscordCoreInternal {
 		newOption.emplace(std::make_pair("autocomplete", dataPackage.autocomplete));
 		newOption.emplace(std::make_pair("min_value", dataPackage.minValue));
 		newOption.emplace(std::make_pair("max_value", dataPackage.maxValue));
+		newOption.emplace(nameLocalizations);
+		newOption.emplace(descriptionLocalizations);
 		if (dataPackage.type == DiscordCoreAPI::ApplicationCommandOptionType::Channel) {
-			nlohmann::json newArray01{};
-			newOption.emplace(std::make_pair("channel_types", newArray01));
-			for (auto& value: dataPackage.channelTypes) {
-				newOption["channel_types"].emplace_back(value);
-			}
+			newOption.emplace(channelTypes);
 		}
-		std::unordered_map<std::string, std::string> descriptionLocalizations{};///< Dictionary for the description field. Values follow the same restrictions as description.
-		std::unordered_map<std::string, std::string> nameLocalizations{};///< Dictionary for the name field. Values follow the same restrictions as name.
 		if (dataPackage.type != DiscordCoreAPI::ApplicationCommandOptionType::Sub_Command &&
 			dataPackage.type != DiscordCoreAPI::ApplicationCommandOptionType::Sub_Command_Group) {
 			newOption.emplace(std::make_pair("required", dataPackage.required));
@@ -460,11 +459,13 @@ namespace DiscordCoreInternal {
 				choiceData.name = dataPackage.choices[y].name;
 				if (dataPackage.choices[y].valueString != "") {
 					choiceData.valueString = dataPackage.choices[y].valueString;
-					nlohmann::json jsonValue = { { "name", choiceData.name }, { "value", choiceData.valueString } };
+					nlohmann::json jsonValue = { { "name", choiceData.name }, { "value", choiceData.valueString },
+						{ "name_localizations", choiceData.nameLocalizations } };
 					newOption["choices"].emplace_back(jsonValue);
 				} else if (dataPackage.choices[y].valueInt != 0) {
 					choiceData.valueInt = dataPackage.choices[y].valueInt;
-					nlohmann::json jsonValue = { { "name", choiceData.name }, { "value", choiceData.valueInt } };
+					nlohmann::json jsonValue = { { "name", choiceData.name }, { "value", choiceData.valueInt },
+						{ "name_localizations", choiceData.nameLocalizations } };
 					newOption["choices"].emplace_back(jsonValue);
 				}
 			}
@@ -509,8 +510,12 @@ namespace DiscordCoreInternal {
 			data = { { "name", dataPackage.name }, { "type", dataPackage.type } };
 		} else {
 			data = { { "name", dataPackage.name }, { "description", dataPackage.description }, { "default_permission", dataPackage.defaultPermission },
-				{ "type", dataPackage.type } };
-
+				{ "dm_permission", dataPackage.dmPermission }, { "description_localizations", dataPackage.descriptionLocalizations },
+				{ "name_localizations", dataPackage.nameLocalizations } };
+			if (dataPackage.defaultMemberPermissions != "") {
+				nlohmann::json dataNew = { "default_member_permissions", dataPackage.defaultMemberPermissions };
+				data.emplace(dataNew);
+			}
 			nlohmann::json arrayValue{};
 
 			data.emplace(std::make_pair("options", arrayValue));
@@ -530,8 +535,13 @@ namespace DiscordCoreInternal {
 		if (dataPackage.type == DiscordCoreAPI::ApplicationCommandType::Message || dataPackage.type == DiscordCoreAPI::ApplicationCommandType::User) {
 			data = { { "name", dataPackage.name }, { "type", dataPackage.type } };
 		} else {
-			data = { { "name", dataPackage.name }, { "description", dataPackage.description }, { "default_permission", dataPackage.defaultPermission },
-				{ "type", dataPackage.type } };
+			 data = { { "name", dataPackage.name }, { "description", dataPackage.description },
+				{ "default_permission", dataPackage.defaultPermission }, { "dm_permission", dataPackage.dmPermission },
+				{ "description_localizations", dataPackage.descriptionLocalizations }, { "name_localizations", dataPackage.nameLocalizations } };
+			if (dataPackage.defaultMemberPermissions != "") {
+				 nlohmann::json dataNew = { "default_member_permissions", dataPackage.defaultMemberPermissions };
+				data.emplace(dataNew);
+			}
 
 			nlohmann::json arrayValue{};
 
@@ -549,7 +559,13 @@ namespace DiscordCoreInternal {
 
 	std::string JSONIFY(DiscordCoreAPI::EditGlobalApplicationCommandData dataPackage) {
 		nlohmann::json data = { { "name", dataPackage.name }, { "description", dataPackage.description },
-			{ "default_permission", dataPackage.defaultPermission } };
+			{ "default_permission", dataPackage.defaultPermission },
+			{ "dm_permission", dataPackage.dmPermission }, { "description_localizations", dataPackage.descriptionLocalizations },
+			{ "name_localizations", dataPackage.nameLocalizations } };
+		if (dataPackage.defaultMemberPermissions != "") {
+			nlohmann::json dataNew = { "default_member_permissions", dataPackage.defaultMemberPermissions };
+			data.emplace(dataNew);
+		}
 
 		nlohmann::json arrayValue;
 
@@ -566,8 +582,12 @@ namespace DiscordCoreInternal {
 
 	std::string JSONIFY(DiscordCoreAPI::EditGuildApplicationCommandData dataPackage) {
 		nlohmann::json data = { { "name", dataPackage.name }, { "description", dataPackage.description },
-			{ "default_permission", dataPackage.defaultPermission } };
-
+			{ "default_permission", dataPackage.defaultPermission }, { "dm_permission", dataPackage.dmPermission },
+			{ "description_localizations", dataPackage.descriptionLocalizations }, { "name_localizations", dataPackage.nameLocalizations } };
+		if (dataPackage.defaultMemberPermissions != "") {
+			nlohmann::json dataNew = { "default_member_permissions", dataPackage.defaultMemberPermissions };
+			data.emplace(dataNew);
+		}
 		nlohmann::json arrayValue;
 
 		data.emplace(std::make_pair("options", arrayValue));

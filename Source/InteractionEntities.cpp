@@ -248,7 +248,7 @@ namespace DiscordCoreAPI {
 						embedData->setColor("FEFEFE");
 						embedData->setTitle("__**Permission Issue:**__");
 						embedData->setTimeStamp(getTimeAndDate());
-						embedData->setDescription("Sorry, but that menu can only be selected by <@!" + this->userId + ">!");
+						embedData->setDescription("Sorry, but that menu can only be selected by <@" + this->userId + ">!");
 						createResponseData->addMessageEmbed(*embedData);
 						createResponseData->data.data.flags = 64;
 						createResponseData->data.type = InteractionCallbackType::Channel_Message_With_Source;
@@ -374,7 +374,7 @@ namespace DiscordCoreAPI {
 						embedData->setColor("FEFEFE");
 						embedData->setTitle("__**Permission Issue:**__");
 						embedData->setTimeStamp(getTimeAndDate());
-						embedData->setDescription("Sorry, but that button can only be pressed by <@!" + this->userId + ">!");
+						embedData->setDescription("Sorry, but that button can only be pressed by <@" + this->userId + ">!");
 						createResponseData->addMessageEmbed(*embedData);
 						createResponseData->data.data.flags = 64;
 						createResponseData->data.type = InteractionCallbackType::Channel_Message_With_Source;

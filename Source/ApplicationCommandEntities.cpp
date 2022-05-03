@@ -28,8 +28,16 @@
 namespace DiscordCoreAPI {
 
 	ApplicationCommand::ApplicationCommand(ApplicationCommandData dataNew) {
+		this->descriptionLocalizations = dataNew.descriptionLocalizations;
+		this->defaultMemberPermissions = dataNew.defaultMemberPermissions;
+		this->nameLocalizations = dataNew.nameLocalizations;
 		this->defaultPermission = dataNew.defaultPermission;
+		this->defaultPermission = dataNew.defaultPermission;
+		this->applicationId = dataNew.applicationId;
+		this->dmPermission = dataNew.dmPermission;
 		this->description = dataNew.description;
+		this->guildId = dataNew.guildId;
+		this->version = dataNew.version;
 		this->options = dataNew.options;
 		this->name = dataNew.name;
 		this->id = dataNew.id;
