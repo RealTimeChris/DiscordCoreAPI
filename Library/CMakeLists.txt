@@ -36,7 +36,7 @@ if (DEFINED ENV{EnableASAN})
 	endif()
 endif()
 
-find_package(Curl REQUIRED)
+find_package(CURL REQUIRED)
 find_package(FFMPEG REQUIRED)
 find_package(GLIB REQUIRED)
 find_package(INTL REQUIRED)
