@@ -1,6 +1,6 @@
 generate_product_version(
 	PRODUCT_INFO
-	NAME "DiscordCoreAPI"
+	NAME "${LIB_NAME}"
 	FILE_DESCRIPTION "A Discord bot library written in C++, using asynchronous coroutines."
 	ORIGINAL_FILENAME "discordcoreapi.dll"
 	COMPANY_NAME "RealTimeChris Inc."
@@ -28,7 +28,7 @@ add_library("${PROJECT_NAME}::${LIB_NAME}" ALIAS "${LIB_NAME}")
 file(GLOB HEADERS CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/Include/discordcoreapi/*.hpp")
 
 set_target_properties(
-	DiscordCoreAPI PROPERTIES
+	"${LIB_NAME}" PROPERTIES
 	PUBLIC_HEADER "${HEADERS}"
 	OUTPUT_NAME "discordcoreapi"
 	CXX_STANDARD_REQUIRED ON
@@ -43,7 +43,7 @@ if (EXISTS "${VCPKG_INSTALLED_DIR}")
 endif()
 
 target_include_directories(
-	DiscordCoreAPI PUBLIC
+	"${LIB_NAME}" PUBLIC
 	"$<INSTALL_INTERFACE:$<INSTALL_PREFIX>/include>"
 	PRIVATE
 	"$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Include/>"
@@ -64,7 +64,7 @@ find_opus("${OPUS_RELEASE_ROOT}" "${OPUS_DEBUG_ROOT}" "${OPUS_INCLUDE_DIR}")
 find_sodium("${SODIUM_RELEASE_ROOT}" "${SODIUM_DEBUG_ROOT}" "${SODIUM_INCLUDE_DIR}")
 
 target_link_libraries(
-	DiscordCoreAPI PUBLIC
+	"${LIB_NAME}" PUBLIC
 	$<$<TARGET_EXISTS:CURL::Curl>:CURL::Curl>
 	$<$<TARGET_EXISTS:FFMPEG::AVFormat>:FFMPEG::AVFormat>
 	$<$<TARGET_EXISTS:FFMPEG::AVCodec>:FFMPEG::AVCodec>
@@ -82,29 +82,29 @@ target_link_libraries(
 )
 
 target_compile_features(
-	DiscordCoreAPI PUBLIC
+	"${LIB_NAME}" PUBLIC
 	"cxx_std_20"
 )
 
 if (DEFINED ENV{EnableASAN})
 	if(MSVC)
-		target_compile_options(DiscordCoreAPI PUBLIC "/fsanitize=address" "/Zi" "/Debug")
-		target_link_options(DiscordCoreAPI PUBLIC "/incremental:no" "/Debug")	
+		target_compile_options("${LIB_NAME}" PUBLIC "/fsanitize=address" "/Zi" "/Debug")
+		target_link_options("${LIB_NAME}" PUBLIC "/incremental:no" "/Debug")	
 	else()
-		target_compile_options(DiscordCoreAPI PUBLIC "-fsanitize=address")
-		target_link_options(DiscordCoreAPI PUBLIC "-fsanitize=address")
+		target_compile_options("${LIB_NAME}" PUBLIC "-fsanitize=address")
+		target_link_options("${LIB_NAME}" PUBLIC "-fsanitize=address")
 	endif()
 endif()
 
 target_compile_options(
-	DiscordCoreAPI PUBLIC
+	"${LIB_NAME}" PUBLIC
 	"$<$<PLATFORM_ID:Windows>:/bigobj>"
 	"$<$<PLATFORM_ID:Windows>:/MP>"
 	"$<$<PLATFORM_ID:Linux>:-O3>"
 )
 
 target_link_options(
-	DiscordCoreAPI PUBLIC
+	"${LIB_NAME}" PUBLIC
 	"$<$<PLATFORM_ID:Windows>:/DEBUG>"
 )
 
@@ -112,7 +112,7 @@ set(EXPORTED_TARGETS_NAME "DiscordCoreAPITargets")
 set(DISCORDCOREAPI_INCLUDE_DIR "${CMAKE_INSTALL_PREFIX}/include/discordcoreapi")
 
 install(
-	TARGETS DiscordCoreAPI
+	TARGETS "${LIB_NAME}"
 	EXPORT "${EXPORTED_TARGETS_NAME}"
 	RUNTIME DESTINATION "$<IF:$<CONFIG:Debug>,$<IF:$<STREQUAL:${_VCPKG_INSTALLED_DIR},>,debug/bin,bin>,bin>"
 	ARCHIVE DESTINATION "$<IF:$<CONFIG:Debug>,$<IF:$<STREQUAL:${_VCPKG_INSTALLED_DIR},>,debug/lib,lib>,lib>"
@@ -124,7 +124,7 @@ set(EXPORTED_TARGETS_FILE_NAME "${EXPORTED_TARGETS_NAME}.cmake")
 install(
 	EXPORT "${EXPORTED_TARGETS_NAME}"
 	FILE "${EXPORTED_TARGETS_FILE_NAME}"
-	NAMESPACE DiscordCoreAPI::
+	NAMESPACE "${LIB_NAME}::"
 	DESTINATION "share/discordcoreapi"
 )
 
@@ -153,7 +153,7 @@ write_basic_package_version_file(
 
 install(
 	FILES 
-	"$<$<PLATFORM_ID:Windows>:$<TARGET_PDB_FILE:DiscordCoreAPI>>"
+	"$<$<PLATFORM_ID:Windows>:$<TARGET_PDB_FILE:"${LIB_NAME}">>"
 	DESTINATION "$<IF:$<CONFIG:Debug>,$<IF:$<STREQUAL:${_VCPKG_INSTALLED_DIR},>,debug/bin,bin>,bin>"
 	OPTIONAL
 )
