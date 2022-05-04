@@ -793,7 +793,7 @@ namespace DiscordCoreInternal {
 
 		if (pDataStructure.nick == "") {
 			pDataStructure.userMention = "<@" + pDataStructure.user.id + ">";
-		} 
+		}
 
 		if (jsonObjectData.contains("communication_disabled_until") && !jsonObjectData["communication_disabled_until"].is_null()) {
 			pDataStructure.communicationDisabledUntil = jsonObjectData["communication_disabled_until"].get<std::string>();
@@ -3634,7 +3634,7 @@ namespace DiscordCoreInternal {
 
 		if (jsonObjectData.contains("type") && !jsonObjectData["type"].is_null()) {
 			pDataStructure.type = jsonObjectData["type"].get<DiscordCoreAPI::ApplicationCommandType>();
-		}		
+		}
 
 		if (jsonObjectData.contains("name_localizations") && !jsonObjectData["name_localizations"].is_null()) {
 			pDataStructure.nameLocalizations.clear();

@@ -101,7 +101,6 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll CoRoutineThreadPool {
 	  public:
-
 		CoRoutineThreadPool() {
 			for (uint32_t x = 0; x < std::thread::hardware_concurrency(); ++x) {
 				std::jthread workerThread([this]() {

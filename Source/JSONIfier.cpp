@@ -534,11 +534,11 @@ namespace DiscordCoreInternal {
 		if (dataPackage.type == DiscordCoreAPI::ApplicationCommandType::Message || dataPackage.type == DiscordCoreAPI::ApplicationCommandType::User) {
 			data = { { "name", dataPackage.name }, { "type", dataPackage.type } };
 		} else {
-			 data = { { "name", dataPackage.name }, { "description", dataPackage.description },
-				{ "default_permission", dataPackage.defaultPermission }, { "dm_permission", dataPackage.dmPermission },
-				{ "description_localizations", dataPackage.descriptionLocalizations }, { "name_localizations", dataPackage.nameLocalizations } };
+			data = { { "name", dataPackage.name }, { "description", dataPackage.description }, { "default_permission", dataPackage.defaultPermission },
+				{ "dm_permission", dataPackage.dmPermission }, { "description_localizations", dataPackage.descriptionLocalizations },
+				{ "name_localizations", dataPackage.nameLocalizations } };
 			if (dataPackage.defaultMemberPermissions != "") {
-				 nlohmann::json dataNew = { "default_member_permissions", dataPackage.defaultMemberPermissions };
+				nlohmann::json dataNew = { "default_member_permissions", dataPackage.defaultMemberPermissions };
 				data.emplace(dataNew);
 			}
 
@@ -558,9 +558,8 @@ namespace DiscordCoreInternal {
 
 	std::string JSONIFY(DiscordCoreAPI::EditGlobalApplicationCommandData dataPackage) {
 		nlohmann::json data = { { "name", dataPackage.name }, { "description", dataPackage.description },
-			{ "default_permission", dataPackage.defaultPermission },
-			{ "dm_permission", dataPackage.dmPermission }, { "description_localizations", dataPackage.descriptionLocalizations },
-			{ "name_localizations", dataPackage.nameLocalizations } };
+			{ "default_permission", dataPackage.defaultPermission }, { "dm_permission", dataPackage.dmPermission },
+			{ "description_localizations", dataPackage.descriptionLocalizations }, { "name_localizations", dataPackage.nameLocalizations } };
 		if (dataPackage.defaultMemberPermissions != "") {
 			nlohmann::json dataNew = { "default_member_permissions", dataPackage.defaultMemberPermissions };
 			data.emplace(dataNew);
