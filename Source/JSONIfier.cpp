@@ -517,7 +517,6 @@ namespace DiscordCoreInternal {
 				data.emplace(dataNew);
 			}
 			nlohmann::json arrayValue{};
-
 			data.emplace(std::make_pair("options", arrayValue));
 
 			if (dataPackage.options.size() > 0) {

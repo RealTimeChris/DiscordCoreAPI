@@ -57,6 +57,9 @@ namespace DiscordCoreAPI {
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Global_Application_Commands;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
 			workload.relativePath = "/applications/" + dataPackage.applicationId + "/commands";
+			if (dataPackage.withLocalizations) {
+				workload.relativePath += "?with_localizations=true";
+			}
 			workload.callStack = "ApplicationCommands::getGlobalApplicationCommandsAsync";
 			co_return DiscordCoreInternal::submitWorkloadAndGetResult<std::vector<ApplicationCommand>>(*ApplicationCommands::httpClient, workload);
 		} catch (...) {
@@ -206,6 +209,9 @@ namespace DiscordCoreAPI {
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Guild_Application_Commands;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
 			workload.relativePath = "/applications/" + dataPackage.applicationId + "/guilds/" + dataPackage.guildId + "/commands";
+			if (dataPackage.withLocalizations) {
+				workload.relativePath += "?with_localizations=true";
+			}
 			workload.callStack = "ApplicationCommands::getGuildApplicationCommandsAsync";
 			co_return DiscordCoreInternal::submitWorkloadAndGetResult<std::vector<ApplicationCommand>>(*ApplicationCommands::httpClient, workload);
 		} catch (...) {

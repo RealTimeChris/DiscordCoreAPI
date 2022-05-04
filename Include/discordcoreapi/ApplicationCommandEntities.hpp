@@ -31,6 +31,7 @@ namespace DiscordCoreAPI {
 	/// For getting all of the Global Application Commands. \brief For getting all of the Global Application Commands.
 	struct DiscordCoreAPI_Dll GetGlobalApplicationCommandsData {
 		std::string applicationId{ "" };///< The current application's Id (The Bot's User Id).
+		bool withLocalizations{ false };///< Do we collect the name-and-description localizations?
 	};
 
 	/// For collecting a single global ApplicationCommand. \brief For collecting a single global ApplicationCommand.
@@ -81,6 +82,7 @@ namespace DiscordCoreAPI {
 	/// For acquiring all of the Guild ApplicationCommands of a single Guild. \brief For acquiring all of the Guild ApplicationCommands of a single Guild.
 	struct DiscordCoreAPI_Dll GetGuildApplicationCommandsData {
 		std::string applicationId{ "" };///< The current application's Id (The Bot's User Id).
+		bool withLocalizations{ false };///< Do we collect the name-and-description localizations?
 		std::string guildId{ "" };///< The id of the Guild for which you would like to acquire the ApplicationCommands from.
 	};
 
