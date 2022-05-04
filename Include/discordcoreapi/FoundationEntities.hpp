@@ -1359,7 +1359,7 @@ namespace DiscordCoreAPI {
 
 		std::unordered_map<std::string, OverWriteData> permissionOverwrites{};///< Permission overwrites for the given Channel.
 		std::unordered_map<std::string, UserData> recipients{};///< Recipients, in the case of a group Dm or Dm.
-		int32_t defaultAutoArchiveDuration{ 0 };
+		int32_t defaultAutoArchiveDuration{ 0 };///< Default time it takes to archive a thread.
 		ThreadMetadataData threadMetadata{};///< Metadata in the case that this Channel is a Thread.
 		ChannelType type{ ChannelType::Dm };///< The type of the Channel.
 		TimeStamp lastPinTimestamp{ "" };///< Timestamp of the last pinned Message.
@@ -2279,8 +2279,7 @@ namespace DiscordCoreAPI {
 
 	/// Data structure representing an ApplicationCommand's option choice. \brief Data structure representing an ApplicationCommand's option choice.
 	struct DiscordCoreAPI_Dll ApplicationCommandOptionChoiceData {
-		std::unordered_map<std::string, std::string>
-			nameLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the name field. Values follow the same restrictions as name.
+		std::unordered_map<std::string, std::string> nameLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the name field.
 		std::string valueString{ "" };///< The value, if the given choice is a std::string.
 		float valueFloat{ 0.0f };///< The value, if the given choice is a float.
 		std::string name{ "" };///< The name of the current choice.
@@ -2289,9 +2288,8 @@ namespace DiscordCoreAPI {
 
 	/// Data structure representing an ApplicationCommand's option. \brief Data structure representing an ApplicationCommand's option.
 	struct DiscordCoreAPI_Dll ApplicationCommandOptionData {
-		std::unordered_map<std::string, std::string>
-			descriptionLocalizations{};///< Dictionary for the description field. Values follow the same restrictions as description.
-		std::unordered_map<std::string, std::string> nameLocalizations{};///< Dictionary for the name field. Values follow the same restrictions as name.
+		std::unordered_map<std::string, std::string> descriptionLocalizations{};///< Dictionary for the description localizations field.
+		std::unordered_map<std::string, std::string> nameLocalizations{};///< Dictionary for the name localizations field.
 		std::vector<ApplicationCommandOptionChoiceData> choices{};///< A std::vector of possible choices for the current ApplicationCommand option.
 		std::vector<ApplicationCommandOptionData> options{};///< A std::vector of possible options for the current ApplicationCommand option.
 		std::vector<ChannelType> channelTypes{};///< Set when the ApplicationCommand option type is set to Channel.
@@ -2299,12 +2297,8 @@ namespace DiscordCoreAPI {
 		std::string description{ "" };///< A description of the current ApplicationCommand option.
 		bool autocomplete{ false };///< If autocomplete interactions are enabled for this STRING, INTEGER, or NUMBER type option.
 		bool required{ false };///< If the parameter is required or optional -- default false.
-		int32_t minValue{
-			0
-		};///< Integer for INTEGER options, double for NUMBER options. If the option is an INTEGER or NUMBER type, the minimum value permitted.
-		int32_t maxValue{
-			0
-		};///< Integer for INTEGER options, double for NUMBER options. If the option is an INTEGER or NUMBER type, the maximum value permitted.
+		int32_t minValue{ 0 };///< If the option is an INTEGER or NUMBER type, the minimum value permitted.
+		int32_t maxValue{ 0 };///< If the option is an INTEGER or NUMBER type, the maximum value permitted.
 		std::string name{ "" };///< Name of the current ApplicationCommand option.
 	};
 

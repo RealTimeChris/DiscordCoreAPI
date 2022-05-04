@@ -42,8 +42,10 @@ namespace DiscordCoreAPI {
 
 	/// For creating a single global ApplicationCommand. \brief For creating a single global ApplicationCommand.
 	struct DiscordCoreAPI_Dll CreateGlobalApplicationCommandData {
-		std::unordered_map<std::string, std::string> descriptionLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the description field.
-		std::unordered_map<std::string, std::string> nameLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the name field.
+		std::unordered_map<std::string, std::string>
+			descriptionLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the description field.
+		std::unordered_map<std::string, std::string>
+			nameLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the name field.
 		std::vector<ApplicationCommandOptionData> options{};///< The options for the ApplicationCommand.
 		std::string defaultMemberPermissions{ "" };///< Set of permissions represented as a bit set. only for globally - scoped commands.
 		std::string applicationId{ "" };///< Application id.
@@ -56,8 +58,10 @@ namespace DiscordCoreAPI {
 
 	/// For editing a single global ApplicationCommand. \brief For editing a single global ApplicationCommand.
 	struct DiscordCoreAPI_Dll EditGlobalApplicationCommandData {
-		std::unordered_map<std::string, std::string> descriptionLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the description field.
-		std::unordered_map<std::string, std::string> nameLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the name field.
+		std::unordered_map<std::string, std::string>
+			descriptionLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the description field.
+		std::unordered_map<std::string, std::string>
+			nameLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the name field.
 		std::vector<ApplicationCommandOptionData> options{};///< The options for the ApplicationCommand.
 		std::string defaultMemberPermissions{ "" };///< Set of permissions represented as a bit set. only for globally - scoped commands.
 		bool defaultPermission{ false };///< Whether the command is enabled by default when the bot is added to a Guild.
@@ -88,8 +92,10 @@ namespace DiscordCoreAPI {
 
 	/// For creating a single Guild ApplicationCommand. \brief For creating a single Guild ApplicationCommand.
 	struct DiscordCoreAPI_Dll CreateGuildApplicationCommandData {
-		std::unordered_map<std::string, std::string> descriptionLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the description field.
-		std::unordered_map<std::string, std::string> nameLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the name field.
+		std::unordered_map<std::string, std::string>
+			descriptionLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the description field.
+		std::unordered_map<std::string, std::string>
+			nameLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the name field.
 		std::vector<ApplicationCommandOptionData> options{};///< The options for the ApplicationCommand.
 		std::string defaultMemberPermissions{ "" };///< Set of permissions represented as a bit set. only for globally - scoped commands.
 		std::string applicationId{ "" };///< Application id.
@@ -110,8 +116,10 @@ namespace DiscordCoreAPI {
 
 	/// For editing a single Guild ApplicationCommand. \brief For editing a single Guild ApplicationCommand.
 	struct DiscordCoreAPI_Dll EditGuildApplicationCommandData {
-		std::unordered_map<std::string, std::string> descriptionLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the description field.
-		std::unordered_map<std::string, std::string> nameLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the name field.
+		std::unordered_map<std::string, std::string>
+			descriptionLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the description field.
+		std::unordered_map<std::string, std::string>
+			nameLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the name field.
 		std::vector<ApplicationCommandOptionData> options{};///< The options for the ApplicationCommand.
 		std::string defaultMemberPermissions{ "" };///< Set of permissions represented as a bit set. only for globally - scoped commands.
 		bool defaultPermission{ false };///< Whether the command is enabled by default when the bot is added to a Guild.
