@@ -25,15 +25,18 @@ endif()
 
 add_library("${PROJECT_NAME}::${LIB_NAME}" ALIAS "${LIB_NAME}")
 
-if (DEFINED ENV{EnableASAN})
-	if(MSVC)
-		target_compile_options(DiscordCoreAPI PUBLIC "/fsanitize=address" "/Zi" "/Debug")
-		target_link_options(DiscordCoreAPI PUBLIC "/incremental:no" "/Debug")	
-	else()
-		target_compile_options(DiscordCoreAPI PUBLIC "-fsanitize=address")
-		target_link_options(DiscordCoreAPI PUBLIC "-fsanitize=address")
-	endif()
-endif()
+file(GLOB HEADERS CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/Include/discordcoreapi/*.hpp")
+
+set_target_properties(
+	DiscordCoreAPI PROPERTIES
+	PUBLIC_HEADER "${HEADERS}"
+	OUTPUT_NAME "discordcoreapi"
+	CXX_STANDARD_REQUIRED ON
+	CXX_EXTENSIONS OFF
+	RUNTIME_OUTPUT_DIRECTORY "$<INSTALL_INTERFACE:$<IF:$<CONFIG:Debug>,$<INSTALL_PREFIX>/debug/bin/,$<INSTALL_PREFIX>/bin/>>$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Output Files/$<CONFIG>>"
+	ARCHIVE_OUTPUT_DIRECTORY "$<INSTALL_INTERFACE:$<IF:$<CONFIG:Debug>,$<INSTALL_PREFIX>/debug/lib/,$<INSTALL_PREFIX>/lib/>>$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Output Files/$<CONFIG>>"
+	PDB_OUTPUT_DIRECTORY_RELEASE "$<INSTALL_INTERFACE:$<IF:$<CONFIG:Debug>,$<INSTALL_PREFIX>/debug/bin/,$<INSTALL_PREFIX>/bin/>>$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Output Files/$<CONFIG>>"
+)
 
 find_curl("${CURL_RELEASE_ROOT}" "${CURL_DEBUG_ROOT}" "${CURL_INCLUDE_DIR}")
 find_ffmpeg("${FFMPEG_RELEASE_ROOT}" "${FFMPEG_DEBUG_ROOT}" "${FFMPEG_INCLUDE_DIR}")
@@ -44,6 +47,21 @@ find_nlohmann_json("${NLOHMANN_INCLUDE_DIR}")
 find_openssl("${OPENSSL_RELEASE_ROOT}" "${OPENSSL_DEBUG_ROOT}" "${OPENSSL_INCLUDE_DIR}")
 find_opus("${OPUS_RELEASE_ROOT}" "${OPUS_DEBUG_ROOT}" "${OPUS_INCLUDE_DIR}")
 find_sodium("${SODIUM_RELEASE_ROOT}" "${SODIUM_DEBUG_ROOT}" "${SODIUM_INCLUDE_DIR}")
+
+if (EXISTS "${VCPKG_INSTALLED_DIR}")
+	set(GLIB_INCLUDE_DIR "${VCPKG_INSTALLED_DIR}")
+endif()
+
+target_include_directories(
+	DiscordCoreAPI PUBLIC
+	"$<INSTALL_INTERFACE:$<INSTALL_PREFIX>/include>"
+	PRIVATE
+	"$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Include/>"
+	"${GLIB_INCLUDE_DIR}/lib/glib-2.0/include"
+	"${GLIB_INCLUDE_DIR}/include/glib-2.0"
+	"${GLIB_INCLUDE_DIR}/lib/glib-2.0/"
+	"${GLIB_INCLUDE_DIR}/include/"
+)
 
 target_link_libraries(
 	DiscordCoreAPI PUBLIC
@@ -63,38 +81,20 @@ target_link_libraries(
 	$<$<TARGET_EXISTS:Threads::Threads>:Threads::Threads>
 )
 
-file(GLOB HEADERS CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/Include/discordcoreapi/*.hpp")
-
-set_target_properties(
-	DiscordCoreAPI PROPERTIES
-	PUBLIC_HEADER "${HEADERS}"
-	OUTPUT_NAME "discordcoreapi"
-	CXX_STANDARD_REQUIRED ON
-	CXX_EXTENSIONS OFF
-	RUNTIME_OUTPUT_DIRECTORY "$<INSTALL_INTERFACE:$<IF:$<CONFIG:Debug>,$<INSTALL_PREFIX>/debug/bin/,$<INSTALL_PREFIX>/bin/>>$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Output Files/$<CONFIG>>"
-	ARCHIVE_OUTPUT_DIRECTORY "$<INSTALL_INTERFACE:$<IF:$<CONFIG:Debug>,$<INSTALL_PREFIX>/debug/lib/,$<INSTALL_PREFIX>/lib/>>$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Output Files/$<CONFIG>>"
-	PDB_OUTPUT_DIRECTORY_RELEASE "$<INSTALL_INTERFACE:$<IF:$<CONFIG:Debug>,$<INSTALL_PREFIX>/debug/bin/,$<INSTALL_PREFIX>/bin/>>$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Output Files/$<CONFIG>>"
+target_compile_features(
+	DiscordCoreAPI PUBLIC
+	"cxx_std_20"
 )
 
-if (EXISTS "${VCPKG_INSTALLED_DIR}")
-	set(GLIB_INCLUDE_DIR "${VCPKG_INSTALLED_DIR}")
+if (DEFINED ENV{EnableASAN})
+	if(MSVC)
+		target_compile_options(DiscordCoreAPI PUBLIC "/fsanitize=address" "/Zi" "/Debug")
+		target_link_options(DiscordCoreAPI PUBLIC "/incremental:no" "/Debug")	
+	else()
+		target_compile_options(DiscordCoreAPI PUBLIC "-fsanitize=address")
+		target_link_options(DiscordCoreAPI PUBLIC "-fsanitize=address")
+	endif()
 endif()
-
-target_include_directories(
-	DiscordCoreAPI PUBLIC
-	"$<INSTALL_INTERFACE:$<INSTALL_PREFIX>/include>"
-	PRIVATE
-	"$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Include/>"
-	"${GLIB_INCLUDE_DIR}/lib/glib-2.0/include"
-	"${GLIB_INCLUDE_DIR}/include/glib-2.0"
-	"${GLIB_INCLUDE_DIR}/lib/glib-2.0/"
-	"${GLIB_INCLUDE_DIR}/include/"
-)
-
-target_link_options(
-	DiscordCoreAPI PUBLIC
-	"$<$<PLATFORM_ID:Windows>:/DEBUG>"
-)
 
 target_compile_options(
 	DiscordCoreAPI PUBLIC
@@ -103,9 +103,9 @@ target_compile_options(
 	"$<$<PLATFORM_ID:Linux>:-O3>"
 )
 
-target_compile_features(
+target_link_options(
 	DiscordCoreAPI PUBLIC
-	"cxx_std_20"
+	"$<$<PLATFORM_ID:Windows>:/DEBUG>"
 )
 
 set(EXPORTED_TARGETS_NAME "DiscordCoreAPITargets")
