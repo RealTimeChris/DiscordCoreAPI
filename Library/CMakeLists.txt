@@ -51,6 +51,7 @@ target_include_directories(
 	"${GLIB_INCLUDE_DIR}/include/glib-2.0"
 	"${GLIB_INCLUDE_DIR}/lib/glib-2.0/"
 	"${GLIB_INCLUDE_DIR}/include/"
+	"${GLIB_INCLUDE_DIR}"
 )
 
 find_curl("${CURL_RELEASE_ROOT}" "${CURL_DEBUG_ROOT}" "${CURL_INCLUDE_DIR}")
