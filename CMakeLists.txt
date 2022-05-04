@@ -1,4 +1,4 @@
-# SET THESE VALUES.
+# Set these values, if you are not building with VCPKG.
 set(CURL_INCLUDE_DIR "C:/Users/Chris/Downloads/curlNew/include")
 set(CURL_RELEASE_ROOT "C:/Users/Chris/Downloads/curlNew/Build/lib/Release")
 set(CURL_DEBUG_ROOT "C:/Users/Chris/Downloads/curlNew/Build/lib/Debug")
