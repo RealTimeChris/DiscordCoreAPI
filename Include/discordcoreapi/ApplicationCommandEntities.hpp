@@ -42,10 +42,8 @@ namespace DiscordCoreAPI {
 
 	/// For creating a single global ApplicationCommand. \brief For creating a single global ApplicationCommand.
 	struct DiscordCoreAPI_Dll CreateGlobalApplicationCommandData {
-		std::unordered_map<std::string, std::string>
-			descriptionLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the description field. Values follow the same restrictions as description.
-		std::unordered_map<std::string, std::string>
-			nameLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the name field. Values follow the same restrictions as name.
+		std::unordered_map<std::string, std::string> descriptionLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the description field.
+		std::unordered_map<std::string, std::string> nameLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the name field.
 		std::vector<ApplicationCommandOptionData> options{};///< The options for the ApplicationCommand.
 		std::string defaultMemberPermissions{ "" };///< Set of permissions represented as a bit set. only for globally - scoped commands.
 		std::string applicationId{ "" };///< Application id.
