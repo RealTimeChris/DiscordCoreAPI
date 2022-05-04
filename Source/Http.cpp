@@ -35,7 +35,7 @@ namespace DiscordCoreInternal {
 			rateLimitData->msRemain = static_cast<int64_t>(ceil(stod(headersNew["x-ratelimit-reset-after"]))) * 1000;
 		}
 		if (headersNew.contains("x-ratelimit-remaining")) {
-			rateLimitData->getsRemaining = static_cast<int64_t>(ceil(stod(headersNew["x-ratelimit-remaining"]))) * 1000;
+			rateLimitData->getsRemaining = static_cast<int64_t>(stoi(headersNew["x-ratelimit-remaining"])) * 1000;
 			if (rateLimitData->getsRemaining <= 1) {
 				rateLimitData->doWeWait = true;
 			}
