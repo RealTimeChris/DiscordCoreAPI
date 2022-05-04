@@ -39,7 +39,7 @@ set_target_properties(
 )
 
 if (EXISTS "${VCPKG_INSTALLED_DIR}")
-	set(GLIB_INCLUDE_DIR "${VCPKG_INSTALLED_DIR}")
+	set(GLIB_INCLUDE_DIR "${VCPKG_INSTALLED_DIR}/include")
 endif()
 
 target_include_directories(
