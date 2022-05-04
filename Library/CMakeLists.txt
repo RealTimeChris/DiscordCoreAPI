@@ -107,7 +107,7 @@ target_link_options(
 )
 
 set(EXPORTED_TARGETS_NAME "DiscordCoreAPITargets")
-set(DISCORDCOREAPI_INCLUDE_DIR "${CMAKE_INSTALL_PREFIX}/include/discordcoreapi")
+set(DISCORDCOREAPI_INCLUDE_DIR "$<IF:$<PLATFORM_ID:Linux>,${CMAKE_INSTALL_PREFIX}/${LIB_NAME}/include/discordcoreapi,${CMAKE_INSTALL_PREFIX}/include/discordcoreapi>")
 
 install(
 	TARGETS "${LIB_NAME}"
@@ -128,13 +128,13 @@ install(
 
 set(EXPORTED_TARGETS_FILE_PATH "share/discordcoreapi/${EXPORTED_TARGETS_FILE_NAME}")
 set(CONFIG_FILE_NAME "DiscordCoreAPIConfig.cmake")
-set(RELEASE_PDB_FILE_PATH "${CMAKE_INSTALL_PREFIX}/bin/discordcoreapi.pdb")
-set(DEBUG_PDB_FILE_PATH "${CMAKE_INSTALL_PREFIX}/debug/bin/discordcoreapi.pdb")
+set(RELEASE_PDB_FILE_PATH "$<IF:$<PLATFORM_ID:Linux>,${CMAKE_INSTALL_PREFIX}/${LIB_NAME}/bin/discordcoreapi.pdb,${CMAKE_INSTALL_PREFIX}/bin/discordcoreapi.pdb>")
+set(DEBUG_PDB_FILE_PATH "$<IF:$<PLATFORM_ID:Linux>,${CMAKE_INSTALL_PREFIX}/${LIB_NAME}/debug/bin/discordcoreapi.pdb,${CMAKE_INSTALL_PREFIX}/debug/bin/discordcoreapi.pdb>")
 
 configure_package_config_file(
 	"${CMAKE_SOURCE_DIR}/CMake/${CONFIG_FILE_NAME}.in"
 	"${CMAKE_CURRENT_BINARY_DIR}/${CONFIG_FILE_NAME}"
-	INSTALL_DESTINATION "share/discordcoreapi"
+	INSTALL_DESTINATION "$<IF:$<PLATFORM_ID:Linux>,DiscordCoreAPI/share/discordcoreapi,share/discordcoreapi>"
 	PATH_VARS
 	EXPORTED_TARGETS_FILE_PATH
 	RELEASE_PDB_FILE_PATH
@@ -153,13 +153,16 @@ install(
 	FILES
 	"${CMAKE_CURRENT_BINARY_DIR}/${CONFIG_FILE_NAME}"
 	"${CMAKE_CURRENT_BINARY_DIR}/${VERSION_FILE_NAME}"
-	DESTINATION "${CMAKE_INSTALL_PREFIX}/share/discordcoreapi"
+	DESTINATION "$<IF:$<PLATFORM_ID:Linux>,DiscordCoreAPI/share/discordcoreapi,share/discordcoreapi>"
 )
+
+set(BIN_DIR "$<IF:$<PLATFORM_ID:Linux>,DiscordCoreAPI/bin,bin>")
+set(DEBUG_BIN_DIR "$<IF:$<PLATFORM_ID:Linux>,DiscordCoreAPI/debug/bin,debug/bin>")
 
 install(
 	FILES 
 	"$<$<PLATFORM_ID:Windows>:$<TARGET_PDB_FILE:${LIB_NAME}>>"
-	DESTINATION "$<IF:$<CONFIG:Debug>,$<IF:$<STREQUAL:${_VCPKG_INSTALLED_DIR},>,debug/bin,bin>,bin>"
+	DESTINATION "$<IF:$<CONFIG:Debug>,$<IF:$<STREQUAL:${_VCPKG_INSTALLED_DIR},>,${DEBUG_BIN_DIR},${BIN_DIR}>,${BIN_DIR}>"
 	OPTIONAL
 )
 
@@ -168,5 +171,5 @@ install(
 	"${CMAKE_SOURCE_DIR}/Certs/DiscordCert.pem"
 	"${CMAKE_SOURCE_DIR}/Certs/GoogleCert.pem"
 	"${CMAKE_SOURCE_DIR}/Certs/SoundCloudCert.pem" 
-	DESTINATION "share/discordcoreapi/data"
+	DESTINATION "$<IF:$<PLATFORM_ID:Linux>,DiscordCoreAPI/share/discordcoreapi/data,share/discordcoreapi/data>"
 )
