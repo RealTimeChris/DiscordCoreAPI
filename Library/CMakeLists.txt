@@ -47,11 +47,8 @@ target_include_directories(
 	"$<INSTALL_INTERFACE:$<INSTALL_PREFIX>/include>"
 	PRIVATE
 	"$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Include/>"
-	"${GLIB_INCLUDE_DIR}/../lib/glib-2.0/include"
 	"${GLIB_INCLUDE_DIR}/glib-2.0"
 	"${GLIB_INCLUDE_DIR}/../lib/glib-2.0/"
-	"${GLIB_INCLUDE_DIR}/include/"
-	"${GLIB_INCLUDE_DIR}"
 )
 
 find_curl("${CURL_RELEASE_ROOT}" "${CURL_DEBUG_ROOT}" "${CURL_INCLUDE_DIR}")
