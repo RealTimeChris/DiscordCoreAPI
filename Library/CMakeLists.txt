@@ -1,3 +1,4 @@
+include(GenerateProductVersion)
 generate_product_version(
 	PRODUCT_INFO
 	NAME "${LIB_NAME}"
@@ -129,6 +130,7 @@ set(CONFIG_FILE_NAME "DiscordCoreAPIConfig.cmake")
 set(RELEASE_PDB_FILE_PATH "${CMAKE_INSTALL_PREFIX}/bin/discordcoreapi.pdb")
 set(DEBUG_PDB_FILE_PATH "${CMAKE_INSTALL_PREFIX}/debug/bin/discordcoreapi.pdb")
 
+include(CMakePackageConfigHelpers)
 configure_package_config_file(
 	"${CMAKE_SOURCE_DIR}/CMake/${CONFIG_FILE_NAME}.in"
 	"${CMAKE_CURRENT_BINARY_DIR}/${CONFIG_FILE_NAME}"

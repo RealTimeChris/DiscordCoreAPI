@@ -74,7 +74,4 @@ elseif(EXISTS "${_VCPKG_INSTALLED_DIR}")
 	set(SODIUM_DEBUG_ROOT "${VCPKG_INSTALLED_DIR}/debug/lib")
 endif()
 
-include(CMakePackageConfigHelpers)
-include(GenerateProductVersion)
-
 add_subdirectory(Library)
