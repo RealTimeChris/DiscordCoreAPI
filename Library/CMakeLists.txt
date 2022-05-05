@@ -13,8 +13,12 @@ generate_product_version(
 file(GLOB SOURCES CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/Source/*.cpp")
 
 if (WIN32)
+	set(LIBRARY_SUFFIX ".lib")
+	set(LIBRARY_PREFIX "")
 	add_library("${LIB_NAME}" SHARED "${SOURCES}" "${PRODUCT_INFO}")
 elseif (UNIX)
+	set(LIBRARY_SUFFIX ".a")
+	set(LIBRARY_PREFIX "lib")
 	add_library("${LIB_NAME}" STATIC "${SOURCES}" "${PRODUCT_INFO}")
 	find_package(Threads REQUIRED)
 endif()
@@ -46,6 +50,14 @@ target_include_directories(
 	"${GLIB_INCLUDE_DIR}/glib-2.0"
 	"${GLIB_INCLUDE_DIR}/../lib/glib-2.0/include"
 )
+
+include(FindCurl)
+include(FindFFMPEG)
+include(FindGlib)
+include(FindNlohmannJson)
+include(FindOpenSSL)
+include(FindOpus)
+include(FindSodium)
 
 target_link_libraries(
 	"${LIB_NAME}" PUBLIC
