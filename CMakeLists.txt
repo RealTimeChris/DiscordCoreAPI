@@ -80,8 +80,6 @@ elseif(EXISTS "${_VCPKG_INSTALLED_DIR}")
 	set(SODIUM_INCLUDE_DIR "${VCPKG_INSTALLED_DIR}/include")
 	set(SODIUM_RELEASE_ROOT "${VCPKG_INSTALLED_DIR}/lib")
 	set(SODIUM_DEBUG_ROOT "${VCPKG_INSTALLED_DIR}/debug/lib")
-else()
-	message(FATAL_ERROR "Please, either compile this with VCPKG or set the _DEBUG_ROOT, _RELEASE_ROOT AND _INCLUDE_DIR values in CMakeLists.txt!")
 endif()
 
 include(CMakePackageConfigHelpers)
