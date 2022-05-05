@@ -55,6 +55,7 @@
 #include <coroutine>
 #include <concepts>
 #include <iostream>
+#include <fstream>
 #include <bitset>
 #include <memory>
 #include <random>
@@ -101,6 +102,7 @@
 
 namespace DiscordCoreInternal {
 
+	struct HttpWorkloadData;
 	class VoiceSocketAgent;
 	class BaseSocketAgent;
 	class HttpClient;
@@ -161,6 +163,7 @@ namespace DiscordCoreAPI {
 	class Guilds;
 	class Roles;
 	class Guild;
+	struct File;
 	class Test;
 
 	template<typename ReturnType, typename... ArgTypes> class Event;
@@ -659,6 +662,8 @@ namespace DiscordCoreAPI {
 
 	/**@}*/
 
+	DiscordCoreAPI_Dll void constructMultiPartData(DiscordCoreInternal::HttpWorkloadData& dataPackage, nlohmann::json theData, std::vector<File>& files);
+
 	DiscordCoreAPI_Dll std::string getISO8601TimeStamp(
 		std::string year, std::string month, std::string day, std::string hour, std::string minute, std::string second);
 
@@ -669,10 +674,12 @@ namespace DiscordCoreAPI {
 	DiscordCoreAPI_Dll std::string convertMsToDurationString(int32_t durationInMs);
 
 	DiscordCoreAPI_Dll std::string convertToLowerCase(std::string stringToConvert);
-
+	
 	DiscordCoreAPI_Dll int64_t convertTimestampToMsInteger(std::string timeStamp);
 
 	DiscordCoreAPI_Dll std::string base64Encode(std::string, bool = false);
+
+	DiscordCoreAPI_Dll std::string loadFileContents(std::string filePath);
 
 	DiscordCoreAPI_Dll std::string urlDecode(std::string inputString);
 
@@ -1272,6 +1279,16 @@ namespace DiscordCoreAPI {
 		std::string messageId{ "" };///< Id of the Message to reference.
 		std::string channelId{ "" };///< Id of the Channel that the referenced Message was sent in.
 		std::string guildId{ "" };///< Id of the Guild that the referenced Message was sent in.
+	};
+
+	enum class MediaType { png = 0, gif = 1, jpeg = 2, mpeg = 3, mp3 = 4 };
+
+	/// Data representing a file to be sent via multipart-form data. \brief Data representing a file to be sent via multipart-form data.
+	struct File {
+		std::string description{};
+		std::string fileName{};
+		MediaType mediaType{};
+		std::string data{};
 	};
 
 	/// Permission overwrites types. \brief Permission overwrites types.
@@ -3513,6 +3530,8 @@ namespace DiscordCoreInternal {
 
 	enum class HttpWorkloadClass { Get = 0, Put = 1, Post = 2, Patch = 3, Delete = 4 };
 
+	enum class PayloadType { Application_Json = 1, Multipart_Form = 2 };
+
 	enum class HttpWorkloadType : int64_t {
 		Unset = 0,
 		Get_Global_Application_Commands = 1,
@@ -3683,6 +3702,7 @@ namespace DiscordCoreInternal {
 		static std::unordered_map<HttpWorkloadType, int64_t> workloadIdsExternal;
 		static std::unordered_map<HttpWorkloadType, int64_t> workloadIdsInternal;
 		std::unordered_map<std::string, std::string> headersToInsert{};
+		PayloadType payloadType{ PayloadType::Application_Json };
 		HttpWorkloadClass workloadClass{};
 		HttpWorkloadType workloadType{};
 		std::string relativePath{ "" };

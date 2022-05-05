@@ -55,7 +55,8 @@ namespace DiscordCoreAPI {
 		/// \param emojiName An emoji name, if desired.
 		/// \param emojiId An emoji id, if desired.
 		/// \param url A url, if applicable.
-		void addButton(bool disabled, std::string customIdNew, std::string buttonLabel, ButtonStyle buttonStyle, std::string emojiName = "",
+		/// \returns MessageResponseBase& A reference to this data structure.
+		MessageResponseBase& addButton(bool disabled, std::string customIdNew, std::string buttonLabel, ButtonStyle buttonStyle, std::string emojiName = "",
 			std::string emojiId = "", std::string url = "") {
 			if (this->components.size() == 0) {
 				ActionRowData actionRowData;
@@ -78,6 +79,7 @@ namespace DiscordCoreAPI {
 					this->components.push_back(actionRowData);
 				}
 			}
+			return *this;
 		}
 
 		/// Adds a select-menu to the response Message. \brief Adds a select-menu to the response Message.
@@ -87,7 +89,8 @@ namespace DiscordCoreAPI {
 		/// \param placeholder Custom placeholder text if nothing is selected, max 100 characters.
 		/// \param maxValues Maximum number of selections that are possible.
 		/// \param minValues Minimum required number of selections that are required.
-		void addSelectMenu(
+		/// \returns MessageResponseBase& A reference to this data structure.
+		MessageResponseBase& addSelectMenu(
 			bool disabled, std::string customIdNew, std::vector<SelectOptionData> options, std::string placeholder, int32_t maxValues, int32_t minValues) {
 			if (this->components.size() == 0) {
 				ActionRowData actionRowData;
@@ -109,36 +112,55 @@ namespace DiscordCoreAPI {
 					this->components.push_back(actionRowData);
 				}
 			}
+			return *this;
+		}
+
+		/// Adds a file to the current collection of files for this message response. \brief Adds a file to the current collection of files for this message response.
+		/// \param theFile The file to be added.
+		/// \returns MessageResponseBase& A reference to this data structure.
+		MessageResponseBase& addFile(File theFile) {
+			this->files.push_back(theFile);
+			return *this;
 		}
 
 		/// For setting the allowable mentions in a response. \brief For setting the allowable mentions in a response.
 		/// \param dataPackage An AllowedMentionsData structure.
-		void addAllowedMentions(AllowedMentionsData dataPackage) {
+		/// \returns MessageResponseBase& A reference to this data structure.
+		MessageResponseBase& addAllowedMentions(AllowedMentionsData dataPackage) {
 			this->allowedMentions = dataPackage;
+			return *this;
 		}
 
 		/// For setting the components in a response. \brief For setting the components in a response.
 		/// \param dataPackage An ActionRowData structure.
-		void addComponentRow(ActionRowData dataPackage) {
+		/// \returns MessageResponseBase& A reference to this data structure.
+		MessageResponseBase& addComponentRow(ActionRowData dataPackage) {
 			this->components.push_back(dataPackage);
+			return *this;
 		}
 
 		/// For setting the embeds in a response. \brief For setting the embeds in a response.
 		/// \param dataPackage An EmbedData structure.
-		void addMessageEmbed(EmbedData dataPackage) {
+		/// \returns MessageResponseBase& A reference to this data structure.
+		MessageResponseBase& addMessageEmbed(EmbedData dataPackage) {
 			this->embeds.push_back(dataPackage);
+			return *this;
 		}
 
 		/// For setting the Message content in a response. \brief For setting the Message content in a response.
 		/// \param dataPackage A std::string, containing the content.
-		void addContent(std::string dataPackage) {
+		/// \returns MessageResponseBase& A reference to this data structure.
+		MessageResponseBase& addContent(std::string dataPackage) {
 			this->content = dataPackage;
+			return *this;
 		}
 
 		/// For setting the tts status of a response. \brief For setting the tts status of a response.
 		/// \param enabledTTs A bool.
-		void setTTSStatus(bool enabledTTs) {
+		/// \returns MessageResponseBase& A reference to this data structure.
+		MessageResponseBase& setTTSStatus(bool enabledTTs) {
 			this->tts = enabledTTs;
+			return *this;
 		}
 
 		virtual ~MessageResponseBase() = default;
@@ -150,7 +172,9 @@ namespace DiscordCoreAPI {
 		AllowedMentionsData allowedMentions{};
 		std::vector<std::string> stickerIds{};
 		std::vector<EmbedData> embeds{};
+		std::vector<File> files{};
 		std::string content{ "" };
+		int32_t flags{ 0 };
 		bool tts{ false };
 	};
 

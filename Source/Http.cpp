@@ -530,7 +530,11 @@ namespace DiscordCoreInternal {
 		try {
 			workload.headersToInsert.insert(std::make_pair("Authorization", "Bot " + httpClient.getBotToken()));
 			workload.headersToInsert.insert(std::make_pair("User-Agent", "DiscordBot (https://discordcoreapi.com/ 1.0)"));
-			workload.headersToInsert.insert(std::make_pair("Content-Type", "application/json"));
+			if (workload.payloadType == PayloadType::Application_Json) {
+				workload.headersToInsert.insert(std::make_pair("Content-Type", "application/json"));
+			} else if (workload.payloadType == PayloadType::Multipart_Form) {
+				workload.headersToInsert.insert(std::make_pair("Content-Type", "multipart/form-data; boundary=boundary25"));
+			}
 			httpClient.httpRequest(workload);
 			return;
 		} catch (...) {
@@ -552,7 +556,11 @@ namespace DiscordCoreInternal {
 		try {
 			workload.headersToInsert.insert(std::make_pair("Authorization", "Bot " + httpClient.getBotToken()));
 			workload.headersToInsert.insert(std::make_pair("User-Agent", "DiscordBot (https://discordcoreapi.com/ 1.0)"));
-			workload.headersToInsert.insert(std::make_pair("Content-Type", "application/json"));
+			if (workload.payloadType == PayloadType::Application_Json) {
+				workload.headersToInsert.insert(std::make_pair("Content-Type", "application/json"));
+			} else if (workload.payloadType == PayloadType::Multipart_Form) {
+				workload.headersToInsert.insert(std::make_pair("Content-Type", "multipart/form-data; boundary=boundary25"));
+			}
 			return httpClient.httpRequest(workload);
 		} catch (...) {
 			DiscordCoreAPI::reportException(workload.callStack + "::HttpClient::submitWorkloadAndGetResult()");

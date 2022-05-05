@@ -28,6 +28,29 @@
 
 namespace DiscordCoreAPI {
 
+	void constructMultiPartData(DiscordCoreInternal::HttpWorkloadData& dataPackage, nlohmann::json theData, std::vector<File>& files) {
+		dataPackage.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
+		const std::string boundary("boundary25");
+		const std::string partStart("--" + boundary + "\r\nContent-Type: application/octet-stream\r\nContent-Disposition: form-data; ");
+
+		std::string content("--" + boundary);
+
+		content += "\r\nContent-Type: application/json\r\nContent-Disposition: form-data; name=\"payload_json\"\r\n\r\n";
+		content += theData.dump() + "\r\n";
+		if (files.size() == 1) {
+			content += partStart + "name=\"file\"; filename=\"" + files[0].fileName + "\"" + "\r\n\r\n";
+			content += files[0].data;
+		} else {
+			for (uint8_t x = 0; x < files.size(); x += 1) {
+				content += partStart + "name=\"files[" + std::to_string(x) + "]\"; filename=\"" + files[x].fileName + "\"\r\n\r\n";
+				content += files[x].data;
+				content += "\r\n";
+			}
+		}
+		content += "\r\n--" + boundary + "--";
+		dataPackage.content = content;
+	}
+
 	std::string getISO8601TimeStamp(std::string year, std::string month, std::string day, std::string hour, std::string minute, std::string second) {
 		std::string theTimeStamp{};
 		theTimeStamp += year + "-";
@@ -155,6 +178,14 @@ namespace DiscordCoreAPI {
 			}
 		}
 		return newString;
+	}
+
+	std::string loadFileContents(std::string filePath) {
+		std::ifstream file(filePath, std::ios::in | std::ios::binary);
+		std::ostringstream stream{};
+		stream << file.rdbuf();
+		std::string theString = stream.str();
+		return theString;
 	}
 
 	int64_t convertTimestampToMsInteger(std::string timeStamp) {
