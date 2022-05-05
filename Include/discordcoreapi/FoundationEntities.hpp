@@ -2596,6 +2596,18 @@ namespace DiscordCoreAPI {
 		Lottie = 3///< Lottie.
 	};
 
+	/// Represents a forum thread message. \brief Represents a forum thread message.
+	struct DiscordCoreAPI_Dll ForumThreadMessageData {
+		std::vector<AttachmentData> attachments{};///< Array of partial attachment objects attachment objects with filename.
+		std::vector<ActionRowData> components{};///< Array of message component objects the components to include with the message.
+		AllowedMentionsData allowedMentions{};///< Allowed mention object allowed mentions for the message.
+		std::vector<std::string> stickerIds{};///< Array of snowflakes IDs of up to 3 stickers in the server to send in the message.
+		std::vector<EmbedData> embeds{};///< Array of embed objects	embedded rich content (up to 6000 characters).
+		std::vector<File> files{};///< File contents the contents of the file being sent one of content, file, embed(s), sticker_ids.
+		std::string content{ "" };///< The message contents (up to 2000 characters).
+		int32_t flags{ 0 };///< Flags to be set for the message.
+	};
+
 	/// Message Sticker item data. \brief Message Sticker item data.
 	class DiscordCoreAPI_Dll StickerItemData : public DiscordEntity {
 	  public:
@@ -3703,7 +3715,8 @@ namespace DiscordCoreInternal {
 		Get_Application_Info = 159,
 		Get_Authorization_Info = 160,
 		Get_Gateway_Bot = 161,
-		LAST = 162
+		Post_Thread_In_Forum_Channel = 162,
+		LAST = 163
 	};
 
 	struct DiscordCoreAPI_Dll HttpWorkloadData {

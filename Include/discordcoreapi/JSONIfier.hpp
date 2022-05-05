@@ -36,6 +36,7 @@ namespace DiscordCoreAPI {
 	struct CreateGuildScheduledEventData;
 	struct ModifyGuildScheduledEventData;
 	struct StartThreadWithoutMessageData;
+	struct StartThreadInForumChannelData;
 	struct ModifyGuildWelcomeScreenData;
 	struct ModifyGuildRolePositionsData;
 	struct EditApplicationCommandData;
@@ -146,6 +147,8 @@ namespace DiscordCoreInternal {
 	std::string JSONIFY(DiscordCoreAPI::StartThreadWithMessageData dataPackage);
 
 	std::string JSONIFY(DiscordCoreAPI::StartThreadWithoutMessageData dataPackage);
+
+	std::string JSONIFY(DiscordCoreAPI::StartThreadInForumChannelData dataPackage);
 
 	std::string JSONIFY(DiscordCoreAPI::CreateGuildEmojiData dataPackage);
 

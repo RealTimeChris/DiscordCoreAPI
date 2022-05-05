@@ -210,6 +210,108 @@ namespace DiscordCoreInternal {
 		return finalValue;
 	};
 
+	std::string JSONIFY(DiscordCoreAPI::StartThreadInForumChannelData dataPackage) {
+		nlohmann::json theData{};
+		auto componentsActionRow = nlohmann::json::array();
+
+		for (auto& value: dataPackage.message.components) {
+			auto components = nlohmann::json::array();
+
+			for (auto& valueNew: value.components) {
+				if (valueNew.type == DiscordCoreAPI::ComponentType::Button) {
+					nlohmann::json component = { { "custom_id", valueNew.customId }, { "disabled", valueNew.disabled },
+						{ "emoji", { { "name", valueNew.emoji.name }, { "animated", valueNew.emoji.animated } } }, { "label", valueNew.label },
+						{ "style", valueNew.style }, { "type", valueNew.type }, { "url", valueNew.url } };
+					if (valueNew.emoji.id != "") {
+						nlohmann::json componentNew = { { "id", valueNew.emoji.id } };
+						component["emoji"].update(componentNew);
+					}
+					components.push_back(component);
+				} else if (valueNew.type == DiscordCoreAPI::ComponentType::SelectMenu) {
+					nlohmann::json optionsArray = nlohmann::json::array();
+					for (auto& value01: valueNew.options) {
+						nlohmann::json option = { { "description", value01.description }, { "label", value01.label }, { "value", value01.value },
+							{ "default", value01._default } };
+						if (value01.emoji.name != "") {
+							nlohmann::json dataNew = { { "emoji", { { "name", value01.emoji.name }, { "animated", value01.emoji.animated } } } };
+							option.update(dataNew);
+						}
+						if (value01.emoji.id != "") {
+							nlohmann::json dataNew = { { "id", value01.emoji.id } };
+							option["emoji"].update(dataNew);
+						}
+						optionsArray.push_back(option);
+					};
+					{
+						nlohmann::json component = { { "custom_id", valueNew.customId }, { "options", optionsArray }, { "disabled", valueNew.disabled },
+							{ "type", valueNew.type }, { "max_values", valueNew.maxValues }, { "min_values", valueNew.minValues },
+							{ "placeholder", valueNew.placeholder } };
+						components.push_back(component);
+					}
+				} else if (valueNew.type == DiscordCoreAPI::ComponentType::TextInput) {
+					nlohmann::json component = { { "min_length", valueNew.minLength }, { "max_length", valueNew.maxLength }, { "label", valueNew.label },
+						{ "placeholder", valueNew.placeholder }, { "type", valueNew.type }, { "custom_id", valueNew.customId }, { "style", valueNew.style },
+						{ "required", valueNew.required } };
+					components.push_back(component);
+				}
+			}
+			nlohmann::json componentActionRow = { { "type", 1 }, { "components", components } };
+			componentsActionRow.push_back(componentActionRow);
+		}
+		auto stickersArray = nlohmann::json::array();
+
+		for (auto& value: dataPackage.message.stickerIds) {
+			stickersArray.push_back(value);
+		}
+
+		auto embedsArray = nlohmann::json::array();
+
+		for (auto& value: dataPackage.message.embeds) {
+			auto fields = nlohmann::json::array();
+
+			for (auto& value2: value.fields) {
+				nlohmann::json field = { { "inline", value2.Inline }, { "value", value2.value }, { "name", value2.name } };
+				fields.push_back(field);
+			}
+
+			int32_t colorValInt = std::stol(value.hexColorValue, 0, 16);
+			std::stringstream stream{};
+			stream << std::setbase(10) << colorValInt;
+			std::string realColorVal = stream.str();
+
+			nlohmann::json embed = { { "author",
+										 { { "icon_url", value.author.iconUrl }, { "name", value.author.name }, { "url", value.author.url },
+											 { "proxy_icon_url", value.author.proxyIconUrl } } },
+				{ "image",
+					{ { "height", value.image.height }, { "width", value.image.width }, { "url", value.image.url }, { "proxy_url", value.image.proxyUrl } } },
+				{ "provider", { { "name", value.provider.name }, { "url", value.provider.url } } },
+				{ "thumbnail",
+					{ { "height", value.thumbnail.height }, { "width", value.thumbnail.width }, { "url", value.thumbnail.url },
+						{ "proxy_url", value.thumbnail.proxyUrl } } },
+				{ "footer", { { "icon_url", value.footer.iconUrl }, { "proxy_icon_url", value.footer.proxyIconUrl }, { "text", value.footer.text } } },
+				{ "description", value.description }, { "title", value.title }, { "fields", fields }, { "color", realColorVal },
+				{ "timestamp", value.timestamp }, { "components", componentsActionRow } };
+			embedsArray.push_back(embed);
+		}
+
+		nlohmann::json data = { { "allowed_mentions",
+									{ { "parse", dataPackage.message.allowedMentions.parse },
+										{ "replied_user", dataPackage.message.allowedMentions.repliedUser },
+										{ "roles", dataPackage.message.allowedMentions.roles }, { "users", dataPackage.message.allowedMentions.users } } },
+			{ "components", componentsActionRow }, { "sticker_ids", stickersArray }, { "content", dataPackage.message.content } };
+
+		if (dataPackage.message.embeds.size() > 0) {
+			nlohmann::json dataNew = { { "embeds", embedsArray } };
+			data.update(dataNew);
+		}
+
+		theData.emplace(std::make_pair("message", data.dump()));
+		theData.emplace(std::make_pair("name", dataPackage.name));
+		theData.emplace(std::make_pair("auto_archive_duration", dataPackage.autoArchiveDuration));
+		theData.emplace(std::make_pair("rate_limit_per_user", dataPackage.rateLimitPerUser));
+		return theData.dump();
+	}
+
 	std::string JSONIFY(DiscordCoreAPI::CreateMessageData dataPackage) {
 		auto componentsActionRow = nlohmann::json::array();
 

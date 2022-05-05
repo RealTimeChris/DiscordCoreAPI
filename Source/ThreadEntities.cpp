@@ -96,6 +96,27 @@ namespace DiscordCoreAPI {
 		}
 	}
 
+	CoRoutine<Thread> Threads::startThreadInForumChannelAsync(StartThreadInForumChannelData dataPackage) {
+		try {
+			DiscordCoreInternal::HttpWorkloadData workload{};
+			workload.thisWorkerId =
+				DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Post_Thread_In_Forum_Channel];
+			DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Post_Thread_In_Forum_Channel] += 1;
+			co_await NewThreadAwaitable<Thread>();
+			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Post_Thread_In_Forum_Channel;
+			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Post;
+			workload.relativePath = "/channels/" + dataPackage.channelId + "/threads";
+			workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
+			workload.callStack = "Threads::startThreadInForumChannelAsync";
+			if (dataPackage.reason != "") {
+				workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));
+			}
+			co_return DiscordCoreInternal::submitWorkloadAndGetResult<Thread>(*Threads::httpClient, workload);
+		} catch (...) {
+			reportException("Threads::startThreadInForumChannelAsync()");
+		}
+	}
+
 	CoRoutine<void> Threads::joinThreadAsync(JoinThreadData dataPackage) {
 		try {
 			DiscordCoreInternal::HttpWorkloadData workload{};

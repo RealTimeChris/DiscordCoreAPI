@@ -49,6 +49,16 @@ namespace DiscordCoreAPI {
 		bool invitable{ false };///< Whether non-moderators can add other non - moderators to a thread; only available when creating a private thread.
 	};
 
+	/// For starting a Thread, in a forum channel. \brief For starting a Thread, in a forum channel.
+	struct DiscordCoreAPI_Dll StartThreadInForumChannelData {
+		ThreadAutoArchiveDuration autoArchiveDuration{ ThreadAutoArchiveDuration::Longest };/// Duration in minutes to automatically archive the thread.
+		ForumThreadMessageData message{};///< A forum thread message params object contents of the first message in the forum thread.
+		std::string channelId{ "" };///< The id of the channel.
+		int32_t rateLimitPerUser{};///< Integer amount of seconds a user has to wait before sending another message(0 - 21600).
+		std::string reason{ "" };///< Reason for starting the Thread.
+		std::string name{ "" };///< 1-100 character channel name auto_archive_duration.
+	};
+
 	/// For joining a Thread. \brief For joining a Thread.
 	struct DiscordCoreAPI_Dll JoinThreadData {
 		std::string channelId{ "" };///< The id of the Thread to join.
@@ -141,6 +151,11 @@ namespace DiscordCoreAPI {
 		/// \param dataPackage A StartThreadWithoutMessageData structure.
 		/// \returns A CoRoutine containing a Channel.
 		static CoRoutine<Thread> startThreadWithoutMessageAsync(StartThreadWithoutMessageData dataPackage);
+
+		/// Starts a Thread, in a forum channel. \brief Starts a Thread, in a forum channel.
+		/// \param dataPackage A StartThreadInForumChannelData structure.
+		/// \returns A CoRoutine containing a Channel.
+		static CoRoutine<Thread> startThreadInForumChannelAsync(StartThreadInForumChannelData dataPackage);
 
 		/// Joins a Thread. \brief Joins a Thread.
 		/// \param dataPackage A JoinThreadData structure.
