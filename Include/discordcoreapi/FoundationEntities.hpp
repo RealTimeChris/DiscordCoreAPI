@@ -1285,9 +1285,7 @@ namespace DiscordCoreAPI {
 
 	/// Data representing a file to be sent via multipart-form data. \brief Data representing a file to be sent via multipart-form data.
 	struct File {
-		std::string description{};
 		std::string fileName{};
-		MediaType mediaType{};
 		std::string data{};
 	};
 
