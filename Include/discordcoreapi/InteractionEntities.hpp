@@ -40,7 +40,7 @@ namespace DiscordCoreAPI {
 		/// \param emojiName An emoji name, if desired.
 		/// \param emojiId An emoji id, if desired.
 		/// \param url A url, if applicable.
-		void addButton(bool disabled, std::string customIdNew, std::string buttonLabel, ButtonStyle buttonStyle, std::string emojiName = "",
+		InteractionResponse& addButton(bool disabled, std::string customIdNew, std::string buttonLabel, ButtonStyle buttonStyle, std::string emojiName = "",
 			std::string emojiId = "", std::string url = "") {
 			if (this->data.data.components.size() == 0) {
 				ActionRowData actionRowData;
@@ -63,6 +63,7 @@ namespace DiscordCoreAPI {
 					this->data.data.components.push_back(actionRowData);
 				}
 			}
+			return *this;
 		}
 
 		/// Adds a select-menu to the response Message. \brief Adds a select-menu to the response Message.
@@ -72,7 +73,7 @@ namespace DiscordCoreAPI {
 		/// \param placeholder Custom placeholder text if nothing is selected, max 100 characters.
 		/// \param maxValues Maximum number of selections that are possible.
 		/// \param minValues Minimum required number of selections that are required.
-		void addSelectMenu(
+		InteractionResponse& addSelectMenu(
 			bool disabled, std::string customIdNew, std::vector<SelectOptionData> options, std::string placeholder, int32_t maxValues, int32_t minValues) {
 			if (this->data.data.components.size() == 0) {
 				ActionRowData actionRowData;
@@ -94,42 +95,57 @@ namespace DiscordCoreAPI {
 					this->data.data.components.push_back(actionRowData);
 				}
 			}
+			return *this;
+		}
+
+		/// Adds a file to the current collection of files for this message response. \brief Adds a file to the current collection of files for this message response.
+		/// \param theFile The file to be added.
+		/// \returns MessageResponseBase& A reference to this data structure.
+		InteractionResponse& addFile(File theFile) {
+			this->data.data.files.push_back(theFile);
+			return *this;
 		}
 
 		/// For setting the allowable mentions in a response. \brief For setting the allowable mentions in a response.
 		/// \param dataPackage An AllowedMentionsData structure.
-		void addAllowedMentions(AllowedMentionsData dataPackage) {
+		InteractionResponse& addAllowedMentions(AllowedMentionsData dataPackage) {
 			this->data.data.allowedMentions = dataPackage;
+			return *this;
 		}
 
 		/// For setting the components in a response. \brief For setting the components in a response.
 		/// \param dataPackage An ActionRowData structure.
-		void addComponentRow(ActionRowData dataPackage) {
+		InteractionResponse& addComponentRow(ActionRowData dataPackage) {
 			this->data.data.components.push_back(dataPackage);
+			return *this;
 		}
 
 		/// Sets the response type of the current Message. \brief Sets the response type of the current Message.
 		/// \param type Interaction callback type.
-		void setResponseType(InteractionCallbackType type) {
+		InteractionResponse& setResponseType(InteractionCallbackType type) {
 			this->data.type = type;
+			return *this;
 		}
 
 		/// For setting the embeds in a response. \brief For setting the embeds in a response.
 		/// \param dataPackage An EmbedData structure.
-		void addMessageEmbed(EmbedData dataPackage) {
+		InteractionResponse& addMessageEmbed(EmbedData dataPackage) {
 			this->data.data.embeds.push_back(dataPackage);
+			return *this;
 		}
 
 		/// For setting the Message content in a response. \brief For setting the content in a response.
 		/// \param dataPackage A std::string, containing the content.
-		void addContent(std::string dataPackage) {
+		InteractionResponse& addContent(std::string dataPackage) {
 			this->data.data.content = dataPackage;
+			return *this;
 		}
 
 		/// For setting the tts status of a response. \brief For setting the tts status of a response.
 		/// \param enabledTTs A bool.
-		void setTTSStatus(bool enabledTTs) {
+		InteractionResponse& setTTSStatus(bool enabledTTs) {
 			this->data.data.tts = enabledTTs;
+			return *this;
 		}
 
 		virtual ~InteractionResponse() = default;
@@ -162,6 +178,7 @@ namespace DiscordCoreAPI {
 			this->data.data.content = dataPackage.content;
 			this->data.data.embeds = dataPackage.embeds;
 			this->requesterId = dataPackage.requesterId;
+			this->data.data.files = dataPackage.files;
 			this->data.data.tts = dataPackage.tts;
 			this->data.data.flags = 64;
 		}
@@ -191,6 +208,7 @@ namespace DiscordCoreAPI {
 			this->data.data.content = dataPackage.content;
 			this->data.data.embeds = dataPackage.embeds;
 			this->requesterId = dataPackage.requesterId;
+			this->data.data.files = dataPackage.files;
 			this->data.data.flags = dataPackage.flags;
 			this->data.data.tts = dataPackage.tts;
 		}
@@ -246,14 +264,15 @@ namespace DiscordCoreAPI {
 			}
 			this->interactionPackage.applicationId = dataPackage.applicationId;
 			this->interactionPackage.interactionId = dataPackage.interactionId;
-			this->messagePackage.channelId = dataPackage.channelId;
 			this->data.data.allowedMentions = dataPackage.allowedMentions;
+			this->messagePackage.channelId = dataPackage.channelId;
 			this->data.data.components = dataPackage.components;
+			this->data.data.customId = dataPackage.customId;
 			this->data.data.content = dataPackage.content;
+			this->requesterId = dataPackage.requesterId;
 			this->data.data.embeds = dataPackage.embeds;
 			this->data.data.title = dataPackage.title;
-			this->data.data.customId = dataPackage.customId;
-			this->requesterId = dataPackage.requesterId;
+			this->data.data.files = dataPackage.files;
 			this->data.data.flags = dataPackage.flags;
 			this->data.data.tts = dataPackage.tts;
 		}
@@ -300,6 +319,7 @@ namespace DiscordCoreAPI {
 			this->data.data.content = dataPackage.content;
 			this->data.data.embeds = dataPackage.embeds;
 			this->requesterId = dataPackage.requesterId;
+			this->data.data.files = dataPackage.files;
 			this->data.data.flags = dataPackage.flags;
 			this->data.data.tts = dataPackage.tts;
 		}
@@ -356,6 +376,7 @@ namespace DiscordCoreAPI {
 			this->data.data.content = dataPackage.content;
 			this->data.data.embeds = dataPackage.embeds;
 			this->requesterId = dataPackage.requesterId;
+			this->data.data.files = dataPackage.files;
 			this->data.data.tts = dataPackage.tts;
 			this->data.data.flags = 64;
 		}
@@ -393,6 +414,7 @@ namespace DiscordCoreAPI {
 			this->data.data.embeds = dataPackage.embeds;
 			this->requesterId = dataPackage.requesterId;
 			this->data.data.flags = dataPackage.flags;
+			this->data.data.files = dataPackage.files;
 			this->data.data.tts = dataPackage.tts;
 		}
 
@@ -430,6 +452,7 @@ namespace DiscordCoreAPI {
 			this->data.data.embeds = dataPackage.embeds;
 			this->requesterId = dataPackage.requesterId;
 			this->data.data.flags = dataPackage.flags;
+			this->data.data.files = dataPackage.files;
 			this->data.data.tts = dataPackage.tts;
 		}
 

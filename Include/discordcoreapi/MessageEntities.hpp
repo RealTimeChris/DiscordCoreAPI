@@ -275,6 +275,7 @@ namespace DiscordCoreAPI {
 		std::string requesterId{ "" };
 		std::string channelId{ "" };
 		std::string messageId{ "" };
+		std::vector<File> files{};
 		int32_t flags{ 0 };
 
 		EditMessageData() = default;

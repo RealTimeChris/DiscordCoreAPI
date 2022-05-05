@@ -57,7 +57,11 @@ namespace DiscordCoreAPI {
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Post;
 			workload.relativePath =
 				"/interactions/" + dataPackage.interactionPackage.interactionId + "/" + dataPackage.interactionPackage.interactionToken + "/callback";
-			workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
+			if (dataPackage.data.data.files.size() > 0) {
+				constructMultiPartData(workload, nlohmann::json::parse(DiscordCoreInternal::JSONIFY(dataPackage)), dataPackage.data.data.files);
+			} else {
+				workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
+			}
 			workload.callStack = "Interactions::createInteractionResponseAsync";
 			DiscordCoreInternal::submitWorkloadAndGetResult<void>(*Interactions::httpClient, workload);
 			co_return Interactions::getInteractionResponseAsync(
@@ -95,7 +99,11 @@ namespace DiscordCoreAPI {
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Patch;
 			workload.relativePath =
 				"/webhooks/" + dataPackage.interactionPackage.applicationId + "/" + dataPackage.interactionPackage.interactionToken + "/messages/@original";
-			workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
+			if (dataPackage.data.data.files.size() > 0) {
+				constructMultiPartData(workload, nlohmann::json::parse(DiscordCoreInternal::JSONIFY(dataPackage)), dataPackage.data.data.files);
+			} else {
+				workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
+			}
 			workload.callStack = "Interactions::editInteractionResponseAsync";
 			co_return DiscordCoreInternal::submitWorkloadAndGetResult<Message>(*Interactions::httpClient, workload);
 		} catch (...) {
@@ -131,7 +139,11 @@ namespace DiscordCoreAPI {
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Post_Followup_Message;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Post;
 			workload.relativePath = "/webhooks/" + dataPackage.interactionPackage.applicationId + "/" + dataPackage.interactionPackage.interactionToken;
-			workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
+			if (dataPackage.data.data.files.size() > 0) {
+				constructMultiPartData(workload, nlohmann::json::parse(DiscordCoreInternal::JSONIFY(dataPackage)), dataPackage.data.data.files);
+			} else {
+				workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
+			}
 			workload.callStack = "Interactions::createFollowUpMessageAsync";
 			co_return DiscordCoreInternal::submitWorkloadAndGetResult<Message>(*Interactions::httpClient, workload);
 		} catch (...) {
@@ -166,7 +178,11 @@ namespace DiscordCoreAPI {
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Patch;
 			workload.relativePath = "/webhooks/" + dataPackage.interactionPackage.applicationId + "/" + dataPackage.interactionPackage.interactionToken +
 				"/messages/" + dataPackage.messagePackage.messageId;
-			workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
+			if (dataPackage.data.data.files.size() > 0) {
+				constructMultiPartData(workload, nlohmann::json::parse(DiscordCoreInternal::JSONIFY(dataPackage)), dataPackage.data.data.files);
+			} else {
+				workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
+			}
 			workload.callStack = "Interactions::editFollowUpMessageAsync";
 			co_return DiscordCoreInternal::submitWorkloadAndGetResult<Message>(*Interactions::httpClient, workload);
 		} catch (...) {

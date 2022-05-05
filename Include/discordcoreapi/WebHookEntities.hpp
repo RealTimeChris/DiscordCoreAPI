@@ -324,6 +324,7 @@ namespace DiscordCoreAPI {
 		std::vector<EmbedData> embeds{};///< Array of up to 10 embed objects.
 		std::string webhookToken{ "" };///< The WebHook token you would like to collect.
 		std::string webhookId{ "" };///< The WebHook you would like to collect.
+		std::vector<File> files{};///< Files for uploading.
 		std::string content{ "" };///< The message contents(up to 2000 characters).
 	};
 

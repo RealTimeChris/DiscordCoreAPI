@@ -211,7 +211,11 @@ namespace DiscordCoreAPI {
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Patch_Message;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Patch;
 			workload.relativePath = "/channels/" + dataPackage.channelId + "/messages/" + dataPackage.messageId;
-			workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
+			if (dataPackage.files.size() > 0) {
+				constructMultiPartData(workload, nlohmann::json::parse(DiscordCoreInternal::JSONIFY(dataPackage)), dataPackage.files);
+			} else {
+				workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
+			}
 			workload.callStack = "Messages::editMessageAsync";
 			auto result = DiscordCoreInternal::submitWorkloadAndGetResult<Message>(*Messages::httpClient, workload);
 			result.requesterId = dataPackage.requesterId;

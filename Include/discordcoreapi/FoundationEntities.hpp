@@ -2466,6 +2466,7 @@ namespace DiscordCoreAPI {
 		std::vector<EmbedData> embeds{};///< Message embeds.
 		std::string customId{ "" };///< A developer-defined identifier for the component, max 100 characters.
 		std::string content{ "" };///< Message content.
+		std::vector<File> files{};///< Files for uploading.
 		std::string title{ "" };///< The title of the popup modal.
 		int32_t flags{ 0 };///< Flags.
 		bool tts{ false };///< Is it TTS?
@@ -3250,6 +3251,14 @@ namespace DiscordCoreAPI {
 			return *this;
 		}
 
+		/// Adds a file to the current collection of files for this message response. \brief Adds a file to the current collection of files for this message response.
+		/// \param theFile The file to be added.
+		/// \returns MessageResponseBase& A reference to this data structure.
+		RespondToInputEventData& addFile(File theFile) {
+			this->files.push_back(theFile);
+			return *this;
+		}
+
 		/// For setting the allowable mentions in a response. \brief For setting the allowable mentions in a response.
 		/// \param dataPackage An AllowedMentionsData structure.
 		RespondToInputEventData& addAllowedMentions(AllowedMentionsData dataPackage) {
@@ -3314,6 +3323,7 @@ namespace DiscordCoreAPI {
 		std::string messageId{ "" };
 		std::string customId{ "" };
 		std::string content{ "" };
+		std::vector<File> files{};
 		std::string title{ "" };
 		int32_t flags{ 0 };
 		bool tts{ false };
