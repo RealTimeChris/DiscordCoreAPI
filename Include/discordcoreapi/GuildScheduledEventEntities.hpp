@@ -90,7 +90,7 @@ namespace DiscordCoreAPI {
 	  public:
 		GuildScheduledEvent() = default;
 
-		GuildScheduledEvent(GuildScheduledEventData dataNew);
+		virtual ~GuildScheduledEvent() = default;
 	};
 
 	/**@}*/

@@ -20,6 +20,7 @@
 
 #pragma once
 
+#include <discordcoreapi/FoundationEntities.hpp>
 #include <discordcoreapi/JSONIfier.hpp>
 
 namespace DiscordCoreAPI {
@@ -56,8 +57,8 @@ namespace DiscordCoreAPI {
 		/// \param emojiId An emoji id, if desired.
 		/// \param url A url, if applicable.
 		/// \returns MessageResponseBase& A reference to this data structure.
-		MessageResponseBase& addButton(bool disabled, std::string customIdNew, std::string buttonLabel, ButtonStyle buttonStyle, std::string emojiName = "",
-			std::string emojiId = "", std::string url = "") {
+		MessageResponseBase& addButton(
+			bool disabled, std::string customIdNew, std::string buttonLabel, ButtonStyle buttonStyle, std::string emojiName = "", std::string emojiId = "", std::string url = "") {
 			if (this->components.size() == 0) {
 				ActionRowData actionRowData;
 				this->components.push_back(actionRowData);
@@ -322,7 +323,7 @@ namespace DiscordCoreAPI {
 	  public:
 		Message() = default;
 
-		Message(MessageData dataNew);
+		virtual ~Message() = default;
 	};
 
 	/**@}*/

@@ -100,9 +100,13 @@ namespace DiscordCoreAPI {
 	  public:
 		VoiceStateData voiceData{};///< For the voice connection's data, if any.
 
+		GuildMember& operator=(GuildMemberData&);
+
+		GuildMember(GuildMemberData&);
+
 		GuildMember() = default;
 
-		GuildMember(GuildMemberData dataNew);
+		virtual ~GuildMember() = default;
 	};
 	/**@}*/
 
@@ -167,6 +171,7 @@ namespace DiscordCoreAPI {
 	  protected:
 		static std::unordered_map<std::string, GuildMember> cache;
 		static DiscordCoreInternal::HttpClient* httpClient;
+		static std::mutex accessMutex;
 
 		static void insertGuildMember(GuildMember dataPackage);
 

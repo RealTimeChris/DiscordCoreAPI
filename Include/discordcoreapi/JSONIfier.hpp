@@ -69,6 +69,7 @@ namespace DiscordCoreAPI {
 	class ExecuteWebHookData;
 	class CreateMessageData;
 	class EditMessageData;
+	class EditWebHookData;
 
 };// namespace DiscordCoreAPI
 
@@ -120,21 +121,13 @@ namespace DiscordCoreInternal {
 
 	std::string JSONIFY(DiscordCoreAPI::EditGuildApplicationCommandData dataPackage);
 
-	std::string JSONIFY(DiscordCoreAPI::EditFollowUpMessageData dataPackage);
-
-	std::string JSONIFY(DiscordCoreAPI::EditInteractionResponseData dataPackage);
-
-	std::string JSONIFY(DiscordCoreAPI::CreateDeferredInteractionResponseData dataPackage);
-
-	std::string JSONIFY(DiscordCoreAPI::CreateInteractionResponseData dataPackage);
+	std::string JSONIFY(DiscordCoreAPI::InteractionResponseData dataPackage);
 
 	std::string JSONIFY(DiscordCoreAPI::CreateGuildRoleData dataPackage);
 
 	std::string JSONIFY(DiscordCoreAPI::ModifyGuildRolePositionsData dataPackage);
 
 	std::string JSONIFY(DiscordCoreAPI::EditChannelPermissionOverwritesData dataPackage);
-
-	std::string JSONIFY(DiscordCoreAPI::CreateFollowUpMessageData dataPackage);
 
 	std::string JSONIFY(DiscordCoreAPI::DeleteMessagesBulkData dataPackage);
 
@@ -174,6 +167,6 @@ namespace DiscordCoreInternal {
 
 	std::string JSONIFY(DiscordCoreAPI::ExecuteWebHookData dataPackage);
 
-	std::string JSONIFY(DiscordCoreAPI::EditWebHookMessageData dataPackage);
+	std::string JSONIFY(DiscordCoreAPI::EditWebHookData dataPackage);
 
 }// namespace DiscordCoreInternal

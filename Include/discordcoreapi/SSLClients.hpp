@@ -255,7 +255,7 @@ namespace DiscordCoreInternal {
 		std::unique_ptr<SOCKET, SOCKETDeleter> socketPtr{ new SOCKET{ INVALID_SOCKET }, SOCKETDeleter{} };
 	};
 
-	struct X509Deleter {
+	struct DiscordCoreAPI_Dll X509Deleter {
 		void operator()(X509* other) {
 			X509_free(other);
 		}
@@ -275,7 +275,7 @@ namespace DiscordCoreInternal {
 
 		static void initialize();
 
-		virtual ~HttpSSLClient(){};
+		virtual ~HttpSSLClient() = default;
 
 	  protected:
 		static std::string soundcloudCertPathStatic;

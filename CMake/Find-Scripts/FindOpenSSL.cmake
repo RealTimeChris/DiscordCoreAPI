@@ -10,27 +10,27 @@
 #	OPENSSL::Crypto and OPENSLL::Ssl
 find_library(
 	LIBCRYPTO_RELEASE_LIBRARY 
-	NAMES "libcrypto${LIBRARY_SUFFIX}" 
+	NAMES "libcrypto${LIB_SUFFIX}" 
 	PATHS "${OPENSSL_RELEASE_ROOT}" NO_DEFAULT_PATH
 )
 find_library(
 	LIBCRYPTO_DEBUG_LIBRARY
-	NAMES "libcrypto${LIBRARY_SUFFIX}"
+	NAMES "libcrypto${LIB_SUFFIX}"
 	PATHS "${OPENSSL_DEBUG_ROOT}" NO_DEFAULT_PATH
 )
 find_library(
 	LIBSSL_RELEASE_LIBRARY 
-	NAMES "libssl${LIBRARY_SUFFIX}" 
+	NAMES "libssl${LIB_SUFFIX}" 
 	PATHS "${OPENSSL_RELEASE_ROOT}" NO_DEFAULT_PATH
 )
 find_library(
 	LIBSSL_DEBUG_LIBRARY 
-	NAMES "libssl${LIBRARY_SUFFIX}" 
+	NAMES "libssl${LIB_SUFFIX}" 
 	PATHS "${OPENSSL_DEBUG_ROOT}" NO_DEFAULT_PATH
 )
 if (EXISTS "${LIBSSL_RELEASE_LIBRARY}" AND EXISTS "${LIBSSL_DEBUG_LIBRARY}" AND EXISTS "${LIBCRYPTO_RELEASE_LIBRARY}" 
 	AND EXISTS "${LIBCRYPTO_DEBUG_LIBRARY}" AND EXISTS "${OPENSSL_INCLUDE_DIR}")
-	message(STATUS "Found OpenSSL libraries!")
+	message(STATUS "Found OpenSSL libraries")
 else()
 	message(FATAL_ERROR "Couldn't find OpenSSL!")
 endif()
@@ -78,7 +78,7 @@ if (EXISTS "${LIBSSL_RELEASE_DLL}" AND EXISTS "${LIBSSL_DEBUG_DLL}" AND EXISTS "
 		IMPORTED_IMPLIB_RELEASE "${LIBCRYPTO_RELEASE_LIBRARY}" IMPORTED_IMPLIB_DEBUG "${LIBCRYPTO_DEBUG_LIBRARY}"
 	)
 	target_include_directories(OPENSSL::Crypto INTERFACE "${OPENSSL_INCLUDE_DIR}")
-	message(STATUS "Found OpenSSL Dlls!")
+	message(STATUS "Found OpenSSL Dlls")
 else()
 	add_library(OPENSSL::Ssl STATIC IMPORTED GLOBAL)
 	set_target_properties(
@@ -96,5 +96,5 @@ else()
 	unset(LIBCRYPTO_DEBUG_DLL CACHE)
 	unset(LIBSSL_RELEASE_DLL CACHE)
 	unset(LIBSSL_DEBUG_DLL CACHE)
-	message(STATUS "Couldn't find OpenSSL Dlls - linking statically!")
+	message(STATUS "Couldn't find OpenSSL Dlls - linking statically")
 endif()

@@ -2,7 +2,7 @@ include(GenerateProductVersion)
 generate_product_version(
 	PRODUCT_INFO
 	NAME "${LIB_NAME}"
-	FILE_DESCRIPTION "A Discord bot library written in C++, using asynchronous coroutines."
+	FILE_DESCRIPTION "${DESCRIPTION}"
 	ORIGINAL_FILENAME "discordcoreapi.dll"
 	COMPANY_NAME "RealTimeChris Inc."
 	VERSION_MAJOR "1"
@@ -34,27 +34,17 @@ set_target_properties(
 	OUTPUT_NAME "discordcoreapi"
 	CXX_STANDARD_REQUIRED ON
 	CXX_EXTENSIONS OFF
-	RUNTIME_OUTPUT_DIRECTORY "$<INSTALL_INTERFACE:$<IF:$<CONFIG:Debug>,$<INSTALL_PREFIX>/debug/bin/,$<INSTALL_PREFIX>/bin/>>$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Output Files/$<CONFIG>>"
-	ARCHIVE_OUTPUT_DIRECTORY "$<INSTALL_INTERFACE:$<IF:$<CONFIG:Debug>,$<INSTALL_PREFIX>/debug/lib/,$<INSTALL_PREFIX>/lib/>>$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Output Files/$<CONFIG>>"
-	PDB_OUTPUT_DIRECTORY "$<INSTALL_INTERFACE:$<IF:$<CONFIG:Debug>,$<INSTALL_PREFIX>/debug/bin/,$<INSTALL_PREFIX>/bin/>>$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Output Files/$<CONFIG>>"
 )
-
-if (EXISTS "${VCPKG_INSTALLED_DIR}")
-	set(GLIB_INCLUDE_DIR "${VCPKG_INSTALLED_DIR}/include")
-endif()
 
 target_include_directories(
 	"${LIB_NAME}" PUBLIC
 	"$<INSTALL_INTERFACE:$<INSTALL_PREFIX>/include>"
 	PRIVATE
 	"$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Include/>"
-	"${GLIB_INCLUDE_DIR}/glib-2.0"
-	"${GLIB_INCLUDE_DIR}/../lib/glib-2.0/include"
 )
 
 include(FindCurl)
 include(FindFFMPEG)
-include(FindGlib)
 include(FindNlohmannJson)
 include(FindOpenSSL)
 include(FindOpus)
@@ -67,8 +57,6 @@ target_link_libraries(
 	$<$<TARGET_EXISTS:FFMPEG::AVCodec>:FFMPEG::AVCodec>
 	$<$<TARGET_EXISTS:FFMPEG::AVUtil>:FFMPEG::AVUtil>
 	$<$<TARGET_EXISTS:FFMPEG::SWResample>:FFMPEG::SWResample>
-	$<$<TARGET_EXISTS:GLIB::Glib>:GLIB::Glib>
-	$<$<TARGET_EXISTS:INTL::Intl>:INTL::Intl>
 	$<$<TARGET_EXISTS:LIBZ::Libz>:LIBZ::Libz>
 	$<$<TARGET_EXISTS:NLOHMANN::Json>:NLOHMANN::Json>
 	$<$<TARGET_EXISTS:OPENSSL::Ssl>:OPENSSL::Ssl>
@@ -105,30 +93,12 @@ target_link_options(
 	"$<$<PLATFORM_ID:Windows>:/DEBUG>"
 )
 
-set(EXPORTED_TARGETS_NAME "DiscordCoreAPITargets")
-set(DISCORDCOREAPI_INCLUDE_DIR "${CMAKE_INSTALL_PREFIX}/include/discordcoreapi")
-
-install(
-	TARGETS "${LIB_NAME}"
-	EXPORT "${EXPORTED_TARGETS_NAME}"
-	RUNTIME DESTINATION "$<IF:$<CONFIG:Debug>,$<IF:$<STREQUAL:${_VCPKG_INSTALLED_DIR},>,debug/bin,bin>,bin>"
-	ARCHIVE DESTINATION "$<IF:$<CONFIG:Debug>,$<IF:$<STREQUAL:${_VCPKG_INSTALLED_DIR},>,debug/lib,lib>,lib>"
-	PUBLIC_HEADER DESTINATION "${DISCORDCOREAPI_INCLUDE_DIR}"
-)
-
-set(EXPORTED_TARGETS_FILE_NAME "${EXPORTED_TARGETS_NAME}.cmake")
-
-install(
-	EXPORT "${EXPORTED_TARGETS_NAME}"
-	FILE "${EXPORTED_TARGETS_FILE_NAME}"
-	NAMESPACE "${LIB_NAME}::"
-	DESTINATION "share/discordcoreapi"
-)
-
-set(EXPORTED_TARGETS_FILE_PATH "share/discordcoreapi/${EXPORTED_TARGETS_FILE_NAME}")
 set(CONFIG_FILE_NAME "DiscordCoreAPIConfig.cmake")
-set(RELEASE_PDB_FILE_PATH "${CMAKE_INSTALL_PREFIX}/bin/discordcoreapi.pdb")
-set(DEBUG_PDB_FILE_PATH "${CMAKE_INSTALL_PREFIX}/debug/bin/discordcoreapi.pdb")
+set(EXPORTED_TARGETS_NAME "DiscordCoreAPITargets")
+set(EXPORTED_TARGETS_FILE_NAME "${EXPORTED_TARGETS_NAME}.cmake")
+set(EXPORTED_TARGETS_FILE_PATH "share/discordcoreapi/${EXPORTED_TARGETS_FILE_NAME}")
+set(RELEASE_PDB_FILE_PATH "bin/discordcoreapi.pdb")
+set(DEBUG_PDB_FILE_PATH "debug/bin/discordcoreapi.pdb")
 
 include(CMakePackageConfigHelpers)
 configure_package_config_file(
@@ -145,7 +115,7 @@ set(VERSION_FILE_NAME "DiscordCoreAPIConfigVersion.cmake")
 
 write_basic_package_version_file(
 	"${CMAKE_CURRENT_BINARY_DIR}/${VERSION_FILE_NAME}"
-	VERSION "1.0.0"
+	VERSION "${PRODUCT_VERSION}"
 	COMPATIBILITY AnyNewerVersion
 )
 
@@ -153,13 +123,28 @@ install(
 	FILES
 	"${CMAKE_CURRENT_BINARY_DIR}/${CONFIG_FILE_NAME}"
 	"${CMAKE_CURRENT_BINARY_DIR}/${VERSION_FILE_NAME}"
-	DESTINATION "${CMAKE_INSTALL_PREFIX}/share/discordcoreapi"
+	DESTINATION "share/discordcoreapi"
+)
+
+install(
+	TARGETS "${LIB_NAME}"
+	EXPORT "${EXPORTED_TARGETS_NAME}"
+	RUNTIME DESTINATION "$<IF:$<CONFIG:Debug>,debug/bin,bin>"
+	ARCHIVE DESTINATION "$<IF:$<CONFIG:Debug>,debug/lib,lib>"
+	PUBLIC_HEADER DESTINATION "include/discordcoreapi"
+)
+
+install(
+	EXPORT "${EXPORTED_TARGETS_NAME}"
+	FILE "${EXPORTED_TARGETS_FILE_NAME}"
+	NAMESPACE "${PROJECT_NAME}::"
+	DESTINATION "share/discordcoreapi"
 )
 
 install(
 	FILES 
 	"$<$<PLATFORM_ID:Windows>:$<TARGET_PDB_FILE:${LIB_NAME}>>"
-	DESTINATION "$<IF:$<CONFIG:Debug>,$<IF:$<STREQUAL:${_VCPKG_INSTALLED_DIR},>,debug/bin,bin>,bin>"
+	DESTINATION "$<IF:$<CONFIG:Debug>,debug/bin,bin>"
 	OPTIONAL
 )
 

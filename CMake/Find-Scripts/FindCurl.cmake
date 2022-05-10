@@ -10,16 +10,16 @@
 #	CURL::Curl
 find_library(
 	CURL_RELEASE_LIBRARY
-	NAMES "libcurl${LIBRARY_SUFFIX}" "libcurl_imp${LIBRARY_SUFFIX}" "curl${LIBRARY_SUFFIX}" "curl_imp${LIBRARY_SUFFIX}"
+	NAMES "libcurl${LIB_SUFFIX}" "libcurl_imp${LIB_SUFFIX}" "curl${LIB_SUFFIX}" "curl_imp${LIB_SUFFIX}"
 	PATHS "${CURL_RELEASE_ROOT}" NO_DEFAULT_PATH
 )
 find_library(
 	CURL_DEBUG_LIBRARY
-	NAMES "libcurl-d${LIBRARY_SUFFIX}" "libcurl-d_imp${LIBRARY_SUFFIX}" "curl${LIBRARY_SUFFIX}" 
+	NAMES "libcurl-d${LIB_SUFFIX}" "libcurl-d_imp${LIB_SUFFIX}" "curl${LIB_SUFFIX}" 
 	PATHS "${CURL_DEBUG_ROOT}" NO_DEFAULT_PATH
 )
 if(EXISTS "${CURL_RELEASE_LIBRARY}" AND EXISTS "${CURL_DEBUG_LIBRARY}" AND EXISTS "${CURL_INCLUDE_DIR}")
-	message(STATUS "Found Curl libraries!")
+	message(STATUS "Found Curl libraries")
 else()
 	message(FATAL_ERROR "Couldn't find Curl!")
 endif()
@@ -45,7 +45,7 @@ if (EXISTS "${CURL_RELEASE_DLL}" AND EXISTS "${CURL_DEBUG_DLL}")
 		IMPORTED_IMPLIB_RELEASE "${CURL_RELEASE_LIBRARY}" IMPORTED_IMPLIB_DEBUG "${CURL_DEBUG_LIBRARY}"
 	)
 	target_include_directories(CURL::Curl INTERFACE "${CURL_INCLUDE_DIR}")
-	message(STATUS "Found Curl Dlls!")
+	message(STATUS "Found Curl Dlls")
 else()
 	add_library(CURL::Curl STATIC IMPORTED GLOBAL)
 	set_target_properties(
@@ -55,7 +55,7 @@ else()
 	target_include_directories(CURL::Curl INTERFACE "${CURL_INCLUDE_DIR}")
 	unset(CURL_RELEASE_DLL CACHE)
 	unset(CURL_DEBUG_DLL CACHE)
-	message(STATUS "Couldn't find Curl Dlls - linking statically!")
+	message(STATUS "Couldn't find Curl Dlls - linking statically")
 endif()
 # This file locates the Libz library, using a couple of provided paths for searching.
 #
@@ -79,7 +79,7 @@ if (UNIX)
 		PATHS "${CURL_DEBUG_ROOT}" NO_DEFAULT_PATH
 	)
 	if(EXISTS "${LIBZ_RELEASE_LIBRARY}" AND EXISTS "${LIBZ_DEBUG_LIBRARY}" AND EXISTS "${CURL_INCLUDE_DIR}")
-		message(STATUS "Found Libz libraries!")
+		message(STATUS "Found Libz libraries")
 		add_library(LIBZ::Libz STATIC IMPORTED GLOBAL)
 		set_target_properties(
 			LIBZ::Libz PROPERTIES 

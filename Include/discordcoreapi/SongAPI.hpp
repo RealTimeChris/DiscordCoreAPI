@@ -23,6 +23,7 @@
 #include <discordcoreapi/EventEntities.hpp>
 #include <discordcoreapi/FoundationEntities.hpp>
 #include <discordcoreapi/GuildMemberEntities.hpp>
+#include <discordcoreapi/VoiceConnection.hpp>
 
 namespace DiscordCoreAPI {
 
@@ -34,11 +35,11 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll SongAPI {
 	  public:
 		friend class VoiceConnection;
-		friend class SoundCloudAPI;
-		friend class YouTubeAPI;
+		friend class DiscordCoreInternal::SoundCloudAPI;
+		friend class DiscordCoreInternal::YouTubeAPI;
 
-		Event<CoRoutine<void>, SongCompletionEventData> onSongCompletionEvent{};
-		EventDelegateToken theToken{};
+		DiscordCoreInternal::Event<CoRoutine<void>, SongCompletionEventData> onSongCompletionEvent{};
+		DiscordCoreInternal::EventDelegateToken theToken{};
 		Playlist playlist{};
 
 		SongAPI(std::string guildId);

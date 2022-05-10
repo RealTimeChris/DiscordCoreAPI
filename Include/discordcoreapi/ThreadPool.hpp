@@ -70,11 +70,14 @@ namespace DiscordCoreAPI {
 	  protected:
 		std::unordered_map<std::string, std::jthread> threads{};
 	};
+}
+
+namespace DiscordCoreInternal {
 
 	struct DiscordCoreAPI_Dll WorkloadStatus {
 		WorkloadStatus& operator=(WorkloadStatus& other) {
-			this->theCurrentStatus.store(other.doWeQuit.load(std::memory_order::seq_cst), std::memory_order::seq_cst);
-			this->doWeQuit.store(other.doWeQuit.load(std::memory_order::seq_cst), std::memory_order::seq_cst);
+			this->theCurrentStatus.store(other.doWeQuit.load());
+			this->doWeQuit.store(other.doWeQuit.load());
 			return *this;
 		}
 
@@ -89,8 +92,8 @@ namespace DiscordCoreAPI {
 		}
 
 		~WorkloadStatus() {
-			if (DiscordCoreInternal::Globals::httpConnections[this->threadId] != nullptr) {
-				DiscordCoreInternal::Globals::httpConnections.erase(this->threadId);
+			if (Globals::httpConnections[this->threadId] != nullptr) {
+				Globals::httpConnections.erase(this->threadId);
 			}
 		}
 
@@ -103,12 +106,12 @@ namespace DiscordCoreAPI {
 	  public:
 		CoRoutineThreadPool() {
 			for (uint32_t x = 0; x < std::thread::hardware_concurrency(); ++x) {
-				std::jthread workerThread([this]() {
-					auto thePtr = std::make_unique<DiscordCoreInternal::HttpConnection>();
-					DiscordCoreInternal::Globals::httpConnections.insert(std::make_pair(std::this_thread::get_id(), std::move(thePtr)));
+				std::unique_ptr<std::jthread> workerThread = std::make_unique<std::jthread>(([this]() {
+					auto thePtr = std::make_unique<HttpConnection>();
+					Globals::httpConnections.insert(std::make_pair(std::this_thread::get_id(), std::move(thePtr)));
 					this->threadFunction();
-				});
-				this->theThreads.push_back(std::move(workerThread));
+				}));
+				theThreads.push_back(std::move(workerThread));
 			}
 		}
 
@@ -116,16 +119,16 @@ namespace DiscordCoreAPI {
 			std::unique_lock<std::mutex> theLock(this->theMutex01);
 			bool areWeAllBusy{ true };
 			for (auto& [key, value]: this->theWorkingStatuses) {
-				if (!value.theCurrentStatus.load(std::memory_order::seq_cst)) {
+				if (!value.theCurrentStatus.load()) {
 					areWeAllBusy = false;
 				}
 			}
 			if (areWeAllBusy) {
-				std::jthread workerThread([this]() {
-					auto thePtr = std::make_unique<DiscordCoreInternal::HttpConnection>();
-					DiscordCoreInternal::Globals::httpConnections.insert(std::make_pair(std::this_thread::get_id(), std::move(thePtr)));
+				std::unique_ptr<std::jthread> workerThread = std::make_unique<std::jthread>(([this]() {
+					auto thePtr = std::make_unique<HttpConnection>();
+					Globals::httpConnections.insert(std::make_pair(std::this_thread::get_id(), std::move(thePtr)));
 					this->threadFunction();
-				});
+				}));
 				theThreads.push_back(std::move(workerThread));
 			}
 			this->theCoroutineHandles.emplace(coro);
@@ -133,9 +136,9 @@ namespace DiscordCoreAPI {
 		}
 
 		~CoRoutineThreadPool() {
-			this->areWeQuitting.store(true, std::memory_order::seq_cst);
+			this->areWeQuitting.store(true);
 			for (uint32_t x = 0; x < this->theThreads.size(); x += 1) {
-				std::jthread& thread = this->theThreads[x];
+				std::jthread& thread = *this->theThreads[x];
 				if (thread.joinable()) {
 					thread.join();
 				}
@@ -147,7 +150,7 @@ namespace DiscordCoreAPI {
 		std::unordered_map<std::thread::id, WorkloadStatus> theWorkingStatuses{};
 		std::queue<std::coroutine_handle<>> theCoroutineHandles{};
 		std::atomic_bool areWeQuitting{ false };
-		std::vector<std::jthread> theThreads{};
+		std::vector<std::unique_ptr<std::jthread>> theThreads{};
 		std::condition_variable theCondVar{};
 		std::mutex theMutex01{};
 		std::mutex theMutex02{};
@@ -158,19 +161,19 @@ namespace DiscordCoreAPI {
 			this->theWorkingStatuses.insert_or_assign(std::this_thread::get_id(), theStatus);
 			auto theAtomicBoolPtr = &this->theWorkingStatuses[std::this_thread::get_id()].theCurrentStatus;
 			theLock00.unlock();
-			while (!this->areWeQuitting.load(std::memory_order::seq_cst)) {
+			while (!this->areWeQuitting.load()) {
 				std::unique_lock<std::mutex> theLock01{ this->theMutex01 };
-				while (!this->areWeQuitting.load(std::memory_order::seq_cst) && this->theCoroutineHandles.size() == 0) {
+				while (!this->areWeQuitting.load() && this->theCoroutineHandles.size() == 0) {
 					if (this->theThreads.size() > std::thread::hardware_concurrency()) {
 						for (auto& [key, value]: this->theWorkingStatuses) {
 							bool doWeBreak{ false };
-							if (value.theCurrentStatus.load(std::memory_order::seq_cst)) {
+							if (value.theCurrentStatus.load()) {
 								for (uint32_t x = 0; x < this->theThreads.size(); x += 1) {
-									if (this->theThreads[x].get_id() == key) {
-										this->theThreads[x].detach();
+									if (this->theThreads[x]->get_id() == key) {
+										this->theThreads[x]->detach();
 										this->theThreads.erase(this->theThreads.begin() + x);
 										doWeBreak = true;
-										value.doWeQuit.store(true, std::memory_order::seq_cst);
+										value.doWeQuit.store(true);
 										break;
 									}
 								}
@@ -182,20 +185,20 @@ namespace DiscordCoreAPI {
 					}
 					this->theCondVar.wait_for(theLock01, std::chrono::microseconds(1000));
 				}
-				if (this->areWeQuitting.load(std::memory_order::seq_cst)) {
+				if (this->areWeQuitting.load()) {
 					break;
 				}
 				auto& coroHandle = this->theCoroutineHandles.front();
 				this->theCoroutineHandles.pop();
 				theLock01.unlock();
 				if (theAtomicBoolPtr) {
-					theAtomicBoolPtr->store(true, std::memory_order::seq_cst);
+					theAtomicBoolPtr->store(true);
 				}
 				coroHandle.resume();
 				if (theAtomicBoolPtr) {
-					theAtomicBoolPtr->store(false, std::memory_order::seq_cst);
+					theAtomicBoolPtr->store(false);
 				}
-				if (this->theWorkingStatuses[std::this_thread::get_id()].doWeQuit.load(std::memory_order::seq_cst)) {
+				if (this->theWorkingStatuses[std::this_thread::get_id()].doWeQuit.load()) {
 					break;
 				}
 			}

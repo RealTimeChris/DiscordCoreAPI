@@ -26,7 +26,7 @@ namespace DiscordCoreInternal {
 
 	struct ErlPackError : public std::runtime_error {
 	  public:
-		explicit ErlPackError(const std::string& message) : std::runtime_error(message.c_str()){};
+		ErlPackError(const std::string& message) : std::runtime_error(message.c_str()){};
 	};
 
 	constexpr uint8_t formatVersion{ 131 };
@@ -64,7 +64,7 @@ namespace DiscordCoreInternal {
 	  public:
 		std::string buffer{};
 
-		uint32_t offSet{};
+		uint64_t offSet{};
 
 		ErlPackBuffer() = default;
 

@@ -32,7 +32,7 @@ namespace DiscordCoreAPI {
 
 	void SongAPI::onSongCompletion(std::function<CoRoutine<void>(SongCompletionEventData)> handler, std::string guildId) {
 		auto returnValue = getSongAPIMap()[guildId].get();
-		if (returnValue->theToken != EventDelegateToken{}) {
+		if (returnValue->theToken != DiscordCoreInternal::EventDelegateToken{}) {
 			returnValue->onSongCompletionEvent.remove(returnValue->theToken);
 		}
 		returnValue->theToken = returnValue->onSongCompletionEvent.add(handler);
@@ -163,7 +163,7 @@ namespace DiscordCoreAPI {
 		auto resultValue = getSongAPIMap()[guildId].get();
 		if (resultValue) {
 			getSongAPIMap()[guildId]->onSongCompletionEvent.remove(getSongAPIMap()[guildId]->theToken);
-			getSongAPIMap()[guildId]->theToken = EventDelegateToken{};
+			getSongAPIMap()[guildId]->theToken = DiscordCoreInternal::EventDelegateToken{};
 		}
 	}
 
@@ -266,8 +266,7 @@ namespace DiscordCoreAPI {
 		try {
 			if (getSongAPIMap()[guildMember.guildId]->playlist.currentSong.type == SongType::SoundCloud) {
 				getSoundCloudAPIMap()[guildMember.guildId]->cancelCurrentSong();
-				auto newerSong =
-					getSoundCloudAPIMap()[guildMember.guildId]->collectFinalSong(guildMember, getSongAPIMap()[guildMember.guildId]->playlist.currentSong);
+				auto newerSong = getSoundCloudAPIMap()[guildMember.guildId]->collectFinalSong(guildMember, getSongAPIMap()[guildMember.guildId]->playlist.currentSong);
 				newerSong.addedByUserId = guildMember.user.id;
 				getSongAPIMap()[this->guildId]->theTask = std::make_unique<std::jthread>([=, this](std::stop_token theToken) {
 					getSoundCloudAPIMap()[this->guildId]->downloadAndStreamAudio(newerSong, getSoundCloudAPIMap()[this->guildId].get(), theToken, 0);
@@ -275,8 +274,7 @@ namespace DiscordCoreAPI {
 
 			} else if (getSongAPIMap()[guildMember.guildId]->playlist.currentSong.type == SongType::YouTube) {
 				getYouTubeAPIMap()[guildMember.guildId]->cancelCurrentSong();
-				auto newerSong =
-					getYouTubeAPIMap()[guildMember.guildId]->collectFinalSong(guildMember, getSongAPIMap()[guildMember.guildId]->playlist.currentSong);
+				auto newerSong = getYouTubeAPIMap()[guildMember.guildId]->collectFinalSong(guildMember, getSongAPIMap()[guildMember.guildId]->playlist.currentSong);
 				newerSong.addedByUserId = guildMember.user.id;
 				getSongAPIMap()[this->guildId]->theTask = std::make_unique<std::jthread>([=, this](std::stop_token theToken) {
 					getYouTubeAPIMap()[this->guildId]->downloadAndStreamAudio(newerSong, getYouTubeAPIMap()[this->guildId].get(), theToken, 0);

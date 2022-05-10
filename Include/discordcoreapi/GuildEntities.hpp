@@ -306,10 +306,12 @@ namespace DiscordCoreAPI {
 		/// \returns A bool telling us if we are connected.
 		bool areWeConnected();
 
+		virtual ~Guild() = default;
+
 	  protected:
 		VoiceConnection* voiceConnectionPtr{ nullptr };
 
-		void initialize();
+		void initialize(bool doWeShowIt);
 	};
 
 	/**@}*/
@@ -322,6 +324,7 @@ namespace DiscordCoreAPI {
 	/// An interface class for the Guild related Discord endpoints. \brief An interface class for the Guild related Discord endpoints.
 	class DiscordCoreAPI_Dll Guilds {
 	  public:
+		friend class DiscordCoreInternal::BaseSocketAgent;
 		friend DiscordCoreClient;
 		friend EventHandler;
 

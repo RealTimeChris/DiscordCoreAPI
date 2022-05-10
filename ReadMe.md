@@ -3,10 +3,10 @@
  <img src="https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Images/TheLogo.png?raw=true"  width="500">
 </p>
 
-Hello, and welcome to DiscordCoreAPI! This is a Discord bot library that leverages custom asynchronous [CoRoutines](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Include/discordcoreapi/CoRoutine.hpp), as well as a home-brew set of [Https](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Source/Http.cpp#L308), [WebSocket](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Source/WebSocketEntities.cpp#L36), and [Datagram](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Source/WebSocketEntities.cpp#L974) socket clients - all to deliver the utmost performance and efficiency for your bot. It uses roughly 0.1% of an Intel i7 9750h CPU to stream audio in high quality (Opus @ 48Khz, 16-bit) to a single server.
+Hello, and welcome to DiscordCoreAPI! This is a Discord bot library that leverages custom asynchronous [CoRoutines](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Include/discordcoreapi/CoRoutine.hpp), as well as a home-brew set of [Https](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Source/Http.cpp#L300), [WebSocket](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Source/WebSocketEntities.cpp#L36), and [Datagram](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Source/WebSocketEntities.cpp#L954) socket clients - all to deliver the utmost performance and efficiency for your bot. It uses roughly 0.1% of an Intel i7 9750h CPU to stream audio in high quality (Opus @ 48Khz, 16-bit) to a single server.
 
 # Documentation/Examples
-[Documentation/Examples](https://discordcoreapi.com/d0/d8e/a05717.html)
+[Documentation/Examples](https://discordcoreapi.com/db/dcc/a05753.html)
 
 # Discord Server
 [This is a link to the Discord server!](https://discord.gg/adgMqeBuhP)
@@ -17,7 +17,7 @@ Hello, and welcome to DiscordCoreAPI! This is a Discord bot library that leverag
 # Features   
 
 ## Performant
-- Thanks to utilizing [Erlang Text Format](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Source/ErlPacker.cpp) for websocket transfer, and a pool of [kept-alive HTTP connections](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Source/Http.cpp#L287-L295) - this library offers the snappiest responses to your interactions and user input.
+- Thanks to utilizing [Erlang Text Format](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Source/ErlPacker.cpp) for websocket transfer, and a pool of [kept-alive HTTP connections](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Source/Http.cpp#L281-L288) - this library offers the snappiest responses to your interactions and user input.
 
 ## CPU Efficient   
 - It only uses about 0.1% of an Intel i7 9750h to stream audio in high quality (Opus 48Khz 16-bit Stereo) to a single server.   
@@ -65,7 +65,7 @@ Hello, and welcome to DiscordCoreAPI! This is a Discord bot library that leverag
    
 ## A Unified "Input-Event" System
 - User interactions (Application Commands, Message Commands, User Commands) are accepted via the `DiscordCoreAPI::EventManager::onInputEventCreation` event.
-- They can all be responded to using the `DiscordCoreAPI::InputEvents::respondToEvent()` function.
+- They can all be responded to using the `DiscordCoreAPI::InputEvents::respondToInputEvent()` function.
 - Alternatively you can implement your own input-event handling by using the raw `DiscordCoreAPI::EventManager::onInteractionCreation` or `DiscordCoreAPI::EventManager::onMessageCreation` events.
 ```cpp
 DiscordCoreAPI::EmbedData newEmbed{};
@@ -77,7 +77,7 @@ newEmbed.setColor(discordGuild.data.borderColor);
 DiscordCoreAPI::RespondToInputEventData dataPackage{ args.eventData };
 dataPackage.addMessageEmbed(newEmbed);
 dataPackage.setResponseType(DiscordCoreAPI::InputEventResponseType::Ephemeral_Interaction_Response);
-DiscordCoreAPI::InputEventData newEvent = DiscordCoreAPI::InputEvents::respondToEvent(dataPackage);
+DiscordCoreAPI::InputEventData newEvent = DiscordCoreAPI::InputEvents::respondToInputEvent(dataPackage);
 DiscordCoreAPI::InputEvents::deleteInputEventResponseAsync(newEvent, 20000).get();
 ```
 
@@ -95,7 +95,6 @@ DiscordCoreAPI::InputEvents::deleteInputEventResponseAsync(newEvent, 20000).get(
 - NOTE: I installed these using the [vcpkg](https://github.com/microsoft/vcpkg) installer.
 - [Curl](https://github.com/curl/curl) (.\\vcpkg install curl:x64-windows_OR_linux)
 - [FFMPEG](http://ffmpeg.org/) (.\\vcpkg install ffmpeg:x64-windows_OR_linux)
-- [Glib](https://github.com/GNOME/glib) (.\\vcpkg install glib:x64-windows_OR_linux)
 - [Nlohmann Json](https://github.com/nlohmann/json) (.\\vcpkg install nlohmann-json:x64-windows_OR_linux)
 - [OpenSSL](https://wiki.openssl.org/index.php/Compilation_and_Installation#W64) (.\\vcpkg install openssl:x64-windows_OR_linux)
 - [Opus](https://opus-codec.org/development/) (.\\vcpkg install opus:x64-windows_OR_linux)
@@ -117,8 +116,8 @@ DiscordCoreAPI::InputEvents::deleteInputEventResponseAsync(newEvent, 20000).get(
 - [Here](https://github.com/RealTimeChris/Bot-Template-for-DiscordCoreAPI/blob/main/CMakeLists.txt) and [here](https://github.com/RealTimeChris/Bot-Template-for-DiscordCoreAPI/blob/main/Executable/CMakeLists.txt) is an example of building an executable from this library with this method.
 
 # Build Instructions (Non-Vcpkg) - The Executable
-- Download the [bot template](https://github.com/RealTimeChris/Bot-Template-for-DiscordCoreAPI) or create your own with the same [imports](https://github.com/RealTimeChris/Bot-Template-for-DiscordCoreAPI/blob/main/Executable/CMakeLists.txt#L38), and set within it either the path to the vcpkg base-directory, or the path to the DiscordCoreAPIConfig.cmake file that was created by the installation process before this and the same `<DEPENDENCY>_INCLUDE_DIR`, `<DEPENDENCY>_DEBUG_ROOT` and `<DEPENDENCY>_RELEASE_ROOT` values as before.
-- Download, install and run [these following scripts](https://github.com/RealTimeChris/DiscordCoreAPI/tree/main/CMake/Find-Scripts) after the call to project() but before trying to find the DiscordCoreAPI package. Such as [here](https://github.com/RealTimeChris/Bot-Template-for-DiscordCoreAPI/blob/main/CMakeLists.txt#L6-L24), and [here](https://github.com/RealTimeChris/Bot-Template-for-DiscordCoreAPI/blob/main/CMakeLists.txt#L60-L68).
+- Download the [bot template](https://github.com/RealTimeChris/Bot-Template-for-DiscordCoreAPI) or create your own with the same [imports](https://github.com/RealTimeChris/Bot-Template-for-DiscordCoreAPI/blob/main/Executable/CMakeLists.txt#L29), and set within it either the path to the vcpkg base-directory, or the path to the DiscordCoreAPIConfig.cmake file that was created by the installation process before this and the same `<DEPENDENCY>_INCLUDE_DIR`, `<DEPENDENCY>_DEBUG_ROOT` and `<DEPENDENCY>_RELEASE_ROOT` values as before.
+- Download, install and run [these following scripts](https://github.com/RealTimeChris/DiscordCoreAPI/tree/main/CMake/Find-Scripts) after the call to project() but before trying to find the DiscordCoreAPI package. Such as [here](https://github.com/RealTimeChris/Bot-Template-for-DiscordCoreAPI/blob/main/CMakeLists.txt#L6-L21), and [here](https://github.com/RealTimeChris/Bot-Template-for-DiscordCoreAPI/blob/main/CMakeLists.txt#L83-L88).
 - Set up a main.cpp like [this one](https://github.com/RealTimeChris/Bot-Template-for-DiscordCoreAPI/blob/main/main.cpp), including the header `discordcoreapi/Index.hpp`.
 - Run in a terminal from within the same folder as the top-level CMakeLists.txt, `cmake -S . --preset Linux_OR_Windows-Debug_OR_Release`.
 - Then run `cmake --build --preset Linux_OR_Windows-Debug_OR_Release`.
@@ -127,3 +126,4 @@ DiscordCoreAPI::InputEvents::deleteInputEventResponseAsync(newEvent, 20000).get(
 # Roadmap
 I am currently working on getting this thing to be used by people like you! So, if you have any suggestions for the library that would make it more usable - don't hesitate to let me know! I can be
 easily found on the Discord server that is linked to above! Cheers and thanks for your time
+https://github.com/RealTimeChris/Bot-Template-for-DiscordCoreAPI/blob/main/CMakeLists.txt#L76-L81

@@ -35,8 +35,8 @@ namespace DiscordCoreAPI {
 	/// VoiceConnection class - represents the connection to a given voice Channel. \brief VoiceConnection class - represents the connection to a given voice Channel.
 	class DiscordCoreAPI_Dll VoiceConnection {
 	  public:
-		friend SoundCloudAPI;
-		friend YouTubeAPI;
+		friend class DiscordCoreInternal::SoundCloudAPI;
+		friend class DiscordCoreInternal::YouTubeAPI;
 		friend SongAPI;
 		friend Guild;
 
@@ -52,36 +52,36 @@ namespace DiscordCoreAPI {
 
 	  protected:
 		std::unique_ptr<DiscordCoreInternal::VoiceSocketAgent> voiceSocketAgent{ nullptr };
+		std::unique_ptr<DiscordCoreInternal::AudioEncoder> encoder{ nullptr };
 		DiscordCoreInternal::BaseSocketAgent* baseSocketAgent{ nullptr };
 		DiscordCoreInternal::VoiceConnectInitData voiceConnectInitData{};
 		DiscordCoreInternal::VoiceConnectionData* voiceConnectionData{};
+		DiscordCoreInternal::EventWaiter* doWeReconnect{ nullptr };
 		TSUnboundedMessageBlock<AudioFrameData> audioBuffer{};
 		std::unique_ptr<std::jthread> theTask{ nullptr };
-		std::unique_ptr<AudioEncoder> encoder{ nullptr };
+		DiscordCoreInternal::EventWaiter playSetEvent{};
+		DiscordCoreInternal::EventWaiter stopSetEvent{};
+		DiscordCoreInternal::EventWaiter pauseEvent{};
 		std::atomic_bool areWeStopping{ false };
 		std::atomic_bool areWePlaying{ false };
 		std::string currentGuildMemberId{ "" };
-		EventWaiter* doWeReconnect{ nullptr };
 		const int32_t maxBufferSize{ 1276 };
 		int64_t disconnectStartTime{ 0 };
 		bool areWeConnectedBool{ false };
 		bool didWeJustConnect{ true };
-		EventWaiter playSetEvent{};
-		EventWaiter stopSetEvent{};
-		AudioFrameData audioData{};
 		int16_t sequenceIndex{ 0 };
-		EventWaiter pauseEvent{};
+		AudioFrameData audioData{};
 		int32_t timeStamp{ 0 };
 
 		std::string encryptSingleAudioFrame(EncodedFrameData bufferToSend, int32_t audioSSRC, std::string keys);
 
-		void connect(DiscordCoreInternal::VoiceConnectInitData voiceConnectInitDataNew);
-
-		void sendSingleAudioFrame(std::string& audioDataPacketNew);
-
 		TSUnboundedMessageBlock<AudioFrameData>& getAudioBuffer();
 
 		void sendSingleFrame(AudioFrameData frameData);
+
+		void connect(DiscordCoreInternal::VoiceConnectInitData voiceConnectInitDataNew);
+
+		void sendSingleAudioFrame(std::string& audioDataPacketNew);
 
 		void sendSpeakingMessage(bool isSpeaking);
 

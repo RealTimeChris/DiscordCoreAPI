@@ -188,6 +188,18 @@ namespace DiscordCoreAPI {
 		return theString;
 	}
 
+	std::string utf8MakeValid(std::string inputString) {
+		std::string returnString{};
+		for (auto& value: inputString) {
+			if (value >= 128) {
+				returnString.push_back(value - 128);
+			} else {
+				returnString.push_back(value);
+			}
+		}
+		return returnString;
+	}
+
 	int64_t convertTimestampToMsInteger(std::string timeStamp) {
 		try {
 			Time timeValue = Time(stoi(timeStamp.substr(0, 4)), stoi(timeStamp.substr(5, 6)), stoi(timeStamp.substr(8, 9)), stoi(timeStamp.substr(11, 12)),
@@ -225,12 +237,10 @@ namespace DiscordCoreAPI {
 			returnString.push_back(base64_chars_[(theString[static_cast<int64_t>(pos + 0)] & 0xfc) >> 2]);
 
 			if (static_cast<uint64_t>(pos + 1) < theString.size()) {
-				returnString.push_back(
-					base64_chars_[((theString[static_cast<int64_t>(pos + 0)] & 0x03) << 4) + ((theString[static_cast<int64_t>(pos + 1)] & 0xf0) >> 4)]);
+				returnString.push_back(base64_chars_[((theString[static_cast<int64_t>(pos + 0)] & 0x03) << 4) + ((theString[static_cast<int64_t>(pos + 1)] & 0xf0) >> 4)]);
 
 				if (static_cast<uint64_t>(pos + 2) < theString.size()) {
-					returnString.push_back(
-						base64_chars_[((theString[static_cast<int64_t>(pos + 1)] & 0x0f) << 2) + ((theString[static_cast<int64_t>(pos + 2)] & 0xc0) >> 6)]);
+					returnString.push_back(base64_chars_[((theString[static_cast<int64_t>(pos + 1)] & 0x0f) << 2) + ((theString[static_cast<int64_t>(pos + 2)] & 0xc0) >> 6)]);
 					returnString.push_back(base64_chars_[theString[static_cast<int64_t>(pos + 2)] & 0x3f]);
 				} else {
 					returnString.push_back(base64_chars_[(theString[static_cast<int64_t>(pos + 1)] & 0x0f) << 2]);
@@ -286,8 +296,8 @@ namespace DiscordCoreAPI {
 	std::string getCurrentISO8601TimeStamp() {
 		std::time_t result = std::time(nullptr);
 		auto resultTwo = std::localtime(&result);
-		std::string resultString = getISO8601TimeStamp(std::to_string(resultTwo->tm_year + 1900), std::to_string(resultTwo->tm_mon),
-			std::to_string(resultTwo->tm_mday), std::to_string(resultTwo->tm_hour), std::to_string(resultTwo->tm_min), std::to_string(resultTwo->tm_sec));
+		std::string resultString = getISO8601TimeStamp(std::to_string(resultTwo->tm_year + 1900), std::to_string(resultTwo->tm_mon), std::to_string(resultTwo->tm_mday),
+			std::to_string(resultTwo->tm_hour), std::to_string(resultTwo->tm_min), std::to_string(resultTwo->tm_sec));
 		return resultString;
 	}
 
@@ -350,7 +360,7 @@ namespace DiscordCoreAPI {
 			int64_t secondsPerMinute = 60;
 			int64_t secondsPerHour = secondsPerMinute * 60;
 			int64_t secondsPerDay = secondsPerHour * 24;
-			auto targetElapsedTime = (((days * secondsPerDay) + (( hours )*secondsPerHour) + (minutes * secondsPerMinute))) * 1000;
+			auto targetElapsedTime = ((days * secondsPerDay) + (hours * secondsPerHour) + (minutes * secondsPerMinute)) * 1000;
 			auto actualElapsedTime = currentTime - startTimeRaw;
 			if (actualElapsedTime >= targetElapsedTime) {
 				return true;
@@ -374,8 +384,8 @@ namespace DiscordCoreAPI {
 		int32_t secondsPerMonth{ secondsPerDay * daysPerMonth };
 		int32_t daysPerYear{ 365 };
 		int32_t secondsPerYear{ secondsPerDay * daysPerYear };
-		int32_t secondsToAdd = (yearsToAdd * secondsPerYear) + (( monthsToAdd )*secondsPerMonth) + (( daysToAdd )*secondsPerDay) +
-			(hoursToAdd * secondsPerHour) + (minutesToAdd * secondsPerMinute);
+		int32_t secondsToAdd =
+			(yearsToAdd * secondsPerYear) + (monthsToAdd * secondsPerMonth) + (daysToAdd * secondsPerDay) + (hoursToAdd * secondsPerHour) + (minutesToAdd * secondsPerMinute);
 		result += secondsToAdd;
 		auto resultTwo = std::localtime(&result);
 		std::string resultString{};
@@ -384,17 +394,15 @@ namespace DiscordCoreAPI {
 				resultTwo->tm_hour = resultTwo->tm_hour - 24;
 				resultTwo->tm_mday += 1;
 			}
-			resultString =
-				getISO8601TimeStamp(std::to_string(resultTwo->tm_year + 1900), std::to_string(resultTwo->tm_mon + 1), std::to_string(resultTwo->tm_mday),
-					std::to_string(resultTwo->tm_hour + 4), std::to_string(resultTwo->tm_min), std::to_string(resultTwo->tm_sec));
+			resultString = getISO8601TimeStamp(std::to_string(resultTwo->tm_year + 1900), std::to_string(resultTwo->tm_mon + 1), std::to_string(resultTwo->tm_mday),
+				std::to_string(resultTwo->tm_hour + 4), std::to_string(resultTwo->tm_min), std::to_string(resultTwo->tm_sec));
 		} else {
 			if (resultTwo->tm_hour + 5 >= 24) {
 				resultTwo->tm_hour = resultTwo->tm_hour - 24;
 				resultTwo->tm_mday += 1;
 			}
-			resultString =
-				getISO8601TimeStamp(std::to_string(resultTwo->tm_year + 1900), std::to_string(resultTwo->tm_mon + 1), std::to_string(resultTwo->tm_mday),
-					std::to_string(resultTwo->tm_hour + 5), std::to_string(resultTwo->tm_min), std::to_string(resultTwo->tm_sec));
+			resultString = getISO8601TimeStamp(std::to_string(resultTwo->tm_year + 1900), std::to_string(resultTwo->tm_mon + 1), std::to_string(resultTwo->tm_mday),
+				std::to_string(resultTwo->tm_hour + 5), std::to_string(resultTwo->tm_min), std::to_string(resultTwo->tm_sec));
 		}
 		return resultString;
 	}
@@ -424,14 +432,13 @@ namespace DiscordCoreAPI {
 	}
 
 	std::string DiscordEntity::getCreatedAtTimestamp(TimeFormat timeFormat) {
-		std::string returnString;
+		std::string returnString{};
 		int64_t timeInMs = (stoll(this->id) >> 22) + 1420070400000;
 		returnString = convertTimeInMsToDateTimeString(timeInMs, timeFormat);
 		return returnString;
 	}
 
-	std::vector<ApplicationCommandInteractionDataOption> convertAppCommandInteractionDataOptions(
-		std::vector<ApplicationCommandInteractionDataOption> originalOptions) {
+	std::vector<ApplicationCommandInteractionDataOption> convertAppCommandInteractionDataOptions(std::vector<ApplicationCommandInteractionDataOption> originalOptions) {
 		std::vector<ApplicationCommandInteractionDataOption> newVector{};
 		for (auto& value: originalOptions) {
 			ApplicationCommandInteractionDataOption newItem = value;
@@ -706,53 +713,55 @@ namespace DiscordCoreAPI {
 		return permissions;
 	}
 
-	MoveThroughMessagePagesData moveThroughMessagePages(std::string userID, InputEventData originalEvent, uint32_t currentPageIndex,
-		std::vector<EmbedData> messageEmbeds, bool deleteAfter, uint32_t waitForMaxMs, bool returnResult) {
+	MoveThroughMessagePagesData moveThroughMessagePages(std::string userID, InputEventData originalEvent, uint32_t currentPageIndex, std::vector<EmbedData> messageEmbeds,
+		bool deleteAfter, uint32_t waitForMaxMs, bool returnResult) {
 		MoveThroughMessagePagesData returnData{};
 		try {
 			uint32_t newCurrentPageIndex = currentPageIndex;
-			RespondToInputEventData dataPackage{ originalEvent };
+			std::unique_ptr<RespondToInputEventData> dataPackage{ std::make_unique<RespondToInputEventData>(originalEvent) };
 
-			dataPackage.addMessageEmbed(messageEmbeds[currentPageIndex]);
+			dataPackage->addMessageEmbed(messageEmbeds[currentPageIndex]);
 			if (returnResult) {
-				dataPackage.addButton(false, "select", "Select", ButtonStyle::Success, "✅");
+				dataPackage->addButton(false, "select", "Select", ButtonStyle::Success, "✅");
 			}
-			dataPackage.addButton(false, "backwards", "Prev Page", ButtonStyle::Primary, "◀️");
-			dataPackage.addButton(false, "forwards", "Next Page", ButtonStyle::Primary, "▶️");
-			dataPackage.addButton(false, "exit", "Exit", ButtonStyle::Danger, "❌");
+			dataPackage->addButton(false, "backwards", "Prev Page", ButtonStyle::Primary, "◀️");
+			dataPackage->addButton(false, "forwards", "Next Page", ButtonStyle::Primary, "▶️");
+			dataPackage->addButton(false, "exit", "Exit", ButtonStyle::Danger, "❌");
 			if (originalEvent.eventType == InteractionType::Application_Command) {
-				dataPackage.setResponseType(InputEventResponseType::Edit_Interaction_Response);
+				dataPackage->setResponseType(InputEventResponseType::Edit_Interaction_Response);
 			}
-			originalEvent = InputEvents::respondToEventAsync(dataPackage).get();
+			originalEvent = InputEvents::respondToInputEventAsync(*dataPackage).get();
 			while (true) {
-				ButtonCollector button{ originalEvent };
+				std::unique_ptr<ButtonCollector> button{ std::make_unique<ButtonCollector>(originalEvent) };
 
-				std::vector<ButtonResponseData> buttonIntData{ button.collectButtonData(false, waitForMaxMs, 1, originalEvent.getRequesterId()).get() };
+				std::vector<ButtonResponseData> buttonIntData{ button->collectButtonData(false, waitForMaxMs, 1, originalEvent.getRequesterId()).get() };
 
 				if (buttonIntData.size() == 0 || buttonIntData.at(0).buttonId == "empty" || buttonIntData.at(0).buttonId == "exit") {
+					std::unique_ptr<RespondToInputEventData> dataPackage02{ std::make_unique<RespondToInputEventData>(originalEvent) };
 					if (buttonIntData.at(0).buttonId == "empty") {
-						dataPackage = originalEvent;
+						*dataPackage02 = originalEvent;
 					} else {
-						dataPackage = RespondToInputEventData{ static_cast<InteractionData>(buttonIntData.at(0)) };
+						std::unique_ptr<InteractionData> interactionData = std::make_unique<InteractionData>(static_cast<InteractionData>(buttonIntData.at(0)));
+						*dataPackage02 = RespondToInputEventData{ *interactionData };
 					}
 
-					dataPackage.addMessageEmbed(messageEmbeds[newCurrentPageIndex]);
+					dataPackage02->addMessageEmbed(messageEmbeds[newCurrentPageIndex]);
 					for (auto& value: originalEvent.getComponents()) {
 						for (auto& value02: value.components) {
 							value02.disabled = true;
 						}
-						dataPackage.addComponentRow(value);
+						dataPackage02->addComponentRow(value);
 					}
 					if (deleteAfter == true) {
 						InputEvents::deleteInputEventResponseAsync(InputEventData{ InputEventData(originalEvent) });
 					} else {
-						dataPackage.setResponseType(InputEventResponseType::Edit_Interaction_Response);
-						InputEvents::respondToEventAsync(dataPackage).get();
+						dataPackage02->setResponseType(InputEventResponseType::Edit_Interaction_Response);
+						InputEvents::respondToInputEventAsync(*dataPackage02).get();
 					}
-					MoveThroughMessagePagesData dataPackage02{};
-					dataPackage02.inputEventData = originalEvent;
-					dataPackage02.buttonId = "exit";
-					return dataPackage02;
+					MoveThroughMessagePagesData dataPackage03{};
+					dataPackage03.inputEventData = originalEvent;
+					dataPackage03.buttonId = "exit";
+					return dataPackage03;
 				} else if (buttonIntData.at(0).buttonId == "forwards" || buttonIntData.at(0).buttonId == "backwards") {
 					if (buttonIntData.at(0).buttonId == "forwards" && (newCurrentPageIndex == (messageEmbeds.size() - 1))) {
 						newCurrentPageIndex = 0;
@@ -763,27 +772,29 @@ namespace DiscordCoreAPI {
 					} else if (buttonIntData.at(0).buttonId == "backwards" && (newCurrentPageIndex == 0)) {
 						newCurrentPageIndex = static_cast<uint8_t>(messageEmbeds.size()) - 1;
 					}
-					dataPackage = RespondToInputEventData{ static_cast<InteractionData>(buttonIntData.at(0)) };
-					dataPackage.setResponseType(InputEventResponseType::Edit_Interaction_Response);
+					std::unique_ptr<InteractionData> interactionData = std::make_unique<InteractionData>(static_cast<InteractionData>(buttonIntData.at(0)));
+					*dataPackage = RespondToInputEventData{ *interactionData };
+					dataPackage->setResponseType(InputEventResponseType::Edit_Interaction_Response);
 					for (auto& value: originalEvent.getComponents()) {
-						dataPackage.addComponentRow(value);
+						dataPackage->addComponentRow(value);
 					}
-					dataPackage.addMessageEmbed(messageEmbeds[newCurrentPageIndex]);
-					InputEvents::respondToEventAsync(dataPackage).get();
+					dataPackage->addMessageEmbed(messageEmbeds[newCurrentPageIndex]);
+					InputEvents::respondToInputEventAsync(*dataPackage).get();
 				} else if (buttonIntData.at(0).buttonId == "select") {
 					if (deleteAfter == true) {
 						InputEvents::deleteInputEventResponseAsync(InputEventData{ InputEventData(originalEvent) });
 					} else {
-						dataPackage = RespondToInputEventData{ static_cast<InteractionData>(buttonIntData.at(0)) };
-						dataPackage.setResponseType(InputEventResponseType::Edit_Interaction_Response);
-						dataPackage.addMessageEmbed(messageEmbeds[newCurrentPageIndex]);
+						std::unique_ptr<InteractionData> interactionData = std::make_unique<InteractionData>(static_cast<InteractionData>(buttonIntData.at(0)));
+						*dataPackage = RespondToInputEventData{ *interactionData };
+						dataPackage->setResponseType(InputEventResponseType::Edit_Interaction_Response);
+						dataPackage->addMessageEmbed(messageEmbeds[newCurrentPageIndex]);
 						for (auto& value: originalEvent.getComponents()) {
 							for (auto& value02: value.components) {
 								value02.disabled = true;
 							}
-							dataPackage.addComponentRow(value);
+							dataPackage->addComponentRow(value);
 						}
-						InputEvents::respondToEventAsync(dataPackage).get();
+						InputEvents::respondToInputEventAsync(*dataPackage).get();
 					}
 					returnData.currentPageIndex = newCurrentPageIndex;
 					returnData.inputEventData = originalEvent;
@@ -809,12 +820,12 @@ namespace DiscordCoreAPI {
 		this->eventData = inputEventData;
 		DiscordCoreInternal::DataParser::parseObject(inputEventData.getInteractionData().rawData, *this);
 	}
-
 };
 
 namespace DiscordCoreInternal {
 
 	std::unordered_map<HttpWorkloadType, int64_t> HttpWorkloadData::workloadIdsExternal{};
 	std::unordered_map<HttpWorkloadType, int64_t> HttpWorkloadData::workloadIdsInternal{};
+	std::mutex HttpWorkloadData::accessMutex{};
 
 }

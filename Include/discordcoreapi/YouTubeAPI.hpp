@@ -27,31 +27,31 @@
 #include <discordcoreapi/FoundationEntities.hpp>
 #include <regex>
 
-namespace DiscordCoreAPI {
+namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll YouTubeRequestBuilder {
 	  public:
 		YouTubeRequestBuilder() = default;
 
-		YouTubeRequestBuilder(DiscordCoreInternal::HttpClient*);
+		YouTubeRequestBuilder(HttpClient*);
 
-		Song collectFinalSong(GuildMemberData addedByGuildMember, Song newSong);
+		DiscordCoreAPI::Song collectFinalSong(DiscordCoreAPI::GuildMemberData addedByGuildMember, DiscordCoreAPI::Song newSong);
 
-		std::vector<Song> collectSearchResults(std::string theString);
+		std::vector<DiscordCoreAPI::Song> collectSearchResults(std::string theString);
 
 	  protected:
-		DiscordCoreInternal::HttpClient* httpClient{ nullptr };
+		HttpClient* httpClient{ nullptr };
 		std::string baseUrl{ "https://www.youtube.com" };
 
-		Song constructDownloadInfo(GuildMemberData guildMember, Song newSong);
+		DiscordCoreAPI::Song constructDownloadInfo(DiscordCoreAPI::GuildMemberData guildMember, DiscordCoreAPI::Song newSong);
 
-		Song constructFinalDownloadUrl(Song newSong);
+		DiscordCoreAPI::Song constructFinalDownloadUrl(DiscordCoreAPI::Song newSong);
 
 		std::vector<char> sliceVector(std::vector<char> vectorToSlice, int32_t firstElement, int32_t lastElement = 0);
 
 		std::vector<char> swapHeadAndPosition(std::vector<char> inputVector, int32_t position);
 
-		YouTubeFormat decipherFormat(YouTubeFormat format, std::string html5playerFile);
+		DiscordCoreAPI::YouTubeFormat decipherFormat(DiscordCoreAPI::YouTubeFormat format, std::string html5playerFile);
 
 		std::string decipher(std::vector<std::string> tokens, std::string cipherSignature);
 
@@ -67,20 +67,20 @@ namespace DiscordCoreAPI {
 
 		std::string joinString(std::vector<char> stringToJoin);
 
-		std::string setDownloadUrl(YouTubeFormat format);
+		std::string setDownloadUrl(DiscordCoreAPI::YouTubeFormat format);
 	};
 
 	class DiscordCoreAPI_Dll YouTubeAPI {
 	  public:
-		YouTubeAPI(std::string guildId, DiscordCoreInternal::HttpClient* httpClient);
+		YouTubeAPI(std::string guildId, HttpClient* httpClient);
 
-		void weFailedToDownloadOrDecode(Song newSong, YouTubeAPI* youtubeAPI, std::stop_token theToken, int32_t currentRecursionDepth);
+		void weFailedToDownloadOrDecode(DiscordCoreAPI::Song newSong, YouTubeAPI* youtubeAPI, std::stop_token theToken, int32_t currentRecursionDepth);
 
-		void downloadAndStreamAudio(Song newSong, YouTubeAPI* youtubeAPI, std::stop_token theToken, int32_t currentRecursionDepth);
+		void downloadAndStreamAudio(DiscordCoreAPI::Song newSong, YouTubeAPI* youtubeAPI, std::stop_token theToken, int32_t currentRecursionDepth);
 
-		Song collectFinalSong(GuildMemberData addedByGuildMember, Song newSong);
+		DiscordCoreAPI::Song collectFinalSong(DiscordCoreAPI::GuildMemberData addedByGuildMember, DiscordCoreAPI::Song newSong);
 
-		std::vector<Song> searchForSong(std::string searchQuery);
+		std::vector<DiscordCoreAPI::Song> searchForSong(std::string searchQuery);
 
 		void cancelCurrentSong();
 
@@ -89,7 +89,7 @@ namespace DiscordCoreAPI {
 		const int32_t maxBufferSize{ 8192 };
 		std::string guildId{ "" };
 		bool doWePrint{ false };
-		Song theSong{};
+		DiscordCoreAPI::Song theSong{};
 	};
 
 };// namespace DiscordCoreAPI

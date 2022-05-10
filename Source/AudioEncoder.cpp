@@ -20,22 +20,22 @@
 
 #include <discordcoreapi/AudioEncoder.hpp>
 
-namespace DiscordCoreAPI {
+namespace DiscordCoreInternal {
 
 	AudioEncoder::AudioEncoder() {
 		int32_t error;
 		this->encoder = opus_encoder_create(this->sampleRate, this->nChannels, OPUS_APPLICATION_AUDIO, &error);
 		if (error != OPUS_OK) {
-			std::cout << shiftToBrightRed() << "Failed to create Opus encoder!" << reset() << std::endl << std::endl;
+			std::cout << DiscordCoreAPI::shiftToBrightRed() << "Failed to create Opus encoder!" << DiscordCoreAPI::reset() << std::endl << std::endl;
 		}
 	}
 
-	std::vector<AudioFrameData> AudioEncoder::encodeFrames(std::vector<RawFrameData>& rawFrames) {
-		std::vector<AudioFrameData> newData{};
+	std::vector<DiscordCoreAPI::AudioFrameData> AudioEncoder::encodeFrames(std::vector<DiscordCoreAPI::RawFrameData>& rawFrames) {
+		std::vector<DiscordCoreAPI::AudioFrameData> newData{};
 		newData.reserve(rawFrames.size());
 		for (int32_t x = 0; x < rawFrames.size(); x += 1) {
-			AudioFrameData frameData{};
-			frameData.type = AudioFrameType::Encoded;
+			DiscordCoreAPI::AudioFrameData frameData{};
+			frameData.type = DiscordCoreAPI::AudioFrameType::Encoded;
 			frameData.encodedFrameData = encodeSingleAudioFrame(rawFrames[x]);
 			newData.push_back(frameData);
 		}
@@ -43,7 +43,7 @@ namespace DiscordCoreAPI {
 		return newData;
 	}
 
-	EncodedFrameData AudioEncoder::encodeSingleAudioFrame(RawFrameData& inputFrame) {
+	DiscordCoreAPI::EncodedFrameData AudioEncoder::encodeSingleAudioFrame(DiscordCoreAPI::RawFrameData& inputFrame) {
 		std::vector<opus_int16> newVector{};
 		newVector.reserve(inputFrame.data.size() / 2);
 		for (uint32_t x = 0; x < inputFrame.data.size() / 2; x += 1) {
@@ -57,9 +57,9 @@ namespace DiscordCoreAPI {
 		newBuffer.reserve(this->maxBufferSize);
 		int32_t count = opus_encode(this->encoder, newVector.data(), inputFrame.sampleCount, newBuffer.data(), this->maxBufferSize);
 		if (count <= 0) {
-			return EncodedFrameData();
+			return DiscordCoreAPI::EncodedFrameData();
 		}
-		EncodedFrameData encodedFrame{};
+		DiscordCoreAPI::EncodedFrameData encodedFrame{};
 		encodedFrame.data.insert(encodedFrame.data.begin(), newBuffer.begin(), newBuffer.begin() + count);
 		encodedFrame.sampleCount = inputFrame.sampleCount;
 		return encodedFrame;

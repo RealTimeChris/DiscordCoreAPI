@@ -28,7 +28,7 @@ extern "C" {
 #include <libswresample/swresample.h>
 }
 
-namespace DiscordCoreAPI {
+namespace DiscordCoreInternal {
 
 	struct DiscordCoreAPI_Dll AVFrameWrapper {
 		struct DiscordCoreAPI_Dll AVFrameDeleter {
@@ -266,7 +266,7 @@ namespace DiscordCoreAPI {
 
 		void submitDataForDecoding(std::string dataToDecode);
 
-		bool getFrame(RawFrameData& dataPackage);
+		bool getFrame(DiscordCoreAPI::RawFrameData& dataPackage);
 
 		bool haveWeFailed();
 
@@ -276,8 +276,8 @@ namespace DiscordCoreAPI {
 
 	  protected:
 		int64_t audioStreamIndex{ 0 }, bufferMaxSize{ 0 }, bytesRead{ 0 }, totalFileSize{ 0 };
-		TSUnboundedMessageBlock<std::string> inputDataBuffer{};
-		TSUnboundedMessageBlock<RawFrameData> outDataBuffer{};
+		DiscordCoreAPI::TSUnboundedMessageBlock<DiscordCoreAPI::RawFrameData> outDataBuffer{};
+		DiscordCoreAPI::TSUnboundedMessageBlock<std::string> inputDataBuffer{};
 		AVFrameWrapper frame{ nullptr }, newFrame{ nullptr };
 		AVCodecContextWrapper audioDecodeContext{ nullptr };
 		std::atomic_int32_t refreshTimeForBuffer{ 10000 };

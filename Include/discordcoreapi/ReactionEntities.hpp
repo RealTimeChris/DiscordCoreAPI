@@ -131,7 +131,7 @@ namespace DiscordCoreAPI {
 	  public:
 		Reaction() = default;
 
-		Reaction(ReactionData dataNew);
+		virtual ~Reaction() = default;
 	};
 
 	/**@}*/

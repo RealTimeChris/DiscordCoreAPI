@@ -156,20 +156,19 @@ namespace DiscordCoreInternal {
 	}
 
 	void ErlPacker::appendNil(ErlPackBuffer& buffer) {
-		std::vector<uint8_t> bufferNew{ static_cast<uint8_t>(ETFTokenType::Small_Atom), 3, static_cast<uint8_t>('n'), static_cast<uint8_t>('i'),
-			static_cast<uint8_t>('l') };
+		std::vector<uint8_t> bufferNew{ static_cast<uint8_t>(ETFTokenType::Small_Atom), 3, static_cast<uint8_t>('n'), static_cast<uint8_t>('i'), static_cast<uint8_t>('l') };
 		ErlPacker::writeToBuffer(buffer, bufferNew);
 	}
 
 	void ErlPacker::appendFalse(ErlPackBuffer& buffer) {
-		std::vector<uint8_t> bufferNew{ static_cast<uint8_t>(ETFTokenType::Small_Atom), 5, static_cast<uint8_t>('f'), static_cast<uint8_t>('a'),
-			static_cast<uint8_t>('l'), static_cast<uint8_t>('s'), static_cast<uint8_t>('e') };
+		std::vector<uint8_t> bufferNew{ static_cast<uint8_t>(ETFTokenType::Small_Atom), 5, static_cast<uint8_t>('f'), static_cast<uint8_t>('a'), static_cast<uint8_t>('l'),
+			static_cast<uint8_t>('s'), static_cast<uint8_t>('e') };
 		ErlPacker::writeToBuffer(buffer, bufferNew);
 	}
 
 	void ErlPacker::appendTrue(ErlPackBuffer& buffer) {
-		std::vector<uint8_t> bufferNew{ static_cast<uint8_t>(ETFTokenType::Small_Atom), 4, static_cast<uint8_t>('t'), static_cast<uint8_t>('r'),
-			static_cast<uint8_t>('u'), static_cast<uint8_t>('e') };
+		std::vector<uint8_t> bufferNew{ static_cast<uint8_t>(ETFTokenType::Small_Atom), 4, static_cast<uint8_t>('t'), static_cast<uint8_t>('r'), static_cast<uint8_t>('u'),
+			static_cast<uint8_t>('e') };
 		ErlPacker::writeToBuffer(buffer, bufferNew);
 	}
 
@@ -251,9 +250,8 @@ namespace DiscordCoreInternal {
 			throw ErlPackError("ETF Parse Error: readBits() past end of buffer");
 		}
 		ReturnType newValue{ 0 };
-		for (uint32_t x = 0; x < sizeof(ReturnType); x += 1) {
-			newValue |= static_cast<ReturnType>(
-				static_cast<uint64_t>(buffer.buffer.data()[static_cast<uint64_t>(buffer.offSet + x)]) << (static_cast<uint64_t>(x) * byteSize));
+		for (uint64_t x = 0; x < sizeof(ReturnType); x += 1) {
+			newValue |= static_cast<ReturnType>(static_cast<uint64_t>(buffer.buffer.data()[buffer.offSet + x]) << (x * static_cast<uint64_t>(byteSize)));
 		}
 		buffer.offSet += sizeof(ReturnType);
 		ErlPacker::etfByteOrder(newValue, theValue);

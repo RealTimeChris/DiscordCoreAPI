@@ -10,16 +10,16 @@
 #	OPUS::Opus
 find_library(
 	OPUS_RELEASE_LIBRARY
-	NAMES "${LIBRARY_PREFIX}opus${LIBRARY_SUFFIX}" 
+	NAMES "${LIB_PREFIX}opus${LIB_SUFFIX}" 
 	PATHS "${OPUS_RELEASE_ROOT}" NO_DEFAULT_PATH
 )
 find_library(
 	OPUS_DEBUG_LIBRARY 
-	NAMES "${LIBRARY_PREFIX}opus${LIBRARY_SUFFIX}" 
+	NAMES "${LIB_PREFIX}opus${LIB_SUFFIX}" 
 	PATHS "${OPUS_DEBUG_ROOT}" NO_DEFAULT_PATH
 )
 if (EXISTS "${OPUS_RELEASE_LIBRARY}" AND EXISTS "${OPUS_DEBUG_LIBRARY}" AND EXISTS "${OPUS_INCLUDE_DIR}")
-	message(STATUS "Found Opus libraries!")
+	message(STATUS "Found Opus libraries")
 else()
 	message(FATAL_ERROR "Couldn't find Opus!")
 endif()
@@ -45,7 +45,7 @@ if (EXISTS "${OPUS_RELEASE_DLL}" AND EXISTS "${OPUS_DEBUG_DLL}")
 		IMPORTED_IMPLIB_RELEASE "${OPUS_RELEASE_LIBRARY}" IMPORTED_IMPLIB_DEBUG "${OPUS_DEBUG_LIBRARY}"
 	)
 	target_include_directories(OPUS::Opus INTERFACE "${OPUS_INCLUDE_DIR}")
-	message(STATUS "Found Opus Dlls!")
+	message(STATUS "Found Opus Dlls")
 else()
 	add_library(OPUS::Opus STATIC IMPORTED GLOBAL)
 	set_target_properties(
@@ -55,5 +55,5 @@ else()
 	target_include_directories(OPUS::Opus INTERFACE "${OPUS_INCLUDE_DIR}")
 	unset(OPUS_RELEASE_DLL CACHE)
 	unset(OPUS_DEBUG_DLL CACHE)
-	message(STATUS "Couldn't find Opus Dlls - linking statically!")
+	message(STATUS "Couldn't find Opus Dlls - linking statically")
 endif()

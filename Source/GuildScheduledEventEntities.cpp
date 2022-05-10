@@ -24,24 +24,6 @@
 
 namespace DiscordCoreAPI {
 
-	GuildScheduledEvent::GuildScheduledEvent(GuildScheduledEventData dataNew) {
-		this->scheduledStartTime = dataNew.scheduledStartTime;
-		this->scheduledEndTime = dataNew.scheduledEndTime;
-		this->entityMetadata = dataNew.entityMetadata;
-		this->privacyLevel = dataNew.privacyLevel;
-		this->description = dataNew.description;
-		this->entityType = dataNew.entityType;
-		this->userCount = dataNew.userCount;
-		this->creatorId = dataNew.creatorId;
-		this->channelId = dataNew.channelId;
-		this->entityId = dataNew.entityId;
-		this->creator = dataNew.creator;
-		this->guildId = dataNew.guildId;
-		this->status = dataNew.status;
-		this->name = dataNew.name;
-		this->id = dataNew.id;
-	}
-
 	void GuildScheduledEvents::initialize(DiscordCoreInternal::HttpClient* theClient) {
 		GuildScheduledEvents::httpClient = theClient;
 	}
@@ -49,9 +31,7 @@ namespace DiscordCoreAPI {
 	CoRoutine<std::vector<GuildScheduledEvent>> GuildScheduledEvents::getGuildScheduledEventsAsync(GetGuildScheduledEventsData dataPackage) {
 		try {
 			DiscordCoreInternal::HttpWorkloadData workload{};
-			workload.thisWorkerId =
-				DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Get_Guild_Scheduled_Events];
-			DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Get_Guild_Scheduled_Events] += 1;
+			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Get_Guild_Scheduled_Events);
 			co_await NewThreadAwaitable<std::vector<GuildScheduledEvent>>();
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Guild_Scheduled_Events;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
@@ -66,9 +46,7 @@ namespace DiscordCoreAPI {
 	CoRoutine<GuildScheduledEvent> GuildScheduledEvents::createGuildScheduledEventAsync(CreateGuildScheduledEventData dataPackage) {
 		try {
 			DiscordCoreInternal::HttpWorkloadData workload{};
-			workload.thisWorkerId =
-				DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Post_Guild_Scheduled_Event];
-			DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Post_Guild_Scheduled_Event] += 1;
+			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Post_Guild_Scheduled_Event);
 			co_await NewThreadAwaitable<GuildScheduledEvent>();
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Post_Guild_Scheduled_Event;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Post;
@@ -84,9 +62,7 @@ namespace DiscordCoreAPI {
 	CoRoutine<GuildScheduledEvent> GuildScheduledEvents::getGuildScheduledEventAsync(GetGuildScheduledEventData dataPackage) {
 		try {
 			DiscordCoreInternal::HttpWorkloadData workload{};
-			workload.thisWorkerId =
-				DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Get_Guild_Scheduled_Event];
-			DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Get_Guild_Scheduled_Event] += 1;
+			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Get_Guild_Scheduled_Event);
 			co_await NewThreadAwaitable<GuildScheduledEvent>();
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Guild_Scheduled_Event;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
@@ -105,9 +81,7 @@ namespace DiscordCoreAPI {
 	CoRoutine<GuildScheduledEvent> GuildScheduledEvents::modifyGuildScheduledEventAsync(ModifyGuildScheduledEventData dataPackage) {
 		try {
 			DiscordCoreInternal::HttpWorkloadData workload{};
-			workload.thisWorkerId =
-				DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Patch_Guild_Scheduled_Event];
-			DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Patch_Guild_Scheduled_Event] += 1;
+			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Patch_Guild_Scheduled_Event);
 			co_await NewThreadAwaitable<GuildScheduledEvent>();
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Patch_Guild_Scheduled_Event;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Patch;
@@ -123,9 +97,7 @@ namespace DiscordCoreAPI {
 	CoRoutine<void> GuildScheduledEvents::deleteGuildScheduledEventAsync(DeleteGuildScheduledEventData dataPackage) {
 		try {
 			DiscordCoreInternal::HttpWorkloadData workload{};
-			workload.thisWorkerId =
-				DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Delete_Guild_Scheduled_Event];
-			DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Delete_Guild_Scheduled_Event] += 1;
+			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Delete_Guild_Scheduled_Event);
 			co_await NewThreadAwaitable<void>();
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Delete_Guild_Scheduled_Event;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Delete;
@@ -140,9 +112,7 @@ namespace DiscordCoreAPI {
 	CoRoutine<std::vector<GuildScheduledEventUserData>> GuildScheduledEvents::getGuildScheduledEventUsersAsync(GetGuildScheduledEventUsersData dataPackage) {
 		try {
 			DiscordCoreInternal::HttpWorkloadData workload{};
-			workload.thisWorkerId =
-				DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Get_Guild_Scheduled_Event_Users];
-			DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Get_Guild_Scheduled_Event_Users] += 1;
+			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Get_Guild_Scheduled_Event_Users);
 			co_await NewThreadAwaitable<std::vector<GuildScheduledEventUserData>>();
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Guild_Scheduled_Event_Users;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;

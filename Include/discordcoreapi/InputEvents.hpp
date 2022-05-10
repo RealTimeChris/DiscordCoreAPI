@@ -36,7 +36,7 @@ namespace DiscordCoreAPI {
 		/// Responds to one of a number of types of "InputEvents". \brief Responds to one of a number of types of "InputEvents".
 		/// \param dataPackage A RespondToInputEventData structure.
 		/// \returns An std::unique_ptr containing an InputEventData structure.
-		static CoRoutine<InputEventData> respondToEventAsync(RespondToInputEventData dataPackage);
+		static CoRoutine<InputEventData> respondToInputEventAsync(RespondToInputEventData dataPackage);
 
 		/// Deletes a previously sent "input-event-response". \brief Deletes a previously sent "input-event-response".
 		/// \param dataPackage A std::unique_ptr containing an InputEventData structure.
@@ -45,27 +45,23 @@ namespace DiscordCoreAPI {
 		static CoRoutine<void> deleteInputEventResponseAsync(InputEventData dataPackage, int32_t timeDelayNew = 0);
 
 	  protected:
-		static InputEventData respondToEvent(CreateEphemeralInteractionResponseData dataPackage);
+		static InputEventData respondToInputEvent(CreateEphemeralInteractionResponseData dataPackage);
 
-		static InputEventData respondToEvent(CreateDeferredInteractionResponseData dataPackage);
+		static InputEventData respondToInputEvent(CreateDeferredInteractionResponseData dataPackage);
 
-		static InputEventData respondToEvent(EditEphemeralInteractionResponseData dataPackage);
+		static InputEventData respondToInputEvent(CreateEphemeralFollowUpMessageData dataPackage);
 
-		static InputEventData respondToEvent(CreateEphemeralFollowUpMessageData dataPackage);
+		static InputEventData respondToInputEvent(CreateInteractionResponseData dataPackage);
 
-		static InputEventData respondToEvent(EditEphemeralFollowUpMessageData dataPackage);
+		static InputEventData respondToInputEvent(EditInteractionResponseData dataPackage);
 
-		static InputEventData respondToEvent(CreateInteractionResponseData dataPackage);
+		static InputEventData respondToInputEvent(CreateFollowUpMessageData dataPackage);
 
-		static InputEventData respondToEvent(EditInteractionResponseData dataPackage);
+		static InputEventData respondToInputEvent(EditFollowUpMessageData dataPackage);
 
-		static InputEventData respondToEvent(CreateFollowUpMessageData dataPackage);
+		static InputEventData respondToInputEvent(CreateMessageData dataPackage);
 
-		static InputEventData respondToEvent(EditFollowUpMessageData dataPackage);
-
-		static InputEventData respondToEvent(CreateMessageData dataPackage);
-
-		static InputEventData respondToEvent(EditMessageData dataPackage);
+		static InputEventData respondToInputEvent(EditMessageData dataPackage);
 	};
 	/**@}*/
 }// namespace DiscordCoreAPI

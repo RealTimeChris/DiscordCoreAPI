@@ -51,8 +51,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void BotUser::updatePresence(UpdatePresenceData dataPackage) {
-		dataPackage.since =
-			static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
+		dataPackage.since = static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
 		nlohmann::json payload = DiscordCoreInternal::JSONIFY(dataPackage);
 		this->baseSocketAgent->sendMessage(payload);
 	}
@@ -68,9 +67,7 @@ namespace DiscordCoreAPI {
 	CoRoutine<void> Users::addRecipientToGroupDMAsync(AddRecipientToGroupDMData dataPackage) {
 		try {
 			DiscordCoreInternal::HttpWorkloadData workload{};
-			workload.thisWorkerId =
-				DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Put_Recipient_To_Group_Dm];
-			DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Put_Recipient_To_Group_Dm] += 1;
+			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Put_Recipient_To_Group_Dm);
 			co_await NewThreadAwaitable<void>();
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Put_Recipient_To_Group_Dm;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Put;
@@ -86,9 +83,7 @@ namespace DiscordCoreAPI {
 	CoRoutine<void> Users::removeRecipientFromGroupDMAsync(RemoveRecipientFromGroupDMData dataPackage) {
 		try {
 			DiscordCoreInternal::HttpWorkloadData workload{};
-			workload.thisWorkerId =
-				DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Delete_Recipient_From_Group_Dm];
-			DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Delete_Recipient_From_Group_Dm] += 1;
+			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Delete_Recipient_From_Group_Dm);
 			co_await NewThreadAwaitable<void>();
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Delete_Recipient_From_Group_Dm;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Delete;
@@ -103,9 +98,7 @@ namespace DiscordCoreAPI {
 	CoRoutine<void> Users::modifyCurrentUserVoiceStateAsync(ModifyCurrentUserVoiceStateData dataPackage) {
 		try {
 			DiscordCoreInternal::HttpWorkloadData workload{};
-			workload.thisWorkerId =
-				DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Patch_Current_User_Voice_State];
-			DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Patch_Current_User_Voice_State] += 1;
+			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Patch_Current_User_Voice_State);
 			co_await NewThreadAwaitable<void>();
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Patch_Current_User_Voice_State;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Patch;
@@ -120,8 +113,7 @@ namespace DiscordCoreAPI {
 	CoRoutine<void> Users::modifyUserVoiceStateAsync(ModifyUserVoiceStateData dataPackage) {
 		try {
 			DiscordCoreInternal::HttpWorkloadData workload{};
-			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Patch_User_Voice_State];
-			DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Patch_User_Voice_State] += 1;
+			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Patch_User_Voice_State);
 			co_await NewThreadAwaitable<void>();
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Patch_User_Voice_State;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Patch;
@@ -136,8 +128,7 @@ namespace DiscordCoreAPI {
 	CoRoutine<UserData> Users::getCurrentUserAsync() {
 		try {
 			DiscordCoreInternal::HttpWorkloadData workload{};
-			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Get_Current_User];
-			DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Get_Current_User] += 1;
+			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Get_Current_User);
 			co_await NewThreadAwaitable<UserData>();
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Current_User;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
@@ -165,8 +156,7 @@ namespace DiscordCoreAPI {
 	CoRoutine<User> Users::getUserAsync(GetUserData dataPackage) {
 		try {
 			DiscordCoreInternal::HttpWorkloadData workload{};
-			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Get_User];
-			DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Get_User] += 1;
+			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Get_User);
 			co_await NewThreadAwaitable<User>();
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_User;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
@@ -181,8 +171,7 @@ namespace DiscordCoreAPI {
 	CoRoutine<User> Users::modifyCurrentUserAsync(ModifyCurrentUserData dataPackage) {
 		try {
 			DiscordCoreInternal::HttpWorkloadData workload{};
-			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Patch_Current_User];
-			DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Patch_Current_User] += 1;
+			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Patch_Current_User);
 			co_await NewThreadAwaitable<User>();
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Patch_Current_User;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Patch;
@@ -204,8 +193,7 @@ namespace DiscordCoreAPI {
 	CoRoutine<std::vector<ConnectionData>> Users::getUserConnectionsAsync() {
 		try {
 			DiscordCoreInternal::HttpWorkloadData workload{};
-			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Get_User_Connections];
-			DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Get_User_Connections] += 1;
+			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Get_User_Connections);
 			co_await NewThreadAwaitable<std::vector<ConnectionData>>();
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_User_Connections;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
@@ -220,8 +208,7 @@ namespace DiscordCoreAPI {
 	CoRoutine<ApplicationData> Users::getCurrentUserApplicationInfoAsync() {
 		try {
 			DiscordCoreInternal::HttpWorkloadData workload{};
-			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Get_Application_Info];
-			DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Get_Application_Info] += 1;
+			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Get_Application_Info);
 			co_await NewThreadAwaitable<ApplicationData>();
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Application_Info;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
@@ -236,8 +223,7 @@ namespace DiscordCoreAPI {
 	CoRoutine<AuthorizationInfoData> Users::getCurrentUserAuthorizationInfoAsync() {
 		try {
 			DiscordCoreInternal::HttpWorkloadData workload{};
-			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Get_Authorization_Info];
-			DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Get_Authorization_Info] += 1;
+			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Get_Authorization_Info);
 			co_await NewThreadAwaitable<AuthorizationInfoData>();
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Authorization_Info;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;

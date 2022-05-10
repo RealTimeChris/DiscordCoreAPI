@@ -38,9 +38,9 @@ namespace DiscordCoreInternal {
 		friend class DiscordCoreAPI::VoiceConnection;
 		friend VoiceSocketAgent;
 
-		BaseSocketAgent(std::string botToken, std::string baseUrl, DiscordCoreAPI::EventManager* eventManager,
-			DiscordCoreAPI::DiscordCoreClient* discordCoreClient, DiscordCoreAPI::CommandController* commandController, std::atomic_bool* theBool,
-			bool doWePrintMessages = false, int32_t shardNumber = 0, int32_t numberOfShards = 1) noexcept;
+		BaseSocketAgent(std::string botToken, std::string baseUrl, DiscordCoreAPI::EventManager* eventManager, DiscordCoreAPI::DiscordCoreClient* discordCoreClient,
+			DiscordCoreAPI::CommandController* commandController, std::atomic_bool* theBool, bool doWePrintMessages = false, int32_t shardNumber = 0,
+			int32_t numberOfShards = 1) noexcept;
 
 		BaseSocketAgent(nullptr_t) noexcept;
 
@@ -61,13 +61,12 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::CommandController* commandController{ nullptr };
 		WebSocketOpCode dataOpcode{ WebSocketOpCode::Op_Binary };
 		std::unique_ptr<WebSocketSSLClient> webSocket{ nullptr };
-		DiscordCoreAPI::EventWaiter areWeReadyToConnectEvent{};
 		std::unique_ptr<std::jthread> theTask{ nullptr };
 		DiscordCoreAPI::EventManager* eventManager{};
-		DiscordCoreAPI::EventWaiter doWeReconnect{};
 		VoiceConnectionData voiceConnectionData{};
 		std::atomic_bool areWeConnected{ false };
 		bool haveWeReceivedHeartbeatAck{ true };
+		EventWaiter areWeReadyToConnectEvent{};
 		std::atomic_bool* doWeQuit{ nullptr };
 		const int32_t maxReconnectTries{ 10 };
 		std::binary_semaphore semaphore{ 1 };
@@ -80,6 +79,7 @@ namespace DiscordCoreInternal {
 		int32_t lastNumberReceived{ 0 };
 		int32_t heartbeatInterval{ 0 };
 		std::mutex accessorMutex01{};
+		EventWaiter doWeReconnect{};
 		std::string sessionId{ "" };
 		bool areWeResuming{ false };
 		bool printMessages{ false };
@@ -136,8 +136,6 @@ namespace DiscordCoreInternal {
 		WebSocketOpCode dataOpcode{ WebSocketOpCode::Op_Text };
 		WebSocketState state{ WebSocketState::Initializing };
 		std::unique_ptr<std::jthread> theTask{ nullptr };
-		DiscordCoreAPI::EventWaiter areWeConnected{};
-		DiscordCoreAPI::EventWaiter doWeReconnect{};
 		VoiceConnectInitData voiceConnectInitData{};
 		BaseSocketAgent* baseSocketAgent{ nullptr };
 		VoiceConnectionData voiceConnectionData{};
@@ -147,6 +145,8 @@ namespace DiscordCoreInternal {
 		int32_t lastNumberReceived{ 0 };
 		bool areWeHeartBeating{ false };
 		int32_t heartbeatInterval{ 0 };
+		EventWaiter areWeConnected{};
+		EventWaiter doWeReconnect{};
 		bool printMessages{ false };
 		std::string baseUrl{ "" };
 		std::string hostIp{ "" };

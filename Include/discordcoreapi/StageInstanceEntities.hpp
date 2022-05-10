@@ -55,7 +55,7 @@ namespace DiscordCoreAPI {
 	  public:
 		StageInstance() = default;
 
-		StageInstance(StageInstanceData dataNew);
+		virtual ~StageInstance() = default;
 	};
 
 	/**

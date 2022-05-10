@@ -27,22 +27,6 @@
 
 namespace DiscordCoreAPI {
 
-	ApplicationCommand::ApplicationCommand(ApplicationCommandData dataNew) {
-		this->descriptionLocalizations = dataNew.descriptionLocalizations;
-		this->defaultMemberPermissions = dataNew.defaultMemberPermissions;
-		this->nameLocalizations = dataNew.nameLocalizations;
-		this->defaultPermission = dataNew.defaultPermission;
-		this->defaultPermission = dataNew.defaultPermission;
-		this->applicationId = dataNew.applicationId;
-		this->dmPermission = dataNew.dmPermission;
-		this->description = dataNew.description;
-		this->guildId = dataNew.guildId;
-		this->version = dataNew.version;
-		this->options = dataNew.options;
-		this->name = dataNew.name;
-		this->id = dataNew.id;
-	}
-
 	void ApplicationCommands::initialize(DiscordCoreInternal::HttpClient* theClient) {
 		ApplicationCommands::httpClient = theClient;
 	}
@@ -50,9 +34,7 @@ namespace DiscordCoreAPI {
 	CoRoutine<std::vector<ApplicationCommand>> ApplicationCommands::getGlobalApplicationCommandsAsync(GetGlobalApplicationCommandsData dataPackage) {
 		try {
 			DiscordCoreInternal::HttpWorkloadData workload{};
-			workload.thisWorkerId =
-				DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Get_Global_Application_Commands];
-			DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Get_Global_Application_Commands] += 1;
+			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Get_Global_Application_Commands);
 			co_await NewThreadAwaitable<std::vector<ApplicationCommand>>();
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Global_Application_Commands;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
@@ -70,9 +52,7 @@ namespace DiscordCoreAPI {
 	CoRoutine<ApplicationCommand> ApplicationCommands::createGlobalApplicationCommandAsync(CreateGlobalApplicationCommandData dataPackage) {
 		try {
 			DiscordCoreInternal::HttpWorkloadData workload{};
-			workload.thisWorkerId =
-				DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Post_Global_Application_Command];
-			DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Post_Global_Application_Command] += 1;
+			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Post_Global_Application_Command);
 			co_await NewThreadAwaitable<ApplicationCommand>();
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Post_Global_Application_Command;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Post;
@@ -88,9 +68,7 @@ namespace DiscordCoreAPI {
 	CoRoutine<ApplicationCommand> ApplicationCommands::getGlobalApplicationCommandAsync(GetGlobalApplicationCommandData dataPackage) {
 		try {
 			DiscordCoreInternal::HttpWorkloadData workload{};
-			workload.thisWorkerId =
-				DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Get_Global_Application_Command];
-			DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Get_Global_Application_Command] += 1;
+			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Get_Global_Application_Command);
 			co_await NewThreadAwaitable<ApplicationCommand>();
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Global_Application_Command;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
@@ -105,9 +83,7 @@ namespace DiscordCoreAPI {
 	CoRoutine<ApplicationCommand> ApplicationCommands::editGlobalApplicationCommandAsync(EditGlobalApplicationCommandData dataPackage) {
 		try {
 			DiscordCoreInternal::HttpWorkloadData workload{};
-			workload.thisWorkerId =
-				DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Patch_Global_Application_Command];
-			DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Patch_Global_Application_Command] += 1;
+			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Patch_Global_Application_Command);
 			co_await NewThreadAwaitable<ApplicationCommand>();
 			std::vector<ApplicationCommand> appCommands = getGlobalApplicationCommandsAsync({ .applicationId = dataPackage.applicationId }).get();
 			bool isItFound{ false };
@@ -135,9 +111,7 @@ namespace DiscordCoreAPI {
 	CoRoutine<void> ApplicationCommands::deleteGlobalApplicationCommandAsync(DeleteGlobalApplicationCommandData dataPackage) {
 		try {
 			DiscordCoreInternal::HttpWorkloadData workload{};
-			workload.thisWorkerId =
-				DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Delete_Global_Application_Command];
-			DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Delete_Global_Application_Command] += 1;
+			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Delete_Global_Application_Command);
 			co_await NewThreadAwaitable<void>();
 			std::vector<ApplicationCommand> appCommands = getGlobalApplicationCommandsAsync({ .applicationId = dataPackage.applicationId }).get();
 			std::string commandId{};
@@ -161,13 +135,10 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	CoRoutine<std::vector<ApplicationCommand>> ApplicationCommands::bulkOverwriteGlobalApplicationCommandsAsync(
-		BulkOverwriteGlobalApplicationCommandsData dataPackage) {
+	CoRoutine<std::vector<ApplicationCommand>> ApplicationCommands::bulkOverwriteGlobalApplicationCommandsAsync(BulkOverwriteGlobalApplicationCommandsData dataPackage) {
 		try {
 			DiscordCoreInternal::HttpWorkloadData workload{};
-			workload.thisWorkerId =
-				DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Bulk_Put_Global_Application_Commands];
-			DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Bulk_Put_Global_Application_Commands] += 1;
+			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Bulk_Put_Global_Application_Commands);
 			co_await NewThreadAwaitable<std::vector<ApplicationCommand>>();
 			auto newDataArray = nlohmann::json::array();
 			std::vector<CreateGlobalApplicationCommandData> newVector{};
@@ -180,7 +151,7 @@ namespace DiscordCoreAPI {
 				for (auto& value01: value.options) {
 					dataPackageNew.options.push_back(value01);
 				}
-				dataPackageNew.type = ( ApplicationCommandType )value.type;
+				dataPackageNew.type = static_cast<ApplicationCommandType>(value.type);
 				newVector.push_back(dataPackageNew);
 			}
 			for (auto& value: newVector) {
@@ -202,9 +173,7 @@ namespace DiscordCoreAPI {
 	CoRoutine<std::vector<ApplicationCommand>> ApplicationCommands::getGuildApplicationCommandsAsync(GetGuildApplicationCommandsData dataPackage) {
 		try {
 			DiscordCoreInternal::HttpWorkloadData workload{};
-			workload.thisWorkerId =
-				DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Get_Guild_Application_Commands];
-			DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Get_Guild_Application_Commands] += 1;
+			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Get_Guild_Application_Commands);
 			co_await NewThreadAwaitable<std::vector<ApplicationCommand>>();
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Guild_Application_Commands;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
@@ -222,9 +191,7 @@ namespace DiscordCoreAPI {
 	CoRoutine<ApplicationCommand> ApplicationCommands::createGuildApplicationCommandAsync(CreateGuildApplicationCommandData dataPackage) {
 		try {
 			DiscordCoreInternal::HttpWorkloadData workload{};
-			workload.thisWorkerId =
-				DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Post_Guild_Application_Command];
-			DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Post_Guild_Application_Command] += 1;
+			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Post_Guild_Application_Command);
 			co_await NewThreadAwaitable<ApplicationCommand>();
 			dataPackage.applicationId = dataPackage.applicationId;
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Post_Guild_Application_Command;
@@ -241,9 +208,7 @@ namespace DiscordCoreAPI {
 	CoRoutine<ApplicationCommand> ApplicationCommands::getGuildApplicationCommandAsync(GetGuildApplicationCommandData dataPackage) {
 		try {
 			DiscordCoreInternal::HttpWorkloadData workload{};
-			workload.thisWorkerId =
-				DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Get_Guild_Application_Command];
-			DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Get_Guild_Application_Command] += 1;
+			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Get_Guild_Application_Command);
 			co_await NewThreadAwaitable<ApplicationCommand>();
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Guild_Application_Command;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
@@ -258,9 +223,7 @@ namespace DiscordCoreAPI {
 	CoRoutine<ApplicationCommand> ApplicationCommands::editGuildApplicationCommandAsync(EditGuildApplicationCommandData dataPackage) {
 		try {
 			DiscordCoreInternal::HttpWorkloadData workload{};
-			workload.thisWorkerId =
-				DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Patch_Guild_Application_Command];
-			DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Patch_Guild_Application_Command] += 1;
+			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Patch_Guild_Application_Command);
 			co_await NewThreadAwaitable<ApplicationCommand>();
 			std::vector<ApplicationCommand> appCommands = getGuildApplicationCommandsAsync({ .guildId = dataPackage.guildId }).get();
 			bool isItFound = false;
@@ -288,9 +251,7 @@ namespace DiscordCoreAPI {
 	CoRoutine<void> ApplicationCommands::deleteGuildApplicationCommandAsync(DeleteGuildApplicationCommandData dataPackage) {
 		try {
 			DiscordCoreInternal::HttpWorkloadData workload{};
-			workload.thisWorkerId =
-				DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Delete_Guild_Application_Command];
-			DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Delete_Guild_Application_Command] += 1;
+			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Delete_Guild_Application_Command);
 			co_await NewThreadAwaitable<void>();
 			std::vector<ApplicationCommand> appCommands = getGuildApplicationCommandsAsync({ .guildId = dataPackage.guildId }).get();
 			std::string commandId;
@@ -314,13 +275,10 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	CoRoutine<std::vector<ApplicationCommand>> ApplicationCommands::bulkOverwriteGuildApplicationCommandsAsync(
-		BulkOverwriteGuildApplicationCommandsData dataPackage) {
+	CoRoutine<std::vector<ApplicationCommand>> ApplicationCommands::bulkOverwriteGuildApplicationCommandsAsync(BulkOverwriteGuildApplicationCommandsData dataPackage) {
 		try {
 			DiscordCoreInternal::HttpWorkloadData workload{};
-			workload.thisWorkerId =
-				DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Bulk_Put_Guild_Application_Commands];
-			DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Bulk_Put_Guild_Application_Commands] += 1;
+			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Bulk_Put_Guild_Application_Commands);
 			co_await NewThreadAwaitable<std::vector<ApplicationCommand>>();
 			auto newDataArray = nlohmann::json::array();
 			std::vector<CreateGuildApplicationCommandData> newVector{};
@@ -333,7 +291,7 @@ namespace DiscordCoreAPI {
 				for (auto& value01: value.options) {
 					dataPackageNew.options.push_back(value01);
 				}
-				dataPackageNew.type = ( ApplicationCommandType )value.type;
+				dataPackageNew.type = static_cast<ApplicationCommandType>(value.type);
 				newVector.push_back(dataPackageNew);
 			}
 			for (auto& value: newVector) {
@@ -357,27 +315,23 @@ namespace DiscordCoreAPI {
 		try {
 			DiscordCoreInternal::HttpWorkloadData workload{};
 			workload.thisWorkerId =
-				DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Get_Guild_Application_Commands_Permissions];
-			DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Get_Guild_Application_Commands_Permissions] += 1;
+				DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Get_Guild_Application_Commands_Permissions);
 			co_await NewThreadAwaitable<std::vector<GuildApplicationCommandPermissionsData>>();
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Guild_Application_Commands_Permissions;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
 			workload.relativePath = "/applications/" + dataPackage.applicationId + "/guilds/" + dataPackage.guildId + "/commands/permissions";
 			workload.callStack = "ApplicationCommands::getGuildApplicationCommandPermissionsAsync";
-			co_return DiscordCoreInternal::submitWorkloadAndGetResult<std::vector<GuildApplicationCommandPermissionsData>>(
-				*ApplicationCommands::httpClient, workload);
+			co_return DiscordCoreInternal::submitWorkloadAndGetResult<std::vector<GuildApplicationCommandPermissionsData>>(*ApplicationCommands::httpClient, workload);
 		} catch (...) {
 			reportException("ApplicationCommands::getGuildApplicationCommandPermissionsAsync()");
 		}
 	}
 
-	CoRoutine<GuildApplicationCommandPermissionsData> ApplicationCommands::getApplicationCommandPermissionsAsync(
-		GetApplicationCommandPermissionsData dataPackage) {
+	CoRoutine<GuildApplicationCommandPermissionsData> ApplicationCommands::getApplicationCommandPermissionsAsync(GetApplicationCommandPermissionsData dataPackage) {
 		try {
 			DiscordCoreInternal::HttpWorkloadData workload{};
 			workload.thisWorkerId =
-				DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Get_Guild_Application_Command_Permissions];
-			DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Get_Guild_Application_Command_Permissions] += 1;
+				DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Get_Guild_Application_Command_Permissions);
 			co_await NewThreadAwaitable<GuildApplicationCommandPermissionsData>();
 			std::vector<ApplicationCommand> appCommands = getGuildApplicationCommandsAsync({ .guildId = dataPackage.guildId }).get();
 			std::string commandId;
@@ -401,13 +355,11 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	CoRoutine<GuildApplicationCommandPermissionsData> ApplicationCommands::editGuildApplicationCommandPermissionsAsync(
-		EditGuildApplicationCommandPermissionsData dataPackage) {
+	CoRoutine<GuildApplicationCommandPermissionsData> ApplicationCommands::editGuildApplicationCommandPermissionsAsync(EditGuildApplicationCommandPermissionsData dataPackage) {
 		try {
 			DiscordCoreInternal::HttpWorkloadData workload{};
 			workload.thisWorkerId =
-				DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Put_Guild_Application_Command_Permissions];
-			DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Put_Guild_Application_Command_Permissions] += 1;
+				DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Put_Guild_Application_Command_Permissions);
 			co_await NewThreadAwaitable<GuildApplicationCommandPermissionsData>();
 			std::vector<ApplicationCommand> appCommands = getGuildApplicationCommandsAsync({ .guildId = dataPackage.guildId }).get();
 			std::string commandId;
@@ -437,10 +389,8 @@ namespace DiscordCoreAPI {
 		BatchEditGuildApplicationCommandPermissionsData dataPackage) {
 		try {
 			DiscordCoreInternal::HttpWorkloadData workload{};
-			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal
-				[DiscordCoreInternal::HttpWorkloadType::Batch_Put_Guild_Application_Command_Permissions];
-			DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal
-				[DiscordCoreInternal::HttpWorkloadType::Batch_Put_Guild_Application_Command_Permissions] += 1;
+			workload.thisWorkerId =
+				DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Batch_Put_Guild_Application_Command_Permissions);
 			co_await NewThreadAwaitable<std::vector<GuildApplicationCommandPermissionsData>>();
 			std::vector<ApplicationCommand> appCommands = getGuildApplicationCommandsAsync({ .guildId = dataPackage.guildId }).get();
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Batch_Put_Guild_Application_Command_Permissions;
@@ -448,8 +398,7 @@ namespace DiscordCoreAPI {
 			workload.relativePath = "/applications/" + dataPackage.applicationId + "/guilds/" + dataPackage.guildId + "/commands/permissions";
 			workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
 			workload.callStack = "ApplicationCommands::batchEditGuildApplicationCommandPermissionsAsync";
-			co_return DiscordCoreInternal::submitWorkloadAndGetResult<std::vector<GuildApplicationCommandPermissionsData>>(
-				*ApplicationCommands::httpClient, workload);
+			co_return DiscordCoreInternal::submitWorkloadAndGetResult<std::vector<GuildApplicationCommandPermissionsData>>(*ApplicationCommands::httpClient, workload);
 		} catch (...) {
 			reportException("ApplicationCommands::batchEditGuildApplicationCommandPermissionsAsync()");
 		}

@@ -20,7 +20,7 @@
 
 #include <discordcoreapi/AudioDecoder.hpp>
 
-namespace DiscordCoreAPI {
+namespace DiscordCoreInternal {
 
 	AudioDecoder::AudioDecoder(BuildAudioDecoderData dataPackage, bool doWePrintNew) {
 		this->bufferMaxSize = dataPackage.bufferMaxSize;
@@ -32,7 +32,7 @@ namespace DiscordCoreAPI {
 		this->inputDataBuffer.send(dataToDecode);
 	}
 
-	bool AudioDecoder::getFrame(RawFrameData& dataPackage) {
+	bool AudioDecoder::getFrame(DiscordCoreAPI::RawFrameData& dataPackage) {
 		if (!this->areWeQuitting) {
 			if (this->outDataBuffer.tryReceive(dataPackage)) {
 				if (dataPackage.sampleCount != -1) {
@@ -44,7 +44,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void AudioDecoder::cancelMe() {
-		this->refreshTimeForBuffer.store(10, std::memory_order_seq_cst);
+		this->refreshTimeForBuffer.store(10);
 		this->inputDataBuffer.clearContents();
 		this->inputDataBuffer.send(std::string());
 		this->inputDataBuffer.send(std::string());
@@ -61,7 +61,7 @@ namespace DiscordCoreAPI {
 	}
 
 	bool AudioDecoder::haveWeFailed() {
-		return this->haveWeFailedBool.load(std::memory_order_seq_cst);
+		return this->haveWeFailedBool.load();
 	}
 
 	void AudioDecoder::startMe() {
@@ -74,15 +74,14 @@ namespace DiscordCoreAPI {
 		AudioDecoder* stream = static_cast<AudioDecoder*>(opaque);
 		stream->bytesRead = 0;
 		stream->currentBuffer = std::string();
+		DiscordCoreAPI::RawFrameData frameData{};
 		if (stream->areWeQuitting) {
-			RawFrameData frameData{};
 			frameData.sampleCount = 0;
 			stream->outDataBuffer.send(frameData);
 			stream->areWeQuitting = true;
 			return AVERROR_EOF;
 		}
-		if (waitForTimeToPass(stream->inputDataBuffer, stream->currentBuffer, stream->refreshTimeForBuffer.load(std::memory_order_seq_cst))) {
-			RawFrameData frameData{};
+		if (DiscordCoreAPI::waitForTimeToPass(stream->inputDataBuffer, stream->currentBuffer, stream->refreshTimeForBuffer.load())) {
 			frameData.sampleCount = 0;
 			stream->outDataBuffer.send(frameData);
 			stream->areWeQuitting = true;
@@ -91,7 +90,6 @@ namespace DiscordCoreAPI {
 		if (stream->currentBuffer.size() > 0) {
 			stream->bytesRead = stream->currentBuffer.size();
 		} else {
-			RawFrameData frameData{};
 			frameData.sampleCount = 0;
 			stream->outDataBuffer.send(frameData);
 			stream->areWeQuitting = true;
@@ -101,7 +99,6 @@ namespace DiscordCoreAPI {
 			buf[x] = stream->currentBuffer[x];
 		}
 		if (stream->ioContext->buf_ptr - stream->ioContext->buffer >= stream->totalFileSize) {
-			RawFrameData frameData{};
 			frameData.sampleCount = 0;
 			stream->outDataBuffer.send(frameData);
 			stream->areWeQuitting = true;
@@ -115,28 +112,28 @@ namespace DiscordCoreAPI {
 			if (!this->haveWeBooted) {
 				unsigned char* fileStreamBuffer = static_cast<unsigned char*>(av_malloc(this->bufferMaxSize));
 				if (fileStreamBuffer == nullptr) {
-					this->haveWeFailedBool.store(true, std::memory_order_seq_cst);
+					this->haveWeFailedBool.store(true);
 					throw std::runtime_error("Failed to allocate filestreambuffer.");
 				}
 
 				this->ioContext = avio_alloc_context(fileStreamBuffer, static_cast<int32_t>(this->bufferMaxSize), 0, this, &AudioDecoder::FileStreamRead, 0, 0);
 
 				if (this->ioContext == nullptr) {
-					this->haveWeFailedBool.store(true, std::memory_order_seq_cst);
+					this->haveWeFailedBool.store(true);
 					throw std::runtime_error("Failed to allocate AVIOContext.");
 				}
 
 				this->formatContext = avformat_alloc_context();
 
 				if (!this->formatContext) {
-					this->haveWeFailedBool.store(true, std::memory_order_seq_cst);
+					this->haveWeFailedBool.store(true);
 					throw std::runtime_error("Could not allocate the format context.");
 				}
 
 				this->formatContext->pb = this->ioContext;
 				this->formatContext->flags |= AVFMT_FLAG_CUSTOM_IO;
 				if (avformat_open_input(*this->formatContext, "memory", nullptr, nullptr) < 0) {
-					this->haveWeFailedBool.store(true, std::memory_order_seq_cst);
+					this->haveWeFailedBool.store(true);
 					throw std::runtime_error("Error opening AVFormatContext.");
 				}
 				*this->formatContext.getBoolPtr() = true;
@@ -146,20 +143,18 @@ namespace DiscordCoreAPI {
 					std::string newString = "Could not find ";
 					newString += av_get_media_type_string(type);
 					newString += " stream in input memory stream.";
-					this->haveWeFailedBool.store(true, std::memory_order_seq_cst);
+					this->haveWeFailedBool.store(true);
 					throw std::runtime_error(newString.c_str());
-				}
-
-				else {
+				} else {
 					this->audioStreamIndex = ret;
 					this->audioStream = this->formatContext->streams[this->audioStreamIndex];
 					if (!this->audioStream) {
-						this->haveWeFailedBool.store(true, std::memory_order_seq_cst);
+						this->haveWeFailedBool.store(true);
 						throw std::runtime_error("Could not find an audio stream.");
 					}
 
 					if (avformat_find_stream_info(this->formatContext, NULL) < 0) {
-						this->haveWeFailedBool.store(true, std::memory_order_seq_cst);
+						this->haveWeFailedBool.store(true);
 						throw std::runtime_error("Could not find stream information.");
 					}
 
@@ -168,7 +163,7 @@ namespace DiscordCoreAPI {
 						std::string newString = "Failed to find ";
 						newString += av_get_media_type_string(type);
 						newString += " decoder.";
-						this->haveWeFailedBool.store(true, std::memory_order_seq_cst);
+						this->haveWeFailedBool.store(true);
 						throw std::runtime_error(newString.c_str());
 					}
 
@@ -177,7 +172,7 @@ namespace DiscordCoreAPI {
 						std::string newString = "Failed to allocate the ";
 						newString += av_get_media_type_string(type);
 						newString += " AVCodecContext.";
-						this->haveWeFailedBool.store(true, std::memory_order_seq_cst);
+						this->haveWeFailedBool.store(true);
 						throw std::runtime_error(newString.c_str());
 					}
 
@@ -185,7 +180,7 @@ namespace DiscordCoreAPI {
 						std::string newString = "Failed to copy ";
 						newString += av_get_media_type_string(type);
 						newString += " codec parameters to decoder context.";
-						this->haveWeFailedBool.store(true, std::memory_order_seq_cst);
+						this->haveWeFailedBool.store(true);
 						throw std::runtime_error(newString.c_str());
 					}
 
@@ -193,7 +188,7 @@ namespace DiscordCoreAPI {
 						std::string newString = "Failed to open ";
 						newString += av_get_media_type_string(type);
 						newString += " AVCodecContext.";
-						this->haveWeFailedBool.store(true, std::memory_order_seq_cst);
+						this->haveWeFailedBool.store(true);
 						throw std::runtime_error(newString.c_str());
 					}
 
@@ -211,19 +206,19 @@ namespace DiscordCoreAPI {
 			if (this->currentBuffer.size() > 0) {
 				this->packet = av_packet_alloc();
 				if (!this->packet) {
-					this->haveWeFailedBool.store(true, std::memory_order_seq_cst);
+					this->haveWeFailedBool.store(true);
 					throw std::runtime_error("Error: Could not allocate packet");
 				}
 
 				this->frame = av_frame_alloc();
 				if (!this->frame) {
-					this->haveWeFailedBool.store(true, std::memory_order_seq_cst);
+					this->haveWeFailedBool.store(true);
 					throw std::runtime_error("Error: Could not allocate frame");
 				}
 
 				this->newFrame = av_frame_alloc();
 				if (!this->newFrame) {
-					this->haveWeFailedBool.store(true, std::memory_order_seq_cst);
+					this->haveWeFailedBool.store(true);
 					throw std::runtime_error("Error: Could not allocate new-frame");
 				}
 
@@ -237,14 +232,14 @@ namespace DiscordCoreAPI {
 							char charString[32];
 							av_strerror(ret, charString, 32);
 							std::string newString = "Error submitting a packet for decoding (" + std::to_string(ret) + "), " + charString + ".";
-							this->haveWeFailedBool.store(true, std::memory_order_seq_cst);
+							this->haveWeFailedBool.store(true);
 							throw std::runtime_error(newString.c_str());
 						}
 						if (ret >= 0) {
 							ret = avcodec_receive_frame(this->audioDecodeContext, this->frame);
 							if (ret < 0) {
 								std::string newString = "Error during decoding (" + std::to_string(ret) + ")";
-								this->haveWeFailedBool.store(true, std::memory_order_seq_cst);
+								this->haveWeFailedBool.store(true);
 								throw std::runtime_error(newString.c_str());
 							}
 
@@ -257,9 +252,8 @@ namespace DiscordCoreAPI {
 							this->newFrame->nb_samples = frame->nb_samples;
 							this->newFrame->pts = frame->pts;
 							swr_convert_frame(this->swrContext, this->newFrame, this->frame);
-							int32_t unpadded_linesize =
-								this->newFrame->nb_samples * av_get_bytes_per_sample(static_cast<AVSampleFormat>(this->newFrame->format)) * 2;
-							RawFrameData rawFrame{};
+							int32_t unpadded_linesize = this->newFrame->nb_samples * av_get_bytes_per_sample(static_cast<AVSampleFormat>(this->newFrame->format)) * 2;
+							DiscordCoreAPI::RawFrameData rawFrame{};
 							rawFrame.data.resize(unpadded_linesize);
 							for (int32_t x = 0; x < unpadded_linesize; x += 1) {
 								rawFrame.data[x] = this->newFrame->extended_data[0][x];
@@ -272,7 +266,7 @@ namespace DiscordCoreAPI {
 									swr_init(this->swrContext);
 								}
 								swr_convert_frame(this->swrContext, this->newFrame, nullptr);
-								RawFrameData rawFrame02{};
+								DiscordCoreAPI::RawFrameData rawFrame02{};
 								rawFrame02.data.resize(*this->newFrame->linesize);
 								for (int32_t x = 0; x < *this->newFrame->linesize; x += 1) {
 									rawFrame02.data[x] = this->newFrame->extended_data[0][x];
@@ -281,7 +275,7 @@ namespace DiscordCoreAPI {
 								this->outDataBuffer.send(rawFrame02);
 							}
 							if (ret < 0 || newFrame->nb_samples == 0) {
-								this->haveWeFailedBool.store(true, std::memory_order_seq_cst);
+								this->haveWeFailedBool.store(true);
 								throw std::runtime_error("Return value is less than zero!");
 							}
 						} else {
@@ -298,14 +292,14 @@ namespace DiscordCoreAPI {
 					}
 				}
 				if (this->doWePrint) {
-					std::cout << shiftToBrightGreen() << "Completed decoding!" << std::endl << reset() << std::endl;
+					std::cout << DiscordCoreAPI::shiftToBrightGreen() << "Completed decoding!" << std::endl << DiscordCoreAPI::reset() << std::endl;
 				}
 				return;
 			}
 			return;
 		} catch (...) {
-			this->haveWeFailedBool.store(true, std::memory_order_seq_cst);
-			reportException("AudioDecoder::run");
+			this->haveWeFailedBool.store(true);
+			DiscordCoreAPI::reportException("AudioDecoder::run()");
 			return;
 		}
 	}

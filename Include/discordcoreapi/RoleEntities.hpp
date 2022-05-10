@@ -121,7 +121,7 @@ namespace DiscordCoreAPI {
 	  public:
 		Role() = default;
 
-		Role(RoleData dataNew);
+		virtual ~Role() = default;
 	};
 
 	/**@}*/

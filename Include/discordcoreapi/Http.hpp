@@ -27,15 +27,15 @@
 
 namespace DiscordCoreInternal {
 
-	class HttpConnectionManager;
-	struct RateLimitData;
-	struct HttpData;
+	class DiscordCoreAPI_Dll HttpConnectionManager;
+	struct DiscordCoreAPI_Dll RateLimitData;
+	struct DiscordCoreAPI_Dll HttpData;
 
 	struct HttpError : public std::runtime_error {
 	  public:
-		explicit HttpError(std::string&& message) : std::runtime_error(message.c_str()){};
+		HttpError(std::string&& message) : std::runtime_error(message.c_str()){};
 
-		explicit HttpError(std::string& message) : std::runtime_error(message.c_str()){};
+		HttpError(std::string& message) : std::runtime_error(message.c_str()){};
 	};
 
 	class DiscordCoreAPI_Dll HttpRnRBuilder {
@@ -56,7 +56,7 @@ namespace DiscordCoreInternal {
 
 		void resetValues();
 
-		virtual ~HttpRnRBuilder(){};
+		virtual ~HttpRnRBuilder() = default;
 
 	  protected:
 		std::unordered_map<std::string, std::string> headers{};
@@ -104,7 +104,7 @@ namespace DiscordCoreInternal {
 		int64_t lastTimeUsed{ 0 };
 		bool doWeConnect{ true };
 
-		virtual ~HttpConnection(){};
+		virtual ~HttpConnection() = default;
 	};
 
 	namespace Globals {
@@ -138,15 +138,15 @@ namespace DiscordCoreInternal {
 
 		HttpData httpRequest(HttpWorkloadData&);
 
-		bool getDoWePrintFFMPEG();
+		const bool getDoWePrintFFMPEG();
 
-		std::string getBotToken();
+		const std::string getBotToken();
 
 	  protected:
 		HttpConnectionManager connectionManager{};
-		bool doWePrintFFMPEG{ false };
+		const bool doWePrintFFMPEG{ false };
+		const bool doWePrintHttp{ false };
 		const std::string botToken{};
-		bool doWePrintHttp{ false };
 
 		HttpData executeHttpRequest(HttpWorkloadData& workload, HttpConnection& theConnection, RateLimitData* rateLimitDataPtr);
 

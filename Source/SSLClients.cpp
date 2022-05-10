@@ -83,16 +83,16 @@ namespace DiscordCoreInternal {
 		try {
 #ifdef _WIN32
 			HttpSSLClient::googleCertPathStatic = getFilePath("GoogleCert.pem", "share\\discordcoreapi\\data");
-			HttpSSLClient::defaultCertPathStatic = getFilePath("DiscordCert.pem", "share\\discordcoreapi\\data",
-				HttpSSLClient::googleCertPathStatic.substr(0, HttpSSLClient::googleCertPathStatic.find("GoogleCert.pem")));
-			HttpSSLClient::soundcloudCertPathStatic = getFilePath("SoundCloudCert.pem", "share\\discordcoreapi\\data",
-				HttpSSLClient::googleCertPathStatic.substr(0, HttpSSLClient::googleCertPathStatic.find("GoogleCert.pem")));
+			HttpSSLClient::defaultCertPathStatic = getFilePath(
+				"DiscordCert.pem", "share\\discordcoreapi\\data", HttpSSLClient::googleCertPathStatic.substr(0, HttpSSLClient::googleCertPathStatic.find("GoogleCert.pem")));
+			HttpSSLClient::soundcloudCertPathStatic = getFilePath(
+				"SoundCloudCert.pem", "share\\discordcoreapi\\data", HttpSSLClient::googleCertPathStatic.substr(0, HttpSSLClient::googleCertPathStatic.find("GoogleCert.pem")));
 #else
 			HttpSSLClient::googleCertPathStatic = getFilePath("GoogleCert.pem", "share/discordcoreapi/data");
-			HttpSSLClient::defaultCertPathStatic = getFilePath("DiscordCert.pem", "share/discordcoreapi/data",
-				HttpSSLClient::googleCertPathStatic.substr(0, HttpSSLClient::googleCertPathStatic.find("GoogleCert.pem")));
-			HttpSSLClient::soundcloudCertPathStatic = getFilePath("SoundCloudCert.pem", "share/discordcoreapi/data",
-				HttpSSLClient::googleCertPathStatic.substr(0, HttpSSLClient::googleCertPathStatic.find("GoogleCert.pem")));
+			HttpSSLClient::defaultCertPathStatic = getFilePath(
+				"DiscordCert.pem", "share/discordcoreapi/data", HttpSSLClient::googleCertPathStatic.substr(0, HttpSSLClient::googleCertPathStatic.find("GoogleCert.pem")));
+			HttpSSLClient::soundcloudCertPathStatic = getFilePath(
+				"SoundCloudCert.pem", "share/discordcoreapi/data", HttpSSLClient::googleCertPathStatic.substr(0, HttpSSLClient::googleCertPathStatic.find("GoogleCert.pem")));
 #endif
 		} catch (...) {
 			DiscordCoreAPI::reportException("HttpSSLClient::HttpSSLClient()");
@@ -103,11 +103,11 @@ namespace DiscordCoreInternal {
 		try {
 			std::string stringNew{};
 			if (baseUrl.find(".com") != std::string::npos) {
-				stringNew = baseUrl.substr(baseUrl.find("https://") + std::string("https://").size(),
-					baseUrl.find(".com") + std::string(".com").size() - std::string("https://").size());
+				stringNew =
+					baseUrl.substr(baseUrl.find("https://") + std::string("https://").size(), baseUrl.find(".com") + std::string(".com").size() - std::string("https://").size());
 			} else if (baseUrl.find(".org") != std::string::npos) {
-				stringNew = baseUrl.substr(baseUrl.find("https://") + std::string("https://").size(),
-					baseUrl.find(".org") + std::string(".org").size() - std::string("https://").size());
+				stringNew =
+					baseUrl.substr(baseUrl.find("https://") + std::string("https://").size(), baseUrl.find(".org") + std::string(".org").size() - std::string("https://").size());
 			}
 
 			std::string certPath{};
@@ -368,16 +368,14 @@ namespace DiscordCoreInternal {
 				return;
 			}
 
-			if (auto returnValue = connect(this->theSocket, resultAddress->ai_addr, static_cast<int32_t>(resultAddress->ai_addrlen));
-				returnValue == SOCKET_ERROR) {
+			if (auto returnValue = connect(this->theSocket, resultAddress->ai_addr, static_cast<int32_t>(resultAddress->ai_addrlen)); returnValue == SOCKET_ERROR) {
 				reportError("connect() Error: ", returnValue);
 				return;
 			}
 
 #ifdef _WIN32
-			bool optionValue{ true };
-			if (auto returnValue = setsockopt(this->theSocket, IPPROTO_TCP, TCP_NODELAY, reinterpret_cast<const char*>(&optionValue), sizeof(optionValue));
-				returnValue == SOCKET_ERROR) {
+			char optionValue{ true };
+			if (auto returnValue = setsockopt(this->theSocket, IPPROTO_TCP, TCP_NODELAY, &optionValue, sizeof(optionValue)); returnValue == SOCKET_ERROR) {
 				reportError("setsockopt() Error: ", returnValue);
 				return;
 			}
@@ -599,8 +597,7 @@ namespace DiscordCoreInternal {
 				return;
 			}
 
-			if (auto returnValue = connect(this->theSocket, resultAddress->ai_addr, static_cast<int32_t>(resultAddress->ai_addrlen));
-				returnValue == SOCKET_ERROR) {
+			if (auto returnValue = connect(this->theSocket, resultAddress->ai_addr, static_cast<int32_t>(resultAddress->ai_addrlen)); returnValue == SOCKET_ERROR) {
 				reportError("connect() Error: ", returnValue);
 				return;
 			}

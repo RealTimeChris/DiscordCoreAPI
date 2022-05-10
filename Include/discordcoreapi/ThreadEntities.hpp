@@ -128,7 +128,7 @@ namespace DiscordCoreAPI {
 	  public:
 		Thread() = default;
 
-		Thread(ChannelData dataNew);
+		virtual ~Thread() = default;
 	};
 
 	/**@}*/

@@ -20,6 +20,7 @@
 
 #include <discordcoreapi/DiscordCoreClient.hpp>
 #include <csignal>
+#include <atomic>
 
 namespace DiscordCoreAPI {
 
@@ -29,6 +30,7 @@ namespace DiscordCoreAPI {
 		YouTubeAPIMap youtubeAPIMap{};
 		SongAPIMap songAPIMap{};
 		std::atomic_bool doWeQuit{ false };
+		std::atomic_flag weveQuit{};
 	}
 
 	VoiceConnectionMap& getVoiceConnectionMap() {
@@ -79,8 +81,7 @@ namespace DiscordCoreAPI {
 		this->eventManager.onUserUpdate(&EventHandler::onUserUpdate);
 		this->eventManager.onVoiceStateUpdate(&EventHandler::onVoiceStateUpdate);
 		EventHandler::initialize(this->cacheOptions);
-		this->httpClient =
-			std::make_unique<DiscordCoreInternal::HttpClient>(botTokenNew, this->loggingOptions.logHttpMessages, this->loggingOptions.logFFMPEGMessages);
+		this->httpClient = std::make_unique<DiscordCoreInternal::HttpClient>(botTokenNew, this->loggingOptions.logHttpMessages, this->loggingOptions.logFFMPEGMessages);
 		ApplicationCommands::initialize(this->httpClient.get());
 		Channels::initialize(this->httpClient.get());
 		Guilds::initialize(this->httpClient.get(), this);
@@ -95,7 +96,7 @@ namespace DiscordCoreAPI {
 		Threads::initialize(this->httpClient.get());
 		Users::initialize(this->httpClient.get());
 		WebHooks::initialize(this->httpClient.get());
-		this->instantiateWebSockets(botTokenNew);
+		this->botToken = botTokenNew;
 	}
 
 	void DiscordCoreClient::registerFunction(std::vector<std::string> functionNames, std::unique_ptr<BaseFunction> baseFunction) {
@@ -108,20 +109,21 @@ namespace DiscordCoreAPI {
 
 	void DiscordCoreClient::runBot() {
 		try {
+			this->instantiateWebSockets();
 			if (!this->didWeStartFine) {
 				return;
 			}
 			this->webSocketMap[std::to_string(this->shardingOptions.startingShard)]->getTheTask()->join();
+			DiscordCoreAPI::Globals::weveQuit.test_and_set();
 		} catch (...) {
 			reportException("DiscordCoreClient::runBot()");
 		}
 	}
 
-	void DiscordCoreClient::instantiateWebSockets(std::string botTokenNew) {
+	void DiscordCoreClient::instantiateWebSockets() {
 		GatewayBotData gatewayData = this->getGateWayBot();
 		if (gatewayData.url == "") {
-			std::cout << shiftToBrightRed << "Failed to collect the connection URL! Closing! Did you remember to properly set your bot token?" << reset
-					  << std::endl;
+			std::cout << shiftToBrightRed << "Failed to collect the connection URL! Closing! Did you remember to properly set your bot token?" << reset << std::endl;
 			std::this_thread::sleep_for(std::chrono::seconds{ 5 });
 			return;
 		}
@@ -131,19 +133,16 @@ namespace DiscordCoreAPI {
 		}
 		int32_t shardGroupCount{ static_cast<int32_t>(
 			ceil(static_cast<float>(this->shardingOptions.numberOfShardsForThisProcess) / static_cast<float>(gatewayData.sessionStartLimit.maxConcurrency))) };
-		int32_t shardsPerGroup{ static_cast<int32_t>(
-			ceil(static_cast<float>(this->shardingOptions.numberOfShardsForThisProcess) / static_cast<float>(shardGroupCount))) };
+		int32_t shardsPerGroup{ static_cast<int32_t>(ceil(static_cast<float>(this->shardingOptions.numberOfShardsForThisProcess) / static_cast<float>(shardGroupCount))) };
 		for (int32_t x = 0; x < shardGroupCount; x += 1) {
 			for (int32_t y = 0; y < shardsPerGroup; y += 1) {
-				std::cout << shiftToBrightBlue << "Connecting Shard " + std::to_string(x * shardsPerGroup + y + 1) << " of "
-						  << this->shardingOptions.numberOfShardsForThisProcess
-						  << std::string(" Shards for this process. (") + std::to_string(x * shardsPerGroup + y + 1 + this->shardingOptions.startingShard) +
-						" of " + std::to_string(this->shardingOptions.totalNumberOfShards) + std::string(" Shards total across all processes.)")
+				std::cout << shiftToBrightBlue << "Connecting Shard " + std::to_string(x * shardsPerGroup + y + 1) << " of " << this->shardingOptions.numberOfShardsForThisProcess
+						  << std::string(" Shards for this process. (") + std::to_string(x * shardsPerGroup + y + 1 + this->shardingOptions.startingShard) + " of " +
+						std::to_string(this->shardingOptions.totalNumberOfShards) + std::string(" Shards total across all processes.)")
 						  << std::endl;
 				auto thePtr = std::unique_ptr<DiscordCoreInternal::BaseSocketAgent, WebSocketDeleter>(
-					new DiscordCoreInternal::BaseSocketAgent{ botTokenNew,
-						gatewayData.url.substr(gatewayData.url.find("wss://") + std::string("wss://").size()), &this->eventManager, this,
-						&this->commandController, &Globals::doWeQuit, this->loggingOptions.logWebSocketMessages,
+					new DiscordCoreInternal::BaseSocketAgent{ this->botToken, gatewayData.url.substr(gatewayData.url.find("wss://") + std::string("wss://").size()),
+						&this->eventManager, this, &this->commandController, &Globals::doWeQuit, this->loggingOptions.logWebSocketMessages,
 						x * shardsPerGroup + y + this->shardingOptions.startingShard, this->shardingOptions.totalNumberOfShards },
 					WebSocketDeleter{});
 				this->webSocketMap.insert_or_assign(std::to_string(x * shardsPerGroup + y + this->shardingOptions.startingShard), std::move(thePtr));
@@ -189,6 +188,10 @@ namespace DiscordCoreAPI {
 	}
 
 	void signalHandler(int32_t) {
-		DiscordCoreAPI::Globals::doWeQuit.store(true, std::memory_order_seq_cst);
+		std::atomic_signal_fence(std::memory_order_seq_cst);
+		DiscordCoreAPI::Globals::doWeQuit.store(true);
+		while (!DiscordCoreAPI::Globals::weveQuit.test()) {
+			std::this_thread::sleep_for(std::chrono::milliseconds{ 1 });
+		}
 	}
 }

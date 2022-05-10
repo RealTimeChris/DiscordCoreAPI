@@ -71,7 +71,7 @@ namespace DiscordCoreAPI {
 	  public:
 		Sticker() = default;
 
-		Sticker(StickerData dataNew);
+		virtual ~Sticker() = default;
 	};
 
 	/**@}*/

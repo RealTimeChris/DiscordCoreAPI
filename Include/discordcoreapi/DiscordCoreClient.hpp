@@ -50,9 +50,9 @@
 
 namespace DiscordCoreAPI {
 
-	void signalHandler(int32_t);
+	extern "C" void signalHandler(int32_t);
 
-	struct WebSocketDeleter {
+	struct DiscordCoreAPI_Dll WebSocketDeleter {
 		void operator()(DiscordCoreInternal::BaseSocketAgent* other) {
 			if (other != nullptr) {
 				delete other;
@@ -63,9 +63,9 @@ namespace DiscordCoreAPI {
 
 	using VoiceConnectionMap = std::unordered_map<std::string, std::unique_ptr<VoiceConnection>>;
 
-	using SoundCloudAPIMap = std::unordered_map<std::string, std::unique_ptr<SoundCloudAPI>>;
+	using SoundCloudAPIMap = std::unordered_map<std::string, std::unique_ptr<DiscordCoreInternal::SoundCloudAPI>>;
 
-	using YouTubeAPIMap = std::unordered_map<std::string, std::unique_ptr<YouTubeAPI>>;
+	using YouTubeAPIMap = std::unordered_map<std::string, std::unique_ptr<DiscordCoreInternal::YouTubeAPI>>;
 
 	using SongAPIMap = std::unordered_map<std::string, std::unique_ptr<SongAPI>>;
 
@@ -84,6 +84,7 @@ namespace DiscordCoreAPI {
 	/// DiscordCoreClient - The main class for this library. \brief DiscordCoreClient - The main class for this library.
 	class DiscordCoreAPI_Dll DiscordCoreClient {
 	  public:
+		friend class DiscordCoreInternal::BaseSocketAgent;
 		friend Guild;
 
 		CommandController commandController{ this };///< A command controller.
@@ -96,8 +97,7 @@ namespace DiscordCoreAPI {
 		/// \param shardOptionsNew A DiscordCoreAPI::ShardingOptions structure to select the shard configuration for this given process.
 		/// \param loggingOptionsNew A DiscordCoreAPI::LoggingOptions structure to select logging configuration options.
 		DiscordCoreClient(std::string botTokenNew, std::vector<RepeatedFunctionData> functionsToExecuteNew = std::vector<RepeatedFunctionData>{},
-			CacheOptions cacheOptionsNew = CacheOptions{}, ShardingOptions shardOptionsNew = ShardingOptions{},
-			LoggingOptions loggingOptionsNew = LoggingOptions{});
+			CacheOptions cacheOptionsNew = CacheOptions{}, ShardingOptions shardOptionsNew = ShardingOptions{}, LoggingOptions loggingOptionsNew = LoggingOptions{});
 
 		/// For registering a function with the CommandController. \brief For registering a function with the CommandController.
 		/// \param functionNames A vector containing the possible names for activating this command/function.
@@ -117,6 +117,7 @@ namespace DiscordCoreAPI {
 		std::unordered_map<std::string, std::unique_ptr<DiscordCoreInternal::BaseSocketAgent, WebSocketDeleter>> webSocketMap{};
 		std::unique_ptr<DiscordCoreInternal::HttpClient> httpClient{};
 		std::vector<RepeatedFunctionData> functionsToExecute{};
+
 #ifdef _WIN32
 		DiscordCoreInternal::WSADataWrapper theWSAData{};
 #endif
@@ -126,11 +127,12 @@ namespace DiscordCoreAPI {
 		bool didWeStartFine{ false };
 		CacheOptions cacheOptions{};
 		ThreadPool threadPool{};
+		std::string botToken{};
 		BotUser currentUser{};
 
-		void instantiateWebSockets(std::string botTokenNew);
-
 		GatewayBotData getGateWayBot();
+
+		void instantiateWebSockets();
 
 		void run();
 	};

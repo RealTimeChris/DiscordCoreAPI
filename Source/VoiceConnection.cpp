@@ -60,8 +60,7 @@ namespace DiscordCoreAPI {
 			for (uint32_t x = 0; x < keys.size(); x += 1) {
 				encryptionKeys[x] = keys[x];
 			}
-			if (crypto_secretbox_easy(
-					audioDataPacket.get() + headerSize, bufferToSend.data.data(), bufferToSend.data.size(), nonceForLibSodium, encryptionKeys.get()) != 0) {
+			if (crypto_secretbox_easy(audioDataPacket.get() + headerSize, bufferToSend.data.data(), bufferToSend.data.size(), nonceForLibSodium, encryptionKeys.get()) != 0) {
 				throw std::runtime_error("ENCRYPTION FAILED!");
 			};
 			bufferToSend.data.clear();
@@ -104,14 +103,14 @@ namespace DiscordCoreAPI {
 		if (this == nullptr) {
 			return false;
 		} else {
-			return this->areWePlaying.load(std::memory_order_seq_cst);
+			return this->areWePlaying.load();
 		}
 	}
 
 	bool VoiceConnection::stop() {
-		if (this->areWePlaying.load(std::memory_order_seq_cst)) {
-			this->areWePlaying.store(false, std::memory_order_seq_cst);
-			this->areWeStopping.store(true, std::memory_order_seq_cst);
+		if (this->areWePlaying.load()) {
+			this->areWePlaying.store(false);
+			this->areWeStopping.store(true);
 			this->clearAudioData();
 			this->stopSetEvent.set();
 			return true;
@@ -147,7 +146,7 @@ namespace DiscordCoreAPI {
 	void VoiceConnection::connect(DiscordCoreInternal::VoiceConnectInitData voiceConnectInitDataNew) {
 		try {
 			this->areWeConnectedBool = true;
-			this->areWeStopping.store(false, std::memory_order_seq_cst);
+			this->areWeStopping.store(false);
 			this->stopSetEvent.set();
 			this->pauseEvent.set();
 			this->voiceConnectInitData = voiceConnectInitDataNew;
@@ -157,8 +156,8 @@ namespace DiscordCoreAPI {
 			if (!this->baseSocketAgent->areWeReadyToConnectEvent.wait(10000)) {
 				return;
 			}
-			this->voiceSocketAgent = std::make_unique<DiscordCoreInternal::VoiceSocketAgent>(
-				this->voiceConnectInitData, this->baseSocketAgent, this->baseSocketAgent->printMessages);
+			this->voiceSocketAgent =
+				std::make_unique<DiscordCoreInternal::VoiceSocketAgent>(this->voiceConnectInitData, this->baseSocketAgent, this->baseSocketAgent->printMessages);
 			this->doWeReconnect = &this->voiceSocketAgent->doWeReconnect;
 			if (!this->voiceSocketAgent->areWeConnected.wait(10000)) {
 				return;
@@ -170,7 +169,7 @@ namespace DiscordCoreAPI {
 				});
 			}
 		} catch (...) {
-			DiscordCoreAPI::reportException("VoiceConnection::connect()");
+			reportException("VoiceConnection::connect()");
 		}
 	}
 
@@ -178,8 +177,8 @@ namespace DiscordCoreAPI {
 		this->stopSetEvent.set();
 		this->playSetEvent.set();
 		this->areWeConnectedBool = false;
-		this->areWePlaying.store(false, std::memory_order_seq_cst);
-		this->areWeStopping.store(true, std::memory_order_seq_cst);
+		this->areWePlaying.store(false);
+		this->areWeStopping.store(true);
 		this->sendSpeakingMessage(false);
 		if (this->voiceSocketAgent) {
 			this->voiceSocketAgent.reset(nullptr);
@@ -251,7 +250,7 @@ namespace DiscordCoreAPI {
 				}
 				if (!this->playSetEvent.wait(10000)) {
 					if (theToken.stop_requested()) {
-						this->areWePlaying.store(false, std::memory_order_seq_cst);
+						this->areWePlaying.store(false);
 						return;
 					}
 					continue;
@@ -259,51 +258,46 @@ namespace DiscordCoreAPI {
 				this->playSetEvent.reset();
 			start:
 				if (theToken.stop_requested()) {
-					this->areWePlaying.store(false, std::memory_order_seq_cst);
+					this->areWePlaying.store(false);
 					return;
 				}
 				this->audioData.type = AudioFrameType::Unset;
 				this->audioData.encodedFrameData.data.clear();
 				this->audioData.rawFrameData.data.clear();
 				this->audioBuffer.tryReceive(this->audioData);
-				if ((this->audioData.encodedFrameData.sampleCount == 0 && this->audioData.rawFrameData.sampleCount == 0) ||
-					this->audioData.type == AudioFrameType::Unset) {
-					this->areWePlaying.store(false, std::memory_order_seq_cst);
+				if ((this->audioData.encodedFrameData.sampleCount == 0 && this->audioData.rawFrameData.sampleCount == 0) || this->audioData.type == AudioFrameType::Unset) {
+					this->areWePlaying.store(false);
 					goto start;
 				}
-				this->areWePlaying.store(true, std::memory_order_seq_cst);
-				int64_t startingValue{
-					std::chrono::duration_cast<std::chrono::nanoseconds, int64_t>(std::chrono::system_clock::now().time_since_epoch()).count()
-				};
+				this->areWePlaying.store(true);
+				int64_t startingValue{ std::chrono::duration_cast<std::chrono::nanoseconds, int64_t>(std::chrono::system_clock::now().time_since_epoch()).count() };
 				int64_t intervalCount{ 20000000 };
 				int32_t frameCounter{ 0 };
 				int64_t totalTime{ 0 };
 				if (this->disconnectStartTime != 0) {
-					int64_t currentTime = static_cast<int64_t>(
-						std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
+					int64_t currentTime = static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
 					if (currentTime - this->disconnectStartTime >= 60000) {
 						this->reconnect();
 					}
 				}
 				this->sendSpeakingMessage(true);
-				while ((this->audioData.rawFrameData.sampleCount != 0 || this->audioData.encodedFrameData.sampleCount != 0) && !this->areWeStopping &&
-					!theToken.stop_requested()) {
-					this->areWePlaying.store(true, std::memory_order_seq_cst);
+				while ((this->audioData.rawFrameData.sampleCount != 0 || this->audioData.encodedFrameData.sampleCount != 0) && !this->areWeStopping && !theToken.stop_requested()) {
+					this->areWePlaying.store(true);
 					if (!this->doWeReconnect->wait(0)) {
 						this->areWeConnectedBool = false;
 						this->sendSpeakingMessage(false);
 						this->reconnect();
 						this->sendSpeakingMessage(true);
-						this->areWePlaying.store(true, std::memory_order_seq_cst);
+						this->areWePlaying.store(true);
 						this->doWeReconnect->set();
 					}
-					if (this->areWeStopping.load(std::memory_order_seq_cst)) {
-						this->areWePlaying.store(false, std::memory_order_seq_cst);
+					if (this->areWeStopping.load()) {
+						this->areWePlaying.store(false);
 						break;
 					}
 					this->pauseEvent.wait(240000);
 					if (theToken.stop_requested()) {
-						this->areWePlaying.store(false, std::memory_order_seq_cst);
+						this->areWePlaying.store(false);
 						return;
 					}
 					frameCounter += 1;
@@ -313,7 +307,7 @@ namespace DiscordCoreAPI {
 					}
 					nanoSleep(100000);
 					if (theToken.stop_requested()) {
-						this->areWePlaying.store(false, std::memory_order_seq_cst);
+						this->areWePlaying.store(false);
 						return;
 					}
 					if (this->audioData.type != AudioFrameType::Unset && this->audioData.type != AudioFrameType::Skip && !this->areWeStopping) {
@@ -322,29 +316,27 @@ namespace DiscordCoreAPI {
 							std::vector<RawFrameData> rawFrames{};
 							rawFrames.push_back(this->audioData.rawFrameData);
 							auto encodedFrameData = this->encoder->encodeFrames(rawFrames);
-							newFrame = this->encryptSingleAudioFrame(
-								encodedFrameData[0].encodedFrameData, this->voiceConnectionData->audioSSRC, this->voiceConnectionData->secretKey);
+							newFrame =
+								this->encryptSingleAudioFrame(encodedFrameData[0].encodedFrameData, this->voiceConnectionData->audioSSRC, this->voiceConnectionData->secretKey);
 						} else {
-							newFrame = this->encryptSingleAudioFrame(
-								this->audioData.encodedFrameData, this->voiceConnectionData->audioSSRC, this->voiceConnectionData->secretKey);
+							newFrame = this->encryptSingleAudioFrame(this->audioData.encodedFrameData, this->voiceConnectionData->audioSSRC, this->voiceConnectionData->secretKey);
 						}
 						if (newFrame.size() == 0) {
 							continue;
 						}
 						nanoSleep(18000000);
 						if (theToken.stop_requested()) {
-							this->areWePlaying.store(false, std::memory_order_seq_cst);
+							this->areWePlaying.store(false);
 							return;
 						}
-						auto timeCounter = static_cast<int64_t>(
-							std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - startingValue);
+						auto timeCounter =
+							static_cast<int64_t>(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - startingValue);
 						auto waitTime = intervalCount - timeCounter;
 						spinLock(waitTime);
-						startingValue = static_cast<int64_t>(
-							std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
+						startingValue = static_cast<int64_t>(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
 						this->sendSingleAudioFrame(newFrame);
-						totalTime += static_cast<int64_t>(
-							std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - startingValue);
+						totalTime +=
+							static_cast<int64_t>(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - startingValue);
 						intervalCount = 20000000 - (totalTime / frameCounter);
 						this->audioData.type = AudioFrameType::Unset;
 						this->audioData.encodedFrameData.data.clear();
@@ -352,23 +344,22 @@ namespace DiscordCoreAPI {
 					} else if (this->audioData.type == AudioFrameType::Skip && !this->areWeStopping) {
 						SongCompletionEventData completionEventData{};
 						completionEventData.guild = Guilds::getCachedGuildAsync({ .guildId = this->voiceConnectInitData.guildId }).get();
-						completionEventData.guildMember = GuildMembers::getCachedGuildMemberAsync(
-							{ .guildMemberId = this->currentGuildMemberId, .guildId = this->voiceConnectInitData.guildId })
-															  .get();
+						completionEventData.guildMember =
+							GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = this->currentGuildMemberId, .guildId = this->voiceConnectInitData.guildId }).get();
 						completionEventData.wasItAFail = false;
 						getSongAPIMap()[this->voiceConnectInitData.guildId]->onSongCompletionEvent(completionEventData);
 						break;
 					}
 				}
-				this->areWePlaying.store(false, std::memory_order_seq_cst);
+				this->areWePlaying.store(false);
 				this->disconnectStartTime =
 					static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
 				this->sendSpeakingMessage(false);
 				this->clearAudioData();
-				if (this->areWeStopping.load(std::memory_order_seq_cst)) {
+				if (this->areWeStopping.load()) {
 					this->stopSetEvent.wait(5000);
 					this->stopSetEvent.reset();
-					this->areWeStopping.store(false, std::memory_order_seq_cst);
+					this->areWeStopping.store(false);
 				}
 
 				if (theToken.stop_requested()) {

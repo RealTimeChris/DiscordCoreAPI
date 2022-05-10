@@ -24,33 +24,6 @@
 
 namespace DiscordCoreAPI {
 
-	Channel::Channel(ChannelData dataNew) {
-		this->permissionOverwrites = dataNew.permissionOverwrites;
-		this->rateLimitPerUser = dataNew.rateLimitPerUser;
-		this->lastPinTimestamp = dataNew.lastPinTimestamp;
-		this->videoQualityMode = dataNew.videoQualityMode;
-		this->threadMetadata = dataNew.threadMetadata;
-		this->lastMessageId = dataNew.lastMessageId;
-		this->applicationId = dataNew.applicationId;
-		this->messageCount = dataNew.messageCount;
-		this->channelFlags = dataNew.channelFlags;
-		this->memberCount = dataNew.memberCount;
-		this->recipients = dataNew.recipients;
-		this->userLimit = dataNew.userLimit;
-		this->rtcRegion = dataNew.rtcRegion;
-		this->position = dataNew.position;
-		this->parentId = dataNew.parentId;
-		this->ownerId = dataNew.ownerId;
-		this->bitrate = dataNew.bitrate;
-		this->guildId = dataNew.guildId;
-		this->member = dataNew.member;
-		this->topic = dataNew.topic;
-		this->type = dataNew.type;
-		this->name = dataNew.name;
-		this->icon = dataNew.icon;
-		this->id = dataNew.id;
-	}
-
 	void Channels::initialize(DiscordCoreInternal::HttpClient* theClient) {
 		Channels::httpClient = theClient;
 	}
@@ -58,8 +31,7 @@ namespace DiscordCoreAPI {
 	CoRoutine<Channel> Channels::getChannelAsync(GetChannelData dataPackage) {
 		try {
 			DiscordCoreInternal::HttpWorkloadData workload{};
-			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Get_Channel];
-			DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Get_Channel] += 1;
+			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Get_Channel);
 			co_await NewThreadAwaitable<Channel>();
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Channel;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
@@ -89,8 +61,7 @@ namespace DiscordCoreAPI {
 	CoRoutine<Channel> Channels::modifyChannelAsync(ModifyChannelData dataPackage) {
 		try {
 			DiscordCoreInternal::HttpWorkloadData workload{};
-			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Patch_Channel];
-			DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Patch_Channel] += 1;
+			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Patch_Channel);
 			co_await NewThreadAwaitable<Channel>();
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Patch_Channel;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Patch;
@@ -111,8 +82,7 @@ namespace DiscordCoreAPI {
 	CoRoutine<void> Channels::deleteOrCloseChannelAsync(DeleteOrCloseChannelData dataPackage) {
 		try {
 			DiscordCoreInternal::HttpWorkloadData workload{};
-			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Delete_Channel];
-			DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Delete_Channel] += 1;
+			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Delete_Channel);
 			co_await NewThreadAwaitable<void>();
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Delete_Channel;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Delete;
@@ -130,9 +100,7 @@ namespace DiscordCoreAPI {
 	CoRoutine<void> Channels::editChannelPermissionOverwritesAsync(EditChannelPermissionOverwritesData dataPackage) {
 		try {
 			DiscordCoreInternal::HttpWorkloadData workload{};
-			workload.thisWorkerId =
-				DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Put_Channel_Permission_Overwrites];
-			DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Put_Channel_Permission_Overwrites] += 1;
+			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Put_Channel_Permission_Overwrites);
 			co_await NewThreadAwaitable<void>();
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Put_Channel_Permission_Overwrites;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Put;
@@ -151,8 +119,7 @@ namespace DiscordCoreAPI {
 	CoRoutine<std::vector<InviteData>> Channels::getChannelInvitesAsync(GetChannelInvitesData dataPackage) {
 		try {
 			DiscordCoreInternal::HttpWorkloadData workload{};
-			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Get_Channel_Invites];
-			DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Get_Channel_Invites] += 1;
+			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Get_Channel_Invites);
 			co_await NewThreadAwaitable<std::vector<InviteData>>();
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Channel_Invites;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
@@ -167,8 +134,7 @@ namespace DiscordCoreAPI {
 	CoRoutine<InviteData> Channels::createChannelInviteAsync(CreateChannelInviteData dataPackage) {
 		try {
 			DiscordCoreInternal::HttpWorkloadData workload{};
-			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Post_Channel_Invite];
-			DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Post_Channel_Invite] += 1;
+			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Post_Channel_Invite);
 			co_await NewThreadAwaitable<InviteData>();
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Post_Channel_Invite;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Post;
@@ -187,9 +153,7 @@ namespace DiscordCoreAPI {
 	CoRoutine<void> Channels::deleteChannelPermissionOverwritesAsync(DeleteChannelPermissionOverwritesData dataPackage) {
 		try {
 			DiscordCoreInternal::HttpWorkloadData workload{};
-			workload.thisWorkerId =
-				DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Delete_Channel_Permission_Overwrites];
-			DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Delete_Channel_Permission_Overwrites] += 1;
+			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Delete_Channel_Permission_Overwrites);
 			co_await NewThreadAwaitable<void>();
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Delete_Channel_Permission_Overwrites;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Delete;
@@ -207,8 +171,7 @@ namespace DiscordCoreAPI {
 	CoRoutine<Channel> Channels::followNewsChannelAsync(FollowNewsChannelData dataPackage) {
 		try {
 			DiscordCoreInternal::HttpWorkloadData workload{};
-			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Post_Follow_News_Channel];
-			DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Post_Follow_News_Channel] += 1;
+			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Post_Follow_News_Channel);
 			co_await NewThreadAwaitable<Channel>();
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Post_Follow_News_Channel;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Post;
@@ -224,9 +187,7 @@ namespace DiscordCoreAPI {
 	CoRoutine<void> Channels::triggerTypingIndicatorAsync(TriggerTypingIndicatorData dataPackage) {
 		try {
 			DiscordCoreInternal::HttpWorkloadData workload{};
-			workload.thisWorkerId =
-				DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Post_Trigger_Typing_Indicator];
-			DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Post_Trigger_Typing_Indicator] += 1;
+			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Post_Trigger_Typing_Indicator);
 			co_await NewThreadAwaitable<void>();
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Post_Trigger_Typing_Indicator;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Post;
@@ -241,8 +202,7 @@ namespace DiscordCoreAPI {
 	CoRoutine<std::vector<Channel>> Channels::getGuildChannelsAsync(GetGuildChannelsData dataPackage) {
 		try {
 			DiscordCoreInternal::HttpWorkloadData workload{};
-			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Get_Guild_Channels];
-			DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Get_Guild_Channels] += 1;
+			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Get_Guild_Channels);
 			co_await NewThreadAwaitable<std::vector<Channel>>();
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Guild_Channels;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
@@ -257,8 +217,7 @@ namespace DiscordCoreAPI {
 	CoRoutine<Channel> Channels::createGuildChannelAsync(CreateGuildChannelData dataPackage) {
 		try {
 			DiscordCoreInternal::HttpWorkloadData workload{};
-			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Post_Guild_Channel];
-			DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Post_Guild_Channel] += 1;
+			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Post_Guild_Channel);
 			co_await NewThreadAwaitable<Channel>();
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Post_Guild_Channel;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Post;
@@ -279,9 +238,7 @@ namespace DiscordCoreAPI {
 	CoRoutine<void> Channels::modifyGuildChannelPositionsAsync(ModifyGuildChannelPositionsData dataPackage) {
 		try {
 			DiscordCoreInternal::HttpWorkloadData workload{};
-			workload.thisWorkerId =
-				DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Patch_Guild_Channel_Positions];
-			DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Patch_Guild_Channel_Positions] += 1;
+			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Patch_Guild_Channel_Positions);
 			co_await NewThreadAwaitable<void>();
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Patch_Guild_Channel_Positions;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Patch;
@@ -300,8 +257,7 @@ namespace DiscordCoreAPI {
 	CoRoutine<Channel> Channels::createDMChannelAsync(CreateDMChannelData dataPackage) {
 		try {
 			DiscordCoreInternal::HttpWorkloadData workload{};
-			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Post_Create_User_Dm];
-			DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Post_Create_User_Dm] += 1;
+			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Post_Create_User_Dm);
 			co_await NewThreadAwaitable<Channel>();
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Post_Create_User_Dm;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Post;
@@ -318,8 +274,7 @@ namespace DiscordCoreAPI {
 	CoRoutine<std::vector<VoiceRegionData>> Channels::getVoiceRegionsAsync() {
 		try {
 			DiscordCoreInternal::HttpWorkloadData workload{};
-			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Get_Voice_Regions];
-			DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Get_Voice_Regions] += 1;
+			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Get_Voice_Regions);
 			co_await NewThreadAwaitable<std::vector<VoiceRegionData>>();
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Voice_Regions;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;

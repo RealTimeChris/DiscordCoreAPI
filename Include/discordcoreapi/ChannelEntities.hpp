@@ -152,7 +152,7 @@ namespace DiscordCoreAPI {
 	  public:
 		Channel() = default;
 
-		Channel(ChannelData dataNew);
+		virtual ~Channel() = default;
 	};
 
 	/**@}*/

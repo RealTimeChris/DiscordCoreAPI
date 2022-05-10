@@ -23,7 +23,7 @@
 #include <discordcoreapi/CoRoutine.hpp>
 #include <discordcoreapi/FoundationEntities.hpp>
 
-namespace DiscordCoreAPI {
+namespace DiscordCoreInternal {
 
 	/**
 	 * \addtogroup discord_events
@@ -40,11 +40,13 @@ namespace DiscordCoreAPI {
 
 		friend inline bool operator<(const EventDelegateToken& lhs, const EventDelegateToken& rhs);
 
-		EventDelegateToken() = default;
+		friend class DiscordCoreAPI::SongAPI;
 
 	  protected:
 		std::string handlerId{ "" };
 		std::string eventId{ "" };
+
+		EventDelegateToken() = default;
 	};
 
 	bool operator==(const EventDelegateToken& lhs, const EventDelegateToken& rhs) {
@@ -134,8 +136,7 @@ namespace DiscordCoreAPI {
 
 		EventDelegateToken add(EventDelegate<ReturnType, ArgTypes...> eventDelegate) {
 			EventDelegateToken eventToken{};
-			eventToken.handlerId =
-				std::to_string(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
+			eventToken.handlerId = std::to_string(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
 			eventToken.eventId = this->eventId;
 			this->theFunctions.insert_or_assign(eventToken, std::move(eventDelegate));
 			return eventToken;
@@ -148,6 +149,7 @@ namespace DiscordCoreAPI {
 		}
 
 		void operator()(ArgTypes... args) {
+			std::lock_guard<std::mutex> theLock{ this->theMutex };
 			for (auto& [key, value]: this->theFunctions) {
 				value.theFunction(args...);
 			}
@@ -156,11 +158,12 @@ namespace DiscordCoreAPI {
 	  protected:
 		std::map<EventDelegateToken, EventDelegate<ReturnType, ArgTypes...>> theFunctions{};
 		std::string eventId{ "" };
+		std::mutex theMutex{};
 	};
 
 	class DiscordCoreAPI_Dll EventWaiter {
 	  public:
-		ReferenceCountingPtr<std::atomic_bool> theEventState{ nullptr };
+		DiscordCoreAPI::ReferenceCountingPtr<std::atomic_bool> theEventState{ nullptr };
 
 		EventWaiter() {
 			this->theEventState = new std::atomic_bool{};
@@ -170,14 +173,13 @@ namespace DiscordCoreAPI {
 			int64_t millisecondsWaited{ 0 };
 			int64_t startTime = std::chrono::duration_cast<std::chrono::milliseconds, int64_t>(std::chrono::system_clock::now().time_since_epoch()).count();
 			while (true) {
-				if (this->theEventState->load(std::memory_order_seq_cst)) {
+				if (this->theEventState->load()) {
 					return true;
 				} else if (millisecondsMaxToWait - millisecondsWaited <= 20) {
 				} else {
 					std::this_thread::sleep_for(std::chrono::milliseconds{ 1 });
 				}
-				int64_t currentTime =
-					std::chrono::duration_cast<std::chrono::milliseconds, int64_t>(std::chrono::system_clock::now().time_since_epoch()).count();
+				int64_t currentTime = std::chrono::duration_cast<std::chrono::milliseconds, int64_t>(std::chrono::system_clock::now().time_since_epoch()).count();
 				millisecondsWaited = currentTime - startTime;
 				if (millisecondsWaited >= millisecondsMaxToWait) {
 					return false;
@@ -186,15 +188,15 @@ namespace DiscordCoreAPI {
 		}
 
 		bool checkStatus() {
-			return this->theEventState->load(std::memory_order_seq_cst);
+			return this->theEventState->load();
 		}
 
 		void set() {
-			this->theEventState->store(true, std::memory_order_seq_cst);
+			this->theEventState->store(true);
 		}
 
 		void reset() {
-			this->theEventState->store(false, std::memory_order_seq_cst);
+			this->theEventState->store(false);
 		}
 	};
 

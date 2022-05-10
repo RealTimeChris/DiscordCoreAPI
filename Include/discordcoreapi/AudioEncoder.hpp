@@ -23,7 +23,7 @@
 #include <discordcoreapi/FoundationEntities.hpp>
 #include <opus/opus.h>
 
-namespace DiscordCoreAPI {
+namespace DiscordCoreInternal {
 
 	struct DiscordCoreAPI_Dll OpusEncoderWrapper {
 		struct DiscordCoreAPI_Dll OpusEncoderDeleter {
@@ -53,7 +53,7 @@ namespace DiscordCoreAPI {
 	  public:
 		AudioEncoder();
 
-		std::vector<AudioFrameData> encodeFrames(std::vector<RawFrameData>& rawFrames);
+		std::vector<DiscordCoreAPI::AudioFrameData> encodeFrames(std::vector<DiscordCoreAPI::RawFrameData>& rawFrames);
 
 	  protected:
 		OpusEncoderWrapper encoder{ nullptr };
@@ -61,7 +61,7 @@ namespace DiscordCoreAPI {
 		const int32_t sampleRate{ 48000 };
 		const int32_t nChannels{ 2 };
 
-		EncodedFrameData encodeSingleAudioFrame(RawFrameData& inputFrame);
+		DiscordCoreAPI::EncodedFrameData encodeSingleAudioFrame(DiscordCoreAPI::RawFrameData& inputFrame);
 	};
 
 }// namespace DiscordCoreAPI

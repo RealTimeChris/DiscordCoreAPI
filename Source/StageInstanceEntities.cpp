@@ -24,15 +24,6 @@
 
 namespace DiscordCoreAPI {
 
-	StageInstance::StageInstance(StageInstanceData dataNew) {
-		this->discoverableDisabled = dataNew.discoverableDisabled;
-		this->privacyLevel = dataNew.privacyLevel;
-		this->channelId = dataNew.channelId;
-		this->guildId = dataNew.guildId;
-		this->topic = dataNew.topic;
-		this->id = dataNew.id;
-	}
-
 	void StageInstances::initialize(DiscordCoreInternal::HttpClient* theClient) {
 		StageInstances::httpClient = theClient;
 	}
@@ -40,15 +31,13 @@ namespace DiscordCoreAPI {
 	CoRoutine<StageInstance> StageInstances::createStageInstanceAsync(CreateStageInstanceData dataPackage) {
 		try {
 			DiscordCoreInternal::HttpWorkloadData workload{};
-			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Post_Stage_Instance];
-			DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Post_Stage_Instance] += 1;
+			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Post_Stage_Instance);
 			co_await NewThreadAwaitable<StageInstance>();
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Post_Stage_Instance;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Post;
 			workload.relativePath = "/stage-instances";
 			workload.callStack = "StageInstances::createStageInstanceAsync";
-			nlohmann::json responseData = { { "topic", dataPackage.topic }, { "privacy_level", dataPackage.privacyLevel },
-				{ "channel_id", dataPackage.channelId } };
+			nlohmann::json responseData = { { "topic", dataPackage.topic }, { "privacy_level", dataPackage.privacyLevel }, { "channel_id", dataPackage.channelId } };
 			workload.content = responseData.dump();
 			if (dataPackage.reason != "") {
 				workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));
@@ -62,8 +51,7 @@ namespace DiscordCoreAPI {
 	CoRoutine<StageInstance> StageInstances::getStageInstanceAsync(GetStageInstanceData dataPackage) {
 		try {
 			DiscordCoreInternal::HttpWorkloadData workload{};
-			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Get_Stage_Instance];
-			DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Get_Stage_Instance] += 1;
+			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Get_Stage_Instance);
 			co_await NewThreadAwaitable<StageInstance>();
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Stage_Instance;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
@@ -78,8 +66,7 @@ namespace DiscordCoreAPI {
 	CoRoutine<StageInstance> StageInstances::modifyStageInstanceAsync(ModifyStageInstanceData dataPackage) {
 		try {
 			DiscordCoreInternal::HttpWorkloadData workload{};
-			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Patch_Stage_Instance];
-			DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Patch_Stage_Instance] += 1;
+			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Patch_Stage_Instance);
 			co_await NewThreadAwaitable<StageInstance>();
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Patch_Stage_Instance;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Patch;
@@ -99,8 +86,7 @@ namespace DiscordCoreAPI {
 	CoRoutine<void> StageInstances::deleteStageInstanceAsync(DeleteStageInstanceData dataPackage) {
 		try {
 			DiscordCoreInternal::HttpWorkloadData workload{};
-			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Delete_Stage_Instance];
-			DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[DiscordCoreInternal::HttpWorkloadType::Delete_Stage_Instance] += 1;
+			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Delete_Stage_Instance);
 			co_await NewThreadAwaitable<void>();
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Delete_Stage_Instance;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Delete;

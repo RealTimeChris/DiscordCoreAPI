@@ -10,16 +10,16 @@
 #	SODIUM::Sodium
 find_library(
 	SODIUM_RELEASE_LIBRARY 
-	NAMES "libsodium${LIBRARY_SUFFIX}" 
+	NAMES "libsodium${LIB_SUFFIX}" 
 	PATHS "${SODIUM_RELEASE_ROOT}" NO_DEFAULT_PATH
 )
 find_library(
 	SODIUM_DEBUG_LIBRARY 
-	NAMES "libsodium${LIBRARY_SUFFIX}" 
+	NAMES "libsodium${LIB_SUFFIX}" 
 	PATHS "${SODIUM_DEBUG_ROOT}" NO_DEFAULT_PATH
 )
 if (EXISTS "${SODIUM_RELEASE_LIBRARY}" AND EXISTS "${SODIUM_DEBUG_LIBRARY}" AND EXISTS "${SODIUM_INCLUDE_DIR}")
-	message(STATUS "Found Sodium libraries!")
+	message(STATUS "Found Sodium libraries")
 else()
 	message(FATAL_ERROR "Couldn't find Sodium!")
 endif()
@@ -45,7 +45,7 @@ if (EXISTS "${SODIUM_RELEASE_DLL}" AND EXISTS "${SODIUM_DEBUG_DLL}")
 		IMPORTED_IMPLIB_RELEASE "${SODIUM_RELEASE_LIBRARY}" IMPORTED_IMPLIB_DEBUG "${SODIUM_DEBUG_LIBRARY}"
 	)
 	target_include_directories(SODIUM::Sodium INTERFACE "${SODIUM_INCLUDE_DIR}")
-	message(STATUS "Found Sodium Dlls!")
+	message(STATUS "Found Sodium Dlls")
 else()
 	add_library(SODIUM::Sodium STATIC IMPORTED GLOBAL)
 	set_target_properties(
@@ -55,5 +55,5 @@ else()
 	target_include_directories(SODIUM::Sodium INTERFACE "${SODIUM_INCLUDE_DIR}")
 	unset(SODIUM_RELEASE_DLL CACHE)
 	unset(SODIUM_DEBUG_DLL CACHE)
-	message(STATUS "Couldn't find Sodium Dlls - linking statically!")
+	message(STATUS "Couldn't find Sodium Dlls - linking statically")
 endif()

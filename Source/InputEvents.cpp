@@ -24,7 +24,7 @@
 
 namespace DiscordCoreAPI {
 
-	CoRoutine<InputEventData> InputEvents::respondToEventAsync(RespondToInputEventData dataPackage) {
+	CoRoutine<InputEventData> InputEvents::respondToInputEventAsync(RespondToInputEventData dataPackage) {
 		co_await NewThreadAwaitable<InputEventData>();
 		if (dataPackage.type == InputEventResponseType::Unset) {
 			throw std::runtime_error("Please set an input-event-response-type!");
@@ -37,16 +37,12 @@ namespace DiscordCoreAPI {
 			} else {
 				dataPackage02.data.type = InteractionCallbackType::Update_Message;
 			}
-			InputEventData newEvent = InputEventData(InputEvents::respondToEvent(dataPackage02));
-			if (dataPackage.type == InputEventResponseType::Ephemeral_Interaction_Response ||
-				dataPackage.type == InputEventResponseType::Edit_Ephemeral_Interaction_Response) {
-				newEvent.responseType = InputEventResponseType::Edit_Ephemeral_Interaction_Response;
-			} else if (dataPackage.type == InputEventResponseType::Ephemeral_Follow_Up_Message ||
-				dataPackage.type == InputEventResponseType::Edit_Ephemeral_Follow_Up_Message) {
-				newEvent.responseType = InputEventResponseType::Edit_Ephemeral_Follow_Up_Message;
-			} else if (dataPackage.type == InputEventResponseType::Interaction_Response) {
+			InputEventData newEvent = InputEventData(InputEvents::respondToInputEvent(dataPackage02));
+			if (dataPackage.type == InputEventResponseType::Interaction_Response || dataPackage.type == InputEventResponseType::Ephemeral_Interaction_Response ||
+				dataPackage.type == InputEventResponseType::Edit_Interaction_Response) {
 				newEvent.responseType = InputEventResponseType::Edit_Interaction_Response;
-			} else if (dataPackage.type == InputEventResponseType::Follow_Up_Message) {
+			} else if (dataPackage.type == InputEventResponseType::Follow_Up_Message || dataPackage.type == InputEventResponseType::Ephemeral_Follow_Up_Message ||
+				dataPackage.type == InputEventResponseType::Edit_Follow_Up_Message) {
 				newEvent.responseType = InputEventResponseType::Edit_Follow_Up_Message;
 			}
 			co_return newEvent;
@@ -55,37 +51,31 @@ namespace DiscordCoreAPI {
 			case InputEventResponseType::Ephemeral_Deferred_Response: {
 				auto dataPackage02 = CreateDeferredInteractionResponseData{ dataPackage };
 				dataPackage02.data.data.flags = 64;
-				co_return InputEvents::respondToEvent(dataPackage02);
+				co_return InputEvents::respondToInputEvent(dataPackage02);
 			}
 			case InputEventResponseType::Deferred_Response: {
 				[[fallthrough]];
 			}
 			case InputEventResponseType::Deferred_Response_With_Source: {
-				co_return InputEvents::respondToEvent(CreateDeferredInteractionResponseData{ dataPackage });
+				co_return InputEvents::respondToInputEvent(CreateDeferredInteractionResponseData{ dataPackage });
 			}
 			case InputEventResponseType::Interaction_Response: {
-				co_return InputEvents::respondToEvent(CreateInteractionResponseData{ dataPackage });
-			}
-			case InputEventResponseType::Edit_Ephemeral_Interaction_Response: {
-				co_return InputEvents::respondToEvent(EditEphemeralInteractionResponseData{ dataPackage });
+				co_return InputEvents::respondToInputEvent(CreateInteractionResponseData{ dataPackage });
 			}
 			case InputEventResponseType::Edit_Interaction_Response: {
-				co_return InputEvents::respondToEvent(EditInteractionResponseData{ dataPackage });
+				co_return InputEvents::respondToInputEvent(EditInteractionResponseData{ dataPackage });
 			}
 			case InputEventResponseType::Ephemeral_Interaction_Response: {
-				co_return InputEvents::respondToEvent(CreateEphemeralInteractionResponseData{ dataPackage });
+				co_return InputEvents::respondToInputEvent(CreateEphemeralInteractionResponseData{ dataPackage });
 			}
 			case InputEventResponseType::Follow_Up_Message: {
-				co_return InputEvents::respondToEvent(CreateFollowUpMessageData{ dataPackage });
-			}
-			case InputEventResponseType::Edit_Ephemeral_Follow_Up_Message: {
-				co_return InputEvents::respondToEvent(EditEphemeralFollowUpMessageData{ dataPackage });
+				co_return InputEvents::respondToInputEvent(CreateFollowUpMessageData{ dataPackage });
 			}
 			case InputEventResponseType::Edit_Follow_Up_Message: {
-				co_return InputEvents::respondToEvent(EditFollowUpMessageData{ dataPackage });
+				co_return InputEvents::respondToInputEvent(EditFollowUpMessageData{ dataPackage });
 			}
 			case InputEventResponseType::Ephemeral_Follow_Up_Message: {
-				co_return InputEvents::respondToEvent(CreateEphemeralFollowUpMessageData{ dataPackage });
+				co_return InputEvents::respondToInputEvent(CreateEphemeralFollowUpMessageData{ dataPackage });
 			}
 			case InputEventResponseType::Unset: {
 				std::cout << shiftToBrightRed() << "Failed to set input event response type!" << reset() << std::endl;
@@ -100,22 +90,22 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<void> InputEvents::deleteInputEventResponseAsync(InputEventData dataPackage, int32_t timeDelayNew) {
 		co_await NewThreadAwaitable<void>();
-		if (dataPackage.responseType == InputEventResponseType::Follow_Up_Message ||
-			dataPackage.responseType == InputEventResponseType::Edit_Follow_Up_Message) {
-			DeleteFollowUpMessageData dataPackageNewer{ dataPackage };
+		if (dataPackage.responseType == InputEventResponseType::Follow_Up_Message || dataPackage.responseType == InputEventResponseType::Edit_Follow_Up_Message) {
+			RespondToInputEventData dataPackageNew{ dataPackage };
+			DeleteFollowUpMessageData dataPackageNewer{ dataPackageNew };
 			dataPackageNewer.timeDelay = timeDelayNew;
 			Interactions::deleteFollowUpMessageAsync(dataPackageNewer).get();
-		} else if (dataPackage.responseType == InputEventResponseType::Interaction_Response ||
-			dataPackage.responseType == InputEventResponseType::Edit_Interaction_Response ||
+		} else if (dataPackage.responseType == InputEventResponseType::Interaction_Response || dataPackage.responseType == InputEventResponseType::Edit_Interaction_Response ||
 			dataPackage.responseType == InputEventResponseType::Deferred_Response) {
-			DeleteInteractionResponseData dataPackageNewer{ dataPackage };
+			RespondToInputEventData dataPackageNew{ dataPackage };
+			DeleteInteractionResponseData dataPackageNewer{ dataPackageNew };
 			dataPackageNewer.timeDelay = timeDelayNew;
 			Interactions::deleteInteractionResponseAsync(dataPackageNewer).get();
 		}
 		co_return;
 	}
 
-	InputEventData InputEvents::respondToEvent(CreateDeferredInteractionResponseData dataPackage) {
+	InputEventData InputEvents::respondToInputEvent(CreateDeferredInteractionResponseData dataPackage) {
 		CreateInteractionResponseData dataPackage02{ dataPackage };
 		Interactions::createInteractionResponseAsync(dataPackage02).get();
 		InputEventData dataPackageNewer{};
@@ -129,7 +119,7 @@ namespace DiscordCoreAPI {
 		return dataPackageNewer;
 	}
 
-	InputEventData InputEvents::respondToEvent(CreateInteractionResponseData dataPackage) {
+	InputEventData InputEvents::respondToInputEvent(CreateInteractionResponseData dataPackage) {
 		Message messageData = Interactions::createInteractionResponseAsync(dataPackage).get();
 		InputEventData dataPackageNewer{};
 		dataPackageNewer.interactionData->applicationId = dataPackage.interactionPackage.applicationId;
@@ -144,7 +134,7 @@ namespace DiscordCoreAPI {
 		return dataPackageNewer;
 	}
 
-	InputEventData InputEvents::respondToEvent(EditInteractionResponseData dataPackage) {
+	InputEventData InputEvents::respondToInputEvent(EditInteractionResponseData dataPackage) {
 		Message messageData = Interactions::editInteractionResponseAsync(dataPackage).get();
 		InputEventData dataPackageNewer{};
 		dataPackageNewer.interactionData->applicationId = dataPackage.interactionPackage.applicationId;
@@ -157,33 +147,7 @@ namespace DiscordCoreAPI {
 		return dataPackageNewer;
 	}
 
-	InputEventData InputEvents::respondToEvent(EditEphemeralInteractionResponseData dataPackage) {
-		Message messageData = Interactions::editInteractionResponseAsync(dataPackage).get();
-		InputEventData dataPackageNewer{};
-		dataPackageNewer.interactionData->applicationId = dataPackage.interactionPackage.applicationId;
-		dataPackageNewer.responseType = InputEventResponseType::Edit_Ephemeral_Interaction_Response;
-		dataPackageNewer.interactionData->token = dataPackage.interactionPackage.interactionToken;
-		dataPackageNewer.interactionData->id = dataPackage.interactionPackage.interactionId;
-		dataPackageNewer.eventType = InteractionType::Application_Command;
-		dataPackageNewer.requesterId = dataPackage.requesterId;
-		*dataPackageNewer.messageData = messageData;
-		return dataPackageNewer;
-	}
-
-	InputEventData InputEvents::respondToEvent(EditEphemeralFollowUpMessageData dataPackage) {
-		Message messageData = Interactions::editFollowUpMessageAsync(dataPackage).get();
-		InputEventData dataPackageNewer{};
-		dataPackageNewer.interactionData->applicationId = dataPackage.interactionPackage.applicationId;
-		dataPackageNewer.responseType = InputEventResponseType::Edit_Ephemeral_Follow_Up_Message;
-		dataPackageNewer.interactionData->token = dataPackage.interactionPackage.interactionToken;
-		dataPackageNewer.interactionData->id = dataPackage.interactionPackage.interactionId;
-		dataPackageNewer.eventType = InteractionType::Application_Command;
-		dataPackageNewer.requesterId = dataPackage.requesterId;
-		*dataPackageNewer.messageData = messageData;
-		return dataPackageNewer;
-	}
-
-	InputEventData InputEvents::respondToEvent(CreateFollowUpMessageData dataPackage) {
+	InputEventData InputEvents::respondToInputEvent(CreateFollowUpMessageData dataPackage) {
 		Message messageData = Interactions::createFollowUpMessageAsync(dataPackage).get();
 		InputEventData dataPackageNewer{};
 		dataPackageNewer.responseType = InputEventResponseType::Follow_Up_Message;
@@ -196,7 +160,7 @@ namespace DiscordCoreAPI {
 		return dataPackageNewer;
 	}
 
-	InputEventData InputEvents::respondToEvent(EditFollowUpMessageData dataPackage) {
+	InputEventData InputEvents::respondToInputEvent(EditFollowUpMessageData dataPackage) {
 		Message messageData = Interactions::editFollowUpMessageAsync(dataPackage).get();
 		InputEventData dataPackageNewer{};
 		dataPackageNewer.responseType = InputEventResponseType::Edit_Follow_Up_Message;
@@ -209,7 +173,7 @@ namespace DiscordCoreAPI {
 		return dataPackageNewer;
 	}
 
-	InputEventData InputEvents::respondToEvent(CreateEphemeralInteractionResponseData dataPackage) {
+	InputEventData InputEvents::respondToInputEvent(CreateEphemeralInteractionResponseData dataPackage) {
 		CreateInteractionResponseData newData{ dataPackage };
 		Message newMessage = Interactions::createInteractionResponseAsync(newData).get();
 		InputEventData dataPackageNewer{};
@@ -223,7 +187,7 @@ namespace DiscordCoreAPI {
 		return dataPackageNewer;
 	}
 
-	InputEventData InputEvents::respondToEvent(CreateEphemeralFollowUpMessageData dataPackage) {
+	InputEventData InputEvents::respondToInputEvent(CreateEphemeralFollowUpMessageData dataPackage) {
 		CreateFollowUpMessageData dataPackageNew{ dataPackage };
 		Message messageData = Interactions::createFollowUpMessageAsync(dataPackageNew).get();
 		InputEventData dataPackageNewer{};
