@@ -274,8 +274,8 @@ namespace DiscordCoreAPI {
 		}
 
 	  protected:
-		AllowedMentionsData allowedMentions{};///< Allowed mention object.
 		std::vector<ActionRowData> components{};///< Array of message component.
+		AllowedMentionsData allowedMentions{};///< Allowed mention object.
 		std::vector<EmbedData> embeds{};///< Array of up to 10 embed objects.
 		std::string webhookToken{ "" };///< The WebHook token you would like to collect.
 		std::string webhookId{ "" };///< The WebHook you would like to collect.

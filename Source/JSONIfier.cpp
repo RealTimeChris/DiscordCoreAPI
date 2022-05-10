@@ -118,7 +118,8 @@ namespace DiscordCoreAPI {
 			nlohmann::json component{};
 			component["custom_id"] = valueIn.customId;
 			component["disabled"] = valueIn.disabled;
-			component["emoji"] = { { "name", valueIn.emoji.name }, { "animated", valueIn.emoji.animated } };
+			component["emoji"]["name"] = valueIn.emoji.name;
+			component["emoji"]["animated"] = valueIn.emoji.animated;
 			component["label"] = valueIn.label;
 			component["style"] = valueIn.style;
 			component["type"] = valueIn.type;
@@ -401,12 +402,23 @@ namespace DiscordCoreInternal {
 	};
 
 	std::string JSONIFY(DiscordCoreAPI::StartThreadInForumChannelData dataPackage) {
-		nlohmann::json theData{};
-		auto componentsActionRow = nlohmann::json::array();
-		
+		nlohmann::json data{};
+
+		nlohmann::json attachments{};
+
+		for (auto& value: dataPackage.message.attachments) {
+			nlohmann::json attachment{ value };
+			attachments.push_back(attachment);
+		}
+
+		if (attachments.size() > 0) {
+			data["message"]["attachments"] = attachments;
+		}
+
+		nlohmann::json componentsActionRow{};
 
 		for (auto& value: dataPackage.message.components) {
-			auto components = nlohmann::json::array();
+			nlohmann::json components{};
 
 			for (auto& valueNew: value.components) {
 				components.push_back(nlohmann::json{ valueNew });
@@ -416,33 +428,44 @@ namespace DiscordCoreInternal {
 			componentActionRow["components"] = components;
 			componentsActionRow.push_back(componentActionRow);
 		}
-		auto stickersArray = nlohmann::json::array();
+
+		if (componentsActionRow.size() > 0) {
+			data["message"]["components"] = componentsActionRow;
+		}
+
+		data["message"]["allowed_mentions"] = dataPackage.message.allowedMentions;
+
+		nlohmann::json stickersArray{};
 
 		for (auto& value: dataPackage.message.stickerIds) {
 			stickersArray.push_back(value);
 		}
 
-		auto embedsArray = nlohmann::json::array();
+		if (stickersArray.size() > 0) {
+			data["message"]["sticker_ids"] = stickersArray;
+		}
+
+		nlohmann::json embedsArray{};
 
 		for (auto& value: dataPackage.message.embeds) {
 			nlohmann::json embed{ value };
 			embedsArray.push_back(embed);
 		}
 
-		theData["message"]["allowed_mentions"] = dataPackage.message.allowedMentions;
-		if (dataPackage.message.content != "") {
-			theData["message"]["content"] = dataPackage.message.content;
-		}
-		theData["message"]["components"] = componentsActionRow;
-		theData["sticker_ids"] = stickersArray;
 		if (dataPackage.message.embeds.size() > 0) {
-			theData["message"]["embeds"] = embedsArray;
+			data["message"]["embeds"] = embedsArray;
 		}
 
-		theData["name"] = dataPackage.name;
-		theData["auto_archive_duration"] = dataPackage.autoArchiveDuration;
-		theData["rate_limit_per_user"] = dataPackage.rateLimitPerUser;
-		return theData.dump();
+		if (dataPackage.message.content != "") {
+			data["message"]["content"] = dataPackage.message.content;
+		}
+
+		data["message"]["flags"] = dataPackage.message.flags;
+
+		data["name"] = dataPackage.name;
+		data["auto_archive_duration"] = dataPackage.autoArchiveDuration;
+		data["rate_limit_per_user"] = dataPackage.rateLimitPerUser;
+		return data.dump();
 	}
 
 	std::string JSONIFY(DiscordCoreAPI::CreateMessageData dataPackage) {
@@ -516,10 +539,24 @@ namespace DiscordCoreInternal {
 	}
 
 	std::string JSONIFY(DiscordCoreAPI::EditMessageData dataPackage) {
-		auto componentsActionRow = nlohmann::json::array();
+
+		nlohmann::json data{};
+
+		nlohmann::json attachments{};
+
+		for (auto& value: dataPackage.attachments) {
+			nlohmann::json attachment{ value };
+			attachments.push_back(attachment);
+		}
+
+		if (attachments.size() > 0) {
+			data["attachments"] = attachments;
+		}
+
+		nlohmann::json componentsActionRow{};
 
 		for (auto& value: dataPackage.components) {
-			auto components = nlohmann::json::array();
+			nlohmann::json components{};
 
 			for (auto& valueNew: value.components) {
 				components.push_back(nlohmann::json{ valueNew });
@@ -530,32 +567,34 @@ namespace DiscordCoreInternal {
 			componentsActionRow.push_back(componentActionRow);
 		}
 
-		auto embedsArray = nlohmann::json::array();
+		if (componentsActionRow.size() > 0) {
+			data["components"] = componentsActionRow;
+		}
+
+		data["allowed_mentions"] = dataPackage.allowedMentions;
+
+		nlohmann::json stickersArray{};
+
+		if (stickersArray.size() > 0) {
+			data["sticker_ids"] = stickersArray;
+		}
+
+		nlohmann::json embedsArray{};
 
 		for (auto& value: dataPackage.embeds) {
 			nlohmann::json embed{ value };
 			embedsArray.push_back(embed);
 		}
 
-		auto attachments = nlohmann::json::array();
-
-		for (auto& value: dataPackage.attachments) {
-			nlohmann::json attachment = nlohmann::json{ value };
-			attachments.push_back(attachment);
-		}
-		nlohmann::json data{};
-		data["allowed_mentions"] = dataPackage.allowedMentions;
-		if (embedsArray.size() > 0) {
+		if (dataPackage.embeds.size() > 0) {
 			data["embeds"] = embedsArray;
 		}
-		data["flags"] = dataPackage.flags;
-		data["components"] = componentsActionRow;
-		if (attachments.size() > 0) {
-			data["attachments"] = attachments;
-		}
+
 		if (dataPackage.content != "") {
 			data["content"] = dataPackage.content;
 		}
+
+		data["flags"] = dataPackage.flags;
 
 		return data.dump();
 	}
@@ -566,9 +605,12 @@ namespace DiscordCoreInternal {
 		stream << std::setbase(10) << roleColorInt;
 		std::string roleColorReal = stream.str();
 
-		nlohmann::json data = { { "color", roleColorReal }, { "hoist", dataPackage.hoist }, { "mendtionable", dataPackage.mentionable }, { "name", dataPackage.name },
-			{ "permissions", stol(dataPackage.permissions) } };
-
+		nlohmann::json data{};
+		data["color"] = roleColorReal;
+		data["hoist"] = dataPackage.hoist;
+		data["mendtionable"] = dataPackage.mentionable;
+		data["name"] = dataPackage.name;
+		data["permissions"] = stol(dataPackage.permissions);
 		return data.dump();
 	}
 
@@ -624,10 +666,13 @@ namespace DiscordCoreInternal {
 	}
 
 	std::string JSONIFY(DiscordCoreAPI::EditGuildApplicationCommandPermissionsData dataPackage) {
-		nlohmann::json newDataArray = nlohmann::json::array();
+		nlohmann::json newDataArray{};
 
 		for (auto& value: dataPackage.permissions) {
-			nlohmann::json newData = { { "id", value.id }, { "permission", value.permission }, { "type", value.type } };
+			nlohmann::json newData{};
+			newData["id"] = value.id;
+			newData["permission"] = value.permission;
+			newData["type"] = value.type;
 			newDataArray.push_back(newData);
 		}
 
@@ -745,200 +790,117 @@ namespace DiscordCoreInternal {
 
 	std::string JSONIFY(DiscordCoreAPI::EditWebHookData dataPackage) {
 
-		auto embedsArray = nlohmann::json::array();
+		nlohmann::json data{};
 
-		for (auto& value: dataPackage.embeds) {
-			auto fields = nlohmann::json::array();
-
-			for (auto& value2: value.fields) {
-				nlohmann::json field{ value2 };
-				fields.push_back(field);
-			}
-
-			int32_t colorValInt = std::stol(value.hexColorValue, 0, 16);
-			std::stringstream stream;
-			stream << std::setbase(10) << colorValInt;
-			std::string realColorVal = stream.str();
-
-			nlohmann::json embed = {
-				{ "author", { { "icon_url", value.author.iconUrl }, { "name", value.author.name }, { "url", value.author.url }, { "proxy_icon_url", value.author.proxyIconUrl } } },
-				{ "image", { { "height", value.image.height }, { "width", value.image.width }, { "url", value.image.url }, { "proxy_url", value.image.proxyUrl } } },
-				{ "provider", { { "name", value.provider.name }, { "url", value.provider.url } } },
-				{ "thumbnail",
-					{ { "height", value.thumbnail.height }, { "width", value.thumbnail.width }, { "url", value.thumbnail.url }, { "proxy_url", value.thumbnail.proxyUrl } } },
-				{ "footer", { { "icon_url", value.footer.iconUrl }, { "proxy_icon_url", value.footer.proxyIconUrl }, { "text", value.footer.text } } },
-				{ "description", value.description },
-				{ "title", value.title },
-				{ "fields", fields },
-				{ "color", realColorVal },
-				{ "timestamp", value.timestamp },
-			};
-			embedsArray.push_back(embed);
-		}
-
-		auto parseArray = nlohmann::json::array();
-		for (auto& value: dataPackage.allowedMentions.parse) {
-			parseArray.push_back(value);
-		};
-
-		auto rolesArray = nlohmann::json::array();
-		for (auto& value: dataPackage.allowedMentions.roles) {
-			rolesArray.push_back(value);
-		}
-
-		auto usersArray = nlohmann::json::array();
-		for (auto& value: dataPackage.allowedMentions.users) {
-			usersArray.push_back(value);
-		}
-
-		auto componentsActionRow = nlohmann::json::array();
+		nlohmann::json componentsActionRow{};
 
 		for (auto& value: dataPackage.components) {
-			auto components = nlohmann::json::array();
-
-			for (auto& valueNew: value.components) {
-				auto components = nlohmann::json::array();
-
-				for (auto& valueNew: value.components) {
-					components.push_back(nlohmann::json{ valueNew });
-				}
-				nlohmann::json componentActionRow = { { "type", 1 }, { "components", components } };
-				componentsActionRow.push_back(componentActionRow);
-			}
-		}
-
-		if (dataPackage.content == "") {
-			nlohmann::json data = { { "embeds", embedsArray },
-				{ "allowed_mentions",
-					{ { "parse", parseArray }, { "roles", rolesArray }, { "users", usersArray }, { "repliedUser", dataPackage.allowedMentions.repliedUser } } },
-				{ "components", componentsActionRow } };
-
-			return data.dump();
-		} else {
-			nlohmann::json data = { { "content", dataPackage.content }, { "embeds", embedsArray },
-				{
-					"allowed_mentions",
-					{ { "parse", parseArray }, { "roles", rolesArray }, { "users", usersArray }, { "repliedUser", dataPackage.allowedMentions.repliedUser } },
-				},
-				{ "components", componentsActionRow } };
-
-			return data.dump();
-		};
-	}
-
-	std::string JSONIFY(DiscordCoreAPI::InteractionResponseData dataPackage) {
-		auto embedsArray = nlohmann::json::array();
-		
-		for (auto& value: dataPackage.data.embeds) {
-			auto fields = nlohmann::json::array();
-
-			for (auto& value2: value.fields) {
-				nlohmann::json field{ value2 };
-				fields.push_back(field);
-			}
-
-			if (value.hexColorValue == "") {
-				value.hexColorValue = "fefefe";
-			}
-			int32_t colorValInt = std::stol(value.hexColorValue, 0, 16);
-			std::stringstream stream;
-			stream << std::setbase(10) << colorValInt;
-			std::string realColorVal = stream.str();
-
-			nlohmann::json embed = {
-				{ "author", { { "icon_url", value.author.iconUrl }, { "name", value.author.name }, { "url", value.author.url }, { "proxy_icon_url", value.author.proxyIconUrl } } },
-				{ "image", { { "height", value.image.height }, { "width", value.image.width }, { "url", value.image.url }, { "proxy_url", value.image.proxyUrl } } },
-				{ "provider", { { "name", value.provider.name }, { "url", value.provider.url } } },
-				{ "thumbnail",
-					{ { "height", value.thumbnail.height }, { "width", value.thumbnail.width }, { "url", value.thumbnail.url }, { "proxy_url", value.thumbnail.proxyUrl } } },
-				{ "footer", { { "icon_url", value.footer.iconUrl }, { "proxy_icon_url", value.footer.proxyIconUrl }, { "text", value.footer.text } } },
-				{ "description", value.description },
-				{ "title", value.title },
-				{ "fields", fields },
-				{ "color", realColorVal },
-				{ "timestamp", value.timestamp },
-			};
-			embedsArray.push_back(embed);
-		}
-
-		auto componentsActionRow = nlohmann::json::array();
-
-		for (auto& value: dataPackage.data.components) {
-			auto components = nlohmann::json::array();
+			nlohmann::json components{};
 
 			for (auto& valueNew: value.components) {
 				components.push_back(nlohmann::json{ valueNew });
 			}
-			nlohmann::json componentActionRow = { { "type", 1 }, { "components", components } };
+			nlohmann::json componentActionRow{};
+			componentActionRow["type"] = 1;
+			componentActionRow["components"] = components;
 			componentsActionRow.push_back(componentActionRow);
 		}
 
-		nlohmann::json choicesVector{};
-		for (auto& value: dataPackage.data.choices) {
-			choicesVector.push_back(value);
+		if (componentsActionRow.size() > 0) {
+			data["components"] = componentsActionRow;
+		}
+
+		data["allowed_mentions"] = dataPackage.allowedMentions;
+
+		nlohmann::json embedsArray{};
+
+		for (auto& value: dataPackage.embeds) {
+			nlohmann::json embed{ value };
+			embedsArray.push_back(embed);
+		}
+
+		if (dataPackage.embeds.size() > 0) {
+			data["embeds"] = embedsArray;
+		}
+
+		if (dataPackage.content != "") {
+			data["content"] = dataPackage.content;
+		}
+
+		return data.dump();
+	}
+
+	std::string JSONIFY(DiscordCoreAPI::InteractionResponseData dataPackage) {
+		nlohmann::json data{};
+
+		nlohmann::json attachments{};
+
+		for (auto& value: dataPackage.data.attachments) {
+			nlohmann::json attachment{ value };
+			attachments.push_back(attachment);
+		}
+
+		if (attachments.size() > 0) {
+			data["data"]["attachments"] = attachments;
+		}
+
+		nlohmann::json componentsActionRow{};
+
+		for (auto& value: dataPackage.data.components) {
+			nlohmann::json components{};
+
+			for (auto& valueNew: value.components) {
+				components.push_back(nlohmann::json{ valueNew });
+			}
+			nlohmann::json componentActionRow{};
+			componentActionRow["type"] = 1;
+			componentActionRow["components"] = components;
+			componentsActionRow.push_back(componentActionRow);
+		}
+
+		if (componentsActionRow.size() > 0) {
+			data["data"]["components"] = componentsActionRow;
+		}
+
+		data["data"]["allowed_mentions"] = dataPackage.data.allowedMentions;
+
+		if (dataPackage.data.choices.size() > 0) {
+			for (auto& value: dataPackage.data.choices) {
+				data["data"]["choices"].push_back(value);
+			}
+		}
+
+		nlohmann::json embedsArray{};
+
+		for (auto& value: dataPackage.data.embeds) {
+			nlohmann::json embed{ value };
+			embedsArray.push_back(embed);
+		}
+
+		if (dataPackage.data.embeds.size() > 0) {
+			data["data"]["embeds"] = embedsArray;
+		}
+
+		if (dataPackage.data.customId != "") {
+			data["data"]["custom_id"] = dataPackage.data.customId;
 		}
 
 		if (dataPackage.data.content != "") {
-			nlohmann::json newVector{};
-			for (auto& value: dataPackage.data.attachments) {
-				nlohmann::json newValue{ value };
-				newVector.push_back(newValue);
-			}
-			nlohmann::json data = { { "type", dataPackage.type }, 
-				{ "data",
-					{
-						{ "tts", dataPackage.data.tts },
-						{ "choices", choicesVector },
-						{ "embeds", embedsArray },
-						{ "flags", dataPackage.data.flags },
-						{ "content", dataPackage.data.content },
-						{ "allowed_mentions",
-							{ { "parse", dataPackage.data.allowedMentions.parse }, { "roles", dataPackage.data.allowedMentions.roles },
-								{ "users", dataPackage.data.allowedMentions.users }, { "repliedUser", dataPackage.data.allowedMentions.repliedUser } } },
-						{ "components", componentsActionRow },
-					} } };
-			if (dataPackage.data.customId != "") {
-				nlohmann::json dataNew = { { "data",
-					{ { "custom_id", dataPackage.data.customId }, { "title", dataPackage.data.title }, { "flags", dataPackage.data.flags }, { "content", dataPackage.data.content },
-
-						{ "allowed_mentions",
-							{ { "parse", dataPackage.data.allowedMentions.parse }, { "roles", dataPackage.data.allowedMentions.roles },
-								{ "users", dataPackage.data.allowedMentions.users }, { "repliedUser", dataPackage.data.allowedMentions.repliedUser } } },
-						{ "components", componentsActionRow } } } };
-				data.update(dataNew);
-			}
-
-			return data.dump();
-		} else {
-			nlohmann::json attachmentsVector{};
-			for (auto& value: dataPackage.data.attachments) {
-				nlohmann::json newValue{ value };
-				attachmentsVector.push_back(newValue);
-			}
-
-			nlohmann::json data{};
-			data["type"] = dataPackage.type;
-			data["data"]["tts"] = dataPackage.data.tts;
-			data["data"]["choices"] = choicesVector;
-			if (embedsArray.size() > 0) {
-				data["data"]["embeds"] = embedsArray;
-			}
-			if (dataPackage.data.attachments.size() > 0) {
-				data["data"]["attachments"] = attachmentsVector;
-			}
-			data["data"]["components"] = componentsActionRow;
-			data["data"]["allowed_mentions"] = { { "parse", dataPackage.data.allowedMentions.parse }, { "roles", dataPackage.data.allowedMentions.roles },
-				{ "users", dataPackage.data.allowedMentions.users }, { "repliedUser", dataPackage.data.allowedMentions.repliedUser } };
-			data["data"]["flags"] = dataPackage.data.flags;
-
-			if (dataPackage.data.customId != "") {
-				data["data"]["custom_id"] = dataPackage.data.customId;
-				;
-				data["data"]["title"] = dataPackage.data.title;
-			}
-
-			return data.dump();
+			data["data"]["content"] = dataPackage.data.content;
 		}
+
+		if (dataPackage.data.title != "") {
+			data["data"]["title"] = dataPackage.data.title;
+		}
+
+		data["data"]["flags"] = dataPackage.data.flags;
+
+		data["data"]["tts"] = dataPackage.data.tts;
+
+		data["type"] = dataPackage.type;
+
+		return data.dump();
+		
 	}
 
 	std::string JSONIFY(DiscordCoreAPI::CreateGuildRoleData dataPackage) {
@@ -971,76 +933,63 @@ namespace DiscordCoreInternal {
 	}
 
 	std::string JSONIFY(DiscordCoreAPI::ExecuteWebHookData dataPackage) {
-		auto embedsArray = nlohmann::json::array();
+		nlohmann::json data{};
 
-		for (auto& value: dataPackage.embeds) {
-			auto fields = nlohmann::json::array();
+		nlohmann::json attachments{};
 
-			for (auto& value2: value.fields) {
-				nlohmann::json field{ value2 };
-				fields.push_back(field);
-			}
-
-			int32_t colorValInt = stol(value.hexColorValue, 0, 16);
-			std::stringstream stream{};
-			stream << std::setbase(10) << colorValInt;
-			std::string realColorVal = stream.str();
-
-			nlohmann::json embed = {
-				{ "author", { { "icon_url", value.author.iconUrl }, { "name", value.author.name }, { "url", value.author.url }, { "proxy_icon_url", value.author.proxyIconUrl } } },
-				{ "image", { { "height", value.image.height }, { "width", value.image.width }, { "url", value.image.url }, { "proxy_url", value.image.proxyUrl } } },
-				{ "provider", { { "name", value.provider.name }, { "url", value.provider.url } } },
-				{ "thumbnail",
-					{ { "height", value.thumbnail.height }, { "width", value.thumbnail.width }, { "url", value.thumbnail.url }, { "proxy_url", value.thumbnail.proxyUrl } } },
-				{ "footer", { { "icon_url", value.footer.iconUrl }, { "proxy_icon_url", value.footer.proxyIconUrl }, { "text", value.footer.text } } },
-				{ "description", value.description },
-				{ "title", value.title },
-				{ "fields", fields },
-				{ "color", realColorVal },
-				{ "timestamp", value.timestamp },
-			};
-			embedsArray.push_back(embed);
+		for (auto& value: dataPackage.attachments) {
+			nlohmann::json attachment{ value };
+			attachments.push_back(attachment);
 		}
 
-		auto parseArray = nlohmann::json::array();
-		for (auto& value: dataPackage.allowedMentions.parse) {
-			parseArray.push_back(value);
-		};
-
-		auto rolesArray = nlohmann::json::array();
-		for (auto& value: dataPackage.allowedMentions.roles) {
-			rolesArray.push_back(value);
+		if (attachments.size() > 0) {
+			data["attachments"] = attachments;
 		}
 
-		auto usersArray = nlohmann::json::array();
-		for (auto& value: dataPackage.allowedMentions.users) {
-			usersArray.push_back(value);
-		}
-
-		auto componentsActionRow = nlohmann::json::array();
+		nlohmann::json componentsActionRow{};
 
 		for (auto& value: dataPackage.components) {
-			auto components = nlohmann::json::array();
+			nlohmann::json components{};
 
 			for (auto& valueNew: value.components) {
 				components.push_back(nlohmann::json{ valueNew });
 			}
-			nlohmann::json componentActionRow = { { "type", 1 }, { "components", components } };
+			nlohmann::json componentActionRow{};
+			componentActionRow["type"] = 1;
+			componentActionRow["components"] = components;
 			componentsActionRow.push_back(componentActionRow);
 		}
 
+		if (componentsActionRow.size() > 0) {
+			data["components"] = componentsActionRow;
+		}
 
-		nlohmann::json data = { { "flags", dataPackage.flags }, { "tts", dataPackage.tts }, { "embeds", embedsArray },
-			{ "allowed_mentions",
-				{ { "parse", parseArray }, { "roles", rolesArray }, { "users", usersArray }, { "repliedUser", dataPackage.allowedMentions.repliedUser }
+		data["allowed_mentions"] = dataPackage.allowedMentions;
 
-				} },
-			{ "components", componentsActionRow } };
+		nlohmann::json embedsArray{};
+
+		for (auto& value: dataPackage.embeds) {
+			nlohmann::json embed{ value };
+			embedsArray.push_back(embed);
+		}
+
+		if (dataPackage.embeds.size() > 0) {
+			data["embeds"] = embedsArray;
+		}
+
+		data["avatar_url"] = dataPackage.avatarUrl;
+
+		if (dataPackage.username != "") {
+			data["username"] = dataPackage.username;
+		}
 
 		if (dataPackage.content != "") {
-			nlohmann::json dataNew = { { "content", dataPackage.content } };
-			data.update(dataNew);
+			data["content"] = dataPackage.content;
 		}
+
+		data["flags"] = dataPackage.flags;
+
+		data["tts"] = dataPackage.tts;
 
 		return data.dump();
 	}
