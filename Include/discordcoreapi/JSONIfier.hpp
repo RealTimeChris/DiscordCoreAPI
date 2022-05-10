@@ -71,9 +71,15 @@ namespace DiscordCoreAPI {
 	class EditMessageData;
 	class EditWebHookData;
 
-	void to_json(nlohmann::json& jsonOut, const DiscordCoreAPI::ComponentData& valueIn);
+	void to_json(nlohmann::json& jsonOut, const DiscordCoreAPI::AllowedMentionsData& valueIn);
 
 	void to_json(nlohmann::json& jsonOut, const DiscordCoreAPI::AttachmentData& valueIn);
+
+	void to_json(nlohmann::json& jsonOut, const DiscordCoreAPI::EmbedFieldData& valueIn);
+
+	void to_json(nlohmann::json& jsonOut, const DiscordCoreAPI::ComponentData& valueIn);
+
+	void to_json(nlohmann::json& jsonOut, const DiscordCoreAPI::EmbedData& valueIn);
 
 };// namespace DiscordCoreAPI
 
