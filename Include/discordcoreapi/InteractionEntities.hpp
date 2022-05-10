@@ -163,7 +163,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// For creating an ephemeral Interaction response. \brief For creating an ephemeral Interaction response.
-	class DiscordCoreAPI_Dll CreateEphemeralInteractionResponseData : public InteractionResponse {
+	class DiscordCoreAPI_Dll CreateEphemeralInteractionResponseData {
 	  public:
 		friend CreateInteractionResponseData;
 		friend Interactions;
@@ -189,10 +189,15 @@ namespace DiscordCoreAPI {
 		}
 
 		virtual ~CreateEphemeralInteractionResponseData() = default;
+
+	  protected:
+		InteractionPackageData interactionPackage{};
+		InteractionResponseData data{};
+		std::string requesterId{ "" };
 	};
 
 	/// For creating a deferred Interaction response. \brief For creating a deferred Interaction response.
-	class DiscordCoreAPI_Dll CreateDeferredInteractionResponseData : public InteractionResponse {
+	class DiscordCoreAPI_Dll CreateDeferredInteractionResponseData {
 	  public:
 		friend CreateInteractionResponseData;
 		friend Interactions;
@@ -220,11 +225,13 @@ namespace DiscordCoreAPI {
 		virtual ~CreateDeferredInteractionResponseData() = default;
 
 	  protected:
-		std::string channelId{ "" };
+		InteractionPackageData interactionPackage{};
+		InteractionResponseData data{};
+		std::string requesterId{ "" };
 	};
 
 	/// For creating an Interaction response. \brief For creating an Interaction response.
-	class DiscordCoreAPI_Dll CreateInteractionResponseData : public InteractionResponse {
+	class DiscordCoreAPI_Dll CreateInteractionResponseData {
 	  public:
 		friend SelectMenuCollector;
 		friend ButtonCollector;
@@ -268,7 +275,6 @@ namespace DiscordCoreAPI {
 			this->interactionPackage.applicationId = dataPackage.applicationId;
 			this->interactionPackage.interactionId = dataPackage.interactionId;
 			this->data.data.allowedMentions = dataPackage.allowedMentions;
-			this->messagePackage.channelId = dataPackage.channelId;
 			this->data.data.components = dataPackage.components;
 			this->data.data.customId = dataPackage.customId;
 			this->data.data.content = dataPackage.content;
@@ -297,6 +303,11 @@ namespace DiscordCoreAPI {
 		}
 
 		virtual ~CreateInteractionResponseData() = default;
+
+	  protected:
+		InteractionPackageData interactionPackage{};
+		InteractionResponseData data{};
+		std::string requesterId{ "" };
 	};
 
 	/// For getting an Interaction response. \brief For getting an Interaction response.
@@ -306,7 +317,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// For editing an Interaction response. \brief For editing an Interaction response.
-	class DiscordCoreAPI_Dll EditInteractionResponseData : public InteractionResponse {
+	class DiscordCoreAPI_Dll EditInteractionResponseData {
 	  public:
 		friend Interactions;
 		friend InputEvents;
@@ -315,18 +326,20 @@ namespace DiscordCoreAPI {
 			this->interactionPackage.interactionToken = dataPackage.interactionToken;
 			this->interactionPackage.applicationId = dataPackage.applicationId;
 			this->interactionPackage.interactionId = dataPackage.interactionId;
-			this->data.data.allowedMentions = dataPackage.allowedMentions;
-			this->data.type = InteractionCallbackType::Update_Message;
-			this->data.data.components = dataPackage.components;
-			this->data.data.content = dataPackage.content;
-			this->data.data.embeds = dataPackage.embeds;
+			this->data.allowedMentions = dataPackage.allowedMentions;
+			this->data.components = dataPackage.components;
+			this->data.content = dataPackage.content;
+			this->data.embeds = dataPackage.embeds;
 			this->requesterId = dataPackage.requesterId;
-			this->data.data.files = dataPackage.files;
-			this->data.data.flags = dataPackage.flags;
-			this->data.data.tts = dataPackage.tts;
+			this->data.files = dataPackage.files;
 		}
 
 		virtual ~EditInteractionResponseData() = default;
+
+	  protected:
+		InteractionPackageData interactionPackage{};
+		std::string requesterId{ "" };
+		EditWebHookData data{};
 	};
 
 	/// For deleting an Interaction response. \brief For deleting an Interaction response.

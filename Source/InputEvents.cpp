@@ -114,7 +114,6 @@ namespace DiscordCoreAPI {
 		dataPackageNewer.interactionData->token = dataPackage.interactionPackage.interactionToken;
 		dataPackageNewer.interactionData->id = dataPackage.interactionPackage.interactionId;
 		dataPackageNewer.eventType = InteractionType::Application_Command;
-		dataPackageNewer.interactionData->channelId = dataPackage.channelId;
 		dataPackageNewer.requesterId = dataPackage.requesterId;
 		return dataPackageNewer;
 	}
@@ -123,7 +122,6 @@ namespace DiscordCoreAPI {
 		Message messageData = Interactions::createInteractionResponseAsync(dataPackage).get();
 		InputEventData dataPackageNewer{};
 		dataPackageNewer.interactionData->applicationId = dataPackage.interactionPackage.applicationId;
-		dataPackageNewer.interactionData->channelId = dataPackage.messagePackage.channelId;
 		dataPackageNewer.interactionData->token = dataPackage.interactionPackage.interactionToken;
 		dataPackageNewer.responseType = InputEventResponseType::Interaction_Response;
 		dataPackageNewer.interactionData->message.components = dataPackage.data.data.components;

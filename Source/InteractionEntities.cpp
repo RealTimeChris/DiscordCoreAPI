@@ -39,15 +39,16 @@ namespace DiscordCoreAPI {
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Post;
 			workload.relativePath = "/interactions/" + dataPackage.interactionPackage.interactionId + "/" + dataPackage.interactionPackage.interactionToken + "/callback";
 			if (dataPackage.data.data.files.size() > 0) {
-				constructMultiPartData(workload, nlohmann::json::parse(DiscordCoreInternal::JSONIFY(dataPackage.getInteractionResponseData())), dataPackage.data.data.files);
+				constructMultiPartData(workload, nlohmann::json::parse(DiscordCoreInternal::JSONIFY(dataPackage.data)), dataPackage.data.data.files);
 			} else {
-				workload.content = DiscordCoreInternal::JSONIFY(dataPackage.getInteractionResponseData());
+				workload.content = DiscordCoreInternal::JSONIFY(dataPackage.data);
 			}
 			workload.callStack = "Interactions::createInteractionResponseAsync";
 			DiscordCoreInternal::submitWorkloadAndGetResult<void>(*Interactions::httpClient, workload);
-			co_return Interactions::getInteractionResponseAsync(
-				{ .interactionToken = dataPackage.interactionPackage.interactionToken, .applicationId = dataPackage.interactionPackage.applicationId })
-				.get();
+			GetInteractionResponseData dataPackage01{};
+			dataPackage01.applicationId = dataPackage.interactionPackage.applicationId;
+			dataPackage01.interactionToken = dataPackage.interactionPackage.interactionToken;
+			co_return Interactions::getInteractionResponseAsync(dataPackage01).get();
 		} catch (...) {
 			reportException("Interactions::createInteractionResponseAsync()");
 		}
@@ -76,10 +77,10 @@ namespace DiscordCoreAPI {
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Patch_Interaction_Response;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Patch;
 			workload.relativePath = "/webhooks/" + dataPackage.interactionPackage.applicationId + "/" + dataPackage.interactionPackage.interactionToken + "/messages/@original";
-			if (dataPackage.data.data.files.size() > 0) {
-				constructMultiPartData(workload, nlohmann::json::parse(DiscordCoreInternal::JSONIFY(dataPackage.getInteractionResponseData())), dataPackage.data.data.files);
+			if (dataPackage.data.files.size() > 0) {
+				constructMultiPartData(workload, nlohmann::json::parse(DiscordCoreInternal::JSONIFY(dataPackage.data)), dataPackage.data.files);
 			} else {
-				workload.content = DiscordCoreInternal::JSONIFY(dataPackage.getInteractionResponseData());
+				workload.content = DiscordCoreInternal::JSONIFY(dataPackage.data);
 			}
 			workload.callStack = "Interactions::editInteractionResponseAsync";
 			co_return DiscordCoreInternal::submitWorkloadAndGetResult<Message>(*Interactions::httpClient, workload);
@@ -235,7 +236,7 @@ namespace DiscordCoreAPI {
 						embedData->setTitle("__**Permission Issue:**__");
 						embedData->setTimeStamp(getTimeAndDate());
 						embedData->setDescription("Sorry, but that menu can only be selected by <@" + this->userId + ">!");
-						createResponseData->addMessageEmbed(*embedData);
+						createResponseData->data.data.embeds.push_back(*embedData);
 						createResponseData->data.data.flags = 64;
 						createResponseData->data.type = InteractionCallbackType::Channel_Message_With_Source;
 						Interactions::createInteractionResponseAsync(*createResponseData).get();
@@ -361,7 +362,7 @@ namespace DiscordCoreAPI {
 						embedData->setTitle("__**Permission Issue:**__");
 						embedData->setTimeStamp(getTimeAndDate());
 						embedData->setDescription("Sorry, but that button can only be pressed by <@" + this->userId + ">!");
-						createResponseData->addMessageEmbed(*embedData);
+						createResponseData->data.data.embeds.push_back(*embedData);
 						createResponseData->data.data.flags = 64;
 						createResponseData->data.type = InteractionCallbackType::Channel_Message_With_Source;
 						Interactions::createInteractionResponseAsync(*createResponseData).get();

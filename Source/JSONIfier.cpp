@@ -681,6 +681,7 @@ namespace DiscordCoreInternal {
 	}
 
 	std::string JSONIFY(DiscordCoreAPI::EditWebHookData dataPackage) {
+
 		auto embedsArray = nlohmann::json::array();
 
 		for (auto& value: dataPackage.embeds) {
@@ -884,12 +885,11 @@ namespace DiscordCoreInternal {
 					{ "size", value.size } };
 				newVector.push_back(newValue);
 			}
-			nlohmann::json data = { { "type", dataPackage.type }, { "tts", dataPackage.data.tts },
+			nlohmann::json data = { { "type", dataPackage.type }, 
 				{ "data",
 					{
-
+						{ "tts", dataPackage.data.tts },
 						{ "choices", choicesVector },
-						{ "attachments", newVector },
 						{ "embeds", embedsArray },
 						{ "flags", dataPackage.data.flags },
 						{ "content", dataPackage.data.content },
@@ -927,26 +927,32 @@ namespace DiscordCoreInternal {
 				newVector.push_back(newValue);
 			}
 
-			nlohmann::json data = { { "type", dataPackage.type }, { "tts", dataPackage.data.tts },
-				{ "data",
-					{
-						{ "choices", choicesVector },
-						{ "attachments", newVector },
-						{ "embeds", embedsArray },
-						{ "flags", dataPackage.data.flags },
-						{ "allowed_mentions",
-							{ { "parse", dataPackage.data.allowedMentions.parse }, { "roles", dataPackage.data.allowedMentions.roles },
-								{ "users", dataPackage.data.allowedMentions.users }, { "repliedUser", dataPackage.data.allowedMentions.repliedUser } } },
-						{ "components", componentsActionRow },
-					} } };
+			nlohmann::json data{};
+			data["type"] = dataPackage.type;
+			data["data"]["tts"] = dataPackage.data.tts;
+			data["data"]["choices"] = choicesVector;
+			if (embedsArray.size() > 0) {
+				data["data"]["embeds"] = embedsArray;
+			}
+			if (dataPackage.data.attachments.size() > 0) {
+				auto attachments = nlohmann::json::array();
+
+				for (auto& value: dataPackage.data.attachments) {
+					nlohmann::json attachment = { { "content_type", value.contentType }, { "file_name", value.filename }, { "height", value.height }, { "id", value.id },
+						{ "proxy_url", value.proxyUrl }, { "size", value.size }, { "url", value.url }, { "width", value.width } };
+					attachments.push_back(attachment);
+				}
+				data["data"]["attachments"] = attachments;
+			}
+			data["data"]["components"] = componentsActionRow;
+			data["data"]["allowed_mentions"] = { { "parse", dataPackage.data.allowedMentions.parse }, { "roles", dataPackage.data.allowedMentions.roles },
+				{ "users", dataPackage.data.allowedMentions.users }, { "repliedUser", dataPackage.data.allowedMentions.repliedUser } };
+			data["data"]["flags"] = dataPackage.data.flags;
+
 			if (dataPackage.data.customId != "") {
-				nlohmann::json dataNew = { { "data",
-					{ { "custom_id", dataPackage.data.customId }, { "title", dataPackage.data.title }, { "flags", dataPackage.data.flags },
-						{ "allowed_mentions",
-							{ { "parse", dataPackage.data.allowedMentions.parse }, { "roles", dataPackage.data.allowedMentions.roles },
-								{ "users", dataPackage.data.allowedMentions.users }, { "repliedUser", dataPackage.data.allowedMentions.repliedUser } } },
-						{ "components", componentsActionRow } } } };
-				data.update(dataNew);
+				data["data"]["custom_id"] = dataPackage.data.customId;
+				;
+				data["data"]["title"] = dataPackage.data.title;
 			}
 
 			return data.dump();

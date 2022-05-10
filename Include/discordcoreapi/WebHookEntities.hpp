@@ -170,6 +170,7 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll EditWebHookData {
 	  public:
 		friend std::string DiscordCoreInternal::JSONIFY(DiscordCoreAPI::EditWebHookData dataPackage);
+		friend class EditInteractionResponseData;
 		friend class EditFollowUpMessageData;
 		friend class Interactions;
 		friend WebHooks;
