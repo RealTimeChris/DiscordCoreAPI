@@ -25,6 +25,14 @@
 
 namespace DiscordCoreAPI {
 
+	DiscordCoreInternal::EventDelegateToken EventManager::onAutoCompleteEntry(DiscordCoreInternal::EventDelegate<void, OnAutoCompleteEntryData> handler) {
+		return onAutoCompleteEntryEvent.add(std::move(handler));
+	}
+
+	void EventManager::onAutoCompleteEntry(DiscordCoreInternal::EventDelegateToken& token) {
+		return onInputEventCreationEvent.remove(token);
+	}
+
 	DiscordCoreInternal::EventDelegateToken EventManager::onInputEventCreation(DiscordCoreInternal::EventDelegate<void, OnInputEventCreationData> handler) {
 		return onInputEventCreationEvent.add(std::move(handler));
 	}

@@ -31,6 +31,8 @@ namespace DiscordCoreAPI {
 	 * @{
 	 */
 
+	using AutoCompleteEntryFunction = std::function<std::string(std::string)>;
+
 	class DiscordCoreAPI_Dll InteractionResponse {
 	  public:
 		/// Adds a button to the response Message. \brief Adds a button to the response Message.
@@ -222,6 +224,7 @@ namespace DiscordCoreAPI {
 			this->data.data.allowedMentions = dataPackage.allowedMentions;
 			this->data.data.components = dataPackage.components;
 			this->data.data.content = dataPackage.content;
+			this->data.data.choices = dataPackage.choices;
 			this->data.data.embeds = dataPackage.embeds;
 			this->requesterId = dataPackage.requesterId;
 			this->data.data.files = dataPackage.files;
@@ -298,14 +301,14 @@ namespace DiscordCoreAPI {
 
 		CreateInteractionResponseData(RespondToInputEventData& dataPackage) {
 			this->interactionPackage.interactionToken = dataPackage.interactionToken;
-			if (dataPackage.eventType == InteractionType::Message_Component && dataPackage.type == InputEventResponseType::Deferred_Response_For_Components) {
+			if (dataPackage.eventType == InteractionType::Message_Component && dataPackage.type == InputEventResponseType::Deferred_Response) {
 				this->data.type = InteractionCallbackType::Deferred_Update_Message;
 			} else if (dataPackage.eventType == InteractionType::Message_Component) {
 				this->data.type = InteractionCallbackType::Update_Message;
 			} else {
 				this->data.type = InteractionCallbackType::Channel_Message_With_Source;
 			}
-			if (dataPackage.title != "") {
+			if (dataPackage.type == InputEventResponseType::Modal_Interaction_Response || dataPackage.title != "") {
 				this->data.type = InteractionCallbackType::Modal;
 			}
 			this->interactionPackage.applicationId = dataPackage.applicationId;

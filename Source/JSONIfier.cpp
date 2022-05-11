@@ -620,9 +620,7 @@ namespace DiscordCoreInternal {
 			for (int32_t x = 0; x < dataPackage.options.size(); x += 1) {
 				JSONIFY(dataPackage.options[x], &data["options"]);
 			}
-			data["options"] = nlohmann::json{};
 		}
-
 		return data.dump();
 	}
 
@@ -641,9 +639,7 @@ namespace DiscordCoreInternal {
 			for (int32_t x = 0; x < dataPackage.options.size(); x += 1) {
 				JSONIFY(dataPackage.options[x], &data["options"]);
 			}
-			data["options"] = nlohmann::json{};
 		}
-
 		return data.dump();
 	}
 

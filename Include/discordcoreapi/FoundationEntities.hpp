@@ -2082,7 +2082,6 @@ namespace DiscordCoreAPI {
 	/// Data structure representing a single Guild. \brief Data structure representing a single Guild.
 	class DiscordCoreAPI_Dll GuildData : public DiscordEntity {
 	  public:
-
 		void setPremiumProgressBarEnabled(bool enabled) {
 			if (enabled) {
 				this->guildFlags |= static_cast<uint8_t>(GuildFlags::Premium_Progress_Bar_Enabled);
@@ -2904,17 +2903,16 @@ namespace DiscordCoreAPI {
 	/// Input event response types. \brief Input event response types.
 	enum class InputEventResponseType {
 		Unset = 0,///< Unset.
-		Ephemeral_Deferred_Response = 1,///< Deferred ephemeral response.
-		Deferred_Response_With_Source = 2,///< For responding to application commands. ACK an interaction and edit a response later, the user sees a loading state.
-		Deferred_Response_For_Components = 3,///< For components, ACK an interaction and edit the original message later; the user does not see a loading state.
-		Interaction_Response = 4,///< Interaction response.
-		Ephemeral_Interaction_Response = 5,///< Ephemeral Interaction response.
-		Edit_Interaction_Response = 6,///< Interaction response edit.
-		Follow_Up_Message = 8,///< Follow-up Message.
-		Ephemeral_Follow_Up_Message = 9,///< Ephemeral follow-up Message.
-		Edit_Follow_Up_Message = 10,///< Follow-up Message edit.
-		Application_Command_AutoComplete_Result = 11,///< Respond to an autocomplete interaction with suggested choices.
-		Modal_Interaction_Response = 11,///< Respond to an interaction with a popup modal.
+		Deferred_Response = 1,
+		Ephemeral_Deferred_Response = 2,///< Deferred ephemeral response.
+		Interaction_Response = 3,///< Interaction response.
+		Ephemeral_Interaction_Response = 4,///< Ephemeral Interaction response.
+		Edit_Interaction_Response = 5,///< Interaction response edit.
+		Follow_Up_Message = 6,///< Follow-up Message.
+		Ephemeral_Follow_Up_Message = 7,///< Ephemeral follow-up Message.
+		Edit_Follow_Up_Message = 8,///< Follow-up Message edit.
+		Application_Command_AutoComplete_Result = 9,///< Respond to an autocomplete interaction with suggested choices.
+		Modal_Interaction_Response = 10,///< Respond to an interaction with a popup modal.
 	};
 
 	/// Data representing a Guild Emoji Update event. \brief Data representing a Guild Emoji Update event.
@@ -3418,6 +3416,14 @@ namespace DiscordCoreAPI {
 			return *this;
 		}
 
+		/// For setting the choices of an autocomplete response. \brief For setting the choices of an autocomplete response.
+		/// \param theChoice A choice..
+		/// \returns RespondToInputEventData& A reference to this data structure.
+		RespondToInputEventData& setAutoCompleteChoice(std::string theData) {
+			this->choices.push_back(theData);
+			return *this;
+		}
+
 		/// For setting the direct-Message User target of a response. \brief For setting the direct-Message User target of a response.
 		/// \param targetUserIdNew A std::string, containing the target User's id.
 		/// \returns RespondToInputEventData& A reference to this data structure.
@@ -3430,6 +3436,7 @@ namespace DiscordCoreAPI {
 		std::vector<ActionRowData> components{};
 		AllowedMentionsData allowedMentions{};
 		std::string interactionToken{ "" };
+		std::vector<std::string> choices{};
 		std::vector<EmbedData> embeds{};
 		std::string interactionId{ "" };
 		std::string applicationId{ "" };
