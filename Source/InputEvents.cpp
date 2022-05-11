@@ -33,7 +33,6 @@ namespace DiscordCoreAPI {
 			CreateInteractionResponseData dataPackage02{ dataPackage };
 			if (dataPackage.type == InputEventResponseType::Deferred_Response) {
 				dataPackage02.data.type = InteractionCallbackType::Deferred_Update_Message;
-				std::cout << "WERE NOT HERE WERE GONE!" << std::endl;
 			} else {
 				dataPackage02.data.type = InteractionCallbackType::Update_Message;
 			}
@@ -119,7 +118,6 @@ namespace DiscordCoreAPI {
 	}
 
 	InputEventData InputEvents::respondToInputEvent(CreateInteractionResponseData dataPackage) {
-		std::cout << "WER MISSING THE SHIT THE SHTIS HSIT" << std::endl;
 		Message messageData = Interactions::createInteractionResponseAsync(dataPackage).get();
 		InputEventData dataPackageNewer{};
 		dataPackageNewer.interactionData->applicationId = dataPackage.interactionPackage.applicationId;
