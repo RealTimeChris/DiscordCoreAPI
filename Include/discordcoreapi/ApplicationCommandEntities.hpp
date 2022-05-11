@@ -258,12 +258,6 @@ namespace DiscordCoreAPI {
 		/// \returns A CoRoutine containing a GuildApplicationCommandPermissionsData.
 		static CoRoutine<GuildApplicationCommandPermissionsData> editGuildApplicationCommandPermissionsAsync(EditGuildApplicationCommandPermissionsData dataPackage);
 
-		/// Batch edit Guild ApplicationCommand permissions for a single server on this bot. \brief Batch edit Guild ApplicationCommand permissions for a single server on this bot.
-		/// \param dataPackage A BatchEditGuildApplicationCommandPermissionsData structure.
-		/// \returns A CoRoutine containing a std::vector<GuildApplicationCommandPermissionsData>.
-		static CoRoutine<std::vector<GuildApplicationCommandPermissionsData>> batchEditGuildApplicationCommandPermissionsAsync(
-			BatchEditGuildApplicationCommandPermissionsData dataPackage);
-
 	  protected:
 		static DiscordCoreInternal::HttpClient* httpClient;
 	};

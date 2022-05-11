@@ -385,23 +385,5 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	CoRoutine<std::vector<GuildApplicationCommandPermissionsData>> ApplicationCommands::batchEditGuildApplicationCommandPermissionsAsync(
-		BatchEditGuildApplicationCommandPermissionsData dataPackage) {
-		try {
-			DiscordCoreInternal::HttpWorkloadData workload{};
-			workload.thisWorkerId =
-				DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Batch_Put_Guild_Application_Command_Permissions);
-			co_await NewThreadAwaitable<std::vector<GuildApplicationCommandPermissionsData>>();
-			std::vector<ApplicationCommand> appCommands = getGuildApplicationCommandsAsync({ .guildId = dataPackage.guildId }).get();
-			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Batch_Put_Guild_Application_Command_Permissions;
-			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Put;
-			workload.relativePath = "/applications/" + dataPackage.applicationId + "/guilds/" + dataPackage.guildId + "/commands/permissions";
-			workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
-			workload.callStack = "ApplicationCommands::batchEditGuildApplicationCommandPermissionsAsync";
-			co_return DiscordCoreInternal::submitWorkloadAndGetResult<std::vector<GuildApplicationCommandPermissionsData>>(*ApplicationCommands::httpClient, workload);
-		} catch (...) {
-			reportException("ApplicationCommands::batchEditGuildApplicationCommandPermissionsAsync()");
-		}
-	}
 	DiscordCoreInternal::HttpClient* ApplicationCommands::httpClient{ nullptr };
 }
