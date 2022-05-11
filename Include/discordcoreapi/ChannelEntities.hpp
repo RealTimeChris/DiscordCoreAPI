@@ -114,6 +114,7 @@ namespace DiscordCoreAPI {
 	/// For creating a new Channel within a chosen Guild. \brief For creating a new Channel within a chosen Guild.
 	struct DiscordCoreAPI_Dll CreateGuildChannelData {
 		std::vector<OverWriteData> permissionOverwrites{};///< Array of overwrite objects	the Channel's permission overwrites.
+		int32_t defaultAutoArchiveDuration{ 0 };///< Defualt duration of time before archiving a thread.
 		int32_t rateLimitPerUser{ 0 };///< Amount of seconds a user has to wait before sending another message(0 - 21600).
 		std::string parentId{ "" };///< Id of the parent category for a Channel.
 		std::string guildId{ "" };///< The Guild within which to create the Channel.

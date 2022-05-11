@@ -1006,24 +1006,29 @@ namespace DiscordCoreInternal {
 
 		nlohmann::json overwrites{};
 		for (auto& value: dataPackage.permissionOverwrites) {
-			nlohmann::json newData = { { "allow", value.allow.getCurrentPermissionString() }, { "channel_id", value.channelId },
-				{ "deny", value.deny.getCurrentPermissionString() }, { "id", value.id }, { "type", value.type } };
+			nlohmann::json newData{};
+			newData["allow"] = value.allow.getCurrentPermissionString();
+			newData["channel_id"] = value.channelId;
+			newData["deny"] = value.deny.getCurrentPermissionString();
+			newData["id"] = value.id;
+			newData["type"] = value.type;
 			overwrites.push_back(newData);
 		}
-		data = {
-			{ "name", dataPackage.name },
-			{ "nsfw", dataPackage.nsfw },
-			{ "parent_id", dataPackage.parentId },
-			{ "permission_overwrites", overwrites },
-			{ "position", dataPackage.position },
-			{ "rate_limit_per_user", dataPackage.rateLimitPerUser },
-			{ "topic", dataPackage.topic },
-			{ "type", dataPackage.type },
-		};
+		data["name"] = dataPackage.name;
+		data["nsfw"] = dataPackage.nsfw;
+		data["parent_id"] = dataPackage.parentId;
+		data["permission_overwrites"] = overwrites;
+		data["position"] = dataPackage.position;
 		if (dataPackage.type == DiscordCoreAPI::ChannelType::Guild_Voice || dataPackage.type == DiscordCoreAPI::ChannelType::Guild_Stage_Voice) {
-			nlohmann::json dataNew = { { "bitrate", dataPackage.bitrate }, { "user_limit", dataPackage.userLimit } };
-			data.update(dataNew);
+			data["bitrate"] = dataPackage.bitrate;
+			data["user_limit"] = dataPackage.userLimit;
 		}
+
+        data["rate_limit_per_user"] = dataPackage.rateLimitPerUser;
+		data["topic"] = dataPackage.topic;
+		data["type"] = dataPackage.type;
+		data["default_auto_archive_duration"] = dataPackage.defaultAutoArchiveDuration;
+		
 		return data.dump();
 	}
 
@@ -1031,10 +1036,12 @@ namespace DiscordCoreInternal {
 		nlohmann::json data{};
 
 		for (auto& value: dataPackage.modifyChannelData) {
-			nlohmann::json dataNew = { { "id", value.id }, { "lock_permissions", value.lockPermissions }, { "position", value.position } };
+			nlohmann::json dataNew{};
+			dataNew["id"] = value.id;
+			dataNew["lock_permissions"] = value.lockPermissions;
+			dataNew["position"] = value.position;
 			if (value.parentId != "") {
-				nlohmann::json dataNewer = { { "parent_id", value.parentId } };
-				dataNew.update(dataNewer);
+				dataNew["parent_id"] = value.parentId;
 			}
 			data.push_back(dataNew);
 		}
@@ -1045,9 +1052,12 @@ namespace DiscordCoreInternal {
 	std::string JSONIFY(DiscordCoreAPI::AddGuildMemberData dataPackage) {
 		nlohmann::json data{};
 
-		data = { { "access_token", dataPackage.accessToken }, { "deaf", dataPackage.deaf }, { "mute", dataPackage.mute }, { "nick", dataPackage.nick },
-			{ "roles", dataPackage.roles } };
-
+		data["access_token"] = dataPackage.accessToken;
+		data["roles"] = dataPackage.roles;
+		data["deaf"] = dataPackage.deaf;
+		data["mute"] = dataPackage.mute;
+		data["nick"] = dataPackage.nick;
+	
 		return data.dump();
 	}
 
@@ -1066,10 +1076,12 @@ namespace DiscordCoreInternal {
 		nlohmann::json channelsArray = nlohmann::json::array();
 
 		for (auto& value: dataPackage.welcomeChannels) {
-			nlohmann::json newData = { { "channel_id", value.channelId }, { "description", value.description }, { "emoji_name", value.emojiName } };
+			nlohmann::json newData{};
+			newData["channel_id"] = value.channelId;
+			newData["description"] = value.description;
+			newData["emoji_name"] = value.emojiName;
 			if (value.emojiId != "") {
-				nlohmann::json dataNewer = { { "emoji_id", value.emojiId } };
-				newData.update(dataNewer);
+				newData["emoji_id"] = value.emojiId;
 			}
 			channelsArray.push_back(newData);
 		}
@@ -1085,29 +1097,36 @@ namespace DiscordCoreInternal {
 	std::string JSONIFY(DiscordCoreAPI::CreateGuildScheduledEventData dataPackage) {
 		nlohmann::json data{};
 
-		data = { { "description", dataPackage.description }, { "entity_metadata", { { "location", dataPackage.entityMetadata.location } } },
-			{ "entity_type", dataPackage.entityType }, { "name", dataPackage.name }, { "privacy_level", dataPackage.privacyLevel },
-			{ "scheduled_end_time", dataPackage.scheduledEndTime }, { "scheduled_start_time", dataPackage.scheduledStartTime } };
+		data["entity_metadata"]["location"] = dataPackage.entityMetadata.location;
+		data["entity_metadata"]["entity_type"] = dataPackage.entityType;
+		data["scheduled_start_time"] = dataPackage.scheduledStartTime;
+		data["scheduled_end_time"] = dataPackage.scheduledEndTime;
+		data["privacy_level"] = dataPackage.privacyLevel;
+		data["description"] = dataPackage.description;
+		data["name"] = dataPackage.name;
 
 		if (dataPackage.entityType == DiscordCoreAPI::GuildScheduledEventEntityType::External) {
-			data.update({ { "channel_id", nullptr } });
+			data["channel_id"] = nullptr;
 		} else {
-			data.update({ { "channel_id", dataPackage.channelId } });
+			data["channel_id"] = dataPackage.channelId;
 		}
 		return data.dump();
 	}
 
 	std::string JSONIFY(DiscordCoreAPI::ModifyGuildScheduledEventData dataPackage) {
 		nlohmann::json data{};
-
-		data = { { "description", dataPackage.description }, { "entity_metadata", { { "location", dataPackage.entityMetadata.location } } },
-			{ "entity_type", dataPackage.entityType }, { "name", dataPackage.name }, { "privacy_level", dataPackage.privacyLevel },
-			{ "scheduled_end_time", dataPackage.scheduledEndTime }, { "scheduled_start_time", dataPackage.scheduledStartTime }, { "status", dataPackage.status } };
+		data["entity_metadata"]["location"] = dataPackage.entityMetadata.location;
+		data["entity_metadata"]["entity_type"] = dataPackage.entityType;
+		data["scheduled_start_time"] = dataPackage.scheduledStartTime;
+		data["scheduled_end_time"] = dataPackage.scheduledEndTime;
+		data["privacy_level"] = dataPackage.privacyLevel;
+		data["description"] = dataPackage.description;
+		data["name"] = dataPackage.name;
 
 		if (dataPackage.entityType == DiscordCoreAPI::GuildScheduledEventEntityType::External) {
-			data.update({ { "channel_id", nullptr } });
+			data["channel_id"] = nullptr;
 		} else {
-			data.update({ { "channel_id", dataPackage.channelId } });
+			data["channel_id"] = dataPackage.channelId;
 		}
 
 		return data.dump();
