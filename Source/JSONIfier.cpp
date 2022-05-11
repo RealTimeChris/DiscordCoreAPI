@@ -56,8 +56,7 @@ namespace DiscordCoreAPI {
 		auto fields = nlohmann::json::array();
 
 		for (auto& value2: valueNew.fields) {
-			nlohmann::json field{ value2 };
-			fields.push_back(field);
+			fields.push_back(value2);
 		}
 
 		int32_t colorValInt = stol(valueNew.hexColorValue, 0, 16);
@@ -66,10 +65,13 @@ namespace DiscordCoreAPI {
 		std::string realColorVal = stream.str();
 
 		nlohmann::json embed{};
+		embed["footer"]["proxy_icon_url"] = valueNew.footer.proxyIconUrl;
+		embed["footer"]["icon_url"] = valueNew.footer.iconUrl;
+		embed["footer"]["text"] = valueNew.footer.text;
+		embed["author"]["proxy_icon_url"] = valueNew.author.proxyIconUrl;
 		embed["author"]["icon_url"] = valueNew.author.iconUrl;
 		embed["author"]["name"] = valueNew.author.name;
 		embed["author"]["url"] = valueNew.author.url;
-		embed["author"]["proxy_icon_url"] = valueNew.author.proxyIconUrl;
 		embed["image"]["height"] = valueNew.image.height;
 		embed["image"]["width"] = valueNew.image.width;
 		embed["image"]["url"] = valueNew.image.url;
@@ -79,15 +81,18 @@ namespace DiscordCoreAPI {
 		embed["thumbnail"]["height"] = valueNew.thumbnail.height;
 		embed["thumbnail"]["width"] = valueNew.thumbnail.width;
 		embed["thumbnail"]["url"] = valueNew.thumbnail.url;
-		embed["thumbnail"]["proxy_url"] = valueNew.thumbnail.proxyUrl;
-		embed["footer"]["icon_url"] = valueNew.footer.iconUrl;
-		embed["thumbnail"]["proxy_icon_url"] = valueNew.footer.proxyIconUrl;
-		embed["thumbnail"]["text"] = valueNew.footer.text;
+		embed["thumbnail"]["proxy_url"] = valueNew.thumbnail.proxyUrl;		
+		embed["video"]["height"] = valueNew.video.height;
+		embed["video"]["proxy_url"] = valueNew.video.proxyUrl;
+		embed["video"]["width"] = valueNew.video.width;
+		embed["video"]["url"] = valueNew.video.url;
+		embed["type"] = valueNew.type;
 		embed["description"] = valueNew.description;
 		embed["title"] = valueNew.title;
 		embed["fields"] = fields;
 		embed["color"] = realColorVal;
 		embed["timestamp"] = valueNew.timestamp;
+		embed["url"] = valueNew.url;
 		jsonOut = embed;
 	}
 
@@ -96,7 +101,7 @@ namespace DiscordCoreAPI {
 		newValue["inline"] = valueNew.Inline;
 		newValue["value"] = valueNew.value;
 		newValue["name"] = valueNew.name;
-		jsonOut = newValue;
+		jsonOut.update(newValue);
 	}
 
 	void to_json(nlohmann::json& jsonOut, const DiscordCoreAPI::AttachmentData& valueNew) {
@@ -425,7 +430,10 @@ namespace DiscordCoreInternal {
 			data["message"]["attachments"] = attachments;
 		}
 
-		if (dataPackage.message.components.size() > 0) {
+		if (dataPackage.message.components.size() == 0) {
+			auto componentsActionRow = nlohmann::json::array();
+			data["message"]["components"] = componentsActionRow;
+		} else {
 			data["message"]["components"] = nlohmann::json{ dataPackage.message.components };
 		}
 
@@ -441,10 +449,13 @@ namespace DiscordCoreInternal {
 			data["message"]["sticker_ids"] = stickersArray;
 		}
 
-		nlohmann::json embedsArray{};
-
-		for (auto& value: dataPackage.message.embeds) {
-			data["embeds"].push_back(value);
+		if (dataPackage.message.embeds.size() == 0) {
+			auto embedsVector = nlohmann::json::array();
+			data["embeds"] = embedsVector;
+		} else {
+			for (auto& value: dataPackage.message.embeds) {
+				data["embeds"].push_back(value);
+			}
 		}
 
 		if (dataPackage.message.content != "") {
@@ -477,7 +488,10 @@ namespace DiscordCoreInternal {
 			data["message_reference"] = dataPackage.messageReference;
 		}
 
-		if (dataPackage.components.size() > 0) {
+		if (dataPackage.components.size() == 0) {
+			auto componentsActionRow = nlohmann::json::array();
+			data["components"] = componentsActionRow;
+		} else {
 			data["components"] = nlohmann::json{ dataPackage.components };
 		}
 
@@ -493,8 +507,13 @@ namespace DiscordCoreInternal {
 			data["sticker_ids"] = stickersArray;
 		}		
 
-		for (auto& value: dataPackage.embeds) {
-			data["embeds"].push_back(value);
+		if (dataPackage.embeds.size() == 0) {
+			auto embedsVector = nlohmann::json::array();
+			data["embeds"] = embedsVector;
+		} else {
+			for (auto& value: dataPackage.embeds) {
+				data["embeds"].push_back(value);
+			}
 		}
 
 		if (dataPackage.content != "") {
@@ -523,7 +542,10 @@ namespace DiscordCoreInternal {
 			data["attachments"] = attachments;
 		}
 
-		if (dataPackage.components.size() > 0) {
+		if (dataPackage.components.size() == 0) {
+			auto componentsActionRow = nlohmann::json::array();
+			data["components"] = componentsActionRow;
+		} else {
 			data["components"] = nlohmann::json{ dataPackage.components };
 		}
 
@@ -535,8 +557,13 @@ namespace DiscordCoreInternal {
 			data["sticker_ids"] = stickersArray;
 		}
 
-		for (auto& value: dataPackage.embeds) {
-			data["embeds"].push_back(value);
+		if (dataPackage.embeds.size() == 0) {
+			auto embedsVector = nlohmann::json::array();
+			data["embeds"] = embedsVector;
+		} else {
+			for (auto& value: dataPackage.embeds) {
+				data["embeds"].push_back(value);
+			}
 		}
 
 		if (dataPackage.content != "") {
@@ -740,21 +767,35 @@ namespace DiscordCoreInternal {
 	std::string JSONIFY(DiscordCoreAPI::EditWebHookData dataPackage) {
 		nlohmann::json data{};
 
-		if (dataPackage.components.size() > 0) {
+		if (dataPackage.attachments.size() == 0) {
+			auto attachmentsVector = nlohmann::json::array();
+			data["attachments"] = attachmentsVector;
+		} else {
+			data["attachments"] = nlohmann::json{ dataPackage.attachments };
+		}
+
+		if (dataPackage.components.size() == 0) {
+			auto componentsActionRow = nlohmann::json::array();
+			data["components"] = componentsActionRow;
+		} else {
 			data["components"] = nlohmann::json{ dataPackage.components };
 		}
 
 		data["allowed_mentions"] = dataPackage.allowedMentions;
-
-		nlohmann::json embedsArray{};
-
-		for (auto& value: dataPackage.embeds) {
-			data["embeds"].push_back(value);
+		
+		if (dataPackage.components.size() == 0) {
+			auto embedsVector = nlohmann::json::array();
+			data["embeds"] = embedsVector;
+		} else {
+			for (auto& value: dataPackage.embeds) {
+				data["embeds"].push_back(value);
+			}
 		}
 
 		if (dataPackage.content != "") {
 			data["content"] = dataPackage.content;
 		}
+
 		return data.dump();
 	}
 
@@ -768,24 +809,30 @@ namespace DiscordCoreInternal {
 			attachments.push_back(attachment);
 		}
 
-		if (attachments.size() > 0) {
-			data["data"]["attachments"] = attachments;
+		for (auto&value:dataPackage.data.attachments){
+			data["data"]["attachments"].push_back(value);
 		}
 
-		if (dataPackage.data.components.size() > 0) {
-			data["components"] = nlohmann::json{ dataPackage.data.components };
+		if (dataPackage.data.components.size() == 0) {
+			auto componentsActionRow = nlohmann::json::array();
+			data["data"]["components"] = componentsActionRow;
+		} else {
+			data["data"]["components"] = nlohmann::json{ dataPackage.data.components };
 		}
 
 		data["data"]["allowed_mentions"] = dataPackage.data.allowedMentions;
 
-		if (dataPackage.data.choices.size() > 0) {
-			for (auto& value: dataPackage.data.choices) {
-				data["data"]["choices"].push_back(value);
-			}
-		}
+		for (auto& value: dataPackage.data.choices) {
+			data["data"]["choices"].push_back(value);
+		}		
 
-		for (auto& value: dataPackage.data.embeds) {
-			data["embeds"].push_back(value);
+		if (dataPackage.data.embeds.size() == 0) {
+			auto embedsVector = nlohmann::json::array();
+			data["data"]["embeds"] = embedsVector;
+		} else {
+			for (auto& value: dataPackage.data.embeds) {
+				data["data"]["embeds"].push_back(value);
+			}
 		}
 
 		if (dataPackage.data.customId != "") {
@@ -853,14 +900,22 @@ namespace DiscordCoreInternal {
 			data["attachments"] = attachments;
 		}
 
-		if (dataPackage.components.size() > 0) {
+		if (dataPackage.components.size() == 0) {
+			auto componentsActionRow = nlohmann::json::array();
+			data["components"] = componentsActionRow;
+		} else {
 			data["components"] = nlohmann::json{ dataPackage.components };
 		}
 
 		data["allowed_mentions"] = dataPackage.allowedMentions;
 
-		for (auto& value: dataPackage.embeds) {
-			data["embeds"].push_back(value);
+		if (dataPackage.embeds.size() == 0) {
+			auto embedsVector = nlohmann::json::array();
+			data["embeds"] = embedsVector;
+		} else {
+			for (auto& value: dataPackage.embeds) {
+				data["embeds"].push_back(value);
+			}
 		}
 
 		data["avatar_url"] = dataPackage.avatarUrl;

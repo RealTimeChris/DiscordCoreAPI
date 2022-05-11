@@ -211,12 +211,12 @@ namespace DiscordCoreAPI {
 		friend InputEvents;
 
 		CreateEphemeralInteractionResponseData(RespondToInputEventData& dataPackage) {
-			this->interactionPackage.interactionToken = dataPackage.interactionToken;
 			if (dataPackage.eventType == InteractionType::Message_Component) {
 				this->data.type = InteractionCallbackType::Update_Message;
 			} else {
 				this->data.type = InteractionCallbackType::Channel_Message_With_Source;
 			}
+			this->interactionPackage.interactionToken = dataPackage.interactionToken;
 			this->interactionPackage.applicationId = dataPackage.applicationId;
 			this->interactionPackage.interactionId = dataPackage.interactionId;
 			this->data.data.allowedMentions = dataPackage.allowedMentions;
@@ -359,10 +359,11 @@ namespace DiscordCoreAPI {
 			this->interactionPackage.interactionId = dataPackage.interactionId;
 			this->data.allowedMentions = dataPackage.allowedMentions;
 			this->data.components = dataPackage.components;
+			this->requesterId = dataPackage.requesterId;
 			this->data.content = dataPackage.content;
 			this->data.embeds = dataPackage.embeds;
-			this->requesterId = dataPackage.requesterId;
-			this->data.files = dataPackage.files;
+			this->data.flags = dataPackage.flags;
+			this->data.tts = dataPackage.tts;
 		}
 
 		virtual ~EditInteractionResponseData() = default;
@@ -427,7 +428,15 @@ namespace DiscordCoreAPI {
 
 		CreateFollowUpMessageData(CreateEphemeralFollowUpMessageData& dataPackage) {
 			this->interactionPackage = dataPackage.interactionPackage;
+			this->allowedMentions = dataPackage.allowedMentions;
 			this->requesterId = dataPackage.requesterId;
+			this->components = dataPackage.components;
+			this->content = dataPackage.content;
+			this->embeds = dataPackage.embeds;
+			this->flags = dataPackage.flags;
+			this->files = dataPackage.files;
+			this->tts = dataPackage.tts;
+			this->flags = 64;
 		}
 
 		CreateFollowUpMessageData(RespondToInputEventData& dataPackage) {

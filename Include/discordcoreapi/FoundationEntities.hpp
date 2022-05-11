@@ -2513,7 +2513,7 @@ namespace DiscordCoreAPI {
 		Pong = 1,///<	ACK a Ping
 		Channel_Message_With_Source = 4,///< Respond to an interaction with a message.
 		Deferred_Channel_Message_With_Source = 5,///< ACK an interaction and edit a response later, the user sees a loading state.
-		Deferred_Update_Message = 6,///< For components, ACK an interactionand edit the original message later; the user does not see a loading state.
+		Deferred_Update_Message = 6,///< For components, ACK an interaction and edit the original message later; the user does not see a loading state.
 		Update_Message = 7,///< For components, edit the message the component was attached to.
 		Application_Command_Autocomplete_Result = 8,///< Respond to an autocomplete interaction with suggested choices.
 		Modal = 9///<	Respond to an interaction with a popup modal.

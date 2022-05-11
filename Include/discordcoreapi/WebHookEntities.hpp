@@ -227,7 +227,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// For editing a WebHook Message. \brief For editing a WebHook Message.
-	class DiscordCoreAPI_Dll EditWebHookData {
+	class DiscordCoreAPI_Dll EditWebHookData : public ExecuteWebHookData {
 	  public:
 		friend std::string DiscordCoreInternal::JSONIFY(DiscordCoreAPI::EditWebHookData dataPackage);
 		friend class EditInteractionResponseData;
@@ -239,108 +239,14 @@ namespace DiscordCoreAPI {
 		std::string threadId{ "" };///< Send a message to the specified thread within a webhook's Channel. The thread will automatically be unarchived.
 		bool wait{ false };///< Waits for server confirmation of message send before response, and returns the created message body.
 
-		EditWebHookData() = default;
+		ExecuteWebHookData& setTTSStatus(bool) = delete;
 
+		EditWebHookData() = default;
+		
 		EditWebHookData(WebHookData dataNew) {
 			this->webhookToken = dataNew.token;
 			this->webhookId = dataNew.id;
 		}
-
-		/// Adds a button to the response Message. \brief Adds a button to the response Message.
-		/// \param disabled Whether the button is active or not.
-		/// \param customIdNew A custom id to give for identifying the button.
-		/// \param buttonLabel A visible label for the button.
-		/// \param buttonStyle The style of the button.
-		/// \param emojiName An emoji name, if desired.
-		/// \param emojiId An emoji id, if desired.
-		/// \param url A url, if applicable.
-		void addButton(
-			bool disabled, std::string customIdNew, std::string buttonLabel, ButtonStyle buttonStyle, std::string emojiName = "", std::string emojiId = "", std::string url = "") {
-			if (this->components.size() == 0) {
-				ActionRowData actionRowData;
-				this->components.push_back(actionRowData);
-			}
-			if (this->components.size() < 5) {
-				if (this->components[this->components.size() - 1].components.size() < 5) {
-					ComponentData component;
-					component.type = ComponentType::Button;
-					component.emoji.name = emojiName;
-					component.label = buttonLabel;
-					component.style = static_cast<int32_t>(buttonStyle);
-					component.customId = customIdNew;
-					component.disabled = disabled;
-					component.emoji.id = emojiId;
-					component.url = url;
-					this->components[this->components.size() - 1].components.push_back(component);
-				} else if (this->components[this->components.size() - 1].components.size() == 5) {
-					ActionRowData actionRowData;
-					this->components.push_back(actionRowData);
-				}
-			}
-		}
-
-		/// Adds a select-menu to the response Message. \brief Adds a select-menu to the response Message.
-		/// \param disabled Whether the select-menu is active or not.
-		/// \param customIdNew A custom id to give for identifying the select-menu.
-		/// \param options A std::vector of select-menu-options to offer.
-		/// \param placeholder Custom placeholder text if nothing is selected, max 100 characters.
-		/// \param maxValues Maximum number of selections that are possible.
-		/// \param minValues Minimum required number of selections that are required.
-		void addSelectMenu(bool disabled, std::string customIdNew, std::vector<SelectOptionData> options, std::string placeholder, int32_t maxValues, int32_t minValues) {
-			if (this->components.size() == 0) {
-				ActionRowData actionRowData;
-				this->components.push_back(actionRowData);
-			}
-			if (this->components.size() < 5) {
-				if (this->components[this->components.size() - 1].components.size() < 5) {
-					ComponentData componentData;
-					componentData.type = ComponentType::SelectMenu;
-					componentData.placeholder = placeholder;
-					componentData.maxValues = maxValues;
-					componentData.minValues = minValues;
-					componentData.disabled = disabled;
-					componentData.customId = customIdNew;
-					componentData.options = options;
-					this->components[this->components.size() - 1].components.push_back(componentData);
-				} else if (this->components[this->components.size() - 1].components.size() == 5) {
-					ActionRowData actionRowData;
-					this->components.push_back(actionRowData);
-				}
-			}
-		}
-
-		/// For setting the allowable mentions in a response. \brief For setting the allowable mentions in a response.
-		/// \param dataPackage An AllowedMentionsData structure.
-		void addAllowedMentions(AllowedMentionsData dataPackage) {
-			this->allowedMentions = dataPackage;
-		}
-
-		/// For setting the components in a response. \brief For setting the components in a response.
-		/// \param dataPackage An ActionRowData structure.
-		void addComponentRow(ActionRowData dataPackage) {
-			this->components.push_back(dataPackage);
-		}
-
-		/// For setting the embeds in a response. \brief For setting the embeds in a response.
-		/// \param dataPackage An EmbedData structure.
-		void addMessageEmbed(EmbedData dataPackage) {
-			this->embeds.push_back(dataPackage);
-		}
-
-		/// For setting the Message content in a response. \brief For setting the Message content in a response.
-		/// \param dataPackage A std::string, containing the content.
-		void addContent(std::string dataPackage) {
-			this->content = dataPackage;
-		}
-
-	  protected:
-		std::vector<ActionRowData> components{};///< Array of message component.
-		AllowedMentionsData allowedMentions{};///< Allowed mention object.
-		std::vector<EmbedData> embeds{};///< Array of up to 10 embed objects.
-		std::string webhookToken{ "" };///< The WebHook token you would like to collect.
-		std::string webhookId{ "" };///< The WebHook you would like to collect.
-		std::vector<File> files{};///< Files for uploading.
-		std::string content{ "" };///< The message contents(up to 2000 characters).
 	};
 
 	/// For collecting a list of WebHooks from a chosen Channel. \brief For collecting a list of WebHooks from a chosen Channel.

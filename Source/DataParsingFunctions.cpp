@@ -3995,7 +3995,57 @@ namespace DiscordCoreInternal {
 		}
 	}
 
+	template<> void DataParser::parseObject(nlohmann::json const& jsonObjectData, DiscordCoreAPI::StickerPackData& pDataStructure) {
+		if (jsonObjectData.contains("stickers") && !jsonObjectData["stickers"].is_null()) {
+			pDataStructure.stickers.clear();
+			pDataStructure.stickers.reserve(jsonObjectData["stickers"].size());
+			for (auto& value: jsonObjectData["stickers"]) {
+				DiscordCoreAPI::StickerData newData{};
+				DataParser::parseObject(value, newData);
+				pDataStructure.stickers.push_back(newData);
+			}
+			pDataStructure.stickers.shrink_to_fit();
+		}
+
+		if (jsonObjectData.contains("cover_sticker_id") && !jsonObjectData["cover_sticker_id"].is_null()) {
+			pDataStructure.coverStickerId = jsonObjectData["cover_sticker_id"].get<std::string>();
+		}
+
+		if (jsonObjectData.contains("banner_asset_id") && !jsonObjectData["banner_asset_id"].is_null()) {
+			pDataStructure.bannerAssetId = jsonObjectData["banner_asset_id"].get<std::string>();
+		}
+
+		if (jsonObjectData.contains("description") && !jsonObjectData["description"].is_null()) {
+			pDataStructure.description = jsonObjectData["description"].get<std::string>();
+		}
+
+		if (jsonObjectData.contains("name") && !jsonObjectData["name"].is_null()) {
+			pDataStructure.name = jsonObjectData["name"].get<std::string>();
+		}
+
+		if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
+			pDataStructure.Id = jsonObjectData["id"].get<std::string>();
+		}
+
+		if (jsonObjectData.contains("sku_id") && !jsonObjectData["sku_id"].is_null()) {
+			pDataStructure.skuId = jsonObjectData["sku_id"].get<std::string>();
+		}
+	}
+
+	template<> void DataParser::parseObject(nlohmann::json const& jsonObjectData, std::vector<DiscordCoreAPI::StickerPackData>& pDataStructure) {
+		if (jsonObjectData.contains("sticker_packs") && !jsonObjectData["sticker_packs"].is_null()) {
+			pDataStructure.reserve(jsonObjectData["sticker_packs"].size());
+			for (auto& value: jsonObjectData["sticker_packs"]) {
+				DiscordCoreAPI::StickerPackData newData{};
+				DataParser::parseObject(value, newData);
+				pDataStructure.push_back(newData);
+			}
+			pDataStructure.shrink_to_fit();
+		}
+	}
+
 	template<> void DataParser::parseObject(nlohmann::json const& jsonObjectData, DiscordCoreAPI::ApplicationCommandInteractionData& pDataStructure) {
+
 		if (jsonObjectData.contains("type") && !jsonObjectData["type"].is_null()) {
 			pDataStructure.type = jsonObjectData["type"].get<DiscordCoreAPI::ApplicationCommandType>();
 		}
@@ -4092,55 +4142,6 @@ namespace DiscordCoreInternal {
 	template<> void DataParser::parseObject(nlohmann::json const& jsonObjectData, DiscordCoreAPI::UserCommandInteractionData& pDataStructure) {
 		if (jsonObjectData.contains("target_id") && !jsonObjectData["target_id"].is_null()) {
 			pDataStructure.targetId = jsonObjectData["target_id"].get<std::string>();
-		}
-	}
-
-	template<> void DataParser::parseObject(nlohmann::json const& jsonObjectData, DiscordCoreAPI::StickerPackData& pDataStructure) {
-		if (jsonObjectData.contains("stickers") && !jsonObjectData["stickers"].is_null()) {
-			pDataStructure.stickers.clear();
-			pDataStructure.stickers.reserve(jsonObjectData["stickers"].size());
-			for (auto& value: jsonObjectData["stickers"]) {
-				DiscordCoreAPI::StickerData newData{};
-				DataParser::parseObject(value, newData);
-				pDataStructure.stickers.push_back(newData);
-			}
-			pDataStructure.stickers.shrink_to_fit();
-		}
-
-		if (jsonObjectData.contains("cover_sticker_id") && !jsonObjectData["cover_sticker_id"].is_null()) {
-			pDataStructure.coverStickerId = jsonObjectData["cover_sticker_id"].get<std::string>();
-		}
-
-		if (jsonObjectData.contains("banner_asset_id") && !jsonObjectData["banner_asset_id"].is_null()) {
-			pDataStructure.bannerAssetId = jsonObjectData["banner_asset_id"].get<std::string>();
-		}
-
-		if (jsonObjectData.contains("description") && !jsonObjectData["description"].is_null()) {
-			pDataStructure.description = jsonObjectData["description"].get<std::string>();
-		}
-
-		if (jsonObjectData.contains("name") && !jsonObjectData["name"].is_null()) {
-			pDataStructure.name = jsonObjectData["name"].get<std::string>();
-		}
-
-		if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
-			pDataStructure.Id = jsonObjectData["id"].get<std::string>();
-		}
-
-		if (jsonObjectData.contains("sku_id") && !jsonObjectData["sku_id"].is_null()) {
-			pDataStructure.skuId = jsonObjectData["sku_id"].get<std::string>();
-		}
-	}
-
-	template<> void DataParser::parseObject(nlohmann::json const& jsonObjectData, std::vector<DiscordCoreAPI::StickerPackData>& pDataStructure) {
-		if (jsonObjectData.contains("sticker_packs") && !jsonObjectData["sticker_packs"].is_null()) {
-			pDataStructure.reserve(jsonObjectData["sticker_packs"].size());
-			for (auto& value: jsonObjectData["sticker_packs"]) {
-				DiscordCoreAPI::StickerPackData newData{};
-				DataParser::parseObject(value, newData);
-				pDataStructure.push_back(newData);
-			}
-			pDataStructure.shrink_to_fit();
 		}
 	}
 

@@ -42,6 +42,7 @@ namespace DiscordCoreAPI {
 				constructMultiPartData(workload, nlohmann::json::parse(DiscordCoreInternal::JSONIFY(dataPackage.data)), dataPackage.data.data.files);
 			} else {
 				workload.content = DiscordCoreInternal::JSONIFY(dataPackage.data);
+				std::cout << "WERE HERE\n" << workload.content << std::endl;
 			}
 			workload.callStack = "Interactions::createInteractionResponseAsync";
 			DiscordCoreInternal::submitWorkloadAndGetResult<void>(*Interactions::httpClient, workload);
@@ -81,6 +82,7 @@ namespace DiscordCoreAPI {
 				constructMultiPartData(workload, nlohmann::json::parse(DiscordCoreInternal::JSONIFY(dataPackage.data)), dataPackage.data.files);
 			} else {
 				workload.content = DiscordCoreInternal::JSONIFY(dataPackage.data);
+				std::cout << "EDITING: \n" << workload.content << std::endl;
 			}
 			workload.callStack = "Interactions::editInteractionResponseAsync";
 			co_return DiscordCoreInternal::submitWorkloadAndGetResult<Message>(*Interactions::httpClient, workload);
@@ -117,6 +119,7 @@ namespace DiscordCoreAPI {
 				constructMultiPartData(workload, nlohmann::json::parse(DiscordCoreInternal::JSONIFY(dataPackage)), dataPackage.files);
 			} else {
 				workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
+				std::cout << "FOLLOW-UP: \n" << workload.content << std::endl;
 			}
 			workload.callStack = "Interactions::createFollowUpMessageAsync";
 			co_return DiscordCoreInternal::submitWorkloadAndGetResult<Message>(*Interactions::httpClient, workload);
@@ -154,6 +157,7 @@ namespace DiscordCoreAPI {
 				constructMultiPartData(workload, nlohmann::json::parse(DiscordCoreInternal::JSONIFY(dataPackage.data)), dataPackage.data.files);
 			} else {
 				workload.content = DiscordCoreInternal::JSONIFY(dataPackage.data);
+				std::cout << "EDITING FOLLOW-UP: \n" << workload.content << std::endl;
 			}
 			workload.callStack = "Interactions::editFollowUpMessageAsync";
 			co_return DiscordCoreInternal::submitWorkloadAndGetResult<Message>(*Interactions::httpClient, workload);
