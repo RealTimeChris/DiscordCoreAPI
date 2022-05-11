@@ -425,7 +425,9 @@ namespace DiscordCoreInternal {
 			data["message"]["attachments"] = attachments;
 		}
 
-		data["message"]["components"] = nlohmann::json{ dataPackage.message.components };
+		if (dataPackage.message.components.size() > 0) {
+			data["message"]["components"] = nlohmann::json{ dataPackage.message.components };
+		}
 
 		data["message"]["allowed_mentions"] = dataPackage.message.allowedMentions;
 
@@ -475,7 +477,9 @@ namespace DiscordCoreInternal {
 			data["message_reference"] = dataPackage.messageReference;
 		}
 
-		data["components"] = nlohmann::json{ dataPackage.components };
+		if (dataPackage.components.size() > 0) {
+			data["components"] = nlohmann::json{ dataPackage.components };
+		}
 
 		data["allowed_mentions"] = dataPackage.allowedMentions;
 		
@@ -519,7 +523,9 @@ namespace DiscordCoreInternal {
 			data["attachments"] = attachments;
 		}
 
-		data["components"] = nlohmann::json{ dataPackage.components };
+		if (dataPackage.components.size() > 0) {
+			data["components"] = nlohmann::json{ dataPackage.components };
+		}
 
 		data["allowed_mentions"] = dataPackage.allowedMentions;
 
@@ -734,7 +740,9 @@ namespace DiscordCoreInternal {
 	std::string JSONIFY(DiscordCoreAPI::EditWebHookData dataPackage) {
 		nlohmann::json data{};
 
-		data["components"] = nlohmann::json{ dataPackage.components };
+		if (dataPackage.components.size() > 0) {
+			data["components"] = nlohmann::json{ dataPackage.components };
+		}
 
 		data["allowed_mentions"] = dataPackage.allowedMentions;
 
@@ -765,7 +773,9 @@ namespace DiscordCoreInternal {
 			data["data"]["attachments"] = attachments;
 		}
 
-		data["components"] = nlohmann::json{ dataPackage.data.components };
+		if (dataPackage.data.components.size() > 0) {
+			data["components"] = nlohmann::json{ dataPackage.data.components };
+		}
 
 		data["data"]["allowed_mentions"] = dataPackage.data.allowedMentions;
 
@@ -844,7 +854,9 @@ namespace DiscordCoreInternal {
 			data["attachments"] = attachments;
 		}
 
-		data["components"] = nlohmann::json{ dataPackage.components };
+		if (dataPackage.components.size() > 0) {
+			data["components"] = nlohmann::json{ dataPackage.components };
+		}
 
 		data["allowed_mentions"] = dataPackage.allowedMentions;
 
