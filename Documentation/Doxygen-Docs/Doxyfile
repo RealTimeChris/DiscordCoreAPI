@@ -60,14 +60,14 @@ PROJECT_BRIEF          = "A Discord bot library written in C++, with custom asyn
 # pixels and the maximum width should not exceed 200 pixels. Doxygen will copy
 # the logo to the output directory.
 
-PROJECT_LOGO           = ./html/Images/TheLogo.png
+PROJECT_LOGO           = ./Images/TheLogo.png
 
 # The OUTPUT_DIRECTORY tag is used to specify the (relative or absolute) path
 # into which the generated documentation will be written. If a relative path is
 # entered, it will be relative to the location where doxygen was started. If
 # left blank the current directory will be used.
 
-OUTPUT_DIRECTORY       =
+OUTPUT_DIRECTORY       = ../../../DiscordCoreAPI-Docs
 
 # If the CREATE_SUBDIRS tag is set to YES then doxygen will create up to 4096
 # sub-directories (in 2 levels) under the output directory of each output format
@@ -906,29 +906,29 @@ WARN_LOGFILE           =
 # spaces. See also FILE_PATTERNS and EXTENSION_MAPPING
 # Note: If this tag is empty the current directory is searched.
 
-INPUT                  = ./html/Documentation-Examples \
-                         ./html/Documentation-Examples/Application-Command-Stuff \
-                         ./html/Documentation-Examples/Button-Stuff \
-                         ./html/Documentation-Examples/Channel-Stuff \
-                         ./html/Documentation-Examples/Guild-Stuff \
-                         ./html/Documentation-Examples/General-Usage \
-                         ./html/Documentation-Examples/Login-Setup \
-                         ./html/Documentation-Examples/Modal-Stuff \
-                         ./html/Documentation-Examples/Music-Bot \
-                         ./html/Documentation-Examples/Select-Menu-Stuff \
-                         ./html/Documentation-Examples/Voice-Connection-Stuff \
-                         ./html/Documentation-Examples/Guild-Scheduled-Event-Stuff \
-                         ./html/Documentation-Examples/Guild-Member-Stuff \
-                         ./html/Documentation-Examples/Input-Event-Stuff \
-                         ./html/Documentation-Examples/Interaction-Stuff \
-                         ./html/Documentation-Examples/Message-Stuff \
-                         ./html/Documentation-Examples/Reaction-Stuff \
-                         ./html/Documentation-Examples/Role-Stuff \
-                         ./html/Documentation-Examples/Stage-Instance-Stuff \
-                         ./html/Documentation-Examples/Sticker-Stuff \
-                         ./html/Documentation-Examples/Thread-Stuff \
-                         ./html/Documentation-Examples/User-Stuff \
-                         ./html/Documentation-Examples/Webhook-Stuff \
+INPUT                  = ./Documentation-Examples \
+				 ./Documentation-Examples/Application-Command-Stuff \
+				 ./Documentation-Examples/Button-Stuff \
+				 ./Documentation-Examples/Channel-Stuff \
+				 ./Documentation-Examples/Guild-Stuff \
+				 ./Documentation-Examples/General-Usage \
+				 ./Documentation-Examples/Login-Setup \
+				 ./Documentation-Examples/Modal-Stuff \
+				 ./Documentation-Examples/Music-Bot \
+				 ./Documentation-Examples/Select-Menu-Stuff \
+				 ./Documentation-Examples/Voice-Connection-Stuff \
+				 ./Documentation-Examples/Guild-Scheduled-Event-Stuff \
+				 ./Documentation-Examples/Guild-Member-Stuff \
+				 ./Documentation-Examples/Input-Event-Stuff \
+				 ./Documentation-Examples/Interaction-Stuff \
+				 ./Documentation-Examples/Message-Stuff \
+				 ./Documentation-Examples/Reaction-Stuff \
+				 ./Documentation-Examples/Role-Stuff \
+				 ./Documentation-Examples/Stage-Instance-Stuff \
+				 ./Documentation-Examples/Sticker-Stuff \
+				 ./Documentation-Examples/Thread-Stuff \
+				 ./Documentation-Examples/User-Stuff \
+				 ./Documentation-Examples/Webhook-Stuff \
                          ../../Include/discordcoreapi \
                          ../../Source
 
@@ -1128,7 +1128,7 @@ FILTER_SOURCE_PATTERNS =
 # (index.html). This can be useful if you have a project on for instance GitHub
 # and want to reuse the introduction page also for the doxygen output.
 
-USE_MDFILE_AS_MAINPAGE = ./html/Documentation-Examples/999-ReadMe.md
+USE_MDFILE_AS_MAINPAGE = ./Documentation-Examples/999-ReadMe.md
 
 #---------------------------------------------------------------------------
 # Configuration options related to source browsing
@@ -1324,7 +1324,7 @@ HTML_EXTRA_STYLESHEET  = doxygen-awesome.css \
 # files will be copied as-is; there are no commands or markers available.
 # This tag requires that the tag GENERATE_HTML is set to YES.
 
-HTML_EXTRA_FILES       = ./html/Images/TheLogo.png
+HTML_EXTRA_FILES       = ./Images/TheLogo.png
 
 # The HTML_COLORSTYLE_HUE tag controls the color of the HTML output. Doxygen
 # will adjust the colors in the style sheet and background images according to
