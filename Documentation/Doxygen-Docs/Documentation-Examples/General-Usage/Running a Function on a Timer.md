@@ -3,7 +3,7 @@ Running a Function on a Timer {#runningfunctiontimer}
 - Create a function who's argument is of type `DiscordCoreAPI::DiscordCoreClient*`, with a return type of `void`.
 - Create a data value of type `std::vector<DiscordCoreAPI::RepeatedFunctionData>`.
 - Create a data value of type `DiscordCoreAPI::RepeatedFunctionData`, and fill out its members, and stuff it inside the vector. Be sure to set `repeated` to true if you would like the function call to be recurring.
-- Pass a reference to this vector as a second argument to the `DiscordCoreAPI::DiscordCoreClient` constructor - now the functions it contains will run on a schedule defined by the `intervalInMs` member of the data structure.
+- Pass this vector as a second argument to the `DiscordCoreAPI::DiscordCoreClient` constructor - now the functions it contains will run on a schedule defined by the `intervalInMs` member of the data structure.
 - Do this with as many functions as you would like!
 
 ```cpp
