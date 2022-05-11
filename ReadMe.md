@@ -96,7 +96,7 @@ DiscordCoreAPI::InputEvents::deleteInputEventResponseAsync(newEvent, 20000).get(
 - [Curl](https://github.com/curl/curl) (.\\vcpkg install curl:x64-windows_OR_linux)
 - [FFMPEG](https://github.com/FFmpeg/FFmpeg) (.\\vcpkg install ffmpeg:x64-windows_OR_linux)
 - [Nlohmann Json](https://github.com/nlohmann/json) (.\\vcpkg install nlohmann-json:x64-windows_OR_linux)
-- [OpenSSL](https://wiki.openssl.org/index.php/Compilation_and_Installation#W64) (.\\vcpkg install openssl:x64-windows_OR_linux)
+- [OpenSSL](https://github.com/openssl/openssl) (.\\vcpkg install openssl:x64-windows_OR_linux)
 - [Opus](https://opus-codec.org/development/) (.\\vcpkg install opus:x64-windows_OR_linux)
 - [Sodium](https://github.com/jedisct1/libsodium) (.\\vcpkg install libsodium:x64-windows_OR_linux)
 
