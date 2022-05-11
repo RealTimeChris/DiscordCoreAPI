@@ -14,12 +14,8 @@ generate_product_version(
 file(GLOB SOURCES CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/Source/*.cpp")
 
 if (WIN32)
-	set(LIB_SUFFIX ".lib")
-	set(LIB_PREFIX "")
 	add_library("${LIB_NAME}" SHARED "${SOURCES}" "${PRODUCT_INFO}")
 elseif (UNIX)
-	set(LIB_SUFFIX ".a")
-	set(LIB_PREFIX "lib")
 	add_library("${LIB_NAME}" STATIC "${SOURCES}" "${PRODUCT_INFO}")
 	find_package(Threads REQUIRED)
 endif()
