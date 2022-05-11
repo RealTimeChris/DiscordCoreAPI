@@ -8,6 +8,13 @@
 #	OPUS_INCLUDE_DIR = The directory containing the public headers.
 # What it produces:
 #	OPUS::Opus
+if (UNIX)
+	set(LIB_SUFFIX ".a")
+	set(LIB_PREFIX "lib")
+else()
+	set(LIB_SUFFIX ".lib")
+	set(LIB_PREFIX "")
+endif()
 find_library(
 	OPUS_RELEASE_LIBRARY
 	NAMES "${LIB_PREFIX}opus${LIB_SUFFIX}" 

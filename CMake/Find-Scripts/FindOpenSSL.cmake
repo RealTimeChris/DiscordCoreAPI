@@ -8,6 +8,13 @@
 #	OPENSSL_INCLUDE_DIR = The directory containing the public headers.
 # What it produces:
 #	OPENSSL::Crypto and OPENSLL::Ssl
+if (UNIX)
+	set(LIB_SUFFIX ".a")
+	set(LIB_PREFIX "lib")
+else()
+	set(LIB_SUFFIX ".lib")
+	set(LIB_PREFIX "")
+endif()
 find_library(
 	LIBCRYPTO_RELEASE_LIBRARY 
 	NAMES "libcrypto${LIB_SUFFIX}" 

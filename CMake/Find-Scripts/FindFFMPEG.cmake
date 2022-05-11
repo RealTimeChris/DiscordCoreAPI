@@ -8,6 +8,13 @@
 #	FFMPEG_INCLUDE_DIR = The directory containing the public headers.
 # What it produces:
 #	FFMPEG::AVCodec, FFMPEG::AVFormat, FFMPEG::AVUtil, and FFMPEG::SWResample
+if (UNIX)
+	set(LIB_SUFFIX ".a")
+	set(LIB_PREFIX "lib")
+else()
+	set(LIB_SUFFIX ".lib")
+	set(LIB_PREFIX "")
+endif()
 find_library(
 	AVCODEC_RELEASE_LIBRARY 
 	NAMES "${LIB_PREFIX}avcodec${LIB_SUFFIX}" 
