@@ -298,7 +298,7 @@ namespace DiscordCoreAPI {
 
 		CreateInteractionResponseData(RespondToInputEventData& dataPackage) {
 			this->interactionPackage.interactionToken = dataPackage.interactionToken;
-			if (dataPackage.eventType == InteractionType::Message_Component && dataPackage.type == InputEventResponseType::Deferred_Response) {
+			if (dataPackage.eventType == InteractionType::Message_Component && dataPackage.type == InputEventResponseType::Deferred_Response_For_Components) {
 				this->data.type = InteractionCallbackType::Deferred_Update_Message;
 			} else if (dataPackage.eventType == InteractionType::Message_Component) {
 				this->data.type = InteractionCallbackType::Update_Message;

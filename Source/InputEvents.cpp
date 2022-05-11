@@ -31,7 +31,7 @@ namespace DiscordCoreAPI {
 		}
 		if (dataPackage.eventType == InteractionType::Message_Component) {
 			CreateInteractionResponseData dataPackage02{ dataPackage };
-			if (dataPackage.type == InputEventResponseType::Deferred_Response) {
+			if (dataPackage.type == InputEventResponseType::Deferred_Response_For_Components) {
 				dataPackage02.data.type = InteractionCallbackType::Deferred_Update_Message;
 			} else {
 				dataPackage02.data.type = InteractionCallbackType::Update_Message;
@@ -57,9 +57,6 @@ namespace DiscordCoreAPI {
 				auto dataPackage02 = CreateDeferredInteractionResponseData{ dataPackage };
 				dataPackage02.data.data.flags = 64;
 				co_return InputEvents::respondToInputEvent(dataPackage02);
-			}
-			case InputEventResponseType::Deferred_Response: {
-				[[fallthrough]];
 			}
 			case InputEventResponseType::Deferred_Response_With_Source: {
 				co_return InputEvents::respondToInputEvent(CreateDeferredInteractionResponseData{ dataPackage });
