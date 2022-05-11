@@ -56,6 +56,8 @@ namespace DiscordCoreAPI {
 	/// For creating a new Role within a chosen Guild. \brief For creating a new Role within a chosen Guild.
 	struct DiscordCoreAPI_Dll CreateGuildRoleData {
 		std::string hexColorValue{ "" };///< Hex color-value between 0 and ffffff.
+		std::vector<uint8_t> icon{};///< Image data	the role's icon image (if the guild has the ROLE_ICONS feature)	null.
+		std::string unicodeEmoji{};///< The role's unicode emoji as a standard emoji.
 		Permissions permissions{};///< The base permissions to give the Role.
 		bool mentionable{ false };///< Is it mentionable by others in the Guild.
 		std::string guildId{ "" };///< Which Guild to make the Role in.
@@ -88,7 +90,9 @@ namespace DiscordCoreAPI {
 	/// For updating a Role's options within a chosen Guild. \brief For updating a Role's options within a chosen Guild.
 	struct DiscordCoreAPI_Dll ModifyGuildRoleData {
 		std::string hexColorValue{ "" };///< A hex-color value between 0x00 and 0xFFFFFF.
-		std::string permissions{ "0" };///< Base Guild permissions for the Role.
+		Permissions permissions{ "0" };///< Base Guild permissions for the Role.
+		std::vector<uint8_t> icon{};///< Image data	the role's icon image (if the guild has the ROLE_ICONS feature)	null.
+		std::string unicodeEmoji{};///< The role's unicode emoji as a standard emoji.
 		bool mentionable{ false };///< Is it mentionable?
 		std::string guildId{ "" };///< The id of the Guild within which to update the Role.
 		std::string roleId{ "" };///< The id of the Role to update.

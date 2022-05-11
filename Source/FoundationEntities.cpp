@@ -438,16 +438,6 @@ namespace DiscordCoreAPI {
 		return returnString;
 	}
 
-	std::vector<ApplicationCommandInteractionDataOption> convertAppCommandInteractionDataOptions(std::vector<ApplicationCommandInteractionDataOption> originalOptions) {
-		std::vector<ApplicationCommandInteractionDataOption> newVector{};
-		for (auto& value: originalOptions) {
-			ApplicationCommandInteractionDataOption newItem = value;
-			newItem.options = convertAppCommandInteractionDataOptions(value.options);
-			newVector.push_back(newItem);
-		}
-		return newVector;
-	}
-
 	void Permissions::addPermissions(std::vector<Permission> permissionsToAdd) {
 		if (*this == "") {
 			this->push_back('0');

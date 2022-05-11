@@ -50,6 +50,7 @@ namespace DiscordCoreAPI {
 		std::string afkChannelId{ "" };///< Id for afk Channel.
 		std::vector<RoleData> roles{};///< Array of Role objects.
 		std::vector<uint8_t> icon{};///< base64 128x128 image for the Guild icon.
+		std::string region{ "" };///< The region that the servers are in.
 		std::string name{ "" };///< The name of the new Guild.
 	};
 
@@ -66,6 +67,7 @@ namespace DiscordCoreAPI {
 	/// For modifying the properties of a chosen Guild. \brief For modifying the properties of a chosen Guild.
 	struct DiscordCoreAPI_Dll ModifyGuildData {
 		ModifyGuildData(GuildData dataPackage) {
+			this->premiumProgressBarEnabled = dataPackage.getPremiumProgressBarEnabled();
 			this->defaultMessageNotifications = dataPackage.defaultMessageNotifications;
 			this->publicUpdatesChannelId = dataPackage.publicUpdatesChannelId;
 			this->explicitContentFilter = dataPackage.explicitContentFilter;
@@ -85,6 +87,7 @@ namespace DiscordCoreAPI {
 		DefaultMessageNotificationLevel defaultMessageNotifications{};///< Default message notification level.
 		ExplicitContentFilterLevel explicitContentFilter{};///< Explicit content filter level.
 		std::string publicUpdatesChannelId{ "" };///< The id of the Channel where admins and moderators of Community guilds receive notices from Discord.
+		bool premiumProgressBarEnabled{ false };///< Whether or not the progress bar is enabled.
 		std::vector<uint8_t> discoverySplash{};/// Base64 16 : 9 png / jpeg image for the Guild discovery splash(when the server has the DISCOVERABLE feature).
 		VerificationLevel verificationLevel{};///< Verification level.
 		std::vector<std::string> features{};///< Array of Guild feature strings enabled Guild features.

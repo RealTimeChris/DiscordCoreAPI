@@ -2077,11 +2077,20 @@ namespace DiscordCoreAPI {
 		Longest = 3600///< Longest.
 	};
 
-	enum class GuildFlags { WidgetEnabled = 0b00000001, Unavailable = 0b00000010, Owner = 0b00000100, Large = 0b00001000 };
+	enum class GuildFlags { WidgetEnabled = 0b00000001, Unavailable = 0b00000010, Owner = 0b00000100, Large = 0b00001000, Premium_Progress_Bar_Enabled = 0b00010000 };
 
 	/// Data structure representing a single Guild. \brief Data structure representing a single Guild.
 	class DiscordCoreAPI_Dll GuildData : public DiscordEntity {
 	  public:
+
+		void setPremiumProgressBarEnabled(bool enabled) {
+			if (enabled) {
+				this->guildFlags |= static_cast<uint8_t>(GuildFlags::Premium_Progress_Bar_Enabled);
+			} else {
+				this->guildFlags &= ~static_cast<uint8_t>(GuildFlags::Premium_Progress_Bar_Enabled);
+			}
+		}
+
 		void setWidgetEnabled(bool enabled) {
 			if (enabled) {
 				this->guildFlags |= static_cast<uint8_t>(GuildFlags::WidgetEnabled);
@@ -2112,6 +2121,10 @@ namespace DiscordCoreAPI {
 			} else {
 				this->guildFlags &= ~static_cast<uint8_t>(GuildFlags::Large);
 			}
+		}
+
+		bool getPremiumProgressBarEnabled() {
+			return this->guildFlags & static_cast<uint8_t>(GuildFlags::Premium_Progress_Bar_Enabled);
 		}
 
 		bool getWidgetEnabled() {
@@ -2780,11 +2793,6 @@ namespace DiscordCoreAPI {
 		std::unordered_map<std::string, UserData> users{};///< Map full of UserData.
 		std::unordered_map<std::string, RoleData> roles{};///< Map full of RoleData.
 	};
-
-	struct DiscordCoreAPI_Dll ApplicationCommandInteractionDataOption;
-
-	DiscordCoreAPI_Dll std::vector<ApplicationCommandInteractionDataOption> convertAppCommandInteractionDataOptions(
-		std::vector<ApplicationCommandInteractionDataOption> originalOptions);
 
 	/// Represents a Sticker pack. \brief Represents a Sticker pack.
 	struct DiscordCoreAPI_Dll StickerPackData {

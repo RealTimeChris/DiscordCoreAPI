@@ -121,8 +121,6 @@ namespace DiscordCoreInternal {
 
 	std::string JSONIFY(DiscordCoreAPI::EditGuildApplicationCommandPermissionsData dataPackage);
 
-	std::string JSONIFY(DiscordCoreAPI::BatchEditGuildApplicationCommandPermissionsData dataPackage);
-
 	std::string JSONIFY(DiscordCoreAPI::CreateGlobalApplicationCommandData dataPackage);
 
 	std::string JSONIFY(DiscordCoreAPI::EditGlobalApplicationCommandData dataPackage);
