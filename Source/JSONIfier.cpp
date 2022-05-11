@@ -34,139 +34,149 @@
 
 namespace DiscordCoreAPI {
 	
-	void to_json(nlohmann::json& jsonOut, const DiscordCoreAPI::MessageReferenceData& valueIn) {
+	void to_json(nlohmann::json& jsonOut, const DiscordCoreAPI::MessageReferenceData& valueNew) {
 		nlohmann::json newValue{};
-		newValue["fail_if_not_exists"] = valueIn.failIfNotExists;
-		newValue["message_id"] = valueIn.messageId;
-		newValue["channel_id"] = valueIn.channelId;
-		newValue["guild_id"] = valueIn.guildId;
+		newValue["fail_if_not_exists"] = valueNew.failIfNotExists;
+		newValue["message_id"] = valueNew.messageId;
+		newValue["channel_id"] = valueNew.channelId;
+		newValue["guild_id"] = valueNew.guildId;
 		jsonOut = newValue;
 	}
 
-	void to_json(nlohmann::json& jsonOut, const DiscordCoreAPI::AllowedMentionsData& valueIn) {
+	void to_json(nlohmann::json& jsonOut, const DiscordCoreAPI::AllowedMentionsData& valueNew) {
 		nlohmann::json newValue{};
-		newValue["replied_user"] = valueIn.repliedUser;
-		newValue["parse"] = valueIn.parse;
-		newValue["roles"] = valueIn.roles;
-		newValue["users"] = valueIn.users;
+		newValue["replied_user"] = valueNew.repliedUser;
+		newValue["parse"] = valueNew.parse;
+		newValue["roles"] = valueNew.roles;
+		newValue["users"] = valueNew.users;
 		jsonOut = newValue;
 	}
 
-	void to_json(nlohmann::json& jsonOut, const DiscordCoreAPI::EmbedData& valueIn) {
+	void to_json(nlohmann::json& jsonOut, const DiscordCoreAPI::EmbedData& valueNew) {
 		auto fields = nlohmann::json::array();
 
-		for (auto& value2: valueIn.fields) {
+		for (auto& value2: valueNew.fields) {
 			nlohmann::json field{ value2 };
 			fields.push_back(field);
 		}
 
-		int32_t colorValInt = stol(valueIn.hexColorValue, 0, 16);
+		int32_t colorValInt = stol(valueNew.hexColorValue, 0, 16);
 		std::stringstream stream;
 		stream << std::setbase(10) << colorValInt;
 		std::string realColorVal = stream.str();
 
 		nlohmann::json embed{};
-		embed["author"]["icon_url"] = valueIn.author.iconUrl;
-		embed["author"]["name"] = valueIn.author.name;
-		embed["author"]["url"] = valueIn.author.url;
-		embed["author"]["proxy_icon_url"] = valueIn.author.proxyIconUrl;
-		embed["image"]["height"] = valueIn.image.height;
-		embed["image"]["width"] = valueIn.image.width;
-		embed["image"]["url"] = valueIn.image.url;
-		embed["image"]["proxy_url"] = valueIn.image.proxyUrl;
-		embed["provider"]["name"] = valueIn.provider.name;
-		embed["provider"]["url"] = valueIn.provider.url;
-		embed["thumbnail"]["height"] = valueIn.thumbnail.height;
-		embed["thumbnail"]["width"] = valueIn.thumbnail.width;
-		embed["thumbnail"]["url"] = valueIn.thumbnail.url;
-		embed["thumbnail"]["proxy_url"] = valueIn.thumbnail.proxyUrl;
-		embed["footer"]["icon_url"] = valueIn.footer.iconUrl;
-		embed["thumbnail"]["proxy_icon_url"] = valueIn.footer.proxyIconUrl;
-		embed["thumbnail"]["text"] = valueIn.footer.text;
-		embed["description"] = valueIn.description;
-		embed["title"] = valueIn.title;
+		embed["author"]["icon_url"] = valueNew.author.iconUrl;
+		embed["author"]["name"] = valueNew.author.name;
+		embed["author"]["url"] = valueNew.author.url;
+		embed["author"]["proxy_icon_url"] = valueNew.author.proxyIconUrl;
+		embed["image"]["height"] = valueNew.image.height;
+		embed["image"]["width"] = valueNew.image.width;
+		embed["image"]["url"] = valueNew.image.url;
+		embed["image"]["proxy_url"] = valueNew.image.proxyUrl;
+		embed["provider"]["name"] = valueNew.provider.name;
+		embed["provider"]["url"] = valueNew.provider.url;
+		embed["thumbnail"]["height"] = valueNew.thumbnail.height;
+		embed["thumbnail"]["width"] = valueNew.thumbnail.width;
+		embed["thumbnail"]["url"] = valueNew.thumbnail.url;
+		embed["thumbnail"]["proxy_url"] = valueNew.thumbnail.proxyUrl;
+		embed["footer"]["icon_url"] = valueNew.footer.iconUrl;
+		embed["thumbnail"]["proxy_icon_url"] = valueNew.footer.proxyIconUrl;
+		embed["thumbnail"]["text"] = valueNew.footer.text;
+		embed["description"] = valueNew.description;
+		embed["title"] = valueNew.title;
 		embed["fields"] = fields;
 		embed["color"] = realColorVal;
-		embed["timestamp"] = valueIn.timestamp;
+		embed["timestamp"] = valueNew.timestamp;
 		jsonOut = embed;
 	}
 
-	void to_json(nlohmann::json& jsonOut, const DiscordCoreAPI::EmbedFieldData& valueIn) {
+	void to_json(nlohmann::json& jsonOut, const DiscordCoreAPI::EmbedFieldData& valueNew) {
 		nlohmann::json newValue{};
-		newValue["inline"] = valueIn.Inline;
-		newValue["value"] = valueIn.value;
-		newValue["name"] = valueIn.name;
+		newValue["inline"] = valueNew.Inline;
+		newValue["value"] = valueNew.value;
+		newValue["name"] = valueNew.name;
 		jsonOut = newValue;
 	}
 
-	void to_json(nlohmann::json& jsonOut, const DiscordCoreAPI::AttachmentData& valueIn) {
+	void to_json(nlohmann::json& jsonOut, const DiscordCoreAPI::AttachmentData& valueNew) {
 		nlohmann::json newValue{};
-		newValue["content_type"] = valueIn.contentType;
-		newValue["description"] = valueIn.description;
-		newValue["file_name"] = valueIn.filename;
-		newValue["proxy_url"] = valueIn.proxyUrl;
-		newValue["ephemeral"] = valueIn.ephemeral;
-		newValue["url"] = valueIn.url;
-		newValue["height"] = valueIn.height;
-		newValue["width"] = valueIn.width;
-		newValue["size"] = valueIn.size;
+		newValue["content_type"] = valueNew.contentType;
+		newValue["description"] = valueNew.description;
+		newValue["file_name"] = valueNew.filename;
+		newValue["proxy_url"] = valueNew.proxyUrl;
+		newValue["ephemeral"] = valueNew.ephemeral;
+		newValue["url"] = valueNew.url;
+		newValue["height"] = valueNew.height;
+		newValue["width"] = valueNew.width;
+		newValue["size"] = valueNew.size;
 		jsonOut = newValue;
 	}
 
-	void to_json(nlohmann::json& jsonOut, const DiscordCoreAPI::ComponentData& valueIn) {
-		if (valueIn.type == DiscordCoreAPI::ComponentType::Button) {
-			nlohmann::json component{};
-			component["custom_id"] = valueIn.customId;
-			component["disabled"] = valueIn.disabled;
-			component["emoji"]["name"] = valueIn.emoji.name;
-			component["emoji"]["animated"] = valueIn.emoji.animated;
-			component["label"] = valueIn.label;
-			component["style"] = valueIn.style;
-			component["type"] = valueIn.type;
-			component["url"] = valueIn.url;
-			if (valueIn.emoji.id != "") {
-				component["emoji"]["id"] = valueIn.emoji.id;
+	void to_json(nlohmann::json& jsonOut, const std::vector<ActionRowData> &dataPackage) {
+		auto componentsActionRow = nlohmann::json::array();
+		for (auto& value: dataPackage) {
+			auto components = nlohmann::json::array();
+			for (auto& valueNew: value.components) {
+				if (valueNew.type == DiscordCoreAPI::ComponentType::Button) {
+					nlohmann::json component{};
+					component["custom_id"] = valueNew.customId;
+					component["disabled"] = valueNew.disabled;
+					component["emoji"]["name"] = valueNew.emoji.name;
+					component["emoji"]["animated"] = valueNew.emoji.animated;
+					component["label"] = valueNew.label;
+					component["style"] = valueNew.style;
+					component["type"] = valueNew.type;
+					component["url"] = valueNew.url;
+					if (valueNew.emoji.id != "") {
+						component["emoji"]["id"] = valueNew.emoji.id;
+					}
+					components.push_back(component);
+				} else if (valueNew.type == DiscordCoreAPI::ComponentType::SelectMenu) {
+					nlohmann::json optionsArray = nlohmann::json::array();
+					for (auto& value01: valueNew.options) {
+						nlohmann::json option{};
+						option["description"] = value01.description;
+						option["label"] = value01.label;
+						option["value"] = value01.value;
+						option["default"] = value01._default;
+						if (value01.emoji.name != "") {
+							option["emoji"]["name"] = value01.emoji.name;
+							option["emoji"]["animated"] = value01.emoji.animated;
+						}
+						if (value01.emoji.id != "") {
+							option["emoji"]["id"] = value01.emoji.id;
+						}
+						optionsArray.push_back(option);
+					};
+
+					nlohmann::json component{};
+					component["custom_id"] = valueNew.customId;
+					component["options"] = optionsArray;
+					component["disabled"] = valueNew.disabled;
+					component["type"] = valueNew.type;
+					component["max_values"] = valueNew.maxValues;
+					component["min_values"] = valueNew.minValues;
+					component["placeholder"] = valueNew.placeholder;
+					components.push_back(component);
+
+				} else if (valueNew.type == DiscordCoreAPI::ComponentType::TextInput) {
+					nlohmann::json component{};
+					component["min_length"] = valueNew.minLength;
+					component["max_length"] = valueNew.maxLength;
+					component["label"] = valueNew.label;
+					component["placeholder"] = valueNew.placeholder;
+					component["type"] = valueNew.type;
+					component["custom_id"] = valueNew.customId;
+					component["style"] = valueNew.style;
+					component["required"] = valueNew.required;
+					components.push_back(component);
+				}
 			}
-			jsonOut = component;
-		} else if (valueIn.type == DiscordCoreAPI::ComponentType::SelectMenu) {
-			nlohmann::json optionsArray = nlohmann::json::array();
-			for (auto& value01: valueIn.options) {
-				nlohmann::json option{};
-				option["description"] = value01.description;
-				option["label"] = value01.label;
-				option["value"] = value01.value;
-				option["default"] = value01._default;
-				if (value01.emoji.name != "") {
-					option["emoji"]["name"] = value01.emoji.name;
-					option["emoji"]["animated"] = value01.emoji.animated;
-				}
-				if (value01.emoji.id != "") {
-					option["emoji"]["id"] = value01.emoji.id;
-				}
-				optionsArray.push_back(option);
-			};
-		
-			nlohmann::json component{};
-			component["custom_id"] = valueIn.customId;
-			component["options"] = optionsArray;
-			component["disabled"] = valueIn.disabled;
-			component["type"] = valueIn.type;
-			component["max_values"] = valueIn.maxValues;
-			component["min_values"] = valueIn.minValues;
-			component["placeholder"] = valueIn.placeholder;
-			jsonOut = component;
-		
-		} else if (valueIn.type == DiscordCoreAPI::ComponentType::TextInput) {
-			nlohmann::json component{};
-			component["min_length"] = valueIn.minLength;
-			component["max_length"] = valueIn.maxLength;
-			component["label"] = valueIn.label;
-			component["placeholder"] = valueIn.placeholder;
-			component["type"] = valueIn.type;
-			component["custom_id"] = valueIn.customId;
-			component["style"] = valueIn.style;
-			component["required"] = valueIn.required;
-			jsonOut = component;
+			nlohmann::json componentActionRow{};
+			componentActionRow["type"] = 1;
+			componentActionRow["components"] = components;
+			jsonOut = componentActionRow;
 		}
 	}
 }
@@ -415,23 +425,7 @@ namespace DiscordCoreInternal {
 			data["message"]["attachments"] = attachments;
 		}
 
-		nlohmann::json componentsActionRow{};
-
-		for (auto& value: dataPackage.message.components) {
-			nlohmann::json components{};
-
-			for (auto& valueNew: value.components) {
-				components.push_back(nlohmann::json{ valueNew });
-			}
-			nlohmann::json componentActionRow{};
-			componentActionRow["type"] = 1;
-			componentActionRow["components"] = components;
-			componentsActionRow.push_back(componentActionRow);
-		}
-
-		if (componentsActionRow.size() > 0) {
-			data["message"]["components"] = componentsActionRow;
-		}
+		data["message"]["components"] = nlohmann::json{ dataPackage.message.components };
 
 		data["message"]["allowed_mentions"] = dataPackage.message.allowedMentions;
 
@@ -448,12 +442,7 @@ namespace DiscordCoreInternal {
 		nlohmann::json embedsArray{};
 
 		for (auto& value: dataPackage.message.embeds) {
-			nlohmann::json embed{ value };
-			embedsArray.push_back(embed);
-		}
-
-		if (dataPackage.message.embeds.size() > 0) {
-			data["message"]["embeds"] = embedsArray;
+			data["embeds"].push_back(value);
 		}
 
 		if (dataPackage.message.content != "") {
@@ -486,23 +475,7 @@ namespace DiscordCoreInternal {
 			data["message_reference"] = dataPackage.messageReference;
 		}
 
-		nlohmann::json componentsActionRow{};
-
-		for (auto& value: dataPackage.components) {
-			nlohmann::json components{};
-
-			for (auto& valueNew: value.components) {
-				components.push_back(nlohmann::json{ valueNew });
-			}
-			nlohmann::json componentActionRow{};
-			componentActionRow["type"] = 1;
-			componentActionRow["components"] = components;
-			componentsActionRow.push_back(componentActionRow);
-		}
-
-		if (componentsActionRow.size() > 0) {
-			data["components"] = componentsActionRow;
-		}
+		data["components"] = nlohmann::json{ dataPackage.components };
 
 		data["allowed_mentions"] = dataPackage.allowedMentions;
 		
@@ -516,15 +489,8 @@ namespace DiscordCoreInternal {
 			data["sticker_ids"] = stickersArray;
 		}		
 
-		nlohmann::json embedsArray{};		
-
 		for (auto& value: dataPackage.embeds) {
-			nlohmann::json embed{ value };
-			embedsArray.push_back(embed);
-		}
-		
-		if (dataPackage.embeds.size() > 0) {
-			data["embeds"] = embedsArray;
+			data["embeds"].push_back(value);
 		}
 
 		if (dataPackage.content != "") {
@@ -553,23 +519,7 @@ namespace DiscordCoreInternal {
 			data["attachments"] = attachments;
 		}
 
-		nlohmann::json componentsActionRow{};
-
-		for (auto& value: dataPackage.components) {
-			nlohmann::json components{};
-
-			for (auto& valueNew: value.components) {
-				components.push_back(nlohmann::json{ valueNew });
-			}
-			nlohmann::json componentActionRow{};
-			componentActionRow["type"] = 1;
-			componentActionRow["components"] = components;
-			componentsActionRow.push_back(componentActionRow);
-		}
-
-		if (componentsActionRow.size() > 0) {
-			data["components"] = componentsActionRow;
-		}
+		data["components"] = nlohmann::json{ dataPackage.components };
 
 		data["allowed_mentions"] = dataPackage.allowedMentions;
 
@@ -579,15 +529,8 @@ namespace DiscordCoreInternal {
 			data["sticker_ids"] = stickersArray;
 		}
 
-		nlohmann::json embedsArray{};
-
 		for (auto& value: dataPackage.embeds) {
-			nlohmann::json embed{ value };
-			embedsArray.push_back(embed);
-		}
-
-		if (dataPackage.embeds.size() > 0) {
-			data["embeds"] = embedsArray;
+			data["embeds"].push_back(value);
 		}
 
 		if (dataPackage.content != "") {
@@ -789,44 +732,22 @@ namespace DiscordCoreInternal {
 	}
 
 	std::string JSONIFY(DiscordCoreAPI::EditWebHookData dataPackage) {
-
 		nlohmann::json data{};
 
-		nlohmann::json componentsActionRow{};
-
-		for (auto& value: dataPackage.components) {
-			nlohmann::json components{};
-
-			for (auto& valueNew: value.components) {
-				components.push_back(nlohmann::json{ valueNew });
-			}
-			nlohmann::json componentActionRow{};
-			componentActionRow["type"] = 1;
-			componentActionRow["components"] = components;
-			componentsActionRow.push_back(componentActionRow);
-		}
-
-		if (componentsActionRow.size() > 0) {
-			data["components"] = componentsActionRow;
-		}
+		data["components"] = nlohmann::json{ dataPackage.components };
 
 		data["allowed_mentions"] = dataPackage.allowedMentions;
 
 		nlohmann::json embedsArray{};
 
 		for (auto& value: dataPackage.embeds) {
-			nlohmann::json embed{ value };
-			embedsArray.push_back(embed);
-		}
-
-		if (dataPackage.embeds.size() > 0) {
-			data["embeds"] = embedsArray;
+			data["embeds"].push_back(value);
 		}
 
 		if (dataPackage.content != "") {
 			data["content"] = dataPackage.content;
 		}
-
+		std::cout << "THE DATA\n" << data.dump() << std::endl;
 		return data.dump();
 	}
 
@@ -844,23 +765,7 @@ namespace DiscordCoreInternal {
 			data["data"]["attachments"] = attachments;
 		}
 
-		nlohmann::json componentsActionRow{};
-
-		for (auto& value: dataPackage.data.components) {
-			nlohmann::json components{};
-
-			for (auto& valueNew: value.components) {
-				components.push_back(nlohmann::json{ valueNew });
-			}
-			nlohmann::json componentActionRow{};
-			componentActionRow["type"] = 1;
-			componentActionRow["components"] = components;
-			componentsActionRow.push_back(componentActionRow);
-		}
-
-		if (componentsActionRow.size() > 0) {
-			data["data"]["components"] = componentsActionRow;
-		}
+		data["components"] = nlohmann::json{ dataPackage.data.components };
 
 		data["data"]["allowed_mentions"] = dataPackage.data.allowedMentions;
 
@@ -870,15 +775,8 @@ namespace DiscordCoreInternal {
 			}
 		}
 
-		nlohmann::json embedsArray{};
-
 		for (auto& value: dataPackage.data.embeds) {
-			nlohmann::json embed{ value };
-			embedsArray.push_back(embed);
-		}
-
-		if (dataPackage.data.embeds.size() > 0) {
-			data["data"]["embeds"] = embedsArray;
+			data["embeds"].push_back(value);
 		}
 
 		if (dataPackage.data.customId != "") {
@@ -946,35 +844,12 @@ namespace DiscordCoreInternal {
 			data["attachments"] = attachments;
 		}
 
-		nlohmann::json componentsActionRow{};
-
-		for (auto& value: dataPackage.components) {
-			nlohmann::json components{};
-
-			for (auto& valueNew: value.components) {
-				components.push_back(nlohmann::json{ valueNew });
-			}
-			nlohmann::json componentActionRow{};
-			componentActionRow["type"] = 1;
-			componentActionRow["components"] = components;
-			componentsActionRow.push_back(componentActionRow);
-		}
-
-		if (componentsActionRow.size() > 0) {
-			data["components"] = componentsActionRow;
-		}
+		data["components"] = nlohmann::json{ dataPackage.components };
 
 		data["allowed_mentions"] = dataPackage.allowedMentions;
 
-		nlohmann::json embedsArray{};
-
 		for (auto& value: dataPackage.embeds) {
-			nlohmann::json embed{ value };
-			embedsArray.push_back(embed);
-		}
-
-		if (dataPackage.embeds.size() > 0) {
-			data["embeds"] = embedsArray;
+			data["embeds"].push_back(value);
 		}
 
 		data["avatar_url"] = dataPackage.avatarUrl;

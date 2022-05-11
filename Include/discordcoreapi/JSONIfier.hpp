@@ -77,7 +77,7 @@ namespace DiscordCoreAPI {
 
 	void to_json(nlohmann::json& jsonOut, const DiscordCoreAPI::EmbedFieldData& valueIn);
 
-	void to_json(nlohmann::json& jsonOut, const DiscordCoreAPI::ComponentData& valueIn);
+	void to_json(nlohmann::json& jsonOut, const std::vector<ActionRowData>& dataPackage);
 
 	void to_json(nlohmann::json& jsonOut, const DiscordCoreAPI::EmbedData& valueIn);
 
