@@ -82,7 +82,7 @@ DiscordCoreAPI::InputEvents::deleteInputEventResponseAsync(newEvent, 20000).get(
 ```
 
 # Supported Platforms
-- This library currently supports being built within Visual Studio 2022/MSVC on the Windows platform as well as g++-11 on the Linux platform.
+- This library currently supports being built within Visual Studio 2022/MSVC on the Windows platform as well as g++ 11 on the Linux platform.
 
 # Build Instructions (Full-Vcpkg)
 - [Install vcpkg](https://vcpkg.io/en/getting-started.html), if need be.
