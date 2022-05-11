@@ -45,6 +45,12 @@ namespace DiscordCoreAPI {
 				newEvent.responseType = InputEventResponseType::Edit_Follow_Up_Message;
 			}
 			co_return newEvent;
+		} else if (dataPackage.eventType == InteractionType::Application_Command_Autocomplete) {
+			CreateInteractionResponseData dataPackage02{ dataPackage };
+			dataPackage02.data.type = InteractionCallbackType::Application_Command_Autocomplete_Result;
+			InputEventData newEvent = InputEvents::respondToInputEvent(dataPackage02);
+			newEvent.responseType = InputEventResponseType::Application_Command_AutoComplete_Result;
+			co_return newEvent;
 		}
 		switch (dataPackage.type) {
 			case InputEventResponseType::Ephemeral_Deferred_Response: {

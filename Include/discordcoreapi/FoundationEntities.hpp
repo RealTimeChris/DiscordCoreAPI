@@ -2905,14 +2905,16 @@ namespace DiscordCoreAPI {
 	enum class InputEventResponseType {
 		Unset = 0,///< Unset.
 		Ephemeral_Deferred_Response = 1,///< Deferred ephemeral response.
-		Deferred_Response_With_Source = 2,///< Deferred response, with source.
-		Deferred_Response = 3,///< Deferred response.
+		Deferred_Response_With_Source = 2,///< For responding to application commands. ACK an interaction and edit a response later, the user sees a loading state.
+		Deferred_Response_For_Components = 3,///< For components, ACK an interaction and edit the original message later; the user does not see a loading state.
 		Interaction_Response = 4,///< Interaction response.
 		Ephemeral_Interaction_Response = 5,///< Ephemeral Interaction response.
 		Edit_Interaction_Response = 6,///< Interaction response edit.
 		Follow_Up_Message = 8,///< Follow-up Message.
 		Ephemeral_Follow_Up_Message = 9,///< Ephemeral follow-up Message.
 		Edit_Follow_Up_Message = 10,///< Follow-up Message edit.
+		Application_Command_AutoComplete_Result = 11,///< Respond to an autocomplete interaction with suggested choices.
+		Modal_Interaction_Response = 11,///< Respond to an interaction with a popup modal.
 	};
 
 	/// Data representing a Guild Emoji Update event. \brief Data representing a Guild Emoji Update event.
