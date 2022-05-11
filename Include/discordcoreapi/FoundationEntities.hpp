@@ -1506,6 +1506,7 @@ namespace DiscordCoreAPI {
 			return this->guildMemberFlags & static_cast<uint8_t>(GuildMemberFlags::Mute);
 		}
 
+		TimeStamp communicationDisabledUntil{ "" };///< When the user's timeout will expire and the user will be able to communicate in the guild again.
 		std::vector<std::string> roles{};///< The Guild roles that they have.
 		std::string premiumSince{ "" };///< If applicable, when they first boosted the server.
 		int8_t guildMemberFlags{ 0 };///< GuildMember flags.
@@ -1515,7 +1516,6 @@ namespace DiscordCoreAPI {
 		TimeStamp joinedAt{ "" };///< When they joined the Guild.
 		std::string nick{ "" };///< Their nick/display name.
 		UserData user{};///< User data for the current GuildMember.
-		TimeStamp communicationDisabledUntil{ "" };///< When the user's timeout will expire and the user will be able to communicate in the guild again.
 
 		virtual ~GuildMemberData() = default;
 	};
@@ -3435,6 +3435,177 @@ namespace DiscordCoreAPI {
 		std::string title{ "" };
 		int32_t flags{ 0 };
 		bool tts{ false };
+	};
+
+	class MessageResponseBase {
+	  public:
+		/// Adds a button to the response Message. \brief Adds a button to the response Message.
+		/// \param disabled Whether the button is active or not.
+		/// \param customIdNew A custom id to give for identifying the button.
+		/// \param buttonLabel A visible label for the button.
+		/// \param buttonStyle The style of the button.
+		/// \param emojiName An emoji name, if desired.
+		/// \param emojiId An emoji id, if desired.
+		/// \param url A url, if applicable.
+		/// \returns RespondToInputEventData& A reference to this data structure.
+		MessageResponseBase& addButton(
+			bool disabled, std::string customIdNew, std::string buttonLabel, ButtonStyle buttonStyle, std::string emojiName = "", std::string emojiId = "", std::string url = "") {
+			if (this->components.size() == 0) {
+				ActionRowData actionRowData;
+				this->components.push_back(actionRowData);
+			}
+			if (this->components.size() < 5) {
+				if (this->components[this->components.size() - 1].components.size() < 5) {
+					ComponentData component;
+					component.type = ComponentType::Button;
+					component.emoji.name = emojiName;
+					component.label = buttonLabel;
+					component.style = static_cast<int32_t>(buttonStyle);
+					component.customId = customIdNew;
+					component.disabled = disabled;
+					component.emoji.id = emojiId;
+					component.url = url;
+					this->components[this->components.size() - 1].components.push_back(component);
+				} else if (this->components[this->components.size() - 1].components.size() == 5) {
+					ActionRowData actionRowData;
+					this->components.push_back(actionRowData);
+				}
+			}
+			return *this;
+		}
+
+		/// Adds a select-menu to the response Message. \brief Adds a select-menu to the response Message.
+		/// \param disabled Whether the select-menu is active or not.
+		/// \param customIdNew A custom id to give for identifying the select-menu.
+		/// \param options A std::vector of select-menu-options to offer.
+		/// \param placeholder Custom placeholder text if nothing is selected, max 100 characters.
+		/// \param maxValues Maximum number of selections that are possible.
+		/// \param minValues Minimum required number of selections that are required.
+		/// \returns RespondToInputEventData& A reference to this data structure.
+		MessageResponseBase& addSelectMenu(
+			bool disabled, std::string customIdNew, std::vector<SelectOptionData> options, std::string placeholder, int32_t maxValues, int32_t minValues) {
+			if (this->components.size() == 0) {
+				ActionRowData actionRowData;
+				this->components.push_back(actionRowData);
+			}
+			if (this->components.size() < 5) {
+				if (this->components[this->components.size() - 1].components.size() < 5) {
+					ComponentData componentData;
+					componentData.type = ComponentType::SelectMenu;
+					componentData.placeholder = placeholder;
+					componentData.maxValues = maxValues;
+					componentData.minValues = minValues;
+					componentData.disabled = disabled;
+					componentData.customId = customIdNew;
+					componentData.options = options;
+					this->components[this->components.size() - 1].components.push_back(componentData);
+				} else if (this->components[this->components.size() - 1].components.size() == 5) {
+					ActionRowData actionRowData;
+					this->components.push_back(actionRowData);
+				}
+			}
+			return *this;
+		}
+
+		/// Adds a modal to the response Message. \brief Adds a modal to the response Message.
+		/// \param topTitleNew A title for the modal.
+		/// \param topCustomIdNew A custom id to give for the modal.
+		/// \param titleNew A title for the modal's individual input.
+		/// \param customIdNew A custom id to give for the modal's individual input.
+		/// \param required Is it a required response?
+		/// \param minLength Minimum length.
+		/// \param maxLength Maximum length.
+		/// \param inputStyle The input style.
+		/// \param label A label for the modal.
+		/// \param placeholder A placeholder for the modal.
+		/// \returns RespondToInputEventData& A reference to this data structure.
+		MessageResponseBase& addModal(std::string topTitleNew, std::string topCustomIdNew, std::string titleNew, std::string customIdNew, bool required, int32_t minLength,
+			int32_t maxLength, TextInputStyle inputStyle, std::string label = "", std::string placeholder = "") {
+			this->title = topTitleNew;
+			this->customId = topCustomIdNew;
+			if (this->components.size() == 0) {
+				ActionRowData actionRowData;
+				this->components.push_back(actionRowData);
+			}
+			if (this->components.size() < 5) {
+				if (this->components[this->components.size() - 1].components.size() < 5) {
+					ComponentData component{};
+					component.type = ComponentType::TextInput;
+					component.customId = customIdNew;
+					component.style = static_cast<int32_t>(inputStyle);
+					component.title = titleNew;
+					component.maxLength = maxLength;
+					component.minLength = minLength;
+					component.label = label;
+					component.required = required;
+					component.placeholder = placeholder;
+					this->components[this->components.size() - 1].components.push_back(component);
+				} else if (this->components[this->components.size() - 1].components.size() == 5) {
+					ActionRowData actionRowData;
+					this->components.push_back(actionRowData);
+				}
+			}
+			return *this;
+		}
+
+		/// Adds a file to the current collection of files for this message response. \brief Adds a file to the current collection of files for this message response.
+		/// \param theFile The file to be added.
+		/// \returns RespondToInputEventData& A reference to this data structure.
+		MessageResponseBase& addFile(File theFile) {
+			this->files.push_back(theFile);
+			return *this;
+		}
+
+		/// For setting the allowable mentions in a response. \brief For setting the allowable mentions in a response.
+		/// \param dataPackage An AllowedMentionsData structure.
+		/// \returns RespondToInputEventData& A reference to this data structure.
+		MessageResponseBase& addAllowedMentions(AllowedMentionsData dataPackage) {
+			this->allowedMentions = dataPackage;
+			return *this;
+		}
+
+		/// For setting the components in a response. \brief For setting the components in a response.
+		/// \param dataPackage An ActionRowData structure.
+		/// \returns RespondToInputEventData& A reference to this data structure.
+		MessageResponseBase& addComponentRow(ActionRowData dataPackage) {
+			this->components.push_back(dataPackage);
+			return *this;
+		}
+
+		/// For setting the embeds in a response. \brief For setting the embeds in a response.
+		/// \param dataPackage An EmbedData structure.
+		/// \returns RespondToInputEventData& A reference to this data structure.
+		MessageResponseBase& addMessageEmbed(EmbedData dataPackage) {
+			this->embeds.push_back(dataPackage);
+			return *this;
+		}
+
+		/// For setting the Message content in a response. \brief For setting the Message content in a response.
+		/// \param dataPackage A std::string, containing the content.
+		/// \returns RespondToInputEventData& A reference to this data structure.
+		MessageResponseBase& addContent(std::string dataPackage) {
+			this->content = dataPackage;
+			return *this;
+		}
+
+		/// For setting the tts status of a response. \brief For setting the tts status of a response.
+		/// \param enabledTTs A bool.
+		/// \returns RespondToInputEventData& A reference to this data structure.
+		MessageResponseBase& setTTSStatus(bool enabledTTs) {
+			this->tts = enabledTTs;
+			return *this;
+		}
+
+	  protected:
+		std::vector<ActionRowData> components{};
+		AllowedMentionsData allowedMentions{};
+		std::vector<EmbedData> embeds{};
+		std::string customId{ "" };
+		std::string content{ "" };
+		std::vector<File> files{};
+		std::string title{ "" };
+		bool tts{ false };
+		int32_t flags{ 0 };
 	};
 
 	/// Command data, for functions executed by the CommandController. \brief Command data, for functions executed by the CommandController.

@@ -113,10 +113,10 @@ namespace DiscordCoreAPI {
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Post_Followup_Message;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Post;
 			workload.relativePath = "/webhooks/" + dataPackage.interactionPackage.applicationId + "/" + dataPackage.interactionPackage.interactionToken;
-			if (dataPackage.data.files.size() > 0) {
-				constructMultiPartData(workload, nlohmann::json::parse(DiscordCoreInternal::JSONIFY(dataPackage.data)), dataPackage.data.files);
+			if (dataPackage.files.size() > 0) {
+				constructMultiPartData(workload, nlohmann::json::parse(DiscordCoreInternal::JSONIFY(dataPackage)), dataPackage.files);
 			} else {
-				workload.content = DiscordCoreInternal::JSONIFY(dataPackage.data);
+				workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
 			}
 			workload.callStack = "Interactions::createFollowUpMessageAsync";
 			co_return DiscordCoreInternal::submitWorkloadAndGetResult<Message>(*Interactions::httpClient, workload);

@@ -755,7 +755,6 @@ namespace DiscordCoreInternal {
 		if (dataPackage.content != "") {
 			data["content"] = dataPackage.content;
 		}
-		std::cout << "THE DATA\n" << data.dump() << std::endl;
 		return data.dump();
 	}
 

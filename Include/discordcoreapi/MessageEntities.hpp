@@ -47,7 +47,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// For creating a Message. \brief For creating a Message.
-	class DiscordCoreAPI_Dll CreateMessageData {
+	class DiscordCoreAPI_Dll CreateMessageData : public MessageResponseBase {
 	  public:
 		friend std::string DiscordCoreInternal::JSONIFY(CreateMessageData dataPackage);
 		friend InputEvents;
@@ -81,133 +81,10 @@ namespace DiscordCoreAPI {
 
 		CreateMessageData() = default;
 
-		/// Adds a button to the response Message. \brief Adds a button to the response Message.
-		/// \param disabled Whether the button is active or not.
-		/// \param customIdNew A custom id to give for identifying the button.
-		/// \param buttonLabel A visible label for the button.
-		/// \param buttonStyle The style of the button.
-		/// \param emojiName An emoji name, if desired.
-		/// \param emojiId An emoji id, if desired.
-		/// \param url A url, if applicable.
-		/// \returns MessageResponseBase& A reference to this data structure.
-		CreateMessageData& addButton(
-			bool disabled, std::string customIdNew, std::string buttonLabel, ButtonStyle buttonStyle, std::string emojiName = "", std::string emojiId = "", std::string url = "") {
-			if (this->components.size() == 0) {
-				ActionRowData actionRowData;
-				this->components.push_back(actionRowData);
-			}
-			if (this->components.size() < 5) {
-				if (this->components[this->components.size() - 1].components.size() < 5) {
-					ComponentData component;
-					component.type = ComponentType::Button;
-					component.emoji.name = emojiName;
-					component.label = buttonLabel;
-					component.style = static_cast<int32_t>(buttonStyle);
-					component.customId = customIdNew;
-					component.disabled = disabled;
-					component.emoji.id = emojiId;
-					component.url = url;
-					this->components[this->components.size() - 1].components.push_back(component);
-				} else if (this->components[this->components.size() - 1].components.size() == 5) {
-					ActionRowData actionRowData;
-					this->components.push_back(actionRowData);
-				}
-			}
-			return *this;
-		}
-
-		/// Adds a select-menu to the response Message. \brief Adds a select-menu to the response Message.
-		/// \param disabled Whether the select-menu is active or not.
-		/// \param customIdNew A custom id to give for identifying the select-menu.
-		/// \param options A std::vector of select-menu-options to offer.
-		/// \param placeholder Custom placeholder text if nothing is selected, max 100 characters.
-		/// \param maxValues Maximum number of selections that are possible.
-		/// \param minValues Minimum required number of selections that are required.
-		/// \returns MessageResponseBase& A reference to this data structure.
-		CreateMessageData& addSelectMenu(
-			bool disabled, std::string customIdNew, std::vector<SelectOptionData> options, std::string placeholder, int32_t maxValues, int32_t minValues) {
-			if (this->components.size() == 0) {
-				ActionRowData actionRowData;
-				this->components.push_back(actionRowData);
-			}
-			if (this->components.size() < 5) {
-				if (this->components[this->components.size() - 1].components.size() < 5) {
-					ComponentData componentData;
-					componentData.type = ComponentType::SelectMenu;
-					componentData.placeholder = placeholder;
-					componentData.maxValues = maxValues;
-					componentData.minValues = minValues;
-					componentData.disabled = disabled;
-					componentData.customId = customIdNew;
-					componentData.options = options;
-					this->components[this->components.size() - 1].components.push_back(componentData);
-				} else if (this->components[this->components.size() - 1].components.size() == 5) {
-					ActionRowData actionRowData;
-					this->components.push_back(actionRowData);
-				}
-			}
-			return *this;
-		}
-
-		/// Adds a file to the current collection of files for this message response. \brief Adds a file to the current collection of files for this message response.
-		/// \param theFile The file to be added.
-		/// \returns MessageResponseBase& A reference to this data structure.
-		CreateMessageData& addFile(File theFile) {
-			this->files.push_back(theFile);
-			return *this;
-		}
-
-		/// For setting the allowable mentions in a response. \brief For setting the allowable mentions in a response.
-		/// \param dataPackage An AllowedMentionsData structure.
-		/// \returns MessageResponseBase& A reference to this data structure.
-		CreateMessageData& addAllowedMentions(AllowedMentionsData dataPackage) {
-			this->allowedMentions = dataPackage;
-			return *this;
-		}
-
-		/// For setting the components in a response. \brief For setting the components in a response.
-		/// \param dataPackage An ActionRowData structure.
-		/// \returns MessageResponseBase& A reference to this data structure.
-		CreateMessageData& addComponentRow(ActionRowData dataPackage) {
-			this->components.push_back(dataPackage);
-			return *this;
-		}
-
-		/// For setting the embeds in a response. \brief For setting the embeds in a response.
-		/// \param dataPackage An EmbedData structure.
-		/// \returns MessageResponseBase& A reference to this data structure.
-		CreateMessageData& addMessageEmbed(EmbedData dataPackage) {
-			this->embeds.push_back(dataPackage);
-			return *this;
-		}
-
-		/// For setting the Message content in a response. \brief For setting the Message content in a response.
-		/// \param dataPackage A std::string, containing the content.
-		/// \returns MessageResponseBase& A reference to this data structure.
-		CreateMessageData& addContent(std::string dataPackage) {
-			this->content = dataPackage;
-			return *this;
-		}
-
-		/// For setting the tts status of a response. \brief For setting the tts status of a response.
-		/// \param enabledTTs A bool.
-		/// \returns MessageResponseBase& A reference to this data structure.
-		CreateMessageData& setTTSStatus(bool enabledTTs) {
-			this->tts = enabledTTs;
-			return *this;
-		}
-
 	  protected:
 		std::vector<AttachmentData> attachments{};
 		MessageReferenceData messageReference{};
-		std::vector<ActionRowData> components{};
-		AllowedMentionsData allowedMentions{};
 		std::vector<std::string> stickerIds{};
-		std::vector<EmbedData> embeds{};
-		std::vector<File> files{};
-		std::string content{ "" };
-		int32_t flags{ 0 };
-		bool tts{ false };
 	};
 
 	/// For sending a direct-message. \brief For sending a direct-message.
@@ -241,7 +118,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// For editing a Message. \brief For editing a Message.
-	class DiscordCoreAPI_Dll EditMessageData {
+	class DiscordCoreAPI_Dll EditMessageData : public MessageResponseBase {
 	  public:
 		friend std::string DiscordCoreInternal::JSONIFY(EditMessageData dataPackage);
 		friend InputEvents;
@@ -269,14 +146,9 @@ namespace DiscordCoreAPI {
 
 	  protected:
 		std::vector<AttachmentData> attachments{};
-		std::vector<ActionRowData> components{};
-		AllowedMentionsData allowedMentions{};
-		std::vector<EmbedData> embeds{};
 		std::string requesterId{ "" };
 		std::string channelId{ "" };
 		std::string messageId{ "" };
-		std::string content{ "" };
-		std::vector<File> files{};
 		int32_t flags{ 0 };
 
 		EditMessageData() = default;

@@ -66,7 +66,7 @@ namespace DiscordCoreAPI {
 		/// \param emojiName An emoji name, if desired.
 		/// \param emojiId An emoji id, if desired.
 		/// \param url A url, if applicable.
-		void addButton(
+		ExecuteWebHookData& addButton(
 			bool disabled, std::string customIdNew, std::string buttonLabel, ButtonStyle buttonStyle, std::string emojiName = "", std::string emojiId = "", std::string url = "") {
 			if (this->components.size() == 0) {
 				ActionRowData actionRowData;
@@ -89,6 +89,7 @@ namespace DiscordCoreAPI {
 					this->components.push_back(actionRowData);
 				}
 			}
+			return *this;
 		}
 
 		/// Adds a select-menu to the response Message. \brief Adds a select-menu to the response Message.
@@ -98,7 +99,8 @@ namespace DiscordCoreAPI {
 		/// \param placeholder Custom placeholder text if nothing is selected, max 100 characters.
 		/// \param maxValues Maximum number of selections that are possible.
 		/// \param minValues Minimum required number of selections that are required.
-		void addSelectMenu(bool disabled, std::string customIdNew, std::vector<SelectOptionData> options, std::string placeholder, int32_t maxValues, int32_t minValues) {
+		ExecuteWebHookData addSelectMenu(
+			bool disabled, std::string customIdNew, std::vector<SelectOptionData> options, std::string placeholder, int32_t maxValues, int32_t minValues) {
 			if (this->components.size() == 0) {
 				ActionRowData actionRowData;
 				this->components.push_back(actionRowData);
@@ -119,36 +121,92 @@ namespace DiscordCoreAPI {
 					this->components.push_back(actionRowData);
 				}
 			}
+			return *this;
+		}
+
+        /// Adds a modal to the response Message. \brief Adds a modal to the response Message.
+		/// \param topTitleNew A title for the modal.
+		/// \param topCustomIdNew A custom id to give for the modal.
+		/// \param titleNew A title for the modal's individual input.
+		/// \param customIdNew A custom id to give for the modal's individual input.
+		/// \param required Is it a required response?
+		/// \param minLength Minimum length.
+		/// \param maxLength Maximum length.
+		/// \param inputStyle The input style.
+		/// \param label A label for the modal.
+		/// \param placeholder A placeholder for the modal.
+		/// \returns RespondToInputEventData& A reference to this data structure.
+		ExecuteWebHookData& addModal(std::string topTitleNew, std::string topCustomIdNew, std::string titleNew, std::string customIdNew, bool required, int32_t minLength,
+			int32_t maxLength, TextInputStyle inputStyle, std::string label = "", std::string placeholder = "") {
+			this->title = topTitleNew;
+			this->customId = topCustomIdNew;
+			if (this->components.size() == 0) {
+				ActionRowData actionRowData;
+				this->components.push_back(actionRowData);
+			}
+			if (this->components.size() < 5) {
+				if (this->components[this->components.size() - 1].components.size() < 5) {
+					ComponentData component{};
+					component.type = ComponentType::TextInput;
+					component.customId = customIdNew;
+					component.style = static_cast<int32_t>(inputStyle);
+					component.title = titleNew;
+					component.maxLength = maxLength;
+					component.minLength = minLength;
+					component.label = label;
+					component.required = required;
+					component.placeholder = placeholder;
+					this->components[this->components.size() - 1].components.push_back(component);
+				} else if (this->components[this->components.size() - 1].components.size() == 5) {
+					ActionRowData actionRowData;
+					this->components.push_back(actionRowData);
+				}
+			}
+			return *this;
+		}
+
+		
+		/// Adds a file to the current collection of files for this message response. \brief Adds a file to the current collection of files for this message response.
+		/// \param theFile The file to be added.
+		/// \returns MessageResponseBase& A reference to this data structure.
+		ExecuteWebHookData& addFile(File theFile) {
+			this->files.push_back(theFile);
+			return *this;
 		}
 
 		/// For setting the allowable mentions in a response. \brief For setting the allowable mentions in a response.
 		/// \param dataPackage An AllowedMentionsData structure.
-		void addAllowedMentions(AllowedMentionsData dataPackage) {
+		ExecuteWebHookData& addAllowedMentions(AllowedMentionsData dataPackage) {
 			this->allowedMentions = dataPackage;
+			return *this;
 		}
 
 		/// For setting the components in a response. \brief For setting the components in a response.
 		/// \param dataPackage An ActionRowData structure.
-		void addComponentRow(ActionRowData dataPackage) {
+		ExecuteWebHookData& addComponentRow(ActionRowData dataPackage) {
 			this->components.push_back(dataPackage);
+			return *this;
 		}
 
 		/// For setting the embeds in a response. \brief For setting the embeds in a response.
 		/// \param dataPackage An EmbedData structure.
-		void addMessageEmbed(EmbedData dataPackage) {
+		ExecuteWebHookData& addMessageEmbed(EmbedData dataPackage) {
 			this->embeds.push_back(dataPackage);
+			return *this;
 		}
 
-		/// For setting the Message content in a response. \brief For setting the Message content in a response.
+		/// For setting the Message content in a response. \brief For setting the content in a response.
 		/// \param dataPackage A std::string, containing the content.
-		void addContent(std::string dataPackage) {
+		ExecuteWebHookData& addContent(std::string dataPackage) {
 			this->content = dataPackage;
+			return *this;
 		}
 
 		/// For setting the tts status of a response. \brief For setting the tts status of a response.
 		/// \param enabledTTs A bool.
-		void setTTSStatus(bool enabledTTs) {
+		ExecuteWebHookData& setTTSStatus(bool enabledTTs) {
 			this->tts = enabledTTs;
+			return *this;
 		}
 
 	  protected:
@@ -160,8 +218,10 @@ namespace DiscordCoreAPI {
 		std::string avatarUrl{ "" };///< Override the default avatar of the webhook.
 		std::string webhookId{ "" };///< The WebHook you would like to execute.
 		std::string username{ "" };///< Override the default username of the webhook.
+		std::string customId{ "" };///< Custom id for the modal.
 		std::string content{ "" };///< The message contents (up to 2000 characters)	one of content, file, embeds.
 		std::vector<File> files{};///< File contents the contents of the file being sent.
+		std::string title{ "" };///< Title for the modal.
 		int32_t flags{ 0 };///< Flags combined as a bitfield.
 		bool tts{ false };///< True if this is a TTS message.
 	};

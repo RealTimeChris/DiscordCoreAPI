@@ -99,6 +99,47 @@ namespace DiscordCoreAPI {
 			return *this;
 		}
 
+		/// Adds a modal to the response Message. \brief Adds a modal to the response Message.
+		/// \param topTitleNew A title for the modal.
+		/// \param topCustomIdNew A custom id to give for the modal.
+		/// \param titleNew A title for the modal's individual input.
+		/// \param customIdNew A custom id to give for the modal's individual input.
+		/// \param required Is it a required response?
+		/// \param minLength Minimum length.
+		/// \param maxLength Maximum length.
+		/// \param inputStyle The input style.
+		/// \param label A label for the modal.
+		/// \param placeholder A placeholder for the modal.
+		/// \returns RespondToInputEventData& A reference to this data structure.
+		InteractionResponse& addModal(std::string topTitleNew, std::string topCustomIdNew, std::string titleNew, std::string customIdNew, bool required, int32_t minLength,
+			int32_t maxLength, TextInputStyle inputStyle, std::string label = "", std::string placeholder = "") {
+			this->data.data.title = topTitleNew;
+			this->data.data.customId = topCustomIdNew;
+			if (this->data.data.components.size() == 0) {
+				ActionRowData actionRowData;
+				this->data.data.components.push_back(actionRowData);
+			}
+			if (this->data.data.components.size() < 5) {
+				if (this->data.data.components[this->data.data.components.size() - 1].components.size() < 5) {
+					ComponentData component{};
+					component.type = ComponentType::TextInput;
+					component.customId = customIdNew;
+					component.style = static_cast<int32_t>(inputStyle);
+					component.title = titleNew;
+					component.maxLength = maxLength;
+					component.minLength = minLength;
+					component.label = label;
+					component.required = required;
+					component.placeholder = placeholder;
+					this->data.data.components[this->data.data.components.size() - 1].components.push_back(component);
+				} else if (this->data.data.components[this->data.data.components.size() - 1].components.size() == 5) {
+					ActionRowData actionRowData;
+					this->data.data.components.push_back(actionRowData);
+				}
+			}
+			return *this;
+		}
+
 		/// Adds a file to the current collection of files for this message response. \brief Adds a file to the current collection of files for this message response.
 		/// \param theFile The file to be added.
 		/// \returns MessageResponseBase& A reference to this data structure.
@@ -163,7 +204,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// For creating an ephemeral Interaction response. \brief For creating an ephemeral Interaction response.
-	class DiscordCoreAPI_Dll CreateEphemeralInteractionResponseData {
+	class DiscordCoreAPI_Dll CreateEphemeralInteractionResponseData : public InteractionResponse {
 	  public:
 		friend CreateInteractionResponseData;
 		friend Interactions;
@@ -189,11 +230,6 @@ namespace DiscordCoreAPI {
 		}
 
 		virtual ~CreateEphemeralInteractionResponseData() = default;
-
-	  protected:
-		InteractionPackageData interactionPackage{};
-		InteractionResponseData data{};
-		std::string requesterId{ "" };
 	};
 
 	/// For creating a deferred Interaction response. \brief For creating a deferred Interaction response.
@@ -231,7 +267,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// For creating an Interaction response. \brief For creating an Interaction response.
-	class DiscordCoreAPI_Dll CreateInteractionResponseData {
+	class DiscordCoreAPI_Dll CreateInteractionResponseData : public InteractionResponse {
 	  public:
 		friend SelectMenuCollector;
 		friend ButtonCollector;
@@ -303,11 +339,6 @@ namespace DiscordCoreAPI {
 		}
 
 		virtual ~CreateInteractionResponseData() = default;
-
-	  protected:
-		InteractionPackageData interactionPackage{};
-		InteractionResponseData data{};
-		std::string requesterId{ "" };
 	};
 
 	/// For getting an Interaction response. \brief For getting an Interaction response.
@@ -359,7 +390,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// For creating an ephemeral follow up Message. \brief For creating an ephemeral follow up Message.
-	class DiscordCoreAPI_Dll CreateEphemeralFollowUpMessageData {
+	class DiscordCoreAPI_Dll CreateEphemeralFollowUpMessageData : public ExecuteWebHookData {
 	  public:
 		friend CreateFollowUpMessageData;
 		friend Interactions;
@@ -369,14 +400,14 @@ namespace DiscordCoreAPI {
 			this->interactionPackage.interactionToken = dataPackage.interactionToken;
 			this->interactionPackage.applicationId = dataPackage.applicationId;
 			this->interactionPackage.interactionId = dataPackage.interactionId;
-			this->data.allowedMentions = dataPackage.allowedMentions;
-			this->data.components = dataPackage.components;
+			this->allowedMentions = dataPackage.allowedMentions;
+			this->components = dataPackage.components;
 			this->requesterId = dataPackage.requesterId;
-			this->data.content = dataPackage.content;
-			this->data.embeds = dataPackage.embeds;
-			this->data.files = dataPackage.files;
-			this->data.tts = dataPackage.tts;
-			this->data.flags = 64;
+			this->content = dataPackage.content;
+			this->embeds = dataPackage.embeds;
+			this->files = dataPackage.files;
+			this->tts = dataPackage.tts;
+			this->flags = 64;
 		}
 
 		virtual ~CreateEphemeralFollowUpMessageData() = default;
@@ -384,11 +415,10 @@ namespace DiscordCoreAPI {
 	  protected:
 		InteractionPackageData interactionPackage{};
 		std::string requesterId{ "" };
-		ExecuteWebHookData data{};
 	};
 
 	/// For creating a follow up Message. \brief For creating a follow up Message.
-	class DiscordCoreAPI_Dll CreateFollowUpMessageData {
+	class DiscordCoreAPI_Dll CreateFollowUpMessageData : public ExecuteWebHookData {
 	  public:
 		friend SelectMenuCollector;
 		friend ButtonCollector;
@@ -398,21 +428,20 @@ namespace DiscordCoreAPI {
 		CreateFollowUpMessageData(CreateEphemeralFollowUpMessageData& dataPackage) {
 			this->interactionPackage = dataPackage.interactionPackage;
 			this->requesterId = dataPackage.requesterId;
-			this->data = dataPackage.data;
 		}
 
 		CreateFollowUpMessageData(RespondToInputEventData& dataPackage) {
 			this->interactionPackage.interactionToken = dataPackage.interactionToken;
 			this->interactionPackage.applicationId = dataPackage.applicationId;
 			this->interactionPackage.interactionId = dataPackage.interactionId;
-			this->data.allowedMentions = dataPackage.allowedMentions;
-			this->data.components = dataPackage.components;
+			this->allowedMentions = dataPackage.allowedMentions;
+			this->components = dataPackage.components;
 			this->requesterId = dataPackage.requesterId;
-			this->data.content = dataPackage.content;
-			this->data.embeds = dataPackage.embeds;
-			this->data.flags = dataPackage.flags;
-			this->data.files = dataPackage.files;
-			this->data.tts = dataPackage.tts;
+			this->content = dataPackage.content;
+			this->embeds = dataPackage.embeds;
+			this->flags = dataPackage.flags;
+			this->files = dataPackage.files;
+			this->tts = dataPackage.tts;
 		}
 
 		virtual ~CreateFollowUpMessageData() = default;
@@ -420,7 +449,6 @@ namespace DiscordCoreAPI {
 	  protected:
 		InteractionPackageData interactionPackage{};
 		std::string requesterId{ "" };
-		ExecuteWebHookData data{};
 	};
 
 	/// For getting a follow-up Message. \brief For getting a follow-up Message.
