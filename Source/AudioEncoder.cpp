@@ -54,9 +54,9 @@ namespace DiscordCoreInternal {
 		}
 		newVector.shrink_to_fit();
 		std::vector<uint8_t> newBuffer{};
-		newBuffer.reserve(this->maxBufferSize);
+		newBuffer.resize(this->maxBufferSize);
 		int32_t count = opus_encode(this->encoder, newVector.data(), inputFrame.sampleCount, newBuffer.data(), this->maxBufferSize);
-		if (count <= 0) {
+		if (count <= 0 || count > newBuffer.size()) {
 			return DiscordCoreAPI::EncodedFrameData();
 		}
 		DiscordCoreAPI::EncodedFrameData encodedFrame{};

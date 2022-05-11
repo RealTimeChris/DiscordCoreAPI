@@ -419,15 +419,8 @@ namespace DiscordCoreInternal {
 	std::string JSONIFY(DiscordCoreAPI::StartThreadInForumChannelData dataPackage) {
 		nlohmann::json data{};
 
-		nlohmann::json attachments{};
-
 		for (auto& value: dataPackage.message.attachments) {
-			nlohmann::json attachment{ value };
-			attachments.push_back(attachment);
-		}
-
-		if (attachments.size() > 0) {
-			data["message"]["attachments"] = attachments;
+			data["message"]["attachments"].push_back(value);
 		}
 
 		if (dataPackage.message.components.size() == 0) {
@@ -449,13 +442,8 @@ namespace DiscordCoreInternal {
 			data["message"]["sticker_ids"] = stickersArray;
 		}
 
-		if (dataPackage.message.embeds.size() == 0) {
-			auto embedsVector = nlohmann::json::array();
-			data["embeds"] = embedsVector;
-		} else {
-			for (auto& value: dataPackage.message.embeds) {
-				data["embeds"].push_back(value);
-			}
+		for (auto& value: dataPackage.message.embeds) {
+			data["message"]["embeds"].push_back(value);
 		}
 
 		if (dataPackage.message.content != "") {
@@ -473,15 +461,8 @@ namespace DiscordCoreInternal {
 	std::string JSONIFY(DiscordCoreAPI::CreateMessageData dataPackage) {
 		nlohmann::json data{};
 
-		nlohmann::json attachments{};
-
 		for (auto& value: dataPackage.attachments) {
-			nlohmann::json attachment{ value };
-			attachments.push_back(attachment);
-		}
-
-		if (attachments.size() > 0) {
-			data["attachments"] = attachments;
+			data["attachments"].push_back(value);
 		}
 
 		if (dataPackage.messageReference.messageId != "") {
@@ -507,13 +488,8 @@ namespace DiscordCoreInternal {
 			data["sticker_ids"] = stickersArray;
 		}		
 
-		if (dataPackage.embeds.size() == 0) {
-			auto embedsVector = nlohmann::json::array();
-			data["embeds"] = embedsVector;
-		} else {
-			for (auto& value: dataPackage.embeds) {
-				data["embeds"].push_back(value);
-			}
+		for (auto& value: dataPackage.embeds) {
+			data["embeds"].push_back(value);
 		}
 
 		if (dataPackage.content != "") {
@@ -531,15 +507,8 @@ namespace DiscordCoreInternal {
 
 		nlohmann::json data{};
 
-		nlohmann::json attachments{};
-
 		for (auto& value: dataPackage.attachments) {
-			nlohmann::json attachment{ value };
-			attachments.push_back(attachment);
-		}
-
-		if (attachments.size() > 0) {
-			data["attachments"] = attachments;
+			data["attachments"].push_back(value);
 		}
 
 		if (dataPackage.components.size() == 0) {
@@ -557,13 +526,8 @@ namespace DiscordCoreInternal {
 			data["sticker_ids"] = stickersArray;
 		}
 
-		if (dataPackage.embeds.size() == 0) {
-			auto embedsVector = nlohmann::json::array();
-			data["embeds"] = embedsVector;
-		} else {
-			for (auto& value: dataPackage.embeds) {
-				data["embeds"].push_back(value);
-			}
+		for (auto& value: dataPackage.embeds) {
+			data["embeds"].push_back(value);
 		}
 
 		if (dataPackage.content != "") {
@@ -767,11 +731,8 @@ namespace DiscordCoreInternal {
 	std::string JSONIFY(DiscordCoreAPI::EditWebHookData dataPackage) {
 		nlohmann::json data{};
 
-		if (dataPackage.attachments.size() == 0) {
-			auto attachmentsVector = nlohmann::json::array();
-			data["attachments"] = attachmentsVector;
-		} else {
-			data["attachments"] = nlohmann::json{ dataPackage.attachments };
+		for (auto& value: dataPackage.attachments) {
+			data["attachments"].push_back(value);
 		}
 
 		if (dataPackage.components.size() == 0) {
@@ -783,13 +744,8 @@ namespace DiscordCoreInternal {
 
 		data["allowed_mentions"] = dataPackage.allowedMentions;
 		
-		if (dataPackage.components.size() == 0) {
-			auto embedsVector = nlohmann::json::array();
-			data["embeds"] = embedsVector;
-		} else {
-			for (auto& value: dataPackage.embeds) {
-				data["embeds"].push_back(value);
-			}
+		for (auto& value: dataPackage.embeds) {
+			data["embeds"].push_back(value);
 		}
 
 		if (dataPackage.content != "") {
@@ -801,13 +757,6 @@ namespace DiscordCoreInternal {
 
 	std::string JSONIFY(DiscordCoreAPI::InteractionResponseData dataPackage) {
 		nlohmann::json data{};
-
-		nlohmann::json attachments{};
-
-		for (auto& value: dataPackage.data.attachments) {
-			nlohmann::json attachment{ value };
-			attachments.push_back(attachment);
-		}
 
 		for (auto&value:dataPackage.data.attachments){
 			data["data"]["attachments"].push_back(value);
@@ -826,13 +775,8 @@ namespace DiscordCoreInternal {
 			data["data"]["choices"].push_back(value);
 		}		
 
-		if (dataPackage.data.embeds.size() == 0) {
-			auto embedsVector = nlohmann::json::array();
-			data["data"]["embeds"] = embedsVector;
-		} else {
-			for (auto& value: dataPackage.data.embeds) {
-				data["data"]["embeds"].push_back(value);
-			}
+		for (auto& value: dataPackage.data.embeds) {
+			data["data"]["embeds"].push_back(value);
 		}
 
 		if (dataPackage.data.customId != "") {
@@ -889,15 +833,8 @@ namespace DiscordCoreInternal {
 	std::string JSONIFY(DiscordCoreAPI::ExecuteWebHookData dataPackage) {
 		nlohmann::json data{};
 
-		nlohmann::json attachments{};
-
 		for (auto& value: dataPackage.attachments) {
-			nlohmann::json attachment{ value };
-			attachments.push_back(attachment);
-		}
-
-		if (attachments.size() > 0) {
-			data["attachments"] = attachments;
+			data["attachments"].push_back(value);
 		}
 
 		if (dataPackage.components.size() == 0) {
@@ -909,13 +846,8 @@ namespace DiscordCoreInternal {
 
 		data["allowed_mentions"] = dataPackage.allowedMentions;
 
-		if (dataPackage.embeds.size() == 0) {
-			auto embedsVector = nlohmann::json::array();
-			data["embeds"] = embedsVector;
-		} else {
-			for (auto& value: dataPackage.embeds) {
-				data["embeds"].push_back(value);
-			}
+		for (auto& value: dataPackage.embeds) {
+			data["embeds"].push_back(value);
 		}
 
 		data["avatar_url"] = dataPackage.avatarUrl;
