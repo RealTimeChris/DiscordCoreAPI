@@ -145,7 +145,6 @@ namespace DiscordCoreAPI {
 			for (auto& value: dataPackage.responseData) {
 				CreateGlobalApplicationCommandData dataPackageNew;
 				dataPackageNew.applicationId = dataPackage.applicationId;
-				dataPackageNew.defaultPermission = value.defaultPermission;
 				dataPackageNew.description = value.description;
 				dataPackageNew.name = value.name;
 				for (auto& value01: value.options) {
@@ -285,7 +284,6 @@ namespace DiscordCoreAPI {
 			for (auto& value: dataPackage.responseData) {
 				CreateGuildApplicationCommandData dataPackageNew;
 				dataPackageNew.applicationId = dataPackage.applicationId;
-				dataPackageNew.defaultPermission = value.defaultPermission;
 				dataPackageNew.description = value.description;
 				dataPackageNew.name = value.name;
 				for (auto& value01: value.options) {

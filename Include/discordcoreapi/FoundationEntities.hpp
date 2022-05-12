@@ -2558,7 +2558,6 @@ namespace DiscordCoreAPI {
 		std::unordered_map<std::string, std::string> nameLocalizations{};///< Dictionary with keys in available locales Localization dictionary for name field.
 		std::vector<ApplicationCommandOptionData> options{};///< A std::vector of possible options for the current ApplicationCommand.
 		std::string defaultMemberPermissions{ "" };///< Set of permissions represented as a bit set all
-		bool defaultPermission{ false };///< Whether or not the default Permission in the Guild is to have access to this command or not.
 		std::string applicationId{ "" };///< The current application id.
 		std::string description{ "" };///< A description of the current ApplicationCommand.
 		ApplicationCommandType type{};///< The type of ApplicationCommand.

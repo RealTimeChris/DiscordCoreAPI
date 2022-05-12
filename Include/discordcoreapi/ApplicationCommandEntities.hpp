@@ -47,7 +47,6 @@ namespace DiscordCoreAPI {
 		std::vector<ApplicationCommandOptionData> options{};///< The options for the ApplicationCommand.
 		std::string defaultMemberPermissions{ "" };///< Set of permissions represented as a bit set. only for globally - scoped commands.
 		std::string applicationId{ "" };///< Application id.
-		bool defaultPermission{ true };///< Whether the command is enabled by default when the bot is added to a Guild.
 		ApplicationCommandType type{};///< The type of ApplicationCommand.
 		std::string description{ "" };///< A description of the command.
 		bool dmPermission{ false };///< Indicates whether the command is available in DMs with the app,
@@ -60,7 +59,6 @@ namespace DiscordCoreAPI {
 		std::unordered_map<std::string, std::string> nameLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the name field.
 		std::vector<ApplicationCommandOptionData> options{};///< The options for the ApplicationCommand.
 		std::string defaultMemberPermissions{ "" };///< Set of permissions represented as a bit set. only for globally - scoped commands.
-		bool defaultPermission{ false };///< Whether the command is enabled by default when the bot is added to a Guild.
 		std::string applicationId{ "" };///< The current application's Id (The Bot's User Id).
 		std::string description{ "" };///< A description of the command.
 		bool dmPermission{ false };///< Indicates whether the command is available in DMs with the app.
@@ -93,7 +91,6 @@ namespace DiscordCoreAPI {
 		std::vector<ApplicationCommandOptionData> options{};///< The options for the ApplicationCommand.
 		std::string defaultMemberPermissions{ "" };///< Set of permissions represented as a bit set. only for globally - scoped commands.
 		std::string applicationId{ "" };///< Application id.
-		bool defaultPermission{ true };///< Whether the command is enabled by default when the bot is added to a Guild.
 		ApplicationCommandType type{};///< The type of ApplicationCommand.
 		std::string description{ "" };///< A description of the command.
 		bool dmPermission{ false };///< Indicates whether the command is available in DMs with the app,
@@ -114,7 +111,6 @@ namespace DiscordCoreAPI {
 		std::unordered_map<std::string, std::string> nameLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the name field.
 		std::vector<ApplicationCommandOptionData> options{};///< The options for the ApplicationCommand.
 		std::string defaultMemberPermissions{ "" };///< Set of permissions represented as a bit set. only for globally - scoped commands.
-		bool defaultPermission{ false };///< Whether the command is enabled by default when the bot is added to a Guild.
 		std::string applicationId{ "" };///< The current application's Id (The Bot's User Id).
 		std::string description{ "" };///< A description of the command.
 		bool dmPermission{ false };///< Indicates whether the command is available in DMs with the app.

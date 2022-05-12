@@ -52,7 +52,6 @@ namespace DiscordCoreAPI {
 				registerApplicationCommandsCommandData.dmPermission = true;
 				registerApplicationCommandsCommandData.applicationId = argsNew.discordCoreClient->getBotUser().id;
 				registerApplicationCommandsCommandData.type = ApplicationCommandType::Chat_Input;
-				registerApplicationCommandsCommandData.defaultPermission = true;
 				registerApplicationCommandsCommandData.description = "Register the programmatically designated slash commands.";
 				registerApplicationCommandsCommandData.name = "registerapplicationcommands";
 				ApplicationCommands::createGlobalApplicationCommandAsync(registerApplicationCommandsCommandData);
@@ -62,7 +61,6 @@ namespace DiscordCoreAPI {
 				createTestData.applicationId = argsNew.discordCoreClient->getBotUser().id;
 				createTestData.type = ApplicationCommandType::Chat_Input;
 				createTestData.name = "test";
-				createTestData.defaultPermission = true;
 				createTestData.description = "Test command.";
 				ApplicationCommands::createGlobalApplicationCommandAsync(createTestData).get();
 

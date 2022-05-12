@@ -38,7 +38,6 @@ namespace DiscordCoreAPI {
 				createTestData.applicationId = newArgs.discordCoreClient->getBotUser().id;
 				createTestData.type = DiscordCoreAPI::ApplicationCommandType::Chat_Input;
 				createTestData.name = "test";
-				createTestData.defaultPermission = true;
 				createTestData.description = "Test command.";
 				DiscordCoreAPI::ApplicationCommandOptionData testOptionOne;
 				testOptionOne.type = DiscordCoreAPI::ApplicationCommandOptionType::Attachment;

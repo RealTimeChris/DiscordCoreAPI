@@ -4,6 +4,7 @@ Collecting Autocomplete Input {#collectingautocompleteinput}
 - Create a function which returns void and takes an argument of type `DiscordCoreAPI::OnAutoCompleteEntryData`, and use it to filter for and provide responses to various inputs.
 - The user's current text inputs will come in on the `DiscordCoreAPI::InputEventData`'s `DiscordCoreAPI::InteractionData::data`'s, `DiscordCoreAPI::ApplicationCommandInteractionData::options` array of options.
 - Use these inputs in order to construct a `DiscordCoreAPI::RespondToInputEventData` response, using the `DiscordCoreAPI::RespondToInputEventData::setAutoCompleteChoice` function - and send it off to the Discord servers in order to provide the user with suggestions for autocomplete.
+- Upon receiving a collection of choices, the user may choose one and respond, at which point you will receive it in the form of an incoming `DiscordCoreAPI::InteractionData` with the respective choices set.
 
 ```cpp
 // main.cpp - Main entry point.

@@ -33,7 +33,6 @@ namespace DiscordCoreAPI {
 			DiscordCoreAPI::InputEvents::deleteInputEventResponseAsync(args.eventData).get();
 
 			DiscordCoreAPI::CreateGuildApplicationCommandData dataPackage;
-			dataPackage.defaultPermission = true;
 			dataPackage.description = "Displays info about the current bot.";
 			dataPackage.name = "botinfo";
 			dataPackage.type = ApplicationCommandType::Chat_Input;

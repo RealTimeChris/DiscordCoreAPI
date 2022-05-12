@@ -33,14 +33,12 @@ namespace DiscordCoreAPI {
 		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
 			vector<DiscordCoreAPI::CreateGuildApplicationCommandData> newVector;
 			DiscordCoreAPI::CreateGuildApplicationCommandData createSellDrugsCommandData;
-			createSellDrugsCommandData.defaultPermission = true;
 			createSellDrugsCommandData.description = "Sell drugs in exchange for some currency!";
 			createSellDrugsCommandData.name = "selldrugs";
 			createSellDrugsCommandData.type = DiscordCoreAPI::ApplicationCommandType::Chat_Input;
 			newVector.push_back(createSellDrugsCommandData);
 
 			DiscordCoreAPI::CreateGuildApplicationCommandData registerSlashCommandsCommandData;
-			registerSlashCommandsCommandData.defaultPermission = true;
 			registerSlashCommandsCommandData.description = "Register the programmatically designated slash commands.";
 			registerSlashCommandsCommandData.name = "registerslashcommands";
 			registerSlashCommandsCommandData.type = DiscordCoreAPI::ApplicationCommandType::Chat_Input;

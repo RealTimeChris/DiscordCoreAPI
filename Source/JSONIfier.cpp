@@ -404,7 +404,6 @@ namespace DiscordCoreInternal {
 		nlohmann::json data{};
 		data["description_localizations"] = dataPackage.descriptionLocalizations;
 		data["name_localizations"] = dataPackage.nameLocalizations;
-		data["default_permission"] = dataPackage.defaultPermission;
 		data["dm_permission"] = dataPackage.dmPermission;
 		data["description"] = dataPackage.description;
 		data["name"] = dataPackage.name;
@@ -424,7 +423,6 @@ namespace DiscordCoreInternal {
 		nlohmann::json data{};
 		data["description_localizations"] = dataPackage.descriptionLocalizations;
 		data["name_localizations"] = dataPackage.nameLocalizations;
-		data["default_permission"] = dataPackage.defaultPermission;
 		data["dm_permission"] = dataPackage.dmPermission;
 		data["description"] = dataPackage.description;
 		data["name"] = dataPackage.name;
@@ -446,7 +444,6 @@ namespace DiscordCoreInternal {
 		nlohmann::json data{};
 		data["description_localizations"] = dataPackage.descriptionLocalizations;
 		data["name_localizations"] = dataPackage.nameLocalizations;
-		data["default_permission"] = dataPackage.defaultPermission;
 		data["dm_permission"] = dataPackage.dmPermission;
 		data["description"] = dataPackage.description;
 		data["name"] = dataPackage.name;
@@ -465,7 +462,6 @@ namespace DiscordCoreInternal {
 		nlohmann::json data{};
 		data["description_localizations"] = dataPackage.descriptionLocalizations;
 		data["name_localizations"] = dataPackage.nameLocalizations;
-		data["default_permission"] = dataPackage.defaultPermission;
 		data["dm_permission"] = dataPackage.dmPermission;
 		data["description"] = dataPackage.description;
 		data["name"] = dataPackage.name;

@@ -38,7 +38,6 @@ namespace DiscordCoreAPI {
 			DiscordCoreAPI::EditGuildApplicationCommandData dataPackage;
 			dataPackage.guildId = args.eventData.getGuildId();
 			dataPackage.name = returnVector.at(0).name;
-			dataPackage.defaultPermission = true;
 			dataPackage.description = "a test description";
 
 			auto returnValue = DiscordCoreAPI::ApplicationCommands::editGuildApplicationCommandAsync(dataPackage).get();

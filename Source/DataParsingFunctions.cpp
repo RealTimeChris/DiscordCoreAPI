@@ -3672,10 +3672,6 @@ namespace DiscordCoreInternal {
 			pDataStructure.version = jsonObjectData["version"].get<std::string>();
 		}
 
-		if (jsonObjectData.contains("default_permission") && !jsonObjectData["default_permission"].is_null()) {
-			pDataStructure.defaultPermission = jsonObjectData["default_permission"].get<bool>();
-		}
-
 		if (jsonObjectData.contains("options") && !jsonObjectData["options"].is_null()) {
 			pDataStructure.options.reserve(jsonObjectData["options"].size());
 			for (auto& value: jsonObjectData["options"]) {
@@ -3738,10 +3734,6 @@ namespace DiscordCoreInternal {
 
 		if (jsonObjectData.contains("version") && !jsonObjectData["version"].is_null()) {
 			pDataStructure.version = jsonObjectData["version"].get<std::string>();
-		}
-
-		if (jsonObjectData.contains("default_permission") && !jsonObjectData["default_permission"].is_null()) {
-			pDataStructure.defaultPermission = jsonObjectData["default_permission"].get<bool>();
 		}
 
 		if (jsonObjectData.contains("options") && !jsonObjectData["options"].is_null()) {
