@@ -3490,7 +3490,10 @@ namespace DiscordCoreAPI {
 		}
 
 		/// For setting the choices of an autocomplete response. \brief For setting the choices of an autocomplete response.
-		/// \param theChoice A choice..
+		/// \param theInt A unique_ptr<int32_t>, if the choice is an int value.
+		/// \param theFloat A std::unique_ptr<float>, if the choice is a float value.
+		/// \param theString A std::string, if the choice is a string value.
+		/// \param theName A std::string for the name of the choice.
 		/// \returns RespondToInputEventData& A reference to this data structure.
 		RespondToInputEventData& setAutoCompleteChoice(
 			std::unique_ptr<int32_t> theInt, std::unique_ptr<float> theFloat, std::unique_ptr<std::string> theString, std::string theName) {
