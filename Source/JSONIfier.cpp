@@ -362,15 +362,7 @@ namespace DiscordCoreInternal {
 				nlohmann::json jsonValue{};
 				jsonValue["name_localizations"] = dataPackage.choices[x].nameLocalizations;
 				jsonValue["name"] = dataPackage.choices[x].name;
-				if (dataPackage.choices[x].valueString != nullptr) {
-					jsonValue["value"] = *dataPackage.choices[x].valueString;
-
-				} else if (dataPackage.choices[x].valueInt != nullptr) {
-					jsonValue["value"] = *dataPackage.choices[x].valueInt;
-
-				} else if (dataPackage.choices[x].valueFloat != nullptr) {
-					jsonValue["value"] = *dataPackage.choices[x].valueFloat;
-				}
+				jsonValue["value"] = dataPackage.choices[x].value;
 				newOption["choices"].push_back(jsonValue);
 			}
 		}
@@ -661,13 +653,7 @@ namespace DiscordCoreInternal {
 				nlohmann::json theValue{};
 				theValue["name"] = value.name;
 				theValue["name_localizations"] = value.nameLocalizations;
-				if (value.valueFloat != nullptr) {
-					theValue["value"] = *value.valueFloat;
-				} else if (value.valueInt != nullptr) {
-					theValue["value"] = *value.valueInt;
-				} else if (value.valueString != nullptr) {
-					theValue["value"] = *value.valueString;
-				}
+				theValue["value"] = value.value;
 				theArray.push_back(theValue);
 			}
 			data["data"]["choices"] = theArray;

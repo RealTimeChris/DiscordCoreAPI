@@ -3519,11 +3519,11 @@ namespace DiscordCoreInternal {
 	template<> void DataParser::parseObject(nlohmann::json const& jsonObjectData, DiscordCoreAPI::ApplicationCommandOptionChoiceData& pDataStructure) {
 		if (jsonObjectData.contains("value") && !jsonObjectData["value"].is_null() && jsonObjectData["value"].is_string()) {
 			if (jsonObjectData["value"].is_string()) {
-				pDataStructure = jsonObjectData["value"].get<std::string>();
+				pDataStructure.value = jsonObjectData["value"].get<std::string>();
 			} else if (jsonObjectData["value"].is_number_float()) {
-				pDataStructure = jsonObjectData["value"].get<float>();
+				pDataStructure.value = jsonObjectData["value"].get<float>();
 			} else if (jsonObjectData["value"].is_number()) {
-				pDataStructure = jsonObjectData["value"].get<int32_t>();
+				pDataStructure.value = jsonObjectData["value"].get<int32_t>();
 			}
 		}
 
@@ -4182,7 +4182,7 @@ namespace DiscordCoreInternal {
 
 	template<> void DataParser::parseObject(nlohmann::json const& jsonObjectData, DiscordCoreAPI::InteractionDataData& pDataStructure) {
 		if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
-			DataParser::parseObject(jsonObjectData, pDataStructure.applicationCommanddata);
+			DataParser::parseObject(jsonObjectData, pDataStructure.applicationCommandData);
 		}
 
 		if (jsonObjectData.contains("target_id") && !jsonObjectData["target_id"].is_null()) {

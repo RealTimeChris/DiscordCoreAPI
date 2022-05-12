@@ -2370,70 +2370,8 @@ namespace DiscordCoreAPI {
 	/// Data structure representing an ApplicationCommand's option choice. \brief Data structure representing an ApplicationCommand's option choice.
 	struct DiscordCoreAPI_Dll ApplicationCommandOptionChoiceData {
 		std::unordered_map<std::string, std::string> nameLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the name field.
-		std::unique_ptr<std::string> valueString{ nullptr };///< The value, if the given choice is a std::string.
-		std::unique_ptr<float> valueFloat{ nullptr };///< The value, if the given choice is a float.
-		std::unique_ptr<int32_t> valueInt{ nullptr };///< The value, if the given choice is an int32_t.
+		nlohmann::json value{};///< The value of the option.
 		std::string name{ "" };///< The name of the current choice.
-
-		ApplicationCommandOptionChoiceData& operator=(const ApplicationCommandOptionChoiceData& theValue) {
-			this->nameLocalizations = theValue.nameLocalizations;
-			if (theValue.valueString != nullptr) {
-				this->valueString = std::make_unique<std::string>();
-				*this->valueString = *theValue.valueString;
-			} else if (theValue.valueFloat != nullptr) {
-				this->valueFloat = std::make_unique<float>();
-				*this->valueFloat = *theValue.valueFloat;
-			} else if (theValue.valueString != nullptr) {
-				this->valueInt = std::make_unique<int32_t>();
-				*this->valueInt = *theValue.valueInt;
-			}
-			this->name = theValue.name;
-			return *this;
-		}
-
-		ApplicationCommandOptionChoiceData(const ApplicationCommandOptionChoiceData& theValue) {
-			*this = theValue;
-		}
-
-		ApplicationCommandOptionChoiceData& operator=(ApplicationCommandOptionChoiceData& theValue) {
-			this->nameLocalizations = theValue.nameLocalizations;
-			if (theValue.valueString != nullptr) {
-				this->valueString = std::make_unique<std::string>();
-				*this->valueString = *theValue.valueString;
-			} else if (theValue.valueFloat != nullptr) {
-				this->valueFloat = std::make_unique<float>();
-				*this->valueFloat = *theValue.valueFloat;
-			} else if (theValue.valueString != nullptr) {
-				this->valueInt = std::make_unique<int32_t>();
-				*this->valueInt = *theValue.valueInt;
-			}
-			this->name = theValue.name;
-			return *this;
-		}
-
-		ApplicationCommandOptionChoiceData(ApplicationCommandOptionChoiceData& theValue) {
-			*this = theValue;
-		}
-
-		ApplicationCommandOptionChoiceData& operator=(nlohmann::json theValue) {
-			if (theValue.is_string()) {
-				this->valueString = std::make_unique<std::string>();
-				*this->valueString = theValue;
-			} else if (theValue.is_number_float()) {
-				this->valueFloat = std::make_unique<float>();
-				*this->valueFloat = theValue;
-			} else {
-				this->valueInt = std::make_unique<int32_t>();
-				*this->valueInt = theValue;
-			}
-			return *this;
-		}
-
-		ApplicationCommandOptionChoiceData(nlohmann::json theValue) {
-			*this = theValue;
-		}
-
-		ApplicationCommandOptionChoiceData() = default;
 	};
 
 	/// Data structure representing an ApplicationCommand's option. \brief Data structure representing an ApplicationCommand's option.
@@ -2893,7 +2831,7 @@ namespace DiscordCoreAPI {
 		bool focused{ false };///< 	True if this option is the currently focused option for autocomplete.
 	};
 
-	/// ApplicationCommand Interaction data.
+	/// ApplicationCommand Interaction data. \brief ApplicationCommand Interaction data.
 	class DiscordCoreAPI_Dll ApplicationCommandInteractionData : public DiscordEntity {
 	  public:
 		std::vector<ApplicationCommandInteractionDataOption> options{};///< ApplicationCommand Interaction data options.
@@ -2907,7 +2845,7 @@ namespace DiscordCoreAPI {
 
 	/// Interaction data data. \brief Interaction data data.
 	struct DiscordCoreAPI_Dll InteractionDataData {
-		ApplicationCommandInteractionData applicationCommanddata{};///< ApplicationCommand Interaction data.
+		ApplicationCommandInteractionData applicationCommandData{};///< ApplicationCommand Interaction data.
 		MessageCommandInteractionData messageInteractionData{};///< Message command Interaction data.
 		UserCommandInteractionData userInteractionData{};///< User command Interaction data.
 		ComponentInteractionData componentData{};///< Component Interaction data.
@@ -3491,19 +3429,13 @@ namespace DiscordCoreAPI {
 		}
 
 		/// For setting the choices of an autocomplete response. \brief For setting the choices of an autocomplete response.
-		/// \param theInt A unique_ptr<int32_t>, if the choice is an int value.
-		/// \param theFloat A std::unique_ptr<float>, if the choice is a float value.
-		/// \param theString A std::string, if the choice is a string value.
+		/// \param theValue An nlohmann::json value that is either an float, int or a std::string.
 		/// \param theName A std::string for the name of the choice.
+		/// \param theNameLocalizations A std::unordered_map<std::string, std::string> for the name localizations.
 		/// \returns RespondToInputEventData& A reference to this data structure.
 		RespondToInputEventData& setAutoCompleteChoice(
-			std::unique_ptr<int32_t> theInt, std::unique_ptr<float> theFloat, std::unique_ptr<std::string> theString, std::string theName) {
-			ApplicationCommandOptionChoiceData theData{};
-			theData.valueString = std::move(theString);
-			theData.valueFloat = std::move(theFloat);
-			theData.valueInt = std::move(theInt);
-			theData.name = theName;
-			this->choices.push_back(theData);
+			nlohmann::json theValue, std::string theName, std::unordered_map<std::string, std::string> theNameLocalizations = std::unordered_map<std::string, std::string>{}) {
+			this->choices.push_back({ .nameLocalizations = theNameLocalizations, .value = theValue, .name = theName });
 			return *this;
 		}
 

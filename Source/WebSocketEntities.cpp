@@ -552,12 +552,12 @@ namespace DiscordCoreInternal {
 					std::unique_ptr<DiscordCoreAPI::InputEventData> eventData{ std::make_unique<DiscordCoreAPI::InputEventData>(
 						*messageDataNew, *interactionData, DiscordCoreAPI::InteractionType::Ping) };
 					if (interactionData->type == DiscordCoreAPI::InteractionType::Application_Command) {
-						if (interactionData->data.applicationCommanddata.type == DiscordCoreAPI::ApplicationCommandType::Chat_Input) {
+						if (interactionData->data.applicationCommandData.type == DiscordCoreAPI::ApplicationCommandType::Chat_Input) {
 							eventData->eventType = DiscordCoreAPI::InteractionType::Application_Command;
-						} else if (interactionData->data.applicationCommanddata.type == DiscordCoreAPI::ApplicationCommandType::Message) {
+						} else if (interactionData->data.applicationCommandData.type == DiscordCoreAPI::ApplicationCommandType::Message) {
 							eventData->eventType = DiscordCoreAPI::InteractionType::Application_Command;
 
-						} else if (interactionData->data.applicationCommanddata.type == DiscordCoreAPI::ApplicationCommandType::User) {
+						} else if (interactionData->data.applicationCommandData.type == DiscordCoreAPI::ApplicationCommandType::User) {
 							eventData->eventType = DiscordCoreAPI::InteractionType::Application_Command;
 						}
 						eventData->responseType = DiscordCoreAPI::InputEventResponseType::Unset;
