@@ -27,10 +27,10 @@ void theAutoCompleteFunction(DiscordCoreAPI::OnAutoCompleteEntryData dataPackage
 
 int32_t main() {
 	std::string botToken = "YOUR_BOT_TOKEN_HERE";
-	DiscordCoreAPI::DiscordCoreClient thePtr{ botToken };
-	thePtr.eventManager.onAutoCompleteEntry(&theAutoCompleteFunction);
-	thePtr.registerFunction(std::vector<std::string>{ "test" }, std::make_unique<DiscordCoreAPI::Test>());
-	thePtr.runBot();
+	DiscordCoreAPI::DiscordCoreClient theClient{ botToken };
+	theClient.eventManager.onAutoCompleteEntry(&theAutoCompleteFunction);
+	theClient.registerFunction(std::vector<std::string>{ "test" }, std::make_unique<DiscordCoreAPI::Test>());
+	theClient.runBot();
 	return 0;
 }
 ```
