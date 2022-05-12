@@ -4,6 +4,8 @@ Docs/Examples {#Examples}
 
 - \subpage generalusage
 
+- \subpage autocompletestuff
+
 - \subpage buttonstuff
 
 - \subpage selectmenustuff

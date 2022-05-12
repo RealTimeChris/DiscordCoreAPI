@@ -299,6 +299,22 @@ namespace DiscordCoreAPI {
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Guild_Bans;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
 			workload.relativePath = "/guilds/" + dataPackage.guildId + "/bans";
+			if (dataPackage.after != "") {
+				workload.relativePath += "?after=" + dataPackage.after;
+				if (dataPackage.before != "") {
+					workload.relativePath += "&before=" + dataPackage.before;
+				}
+				if (dataPackage.limit != "") {
+					workload.relativePath += "&limit=" + dataPackage.limit;
+				}
+			} else if (dataPackage.before != "") {
+				workload.relativePath += "?before=" + dataPackage.before;
+				if (dataPackage.limit != "") {
+					workload.relativePath += "&limit=" + dataPackage.limit;
+				}
+			} else if (dataPackage.limit != "") {
+				workload.relativePath += "?limit=" + dataPackage.limit;
+			}
 			workload.callStack = "Guilds::getGuildBansAsync";
 			co_return DiscordCoreInternal::submitWorkloadAndGetResult<std::vector<BanData>>(*Guilds::httpClient, workload);
 		} catch (...) {

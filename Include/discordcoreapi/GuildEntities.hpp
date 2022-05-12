@@ -115,6 +115,9 @@ namespace DiscordCoreAPI {
 	/// For getting a list of Guild bans. \brief For getting a list of Guild bans.
 	struct DiscordCoreAPI_Dll GetGuildBansData {
 		std::string guildId{ "" };///< The Guild from which to collect the list of bans.
+		std::string before{ "" };///< Consider only users before given user id.
+		std::string after{ "" };///< Consider only users after given user id null.
+		std::string limit{ "" };///< Number of users to return ( up to maximum 1000 ).
 	};
 
 	/// For getting a single Guild Ban. \brief For getting a single Guild Ban.
