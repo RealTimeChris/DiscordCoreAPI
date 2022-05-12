@@ -3429,7 +3429,7 @@ namespace DiscordCoreAPI {
 		}
 
 		/// For setting the choices of an autocomplete response. \brief For setting the choices of an autocomplete response.
-		/// \param theValue An nlohmann::json value that is either an float, int or a std::string.
+		/// \param theValue An nlohmann::json value that is either a float, int or a std::string.
 		/// \param theName A std::string for the name of the choice.
 		/// \param theNameLocalizations A std::unordered_map<std::string, std::string> for the name localizations.
 		/// \returns RespondToInputEventData& A reference to this data structure.
