@@ -39,7 +39,6 @@ namespace DiscordCoreAPI {
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Post;
 			workload.relativePath = "/interactions/" + dataPackage.interactionPackage.interactionId + "/" + dataPackage.interactionPackage.interactionToken + "/callback";
 			if (dataPackage.data.data.files.size() > 0) {
-				std::cout << "THE TYPE: " << std::to_string(static_cast<int32_t>(dataPackage.data.type)) << std::endl;
 				constructMultiPartData(workload, nlohmann::json::parse(DiscordCoreInternal::JSONIFY(dataPackage.data)), dataPackage.data.data.files);
 			} else {
 				workload.content = DiscordCoreInternal::JSONIFY(dataPackage.data);
