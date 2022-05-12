@@ -39,6 +39,7 @@ namespace DiscordCoreAPI {
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Post;
 			workload.relativePath = "/interactions/" + dataPackage.interactionPackage.interactionId + "/" + dataPackage.interactionPackage.interactionToken + "/callback";
 			if (dataPackage.data.data.files.size() > 0) {
+				std::cout << "THE TYPE: " << std::to_string(static_cast<int32_t>(dataPackage.data.type)) << std::endl;
 				constructMultiPartData(workload, nlohmann::json::parse(DiscordCoreInternal::JSONIFY(dataPackage.data)), dataPackage.data.data.files);
 			} else {
 				workload.content = DiscordCoreInternal::JSONIFY(dataPackage.data);
@@ -48,7 +49,11 @@ namespace DiscordCoreAPI {
 			GetInteractionResponseData dataPackage01{};
 			dataPackage01.applicationId = dataPackage.interactionPackage.applicationId;
 			dataPackage01.interactionToken = dataPackage.interactionPackage.interactionToken;
-			co_return Interactions::getInteractionResponseAsync(dataPackage01).get();
+			if (dataPackage.data.type != InteractionCallbackType::Application_Command_Autocomplete_Result) {
+				co_return Interactions::getInteractionResponseAsync(dataPackage01).get();
+			} else {
+				co_return Message{};
+			}
 		} catch (...) {
 			reportException("Interactions::createInteractionResponseAsync()");
 		}

@@ -814,8 +814,8 @@ namespace DiscordCoreAPI {
 
 namespace DiscordCoreInternal {
 
-	std::unordered_map<HttpWorkloadType, int64_t> HttpWorkloadData::workloadIdsExternal{};
-	std::unordered_map<HttpWorkloadType, int64_t> HttpWorkloadData::workloadIdsInternal{};
+	std::unordered_map<HttpWorkloadType, std::atomic_int64_t> HttpWorkloadData::workloadIdsExternal{};
+	std::unordered_map<HttpWorkloadType, std::atomic_int64_t> HttpWorkloadData::workloadIdsInternal{};
 	std::mutex HttpWorkloadData::accessMutex{};
 
 }

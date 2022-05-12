@@ -489,7 +489,7 @@ namespace DiscordCoreInternal {
 				std::this_thread::sleep_for(std::chrono::milliseconds{ 500 });
 				rateLimitDataPtr->haveWeGoneYet = true;
 			}
-			while (HttpWorkloadData::workloadIdsInternal[workload.workloadType] < workload.thisWorkerId && workload.thisWorkerId != 0) {
+			while (HttpWorkloadData::workloadIdsInternal[workload.workloadType].load() < workload.thisWorkerId.load() && workload.thisWorkerId.load() != 0) {
 				std::this_thread::sleep_for(std::chrono::milliseconds{ 1 });
 			}
 
@@ -500,7 +500,8 @@ namespace DiscordCoreInternal {
 			}
 
 			HttpData resultData = this->executeByRateLimitData(workload, *theConnectionNew);
-			HttpWorkloadData::workloadIdsInternal[workload.workloadType] += 1;
+			auto theValue = HttpWorkloadData::workloadIdsInternal[workload.workloadType].load();
+			HttpWorkloadData::workloadIdsInternal[workload.workloadType].store(theValue + 1);
 			rateLimitDataPtr->theSemaphore.release();
 			return resultData;
 		} catch (...) {

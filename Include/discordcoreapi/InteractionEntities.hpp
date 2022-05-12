@@ -213,6 +213,7 @@ namespace DiscordCoreAPI {
 		friend InputEvents;
 
 		CreateEphemeralInteractionResponseData(RespondToInputEventData& dataPackage) {
+			this->data = dataPackage;
 			if (dataPackage.eventType == InteractionType::Message_Component) {
 				this->data.type = InteractionCallbackType::Update_Message;
 			} else {
@@ -221,14 +222,7 @@ namespace DiscordCoreAPI {
 			this->interactionPackage.interactionToken = dataPackage.interactionToken;
 			this->interactionPackage.applicationId = dataPackage.applicationId;
 			this->interactionPackage.interactionId = dataPackage.interactionId;
-			this->data.data.allowedMentions = dataPackage.allowedMentions;
-			this->data.data.components = dataPackage.components;
-			this->data.data.content = dataPackage.content;
-			this->data.data.choices = dataPackage.choices;
-			this->data.data.embeds = dataPackage.embeds;
 			this->requesterId = dataPackage.requesterId;
-			this->data.data.files = dataPackage.files;
-			this->data.data.tts = dataPackage.tts;
 			this->data.data.flags = 64;
 		}
 
@@ -243,6 +237,7 @@ namespace DiscordCoreAPI {
 		friend InputEvents;
 
 		CreateDeferredInteractionResponseData(RespondToInputEventData& dataPackage) {
+			this->data = dataPackage;
 			if (dataPackage.eventType == InteractionType::Message_Component) {
 				this->data.type = InteractionCallbackType::Deferred_Update_Message;
 			} else {
@@ -251,14 +246,7 @@ namespace DiscordCoreAPI {
 			this->interactionPackage.interactionToken = dataPackage.interactionToken;
 			this->interactionPackage.applicationId = dataPackage.applicationId;
 			this->interactionPackage.interactionId = dataPackage.interactionId;
-			this->data.data.allowedMentions = dataPackage.allowedMentions;
-			this->data.data.components = dataPackage.components;
-			this->data.data.content = dataPackage.content;
-			this->data.data.embeds = dataPackage.embeds;
 			this->requesterId = dataPackage.requesterId;
-			this->data.data.files = dataPackage.files;
-			this->data.data.flags = dataPackage.flags;
-			this->data.data.tts = dataPackage.tts;
 		}
 
 		virtual ~CreateDeferredInteractionResponseData() = default;
@@ -301,10 +289,14 @@ namespace DiscordCoreAPI {
 
 		CreateInteractionResponseData(RespondToInputEventData& dataPackage) {
 			this->interactionPackage.interactionToken = dataPackage.interactionToken;
+			this->data = dataPackage;
 			if (dataPackage.eventType == InteractionType::Message_Component && dataPackage.type == InputEventResponseType::Deferred_Response) {
 				this->data.type = InteractionCallbackType::Deferred_Update_Message;
 			} else if (dataPackage.eventType == InteractionType::Message_Component) {
 				this->data.type = InteractionCallbackType::Update_Message;
+			} else if (dataPackage.eventType == InteractionType::Application_Command_Autocomplete ||
+				dataPackage.type == InputEventResponseType::Application_Command_AutoComplete_Result) {
+				this->data.type = InteractionCallbackType::Application_Command_Autocomplete_Result;
 			} else {
 				this->data.type = InteractionCallbackType::Channel_Message_With_Source;
 			}
@@ -313,16 +305,7 @@ namespace DiscordCoreAPI {
 			}
 			this->interactionPackage.applicationId = dataPackage.applicationId;
 			this->interactionPackage.interactionId = dataPackage.interactionId;
-			this->data.data.allowedMentions = dataPackage.allowedMentions;
-			this->data.data.components = dataPackage.components;
-			this->data.data.customId = dataPackage.customId;
-			this->data.data.content = dataPackage.content;
 			this->requesterId = dataPackage.requesterId;
-			this->data.data.embeds = dataPackage.embeds;
-			this->data.data.title = dataPackage.title;
-			this->data.data.files = dataPackage.files;
-			this->data.data.flags = dataPackage.flags;
-			this->data.data.tts = dataPackage.tts;
 		}
 
 		CreateInteractionResponseData(InteractionData& dataPackage) {

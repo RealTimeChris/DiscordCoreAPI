@@ -566,14 +566,14 @@ namespace DiscordCoreInternal {
 				nlohmann::json jsonValue{};
 				jsonValue["name_localizations"] = dataPackage.choices[x].nameLocalizations;
 				jsonValue["name"] = dataPackage.choices[x].name;
-				if (dataPackage.choices[x].valueString != "") {
-					jsonValue["value"] = dataPackage.choices[x].valueString;
+				if (dataPackage.choices[x].valueString != nullptr) {
+					jsonValue["value"] = *dataPackage.choices[x].valueString;
 					
-				} else if (dataPackage.choices[x].valueInt != 0) {
-					jsonValue["value"] = dataPackage.choices[x].valueInt;
+				} else if (dataPackage.choices[x].valueInt != nullptr) {
+					jsonValue["value"] = *dataPackage.choices[x].valueInt;
 				
-				} else if (dataPackage.choices[x].valueFloat != 0.0f) {
-					jsonValue["value"] = dataPackage.choices[x].valueFloat;
+				} else if (dataPackage.choices[x].valueFloat != nullptr) {
+					jsonValue["value"] = *dataPackage.choices[x].valueFloat;
 				}
 				newOption["choices"].push_back(jsonValue);
 			}
@@ -729,9 +729,23 @@ namespace DiscordCoreInternal {
 
 		data["data"]["allowed_mentions"] = dataPackage.data.allowedMentions;
 
-		for (auto& value: dataPackage.data.choices) {
-			data["data"]["choices"].push_back(value);
-		}		
+		if (dataPackage.data.choices.size() > 0) {
+			nlohmann::json::array_t theArray{};
+			for (auto& value: dataPackage.data.choices) {
+				nlohmann::json theValue{};
+				theValue["name"] = value.name;
+				theValue["name_localizations"] = value.nameLocalizations;
+				if (value.valueFloat != nullptr) {
+					theValue["value"] = *value.valueFloat;
+				} else if (value.valueInt != nullptr) {
+					theValue["value"] = *value.valueInt;
+				} else if (value.valueString != nullptr) {
+					theValue["value"] = *value.valueString;
+				}
+				theArray.push_back(theValue);
+			}
+			data["data"]["choices"] = theArray;
+		}
 
 		for (auto& value: dataPackage.data.embeds) {
 			data["data"]["embeds"].push_back(value);

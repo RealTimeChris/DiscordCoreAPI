@@ -2370,10 +2370,70 @@ namespace DiscordCoreAPI {
 	/// Data structure representing an ApplicationCommand's option choice. \brief Data structure representing an ApplicationCommand's option choice.
 	struct DiscordCoreAPI_Dll ApplicationCommandOptionChoiceData {
 		std::unordered_map<std::string, std::string> nameLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the name field.
-		std::string valueString{ "" };///< The value, if the given choice is a std::string.
-		float valueFloat{ 0.0f };///< The value, if the given choice is a float.
+		std::unique_ptr<std::string> valueString{ nullptr };///< The value, if the given choice is a std::string.
+		std::unique_ptr<float> valueFloat{ nullptr };///< The value, if the given choice is a float.
+		std::unique_ptr<int32_t> valueInt{ nullptr };///< The value, if the given choice is an int32_t.
 		std::string name{ "" };///< The name of the current choice.
-		int32_t valueInt{ 0 };///< The value, if the given choice is an int32_t.
+
+		ApplicationCommandOptionChoiceData& operator=(const ApplicationCommandOptionChoiceData& theValue) {
+			this->nameLocalizations = theValue.nameLocalizations;
+			if (theValue.valueString != nullptr) {
+				this->valueString = std::make_unique<std::string>();
+				*this->valueString = *theValue.valueString;
+			} else if (theValue.valueFloat != nullptr) {
+				this->valueFloat = std::make_unique<float>();
+				*this->valueFloat = *theValue.valueFloat;
+			} else if (theValue.valueString != nullptr) {
+				this->valueInt = std::make_unique<int32_t>();
+				*this->valueInt = *theValue.valueInt;
+			}
+			this->name = theValue.name;
+			return *this;
+		}
+
+		ApplicationCommandOptionChoiceData(const ApplicationCommandOptionChoiceData& theValue) {
+			*this = theValue;
+		}
+
+		ApplicationCommandOptionChoiceData& operator=(ApplicationCommandOptionChoiceData& theValue) {
+			this->nameLocalizations = theValue.nameLocalizations;
+			if (theValue.valueString != nullptr) {
+				this->valueString = std::make_unique<std::string>();
+				*this->valueString = *theValue.valueString;
+			} else if (theValue.valueFloat != nullptr) {
+				this->valueFloat = std::make_unique<float>();
+				*this->valueFloat = *theValue.valueFloat;
+			} else if (theValue.valueString != nullptr) {
+				this->valueInt = std::make_unique<int32_t>();
+				*this->valueInt = *theValue.valueInt;
+			}
+			this->name = theValue.name;
+			return *this;
+		}
+
+		ApplicationCommandOptionChoiceData(ApplicationCommandOptionChoiceData& theValue) {
+			*this = theValue;
+		}
+
+		ApplicationCommandOptionChoiceData& operator=(nlohmann::json theValue) {
+			if (theValue.is_string()) {
+				this->valueString = std::make_unique<std::string>();
+				*this->valueString = theValue;
+			} else if (theValue.is_number_float()) {
+				this->valueFloat = std::make_unique<float>();
+				*this->valueFloat = theValue;
+			} else {
+				this->valueInt = std::make_unique<int32_t>();
+				*this->valueInt = theValue;
+			}
+			return *this;
+		}
+
+		ApplicationCommandOptionChoiceData(nlohmann::json theValue) {
+			*this = theValue;
+		}
+
+		ApplicationCommandOptionChoiceData() = default;
 	};
 
 	/// Data structure representing an ApplicationCommand's option. \brief Data structure representing an ApplicationCommand's option.
@@ -2522,21 +2582,21 @@ namespace DiscordCoreAPI {
 
 	/// Interaction callback types. \brief Interaction callback types.
 	enum class InteractionCallbackType {
-		Pong = 1,///<	ACK a Ping
+		Pong = 1,///< ACK a Ping.
 		Channel_Message_With_Source = 4,///< Respond to an interaction with a message.
 		Deferred_Channel_Message_With_Source = 5,///< ACK an interaction and edit a response later, the user sees a loading state.
 		Deferred_Update_Message = 6,///< For components, ACK an interaction and edit the original message later; the user does not see a loading state.
 		Update_Message = 7,///< For components, edit the message the component was attached to.
 		Application_Command_Autocomplete_Result = 8,///< Respond to an autocomplete interaction with suggested choices.
-		Modal = 9///<	Respond to an interaction with a popup modal.
+		Modal = 9///< Respond to an interaction with a popup modal.
 	};
 
 	/// Interaction ApplicationCommand callback data. \brief Interaction ApplicationCommand callback data.
 	struct DiscordCoreAPI_Dll InteractionCallbackData {
+		std::vector<ApplicationCommandOptionChoiceData> choices{};///< Autocomplete choices(max of 25 choices).
 		std::vector<AttachmentData> attachments{};///< Array of partial attachment objects attachment objects with filename and description.
 		std::vector<ActionRowData> components{};///< Message components.
 		AllowedMentionsData allowedMentions{};///< Allowed mentions data.
-		std::vector<std::string> choices{};///< Autocomplete choices(max of 25 choices).
 		std::vector<EmbedData> embeds{};///< Message embeds.
 		std::string customId{ "" };///< A developer-defined identifier for the component, max 100 characters.
 		std::string content{ "" };///< Message content.
@@ -2555,10 +2615,8 @@ namespace DiscordCoreAPI {
 	/// Data structure representing an ApplicationCommand. \brief Data structure representing an ApplicationCommand.
 	class DiscordCoreAPI_Dll ApplicationCommandData : public DiscordEntity {
 	  public:
-		std::unordered_map<std::string, std::string>
-			descriptionLocalizations{};///< Dictionary with keys in available locales Localization dictionary for name field.Values follow the same restrictions as name all.
-		std::unordered_map<std::string, std::string>
-			nameLocalizations{};///< Dictionary with keys in available locales Localization dictionary for name field.Values follow the same restrictions as name all.
+		std::unordered_map<std::string, std::string> descriptionLocalizations{};///< Dictionary with keys in available locales Localization dictionary for name field.
+		std::unordered_map<std::string, std::string> nameLocalizations{};///< Dictionary with keys in available locales Localization dictionary for name field.
 		std::vector<ApplicationCommandOptionData> options{};///< A std::vector of possible options for the current ApplicationCommand.
 		std::string defaultMemberPermissions{ "" };///< Set of permissions represented as a bit set all
 		bool defaultPermission{ false };///< Whether or not the default Permission in the Guild is to have access to this command or not.
@@ -3221,6 +3279,21 @@ namespace DiscordCoreAPI {
 		friend InputEvents;
 		friend SendDMData;
 
+		operator InteractionResponseData() {
+			InteractionResponseData dataPackage{};
+			dataPackage.data.allowedMentions = this->allowedMentions;
+			dataPackage.data.components = this->components;
+			dataPackage.data.customId = this->customId;
+			dataPackage.data.choices = this->choices;
+			dataPackage.data.content = this->content;
+			dataPackage.data.embeds = this->embeds;
+			dataPackage.data.files = this->files;
+			dataPackage.data.flags = this->flags;
+			dataPackage.data.title = this->title;
+			dataPackage.data.tts = this->tts;
+			return dataPackage;
+		}
+
 		RespondToInputEventData& operator=(InteractionData& dataPackage) {
 			this->applicationId = dataPackage.applicationId;
 			this->requesterId = dataPackage.requesterId;
@@ -3419,7 +3492,13 @@ namespace DiscordCoreAPI {
 		/// For setting the choices of an autocomplete response. \brief For setting the choices of an autocomplete response.
 		/// \param theChoice A choice..
 		/// \returns RespondToInputEventData& A reference to this data structure.
-		RespondToInputEventData& setAutoCompleteChoice(std::string theData) {
+		RespondToInputEventData& setAutoCompleteChoice(
+			std::unique_ptr<int32_t> theInt, std::unique_ptr<float> theFloat, std::unique_ptr<std::string> theString, std::string theName) {
+			ApplicationCommandOptionChoiceData theData{};
+			theData.valueString = std::move(theString);
+			theData.valueFloat = std::move(theFloat);
+			theData.valueInt = std::move(theInt);
+			theData.name = theName;
 			this->choices.push_back(theData);
 			return *this;
 		}
@@ -3433,10 +3512,10 @@ namespace DiscordCoreAPI {
 		}
 
 	  protected:
+		std::vector<ApplicationCommandOptionChoiceData> choices{};
 		std::vector<ActionRowData> components{};
 		AllowedMentionsData allowedMentions{};
 		std::string interactionToken{ "" };
-		std::vector<std::string> choices{};
 		std::vector<EmbedData> embeds{};
 		std::string interactionId{ "" };
 		std::string applicationId{ "" };
@@ -4006,8 +4085,8 @@ namespace DiscordCoreInternal {
 	};
 
 	struct DiscordCoreAPI_Dll HttpWorkloadData {
-		static std::unordered_map<HttpWorkloadType, int64_t> workloadIdsExternal;
-		static std::unordered_map<HttpWorkloadType, int64_t> workloadIdsInternal;
+		static std::unordered_map<HttpWorkloadType, std::atomic_int64_t> workloadIdsExternal;
+		static std::unordered_map<HttpWorkloadType, std::atomic_int64_t> workloadIdsInternal;
 		static std::mutex accessMutex;
 
 		std::unordered_map<std::string, std::string> headersToInsert{};
@@ -4058,8 +4137,8 @@ namespace DiscordCoreInternal {
 
 		static int64_t getAndIncrementWorkloadId(HttpWorkloadType workloadType) {
 			std::lock_guard<std::mutex> theLock{ HttpWorkloadData::accessMutex };
-			int64_t theValue = DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[workloadType];
-			DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[workloadType] += 1;
+			int64_t theValue = DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[workloadType].load();
+			DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[workloadType].store(theValue + 1);
 			return theValue;
 		}
 	};

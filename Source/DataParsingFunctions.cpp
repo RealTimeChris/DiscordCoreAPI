@@ -3517,16 +3517,18 @@ namespace DiscordCoreInternal {
 	}
 
 	template<> void DataParser::parseObject(nlohmann::json const& jsonObjectData, DiscordCoreAPI::ApplicationCommandOptionChoiceData& pDataStructure) {
+		if (jsonObjectData.contains("value") && !jsonObjectData["value"].is_null() && jsonObjectData["value"].is_string()) {
+			if (jsonObjectData["value"].is_string()) {
+				pDataStructure = jsonObjectData["value"].get<std::string>();
+			} else if (jsonObjectData["value"].is_number_float()) {
+				pDataStructure = jsonObjectData["value"].get<float>();
+			} else if (jsonObjectData["value"].is_number()) {
+				pDataStructure = jsonObjectData["value"].get<int32_t>();
+			}
+		}
+
 		if (jsonObjectData.contains("name") && !jsonObjectData["name"].is_null()) {
 			pDataStructure.name = jsonObjectData["name"].get<std::string>();
-		}
-
-		if (jsonObjectData.contains("value") && !jsonObjectData["value"].is_null() && jsonObjectData["value"].is_string()) {
-			pDataStructure.valueString = jsonObjectData["value"].get<std::string>();
-		}
-
-		if (jsonObjectData.contains("value") && !jsonObjectData["value"].is_null() && jsonObjectData["value"].is_number_integer()) {
-			pDataStructure.valueInt = jsonObjectData["value"].get<int32_t>();
 		}
 
 		if (jsonObjectData.contains("name_localizations") && !jsonObjectData["name_localizations"].is_null()) {
