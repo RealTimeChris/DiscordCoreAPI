@@ -137,12 +137,14 @@ install(
 	DESTINATION "share/discordcoreapi"
 )
 
-install(
-	FILES 
-	"$<$<PLATFORM_ID:Windows>:$<TARGET_PDB_FILE:${LIB_NAME}>>"
-	DESTINATION "$<$<PLATFORM_ID:Windows>:$<IF:$<CONFIG:Debug>,debug/bin,bin>>"
-	OPTIONAL
-)
+if (WIN32)
+	install(
+		FILES 
+		"$<$<PLATFORM_ID:Windows>:$<TARGET_PDB_FILE:${LIB_NAME}>>"
+		DESTINATION "$<$<PLATFORM_ID:Windows>:$<IF:$<CONFIG:Debug>,debug/bin,bin>>"
+		OPTIONAL
+	)
+endif()
 
 install(
 	FILES 
