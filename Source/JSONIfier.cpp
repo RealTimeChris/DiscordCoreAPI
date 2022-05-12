@@ -416,6 +416,131 @@ namespace DiscordCoreInternal {
 		return finalValue;
 	};
 
+	std::string JSONIFY(DiscordCoreAPI::EditWebHookData dataPackage) {
+		nlohmann::json data{};
+
+		for (auto& value: dataPackage.attachments) {
+			data["attachments"].push_back(value);
+		}
+
+		if (dataPackage.components.size() == 0) {
+			auto componentsActionRow = nlohmann::json::array();
+			data["components"] = componentsActionRow;
+		} else {
+			data["components"] = nlohmann::json{ dataPackage.components };
+		}
+
+		data["allowed_mentions"] = dataPackage.allowedMentions;
+
+		for (auto& value: dataPackage.embeds) {
+			data["embeds"].push_back(value);
+		}
+
+		if (dataPackage.content != "") {
+			data["content"] = dataPackage.content;
+		}
+
+		return data.dump();
+	}
+
+	std::string JSONIFY(DiscordCoreAPI::InteractionResponseData dataPackage) {
+		nlohmann::json data{};
+
+		for (auto& value: dataPackage.data.attachments) {
+			data["data"]["attachments"].push_back(value);
+		}
+
+		if (dataPackage.data.components.size() == 0) {
+			auto componentsActionRow = nlohmann::json::array();
+			data["data"]["components"] = componentsActionRow;
+		} else {
+			data["data"]["components"] = nlohmann::json{ dataPackage.data.components };
+		}
+
+		data["data"]["allowed_mentions"] = dataPackage.data.allowedMentions;
+
+		if (dataPackage.data.choices.size() > 0) {
+			nlohmann::json::array_t theArray{};
+			for (auto& value: dataPackage.data.choices) {
+				nlohmann::json theValue{};
+				theValue["name"] = value.name;
+				theValue["name_localizations"] = value.nameLocalizations;
+				if (value.valueFloat != nullptr) {
+					theValue["value"] = *value.valueFloat;
+				} else if (value.valueInt != nullptr) {
+					theValue["value"] = *value.valueInt;
+				} else if (value.valueString != nullptr) {
+					theValue["value"] = *value.valueString;
+				}
+				theArray.push_back(theValue);
+			}
+			data["data"]["choices"] = theArray;
+		}
+
+		for (auto& value: dataPackage.data.embeds) {
+			data["data"]["embeds"].push_back(value);
+		}
+
+		if (dataPackage.data.customId != "") {
+			data["data"]["custom_id"] = dataPackage.data.customId;
+		}
+
+		if (dataPackage.data.content != "") {
+			data["data"]["content"] = dataPackage.data.content;
+		}
+
+		if (dataPackage.data.title != "") {
+			data["data"]["title"] = dataPackage.data.title;
+		}
+
+		data["data"]["flags"] = dataPackage.data.flags;
+
+		data["data"]["tts"] = dataPackage.data.tts;
+
+		data["type"] = dataPackage.type;
+
+		return data.dump();
+	}
+
+	std::string JSONIFY(DiscordCoreAPI::ExecuteWebHookData dataPackage) {
+		nlohmann::json data{};
+
+		for (auto& value: dataPackage.attachments) {
+			data["attachments"].push_back(value);
+		}
+
+		if (dataPackage.components.size() == 0) {
+			auto componentsActionRow = nlohmann::json::array();
+			data["components"] = componentsActionRow;
+		} else {
+			data["components"] = nlohmann::json{ dataPackage.components };
+		}
+
+		data["allowed_mentions"] = dataPackage.allowedMentions;
+
+		for (auto& value: dataPackage.embeds) {
+			data["embeds"].push_back(value);
+		}
+
+		if (dataPackage.avatarUrl != "") {
+			data["avatar_url"] = dataPackage.username;
+		}
+
+		if (dataPackage.username != "") {
+			data["username"] = dataPackage.username;
+		}
+
+		if (dataPackage.content != "") {
+			data["content"] = dataPackage.content;
+		}
+
+		data["flags"] = dataPackage.flags;
+
+		data["tts"] = dataPackage.tts;
+
+		return data.dump();
+	}
+
 	std::string JSONIFY(DiscordCoreAPI::StartThreadInForumChannelData dataPackage) {
 		nlohmann::json data{};
 
@@ -686,93 +811,6 @@ namespace DiscordCoreInternal {
 		return data.dump();
 	}
 
-	std::string JSONIFY(DiscordCoreAPI::EditWebHookData dataPackage) {
-		nlohmann::json data{};
-
-		for (auto& value: dataPackage.attachments) {
-			data["attachments"].push_back(value);
-		}
-
-		if (dataPackage.components.size() == 0) {
-			auto componentsActionRow = nlohmann::json::array();
-			data["components"] = componentsActionRow;
-		} else {
-			data["components"] = nlohmann::json{ dataPackage.components };
-		}
-
-		data["allowed_mentions"] = dataPackage.allowedMentions;
-		
-		for (auto& value: dataPackage.embeds) {
-			data["embeds"].push_back(value);
-		}
-
-		if (dataPackage.content != "") {
-			data["content"] = dataPackage.content;
-		}
-
-		return data.dump();
-	}
-
-	std::string JSONIFY(DiscordCoreAPI::InteractionResponseData dataPackage) {
-		nlohmann::json data{};
-
-		for (auto&value:dataPackage.data.attachments){
-			data["data"]["attachments"].push_back(value);
-		}
-
-		if (dataPackage.data.components.size() == 0) {
-			auto componentsActionRow = nlohmann::json::array();
-			data["data"]["components"] = componentsActionRow;
-		} else {
-			data["data"]["components"] = nlohmann::json{ dataPackage.data.components };
-		}
-
-		data["data"]["allowed_mentions"] = dataPackage.data.allowedMentions;
-
-		if (dataPackage.data.choices.size() > 0) {
-			nlohmann::json::array_t theArray{};
-			for (auto& value: dataPackage.data.choices) {
-				nlohmann::json theValue{};
-				theValue["name"] = value.name;
-				theValue["name_localizations"] = value.nameLocalizations;
-				if (value.valueFloat != nullptr) {
-					theValue["value"] = *value.valueFloat;
-				} else if (value.valueInt != nullptr) {
-					theValue["value"] = *value.valueInt;
-				} else if (value.valueString != nullptr) {
-					theValue["value"] = *value.valueString;
-				}
-				theArray.push_back(theValue);
-			}
-			data["data"]["choices"] = theArray;
-		}
-
-		for (auto& value: dataPackage.data.embeds) {
-			data["data"]["embeds"].push_back(value);
-		}
-
-		if (dataPackage.data.customId != "") {
-			data["data"]["custom_id"] = dataPackage.data.customId;
-		}
-
-		if (dataPackage.data.content != "") {
-			data["data"]["content"] = dataPackage.data.content;
-		}
-
-		if (dataPackage.data.title != "") {
-			data["data"]["title"] = dataPackage.data.title;
-		}
-
-		data["data"]["flags"] = dataPackage.data.flags;
-
-		data["data"]["tts"] = dataPackage.data.tts;
-
-		data["type"] = dataPackage.type;
-
-		return data.dump();
-		
-	}
-
 	std::string JSONIFY(DiscordCoreAPI::CreateGuildRoleData dataPackage) {
 		int32_t roleColorInt = stol(dataPackage.hexColorValue, 0, 16);
 		std::stringstream stream;
@@ -811,45 +849,6 @@ namespace DiscordCoreInternal {
 		data["allow"] = stoll(dataPackage.allow);
 		data["deny"] = stoll(dataPackage.deny);
 		data["type"] = dataPackage.type;
-		return data.dump();
-	}
-
-	std::string JSONIFY(DiscordCoreAPI::ExecuteWebHookData dataPackage) {
-		nlohmann::json data{};
-
-		for (auto& value: dataPackage.attachments) {
-			data["attachments"].push_back(value);
-		}
-
-		if (dataPackage.components.size() == 0) {
-			auto componentsActionRow = nlohmann::json::array();
-			data["components"] = componentsActionRow;
-		} else {
-			data["components"] = nlohmann::json{ dataPackage.components };
-		}
-
-		data["allowed_mentions"] = dataPackage.allowedMentions;
-
-		for (auto& value: dataPackage.embeds) {
-			data["embeds"].push_back(value);
-		}
-
-		if (dataPackage.avatarUrl != "") {
-			data["avatar_url"] = dataPackage.username;
-		}
-
-		if (dataPackage.username != "") {
-			data["username"] = dataPackage.username;
-		}
-
-		if (dataPackage.content != "") {
-			data["content"] = dataPackage.content;
-		}
-
-		data["flags"] = dataPackage.flags;
-
-		data["tts"] = dataPackage.tts;
-
 		return data.dump();
 	}
 
