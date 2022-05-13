@@ -222,7 +222,7 @@ namespace DiscordCoreInternal {
 
 			if (this->areWeCollectingData && payload["t"] == "VOICE_SERVER_UPDATE" && !this->serverUpdateCollected) {
 				if (!this->serverUpdateCollected && !this->stateUpdateCollected) {
-					this->voiceConnectionData = VoiceConnectionData();
+					this->voiceConnectionData = VoiceConnectionData{};
 					this->voiceConnectionData.endPoint = payload["d"]["endpoint"].get<std::string>();
 					this->voiceConnectionData.token = payload["d"]["token"].get<std::string>();
 					this->serverUpdateCollected = true;
@@ -240,7 +240,7 @@ namespace DiscordCoreInternal {
 
 			if (this->areWeCollectingData && payload["t"] == "VOICE_STATE_UPDATE" && !this->stateUpdateCollected && payload["d"]["member"]["user"]["id"] == this->userId) {
 				if (!this->stateUpdateCollected && !this->serverUpdateCollected) {
-					this->voiceConnectionData = VoiceConnectionData();
+					this->voiceConnectionData = VoiceConnectionData{};
 					this->voiceConnectionData.sessionId = payload["d"]["session_id"].get<std::string>();
 					this->stateUpdateCollected = true;
 				} else {
@@ -1372,5 +1372,6 @@ namespace DiscordCoreInternal {
 				this->theTask.reset(nullptr);
 			}
 		}
+		this->baseSocketAgent->voiceConnectionDataBufferMap.erase(this->voiceConnectInitData.guildId);
 	};
 }
