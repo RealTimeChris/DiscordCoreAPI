@@ -508,8 +508,7 @@ namespace DiscordCoreInternal {
 		}
 
 		if (dataPackage.message.components.size() == 0) {
-			auto componentsActionRow = nlohmann::json::array();
-			data["message"]["components"] = componentsActionRow;
+			data["message"]["components"] = nlohmann::json::array();
 		} else {
 			data["message"]["components"] = nlohmann::json{ dataPackage.message.components };
 		}
@@ -626,8 +625,7 @@ namespace DiscordCoreInternal {
 		}
 
 		if (dataPackage.data.components.size() == 0) {
-			auto componentsActionRow = nlohmann::json::array();
-			data["data"]["components"] = componentsActionRow;
+			data["data"]["components"] = nlohmann::json::array();
 		} else {
 			data["data"]["components"] = nlohmann::json{ dataPackage.data.components };
 		}
@@ -859,8 +857,7 @@ namespace DiscordCoreInternal {
 		}
 
 		if (dataPackage.components.size() == 0) {
-			auto componentsActionRow = nlohmann::json::array();
-			data["components"] = componentsActionRow;
+			data["components"] = nlohmann::json::array();
 		} else {
 			data["components"] = nlohmann::json{ dataPackage.components };
 		}
@@ -932,8 +929,7 @@ namespace DiscordCoreInternal {
 		}
 
 		if (dataPackage.components.size() == 0) {
-			auto componentsActionRow = nlohmann::json::array();
-			data["components"] = componentsActionRow;
+			data["components"] = nlohmann::json::array();
 		} else {
 			data["components"] = nlohmann::json{ dataPackage.components };
 		}
@@ -967,8 +963,7 @@ namespace DiscordCoreInternal {
 		}
 
 		if (dataPackage.components.size() == 0) {
-			auto componentsActionRow = nlohmann::json::array();
-			data["components"] = componentsActionRow;
+			data["components"] = nlohmann::json::array();
 		} else {
 			data["components"] = nlohmann::json{ dataPackage.components };
 		}
@@ -1073,8 +1068,7 @@ namespace DiscordCoreInternal {
 		}
 
 		if (dataPackage.components.size() == 0) {
-			auto componentsActionRow = nlohmann::json::array();
-			data["components"] = componentsActionRow;
+			data["components"] = nlohmann::json::array();
 		} else {
 			data["components"] = nlohmann::json{ dataPackage.components };
 		}
