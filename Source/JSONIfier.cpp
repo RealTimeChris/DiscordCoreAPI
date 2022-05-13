@@ -75,9 +75,9 @@ namespace DiscordCoreAPI {
 	}
 
 	void to_json(nlohmann::json& jsonOut, const std::vector<ActionRowData>& dataPackage) {
-		auto componentsActionRow = nlohmann::json::array();
+		nlohmann::json componentsActionRow{};
 		for (auto& value: dataPackage) {
-			auto components = nlohmann::json::array();
+			nlohmann::json components{};
 			for (auto& valueNew: value.components) {
 				if (valueNew.type == DiscordCoreAPI::ComponentType::Button) {
 					nlohmann::json component{};
@@ -94,7 +94,7 @@ namespace DiscordCoreAPI {
 					component["url"] = valueNew.url;
 					components.push_back(component);
 				} else if (valueNew.type == DiscordCoreAPI::ComponentType::SelectMenu) {
-					nlohmann::json optionsArray = nlohmann::json::array();
+					nlohmann::json optionsArray{};
 					for (auto& value01: valueNew.options) {
 						nlohmann::json option{};
 						if (value01.emoji.name != "") {
@@ -142,7 +142,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void to_json(nlohmann::json& jsonOut, const DiscordCoreAPI::EmbedData& valueNew) {
-		auto fields = nlohmann::json::array();
+		nlohmann::json fields{};
 
 		for (auto& value2: valueNew.fields) {
 			fields.push_back(value2);
@@ -256,7 +256,7 @@ namespace DiscordCoreInternal {
 	}
 
 	nlohmann::json JSONIFY(DiscordCoreAPI::UpdatePresenceData dataPackage) {
-		auto activitiesArray = nlohmann::json::array();
+		nlohmann::json activitiesArray{};
 		nlohmann::json data{};
 		data["activities"] = nlohmann::json{};
 		for (auto& value: dataPackage.activities) {
@@ -507,10 +507,8 @@ namespace DiscordCoreInternal {
 			data["message"]["attachments"].push_back(value);
 		}
 
-		if (dataPackage.message.components.size() == 0) {
-			data["message"]["components"] = nlohmann::json::array();
-		} else {
-			data["message"]["components"] = nlohmann::json{ dataPackage.message.components };
+		if (dataPackage.message.components.size() > 0) {
+			data["components"] = dataPackage.message.components;
 		}
 
 		data["message"]["allowed_mentions"] = dataPackage.message.allowedMentions;
@@ -582,7 +580,7 @@ namespace DiscordCoreInternal {
 	}
 
 	std::string JSONIFY(DiscordCoreAPI::ModifyGuildWelcomeScreenData dataPackage) {
-		nlohmann::json channelsArray = nlohmann::json::array();
+		nlohmann::json channelsArray{};
 
 		for (auto& value: dataPackage.welcomeChannels) {
 			nlohmann::json newData{};
@@ -624,10 +622,8 @@ namespace DiscordCoreInternal {
 			data["data"]["attachments"].push_back(value);
 		}
 
-		if (dataPackage.data.components.size() == 0) {
-			data["data"]["components"] = nlohmann::json::array();
-		} else {
-			data["data"]["components"] = nlohmann::json{ dataPackage.data.components };
+		if (dataPackage.data.components.size() > 0) {
+			data["data"]["components"] = dataPackage.data.components;
 		}
 
 		data["data"]["allowed_mentions"] = dataPackage.data.allowedMentions;
@@ -727,7 +723,7 @@ namespace DiscordCoreInternal {
 		if (dataPackage.roleIds.size() == 0) {
 			data["roles"] = nullptr;
 		} else {
-			nlohmann::json roleIdArray = nlohmann::json::array();
+			nlohmann::json roleIdArray{};
 			for (auto& value: dataPackage.roleIds) {
 				roleIdArray.push_back(value);
 			}
@@ -856,10 +852,8 @@ namespace DiscordCoreInternal {
 			data["attachments"].push_back(value);
 		}
 
-		if (dataPackage.components.size() == 0) {
-			data["components"] = nlohmann::json::array();
-		} else {
-			data["components"] = nlohmann::json{ dataPackage.components };
+		if (dataPackage.components.size() > 0) {
+			data["components"] = dataPackage.components;
 		}
 
 		data["allowed_mentions"] = dataPackage.allowedMentions;
@@ -888,7 +882,7 @@ namespace DiscordCoreInternal {
 	}
 
 	std::string JSONIFY(DiscordCoreAPI::ModifyChannelData dataPackage) {
-		auto permOws = nlohmann::json::array();
+		nlohmann::json permOws{};
 		for (auto& [key, value]: dataPackage.channelData.permissionOverwrites) {
 			nlohmann::json newData{};
 			newData["allow"] = value.allow.getCurrentPermissionString();
@@ -928,10 +922,8 @@ namespace DiscordCoreInternal {
 			data["message_reference"] = dataPackage.messageReference;
 		}
 
-		if (dataPackage.components.size() == 0) {
-			data["components"] = nlohmann::json::array();
-		} else {
-			data["components"] = nlohmann::json{ dataPackage.components };
+		if (dataPackage.components.size() > 0) {
+			data["components"] = dataPackage.components;
 		}
 
 		data["allowed_mentions"] = dataPackage.allowedMentions;
@@ -962,10 +954,8 @@ namespace DiscordCoreInternal {
 			data["attachments"].push_back(value);
 		}
 
-		if (dataPackage.components.size() == 0) {
-			data["components"] = nlohmann::json::array();
-		} else {
-			data["components"] = nlohmann::json{ dataPackage.components };
+		if (dataPackage.components.size() > 0) {
+			data["components"] = dataPackage.components;
 		}
 
 		data["allowed_mentions"] = dataPackage.allowedMentions;
@@ -1067,10 +1057,8 @@ namespace DiscordCoreInternal {
 			data["attachments"].push_back(value);
 		}
 
-		if (dataPackage.components.size() == 0) {
-			data["components"] = nlohmann::json::array();
-		} else {
-			data["components"] = nlohmann::json{ dataPackage.components };
+		if (dataPackage.components.size() > 0) {
+			data["components"] = dataPackage.components;
 		}
 
 		data["allowed_mentions"] = dataPackage.allowedMentions;
