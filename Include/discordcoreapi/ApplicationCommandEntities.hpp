@@ -30,8 +30,8 @@ namespace DiscordCoreAPI {
 
 	/// For getting all of the Global Application Commands. \brief For getting all of the Global Application Commands.
 	struct DiscordCoreAPI_Dll GetGlobalApplicationCommandsData {
-		std::string applicationId{};///< The current application's Id (The Bot's User Id).
 		bool withLocalizations{ false };///< Do we collect the name-and-description localizations?
+		std::string applicationId{};///< The current application's Id (The Bot's User Id).
 	};
 
 	/// For collecting a single global ApplicationCommand. \brief For collecting a single global ApplicationCommand.
@@ -45,11 +45,11 @@ namespace DiscordCoreAPI {
 		std::unordered_map<std::string, std::string> descriptionLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the description field.
 		std::unordered_map<std::string, std::string> nameLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the name field.
 		std::vector<ApplicationCommandOptionData> options{};///< The options for the ApplicationCommand.
-		std::string defaultMemberPermissions{};///< Set of permissions represented as a bit set. only for globally - scoped commands.
-		std::string applicationId{};///< Application id.
+		std::string defaultMemberPermissions{};///< Set of permissions represented as a bit set. only for globally - scoped commands.	
 		ApplicationCommandType type{};///< The type of ApplicationCommand.
-		std::string description{};///< A description of the command.
+		std::string applicationId{};///< Application id.
 		bool dmPermission{ false };///< Indicates whether the command is available in DMs with the app,
+		std::string description{};///< A description of the command.
 		std::string name{};///< A name for the new command.
 	};
 
@@ -60,8 +60,8 @@ namespace DiscordCoreAPI {
 		std::vector<ApplicationCommandOptionData> options{};///< The options for the ApplicationCommand.
 		std::string defaultMemberPermissions{};///< Set of permissions represented as a bit set. only for globally - scoped commands.
 		std::string applicationId{};///< The current application's Id (The Bot's User Id).
-		std::string description{};///< A description of the command.
 		bool dmPermission{ false };///< Indicates whether the command is available in DMs with the app.
+		std::string description{};///< A description of the command.
 		std::string name{};///< A name for the new command.
 	};
 
@@ -90,10 +90,10 @@ namespace DiscordCoreAPI {
 		std::unordered_map<std::string, std::string> nameLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the name field.
 		std::vector<ApplicationCommandOptionData> options{};///< The options for the ApplicationCommand.
 		std::string defaultMemberPermissions{};///< Set of permissions represented as a bit set. only for globally - scoped commands.
-		std::string applicationId{};///< Application id.
 		ApplicationCommandType type{};///< The type of ApplicationCommand.
-		std::string description{};///< A description of the command.
+		std::string applicationId{};///< Application id.
 		bool dmPermission{ false };///< Indicates whether the command is available in DMs with the app,
+		std::string description{};///< A description of the command.
 		std::string guildId{};///< The guild's id.
 		std::string name{};///< A name for the new command.
 	};
@@ -112,8 +112,8 @@ namespace DiscordCoreAPI {
 		std::vector<ApplicationCommandOptionData> options{};///< The options for the ApplicationCommand.
 		std::string defaultMemberPermissions{};///< Set of permissions represented as a bit set. only for globally - scoped commands.
 		std::string applicationId{};///< The current application's Id (The Bot's User Id).
-		std::string description{};///< A description of the command.
 		bool dmPermission{ false };///< Indicates whether the command is available in DMs with the app.
+		std::string description{};///< A description of the command.
 		std::string guildId{};///< The id of the Guild which you would like to add the new command to.
 		std::string name{};///< A name for the new command.
 	};

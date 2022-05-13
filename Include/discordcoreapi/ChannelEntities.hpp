@@ -81,8 +81,8 @@ namespace DiscordCoreAPI {
 		InviteTargetTypes targetType{};///<	The type of target for this voice Channel invite.
 		std::string targetUserId{};///< Id of the user whose stream to display for this invite, required if target_type is 1.
 		std::string channelId{};///< The id of the Channel to create the invite for.
-		std::string reason{};///< Reason for creating the invite.
 		bool temporary{ false };///< Whether this invite only grants temporary membership.
+		std::string reason{};///< Reason for creating the invite.
 		bool unique{ false };///< If true, don't try to reuse a similar invite (useful for creating many unique one time use invites).
 		int32_t maxUses{ 0 };///< Max number of uses or 0 for unlimited.between 0 and 100.
 		int32_t maxAge{ 0 };///< Duration of invite in seconds before expiry, or 0 for never.between 0 and 604800 (7 days)	86400 (24 hours).
@@ -116,14 +116,14 @@ namespace DiscordCoreAPI {
 		std::vector<OverWriteData> permissionOverwrites{};///< Array of overwrite objects	the Channel's permission overwrites.
 		int32_t defaultAutoArchiveDuration{ 0 };///< Defualt duration of time before archiving a thread.
 		int32_t rateLimitPerUser{ 0 };///< Amount of seconds a user has to wait before sending another message(0 - 21600).
+		int32_t userLimit{ 0 };///< The user limit of the voice Channel(voice only).
 		std::string parentId{};///< Id of the parent category for a Channel.
 		std::string guildId{};///< The Guild within which to create the Channel.
-		std::string reason{};///< Reason for creating the Channel.
-		std::string topic{};///< Channel topic(0 - 1024 characters).
-		int32_t userLimit{ 0 };///< The user limit of the voice Channel(voice only).
-		std::string name{};///< The name of the Channel.
 		int32_t position{ 0 };///< Sorting position of the Channel.
 		int32_t bitrate{ 0 };///< The bitrate(in bits) of the voice Channel(voice only).
+		std::string reason{};///< Reason for creating the Channel.
+		std::string topic{};///< Channel topic(0 - 1024 characters).
+		std::string name{};///< The name of the Channel.
 		ChannelType type{};///< The type of Channel.
 		bool nsfw{ false };///<  Whether the Channel is nsfw.
 	};

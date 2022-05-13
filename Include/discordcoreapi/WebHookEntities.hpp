@@ -215,12 +215,12 @@ namespace DiscordCoreAPI {
 		AllowedMentionsData allowedMentions{};///< Allowed mention object.
 		std::vector<EmbedData> embeds{};///< Array of up to 10 embed objects.
 		std::string webhookToken{};///< The WebHook token you would like to execute.
+		std::vector<File> files{};///< File contents the contents of the file being sent.
 		std::string avatarUrl{};///< Override the default avatar of the webhook.
 		std::string webhookId{};///< The WebHook you would like to execute.
 		std::string username{};///< Override the default username of the webhook.
 		std::string customId{};///< Custom id for the modal.
 		std::string content{};///< The message contents (up to 2000 characters)	one of content, file, embeds.
-		std::vector<File> files{};///< File contents the contents of the file being sent.
 		std::string title{};///< Title for the modal.
 		int32_t flags{ 0 };///< Flags combined as a bitfield.
 		bool tts{ false };///< True if this is a TTS message.

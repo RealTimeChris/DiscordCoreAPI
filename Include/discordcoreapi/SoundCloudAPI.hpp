@@ -69,9 +69,9 @@ namespace DiscordCoreInternal {
 		void cancelCurrentSong();
 
 	  protected:
-		HttpClient* httpClient{ nullptr };
 		SoundCloudRequestBuilder requestBuilder{};
 		const int32_t maxBufferSize{ 8192 };
+		HttpClient* httpClient{ nullptr };
 		DiscordCoreAPI::Song theSong{};
 		std::string guildId{};
 	};

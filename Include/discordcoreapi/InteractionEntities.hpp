@@ -448,9 +448,9 @@ namespace DiscordCoreAPI {
 
 	/// For getting a follow-up Message. \brief For getting a follow-up Message.
 	struct DiscordCoreAPI_Dll GetFollowUpMessageData {
-		std::string messageId{};///< Message id.
 		std::string interactionToken{};///< Interaction token.
 		std::string applicationId{};///< application id.
+		std::string messageId{};///< Message id.
 	};
 
 	/// For editing a follow up Message. \brief For editing a follow up Message.

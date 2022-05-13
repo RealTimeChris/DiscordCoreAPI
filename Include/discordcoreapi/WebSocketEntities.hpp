@@ -80,17 +80,18 @@ namespace DiscordCoreInternal {
 		int32_t heartbeatInterval{ 0 };
 		std::mutex accessorMutex01{};
 		EventWaiter doWeReconnect{};
-		std::string sessionId{};
 		bool areWeResuming{ false };
 		bool printMessages{ false };
-		std::string botToken{};
-		std::string baseUrl{};
 		int32_t currentShard{ 0 };
 		int32_t numOfShards{ 0 };
-		std::string userId{};
+		std::string sessionId{};
 		uint32_t closeCode{ 0 };
 		WebSocketState state{};
+		std::string botToken{};
 		ErlPacker erlPacker{};
+		std::string baseUrl{};
+		std::string userId{};
+		
 
 		uint64_t createHeader(char* outbuf, uint64_t sendlength, WebSocketOpCode opCode) noexcept;
 
@@ -148,9 +149,9 @@ namespace DiscordCoreInternal {
 		EventWaiter areWeConnected{};
 		EventWaiter doWeReconnect{};
 		bool printMessages{ false };
+		uint32_t closeCode{ 0 };
 		std::string baseUrl{};
 		std::string hostIp{};
-		uint32_t closeCode{ 0 };
 
 		uint64_t createHeader(char* outbuf, uint64_t sendlength, WebSocketOpCode opCode) noexcept;
 

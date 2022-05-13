@@ -56,16 +56,16 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll ModifyCurrentUserVoiceStateData {
 		std::string requestToSpeakTimestamp{};///< ISO8601 timestamp.
 		std::string channelId{};///< The id of the Channel the user is currently in.
-		std::string guildId{};///< The Guild within which to update the bot's voice state.
 		bool suppress{ false };///< Toggles the user's suppress state.
+		std::string guildId{};///< The Guild within which to update the bot's voice state.
 	};
 
 	/// For modifying a User's voice state. \brief For modifying a User's voice state.
 	struct DiscordCoreAPI_Dll ModifyUserVoiceStateData {
 		std::string channelId{};///< The id of the Channel the user is currently in.
+		bool suppress{ false };///< Toggles the user's suppress state.
 		std::string guildId{};///< The Guild within which you would like to modify their voice state.
 		std::string userId{};///< The user for which you would like to modify the voice state of.
-		bool suppress{ false };///< Toggles the user's suppress state.
 	};
 
 	/// For getting User responseData from the library's cache or the Discord server. \brief For getting User responseData from the library's cache or the Discord server.

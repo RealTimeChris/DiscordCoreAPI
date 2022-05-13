@@ -1072,12 +1072,12 @@ namespace DiscordCoreAPI {
 
 		std::string unicodeEmoji{};///< Emoji representing the Role.
 		Permissions permissions{};///< The Role's base Guild Permissions.
+		int32_t position{ 0 };///< Its position amongst the rest of the Guild's roles.
+		int8_t roleFlags{ 0 };///< Role flags.
+		RoleTagsData tags{};///< Role tags for the Role.
 		std::string name{};///< The Role's name.
 		std::string icon{};///< Icon representing the Role.
-		int32_t position{ 0 };///< Its position amongst the rest of the Guild's roles.
-		RoleTagsData tags{};///< Role tags for the Role.
 		int32_t color{ 0 };///< The Role's color.
-		int8_t roleFlags{ 0 };///< Role flags.
 
 		virtual ~RoleData() = default;
 	};
@@ -1138,14 +1138,14 @@ namespace DiscordCoreAPI {
 		UserData() = default;
 
 		std::string discriminator{};///< The # next to their User name.
-		std::string createdAt{};///< When the User was created.
-		std::string userName{};///< Their username.
 		int32_t premiumType{ 0 };///< Their premium nitro status.
 		int32_t publicFlags{ 0 };///< Public flags.
+		std::string createdAt{};///< When the User was created.
+		std::string userName{};///< Their username.
+		int8_t userFlags{ 0 };///< User flags.
 		std::string avatar{};///< Their avatar url.
 		std::string locale{};///< The region they are from/in.
 		std::string email{};///< Their email address.
-		int8_t userFlags{ 0 };///< User flags.
 		int32_t flags{ 0 };///< Flags.
 
 		virtual ~UserData() = default;
@@ -1156,13 +1156,13 @@ namespace DiscordCoreAPI {
 	  public:
 		std::string contentType{};///< Type of content for the attachment.
 		std::string description{};///< A description of the attachment.
+		bool ephemeral{ false };///< Whether it was an ephemeral response.
 		std::string filename{};///< The file name of the attachment.
 		std::string proxyUrl{};///< The proxy url for the attachment.
-		bool ephemeral{ false };///< Whether it was an ephemeral response.
-		std::string url{};///< The url for the attachment.
 		int32_t height{ 0 };///< The height of the attachment.
 		int32_t width{ 0 };///< The width of the attachment.
 		int32_t size{ 0 };///< The size of the attachment.
+		std::string url{};///< The url for the attachment.
 
 		virtual ~AttachmentData() = default;
 	};
@@ -1192,17 +1192,17 @@ namespace DiscordCoreAPI {
 	/// Embed thumbnail data. \brief Embed thumbnail data.
 	struct DiscordCoreAPI_Dll EmbedThumbnailData {
 		std::string proxyUrl{};///< Proxy url.
-		std::string url{};///< Image url.
 		int32_t height{ 0 };///< Image height.
 		int32_t width{ 0 };///< Image width.
+		std::string url{};///< Image url.
 	};
 
 	/// Embed video data. \brief Embed video data.
 	struct DiscordCoreAPI_Dll EmbedVideoData {
 		std::string proxyUrl{};///< Proxy url.
-		std::string url{};///< Image url.
 		int32_t height{ 0 };///< Image height.
 		int32_t width{ 0 };///< Image width.
+		std::string url{};///< Image url.
 	};
 
 	/// Embed provider data. \brief Embed provider data.
@@ -1221,9 +1221,9 @@ namespace DiscordCoreAPI {
 
 	/// Embed field data. \brief Embed field data.
 	struct DiscordCoreAPI_Dll EmbedFieldData {
+		bool Inline{ false };///< Is the field inline with the rest of them?
 		std::string value{};///< The text on the field.
 		std::string name{};///< The title of the field.
-		bool Inline{ false };///< Is the field inline with the rest of them?
 	};
 
 	/// Embed types. \brief Embed types.
@@ -1242,15 +1242,15 @@ namespace DiscordCoreAPI {
 		std::string hexColorValue{ "000000" };///< Hex color value of the embed.
 		std::vector<EmbedFieldData> fields{};///< Array of embed fields.
 		EmbedThumbnailData thumbnail{};///< Embed thumbnail data.
-		std::string description{};///< Description of the embed.
 		EmbedProviderData provider{};///< Embed provider data.
-		std::string timestamp{};///< Timestamp to be placed on the embed.
+		std::string description{};///< Description of the embed.
 		EmbedFooterData footer{};///< Embed footer data.
 		EmbedAuthorData author{};///< Embed author data.
-		std::string title{};///< Title of the embed.
-		std::string type{};///< Type of the embed.
+		std::string timestamp{};///< Timestamp to be placed on the embed.
 		EmbedImageData image{};///< Embed image data.
 		EmbedVideoData video{};///< Embed video data.
+		std::string title{};///< Title of the embed.
+		std::string type{};///< Type of the embed.
 		std::string url{};///< Url for the embed.
 
 		/// Sets the author's name and avatar for the embed. \brief Sets the author's name and avatar for the embed.
@@ -1287,7 +1287,7 @@ namespace DiscordCoreAPI {
 		/// \param Inline Is it inline with the rest of the fields on the embed?
 		/// \returns EmbedData& A reference to this embed.
 		EmbedData& addField(std::string name, std::string value, bool Inline = true) {
-			this->fields.push_back(EmbedFieldData{ .value = value, .name = name, .Inline = Inline });
+			this->fields.push_back(EmbedFieldData{ .Inline = Inline, .value = value, .name = name });
 			return *this;
 		}
 
@@ -1385,7 +1385,7 @@ namespace DiscordCoreAPI {
 	/// Meta data for a Thread type of Channel. \brief Meta data for a Thread type of Channel.
 	struct DiscordCoreAPI_Dll ThreadMetadataData {
 		int32_t autoArchiveDuration{ 0 };///< How int64_t before archiving this Thread.
-		TimeStamp archiveTimestamp{};///< (Where applicable) the time at which this Thread was archived.
+		TimeStamp archiveTimestamp{ "" };///< (Where applicable) the time at which this Thread was archived.
 		bool invitable{ false };///< The id of the individual who archived this Thread.
 		bool archived{ false };///< Whether or not this Thread is currently archived.
 		bool locked{ false };///< Whether or not this Thread is currently locked.
@@ -1394,7 +1394,7 @@ namespace DiscordCoreAPI {
 	/// Data for a single member of a Thread. \brief Data for a single member of a Thread.
 	class DiscordCoreAPI_Dll ThreadMemberData : public DiscordEntity {
 	  public:
-		TimeStamp joinTimestamp{};///< The time at which the member joined this Thread.
+		TimeStamp joinTimestamp{ "" };///< The time at which the member joined this Thread.
 		std::string userId{};///< The User's id.
 		int32_t flags{ 0 };///< Flags.
 
@@ -1438,26 +1438,26 @@ namespace DiscordCoreAPI {
 		int32_t defaultAutoArchiveDuration{ 0 };///< Default time it takes to archive a thread.
 		ThreadMetadataData threadMetadata{};///< Metadata in the case that this Channel is a Thread.
 		ChannelType type{ ChannelType::Dm };///< The type of the Channel.
-		TimeStamp lastPinTimestamp{};///< Timestamp of the last pinned Message.
-		std::string lastMessageId{};///< Id of the last Message.
-		std::string applicationId{};///< Application id of the current application.
+		TimeStamp lastPinTimestamp{ "" };///< Timestamp of the last pinned Message.
 		int32_t videoQualityMode{ 0 };///< Video quality mode.
 		int32_t rateLimitPerUser{ 0 };///< Amount of seconds a User has to wait before sending another Message.
+		std::string lastMessageId{};///< Id of the last Message.
+		std::string applicationId{};///< Application id of the current application.
+		ThreadMemberData member{};///< Thread member object for the current User, if they have joined the Thread.
+		int32_t messageCount{ 0 };///< An approximate count of Messages in a Thread stops counting at 50.
 		std::string permissions{};///< Computed permissions for the invoking user in the channel, including overwrites.
+		int8_t channelFlags{ 0 };///< Channel flags.
+		int32_t memberCount{ 0 };///< Count of members active in the Channel.
 		std::string rtcRegion{};///< Real-time clock region.
+		int32_t userLimit{ 0 };///< User limit, in the case of voice channels.
 		std::string parentId{};///< Id of the parent Channel, if applicable.
 		std::string guildId{};///< Id of the Channel's Guild, if applicable.
 		std::string ownerId{};///< Id of the Channel's owner.
-		ThreadMemberData member{};///< Thread member object for the current User, if they have joined the Thread.
-		int32_t messageCount{ 0 };///< An approximate count of Messages in a Thread stops counting at 50.
-		int8_t channelFlags{ 0 };///< Channel flags.
-		int32_t memberCount{ 0 };///< Count of members active in the Channel.
-		std::string topic{};///< The Channel's topic.
-		int32_t userLimit{ 0 };///< User limit, in the case of voice channels.
-		std::string name{};///< Name of the Channel.
-		std::string icon{};///< Icon for the Channel, if applicable.
 		int32_t position{ 0 };///< The position of the Channel, in the Guild's Channel list.
 		int32_t bitrate{ 0 };///< Bitrate of the Channel, if it is a voice Channel.
+		std::string topic{};///< The Channel's topic.
+		std::string name{};///< Name of the Channel.
+		std::string icon{};///< Icon for the Channel, if applicable.
 		int64_t flags{ 0 };///< Channel flags combined as a bitfield.
 
 		virtual ~ChannelData() = default;
@@ -1506,14 +1506,14 @@ namespace DiscordCoreAPI {
 			return this->guildMemberFlags & static_cast<uint8_t>(GuildMemberFlags::Mute);
 		}
 
-		TimeStamp communicationDisabledUntil{};///< When the user's timeout will expire and the user will be able to communicate in the guild again.
+		TimeStamp communicationDisabledUntil{ "" };///< When the user's timeout will expire and the user will be able to communicate in the guild again.
 		std::vector<std::string> roles{};///< The Guild roles that they have.
-		std::string premiumSince{};///< If applicable, when they first boosted the server.
 		int8_t guildMemberFlags{ 0 };///< GuildMember flags.
-		Permissions permissions{};///< Their base-level Permissions in the Guild.
+		std::string premiumSince{};///< If applicable, when they first boosted the server.
+		Permissions permissions{};///< Their base-level Permissions in the Guild.		
+		TimeStamp joinedAt{ "" };///< When they joined the Guild.
 		std::string guildId{};///< The current Guild's id.
 		std::string avatar{};///< The member's guild avatar hash.
-		TimeStamp joinedAt{};///< When they joined the Guild.
 		std::string nick{};///< Their nick/display name.
 		UserData user{};///< User data for the current GuildMember.
 
@@ -1522,17 +1522,17 @@ namespace DiscordCoreAPI {
 
 	/// Voice state data. \brief Voice state data.
 	struct DiscordCoreAPI_Dll VoiceStateData {
-		TimeStamp requestToSpeakTimestamp{};///< The time at which the User requested to speak.
-		std::string channelId{};///< The Channel id this User is connected to.
-		std::string sessionId{};///< The session id for this voice state.
-		std::string guildId{};///< The Guild id this voice state is for.
-		std::string userId{};///< The User id this voice state is for.
+		TimeStamp requestToSpeakTimestamp{ "" };///< The time at which the User requested to speak.
 		GuildMemberData member{};///< The Guild member this voice state is for.
 		bool selfStream{ false };///< Whether this User is streaming using "Go Live".
 		bool selfVideo{ false };///< Whether this User's camera is enabled.
+		std::string channelId{};///< The Channel id this User is connected to.
+		std::string sessionId{};///< The session id for this voice state.
 		bool selfDeaf{ false };///< Whether this User is locally deafened.
 		bool selfMute{ false };///< Whether this User is locally muted.
 		bool suppress{ false };///< Whether this User is muted by the current User.
+		std::string guildId{};///< The Guild id this voice state is for.
+		std::string userId{};///< The User id this voice state is for.
 		bool deaf{ false };///< Whether this User is deafened by the server.
 		bool mute{ false };///< Whether this User is muted by the server.
 	};
@@ -1596,8 +1596,8 @@ namespace DiscordCoreAPI {
 		bool requireColons{ false };///< Require colons to render it?
 		bool available{ true };///< Is it available to be used?
 		bool animated{ false };///< Is it animated?
-		std::string name{};///< What is its name?
 		bool managed{ false };///< Is it managed?
+		std::string name{};///< What is its name?
 		UserData user{};///< User that created this emoji.
 
 		virtual ~EmojiData() = default;
@@ -1609,13 +1609,13 @@ namespace DiscordCoreAPI {
 		int32_t defaultAutoArchiveDuration{ 10080 };
 		int32_t videoQualityMode{ 1 };
 		int32_t rateLimitPerUser{ 0 };
+		int32_t bitrate{ 48000 };
 		std::string parentId{};
 		std::string rtcRgion{};
-		int32_t bitrate{ 48000 };
-		std::string topic{};
 		int32_t userLimit{ 0 };
-		std::string name{};
 		int32_t position{ 0 };
+		std::string topic{};
+		std::string name{};
 		ChannelType type{};
 		bool nsfw{ false };
 	};
@@ -1623,11 +1623,11 @@ namespace DiscordCoreAPI {
 	/// Data structure representing a single reaction. \brief/// Data structure representing a single reaction.
 	class DiscordCoreAPI_Dll ReactionData : public DiscordEntity {
 	  public:
+		GuildMemberData member{};///< The GuildMember who placed the reaction.
 		std::string channelId{};///< The id of the Channel where it was placed.
 		std::string messageId{};///< The id of the Message upon which it was placed.
 		std::string guildId{};///< The id of the Guild where it was placed.
 		std::string userId{};///< The id of the User who placed the reaction.
-		GuildMemberData member{};///< The GuildMember who placed the reaction.
 		int32_t count{ 0 };///< The number of times this particular emoji was placed as a reaction to the given Message.
 		EmojiData emoji{};///< The emoji that was placed as a reaction.
 		bool me{ false };///< Whether or not I (The bot) placed it.
@@ -1676,9 +1676,9 @@ namespace DiscordCoreAPI {
 	/// For updating the current voice state. \brief For updating the current voice state.
 	struct DiscordCoreAPI_Dll UpdateVoiceStateData {
 		std::string channelId{};///< Id of the desired voice Channel. Leave blank to disconnect.
-		std::string guildId{};///< The id of the Guild fo which we would like to establish a voice connection.
 		bool selfMute{ false };///< Whether or not we self-mute ourselves.
 		bool selfDeaf{ false };///< Whether or not we self-deafen ourselves.
+		std::string guildId{};///< The id of the Guild fo which we would like to establish a voice connection.
 	};
 
 	/// Team object data. \brief Team object data.
@@ -1701,14 +1701,14 @@ namespace DiscordCoreAPI {
 		std::string primarySkuId{};///< Primary SKU Id.
 		std::string description{};///< Description of the application.
 		std::string coverImage{};///< The cover image.
+		bool botPublic{ false };///< Is the bot public?
 		std::string verifyKey{};///< The verification key.
 		std::string summary{};///< Summary of the application.
 		std::string guildId{};///< Guild id.
-		bool botPublic{ false };///< Is the bot public?
+		TeamObjectData team{};///< Team object data.
 		std::string slug{};///< Sluhg.
 		std::string name{};///< Application's name.
 		std::string icon{};///< Application's icon.
-		TeamObjectData team{};///< Team object data.
 		int32_t flags{ 0 };///< Application flags.
 		UserData owner{};///< Application's owner.
 
@@ -1758,14 +1758,14 @@ namespace DiscordCoreAPI {
 		int32_t subscriberCount{ 0 };///< Number of current subscribers.
 		bool enableEmoticons{ true };///< Emoticons enabled?
 		int32_t expireBehavior{ 0 };///< What to do upon expiry.
-		TimeStamp syncedAt{};///< Time it was last synced at.
-		std::string roleId{};///< Role Id.
-		std::string name{};///< Name of the integration.
-		std::string type{};///< Type of integration.
+		TimeStamp syncedAt{ "" };///< Time it was last synced at.
 		bool enabled{ false };///< Enabled?
 		bool syncing{ false };///< Is it syncing?
 		AccountData account{};///< Account data.
 		bool revoked{ false };///< Has it been revoked?
+		std::string roleId{};///< Role Id.
+		std::string name{};///< Name of the integration.
+		std::string type{};///< Type of integration.
 		UserData user{};///< User data for the integration.
 
 		virtual ~IntegrationData() = default;
@@ -1856,8 +1856,8 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll AuditLogEntryData : public DiscordEntity {
 	  public:
 		std::vector<AuditLogChangeData> changes{};///< Array of audit log change data.
-		std::string createdTimeStamp{};///< Time at which this entry was created.
 		AuditLogEntryInfoData options{};///< Audit log entry info data.
+		std::string createdTimeStamp{};///< Time at which this entry was created.
 		AuditLogEvent actionType{};///< Audit log action type.
 		std::string targetId{};///< Id of the target User.
 		std::string userId{};///< Id of the executing User.
@@ -1915,17 +1915,17 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll ActivityData {
 		std::string applicationId{};///< Application id for the current application.
 		TimestampData timestamps{};///< Timestamp data.
-		std::string details{};///< Details about the activity.
-		std::string state{};///< The player's current party status.
 		int32_t createdAt{ 0 };///< Timestamp of when the activity began.
 		bool instance{ false };///< Whether this activity is an instanced context, like a match.
-		std::string name{};///< Name of the activity.
-		std::string url{};///< Url associated with the activity.
 		SecretsData secrets{};///< Secrets data.
+		std::string details{};///< Details about the activity.
 		ButtonData buttons{};///< Button Data.
 		ActivityType type{};///< Activity data.
 		AssetsData assets{};///< Assets data.
+		std::string state{};///< The player's current party status.
+		std::string name{};///< Name of the activity.
 		int32_t flags{ 0 };///< Flags.
+		std::string url{};///< Url associated with the activity.
 		EmojiData emoji{};///< Emoji associated with the activity.
 		PartyData party{};///< Party data.
 	};
@@ -2040,12 +2040,12 @@ namespace DiscordCoreAPI {
 
 		StickerFormatType formatType{};///< Format type.
 		std::string description{};///< Description of the Sticker.
-		std::string guildId{};///< The Guild id for which the Sticker exists in.
-		std::string packId{};///< Pack id of the Sticker.
 		int8_t stickerFlags{ 0 };///< Sticker flags.
-		std::string asset{};///< Asset value for the Sticker.
 		int32_t nsfwLevel{ 0 };///< NSFW warning level.
 		int32_t sortValue{ 0 };///< Where in the stack of stickers it resides.
+		std::string guildId{};///< The Guild id for which the Sticker exists in.
+		std::string packId{};///< Pack id of the Sticker.
+		std::string asset{};///< Asset value for the Sticker.
 		std::string name{};///< The Sticker's name.
 		std::string tags{};///< Tags for the Sticker to use.
 		StickerType type{};///< The type of Sticker.
@@ -2059,8 +2059,8 @@ namespace DiscordCoreAPI {
 		int32_t approximatePresenceCount{ 0 };
 		std::vector<std::string> features{};
 		int32_t approximateMemberCount{ 0 };
-		std::string discoverySplash{};
 		std::vector<EmojiData> emojis{};
+		std::string discoverySplash{};
 		std::string description{};
 		std::string splash{};
 		std::string name{};
@@ -2154,42 +2154,42 @@ namespace DiscordCoreAPI {
 		std::unordered_map<std::string, RoleData> roles{};///< Array of Guild roles.
 		std::vector<StageInstanceData> stageInstances{};///< Array of stage instances.
 		DiscordCoreClient* discordCoreClient{ nullptr };///< A pointer to the DiscordCoreClient.
-		std::string publicUpdatesChannelId{};///< Id of the public updates Channel.
 		int32_t premiumSubscriptionCount{ 0 };///< Premium subscription count.
 		int32_t approximatePresenceCount{ 0 };///< Approximate quantity of presences.
 		VerificationLevel verificationLevel{};///< Verification level required.
+		std::string publicUpdatesChannelId{};///< Id of the public updates Channel.
 		std::vector<std::string> features{};///< List of Guild features.
-		int32_t approximateMemberCount{ 0 };///< Approximate member count.
+		int32_t approximateMemberCount{ 0 };///< Approximate member count.		
+		WelcomeScreenData welcomeScreen{};///< Welcome screen for the Guild.
+		int32_t maxVideoChannelUsers{ 0 };///< Maximum quantity of users per video Channel.
+		AfkTimeOutDurations afkTimeOut{};///< Time for an individual to time out as afk.
+		int32_t systemChannelFlags{ 0 };///< System Channel flags.		
 		std::string discoverySplash{};///< Link to the discovery image's splash.
 		std::string preferredLocale{};///< Preferred locale, for voice chat servers.
 		std::string widgetChannelId{};///< Channel id for the Guild's widget.
 		std::string systemChannelId{};///< Channel id for the Guild's system Channel.
-		WelcomeScreenData welcomeScreen{};///< Welcome screen for the Guild.
-		int32_t maxVideoChannelUsers{ 0 };///< Maximum quantity of users per video Channel.
 		std::string rulesChannelId{};///< Channel id for the Guild's rules Channel.
-		AfkTimeOutDurations afkTimeOut{};///< Time for an individual to time out as afk.
 		std::string vanityUrlCode{};///< Vanity Url code, if applicable.
-		std::string applicationId{};///< The current application id.
-		int32_t systemChannelFlags{ 0 };///< System Channel flags.
+		std::string applicationId{};///< The current application id.		
 		std::string afkChannelId{};///< Channel if of the "afk" Channel.
-		std::string description{};///< Description of the Guild.
-		std::string createdAt{};///< When was the Guild created?
-		std::string iconHash{};///< Url to the Guild's icon.
+		std::string description{};///< Description of the Guild.		
 		Permissions permissions{};///< Current Permissions for the bot in the Guild.
 		PremiumTier premiumTier{};///< What is the premium tier?
 		int32_t maxPresences{ 0 };///< Max number of presences allowed.
-		std::string ownerId{};///< User id of the Guild's owner.
-		TimeStamp joinedAt{};///< When the bot joined this Guild.
 		int32_t memberCount{ 0 };///< Member count.
+		TimeStamp joinedAt{ "" };///< When the bot joined this Guild.
+		int32_t maxMembers{ 0 };///< Max quantity of members.
+		std::string createdAt{};///< When was the Guild created?
+		int8_t guildFlags{ 0 };///< Guild flags.
+		int32_t nsfwLevel{ 0 };///< NSFW warning level.
+		std::string iconHash{};///< Url to the Guild's icon.
+		std::string ownerId{};///< User id of the Guild's owner.		
 		std::string region{};///< Region of the world where the Guild's servers are.
 		std::string splash{};///< Url to the Guild's splash.
 		std::string banner{};///< Url to the Guild's banner.
-		int32_t maxMembers{ 0 };///< Max quantity of members
-		int8_t guildFlags{ 0 };///< Guild flags.
-		int32_t nsfwLevel{ 0 };///< NSFW warning level.
+		MFALevel mfaLevel{};///< MFA level.
 		std::string icon{};///< Url to the Guild's icon.
 		std::string name{};///< The Guild's name.
-		MFALevel mfaLevel{};///< MFA level.
 
 		GuildData() = default;
 
@@ -2229,15 +2229,15 @@ namespace DiscordCoreAPI {
 		GuildScheduledEventPrivacyLevel privacyLevel{};///< The privacy level of the scheduled event.
 		GuildScheduledEventMetadata entityMetadata{};///< Additional metadata for the Guild scheduled event.
 		GuildScheduledEventEntityType entityType{};///< The type of the scheduled event.
+		GuildScheduledEventStatus status{};///< The status of the scheduled event.
 		std::string scheduledStartTime{};///< The time the scheduled event will start.
 		std::string scheduledEndTime{};///< The time the scheduled event will end, required if entity_type is External.
-		GuildScheduledEventStatus status{};///< The status of the scheduled event.
 		std::string description{};///< The description of the scheduled event(1 - 1000 characters.
+		uint32_t userCount{ 0 };///< The number of users subscribed to the scheduled event.
 		std::string channelId{};///< The Channel id in which the scheduled event will be hosted, or null if scheduled entity type is External.
 		std::string creatorId{};///< The id of the User that created the scheduled event *.
 		std::string entityId{};///< The id of an entity associated with a Guild scheduled event.
 		std::string guildId{};///< The Guild id which the scheduled event belongs to.
-		uint32_t userCount{ 0 };///< The number of users subscribed to the scheduled event.
 		std::string name{};///< The name of the scheduled event(1 - 100 characters).
 		UserData creator{};///< The User that created the scheduled event.
 
@@ -2258,16 +2258,16 @@ namespace DiscordCoreAPI {
 		ApplicationData targetApplication{};///< Application data.
 		int32_t approximateMemberCount{ 0 };///< Approximate member count.
 		StageInstanceData stageInstance{};///< Stage instance data.
-		std::string guildId{};///< The Guild this invite is for.
-		TimeStamp createdAt{};///< Time it was created at.
-		TimeStamp expiresAt{};///< When the invite expires.
+		TimeStamp createdAt{ "" };///< Time it was created at.
+		TimeStamp expiresAt{ "" };///< When the invite expires.
 		int32_t targetType{ 0 };///< Target type.
 		bool temporary{ false };///< Is it temporary?
-		std::string code{};///< Unique invite code.
+		std::string guildId{};///< The Guild this invite is for.
 		UserData targetUser{};///< Target User of the invite.
 		ChannelData channel{};///< Channel data of the Channel that the invite is for.
 		int32_t maxUses{ 0 };///< Max number of uses.
 		int32_t maxAge{ 0 };///< Maximum age of the invite.
+		std::string code{};///< Unique invite code.
 		UserData inviter{};///< The User who created the invite.
 		GuildData guild{};///< Guild data of the Channel that the invite is for.
 		int32_t uses{ 0 };///< The current number of uses.
@@ -2278,13 +2278,13 @@ namespace DiscordCoreAPI {
 		GuildData serializedSourceGuild{};///< The Guild snapshot this template contains.
 		std::string sourceGuildId{};///< The ID of the Guild this template is based on.
 		std::string description{};///< The description for the template.
+		uint32_t usageCount{ 0 };///< Number of times this template has been used.
 		std::string creatorId{};///< The ID of the User who created the template.
 		std::string createdAt{};///< When this template was created.
 		std::string updatedAt{};///< When this template was last synced to the source Guild.
-		uint32_t usageCount{ 0 };///< Number of times this template has been used.
+		bool isDirty{ false };///< Whether the template has unsynced changes.
 		std::string code{};///< The template code(unique ID).
 		std::string name{};///< Template name.
-		bool isDirty{ false };///< Whether the template has unsynced changes.
 		UserData creator{};///< The User who created the template.
 	};
 
@@ -2306,14 +2306,14 @@ namespace DiscordCoreAPI {
 	  public:
 		std::string applicationId{};///< Application id.
 		ChannelData sourceChannel{};///< Channel for which the WebHook was issued.
+		GuildData sourceGuild{};///< Source Guild id.
 		std::string channelId{};///< Channel id for which the WebHook was issued.
+		WebHookType type{ 0 };///< Type of WebHook.
 		std::string guildId{};///< Guild id for which the WebHook was issued.
 		std::string avatar{};///< Avatar of the WebHook.
-		GuildData sourceGuild{};///< Source Guild id.
 		std::string token{};///< Token of the WebHook.
 		std::string name{};///< Name of the WebHook.
 		std::string url{};///< Url of the WebHook.
-		WebHookType type{ 0 };///< Type of WebHook.
 		UserData user{};///< User which create the WebHook.
 
 		virtual ~WebHookData() = default;
@@ -2382,8 +2382,8 @@ namespace DiscordCoreAPI {
 		std::vector<ApplicationCommandOptionData> options{};///< A std::vector of possible options for the current ApplicationCommand option.
 		std::vector<ChannelType> channelTypes{};///< Set when the ApplicationCommand option type is set to Channel.
 		ApplicationCommandOptionType type{};///< The type of command option.
-		std::string description{};///< A description of the current ApplicationCommand option.
 		bool autocomplete{ false };///< If autocomplete interactions are enabled for this STRING, INTEGER, or NUMBER type option.
+		std::string description{};///< A description of the current ApplicationCommand option.
 		bool required{ false };///< If the parameter is required or optional -- default false.
 		int32_t minValue{ 0 };///< If the option is an INTEGER or NUMBER type, the minimum value permitted.
 		int32_t maxValue{ 0 };///< If the option is an INTEGER or NUMBER type, the maximum value permitted.
@@ -2392,24 +2392,24 @@ namespace DiscordCoreAPI {
 
 	/// Representing "TypingStart" data. \brief Representing "TypingStart" data.
 	struct DiscordCoreAPI_Dll TypingStartData {
-		std::string channelId{};
-		std::string guildId{};
-		std::string userId{};
 		GuildMemberData member{};
+		std::string channelId{};
 		int32_t timestamp{ 0 };
+		std::string guildId{};
+		std::string userId{};	
 	};
 
 	/// YouTube format data. \brief YouTube format data.
 	struct DiscordCoreAPI_Dll YouTubeFormat {
 		std::string signatureCipher{};
 		std::string audioSampleRate{};
+		int32_t averageBitrate{ 0 };
+		int64_t contentLength{ 0 };
+		bool doWeGetSaved{ false };
 		std::string audioQuality{};
 		std::string downloadUrl{};
 		std::string signature{};
-		int32_t averageBitrate{ 0 };
 		std::string mimeType{};
-		int64_t contentLength{ 0 };
-		bool doWeGetSaved{ false };
 		std::string quality{};
 		std::string codecs{};
 		std::string aitags{};
@@ -2479,9 +2479,9 @@ namespace DiscordCoreAPI {
 	/// Represents a single selection from a select-menu. \brief Represents a single selection from a select-menu.
 	struct DiscordCoreAPI_Dll SelectOptionData {
 		std::string description{};///< Description of the select-menu-option.
+		bool _default{ false };///< Is it the default option?
 		std::string label{};///< A visible label for the select-menu-option.
 		std::string value{};///< A value for identifying the option.
-		bool _default{ false };///< Is it the default option?
 		EmojiData emoji{};///< An optional emoji to put on it.
 	};
 
@@ -2499,17 +2499,17 @@ namespace DiscordCoreAPI {
 		std::vector<SelectOptionData> options{};///< Aray of select options the choices in the select, max 25.
 		std::string placeholder{};///< Custom placeholder text if nothing is selected, max 100 characters.
 		std::string customId{};///< A developer-defined identifier for the component, max 100 characters.
-		std::string label{};///< The label for this component.
-		std::string value{};///< A pre-filled value for this component.
-		std::string title{};///< Url, for url types.
 		int32_t minValues{ 0 };///< The minimum number of items that must be chosen; default 1, min 0, max 25.
 		int32_t maxValues{ 0 };///< The maximum number of items that can be chosen; default 1, max 25.
 		bool disabled{ false };///< Whether the component is disabled, default false.
 		int32_t minLength{ 0 };///< The minimum input length for a text input.
 		int32_t maxLength{ 0 };///< The maximum input length for a text input.
 		bool required{ false };///< Whether this component is required to be filled.
-		std::string url{};///< Url, for url types.
 		ComponentType type{};///< Integer component type.
+		std::string label{};///< The label for this component.
+		std::string value{};///< A pre-filled value for this component.
+		std::string title{};///< Url, for url types.
+		std::string url{};///< Url, for url types.
 		EmojiData emoji{};///< Emoji name, id, and animated.
 		int32_t style{};///< One of button styles.
 	};
@@ -2537,9 +2537,9 @@ namespace DiscordCoreAPI {
 		std::vector<ActionRowData> components{};///< Message components.
 		AllowedMentionsData allowedMentions{};///< Allowed mentions data.
 		std::vector<EmbedData> embeds{};///< Message embeds.
+		std::vector<File> files{};///< Files for uploading.
 		std::string customId{};///< A developer-defined identifier for the component, max 100 characters.
 		std::string content{};///< Message content.
-		std::vector<File> files{};///< Files for uploading.
 		std::string title{};///< The title of the popup modal.
 		int32_t flags{ 0 };///< Flags.
 		bool tts{ false };///< Is it TTS?
@@ -2558,10 +2558,10 @@ namespace DiscordCoreAPI {
 		std::unordered_map<std::string, std::string> nameLocalizations{};///< Dictionary with keys in available locales Localization dictionary for name field.
 		std::vector<ApplicationCommandOptionData> options{};///< A std::vector of possible options for the current ApplicationCommand.
 		std::string defaultMemberPermissions{};///< Set of permissions represented as a bit set all
-		std::string applicationId{};///< The current application id.
-		std::string description{};///< A description of the current ApplicationCommand.
 		ApplicationCommandType type{};///< The type of ApplicationCommand.
+		std::string applicationId{};///< The current application id.
 		bool dmPermission{ false };///< Indicates whether the command is available in DMs with the app, only for globally - scoped commands.
+		std::string description{};///< A description of the current ApplicationCommand.
 		std::string guildId{};///< (Where applicable) a Guild id for which guild to assign this ApplicationCommand to.
 		std::string version{};///< An autoincremented version.
 		std::string name{};///< Name of the current ApplicationCommand.
@@ -2588,7 +2588,7 @@ namespace DiscordCoreAPI {
 
 	/// Data for when some Channel pins are updated. \brief Data for when some Channel pins are updated.
 	struct DiscordCoreAPI_Dll ChannelPinsUpdateEventData {
-		TimeStamp lastPinTimestamp{};///< The time of the last pinned Message.
+		TimeStamp lastPinTimestamp{ "" };///< The time of the last pinned Message.
 		std::string channelId{};///< The id of the Channel within which the Message was pinned.
 		std::string guildId{};///< The id of the Guild within which the Message was pinned.
 	};
@@ -2704,20 +2704,20 @@ namespace DiscordCoreAPI {
 		std::vector<StickerData> stickers{};///< Array of Message Sticker data.
 		std::vector<UserData> mentions{};///< Array of User data, for individual's that were mentioned.
 		std::vector<EmbedData> embeds{};///< Array of Message embeds.
-		std::string applicationId{};///< Application id.
-		TimeStamp editedTimestamp{};///< The time at which it was edited.
+		TimeStamp editedTimestamp{ "" };///< The time at which it was edited.
 		MessageActivityData activity{};///< Message activity data.
 		bool mentionEveryone{ false };///< Does the Message mention everyone?
 		ApplicationData application{};///< Application data.
+		std::string applicationId{};///< Application id.
+		TimeStamp timestamp{ "" };///< The timestamp of when the Message was created.
+		GuildMemberData member{};///< The author's Guild member data.
 		std::string channelId{};///< The Channel it was sent in.
 		std::string webhookId{};///< WebHook id of the Message, if applicable.
-		TimeStamp timestamp{};///< The timestamp of when the Message was created.
 		std::string guildId{};///< The id of the Guild the Message was sent in.
 		std::string content{};///< The Message's content.
-		GuildMemberData member{};///< The author's Guild member data.
-		std::string nonce{};///< Nonce.
 		bool pinned{ false };///< Is it pinned?
 		ChannelData thread{};///< The Thread that the Message was sent in, if applicable.
+		std::string nonce{};///< Nonce.
 		int32_t flags{ 0 };///< Flags.
 		MessageType type{};///< Message type.
 		UserData author{};///< The author's User data.
@@ -2813,9 +2813,9 @@ namespace DiscordCoreAPI {
 		bool showActivity{ false };///< Whether activities related to this connection will be shown in presence updates.
 		bool friendSync{ false };///< Whether friend sync is enabled for this connection.
 		bool verified{ false };///< Whether the connection is verified.
-		std::string name{};///< The username of the connection account.
-		std::string type{};///< The service of the connection(twitch, youtube)
 		bool revoked{ false };///< Whether the connection is revoked.
+		std::string name{};///< The username of the connection account.
+		std::string type{};///< The service of the connection(twitch, youtube).
 		std::string id{};///< Id of the connection account.
 	};
 
@@ -2825,9 +2825,9 @@ namespace DiscordCoreAPI {
 		ApplicationCommandOptionType type{};///< The type of ApplicationCommand options.
 		std::string valueString{};///< The value if it's a std::string.
 		bool valueBool{ false };///< the value if it's a bool.
-		std::string name{};///< The name of the current option.
 		int32_t valueInt{ 0 };///< The value if it's an int32_t.
 		bool focused{ false };///< 	True if this option is the currently focused option for autocomplete.
+		std::string name{};///< The name of the current option.
 	};
 
 	/// ApplicationCommand Interaction data. \brief ApplicationCommand Interaction data.
@@ -2835,8 +2835,8 @@ namespace DiscordCoreAPI {
 	  public:
 		std::vector<ApplicationCommandInteractionDataOption> options{};///< ApplicationCommand Interaction data options.
 		ApplicationCommandType type{};///< The type of ApplicationCommand.
-		std::string guildId{};///< The guild that the command took place in.
 		ResolvedData resolved{};///< Resolved data.
+		std::string guildId{};///< The guild that the command took place in.
 		std::string name{};///< The name of the command.
 
 		virtual ~ApplicationCommandInteractionData() = default;
@@ -2855,18 +2855,18 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll InteractionData : public DiscordEntity {
 	  public:
 		std::string applicationId{};///< The application's id.
-		std::string requesterId{};///< The id of the sender of the Interaction.
-		std::string channelId{};///< The Channel the Interaction was sent in.
 		InteractionDataData data{};///< The Interaction's data.
-		std::string guildId{};///< The Guild id of the Guild it was sent in.
-		std::string guildLocale{};///< The guild's preferred locale, if invoked in a guild.
-		GuildMemberData member{};///< The data of the Guild member who sent the Interaction, if applicable.
+		std::string requesterId{};///< The id of the sender of the Interaction.
+		std::string guildLocale{};///< The guild's preferred locale, if invoked in a guild.		
 		nlohmann::json rawData{};///< The Interaction's raw data.
-		std::string token{};///< The Interaction token.
+		GuildMemberData member{};///< The data of the Guild member who sent the Interaction, if applicable.
+		std::string channelId{};///< The Channel the Interaction was sent in.
 		InteractionType type{};///< The type of Interaction.
 		MessageData message{};///< The Message that the Interaction came through on, if applicable.
-		std::string locale{};///< The selected language of the invoking user.
+		std::string guildId{};///< The Guild id of the Guild it was sent in.
 		int32_t version{ 0 };///< The Interaction version.
+		std::string locale{};///< The selected language of the invoking user.
+		std::string token{};///< The Interaction token.		
 		UserData user{};///< The User data of the sender of the Interaction.
 		InteractionData() = default;
 		InteractionData(std::string requesterId) {
@@ -2886,8 +2886,8 @@ namespace DiscordCoreAPI {
 	/// Data from the GetGatewatBot endpoint. \brief Data from the GetGatewatBot endpoint.
 	struct DiscordCoreAPI_Dll GatewayBotData {
 		SessionStartData sessionStartLimit{};///< Information on the current session start limit.
-		std::string url{};///< The WSS Url that can be used for connecting to the gateway.
 		uint32_t shards{ 0 };///< The recommended number of shards to use when connecting.
+		std::string url{};///< The WSS Url that can be used for connecting to the gateway.
 	};
 
 	/// Text input style for modals. \brief Text input style for modals.
@@ -2927,9 +2927,9 @@ namespace DiscordCoreAPI {
 		std::vector<PresenceUpdateData> presences{};
 		std::vector<GuildMemberData> members{};
 		std::vector<std::string> notFound{};
-		std::string guildId{};
 		int32_t chunkIndex{ 0 };
 		int32_t chunkCount{ 0 };
+		std::string guildId{};
 		std::string nonce{};
 	};
 
@@ -3450,19 +3450,19 @@ namespace DiscordCoreAPI {
 		std::vector<ApplicationCommandOptionChoiceData> choices{};
 		std::vector<ActionRowData> components{};
 		AllowedMentionsData allowedMentions{};
-		std::string interactionToken{};
 		std::vector<EmbedData> embeds{};
+		std::string interactionToken{};
+		InputEventResponseType type{};///< The type of response to make.
 		std::string interactionId{};
 		std::string applicationId{};
+		InteractionType eventType{};
 		std::string targetUserId{};
 		std::string requesterId{};
-		InputEventResponseType type{};///< The type of response to make.
-		InteractionType eventType{};
+		std::vector<File> files{};
 		std::string channelId{};
 		std::string messageId{};
 		std::string customId{};
 		std::string content{};
-		std::vector<File> files{};
 		std::string title{};
 		int32_t flags{ 0 };
 		bool tts{ false };
@@ -3631,12 +3631,12 @@ namespace DiscordCoreAPI {
 		std::vector<ActionRowData> components{};
 		AllowedMentionsData allowedMentions{};
 		std::vector<EmbedData> embeds{};
+		std::vector<File> files{};
 		std::string customId{};
 		std::string content{};
-		std::vector<File> files{};
 		std::string title{};
-		bool tts{ false };
 		int32_t flags{ 0 };
+		bool tts{ false };
 	};
 
 	/// Command data, for functions executed by the CommandController. \brief Command data, for functions executed by the CommandController.
@@ -3700,8 +3700,8 @@ namespace DiscordCoreAPI {
 
 	/// Represents a download Url. \brief Represents a download Url.
 	struct DiscordCoreAPI_Dll DownloadUrl {
-		std::string urlPath{};
 		int32_t contentSize{ 0 };
+		std::string urlPath{};
 	};
 
 	/**
@@ -3819,8 +3819,8 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll BaseFunction {
 	  public:
 		std::string helpDescription{};///< Description of the command for the Help command.
-		std::string commandName{};///< Name of the command for calling purposes.
 		BaseFunctionArguments args{};///< The function arguments.
+		std::string commandName{};///< Name of the command for calling purposes.
 		EmbedData helpEmbed{};///< A Message embed for displaying the command via the Help command.
 
 		BaseFunction() = default;
