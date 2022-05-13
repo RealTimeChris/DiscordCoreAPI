@@ -34,7 +34,7 @@
 
 namespace DiscordCoreAPI {
 
-	void to_json(nlohmann::json& jsonOut, const DiscordCoreAPI::MessageReferenceData& valueNew) {
+	void to_json(nlohmann::json& jsonOut, const MessageReferenceData& valueNew) {
 		nlohmann::json newValue{};
 		newValue["fail_if_not_exists"] = valueNew.failIfNotExists;
 		newValue["message_id"] = valueNew.messageId;
@@ -43,7 +43,7 @@ namespace DiscordCoreAPI {
 		jsonOut = newValue;
 	}
 
-	void to_json(nlohmann::json& jsonOut, const DiscordCoreAPI::AllowedMentionsData& valueNew) {
+	void to_json(nlohmann::json& jsonOut, const AllowedMentionsData& valueNew) {
 		nlohmann::json newValue{};
 		newValue["replied_user"] = valueNew.repliedUser;
 		newValue["parse"] = valueNew.parse;
@@ -52,7 +52,7 @@ namespace DiscordCoreAPI {
 		jsonOut = newValue;
 	}
 
-	void to_json(nlohmann::json& jsonOut, const DiscordCoreAPI::AttachmentData& valueNew) {
+	void to_json(nlohmann::json& jsonOut, const AttachmentData& valueNew) {
 		nlohmann::json newValue{};
 		newValue["content_type"] = valueNew.contentType;
 		newValue["description"] = valueNew.description;
@@ -66,7 +66,7 @@ namespace DiscordCoreAPI {
 		jsonOut = newValue;
 	}
 
-	void to_json(nlohmann::json& jsonOut, const DiscordCoreAPI::EmbedFieldData& valueNew) {
+	void to_json(nlohmann::json& jsonOut, const EmbedFieldData& valueNew) {
 		nlohmann::json newValue{};
 		newValue["inline"] = valueNew.Inline;
 		newValue["value"] = valueNew.value;
@@ -142,7 +142,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	void to_json(nlohmann::json& jsonOut, const DiscordCoreAPI::EmbedData& valueNew) {
+	void to_json(nlohmann::json& jsonOut, const EmbedData& valueNew) {
 		nlohmann::json fields{};
 
 		for (auto& value2: valueNew.fields) {
