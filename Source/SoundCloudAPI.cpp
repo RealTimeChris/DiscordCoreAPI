@@ -192,9 +192,9 @@ namespace DiscordCoreInternal {
 			std::vector<HttpData> returnData02 = submitWorkloadAndGetResult(*this->httpClient, workloadVector01);
 			std::string newerString02{};
 			newerString02.insert(newerString02.begin(), returnData02[0].responseMessage.begin(), returnData02[0].responseMessage.end());
-			
+
 			std::string newString03 = newerString02.substr(newerString02.find("client_id=") + std::string{ "client_id=" }.size());
-			std::string clientIdNew{}; 
+			std::string clientIdNew{};
 			if (newString03.find("\"),i.push") != std::string::npos) {
 				clientIdNew = newString03.substr(0, newString03.find("\"),i.push"));
 			} else if (newString03.find("\"),o.push") != std::string::npos) {

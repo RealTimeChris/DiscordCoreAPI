@@ -124,7 +124,7 @@ namespace DiscordCoreAPI {
 			return *this;
 		}
 
-        /// Adds a modal to the response Message. \brief Adds a modal to the response Message.
+		/// Adds a modal to the response Message. \brief Adds a modal to the response Message.
 		/// \param topTitleNew A title for the modal.
 		/// \param topCustomIdNew A custom id to give for the modal.
 		/// \param titleNew A title for the modal's individual input.
@@ -165,7 +165,7 @@ namespace DiscordCoreAPI {
 			return *this;
 		}
 
-		
+
 		/// Adds a file to the current collection of files for this message response. \brief Adds a file to the current collection of files for this message response.
 		/// \param theFile The file to be added.
 		/// \returns MessageResponseBase& A reference to this data structure.
@@ -242,7 +242,7 @@ namespace DiscordCoreAPI {
 		ExecuteWebHookData& setTTSStatus(bool) = delete;
 
 		EditWebHookData() = default;
-		
+
 		EditWebHookData(WebHookData dataNew) {
 			this->webhookToken = dataNew.token;
 			this->webhookId = dataNew.id;

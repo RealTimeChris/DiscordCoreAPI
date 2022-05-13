@@ -727,7 +727,6 @@ namespace DiscordCoreInternal {
 	}
 
 	std::string JSONIFY(DiscordCoreAPI::ModifyGuildMemberData dataPackage) {
-
 		nlohmann::json data{};
 		data["nick"] = dataPackage.nick;
 		data["communication_disabled_until"] = std::string(dataPackage.communicationDisabledUntil);
@@ -781,7 +780,7 @@ namespace DiscordCoreInternal {
 		data["mentionable"] = dataPackage.mentionable;
 		data["hoist"] = dataPackage.hoist;
 		data["name"] = dataPackage.name;
-		data["color"] = roleColorReal;		
+		data["color"] = roleColorReal;
 		if (dataPackage.icon.size() > 0) {
 			data["icon"] = dataPackage.icon;
 		}

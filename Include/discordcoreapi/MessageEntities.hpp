@@ -112,7 +112,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// For crossposting a Message. \brief For crossposting a Message.
-	struct DiscordCoreAPI_Dll CrosspostMessageData  {
+	struct DiscordCoreAPI_Dll CrosspostMessageData {
 		std::string messageId{ "" };///< Id of the message to be crossposted.
 		std::string channelId{ "" };///< Channel within which to crosspost the Message from.
 	};

@@ -2919,7 +2919,7 @@ namespace DiscordCoreInternal {
 		if (jsonObjectData.contains("type") && !jsonObjectData["type"].is_null()) {
 			pDataStructure.type = jsonObjectData["type"].get<DiscordCoreAPI::InteractionType>();
 		}
-		
+
 		if (jsonObjectData.contains("name") && !jsonObjectData["name"].is_null()) {
 			pDataStructure.name = jsonObjectData["name"].get<std::string>();
 		}
@@ -4039,7 +4039,6 @@ namespace DiscordCoreInternal {
 	}
 
 	template<> void DataParser::parseObject(nlohmann::json const& jsonObjectData, DiscordCoreAPI::ApplicationCommandInteractionData& pDataStructure) {
-
 		if (jsonObjectData.contains("type") && !jsonObjectData["type"].is_null()) {
 			pDataStructure.type = jsonObjectData["type"].get<DiscordCoreAPI::ApplicationCommandType>();
 		}
