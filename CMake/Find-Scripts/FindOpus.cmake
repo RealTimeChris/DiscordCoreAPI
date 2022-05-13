@@ -26,9 +26,9 @@ find_library(
 	PATHS "${OPUS_DEBUG_ROOT}" NO_DEFAULT_PATH
 )
 if (EXISTS "${OPUS_RELEASE_LIBRARY}" AND EXISTS "${OPUS_DEBUG_LIBRARY}" AND EXISTS "${OPUS_INCLUDE_DIR}")
-	message(STATUS "Found Opus libraries")
+	message(STATUS "Found Opus: TRUE")
 else()
-	message(FATAL_ERROR "Couldn't find Opus!")
+	message(FATAL_ERROR "Found Opus: FALSE")
 endif()
 cmake_path(GET OPUS_RELEASE_LIBRARY PARENT_PATH OPUS_RELEASE_FILE_PATH)
 find_file(
@@ -52,7 +52,7 @@ if (EXISTS "${OPUS_RELEASE_DLL}" AND EXISTS "${OPUS_DEBUG_DLL}")
 		IMPORTED_IMPLIB_RELEASE "${OPUS_RELEASE_LIBRARY}" IMPORTED_IMPLIB_DEBUG "${OPUS_DEBUG_LIBRARY}"
 	)
 	target_include_directories(OPUS::Opus INTERFACE "${OPUS_INCLUDE_DIR}")
-	message(STATUS "Found Opus Dlls")
+	message(STATUS "Found Opus Dlls: TRUE")
 else()
 	add_library(OPUS::Opus STATIC IMPORTED GLOBAL)
 	set_target_properties(

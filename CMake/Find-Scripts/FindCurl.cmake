@@ -26,9 +26,9 @@ find_library(
 	PATHS "${CURL_DEBUG_ROOT}" NO_DEFAULT_PATH
 )
 if(EXISTS "${CURL_RELEASE_LIBRARY}" AND EXISTS "${CURL_DEBUG_LIBRARY}" AND EXISTS "${CURL_INCLUDE_DIR}")
-	message(STATUS "Found Curl libraries")
+	message(STATUS "Found Curl: TRUE")
 else()
-	message(FATAL_ERROR "Couldn't find Curl!")
+	message(FATAL_ERROR "Found Curl: FALSE")
 endif()
 cmake_path(GET CURL_RELEASE_LIBRARY PARENT_PATH CURL_RELEASE_FILE_PATH)
 find_file(
@@ -52,7 +52,7 @@ if (EXISTS "${CURL_RELEASE_DLL}" AND EXISTS "${CURL_DEBUG_DLL}")
 		IMPORTED_IMPLIB_RELEASE "${CURL_RELEASE_LIBRARY}" IMPORTED_IMPLIB_DEBUG "${CURL_DEBUG_LIBRARY}"
 	)
 	target_include_directories(CURL::Curl INTERFACE "${CURL_INCLUDE_DIR}")
-	message(STATUS "Found Curl Dlls")
+	message(STATUS "Found Curl Dlls: TRUE")
 else()
 	add_library(CURL::Curl STATIC IMPORTED GLOBAL)
 	set_target_properties(
@@ -86,7 +86,7 @@ if (UNIX)
 		PATHS "${CURL_DEBUG_ROOT}" NO_DEFAULT_PATH
 	)
 	if(EXISTS "${LIBZ_RELEASE_LIBRARY}" AND EXISTS "${LIBZ_DEBUG_LIBRARY}" AND EXISTS "${CURL_INCLUDE_DIR}")
-		message(STATUS "Found Libz libraries")
+		message(STATUS "Found Libz: TRUE")
 		add_library(LIBZ::Libz STATIC IMPORTED GLOBAL)
 		set_target_properties(
 			LIBZ::Libz PROPERTIES 
@@ -94,6 +94,6 @@ if (UNIX)
 		)
 		target_include_directories(LIBZ::Libz INTERFACE "${CURL_INCLUDE_DIR}")
 	else()
-		message(STATUS "Couldn't find Libz!")
+		message(STATUS "Found Libz: FALSE")
 	endif()
 endif()

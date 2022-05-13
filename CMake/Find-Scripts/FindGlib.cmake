@@ -19,9 +19,9 @@ find_library(
 	PATHS "${GLIB_DEBUG_ROOT}" NO_DEFAULT_PATH
 )
 if(EXISTS "${GLIB_RELEASE_LIBRARY}" AND EXISTS "${GLIB_DEBUG_LIBRARY}" AND EXISTS "${GLIB_INCLUDE_DIR}")
-	message(STATUS "Found Glib libraries!")
+	message(STATUS "Found Glib: TRUE")
 else()
-	message(FATAL_ERROR "Couldn't find Glib!")
+	message(FATAL_ERROR "Found Glib: FALSE")
 endif()
 cmake_path(GET GLIB_RELEASE_LIBRARY PARENT_PATH GLIB_RELEASE_FILE_PATH)
 find_file(
@@ -78,9 +78,9 @@ find_file(
 	PATHS "${GLIB_DEBUG_ROOT}" NO_DEFAULT_PATH
 )
 if(EXISTS "${INTL_RELEASE_LIBRARY}" AND EXISTS "${INTL_DEBUG_LIBRARY}" AND EXISTS "${GLIB_INCLUDE_DIR}")
-	message(STATUS "Found Intl libraries!")
+	message(STATUS "Found Intl: TRUE")
 else()
-	message(STATUS "Couldn't find Intl!")
+	message(STATUS "Found Intl: FALSE")
 	unset(INTL_RELEASE_LIBRARY CACHE)
 	unset(INTL_DEBUG_LIBRARY CACHE)
 	return()
