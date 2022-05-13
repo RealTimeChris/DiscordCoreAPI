@@ -19,9 +19,9 @@ find_file(
 	PATHS "${NLOHMANN_INCLUDE_DIR}" NO_DEFAULT_PATH
 )
 if(EXISTS "${NLOHMANN_JSON_LIBRARY}" AND EXISTS "${NLOHMANN_INCLUDE_DIR}")
-	message(STATUS "Found Nlohmann-Json library: TRUE")
+	message(STATUS "Found Nlohmann-Json: TRUE")
 	add_library(NLOHMANN::Json INTERFACE IMPORTED GLOBAL)
 	target_include_directories(NLOHMANN::Json INTERFACE "${NLOHMANN_INCLUDE_DIR}")
 else()
-	message(FATAL_ERROR "Found Nlohmann-Json library: FALSE")
+	message(FATAL_ERROR "Found Nlohmann-Json: FALSE")
 endif()
