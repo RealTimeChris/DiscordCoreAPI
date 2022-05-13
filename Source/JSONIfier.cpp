@@ -507,8 +507,11 @@ namespace DiscordCoreInternal {
 			data["message"]["attachments"].push_back(value);
 		}
 
-		if (dataPackage.message.components.size() > 0) {
-			data["components"] = nlohmann::json{ dataPackage.message.components };
+		if (dataPackage.message.components.size() == 0) {
+			auto componentsActionRow = nlohmann::json::array();
+			data["message"]["components"] = componentsActionRow;
+		} else {
+			data["message"]["components"] = nlohmann::json{ dataPackage.message.components };
 		}
 
 		data["message"]["allowed_mentions"] = dataPackage.message.allowedMentions;
@@ -622,7 +625,10 @@ namespace DiscordCoreInternal {
 			data["data"]["attachments"].push_back(value);
 		}
 
-		if (dataPackage.data.components.size() > 0) {
+		if (dataPackage.data.components.size() == 0) {
+			auto componentsActionRow = nlohmann::json::array();
+			data["data"]["components"] = componentsActionRow;
+		} else {
 			data["data"]["components"] = nlohmann::json{ dataPackage.data.components };
 		}
 
@@ -852,7 +858,10 @@ namespace DiscordCoreInternal {
 			data["attachments"].push_back(value);
 		}
 
-		if (dataPackage.components.size() > 0) {
+		if (dataPackage.components.size() == 0) {
+			auto componentsActionRow = nlohmann::json::array();
+			data["components"] = componentsActionRow;
+		} else {
 			data["components"] = nlohmann::json{ dataPackage.components };
 		}
 
@@ -922,7 +931,10 @@ namespace DiscordCoreInternal {
 			data["message_reference"] = dataPackage.messageReference;
 		}
 
-		if (dataPackage.components.size() > 0) {
+		if (dataPackage.components.size() == 0) {
+			auto componentsActionRow = nlohmann::json::array();
+			data["components"] = componentsActionRow;
+		} else {
 			data["components"] = nlohmann::json{ dataPackage.components };
 		}
 
@@ -954,7 +966,10 @@ namespace DiscordCoreInternal {
 			data["attachments"].push_back(value);
 		}
 
-		if (dataPackage.components.size() > 0) {
+		if (dataPackage.components.size() == 0) {
+			auto componentsActionRow = nlohmann::json::array();
+			data["components"] = componentsActionRow;
+		} else {
 			data["components"] = nlohmann::json{ dataPackage.components };
 		}
 
@@ -1057,7 +1072,10 @@ namespace DiscordCoreInternal {
 			data["attachments"].push_back(value);
 		}
 
-		if (dataPackage.components.size() > 0) {
+		if (dataPackage.components.size() == 0) {
+			auto componentsActionRow = nlohmann::json::array();
+			data["components"] = componentsActionRow;
+		} else {
 			data["components"] = nlohmann::json{ dataPackage.components };
 		}
 
