@@ -43,8 +43,8 @@ namespace DiscordCoreInternal {
 		friend class DiscordCoreAPI::SongAPI;
 
 	  protected:
-		std::string handlerId{ "" };
-		std::string eventId{ "" };
+		std::string handlerId{};
+		std::string eventId{};
 
 		EventDelegateToken() = default;
 	};
@@ -157,7 +157,7 @@ namespace DiscordCoreInternal {
 
 	  protected:
 		std::map<EventDelegateToken, EventDelegate<ReturnType, ArgTypes...>> theFunctions{};
-		std::string eventId{ "" };
+		std::string eventId{};
 		std::mutex theMutex{};
 	};
 

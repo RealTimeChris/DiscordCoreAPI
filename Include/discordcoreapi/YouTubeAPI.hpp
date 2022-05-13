@@ -87,7 +87,7 @@ namespace DiscordCoreInternal {
 	  protected:
 		YouTubeRequestBuilder requestBuilder{};
 		const int32_t maxBufferSize{ 8192 };
-		std::string guildId{ "" };
+		std::string guildId{};
 		bool doWePrint{ false };
 		DiscordCoreAPI::Song theSong{};
 	};

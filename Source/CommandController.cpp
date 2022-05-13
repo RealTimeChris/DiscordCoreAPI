@@ -61,7 +61,7 @@ namespace DiscordCoreAPI {
 
 	std::unique_ptr<BaseFunction> CommandController::getCommand(std::string commandName) {
 		try {
-			std::string functionName{ "" };
+			std::string functionName{};
 			bool isItFound{ false };
 			if (commandName.size() > 0) {
 				for (auto const& [keyFirst, value]: Globals::functions) {

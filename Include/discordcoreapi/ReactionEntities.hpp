@@ -32,61 +32,61 @@ namespace DiscordCoreAPI {
 	 */
 	/// For creating a single Reaction. \brief For creating a single Reaction.
 	struct DiscordCoreAPI_Dll CreateReactionData {
-		std::string channelId{ "" };///< The Channel for which to add the Reaction.
-		std::string messageId{ "" };///< The Message on which to add the Reaction.
-		std::string emojiName{ "" };///< The emoji name of the Reaction to add.
-		std::string emojiId{ "" };///< The emoji id of the Reaction to add.
+		std::string channelId{};///< The Channel for which to add the Reaction.
+		std::string messageId{};///< The Message on which to add the Reaction.
+		std::string emojiName{};///< The emoji name of the Reaction to add.
+		std::string emojiId{};///< The emoji id of the Reaction to add.
 	};
 
 	/// For deleting one's own Reaction. \brief For deleting one's own Reaction.
 	struct DiscordCoreAPI_Dll DeleteOwnReactionData {
-		std::string channelId{ "" };///< The Channel from which to remove the Reaction.
-		std::string messageId{ "" };///< The Message from which to remove the Reaction.
-		std::string emojiName{ "" };///< The emoji name for which to remove the emoji.
-		std::string emojiId{ "" };///< The emoji id for which to remove the emoji.
+		std::string channelId{};///< The Channel from which to remove the Reaction.
+		std::string messageId{};///< The Message from which to remove the Reaction.
+		std::string emojiName{};///< The emoji name for which to remove the emoji.
+		std::string emojiId{};///< The emoji id for which to remove the emoji.
 	};
 
 	/// For deleting a reaction, by User. \brief For deleting a reaction, by User.
 	struct DiscordCoreAPI_Dll DeleteUserReactionData {
-		std::string channelId{ "" };///< The Channel from which to remove the Reaction.
-		std::string messageId{ "" };///< The Message from which to remove the Reaction.
-		std::string emojiName{ "" };///< The name of which emoji to remove.
-		std::string emojiId{ "" };///< The id of which emoji to remove.
-		std::string userId{ "" };///< The User id for whom to remove their emoji.
+		std::string channelId{};///< The Channel from which to remove the Reaction.
+		std::string messageId{};///< The Message from which to remove the Reaction.
+		std::string emojiName{};///< The name of which emoji to remove.
+		std::string emojiId{};///< The id of which emoji to remove.
+		std::string userId{};///< The User id for whom to remove their emoji.
 	};
 
 	/// For getting all of the Reactions. \brief For getting all of the Reactions.
 	struct DiscordCoreAPI_Dll GetReactionsData {
-		std::string channelId{ "" };///< The Channel from which to acquire the reactors.
-		std::string messageId{ "" };///< The Message from which to acquire the reactors.
-		std::string afterId{ "" };///< Get users after this user ID.
-		std::string emoji{ "" };///< The emoji name for which to acquire the reactors.
+		std::string channelId{};///< The Channel from which to acquire the reactors.
+		std::string messageId{};///< The Message from which to acquire the reactors.
+		std::string afterId{};///< Get users after this user ID.
+		std::string emoji{};///< The emoji name for which to acquire the reactors.
 		int32_t limit{ 0 };///< The maximum number of reactors to collect.
 	};
 
 	/// For deleting all of the Reactions on a particular Message. \brief For deleting all of the Reactions on a particular Message.
 	struct DiscordCoreAPI_Dll DeleteAllReactionsData {
-		std::string channelId{ "" };///< The Channel from which you would like to remove the emoji.
-		std::string messageId{ "" };///< The Message from which you would like to remove the emoji.
+		std::string channelId{};///< The Channel from which you would like to remove the emoji.
+		std::string messageId{};///< The Message from which you would like to remove the emoji.
 	};
 
 	/// For deleting all of the Reactions of a particular Emoji. \brief For deleting all of the Reactions of a particular Emoji.
 	struct DiscordCoreAPI_Dll DeleteReactionsByEmojiData {
-		std::string channelId{ "" };///< The Channel from which you would like to remove the emoji.
-		std::string messageId{ "" };///< The Message from which you would like to remove the emoji.
-		std::string emojiName{ "" };///< The name of which emoji to remove.
-		std::string emojiId{ "" };///< The id of which emoji to remove.
+		std::string channelId{};///< The Channel from which you would like to remove the emoji.
+		std::string messageId{};///< The Message from which you would like to remove the emoji.
+		std::string emojiName{};///< The name of which emoji to remove.
+		std::string emojiId{};///< The id of which emoji to remove.
 	};
 
 	/// For collecting a list of Emoji from a Guild.
 	struct DiscordCoreAPI_Dll GetEmojiListData {
-		std::string guildId{ "" };///< The id of the chosen Guild.
+		std::string guildId{};///< The id of the chosen Guild.
 	};
 
 	/// For collecting a single Guild Emoji.
 	struct DiscordCoreAPI_Dll GetGuildEmojiData {
-		std::string guildId{ "" };///< The id of the chosen Guild.
-		std::string emojiId{ "" };///< The id of the chosen Emoji
+		std::string guildId{};///< The id of the chosen Guild.
+		std::string emojiId{};///< The id of the chosen Emoji
 	};
 
 	enum class ImageType {
@@ -102,9 +102,9 @@ namespace DiscordCoreAPI {
 
 		std::vector<std::string> roles{};///< Roles that can use this Emoji.
 		std::string imageFilePath{};///< The image responseData.
-		std::string guildId{ "" };///< The Guild within which to create the Emoji.
-		std::string reason{ "" };///< Reason for creating the new Emoji.
-		std::string name{ "" };///< Name of the emoji.
+		std::string guildId{};///< The Guild within which to create the Emoji.
+		std::string reason{};///< Reason for creating the new Emoji.
+		std::string name{};///< Name of the emoji.
 		ImageType type{};///< The type of image being uploaded.
 	  protected:
 		std::string imageDataFinal{};
@@ -113,17 +113,17 @@ namespace DiscordCoreAPI {
 	/// For modifying a Guild Emoji.
 	struct DiscordCoreAPI_Dll ModifyGuildEmojiData {
 		std::vector<std::string> roles{};///< Roles that can use this Emoji.
-		std::string guildId{ "" };///< The Guild within which to modify the Emoji.
-		std::string emojiId{ "" };///< The id of the Emoji to modify.
-		std::string reason{ "" };///< Reason for modifying the Emoji.
-		std::string name{ "" };///< Name of the Emoji.
+		std::string guildId{};///< The Guild within which to modify the Emoji.
+		std::string emojiId{};///< The id of the Emoji to modify.
+		std::string reason{};///< Reason for modifying the Emoji.
+		std::string name{};///< Name of the Emoji.
 	};
 
 	/// For deleting a Guild Emoji.
 	struct DiscordCoreAPI_Dll DeleteGuildEmojiData {
-		std::string guildId{ "" };///< The Guild within which to delete the Emoji.
-		std::string emojiId{ "" };///< The id of the Emoji to delete.
-		std::string reason{ "" };///< Reason for deleting the Emoji.
+		std::string guildId{};///< The Guild within which to delete the Emoji.
+		std::string emojiId{};///< The id of the Emoji to delete.
+		std::string reason{};///< Reason for deleting the Emoji.
 	};
 
 	/// A single Reaction. \brief A single Reaction.

@@ -33,50 +33,50 @@ namespace DiscordCoreAPI {
 	/// For updating a User's presence. \brief For updating a User's presence.
 	struct DiscordCoreAPI_Dll UpdatePresenceData {
 		std::vector<ActivityData> activities{};///< A std::vector of activities.
-		std::string status{ "" };///< Current status.
+		std::string status{};///< Current status.
 		int64_t since{ 0 };///< When was the activity started?
 		bool afk{ false };///< Are we afk.
 	};
 
 	/// For adding a user to a group Dm. \brief For adding a user to a group Dm.
 	struct DiscordCoreAPI_Dll AddRecipientToGroupDMData {
-		std::string channelId{ "" };///< The Channel Id of the Dm.
-		std::string userId{ "" };///< The user's Id.
-		std::string token{ "" };///< The user's access token.
-		std::string nick{ "" };///< The user's nickname.
+		std::string channelId{};///< The Channel Id of the Dm.
+		std::string userId{};///< The user's Id.
+		std::string token{};///< The user's access token.
+		std::string nick{};///< The user's nickname.
 	};
 
 	/// For removing a User from a group Dm. \brief For removing a User from a group Dm.
 	struct DiscordCoreAPI_Dll RemoveRecipientFromGroupDMData {
-		std::string channelId{ "" };///< The Channel Id of the Dm.
-		std::string userId{ "" };///< The user's Id.
+		std::string channelId{};///< The Channel Id of the Dm.
+		std::string userId{};///< The user's Id.
 	};
 
 	/// For updating the bot's current voice state. \brief For updating the bot's current voice state.
 	struct DiscordCoreAPI_Dll ModifyCurrentUserVoiceStateData {
-		std::string requestToSpeakTimestamp{ "" };///< ISO8601 timestamp.
-		std::string channelId{ "" };///< The id of the Channel the user is currently in.
-		std::string guildId{ "" };///< The Guild within which to update the bot's voice state.
+		std::string requestToSpeakTimestamp{};///< ISO8601 timestamp.
+		std::string channelId{};///< The id of the Channel the user is currently in.
+		std::string guildId{};///< The Guild within which to update the bot's voice state.
 		bool suppress{ false };///< Toggles the user's suppress state.
 	};
 
 	/// For modifying a User's voice state. \brief For modifying a User's voice state.
 	struct DiscordCoreAPI_Dll ModifyUserVoiceStateData {
-		std::string channelId{ "" };///< The id of the Channel the user is currently in.
-		std::string guildId{ "" };///< The Guild within which you would like to modify their voice state.
-		std::string userId{ "" };///< The user for which you would like to modify the voice state of.
+		std::string channelId{};///< The id of the Channel the user is currently in.
+		std::string guildId{};///< The Guild within which you would like to modify their voice state.
+		std::string userId{};///< The user for which you would like to modify the voice state of.
 		bool suppress{ false };///< Toggles the user's suppress state.
 	};
 
 	/// For getting User responseData from the library's cache or the Discord server. \brief For getting User responseData from the library's cache or the Discord server.
 	struct DiscordCoreAPI_Dll GetUserData {
-		std::string userId{ "" };///< The id of the desired User.
+		std::string userId{};///< The id of the desired User.
 	};
 
 	/// For modifying the Bot's User responseData. \brief For modifying the Bot's User responseData.
 	struct DiscordCoreAPI_Dll ModifyCurrentUserData {
 		std::vector<uint8_t> avatar{};///< If passed, modifies the user's avatar.
-		std::string username{ "" };///< User's username, if changed may cause the user's discriminator to be randomized.
+		std::string username{};///< User's username, if changed may cause the user's discriminator to be randomized.
 	};
 
 	/// A single User. \brief A single User.

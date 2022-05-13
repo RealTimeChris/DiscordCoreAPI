@@ -61,7 +61,7 @@ namespace DiscordCoreInternal {
 	  protected:
 		std::unordered_map<std::string, std::string> headers{};
 		bool doWeHaveContentSize{ false };
-		std::string contentFinal{ "" };
+		std::string contentFinal{};
 		bool doWeHaveHeaders{ false };
 		int64_t responseCode{ -1 };
 		int64_t contentSize{ -1 };
@@ -88,11 +88,11 @@ namespace DiscordCoreInternal {
 		bool haveWeCollectedTime{ false };
 		bool areWeASpecialBucket{ false };
 		bool didWeHitRateLimit{ false };
-		std::string tempBucket{ "" };
+		std::string tempBucket{};
 		int64_t sampledTimeInMs{ 0 };
 		bool haveWeGoneYet{ false };
 		int64_t getsRemaining{ 0 };
-		std::string bucket{ "" };
+		std::string bucket{};
 		bool doWeWait{ false };
 		int64_t msRemain{ 0 };
 	};
@@ -123,7 +123,7 @@ namespace DiscordCoreInternal {
 
 	struct DiscordCoreAPI_Dll HttpData {
 		std::unordered_map<std::string, std::string> responseHeaders{};
-		std::string responseMessage{ "" };
+		std::string responseMessage{};
 		nlohmann::json responseData{};
 		int64_t responseCode{ 0 };
 	};

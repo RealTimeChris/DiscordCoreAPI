@@ -494,6 +494,7 @@ namespace DiscordCoreInternal {
 	std::string JSONIFY(DiscordCoreAPI::StartThreadWithoutMessageData dataPackage) {
 		nlohmann::json data{};
 		data["auto_archive_duration"] = dataPackage.autoArchiveDuration;
+		data["rate_limit_per_user"] = dataPackage.rateLimitPerUser;
 		data["invitable"] = dataPackage.invitable;
 		data["name"] = dataPackage.threadName;
 		data["type"] = dataPackage.type;
@@ -609,6 +610,7 @@ namespace DiscordCoreInternal {
 	std::string JSONIFY(DiscordCoreAPI::StartThreadWithMessageData dataPackage) {
 		nlohmann::json data{};
 		data["auto_archive_duration"] = dataPackage.autoArchiveDuration;
+		data["rate_limit_per_user"] = dataPackage.rateLimitPerUser;
 		data["name"] = dataPackage.threadName;
 		return data.dump();
 	}
@@ -837,9 +839,6 @@ namespace DiscordCoreInternal {
 		nlohmann::json data{};
 		if (dataPackage.deleteMessageDays != 0) {
 			data["delete_message_days"] = dataPackage.deleteMessageDays;
-		}
-		if (dataPackage.reason != "") {
-			data["reason"] = dataPackage.reason;
 		}
 		return data.dump();
 	}

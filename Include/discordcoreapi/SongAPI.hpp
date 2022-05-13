@@ -146,7 +146,7 @@ namespace DiscordCoreAPI {
 
 		std::unique_ptr<std::jthread> theTask{ nullptr };
 		bool areWeInstantiated{ false };
-		std::string guildId{ "" };
+		std::string guildId{};
 
 		void sendNextSongFinal(GuildMember guildMember);
 

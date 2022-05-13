@@ -33,8 +33,8 @@ namespace DiscordCoreAPI {
 	/// For geting a Guild's audit logs. \brief For geting a Guild's audit logs.
 	struct DiscordCoreAPI_Dll GetGuildAuditLogsData {
 		AuditLogEvent actionType{};///< The action type to acquire audit-logs for.
-		std::string guildId{ "" };///< The guiild id for the Guild which you wish to query the log of.
-		std::string userId{ "" };///< The User for whom to look for the actions of.
+		std::string guildId{};///< The guiild id for the Guild which you wish to query the log of.
+		std::string userId{};///< The User for whom to look for the actions of.
 		int32_t limit{ 0 };///< The maximum number of actions to acquire from the log.
 	};
 
@@ -44,24 +44,24 @@ namespace DiscordCoreAPI {
 		DefaultMessageNotificationLevel defaultMessageNotifications{};///< Default message notification level.
 		ExplicitContentFilterLevel explicitContentFilter{};///< Explicit content filter level.
 		std::vector<ChannelData> channels{};///< Array of partial Channel objects.
-		std::string systemChannelId{ "" };///< The id of the Channel where Guild notices such as welcome messages and boost events are posted.
+		std::string systemChannelId{};///< The id of the Channel where Guild notices such as welcome messages and boost events are posted.
 		int32_t systemChannelFlags{ 0 };///< System Channel flags.
 		int32_t verificationLevel{ 0 };///< Verification level.
-		std::string afkChannelId{ "" };///< Id for afk Channel.
+		std::string afkChannelId{};///< Id for afk Channel.
 		std::vector<RoleData> roles{};///< Array of Role objects.
 		std::vector<uint8_t> icon{};///< base64 128x128 image for the Guild icon.
-		std::string region{ "" };///< The region that the servers are in.
-		std::string name{ "" };///< The name of the new Guild.
+		std::string region{};///< The region that the servers are in.
+		std::string name{};///< The name of the new Guild.
 	};
 
 	/// For getting a Guild from the library's cache or a Discord server. \brief For getting a Guild from the library's cache or a Discord server.
 	struct DiscordCoreAPI_Dll GetGuildData {
-		std::string guildId{ "" };///< The id of the Guild to acquire.
+		std::string guildId{};///< The id of the Guild to acquire.
 	};
 
 	/// For acquiring a Guild preview of a chosen Guild. \brief For acquiring a Guild preview of a chosen Guild.
 	struct DiscordCoreAPI_Dll GetGuildPreviewData {
-		std::string guildId{ "" };///< The id of the Guild's preview to acquire.
+		std::string guildId{};///< The id of the Guild's preview to acquire.
 	};
 
 	/// For modifying the properties of a chosen Guild. \brief For modifying the properties of a chosen Guild.
@@ -86,65 +86,65 @@ namespace DiscordCoreAPI {
 		}
 		DefaultMessageNotificationLevel defaultMessageNotifications{};///< Default message notification level.
 		ExplicitContentFilterLevel explicitContentFilter{};///< Explicit content filter level.
-		std::string publicUpdatesChannelId{ "" };///< The id of the Channel where admins and moderators of Community guilds receive notices from Discord.
+		std::string publicUpdatesChannelId{};///< The id of the Channel where admins and moderators of Community guilds receive notices from Discord.
 		bool premiumProgressBarEnabled{ false };///< Whether or not the progress bar is enabled.
 		std::vector<uint8_t> discoverySplash{};/// Base64 16 : 9 png / jpeg image for the Guild discovery splash(when the server has the DISCOVERABLE feature).
 		VerificationLevel verificationLevel{};///< Verification level.
 		std::vector<std::string> features{};///< Array of Guild feature strings enabled Guild features.
-		std::string preferredLocale{ "" };///< The preferred locale of a Community Guild used in server discovery and notices from Discord; defaults to "en-US".
-		std::string systemChannelId{ "" };///< The id of the Channel where Guild notices such as welcome messages and boost events are posted.
-		std::string rulesChannelId{ "" };///< The id of the Channel where Community guilds display rules and /or guidelines.
+		std::string preferredLocale{};///< The preferred locale of a Community Guild used in server discovery and notices from Discord; defaults to "en-US".
+		std::string systemChannelId{};///< The id of the Channel where Guild notices such as welcome messages and boost events are posted.
+		std::string rulesChannelId{};///< The id of the Channel where Community guilds display rules and /or guidelines.
 		AfkTimeOutDurations afkTimeout{};///< Afk timeout in seconds.
 		int32_t systemChannelFlags{ 0 };///< System Channel flags.
-		std::string afkChannelId{ "" };///< Id for afk channels.
+		std::string afkChannelId{};///< Id for afk channels.
 		std::vector<uint8_t> splash{};///< Base64 16 : 9 png / jpeg image for the Guild splash (when the server has the INVITE_SPLASH feature).
-		std::string description{ "" };///< The description for the Guild, if the Guild is discoverable.
+		std::string description{};///< The description for the Guild, if the Guild is discoverable.
 		std::vector<uint8_t> banner{};///< Base64 16 : 9 png / jpeg image for the Guild banner (when the server has the BANNER feature).
 		std::vector<uint8_t> icon{};///< Base64 1024x1024 png / jpeg / gif image for the Guild icon (can be animated gif when the server has the ANIMATED_ICON).
-		std::string ownerId{ "" };///< User id to transfer Guild ownership to (must be owner).
-		std::string guildId{ "" };///< Id of the chosen Guild to modify.
-		std::string reason{ "" };///< Reason for modifying the Guild.
-		std::string name{ "" };///< Desired name of the Guild.
+		std::string ownerId{};///< User id to transfer Guild ownership to (must be owner).
+		std::string guildId{};///< Id of the chosen Guild to modify.
+		std::string reason{};///< Reason for modifying the Guild.
+		std::string name{};///< Desired name of the Guild.
 	};
 
 	///	For deleting a Guild. \brief For deleting a Guild.
 	struct DiscordCoreAPI_Dll DeleteGuildData {
-		std::string guildId{ "" };///< The Guild you would like to delete.
+		std::string guildId{};///< The Guild you would like to delete.
 	};
 
 	/// For getting a list of Guild bans. \brief For getting a list of Guild bans.
 	struct DiscordCoreAPI_Dll GetGuildBansData {
-		std::string guildId{ "" };///< The Guild from which to collect the list of bans.
-		std::string before{ "" };///< Consider only users before given user id.
-		std::string after{ "" };///< Consider only users after given user id null.
-		std::string limit{ "" };///< Number of users to return ( up to maximum 1000 ).
+		std::string guildId{};///< The Guild from which to collect the list of bans.
+		std::string before{};///< Consider only users before given user id.
+		std::string after{};///< Consider only users after given user id null.
+		std::string limit{};///< Number of users to return ( up to maximum 1000 ).
 	};
 
 	/// For getting a single Guild Ban. \brief For getting a single Guild Ban.
 	struct DiscordCoreAPI_Dll GetGuildBanData {
-		std::string guildId{ "" };///< The Guild from which to collect the Ban from.
-		std::string userId{ "" };///< The User for whom to collect the Ban of.
+		std::string guildId{};///< The Guild from which to collect the Ban from.
+		std::string userId{};///< The User for whom to collect the Ban of.
 	};
 
 	/// For banning a current GuildMember. \brief For banning a current GuildMember.
 	struct DiscordCoreAPI_Dll CreateGuildBanData {
-		std::string guildMemberId{ "" };///< The id of the member to be banned.
+		std::string guildMemberId{};///< The id of the member to be banned.
 		int32_t deleteMessageDays{ 0 };///< The number of days of their Messages to delete.
-		std::string guildId{ "" };///< The id of the Guild from which to ban the member.
-		std::string reason{ "" };///< The reason for the ban.
+		std::string guildId{};///< The id of the Guild from which to ban the member.
+		std::string reason{};///< The reason for the ban.
 	};
 
 	/// For removing a previous created Ban. \brief For removing a previous created Ban.
 	struct DiscordCoreAPI_Dll RemoveGuildBanData {
-		std::string guildId{ "" };///< The Guild from which to remove the Ban.
-		std::string userId{ "" };///< The user Id of the user who's ban to remove.
-		std::string reason{ "" };///< The reason for removing this Ban.
+		std::string guildId{};///< The Guild from which to remove the Ban.
+		std::string userId{};///< The user Id of the user who's ban to remove.
+		std::string reason{};///< The reason for removing this Ban.
 	};
 
 	/// For collecting the Guild prune count. \brief For collecting the Guild prune count.
 	struct DiscordCoreAPI_Dll GetGuildPruneCountData {
 		std::vector<std::string> includeRoles{};///< Roles to be included in the prune.
-		std::string guildId{ "" };///< The Guild to be pruned.
+		std::string guildId{};///< The Guild to be pruned.
 		int32_t days{ 0 };///< The number of days beyond which to prune the user's for inactivity.
 	};
 
@@ -152,143 +152,143 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll BeginGuildPruneData {
 		std::vector<std::string> includeRoles{};/// Roles to be included in the prune.
 		bool computePruneCount{ false };/// Whether 'pruned' is returned, discouraged for large guilds.
-		std::string guildId{ "" };///< Guild within which to perform the prune.
-		std::string reason{ "" };///< Reason for pruning the GuildMembers.
+		std::string guildId{};///< Guild within which to perform the prune.
+		std::string reason{};///< Reason for pruning the GuildMembers.
 		int32_t days{ 0 };/// Number of days after which to prune a given GuildMember.
 	};
 
 	/// For collecting a list of Guild voice regions. \brief For collecting a list of Guild voice regions.
 	struct DiscordCoreAPI_Dll GetGuildVoiceRegionsData {
-		std::string guildId{ "" };///< The Guild for which to collect the voice regions from.
+		std::string guildId{};///< The Guild for which to collect the voice regions from.
 	};
 
 	/// For geting all of the current invites from a Guild. \brief For geting all of the current invites from a Guild.
 	struct DiscordCoreAPI_Dll GetGuildInvitesData {
-		std::string guildId{ "" };///< The id of the Guild you wish to acquire.
+		std::string guildId{};///< The id of the Guild you wish to acquire.
 	};
 
 	/// For collecting a list of Guild voice integrations. \brief
 	struct DiscordCoreAPI_Dll GetGuildIntegrationsData {
-		std::string guildId{ "" };///< The Guild for which to collect the integrations from.
+		std::string guildId{};///< The Guild for which to collect the integrations from.
 	};
 
 	/// For deleting a Guild integration. \brief For deleting a Guild integration.
 	struct DiscordCoreAPI_Dll DeleteGuildIntegrationData {
-		std::string integrationId{ "" };///< The integration's id which we are going to delete.
-		std::string guildId{ "" };///< The Guild from which to delete the integration from.
-		std::string reason{ "" };///< Reason for deleting the integration.
+		std::string integrationId{};///< The integration's id which we are going to delete.
+		std::string guildId{};///< The Guild from which to delete the integration from.
+		std::string reason{};///< Reason for deleting the integration.
 	};
 
 	/// For collecting a Guild's widget settings. \brief For collecting a Guild's widget settings.
 	struct DiscordCoreAPI_Dll GetGuildWidgetSettingsData {
-		std::string guildId{ "" };///< The Guild from which to collect the widget from.
+		std::string guildId{};///< The Guild from which to collect the widget from.
 	};
 
 	/// For modifying a Guild's widget. \brief For modifying a Guild's widget.
 	struct DiscordCoreAPI_Dll ModifyGuildWidgetData {
 		GuildWidgetData widgetData{};///< The new Guild widget responseData.
-		std::string guildId{ "" };///< The Guild for which to modify the widget of.
-		std::string reason{ "" };///< Reason for modifying the widget.
+		std::string guildId{};///< The Guild for which to modify the widget of.
+		std::string reason{};///< Reason for modifying the widget.
 	};
 
 	/// For collecting a Guild's widget. \brief For collecting a Guild's widget.
 	struct DiscordCoreAPI_Dll GetGuildWidgetData {
-		std::string guildId{ "" };///< The Guild from which to collect the widget from.
+		std::string guildId{};///< The Guild from which to collect the widget from.
 	};
 
 	/// For geting the vanity invite responseData of a Guild. \brief For geting the vanity invite responseData of a Guild.
 	struct DiscordCoreAPI_Dll GetGuildVanityInviteData {
-		std::string guildId{ "" };///< The id of the Guild to acquire the vanity invite from.
+		std::string guildId{};///< The id of the Guild to acquire the vanity invite from.
 	};
 
 	/// For collecting a Guild's widget image. \brief For collecting a Guild's widget image.
 	struct DiscordCoreAPI_Dll GetGuildWidgetImageData {
 		WidgetStyleOptions widgetStlye{};///< The style of widget image to collect.
-		std::string guildId{ "" };///< The Guild for which to collect the widget image from.
+		std::string guildId{};///< The Guild for which to collect the widget image from.
 	};
 
 	/// For collecting a Guild's welcome screen. \brief For collecting a Guild's welcome screen.
 	struct DiscordCoreAPI_Dll GetGuildWelcomeScreenData {
-		std::string guildId{ "" };///< The Guild for which to collect the widget image from.
+		std::string guildId{};///< The Guild for which to collect the widget image from.
 	};
 
 	/// For modifying a Guild's welcome screen. \brief For modifying a Guild's welcome screen.
 	struct DiscordCoreAPI_Dll ModifyGuildWelcomeScreenData {
 		std::vector<WelcomeScreenChannelData> welcomeChannels{};///< Welcome channels for the welcome screen.
-		std::string description{ "" };///< The description of the welcome screen.
-		std::string guildId{ "" };///< The Guild for which to modify the welcome screen of.
-		std::string reason{ "" };///< The reason for modifying the welcome screen.
+		std::string description{};///< The description of the welcome screen.
+		std::string guildId{};///< The Guild for which to modify the welcome screen of.
+		std::string reason{};///< The reason for modifying the welcome screen.
 		bool enabled{ false };///< Is it enabled?
 	};
 
 	/// For collecting a Guild's template. \brief For collecting a Guild's template.
 	struct DiscordCoreAPI_Dll GetGuildTemplateData {
-		std::string templateCode{ "" };///< Code for the desired Template.
+		std::string templateCode{};///< Code for the desired Template.
 	};
 
 	/// For creating a Guild from a Guild template. \brief For creating a Guild from a Guild template.
 	struct DiscordCoreAPI_Dll CreateGuildFromGuildTemplateData {
-		std::string templateCode{ "" };///< Code for the desired Template to use.
+		std::string templateCode{};///< Code for the desired Template to use.
 		std::vector<uint8_t> imageData{};///< base64 128x128 image for the Guild icon.
-		std::string name{ "" };///< Desired name of the Guild.
+		std::string name{};///< Desired name of the Guild.
 	};
 
 	/// For collecting a list of Guild Templates from a chosen Guild. \brief For collecting a list of Guild Templates from a chosen Guild.
 	struct DiscordCoreAPI_Dll GetGuildTemplatesData {
-		std::string guildId{ "" };///< Guild from which you would like to collect the Templates from.
+		std::string guildId{};///< Guild from which you would like to collect the Templates from.
 	};
 
 	/// For creating a Guild Template. \brief For creating a Guild Template.
 	struct DiscordCoreAPI_Dll CreateGuildTemplateData {
-		std::string description{ "" };///< Description for the template (0 - 120 characters).
-		std::string guildId{ "" };///< Guild within which you wuold like to create the template.
-		std::string name{ "" };///< Name of the template (1 - 100 characters).
+		std::string description{};///< Description for the template (0 - 120 characters).
+		std::string guildId{};///< Guild within which you wuold like to create the template.
+		std::string name{};///< Name of the template (1 - 100 characters).
 	};
 
 	/// For syncing a Guild Template. \brief For syncing a Guild Template.
 	struct DiscordCoreAPI_Dll SyncGuildTemplateData {
-		std::string templateCode{ "" };///< Template code for which template you would like to sync.
-		std::string guildId{ "" };///< Guild for which you would like to sync the template of.
+		std::string templateCode{};///< Template code for which template you would like to sync.
+		std::string guildId{};///< Guild for which you would like to sync the template of.
 	};
 
 	/// For modifying a Guild Template. \brief For modifying a Guild Template.
 	struct DiscordCoreAPI_Dll ModifyGuildTemplateData {
-		std::string templateCode{ "" };/// Template which you would like to modify.
-		std::string description{ "" };///< Description for the template (0 - 120 characters).
-		std::string guildId{ "" };///< Guild within which you would like to modify the Template.
-		std::string name{ "" };///< Name of the template (1 - 100 characters).
+		std::string templateCode{};/// Template which you would like to modify.
+		std::string description{};///< Description for the template (0 - 120 characters).
+		std::string guildId{};///< Guild within which you would like to modify the Template.
+		std::string name{};///< Name of the template (1 - 100 characters).
 	};
 
 	/// For deleting a Guild Template. \brief For deleting a Guild Template.
 	struct DiscordCoreAPI_Dll DeleteGuildTemplateData {
-		std::string templateCode{ "" };///< The template which you would like to delete.
-		std::string guildId{ "" };///< The Guild within which you would like to delete the Template.
+		std::string templateCode{};///< The template which you would like to delete.
+		std::string guildId{};///< The Guild within which you would like to delete the Template.
 	};
 
 	/// For geting a single invite's responseData from a Guild. \brief For geting a single invite's responseData from a Guild.
 	struct DiscordCoreAPI_Dll GetInviteData {
-		std::string guildScheduledEventId{ "" };///< The Guild scheduled event to include with the invite.
+		std::string guildScheduledEventId{};///< The Guild scheduled event to include with the invite.
 		bool withExpiration{ false };///< Collect expiration time/date?
 		bool withCount{ false };///< Collect usage etc counts?
-		std::string inviteId{ "" };///< The id of the invite you wish to acquire.
+		std::string inviteId{};///< The id of the invite you wish to acquire.
 	};
 
 	/// For deleting a single Guild Invite. \brief For deleting a single Guild Invite.
 	struct DiscordCoreAPI_Dll DeleteInviteData {
-		std::string inviteId{ "" };///< The Invite which you would like to delete.
-		std::string reason{ "" };///< Reason for deleting the Invite.
+		std::string inviteId{};///< The Invite which you would like to delete.
+		std::string reason{};///< Reason for deleting the Invite.
 	};
 
 	/// For collecting a list of Guild's that the Bot is in. \brief For collecting a list of Guild's that the Bot is in.
 	struct DiscordCoreAPI_Dll GetCurrentUserGuildsData {
-		std::string before{ "" };///< Get guilds before this Guild ID.
-		std::string after{ "" };///< Get guilds after this Guild ID.
+		std::string before{};///< Get guilds before this Guild ID.
+		std::string after{};///< Get guilds after this Guild ID.
 		uint32_t limit{ 0 };///< Max number of guilds to return (1 - 200).
 	};
 
 	/// For leaving a particular Guild. \brief For leaving a particular Guild.
 	struct DiscordCoreAPI_Dll LeaveGuildData {
-		std::string guildId{ "" };///< The id of the Guild you would like the bot to leave.
+		std::string guildId{};///< The id of the Guild you would like the bot to leave.
 	};
 
 	/// A discord Guild. Used to connect to/disconnect from voice. \brief A discord Guild. Used to connect to/disconnect from voice.

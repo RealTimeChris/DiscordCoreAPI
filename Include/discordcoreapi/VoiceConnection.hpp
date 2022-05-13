@@ -64,7 +64,7 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::EventWaiter pauseEvent{};
 		std::atomic_bool areWeStopping{ false };
 		std::atomic_bool areWePlaying{ false };
-		std::string currentGuildMemberId{ "" };
+		std::string currentGuildMemberId{};
 		const int32_t maxBufferSize{ 1276 };
 		int64_t disconnectStartTime{ 0 };
 		bool areWeConnectedBool{ false };

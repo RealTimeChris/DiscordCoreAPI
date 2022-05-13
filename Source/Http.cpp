@@ -129,7 +129,7 @@ namespace DiscordCoreInternal {
 				if (this->responseCode == -1) {
 					this->parseCode(other);
 				}
-				std::string newString{ "" };
+				std::string newString{};
 				newString.insert(newString.begin(), other.begin(), other.begin() + other.find("\r\n\r\n") + std::string("\r\n\r\n").size());
 				other.erase(other.begin(), other.begin() + newString.size());
 				while (newString.size() > 0 && newString.find(":") != std::string::npos && newString.find("\r\n") != std::string::npos) {
@@ -422,7 +422,7 @@ namespace DiscordCoreInternal {
 	std::vector<HttpData> HttpClient::executeHttpRequest(std::vector<HttpWorkloadData>& workload) {
 		try {
 			std::vector<HttpData> returnVector{};
-			std::string currentBaseUrl{ "" };
+			std::string currentBaseUrl{};
 			HttpConnection theConnection{};
 			auto rateLimitDataPtr = std::make_unique<RateLimitData>();
 			for (auto& value: workload) {

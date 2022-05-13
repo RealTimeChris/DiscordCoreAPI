@@ -146,7 +146,7 @@ namespace DiscordCoreAPI {
 	}
 
 	std::string convertMsToDurationString(int32_t durationInMs) {
-		std::string newString{ "" };
+		std::string newString{};
 		int32_t msPerSecond{ 1000 };
 		int32_t secondsPerMinute{ 60 };
 		int32_t minutesPerHour{ 60 };

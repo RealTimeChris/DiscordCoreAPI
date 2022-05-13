@@ -40,7 +40,7 @@ namespace DiscordCoreInternal {
 		std::vector<DiscordCoreAPI::Song> collectSearchResults(std::string theString);
 
 	  protected:
-		inline static std::string clientId{ "" };
+		inline static std::string clientId{};
 
 		const std::string baseUrl02{ "https://api-v2.soundcloud.com" };
 		const std::string baseUrl{ "https://soundcloud.com" };
@@ -73,7 +73,7 @@ namespace DiscordCoreInternal {
 		SoundCloudRequestBuilder requestBuilder{};
 		const int32_t maxBufferSize{ 8192 };
 		DiscordCoreAPI::Song theSong{};
-		std::string guildId{ "" };
+		std::string guildId{};
 	};
 
 };// namespace DiscordCoreAPI

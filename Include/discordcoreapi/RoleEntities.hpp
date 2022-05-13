@@ -34,35 +34,35 @@ namespace DiscordCoreAPI {
 
 	/// For adding a Role to a GuildMember. \brief For addin a Role to a GuildMember.
 	struct DiscordCoreAPI_Dll AddGuildMemberRoleData {
-		std::string guildId{ "" };///< The id of the Guild within which to assign the Role.
-		std::string userId{ "" };///< The id of the User to whom to assign the Role.
-		std::string roleId{ "" };///< The id of the Role to be assigned.
-		std::string reason{ "" };///< Reason for adding the GuildMember's Role.
+		std::string guildId{};///< The id of the Guild within which to assign the Role.
+		std::string userId{};///< The id of the User to whom to assign the Role.
+		std::string roleId{};///< The id of the Role to be assigned.
+		std::string reason{};///< Reason for adding the GuildMember's Role.
 	};
 
 	/// For removing a Role from a GuildMember. \brief For removing a Role from a GuildMember.
 	struct DiscordCoreAPI_Dll RemoveGuildMemberRoleData {
-		std::string guildId{ "" };///< The id of the Guild within which to remove the Role.
-		std::string userId{ "" };///< The id of the User from whom to remove the Role.
-		std::string roleId{ "" };///< The id of the Role to be removed.
-		std::string reason{ "" };///< Reason for removing the GuildMember's Role.
+		std::string guildId{};///< The id of the Guild within which to remove the Role.
+		std::string userId{};///< The id of the User from whom to remove the Role.
+		std::string roleId{};///< The id of the Role to be removed.
+		std::string reason{};///< Reason for removing the GuildMember's Role.
 	};
 
 	/// For getting a chosen Guild's Roles. \brief For getting a chosen Guild's Roles.
 	struct DiscordCoreAPI_Dll GetGuildRolesData {
-		std::string guildId{ "" };///< Guild id for which Guild to get the roles from.
+		std::string guildId{};///< Guild id for which Guild to get the roles from.
 	};
 
 	/// For creating a new Role within a chosen Guild. \brief For creating a new Role within a chosen Guild.
 	struct DiscordCoreAPI_Dll CreateGuildRoleData {
-		std::string hexColorValue{ "" };///< Hex color-value between 0 and ffffff.
+		std::string hexColorValue{};///< Hex color-value between 0 and ffffff.
 		std::vector<uint8_t> icon{};///< Image data	the role's icon image (if the guild has the ROLE_ICONS feature)	null.
 		std::string unicodeEmoji{};///< The role's unicode emoji as a standard emoji.
 		Permissions permissions{};///< The base permissions to give the Role.
 		bool mentionable{ false };///< Is it mentionable by others in the Guild.
-		std::string guildId{ "" };///< Which Guild to make the Role in.
-		std::string reason{ "" };///< Reason for creating the Role.
-		std::string name{ "" };///< The name of the Role.
+		std::string guildId{};///< Which Guild to make the Role in.
+		std::string reason{};///< Reason for creating the Role.
+		std::string name{};///< The name of the Role.
 		int32_t position{ 0 };///< The position amongst the other roles.
 		bool hoist{ false };///< Is this Role hoisted above the rest of them?
 	};
@@ -70,7 +70,7 @@ namespace DiscordCoreAPI {
 	/// For updating the positions of the roles. \brief For updating the positions of the roles.
 	struct DiscordCoreAPI_Dll RolePositionData {
 		int32_t rolePosition{ 0 };///< The new Role position.
-		std::string roleId{ "" };///< The Role to update.
+		std::string roleId{};///< The Role to update.
 	};
 
 	/// For updating the Role positions. \brief For updating the Role positions.
@@ -78,10 +78,10 @@ namespace DiscordCoreAPI {
 		friend std::string DiscordCoreInternal::JSONIFY(ModifyGuildRolePositionsData dataPackage);
 		friend Roles;
 
-		std::string guildId{ "" };///< The Guild within which to move the Role.
+		std::string guildId{};///< The Guild within which to move the Role.
 		int32_t newPosition{ 0 };///< The new position of the Role.
-		std::string roleId{ "" };///< The id of the Role to move.
-		std::string reason{ "" };///< Reason for modifying the Role positions.
+		std::string roleId{};///< The id of the Role to move.
+		std::string reason{};///< Reason for modifying the Role positions.
 
 	  protected:
 		std::vector<RolePositionData> rolePositions;
@@ -89,35 +89,35 @@ namespace DiscordCoreAPI {
 
 	/// For updating a Role's options within a chosen Guild. \brief For updating a Role's options within a chosen Guild.
 	struct DiscordCoreAPI_Dll ModifyGuildRoleData {
-		std::string hexColorValue{ "" };///< A hex-color value between 0x00 and 0xFFFFFF.
+		std::string hexColorValue{};///< A hex-color value between 0x00 and 0xFFFFFF.
 		Permissions permissions{ "0" };///< Base Guild permissions for the Role.
 		std::vector<uint8_t> icon{};///< Image data	the role's icon image (if the guild has the ROLE_ICONS feature)	null.
 		std::string unicodeEmoji{};///< The role's unicode emoji as a standard emoji.
 		bool mentionable{ false };///< Is it mentionable?
-		std::string guildId{ "" };///< The id of the Guild within which to update the Role.
-		std::string roleId{ "" };///< The id of the Role to update.
-		std::string reason{ "" };///<< Reason for modifying the Role.
-		std::string name{ "" };///< What the name of the Role is going to be.
+		std::string guildId{};///< The id of the Guild within which to update the Role.
+		std::string roleId{};///< The id of the Role to update.
+		std::string reason{};///<< Reason for modifying the Role.
+		std::string name{};///< What the name of the Role is going to be.
 		bool hoist{ false };///< Is this Role hoisted above the others?
 	};
 
 	/// For removing a Role from a chosen Guild. \brief For removing a Role from a chosen Guild.
 	struct DiscordCoreAPI_Dll RemoveGuildRoleData {
-		std::string guildId{ "" };///< The id of the Guild from which to remove the Role.
-		std::string roleId{ "" };///< The id of the Role to remove.
-		std::string reason{ "" };///< Reason for removing this Role.
+		std::string guildId{};///< The id of the Guild from which to remove the Role.
+		std::string roleId{};///< The id of the Role to remove.
+		std::string reason{};///< Reason for removing this Role.
 	};
 
 	/// For getting a chosen GuildMember's Roles. \brief For getting a chosen GuildMember's Roles.
 	struct DiscordCoreAPI_Dll GetGuildMemberRolesData {
 		GuildMember guildMember{};///< Which Guild member to collect the roles from.
-		std::string guildId{ "" };///< Which Guild to collect their roles from.
+		std::string guildId{};///< Which Guild to collect their roles from.
 	};
 
 	/// For getting a Role from the library's cache, or the Discord server. \brief For getting a Role from the library's cache, or the Discord server.
 	struct DiscordCoreAPI_Dll GetRoleData {
-		std::string guildId{ "" };///< Which Guild to collect the Role from.
-		std::string roleId{ "" };///< Which Role to collect.
+		std::string guildId{};///< Which Guild to collect the Role from.
+		std::string roleId{};///< Which Role to collect.
 	};
 
 	/// A single Role.

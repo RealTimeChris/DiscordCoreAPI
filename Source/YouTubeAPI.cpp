@@ -304,7 +304,7 @@ namespace DiscordCoreInternal {
 			swapKey = regex_replace(swapKey, std::regex("\\$|^'|^\"|'$|\"$"), "");
 		}
 		std::vector<std::string> keys{};
-		std::string keysNew{ "" };
+		std::string keysNew{};
 		keys.push_back(reverseKey);
 		keys.push_back(sliceKey);
 		keys.push_back(spliceKey);
