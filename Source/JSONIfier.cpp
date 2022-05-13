@@ -130,6 +130,7 @@ namespace DiscordCoreAPI {
 					component["required"] = valueNew.required;
 					component["style"] = valueNew.style;
 					component["label"] = valueNew.label;
+					component["value"] = valueNew.value;
 					component["type"] = valueNew.type;
 					components.push_back(component);
 				}
