@@ -508,7 +508,7 @@ namespace DiscordCoreInternal {
 		}
 
 		if (dataPackage.message.components.size() > 0) {
-			data["components"] = dataPackage.message.components;
+			data["components"] = nlohmann::json{ dataPackage.message.components };
 		}
 
 		data["message"]["allowed_mentions"] = dataPackage.message.allowedMentions;
@@ -623,7 +623,7 @@ namespace DiscordCoreInternal {
 		}
 
 		if (dataPackage.data.components.size() > 0) {
-			data["data"]["components"] = dataPackage.data.components;
+			data["data"]["components"] = nlohmann::json{ dataPackage.data.components };
 		}
 
 		data["data"]["allowed_mentions"] = dataPackage.data.allowedMentions;
@@ -853,7 +853,7 @@ namespace DiscordCoreInternal {
 		}
 
 		if (dataPackage.components.size() > 0) {
-			data["components"] = dataPackage.components;
+			data["components"] = nlohmann::json{ dataPackage.components };
 		}
 
 		data["allowed_mentions"] = dataPackage.allowedMentions;
@@ -923,7 +923,7 @@ namespace DiscordCoreInternal {
 		}
 
 		if (dataPackage.components.size() > 0) {
-			data["components"] = dataPackage.components;
+			data["components"] = nlohmann::json{ dataPackage.components };
 		}
 
 		data["allowed_mentions"] = dataPackage.allowedMentions;
@@ -955,7 +955,7 @@ namespace DiscordCoreInternal {
 		}
 
 		if (dataPackage.components.size() > 0) {
-			data["components"] = dataPackage.components;
+			data["components"] = nlohmann::json{ dataPackage.components };
 		}
 
 		data["allowed_mentions"] = dataPackage.allowedMentions;
@@ -1058,7 +1058,7 @@ namespace DiscordCoreInternal {
 		}
 
 		if (dataPackage.components.size() > 0) {
-			data["components"] = dataPackage.components;
+			data["components"] = nlohmann::json{ dataPackage.components };
 		}
 
 		data["allowed_mentions"] = dataPackage.allowedMentions;
