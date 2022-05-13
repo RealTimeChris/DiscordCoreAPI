@@ -107,7 +107,7 @@ DiscordCoreAPI::InputEvents::deleteInputEventResponseAsync(newEvent, 20000).get(
 - Open a terminal inside the git repo's folder.   
 - Run `cmake -S . --preset Linux_OR_Windows-Debug_OR_Release`.
 - Then run `cmake --build --preset Linux_OR_Windows-Debug_OR_Release`.   
-- Run within the same terminal and folder `cmake --install ./Build/Debug_OR_Release` (Note: You will likely need to do this from an elevated terminal).
+- Run within the same terminal and folder `cmake --install ./Build/Debug_OR_Release`.
 - The default installation paths are: Windows = "ROOT_DRIVE:/Users/USERNAME/CMake/DiscordCoreAPI", Linux = "/home/USERNAME/CMake/DiscordCoreAPI"
 
 # The CMAKE Package
