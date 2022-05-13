@@ -129,9 +129,11 @@ namespace DiscordCoreInternal {
 				reportSSLError("SSL_CTX_set_options() Error: ");
 				return false;
 			}
-			std::unique_lock<std::mutex> theLock{ HttpSSLClient::theMutex };
+
 			SSL_CTX_set_verify(this->context, SSL_VERIFY_PEER, nullptr);
 			SSL_CTX_set_verify_depth(this->context, 4);
+
+			std::unique_lock<std::mutex> theLock{ HttpSSLClient::theMutex };
 			if (!SSL_CTX_load_verify_locations(this->context, certPath.c_str(), NULL)) {
 				reportSSLError("SSL_CTX_load_verify_locations() Error: ");
 				return false;
