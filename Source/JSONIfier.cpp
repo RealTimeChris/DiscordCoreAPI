@@ -508,8 +508,7 @@ namespace DiscordCoreInternal {
 		}
 
 		if (dataPackage.message.components.size() == 0) {
-			auto componentsActionRow = nlohmann::json::array();
-			data["message"]["components"] = componentsActionRow;
+			data["message"]["components"] = nlohmann::json::array();
 		} else {
 			data["message"]["components"] = nlohmann::json{ dataPackage.message.components };
 		}
@@ -520,8 +519,12 @@ namespace DiscordCoreInternal {
 			data["message"]["sticker_ids"].push_back(value);
 		}
 
-		for (auto& value: dataPackage.message.embeds) {
-			data["message"]["embeds"].push_back(value);
+		if (dataPackage.message.embeds.size() == 0) {
+			data["message"]["embeds"] = nlohmann::json::array();
+		} else {
+			for (auto& value: dataPackage.message.embeds) {
+				data["message"]["embeds"].push_back(value);
+			}
 		}
 
 		if (dataPackage.message.content != "") {
@@ -626,8 +629,7 @@ namespace DiscordCoreInternal {
 		}
 
 		if (dataPackage.data.components.size() == 0) {
-			auto componentsActionRow = nlohmann::json::array();
-			data["data"]["components"] = componentsActionRow;
+			data["data"]["components"] = nlohmann::json::array();
 		} else {
 			data["data"]["components"] = nlohmann::json{ dataPackage.data.components };
 		}
@@ -646,8 +648,12 @@ namespace DiscordCoreInternal {
 			data["data"]["choices"] = theArray;
 		}
 
-		for (auto& value: dataPackage.data.embeds) {
-			data["data"]["embeds"].push_back(value);
+		if (dataPackage.data.embeds.size() == 0) {
+			data["data"]["embeds"] = nlohmann::json::array();
+		} else {
+			for (auto& value: dataPackage.data.embeds) {
+				data["data"]["embeds"].push_back(value);
+			}
 		}
 
 		if (dataPackage.data.customId != "") {
@@ -859,16 +865,19 @@ namespace DiscordCoreInternal {
 		}
 
 		if (dataPackage.components.size() == 0) {
-			auto componentsActionRow = nlohmann::json::array();
-			data["components"] = componentsActionRow;
+			data["components"] = nlohmann::json::array();
 		} else {
 			data["components"] = nlohmann::json{ dataPackage.components };
 		}
 
 		data["allowed_mentions"] = dataPackage.allowedMentions;
 
-		for (auto& value: dataPackage.embeds) {
-			data["embeds"].push_back(value);
+		if (dataPackage.embeds.size() == 0) {
+			data["embeds"] = nlohmann::json::array();
+		} else {
+			for (auto& value: dataPackage.embeds) {
+				data["embeds"].push_back(value);
+			}
 		}
 
 		if (dataPackage.avatarUrl != "") {
@@ -932,8 +941,7 @@ namespace DiscordCoreInternal {
 		}
 
 		if (dataPackage.components.size() == 0) {
-			auto componentsActionRow = nlohmann::json::array();
-			data["components"] = componentsActionRow;
+			data["components"] = nlohmann::json::array();
 		} else {
 			data["components"] = nlohmann::json{ dataPackage.components };
 		}
@@ -944,8 +952,12 @@ namespace DiscordCoreInternal {
 			data["sticker_ids"].push_back(value);
 		}
 
-		for (auto& value: dataPackage.embeds) {
-			data["embeds"].push_back(value);
+		if (dataPackage.embeds.size() == 0) {
+			data["embeds"] = nlohmann::json::array();
+		} else {
+			for (auto& value: dataPackage.embeds) {
+				data["embeds"].push_back(value);
+			}
 		}
 
 		if (dataPackage.content != "") {
@@ -967,16 +979,19 @@ namespace DiscordCoreInternal {
 		}
 
 		if (dataPackage.components.size() == 0) {
-			auto componentsActionRow = nlohmann::json::array();
-			data["components"] = componentsActionRow;
+			data["components"] = nlohmann::json::array();
 		} else {
 			data["components"] = nlohmann::json{ dataPackage.components };
 		}
 
 		data["allowed_mentions"] = dataPackage.allowedMentions;
 
-		for (auto& value: dataPackage.embeds) {
-			data["embeds"].push_back(value);
+		if (dataPackage.embeds.size() == 0) {
+			data["embeds"] = nlohmann::json::array();
+		} else {
+			for (auto& value: dataPackage.embeds) {
+				data["embeds"].push_back(value);
+			}
 		}
 
 		if (dataPackage.content != "") {
@@ -1073,16 +1088,19 @@ namespace DiscordCoreInternal {
 		}
 
 		if (dataPackage.components.size() == 0) {
-			auto componentsActionRow = nlohmann::json::array();
-			data["components"] = componentsActionRow;
+			data["components"] = nlohmann::json::array();
 		} else {
 			data["components"] = nlohmann::json{ dataPackage.components };
 		}
 
 		data["allowed_mentions"] = dataPackage.allowedMentions;
 
-		for (auto& value: dataPackage.embeds) {
-			data["embeds"].push_back(value);
+		if (dataPackage.embeds.size() == 0) {
+			data["embeds"] = nlohmann::json::array();
+		} else {
+			for (auto& value: dataPackage.embeds) {
+				data["embeds"].push_back(value);
+			}
 		}
 
 		if (dataPackage.content != "") {
