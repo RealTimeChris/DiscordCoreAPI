@@ -52,8 +52,6 @@ namespace DiscordCoreInternal {
 			std::vector<HttpWorkloadData> workloadVector01{};
 			workloadVector01.push_back(dataPackage);
 			std::vector<HttpData> returnData = this->submitWorkloadAndGetResultNew(workloadVector01);
-			std::cout << "THE URL:\n" << dataPackage.baseUrl + dataPackage.relativePath << std::endl;
-			std::cout << "THE RESULTS: " << returnData[0].responseMessage << std::endl;
 			nlohmann::json data = nlohmann::json::parse(returnData[0].responseMessage);
 			if (data.contains("collection") && !data["collection"].is_null()) {
 				for (auto& value: data["collection"]) {
