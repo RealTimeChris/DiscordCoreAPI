@@ -62,7 +62,7 @@ else()
 	target_include_directories(CURL::Curl INTERFACE "${CURL_INCLUDE_DIR}")
 	unset(CURL_RELEASE_DLL CACHE)
 	unset(CURL_DEBUG_DLL CACHE)
-	message(STATUS "Couldn't find Curl Dlls - linking statically")
+	message(STATUS "Found Curl Dlls: FALSE - linking statically")
 endif()
 # This file locates the Libz library, using a couple of provided paths for searching.
 #
