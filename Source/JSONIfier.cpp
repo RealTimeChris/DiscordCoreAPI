@@ -79,7 +79,7 @@ namespace DiscordCoreAPI {
 		for (auto& value: dataPackage) {
 			nlohmann::json components{};
 			for (auto& valueNew: value.components) {
-				if (valueNew.type == DiscordCoreAPI::ComponentType::Button) {
+				if (valueNew.type == ComponentType::Button) {
 					nlohmann::json component{};
 					component["emoji"]["animated"] = valueNew.emoji.animated;
 					component["emoji"]["name"] = valueNew.emoji.name;
@@ -93,7 +93,7 @@ namespace DiscordCoreAPI {
 					component["type"] = valueNew.type;
 					component["url"] = valueNew.url;
 					components.push_back(component);
-				} else if (valueNew.type == DiscordCoreAPI::ComponentType::SelectMenu) {
+				} else if (valueNew.type == ComponentType::SelectMenu) {
 					nlohmann::json optionsArray{};
 					for (auto& value01: valueNew.options) {
 						nlohmann::json option{};
@@ -121,7 +121,7 @@ namespace DiscordCoreAPI {
 					component["type"] = valueNew.type;
 					components.push_back(component);
 
-				} else if (valueNew.type == DiscordCoreAPI::ComponentType::TextInput) {
+				} else if (valueNew.type == ComponentType::TextInput) {
 					nlohmann::json component{};
 					component["placeholder"] = valueNew.placeholder;
 					component["min_length"] = valueNew.minLength;
