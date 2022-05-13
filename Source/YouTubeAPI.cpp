@@ -137,7 +137,7 @@ namespace DiscordCoreInternal {
 		responseToPlayerGet02.insert(responseToPlayerGet02.begin(), responseMessage02[0].responseMessage.begin(), responseMessage02[0].responseMessage.end());
 		newSong.html5PlayerFile = responseToPlayerGet02;
 		newSong.format = decipherFormat(newSong.format, newSong.html5PlayerFile);
-		DiscordCoreAPI::DownloadUrl downloadUrl{ .urlPath = newSong.format.downloadUrl, .contentSize = newSong.contentLength };
+		DiscordCoreAPI::DownloadUrl downloadUrl{ .contentSize = newSong.contentLength, .urlPath = newSong.format.downloadUrl };
 		newSong.viewUrl = newSong.firstDownloadUrl;
 		newSong.addedByUserName = guildMember.user.userName;
 		newSong.contentLength = static_cast<int32_t>(newSong.format.contentLength);
