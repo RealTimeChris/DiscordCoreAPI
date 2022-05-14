@@ -89,8 +89,8 @@ target_link_options(
 	"$<$<PLATFORM_ID:Windows>:/DEBUG>"
 )
 
-set(CONFIG_FILE_NAME "DiscordCoreAPIConfig.cmake")
-set(EXPORTED_TARGETS_NAME "DiscordCoreAPITargets")
+set(CONFIG_FILE_NAME "${PROJECT_NAME}Config.cmake")
+set(EXPORTED_TARGETS_NAME "${PROJECT_NAME}Targets")
 set(EXPORTED_TARGETS_FILE_NAME "${EXPORTED_TARGETS_NAME}.cmake")
 set(EXPORTED_TARGETS_FILE_PATH "share/discordcoreapi/${EXPORTED_TARGETS_FILE_NAME}")
 set(RELEASE_PDB_FILE_PATH "bin/discordcoreapi.pdb")
@@ -107,7 +107,7 @@ configure_package_config_file(
 	DEBUG_PDB_FILE_PATH
 )
 
-set(VERSION_FILE_NAME "DiscordCoreAPIConfigVersion.cmake")
+set(VERSION_FILE_NAME "${PROJECT_NAME}ConfigVersion.cmake")
 
 write_basic_package_version_file(
 	"${CMAKE_CURRENT_BINARY_DIR}/${VERSION_FILE_NAME}"
