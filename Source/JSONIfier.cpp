@@ -836,53 +836,44 @@ namespace DiscordCoreInternal {
 	}
 
 	std::string JSONIFY(DiscordCoreAPI::ExecuteWebHookData dataPackage) {
-		try {
-			nlohmann::json returnValue{};
+		nlohmann::json returnValue{};
 
-			for (auto& value: dataPackage.attachments) {
-				returnValue["attachments"].push_back(value);
-			}
-
-			if (dataPackage.components.size() == 0) {
-				returnValue["components"] = nlohmann::json{};
-			}
-			else {
-				returnValue["components"] = nlohmann::json{ dataPackage.components };
-			}
-
-			returnValue["allowed_mentions"] = dataPackage.allowedMentions;
-
-			if (dataPackage.embeds.size() == 0) {
-				returnValue["embeds"] = nlohmann::json{};
-			} else {
-				for (auto& value: dataPackage.embeds) {
-					returnValue["embeds"].push_back(value);
-				}
-			}
-
-			if (dataPackage.avatarUrl != "") {
-				returnValue["avatar_url"] = dataPackage.username;
-			}
-
-			if (dataPackage.username != "") {
-				returnValue["username"] = dataPackage.username;
-			}
-
-			if (dataPackage.content != "") {
-				returnValue["content"] = dataPackage.content;
-			}
-
-			returnValue["flags"] = dataPackage.flags;
-
-			returnValue["tts"] = dataPackage.tts;
-			std::cout << "THE RETURN:\n" << returnValue.dump() << std::endl;
-			return returnValue.dump();
-		} catch (...) {
-			std::string file{ __FILE__ };
-			int32_t line{ __LINE__ };
-			DiscordCoreAPI::reportException("Exception thrown in DiscordCoreInternal::JSONIFY() @ " + file + " [" + std::to_string(line) + "]\n");
-			return std::string{};
+		for (auto& value: dataPackage.attachments) {
+			returnValue["attachments"].push_back(value);
 		}
+
+		if (dataPackage.components.size() == 0) {
+			returnValue["components"] = nlohmann::json{};
+		} else {
+			returnValue["components"] = nlohmann::json{ dataPackage.components };
+		}
+
+		returnValue["allowed_mentions"] = dataPackage.allowedMentions;
+
+		if (dataPackage.embeds.size() == 0) {
+			returnValue["embeds"] = nlohmann::json{};
+		} else {
+			for (auto& value: dataPackage.embeds) {
+				returnValue["embeds"].push_back(value);
+			}
+		}
+
+		if (dataPackage.avatarUrl != "") {
+			returnValue["avatar_url"] = dataPackage.username;
+		}
+
+		if (dataPackage.username != "") {
+			returnValue["username"] = dataPackage.username;
+		}
+
+		if (dataPackage.content != "") {
+			returnValue["content"] = dataPackage.content;
+		}
+
+		returnValue["flags"] = dataPackage.flags;
+
+		returnValue["tts"] = dataPackage.tts;
+		return returnValue.dump();
 	}
 
 	std::string JSONIFY(DiscordCoreAPI::ModifyChannelData dataPackage) {
