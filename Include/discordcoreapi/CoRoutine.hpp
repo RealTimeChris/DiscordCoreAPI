@@ -42,7 +42,7 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll CoRoutineBase {
 	  public:
-		inline static DiscordCoreInternal::CoRoutineThreadPool threadPool{};
+		static DiscordCoreInternal::CoRoutineThreadPool threadPool;
 	};
 
 	/// A CoRoutine - representing a potentially asynchronous operation/function. \brief A CoRoutine - representing a potentially asynchronous operation/function.
