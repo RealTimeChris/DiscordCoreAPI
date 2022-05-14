@@ -390,8 +390,7 @@ namespace DiscordCoreAPI {
 		std::mutex theMutex{};
 	};
 
-	template<typename ObjectType>
-	concept Copyable = std::copyable<ObjectType>;
+	template<typename ObjectType> concept Copyable = std::copyable<ObjectType>;
 
 	/// A messaging block for data-structures. \brief A messaging block for data-structures.
 	/// \tparam ObjectType The type of object that will be sent over the message block.
@@ -1511,7 +1510,7 @@ namespace DiscordCoreAPI {
 		std::vector<std::string> roles{};///< The Guild roles that they have.
 		int8_t guildMemberFlags{ 0 };///< GuildMember flags.
 		std::string premiumSince{};///< If applicable, when they first boosted the server.
-		Permissions permissions{};///< Their base-level Permissions in the Guild.
+		Permissions permissions{};///< Their base-level Permissions in the Guild.		
 		TimeStamp joinedAt{ "" };///< When they joined the Guild.
 		std::string guildId{};///< The current Guild's id.
 		std::string avatar{};///< The member's guild avatar hash.
@@ -2160,20 +2159,20 @@ namespace DiscordCoreAPI {
 		VerificationLevel verificationLevel{};///< Verification level required.
 		std::string publicUpdatesChannelId{};///< Id of the public updates Channel.
 		std::vector<std::string> features{};///< List of Guild features.
-		int32_t approximateMemberCount{ 0 };///< Approximate member count.
+		int32_t approximateMemberCount{ 0 };///< Approximate member count.		
 		WelcomeScreenData welcomeScreen{};///< Welcome screen for the Guild.
 		int32_t maxVideoChannelUsers{ 0 };///< Maximum quantity of users per video Channel.
 		AfkTimeOutDurations afkTimeOut{};///< Time for an individual to time out as afk.
-		int32_t systemChannelFlags{ 0 };///< System Channel flags.
+		int32_t systemChannelFlags{ 0 };///< System Channel flags.		
 		std::string discoverySplash{};///< Link to the discovery image's splash.
 		std::string preferredLocale{};///< Preferred locale, for voice chat servers.
 		std::string widgetChannelId{};///< Channel id for the Guild's widget.
 		std::string systemChannelId{};///< Channel id for the Guild's system Channel.
 		std::string rulesChannelId{};///< Channel id for the Guild's rules Channel.
 		std::string vanityUrlCode{};///< Vanity Url code, if applicable.
-		std::string applicationId{};///< The current application id.
+		std::string applicationId{};///< The current application id.		
 		std::string afkChannelId{};///< Channel if of the "afk" Channel.
-		std::string description{};///< Description of the Guild.
+		std::string description{};///< Description of the Guild.		
 		Permissions permissions{};///< Current Permissions for the bot in the Guild.
 		PremiumTier premiumTier{};///< What is the premium tier?
 		int32_t maxPresences{ 0 };///< Max number of presences allowed.
@@ -2184,7 +2183,7 @@ namespace DiscordCoreAPI {
 		int8_t guildFlags{ 0 };///< Guild flags.
 		int32_t nsfwLevel{ 0 };///< NSFW warning level.
 		std::string iconHash{};///< Url to the Guild's icon.
-		std::string ownerId{};///< User id of the Guild's owner.
+		std::string ownerId{};///< User id of the Guild's owner.		
 		std::string region{};///< Region of the world where the Guild's servers are.
 		std::string splash{};///< Url to the Guild's splash.
 		std::string banner{};///< Url to the Guild's banner.
@@ -2397,7 +2396,7 @@ namespace DiscordCoreAPI {
 		std::string channelId{};
 		int32_t timestamp{ 0 };
 		std::string guildId{};
-		std::string userId{};
+		std::string userId{};	
 	};
 
 	/// YouTube format data. \brief YouTube format data.
@@ -2858,7 +2857,7 @@ namespace DiscordCoreAPI {
 		std::string applicationId{};///< The application's id.
 		InteractionDataData data{};///< The Interaction's data.
 		std::string requesterId{};///< The id of the sender of the Interaction.
-		std::string guildLocale{};///< The guild's preferred locale, if invoked in a guild.
+		std::string guildLocale{};///< The guild's preferred locale, if invoked in a guild.		
 		nlohmann::json rawData{};///< The Interaction's raw data.
 		GuildMemberData member{};///< The data of the Guild member who sent the Interaction, if applicable.
 		std::string channelId{};///< The Channel the Interaction was sent in.
@@ -2867,7 +2866,7 @@ namespace DiscordCoreAPI {
 		std::string guildId{};///< The Guild id of the Guild it was sent in.
 		int32_t version{ 0 };///< The Interaction version.
 		std::string locale{};///< The selected language of the invoking user.
-		std::string token{};///< The Interaction token.
+		std::string token{};///< The Interaction token.		
 		UserData user{};///< The User data of the sender of the Interaction.
 		InteractionData() = default;
 		InteractionData(std::string requesterId) {
@@ -3272,8 +3271,8 @@ namespace DiscordCoreAPI {
 		/// \param emojiId An emoji id, if desired.
 		/// \param url A url, if applicable.
 		/// \returns RespondToInputEventData& A reference to this data structure.
-		RespondToInputEventData& addButton(bool disabled, std::string customIdNew, std::string buttonLabel, ButtonStyle buttonStyle, std::string emojiName = "",
-			std::string emojiId = "", std::string url = "") {
+		RespondToInputEventData& addButton(
+			bool disabled, std::string customIdNew, std::string buttonLabel, ButtonStyle buttonStyle, std::string emojiName = "", std::string emojiId = "", std::string url = "") {
 			if (this->components.size() == 0) {
 				ActionRowData actionRowData;
 				this->components.push_back(actionRowData);
@@ -3306,8 +3305,8 @@ namespace DiscordCoreAPI {
 		/// \param maxValues Maximum number of selections that are possible.
 		/// \param minValues Minimum required number of selections that are required.
 		/// \returns RespondToInputEventData& A reference to this data structure.
-		RespondToInputEventData& addSelectMenu(bool disabled, std::string customIdNew, std::vector<SelectOptionData> options, std::string placeholder, int32_t maxValues,
-			int32_t minValues) {
+		RespondToInputEventData& addSelectMenu(
+			bool disabled, std::string customIdNew, std::vector<SelectOptionData> options, std::string placeholder, int32_t maxValues, int32_t minValues) {
 			if (this->components.size() == 0) {
 				ActionRowData actionRowData;
 				this->components.push_back(actionRowData);
@@ -3433,8 +3432,8 @@ namespace DiscordCoreAPI {
 		/// \param theName A std::string for the name of the choice.
 		/// \param theNameLocalizations A std::unordered_map<std::string, std::string> for the name localizations.
 		/// \returns RespondToInputEventData& A reference to this data structure.
-		RespondToInputEventData& setAutoCompleteChoice(nlohmann::json theValue, std::string theName,
-			std::unordered_map<std::string, std::string> theNameLocalizations = std::unordered_map<std::string, std::string>{}) {
+		RespondToInputEventData& setAutoCompleteChoice(
+			nlohmann::json theValue, std::string theName, std::unordered_map<std::string, std::string> theNameLocalizations = std::unordered_map<std::string, std::string>{}) {
 			this->choices.push_back({ .nameLocalizations = theNameLocalizations, .value = theValue, .name = theName });
 			return *this;
 		}
@@ -3480,8 +3479,8 @@ namespace DiscordCoreAPI {
 		/// \param emojiId An emoji id, if desired.
 		/// \param url A url, if applicable.
 		/// \returns RespondToInputEventData& A reference to this data structure.
-		MessageResponseBase& addButton(bool disabled, std::string customIdNew, std::string buttonLabel, ButtonStyle buttonStyle, std::string emojiName = "",
-			std::string emojiId = "", std::string url = "") {
+		MessageResponseBase& addButton(
+			bool disabled, std::string customIdNew, std::string buttonLabel, ButtonStyle buttonStyle, std::string emojiName = "", std::string emojiId = "", std::string url = "") {
 			if (this->components.size() == 0) {
 				ActionRowData actionRowData;
 				this->components.push_back(actionRowData);
@@ -3514,8 +3513,8 @@ namespace DiscordCoreAPI {
 		/// \param maxValues Maximum number of selections that are possible.
 		/// \param minValues Minimum required number of selections that are required.
 		/// \returns RespondToInputEventData& A reference to this data structure.
-		MessageResponseBase& addSelectMenu(bool disabled, std::string customIdNew, std::vector<SelectOptionData> options, std::string placeholder, int32_t maxValues,
-			int32_t minValues) {
+		MessageResponseBase& addSelectMenu(
+			bool disabled, std::string customIdNew, std::vector<SelectOptionData> options, std::string placeholder, int32_t maxValues, int32_t minValues) {
 			if (this->components.size() == 0) {
 				ActionRowData actionRowData;
 				this->components.push_back(actionRowData);

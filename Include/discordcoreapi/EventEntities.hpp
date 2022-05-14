@@ -40,13 +40,11 @@ namespace DiscordCoreInternal {
 
 		friend inline bool operator<(const EventDelegateToken& lhs, const EventDelegateToken& rhs);
 
-		friend class DiscordCoreAPI::SongAPI;
+		EventDelegateToken() = default;
 
 	  protected:
 		std::string handlerId{};
 		std::string eventId{};
-
-		EventDelegateToken() = default;
 	};
 
 	bool operator==(const EventDelegateToken& lhs, const EventDelegateToken& rhs) {
@@ -90,14 +88,24 @@ namespace DiscordCoreInternal {
 
 		EventDelegate(EventDelegate<ReturnType, ArgTypes...>& other) = delete;
 
+		EventDelegate<ReturnType, ArgTypes...>& operator=(std::function<ReturnType(ArgTypes...)> theFunctionNew) {
+			this->theFunction = theFunctionNew;
+			return *this;
+		}
+
 		/// Constructor, taking a std::function<ReturnType(ArgTypes..)> as an argument. \brief Constructor, taking a std::function<ReturnType(ArgTypes..)> as an argument.
 		EventDelegate(std::function<ReturnType(ArgTypes...)> theFunctionNew) {
+			*this = theFunctionNew;
+		}
+
+		EventDelegate<ReturnType, ArgTypes...>& operator=(ReturnType (*theFunctionNew)(ArgTypes...)) {
 			this->theFunction = theFunctionNew;
+			return *this;
 		}
 
 		/// Constructor, taking a pointer to a function of type ReturnType(*)(ArgTypes...) as an argument. \brief Constructor, taking a pointer to a function of type ReturnType(*)(ArgTypes...) as an argument.
 		EventDelegate(ReturnType (*theFunctionNew)(ArgTypes...)) {
-			this->theFunction = theFunctionNew;
+			*this = theFunctionNew;
 		}
 
 	  protected:

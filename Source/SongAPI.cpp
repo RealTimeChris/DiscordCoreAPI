@@ -32,9 +32,7 @@ namespace DiscordCoreAPI {
 
 	void SongAPI::onSongCompletion(std::function<CoRoutine<void>(SongCompletionEventData)> handler, std::string guildId) {
 		auto returnValue = getSongAPIMap()[guildId].get();
-		if (returnValue->theToken != DiscordCoreInternal::EventDelegateToken{}) {
-			returnValue->onSongCompletionEvent.remove(returnValue->theToken);
-		}
+		returnValue->onSongCompletionEvent.remove(returnValue->theToken);
 		returnValue->theToken = returnValue->onSongCompletionEvent.add(handler);
 	}
 

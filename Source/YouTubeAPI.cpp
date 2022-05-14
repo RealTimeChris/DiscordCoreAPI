@@ -32,39 +32,44 @@ namespace DiscordCoreInternal {
 	}
 
 	std::vector<DiscordCoreAPI::Song> YouTubeRequestBuilder::collectSearchResults(std::string searchQuery) {
-		DiscordCoreInternal::HttpWorkloadData dataPackage{};
-		dataPackage.baseUrl = YouTubeRequestBuilder::baseUrl;
-		dataPackage.relativePath = "/results?search_query=" + DiscordCoreAPI::urlEncode(searchQuery.c_str());
-		dataPackage.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
-		std::vector<DiscordCoreInternal::HttpWorkloadData> workloadVector01{};
-		workloadVector01.push_back(dataPackage);
-		std::vector<DiscordCoreInternal::HttpData> returnData = DiscordCoreInternal::submitWorkloadAndGetResult(*this->httpClient, workloadVector01);
-		if (returnData[0].responseCode != 200) {
-			std::cout << DiscordCoreAPI::shiftToBrightRed() << "YouTubeRequestBuilder::collectSearchResults() Error: " << returnData[0].responseCode
-					  << returnData[0].responseMessage.c_str() << DiscordCoreAPI::reset() << std::endl;
-		}
-		nlohmann::json partialSearchResultsJson{};
-		if (returnData[0].responseMessage.find("var ytInitialData = ") != std::string::npos) {
-			std::string newString00 = "var ytInitialData = ";
-			std::string newString = returnData[0].responseMessage.substr(returnData[0].responseMessage.find("var ytInitialData = ") + newString00.length());
-			std::string stringSequence = ";</script><script nonce=";
-			newString = newString.substr(0, newString.find(stringSequence));
-			partialSearchResultsJson = nlohmann::json::parse(newString);
-		}
-		std::vector<DiscordCoreAPI::Song> searchResults{};
-		if (partialSearchResultsJson.contains("contents") && !partialSearchResultsJson["contents"].is_null()) {
-			for (auto& value: partialSearchResultsJson["contents"]["twoColumnSearchResultsRenderer"]["primaryContents"]["sectionListRenderer"]["contents"][0]["itemSectionRenderer"]
-													  ["contents"]) {
-				DiscordCoreAPI::Song searchResult{};
-				if (value.contains("videoRenderer") && !value["videoRenderer"].is_null()) {
-					DiscordCoreInternal::DataParser::parseObject(value["videoRenderer"], searchResult);
-					searchResult.type = DiscordCoreAPI::SongType::YouTube;
-					searchResult.viewUrl = YouTubeRequestBuilder::baseUrl + "/watch?v=" + searchResult.songId + "&hl=en";
-					searchResults.push_back(searchResult);
+		try {
+			DiscordCoreInternal::HttpWorkloadData dataPackage{};
+			dataPackage.baseUrl = YouTubeRequestBuilder::baseUrl;
+			dataPackage.relativePath = "/results?search_query=" + DiscordCoreAPI::urlEncode(searchQuery.c_str());
+			dataPackage.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
+			std::vector<DiscordCoreInternal::HttpWorkloadData> workloadVector01{};
+			workloadVector01.push_back(dataPackage);
+			std::vector<DiscordCoreInternal::HttpData> returnData = DiscordCoreInternal::submitWorkloadAndGetResult(*this->httpClient, workloadVector01);
+			if (returnData[0].responseCode != 200) {
+				std::cout << DiscordCoreAPI::shiftToBrightRed() << "YouTubeRequestBuilder::collectSearchResults() Error: " << returnData[0].responseCode
+						  << returnData[0].responseMessage.c_str() << DiscordCoreAPI::reset() << std::endl;
+			}
+			nlohmann::json partialSearchResultsJson{};
+			if (returnData[0].responseMessage.find("var ytInitialData = ") != std::string::npos) {
+				std::string newString00 = "var ytInitialData = ";
+				std::string newString = returnData[0].responseMessage.substr(returnData[0].responseMessage.find("var ytInitialData = ") + newString00.length());
+				std::string stringSequence = ";</script><script nonce=";
+				newString = newString.substr(0, newString.find(stringSequence));
+				partialSearchResultsJson = nlohmann::json::parse(newString);
+			}
+			std::vector<DiscordCoreAPI::Song> searchResults{};
+			if (partialSearchResultsJson.contains("contents") && !partialSearchResultsJson["contents"].is_null()) {
+				for (auto& value: partialSearchResultsJson["contents"]["twoColumnSearchResultsRenderer"]["primaryContents"]["sectionListRenderer"]["contents"][0]
+														  ["itemSectionRenderer"]["contents"]) {
+					DiscordCoreAPI::Song searchResult{};
+					if (value.contains("videoRenderer") && !value["videoRenderer"].is_null()) {
+						DiscordCoreInternal::DataParser::parseObject(value["videoRenderer"], searchResult);
+						searchResult.type = DiscordCoreAPI::SongType::YouTube;
+						searchResult.viewUrl = YouTubeRequestBuilder::baseUrl + "/watch?v=" + searchResult.songId + "&hl=en";
+						searchResults.push_back(searchResult);
+					}
 				}
 			}
+			return searchResults;
+		} catch (...) {
+			DiscordCoreAPI::reportException("YouTubeRequestBuilder::collectSearchResults()");
+			return std::vector<DiscordCoreAPI::Song>{};
 		}
-		return searchResults;
 	}
 
 	DiscordCoreAPI::Song YouTubeRequestBuilder::constructDownloadInfo(DiscordCoreAPI::GuildMemberData guildMember, DiscordCoreAPI::Song newSong) {
