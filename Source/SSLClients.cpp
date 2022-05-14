@@ -83,16 +83,16 @@ namespace DiscordCoreInternal {
 		try {
 #ifdef _WIN32
 			HttpSSLClient::googleCertPathStatic = getFilePath("GoogleCert.pem", "share\\discordcoreapi\\data");
-			HttpSSLClient::defaultCertPathStatic = getFilePath(
-				"DiscordCert.pem", "share\\discordcoreapi\\data", HttpSSLClient::googleCertPathStatic.substr(0, HttpSSLClient::googleCertPathStatic.find("GoogleCert.pem")));
-			HttpSSLClient::soundcloudCertPathStatic = getFilePath(
-				"SoundCloudCert.pem", "share\\discordcoreapi\\data", HttpSSLClient::googleCertPathStatic.substr(0, HttpSSLClient::googleCertPathStatic.find("GoogleCert.pem")));
+			HttpSSLClient::defaultCertPathStatic = getFilePath("DiscordCert.pem", "share\\discordcoreapi\\data",
+				HttpSSLClient::googleCertPathStatic.substr(0, HttpSSLClient::googleCertPathStatic.find("GoogleCert.pem")));
+			HttpSSLClient::soundcloudCertPathStatic = getFilePath("SoundCloudCert.pem", "share\\discordcoreapi\\data",
+				HttpSSLClient::googleCertPathStatic.substr(0, HttpSSLClient::googleCertPathStatic.find("GoogleCert.pem")));
 #else
 			HttpSSLClient::googleCertPathStatic = getFilePath("GoogleCert.pem", "share/discordcoreapi/data");
-			HttpSSLClient::defaultCertPathStatic = getFilePath(
-				"DiscordCert.pem", "share/discordcoreapi/data", HttpSSLClient::googleCertPathStatic.substr(0, HttpSSLClient::googleCertPathStatic.find("GoogleCert.pem")));
-			HttpSSLClient::soundcloudCertPathStatic = getFilePath(
-				"SoundCloudCert.pem", "share/discordcoreapi/data", HttpSSLClient::googleCertPathStatic.substr(0, HttpSSLClient::googleCertPathStatic.find("GoogleCert.pem")));
+			HttpSSLClient::defaultCertPathStatic = getFilePath("DiscordCert.pem", "share/discordcoreapi/data",
+				HttpSSLClient::googleCertPathStatic.substr(0, HttpSSLClient::googleCertPathStatic.find("GoogleCert.pem")));
+			HttpSSLClient::soundcloudCertPathStatic = getFilePath("SoundCloudCert.pem", "share/discordcoreapi/data",
+				HttpSSLClient::googleCertPathStatic.substr(0, HttpSSLClient::googleCertPathStatic.find("GoogleCert.pem")));
 #endif
 		} catch (...) {
 			DiscordCoreAPI::reportException("HttpSSLClient::HttpSSLClient()");

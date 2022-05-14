@@ -139,7 +139,7 @@ namespace DiscordCoreInternal {
 			return this->addrinfoPtrTwo;
 		}
 
-		operator addrinfo* *() {
+		operator addrinfo**() {
 			this->doWeClearAddrInfo = true;
 			return &this->addrinfoPtrTwo;
 		}

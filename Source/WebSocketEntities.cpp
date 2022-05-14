@@ -549,8 +549,8 @@ namespace DiscordCoreInternal {
 					}
 					DiscordCoreInternal::DataParser::parseObject(payload["d"], *interactionData.get());
 					std::unique_ptr<DiscordCoreAPI::MessageData> messageDataNew{ std::make_unique<DiscordCoreAPI::MessageData>() };
-					std::unique_ptr<DiscordCoreAPI::InputEventData> eventData{ std::make_unique<DiscordCoreAPI::InputEventData>(
-						*messageDataNew, *interactionData, DiscordCoreAPI::InteractionType::Ping) };
+					std::unique_ptr<DiscordCoreAPI::InputEventData> eventData{ std::make_unique<DiscordCoreAPI::InputEventData>(*messageDataNew, *interactionData,
+						DiscordCoreAPI::InteractionType::Ping) };
 					if (interactionData->type == DiscordCoreAPI::InteractionType::Application_Command) {
 						if (interactionData->data.applicationCommandData.type == DiscordCoreAPI::ApplicationCommandType::Chat_Input) {
 							eventData->eventType = DiscordCoreAPI::InteractionType::Application_Command;

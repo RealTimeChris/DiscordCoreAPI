@@ -153,8 +153,8 @@ namespace DiscordCoreInternal {
 		std::string downloadBaseUrl{};
 		if (newSong.finalDownloadUrls[0].urlPath.find("https://") != std::string::npos && newSong.finalDownloadUrls[0].urlPath.find("/videoplayback?") != std::string::npos) {
 			std::string newString00 = "https://";
-			downloadBaseUrl = newSong.finalDownloadUrls[0].urlPath.substr(
-				newSong.finalDownloadUrls[0].urlPath.find("https://") + newString00.length(), newSong.finalDownloadUrls[0].urlPath.find("/videoplayback?") - newString00.length());
+			downloadBaseUrl = newSong.finalDownloadUrls[0].urlPath.substr(newSong.finalDownloadUrls[0].urlPath.find("https://") + newString00.length(),
+				newSong.finalDownloadUrls[0].urlPath.find("/videoplayback?") - newString00.length());
 		}
 		std::string request = "GET " + newSong.finalDownloadUrls[0].urlPath +
 			" HTTP/1.1\n\rUser-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.88 Safari/537.36\n\r" +
@@ -249,8 +249,8 @@ namespace DiscordCoreInternal {
 		std::regex swapRegexp(jsVarStr + swapStr);
 		std::string newString = html5PlayerPageBody;
 		std::vector<std::string> tokenActions;
-		std::regex actionsObjRegexp(
-			"var (" + jsVarStr + ")=\\{((?:(?:" + jsKeyStr + reverseStr + "|" + jsKeyStr + sliceStr + "|" + jsKeyStr + spliceStr + "|" + jsKeyStr + swapStr + "),?\\r?\\n?)+)\\};",
+		std::regex actionsObjRegexp("var (" + jsVarStr + ")=\\{((?:(?:" + jsKeyStr + reverseStr + "|" + jsKeyStr + sliceStr + "|" + jsKeyStr + spliceStr + "|" + jsKeyStr +
+				swapStr + "),?\\r?\\n?)+)\\};",
 			std::regex_constants::ECMAScript);
 		std::smatch actionsObjectRegexMatch;
 		regex_search(newString, actionsObjectRegexMatch, actionsObjRegexp, std::regex_constants::match_any | std::regex_constants::match_not_null);

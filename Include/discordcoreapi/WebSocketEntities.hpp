@@ -91,7 +91,7 @@ namespace DiscordCoreInternal {
 		ErlPacker erlPacker{};
 		std::string baseUrl{};
 		std::string userId{};
-		
+
 
 		uint64_t createHeader(char* outbuf, uint64_t sendlength, WebSocketOpCode opCode) noexcept;
 

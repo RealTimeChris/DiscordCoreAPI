@@ -89,7 +89,7 @@ namespace DiscordCoreInternal {
 		const int32_t maxBufferSize{ 8192 };
 		DiscordCoreAPI::Song theSong{};
 		bool doWePrint{ false };
-		std::string guildId{};		
+		std::string guildId{};
 	};
 
 };// namespace DiscordCoreAPI

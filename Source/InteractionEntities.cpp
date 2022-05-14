@@ -192,8 +192,8 @@ namespace DiscordCoreAPI {
 		SelectMenuCollector::selectMenuInteractionBufferMap.insert(std::make_pair(this->bufferMapKey, &this->selectMenuIncomingInteractionBuffer));
 	}
 
-	CoRoutine<std::vector<SelectMenuResponseData>> SelectMenuCollector::collectSelectMenuData(
-		bool getSelectMenuDataForAllNew, int32_t maxWaitTimeInMsNew, int32_t maxCollectedSelectMenuCountNew, std::string targetUser) {
+	CoRoutine<std::vector<SelectMenuResponseData>> SelectMenuCollector::collectSelectMenuData(bool getSelectMenuDataForAllNew, int32_t maxWaitTimeInMsNew,
+		int32_t maxCollectedSelectMenuCountNew, std::string targetUser) {
 		co_await NewThreadAwaitable<std::vector<SelectMenuResponseData>>();
 		if (targetUser == "" && !getSelectMenuDataForAllNew) {
 			this->getSelectMenuDataForAll = true;
@@ -321,8 +321,8 @@ namespace DiscordCoreAPI {
 		ButtonCollector::buttonInteractionBufferMap.insert_or_assign(this->channelId + this->messageId, &this->buttonIncomingInteractionBuffer);
 	}
 
-	CoRoutine<std::vector<ButtonResponseData>> ButtonCollector::collectButtonData(
-		bool getButtonDataForAllNew, int32_t maxWaitTimeInMsNew, int32_t maxNumberOfPressesNew, std::string targetUser) {
+	CoRoutine<std::vector<ButtonResponseData>> ButtonCollector::collectButtonData(bool getButtonDataForAllNew, int32_t maxWaitTimeInMsNew, int32_t maxNumberOfPressesNew,
+		std::string targetUser) {
 		co_await NewThreadAwaitable<std::vector<ButtonResponseData>>();
 		if (targetUser == "" && !getButtonDataForAllNew) {
 			throw std::runtime_error("You've failed to properly set the collectButtonData() parameters!");

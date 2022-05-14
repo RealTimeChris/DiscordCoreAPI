@@ -43,8 +43,8 @@ namespace DiscordCoreAPI {
 		/// \param emojiName An emoji name, if desired.
 		/// \param emojiId An emoji id, if desired.
 		/// \param url A url, if applicable.
-		InteractionResponse& addButton(
-			bool disabled, std::string customIdNew, std::string buttonLabel, ButtonStyle buttonStyle, std::string emojiName = "", std::string emojiId = "", std::string url = "") {
+		InteractionResponse& addButton(bool disabled, std::string customIdNew, std::string buttonLabel, ButtonStyle buttonStyle, std::string emojiName = "",
+			std::string emojiId = "", std::string url = "") {
 			if (this->data.data.components.size() == 0) {
 				ActionRowData actionRowData;
 				this->data.data.components.push_back(actionRowData);
@@ -76,8 +76,8 @@ namespace DiscordCoreAPI {
 		/// \param placeholder Custom placeholder text if nothing is selected, max 100 characters.
 		/// \param maxValues Maximum number of selections that are possible.
 		/// \param minValues Minimum required number of selections that are required.
-		InteractionResponse& addSelectMenu(
-			bool disabled, std::string customIdNew, std::vector<SelectOptionData> options, std::string placeholder, int32_t maxValues, int32_t minValues) {
+		InteractionResponse& addSelectMenu(bool disabled, std::string customIdNew, std::vector<SelectOptionData> options, std::string placeholder, int32_t maxValues,
+			int32_t minValues) {
 			if (this->data.data.components.size() == 0) {
 				ActionRowData actionRowData;
 				this->data.data.components.push_back(actionRowData);
@@ -643,8 +643,8 @@ namespace DiscordCoreAPI {
 		/// inputs to collect before stopping \param targetUserId The id of the single
 		/// User to collect inputs from, if getSelectMenuDataForAllNew is set to
 		/// false. \returns A std::vector of SelectMenuResponseData.
-		CoRoutine<std::vector<SelectMenuResponseData>> collectSelectMenuData(
-			bool getSelectMenuDataForAllNew, int32_t maxWaitTimeInMsNew, int32_t maxCollectedSelectMenuCountNew, std::string targetUserId = "");
+		CoRoutine<std::vector<SelectMenuResponseData>> collectSelectMenuData(bool getSelectMenuDataForAllNew, int32_t maxWaitTimeInMsNew, int32_t maxCollectedSelectMenuCountNew,
+			std::string targetUserId = "");
 
 		~SelectMenuCollector();
 
@@ -733,8 +733,8 @@ namespace DiscordCoreAPI {
 		/// stopping. \param targetUserId The id of the single User to collect inputs
 		/// from, if getButtonDataForAllNew is set to false. \returns A std::vector of
 		/// ButtonResponseData.
-		CoRoutine<std::vector<ButtonResponseData>> collectButtonData(
-			bool getButtonDataForAllNew, int32_t maxWaitTimeInMsNew, int32_t maxNumberOfPressesNew, std::string targetUserId = "");
+		CoRoutine<std::vector<ButtonResponseData>> collectButtonData(bool getButtonDataForAllNew, int32_t maxWaitTimeInMsNew, int32_t maxNumberOfPressesNew,
+			std::string targetUserId = "");
 
 		~ButtonCollector();
 

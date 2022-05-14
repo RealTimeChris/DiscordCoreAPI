@@ -611,7 +611,7 @@ namespace DiscordCoreInternal {
 		}
 
 		if (dataPackage.data.components.size() == 0) {
-			returnValue["data"]["components"] = nlohmann::json{};			
+			returnValue["data"]["components"] = nlohmann::json{};
 		} else {
 			returnValue["data"]["components"] = nlohmann::json{ dataPackage.data.components };
 		}
