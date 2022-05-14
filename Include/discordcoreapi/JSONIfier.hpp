@@ -87,8 +87,6 @@ namespace DiscordCoreAPI {
 
 namespace DiscordCoreInternal {
 
-	int32_t JSONIFY(std::string initialPayload);
-
 	nlohmann::json JSONIFY(std::string serverId, std::string sessionId, std::string token, std::string testString);
 
 	nlohmann::json JSONIFY(std::string botToken, int64_t intents, int32_t currentShard, int32_t numberOfShards);

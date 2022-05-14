@@ -34,232 +34,222 @@
 
 namespace DiscordCoreAPI {
 
-	void to_json(nlohmann::json& jsonOut, const MessageReferenceData& valueNew) {
-		nlohmann::json newValue{};
-		newValue["fail_if_not_exists"] = valueNew.failIfNotExists;
-		newValue["message_id"] = valueNew.messageId;
-		newValue["channel_id"] = valueNew.channelId;
-		newValue["guild_id"] = valueNew.guildId;
-		jsonOut = newValue;
+	void to_json(nlohmann::json& jsonOut, const MessageReferenceData& inputValue) {
+		nlohmann::json returnValue{};
+		returnValue["fail_if_not_exists"] = inputValue.failIfNotExists;
+		returnValue["message_id"] = inputValue.messageId;
+		returnValue["channel_id"] = inputValue.channelId;
+		returnValue["guild_id"] = inputValue.guildId;
+		jsonOut = returnValue;
 	}
 
-	void to_json(nlohmann::json& jsonOut, const AllowedMentionsData& valueNew) {
-		nlohmann::json newValue{};
-		newValue["replied_user"] = valueNew.repliedUser;
-		newValue["parse"] = valueNew.parse;
-		newValue["roles"] = valueNew.roles;
-		newValue["users"] = valueNew.users;
-		jsonOut = newValue;
+	void to_json(nlohmann::json& jsonOut, const AllowedMentionsData& inputValue) {
+		nlohmann::json returnValue{};
+		returnValue["replied_user"] = inputValue.repliedUser;
+		returnValue["parse"] = inputValue.parse;
+		returnValue["roles"] = inputValue.roles;
+		returnValue["users"] = inputValue.users;
+		jsonOut = returnValue;
 	}
 
 	void to_json(nlohmann::json& jsonOut, const AttachmentData& valueNew) {
-		nlohmann::json newValue{};
-		newValue["content_type"] = valueNew.contentType;
-		newValue["description"] = valueNew.description;
-		newValue["ephemeral"] = valueNew.ephemeral;
-		newValue["file_name"] = valueNew.filename;
-		newValue["proxy_url"] = valueNew.proxyUrl;
-		newValue["height"] = valueNew.height;
-		newValue["width"] = valueNew.width;
-		newValue["size"] = valueNew.size;
-		newValue["url"] = valueNew.url;
-		jsonOut = newValue;
+		nlohmann::json returnValue{};
+		returnValue["content_type"] = valueNew.contentType;
+		returnValue["description"] = valueNew.description;
+		returnValue["ephemeral"] = valueNew.ephemeral;
+		returnValue["file_name"] = valueNew.filename;
+		returnValue["proxy_url"] = valueNew.proxyUrl;
+		returnValue["height"] = valueNew.height;
+		returnValue["width"] = valueNew.width;
+		returnValue["size"] = valueNew.size;
+		returnValue["url"] = valueNew.url;
+		jsonOut = returnValue;
 	}
 
-	void to_json(nlohmann::json& jsonOut, const EmbedFieldData& valueNew) {
-		nlohmann::json newValue{};
-		newValue["inline"] = valueNew.Inline;
-		newValue["value"] = valueNew.value;
-		newValue["name"] = valueNew.name;
-		jsonOut.update(newValue);
+	void to_json(nlohmann::json& jsonOut, const EmbedFieldData& inputValue) {
+		nlohmann::json returnValue{};
+		returnValue["inline"] = inputValue.Inline;
+		returnValue["value"] = inputValue.value;
+		returnValue["name"] = inputValue.name;
+		jsonOut.update(returnValue);
 	}
 
 	void to_json(nlohmann::json& jsonOut, const std::vector<ActionRowData>& dataPackage) {
-		nlohmann::json componentsActionRow{};
 		for (auto& value: dataPackage) {
 			nlohmann::json components{};
-			for (auto& valueNew: value.components) {
-				if (valueNew.type == ComponentType::Button) {
+			for (auto& inputValue: value.components) {
+				if (inputValue.type == ComponentType::Button) {
 					nlohmann::json component{};
-					component["emoji"]["animated"] = valueNew.emoji.animated;
-					component["emoji"]["name"] = valueNew.emoji.name;
-					if (valueNew.emoji.id != "") {
-						component["emoji"]["id"] = valueNew.emoji.id;
+					component["emoji"]["animated"] = inputValue.emoji.animated;
+					component["emoji"]["name"] = inputValue.emoji.name;
+					if (inputValue.emoji.id != "") {
+						component["emoji"]["id"] = inputValue.emoji.id;
 					}
-					component["custom_id"] = valueNew.customId;
-					component["disabled"] = valueNew.disabled;
-					component["label"] = valueNew.label;
-					component["style"] = valueNew.style;
-					component["type"] = valueNew.type;
-					component["url"] = valueNew.url;
+					component["custom_id"] = inputValue.customId;
+					component["disabled"] = inputValue.disabled;
+					component["label"] = inputValue.label;
+					component["style"] = inputValue.style;
+					component["type"] = inputValue.type;
+					component["url"] = inputValue.url;
 					components.push_back(component);
-				} else if (valueNew.type == ComponentType::SelectMenu) {
+				} else if (inputValue.type == ComponentType::SelectMenu) {
 					nlohmann::json optionsArray{};
-					for (auto& value01: valueNew.options) {
+					for (auto& valueNew01: inputValue.options) {
 						nlohmann::json option{};
-						if (value01.emoji.name != "") {
-							option["emoji"]["name"] = value01.emoji.name;
-							option["emoji"]["animated"] = value01.emoji.animated;
+						if (valueNew01.emoji.name != "") {
+							option["emoji"]["name"] = valueNew01.emoji.name;
+							option["emoji"]["animated"] = valueNew01.emoji.animated;
 						}
-						if (value01.emoji.id != "") {
-							option["emoji"]["id"] = value01.emoji.id;
+						if (valueNew01.emoji.id != "") {
+							option["emoji"]["id"] = valueNew01.emoji.id;
 						}
-						option["description"] = value01.description;
-						option["default"] = value01._default;
-						option["label"] = value01.label;
-						option["value"] = value01.value;
+						option["description"] = valueNew01.description;
+						option["default"] = valueNew01._default;
+						option["label"] = valueNew01.label;
+						option["value"] = valueNew01.value;
 						optionsArray.push_back(option);
 					};
 
 					nlohmann::json component{};
-					component["placeholder"] = valueNew.placeholder;
-					component["max_values"] = valueNew.maxValues;
-					component["min_values"] = valueNew.minValues;
-					component["custom_id"] = valueNew.customId;
-					component["disabled"] = valueNew.disabled;
+					component["placeholder"] = inputValue.placeholder;
+					component["max_values"] = inputValue.maxValues;
+					component["min_values"] = inputValue.minValues;
+					component["custom_id"] = inputValue.customId;
+					component["disabled"] = inputValue.disabled;
 					component["options"] = optionsArray;
-					component["type"] = valueNew.type;
+					component["type"] = inputValue.type;
 					components.push_back(component);
 
-				} else if (valueNew.type == ComponentType::TextInput) {
+				} else if (inputValue.type == ComponentType::TextInput) {
 					nlohmann::json component{};
-					component["placeholder"] = valueNew.placeholder;
-					component["min_length"] = valueNew.minLength;
-					component["max_length"] = valueNew.maxLength;
-					component["custom_id"] = valueNew.customId;
-					component["required"] = valueNew.required;
-					component["style"] = valueNew.style;
-					component["label"] = valueNew.label;
-					component["value"] = valueNew.value;
-					component["type"] = valueNew.type;
+					component["placeholder"] = inputValue.placeholder;
+					component["min_length"] = inputValue.minLength;
+					component["max_length"] = inputValue.maxLength;
+					component["custom_id"] = inputValue.customId;
+					component["required"] = inputValue.required;
+					component["style"] = inputValue.style;
+					component["label"] = inputValue.label;
+					component["value"] = inputValue.value;
+					component["type"] = inputValue.type;
 					components.push_back(component);
 				}
 			}
-			nlohmann::json componentActionRow{};
-			componentActionRow["components"] = components;
-			componentActionRow["type"] = 1;
-			jsonOut = componentActionRow;
+			nlohmann::json returnValue{};
+			returnValue["components"] = components;
+			returnValue["type"] = 1;
+			jsonOut = returnValue;
 		}
 	}
 
-	void to_json(nlohmann::json& jsonOut, const EmbedData& valueNew) {
-		nlohmann::json fields{};
+	void to_json(nlohmann::json& jsonOut, const std::vector<EmbedData>& inputValue) {
+		nlohmann::json embeds{};
+		for (auto value: inputValue) {
+			nlohmann::json fields{};
 
-		for (auto& value2: valueNew.fields) {
-			fields.push_back(value2);
+			for (auto& value2: value.fields) {
+				fields.push_back(value2);
+			}
+
+			int32_t colorValInt = stol(value.hexColorValue, 0, 16);
+			std::stringstream stream{};
+			stream << std::setbase(10) << colorValInt;
+			std::string colorVal = stream.str();
+
+			nlohmann::json embed{};
+			embed["footer"]["proxy_icon_url"] = value.footer.proxyIconUrl;
+			embed["author"]["proxy_icon_url"] = value.author.proxyIconUrl;
+			embed["thumbnail"]["proxy_url"] = value.thumbnail.proxyUrl;
+			embed["thumbnail"]["height"] = value.thumbnail.height;
+			embed["thumbnail"]["width"] = value.thumbnail.width;
+			embed["image"]["proxy_url"] = value.image.proxyUrl;
+			embed["author"]["icon_url"] = value.author.iconUrl;
+			embed["footer"]["icon_url"] = value.footer.iconUrl;
+			embed["video"]["proxy_url"] = value.video.proxyUrl;
+			embed["provider"]["name"] = value.provider.name;
+			embed["thumbnail"]["url"] = value.thumbnail.url;
+			embed["provider"]["url"] = value.provider.url;
+			embed["video"]["height"] = value.video.height;
+			embed["image"]["height"] = value.image.height;
+			embed["author"]["name"] = value.author.name;
+			embed["image"]["width"] = value.image.width;
+			embed["footer"]["text"] = value.footer.text;
+			embed["video"]["width"] = value.video.width;
+			embed["author"]["url"] = value.author.url;
+			embed["description"] = value.description;
+			embed["image"]["url"] = value.image.url;
+			embed["video"]["url"] = value.video.url;
+			embed["timestamp"] = value.timestamp;
+			embed["title"] = value.title;
+			embed["type"] = value.type;
+			embed["url"] = value.url;
+			embed["color"] = colorVal;
+			embed["fields"] = fields;
+			embeds.push_back(embed);
 		}
-
-		int32_t colorValInt = stol(valueNew.hexColorValue, 0, 16);
-		std::stringstream stream;
-		stream << std::setbase(10) << colorValInt;
-		std::string realColorVal = stream.str();
-
-		nlohmann::json embed{};
-		embed["footer"]["proxy_icon_url"] = valueNew.footer.proxyIconUrl;
-		embed["author"]["proxy_icon_url"] = valueNew.author.proxyIconUrl;
-		embed["thumbnail"]["proxy_url"] = valueNew.thumbnail.proxyUrl;
-		embed["thumbnail"]["height"] = valueNew.thumbnail.height;
-		embed["thumbnail"]["width"] = valueNew.thumbnail.width;
-		embed["image"]["proxy_url"] = valueNew.image.proxyUrl;
-		embed["author"]["icon_url"] = valueNew.author.iconUrl;
-		embed["footer"]["icon_url"] = valueNew.footer.iconUrl;
-		embed["video"]["proxy_url"] = valueNew.video.proxyUrl;
-		embed["provider"]["name"] = valueNew.provider.name;
-		embed["thumbnail"]["url"] = valueNew.thumbnail.url;
-		embed["provider"]["url"] = valueNew.provider.url;
-		embed["video"]["height"] = valueNew.video.height;
-		embed["image"]["height"] = valueNew.image.height;
-		embed["author"]["name"] = valueNew.author.name;
-		embed["image"]["width"] = valueNew.image.width;
-		embed["footer"]["text"] = valueNew.footer.text;
-		embed["video"]["width"] = valueNew.video.width;
-		embed["author"]["url"] = valueNew.author.url;
-		embed["description"] = valueNew.description;
-		embed["image"]["url"] = valueNew.image.url;
-		embed["video"]["url"] = valueNew.video.url;
-		embed["timestamp"] = valueNew.timestamp;
-		embed["title"] = valueNew.title;
-		embed["color"] = realColorVal;
-		embed["type"] = valueNew.type;
-		embed["url"] = valueNew.url;
-		embed["fields"] = fields;
-		jsonOut = embed;
+		std::cout << jsonOut.dump() << std::endl;
+		nlohmann::json returnValue{};
+		returnValue["embeds"] = embeds;
+		std::cout << "WERE HERE:\n" << returnValue.dump() << std::endl;
+		jsonOut = returnValue;
 	}
 }
 
 namespace DiscordCoreInternal {
 
-	int32_t JSONIFY(std::string initialPayload) {
-		nlohmann::json jsonVal = nlohmann::json::parse(initialPayload);
-		int32_t finalValue = 0;
-		if (jsonVal.contains("heartbeat_interval")) {
-			finalValue = jsonVal["heartbeat_interval"];
-		}
-		return finalValue;
-	};
-
 	nlohmann::json JSONIFY(std::string serverId, std::string sessionId, std::string token, std::string) {
-		nlohmann::json data{};
-		data["d"]["server_id"] = serverId;
-		data["d"]["session_id"] = sessionId;
-		data["d"]["token"] = token;
-		data["op"] = 7;
-		return data;
+		nlohmann::json returnValue{};
+		returnValue["d"]["server_id"] = serverId;
+		returnValue["d"]["session_id"] = sessionId;
+		returnValue["d"]["token"] = token;
+		returnValue["op"] = 7;
+		return returnValue;
 	}
 
 	nlohmann::json JSONIFY(std::string botToken, int64_t intents, int32_t currentShard, int32_t numberOfShards) {
-		nlohmann::json data{};
+		nlohmann::json returnValue{};
+		returnValue["d"]["properties"]["$browser"] = "DiscordCoreAPI";
+		returnValue["d"]["properties"]["$device"] = "DiscordCoreAPI";
+		returnValue["d"]["shard"] = { currentShard, numberOfShards };
+		returnValue["d"]["large_threshold"] = 250;
+		returnValue["d"]["intents"] = intents;
+		returnValue["d"]["compress"] = false;
+		returnValue["d"]["token"] = botToken;
+		returnValue["op"] = 2;
 #ifdef _WIN32
-		data["d"]["properties"]["$browser"] = "DiscordCoreAPI";
-		data["d"]["properties"]["$device"] = "DiscordCoreAPI";
-		data["d"]["shard"] = { currentShard, numberOfShards };
-		data["d"]["properties"]["$os"] = "Windows";
-		data["d"]["large_threshold"] = 250;
-		data["d"]["intents"] = intents;
-		data["d"]["compress"] = false;
-		data["d"]["token"] = botToken;
-		data["op"] = 2;
+		returnValue["d"]["properties"]["$os"] = "Windows";
 #else
-		data["d"]["properties"]["$browser"] = "DiscordCoreAPI";
-		data["d"]["properties"]["$device"] = "DiscordCoreAPI";
-		data["d"]["shard"] = { currentShard, numberOfShards };
-		data["d"]["properties"]["$os"] = "Linux";
-		data["d"]["large_threshold"] = 250;
-		data["d"]["intents"] = intents;
-		data["d"]["compress"] = false;
-		data["d"]["token"] = botToken;
-		data["op"] = 2;
+		returnValue["d"]["properties"]["$os"] = "Linux";
 #endif
-		return data;
+		return returnValue;
 	};
 
 	nlohmann::json JSONIFY(std::string botToken, std::string sessionID, int32_t lastReceivedNumber) {
-		nlohmann::json data{};
-		data["d"]["seq"] = lastReceivedNumber;
-		data["d"]["session_id"] = sessionID;
-		data["d"]["token"] = botToken;
-		data["op"] = 6;
-		return data;
+		nlohmann::json returnValue{};
+		returnValue["d"]["seq"] = lastReceivedNumber;
+		returnValue["d"]["session_id"] = sessionID;
+		returnValue["d"]["token"] = botToken;
+		returnValue["op"] = 6;
+		return returnValue;
 	};
 
 	nlohmann::json JSONIFY(DiscordCoreAPI::UpdateVoiceStateData dataPackage) {
-		nlohmann::json data{};
+		nlohmann::json returnValue{};
 		if (dataPackage.channelId == "") {
-			data["d"]["channel_id"] = nullptr;
+			returnValue["d"]["channel_id"] = nullptr;
 		} else {
-			data["d"]["channel_id"] = dataPackage.channelId;
+			returnValue["d"]["channel_id"] = dataPackage.channelId;
 		}
-		data["d"]["self_deaf"] = dataPackage.selfDeaf;
-		data["d"]["self_mute"] = dataPackage.selfMute;
-		data["d"]["guild_id"] = dataPackage.guildId;
-		data["op"] = 4;
-		return data;
+		returnValue["d"]["self_deaf"] = dataPackage.selfDeaf;
+		returnValue["d"]["self_mute"] = dataPackage.selfMute;
+		returnValue["d"]["guild_id"] = dataPackage.guildId;
+		returnValue["op"] = 4;
+		return returnValue;
 	}
 
 	nlohmann::json JSONIFY(DiscordCoreAPI::UpdatePresenceData dataPackage) {
 		nlohmann::json activitiesArray{};
-		nlohmann::json data{};
-		data["activities"] = nlohmann::json{};
+		nlohmann::json returnValue{};
+		returnValue["activities"] = nlohmann::json{};
 		for (auto& value: dataPackage.activities) {
 			nlohmann::json dataNew{};
 			if (value.url != "") {
@@ -269,68 +259,68 @@ namespace DiscordCoreInternal {
 			dataNew["type"] = value.type;
 			activitiesArray.push_back(dataNew);
 		}
-		data["d"]["activities"] = activitiesArray;
-		data["d"]["status"] = dataPackage.status;
-		data["d"]["since"] = dataPackage.since;
-		data["d"]["afk"] = dataPackage.afk;
-		data["op"] = 3;
-		return data;
+		returnValue["d"]["activities"] = activitiesArray;
+		returnValue["d"]["status"] = dataPackage.status;
+		returnValue["d"]["since"] = dataPackage.since;
+		returnValue["d"]["afk"] = dataPackage.afk;
+		returnValue["op"] = 3;
+		return returnValue;
 	}
 
 	nlohmann::json JSONIFY(int32_t lastReceivedNumber) {
-		nlohmann::json data{};
-		data["d"] = lastReceivedNumber;
-		data["op"] = 1;
-		return data;
+		nlohmann::json returnValue{};
+		returnValue["d"] = lastReceivedNumber;
+		returnValue["op"] = 1;
+		return returnValue;
 	};
 
 	std::vector<uint8_t> JSONIFY(std::string localPort, std::string localIp, std::string encryptionMode, int32_t) {
-		nlohmann::json data{};
-		data["d"]["data"]["port"] = stol(localPort);
-		data["d"]["data"]["mode"] = encryptionMode;
-		data["d"]["data"]["address"] = localIp;
-		data["d"]["protocol"] = "udp";
-		data["op"] = 1;
+		nlohmann::json returnValue{};
+		returnValue["d"]["data"]["port"] = stol(localPort);
+		returnValue["d"]["data"]["mode"] = encryptionMode;
+		returnValue["d"]["data"]["address"] = localIp;
+		returnValue["d"]["protocol"] = "udp";
+		returnValue["op"] = 1;
 		std::vector<uint8_t> newVector{};
-		std::string newString = data.dump();
+		std::string newString = returnValue.dump();
 		newString.shrink_to_fit();
 		newVector.insert(newVector.begin(), newString.begin(), newString.end());
 		return newVector;
 	}
 
 	std::vector<uint8_t> JSONIFY(DiscordCoreInternal::VoiceConnectionData dataPackage, VoiceConnectInitData dataPackage02) {
-		nlohmann::json data{};
-		data["d"]["session_id"] = dataPackage.sessionId;
-		data["d"]["server_id"] = dataPackage02.guildId;
-		data["d"]["user_id"] = dataPackage02.userId;
-		data["d"]["token"] = dataPackage.token;
-		data["op"] = 0;
+		nlohmann::json returnValue{};
+		returnValue["d"]["session_id"] = dataPackage.sessionId;
+		returnValue["d"]["server_id"] = dataPackage02.guildId;
+		returnValue["d"]["user_id"] = dataPackage02.userId;
+		returnValue["d"]["token"] = dataPackage.token;
+		returnValue["op"] = 0;
 		std::vector<uint8_t> newVector{};
-		std::string newString = data.dump();
+		std::string newString = returnValue.dump();
 		newString.shrink_to_fit();
 		newVector.insert(newVector.begin(), newString.begin(), newString.end());
 		return newVector;
 	}
 
 	std::vector<uint8_t> JSONIFY(int32_t ssrc, int32_t delay) {
-		nlohmann::json data{};
-		data["d"]["speaking"] = 1 << 0;
-		data["d"]["delay"] = delay;
-		data["d"]["ssrc"] = ssrc;
-		data["op"] = 5;
+		nlohmann::json returnValue{};
+		returnValue["d"]["speaking"] = 1 << 0;
+		returnValue["d"]["delay"] = delay;
+		returnValue["d"]["ssrc"] = ssrc;
+		returnValue["op"] = 5;
 		std::vector<uint8_t> newVector{};
-		std::string newString = data.dump();
+		std::string newString = returnValue.dump();
 		newString.shrink_to_fit();
 		newVector.insert(newVector.begin(), newString.begin(), newString.end());
 		return newVector;
 	};
 
 	std::vector<uint8_t> JSONIFY(int64_t nonce) {
-		nlohmann::json data{};
-		data["d"] = nonce;
-		data["op"] = int32_t(3);
+		nlohmann::json returnValue{};
+		returnValue["d"] = nonce;
+		returnValue["op"] = int32_t(3);
 		std::vector<uint8_t> newVector{};
-		std::string newString = data.dump();
+		std::string newString = returnValue.dump();
 		newString.shrink_to_fit();
 		newVector.insert(newVector.begin(), newString.begin(), newString.end());
 		return newVector;
@@ -379,104 +369,104 @@ namespace DiscordCoreInternal {
 		nlohmann::json newDataArray{};
 
 		for (auto& value: dataPackage.permissions) {
-			nlohmann::json newData{};
-			newData["permission"] = value.permission;
-			newData["type"] = value.type;
-			newData["id"] = value.id;
-			newDataArray.push_back(newData);
+			nlohmann::json newValue{};
+			newValue["permission"] = value.permission;
+			newValue["type"] = value.type;
+			newValue["id"] = value.id;
+			newDataArray.push_back(newValue);
 		}
 
 		return newDataArray.dump();
 	}
 
 	std::string JSONIFY(DiscordCoreAPI::EditChannelPermissionOverwritesData dataPackage) {
-		nlohmann::json data{};
-		data["allow"] = stoll(dataPackage.allow);
-		data["deny"] = stoll(dataPackage.deny);
-		data["type"] = dataPackage.type;
-		return data.dump();
+		nlohmann::json returnValue{};
+		returnValue["allow"] = stoll(dataPackage.allow);
+		returnValue["deny"] = stoll(dataPackage.deny);
+		returnValue["type"] = dataPackage.type;
+		return returnValue.dump();
 	}
 
 	std::string JSONIFY(DiscordCoreAPI::CreateGlobalApplicationCommandData dataPackage) {
-		nlohmann::json data{};
+		nlohmann::json returnValue{};
 		if (dataPackage.defaultMemberPermissions != "") {
-			data["default_member_permissions"] = dataPackage.defaultMemberPermissions;
+			returnValue["default_member_permissions"] = dataPackage.defaultMemberPermissions;
 		}
-		data["description_localizations"] = dataPackage.descriptionLocalizations;
-		data["name_localizations"] = dataPackage.nameLocalizations;
-		data["dm_permission"] = dataPackage.dmPermission;
-		data["description"] = dataPackage.description;
-		data["name"] = dataPackage.name;
-		data["type"] = dataPackage.type;
+		returnValue["description_localizations"] = dataPackage.descriptionLocalizations;
+		returnValue["name_localizations"] = dataPackage.nameLocalizations;
+		returnValue["dm_permission"] = dataPackage.dmPermission;
+		returnValue["description"] = dataPackage.description;
+		returnValue["name"] = dataPackage.name;
+		returnValue["type"] = dataPackage.type;
 		if (dataPackage.options.size() > 0) {
 			for (int32_t x = 0; x < dataPackage.options.size(); x += 1) {
-				JSONIFY(dataPackage.options[x], &data["options"]);
+				JSONIFY(dataPackage.options[x], &returnValue["options"]);
 			}
 		}
-		return data.dump();
+		return returnValue.dump();
 	}
 
 	std::string JSONIFY(DiscordCoreAPI::CreateGuildApplicationCommandData dataPackage) {
-		nlohmann::json data{};
+		nlohmann::json returnValue{};
 		if (dataPackage.defaultMemberPermissions != "") {
-			data["default_member_permissions"] = dataPackage.defaultMemberPermissions;
+			returnValue["default_member_permissions"] = dataPackage.defaultMemberPermissions;
 		}
-		data["description_localizations"] = dataPackage.descriptionLocalizations;
-		data["name_localizations"] = dataPackage.nameLocalizations;
-		data["dm_permission"] = dataPackage.dmPermission;
-		data["description"] = dataPackage.description;
-		data["name"] = dataPackage.name;
-		data["type"] = dataPackage.type;
+		returnValue["description_localizations"] = dataPackage.descriptionLocalizations;
+		returnValue["name_localizations"] = dataPackage.nameLocalizations;
+		returnValue["dm_permission"] = dataPackage.dmPermission;
+		returnValue["description"] = dataPackage.description;
+		returnValue["name"] = dataPackage.name;
+		returnValue["type"] = dataPackage.type;
 		if (dataPackage.options.size() > 0) {
 			for (int32_t x = 0; x < dataPackage.options.size(); x += 1) {
-				JSONIFY(dataPackage.options[x], &data["options"]);
+				JSONIFY(dataPackage.options[x], &returnValue["options"]);
 			}
-			data["options"] = nlohmann::json{};
+			returnValue["options"] = nlohmann::json{};
 		}
 
-		return data.dump();
+		return returnValue.dump();
 	}
 
 	std::string JSONIFY(DiscordCoreAPI::EditGlobalApplicationCommandData dataPackage) {
-		nlohmann::json data{};
+		nlohmann::json returnValue{};
 		if (dataPackage.defaultMemberPermissions != "") {
-			data["default_member_permissions"] = dataPackage.defaultMemberPermissions;
+			returnValue["default_member_permissions"] = dataPackage.defaultMemberPermissions;
 		}
-		data["description_localizations"] = dataPackage.descriptionLocalizations;
-		data["name_localizations"] = dataPackage.nameLocalizations;
-		data["dm_permission"] = dataPackage.dmPermission;
-		data["description"] = dataPackage.description;
-		data["name"] = dataPackage.name;
+		returnValue["description_localizations"] = dataPackage.descriptionLocalizations;
+		returnValue["name_localizations"] = dataPackage.nameLocalizations;
+		returnValue["dm_permission"] = dataPackage.dmPermission;
+		returnValue["description"] = dataPackage.description;
+		returnValue["name"] = dataPackage.name;
 		if (dataPackage.options.size() > 0) {
 			for (int32_t x = 0; x < dataPackage.options.size(); x += 1) {
-				JSONIFY(dataPackage.options[x], &data["options"]);
+				JSONIFY(dataPackage.options[x], &returnValue["options"]);
 			}
 		}
-		return data.dump();
+		return returnValue.dump();
 	}
 
 	std::string JSONIFY(DiscordCoreAPI::EditGuildApplicationCommandData dataPackage) {
-		nlohmann::json data{};
+		nlohmann::json returnValue{};
 		if (dataPackage.defaultMemberPermissions != "") {
-			data["default_member_permissions"] = dataPackage.defaultMemberPermissions;
+			returnValue["default_member_permissions"] = dataPackage.defaultMemberPermissions;
 		}
-		data["description_localizations"] = dataPackage.descriptionLocalizations;
-		data["name_localizations"] = dataPackage.nameLocalizations;
-		data["dm_permission"] = dataPackage.dmPermission;
-		data["description"] = dataPackage.description;
-		data["name"] = dataPackage.name;
+		returnValue["description_localizations"] = dataPackage.descriptionLocalizations;
+		returnValue["name_localizations"] = dataPackage.nameLocalizations;
+		returnValue["dm_permission"] = dataPackage.dmPermission;
+		returnValue["description"] = dataPackage.description;
+		returnValue["name"] = dataPackage.name;
 		if (dataPackage.options.size() > 0) {
 			for (int32_t x = 0; x < dataPackage.options.size(); x += 1) {
-				JSONIFY(dataPackage.options[x], &data["options"]);
+				JSONIFY(dataPackage.options[x], &returnValue["options"]);
 			}
-			data["options"] = nlohmann::json{};
+			returnValue["options"] = nlohmann::json{};
 		}
 
-		return data.dump();
+		return returnValue.dump();
 	}
 
 	std::string JSONIFY(DiscordCoreAPI::ModifyGuildChannelPositionsData dataPackage) {
-		nlohmann::json data{};
+		nlohmann::json returnValue{};
 
 		for (auto& value: dataPackage.modifyChannelData) {
 			nlohmann::json dataNew{};
@@ -486,158 +476,154 @@ namespace DiscordCoreInternal {
 			}
 			dataNew["position"] = value.position;
 			dataNew["id"] = value.id;
-			data.push_back(dataNew);
+			returnValue.push_back(dataNew);
 		}
 
-		return data.dump();
+		return returnValue.dump();
 	}
 
 	std::string JSONIFY(DiscordCoreAPI::StartThreadWithoutMessageData dataPackage) {
-		nlohmann::json data{};
-		data["auto_archive_duration"] = dataPackage.autoArchiveDuration;
-		data["rate_limit_per_user"] = dataPackage.rateLimitPerUser;
-		data["invitable"] = dataPackage.invitable;
-		data["name"] = dataPackage.threadName;
-		data["type"] = dataPackage.type;
-		return data.dump();
+		nlohmann::json returnValue{};
+		returnValue["auto_archive_duration"] = dataPackage.autoArchiveDuration;
+		returnValue["rate_limit_per_user"] = dataPackage.rateLimitPerUser;
+		returnValue["invitable"] = dataPackage.invitable;
+		returnValue["name"] = dataPackage.threadName;
+		returnValue["type"] = dataPackage.type;
+		return returnValue.dump();
 	}
 
 	std::string JSONIFY(DiscordCoreAPI::StartThreadInForumChannelData dataPackage) {
-		nlohmann::json data{};
+		nlohmann::json returnValue{};
 
-		for (auto& value: dataPackage.message.attachments) {
-			data["message"]["attachments"].push_back(value);
+		if (dataPackage.message.attachments.size() > 0) {
+			returnValue["message"]["attachments"] = nlohmann::json{ dataPackage.message.attachments };
 		}
 
 		if (dataPackage.message.components.size() == 0) {
-			data["message"]["components"] = nlohmann::json::array();
+			returnValue["message"]["components"] = nlohmann::json{};
 		} else {
-			data["message"]["components"] = nlohmann::json{ dataPackage.message.components };
+			returnValue["message"]["components"] = nlohmann::json{ dataPackage.message.components };
 		}
 
-		data["message"]["allowed_mentions"] = dataPackage.message.allowedMentions;
+		returnValue["message"]["allowed_mentions"] = dataPackage.message.allowedMentions;
 
 		for (auto& value: dataPackage.message.stickerIds) {
-			data["message"]["sticker_ids"].push_back(value);
+			returnValue["message"]["sticker_ids"].push_back(value);
 		}
 
-		if (dataPackage.message.embeds.size() == 0) {
-			data["message"]["embeds"] = nlohmann::json::array();
-		} else {
-			for (auto& value: dataPackage.message.embeds) {
-				data["message"]["embeds"].push_back(value);
-			}
+		if (dataPackage.message.embeds.size() > 0) {
+			returnValue["message"]["embeds"] = nlohmann::json{ dataPackage.message.embeds };
 		}
 
 		if (dataPackage.message.content != "") {
-			data["message"]["content"] = dataPackage.message.content;
+			returnValue["message"]["content"] = dataPackage.message.content;
 		}
 
-		data["message"]["flags"] = dataPackage.message.flags;
+		returnValue["message"]["flags"] = dataPackage.message.flags;
 
-		data["name"] = dataPackage.name;
-		data["auto_archive_duration"] = dataPackage.autoArchiveDuration;
-		data["rate_limit_per_user"] = dataPackage.rateLimitPerUser;
-		return data.dump();
+		returnValue["name"] = dataPackage.name;
+		returnValue["auto_archive_duration"] = dataPackage.autoArchiveDuration;
+		returnValue["rate_limit_per_user"] = dataPackage.rateLimitPerUser;
+		return returnValue.dump();
 	}
 
 	std::string JSONIFY(DiscordCoreAPI::CreateGuildScheduledEventData dataPackage) {
-		nlohmann::json data{};
+		nlohmann::json returnValue{};
 		if (dataPackage.entityType == DiscordCoreAPI::GuildScheduledEventEntityType::External) {
-			data["channel_id"] = nullptr;
+			returnValue["channel_id"] = nullptr;
 		} else {
-			data["channel_id"] = dataPackage.channelId;
+			returnValue["channel_id"] = dataPackage.channelId;
 		}
-		data["entity_metadata"]["location"] = dataPackage.entityMetadata.location;
-		data["entity_metadata"]["entity_type"] = dataPackage.entityType;
-		data["scheduled_start_time"] = dataPackage.scheduledStartTime;
-		data["scheduled_end_time"] = dataPackage.scheduledEndTime;
-		data["privacy_level"] = dataPackage.privacyLevel;
-		data["description"] = dataPackage.description;
-		data["name"] = dataPackage.name;
-		return data.dump();
+		returnValue["entity_metadata"]["location"] = dataPackage.entityMetadata.location;
+		returnValue["entity_metadata"]["entity_type"] = dataPackage.entityType;
+		returnValue["scheduled_start_time"] = dataPackage.scheduledStartTime;
+		returnValue["scheduled_end_time"] = dataPackage.scheduledEndTime;
+		returnValue["privacy_level"] = dataPackage.privacyLevel;
+		returnValue["description"] = dataPackage.description;
+		returnValue["name"] = dataPackage.name;
+		return returnValue.dump();
 	}
 
 	std::string JSONIFY(DiscordCoreAPI::ModifyGuildRolePositionsData dataPackage) {
 		nlohmann::json dataArray{};
 
 		for (auto& value: dataPackage.rolePositions) {
-			nlohmann::json data{};
-			data["position"] = value.rolePosition;
-			data["id"] = value.roleId;
-			dataArray.push_back(data);
+			nlohmann::json returnValue{};
+			returnValue["position"] = value.rolePosition;
+			returnValue["id"] = value.roleId;
+			dataArray.push_back(returnValue);
 		}
 		return dataArray.dump();
 	};
 
 	std::string JSONIFY(DiscordCoreAPI::ModifyGuildScheduledEventData dataPackage) {
-		nlohmann::json data{};
+		nlohmann::json returnValue{};
 		if (dataPackage.entityType == DiscordCoreAPI::GuildScheduledEventEntityType::External) {
-			data["channel_id"] = nullptr;
+			returnValue["channel_id"] = nullptr;
 		} else {
-			data["channel_id"] = dataPackage.channelId;
+			returnValue["channel_id"] = dataPackage.channelId;
 		}
-		data["entity_metadata"]["location"] = dataPackage.entityMetadata.location;
-		data["entity_metadata"]["entity_type"] = dataPackage.entityType;
-		data["scheduled_start_time"] = dataPackage.scheduledStartTime;
-		data["scheduled_end_time"] = dataPackage.scheduledEndTime;
-		data["privacy_level"] = dataPackage.privacyLevel;
-		data["description"] = dataPackage.description;
-		data["name"] = dataPackage.name;
-		return data.dump();
+		returnValue["entity_metadata"]["location"] = dataPackage.entityMetadata.location;
+		returnValue["entity_metadata"]["entity_type"] = dataPackage.entityType;
+		returnValue["scheduled_start_time"] = dataPackage.scheduledStartTime;
+		returnValue["scheduled_end_time"] = dataPackage.scheduledEndTime;
+		returnValue["privacy_level"] = dataPackage.privacyLevel;
+		returnValue["description"] = dataPackage.description;
+		returnValue["name"] = dataPackage.name;
+		return returnValue.dump();
 	}
 
 	std::string JSONIFY(DiscordCoreAPI::ModifyGuildWelcomeScreenData dataPackage) {
 		nlohmann::json channelsArray{};
 
 		for (auto& value: dataPackage.welcomeChannels) {
-			nlohmann::json newData{};
-			newData["description"] = value.description;
-			newData["channel_id"] = value.channelId;
-			newData["emoji_name"] = value.emojiName;
+			nlohmann::json newValue{};
+			newValue["description"] = value.description;
+			newValue["channel_id"] = value.channelId;
+			newValue["emoji_name"] = value.emojiName;
 			if (value.emojiId != "") {
-				newData["emoji_id"] = value.emojiId;
+				newValue["emoji_id"] = value.emojiId;
 			}
-			channelsArray.push_back(newData);
+			channelsArray.push_back(newValue);
 		}
 
-		nlohmann::json data{};
-		data["description"] = dataPackage.description;
-		data["welcome_channels"] = channelsArray;
-		data["enabled"] = dataPackage.enabled;
-		return data.dump();
+		nlohmann::json returnValue{};
+		returnValue["description"] = dataPackage.description;
+		returnValue["welcome_channels"] = channelsArray;
+		returnValue["enabled"] = dataPackage.enabled;
+		return returnValue.dump();
 	}
 
 	std::string JSONIFY(DiscordCoreAPI::StartThreadWithMessageData dataPackage) {
-		nlohmann::json data{};
-		data["auto_archive_duration"] = dataPackage.autoArchiveDuration;
-		data["rate_limit_per_user"] = dataPackage.rateLimitPerUser;
-		data["name"] = dataPackage.threadName;
-		return data.dump();
+		nlohmann::json returnValue{};
+		returnValue["auto_archive_duration"] = dataPackage.autoArchiveDuration;
+		returnValue["rate_limit_per_user"] = dataPackage.rateLimitPerUser;
+		returnValue["name"] = dataPackage.threadName;
+		return returnValue.dump();
 	}
 
 	std::string JSONIFY(DiscordCoreAPI::AddRecipientToGroupDMData dataPackage) {
-		nlohmann::json data{};
-		data["access_token"] = dataPackage.token;
-		data["nick"] = dataPackage.nick;
+		nlohmann::json returnValue{};
+		returnValue["access_token"] = dataPackage.token;
+		returnValue["nick"] = dataPackage.nick;
 
-		return data.dump();
+		return returnValue.dump();
 	}
 
 	std::string JSONIFY(DiscordCoreAPI::InteractionResponseData dataPackage) {
-		nlohmann::json data{};
+		nlohmann::json returnValue{};
 
-		for (auto& value: dataPackage.data.attachments) {
-			data["data"]["attachments"].push_back(value);
+		if (dataPackage.data.attachments.size() > 0) {
+			returnValue["data"]["attachments"] = nlohmann::json{ dataPackage.data.attachments };
 		}
 
 		if (dataPackage.data.components.size() == 0) {
-			data["data"]["components"] = nlohmann::json::array();
+			returnValue["data"]["components"] = nlohmann::json{};			
 		} else {
-			data["data"]["components"] = nlohmann::json{ dataPackage.data.components };
+			returnValue["data"]["components"] = nlohmann::json{ dataPackage.data.components };
 		}
 
-		data["data"]["allowed_mentions"] = dataPackage.data.allowedMentions;
+		returnValue["data"]["allowed_mentions"] = dataPackage.data.allowedMentions;
 
 		if (dataPackage.data.choices.size() > 0) {
 			nlohmann::json::array_t theArray{};
@@ -648,465 +634,453 @@ namespace DiscordCoreInternal {
 				theValue["value"] = value.value;
 				theArray.push_back(theValue);
 			}
-			data["data"]["choices"] = theArray;
+			returnValue["data"]["choices"] = theArray;
 		}
 
-		if (dataPackage.data.embeds.size() == 0) {
-			data["data"]["embeds"] = nlohmann::json::array();
-		} else {
-			for (auto& value: dataPackage.data.embeds) {
-				data["data"]["embeds"].push_back(value);
-			}
+		if (dataPackage.data.embeds.size() > 0) {
+			returnValue["data"]["embeds"] = nlohmann::json{ dataPackage.data.embeds };
 		}
 
 		if (dataPackage.data.customId != "") {
-			data["data"]["custom_id"] = dataPackage.data.customId;
+			returnValue["data"]["custom_id"] = dataPackage.data.customId;
 		}
 
 		if (dataPackage.data.content != "") {
-			data["data"]["content"] = dataPackage.data.content;
+			returnValue["data"]["content"] = dataPackage.data.content;
 		}
 
 		if (dataPackage.data.title != "") {
-			data["data"]["title"] = dataPackage.data.title;
+			returnValue["data"]["title"] = dataPackage.data.title;
 		}
 
-		data["data"]["flags"] = dataPackage.data.flags;
+		returnValue["data"]["flags"] = dataPackage.data.flags;
 
-		data["data"]["tts"] = dataPackage.data.tts;
+		returnValue["data"]["tts"] = dataPackage.data.tts;
 
-		data["type"] = dataPackage.type;
+		returnValue["type"] = dataPackage.type;
 
-		return data.dump();
+		return returnValue.dump();
 	}
 
 	std::string JSONIFY(DiscordCoreAPI::CreateChannelInviteData dataPackage) {
-		nlohmann::json data{};
+		nlohmann::json returnValue{};
 		if (dataPackage.targetUserId != "") {
-			data["target_application_id"] = dataPackage.targetApplicationId;
-			data["target_user_id"] = dataPackage.targetUserId;
-			data["target_type"] = dataPackage.targetType;
+			returnValue["target_application_id"] = dataPackage.targetApplicationId;
+			returnValue["target_user_id"] = dataPackage.targetUserId;
+			returnValue["target_type"] = dataPackage.targetType;
 		}
-		data["temporary"] = dataPackage.temporary;
-		data["max_uses"] = dataPackage.maxUses;
-		data["max_age"] = dataPackage.maxAge;
-		data["unique"] = dataPackage.unique;
-		return data.dump();
+		returnValue["temporary"] = dataPackage.temporary;
+		returnValue["max_uses"] = dataPackage.maxUses;
+		returnValue["max_age"] = dataPackage.maxAge;
+		returnValue["unique"] = dataPackage.unique;
+		return returnValue.dump();
 	};
 
 	std::string JSONIFY(DiscordCoreAPI::DeleteMessagesBulkData dataPackage) {
-		nlohmann::json data{};
-		data["messages"] = dataPackage.messageIds;
+		nlohmann::json returnValue{};
+		returnValue["messages"] = dataPackage.messageIds;
 
-		return data.dump();
+		return returnValue.dump();
 	}
 
 	std::string JSONIFY(DiscordCoreAPI::CreateGuildChannelData dataPackage) {
-		nlohmann::json data{};
+		nlohmann::json returnValue{};
 		if (dataPackage.type == DiscordCoreAPI::ChannelType::Guild_Voice || dataPackage.type == DiscordCoreAPI::ChannelType::Guild_Stage_Voice) {
-			data["user_limit"] = dataPackage.userLimit;
-			data["bitrate"] = dataPackage.bitrate;
+			returnValue["user_limit"] = dataPackage.userLimit;
+			returnValue["bitrate"] = dataPackage.bitrate;
 		}
 		nlohmann::json overwrites{};
 		for (auto& value: dataPackage.permissionOverwrites) {
-			nlohmann::json newData{};
-			newData["allow"] = value.allow.getCurrentPermissionString();
-			newData["deny"] = value.deny.getCurrentPermissionString();
-			newData["channel_id"] = value.channelId;
-			newData["type"] = value.type;
-			newData["id"] = value.id;
-			overwrites.push_back(newData);
+			nlohmann::json newValue{};
+			newValue["allow"] = value.allow.getCurrentPermissionString();
+			newValue["deny"] = value.deny.getCurrentPermissionString();
+			newValue["channel_id"] = value.channelId;
+			newValue["type"] = value.type;
+			newValue["id"] = value.id;
+			overwrites.push_back(newValue);
 		}
-		data["default_auto_archive_duration"] = dataPackage.defaultAutoArchiveDuration;
-		data["rate_limit_per_user"] = dataPackage.rateLimitPerUser;
-		data["permission_overwrites"] = overwrites;
-		data["parent_id"] = dataPackage.parentId;
-		data["position"] = dataPackage.position;
-		data["topic"] = dataPackage.topic;
-		data["name"] = dataPackage.name;
-		data["nsfw"] = dataPackage.nsfw;
-		data["type"] = dataPackage.type;
-		return data.dump();
+		returnValue["default_auto_archive_duration"] = dataPackage.defaultAutoArchiveDuration;
+		returnValue["rate_limit_per_user"] = dataPackage.rateLimitPerUser;
+		returnValue["permission_overwrites"] = overwrites;
+		returnValue["parent_id"] = dataPackage.parentId;
+		returnValue["position"] = dataPackage.position;
+		returnValue["topic"] = dataPackage.topic;
+		returnValue["name"] = dataPackage.name;
+		returnValue["nsfw"] = dataPackage.nsfw;
+		returnValue["type"] = dataPackage.type;
+		return returnValue.dump();
 	}
 
 	std::string JSONIFY(DiscordCoreAPI::ModifyGuildMemberData dataPackage) {
-		nlohmann::json data{};
-		data["nick"] = dataPackage.nick;
-		data["communication_disabled_until"] = std::string(dataPackage.communicationDisabledUntil);
+		nlohmann::json returnValue{};
+		returnValue["nick"] = dataPackage.nick;
+		returnValue["communication_disabled_until"] = std::string(dataPackage.communicationDisabledUntil);
 
 		if (dataPackage.roleIds.size() == 0) {
-			data["roles"] = nullptr;
+			returnValue["roles"] = nullptr;
 		} else {
 			nlohmann::json roleIdArray{};
 			for (auto& value: dataPackage.roleIds) {
 				roleIdArray.push_back(value);
 			}
-			data["roles"] = roleIdArray;
+			returnValue["roles"] = roleIdArray;
 		}
 
 		if (dataPackage.newVoiceChannelId != "") {
-			data["channel_id"] = dataPackage.newVoiceChannelId;
-			data["mute"] = dataPackage.mute;
-			data["deaf"] = dataPackage.deaf;
+			returnValue["channel_id"] = dataPackage.newVoiceChannelId;
+			returnValue["mute"] = dataPackage.mute;
+			returnValue["deaf"] = dataPackage.deaf;
 		}
-		return data.dump();
+		return returnValue.dump();
 	}
 
 	std::string JSONIFY(DiscordCoreAPI::FollowNewsChannelData dataPackage) {
-		nlohmann::json data{};
-		data["webhook_channel_id"] = dataPackage.targetChannelId;
+		nlohmann::json returnValue{};
+		returnValue["webhook_channel_id"] = dataPackage.targetChannelId;
 
-		return data.dump();
+		return returnValue.dump();
 	}
 
 	std::string JSONIFY(DiscordCoreAPI::CreateGuildEmojiData dataPackage) {
-		nlohmann::json data{};
+		nlohmann::json returnValue{};
 
 		nlohmann::json rolesArray{};
 		for (auto& value: dataPackage.roles) {
 			rolesArray.push_back(value);
 		}
-		data["image"] = dataPackage.imageDataFinal;
-		data["name"] = dataPackage.name;
-		data["roles"] = rolesArray;
-		return data.dump();
+		returnValue["image"] = dataPackage.imageDataFinal;
+		returnValue["name"] = dataPackage.name;
+		returnValue["roles"] = rolesArray;
+		return returnValue.dump();
 	}
 
 	std::string JSONIFY(DiscordCoreAPI::CreateGuildRoleData dataPackage) {
 		int32_t roleColorInt = stol(dataPackage.hexColorValue, 0, 16);
-		std::stringstream stream;
+		std::stringstream stream{};
 		stream << std::setbase(10) << roleColorInt;
-		std::string roleColorReal = stream.str();
+		std::string colorReal = stream.str();
 
-		nlohmann::json data{};
-		data["permissions"] = dataPackage.permissions.getCurrentPermissionString();
-		data["mentionable"] = dataPackage.mentionable;
-		data["hoist"] = dataPackage.hoist;
-		data["name"] = dataPackage.name;
-		data["color"] = roleColorReal;
+		nlohmann::json returnValue{};
+		returnValue["permissions"] = dataPackage.permissions.getCurrentPermissionString();
+		returnValue["mentionable"] = dataPackage.mentionable;
+		returnValue["hoist"] = dataPackage.hoist;
+		returnValue["name"] = dataPackage.name;
+		returnValue["color"] = colorReal;
 		if (dataPackage.icon.size() > 0) {
-			data["icon"] = dataPackage.icon;
+			returnValue["icon"] = dataPackage.icon;
 		}
 		if (dataPackage.unicodeEmoji.size() > 0) {
-			data["unicode_emoji"] = dataPackage.unicodeEmoji;
+			returnValue["unicode_emoji"] = dataPackage.unicodeEmoji;
 		}
-		return data.dump();
+		return returnValue.dump();
 	};
 
 	std::string JSONIFY(DiscordCoreAPI::ModifyGuildEmojiData dataPackage) {
-		nlohmann::json data{};
+		nlohmann::json returnValue{};
 
 		nlohmann::json rolesArray{};
 		for (auto& value: dataPackage.roles) {
 			rolesArray.push_back(value);
 		}
 
-		data["name"] = dataPackage.name;
-		data["roles"] = rolesArray;
+		returnValue["name"] = dataPackage.name;
+		returnValue["roles"] = rolesArray;
 
-		return data.dump();
+		return returnValue.dump();
 	}
 
 	std::string JSONIFY(DiscordCoreAPI::ModifyGuildRoleData dataPackage) {
 		int32_t roleColorInt = stol(dataPackage.hexColorValue, 0, 16);
-		std::stringstream stream;
+		std::stringstream stream{};
 		stream << std::setbase(10) << roleColorInt;
-		std::string roleColorReal = stream.str();
+		std::string colorReal = stream.str();
 
-		nlohmann::json data{};
-		data["permissions"] = dataPackage.permissions.getCurrentPermissionString();
-		data["mentionable"] = dataPackage.mentionable;
-		data["hoist"] = dataPackage.hoist;
-		data["name"] = dataPackage.name;
-		data["color"] = roleColorReal;
+		nlohmann::json returnValue{};
+		returnValue["permissions"] = dataPackage.permissions.getCurrentPermissionString();
+		returnValue["mentionable"] = dataPackage.mentionable;
+		returnValue["hoist"] = dataPackage.hoist;
+		returnValue["name"] = dataPackage.name;
+		returnValue["color"] = colorReal;
 		if (dataPackage.icon.size() > 0) {
-			data["icon"] = dataPackage.icon;
+			returnValue["icon"] = dataPackage.icon;
 		}
 		if (dataPackage.unicodeEmoji.size() > 0) {
-			data["unicode_emoji"] = dataPackage.unicodeEmoji;
+			returnValue["unicode_emoji"] = dataPackage.unicodeEmoji;
 		}
-		return data.dump();
+		return returnValue.dump();
 	}
 
 	std::string JSONIFY(DiscordCoreAPI::BeginGuildPruneData dataPackage) {
-		nlohmann::json data{};
-		data["compute_prune_count"] = dataPackage.computePruneCount;
-		data["include_roles"] = dataPackage.includeRoles;
-		data["days"] = dataPackage.days;
-		return data.dump();
+		nlohmann::json returnValue{};
+		returnValue["compute_prune_count"] = dataPackage.computePruneCount;
+		returnValue["include_roles"] = dataPackage.includeRoles;
+		returnValue["days"] = dataPackage.days;
+		return returnValue.dump();
 	}
 
 	std::string JSONIFY(DiscordCoreAPI::CreateGuildBanData dataPackage) {
-		nlohmann::json data{};
+		nlohmann::json returnValue{};
 		if (dataPackage.deleteMessageDays != 0) {
-			data["delete_message_days"] = dataPackage.deleteMessageDays;
+			returnValue["delete_message_days"] = dataPackage.deleteMessageDays;
 		}
-		return data.dump();
+		return returnValue.dump();
 	}
 
 	std::string JSONIFY(DiscordCoreAPI::AddGuildMemberData dataPackage) {
-		nlohmann::json data{};
+		nlohmann::json returnValue{};
 
-		data["access_token"] = dataPackage.accessToken;
-		data["roles"] = dataPackage.roles;
-		data["deaf"] = dataPackage.deaf;
-		data["mute"] = dataPackage.mute;
-		data["nick"] = dataPackage.nick;
+		returnValue["access_token"] = dataPackage.accessToken;
+		returnValue["roles"] = dataPackage.roles;
+		returnValue["deaf"] = dataPackage.deaf;
+		returnValue["mute"] = dataPackage.mute;
+		returnValue["nick"] = dataPackage.nick;
 
-		return data.dump();
+		return returnValue.dump();
 	}
 
 	std::string JSONIFY(DiscordCoreAPI::ExecuteWebHookData dataPackage) {
-		nlohmann::json data{};
+		try {
+			nlohmann::json returnValue{};
 
-		for (auto& value: dataPackage.attachments) {
-			data["attachments"].push_back(value);
-		}
-
-		if (dataPackage.components.size() == 0) {
-			data["components"] = nlohmann::json::array();
-		} else {
-			data["components"] = nlohmann::json{ dataPackage.components };
-		}
-
-		data["allowed_mentions"] = dataPackage.allowedMentions;
-
-		if (dataPackage.embeds.size() == 0) {
-			data["embeds"] = nlohmann::json::array();
-		} else {
-			for (auto& value: dataPackage.embeds) {
-				data["embeds"].push_back(value);
+			if (dataPackage.attachments.size() > 0) {
+				returnValue["attachments"] = nlohmann::json{ dataPackage.attachments };
 			}
+
+			if (dataPackage.components.size() == 0) {
+				returnValue["components"] = nlohmann::json{};
+			}
+			else {
+				returnValue["components"] = nlohmann::json{ dataPackage.components };
+			}
+
+			returnValue["allowed_mentions"] = dataPackage.allowedMentions;
+
+			if (dataPackage.embeds.size() > 0) {
+				returnValue["embeds"].push_back(nlohmann::json{ dataPackage.embeds }["embeds"]);
+			}
+
+			if (dataPackage.avatarUrl != "") {
+				returnValue["avatar_url"] = dataPackage.username;
+			}
+
+			if (dataPackage.username != "") {
+				returnValue["username"] = dataPackage.username;
+			}
+
+			if (dataPackage.content != "") {
+				returnValue["content"] = dataPackage.content;
+			}
+
+			returnValue["flags"] = dataPackage.flags;
+
+			returnValue["tts"] = dataPackage.tts;
+			std::cout << "THE RETURN:\n" << returnValue.dump() << std::endl;
+			return returnValue.dump();
+		} catch (...) {
+			std::string file{ __FILE__ };
+			int32_t line{ __LINE__ };
+			DiscordCoreAPI::reportException("Exception thrown in DiscordCoreInternal::JSONIFY() @ " + file + " [" + std::to_string(line) + "]\n");
+			return std::string{};
 		}
-
-		if (dataPackage.avatarUrl != "") {
-			data["avatar_url"] = dataPackage.username;
-		}
-
-		if (dataPackage.username != "") {
-			data["username"] = dataPackage.username;
-		}
-
-		if (dataPackage.content != "") {
-			data["content"] = dataPackage.content;
-		}
-
-		data["flags"] = dataPackage.flags;
-
-		data["tts"] = dataPackage.tts;
-
-		return data.dump();
 	}
 
 	std::string JSONIFY(DiscordCoreAPI::ModifyChannelData dataPackage) {
 		nlohmann::json permOws{};
 		for (auto& [key, value]: dataPackage.channelData.permissionOverwrites) {
-			nlohmann::json newData{};
-			newData["allow"] = value.allow.getCurrentPermissionString();
-			newData["deny"] = value.deny.getCurrentPermissionString();
-			newData["channel_id"] = value.channelId;
-			newData["type"] = value.type;
-			newData["id"] = value.id;
-			permOws.push_back(newData);
+			nlohmann::json newValue{};
+			newValue["allow"] = value.allow.getCurrentPermissionString();
+			newValue["deny"] = value.deny.getCurrentPermissionString();
+			newValue["channel_id"] = value.channelId;
+			newValue["type"] = value.type;
+			newValue["id"] = value.id;
+			permOws.push_back(newValue);
 		}
 
-		nlohmann::json data{};
-		data["default_auto_archive_duration"] = dataPackage.channelData.defaultAutoArchiveDuration;
-		data["video_quality_mode"] = dataPackage.channelData.videoQualityMode;
-		data["rate_limit_per_user"] = dataPackage.channelData.rateLimitPerUser;
-		data["user_limit"] = dataPackage.channelData.userLimit;
-		data["rtc_region"] = dataPackage.channelData.rtcRgion;
-		data["parent_id"] = dataPackage.channelData.parentId;
-		data["parent_id"] = dataPackage.channelData.parentId;
-		data["position"] = dataPackage.channelData.position;
-		data["bitrate"] = dataPackage.channelData.bitrate;
-		data["topic"] = dataPackage.channelData.topic;
-		data["nsfw"] = dataPackage.channelData.nsfw;
-		data["name"] = dataPackage.channelData.name;
-		data["type"] = dataPackage.channelData.type;
-		data["permission_overwrites"] = permOws;
-		return data.dump();
+		nlohmann::json returnValue{};
+		returnValue["default_auto_archive_duration"] = dataPackage.channelData.defaultAutoArchiveDuration;
+		returnValue["video_quality_mode"] = dataPackage.channelData.videoQualityMode;
+		returnValue["rate_limit_per_user"] = dataPackage.channelData.rateLimitPerUser;
+		returnValue["user_limit"] = dataPackage.channelData.userLimit;
+		returnValue["rtc_region"] = dataPackage.channelData.rtcRgion;
+		returnValue["parent_id"] = dataPackage.channelData.parentId;
+		returnValue["parent_id"] = dataPackage.channelData.parentId;
+		returnValue["position"] = dataPackage.channelData.position;
+		returnValue["bitrate"] = dataPackage.channelData.bitrate;
+		returnValue["topic"] = dataPackage.channelData.topic;
+		returnValue["nsfw"] = dataPackage.channelData.nsfw;
+		returnValue["name"] = dataPackage.channelData.name;
+		returnValue["type"] = dataPackage.channelData.type;
+		returnValue["permission_overwrites"] = permOws;
+		return returnValue.dump();
 	}
 
 	std::string JSONIFY(DiscordCoreAPI::CreateMessageData dataPackage) {
-		nlohmann::json data{};
+		nlohmann::json returnValue{};
 
-		for (auto& value: dataPackage.attachments) {
-			data["attachments"].push_back(value);
+		if (dataPackage.attachments.size() > 0) {
+			returnValue["attachments"] = nlohmann::json{ dataPackage.attachments };
 		}
 
 		if (dataPackage.messageReference.messageId != "") {
-			data["message_reference"] = dataPackage.messageReference;
+			returnValue["message_reference"] = dataPackage.messageReference;
 		}
 
 		if (dataPackage.components.size() == 0) {
-			data["components"] = nlohmann::json::array();
+			returnValue["components"] = nlohmann::json{};
 		} else {
-			data["components"] = nlohmann::json{ dataPackage.components };
+			returnValue["components"] = nlohmann::json{ dataPackage.components };
 		}
 
-		data["allowed_mentions"] = dataPackage.allowedMentions;
+		returnValue["allowed_mentions"] = dataPackage.allowedMentions;
 
 		for (auto& value: dataPackage.stickerIds) {
-			data["sticker_ids"].push_back(value);
+			returnValue["sticker_ids"].push_back(value);
 		}
 
-		if (dataPackage.embeds.size() == 0) {
-			data["embeds"] = nlohmann::json::array();
-		} else {
-			for (auto& value: dataPackage.embeds) {
-				data["embeds"].push_back(value);
-			}
+		if (dataPackage.embeds.size() > 0) {
+			returnValue["embeds"] = nlohmann::json{ dataPackage.embeds };
 		}
 
 		if (dataPackage.content != "") {
-			data["content"] = dataPackage.content;
+			returnValue["content"] = dataPackage.content;
 		}
 
-		data["flags"] = dataPackage.flags;
+		returnValue["flags"] = dataPackage.flags;
 
-		data["tts"] = dataPackage.tts;
+		returnValue["tts"] = dataPackage.tts;
 
-		return data.dump();
+		return returnValue.dump();
 	}
 
 	std::string JSONIFY(DiscordCoreAPI::EditMessageData dataPackage) {
-		nlohmann::json data{};
+		nlohmann::json returnValue{};
 
-		for (auto& value: dataPackage.attachments) {
-			data["attachments"].push_back(value);
+		if (dataPackage.attachments.size() > 0) {
+			returnValue["attachments"] = nlohmann::json{ dataPackage.attachments };
 		}
 
 		if (dataPackage.components.size() == 0) {
-			data["components"] = nlohmann::json::array();
+			returnValue["components"] = nlohmann::json{};
 		} else {
-			data["components"] = nlohmann::json{ dataPackage.components };
+			returnValue["components"] = nlohmann::json{ dataPackage.components };
 		}
 
-		data["allowed_mentions"] = dataPackage.allowedMentions;
+		returnValue["allowed_mentions"] = dataPackage.allowedMentions;
 
-		if (dataPackage.embeds.size() == 0) {
-			data["embeds"] = nlohmann::json::array();
-		} else {
-			for (auto& value: dataPackage.embeds) {
-				data["embeds"].push_back(value);
-			}
+		if (dataPackage.embeds.size() > 0) {
+			returnValue["embeds"] = nlohmann::json{ dataPackage.embeds };
 		}
 
 		if (dataPackage.content != "") {
-			data["content"] = dataPackage.content;
+			returnValue["content"] = dataPackage.content;
 		}
 
-		data["flags"] = dataPackage.flags;
+		returnValue["flags"] = dataPackage.flags;
 
-		return data.dump();
+		return returnValue.dump();
 	}
 
 	std::string JSONIFY(DiscordCoreAPI::CreateGuildData dataPackage) {
-		nlohmann::json data{};
-		data["default_message_notifications"] = dataPackage.defaultMessageNotifications;
-		data["explicit_content_filter"] = dataPackage.explicitContentFilter;
-		data["system_channel_flags"] = dataPackage.systemChannelFlags;
-		data["verification_level"] = dataPackage.verificationLevel;
-		data["afk_timeout"] = dataPackage.afkTimeout;
-		data["region"] = dataPackage.region;
-		data["name"] = dataPackage.name;
-		data["icon"] = dataPackage.icon;
+		nlohmann::json returnValue{};
+		returnValue["default_message_notifications"] = dataPackage.defaultMessageNotifications;
+		returnValue["explicit_content_filter"] = dataPackage.explicitContentFilter;
+		returnValue["system_channel_flags"] = dataPackage.systemChannelFlags;
+		returnValue["verification_level"] = dataPackage.verificationLevel;
+		returnValue["afk_timeout"] = dataPackage.afkTimeout;
+		returnValue["region"] = dataPackage.region;
+		returnValue["name"] = dataPackage.name;
+		returnValue["icon"] = dataPackage.icon;
 
 		for (auto& value: dataPackage.channels) {
-			nlohmann::json newData{};
-			newData["parent_id"] = value.parentId;
-			newData["name"] = value.name;
-			newData["type"] = value.type;
-			newData["id"] = value.id;
-			data["channels"].push_back(newData);
+			nlohmann::json newValue{};
+			newValue["parent_id"] = value.parentId;
+			newValue["name"] = value.name;
+			newValue["type"] = value.type;
+			newValue["id"] = value.id;
+			returnValue["channels"].push_back(newValue);
 		}
 
 		for (auto& value: dataPackage.roles) {
-			nlohmann::json newData{};
-			newData["permissions"] = value.permissions.getCurrentPermissionString();
-			newData["tags"]["premium_subscriber"] = value.tags.premiumSubscriber;
-			newData["tags"]["integration_id"] = value.tags.integrationId;
-			newData["mentionable"] = value.getMentionable();
-			newData["tags"]["bot_id"] = value.tags.botId;
-			newData["managed"] = value.getManaged();
-			newData["position"] = value.position;
-			newData["hoist"] = value.getHoist();
-			newData["color"] = value.color;
-			newData["name"] = value.name;
-			data["roles"].push_back(newData);
+			nlohmann::json newValue{};
+			newValue["permissions"] = value.permissions.getCurrentPermissionString();
+			newValue["tags"]["premium_subscriber"] = value.tags.premiumSubscriber;
+			newValue["tags"]["integration_id"] = value.tags.integrationId;
+			newValue["mentionable"] = value.getMentionable();
+			newValue["tags"]["bot_id"] = value.tags.botId;
+			newValue["managed"] = value.getManaged();
+			newValue["position"] = value.position;
+			newValue["hoist"] = value.getHoist();
+			newValue["color"] = value.color;
+			newValue["name"] = value.name;
+			returnValue["roles"].push_back(newValue);
 		}
 		if (dataPackage.systemChannelId != "") {
-			data["system_channel_id"] = dataPackage.systemChannelId;
+			returnValue["system_channel_id"] = dataPackage.systemChannelId;
 		}
 		if (dataPackage.afkChannelId != "") {
-			data["afk_channel_id"] = dataPackage.afkChannelId;
+			returnValue["afk_channel_id"] = dataPackage.afkChannelId;
 		}
-		return data.dump();
+		return returnValue.dump();
 	}
 
 	std::string JSONIFY(DiscordCoreAPI::ModifyGuildData dataPackage) {
-		nlohmann::json data{};
-		data["premium_progress_bar_enabled"] = dataPackage.premiumProgressBarEnabled;
-		data["default_message_notifications"] = dataPackage.defaultMessageNotifications;
-		data["explicit_content_filter"] = dataPackage.explicitContentFilter;
-		data["system_channel_flags"] = dataPackage.systemChannelFlags;
-		data["verification_level"] = dataPackage.verificationLevel;
-		data["discovery_splash"] = dataPackage.discoverySplash;
-		data["preferred_locale"] = dataPackage.preferredLocale;
-		data["rules_channel_id"] = dataPackage.rulesChannelId;
-		data["description"] = dataPackage.description;
-		data["afk_timeout"] = dataPackage.afkTimeout;
-		data["features"] = dataPackage.features;
-		data["splash"] = dataPackage.splash;
-		data["banner"] = dataPackage.banner;
-		data["name"] = dataPackage.name;
-		data["icon"] = dataPackage.icon;
+		nlohmann::json returnValue{};
+		returnValue["premium_progress_bar_enabled"] = dataPackage.premiumProgressBarEnabled;
+		returnValue["default_message_notifications"] = dataPackage.defaultMessageNotifications;
+		returnValue["explicit_content_filter"] = dataPackage.explicitContentFilter;
+		returnValue["system_channel_flags"] = dataPackage.systemChannelFlags;
+		returnValue["verification_level"] = dataPackage.verificationLevel;
+		returnValue["discovery_splash"] = dataPackage.discoverySplash;
+		returnValue["preferred_locale"] = dataPackage.preferredLocale;
+		returnValue["rules_channel_id"] = dataPackage.rulesChannelId;
+		returnValue["description"] = dataPackage.description;
+		returnValue["afk_timeout"] = dataPackage.afkTimeout;
+		returnValue["features"] = dataPackage.features;
+		returnValue["splash"] = dataPackage.splash;
+		returnValue["banner"] = dataPackage.banner;
+		returnValue["name"] = dataPackage.name;
+		returnValue["icon"] = dataPackage.icon;
 
 		if (dataPackage.publicUpdatesChannelId != "") {
-			data["public_updates_channel_id"] = dataPackage.publicUpdatesChannelId;
+			returnValue["public_updates_channel_id"] = dataPackage.publicUpdatesChannelId;
 		}
 		if (dataPackage.afkChannelId != "") {
-			data["afk_channel_id"] = dataPackage.afkChannelId;
+			returnValue["afk_channel_id"] = dataPackage.afkChannelId;
 		}
 		if (dataPackage.systemChannelId != "") {
-			data["system_channel_id"] = dataPackage.systemChannelId;
+			returnValue["system_channel_id"] = dataPackage.systemChannelId;
 		}
 		if (dataPackage.ownerId != "") {
-			data["owner_id"] = dataPackage.ownerId;
+			returnValue["owner_id"] = dataPackage.ownerId;
 		}
 
-		return data.dump();
+		return returnValue.dump();
 	}
 
 	std::string JSONIFY(DiscordCoreAPI::EditWebHookData dataPackage) {
-		nlohmann::json data{};
+		nlohmann::json returnValue{};
 
-		for (auto& value: dataPackage.attachments) {
-			data["attachments"].push_back(value);
+		if (dataPackage.attachments.size() > 0) {
+			returnValue["attachments"] = nlohmann::json{ dataPackage.attachments };
 		}
 
 		if (dataPackage.components.size() == 0) {
-			data["components"] = nlohmann::json::array();
+			returnValue["components"] = nlohmann::json{};
 		} else {
-			data["components"] = nlohmann::json{ dataPackage.components };
+			returnValue["components"] = nlohmann::json{ dataPackage.components };
 		}
 
-		data["allowed_mentions"] = dataPackage.allowedMentions;
+		returnValue["allowed_mentions"] = dataPackage.allowedMentions;
 
-		if (dataPackage.embeds.size() == 0) {
-			data["embeds"] = nlohmann::json::array();
-		} else {
-			for (auto& value: dataPackage.embeds) {
-				data["embeds"].push_back(value);
-			}
+		if (dataPackage.embeds.size() > 0) {
+			returnValue["embeds"] = nlohmann::json{ dataPackage.embeds };
 		}
 
 		if (dataPackage.content != "") {
-			data["content"] = dataPackage.content;
+			returnValue["content"] = dataPackage.content;
 		}
 
-		return data.dump();
+		return returnValue.dump();
 	}
 
 }
