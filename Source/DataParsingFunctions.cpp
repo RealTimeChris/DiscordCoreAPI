@@ -995,7 +995,7 @@ namespace DiscordCoreInternal {
 			pDataStructure.emojis.clear();
 			pDataStructure.emojis.reserve(jsonObjectData["stickers"].size());
 			for (auto& value: jsonObjectData["stickers"]) {
-				DiscordCoreAPI::Sticker newData{};
+				DiscordCoreAPI::StickerData newData{};
 				DataParser::parseObject(value, newData);
 				pDataStructure.stickers.push_back(newData);
 			}
@@ -1302,7 +1302,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	template<> static void DataParser::parseObject(nlohmann::json const& jsonObjectData, DiscordCoreAPI::StickerData& pDataStructure) {
+	template<> void DataParser::parseObject(nlohmann::json const& jsonObjectData, DiscordCoreAPI::Sticker& pDataStructure) {
 		if (jsonObjectData.contains("asset") && !jsonObjectData["asset"].is_null()) {
 			pDataStructure.asset = jsonObjectData["asset"].get<std::string>();
 		}
@@ -1348,7 +1348,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	template<> static void DataParser::parseObject(nlohmann::json const& jsonObjectData, DiscordCoreAPI::Sticker& pDataStructure) {
+	template<> void DataParser::parseObject(nlohmann::json const& jsonObjectData, DiscordCoreAPI::StickerData& pDataStructure) {
 		if (jsonObjectData.contains("asset") && !jsonObjectData["asset"].is_null()) {
 			pDataStructure.asset = jsonObjectData["asset"].get<std::string>();
 		}
@@ -1393,7 +1393,7 @@ namespace DiscordCoreInternal {
 			DataParser::parseObject(jsonObjectData["user"], pDataStructure.user);
 		}
 	}
-	
+
 	template<> void DataParser::parseObject(nlohmann::json const& jsonObjectData, std::vector<DiscordCoreAPI::StickerData>& pDataStructure) {
 		pDataStructure.reserve(jsonObjectData.size());
 		for (auto& value: jsonObjectData) {
@@ -1403,7 +1403,7 @@ namespace DiscordCoreInternal {
 		}
 		pDataStructure.shrink_to_fit();
 	}
-	
+
 	template<> void DataParser::parseObject(nlohmann::json const& jsonObjectData, std::vector<DiscordCoreAPI::Sticker>& pDataStructure) {
 		pDataStructure.reserve(jsonObjectData.size());
 		for (auto& value: jsonObjectData) {
