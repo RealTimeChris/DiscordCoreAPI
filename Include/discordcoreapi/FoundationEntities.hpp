@@ -786,12 +786,21 @@ namespace DiscordCoreAPI {
 			return this->originalTimeStamp;
 		}
 
-		TimeStamp& operator=(std::string originalTimeStampNew) {
+		TimeStamp& operator=(std::string&& originalTimeStampNew) {
 			this->originalTimeStamp = originalTimeStampNew;
 			return *this;
 		}
 
-		TimeStamp(std::string originalTimeStampNew) {
+		TimeStamp(std::string&& originalTimeStampNew) {
+			*this = originalTimeStampNew;
+		}
+
+		TimeStamp& operator=(std::string& originalTimeStampNew) {
+			this->originalTimeStamp = originalTimeStampNew;
+			return *this;
+		}
+
+		TimeStamp(std::string& originalTimeStampNew) {
 			*this = originalTimeStampNew;
 		}
 
