@@ -211,8 +211,8 @@ namespace DiscordCoreAPI {
 			return timeValue.getTime() * 1000;
 		} catch (...) {
 			reportException("convertTimestampToMsInteger()");
+			return 0;
 		}
-		return 0;
 	}
 
 	std::string base64Encode(std::string theString, bool url) {
