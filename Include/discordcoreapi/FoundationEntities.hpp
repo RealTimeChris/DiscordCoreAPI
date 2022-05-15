@@ -234,14 +234,14 @@ namespace DiscordCoreAPI {
 
 	template<typename ObjectType> class ReferenceCountingPtr {
 	  public:
-		class DiscordCoreAPI_Dll ObjectTypeWrapper {
+		class DiscordCoreAPI_Dll ObjectWrapper {
 		  public:
-			ObjectTypeWrapper& operator=(ObjectType* other) {
+			ObjectWrapper& operator=(ObjectType* other) {
 				this->thePtr = other;
 				return *this;
 			}
 
-			ObjectTypeWrapper(ObjectType* other) {
+			ObjectWrapper(ObjectType* other) {
 				*this = other;
 			}
 
@@ -249,7 +249,7 @@ namespace DiscordCoreAPI {
 				return this->thePtr;
 			}
 
-			ObjectTypeWrapper() = default;
+			ObjectWrapper() = default;
 
 			ObjectType* get() {
 				return this->thePtr;
@@ -267,7 +267,7 @@ namespace DiscordCoreAPI {
 				};
 			}
 
-			virtual ~ObjectTypeWrapper() = default;
+			virtual ~ObjectWrapper() = default;
 
 		  protected:
 			ObjectType* thePtr{ nullptr };
@@ -275,28 +275,27 @@ namespace DiscordCoreAPI {
 		};
 
 		ReferenceCountingPtr& operator=(ObjectType* ptr) {
-			ObjectTypeWrapper* newObject{ new ObjectTypeWrapper{ ptr } };
-			if (newObject) {
-				newObject->incrementCount();
-			}
 			if (this->thePtr) {
 				this->thePtr->release();
 			}
-			this->thePtr = newObject;
+			this->thePtr = new ObjectWrapper{ ptr };
+			if (this->thePtr) {
+				this->thePtr->incrementCount();
+			}
 			return *this;
 		}
 
 		ReferenceCountingPtr(ObjectType* ptr = nullptr) {
-			ObjectTypeWrapper* newObject{ new ObjectTypeWrapper{ ptr } };
-			if (newObject) {
-				this->thePtr = newObject;
-				newObject->incrementCount();
-			}
+			*this = ptr;
 		}
 
 		ReferenceCountingPtr& operator=(const ReferenceCountingPtr& ptr) {
 			this->thePtr = ptr.thePtr;
 			return *this;
+		}
+
+		ReferenceCountingPtr(const ReferenceCountingPtr& ptr) {
+			*this = ptr;
 		}
 
 		ReferenceCountingPtr(nullptr_t){};
@@ -320,7 +319,7 @@ namespace DiscordCoreAPI {
 		}
 
 	  protected:
-		ObjectTypeWrapper* thePtr{ nullptr };
+		ObjectWrapper* thePtr{ nullptr };
 	};
 
 	/**
