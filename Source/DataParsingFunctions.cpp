@@ -5137,4 +5137,60 @@ namespace DiscordCoreInternal {
 		pDataStructure.shrink_to_fit();
 	}
 
+	template<> void DataParser::parseObject(nlohmann::json const& jsonObjectData, std::vector<DiscordCoreAPI::StickerData>& pDataStructure) {
+		pDataStructure.reserve(jsonObjectData.size());
+		for (auto& value: jsonObjectData) {
+			DiscordCoreAPI::StickerData newData{};
+			DataParser::parseObject(value, newData);
+			pDataStructure.push_back(newData);
+		}
+		pDataStructure.shrink_to_fit();
+	}
+
+	template<> void DataParser::parseObject<DiscordCoreAPI::StickerData>(nlohmann::json const& jsonObjectData, DiscordCoreAPI::StickerData& pDataStructure) {
+		if (jsonObjectData.contains("asset") && !jsonObjectData["asset"].is_null()) {
+			pDataStructure.asset = jsonObjectData["asset"].get<std::string>();
+		}
+
+		if (jsonObjectData.contains("description") && !jsonObjectData["description"].is_null()) {
+			pDataStructure.description = jsonObjectData["description"].get<std::string>();
+		}
+
+		if (jsonObjectData.contains("format_type") && !jsonObjectData["format_type"].is_null()) {
+			pDataStructure.formatType = jsonObjectData["format_type"].get<DiscordCoreAPI::StickerFormatType>();
+		}
+
+		if (jsonObjectData.contains("available") && !jsonObjectData["available"].is_null()) {
+			pDataStructure.setAvailable(jsonObjectData["available"].get<bool>());
+		}
+
+		if (jsonObjectData.contains("guild_id") && !jsonObjectData["guild_id"].is_null()) {
+			pDataStructure.guildId = jsonObjectData["guild_id"].get<std::string>();
+		}
+
+		if (jsonObjectData.contains("pack_id") && !jsonObjectData["pack_id"].is_null()) {
+			pDataStructure.packId = jsonObjectData["pack_id"].get<std::string>();
+		}
+
+		if (jsonObjectData.contains("type") && !jsonObjectData["type"].is_null()) {
+			pDataStructure.type = jsonObjectData["type"].get<DiscordCoreAPI::StickerType>();
+		}
+
+		if (jsonObjectData.contains("sort_value") && !jsonObjectData["sort_value"].is_null()) {
+			pDataStructure.sortValue = jsonObjectData["sort_value"].get<int32_t>();
+		}
+
+		if (jsonObjectData.contains("name") && !jsonObjectData["name"].is_null()) {
+			pDataStructure.name = jsonObjectData["name"].get<std::string>();
+		}
+
+		if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
+			pDataStructure.id = jsonObjectData["id"].get<std::string>();
+		}
+
+		if (jsonObjectData.contains("user") && !jsonObjectData["user"].is_null()) {
+			DataParser::parseObject(jsonObjectData["user"], pDataStructure.user);
+		}
+	}
+
 };
