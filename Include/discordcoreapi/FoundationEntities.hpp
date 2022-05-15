@@ -698,6 +698,140 @@ namespace DiscordCoreAPI {
 
 	DiscordCoreAPI_Dll std::string reset();
 
+	/// For ids of DiscordEntities. \brief For ids of DiscordEntities.
+	using Snowflake = std::string;
+
+	struct StringWrapper {
+
+		friend const char* operator+(const char* lhs, StringWrapper& other);
+
+		friend bool operator!=(StringWrapper& lhs, StringWrapper& rhs);
+
+		friend bool operator!=(StringWrapper& lhs, const char* rhs);
+
+		friend bool operator==(StringWrapper& lhs, Snowflake& rhs);
+
+		friend bool operator==(StringWrapper&, StringWrapper&);
+
+		StringWrapper& operator=(StringWrapper&& other) {
+			this->theString.reset(other.theString.release());
+			this->length = other.length;
+			return *this;
+		}
+
+		StringWrapper(StringWrapper&& other) {
+			*this = std::move(other);
+		}
+
+		StringWrapper& operator=(const StringWrapper& other) {
+			this->theString.reset(other.theString.get());
+			this->length = other.length;
+			return *this;
+		}
+
+		StringWrapper(const StringWrapper& other) {
+			*this = other;
+		}
+
+		StringWrapper& operator=(StringWrapper& other) {
+			this->theString.reset(other.theString.release());
+			this->length = other.length;
+			return *this;
+		}
+
+		StringWrapper(StringWrapper& other) {
+			*this = other;
+		}
+
+		StringWrapper& operator=(std::string&& theString) {
+			convertString(theString);
+			return *this;
+		}
+
+		StringWrapper(std::string&& theString) {
+			*this = std::move(theString);
+		}
+
+		StringWrapper& operator=(std::string& theString) {
+			convertString(theString);
+			return *this;
+		}
+
+		StringWrapper(std::string& theString) {
+			*this = theString;
+		}
+
+		StringWrapper& operator=(const char* theString) {
+			convertString(theString);
+			return *this;
+		}
+
+		StringWrapper(const char* theString) {
+			*this = theString;
+		}
+
+		operator const char*() {
+			return this->theString.get();
+		}
+
+		operator std::string() {
+			return this->convertPtr();
+		}
+
+		StringWrapper() = default;
+
+	  protected:
+		std::string convertPtr() {
+			std::string returnString;
+			for (int64_t x = 0; x < this->length; x += 1) {
+				returnString.push_back(this->theString[x]);
+			}
+			return returnString;
+		}
+
+		void convertString(std::string& theString) {
+			char theValue = NULL;
+			int64_t theCount{};
+			do {
+				theValue = theString[theCount];
+				theCount += 1;
+			} while (theValue != NULL);
+			this->length = theCount;
+			std::unique_ptr<char[]> returnString = std::make_unique<char[]>(theCount);
+			for (int64_t x = 0; x < theCount; x += 1) {
+				returnString[x] = theString[x];
+			}
+			this->theString = std::move(returnString);
+		}
+
+		void convertString(const char* theString) {
+			char theValue = NULL;
+			int64_t theCount{};
+			do {
+				theValue = theString[theCount];
+				theCount += 1;
+			} while (theValue != NULL);
+			this->length = theCount;
+			std::unique_ptr<char[]> returnString = std::make_unique<char[]>(theCount);
+			for (int64_t x = 0; x < theCount; x += 1) {
+				returnString[x] = theString[x];
+			}
+			this->theString = std::move(returnString);
+		}
+		int64_t length{ 0 };
+		std::unique_ptr<char[]> theString{};
+	};
+
+	bool operator!=(StringWrapper& lhs, const char* rhs);
+
+	bool operator==(StringWrapper& lhs, StringWrapper& rhs);
+
+	bool operator!=(StringWrapper& lhs, StringWrapper& rhs);
+
+	const char* operator+(const char* lhs, StringWrapper& other);
+
+	bool operator==(StringWrapper& lhs, Snowflake& rhs);
+	
 	/**
 	 * \addtogroup foundation_entities
 	 * @{
@@ -781,6 +915,7 @@ namespace DiscordCoreAPI {
 	/// Class for representing a timestamp. \brief Class for representing a timestamp.
 	class DiscordCoreAPI_Dll TimeStamp {
 	  public:
+
 		operator std::string() {
 			return this->originalTimeStamp;
 		}
@@ -791,7 +926,7 @@ namespace DiscordCoreAPI {
 		}
 
 		TimeStamp(std::string&& originalTimeStampNew) {
-			*this = originalTimeStampNew;
+			*this = std::move(originalTimeStampNew);
 		}
 
 		TimeStamp& operator=(std::string& originalTimeStampNew) {
@@ -952,9 +1087,6 @@ namespace DiscordCoreAPI {
 		All_Intents = Default_Intents | Privileged_Intents///< Every single intent.
 	};
 
-	/// For ids of DiscordEntities. \brief For ids of DiscordEntities.
-	using Snowflake = std::string;
-
 	/// Base class DiscordCoreAPI_Dll for all Discord entities. \brief Base class DiscordCoreAPI_Dll for all Discord entities.
 	class DiscordCoreAPI_Dll DiscordEntity {
 	  public:
@@ -1082,15 +1214,15 @@ namespace DiscordCoreAPI {
 
 		UserData() = default;
 
-		std::string discriminator{};///< The # next to their User name.
+		StringWrapper discriminator{};///< The # next to their User name.
+		StringWrapper createdAt{};///< When the User was created.
 		int32_t premiumType{ 0 };///< Their premium nitro status.
 		int32_t publicFlags{ 0 };///< Public flags.
-		std::string createdAt{};///< When the User was created.
 		std::string userName{};///< Their username.
+		StringWrapper avatar{};///< Their avatar url.
+		StringWrapper locale{};///< The region they are from/in.
 		int8_t userFlags{ 0 };///< User flags.
-		std::string avatar{};///< Their avatar url.
-		std::string locale{};///< The region they are from/in.
-		std::string email{};///< Their email address.
+		StringWrapper email{};///< Their email address.
 		int32_t flags{ 0 };///< Flags.
 
 		virtual ~UserData() = default;
@@ -1384,25 +1516,25 @@ namespace DiscordCoreAPI {
 		ThreadMetadataData threadMetadata{};///< Metadata in the case that this Channel is a Thread.
 		ChannelType type{ ChannelType::Dm };///< The type of the Channel.
 		TimeStamp lastPinTimestamp{ "" };///< Timestamp of the last pinned Message.
+		StringWrapper lastMessageId{};///< Id of the last Message.
+		StringWrapper applicationId{};///< Application id of the current application.		
 		int32_t videoQualityMode{ 0 };///< Video quality mode.
 		int32_t rateLimitPerUser{ 0 };///< Amount of seconds a User has to wait before sending another Message.
-		std::string lastMessageId{};///< Id of the last Message.
-		std::string applicationId{};///< Application id of the current application.
+		StringWrapper permissions{};///< Computed permissions for the invoking user in the channel, including overwrites.
 		ThreadMemberData member{};///< Thread member object for the current User, if they have joined the Thread.
 		int32_t messageCount{ 0 };///< An approximate count of Messages in a Thread stops counting at 50.
-		std::string permissions{};///< Computed permissions for the invoking user in the channel, including overwrites.
+		StringWrapper rtcRegion{};///< Real-time clock region.
 		int8_t channelFlags{ 0 };///< Channel flags.
 		int32_t memberCount{ 0 };///< Count of members active in the Channel.
-		std::string rtcRegion{};///< Real-time clock region.
+		StringWrapper parentId{};///< Id of the parent Channel, if applicable.
+		StringWrapper guildId{};///< Id of the Channel's Guild, if applicable.
+		StringWrapper ownerId{};///< Id of the Channel's owner.
 		int32_t userLimit{ 0 };///< User limit, in the case of voice channels.
-		std::string parentId{};///< Id of the parent Channel, if applicable.
-		std::string guildId{};///< Id of the Channel's Guild, if applicable.
-		std::string ownerId{};///< Id of the Channel's owner.
+		StringWrapper topic{};///< The Channel's topic.
 		int32_t position{ 0 };///< The position of the Channel, in the Guild's Channel list.
+		StringWrapper name{};///< Name of the Channel.
+		StringWrapper icon{};///< Icon for the Channel, if applicable.
 		int32_t bitrate{ 0 };///< Bitrate of the Channel, if it is a voice Channel.
-		std::string topic{};///< The Channel's topic.
-		std::string name{};///< Name of the Channel.
-		std::string icon{};///< Icon for the Channel, if applicable.
 		int64_t flags{ 0 };///< Channel flags combined as a bitfield.
 
 		virtual ~ChannelData() = default;
@@ -1454,12 +1586,12 @@ namespace DiscordCoreAPI {
 		TimeStamp communicationDisabledUntil{ "" };///< When the user's timeout will expire and the user will be able to communicate in the guild again.
 		std::vector<std::string> roles{};///< The Guild roles that they have.
 		int8_t guildMemberFlags{ 0 };///< GuildMember flags.
-		std::string premiumSince{};///< If applicable, when they first boosted the server.
+		StringWrapper premiumSince{};///< If applicable, when they first boosted the server.
 		Permissions permissions{};///< Their base-level Permissions in the Guild.		
 		TimeStamp joinedAt{ "" };///< When they joined the Guild.
-		std::string guildId{};///< The current Guild's id.
-		std::string avatar{};///< The member's guild avatar hash.
-		std::string nick{};///< Their nick/display name.
+		StringWrapper guildId{};///< The current Guild's id.
+		StringWrapper avatar{};///< The member's guild avatar hash.
+		StringWrapper nick{};///< Their nick/display name.
 		UserData user{};///< User data for the current GuildMember.
 
 		virtual ~GuildMemberData() = default;
@@ -1536,7 +1668,7 @@ namespace DiscordCoreAPI {
 	/// Data structure representing a single emoji. \brief Data structure representing a single emoji.
 	class DiscordCoreAPI_Dll EmojiData : public DiscordEntity {
 	  public:
-		std::wstring unicodeName{ L"" };///< What is its unicode name?
+		std::string unicodeName{ "" };///< What is its unicode name?
 		std::vector<RoleData> roles{};///< Roles that are allowed to use this emoji.
 		bool requireColons{ false };///< Require colons to render it?
 		bool available{ true };///< Is it available to be used?
@@ -1555,12 +1687,12 @@ namespace DiscordCoreAPI {
 		int32_t videoQualityMode{ 1 };
 		int32_t rateLimitPerUser{ 0 };
 		int32_t bitrate{ 48000 };
-		std::string parentId{};
-		std::string rtcRgion{};
+		StringWrapper parentId{};
+		StringWrapper rtcRgion{};
 		int32_t userLimit{ 0 };
 		int32_t position{ 0 };
-		std::string topic{};
-		std::string name{};
+		StringWrapper topic{};
+		StringWrapper name{};
 		ChannelType type{};
 		bool nsfw{ false };
 	};
@@ -2154,37 +2286,37 @@ namespace DiscordCoreAPI {
 		int32_t premiumSubscriptionCount{ 0 };///< Premium subscription count.
 		int32_t approximatePresenceCount{ 0 };///< Approximate quantity of presences.
 		VerificationLevel verificationLevel{};///< Verification level required.
-		std::string publicUpdatesChannelId{};///< Id of the public updates Channel.
+		StringWrapper publicUpdatesChannelId{};///< Id of the public updates Channel.
 		std::vector<std::string> features{};///< List of Guild features.
 		int32_t approximateMemberCount{ 0 };///< Approximate member count.		
 		WelcomeScreenData welcomeScreen{};///< Welcome screen for the Guild.
 		int32_t maxVideoChannelUsers{ 0 };///< Maximum quantity of users per video Channel.
 		AfkTimeOutDurations afkTimeOut{};///< Time for an individual to time out as afk.
-		std::string discoverySplash{};///< Link to the discovery image's splash.
-		std::string preferredLocale{};///< Preferred locale, for voice chat servers.
-		std::string widgetChannelId{};///< Channel id for the Guild's widget.
-		std::string systemChannelId{};///< Channel id for the Guild's system Channel.
-		std::string rulesChannelId{};///< Channel id for the Guild's rules Channel.
-		std::string vanityUrlCode{};///< Vanity Url code, if applicable.
-		std::string applicationId{};///< The current application id.		
-		std::string afkChannelId{};///< Channel if of the "afk" Channel.
-		std::string description{};///< Description of the Guild.		
+		StringWrapper discoverySplash{};///< Link to the discovery image's splash.
+		StringWrapper preferredLocale{};///< Preferred locale, for voice chat servers.
+		StringWrapper widgetChannelId{};///< Channel id for the Guild's widget.
+		StringWrapper systemChannelId{};///< Channel id for the Guild's system Channel.
+		StringWrapper rulesChannelId{};///< Channel id for the Guild's rules Channel.
+		StringWrapper vanityUrlCode{};///< Vanity Url code, if applicable.
+		StringWrapper applicationId{};///< The current application id.		
+		StringWrapper afkChannelId{};///< Channel if of the "afk" Channel.
+		StringWrapper description{};///< Description of the Guild.		
 		Permissions permissions{};///< Current Permissions for the bot in the Guild.
 		PremiumTier premiumTier{};///< What is the premium tier?
 		int32_t maxPresences{ 0 };///< Max number of presences allowed.
 		int32_t memberCount{ 0 };///< Member count.
 		TimeStamp joinedAt{ "" };///< When the bot joined this Guild.
 		int32_t maxMembers{ 0 };///< Max quantity of members.
-		std::string createdAt{};///< When was the Guild created?
+		StringWrapper createdAt{};///< When was the Guild created?
 		int8_t guildFlags{ 0 };///< Guild flags.
-		std::string iconHash{};///< Url to the Guild's icon.
-		std::string ownerId{};///< User id of the Guild's owner.		
-		std::string region{};///< Region of the world where the Guild's servers are.
-		std::string splash{};///< Url to the Guild's splash.
-		std::string banner{};///< Url to the Guild's banner.
+		StringWrapper iconHash{};///< Url to the Guild's icon.
+		StringWrapper ownerId{};///< User id of the Guild's owner.		
+		StringWrapper region{};///< Region of the world where the Guild's servers are.
+		StringWrapper splash{};///< Url to the Guild's splash.
+		StringWrapper banner{};///< Url to the Guild's banner.
 		MFALevel mfaLevel{};///< MFA level.
-		std::string icon{};///< Url to the Guild's icon.
-		std::string name{};///< The Guild's name.
+		StringWrapper icon{};///< Url to the Guild's icon.
+		StringWrapper name{};///< The Guild's name.
 
 		GuildData() = default;
 
@@ -4090,3 +4222,15 @@ namespace DiscordCoreInternal {
 	};
 
 };// namespace DiscordCoreInternal
+
+namespace nlohmann {
+	template<> struct adl_serializer<DiscordCoreAPI::TimeStamp> {
+		static DiscordCoreAPI::TimeStamp from_json(const json& inputValue) {
+			return { inputValue.get<DiscordCoreAPI::TimeStamp>() };
+		}
+
+		static void to_json(json& outputValue, DiscordCoreAPI::TimeStamp inputValue) {
+			outputValue = inputValue;
+		}
+	};
+}

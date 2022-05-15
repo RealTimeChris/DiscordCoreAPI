@@ -91,21 +91,21 @@ namespace DiscordCoreAPI {
 		bool premiumProgressBarEnabled{ false };///< Whether or not the progress bar is enabled.
 		std::vector<uint8_t> discoverySplash{};/// Base64 16 : 9 png / jpeg image for the Guild discovery splash(when the server has the DISCOVERABLE feature).
 		VerificationLevel verificationLevel{};///< Verification level.
-		std::string publicUpdatesChannelId{};///< The id of the Channel where admins and moderators of Community guilds receive notices from Discord.
+		StringWrapper publicUpdatesChannelId{};///< The id of the Channel where admins and moderators of Community guilds receive notices from Discord.
 		std::vector<std::string> features{};///< Array of Guild feature strings enabled Guild features.
 		AfkTimeOutDurations afkTimeout{};///< Afk timeout in seconds.
 		std::vector<uint8_t> banner{};///< Base64 16 : 9 png / jpeg image for the Guild banner (when the server has the BANNER feature).
 		std::vector<uint8_t> splash{};///< Base64 16 : 9 png / jpeg image for the Guild splash (when the server has the INVITE_SPLASH feature).
-		std::string preferredLocale{};///< The preferred locale of a Community Guild used in server discovery and notices from Discord; defaults to "en-US".
-		std::string systemChannelId{};///< The id of the Channel where Guild notices such as welcome messages and boost events are posted.
-		std::string rulesChannelId{};///< The id of the Channel where Community guilds display rules and /or guidelines.
+		StringWrapper preferredLocale{};///< The preferred locale of a Community Guild used in server discovery and notices from Discord; defaults to "en-US".
+		StringWrapper systemChannelId{};///< The id of the Channel where Guild notices such as welcome messages and boost events are posted.
+		StringWrapper rulesChannelId{};///< The id of the Channel where Community guilds display rules and /or guidelines.
 		std::vector<uint8_t> icon{};///< Base64 1024x1024 png / jpeg / gif image for the Guild icon (can be animated gif when the server has the ANIMATED_ICON).
-		std::string afkChannelId{};///< Id for afk channels.
-		std::string description{};///< The description for the Guild, if the Guild is discoverable.
-		std::string ownerId{};///< User id to transfer Guild ownership to (must be owner).
-		std::string guildId{};///< Id of the chosen Guild to modify.
+		StringWrapper afkChannelId{};///< Id for afk channels.
+		StringWrapper description{};///< The description for the Guild, if the Guild is discoverable.
+		StringWrapper ownerId{};///< User id to transfer Guild ownership to (must be owner).
+		StringWrapper guildId{};///< Id of the chosen Guild to modify.
 		std::string reason{};///< Reason for modifying the Guild.
-		std::string name{};///< Desired name of the Guild.
+		StringWrapper name{};///< Desired name of the Guild.
 	};
 
 	///	For deleting a Guild. \brief For deleting a Guild.

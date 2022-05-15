@@ -40,7 +40,7 @@ namespace DiscordCoreAPI {
 		CoRoutineError(std::string theMessage) : std::runtime_error(theMessage){};
 	};
 
-	class DiscordCoreAPI_Dll CoRoutineBase {
+	class CoRoutineBase {
 	  public:
 		static DiscordCoreInternal::CoRoutineThreadPool threadPool;
 	};
@@ -51,7 +51,7 @@ namespace DiscordCoreAPI {
 	  public:
 		friend class promise_type;
 
-		class DiscordCoreAPI_Dll promise_type {
+		class promise_type {
 		  public:
 			template<typename ReturnType02> friend class CoRoutine;
 
@@ -201,7 +201,7 @@ namespace DiscordCoreAPI {
 	  public:
 		friend class promise_type;
 
-		class DiscordCoreAPI_Dll promise_type {
+		class promise_type {
 		  public:
 			template<typename void02> friend class CoRoutine;
 

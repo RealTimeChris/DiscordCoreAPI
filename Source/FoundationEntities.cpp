@@ -28,6 +28,59 @@
 
 namespace DiscordCoreAPI {
 
+	bool operator!=(StringWrapper& lhs, const char* rhs) {
+		std::string theString{ lhs };
+		std::string theString02{ rhs };
+		if (theString != theString02) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	bool operator!=(StringWrapper& lhs, StringWrapper& rhs) {
+		if (lhs.length != rhs.length) {
+			return true;
+		}
+		for (int64_t x = 0; x < lhs.length; x += 1) {
+			if (lhs.theString[x] != rhs.theString[x]) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	bool operator==(StringWrapper& lhs, StringWrapper& rhs) {
+		if (lhs.length != rhs.length) {
+			return false;
+		}
+		for (int64_t x = 0; x < lhs.length; x += 1) {
+			if (lhs.theString[x] != rhs.theString[x]) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	const char* operator+(const char* lhs, StringWrapper& other) {
+		std::string newString01{ lhs };
+		std::string newString02 = other;
+		newString01 += newString02;
+		return newString01.data();
+	}
+
+	bool operator==(StringWrapper& lhs, Snowflake& rhs) {
+		if (lhs.length != rhs.length()) {
+			return false;
+		}
+		for (int64_t x = 0; x < lhs.length; x += 1) {
+			if (lhs.theString[x] != rhs[x]) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	std::string getISO8601TimeStamp(std::string year, std::string month, std::string day, std::string hour, std::string minute, std::string second) {
 		std::string theTimeStamp{};
 		theTimeStamp += year + "-";
@@ -652,7 +705,7 @@ namespace DiscordCoreAPI {
 		}
 		GetGuildMemberRolesData getRolesData{};
 		getRolesData.guildMember = guildMember;
-		getRolesData.guildId = guildMember.guildId;
+		getRolesData.guildId = std::string{ guildMember.guildId };
 		auto guildMemberRoles = Roles::getGuildMemberRolesAsync(getRolesData).get();
 		for (auto& value: guildMemberRoles) {
 			permissions |= stoll(value.permissions);
