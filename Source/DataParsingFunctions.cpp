@@ -992,12 +992,7 @@ namespace DiscordCoreInternal {
 		}
 
 		if (jsonObjectData.contains("features") && !jsonObjectData["features"].is_null()) {
-			pDataStructure.features.clear();
-			pDataStructure.features.reserve(jsonObjectData["features"].size());
-			for (auto& value: jsonObjectData["features"]) {
-				pDataStructure.features.push_back(value);
-			}
-			pDataStructure.features.shrink_to_fit();
+			pDataStructure.features = jsonObjectData["features"].get<std::vector<std::string>>();
 		}
 
 		if (jsonObjectData.contains("description") && !jsonObjectData["description"].is_null()) {
