@@ -1702,6 +1702,15 @@ namespace DiscordCoreAPI {
 		bool enabled{ false };///< Whether the widget is enabled.
 	};
 
+	/// Get Guild Widget Data. \brief Get Guild Widget Data.
+	struct GetGuildWidgetData : public DiscordEntity {
+		std::vector<ChannelData> channels{};///< Voice and stage channels which are accessible by @everyone.
+		std::vector<UserData> members{};///< Special widget user objects that includes users presence (Limit 100).
+		std::string instantInvite{};///< Instant invite for the guilds specified widget invite channel.
+		int32_t presence_count{ 0 };///< Number of online members in this guild.
+		std::string name{};///< Guild name (2-100 characters).
+	};
+
 	/// Widget style options. \brief Widget style options.
 	enum class WidgetStyleOptions {
 		Shield = 0,///< Shield
@@ -2022,6 +2031,7 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll GuildPreviewData {
 		int32_t approximatePresenceCount{ 0 };
 		std::vector<std::string> features{};
+		std::vector<StickerData> stickers{};
 		int32_t approximateMemberCount{ 0 };
 		std::vector<EmojiData> emojis{};
 		std::string discoverySplash{};

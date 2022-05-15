@@ -991,6 +991,17 @@ namespace DiscordCoreInternal {
 			pDataStructure.emojis.shrink_to_fit();
 		}
 
+		if (jsonObjectData.contains("stickers") && !jsonObjectData["stickers"].is_null()) {
+			pDataStructure.emojis.clear();
+			pDataStructure.emojis.reserve(jsonObjectData["stickers"].size());
+			for (auto& value: jsonObjectData["stickers"]) {
+				DiscordCoreAPI::StickerData newData{};
+				DataParser::parseObject(value, newData);
+				pDataStructure.stickers.push_back(newData);
+			}
+			pDataStructure.emojis.shrink_to_fit();
+		}
+
 		if (jsonObjectData.contains("features") && !jsonObjectData["features"].is_null()) {
 			pDataStructure.features = jsonObjectData["features"].get<std::vector<std::string>>();
 		}
