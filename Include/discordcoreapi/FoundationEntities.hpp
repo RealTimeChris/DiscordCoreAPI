@@ -1988,23 +1988,6 @@ namespace DiscordCoreAPI {
 		virtual ~StageInstanceData() = default;
 	};
 
-	struct DiscordCoreAPI_Dll StickerData;
-
-	/// Data representing a single Guild preview. \brief Data representing a single Guild preview.
-	struct DiscordCoreAPI_Dll GuildPreviewData {
-		int32_t approximatePresenceCount{ 0 };
-		std::vector<std::string> features{};
-		std::vector<StickerData> stickers{};
-		int32_t approximateMemberCount{ 0 };
-		std::vector<EmojiData> emojis{};
-		std::string discoverySplash{};
-		std::string description{};
-		std::string splash{};
-		std::string name{};
-		std::string icon{};
-		std::string id{};
-	};
-
 	/// Sticker types. \brief Sticker types.
 	enum class StickerType {
 		Standard = 1,///< Standard.
@@ -2042,6 +2025,21 @@ namespace DiscordCoreAPI {
 		UserData user{};///< The User that uploaded the Guild Sticker.
 
 		virtual ~StickerData() = default;
+	};
+
+	/// Data representing a single Guild preview. \brief Data representing a single Guild preview.
+	struct DiscordCoreAPI_Dll GuildPreviewData {
+		int32_t approximatePresenceCount{ 0 };
+		std::vector<std::string> features{};
+		std::vector<StickerData> stickers{};
+		int32_t approximateMemberCount{ 0 };
+		std::vector<EmojiData> emojis{};
+		std::string discoverySplash{};
+		std::string description{};
+		std::string splash{};
+		std::string name{};
+		std::string icon{};
+		std::string id{};
 	};
 
 	/// Afk timeout durations. \brief Afk timeout durations.
