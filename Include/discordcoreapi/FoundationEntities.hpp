@@ -1703,7 +1703,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Get Guild Widget Data. \brief Get Guild Widget Data.
-	struct GetGuildWidgetData : public DiscordEntity {
+	struct GetGuildWidgetObjectData : public DiscordEntity {
 		std::vector<ChannelData> channels{};///< Voice and stage channels which are accessible by @everyone.
 		std::vector<UserData> members{};///< Special widget user objects that includes users presence (Limit 100).
 		std::string instantInvite{};///< Instant invite for the guilds specified widget invite channel.
