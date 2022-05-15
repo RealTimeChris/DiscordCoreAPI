@@ -1703,7 +1703,7 @@ namespace DiscordCoreAPI {
 
 	/// Get Guild Widget Data. \brief Get Guild Widget Data.
 	struct DiscordCoreAPI_Dll GetGuildWidgetObjectData : public DiscordEntity {
-		std::vector<ChannelData> channels{};///< Voice and stage channels which are accessible by @everyone.
+		std::vector<ChannelData> channels{};///< Voice and stage channels which are accessible by everyone.
 		std::vector<UserData> members{};///< Special widget user objects that includes users presence (Limit 100).
 		std::string instantInvite{};///< Instant invite for the guilds specified widget invite channel.
 		int32_t presence_count{ 0 };///< Number of online members in this guild.
@@ -2932,7 +2932,7 @@ namespace DiscordCoreAPI {
 	/// Data representing an input-event, which is any Message or Interaction that is coming into the bot as an input. \brief Data representing an input-event, which is any Message or Interaction that is coming into the bot as an input.
 	class DiscordCoreAPI_Dll InputEventData {
 	  public:
-		friend class DiscordCoreAPI_Dll DiscordCoreInternal::BaseSocketAgent;
+		friend class DiscordCoreInternal::BaseSocketAgent;
 		friend RecurseThroughMessagePagesData;
 		friend OnInteractionCreationData;
 		friend RespondToInputEventData;
@@ -3734,10 +3734,10 @@ namespace DiscordCoreAPI {
 
 	/// A song from the various platforms. \brief A song from the various platforms.
 	struct DiscordCoreAPI_Dll Song {
-		friend class DiscordCoreAPI_Dll DiscordCoreInternal::SoundCloudRequestBuilder;
-		friend class DiscordCoreAPI_Dll DiscordCoreInternal::YouTubeRequestBuilder;
-		friend class DiscordCoreAPI_Dll DiscordCoreInternal::SoundCloudAPI;
-		friend class DiscordCoreAPI_Dll DiscordCoreInternal::YouTubeAPI;
+		friend class DiscordCoreInternal::SoundCloudRequestBuilder;
+		friend class DiscordCoreInternal::YouTubeRequestBuilder;
+		friend class DiscordCoreInternal::SoundCloudAPI;
+		friend class DiscordCoreInternal::YouTubeAPI;
 		friend DiscordCoreInternal::DataParser;
 		friend SongAPI;
 
