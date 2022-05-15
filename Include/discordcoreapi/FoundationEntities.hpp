@@ -1628,13 +1628,34 @@ namespace DiscordCoreAPI {
 		virtual ~TeamObjectData() = default;
 	};
 
+	/// Application flags, for the ApplicationData structure.
+	enum class ApplicationFlags {
+		Gateway_Presence = 1 << 12,///< Intent required for bots in 100 or more servers to receive presence_update events.
+		Gateway_Presence_Limited = 1 << 13,///< Intent required for bots in under 100 servers to receive presence_update events, found in Bot Settings.
+		Gateway_Guild_Members = 1 << 14,///< Intent required for bots in 100 or more servers to receive member-related events like guild_member_add.
+		Gateway_Guild_Members_Limited = 1 << 15,///< Intent required for bots in under 100 servers to receive member-related events like guild_member_add, found in Bot Settings.
+		Verificatino_Pending_Guild_Limit = 1 << 16,///< Indicates unusual growth of an app that prevents verification
+		Embedded = 1 << 17,///< Indicates if an app is embedded within the Discord client (currently unavailable publicly)
+		Gateway_Message_Content = 1 << 18,///< Intent required for bots in 100 or more servers to receive message content
+		Gateway_Message_Content_Limited = 1 << 19///< Intent required for bots in under 100 servers to receive message content, found in Bot Settings};
+	};
+
+	/// Install params data, for application data. \brief Install params data, for application data.
+	struct InstallParamsData {
+		std::vector<std::string> scopes{};///< The scopes to add the application to the server with.
+		std::string permissions{};///< The permissions to request for the bot role.
+	};
+
 	/// Application data. \brief Application data.
 	class DiscordCoreAPI_Dll ApplicationData : public DiscordEntity {
 	  public:
 		std::vector<std::string> rpcOrigins{};///< Array of RPC origin strings.
+		bool botRequireCodeGrant{ false };///< Does the bot require a code grant?
+		std::vector<std::string> tags{};///< Up to 5 tags describing the content and functionality of the application install_params.
 		std::string termsOfServiceUrl{};///< Terms of service Url.
 		std::string privacyPolicyUrl{};///< Privacy policy Url.
-		bool botRequireCodeGrant{ false };///< Does the bot require a code grant?
+		ApplicationFlags flags{ 0 };///< Application flags.
+		InstallParamsData params{};///< Settings for the application's default in-app authorization link, if enabled std::string customInstallUrl{};
 		std::string primarySkuId{};///< Primary SKU Id.
 		std::string description{};///< Description of the application.
 		std::string coverImage{};///< The cover image.
@@ -1646,7 +1667,6 @@ namespace DiscordCoreAPI {
 		std::string slug{};///< Sluhg.
 		std::string name{};///< Application's name.
 		std::string icon{};///< Application's icon.
-		int32_t flags{ 0 };///< Application flags.
 		UserData owner{};///< Application's owner.
 
 		virtual ~ApplicationData() = default;
