@@ -328,68 +328,6 @@ namespace DiscordCoreAPI {
 	 * @{
 	 */
 
-	/// A thread-safe unordered-map, for storing and accessing objects. \brief A thread-safe unordered-map, for storing and accessing objects.
-	/// \tparam KeyType The type of key for storing the values.
-	/// \tparam ObjectType The type of objects that will be stored.
-	template<typename KeyType, typename ObjectType> class TSUnorderedMap {
-	  public:
-		ObjectType& operator[](KeyType& theKey) {
-			std::lock_guard<std::mutex> theLock{ this->theMutex };
-			if (this->theData.contains(theKey)) {
-				return this->theData[theKey];
-			} else {
-				this->theData.insert_or_assign(theKey, ObjectType{});
-				return this->theData[theKey];
-			}
-		}
-
-		ObjectType& operator[](KeyType&& theKey) {
-			std::lock_guard<std::mutex> theLock{ this->theMutex };
-			if (this->theData.contains(theKey)) {
-				return this->theData[theKey];
-			} else {
-				this->theData.insert_or_assign(theKey, ObjectType{});
-				return this->theData[theKey];
-			}
-		}
-
-		TSUnorderedMap() = default;
-
-		/// Inserts a new object into the map. \brief Inserts a new object into the map.
-		/// \param theKey A object of type KeyType to act as the stored key.
-		/// \param theObject The Object to be stored.
-		void insert(KeyType& theKey, ObjectType& theObject) {
-			std::lock_guard<std::mutex> theLock{ this->theMutex };
-			this->theData.insert_or_assign(theKey, theObject);
-		}
-
-		/// Checks if an item is stored with a chosen key value. \brief Checks if an item is stored with a chosen key value.
-		/// \param theKey The key to check for the presence of.
-		/// \returns bool A bool representing the item's presence.
-		bool contains(KeyType& theKey) {
-			std::lock_guard<std::mutex> theLock{ this->theMutex };
-			return this->theData.contains(theKey);
-		}
-
-		/// Returns the value stored at a chosen key value, or throws an error if it doesn't exist. \brief Returns the value stored at a chosen key value, or throws an error if it doesn't exist.
-		/// \param theKey The key value to access the itemn of.
-		/// \returns ObjectType An object of type ObjectType.
-		ObjectType at(KeyType& theKey) {
-			std::lock_guard<std::mutex> theLock{ this->theMutex };
-			if (this->theData.contains(theKey)) {
-				return this->theData[theKey];
-			} else {
-				throw std::exception("An object at that key does not exist.");
-			}
-		}
-
-		~TSUnorderedMap() = default;
-
-	  protected:
-		std::unordered_map<KeyType, ObjectType> theData{};
-		std::mutex theMutex{};
-	};
-
 	template<typename ObjectType> concept Copyable = std::copyable<ObjectType>;
 
 	/// A messaging block for data-structures. \brief A messaging block for data-structures.
