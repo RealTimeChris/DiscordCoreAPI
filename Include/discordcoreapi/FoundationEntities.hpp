@@ -102,15 +102,15 @@
 
 namespace DiscordCoreInternal {
 
-	struct HttpWorkloadData;
-	class SoundCloudRequestBuilder;
-	class YouTubeRequestBuilder;
-	class VoiceSocketAgent;
-	class BaseSocketAgent;
-	class SoundCloudAPI;
-	class YouTubeAPI;
-	class HttpClient;
-	class DataParser;
+	struct DiscordCoreAPI_Dll HttpWorkloadData;
+	class DiscordCoreAPI_Dll SoundCloudRequestBuilder;
+	class DiscordCoreAPI_Dll YouTubeRequestBuilder;
+	class DiscordCoreAPI_Dll VoiceSocketAgent;
+	class DiscordCoreAPI_Dll BaseSocketAgent;
+	class DiscordCoreAPI_Dll SoundCloudAPI;
+	class DiscordCoreAPI_Dll YouTubeAPI;
+	class DiscordCoreAPI_Dll HttpClient;
+	class DiscordCoreAPI_Dll DataParser;
 }// namespace DiscordCoreInternal
 
 /**
@@ -122,49 +122,49 @@ namespace DiscordCoreInternal {
 /// library.
 namespace DiscordCoreAPI {
 
-	struct RecurseThroughMessagePagesData;
-	struct DeleteInteractionResponseData;
-	struct DeleteFollowUpMessageData;
-	struct OnInteractionCreationData;
-	struct GetGuildMemberRolesData;
-	struct BaseFunctionArguments;
-	struct GetRolesData;
-	struct CommandData;
-	struct File;
+	struct DiscordCoreAPI_Dll RecurseThroughMessagePagesData;
+	struct DiscordCoreAPI_Dll DeleteInteractionResponseData;
+	struct DiscordCoreAPI_Dll DeleteFollowUpMessageData;
+	struct DiscordCoreAPI_Dll OnInteractionCreationData;
+	struct DiscordCoreAPI_Dll GetGuildMemberRolesData;
+	struct DiscordCoreAPI_Dll BaseFunctionArguments;
+	struct DiscordCoreAPI_Dll GetRolesData;
+	struct DiscordCoreAPI_Dll CommandData;
+	struct DiscordCoreAPI_Dll File;
 
-	class CreateEphemeralInteractionResponseData;
-	class CreateDeferredInteractionResponseData;
-	class CreateEphemeralFollowUpMessageData;
-	class CreateInteractionResponseData;
-	class EditInteractionResponseData;
-	class CreateFollowUpMessageData;
-	class RespondToInputEventData;
-	class EditFollowUpMessageData;
-	class SelectMenuCollector;
-	class DiscordCoreClient;
-	class CreateMessageData;
-	class VoiceConnection;
-	class EditMessageData;
-	class ButtonCollector;
-	class ModalCollector;
-	class Interactions;
-	class EventManager;
-	class EventHandler;
-	class GuildMembers;
-	class GuildMember;
-	class ChannelData;
-	class InputEvents;
-	class EventWaiter;
-	class SendDMData;
-	class Reactions;
-	class Messages;
-	class WebHooks;
-	class SongAPI;
-	class BotUser;
-	class Guilds;
-	class Roles;
-	class Guild;
-	class Test;
+	class DiscordCoreAPI_Dll CreateEphemeralInteractionResponseData;
+	class DiscordCoreAPI_Dll CreateDeferredInteractionResponseData;
+	class DiscordCoreAPI_Dll CreateEphemeralFollowUpMessageData;
+	class DiscordCoreAPI_Dll CreateInteractionResponseData;
+	class DiscordCoreAPI_Dll EditInteractionResponseData;
+	class DiscordCoreAPI_Dll CreateFollowUpMessageData;
+	class DiscordCoreAPI_Dll RespondToInputEventData;
+	class DiscordCoreAPI_Dll EditFollowUpMessageData;
+	class DiscordCoreAPI_Dll SelectMenuCollector;
+	class DiscordCoreAPI_Dll DiscordCoreClient;
+	class DiscordCoreAPI_Dll CreateMessageData;
+	class DiscordCoreAPI_Dll VoiceConnection;
+	class DiscordCoreAPI_Dll EditMessageData;
+	class DiscordCoreAPI_Dll ButtonCollector;
+	class DiscordCoreAPI_Dll ModalCollector;
+	class DiscordCoreAPI_Dll Interactions;
+	class DiscordCoreAPI_Dll EventManager;
+	class DiscordCoreAPI_Dll EventHandler;
+	class DiscordCoreAPI_Dll GuildMembers;
+	class DiscordCoreAPI_Dll GuildMember;
+	class DiscordCoreAPI_Dll ChannelData;
+	class DiscordCoreAPI_Dll InputEvents;
+	class DiscordCoreAPI_Dll EventWaiter;
+	class DiscordCoreAPI_Dll SendDMData;
+	class DiscordCoreAPI_Dll Reactions;
+	class DiscordCoreAPI_Dll Messages;
+	class DiscordCoreAPI_Dll WebHooks;
+	class DiscordCoreAPI_Dll SongAPI;
+	class DiscordCoreAPI_Dll BotUser;
+	class DiscordCoreAPI_Dll Guilds;
+	class DiscordCoreAPI_Dll Roles;
+	class DiscordCoreAPI_Dll Guild;
+	class DiscordCoreAPI_Dll Test;
 
 	template<typename ReturnType, typename... ArgTypes> class Event;
 	template<typename ReturnType, typename... ArgTypes> class EventDelegate;
@@ -956,7 +956,7 @@ namespace DiscordCoreAPI {
 	/// For ids of DiscordEntities. \brief For ids of DiscordEntities.
 	using Snowflake = std::string;
 
-	/// Base class for all Discord entities. \brief Base class for all Discord entities.
+	/// Base class DiscordCoreAPI_Dll for all Discord entities. \brief Base class DiscordCoreAPI_Dll for all Discord entities.
 	class DiscordCoreAPI_Dll DiscordEntity {
 	  public:
 		Snowflake id{};///< The identifier "snowflake" of the given entity.
@@ -1988,6 +1988,23 @@ namespace DiscordCoreAPI {
 		virtual ~StageInstanceData() = default;
 	};
 
+	struct DiscordCoreAPI_Dll StickerData;
+
+	/// Data representing a single Guild preview. \brief Data representing a single Guild preview.
+	struct DiscordCoreAPI_Dll GuildPreviewData {
+		int32_t approximatePresenceCount{ 0 };
+		std::vector<std::string> features{};
+		std::vector<StickerData> stickers{};
+		int32_t approximateMemberCount{ 0 };
+		std::vector<EmojiData> emojis{};
+		std::string discoverySplash{};
+		std::string description{};
+		std::string splash{};
+		std::string name{};
+		std::string icon{};
+		std::string id{};
+	};
+
 	/// Sticker types. \brief Sticker types.
 	enum class StickerType {
 		Standard = 1,///< Standard.
@@ -2025,21 +2042,6 @@ namespace DiscordCoreAPI {
 		UserData user{};///< The User that uploaded the Guild Sticker.
 
 		virtual ~StickerData() = default;
-	};
-
-	/// Data representing a single Guild preview. \brief Data representing a single Guild preview.
-	struct DiscordCoreAPI_Dll GuildPreviewData {
-		int32_t approximatePresenceCount{ 0 };
-		std::vector<std::string> features{};
-		std::vector<StickerData> stickers{};
-		int32_t approximateMemberCount{ 0 };
-		std::vector<EmojiData> emojis{};
-		std::string discoverySplash{};
-		std::string description{};
-		std::string splash{};
-		std::string name{};
-		std::string icon{};
-		std::string id{};
 	};
 
 	/// Afk timeout durations. \brief Afk timeout durations.
@@ -2933,7 +2935,7 @@ namespace DiscordCoreAPI {
 	/// Data representing an input-event, which is any Message or Interaction that is coming into the bot as an input. \brief Data representing an input-event, which is any Message or Interaction that is coming into the bot as an input.
 	class DiscordCoreAPI_Dll InputEventData {
 	  public:
-		friend class DiscordCoreInternal::BaseSocketAgent;
+		friend class DiscordCoreAPI_Dll DiscordCoreInternal::BaseSocketAgent;
 		friend RecurseThroughMessagePagesData;
 		friend OnInteractionCreationData;
 		friend RespondToInputEventData;
@@ -3638,7 +3640,7 @@ namespace DiscordCoreAPI {
 
 	/// Command data, for functions executed by the CommandController. \brief Command data, for functions executed by the CommandController.
 	struct DiscordCoreAPI_Dll CommandData {
-		friend struct BaseFunctionArguments;
+		friend struct DiscordCoreAPI_Dll BaseFunctionArguments;
 
 		std::vector<std::string> optionsArgs{};
 		std::string subCommandGroupName{};
@@ -3735,10 +3737,10 @@ namespace DiscordCoreAPI {
 
 	/// A song from the various platforms. \brief A song from the various platforms.
 	struct DiscordCoreAPI_Dll Song {
-		friend class DiscordCoreInternal::SoundCloudRequestBuilder;
-		friend class DiscordCoreInternal::YouTubeRequestBuilder;
-		friend class DiscordCoreInternal::SoundCloudAPI;
-		friend class DiscordCoreInternal::YouTubeAPI;
+		friend class DiscordCoreAPI_Dll DiscordCoreInternal::SoundCloudRequestBuilder;
+		friend class DiscordCoreAPI_Dll DiscordCoreInternal::YouTubeRequestBuilder;
+		friend class DiscordCoreAPI_Dll DiscordCoreInternal::SoundCloudAPI;
+		friend class DiscordCoreAPI_Dll DiscordCoreInternal::YouTubeAPI;
 		friend DiscordCoreInternal::DataParser;
 		friend SongAPI;
 
@@ -3808,7 +3810,7 @@ namespace DiscordCoreAPI {
 		virtual ~BaseFunctionArguments() = default;
 	};
 
-	/// Base class for the command classes. \brief Base class for the command classes.
+	/// Base class DiscordCoreAPI_Dll for the command classes. \brief Base class DiscordCoreAPI_Dll for the command classes.
 	struct DiscordCoreAPI_Dll BaseFunction {
 		std::string helpDescription{};///< Description of the command for the Help command.
 		BaseFunctionArguments args{};///< The function arguments.

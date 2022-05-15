@@ -21,13 +21,13 @@
 #include <discordcoreapi/DataParsingFunctions.hpp>
 #include <discordcoreapi/ApplicationCommandEntities.hpp>
 #include <discordcoreapi/Http.hpp>
-#include <discordcoreapi/StickerEntities.hpp>
 #include <discordcoreapi/GuildEntities.hpp>
 #include <discordcoreapi/GuildMemberEntities.hpp>
 #include <discordcoreapi/ChannelEntities.hpp>
 #include <discordcoreapi/MessageEntities.hpp>
 #include <discordcoreapi/GuildScheduledEventEntities.hpp>
 #include <discordcoreapi/StageInstanceEntities.hpp>
+#include <discordcoreapi/StickerEntities.hpp>
 #include <discordcoreapi/RoleEntities.hpp>
 #include <discordcoreapi/UserEntities.hpp>
 #include <discordcoreapi/WebHookEntities.hpp>
@@ -999,7 +999,7 @@ namespace DiscordCoreInternal {
 				DataParser::parseObject(value, newData);
 				pDataStructure.stickers.push_back(newData);
 			}
-			pDataStructure.emojis.shrink_to_fit();
+			pDataStructure.stickers.shrink_to_fit();
 		}
 
 		if (jsonObjectData.contains("features") && !jsonObjectData["features"].is_null()) {
