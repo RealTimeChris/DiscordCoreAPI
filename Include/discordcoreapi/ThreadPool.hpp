@@ -106,11 +106,11 @@ namespace DiscordCoreInternal {
 	  public:
 		CoRoutineThreadPool() {
 			for (uint32_t x = 0; x < std::thread::hardware_concurrency(); ++x) {
-				std::unique_ptr<std::jthread> workerThread = std::make_unique<std::jthread>(([this]() {
+				std::unique_ptr<std::jthread> workerThread = std::make_unique<std::jthread>([this]() {
 					auto thePtr = std::make_unique<HttpConnection>();
 					Globals::httpConnections.insert(std::make_pair(std::this_thread::get_id(), std::move(thePtr)));
 					this->threadFunction();
-				}));
+				});
 				theThreads.push_back(std::move(workerThread));
 			}
 		}
@@ -124,11 +124,11 @@ namespace DiscordCoreInternal {
 				}
 			}
 			if (areWeAllBusy) {
-				std::unique_ptr<std::jthread> workerThread = std::make_unique<std::jthread>(([this]() {
+				std::unique_ptr<std::jthread> workerThread = std::make_unique<std::jthread>([this]() {
 					auto thePtr = std::make_unique<HttpConnection>();
 					Globals::httpConnections.insert(std::make_pair(std::this_thread::get_id(), std::move(thePtr)));
 					this->threadFunction();
-				}));
+				});
 				theThreads.push_back(std::move(workerThread));
 			}
 			this->theCoroutineHandles.emplace(coro);
