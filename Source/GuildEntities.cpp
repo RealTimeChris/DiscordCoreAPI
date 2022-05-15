@@ -159,13 +159,24 @@ namespace DiscordCoreAPI {
 				if (dataPackage.limit != 0) {
 					workload.relativePath += "&limit=" + std::to_string(dataPackage.limit);
 				}
+				if (dataPackage.before != "") {
+					workload.relativePath += "&before=" + dataPackage.before;
+				}
 			} else if (std::to_string(static_cast<int32_t>(dataPackage.actionType)) != "") {
 				workload.relativePath += "?action_type=" + std::to_string(static_cast<int32_t>(dataPackage.actionType));
 				if (dataPackage.limit != 0) {
 					workload.relativePath += "&limit=" + std::to_string(dataPackage.limit);
 				}
+				if (dataPackage.before != "") {
+					workload.relativePath += "&before=" + dataPackage.before;
+				}
 			} else if (dataPackage.limit != 0) {
 				workload.relativePath += "?limit=" + std::to_string(dataPackage.limit);
+				if (dataPackage.before != "") {
+					workload.relativePath += "&before=" + dataPackage.before;
+				}
+			} else if (dataPackage.before != "") {
+				workload.relativePath += "?before=" + dataPackage.before;
 			}
 			workload.callStack = "Guilds::getAuditLogDataAsync";
 			co_return DiscordCoreInternal::submitWorkloadAndGetResult<AuditLogData>(*Guilds::httpClient, workload);

@@ -34,6 +34,7 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll GetGuildAuditLogsData {
 		AuditLogEvent actionType{};///< The action type to acquire audit-logs for.
 		std::string guildId{};///< The guiild id for the Guild which you wish to query the log of.
+		std::string before{};///< Entries that preceded a specific audit log entry ID.
 		std::string userId{};///< The User for whom to look for the actions of.
 		int32_t limit{ 0 };///< The maximum number of actions to acquire from the log.
 	};

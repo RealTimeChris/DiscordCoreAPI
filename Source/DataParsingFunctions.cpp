@@ -4394,23 +4394,11 @@ namespace DiscordCoreInternal {
 
 	template<> void DataParser::parseObject(nlohmann::json const& jsonObjectData, DiscordCoreAPI::AuditLogChangeData& pDataStructure) {
 		if (jsonObjectData.contains("new_value") && !jsonObjectData["new_value"].is_null()) {
-			if (jsonObjectData["new_value"].is_string()) {
-				pDataStructure.newValueString = jsonObjectData["new_value"].get<std::string>();
-			} else if (jsonObjectData["new_value"].is_boolean()) {
-				pDataStructure.newValueBool = jsonObjectData["new_value"].get<bool>();
-			} else if (jsonObjectData["new_value"].is_number_integer()) {
-				pDataStructure.newValueInt = jsonObjectData["new_value"].get<int32_t>();
-			}
+			pDataStructure.newValue = jsonObjectData["new_value"];
 		}
 
 		if (jsonObjectData.contains("old_value") && !jsonObjectData["old_value"].is_null()) {
-			if (jsonObjectData["old_value"].is_string()) {
-				pDataStructure.oldValueString = jsonObjectData["old_value"].get<std::string>();
-			} else if (jsonObjectData["old_value"].is_boolean()) {
-				pDataStructure.oldValueBool = jsonObjectData["old_value"].get<bool>();
-			} else if (jsonObjectData["old_value"].is_number_integer()) {
-				pDataStructure.oldValueInt = jsonObjectData["old_value"].get<int32_t>();
-			}
+			pDataStructure.oldValue = jsonObjectData["old_value"];
 		}
 
 		if (jsonObjectData.contains("key") && !jsonObjectData["key"].is_null()) {
@@ -4418,7 +4406,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	template<> void DataParser::parseObject(nlohmann::json const& jsonObjectData, DiscordCoreAPI::AuditLogEntryInfoData& pDataStructure) {
+	template<> void DataParser::parseObject(nlohmann::json const& jsonObjectData, DiscordCoreAPI::OptionalAuditEntryInfoData& pDataStructure) {
 		if (jsonObjectData.contains("delete_member_days") && !jsonObjectData["delete_member_days"].is_null()) {
 			pDataStructure.deleteMemberDays = jsonObjectData["delete_member_days"].get<std::string>();
 		}
@@ -4625,6 +4613,17 @@ namespace DiscordCoreInternal {
 				DiscordCoreAPI::WebHookData newData{};
 				DataParser::parseObject(value, newData);
 				pDataStructure.webhooks.push_back(newData);
+			}
+			pDataStructure.webhooks.shrink_to_fit();
+		}
+
+		if (jsonObjectData.contains("guild_scheduled_events") && !jsonObjectData["guild_scheduled_events"].is_null()) {
+			pDataStructure.webhooks.clear();
+			pDataStructure.webhooks.reserve(jsonObjectData["guild_scheduled_events"].size());
+			for (auto& value: jsonObjectData["guild_scheduled_events"]) {
+				DiscordCoreAPI::GuildScheduledEventData newData{};
+				DataParser::parseObject(value, newData);
+				pDataStructure.guildScheduledEvents.push_back(newData);
 			}
 			pDataStructure.webhooks.shrink_to_fit();
 		}

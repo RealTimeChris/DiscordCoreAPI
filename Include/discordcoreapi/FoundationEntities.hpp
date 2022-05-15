@@ -1776,31 +1776,29 @@ namespace DiscordCoreAPI {
 		Guild_Scheduled_Event_Delete = 102,///< Guild-scheduled-event delete.
 		Thread_Create = 110,///< Thread create.
 		Thread_Update = 111,///< Thread update.
-		Thread_Delete = 112///< Thread delete.
+		Thread_Delete = 112,///< Thread delete.
+		Application_Command_Permission_Update=121///< Permissions were updated for a command.
 	};
 
 	/// Audit log entry info data \brief Audit log entry info data.
-	class DiscordCoreAPI_Dll AuditLogEntryInfoData : public DiscordEntity {
+	class DiscordCoreAPI_Dll OptionalAuditEntryInfoData : public DiscordEntity {
 	  public:
 		std::string deleteMemberDays{};///< Number of days for which the member's Messages were deleted.
 		std::string membersRemoved{};///< Number of members that were removed upon a prune.
+		std::string applicationId{};///< ID of the app whose permissions were targeted APPLICATION_COMMAND_PERMISSION_UPDATE.
 		std::string channelId{};///< Channel Id.
 		std::string messageId{};///< Message Id.
 		std::string roleName{};///< Role name.
 		std::string count{};///< Count.
 		std::string type{};///< Type.
 
-		virtual ~AuditLogEntryInfoData() = default;
+		virtual ~OptionalAuditEntryInfoData() = default;
 	};
 
 	/// Audit log change data. \brief Audit log change data.
 	struct DiscordCoreAPI_Dll AuditLogChangeData {
-		std::string newValueString{};///< New value, if it's a std::string.
-		std::string oldValueString{};///< Old value, if it's a std::string.
-		bool newValueBool{ false };///< New value, if it's a bool.
-		bool oldValueBool{ false };///< Old value, if it's a bool.
-		int32_t newValueInt{ 0 };///< New value, if it's an int32_t.
-		int32_t oldValueInt{ 0 };///< Old value, if it's an int32_t.
+		nlohmann::json newValue{};///< New value.
+		nlohmann::json oldValue{};///< Old value.
 		std::string key{};///< The key of the audit log change.
 	};
 
@@ -1813,7 +1811,7 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll AuditLogEntryData : public DiscordEntity {
 	  public:
 		std::vector<AuditLogChangeData> changes{};///< Array of audit log change data.
-		AuditLogEntryInfoData options{};///< Audit log entry info data.
+		OptionalAuditEntryInfoData options{};///< Audit log entry info data.
 		std::string createdTimeStamp{};///< Time at which this entry was created.
 		AuditLogEvent actionType{};///< Audit log action type.
 		std::string targetId{};///< Id of the target User.
@@ -2034,6 +2032,22 @@ namespace DiscordCoreAPI {
 		Longest = 3600///< Longest.
 	};
 
+	/// Guild NSFW level. \brief Guild NSFW level.
+	enum class GuildNSFWLevel {
+		Default = 0,///< Default.
+		Explicit = 1,///< Explicit.
+		Safe = 2,///< Safe.
+		Age_Restricted = 3///< Age restricted.
+	};
+
+	/// System channel flags. \brief System channel flags.
+	enum class SystemChannelFlags {
+		Suppress_Join_Notifications = 1 << 0,///< Suppress member join notifications.
+		Suppress_Premium_Subscriptions = 1 << 1,///< Suppress server boost notifications.
+		Suppress_Guild_Reminder_Notifications = 1 << 2,///< Suppress server setup tips.
+		Suppress_Join_Notification_Replies = 1 << 3///< Hide member join sticker reply buttons.
+	};
+
 	enum class GuildFlags { WidgetEnabled = 0b00000001, Unavailable = 0b00000010, Owner = 0b00000100, Large = 0b00001000, Premium_Progress_Bar_Enabled = 0b00010000 };
 
 	/// Data structure representing a single Guild. \brief Data structure representing a single Guild.
@@ -2098,7 +2112,7 @@ namespace DiscordCoreAPI {
 		bool getLarge() {
 			return this->guildFlags & static_cast<uint8_t>(GuildFlags::Large);
 		}
-
+		
 		std::unordered_map<std::string, PresenceUpdateData> presences{};///< Array of presences for each GuildMember.
 		DefaultMessageNotificationLevel defaultMessageNotifications{};///< Default Message notification level.
 		std::unordered_map<std::string, VoiceStateData> voiceStates{};///< Array of Guild-member voice-states.
@@ -2106,11 +2120,12 @@ namespace DiscordCoreAPI {
 		std::unordered_map<std::string, StickerData> stickers{};///< Array of Guild stickers.
 		std::unordered_map<std::string, ChannelData> channels{};///< Array of Guild channels.
 		std::unordered_map<std::string, ChannelData> threads{};///< Array of Guild threads.
+		GuildNSFWLevel nsfwLevel{ GuildNSFWLevel::Default };///< NSFW warning level.
 		std::unordered_map<std::string, EmojiData> emoji{};///< Array of Guild emojis.
 		ExplicitContentFilterLevel explicitContentFilter{};///< Explicit content filtering level, by default.
 		std::unordered_map<std::string, RoleData> roles{};///< Array of Guild roles.
-		std::vector<StageInstanceData> stageInstances{};///< Array of stage instances.
 		DiscordCoreClient* discordCoreClient{ nullptr };///< A pointer to the DiscordCoreClient.
+		SystemChannelFlags systemChannelFlags{};///< System Channel flags.
 		int32_t premiumSubscriptionCount{ 0 };///< Premium subscription count.
 		int32_t approximatePresenceCount{ 0 };///< Approximate quantity of presences.
 		VerificationLevel verificationLevel{};///< Verification level required.
@@ -2120,7 +2135,6 @@ namespace DiscordCoreAPI {
 		WelcomeScreenData welcomeScreen{};///< Welcome screen for the Guild.
 		int32_t maxVideoChannelUsers{ 0 };///< Maximum quantity of users per video Channel.
 		AfkTimeOutDurations afkTimeOut{};///< Time for an individual to time out as afk.
-		int32_t systemChannelFlags{ 0 };///< System Channel flags.		
 		std::string discoverySplash{};///< Link to the discovery image's splash.
 		std::string preferredLocale{};///< Preferred locale, for voice chat servers.
 		std::string widgetChannelId{};///< Channel id for the Guild's widget.
@@ -2138,7 +2152,6 @@ namespace DiscordCoreAPI {
 		int32_t maxMembers{ 0 };///< Max quantity of members.
 		std::string createdAt{};///< When was the Guild created?
 		int8_t guildFlags{ 0 };///< Guild flags.
-		int32_t nsfwLevel{ 0 };///< NSFW warning level.
 		std::string iconHash{};///< Url to the Guild's icon.
 		std::string ownerId{};///< User id of the Guild's owner.		
 		std::string region{};///< Region of the world where the Guild's servers are.
@@ -2295,11 +2308,12 @@ namespace DiscordCoreAPI {
 			}
 			return AuditLogEntryData();
 		}
-		std::vector<AuditLogEntryData> auditLogEntries{};///< Array of audit log entries.
-		std::vector<IntegrationData> integrations{};///< Integration data.
-		std::vector<WebHookData> webhooks{};///< Array of WebHook data.
-		std::vector<ChannelData> threads{};///< Array of Channel data.
-		std::vector<UserData> users{};///< Array of u
+		std::vector<GuildScheduledEventData> guildScheduledEvents{};///< Array of guild scheduled event objects.
+		std::vector<AuditLogEntryData> auditLogEntries{};///< Array of audit log entry objects.
+		std::vector<IntegrationData> integrations{};///< Array of partial integration objects.
+		std::vector<WebHookData> webhooks{};///< Array of webhook objects.
+		std::vector<ChannelData> threads{};///< Array of thread-specific channel objects.
+		std::vector<UserData> users{};///< Array of user objects.
 	};
 
 	/// For removing a reaction. \brief For removing a reaction.
