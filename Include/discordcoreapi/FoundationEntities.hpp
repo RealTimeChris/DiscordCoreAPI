@@ -3641,7 +3641,6 @@ namespace DiscordCoreAPI {
 
 	/// Command data, for functions executed by the CommandController. \brief Command data, for functions executed by the CommandController.
 	struct DiscordCoreAPI_Dll CommandData {
-	  public:
 		friend struct BaseFunctionArguments;
 
 		std::vector<std::string> optionsArgs{};
@@ -3739,7 +3738,6 @@ namespace DiscordCoreAPI {
 
 	/// A song from the various platforms. \brief A song from the various platforms.
 	struct DiscordCoreAPI_Dll Song {
-	  public:
 		friend class DiscordCoreInternal::SoundCloudRequestBuilder;
 		friend class DiscordCoreInternal::YouTubeRequestBuilder;
 		friend class DiscordCoreInternal::SoundCloudAPI;
@@ -3783,7 +3781,6 @@ namespace DiscordCoreAPI {
 
 	/// Playlist of songs and other variables. \brief Playlist of songs and other variables.
 	struct DiscordCoreAPI_Dll Playlist {
-	  public:
 		bool isLoopSongEnabled{ false };///< Is looping of Songs currently enabled?
 		bool isLoopAllEnabled{ false };///< Is looping of the entire Playlist currently enabled?
 		std::vector<Song> songQueue{};///< The list of Songs that are stored to be played.
@@ -3799,7 +3796,6 @@ namespace DiscordCoreAPI {
 
 	/// Base arguments for the command classes. \brief Base arguments for the command classes.
 	struct DiscordCoreAPI_Dll BaseFunctionArguments {
-	  public:
 		DiscordCoreClient* discordCoreClient{ nullptr };///< A pointer to the instance of DiscordCoreClient.
 		InputEventData eventData{};///< InputEventData representing the input event that triggered the command.
 		CommandData commandData{};///< The input command's data.
@@ -3816,8 +3812,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Base class for the command classes. \brief Base class for the command classes.
-	class DiscordCoreAPI_Dll BaseFunction {
-	  public:
+	struct DiscordCoreAPI_Dll BaseFunction {
 		std::string helpDescription{};///< Description of the command for the Help command.
 		BaseFunctionArguments args{};///< The function arguments.
 		std::string commandName{};///< Name of the command for calling purposes.
