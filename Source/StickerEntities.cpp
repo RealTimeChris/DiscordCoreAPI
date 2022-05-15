@@ -18,8 +18,8 @@
 /// https://discordcoreapi.com
 /// \file StickerEntities.cpp
 
-#include <discordcoreapi/StickerEntities.hpp>
 #include <discordcoreapi/Http.hpp>
+#include <discordcoreapi/StickerEntities.hpp>
 
 namespace DiscordCoreAPI {
 
