@@ -28,29 +28,6 @@
 
 namespace DiscordCoreAPI {
 
-	void constructMultiPartData(DiscordCoreInternal::HttpWorkloadData& dataPackage, nlohmann::json theData, std::vector<File>& files) {
-		dataPackage.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
-		const std::string boundary("boundary25");
-		const std::string partStart("--" + boundary + "\r\nContent-Type: application/octet-stream\r\nContent-Disposition: form-data; ");
-
-		std::string content("--" + boundary);
-
-		content += "\r\nContent-Type: application/json\r\nContent-Disposition: form-data; name=\"payload_json\"\r\n\r\n";
-		content += theData.dump() + "\r\n";
-		if (files.size() == 1) {
-			content += partStart + "name=\"file\"; filename=\"" + files[0].fileName + "\"" + "\r\n\r\n";
-			content += files[0].data;
-		} else {
-			for (uint8_t x = 0; x < files.size(); x += 1) {
-				content += partStart + "name=\"files[" + std::to_string(x) + "]\"; filename=\"" + files[x].fileName + "\"\r\n\r\n";
-				content += files[x].data;
-				content += "\r\n";
-			}
-		}
-		content += "\r\n--" + boundary + "--";
-		dataPackage.content = content;
-	}
-
 	std::string getISO8601TimeStamp(std::string year, std::string month, std::string day, std::string hour, std::string minute, std::string second) {
 		std::string theTimeStamp{};
 		theTimeStamp += year + "-";
@@ -80,6 +57,29 @@ namespace DiscordCoreAPI {
 			theTimeStamp += ":" + second;
 		}
 		return theTimeStamp;
+	}
+
+	void constructMultiPartData(DiscordCoreInternal::HttpWorkloadData& dataPackage, nlohmann::json theData, std::vector<File>& files) {
+		dataPackage.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
+		const std::string boundary("boundary25");
+		const std::string partStart("--" + boundary + "\r\nContent-Type: application/octet-stream\r\nContent-Disposition: form-data; ");
+
+		std::string content("--" + boundary);
+
+		content += "\r\nContent-Type: application/json\r\nContent-Disposition: form-data; name=\"payload_json\"\r\n\r\n";
+		content += theData.dump() + "\r\n";
+		if (files.size() == 1) {
+			content += partStart + "name=\"file\"; filename=\"" + files[0].fileName + "\"" + "\r\n\r\n";
+			content += files[0].data;
+		} else {
+			for (uint8_t x = 0; x < files.size(); x += 1) {
+				content += partStart + "name=\"files[" + std::to_string(x) + "]\"; filename=\"" + files[x].fileName + "\"\r\n\r\n";
+				content += files[x].data;
+				content += "\r\n";
+			}
+		}
+		content += "\r\n--" + boundary + "--";
+		dataPackage.content = content;
 	}
 
 	void reportException(std::string stackTrace, UnboundedMessageBlock<std::exception>* sendBuffer, bool rethrow) {
@@ -184,26 +184,6 @@ namespace DiscordCoreAPI {
 		return newString;
 	}
 
-	std::string loadFileContents(std::string filePath) {
-		std::ifstream file(filePath, std::ios::in | std::ios::binary);
-		std::ostringstream stream{};
-		stream << file.rdbuf();
-		std::string theString = stream.str();
-		return theString;
-	}
-
-	std::string utf8MakeValid(std::string inputString) {
-		std::string returnString{};
-		for (auto& value: inputString) {
-			if (value >= 128) {
-				returnString.push_back(value - 128);
-			} else {
-				returnString.push_back(value);
-			}
-		}
-		return returnString;
-	}
-
 	int64_t convertTimestampToMsInteger(std::string timeStamp) {
 		try {
 			Time timeValue = Time(stoi(timeStamp.substr(0, 4)), stoi(timeStamp.substr(5, 6)), stoi(timeStamp.substr(8, 9)), stoi(timeStamp.substr(11, 12)),
@@ -262,6 +242,26 @@ namespace DiscordCoreAPI {
 		return returnString;
 	}
 
+	std::string loadFileContents(std::string filePath) {
+		std::ifstream file(filePath, std::ios::in | std::ios::binary);
+		std::ostringstream stream{};
+		stream << file.rdbuf();
+		std::string theString = stream.str();
+		return theString;
+	}
+
+	std::string utf8MakeValid(std::string inputString) {
+		std::string returnString{};
+		for (auto& value: inputString) {
+			if (value >= 128) {
+				returnString.push_back(value - 128);
+			} else {
+				returnString.push_back(value);
+			}
+		}
+		return returnString;
+	}
+
 	std::string urlDecode(std::string inputString) {
 		CURLUWrapper urlHandle = curl_url();
 		int32_t outLength{ 0 };
@@ -316,11 +316,6 @@ namespace DiscordCoreAPI {
 		return returnString;
 	}
 
-	std::ostream& operator<<(std::ostream& outputSttream, std::string (*theFunction)(void)) {
-		outputSttream << theFunction();
-		return outputSttream;
-	}
-
 	std::string shiftToBrightGreen() {
 		return std::string("\033[1;40;92m");
 	}
@@ -355,6 +350,11 @@ namespace DiscordCoreAPI {
 
 	std::string reset() {
 		return std::string("\033[0m");
+	}
+
+	std::ostream& operator<<(std::ostream& outputSttream, std::string (*theFunction)(void)) {
+		outputSttream << theFunction();
+		return outputSttream;
 	}
 
 	bool hasTimeElapsed(std::string timeStamp, int64_t days, int64_t hours, int64_t minutes) {

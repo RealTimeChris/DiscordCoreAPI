@@ -722,9 +722,9 @@ namespace DiscordCoreAPI {
 
 	/**@}*/
 
-	DiscordCoreAPI_Dll void constructMultiPartData(DiscordCoreInternal::HttpWorkloadData& dataPackage, nlohmann::json theData, std::vector<File>& files);
-
 	DiscordCoreAPI_Dll std::string getISO8601TimeStamp(std::string year, std::string month, std::string day, std::string hour, std::string minute, std::string second);
+
+	DiscordCoreAPI_Dll void constructMultiPartData(DiscordCoreInternal::HttpWorkloadData& dataPackage, nlohmann::json theData, std::vector<File>& files);
 
 	DiscordCoreAPI_Dll void reportException(std::string stackTrace, UnboundedMessageBlock<std::exception>* sendBuffer = nullptr, bool rethrow = false);
 
