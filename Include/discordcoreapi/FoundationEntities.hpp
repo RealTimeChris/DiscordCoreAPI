@@ -2048,7 +2048,14 @@ namespace DiscordCoreAPI {
 		Suppress_Join_Notification_Replies = 1 << 3///< Hide member join sticker reply buttons.
 	};
 
-	enum class GuildFlags { WidgetEnabled = 0b00000001, Unavailable = 0b00000010, Owner = 0b00000100, Large = 0b00001000, Premium_Progress_Bar_Enabled = 0b00010000 };
+	/// Guild flags. \brief Guild flags.
+	enum class GuildFlags {
+		WidgetEnabled = 0b00000001,///< Widget enabled.
+		Unavailable = 0b00000010,///< Unavailable.
+		Owner = 0b00000100,///< Owner.
+		Large = 0b00001000,///< Large.
+		Premium_Progress_Bar_Enabled = 0b00010000///< Premium progress bar enabled
+	};
 
 	/// Data structure representing a single Guild. \brief Data structure representing a single Guild.
 	class DiscordCoreAPI_Dll GuildData : public DiscordEntity {

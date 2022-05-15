@@ -1611,7 +1611,7 @@ namespace DiscordCoreInternal {
 		}
 
 		if (jsonObjectData.contains("system_channel_flags") && !jsonObjectData["system_channel_flags"].is_null()) {
-			pDataStructure.systemChannelFlags = jsonObjectData["system_channel_flags"].get<int32_t>();
+			pDataStructure.systemChannelFlags = jsonObjectData["system_channel_flags"].get<DiscordCoreAPI::SystemChannelFlags>();
 		}
 
 		if (jsonObjectData.contains("large") && !jsonObjectData["large"].is_null()) {
@@ -1711,18 +1711,7 @@ namespace DiscordCoreInternal {
 		}
 
 		if (jsonObjectData.contains("nsfw_level") && !jsonObjectData["nsfw_level"].is_null()) {
-			pDataStructure.nsfwLevel = jsonObjectData["nsfw_level"].get<int32_t>();
-		}
-
-		if (jsonObjectData.contains("stage_instances") && !jsonObjectData["stage_instances"].is_null()) {
-			pDataStructure.stageInstances.clear();
-			pDataStructure.stageInstances.reserve(jsonObjectData["stage_instances"].size());
-			for (auto& value: jsonObjectData["stage_instances"]) {
-				DiscordCoreAPI::StageInstanceData newData{};
-				DataParser::parseObject(value, newData);
-				pDataStructure.stageInstances.push_back(newData);
-			}
-			pDataStructure.stageInstances.shrink_to_fit();
+			pDataStructure.nsfwLevel = jsonObjectData["nsfw_level"].get<DiscordCoreAPI::GuildNSFWLevel>();
 		}
 	};
 
@@ -1891,7 +1880,7 @@ namespace DiscordCoreInternal {
 		}
 
 		if (jsonObjectData.contains("system_channel_flags") && !jsonObjectData["system_channel_flags"].is_null()) {
-			pDataStructure.systemChannelFlags = jsonObjectData["system_channel_flags"].get<int32_t>();
+			pDataStructure.systemChannelFlags = jsonObjectData["system_channel_flags"].get<DiscordCoreAPI::SystemChannelFlags>();
 		}
 
 		if (jsonObjectData.contains("large") && !jsonObjectData["large"].is_null()) {
@@ -1991,18 +1980,7 @@ namespace DiscordCoreInternal {
 		}
 
 		if (jsonObjectData.contains("nsfw_level") && !jsonObjectData["nsfw_level"].is_null()) {
-			pDataStructure.nsfwLevel = jsonObjectData["nsfw_level"].get<int32_t>();
-		}
-
-		if (jsonObjectData.contains("stage_instances") && !jsonObjectData["stage_instances"].is_null()) {
-			pDataStructure.stageInstances.clear();
-			pDataStructure.stageInstances.reserve(jsonObjectData["stage_instances"].size());
-			for (auto& value: jsonObjectData["stage_instances"]) {
-				DiscordCoreAPI::StageInstanceData newData{};
-				DataParser::parseObject(value, newData);
-				pDataStructure.stageInstances.push_back(newData);
-			}
-			pDataStructure.stageInstances.shrink_to_fit();
+			pDataStructure.nsfwLevel = jsonObjectData["nsfw_level"].get<DiscordCoreAPI::GuildNSFWLevel>();
 		}
 	};
 

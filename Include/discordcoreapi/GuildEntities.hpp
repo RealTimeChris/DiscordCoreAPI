@@ -87,13 +87,13 @@ namespace DiscordCoreAPI {
 		}
 		DefaultMessageNotificationLevel defaultMessageNotifications{};///< Default message notification level.
 		ExplicitContentFilterLevel explicitContentFilter{};///< Explicit content filter level.
+		SystemChannelFlags systemChannelFlags{ 0 };///< System Channel flags.
 		bool premiumProgressBarEnabled{ false };///< Whether or not the progress bar is enabled.
 		std::vector<uint8_t> discoverySplash{};/// Base64 16 : 9 png / jpeg image for the Guild discovery splash(when the server has the DISCOVERABLE feature).
 		VerificationLevel verificationLevel{};///< Verification level.
 		std::string publicUpdatesChannelId{};///< The id of the Channel where admins and moderators of Community guilds receive notices from Discord.
 		std::vector<std::string> features{};///< Array of Guild feature strings enabled Guild features.
 		AfkTimeOutDurations afkTimeout{};///< Afk timeout in seconds.
-		int32_t systemChannelFlags{ 0 };///< System Channel flags.
 		std::vector<uint8_t> banner{};///< Base64 16 : 9 png / jpeg image for the Guild banner (when the server has the BANNER feature).
 		std::vector<uint8_t> splash{};///< Base64 16 : 9 png / jpeg image for the Guild splash (when the server has the INVITE_SPLASH feature).
 		std::string preferredLocale{};///< The preferred locale of a Community Guild used in server discovery and notices from Discord; defaults to "en-US".
