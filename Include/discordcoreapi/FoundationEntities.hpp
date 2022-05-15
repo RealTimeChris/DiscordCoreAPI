@@ -99,72 +99,71 @@
  * \defgroup foundation_entities Foundation Entities
  * \brief For all of the building blocks of the main endpoints.
  */
+namespace DiscordCoreInternal{
 
-namespace DiscordCoreInternal {
+	struct HttpWorkloadData;
+	class SoundCloudRequestBuilder;
+	class YouTubeRequestBuilder;
+	class VoiceSocketAgent;
+	class BaseSocketAgent;
+	class SoundCloudAPI;
+	class YouTubeAPI;
+	class HttpClient;
+	class DataParser;
 
-	struct DiscordCoreAPI_Dll HttpWorkloadData;
-	class DiscordCoreAPI_Dll SoundCloudRequestBuilder;
-	class DiscordCoreAPI_Dll YouTubeRequestBuilder;
-	class DiscordCoreAPI_Dll VoiceSocketAgent;
-	class DiscordCoreAPI_Dll BaseSocketAgent;
-	class DiscordCoreAPI_Dll SoundCloudAPI;
-	class DiscordCoreAPI_Dll YouTubeAPI;
-	class DiscordCoreAPI_Dll HttpClient;
-	class DiscordCoreAPI_Dll DataParser;
 }// namespace DiscordCoreInternal
 
 /**
  * \addtogroup foundation_entities
  * @{
  */
-
 /// The main namespace for this library. \brief The main namespace for this
 /// library.
 namespace DiscordCoreAPI {
 
-	struct DiscordCoreAPI_Dll RecurseThroughMessagePagesData;
-	struct DiscordCoreAPI_Dll DeleteInteractionResponseData;
-	struct DiscordCoreAPI_Dll DeleteFollowUpMessageData;
-	struct DiscordCoreAPI_Dll OnInteractionCreationData;
-	struct DiscordCoreAPI_Dll GetGuildMemberRolesData;
-	struct DiscordCoreAPI_Dll BaseFunctionArguments;
-	struct DiscordCoreAPI_Dll GetRolesData;
-	struct DiscordCoreAPI_Dll CommandData;
-	struct DiscordCoreAPI_Dll File;
+	struct RecurseThroughMessagePagesData;
+	struct DeleteInteractionResponseData;
+	struct DeleteFollowUpMessageData;
+	struct OnInteractionCreationData;
+	struct GetGuildMemberRolesData;
+	struct BaseFunctionArguments;
+	struct GetRolesData;
+	struct CommandData;
+	struct File;
 
-	class DiscordCoreAPI_Dll CreateEphemeralInteractionResponseData;
-	class DiscordCoreAPI_Dll CreateDeferredInteractionResponseData;
-	class DiscordCoreAPI_Dll CreateEphemeralFollowUpMessageData;
-	class DiscordCoreAPI_Dll CreateInteractionResponseData;
-	class DiscordCoreAPI_Dll EditInteractionResponseData;
-	class DiscordCoreAPI_Dll CreateFollowUpMessageData;
-	class DiscordCoreAPI_Dll RespondToInputEventData;
-	class DiscordCoreAPI_Dll EditFollowUpMessageData;
-	class DiscordCoreAPI_Dll SelectMenuCollector;
-	class DiscordCoreAPI_Dll DiscordCoreClient;
-	class DiscordCoreAPI_Dll CreateMessageData;
-	class DiscordCoreAPI_Dll VoiceConnection;
-	class DiscordCoreAPI_Dll EditMessageData;
-	class DiscordCoreAPI_Dll ButtonCollector;
-	class DiscordCoreAPI_Dll ModalCollector;
-	class DiscordCoreAPI_Dll Interactions;
-	class DiscordCoreAPI_Dll EventManager;
-	class DiscordCoreAPI_Dll EventHandler;
-	class DiscordCoreAPI_Dll GuildMembers;
-	class DiscordCoreAPI_Dll GuildMember;
-	class DiscordCoreAPI_Dll ChannelData;
-	class DiscordCoreAPI_Dll InputEvents;
-	class DiscordCoreAPI_Dll EventWaiter;
-	class DiscordCoreAPI_Dll SendDMData;
-	class DiscordCoreAPI_Dll Reactions;
-	class DiscordCoreAPI_Dll Messages;
-	class DiscordCoreAPI_Dll WebHooks;
-	class DiscordCoreAPI_Dll SongAPI;
-	class DiscordCoreAPI_Dll BotUser;
-	class DiscordCoreAPI_Dll Guilds;
-	class DiscordCoreAPI_Dll Roles;
-	class DiscordCoreAPI_Dll Guild;
-	class DiscordCoreAPI_Dll Test;
+	class CreateEphemeralInteractionResponseData;
+	class CreateDeferredInteractionResponseData;
+	class CreateEphemeralFollowUpMessageData;
+	class CreateInteractionResponseData;
+	class EditInteractionResponseData;
+	class CreateFollowUpMessageData;
+	class RespondToInputEventData;
+	class EditFollowUpMessageData;
+	class SelectMenuCollector;
+	class DiscordCoreClient;
+	class CreateMessageData;
+	class VoiceConnection;
+	class EditMessageData;
+	class ButtonCollector;
+	class ModalCollector;
+	class Interactions;
+	class EventManager;
+	class EventHandler;
+	class GuildMembers;
+	class GuildMember;
+	class ChannelData;
+	class InputEvents;
+	class EventWaiter;
+	class SendDMData;
+	class Reactions;
+	class Messages;
+	class WebHooks;
+	class SongAPI;
+	class BotUser;
+	class Guilds;
+	class Roles;
+	class Guild;
+	class Test;
 
 	template<typename ReturnType, typename... ArgTypes> class Event;
 	template<typename ReturnType, typename... ArgTypes> class EventDelegate;
