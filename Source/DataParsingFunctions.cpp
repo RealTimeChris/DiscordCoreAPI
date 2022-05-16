@@ -1544,6 +1544,7 @@ namespace DiscordCoreInternal {
 			for (auto& value: jsonObjectData["roles"]) {
 				DiscordCoreAPI::RoleData newData{};
 				DataParser::parseObject(value, newData);
+				pDataStructure.roles.push_back(newData.id);
 				DiscordCoreAPI::Roles::insertRole(*static_cast<DiscordCoreAPI::Role*>(&newData));
 			}
 		}
@@ -1614,6 +1615,7 @@ namespace DiscordCoreInternal {
 						newData.voiceData = value01;
 					}
 				}
+				pDataStructure.members.push_back(newData.user.id);
 				DiscordCoreAPI::GuildMembers::insertGuildMember(newData);
 			}
 		}
@@ -1623,6 +1625,7 @@ namespace DiscordCoreInternal {
 				DiscordCoreAPI::ChannelData newData{};
 				DataParser::parseObject(value, newData);
 				newData.guildId = pDataStructure.id;
+				pDataStructure.channels.push_back(newData.id);
 				DiscordCoreAPI::Channels::insertChannel(*static_cast<DiscordCoreAPI::Channel*>(&newData));
 			}
 		}
@@ -1785,6 +1788,7 @@ namespace DiscordCoreInternal {
 			for (auto& value: jsonObjectData["roles"]) {
 				DiscordCoreAPI::RoleData newData{};
 				DataParser::parseObject(value, newData);
+				pDataStructure.roles.push_back(newData.id);
 				DiscordCoreAPI::Roles::insertRole(*static_cast<DiscordCoreAPI::Role*>(&newData));
 			}
 		}
@@ -1840,7 +1844,6 @@ namespace DiscordCoreInternal {
 				DataParser::parseObject(value, newData);
 				std::string userId = newData.userId;
 				pDataStructure.voiceStates.insert_or_assign(userId, newData);
-				std::cout << "THIS IS NOT IT: " << newData.channelId << std::endl;
 			}
 		}
 
@@ -1854,9 +1857,9 @@ namespace DiscordCoreInternal {
 					if (key01 == newData.user.id) {
 						value01.guildId = pDataStructure.id;
 						newData.voiceData = value01;
-						std::cout << "WERE HERE THIS IS IT: " << std::string{ value01.userId } << std::endl;
 					}
 				}
+				pDataStructure.members.push_back(newData.user.id);
 				DiscordCoreAPI::GuildMembers::insertGuildMember(newData);
 			}
 		}
@@ -1866,6 +1869,7 @@ namespace DiscordCoreInternal {
 				DiscordCoreAPI::ChannelData newData{};
 				DataParser::parseObject(value, newData);
 				newData.guildId = pDataStructure.id;
+				pDataStructure.channels.push_back(newData.id);
 				DiscordCoreAPI::Channels::insertChannel(*static_cast<DiscordCoreAPI::Channel*>(&newData));
 			}
 		}
