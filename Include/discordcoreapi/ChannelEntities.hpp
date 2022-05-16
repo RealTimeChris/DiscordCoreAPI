@@ -153,7 +153,7 @@ namespace DiscordCoreAPI {
 	  public:
 		Channel() = default;
 
-		virtual ~Channel() = default;
+		~Channel() = default;
 	};
 
 	/**@}*/
@@ -165,6 +165,7 @@ namespace DiscordCoreAPI {
 	/// An interface class for the Channel related endpoints. \brief An interface class for the Channel-related endpoints.
 	class DiscordCoreAPI_Dll Channels {
 	  public:
+		friend class DiscordCoreInternal::DataParser;
 		friend DiscordCoreClient;
 		friend EventHandler;
 		friend Guild;

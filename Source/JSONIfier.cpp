@@ -856,14 +856,13 @@ namespace DiscordCoreInternal {
 		data["video_quality_mode"] = dataPackage.channelData.videoQualityMode;
 		data["rate_limit_per_user"] = dataPackage.channelData.rateLimitPerUser;
 		data["user_limit"] = dataPackage.channelData.userLimit;
-		data["rtc_region"] = dataPackage.channelData.rtcRgion;
-		data["parent_id"] = dataPackage.channelData.parentId;
-		data["parent_id"] = dataPackage.channelData.parentId;
+		data["rtc_region"] = std::string{ dataPackage.channelData.rtcRgion };
+		data["parent_id"] = std::string{ dataPackage.channelData.parentId };
 		data["position"] = dataPackage.channelData.position;
 		data["bitrate"] = dataPackage.channelData.bitrate;
-		data["topic"] = dataPackage.channelData.topic;
+		data["topic"] = std::string{ dataPackage.channelData.topic };
 		data["nsfw"] = dataPackage.channelData.nsfw;
-		data["name"] = dataPackage.channelData.name;
+		data["name"] = std::string{ dataPackage.channelData.name };
 		data["type"] = dataPackage.channelData.type;
 		data["permission_overwrites"] = permOws;
 		return data.dump();
@@ -938,10 +937,10 @@ namespace DiscordCoreInternal {
 		data["icon"] = dataPackage.icon;
 		for (auto& value: dataPackage.channels) {
 			nlohmann::json newData{};
-			newData["parent_id"] = value.parentId;
-			newData["name"] = value.name;
+			newData["parent_id"] = std::string{ value.parentId };
+			newData["name"] = std::string{ value.name };
+			newData["id"] = std::string{ value.id };
 			newData["type"] = value.type;
-			newData["id"] = value.id;
 			data["channels"].push_back(newData);
 		}
 		for (auto& value: dataPackage.roles) {
@@ -975,26 +974,26 @@ namespace DiscordCoreInternal {
 		data["system_channel_flags"] = dataPackage.systemChannelFlags;
 		data["verification_level"] = dataPackage.verificationLevel;
 		data["discovery_splash"] = dataPackage.discoverySplash;
-		data["preferred_locale"] = dataPackage.preferredLocale;
-		data["rules_channel_id"] = dataPackage.rulesChannelId;
-		data["description"] = dataPackage.description;
+		data["preferred_locale"] = std::string{ dataPackage.preferredLocale };
+		data["rules_channel_id"] == std::string{ dataPackage.rulesChannelId };
+		data["description"] = std::string{ dataPackage.description };
 		data["afk_timeout"] = dataPackage.afkTimeout;
 		data["features"] = dataPackage.features;
 		data["splash"] = dataPackage.splash;
 		data["banner"] = dataPackage.banner;
-		data["name"] = dataPackage.name;
+		data["name"] = std::string{ dataPackage.name };
 		data["icon"] = dataPackage.icon;
 		if (dataPackage.publicUpdatesChannelId != "") {
-			data["public_updates_channel_id"] = dataPackage.publicUpdatesChannelId;
+			data["public_updates_channel_id"] = std::string{ dataPackage.publicUpdatesChannelId };
 		}
 		if (dataPackage.afkChannelId != "") {
-			data["afk_channel_id"] = dataPackage.afkChannelId;
+			data["afk_channel_id"] = std::string{ dataPackage.afkChannelId };
 		}
 		if (dataPackage.systemChannelId != "") {
-			data["system_channel_id"] = dataPackage.systemChannelId;
+			data["system_channel_id"] = std::string{ dataPackage.systemChannelId };
 		}
 		if (dataPackage.ownerId != "") {
-			data["owner_id"] = dataPackage.ownerId;
+			data["owner_id"] = std::string{ dataPackage.ownerId };
 		}
 		return data.dump();
 	}

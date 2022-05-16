@@ -449,7 +449,7 @@ namespace DiscordCoreInternal {
 				} else if (payload["t"] == "GUILD_MEMBER_ADD") {
 					std::unique_ptr<DiscordCoreAPI::OnGuildMemberAddData> dataPackage{ std::make_unique<DiscordCoreAPI::OnGuildMemberAddData>() };
 					if (payload["d"].contains("guild_id")) {
-						dataPackage->guildMember.guildId = payload["d"]["guild_id"];
+						dataPackage->guildMember.guildId = payload["d"]["guild_id"].get<std::string>();
 					}
 					DiscordCoreInternal::DataParser::parseObject(payload["d"], dataPackage->guildMember);
 					dataPackage->discordCoreClient = this->discordCoreClient;
@@ -468,7 +468,7 @@ namespace DiscordCoreInternal {
 				} else if (payload["t"] == "GUILD_MEMBER_UPDATE") {
 					std::unique_ptr<DiscordCoreAPI::OnGuildMemberUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnGuildMemberUpdateData>() };
 					if (payload["d"].contains("guild_id")) {
-						dataPackage->guildMemberNew.guildId = payload["d"]["guild_id"];
+						dataPackage->guildMemberNew.guildId = payload["d"]["guild_id"].get<std::string>();
 					}
 					if (payload["d"].contains("user") && payload["d"]["user"].contains("id")) {
 						dataPackage->guildMemberOld =

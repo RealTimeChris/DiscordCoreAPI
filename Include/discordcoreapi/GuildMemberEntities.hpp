@@ -106,7 +106,7 @@ namespace DiscordCoreAPI {
 
 		GuildMember() = default;
 
-		virtual ~GuildMember() = default;
+		~GuildMember() = default;
 	};
 	/**@}*/
 
@@ -117,6 +117,7 @@ namespace DiscordCoreAPI {
 	/// An interface class for the GuildMember related Discord endpoints. \brief An interface class for the GuildMember related Discord endpoints.
 	class DiscordCoreAPI_Dll GuildMembers {
 	  public:
+		friend class DiscordCoreInternal::DataParser;
 		friend DiscordCoreClient;
 		friend EventHandler;
 		friend Guild;
@@ -175,7 +176,7 @@ namespace DiscordCoreAPI {
 
 		static void insertGuildMember(GuildMember dataPackage);
 
-		static void removeGuildMember(GuildMember dataPackage);
+		static void removeGuildMember(std::string globalId);
 	};
 	/**@}*/
 };// namespace DiscordCoreAPI

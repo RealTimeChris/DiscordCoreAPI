@@ -88,7 +88,7 @@ namespace DiscordCoreAPI {
 
 		User(UserData&);
 
-		virtual ~User() = default;
+		~User() = default;
 	};
 
 	/// A type of User, to represent the Bot and some of its associated endpoints. \brief A type of User, to represent the Bot and some of its associated endpoints.
@@ -118,6 +118,7 @@ namespace DiscordCoreAPI {
 	/// An interface class for the User related Discord endpoints. \brief An interface class for the User related Discord endpoints.
 	class DiscordCoreAPI_Dll Users {
 	  public:
+		friend class DiscordCoreInternal::DataParser;
 		friend DiscordCoreClient;
 		friend EventHandler;
 		friend Guild;

@@ -99,7 +99,7 @@
  * \defgroup foundation_entities Foundation Entities
  * \brief For all of the building blocks of the main endpoints.
  */
-namespace DiscordCoreInternal{
+namespace DiscordCoreInternal {
 
 	struct HttpWorkloadData;
 	class SoundCloudRequestBuilder;
@@ -326,7 +326,8 @@ namespace DiscordCoreAPI {
 	 * @{
 	 */
 
-	template<typename ObjectType> concept Copyable = std::copyable<ObjectType>;
+	template<typename ObjectType>
+	concept Copyable = std::copyable<ObjectType>;
 
 	/// A messaging block for data-structures. \brief A messaging block for data-structures.
 	/// \tparam ObjectType The type of object that will be sent over the message block.
@@ -698,140 +699,6 @@ namespace DiscordCoreAPI {
 
 	DiscordCoreAPI_Dll std::string reset();
 
-	/// For ids of DiscordEntities. \brief For ids of DiscordEntities.
-	using Snowflake = std::string;
-
-	struct StringWrapper {
-
-		friend const char* operator+(const char* lhs, StringWrapper& other);
-
-		friend bool operator!=(StringWrapper& lhs, StringWrapper& rhs);
-
-		friend bool operator!=(StringWrapper& lhs, const char* rhs);
-
-		friend bool operator==(StringWrapper& lhs, Snowflake& rhs);
-
-		friend bool operator==(StringWrapper&, StringWrapper&);
-
-		StringWrapper& operator=(StringWrapper&& other) {
-			this->theString.reset(other.theString.release());
-			this->length = other.length;
-			return *this;
-		}
-
-		StringWrapper(StringWrapper&& other) {
-			*this = std::move(other);
-		}
-
-		StringWrapper& operator=(const StringWrapper& other) {
-			this->theString.reset(other.theString.get());
-			this->length = other.length;
-			return *this;
-		}
-
-		StringWrapper(const StringWrapper& other) {
-			*this = other;
-		}
-
-		StringWrapper& operator=(StringWrapper& other) {
-			this->theString.reset(other.theString.release());
-			this->length = other.length;
-			return *this;
-		}
-
-		StringWrapper(StringWrapper& other) {
-			*this = other;
-		}
-
-		StringWrapper& operator=(std::string&& theString) {
-			convertString(theString);
-			return *this;
-		}
-
-		StringWrapper(std::string&& theString) {
-			*this = std::move(theString);
-		}
-
-		StringWrapper& operator=(std::string& theString) {
-			convertString(theString);
-			return *this;
-		}
-
-		StringWrapper(std::string& theString) {
-			*this = theString;
-		}
-
-		StringWrapper& operator=(const char* theString) {
-			convertString(theString);
-			return *this;
-		}
-
-		StringWrapper(const char* theString) {
-			*this = theString;
-		}
-
-		operator const char*() {
-			return this->theString.get();
-		}
-
-		operator std::string() {
-			return this->convertPtr();
-		}
-
-		StringWrapper() = default;
-
-	  protected:
-		std::string convertPtr() {
-			std::string returnString;
-			for (int64_t x = 0; x < this->length; x += 1) {
-				returnString.push_back(this->theString[x]);
-			}
-			return returnString;
-		}
-
-		void convertString(std::string& theString) {
-			char theValue = NULL;
-			int64_t theCount{};
-			do {
-				theValue = theString[theCount];
-				theCount += 1;
-			} while (theValue != NULL);
-			this->length = theCount;
-			std::unique_ptr<char[]> returnString = std::make_unique<char[]>(theCount);
-			for (int64_t x = 0; x < theCount; x += 1) {
-				returnString[x] = theString[x];
-			}
-			this->theString = std::move(returnString);
-		}
-
-		void convertString(const char* theString) {
-			char theValue = NULL;
-			int64_t theCount{};
-			do {
-				theValue = theString[theCount];
-				theCount += 1;
-			} while (theValue != NULL);
-			this->length = theCount;
-			std::unique_ptr<char[]> returnString = std::make_unique<char[]>(theCount);
-			for (int64_t x = 0; x < theCount; x += 1) {
-				returnString[x] = theString[x];
-			}
-			this->theString = std::move(returnString);
-		}
-		int64_t length{ 0 };
-		std::unique_ptr<char[]> theString{};
-	};
-
-	bool operator!=(StringWrapper& lhs, const char* rhs);
-
-	bool operator==(StringWrapper& lhs, StringWrapper& rhs);
-
-	bool operator!=(StringWrapper& lhs, StringWrapper& rhs);
-
-	const char* operator+(const char* lhs, StringWrapper& other);
-
-	bool operator==(StringWrapper& lhs, Snowflake& rhs);
-	
 	/**
 	 * \addtogroup foundation_entities
 	 * @{
@@ -915,7 +782,6 @@ namespace DiscordCoreAPI {
 	/// Class for representing a timestamp. \brief Class for representing a timestamp.
 	class DiscordCoreAPI_Dll TimeStamp {
 	  public:
-
 		operator std::string() {
 			return this->originalTimeStamp;
 		}
@@ -926,7 +792,7 @@ namespace DiscordCoreAPI {
 		}
 
 		TimeStamp(std::string&& originalTimeStampNew) {
-			*this = std::move(originalTimeStampNew);
+			*this = originalTimeStampNew;
 		}
 
 		TimeStamp& operator=(std::string& originalTimeStampNew) {
@@ -1087,6 +953,9 @@ namespace DiscordCoreAPI {
 		All_Intents = Default_Intents | Privileged_Intents///< Every single intent.
 	};
 
+	/// For ids of DiscordEntities. \brief For ids of DiscordEntities.
+	using Snowflake = std::string;
+
 	/// Base class DiscordCoreAPI_Dll for all Discord entities. \brief Base class DiscordCoreAPI_Dll for all Discord entities.
 	class DiscordCoreAPI_Dll DiscordEntity {
 	  public:
@@ -1159,70 +1028,87 @@ namespace DiscordCoreAPI {
 		virtual ~RoleData() = default;
 	};
 
-	enum class UserFlags : int8_t { Bot = 0b00000001, MFAEnabled = 0b00000010, System = 0b00000100, Verified = 0b00001000 };
+	enum class UserFlags : int32_t {
+		Staff = 1 << 0,///< Discord Employee.
+		Partner = 1 << 1,///< Partnered Server Owner.
+		Hypesquad = 1 << 2,///< HypeSquad Events Member.
+		Bug_Hunter_Level_1 = 1 << 3,///< Bug Hunter Level 1.
+		Hypesquad_Online_House_1 = 1 << 6,///< House Bravery Member.
+		Hypesquad_Online_House_2 = 1 << 7,///< House Brilliance Member.
+		Hypesquad_Online_House_3 = 1 << 8,///< House Balance Member.
+		Premium_Early_Suppoerter = 1 << 9,///< Early Nitro Supporter.
+		Team_Pseudo_User = 1 << 10,///< User is a team.
+		Bug_Hunter_Level_2 = 1 << 14,///< Bug Hunter Level 2.
+		Verified_Bot = 1 << 16,///< Verified Bot.
+		Verified_Developer = 1 << 17,///< Early Verified Bot Developer.
+		Certified_Moderator = 1 << 18,///< Discord Certified Moderator.
+		Bot_Http_Interactions = 1 << 19,///< Bot uses only HTTP interactions and is shown in the online member list.
+		Bot = 1 << 20,///< Is it a bot?
+		MFAEnabled = 1 << 21,///< Is MFA enabled?
+		System = 1 << 22,///< Is it a system integration?
+		Verified = 1 << 23///< Is it verified?
+	};
 
 	/// Data structure representing a single User. \brief Data structure representing a single User.
 	class DiscordCoreAPI_Dll UserData : public DiscordEntity {
 	  public:
 		void setBot(bool enabled) {
 			if (enabled) {
-				this->userFlags |= static_cast<uint8_t>(UserFlags::Bot);
+				this->flags |= static_cast<uint8_t>(UserFlags::Bot);
 			} else {
-				this->userFlags &= ~static_cast<uint8_t>(UserFlags::Bot);
+				this->flags &= ~static_cast<uint8_t>(UserFlags::Bot);
 			}
 		}
 
 		void setMFAEnabled(bool enabled) {
 			if (enabled) {
-				this->userFlags |= static_cast<uint8_t>(UserFlags::MFAEnabled);
+				this->flags |= static_cast<uint8_t>(UserFlags::MFAEnabled);
 			} else {
-				this->userFlags &= ~static_cast<uint8_t>(UserFlags::MFAEnabled);
+				this->flags &= ~static_cast<uint8_t>(UserFlags::MFAEnabled);
 			}
 		}
 
 		void setSystem(bool enabled) {
 			if (enabled) {
-				this->userFlags |= static_cast<uint8_t>(UserFlags::System);
+				this->flags |= static_cast<uint8_t>(UserFlags::System);
 			} else {
-				this->userFlags &= ~static_cast<uint8_t>(UserFlags::System);
+				this->flags &= ~static_cast<uint8_t>(UserFlags::System);
 			}
 		}
 
 		void setVerified(bool enabled) {
 			if (enabled) {
-				this->userFlags |= static_cast<uint8_t>(UserFlags::Verified);
+				this->flags |= static_cast<uint8_t>(UserFlags::Verified);
 			} else {
-				this->userFlags &= ~static_cast<uint8_t>(UserFlags::Verified);
+				this->flags &= ~static_cast<uint8_t>(UserFlags::Verified);
 			}
 		}
 
 		bool getBot() {
-			return this->userFlags & static_cast<uint8_t>(UserFlags::Bot);
+			return this->flags & static_cast<uint8_t>(UserFlags::Bot);
 		}
 
 		bool getMFAEnabled() {
-			return this->userFlags & static_cast<uint8_t>(UserFlags::MFAEnabled);
+			return this->flags & static_cast<uint8_t>(UserFlags::MFAEnabled);
 		}
 
 		bool getSystem() {
-			return this->userFlags & static_cast<uint8_t>(UserFlags::System);
+			return this->flags & static_cast<uint8_t>(UserFlags::System);
 		}
 
 		bool getVerified() {
-			return this->userFlags & static_cast<uint8_t>(UserFlags::Verified);
+			return this->flags & static_cast<uint8_t>(UserFlags::Verified);
 		}
 
 		UserData() = default;
-
-		StringWrapper discriminator{};///< The # next to their User name.
-		StringWrapper createdAt{};///< When the User was created.
+		
+		std::string discriminator{};///< The # next to their User name.
 		int32_t premiumType{ 0 };///< Their premium nitro status.
 		int32_t publicFlags{ 0 };///< Public flags.
 		std::string userName{};///< Their username.
-		StringWrapper avatar{};///< Their avatar url.
-		StringWrapper locale{};///< The region they are from/in.
-		int8_t userFlags{ 0 };///< User flags.
-		StringWrapper email{};///< Their email address.
+		std::string avatar{};///< Their avatar url.
+		std::string locale{};///< The region they are from/in.
+		std::string email{};///< Their email address.
 		int32_t flags{ 0 };///< Flags.
 
 		virtual ~UserData() = default;
@@ -1516,25 +1402,25 @@ namespace DiscordCoreAPI {
 		ThreadMetadataData threadMetadata{};///< Metadata in the case that this Channel is a Thread.
 		ChannelType type{ ChannelType::Dm };///< The type of the Channel.
 		TimeStamp lastPinTimestamp{ "" };///< Timestamp of the last pinned Message.
-		StringWrapper lastMessageId{};///< Id of the last Message.
-		StringWrapper applicationId{};///< Application id of the current application.		
 		int32_t videoQualityMode{ 0 };///< Video quality mode.
 		int32_t rateLimitPerUser{ 0 };///< Amount of seconds a User has to wait before sending another Message.
-		StringWrapper permissions{};///< Computed permissions for the invoking user in the channel, including overwrites.
+		std::string lastMessageId{};///< Id of the last Message.
+		std::string applicationId{};///< Application id of the current application.
 		ThreadMemberData member{};///< Thread member object for the current User, if they have joined the Thread.
 		int32_t messageCount{ 0 };///< An approximate count of Messages in a Thread stops counting at 50.
-		StringWrapper rtcRegion{};///< Real-time clock region.
+		std::string permissions{};///< Computed permissions for the invoking user in the channel, including overwrites.
 		int8_t channelFlags{ 0 };///< Channel flags.
 		int32_t memberCount{ 0 };///< Count of members active in the Channel.
-		StringWrapper parentId{};///< Id of the parent Channel, if applicable.
-		StringWrapper guildId{};///< Id of the Channel's Guild, if applicable.
-		StringWrapper ownerId{};///< Id of the Channel's owner.
+		std::string rtcRegion{};///< Real-time clock region.
 		int32_t userLimit{ 0 };///< User limit, in the case of voice channels.
-		StringWrapper topic{};///< The Channel's topic.
+		std::string parentId{};///< Id of the parent Channel, if applicable.
+		std::string guildId{};///< Id of the Channel's Guild, if applicable.
+		std::string ownerId{};///< Id of the Channel's owner.
 		int32_t position{ 0 };///< The position of the Channel, in the Guild's Channel list.
-		StringWrapper name{};///< Name of the Channel.
-		StringWrapper icon{};///< Icon for the Channel, if applicable.
 		int32_t bitrate{ 0 };///< Bitrate of the Channel, if it is a voice Channel.
+		std::string topic{};///< The Channel's topic.
+		std::string name{};///< Name of the Channel.
+		std::string icon{};///< Icon for the Channel, if applicable.
 		int64_t flags{ 0 };///< Channel flags combined as a bitfield.
 
 		virtual ~ChannelData() = default;
@@ -1586,12 +1472,12 @@ namespace DiscordCoreAPI {
 		TimeStamp communicationDisabledUntil{ "" };///< When the user's timeout will expire and the user will be able to communicate in the guild again.
 		std::vector<std::string> roles{};///< The Guild roles that they have.
 		int8_t guildMemberFlags{ 0 };///< GuildMember flags.
-		StringWrapper premiumSince{};///< If applicable, when they first boosted the server.
-		Permissions permissions{};///< Their base-level Permissions in the Guild.		
+		std::string premiumSince{};///< If applicable, when they first boosted the server.
+		Permissions permissions{};///< Their base-level Permissions in the Guild.
 		TimeStamp joinedAt{ "" };///< When they joined the Guild.
-		StringWrapper guildId{};///< The current Guild's id.
-		StringWrapper avatar{};///< The member's guild avatar hash.
-		StringWrapper nick{};///< Their nick/display name.
+		std::string guildId{};///< The current Guild's id.
+		std::string avatar{};///< The member's guild avatar hash.
+		std::string nick{};///< Their nick/display name.
 		UserData user{};///< User data for the current GuildMember.
 
 		virtual ~GuildMemberData() = default;
@@ -1668,7 +1554,7 @@ namespace DiscordCoreAPI {
 	/// Data structure representing a single emoji. \brief Data structure representing a single emoji.
 	class DiscordCoreAPI_Dll EmojiData : public DiscordEntity {
 	  public:
-		std::string unicodeName{ "" };///< What is its unicode name?
+		std::wstring unicodeName{ L"" };///< What is its unicode name?
 		std::vector<RoleData> roles{};///< Roles that are allowed to use this emoji.
 		bool requireColons{ false };///< Require colons to render it?
 		bool available{ true };///< Is it available to be used?
@@ -1687,12 +1573,12 @@ namespace DiscordCoreAPI {
 		int32_t videoQualityMode{ 1 };
 		int32_t rateLimitPerUser{ 0 };
 		int32_t bitrate{ 48000 };
-		StringWrapper parentId{};
-		StringWrapper rtcRgion{};
+		std::string parentId{};
+		std::string rtcRgion{};
 		int32_t userLimit{ 0 };
 		int32_t position{ 0 };
-		StringWrapper topic{};
-		StringWrapper name{};
+		std::string topic{};
+		std::string name{};
 		ChannelType type{};
 		bool nsfw{ false };
 	};
@@ -1926,7 +1812,7 @@ namespace DiscordCoreAPI {
 		Thread_Create = 110,///< Thread create.
 		Thread_Update = 111,///< Thread update.
 		Thread_Delete = 112,///< Thread delete.
-		Application_Command_Permission_Update=121///< Permissions were updated for a command.
+		Application_Command_Permission_Update = 121///< Permissions were updated for a command.
 	};
 
 	/// Audit log entry info data \brief Audit log entry info data.
@@ -2269,54 +2155,51 @@ namespace DiscordCoreAPI {
 		bool getLarge() {
 			return this->guildFlags & static_cast<uint8_t>(GuildFlags::Large);
 		}
-		
+
 		std::unordered_map<std::string, PresenceUpdateData> presences{};///< Array of presences for each GuildMember.
 		DefaultMessageNotificationLevel defaultMessageNotifications{};///< Default Message notification level.
 		std::unordered_map<std::string, VoiceStateData> voiceStates{};///< Array of Guild-member voice-states.
-		std::unordered_map<std::string, GuildMemberData> members{};///< Array of GuildMembers.
-		std::unordered_map<std::string, StickerData> stickers{};///< Array of Guild stickers.
-		std::unordered_map<std::string, ChannelData> channels{};///< Array of Guild channels.
-		std::unordered_map<std::string, ChannelData> threads{};///< Array of Guild threads.
 		GuildNSFWLevel nsfwLevel{ GuildNSFWLevel::Default };///< NSFW warning level.
-		std::unordered_map<std::string, EmojiData> emoji{};///< Array of Guild emojis.
 		ExplicitContentFilterLevel explicitContentFilter{};///< Explicit content filtering level, by default.
-		std::unordered_map<std::string, RoleData> roles{};///< Array of Guild roles.
 		DiscordCoreClient* discordCoreClient{ nullptr };///< A pointer to the DiscordCoreClient.
 		SystemChannelFlags systemChannelFlags{};///< System Channel flags.
 		int32_t premiumSubscriptionCount{ 0 };///< Premium subscription count.
 		int32_t approximatePresenceCount{ 0 };///< Approximate quantity of presences.
 		VerificationLevel verificationLevel{};///< Verification level required.
-		StringWrapper publicUpdatesChannelId{};///< Id of the public updates Channel.
+		std::string publicUpdatesChannelId{};///< Id of the public updates Channel.
 		std::vector<std::string> features{};///< List of Guild features.
-		int32_t approximateMemberCount{ 0 };///< Approximate member count.		
+		int32_t approximateMemberCount{ 0 };///< Approximate member count.
+		std::vector<std::string> channels{};///< Array of Guild channels.
+		std::vector<std::string> members{};///< Array of GuildMembers.
 		WelcomeScreenData welcomeScreen{};///< Welcome screen for the Guild.
 		int32_t maxVideoChannelUsers{ 0 };///< Maximum quantity of users per video Channel.
+		std::vector<std::string> roles{};///< Array of Guild roles.
 		AfkTimeOutDurations afkTimeOut{};///< Time for an individual to time out as afk.
-		StringWrapper discoverySplash{};///< Link to the discovery image's splash.
-		StringWrapper preferredLocale{};///< Preferred locale, for voice chat servers.
-		StringWrapper widgetChannelId{};///< Channel id for the Guild's widget.
-		StringWrapper systemChannelId{};///< Channel id for the Guild's system Channel.
-		StringWrapper rulesChannelId{};///< Channel id for the Guild's rules Channel.
-		StringWrapper vanityUrlCode{};///< Vanity Url code, if applicable.
-		StringWrapper applicationId{};///< The current application id.		
-		StringWrapper afkChannelId{};///< Channel if of the "afk" Channel.
-		StringWrapper description{};///< Description of the Guild.		
+		std::string discoverySplash{};///< Link to the discovery image's splash.
+		std::string preferredLocale{};///< Preferred locale, for voice chat servers.
+		std::string widgetChannelId{};///< Channel id for the Guild's widget.
+		std::string systemChannelId{};///< Channel id for the Guild's system Channel.
+		std::string rulesChannelId{};///< Channel id for the Guild's rules Channel.
+		std::string vanityUrlCode{};///< Vanity Url code, if applicable.
+		std::string applicationId{};///< The current application id.
+		std::string afkChannelId{};///< Channel if of the "afk" Channel.
+		std::string description{};///< Description of the Guild.
 		Permissions permissions{};///< Current Permissions for the bot in the Guild.
 		PremiumTier premiumTier{};///< What is the premium tier?
 		int32_t maxPresences{ 0 };///< Max number of presences allowed.
 		int32_t memberCount{ 0 };///< Member count.
 		TimeStamp joinedAt{ "" };///< When the bot joined this Guild.
 		int32_t maxMembers{ 0 };///< Max quantity of members.
-		StringWrapper createdAt{};///< When was the Guild created?
+		std::string createdAt{};///< When was the Guild created?
 		int8_t guildFlags{ 0 };///< Guild flags.
-		StringWrapper iconHash{};///< Url to the Guild's icon.
-		StringWrapper ownerId{};///< User id of the Guild's owner.		
-		StringWrapper region{};///< Region of the world where the Guild's servers are.
-		StringWrapper splash{};///< Url to the Guild's splash.
-		StringWrapper banner{};///< Url to the Guild's banner.
+		std::string iconHash{};///< Url to the Guild's icon.
+		std::string ownerId{};///< User id of the Guild's owner.
+		std::string region{};///< Region of the world where the Guild's servers are.
+		std::string splash{};///< Url to the Guild's splash.
+		std::string banner{};///< Url to the Guild's banner.
 		MFALevel mfaLevel{};///< MFA level.
-		StringWrapper icon{};///< Url to the Guild's icon.
-		StringWrapper name{};///< The Guild's name.
+		std::string icon{};///< Url to the Guild's icon.
+		std::string name{};///< The Guild's name.
 
 		GuildData() = default;
 
@@ -2524,7 +2407,7 @@ namespace DiscordCoreAPI {
 		std::string channelId{};
 		int32_t timestamp{ 0 };
 		std::string guildId{};
-		std::string userId{};	
+		std::string userId{};
 	};
 
 	/// YouTube format data. \brief YouTube format data.
@@ -2985,7 +2868,7 @@ namespace DiscordCoreAPI {
 		std::string applicationId{};///< The application's id.
 		InteractionDataData data{};///< The Interaction's data.
 		std::string requesterId{};///< The id of the sender of the Interaction.
-		std::string guildLocale{};///< The guild's preferred locale, if invoked in a guild.		
+		std::string guildLocale{};///< The guild's preferred locale, if invoked in a guild.
 		nlohmann::json rawData{};///< The Interaction's raw data.
 		GuildMemberData member{};///< The data of the Guild member who sent the Interaction, if applicable.
 		std::string channelId{};///< The Channel the Interaction was sent in.
@@ -2994,7 +2877,7 @@ namespace DiscordCoreAPI {
 		std::string guildId{};///< The Guild id of the Guild it was sent in.
 		int32_t version{ 0 };///< The Interaction version.
 		std::string locale{};///< The selected language of the invoking user.
-		std::string token{};///< The Interaction token.		
+		std::string token{};///< The Interaction token.
 		UserData user{};///< The User data of the sender of the Interaction.
 		InteractionData() = default;
 		InteractionData(std::string requesterId) {
@@ -3399,8 +3282,8 @@ namespace DiscordCoreAPI {
 		/// \param emojiId An emoji id, if desired.
 		/// \param url A url, if applicable.
 		/// \returns RespondToInputEventData& A reference to this data structure.
-		RespondToInputEventData& addButton(
-			bool disabled, std::string customIdNew, std::string buttonLabel, ButtonStyle buttonStyle, std::string emojiName = "", std::string emojiId = "", std::string url = "") {
+		RespondToInputEventData& addButton(bool disabled, std::string customIdNew, std::string buttonLabel, ButtonStyle buttonStyle, std::string emojiName = "",
+			std::string emojiId = "", std::string url = "") {
 			if (this->components.size() == 0) {
 				ActionRowData actionRowData;
 				this->components.push_back(actionRowData);
@@ -3433,8 +3316,8 @@ namespace DiscordCoreAPI {
 		/// \param maxValues Maximum number of selections that are possible.
 		/// \param minValues Minimum required number of selections that are required.
 		/// \returns RespondToInputEventData& A reference to this data structure.
-		RespondToInputEventData& addSelectMenu(
-			bool disabled, std::string customIdNew, std::vector<SelectOptionData> options, std::string placeholder, int32_t maxValues, int32_t minValues) {
+		RespondToInputEventData& addSelectMenu(bool disabled, std::string customIdNew, std::vector<SelectOptionData> options, std::string placeholder, int32_t maxValues,
+			int32_t minValues) {
 			if (this->components.size() == 0) {
 				ActionRowData actionRowData;
 				this->components.push_back(actionRowData);
@@ -3560,8 +3443,8 @@ namespace DiscordCoreAPI {
 		/// \param theName A std::string for the name of the choice.
 		/// \param theNameLocalizations A std::unordered_map<std::string, std::string> for the name localizations.
 		/// \returns RespondToInputEventData& A reference to this data structure.
-		RespondToInputEventData& setAutoCompleteChoice(
-			nlohmann::json theValue, std::string theName, std::unordered_map<std::string, std::string> theNameLocalizations = std::unordered_map<std::string, std::string>{}) {
+		RespondToInputEventData& setAutoCompleteChoice(nlohmann::json theValue, std::string theName,
+			std::unordered_map<std::string, std::string> theNameLocalizations = std::unordered_map<std::string, std::string>{}) {
 			this->choices.push_back({ .nameLocalizations = theNameLocalizations, .value = theValue, .name = theName });
 			return *this;
 		}
@@ -3607,8 +3490,8 @@ namespace DiscordCoreAPI {
 		/// \param emojiId An emoji id, if desired.
 		/// \param url A url, if applicable.
 		/// \returns RespondToInputEventData& A reference to this data structure.
-		MessageResponseBase& addButton(
-			bool disabled, std::string customIdNew, std::string buttonLabel, ButtonStyle buttonStyle, std::string emojiName = "", std::string emojiId = "", std::string url = "") {
+		MessageResponseBase& addButton(bool disabled, std::string customIdNew, std::string buttonLabel, ButtonStyle buttonStyle, std::string emojiName = "",
+			std::string emojiId = "", std::string url = "") {
 			if (this->components.size() == 0) {
 				ActionRowData actionRowData;
 				this->components.push_back(actionRowData);
@@ -3641,8 +3524,8 @@ namespace DiscordCoreAPI {
 		/// \param maxValues Maximum number of selections that are possible.
 		/// \param minValues Minimum required number of selections that are required.
 		/// \returns RespondToInputEventData& A reference to this data structure.
-		MessageResponseBase& addSelectMenu(
-			bool disabled, std::string customIdNew, std::vector<SelectOptionData> options, std::string placeholder, int32_t maxValues, int32_t minValues) {
+		MessageResponseBase& addSelectMenu(bool disabled, std::string customIdNew, std::vector<SelectOptionData> options, std::string placeholder, int32_t maxValues,
+			int32_t minValues) {
 			if (this->components.size() == 0) {
 				ActionRowData actionRowData;
 				this->components.push_back(actionRowData);
@@ -4222,15 +4105,3 @@ namespace DiscordCoreInternal {
 	};
 
 };// namespace DiscordCoreInternal
-
-namespace nlohmann {
-	template<> struct adl_serializer<DiscordCoreAPI::TimeStamp> {
-		static DiscordCoreAPI::TimeStamp from_json(const json& inputValue) {
-			return { inputValue.get<DiscordCoreAPI::TimeStamp>() };
-		}
-
-		static void to_json(json& outputValue, DiscordCoreAPI::TimeStamp inputValue) {
-			outputValue = inputValue;
-		}
-	};
-}

@@ -71,7 +71,6 @@ namespace DiscordCoreInternal {
 			} else {
 				pDataStructure.id = std::to_string(jsonObjectData["id"].get<int64_t>());
 			}
-			pDataStructure.createdAt = pDataStructure.getCreatedAtTimestamp(DiscordCoreAPI::TimeFormat::LongDateTime);
 		}
 
 		if (jsonObjectData.contains("discriminator") && !jsonObjectData["discriminator"].is_null()) {
@@ -132,7 +131,6 @@ namespace DiscordCoreInternal {
 			} else {
 				pDataStructure.id = std::to_string(jsonObjectData["id"].get<int64_t>());
 			}
-			pDataStructure.createdAt = pDataStructure.getCreatedAtTimestamp(DiscordCoreAPI::TimeFormat::LongDateTime);
 		}
 
 		if (jsonObjectData.contains("discriminator") && !jsonObjectData["discriminator"].is_null()) {
@@ -814,7 +812,7 @@ namespace DiscordCoreInternal {
 	template<> void DataParser::parseObject(nlohmann::json const& jsonObjectData, DiscordCoreAPI::GuildMember& pDataStructure) {
 		 
 		if (jsonObjectData.contains("communication_disabled_until") && !jsonObjectData["communication_disabled_until"].is_null()) {
-			pDataStructure.communicationDisabledUntil = jsonObjectData["communication_disabled_until"].get<DiscordCoreAPI::TimeStamp>();
+			pDataStructure.communicationDisabledUntil = jsonObjectData["communication_disabled_until"];
 		}
 
 		if (jsonObjectData.contains("roles") && !jsonObjectData["roles"].is_null()) {
@@ -865,7 +863,7 @@ namespace DiscordCoreInternal {
 	template<> void DataParser::parseObject(nlohmann::json const& jsonObjectData, DiscordCoreAPI::GuildMemberData& pDataStructure) {
 
 		if (jsonObjectData.contains("communication_disabled_until") && !jsonObjectData["communication_disabled_until"].is_null()) {
-			pDataStructure.communicationDisabledUntil = jsonObjectData["communication_disabled_until"].get<DiscordCoreAPI::TimeStamp>();
+			pDataStructure.communicationDisabledUntil = jsonObjectData["communication_disabled_until"];
 		}
 
 		if (jsonObjectData.contains("roles") && !jsonObjectData["roles"].is_null()) {
@@ -1542,23 +1540,11 @@ namespace DiscordCoreInternal {
 			pDataStructure.permissions = jsonObjectData["permissions"].get<std::string>();
 		}
 
-		if (jsonObjectData.contains("stickers") && !jsonObjectData["stickers"].is_null()) {
-			pDataStructure.stickers.clear();
-			for (auto& value: jsonObjectData["stickers"]) {
-				DiscordCoreAPI::StickerData newData{};
-				DataParser::parseObject(value, newData);
-				std::string stickerId = newData.id;
-				pDataStructure.stickers.insert_or_assign(stickerId, newData);
-			}
-		}
-
 		if (jsonObjectData.contains("roles") && !jsonObjectData["roles"].is_null()) {
-			pDataStructure.roles.clear();
 			for (auto& value: jsonObjectData["roles"]) {
 				DiscordCoreAPI::RoleData newData{};
 				DataParser::parseObject(value, newData);
-				std::string roleId = newData.id;
-				pDataStructure.roles.insert_or_assign(roleId, newData);
+				DiscordCoreAPI::Roles::insertRole(*static_cast<DiscordCoreAPI::Role*>(&newData));
 			}
 		}
 
@@ -1584,16 +1570,6 @@ namespace DiscordCoreInternal {
 
 		if (jsonObjectData.contains("explicit_content_filter_level") && !jsonObjectData["explicit_content_filter_level"].is_null()) {
 			pDataStructure.explicitContentFilter = jsonObjectData["explicit_content_filter_level"].get<DiscordCoreAPI::ExplicitContentFilterLevel>();
-		}
-
-		if (jsonObjectData.contains("emojis") && !jsonObjectData["emojis"].is_null()) {
-			pDataStructure.emoji.clear();
-			for (auto& value: jsonObjectData["emojis"]) {
-				DiscordCoreAPI::EmojiData newData{};
-				DataParser::parseObject(value, newData);
-				std::string emojiId = newData.name;
-				pDataStructure.emoji.insert_or_assign(emojiId, newData);
-			}
 		}
 
 		if (jsonObjectData.contains("mfa_level") && !jsonObjectData["mfa_level"].is_null()) {
@@ -1627,34 +1603,27 @@ namespace DiscordCoreInternal {
 		}
 
 		if (jsonObjectData.contains("members") && !jsonObjectData["members"].is_null()) {
-			pDataStructure.members.clear();
 			for (auto& value: jsonObjectData["members"]) {
-				DiscordCoreAPI::GuildMemberData newData{};
+				DiscordCoreAPI::GuildMember newData{};
 				DataParser::parseObject(value, newData);
 				newData.guildId = pDataStructure.id;
-				std::string userId = newData.user.id;
-				pDataStructure.members.insert_or_assign(userId, newData);
+				newData.voiceData.guildId = pDataStructure.id;
+				for (auto& [key01, value01]: pDataStructure.voiceStates) {
+					if (key01 == newData.user.id) {
+						value01.guildId = pDataStructure.id;
+						newData.voiceData = value01;
+					}
+				}
+				DiscordCoreAPI::GuildMembers::insertGuildMember(newData);
 			}
 		}
 
 		if (jsonObjectData.contains("channels") && !jsonObjectData["channels"].is_null()) {
-			pDataStructure.channels.clear();
 			for (auto& value: jsonObjectData["channels"]) {
 				DiscordCoreAPI::ChannelData newData{};
 				DataParser::parseObject(value, newData);
 				newData.guildId = pDataStructure.id;
-				std::string channelId = newData.id;
-				pDataStructure.channels.insert_or_assign(channelId, newData);
-			}
-		}
-
-		if (jsonObjectData.contains("threads") && !jsonObjectData["threads"].is_null()) {
-			pDataStructure.threads.clear();
-			for (auto& value: jsonObjectData["threads"]) {
-				DiscordCoreAPI::ChannelData newData{};
-				DataParser::parseObject(value, newData);
-				std::string threadId = newData.id;
-				pDataStructure.threads.insert_or_assign(threadId, newData);
+				DiscordCoreAPI::Channels::insertChannel(*static_cast<DiscordCoreAPI::Channel*>(&newData));
 			}
 		}
 
@@ -1812,23 +1781,11 @@ namespace DiscordCoreInternal {
 			pDataStructure.permissions = jsonObjectData["permissions"].get<std::string>();
 		}
 
-		if (jsonObjectData.contains("stickers") && !jsonObjectData["stickers"].is_null()) {
-			pDataStructure.stickers.clear();
-			for (auto& value: jsonObjectData["stickers"]) {
-				DiscordCoreAPI::StickerData newData{};
-				DataParser::parseObject(value, newData);
-				std::string stickerId = newData.id;
-				pDataStructure.stickers.insert_or_assign(stickerId, newData);
-			}
-		}
-
 		if (jsonObjectData.contains("roles") && !jsonObjectData["roles"].is_null()) {
-			pDataStructure.roles.clear();
 			for (auto& value: jsonObjectData["roles"]) {
 				DiscordCoreAPI::RoleData newData{};
 				DataParser::parseObject(value, newData);
-				std::string roleId = newData.id;
-				pDataStructure.roles.insert_or_assign(roleId, newData);
+				DiscordCoreAPI::Roles::insertRole(*static_cast<DiscordCoreAPI::Role*>(&newData));
 			}
 		}
 
@@ -1854,16 +1811,6 @@ namespace DiscordCoreInternal {
 
 		if (jsonObjectData.contains("explicit_content_filter_level") && !jsonObjectData["explicit_content_filter_level"].is_null()) {
 			pDataStructure.explicitContentFilter = jsonObjectData["explicit_content_filter_level"].get<DiscordCoreAPI::ExplicitContentFilterLevel>();
-		}
-
-		if (jsonObjectData.contains("emojis") && !jsonObjectData["emojis"].is_null()) {
-			pDataStructure.emoji.clear();
-			for (auto& value: jsonObjectData["emojis"]) {
-				DiscordCoreAPI::EmojiData newData{};
-				DataParser::parseObject(value, newData);
-				std::string emojiId = newData.name;
-				pDataStructure.emoji.insert_or_assign(emojiId, newData);
-			}
 		}
 
 		if (jsonObjectData.contains("mfa_level") && !jsonObjectData["mfa_level"].is_null()) {
@@ -1893,38 +1840,33 @@ namespace DiscordCoreInternal {
 				DataParser::parseObject(value, newData);
 				std::string userId = newData.userId;
 				pDataStructure.voiceStates.insert_or_assign(userId, newData);
+				std::cout << "THIS IS NOT IT: " << newData.channelId << std::endl;
 			}
 		}
 
 		if (jsonObjectData.contains("members") && !jsonObjectData["members"].is_null()) {
-			pDataStructure.members.clear();
 			for (auto& value: jsonObjectData["members"]) {
-				DiscordCoreAPI::GuildMemberData newData{};
+				DiscordCoreAPI::GuildMember newData{};
 				DataParser::parseObject(value, newData);
 				newData.guildId = pDataStructure.id;
-				std::string userId = newData.user.id;
-				pDataStructure.members.insert_or_assign(userId, newData);
+				newData.voiceData.guildId = pDataStructure.id;
+				for (auto& [key01, value01]: pDataStructure.voiceStates) {
+					if (key01 == newData.user.id) {
+						value01.guildId = pDataStructure.id;
+						newData.voiceData = value01;
+						std::cout << "WERE HERE THIS IS IT: " << std::string{ value01.userId } << std::endl;
+					}
+				}
+				DiscordCoreAPI::GuildMembers::insertGuildMember(newData);
 			}
 		}
 
 		if (jsonObjectData.contains("channels") && !jsonObjectData["channels"].is_null()) {
-			pDataStructure.channels.clear();
 			for (auto& value: jsonObjectData["channels"]) {
 				DiscordCoreAPI::ChannelData newData{};
 				DataParser::parseObject(value, newData);
 				newData.guildId = pDataStructure.id;
-				std::string channelId = newData.id;
-				pDataStructure.channels.insert_or_assign(channelId, newData);
-			}
-		}
-
-		if (jsonObjectData.contains("threads") && !jsonObjectData["threads"].is_null()) {
-			pDataStructure.threads.clear();
-			for (auto& value: jsonObjectData["threads"]) {
-				DiscordCoreAPI::ChannelData newData{};
-				DataParser::parseObject(value, newData);
-				std::string threadId = newData.id;
-				pDataStructure.threads.insert_or_assign(threadId, newData);
+				DiscordCoreAPI::Channels::insertChannel(*static_cast<DiscordCoreAPI::Channel*>(&newData));
 			}
 		}
 

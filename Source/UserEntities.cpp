@@ -30,11 +30,10 @@ namespace DiscordCoreAPI {
 		this->discriminator = other.discriminator;
 		this->publicFlags = other.publicFlags;
 		this->premiumType = other.premiumType;
-		this->createdAt = other.createdAt;
-		this->userFlags = other.userFlags;
 		this->userName = other.userName;
 		this->locale = other.locale;
 		this->avatar = other.avatar;
+		this->flags = other.flags;
 		this->email = other.email;
 		this->flags = other.flags;
 		this->id = other.id;

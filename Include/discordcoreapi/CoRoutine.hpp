@@ -40,7 +40,7 @@ namespace DiscordCoreAPI {
 		CoRoutineError(std::string theMessage) : std::runtime_error(theMessage){};
 	};
 
-	class CoRoutineBase {
+	class DiscordCoreAPI_Dll CoRoutineBase {
 	  public:
 		static DiscordCoreInternal::CoRoutineThreadPool threadPool;
 	};

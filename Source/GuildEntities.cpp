@@ -89,36 +89,6 @@ namespace DiscordCoreAPI {
 			if (this->discordCoreClient->cacheOptions.cacheGuilds && doWeShowIt) {
 				std::cout << shiftToBrightBlue() << "Caching Guild: " << this->id << reset() << std::endl;
 			}
-			if (this->discordCoreClient->cacheOptions.cacheChannels) {
-				for (auto& [key, value]: channels) {
-					value.guildId = this->id;
-					Channels::insertChannel(*static_cast<Channel*>(&value));
-				}
-			}
-			if (this->discordCoreClient->cacheOptions.cacheGuildMembers) {
-				for (auto& [key00, value00]: this->members) {
-					value00.guildId = this->id;
-					GuildMember guildMember{ value00 };
-					guildMember.voiceData.guildId = this->id;
-					for (auto& [key01, value01]: this->voiceStates) {
-						if (key01 == value00.user.id) {
-							value01.guildId = this->id;
-							guildMember.voiceData = value01;
-						}
-					}
-					GuildMembers::insertGuildMember(guildMember);
-				}
-			}
-			if (this->discordCoreClient->cacheOptions.cacheRoles) {
-				for (auto& [key, value]: roles) {
-					Roles::insertRole(*static_cast<Role*>(&value));
-				}
-			}
-			if (this->discordCoreClient->cacheOptions.cacheUsers) {
-				for (auto& [key, value]: members) {
-					Users::insertUser(*static_cast<User*>(&value.user));
-				}
-			}
 			if (!getVoiceConnectionMap().contains(this->id)) {
 				std::string theShardId{ std::to_string((stoll(this->id) >> 22) % this->discordCoreClient->shardingOptions.totalNumberOfShards) };
 				getVoiceConnectionMap().insert(std::make_pair(this->id, std::make_unique<VoiceConnection>(this->discordCoreClient->webSocketMap[theShardId].get())));
