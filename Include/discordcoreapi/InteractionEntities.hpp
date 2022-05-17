@@ -43,8 +43,8 @@ namespace DiscordCoreAPI {
 		/// \param emojiName An emoji name, if desired.
 		/// \param emojiId An emoji id, if desired.
 		/// \param url A url, if applicable.
-		InteractionResponse& addButton(bool disabled, const std::string& customIdNew, const std::string& buttonLabel, ButtonStyle buttonStyle, const std::string& emojiName = "",
-			std::string emojiId = "", const std::string& url = "") {
+		InteractionResponse& addButton(bool disabled,  const std::string& customIdNew,  const std::string& buttonLabel, ButtonStyle buttonStyle,  const std::string& emojiName = "",
+			std::string emojiId = "",  const std::string& url = "") {
 			if (this->data.data.components.size() == 0) {
 				ActionRowData actionRowData;
 				this->data.data.components.push_back(actionRowData);
@@ -76,7 +76,7 @@ namespace DiscordCoreAPI {
 		/// \param placeholder Custom placeholder text if nothing is selected, max 100 characters.
 		/// \param maxValues Maximum number of selections that are possible.
 		/// \param minValues Minimum required number of selections that are required.
-		InteractionResponse& addSelectMenu(bool disabled, const std::string& customIdNew, std::vector<SelectOptionData> options, const std::string& placeholder, int32_t maxValues,
+		InteractionResponse& addSelectMenu(bool disabled,  const std::string& customIdNew, std::vector<SelectOptionData> options,  const std::string& placeholder, int32_t maxValues,
 			int32_t minValues) {
 			if (this->data.data.components.size() == 0) {
 				ActionRowData actionRowData;
@@ -113,8 +113,8 @@ namespace DiscordCoreAPI {
 		/// \param label A label for the modal.
 		/// \param placeholder A placeholder for the modal.
 		/// \returns RespondToInputEventData& A reference to this data structure.
-		InteractionResponse& addModal(const std::string& topTitleNew, const std::string& topCustomIdNew, const std::string& titleNew, const std::string& customIdNew, bool required, int32_t minLength,
-			int32_t maxLength, TextInputStyle inputStyle, const std::string& label = "", const std::string& placeholder = "") {
+		InteractionResponse& addModal(const std::string& topTitleNew,  const std::string& topCustomIdNew,  const std::string& titleNew,  const std::string& customIdNew, bool required, int32_t minLength,
+			int32_t maxLength, TextInputStyle inputStyle,  const std::string& label = "",  const std::string& placeholder = "") {
 			this->data.data.title = topTitleNew;
 			this->data.data.customId = topCustomIdNew;
 			if (this->data.data.components.size() == 0) {
@@ -644,7 +644,7 @@ namespace DiscordCoreAPI {
 		/// User to collect inputs from, if getSelectMenuDataForAllNew is set to
 		/// false. \returns A std::vector of SelectMenuResponseData.
 		CoRoutine<std::vector<SelectMenuResponseData>> collectSelectMenuData(bool getSelectMenuDataForAllNew, int32_t maxWaitTimeInMsNew, int32_t maxCollectedSelectMenuCountNew,
-			const std::string& targetUserId = "");
+			 const std::string& targetUserId = "");
 
 		~SelectMenuCollector();
 
@@ -734,7 +734,7 @@ namespace DiscordCoreAPI {
 		/// from, if getButtonDataForAllNew is set to false. \returns A std::vector of
 		/// ButtonResponseData.
 		CoRoutine<std::vector<ButtonResponseData>> collectButtonData(bool getButtonDataForAllNew, int32_t maxWaitTimeInMsNew, int32_t maxNumberOfPressesNew,
-			const std::string& targetUserId = "");
+			 const std::string& targetUserId = "");
 
 		~ButtonCollector();
 

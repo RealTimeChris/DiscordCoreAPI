@@ -206,7 +206,7 @@ namespace DiscordCoreInternal {
 		return inputVector;
 	}
 
-	DiscordCoreAPI::YouTubeFormat YouTubeRequestBuilder::decipherFormat(DiscordCoreAPI::YouTubeFormat format, const std::string& html5playerFile) {
+	DiscordCoreAPI::YouTubeFormat YouTubeRequestBuilder::decipherFormat(DiscordCoreAPI::YouTubeFormat format,  const std::string& html5playerFile) {
 		format.signature = DiscordCoreAPI::urlDecode(format.signature);
 		DiscordCoreAPI::YouTubeFormat decipheredFormat = format;
 		std::vector<std::string> tokens = YouTubeRequestBuilder::getTokens(html5playerFile);
@@ -219,7 +219,7 @@ namespace DiscordCoreInternal {
 		return decipheredFormat;
 	}
 
-	std::string YouTubeRequestBuilder::decipher(std::vector<std::string> tokens, const std::string& cipherSignature) {
+	std::string YouTubeRequestBuilder::decipher(std::vector<std::string> tokens,  const std::string& cipherSignature) {
 		std::vector<char> signatureNew = YouTubeRequestBuilder::splitString(cipherSignature);
 		for (int32_t x = 0, len = static_cast<int32_t>(tokens.size()); x < len; x += 1) {
 			std::string token = tokens[x];
@@ -361,7 +361,7 @@ namespace DiscordCoreInternal {
 		return stringToReverse;
 	}
 
-	std::string YouTubeRequestBuilder::between(const std::string& body, const std::string& left, const std::string& right) {
+	std::string YouTubeRequestBuilder::between(const std::string& body,  const std::string& left,  const std::string& right) {
 		int64_t positionStart = body.find(left) + left.length();
 		int64_t positionEnd = body.find(right, positionStart);
 		std::string newString = body.substr(positionStart, positionEnd - positionStart);

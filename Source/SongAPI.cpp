@@ -30,7 +30,7 @@ namespace DiscordCoreAPI {
 		this->guildId = guildId;
 	}
 
-	void SongAPI::onSongCompletion(std::function<CoRoutine<void>(SongCompletionEventData)> handler, const std::string& guildId) {
+	void SongAPI::onSongCompletion(std::function<CoRoutine<void>(SongCompletionEventData)> handler,  const std::string& guildId) {
 		auto returnValue = getSongAPIMap()[guildId].get();
 		returnValue->onSongCompletionEvent.remove(returnValue->theToken);
 		returnValue->theToken = returnValue->onSongCompletionEvent.add(handler);
@@ -165,7 +165,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	std::vector<Song> SongAPI::searchForSong(const std::string& searchQuery, const std::string& guildId) {
+	std::vector<Song> SongAPI::searchForSong(const std::string& searchQuery,  const std::string& guildId) {
 		auto vector01 = getSoundCloudAPIMap()[guildId]->searchForSong(searchQuery);
 		auto vector02 = getYouTubeAPIMap()[guildId]->searchForSong(searchQuery);
 		int32_t totalLength = static_cast<int32_t>(vector01.size() + vector02.size());
@@ -186,7 +186,7 @@ namespace DiscordCoreAPI {
 		return newVector;
 	}
 
-	void SongAPI::setLoopAllStatus(bool enabled, const std::string& guildId) {
+	void SongAPI::setLoopAllStatus(bool enabled,  const std::string& guildId) {
 		getSongAPIMap()[guildId]->playlist.isLoopAllEnabled = enabled;
 	}
 
@@ -194,7 +194,7 @@ namespace DiscordCoreAPI {
 		return getSongAPIMap()[guildId]->playlist.isLoopAllEnabled;
 	}
 
-	void SongAPI::setLoopSongStatus(bool enabled, const std::string& guildId) {
+	void SongAPI::setLoopSongStatus(bool enabled,  const std::string& guildId) {
 		getSongAPIMap()[guildId]->playlist.isLoopSongEnabled = enabled;
 	}
 
@@ -228,7 +228,7 @@ namespace DiscordCoreAPI {
 		return song;
 	}
 
-	void SongAPI::setPlaylist(Playlist playlistNew, const std::string& guildId) {
+	void SongAPI::setPlaylist(Playlist playlistNew,  const std::string& guildId) {
 		getSongAPIMap()[guildId]->playlist.currentSong = playlistNew.currentSong;
 		getSongAPIMap()[guildId]->playlist.isLoopAllEnabled = playlistNew.isLoopAllEnabled;
 		getSongAPIMap()[guildId]->playlist.isLoopSongEnabled = playlistNew.isLoopSongEnabled;
@@ -240,7 +240,7 @@ namespace DiscordCoreAPI {
 		return getSongAPIMap()[guildId]->playlist;
 	}
 
-	void SongAPI::modifyQueue(int32_t firstSongPosition, int32_t secondSongPosition, const std::string& guildId) {
+	void SongAPI::modifyQueue(int32_t firstSongPosition, int32_t secondSongPosition,  const std::string& guildId) {
 		Song tempSong = getSongAPIMap()[guildId]->playlist.songQueue[firstSongPosition];
 		getSongAPIMap()[guildId]->playlist.songQueue[firstSongPosition] = getSongAPIMap()[guildId]->playlist.songQueue[secondSongPosition];
 		getSongAPIMap()[guildId]->playlist.songQueue[secondSongPosition] = tempSong;
@@ -256,7 +256,7 @@ namespace DiscordCoreAPI {
 		};
 	}
 
-	void SongAPI::setCurrentSong(Song song, const std::string& guildId) {
+	void SongAPI::setCurrentSong(Song song,  const std::string& guildId) {
 		getSongAPIMap()[guildId]->playlist.currentSong = song;
 	}
 

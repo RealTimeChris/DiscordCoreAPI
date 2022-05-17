@@ -28,7 +28,7 @@
 
 namespace DiscordCoreAPI {
 
-	std::string getISO8601TimeStamp(const std::string& year, const std::string& month, const std::string& day, const std::string& hour, const std::string& minute, const std::string& second) {
+	std::string getISO8601TimeStamp(const std::string& year,  const std::string& month,  const std::string& day,  const std::string& hour,  const std::string& minute,  const std::string& second) {
 		std::string theTimeStamp{};
 		theTimeStamp += year + "-";
 		if (month.size() < 2) {
@@ -352,7 +352,7 @@ namespace DiscordCoreAPI {
 		return std::string("\033[0m");
 	}
 
-	std::ostream& operator<<(std::ostream& outputSttream, const std::string& (*theFunction)(void)) {
+	std::ostream& operator<<(std::ostream& outputSttream,  const std::string& (*theFunction)(void)) {
 		outputSttream << theFunction();
 		return outputSttream;
 	}

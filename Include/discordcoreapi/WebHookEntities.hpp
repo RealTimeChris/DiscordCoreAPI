@@ -66,8 +66,8 @@ namespace DiscordCoreAPI {
 		/// \param emojiName An emoji name, if desired.
 		/// \param emojiId An emoji id, if desired.
 		/// \param url A url, if applicable.
-		ExecuteWebHookData& addButton(bool disabled, const std::string& customIdNew, const std::string& buttonLabel, ButtonStyle buttonStyle, const std::string& emojiName = "",
-			std::string emojiId = "", const std::string& url = "") {
+		ExecuteWebHookData& addButton(bool disabled,  const std::string& customIdNew,  const std::string& buttonLabel, ButtonStyle buttonStyle,  const std::string& emojiName = "",
+			std::string emojiId = "",  const std::string& url = "") {
 			if (this->components.size() == 0) {
 				ActionRowData actionRowData;
 				this->components.push_back(actionRowData);
@@ -99,7 +99,7 @@ namespace DiscordCoreAPI {
 		/// \param placeholder Custom placeholder text if nothing is selected, max 100 characters.
 		/// \param maxValues Maximum number of selections that are possible.
 		/// \param minValues Minimum required number of selections that are required.
-		ExecuteWebHookData addSelectMenu(bool disabled, const std::string& customIdNew, std::vector<SelectOptionData> options, const std::string& placeholder, int32_t maxValues,
+		ExecuteWebHookData addSelectMenu(bool disabled,  const std::string& customIdNew, std::vector<SelectOptionData> options,  const std::string& placeholder, int32_t maxValues,
 			int32_t minValues) {
 			if (this->components.size() == 0) {
 				ActionRowData actionRowData;
@@ -136,8 +136,8 @@ namespace DiscordCoreAPI {
 		/// \param label A label for the modal.
 		/// \param placeholder A placeholder for the modal.
 		/// \returns RespondToInputEventData& A reference to this data structure.
-		ExecuteWebHookData& addModal(const std::string& topTitleNew, const std::string& topCustomIdNew, const std::string& titleNew, const std::string& customIdNew, bool required, int32_t minLength,
-			int32_t maxLength, TextInputStyle inputStyle, const std::string& label = "", const std::string& placeholder = "") {
+		ExecuteWebHookData& addModal(const std::string& topTitleNew,  const std::string& topCustomIdNew,  const std::string& titleNew,  const std::string& customIdNew, bool required, int32_t minLength,
+			int32_t maxLength, TextInputStyle inputStyle,  const std::string& label = "",  const std::string& placeholder = "") {
 			this->title = topTitleNew;
 			this->customId = topCustomIdNew;
 			if (this->components.size() == 0) {

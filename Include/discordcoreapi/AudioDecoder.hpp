@@ -264,7 +264,7 @@ namespace DiscordCoreInternal {
 	  public:
 		AudioDecoder(BuildAudioDecoderData dataPackage, bool doWePrint);
 
-		void submitDataForDecoding(const std::string&dataToDecode);
+		void submitDataForDecoding(const std::string& dataToDecode);
 
 		bool getFrame(DiscordCoreAPI::RawFrameData& dataPackage);
 
