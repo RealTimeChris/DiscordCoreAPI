@@ -230,9 +230,9 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	CoRoutine<RoleData> Roles::getCachedRoleAsync(GetRoleData dataPackage) {
+	CoRoutine<Role> Roles::getCachedRoleAsync(GetRoleData dataPackage) {
 		try {
-			co_await NewThreadAwaitable<RoleData>();
+			co_await NewThreadAwaitable<Role>();
 			if (Roles::cache.contains(dataPackage.roleId)) {
 				co_return Roles::cache[dataPackage.roleId];
 			} else {
@@ -243,7 +243,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	void Roles::insertRole(RoleData role) {
+	void Roles::insertRole(Role role) {
 		try {
 			if (role.id == "") {
 				return;
@@ -262,5 +262,5 @@ namespace DiscordCoreAPI {
 		}
 	};
 	DiscordCoreInternal::HttpClient* Roles::httpClient{ nullptr };
-	std::unordered_map<std::string, RoleData> Roles::cache{};
+	std::unordered_map<std::string, Role> Roles::cache{};
 }

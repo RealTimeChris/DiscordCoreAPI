@@ -20,7 +20,6 @@
 #pragma once
 
 #include <discordcoreapi/FoundationEntities.hpp>
-#include <discordcoreapi/UserEntities.hpp>
 
 namespace DiscordCoreAPI {
 
@@ -99,64 +98,11 @@ namespace DiscordCoreAPI {
 	/// A single GuildMember. \brief A single GuildMember.
 	class DiscordCoreAPI_Dll GuildMember : public GuildMemberData {
 	  public:
-
-		TimeStamp communicationDisabledUntil{ "" };///< When the user's timeout will expire and the user will be able to communicate in the guild again.
-		std::vector<std::string> roles{};///< The Guild roles that they have.
-		int8_t flags{ 0 };///< GuildMember flags.
-		std::string premiumSince{};///< If applicable, when they first boosted the server.
-		Permissions permissions{};///< Their base-level Permissions in the Guild.
-		TimeStamp joinedAt{ "" };///< When they joined the Guild.
-		std::string guildId{};///< The current Guild's id.
-		std::string avatar{};///< The member's guild avatar hash.
-		std::string nick{};///< Their nick/display name.
-		User user{};///< User data for the current GuildMember.
-
 		VoiceStateData voiceData{};///< For the voice connection's data, if any.
 
-		GuildMember& operator=(GuildMemberData&& other) {
-			this->communicationDisabledUntil = other.communicationDisabledUntil;
-			this->permissions = other.permissions;
-			this->guildId = other.guildId;
-			this->avatar = other.avatar;
-			this->roles = other.roles;
-			this->flags = other.flags;
-			this->nick = other.nick;
-			this->user = other.user;
-			return *this;
-		}
+		GuildMember& operator=(GuildMemberData&);
 
-		GuildMember(GuildMemberData&& other) {
-			*this = std::move(other);
-		}
-
-		GuildMember& operator=(GuildMemberData& other) {
-			this->communicationDisabledUntil = other.communicationDisabledUntil;
-			this->permissions = other.permissions;
-			this->guildId = other.guildId;
-			this->avatar = other.avatar;
-			this->roles = other.roles;
-			this->flags = other.flags;
-			this->nick = other.nick;
-			this->user = other.user;
-			return *this;
-		}
-
-		operator GuildMemberData() {
-			GuildMemberData dataPackage{};
-			dataPackage.communicationDisabledUntil = this->communicationDisabledUntil;
-			dataPackage.permissions = this->permissions;
-			dataPackage.guildId = this->guildId;
-			dataPackage.avatar = this->avatar;
-			dataPackage.roles = this->roles;
-			dataPackage.flags = this->flags;
-			dataPackage.nick = this->nick;
-			dataPackage.user = this->user;
-			return dataPackage;
-		}
-
-		GuildMember(GuildMemberData& other) {
-			*this = other;
-		}
+		GuildMember(GuildMemberData&);
 
 		GuildMember() = default;
 
@@ -186,7 +132,7 @@ namespace DiscordCoreAPI {
 		/// Collects a GuildMember from the library's cache. \brief Collects a GuildMember from the library's cache.
 		/// \param dataPackage A GetGuildMemberData structure.
 		/// \returns A CoRoutine containing a GuildMember.
-		static CoRoutine<GuildMemberData> getCachedGuildMemberAsync(GetGuildMemberData dataPackage);
+		static CoRoutine<GuildMember> getCachedGuildMemberAsync(GetGuildMemberData dataPackage);
 
 		/// Lists all of the GuildMembers of a chosen Guild. \brief Lists all of the GuildMembers of a chosen Guild.
 		/// \param dataPackage A ListGuildMembersData structure.
@@ -224,11 +170,11 @@ namespace DiscordCoreAPI {
 		static CoRoutine<GuildMember> timeoutGuildMemberAsync(TimeoutGuildMemberData dataPackage);
 
 	  protected:
-		static std::unordered_map<std::string, GuildMemberData> cache;
+		static std::unordered_map<std::string, GuildMember> cache;
 		static DiscordCoreInternal::HttpClient* httpClient;
 		static std::mutex accessMutex;
 
-		static void insertGuildMember(GuildMemberData dataPackage);
+		static void insertGuildMember(GuildMember dataPackage);
 
 		static void removeGuildMember(std::string globalId);
 	};

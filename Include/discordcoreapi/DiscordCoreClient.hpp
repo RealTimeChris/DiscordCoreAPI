@@ -85,7 +85,6 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll DiscordCoreClient {
 	  public:
 		friend class DiscordCoreInternal::BaseSocketAgent;
-		friend GuildData;
 		friend Guild;
 
 		CommandController commandController{ this };///< A command controller.
