@@ -22,7 +22,7 @@
 
 namespace DiscordCoreInternal {
 
-	auto getFilePath(std::string fileName, std::string pathPrefix, std::string searchRoot = "") {
+	auto getFilePath(const std::string& fileName,const std::string& pathPrefix, std::string searchRoot = "") {
 		{
 			if (searchRoot == "") {
 #ifdef _WIN32
@@ -52,7 +52,7 @@ namespace DiscordCoreInternal {
 		return std::string{};
 	}
 
-	void reportSSLError(std::string errorPosition, int32_t errorValue = 0, SSL* ssl = nullptr) noexcept {
+	void reportSSLError(const std::string& errorPosition, int32_t errorValue = 0, SSL* ssl = nullptr) noexcept {
 		if (ssl) {
 			std::cout << DiscordCoreAPI::shiftToBrightRed() << errorPosition << SSL_get_error(ssl, errorValue) << std::endl;
 		} else {
@@ -62,7 +62,7 @@ namespace DiscordCoreInternal {
 		std::cout << std::endl << DiscordCoreAPI::reset();
 	}
 
-	void reportError(std::string errorPosition, int32_t errorValue) noexcept {
+	void reportError(const std::string& errorPosition, int32_t errorValue) noexcept {
 		std::cout << DiscordCoreAPI::shiftToBrightRed() << errorPosition << errorValue << ", ";
 #ifdef _WIN32
 		std::cout << WSAGetLastError() << std::endl << DiscordCoreAPI::reset();

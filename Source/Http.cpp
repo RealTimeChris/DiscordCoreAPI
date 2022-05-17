@@ -115,7 +115,7 @@ namespace DiscordCoreInternal {
 		this->contentSize = 0;
 	}
 
-	bool HttpRnRBuilder::checkForHeadersToParse(std::string& other) {
+	bool HttpRnRBuilder::checkForHeadersToParse(const std::string& other) {
 		if (other.find("HTTP/1.") != std::string::npos) {
 			return true;
 		} else {
@@ -297,7 +297,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	HttpClient::HttpClient(std::string botTokenNew, bool doWePrintHttpNew, bool doWePrintFFMPEGNew)
+	HttpClient::HttpClient(const std::string& botTokenNew, bool doWePrintHttpNew, bool doWePrintFFMPEGNew)
 		: botToken(botTokenNew), doWePrintFFMPEG(doWePrintFFMPEGNew), doWePrintHttp(doWePrintHttpNew) {
 		this->connectionManager.initialize();
 	};
@@ -372,7 +372,7 @@ namespace DiscordCoreInternal {
 							  << DiscordCoreAPI::reset() << std::endl;
 					returnData = this->executeByRateLimitData(workload, theConnection);
 				} else {
-					throw HttpError(std::string(std::to_string(returnData.responseCode) + ", " + returnData.responseMessage));
+					throw HttpError(std::to_string(returnData.responseCode) + ", " + returnData.responseMessage);
 				}
 			}
 			return returnData;

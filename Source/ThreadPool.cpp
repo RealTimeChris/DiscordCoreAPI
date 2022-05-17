@@ -43,7 +43,7 @@ namespace DiscordCoreAPI {
 		return threadId;
 	}
 
-	void ThreadPool::stopThread(std::string theKey) {
+	void ThreadPool::stopThread(const std::string&theKey) {
 		if (this->threads.contains(theKey)) {
 			this->threads[theKey].request_stop();
 			if (this->threads[theKey].joinable()) {

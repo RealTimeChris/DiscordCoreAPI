@@ -57,7 +57,7 @@ namespace DiscordCoreInternal {
 	#define SOCKET_ERROR (-1)
 #endif
 
-	DiscordCoreAPI_Dll void reportError(std::string errorPosition, int32_t errorValue) noexcept;
+	DiscordCoreAPI_Dll void reportError(const std::string& errorPosition, int32_t errorValue) noexcept;
 #ifdef _WIN32
 	struct DiscordCoreAPI_Dll WSADataWrapper {
 		struct DiscordCoreAPI_Dll WSADataDeleter {

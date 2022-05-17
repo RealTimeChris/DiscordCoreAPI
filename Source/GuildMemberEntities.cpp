@@ -250,16 +250,16 @@ namespace DiscordCoreAPI {
 	void GuildMembers::insertGuildMember(GuildMember guildMember) {
 		try {
 			std::lock_guard<std::mutex> theLock{ GuildMembers::accessMutex };
-			if (std::string(guildMember.user.id) == "") {
+			if (guildMember.user.id == "") {
 				return;
 			}
-			GuildMembers::cache.insert_or_assign(std::string(guildMember.guildId) + " + " + std::string(guildMember.user.id), guildMember);
+			GuildMembers::cache.insert_or_assign(guildMember.guildId + " + " + guildMember.user.id, guildMember);
 		} catch (...) {
 			reportException("GuildMembers::insertGuildMember()");
 		}
 	}
 
-	void GuildMembers::removeGuildMember(std::string globalId) {
+	void GuildMembers::removeGuildMember(const std::string& globalId) {
 		try {
 			std::lock_guard<std::mutex> theLock{ GuildMembers::accessMutex };
 			GuildMembers::cache.erase(globalId);

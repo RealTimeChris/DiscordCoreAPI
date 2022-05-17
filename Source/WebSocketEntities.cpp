@@ -33,7 +33,7 @@ namespace DiscordCoreInternal {
 	constexpr uint8_t maxHeaderSize{ sizeof(uint64_t) + 2 };
 	constexpr unsigned char webSocketMaskBit{ (1u << 7u) };
 
-	BaseSocketAgent::BaseSocketAgent(std::string botTokenNew, std::string baseUrl, DiscordCoreAPI::EventManager* eventManager, DiscordCoreAPI::DiscordCoreClient* discordCoreClient,
+	BaseSocketAgent::BaseSocketAgent(const std::string& botTokenNew,const std::string& baseUrl, DiscordCoreAPI::EventManager* eventManager, DiscordCoreAPI::DiscordCoreClient* discordCoreClient,
 		DiscordCoreAPI::CommandController* commandController, std::atomic_bool* doWeQuitNew, bool doWePrintMessages, int32_t shardNumber, int32_t numberOfShards) noexcept {
 		this->doWeQuit = doWeQuitNew;
 		this->commandController = commandController;
@@ -53,7 +53,7 @@ namespace DiscordCoreInternal {
 
 	BaseSocketAgent::BaseSocketAgent(nullptr_t) noexcept {};
 
-	void BaseSocketAgent::sendMessage(std::string& dataToSend) noexcept {
+	void BaseSocketAgent::sendMessage(const std::string& dataToSend) noexcept {
 		try {
 			std::lock_guard<std::mutex> accessLock{ this->accessorMutex01 };
 			if (this->printMessages) {
@@ -79,7 +79,7 @@ namespace DiscordCoreInternal {
 		}		
 	}
 
-	void BaseSocketAgent::sendMessage(nlohmann::json& dataToSend) noexcept {
+	void BaseSocketAgent::sendMessage(const nlohmann::json& dataToSend) noexcept {
 		try {
 			DiscordCoreAPI::StopWatch stopWatch{ std::chrono::milliseconds{ 5500 } };
 			while (!this->areWeConnected.load() && !(dataToSend.contains("op") && (dataToSend["op"] == 2 || dataToSend["op"] == 6))) {
@@ -136,7 +136,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	std::vector<std::string> BaseSocketAgent::tokenize(std::string& dataIn, std::string separator) noexcept {
+	std::vector<std::string> BaseSocketAgent::tokenize(const std::string& dataIn, const std::string& separator) noexcept {
 		try {
 			std::string::size_type value{ 0 };
 			std::vector<std::string> dataOut{};
@@ -993,7 +993,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void VoiceSocketAgent::sendMessage(std::vector<uint8_t>& dataToSend) noexcept {
+	void VoiceSocketAgent::sendMessage(const std::vector<uint8_t>& dataToSend) noexcept {
 		try {
 			std::string newString{};
 			newString.insert(newString.begin(), dataToSend.begin(), dataToSend.end());
@@ -1014,7 +1014,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void VoiceSocketAgent::sendMessage(std::string& dataToSend) noexcept {
+	void VoiceSocketAgent::sendMessage(const std::string& dataToSend) noexcept {
 		try {
 			if (this->printMessages) {
 				std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Sending Voice WebSocket Message: " << std::endl << dataToSend << DiscordCoreAPI::reset();
@@ -1056,7 +1056,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	std::vector<std::string> VoiceSocketAgent::tokenize(std::string& dataIn, std::string separator) noexcept {
+	std::vector<std::string> VoiceSocketAgent::tokenize(const std::string& dataIn, const std::string& separator) noexcept {
 		try {
 			std::vector<std::string> dataOut{};
 			for (auto value = 0; value != std::string::npos; value = static_cast<int32_t>(dataIn.find_first_not_of(separator, value))) {

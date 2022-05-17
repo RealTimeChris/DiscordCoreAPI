@@ -200,7 +200,7 @@ namespace DiscordCoreAPI {
 
 		static void insertRole(Role dataPackage);
 
-		static void removeRole(std::string roleId);
+		static void removeRole(const std::string&roleId);
 	};
 	/**@}*/
 

@@ -49,7 +49,7 @@ namespace DiscordCoreAPI {
 		return Globals::songAPIMap;
 	}
 
-	DiscordCoreClient::DiscordCoreClient(std::string botTokenNew, std::vector<RepeatedFunctionData> functionsToExecuteNew, CacheOptions cacheOptionsNew,
+	DiscordCoreClient::DiscordCoreClient(const std::string&botTokenNew, std::vector<RepeatedFunctionData> functionsToExecuteNew, CacheOptions cacheOptionsNew,
 		ShardingOptions shardingOptionsNew, LoggingOptions loggingOptionsNew) {
 		curl_global_init(CURL_GLOBAL_NOTHING);
 		if (sodium_init() == -1) {
