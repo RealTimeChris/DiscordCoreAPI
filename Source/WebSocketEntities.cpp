@@ -577,7 +577,6 @@ namespace DiscordCoreInternal {
 								DiscordCoreAPI::ButtonCollector::buttonInteractionBufferMap[eventData->getChannelId() + eventData->getMessageId()]->send(
 									eventData->getInteractionData());
 							}
-							this->eventManager->onInputEventCreationEvent(*eventCreationData);
 							this->eventManager->onInteractionCreationEvent(*dataPackage);
 						} else if (interactionData->data.componentData.componentType == DiscordCoreAPI::ComponentType::SelectMenu) {
 							eventData->eventType = DiscordCoreAPI::InteractionType::Message_Component;
@@ -592,7 +591,6 @@ namespace DiscordCoreInternal {
 								DiscordCoreAPI::SelectMenuCollector::selectMenuInteractionBufferMap[eventData->getChannelId() + eventData->getMessageId()]->send(
 									eventData->getInteractionData());
 							}
-							this->eventManager->onInputEventCreationEvent(*eventCreationData);
 							this->eventManager->onInteractionCreationEvent(*dataPackage);
 						}
 					} else if (interactionData->type == DiscordCoreAPI::InteractionType::Modal_Submit) {
@@ -607,7 +605,6 @@ namespace DiscordCoreInternal {
 						if (DiscordCoreAPI::ModalCollector::modalInteractionBufferMap.contains(eventData->getChannelId())) {
 							DiscordCoreAPI::ModalCollector::modalInteractionBufferMap[eventData->getChannelId()]->send(eventData->getInteractionData());
 						}
-						this->eventManager->onInputEventCreationEvent(*eventCreationData);
 						this->eventManager->onInteractionCreationEvent(*dataPackage);
 					} else if (interactionData->type == DiscordCoreAPI::InteractionType::Application_Command_Autocomplete) {
 						eventData->eventType = DiscordCoreAPI::InteractionType::Application_Command_Autocomplete;
@@ -616,15 +613,9 @@ namespace DiscordCoreInternal {
 						*eventData->interactionData = *interactionData;
 						std::unique_ptr<DiscordCoreAPI::OnInteractionCreationData> dataPackage{ std::make_unique<DiscordCoreAPI::OnInteractionCreationData>() };
 						dataPackage->interactionData = *interactionData;
-						std::unique_ptr<DiscordCoreAPI::OnInputEventCreationData> eventCreationData{ std::make_unique<DiscordCoreAPI::OnInputEventCreationData>() };
-						eventCreationData->inputEventData = *eventData;
 						std::unique_ptr<DiscordCoreAPI::OnAutoCompleteEntryData> autocompleteEntryData{ std::make_unique<DiscordCoreAPI::OnAutoCompleteEntryData>() };
 						autocompleteEntryData->inputEvent = *eventData;
-						if (DiscordCoreAPI::ModalCollector::modalInteractionBufferMap.contains(eventData->getChannelId())) {
-							DiscordCoreAPI::ModalCollector::modalInteractionBufferMap[eventData->getChannelId()]->send(eventData->getInteractionData());
-						}
 						this->eventManager->onAutoCompleteEntryEvent(*autocompleteEntryData);
-						this->eventManager->onInputEventCreationEvent(*eventCreationData);
 						this->eventManager->onInteractionCreationEvent(*dataPackage);
 					}
 				} else if (payload["t"] == "INVITE_CREATE") {
