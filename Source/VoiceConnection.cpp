@@ -207,7 +207,7 @@ namespace DiscordCoreAPI {
 		};
 	}
 
-	void VoiceConnection::sendSingleAudioFrame(const std::string&& audioDataPacketNew) {
+	void VoiceConnection::sendSingleAudioFrame(const std::string& audioDataPacketNew) {
 		if (this->voiceSocketAgent) {
 			if (this->voiceSocketAgent->voiceSocket) {
 				this->voiceSocketAgent->sendVoiceData(audioDataPacketNew);
