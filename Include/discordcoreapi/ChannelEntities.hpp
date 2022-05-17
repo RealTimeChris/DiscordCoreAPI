@@ -253,7 +253,7 @@ namespace DiscordCoreAPI {
 
 		static void insertChannel(Channel dataPackage);
 
-		static void removeChannel( const std::string&channelId);
+		static void removeChannel(const std::string&channelId);
 	};
 	/**@}*/
 }// namespace DiscordCoreAPI

@@ -304,7 +304,7 @@ namespace DiscordCoreAPI {
 		/// \param selfDeaf Self-deafen the bot?
 		/// \param selfMute Self-mute the bot?
 		/// \returns A pointer containing the voice connection.
-		VoiceConnection* connectToVoice( const std::string& channelId, bool selfDeaf, bool selfMute);
+		VoiceConnection* connectToVoice(const std::string& channelId, bool selfDeaf, bool selfMute);
 
 		/// Disconnects from a voice Channel. \brief Disconnects from a voice Channel.
 		void disconnect();
@@ -524,7 +524,7 @@ namespace DiscordCoreAPI {
 
 		static void insertGuild(Guild guild);
 
-		static void removeGuild( const std::string& GuildId);
+		static void removeGuild(const std::string& GuildId);
 	};
 	/**@}*/
 }// namespace DiscordCoreAPI

@@ -38,9 +38,9 @@ namespace DiscordCoreAPI {
 	  protected:
 		DiscordCoreClient* discordCoreClient{ nullptr };
 
-		std::unique_ptr<BaseFunction> createFunction( const std::string&functionName);
+		std::unique_ptr<BaseFunction> createFunction(const std::string&functionName);
 
-		std::unique_ptr<BaseFunction> getCommand( const std::string&commandName);
+		std::unique_ptr<BaseFunction> getCommand(const std::string&commandName);
 	};
 
 };// namespace DiscordCoreAPI

@@ -297,7 +297,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	void Channels::removeChannel( const std::string&channelId) {
+	void Channels::removeChannel(const std::string&channelId) {
 		try {
 			Channels::cache.erase(channelId);
 		} catch (...) {

@@ -28,7 +28,7 @@ namespace DiscordCoreInternal {
 		this->doWePrint = doWePrintNew;
 	}
 
-	void AudioDecoder::submitDataForDecoding( const std::string&dataToDecode) {
+	void AudioDecoder::submitDataForDecoding(const std::string&dataToDecode) {
 		this->inputDataBuffer.send(dataToDecode);
 	}
 
