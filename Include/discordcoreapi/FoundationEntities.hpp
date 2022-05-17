@@ -975,7 +975,7 @@ namespace DiscordCoreAPI {
 		std::string botId{};///< What is the bot id?
 	};
 
-	enum class RoleFlags : int8_t { Mentionable = 0b00000001, Managed = 0b00000010, Hoist = 0b00000100 };
+	enum class RoleFlags : int8_t { Mentionable = 1 << 0, Managed = 1 << 1, Hoist = 1 << 2 };
 
 	/// Data structure representing a single Role. \brief Data structure representing a single Role.
 	class DiscordCoreAPI_Dll RoleData : public DiscordEntity {
@@ -1380,7 +1380,7 @@ namespace DiscordCoreAPI {
 		Longest = 10080///< Longest.
 	};
 
-	enum class ChannelFlags { NSFW = 0b00000001 };
+	enum class ChannelFlags { NSFW = 1 << 0 };
 
 	/// Data structure representing a single Channel. \brief Data structure representing a single Channel.
 	class DiscordCoreAPI_Dll ChannelData : public DiscordEntity {
@@ -1429,7 +1429,7 @@ namespace DiscordCoreAPI {
 
 	struct DiscordCoreAPI_Dll VoiceStateData;
 
-	enum class GuildMemberFlags { Pending = 0b00000001, Deaf = 0b00000010, Mute = 0b00000100 };
+	enum class GuildMemberFlags { Pending = 1 << 0, Deaf = 1 << 1, Mute = 1 << 2 };
 
 	/// Data structure representing a single GuildMember. \brief Data structure representing a single GuildMember.
 	class DiscordCoreAPI_Dll GuildMemberData {
@@ -2012,7 +2012,7 @@ namespace DiscordCoreAPI {
 		Guild = 2///< Guild.
 	};
 
-	enum class StickerFlags { Available = 0b00000001 };
+	enum class StickerFlags { Available = 1 << 0 };
 
 	/// Data representing a single Sticker. \brief Data representing a single Sticker.
 	class DiscordCoreAPI_Dll StickerData : public DiscordEntity {
@@ -2087,11 +2087,11 @@ namespace DiscordCoreAPI {
 
 	/// Guild flags. \brief Guild flags.
 	enum class GuildFlags {
-		WidgetEnabled = 0b00000001,///< Widget enabled.
-		Unavailable = 0b00000010,///< Unavailable.
-		Owner = 0b00000100,///< Owner.
-		Large = 0b00001000,///< Large.
-		Premium_Progress_Bar_Enabled = 0b00010000///< Premium progress bar enabled
+		WidgetEnabled = 1 << 0,///< Widget enabled.
+		Unavailable = 1 << 1,///< Unavailable.
+		Owner = 1 << 2,///< Owner.
+		Large = 1 << 3,///< Large.
+		Premium_Progress_Bar_Enabled = 1 << 4///< Premium progress bar enabled
 	};
 
 	/// Data structure representing a single Guild. \brief Data structure representing a single Guild.
@@ -2158,50 +2158,17 @@ namespace DiscordCoreAPI {
 		}
 
 		std::unordered_map<std::string, PresenceUpdateData> presences{};///< Array of presences for each GuildMember.
-		DefaultMessageNotificationLevel defaultMessageNotifications{};///< Default Message notification level.
 		std::unordered_map<std::string, VoiceStateData> voiceStates{};///< Array of Guild-member voice-states.
-		GuildNSFWLevel nsfwLevel{ GuildNSFWLevel::Default };///< NSFW warning level.
-		ExplicitContentFilterLevel explicitContentFilter{};///< Explicit content filtering level, by default.
 		DiscordCoreClient* discordCoreClient{ nullptr };///< A pointer to the DiscordCoreClient.
-		SystemChannelFlags systemChannelFlags{};///< System Channel flags.
-		int32_t premiumSubscriptionCount{ 0 };///< Premium subscription count.
-		int32_t approximatePresenceCount{ 0 };///< Approximate quantity of presences.
-		VerificationLevel verificationLevel{};///< Verification level required.
-		std::string publicUpdatesChannelId{};///< Id of the public updates Channel.
+		VoiceConnection* voiceConnectionPtr{ nullptr };
 		std::vector<std::string> features{};///< List of Guild features.
-		int32_t approximateMemberCount{ 0 };///< Approximate member count.
 		std::vector<std::string> channels{};///< Array of Guild channels.
 		std::vector<std::string> members{};///< Array of GuildMembers.
-		WelcomeScreenData welcomeScreen{};///< Welcome screen for the Guild.
-		int32_t maxVideoChannelUsers{ 0 };///< Maximum quantity of users per video Channel.
 		std::vector<std::string> roles{};///< Array of Guild roles.
-		AfkTimeOutDurations afkTimeOut{};///< Time for an individual to time out as afk.
-		std::string discoverySplash{};///< Link to the discovery image's splash.
-		std::string preferredLocale{};///< Preferred locale, for voice chat servers.
-		std::string widgetChannelId{};///< Channel id for the Guild's widget.
-		std::string systemChannelId{};///< Channel id for the Guild's system Channel.
-		std::string rulesChannelId{};///< Channel id for the Guild's rules Channel.
-		std::string vanityUrlCode{};///< Vanity Url code, if applicable.
-		std::string applicationId{};///< The current application id.
-		std::string afkChannelId{};///< Channel if of the "afk" Channel.
-		std::string description{};///< Description of the Guild.
-		Permissions permissions{};///< Current Permissions for the bot in the Guild.
-		PremiumTier premiumTier{};///< What is the premium tier?
-		int32_t maxPresences{ 0 };///< Max number of presences allowed.
-		int32_t memberCount{ 0 };///< Member count.
-		TimeStamp joinedAt{ "" };///< When the bot joined this Guild.
-		int32_t maxMembers{ 0 };///< Max quantity of members.
-		std::string createdAt{};///< When was the Guild created?
-		int8_t guildFlags{ 0 };///< Guild flags.
-		std::string iconHash{};///< Url to the Guild's icon.
-		std::string ownerId{};///< User id of the Guild's owner.
-		std::string region{};///< Region of the world where the Guild's servers are.
-		std::string splash{};///< Url to the Guild's splash.
-		std::string banner{};///< Url to the Guild's banner.
-		MFALevel mfaLevel{};///< MFA level.
-		std::string icon{};///< Url to the Guild's icon.
 		std::string name{};///< The Guild's name.
-
+		int32_t memberCount{ 0 };///< The number of members in this Guild.
+		int8_t guildFlags{ 0 };///< Guild flags.
+		
 		GuildData() = default;
 
 		virtual ~GuildData() = default;
