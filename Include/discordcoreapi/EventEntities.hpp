@@ -56,7 +56,7 @@ namespace DiscordCoreInternal {
 	}
 
 	bool operator<(const EventDelegateToken& lhs, const EventDelegateToken& rhs) {
-		if (lhs.handlerId < rhs.handlerId) {
+		if (stoll(lhs.handlerId) < stoll(rhs.handlerId)) {
 			return true;
 		} else {
 			return false;
