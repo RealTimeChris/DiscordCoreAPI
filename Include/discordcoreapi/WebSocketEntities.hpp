@@ -38,9 +38,9 @@ namespace DiscordCoreInternal {
 		friend class DiscordCoreAPI::VoiceConnection;
 		friend VoiceSocketAgent;
 
-		BaseSocketAgent(const std::string& botToken, const std::string& baseUrl, DiscordCoreAPI::EventManager* eventManager, DiscordCoreAPI::DiscordCoreClient* discordCoreClient,
-			DiscordCoreAPI::CommandController* commandController, std::atomic_bool* theBool, bool doWePrintMessages = false, int32_t shardNumber = 0,
-			int32_t numberOfShards = 1) noexcept;
+		BaseSocketAgent(const std::string& botTokenNew, const std::string& baseUrl, DiscordCoreAPI::EventManager* eventManager,
+			DiscordCoreAPI::DiscordCoreClient* discordCoreClient, DiscordCoreAPI::CommandController* commandController, std::atomic_bool* doWeQuitNew,
+			bool doWePrintSuccessMessages, bool doWePrintErrorMessages, int32_t shardNumber, int32_t numberOfShards) noexcept;
 
 		BaseSocketAgent(nullptr_t) noexcept;
 
@@ -73,15 +73,16 @@ namespace DiscordCoreInternal {
 		bool serverUpdateCollected{ false };
 		bool stateUpdateCollected{ false };
 		int32_t currentReconnectTries{ 0 };
+		bool printSuccessMessages{ false };
 		bool areWeCollectingData{ false };
 		bool areWeAuthenticated{ false };
+		bool printErrorMessages{ false };
 		bool areWeHeartBeating{ false };
 		int32_t lastNumberReceived{ 0 };
 		int32_t heartbeatInterval{ 0 };
 		std::mutex accessorMutex01{};
 		EventWaiter doWeReconnect{};
 		bool areWeResuming{ false };
-		bool printMessages{ false };
 		int32_t currentShard{ 0 };
 		int32_t numOfShards{ 0 };
 		std::string sessionId{};
@@ -143,12 +144,13 @@ namespace DiscordCoreInternal {
 		bool haveWeReceivedHeartbeatAck{ true };
 		int32_t currentReconnectionTries{ 0 };
 		int32_t maxReconnectionTries{ 10 };
+		bool printSuccessMessages{ false };
+		bool printErrorMessages{ false };
 		int32_t lastNumberReceived{ 0 };
 		bool areWeHeartBeating{ false };
 		int32_t heartbeatInterval{ 0 };
 		EventWaiter areWeConnected{};
 		EventWaiter doWeReconnect{};
-		bool printMessages{ false };
 		uint32_t closeCode{ 0 };
 		std::string baseUrl{};
 		std::string hostIp{};

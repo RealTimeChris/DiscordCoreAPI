@@ -262,7 +262,7 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll AudioDecoder {
 	  public:
-		AudioDecoder(BuildAudioDecoderData dataPackage, bool doWePrint);
+		AudioDecoder(BuildAudioDecoderData dataPackage, bool doWePrintSuccess, bool doWePrintError);
 
 		void submitDataForDecoding(const std::string& dataToDecode);
 
@@ -289,10 +289,11 @@ namespace DiscordCoreInternal {
 		AVStreamWrapper audioStream{ nullptr };
 		AVPacketWrapper packet{ nullptr };
 		AVCodecWrapper codec{ nullptr };
+		bool doWePrintSuccess{ false };
+		bool doWePrintError{ false };
 		std::string currentBuffer{};
 		bool areWeQuitting{ false };
-		bool haveWeBooted{ false };
-		bool doWePrint{ false };
+		bool haveWeBooted{ false };		
 
 		static int32_t FileStreamRead(void* opaque, uint8_t* buf, int32_t);
 

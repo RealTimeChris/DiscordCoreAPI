@@ -3676,9 +3676,14 @@ namespace DiscordCoreAPI {
 
 	/// Logging options for the library. \brief Loggin options for the library.
 	struct DiscordCoreAPI_Dll LoggingOptions {
-		bool logWebSocketMessages{ false };///< Do we log the websocket messages?
-		bool logFFMPEGMessages{ false };///< Do we log FFMPEG messages?
-		bool logHttpMessages{ false };///< Do we log Http response messages?
+		bool logWebSocketSuccessMessages{ false };///< Do we log the websocket success messages?
+		bool logWebSocketErrorMessages{ false };///< Do we log the websocket error messages?
+		bool logGeneralSuccessMessages{ false };///< Do we log general success messages?
+		bool logFFMPEGSuccessMessages{ false };///< Do we log FFMPEG success messages?
+		bool logGeneralErrorMessages{ false };///< Do we log general error messages?
+		bool logHttpSuccessMessages{ false };///< Do we log Http response success messages?
+		bool logFFMPEGErrorMessages{ false };///< Do we log FFMPEG error messages?
+		bool logHttpErrorMessages{ false };///< Do we log Http response error messages?
 	};
 
 	/// For selecting the caching style of the library. \brief For selecting the caching style of the library.

@@ -33,13 +33,14 @@ namespace DiscordCoreInternal {
 	constexpr uint8_t maxHeaderSize{ sizeof(uint64_t) + 2 };
 	constexpr unsigned char webSocketMaskBit{ (1u << 7u) };
 
-	BaseSocketAgent::BaseSocketAgent(const std::string& botTokenNew, const std::string& baseUrl, DiscordCoreAPI::EventManager* eventManager, DiscordCoreAPI::DiscordCoreClient* discordCoreClient,
-		DiscordCoreAPI::CommandController* commandController, std::atomic_bool* doWeQuitNew, bool doWePrintMessages, int32_t shardNumber, int32_t numberOfShards) noexcept {
+	BaseSocketAgent::BaseSocketAgent(const std::string& botTokenNew, const std::string& baseUrl, DiscordCoreAPI::EventManager* eventManager, DiscordCoreAPI::DiscordCoreClient* discordCoreClient, DiscordCoreAPI::CommandController* commandController, std::atomic_bool* doWeQuitNew, bool doWePrintSuccessMessages,
+		bool doWePrintErrorMessages, int32_t shardNumber, int32_t numberOfShards) noexcept {
 		this->doWeQuit = doWeQuitNew;
 		this->commandController = commandController;
 		this->discordCoreClient = discordCoreClient;
 		this->eventManager = eventManager;
-		this->printMessages = doWePrintMessages;
+		this->printSuccessMessages = doWePrintSuccessMessages;
+		this->printErrorMessages = doWePrintErrorMessages;
 		this->currentShard = shardNumber;
 		this->numOfShards = numberOfShards;
 		this->state = WebSocketState::Initializing;
@@ -56,12 +57,14 @@ namespace DiscordCoreInternal {
 	void BaseSocketAgent::sendMessage(const std::string& dataToSend) noexcept {
 		try {
 			std::lock_guard<std::mutex> accessLock{ this->accessorMutex01 };
-			if (this->printMessages) {
+			if (this->printSuccessMessages) {
 				std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Sending WebSocket Message: " << std::endl << dataToSend << DiscordCoreAPI::reset();
 			}
 			this->webSocket->writeData(dataToSend);
 		} catch (...) {
-			DiscordCoreAPI::reportException("BaseSocketAgent::sendMessage()");
+			if (this->printErrorMessages) {
+				DiscordCoreAPI::reportException("BaseSocketAgent::sendMessage()");
+			}
 			this->onClosedExternal();
 		}
 	}
@@ -79,7 +82,7 @@ namespace DiscordCoreInternal {
 				}
 			}
 			std::lock_guard<std::mutex> accessLock{ this->accessorMutex01 };
-			if (this->printMessages) {
+			if (this->printSuccessMessages) {
 				std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Sending WebSocket Message: " << dataToSend.dump() << std::endl << DiscordCoreAPI::reset() << std::endl;
 			}
 			std::string theVector = this->erlPacker.parseJsonToEtf(dataToSend);
@@ -92,7 +95,9 @@ namespace DiscordCoreInternal {
 			theVectorNew.insert(theVectorNew.begin() + header.size(), theVector.begin(), theVector.end());
 			this->webSocket->writeData(theVectorNew);
 		} catch (...) {
-			DiscordCoreAPI::reportException("BaseSocketAgent::sendMessage()");
+			if (this->printErrorMessages) {
+				DiscordCoreAPI::reportException("BaseSocketAgent::sendMessage()");
+			}
 			this->onClosedExternal();
 		}
 	}
@@ -121,7 +126,9 @@ namespace DiscordCoreInternal {
 			outBuffer[position++] = 0;
 			return position;
 		} catch (...) {
-			DiscordCoreAPI::reportException("BaseSocketAgent::createHeader()");
+			if (this->printErrorMessages) {
+				DiscordCoreAPI::reportException("BaseSocketAgent::createHeader()");
+			}
 			this->onClosedExternal();
 			return uint64_t{};
 		}
@@ -138,7 +145,9 @@ namespace DiscordCoreInternal {
 			}
 			return dataOut;
 		} catch (...) {
-			DiscordCoreAPI::reportException("BaseSocketAgent::tokenize()");
+			if (this->printErrorMessages) {
+				DiscordCoreAPI::reportException("BaseSocketAgent::tokenize()");
+			}
 			this->onClosedExternal();
 			return std::vector<std::string>{};
 		}
@@ -165,7 +174,9 @@ namespace DiscordCoreInternal {
 			}
 			this->semaphore.release();
 		} catch (...) {
-			DiscordCoreAPI::reportException("BaseSocketAgent::getVoiceConnectionData()");
+			if (this->printErrorMessages) {
+				DiscordCoreAPI::reportException("BaseSocketAgent::getVoiceConnectionData()");
+			}
 			this->onClosedExternal();
 		}
 	}
@@ -194,7 +205,9 @@ namespace DiscordCoreInternal {
 				}
 			}
 		} catch (...) {
-			DiscordCoreAPI::reportException("BaseSocketAgent::run()");
+			if (this->printErrorMessages) {
+				DiscordCoreAPI::reportException("BaseSocketAgent::run()");
+			}
 			this->onClosedExternal();
 		}
 	}
@@ -770,12 +783,14 @@ namespace DiscordCoreInternal {
 					this->eventManager->onWebhookUpdateEvent(*dataPackage);
 				}
 			}
-			if (this->printMessages) {
+			if (this->printSuccessMessages) {
 				std::cout << DiscordCoreAPI::shiftToBrightGreen() << "Message received from WebSocket: " << payload.dump() << std::endl << DiscordCoreAPI::reset() << std::endl;
 			}
 			return;
 		} catch (...) {
-			DiscordCoreAPI::reportException("BaseSocketAgent::onMessageReceived()");
+			if (this->printErrorMessages) {
+				DiscordCoreAPI::reportException("BaseSocketAgent::onMessageReceived()");
+			}
 			this->onClosedExternal();
 			return;
 		}
@@ -791,7 +806,9 @@ namespace DiscordCoreInternal {
 				this->onClosedExternal();
 			}
 		} catch (...) {
-			DiscordCoreAPI::reportException("BaseSocketAgent::sendHeartBeat()");
+			if (this->printErrorMessages) {
+				DiscordCoreAPI::reportException("BaseSocketAgent::sendHeartBeat()");
+			}
 			this->onClosedExternal();
 		}
 	}
@@ -826,7 +843,9 @@ namespace DiscordCoreInternal {
 					return;
 			}
 		} catch (...) {
-			DiscordCoreAPI::reportException("BaseSocketAgent::handleBuffer()");
+			if (this->printErrorMessages) {
+				DiscordCoreAPI::reportException("BaseSocketAgent::handleBuffer()");
+			}
 			this->onClosedExternal();
 		}
 	}
@@ -898,7 +917,9 @@ namespace DiscordCoreInternal {
 			}
 			return false;
 		} catch (...) {
-			DiscordCoreAPI::reportException("BaseSocketAgent::parseHeader()");
+			if (this->printErrorMessages) {
+				DiscordCoreAPI::reportException("BaseSocketAgent::parseHeader()");
+			}
 			this->onClosedExternal();
 			return false;
 		}
@@ -934,7 +955,9 @@ namespace DiscordCoreInternal {
 				DiscordCoreAPI::generateBase64EncodedKey() + "\r\nSec-WebSocket-Version: 13\r\n\r\n";
 			this->sendMessage(sendString);
 		} catch (...) {
-			DiscordCoreAPI::reportException("BaseSocketAgent::connect()");
+			if (this->printErrorMessages) {
+				DiscordCoreAPI::reportException("BaseSocketAgent::connect()");
+			}
 			this->onClosedExternal();
 		}
 	}
@@ -947,9 +970,10 @@ namespace DiscordCoreInternal {
 	}
 
 	VoiceSocketAgent::VoiceSocketAgent(VoiceConnectInitData initDataNew, BaseSocketAgent* baseBaseSocketAgentNew, bool printMessagesNew) noexcept {
-		this->printMessages = printMessagesNew;
 		this->baseSocketAgent = baseBaseSocketAgentNew;
 		this->voiceConnectInitData = initDataNew;
+		this->printSuccessMessages = baseBaseSocketAgentNew->printSuccessMessages;
+		this->printErrorMessages = baseBaseSocketAgentNew->printErrorMessages;
 		this->baseSocketAgent->voiceConnectionDataBufferMap.insert_or_assign(this->voiceConnectInitData.guildId, &this->voiceConnectionDataBuffer);
 		this->baseSocketAgent->getVoiceConnectionData(this->voiceConnectInitData);
 		this->doWeReconnect.set();
@@ -970,7 +994,9 @@ namespace DiscordCoreInternal {
 				}
 			}
 		} catch (...) {
-			DiscordCoreAPI::reportException("VoiceSocketAgent::sendVoiceData()");
+			if (this->printErrorMessages) {
+				DiscordCoreAPI::reportException("VoiceSocketAgent::sendVoiceData()");
+			}
 			this->onClosedExternal();
 		}
 	}
@@ -979,7 +1005,7 @@ namespace DiscordCoreInternal {
 		try {
 			std::string newString{};
 			newString.insert(newString.begin(), dataToSend.begin(), dataToSend.end());
-			if (this->printMessages) {
+			if (this->printSuccessMessages) {
 				std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Sending Voice WebSocket Message: " << newString << std::endl << DiscordCoreAPI::reset() << std::endl;
 			}
 			std::vector<char> out{};
@@ -991,19 +1017,23 @@ namespace DiscordCoreInternal {
 			theVectorNew.insert(theVectorNew.begin() + header.size(), newString.begin(), newString.end());
 			this->webSocket->writeData(theVectorNew);
 		} catch (...) {
-			DiscordCoreAPI::reportException("VoiceSocketAgent::sendMessage()");
+			if (this->printErrorMessages) {
+				DiscordCoreAPI::reportException("VoiceSocketAgent::sendMessage()");
+			}
 			this->onClosedExternal();
 		}
 	}
 
 	void VoiceSocketAgent::sendMessage(const std::string& dataToSend) noexcept {
 		try {
-			if (this->printMessages) {
+			if (this->printSuccessMessages) {
 				std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Sending Voice WebSocket Message: " << std::endl << dataToSend << DiscordCoreAPI::reset();
 			}
 			this->webSocket->writeData(dataToSend);
 		} catch (...) {
-			DiscordCoreAPI::reportException("VoiceSocketAgent::sendMessage()");
+			if (this->printErrorMessages) {
+				DiscordCoreAPI::reportException("VoiceSocketAgent::sendMessage()");
+			}
 			this->onClosedExternal();
 		}
 	}
@@ -1032,7 +1062,9 @@ namespace DiscordCoreInternal {
 			outBuffer[position++] = 0;
 			return position;
 		} catch (...) {
-			DiscordCoreAPI::reportException("VoiceSocketAgent::createHeader()");
+			if (this->printErrorMessages) {
+				DiscordCoreAPI::reportException("VoiceSocketAgent::createHeader()");
+			}
 			this->onClosedExternal();
 			return size_t{};
 		}
@@ -1048,7 +1080,9 @@ namespace DiscordCoreInternal {
 			}
 			return dataOut;
 		} catch (...) {
-			DiscordCoreAPI::reportException("VoiceSocketAgent::tokenize()");
+			if (this->printErrorMessages) {
+				DiscordCoreAPI::reportException("VoiceSocketAgent::tokenize()");
+			}
 			this->onClosedExternal();
 			return std::vector<std::string>{};
 		}
@@ -1082,7 +1116,9 @@ namespace DiscordCoreInternal {
 				this->handleBuffer();
 			}
 		} catch (...) {
-			DiscordCoreAPI::reportException("VoiceSocketAgent::run()");
+			if (this->printErrorMessages) {
+				DiscordCoreAPI::reportException("VoiceSocketAgent::run()");
+			}
 			this->onClosedExternal();
 		}
 	}
@@ -1092,7 +1128,7 @@ namespace DiscordCoreInternal {
 			std::string message = this->webSocket->getInputBuffer();
 			this->webSocket->getInputBuffer().clear();
 			nlohmann::json payload = payload.parse(message);
-			if (this->printMessages) {
+			if (this->printSuccessMessages) {
 				std::cout << DiscordCoreAPI::shiftToBrightGreen() << "Message received from Voice WebSocket: " << message << std::endl << DiscordCoreAPI::reset() << std::endl;
 			}
 			if (payload.contains("op")) {
@@ -1137,7 +1173,9 @@ namespace DiscordCoreInternal {
 				}
 			}
 		} catch (...) {
-			DiscordCoreAPI::reportException("VoiceSocketAgent::onMessageReceived()");
+			if (this->printErrorMessages) {
+				DiscordCoreAPI::reportException("VoiceSocketAgent::onMessageReceived()");
+			}
 			this->onClosedExternal();
 		}
 	}
@@ -1171,7 +1209,9 @@ namespace DiscordCoreInternal {
 			this->voiceSocket->getInputBuffer().clear();
 			this->voiceConnectionData.externalIp = message;
 		} catch (...) {
-			DiscordCoreAPI::reportException("VoiceSocketAgent::collectExternalIP()");
+			if (this->printErrorMessages) {
+				DiscordCoreAPI::reportException("VoiceSocketAgent::collectExternalIP()");
+			}
 			this->onClosedExternal();
 		}
 	}
@@ -1188,7 +1228,9 @@ namespace DiscordCoreInternal {
 				this->onClosedExternal();
 			}
 		} catch (...) {
-			DiscordCoreAPI::reportException("VoiceSocketAgent::sendHeartBeat()");
+			if (this->printErrorMessages) {
+				DiscordCoreAPI::reportException("VoiceSocketAgent::sendHeartBeat()");
+			}
 			this->onClosedExternal();
 		}
 	}
@@ -1197,7 +1239,9 @@ namespace DiscordCoreInternal {
 		try {
 			this->voiceSocket = std::make_unique<DatagramSocketSSLClient>(this->voiceConnectionData.voiceIp, this->voiceConnectionData.voicePort);
 		} catch (...) {
-			DiscordCoreAPI::reportException("VoiceSocketAgent::voiceConnect()");
+			if (this->printErrorMessages) {
+				DiscordCoreAPI::reportException("VoiceSocketAgent::voiceConnect()");
+			}
 			this->onClosedExternal();
 		}
 	}
@@ -1233,7 +1277,9 @@ namespace DiscordCoreInternal {
 					return;
 			}
 		} catch (...) {
-			DiscordCoreAPI::reportException("VoiceSocketAgent::handleBuffer()");
+			if (this->printErrorMessages) {
+				DiscordCoreAPI::reportException("VoiceSocketAgent::handleBuffer()");
+			}
 			this->onClosedExternal();
 		}
 	}
@@ -1305,7 +1351,9 @@ namespace DiscordCoreInternal {
 			}
 			return false;
 		} catch (...) {
-			DiscordCoreAPI::reportException("VoiceSocketAgent::parseHeader()");
+			if (this->printErrorMessages) {
+				DiscordCoreAPI::reportException("VoiceSocketAgent::parseHeader()");
+			}
 			this->onClosedExternal();
 			return false;
 		}
@@ -1333,7 +1381,9 @@ namespace DiscordCoreInternal {
 				DiscordCoreAPI::generateBase64EncodedKey() + "\r\nSec-WebSocket-Version: 13\r\n\r\n";
 			this->sendMessage(sendVector);
 		} catch (...) {
-			DiscordCoreAPI::reportException("VoiceSocketAgent::connect()");
+			if (this->printErrorMessages) {
+				DiscordCoreAPI::reportException("VoiceSocketAgent::connect()");
+			}
 			this->onClosedExternal();
 		}
 	}

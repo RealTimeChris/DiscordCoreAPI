@@ -76,8 +76,9 @@ namespace DiscordCoreInternal {
 	  protected:
 		SoundCloudRequestBuilder requestBuilder{};
 		const int32_t maxBufferSize{ 8192 };
-		HttpClient* httpClient{ nullptr };
+		bool doWePrintSuccess{ false };
 		DiscordCoreAPI::Song theSong{};
+		bool doWePrintError{ false };
 		std::string guildId{};
 	};
 

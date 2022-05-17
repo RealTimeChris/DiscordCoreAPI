@@ -278,8 +278,9 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	HttpClient::HttpClient(const std::string&  botTokenNew, bool doWePrintHttpNew, bool doWePrintFFMPEGNew)
-		: botToken(botTokenNew), doWePrintFFMPEG(doWePrintFFMPEGNew), doWePrintHttp(doWePrintHttpNew) {
+	HttpClient::HttpClient(const std::string& botTokenNew, bool doWePrintHttpSuccessNew, bool doWePrintHttpErrorNew, bool doWePrintFFMPEGSuccessNew, bool doWePrintFFMPEGErrorNew)
+		: botToken(botTokenNew), doWePrintFFMPEGError(doWePrintFFMPEGErrorNew), doWePrintHttpSuccess(doWePrintHttpSuccessNew), doWePrintHttpError(doWePrintHttpErrorNew),
+		  doWePrintFFMPEGSuccess(doWePrintFFMPEGSuccessNew) {
 		this->connectionManager.initialize();
 	};
 
@@ -308,7 +309,7 @@ namespace DiscordCoreInternal {
 			rateLimitDataPtr->doWeWait = false;
 		}
 		if (timeRemaining > 0) {
-			if (this->doWePrintHttp) {
+			if (this->doWePrintHttpSuccess) {
 				std::cout << DiscordCoreAPI::shiftToBrightBlue() << "We're waiting on rate-limit: " << timeRemaining << std::endl << DiscordCoreAPI::reset() << std::endl;
 			}
 			int64_t targetTime = currentTime + timeRemaining;
@@ -336,7 +337,7 @@ namespace DiscordCoreInternal {
 			Globals::rateLimitValues[currentBucket] = std::move(rateLimitData);
 		}
 		if (returnData.responseCode == 204 || returnData.responseCode == 201 || returnData.responseCode == 200) {
-			if (this->doWePrintHttp) {
+			if (this->doWePrintHttpSuccess) {
 				std::cout << DiscordCoreAPI::shiftToBrightGreen() << workload.callStack + " Success: " << returnData.responseCode << ", " << returnData.responseMessage << std::endl
 						  << DiscordCoreAPI::reset() << std::endl;
 			}
@@ -346,11 +347,13 @@ namespace DiscordCoreInternal {
 				rateLimitDataPtr->didWeHitRateLimit = true;
 				rateLimitDataPtr->sampledTimeInMs =
 					static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
-				std::cout << DiscordCoreAPI::shiftToBrightRed() << workload.callStack + "::httpRequest(), We've hit rate limit! Time Remaining: "
-						  << std::to_string(Globals::rateLimitValues[Globals::rateLimitValueBuckets[workload.workloadType]]->msRemain) << std::endl
-						  << DiscordCoreAPI::reset() << std::endl;
+				if (this->doWePrintHttpError) {
+					std::cout << DiscordCoreAPI::shiftToBrightRed() << workload.callStack + "::httpRequest(), We've hit rate limit! Time Remaining: "
+							  << std::to_string(Globals::rateLimitValues[Globals::rateLimitValueBuckets[workload.workloadType]]->msRemain) << std::endl
+							  << DiscordCoreAPI::reset() << std::endl;
+				}
 				returnData = this->executeByRateLimitData(workload, theConnection);
-			} else {
+			} else if (this->doWePrintHttpError) {
 				std::cout << "Http Error: Code = " << std::to_string(returnData.responseCode) + ", Message = " + returnData.responseMessage << std::endl;
 			}
 		}
@@ -466,8 +469,12 @@ namespace DiscordCoreInternal {
 		return resultData;
 	}
 
-	const bool HttpClient::getDoWePrintFFMPEG() {
-		return this->doWePrintFFMPEG;
+	const bool HttpClient::getDoWePrintFFMPEGSuccess() {
+		return this->doWePrintFFMPEGSuccess;
+	}
+
+	const bool HttpClient::getDoWePrintFFMPEGError() {
+		return this->doWePrintFFMPEGError;
 	}
 
 	const std::string HttpClient::getBotToken() {

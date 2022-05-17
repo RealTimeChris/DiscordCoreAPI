@@ -22,10 +22,11 @@
 
 namespace DiscordCoreInternal {
 
-	AudioDecoder::AudioDecoder(BuildAudioDecoderData dataPackage, bool doWePrintNew) {
+	AudioDecoder::AudioDecoder(BuildAudioDecoderData dataPackage, bool doWePrintSuccessNew, bool doWePrintErrorNew) {
 		this->bufferMaxSize = dataPackage.bufferMaxSize;
 		this->totalFileSize = dataPackage.totalFileSize;
-		this->doWePrint = doWePrintNew;
+		this->doWePrintSuccess = doWePrintSuccessNew;
+		this->doWePrintError = doWePrintErrorNew;
 	}
 
 	void AudioDecoder::submitDataForDecoding(const std::string& dataToDecode) {
@@ -112,7 +113,9 @@ namespace DiscordCoreInternal {
 			unsigned char* fileStreamBuffer = static_cast<unsigned char*>(av_malloc(this->bufferMaxSize));
 			if (fileStreamBuffer == nullptr) {
 				this->haveWeFailedBool.store(true);
-				std::cout << "Failed to allocate filestreambuffer." << std::endl;
+				if (this->doWePrintError) {
+					std::cout << "Failed to allocate filestreambuffer." << std::endl;
+				}
 				return;
 			}
 
@@ -120,7 +123,9 @@ namespace DiscordCoreInternal {
 
 			if (this->ioContext == nullptr) {
 				this->haveWeFailedBool.store(true);
-				std::cout << "Failed to allocate AVIOContext." << std::endl;
+				if (this->doWePrintError) {
+					std::cout << "Failed to allocate AVIOContext." << std::endl;
+				}
 				return;
 			}
 
@@ -128,7 +133,9 @@ namespace DiscordCoreInternal {
 
 			if (!this->formatContext) {
 				this->haveWeFailedBool.store(true);
-				std::cout << "Could not allocate the format context." << std::endl;
+				if (this->doWePrintError) {
+					std::cout << "Could not allocate the format context." << std::endl;
+				}
 				return;
 			}
 
@@ -136,7 +143,9 @@ namespace DiscordCoreInternal {
 			this->formatContext->flags |= AVFMT_FLAG_CUSTOM_IO;
 			if (avformat_open_input(*this->formatContext, "memory", nullptr, nullptr) < 0) {
 				this->haveWeFailedBool.store(true);
-				std::cout << "Error opening AVFormatContext." << std::endl;
+				if (this->doWePrintError) {
+					std::cout << "Error opening AVFormatContext." << std::endl;
+				}
 				return;
 			}
 			*this->formatContext.getBoolPtr() = true;
@@ -147,20 +156,26 @@ namespace DiscordCoreInternal {
 				newString += av_get_media_type_string(type);
 				newString += " stream in input memory stream.";
 				this->haveWeFailedBool.store(true);
-				std::cout << newString << std::endl;
+					if (this->doWePrintError) {
+							std::cout << newString << std::endl;
+					}
 				return;
 			} else {
 				this->audioStreamIndex = ret;
 				this->audioStream = this->formatContext->streams[this->audioStreamIndex];
 				if (!this->audioStream) {
 					this->haveWeFailedBool.store(true);
-					std::cout << "Could not find an audio stream." << std::endl;
+					if (this->doWePrintError) {
+						std::cout << "Could not find an audio stream." << std::endl;
+					}
 					return;
 				}
 
 				if (avformat_find_stream_info(this->formatContext, NULL) < 0) {
 					this->haveWeFailedBool.store(true);
-					std::cout << "Could not find stream information." << std::endl;
+					if (this->doWePrintError) {
+						std::cout << "Could not find stream information." << std::endl;
+					}
 					return;
 				}
 
@@ -170,7 +185,9 @@ namespace DiscordCoreInternal {
 					newString += av_get_media_type_string(type);
 					newString += " decoder.";
 					this->haveWeFailedBool.store(true);
-					std::cout << newString << std::endl;
+					if (this->doWePrintError) {
+							std::cout << newString << std::endl;
+					}
 					return;
 				}
 
@@ -180,7 +197,9 @@ namespace DiscordCoreInternal {
 					newString += av_get_media_type_string(type);
 					newString += " AVCodecContext.";
 					this->haveWeFailedBool.store(true);
-					std::cout << newString << std::endl;
+					if (this->doWePrintError) {
+							std::cout << newString << std::endl;
+					}
 					return;
 				}
 
@@ -189,7 +208,9 @@ namespace DiscordCoreInternal {
 					newString += av_get_media_type_string(type);
 					newString += " codec parameters to decoder context.";
 					this->haveWeFailedBool.store(true);
-					std::cout << newString << std::endl;
+					if (this->doWePrintError) {
+							std::cout << newString << std::endl;
+					}
 					return;
 				}
 
@@ -198,14 +219,16 @@ namespace DiscordCoreInternal {
 					newString += av_get_media_type_string(type);
 					newString += " AVCodecContext.";
 					this->haveWeFailedBool.store(true);
-					std::cout << newString << std::endl;
+					if (this->doWePrintError) {
+							std::cout << newString << std::endl;
+					}
 					return;
 				}
 
 				this->swrContext = swr_alloc_set_opts(NULL, AV_CH_LAYOUT_STEREO, AVSampleFormat::AV_SAMPLE_FMT_S16, 48000, AV_CH_LAYOUT_STEREO,
 					this->audioDecodeContext->sample_fmt, this->audioDecodeContext->sample_rate, 0, nullptr);
 				swr_init(this->swrContext);
-				if (this->doWePrint) {
+				if (this->doWePrintSuccess) {
 					av_dump_format(this->formatContext, 0, "memory", 0);
 				}
 			}
@@ -217,21 +240,27 @@ namespace DiscordCoreInternal {
 			this->packet = av_packet_alloc();
 			if (!this->packet) {
 				this->haveWeFailedBool.store(true);
-				std::cout << "Error: Could not allocate packet" << std::endl;
+				if (this->doWePrintError) {
+					std::cout << "Error: Could not allocate packet" << std::endl;
+				}
 				return;
 			}
 
 			this->frame = av_frame_alloc();
 			if (!this->frame) {
 				this->haveWeFailedBool.store(true);
-				std::cout << "Error: Could not allocate frame" << std::endl;
+				if (this->doWePrintError) {
+					std::cout << "Error: Could not allocate frame" << std::endl;
+				}
 				return;
 			}
 
 			this->newFrame = av_frame_alloc();
 			if (!this->newFrame) {
 				this->haveWeFailedBool.store(true);
-				std::cout << "Error: Could not allocate new-frame" << std::endl;
+				if (this->doWePrintError) {
+					std::cout << "Error: Could not allocate new-frame" << std::endl;
+				}
 				return;
 			}
 
@@ -246,7 +275,9 @@ namespace DiscordCoreInternal {
 						av_strerror(ret, charString, 32);
 						std::string newString = "Error submitting a packet for decoding (" + std::to_string(ret) + "), " + charString + ".";
 						this->haveWeFailedBool.store(true);
-						std::cout << newString << std::endl;
+						if (this->doWePrintError) {
+							std::cout << newString << std::endl;
+						}
 						return;
 					}
 					if (ret >= 0) {
@@ -254,7 +285,9 @@ namespace DiscordCoreInternal {
 						if (ret < 0) {
 							std::string newString = "Error during decoding (" + std::to_string(ret) + ")";
 							this->haveWeFailedBool.store(true);
-							std::cout << newString << std::endl;
+							if (this->doWePrintError) {
+								std::cout << newString << std::endl;
+							}
 							return;
 						}
 
@@ -291,7 +324,9 @@ namespace DiscordCoreInternal {
 						}
 						if (ret < 0 || newFrame->nb_samples == 0) {
 							this->haveWeFailedBool.store(true);
-							std::cout << "Return value is less than zero!" << std::endl;
+							if (this->doWePrintError) {
+								std::cout << "Return value is less than zero!" << std::endl;
+							}
 							return;
 						}
 					} else {
@@ -307,7 +342,7 @@ namespace DiscordCoreInternal {
 					break;
 				}
 			}
-			if (this->doWePrint) {
+			if (this->doWePrintSuccess) {
 				std::cout << DiscordCoreAPI::shiftToBrightGreen() << "Completed decoding!" << std::endl << DiscordCoreAPI::reset() << std::endl;
 			}
 			return;

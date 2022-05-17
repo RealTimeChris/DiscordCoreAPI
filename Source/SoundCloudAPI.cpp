@@ -192,8 +192,9 @@ namespace DiscordCoreInternal {
 	}
 
 	SoundCloudAPI::SoundCloudAPI(const std::string& guildIdNew, HttpClient* httpClient) : requestBuilder(httpClient) {
-		this->httpClient = httpClient;
 		this->guildId = guildIdNew;
+		this->doWePrintSuccess = httpClient->getDoWePrintFFMPEGSuccess();
+		this->doWePrintError = httpClient->getDoWePrintFFMPEGError();
 	}
 
 	DiscordCoreAPI::Song SoundCloudAPI::collectFinalSong(DiscordCoreAPI::GuildMemberData addedByGuildMember, DiscordCoreAPI::Song newSong) {
@@ -275,7 +276,7 @@ namespace DiscordCoreInternal {
 		dataPackage.totalFileSize = newSong.contentLength;
 		dataPackage.bufferMaxSize = soundCloudAPI->maxBufferSize;
 		const int32_t bytesTotal{ 8192 };
-		std::unique_ptr<AudioDecoder> audioDecoder = std::make_unique<AudioDecoder>(dataPackage, soundCloudAPI->httpClient->getDoWePrintFFMPEG());
+		std::unique_ptr<AudioDecoder> audioDecoder = std::make_unique<AudioDecoder>(dataPackage, soundCloudAPI->doWePrintSuccess, soundCloudAPI->doWePrintError);
 		AudioEncoder audioEncoder = AudioEncoder();
 		bool haveWeFailed{ false };
 		while (counter < newSong.finalDownloadUrls.size()) {

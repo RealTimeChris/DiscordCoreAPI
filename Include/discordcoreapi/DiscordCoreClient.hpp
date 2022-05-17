@@ -97,7 +97,7 @@ namespace DiscordCoreAPI {
 		/// \param shardOptionsNew A DiscordCoreAPI::ShardingOptions structure to select the shard configuration for this given process.
 		/// \param loggingOptionsNew A DiscordCoreAPI::LoggingOptions structure to select logging configuration options.
 		DiscordCoreClient(const std::string& botTokenNew, std::vector<RepeatedFunctionData> functionsToExecuteNew = std::vector<RepeatedFunctionData>{},
-			CacheOptions cacheOptionsNew = CacheOptions{}, ShardingOptions shardOptionsNew = ShardingOptions{}, LoggingOptions loggingOptionsNew = LoggingOptions{});
+			LoggingOptions loggingOptionsNew = LoggingOptions{}, CacheOptions cacheOptionsNew = CacheOptions{}, ShardingOptions shardOptionsNew = ShardingOptions{});
 
 		/// For registering a function with the CommandController. \brief For registering a function with the CommandController.
 		/// \param functionNames A vector containing the possible names for activating this command/function.
