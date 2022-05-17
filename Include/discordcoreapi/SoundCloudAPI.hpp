@@ -58,11 +58,16 @@ namespace DiscordCoreInternal {
 	  public:
 		SoundCloudAPI(const std::string& guildId, HttpClient* httpClient);
 
+		void breakOutPlayMore(std::stop_token theToken, std::unique_ptr<AudioDecoder> audioDecoder, bool haveWeFailed, int32_t counter, SoundCloudAPI* soundCloudAPI,
+			DiscordCoreAPI::Song newSong, int32_t currentRecursionDepth);
+
 		void weFailedToDownloadOrDecode(DiscordCoreAPI::Song newSong, SoundCloudAPI* youtubeAPI, std::stop_token theToken, int32_t currentRecursionDepth);
 
 		void downloadAndStreamAudio(DiscordCoreAPI::Song newSong, SoundCloudAPI* soundCloudAPI, std::stop_token theToken, int32_t currentRecursionDepth);
 
 		DiscordCoreAPI::Song collectFinalSong(DiscordCoreAPI::GuildMemberData addedByGuildMember, DiscordCoreAPI::Song newSong);
+
+		void breakOut(std::stop_token theToken, std::unique_ptr<AudioDecoder> audioDecoder, SoundCloudAPI* soundCloudAPI);
 
 		std::vector<DiscordCoreAPI::Song> searchForSong(const std::string& searchQuery);
 
