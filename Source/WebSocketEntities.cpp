@@ -290,9 +290,11 @@ namespace DiscordCoreInternal {
 			}
 
 			if (payload["op"] == 7) {
-				std::cout << DiscordCoreAPI::shiftToBrightBlue()
-						  << "Shard [" + std::to_string(this->currentShard) + ", " + std::to_string(this->numOfShards) + "] - Reconnecting (Type 7)!" << std::endl
-						  << DiscordCoreAPI::reset() << std::endl;
+				if (this->printSuccessMessages) {
+					std::cout << DiscordCoreAPI::shiftToBrightBlue()
+							  << "Shard [" + std::to_string(this->currentShard) + ", " + std::to_string(this->numOfShards) + "] - Reconnecting (Type 7)!" << std::endl
+							  << DiscordCoreAPI::reset() << std::endl;
+				}
 				this->areWeResuming = true;
 				this->currentReconnectTries += 1;
 				this->areWeConnected.store(false);
@@ -301,9 +303,11 @@ namespace DiscordCoreInternal {
 			}
 
 			if (payload["op"] == 9) {
-				std::cout << DiscordCoreAPI::shiftToBrightBlue()
-						  << "Shard [" + std::to_string(this->currentShard) + ", " + std::to_string(this->numOfShards) + "] - Reconnecting (Type 9)!" << std::endl
-						  << DiscordCoreAPI::reset() << std::endl;
+				if (this->printSuccessMessages) {
+					std::cout << DiscordCoreAPI::shiftToBrightBlue()
+							  << "Shard [" + std::to_string(this->currentShard) + ", " + std::to_string(this->numOfShards) + "] - Reconnecting (Type 9)!" << std::endl
+							  << DiscordCoreAPI::reset() << std::endl;
+				}
 				this->currentReconnectTries += 1;
 				std::mt19937_64 randomEngine{ static_cast<uint64_t>(std::chrono::system_clock::now().time_since_epoch().count()) };
 				int32_t numOfMsToWait =
@@ -932,7 +936,9 @@ namespace DiscordCoreInternal {
 	void BaseSocketAgent::onClosedInternal() noexcept {
 		this->areWeReadyToConnectEvent.reset();
 		if (this->maxReconnectTries > this->currentReconnectTries) {
-			std::cout << DiscordCoreAPI::shiftToBrightRed() << "WebSocket Closed; Code: " << this->closeCode << DiscordCoreAPI::reset() << std::endl;
+			if (this->printErrorMessages) {
+				std::cout << DiscordCoreAPI::shiftToBrightRed() << "WebSocket Closed; Code: " << this->closeCode << DiscordCoreAPI::reset() << std::endl;
+			}
 			this->closeCode = 0;
 			this->areWeConnected.store(false);
 			this->currentReconnectTries += 1;
@@ -947,7 +953,7 @@ namespace DiscordCoreInternal {
 
 	void BaseSocketAgent::connect() noexcept {
 		try {
-			this->webSocket = std::make_unique<WebSocketSSLClient>(this->baseUrl, "443");
+			this->webSocket = std::make_unique<WebSocketSSLClient>(this->baseUrl, "443", this->printErrorMessages);
 			this->state = WebSocketState::Initializing;
 			this->doWeReconnect.set();
 			std::string sendString = "GET /?v=10&encoding=etf HTTP/1.1\r\nHost: " + this->baseUrl +
@@ -986,7 +992,9 @@ namespace DiscordCoreInternal {
 	void VoiceSocketAgent::sendVoiceData(std::string& responseData) noexcept {
 		try {
 			if (responseData.size() == 0) {
-				std::cout << DiscordCoreAPI::shiftToBrightRed() << "Please specify voice data to send" << std::endl << DiscordCoreAPI::reset() << std::endl;
+				if (this->printErrorMessages) {
+					std::cout << DiscordCoreAPI::shiftToBrightRed() << "Please specify voice data to send" << std::endl << DiscordCoreAPI::reset() << std::endl;
+				}
 				return;
 			} else {
 				if (!this->voiceSocket->writeData(responseData)) {
@@ -1237,7 +1245,7 @@ namespace DiscordCoreInternal {
 
 	void VoiceSocketAgent::voiceConnect() noexcept {
 		try {
-			this->voiceSocket = std::make_unique<DatagramSocketSSLClient>(this->voiceConnectionData.voiceIp, this->voiceConnectionData.voicePort);
+			this->voiceSocket = std::make_unique<DatagramSocketSSLClient>(this->voiceConnectionData.voiceIp, this->voiceConnectionData.voicePort, this->printErrorMessages);
 		} catch (...) {
 			if (this->printErrorMessages) {
 				DiscordCoreAPI::reportException("VoiceSocketAgent::voiceConnect()");
@@ -1364,7 +1372,9 @@ namespace DiscordCoreInternal {
 	}
 
 	void VoiceSocketAgent::onClosedInternal() noexcept {
-		std::cout << DiscordCoreAPI::shiftToBrightRed() << "Voice WebSocket Closed; Code: " << this->closeCode << DiscordCoreAPI::reset() << std::endl;
+		if (this->printErrorMessages) {
+			std::cout << DiscordCoreAPI::shiftToBrightRed() << "Voice WebSocket Closed; Code: " << this->closeCode << DiscordCoreAPI::reset() << std::endl;
+		}
 		this->closeCode = 0;
 		this->voiceSocket.reset(nullptr);
 		this->webSocket.reset(nullptr);
@@ -1374,7 +1384,7 @@ namespace DiscordCoreInternal {
 		try {
 			DiscordCoreAPI::waitForTimeToPass(this->voiceConnectionDataBuffer, this->voiceConnectionData, 20000);
 			this->baseUrl = this->voiceConnectionData.endPoint.substr(0, this->voiceConnectionData.endPoint.find(":"));
-			this->webSocket = std::make_unique<WebSocketSSLClient>(this->baseUrl, "443");
+			this->webSocket = std::make_unique<WebSocketSSLClient>(this->baseUrl, "443", this->printErrorMessages);
 			this->state = WebSocketState::Initializing;
 			std::string sendVector = "GET /?v=4 HTTP/1.1\r\nHost: " + this->baseUrl +
 				"\r\nPragma: no-cache\r\nUser-Agent: DiscordCoreAPI/1.0\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Key: " +

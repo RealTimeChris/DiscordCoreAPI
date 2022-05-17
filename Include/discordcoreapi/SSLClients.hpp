@@ -265,7 +265,7 @@ namespace DiscordCoreInternal {
 	  public:
 		HttpSSLClient() noexcept = default;
 
-		bool connect(const std::string& baseUrl, const std::string& portNew = "443") noexcept;
+		bool connect(const std::string& baseUrl, bool doWePrintError, const std::string& portNew = "443") noexcept;
 
 		void writeData(const std::string& theData) noexcept;
 
@@ -287,6 +287,7 @@ namespace DiscordCoreInternal {
 		int32_t maxBufferSize{ 16 * 1024 };
 		SOCKETWrapper theSocket{ nullptr };
 		SSL_CTXWrapper context{ nullptr };
+		bool doWePrintError{ false };
 		std::string outputBuffer{};
 		std::string inputBuffer{};
 		SSLWrapper ssl{ nullptr };
@@ -295,7 +296,7 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll WebSocketSSLClient {
 	  public:
-		WebSocketSSLClient(const std::string& baseUrl, const std::string& port, int64_t maxBufferSize = 16 * 1024) noexcept;
+		WebSocketSSLClient(const std::string& baseUrl, const std::string& port, bool doWePrintError, int64_t maxBufferSize = 16 * 1024) noexcept;
 
 		WebSocketSSLClient() noexcept = default;
 
@@ -311,6 +312,7 @@ namespace DiscordCoreInternal {
 		const int64_t maxBufferSize{ 1024 * 16 };
 		SOCKETWrapper theSocket{ nullptr };
 		SSL_CTXWrapper context{ nullptr };
+		bool doWePrintError{ false };
 		std::string outputBuffer{};
 		SSLWrapper ssl{ nullptr };
 		std::string inputBuffer{};
@@ -320,7 +322,7 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll DatagramSocketSSLClient {
 	  public:
-		DatagramSocketSSLClient(const std::string& hostName, const std::string& port) noexcept;
+		DatagramSocketSSLClient(const std::string& hostName, const std::string& port, bool doWePrintError) noexcept;
 
 		DatagramSocketSSLClient() noexcept = default;
 
@@ -334,6 +336,7 @@ namespace DiscordCoreInternal {
 		const int32_t maxBufferSize{ 1024 * 16 };
 		SOCKETWrapper theSocket{ nullptr };
 		BIOWrapper datagramBio{ nullptr };
+		bool doWePrintError{ false };
 		std::string inputBuffer{};
 	};
 }// namespace DiscordCoreInternal

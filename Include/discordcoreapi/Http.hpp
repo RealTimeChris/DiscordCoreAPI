@@ -141,6 +141,10 @@ namespace DiscordCoreInternal {
 
 		const bool getDoWePrintFFMPEGError();
 
+		const bool getDoWePrintHttpSuccess();
+
+		const bool getDoWePrintHttpError();
+
 		const std::string getBotToken();
 
 	  protected:

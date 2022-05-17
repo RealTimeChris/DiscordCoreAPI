@@ -80,7 +80,6 @@ namespace DiscordCoreAPI {
 				co_return InputEvents::respondToInputEvent(CreateEphemeralFollowUpMessageData{ dataPackage });
 			}
 			case InputEventResponseType::Unset: {
-				std::cout << shiftToBrightRed() << "Failed to set input event response type!" << reset() << std::endl;
 				break;
 			}
 			default: {

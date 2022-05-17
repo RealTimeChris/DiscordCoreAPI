@@ -366,7 +366,7 @@ namespace DiscordCoreInternal {
 			int64_t currentTimeDistance =
 				std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - theConnection.lastTimeUsed;
 			if (theConnection.doWeConnect || (theConnection.lastTimeUsed != 0 && currentTimeDistance >= 30000)) {
-				if (!theConnection.connect(workload.baseUrl)) {
+				if (!theConnection.connect(workload.baseUrl,this->doWePrintHttpError)) {
 					return HttpData{};
 				};
 				theConnection.doWeConnect = false;
@@ -404,7 +404,7 @@ namespace DiscordCoreInternal {
 		auto rateLimitDataPtr = std::make_unique<RateLimitData>();
 		for (auto& value: workload) {
 			if (currentBaseUrl != value.baseUrl) {
-				if (!theConnection.connect(value.baseUrl)) {
+				if (!theConnection.connect(value.baseUrl, this->doWePrintHttpError)) {
 					continue;
 				};
 			}
@@ -475,6 +475,14 @@ namespace DiscordCoreInternal {
 
 	const bool HttpClient::getDoWePrintFFMPEGError() {
 		return this->doWePrintFFMPEGError;
+	}
+
+	const bool HttpClient::getDoWePrintHttpSuccess() {
+		return this->doWePrintHttpSuccess;
+	}
+
+	const bool HttpClient::getDoWePrintHttpError() {
+		return this->doWePrintHttpError;
 	}
 
 	const std::string HttpClient::getBotToken() {

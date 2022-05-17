@@ -25,9 +25,6 @@ namespace DiscordCoreInternal {
 	AudioEncoder::AudioEncoder() {
 		int32_t error;
 		this->encoder = opus_encoder_create(this->sampleRate, this->nChannels, OPUS_APPLICATION_AUDIO, &error);
-		if (error != OPUS_OK) {
-			std::cout << DiscordCoreAPI::shiftToBrightRed() << "Failed to create Opus encoder!" << DiscordCoreAPI::reset() << std::endl << std::endl;
-		}
 	}
 
 	std::vector<DiscordCoreAPI::AudioFrameData> AudioEncoder::encodeFrames(std::vector<DiscordCoreAPI::RawFrameData>& rawFrames) {
