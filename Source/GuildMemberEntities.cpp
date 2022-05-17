@@ -259,7 +259,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	void GuildMembers::removeGuildMember(std::string const& globalId) {
+	void GuildMembers::removeGuildMember( const std::string& globalId) {
 		try {
 			std::lock_guard<std::mutex> theLock{ GuildMembers::accessMutex };
 			GuildMembers::cache.erase(globalId);

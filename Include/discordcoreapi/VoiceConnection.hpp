@@ -73,7 +73,7 @@ namespace DiscordCoreAPI {
 		AudioFrameData audioData{};
 		int32_t timeStamp{ 0 };
 
-		std::string encryptSingleAudioFrame(EncodedFrameData bufferToSend, int32_t audioSSRC, std::string const& keys);
+		std::string encryptSingleAudioFrame(EncodedFrameData bufferToSend, int32_t audioSSRC,  const std::string& keys);
 
 		TSUnboundedMessageBlock<AudioFrameData>& getAudioBuffer();
 

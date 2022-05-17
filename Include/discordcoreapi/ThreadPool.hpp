@@ -44,7 +44,7 @@ namespace DiscordCoreAPI {
 
 		std::string storeThread(TimeElapsedHandler timeElapsedHandler, int32_t timeInterval);
 
-		void stopThread(std::string const&theKey);
+		void stopThread( const std::string&theKey);
 
 		/// For executing a chosen function of type std::function<void(ArgTypes...)> after a chosen time delay. \brief For executing a chosen function of type std::function<void(ArgTypes...)> after a chosen time delay.
 		/// \tparam ArgTypes The types of arguments that will be passed into the function.

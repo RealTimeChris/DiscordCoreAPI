@@ -47,7 +47,7 @@ namespace DiscordCoreInternal {
 
 		std::string buildRequest(HttpWorkloadData& workload);
 
-		bool checkForHeadersToParse(std::string const&);
+		bool checkForHeadersToParse( const std::string&);
 
 		void parseHeaders(std::string&);
 
@@ -131,7 +131,7 @@ namespace DiscordCoreInternal {
 	  public:
 		HttpClient() = default;
 
-		HttpClient(std::string const&, bool doWePrintHttp, bool doWePrintFFMPEG);
+		HttpClient( const std::string&, bool doWePrintHttp, bool doWePrintFFMPEG);
 
 		std::vector<HttpData> httpRequest(std::vector<HttpWorkloadData>&);
 

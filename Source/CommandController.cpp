@@ -59,7 +59,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	std::unique_ptr<BaseFunction> CommandController::getCommand(std::string const&commandName) {
+	std::unique_ptr<BaseFunction> CommandController::getCommand( const std::string&commandName) {
 		try {
 			std::string functionName{};
 			bool isItFound{ false };
@@ -84,7 +84,7 @@ namespace DiscordCoreAPI {
 		return nullptr;
 	}
 
-	std::unique_ptr<BaseFunction> CommandController::createFunction(std::string const&functionName) {
+	std::unique_ptr<BaseFunction> CommandController::createFunction( const std::string&functionName) {
 		try {
 			for (auto& [key01, value01]: Globals::functions) {
 				for (auto& value02: key01) {
