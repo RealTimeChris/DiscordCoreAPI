@@ -75,8 +75,8 @@ namespace DiscordCoreInternal {
 			}
 		} catch (...) {
 			DiscordCoreAPI::reportException("BaseSocketAgent::getTheTask()");
-		}
-		return nullptr;
+			return nullptr;
+		}		
 	}
 
 	void BaseSocketAgent::sendMessage(nlohmann::json& dataToSend) noexcept {
@@ -927,22 +927,18 @@ namespace DiscordCoreInternal {
 	}
 
 	void BaseSocketAgent::onClosedInternal() noexcept {
-		try {
-			this->areWeReadyToConnectEvent.reset();
-			if (this->maxReconnectTries > this->currentReconnectTries) {
-				std::cout << DiscordCoreAPI::shiftToBrightRed() << "WebSocket Closed; Code: " << this->closeCode << DiscordCoreAPI::reset() << std::endl;
-				this->closeCode = 0;
-				this->areWeConnected.store(false);
-				this->currentReconnectTries += 1;
-				this->webSocket.reset(nullptr);
-				this->areWeAuthenticated = false;
-				this->haveWeReceivedHeartbeatAck = true;
-				this->connect();
-			} else if (this->maxReconnectTries <= this->currentReconnectTries) {
-				this->theTask->request_stop();
-			}
-		} catch (...) {
-			DiscordCoreAPI::reportException("BaseSocketAgent::onClosedInternal()");
+		this->areWeReadyToConnectEvent.reset();
+		if (this->maxReconnectTries > this->currentReconnectTries) {
+			std::cout << DiscordCoreAPI::shiftToBrightRed() << "WebSocket Closed; Code: " << this->closeCode << DiscordCoreAPI::reset() << std::endl;
+			this->closeCode = 0;
+			this->areWeConnected.store(false);
+			this->currentReconnectTries += 1;
+			this->webSocket.reset(nullptr);
+			this->areWeAuthenticated = false;
+			this->haveWeReceivedHeartbeatAck = true;
+			this->connect();
+		} else if (this->maxReconnectTries <= this->currentReconnectTries) {
+			this->theTask->request_stop();
 		}
 	}
 
@@ -1338,14 +1334,10 @@ namespace DiscordCoreInternal {
 	}
 
 	void VoiceSocketAgent::onClosedInternal() noexcept {
-		try {
-			std::cout << DiscordCoreAPI::shiftToBrightRed() << "Voice WebSocket Closed; Code: " << this->closeCode << DiscordCoreAPI::reset() << std::endl;
-			this->closeCode = 0;
-			this->voiceSocket.reset(nullptr);
-			this->webSocket.reset(nullptr);
-		} catch (...) {
-			DiscordCoreAPI::reportException("VoiceSocketAgent::onClosedInternal()");
-		}
+		std::cout << DiscordCoreAPI::shiftToBrightRed() << "Voice WebSocket Closed; Code: " << this->closeCode << DiscordCoreAPI::reset() << std::endl;
+		this->closeCode = 0;
+		this->voiceSocket.reset(nullptr);
+		this->webSocket.reset(nullptr);
 	}
 
 	void VoiceSocketAgent::connect() noexcept {
@@ -1365,12 +1357,10 @@ namespace DiscordCoreInternal {
 	}
 
 	VoiceSocketAgent::~VoiceSocketAgent() noexcept {
-		if (this != nullptr) {
-			this->theTask->request_stop();
-			if (this->theTask->joinable()) {
-				this->theTask->join();
-				this->theTask.reset(nullptr);
-			}
+		this->theTask->request_stop();
+		if (this->theTask->joinable()) {
+			this->theTask->join();
+			this->theTask.reset(nullptr);
 		}
 		this->baseSocketAgent->voiceConnectionDataBufferMap.erase(this->voiceConnectInitData.guildId);
 	};
