@@ -1028,7 +1028,6 @@ namespace DiscordCoreAPI {
 		virtual ~RoleData() = default;
 	};
 
-	/// User's flags. \brief User's flags.
 	enum class UserFlags : int32_t {
 		Staff = 1 << 0,///< Discord Employee.
 		Partner = 1 << 1,///< Partnered Server Owner.
