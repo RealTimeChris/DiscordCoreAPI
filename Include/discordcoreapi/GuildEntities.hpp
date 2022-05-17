@@ -253,7 +253,9 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll Guild : public GuildData {
 	  public:
 
-		DefaultMessageNotificationLevel defaultMessageNotifications{};///< Default Message notification level. Guild-member voice-states.
+		std::unordered_map<std::string, PresenceUpdateData> presences{};///< Array of presences for each GuildMember.
+		DefaultMessageNotificationLevel defaultMessageNotifications{};///< Default Message notification level.
+		std::unordered_map<std::string, VoiceStateData> voiceStates{};///< Array of Guild-member voice-states.
 		GuildNSFWLevel nsfwLevel{ GuildNSFWLevel::Default };///< NSFW warning level.
 		ExplicitContentFilterLevel explicitContentFilter{};///< Explicit content filtering level, by default.
 		DiscordCoreClient* discordCoreClient{ nullptr };///< A pointer to the DiscordCoreClient.
@@ -262,9 +264,13 @@ namespace DiscordCoreAPI {
 		int32_t approximatePresenceCount{ 0 };///< Approximate quantity of presences.
 		VerificationLevel verificationLevel{};///< Verification level required.
 		std::string publicUpdatesChannelId{};///< Id of the public updates Channel.
+		std::vector<std::string> features{};///< List of Guild features.
 		int32_t approximateMemberCount{ 0 };///< Approximate member count.
+		std::vector<std::string> channels{};///< Array of Guild channels.
+		std::vector<std::string> members{};///< Array of GuildMembers.
 		WelcomeScreenData welcomeScreen{};///< Welcome screen for the Guild.
 		int32_t maxVideoChannelUsers{ 0 };///< Maximum quantity of users per video Channel.
+		std::vector<std::string> roles{};///< Array of Guild roles.
 		AfkTimeOutDurations afkTimeOut{};///< Time for an individual to time out as afk.
 		std::string discoverySplash{};///< Link to the discovery image's splash.
 		std::string preferredLocale{};///< Preferred locale, for voice chat servers.
@@ -278,9 +284,11 @@ namespace DiscordCoreAPI {
 		Permissions permissions{};///< Current Permissions for the bot in the Guild.
 		PremiumTier premiumTier{};///< What is the premium tier?
 		int32_t maxPresences{ 0 };///< Max number of presences allowed.
+		int32_t memberCount{ 0 };///< Member count.
 		TimeStamp joinedAt{ "" };///< When the bot joined this Guild.
 		int32_t maxMembers{ 0 };///< Max quantity of members.
 		std::string createdAt{};///< When was the Guild created?
+		int8_t guildFlags{ 0 };///< Guild flags.
 		std::string iconHash{};///< Url to the Guild's icon.
 		std::string ownerId{};///< User id of the Guild's owner.
 		std::string region{};///< Region of the world where the Guild's servers are.
@@ -288,6 +296,7 @@ namespace DiscordCoreAPI {
 		std::string banner{};///< Url to the Guild's banner.
 		MFALevel mfaLevel{};///< MFA level.
 		std::string icon{};///< Url to the Guild's icon.
+		std::string name{};///< The Guild's name.
 
 		friend Guilds;
 
