@@ -659,29 +659,29 @@ namespace DiscordCoreAPI {
 
 	/**@}*/
 
-	DiscordCoreAPI_Dll std::string getISO8601TimeStamp(const std::string& year, const std::string& month, const std::string& day, const std::string& hour, const std::string& minute, const std::string& second);
+	DiscordCoreAPI_Dll std::string getISO8601TimeStamp(std::string const& year, std::string const& month, std::string const& day, std::string const& hour, std::string const& minute, std::string const& second);
 
 	DiscordCoreAPI_Dll void constructMultiPartData(DiscordCoreInternal::HttpWorkloadData& dataPackage, nlohmann::json theData, std::vector<File>& files);
 
-	DiscordCoreAPI_Dll void reportException(const std::string& stackTrace, UnboundedMessageBlock<std::exception>* sendBuffer = nullptr, bool rethrow = false);
+	DiscordCoreAPI_Dll void reportException(std::string const& stackTrace, UnboundedMessageBlock<std::exception>* sendBuffer = nullptr, bool rethrow = false);
 
 	DiscordCoreAPI_Dll std::string convertTimeInMsToDateTimeString(int64_t timeInMs, TimeFormat timeFormat);
 
 	DiscordCoreAPI_Dll std::string convertMsToDurationString(int32_t durationInMs);
 
-	DiscordCoreAPI_Dll std::string convertToLowerCase(const std::string& stringToConvert);
+	DiscordCoreAPI_Dll std::string convertToLowerCase(std::string const& stringToConvert);
 
-	DiscordCoreAPI_Dll int64_t convertTimestampToMsInteger(const std::string& timeStamp);
+	DiscordCoreAPI_Dll int64_t convertTimestampToMsInteger(std::string const& timeStamp);
 
-	DiscordCoreAPI_Dll std::string base64Encode(const std::string&, bool = false);
+	DiscordCoreAPI_Dll std::string base64Encode(std::string const&, bool = false);
 
-	DiscordCoreAPI_Dll std::string loadFileContents(const std::string& filePath);
+	DiscordCoreAPI_Dll std::string loadFileContents(std::string const& filePath);
 
-	DiscordCoreAPI_Dll std::string utf8MakeValid(const std::string& inputString);
+	DiscordCoreAPI_Dll std::string utf8MakeValid(std::string const& inputString);
 
-	DiscordCoreAPI_Dll std::string urlDecode(const std::string& inputString);
+	DiscordCoreAPI_Dll std::string urlDecode(std::string const& inputString);
 
-	DiscordCoreAPI_Dll std::string urlEncode(const std::string& inputString);
+	DiscordCoreAPI_Dll std::string urlEncode(std::string const& inputString);
 
 	DiscordCoreAPI_Dll void spinLock(int64_t timeInNsToSpinLockFor);
 
@@ -751,7 +751,7 @@ namespace DiscordCoreAPI {
 
 	/**@}*/
 
-	std::ostream& operator<<(std::ostream& outputSttream, const std::string& (*theFunction)(void));
+	std::ostream& operator<<(std::ostream& outputSttream, std::string const& (*theFunction)(void));
 
 	/**
 	 * \addtogroup utilities
@@ -764,7 +764,7 @@ namespace DiscordCoreAPI {
 	/// \param hours An int64_t representing the number of hours to check for.
 	/// \param minutes An int64_t representing the number of minutes to check for.
 	/// \returns bool A bool denoting whether or not the input period of time has elapsed since the supplied timestamp.
-	DiscordCoreAPI_Dll bool hasTimeElapsed(const std::string& timeStamp, int64_t days = 0, int64_t hours = 0, int64_t minutes = 0);
+	DiscordCoreAPI_Dll bool hasTimeElapsed(std::string const& timeStamp, int64_t days = 0, int64_t hours = 0, int64_t minutes = 0);
 
 	/// Collects a timestamp that is a chosen number of minutes ahead of the current time. \brief Collects a timestamp that is a chosen number of minutes ahead of the current time.
 	/// \param minutesToAdd An int32_t containing the number of minutes to increment the timestamp forward for.
@@ -905,7 +905,7 @@ namespace DiscordCoreAPI {
 	  protected:
 		static std::string computeBasePermissions(GuildMember guildMember);
 
-		static std::string computeOverwrites(const std::string& basePermissions, GuildMember guildMember, ChannelData channel);
+		static std::string computeOverwrites(std::string const& basePermissions, GuildMember guildMember, ChannelData channel);
 
 		static std::string computePermissions(GuildMember guildMember, ChannelData channel);
 	};
@@ -1220,7 +1220,7 @@ namespace DiscordCoreAPI {
 		/// \param authorName The author's name.
 		/// \param authorAvatarUrl The url to their avatar.
 		/// \returns EmbedData& A reference to this embed.
-		EmbedData& setAuthor(const std::string& authorName, const std::string& authorAvatarUrl = "") {
+		EmbedData& setAuthor(std::string const& authorName, std::string const& authorAvatarUrl = "") {
 			this->author.name = authorName;
 			this->author.iconUrl = authorAvatarUrl;
 			return *this;
@@ -1230,7 +1230,7 @@ namespace DiscordCoreAPI {
 		/// \param footerText The footer's text.
 		/// \param footerIconUrlText Url to the footer's icon.
 		/// \returns EmbedData& A reference to this embed.
-		EmbedData& setFooter(const std::string& footerText, const std::string& footerIconUrlText = "") {
+		EmbedData& setFooter(std::string const& footerText, std::string const& footerIconUrlText = "") {
 			this->footer.text = footerText;
 			this->footer.iconUrl = footerIconUrlText;
 			return *this;
@@ -1239,7 +1239,7 @@ namespace DiscordCoreAPI {
 		/// Sets the timestamp on the embed. \brief Sets the timestamp on the embed.
 		/// \param timeStamp The timestamp to be set.
 		/// \returns EmbedData& A reference to this embed.
-		EmbedData& setTimeStamp(const std::string& timeStamp) {
+		EmbedData& setTimeStamp(std::string const& timeStamp) {
 			this->timestamp = timeStamp;
 			return *this;
 		}
@@ -1249,7 +1249,7 @@ namespace DiscordCoreAPI {
 		/// \param value The contents of the embed field.
 		/// \param Inline Is it inline with the rest of the fields on the embed?
 		/// \returns EmbedData& A reference to this embed.
-		EmbedData& addField(const std::string& name, const std::string& value, bool Inline = true) {
+		EmbedData& addField(std::string const& name, std::string const& value, bool Inline = true) {
 			this->fields.push_back(EmbedFieldData{ .Inline = Inline, .value = value, .name = name });
 			return *this;
 		}
@@ -1257,7 +1257,7 @@ namespace DiscordCoreAPI {
 		/// Sets the description (the main contents) of the embed. \brief Sets the description (the main contents) of the embed.
 		/// \param descriptionNew The contents of the description to set.
 		/// \returns EmbedData& A reference to this embed.
-		EmbedData& setDescription(const std::string& descriptionNew) {
+		EmbedData& setDescription(std::string const& descriptionNew) {
 			this->description = descriptionNew;
 			return *this;
 		}
@@ -1265,7 +1265,7 @@ namespace DiscordCoreAPI {
 		/// Sets the color of the embed, by applying a hex-color value. \brief Sets the color of the embed, by applying a hex-color value.
 		/// \param hexColorValueNew A std::string containing a hex-number value (Between 0x00 0xFFFFFF).
 		/// \returns EmbedData& A reference to this embed.
-		EmbedData& setColor(const std::string& hexColorValueNew) {
+		EmbedData& setColor(std::string const& hexColorValueNew) {
 			this->hexColorValue = hexColorValueNew;
 			return *this;
 		}
@@ -1273,7 +1273,7 @@ namespace DiscordCoreAPI {
 		/// Sets the thumbnail of the embed. \brief Sets the thumbnail of the embed.
 		/// \param thumbnailUrl The url to the thumbnail to be used.
 		/// \returns EmbedData& A reference to this embed.
-		EmbedData& setThumbnail(const std::string& thumbnailUrl) {
+		EmbedData& setThumbnail(std::string const& thumbnailUrl) {
 			this->thumbnail.url = thumbnailUrl;
 			return *this;
 		}
@@ -1281,7 +1281,7 @@ namespace DiscordCoreAPI {
 		/// Sets the title of the embed. \brief Sets the title of the embed.
 		/// \param titleNew A std::string containing the desired title.
 		/// \returns EmbedData& A reference to this embed.
-		EmbedData& setTitle(const std::string& titleNew) {
+		EmbedData& setTitle(std::string const& titleNew) {
 			this->title = titleNew;
 			return *this;
 		}
@@ -1289,7 +1289,7 @@ namespace DiscordCoreAPI {
 		/// Sets the image of the embed. \brief Sets the image of the embed.
 		/// \param imageUrl The url of the image to be set on the embed.
 		/// \returns EmbedData& A reference to this embed.
-		EmbedData& setImage(const std::string& imageUrl) {
+		EmbedData& setImage(std::string const& imageUrl) {
 			this->image.url = imageUrl;
 			return *this;
 		}
@@ -2332,7 +2332,7 @@ namespace DiscordCoreAPI {
 	/// Audit log data. \brief Audit log data.
 	class DiscordCoreAPI_Dll AuditLogData {
 	  public:
-		auto getAuditLogData(const std::string& userIdOfChanger, AuditLogEvent auditLogType) {
+		auto getAuditLogData(std::string const& userIdOfChanger, AuditLogEvent auditLogType) {
 			for (auto& value: this->auditLogEntries) {
 				if (value.id == userIdOfChanger && value.actionType == auditLogType) {
 					return value;
@@ -2340,7 +2340,7 @@ namespace DiscordCoreAPI {
 			}
 			return AuditLogEntryData();
 		}
-		auto getAuditLogData(AuditLogEvent auditLogType, const std::string& userIdOfTarget) {
+		auto getAuditLogData(AuditLogEvent auditLogType, std::string const& userIdOfTarget) {
 			for (auto& value: this->auditLogEntries) {
 				if (value.targetId == userIdOfTarget && value.actionType == auditLogType) {
 					return value;
@@ -2880,7 +2880,7 @@ namespace DiscordCoreAPI {
 		std::string token{};///< The Interaction token.
 		UserData user{};///< The User data of the sender of the Interaction.
 		InteractionData() = default;
-		InteractionData(const std::string& requesterId) {
+		InteractionData(std::string const& requesterId) {
 			this->requesterId = requesterId;
 		}
 		virtual ~InteractionData() = default;
@@ -3282,8 +3282,8 @@ namespace DiscordCoreAPI {
 		/// \param emojiId An emoji id, if desired.
 		/// \param url A url, if applicable.
 		/// \returns RespondToInputEventData& A reference to this data structure.
-		RespondToInputEventData& addButton(bool disabled, const std::string& customIdNew, const std::string& buttonLabel, ButtonStyle buttonStyle, const std::string& emojiName = "",
-			std::string emojiId = "", const std::string& url = "") {
+		RespondToInputEventData& addButton(bool disabled, std::string const& customIdNew, std::string const& buttonLabel, ButtonStyle buttonStyle, std::string const& emojiName = "",
+			std::string emojiId = "", std::string const& url = "") {
 			if (this->components.size() == 0) {
 				ActionRowData actionRowData;
 				this->components.push_back(actionRowData);
@@ -3316,7 +3316,7 @@ namespace DiscordCoreAPI {
 		/// \param maxValues Maximum number of selections that are possible.
 		/// \param minValues Minimum required number of selections that are required.
 		/// \returns RespondToInputEventData& A reference to this data structure.
-		RespondToInputEventData& addSelectMenu(bool disabled, const std::string& customIdNew, std::vector<SelectOptionData> options, const std::string& placeholder, int32_t maxValues,
+		RespondToInputEventData& addSelectMenu(bool disabled, std::string const& customIdNew, std::vector<SelectOptionData> options, std::string const& placeholder, int32_t maxValues,
 			int32_t minValues) {
 			if (this->components.size() == 0) {
 				ActionRowData actionRowData;
@@ -3353,8 +3353,8 @@ namespace DiscordCoreAPI {
 		/// \param label A label for the modal.
 		/// \param placeholder A placeholder for the modal.
 		/// \returns RespondToInputEventData& A reference to this data structure.
-		RespondToInputEventData& addModal(const std::string& topTitleNew, const std::string& topCustomIdNew, const std::string& titleNew, const std::string& customIdNew,
-			bool required, int32_t minLength, int32_t maxLength, TextInputStyle inputStyle, const std::string& label = "", const std::string& placeholder = "") {
+		RespondToInputEventData& addModal(std::string const& topTitleNew, std::string const& topCustomIdNew, std::string const& titleNew, std::string const& customIdNew,
+			bool required, int32_t minLength, int32_t maxLength, TextInputStyle inputStyle, std::string const& label = "", std::string const& placeholder = "") {
 			this->title = topTitleNew;
 			this->customId = topCustomIdNew;
 			if (this->components.size() == 0) {
@@ -3425,7 +3425,7 @@ namespace DiscordCoreAPI {
 		/// For setting the Message content in a response. \brief For setting the Message content in a response.
 		/// \param dataPackage A std::string, containing the content.
 		/// \returns RespondToInputEventData& A reference to this data structure.
-		RespondToInputEventData& addContent(const std::string& dataPackage) {
+		RespondToInputEventData& addContent(std::string const& dataPackage) {
 			this->content = dataPackage;
 			return *this;
 		}
@@ -3443,7 +3443,7 @@ namespace DiscordCoreAPI {
 		/// \param theName A std::string for the name of the choice.
 		/// \param theNameLocalizations A std::unordered_map<std::string, std::string> for the name localizations.
 		/// \returns RespondToInputEventData& A reference to this data structure.
-		RespondToInputEventData& setAutoCompleteChoice(nlohmann::json theValue, const std::string& theName,
+		RespondToInputEventData& setAutoCompleteChoice(nlohmann::json theValue, std::string const& theName,
 			std::unordered_map<std::string, std::string> theNameLocalizations = std::unordered_map<std::string, std::string>{}) {
 			this->choices.push_back({ .nameLocalizations = theNameLocalizations, .value = theValue, .name = theName });
 			return *this;
@@ -3452,7 +3452,7 @@ namespace DiscordCoreAPI {
 		/// For setting the direct-Message User target of a response. \brief For setting the direct-Message User target of a response.
 		/// \param targetUserIdNew A std::string, containing the target User's id.
 		/// \returns RespondToInputEventData& A reference to this data structure.
-		RespondToInputEventData& setTargetUserID(const std::string& targetUserIdNew) {
+		RespondToInputEventData& setTargetUserID(std::string const& targetUserIdNew) {
 			this->targetUserId = targetUserIdNew;
 			return *this;
 		}
@@ -3490,8 +3490,8 @@ namespace DiscordCoreAPI {
 		/// \param emojiId An emoji id, if desired.
 		/// \param url A url, if applicable.
 		/// \returns RespondToInputEventData& A reference to this data structure.
-		MessageResponseBase& addButton(bool disabled, const std::string& customIdNew, const std::string& buttonLabel, ButtonStyle buttonStyle, const std::string& emojiName = "",
-			std::string emojiId = "", const std::string& url = "") {
+		MessageResponseBase& addButton(bool disabled, std::string const& customIdNew, std::string const& buttonLabel, ButtonStyle buttonStyle, std::string const& emojiName = "",
+			std::string emojiId = "", std::string const& url = "") {
 			if (this->components.size() == 0) {
 				ActionRowData actionRowData;
 				this->components.push_back(actionRowData);
@@ -3524,7 +3524,7 @@ namespace DiscordCoreAPI {
 		/// \param maxValues Maximum number of selections that are possible.
 		/// \param minValues Minimum required number of selections that are required.
 		/// \returns RespondToInputEventData& A reference to this data structure.
-		MessageResponseBase& addSelectMenu(bool disabled, const std::string& customIdNew, std::vector<SelectOptionData> options, const std::string& placeholder, int32_t maxValues,
+		MessageResponseBase& addSelectMenu(bool disabled, std::string const& customIdNew, std::vector<SelectOptionData> options, std::string const& placeholder, int32_t maxValues,
 			int32_t minValues) {
 			if (this->components.size() == 0) {
 				ActionRowData actionRowData;
@@ -3561,8 +3561,8 @@ namespace DiscordCoreAPI {
 		/// \param label A label for the modal.
 		/// \param placeholder A placeholder for the modal.
 		/// \returns RespondToInputEventData& A reference to this data structure.
-		MessageResponseBase& addModal(const std::string& topTitleNew, const std::string& topCustomIdNew, const std::string& titleNew, const std::string& customIdNew, bool required, int32_t minLength,
-			int32_t maxLength, TextInputStyle inputStyle, const std::string& label = "", const std::string& placeholder = "") {
+		MessageResponseBase& addModal(std::string const& topTitleNew, std::string const& topCustomIdNew, std::string const& titleNew, std::string const& customIdNew, bool required, int32_t minLength,
+			int32_t maxLength, TextInputStyle inputStyle, std::string const& label = "", std::string const& placeholder = "") {
 			this->title = topTitleNew;
 			this->customId = topCustomIdNew;
 			if (this->components.size() == 0) {
@@ -3625,7 +3625,7 @@ namespace DiscordCoreAPI {
 		/// For setting the Message content in a response. \brief For setting the Message content in a response.
 		/// \param dataPackage A std::string, containing the content.
 		/// \returns RespondToInputEventData& A reference to this data structure.
-		MessageResponseBase& addContent(const std::string& dataPackage) {
+		MessageResponseBase& addContent(std::string const& dataPackage) {
 			this->content = dataPackage;
 			return *this;
 		}
@@ -3844,7 +3844,7 @@ namespace DiscordCoreAPI {
 		std::string buttonId{};
 	};
 
-	DiscordCoreAPI_Dll MoveThroughMessagePagesData moveThroughMessagePages(const std::string& userID, InputEventData originalEvent, uint32_t currentPageIndex,
+	DiscordCoreAPI_Dll MoveThroughMessagePagesData moveThroughMessagePages(std::string const& userID, InputEventData originalEvent, uint32_t currentPageIndex,
 		std::vector<EmbedData> messageEmbeds, bool deleteAfter, uint32_t waitForMaxMs, bool returnResult = false);
 	/**@}*/
 

@@ -176,7 +176,7 @@ namespace DiscordCoreAPI {
 
 		static void insertGuildMember(GuildMember dataPackage);
 
-		static void removeGuildMember(const std::string& globalId);
+		static void removeGuildMember(std::string const& globalId);
 	};
 	/**@}*/
 };// namespace DiscordCoreAPI

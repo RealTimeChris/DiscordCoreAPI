@@ -28,7 +28,7 @@
 
 namespace DiscordCoreAPI {
 
-	std::string getISO8601TimeStamp(const std::string& year, const std::string& month, const std::string& day, const std::string& hour, const std::string& minute, const std::string& second) {
+	std::string getISO8601TimeStamp(std::string const& year, std::string const& month, std::string const& day, std::string const& hour, std::string const& minute, std::string const& second) {
 		std::string theTimeStamp{};
 		theTimeStamp += year + "-";
 		if (month.size() < 2) {
@@ -82,7 +82,7 @@ namespace DiscordCoreAPI {
 		dataPackage.content = content;
 	}
 
-	void reportException(const std::string& stackTrace, UnboundedMessageBlock<std::exception>* sendBuffer, bool rethrow) {
+	void reportException(std::string const& stackTrace, UnboundedMessageBlock<std::exception>* sendBuffer, bool rethrow) {
 		try {
 			auto currentException = std::current_exception();
 			if (currentException) {
@@ -172,7 +172,7 @@ namespace DiscordCoreAPI {
 		return newString;
 	}
 
-	std::string convertToLowerCase(const std::string& stringToConvert) {
+	std::string convertToLowerCase(std::string const& stringToConvert) {
 		std::string newString;
 		for (auto& value: stringToConvert) {
 			if (isupper(static_cast<unsigned char>(value))) {
@@ -184,7 +184,7 @@ namespace DiscordCoreAPI {
 		return newString;
 	}
 
-	int64_t convertTimestampToMsInteger(const std::string& timeStamp) {
+	int64_t convertTimestampToMsInteger(std::string const& timeStamp) {
 		try {
 			Time timeValue = Time(stoi(timeStamp.substr(0, 4)), stoi(timeStamp.substr(5, 6)), stoi(timeStamp.substr(8, 9)), stoi(timeStamp.substr(11, 12)),
 				stoi(timeStamp.substr(14, 15)), stoi(timeStamp.substr(17, 18)));
@@ -195,7 +195,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	std::string base64Encode(const std::string& theString, bool url) {
+	std::string base64Encode(std::string const& theString, bool url) {
 		const char* base64_chars[2] = { "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 										"abcdefghijklmnopqrstuvwxyz"
 										"0123456789"
@@ -242,7 +242,7 @@ namespace DiscordCoreAPI {
 		return returnString;
 	}
 
-	std::string loadFileContents(const std::string& filePath) {
+	std::string loadFileContents(std::string const& filePath) {
 		std::ifstream file(filePath, std::ios::in | std::ios::binary);
 		std::ostringstream stream{};
 		stream << file.rdbuf();
@@ -250,7 +250,7 @@ namespace DiscordCoreAPI {
 		return theString;
 	}
 
-	std::string utf8MakeValid(const std::string& inputString) {
+	std::string utf8MakeValid(std::string const& inputString) {
 		std::string returnString{};
 		for (auto& value: inputString) {
 			if (value >= 128) {
@@ -262,14 +262,14 @@ namespace DiscordCoreAPI {
 		return returnString;
 	}
 
-	std::string urlDecode(const std::string& inputString) {
+	std::string urlDecode(std::string const& inputString) {
 		CURLUWrapper urlHandle = curl_url();
 		int32_t outLength{ 0 };
 		std::string returnString = curl_easy_unescape(urlHandle, inputString.c_str(), static_cast<int32_t>(inputString.length()), &outLength);
 		return returnString;
 	}
 
-	std::string urlEncode(const std::string& inputString) {
+	std::string urlEncode(std::string const& inputString) {
 		std::ostringstream escaped{};
 		escaped.fill('0');
 		escaped << std::hex;
@@ -352,12 +352,12 @@ namespace DiscordCoreAPI {
 		return std::string("\033[0m");
 	}
 
-	std::ostream& operator<<(std::ostream& outputSttream, const std::string& (*theFunction)(void)) {
+	std::ostream& operator<<(std::ostream& outputSttream, std::string const& (*theFunction)(void)) {
 		outputSttream << theFunction();
 		return outputSttream;
 	}
 
-	bool hasTimeElapsed(const std::string& timeStamp, int64_t days, int64_t hours, int64_t minutes) {
+	bool hasTimeElapsed(std::string const& timeStamp, int64_t days, int64_t hours, int64_t minutes) {
 		try {
 			int64_t startTimeRaw = convertTimestampToMsInteger(timeStamp);
 			auto currentTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
@@ -669,7 +669,7 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	std::string Permissions::computeOverwrites(const std::string& basePermissions, GuildMember guildMember, ChannelData channel) {
+	std::string Permissions::computeOverwrites(std::string const& basePermissions, GuildMember guildMember, ChannelData channel) {
 		if ((stoll(basePermissions) & static_cast<int64_t>(Permission::Administrator)) == static_cast<int64_t>(Permission::Administrator)) {
 			return Permissions::getAllPermissions();
 		}
@@ -707,7 +707,7 @@ namespace DiscordCoreAPI {
 		return permissions;
 	}
 
-	MoveThroughMessagePagesData moveThroughMessagePages(const std::string& userID, InputEventData originalEvent, uint32_t currentPageIndex, std::vector<EmbedData> messageEmbeds,
+	MoveThroughMessagePagesData moveThroughMessagePages(std::string const& userID, InputEventData originalEvent, uint32_t currentPageIndex, std::vector<EmbedData> messageEmbeds,
 		bool deleteAfter, uint32_t waitForMaxMs, bool returnResult) {
 		MoveThroughMessagePagesData returnData{};
 		try {

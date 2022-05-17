@@ -115,7 +115,7 @@ namespace DiscordCoreInternal {
 		this->contentSize = 0;
 	}
 
-	bool HttpRnRBuilder::checkForHeadersToParse(const std::string& other) {
+	bool HttpRnRBuilder::checkForHeadersToParse(std::string const& other) {
 		if (other.find("HTTP/1.") != std::string::npos) {
 			return true;
 		} else {
@@ -297,7 +297,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	HttpClient::HttpClient(const std::string& botTokenNew, bool doWePrintHttpNew, bool doWePrintFFMPEGNew)
+	HttpClient::HttpClient(std::string const& botTokenNew, bool doWePrintHttpNew, bool doWePrintFFMPEGNew)
 		: botToken(botTokenNew), doWePrintFFMPEG(doWePrintFFMPEGNew), doWePrintHttp(doWePrintHttpNew) {
 		this->connectionManager.initialize();
 	};

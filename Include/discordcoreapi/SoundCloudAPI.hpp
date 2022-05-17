@@ -37,7 +37,7 @@ namespace DiscordCoreInternal {
 
 		std::vector<HttpData> submitWorkloadAndGetResultNew(std::vector<HttpWorkloadData> httpData);
 
-		std::vector<DiscordCoreAPI::Song> collectSearchResults(const std::string&theString);
+		std::vector<DiscordCoreAPI::Song> collectSearchResults(std::string const&theString);
 
 	  protected:
 		inline static std::string clientId{};
@@ -56,7 +56,7 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll SoundCloudAPI {
 	  public:
-		SoundCloudAPI(const std::string&guildId, HttpClient* httpClient);
+		SoundCloudAPI(std::string const&guildId, HttpClient* httpClient);
 
 		void weFailedToDownloadOrDecode(DiscordCoreAPI::Song newSong, SoundCloudAPI* youtubeAPI, std::stop_token theToken, int32_t currentRecursionDepth);
 
@@ -64,7 +64,7 @@ namespace DiscordCoreInternal {
 
 		DiscordCoreAPI::Song collectFinalSong(DiscordCoreAPI::GuildMemberData addedByGuildMember, DiscordCoreAPI::Song newSong);
 
-		std::vector<DiscordCoreAPI::Song> searchForSong(const std::string&searchQuery);
+		std::vector<DiscordCoreAPI::Song> searchForSong(std::string const&searchQuery);
 
 		void cancelCurrentSong();
 

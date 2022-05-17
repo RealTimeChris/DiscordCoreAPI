@@ -183,7 +183,7 @@ namespace DiscordCoreAPI {
 
 namespace DiscordCoreInternal {
 
-	int32_t JSONIFY(const std::string& initialPayload) {
+	int32_t JSONIFY(std::string const& initialPayload) {
 		nlohmann::json jsonVal = nlohmann::json::parse(initialPayload);
 		int32_t finalValue = 0;
 		if (jsonVal.contains("heartbeat_interval")) {
@@ -192,7 +192,7 @@ namespace DiscordCoreInternal {
 		return finalValue;
 	};
 
-	nlohmann::json JSONIFY(const std::string& serverId, const std::string& sessionId, const std::string& token, std::string) {
+	nlohmann::json JSONIFY(std::string const& serverId, std::string const& sessionId, std::string const& token, std::string) {
 		nlohmann::json data{};
 		data["d"]["server_id"] = serverId;
 		data["d"]["session_id"] = sessionId;
@@ -201,7 +201,7 @@ namespace DiscordCoreInternal {
 		return data;
 	}
 
-	nlohmann::json JSONIFY(const std::string& botToken, int64_t intents, int32_t currentShard, int32_t numberOfShards) {
+	nlohmann::json JSONIFY(std::string const& botToken, int64_t intents, int32_t currentShard, int32_t numberOfShards) {
 		nlohmann::json data{};
 #ifdef _WIN32
 		data["d"]["properties"]["$browser"] = "DiscordCoreAPI";
@@ -227,7 +227,7 @@ namespace DiscordCoreInternal {
 		return data;
 	};
 
-	nlohmann::json JSONIFY(const std::string& botToken, const std::string& sessionID, int32_t lastReceivedNumber) {
+	nlohmann::json JSONIFY(std::string const& botToken, std::string const& sessionID, int32_t lastReceivedNumber) {
 		nlohmann::json data{};
 		data["d"]["seq"] = lastReceivedNumber;
 		data["d"]["session_id"] = sessionID;
@@ -278,7 +278,7 @@ namespace DiscordCoreInternal {
 		return data;
 	};
 
-	std::vector<uint8_t> JSONIFY(const std::string& localPort, const std::string& localIp, const std::string& encryptionMode, int32_t) {
+	std::vector<uint8_t> JSONIFY(std::string const& localPort, std::string const& localIp, std::string const& encryptionMode, int32_t) {
 		nlohmann::json data{};
 		data["d"]["data"]["port"] = stol(localPort);
 		data["d"]["data"]["mode"] = encryptionMode;

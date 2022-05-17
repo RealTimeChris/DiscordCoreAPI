@@ -57,7 +57,7 @@ namespace DiscordCoreInternal {
 	#define SOCKET_ERROR (-1)
 #endif
 
-	DiscordCoreAPI_Dll void reportError(const std::string& errorPosition, int32_t errorValue) noexcept;
+	DiscordCoreAPI_Dll void reportError(std::string const& errorPosition, int32_t errorValue) noexcept;
 #ifdef _WIN32
 	struct DiscordCoreAPI_Dll WSADataWrapper {
 		struct DiscordCoreAPI_Dll WSADataDeleter {
@@ -265,9 +265,9 @@ namespace DiscordCoreInternal {
 	  public:
 		HttpSSLClient() noexcept = default;
 
-		bool connect(const std::string& baseUrl, const std::string& portNew = "443") noexcept;
+		bool connect(std::string const& baseUrl, std::string const& portNew = "443") noexcept;
 
-		void writeData(const std::string& theData) noexcept;
+		void writeData(std::string const& theData) noexcept;
 
 		std::string& getInputBuffer() noexcept;
 
@@ -295,13 +295,13 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll WebSocketSSLClient {
 	  public:
-		WebSocketSSLClient(const std::string& baseUrl, const std::string& port, int64_t maxBufferSize = 16 * 1024) noexcept;
+		WebSocketSSLClient(std::string const& baseUrl, std::string const& port, int64_t maxBufferSize = 16 * 1024) noexcept;
 
 		WebSocketSSLClient() noexcept = default;
 
 		bool processIO(int32_t waitTimeInMicroSeconds) noexcept;
 
-		void writeData(const std::string& data) noexcept;
+		void writeData(std::string const& data) noexcept;
 
 		std::string& getInputBuffer() noexcept;
 
@@ -320,7 +320,7 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll DatagramSocketSSLClient {
 	  public:
-		DatagramSocketSSLClient(const std::string& hostName, const std::string& port) noexcept;
+		DatagramSocketSSLClient(std::string const& hostName, std::string const& port) noexcept;
 
 		DatagramSocketSSLClient() noexcept = default;
 

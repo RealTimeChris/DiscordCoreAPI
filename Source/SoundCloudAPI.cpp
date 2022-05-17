@@ -37,7 +37,7 @@ namespace DiscordCoreInternal {
 		return DiscordCoreAPI::Song{};
 	}
 
-	std::vector<DiscordCoreAPI::Song> SoundCloudRequestBuilder::collectSearchResults(const std::string&songQuery) {
+	std::vector<DiscordCoreAPI::Song> SoundCloudRequestBuilder::collectSearchResults(std::string const&songQuery) {
 		try {
 			std::vector<DiscordCoreAPI::Song> results{};
 			std::unordered_map<std::string, std::string> theHeaders{
@@ -216,7 +216,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	SoundCloudAPI::SoundCloudAPI(const std::string&guildIdNew, HttpClient* httpClient) : requestBuilder(httpClient) {
+	SoundCloudAPI::SoundCloudAPI(std::string const&guildIdNew, HttpClient* httpClient) : requestBuilder(httpClient) {
 		this->httpClient = httpClient;
 		this->guildId = guildIdNew;
 	}
@@ -380,7 +380,7 @@ namespace DiscordCoreInternal {
 		}
 	};
 
-	std::vector<DiscordCoreAPI::Song> SoundCloudAPI::searchForSong(const std::string&searchQuery) {
+	std::vector<DiscordCoreAPI::Song> SoundCloudAPI::searchForSong(std::string const&searchQuery) {
 		return this->requestBuilder.collectSearchResults(searchQuery);
 	}
 

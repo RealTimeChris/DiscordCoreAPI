@@ -254,7 +254,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	void Roles::removeRole(const std::string&roleId) {
+	void Roles::removeRole(std::string const&roleId) {
 		try {
 			Roles::cache.erase(roleId);
 		} catch (...) {

@@ -53,7 +53,7 @@ namespace DiscordCoreAPI {
 		friend InputEvents;
 		friend Messages;
 
-		CreateMessageData(const std::string&channelIdNew) {
+		CreateMessageData(std::string const&channelIdNew) {
 			this->channelId = channelIdNew;
 		}
 

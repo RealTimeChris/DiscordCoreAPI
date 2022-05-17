@@ -29,7 +29,7 @@
 
 namespace DiscordCoreAPI {
 
-	VoiceConnection* Guild::connectToVoice(const std::string&channelId, bool selfDeaf, bool selfMute) {
+	VoiceConnection* Guild::connectToVoice(std::string const&channelId, bool selfDeaf, bool selfMute) {
 		try {
 			if (getVoiceConnectionMap()[this->id]->areWeConnected()) {
 				this->voiceConnectionPtr = getVoiceConnectionMap()[this->id].get();
@@ -837,7 +837,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	void Guilds::removeGuild(const std::string&guildId) {
+	void Guilds::removeGuild(std::string const&guildId) {
 		try {
 			Guilds::cache.erase(guildId);
 		} catch (...) {

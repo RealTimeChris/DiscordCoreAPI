@@ -193,7 +193,7 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<std::vector<SelectMenuResponseData>> SelectMenuCollector::collectSelectMenuData(bool getSelectMenuDataForAllNew, int32_t maxWaitTimeInMsNew,
-		int32_t maxCollectedSelectMenuCountNew, const std::string& targetUser) {
+		int32_t maxCollectedSelectMenuCountNew, std::string const& targetUser) {
 		co_await NewThreadAwaitable<std::vector<SelectMenuResponseData>>();
 		if (targetUser == "" && !getSelectMenuDataForAllNew) {
 			this->getSelectMenuDataForAll = true;
@@ -322,7 +322,7 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<std::vector<ButtonResponseData>> ButtonCollector::collectButtonData(bool getButtonDataForAllNew, int32_t maxWaitTimeInMsNew, int32_t maxNumberOfPressesNew,
-		const std::string& targetUser) {
+		std::string const& targetUser) {
 		co_await NewThreadAwaitable<std::vector<ButtonResponseData>>();
 		if (targetUser == "" && !getButtonDataForAllNew) {
 			throw std::runtime_error("You've failed to properly set the collectButtonData() parameters!");

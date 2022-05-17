@@ -22,7 +22,7 @@
 
 namespace DiscordCoreInternal {
 
-	auto getFilePath(const std::string& fileName,const std::string& pathPrefix, std::string searchRoot = "") {
+	auto getFilePath(std::string const& fileName,std::string const& pathPrefix, std::string searchRoot = "") {
 		{
 			if (searchRoot == "") {
 #ifdef _WIN32
@@ -52,7 +52,7 @@ namespace DiscordCoreInternal {
 		return std::string{};
 	}
 
-	void reportSSLError(const std::string& errorPosition, int32_t errorValue = 0, SSL* ssl = nullptr) noexcept {
+	void reportSSLError(std::string const& errorPosition, int32_t errorValue = 0, SSL* ssl = nullptr) noexcept {
 		if (ssl) {
 			std::cout << DiscordCoreAPI::shiftToBrightRed() << errorPosition << SSL_get_error(ssl, errorValue) << std::endl;
 		} else {
@@ -62,7 +62,7 @@ namespace DiscordCoreInternal {
 		std::cout << std::endl << DiscordCoreAPI::reset();
 	}
 
-	void reportError(const std::string& errorPosition, int32_t errorValue) noexcept {
+	void reportError(std::string const& errorPosition, int32_t errorValue) noexcept {
 		std::cout << DiscordCoreAPI::shiftToBrightRed() << errorPosition << errorValue << ", ";
 #ifdef _WIN32
 		std::cout << WSAGetLastError() << std::endl << DiscordCoreAPI::reset();
@@ -91,7 +91,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	bool HttpSSLClient::connect(const std::string& baseUrl, const std::string& portNew) noexcept {
+	bool HttpSSLClient::connect(std::string const& baseUrl, std::string const& portNew) noexcept {
 		std::string stringNew{};
 		if (baseUrl.find(".com") != std::string::npos) {
 			stringNew =
@@ -191,7 +191,7 @@ namespace DiscordCoreInternal {
 		return true;
 	}
 
-	void HttpSSLClient::writeData(const std::string& data) noexcept {
+	void HttpSSLClient::writeData(std::string const& data) noexcept {
 		this->outputBuffer.insert(this->outputBuffer.end(), data.begin(), data.end());
 	}
 
@@ -331,7 +331,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	WebSocketSSLClient::WebSocketSSLClient(const std::string& baseUrlNew, const std::string& portNew, int64_t maxBufferSizeNew) noexcept : maxBufferSize(maxBufferSizeNew) {
+	WebSocketSSLClient::WebSocketSSLClient(std::string const& baseUrlNew, std::string const& portNew, int64_t maxBufferSizeNew) noexcept : maxBufferSize(maxBufferSizeNew) {
 		addrinfoWrapper resultAddress{ nullptr }, hints{ nullptr };
 		hints->ai_family = AF_INET;
 		hints->ai_socktype = SOCK_STREAM;
@@ -532,7 +532,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void WebSocketSSLClient::writeData(const std::string& data) noexcept {
+	void WebSocketSSLClient::writeData(std::string const& data) noexcept {
 		this->outputBuffer.insert(this->outputBuffer.end(), data.begin(), data.end());
 	}
 
@@ -544,7 +544,7 @@ namespace DiscordCoreInternal {
 		return this->bytesRead;
 	}
 
-	DatagramSocketSSLClient::DatagramSocketSSLClient(const std::string& baseUrlNew, const std::string& portNew) noexcept {
+	DatagramSocketSSLClient::DatagramSocketSSLClient(std::string const& baseUrlNew, std::string const& portNew) noexcept {
 		addrinfoWrapper resultAddress{ nullptr }, hints{ nullptr };
 		hints->ai_family = AF_INET;
 		hints->ai_socktype = SOCK_DGRAM;
