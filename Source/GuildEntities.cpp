@@ -846,7 +846,7 @@ namespace DiscordCoreAPI {
 	};
 
 	DiscordCoreInternal::HttpClient* Guilds::httpClient{ nullptr };
-	std::unordered_map<std::string, GuildData> Guilds::cache{};
 	DiscordCoreClient* Guilds::discordCoreClient{ nullptr };
+	std::unordered_map<std::string, Guild> Guilds::cache{};
 
 }
