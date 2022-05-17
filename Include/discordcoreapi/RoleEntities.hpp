@@ -123,6 +123,48 @@ namespace DiscordCoreAPI {
 	/// A single Role.
 	class DiscordCoreAPI_Dll Role : public RoleData {
 	  public:
+
+		std::string unicodeEmoji{};///< Emoji representing the Role.
+		Permissions permissions{};///< The Role's base Guild Permissions.
+		int32_t position{ 0 };///< Its position amongst the rest of the Guild's roles.
+		std::string name{};///< The Role's name.
+		std::string icon{};///< Icon representing the Role.
+		int32_t color{ 0 };///< The Role's color.
+		RoleTagsData tags{};///< Role tags.
+		int8_t flags{ 0 };///< Role flags.
+
+		Role& operator=(RoleData&& other) {
+			this->unicodeEmoji = other.unicodeEmoji;
+			this->permissions = other.permissions;
+			this->position = other.position;
+			this->color = other.color;
+			this->flags = other.flags;
+			this->name = other.name;
+			this->icon = other.icon;
+			this->id = other.id;
+			return *this;
+		}
+
+		Role(RoleData&& other) {
+			*this = other;
+		}
+
+		Role& operator=(RoleData& other) {
+			this->unicodeEmoji = other.unicodeEmoji;
+			this->permissions = other.permissions;
+			this->position = other.position;
+			this->color = other.color;
+			this->flags = other.flags;
+			this->name = other.name;
+			this->icon = other.icon;
+			this->id = other.id;
+			return *this;
+		}
+
+		Role(RoleData& other) {
+			*this = other;
+		}
+
 		Role() = default;
 
 		virtual ~Role() = default;
@@ -192,13 +234,13 @@ namespace DiscordCoreAPI {
 		/// Collects a given Role from the library's cache. \brief Collects a given Role from the library's cache.
 		/// \param dataPackage A GetRoleData structure.
 		/// \returns A CoRoutine containing a Role.
-		static CoRoutine<Role> getCachedRoleAsync(GetRoleData dataPackage);
+		static CoRoutine<RoleData> getCachedRoleAsync(GetRoleData dataPackage);
 
 	  protected:
+		static std::unordered_map<std::string, RoleData> cache;
 		static DiscordCoreInternal::HttpClient* httpClient;
-		static std::unordered_map<std::string, Role> cache;
 
-		static void insertRole(Role dataPackage);
+		static void insertRole(RoleData dataPackage);
 
 		static void removeRole(std::string roleId);
 	};

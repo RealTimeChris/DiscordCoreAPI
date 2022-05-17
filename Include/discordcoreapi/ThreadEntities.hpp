@@ -21,6 +21,7 @@
 #pragma once
 
 #include <discordcoreapi/CoRoutine.hpp>
+#include <discordcoreapi/ChannelEntities.hpp>
 #include <discordcoreapi/FoundationEntities.hpp>
 
 namespace DiscordCoreAPI {
@@ -126,7 +127,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Represents a single Thread. \brief Represents a single Thread.
-	class DiscordCoreAPI_Dll Thread : public ChannelData {
+	class DiscordCoreAPI_Dll Thread : public Channel {
 	  public:
 		Thread() = default;
 

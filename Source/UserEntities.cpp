@@ -26,24 +26,6 @@
 
 namespace DiscordCoreAPI {
 
-	User& User::operator=(UserData& other) {
-		this->discriminator = other.discriminator;
-		this->publicFlags = other.publicFlags;
-		this->premiumType = other.premiumType;
-		this->userName = other.userName;
-		this->locale = other.locale;
-		this->avatar = other.avatar;
-		this->flags = other.flags;
-		this->email = other.email;
-		this->flags = other.flags;
-		this->id = other.id;
-		return *this;
-	}
-
-	User::User(UserData& dataNew) {
-		*this = dataNew;
-	}
-
 	void BotUser::updateVoiceStatus(UpdateVoiceStateData dataPackage) {
 		nlohmann::json payload = DiscordCoreInternal::JSONIFY(dataPackage);
 		this->baseSocketAgent->sendMessage(payload);
@@ -139,9 +121,9 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	CoRoutine<User> Users::getCachedUserAsync(GetUserData dataPackage) {
+	CoRoutine<UserData> Users::getCachedUserAsync(GetUserData dataPackage) {
 		try {
-			co_await NewThreadAwaitable<User>();
+			co_await NewThreadAwaitable<UserData>();
 			if (Users::cache.contains(dataPackage.userId)) {
 				co_return Users::cache[dataPackage.userId];
 			} else {
@@ -161,7 +143,10 @@ namespace DiscordCoreAPI {
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
 			workload.relativePath = "/users/" + dataPackage.userId;
 			workload.callStack = "Users::getUserAsync";
-			co_return DiscordCoreInternal::submitWorkloadAndGetResult<User>(*Users::httpClient, workload);
+			auto userNew = DiscordCoreInternal::submitWorkloadAndGetResult<User>(*Users::httpClient, workload);
+			Users::insertUser(userNew);
+			userNew = Users::getCachedUserAsync({ .userId = dataPackage.userId }).get();
+			co_return userNew;
 		} catch (...) {
 			reportException("Users::getUserAsync()");
 		}
@@ -234,7 +219,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	void Users::insertUser(User user) {
+	void Users::insertUser(UserData user) {
 		try {
 			if (user.id == "") {
 				return;
@@ -246,6 +231,6 @@ namespace DiscordCoreAPI {
 	}
 
 	DiscordCoreInternal::HttpClient* Users::httpClient{ nullptr };
-	std::unordered_map<std::string, User> Users::cache{};
+	std::unordered_map<std::string, UserData> Users::cache{};
 
 }

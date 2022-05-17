@@ -84,7 +84,7 @@ namespace DiscordCoreAPI {
 		return false;
 	}
 
-	void Guild::initialize(bool doWeShowIt) {
+	void GuildData::initialize(bool doWeShowIt) {
 		try {
 			if (this->discordCoreClient->cacheOptions.cacheGuilds && doWeShowIt) {
 				std::cout << shiftToBrightBlue() << "Caching Guild: " << this->id << reset() << std::endl;
@@ -174,10 +174,10 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	CoRoutine<std::vector<Guild>> Guilds::getAllGuildsAsync() {
+	CoRoutine<std::vector<GuildData>> Guilds::getAllGuildsAsync() {
 		try {
-			co_await NewThreadAwaitable<std::vector<Guild>>();
-			std::vector<Guild> guildVector{};
+			co_await NewThreadAwaitable<std::vector<GuildData>>();
+			std::vector<GuildData> guildVector{};
 			for (auto& [key, value]: Guilds::cache) {
 				value.discordCoreClient = Guilds::discordCoreClient;
 				guildVector.push_back(value);
@@ -198,16 +198,18 @@ namespace DiscordCoreAPI {
 			workload.relativePath = "/guilds/" + dataPackage.guildId + "?with_counts=true";
 			workload.callStack = "Guilds::getGuildAsync";
 			auto guildNew = DiscordCoreInternal::submitWorkloadAndGetResult<Guild>(*Guilds::httpClient, workload);
+			Guilds::insertGuild(guildNew);
 			guildNew.discordCoreClient = Guilds::discordCoreClient;
+			guildNew = Guilds::getCachedGuildAsync({ .guildId = dataPackage.guildId }).get();
 			co_return guildNew;
 		} catch (...) {
 			reportException("Guilds::getGuildAsync()");
 		}
 	}
 
-	CoRoutine<Guild> Guilds::getCachedGuildAsync(GetGuildData dataPackage) {
+	CoRoutine<GuildData> Guilds::getCachedGuildAsync(GetGuildData dataPackage) {
 		try {
-			co_await NewThreadAwaitable<Guild>();
+			co_await NewThreadAwaitable<GuildData>();
 			if (Guilds::cache.contains(dataPackage.guildId)) {
 				co_return Guilds::cache[dataPackage.guildId];
 
@@ -821,7 +823,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	void Guilds::insertGuild(Guild guild) {
+	void Guilds::insertGuild(GuildData guild) {
 		try {
 			if (guild.id == "") {
 				return;
@@ -830,6 +832,7 @@ namespace DiscordCoreAPI {
 			if (!Guilds::cache.contains(guild.id)) {
 				doWeShowIt = true;
 			}
+			guild.discordCoreClient = Guilds::discordCoreClient;
 			guild.initialize(doWeShowIt);
 			Guilds::cache.insert_or_assign(guild.id, guild);
 		} catch (...) {
@@ -847,6 +850,6 @@ namespace DiscordCoreAPI {
 
 	DiscordCoreInternal::HttpClient* Guilds::httpClient{ nullptr };
 	DiscordCoreClient* Guilds::discordCoreClient{ nullptr };
-	std::unordered_map<std::string, Guild> Guilds::cache{};
+	std::unordered_map<std::string, GuildData> Guilds::cache{};
 
 }

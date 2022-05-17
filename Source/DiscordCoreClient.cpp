@@ -61,6 +61,7 @@ namespace DiscordCoreAPI {
 		std::signal(SIGILL, &signalHandler);
 		std::signal(SIGABRT, &signalHandler);
 		std::signal(SIGFPE, &signalHandler);
+		DiscordCoreInternal::DataParser::initialize(this);
 		this->functionsToExecute = functionsToExecuteNew;
 		DiscordCoreInternal::HttpSSLClient::initialize();
 		this->loggingOptions = loggingOptionsNew;

@@ -39,15 +39,16 @@ namespace DiscordCoreAPI {
 			workload.callStack = "Channels::getChannelAsync";
 			auto channelNew = DiscordCoreInternal::submitWorkloadAndGetResult<Channel>(*Channels::httpClient, workload);
 			Channels::insertChannel(channelNew);
+			channelNew = Channels::getCachedChannelAsync({ .channelId = dataPackage.channelId }).get();
 			co_return channelNew;
 		} catch (...) {
 			reportException("Channels::getChannelAsync()");
 		}
 	}
 
-	CoRoutine<Channel> Channels::getCachedChannelAsync(GetChannelData dataPackage) {
+	CoRoutine<ChannelData> Channels::getCachedChannelAsync(GetChannelData dataPackage) {
 		try {
-			co_await NewThreadAwaitable<Channel>();
+			co_await NewThreadAwaitable<ChannelData>();
 			if (Channels::cache.contains(dataPackage.channelId)) {
 				co_return Channels::cache[dataPackage.channelId];
 			} else {
@@ -261,7 +262,7 @@ namespace DiscordCoreAPI {
 			co_await NewThreadAwaitable<Channel>();
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Post_Create_User_Dm;
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Post;
-			workload.relativePath = "/users/@me/channels";
+			workload.relativePath = "/channels/@me/channels";
 			workload.callStack = "Channels::createDMChannelAsync";
 			nlohmann::json theValue = { { "recipient_id", dataPackage.userId } };
 			workload.content = theValue.dump();
@@ -286,7 +287,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	void Channels::insertChannel(Channel channel) {
+	void Channels::insertChannel(ChannelData channel) {
 		try {
 			if (channel.id == "") {
 				return;
@@ -306,6 +307,6 @@ namespace DiscordCoreAPI {
 	};
 
 	DiscordCoreInternal::HttpClient* Channels::httpClient{ nullptr };
-	std::unordered_map<std::string, Channel> Channels::cache{};
+	std::unordered_map<std::string, ChannelData> Channels::cache{};
 
 }

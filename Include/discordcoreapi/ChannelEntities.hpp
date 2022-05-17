@@ -35,25 +35,6 @@ namespace DiscordCoreAPI {
 		std::string channelId{};///< The id of the Channel to acquire.
 	};
 
-	/// For modifying a Channel's properties. \brief For modifying a Channel's properties.
-	struct DiscordCoreAPI_Dll ModifyChannelData {
-		ModifyChannelData(ChannelData newData) {
-			this->channelData.permissionOverwrites = newData.permissionOverwrites;
-			this->channelData.rateLimitPerUser = newData.rateLimitPerUser;
-			this->channelData.userLimit = newData.userLimit;
-			this->channelData.rtcRgion = newData.rtcRegion;
-			this->channelData.parentId = newData.parentId;
-			this->channelData.position = newData.position;
-			this->channelData.nsfw = newData.getNSFW();
-			this->channelData.topic = newData.topic;
-			this->channelData.name = newData.name;
-			this->channelData.type = newData.type;
-		};
-		UpdateChannelData channelData{};///< The responseData of the Channel to be updated.
-		std::string channelId{};///< The id of the Channel to modify.
-		std::string reason{};///< A reason for modifying the Channel.
-	};
-
 	/// For deleting or closing a Channel. \brief For deleting or closing a Channel.
 	struct DiscordCoreAPI_Dll DeleteOrCloseChannelData {
 		std::string channelId{};///< The id of the Channel to close/delete.
@@ -151,9 +132,101 @@ namespace DiscordCoreAPI {
 	/// A Channel object. \brief A Channel object.
 	class DiscordCoreAPI_Dll Channel : public ChannelData {
 	  public:
+
+		std::unordered_map<std::string, OverWriteData> permissionOverwrites{};///< Permission overwrites for the given Channel.
+		std::unordered_map<std::string, UserData> recipients{};///< Recipients, in the case of a group Dm or Dm.
+		int32_t defaultAutoArchiveDuration{ 0 };///< Default time it takes to archive a thread.
+		ThreadMetadataData threadMetadata{};///< Metadata in the case that this Channel is a Thread.
+		ChannelType type{ ChannelType::Dm };///< The type of the Channel.
+		TimeStamp lastPinTimestamp{ "" };///< Timestamp of the last pinned Message.
+		int32_t videoQualityMode{ 0 };///< Video quality mode.
+		int32_t rateLimitPerUser{ 0 };///< Amount of seconds a User has to wait before sending another Message.
+		std::string lastMessageId{};///< Id of the last Message.
+		std::string applicationId{};///< Application id of the current application.
+		ThreadMemberData member{};///< Thread member object for the current User, if they have joined the Thread.
+		int32_t messageCount{ 0 };///< An approximate count of Messages in a Thread stops counting at 50.
+		std::string permissions{};///< Computed permissions for the invoking user in the channel, including overwrites.
+		int32_t memberCount{ 0 };///< Count of members active in the Channel.
+		std::string rtcRegion{};///< Real-time clock region.
+		int32_t userLimit{ 0 };///< User limit, in the case of voice channels.
+		std::string parentId{};///< Id of the parent Channel, if applicable.
+		std::string guildId{};///< Id of the Channel's Guild, if applicable.
+		std::string ownerId{};///< Id of the Channel's owner.
+		int32_t position{ 0 };///< The position of the Channel, in the Guild's Channel list.
+		int32_t bitrate{ 0 };///< Bitrate of the Channel, if it is a voice Channel.
+		std::string topic{};///< The Channel's topic.
+		std::string name{};///< Name of the Channel.
+		std::string icon{};///< Icon for the Channel, if applicable.
+		int8_t flags{ 0 };///< Channel flags combined as a bitfield.
+
+		Channel& operator=(ChannelData&& other) {
+			this->permissionOverwrites = other.permissionOverwrites;
+			this->lastPinTimestamp = other.lastPinTimestamp;
+			this->lastMessageId = other.lastMessageId;
+			this->messageCount = other.messageCount;
+			this->permissions = other.permissions;
+			this->memberCount = other.memberCount;
+			this->recipients = other.recipients;
+			this->parentId = other.parentId;
+			this->position = other.position;
+			this->guildId = other.guildId;
+			this->member = other.member;
+			this->flags = other.flags;
+			this->name = other.name;
+			this->type = other.type;
+			this->id = other.id;
+			return *this;
+		}
+
+		Channel(ChannelData&& other) {
+			*this = std::move(other);
+		}
+
+		Channel& operator=(ChannelData& other) {
+			this->permissionOverwrites = other.permissionOverwrites;
+			this->lastPinTimestamp = other.lastPinTimestamp;
+			this->lastMessageId = other.lastMessageId;
+			this->messageCount = other.messageCount;
+			this->permissions = other.permissions;
+			this->memberCount = other.memberCount;
+			this->recipients = other.recipients;
+			this->parentId = other.parentId;
+			this->position = other.position;
+			this->guildId = other.guildId;
+			this->member = other.member;
+			this->flags = other.flags;
+			this->name = other.name;
+			this->type = other.type;
+			this->id = other.id;
+			return *this;
+		}
+
+		Channel(ChannelData& other) {
+			*this = other;
+		}
+
 		Channel() = default;
 
 		~Channel() = default;
+	};
+
+	/// For modifying a Channel's properties. \brief For modifying a Channel's properties.
+	struct DiscordCoreAPI_Dll ModifyChannelData {
+		ModifyChannelData(Channel newData) {
+			this->channelData.permissionOverwrites = newData.permissionOverwrites;
+			this->channelData.rateLimitPerUser = newData.rateLimitPerUser;
+			this->channelData.userLimit = newData.userLimit;
+			this->channelData.rtcRgion = newData.rtcRegion;
+			this->channelData.parentId = newData.parentId;
+			this->channelData.position = newData.position;
+			this->channelData.nsfw = newData.getNSFW();
+			this->channelData.topic = newData.topic;
+			this->channelData.name = newData.name;
+			this->channelData.type = newData.type;
+		};
+		UpdateChannelData channelData{};///< The responseData of the Channel to be updated.
+		std::string channelId{};///< The id of the Channel to modify.
+		std::string reason{};///< A reason for modifying the Channel.
 	};
 
 	/**@}*/
@@ -180,7 +253,7 @@ namespace DiscordCoreAPI {
 		/// Collects a Channel from the library's cache. \brief Collects a Channel from the library's cache.
 		/// \param dataPackage A GetChannelData structure.
 		/// \returns A CoRoutine containing a Channel.
-		static CoRoutine<Channel> getCachedChannelAsync(GetChannelData dataPackage);
+		static CoRoutine<ChannelData> getCachedChannelAsync(GetChannelData dataPackage);
 
 		/// Modifies a Channel's properties. \brief Modifies a Channel's properties.
 		/// \param dataPackage A ModifyChannelData structure.
@@ -248,10 +321,10 @@ namespace DiscordCoreAPI {
 		static CoRoutine<std::vector<VoiceRegionData>> getVoiceRegionsAsync();
 
 	  protected:
-		static std::unordered_map<std::string, Channel> cache;
+		static std::unordered_map<std::string, ChannelData> cache;
 		static DiscordCoreInternal::HttpClient* httpClient;
 
-		static void insertChannel(Channel dataPackage);
+		static void insertChannel(ChannelData dataPackage);
 
 		static void removeChannel(std::string channelId);
 	};

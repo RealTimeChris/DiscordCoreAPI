@@ -26,22 +26,6 @@
 
 namespace DiscordCoreAPI {
 
-	GuildMember& GuildMember::operator=(GuildMemberData& dataNew) {
-		this->guildMemberFlags = dataNew.guildMemberFlags;
-		this->premiumSince = dataNew.premiumSince;
-		this->permissions = dataNew.permissions;
-		this->joinedAt = dataNew.joinedAt;
-		this->guildId = dataNew.guildId;
-		this->roles = dataNew.roles;
-		this->user = dataNew.user;
-		this->nick = dataNew.nick;
-		return *this;
-	};
-
-	GuildMember::GuildMember(GuildMemberData& other) {
-		*this = other;
-	}
-
 	void GuildMembers::initialize(DiscordCoreInternal::HttpClient* theClient) {
 		GuildMembers::httpClient = theClient;
 	}
@@ -55,21 +39,26 @@ namespace DiscordCoreAPI {
 			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
 			workload.relativePath = "/guilds/" + dataPackage.guildId + "/members/" + dataPackage.guildMemberId;
 			workload.callStack = "GuildMembers::getGuildMemberAsync";
-			auto guildMember = DiscordCoreInternal::submitWorkloadAndGetResult<GuildMember>(*GuildMembers::httpClient, workload);
-			guildMember.guildId = dataPackage.guildId;
-			GuildMembers::insertGuildMember(guildMember);
-			co_return guildMember;
+			auto guildMemberNew = DiscordCoreInternal::submitWorkloadAndGetResult<GuildMember>(*GuildMembers::httpClient, workload);
+			GuildMembers::insertGuildMember(guildMemberNew);
+			std::cout << "WERE NOT HERE010101" << std::endl;
+			guildMemberNew = GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = dataPackage.guildMemberId, .guildId = dataPackage.guildId }).get();
+			std::cout << "WERE NOT HERE02020202" << std::endl;
+			co_return guildMemberNew;
 		} catch (...) {
 			reportException("GuildMembers::getGuildMemberAsync()");
 		}
 	}
 
-	CoRoutine<GuildMember> GuildMembers::getCachedGuildMemberAsync(GetGuildMemberData dataPackage) {
+	CoRoutine<GuildMemberData> GuildMembers::getCachedGuildMemberAsync(GetGuildMemberData dataPackage) {
 		try {
-			co_await NewThreadAwaitable<GuildMember>();
+			co_await NewThreadAwaitable<GuildMemberData>();
+			std::cout << "WERE NOT 030303" << std::endl;
+			std::cout << "GUILD ID: " << dataPackage.guildId << " MEMBER ID: " << dataPackage.guildMemberId << std::endl;
 			if (GuildMembers::cache.contains(dataPackage.guildId + " + " + dataPackage.guildMemberId)) {
 				co_return GuildMembers::cache[dataPackage.guildId + " + " + dataPackage.guildMemberId];
 			} else {
+				std::cout << "WERE NOT 404040" << std::endl;
 				co_return GuildMembers::getGuildMemberAsync(dataPackage).get();
 			}
 		} catch (...) {
@@ -247,13 +236,14 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	void GuildMembers::insertGuildMember(GuildMember guildMember) {
+	void GuildMembers::insertGuildMember(GuildMemberData guildMember) {
 		try {
 			std::lock_guard<std::mutex> theLock{ GuildMembers::accessMutex };
+			std::cout << "THE GUYILD NEW NEW NEW : " << guildMember.guildId << " GUILD MEMBER: " << guildMember.user.id << std::endl;
 			if (std::string(guildMember.user.id) == "") {
 				return;
 			}
-			GuildMembers::cache.insert_or_assign(std::string(guildMember.guildId) + " + " + std::string(guildMember.user.id), guildMember);
+			GuildMembers::cache.insert_or_assign(guildMember.guildId + " + " + guildMember.user.id, guildMember);
 		} catch (...) {
 			reportException("GuildMembers::insertGuildMember()");
 		}
@@ -268,6 +258,6 @@ namespace DiscordCoreAPI {
 		}
 	};
 	DiscordCoreInternal::HttpClient* GuildMembers::httpClient{ nullptr };
-	std::unordered_map<std::string, GuildMember> GuildMembers::cache{};
+	std::unordered_map<std::string, GuildMemberData> GuildMembers::cache{};
 	std::mutex GuildMembers::accessMutex{};
 };
