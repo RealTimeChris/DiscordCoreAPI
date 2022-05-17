@@ -51,15 +51,15 @@ namespace DiscordCoreInternal {
 
 		std::vector<char> swapHeadAndPosition(std::vector<char> inputVector, int32_t position);
 
-		DiscordCoreAPI::YouTubeFormat decipherFormat(DiscordCoreAPI::YouTubeFormat format,  const std::string& html5playerFile);
+		DiscordCoreAPI::YouTubeFormat decipherFormat(DiscordCoreAPI::YouTubeFormat format, const std::string& html5playerFile);
 
-		std::string decipher(std::vector<std::string> tokens,  const std::string& cipherSignature);
+		std::string decipher(std::vector<std::string> tokens, const std::string& cipherSignature);
 
 		std::vector<std::string> extractActions(const std::string& html5PlayerPageBody);
 
 		std::vector<char> reverseString(std::vector<char> stringToReverse);
 
-		std::string between(const std::string& body,  const std::string& left,  const std::string& right);
+		std::string between(const std::string& body, const std::string& left, const std::string& right);
 
 		std::vector<std::string> getTokens(const std::string& html5PlayerFile);
 

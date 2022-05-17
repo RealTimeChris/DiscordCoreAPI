@@ -136,7 +136,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	std::vector<std::string> BaseSocketAgent::tokenize(const std::string& dataIn,  const std::string& separator) noexcept {
+	std::vector<std::string> BaseSocketAgent::tokenize(const std::string& dataIn, const std::string& separator) noexcept {
 		try {
 			std::string::size_type value{ 0 };
 			std::vector<std::string> dataOut{};
@@ -1056,7 +1056,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	std::vector<std::string> VoiceSocketAgent::tokenize(const std::string& dataIn,  const std::string& separator) noexcept {
+	std::vector<std::string> VoiceSocketAgent::tokenize(const std::string& dataIn, const std::string& separator) noexcept {
 		try {
 			std::vector<std::string> dataOut{};
 			for (auto value = 0; value != std::string::npos; value = static_cast<int32_t>(dataIn.find_first_not_of(separator, value))) {

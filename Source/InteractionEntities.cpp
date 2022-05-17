@@ -193,7 +193,7 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<std::vector<SelectMenuResponseData>> SelectMenuCollector::collectSelectMenuData(bool getSelectMenuDataForAllNew, int32_t maxWaitTimeInMsNew,
-		int32_t maxCollectedSelectMenuCountNew,  const std::string& targetUser) {
+		int32_t maxCollectedSelectMenuCountNew, const std::string& targetUser) {
 		co_await NewThreadAwaitable<std::vector<SelectMenuResponseData>>();
 		if (targetUser == "" && !getSelectMenuDataForAllNew) {
 			this->getSelectMenuDataForAll = true;

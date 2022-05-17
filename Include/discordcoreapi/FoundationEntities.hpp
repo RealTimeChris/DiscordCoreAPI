@@ -659,7 +659,7 @@ namespace DiscordCoreAPI {
 
 	/**@}*/
 
-	DiscordCoreAPI_Dll std::string getISO8601TimeStamp(const std::string& year,  const std::string& month,  const std::string& day,  const std::string& hour,  const std::string& minute,  const std::string& second);
+	DiscordCoreAPI_Dll std::string getISO8601TimeStamp(const std::string& year, const std::string& month, const std::string& day, const std::string& hour, const std::string& minute, const std::string& second);
 
 	DiscordCoreAPI_Dll void constructMultiPartData(DiscordCoreInternal::HttpWorkloadData& dataPackage, nlohmann::json theData, std::vector<File>& files);
 
@@ -751,7 +751,7 @@ namespace DiscordCoreAPI {
 
 	/**@}*/
 
-	std::ostream& operator<<(std::ostream& outputSttream,  const std::string& (*theFunction)(void));
+	std::ostream& operator<<(std::ostream& outputSttream, const std::string& (*theFunction)(void));
 
 	/**
 	 * \addtogroup utilities
@@ -1220,7 +1220,7 @@ namespace DiscordCoreAPI {
 		/// \param authorName The author's name.
 		/// \param authorAvatarUrl The url to their avatar.
 		/// \returns EmbedData& A reference to this embed.
-		EmbedData& setAuthor(const std::string& authorName,  const std::string& authorAvatarUrl = "") {
+		EmbedData& setAuthor(const std::string& authorName, const std::string& authorAvatarUrl = "") {
 			this->author.name = authorName;
 			this->author.iconUrl = authorAvatarUrl;
 			return *this;
@@ -1230,7 +1230,7 @@ namespace DiscordCoreAPI {
 		/// \param footerText The footer's text.
 		/// \param footerIconUrlText Url to the footer's icon.
 		/// \returns EmbedData& A reference to this embed.
-		EmbedData& setFooter(const std::string& footerText,  const std::string& footerIconUrlText = "") {
+		EmbedData& setFooter(const std::string& footerText, const std::string& footerIconUrlText = "") {
 			this->footer.text = footerText;
 			this->footer.iconUrl = footerIconUrlText;
 			return *this;
@@ -1249,7 +1249,7 @@ namespace DiscordCoreAPI {
 		/// \param value The contents of the embed field.
 		/// \param Inline Is it inline with the rest of the fields on the embed?
 		/// \returns EmbedData& A reference to this embed.
-		EmbedData& addField(const std::string& name,  const std::string& value, bool Inline = true) {
+		EmbedData& addField(const std::string& name, const std::string& value, bool Inline = true) {
 			this->fields.push_back(EmbedFieldData{ .Inline = Inline, .value = value, .name = name });
 			return *this;
 		}
@@ -2340,7 +2340,7 @@ namespace DiscordCoreAPI {
 			}
 			return AuditLogEntryData();
 		}
-		auto getAuditLogData(AuditLogEvent auditLogType,  const std::string& userIdOfTarget) {
+		auto getAuditLogData(AuditLogEvent auditLogType, const std::string& userIdOfTarget) {
 			for (auto& value: this->auditLogEntries) {
 				if (value.targetId == userIdOfTarget && value.actionType == auditLogType) {
 					return value;
@@ -3282,8 +3282,8 @@ namespace DiscordCoreAPI {
 		/// \param emojiId An emoji id, if desired.
 		/// \param url A url, if applicable.
 		/// \returns RespondToInputEventData& A reference to this data structure.
-		RespondToInputEventData& addButton(bool disabled,  const std::string& customIdNew,  const std::string& buttonLabel, ButtonStyle buttonStyle,  const std::string& emojiName = "",
-			std::string emojiId = "",  const std::string& url = "") {
+		RespondToInputEventData& addButton(bool disabled, const std::string& customIdNew, const std::string& buttonLabel, ButtonStyle buttonStyle, const std::string& emojiName = "",
+			std::string emojiId = "", const std::string& url = "") {
 			if (this->components.size() == 0) {
 				ActionRowData actionRowData;
 				this->components.push_back(actionRowData);
@@ -3316,7 +3316,7 @@ namespace DiscordCoreAPI {
 		/// \param maxValues Maximum number of selections that are possible.
 		/// \param minValues Minimum required number of selections that are required.
 		/// \returns RespondToInputEventData& A reference to this data structure.
-		RespondToInputEventData& addSelectMenu(bool disabled,  const std::string& customIdNew, std::vector<SelectOptionData> options,  const std::string& placeholder, int32_t maxValues,
+		RespondToInputEventData& addSelectMenu(bool disabled, const std::string& customIdNew, std::vector<SelectOptionData> options, const std::string& placeholder, int32_t maxValues,
 			int32_t minValues) {
 			if (this->components.size() == 0) {
 				ActionRowData actionRowData;
@@ -3353,8 +3353,8 @@ namespace DiscordCoreAPI {
 		/// \param label A label for the modal.
 		/// \param placeholder A placeholder for the modal.
 		/// \returns RespondToInputEventData& A reference to this data structure.
-		RespondToInputEventData& addModal(const std::string& topTitleNew,  const std::string& topCustomIdNew,  const std::string& titleNew,  const std::string& customIdNew,
-			bool required, int32_t minLength, int32_t maxLength, TextInputStyle inputStyle,  const std::string& label = "",  const std::string& placeholder = "") {
+		RespondToInputEventData& addModal(const std::string& topTitleNew, const std::string& topCustomIdNew, const std::string& titleNew, const std::string& customIdNew,
+			bool required, int32_t minLength, int32_t maxLength, TextInputStyle inputStyle, const std::string& label = "", const std::string& placeholder = "") {
 			this->title = topTitleNew;
 			this->customId = topCustomIdNew;
 			if (this->components.size() == 0) {
@@ -3443,7 +3443,7 @@ namespace DiscordCoreAPI {
 		/// \param theName A std::string for the name of the choice.
 		/// \param theNameLocalizations A std::unordered_map<std::string, std::string> for the name localizations.
 		/// \returns RespondToInputEventData& A reference to this data structure.
-		RespondToInputEventData& setAutoCompleteChoice(nlohmann::json theValue,  const std::string& theName,
+		RespondToInputEventData& setAutoCompleteChoice(nlohmann::json theValue, const std::string& theName,
 			std::unordered_map<std::string, std::string> theNameLocalizations = std::unordered_map<std::string, std::string>{}) {
 			this->choices.push_back({ .nameLocalizations = theNameLocalizations, .value = theValue, .name = theName });
 			return *this;
@@ -3490,8 +3490,8 @@ namespace DiscordCoreAPI {
 		/// \param emojiId An emoji id, if desired.
 		/// \param url A url, if applicable.
 		/// \returns RespondToInputEventData& A reference to this data structure.
-		MessageResponseBase& addButton(bool disabled,  const std::string& customIdNew,  const std::string& buttonLabel, ButtonStyle buttonStyle,  const std::string& emojiName = "",
-			std::string emojiId = "",  const std::string& url = "") {
+		MessageResponseBase& addButton(bool disabled, const std::string& customIdNew, const std::string& buttonLabel, ButtonStyle buttonStyle, const std::string& emojiName = "",
+			std::string emojiId = "", const std::string& url = "") {
 			if (this->components.size() == 0) {
 				ActionRowData actionRowData;
 				this->components.push_back(actionRowData);
@@ -3524,7 +3524,7 @@ namespace DiscordCoreAPI {
 		/// \param maxValues Maximum number of selections that are possible.
 		/// \param minValues Minimum required number of selections that are required.
 		/// \returns RespondToInputEventData& A reference to this data structure.
-		MessageResponseBase& addSelectMenu(bool disabled,  const std::string& customIdNew, std::vector<SelectOptionData> options,  const std::string& placeholder, int32_t maxValues,
+		MessageResponseBase& addSelectMenu(bool disabled, const std::string& customIdNew, std::vector<SelectOptionData> options, const std::string& placeholder, int32_t maxValues,
 			int32_t minValues) {
 			if (this->components.size() == 0) {
 				ActionRowData actionRowData;
@@ -3561,8 +3561,8 @@ namespace DiscordCoreAPI {
 		/// \param label A label for the modal.
 		/// \param placeholder A placeholder for the modal.
 		/// \returns RespondToInputEventData& A reference to this data structure.
-		MessageResponseBase& addModal(const std::string& topTitleNew,  const std::string& topCustomIdNew,  const std::string& titleNew,  const std::string& customIdNew, bool required, int32_t minLength,
-			int32_t maxLength, TextInputStyle inputStyle,  const std::string& label = "",  const std::string& placeholder = "") {
+		MessageResponseBase& addModal(const std::string& topTitleNew, const std::string& topCustomIdNew, const std::string& titleNew, const std::string& customIdNew, bool required, int32_t minLength,
+			int32_t maxLength, TextInputStyle inputStyle, const std::string& label = "", const std::string& placeholder = "") {
 			this->title = topTitleNew;
 			this->customId = topCustomIdNew;
 			if (this->components.size() == 0) {

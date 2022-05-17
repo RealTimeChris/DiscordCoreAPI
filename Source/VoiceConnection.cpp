@@ -24,7 +24,7 @@
 
 namespace DiscordCoreAPI {
 
-	std::string VoiceConnection::encryptSingleAudioFrame(EncodedFrameData bufferToSend, int32_t audioSSRC,  const std::string&  keys) {
+	std::string VoiceConnection::encryptSingleAudioFrame(EncodedFrameData bufferToSend, int32_t audioSSRC, const std::string&  keys) {
 		if (keys.size() > 0) {
 			this->sequenceIndex += 1;
 			this->timeStamp += 960;

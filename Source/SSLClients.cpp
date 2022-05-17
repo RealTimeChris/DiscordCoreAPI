@@ -91,7 +91,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	bool HttpSSLClient::connect(const std::string& baseUrl,  const std::string& portNew) noexcept {
+	bool HttpSSLClient::connect(const std::string& baseUrl, const std::string& portNew) noexcept {
 		std::string stringNew{};
 		if (baseUrl.find(".com") != std::string::npos) {
 			stringNew =
@@ -331,7 +331,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	WebSocketSSLClient::WebSocketSSLClient(const std::string& baseUrlNew,  const std::string& portNew, int64_t maxBufferSizeNew) noexcept : maxBufferSize(maxBufferSizeNew) {
+	WebSocketSSLClient::WebSocketSSLClient(const std::string& baseUrlNew, const std::string& portNew, int64_t maxBufferSizeNew) noexcept : maxBufferSize(maxBufferSizeNew) {
 		addrinfoWrapper resultAddress{ nullptr }, hints{ nullptr };
 		hints->ai_family = AF_INET;
 		hints->ai_socktype = SOCK_STREAM;
@@ -544,7 +544,7 @@ namespace DiscordCoreInternal {
 		return this->bytesRead;
 	}
 
-	DatagramSocketSSLClient::DatagramSocketSSLClient(const std::string& baseUrlNew,  const std::string& portNew) noexcept {
+	DatagramSocketSSLClient::DatagramSocketSSLClient(const std::string& baseUrlNew, const std::string& portNew) noexcept {
 		addrinfoWrapper resultAddress{ nullptr }, hints{ nullptr };
 		hints->ai_family = AF_INET;
 		hints->ai_socktype = SOCK_DGRAM;

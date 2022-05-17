@@ -192,7 +192,7 @@ namespace DiscordCoreInternal {
 		return finalValue;
 	};
 
-	nlohmann::json JSONIFY(const std::string& serverId,  const std::string& sessionId,  const std::string& token, std::string) {
+	nlohmann::json JSONIFY(const std::string& serverId, const std::string& sessionId, const std::string& token, std::string) {
 		nlohmann::json data{};
 		data["d"]["server_id"] = serverId;
 		data["d"]["session_id"] = sessionId;
@@ -227,7 +227,7 @@ namespace DiscordCoreInternal {
 		return data;
 	};
 
-	nlohmann::json JSONIFY(const std::string& botToken,  const std::string& sessionID, int32_t lastReceivedNumber) {
+	nlohmann::json JSONIFY(const std::string& botToken, const std::string& sessionID, int32_t lastReceivedNumber) {
 		nlohmann::json data{};
 		data["d"]["seq"] = lastReceivedNumber;
 		data["d"]["session_id"] = sessionID;
@@ -278,7 +278,7 @@ namespace DiscordCoreInternal {
 		return data;
 	};
 
-	std::vector<uint8_t> JSONIFY(const std::string& localPort,  const std::string& localIp,  const std::string& encryptionMode, int32_t) {
+	std::vector<uint8_t> JSONIFY(const std::string& localPort, const std::string& localIp, const std::string& encryptionMode, int32_t) {
 		nlohmann::json data{};
 		data["d"]["data"]["port"] = stol(localPort);
 		data["d"]["data"]["mode"] = encryptionMode;

@@ -38,7 +38,7 @@ namespace DiscordCoreInternal {
 		friend class DiscordCoreAPI::VoiceConnection;
 		friend VoiceSocketAgent;
 
-		BaseSocketAgent(const std::string& botToken,  const std::string& baseUrl, DiscordCoreAPI::EventManager* eventManager, DiscordCoreAPI::DiscordCoreClient* discordCoreClient,
+		BaseSocketAgent(const std::string& botToken, const std::string& baseUrl, DiscordCoreAPI::EventManager* eventManager, DiscordCoreAPI::DiscordCoreClient* discordCoreClient,
 			DiscordCoreAPI::CommandController* commandController, std::atomic_bool* theBool, bool doWePrintMessages = false, int32_t shardNumber = 0,
 			int32_t numberOfShards = 1) noexcept;
 
@@ -95,7 +95,7 @@ namespace DiscordCoreInternal {
 
 		uint64_t createHeader(char* outbuf, uint64_t sendlength, WebSocketOpCode opCode) noexcept;
 
-		std::vector<std::string> tokenize(const std::string& ,  const std::string& = "\r\n") noexcept;
+		std::vector<std::string> tokenize(const std::string& , const std::string& = "\r\n") noexcept;
 
 		void getVoiceConnectionData(VoiceConnectInitData doWeCollect) noexcept;
 
@@ -155,7 +155,7 @@ namespace DiscordCoreInternal {
 
 		uint64_t createHeader(char* outbuf, uint64_t sendlength, WebSocketOpCode opCode) noexcept;
 
-		std::vector<std::string> tokenize(const std::string& ,  const std::string& = "\r\n") noexcept;
+		std::vector<std::string> tokenize(const std::string& , const std::string& = "\r\n") noexcept;
 
 		void run(std::stop_token) noexcept;
 
