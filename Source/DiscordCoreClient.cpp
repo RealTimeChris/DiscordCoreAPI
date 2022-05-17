@@ -108,16 +108,12 @@ namespace DiscordCoreAPI {
 	}
 
 	void DiscordCoreClient::runBot() {
-		try {
-			this->instantiateWebSockets();
-			if (!this->didWeStartFine) {
-				return;
-			}
-			this->webSocketMap[std::to_string(this->shardingOptions.startingShard)]->getTheTask()->join();
-			DiscordCoreAPI::Globals::weveQuit.test_and_set();
-		} catch (...) {
-			reportException("DiscordCoreClient::runBot()");
+		this->instantiateWebSockets();
+		if (!this->didWeStartFine) {
+			return;
 		}
+		this->webSocketMap[std::to_string(this->shardingOptions.startingShard)]->getTheTask()->join();
+		DiscordCoreAPI::Globals::weveQuit.test_and_set();
 	}
 
 	void DiscordCoreClient::instantiateWebSockets() {
@@ -168,17 +164,12 @@ namespace DiscordCoreAPI {
 	}
 
 	GatewayBotData DiscordCoreClient::getGateWayBot() {
-		try {
-			DiscordCoreInternal::HttpWorkloadData workload{};
-			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Gateway_Bot;
-			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
-			workload.relativePath = "/gateway/bot";
-			workload.callStack = "DiscordCoreClient::getGateWayBot";
-			return DiscordCoreInternal::submitWorkloadAndGetResult<GatewayBotData>(*this->httpClient, workload);
-		} catch (...) {
-			reportException("DiscordCoreClient::getGateWayBot()");
-		}
-		return GatewayBotData{};
+		DiscordCoreInternal::HttpWorkloadData workload{};
+		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Gateway_Bot;
+		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
+		workload.relativePath = "/gateway/bot";
+		workload.callStack = "DiscordCoreClient::getGateWayBot";
+		return DiscordCoreInternal::submitWorkloadAndGetResult<GatewayBotData>(*this->httpClient, workload);
 	}
 
 	DiscordCoreClient::~DiscordCoreClient() {

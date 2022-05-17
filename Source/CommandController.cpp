@@ -32,11 +32,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void CommandController::registerFunction(std::vector<std::string> functionNames, std::unique_ptr<BaseFunction> baseFunction) {
-		try {
-			Globals::functions.insert(std::make_pair(functionNames, std::move(baseFunction)));
-		} catch (...) {
-			reportException("CommandController::registerFunction()");
-		}
+		Globals::functions.insert(std::make_pair(functionNames, std::move(baseFunction)));
 	}
 
 	std::map<std::vector<std::string>, std::unique_ptr<BaseFunction>>& CommandController::getFunctions() {
@@ -45,58 +41,45 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<void> CommandController::checkForAndRunCommand(CommandData commandData) {
 		co_await NewThreadAwaitable<void>();
-		try {
-			std::unique_ptr<BaseFunction> functionPointer{ this->getCommand(convertToLowerCase(commandData.commandName)) };
-			if (functionPointer == nullptr) {
-				co_return;
-			}
-
-			functionPointer->args = BaseFunctionArguments{ commandData, this->discordCoreClient };
-			functionPointer->execute(functionPointer->args);
+		std::unique_ptr<BaseFunction> functionPointer{ this->getCommand(convertToLowerCase(commandData.commandName)) };
+		if (functionPointer == nullptr) {
 			co_return;
-		} catch (...) {
-			reportException("CommandController::checkForAndRunCommand()");
 		}
+
+		functionPointer->args = BaseFunctionArguments{ commandData, this->discordCoreClient };
+		functionPointer->execute(functionPointer->args);
+		co_return;
 	}
 
 	std::unique_ptr<BaseFunction> CommandController::getCommand(const std::string& commandName) {
-		try {
-			std::string functionName{};
-			bool isItFound{ false };
-			if (commandName.size() > 0) {
-				for (auto const& [keyFirst, value]: Globals::functions) {
-					for (auto& key: keyFirst) {
-						if (key.find(convertToLowerCase(commandName)) != std::string::npos) {
-							isItFound = true;
-							functionName = convertToLowerCase(commandName.substr(0, key.length()));
-							break;
-						}
+		std::string functionName{};
+		bool isItFound{ false };
+		if (commandName.size() > 0) {
+			for (auto const& [keyFirst, value]: Globals::functions) {
+				for (auto& key: keyFirst) {
+					if (key.find(convertToLowerCase(commandName)) != std::string::npos) {
+						isItFound = true;
+						functionName = convertToLowerCase(commandName.substr(0, key.length()));
+						break;
 					}
 				}
 			}
-			if (isItFound) {
-				std::unique_ptr<BaseFunction> newValue = createFunction(functionName);
-				return newValue;
-			}
-		} catch (...) {
-			reportException("CommandController::getCommand()");
 		}
-		return nullptr;
+		if (isItFound) {
+			std::unique_ptr<BaseFunction> newValue = createFunction(functionName);
+			return newValue;
+		}
 	}
 
 	std::unique_ptr<BaseFunction> CommandController::createFunction(const std::string& functionName) {
-		try {
-			for (auto& [key01, value01]: Globals::functions) {
-				for (auto& value02: key01) {
-					if (functionName == value02) {
-						return Globals::functions[key01]->create();
-					}
+		for (auto& [key01, value01]: Globals::functions) {
+			for (auto& value02: key01) {
+				if (functionName == value02) {
+					return Globals::functions[key01]->create();
 				}
 			}
-		} catch (...) {
-			reportException("CommandController::createFunction()");
 		}
-		return std::unique_ptr<BaseFunction>{ nullptr };
+		return nullptr;
 	}
 
 }

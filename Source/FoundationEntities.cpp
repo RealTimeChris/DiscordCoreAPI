@@ -358,23 +358,18 @@ namespace DiscordCoreAPI {
 	}
 
 	bool hasTimeElapsed(const std::string& timeStamp, int64_t days, int64_t hours, int64_t minutes) {
-		try {
-			int64_t startTimeRaw = convertTimestampToMsInteger(timeStamp);
-			auto currentTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-			int64_t secondsPerMinute = 60;
-			int64_t secondsPerHour = secondsPerMinute * 60;
-			int64_t secondsPerDay = secondsPerHour * 24;
-			auto targetElapsedTime = ((days * secondsPerDay) + (hours * secondsPerHour) + (minutes * secondsPerMinute)) * 1000;
-			auto actualElapsedTime = currentTime - startTimeRaw;
-			if (actualElapsedTime >= targetElapsedTime) {
-				return true;
-			} else {
-				return false;
-			}
-		} catch (...) {
-			reportException("hasTimeElapsed()");
+		int64_t startTimeRaw = convertTimestampToMsInteger(timeStamp);
+		auto currentTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+		int64_t secondsPerMinute = 60;
+		int64_t secondsPerHour = secondsPerMinute * 60;
+		int64_t secondsPerDay = secondsPerHour * 24;
+		auto targetElapsedTime = ((days * secondsPerDay) + (hours * secondsPerHour) + (minutes * secondsPerMinute)) * 1000;
+		auto actualElapsedTime = currentTime - startTimeRaw;
+		if (actualElapsedTime >= targetElapsedTime) {
+			return true;
+		} else {
+			return false;
 		}
-		return false;
 	}
 
 	std::string getFutureISO8601TimeStamp(int32_t minutesToAdd, int32_t hoursToAdd, int32_t daysToAdd, int32_t monthsToAdd, int32_t yearsToAdd) {
@@ -710,96 +705,91 @@ namespace DiscordCoreAPI {
 	MoveThroughMessagePagesData moveThroughMessagePages(const std::string& userID, InputEventData originalEvent, uint32_t currentPageIndex, std::vector<EmbedData> messageEmbeds,
 		bool deleteAfter, uint32_t waitForMaxMs, bool returnResult) {
 		MoveThroughMessagePagesData returnData{};
-		try {
-			uint32_t newCurrentPageIndex = currentPageIndex;
-			std::unique_ptr<RespondToInputEventData> dataPackage{ std::make_unique<RespondToInputEventData>(originalEvent) };
+		uint32_t newCurrentPageIndex = currentPageIndex;
+		std::unique_ptr<RespondToInputEventData> dataPackage{ std::make_unique<RespondToInputEventData>(originalEvent) };
 
-			dataPackage->addMessageEmbed(messageEmbeds[currentPageIndex]);
-			if (returnResult) {
-				dataPackage->addButton(false, "select", "Select", ButtonStyle::Success, "✅");
-			}
-			dataPackage->addButton(false, "backwards", "Prev Page", ButtonStyle::Primary, "◀️");
-			dataPackage->addButton(false, "forwards", "Next Page", ButtonStyle::Primary, "▶️");
-			dataPackage->addButton(false, "exit", "Exit", ButtonStyle::Danger, "❌");
-			if (originalEvent.eventType == InteractionType::Application_Command) {
-				dataPackage->setResponseType(InputEventResponseType::Edit_Interaction_Response);
-			}
-			originalEvent = InputEvents::respondToInputEventAsync(*dataPackage).get();
-			while (true) {
-				std::unique_ptr<ButtonCollector> button{ std::make_unique<ButtonCollector>(originalEvent) };
+		dataPackage->addMessageEmbed(messageEmbeds[currentPageIndex]);
+		if (returnResult) {
+			dataPackage->addButton(false, "select", "Select", ButtonStyle::Success, "✅");
+		}
+		dataPackage->addButton(false, "backwards", "Prev Page", ButtonStyle::Primary, "◀️");
+		dataPackage->addButton(false, "forwards", "Next Page", ButtonStyle::Primary, "▶️");
+		dataPackage->addButton(false, "exit", "Exit", ButtonStyle::Danger, "❌");
+		if (originalEvent.eventType == InteractionType::Application_Command) {
+			dataPackage->setResponseType(InputEventResponseType::Edit_Interaction_Response);
+		}
+		originalEvent = InputEvents::respondToInputEventAsync(*dataPackage).get();
+		while (true) {
+			std::unique_ptr<ButtonCollector> button{ std::make_unique<ButtonCollector>(originalEvent) };
 
-				std::vector<ButtonResponseData> buttonIntData{ button->collectButtonData(false, waitForMaxMs, 1, originalEvent.getRequesterId()).get() };
+			std::vector<ButtonResponseData> buttonIntData{ button->collectButtonData(false, waitForMaxMs, 1, originalEvent.getRequesterId()).get() };
 
-				if (buttonIntData.size() == 0 || buttonIntData.at(0).buttonId == "empty" || buttonIntData.at(0).buttonId == "exit") {
-					std::unique_ptr<RespondToInputEventData> dataPackage02{ std::make_unique<RespondToInputEventData>(originalEvent) };
-					if (buttonIntData.at(0).buttonId == "empty") {
-						*dataPackage02 = originalEvent;
-					} else {
-						std::unique_ptr<InteractionData> interactionData = std::make_unique<InteractionData>(static_cast<InteractionData>(buttonIntData.at(0)));
-						*dataPackage02 = RespondToInputEventData{ *interactionData };
+			if (buttonIntData.size() == 0 || buttonIntData.at(0).buttonId == "empty" || buttonIntData.at(0).buttonId == "exit") {
+				std::unique_ptr<RespondToInputEventData> dataPackage02{ std::make_unique<RespondToInputEventData>(originalEvent) };
+				if (buttonIntData.at(0).buttonId == "empty") {
+					*dataPackage02 = originalEvent;
+				} else {
+					std::unique_ptr<InteractionData> interactionData = std::make_unique<InteractionData>(static_cast<InteractionData>(buttonIntData.at(0)));
+					*dataPackage02 = RespondToInputEventData{ *interactionData };
+				}
+
+				dataPackage02->addMessageEmbed(messageEmbeds[newCurrentPageIndex]);
+				for (auto& value: originalEvent.getComponents()) {
+					for (auto& value02: value.components) {
+						value02.disabled = true;
 					}
-
-					dataPackage02->addMessageEmbed(messageEmbeds[newCurrentPageIndex]);
+					dataPackage02->addComponentRow(value);
+				}
+				if (deleteAfter == true) {
+					InputEvents::deleteInputEventResponseAsync(InputEventData{ InputEventData(originalEvent) });
+				} else {
+					dataPackage02->setResponseType(InputEventResponseType::Edit_Interaction_Response);
+					InputEvents::respondToInputEventAsync(*dataPackage02).get();
+				}
+				MoveThroughMessagePagesData dataPackage03{};
+				dataPackage03.inputEventData = originalEvent;
+				dataPackage03.buttonId = "exit";
+				return dataPackage03;
+			} else if (buttonIntData.at(0).buttonId == "forwards" || buttonIntData.at(0).buttonId == "backwards") {
+				if (buttonIntData.at(0).buttonId == "forwards" && (newCurrentPageIndex == (messageEmbeds.size() - 1))) {
+					newCurrentPageIndex = 0;
+				} else if (buttonIntData.at(0).buttonId == "forwards" && (newCurrentPageIndex < messageEmbeds.size())) {
+					newCurrentPageIndex += 1;
+				} else if (buttonIntData.at(0).buttonId == "backwards" && (newCurrentPageIndex > 0)) {
+					newCurrentPageIndex -= 1;
+				} else if (buttonIntData.at(0).buttonId == "backwards" && (newCurrentPageIndex == 0)) {
+					newCurrentPageIndex = static_cast<uint8_t>(messageEmbeds.size()) - 1;
+				}
+				std::unique_ptr<InteractionData> interactionData = std::make_unique<InteractionData>(static_cast<InteractionData>(buttonIntData.at(0)));
+				*dataPackage = RespondToInputEventData{ *interactionData };
+				dataPackage->setResponseType(InputEventResponseType::Edit_Interaction_Response);
+				for (auto& value: originalEvent.getComponents()) {
+					dataPackage->addComponentRow(value);
+				}
+				dataPackage->addMessageEmbed(messageEmbeds[newCurrentPageIndex]);
+				InputEvents::respondToInputEventAsync(*dataPackage).get();
+			} else if (buttonIntData.at(0).buttonId == "select") {
+				if (deleteAfter == true) {
+					InputEvents::deleteInputEventResponseAsync(InputEventData{ InputEventData(originalEvent) });
+				} else {
+					std::unique_ptr<InteractionData> interactionData = std::make_unique<InteractionData>(static_cast<InteractionData>(buttonIntData.at(0)));
+					*dataPackage = RespondToInputEventData{ *interactionData };
+					dataPackage->setResponseType(InputEventResponseType::Edit_Interaction_Response);
+					dataPackage->addMessageEmbed(messageEmbeds[newCurrentPageIndex]);
 					for (auto& value: originalEvent.getComponents()) {
 						for (auto& value02: value.components) {
 							value02.disabled = true;
 						}
-						dataPackage02->addComponentRow(value);
-					}
-					if (deleteAfter == true) {
-						InputEvents::deleteInputEventResponseAsync(InputEventData{ InputEventData(originalEvent) });
-					} else {
-						dataPackage02->setResponseType(InputEventResponseType::Edit_Interaction_Response);
-						InputEvents::respondToInputEventAsync(*dataPackage02).get();
-					}
-					MoveThroughMessagePagesData dataPackage03{};
-					dataPackage03.inputEventData = originalEvent;
-					dataPackage03.buttonId = "exit";
-					return dataPackage03;
-				} else if (buttonIntData.at(0).buttonId == "forwards" || buttonIntData.at(0).buttonId == "backwards") {
-					if (buttonIntData.at(0).buttonId == "forwards" && (newCurrentPageIndex == (messageEmbeds.size() - 1))) {
-						newCurrentPageIndex = 0;
-					} else if (buttonIntData.at(0).buttonId == "forwards" && (newCurrentPageIndex < messageEmbeds.size())) {
-						newCurrentPageIndex += 1;
-					} else if (buttonIntData.at(0).buttonId == "backwards" && (newCurrentPageIndex > 0)) {
-						newCurrentPageIndex -= 1;
-					} else if (buttonIntData.at(0).buttonId == "backwards" && (newCurrentPageIndex == 0)) {
-						newCurrentPageIndex = static_cast<uint8_t>(messageEmbeds.size()) - 1;
-					}
-					std::unique_ptr<InteractionData> interactionData = std::make_unique<InteractionData>(static_cast<InteractionData>(buttonIntData.at(0)));
-					*dataPackage = RespondToInputEventData{ *interactionData };
-					dataPackage->setResponseType(InputEventResponseType::Edit_Interaction_Response);
-					for (auto& value: originalEvent.getComponents()) {
 						dataPackage->addComponentRow(value);
 					}
-					dataPackage->addMessageEmbed(messageEmbeds[newCurrentPageIndex]);
 					InputEvents::respondToInputEventAsync(*dataPackage).get();
-				} else if (buttonIntData.at(0).buttonId == "select") {
-					if (deleteAfter == true) {
-						InputEvents::deleteInputEventResponseAsync(InputEventData{ InputEventData(originalEvent) });
-					} else {
-						std::unique_ptr<InteractionData> interactionData = std::make_unique<InteractionData>(static_cast<InteractionData>(buttonIntData.at(0)));
-						*dataPackage = RespondToInputEventData{ *interactionData };
-						dataPackage->setResponseType(InputEventResponseType::Edit_Interaction_Response);
-						dataPackage->addMessageEmbed(messageEmbeds[newCurrentPageIndex]);
-						for (auto& value: originalEvent.getComponents()) {
-							for (auto& value02: value.components) {
-								value02.disabled = true;
-							}
-							dataPackage->addComponentRow(value);
-						}
-						InputEvents::respondToInputEventAsync(*dataPackage).get();
-					}
-					returnData.currentPageIndex = newCurrentPageIndex;
-					returnData.inputEventData = originalEvent;
-					returnData.buttonId = buttonIntData.at(0).buttonId;
-					return returnData;
 				}
-			};
-		} catch (...) {
-			reportException("recurseThroughMessagePages()");
-		}
-		return returnData;
+				returnData.currentPageIndex = newCurrentPageIndex;
+				returnData.inputEventData = originalEvent;
+				returnData.buttonId = buttonIntData.at(0).buttonId;
+				return returnData;
+			}
+		};
 	};
 
 	CommandData::CommandData(InputEventData inputEventData) {

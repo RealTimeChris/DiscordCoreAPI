@@ -41,27 +41,17 @@ namespace DiscordCoreInternal {
 	}
 
 	std::string ErlPacker::parseJsonToEtf(const nlohmann::json& dataToParse) {
-		try {
-			ErlPackBuffer buffer{};
-			ErlPacker::appendVersion(buffer);
-			ErlPacker::singleValueJsonToETF(buffer, dataToParse);
-			return buffer.buffer;
-		} catch (...) {
-			DiscordCoreAPI::reportException("ErlPacker::parseJsonToEtf()");
-		}
-		return std::string{};
+		ErlPackBuffer buffer{};
+		ErlPacker::appendVersion(buffer);
+		ErlPacker::singleValueJsonToETF(buffer, dataToParse);
+		return buffer.buffer;
 	}
 
 	nlohmann::json ErlPacker::parseEtfToJson(const std::string* dataToParse) {
-		try {
-			ErlPackBuffer buffer{ dataToParse };
-			uint8_t version{};
-			ErlPacker::readBits(buffer, version);
-			return ErlPacker::singleValueETFToJson(buffer);
-		} catch (...) {
-			DiscordCoreAPI::reportException("ErlPacker::parseEtfToJson()");
-		}
-		return nlohmann::json();
+		ErlPackBuffer buffer{ dataToParse };
+		uint8_t version{};
+		ErlPacker::readBits(buffer, version);
+		return ErlPacker::singleValueETFToJson(buffer);
 	}
 
 	template<typename ReturnType> void ErlPacker::etfByteOrder(ReturnType x, ReturnType& theValue) {

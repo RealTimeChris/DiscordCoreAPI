@@ -64,185 +64,137 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<void> Users::addRecipientToGroupDMAsync(AddRecipientToGroupDMData dataPackage) {
-		try {
-			DiscordCoreInternal::HttpWorkloadData workload{};
-			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Put_Recipient_To_Group_Dm);
-			co_await NewThreadAwaitable<void>();
-			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Put_Recipient_To_Group_Dm;
-			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Put;
-			workload.relativePath = "/channels/" + dataPackage.channelId + "/recipients/" + dataPackage.userId;
-			workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
-			workload.callStack = "Users::addRecipientToGroupDMAsync";
-			co_return DiscordCoreInternal::submitWorkloadAndGetResult<void>(*Users::httpClient, workload);
-		} catch (...) {
-			reportException("Users::addRecipientToGroupDMAsync()");
-		}
+		DiscordCoreInternal::HttpWorkloadData workload{};
+		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Put_Recipient_To_Group_Dm);
+		co_await NewThreadAwaitable<void>();
+		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Put_Recipient_To_Group_Dm;
+		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Put;
+		workload.relativePath = "/channels/" + dataPackage.channelId + "/recipients/" + dataPackage.userId;
+		workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
+		workload.callStack = "Users::addRecipientToGroupDMAsync";
+		co_return DiscordCoreInternal::submitWorkloadAndGetResult<void>(*Users::httpClient, workload);
 	}
 
 	CoRoutine<void> Users::removeRecipientFromGroupDMAsync(RemoveRecipientFromGroupDMData dataPackage) {
-		try {
-			DiscordCoreInternal::HttpWorkloadData workload{};
-			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Delete_Recipient_From_Group_Dm);
-			co_await NewThreadAwaitable<void>();
-			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Delete_Recipient_From_Group_Dm;
-			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Delete;
-			workload.relativePath = "/channels/" + dataPackage.channelId + "/recipients/" + dataPackage.userId;
-			workload.callStack = "Users::removeRecipientToGroupDMAsync";
-			co_return DiscordCoreInternal::submitWorkloadAndGetResult<void>(*Users::httpClient, workload);
-		} catch (...) {
-			reportException("Users::removeRecipientFromGroupDMAsync()");
-		}
+		DiscordCoreInternal::HttpWorkloadData workload{};
+		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Delete_Recipient_From_Group_Dm);
+		co_await NewThreadAwaitable<void>();
+		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Delete_Recipient_From_Group_Dm;
+		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Delete;
+		workload.relativePath = "/channels/" + dataPackage.channelId + "/recipients/" + dataPackage.userId;
+		workload.callStack = "Users::removeRecipientToGroupDMAsync";
+		co_return DiscordCoreInternal::submitWorkloadAndGetResult<void>(*Users::httpClient, workload);
 	}
 
 	CoRoutine<void> Users::modifyCurrentUserVoiceStateAsync(ModifyCurrentUserVoiceStateData dataPackage) {
-		try {
-			DiscordCoreInternal::HttpWorkloadData workload{};
-			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Patch_Current_User_Voice_State);
-			co_await NewThreadAwaitable<void>();
-			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Patch_Current_User_Voice_State;
-			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Patch;
-			workload.relativePath = "/guilds/" + dataPackage.guildId + "/voice-states/@me";
-			workload.callStack = "Users::modifyCurrentUserVoiceStateAsync";
-			co_return DiscordCoreInternal::submitWorkloadAndGetResult<void>(*Users::httpClient, workload);
-		} catch (...) {
-			reportException("Users::modifyCurrentUserVoiceStateAsync()");
-		}
+		DiscordCoreInternal::HttpWorkloadData workload{};
+		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Patch_Current_User_Voice_State);
+		co_await NewThreadAwaitable<void>();
+		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Patch_Current_User_Voice_State;
+		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Patch;
+		workload.relativePath = "/guilds/" + dataPackage.guildId + "/voice-states/@me";
+		workload.callStack = "Users::modifyCurrentUserVoiceStateAsync";
+		co_return DiscordCoreInternal::submitWorkloadAndGetResult<void>(*Users::httpClient, workload);
 	}
 
 	CoRoutine<void> Users::modifyUserVoiceStateAsync(ModifyUserVoiceStateData dataPackage) {
-		try {
-			DiscordCoreInternal::HttpWorkloadData workload{};
-			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Patch_User_Voice_State);
-			co_await NewThreadAwaitable<void>();
-			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Patch_User_Voice_State;
-			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Patch;
-			workload.relativePath = "/guilds/" + dataPackage.guildId + "/voice-states/" + dataPackage.userId;
-			workload.callStack = "Users::modifyUserVoiceStateAsync";
-			co_return DiscordCoreInternal::submitWorkloadAndGetResult<void>(*Users::httpClient, workload);
-		} catch (...) {
-			reportException("Users::modifyUserVoiceStateAsync()");
-		}
+		DiscordCoreInternal::HttpWorkloadData workload{};
+		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Patch_User_Voice_State);
+		co_await NewThreadAwaitable<void>();
+		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Patch_User_Voice_State;
+		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Patch;
+		workload.relativePath = "/guilds/" + dataPackage.guildId + "/voice-states/" + dataPackage.userId;
+		workload.callStack = "Users::modifyUserVoiceStateAsync";
+		co_return DiscordCoreInternal::submitWorkloadAndGetResult<void>(*Users::httpClient, workload);
 	}
 
 	CoRoutine<UserData> Users::getCurrentUserAsync() {
-		try {
-			DiscordCoreInternal::HttpWorkloadData workload{};
-			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Get_Current_User);
-			co_await NewThreadAwaitable<UserData>();
-			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Current_User;
-			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
-			workload.relativePath = "/users/@me";
-			workload.callStack = "Users::getCurrentUserAsync";
-			co_return DiscordCoreInternal::submitWorkloadAndGetResult<UserData>(*Users::httpClient, workload);
-		} catch (...) {
-			reportException("Users::getCurrentUserAsync()");
-		}
+		DiscordCoreInternal::HttpWorkloadData workload{};
+		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Get_Current_User);
+		co_await NewThreadAwaitable<UserData>();
+		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Current_User;
+		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
+		workload.relativePath = "/users/@me";
+		workload.callStack = "Users::getCurrentUserAsync";
+		co_return DiscordCoreInternal::submitWorkloadAndGetResult<UserData>(*Users::httpClient, workload);
 	}
 
 	CoRoutine<User> Users::getCachedUserAsync(GetUserData dataPackage) {
-		try {
-			co_await NewThreadAwaitable<User>();
-			if (Users::cache.contains(dataPackage.userId)) {
-				co_return Users::cache[dataPackage.userId];
-			} else {
-				co_return getUserAsync(dataPackage).get();
-			}
-		} catch (...) {
-			reportException("Users::getCachedUserAsync()");
+		co_await NewThreadAwaitable<User>();
+		if (Users::cache.contains(dataPackage.userId)) {
+			co_return Users::cache[dataPackage.userId];
+		} else {
+			co_return getUserAsync(dataPackage).get();
 		}
 	}
 
 	CoRoutine<User> Users::getUserAsync(GetUserData dataPackage) {
-		try {
-			DiscordCoreInternal::HttpWorkloadData workload{};
-			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Get_User);
-			co_await NewThreadAwaitable<User>();
-			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_User;
-			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
-			workload.relativePath = "/users/" + dataPackage.userId;
-			workload.callStack = "Users::getUserAsync";
-			co_return DiscordCoreInternal::submitWorkloadAndGetResult<User>(*Users::httpClient, workload);
-		} catch (...) {
-			reportException("Users::getUserAsync()");
-		}
+		DiscordCoreInternal::HttpWorkloadData workload{};
+		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Get_User);
+		co_await NewThreadAwaitable<User>();
+		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_User;
+		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
+		workload.relativePath = "/users/" + dataPackage.userId;
+		workload.callStack = "Users::getUserAsync";
+		co_return DiscordCoreInternal::submitWorkloadAndGetResult<User>(*Users::httpClient, workload);
 	}
 
 	CoRoutine<User> Users::modifyCurrentUserAsync(ModifyCurrentUserData dataPackage) {
-		try {
-			DiscordCoreInternal::HttpWorkloadData workload{};
-			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Patch_Current_User);
-			co_await NewThreadAwaitable<User>();
-			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Patch_Current_User;
-			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Patch;
-			workload.relativePath = "/users/@me";
-			workload.callStack = "Users::modifyCurrentUserAsync";
-			if (dataPackage.avatar.size() > 0) {
-				nlohmann::json responseData = { { "avatar", dataPackage.avatar }, { "username", dataPackage.username } };
-				workload.content = responseData.dump();
-			} else {
-				nlohmann::json responseData = { { "username", dataPackage.username } };
-				workload.content = responseData.dump();
-			}
-			co_return DiscordCoreInternal::submitWorkloadAndGetResult<User>(*Users::httpClient, workload);
-		} catch (...) {
-			reportException("Users::modifyCurrentUserAsync()");
+		DiscordCoreInternal::HttpWorkloadData workload{};
+		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Patch_Current_User);
+		co_await NewThreadAwaitable<User>();
+		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Patch_Current_User;
+		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Patch;
+		workload.relativePath = "/users/@me";
+		workload.callStack = "Users::modifyCurrentUserAsync";
+		if (dataPackage.avatar.size() > 0) {
+			nlohmann::json responseData = { { "avatar", dataPackage.avatar }, { "username", dataPackage.username } };
+			workload.content = responseData.dump();
+		} else {
+			nlohmann::json responseData = { { "username", dataPackage.username } };
+			workload.content = responseData.dump();
 		}
+		co_return DiscordCoreInternal::submitWorkloadAndGetResult<User>(*Users::httpClient, workload);
 	}
 
 	CoRoutine<std::vector<ConnectionData>> Users::getUserConnectionsAsync() {
-		try {
-			DiscordCoreInternal::HttpWorkloadData workload{};
-			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Get_User_Connections);
-			co_await NewThreadAwaitable<std::vector<ConnectionData>>();
-			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_User_Connections;
-			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
-			workload.relativePath = "/users/@me/connections";
-			workload.callStack = "Users::getUserConnectionsAsync";
-			co_return DiscordCoreInternal::submitWorkloadAndGetResult<std::vector<ConnectionData>>(*Users::httpClient, workload);
-		} catch (...) {
-			reportException("Users::getUserConnectionsAsync()");
-		}
+		DiscordCoreInternal::HttpWorkloadData workload{};
+		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Get_User_Connections);
+		co_await NewThreadAwaitable<std::vector<ConnectionData>>();
+		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_User_Connections;
+		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
+		workload.relativePath = "/users/@me/connections";
+		workload.callStack = "Users::getUserConnectionsAsync";
+		co_return DiscordCoreInternal::submitWorkloadAndGetResult<std::vector<ConnectionData>>(*Users::httpClient, workload);
 	}
 
 	CoRoutine<ApplicationData> Users::getCurrentUserApplicationInfoAsync() {
-		try {
-			DiscordCoreInternal::HttpWorkloadData workload{};
-			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Get_Application_Info);
-			co_await NewThreadAwaitable<ApplicationData>();
-			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Application_Info;
-			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
-			workload.relativePath = "/oauth2/applications/@me";
-			workload.callStack = "Users::getApplicationDataAsync";
-			co_return DiscordCoreInternal::submitWorkloadAndGetResult<ApplicationData>(*Users::httpClient, workload);
-		} catch (...) {
-			reportException("Users::getApplicationDataAsync()");
-		}
+		DiscordCoreInternal::HttpWorkloadData workload{};
+		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Get_Application_Info);
+		co_await NewThreadAwaitable<ApplicationData>();
+		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Application_Info;
+		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
+		workload.relativePath = "/oauth2/applications/@me";
+		workload.callStack = "Users::getApplicationDataAsync";
+		co_return DiscordCoreInternal::submitWorkloadAndGetResult<ApplicationData>(*Users::httpClient, workload);
 	}
 
 	CoRoutine<AuthorizationInfoData> Users::getCurrentUserAuthorizationInfoAsync() {
-		try {
-			DiscordCoreInternal::HttpWorkloadData workload{};
-			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Get_Authorization_Info);
-			co_await NewThreadAwaitable<AuthorizationInfoData>();
-			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Authorization_Info;
-			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
-			workload.relativePath = "/oauth2/@me";
-			workload.callStack = "Users::getCurrentUserAuthorizationInfoAsync";
-			co_return DiscordCoreInternal::submitWorkloadAndGetResult<AuthorizationInfoData>(*Users::httpClient, workload);
-		} catch (...) {
-			reportException("Users::getCurrentUserAuthorizationInfoAsync()");
-		}
+		DiscordCoreInternal::HttpWorkloadData workload{};
+		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Get_Authorization_Info);
+		co_await NewThreadAwaitable<AuthorizationInfoData>();
+		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Authorization_Info;
+		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
+		workload.relativePath = "/oauth2/@me";
+		workload.callStack = "Users::getCurrentUserAuthorizationInfoAsync";
+		co_return DiscordCoreInternal::submitWorkloadAndGetResult<AuthorizationInfoData>(*Users::httpClient, workload);
 	}
 
 	void Users::insertUser(User user) {
-		try {
-			if (user.id == "") {
-				return;
-			}
-			Users::cache.insert_or_assign(user.id, user);
-		} catch (...) {
-			reportException("Users::insertUser()");
+		if (user.id == "") {
+			return;
 		}
+		Users::cache.insert_or_assign(user.id, user);
 	}
 
 	DiscordCoreInternal::HttpClient* Users::httpClient{ nullptr };

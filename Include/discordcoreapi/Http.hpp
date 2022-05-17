@@ -47,7 +47,7 @@ namespace DiscordCoreInternal {
 
 		std::string buildRequest(HttpWorkloadData& workload);
 
-		bool checkForHeadersToParse(const std::string& );
+		bool checkForHeadersToParse( const std::string& );
 
 		void parseHeaders(std::string&);
 
@@ -131,7 +131,7 @@ namespace DiscordCoreInternal {
 	  public:
 		HttpClient() = default;
 
-		HttpClient(const std::string& , bool doWePrintHttp, bool doWePrintFFMPEG);
+		HttpClient( const std::string& , bool doWePrintHttp, bool doWePrintFFMPEG);
 
 		std::vector<HttpData> httpRequest(std::vector<HttpWorkloadData>&);
 
@@ -158,20 +158,15 @@ namespace DiscordCoreInternal {
 
 	template<typename ReturnType> ReturnType submitWorkloadAndGetResult(HttpClient& httpClient, HttpWorkloadData& workload) {
 		ReturnType returnObject{};
-		try {
-			workload.headersToInsert.insert(std::make_pair("Authorization", "Bot " + httpClient.getBotToken()));
-			workload.headersToInsert.insert(std::make_pair("User-Agent", "DiscordBot (https://discordcoreapi.com 1.0)"));
-			if (workload.payloadType == PayloadType::Application_Json) {
-				workload.headersToInsert.insert(std::make_pair("Content-Type", "application/json"));
-			} else if (workload.payloadType == PayloadType::Multipart_Form) {
-				workload.headersToInsert.insert(std::make_pair("Content-Type", "multipart/form-data; boundary=boundary25"));
-			}
-			HttpData returnData = httpClient.httpRequest(workload);
-			DataParser::parseObject(returnData.responseData, returnObject);
-			return returnObject;
-		} catch (...) {
-			DiscordCoreAPI::reportException(workload.callStack + "::HttpClient::submitWorkloadAndGetResult()", nullptr, true);
+		workload.headersToInsert.insert(std::make_pair("Authorization", "Bot " + httpClient.getBotToken()));
+		workload.headersToInsert.insert(std::make_pair("User-Agent", "DiscordBot (https://discordcoreapi.com 1.0)"));
+		if (workload.payloadType == PayloadType::Application_Json) {
+			workload.headersToInsert.insert(std::make_pair("Content-Type", "application/json"));
+		} else if (workload.payloadType == PayloadType::Multipart_Form) {
+			workload.headersToInsert.insert(std::make_pair("Content-Type", "multipart/form-data; boundary=boundary25"));
 		}
+		HttpData returnData = httpClient.httpRequest(workload);
+		DataParser::parseObject(returnData.responseData, returnObject);
 		return returnObject;
 	}
 

@@ -67,16 +67,7 @@ namespace DiscordCoreInternal {
 	}
 
 	std::jthread* BaseSocketAgent::getTheTask() noexcept {
-		try {
-			if (this == nullptr) {
-				throw std::runtime_error("Sorry, but the base socket agent was nullptr. Did you remember to properly set your bot token?");
-			} else {
-				return this->theTask.get();
-			}
-		} catch (...) {
-			DiscordCoreAPI::reportException("BaseSocketAgent::getTheTask()");
-			return nullptr;
-		}		
+		return this->theTask.get();
 	}
 
 	void BaseSocketAgent::sendMessage(const nlohmann::json& dataToSend) noexcept {

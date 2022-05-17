@@ -29,76 +29,60 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<StageInstance> StageInstances::createStageInstanceAsync(CreateStageInstanceData dataPackage) {
-		try {
-			DiscordCoreInternal::HttpWorkloadData workload{};
-			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Post_Stage_Instance);
-			co_await NewThreadAwaitable<StageInstance>();
-			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Post_Stage_Instance;
-			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Post;
-			workload.relativePath = "/stage-instances";
-			workload.callStack = "StageInstances::createStageInstanceAsync";
-			nlohmann::json responseData = { { "topic", dataPackage.topic }, { "privacy_level", dataPackage.privacyLevel }, { "channel_id", dataPackage.channelId } };
-			workload.content = responseData.dump();
-			if (dataPackage.reason != "") {
-				workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));
-			}
-			co_return DiscordCoreInternal::submitWorkloadAndGetResult<StageInstance>(*StageInstances::httpClient, workload);
-		} catch (...) {
-			reportException("StageInstances::createStageInstanceAsync()");
+		DiscordCoreInternal::HttpWorkloadData workload{};
+		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Post_Stage_Instance);
+		co_await NewThreadAwaitable<StageInstance>();
+		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Post_Stage_Instance;
+		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Post;
+		workload.relativePath = "/stage-instances";
+		workload.callStack = "StageInstances::createStageInstanceAsync";
+		nlohmann::json responseData = { { "topic", dataPackage.topic }, { "privacy_level", dataPackage.privacyLevel }, { "channel_id", dataPackage.channelId } };
+		workload.content = responseData.dump();
+		if (dataPackage.reason != "") {
+			workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));
 		}
+		co_return DiscordCoreInternal::submitWorkloadAndGetResult<StageInstance>(*StageInstances::httpClient, workload);
 	}
 
 	CoRoutine<StageInstance> StageInstances::getStageInstanceAsync(GetStageInstanceData dataPackage) {
-		try {
-			DiscordCoreInternal::HttpWorkloadData workload{};
-			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Get_Stage_Instance);
-			co_await NewThreadAwaitable<StageInstance>();
-			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Stage_Instance;
-			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
-			workload.relativePath = "/stage-instances/" + dataPackage.channelId;
-			workload.callStack = "StageInstances::getStageInstanceAsync";
-			co_return DiscordCoreInternal::submitWorkloadAndGetResult<StageInstance>(*StageInstances::httpClient, workload);
-		} catch (...) {
-			reportException("StageInstances::getStageInstanceAsync()");
-		}
+		DiscordCoreInternal::HttpWorkloadData workload{};
+		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Get_Stage_Instance);
+		co_await NewThreadAwaitable<StageInstance>();
+		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Stage_Instance;
+		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
+		workload.relativePath = "/stage-instances/" + dataPackage.channelId;
+		workload.callStack = "StageInstances::getStageInstanceAsync";
+		co_return DiscordCoreInternal::submitWorkloadAndGetResult<StageInstance>(*StageInstances::httpClient, workload);
 	}
 
 	CoRoutine<StageInstance> StageInstances::modifyStageInstanceAsync(ModifyStageInstanceData dataPackage) {
-		try {
-			DiscordCoreInternal::HttpWorkloadData workload{};
-			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Patch_Stage_Instance);
-			co_await NewThreadAwaitable<StageInstance>();
-			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Patch_Stage_Instance;
-			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Patch;
-			workload.relativePath = "/stage-instances/" + dataPackage.channelId;
-			nlohmann::json responseData = { { "privacy_level", dataPackage.privacyLevel }, { "topic", dataPackage.topic } };
-			workload.content = responseData.dump();
-			workload.callStack = "StageInstances::modifyStageInstanceAsync";
-			if (dataPackage.reason != "") {
-				workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));
-			}
-			co_return DiscordCoreInternal::submitWorkloadAndGetResult<StageInstance>(*StageInstances::httpClient, workload);
-		} catch (...) {
-			reportException("StageInstances::modifyStageInstanceAsync()");
+		DiscordCoreInternal::HttpWorkloadData workload{};
+		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Patch_Stage_Instance);
+		co_await NewThreadAwaitable<StageInstance>();
+		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Patch_Stage_Instance;
+		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Patch;
+		workload.relativePath = "/stage-instances/" + dataPackage.channelId;
+		nlohmann::json responseData = { { "privacy_level", dataPackage.privacyLevel }, { "topic", dataPackage.topic } };
+		workload.content = responseData.dump();
+		workload.callStack = "StageInstances::modifyStageInstanceAsync";
+		if (dataPackage.reason != "") {
+			workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));
 		}
+		co_return DiscordCoreInternal::submitWorkloadAndGetResult<StageInstance>(*StageInstances::httpClient, workload);
 	}
 
 	CoRoutine<void> StageInstances::deleteStageInstanceAsync(DeleteStageInstanceData dataPackage) {
-		try {
-			DiscordCoreInternal::HttpWorkloadData workload{};
-			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Delete_Stage_Instance);
-			co_await NewThreadAwaitable<void>();
-			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Delete_Stage_Instance;
-			workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Delete;
-			workload.relativePath = "/stage-instances/" + dataPackage.channelId;
-			workload.callStack = "StageInstances::deleteStageInstanceAsync";
-			if (dataPackage.reason != "") {
-				workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));
-			}
-			co_return DiscordCoreInternal::submitWorkloadAndGetResult<void>(*StageInstances::httpClient, workload);
-		} catch (...) {
-			reportException("StageInstances::deleteStageInstanceAsync()");
+		DiscordCoreInternal::HttpWorkloadData workload{};
+		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Delete_Stage_Instance);
+		co_await NewThreadAwaitable<void>();
+		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Delete_Stage_Instance;
+		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Delete;
+		workload.relativePath = "/stage-instances/" + dataPackage.channelId;
+		workload.callStack = "StageInstances::deleteStageInstanceAsync";
+		if (dataPackage.reason != "") {
+			workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));
 		}
+		co_return DiscordCoreInternal::submitWorkloadAndGetResult<void>(*StageInstances::httpClient, workload);
 	}
 	DiscordCoreInternal::HttpClient* StageInstances::httpClient{ nullptr };
 }
