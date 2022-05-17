@@ -78,7 +78,6 @@ namespace DiscordCoreInternal {
 		dataPackage02.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
 		dataPackageWorkload.push_back(dataPackage02);
 		std::vector<DiscordCoreInternal::HttpData> responseData = DiscordCoreInternal::submitWorkloadAndGetResult(*this->httpClient, dataPackageWorkload);
-
 		std::string resultStringHTMLBody{};
 		if (responseData[0].responseCode != 204 && responseData[0].responseCode != 201 && responseData[0].responseCode != 200) {
 			std::cout << DiscordCoreAPI::shiftToBrightRed() << "YouTubeRequestBuilder::constructDownloadInfo() 01 Error: " << responseData[0].responseCode << ", "
