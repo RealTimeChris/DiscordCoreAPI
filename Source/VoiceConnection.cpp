@@ -373,13 +373,11 @@ namespace DiscordCoreAPI {
 	};
 
 	VoiceConnection::~VoiceConnection() {
-		if (this != nullptr) {
-			if (this->theTask) {
-				this->theTask->request_stop();
-				if (this->theTask->joinable()) {
-					this->theTask->join();
-					this->theTask.reset(nullptr);
-				}
+		if (this->theTask) {
+			this->theTask->request_stop();
+			if (this->theTask->joinable()) {
+				this->theTask->join();
+				this->theTask.reset(nullptr);
 			}
 		}
 	}
