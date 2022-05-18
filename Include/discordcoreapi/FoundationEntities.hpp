@@ -3213,8 +3213,8 @@ namespace DiscordCoreAPI {
 		friend CreateEphemeralInteractionResponseData;
 		friend CreateDeferredInteractionResponseData;
 		friend CreateEphemeralFollowUpMessageData;
+		friend struct InteractionResponseData;
 		friend DeleteInteractionResponseData;
-		friend class InteractionResponseData;
 		friend CreateInteractionResponseData;
 		friend EditInteractionResponseData;
 		friend DeleteFollowUpMessageData;
