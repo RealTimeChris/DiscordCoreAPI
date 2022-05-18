@@ -1655,7 +1655,6 @@ namespace DiscordCoreInternal {
 						newData.voiceData = value01;
 					}
 				}
-				std::cout << "THE MEMBER ID: " << newData.user.id << std::endl;
 				pDataStructure.members.push_back(newData.user.id);
 				DiscordCoreAPI::GuildMembers::insertGuildMember(newData);
 			}

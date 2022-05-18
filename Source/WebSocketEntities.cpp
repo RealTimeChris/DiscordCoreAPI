@@ -583,18 +583,15 @@ namespace DiscordCoreInternal {
 						this->eventManager->onInputEventCreationEvent(*eventCreationData);
 					} else if (interactionData->type == DiscordCoreAPI::InteractionType::Message_Component) {
 						if (interactionData->data.componentData.componentType == DiscordCoreAPI::ComponentType::Button) {
-							std::cout << "WERE GOING GOING GONE !010101 CHANNEL ID: " << eventData->getChannelId() << " MESSAGE ID: " << eventData->getMessageId() << std::endl;
 							eventData->eventType = DiscordCoreAPI::InteractionType::Message_Component;
 							eventData->responseType = DiscordCoreAPI::InputEventResponseType::Unset;
 							eventData->requesterId = interactionData->requesterId;
 							*eventData->interactionData = *interactionData;
-							std::cout << "WERE GOING GOING GONE !010101 CHANNEL ID: " << eventData->getChannelId() << " MESSAGE ID: " << eventData->getMessageId() << std::endl;
 							std::unique_ptr<DiscordCoreAPI::OnInteractionCreationData> dataPackage{ std::make_unique<DiscordCoreAPI::OnInteractionCreationData>() };
 							dataPackage->interactionData = *interactionData;
 							if (DiscordCoreAPI::ButtonCollector::buttonInteractionBufferMap.contains(eventData->getChannelId() + eventData->getMessageId())) {
 								DiscordCoreAPI::ButtonCollector::buttonInteractionBufferMap[eventData->getChannelId() + eventData->getMessageId()]->send(
 									eventData->getInteractionData());
-								std::cout << "WERE GOING GOING GONE !020202 CHANNEL ID: " << eventData->getChannelId() << " MESSAGE ID: " << eventData->getMessageId() << std::endl;
 							}
 							this->eventManager->onInteractionCreationEvent(*dataPackage);
 						} else if (interactionData->data.componentData.componentType == DiscordCoreAPI::ComponentType::SelectMenu) {
