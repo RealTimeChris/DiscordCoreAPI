@@ -6,9 +6,9 @@ Login/Instantiation {#logininstantiation}
 - Create an object of type `DiscordCoreAPI::DiscordCoreClient`, using your bot token as an argument, as well as a string to act as a "command prefix" for accepting commands via message input.
 - Additionally-there are 4 optional arguments to the constructor which offer various potential configuration options, they are as follows:   
 `std::vector<DiscordCoreAPI::RepeatedFunctionData>` - For adding potentailly recurring functions.   
-`DiscordCoreAPI::CacheOptions`   
-`DiscordCoreAPI::ShardingOptions`   
 `DiscordCoreAPI::LoggingOptions`   
+`DiscordCoreAPI::CacheOptions`   
+`DiscordCoreAPI::ShardingOptions`    
 - Run the `DiscordCoreAPI::DiscordCoreClient::runBot()` function.
 
 ```cpp
