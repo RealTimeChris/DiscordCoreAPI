@@ -1,19 +1,22 @@
 \mainpage DiscordCoreAPI
 
-Hello, and welcome to DiscordCoreAPI! This is a Discord bot library that leverages custom asynchronous [CoRoutines](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Include/discordcoreapi/CoRoutine.hpp), as well as a home-brew set of [Https](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Source/Http.cpp#L300), [WebSocket](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Source/WebSocketEntities.cpp#L36), and [Datagram](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Source/WebSocketEntities.cpp#L971) socket clients - all to deliver the utmost performance and efficiency for your bot. It uses roughly 0.1% of an Intel i7 9750h CPU to stream audio in high quality (Opus @ 48Khz, 16-bit) to a single server.
+Hello, and welcome to DiscordCoreAPI! This is a Discord bot library that leverages custom asynchronous [CoRoutines](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Include/discordcoreapi/CoRoutine.hpp), as well as a home-brew set of [Https](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Source/Http.cpp#L281), [WebSocket](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Source/WebSocketEntities.cpp#L36), and [Datagram](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Source/WebSocketEntities.cpp#L978) socket clients - all to deliver the utmost performance and efficiency for your bot. It uses roughly 0.1% of an Intel i7 9750h CPU to stream audio in high quality (Opus @ 48Khz, 16-bit) to a single server.
 
 ![imageDiscordCoreAPI](./TheLogo.png "A bot library for Discord, written in C++, and featuring explicit multithreading through the usage of custom, asynchronous C++ CoRoutines.")
 
-# Discord Server
-[This is a link to the Discord server!](https://discord.gg/adgMqeBuhP)
-
 # Github Repo
-[Check it out!](https://github.com/RealTimeChris/DiscordCoreAPI)
+[Check it out!](https://github.com/RealTimeChris/DiscordCoreAPI)   
+
+# Discord Server
+[This is a link to the Discord server!](https://discord.gg/adgMqeBuhP)   
+
+# Bot Template
+[A template for utilizing this library.](https://github.com/RealTimeChris/Bot-Template-for-DiscordCoreAPI)   
 
 # Features   
 
 ## Performant
-- Thanks to utilizing [Erlang Text Format](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Source/ErlPacker.cpp) for websocket transfer, and a pool of [kept-alive HTTP connections](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Source/Http.cpp#L281-L288) - this library offers the snappiest responses to your interactions and user input.
+- Thanks to utilizing [Erlang Text Format](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Source/ErlPacker.cpp) for websocket transfer, and a pool of [kept-alive HTTP connections](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Source/Http.cpp#L262-L269) - this library offers the snappiest responses to your interactions and user input.
 
 ## CPU Efficient   
 - It only uses about 0.1% of an Intel i7 9750h to stream audio in high quality (Opus 48Khz 16-bit Stereo) to a single server.   
@@ -61,10 +64,10 @@ Hello, and welcome to DiscordCoreAPI! This is a Discord bot library that leverag
    
 ## A Unified "Input-Event" System
 - User interactions (Application Commands, Message Commands, User Commands) are accepted via the `DiscordCoreAPI::EventManager::onInputEventCreation` event.
-- They can all be responded to using the `DiscordCoreAPI::InputEvents::respondToInputEventAsync()` function.
+- They can all be responded to using the `DiscordCoreAPI::InputEvents::respondToInputEvent()` function.
 - Alternatively you can implement your own input-event handling by using the raw `DiscordCoreAPI::EventManager::onInteractionCreation` or `DiscordCoreAPI::EventManager::onMessageCreation` events.
 ```cpp
-DiscordCoreAPI::EmbedData newEmbed;
+DiscordCoreAPI::EmbedData newEmbed{};
 newEmbed.setAuthor(args.eventData.getUserName(), args.eventData.getAvatarURL());
 newEmbed.setDescription("------\\n__**Sorry, but there's already something playing!**__\\n------");
 newEmbed.setTimeStamp(getTimeAndDate());
@@ -73,7 +76,7 @@ newEmbed.setColor(discordGuild.data.borderColor);
 DiscordCoreAPI::RespondToInputEventData dataPackage{ args.eventData };
 dataPackage.addMessageEmbed(newEmbed);
 dataPackage.setResponseType(DiscordCoreAPI::InputEventResponseType::Ephemeral_Interaction_Response);
-DiscordCoreAPI::InputEventData newEvent = DiscordCoreAPI::InputEvents::respondToInputEventAsync(dataPackage);
+DiscordCoreAPI::InputEventData newEvent = DiscordCoreAPI::InputEvents::respondToInputEvent(dataPackage);
 DiscordCoreAPI::InputEvents::deleteInputEventResponseAsync(newEvent, 20000).get();
 ```
 
