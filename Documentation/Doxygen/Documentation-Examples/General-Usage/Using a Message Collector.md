@@ -2,8 +2,8 @@ Using a Message Collector {#usingmessagecollector}
 ============
 - First, define a filtering function-which is one that takes a `DiscordCoreAPI::Message` as its one argument, that returns a `bool`. Define it so that if it returns true, the message is "collected".
 - Instantiate the `DiscordCoreAPI::MessageCollector` class with arguments to define how many messages are collected, for how long in milliseconds the collection runs, a userId, and the filter function.
-- Execute the `DiscordCoreAPI::MessageCollector::collectMessages` function, calling `.get()` to wait for the results now or otherwise leaving them until later.
-- This function returns a value of type `DiscordCoreAPI::CoRoutine<DiscordCoreAPI::MessageCollectorReturnData>`, which contains a vector of collected `DiscordCoreAPI::Message`s.
+- Execute the `DiscordCoreAPI::MessageCollector::collectMessages` function.
+- This function returns a struct of type `DiscordCoreAPI::MessageCollectorReturnData`, which contains a vector of collected `DiscordCoreAPI::Message`s.
  
 ```cpp
 function<bool(DiscordCoreAPI::Message)> messageFilter = [=](DiscordCoreAPI::Message message)-> bool {
