@@ -250,5 +250,6 @@ namespace DiscordCoreAPI {
 
 	DiscordCoreInternal::HttpClient* Roles::httpClient{ nullptr };
 	std::unordered_map<std::string, RoleData> Roles::cache{};
+	bool Roles::doWeCache{ false };
 	std::mutex Roles::theMutex{};
 }
