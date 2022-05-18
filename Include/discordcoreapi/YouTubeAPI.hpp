@@ -35,7 +35,7 @@ namespace DiscordCoreInternal {
 
 		YouTubeRequestBuilder(HttpClient*);
 
-		DiscordCoreAPI::Song collectFinalSong(DiscordCoreAPI::GuildMemberData addedByGuildMember, DiscordCoreAPI::Song newSong);
+		DiscordCoreAPI::Song collectFinalSong(const DiscordCoreAPI::GuildMemberData& addedByGuildMember, DiscordCoreAPI::Song& newSong);
 
 		std::vector<DiscordCoreAPI::Song> collectSearchResults(const std::string& theString);
 
@@ -43,21 +43,21 @@ namespace DiscordCoreInternal {
 		HttpClient* httpClient{ nullptr };
 		std::string baseUrl{ "https://www.youtube.com" };
 
-		DiscordCoreAPI::Song constructDownloadInfo(DiscordCoreAPI::GuildMemberData guildMember, DiscordCoreAPI::Song newSong);
+		DiscordCoreAPI::Song constructDownloadInfo(const DiscordCoreAPI::GuildMemberData& guildMember, DiscordCoreAPI::Song& newSong);
 
-		DiscordCoreAPI::Song constructFinalDownloadUrl(DiscordCoreAPI::Song newSong);
+		DiscordCoreAPI::Song constructFinalDownloadUrl(DiscordCoreAPI::Song& newSong);
 
-		std::vector<char> sliceVector(std::vector<char> vectorToSlice, int32_t firstElement, int32_t lastElement = 0);
+		std::vector<char> sliceVector(const std::vector<char>& vectorToSlice, int32_t firstElement, int32_t lastElement = 0);
 
-		std::vector<char> swapHeadAndPosition(std::vector<char> inputVector, int32_t position);
+		std::vector<char> swapHeadAndPosition(std::vector<char>& inputVector, int32_t position);
 
-		DiscordCoreAPI::YouTubeFormat decipherFormat(DiscordCoreAPI::YouTubeFormat format, const std::string& html5playerFile);
+		DiscordCoreAPI::YouTubeFormat decipherFormat(DiscordCoreAPI::YouTubeFormat& format, const std::string& html5playerFile);
 
-		std::string decipher(std::vector<std::string> tokens, const std::string& cipherSignature);
+		std::string decipher(const std::vector<std::string>& tokens, const std::string& cipherSignature);
 
 		std::vector<std::string> extractActions(const std::string& html5PlayerPageBody);
 
-		std::vector<char> reverseString(std::vector<char> stringToReverse);
+		std::vector<char> reverseString(std::vector<char>& stringToReverse);
 
 		std::string between(const std::string& body, const std::string& left, const std::string& right);
 
@@ -65,9 +65,9 @@ namespace DiscordCoreInternal {
 
 		std::vector<char> splitString(const std::string& stringToSplit);
 
-		std::string joinString(std::vector<char> stringToJoin);
+		std::string joinString(const std::vector<char>& stringToJoin);
 
-		std::string setDownloadUrl(DiscordCoreAPI::YouTubeFormat format);
+		std::string setDownloadUrl(const DiscordCoreAPI::YouTubeFormat& format);
 	};
 
 	class DiscordCoreAPI_Dll YouTubeAPI {
@@ -75,13 +75,13 @@ namespace DiscordCoreInternal {
 		YouTubeAPI(const std::string& guildId, HttpClient* httpClient);
 
 		void breakOutPlayMore(std::stop_token theToken, std::unique_ptr<AudioDecoder> audioDecoder, bool haveWeFailed, int32_t counter, YouTubeAPI* soundCloudAPI,
-			DiscordCoreAPI::Song newSong, int32_t currentRecursionDepth);
+			DiscordCoreAPI::Song& newSong, int32_t currentRecursionDepth);
 
-		void weFailedToDownloadOrDecode(DiscordCoreAPI::Song newSong, YouTubeAPI* youtubeAPI, std::stop_token theToken, int32_t currentRecursionDepth);
+		void weFailedToDownloadOrDecode(DiscordCoreAPI::Song& newSong, YouTubeAPI* youtubeAPI, std::stop_token theToken, int32_t currentRecursionDepth);
 
-		void downloadAndStreamAudio(DiscordCoreAPI::Song newSong, YouTubeAPI* youtubeAPI, std::stop_token theToken, int32_t currentRecursionDepth);
+		void downloadAndStreamAudio(DiscordCoreAPI::Song& newSong, YouTubeAPI* youtubeAPI, std::stop_token theToken, int32_t currentRecursionDepth);
 
-		DiscordCoreAPI::Song collectFinalSong(DiscordCoreAPI::GuildMemberData addedByGuildMember, DiscordCoreAPI::Song newSong);
+		DiscordCoreAPI::Song collectFinalSong(const DiscordCoreAPI::GuildMemberData& addedByGuildMember, DiscordCoreAPI::Song& newSong);
 
 		void breakOut(std::stop_token theToken, std::unique_ptr<AudioDecoder> audioDecoder, YouTubeAPI* soundCloudAPI);
 

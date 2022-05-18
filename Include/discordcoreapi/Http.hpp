@@ -45,9 +45,9 @@ namespace DiscordCoreInternal {
 
 		HttpData handleHeaders(RateLimitData* rateLimitDataPtr);
 
-		std::string buildRequest(HttpWorkloadData& workload);
+		std::string buildRequest(const HttpWorkloadData& workload);
 
-		bool checkForHeadersToParse( const std::string& );
+		bool checkForHeadersToParse(const std::string&);
 
 		void parseHeaders(std::string&);
 
@@ -133,7 +133,7 @@ namespace DiscordCoreInternal {
 
 		HttpClient(const std::string& botTokenNew, bool doWePrintHttpSuccessNew, bool doWePrintHttpErrorNew, bool doWePrintFFMPEGSuccessNew, bool doWePrintFFMPEGErrorNew);
 
-		std::vector<HttpData> httpRequest(std::vector<HttpWorkloadData>&);
+		std::vector<HttpData> httpRequest(const std::vector<HttpWorkloadData>&);
 
 		HttpData httpRequest(HttpWorkloadData&);
 
@@ -155,13 +155,13 @@ namespace DiscordCoreInternal {
 		const bool doWePrintHttpError{};
 		const std::string botToken{};
 
-		HttpData executeHttpRequest(HttpWorkloadData& workload, HttpConnection& theConnection, RateLimitData* rateLimitDataPtr);
+		HttpData executeHttpRequest(const HttpWorkloadData& workload, HttpConnection& theConnection, RateLimitData* rateLimitDataPtr);
 
-		HttpData executeByRateLimitData(HttpWorkloadData& workload, HttpConnection& theConnection);
+		HttpData executeByRateLimitData(const HttpWorkloadData& workload, HttpConnection& theConnection);
 
 		HttpData getResponse(HttpConnection& theConnection, RateLimitData* rateLimitDataPtr);
 
-		std::vector<HttpData> executeHttpRequest(std::vector<HttpWorkloadData>&);
+		std::vector<HttpData> executeHttpRequest(const std::vector<HttpWorkloadData>&);
 	};
 
 	template<typename ReturnType> ReturnType submitWorkloadAndGetResult(HttpClient& httpClient, HttpWorkloadData& workload) {
@@ -182,6 +182,6 @@ namespace DiscordCoreInternal {
 
 	HttpData submitWorkloadAndGetResult(HttpClient& httpClient, HttpWorkloadData& workload);
 
-	std::vector<HttpData> submitWorkloadAndGetResult(HttpClient& httpClient, std::vector<HttpWorkloadData>& workload);
+	std::vector<HttpData> submitWorkloadAndGetResult(HttpClient& httpClient, const std::vector<HttpWorkloadData>& workload);
 
 }// namespace DiscordCoreInternal

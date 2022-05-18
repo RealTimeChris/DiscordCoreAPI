@@ -73,15 +73,15 @@ namespace DiscordCoreAPI {
 		AudioFrameData audioData{};
 		int32_t timeStamp{ 0 };
 
-		std::string encryptSingleAudioFrame(EncodedFrameData bufferToSend, int32_t audioSSRC, const std::string&  keys);
+		std::string encryptSingleAudioFrame(EncodedFrameData& bufferToSend, int32_t audioSSRC, const std::string& keys);
+
+		void connect(const DiscordCoreInternal::VoiceConnectInitData& voiceConnectInitDataNew);
+
+		void sendSingleAudioFrame(std::string& audioDataPacketNew);
 
 		TSUnboundedMessageBlock<AudioFrameData>& getAudioBuffer();
 
-		void sendSingleFrame(AudioFrameData frameData);
-
-		void connect(DiscordCoreInternal::VoiceConnectInitData voiceConnectInitDataNew);
-
-		void sendSingleAudioFrame(std::string& audioDataPacketNew);
+		void sendSingleFrame(const AudioFrameData& frameData);
 
 		void sendSpeakingMessage(bool isSpeaking);
 

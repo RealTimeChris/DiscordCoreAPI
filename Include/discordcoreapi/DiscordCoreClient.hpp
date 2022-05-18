@@ -76,7 +76,7 @@ namespace DiscordCoreAPI {
 	DiscordCoreAPI_Dll YouTubeAPIMap& getYouTubeAPIMap();
 
 	DiscordCoreAPI_Dll SongAPIMap& getSongAPIMap();
-
+	
 	/**
 	 * \addtogroup main_endpoints
 	 * @{
@@ -103,7 +103,7 @@ namespace DiscordCoreAPI {
 		/// For registering a function with the CommandController. \brief For registering a function with the CommandController.
 		/// \param functionNames A vector containing the possible names for activating this command/function.
 		/// \param baseFunction A unique_ptr to the command to be registered.
-		void registerFunction(std::vector<std::string> functionNames, std::unique_ptr<BaseFunction> baseFunction);
+		void registerFunction(const std::vector<std::string>& functionNames, std::unique_ptr<BaseFunction> baseFunction);
 
 		/// For collecting a copy of the current bot's User. \brief For collecting a copy of the current bot's User.
 		/// \returns BotUser An instance of BotUser.

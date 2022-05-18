@@ -24,7 +24,7 @@
 
 namespace DiscordCoreAPI {
 
-	std::string VoiceConnection::encryptSingleAudioFrame(EncodedFrameData bufferToSend, int32_t audioSSRC, const std::string&  keys) {
+	std::string VoiceConnection::encryptSingleAudioFrame(EncodedFrameData& bufferToSend, int32_t audioSSRC, const std::string&  keys) {
 		if (keys.size() > 0) {
 			this->sequenceIndex += 1;
 			this->timeStamp += 960;
@@ -87,7 +87,7 @@ namespace DiscordCoreAPI {
 		return this->audioBuffer;
 	}
 
-	void VoiceConnection::sendSingleFrame(AudioFrameData frameData) {
+	void VoiceConnection::sendSingleFrame(const AudioFrameData& frameData) {
 		this->audioBuffer.send(frameData);
 	}
 
@@ -143,7 +143,7 @@ namespace DiscordCoreAPI {
 		this->play();
 	}
 
-	void VoiceConnection::connect(DiscordCoreInternal::VoiceConnectInitData voiceConnectInitDataNew) {
+	void VoiceConnection::connect(const DiscordCoreInternal::VoiceConnectInitData& voiceConnectInitDataNew) {
 		this->areWeConnectedBool = true;
 		this->areWeStopping.store(false);
 		this->stopSetEvent.set();

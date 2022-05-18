@@ -128,7 +128,7 @@ namespace DiscordCoreInternal {
 
 		nlohmann::json singleValueETFToJson(const ErlPackBuffer&);
 
-		nlohmann::json processAtom(std::vector<char>&, uint32_t&);
+		nlohmann::json processAtom(const std::vector<char>&, uint32_t&);
 
 		nlohmann::json parseAtom(const ErlPackBuffer&);
 

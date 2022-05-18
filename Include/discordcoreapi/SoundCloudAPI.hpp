@@ -33,9 +33,9 @@ namespace DiscordCoreInternal {
 
 		SoundCloudRequestBuilder(HttpClient*);
 
-		DiscordCoreAPI::Song collectFinalSong(DiscordCoreAPI::GuildMemberData addedByGuildMember, DiscordCoreAPI::Song newSong);
+		DiscordCoreAPI::Song collectFinalSong(const DiscordCoreAPI::GuildMemberData& addedByGuildMember, const DiscordCoreAPI::Song& newSong);
 
-		std::vector<HttpData> submitWorkloadAndGetResultNew(std::vector<HttpWorkloadData> httpData);
+		std::vector<HttpData> submitWorkloadAndGetResultNew(const std::vector<HttpWorkloadData>& httpData);
 
 		std::vector<DiscordCoreAPI::Song> collectSearchResults(const std::string& theString);
 
@@ -47,9 +47,9 @@ namespace DiscordCoreInternal {
 		const std::string appVersion{ "1649920649" };
 		HttpClient* httpClient{ nullptr };
 
-		DiscordCoreAPI::Song constructSecondDownloadUrl(DiscordCoreAPI::Song newSong);
+		DiscordCoreAPI::Song constructSecondDownloadUrl(const DiscordCoreAPI::Song& newSong);
 
-		DiscordCoreAPI::Song constructFinalDownloadUrl(DiscordCoreAPI::Song newSong);
+		DiscordCoreAPI::Song constructFinalDownloadUrl(const DiscordCoreAPI::Song& newSong);
 
 		std::string collectClientId();
 	};
@@ -59,13 +59,13 @@ namespace DiscordCoreInternal {
 		SoundCloudAPI(const std::string& guildId, HttpClient* httpClient);
 
 		void breakOutPlayMore(std::stop_token theToken, std::unique_ptr<AudioDecoder> audioDecoder, bool haveWeFailed, int32_t counter, SoundCloudAPI* soundCloudAPI,
-			DiscordCoreAPI::Song newSong, int32_t currentRecursionDepth);
+			const DiscordCoreAPI::Song& newSong, int32_t currentRecursionDepth);
 
-		void weFailedToDownloadOrDecode(DiscordCoreAPI::Song newSong, SoundCloudAPI* youtubeAPI, std::stop_token theToken, int32_t currentRecursionDepth);
+		void weFailedToDownloadOrDecode(const DiscordCoreAPI::Song& newSong, SoundCloudAPI* youtubeAPI, std::stop_token theToken, int32_t currentRecursionDepth);
 
-		void downloadAndStreamAudio(DiscordCoreAPI::Song newSong, SoundCloudAPI* soundCloudAPI, std::stop_token theToken, int32_t currentRecursionDepth);
+		void downloadAndStreamAudio(const DiscordCoreAPI::Song& newSong, SoundCloudAPI* soundCloudAPI, std::stop_token theToken, int32_t currentRecursionDepth);
 
-		DiscordCoreAPI::Song collectFinalSong(DiscordCoreAPI::GuildMemberData addedByGuildMember, DiscordCoreAPI::Song newSong);
+		DiscordCoreAPI::Song collectFinalSong(const DiscordCoreAPI::GuildMemberData& addedByGuildMember, const DiscordCoreAPI::Song& newSong);
 
 		void breakOut(std::stop_token theToken, std::unique_ptr<AudioDecoder> audioDecoder, SoundCloudAPI* soundCloudAPI);
 

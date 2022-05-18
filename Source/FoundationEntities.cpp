@@ -59,7 +59,7 @@ namespace DiscordCoreAPI {
 		return theTimeStamp;
 	}
 
-	void constructMultiPartData(DiscordCoreInternal::HttpWorkloadData& dataPackage, nlohmann::json theData, std::vector<File>& files) {
+	void constructMultiPartData(DiscordCoreInternal::HttpWorkloadData& dataPackage, nlohmann::json theData, const std::vector<File>& files) {
 		dataPackage.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
 		const std::string boundary("boundary25");
 		const std::string partStart("--" + boundary + "\r\nContent-Type: application/octet-stream\r\nContent-Disposition: form-data; ");
@@ -437,7 +437,7 @@ namespace DiscordCoreAPI {
 		return returnString;
 	}
 
-	void Permissions::addPermissions(std::vector<Permission> permissionsToAdd) {
+	void Permissions::addPermissions(const std::vector<Permission>& permissionsToAdd) {
 		if (*this == "") {
 			this->push_back('0');
 		}
@@ -450,7 +450,7 @@ namespace DiscordCoreAPI {
 		*this = sstream.str();
 	}
 
-	void Permissions::removePermissions(std::vector<Permission> permissionsToRemove) {
+	void Permissions::removePermissions(const std::vector<Permission>& permissionsToRemove) {
 		if (*this == "") {
 			this->push_back('0');
 		}
@@ -610,12 +610,12 @@ namespace DiscordCoreAPI {
 		return stream.str();
 	}
 
-	std::string Permissions::getCurrentChannelPermissions(GuildMember guildMember, ChannelData channel) {
+	std::string Permissions::getCurrentChannelPermissions(const GuildMember& guildMember, ChannelData& channel) {
 		std::string permsString = Permissions::computePermissions(guildMember, channel);
 		return permsString;
 	}
 
-	bool Permissions::checkForPermission(GuildMember guildMember, ChannelData channel, Permission permission) {
+	bool Permissions::checkForPermission(const GuildMember& guildMember, ChannelData& channel, Permission permission) {
 		std::string permissionsString = Permissions::computePermissions(guildMember, channel);
 		if ((stoll(permissionsString) & static_cast<int64_t>(permission)) == static_cast<int64_t>(permission)) {
 			return true;
@@ -624,12 +624,12 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	std::string Permissions::getCurrentGuildPermissions(GuildMember guildMember) {
+	std::string Permissions::getCurrentGuildPermissions(const GuildMember& guildMember) {
 		std::string permissions = Permissions::computeBasePermissions(guildMember);
 		return permissions;
 	}
 
-	std::string Permissions::computeBasePermissions(GuildMember guildMember) {
+	std::string Permissions::computeBasePermissions(const GuildMember& guildMember) {
 		Guild guild = Guilds::getCachedGuildAsync({ .guildId = guildMember.guildId }).get();
 		if (guild.ownerId == guildMember.user.id) {
 			return Permissions::getAllPermissions();
@@ -661,10 +661,11 @@ namespace DiscordCoreAPI {
 	}
 
 	std::string Permissions::getCurrentPermissionString() {
-		return *this;
+		std::string returnString = *this;
+		return returnString;
 	}
 
-	std::string Permissions::computeOverwrites(const std::string& basePermissions, GuildMember guildMember, ChannelData channel) {
+	std::string Permissions::computeOverwrites(const std::string& basePermissions, const GuildMember& guildMember, ChannelData& channel) {
 		if ((stoll(basePermissions) & static_cast<int64_t>(Permission::Administrator)) == static_cast<int64_t>(Permission::Administrator)) {
 			return Permissions::getAllPermissions();
 		}
@@ -696,13 +697,13 @@ namespace DiscordCoreAPI {
 		return std::to_string(permissions);
 	}
 
-	std::string Permissions::computePermissions(GuildMember guildMember, ChannelData channel) {
+	std::string Permissions::computePermissions(const GuildMember& guildMember, ChannelData& channel) {
 		std::string permissions = Permissions::computeBasePermissions(guildMember);
 		permissions = Permissions::computeOverwrites(permissions, guildMember, channel);
 		return permissions;
 	}
 
-	MoveThroughMessagePagesData moveThroughMessagePages(const std::string& userID, InputEventData originalEvent, uint32_t currentPageIndex, std::vector<EmbedData> messageEmbeds,
+	MoveThroughMessagePagesData moveThroughMessagePages(const std::string& userID, InputEventData originalEvent, uint32_t currentPageIndex,const std::vector<EmbedData>& messageEmbeds,
 		bool deleteAfter, uint32_t waitForMaxMs, bool returnResult) {
 		MoveThroughMessagePagesData returnData{};
 		uint32_t newCurrentPageIndex = currentPageIndex;

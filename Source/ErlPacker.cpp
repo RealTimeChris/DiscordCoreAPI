@@ -317,7 +317,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	nlohmann::json ErlPacker::processAtom(std::vector<char>& atom, uint32_t& length) {
+	nlohmann::json ErlPacker::processAtom(const std::vector<char>& atom, uint32_t& length) {
 		nlohmann::json jsonData{};
 		if (atom.size() == 0) {
 			return jsonData;

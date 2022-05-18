@@ -93,12 +93,11 @@ namespace DiscordCoreInternal {
 		std::string baseUrl{};
 		std::string userId{};
 
+		std::vector<std::string> tokenize(const std::string&, const std::string& = "\r\n") noexcept;
 
 		uint64_t createHeader(char* outbuf, uint64_t sendlength, WebSocketOpCode opCode) noexcept;
 
-		std::vector<std::string> tokenize(const std::string& , const std::string& = "\r\n") noexcept;
-
-		void getVoiceConnectionData(VoiceConnectInitData doWeCollect) noexcept;
+		void getVoiceConnectionData(const VoiceConnectInitData& doWeCollect) noexcept;
 
 		void run(std::stop_token) noexcept;
 

@@ -55,7 +55,7 @@ namespace DiscordCoreInternal {
 		return httpData;
 	}
 
-	std::string HttpRnRBuilder::buildRequest(HttpWorkloadData& workload) {
+	std::string HttpRnRBuilder::buildRequest(const HttpWorkloadData& workload) {
 		std::string baseUrlNew{};
 		if (workload.baseUrl.find(".com") != std::string::npos) {
 			baseUrlNew = workload.baseUrl.substr(workload.baseUrl.find("https://") + std::string("https://").size(),
@@ -284,7 +284,7 @@ namespace DiscordCoreInternal {
 		this->connectionManager.initialize();
 	};
 
-	HttpData HttpClient::executeByRateLimitData(HttpWorkloadData& workload, HttpConnection& theConnection) {
+	HttpData HttpClient::executeByRateLimitData(const HttpWorkloadData& workload, HttpConnection& theConnection) {
 		HttpData returnData{};
 		theConnection.resetValues();
 		RateLimitData* rateLimitDataPtr = Globals::rateLimitValues[Globals::rateLimitValueBuckets[workload.workloadType]].get();
@@ -360,7 +360,7 @@ namespace DiscordCoreInternal {
 		return returnData;
 	}
 
-	HttpData HttpClient::executeHttpRequest(HttpWorkloadData& workload, HttpConnection& theConnection, RateLimitData* rateLimitDataPtr) {
+	HttpData HttpClient::executeHttpRequest(const HttpWorkloadData& workload, HttpConnection& theConnection, RateLimitData* rateLimitDataPtr) {
 		try {
 			theConnection.resetValues();
 			int64_t currentTimeDistance =
@@ -397,7 +397,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	std::vector<HttpData> HttpClient::executeHttpRequest(std::vector<HttpWorkloadData>& workload) {
+	std::vector<HttpData> HttpClient::executeHttpRequest(const std::vector<HttpWorkloadData>& workload) {
 		std::vector<HttpData> returnVector{};
 		std::string currentBaseUrl{};
 		HttpConnection theConnection{};
@@ -439,7 +439,7 @@ namespace DiscordCoreInternal {
 		return theConnection.handleHeaders(rateLimitDataPtr);
 	}
 
-	std::vector<HttpData> HttpClient::httpRequest(std::vector<HttpWorkloadData>& workload) {
+	std::vector<HttpData> HttpClient::httpRequest(const std::vector<HttpWorkloadData>& workload) {
 		return this->executeHttpRequest(workload);
 	}
 
@@ -502,7 +502,7 @@ namespace DiscordCoreInternal {
 		return;
 	}
 
-	std::vector<HttpData> submitWorkloadAndGetResult(HttpClient& httpClient, std::vector<HttpWorkloadData>& workloadNew) {
+	std::vector<HttpData> submitWorkloadAndGetResult(HttpClient& httpClient, const std::vector<HttpWorkloadData>& workloadNew) {
 		std::vector<HttpWorkloadData> workload = workloadNew;
 		return httpClient.httpRequest(workload);
 	}

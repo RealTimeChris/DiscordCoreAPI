@@ -31,7 +31,7 @@ namespace DiscordCoreAPI {
 		this->discordCoreClient = discordCoreClientNew;
 	}
 
-	void CommandController::registerFunction(std::vector<std::string> functionNames, std::unique_ptr<BaseFunction> baseFunction) {
+	void CommandController::registerFunction(const std::vector<std::string>& functionNames, std::unique_ptr<BaseFunction> baseFunction) {
 		Globals::functions.insert(std::make_pair(functionNames, std::move(baseFunction)));
 	}
 

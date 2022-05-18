@@ -22,7 +22,7 @@
 
 namespace DiscordCoreInternal {
 
-	AudioDecoder::AudioDecoder(BuildAudioDecoderData dataPackage, bool doWePrintSuccessNew, bool doWePrintErrorNew) {
+	AudioDecoder::AudioDecoder(const BuildAudioDecoderData& dataPackage, bool doWePrintSuccessNew, bool doWePrintErrorNew) {
 		this->bufferMaxSize = dataPackage.bufferMaxSize;
 		this->totalFileSize = dataPackage.totalFileSize;
 		this->doWePrintSuccess = doWePrintSuccessNew;

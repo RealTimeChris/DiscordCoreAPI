@@ -99,10 +99,10 @@ namespace DiscordCoreAPI {
 		BotUser(UserData dataPackage, DiscordCoreInternal::BaseSocketAgent* pBaseBaseSocketAgentNew);
 
 		/// Updates the bot's current voice-status. Joins/leaves a Channel, and/or self deafens/mutes. \brief Updates the bot's current voice-status. Joins/leaves a Channel, and/or self deafens/mutes.
-		void updateVoiceStatus(UpdateVoiceStateData datdataPackageaPackage);
+		void updateVoiceStatus(const UpdateVoiceStateData& datdataPackageaPackage);
 
 		/// Updates the bot's current activity status, to be viewed by others in the same server as the bot. \brief Updates the bot's current activity status, to be viewed by others in the same server as the bot.
-		void updatePresence(UpdatePresenceData dataPackage);
+		void updatePresence(UpdatePresenceData& dataPackage);
 
 	  protected:
 		BotUser() = default;

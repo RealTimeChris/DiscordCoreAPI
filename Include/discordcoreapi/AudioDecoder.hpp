@@ -262,7 +262,7 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll AudioDecoder {
 	  public:
-		AudioDecoder(BuildAudioDecoderData dataPackage, bool doWePrintSuccess, bool doWePrintError);
+		AudioDecoder(const BuildAudioDecoderData& dataPackage, bool doWePrintSuccess, bool doWePrintError);
 
 		void submitDataForDecoding(const std::string& dataToDecode);
 

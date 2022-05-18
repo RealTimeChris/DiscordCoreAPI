@@ -29,11 +29,11 @@ namespace DiscordCoreAPI {
 	  public:
 		CommandController(DiscordCoreClient*);
 
-		void registerFunction(std::vector<std::string> functionNames, std::unique_ptr<BaseFunction> baseFunction);
+		void registerFunction(const std::vector<std::string>& functionNames, std::unique_ptr<BaseFunction> baseFunction);
 
 		std::map<std::vector<std::string>, std::unique_ptr<BaseFunction>>& getFunctions();
 
-		CoRoutine<void> checkForAndRunCommand(CommandData commandData);
+		CoRoutine<void> checkForAndRunCommand(const CommandData commandData);
 
 	  protected:
 		DiscordCoreClient* discordCoreClient{ nullptr };

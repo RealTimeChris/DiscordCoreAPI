@@ -44,12 +44,12 @@ namespace DiscordCoreAPI {
 		*this = dataNew;
 	}
 
-	void BotUser::updateVoiceStatus(UpdateVoiceStateData dataPackage) {
+	void BotUser::updateVoiceStatus(const UpdateVoiceStateData& dataPackage) {
 		nlohmann::json payload = DiscordCoreInternal::JSONIFY(dataPackage);
 		this->baseSocketAgent->sendMessage(payload);
 	}
 
-	void BotUser::updatePresence(UpdatePresenceData dataPackage) {
+	void BotUser::updatePresence(UpdatePresenceData& dataPackage) {
 		dataPackage.since = static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
 		nlohmann::json payload = DiscordCoreInternal::JSONIFY(dataPackage);
 		this->baseSocketAgent->sendMessage(payload);

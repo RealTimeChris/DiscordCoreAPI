@@ -102,7 +102,7 @@ namespace DiscordCoreAPI {
 		this->botToken = botTokenNew;
 	}
 
-	void DiscordCoreClient::registerFunction(std::vector<std::string> functionNames, std::unique_ptr<BaseFunction> baseFunction) {
+	void DiscordCoreClient::registerFunction(const std::vector<std::string>& functionNames, std::unique_ptr<BaseFunction> baseFunction) {
 		this->commandController.registerFunction(functionNames, std::move(baseFunction));
 	}
 

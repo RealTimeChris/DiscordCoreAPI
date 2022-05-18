@@ -659,9 +659,10 @@ namespace DiscordCoreAPI {
 
 	/**@}*/
 
-	DiscordCoreAPI_Dll std::string getISO8601TimeStamp(const std::string& year, const std::string& month, const std::string& day, const std::string& hour, const std::string& minute, const std::string& second);
+	DiscordCoreAPI_Dll std::string getISO8601TimeStamp(const std::string& year, const std::string& month, const std::string& day, const std::string& hour,
+		const std::string& minute, const std::string& second);
 
-	DiscordCoreAPI_Dll void constructMultiPartData(DiscordCoreInternal::HttpWorkloadData& dataPackage, nlohmann::json theData, std::vector<File>& files);
+	DiscordCoreAPI_Dll void constructMultiPartData(DiscordCoreInternal::HttpWorkloadData& dataPackage, nlohmann::json theData, const std::vector<File>& files);
 
 	DiscordCoreAPI_Dll void reportException(const std::string& stackTrace, UnboundedMessageBlock<std::exception>* sendBuffer = nullptr, bool rethrow = false);
 
@@ -866,11 +867,11 @@ namespace DiscordCoreAPI {
 
 		/// Adds one or more Permissions to the current Permissions value. \brief Adds one or more Permissions to the current Permissions value.
 		/// \param permissionsToAdd A std::vector containing the Permissions you wish to add.
-		void addPermissions(std::vector<Permission> permissionsToAdd);
+		void addPermissions(const std::vector<Permission>& permissionsToAdd);
 
 		/// Removes one or more Permissions from the current Permissions value. \brief Removes one or more Permissions from the current Permissions value.
 		/// \param permissionsToRemove A std::vector containing the Permissions you wish to remove.
-		void removePermissions(std::vector<Permission> permissionsToRemove);
+		void removePermissions(const std::vector<Permission>& permissionsToRemove);
 
 		/// Displays the currently present Permissions in a std::string, and returns a std::vector with each of them stored in std::string format. \brief Displays the currently present Permissions in a std::string, and returns a std::vector with each of them stored in std::string format.
 		/// \returns A std::vector full of strings of the Permissions that are in the input std::string's value.
@@ -887,27 +888,27 @@ namespace DiscordCoreAPI {
 		/// Returns a std::string containing the currently held Permissions in a given Guild. \brief Returns a std::string containing the currently held Permissions in a given Guild.
 		/// \param guildMember The GuildMember who's Permissions are to be evaluated.
 		/// \returns A std::string containing the current Permissions.
-		static std::string getCurrentGuildPermissions(GuildMember guildMember);
+		static std::string getCurrentGuildPermissions(const GuildMember& guildMember);
 
 		/// Returns a std::string containing all of a given User's Permissions for a given Channel. \brief Returns a std::string containing all of a given User's Permissions for a given Channel.
 		/// \param guildMember The GuildMember who's Permissions to analyze.
 		/// \param channel The Channel withint which to check for Permissions.
 		/// \returns A std::string containing the final Permission's value for a given Channel.
-		static std::string getCurrentChannelPermissions(GuildMember guildMember, ChannelData channel);
+		static std::string getCurrentChannelPermissions(const GuildMember& guildMember, ChannelData& channel);
 
 		/// Checks for a given Permission in a chosen Channel, for a specific User. \brief Checks for a given Permission in a chosen Channel, for a specific User.
 		/// \param guildMember The GuildMember who to check the Permissions of.
 		/// \param channel The Channel within which to check for the Permission's presence.
 		/// \param permission A Permission to check the current Channel for.
 		/// \returns A bool suggesting the presence of the chosen Permission.
-		bool checkForPermission(GuildMember guildMember, ChannelData channel, Permission permission);
+		bool checkForPermission(const GuildMember& guildMember, ChannelData& channel, Permission permission);
 
 	  protected:
-		static std::string computeBasePermissions(GuildMember guildMember);
+		static std::string computeBasePermissions(const GuildMember& guildMember);
 
-		static std::string computeOverwrites(const std::string& basePermissions, GuildMember guildMember, ChannelData channel);
+		static std::string computeOverwrites(const std::string& basePermissions, const GuildMember& guildMember, ChannelData& channel);
 
-		static std::string computePermissions(GuildMember guildMember, ChannelData channel);
+		static std::string computePermissions(const GuildMember& guildMember, ChannelData& channel);
 	};
 
 	/**@}*/
@@ -2556,12 +2557,6 @@ namespace DiscordCoreAPI {
 		bool tts{ false };///< Is it TTS?
 	};
 
-	/// Interaction response data. \brief Interaction response data.
-	struct DiscordCoreAPI_Dll InteractionResponseData {
-		InteractionCallbackData data{};///< Interaction ApplicationCommand callback data.
-		InteractionCallbackType type{};///< Interaction callback type.
-	};
-
 	/// Data structure representing an ApplicationCommand. \brief Data structure representing an ApplicationCommand.
 	class DiscordCoreAPI_Dll ApplicationCommandData : public DiscordEntity {
 	  public:
@@ -3214,10 +3209,12 @@ namespace DiscordCoreAPI {
 	/// \brief Data for responding to an input-event.
 	class DiscordCoreAPI_Dll RespondToInputEventData {
 	  public:
+		
 		friend CreateEphemeralInteractionResponseData;
 		friend CreateDeferredInteractionResponseData;
 		friend CreateEphemeralFollowUpMessageData;
 		friend DeleteInteractionResponseData;
+		friend class InteractionResponseData;
 		friend CreateInteractionResponseData;
 		friend EditInteractionResponseData;
 		friend DeleteFollowUpMessageData;
@@ -3227,21 +3224,6 @@ namespace DiscordCoreAPI {
 		friend EditMessageData;
 		friend InputEvents;
 		friend SendDMData;
-
-		operator InteractionResponseData() {
-			InteractionResponseData dataPackage{};
-			dataPackage.data.allowedMentions = this->allowedMentions;
-			dataPackage.data.components = this->components;
-			dataPackage.data.customId = this->customId;
-			dataPackage.data.choices = this->choices;
-			dataPackage.data.content = this->content;
-			dataPackage.data.embeds = this->embeds;
-			dataPackage.data.files = this->files;
-			dataPackage.data.flags = this->flags;
-			dataPackage.data.title = this->title;
-			dataPackage.data.tts = this->tts;
-			return dataPackage;
-		}
 
 		RespondToInputEventData& operator=(InteractionData& dataPackage) {
 			this->applicationId = dataPackage.applicationId;
@@ -3256,7 +3238,7 @@ namespace DiscordCoreAPI {
 
 		RespondToInputEventData(InteractionData& dataPackage) {
 			*this = dataPackage;
-		};
+		}
 
 		RespondToInputEventData& operator=(InputEventData& dataPackage) {
 			this->interactionToken = dataPackage.getInteractionToken();
@@ -3477,6 +3459,28 @@ namespace DiscordCoreAPI {
 		std::string title{};
 		int32_t flags{ 0 };
 		bool tts{ false };
+	};
+
+	/// Interaction response data. \brief Interaction response data.
+	struct DiscordCoreAPI_Dll InteractionResponseData {
+		InteractionResponseData& operator=(const RespondToInputEventData& other) {
+			this->data.allowedMentions = other.allowedMentions;
+			this->data.components = other.components;
+			this->data.customId = other.customId;
+			this->data.choices = other.choices;
+			this->data.content = other.content;
+			this->data.embeds = other.embeds;
+			this->data.title = other.title;
+			this->data.files = other.files;
+			this->data.flags = other.flags;
+			this->data.tts = other.tts;
+		}
+		InteractionResponseData(RespondToInputEventData& other) {
+			*this = other;
+		}
+		InteractionResponseData() = default;
+		InteractionCallbackData data{};///< Interaction ApplicationCommand callback data.
+		InteractionCallbackType type{};///< Interaction callback type.
 	};
 
 	class DiscordCoreAPI_Dll MessageResponseBase {
@@ -3850,7 +3854,7 @@ namespace DiscordCoreAPI {
 	};
 
 	DiscordCoreAPI_Dll MoveThroughMessagePagesData moveThroughMessagePages(const std::string& userID, InputEventData originalEvent, uint32_t currentPageIndex,
-		std::vector<EmbedData> messageEmbeds, bool deleteAfter, uint32_t waitForMaxMs, bool returnResult = false);
+		const std::vector<EmbedData>& messageEmbeds, bool deleteAfter, uint32_t waitForMaxMs, bool returnResult = false);
 	/**@}*/
 
 };// namespace DiscordCoreAPI

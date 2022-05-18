@@ -59,7 +59,7 @@ namespace DiscordCoreAPI {
 		/// \param guildMember The GuildMember that is adding the Song to the queue.
 		/// \param song The Song to be added to the queue.
 		/// \returns The Song that was added to the queue.
-		static Song addSongToQueue(GuildMember guildMember, Song song);
+		static Song addSongToQueue(const GuildMember& guildMember, const Song& song);
 
 		/// Checks to see if there are any playable Songs in the current Playlist. \brief Checks to see if there are any playable Songs in the current Playlist.
 		/// \param guildId The id of the Guild for which we would like to check its Playlist for Songs.
@@ -70,7 +70,7 @@ namespace DiscordCoreAPI {
 		/// \brief Send the next playable song off of the current Guild's Playlist to be played.
 		/// \param guildMember The GuildMember who is requesting the Song to be sent.
 		/// \returns A bool suggesting the success status of the send.
-		static bool sendNextSong(GuildMember guildMember);
+		static bool sendNextSong(const GuildMember& guildMember);
 
 		/// Plays the current Song. (Assuming that you are currently connected to a VoiceConnection). \brief Plays the current Song. (Assuming that you are currently connected to a VoiceConnection).
 		/// \param guildId The id of the Guild within which to play the current Song.
@@ -79,7 +79,7 @@ namespace DiscordCoreAPI {
 
 		/// Skips to the next Song in the queue, if applicable. \brief Skips to the next Song in the queue, if applicable.
 		/// \param guildMember The GuildMember structure of the individual who is skipping the Song.
-		static void skip(GuildMember guildMember);
+		static void skip(const GuildMember& guildMember);
 
 		/// Stops the currently playing Song. \brief Stops the currently playing Song.
 		/// \param guildId The id of the Guild within which to stop the currently playing music.
@@ -102,7 +102,7 @@ namespace DiscordCoreAPI {
 		/// Sets the playlist of the desired Guild. \brief Sets the playlist of the desired Guild.
 		/// \param playlistNew The new Playlist to be set.
 		/// \param guildId The id of the desired Guild to set the Playlist of.
-		static void setPlaylist(Playlist playlistNew, const std::string& guildId);
+		static void setPlaylist(const Playlist& playlistNew, const std::string& guildId);
 
 		/// Returns the current loop-all status of the current Guild's Playlist. \brief Returns the current loop-all status of the current Guild's Playlist.
 		/// \param guildId The id of the Guild for which you would like to check the loop-all status of.
@@ -137,7 +137,7 @@ namespace DiscordCoreAPI {
 		/// Sets the currently playing Song. \brief Sets the currently playing Song.
 		/// \param song The Song to set as the currently playing Song.
 		/// \param guildId The id for which Guild to set the current Song of.
-		static void setCurrentSong(Song song, const std::string& guildId);
+		static void setCurrentSong(const Song& song, const std::string& guildId);
 
 		~SongAPI();
 
@@ -148,7 +148,7 @@ namespace DiscordCoreAPI {
 		bool areWeInstantiated{ false };
 		std::string guildId{};
 
-		void sendNextSongFinal(GuildMember guildMember);
+		void sendNextSongFinal(const GuildMember& guildMember);
 
 		bool sendNextSong();
 	};

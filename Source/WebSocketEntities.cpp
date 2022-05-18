@@ -153,7 +153,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void BaseSocketAgent::getVoiceConnectionData(VoiceConnectInitData doWeCollect) noexcept {
+	void BaseSocketAgent::getVoiceConnectionData(const VoiceConnectInitData& doWeCollect) noexcept {
 		try {
 			this->semaphore.acquire();
 			DiscordCoreAPI::UpdateVoiceStateData dataPackage{};

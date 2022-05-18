@@ -151,7 +151,7 @@ namespace DiscordCoreAPI {
 		co_return DiscordCoreInternal::submitWorkloadAndGetResult<void>(*Interactions::httpClient, workload);
 	}
 
-	SelectMenuCollector::SelectMenuCollector(InputEventData dataPackage) {
+	SelectMenuCollector::SelectMenuCollector(InputEventData& dataPackage) {
 		this->channelId = dataPackage.getChannelId();
 		this->messageId = dataPackage.getMessageId();
 		this->userId = dataPackage.getRequesterId();
@@ -161,7 +161,7 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<std::vector<SelectMenuResponseData>> SelectMenuCollector::collectSelectMenuData(bool getSelectMenuDataForAllNew, int32_t maxWaitTimeInMsNew,
-		int32_t maxCollectedSelectMenuCountNew, const std::string& targetUser) {
+		int32_t maxCollectedSelectMenuCountNew, std::string targetUser) {
 		co_await NewThreadAwaitable<std::vector<SelectMenuResponseData>>();
 		if (targetUser == "" && !getSelectMenuDataForAllNew) {
 			this->getSelectMenuDataForAll = true;
@@ -276,7 +276,7 @@ namespace DiscordCoreAPI {
 		SelectMenuCollector::selectMenuInteractionBufferMap.erase(this->bufferMapKey);
 	}
 
-	ButtonCollector::ButtonCollector(InputEventData dataPackage) {
+	ButtonCollector::ButtonCollector(InputEventData& dataPackage) {
 		this->channelId = dataPackage.getChannelId();
 		this->messageId = dataPackage.getMessageId();
 		this->userId = dataPackage.getRequesterId();
@@ -285,7 +285,7 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<std::vector<ButtonResponseData>> ButtonCollector::collectButtonData(bool getButtonDataForAllNew, int32_t maxWaitTimeInMsNew, int32_t maxNumberOfPressesNew,
-		 const std::string& targetUser) {
+		 std::string targetUser) {
 		co_await NewThreadAwaitable<std::vector<ButtonResponseData>>();
 		if (targetUser == "" && !getButtonDataForAllNew) {
 			throw std::runtime_error("You've failed to properly set the collectButtonData() parameters!");
@@ -395,7 +395,7 @@ namespace DiscordCoreAPI {
 		ButtonCollector::buttonInteractionBufferMap.erase(this->channelId + this->messageId);
 	}
 
-	ModalCollector::ModalCollector(InputEventData dataPackage) {
+	ModalCollector::ModalCollector(InputEventData& dataPackage) {
 		this->channelId = dataPackage.getChannelId();
 		ModalCollector::modalInteractionBufferMap.insert_or_assign(this->channelId, &this->modalIncomingInteractionBuffer);
 	}

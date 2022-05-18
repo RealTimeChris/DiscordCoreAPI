@@ -24,7 +24,7 @@
 
 namespace DiscordCoreAPI {
 
-	CoRoutine<InputEventData> InputEvents::respondToInputEventAsync(RespondToInputEventData dataPackage) {
+	CoRoutine<InputEventData> InputEvents::respondToInputEventAsync(const RespondToInputEventData& dataPackage) {
 		co_await NewThreadAwaitable<InputEventData>();
 		if (dataPackage.type == InputEventResponseType::Unset) {
 			throw std::runtime_error("Please set an input-event-response-type!");
@@ -89,16 +89,17 @@ namespace DiscordCoreAPI {
 		co_return InputEventData();
 	}
 
-	CoRoutine<void> InputEvents::deleteInputEventResponseAsync(InputEventData dataPackage, int32_t timeDelayNew) {
+	CoRoutine<void> InputEvents::deleteInputEventResponseAsync(const InputEventData& dataPackage, int32_t timeDelayNew) {
+		InputEventData newPackage = dataPackage;
 		co_await NewThreadAwaitable<void>();
-		if (dataPackage.responseType == InputEventResponseType::Follow_Up_Message || dataPackage.responseType == InputEventResponseType::Edit_Follow_Up_Message) {
-			RespondToInputEventData dataPackageNew{ dataPackage };
+		if (newPackage.responseType == InputEventResponseType::Follow_Up_Message || newPackage.responseType == InputEventResponseType::Edit_Follow_Up_Message) {
+			RespondToInputEventData dataPackageNew{ newPackage };
 			DeleteFollowUpMessageData dataPackageNewer{ dataPackageNew };
 			dataPackageNewer.timeDelay = timeDelayNew;
 			Interactions::deleteFollowUpMessageAsync(dataPackageNewer).get();
-		} else if (dataPackage.responseType == InputEventResponseType::Interaction_Response || dataPackage.responseType == InputEventResponseType::Edit_Interaction_Response ||
-			dataPackage.responseType == InputEventResponseType::Deferred_Response) {
-			RespondToInputEventData dataPackageNew{ dataPackage };
+		} else if (newPackage.responseType == InputEventResponseType::Interaction_Response || newPackage.responseType == InputEventResponseType::Edit_Interaction_Response ||
+			newPackage.responseType == InputEventResponseType::Deferred_Response) {
+			RespondToInputEventData dataPackageNew{ newPackage };
 			DeleteInteractionResponseData dataPackageNewer{ dataPackageNew };
 			dataPackageNewer.timeDelay = timeDelayNew;
 			Interactions::deleteInteractionResponseAsync(dataPackageNewer).get();
@@ -106,7 +107,7 @@ namespace DiscordCoreAPI {
 		co_return;
 	}
 
-	InputEventData InputEvents::respondToInputEvent(CreateDeferredInteractionResponseData dataPackage) {
+	InputEventData InputEvents::respondToInputEvent(const CreateDeferredInteractionResponseData& dataPackage) {
 		CreateInteractionResponseData dataPackage02{ dataPackage };
 		Interactions::createInteractionResponseAsync(dataPackage02).get();
 		InputEventData dataPackageNewer{};
@@ -119,7 +120,7 @@ namespace DiscordCoreAPI {
 		return dataPackageNewer;
 	}
 
-	InputEventData InputEvents::respondToInputEvent(CreateInteractionResponseData dataPackage) {
+	InputEventData InputEvents::respondToInputEvent(const CreateInteractionResponseData& dataPackage) {
 		Message messageData = Interactions::createInteractionResponseAsync(dataPackage).get();
 		InputEventData dataPackageNewer{};
 		dataPackageNewer.interactionData->applicationId = dataPackage.interactionPackage.applicationId;
@@ -133,7 +134,7 @@ namespace DiscordCoreAPI {
 		return dataPackageNewer;
 	}
 
-	InputEventData InputEvents::respondToInputEvent(EditInteractionResponseData dataPackage) {
+	InputEventData InputEvents::respondToInputEvent(const EditInteractionResponseData& dataPackage) {
 		Message messageData = Interactions::editInteractionResponseAsync(dataPackage).get();
 		InputEventData dataPackageNewer{};
 		dataPackageNewer.interactionData->applicationId = dataPackage.interactionPackage.applicationId;
@@ -146,7 +147,7 @@ namespace DiscordCoreAPI {
 		return dataPackageNewer;
 	}
 
-	InputEventData InputEvents::respondToInputEvent(CreateFollowUpMessageData dataPackage) {
+	InputEventData InputEvents::respondToInputEvent(const CreateFollowUpMessageData& dataPackage) {
 		Message messageData = Interactions::createFollowUpMessageAsync(dataPackage).get();
 		InputEventData dataPackageNewer{};
 		dataPackageNewer.responseType = InputEventResponseType::Follow_Up_Message;
@@ -159,7 +160,7 @@ namespace DiscordCoreAPI {
 		return dataPackageNewer;
 	}
 
-	InputEventData InputEvents::respondToInputEvent(EditFollowUpMessageData dataPackage) {
+	InputEventData InputEvents::respondToInputEvent(const EditFollowUpMessageData& dataPackage) {
 		Message messageData = Interactions::editFollowUpMessageAsync(dataPackage).get();
 		InputEventData dataPackageNewer{};
 		dataPackageNewer.responseType = InputEventResponseType::Edit_Follow_Up_Message;
@@ -172,7 +173,7 @@ namespace DiscordCoreAPI {
 		return dataPackageNewer;
 	}
 
-	InputEventData InputEvents::respondToInputEvent(CreateEphemeralInteractionResponseData dataPackage) {
+	InputEventData InputEvents::respondToInputEvent(const CreateEphemeralInteractionResponseData& dataPackage) {
 		CreateInteractionResponseData newData{ dataPackage };
 		Message newMessage = Interactions::createInteractionResponseAsync(newData).get();
 		InputEventData dataPackageNewer{};
@@ -186,7 +187,7 @@ namespace DiscordCoreAPI {
 		return dataPackageNewer;
 	}
 
-	InputEventData InputEvents::respondToInputEvent(CreateEphemeralFollowUpMessageData dataPackage) {
+	InputEventData InputEvents::respondToInputEvent(const CreateEphemeralFollowUpMessageData& dataPackage) {
 		CreateFollowUpMessageData dataPackageNew{ dataPackage };
 		Message messageData = Interactions::createFollowUpMessageAsync(dataPackageNew).get();
 		InputEventData dataPackageNewer{};
