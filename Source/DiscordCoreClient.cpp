@@ -93,8 +93,8 @@ namespace DiscordCoreAPI {
 		this->httpClient = std::make_unique<DiscordCoreInternal::HttpClient>(botTokenNew, this->loggingOptions.logHttpSuccessMessages, this->loggingOptions.logHttpErrorMessages,
 			this->loggingOptions.logFFMPEGSuccessMessages, this->loggingOptions.logFFMPEGErrorMessages);
 		ApplicationCommands::initialize(this->httpClient.get());
-		Channels::initialize(this->httpClient.get());
-		Guilds::initialize(this->httpClient.get(), this);
+		Channels::initialize(this->httpClient.get(), this->cacheOptions.cacheChannels);
+		Guilds::initialize(this->httpClient.get(), this, this->cacheOptions.cacheGuilds);
 		GuildMembers::initialize(this->httpClient.get());
 		GuildScheduledEvents::initialize(this->httpClient.get());
 		Interactions::initialize(this->httpClient.get());
@@ -104,7 +104,7 @@ namespace DiscordCoreAPI {
 		Stickers::initialize(this->httpClient.get());
 		StageInstances::initialize(this->httpClient.get());
 		Threads::initialize(this->httpClient.get());
-		Users::initialize(this->httpClient.get());
+		Users::initialize(this->httpClient.get(), this->cacheOptions.cacheUsers);
 		WebHooks::initialize(this->httpClient.get());
 		this->botToken = botTokenNew;
 	}

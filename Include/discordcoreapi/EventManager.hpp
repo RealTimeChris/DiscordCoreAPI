@@ -116,8 +116,8 @@ namespace DiscordCoreAPI {
 
 	/// Data that is received as part of a Guild update event. \brief Data that is received as part of a Guild update event.
 	struct DiscordCoreAPI_Dll OnGuildUpdateData {
-		Guild guildOld{};///< The old Guild.
-		Guild guildNew{};///< The new, updated Guild.
+		GuildData guildOld{};///< The old Guild.
+		GuildData guildNew{};///< The new, updated Guild.
 	};
 
 	/// Data that is received as part of a Guild deletion event. \brief Data that is received as part of a Guild deletion event.
@@ -306,8 +306,8 @@ namespace DiscordCoreAPI {
 
 	/// Data that is received as part of a User update event. \brief Data that is received as part of a User update event.
 	struct DiscordCoreAPI_Dll OnUserUpdateData {
-		User userOld{};///< The old User.
-		User userNew{};///< The new User.
+		UserData userOld{};///< The old User.
+		UserData userNew{};///< The new User.
 	};
 
 	/// Data that is received as part of a voice state update event. \brief Data that is received as part of a voice state update event.

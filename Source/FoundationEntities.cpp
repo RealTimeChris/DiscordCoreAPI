@@ -630,7 +630,7 @@ namespace DiscordCoreAPI {
 	}
 
 	std::string Permissions::computeBasePermissions(const GuildMember& guildMember) {
-		Guild guild = Guilds::getCachedGuildAsync({ .guildId = guildMember.guildId }).get();
+		GuildData guild = Guilds::getCachedGuildAsync({ .guildId = guildMember.guildId }).get();
 		if (guild.ownerId == guildMember.user.id) {
 			return Permissions::getAllPermissions();
 		}
@@ -708,8 +708,9 @@ namespace DiscordCoreAPI {
 		MoveThroughMessagePagesData returnData{};
 		uint32_t newCurrentPageIndex = currentPageIndex;
 		std::unique_ptr<RespondToInputEventData> dataPackage{ std::make_unique<RespondToInputEventData>(originalEvent) };
-
-		dataPackage->addMessageEmbed(messageEmbeds[currentPageIndex]);
+		if (messageEmbeds.size() > 0) {
+			dataPackage->addMessageEmbed(messageEmbeds[currentPageIndex]);
+		}
 		if (returnResult) {
 			dataPackage->addButton(false, "select", "Select", ButtonStyle::Success, "✅");
 		}

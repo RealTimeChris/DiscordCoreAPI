@@ -34,7 +34,7 @@ namespace DiscordCoreAPI {
 			try {
 				auto responseData = DiscordCoreAPI::Users::getCurrentUserAuthorizationInfoAsync().get();
 
-				cout << "THE NAME: " << responseData.user.userName << endl;
+				cout << "THE NAME: " << responseData.user.username << endl;
 
 
 			} catch (...) {

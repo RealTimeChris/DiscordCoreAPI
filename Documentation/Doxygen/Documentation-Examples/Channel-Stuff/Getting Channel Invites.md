@@ -39,7 +39,7 @@ namespace DiscordCoreAPI {
 
 				cout << "THE INVITES: " << endl;
 				for (auto value: channelInvites) {
-					cout << value.inviter.userName << endl;
+					cout << value.inviter.username << endl;
 				}
 
 

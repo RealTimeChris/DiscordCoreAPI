@@ -271,7 +271,7 @@ namespace DiscordCoreInternal {
 			if (payload["t"] == "READY") {
 				this->areWeConnected.store(true);
 				this->sessionId = payload["d"]["session_id"];
-				std::vector<DiscordCoreAPI::Guild> theGuilds{};
+				std::vector<DiscordCoreAPI::GuildData> theGuilds{};
 				DataParser::parseObject(payload["d"]["guilds"], theGuilds);
 				for (auto& value: theGuilds) {
 					value.discordCoreClient = this->discordCoreClient;
@@ -279,6 +279,7 @@ namespace DiscordCoreInternal {
 				}
 				DiscordCoreAPI::UserData theUser{};
 				DataParser::parseObject(payload["d"]["user"], theUser);
+				DiscordCoreAPI::Users::insertUser(theUser);
 				this->discordCoreClient->currentUser = DiscordCoreAPI::BotUser{ theUser, this };
 				this->currentReconnectTries = 0;
 				this->areWeReadyToConnectEvent.set();
@@ -400,7 +401,7 @@ namespace DiscordCoreInternal {
 					DiscordCoreInternal::DataParser::parseObject(payload["d"], dataPackage->threadMembersUpdateData);
 					this->eventManager->onThreadMembersUpdateEvent(*dataPackage);
 				} else if (payload["t"] == "GUILD_CREATE") {
-					DiscordCoreAPI::Guild guildNew{};
+					DiscordCoreAPI::GuildData guildNew{};
 					std::unique_ptr<DiscordCoreAPI::OnGuildCreationData> dataPackage{ std::make_unique<DiscordCoreAPI::OnGuildCreationData>() };
 					DiscordCoreInternal::DataParser::parseObject(payload["d"], guildNew);
 					guildNew.discordCoreClient = this->discordCoreClient;

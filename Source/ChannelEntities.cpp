@@ -24,7 +24,42 @@
 
 namespace DiscordCoreAPI {
 
-	void Channels::initialize(DiscordCoreInternal::HttpClient* theClient) {
+	Channel& Channel::operator=(ChannelData&& other) {
+		this->permissionOverwrites = other.permissionOverwrites;
+		this->memberCount = other.memberCount;
+		this->parentId = other.parentId;
+		this->position = other.position;
+		this->guildId = other.guildId;
+		this->ownerId = other.ownerId;
+		this->flags = other.flags;
+		this->name = other.name;
+		this->type = other.type;
+		return *this;
+	}
+
+	Channel::Channel(ChannelData&& other) {
+		*this = other;
+	}
+
+	Channel& Channel::operator=(ChannelData& other) {
+		this->permissionOverwrites = other.permissionOverwrites;
+		this->memberCount = other.memberCount;
+		this->parentId = other.parentId;
+		this->position = other.position;
+		this->guildId = other.guildId;
+		this->ownerId = other.ownerId;
+		this->flags = other.flags;
+		this->name = other.name;
+		this->type = other.type;
+		return *this;
+	}
+
+	Channel::Channel(ChannelData& other) {
+		*this = other;
+	}
+
+	void Channels::initialize(DiscordCoreInternal::HttpClient* theClient, bool doWeCacheNew) {
+		Channels::doWeCache = doWeCacheNew;
 		Channels::httpClient = theClient;
 	}
 
@@ -41,8 +76,8 @@ namespace DiscordCoreAPI {
 		co_return channelNew;
 	}
 
-	CoRoutine<Channel> Channels::getCachedChannelAsync(GetChannelData dataPackage) {
-		co_await NewThreadAwaitable<Channel>();
+	CoRoutine<ChannelData> Channels::getCachedChannelAsync(GetChannelData dataPackage) {
+		co_await NewThreadAwaitable<ChannelData>();
 		if (Channels::cache.contains(dataPackage.channelId)) {
 			co_return Channels::cache[dataPackage.channelId];
 		} else {
@@ -226,11 +261,13 @@ namespace DiscordCoreAPI {
 		co_return DiscordCoreInternal::submitWorkloadAndGetResult<std::vector<VoiceRegionData>>(*Channels::httpClient, workload);
 	}
 
-	void Channels::insertChannel(Channel channel) {
+	void Channels::insertChannel(ChannelData channel) {
 		if (channel.id == "") {
 			return;
 		}
-		Channels::cache.insert_or_assign(channel.id, channel);
+		if (Channels::doWeCache) {
+			Channels::cache.insert_or_assign(channel.id, channel);
+		}
 	}
 
 	void Channels::removeChannel(const std::string& channelId) {
@@ -238,6 +275,6 @@ namespace DiscordCoreAPI {
 	};
 
 	DiscordCoreInternal::HttpClient* Channels::httpClient{ nullptr };
-	std::unordered_map<std::string, Channel> Channels::cache{};
-
+	std::unordered_map<std::string, ChannelData> Channels::cache{};
+	bool Channels::doWeCache{ false };
 }

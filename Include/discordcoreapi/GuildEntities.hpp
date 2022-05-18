@@ -65,49 +65,6 @@ namespace DiscordCoreAPI {
 		std::string guildId{};///< The id of the Guild's preview to acquire.
 	};
 
-	/// For modifying the properties of a chosen Guild. \brief For modifying the properties of a chosen Guild.
-	struct DiscordCoreAPI_Dll ModifyGuildData {
-		ModifyGuildData(GuildData dataPackage) {
-			this->premiumProgressBarEnabled = dataPackage.getPremiumProgressBarEnabled();
-			this->defaultMessageNotifications = dataPackage.defaultMessageNotifications;
-			this->publicUpdatesChannelId = dataPackage.publicUpdatesChannelId;
-			this->explicitContentFilter = dataPackage.explicitContentFilter;
-			this->systemChannelFlags = dataPackage.systemChannelFlags;
-			this->verificationLevel = dataPackage.verificationLevel;
-			this->preferredLocale = dataPackage.preferredLocale;
-			this->systemChannelId = dataPackage.systemChannelId;
-			this->rulesChannelId = dataPackage.rulesChannelId;
-			this->afkChannelId = dataPackage.afkChannelId;
-			this->description = dataPackage.description;
-			this->afkTimeout = dataPackage.afkTimeOut;
-			this->features = dataPackage.features;
-			this->ownerId = dataPackage.ownerId;
-			this->guildId = dataPackage.id;
-			this->name = dataPackage.name;
-		}
-		DefaultMessageNotificationLevel defaultMessageNotifications{};///< Default message notification level.
-		ExplicitContentFilterLevel explicitContentFilter{};///< Explicit content filter level.
-		SystemChannelFlags systemChannelFlags{ 0 };///< System Channel flags.
-		bool premiumProgressBarEnabled{ false };///< Whether or not the progress bar is enabled.
-		std::vector<uint8_t> discoverySplash{};/// Base64 16 : 9 png / jpeg image for the Guild discovery splash(when the server has the DISCOVERABLE feature).
-		VerificationLevel verificationLevel{};///< Verification level.
-		std::string publicUpdatesChannelId{};///< The id of the Channel where admins and moderators of Community guilds receive notices from Discord.
-		std::vector<std::string> features{};///< Array of Guild feature strings enabled Guild features.
-		AfkTimeOutDurations afkTimeout{};///< Afk timeout in seconds.
-		std::vector<uint8_t> banner{};///< Base64 16 : 9 png / jpeg image for the Guild banner (when the server has the BANNER feature).
-		std::vector<uint8_t> splash{};///< Base64 16 : 9 png / jpeg image for the Guild splash (when the server has the INVITE_SPLASH feature).
-		std::string preferredLocale{};///< The preferred locale of a Community Guild used in server discovery and notices from Discord; defaults to "en-US".
-		std::string systemChannelId{};///< The id of the Channel where Guild notices such as welcome messages and boost events are posted.
-		std::string rulesChannelId{};///< The id of the Channel where Community guilds display rules and /or guidelines.
-		std::vector<uint8_t> icon{};///< Base64 1024x1024 png / jpeg / gif image for the Guild icon (can be animated gif when the server has the ANIMATED_ICON).
-		std::string afkChannelId{};///< Id for afk channels.
-		std::string description{};///< The description for the Guild, if the Guild is discoverable.
-		std::string ownerId{};///< User id to transfer Guild ownership to (must be owner).
-		std::string guildId{};///< Id of the chosen Guild to modify.
-		std::string reason{};///< Reason for modifying the Guild.
-		std::string name{};///< Desired name of the Guild.
-	};
-
 	///	For deleting a Guild. \brief For deleting a Guild.
 	struct DiscordCoreAPI_Dll DeleteGuildData {
 		std::string guildId{};///< The Guild you would like to delete.
@@ -297,7 +254,46 @@ namespace DiscordCoreAPI {
 	  public:
 		friend Guilds;
 
+		DefaultMessageNotificationLevel defaultMessageNotifications{};///< Default Message notification level.
+		GuildNSFWLevel nsfwLevel{ GuildNSFWLevel::Default };///< NSFW warning level.
+		ExplicitContentFilterLevel explicitContentFilter{};///< Explicit content filtering level, by default.
+		SystemChannelFlags systemChannelFlags{};///< System Channel flags.
+		int32_t premiumSubscriptionCount{ 0 };///< Premium subscription count.
+		int32_t approximatePresenceCount{ 0 };///< Approximate quantity of presences.
+		VerificationLevel verificationLevel{};///< Verification level required.
+		std::string publicUpdatesChannelId{};///< Id of the public updates Channel.
+		int32_t approximateMemberCount{ 0 };///< Approximate member count.
+		WelcomeScreenData welcomeScreen{};///< Welcome screen for the Guild.
+		int32_t maxVideoChannelUsers{ 0 };///< Maximum quantity of users per video Channel.
+		AfkTimeOutDurations afkTimeOut{};///< Time for an individual to time out as afk.
+		std::string discoverySplash{};///< Link to the discovery image's splash.
+		std::string preferredLocale{};///< Preferred locale, for voice chat servers.
+		std::string widgetChannelId{};///< Channel id for the Guild's widget.
+		std::string systemChannelId{};///< Channel id for the Guild's system Channel.
+		std::string rulesChannelId{};///< Channel id for the Guild's rules Channel.
+		std::string vanityUrlCode{};///< Vanity Url code, if applicable.
+		std::string applicationId{};///< The current application id.
+		std::string afkChannelId{};///< Channel if of the "afk" Channel.
+		std::string description{};///< Description of the Guild.
+		Permissions permissions{};///< Current Permissions for the bot in the Guild.
+		PremiumTier premiumTier{};///< What is the premium tier?
+		int32_t maxPresences{ 0 };///< Max number of presences allowed.
+		int32_t maxMembers{ 0 };///< Max quantity of members.
+		std::string iconHash{};///< Url to the Guild's icon.
+		std::string region{};///< Region of the world where the Guild's servers are.
+		std::string splash{};///< Url to the Guild's splash.
+		std::string banner{};///< Url to the Guild's banner.
+		MFALevel mfaLevel{};///< MFA level.
+
 		Guild() = default;
+
+		Guild& operator=(GuildData&&);
+
+		Guild(GuildData&&);
+
+		Guild& operator=(GuildData&);
+
+		Guild(GuildData&);
 
 		/// Connects to a given voice Channel. \brief Connects to a given voice Channel.
 		/// \param channelId The voice Channel's id to connect to.
@@ -314,11 +310,49 @@ namespace DiscordCoreAPI {
 		bool areWeConnected();
 
 		~Guild() = default;
+	};
 
-	  protected:
-		VoiceConnection* voiceConnectionPtr{ nullptr };
-
-		void initialize(bool doWeShowIt);
+	/// For modifying the properties of a chosen Guild. \brief For modifying the properties of a chosen Guild.
+	struct DiscordCoreAPI_Dll ModifyGuildData {
+		ModifyGuildData(Guild dataPackage) {
+			this->premiumProgressBarEnabled = dataPackage.getPremiumProgressBarEnabled();
+			this->defaultMessageNotifications = dataPackage.defaultMessageNotifications;
+			this->publicUpdatesChannelId = dataPackage.publicUpdatesChannelId;
+			this->explicitContentFilter = dataPackage.explicitContentFilter;
+			this->systemChannelFlags = dataPackage.systemChannelFlags;
+			this->verificationLevel = dataPackage.verificationLevel;
+			this->preferredLocale = dataPackage.preferredLocale;
+			this->systemChannelId = dataPackage.systemChannelId;
+			this->rulesChannelId = dataPackage.rulesChannelId;
+			this->afkChannelId = dataPackage.afkChannelId;
+			this->description = dataPackage.description;
+			this->afkTimeout = dataPackage.afkTimeOut;
+			this->features = dataPackage.features;
+			this->ownerId = dataPackage.ownerId;
+			this->guildId = dataPackage.id;
+			this->name = dataPackage.name;
+		}
+		DefaultMessageNotificationLevel defaultMessageNotifications{};///< Default message notification level.
+		ExplicitContentFilterLevel explicitContentFilter{};///< Explicit content filter level.
+		SystemChannelFlags systemChannelFlags{ 0 };///< System Channel flags.
+		bool premiumProgressBarEnabled{ false };///< Whether or not the progress bar is enabled.
+		std::vector<uint8_t> discoverySplash{};/// Base64 16 : 9 png / jpeg image for the Guild discovery splash(when the server has the DISCOVERABLE feature).
+		VerificationLevel verificationLevel{};///< Verification level.
+		std::string publicUpdatesChannelId{};///< The id of the Channel where admins and moderators of Community guilds receive notices from Discord.
+		std::vector<std::string> features{};///< Array of Guild feature strings enabled Guild features.
+		AfkTimeOutDurations afkTimeout{};///< Afk timeout in seconds.
+		std::vector<uint8_t> banner{};///< Base64 16 : 9 png / jpeg image for the Guild banner (when the server has the BANNER feature).
+		std::vector<uint8_t> splash{};///< Base64 16 : 9 png / jpeg image for the Guild splash (when the server has the INVITE_SPLASH feature).
+		std::string preferredLocale{};///< The preferred locale of a Community Guild used in server discovery and notices from Discord; defaults to "en-US".
+		std::string systemChannelId{};///< The id of the Channel where Guild notices such as welcome messages and boost events are posted.
+		std::string rulesChannelId{};///< The id of the Channel where Community guilds display rules and /or guidelines.
+		std::vector<uint8_t> icon{};///< Base64 1024x1024 png / jpeg / gif image for the Guild icon (can be animated gif when the server has the ANIMATED_ICON).
+		std::string afkChannelId{};///< Id for afk channels.
+		std::string description{};///< The description for the Guild, if the Guild is discoverable.
+		std::string ownerId{};///< User id to transfer Guild ownership to (must be owner).
+		std::string guildId{};///< Id of the chosen Guild to modify.
+		std::string reason{};///< Reason for modifying the Guild.
+		std::string name{};///< Desired name of the Guild.
 	};
 
 	/**@}*/
@@ -336,7 +370,7 @@ namespace DiscordCoreAPI {
 		friend DiscordCoreClient;
 		friend EventHandler;
 
-		static void initialize(DiscordCoreInternal::HttpClient*, DiscordCoreClient*);
+		static void initialize(DiscordCoreInternal::HttpClient* theClient, DiscordCoreClient* discordCoreClientNew, bool doWeCacheNew);
 
 		/// Gets an audit log from the Discord servers. \brief Gets an audit log from the Discord servers.
 		/// \param dataPackage A GetGuildAuditLogsData structure.
@@ -350,7 +384,7 @@ namespace DiscordCoreAPI {
 
 		/// Returns all of the Guilds that the current bot is in. \brief Returns all of the Guilds that the current bot is in.
 		/// \returns A CoRoutine containing a std::vector<Guild>.
-		static CoRoutine<std::vector<Guild>> getAllGuildsAsync();
+		static CoRoutine<std::vector<GuildData>> getAllGuildsAsync();
 
 		/// Collects a Guild from the Discord servers. \brief Collects a Guild from the Discord servers.
 		/// \param dataPackage A GetGuildData structure.
@@ -360,7 +394,7 @@ namespace DiscordCoreAPI {
 		/// Collects a Guild from the library's cache. \brief Collects a Guild from the library's cache.
 		/// \param dataPackage A GetGuildData structure.
 		/// \returns A CoRoutine containing a Guild.
-		static CoRoutine<Guild> getCachedGuildAsync(GetGuildData dataPackage);
+		static CoRoutine<GuildData> getCachedGuildAsync(GetGuildData dataPackage);
 
 		/// Acquires the preview Data of a chosen Guild. \brief Acquires the preview Data of a chosen Guild.
 		/// \param dataPackage A GetGuildPreviewData structure.
@@ -519,10 +553,11 @@ namespace DiscordCoreAPI {
 
 	  protected:
 		static DiscordCoreAPI::DiscordCoreClient* discordCoreClient;
-		static std::unordered_map<std::string, Guild> cache;
+		static std::unordered_map<std::string, GuildData> cache;
 		static DiscordCoreInternal::HttpClient* httpClient;
+		static bool doWeCache;
 
-		static void insertGuild(Guild guild);
+		static void insertGuild(GuildData guild);
 
 		static void removeGuild(const std::string& GuildId);
 	};

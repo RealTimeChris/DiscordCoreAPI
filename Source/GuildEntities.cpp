@@ -29,6 +29,52 @@
 
 namespace DiscordCoreAPI {
 
+	Guild& Guild::operator=(GuildData&& other) {
+		this->voiceConnectionPtr = other.voiceConnectionPtr;
+		this->discordCoreClient = other.discordCoreClient;
+		this->voiceStates = other.voiceStates;
+		this->memberCount = other.memberCount;
+		this->presences = other.presences;
+		this->features = other.features;
+		this->channels = other.channels;
+		this->joinedAt = other.joinedAt;
+		this->ownerId = other.ownerId;
+		this->members = other.members;
+		this->flags = other.flags;
+		this->roles = other.roles;
+		this->icon = other.icon;
+		this->name = other.name;
+		this->id = other.id;
+		return *this;
+	}
+
+	Guild::Guild(GuildData&& other) {
+		*this = other;
+	}
+
+	Guild& Guild::operator=(GuildData& other) {
+		this->voiceConnectionPtr = other.voiceConnectionPtr;
+		this->discordCoreClient = other.discordCoreClient;
+		this->voiceStates = other.voiceStates;
+		this->memberCount = other.memberCount;
+		this->presences = other.presences;
+		this->features = other.features;
+		this->channels = other.channels;
+		this->joinedAt = other.joinedAt;
+		this->ownerId = other.ownerId;
+		this->members = other.members;
+		this->flags = other.flags;
+		this->roles = other.roles;
+		this->icon = other.icon;
+		this->name = other.name;
+		this->id = other.id;
+		return *this;
+	}
+
+	Guild::Guild(GuildData& other) {
+		*this = other;
+	}
+
 	VoiceConnection* Guild::connectToVoice(const std::string& channelId, bool selfDeaf, bool selfMute) {
 		if (getVoiceConnectionMap()[this->id]->areWeConnected()) {
 			this->voiceConnectionPtr = getVoiceConnectionMap()[this->id].get();
@@ -70,10 +116,7 @@ namespace DiscordCoreAPI {
 		return this->voiceConnectionPtr->areWeConnected();
 	}
 
-	void Guild::initialize(bool doWeShowIt) {
-		if (this->discordCoreClient->cacheOptions.cacheGuilds && doWeShowIt) {
-			std::cout << shiftToBrightBlue() << "Caching Guild: " << this->id << reset() << std::endl;
-		}
+	void GuildData::initialize(bool doWeShowIt) {
 		if (!getVoiceConnectionMap().contains(this->id)) {
 			std::string theShardId{ std::to_string((stoll(this->id) >> 22) % this->discordCoreClient->shardingOptions.totalNumberOfShards) };
 			getVoiceConnectionMap().insert(std::make_pair(this->id, std::make_unique<VoiceConnection>(this->discordCoreClient->webSocketMap[theShardId].get())));
@@ -90,8 +133,9 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	void Guilds::initialize(DiscordCoreInternal::HttpClient* theClient, DiscordCoreClient* discordCoreClientNew) {
+	void Guilds::initialize(DiscordCoreInternal::HttpClient* theClient, DiscordCoreClient* discordCoreClientNew, bool doWeCacheNew) {
 		Guilds::discordCoreClient = discordCoreClientNew;
+		Guilds::doWeCache = doWeCacheNew;
 		Guilds::httpClient = theClient;
 	}
 
@@ -148,9 +192,9 @@ namespace DiscordCoreAPI {
 		co_return guildNew;
 	}
 
-	CoRoutine<std::vector<Guild>> Guilds::getAllGuildsAsync() {
-		co_await NewThreadAwaitable<std::vector<Guild>>();
-		std::vector<Guild> guildVector{};
+	CoRoutine<std::vector<GuildData>> Guilds::getAllGuildsAsync() {
+		co_await NewThreadAwaitable<std::vector<GuildData>>();
+		std::vector<GuildData> guildVector{};
 		for (auto& [key, value]: Guilds::cache) {
 			value.discordCoreClient = Guilds::discordCoreClient;
 			guildVector.push_back(value);
@@ -167,12 +211,13 @@ namespace DiscordCoreAPI {
 		workload.relativePath = "/guilds/" + dataPackage.guildId + "?with_counts=true";
 		workload.callStack = "Guilds::getGuildAsync";
 		auto guildNew = DiscordCoreInternal::submitWorkloadAndGetResult<Guild>(*Guilds::httpClient, workload);
+		guildNew = Guilds::getCachedGuildAsync({ .guildId = dataPackage.guildId }).get();
 		guildNew.discordCoreClient = Guilds::discordCoreClient;
 		co_return guildNew;
 	}
 
-	CoRoutine<Guild> Guilds::getCachedGuildAsync(GetGuildData dataPackage) {
-		co_await NewThreadAwaitable<Guild>();
+	CoRoutine<GuildData> Guilds::getCachedGuildAsync(GetGuildData dataPackage) {
+		co_await NewThreadAwaitable<GuildData>();
 		if (Guilds::cache.contains(dataPackage.guildId)) {
 			co_return Guilds::cache[dataPackage.guildId];
 
@@ -659,7 +704,7 @@ namespace DiscordCoreAPI {
 		co_return DiscordCoreInternal::submitWorkloadAndGetResult<void>(*Guilds::httpClient, workload);
 	}
 
-	void Guilds::insertGuild(Guild guild) {
+	void Guilds::insertGuild(GuildData guild) {
 		if (guild.id == "") {
 			return;
 		}
@@ -668,7 +713,11 @@ namespace DiscordCoreAPI {
 			doWeShowIt = true;
 		}
 		guild.initialize(doWeShowIt);
-		Guilds::cache.insert_or_assign(guild.id, guild);
+		std::cout << "DO WE CACHE? " << std::boolalpha << Guilds::doWeCache << std::endl;
+		if (Guilds::doWeCache) {
+			Guilds::cache.insert_or_assign(guild.id, guild);
+		}
+		std::cout << "THE GUILD SIZE: " << Guilds::cache[guild.id].members.size() << std::endl;
 	}
 
 	void Guilds::removeGuild(const std::string& guildId) {
@@ -676,7 +725,8 @@ namespace DiscordCoreAPI {
 	};
 
 	DiscordCoreInternal::HttpClient* Guilds::httpClient{ nullptr };
+	std::unordered_map<std::string, GuildData> Guilds::cache{};
 	DiscordCoreClient* Guilds::discordCoreClient{ nullptr };
-	std::unordered_map<std::string, Guild> Guilds::cache{};
+	bool Guilds::doWeCache{ false };
 
 }

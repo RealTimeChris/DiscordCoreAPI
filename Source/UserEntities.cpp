@@ -26,16 +26,24 @@
 
 namespace DiscordCoreAPI {
 
+	User& User::operator=(UserData&& other) {
+		this->discriminator = other.discriminator;
+		this->publicFlags = other.publicFlags;
+		this->username = other.username;
+		this->avatar = other.avatar;
+		this->id = other.id;
+		return *this;
+	}
+
+	User::User(UserData&& dataNew) {
+		*this = dataNew;
+	}
+
 	User& User::operator=(UserData& other) {
 		this->discriminator = other.discriminator;
 		this->publicFlags = other.publicFlags;
-		this->premiumType = other.premiumType;
-		this->userName = other.userName;
-		this->locale = other.locale;
+		this->username = other.username;
 		this->avatar = other.avatar;
-		this->flags = other.flags;
-		this->email = other.email;
-		this->flags = other.flags;
 		this->id = other.id;
 		return *this;
 	}
@@ -59,7 +67,8 @@ namespace DiscordCoreAPI {
 		this->baseSocketAgent = baseSocketAgentNew;
 	}
 
-	void Users::initialize(DiscordCoreInternal::HttpClient* theClient) {
+	void Users::initialize(DiscordCoreInternal::HttpClient* theClient, bool doWeCacheNew) {
+		Users::doWeCache = doWeCacheNew;
 		Users::httpClient = theClient;
 	}
 
@@ -119,8 +128,8 @@ namespace DiscordCoreAPI {
 		co_return DiscordCoreInternal::submitWorkloadAndGetResult<UserData>(*Users::httpClient, workload);
 	}
 
-	CoRoutine<User> Users::getCachedUserAsync(GetUserData dataPackage) {
-		co_await NewThreadAwaitable<User>();
+	CoRoutine<UserData> Users::getCachedUserAsync(GetUserData dataPackage) {
+		co_await NewThreadAwaitable<UserData>();
 		if (Users::cache.contains(dataPackage.userId)) {
 			co_return Users::cache[dataPackage.userId];
 		} else {
@@ -136,7 +145,9 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
 		workload.relativePath = "/users/" + dataPackage.userId;
 		workload.callStack = "Users::getUserAsync";
-		co_return DiscordCoreInternal::submitWorkloadAndGetResult<User>(*Users::httpClient, workload);
+		auto userNew = DiscordCoreInternal::submitWorkloadAndGetResult<User>(*Users::httpClient, workload);
+		Users::insertUser(userNew);
+		co_return userNew;
 	}
 
 	CoRoutine<User> Users::modifyCurrentUserAsync(ModifyCurrentUserData dataPackage) {
@@ -190,14 +201,17 @@ namespace DiscordCoreAPI {
 		co_return DiscordCoreInternal::submitWorkloadAndGetResult<AuthorizationInfoData>(*Users::httpClient, workload);
 	}
 
-	void Users::insertUser(User user) {
+	void Users::insertUser(UserData user) {
 		if (user.id == "") {
 			return;
 		}
-		Users::cache.insert_or_assign(user.id, user);
+		if (Users::doWeCache) {
+			Users::cache.insert_or_assign(user.id, user);
+		}
 	}
 
 	DiscordCoreInternal::HttpClient* Users::httpClient{ nullptr };
-	std::unordered_map<std::string, User> Users::cache{};
+	std::unordered_map<std::string, UserData> Users::cache{};
+	bool Users::doWeCache{ false };
 
 }

@@ -46,7 +46,7 @@ namespace DiscordCoreAPI {
 				auto responseData = DiscordCoreAPI::GuildScheduledEvents::getGuildScheduledEventUsersAsync(dataPackage).get();
 
 				for (auto& value: responseData) {
-					cout << "THE USER NAME: " << value.user.userName << endl;
+					cout << "THE USER NAME: " << value.user.username << endl;
 				}
 
 

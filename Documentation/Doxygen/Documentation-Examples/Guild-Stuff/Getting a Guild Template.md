@@ -37,7 +37,7 @@ namespace DiscordCoreAPI {
 
 				auto responseData = DiscordCoreAPI::Guilds::getGuildTemplateAsync(dataPackage01).get();
 
-				cout << "USER NAME: " << responseData.creator.userName << endl;
+				cout << "USER NAME: " << responseData.creator.username << endl;
 
 
 			} catch (...) {

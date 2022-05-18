@@ -1051,67 +1051,70 @@ namespace DiscordCoreAPI {
 		Verified = 1 << 23///< Is it verified?
 	};
 
+	/// Premium types denote the level of premium a user has. \brief Premium types denote the level of premium a user has.
+	enum class PremiumType : int8_t {
+		None = 0,///< None.
+		Nitro_Classic = 1,///< Nitro classic.
+		Nitro = 2///< Nitro.
+	};
+
 	/// Data structure representing a single User. \brief Data structure representing a single User.
 	class DiscordCoreAPI_Dll UserData : public DiscordEntity {
 	  public:
 		void setBot(bool enabled) {
 			if (enabled) {
-				this->flags |= static_cast<uint8_t>(UserFlags::Bot);
+				this->publicFlags = static_cast<UserFlags>(static_cast<int32_t>(this->publicFlags) | static_cast<uint32_t>(UserFlags::Bot));
 			} else {
-				this->flags &= ~static_cast<uint8_t>(UserFlags::Bot);
+				this->publicFlags = static_cast<UserFlags>(static_cast<int32_t>(this->publicFlags) & ~static_cast<uint32_t>(UserFlags::Bot));
 			}
 		}
 
 		void setMFAEnabled(bool enabled) {
 			if (enabled) {
-				this->flags |= static_cast<uint8_t>(UserFlags::MFAEnabled);
+				this->publicFlags = static_cast<UserFlags>(static_cast<int32_t>(this->publicFlags) | static_cast<uint32_t>(UserFlags::MFAEnabled));
 			} else {
-				this->flags &= ~static_cast<uint8_t>(UserFlags::MFAEnabled);
+				this->publicFlags = static_cast<UserFlags>(static_cast<int32_t>(this->publicFlags) & ~static_cast<uint32_t>(UserFlags::MFAEnabled));
 			}
 		}
 
 		void setSystem(bool enabled) {
 			if (enabled) {
-				this->flags |= static_cast<uint8_t>(UserFlags::System);
+				this->publicFlags = static_cast<UserFlags>(static_cast<int32_t>(this->publicFlags) | static_cast<uint32_t>(UserFlags::System));
 			} else {
-				this->flags &= ~static_cast<uint8_t>(UserFlags::System);
+				this->publicFlags = static_cast<UserFlags>(static_cast<int32_t>(this->publicFlags) & ~static_cast<uint32_t>(UserFlags::System));
 			}
 		}
 
 		void setVerified(bool enabled) {
 			if (enabled) {
-				this->flags |= static_cast<uint8_t>(UserFlags::Verified);
+				this->publicFlags = static_cast<UserFlags>(static_cast<int32_t>(this->publicFlags) | static_cast<uint32_t>(UserFlags::Verified));
 			} else {
-				this->flags &= ~static_cast<uint8_t>(UserFlags::Verified);
+				this->publicFlags = static_cast<UserFlags>(static_cast<int32_t>(this->publicFlags) & ~static_cast<uint32_t>(UserFlags::Verified));
 			}
 		}
 
 		bool getBot() {
-			return this->flags & static_cast<uint8_t>(UserFlags::Bot);
+			return static_cast<int32_t>(this->publicFlags) & static_cast<int32_t>(UserFlags::Bot);
 		}
 
 		bool getMFAEnabled() {
-			return this->flags & static_cast<uint8_t>(UserFlags::MFAEnabled);
+			return static_cast<int32_t>(this->publicFlags) & static_cast<int32_t>(UserFlags::MFAEnabled);
 		}
 
 		bool getSystem() {
-			return this->flags & static_cast<uint8_t>(UserFlags::System);
+			return static_cast<int32_t>(this->publicFlags) & static_cast<int32_t>(UserFlags::System);
 		}
 
 		bool getVerified() {
-			return this->flags & static_cast<uint8_t>(UserFlags::Verified);
+			return static_cast<int32_t>(this->publicFlags) & static_cast<int32_t>(UserFlags::Verified);
 		}
 
 		UserData() = default;
 		
-		std::string discriminator{};///< The # next to their User name.
-		int32_t premiumType{ 0 };///< Their premium nitro status.
-		int32_t publicFlags{ 0 };///< Public flags.
-		std::string userName{};///< Their username.
-		std::string avatar{};///< Their avatar url.
-		std::string locale{};///< The region they are from/in.
-		std::string email{};///< Their email address.
-		int32_t flags{ 0 };///< Flags.
+		std::string discriminator{};///< The user's 4-digit discord-tag	identify.
+		UserFlags publicFlags{};///< The public flags on a user' s account.
+		std::string username{};///< The user's username, not unique across the platform	identify.
+		std::string avatar{};///< The user's avatar hash.
 
 		virtual ~UserData() = default;
 	};
@@ -1331,7 +1334,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Channel types. \brief Channel types.
-	enum class ChannelType {
+	enum class ChannelType : int8_t {
 		Guild_Text = 0,///< Guild text.
 		Dm = 1,///< Direct-Message.
 		Guild_Voice = 2,/// Guild voice.
@@ -1388,42 +1391,25 @@ namespace DiscordCoreAPI {
 	  public:
 		void setNSFW(bool enabled) {
 			if (enabled) {
-				this->channelFlags |= static_cast<uint8_t>(ChannelFlags::NSFW);
+				this->flags |= static_cast<uint8_t>(ChannelFlags::NSFW);
 			} else {
-				this->channelFlags &= ~static_cast<uint8_t>(ChannelFlags::NSFW);
+				this->flags &= ~static_cast<uint8_t>(ChannelFlags::NSFW);
 			}
 		}
 
 		bool getNSFW() {
-			return this->channelFlags & static_cast<uint8_t>(ChannelFlags::NSFW);
+			return this->flags & static_cast<uint8_t>(ChannelFlags::NSFW);
 		}
 
 		std::unordered_map<std::string, OverWriteData> permissionOverwrites{};///< Permission overwrites for the given Channel.
-		std::unordered_map<std::string, UserData> recipients{};///< Recipients, in the case of a group Dm or Dm.
-		int32_t defaultAutoArchiveDuration{ 0 };///< Default time it takes to archive a thread.
-		ThreadMetadataData threadMetadata{};///< Metadata in the case that this Channel is a Thread.
-		ChannelType type{ ChannelType::Dm };///< The type of the Channel.
-		TimeStamp lastPinTimestamp{ "" };///< Timestamp of the last pinned Message.
-		int32_t videoQualityMode{ 0 };///< Video quality mode.
-		int32_t rateLimitPerUser{ 0 };///< Amount of seconds a User has to wait before sending another Message.
-		std::string lastMessageId{};///< Id of the last Message.
-		std::string applicationId{};///< Application id of the current application.
-		ThreadMemberData member{};///< Thread member object for the current User, if they have joined the Thread.
-		int32_t messageCount{ 0 };///< An approximate count of Messages in a Thread stops counting at 50.
-		std::string permissions{};///< Computed permissions for the invoking user in the channel, including overwrites.
-		int8_t channelFlags{ 0 };///< Channel flags.
 		int32_t memberCount{ 0 };///< Count of members active in the Channel.
-		std::string rtcRegion{};///< Real-time clock region.
-		int32_t userLimit{ 0 };///< User limit, in the case of voice channels.
-		std::string parentId{};///< Id of the parent Channel, if applicable.
+		std::string parentId{};///< Id of the Channel's parent Channel/category.
 		std::string guildId{};///< Id of the Channel's Guild, if applicable.
 		std::string ownerId{};///< Id of the Channel's owner.
 		int32_t position{ 0 };///< The position of the Channel, in the Guild's Channel list.
-		int32_t bitrate{ 0 };///< Bitrate of the Channel, if it is a voice Channel.
-		std::string topic{};///< The Channel's topic.
 		std::string name{};///< Name of the Channel.
-		std::string icon{};///< Icon for the Channel, if applicable.
-		int64_t flags{ 0 };///< Channel flags combined as a bitfield.
+		ChannelType type{ ChannelType::Dm };///< The type of the Channel.
+		int8_t flags{ 0 };///< Channel flags combined as a bitfield.
 
 		virtual ~ChannelData() = default;
 	};
@@ -2100,110 +2086,82 @@ namespace DiscordCoreAPI {
 	  public:
 		void setPremiumProgressBarEnabled(bool enabled) {
 			if (enabled) {
-				this->guildFlags |= static_cast<uint8_t>(GuildFlags::Premium_Progress_Bar_Enabled);
+				this->flags |= static_cast<uint8_t>(GuildFlags::Premium_Progress_Bar_Enabled);
 			} else {
-				this->guildFlags &= ~static_cast<uint8_t>(GuildFlags::Premium_Progress_Bar_Enabled);
+				this->flags &= ~static_cast<uint8_t>(GuildFlags::Premium_Progress_Bar_Enabled);
 			}
 		}
 
 		void setWidgetEnabled(bool enabled) {
 			if (enabled) {
-				this->guildFlags |= static_cast<uint8_t>(GuildFlags::WidgetEnabled);
+				this->flags |= static_cast<uint8_t>(GuildFlags::WidgetEnabled);
 			} else {
-				this->guildFlags &= ~static_cast<uint8_t>(GuildFlags::WidgetEnabled);
+				this->flags &= ~static_cast<uint8_t>(GuildFlags::WidgetEnabled);
 			}
 		}
 
 		void setUnavailable(bool enabled) {
 			if (enabled) {
-				this->guildFlags |= static_cast<uint8_t>(GuildFlags::Unavailable);
+				this->flags |= static_cast<uint8_t>(GuildFlags::Unavailable);
 			} else {
-				this->guildFlags &= ~static_cast<uint8_t>(GuildFlags::Unavailable);
+				this->flags &= ~static_cast<uint8_t>(GuildFlags::Unavailable);
 			}
 		}
 
 		void setOwner(bool enabled) {
 			if (enabled) {
-				this->guildFlags |= static_cast<uint8_t>(GuildFlags::Owner);
+				this->flags |= static_cast<uint8_t>(GuildFlags::Owner);
 			} else {
-				this->guildFlags &= ~static_cast<uint8_t>(GuildFlags::Owner);
+				this->flags &= ~static_cast<uint8_t>(GuildFlags::Owner);
 			}
 		}
 
 		void setLarge(bool enabled) {
 			if (enabled) {
-				this->guildFlags |= static_cast<uint8_t>(GuildFlags::Large);
+				this->flags |= static_cast<uint8_t>(GuildFlags::Large);
 			} else {
-				this->guildFlags &= ~static_cast<uint8_t>(GuildFlags::Large);
+				this->flags &= ~static_cast<uint8_t>(GuildFlags::Large);
 			}
 		}
 
 		bool getPremiumProgressBarEnabled() {
-			return this->guildFlags & static_cast<uint8_t>(GuildFlags::Premium_Progress_Bar_Enabled);
+			return this->flags & static_cast<uint8_t>(GuildFlags::Premium_Progress_Bar_Enabled);
 		}
 
 		bool getWidgetEnabled() {
-			return this->guildFlags & static_cast<uint8_t>(GuildFlags::WidgetEnabled);
+			return this->flags & static_cast<uint8_t>(GuildFlags::WidgetEnabled);
 		}
 
 		bool getUnavailable() {
-			return this->guildFlags & static_cast<uint8_t>(GuildFlags::Unavailable);
+			return this->flags & static_cast<uint8_t>(GuildFlags::Unavailable);
 		}
 
 		bool getOwner() {
-			return this->guildFlags & static_cast<uint8_t>(GuildFlags::Owner);
+			return this->flags & static_cast<uint8_t>(GuildFlags::Owner);
 		}
 
 		bool getLarge() {
-			return this->guildFlags & static_cast<uint8_t>(GuildFlags::Large);
+			return this->flags& static_cast<uint8_t>(GuildFlags::Large);
 		}
 
 		std::unordered_map<std::string, PresenceUpdateData> presences{};///< Array of presences for each GuildMember.
-		DefaultMessageNotificationLevel defaultMessageNotifications{};///< Default Message notification level.
 		std::unordered_map<std::string, VoiceStateData> voiceStates{};///< Array of Guild-member voice-states.
-		GuildNSFWLevel nsfwLevel{ GuildNSFWLevel::Default };///< NSFW warning level.
-		ExplicitContentFilterLevel explicitContentFilter{};///< Explicit content filtering level, by default.
 		DiscordCoreClient* discordCoreClient{ nullptr };///< A pointer to the DiscordCoreClient.
-		SystemChannelFlags systemChannelFlags{};///< System Channel flags.
-		int32_t premiumSubscriptionCount{ 0 };///< Premium subscription count.
-		int32_t approximatePresenceCount{ 0 };///< Approximate quantity of presences.
-		VerificationLevel verificationLevel{};///< Verification level required.
-		std::string publicUpdatesChannelId{};///< Id of the public updates Channel.
+		VoiceConnection* voiceConnectionPtr{ nullptr };///< A pointer to the VoiceConnection, if present.
 		std::vector<std::string> features{};///< List of Guild features.
-		int32_t approximateMemberCount{ 0 };///< Approximate member count.
 		std::vector<std::string> channels{};///< Array of Guild channels.
 		std::vector<std::string> members{};///< Array of GuildMembers.
-		WelcomeScreenData welcomeScreen{};///< Welcome screen for the Guild.
-		int32_t maxVideoChannelUsers{ 0 };///< Maximum quantity of users per video Channel.
 		std::vector<std::string> roles{};///< Array of Guild roles.
-		AfkTimeOutDurations afkTimeOut{};///< Time for an individual to time out as afk.
-		std::string discoverySplash{};///< Link to the discovery image's splash.
-		std::string preferredLocale{};///< Preferred locale, for voice chat servers.
-		std::string widgetChannelId{};///< Channel id for the Guild's widget.
-		std::string systemChannelId{};///< Channel id for the Guild's system Channel.
-		std::string rulesChannelId{};///< Channel id for the Guild's rules Channel.
-		std::string vanityUrlCode{};///< Vanity Url code, if applicable.
-		std::string applicationId{};///< The current application id.
-		std::string afkChannelId{};///< Channel if of the "afk" Channel.
-		std::string description{};///< Description of the Guild.
-		Permissions permissions{};///< Current Permissions for the bot in the Guild.
-		PremiumTier premiumTier{};///< What is the premium tier?
-		int32_t maxPresences{ 0 };///< Max number of presences allowed.
-		int32_t memberCount{ 0 };///< Member count.
 		TimeStamp joinedAt{ "" };///< When the bot joined this Guild.
-		int32_t maxMembers{ 0 };///< Max quantity of members.
-		std::string createdAt{};///< When was the Guild created?
-		int8_t guildFlags{ 0 };///< Guild flags.
-		std::string iconHash{};///< Url to the Guild's icon.
+		int32_t memberCount{ 0 };///< Member count.
 		std::string ownerId{};///< User id of the Guild's owner.
-		std::string region{};///< Region of the world where the Guild's servers are.
-		std::string splash{};///< Url to the Guild's splash.
-		std::string banner{};///< Url to the Guild's banner.
-		MFALevel mfaLevel{};///< MFA level.
 		std::string icon{};///< Url to the Guild's icon.
 		std::string name{};///< The Guild's name.
+		int8_t flags{ 0 };///< Guild flags.
 
 		GuildData() = default;
+
+		void initialize(bool doWeShowIt);
 
 		virtual ~GuildData() = default;
 	};
@@ -3026,12 +2984,12 @@ namespace DiscordCoreAPI {
 		/// Returns the username of the last User to trigger this input-event. \brief Returns the username of the last User to trigger this input-event.
 		/// \returns A std::string containing the User name.
 		std::string getUserName() {
-			if (this->messageData->author.userName == "" && this->interactionData->member.user.userName != "") {
-				return this->interactionData->member.user.userName;
-			} else if (this->interactionData->member.user.userName == "" && this->interactionData->user.userName != "") {
-				return this->interactionData->user.userName;
-			} else if (this->messageData->author.userName != "") {
-				return this->messageData->author.userName;
+			if (this->messageData->author.username == "" && this->interactionData->member.user.username != "") {
+				return this->interactionData->member.user.username;
+			} else if (this->interactionData->member.user.username == "" && this->interactionData->user.username != "") {
+				return this->interactionData->user.username;
+			} else if (this->messageData->author.username != "") {
+				return this->messageData->author.username;
 			} else {
 				return std::string();
 			}
@@ -3682,14 +3640,14 @@ namespace DiscordCoreAPI {
 
 	/// Logging options for the library. \brief Loggin options for the library.
 	struct DiscordCoreAPI_Dll LoggingOptions {
-		bool logWebSocketSuccessMessages{ false };///< Do we log the websocket success messages?
-		bool logWebSocketErrorMessages{ false };///< Do we log the websocket error messages?
-		bool logGeneralSuccessMessages{ false };///< Do we log general success messages?
-		bool logFFMPEGSuccessMessages{ false };///< Do we log FFMPEG success messages?
-		bool logGeneralErrorMessages{ false };///< Do we log general error messages?
-		bool logHttpSuccessMessages{ false };///< Do we log Http response success messages?
-		bool logFFMPEGErrorMessages{ false };///< Do we log FFMPEG error messages?
-		bool logHttpErrorMessages{ false };///< Do we log Http response error messages?
+		bool logWebSocketSuccessMessages{ false };///< Do we log the websocket success messages to cout?
+		bool logWebSocketErrorMessages{ false };///< Do we log the websocket error messages to cout?
+		bool logGeneralSuccessMessages{ false };///< Do we log general success messages to cout?
+		bool logFFMPEGSuccessMessages{ false };///< Do we log FFMPEG success messages to cout?
+		bool logGeneralErrorMessages{ false };///< Do we log general error messages to cout?
+		bool logHttpSuccessMessages{ false };///< Do we log Http response success messages to cout?
+		bool logFFMPEGErrorMessages{ false };///< Do we log FFMPEG error messages to cout?
+		bool logHttpErrorMessages{ false };///< Do we log Http response error messages to cout?
 	};
 
 	/// For selecting the caching style of the library. \brief For selecting the caching style of the library.

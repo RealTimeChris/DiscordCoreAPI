@@ -82,7 +82,19 @@ namespace DiscordCoreAPI {
 	/// A single User. \brief A single User.
 	class DiscordCoreAPI_Dll User : public UserData {
 	  public:
+
+		std::string discriminator{};///< The user's 4-digit discord-tag	identify.
+		PremiumType premiumType{};///< The type of Nitro subscription on a user ' s account.
+		int32_t accentColor{ 0 };///< The user 's banner color encoded as an integer representation of hexadecimal color code.
+		std::string banner{};///< The user's banner hash.
+		std::string locale{};///< The user' s chosen language option.
+		std::string email{};///< The user's email.
+
 		User() = default;
+
+		User& operator=(UserData&& other);
+
+		User(UserData&&);
 
 		User& operator=(UserData& other);
 
@@ -118,12 +130,13 @@ namespace DiscordCoreAPI {
 	/// An interface class for the User related Discord endpoints. \brief An interface class for the User related Discord endpoints.
 	class DiscordCoreAPI_Dll Users {
 	  public:
+		friend class DiscordCoreInternal::BaseSocketAgent;
 		friend class DiscordCoreInternal::DataParser;
 		friend DiscordCoreClient;
 		friend EventHandler;
 		friend Guild;
 
-		static void initialize(DiscordCoreInternal::HttpClient*);
+		static void initialize(DiscordCoreInternal::HttpClient*, bool doWeCacheNew);
 
 		/// Adds a chosen recipient to a group Dm. \brief Adds a chosen recipient to a group Dm.
 		/// \param dataPackage An AddRecipientToGroupDMData  structure.
@@ -152,7 +165,7 @@ namespace DiscordCoreAPI {
 		/// Collects a given User from the library's cache. \brief Collects a given User from the library's cache.
 		/// \param dataPackage A GetUserData structure.
 		/// \returns A CoRoutine containing a User.
-		static CoRoutine<User> getCachedUserAsync(GetUserData dataPackage);
+		static CoRoutine<UserData> getCachedUserAsync(GetUserData dataPackage);
 
 		/// Collects a given User from the Discord servers. \brief Collects a given User from the Discord servers.
 		/// \param dataPackage A GetUserData structure.
@@ -178,10 +191,11 @@ namespace DiscordCoreAPI {
 		static CoRoutine<AuthorizationInfoData> getCurrentUserAuthorizationInfoAsync();
 
 	  protected:
+		static std::unordered_map<std::string, UserData> cache;
 		static DiscordCoreInternal::HttpClient* httpClient;
-		static std::unordered_map<std::string, User> cache;
+		static bool doWeCache;
 
-		static void insertUser(User user);
+		static void insertUser(UserData user);
 	};
 	/**@}*/
 

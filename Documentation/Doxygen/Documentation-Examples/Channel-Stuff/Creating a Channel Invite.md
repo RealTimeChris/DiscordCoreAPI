@@ -38,7 +38,7 @@ namespace DiscordCoreAPI {
 				dataPackage.temporary = true;
 
 				DiscordCoreAPI::InviteData channelInvite = Channels::createChannelInviteAsync(dataPackage).get();
-				cout << "CHANNEL INVITE: " << channelInvite.inviter.userName << endl;
+				cout << "CHANNEL INVITE: " << channelInvite.inviter.username << endl;
 
 			} catch (...) {
 				rethrowException("Test::execute()");

@@ -456,7 +456,7 @@ namespace DiscordCoreAPI {
 	void EventHandler::onChannelCreation(OnChannelCreationData dataPackage) {
 		if (EventHandler::options.cacheChannels) {
 			Channels::insertChannel(dataPackage.channel);
-			Guild guild = Guilds::getCachedGuildAsync({ dataPackage.channel.guildId }).get();
+			GuildData guild = Guilds::getCachedGuildAsync({ dataPackage.channel.guildId }).get();
 			guild.channels.push_back(dataPackage.channel.id);
 			Guilds::insertGuild(guild);
 		}
@@ -471,7 +471,7 @@ namespace DiscordCoreAPI {
 	void EventHandler::onChannelDeletion(OnChannelDeletionData dataPackage) {
 		if (EventHandler::options.cacheChannels) {
 			Channels::removeChannel(dataPackage.channel.id);
-			Guild guild = Guilds::getCachedGuildAsync({ dataPackage.channel.guildId }).get();
+			GuildData guild = Guilds::getCachedGuildAsync({ dataPackage.channel.guildId }).get();
 			for (uint64_t x = 0; x < guild.channels.size(); x += 1) {
 				if (guild.channels[x] == dataPackage.channel.id) {
 					guild.channels.erase(guild.channels.begin() + x);
@@ -511,7 +511,7 @@ namespace DiscordCoreAPI {
 	void EventHandler::onGuildMemberAdd(OnGuildMemberAddData dataPackage) {
 		if (EventHandler::options.cacheGuildMembers) {
 			GuildMembers::insertGuildMember(dataPackage.guildMember);
-			Guild guild = Guilds::getCachedGuildAsync({ dataPackage.guildMember.guildId }).get();
+			GuildData guild = Guilds::getCachedGuildAsync({ dataPackage.guildMember.guildId }).get();
 			guild.members.push_back(dataPackage.guildMember.user.id);
 			guild.memberCount += 1;
 			Guilds::insertGuild(guild);
@@ -523,7 +523,7 @@ namespace DiscordCoreAPI {
 			GuildMember guildMember = GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = dataPackage.user.id, .guildId = dataPackage.guildId }).get();
 			std::string globalId = std::string{ guildMember.guildId } + " + " + guildMember.user.id;
 			GuildMembers::removeGuildMember(globalId);
-			Guild guild = Guilds::getCachedGuildAsync({ dataPackage.guildId }).get();
+			GuildData guild = Guilds::getCachedGuildAsync({ dataPackage.guildId }).get();
 			for (uint64_t x = 0; x < guild.members.size(); x += 1) {
 				if (guild.members[x] == dataPackage.user.id) {
 					guild.members.erase(guild.members.begin() + x);
@@ -543,7 +543,7 @@ namespace DiscordCoreAPI {
 	void EventHandler::onRoleCreation(OnRoleCreationData dataPackage) {
 		if (EventHandler::options.cacheRoles) {
 			Roles::insertRole(dataPackage.role);
-			Guild guild = Guilds::getCachedGuildAsync({ dataPackage.guildId }).get();
+			GuildData guild = Guilds::getCachedGuildAsync({ dataPackage.guildId }).get();
 			guild.roles.push_back(dataPackage.role.id);
 			Guilds::insertGuild(guild);
 		}
@@ -558,7 +558,7 @@ namespace DiscordCoreAPI {
 	void EventHandler::onRoleDeletion(OnRoleDeletionData dataPackage) {
 		if (EventHandler::options.cacheRoles) {
 			Roles::removeRole(dataPackage.roleOld.id);
-			Guild guild = Guilds::getCachedGuildAsync({ dataPackage.guildId }).get();
+			GuildData guild = Guilds::getCachedGuildAsync({ dataPackage.guildId }).get();
 			for (uint64_t x = 0; x < guild.roles.size(); x += 1) {
 				if (guild.roles[x] == dataPackage.roleOld.id) {
 					guild.roles.erase(guild.roles.begin() + x);
@@ -580,7 +580,7 @@ namespace DiscordCoreAPI {
 				GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = dataPackage.voiceStateData.userId, .guildId = dataPackage.voiceStateData.guildId }).get();
 			guildMember.voiceData = dataPackage.voiceStateData;
 			GuildMembers::insertGuildMember(guildMember);
-			Guild guild = Guilds::getCachedGuildAsync({ .guildId = dataPackage.voiceStateData.guildId }).get();
+			GuildData guild = Guilds::getCachedGuildAsync({ .guildId = dataPackage.voiceStateData.guildId }).get();
 			guild.voiceStates.insert_or_assign(dataPackage.voiceStateData.userId, dataPackage.voiceStateData);
 			Guilds::insertGuild(guild);
 		}
