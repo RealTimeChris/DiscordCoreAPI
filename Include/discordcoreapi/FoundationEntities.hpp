@@ -759,6 +759,20 @@ namespace DiscordCoreAPI {
 	 * @{
 	 */
 
+	template<typename StoredAsType, typename FlagType> StoredAsType setBool(StoredAsType inputFlag, FlagType theFlag, bool enabled) {
+		if (enabled) {
+			inputFlag |= static_cast<StoredAsType>(theFlag);
+			return inputFlag;
+		} else {
+			inputFlag &= ~static_cast<StoredAsType>(theFlag);
+			return inputFlag;
+		}
+	}
+
+	template<typename StoredAsType, typename FlagType> bool getBool(StoredAsType inputFlag, FlagType theFlag) {
+		return static_cast<StoredAsType>(inputFlag) & static_cast<StoredAsType>(theFlag);
+	}
+
 	/// Deduces whether or not a chosen period of time has passed, for a chosen timestamp. \brief Deduces whether or not a chosen period of time has passed, for a chosen timestamp.
 	/// \param timeStamp A std::string representing the timestamp that you would like to check for time-elapsement.
 	/// \param days An int64_t representing the number of days to check for.
@@ -976,53 +990,18 @@ namespace DiscordCoreAPI {
 		std::string botId{};///< What is the bot id?
 	};
 
-	enum class RoleFlags : int8_t { Mentionable = 0b00000001, Managed = 0b00000010, Hoist = 0b00000100 };
+	enum class RoleFlags : int8_t { Mentionable = 1 << 0, Managed = 1 << 1, Hoist = 1 << 2 };
 
 	/// Data structure representing a single Role. \brief Data structure representing a single Role.
 	class DiscordCoreAPI_Dll RoleData : public DiscordEntity {
 	  public:
-		void setMentionable(bool enabled) {
-			if (enabled) {
-				this->flags |= static_cast<uint8_t>(RoleFlags::Mentionable);
-			} else {
-				this->flags &= ~static_cast<uint8_t>(RoleFlags::Mentionable);
-			}
-		}
-
-		void setManaged(bool enabled) {
-			if (enabled) {
-				this->flags |= static_cast<uint8_t>(RoleFlags::Managed);
-			} else {
-				this->flags &= ~static_cast<uint8_t>(RoleFlags::Managed);
-			}
-		}
-
-		void setHoist(bool enabled) {
-			if (enabled) {
-				this->flags |= static_cast<uint8_t>(RoleFlags::Hoist);
-			} else {
-				this->flags &= ~static_cast<uint8_t>(RoleFlags::Hoist);
-			}
-		}
-
-		bool getMentionable() {
-			return this->flags & static_cast<uint8_t>(RoleFlags::Mentionable);
-		}
-
-		bool getManaged() {
-			return this->flags & static_cast<uint8_t>(RoleFlags::Managed);
-		}
-
-		bool getHoist() {
-			return this->flags & static_cast<uint8_t>(RoleFlags::Hoist);
-		}
 
 		std::string unicodeEmoji{};///< Emoji representing the Role.
 		Permissions permissions{};///< The Role's base Guild Permissions.
 		int32_t position{ 0 };///< Its position amongst the rest of the Guild's roles.
-		int8_t flags{ 0 };///< Role flags.
 		std::string name{};///< The Role's name.
 		int32_t color{ 0 };///< The Role's color.
+		int8_t flags{ 0 };///< Role flags.
 
 		virtual ~RoleData() = default;
 	};
@@ -1058,61 +1037,14 @@ namespace DiscordCoreAPI {
 
 	/// Data structure representing a single User. \brief Data structure representing a single User.
 	class DiscordCoreAPI_Dll UserData : public DiscordEntity {
-	  public:
-		void setBot(bool enabled) {
-			if (enabled) {
-				this->publicFlags = static_cast<UserFlags>(static_cast<int32_t>(this->publicFlags) | static_cast<uint32_t>(UserFlags::Bot));
-			} else {
-				this->publicFlags = static_cast<UserFlags>(static_cast<int32_t>(this->publicFlags) & ~static_cast<uint32_t>(UserFlags::Bot));
-			}
-		}
-
-		void setMFAEnabled(bool enabled) {
-			if (enabled) {
-				this->publicFlags = static_cast<UserFlags>(static_cast<int32_t>(this->publicFlags) | static_cast<uint32_t>(UserFlags::MFAEnabled));
-			} else {
-				this->publicFlags = static_cast<UserFlags>(static_cast<int32_t>(this->publicFlags) & ~static_cast<uint32_t>(UserFlags::MFAEnabled));
-			}
-		}
-
-		void setSystem(bool enabled) {
-			if (enabled) {
-				this->publicFlags = static_cast<UserFlags>(static_cast<int32_t>(this->publicFlags) | static_cast<uint32_t>(UserFlags::System));
-			} else {
-				this->publicFlags = static_cast<UserFlags>(static_cast<int32_t>(this->publicFlags) & ~static_cast<uint32_t>(UserFlags::System));
-			}
-		}
-
-		void setVerified(bool enabled) {
-			if (enabled) {
-				this->publicFlags = static_cast<UserFlags>(static_cast<int32_t>(this->publicFlags) | static_cast<uint32_t>(UserFlags::Verified));
-			} else {
-				this->publicFlags = static_cast<UserFlags>(static_cast<int32_t>(this->publicFlags) & ~static_cast<uint32_t>(UserFlags::Verified));
-			}
-		}
-
-		bool getBot() {
-			return static_cast<int32_t>(this->publicFlags) & static_cast<int32_t>(UserFlags::Bot);
-		}
-
-		bool getMFAEnabled() {
-			return static_cast<int32_t>(this->publicFlags) & static_cast<int32_t>(UserFlags::MFAEnabled);
-		}
-
-		bool getSystem() {
-			return static_cast<int32_t>(this->publicFlags) & static_cast<int32_t>(UserFlags::System);
-		}
-
-		bool getVerified() {
-			return static_cast<int32_t>(this->publicFlags) & static_cast<int32_t>(UserFlags::Verified);
-		}
+	  public:		
 
 		UserData() = default;
 		
-		std::string discriminator{};///< The user's 4-digit discord-tag	identify.
-		UserFlags publicFlags{};///< The public flags on a user' s account.
+		std::string discriminator{};///< The user's 4-digit discord-tag	identify.		
 		std::string userName{};///< The user's userName, not unique across the platform	identify.
 		std::string avatar{};///< The user's avatar hash.
+		int32_t flags{};///< The public flags on a user' s account.
 
 		virtual ~UserData() = default;
 	};
@@ -1382,22 +1314,11 @@ namespace DiscordCoreAPI {
 		Longest = 10080///< Longest.
 	};
 
-	enum class ChannelFlags { NSFW = 0b00000001 };
+	enum class ChannelFlags : int8_t { NSFW = 1 << 0 };
 
 	/// Data structure representing a single Channel. \brief Data structure representing a single Channel.
 	class DiscordCoreAPI_Dll ChannelData : public DiscordEntity {
 	  public:
-		void setNSFW(bool enabled) {
-			if (enabled) {
-				this->flags |= static_cast<uint8_t>(ChannelFlags::NSFW);
-			} else {
-				this->flags &= ~static_cast<uint8_t>(ChannelFlags::NSFW);
-			}
-		}
-
-		bool getNSFW() {
-			return this->flags & static_cast<uint8_t>(ChannelFlags::NSFW);
-		}
 
 		std::unordered_map<std::string, OverWriteData> permissionOverwrites{};///< Permission overwrites for the given Channel.
 		int32_t memberCount{ 0 };///< Count of members active in the Channel.
@@ -1431,46 +1352,11 @@ namespace DiscordCoreAPI {
 		bool mute{ false };///< Whether this User is muted by the server.
 	};
 
-	enum class GuildMemberFlags { Pending = 1 << 0, Deaf = 1 << 1, Mute = 1 << 2 };
+	enum class GuildMemberFlags : int8_t { Pending = 1 << 0, Deaf = 1 << 1, Mute = 1 << 2 };
 
 	/// Data structure representing a single GuildMember. \brief Data structure representing a single GuildMember.
 	class DiscordCoreAPI_Dll GuildMemberData {
 	  public:
-		void setPending(bool enabled) {
-			if (enabled) {
-				this->flags |= static_cast<uint8_t>(GuildMemberFlags::Pending);
-			} else {
-				this->flags &= ~static_cast<uint8_t>(GuildMemberFlags::Pending);
-			}
-		}
-
-		void setDeaf(bool enabled) {
-			if (enabled) {
-				this->flags |= static_cast<uint8_t>(GuildMemberFlags::Deaf);
-			} else {
-				this->flags &= ~static_cast<uint8_t>(GuildMemberFlags::Deaf);
-			}
-		}
-
-		void setMute(bool enabled) {
-			if (enabled) {
-				this->flags |= static_cast<uint8_t>(GuildMemberFlags::Mute);
-			} else {
-				this->flags &= ~static_cast<uint8_t>(GuildMemberFlags::Mute);
-			}
-		}
-
-		bool getPending() {
-			return this->flags & static_cast<uint8_t>(GuildMemberFlags::Pending);
-		}
-
-		bool getDeaf() {
-			return this->flags & static_cast<uint8_t>(GuildMemberFlags::Deaf);
-		}
-
-		bool getMute() {
-			return this->flags & static_cast<uint8_t>(GuildMemberFlags::Mute);
-		}
 		
 		std::vector<std::string> roles{};///< The Guild roles that they have.
 		VoiceStateData voiceData{};///< For the voice connection's data, if any.
@@ -1478,8 +1364,8 @@ namespace DiscordCoreAPI {
 		TimeStamp joinedAt{ "" };///< When they joined the Guild.
 		std::string guildId{};///< The current Guild's id.
 		std::string nick{};///< Their nick/display name.
-		int8_t flags{ 0 };///< GuildMember flags.
 		UserData user{};///< The User for this GuildMember.
+		int8_t flags{ 0 };///< GuildMember flags.
 
 		virtual ~GuildMemberData() = default;
 	};
@@ -1995,7 +1881,7 @@ namespace DiscordCoreAPI {
 		Guild = 2///< Guild.
 	};
 
-	enum class StickerFlags { Available = 0b00000001 };
+	enum class StickerFlags { Available = 1 << 0 };
 
 	/// Data representing a single Sticker. \brief Data representing a single Sticker.
 	class DiscordCoreAPI_Dll StickerData : public DiscordEntity {
@@ -2069,76 +1955,17 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Guild flags. \brief Guild flags.
-	enum class GuildFlags {
-		WidgetEnabled = 0b00000001,///< Widget enabled.
-		Unavailable = 0b00000010,///< Unavailable.
-		Owner = 0b00000100,///< Owner.
-		Large = 0b00001000,///< Large.
-		Premium_Progress_Bar_Enabled = 0b00010000///< Premium progress bar enabled
+	enum class GuildFlags : int8_t {
+		WidgetEnabled = 1 << 0,///< Widget enabled.
+		Unavailable = 1 << 1,///< Unavailable.
+		Owner = 1 << 2,///< Owner.
+		Large = 1 << 3,///< Large.
+		Premium_Progress_Bar_Enabled = 1 << 4///< Premium progress bar enabled
 	};
 
 	/// Data structure representing a single Guild. \brief Data structure representing a single Guild.
 	class DiscordCoreAPI_Dll GuildData : public DiscordEntity {
 	  public:
-		void setPremiumProgressBarEnabled(bool enabled) {
-			if (enabled) {
-				this->flags |= static_cast<uint8_t>(GuildFlags::Premium_Progress_Bar_Enabled);
-			} else {
-				this->flags &= ~static_cast<uint8_t>(GuildFlags::Premium_Progress_Bar_Enabled);
-			}
-		}
-
-		void setWidgetEnabled(bool enabled) {
-			if (enabled) {
-				this->flags |= static_cast<uint8_t>(GuildFlags::WidgetEnabled);
-			} else {
-				this->flags &= ~static_cast<uint8_t>(GuildFlags::WidgetEnabled);
-			}
-		}
-
-		void setUnavailable(bool enabled) {
-			if (enabled) {
-				this->flags |= static_cast<uint8_t>(GuildFlags::Unavailable);
-			} else {
-				this->flags &= ~static_cast<uint8_t>(GuildFlags::Unavailable);
-			}
-		}
-
-		void setOwner(bool enabled) {
-			if (enabled) {
-				this->flags |= static_cast<uint8_t>(GuildFlags::Owner);
-			} else {
-				this->flags &= ~static_cast<uint8_t>(GuildFlags::Owner);
-			}
-		}
-
-		void setLarge(bool enabled) {
-			if (enabled) {
-				this->flags |= static_cast<uint8_t>(GuildFlags::Large);
-			} else {
-				this->flags &= ~static_cast<uint8_t>(GuildFlags::Large);
-			}
-		}
-
-		bool getPremiumProgressBarEnabled() {
-			return this->flags & static_cast<uint8_t>(GuildFlags::Premium_Progress_Bar_Enabled);
-		}
-
-		bool getWidgetEnabled() {
-			return this->flags & static_cast<uint8_t>(GuildFlags::WidgetEnabled);
-		}
-
-		bool getUnavailable() {
-			return this->flags & static_cast<uint8_t>(GuildFlags::Unavailable);
-		}
-
-		bool getOwner() {
-			return this->flags & static_cast<uint8_t>(GuildFlags::Owner);
-		}
-
-		bool getLarge() {
-			return this->flags & static_cast<uint8_t>(GuildFlags::Large);
-		}
 
 		std::unordered_map<std::string, PresenceUpdateData> presences{};///< Array of presences for each GuildMember.
 		std::unordered_map<std::string, VoiceStateData> voiceStates{};///< Array of Guild-member voice-states.

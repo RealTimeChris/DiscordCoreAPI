@@ -28,7 +28,7 @@ namespace DiscordCoreAPI {
 
 	User& User::operator=(UserData&& other) {
 		this->discriminator = other.discriminator;
-		this->publicFlags = other.publicFlags;
+		this->flags = other.flags;
 		this->userName = other.userName;
 		this->avatar = other.avatar;
 		this->id = other.id;
@@ -41,7 +41,7 @@ namespace DiscordCoreAPI {
 
 	User& User::operator=(UserData& other) {
 		this->discriminator = other.discriminator;
-		this->publicFlags = other.publicFlags;
+		this->flags = other.flags;
 		this->userName = other.userName;
 		this->avatar = other.avatar;
 		this->id = other.id;

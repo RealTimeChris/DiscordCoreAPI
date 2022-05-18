@@ -91,23 +91,27 @@ namespace DiscordCoreInternal {
 		}
 
 		if (jsonObjectData.contains("bot") && !jsonObjectData["bot"].is_null()) {
-			pDataStructure.setBot(jsonObjectData["bot"].get<bool>());
+			pDataStructure.flags =
+				DiscordCoreAPI::setBool<int32_t, DiscordCoreAPI::UserFlags>(pDataStructure.flags, DiscordCoreAPI::UserFlags::Bot, jsonObjectData["bot"].get<bool>());
 		}
 
 		if (jsonObjectData.contains("system") && !jsonObjectData["system"].is_null()) {
-			pDataStructure.setSystem(jsonObjectData["system"].get<bool>());
+			pDataStructure.flags =
+				DiscordCoreAPI::setBool<int32_t, DiscordCoreAPI::UserFlags>(pDataStructure.flags, DiscordCoreAPI::UserFlags::System, jsonObjectData["system"].get<bool>());
 		}
 
 		if (jsonObjectData.contains("mfa_enabled") && !jsonObjectData["mfa_enabled"].is_null()) {
-			pDataStructure.setMFAEnabled(jsonObjectData["mfa_enabled"].get<bool>());
+			pDataStructure.flags =
+				DiscordCoreAPI::setBool<int32_t, DiscordCoreAPI::UserFlags>(pDataStructure.flags, DiscordCoreAPI::UserFlags::MFAEnabled, jsonObjectData["mfa_enabled"].get<bool>());
+		}
+
+		if (jsonObjectData.contains("verified") && !jsonObjectData["verified"].is_null()) {
+			pDataStructure.flags =
+				DiscordCoreAPI::setBool<int32_t, DiscordCoreAPI::UserFlags>(pDataStructure.flags, DiscordCoreAPI::UserFlags::Verified, jsonObjectData["verified"].get<bool>());
 		}
 
 		if (jsonObjectData.contains("locale") && !jsonObjectData["locale"].is_null()) {
 			pDataStructure.locale = jsonObjectData["locale"].get<std::string>();
-		}
-
-		if (jsonObjectData.contains("verified") && !jsonObjectData["verified"].is_null()) {
-			pDataStructure.setVerified(jsonObjectData["verified"].get<bool>());
 		}
 
 		if (jsonObjectData.contains("email") && !jsonObjectData["email"].is_null()) {
@@ -119,7 +123,7 @@ namespace DiscordCoreInternal {
 		}
 
 		if (jsonObjectData.contains("public_flags") && !jsonObjectData["public_flags"].is_null()) {
-			pDataStructure.publicFlags = jsonObjectData["public_flags"].get<DiscordCoreAPI::UserFlags>();
+			pDataStructure.flags = jsonObjectData["public_flags"].get<int32_t>();
 		}
 	}
 
@@ -147,23 +151,27 @@ namespace DiscordCoreInternal {
 		}
 
 		if (jsonObjectData.contains("bot") && !jsonObjectData["bot"].is_null()) {
-			pDataStructure.setBot(jsonObjectData["bot"].get<bool>());
+			pDataStructure.flags =
+				DiscordCoreAPI::setBool<int32_t, DiscordCoreAPI::UserFlags>(pDataStructure.flags, DiscordCoreAPI::UserFlags::Bot, jsonObjectData["bot"].get<bool>());
 		}
 
 		if (jsonObjectData.contains("system") && !jsonObjectData["system"].is_null()) {
-			pDataStructure.setSystem(jsonObjectData["system"].get<bool>());
+			pDataStructure.flags =
+				DiscordCoreAPI::setBool<int32_t, DiscordCoreAPI::UserFlags>(pDataStructure.flags, DiscordCoreAPI::UserFlags::System, jsonObjectData["system"].get<bool>());
 		}
 
 		if (jsonObjectData.contains("mfa_enabled") && !jsonObjectData["mfa_enabled"].is_null()) {
-			pDataStructure.setMFAEnabled(jsonObjectData["mfa_enabled"].get<bool>());
+			pDataStructure.flags =
+				DiscordCoreAPI::setBool<int32_t, DiscordCoreAPI::UserFlags>(pDataStructure.flags, DiscordCoreAPI::UserFlags::MFAEnabled, jsonObjectData["mfa_enabled"].get<bool>());
 		}
 
 		if (jsonObjectData.contains("verified") && !jsonObjectData["verified"].is_null()) {
-			pDataStructure.setVerified(jsonObjectData["verified"].get<bool>());
+			pDataStructure.flags =
+				DiscordCoreAPI::setBool<int32_t, DiscordCoreAPI::UserFlags>(pDataStructure.flags, DiscordCoreAPI::UserFlags::Verified, jsonObjectData["verified"].get<bool>());
 		}
 
 		if (jsonObjectData.contains("public_flags") && !jsonObjectData["public_flags"].is_null()) {
-			pDataStructure.publicFlags = jsonObjectData["public_flags"].get<DiscordCoreAPI::UserFlags>();
+			pDataStructure.flags = jsonObjectData["public_flags"].get<int32_t>();
 		}
 	}
 
@@ -290,7 +298,8 @@ namespace DiscordCoreInternal {
 		}
 
 		if (jsonObjectData.contains("nsfw") && !jsonObjectData["nsfw"].is_null()) {
-			pDataStructure.setNSFW(jsonObjectData["nsfw"].get<bool>());
+			pDataStructure.flags =
+				DiscordCoreAPI::setBool<int8_t, DiscordCoreAPI::ChannelFlags>(pDataStructure.flags, DiscordCoreAPI::ChannelFlags::NSFW, jsonObjectData["nsfw"].get<bool>());
 		}
 
 		if (jsonObjectData.contains("last_message_id") && !jsonObjectData["last_message_id"].is_null()) {
@@ -379,7 +388,7 @@ namespace DiscordCoreInternal {
 		}
 
 		if (jsonObjectData.contains("flags") && !jsonObjectData["flags"].is_null()) {
-			pDataStructure.flags = jsonObjectData["flags"].get<int32_t>();
+			pDataStructure.flags = jsonObjectData["flags"].get<int8_t>();
 		}
 
 		if (jsonObjectData.contains("type") && !jsonObjectData["type"].is_null()) {
@@ -413,7 +422,8 @@ namespace DiscordCoreInternal {
 		}
 
 		if (jsonObjectData.contains("nsfw") && !jsonObjectData["nsfw"].is_null()) {
-			pDataStructure.setNSFW(jsonObjectData["nsfw"].get<bool>());
+			pDataStructure.flags =
+				DiscordCoreAPI::setBool<int8_t, DiscordCoreAPI::ChannelFlags>(pDataStructure.flags, DiscordCoreAPI::ChannelFlags::NSFW, jsonObjectData["nsfw"].get<bool>());
 		}
 
 		if (jsonObjectData.contains("owner_id") && !jsonObjectData["owner_id"].is_null()) {
@@ -436,7 +446,7 @@ namespace DiscordCoreInternal {
 		}
 
 		if (jsonObjectData.contains("flags") && !jsonObjectData["flags"].is_null()) {
-			pDataStructure.flags = jsonObjectData["flags"].get<int32_t>();
+			pDataStructure.flags = jsonObjectData["flags"].get<int8_t>();
 		}
 
 		if (jsonObjectData.contains("type") && !jsonObjectData["type"].is_null()) {
@@ -478,7 +488,8 @@ namespace DiscordCoreInternal {
 		}
 
 		if (jsonObjectData.contains("nsfw") && !jsonObjectData["nsfw"].is_null()) {
-			pDataStructure.setNSFW(jsonObjectData["nsfw"].get<bool>());
+			pDataStructure.flags =
+				DiscordCoreAPI::setBool<int8_t, DiscordCoreAPI::ChannelFlags>(pDataStructure.flags, DiscordCoreAPI::ChannelFlags::NSFW, jsonObjectData["nsfw"].get<bool>());
 		}
 
 		if (jsonObjectData.contains("last_message_id") && !jsonObjectData["last_message_id"].is_null()) {
@@ -621,7 +632,7 @@ namespace DiscordCoreInternal {
 		}
 
 		if (jsonObjectData.contains("hoist") && !jsonObjectData["hoist"].is_null()) {
-			pDataStructure.setHoist(jsonObjectData["hoist"].get<bool>());
+			pDataStructure.flags = DiscordCoreAPI::setBool<int8_t, DiscordCoreAPI::RoleFlags>(pDataStructure.flags, DiscordCoreAPI::RoleFlags::Hoist, jsonObjectData["hoist"].get<bool>());
 		}
 
 		if (jsonObjectData.contains("position") && !jsonObjectData["position"].is_null()) {
@@ -633,11 +644,13 @@ namespace DiscordCoreInternal {
 		}
 
 		if (jsonObjectData.contains("managed") && !jsonObjectData["managed"].is_null()) {
-			pDataStructure.setManaged(jsonObjectData["managed"].get<bool>());
+			pDataStructure.flags =
+				DiscordCoreAPI::setBool<int8_t, DiscordCoreAPI::RoleFlags>(pDataStructure.flags, DiscordCoreAPI::RoleFlags::Managed, jsonObjectData["managed"].get<bool>());
 		}
 
 		if (jsonObjectData.contains("mentionable") && !jsonObjectData["mentionable"].is_null()) {
-			pDataStructure.setMentionable(jsonObjectData["mentionable"].get<bool>());
+			pDataStructure.flags =
+				DiscordCoreAPI::setBool<int8_t, DiscordCoreAPI::RoleFlags>(pDataStructure.flags, DiscordCoreAPI::RoleFlags::Mentionable, jsonObjectData["mentionable"].get<bool>());
 		}
 
 		if (jsonObjectData.contains("tags") && !jsonObjectData["tags"].is_null()) {
@@ -673,7 +686,18 @@ namespace DiscordCoreInternal {
 		}
 
 		if (jsonObjectData.contains("hoist") && !jsonObjectData["hoist"].is_null()) {
-			pDataStructure.setHoist(jsonObjectData["hoist"].get<bool>());
+			pDataStructure.flags =
+				DiscordCoreAPI::setBool<int8_t, DiscordCoreAPI::RoleFlags>(pDataStructure.flags, DiscordCoreAPI::RoleFlags::Hoist, jsonObjectData["hoist"].get<bool>());
+		}
+
+		if (jsonObjectData.contains("managed") && !jsonObjectData["managed"].is_null()) {
+			pDataStructure.flags =
+				DiscordCoreAPI::setBool<int8_t, DiscordCoreAPI::RoleFlags>(pDataStructure.flags, DiscordCoreAPI::RoleFlags::Managed, jsonObjectData["managed"].get<bool>());
+		}
+
+		if (jsonObjectData.contains("mentionable") && !jsonObjectData["mentionable"].is_null()) {
+			pDataStructure.flags =
+				DiscordCoreAPI::setBool<int8_t, DiscordCoreAPI::RoleFlags>(pDataStructure.flags, DiscordCoreAPI::RoleFlags::Mentionable, jsonObjectData["mentionable"].get<bool>());
 		}
 
 		if (jsonObjectData.contains("position") && !jsonObjectData["position"].is_null()) {
@@ -682,14 +706,6 @@ namespace DiscordCoreInternal {
 
 		if (jsonObjectData.contains("permissions") && !jsonObjectData["permissions"].is_null()) {
 			pDataStructure.permissions = jsonObjectData["permissions"].get<std::string>();
-		}
-
-		if (jsonObjectData.contains("managed") && !jsonObjectData["managed"].is_null()) {
-			pDataStructure.setManaged(jsonObjectData["managed"].get<bool>());
-		}
-
-		if (jsonObjectData.contains("mentionable") && !jsonObjectData["mentionable"].is_null()) {
-			pDataStructure.setMentionable(jsonObjectData["mentionable"].get<bool>());
 		}
 	}
 
@@ -725,6 +741,10 @@ namespace DiscordCoreInternal {
 			pDataStructure.roles = jsonObjectData["roles"].get<std::vector<std::string>>();
 		}
 
+		if (jsonObjectData.contains("flags") && !jsonObjectData["flags"].is_null()) {
+			pDataStructure.flags = jsonObjectData["flags"].get<int8_t>();
+		}
+
 		if (jsonObjectData.contains("premium_since") && !jsonObjectData["premium_since"].is_null()) {
 			pDataStructure.premiumSince = jsonObjectData["premium_since"].get<std::string>();
 		}
@@ -754,15 +774,18 @@ namespace DiscordCoreInternal {
 		}
 
 		if (jsonObjectData.contains("pending") && !jsonObjectData["pending"].is_null()) {
-			pDataStructure.setPending(jsonObjectData["pending"].get<bool>());
+			pDataStructure.flags =
+				DiscordCoreAPI::setBool<int8_t, DiscordCoreAPI::GuildMemberFlags>(pDataStructure.flags, DiscordCoreAPI::GuildMemberFlags::Pending, jsonObjectData["pending"].get<bool>());
 		}
 
 		if (jsonObjectData.contains("mute") && !jsonObjectData["mute"].is_null()) {
-			pDataStructure.setMute(jsonObjectData["mute"].get<bool>());
+			pDataStructure.flags =
+				DiscordCoreAPI::setBool<int8_t, DiscordCoreAPI::GuildMemberFlags>(pDataStructure.flags, DiscordCoreAPI::GuildMemberFlags::Mute, jsonObjectData["mute"].get<bool>());
 		}
 
 		if (jsonObjectData.contains("deaf") && !jsonObjectData["deaf"].is_null()) {
-			pDataStructure.setDeaf(jsonObjectData["deaf"].get<bool>());
+			pDataStructure.flags =
+				DiscordCoreAPI::setBool<int8_t, DiscordCoreAPI::GuildMemberFlags>(pDataStructure.flags, DiscordCoreAPI::GuildMemberFlags::Deaf, jsonObjectData["deaf"].get<bool>());
 		}
 	}
 
@@ -792,16 +815,23 @@ namespace DiscordCoreInternal {
 			DataParser::parseObject(jsonObjectData["user"], pDataStructure.user);
 		}
 
+		if (jsonObjectData.contains("flags") && !jsonObjectData["flags"].is_null()) {
+			pDataStructure.flags = jsonObjectData["flags"].get<int8_t>();
+		}
+
 		if (jsonObjectData.contains("pending") && !jsonObjectData["pending"].is_null()) {
-			pDataStructure.setPending(jsonObjectData["pending"].get<bool>());
+			pDataStructure.flags =
+				DiscordCoreAPI::setBool<int8_t, DiscordCoreAPI::GuildMemberFlags>(pDataStructure.flags, DiscordCoreAPI::GuildMemberFlags::Pending, jsonObjectData["pending"].get<bool>());
 		}
 
 		if (jsonObjectData.contains("mute") && !jsonObjectData["mute"].is_null()) {
-			pDataStructure.setMute(jsonObjectData["mute"].get<bool>());
+			pDataStructure.flags =
+				DiscordCoreAPI::setBool<int8_t, DiscordCoreAPI::GuildMemberFlags>(pDataStructure.flags, DiscordCoreAPI::GuildMemberFlags::Mute, jsonObjectData["mute"].get<bool>());
 		}
 
 		if (jsonObjectData.contains("deaf") && !jsonObjectData["deaf"].is_null()) {
-			pDataStructure.setDeaf(jsonObjectData["deaf"].get<bool>());
+			pDataStructure.flags =
+				DiscordCoreAPI::setBool<int8_t, DiscordCoreAPI::GuildMemberFlags>(pDataStructure.flags, DiscordCoreAPI::GuildMemberFlags::Deaf, jsonObjectData["deaf"].get<bool>());
 		}
 	}
 
@@ -1366,7 +1396,8 @@ namespace DiscordCoreInternal {
 		}
 
 		if (jsonObjectData.contains("owner") && !jsonObjectData["owner"].is_null()) {
-			pDataStructure.setOwner(jsonObjectData["owner"].get<bool>());
+			pDataStructure.flags =
+				DiscordCoreAPI::setBool<int8_t, DiscordCoreAPI::GuildFlags>(pDataStructure.flags, DiscordCoreAPI::GuildFlags::Owner, jsonObjectData["owner"].get<bool>());
 		}
 
 		if (jsonObjectData.contains("owner_id") && !jsonObjectData["owner_id"].is_null()) {
@@ -1444,16 +1475,18 @@ namespace DiscordCoreInternal {
 			}
 		}
 
-		if (jsonObjectData.contains("owner") && !jsonObjectData["owner"].is_null()) {
-			pDataStructure.setOwner(jsonObjectData["owner"].get<bool>());
-		}
-
 		if (jsonObjectData.contains("afk_timeout") && !jsonObjectData["afk_timeout"].is_null()) {
 			pDataStructure.afkTimeOut = jsonObjectData["afk_timeout"].get<DiscordCoreAPI::AfkTimeOutDurations>();
 		}
 
+		if (jsonObjectData.contains("owner") && !jsonObjectData["owner"].is_null()) {
+			pDataStructure.flags =
+				DiscordCoreAPI::setBool<int8_t, DiscordCoreAPI::GuildFlags>(pDataStructure.flags, DiscordCoreAPI::GuildFlags::Owner, jsonObjectData["owner"].get<bool>());
+		}
+
 		if (jsonObjectData.contains("widget_enabled") && !jsonObjectData["widget_enabled"].is_null()) {
-			pDataStructure.setWidgetEnabled(jsonObjectData["widget_enabled"].get<bool>());
+			pDataStructure.flags = DiscordCoreAPI::setBool<int8_t, DiscordCoreAPI::GuildFlags>(pDataStructure.flags, DiscordCoreAPI::GuildFlags::WidgetEnabled,
+				jsonObjectData["widget_enabled"].get<bool>());
 		}
 
 		if (jsonObjectData.contains("verification_level") && !jsonObjectData["verification_level"].is_null()) {
@@ -1477,11 +1510,13 @@ namespace DiscordCoreInternal {
 		}
 
 		if (jsonObjectData.contains("large") && !jsonObjectData["large"].is_null()) {
-			pDataStructure.setLarge(jsonObjectData["large"].get<bool>());
+			pDataStructure.flags =
+				DiscordCoreAPI::setBool<int8_t, DiscordCoreAPI::GuildFlags>(pDataStructure.flags, DiscordCoreAPI::GuildFlags::Large, jsonObjectData["large"].get<bool>());
 		}
 
 		if (jsonObjectData.contains("unavailable") && !jsonObjectData["unavailable"].is_null()) {
-			pDataStructure.setUnavailable(jsonObjectData["unavailable"].get<bool>());
+			pDataStructure.flags = DiscordCoreAPI::setBool<int8_t, DiscordCoreAPI::GuildFlags>(pDataStructure.flags, DiscordCoreAPI::GuildFlags::Unavailable,
+				jsonObjectData["unavailable"].get<bool>());
 		}
 
 		if (jsonObjectData.contains("member_count") && !jsonObjectData["member_count"].is_null()) {
@@ -1593,7 +1628,8 @@ namespace DiscordCoreInternal {
 		}
 
 		if (jsonObjectData.contains("owner") && !jsonObjectData["owner"].is_null()) {
-			pDataStructure.setOwner(jsonObjectData["owner"].get<bool>());
+			pDataStructure.flags =
+				DiscordCoreAPI::setBool<int8_t, DiscordCoreAPI::GuildFlags>(pDataStructure.flags, DiscordCoreAPI::GuildFlags::Owner, jsonObjectData["owner"].get<bool>());
 		}
 
 		if (jsonObjectData.contains("owner_id") && !jsonObjectData["owner_id"].is_null()) {
@@ -1613,20 +1649,19 @@ namespace DiscordCoreInternal {
 			}
 		}
 
-		if (jsonObjectData.contains("owner") && !jsonObjectData["owner"].is_null()) {
-			pDataStructure.setOwner(jsonObjectData["owner"].get<bool>());
-		}
-
 		if (jsonObjectData.contains("widget_enabled") && !jsonObjectData["widget_enabled"].is_null()) {
-			pDataStructure.setWidgetEnabled(jsonObjectData["widget_enabled"].get<bool>());
+			pDataStructure.flags = DiscordCoreAPI::setBool<int8_t, DiscordCoreAPI::GuildFlags>(pDataStructure.flags, DiscordCoreAPI::GuildFlags::WidgetEnabled,
+				jsonObjectData["widget_enabled"].get<bool>());
 		}
 
 		if (jsonObjectData.contains("large") && !jsonObjectData["large"].is_null()) {
-			pDataStructure.setLarge(jsonObjectData["large"].get<bool>());
+			pDataStructure.flags =
+				DiscordCoreAPI::setBool<int8_t, DiscordCoreAPI::GuildFlags>(pDataStructure.flags, DiscordCoreAPI::GuildFlags::Large, jsonObjectData["large"].get<bool>());
 		}
 
 		if (jsonObjectData.contains("unavailable") && !jsonObjectData["unavailable"].is_null()) {
-			pDataStructure.setUnavailable(jsonObjectData["unavailable"].get<bool>());
+			pDataStructure.flags = DiscordCoreAPI::setBool<int8_t, DiscordCoreAPI::GuildFlags>(pDataStructure.flags, DiscordCoreAPI::GuildFlags::Unavailable,
+				jsonObjectData["unavailable"].get<bool>());
 		}
 
 		if (jsonObjectData.contains("member_count") && !jsonObjectData["member_count"].is_null()) {

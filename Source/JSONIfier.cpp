@@ -948,11 +948,11 @@ namespace DiscordCoreInternal {
 			newData["permissions"] = value.permissions.getCurrentPermissionString();
 			newData["tags"]["premium_subscriber"] = value.tags.premiumSubscriber;
 			newData["tags"]["integration_id"] = value.tags.integrationId;
-			newData["mentionable"] = value.getMentionable();
+			newData["mentionable"] = DiscordCoreAPI::getBool<int8_t, DiscordCoreAPI::RoleFlags>(value.flags, DiscordCoreAPI::RoleFlags::Mentionable);
 			newData["tags"]["bot_id"] = value.tags.botId;
-			newData["managed"] = value.getManaged();
+			newData["managed"] = DiscordCoreAPI::getBool<int8_t, DiscordCoreAPI::RoleFlags>(value.flags, DiscordCoreAPI::RoleFlags::Managed);			
 			newData["position"] = value.position;
-			newData["hoist"] = value.getHoist();
+			newData["hoist"] = DiscordCoreAPI::getBool<int8_t, DiscordCoreAPI::RoleFlags>(value.flags, DiscordCoreAPI::RoleFlags::Hoist);
 			newData["color"] = value.color;
 			newData["name"] = value.name;
 			data["roles"].push_back(newData);

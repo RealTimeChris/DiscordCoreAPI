@@ -166,13 +166,13 @@ namespace DiscordCoreAPI {
 	/// For modifying a Channel's properties. \brief For modifying a Channel's properties.
 	struct DiscordCoreAPI_Dll ModifyChannelData {
 		ModifyChannelData(Channel newData) {
+			this->channelData.nsfw = getBool<int8_t,ChannelFlags>(newData.flags, ChannelFlags::NSFW);
 			this->channelData.permissionOverwrites = newData.permissionOverwrites;
 			this->channelData.rateLimitPerUser = newData.rateLimitPerUser;
 			this->channelData.userLimit = newData.userLimit;
 			this->channelData.rtcRgion = newData.rtcRegion;
 			this->channelData.parentId = newData.parentId;
 			this->channelData.position = newData.position;
-			this->channelData.nsfw = newData.getNSFW();
 			this->channelData.topic = newData.topic;
 			this->channelData.name = newData.name;
 			this->channelData.type = newData.type;

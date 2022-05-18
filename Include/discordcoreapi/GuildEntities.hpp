@@ -316,7 +316,7 @@ namespace DiscordCoreAPI {
 	/// For modifying the properties of a chosen Guild. \brief For modifying the properties of a chosen Guild.
 	struct DiscordCoreAPI_Dll ModifyGuildData {
 		ModifyGuildData(Guild dataPackage) {
-			this->premiumProgressBarEnabled = dataPackage.getPremiumProgressBarEnabled();
+			this->premiumProgressBarEnabled = getBool<int8_t, GuildFlags>(dataPackage.flags, GuildFlags::Premium_Progress_Bar_Enabled);
 			this->defaultMessageNotifications = dataPackage.defaultMessageNotifications;
 			this->publicUpdatesChannelId = dataPackage.publicUpdatesChannelId;
 			this->explicitContentFilter = dataPackage.explicitContentFilter;
