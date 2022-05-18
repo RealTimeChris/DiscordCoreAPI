@@ -664,7 +664,7 @@ namespace DiscordCoreAPI {
 			return;
 		}
 		bool doWeShowIt{ false };
-		if (!Guilds::cache.contains(guild.id)) {
+		if (!Guilds::cache.contains(guild.id) && Guilds::discordCoreClient->loggingOptions.logGeneralSuccessMessages) {
 			doWeShowIt = true;
 		}
 		guild.initialize(doWeShowIt);
