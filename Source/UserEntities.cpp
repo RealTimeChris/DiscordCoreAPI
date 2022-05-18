@@ -52,7 +52,7 @@ namespace DiscordCoreAPI {
 		*this = dataNew;
 	}
 
-	void BotUser::updateVoiceStatus(UpdateVoiceStateData& dataPackage) {
+	void BotUser::updateVoiceStatus(const UpdateVoiceStateData& dataPackage) {
 		nlohmann::json payload = DiscordCoreInternal::JSONIFY(dataPackage);
 		this->baseSocketAgent->sendMessage(payload);
 	}

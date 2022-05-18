@@ -432,7 +432,7 @@ namespace DiscordCoreAPI {
 
 	std::string DiscordEntity::getCreatedAtTimestamp(TimeFormat timeFormat) {
 		std::string returnString{};
-		int64_t timeInMs = (static_cast<uint64_t>(this->id) >> 22) + 1420070400000;
+		int64_t timeInMs = (stoll(this->id) >> 22) + 1420070400000;
 		returnString = convertTimeInMsToDateTimeString(timeInMs, timeFormat);
 		return returnString;
 	}
@@ -610,12 +610,12 @@ namespace DiscordCoreAPI {
 		return stream.str();
 	}
 
-	std::string Permissions::getCurrentChannelPermissions(GuildMember& guildMember, ChannelData& channel) {
+	std::string Permissions::getCurrentChannelPermissions(const GuildMember& guildMember, ChannelData& channel) {
 		std::string permsString = Permissions::computePermissions(guildMember, channel);
 		return permsString;
 	}
 
-	bool Permissions::checkForPermission( GuildMember& guildMember, ChannelData& channel, Permission permission) {
+	bool Permissions::checkForPermission(const GuildMember& guildMember, ChannelData& channel, Permission permission) {
 		std::string permissionsString = Permissions::computePermissions(guildMember, channel);
 		if ((stoll(permissionsString) & static_cast<int64_t>(permission)) == static_cast<int64_t>(permission)) {
 			return true;
@@ -624,12 +624,12 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	std::string Permissions::getCurrentGuildPermissions(GuildMember& guildMember) {
+	std::string Permissions::getCurrentGuildPermissions(const GuildMember& guildMember) {
 		std::string permissions = Permissions::computeBasePermissions(guildMember);
 		return permissions;
 	}
 
-	std::string Permissions::computeBasePermissions(GuildMember& guildMember) {
+	std::string Permissions::computeBasePermissions(const GuildMember& guildMember) {
 		GuildData guild = Guilds::getCachedGuildAsync({ .guildId = guildMember.guildId }).get();
 		if (guild.ownerId == guildMember.user.id) {
 			return Permissions::getAllPermissions();
@@ -637,7 +637,7 @@ namespace DiscordCoreAPI {
 		auto guildRoles = Roles ::getGuildRolesAsync({ .guildId = guildMember.guildId }).get();
 		RoleData roleEveryone{};
 		for (auto& value: guildRoles) {
-			if (value.id == static_cast<std::string>(guild.id)) {
+			if (value.id == guild.id) {
 				roleEveryone = value;
 			}
 		}
@@ -665,7 +665,7 @@ namespace DiscordCoreAPI {
 		return returnString;
 	}
 
-	std::string Permissions::computeOverwrites(const std::string& basePermissions, GuildMember& guildMember, ChannelData& channel) {
+	std::string Permissions::computeOverwrites(const std::string& basePermissions, const GuildMember& guildMember, ChannelData& channel) {
 		if ((stoll(basePermissions) & static_cast<int64_t>(Permission::Administrator)) == static_cast<int64_t>(Permission::Administrator)) {
 			return Permissions::getAllPermissions();
 		}
@@ -689,7 +689,7 @@ namespace DiscordCoreAPI {
 		}
 		permissions &= ~deny;
 		permissions |= allow;
-		if (channel.permissionOverwrites.contains(static_cast<std::string>(guildMember.user.id))) {
+		if (channel.permissionOverwrites.contains(guildMember.user.id)) {
 			OverWriteData currentOverWrites = channel.permissionOverwrites[guildMember.user.id];
 			permissions &= ~stoll(currentOverWrites.deny);
 			permissions |= stoll(currentOverWrites.allow);
@@ -697,7 +697,7 @@ namespace DiscordCoreAPI {
 		return std::to_string(permissions);
 	}
 
-	std::string Permissions::computePermissions(GuildMember& guildMember, ChannelData& channel) {
+	std::string Permissions::computePermissions(const GuildMember& guildMember, ChannelData& channel) {
 		std::string permissions = Permissions::computeBasePermissions(guildMember);
 		permissions = Permissions::computeOverwrites(permissions, guildMember, channel);
 		return permissions;
