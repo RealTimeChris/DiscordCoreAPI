@@ -24,12 +24,13 @@
 
 namespace DiscordCoreInternal {
 
-	DiscordCoreAPI::Song SoundCloudRequestBuilder::collectFinalSong(DiscordCoreAPI::GuildMemberData addedByGuildMember, DiscordCoreAPI::Song newSong) {
-		auto newerSong = constructSecondDownloadUrl(newSong);
-		auto newestSong = constructFinalDownloadUrl(newerSong);
-		newestSong.addedByUserId = addedByGuildMember.user.id;
-		newestSong.addedByUserName = addedByGuildMember.user.userName;
-		return newestSong;
+	DiscordCoreAPI::Song SoundCloudRequestBuilder::collectFinalSong(const DiscordCoreAPI::GuildMemberData& addedByGuildMember, const DiscordCoreAPI::Song& newerSong) {
+		DiscordCoreAPI::Song newSong = newerSong;
+		auto newestSong = constructSecondDownloadUrl(newSong);
+		auto newesterSong = constructFinalDownloadUrl(newestSong);
+		newesterSong.addedByUserId = addedByGuildMember.user.id;
+		newesterSong.addedByUserName = addedByGuildMember.user.userName;
+		return newesterSong;
 	}
 
 	std::vector<DiscordCoreAPI::Song> SoundCloudRequestBuilder::collectSearchResults(const std::string& songQuery) {
@@ -68,7 +69,7 @@ namespace DiscordCoreInternal {
 		return results;
 	}
 
-	DiscordCoreAPI::Song SoundCloudRequestBuilder::constructSecondDownloadUrl(DiscordCoreAPI::Song newSong) {
+	DiscordCoreAPI::Song SoundCloudRequestBuilder::constructSecondDownloadUrl(DiscordCoreAPI::Song& newSong) {
 		HttpWorkloadData dataPackage{};
 		dataPackage.baseUrl = newSong.firstDownloadUrl;
 		dataPackage.workloadClass = HttpWorkloadClass::Get;
@@ -82,7 +83,7 @@ namespace DiscordCoreInternal {
 		return newSong;
 	}
 
-	DiscordCoreAPI::Song SoundCloudRequestBuilder::constructFinalDownloadUrl(DiscordCoreAPI::Song newSong) {
+	DiscordCoreAPI::Song SoundCloudRequestBuilder::constructFinalDownloadUrl(DiscordCoreAPI::Song& newSong) {
 		if (newSong.secondDownloadUrl.find("/playlist") != std::string::npos) {
 			HttpWorkloadData dataPackage{};
 			dataPackage.baseUrl = newSong.secondDownloadUrl;
@@ -218,7 +219,7 @@ namespace DiscordCoreInternal {
 		};
 	}
 
-	std::vector<HttpData> SoundCloudRequestBuilder::submitWorkloadAndGetResultNew(std::vector<HttpWorkloadData> workload) {
+	std::vector<HttpData> SoundCloudRequestBuilder::submitWorkloadAndGetResultNew(const std::vector<HttpWorkloadData>& workload) {
 		return submitWorkloadAndGetResult(*this->httpClient, workload);
 	}
 

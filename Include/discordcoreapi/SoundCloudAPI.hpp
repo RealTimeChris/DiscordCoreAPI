@@ -47,9 +47,9 @@ namespace DiscordCoreInternal {
 		const std::string appVersion{ "1649920649" };
 		HttpClient* httpClient{ nullptr };
 
-		DiscordCoreAPI::Song constructSecondDownloadUrl(const DiscordCoreAPI::Song& newSong);
+		DiscordCoreAPI::Song constructSecondDownloadUrl(DiscordCoreAPI::Song& newSong);
 
-		DiscordCoreAPI::Song constructFinalDownloadUrl(const DiscordCoreAPI::Song& newSong);
+		DiscordCoreAPI::Song constructFinalDownloadUrl(DiscordCoreAPI::Song& newSong);
 
 		std::string collectClientId();
 	};

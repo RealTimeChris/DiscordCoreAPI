@@ -122,7 +122,7 @@ namespace DiscordCoreAPI {
 		return getVoiceConnectionMap()[guildId]->areWeCurrentlyPlaying();
 	}
 
-	void SongAPI::skip(GuildMember guildMember) {
+	void SongAPI::skip(const GuildMember& guildMember) {
 		if (SongAPI::getCurrentSong(guildMember.guildId).type == SongType::SoundCloud) {
 			getSoundCloudAPIMap()[guildMember.guildId]->cancelCurrentSong();
 		} else {
@@ -221,14 +221,14 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	Song SongAPI::addSongToQueue(GuildMember guildMember, Song song) {
+	Song SongAPI::addSongToQueue(const GuildMember& guildMember, Song& song) {
 		song.addedByUserId = guildMember.user.id;
 		song.addedByUserName = guildMember.user.userName;
 		getSongAPIMap()[guildMember.guildId]->playlist.songQueue.push_back(song);
 		return song;
 	}
 
-	void SongAPI::setPlaylist(Playlist playlistNew, const std::string& guildId) {
+	void SongAPI::setPlaylist(const Playlist& playlistNew, const std::string& guildId) {
 		getSongAPIMap()[guildId]->playlist.currentSong = playlistNew.currentSong;
 		getSongAPIMap()[guildId]->playlist.isLoopAllEnabled = playlistNew.isLoopAllEnabled;
 		getSongAPIMap()[guildId]->playlist.isLoopSongEnabled = playlistNew.isLoopSongEnabled;
@@ -256,11 +256,11 @@ namespace DiscordCoreAPI {
 		};
 	}
 
-	void SongAPI::setCurrentSong(Song song, const std::string& guildId) {
+	void SongAPI::setCurrentSong(const Song& song, const std::string& guildId) {
 		getSongAPIMap()[guildId]->playlist.currentSong = song;
 	}
 
-	void SongAPI::sendNextSongFinal(GuildMember guildMember) {
+	void SongAPI::sendNextSongFinal(const GuildMember& guildMember) {
 		if (getSongAPIMap()[guildMember.guildId]->playlist.currentSong.type == SongType::SoundCloud) {
 			getSoundCloudAPIMap()[guildMember.guildId]->cancelCurrentSong();
 			auto newerSong = getSoundCloudAPIMap()[guildMember.guildId]->collectFinalSong(guildMember, getSongAPIMap()[guildMember.guildId]->playlist.currentSong);
@@ -271,7 +271,7 @@ namespace DiscordCoreAPI {
 
 		} else if (getSongAPIMap()[guildMember.guildId]->playlist.currentSong.type == SongType::YouTube) {
 			getYouTubeAPIMap()[guildMember.guildId]->cancelCurrentSong();
-			auto newerSong = getYouTubeAPIMap()[guildMember.guildId]->collectFinalSong(guildMember, getSongAPIMap()[guildMember.guildId]->playlist.currentSong);
+			Song newerSong = getYouTubeAPIMap()[guildMember.guildId]->collectFinalSong(guildMember, getSongAPIMap()[guildMember.guildId]->playlist.currentSong);
 			newerSong.addedByUserId = guildMember.user.id;
 			getSongAPIMap()[this->guildId]->theTask = std::make_unique<std::jthread>([=, this](std::stop_token theToken) {
 				getYouTubeAPIMap()[this->guildId]->downloadAndStreamAudio(newerSong, getYouTubeAPIMap()[this->guildId].get(), theToken, 0);
@@ -279,7 +279,7 @@ namespace DiscordCoreAPI {
 		};
 	}
 
-	bool SongAPI::sendNextSong(GuildMember guildMember) {
+	bool SongAPI::sendNextSong(const GuildMember& guildMember) {
 		std::lock_guard<std::mutex> accessLock{ SongAPI::accessMutex };
 		if (!getSongAPIMap().contains(guildMember.guildId)) {
 			getSongAPIMap().insert_or_assign(guildMember.guildId, std::make_unique<SongAPI>(guildMember.guildId));

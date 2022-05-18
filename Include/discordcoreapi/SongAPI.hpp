@@ -59,7 +59,7 @@ namespace DiscordCoreAPI {
 		/// \param guildMember The GuildMember that is adding the Song to the queue.
 		/// \param song The Song to be added to the queue.
 		/// \returns The Song that was added to the queue.
-		static Song addSongToQueue(const GuildMember& guildMember, const Song& song);
+		static Song addSongToQueue(const GuildMember& guildMember, Song& song);
 
 		/// Checks to see if there are any playable Songs in the current Playlist. \brief Checks to see if there are any playable Songs in the current Playlist.
 		/// \param guildId The id of the Guild for which we would like to check its Playlist for Songs.
