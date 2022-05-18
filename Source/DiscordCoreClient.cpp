@@ -61,6 +61,13 @@ namespace DiscordCoreAPI {
 		this->functionsToExecute = functionsToExecuteNew;
 		DiscordCoreInternal::HttpSSLClient::initialize();
 		this->loggingOptions = loggingOptionsNew;
+		if (this->loggingOptions.logFFMPEGSuccessMessages) {
+			av_log_set_level(AV_LOG_VERBOSE);
+		} else if (this->loggingOptions.logFFMPEGErrorMessages) {
+			av_log_set_level(AV_LOG_ERROR);
+		} else {
+			av_log_set_level(AV_LOG_QUIET);
+		}
 		if (sodium_init() == -1) {
 			if (this->loggingOptions.logGeneralErrorMessages){
 				std::cout << DiscordCoreAPI::shiftToBrightRed() << "LibSodium failed to initialize!" << std::endl << std::endl << reset();
