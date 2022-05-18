@@ -276,6 +276,7 @@ namespace DiscordCoreAPI {
 	  protected:
 		static std::unordered_map<std::string, ChannelData> cache;
 		static DiscordCoreInternal::HttpClient* httpClient;
+		static std::mutex theMutex;
 		static bool doWeCache;
 
 		static void insertChannel(ChannelData dataPackage);

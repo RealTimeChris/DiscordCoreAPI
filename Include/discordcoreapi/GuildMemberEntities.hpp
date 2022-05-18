@@ -98,7 +98,15 @@ namespace DiscordCoreAPI {
 	/// A single GuildMember. \brief A single GuildMember.
 	class DiscordCoreAPI_Dll GuildMember : public GuildMemberData {
 	  public:
-		VoiceStateData voiceData{};///< For the voice connection's data, if any.
+
+		TimeStamp communicationDisabledUntil{ "" };///< When the user's timeout will expire and the user will be able to communicate in the guild again.
+		std::string premiumSince{};///< If applicable, when they first boosted the server.
+		std::string avatar{};///< The member's guild avatar hash.
+		UserData user{};///< User data for the current GuildMember.
+
+		GuildMember& operator=(GuildMemberData&&);
+
+		GuildMember(GuildMemberData&&);
 
 		GuildMember& operator=(GuildMemberData&);
 
@@ -122,7 +130,7 @@ namespace DiscordCoreAPI {
 		friend EventHandler;
 		friend Guild;
 
-		static void initialize(DiscordCoreInternal::HttpClient*);
+		static void initialize(DiscordCoreInternal::HttpClient*, bool doWeCacheNew);
 
 		/// Collects a GuildMember from the Discord servers. \brief Collects a GuildMember from the Discord servers.
 		/// \param dataPackage A GetGuildMemberData structure.
@@ -132,7 +140,7 @@ namespace DiscordCoreAPI {
 		/// Collects a GuildMember from the library's cache. \brief Collects a GuildMember from the library's cache.
 		/// \param dataPackage A GetGuildMemberData structure.
 		/// \returns A CoRoutine containing a GuildMember.
-		static CoRoutine<GuildMember> getCachedGuildMemberAsync(GetGuildMemberData dataPackage);
+		static CoRoutine<GuildMemberData> getCachedGuildMemberAsync(GetGuildMemberData dataPackage);
 
 		/// Lists all of the GuildMembers of a chosen Guild. \brief Lists all of the GuildMembers of a chosen Guild.
 		/// \param dataPackage A ListGuildMembersData structure.
@@ -170,11 +178,12 @@ namespace DiscordCoreAPI {
 		static CoRoutine<GuildMember> timeoutGuildMemberAsync(TimeoutGuildMemberData dataPackage);
 
 	  protected:
-		static std::unordered_map<std::string, GuildMember> cache;
+		static std::unordered_map<std::string, GuildMemberData> cache;
 		static DiscordCoreInternal::HttpClient* httpClient;
-		static std::mutex accessMutex;
+		static std::mutex theMutex;
+		static bool doWeCache;
 
-		static void insertGuildMember(GuildMember dataPackage);
+		static void insertGuildMember(GuildMemberData dataPackage);
 
 		static void removeGuildMember(const std::string& globalId);
 	};

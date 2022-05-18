@@ -983,47 +983,45 @@ namespace DiscordCoreAPI {
 	  public:
 		void setMentionable(bool enabled) {
 			if (enabled) {
-				this->roleFlags |= static_cast<uint8_t>(RoleFlags::Mentionable);
+				this->flags |= static_cast<uint8_t>(RoleFlags::Mentionable);
 			} else {
-				this->roleFlags &= ~static_cast<uint8_t>(RoleFlags::Mentionable);
+				this->flags &= ~static_cast<uint8_t>(RoleFlags::Mentionable);
 			}
 		}
 
 		void setManaged(bool enabled) {
 			if (enabled) {
-				this->roleFlags |= static_cast<uint8_t>(RoleFlags::Managed);
+				this->flags |= static_cast<uint8_t>(RoleFlags::Managed);
 			} else {
-				this->roleFlags &= ~static_cast<uint8_t>(RoleFlags::Managed);
+				this->flags &= ~static_cast<uint8_t>(RoleFlags::Managed);
 			}
 		}
 
 		void setHoist(bool enabled) {
 			if (enabled) {
-				this->roleFlags |= static_cast<uint8_t>(RoleFlags::Hoist);
+				this->flags |= static_cast<uint8_t>(RoleFlags::Hoist);
 			} else {
-				this->roleFlags &= ~static_cast<uint8_t>(RoleFlags::Hoist);
+				this->flags &= ~static_cast<uint8_t>(RoleFlags::Hoist);
 			}
 		}
 
 		bool getMentionable() {
-			return this->roleFlags & static_cast<uint8_t>(RoleFlags::Mentionable);
+			return this->flags & static_cast<uint8_t>(RoleFlags::Mentionable);
 		}
 
 		bool getManaged() {
-			return this->roleFlags & static_cast<uint8_t>(RoleFlags::Managed);
+			return this->flags & static_cast<uint8_t>(RoleFlags::Managed);
 		}
 
 		bool getHoist() {
-			return this->roleFlags & static_cast<uint8_t>(RoleFlags::Hoist);
+			return this->flags & static_cast<uint8_t>(RoleFlags::Hoist);
 		}
 
 		std::string unicodeEmoji{};///< Emoji representing the Role.
 		Permissions permissions{};///< The Role's base Guild Permissions.
 		int32_t position{ 0 };///< Its position amongst the rest of the Guild's roles.
-		int8_t roleFlags{ 0 };///< Role flags.
-		RoleTagsData tags{};///< Role tags for the Role.
+		int8_t flags{ 0 };///< Role flags.
 		std::string name{};///< The Role's name.
-		std::string icon{};///< Icon representing the Role.
 		int32_t color{ 0 };///< The Role's color.
 
 		virtual ~RoleData() = default;
@@ -1416,65 +1414,9 @@ namespace DiscordCoreAPI {
 
 	struct DiscordCoreAPI_Dll VoiceStateData;
 
-	enum class GuildMemberFlags { Pending = 0b00000001, Deaf = 0b00000010, Mute = 0b00000100 };
-
-	/// Data structure representing a single GuildMember. \brief Data structure representing a single GuildMember.
-	class DiscordCoreAPI_Dll GuildMemberData {
-	  public:
-		void setPending(bool enabled) {
-			if (enabled) {
-				this->guildMemberFlags |= static_cast<uint8_t>(GuildMemberFlags::Pending);
-			} else {
-				this->guildMemberFlags &= ~static_cast<uint8_t>(GuildMemberFlags::Pending);
-			}
-		}
-
-		void setDeaf(bool enabled) {
-			if (enabled) {
-				this->guildMemberFlags |= static_cast<uint8_t>(GuildMemberFlags::Deaf);
-			} else {
-				this->guildMemberFlags &= ~static_cast<uint8_t>(GuildMemberFlags::Deaf);
-			}
-		}
-
-		void setMute(bool enabled) {
-			if (enabled) {
-				this->guildMemberFlags |= static_cast<uint8_t>(GuildMemberFlags::Mute);
-			} else {
-				this->guildMemberFlags &= ~static_cast<uint8_t>(GuildMemberFlags::Mute);
-			}
-		}
-
-		bool getPending() {
-			return this->guildMemberFlags & static_cast<uint8_t>(GuildMemberFlags::Pending);
-		}
-
-		bool getDeaf() {
-			return this->guildMemberFlags & static_cast<uint8_t>(GuildMemberFlags::Deaf);
-		}
-
-		bool getMute() {
-			return this->guildMemberFlags & static_cast<uint8_t>(GuildMemberFlags::Mute);
-		}
-
-		TimeStamp communicationDisabledUntil{ "" };///< When the user's timeout will expire and the user will be able to communicate in the guild again.
-		std::vector<std::string> roles{};///< The Guild roles that they have.
-		int8_t guildMemberFlags{ 0 };///< GuildMember flags.
-		std::string premiumSince{};///< If applicable, when they first boosted the server.
-		Permissions permissions{};///< Their base-level Permissions in the Guild.
-		TimeStamp joinedAt{ "" };///< When they joined the Guild.
-		std::string guildId{};///< The current Guild's id.
-		std::string avatar{};///< The member's guild avatar hash.
-		std::string nick{};///< Their nick/display name.
-		UserData user{};///< User data for the current GuildMember.
-
-		virtual ~GuildMemberData() = default;
-	};
-
 	/// Voice state data. \brief Voice state data.
 	struct DiscordCoreAPI_Dll VoiceStateData {
 		TimeStamp requestToSpeakTimestamp{ "" };///< The time at which the User requested to speak.
-		GuildMemberData member{};///< The Guild member this voice state is for.
 		bool selfStream{ false };///< Whether this User is streaming using "Go Live".
 		bool selfVideo{ false };///< Whether this User's camera is enabled.
 		std::string channelId{};///< The Channel id this User is connected to.
@@ -1482,10 +1424,64 @@ namespace DiscordCoreAPI {
 		bool selfDeaf{ false };///< Whether this User is locally deafened.
 		bool selfMute{ false };///< Whether this User is locally muted.
 		bool suppress{ false };///< Whether this User is muted by the current User.
+		std::string memberId{};///< The Guild member id this voice state is for.
 		std::string guildId{};///< The Guild id this voice state is for.
 		std::string userId{};///< The User id this voice state is for.
 		bool deaf{ false };///< Whether this User is deafened by the server.
 		bool mute{ false };///< Whether this User is muted by the server.
+	};
+
+	enum class GuildMemberFlags { Pending = 1 << 0, Deaf = 1 << 1, Mute = 1 << 2 };
+
+	/// Data structure representing a single GuildMember. \brief Data structure representing a single GuildMember.
+	class DiscordCoreAPI_Dll GuildMemberData {
+	  public:
+		void setPending(bool enabled) {
+			if (enabled) {
+				this->flags |= static_cast<uint8_t>(GuildMemberFlags::Pending);
+			} else {
+				this->flags &= ~static_cast<uint8_t>(GuildMemberFlags::Pending);
+			}
+		}
+
+		void setDeaf(bool enabled) {
+			if (enabled) {
+				this->flags |= static_cast<uint8_t>(GuildMemberFlags::Deaf);
+			} else {
+				this->flags &= ~static_cast<uint8_t>(GuildMemberFlags::Deaf);
+			}
+		}
+
+		void setMute(bool enabled) {
+			if (enabled) {
+				this->flags |= static_cast<uint8_t>(GuildMemberFlags::Mute);
+			} else {
+				this->flags &= ~static_cast<uint8_t>(GuildMemberFlags::Mute);
+			}
+		}
+
+		bool getPending() {
+			return this->flags & static_cast<uint8_t>(GuildMemberFlags::Pending);
+		}
+
+		bool getDeaf() {
+			return this->flags & static_cast<uint8_t>(GuildMemberFlags::Deaf);
+		}
+
+		bool getMute() {
+			return this->flags & static_cast<uint8_t>(GuildMemberFlags::Mute);
+		}
+		
+		std::vector<std::string> roles{};///< The Guild roles that they have.
+		VoiceStateData voiceData{};///< For the voice connection's data, if any.
+		Permissions permissions{};///< Their base-level Permissions in the Guild.
+		TimeStamp joinedAt{ "" };///< When they joined the Guild.
+		std::string guildId{};///< The current Guild's id.
+		std::string nick{};///< Their nick/display name.
+		int8_t flags{ 0 };///< GuildMember flags.
+		UserData user{};///< The User for this GuildMember.
+
+		virtual ~GuildMemberData() = default;
 	};
 
 	/// Data representing an active Thread. \brief Data representing an active Thread.

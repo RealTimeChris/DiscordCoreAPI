@@ -262,6 +262,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void Channels::insertChannel(ChannelData channel) {
+		std::lock_guard<std::mutex> theLock{ Channels::theMutex };
 		if (channel.id == "") {
 			return;
 		}
@@ -271,10 +272,12 @@ namespace DiscordCoreAPI {
 	}
 
 	void Channels::removeChannel(const std::string& channelId) {
+		std::lock_guard<std::mutex> theLock{ Channels::theMutex };
 		Channels::cache.erase(channelId);
 	};
 
 	DiscordCoreInternal::HttpClient* Channels::httpClient{ nullptr };
 	std::unordered_map<std::string, ChannelData> Channels::cache{};
 	bool Channels::doWeCache{ false };
+	std::mutex Channels::theMutex{};
 }

@@ -22,6 +22,7 @@
 
 #include <discordcoreapi/FoundationEntities.hpp>
 #include <discordcoreapi/VoiceConnection.hpp>
+#include <discordcoreapi/RoleEntities.hpp>
 
 namespace DiscordCoreAPI {
 
@@ -47,7 +48,7 @@ namespace DiscordCoreAPI {
 		std::vector<ChannelData> channels{};///< Array of partial Channel objects.
 		int32_t systemChannelFlags{ 0 };///< System Channel flags.
 		int32_t verificationLevel{ 0 };///< Verification level.
-		std::vector<RoleData> roles{};///< Array of Role objects.
+		std::vector<Role> roles{};///< Array of Role objects.
 		std::string systemChannelId{};///< The id of the Channel where Guild notices such as welcome messages and boost events are posted.
 		std::vector<uint8_t> icon{};///< base64 128x128 image for the Guild icon.
 		std::string afkChannelId{};///< Id for afk Channel.
@@ -555,6 +556,7 @@ namespace DiscordCoreAPI {
 		static DiscordCoreAPI::DiscordCoreClient* discordCoreClient;
 		static std::unordered_map<std::string, GuildData> cache;
 		static DiscordCoreInternal::HttpClient* httpClient;
+		static std::mutex theMutex;
 		static bool doWeCache;
 
 		static void insertGuild(GuildData guild);

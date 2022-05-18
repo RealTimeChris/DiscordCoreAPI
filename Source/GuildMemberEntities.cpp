@@ -26,15 +26,31 @@
 
 namespace DiscordCoreAPI {
 
-	GuildMember& GuildMember::operator=(GuildMemberData& dataNew) {
-		this->guildMemberFlags = dataNew.guildMemberFlags;
-		this->premiumSince = dataNew.premiumSince;
+	GuildMember& GuildMember::operator=(GuildMemberData&& dataNew) {
 		this->permissions = dataNew.permissions;
+		this->voiceData = dataNew.voiceData;
 		this->joinedAt = dataNew.joinedAt;
 		this->guildId = dataNew.guildId;
 		this->roles = dataNew.roles;
-		this->user = dataNew.user;
+		this->flags = dataNew.flags;
 		this->nick = dataNew.nick;
+		this->user = dataNew.user;
+		return *this;
+	};
+
+	GuildMember::GuildMember(GuildMemberData&& other) {
+		*this = other;
+	}
+
+	GuildMember& GuildMember::operator=(GuildMemberData& dataNew) {
+		this->permissions = dataNew.permissions;
+		this->voiceData = dataNew.voiceData;
+		this->joinedAt = dataNew.joinedAt;
+		this->guildId = dataNew.guildId;
+		this->roles = dataNew.roles;
+		this->flags = dataNew.flags;
+		this->nick = dataNew.nick;
+		this->user = dataNew.user;
 		return *this;
 	};
 
@@ -42,7 +58,8 @@ namespace DiscordCoreAPI {
 		*this = other;
 	}
 
-	void GuildMembers::initialize(DiscordCoreInternal::HttpClient* theClient) {
+	void GuildMembers::initialize(DiscordCoreInternal::HttpClient* theClient, bool doWeCacheNew) {
+		GuildMembers::doWeCache = doWeCacheNew;
 		GuildMembers::httpClient = theClient;
 	}
 
@@ -60,8 +77,8 @@ namespace DiscordCoreAPI {
 		co_return guildMember;
 	}
 
-	CoRoutine<GuildMember> GuildMembers::getCachedGuildMemberAsync(GetGuildMemberData dataPackage) {
-		co_await NewThreadAwaitable<GuildMember>();
+	CoRoutine<GuildMemberData> GuildMembers::getCachedGuildMemberAsync(GetGuildMemberData dataPackage) {
+		co_await NewThreadAwaitable<GuildMemberData>();
 		if (GuildMembers::cache.contains(dataPackage.guildId + " + " + dataPackage.guildMemberId)) {
 			co_return GuildMembers::cache[dataPackage.guildId + " + " + dataPackage.guildMemberId];
 		} else {
@@ -211,19 +228,23 @@ namespace DiscordCoreAPI {
 		co_return newGuildMember;
 	}
 
-	void GuildMembers::insertGuildMember(GuildMember guildMember) {
-		std::lock_guard<std::mutex> theLock{ GuildMembers::accessMutex };
+	void GuildMembers::insertGuildMember(GuildMemberData guildMember) {
+		std::lock_guard<std::mutex> theLock{ GuildMembers::theMutex };
 		if (guildMember.user.id == "") {
 			return;
 		}
-		GuildMembers::cache.insert_or_assign(guildMember.guildId + " + " + guildMember.user.id, guildMember);
+		if (GuildMembers::doWeCache) {
+			GuildMembers::cache.insert_or_assign(guildMember.guildId + " + " + guildMember.user.id, guildMember);
+		}		
 	}
 
 	void GuildMembers::removeGuildMember(const std::string& globalId) {
-		std::lock_guard<std::mutex> theLock{ GuildMembers::accessMutex };
+		std::lock_guard<std::mutex> theLock{ GuildMembers::theMutex };
 		GuildMembers::cache.erase(globalId);
 	};
+
+	std::unordered_map<std::string, GuildMemberData> GuildMembers::cache{};
 	DiscordCoreInternal::HttpClient* GuildMembers::httpClient{ nullptr };
-	std::unordered_map<std::string, GuildMember> GuildMembers::cache{};
-	std::mutex GuildMembers::accessMutex{};
+	std::mutex GuildMembers::theMutex{};
+	bool GuildMembers::doWeCache{ false };
 };

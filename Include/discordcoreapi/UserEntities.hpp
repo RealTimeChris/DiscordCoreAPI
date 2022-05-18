@@ -193,6 +193,7 @@ namespace DiscordCoreAPI {
 	  protected:
 		static std::unordered_map<std::string, UserData> cache;
 		static DiscordCoreInternal::HttpClient* httpClient;
+		static std::mutex theMutex;
 		static bool doWeCache;
 
 		static void insertUser(UserData user);

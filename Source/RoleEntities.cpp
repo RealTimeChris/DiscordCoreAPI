@@ -23,7 +23,37 @@
 
 namespace DiscordCoreAPI {
 
-	void Roles::initialize(DiscordCoreInternal::HttpClient* theClient) {
+	Role& Role::operator=(RoleData&&other) {
+		this->unicodeEmoji = other.unicodeEmoji;
+		this->permissions = other.permissions;
+		this->position = other.position;
+		this->flags = other.flags;
+		this->color = other.color;
+		this->name = other.name;
+		return *this;
+	}
+
+	Role::Role(RoleData&& other) {
+		*this = other;
+	}
+
+	Role& Role::operator=(RoleData& other) {
+		this->unicodeEmoji = other.unicodeEmoji;
+		this->permissions = other.permissions;
+		this->position = other.position;
+		this->flags = other.flags;
+		this->color = other.color;
+		this->name = other.name;
+		return *this;
+	}
+
+	Role::Role(RoleData& other) {
+		*this = other;
+	}
+
+
+	void Roles::initialize(DiscordCoreInternal::HttpClient* theClient, bool doWeCacheNew) {
+		Roles::doWeCache = doWeCacheNew;
 		Roles::httpClient = theClient;
 	}
 
@@ -194,8 +224,8 @@ namespace DiscordCoreAPI {
 		co_return newRole;
 	}
 
-	CoRoutine<Role> Roles::getCachedRoleAsync(GetRoleData dataPackage) {
-		co_await NewThreadAwaitable<Role>();
+	CoRoutine<RoleData> Roles::getCachedRoleAsync(GetRoleData dataPackage) {
+		co_await NewThreadAwaitable<RoleData>();
 		if (Roles::cache.contains(dataPackage.roleId)) {
 			co_return Roles::cache[dataPackage.roleId];
 		} else {
@@ -203,16 +233,22 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	void Roles::insertRole(Role role) {
+	void Roles::insertRole(RoleData role) {
+		std::lock_guard<std::mutex> theLock{ Roles::theMutex };
 		if (role.id == "") {
 			return;
 		}
-		Roles::cache.insert_or_assign(role.id, role);
+		if (Roles::doWeCache) {
+			Roles::cache.insert_or_assign(role.id, role);
+		}
 	}
 
 	void Roles::removeRole(const std::string& roleId) {
+		std::lock_guard<std::mutex> theLock{ Roles::theMutex };
 		Roles::cache.erase(roleId);
 	};
+
 	DiscordCoreInternal::HttpClient* Roles::httpClient{ nullptr };
-	std::unordered_map<std::string, Role> Roles::cache{};
+	std::unordered_map<std::string, RoleData> Roles::cache{};
+	std::mutex Roles::theMutex{};
 }

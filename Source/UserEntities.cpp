@@ -202,6 +202,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void Users::insertUser(UserData user) {
+		std::lock_guard<std::mutex> theLock{ Users::theMutex };
 		if (user.id == "") {
 			return;
 		}
@@ -213,5 +214,6 @@ namespace DiscordCoreAPI {
 	DiscordCoreInternal::HttpClient* Users::httpClient{ nullptr };
 	std::unordered_map<std::string, UserData> Users::cache{};
 	bool Users::doWeCache{ false };
+	std::mutex Users::theMutex{};
 
 }

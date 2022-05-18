@@ -95,12 +95,12 @@ namespace DiscordCoreAPI {
 		ApplicationCommands::initialize(this->httpClient.get());
 		Channels::initialize(this->httpClient.get(), this->cacheOptions.cacheChannels);
 		Guilds::initialize(this->httpClient.get(), this, this->cacheOptions.cacheGuilds);
-		GuildMembers::initialize(this->httpClient.get());
+		GuildMembers::initialize(this->httpClient.get(), this->cacheOptions.cacheGuildMembers);
 		GuildScheduledEvents::initialize(this->httpClient.get());
 		Interactions::initialize(this->httpClient.get());
 		Messages::initialize(this->httpClient.get());
 		Reactions::initialize(this->httpClient.get());
-		Roles::initialize(this->httpClient.get());
+		Roles::initialize(this->httpClient.get(), this->cacheOptions.cacheRoles);
 		Stickers::initialize(this->httpClient.get());
 		StageInstances::initialize(this->httpClient.get());
 		Threads::initialize(this->httpClient.get());

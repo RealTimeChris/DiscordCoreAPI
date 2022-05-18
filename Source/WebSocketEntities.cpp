@@ -279,8 +279,8 @@ namespace DiscordCoreInternal {
 				}
 				DiscordCoreAPI::UserData theUser{};
 				DataParser::parseObject(payload["d"]["user"], theUser);
-				DiscordCoreAPI::Users::insertUser(theUser);
 				this->discordCoreClient->currentUser = DiscordCoreAPI::BotUser{ theUser, this };
+				DiscordCoreAPI::Users::insertUser(theUser);
 				this->currentReconnectTries = 0;
 				this->areWeReadyToConnectEvent.set();
 				this->areWeAuthenticated = true;

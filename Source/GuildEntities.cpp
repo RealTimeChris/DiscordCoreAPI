@@ -705,6 +705,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void Guilds::insertGuild(GuildData guild) {
+		std::lock_guard<std::mutex> theLock{ Guilds::theMutex };
 		if (guild.id == "") {
 			return;
 		}
@@ -721,12 +722,14 @@ namespace DiscordCoreAPI {
 	}
 
 	void Guilds::removeGuild(const std::string& guildId) {
+		std::lock_guard<std::mutex> theLock{ Guilds::theMutex };
 		Guilds::cache.erase(guildId);
 	};
 
 	DiscordCoreInternal::HttpClient* Guilds::httpClient{ nullptr };
-	std::unordered_map<std::string, GuildData> Guilds::cache{};
+	std::unordered_map<std::string, GuildData> Guilds::cache{};	
 	DiscordCoreClient* Guilds::discordCoreClient{ nullptr };
 	bool Guilds::doWeCache{ false };
+	std::mutex Guilds::theMutex{};
 
 }
