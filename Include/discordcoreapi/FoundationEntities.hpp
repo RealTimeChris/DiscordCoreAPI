@@ -3474,6 +3474,7 @@ namespace DiscordCoreAPI {
 			this->data.files = other.files;
 			this->data.flags = other.flags;
 			this->data.tts = other.tts;
+			return *this;
 		}
 		InteractionResponseData(RespondToInputEventData& other) {
 			*this = other;
