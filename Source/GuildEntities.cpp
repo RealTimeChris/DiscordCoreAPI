@@ -80,7 +80,7 @@ namespace DiscordCoreAPI {
 			this->voiceConnectionPtr = getVoiceConnectionMap()[this->id].get();
 			return this->voiceConnectionPtr;
 		} else if (channelId != "") {
-			std::string theShardId{ std::to_string((stoll(this->id) >> 22) % this->discordCoreClient->shardingOptions.totalNumberOfShards) };
+			std::string theShardId{ std::to_string((std::stoll(this->id) >> 22) % this->discordCoreClient->shardingOptions.totalNumberOfShards) };
 			getVoiceConnectionMap()[this->id] = std::make_unique<VoiceConnection>(this->discordCoreClient->webSocketMap[theShardId].get());
 			this->voiceConnectionPtr = getVoiceConnectionMap()[this->id].get();
 			DiscordCoreInternal::VoiceConnectInitData voiceConnectInitData{};
@@ -118,7 +118,7 @@ namespace DiscordCoreAPI {
 
 	void GuildData::initialize(bool doWeShowIt) {
 		if (!getVoiceConnectionMap().contains(this->id)) {
-			std::string theShardId{ std::to_string((stoll(this->id) >> 22) % this->discordCoreClient->shardingOptions.totalNumberOfShards) };
+			std::string theShardId{ std::to_string((std::stoll(this->id) >> 22) % this->discordCoreClient->shardingOptions.totalNumberOfShards) };
 			getVoiceConnectionMap().insert(std::make_pair(this->id, std::make_unique<VoiceConnection>(this->discordCoreClient->webSocketMap[theShardId].get())));
 		}
 		this->voiceConnectionPtr = getVoiceConnectionMap()[this->id].get();

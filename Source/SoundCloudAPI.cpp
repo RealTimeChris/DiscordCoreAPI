@@ -24,7 +24,7 @@
 
 namespace DiscordCoreInternal {
 
-	DiscordCoreAPI::Song SoundCloudRequestBuilder::collectFinalSong(const DiscordCoreAPI::GuildMemberData& addedByGuildMember, const DiscordCoreAPI::Song& newerSong) {
+	DiscordCoreAPI::Song SoundCloudRequestBuilder::collectFinalSong(DiscordCoreAPI::GuildMemberData& addedByGuildMember, const DiscordCoreAPI::Song& newerSong) {
 		DiscordCoreAPI::Song newSong = newerSong;
 		auto newestSong = constructSecondDownloadUrl(newSong);
 		auto newesterSong = constructFinalDownloadUrl(newestSong);
@@ -198,7 +198,7 @@ namespace DiscordCoreInternal {
 		this->doWePrintError = httpClient->getDoWePrintFFMPEGError();
 	}
 
-	DiscordCoreAPI::Song SoundCloudAPI::collectFinalSong(const DiscordCoreAPI::GuildMemberData& addedByGuildMember,const DiscordCoreAPI::Song& newSong) {
+	DiscordCoreAPI::Song SoundCloudAPI::collectFinalSong(DiscordCoreAPI::GuildMemberData& addedByGuildMember,const DiscordCoreAPI::Song& newSong) {
 		return this->requestBuilder.collectFinalSong(addedByGuildMember, newSong);
 	}
 

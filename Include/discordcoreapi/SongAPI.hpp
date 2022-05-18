@@ -59,7 +59,7 @@ namespace DiscordCoreAPI {
 		/// \param guildMember The GuildMember that is adding the Song to the queue.
 		/// \param song The Song to be added to the queue.
 		/// \returns The Song that was added to the queue.
-		static Song addSongToQueue(const GuildMember& guildMember, Song& song);
+		static Song addSongToQueue(GuildMember& guildMember, Song& song);
 
 		/// Checks to see if there are any playable Songs in the current Playlist. \brief Checks to see if there are any playable Songs in the current Playlist.
 		/// \param guildId The id of the Guild for which we would like to check its Playlist for Songs.
@@ -70,7 +70,7 @@ namespace DiscordCoreAPI {
 		/// \brief Send the next playable song off of the current Guild's Playlist to be played.
 		/// \param guildMember The GuildMember who is requesting the Song to be sent.
 		/// \returns A bool suggesting the success status of the send.
-		static bool sendNextSong(const GuildMember& guildMember);
+		static bool sendNextSong(GuildMember& guildMember);
 
 		/// Plays the current Song. (Assuming that you are currently connected to a VoiceConnection). \brief Plays the current Song. (Assuming that you are currently connected to a VoiceConnection).
 		/// \param guildId The id of the Guild within which to play the current Song.
@@ -79,7 +79,7 @@ namespace DiscordCoreAPI {
 
 		/// Skips to the next Song in the queue, if applicable. \brief Skips to the next Song in the queue, if applicable.
 		/// \param guildMember The GuildMember structure of the individual who is skipping the Song.
-		static void skip(const GuildMember& guildMember);
+		static void skip(GuildMember& guildMember);
 
 		/// Stops the currently playing Song. \brief Stops the currently playing Song.
 		/// \param guildId The id of the Guild within which to stop the currently playing music.
@@ -148,7 +148,7 @@ namespace DiscordCoreAPI {
 		bool areWeInstantiated{ false };
 		std::string guildId{};
 
-		void sendNextSongFinal(const GuildMember& guildMember);
+		void sendNextSongFinal(GuildMember& guildMember);
 
 		bool sendNextSong();
 	};
