@@ -27,26 +27,6 @@
 #include <discordcoreapi/InputEvents.hpp>
 
 namespace DiscordCoreAPI {
-		
-	std::string operator+(std::string lhs, Snowflake& rhs) {
-		std::string returnString{};
-		returnString = lhs + rhs.operator std::string();
-		return returnString;
-	}
-
-	std::string operator+(Snowflake& lhs, std::string rhs) {
-		std::string returnString{};
-		returnString = lhs.operator std::string() + rhs;
-		return returnString;
-	}
-
-	bool operator==(std::string lhs, Snowflake& rhs) {
-		if (lhs == rhs.operator std::string()) {
-			return true;
-		} else {
-			return false;
-		}
-	}
 
 	std::string getISO8601TimeStamp(const std::string& year, const std::string& month, const std::string& day, const std::string& hour, const std::string& minute, const std::string& second) {
 		std::string theTimeStamp{};

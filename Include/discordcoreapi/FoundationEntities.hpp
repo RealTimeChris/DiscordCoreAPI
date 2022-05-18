@@ -1013,11 +1013,25 @@ namespace DiscordCoreAPI {
 		uint64_t theId{};
 	};
 
-	std::string operator+(std::string lhs, Snowflake& rhs);
+	inline std::string operator+(std::string lhs, Snowflake& rhs) {
+		std::string returnString{};
+		returnString = lhs + rhs.operator std::string();
+		return returnString;
+	}
 
-	std::string operator+(Snowflake& lhs, std::string rhs);
+	inline std::string operator+(Snowflake& lhs, std::string rhs) {
+		std::string returnString{};
+		returnString = lhs.operator std::string() + rhs;
+		return returnString;
+	}
 
-	bool operator==(std::string lhs, Snowflake& rhs);
+	inline bool operator==(std::string lhs, Snowflake& rhs) {
+		if (lhs == rhs.operator std::string()) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 
 	/// Base class DiscordCoreAPI_Dll for all Discord entities. \brief Base class DiscordCoreAPI_Dll for all Discord entities.
 	class DiscordCoreAPI_Dll DiscordEntity {
