@@ -430,6 +430,13 @@ namespace DiscordCoreAPI {
 		return timeStamp;
 	}
 
+	std::string DiscordCacheEntity::getCreatedAtTimestamp(TimeFormat timeFormat) {
+		std::string returnString{};
+		int64_t timeInMs = (this->id >> 22) + 1420070400000;
+		returnString = convertTimeInMsToDateTimeString(timeInMs, timeFormat);
+		return returnString;
+	}
+
 	std::string DiscordEntity::getCreatedAtTimestamp(TimeFormat timeFormat) {
 		std::string returnString{};
 		int64_t timeInMs = (stoll(this->id) >> 22) + 1420070400000;
@@ -631,13 +638,13 @@ namespace DiscordCoreAPI {
 
 	std::string Permissions::computeBasePermissions(const GuildMember& guildMember) {
 		GuildData guild = Guilds::getCachedGuildAsync({ .guildId = guildMember.guildId }).get();
-		if (guild.ownerId == guildMember.user.id) {
+		if (guild.ownerId == std::to_string(guildMember.user.id)) {
 			return Permissions::getAllPermissions();
 		}
 		auto guildRoles = Roles ::getGuildRolesAsync({ .guildId = guildMember.guildId }).get();
 		RoleData roleEveryone{};
 		for (auto& value: guildRoles) {
-			if (value.id == guild.id) {
+			if (value.id == std::to_string(guild.id)) {
 				roleEveryone = value;
 			}
 		}
@@ -689,8 +696,8 @@ namespace DiscordCoreAPI {
 		}
 		permissions &= ~deny;
 		permissions |= allow;
-		if (channel.permissionOverwrites.contains(guildMember.user.id)) {
-			OverWriteData currentOverWrites = channel.permissionOverwrites[guildMember.user.id];
+		if (channel.permissionOverwrites.contains(std::to_string(guildMember.user.id))) {
+			OverWriteData currentOverWrites = channel.permissionOverwrites[std::to_string(guildMember.user.id)];
 			permissions &= ~stoll(currentOverWrites.deny);
 			permissions |= stoll(currentOverWrites.allow);
 		}

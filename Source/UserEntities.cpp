@@ -130,8 +130,8 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<UserData> Users::getCachedUserAsync(GetUserData dataPackage) {
 		co_await NewThreadAwaitable<UserData>();
-		if (Users::cache.contains(dataPackage.userId)) {
-			co_return Users::cache[dataPackage.userId];
+		if (Users::cache.contains(stoull(dataPackage.userId))) {
+			co_return Users::cache[stoull(dataPackage.userId)];
 		} else {
 			co_return getUserAsync(dataPackage).get();
 		}
@@ -203,7 +203,7 @@ namespace DiscordCoreAPI {
 
 	void Users::insertUser(UserData user) {
 		std::lock_guard<std::mutex> theLock{ Users::theMutex };
-		if (user.id == "") {
+		if (user.id == 0) {
 			return;
 		}
 		if (Users::doWeCache) {
@@ -212,7 +212,7 @@ namespace DiscordCoreAPI {
 	}
 
 	DiscordCoreInternal::HttpClient* Users::httpClient{ nullptr };
-	std::unordered_map<std::string, UserData> Users::cache{};
+	std::unordered_map<uint64_t, UserData> Users::cache{};
 	bool Users::doWeCache{ false };
 	std::mutex Users::theMutex{};
 

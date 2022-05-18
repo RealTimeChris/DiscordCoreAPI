@@ -76,13 +76,13 @@ namespace DiscordCoreAPI {
 	}
 
 	VoiceConnection* Guild::connectToVoice(const std::string& channelId, bool selfDeaf, bool selfMute) {
-		if (getVoiceConnectionMap()[this->id]->areWeConnected()) {
-			this->voiceConnectionPtr = getVoiceConnectionMap()[this->id].get();
+		if (getVoiceConnectionMap()[std::to_string(this->id)]->areWeConnected()) {
+			this->voiceConnectionPtr = getVoiceConnectionMap()[std::to_string(this->id)].get();
 			return this->voiceConnectionPtr;
 		} else if (channelId != "") {
-			std::string theShardId{ std::to_string((stoll(this->id) >> 22) % this->discordCoreClient->shardingOptions.totalNumberOfShards) };
-			getVoiceConnectionMap()[this->id] = std::make_unique<VoiceConnection>(this->discordCoreClient->webSocketMap[theShardId].get());
-			this->voiceConnectionPtr = getVoiceConnectionMap()[this->id].get();
+			std::string theShardId{ std::to_string((this->id >> 22) % this->discordCoreClient->shardingOptions.totalNumberOfShards) };
+			getVoiceConnectionMap()[std::to_string(this->id)] = std::make_unique<VoiceConnection>(this->discordCoreClient->webSocketMap[theShardId].get());
+			this->voiceConnectionPtr = getVoiceConnectionMap()[std::to_string(this->id)].get();
 			DiscordCoreInternal::VoiceConnectInitData voiceConnectInitData{};
 			voiceConnectInitData.channelId = channelId;
 			voiceConnectInitData.guildId = this->id;
@@ -97,39 +97,39 @@ namespace DiscordCoreAPI {
 	}
 
 	void Guild::disconnect() {
-		if (getVoiceConnectionMap().contains(this->id) && getVoiceConnectionMap()[this->id]) {
-			getVoiceConnectionMap()[this->id]->disconnect();
-			SongAPI::stop(this->id);
+		if (getVoiceConnectionMap().contains(std::to_string(this->id)) && getVoiceConnectionMap()[std::to_string(this->id)]) {
+			getVoiceConnectionMap()[std::to_string(this->id)]->disconnect();
+			SongAPI::stop(std::to_string(this->id));
 			UpdateVoiceStateData updateVoiceData{};
 			updateVoiceData.channelId = "";
 			updateVoiceData.selfDeaf = false;
 			updateVoiceData.selfMute = false;
 			updateVoiceData.guildId = this->id;
 			this->discordCoreClient->getBotUser().updateVoiceStatus(updateVoiceData);
-			getVoiceConnectionMap()[this->id].reset(nullptr);
+			getVoiceConnectionMap()[std::to_string(this->id)].reset(nullptr);
 			this->voiceConnectionPtr = nullptr;
 		}
 	}
 
 	bool Guild::areWeConnected() {
-		this->voiceConnectionPtr = getVoiceConnectionMap()[this->id].get();
+		this->voiceConnectionPtr = getVoiceConnectionMap()[std::to_string(this->id)].get();
 		return this->voiceConnectionPtr->areWeConnected();
 	}
 
 	void GuildData::initialize(bool doWeShowIt) {
-		if (!getVoiceConnectionMap().contains(this->id)) {
-			std::string theShardId{ std::to_string((stoll(this->id) >> 22) % this->discordCoreClient->shardingOptions.totalNumberOfShards) };
-			getVoiceConnectionMap().insert(std::make_pair(this->id, std::make_unique<VoiceConnection>(this->discordCoreClient->webSocketMap[theShardId].get())));
+		if (!getVoiceConnectionMap().contains(std::to_string(this->id))) {
+			std::string theShardId{ std::to_string((this->id >> 22) % this->discordCoreClient->shardingOptions.totalNumberOfShards) };
+			getVoiceConnectionMap().insert(std::make_pair(std::to_string(this->id), std::make_unique<VoiceConnection>(this->discordCoreClient->webSocketMap[theShardId].get())));
 		}
-		this->voiceConnectionPtr = getVoiceConnectionMap()[this->id].get();
-		if (!getYouTubeAPIMap().contains(this->id)) {
-			getYouTubeAPIMap().insert(std::make_pair(this->id, std::make_unique<DiscordCoreInternal::YouTubeAPI>(this->id, this->discordCoreClient->httpClient.get())));
+		this->voiceConnectionPtr = getVoiceConnectionMap()[std::to_string(this->id)].get();
+		if (!getYouTubeAPIMap().contains(std::to_string(this->id))) {
+			getYouTubeAPIMap().insert(std::make_pair(std::to_string(this->id), std::make_unique<DiscordCoreInternal::YouTubeAPI>(std::to_string(this->id), this->discordCoreClient->httpClient.get())));
 		}
-		if (!getSoundCloudAPIMap().contains(this->id)) {
-			getSoundCloudAPIMap().insert(std::make_pair(this->id, std::make_unique<DiscordCoreInternal::SoundCloudAPI>(this->id, this->discordCoreClient->httpClient.get())));
+		if (!getSoundCloudAPIMap().contains(std::to_string(this->id))) {
+			getSoundCloudAPIMap().insert(std::make_pair(std::to_string(this->id), std::make_unique<DiscordCoreInternal::SoundCloudAPI>(std::to_string(this->id), this->discordCoreClient->httpClient.get())));
 		}
-		if (!getSongAPIMap().contains(this->id)) {
-			getSongAPIMap().insert(std::make_pair(this->id, std::make_unique<SongAPI>(this->id)));
+		if (!getSongAPIMap().contains(std::to_string(this->id))) {
+			getSongAPIMap().insert(std::make_pair(std::to_string(this->id), std::make_unique<SongAPI>(std::to_string(this->id))));
 		}
 	}
 
@@ -218,8 +218,8 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<GuildData> Guilds::getCachedGuildAsync(GetGuildData dataPackage) {
 		co_await NewThreadAwaitable<GuildData>();
-		if (Guilds::cache.contains(dataPackage.guildId)) {
-			co_return Guilds::cache[dataPackage.guildId];
+		if (Guilds::cache.contains(stoull(dataPackage.guildId))) {
+			co_return Guilds::cache[stoull(dataPackage.guildId)];
 
 		} else {
 			auto guildNew = Guilds::getGuildAsync({ .guildId = dataPackage.guildId }).get();
@@ -706,7 +706,7 @@ namespace DiscordCoreAPI {
 
 	void Guilds::insertGuild(GuildData guild) {
 		std::lock_guard<std::mutex> theLock{ Guilds::theMutex };
-		if (guild.id == "") {
+		if (guild.id == 0) {
 			return;
 		}
 		bool doWeShowIt{ false };
@@ -719,13 +719,13 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	void Guilds::removeGuild(const std::string& guildId) {
+	void Guilds::removeGuild(const uint64_t& guildId) {
 		std::lock_guard<std::mutex> theLock{ Guilds::theMutex };
 		Guilds::cache.erase(guildId);
 	};
 
 	DiscordCoreInternal::HttpClient* Guilds::httpClient{ nullptr };
-	std::unordered_map<std::string, GuildData> Guilds::cache{};	
+	std::unordered_map<uint64_t, GuildData> Guilds::cache{};
 	DiscordCoreClient* Guilds::discordCoreClient{ nullptr };
 	bool Guilds::doWeCache{ false };
 	std::mutex Guilds::theMutex{};

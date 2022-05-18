@@ -939,7 +939,7 @@ namespace DiscordCoreInternal {
 			nlohmann::json newData{};
 			newData["parent_id"] = std::string{ value.parentId };
 			newData["name"] = std::string{ value.name };
-			newData["id"] = std::string{ value.id };
+			newData["id"] = std::to_string(value.id);
 			newData["type"] = value.type;
 			data["channels"].push_back(newData);
 		}

@@ -177,14 +177,14 @@ namespace DiscordCoreAPI {
 		static CoRoutine<GuildMember> timeoutGuildMemberAsync(TimeoutGuildMemberData dataPackage);
 
 	  protected:
-		static std::unordered_map<std::string, GuildMemberData> cache;
+		static std::map<std::string, GuildMemberData> cache;
 		static DiscordCoreInternal::HttpClient* httpClient;
 		static std::mutex theMutex;
 		static bool doWeCache;
 
 		static void insertGuildMember(GuildMemberData dataPackage);
 
-		static void removeGuildMember(const std::string& globalId);
+		static void removeGuildMember(GuildMember& globalId);
 	};
 	/**@}*/
 };// namespace DiscordCoreAPI

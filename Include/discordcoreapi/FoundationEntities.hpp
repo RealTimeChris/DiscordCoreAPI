@@ -971,6 +971,18 @@ namespace DiscordCoreAPI {
 	/// For ids of DiscordEntities. \brief For ids of DiscordEntities.
 	using Snowflake = std::string;
 
+	/// Base class for all Discord entities, that are cached. \brief Base class for all Discord entities, that are cached.
+	class DiscordCoreAPI_Dll DiscordCacheEntity {
+	  public:
+		uint64_t id{};///< The identifier "snowflake" of the given entity.
+		/// Converts the snowflake-id into a time and date stamp. \brief Converts the
+		/// snowflake-id into a time and date stamp. \returns std::string A
+		/// std::string containing the timestamp.
+		std::string getCreatedAtTimestamp(TimeFormat timeFormat);
+
+		virtual ~DiscordCacheEntity() = default;
+	};
+
 	/// Base class DiscordCoreAPI_Dll for all Discord entities. \brief Base class DiscordCoreAPI_Dll for all Discord entities.
 	class DiscordCoreAPI_Dll DiscordEntity {
 	  public:
@@ -993,7 +1005,7 @@ namespace DiscordCoreAPI {
 	enum class RoleFlags : int8_t { Mentionable = 1 << 0, Managed = 1 << 1, Hoist = 1 << 2 };
 
 	/// Data structure representing a single Role. \brief Data structure representing a single Role.
-	class DiscordCoreAPI_Dll RoleData : public DiscordEntity {
+	class DiscordCoreAPI_Dll RoleData : public DiscordCacheEntity {
 	  public:
 
 		std::string unicodeEmoji{};///< Emoji representing the Role.
@@ -1036,7 +1048,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Data structure representing a single User. \brief Data structure representing a single User.
-	class DiscordCoreAPI_Dll UserData : public DiscordEntity {
+	class DiscordCoreAPI_Dll UserData : public DiscordCacheEntity {
 	  public:		
 
 		UserData() = default;
@@ -1317,7 +1329,7 @@ namespace DiscordCoreAPI {
 	enum class ChannelFlags : int8_t { NSFW = 1 << 0 };
 
 	/// Data structure representing a single Channel. \brief Data structure representing a single Channel.
-	class DiscordCoreAPI_Dll ChannelData : public DiscordEntity {
+	class DiscordCoreAPI_Dll ChannelData : public DiscordCacheEntity {
 	  public:
 
 		std::unordered_map<std::string, OverWriteData> permissionOverwrites{};///< Permission overwrites for the given Channel.
@@ -1964,17 +1976,17 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Data structure representing a single Guild. \brief Data structure representing a single Guild.
-	class DiscordCoreAPI_Dll GuildData : public DiscordEntity {
+	class DiscordCoreAPI_Dll GuildData : public DiscordCacheEntity {
 	  public:
 
-		std::unordered_map<std::string, PresenceUpdateData> presences{};///< Array of presences for each GuildMember.
-		std::unordered_map<std::string, VoiceStateData> voiceStates{};///< Array of Guild-member voice-states.
+		std::unordered_map<uint64_t, PresenceUpdateData> presences{};///< Array of presences for each GuildMember.
+		std::unordered_map<uint64_t, VoiceStateData> voiceStates{};///< Array of Guild-member voice-states.
 		DiscordCoreClient* discordCoreClient{ nullptr };///< A pointer to the DiscordCoreClient.
 		VoiceConnection* voiceConnectionPtr{ nullptr };///< A pointer to the VoiceConnection, if present.
 		std::vector<std::string> features{};///< List of Guild features.
-		std::vector<std::string> channels{};///< Array of Guild channels.
-		std::vector<std::string> members{};///< Array of GuildMembers.
-		std::vector<std::string> roles{};///< Array of Guild roles.
+		std::vector<uint64_t> channels{};///< Array of Guild channels.
+		std::vector<uint64_t> members{};///< Array of GuildMembers.
+		std::vector<uint64_t> roles{};///< Array of Guild roles.
 		TimeStamp joinedAt{ "" };///< When the bot joined this Guild.
 		int32_t memberCount{ 0 };///< Member count.
 		std::string ownerId{};///< User id of the Guild's owner.
@@ -2787,12 +2799,12 @@ namespace DiscordCoreAPI {
 			} else {
 				this->interactionData->message.id = this->messageData->id;
 			}
-			if (this->messageData->member.user.id == "") {
+			if (this->messageData->member.user.id == 0) {
 				this->messageData->member = this->interactionData->member;
 			} else {
 				this->interactionData->member = this->messageData->member;
 			}
-			if (this->interactionData->user.id != "") {
+			if (this->interactionData->user.id != 0) {
 				this->messageData->author = this->interactionData->user;
 			} else {
 				this->interactionData->user = this->messageData->author;
@@ -2865,10 +2877,10 @@ namespace DiscordCoreAPI {
 		/// Returns the User id of the last requester of this input-event. \brief Returns the User id of the last requester of this input-event.
 		/// \returns A std::string containing the author's id.
 		std::string getAuthorId() {
-			if (this->messageData->author.id == "") {
-				return this->interactionData->user.id;
-			} else if (this->messageData->author.id != "") {
-				return this->messageData->author.id;
+			if (this->messageData->author.id == 0) {
+				return std::to_string(this->interactionData->user.id);
+			} else if (this->messageData->author.id != 0) {
+				return std::to_string(this->messageData->author.id);
 			} else {
 				return std::string();
 			}

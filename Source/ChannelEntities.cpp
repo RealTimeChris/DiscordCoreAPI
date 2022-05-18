@@ -80,8 +80,8 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<ChannelData> Channels::getCachedChannelAsync(GetChannelData dataPackage) {
 		co_await NewThreadAwaitable<ChannelData>();
-		if (Channels::cache.contains(dataPackage.channelId)) {
-			co_return Channels::cache[dataPackage.channelId];
+		if (Channels::cache.contains(stoull(dataPackage.channelId))) {
+			co_return Channels::cache[stoull(dataPackage.channelId)];
 		} else {
 			co_return Channels::getChannelAsync(dataPackage).get();
 		}
@@ -265,7 +265,7 @@ namespace DiscordCoreAPI {
 
 	void Channels::insertChannel(ChannelData channel) {
 		std::lock_guard<std::mutex> theLock{ Channels::theMutex };
-		if (channel.id == "") {
+		if (channel.id == 0) {
 			return;
 		}
 		if (Channels::doWeCache) {
@@ -273,13 +273,13 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	void Channels::removeChannel(const std::string& channelId) {
+	void Channels::removeChannel(const uint64_t& channelId) {
 		std::lock_guard<std::mutex> theLock{ Channels::theMutex };
 		Channels::cache.erase(channelId);
 	};
 
 	DiscordCoreInternal::HttpClient* Channels::httpClient{ nullptr };
-	std::unordered_map<std::string, ChannelData> Channels::cache{};
+	std::unordered_map<uint64_t, ChannelData> Channels::cache{};
 	bool Channels::doWeCache{ false };
 	std::mutex Channels::theMutex{};
 }

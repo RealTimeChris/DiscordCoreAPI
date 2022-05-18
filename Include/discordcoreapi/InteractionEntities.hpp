@@ -386,7 +386,7 @@ namespace DiscordCoreAPI {
 			this->interactionPackage.interactionToken = dataPackage.token;
 			this->interactionPackage.interactionId = dataPackage.id;
 			this->interactionPackage.applicationId = dataPackage.applicationId;
-			if (dataPackage.member.user.id != "") {
+			if (dataPackage.member.user.id != 0) {
 				this->requesterId = dataPackage.message.member.user.id;
 			} else {
 				this->requesterId = dataPackage.user.id;

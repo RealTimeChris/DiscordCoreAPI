@@ -67,9 +67,9 @@ namespace DiscordCoreInternal {
 
 		if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
 			if (jsonObjectData["id"].is_string()) {
-				pDataStructure.id = jsonObjectData["id"].get<std::string>();
+				pDataStructure.id = stoull(jsonObjectData["id"].get<std::string>());
 			} else {
-				pDataStructure.id = std::to_string(jsonObjectData["id"].get<int64_t>());
+				pDataStructure.id = jsonObjectData["id"].get<int64_t>();
 			}
 		}
 
@@ -86,7 +86,7 @@ namespace DiscordCoreInternal {
 		}
 
 		if (jsonObjectData.contains("avatar") && !jsonObjectData["avatar"].is_null()) {
-			std::string avatarString = "https://cdn.discordapp.com/avatars/" + pDataStructure.id + "/" + jsonObjectData["avatar"].get<std::string>();
+			std::string avatarString = "https://cdn.discordapp.com/avatars/" + std::to_string(pDataStructure.id) + "/" + jsonObjectData["avatar"].get<std::string>();
 			pDataStructure.avatar = avatarString;
 		}
 
@@ -135,9 +135,9 @@ namespace DiscordCoreInternal {
 
 		if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
 			if (jsonObjectData["id"].is_string()) {
-				pDataStructure.id = jsonObjectData["id"].get<std::string>();
+				pDataStructure.id = stoull(jsonObjectData["id"].get<std::string>());
 			} else {
-				pDataStructure.id = std::to_string(jsonObjectData["id"].get<int64_t>());
+				pDataStructure.id = jsonObjectData["id"].get<int64_t>();
 			}
 		}
 
@@ -146,7 +146,7 @@ namespace DiscordCoreInternal {
 		}
 
 		if (jsonObjectData.contains("avatar") && !jsonObjectData["avatar"].is_null()) {
-			std::string avatarString = "https://cdn.discordapp.com/avatars/" + pDataStructure.id + "/" + jsonObjectData["avatar"].get<std::string>();
+			std::string avatarString = "https://cdn.discordapp.com/avatars/" + std::to_string(pDataStructure.id) + "/" + jsonObjectData["avatar"].get<std::string>();
 			pDataStructure.avatar = avatarString;
 		}
 
@@ -261,9 +261,9 @@ namespace DiscordCoreInternal {
 		
 		if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
 			if (jsonObjectData["id"].is_string()) {
-				pDataStructure.id = jsonObjectData["id"].get<std::string>();
+				pDataStructure.id = stoull(jsonObjectData["id"].get<std::string>());
 			} else {
-				pDataStructure.id = std::to_string(jsonObjectData["id"].get<int64_t>());
+				pDataStructure.id = jsonObjectData["id"].get<int64_t>();
 			}
 		}
 
@@ -323,7 +323,7 @@ namespace DiscordCoreInternal {
 			for (auto& value: jsonObjectData["recipients"]) {
 				DiscordCoreAPI::UserData newData{};
 				DataParser::parseObject(value, newData);
-				std::string userId = newData.id;
+				std::string userId = std::to_string(newData.id);
 				pDataStructure.recipients.insert_or_assign(userId, newData);
 			}
 		}
@@ -381,9 +381,9 @@ namespace DiscordCoreInternal {
 		
 		if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
 			if (jsonObjectData["id"].is_string()) {
-				pDataStructure.id = jsonObjectData["id"].get<std::string>();
+				pDataStructure.id = stoull(jsonObjectData["id"].get<std::string>());
 			} else {
-				pDataStructure.id = std::to_string(jsonObjectData["id"].get<int64_t>());
+				pDataStructure.id = jsonObjectData["id"].get<int64_t>();
 			}
 		}
 
@@ -439,9 +439,9 @@ namespace DiscordCoreInternal {
 		
 		if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
 			if (jsonObjectData["id"].is_string()) {
-				pDataStructure.id = jsonObjectData["id"].get<std::string>();
+				pDataStructure.id = stoull(jsonObjectData["id"].get<std::string>());
 			} else {
-				pDataStructure.id = std::to_string(jsonObjectData["id"].get<int64_t>());
+				pDataStructure.id = jsonObjectData["id"].get<int64_t>();
 			}
 		}
 
@@ -513,7 +513,7 @@ namespace DiscordCoreInternal {
 			for (auto& value: jsonObjectData["recipients"]) {
 				DiscordCoreAPI::UserData newData{};
 				DataParser::parseObject(value, newData);
-				std::string userId = newData.id;
+				std::string userId = std::to_string(newData.id);
 				pDataStructure.recipients.insert_or_assign(userId, newData);
 			}
 		}
@@ -662,9 +662,9 @@ namespace DiscordCoreInternal {
 		
 		if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
 			if (jsonObjectData["id"].is_string()) {
-				pDataStructure.id = jsonObjectData["id"].get<std::string>();
+				pDataStructure.id = stoull(jsonObjectData["id"].get<std::string>());
 			} else {
-				pDataStructure.id = std::to_string(jsonObjectData["id"].get<int64_t>());
+				pDataStructure.id = jsonObjectData["id"].get<int64_t>();
 			}
 		}
 
@@ -1362,7 +1362,7 @@ namespace DiscordCoreInternal {
 	template<> void DataParser::parseObject(const nlohmann::json& jsonObjectData, DiscordCoreAPI::Guild& pDataStructure) {
 	
 		if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
-			pDataStructure.id = jsonObjectData["id"].get<std::string>();
+			pDataStructure.id = stoull(jsonObjectData["id"].get<std::string>());
 		}
 
 		if (jsonObjectData.contains("afk_channel_id") && !jsonObjectData["afk_channel_id"].is_null()) {
@@ -1371,7 +1371,7 @@ namespace DiscordCoreInternal {
 
 		if (jsonObjectData.contains("icon") && !jsonObjectData["icon"].is_null()) {
 			std::string iconUrlString = "https://cdn.discordapp.com/";
-			iconUrlString += "icons/" + pDataStructure.id + "/" + jsonObjectData["icon"].get<std::string>() + ".png";
+			iconUrlString += "icons/" + std::to_string(pDataStructure.id) + "/" + jsonObjectData["icon"].get<std::string>() + ".png";
 			pDataStructure.icon = iconUrlString;
 		}
 
@@ -1385,13 +1385,13 @@ namespace DiscordCoreInternal {
 
 		if (jsonObjectData.contains("splash") && !jsonObjectData["splash"].is_null()) {
 			std::string iconUrlString = "https://cdn.discordapp.com/";
-			iconUrlString += "splashes/" + pDataStructure.id + "/" + jsonObjectData["splash"].get<std::string>() + ".png";
+			iconUrlString += "splashes/" + std::to_string(pDataStructure.id) + "/" + jsonObjectData["splash"].get<std::string>() + ".png";
 			pDataStructure.splash = iconUrlString;
 		}
 
 		if (jsonObjectData.contains("discovery_splash") && !jsonObjectData["discovery_splash"].is_null()) {
 			std::string discordSplashUrlString = "https://cdn.discordapp.com/";
-			discordSplashUrlString += "discovery-splashes/" + pDataStructure.id + "/" + jsonObjectData["discovery_splash"].get<std::string>() + ".png";
+			discordSplashUrlString += "discovery-splashes/" + std::to_string(pDataStructure.id) + "/" + jsonObjectData["discovery_splash"].get<std::string>() + ".png";
 			pDataStructure.discoverySplash = discordSplashUrlString;
 		}
 
@@ -1422,7 +1422,7 @@ namespace DiscordCoreInternal {
 
 		if (jsonObjectData.contains("banner") && !jsonObjectData["banner"].is_null()) {
 			std::string guildBannerUrl = "https://cdn.discordapp.com/";
-			guildBannerUrl += "banners/" + pDataStructure.id + "/" + jsonObjectData["banner"].get<std::string>() + ".png";
+			guildBannerUrl += "banners/" + std::to_string(pDataStructure.id) + "/" + jsonObjectData["banner"].get<std::string>() + ".png";
 			pDataStructure.banner = guildBannerUrl;
 		}
 
@@ -1471,7 +1471,7 @@ namespace DiscordCoreInternal {
 				DiscordCoreAPI::RoleData newData{};
 				DataParser::parseObject(value, newData);
 				pDataStructure.roles.push_back(newData.id);
-				DiscordCoreAPI::Roles::insertRole(*static_cast<DiscordCoreAPI::Role*>(&newData));
+				DiscordCoreAPI::Roles::insertRole(newData);
 			}
 		}
 
@@ -1528,7 +1528,7 @@ namespace DiscordCoreInternal {
 			for (auto& value: jsonObjectData["voice_states"]) {
 				DiscordCoreAPI::VoiceStateData newData{};
 				DataParser::parseObject(value, newData);
-				std::string userId = newData.userId;
+				uint64_t userId = stoull(newData.userId);
 				pDataStructure.voiceStates.insert_or_assign(userId, newData);
 			}
 		}
@@ -1556,7 +1556,7 @@ namespace DiscordCoreInternal {
 				DataParser::parseObject(value, newData);
 				newData.guildId = pDataStructure.id;
 				pDataStructure.channels.push_back(newData.id);
-				DiscordCoreAPI::Channels::insertChannel(*static_cast<DiscordCoreAPI::Channel*>(&newData));
+				DiscordCoreAPI::Channels::insertChannel(newData);
 			}
 		}
 
@@ -1565,7 +1565,7 @@ namespace DiscordCoreInternal {
 			for (auto& value: jsonObjectData["presences"]) {
 				DiscordCoreAPI::PresenceUpdateData newData{};
 				DataParser::parseObject(value, newData);
-				std::string presenceId = newData.user.id;
+				uint64_t presenceId = newData.user.id;
 				pDataStructure.presences.insert_or_assign(presenceId, newData);
 			}
 		}
@@ -1610,12 +1610,12 @@ namespace DiscordCoreInternal {
 	template<> void DataParser::parseObject(const nlohmann::json& jsonObjectData, DiscordCoreAPI::GuildData& pDataStructure) {
 		
 		if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
-			pDataStructure.id = jsonObjectData["id"].get<std::string>();
+			pDataStructure.id = stoull(jsonObjectData["id"].get<std::string>());
 		}
 
 		if (jsonObjectData.contains("icon") && !jsonObjectData["icon"].is_null()) {
 			std::string iconUrlString = "https://cdn.discordapp.com/";
-			iconUrlString += "icons/" + pDataStructure.id + "/" + jsonObjectData["icon"].get<std::string>() + ".png";
+			iconUrlString += "icons/" + std::to_string(pDataStructure.id) + "/" + jsonObjectData["icon"].get<std::string>() + ".png";
 			pDataStructure.icon = iconUrlString;
 		}
 
@@ -1645,7 +1645,7 @@ namespace DiscordCoreInternal {
 				DiscordCoreAPI::RoleData newData{};
 				DataParser::parseObject(value, newData);
 				pDataStructure.roles.push_back(newData.id);
-				DiscordCoreAPI::Roles::insertRole(*static_cast<DiscordCoreAPI::Role*>(&newData));
+				DiscordCoreAPI::Roles::insertRole(newData);
 			}
 		}
 
@@ -1673,7 +1673,7 @@ namespace DiscordCoreInternal {
 			for (auto& value: jsonObjectData["voice_states"]) {
 				DiscordCoreAPI::VoiceStateData newData{};
 				DataParser::parseObject(value, newData);
-				std::string userId = newData.userId;
+				uint64_t userId = stoull(newData.userId);
 				pDataStructure.voiceStates.insert_or_assign(userId, newData);
 			}
 		}
@@ -1710,7 +1710,7 @@ namespace DiscordCoreInternal {
 			for (auto& value: jsonObjectData["presences"]) {
 				DiscordCoreAPI::PresenceUpdateData newData{};
 				DataParser::parseObject(value, newData);
-				std::string presenceId = newData.user.id;
+				uint64_t presenceId = newData.user.id;
 				pDataStructure.presences.insert_or_assign(presenceId, newData);
 			}
 		}

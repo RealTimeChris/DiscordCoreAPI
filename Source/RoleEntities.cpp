@@ -26,11 +26,11 @@ namespace DiscordCoreAPI {
 	Role& Role::operator=(RoleData&&other) {
 		this->unicodeEmoji = other.unicodeEmoji;
 		this->permissions = other.permissions;
+		this->id = std::to_string(other.id);
 		this->position = other.position;
 		this->flags = other.flags;
 		this->color = other.color;
 		this->name = other.name;
-		this->id = other.id;
 		return *this;
 	}
 
@@ -41,11 +41,11 @@ namespace DiscordCoreAPI {
 	Role& Role::operator=(RoleData& other) {
 		this->unicodeEmoji = other.unicodeEmoji;
 		this->permissions = other.permissions;
+		this->id = std::to_string(other.id);
 		this->position = other.position;
 		this->flags = other.flags;
 		this->color = other.color;
 		this->name = other.name;
-		this->id = other.id;
 		return *this;
 	}
 
@@ -228,8 +228,8 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<RoleData> Roles::getCachedRoleAsync(GetRoleData dataPackage) {
 		co_await NewThreadAwaitable<RoleData>();
-		if (Roles::cache.contains(dataPackage.roleId)) {
-			co_return Roles::cache[dataPackage.roleId];
+		if (Roles::cache.contains(stoull(dataPackage.roleId))) {
+			co_return Roles::cache[stoull(dataPackage.roleId)];
 		} else {
 			co_return Roles::getRoleAsync(dataPackage).get();
 		}
@@ -237,7 +237,7 @@ namespace DiscordCoreAPI {
 
 	void Roles::insertRole(RoleData role) {
 		std::lock_guard<std::mutex> theLock{ Roles::theMutex };
-		if (role.id == "") {
+		if (role.id == 0) {
 			return;
 		}
 		if (Roles::doWeCache) {
@@ -245,13 +245,13 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	void Roles::removeRole(const std::string& roleId) {
+	void Roles::removeRole(const uint64_t& roleId) {
 		std::lock_guard<std::mutex> theLock{ Roles::theMutex };
 		Roles::cache.erase(roleId);
 	};
 
 	DiscordCoreInternal::HttpClient* Roles::httpClient{ nullptr };
-	std::unordered_map<std::string, RoleData> Roles::cache{};
+	std::unordered_map<uint64_t, RoleData> Roles::cache{};
 	bool Roles::doWeCache{ false };
 	std::mutex Roles::theMutex{};
 }

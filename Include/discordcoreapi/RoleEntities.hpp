@@ -121,9 +121,15 @@ namespace DiscordCoreAPI {
 	};
 
 	/// A single Role.
-	class DiscordCoreAPI_Dll Role : public RoleData {
+	class DiscordCoreAPI_Dll Role : public DiscordEntity {
 	  public:
 
+		std::string unicodeEmoji{};///< Emoji representing the Role.
+		Permissions permissions{};///< The Role's base Guild Permissions.
+		int32_t position{ 0 };///< Its position amongst the rest of the Guild's roles.
+		std::string name{};///< The Role's name.
+		int32_t color{ 0 };///< The Role's color.
+		int8_t flags{ 0 };///< Role flags.
 		RoleTagsData tags{};///< Role tags for the Role.
 		std::string icon{};///< Icon representing the Role.
 
@@ -134,6 +140,17 @@ namespace DiscordCoreAPI {
 		Role& operator=(RoleData& other);
 
 		Role(RoleData& other);
+
+		operator RoleData() {
+			RoleData returnData{};
+			returnData.unicodeEmoji = this->unicodeEmoji;
+			returnData.permissions = this->permissions;
+			returnData.position = this->position;
+			returnData.color = this->color;
+			returnData.flags = this->flags;
+			returnData.name = this->name;
+			return returnData;
+		}
 
 		Role() = default;
 
@@ -207,14 +224,14 @@ namespace DiscordCoreAPI {
 		static CoRoutine<RoleData> getCachedRoleAsync(GetRoleData dataPackage);
 
 	  protected:
-		static std::unordered_map<std::string, RoleData> cache;
+		static std::unordered_map<uint64_t, RoleData> cache;
 		static DiscordCoreInternal::HttpClient* httpClient;
 		static std::mutex theMutex;
 		static bool doWeCache;
 
 		static void insertRole(RoleData dataPackage);
 
-		static void removeRole(const std::string& roleId);
+		static void removeRole(const uint64_t& roleId);
 	};
 	/**@}*/
 

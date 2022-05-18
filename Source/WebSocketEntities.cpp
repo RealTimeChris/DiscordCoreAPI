@@ -755,7 +755,7 @@ namespace DiscordCoreInternal {
 					DiscordCoreAPI::User newData{};
 					DiscordCoreInternal::DataParser::parseObject(payload["d"]["user"], newData);
 					dataPackage->userNew = newData;
-					dataPackage->userOld = DiscordCoreAPI::Users::getCachedUserAsync({ .userId = dataPackage->userNew.id }).get();
+					dataPackage->userOld = DiscordCoreAPI::Users::getCachedUserAsync({ .userId = std::to_string(dataPackage->userNew.id) }).get();
 					this->eventManager->onUserUpdateEvent(*dataPackage);
 				} else if (payload["t"] == "VOICE_STATE_UPDATE") {
 					std::unique_ptr<DiscordCoreAPI::OnVoiceStateUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnVoiceStateUpdateData>() };

@@ -554,14 +554,14 @@ namespace DiscordCoreAPI {
 
 	  protected:
 		static DiscordCoreAPI::DiscordCoreClient* discordCoreClient;
-		static std::unordered_map<std::string, GuildData> cache;
+		static std::unordered_map<uint64_t, GuildData> cache;
 		static DiscordCoreInternal::HttpClient* httpClient;
 		static std::mutex theMutex;
 		static bool doWeCache;
 
 		static void insertGuild(GuildData guild);
 
-		static void removeGuild(const std::string& GuildId);
+		static void removeGuild(const uint64_t& GuildId);
 	};
 	/**@}*/
 }// namespace DiscordCoreAPI
