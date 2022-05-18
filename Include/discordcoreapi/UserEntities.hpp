@@ -76,7 +76,7 @@ namespace DiscordCoreAPI {
 	/// For modifying the Bot's User responseData. \brief For modifying the Bot's User responseData.
 	struct DiscordCoreAPI_Dll ModifyCurrentUserData {
 		std::vector<uint8_t> avatar{};///< If passed, modifies the user's avatar.
-		std::string username{};///< User's username, if changed may cause the user's discriminator to be randomized.
+		std::string userName{};///< User's userName, if changed may cause the user's discriminator to be randomized.
 	};
 
 	/// A single User. \brief A single User.

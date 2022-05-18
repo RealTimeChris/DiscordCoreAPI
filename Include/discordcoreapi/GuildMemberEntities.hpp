@@ -44,7 +44,7 @@ namespace DiscordCoreAPI {
 	/// For searching for one or more GuildMembers within a chosen Guild. \brief For searching for one or more GuildMembers within a chosen Guild.
 	struct DiscordCoreAPI_Dll SearchGuildMembersData {
 		std::string guildId{};///< Guild within which to search for the GuildMembers.
-		std::string query{};///< Query std::string to match username(s) and nickname(s) against.
+		std::string query{};///< Query std::string to match userName(s) and nickname(s) against.
 		int32_t limit{ 0 };///< Max number of members to return (1 - 1000).
 	};
 

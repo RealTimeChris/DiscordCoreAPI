@@ -198,7 +198,7 @@ PlayQ {#Play-Q}
 									co_return;
 								}
 								savePlaylist(discordGuild);
-								newEmbed.setAuthor(eventData.guildMember.user.username, eventData.guildMember.user.avatar);
+								newEmbed.setAuthor(eventData.guildMember.user.userName, eventData.guildMember.user.avatar);
 								newEmbed.setDescription("__**Title:**__ [" + SongAPI::getCurrentSong(eventData.guild.id).songTitle + "](" +
 														SongAPI::getCurrentSong(eventData.guild.id).viewUrl + ")" + "\n__**Description:**__ " +
 														SongAPI::getCurrentSong(eventData.guild.id).description + "\n__**Duration:**__ " +
@@ -228,7 +228,7 @@ PlayQ {#Play-Q}
 								SongAPI::sendNextSong(eventData.guildMember);
 								savePlaylist(discordGuild);
 								loadPlaylist(discordGuild);
-								newEmbed.setAuthor(eventData.guildMember.user.username, eventData.guildMember.user.avatar);
+								newEmbed.setAuthor(eventData.guildMember.user.userName, eventData.guildMember.user.avatar);
 								newEmbed.setDescription(
 									"__**It appears as though there was an error when trying to play the following track!**__\n__**Title:**__ [" +
 									eventData.previousSong.songTitle + "](" + eventData.previousSong.viewUrl + ")" + "\n__**Description:**__ " +
@@ -255,7 +255,7 @@ PlayQ {#Play-Q}
 								Messages::createMessageAsync(dataPackage02).get();
 
 								if (!SongAPI::areWeCurrentlyPlaying(eventData.guild.id)) {
-									newEmbed.setAuthor(eventData.guildMember.user.username, eventData.guildMember.user.avatar);
+									newEmbed.setAuthor(eventData.guildMember.user.userName, eventData.guildMember.user.avatar);
 									newEmbed.setDescription("__**Title:**__ [" + SongAPI::getCurrentSong(eventData.guild.id).songTitle + "](" +
 															SongAPI::getCurrentSong(eventData.guild.id).viewUrl + ")" + "\n__**Description:**__ " +
 															SongAPI::getCurrentSong(eventData.guild.id).description + "\n__**Duration:**__ " +
@@ -287,7 +287,7 @@ PlayQ {#Play-Q}
 							SongAPI::play(eventData.guild.id);
 						} else {
 							EmbedData newEmbed;
-							newEmbed.setAuthor(eventData.guildMember.user.username, eventData.guildMember.user.avatar);
+							newEmbed.setAuthor(eventData.guildMember.user.userName, eventData.guildMember.user.avatar);
 							newEmbed.setDescription("------\n__**Sorry, but there's nothing left to play here!**__\n------");
 							newEmbed.setTimeStamp(getTimeAndDate());
 							newEmbed.setTitle("__**Now Playing:**__");

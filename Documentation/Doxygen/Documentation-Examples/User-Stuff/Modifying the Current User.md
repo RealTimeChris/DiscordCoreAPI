@@ -33,11 +33,11 @@ namespace DiscordCoreAPI {
 		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
 			try {
 				DiscordCoreAPI::ModifyCurrentUserData dataPackage;
-				dataPackage.username = "MBot_GameHouse";
+				dataPackage.userName = "MBot_GameHouse";
 
 				auto currentUser = DiscordCoreAPI::Users::modifyCurrentUserAsync(dataPackage).get();
 
-				cout << currentUser.username << endl;
+				cout << currentUser.userName << endl;
 
 
 			} catch (...) {

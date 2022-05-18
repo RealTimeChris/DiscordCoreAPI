@@ -40,7 +40,7 @@ namespace DiscordCoreAPI {
 
 				auto guildMember = DiscordCoreAPI::GuildMembers::addGuildMemberAsync(dataPackage).get();
 
-				cout << "THE NAME: " << guildMember.user.username << endl;
+				cout << "THE NAME: " << guildMember.user.userName << endl;
 
 
 			} catch (...) {

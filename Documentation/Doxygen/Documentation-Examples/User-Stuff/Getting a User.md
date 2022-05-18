@@ -37,7 +37,7 @@ namespace DiscordCoreAPI {
 
 				auto currentUser = DiscordCoreAPI::Users::getUserAsync(dataPackage).get();
 
-				cout << currentUser.username << endl;
+				cout << currentUser.userName << endl;
 
 
 			} catch (...) {

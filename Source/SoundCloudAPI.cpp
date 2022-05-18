@@ -29,7 +29,7 @@ namespace DiscordCoreInternal {
 		auto newestSong = constructSecondDownloadUrl(newSong);
 		auto newesterSong = constructFinalDownloadUrl(newestSong);
 		newesterSong.addedByUserId = addedByGuildMember.user.id;
-		newesterSong.addedByUserName = addedByGuildMember.user.username;
+		newesterSong.addedByUserName = addedByGuildMember.user.userName;
 		return newesterSong;
 	}
 

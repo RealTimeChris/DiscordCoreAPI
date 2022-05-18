@@ -218,7 +218,7 @@ namespace DiscordCoreAPI {
 		std::vector<File> files{};///< File contents the contents of the file being sent.
 		std::string avatarUrl{};///< Override the default avatar of the webhook.
 		std::string webhookId{};///< The WebHook you would like to execute.
-		std::string username{};///< Override the default username of the webhook.
+		std::string userName{};///< Override the default userName of the webhook.
 		std::string customId{};///< Custom id for the modal.
 		std::string content{};///< The message contents (up to 2000 characters)	one of content, file, embeds.
 		std::string title{};///< Title for the modal.

@@ -29,7 +29,7 @@ namespace DiscordCoreAPI {
 	User& User::operator=(UserData&& other) {
 		this->discriminator = other.discriminator;
 		this->publicFlags = other.publicFlags;
-		this->username = other.username;
+		this->userName = other.userName;
 		this->avatar = other.avatar;
 		this->id = other.id;
 		return *this;
@@ -42,7 +42,7 @@ namespace DiscordCoreAPI {
 	User& User::operator=(UserData& other) {
 		this->discriminator = other.discriminator;
 		this->publicFlags = other.publicFlags;
-		this->username = other.username;
+		this->userName = other.userName;
 		this->avatar = other.avatar;
 		this->id = other.id;
 		return *this;
@@ -159,10 +159,10 @@ namespace DiscordCoreAPI {
 		workload.relativePath = "/users/@me";
 		workload.callStack = "Users::modifyCurrentUserAsync";
 		if (dataPackage.avatar.size() > 0) {
-			nlohmann::json responseData = { { "avatar", dataPackage.avatar }, { "username", dataPackage.username } };
+			nlohmann::json responseData = { { "avatar", dataPackage.avatar }, { "userName", dataPackage.userName } };
 			workload.content = responseData.dump();
 		} else {
-			nlohmann::json responseData = { { "username", dataPackage.username } };
+			nlohmann::json responseData = { { "userName", dataPackage.userName } };
 			workload.content = responseData.dump();
 		}
 		co_return DiscordCoreInternal::submitWorkloadAndGetResult<User>(*Users::httpClient, workload);

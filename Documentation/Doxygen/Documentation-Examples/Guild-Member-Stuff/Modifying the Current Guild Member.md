@@ -39,7 +39,7 @@ namespace DiscordCoreAPI {
 
 				auto guildMember = DiscordCoreAPI::GuildMembers::modifyCurrentGuildMemberAsync(dataPackage).get();
 
-				cout << "THE NAME: " << guildMember.user.username << endl;
+				cout << "THE NAME: " << guildMember.user.userName << endl;
 
 
 			} catch (...) {

@@ -139,7 +139,7 @@ namespace DiscordCoreInternal {
 		newSong.format = decipherFormat(newSong.format, newSong.html5PlayerFile);
 		DiscordCoreAPI::DownloadUrl downloadUrl{ .contentSize = newSong.contentLength, .urlPath = newSong.format.downloadUrl };
 		newSong.viewUrl = newSong.firstDownloadUrl;
-		newSong.addedByUserName = guildMember.user.username;
+		newSong.addedByUserName = guildMember.user.userName;
 		newSong.contentLength = static_cast<int32_t>(newSong.format.contentLength);
 		std::vector<DiscordCoreAPI::DownloadUrl> theUrls{};
 		newSong.finalDownloadUrls = theUrls;
@@ -391,7 +391,7 @@ namespace DiscordCoreInternal {
 		auto newerSong = YouTubeRequestBuilder::constructDownloadInfo(addedByGuildMember, newSong);
 		newerSong = YouTubeRequestBuilder::constructFinalDownloadUrl(newerSong);
 		newerSong.addedByUserId = addedByGuildMember.user.id;
-		newerSong.addedByUserName = addedByGuildMember.user.username;
+		newerSong.addedByUserName = addedByGuildMember.user.userName;
 		return newerSong;
 	}
 

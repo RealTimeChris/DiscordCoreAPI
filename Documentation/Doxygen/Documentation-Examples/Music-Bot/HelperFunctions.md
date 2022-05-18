@@ -11,7 +11,7 @@ Helper Functions {#HelperFunctions}
 			if (displayResponse) {
 				std::string msgString = "------\n**Sorry, but we can't do that in a direct message!**\n------";
 				std::unique_ptr<EmbedData> msgEmbed(new EmbedData());
-				msgEmbed->setAuthor(eventData.getMessageData().interaction.user.username, eventData.getMessageData().author.avatar);
+				msgEmbed->setAuthor(eventData.getMessageData().interaction.user.userName, eventData.getMessageData().author.avatar);
 				msgEmbed->setColor("FEFEFE");
 				msgEmbed->setDescription(msgString);
 				msgEmbed->setTimeStamp(getTimeAndDate());
@@ -74,7 +74,7 @@ Helper Functions {#HelperFunctions}
 		if (!doWeHaveControl) {
 			std::string msgString = "------\n**Sorry, but you lack the permissions to do that!**\n------";
 			std::unique_ptr<EmbedData> msgEmbed(new EmbedData());
-			msgEmbed->setAuthor(guildMember.user.username, guildMember.user.avatar);
+			msgEmbed->setAuthor(guildMember.user.userName, guildMember.user.avatar);
 			msgEmbed->setDescription(msgString);
 			msgEmbed->setColor(guildData.data.borderColor);
 			msgEmbed->setTimeStamp(getTimeAndDate());
@@ -108,7 +108,7 @@ Helper Functions {#HelperFunctions}
 		}
 
 		bool areWeACommander =
-			checkForBotCommanderStatus(guildMember, DiscordUser(args.discordCoreClient->getBotUser().username, args.discordCoreClient->getBotUser().id));
+			checkForBotCommanderStatus(guildMember, DiscordUser(args.discordCoreClient->getBotUser().userName, args.discordCoreClient->getBotUser().id));
 
 		if (areWeACommander) {
 			return true;
@@ -117,7 +117,7 @@ Helper Functions {#HelperFunctions}
 		if (displayResponse) {
 			std::string msgString = "------\n**Sorry, but you don't have the permissions required for that!**\n------";
 			std::unique_ptr<EmbedData> msgEmbed(new EmbedData());
-			msgEmbed->setAuthor(guildMember.user.username, guildMember.user.avatar);
+			msgEmbed->setAuthor(guildMember.user.userName, guildMember.user.avatar);
 			msgEmbed->setColor(discordGuild.data.borderColor);
 			msgEmbed->setDescription(msgString);
 			msgEmbed->setTimeStamp(getTimeAndDate());

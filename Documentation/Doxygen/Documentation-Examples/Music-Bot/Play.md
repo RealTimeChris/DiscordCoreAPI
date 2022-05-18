@@ -184,7 +184,7 @@ Play {#Play}
 									co_return;
 								}
 								savePlaylist(discordGuild);
-								newEmbed.setAuthor(eventDataNew.guildMember.user.username, eventDataNew.guildMember.user.avatar);
+								newEmbed.setAuthor(eventDataNew.guildMember.user.userName, eventDataNew.guildMember.user.avatar);
 								newEmbed.setDescription("__**Title:**__ [" + SongAPI::getCurrentSong(eventDataNew.guild.id).songTitle + "](" +
 														SongAPI::getCurrentSong(eventDataNew.guild.id).viewUrl + ")" + "\n__**Description:**__ " +
 														SongAPI::getCurrentSong(eventDataNew.guild.id).description + "\n__**Duration:**__ " +
@@ -214,7 +214,7 @@ Play {#Play}
 								SongAPI::sendNextSong(eventDataNew.guildMember);
 								savePlaylist(discordGuild);
 								loadPlaylist(discordGuild);
-								newEmbed.setAuthor(eventDataNew.guildMember.user.username, eventDataNew.guildMember.user.avatar);
+								newEmbed.setAuthor(eventDataNew.guildMember.user.userName, eventDataNew.guildMember.user.avatar);
 								newEmbed.setDescription(
 									"__**It appears as though there was an error when trying to play the following track!**__\n__**Title:**__ [" +
 									eventDataNew.previousSong.songTitle + "](" + eventDataNew.previousSong.viewUrl + ")" + "\n__**Description:**__ " +
@@ -242,7 +242,7 @@ Play {#Play}
 								Messages::createMessageAsync(dataPackage02).get();
 
 								if (!SongAPI::areWeCurrentlyPlaying(eventDataNew.guild.id)) {
-									newEmbed.setAuthor(eventDataNew.guildMember.user.username, eventDataNew.guildMember.user.avatar);
+									newEmbed.setAuthor(eventDataNew.guildMember.user.userName, eventDataNew.guildMember.user.avatar);
 									newEmbed.setDescription("__**Title:**__ [" + SongAPI::getCurrentSong(eventDataNew.guild.id).songTitle + "](" +
 															SongAPI::getCurrentSong(eventDataNew.guild.id).viewUrl + ")" + "\n__**Description:**__ " +
 															SongAPI::getCurrentSong(eventDataNew.guild.id).description + "\n__**Duration:**__ " +
@@ -274,7 +274,7 @@ Play {#Play}
 							SongAPI::play(eventDataNew.guild.id);
 						} else {
 							EmbedData newEmbed;
-							newEmbed.setAuthor(eventDataNew.guildMember.user.username, eventDataNew.guildMember.user.avatar);
+							newEmbed.setAuthor(eventDataNew.guildMember.user.userName, eventDataNew.guildMember.user.avatar);
 							newEmbed.setDescription("------\n__**Sorry, but there's nothing left to play here!**__\n------");
 							newEmbed.setTimeStamp(getTimeAndDate());
 							newEmbed.setTitle("__**Now Playing:**__");

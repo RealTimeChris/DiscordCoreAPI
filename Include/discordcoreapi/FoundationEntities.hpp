@@ -1111,7 +1111,7 @@ namespace DiscordCoreAPI {
 		
 		std::string discriminator{};///< The user's 4-digit discord-tag	identify.
 		UserFlags publicFlags{};///< The public flags on a user' s account.
-		std::string username{};///< The user's username, not unique across the platform	identify.
+		std::string userName{};///< The user's userName, not unique across the platform	identify.
 		std::string avatar{};///< The user's avatar hash.
 
 		virtual ~UserData() = default;
@@ -2775,7 +2775,7 @@ namespace DiscordCoreAPI {
 		bool friendSync{ false };///< Whether friend sync is enabled for this connection.
 		bool verified{ false };///< Whether the connection is verified.
 		bool revoked{ false };///< Whether the connection is revoked.
-		std::string name{};///< The username of the connection account.
+		std::string name{};///< The userName of the connection account.
 		std::string type{};///< The service of the connection(twitch, youtube).
 		std::string id{};///< Id of the connection account.
 	};
@@ -2977,15 +2977,15 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-		/// Returns the username of the last User to trigger this input-event. \brief Returns the username of the last User to trigger this input-event.
+		/// Returns the userName of the last User to trigger this input-event. \brief Returns the userName of the last User to trigger this input-event.
 		/// \returns A std::string containing the User name.
 		std::string getUserName() {
-			if (this->messageData->author.username == "" && this->interactionData->member.user.username != "") {
-				return this->interactionData->member.user.username;
-			} else if (this->interactionData->member.user.username == "" && this->interactionData->user.username != "") {
-				return this->interactionData->user.username;
-			} else if (this->messageData->author.username != "") {
-				return this->messageData->author.username;
+			if (this->messageData->author.userName == "" && this->interactionData->member.user.userName != "") {
+				return this->interactionData->member.user.userName;
+			} else if (this->interactionData->member.user.userName == "" && this->interactionData->user.userName != "") {
+				return this->interactionData->user.userName;
+			} else if (this->messageData->author.userName != "") {
+				return this->messageData->author.userName;
 			} else {
 				return std::string();
 			}

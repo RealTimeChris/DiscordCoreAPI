@@ -827,10 +827,10 @@ namespace DiscordCoreInternal {
 			}
 		}
 		if (dataPackage.avatarUrl != "") {
-			data["avatar_url"] = dataPackage.username;
+			data["avatar_url"] = dataPackage.userName;
 		}
-		if (dataPackage.username != "") {
-			data["username"] = dataPackage.username;
+		if (dataPackage.userName != "") {
+			data["userName"] = dataPackage.userName;
 		}
 		if (dataPackage.content != "") {
 			data["content"] = dataPackage.content;
