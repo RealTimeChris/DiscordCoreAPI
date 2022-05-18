@@ -3682,14 +3682,14 @@ namespace DiscordCoreAPI {
 
 	/// Logging options for the library. \brief Loggin options for the library.
 	struct DiscordCoreAPI_Dll LoggingOptions {
-		bool logWebSocketSuccessMessages{ false };///< Do we log the websocket success messages?
-		bool logWebSocketErrorMessages{ false };///< Do we log the websocket error messages?
-		bool logGeneralSuccessMessages{ false };///< Do we log general success messages?
-		bool logFFMPEGSuccessMessages{ false };///< Do we log FFMPEG success messages?
-		bool logGeneralErrorMessages{ false };///< Do we log general error messages?
-		bool logHttpSuccessMessages{ false };///< Do we log Http response success messages?
-		bool logFFMPEGErrorMessages{ false };///< Do we log FFMPEG error messages?
-		bool logHttpErrorMessages{ false };///< Do we log Http response error messages?
+		bool logWebSocketSuccessMessages{ false };///< Do we log the websocket success messages to cout?
+		bool logWebSocketErrorMessages{ false };///< Do we log the websocket error messages to cout?
+		bool logGeneralSuccessMessages{ false };///< Do we log general success messages to cout?
+		bool logFFMPEGSuccessMessages{ false };///< Do we log FFMPEG success messages to cout?
+		bool logGeneralErrorMessages{ false };///< Do we log general error messages to cout?
+		bool logHttpSuccessMessages{ false };///< Do we log Http response success messages to cout?
+		bool logFFMPEGErrorMessages{ false };///< Do we log FFMPEG error messages to cout?
+		bool logHttpErrorMessages{ false };///< Do we log Http response error messages to cout?
 	};
 
 	/// For selecting the caching style of the library. \brief For selecting the caching style of the library.

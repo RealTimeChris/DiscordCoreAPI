@@ -10,14 +10,14 @@ Running a Command {#runningcommand}
 
 #include "Index.hpp"
 
-	namespace DiscordCoreAPI {
+    namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
-	  public:
-		Test() {
-			this->commandName = "test";
-			this->helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed;
+    class Test : public DiscordCoreAPI::BaseFunction {
+    public:
+        Test() {
+        this->commandName = "test";
+        this->helpDescription = "Testing purposes!";
+        DiscordCoreAPI::EmbedData msgEmbed;
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
