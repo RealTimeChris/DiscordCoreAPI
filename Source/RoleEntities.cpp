@@ -30,6 +30,7 @@ namespace DiscordCoreAPI {
 		this->flags = other.flags;
 		this->color = other.color;
 		this->name = other.name;
+		this->id = other.id;
 		return *this;
 	}
 
@@ -44,6 +45,7 @@ namespace DiscordCoreAPI {
 		this->flags = other.flags;
 		this->color = other.color;
 		this->name = other.name;
+		this->id = other.id;
 		return *this;
 	}
 

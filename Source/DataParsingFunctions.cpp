@@ -1500,7 +1500,7 @@ namespace DiscordCoreInternal {
 
 		if (jsonObjectData.contains("members") && !jsonObjectData["members"].is_null()) {
 			for (auto& value: jsonObjectData["members"]) {
-				DiscordCoreAPI::GuildMember newData{};
+				DiscordCoreAPI::GuildMemberData newData{};
 				DataParser::parseObject(value, newData);
 				newData.guildId = pDataStructure.id;
 				newData.voiceData.guildId = pDataStructure.id;

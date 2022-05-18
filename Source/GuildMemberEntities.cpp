@@ -80,7 +80,10 @@ namespace DiscordCoreAPI {
 	CoRoutine<GuildMemberData> GuildMembers::getCachedGuildMemberAsync(GetGuildMemberData dataPackage) {
 		co_await NewThreadAwaitable<GuildMemberData>();
 		if (GuildMembers::cache.contains(dataPackage.guildId + " + " + dataPackage.guildMemberId)) {
-			co_return GuildMembers::cache[dataPackage.guildId + " + " + dataPackage.guildMemberId];
+			std::cout << "WERE NOT HERE! GUILD ID: " << dataPackage.guildId << " GUILDMEMBER ID: " << dataPackage.guildMemberId << std::endl;
+			auto guildMember = GuildMembers::cache[dataPackage.guildId + " + " + dataPackage.guildMemberId];
+			std::cout << "WERE NOT HERE! GUILD ID: " << guildMember.guildId << " GUILDMEMBER ID: " << guildMember.user.id << std::endl;
+			co_return guildMember;
 		} else {
 			co_return GuildMembers::getGuildMemberAsync(dataPackage).get();
 		}

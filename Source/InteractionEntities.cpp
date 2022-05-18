@@ -67,6 +67,7 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<Message> Interactions::editInteractionResponseAsync(EditInteractionResponseData dataPackage) {
 		DiscordCoreInternal::HttpWorkloadData workload{};
+		std::cout << "THE INTERACTION TOKEN: " << dataPackage.interactionPackage.interactionToken << std::endl;
 		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Patch_Interaction_Response);
 		co_await NewThreadAwaitable<Message>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Patch_Interaction_Response;
@@ -281,6 +282,7 @@ namespace DiscordCoreAPI {
 		this->messageId = dataPackage.getMessageId();
 		this->userId = dataPackage.getRequesterId();
 		*this->interactionData = dataPackage.getInteractionData();
+		std::cout << "CHANNEL ID: " << this->channelId << " THE MESSAGE ID: " << this->messageId << "THE USER ID: " << this->userId << std::endl;
 		ButtonCollector::buttonInteractionBufferMap.insert_or_assign(this->channelId + this->messageId, &this->buttonIncomingInteractionBuffer);
 	}
 
@@ -309,6 +311,7 @@ namespace DiscordCoreAPI {
 	void ButtonCollector::run() {
 		while (!this->doWeQuit) {
 			if (this->getButtonDataForAll == false) {
+				std::cout << "WERE NOT HERE THIS ISNT IT!" << std::endl;
 				auto buttonInteractionData = std::make_unique<InteractionData>();
 				if (waitForTimeToPass(this->buttonIncomingInteractionBuffer, *buttonInteractionData.get(), this->maxTimeInMs)) {
 					this->buttonId = "empty";
@@ -321,6 +324,7 @@ namespace DiscordCoreAPI {
 					this->responseVector.push_back(*response);
 					break;
 				}
+				std::cout << "WERE NOT HERE THIS ISNT IT!012012012" << std::endl;
 				if (buttonInteractionData->user.id != this->userId) {
 					auto createResponseData = std::make_unique<CreateInteractionResponseData>(*buttonInteractionData);
 					auto embedData = std::make_unique<EmbedData>();
@@ -354,6 +358,7 @@ namespace DiscordCoreAPI {
 						}
 						doWeQuit = true;
 					}
+					std::cout << "WERE NOT HERE THIS ISNT IT!123123123" << std::endl;
 				}
 			} else {
 				auto buttonInteractionData = std::make_unique<InteractionData>();

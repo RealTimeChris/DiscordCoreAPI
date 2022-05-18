@@ -102,7 +102,6 @@ namespace DiscordCoreAPI {
 		TimeStamp communicationDisabledUntil{ "" };///< When the user's timeout will expire and the user will be able to communicate in the guild again.
 		std::string premiumSince{};///< If applicable, when they first boosted the server.
 		std::string avatar{};///< The member's guild avatar hash.
-		UserData user{};///< User data for the current GuildMember.
 
 		GuildMember& operator=(GuildMemberData&&);
 

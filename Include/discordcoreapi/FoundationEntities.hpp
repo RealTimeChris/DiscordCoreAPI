@@ -2137,7 +2137,7 @@ namespace DiscordCoreAPI {
 		}
 
 		bool getLarge() {
-			return this->flags& static_cast<uint8_t>(GuildFlags::Large);
+			return this->flags & static_cast<uint8_t>(GuildFlags::Large);
 		}
 
 		std::unordered_map<std::string, PresenceUpdateData> presences{};///< Array of presences for each GuildMember.

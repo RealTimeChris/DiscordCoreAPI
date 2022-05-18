@@ -714,11 +714,9 @@ namespace DiscordCoreAPI {
 			doWeShowIt = true;
 		}
 		guild.initialize(doWeShowIt);
-		std::cout << "DO WE CACHE? " << std::boolalpha << Guilds::doWeCache << std::endl;
 		if (Guilds::doWeCache) {
 			Guilds::cache.insert_or_assign(guild.id, guild);
 		}
-		std::cout << "THE GUILD SIZE: " << Guilds::cache[guild.id].members.size() << std::endl;
 	}
 
 	void Guilds::removeGuild(const std::string& guildId) {
