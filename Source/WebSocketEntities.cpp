@@ -493,8 +493,8 @@ namespace DiscordCoreInternal {
 					this->eventManager->onGuildMembersChunkEvent(*dataPackage);
 				} else if (payload["t"] == "GUILD_ROLE_CREATE") {
 					std::unique_ptr<DiscordCoreAPI::OnRoleCreationData> dataPackage{ std::make_unique<DiscordCoreAPI::OnRoleCreationData>() };
-					if (payload["d"].contains("Role")) {
-						DiscordCoreInternal::DataParser::parseObject(payload["d"]["Role"], dataPackage->role);
+					if (payload["d"].contains("role")) {
+						DiscordCoreInternal::DataParser::parseObject(payload["d"]["role"], dataPackage->role);
 					}
 					if (payload["d"].contains("guild_id")) {
 						dataPackage->guildId = stoull(payload["d"]["guild_id"].get<std::string>());
@@ -502,13 +502,14 @@ namespace DiscordCoreInternal {
 					this->eventManager->onRoleCreationEvent(*dataPackage);
 				} else if (payload["t"] == "GUILD_ROLE_UPDATE") {
 					std::unique_ptr<DiscordCoreAPI::OnRoleUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnRoleUpdateData>() };
-					if (payload["d"].contains("Role")) {
-						dataPackage->roleOld = DiscordCoreAPI::Roles::getCachedRoleAsync({ .roleId = stoull(payload["d"]["Role"]["id"].get<std::string>()) }).get();
-						dataPackage->roleNew = dataPackage->roleOld;
-					}
-					DiscordCoreInternal::DataParser::parseObject(payload["d"]["Role"], dataPackage->roleNew);
 					if (payload["d"].contains("guild_id")) {
 						dataPackage->guildId = stoull(payload["d"]["guild_id"].get<std::string>());
+					}
+					DiscordCoreInternal::DataParser::parseObject(payload["d"]["role"], dataPackage->roleNew);
+					if (payload["d"].contains("role")) {
+						dataPackage->roleOld =
+							DiscordCoreAPI::Roles::getCachedRoleAsync({ .guildId = dataPackage->guildId, .roleId = stoull(payload["d"]["role_id"].get<std::string>()) }).get();
+						dataPackage->roleNew = dataPackage->roleOld;
 					}
 					this->eventManager->onRoleUpdateEvent(*dataPackage);
 				} else if (payload["t"] == "GUILD_ROLE_DELETE") {
@@ -517,7 +518,8 @@ namespace DiscordCoreInternal {
 						dataPackage->guildId = stoull(payload["d"]["guild_id"].get<std::string>());
 					}
 					if (payload["d"].contains("role_id")) {
-						dataPackage->roleOld = DiscordCoreAPI::Roles::getCachedRoleAsync({ .roleId = stoull(payload["d"]["role_id"].get<std::string>()) }).get();
+						dataPackage->roleOld =
+							DiscordCoreAPI::Roles::getCachedRoleAsync({ .guildId = dataPackage->guildId, .roleId = stoull(payload["d"]["role_id"].get<std::string>()) }).get();
 					}
 					this->eventManager->onRoleDeletionEvent(*dataPackage);
 				} else if (payload["t"] == "INTEGRATION_CREATE") {
@@ -578,8 +580,8 @@ namespace DiscordCoreInternal {
 							std::unique_ptr<DiscordCoreAPI::OnInteractionCreationData> dataPackage{ std::make_unique<DiscordCoreAPI::OnInteractionCreationData>() };
 							dataPackage->interactionData = *interactionData;
 							if (DiscordCoreAPI::ButtonCollector::buttonInteractionBufferMap.contains(std::to_string(eventData->getChannelId()) + std::to_string(eventData->getMessageId()))) {
-								DiscordCoreAPI::ButtonCollector::buttonInteractionBufferMap[std::to_string(eventData->getChannelId()) + std::to_string(eventData->getMessageId())]->send(
-									eventData->getInteractionData());
+								DiscordCoreAPI::ButtonCollector::buttonInteractionBufferMap[std::to_string(eventData->getChannelId()) + std::to_string(eventData->getMessageId())]
+									->send(*interactionData);
 							}
 							this->eventManager->onInteractionCreationEvent(*dataPackage);
 						} else if (interactionData->data.componentData.componentType == DiscordCoreAPI::ComponentType::SelectMenu) {
@@ -590,7 +592,7 @@ namespace DiscordCoreInternal {
 							if (DiscordCoreAPI::SelectMenuCollector::selectMenuInteractionBufferMap.contains(std::to_string(eventData->getChannelId()) + std::to_string(eventData->getMessageId()))) {
 								DiscordCoreAPI::SelectMenuCollector::selectMenuInteractionBufferMap[std::to_string(eventData->getChannelId()) +
 									std::to_string(eventData->getMessageId())]
-									->send(eventData->getInteractionData());
+									->send(*interactionData);
 							}
 							this->eventManager->onInteractionCreationEvent(*dataPackage);
 						}
