@@ -108,8 +108,8 @@ namespace DiscordCoreAPI {
 	}
 
 	InputEventData InputEvents::respondToInputEvent(const CreateDeferredInteractionResponseData& dataPackage) {
-		CreateInteractionResponseData dataPackage02{ dataPackage };
-		Interactions::createInteractionResponseAsync(dataPackage02).get();
+		CreateInteractionResponseData dataPackageNew{ dataPackage };
+		Interactions::createInteractionResponseAsync(dataPackageNew).get();
 		InputEventData dataPackageNewer{};
 		dataPackageNewer.responseType = InputEventResponseType::Deferred_Response;
 		dataPackageNewer.interactionData->applicationId = dataPackage.interactionPackage.applicationId;
@@ -121,9 +121,9 @@ namespace DiscordCoreAPI {
 	InputEventData InputEvents::respondToInputEvent(const CreateInteractionResponseData& dataPackage) {
 		Message messageData = Interactions::createInteractionResponseAsync(dataPackage).get();
 		InputEventData dataPackageNewer{};
+		dataPackageNewer.responseType = InputEventResponseType::Interaction_Response;
 		dataPackageNewer.interactionData->applicationId = dataPackage.interactionPackage.applicationId;
 		dataPackageNewer.interactionData->token = dataPackage.interactionPackage.interactionToken;
-		dataPackageNewer.responseType = InputEventResponseType::Interaction_Response;
 		dataPackageNewer.interactionData->id = dataPackage.interactionPackage.interactionId;
 		dataPackageNewer.interactionData->channelId = messageData.channelId;
 		dataPackageNewer.interactionData->user = messageData.author;
@@ -134,8 +134,8 @@ namespace DiscordCoreAPI {
 	InputEventData InputEvents::respondToInputEvent(const EditInteractionResponseData& dataPackage) {
 		Message messageData = Interactions::editInteractionResponseAsync(dataPackage).get();
 		InputEventData dataPackageNewer{};
-		dataPackageNewer.interactionData->applicationId = dataPackage.interactionPackage.applicationId;
 		dataPackageNewer.responseType = InputEventResponseType::Edit_Interaction_Response;
+		dataPackageNewer.interactionData->applicationId = dataPackage.interactionPackage.applicationId;
 		dataPackageNewer.interactionData->token = dataPackage.interactionPackage.interactionToken;
 		dataPackageNewer.interactionData->id = dataPackage.interactionPackage.interactionId;
 		dataPackageNewer.interactionData->channelId = messageData.channelId;
@@ -171,8 +171,8 @@ namespace DiscordCoreAPI {
 	}
 
 	InputEventData InputEvents::respondToInputEvent(const CreateEphemeralInteractionResponseData& dataPackage) {
-		CreateInteractionResponseData newData{ dataPackage };
-		Message messageData = Interactions::createInteractionResponseAsync(newData).get();
+		CreateInteractionResponseData dataPackageNew{ dataPackage };
+		Message messageData = Interactions::createInteractionResponseAsync(dataPackageNew).get();
 		InputEventData dataPackageNewer{};
 		dataPackageNewer.responseType = InputEventResponseType::Ephemeral_Interaction_Response;
 		dataPackageNewer.interactionData->applicationId = dataPackage.interactionPackage.applicationId;
