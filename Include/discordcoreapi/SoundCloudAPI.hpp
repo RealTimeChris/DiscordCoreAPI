@@ -33,7 +33,7 @@ namespace DiscordCoreInternal {
 
 		SoundCloudRequestBuilder(HttpClient*);
 
-		DiscordCoreAPI::Song collectFinalSong(const DiscordCoreAPI::GuildMemberData& addedByGuildMember, const DiscordCoreAPI::Song& newSong);
+		DiscordCoreAPI::Song collectFinalSong(DiscordCoreAPI::GuildMemberData& addedByGuildMember, const DiscordCoreAPI::Song& newSong);
 
 		std::vector<HttpData> submitWorkloadAndGetResultNew(const std::vector<HttpWorkloadData>& httpData);
 
@@ -65,7 +65,7 @@ namespace DiscordCoreInternal {
 
 		void downloadAndStreamAudio(const DiscordCoreAPI::Song& newSong, SoundCloudAPI* soundCloudAPI, std::stop_token theToken, int32_t currentRecursionDepth);
 
-		DiscordCoreAPI::Song collectFinalSong(const DiscordCoreAPI::GuildMemberData& addedByGuildMember, const DiscordCoreAPI::Song& newSong);
+		DiscordCoreAPI::Song collectFinalSong(DiscordCoreAPI::GuildMemberData& addedByGuildMember, const DiscordCoreAPI::Song& newSong);
 
 		void breakOut(std::stop_token theToken, std::unique_ptr<AudioDecoder> audioDecoder, SoundCloudAPI* soundCloudAPI);
 

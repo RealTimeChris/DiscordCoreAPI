@@ -35,7 +35,7 @@ namespace DiscordCoreInternal {
 
 		YouTubeRequestBuilder(HttpClient*);
 
-		DiscordCoreAPI::Song collectFinalSong(const DiscordCoreAPI::GuildMemberData& addedByGuildMember, DiscordCoreAPI::Song& newSong);
+		DiscordCoreAPI::Song collectFinalSong(DiscordCoreAPI::GuildMemberData& addedByGuildMember, DiscordCoreAPI::Song& newSong);
 
 		std::vector<DiscordCoreAPI::Song> collectSearchResults(const std::string& theString);
 
@@ -43,7 +43,7 @@ namespace DiscordCoreInternal {
 		HttpClient* httpClient{ nullptr };
 		std::string baseUrl{ "https://www.youtube.com" };
 
-		DiscordCoreAPI::Song constructDownloadInfo(const DiscordCoreAPI::GuildMemberData& guildMember, DiscordCoreAPI::Song& newSong);
+		DiscordCoreAPI::Song constructDownloadInfo(DiscordCoreAPI::GuildMemberData& guildMember, DiscordCoreAPI::Song& newSong);
 
 		DiscordCoreAPI::Song constructFinalDownloadUrl(DiscordCoreAPI::Song& newSong);
 
@@ -81,7 +81,7 @@ namespace DiscordCoreInternal {
 
 		void downloadAndStreamAudio(const DiscordCoreAPI::Song& newSong, YouTubeAPI* youtubeAPI, std::stop_token theToken, int32_t currentRecursionDepth);
 
-		DiscordCoreAPI::Song collectFinalSong(const DiscordCoreAPI::GuildMemberData& addedByGuildMember, DiscordCoreAPI::Song& newSong);
+		DiscordCoreAPI::Song collectFinalSong(DiscordCoreAPI::GuildMemberData& addedByGuildMember, DiscordCoreAPI::Song& newSong);
 
 		void breakOut(std::stop_token theToken, std::unique_ptr<AudioDecoder> audioDecoder, YouTubeAPI* soundCloudAPI);
 

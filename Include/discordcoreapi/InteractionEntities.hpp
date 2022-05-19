@@ -795,11 +795,11 @@ namespace DiscordCoreAPI {
 		std::vector<std::string> values{};
 		std::string bufferMapKey{};
 		std::string selectMenuId{};
+		uint32_t maxTimeInMs{ 0 };
+		bool doWeQuit{ false };
 		uint64_t channelId{};
 		uint64_t messageId{};
-		uint32_t maxTimeInMs{ 0 };
 		uint64_t userId{};
-		bool doWeQuit{ false };
 
 		void run();
 	};
@@ -842,9 +842,9 @@ namespace DiscordCoreAPI {
 
 		std::unique_ptr<InteractionData> interactionData{ std::make_unique<InteractionData>() };///< Interaction data.
 		std::string emojiName{};///< The emoji name, if applicable.
+		std::string buttonId{};///< The id of the button, for identification.
 		uint64_t channelId{};///< The Channel id where it took place.
 		uint64_t messageId{};///< The Message id where it took place.
-		std::string buttonId{};///< The id of the button, for identification.
 		uint64_t userId{};///< The User id who selected the menu options.
 	};
 

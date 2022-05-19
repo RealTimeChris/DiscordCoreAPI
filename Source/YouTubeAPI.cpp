@@ -67,7 +67,7 @@ namespace DiscordCoreInternal {
 		return searchResults;
 	}
 
-	DiscordCoreAPI::Song YouTubeRequestBuilder::constructDownloadInfo(const DiscordCoreAPI::GuildMemberData& guildMember, DiscordCoreAPI::Song& newSong) {
+	DiscordCoreAPI::Song YouTubeRequestBuilder::constructDownloadInfo(DiscordCoreAPI::GuildMemberData& guildMember, DiscordCoreAPI::Song& newSong) {
 		if (newSong.firstDownloadUrl != "") {
 			std::this_thread::sleep_for(std::chrono::milliseconds{ 500 });
 		}
@@ -386,7 +386,7 @@ namespace DiscordCoreInternal {
 		return downloadUrl;
 	}
 
-	DiscordCoreAPI::Song YouTubeRequestBuilder::collectFinalSong(const DiscordCoreAPI::GuildMemberData& addedByGuildMember, DiscordCoreAPI::Song& newSong) {
+	DiscordCoreAPI::Song YouTubeRequestBuilder::collectFinalSong(DiscordCoreAPI::GuildMemberData& addedByGuildMember, DiscordCoreAPI::Song& newSong) {
 		newSong.firstDownloadUrl = YouTubeRequestBuilder::baseUrl + "/watch?v=" + newSong.songId + "&hl=en";
 		auto newerSong = YouTubeRequestBuilder::constructDownloadInfo(addedByGuildMember, newSong);
 		newerSong = YouTubeRequestBuilder::constructFinalDownloadUrl(newerSong);
@@ -401,7 +401,7 @@ namespace DiscordCoreInternal {
 		this->guildId = guildIdNew;
 	}
 
-	DiscordCoreAPI::Song YouTubeAPI::collectFinalSong(const DiscordCoreAPI::GuildMemberData& addedByGuildMember, DiscordCoreAPI::Song& newSong) {
+	DiscordCoreAPI::Song YouTubeAPI::collectFinalSong(DiscordCoreAPI::GuildMemberData& addedByGuildMember, DiscordCoreAPI::Song& newSong) {
 		return this->requestBuilder.collectFinalSong(addedByGuildMember, newSong);
 	}
 

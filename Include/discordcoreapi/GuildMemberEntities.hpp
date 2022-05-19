@@ -69,7 +69,7 @@ namespace DiscordCoreAPI {
 	/// For modifying a GuildMember's values. \brief For modifying a GuildMember's values.
 	struct DiscordCoreAPI_Dll ModifyGuildMemberData {
 		TimeStamp communicationDisabledUntil{ "" };///< When the user's timeout will expire and the user will be able to communicate in the guild again.
-		std::vector<std::string> roleIds{};///< A collection of Role id's to be applied to them.
+		std::vector<uint64_t> roleIds{};///< A collection of Role id's to be applied to them.
 		std::string newVoiceChannelId{};///< The new voice Channel to move them into.
 		std::string currentChannelId{};///< The current voice Channel, if applicaple.
 		uint64_t guildMemberId{};///< The user id of the desired Guild memeber.
