@@ -131,11 +131,11 @@ namespace DiscordCoreAPI {
 	CoRoutine<UserData*> Users::getCachedUserAsync(GetUserData dataPackage) {
 		co_await NewThreadAwaitable<UserData*>();
 		if (Users::cache.contains(dataPackage.userId)) {
-			co_return &Users::cache[dataPackage.userId];
+			co_return Users::cache[dataPackage.userId].get();
 		} else {
-			User theUser = getUserAsync(dataPackage).get();
-			Users::cache.insert_or_assign(theUser.id, theUser);
-			co_return &Users::cache[dataPackage.userId];
+			std::unique_ptr<UserData> theUser = std::make_unique<UserData>(getUserAsync(dataPackage).get());
+			Users::cache.insert_or_assign(theUser->id, std::move(theUser));
+			co_return Users::cache[dataPackage.userId].get();
 		}
 	}
 
@@ -209,12 +209,14 @@ namespace DiscordCoreAPI {
 			return;
 		}
 		if (Users::doWeCache) {
-			Users::cache.insert_or_assign(insertUser.id, insertUser);
+			std::unique_ptr<UserData> thePtr{ std::make_unique<UserData>() };
+			*thePtr = insertUser;
+			Users::cache.insert_or_assign(insertUser.id, std::move(thePtr));
 		}
 	}
 
+	std::unordered_map<uint64_t, std::unique_ptr<UserData>> Users::cache{};
 	DiscordCoreInternal::HttpClient* Users::httpClient{ nullptr };
-	std::unordered_map<uint64_t, UserData> Users::cache{};
 	bool Users::doWeCache{ false };
 	std::mutex Users::theMutex{};
 
