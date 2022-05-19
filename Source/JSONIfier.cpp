@@ -241,11 +241,11 @@ namespace DiscordCoreInternal {
 		if (dataPackage.channelId == 0) {
 			data["d"]["channel_id"] = nullptr;
 		} else {
-			data["d"]["channel_id"] = dataPackage.channelId;
+			data["d"]["channel_id"] = std::to_string(dataPackage.channelId);
 		}
 		data["d"]["self_deaf"] = dataPackage.selfDeaf;
 		data["d"]["self_mute"] = dataPackage.selfMute;
-		data["d"]["guild_id"] = dataPackage.guildId;
+		data["d"]["guild_id"] = std::to_string(dataPackage.guildId);
 		data["op"] = 4;
 		return data;
 	}
@@ -295,8 +295,8 @@ namespace DiscordCoreInternal {
 	std::vector<uint8_t> JSONIFY(const DiscordCoreInternal::VoiceConnectionData& dataPackage, const VoiceConnectInitData& dataPackage02) {
 		nlohmann::json data{};
 		data["d"]["session_id"] = dataPackage.sessionId;
-		data["d"]["server_id"] = dataPackage02.guildId;
-		data["d"]["user_id"] = dataPackage02.userId;
+		data["d"]["server_id"] = std::to_string(dataPackage02.guildId);
+		data["d"]["user_id"] = std::to_string(dataPackage02.userId);
 		data["d"]["token"] = dataPackage.token;
 		data["op"] = 0;
 		std::vector<uint8_t> newVector{};
@@ -375,7 +375,7 @@ namespace DiscordCoreInternal {
 			nlohmann::json newData{};
 			newData["permission"] = value.permission;
 			newData["type"] = value.type;
-			newData["id"] = value.id;
+			newData["id"] = std::to_string(value.id);
 			newDataArray.push_back(newData);
 		}
 		return newDataArray.dump();
@@ -383,8 +383,8 @@ namespace DiscordCoreInternal {
 
 	std::string JSONIFY(const DiscordCoreAPI::EditChannelPermissionOverwritesData& dataPackage) {
 		nlohmann::json data{};
-		data["allow"] = stoll(dataPackage.allow);
-		data["deny"] = stoll(dataPackage.deny);
+		data["allow"] = dataPackage.allow;
+		data["deny"] = dataPackage.deny;
 		data["type"] = dataPackage.type;
 		return data.dump();
 	}
@@ -470,11 +470,11 @@ namespace DiscordCoreInternal {
 		for (auto& value: dataPackage.modifyChannelData) {
 			nlohmann::json dataNew{};
 			dataNew["lock_permissions"] = value.lockPermissions;
-			if (value.parentId != "") {
+			if (value.parentId != 0) {
 				dataNew["parent_id"] = value.parentId;
 			}
 			dataNew["position"] = value.position;
-			dataNew["id"] = value.id;
+			dataNew["id"] = std::to_string(value.id);
 			data.push_back(dataNew);
 		}
 		return data.dump();
@@ -526,7 +526,7 @@ namespace DiscordCoreInternal {
 		if (dataPackage.entityType == DiscordCoreAPI::GuildScheduledEventEntityType::External) {
 			data["channel_id"] = nullptr;
 		} else {
-			data["channel_id"] = dataPackage.channelId;
+			data["channel_id"] = std::to_string(dataPackage.channelId);
 		}
 		data["entity_metadata"]["location"] = dataPackage.entityMetadata.location;
 		data["entity_metadata"]["entity_type"] = dataPackage.entityType;
@@ -543,7 +543,7 @@ namespace DiscordCoreInternal {
 		for (auto& value: dataPackage.rolePositions) {
 			nlohmann::json data{};
 			data["position"] = value.rolePosition;
-			data["id"] = value.roleId;
+			data["id"] = std::to_string(value.roleId);
 			dataArray.push_back(data);
 		}
 		return dataArray.dump();
@@ -554,7 +554,7 @@ namespace DiscordCoreInternal {
 		if (dataPackage.entityType == DiscordCoreAPI::GuildScheduledEventEntityType::External) {
 			data["channel_id"] = nullptr;
 		} else {
-			data["channel_id"] = dataPackage.channelId;
+			data["channel_id"] = std::to_string(dataPackage.channelId);
 		}
 		data["entity_metadata"]["location"] = dataPackage.entityMetadata.location;
 		data["entity_metadata"]["entity_type"] = dataPackage.entityType;
@@ -573,8 +573,8 @@ namespace DiscordCoreInternal {
 			newData["description"] = value.description;
 			newData["channel_id"] = value.channelId;
 			newData["emoji_name"] = value.emojiName;
-			if (value.emojiId != "") {
-				newData["emoji_id"] = value.emojiId;
+			if (value.emojiId != 0) {
+				newData["emoji_id"] = std::to_string(value.emojiId);
 			}
 			channelsArray.push_back(newData);
 		}
@@ -648,7 +648,7 @@ namespace DiscordCoreInternal {
 		nlohmann::json data{};
 		if (dataPackage.targetUserId != 0) {
 			data["target_application_id"] = dataPackage.targetApplicationId;
-			data["target_user_id"] = dataPackage.targetUserId;
+			data["target_user_id"] = std::to_string(dataPackage.targetUserId);
 			data["target_type"] = dataPackage.targetType;
 		}
 		data["temporary"] = dataPackage.temporary;
@@ -675,15 +675,15 @@ namespace DiscordCoreInternal {
 			nlohmann::json newData{};
 			newData["allow"] = value.allow.getCurrentPermissionString();
 			newData["deny"] = value.deny.getCurrentPermissionString();
-			newData["channel_id"] = value.channelId;
+			newData["channel_id"] = std::to_string(value.channelId);
 			newData["type"] = value.type;
-			newData["id"] = value.id;
+			newData["id"] = std::to_string(value.id);
 			overwrites.push_back(newData);
 		}
 		data["default_auto_archive_duration"] = dataPackage.defaultAutoArchiveDuration;
 		data["rate_limit_per_user"] = dataPackage.rateLimitPerUser;
 		data["permission_overwrites"] = overwrites;
-		data["parent_id"] = dataPackage.parentId;
+		data["parent_id"] = std::to_string(dataPackage.parentId);
 		data["position"] = dataPackage.position;
 		data["topic"] = dataPackage.topic;
 		data["name"] = dataPackage.name;
@@ -705,8 +705,8 @@ namespace DiscordCoreInternal {
 			}
 			data["roles"] = roleIdArray;
 		}
-		if (dataPackage.newVoiceChannelId != "") {
-			data["channel_id"] = dataPackage.newVoiceChannelId;
+		if (dataPackage.newVoiceChannelId != 0) {
+			data["channel_id"] = std::to_string(dataPackage.newVoiceChannelId);
 			data["mute"] = dataPackage.mute;
 			data["deaf"] = dataPackage.deaf;
 		}
@@ -715,7 +715,7 @@ namespace DiscordCoreInternal {
 
 	std::string JSONIFY(const DiscordCoreAPI::FollowNewsChannelData& dataPackage) {
 		nlohmann::json data{};
-		data["webhook_channel_id"] = dataPackage.targetChannelId;
+		data["webhook_channel_id"] = std::to_string(dataPackage.targetChannelId);
 		return data.dump();
 	}
 

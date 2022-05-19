@@ -95,7 +95,7 @@ namespace DiscordCoreAPI {
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Guild_Members;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/members";
-		if (dataPackage.after != "") {
+		if (dataPackage.after != 0) {
 			workload.relativePath += "?after=" + dataPackage.after;
 			if (dataPackage.limit != 0) {
 				workload.relativePath += "&limit=" + std::to_string(dataPackage.limit);

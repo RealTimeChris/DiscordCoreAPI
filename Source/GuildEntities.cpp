@@ -78,11 +78,15 @@ namespace DiscordCoreAPI {
 	VoiceConnection* Guild::connectToVoice(const uint64_t& channelId, bool selfDeaf, bool selfMute) {
 		if (getVoiceConnectionMap()[this->id]->areWeConnected()) {
 			this->voiceConnectionPtr = getVoiceConnectionMap()[this->id].get();
+			std::cout << "WERE HERE THIS IS IT!" << std::endl;
 			return this->voiceConnectionPtr;
 		} else if (channelId != 0) {
-			std::string theShardId{ std::to_string((this->id >> 22) % this->discordCoreClient->shardingOptions.totalNumberOfShards) };
+			std::cout << "WERE HERE THIS IS IT!010101" << std::endl;
+			std::string theShardId{ std::to_string(((this->id >> 22) % this->discordCoreClient->shardingOptions.totalNumberOfShards)) };
 			getVoiceConnectionMap()[this->id] = std::make_unique<VoiceConnection>(this->discordCoreClient->webSocketMap[theShardId].get());
+			std::cout << "WERE HERE THIS IS IT!020202" << std::endl;
 			this->voiceConnectionPtr = getVoiceConnectionMap()[this->id].get();
+			std::cout << "WERE HERE THIS IS IT!030303" << std::endl;
 			DiscordCoreInternal::VoiceConnectInitData voiceConnectInitData{};
 			voiceConnectInitData.channelId = channelId;
 			voiceConnectInitData.guildId = this->id;
@@ -90,6 +94,7 @@ namespace DiscordCoreAPI {
 			voiceConnectInitData.selfDeaf = selfDeaf;
 			voiceConnectInitData.selfMute = selfMute;
 			this->voiceConnectionPtr->connect(voiceConnectInitData);
+			std::cout << "WERE HERE THIS IS IT!0440404" << std::endl;
 			return this->voiceConnectionPtr;
 		} else {
 			return nullptr;
@@ -274,20 +279,20 @@ namespace DiscordCoreAPI {
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Guild_Bans;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/bans";
-		if (dataPackage.after != "") {
+		if (dataPackage.after != 0) {
 			workload.relativePath += "?after=" + dataPackage.after;
-			if (dataPackage.before != "") {
+			if (dataPackage.before != 0) {
 				workload.relativePath += "&before=" + dataPackage.before;
 			}
-			if (dataPackage.limit != "") {
+			if (dataPackage.limit != 0) {
 				workload.relativePath += "&limit=" + dataPackage.limit;
 			}
-		} else if (dataPackage.before != "") {
+		} else if (dataPackage.before != 0) {
 			workload.relativePath += "?before=" + dataPackage.before;
-			if (dataPackage.limit != "") {
+			if (dataPackage.limit != 0) {
 				workload.relativePath += "&limit=" + dataPackage.limit;
 			}
-		} else if (dataPackage.limit != "") {
+		} else if (dataPackage.limit != 0) {
 			workload.relativePath += "?limit=" + dataPackage.limit;
 		}
 		workload.callStack = "Guilds::getGuildBansAsync";
@@ -419,7 +424,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<void>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Delete_Guild_Integration;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Delete;
-		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/integrations/" + dataPackage.integrationId;
+		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/integrations/" + std::to_string(dataPackage.integrationId);
 		workload.callStack = "Guilds::deleteGuildIntegrationAsync";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));
@@ -669,15 +674,15 @@ namespace DiscordCoreAPI {
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Current_User_Guilds;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
 		workload.relativePath = "/users/@me/guilds";
-		if (dataPackage.after != "") {
+		if (dataPackage.after != 0) {
 			workload.relativePath += "?after=" + dataPackage.after;
-			if (dataPackage.before != "") {
+			if (dataPackage.before != 0) {
 				workload.relativePath += "&before=" + dataPackage.before;
 			}
 			if (dataPackage.limit != 0) {
 				workload.relativePath += "&limit=" + dataPackage.limit;
 			}
-		} else if (dataPackage.before != "") {
+		} else if (dataPackage.before != 0) {
 			workload.relativePath += "?before=" + dataPackage.before;
 			if (dataPackage.limit != 0) {
 				workload.relativePath += "&limit=" + dataPackage.limit;

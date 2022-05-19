@@ -101,7 +101,7 @@ namespace DiscordCoreAPI {
 	/// For acquiring a single Guild ApplicationCommand. \brief For acquiring a single Guild ApplicationCommand.
 	struct DiscordCoreAPI_Dll GetGuildApplicationCommandData {
 		uint64_t applicationId{};///< The current application's Id (The Bot's User Id).
-		std::string commandId{};///< The command id which you would like to acquire.
+		uint64_t commandId{};///< The command id which you would like to acquire.
 		uint64_t guildId{};///< The id of the Guild from which you would like to acquire the ApplicationCommand from.
 	};
 
@@ -150,7 +150,7 @@ namespace DiscordCoreAPI {
 		std::vector<ApplicationCommandPermissionData> permissions{};///< A std::vector of ApplicationCommand permissions.
 		uint64_t applicationId{};///< The current application's Id (The Bot's User Id).
 		std::string commandName{};///< The command name which you would like to edit the permissions of.
-		std::string commandId{};///< The command id which you would like to edit the permissions of.
+		uint64_t commandId{};///< The command id which you would like to edit the permissions of.
 		uint64_t guildId{};///< The Guild id of the Guild for which you would like to edit the command permissions.
 	};
 

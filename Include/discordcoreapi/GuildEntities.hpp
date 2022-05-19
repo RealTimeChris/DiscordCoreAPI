@@ -74,9 +74,9 @@ namespace DiscordCoreAPI {
 	/// For getting a list of Guild bans. \brief For getting a list of Guild bans.
 	struct DiscordCoreAPI_Dll GetGuildBansData {
 		uint64_t guildId{};///< The Guild from which to collect the list of bans.
-		std::string before{};///< Consider only users before given user id.
-		std::string after{};///< Consider only users after given user id null.
-		std::string limit{};///< Number of users to return ( up to maximum 1000 ).
+		uint64_t before{};///< Consider only users before given user id.
+		uint64_t after{};///< Consider only users after given user id null.
+		uint64_t limit{};///< Number of users to return ( up to maximum 1000 ).
 	};
 
 	/// For getting a single Guild Ban. \brief For getting a single Guild Ban.
@@ -102,14 +102,14 @@ namespace DiscordCoreAPI {
 
 	/// For collecting the Guild prune count. \brief For collecting the Guild prune count.
 	struct DiscordCoreAPI_Dll GetGuildPruneCountData {
-		std::vector<std::string> includeRoles{};///< Roles to be included in the prune.
+		std::vector<uint64_t> includeRoles{};///< Roles to be included in the prune.
 		uint64_t guildId{};///< The Guild to be pruned.
 		int32_t days{ 0 };///< The number of days beyond which to prune the user's for inactivity.
 	};
 
 	/// For pruning a number of GuildMembers from the Guild. \brief For pruning a number of GuildMembers from the Guild.
 	struct DiscordCoreAPI_Dll BeginGuildPruneData {
-		std::vector<std::string> includeRoles{};/// Roles to be included in the prune.
+		std::vector<uint64_t> includeRoles{};/// Roles to be included in the prune.
 		bool computePruneCount{ false };/// Whether 'pruned' is returned, discouraged for large guilds.
 		uint64_t guildId{};///< Guild within which to perform the prune.
 		std::string reason{};///< Reason for pruning the GuildMembers.
@@ -133,7 +133,7 @@ namespace DiscordCoreAPI {
 
 	/// For deleting a Guild integration. \brief For deleting a Guild integration.
 	struct DiscordCoreAPI_Dll DeleteGuildIntegrationData {
-		std::string integrationId{};///< The integration's id which we are going to delete.
+		uint64_t integrationId{};///< The integration's id which we are going to delete.
 		uint64_t guildId{};///< The Guild from which to delete the integration from.
 		std::string reason{};///< Reason for deleting the integration.
 	};
@@ -234,14 +234,14 @@ namespace DiscordCoreAPI {
 
 	/// For deleting a single Guild Invite. \brief For deleting a single Guild Invite.
 	struct DiscordCoreAPI_Dll DeleteInviteData {
-		std::string inviteId{};///< The Invite which you would like to delete.
+		uint64_t inviteId{};///< The Invite which you would like to delete.
 		std::string reason{};///< Reason for deleting the Invite.
 	};
 
 	/// For collecting a list of Guild's that the Bot is in. \brief For collecting a list of Guild's that the Bot is in.
 	struct DiscordCoreAPI_Dll GetCurrentUserGuildsData {
-		std::string before{};///< Get guilds before this Guild ID.
-		std::string after{};///< Get guilds after this Guild ID.
+		uint64_t before{};///< Get guilds before this Guild ID.
+		uint64_t after{};///< Get guilds after this Guild ID.
 		uint32_t limit{ 0 };///< Max number of guilds to return (1 - 200).
 	};
 

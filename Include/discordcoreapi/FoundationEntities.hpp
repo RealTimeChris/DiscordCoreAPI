@@ -1358,7 +1358,7 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll GuildMemberData {
 	  public:
 		
-		std::vector<std::string> roles{};///< The Guild roles that they have.
+		std::vector<uint64_t> roles{};///< The Guild roles that they have.
 		VoiceStateData voiceData{};///< For the voice connection's data, if any.
 		Permissions permissions{};///< Their base-level Permissions in the Guild.
 		TimeStamp joinedAt{ "" };///< When they joined the Guild.
@@ -1839,7 +1839,7 @@ namespace DiscordCoreAPI {
 		std::string description{};///< Description of the welcome Channel.
 		uint64_t channelId{};///< Id of the welcome Channel.
 		std::string emojiName{};///< Emoji name for the Channel.
-		std::string emojiId{};///< Emoji id for the Channel.
+		uint64_t emojiId{};///< Emoji id for the Channel.
 	};
 
 	/// Welcome screen data. \brief Welcome screen data.

@@ -32,9 +32,9 @@ namespace DiscordCoreAPI {
 
 	/// For getting a collection of Messages. \brief For getting a collection of Messages.
 	struct DiscordCoreAPI_Dll GetMessagesData {
-		std::string aroundThisId{};///< Around this id.
-		std::string beforeThisId{};///< Before this id.
-		std::string afterThisId{};///< After this id.
+		uint64_t aroundThisId{};///< Around this id.
+		uint64_t beforeThisId{};///< Before this id.
+		uint64_t afterThisId{};///< After this id.
 		uint64_t channelId{};///< Channel from which to collect the Messages.
 		int32_t limit{ 0 };///< Limit of Messages to collect.
 	};
@@ -166,7 +166,7 @@ namespace DiscordCoreAPI {
 
 	/// For deleting a bulk of Messages. \brief For deleting a bulk of Messages.
 	struct DiscordCoreAPI_Dll DeleteMessagesBulkData {
-		std::vector<std::string> messageIds{};///< Array of Message ids to delete.
+		std::vector<uint64_t> messageIds{};///< Array of Message ids to delete.
 		uint64_t channelId{};///< Channel within which to delete the Messages.
 		std::string reason{};///< The reason for deleting the Messages.
 	};

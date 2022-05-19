@@ -738,7 +738,9 @@ namespace DiscordCoreInternal {
 		}
 
 		if (jsonObjectData.contains("roles") && !jsonObjectData["roles"].is_null()) {
-			pDataStructure.roles = jsonObjectData["roles"].get<std::vector<std::string>>();
+			for (auto& value: jsonObjectData["roles"].get<std::vector<std::string>>()) {
+				pDataStructure.roles.push_back(stoull(value));
+			}
 		}
 
 		if (jsonObjectData.contains("flags") && !jsonObjectData["flags"].is_null()) {
@@ -792,7 +794,9 @@ namespace DiscordCoreInternal {
 	template<> void DataParser::parseObject(const nlohmann::json& jsonObjectData, DiscordCoreAPI::GuildMemberData& pDataStructure) {
 
 		if (jsonObjectData.contains("roles") && !jsonObjectData["roles"].is_null()) {
-			pDataStructure.roles = jsonObjectData["roles"].get<std::vector<std::string>>();
+			for (auto& value: jsonObjectData["roles"].get<std::vector<std::string>>()) {
+				pDataStructure.roles.push_back(stoull(value));
+			}
 		}
 
 		if (jsonObjectData.contains("permissions") && !jsonObjectData["permissions"].is_null()) {
@@ -1180,7 +1184,7 @@ namespace DiscordCoreInternal {
 		}
 
 		if (jsonObjectData.contains("emoji_id") && !jsonObjectData["emoji_id"].is_null()) {
-			pDataStructure.emojiId = jsonObjectData["emoji_id"].get<std::string>();
+			pDataStructure.emojiId = stoull(jsonObjectData["emoji_id"].get<std::string>());
 		}
 
 		if (jsonObjectData.contains("emoji_name") && !jsonObjectData["emoji_name"].is_null()) {

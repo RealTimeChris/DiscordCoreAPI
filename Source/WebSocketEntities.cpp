@@ -156,6 +156,7 @@ namespace DiscordCoreInternal {
 	void BaseSocketAgent::getVoiceConnectionData(const VoiceConnectInitData& doWeCollect) noexcept {
 		try {
 			this->semaphore.acquire();
+			std::cout << "WERE FINALLY BACK!" << std::endl;
 			DiscordCoreAPI::UpdateVoiceStateData dataPackage{};
 			dataPackage.channelId = 0;
 			dataPackage.guildId = doWeCollect.guildId;
@@ -163,15 +164,20 @@ namespace DiscordCoreInternal {
 			dataPackage.selfMute = doWeCollect.selfMute;
 			this->userId = doWeCollect.userId;
 			nlohmann::json newData = JSONIFY(dataPackage);
+			std::cout << "WERE FINALLY BACK!020202" << std::endl;
 			this->sendMessage(newData);
 			std::this_thread::sleep_for(std::chrono::milliseconds{ 500 });
+			std::cout << "WERE FINALLY BACK!030303" << std::endl;
 			dataPackage.channelId = doWeCollect.channelId;
 			newData = JSONIFY(dataPackage);
+			std::cout << "WERE FINALLY BACK!040404" << std::endl;
 			this->areWeCollectingData = true;
 			this->sendMessage(newData);
+			std::cout << "WERE FINALLY BACK!050505" << std::endl;
 			while (this->areWeCollectingData) {
 				std::this_thread::sleep_for(std::chrono::milliseconds{ 1 });
 			}
+			std::cout << "WERE FINALLY BACK!060606" << std::endl;
 			this->semaphore.release();
 		} catch (...) {
 			if (this->printErrorMessages) {
@@ -242,7 +248,7 @@ namespace DiscordCoreInternal {
 				}
 			}
 
-			if (this->areWeCollectingData && payload["t"] == "VOICE_STATE_UPDATE" && !this->stateUpdateCollected && payload["d"]["member"]["user"]["id"] == this->userId) {
+			if (this->areWeCollectingData && payload["t"] == "VOICE_STATE_UPDATE" && !this->stateUpdateCollected && payload["d"]["member"]["user"]["id"] == std::to_string(this->userId)) {
 				if (!this->stateUpdateCollected && !this->serverUpdateCollected) {
 					this->voiceConnectionData = VoiceConnectionData{};
 					this->voiceConnectionData.sessionId = payload["d"]["session_id"].get<std::string>();
@@ -452,7 +458,7 @@ namespace DiscordCoreInternal {
 				} else if (payload["t"] == "GUILD_INTEGRATIONS_UPDATE") {
 					std::unique_ptr<DiscordCoreAPI::OnGuildIntegrationsUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnGuildIntegrationsUpdateData>() };
 					if (payload["d"].contains("guild_id")) {
-						dataPackage->guildId = payload["d"]["guild_id"];
+						dataPackage->guildId = stoull(payload["d"]["guild_id"].get<std::string>());
 					}
 					this->eventManager->onGuildIntegrationsUpdateEvent(*dataPackage);
 				} else if (payload["t"] == "GUILD_MEMBER_ADD") {
@@ -497,7 +503,7 @@ namespace DiscordCoreInternal {
 						DiscordCoreInternal::DataParser::parseObject(payload["d"]["Role"], dataPackage->role);
 					}
 					if (payload["d"].contains("guild_id")) {
-						dataPackage->guildId = payload["d"]["guild_id"];
+						dataPackage->guildId = stoull(payload["d"]["guild_id"].get<std::string>());
 					}
 					this->eventManager->onRoleCreationEvent(*dataPackage);
 				} else if (payload["t"] == "GUILD_ROLE_UPDATE") {
@@ -975,14 +981,19 @@ namespace DiscordCoreInternal {
 	}
 
 	VoiceSocketAgent::VoiceSocketAgent(VoiceConnectInitData initDataNew, BaseSocketAgent* baseBaseSocketAgentNew, bool printMessagesNew) noexcept {
+		std::cout << "WERE COMING BACK 010101" << std::endl;
 		this->baseSocketAgent = baseBaseSocketAgentNew;
 		this->voiceConnectInitData = initDataNew;
 		this->printSuccessMessages = baseBaseSocketAgentNew->printSuccessMessages;
 		this->printErrorMessages = baseBaseSocketAgentNew->printErrorMessages;
+		std::cout << "WERE COMING BACK 020202" << std::endl;
 		this->baseSocketAgent->voiceConnectionDataBufferMap.insert_or_assign(std::to_string(this->voiceConnectInitData.guildId), &this->voiceConnectionDataBuffer);
 		this->baseSocketAgent->getVoiceConnectionData(this->voiceConnectInitData);
+		std::cout << "WERE COMING BACK 030303" << std::endl;
 		this->doWeReconnect.set();
+		std::cout << "WERE COMING BACK 040404" << std::endl;
 		this->areWeConnected.reset();
+		std::cout << "WERE COMING BACK 050505" << std::endl;
 		this->theTask = std::make_unique<std::jthread>([this](std::stop_token theToken) {
 			this->run(theToken);
 		});

@@ -71,21 +71,21 @@ namespace DiscordCoreAPI {
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Messages;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/messages";
-		if (dataPackage.aroundThisId != "") {
+		if (dataPackage.aroundThisId != 0) {
 			workload.relativePath += "?around=" + dataPackage.aroundThisId;
 			if (dataPackage.limit != 0) {
 				workload.relativePath += "&limit=" + std::to_string(dataPackage.limit);
 			} else if (dataPackage.limit == 0) {
 				workload.relativePath += "&limit=1";
 			}
-		} else if (dataPackage.beforeThisId != "") {
+		} else if (dataPackage.beforeThisId != 0) {
 			workload.relativePath += "?before=" + dataPackage.beforeThisId;
 			if (dataPackage.limit != 0) {
 				workload.relativePath += "&limit=" + std::to_string(dataPackage.limit);
 			} else if (dataPackage.limit == 0) {
 				workload.relativePath += "&limit=1";
 			}
-		} else if (dataPackage.afterThisId != "") {
+		} else if (dataPackage.afterThisId != 0) {
 			workload.relativePath += "?after=" + dataPackage.afterThisId;
 			if (dataPackage.limit != 0) {
 				workload.relativePath += "&limit=" + std::to_string(dataPackage.limit);

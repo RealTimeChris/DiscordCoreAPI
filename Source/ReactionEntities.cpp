@@ -34,8 +34,8 @@ namespace DiscordCoreAPI {
 		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Put_Reaction);
 		co_await NewThreadAwaitable<Reaction>();
 		std::string emoji;
-		if (dataPackage.emojiId != std::string()) {
-			emoji += ":" + dataPackage.emojiName + ":" + dataPackage.emojiId;
+		if (dataPackage.emojiId != 0) {
+			emoji += ":" + dataPackage.emojiName + ":" + std::to_string(dataPackage.emojiId);
 		} else {
 			emoji = dataPackage.emojiName;
 		}
@@ -51,8 +51,8 @@ namespace DiscordCoreAPI {
 		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Delete_Own_Reaction);
 		co_await NewThreadAwaitable<void>();
 		std::string emoji;
-		if (dataPackage.emojiId != std::string()) {
-			emoji += ":" + dataPackage.emojiName + ":" + dataPackage.emojiId;
+		if (dataPackage.emojiId != 0) {
+			emoji += ":" + dataPackage.emojiName + ":" + std::to_string(dataPackage.emojiId);
 		} else {
 			emoji = dataPackage.emojiName;
 		}
@@ -68,8 +68,8 @@ namespace DiscordCoreAPI {
 		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Delete_User_Reaction);
 		co_await NewThreadAwaitable<void>();
 		std::string emoji;
-		if (dataPackage.emojiId != std::string()) {
-			emoji += ":" + dataPackage.emojiName + ":" + dataPackage.emojiId;
+		if (dataPackage.emojiId != 0) {
+			emoji += ":" + dataPackage.emojiName + ":" + std::to_string(dataPackage.emojiId);
 
 		} else {
 			emoji = dataPackage.emojiName;
@@ -88,7 +88,7 @@ namespace DiscordCoreAPI {
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Reactions;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/messages/" + std::to_string(dataPackage.messageId) + "/reactions/" + dataPackage.emoji;
-		if (dataPackage.afterId != "") {
+		if (dataPackage.afterId != 0) {
 			workload.relativePath += "?after=" + dataPackage.afterId;
 			if (dataPackage.limit != 0) {
 				workload.relativePath += "&limit=" + std::to_string(dataPackage.limit);
@@ -117,8 +117,8 @@ namespace DiscordCoreAPI {
 		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Delete_Reactions_By_Emoji);
 		co_await NewThreadAwaitable<void>();
 		std::string emoji;
-		if (dataPackage.emojiId != std::string()) {
-			emoji += ":" + dataPackage.emojiName + ":" + dataPackage.emojiId;
+		if (dataPackage.emojiId != 0) {
+			emoji += ":" + dataPackage.emojiName + ":" + std::to_string(dataPackage.emojiId);
 		} else {
 			emoji = dataPackage.emojiName;
 		}
@@ -196,7 +196,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<EmojiData>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Patch_Guild_Emoji;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Patch;
-		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/emojis/" + dataPackage.emojiId;
+		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/emojis/" + std::to_string(dataPackage.emojiId);
 		workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
 		workload.callStack = "Reactions::modifyGuildEmojiAsync";
 		if (dataPackage.reason != "") {
@@ -211,7 +211,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<void>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Delete_Guild_Emoji;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Delete;
-		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/emojis/" + dataPackage.emojiId;
+		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/emojis/" + std::to_string(dataPackage.emojiId);
 		workload.callStack = "Reactions::deleteGuildEmojiAsync";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));

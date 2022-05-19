@@ -37,7 +37,7 @@ namespace DiscordCoreAPI {
 	/// For listing the GuildMembers of a chosen Guild. \brief For listing the GuildMembers of a chosen Guild.
 	struct DiscordCoreAPI_Dll ListGuildMembersData {
 		uint64_t guildId{};///< Guild from which to list the GuildMembers.
-		std::string after{};///< The highest user id in the previous page.
+		uint64_t after{};///< The highest user id in the previous page.
 		int32_t limit{ 0 };///< Max number of members to return (1 - 1000).
 	};
 
@@ -50,7 +50,7 @@ namespace DiscordCoreAPI {
 
 	/// For adding a new GuildMember to a chosen Guild. \brief For adding a new GuildMember to a chosen Guild.
 	struct DiscordCoreAPI_Dll AddGuildMemberData {
-		std::vector<std::string> roles{};///< Array of Role ids the member is assigned.
+		std::vector<uint64_t> roles{};///< Array of Role ids the member is assigned.
 		std::string accessToken{};///< An oauth2 access token granted with the guilds.join to the bot's application for the user you want to add.
 		uint64_t guildId{};///< The Guild to add the new GuildMember to.
 		uint64_t userId{};///< The User id of the user you wish to add.
@@ -69,9 +69,9 @@ namespace DiscordCoreAPI {
 	/// For modifying a GuildMember's values. \brief For modifying a GuildMember's values.
 	struct DiscordCoreAPI_Dll ModifyGuildMemberData {
 		TimeStamp communicationDisabledUntil{ "" };///< When the user's timeout will expire and the user will be able to communicate in the guild again.
-		std::vector<std::string> roleIds{};///< A collection of Role id's to be applied to them.
-		std::string newVoiceChannelId{};///< The new voice Channel to move them into.
-		std::string currentChannelId{};///< The current voice Channel, if applicaple.
+		std::vector<uint64_t> roleIds{};///< A collection of Role id's to be applied to them.
+		uint64_t newVoiceChannelId{};///< The new voice Channel to move them into.
+		uint64_t currentChannelId{};///< The current voice Channel, if applicaple.
 		uint64_t guildMemberId{};///< The user id of the desired Guild memeber.
 		uint64_t guildId{};///< The id of the Guild for which you would like to modify a member.
 		std::string reason{};///< Reason for modifying this GuildMember.
