@@ -3083,16 +3083,16 @@ namespace DiscordCoreAPI {
 		std::vector<EmbedData> embeds{};
 		std::string interactionToken{};
 		InputEventResponseType type{};///< The type of response to make.
+		InteractionType eventType{};
+		std::vector<File> files{};
 		uint64_t interactionId{};
 		uint64_t applicationId{};
-		InteractionType eventType{};
 		uint64_t targetUserId{};
 		uint64_t requesterId{};
-		std::vector<File> files{};
-		uint64_t channelId{};
-		uint64_t messageId{};
 		std::string customId{};
 		std::string content{};
+		uint64_t channelId{};
+		uint64_t messageId{};
 		std::string title{};
 		int32_t flags{ 0 };
 		bool tts{ false };
@@ -3113,7 +3113,7 @@ namespace DiscordCoreAPI {
 			this->data.tts = other.tts;
 			return *this;
 		}
-		InteractionResponseData(RespondToInputEventData& other) {
+		InteractionResponseData(const RespondToInputEventData& other) {
 			*this = other;
 		}
 		InteractionResponseData() = default;

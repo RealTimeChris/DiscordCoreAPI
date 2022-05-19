@@ -336,7 +336,6 @@ namespace DiscordCoreAPI {
 		}
 
 		CreateInteractionResponseData(const RespondToInputEventData& dataPackage) {
-			this->interactionPackage.interactionToken = dataPackage.interactionToken;
 			this->data = dataPackage;
 			if (dataPackage.eventType == InteractionType::Message_Component && dataPackage.type == InputEventResponseType::Deferred_Response) {
 				this->data.type = InteractionCallbackType::Deferred_Update_Message;
@@ -345,19 +344,18 @@ namespace DiscordCoreAPI {
 			} else if (dataPackage.eventType == InteractionType::Application_Command_Autocomplete ||
 				dataPackage.type == InputEventResponseType::Application_Command_AutoComplete_Result) {
 				this->data.type = InteractionCallbackType::Application_Command_Autocomplete_Result;
+			} else if (dataPackage.type == InputEventResponseType::Modal_Interaction_Response || dataPackage.title != "") {
+				this->data.type = InteractionCallbackType::Modal;
 			} else {
 				this->data.type = InteractionCallbackType::Channel_Message_With_Source;
 			}
-			if (dataPackage.type == InputEventResponseType::Modal_Interaction_Response || dataPackage.title != "") {
-				this->data.type = InteractionCallbackType::Modal;
-			}
+			this->interactionPackage.interactionToken = dataPackage.interactionToken;
 			this->interactionPackage.applicationId = dataPackage.applicationId;
 			this->interactionPackage.interactionId = dataPackage.interactionId;
 			this->requesterId = dataPackage.requesterId;
 		}
 
 		CreateInteractionResponseData(RespondToInputEventData& dataPackage) {
-			this->interactionPackage.interactionToken = dataPackage.interactionToken;
 			this->data = dataPackage;
 			if (dataPackage.eventType == InteractionType::Message_Component && dataPackage.type == InputEventResponseType::Deferred_Response) {
 				this->data.type = InteractionCallbackType::Deferred_Update_Message;
@@ -372,6 +370,7 @@ namespace DiscordCoreAPI {
 			if (dataPackage.type == InputEventResponseType::Modal_Interaction_Response || dataPackage.title != "") {
 				this->data.type = InteractionCallbackType::Modal;
 			}
+			this->interactionPackage.interactionToken = dataPackage.interactionToken;
 			this->interactionPackage.applicationId = dataPackage.applicationId;
 			this->interactionPackage.interactionId = dataPackage.interactionId;
 			this->requesterId = dataPackage.requesterId;
@@ -383,9 +382,9 @@ namespace DiscordCoreAPI {
 			} else {
 				this->data.type = InteractionCallbackType::Channel_Message_With_Source;
 			}
+			this->interactionPackage.applicationId = dataPackage.applicationId;
 			this->interactionPackage.interactionToken = dataPackage.token;
 			this->interactionPackage.interactionId = dataPackage.id;
-			this->interactionPackage.applicationId = dataPackage.applicationId;
 			if (dataPackage.member.id != 0) {
 				this->requesterId = dataPackage.member.id;
 			} else if (dataPackage.message.member.id != 0) {
@@ -419,6 +418,7 @@ namespace DiscordCoreAPI {
 			this->requesterId = dataPackage.requesterId;
 			this->data.content = dataPackage.content;
 			this->data.embeds = dataPackage.embeds;
+			this->data.title = dataPackage.title;
 			this->data.flags = dataPackage.flags;
 			this->data.tts = dataPackage.tts;
 		}
@@ -432,6 +432,7 @@ namespace DiscordCoreAPI {
 			this->requesterId = dataPackage.requesterId;
 			this->data.content = dataPackage.content;
 			this->data.embeds = dataPackage.embeds;
+			this->data.title = dataPackage.title;
 			this->data.flags = dataPackage.flags;
 			this->data.tts = dataPackage.tts;
 		}
@@ -769,19 +770,15 @@ namespace DiscordCoreAPI {
 		static std::unordered_map<std::string, UnboundedMessageBlock<InteractionData>*> selectMenuInteractionBufferMap;
 
 		/// Constructor. \brief Constructor.
-		/// \param dataPackage An InputEventData structure, from the response that
-		/// came from the submitted select-menu.
+		/// \param dataPackage An InputEventData structure, from the response that came from the submitted select-menu.
 		SelectMenuCollector(InputEventData& dataPackage);
 
-		/// Used to collect the select-menu inputs from one or more users. \brief Used
-		/// to collect the select-menu inputs from one or more users. \param
-		/// getSelectMenuDataForAllNew Whether or not to collect select-menu input
-		/// from a single target User or all potential users. \param
-		/// maxWaitTimeInMsNew The maximum amount of time to wait for new inputs, in
-		/// milliseconds. \param maxCollectedSelectMenuCountNew The maximum number of
-		/// inputs to collect before stopping \param targetUserId The id of the single
-		/// User to collect inputs from, if getSelectMenuDataForAllNew is set to
-		/// false. \returns A std::vector of SelectMenuResponseData.
+		/// Used to collect the select-menu inputs from one or more users. \brief Used to collect the select-menu inputs from one or more users.
+		/// \param getSelectMenuDataForAllNew Whether or not to collect select-menu input from a single target User or all potential users.
+		/// \param maxWaitTimeInMsNew The maximum amount of time to wait for new inputs, in milliseconds.
+		/// \param maxCollectedSelectMenuCountNew The maximum number of inputs to collect before stopping.
+		/// \param targetUserId The id of the single User to collect inputs from, if getSelectMenuDataForAllNew is set to false.
+		/// \returns A std::vector of SelectMenuResponseData.
 		CoRoutine<std::vector<SelectMenuResponseData>> collectSelectMenuData(bool getSelectMenuDataForAllNew, int32_t maxWaitTimeInMsNew, int32_t maxCollectedSelectMenuCountNew,
 			uint64_t targetUserId = 0);
 
@@ -797,11 +794,11 @@ namespace DiscordCoreAPI {
 		std::vector<std::string> values{};
 		std::string bufferMapKey{};
 		std::string selectMenuId{};
+		uint32_t maxTimeInMs{ 0 };
+		bool doWeQuit{ false };
 		uint64_t channelId{};
 		uint64_t messageId{};
-		uint32_t maxTimeInMs{ 0 };
 		uint64_t userId{};
-		bool doWeQuit{ false };
 
 		void run();
 	};
@@ -844,14 +841,13 @@ namespace DiscordCoreAPI {
 
 		std::unique_ptr<InteractionData> interactionData{ std::make_unique<InteractionData>() };///< Interaction data.
 		std::string emojiName{};///< The emoji name, if applicable.
+		std::string buttonId{};///< The id of the button, for identification.
 		uint64_t channelId{};///< The Channel id where it took place.
 		uint64_t messageId{};///< The Message id where it took place.
-		std::string buttonId{};///< The id of the button, for identification.
 		uint64_t userId{};///< The User id who selected the menu options.
 	};
 
-	/// ButtonCollector, for collecting button input from one or more Users. \brief
-	/// ButtonCollector, for collecting button input from one or more Users.
+	/// ButtonCollector, for collecting button input from one or more Users. \brief ButtonCollector, for collecting button input from one or more Users.
 	class DiscordCoreAPI_Dll ButtonCollector {
 	  public:
 		friend DiscordCoreClient;
@@ -859,19 +855,15 @@ namespace DiscordCoreAPI {
 		static std::unordered_map<std::string, UnboundedMessageBlock<InteractionData>*> buttonInteractionBufferMap;
 
 		/// Constructor. \brief Constructor.
-		/// \param dataPackage An InputEventData structure, from the response that
-		/// came from the submitted button.
+		/// \param dataPackage An InputEventData structure, from the response that came from the submitted button.
 		ButtonCollector(InputEventData& dataPackage);
 
-		/// Used to collect the button inputs from one or more users. \brief Used to
-		/// collect the button inputs from one or more users. \param
-		/// getButtonDataForAllNew Whether or not to collect input from a single
-		/// target User or all potential users. \param maxWaitTimeInMsNew The maximum
-		/// amount of time to wait for new inputs, in milliseconds. \param
-		/// maxNumberOfPressesNew The maximum number of inputs to collect before
-		/// stopping. \param targetUserId The id of the single User to collect inputs
-		/// from, if getButtonDataForAllNew is set to false. \returns A std::vector of
-		/// ButtonResponseData.
+		/// Used to collect the button inputs from one or more users. \brief Used to collect the button inputs from one or more users.
+		/// \param getButtonDataForAllNew Whether or not to collect input from a single target User or all potential users.
+		/// \param maxWaitTimeInMsNew The maximum amount of time to wait for new inputs, in milliseconds.
+		/// \param maxNumberOfPressesNew The maximum number of inputs to collect before stopping.
+		/// \param targetUserId The id of the single User to collect inputs from, if getButtonDataForAllNew is set to false.
+		/// \returns A std::vector of ButtonResponseData.
 		CoRoutine<std::vector<ButtonResponseData>> collectButtonData(bool getButtonDataForAllNew, int32_t maxWaitTimeInMsNew, int32_t maxNumberOfPressesNew,
 			uint64_t targetUserId = 0);
 
@@ -883,15 +875,15 @@ namespace DiscordCoreAPI {
 		std::vector<ButtonResponseData> responseVector{};
 		int32_t currentCollectedButtonCount{ 0 };
 		int32_t maxCollectedButtonCount{ 0 };
-		std::vector<std::string> values{};
 		bool getButtonDataForAll{ false };
+		std::vector<std::string> values{};
 		std::string bufferMapKey{};
+		uint32_t maxTimeInMs{ 0 };
+		bool doWeQuit{ false };
+		std::string buttonId{};
 		uint64_t channelId{};
 		uint64_t messageId{};
-		std::string buttonId{};
-		uint32_t maxTimeInMs{ 0 };
 		uint64_t userId{};
-		bool doWeQuit{ false };
 
 		void run();
 	};
@@ -934,15 +926,13 @@ namespace DiscordCoreAPI {
 
 		std::unique_ptr<InteractionData> interactionData{ std::make_unique<InteractionData>() };///< Interaction data.
 		std::string customIdSmall{};///< The customId of the particular input.
-		uint64_t channelId{};///< The Channel id where it took place.
 		std::string customId{};///< The customId of the modal component.
-		uint64_t userId{};///< The User id who selected the menu options.
+		uint64_t channelId{};///< The Channel id where it took place.
 		std::string value{};/// The input value of the modal component.
+		uint64_t userId{};///< The User id who selected the menu options.
 	};
 
-	/// ModalCollector, for collecting modal text input from one or more Users.
-	/// \brief ModalCollector, for collecting modal text input from one or more
-	/// Users.
+	/// ModalCollector, for collecting modal text input from one or more Users. \brief ModalCollector, for collecting modal text input from one or more Users.
 	class DiscordCoreAPI_Dll ModalCollector {
 	  public:
 		friend DiscordCoreClient;
@@ -950,14 +940,12 @@ namespace DiscordCoreAPI {
 		static std::unordered_map<std::string, UnboundedMessageBlock<InteractionData>*> modalInteractionBufferMap;
 
 		/// Constructor. \brief Constructor.
-		/// \param dataPackage An InputEventData structure, from the response that
-		/// came from the submitted button.
+		/// \param dataPackage An InputEventData structure, from the response that came from the submitted button.
 		ModalCollector(InputEventData& dataPackage);
 
-		/// Used to collect the button inputs from one or more users. \brief Used to
-		/// collect the button inputs from one or more users. \param
-		/// maxWaitTimeInMsNew The maximum amount of time to wait for new inputs, in
-		/// milliseconds. \returns A std::vector of ButtonResponseData.
+		/// Used to collect the button inputs from one or more users. \brief Used to collect the button inputs from one or more users. 
+		/// \param maxWaitTimeInMsNew The maximum amount of time to wait for new inputs, in milliseconds. 
+		/// \returns A std::vector of ButtonResponseData.
 		CoRoutine<ModalResponseData> collectModalData(int32_t maxWaitTimeInMsNew);
 
 		~ModalCollector();
@@ -966,9 +954,9 @@ namespace DiscordCoreAPI {
 		UnboundedMessageBlock<InteractionData> modalIncomingInteractionBuffer{};
 		int32_t currentCollectedButtonCount{ 0 };
 		ModalResponseData responseData{};
-		uint64_t channelId{};
 		uint32_t maxTimeInMs{ 0 };
 		bool doWeQuit{ false };
+		uint64_t channelId{};
 
 		void run();
 	};
