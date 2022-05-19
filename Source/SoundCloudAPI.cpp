@@ -28,8 +28,8 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::Song newSong = newerSong;
 		auto newestSong = constructSecondDownloadUrl(newSong);
 		auto newesterSong = constructFinalDownloadUrl(newestSong);
-		newesterSong.addedByUserId = addedByGuildMember.user->id;
-		newesterSong.addedByUserName = addedByGuildMember.user->userName;
+		newesterSong.addedByUserId = addedByGuildMember.id;
+		newesterSong.addedByUserName = addedByGuildMember.userName;
 		return newesterSong;
 	}
 

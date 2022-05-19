@@ -513,7 +513,7 @@ namespace DiscordCoreAPI {
 		if (EventHandler::options.cacheGuildMembers) {
 			GuildMembers::insertGuildMember(dataPackage.guildMember);
 			GuildData guild = Guilds::getCachedGuildAsync({ dataPackage.guildMember.guildId }).get();
-			guild.members.push_back(dataPackage.guildMember.user->id);
+			guild.members.push_back(dataPackage.guildMember.id);
 			guild.memberCount += 1;
 			Guilds::insertGuild(guild);
 		}
@@ -522,7 +522,7 @@ namespace DiscordCoreAPI {
 	void EventHandler::onGuildMemberRemove(OnGuildMemberRemoveData dataPackage) {
 		if (EventHandler::options.cacheGuildMembers) {
 			GuildMember guildMember = GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = dataPackage.user.id, .guildId = dataPackage.guildId }).get();
-			std::string globalId = std::to_string(guildMember.guildId) + " + " + std::to_string(guildMember.user->id);
+			std::string globalId = std::to_string(guildMember.guildId) + " + " + std::to_string(guildMember.id);
 			GuildMembers::removeGuildMember(guildMember);
 			GuildData guild = Guilds::getCachedGuildAsync({ dataPackage.guildId }).get();
 			for (uint64_t x = 0; x < guild.members.size(); x += 1) {

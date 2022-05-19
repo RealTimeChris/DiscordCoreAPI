@@ -23,18 +23,18 @@
 #include <discordcoreapi/CoRoutine.hpp>
 #include <discordcoreapi/Http.hpp>
 #include <discordcoreapi/JSONIfier.hpp>
-#include <discordcoreapi/UserEntities.hpp>
 
 namespace DiscordCoreAPI {
 
 	GuildMember& GuildMember::operator=(GuildMemberData&& dataNew) {
 		this->permissions = dataNew.permissions;
 		this->joinedAt = dataNew.joinedAt;
+		this->userName = dataNew.userName;
 		this->guildId = dataNew.guildId;
 		this->roles = dataNew.roles;
 		this->flags = dataNew.flags;
 		this->nick = dataNew.nick;
-		this->user = dataNew.user;
+		this->id = dataNew.id;
 		return *this;
 	};
 
@@ -45,11 +45,12 @@ namespace DiscordCoreAPI {
 	GuildMember& GuildMember::operator=(GuildMemberData& dataNew) {
 		this->permissions = dataNew.permissions;
 		this->joinedAt = dataNew.joinedAt;
+		this->userName = dataNew.userName;
 		this->guildId = dataNew.guildId;
 		this->roles = dataNew.roles;
 		this->flags = dataNew.flags;
 		this->nick = dataNew.nick;
-		this->user = dataNew.user;
+		this->id = dataNew.id;
 		return *this;
 	};
 
@@ -72,7 +73,6 @@ namespace DiscordCoreAPI {
 		workload.callStack = "GuildMembers::getGuildMemberAsync";
 		auto guildMember = DiscordCoreInternal::submitWorkloadAndGetResult<GuildMember>(*GuildMembers::httpClient, workload);
 		guildMember.guildId = dataPackage.guildId;
-		guildMember.user = Users::getCachedUserAsync({ .userId = dataPackage.guildMemberId }).get();
 		GuildMembers::insertGuildMember(guildMember);
 		co_return guildMember;
 	}
@@ -80,14 +80,12 @@ namespace DiscordCoreAPI {
 	CoRoutine<GuildMemberData> GuildMembers::getCachedGuildMemberAsync(GetGuildMemberData dataPackage) {
 		co_await NewThreadAwaitable<GuildMemberData>();
 		std::string theString{ std::to_string(dataPackage.guildId) + " + " + std::to_string(dataPackage.guildMemberId) };
-		GuildMember guildMember{};
 		if (GuildMembers::cache.contains(theString)) {
-			guildMember = GuildMembers::cache[theString];
+			auto guildMember = GuildMembers::cache[theString];
+			co_return guildMember;
 		} else {
-			guildMember = GuildMembers::getGuildMemberAsync(dataPackage).get();
+			co_return GuildMembers::getGuildMemberAsync(dataPackage).get();
 		}
-		guildMember.user = Users::getCachedUserAsync({ .userId = dataPackage.guildMemberId }).get();
-		co_return guildMember;
 	}
 
 	CoRoutine<std::vector<GuildMember>> GuildMembers::listGuildMembersAsync(ListGuildMembersData dataPackage) {
@@ -195,7 +193,7 @@ namespace DiscordCoreAPI {
 		dataPackage01.currentChannelId = voiceState.channelId;
 		dataPackage01.deaf = getBool<int8_t, GuildMemberFlags>(guildMember.flags, GuildMemberFlags::Deaf);
 		dataPackage01.guildId = guildMember.guildId;
-		dataPackage01.guildMemberId = guildMember.user->id;
+		dataPackage01.guildMemberId = guildMember.id;
 		dataPackage01.mute = getBool<int8_t, GuildMemberFlags>(guildMember.flags, GuildMemberFlags::Mute);
 		dataPackage01.nick = guildMember.nick;
 		dataPackage01.roleIds = guildMember.roles;
@@ -236,18 +234,18 @@ namespace DiscordCoreAPI {
 
 	void GuildMembers::insertGuildMember(GuildMemberData guildMember) {
 		std::lock_guard<std::mutex> theLock{ GuildMembers::theMutex };
-		if (guildMember.user->id == 0) {
+		if (guildMember.id == 0) {
 			return;
 		}
-		std::string theString{ std::to_string(guildMember.guildId) + " + " + std::to_string(guildMember.user->id) };
+		std::string theString{ std::to_string(guildMember.guildId) + " + " + std::to_string(guildMember.id) };
 		if (GuildMembers::doWeCache) {
 			GuildMembers::cache.insert_or_assign(theString, guildMember);
-		}
+		}		
 	}
 
 	void GuildMembers::removeGuildMember(GuildMember& guildMember) {
 		std::lock_guard<std::mutex> theLock{ GuildMembers::theMutex };
-		std::string theString{ std::to_string(guildMember.guildId) + " + " + std::to_string(guildMember.user->id) };
+		std::string theString{ std::to_string(guildMember.guildId) + " + " + std::to_string(guildMember.id) };
 		GuildMembers::cache.erase(theString);
 	};
 

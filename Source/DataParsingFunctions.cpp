@@ -756,7 +756,8 @@ namespace DiscordCoreInternal {
 			DiscordCoreAPI::UserData theUser{};
 			DataParser::parseObject(jsonObjectData["user"], theUser);
 			DiscordCoreAPI::Users::insertUser(theUser);
-			pDataStructure.user = DiscordCoreAPI::Users::getCachedUserAsync({ theUser.id }).get();
+			pDataStructure.id = theUser.id;
+			pDataStructure.userName = theUser.userName;
 		}
 
 		if (jsonObjectData.contains("pending") && !jsonObjectData["pending"].is_null()) {
@@ -802,7 +803,8 @@ namespace DiscordCoreInternal {
 			DiscordCoreAPI::UserData theUser{};
 			DataParser::parseObject(jsonObjectData["user"], theUser);
 			DiscordCoreAPI::Users::insertUser(theUser);
-			pDataStructure.user = DiscordCoreAPI::Users::getCachedUserAsync({ theUser.id }).get();
+			pDataStructure.id = theUser.id;
+			pDataStructure.userName = theUser.userName;
 		}
 
 		if (jsonObjectData.contains("flags") && !jsonObjectData["flags"].is_null()) {
@@ -1503,7 +1505,7 @@ namespace DiscordCoreInternal {
 				DiscordCoreAPI::GuildMemberData newData{};
 				DataParser::parseObject(value, newData);
 				newData.guildId = pDataStructure.id;
-				pDataStructure.members.push_back(newData.user->id);
+				pDataStructure.members.push_back(newData.id);
 				DiscordCoreAPI::GuildMembers::insertGuildMember(newData);
 			}
 		}
@@ -1639,7 +1641,7 @@ namespace DiscordCoreInternal {
 				DiscordCoreAPI::GuildMemberData newData{};
 				DataParser::parseObject(value, newData);
 				newData.guildId = pDataStructure.id;
-				pDataStructure.members.push_back(newData.user->id);
+				pDataStructure.members.push_back(newData.id);
 				DiscordCoreAPI::GuildMembers::insertGuildMember(newData);
 			}
 		}
