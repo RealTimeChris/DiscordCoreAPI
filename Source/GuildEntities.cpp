@@ -78,15 +78,11 @@ namespace DiscordCoreAPI {
 	VoiceConnection* Guild::connectToVoice(const uint64_t& channelId, bool selfDeaf, bool selfMute) {
 		if (getVoiceConnectionMap()[this->id]->areWeConnected()) {
 			this->voiceConnectionPtr = getVoiceConnectionMap()[this->id].get();
-			std::cout << "WERE HERE THIS IS IT!" << std::endl;
 			return this->voiceConnectionPtr;
 		} else if (channelId != 0) {
-			std::cout << "WERE HERE THIS IS IT!010101" << std::endl;
 			std::string theShardId{ std::to_string(((this->id >> 22) % this->discordCoreClient->shardingOptions.totalNumberOfShards)) };
 			getVoiceConnectionMap()[this->id] = std::make_unique<VoiceConnection>(this->discordCoreClient->webSocketMap[theShardId].get());
-			std::cout << "WERE HERE THIS IS IT!020202" << std::endl;
 			this->voiceConnectionPtr = getVoiceConnectionMap()[this->id].get();
-			std::cout << "WERE HERE THIS IS IT!030303" << std::endl;
 			DiscordCoreInternal::VoiceConnectInitData voiceConnectInitData{};
 			voiceConnectInitData.channelId = channelId;
 			voiceConnectInitData.guildId = this->id;
@@ -94,7 +90,6 @@ namespace DiscordCoreAPI {
 			voiceConnectInitData.selfDeaf = selfDeaf;
 			voiceConnectInitData.selfMute = selfMute;
 			this->voiceConnectionPtr->connect(voiceConnectInitData);
-			std::cout << "WERE HERE THIS IS IT!0440404" << std::endl;
 			return this->voiceConnectionPtr;
 		} else {
 			return nullptr;
@@ -176,7 +171,7 @@ namespace DiscordCoreAPI {
 				workload.relativePath += "&before=" + std::to_string(dataPackage.before);
 			}
 		} else if (dataPackage.before != 0) {
-			workload.relativePath += "?before=" + dataPackage.before;
+			workload.relativePath += "?before=" + std::to_string(dataPackage.before);
 		}
 		workload.callStack = "Guilds::getAuditLogDataAsync";
 		co_return DiscordCoreInternal::submitWorkloadAndGetResult<AuditLogData>(*Guilds::httpClient, workload);

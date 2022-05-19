@@ -48,7 +48,7 @@ namespace DiscordCoreAPI {
 		friend class Interactions;
 		friend WebHooks;
 
-		std::string threadId{};///< Send a message to the specified thread within a webhook's Channel. The thread will automatically be unarchived.
+		uint64_t threadId{};///< Send a message to the specified thread within a webhook's Channel. The thread will automatically be unarchived.
 		bool wait{ false };///< Waits for server confirmation of message send before response, and returns the created message body.
 
 		ExecuteWebHookData() = default;
@@ -236,7 +236,7 @@ namespace DiscordCoreAPI {
 		friend WebHooks;
 
 		uint64_t messageId{};///< The Message Id to collect.
-		std::string threadId{};///< Send a message to the specified thread within a webhook's Channel. The thread will automatically be unarchived.
+		uint64_t threadId{};///< Send a message to the specified thread within a webhook's Channel. The thread will automatically be unarchived.
 		bool wait{ false };///< Waits for server confirmation of message send before response, and returns the created message body.
 
 		ExecuteWebHookData& setTTSStatus(bool) = delete;
@@ -303,7 +303,7 @@ namespace DiscordCoreAPI {
 		std::string webhookToken{};///< The WebHook token you would like to collect.
 		uint64_t webhookId{};///< The WebHook you would like to collect.
 		uint64_t messageId{};///< The Message Id to collect.
-		std::string threadId{};///< The thread that the Message is in.
+		uint64_t threadId{};///< The thread that the Message is in.
 	};
 
 	/// For deleting a WebHook Message. \brief For deleting a WebHook Message.
@@ -311,7 +311,7 @@ namespace DiscordCoreAPI {
 		std::string webhookToken{};///< The WebHook token you would like to collect.
 		uint64_t webhookId{};///< The WebHook you would like to collect.
 		uint64_t messageId{};///< The Message Id to collect.
-		std::string threadId{};///< Send a message to the specified thread within a webhook's Channel. The thread will automatically be unarchived.
+		uint64_t threadId{};///< Send a message to the specified thread within a webhook's Channel. The thread will automatically be unarchived.
 	};
 
 	/// A single WebHook. \brief A single WebHook.

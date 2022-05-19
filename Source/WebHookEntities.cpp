@@ -104,7 +104,7 @@ namespace DiscordCoreAPI {
 			responseData.update({ { "name", dataPackage.name } });
 		}
 		if (dataPackage.channelId != 0) {
-			responseData.update({ { "channel_id", dataPackage.channelId } });
+			responseData.update({ { "channel_id", std::to_string(dataPackage.channelId) } });
 		}
 		workload.content = responseData.dump();
 		workload.callStack = "WebHooks::modifyWebHookAsync";
@@ -126,7 +126,7 @@ namespace DiscordCoreAPI {
 			responseData.update({ { "name", dataPackage.name } });
 		}
 		if (dataPackage.channelId != 0) {
-			responseData.update({ { "channel_id", dataPackage.channelId } });
+			responseData.update({ { "channel_id", std::to_string(dataPackage.channelId) } });
 		}
 		workload.content = responseData.dump();
 		workload.callStack = "WebHooks::modifyWebHookWithTokenAsync";
@@ -165,12 +165,12 @@ namespace DiscordCoreAPI {
 		workload.callStack = "WebHooks::executeWebHookAsync";
 		if (dataPackage.wait) {
 			workload.relativePath += "?wait=true";
-			if (dataPackage.threadId != "") {
-				workload.relativePath += "&thread_id=" + dataPackage.threadId;
+			if (dataPackage.threadId != 0) {
+				workload.relativePath += "&thread_id=" + std::to_string(dataPackage.threadId);
 			}
 		}
-		if (dataPackage.threadId != "") {
-			workload.relativePath += "?thread_id=" + dataPackage.threadId;
+		if (dataPackage.threadId != 0) {
+			workload.relativePath += "?thread_id=" + std::to_string(dataPackage.threadId);
 		}
 		if (dataPackage.files.size() > 0) {
 			constructMultiPartData(workload, nlohmann::json::parse(DiscordCoreInternal::JSONIFY(dataPackage)), dataPackage.files);
@@ -187,8 +187,8 @@ namespace DiscordCoreAPI {
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Webhook_Message;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
 		workload.relativePath = "/webhooks/" + std::to_string(dataPackage.webhookId) + "/" + dataPackage.webhookToken + "/messages/" + std::to_string(dataPackage.messageId);
-		if (dataPackage.threadId != "") {
-			workload.relativePath += "?thread_id=" + dataPackage.threadId;
+		if (dataPackage.threadId != 0) {
+			workload.relativePath += "?thread_id=" + std::to_string(dataPackage.threadId);
 		}
 		workload.callStack = "WebHooks::getWebHookMessageAsync";
 		co_return DiscordCoreInternal::submitWorkloadAndGetResult<Message>(*WebHooks::httpClient, workload);
@@ -201,8 +201,8 @@ namespace DiscordCoreAPI {
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Patch_Webhook_Message;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Patch;
 		workload.relativePath = "/webhooks/" + std::to_string(dataPackage.webhookId) + "/" + dataPackage.webhookToken + "/messages/" + std::to_string(dataPackage.messageId);
-		if (dataPackage.threadId != "") {
-			workload.relativePath += "?thread_id=" + dataPackage.threadId;
+		if (dataPackage.threadId != 0) {
+			workload.relativePath += "?thread_id=" + std::to_string(dataPackage.threadId);
 		}
 		if (dataPackage.files.size() > 0) {
 			constructMultiPartData(workload, nlohmann::json::parse(DiscordCoreInternal::JSONIFY(dataPackage)), dataPackage.files);
@@ -220,8 +220,8 @@ namespace DiscordCoreAPI {
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Delete_Webhook_Message;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Delete;
 		workload.relativePath = "/webhooks/" + std::to_string(dataPackage.webhookId) + "/" + dataPackage.webhookToken + "/messages/" + std::to_string(dataPackage.messageId);
-		if (dataPackage.threadId != "") {
-			workload.relativePath += "?thread_id=" + dataPackage.threadId;
+		if (dataPackage.threadId != 0) {
+			workload.relativePath += "?thread_id=" + std::to_string(dataPackage.threadId);
 		}
 		workload.callStack = "WebHooks::deleteWebHookMessageAsync";
 		co_return DiscordCoreInternal::submitWorkloadAndGetResult<void>(*WebHooks::httpClient, workload);

@@ -89,7 +89,7 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/messages/" + std::to_string(dataPackage.messageId) + "/reactions/" + dataPackage.emoji;
 		if (dataPackage.afterId != 0) {
-			workload.relativePath += "?after=" + dataPackage.afterId;
+			workload.relativePath += "?after=" + std::to_string(dataPackage.afterId);
 			if (dataPackage.limit != 0) {
 				workload.relativePath += "&limit=" + std::to_string(dataPackage.limit);
 			}

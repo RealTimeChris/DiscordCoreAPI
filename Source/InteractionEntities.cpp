@@ -156,7 +156,7 @@ namespace DiscordCoreAPI {
 		this->messageId = dataPackage.getMessageId();
 		this->userId = dataPackage.getRequesterId();
 		*this->interactionData = dataPackage.getInteractionData();
-		this->bufferMapKey = this->channelId + this->messageId;
+		this->bufferMapKey = std::to_string(this->channelId) + std::to_string(this->messageId);
 		SelectMenuCollector::selectMenuInteractionBufferMap.insert(std::make_pair(this->bufferMapKey, &this->selectMenuIncomingInteractionBuffer));
 	}
 
