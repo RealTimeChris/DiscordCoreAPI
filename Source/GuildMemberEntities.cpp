@@ -79,7 +79,7 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<GuildMemberData> GuildMembers::getCachedGuildMemberAsync(GetGuildMemberData dataPackage) {
 		co_await NewThreadAwaitable<GuildMemberData>();
-		std::string theString{ dataPackage.guildId + " + " + std::to_string(dataPackage.guildMemberId) };
+		std::string theString{ std::to_string(dataPackage.guildId) + " + " + std::to_string(guildMember.user.id) };
 		if (GuildMembers::cache.contains(theString)) {
 			auto guildMember = GuildMembers::cache[theString];
 			co_return guildMember;
@@ -235,7 +235,7 @@ namespace DiscordCoreAPI {
 		if (guildMember.user.id == 0) {
 			return;
 		}
-		std::string theString{ guildMember.guildId + " + " + std::to_string(guildMember.user.id) };
+		std::string theString{ std::to_string(guildMember.guildId) + " + " + std::to_string(guildMember.user.id) };
 		if (GuildMembers::doWeCache) {
 			GuildMembers::cache.insert_or_assign(theString, guildMember);
 		}		
@@ -243,7 +243,7 @@ namespace DiscordCoreAPI {
 
 	void GuildMembers::removeGuildMember(GuildMember& guildMember) {
 		std::lock_guard<std::mutex> theLock{ GuildMembers::theMutex };
-		std::string theString{ guildMember.guildId + " + " + std::to_string(guildMember.user.id) };
+		std::string theString{ std::to_string(guildMember.guildId) + " + " + std::to_string(guildMember.user.id) };
 		GuildMembers::cache.erase(theString);
 	};
 
