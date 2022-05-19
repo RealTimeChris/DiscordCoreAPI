@@ -200,7 +200,7 @@ namespace DiscordCoreAPI {
 					this->responseVector.push_back(*response);
 					break;
 				}
-				if (static_cast<uint64_t>(selectMenuInteractionData->user.id) != this->userId) {
+				if (selectMenuInteractionData->user.id != this->userId) {
 					auto createResponseData = std::make_unique<CreateInteractionResponseData>(*selectMenuInteractionData);
 					auto embedData = std::make_unique<EmbedData>();
 					embedData->setColor("FEFEFE");
@@ -321,7 +321,7 @@ namespace DiscordCoreAPI {
 					this->responseVector.push_back(*response);
 					break;
 				}
-				if (static_cast<uint64_t>(buttonInteractionData->user.id) != this->userId) {
+				if (buttonInteractionData->user.id != this->userId) {
 					auto createResponseData = std::make_unique<CreateInteractionResponseData>(*buttonInteractionData);
 					auto embedData = std::make_unique<EmbedData>();
 					embedData->setColor("FEFEFE");

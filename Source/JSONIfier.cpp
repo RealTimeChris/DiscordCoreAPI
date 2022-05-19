@@ -82,7 +82,7 @@ namespace DiscordCoreAPI {
 					component["emoji"]["animated"] = valueNew.emoji.animated;
 					component["emoji"]["name"] = valueNew.emoji.name;
 					if (valueNew.emoji.id != 0) {
-						component["emoji"]["id"] = *( const std::string* )(&valueNew.emoji.id);
+						component["emoji"]["id"] = valueNew.emoji.id;
 					}
 					component["custom_id"] = valueNew.customId;
 					component["disabled"] = valueNew.disabled;
@@ -100,7 +100,7 @@ namespace DiscordCoreAPI {
 							option["emoji"]["animated"] = value01.emoji.animated;
 						}
 						if (value01.emoji.id != 0) {
-							option["emoji"]["id"] = *( const std::string* )(&value01.emoji.id);
+							option["emoji"]["id"] = value01.emoji.id;
 						}
 						option["description"] = value01.description;
 						option["default"] = value01._default;
@@ -375,7 +375,7 @@ namespace DiscordCoreInternal {
 			nlohmann::json newData{};
 			newData["permission"] = value.permission;
 			newData["type"] = value.type;
-			newData["id"] = *( const std::string* )(&value.id);
+			newData["id"] = value.id;
 			newDataArray.push_back(newData);
 		}
 		return newDataArray.dump();
@@ -677,7 +677,7 @@ namespace DiscordCoreInternal {
 			newData["deny"] = value.deny.getCurrentPermissionString();
 			newData["channel_id"] = value.channelId;
 			newData["type"] = value.type;
-			newData["id"] = *( const std::string* )(&value.id);
+			newData["id"] = value.id;
 			overwrites.push_back(newData);
 		}
 		data["default_auto_archive_duration"] = dataPackage.defaultAutoArchiveDuration;
@@ -848,7 +848,7 @@ namespace DiscordCoreInternal {
 			newData["deny"] = value.deny.getCurrentPermissionString();
 			newData["channel_id"] = value.channelId;
 			newData["type"] = value.type;
-			newData["id"] = *( const std::string* )(&value.id);
+			newData["id"] = value.id;
 			permOws.push_back(newData);
 		}
 		nlohmann::json data{};
@@ -937,9 +937,9 @@ namespace DiscordCoreInternal {
 		data["icon"] = dataPackage.icon;
 		for (auto& value: dataPackage.channels) {
 			nlohmann::json newData{};
-			newData["parent_id"] = std::to_string(value.parentId);
+			newData["parent_id"] = std::string{ value.parentId };
 			newData["name"] = std::string{ value.name };
-			newData["id"] = *( const std::string* )(&value.id);
+			newData["id"] = value.id;
 			newData["type"] = value.type;
 			data["channels"].push_back(newData);
 		}

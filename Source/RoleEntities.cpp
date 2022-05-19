@@ -199,7 +199,7 @@ namespace DiscordCoreAPI {
 		std::vector<Role> rolesVectorNew{};
 		for (auto& value: rolesVector) {
 			for (auto& value2: dataPackage.guildMember.roles) {
-				if (value2 == value.id) {
+				if (value2 == std::to_string(value.id)) {
 					rolesVectorNew.push_back(value);
 				}
 			}

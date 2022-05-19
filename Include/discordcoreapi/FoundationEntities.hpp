@@ -902,27 +902,27 @@ namespace DiscordCoreAPI {
 		/// Returns a std::string containing the currently held Permissions in a given Guild. \brief Returns a std::string containing the currently held Permissions in a given Guild.
 		/// \param guildMember The GuildMember who's Permissions are to be evaluated.
 		/// \returns A std::string containing the current Permissions.
-		static std::string getCurrentGuildPermissions(GuildMember& guildMember);
+		static std::string getCurrentGuildPermissions(const GuildMember& guildMember);
 
 		/// Returns a std::string containing all of a given User's Permissions for a given Channel. \brief Returns a std::string containing all of a given User's Permissions for a given Channel.
 		/// \param guildMember The GuildMember who's Permissions to analyze.
 		/// \param channel The Channel withint which to check for Permissions.
 		/// \returns A std::string containing the final Permission's value for a given Channel.
-		static std::string getCurrentChannelPermissions(GuildMember& guildMember, ChannelData& channel);
+		static std::string getCurrentChannelPermissions(const GuildMember& guildMember, ChannelData& channel);
 
 		/// Checks for a given Permission in a chosen Channel, for a specific User. \brief Checks for a given Permission in a chosen Channel, for a specific User.
 		/// \param guildMember The GuildMember who to check the Permissions of.
 		/// \param channel The Channel within which to check for the Permission's presence.
 		/// \param permission A Permission to check the current Channel for.
 		/// \returns A bool suggesting the presence of the chosen Permission.
-		bool checkForPermission(GuildMember& guildMember, ChannelData& channel, Permission permission);
+		bool checkForPermission(const GuildMember& guildMember, ChannelData& channel, Permission permission);
 
 	  protected:
-		static std::string computeBasePermissions(GuildMember& guildMember);
+		static std::string computeBasePermissions(const GuildMember& guildMember);
 
-		static std::string computeOverwrites(const std::string& basePermissions, GuildMember& guildMember, ChannelData& channel);
+		static std::string computeOverwrites(const std::string& basePermissions, const GuildMember& guildMember, ChannelData& channel);
 
-		static std::string computePermissions(GuildMember& guildMember, ChannelData& channel);
+		static std::string computePermissions(const GuildMember& guildMember, ChannelData& channel);
 	};
 
 	/**@}*/
@@ -969,75 +969,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// For ids of DiscordEntities. \brief For ids of DiscordEntities.
-	class Snowflake {
-	  public:
-		mutable uint64_t id{};
-
-		Snowflake& operator=(uint64_t&& other) {
-			this->id = other;
-			return *this;
-		}
-
-		Snowflake(uint64_t&& other) {
-			*this = other;
-		}
-
-		Snowflake& operator=(const uint64_t& other) {
-			this->id = other;
-			return *this;
-		}
-
-		Snowflake(const uint64_t& other) {
-			*this = other;
-		}
-
-		Snowflake& operator=(uint64_t& other) {
-			this->id = other;
-			return *this;
-		}
-
-		Snowflake(uint64_t& other) {
-			*this = other;
-		}
-
-		Snowflake& operator=(std::string&& other) {
-			this->id = stoull(other);
-			return *this;
-		}
-
-		Snowflake(std::string&& other) {
-			*this = other;
-		}
-
-		Snowflake& operator=(std::string& other) {
-			this->id = stoull(other);
-			return *this;
-		}
-
-		Snowflake(std::string& other) {
-			*this = other;
-		}
-
-		operator const uint64_t&() {
-			return this->id;
-		}
-
-		operator std::string() {
-			std::string returnString{};
-			returnString = std::to_string(this->id);
-			return returnString;
-		}
-
-		Snowflake() = default;
-	};
-
-	inline bool operator!=(const Snowflake& lhs, int32_t rhs) {
-		if (lhs.id == rhs) {
-			return true;
-		} else {
-			return false;
-		}
-	}
+	using Snowflake =uint64_t;
 
 	/// Base class DiscordCoreAPI_Dll for all Discord entities. \brief Base class DiscordCoreAPI_Dll for all Discord entities.
 	class DiscordCoreAPI_Dll DiscordEntity {
@@ -1390,9 +1322,9 @@ namespace DiscordCoreAPI {
 
 		std::unordered_map<uint64_t, OverWriteData> permissionOverwrites{};///< Permission overwrites for the given Channel.
 		int32_t memberCount{ 0 };///< Count of members active in the Channel.
-		uint64_t parentId{};///< Id of the Channel's parent Channel/category.
+		std::string parentId{};///< Id of the Channel's parent Channel/category.
 		uint64_t guildId{};///< Id of the Channel's Guild, if applicable.
-		uint64_t ownerId{};///< Id of the Channel's owner.
+		std::string ownerId{};///< Id of the Channel's owner.
 		int32_t position{ 0 };///< The position of the Channel, in the Guild's Channel list.
 		std::string name{};///< Name of the Channel.
 		ChannelType type{ ChannelType::Dm };///< The type of the Channel.
@@ -1409,11 +1341,11 @@ namespace DiscordCoreAPI {
 		bool selfStream{ false };///< Whether this User is streaming using "Go Live".
 		bool selfVideo{ false };///< Whether this User's camera is enabled.
 		uint64_t channelId{};///< The Channel id this User is connected to.
-		uint64_t sessionId{};///< The session id for this voice state.
+		std::string sessionId{};///< The session id for this voice state.
 		bool selfDeaf{ false };///< Whether this User is locally deafened.
 		bool selfMute{ false };///< Whether this User is locally muted.
 		bool suppress{ false };///< Whether this User is muted by the current User.
-		uint64_t memberId{};///< The Guild member id this voice state is for.
+		std::string memberId{};///< The Guild member id this voice state is for.
 		uint64_t guildId{};///< The Guild id this voice state is for.
 		uint64_t userId{};///< The User id this voice state is for.
 		bool deaf{ false };///< Whether this User is deafened by the server.
@@ -1426,7 +1358,7 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll GuildMemberData {
 	  public:
 		
-		std::vector<uint64_t> roles{};///< The Guild roles that they have.
+		std::vector<std::string> roles{};///< The Guild roles that they have.
 		VoiceStateData voiceData{};///< For the voice connection's data, if any.
 		Permissions permissions{};///< Their base-level Permissions in the Guild.
 		TimeStamp joinedAt{ "" };///< When they joined the Guild.
@@ -1570,7 +1502,7 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll TeamMembersObjectData {
 		std::vector<Permissions> permissions{};///< Permissions for the team.
 		int32_t membershipState{ 0 };///< Current state.
-		uint64_t teamId{};///< Id of the current team.
+		std::string teamId{};///< Id of the current team.
 		UserData user{};///< User data of the current User.
 	};
 
