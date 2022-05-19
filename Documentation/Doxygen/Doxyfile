@@ -1315,6 +1315,7 @@ HTML_STYLESHEET        =
 
 
 HTML_EXTRA_STYLESHEET  = 	./Custom/doxygen-awesome.css \
+				./Custom/doxygen-awesome-darkmode-toggle.js
 
 # The HTML_EXTRA_FILES tag can be used to specify one or more extra images or
 # other source files which should be copied to the HTML output directory. Note

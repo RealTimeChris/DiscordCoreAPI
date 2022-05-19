@@ -35,7 +35,7 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll GetGuildAuditLogsData {
 		AuditLogEvent actionType{};///< The action type to acquire audit-logs for.
 		uint64_t guildId{};///< The guiild id for the Guild which you wish to query the log of.
-		std::string before{};///< Entries that preceded a specific audit log entry ID.
+		uint64_t before{};///< Entries that preceded a specific audit log entry ID.
 		uint64_t userId{};///< The User for whom to look for the actions of.
 		int32_t limit{ 0 };///< The maximum number of actions to acquire from the log.
 	};
@@ -111,8 +111,8 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll BeginGuildPruneData {
 		std::vector<uint64_t> includeRoles{};/// Roles to be included in the prune.
 		bool computePruneCount{ false };/// Whether 'pruned' is returned, discouraged for large guilds.
-		uint64_t guildId{};///< Guild within which to perform the prune.
 		std::string reason{};///< Reason for pruning the GuildMembers.
+		uint64_t guildId{};///< Guild within which to perform the prune.
 		int32_t days{ 0 };/// Number of days after which to prune a given GuildMember.
 	};
 
@@ -134,8 +134,8 @@ namespace DiscordCoreAPI {
 	/// For deleting a Guild integration. \brief For deleting a Guild integration.
 	struct DiscordCoreAPI_Dll DeleteGuildIntegrationData {
 		uint64_t integrationId{};///< The integration's id which we are going to delete.
-		uint64_t guildId{};///< The Guild from which to delete the integration from.
 		std::string reason{};///< Reason for deleting the integration.
+		uint64_t guildId{};///< The Guild from which to delete the integration from.
 	};
 
 	/// For collecting a Guild's widget settings. \brief For collecting a Guild's widget settings.
@@ -146,8 +146,8 @@ namespace DiscordCoreAPI {
 	/// For modifying a Guild's widget. \brief For modifying a Guild's widget.
 	struct DiscordCoreAPI_Dll ModifyGuildWidgetData {
 		GuildWidgetData widgetData{};///< The new Guild widget responseData.
-		uint64_t guildId{};///< The Guild for which to modify the widget of.
 		std::string reason{};///< Reason for modifying the widget.
+		uint64_t guildId{};///< The Guild for which to modify the widget of.
 	};
 
 	/// For collecting a Guild's widget. \brief For collecting a Guild's widget.
@@ -176,8 +176,8 @@ namespace DiscordCoreAPI {
 		std::vector<WelcomeScreenChannelData> welcomeChannels{};///< Welcome channels for the welcome screen.
 		std::string description{};///< The description of the welcome screen.
 		bool enabled{ false };///< Is it enabled?
-		uint64_t guildId{};///< The Guild for which to modify the welcome screen of.
 		std::string reason{};///< The reason for modifying the welcome screen.
+		uint64_t guildId{};///< The Guild for which to modify the welcome screen of.
 	};
 
 	/// For collecting a Guild's template. \brief For collecting a Guild's template.
@@ -226,23 +226,23 @@ namespace DiscordCoreAPI {
 
 	/// For geting a single invite's responseData from a Guild. \brief For geting a single invite's responseData from a Guild.
 	struct DiscordCoreAPI_Dll GetInviteData {
-		std::string guildScheduledEventId{};///< The Guild scheduled event to include with the invite.
+		uint64_t guildScheduledEventId{};///< The Guild scheduled event to include with the invite.
 		bool withExpiration{ false };///< Collect expiration time/date?
 		bool withCount{ false };///< Collect usage etc counts?
-		std::string inviteId{};///< The id of the invite you wish to acquire.
+		uint64_t inviteId{};///< The id of the invite you wish to acquire.
 	};
 
 	/// For deleting a single Guild Invite. \brief For deleting a single Guild Invite.
 	struct DiscordCoreAPI_Dll DeleteInviteData {
-		uint64_t inviteId{};///< The Invite which you would like to delete.
 		std::string reason{};///< Reason for deleting the Invite.
+		uint64_t inviteId{};///< The Invite which you would like to delete.
 	};
 
 	/// For collecting a list of Guild's that the Bot is in. \brief For collecting a list of Guild's that the Bot is in.
 	struct DiscordCoreAPI_Dll GetCurrentUserGuildsData {
 		uint64_t before{};///< Get guilds before this Guild ID.
-		uint64_t after{};///< Get guilds after this Guild ID.
 		uint32_t limit{ 0 };///< Max number of guilds to return (1 - 200).
+		uint64_t after{};///< Get guilds after this Guild ID.
 	};
 
 	/// For leaving a particular Guild. \brief For leaving a particular Guild.
