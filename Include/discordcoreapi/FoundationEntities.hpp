@@ -1336,15 +1336,14 @@ namespace DiscordCoreAPI {
 	enum class GuildMemberFlags : int8_t { Pending = 1 << 0, Deaf = 1 << 1, Mute = 1 << 2 };
 
 	/// Data structure representing a single GuildMember. \brief Data structure representing a single GuildMember.
-	class DiscordCoreAPI_Dll GuildMemberData : public DiscordEntity {
+	class DiscordCoreAPI_Dll GuildMemberData {
 	  public:
-		
 		std::vector<uint64_t> roles{};///< The Guild roles that they have.
 		Permissions permissions{};///< Their base-level Permissions in the Guild.
 		TimeStamp joinedAt{ "" };///< When they joined the Guild.
-		std::string userName{};///< The GuildMember's username.
 		uint64_t guildId{};///< The current Guild's id.
 		std::string nick{};///< Their nick/display name.
+		UserData* user{};///< The GuildMember's User profile.
 		int8_t flags{ 0 };///< GuildMember flags.
 
 		virtual ~GuildMemberData() = default;
@@ -2784,7 +2783,7 @@ namespace DiscordCoreAPI {
 			} else {
 				this->interactionData->message.id = this->messageData->id;
 			}
-			if (this->messageData->member.id == 0) {
+			if (this->messageData->member.user->id == 0) {
 				this->messageData->member = this->interactionData->member;
 			} else {
 				this->interactionData->member = this->messageData->member;
@@ -2804,9 +2803,9 @@ namespace DiscordCoreAPI {
 		/// Returns the userName of the last User to trigger this input-event. \brief Returns the userName of the last User to trigger this input-event.
 		/// \returns A std::string containing the User name.
 		std::string getUserName() {
-			if (this->messageData->author.userName == "" && this->interactionData->member.userName != "") {
-				return this->interactionData->member.userName;
-			} else if (this->interactionData->member.userName == "" && this->interactionData->user.userName != "") {
+			if (this->messageData->author.userName == "" && this->interactionData->member.user->userName != "") {
+				return this->interactionData->member.user->userName;
+			} else if (this->interactionData->member.user->userName == "" && this->interactionData->user.userName != "") {
 				return this->interactionData->user.userName;
 			} else if (this->messageData->author.userName != "") {
 				return this->messageData->author.userName;

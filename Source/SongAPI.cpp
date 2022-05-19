@@ -138,7 +138,7 @@ namespace DiscordCoreAPI {
 		while (getVoiceConnectionMap()[guildMember.guildId]->audioBuffer.tryReceive(frameData)) {
 		};
 		frameData.type = AudioFrameType::Skip;
-		frameData.guildMemberId = guildMember.id;
+		frameData.guildMemberId = guildMember.user->id;
 		getVoiceConnectionMap()[guildMember.guildId]->audioBuffer.send(frameData);
 	}
 
@@ -222,8 +222,8 @@ namespace DiscordCoreAPI {
 	}
 
 	Song SongAPI::addSongToQueue(const GuildMember& guildMember, Song& song) {
-		song.addedByUserId = guildMember.id;
-		song.addedByUserName = guildMember.userName;
+		song.addedByUserId = guildMember.user->id;
+		song.addedByUserName = guildMember.user->userName;
 		getSongAPIMap()[guildMember.guildId]->playlist.songQueue.push_back(song);
 		return song;
 	}
@@ -264,7 +264,7 @@ namespace DiscordCoreAPI {
 		if (getSongAPIMap()[guildMember.guildId]->playlist.currentSong.type == SongType::SoundCloud) {
 			getSoundCloudAPIMap()[guildMember.guildId]->cancelCurrentSong();
 			auto newerSong = getSoundCloudAPIMap()[guildMember.guildId]->collectFinalSong(guildMember, getSongAPIMap()[guildMember.guildId]->playlist.currentSong);
-			newerSong.addedByUserId = guildMember.id;
+			newerSong.addedByUserId = guildMember.user->id;
 			getSongAPIMap()[this->guildId]->theTask = std::make_unique<std::jthread>([=, this](std::stop_token theToken) {
 				getSoundCloudAPIMap()[this->guildId]->downloadAndStreamAudio(newerSong, getSoundCloudAPIMap()[this->guildId].get(), theToken, 0);
 			});
@@ -272,7 +272,7 @@ namespace DiscordCoreAPI {
 		} else if (getSongAPIMap()[guildMember.guildId]->playlist.currentSong.type == SongType::YouTube) {
 			getYouTubeAPIMap()[guildMember.guildId]->cancelCurrentSong();
 			Song newerSong = getYouTubeAPIMap()[guildMember.guildId]->collectFinalSong(guildMember, getSongAPIMap()[guildMember.guildId]->playlist.currentSong);
-			newerSong.addedByUserId = guildMember.id;
+			newerSong.addedByUserId = guildMember.user->id;
 			getSongAPIMap()[this->guildId]->theTask = std::make_unique<std::jthread>([=, this](std::stop_token theToken) {
 				getYouTubeAPIMap()[this->guildId]->downloadAndStreamAudio(newerSong, getYouTubeAPIMap()[this->guildId].get(), theToken, 0);
 			});
