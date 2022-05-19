@@ -79,7 +79,7 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<GuildMemberData> GuildMembers::getCachedGuildMemberAsync(GetGuildMemberData dataPackage) {
 		co_await NewThreadAwaitable<GuildMemberData>();
-		std::string theString{ std::to_string(dataPackage.guildId) + " + " + std::to_string(guildMember.user.id) };
+		std::string theString{ std::to_string(dataPackage.guildId) + " + " + std::to_string(dataPackage.guildMemberId) };
 		if (GuildMembers::cache.contains(theString)) {
 			auto guildMember = GuildMembers::cache[theString];
 			co_return guildMember;
