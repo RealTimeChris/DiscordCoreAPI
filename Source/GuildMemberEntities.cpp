@@ -28,13 +28,13 @@ namespace DiscordCoreAPI {
 
 	GuildMember& GuildMember::operator=(GuildMemberData&& dataNew) {
 		this->permissions = dataNew.permissions;
+		this->voiceData = dataNew.voiceData;
 		this->joinedAt = dataNew.joinedAt;
-		this->userName = dataNew.userName;
 		this->guildId = dataNew.guildId;
 		this->roles = dataNew.roles;
 		this->flags = dataNew.flags;
 		this->nick = dataNew.nick;
-		this->id = dataNew.id;
+		this->user = dataNew.user;
 		return *this;
 	};
 
@@ -44,13 +44,13 @@ namespace DiscordCoreAPI {
 
 	GuildMember& GuildMember::operator=(GuildMemberData& dataNew) {
 		this->permissions = dataNew.permissions;
+		this->voiceData = dataNew.voiceData;
 		this->joinedAt = dataNew.joinedAt;
-		this->userName = dataNew.userName;
 		this->guildId = dataNew.guildId;
 		this->roles = dataNew.roles;
 		this->flags = dataNew.flags;
 		this->nick = dataNew.nick;
-		this->id = dataNew.id;
+		this->user = dataNew.user;
 		return *this;
 	};
 
@@ -187,13 +187,11 @@ namespace DiscordCoreAPI {
 	CoRoutine<GuildMember> GuildMembers::timeoutGuildMemberAsync(TimeoutGuildMemberData dataPackage) {
 		co_await NewThreadAwaitable<GuildMember>();
 		GuildMember guildMember = GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = dataPackage.guildMemberId, .guildId = dataPackage.guildId }).get();
-		Guild guildNew = Guilds::getCachedGuildAsync({ .guildId = dataPackage.guildId }).get();
-		auto voiceState = guildNew.voiceStates.at(dataPackage.guildMemberId);
 		ModifyGuildMemberData dataPackage01{};
-		dataPackage01.currentChannelId = voiceState.channelId;
+		dataPackage01.currentChannelId = guildMember.voiceData.channelId;
 		dataPackage01.deaf = getBool<int8_t, GuildMemberFlags>(guildMember.flags, GuildMemberFlags::Deaf);
 		dataPackage01.guildId = guildMember.guildId;
-		dataPackage01.guildMemberId = guildMember.id;
+		dataPackage01.guildMemberId = guildMember.user.id;
 		dataPackage01.mute = getBool<int8_t, GuildMemberFlags>(guildMember.flags, GuildMemberFlags::Mute);
 		dataPackage01.nick = guildMember.nick;
 		dataPackage01.roleIds = guildMember.roles;
@@ -234,10 +232,10 @@ namespace DiscordCoreAPI {
 
 	void GuildMembers::insertGuildMember(GuildMemberData guildMember) {
 		std::lock_guard<std::mutex> theLock{ GuildMembers::theMutex };
-		if (guildMember.id == 0) {
+		if (guildMember.user.id == 0) {
 			return;
 		}
-		std::string theString{ std::to_string(guildMember.guildId) + " + " + std::to_string(guildMember.id) };
+		std::string theString{ std::to_string(guildMember.guildId) + " + " + std::to_string(guildMember.user.id) };
 		if (GuildMembers::doWeCache) {
 			GuildMembers::cache.insert_or_assign(theString, guildMember);
 		}		
@@ -245,7 +243,7 @@ namespace DiscordCoreAPI {
 
 	void GuildMembers::removeGuildMember(GuildMember& guildMember) {
 		std::lock_guard<std::mutex> theLock{ GuildMembers::theMutex };
-		std::string theString{ std::to_string(guildMember.guildId) + " + " + std::to_string(guildMember.id) };
+		std::string theString{ std::to_string(guildMember.guildId) + " + " + std::to_string(guildMember.user.id) };
 		GuildMembers::cache.erase(theString);
 	};
 

@@ -631,7 +631,7 @@ namespace DiscordCoreAPI {
 
 	std::string Permissions::computeBasePermissions(const GuildMember& guildMember) {
 		GuildData guild = Guilds::getCachedGuildAsync({ .guildId = guildMember.guildId }).get();
-		if (guild.ownerId == std::to_string(guildMember.id)) {
+		if (guild.ownerId == std::to_string(guildMember.user.id)) {
 			return Permissions::getAllPermissions();
 		}
 		auto guildRoles = Roles ::getGuildRolesAsync({ .guildId = guildMember.guildId }).get();
@@ -689,8 +689,8 @@ namespace DiscordCoreAPI {
 		}
 		permissions &= ~deny;
 		permissions |= allow;
-		if (channel.permissionOverwrites.contains(guildMember.id)) {
-			OverWriteData currentOverWrites = channel.permissionOverwrites[guildMember.id];
+		if (channel.permissionOverwrites.contains(guildMember.user.id)) {
+			OverWriteData currentOverWrites = channel.permissionOverwrites[guildMember.user.id];
 			permissions &= ~stoll(currentOverWrites.deny);
 			permissions |= stoll(currentOverWrites.allow);
 		}

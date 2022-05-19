@@ -1333,38 +1333,41 @@ namespace DiscordCoreAPI {
 		virtual ~ChannelData() = default;
 	};
 
-	enum class GuildMemberFlags : int8_t { Pending = 1 << 0, Deaf = 1 << 1, Mute = 1 << 2 };
+	struct DiscordCoreAPI_Dll VoiceStateData;
 
-	/// Data structure representing a single GuildMember. \brief Data structure representing a single GuildMember.
-	class DiscordCoreAPI_Dll GuildMemberData : public DiscordEntity {
-	  public:
-		
-		std::vector<uint64_t> roles{};///< The Guild roles that they have.
-		Permissions permissions{};///< Their base-level Permissions in the Guild.
-		TimeStamp joinedAt{ "" };///< When they joined the Guild.
-		std::string userName{};///< The GuildMember's username.
-		uint64_t guildId{};///< The current Guild's id.
-		std::string nick{};///< Their nick/display name.
-		int8_t flags{ 0 };///< GuildMember flags.
-
-		virtual ~GuildMemberData() = default;
-	};
-	
 	/// Voice state data. \brief Voice state data.
 	struct DiscordCoreAPI_Dll VoiceStateData {
 		TimeStamp requestToSpeakTimestamp{ "" };///< The time at which the User requested to speak.
 		bool selfStream{ false };///< Whether this User is streaming using "Go Live".
-		GuildMemberData member{};///< The GuildMember that this VoiceState belongs to.
 		bool selfVideo{ false };///< Whether this User's camera is enabled.
+		uint64_t channelId{};///< The Channel id this User is connected to.
 		std::string sessionId{};///< The session id for this voice state.
 		bool selfDeaf{ false };///< Whether this User is locally deafened.
 		bool selfMute{ false };///< Whether this User is locally muted.
 		bool suppress{ false };///< Whether this User is muted by the current User.
-		uint64_t channelId{};///< The Channel id this User is connected to.
+		std::string memberId{};///< The Guild member id this voice state is for.
 		uint64_t guildId{};///< The Guild id this voice state is for.
+		uint64_t userId{};///< The User id this voice state is for.
 		bool deaf{ false };///< Whether this User is deafened by the server.
 		bool mute{ false };///< Whether this User is muted by the server.
-		uint64_t userId{};///< The User id this voice state is for.
+	};
+
+	enum class GuildMemberFlags : int8_t { Pending = 1 << 0, Deaf = 1 << 1, Mute = 1 << 2 };
+
+	/// Data structure representing a single GuildMember. \brief Data structure representing a single GuildMember.
+	class DiscordCoreAPI_Dll GuildMemberData {
+	  public:
+		
+		std::vector<uint64_t> roles{};///< The Guild roles that they have.
+		VoiceStateData voiceData{};///< For the voice connection's data, if any.
+		Permissions permissions{};///< Their base-level Permissions in the Guild.
+		TimeStamp joinedAt{ "" };///< When they joined the Guild.
+		uint64_t guildId{};///< The current Guild's id.
+		std::string nick{};///< Their nick/display name.
+		UserData user{};///< The User for this GuildMember.
+		int8_t flags{ 0 };///< GuildMember flags.
+
+		virtual ~GuildMemberData() = default;
 	};
 
 	/// Data representing an active Thread. \brief Data representing an active Thread.
@@ -2784,7 +2787,7 @@ namespace DiscordCoreAPI {
 			} else {
 				this->interactionData->message.id = this->messageData->id;
 			}
-			if (this->messageData->member.id == 0) {
+			if (this->messageData->member.user.id == 0) {
 				this->messageData->member = this->interactionData->member;
 			} else {
 				this->interactionData->member = this->messageData->member;
@@ -2804,9 +2807,9 @@ namespace DiscordCoreAPI {
 		/// Returns the userName of the last User to trigger this input-event. \brief Returns the userName of the last User to trigger this input-event.
 		/// \returns A std::string containing the User name.
 		std::string getUserName() {
-			if (this->messageData->author.userName == "" && this->interactionData->member.userName != "") {
-				return this->interactionData->member.userName;
-			} else if (this->interactionData->member.userName == "" && this->interactionData->user.userName != "") {
+			if (this->messageData->author.userName == "" && this->interactionData->member.user.userName != "") {
+				return this->interactionData->member.user.userName;
+			} else if (this->interactionData->member.user.userName == "" && this->interactionData->user.userName != "") {
 				return this->interactionData->user.userName;
 			} else if (this->messageData->author.userName != "") {
 				return this->messageData->author.userName;
@@ -2818,9 +2821,9 @@ namespace DiscordCoreAPI {
 		/// Gets the avatar Url of the last User to trigger this input-event. \brief Gets the avatar Url of the last User to trigger this input-event.
 		/// \returns A std::string containing the avatar Url.
 		std::string getAvatarUrl() {
-			if (this->messageData->author.avatar == "" && this->interactionData->user.avatar != "") {
-				return this->interactionData->user.avatar;
-			} else if (this->interactionData->user.avatar == "" && this->interactionData->user.avatar != "") {
+			if (this->messageData->author.avatar == "" && this->interactionData->member.user.avatar != "") {
+				return this->interactionData->member.user.avatar;
+			} else if (this->interactionData->member.user.avatar == "" && this->interactionData->user.avatar != "") {
 				return this->interactionData->user.avatar;
 			} else if (this->messageData->author.avatar != "") {
 				return this->messageData->author.avatar;
