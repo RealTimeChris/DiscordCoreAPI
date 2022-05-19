@@ -143,7 +143,6 @@ namespace DiscordCoreInternal {
 			}
 			return;
 		} catch (...) {
-			DiscordCoreAPI::reportException("HttpRnRBuilder::parseHeaders()");
 			this->contentSize = -5;
 		}
 		return;
@@ -219,7 +218,7 @@ namespace DiscordCoreInternal {
 				this->doWeHaveContentSize = true;
 			}
 		} catch (...) {
-			DiscordCoreAPI::reportException("HttpRnRBuilder::parseSize()");
+
 			this->contentSize = -5;
 		}
 	}
@@ -393,7 +392,9 @@ namespace DiscordCoreInternal {
 		} catch (...) {
 			theConnection.doWeConnect = true;
 			theConnection.currentRecursionDepth += 1;
-			DiscordCoreAPI::reportException(workload.callStack + "::HttpClient::executeHttpRequest()");
+			if (this->doWePrintHttpError) {
+				DiscordCoreAPI::reportException(workload.callStack + "::HttpClient::executeHttpRequest()");
+			}
 			return this->executeHttpRequest(workload, theConnection, rateLimitDataPtr);
 		}
 	}

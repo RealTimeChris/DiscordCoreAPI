@@ -185,14 +185,9 @@ namespace DiscordCoreAPI {
 	}
 
 	int64_t convertTimestampToMsInteger(const std::string& timeStamp) {
-		try {
-			Time timeValue = Time(stoi(timeStamp.substr(0, 4)), stoi(timeStamp.substr(5, 6)), stoi(timeStamp.substr(8, 9)), stoi(timeStamp.substr(11, 12)),
-				stoi(timeStamp.substr(14, 15)), stoi(timeStamp.substr(17, 18)));
-			return timeValue.getTime() * 1000;
-		} catch (...) {
-			reportException("convertTimestampToMsInteger()");
-			return 0;
-		}
+		Time timeValue = Time(stoi(timeStamp.substr(0, 4)), stoi(timeStamp.substr(5, 6)), stoi(timeStamp.substr(8, 9)), stoi(timeStamp.substr(11, 12)),
+			stoi(timeStamp.substr(14, 15)), stoi(timeStamp.substr(17, 18)));
+		return timeValue.getTime() * 1000;
 	}
 
 	std::string base64Encode(const std::string& theString, bool url) {

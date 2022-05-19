@@ -288,19 +288,8 @@ namespace DiscordCoreAPI {
 		if (getSongAPIMap()[guildMember.guildId]->playlist.currentSong.songId == "") {
 			getSongAPIMap()[guildMember.guildId]->sendNextSong();
 		}
-		try {
-			getSongAPIMap()[guildMember.guildId]->sendNextSongFinal(guildMember);
-			return true;
-		} catch (...) {
-			reportException("SongAPI::sendNextSong()");
-			SongCompletionEventData eventData{ .wasItAFail = true, .previousSong = getSongAPIMap()[guildMember.guildId]->playlist.currentSong };
-			SongAPI::setCurrentSong(Song(), guildMember.guildId);
-			if (!getSongAPIMap()[guildMember.guildId]->sendNextSong()) {
-				return false;
-			};
-			getSongAPIMap()[guildMember.guildId]->onSongCompletionEvent(eventData);
-		}
-		return false;
+		getSongAPIMap()[guildMember.guildId]->sendNextSongFinal(guildMember);
+		return true;
 	}
 
 	SongAPI::~SongAPI() {
