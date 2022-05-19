@@ -81,7 +81,7 @@ namespace DiscordCoreAPI {
 					nlohmann::json component{};
 					component["emoji"]["animated"] = valueNew.emoji.animated;
 					component["emoji"]["name"] = valueNew.emoji.name;
-					if (valueNew.emoji.id != "") {
+					if (valueNew.emoji.id != 0) {
 						component["emoji"]["id"] = valueNew.emoji.id;
 					}
 					component["custom_id"] = valueNew.customId;
@@ -99,7 +99,7 @@ namespace DiscordCoreAPI {
 							option["emoji"]["name"] = value01.emoji.name;
 							option["emoji"]["animated"] = value01.emoji.animated;
 						}
-						if (value01.emoji.id != "") {
+						if (value01.emoji.id != 0) {
 							option["emoji"]["id"] = value01.emoji.id;
 						}
 						option["description"] = value01.description;
@@ -238,7 +238,7 @@ namespace DiscordCoreInternal {
 
 	nlohmann::json JSONIFY(const DiscordCoreAPI::UpdateVoiceStateData& dataPackage) {
 		nlohmann::json data{};
-		if (dataPackage.channelId == "") {
+		if (dataPackage.channelId == 0) {
 			data["d"]["channel_id"] = nullptr;
 		} else {
 			data["d"]["channel_id"] = dataPackage.channelId;
@@ -646,7 +646,7 @@ namespace DiscordCoreInternal {
 
 	std::string JSONIFY(const DiscordCoreAPI::CreateChannelInviteData& dataPackage) {
 		nlohmann::json data{};
-		if (dataPackage.targetUserId != "") {
+		if (dataPackage.targetUserId != 0) {
 			data["target_application_id"] = dataPackage.targetApplicationId;
 			data["target_user_id"] = dataPackage.targetUserId;
 			data["target_type"] = dataPackage.targetType;
@@ -873,7 +873,7 @@ namespace DiscordCoreInternal {
 		for (auto& value: dataPackage.attachments) {
 			data["attachments"].push_back(value);
 		}
-		if (dataPackage.messageReference.messageId != "") {
+		if (dataPackage.messageReference.messageId != 0) {
 			data["message_reference"] = dataPackage.messageReference;
 		}
 		if (dataPackage.components.size() == 0) {
@@ -939,7 +939,7 @@ namespace DiscordCoreInternal {
 			nlohmann::json newData{};
 			newData["parent_id"] = std::string{ value.parentId };
 			newData["name"] = std::string{ value.name };
-			newData["id"] = std::to_string(value.id);
+			newData["id"] = value.id;
 			newData["type"] = value.type;
 			data["channels"].push_back(newData);
 		}

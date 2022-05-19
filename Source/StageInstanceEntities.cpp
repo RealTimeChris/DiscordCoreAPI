@@ -50,7 +50,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<StageInstance>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Stage_Instance;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
-		workload.relativePath = "/stage-instances/" + dataPackage.channelId;
+		workload.relativePath = "/stage-instances/" + std::to_string(dataPackage.channelId);
 		workload.callStack = "StageInstances::getStageInstanceAsync";
 		co_return DiscordCoreInternal::submitWorkloadAndGetResult<StageInstance>(*StageInstances::httpClient, workload);
 	}
@@ -61,7 +61,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<StageInstance>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Patch_Stage_Instance;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Patch;
-		workload.relativePath = "/stage-instances/" + dataPackage.channelId;
+		workload.relativePath = "/stage-instances/" + std::to_string(dataPackage.channelId);
 		nlohmann::json responseData = { { "privacy_level", dataPackage.privacyLevel }, { "topic", dataPackage.topic } };
 		workload.content = responseData.dump();
 		workload.callStack = "StageInstances::modifyStageInstanceAsync";
@@ -77,7 +77,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<void>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Delete_Stage_Instance;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Delete;
-		workload.relativePath = "/stage-instances/" + dataPackage.channelId;
+		workload.relativePath = "/stage-instances/" + std::to_string(dataPackage.channelId);
 		workload.callStack = "StageInstances::deleteStageInstanceAsync";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));

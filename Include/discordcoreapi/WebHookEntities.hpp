@@ -34,7 +34,7 @@ namespace DiscordCoreAPI {
 	/// For creating a new WebHook. \brief For creating a new WebHook.
 	struct DiscordCoreAPI_Dll CreateWebHookData {
 		std::vector<uint8_t> avatar{};///< Image for the default webhook avatar.
-		std::string channelId{};///< The Channel within which to create the WebHook.
+		uint64_t channelId{};///< The Channel within which to create the WebHook.
 		std::string name{};///< Name of the webhook(1 - 80 characters).
 	};
 
@@ -67,7 +67,7 @@ namespace DiscordCoreAPI {
 		/// \param emojiId An emoji id, if desired.
 		/// \param url A url, if applicable.
 		ExecuteWebHookData& addButton(bool disabled, const std::string& customIdNew, const std::string& buttonLabel, ButtonStyle buttonStyle, const std::string& emojiName = "",
-			std::string emojiId = "", const std::string& url = "") {
+			uint64_t emojiId = 0, const std::string& url = "") {
 			if (this->components.size() == 0) {
 				ActionRowData actionRowData;
 				this->components.push_back(actionRowData);
@@ -217,7 +217,7 @@ namespace DiscordCoreAPI {
 		std::string webhookToken{};///< The WebHook token you would like to execute.
 		std::vector<File> files{};///< File contents the contents of the file being sent.
 		std::string avatarUrl{};///< Override the default avatar of the webhook.
-		std::string webhookId{};///< The WebHook you would like to execute.
+		uint64_t webhookId{};///< The WebHook you would like to execute.
 		std::string userName{};///< Override the default userName of the webhook.
 		std::string customId{};///< Custom id for the modal.
 		std::string content{};///< The message contents (up to 2000 characters)	one of content, file, embeds.
@@ -235,7 +235,7 @@ namespace DiscordCoreAPI {
 		friend class Interactions;
 		friend WebHooks;
 
-		std::string messageId{};///< The Message Id to collect.
+		uint64_t messageId{};///< The Message Id to collect.
 		std::string threadId{};///< Send a message to the specified thread within a webhook's Channel. The thread will automatically be unarchived.
 		bool wait{ false };///< Waits for server confirmation of message send before response, and returns the created message body.
 
@@ -251,30 +251,30 @@ namespace DiscordCoreAPI {
 
 	/// For collecting a list of WebHooks from a chosen Channel. \brief For collecting a list of WebHooks from a chosen Channel.
 	struct DiscordCoreAPI_Dll GetChannelWebHooksData {
-		std::string channelId{};///< The Channel from which to collect the WebHooks.
+		uint64_t channelId{};///< The Channel from which to collect the WebHooks.
 	};
 
 	/// For collecting a list of WebHooks from a chosen Guild. \brief For collecting a list of WebHooks from a chosen Guild.
 	struct DiscordCoreAPI_Dll GetGuildWebHooksData {
-		std::string guildId{};///< The Guild from which to collect the WebHooks.
+		uint64_t guildId{};///< The Guild from which to collect the WebHooks.
 	};
 
 	/// Collects a single WebHook. \brief Collects a single WebHook.
 	struct DiscordCoreAPI_Dll GetWebHookData {
-		std::string webhookId{};///< Id of the desired WebHook to collect.
+		uint64_t webhookId{};///< Id of the desired WebHook to collect.
 	};
 
 	/// Collects a single WebHook, using the Token and Id. \brief Collects a single WebHook, using the Token and Id.
 	struct DiscordCoreAPI_Dll GetWebHookWithTokenData {
 		std::string webhookToken{};///< Token of the desired WebHook.
-		std::string webhookId{};///< Id of the desired WebHook.
+		uint64_t webhookId{};///< Id of the desired WebHook.
 	};
 
 	/// For modifying a WebHook. \brief For modifying a WebHook.
 	struct DiscordCoreAPI_Dll ModifyWebHookData {
 		std::vector<uint8_t> avatar{};///< Image responseData for the default webhook avatar.
-		std::string channelId{};///< The new Channel id this webhook should be moved to.
-		std::string webhookId{};///< The WebHook to be modified.
+		uint64_t channelId{};///< The new Channel id this webhook should be moved to.
+		uint64_t webhookId{};///< The WebHook to be modified.
 		std::string name{};///< The default name of the webhook.
 	};
 
@@ -282,35 +282,35 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll ModifyWebHookWithTokenData {
 		std::string webhookToken{};///< Token of the desired WebHook.
 		std::vector<uint8_t> avatar{};///< Image responseData for the default webhook avatar.
-		std::string channelId{};///< The new Channel id this webhook should be moved to.
-		std::string webhookId{};///< The WebHook to be modified.
+		uint64_t channelId{};///< The new Channel id this webhook should be moved to.
+		uint64_t webhookId{};///< The WebHook to be modified.
 		std::string name{};///< The default name of the webhook.
 	};
 
 	/// For deleting a WebHook. \brief For deleting a WebHook.
 	struct DiscordCoreAPI_Dll DeleteWebHookData {
-		std::string webhookId{};///< The desired WebHook to delete.
+		uint64_t webhookId{};///< The desired WebHook to delete.
 	};
 
 	/// For deleting a WebHook, using its Token. \brief For deleting a WebHook, using its Token.
 	struct DiscordCoreAPI_Dll DeleteWebHookWithTokenData {
 		std::string webhookToken{};///< Token of the desired WebHook.
-		std::string webhookId{};///< The desired WebHook to delete.
+		uint64_t webhookId{};///< The desired WebHook to delete.
 	};
 
 	/// For getting a WebHook Message. \brief For getting a WebHook Message.
 	struct DiscordCoreAPI_Dll GetWebHookMessageData {
 		std::string webhookToken{};///< The WebHook token you would like to collect.
-		std::string webhookId{};///< The WebHook you would like to collect.
-		std::string messageId{};///< The Message Id to collect.
+		uint64_t webhookId{};///< The WebHook you would like to collect.
+		uint64_t messageId{};///< The Message Id to collect.
 		std::string threadId{};///< The thread that the Message is in.
 	};
 
 	/// For deleting a WebHook Message. \brief For deleting a WebHook Message.
 	struct DiscordCoreAPI_Dll DeleteWebHookMessageData {
 		std::string webhookToken{};///< The WebHook token you would like to collect.
-		std::string webhookId{};///< The WebHook you would like to collect.
-		std::string messageId{};///< The Message Id to collect.
+		uint64_t webhookId{};///< The WebHook you would like to collect.
+		uint64_t messageId{};///< The Message Id to collect.
 		std::string threadId{};///< Send a message to the specified thread within a webhook's Channel. The thread will automatically be unarchived.
 	};
 

@@ -99,7 +99,7 @@ Play {#Play}
 				}
 				loadPlaylist(discordGuild);
 
-				if (guildMember.voiceData.channelId == "" || guildMember.voiceData.channelId != voiceConnection->getChannelId()) {
+				if (guildMember.voiceData.channelId == 0 || guildMember.voiceData.channelId != voiceConnection->getChannelId()) {
 					EmbedData newEmbed;
 					newEmbed.setAuthor(args.eventData->getUserName(), args.eventData->getAvatarUrl());
 					newEmbed.setDescription("------\n__**Sorry, but you need to be in a correct voice channel to issue those commands!**__\n------");
@@ -170,7 +170,7 @@ Play {#Play}
 					}
 				}
 				InputEventData newestEvent = *newEvent;
-				std::string channelId = args.eventData->getChannelId();
+				uint64_t channelId = args.eventData->getChannelId();
 				if (!SongAPI::areWeCurrentlyPlaying(guild.id)) {
 					std::function<CoRoutine<void>(SongCompletionEventData)> theTask = [=](SongCompletionEventData eventDataNew) noexcept -> CoRoutine<void> {
 						co_await NewThreadAwaitable<void>();

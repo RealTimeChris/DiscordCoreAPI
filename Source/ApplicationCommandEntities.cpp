@@ -37,7 +37,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<std::vector<ApplicationCommand>>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Global_Application_Commands;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
-		workload.relativePath = "/applications/" + dataPackage.applicationId + "/commands";
+		workload.relativePath = "/applications/" + std::to_string(dataPackage.applicationId) + "/commands";
 		if (dataPackage.withLocalizations) {
 			workload.relativePath += "?with_localizations=true";
 		}
@@ -51,7 +51,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<ApplicationCommand>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Post_Global_Application_Command;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Post;
-		workload.relativePath = "/applications/" + dataPackage.applicationId + "/commands";
+		workload.relativePath = "/applications/" + std::to_string(dataPackage.applicationId) + "/commands";
 		workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
 		workload.callStack = "ApplicationCommands::createGlobalApplicationCommandAsync";
 		co_return DiscordCoreInternal::submitWorkloadAndGetResult<ApplicationCommand>(*ApplicationCommands::httpClient, workload);
@@ -63,7 +63,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<ApplicationCommand>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Global_Application_Command;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
-		workload.relativePath = "/applications/" + dataPackage.applicationId + "/commands/" + dataPackage.commandId;
+		workload.relativePath = "/applications/" + std::to_string(dataPackage.applicationId) + "/commands/" + dataPackage.commandId;
 		workload.callStack = "ApplicationCommands::getGlobalApplicationCommandAsync";
 		co_return DiscordCoreInternal::submitWorkloadAndGetResult<ApplicationCommand>(*ApplicationCommands::httpClient, workload);
 	}
@@ -86,7 +86,7 @@ namespace DiscordCoreAPI {
 		}
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Patch_Global_Application_Command;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Patch;
-		workload.relativePath = "/applications/" + dataPackage.applicationId + "/commands/" + appCommandId;
+		workload.relativePath = "/applications/" + std::to_string(dataPackage.applicationId) + "/commands/" + appCommandId;
 		workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
 		workload.callStack = "ApplicationCommands::editGlobalApplicationCommandAsync";
 		co_return DiscordCoreInternal::submitWorkloadAndGetResult<ApplicationCommand>(*ApplicationCommands::httpClient, workload);
@@ -110,7 +110,7 @@ namespace DiscordCoreAPI {
 		}
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Delete_Global_Application_Command;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Delete;
-		workload.relativePath = "/applications/" + dataPackage.applicationId + "/commands/" + commandId;
+		workload.relativePath = "/applications/" + std::to_string(dataPackage.applicationId) + "/commands/" + commandId;
 		workload.callStack = "ApplicationCommands::deleteGlobalApplicationCommandAsync";
 		co_return DiscordCoreInternal::submitWorkloadAndGetResult<void>(*ApplicationCommands::httpClient, workload);
 	}
@@ -139,7 +139,7 @@ namespace DiscordCoreAPI {
 		nlohmann::json dataNew = newDataArray;
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Bulk_Put_Global_Application_Commands;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Put;
-		workload.relativePath = "/applications/" + dataPackage.applicationId + "/commands";
+		workload.relativePath = "/applications/" + std::to_string(dataPackage.applicationId) + "/commands";
 		workload.content = dataNew.dump();
 		workload.callStack = "ApplicationCommands::bulkOverwriteGlobalApplicationCommandsAsync";
 		co_return DiscordCoreInternal::submitWorkloadAndGetResult<std::vector<ApplicationCommand>>(*ApplicationCommands::httpClient, workload);
@@ -151,7 +151,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<std::vector<ApplicationCommand>>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Guild_Application_Commands;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
-		workload.relativePath = "/applications/" + dataPackage.applicationId + "/guilds/" + dataPackage.guildId + "/commands";
+		workload.relativePath = "/applications/" + std::to_string(dataPackage.applicationId) + "/guilds/" + std::to_string(dataPackage.guildId) + "/commands";
 		if (dataPackage.withLocalizations) {
 			workload.relativePath += "?with_localizations=true";
 		}
@@ -166,7 +166,7 @@ namespace DiscordCoreAPI {
 		dataPackage.applicationId = dataPackage.applicationId;
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Post_Guild_Application_Command;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Post;
-		workload.relativePath = "/applications/" + dataPackage.applicationId + "/guilds/" + dataPackage.guildId + "/commands";
+		workload.relativePath = "/applications/" + std::to_string(dataPackage.applicationId) + "/guilds/" + std::to_string(dataPackage.guildId) + "/commands";
 		workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
 		workload.callStack = "ApplicationCommands::createGuildApplicationCommandAsync";
 		co_return DiscordCoreInternal::submitWorkloadAndGetResult<ApplicationCommand>(*ApplicationCommands::httpClient, workload);
@@ -178,7 +178,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<ApplicationCommand>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Guild_Application_Command;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
-		workload.relativePath = "/applications/" + dataPackage.applicationId + "/guilds/" + dataPackage.guildId + "/commands/" + dataPackage.commandId;
+		workload.relativePath = "/applications/" + std::to_string(dataPackage.applicationId) + "/guilds/" + std::to_string(dataPackage.guildId) + "/commands/" + dataPackage.commandId;
 		workload.callStack = "ApplicationCommands::getGuildApplicationCommandAsync";
 		co_return DiscordCoreInternal::submitWorkloadAndGetResult<ApplicationCommand>(*ApplicationCommands::httpClient, workload);
 	}
@@ -200,7 +200,7 @@ namespace DiscordCoreAPI {
 			co_return ApplicationCommand();
 		}
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Patch;
-		workload.relativePath = "/applications/" + dataPackage.applicationId + "/guilds/" + dataPackage.guildId + "/commands/" + appCommandId;
+		workload.relativePath = "/applications/" + std::to_string(dataPackage.applicationId) + "/guilds/" + std::to_string(dataPackage.guildId) + "/commands/" + appCommandId;
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Patch_Guild_Application_Command;
 		workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
 		workload.callStack = "ApplicationCommands::editGuildApplicationCommandAsync";
@@ -225,7 +225,7 @@ namespace DiscordCoreAPI {
 		}
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Delete_Guild_Application_Command;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Delete;
-		workload.relativePath = "/applications/" + dataPackage.applicationId + "/guilds/" + dataPackage.guildId + "/commands/" + commandId;
+		workload.relativePath = "/applications/" + std::to_string(dataPackage.applicationId) + "/guilds/" + std::to_string(dataPackage.guildId) + "/commands/" + commandId;
 		workload.callStack = "ApplicationCommands::deleteGuildApplicationCommandAsync";
 		co_return DiscordCoreInternal::submitWorkloadAndGetResult<void>(*ApplicationCommands::httpClient, workload);
 	}
@@ -254,7 +254,7 @@ namespace DiscordCoreAPI {
 		nlohmann::json dataNew = newDataArray;
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Bulk_Put_Guild_Application_Commands;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Put;
-		workload.relativePath = "/applications/" + dataPackage.applicationId + "/guilds/" + dataPackage.guildId + "/commands";
+		workload.relativePath = "/applications/" + std::to_string(dataPackage.applicationId) + "/guilds/" + std::to_string(dataPackage.guildId) + "/commands";
 		workload.content = dataNew.dump();
 		workload.callStack = "ApplicationCommands::bulkOverwriteGuildApplicationCommandsAsync";
 		co_return DiscordCoreInternal::submitWorkloadAndGetResult<std::vector<ApplicationCommand>>(*ApplicationCommands::httpClient, workload);
@@ -267,7 +267,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<std::vector<GuildApplicationCommandPermissionsData>>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Guild_Application_Commands_Permissions;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
-		workload.relativePath = "/applications/" + dataPackage.applicationId + "/guilds/" + dataPackage.guildId + "/commands/permissions";
+		workload.relativePath = "/applications/" + std::to_string(dataPackage.applicationId) + "/guilds/" + std::to_string(dataPackage.guildId) + "/commands/permissions";
 		workload.callStack = "ApplicationCommands::getGuildApplicationCommandPermissionsAsync";
 		co_return DiscordCoreInternal::submitWorkloadAndGetResult<std::vector<GuildApplicationCommandPermissionsData>>(*ApplicationCommands::httpClient, workload);
 	}
@@ -290,7 +290,7 @@ namespace DiscordCoreAPI {
 		}
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Guild_Application_Command_Permissions;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
-		workload.relativePath = "/applications/" + dataPackage.applicationId + "/guilds/" + dataPackage.guildId + "/commands/" + commandId + "/permissions";
+		workload.relativePath = "/applications/" + std::to_string(dataPackage.applicationId) + "/guilds/" + std::to_string(dataPackage.guildId) + "/commands/" + commandId + "/permissions";
 		workload.callStack = "ApplicationCommands::getApplicationCommandPermissionsAsync";
 		co_return DiscordCoreInternal::submitWorkloadAndGetResult<GuildApplicationCommandPermissionsData>(*ApplicationCommands::httpClient, workload);
 	}
@@ -313,7 +313,7 @@ namespace DiscordCoreAPI {
 		}
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Put_Guild_Application_Command_Permissions;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Put;
-		workload.relativePath = "/applications/" + dataPackage.applicationId + "/guilds/" + dataPackage.guildId + "/commands/" + commandId + "/permissions";
+		workload.relativePath = "/applications/" + std::to_string(dataPackage.applicationId) + "/guilds/" + std::to_string(dataPackage.guildId) + "/commands/" + commandId + "/permissions";
 		nlohmann::json newData = { { "permissions", nlohmann::json::parse(DiscordCoreInternal::JSONIFY(dataPackage)) } };
 		workload.content = newData.dump();
 		workload.callStack = "ApplicationCommands::editGuildApplicationCommandPermissionsAsync";

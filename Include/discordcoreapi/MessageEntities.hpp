@@ -35,15 +35,15 @@ namespace DiscordCoreAPI {
 		std::string aroundThisId{};///< Around this id.
 		std::string beforeThisId{};///< Before this id.
 		std::string afterThisId{};///< After this id.
-		std::string channelId{};///< Channel from which to collect the Messages.
+		uint64_t channelId{};///< Channel from which to collect the Messages.
 		int32_t limit{ 0 };///< Limit of Messages to collect.
 	};
 
 	/// For getting a Message. \brief For getting a Message.
 	struct DiscordCoreAPI_Dll GetMessageData {
-		std::string requesterId{};///< The requester id.
-		std::string channelId{};///< The Channel from which to collect the Message.
-		std::string id{};///< The id of the Message to collect.
+		uint64_t requesterId{};///< The requester id.
+		uint64_t channelId{};///< The Channel from which to collect the Message.
+		uint64_t id{};///< The id of the Message to collect.
 	};
 
 	/// For creating a Message. \brief For creating a Message.
@@ -53,7 +53,7 @@ namespace DiscordCoreAPI {
 		friend InputEvents;
 		friend Messages;
 
-		CreateMessageData(const std::string& channelIdNew) {
+		CreateMessageData(const uint64_t& channelIdNew) {
 			this->channelId = channelIdNew;
 		}
 
@@ -76,8 +76,8 @@ namespace DiscordCoreAPI {
 			this->channelId = dataPackage.getChannelId();
 		}
 
-		std::string requesterId{};
-		std::string channelId{};
+		uint64_t requesterId{};
+		uint64_t channelId{};
 
 		CreateMessageData() = default;
 
@@ -108,13 +108,13 @@ namespace DiscordCoreAPI {
 		}
 
 	  protected:
-		std::string targetUserId{};
+		uint64_t targetUserId{};
 	};
 
 	/// For crossposting a Message. \brief For crossposting a Message.
 	struct DiscordCoreAPI_Dll CrosspostMessageData {
-		std::string messageId{};///< Id of the message to be crossposted.
-		std::string channelId{};///< Channel within which to crosspost the Message from.
+		uint64_t messageId{};///< Id of the message to be crossposted.
+		uint64_t channelId{};///< Channel within which to crosspost the Message from.
 	};
 
 	/// For editing a Message. \brief For editing a Message.
@@ -146,9 +146,9 @@ namespace DiscordCoreAPI {
 
 	  protected:
 		std::vector<AttachmentData> attachments{};
-		std::string requesterId{};
-		std::string channelId{};
-		std::string messageId{};
+		uint64_t requesterId{};
+		uint64_t channelId{};
+		uint64_t messageId{};
 		int32_t flags{ 0 };
 
 		EditMessageData() = default;
@@ -158,8 +158,8 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll DeleteMessageData {
 	  public:
 		TimeStamp timeStamp{ "" };///< The created-at timestamp of the original message.
-		std::string channelId{};///< The channel Id of the Message to delete.
-		std::string messageId{};///< The message Id of the Message to delete.
+		uint64_t channelId{};///< The channel Id of the Message to delete.
+		uint64_t messageId{};///< The message Id of the Message to delete.
 		int32_t timeDelay{ 0 };///< Number of std::chrono::milliseconds to wait before deleting the Message.
 		std::string reason{};///< The reason for deleting the Message.
 	};
@@ -167,26 +167,26 @@ namespace DiscordCoreAPI {
 	/// For deleting a bulk of Messages. \brief For deleting a bulk of Messages.
 	struct DiscordCoreAPI_Dll DeleteMessagesBulkData {
 		std::vector<std::string> messageIds{};///< Array of Message ids to delete.
-		std::string channelId{};///< Channel within which to delete the Messages.
+		uint64_t channelId{};///< Channel within which to delete the Messages.
 		std::string reason{};///< The reason for deleting the Messages.
 	};
 
 	/// For getting a collection of pinned Messages. \brief For getting a collection of pinned Messages.
 	struct DiscordCoreAPI_Dll GetPinnedMessagesData {
-		std::string channelId{};///< The Channel from which to collect pinned Messages.
+		uint64_t channelId{};///< The Channel from which to collect pinned Messages.
 	};
 
 	/// For pinning a single Message. \brief For pinning a single Message.
 	struct DiscordCoreAPI_Dll PinMessageData {
-		std::string channelId{};///< The Channel within which to pin the Message.
-		std::string messageId{};///< The Message which you would like to pin.
+		uint64_t channelId{};///< The Channel within which to pin the Message.
+		uint64_t messageId{};///< The Message which you would like to pin.
 		std::string reason{};///< Reason for pinning this Message.
 	};
 
 	/// For unpinning a single Message. \brief For unpinning a single Message.
 	struct DiscordCoreAPI_Dll UnpinMessageData {
-		std::string channelId{};///< The Channel within which to unpin the Message.
-		std::string messageId{};///< The Message which you would like to unpin.
+		uint64_t channelId{};///< The Channel within which to unpin the Message.
+		uint64_t messageId{};///< The Message which you would like to unpin.
 		std::string reason{};///< Reason for pinning this Message.
 	};
 

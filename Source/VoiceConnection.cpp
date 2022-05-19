@@ -75,11 +75,11 @@ namespace DiscordCoreAPI {
 		this->baseSocketAgent = BaseSocketAgentNew;
 	}
 
-	std::string VoiceConnection::getChannelId() {
-		if (this && this->voiceConnectInitData.channelId != "") {
+	uint64_t VoiceConnection::getChannelId() {
+		if (this && this->voiceConnectInitData.channelId != 0) {
 			return this->voiceConnectInitData.channelId;
 		} else {
-			return std::string();
+			return uint64_t();
 		}
 	}
 
@@ -297,7 +297,7 @@ namespace DiscordCoreAPI {
 				}
 				frameCounter += 1;
 				this->audioBuffer.tryReceive(this->audioData);
-				if (this->audioData.guildMemberId != "") {
+				if (this->audioData.guildMemberId != 0) {
 					this->currentGuildMemberId = this->audioData.guildMemberId;
 				}
 				nanoSleep(100000);

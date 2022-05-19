@@ -127,13 +127,13 @@ namespace DiscordCoreAPI {
 
 	/// Data that is received as part of a Guild ban add event. \brief Data that is received as part of a Guild ban add event.
 	struct DiscordCoreAPI_Dll OnGuildBanAddData {
-		std::string guildId{};///< The Guild they were banned from.
+		uint64_t guildId{};///< The Guild they were banned from.
 		User user{};///< The User id of the person who was banned.
 	};
 
 	/// Data that is received as part of a Guild ban remove event. \brief Data that is received as part of a Guild ban add event.
 	struct DiscordCoreAPI_Dll OnGuildBanRemoveData {
-		std::string guildId{};///< The Guild they were un-banned from.
+		uint64_t guildId{};///< The Guild they were un-banned from.
 		User user{};///< The User id of the person who was un-banned.
 	};
 
@@ -149,7 +149,7 @@ namespace DiscordCoreAPI {
 
 	/// Data that is received as part of a Guild Integration update event. \brief Data that is received as part of a Guild Integration update event.
 	struct DiscordCoreAPI_Dll OnGuildIntegrationsUpdateData {
-		std::string guildId{};///< The id of the Guild for which the integrations were updated.
+		uint64_t guildId{};///< The id of the Guild for which the integrations were updated.
 	};
 
 	/// Data that is received as part of a GuildMember add event. \brief Data that is received as part of a GuildMember add event.
@@ -161,7 +161,7 @@ namespace DiscordCoreAPI {
 	/// Data that is received as part of a GuildMember remove event. \brief Data that is received as part of a GuildMember remove event.
 	struct DiscordCoreAPI_Dll OnGuildMemberRemoveData {
 		User user{};///< The User responseData of the removed GuildMember.
-		std::string guildId{};///< The id of the Guild from which they were removed.
+		uint64_t guildId{};///< The id of the Guild from which they were removed.
 	};
 
 	/// Data that is received as part of a GuildMember update event. \brief Data that is received as part of a GuildMember update event.
@@ -178,39 +178,39 @@ namespace DiscordCoreAPI {
 	/// Data that is received as part of a Role creation event. \brief Data that is received as part of a Role creation event.
 	struct DiscordCoreAPI_Dll OnRoleCreationData {
 		Role role{};///< The new Role.
-		std::string guildId{};///< The id of the Guild within which the Role was created.
+		uint64_t guildId{};///< The id of the Guild within which the Role was created.
 	};
 
 	/// Data that is received as part of a Role update event. \brief Data that is received as part of a Role update event.
 	struct DiscordCoreAPI_Dll OnRoleUpdateData {
-		std::string guildId{};///< The id of the Guild within which the Role was updated.
+		uint64_t guildId{};///< The id of the Guild within which the Role was updated.
 		Role roleOld{};///< The old Role.
 		Role roleNew{};///< The new Role.
 	};
 
 	/// Data that is received as part of a Role deletion event. \brief Data that is received as part of a Role deletion event.
 	struct DiscordCoreAPI_Dll OnRoleDeletionData {
-		std::string guildId{};///< The id of the Guild from which the Role was deleted.
+		uint64_t guildId{};///< The id of the Guild from which the Role was deleted.
 		Role roleOld{};///< The deleted Role.
 	};
 
 	/// Data that is received as part of an Integration creation event. \brief Data that is received as part of an Integration creation event.
 	struct DiscordCoreAPI_Dll OnIntegrationCreationData {
 		IntegrationData integrationData{};///< The new IntegrationData structure.
-		std::string guildId{};///< The id of the Guild for which this Integration was created.
+		uint64_t guildId{};///< The id of the Guild for which this Integration was created.
 	};
 
 	/// Data that is received as part of an Integration update event. \brief Data that is received as part of an Integration update event.
 	struct DiscordCoreAPI_Dll OnIntegrationUpdateData {
 		IntegrationData integrationData{};///< New IntegrationData structure.
-		std::string guildId{};///< The id of the Guild for which the Integration was updated.
+		uint64_t guildId{};///< The id of the Guild for which the Integration was updated.
 	};
 
 	/// Data that is received as part of an Integration deletion event. \brief Data that is received as part of an Integration deletion event.
 	struct DiscordCoreAPI_Dll OnIntegrationDeletionData {
-		std::string applicationId{};///< Application id of the current application.
-		std::string guildId{};///< The id of the Guild for which the Integration was deleted.
-		std::string id{};///< The id of the deleted Integration.
+		uint64_t applicationId{};///< Application id of the current application.
+		uint64_t guildId{};///< The id of the Guild for which the Integration was deleted.
+		uint64_t id{};///< The id of the deleted Integration.
 	};
 
 	/// Data that is received as part of an Invite creation event. \brief Data that is received as part of an Invite creation event.
@@ -220,8 +220,8 @@ namespace DiscordCoreAPI {
 
 	/// Data that is received as part of an Invite deletion event. \brief Data that is received as part of an Invite deletion event.
 	struct DiscordCoreAPI_Dll OnInviteDeletionData {
-		std::string channelId{};///< The id of the Channel for which the Invite existed.
-		std::string guildId{};///< The id of the Guild for which the Invite existed.
+		uint64_t channelId{};///< The id of the Channel for which the Invite existed.
+		uint64_t guildId{};///< The id of the Guild for which the Invite existed.
 		std::string code{};///< The code of the Invite.
 	};
 
@@ -242,16 +242,16 @@ namespace DiscordCoreAPI {
 
 	/// Data that is received as part of a Message deletion event. \brief Data that is received as part of a Message deletion event.
 	struct DiscordCoreAPI_Dll OnMessageDeletionData {
-		std::string messageId{};///< The id of the Message which was deleted.
-		std::string channelId{};///< The id of the Channel from which the Message was deleted.
-		std::string guildId{};///< The id of the Guild from which the Message was deleted.
+		uint64_t messageId{};///< The id of the Message which was deleted.
+		uint64_t channelId{};///< The id of the Channel from which the Message was deleted.
+		uint64_t guildId{};///< The id of the Guild from which the Message was deleted.
 	};
 
 	/// Data that is received as part of a Message delete bulk event. \brief Data that is received as part of a Message delete bulk event.
 	struct DiscordCoreAPI_Dll OnMessageDeleteBulkData {
-		std::vector<std::string> ids{};///< A std::vector containing the list of deleted Message ids.
-		std::string channelId{};///< The id of the Channel from which the Message was deleted.
-		std::string guildId{};///< The id of the Guild from which the Message was deleted.
+		std::vector<uint64_t> ids{};///< A std::vector containing the list of deleted Message ids.
+		uint64_t channelId{};///< The id of the Channel from which the Message was deleted.
+		uint64_t guildId{};///< The id of the Guild from which the Message was deleted.
 	};
 
 	/// Data that is received as part of a Reaction add event. \brief Data that is received as part of a Reaction add event.
@@ -266,16 +266,16 @@ namespace DiscordCoreAPI {
 
 	/// Data that is received as part of a Reaction remove all event. \brief Data that is received as part of a Reaction remove all event.
 	struct DiscordCoreAPI_Dll OnReactionRemoveAllData {
-		std::string channelId{};///< The id of the Channel from which the Reactions were deleted.
-		std::string messageId{};///< The id of the Message from which the Reactions were deleted.
-		std::string guildId{};///< The id of the Guild from which the Reactions were deleted.
+		uint64_t channelId{};///< The id of the Channel from which the Reactions were deleted.
+		uint64_t messageId{};///< The id of the Message from which the Reactions were deleted.
+		uint64_t guildId{};///< The id of the Guild from which the Reactions were deleted.
 	};
 
 	/// Data that is received as part of a Reaction remove emoji event. \brief Data that is received as part of a Reaction remove emoji event.
 	struct DiscordCoreAPI_Dll OnReactionRemoveEmojiData {
-		std::string messageId{};///< The id of the Message from which the Reactions were deleted.
-		std::string channelId{};///< The id of the Channel from which the Reactions were deleted.
-		std::string guildId{};///< The id of the Guild from which the Reactions were deleted.
+		uint64_t messageId{};///< The id of the Message from which the Reactions were deleted.
+		uint64_t channelId{};///< The id of the Channel from which the Reactions were deleted.
+		uint64_t guildId{};///< The id of the Guild from which the Reactions were deleted.
 		EmojiData emoji{};///< The id of the Emoji which was removed from the Message.
 	};
 
@@ -318,14 +318,14 @@ namespace DiscordCoreAPI {
 	/// Data that is received as part of a voice server update event. \brief Data that is received as part of a voice server update event.
 	struct DiscordCoreAPI_Dll OnVoiceServerUpdateData {
 		std::string endpoint{};///< The new endpoint.
-		std::string guildId{};///< The id of the Guild for which the server update is occurring.
+		uint64_t guildId{};///< The id of the Guild for which the server update is occurring.
 		std::string token{};///< The token of the server update event.
 	};
 
 	/// Data that is received as part of a WebHook update event. \brief Data that is received as part of a WebHook update event.
 	struct DiscordCoreAPI_Dll OnWebhookUpdateData {
-		std::string channelId{};///< Id of the Channel for which the WebHook Update is occurring.
-		std::string guildId{};///< Id of the Guild for which the WebHook Update is occurring.
+		uint64_t channelId{};///< Id of the Channel for which the WebHook Update is occurring.
+		uint64_t guildId{};///< Id of the Guild for which the WebHook Update is occurring.
 	};
 
 	/// Data that is received upon the bot receiving an autocomplete entry. \brief Data that is received upon the bot receiving an autocomplete entry.

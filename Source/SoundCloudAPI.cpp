@@ -192,7 +192,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	SoundCloudAPI::SoundCloudAPI(const std::string& guildIdNew, HttpClient* httpClient) : requestBuilder(httpClient) {
+	SoundCloudAPI::SoundCloudAPI(const uint64_t& guildIdNew, HttpClient* httpClient) : requestBuilder(httpClient) {
 		this->guildId = guildIdNew;
 		this->doWePrintSuccess = httpClient->getDoWePrintFFMPEGSuccess();
 		this->doWePrintError = httpClient->getDoWePrintFFMPEGError();

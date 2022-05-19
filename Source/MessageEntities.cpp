@@ -70,7 +70,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<std::vector<Message>>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Messages;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
-		workload.relativePath = "/channels/" + dataPackage.channelId + "/messages";
+		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/messages";
 		if (dataPackage.aroundThisId != "") {
 			workload.relativePath += "?around=" + dataPackage.aroundThisId;
 			if (dataPackage.limit != 0) {
@@ -109,7 +109,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<Message>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Message;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
-		workload.relativePath = "/channels/" + dataPackage.channelId + "/messages/" + dataPackage.id;
+		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/messages/" + std::to_string(dataPackage.id);
 		workload.callStack = "Messages::getMessageAsync";
 		auto result = DiscordCoreInternal::submitWorkloadAndGetResult<Message>(*Messages::httpClient, workload);
 		result.requesterId = dataPackage.requesterId;
@@ -122,7 +122,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<Message>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Post_Message;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Post;
-		workload.relativePath = "/channels/" + dataPackage.channelId + "/messages";
+		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/messages";
 		if (dataPackage.files.size() > 0) {
 			constructMultiPartData(workload, nlohmann::json::parse(DiscordCoreInternal::JSONIFY(dataPackage)), dataPackage.files);
 		} else {
@@ -140,7 +140,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<Message>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Crosspost_Message;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Post;
-		workload.relativePath = "/channels/" + dataPackage.channelId + "/messages/" + dataPackage.messageId + "/crosspost";
+		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/messages/" + std::to_string(dataPackage.messageId) + "/crosspost";
 		workload.callStack = "Messages::crosspostMessageAsync";
 		co_return DiscordCoreInternal::submitWorkloadAndGetResult<Message>(*Messages::httpClient, workload);
 	}
@@ -151,7 +151,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<Message>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Patch_Message;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Patch;
-		workload.relativePath = "/channels/" + dataPackage.channelId + "/messages/" + dataPackage.messageId;
+		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/messages/" + std::to_string(dataPackage.messageId);
 		if (dataPackage.files.size() > 0) {
 			constructMultiPartData(workload, nlohmann::json::parse(DiscordCoreInternal::JSONIFY(dataPackage)), dataPackage.files);
 		} else {
@@ -176,7 +176,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<void>();
 		std::this_thread::sleep_for(std::chrono::milliseconds{ dataPackage.timeDelay });
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Delete;
-		workload.relativePath = "/channels/" + dataPackage.channelId + "/messages/" + dataPackage.messageId;
+		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/messages/" + std::to_string(dataPackage.messageId);
 		workload.callStack = "Messages::deleteMessageAsync";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));
@@ -190,7 +190,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<void>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Bulk_Delete_Messages;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Post;
-		workload.relativePath = "/channels/" + dataPackage.channelId + "/messages/bulk-delete";
+		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/messages/bulk-delete";
 		workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
 		workload.callStack = "Messages::deleteMessagesBulkAsync";
 		if (dataPackage.reason != "") {
@@ -205,7 +205,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<std::vector<Message>>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Pinned_Messages;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
-		workload.relativePath = "/channels/" + dataPackage.channelId + "/pins";
+		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/pins";
 		workload.callStack = "Messages::getPinnedMessagesAsync";
 		co_return DiscordCoreInternal::submitWorkloadAndGetResult<std::vector<Message>>(*Messages::httpClient, workload);
 	}
@@ -216,7 +216,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<void>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Put_Pin_Message;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Put;
-		workload.relativePath = "/channels/" + dataPackage.channelId + "/pins/" + dataPackage.messageId;
+		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/pins/" + std::to_string(dataPackage.messageId);
 		workload.callStack = "Messages::pinMessageAsync";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));
@@ -230,7 +230,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<void>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Delete_Pin_Message;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Delete;
-		workload.relativePath = "/channels/" + dataPackage.channelId + "/pins/" + dataPackage.messageId;
+		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/pins/" + std::to_string(dataPackage.messageId);
 		workload.callStack = "Messages::unpinMessageAsync";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));

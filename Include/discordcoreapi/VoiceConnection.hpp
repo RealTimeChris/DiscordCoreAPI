@@ -46,7 +46,7 @@ namespace DiscordCoreAPI {
 
 		/// Collects the currently connected-to voice Channel's id. \brief Collects the currently connected-to voice Channel's id.
 		/// \returns A std::string containing the Channel's id.
-		std::string getChannelId();
+		uint64_t getChannelId();
 
 		~VoiceConnection();
 
@@ -65,9 +65,9 @@ namespace DiscordCoreAPI {
 		std::atomic_bool areWeStopping{ false };
 		std::atomic_bool areWePlaying{ false };
 		const int32_t maxBufferSize{ 1276 };
-		std::string currentGuildMemberId{};
 		int64_t disconnectStartTime{ 0 };
 		bool areWeConnectedBool{ false };
+		uint64_t currentGuildMemberId{};
 		bool didWeJustConnect{ true };
 		int16_t sequenceIndex{ 0 };
 		AudioFrameData audioData{};

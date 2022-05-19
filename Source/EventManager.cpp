@@ -496,8 +496,7 @@ namespace DiscordCoreAPI {
 	void EventHandler::onGuildDeletion(OnGuildDeletionData dataPackage) {
 		if (EventHandler::options.cacheGuilds) {
 			for (auto& value: dataPackage.guild.members) {
-				GuildMember guildMember =
-					GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = std::to_string(value), .guildId = std::to_string(dataPackage.guild.id) }).get();
+				GuildMember guildMember = GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = value, .guildId = dataPackage.guild.id }).get();
 				GuildMembers::removeGuildMember(guildMember);
 			}
 			for (auto& value: dataPackage.guild.channels) {
@@ -522,8 +521,8 @@ namespace DiscordCoreAPI {
 
 	void EventHandler::onGuildMemberRemove(OnGuildMemberRemoveData dataPackage) {
 		if (EventHandler::options.cacheGuildMembers) {
-			GuildMember guildMember = GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = std::to_string(dataPackage.user.id), .guildId = dataPackage.guildId }).get();
-			std::string globalId = std::string{ guildMember.guildId } + " + " + std::to_string(guildMember.user.id);
+			GuildMember guildMember = GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = dataPackage.user.id, .guildId = dataPackage.guildId }).get();
+			std::string globalId = std::to_string(guildMember.guildId) + " + " + std::to_string(guildMember.user.id);
 			GuildMembers::removeGuildMember(guildMember);
 			GuildData guild = Guilds::getCachedGuildAsync({ dataPackage.guildId }).get();
 			for (uint64_t x = 0; x < guild.members.size(); x += 1) {
@@ -583,7 +582,7 @@ namespace DiscordCoreAPI {
 			guildMember.voiceData = dataPackage.voiceStateData;
 			GuildMembers::insertGuildMember(guildMember);
 			GuildData guild = Guilds::getCachedGuildAsync({ .guildId = dataPackage.voiceStateData.guildId }).get();
-			guild.voiceStates.insert_or_assign(stoull(dataPackage.voiceStateData.userId), dataPackage.voiceStateData);
+			guild.voiceStates.insert_or_assign(dataPackage.voiceStateData.userId, dataPackage.voiceStateData);
 			Guilds::insertGuild(guild);
 		}
 	}

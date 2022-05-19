@@ -55,7 +55,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<std::vector<Sticker>>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Guild_Stickers;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
-		workload.relativePath = "/guilds/" + dataPackage.guildId + "/stickers";
+		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/stickers";
 		workload.callStack = "Stickers::getGuildStickersAsync";
 		co_return DiscordCoreInternal::submitWorkloadAndGetResult<std::vector<Sticker>>(*Stickers::httpClient, workload);
 	}
@@ -66,7 +66,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<Sticker>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Post_Guild_Sticker;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Post;
-		workload.relativePath = "/guilds/" + dataPackage.guildId + "/stickers";
+		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/stickers";
 		nlohmann::json responseData = { { "description", dataPackage.description }, { "name", dataPackage.name }, { "tags", dataPackage.tags }, { "file", dataPackage.file } };
 		workload.content = responseData.dump();
 		workload.callStack = "Stickers::createGuildStickerAsync";
@@ -82,7 +82,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<Sticker>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Patch_Guild_Sticker;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Patch;
-		workload.relativePath = "/guilds/" + dataPackage.guildId + "/stickers/" + dataPackage.stickerId;
+		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/stickers/" + dataPackage.stickerId;
 		nlohmann::json responseData = { { "description", dataPackage.description }, { "name", dataPackage.name }, { "tags", dataPackage.tags } };
 		workload.content = responseData.dump();
 		workload.callStack = "Stickers::modifyGuildStickerAsync";
@@ -98,7 +98,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<void>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Delete_Guild_Sticker;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Delete;
-		workload.relativePath = "/guilds/" + dataPackage.guildId + "/stickers/" + dataPackage.stickerId;
+		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/stickers/" + dataPackage.stickerId;
 		workload.callStack = "Stickers::deleteGuildStickerAsync";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));

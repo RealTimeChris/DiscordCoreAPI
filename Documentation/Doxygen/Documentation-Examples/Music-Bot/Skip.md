@@ -95,7 +95,7 @@ Skip {#Skip}
 					return;
 				}
 
-				if (guildMember.voiceData.channelId == "" || guildMember.voiceData.channelId != voiceConnection->getChannelId()) {
+				if (guildMember.voiceData.channelId == 0 || guildMember.voiceData.channelId != voiceConnection->getChannelId()) {
 					EmbedData newEmbed;
 					newEmbed.setAuthor(args.eventData->getUserName(), args.eventData->getAvatarUrl());
 					newEmbed.setDescription("------\n__**Sorry, but you need to be in a correct voice channel to issue those commands!**__\n------");

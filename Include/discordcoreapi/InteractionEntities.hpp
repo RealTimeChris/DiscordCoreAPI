@@ -44,7 +44,7 @@ namespace DiscordCoreAPI {
 		/// \param emojiId An emoji id, if desired.
 		/// \param url A url, if applicable.
 		InteractionResponse& addButton(bool disabled, const std::string& customIdNew, const std::string& buttonLabel, ButtonStyle buttonStyle, const std::string& emojiName = "",
-			std::string emojiId = "", const std::string& url = "") {
+			uint64_t emojiId = 0, const std::string& url = "") {
 			if (this->data.data.components.size() == 0) {
 				ActionRowData actionRowData;
 				this->data.data.components.push_back(actionRowData);
@@ -202,7 +202,7 @@ namespace DiscordCoreAPI {
 		InteractionPackageData interactionPackage{};
 		MessagePackageData messagePackage{};
 		InteractionResponseData data{};
-		std::string requesterId{};
+		uint64_t requesterId{};
 	};
 
 	/// For creating an ephemeral Interaction response. \brief For creating an ephemeral Interaction response.
@@ -281,7 +281,7 @@ namespace DiscordCoreAPI {
 	  protected:
 		InteractionPackageData interactionPackage{};
 		InteractionResponseData data{};
-		std::string requesterId{};
+		uint64_t requesterId{};
 	};
 
 	/// For creating an Interaction response. \brief For creating an Interaction response.
@@ -399,7 +399,7 @@ namespace DiscordCoreAPI {
 	/// For getting an Interaction response. \brief For getting an Interaction response.
 	struct DiscordCoreAPI_Dll GetInteractionResponseData {
 		std::string interactionToken{};///< Interaction token.
-		std::string applicationId{};///< application id.
+		uint64_t applicationId{};///< application id.
 	};
 
 	/// For editing an Interaction response. \brief For editing an Interaction response.
@@ -438,7 +438,7 @@ namespace DiscordCoreAPI {
 
 	  protected:
 		InteractionPackageData interactionPackage{};
-		std::string requesterId{};
+		uint64_t requesterId{};
 		EditWebHookData data{};
 	};
 
@@ -497,7 +497,7 @@ namespace DiscordCoreAPI {
 
 	  protected:
 		InteractionPackageData interactionPackage{};
-		std::string requesterId{};
+		uint64_t requesterId{};
 	};
 
 	/// For creating a follow up Message. \brief For creating a follow up Message.
@@ -566,14 +566,14 @@ namespace DiscordCoreAPI {
 
 	  protected:
 		InteractionPackageData interactionPackage{};
-		std::string requesterId{};
+		uint64_t requesterId{};
 	};
 
 	/// For getting a follow-up Message. \brief For getting a follow-up Message.
 	struct DiscordCoreAPI_Dll GetFollowUpMessageData {
 		std::string interactionToken{};///< Interaction token.
-		std::string applicationId{};///< application id.
-		std::string messageId{};///< Message id.
+		uint64_t applicationId{};///< application id.
+		uint64_t messageId{};///< Message id.
 	};
 
 	/// For editing a follow up Message. \brief For editing a follow up Message.
@@ -615,7 +615,7 @@ namespace DiscordCoreAPI {
 	  protected:
 		InteractionPackageData interactionPackage{};
 		MessagePackageData messagePackage{};
-		std::string requesterId{};
+		uint64_t requesterId{};
 		EditWebHookData data{};
 	};
 
@@ -752,9 +752,9 @@ namespace DiscordCoreAPI {
 		std::unique_ptr<InteractionData> interactionData{ std::make_unique<InteractionData>() };///< Interaction data.
 		std::vector<std::string> values{};///< A std::vector of the chosen values.
 		std::string selectionId{};///< Selection id.
-		std::string channelId{};///< The Channel id where it took place.
-		std::string messageId{};///< The Message id where it took place.
-		std::string userId{};///< The User id who selected the menu options.
+		uint64_t channelId{};///< The Channel id where it took place.
+		uint64_t messageId{};///< The Message id where it took place.
+		uint64_t userId{};///< The User id who selected the menu options.
 	};
 
 	/// SelectMenuCollector, for collecting select-menu input from one or more
@@ -781,7 +781,7 @@ namespace DiscordCoreAPI {
 		/// User to collect inputs from, if getSelectMenuDataForAllNew is set to
 		/// false. \returns A std::vector of SelectMenuResponseData.
 		CoRoutine<std::vector<SelectMenuResponseData>> collectSelectMenuData(bool getSelectMenuDataForAllNew, int32_t maxWaitTimeInMsNew, int32_t maxCollectedSelectMenuCountNew,
-			std::string targetUserId = "");
+			uint64_t targetUserId = 0);
 
 		~SelectMenuCollector();
 
@@ -795,10 +795,10 @@ namespace DiscordCoreAPI {
 		std::vector<std::string> values{};
 		std::string bufferMapKey{};
 		std::string selectMenuId{};
-		std::string channelId{};
-		std::string messageId{};
+		uint64_t channelId{};
+		uint64_t messageId{};
 		uint32_t maxTimeInMs{ 0 };
-		std::string userId{};
+		uint64_t userId{};
 		bool doWeQuit{ false };
 
 		void run();
@@ -842,10 +842,10 @@ namespace DiscordCoreAPI {
 
 		std::unique_ptr<InteractionData> interactionData{ std::make_unique<InteractionData>() };///< Interaction data.
 		std::string emojiName{};///< The emoji name, if applicable.
-		std::string channelId{};///< The Channel id where it took place.
-		std::string messageId{};///< The Message id where it took place.
+		uint64_t channelId{};///< The Channel id where it took place.
+		uint64_t messageId{};///< The Message id where it took place.
 		std::string buttonId{};///< The id of the button, for identification.
-		std::string userId{};///< The User id who selected the menu options.
+		uint64_t userId{};///< The User id who selected the menu options.
 	};
 
 	/// ButtonCollector, for collecting button input from one or more Users. \brief
@@ -871,7 +871,7 @@ namespace DiscordCoreAPI {
 		/// from, if getButtonDataForAllNew is set to false. \returns A std::vector of
 		/// ButtonResponseData.
 		CoRoutine<std::vector<ButtonResponseData>> collectButtonData(bool getButtonDataForAllNew, int32_t maxWaitTimeInMsNew, int32_t maxNumberOfPressesNew,
-			std::string targetUserId = "");
+			uint64_t targetUserId = 0);
 
 		~ButtonCollector();
 
@@ -884,11 +884,11 @@ namespace DiscordCoreAPI {
 		std::vector<std::string> values{};
 		bool getButtonDataForAll{ false };
 		std::string bufferMapKey{};
-		std::string channelId{};
-		std::string messageId{};
+		uint64_t channelId{};
+		uint64_t messageId{};
 		std::string buttonId{};
 		uint32_t maxTimeInMs{ 0 };
-		std::string userId{};
+		uint64_t userId{};
 		bool doWeQuit{ false };
 
 		void run();
@@ -932,9 +932,9 @@ namespace DiscordCoreAPI {
 
 		std::unique_ptr<InteractionData> interactionData{ std::make_unique<InteractionData>() };///< Interaction data.
 		std::string customIdSmall{};///< The customId of the particular input.
-		std::string channelId{};///< The Channel id where it took place.
+		uint64_t channelId{};///< The Channel id where it took place.
 		std::string customId{};///< The customId of the modal component.
-		std::string userId{};///< The User id who selected the menu options.
+		uint64_t userId{};///< The User id who selected the menu options.
 		std::string value{};/// The input value of the modal component.
 	};
 
@@ -964,7 +964,7 @@ namespace DiscordCoreAPI {
 		UnboundedMessageBlock<InteractionData> modalIncomingInteractionBuffer{};
 		int32_t currentCollectedButtonCount{ 0 };
 		ModalResponseData responseData{};
-		std::string channelId{};
+		uint64_t channelId{};
 		uint32_t maxTimeInMs{ 0 };
 		bool doWeQuit{ false };
 

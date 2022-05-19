@@ -395,7 +395,7 @@ namespace DiscordCoreInternal {
 		return newerSong;
 	}
 
-	YouTubeAPI::YouTubeAPI(const std::string& guildIdNew, DiscordCoreInternal::HttpClient* httpClient) : requestBuilder(httpClient) {
+	YouTubeAPI::YouTubeAPI(const uint64_t& guildIdNew, DiscordCoreInternal::HttpClient* httpClient) : requestBuilder(httpClient) {
 		this->doWePrintSuccess = httpClient->getDoWePrintFFMPEGSuccess();
 		this->doWePrintError = httpClient->getDoWePrintFFMPEGError();
 		this->guildId = guildIdNew;

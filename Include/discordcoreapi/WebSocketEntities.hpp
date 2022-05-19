@@ -91,7 +91,7 @@ namespace DiscordCoreInternal {
 		std::string botToken{};
 		ErlPacker erlPacker{};
 		std::string baseUrl{};
-		std::string userId{};
+		uint64_t userId{};
 
 		std::vector<std::string> tokenize(const std::string&, const std::string& = "\r\n") noexcept;
 

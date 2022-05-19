@@ -71,7 +71,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<Channel>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Channel;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
-		workload.relativePath = "/channels/" + dataPackage.channelId;
+		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId);
 		workload.callStack = "Channels::getChannelAsync";
 		auto channelNew = DiscordCoreInternal::submitWorkloadAndGetResult<Channel>(*Channels::httpClient, workload);
 		Channels::insertChannel(channelNew);
@@ -80,8 +80,8 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<ChannelData> Channels::getCachedChannelAsync(GetChannelData dataPackage) {
 		co_await NewThreadAwaitable<ChannelData>();
-		if (Channels::cache.contains(stoull(dataPackage.channelId))) {
-			co_return Channels::cache[stoull(dataPackage.channelId)];
+		if (Channels::cache.contains(dataPackage.channelId)) {
+			co_return Channels::cache[dataPackage.channelId];
 		} else {
 			co_return Channels::getChannelAsync(dataPackage).get();
 		}
@@ -93,7 +93,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<Channel>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Patch_Channel;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Patch;
-		workload.relativePath = "/channels/" + dataPackage.channelId;
+		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId);
 		workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
 		workload.callStack = "Channels::modifyChannelAsync";
 		if (dataPackage.reason != "") {
@@ -110,7 +110,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<void>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Delete_Channel;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Delete;
-		workload.relativePath = "/channels/" + dataPackage.channelId;
+		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId);
 		workload.callStack = "Channels::deleteOrCloseAChannelAsync";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));
@@ -124,7 +124,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<void>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Put_Channel_Permission_Overwrites;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Put;
-		workload.relativePath = "/channels/" + dataPackage.channelId + "/permissions/" + dataPackage.roleOrUserId;
+		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/permissions/" + dataPackage.roleOrUserId;
 		workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
 		workload.callStack = "Channels::editChannelPermissionOverwritesAsync";
 		if (dataPackage.reason != "") {
@@ -139,7 +139,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<std::vector<InviteData>>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Channel_Invites;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
-		workload.relativePath = "/channels/" + dataPackage.channelId + "/invites";
+		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/invites";
 		workload.callStack = "Channels::getChannelInvitesAsync";
 		co_return DiscordCoreInternal::submitWorkloadAndGetResult<std::vector<InviteData>>(*Channels::httpClient, workload);
 	}
@@ -150,7 +150,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<InviteData>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Post_Channel_Invite;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Post;
-		workload.relativePath = "/channels/" + dataPackage.channelId + "/invites";
+		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/invites";
 		workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
 		workload.callStack = "Channels::createChannelInviteAsync";
 		if (dataPackage.reason != "") {
@@ -165,7 +165,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<void>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Delete_Channel_Permission_Overwrites;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Delete;
-		workload.relativePath = "/channels/" + dataPackage.channelId + "/permissions/" + dataPackage.roleOrUserId;
+		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/permissions/" + dataPackage.roleOrUserId;
 		workload.callStack = "Channels::deleteChannelPermissionOverwritesAsync";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));
@@ -179,7 +179,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<Channel>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Post_Follow_News_Channel;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Post;
-		workload.relativePath = "/channels/" + dataPackage.channelId + "/followers";
+		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/followers";
 		workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
 		workload.callStack = "Channels::followNewsChannelAsync";
 		co_return DiscordCoreInternal::submitWorkloadAndGetResult<Channel>(*Channels::httpClient, workload);
@@ -191,7 +191,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<void>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Post_Trigger_Typing_Indicator;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Post;
-		workload.relativePath = "/channels/" + dataPackage.channelId + "/typing";
+		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/typing";
 		workload.callStack = "Channels::triggerTypingIndicatorAsync";
 		co_return DiscordCoreInternal::submitWorkloadAndGetResult<void>(*Channels::httpClient, workload);
 	}
@@ -202,7 +202,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<std::vector<Channel>>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Guild_Channels;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
-		workload.relativePath = "/guilds/" + dataPackage.guildId + "/channels";
+		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/channels";
 		workload.callStack = "Channels::getGuildChannelsAsync";
 		co_return DiscordCoreInternal::submitWorkloadAndGetResult<std::vector<Channel>>(*Channels::httpClient, workload);
 	}
@@ -213,7 +213,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<Channel>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Post_Guild_Channel;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Post;
-		workload.relativePath = "/guilds/" + dataPackage.guildId + "/channels";
+		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/channels";
 		workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
 		workload.callStack = "Channels::createGuildChannelAsync";
 		if (dataPackage.reason != "") {
@@ -230,7 +230,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<void>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Patch_Guild_Channel_Positions;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Patch;
-		workload.relativePath = "/guilds/" + dataPackage.guildId + "/channels";
+		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/channels";
 		workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
 		workload.callStack = "Channels::modifyGuildChannelPositionsAsync";
 		if (dataPackage.reason != "") {

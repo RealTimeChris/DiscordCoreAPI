@@ -61,13 +61,13 @@ namespace DiscordCoreAPI {
 		}
 	};
 
-	using VoiceConnectionMap = std::unordered_map<std::string, std::unique_ptr<VoiceConnection>>;
+	using VoiceConnectionMap = std::unordered_map<uint64_t, std::unique_ptr<VoiceConnection>>;
 
-	using SoundCloudAPIMap = std::unordered_map<std::string, std::unique_ptr<DiscordCoreInternal::SoundCloudAPI>>;
+	using SoundCloudAPIMap = std::unordered_map<uint64_t, std::unique_ptr<DiscordCoreInternal::SoundCloudAPI>>;
 
-	using YouTubeAPIMap = std::unordered_map<std::string, std::unique_ptr<DiscordCoreInternal::YouTubeAPI>>;
+	using YouTubeAPIMap = std::unordered_map<uint64_t,std::unique_ptr<DiscordCoreInternal::YouTubeAPI>>;
 
-	using SongAPIMap = std::unordered_map<std::string, std::unique_ptr<SongAPI>>;
+	using SongAPIMap = std::unordered_map<uint64_t, std::unique_ptr<SongAPI>>;
 
 	DiscordCoreAPI_Dll VoiceConnectionMap& getVoiceConnectionMap();
 

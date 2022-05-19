@@ -78,7 +78,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<void>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Put_Recipient_To_Group_Dm;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Put;
-		workload.relativePath = "/channels/" + dataPackage.channelId + "/recipients/" + dataPackage.userId;
+		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/recipients/" + std::to_string(dataPackage.userId);
 		workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
 		workload.callStack = "Users::addRecipientToGroupDMAsync";
 		co_return DiscordCoreInternal::submitWorkloadAndGetResult<void>(*Users::httpClient, workload);
@@ -90,7 +90,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<void>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Delete_Recipient_From_Group_Dm;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Delete;
-		workload.relativePath = "/channels/" + dataPackage.channelId + "/recipients/" + dataPackage.userId;
+		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/recipients/" + std::to_string(dataPackage.userId);
 		workload.callStack = "Users::removeRecipientToGroupDMAsync";
 		co_return DiscordCoreInternal::submitWorkloadAndGetResult<void>(*Users::httpClient, workload);
 	}
@@ -101,7 +101,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<void>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Patch_Current_User_Voice_State;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Patch;
-		workload.relativePath = "/guilds/" + dataPackage.guildId + "/voice-states/@me";
+		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/voice-states/@me";
 		workload.callStack = "Users::modifyCurrentUserVoiceStateAsync";
 		co_return DiscordCoreInternal::submitWorkloadAndGetResult<void>(*Users::httpClient, workload);
 	}
@@ -112,7 +112,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<void>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Patch_User_Voice_State;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Patch;
-		workload.relativePath = "/guilds/" + dataPackage.guildId + "/voice-states/" + dataPackage.userId;
+		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/voice-states/" + std::to_string(dataPackage.userId);
 		workload.callStack = "Users::modifyUserVoiceStateAsync";
 		co_return DiscordCoreInternal::submitWorkloadAndGetResult<void>(*Users::httpClient, workload);
 	}
@@ -130,8 +130,8 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<UserData> Users::getCachedUserAsync(GetUserData dataPackage) {
 		co_await NewThreadAwaitable<UserData>();
-		if (Users::cache.contains(stoull(dataPackage.userId))) {
-			co_return Users::cache[stoull(dataPackage.userId)];
+		if (Users::cache.contains(dataPackage.userId)) {
+			co_return Users::cache[dataPackage.userId];
 		} else {
 			co_return getUserAsync(dataPackage).get();
 		}
@@ -143,7 +143,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<User>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_User;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
-		workload.relativePath = "/users/" + dataPackage.userId;
+		workload.relativePath = "/users/" + std::to_string(dataPackage.userId);
 		workload.callStack = "Users::getUserAsync";
 		auto userNew = DiscordCoreInternal::submitWorkloadAndGetResult<User>(*Users::httpClient, workload);
 		Users::insertUser(userNew);

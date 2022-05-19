@@ -57,7 +57,7 @@ Helper Functions {#HelperFunctions}
 	}
 
 	bool checkIfWeHaveControl(InputEventData eventData, DiscordGuild guildData, GuildMember guildMember) {
-		if (guildData.data.djRoleId == "") {
+		if (guildData.data.djRoleId == 0) {
 			return true;
 		}
 		bool doWeHaveControl = false;
