@@ -363,7 +363,7 @@ namespace DiscordCoreInternal {
 				} else if (payload["t"] == "CHANNEL_UPDATE") {
 					std::unique_ptr<DiscordCoreAPI::OnChannelUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnChannelUpdateData>() };
 					if (payload["d"].contains("id")) {
-						dataPackage->channelOld = DiscordCoreAPI::Channels::getCachedChannelAsync({ .channelId = payload["d"]["id"] }).get();
+						dataPackage->channelOld = DiscordCoreAPI::Channels::getCachedChannelAsync({ .channelId = stoull(payload["d"]["id"].get<std::string>()) }).get();
 						dataPackage->channelNew = dataPackage->channelOld;
 					}
 					DiscordCoreInternal::DataParser::parseObject(payload["d"], dataPackage->channelNew);
@@ -410,7 +410,7 @@ namespace DiscordCoreInternal {
 				} else if (payload["t"] == "GUILD_UPDATE") {
 					std::unique_ptr<DiscordCoreAPI::OnGuildUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnGuildUpdateData>() };
 					if (payload["d"].contains("id")) {
-						dataPackage->guildOld = DiscordCoreAPI::Guilds::getCachedGuildAsync({ .guildId = payload["d"]["id"] }).get();
+						dataPackage->guildOld = DiscordCoreAPI::Guilds::getCachedGuildAsync({ .guildId = stoull(payload["d"]["id"].get<std::string>()) }).get();
 						dataPackage->guildNew = dataPackage->guildOld;
 					}
 					DiscordCoreInternal::DataParser::parseObject(payload["d"], dataPackage->guildNew);
@@ -422,7 +422,7 @@ namespace DiscordCoreInternal {
 				} else if (payload["t"] == "GUILD_BAN_ADD") {
 					std::unique_ptr<DiscordCoreAPI::OnGuildBanAddData> dataPackage{ std::make_unique<DiscordCoreAPI::OnGuildBanAddData>() };
 					if (payload["d"].contains("guild_id")) {
-						dataPackage->guildId = payload["d"]["guild_id"];
+						dataPackage->guildId = stoull(payload["d"]["guild_id"].get<std::string>());
 					}
 					if (payload["d"].contains("user")) {
 						DiscordCoreAPI::User newData{};
@@ -433,7 +433,7 @@ namespace DiscordCoreInternal {
 				} else if (payload["t"] == "GUILD_BAN_REMOVE") {
 					std::unique_ptr<DiscordCoreAPI::OnGuildBanRemoveData> dataPackage{ std::make_unique<DiscordCoreAPI::OnGuildBanRemoveData>() };
 					if (payload["d"].contains("guild_id")) {
-						dataPackage->guildId = payload["d"]["guild_id"];
+						dataPackage->guildId = stoull(payload["d"]["guild_id"].get<std::string>());
 					}
 					if (payload["d"].contains("user")) {
 						DiscordCoreAPI::User newData{};
