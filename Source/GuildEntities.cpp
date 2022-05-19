@@ -88,7 +88,7 @@ namespace DiscordCoreAPI {
 			} else {
 				theChannelId = channelId;
 			}
-			std::string theShardId{ std::to_string(((this->id >> 22) % this->discordCoreClient->shardingOptions.totalNumberOfShards)) };
+			std::string theShardId{ std::to_string((this->id >> 22) % this->discordCoreClient->shardingOptions.totalNumberOfShards) };
 			getVoiceConnectionMap()[this->id] = std::make_unique<VoiceConnection>(this->discordCoreClient->webSocketMap[theShardId].get());
 			this->voiceConnectionPtr = getVoiceConnectionMap()[this->id].get();
 			DiscordCoreInternal::VoiceConnectInitData voiceConnectInitData{};

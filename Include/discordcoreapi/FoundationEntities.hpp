@@ -2785,9 +2785,9 @@ namespace DiscordCoreAPI {
 			} else {
 				this->interactionData->message.id = this->messageData->id;
 			}
-			if (this->messageData->member.id == 0) {
+			if (this->messageData->member.id == 0) {				
 				this->messageData->member = this->interactionData->member;
-			} else {
+			} else {				
 				this->interactionData->member = this->messageData->member;
 			}
 			if (this->interactionData->user.id != 0) {
@@ -2863,10 +2863,11 @@ namespace DiscordCoreAPI {
 		/// Returns the User id of the last requester of this input-event. \brief Returns the User id of the last requester of this input-event.
 		/// \returns A std::string containing the author's id.
 		uint64_t getAuthorId() {
-			if (this->messageData->author.id == 0) {
-				return this->interactionData->user.id;
-			} else if (this->messageData->author.id != 0) {
-				return this->messageData->author.id;
+			if (this->messageData->member.id == 0) {
+				auto returnValue = this->interactionData->user.id;
+				return returnValue;
+			} else if (this->messageData->member.id != 0) {
+				return this->messageData->member.id;
 			} else {
 				return uint64_t();
 			}

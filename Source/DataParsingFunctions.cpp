@@ -3877,9 +3877,10 @@ namespace DiscordCoreInternal {
 
 		if (jsonObjectData.contains("member") && !jsonObjectData["member"].is_null()) {
 			DataParser::parseObject(jsonObjectData["member"], pDataStructure.member);
-		} 
-
-		if (jsonObjectData.contains("user") && !jsonObjectData["user"].is_null()) {
+			pDataStructure.user.avatar = pDataStructure.member.userAvatar;
+			pDataStructure.user.id = pDataStructure.member.id;
+			pDataStructure.user.userName = pDataStructure.member.userName;
+		} else if (jsonObjectData.contains("user") && !jsonObjectData["user"].is_null()) {
 			DataParser::parseObject(jsonObjectData["user"], pDataStructure.user);
 		}
 

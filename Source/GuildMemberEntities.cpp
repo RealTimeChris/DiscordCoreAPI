@@ -35,6 +35,7 @@ namespace DiscordCoreAPI {
 		this->roles = dataNew.roles;
 		this->flags = dataNew.flags;
 		this->nick = dataNew.nick;
+		this->id = dataNew.id;
 		return *this;
 	};
 
@@ -51,6 +52,7 @@ namespace DiscordCoreAPI {
 		this->roles = dataNew.roles;
 		this->flags = dataNew.flags;
 		this->nick = dataNew.nick;
+		this->id = dataNew.id;
 		return *this;
 	};
 
@@ -81,8 +83,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<GuildMemberData>();
 		std::string theString{ std::to_string(dataPackage.guildId) + " + " + std::to_string(dataPackage.guildMemberId) };
 		if (GuildMembers::cache.contains(theString)) {
-			auto guildMember = GuildMembers::cache[theString];
-			co_return guildMember;
+			co_return GuildMembers::cache[theString];
 		} else {
 			co_return GuildMembers::getGuildMemberAsync(dataPackage).get();
 		}

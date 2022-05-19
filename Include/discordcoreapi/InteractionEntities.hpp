@@ -387,9 +387,11 @@ namespace DiscordCoreAPI {
 			this->interactionPackage.interactionId = dataPackage.id;
 			this->interactionPackage.applicationId = dataPackage.applicationId;
 			if (dataPackage.member.id != 0) {
+				this->requesterId = dataPackage.member.id;
+			} else if (dataPackage.message.member.id != 0) {
 				this->requesterId = dataPackage.message.member.id;
-			} else {
-				this->requesterId = dataPackage.user.id;
+			} else if (dataPackage.message.author.id != 0) {
+				this->requesterId = dataPackage.message.author.id;
 			}
 		}
 
