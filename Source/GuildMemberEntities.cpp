@@ -72,8 +72,8 @@ namespace DiscordCoreAPI {
 		workload.callStack = "GuildMembers::getGuildMemberAsync";
 		auto guildMember = DiscordCoreInternal::submitWorkloadAndGetResult<GuildMember>(*GuildMembers::httpClient, workload);
 		guildMember.guildId = dataPackage.guildId;
-		GuildMembers::insertGuildMember(guildMember);
 		guildMember.user = Users::getCachedUserAsync({ .userId = dataPackage.guildMemberId }).get();
+		GuildMembers::insertGuildMember(guildMember);
 		co_return guildMember;
 	}
 
