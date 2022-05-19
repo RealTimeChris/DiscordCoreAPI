@@ -61,8 +61,8 @@ namespace DiscordCoreInternal {
 
 	template<> void DataParser::parseObject(const nlohmann::json& jsonObjectData, DiscordCoreAPI::User& pDataStructure) {
 
-		if (jsonObjectData.contains("userName") && !jsonObjectData["userName"].is_null()) {
-			pDataStructure.userName = jsonObjectData["userName"].get<std::string>();
+		if (jsonObjectData.contains("username") && !jsonObjectData["username"].is_null()) {
+			pDataStructure.userName = jsonObjectData["username"].get<std::string>();
 		}
 
 		if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
@@ -129,8 +129,8 @@ namespace DiscordCoreInternal {
 
 	template<> void DataParser::parseObject(const nlohmann::json& jsonObjectData, DiscordCoreAPI::UserData& pDataStructure) {
 
-		if (jsonObjectData.contains("userName") && !jsonObjectData["userName"].is_null()) {
-			pDataStructure.userName = jsonObjectData["userName"].get<std::string>();
+		if (jsonObjectData.contains("username") && !jsonObjectData["username"].is_null()) {
+			pDataStructure.userName = jsonObjectData["username"].get<std::string>();
 		}
 
 		if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
