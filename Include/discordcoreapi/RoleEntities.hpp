@@ -121,15 +121,9 @@ namespace DiscordCoreAPI {
 	};
 
 	/// A single Role.
-	class DiscordCoreAPI_Dll Role : public DiscordEntity {
+	class DiscordCoreAPI_Dll Role : public RoleData {
 	  public:
 
-		std::string unicodeEmoji{};///< Emoji representing the Role.
-		Permissions permissions{};///< The Role's base Guild Permissions.
-		int32_t position{ 0 };///< Its position amongst the rest of the Guild's roles.
-		std::string name{};///< The Role's name.
-		int32_t color{ 0 };///< The Role's color.
-		int8_t flags{ 0 };///< Role flags.
 		RoleTagsData tags{};///< Role tags for the Role.
 		std::string icon{};///< Icon representing the Role.
 
@@ -140,17 +134,6 @@ namespace DiscordCoreAPI {
 		Role& operator=(RoleData& other);
 
 		Role(RoleData& other);
-
-		operator RoleData() {
-			RoleData returnData{};
-			returnData.unicodeEmoji = this->unicodeEmoji;
-			returnData.permissions = this->permissions;
-			returnData.position = this->position;
-			returnData.color = this->color;
-			returnData.flags = this->flags;
-			returnData.name = this->name;
-			return returnData;
-		}
 
 		Role() = default;
 

@@ -546,7 +546,7 @@ namespace DiscordCoreAPI {
 		if (EventHandler::options.cacheRoles) {
 			Roles::insertRole(dataPackage.role);
 			GuildData guild = Guilds::getCachedGuildAsync({ dataPackage.guildId }).get();
-			guild.roles.push_back(stoull(dataPackage.role.id));
+			guild.roles.push_back(dataPackage.role.id);
 			Guilds::insertGuild(guild);
 		}
 	}
@@ -559,10 +559,10 @@ namespace DiscordCoreAPI {
 
 	void EventHandler::onRoleDeletion(OnRoleDeletionData dataPackage) {
 		if (EventHandler::options.cacheRoles) {
-			Roles::removeRole(stoull(dataPackage.roleOld.id));
+			Roles::removeRole(dataPackage.roleOld.id);
 			GuildData guild = Guilds::getCachedGuildAsync({ dataPackage.guildId }).get();
 			for (uint64_t x = 0; x < guild.roles.size(); x += 1) {
-				if (guild.roles[x] == stoull(dataPackage.roleOld.id)) {
+				if (guild.roles[x] == dataPackage.roleOld.id) {
 					guild.roles.erase(guild.roles.begin() + x);
 				}
 			}

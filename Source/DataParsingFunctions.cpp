@@ -604,9 +604,9 @@ namespace DiscordCoreInternal {
 		
 		if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
 			if (jsonObjectData["id"].is_string()) {
-				pDataStructure.id = jsonObjectData["id"].get<std::string>();
+				pDataStructure.id = stoull(jsonObjectData["id"].get<std::string>());
 			} else {
-				pDataStructure.id = std::to_string(jsonObjectData["id"].get<int64_t>());
+				pDataStructure.id = jsonObjectData["id"].get<int64_t>();
 			}
 		}
 

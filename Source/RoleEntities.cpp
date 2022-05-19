@@ -26,11 +26,11 @@ namespace DiscordCoreAPI {
 	Role& Role::operator=(RoleData&&other) {
 		this->unicodeEmoji = other.unicodeEmoji;
 		this->permissions = other.permissions;
-		this->id = std::to_string(other.id);
 		this->position = other.position;
 		this->flags = other.flags;
 		this->color = other.color;
 		this->name = other.name;
+		this->id = other.id;
 		return *this;
 	}
 
@@ -41,11 +41,11 @@ namespace DiscordCoreAPI {
 	Role& Role::operator=(RoleData& other) {
 		this->unicodeEmoji = other.unicodeEmoji;
 		this->permissions = other.permissions;
-		this->id = std::to_string(other.id);
 		this->position = other.position;
 		this->flags = other.flags;
 		this->color = other.color;
 		this->name = other.name;
+		this->id = other.id;
 		return *this;
 	}
 
@@ -199,7 +199,7 @@ namespace DiscordCoreAPI {
 		std::vector<Role> rolesVectorNew{};
 		for (auto& value: rolesVector) {
 			for (auto& value2: dataPackage.guildMember.roles) {
-				if (value2 == value.id) {
+				if (value2 == std::to_string(value.id)) {
 					rolesVectorNew.push_back(value);
 				}
 			}
@@ -216,11 +216,11 @@ namespace DiscordCoreAPI {
 		}
 		Role newRole{};
 		for (auto& value: roles) {
-			if (value.id == dataPackage.roleId) {
+			if (std::to_string(value.id) == dataPackage.roleId) {
 				newRole = value;
 			}
 		}
-		if (newRole.id != "") {
+		if (newRole.id != 0) {
 			Roles::insertRole(newRole);
 		}
 		co_return newRole;

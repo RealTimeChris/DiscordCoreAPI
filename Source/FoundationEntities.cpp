@@ -644,7 +644,7 @@ namespace DiscordCoreAPI {
 		auto guildRoles = Roles ::getGuildRolesAsync({ .guildId = guildMember.guildId }).get();
 		RoleData roleEveryone{};
 		for (auto& value: guildRoles) {
-			if (value.id == std::to_string(guild.id)) {
+			if (value.id == guild.id) {
 				roleEveryone = value;
 			}
 		}
@@ -688,8 +688,8 @@ namespace DiscordCoreAPI {
 		int64_t allow{ 0 };
 		int64_t deny{ 0 };
 		for (auto& value: guildMemberRoles) {
-			if (channel.permissionOverwrites.contains(value.id)) {
-				OverWriteData currentChannelOverwrites = channel.permissionOverwrites[value.id];
+			if (channel.permissionOverwrites.contains(std::to_string(value.id))) {
+				OverWriteData currentChannelOverwrites = channel.permissionOverwrites[std::to_string(value.id)];
 				allow |= stoll(currentChannelOverwrites.allow);
 				deny |= stoll(currentChannelOverwrites.deny);
 			}
