@@ -144,7 +144,6 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::connect(const DiscordCoreInternal::VoiceConnectInitData& voiceConnectInitDataNew) {
-		std::cout << "WERE GOING GONE 0910101" << std::endl;
 		this->areWeConnectedBool = true;
 		this->areWeStopping.store(false);
 		this->stopSetEvent.set();
@@ -153,27 +152,20 @@ namespace DiscordCoreAPI {
 		if (this->voiceSocketAgent) {
 			this->voiceSocketAgent.reset(nullptr);
 		}
-		std::cout << "WERE GOING GONE 020202" << std::endl;
 		if (!this->baseSocketAgent->areWeReadyToConnectEvent.wait(10000)) {
-			std::cout << "WERE GOING GONE 030303" << std::endl;
 			return;
 		}
-		std::cout << "WERE GOING GONE 040404" << std::endl;
 		this->voiceSocketAgent =
 			std::make_unique<DiscordCoreInternal::VoiceSocketAgent>(this->voiceConnectInitData, this->baseSocketAgent, this->baseSocketAgent->printSuccessMessages);
-		std::cout << "WERE GOING GONE 050505" << std::endl;
 		this->doWeReconnect = &this->voiceSocketAgent->doWeReconnect;
 		if (!this->voiceSocketAgent->areWeConnected.wait(10000)) {
-			std::cout << "WERE GOING GONE 060606" << std::endl;
 			return;
 		}
-		std::cout << "WERE GOING GONE 070707" << std::endl;
 		this->voiceConnectionData = &this->voiceSocketAgent->voiceConnectionData;
 		if (this->theTask == nullptr) {
 			this->theTask = std::make_unique<std::jthread>([=, this](std::stop_token theToken) {
 				this->run(theToken);
 			});
-			std::cout << "WERE GOING GONE 08080808" << std::endl;
 		}
 	}
 
