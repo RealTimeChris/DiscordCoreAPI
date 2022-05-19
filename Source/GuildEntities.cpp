@@ -75,16 +75,24 @@ namespace DiscordCoreAPI {
 		*this = other;
 	}
 
-	VoiceConnection* Guild::connectToVoice(const uint64_t& channelId, bool selfDeaf, bool selfMute) {
+	VoiceConnection* Guild::connectToVoice(const uint64_t guildMemberId, const uint64_t channelId, bool selfDeaf, bool selfMute) {
 		if (getVoiceConnectionMap()[this->id]->areWeConnected()) {
 			this->voiceConnectionPtr = getVoiceConnectionMap()[this->id].get();
 			return this->voiceConnectionPtr;
-		} else if (channelId != 0) {
+		} else if (guildMemberId != 0 || channelId != 0) {
+			uint64_t theChannelId{};
+			if (guildMemberId != 0) {
+				if (this->voiceStates.contains(guildMemberId)) {
+					theChannelId = this->voiceStates.at(guildMemberId).channelId;
+				}
+			} else {
+				theChannelId = channelId;
+			}
 			std::string theShardId{ std::to_string(((this->id >> 22) % this->discordCoreClient->shardingOptions.totalNumberOfShards)) };
 			getVoiceConnectionMap()[this->id] = std::make_unique<VoiceConnection>(this->discordCoreClient->webSocketMap[theShardId].get());
 			this->voiceConnectionPtr = getVoiceConnectionMap()[this->id].get();
 			DiscordCoreInternal::VoiceConnectInitData voiceConnectInitData{};
-			voiceConnectInitData.channelId = channelId;
+			voiceConnectInitData.channelId = theChannelId;
 			voiceConnectInitData.guildId = this->id;
 			voiceConnectInitData.userId = this->discordCoreClient->getBotUser().id;
 			voiceConnectInitData.selfDeaf = selfDeaf;

@@ -297,11 +297,12 @@ namespace DiscordCoreAPI {
 		Guild(GuildData&);
 
 		/// Connects to a given voice Channel. \brief Connects to a given voice Channel.
-		/// \param channelId The voice Channel's id to connect to.
+		/// \param guildMemberId The Id of the user who's voice channel you would like to join. OR...
+		/// \param channelId The Id of the channel you would like to join.
 		/// \param selfDeaf Self-deafen the bot?
 		/// \param selfMute Self-mute the bot?
 		/// \returns A pointer containing the voice connection.
-		VoiceConnection* connectToVoice(const uint64_t& channelId, bool selfDeaf, bool selfMute);
+		VoiceConnection* connectToVoice(const uint64_t guildMemberId, const uint64_t channelId = 0, bool selfDeaf = false, bool selfMute = false);
 
 		/// Disconnects from a voice Channel. \brief Disconnects from a voice Channel.
 		void disconnect();

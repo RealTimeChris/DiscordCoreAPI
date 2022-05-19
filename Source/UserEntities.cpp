@@ -211,7 +211,6 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	
 	DiscordCoreInternal::HttpClient* Users::httpClient{ nullptr };
 	std::unordered_map<uint64_t, UserData> Users::cache{};
 	bool Users::doWeCache{ false };

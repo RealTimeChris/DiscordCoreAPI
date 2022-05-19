@@ -753,7 +753,12 @@ namespace DiscordCoreInternal {
 		}
 
 		if (jsonObjectData.contains("user") && !jsonObjectData["user"].is_null()) {
-			DataParser::parseObject(jsonObjectData["user"], pDataStructure.user);
+			DiscordCoreAPI::User theUser{};
+			DataParser::parseObject(jsonObjectData["user"], theUser);
+			DiscordCoreAPI::Users::insertUser(theUser);
+			pDataStructure.id = theUser.id;
+			pDataStructure.userAvatar = theUser.avatar;
+			pDataStructure.userName = theUser.userName;
 		}
 
 		if (jsonObjectData.contains("pending") && !jsonObjectData["pending"].is_null()) {
@@ -796,7 +801,12 @@ namespace DiscordCoreInternal {
 		}
 
 		if (jsonObjectData.contains("user") && !jsonObjectData["user"].is_null()) {
-			DataParser::parseObject(jsonObjectData["user"], pDataStructure.user);
+			DiscordCoreAPI::User theUser{};
+			DataParser::parseObject(jsonObjectData["user"], theUser);
+			DiscordCoreAPI::Users::insertUser(theUser);
+			pDataStructure.id = theUser.id;
+			pDataStructure.userAvatar = theUser.avatar;
+			pDataStructure.userName = theUser.userName;
 		}
 
 		if (jsonObjectData.contains("flags") && !jsonObjectData["flags"].is_null()) {
@@ -964,9 +974,7 @@ namespace DiscordCoreInternal {
 		}
 
 		if (jsonObjectData.contains("member") && !jsonObjectData["member"].is_null()) {
-			DiscordCoreAPI::GuildMemberData guildMemberData{};
-			DataParser::parseObject(jsonObjectData["member"], guildMemberData);
-			pDataStructure.memberId = guildMemberData.user.id;
+			DataParser::parseObject(jsonObjectData["member"], pDataStructure.member);
 		}
 
 		if (jsonObjectData.contains("session_id") && !jsonObjectData["session_id"].is_null()) {
@@ -1499,14 +1507,7 @@ namespace DiscordCoreInternal {
 				DiscordCoreAPI::GuildMemberData newData{};
 				DataParser::parseObject(value, newData);
 				newData.guildId = pDataStructure.id;
-				newData.voiceData.guildId = pDataStructure.id;
-				for (auto& [key01, value01]: pDataStructure.voiceStates) {
-					if (key01 == newData.user.id) {
-						value01.guildId = pDataStructure.id;
-						newData.voiceData = value01;
-					}
-				}
-				pDataStructure.members.push_back(newData.user.id);
+				pDataStructure.members.push_back(newData.id);
 				DiscordCoreAPI::GuildMembers::insertGuildMember(newData);
 			}
 		}
@@ -1643,14 +1644,7 @@ namespace DiscordCoreInternal {
 				DiscordCoreAPI::GuildMemberData newData{};
 				DataParser::parseObject(value, newData);
 				newData.guildId = pDataStructure.id;
-				newData.voiceData.guildId = pDataStructure.id;
-				for (auto& [key01, value01]: pDataStructure.voiceStates) {
-					if (key01 == newData.user.id) {
-						value01.guildId = pDataStructure.id;
-						newData.voiceData = value01;
-					}
-				}
-				pDataStructure.members.push_back(newData.user.id);
+				pDataStructure.members.push_back(newData.id);
 				DiscordCoreAPI::GuildMembers::insertGuildMember(newData);
 			}
 		}
@@ -3883,8 +3877,9 @@ namespace DiscordCoreInternal {
 
 		if (jsonObjectData.contains("member") && !jsonObjectData["member"].is_null()) {
 			DataParser::parseObject(jsonObjectData["member"], pDataStructure.member);
-			pDataStructure.user = pDataStructure.member.user;
-		} else if (jsonObjectData.contains("user") && !jsonObjectData["user"].is_null()) {
+		} 
+
+		if (jsonObjectData.contains("user") && !jsonObjectData["user"].is_null()) {
 			DataParser::parseObject(jsonObjectData["user"], pDataStructure.user);
 		}
 
