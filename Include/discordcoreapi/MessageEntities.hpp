@@ -60,7 +60,6 @@ namespace DiscordCoreAPI {
 		CreateMessageData(RespondToInputEventData dataPackage) {
 			this->channelId = dataPackage.channelId;
 			this->addAllowedMentions(dataPackage.allowedMentions);
-			this->requesterId = dataPackage.requesterId;
 			for (auto& value: dataPackage.components) {
 				this->components.push_back(value);
 			}
@@ -72,11 +71,9 @@ namespace DiscordCoreAPI {
 		}
 
 		CreateMessageData(InputEventData dataPackage) {
-			this->requesterId = dataPackage.getRequesterId();
 			this->channelId = dataPackage.getChannelId();
 		}
 
-		uint64_t requesterId{};
 		uint64_t channelId{};
 
 		CreateMessageData() = default;
@@ -95,7 +92,6 @@ namespace DiscordCoreAPI {
 		SendDMData(RespondToInputEventData dataPackage) {
 			this->targetUserId = dataPackage.targetUserId;
 			this->addAllowedMentions(dataPackage.allowedMentions);
-			this->requesterId = dataPackage.requesterId;
 			for (auto& value: dataPackage.components) {
 				this->components.push_back(value);
 			}
@@ -125,14 +121,12 @@ namespace DiscordCoreAPI {
 		friend Messages;
 
 		EditMessageData(InputEventData dataPackage) {
-			this->requesterId = dataPackage.getRequesterId();
 			this->channelId = dataPackage.getChannelId();
 			this->messageId = dataPackage.getMessageId();
 		}
 
 		EditMessageData(RespondToInputEventData dataPackage) {
 			this->allowedMentions = dataPackage.allowedMentions;
-			this->requesterId = dataPackage.requesterId;
 			this->channelId = dataPackage.channelId;
 			this->messageId = dataPackage.messageId;
 			for (auto& value: dataPackage.components) {
@@ -146,7 +140,6 @@ namespace DiscordCoreAPI {
 
 	  protected:
 		std::vector<AttachmentData> attachments{};
-		uint64_t requesterId{};
 		uint64_t channelId{};
 		uint64_t messageId{};
 		int32_t flags{ 0 };

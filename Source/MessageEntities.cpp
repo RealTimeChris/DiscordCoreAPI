@@ -130,7 +130,6 @@ namespace DiscordCoreAPI {
 		}
 		workload.callStack = "Messages::createMessageAsync";
 		auto result = DiscordCoreInternal::submitWorkloadAndGetResult<Message>(*Messages::httpClient, workload);
-		result.requesterId = dataPackage.requesterId;
 		co_return result;
 	}
 
@@ -159,7 +158,6 @@ namespace DiscordCoreAPI {
 		}
 		workload.callStack = "Messages::editMessageAsync";
 		auto result = DiscordCoreInternal::submitWorkloadAndGetResult<Message>(*Messages::httpClient, workload);
-		result.requesterId = dataPackage.requesterId;
 		co_return result;
 	}
 

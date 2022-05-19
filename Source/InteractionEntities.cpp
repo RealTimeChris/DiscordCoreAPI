@@ -154,7 +154,6 @@ namespace DiscordCoreAPI {
 	SelectMenuCollector::SelectMenuCollector(InputEventData& dataPackage) {
 		this->channelId = dataPackage.getChannelId();
 		this->messageId = dataPackage.getMessageId();
-		this->userId = dataPackage.getRequesterId();
 		*this->interactionData = dataPackage.getInteractionData();
 		this->bufferMapKey = std::to_string(this->channelId) + std::to_string(this->messageId);
 		SelectMenuCollector::selectMenuInteractionBufferMap.insert(std::make_pair(this->bufferMapKey, &this->selectMenuIncomingInteractionBuffer));
@@ -279,9 +278,9 @@ namespace DiscordCoreAPI {
 	ButtonCollector::ButtonCollector(InputEventData& dataPackage) {
 		this->channelId = dataPackage.getChannelId();
 		this->messageId = dataPackage.getMessageId();
-		this->userId = dataPackage.getRequesterId();
 		*this->interactionData = dataPackage.getInteractionData();
-		ButtonCollector::buttonInteractionBufferMap.insert_or_assign(std::to_string(this->channelId) + std::to_string(this->messageId), &this->buttonIncomingInteractionBuffer);
+		this->bufferMapKey = std::to_string(this->channelId) + std::to_string(this->messageId);
+		ButtonCollector::buttonInteractionBufferMap.insert_or_assign(this->bufferMapKey, &this->buttonIncomingInteractionBuffer);
 	}
 
 	CoRoutine<std::vector<ButtonResponseData>> ButtonCollector::collectButtonData(bool getButtonDataForAllNew, int32_t maxWaitTimeInMsNew, int32_t maxNumberOfPressesNew,
@@ -301,8 +300,8 @@ namespace DiscordCoreAPI {
 	}
 
 	ButtonCollector::~ButtonCollector() {
-		if (ButtonCollector::buttonInteractionBufferMap.contains(std::to_string(this->channelId) + std::to_string(this->messageId))) {
-			ButtonCollector::buttonInteractionBufferMap.erase(std::to_string(this->channelId) + std::to_string(this->messageId));
+		if (ButtonCollector::buttonInteractionBufferMap.contains(this->bufferMapKey)) {
+			ButtonCollector::buttonInteractionBufferMap.erase(this->bufferMapKey);
 		}
 	}
 
@@ -392,7 +391,7 @@ namespace DiscordCoreAPI {
 			}
 
 		}
-		ButtonCollector::buttonInteractionBufferMap.erase(std::to_string(this->channelId) + std::to_string(this->messageId));
+		ButtonCollector::buttonInteractionBufferMap.erase(this->bufferMapKey);
 	}
 
 	ModalCollector::ModalCollector(InputEventData& dataPackage) {

@@ -167,7 +167,7 @@ namespace DiscordCoreInternal {
 					if (this->theThreads.size() > std::thread::hardware_concurrency()) {
 						for (auto& [key, value]: this->theWorkingStatuses) {
 							bool doWeBreak{ false };
-							if (value.theCurrentStatus.load()) {
+							if (value.theCurrentStatus.load() && value.threadId != std::this_thread::get_id()) {
 								for (uint32_t x = 0; x < this->theThreads.size(); x += 1) {
 									if (this->theThreads[x]->get_id() == key) {
 										this->theThreads[x]->detach();

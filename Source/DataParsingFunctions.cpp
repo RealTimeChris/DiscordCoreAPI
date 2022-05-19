@@ -3866,7 +3866,7 @@ namespace DiscordCoreInternal {
 			DataParser::parseObject(jsonObjectData["data"], pDataStructure.data);
 			pDataStructure.rawData = jsonObjectData["data"];
 		}
-
+		
 		if (jsonObjectData.contains("type") && !jsonObjectData["type"].is_null()) {
 			pDataStructure.type = jsonObjectData["type"].get<DiscordCoreAPI::InteractionType>();
 		}
@@ -3883,7 +3883,7 @@ namespace DiscordCoreInternal {
 		} else if (jsonObjectData.contains("user") && !jsonObjectData["user"].is_null()) {
 			DataParser::parseObject(jsonObjectData["user"], pDataStructure.user);
 		}
-
+		
 		if (jsonObjectData.contains("channel_id") && !jsonObjectData["channel_id"].is_null()) {
 			pDataStructure.channelId = stoull(jsonObjectData["channel_id"].get<std::string>());
 		}
@@ -4109,7 +4109,7 @@ namespace DiscordCoreInternal {
 
 	template<> void DataParser::parseObject(const nlohmann::json& jsonObjectData, DiscordCoreAPI::AuditLogEntryData& pDataStructure) {
 		if (jsonObjectData.contains("target_id") && !jsonObjectData["target_id"].is_null()) {
-			pDataStructure.targetId = jsonObjectData["target_id"].get<std::string>();
+			pDataStructure.targetId = stoull(jsonObjectData["target_id"].get<std::string>());
 		}
 
 		if (jsonObjectData.contains("changes") && !jsonObjectData["changes"].is_null()) {

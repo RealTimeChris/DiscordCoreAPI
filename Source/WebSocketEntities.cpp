@@ -558,20 +558,9 @@ namespace DiscordCoreInternal {
 						*interactionData = DiscordCoreAPI::InteractionData(std::stoull(payload["d"]["member"]["user"]["id"].get<std::string>()));
 					}
 					DiscordCoreInternal::DataParser::parseObject(payload["d"], *interactionData.get());
-					std::unique_ptr<DiscordCoreAPI::MessageData> messageDataNew{ std::make_unique<DiscordCoreAPI::MessageData>() };
-					std::unique_ptr<DiscordCoreAPI::InputEventData> eventData{ std::make_unique<DiscordCoreAPI::InputEventData>(*messageDataNew, *interactionData,
-						DiscordCoreAPI::InteractionType::Ping) };
+					std::unique_ptr<DiscordCoreAPI::InputEventData> eventData{ std::make_unique<DiscordCoreAPI::InputEventData>(*interactionData) };
 					if (interactionData->type == DiscordCoreAPI::InteractionType::Application_Command) {
-						if (interactionData->data.applicationCommandData.type == DiscordCoreAPI::ApplicationCommandType::Chat_Input) {
-							eventData->eventType = DiscordCoreAPI::InteractionType::Application_Command;
-						} else if (interactionData->data.applicationCommandData.type == DiscordCoreAPI::ApplicationCommandType::Message) {
-							eventData->eventType = DiscordCoreAPI::InteractionType::Application_Command;
-
-						} else if (interactionData->data.applicationCommandData.type == DiscordCoreAPI::ApplicationCommandType::User) {
-							eventData->eventType = DiscordCoreAPI::InteractionType::Application_Command;
-						}
 						eventData->responseType = DiscordCoreAPI::InputEventResponseType::Unset;
-						eventData->requesterId = interactionData->requesterId;
 						*eventData->interactionData = *interactionData;
 						std::unique_ptr<DiscordCoreAPI::OnInteractionCreationData> dataPackage{ std::make_unique<DiscordCoreAPI::OnInteractionCreationData>() };
 						dataPackage->interactionData = *interactionData;
@@ -584,9 +573,7 @@ namespace DiscordCoreInternal {
 						this->eventManager->onInputEventCreationEvent(*eventCreationData);
 					} else if (interactionData->type == DiscordCoreAPI::InteractionType::Message_Component) {
 						if (interactionData->data.componentData.componentType == DiscordCoreAPI::ComponentType::Button) {
-							eventData->eventType = DiscordCoreAPI::InteractionType::Message_Component;
 							eventData->responseType = DiscordCoreAPI::InputEventResponseType::Unset;
-							eventData->requesterId = interactionData->requesterId;
 							*eventData->interactionData = *interactionData;
 							std::unique_ptr<DiscordCoreAPI::OnInteractionCreationData> dataPackage{ std::make_unique<DiscordCoreAPI::OnInteractionCreationData>() };
 							dataPackage->interactionData = *interactionData;
@@ -596,9 +583,7 @@ namespace DiscordCoreInternal {
 							}
 							this->eventManager->onInteractionCreationEvent(*dataPackage);
 						} else if (interactionData->data.componentData.componentType == DiscordCoreAPI::ComponentType::SelectMenu) {
-							eventData->eventType = DiscordCoreAPI::InteractionType::Message_Component;
 							eventData->responseType = DiscordCoreAPI::InputEventResponseType::Unset;
-							eventData->requesterId = interactionData->requesterId;
 							*eventData->interactionData = *interactionData;
 							std::unique_ptr<DiscordCoreAPI::OnInteractionCreationData> dataPackage{ std::make_unique<DiscordCoreAPI::OnInteractionCreationData>() };
 							dataPackage->interactionData = *interactionData;
@@ -610,9 +595,7 @@ namespace DiscordCoreInternal {
 							this->eventManager->onInteractionCreationEvent(*dataPackage);
 						}
 					} else if (interactionData->type == DiscordCoreAPI::InteractionType::Modal_Submit) {
-						eventData->eventType = DiscordCoreAPI::InteractionType::Modal_Submit;
 						eventData->responseType = DiscordCoreAPI::InputEventResponseType::Unset;
-						eventData->requesterId = interactionData->requesterId;
 						*eventData->interactionData = *interactionData;
 						std::unique_ptr<DiscordCoreAPI::OnInteractionCreationData> dataPackage{ std::make_unique<DiscordCoreAPI::OnInteractionCreationData>() };
 						dataPackage->interactionData = *interactionData;
@@ -623,9 +606,7 @@ namespace DiscordCoreInternal {
 						}
 						this->eventManager->onInteractionCreationEvent(*dataPackage);
 					} else if (interactionData->type == DiscordCoreAPI::InteractionType::Application_Command_Autocomplete) {
-						eventData->eventType = DiscordCoreAPI::InteractionType::Application_Command_Autocomplete;
 						eventData->responseType = DiscordCoreAPI::InputEventResponseType::Unset;
-						eventData->requesterId = interactionData->requesterId;
 						*eventData->interactionData = *interactionData;
 						std::unique_ptr<DiscordCoreAPI::OnInteractionCreationData> dataPackage{ std::make_unique<DiscordCoreAPI::OnInteractionCreationData>() };
 						dataPackage->interactionData = *interactionData;

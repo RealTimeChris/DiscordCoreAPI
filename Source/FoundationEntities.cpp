@@ -717,14 +717,12 @@ namespace DiscordCoreAPI {
 		dataPackage->addButton(false, "backwards", "Prev Page", ButtonStyle::Primary, "◀️");
 		dataPackage->addButton(false, "forwards", "Next Page", ButtonStyle::Primary, "▶️");
 		dataPackage->addButton(false, "exit", "Exit", ButtonStyle::Danger, "❌");
-		if (originalEvent.eventType == InteractionType::Application_Command) {
-			dataPackage->setResponseType(InputEventResponseType::Edit_Interaction_Response);
-		}
+		dataPackage->setResponseType(InputEventResponseType::Edit_Interaction_Response);
 		originalEvent = InputEvents::respondToInputEventAsync(*dataPackage).get();
 		while (true) {
 			std::unique_ptr<ButtonCollector> button{ std::make_unique<ButtonCollector>(originalEvent) };
 
-			std::vector<ButtonResponseData> buttonIntData{ button->collectButtonData(false, waitForMaxMs, 1, originalEvent.getRequesterId()).get() };
+			std::vector<ButtonResponseData> buttonIntData{ button->collectButtonData(false, waitForMaxMs, 1, stoull(userID)).get() };
 
 			if (buttonIntData.size() == 0 || buttonIntData.at(0).buttonId == "empty" || buttonIntData.at(0).buttonId == "exit") {
 				std::unique_ptr<RespondToInputEventData> dataPackage02{ std::make_unique<RespondToInputEventData>(originalEvent) };
