@@ -160,8 +160,8 @@ namespace DiscordCoreAPI {
 
 	/// Data that is received as part of a GuildMember remove event. \brief Data that is received as part of a GuildMember remove event.
 	struct DiscordCoreAPI_Dll OnGuildMemberRemoveData {
-		User user{};///< The User responseData of the removed GuildMember.
 		uint64_t guildId{};///< The id of the Guild from which they were removed.
+		User user{};///< The User responseData of the removed GuildMember.
 	};
 
 	/// Data that is received as part of a GuildMember update event. \brief Data that is received as part of a GuildMember update event.
@@ -177,8 +177,8 @@ namespace DiscordCoreAPI {
 
 	/// Data that is received as part of a Role creation event. \brief Data that is received as part of a Role creation event.
 	struct DiscordCoreAPI_Dll OnRoleCreationData {
-		Role role{};///< The new Role.
 		uint64_t guildId{};///< The id of the Guild within which the Role was created.
+		Role role{};///< The new Role.
 	};
 
 	/// Data that is received as part of a Role update event. \brief Data that is received as part of a Role update event.
@@ -318,8 +318,8 @@ namespace DiscordCoreAPI {
 	/// Data that is received as part of a voice server update event. \brief Data that is received as part of a voice server update event.
 	struct DiscordCoreAPI_Dll OnVoiceServerUpdateData {
 		std::string endpoint{};///< The new endpoint.
-		uint64_t guildId{};///< The id of the Guild for which the server update is occurring.
 		std::string token{};///< The token of the server update event.
+		uint64_t guildId{};///< The id of the Guild for which the server update is occurring.
 	};
 
 	/// Data that is received as part of a WebHook update event. \brief Data that is received as part of a WebHook update event.

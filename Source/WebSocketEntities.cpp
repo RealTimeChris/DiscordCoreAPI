@@ -35,16 +35,16 @@ namespace DiscordCoreInternal {
 
 	BaseSocketAgent::BaseSocketAgent(const std::string& botTokenNew, const std::string& baseUrl, DiscordCoreAPI::EventManager* eventManager, DiscordCoreAPI::DiscordCoreClient* discordCoreClient, DiscordCoreAPI::CommandController* commandController, std::atomic_bool* doWeQuitNew, bool doWePrintSuccessMessages,
 		bool doWePrintErrorMessages, int32_t shardNumber, int32_t numberOfShards) noexcept {
-		this->doWeQuit = doWeQuitNew;
-		this->commandController = commandController;
-		this->discordCoreClient = discordCoreClient;
-		this->eventManager = eventManager;
 		this->printSuccessMessages = doWePrintSuccessMessages;
 		this->printErrorMessages = doWePrintErrorMessages;
-		this->currentShard = shardNumber;
-		this->numOfShards = numberOfShards;
+		this->commandController = commandController;
+		this->discordCoreClient = discordCoreClient;
 		this->state = WebSocketState::Initializing;
+		this->numOfShards = numberOfShards;
+		this->eventManager = eventManager;
+		this->currentShard = shardNumber;
 		this->botToken = botTokenNew;
+		this->doWeQuit = doWeQuitNew;
 		this->baseUrl = baseUrl;
 		this->doWeReconnect.set();
 		this->theTask = std::make_unique<std::jthread>([this](std::stop_token theToken) {

@@ -20,6 +20,8 @@
 
 namespace DiscordCoreAPI {
 
+	constexpr float thePercentage{ 90.0f / 100.0f };
+
 	std::string ThreadPool::storeThread(TimeElapsedHandler timeElapsedHandler, int32_t timeInterval) {
 		std::string threadId = std::to_string(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
 
@@ -27,7 +29,7 @@ namespace DiscordCoreAPI {
 			DiscordCoreAPI::StopWatch stopWatch{ std::chrono::milliseconds{ timeInterval } };
 			while (true) {
 				stopWatch.resetTimer();
-				std::this_thread::sleep_for(std::chrono::milliseconds{ static_cast<int32_t>(std::ceil(static_cast<float>(timeInterval) * 90.0f / 100.0f)) });
+				std::this_thread::sleep_for(std::chrono::milliseconds{ static_cast<int32_t>(std::ceil(static_cast<float>(timeInterval) * thePercentage)) });
 				while (!stopWatch.hasTimePassed() && !stopToken.stop_requested()) {
 					std::this_thread::sleep_for(std::chrono::milliseconds{ 1 });
 				}

@@ -668,21 +668,21 @@ namespace DiscordCoreAPI {
 
 	DiscordCoreAPI_Dll std::string convertTimeInMsToDateTimeString(int64_t timeInMs, TimeFormat timeFormat);
 
-	DiscordCoreAPI_Dll std::string convertMsToDurationString(int32_t durationInMs);
-
 	DiscordCoreAPI_Dll std::string convertToLowerCase(const std::string& stringToConvert);
 
 	DiscordCoreAPI_Dll int64_t convertTimestampToMsInteger(const std::string& timeStamp);
 
 	DiscordCoreAPI_Dll std::string base64Encode(const std::string& , bool = false);
 
+	DiscordCoreAPI_Dll std::string convertMsToDurationString(int32_t durationInMs);
+
 	DiscordCoreAPI_Dll std::string loadFileContents(const std::string& filePath);
 
 	DiscordCoreAPI_Dll std::string utf8MakeValid(const std::string& inputString);
 
-	DiscordCoreAPI_Dll std::string urlDecode(const std::string& inputString);
-
 	DiscordCoreAPI_Dll std::string urlEncode(const std::string& inputString);
+
+	DiscordCoreAPI_Dll std::string urlDecode(const std::string& inputString);
 
 	DiscordCoreAPI_Dll void spinLock(int64_t timeInNsToSpinLockFor);
 
@@ -707,47 +707,47 @@ namespace DiscordCoreAPI {
 
 	/// Permission values, for a given Channel, by Role or GuildMember. \brief Permission values, for a given Channel, by Role or GuildMember.
 	enum class Permission : int64_t {
-		Create_Instant_Invite = 0x0000000000000001,///< Create Instant Invite.
-		Kick_Members = 0x0000000000000002,///< Kick Members.
-		Ban_Members = 0x0000000000000004,///< Ban Members.
-		Administrator = 0x0000000000000008,///< Administrator.
-		Manage_Channels = 0x0000000000000010,///< Manage Channels.
-		Manage_Guild = 0x0000000000000020,///< Manage Guild.
-		Add_Reactions = 0x0000000000000040,///< Add Reactions.
-		View_Audit_Log = 0x0000000000000080,///< View Audit Log.
-		Priority_Speaker = 0x0000000000000100,///< Priority Speaker.
-		Stream = 0x0000000000000200,///< Stream.
-		View_Channel = 0x0000000000000400,///< View Channel.
-		Send_Messages = 0x0000000000000800,///< Send Messages.
-		Send_Tts_Messages = 0x0000000000001000,///< Send TTS Messages.
-		Manage_Messages = 0x0000000000002000,///< Manage Messages.
-		Embed_Links = 0x0000000000004000,///< Embed Links.
-		Attach_Files = 0x0000000000008000,///< Attach Files.
-		Read_Message_History = 0x0000000000010000,///< Read Message History.
-		Mention_Everyone = 0x0000000000020000,///< Mention Everyone.
-		Use_External_Emojis = 0x0000000000040000,///< Use External Emoji.
-		View_Guild_Insights = 0x0000000000080000,///< View Guild Insights.
-		Connect = 0x0000000000100000,///< Connect.
-		Speak = 0x0000000000200000,///< Speak.
-		Mute_Members = 0x0000000000400000,///< Mute Members.
-		Deafen_Members = 0x0000000000800000,///< Deafen Members.
-		Move_Members = 0x0000000001000000,///< Move Members.
-		Use_Vad = 0x0000000002000000,///< Use VAD.
-		Change_Nickname = 0x0000000004000000,///< Change Nickname.
-		Manage_Nicknames = 0x0000000008000000,///< Manage Nicknames.
-		Manage_Roles = 0x0000000010000000,///< Manage Roles.
-		Manage_Webhooks = 0x0000000020000000,///< Manage Webhooks.
-		Manage_Emojis_And_Stickers = 0x0000000040000000,///< Manage Emojis And Stickers.
-		Use_Application_Commands = 0x0000000080000000,///< Use Application Commands.
-		Request_To_Speak = 0x0000000100000000,///< Request To Speak.
-		Manage_Events = 0x0000000200000000,///< Manage Events.
-		Manage_Threads = 0x0000000400000000,///< Manage Threads.
-		Create_Public_Threads = 0x0000000800000000,///< Create Public Threads.
-		Create_Private_Threads = 0x0000001000000000,///< Create Private Threads.
-		Use_External_Stickers = 0x0000002000000000,///< Use External Stickers.
-		Send_Messages_In_Threads = 0x0000004000000000,///< Send Messages In Threads.
-		Start_Embedded_Activities = 0x0000008000000000,///< Start Embedded Activities.
-		Moderate_Members = 0x0000010000000000///< Moderate Members.
+		Create_Instant_Invite = 1 << 0,///< Create Instant Invite.
+		Kick_Members = 1 << 1,///< Kick Members.
+		Ban_Members = 1 << 2,///< Ban Members.
+		Administrator = 1 << 3,///< Administrator.
+		Manage_Channels = 1 << 4,///< Manage Channels.
+		Manage_Guild = 1 << 5,///< Manage Guild.
+		Add_Reactions = 1 << 6,///< Add Reactions.
+		View_Audit_Log = 1 << 7,///< View Audit Log.
+		Priority_Speaker = 1 << 8,///< Priority Speaker.
+		Stream = 1 << 9,///< Stream.
+		View_Channel = 1 << 10,///< View Channel.
+		Send_Messages = 1 << 11,///< Send Messages.
+		Send_Tts_Messages = 1 << 12,///< Send TTS Messages.
+		Manage_Messages = 1 << 13,///< Manage Messages.
+		Embed_Links = 1 << 14,///< Embed Links.
+		Attach_Files = 1 << 15,///< Attach Files.
+		Read_Message_History = 1 << 16,///< Read Message History.
+		Mention_Everyone = 1 << 17,///< Mention Everyone.
+		Use_External_Emojis = 1 << 18,///< Use External Emoji.
+		View_Guild_Insights = 1 << 19,///< View Guild Insights.
+		Connect = 1 << 20,///< Connect.
+		Speak = 1 << 21,///< Speak.
+		Mute_Members = 1 << 22,///< Mute Members.
+		Deafen_Members = 1 << 23,///< Deafen Members.
+		Move_Members = 1 << 24,///< Move Members.
+		Use_Vad = 1 << 25,///< Use VAD.
+		Change_Nickname = 1 << 26,///< Change Nickname.
+		Manage_Nicknames = 1 << 27,///< Manage Nicknames.
+		Manage_Roles = 1 << 28,///< Manage Roles.
+		Manage_Webhooks = 1 << 29,///< Manage Webhooks.
+		Manage_Emojis_And_Stickers = 1 << 30,///< Manage Emojis And Stickers.
+		Use_Application_Commands = 1 << 31,///< Use Application Commands.
+		Request_To_Speak = 1 << 32,///< Request To Speak.
+		Manage_Events = 1 << 33,///< Manage Events.
+		Manage_Threads = 1 << 34,///< Manage Threads.
+		Create_Public_Threads = 1 << 35,///< Create Public Threads.
+		Create_Private_Threads = 1 << 36,///< Create Private Threads.
+		Use_External_Stickers = 1 << 37,///< Use External Stickers.
+		Send_Messages_In_Threads = 1 << 38,///< Send Messages In Threads.
+		Start_Embedded_Activities = 1 << 39,///< Start Embedded Activities.
+		Moderate_Members = 1 << 40///< Moderate Members.
 	};
 
 	/**@}*/
@@ -945,23 +945,23 @@ namespace DiscordCoreAPI {
 
 	/// Gateway intents. \brief Gateway intents.
 	enum class GatewayIntents : int32_t {
-		Guilds = (1 << 0),///< Intent for receipt of Guild information.
-		Guild_Members = (1 << 1),///< Intent for receipt of Guild members.
-		Guild_Bans = (1 << 2),///< Intent for receipt of Guild bans.
-		Guild_Emojis = (1 << 3),///< Intent for receipt of Guild emojis.
-		Guild_Integrations = (1 << 4),///< Intent for receipt of Guild integrations.
-		Guild_Webhooks = (1 << 5),///< Intent for receipt of Guild webhooks.
-		Guild_Invites = (1 << 6),///< Intent for receipt of Guild invites.
-		Guild_VoiceStates = (1 << 7),///< Intent for receipt of Guild voice states.
-		Guild_Presences = (1 << 8),///< Intent for receipt of Guild presences.
-		Guild_Messages = (1 << 9),///< Intent for receipt of Guild messages.
-		Guild_Message_Reactions = (1 << 10),///< Intent for receipt of Guild message reactions.
-		Guild_Message_Typing = (1 << 11),///< Intent for receipt of Guild message typing notifications.
-		Direct_Messages = (1 << 12),///< Intent for receipt of direct messages (DMs).
-		Direct_Message_Reactions = (1 << 13),///< Intent for receipt of direct message reactions.
-		Direct_Message_Typing = (1 << 14),///< Intent for receipt of direct message typing notifications.
-		Message_Content = (1 << 15),///< Intent for receipt of message content.
-		Guild_Scheduled_Events = (1 << 16),///< Scheduled events.
+		Guilds = 1 << 0,///< Intent for receipt of Guild information.
+		Guild_Members = 1 << 1,///< Intent for receipt of Guild members.
+		Guild_Bans = 1 << 2,///< Intent for receipt of Guild bans.
+		Guild_Emojis = 1 << 3,///< Intent for receipt of Guild emojis.
+		Guild_Integrations = 1 << 4,///< Intent for receipt of Guild integrations.
+		Guild_Webhooks = 1 << 5,///< Intent for receipt of Guild webhooks.
+		Guild_Invites = 1 << 6,///< Intent for receipt of Guild invites.
+		Guild_VoiceStates = 1 << 7,///< Intent for receipt of Guild voice states.
+		Guild_Presences = 1 << 8,///< Intent for receipt of Guild presences.
+		Guild_Messages = 1 << 9,///< Intent for receipt of Guild messages.
+		Guild_Message_Reactions = 1 << 10,///< Intent for receipt of Guild message reactions.
+		Guild_Message_Typing = 1 << 11,///< Intent for receipt of Guild message typing notifications.
+		Direct_Messages = 1 << 12,///< Intent for receipt of direct messages (DMs).
+		Direct_Message_Reactions = 1 << 13,///< Intent for receipt of direct message reactions.
+		Direct_Message_Typing = 1 << 14,///< Intent for receipt of direct message typing notifications.
+		Message_Content = 1 << 15,///< Intent for receipt of message content.
+		Guild_Scheduled_Events = 1 << 16,///< Scheduled events.
 		Default_Intents = Guilds | Guild_Bans | Guild_Emojis | Guild_Integrations | Guild_Webhooks | Guild_Invites | Guild_VoiceStates | Guild_Messages | Guild_Message_Reactions |
 			Guild_Message_Typing | Direct_Messages | Direct_Message_Reactions | Direct_Message_Typing | Guild_Scheduled_Events,///< Default intents (all non-privileged intents).
 		Privileged_Intents = Guild_Members | Guild_Presences | Message_Content,///< Privileged intents requiring ID.
@@ -1293,8 +1293,8 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll ThreadMemberData : public DiscordEntity {
 	  public:
 		TimeStamp joinTimestamp{ "" };///< The time at which the member joined this Thread.
-		uint64_t userId{};///< The User's id.
 		int32_t flags{ 0 };///< Flags.
+		uint64_t userId{};///< The User's id.
 
 		virtual ~ThreadMemberData() = default;
 	};

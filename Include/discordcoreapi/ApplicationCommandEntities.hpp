@@ -47,9 +47,9 @@ namespace DiscordCoreAPI {
 		std::vector<ApplicationCommandOptionData> options{};///< The options for the ApplicationCommand.
 		std::string defaultMemberPermissions{};///< Set of permissions represented as a bit set. only for globally - scoped commands.
 		ApplicationCommandType type{};///< The type of ApplicationCommand.
-		uint64_t applicationId{};///< Application id.
 		bool dmPermission{ false };///< Indicates whether the command is available in DMs with the app,
 		std::string description{};///< A description of the command.
+		uint64_t applicationId{};///< Application id.
 		std::string name{};///< A name for the new command.
 	};
 
@@ -59,9 +59,9 @@ namespace DiscordCoreAPI {
 		std::unordered_map<std::string, std::string> nameLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the name field.
 		std::vector<ApplicationCommandOptionData> options{};///< The options for the ApplicationCommand.
 		std::string defaultMemberPermissions{};///< Set of permissions represented as a bit set. only for globally - scoped commands.
-		uint64_t applicationId{};///< The current application's Id (The Bot's User Id).
 		bool dmPermission{ false };///< Indicates whether the command is available in DMs with the app.
 		std::string description{};///< A description of the command.
+		uint64_t applicationId{};///< The current application's Id (The Bot's User Id).
 		std::string name{};///< A name for the new command.
 	};
 
@@ -79,8 +79,8 @@ namespace DiscordCoreAPI {
 
 	/// For acquiring all of the Guild ApplicationCommands of a single Guild. \brief For acquiring all of the Guild ApplicationCommands of a single Guild.
 	struct DiscordCoreAPI_Dll GetGuildApplicationCommandsData {
-		uint64_t applicationId{};///< The current application's Id (The Bot's User Id).
 		bool withLocalizations{ false };///< Do we collect the name-and-description localizations?
+		uint64_t applicationId{};///< The current application's Id (The Bot's User Id).
 		uint64_t guildId{};///< The id of the Guild for which you would like to acquire the ApplicationCommands from.
 	};
 
@@ -91,9 +91,9 @@ namespace DiscordCoreAPI {
 		std::vector<ApplicationCommandOptionData> options{};///< The options for the ApplicationCommand.
 		std::string defaultMemberPermissions{};///< Set of permissions represented as a bit set. only for globally - scoped commands.
 		ApplicationCommandType type{};///< The type of ApplicationCommand.
-		uint64_t applicationId{};///< Application id.
 		bool dmPermission{ false };///< Indicates whether the command is available in DMs with the app,
 		std::string description{};///< A description of the command.
+		uint64_t applicationId{};///< Application id.
 		uint64_t guildId{};///< The guild's id.
 		std::string name{};///< A name for the new command.
 	};
@@ -111,9 +111,9 @@ namespace DiscordCoreAPI {
 		std::unordered_map<std::string, std::string> nameLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the name field.
 		std::vector<ApplicationCommandOptionData> options{};///< The options for the ApplicationCommand.
 		std::string defaultMemberPermissions{};///< Set of permissions represented as a bit set. only for globally - scoped commands.
-		uint64_t applicationId{};///< The current application's Id (The Bot's User Id).
 		bool dmPermission{ false };///< Indicates whether the command is available in DMs with the app.
 		std::string description{};///< A description of the command.
+		uint64_t applicationId{};///< The current application's Id (The Bot's User Id).
 		uint64_t guildId{};///< The id of the Guild which you would like to add the new command to.
 		std::string name{};///< A name for the new command.
 	};
@@ -140,16 +140,16 @@ namespace DiscordCoreAPI {
 
 	/// For acquiring the permissions of a single Guild ApplicationCommand. \brief For acquiring the permissions of a single Guild ApplicationCommand.
 	struct DiscordCoreAPI_Dll GetApplicationCommandPermissionsData {
-		uint64_t applicationId{};///< The current application's Id (The Bot's User Id).
 		std::string commandName{};///< The name of the command which you would like to collect the permissions of.
+		uint64_t applicationId{};///< The current application's Id (The Bot's User Id).
 		uint64_t guildId{};///< The id of the Guild from which you would like to acquire the command permissions.
 	};
 
 	/// For editing the permissions of a single Guild ApplicationCommand. \brief For editing the permissions of a single Guild ApplicationCommand.
 	struct DiscordCoreAPI_Dll EditGuildApplicationCommandPermissionsData {
 		std::vector<ApplicationCommandPermissionData> permissions{};///< A std::vector of ApplicationCommand permissions.
-		uint64_t applicationId{};///< The current application's Id (The Bot's User Id).
 		std::string commandName{};///< The command name which you would like to edit the permissions of.
+		uint64_t applicationId{};///< The current application's Id (The Bot's User Id).
 		uint64_t commandId{};///< The command id which you would like to edit the permissions of.
 		uint64_t guildId{};///< The Guild id of the Guild for which you would like to edit the command permissions.
 	};

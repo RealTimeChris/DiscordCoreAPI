@@ -61,8 +61,8 @@ namespace DiscordCoreAPI {
 		uint64_t targetApplicationId{};///< The id of the embedded application to open for this invite, required if target_type is 2.
 		InviteTargetTypes targetType{};///<	The type of target for this voice Channel invite.
 		uint64_t targetUserId{};///< Id of the user whose stream to display for this invite, required if target_type is 1.
-		uint64_t channelId{};///< The id of the Channel to create the invite for.
 		bool temporary{ false };///< Whether this invite only grants temporary membership.
+		uint64_t channelId{};///< The id of the Channel to create the invite for.
 		std::string reason{};///< Reason for creating the invite.
 		bool unique{ false };///< If true, don't try to reuse a similar invite (useful for creating many unique one time use invites).
 		int32_t maxUses{ 0 };///< Max number of uses or 0 for unlimited.between 0 and 100.
@@ -98,30 +98,30 @@ namespace DiscordCoreAPI {
 		int32_t defaultAutoArchiveDuration{ 0 };///< Defualt duration of time before archiving a thread.
 		int32_t rateLimitPerUser{ 0 };///< Amount of seconds a user has to wait before sending another message(0 - 21600).
 		int32_t userLimit{ 0 };///< The user limit of the voice Channel(voice only).
-		uint64_t parentId{};///< Id of the parent category for a Channel.
-		uint64_t guildId{};///< The Guild within which to create the Channel.
 		int32_t position{ 0 };///< Sorting position of the Channel.
 		int32_t bitrate{ 0 };///< The bitrate(in bits) of the voice Channel(voice only).
 		std::string reason{};///< Reason for creating the Channel.
+		uint64_t parentId{};///< Id of the parent category for a Channel.
 		std::string topic{};///< Channel topic(0 - 1024 characters).
 		std::string name{};///< The name of the Channel.
 		ChannelType type{};///< The type of Channel.
 		bool nsfw{ false };///<  Whether the Channel is nsfw.
+		uint64_t guildId{};///< The Guild within which to create the Channel.
 	};
 
 	/// For modifying the Channel position responseData of a single Channel. \brief For modifying the Channel position responseData of a single Channel.
 	struct DiscordCoreAPI_Dll ModifyGuildChannelPositionData {
 		bool lockPermissions{ false };///< Syncs the permission overwrites with the new parent, if moving to a new category.
-		uint64_t parentId{};///< The new parent ID for the Channel that is moved.
 		int32_t position{ 0 };///< Sorting position of the Channel.
+		uint64_t parentId{};///< The new parent ID for the Channel that is moved.
 		uint64_t id{};///< Channel id.
 	};
 
 	/// For modifying the current positions of one or more Channels in the Guild. \brief For modifying the current positions of one or more Channels in the Guild.
 	struct DiscordCoreAPI_Dll ModifyGuildChannelPositionsData {
 		std::vector<ModifyGuildChannelPositionData> modifyChannelData{};///< Array of new Channel position's responseData.
-		uint64_t guildId{};///< Guild within which to re-order the Channel positions.
 		std::string reason{};///< Reason for re-ordering the Channel positions.
+		uint64_t guildId{};///< Guild within which to re-order the Channel positions.
 	};
 
 	/// For collecting a direct-messaging Channel. \brief For collecting a direct-messaging Channel.
@@ -139,11 +139,11 @@ namespace DiscordCoreAPI {
 		TimeStamp lastPinTimestamp{ "" };///< Timestamp of the last pinned Message.
 		int32_t videoQualityMode{ 0 };///< Video quality mode.
 		int32_t rateLimitPerUser{ 0 };///< Amount of seconds a User has to wait before sending another Message.
-		std::string lastMessageId{};///< Id of the last Message.		
-		uint64_t applicationId{};///< Application id of the current application.
+		std::string lastMessageId{};///< Id of the last Message.
 		ThreadMemberData member{};///< Thread member object for the current User, if they have joined the Thread.
 		int32_t messageCount{ 0 };///< An approximate count of Messages in a Thread stops counting at 50.
 		std::string permissions{};///< Computed permissions for the invoking user in the channel, including overwrites.		
+		uint64_t applicationId{};///< Application id of the current application.
 		std::string rtcRegion{};///< Real-time clock region.
 		int32_t userLimit{ 0 };///< User limit, in the case of voice channels.
 		int32_t bitrate{ 0 };///< Bitrate of the Channel, if it is a voice Channel.
