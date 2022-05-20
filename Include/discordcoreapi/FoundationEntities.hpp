@@ -3391,7 +3391,7 @@ namespace DiscordCoreAPI {
 		friend class DiscordCoreInternal::YouTubeRequestBuilder;
 		friend class DiscordCoreInternal::SoundCloudAPI;
 		friend class DiscordCoreInternal::YouTubeAPI;
-		friend DiscordCoreInternal::DataParser;
+		friend class DiscordCoreInternal::DataParser;
 		friend SongAPI;
 
 		SongType type{ SongType::SoundCloud };///< The type of song.
