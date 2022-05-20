@@ -353,7 +353,8 @@ namespace DiscordCoreInternal {
 				}
 				returnData = this->executeByRateLimitData(workload, theConnection);
 			} else if (this->doWePrintHttpError) {
-				std::cout << DiscordCoreAPI::shiftToBrightRed() << "Http Error: Code = " << std::to_string(returnData.responseCode) + ", Message = " + returnData.responseMessage
+				std::cout << DiscordCoreAPI::shiftToBrightRed()
+						  << workload.callStack + " Error : Code = " << std::to_string(returnData.responseCode) + ", Message = " + returnData.responseMessage
 						  << DiscordCoreAPI::reset() << std::endl;
 			}
 		}
