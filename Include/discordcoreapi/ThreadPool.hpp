@@ -153,10 +153,9 @@ namespace DiscordCoreInternal {
 		std::vector<std::unique_ptr<std::jthread>> theThreads{};
 		std::condition_variable theCondVar{};
 		std::mutex theMutex01{};
-		std::mutex theMutex02{};
 
 		void threadFunction() {
-			std::unique_lock<std::mutex> theLock00{ this->theMutex02 };
+			std::unique_lock<std::mutex> theLock00{ this->theMutex01 };
 			WorkloadStatus theStatus{ std::this_thread::get_id() };
 			this->theWorkingStatuses.insert_or_assign(std::this_thread::get_id(), theStatus);
 			auto theAtomicBoolPtr = &this->theWorkingStatuses[std::this_thread::get_id()].theCurrentStatus;
@@ -203,7 +202,7 @@ namespace DiscordCoreInternal {
 					break;
 				}
 			}
-			std::unique_lock<std::mutex> theLock02{ this->theMutex02 };
+			std::unique_lock<std::mutex> theLock02{ this->theMutex01 };
 			this->theWorkingStatuses.erase(std::this_thread::get_id());
 			this->theThreads.erase(this->theThreads.begin() + theThreadIndex);
 			theLock02.unlock();
