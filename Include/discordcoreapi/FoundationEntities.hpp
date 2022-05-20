@@ -2517,7 +2517,6 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll MessageData : public MessageDataOld {
 	  public:
 		std::unique_ptr<MessageDataOld> referencedMessage{ std::make_unique<MessageDataOld>() };///< The referenced Message, to reply to.
-		uint64_t requesterId{};///< Requester's id, of who sent this Message.
 
 		MessageData& operator=(const MessageData& other) {
 			*this->referencedMessage = *other.referencedMessage;
@@ -2531,7 +2530,6 @@ namespace DiscordCoreAPI {
 			this->application = other.application;
 			this->interaction = other.interaction;
 			this->attachments = other.attachments;
-			this->requesterId = other.requesterId;
 			this->components = other.components;
 			this->timestamp = other.timestamp;
 			this->channelId = other.channelId;
@@ -2645,7 +2643,6 @@ namespace DiscordCoreAPI {
 		nlohmann::json rawData{};///< The Interaction's raw data.
 		GuildMemberData member{};///< The data of the Guild member who sent the Interaction, if applicable.
 		InteractionType type{};///< The type of Interaction.
-		uint64_t requesterId{};///< The id of the sender of the Interaction.
 		MessageData message{};///< The Message that the Interaction came through on, if applicable.
 		uint64_t channelId{};///< The Channel the Interaction was sent in.
 		int32_t version{ 0 };///< The Interaction version.
@@ -2863,7 +2860,6 @@ namespace DiscordCoreAPI {
 
 		RespondToInputEventData& operator=(InteractionData& dataPackage) {
 			this->applicationId = dataPackage.applicationId;
-			this->requesterId = dataPackage.requesterId;
 			this->interactionToken = dataPackage.token;
 			this->messageId = dataPackage.message.id;
 			this->channelId = dataPackage.channelId;
@@ -3084,7 +3080,6 @@ namespace DiscordCoreAPI {
 		uint64_t interactionId{};
 		uint64_t applicationId{};
 		uint64_t targetUserId{};
-		uint64_t requesterId{};
 		std::string customId{};
 		std::string content{};
 		uint64_t channelId{};

@@ -202,7 +202,6 @@ namespace DiscordCoreAPI {
 		InteractionPackageData interactionPackage{};
 		MessagePackageData messagePackage{};
 		InteractionResponseData data{};
-		uint64_t requesterId{};
 	};
 
 	/// For creating an ephemeral Interaction response. \brief For creating an ephemeral Interaction response.
@@ -222,7 +221,6 @@ namespace DiscordCoreAPI {
 			this->interactionPackage.interactionToken = dataPackage.interactionToken;
 			this->interactionPackage.applicationId = dataPackage.applicationId;
 			this->interactionPackage.interactionId = dataPackage.interactionId;
-			this->requesterId = dataPackage.requesterId;
 			this->data.data.flags = 64;
 		}
 
@@ -236,7 +234,6 @@ namespace DiscordCoreAPI {
 			this->interactionPackage.interactionToken = dataPackage.interactionToken;
 			this->interactionPackage.applicationId = dataPackage.applicationId;
 			this->interactionPackage.interactionId = dataPackage.interactionId;
-			this->requesterId = dataPackage.requesterId;
 			this->data.data.flags = 64;
 		}
 
@@ -260,7 +257,6 @@ namespace DiscordCoreAPI {
 			this->interactionPackage.interactionToken = dataPackage.interactionToken;
 			this->interactionPackage.applicationId = dataPackage.applicationId;
 			this->interactionPackage.interactionId = dataPackage.interactionId;
-			this->requesterId = dataPackage.requesterId;
 		}
 
 		CreateDeferredInteractionResponseData(const RespondToInputEventData& dataPackage) {
@@ -273,7 +269,6 @@ namespace DiscordCoreAPI {
 			this->interactionPackage.interactionToken = dataPackage.interactionToken;
 			this->interactionPackage.applicationId = dataPackage.applicationId;
 			this->interactionPackage.interactionId = dataPackage.interactionId;
-			this->requesterId = dataPackage.requesterId;
 		}
 
 		virtual ~CreateDeferredInteractionResponseData() = default;
@@ -281,7 +276,6 @@ namespace DiscordCoreAPI {
 	  protected:
 		InteractionPackageData interactionPackage{};
 		InteractionResponseData data{};
-		uint64_t requesterId{};
 	};
 
 	/// For creating an Interaction response. \brief For creating an Interaction response.
@@ -298,7 +292,6 @@ namespace DiscordCoreAPI {
 			this->interactionPackage.applicationId = dataPackage.interactionPackage.applicationId;
 			this->interactionPackage.interactionId = dataPackage.interactionPackage.interactionId;
 			this->data.data.components = dataPackage.data.data.components;
-			this->requesterId = dataPackage.requesterId;
 			this->data.type = dataPackage.data.type;
 			this->data = dataPackage.data;
 		}
@@ -308,7 +301,6 @@ namespace DiscordCoreAPI {
 			this->interactionPackage.applicationId = dataPackage.interactionPackage.applicationId;
 			this->interactionPackage.interactionId = dataPackage.interactionPackage.interactionId;
 			this->data.data.components = dataPackage.data.data.components;
-			this->requesterId = dataPackage.requesterId;
 			this->data.type = dataPackage.data.type;
 			this->data = dataPackage.data;
 		}
@@ -318,7 +310,6 @@ namespace DiscordCoreAPI {
 			this->interactionPackage.applicationId = dataPackage.interactionPackage.applicationId;
 			this->interactionPackage.interactionId = dataPackage.interactionPackage.interactionId;
 			this->data.data.components = dataPackage.data.data.components;
-			this->requesterId = dataPackage.requesterId;
 			this->data.type = dataPackage.data.type;
 			this->data = dataPackage.data;
 			this->data.data.flags = 64;
@@ -329,7 +320,6 @@ namespace DiscordCoreAPI {
 			this->interactionPackage.applicationId = dataPackage.interactionPackage.applicationId;
 			this->interactionPackage.interactionId = dataPackage.interactionPackage.interactionId;
 			this->data.data.components = dataPackage.data.data.components;
-			this->requesterId = dataPackage.requesterId;
 			this->data.type = dataPackage.data.type;
 			this->data = dataPackage.data;
 			this->data.data.flags = 64;
@@ -353,7 +343,6 @@ namespace DiscordCoreAPI {
 			this->interactionPackage.interactionToken = dataPackage.interactionToken;
 			this->interactionPackage.applicationId = dataPackage.applicationId;
 			this->interactionPackage.interactionId = dataPackage.interactionId;
-			this->requesterId = dataPackage.requesterId;
 		}
 
 		CreateInteractionResponseData(InteractionData& dataPackage) {
@@ -365,13 +354,6 @@ namespace DiscordCoreAPI {
 			this->interactionPackage.applicationId = dataPackage.applicationId;
 			this->interactionPackage.interactionToken = dataPackage.token;
 			this->interactionPackage.interactionId = dataPackage.id;
-			if (dataPackage.member.id != 0) {
-				this->requesterId = dataPackage.member.id;
-			} else if (dataPackage.message.member.id != 0) {
-				this->requesterId = dataPackage.message.member.id;
-			} else if (dataPackage.message.author.id != 0) {
-				this->requesterId = dataPackage.message.author.id;
-			}
 		}
 
 		virtual ~CreateInteractionResponseData() = default;
@@ -395,7 +377,6 @@ namespace DiscordCoreAPI {
 			this->interactionPackage.interactionId = dataPackage.interactionId;
 			this->data.allowedMentions = dataPackage.allowedMentions;
 			this->data.components = dataPackage.components;
-			this->requesterId = dataPackage.requesterId;
 			this->data.content = dataPackage.content;
 			this->data.embeds = dataPackage.embeds;
 			this->data.title = dataPackage.title;
@@ -409,7 +390,6 @@ namespace DiscordCoreAPI {
 			this->interactionPackage.interactionId = dataPackage.interactionId;
 			this->data.allowedMentions = dataPackage.allowedMentions;
 			this->data.components = dataPackage.components;
-			this->requesterId = dataPackage.requesterId;
 			this->data.content = dataPackage.content;
 			this->data.embeds = dataPackage.embeds;
 			this->data.title = dataPackage.title;
@@ -421,7 +401,6 @@ namespace DiscordCoreAPI {
 
 	  protected:
 		InteractionPackageData interactionPackage{};
-		uint64_t requesterId{};
 		EditWebHookData data{};
 	};
 
@@ -454,7 +433,6 @@ namespace DiscordCoreAPI {
 			this->interactionPackage.interactionId = dataPackage.interactionId;
 			this->allowedMentions = dataPackage.allowedMentions;
 			this->components = dataPackage.components;
-			this->requesterId = dataPackage.requesterId;
 			this->content = dataPackage.content;
 			this->embeds = dataPackage.embeds;
 			this->files = dataPackage.files;
@@ -468,7 +446,6 @@ namespace DiscordCoreAPI {
 			this->interactionPackage.interactionId = dataPackage.interactionId;
 			this->allowedMentions = dataPackage.allowedMentions;
 			this->components = dataPackage.components;
-			this->requesterId = dataPackage.requesterId;
 			this->content = dataPackage.content;
 			this->embeds = dataPackage.embeds;
 			this->files = dataPackage.files;
@@ -480,7 +457,6 @@ namespace DiscordCoreAPI {
 
 	  protected:
 		InteractionPackageData interactionPackage{};
-		uint64_t requesterId{};
 	};
 
 	/// For creating a follow up Message. \brief For creating a follow up Message.
@@ -494,7 +470,6 @@ namespace DiscordCoreAPI {
 		CreateFollowUpMessageData(const CreateEphemeralFollowUpMessageData& dataPackage) {
 			this->interactionPackage = dataPackage.interactionPackage;
 			this->allowedMentions = dataPackage.allowedMentions;
-			this->requesterId = dataPackage.requesterId;
 			this->components = dataPackage.components;
 			this->content = dataPackage.content;
 			this->embeds = dataPackage.embeds;
@@ -507,7 +482,6 @@ namespace DiscordCoreAPI {
 		CreateFollowUpMessageData(CreateEphemeralFollowUpMessageData& dataPackage) {
 			this->interactionPackage = dataPackage.interactionPackage;
 			this->allowedMentions = dataPackage.allowedMentions;
-			this->requesterId = dataPackage.requesterId;
 			this->components = dataPackage.components;
 			this->content = dataPackage.content;
 			this->embeds = dataPackage.embeds;
@@ -523,7 +497,6 @@ namespace DiscordCoreAPI {
 			this->interactionPackage.interactionId = dataPackage.interactionId;
 			this->allowedMentions = dataPackage.allowedMentions;
 			this->components = dataPackage.components;
-			this->requesterId = dataPackage.requesterId;
 			this->content = dataPackage.content;
 			this->embeds = dataPackage.embeds;
 			this->flags = dataPackage.flags;
@@ -537,7 +510,6 @@ namespace DiscordCoreAPI {
 			this->interactionPackage.interactionId = dataPackage.interactionId;
 			this->allowedMentions = dataPackage.allowedMentions;
 			this->components = dataPackage.components;
-			this->requesterId = dataPackage.requesterId;
 			this->content = dataPackage.content;
 			this->embeds = dataPackage.embeds;
 			this->flags = dataPackage.flags;
@@ -549,7 +521,6 @@ namespace DiscordCoreAPI {
 
 	  protected:
 		InteractionPackageData interactionPackage{};
-		uint64_t requesterId{};
 	};
 
 	/// For getting a follow-up Message. \brief For getting a follow-up Message.
@@ -573,7 +544,6 @@ namespace DiscordCoreAPI {
 			this->messagePackage.channelId = dataPackage.channelId;
 			this->messagePackage.messageId = dataPackage.messageId;
 			this->data.components = dataPackage.components;
-			this->requesterId = dataPackage.requesterId;
 			this->data.content = dataPackage.content;
 			this->data.embeds = dataPackage.embeds;
 			this->data.files = dataPackage.files;
@@ -587,7 +557,6 @@ namespace DiscordCoreAPI {
 			this->messagePackage.channelId = dataPackage.channelId;
 			this->messagePackage.messageId = dataPackage.messageId;
 			this->data.components = dataPackage.components;
-			this->requesterId = dataPackage.requesterId;
 			this->data.content = dataPackage.content;
 			this->data.embeds = dataPackage.embeds;
 			this->data.files = dataPackage.files;
@@ -598,7 +567,6 @@ namespace DiscordCoreAPI {
 	  protected:
 		InteractionPackageData interactionPackage{};
 		MessagePackageData messagePackage{};
-		uint64_t requesterId{};
 		EditWebHookData data{};
 	};
 

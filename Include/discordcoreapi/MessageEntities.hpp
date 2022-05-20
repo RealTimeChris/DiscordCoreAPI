@@ -41,7 +41,6 @@ namespace DiscordCoreAPI {
 
 	/// For getting a Message. \brief For getting a Message.
 	struct DiscordCoreAPI_Dll GetMessageData {
-		uint64_t requesterId{};///< The requester id.
 		uint64_t channelId{};///< The Channel from which to collect the Message.
 		uint64_t id{};///< The id of the Message to collect.
 	};
