@@ -707,47 +707,47 @@ namespace DiscordCoreAPI {
 
 	/// Permission values, for a given Channel, by Role or GuildMember. \brief Permission values, for a given Channel, by Role or GuildMember.
 	enum class Permission : int64_t {
-		Create_Instant_Invite = 1 << 0,///< Create Instant Invite.
-		Kick_Members = 1 << 1,///< Kick Members.
-		Ban_Members = 1 << 2,///< Ban Members.
-		Administrator = 1 << 3,///< Administrator.
-		Manage_Channels = 1 << 4,///< Manage Channels.
-		Manage_Guild = 1 << 5,///< Manage Guild.
-		Add_Reactions = 1 << 6,///< Add Reactions.
-		View_Audit_Log = 1 << 7,///< View Audit Log.
-		Priority_Speaker = 1 << 8,///< Priority Speaker.
-		Stream = 1 << 9,///< Stream.
-		View_Channel = 1 << 10,///< View Channel.
-		Send_Messages = 1 << 11,///< Send Messages.
-		Send_Tts_Messages = 1 << 12,///< Send TTS Messages.
-		Manage_Messages = 1 << 13,///< Manage Messages.
-		Embed_Links = 1 << 14,///< Embed Links.
-		Attach_Files = 1 << 15,///< Attach Files.
-		Read_Message_History = 1 << 16,///< Read Message History.
-		Mention_Everyone = 1 << 17,///< Mention Everyone.
-		Use_External_Emojis = 1 << 18,///< Use External Emoji.
-		View_Guild_Insights = 1 << 19,///< View Guild Insights.
-		Connect = 1 << 20,///< Connect.
-		Speak = 1 << 21,///< Speak.
-		Mute_Members = 1 << 22,///< Mute Members.
-		Deafen_Members = 1 << 23,///< Deafen Members.
-		Move_Members = 1 << 24,///< Move Members.
-		Use_Vad = 1 << 25,///< Use VAD.
-		Change_Nickname = 1 << 26,///< Change Nickname.
-		Manage_Nicknames = 1 << 27,///< Manage Nicknames.
-		Manage_Roles = 1 << 28,///< Manage Roles.
-		Manage_Webhooks = 1 << 29,///< Manage Webhooks.
-		Manage_Emojis_And_Stickers = 1 << 30,///< Manage Emojis And Stickers.
-		Use_Application_Commands = 1 << 31,///< Use Application Commands.
-		Request_To_Speak = 1 << 32,///< Request To Speak.
-		Manage_Events = 1 << 33,///< Manage Events.
-		Manage_Threads = 1 << 34,///< Manage Threads.
-		Create_Public_Threads = 1 << 35,///< Create Public Threads.
-		Create_Private_Threads = 1 << 36,///< Create Private Threads.
-		Use_External_Stickers = 1 << 37,///< Use External Stickers.
-		Send_Messages_In_Threads = 1 << 38,///< Send Messages In Threads.
-		Start_Embedded_Activities = 1 << 39,///< Start Embedded Activities.
-		Moderate_Members = 1 << 40///< Moderate Members.
+		Create_Instant_Invite = 1ull << 0,///< Create Instant Invite.
+		Kick_Members = 1ull << 1ull,///< Kick Members.
+		Ban_Members = 1ull << 2,///< Ban Members.
+		Administrator = 1ull << 3,///< Administrator.
+		Manage_Channels = 1ull << 4,///< Manage Channels.
+		Manage_Guild = 1ull << 5,///< Manage Guild.
+		Add_Reactions = 1ull << 6,///< Add Reactions.
+		View_Audit_Log = 1ull << 7,///< View Audit Log.
+		Priority_Speaker = 1ull << 8,///< Priority Speaker.
+		Stream = 1ull << 9,///< Stream.
+		View_Channel = 1ull << 10,///< View Channel.
+		Send_Messages = 1ull << 11,///< Send Messages.
+		Send_Tts_Messages = 1ull << 12,///< Send TTS Messages.
+		Manage_Messages = 1ull << 13,///< Manage Messages.
+		Embed_Links = 1ull << 14,///< Embed Links.
+		Attach_Files = 1ull << 15,///< Attach Files.
+		Read_Message_History = 1ull << 16,///< Read Message History.
+		Mention_Everyone = 1ull << 17,///< Mention Everyone.
+		Use_External_Emojis = 1ull << 18,///< Use External Emoji.
+		View_Guild_Insights = 1ull << 19,///< View Guild Insights.
+		Connect = 1ull << 20,///< Connect.
+		Speak = 1ull << 21,///< Speak.
+		Mute_Members = 1ull << 22,///< Mute Members.
+		Deafen_Members = 1ull << 23,///< Deafen Members.
+		Move_Members = 1ull << 24,///< Move Members.
+		Use_Vad = 1ull << 25,///< Use VAD.
+		Change_Nickname = 1ull << 26,///< Change Nickname.
+		Manage_Nicknames = 1ull << 27,///< Manage Nicknames.
+		Manage_Roles = 1ull << 28,///< Manage Roles.
+		Manage_Webhooks = 1ull << 29,///< Manage Webhooks.
+		Manage_Emojis_And_Stickers = 1ull << 30,///< Manage Emojis And Stickers.
+		Use_Application_Commands = 1ull << 31,///< Use Application Commands.
+		Request_To_Speak = 1ull << 32,///< Request To Speak.
+		Manage_Events = 1ull << 33,///< Manage Events.
+		Manage_Threads = 1ull << 34,///< Manage Threads.
+		Create_Public_Threads = 1ull << 35,///< Create Public Threads.
+		Create_Private_Threads = 1ull << 36,///< Create Private Threads.
+		Use_External_Stickers = 1ull << 37,///< Use External Stickers.
+		Send_Messages_In_Threads = 1ull << 38,///< Send Messages In Threads.
+		Start_Embedded_Activities = 1ull << 39,///< Start Embedded Activities.
+		Moderate_Members = 1ull << 40///< Moderate Members.
 	};
 
 	/**@}*/
@@ -2710,8 +2710,8 @@ namespace DiscordCoreAPI {
 		std::vector<std::string> notFound{};
 		int32_t chunkIndex{ 0 };
 		int32_t chunkCount{ 0 };
-		uint64_t guildId{};
 		std::string nonce{};
+		uint64_t guildId{};
 	};
 	
 	/// Data representing an input-event, which is any Message or Interaction that is coming into the bot as an input. \brief Data representing an input-event, which is any Message or Interaction that is coming into the bot as an input.
