@@ -30,13 +30,6 @@ namespace DiscordCoreInternal {
 	struct DiscordCoreAPI_Dll RateLimitData;
 	struct DiscordCoreAPI_Dll HttpData;
 
-	struct HttpError : public std::runtime_error {
-	  public:
-		HttpError(std::string&& message) : std::runtime_error(message.c_str()){};
-
-		HttpError(std::string& message) : std::runtime_error(message.c_str()){};
-	};
-
 	class DiscordCoreAPI_Dll HttpRnRBuilder {
 	  public:
 		friend HttpClient;
