@@ -38,7 +38,7 @@ namespace DiscordCoreInternal {
 		dataPackage.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
 		std::vector<DiscordCoreInternal::HttpWorkloadData> workloadVector01{};
 		workloadVector01.push_back(dataPackage);
-		std::vector<DiscordCoreInternal::HttpData> returnData = DiscordCoreInternal::submitWorkloadAndGetResult(*this->httpClient, workloadVector01);
+		std::vector<DiscordCoreInternal::HttpData> returnData = this->httpClient->submitWorkloadAndGetResult<std::vector<HttpData>>(workloadVector01);
 		if (returnData[0].responseCode != 200 && this->httpClient->getDoWePrintHttpError()) {
 			std::cout << DiscordCoreAPI::shiftToBrightRed() << "YouTubeRequestBuilder::collectSearchResults() Error: " << returnData[0].responseCode
 					  << returnData[0].responseMessage.c_str() << DiscordCoreAPI::reset() << std::endl;
@@ -77,7 +77,7 @@ namespace DiscordCoreInternal {
 		dataPackage02.relativePath = "/watch?v=" + newSong.songId + "&hl=en";
 		dataPackage02.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
 		dataPackageWorkload.push_back(dataPackage02);
-		std::vector<DiscordCoreInternal::HttpData> responseData = DiscordCoreInternal::submitWorkloadAndGetResult(*this->httpClient, dataPackageWorkload);
+		std::vector<DiscordCoreInternal::HttpData> responseData = this->httpClient->submitWorkloadAndGetResult<std::vector<HttpData>>(dataPackageWorkload);
 		std::string resultStringHTMLBody{};
 		if (responseData[0].responseCode != 204 && responseData[0].responseCode != 201 && responseData[0].responseCode != 200 && this->httpClient->getDoWePrintHttpError()) {
 			std::cout << DiscordCoreAPI::shiftToBrightRed() << "YouTubeRequestBuilder::constructDownloadInfo() 01 Error: " << responseData[0].responseCode << ", "
@@ -126,7 +126,7 @@ namespace DiscordCoreInternal {
 		dataPackage03.baseUrl = newSong.html5Player;
 		dataPackage03.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
 		dataPackageWorkload02.push_back(dataPackage03);
-		auto responseMessage02 = DiscordCoreInternal::submitWorkloadAndGetResult(*this->httpClient, dataPackageWorkload02);
+		auto responseMessage02 = this->httpClient->submitWorkloadAndGetResult<std::vector<HttpData>>(dataPackageWorkload02);
 		std::string responseToPlayerGet02{};
 		if (responseMessage02[0].responseCode != 204 && responseMessage02[0].responseCode != 201 && responseMessage02[0].responseCode != 200 &&
 			this->httpClient->getDoWePrintHttpError()) {

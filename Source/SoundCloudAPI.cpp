@@ -90,7 +90,7 @@ namespace DiscordCoreInternal {
 			dataPackage.workloadClass = HttpWorkloadClass::Get;
 			std::vector<HttpWorkloadData> workloadVector01{};
 			workloadVector01.push_back(dataPackage);
-			std::vector<HttpData> results{ submitWorkloadAndGetResult(*this->httpClient, workloadVector01) };
+			std::vector<HttpData> results{ this->httpClient->submitWorkloadAndGetResult<std::vector<HttpData>>(workloadVector01) };
 			std::string newString{};
 			newString.insert(newString.begin(), (results)[0].responseMessage.begin(), (results)[0].responseMessage.end());
 			while (newString.find("#EXTINF:") != std::string::npos) {
@@ -125,7 +125,7 @@ namespace DiscordCoreInternal {
 			dataPackage02.workloadClass = HttpWorkloadClass::Get;
 			std::vector<HttpWorkloadData> workloadVector{};
 			workloadVector.push_back(dataPackage02);
-			auto headersNew = submitWorkloadAndGetResult(*this->httpClient, workloadVector);
+			auto headersNew = this->httpClient->submitWorkloadAndGetResult<std::vector<HttpData>>(workloadVector);
 			auto valueBitRate = stoll(headersNew[0].responseHeaders.find("x-amz-meta-bitrate")->second);
 			auto valueLength = stoll(headersNew[0].responseHeaders.find("x-amz-meta-duration")->second);
 			DiscordCoreAPI::DownloadUrl downloadUrl{};
@@ -149,7 +149,7 @@ namespace DiscordCoreInternal {
 		dataPackage02.workloadClass = HttpWorkloadClass::Get;
 		std::vector<HttpWorkloadData> workloadVector{};
 		workloadVector.push_back(dataPackage02);
-		std::vector<HttpData> returnData = submitWorkloadAndGetResult(*this->httpClient, workloadVector);
+		std::vector<HttpData> returnData = this->httpClient->submitWorkloadAndGetResult<std::vector<HttpData>>(workloadVector);
 		std::vector<std::string> assetPaths{};
 		std::string newString01 = "crossorigin src=";
 		std::string newerString{};
@@ -167,7 +167,7 @@ namespace DiscordCoreInternal {
 		dataPackage03.workloadClass = HttpWorkloadClass::Get;
 		std::vector<HttpWorkloadData> workloadVector01{};
 		workloadVector01.push_back(dataPackage03);
-		std::vector<HttpData> returnData02 = submitWorkloadAndGetResult(*this->httpClient, workloadVector01);
+		std::vector<HttpData> returnData02 = this->httpClient->submitWorkloadAndGetResult<std::vector<HttpData>>(workloadVector01);
 		std::string newerString02{};
 		newerString02.insert(newerString02.begin(), returnData02[0].responseMessage.begin(), returnData02[0].responseMessage.end());
 
@@ -220,7 +220,7 @@ namespace DiscordCoreInternal {
 	}
 
 	std::vector<HttpData> SoundCloudRequestBuilder::submitWorkloadAndGetResultNew(const std::vector<HttpWorkloadData>& workload) {
-		return submitWorkloadAndGetResult(*this->httpClient, workload);
+		return this->httpClient->submitWorkloadAndGetResult<std::vector<HttpData>>(workload);
 	}
 
 	void SoundCloudAPI::weFailedToDownloadOrDecode(const DiscordCoreAPI::Song& newSong, SoundCloudAPI* soundCloudAPI, std::stop_token theToken, int32_t currentRecursionDepth) {

@@ -81,7 +81,7 @@ namespace DiscordCoreAPI {
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/recipients/" + std::to_string(dataPackage.userId);
 		workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
 		workload.callStack = "Users::addRecipientToGroupDMAsync";
-		co_return DiscordCoreInternal::submitWorkloadAndGetResult<void>(*Users::httpClient, workload);
+		co_return Users::httpClient->submitWorkloadAndGetResult<void>(workload);
 	}
 
 	CoRoutine<void> Users::removeRecipientFromGroupDMAsync(RemoveRecipientFromGroupDMData dataPackage) {
@@ -92,7 +92,7 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Delete;
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/recipients/" + std::to_string(dataPackage.userId);
 		workload.callStack = "Users::removeRecipientToGroupDMAsync";
-		co_return DiscordCoreInternal::submitWorkloadAndGetResult<void>(*Users::httpClient, workload);
+		co_return Users::httpClient->submitWorkloadAndGetResult<void>(workload);
 	}
 
 	CoRoutine<void> Users::modifyCurrentUserVoiceStateAsync(ModifyCurrentUserVoiceStateData dataPackage) {
@@ -103,7 +103,7 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Patch;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/voice-states/@me";
 		workload.callStack = "Users::modifyCurrentUserVoiceStateAsync";
-		co_return DiscordCoreInternal::submitWorkloadAndGetResult<void>(*Users::httpClient, workload);
+		co_return Users::httpClient->submitWorkloadAndGetResult<void>(workload);
 	}
 
 	CoRoutine<void> Users::modifyUserVoiceStateAsync(ModifyUserVoiceStateData dataPackage) {
@@ -114,7 +114,7 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Patch;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/voice-states/" + std::to_string(dataPackage.userId);
 		workload.callStack = "Users::modifyUserVoiceStateAsync";
-		co_return DiscordCoreInternal::submitWorkloadAndGetResult<void>(*Users::httpClient, workload);
+		co_return Users::httpClient->submitWorkloadAndGetResult<void>(workload);
 	}
 
 	CoRoutine<UserData> Users::getCurrentUserAsync() {
@@ -125,7 +125,7 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
 		workload.relativePath = "/users/@me";
 		workload.callStack = "Users::getCurrentUserAsync";
-		co_return DiscordCoreInternal::submitWorkloadAndGetResult<UserData>(*Users::httpClient, workload);
+		co_return Users::httpClient->submitWorkloadAndGetResult<UserData>(workload);
 	}
 
 	CoRoutine<UserData> Users::getCachedUserAsync(GetUserData dataPackage) {
@@ -145,7 +145,7 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
 		workload.relativePath = "/users/" + std::to_string(dataPackage.userId);
 		workload.callStack = "Users::getUserAsync";
-		auto userNew = DiscordCoreInternal::submitWorkloadAndGetResult<User>(*Users::httpClient, workload);
+		auto userNew = Users::httpClient->submitWorkloadAndGetResult<User>(workload);
 		Users::insertUser(userNew);
 		co_return userNew;
 	}
@@ -165,7 +165,7 @@ namespace DiscordCoreAPI {
 			nlohmann::json responseData = { { "userName", dataPackage.userName } };
 			workload.content = responseData.dump();
 		}
-		co_return DiscordCoreInternal::submitWorkloadAndGetResult<User>(*Users::httpClient, workload);
+		co_return Users::httpClient->submitWorkloadAndGetResult<User>(workload);
 	}
 
 	CoRoutine<std::vector<ConnectionData>> Users::getUserConnectionsAsync() {
@@ -176,7 +176,7 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
 		workload.relativePath = "/users/@me/connections";
 		workload.callStack = "Users::getUserConnectionsAsync";
-		co_return DiscordCoreInternal::submitWorkloadAndGetResult<std::vector<ConnectionData>>(*Users::httpClient, workload);
+		co_return Users::httpClient->submitWorkloadAndGetResult<std::vector<ConnectionData>>(workload);
 	}
 
 	CoRoutine<ApplicationData> Users::getCurrentUserApplicationInfoAsync() {
@@ -187,7 +187,7 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
 		workload.relativePath = "/oauth2/applications/@me";
 		workload.callStack = "Users::getApplicationDataAsync";
-		co_return DiscordCoreInternal::submitWorkloadAndGetResult<ApplicationData>(*Users::httpClient, workload);
+		co_return Users::httpClient->submitWorkloadAndGetResult<ApplicationData>(workload);
 	}
 
 	CoRoutine<AuthorizationInfoData> Users::getCurrentUserAuthorizationInfoAsync() {
@@ -198,7 +198,7 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
 		workload.relativePath = "/oauth2/@me";
 		workload.callStack = "Users::getCurrentUserAuthorizationInfoAsync";
-		co_return DiscordCoreInternal::submitWorkloadAndGetResult<AuthorizationInfoData>(*Users::httpClient, workload);
+		co_return Users::httpClient->submitWorkloadAndGetResult<AuthorizationInfoData>(workload);
 	}
 
 	void Users::insertUser(UserData user) {

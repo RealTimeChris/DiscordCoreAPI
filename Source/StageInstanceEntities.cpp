@@ -41,7 +41,7 @@ namespace DiscordCoreAPI {
 		if (dataPackage.reason != "") {
 			workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));
 		}
-		co_return DiscordCoreInternal::submitWorkloadAndGetResult<StageInstance>(*StageInstances::httpClient, workload);
+		co_return StageInstances::httpClient->submitWorkloadAndGetResult<StageInstance>(workload);
 	}
 
 	CoRoutine<StageInstance> StageInstances::getStageInstanceAsync(GetStageInstanceData dataPackage) {
@@ -52,7 +52,7 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
 		workload.relativePath = "/stage-instances/" + std::to_string(dataPackage.channelId);
 		workload.callStack = "StageInstances::getStageInstanceAsync";
-		co_return DiscordCoreInternal::submitWorkloadAndGetResult<StageInstance>(*StageInstances::httpClient, workload);
+		co_return StageInstances::httpClient->submitWorkloadAndGetResult<StageInstance>(workload);
 	}
 
 	CoRoutine<StageInstance> StageInstances::modifyStageInstanceAsync(ModifyStageInstanceData dataPackage) {
@@ -68,7 +68,7 @@ namespace DiscordCoreAPI {
 		if (dataPackage.reason != "") {
 			workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));
 		}
-		co_return DiscordCoreInternal::submitWorkloadAndGetResult<StageInstance>(*StageInstances::httpClient, workload);
+		co_return StageInstances::httpClient->submitWorkloadAndGetResult<StageInstance>(workload);
 	}
 
 	CoRoutine<void> StageInstances::deleteStageInstanceAsync(DeleteStageInstanceData dataPackage) {
@@ -82,7 +82,7 @@ namespace DiscordCoreAPI {
 		if (dataPackage.reason != "") {
 			workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));
 		}
-		co_return DiscordCoreInternal::submitWorkloadAndGetResult<void>(*StageInstances::httpClient, workload);
+		co_return StageInstances::httpClient->submitWorkloadAndGetResult<void>(workload);
 	}
 	DiscordCoreInternal::HttpClient* StageInstances::httpClient{ nullptr };
 }

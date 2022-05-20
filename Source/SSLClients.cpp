@@ -646,7 +646,7 @@ namespace DiscordCoreInternal {
 #else
 		if (auto returnValue = fcntl(this->theSocket, F_SETFL, fcntl(this->theSocket, F_GETFL, 0) | O_NONBLOCK); returnValue == SOCKET_ERROR) {
 			if (this->doWePrintError) {
-				reportError("fcntl() Error: ", returnVaue);
+				reportError("fcntl() Error: ", returnValue);
 			}
 			return;
 		}

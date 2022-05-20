@@ -35,7 +35,7 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
 		workload.relativePath = "/stickers/" + dataPackage.stickerId;
 		workload.callStack = "Stickers::getStickerAsync";
-		co_return DiscordCoreInternal::submitWorkloadAndGetResult<Sticker>(*Stickers::httpClient, workload);
+		co_return Stickers::httpClient->submitWorkloadAndGetResult<Sticker>(workload);
 	}
 
 	CoRoutine<std::vector<StickerPackData>> Stickers::getNitroStickerPacksAsync() {
@@ -46,7 +46,7 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
 		workload.relativePath = "/sticker-packs";
 		workload.callStack = "Stickers::getNitroStickerPacksAsync";
-		co_return DiscordCoreInternal::submitWorkloadAndGetResult<std::vector<StickerPackData>>(*Stickers::httpClient, workload);
+		co_return Stickers::httpClient->submitWorkloadAndGetResult<std::vector<StickerPackData>>(workload);
 	}
 
 	CoRoutine<std::vector<Sticker>> Stickers::getGuildStickersAsync(GetGuildStickersData dataPackage) {
@@ -57,7 +57,7 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/stickers";
 		workload.callStack = "Stickers::getGuildStickersAsync";
-		co_return DiscordCoreInternal::submitWorkloadAndGetResult<std::vector<Sticker>>(*Stickers::httpClient, workload);
+		co_return Stickers::httpClient->submitWorkloadAndGetResult<std::vector<Sticker>>(workload);
 	}
 
 	CoRoutine<Sticker> Stickers::createGuildStickerAsync(CreateGuildStickerData dataPackage) {
@@ -73,7 +73,7 @@ namespace DiscordCoreAPI {
 		if (dataPackage.reason != "") {
 			workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));
 		}
-		co_return DiscordCoreInternal::submitWorkloadAndGetResult<Sticker>(*Stickers::httpClient, workload);
+		co_return Stickers::httpClient->submitWorkloadAndGetResult<Sticker>(workload);
 	}
 
 	CoRoutine<Sticker> Stickers::modifyGuildStickerAsync(ModifyGuildStickerData dataPackage) {
@@ -89,7 +89,7 @@ namespace DiscordCoreAPI {
 		if (dataPackage.reason != "") {
 			workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));
 		}
-		co_return DiscordCoreInternal::submitWorkloadAndGetResult<Sticker>(*Stickers::httpClient, workload);
+		co_return Stickers::httpClient->submitWorkloadAndGetResult<Sticker>(workload);
 	}
 
 	CoRoutine<void> Stickers::deleteGuildStickerAsync(DeleteGuildStickerData dataPackage) {
@@ -103,7 +103,7 @@ namespace DiscordCoreAPI {
 		if (dataPackage.reason != "") {
 			workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));
 		}
-		co_return DiscordCoreInternal::submitWorkloadAndGetResult<void>(*Stickers::httpClient, workload);
+		co_return Stickers::httpClient->submitWorkloadAndGetResult<void>(workload);
 	}
 	DiscordCoreInternal::HttpClient* Stickers::httpClient{ nullptr };
 };

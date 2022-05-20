@@ -44,7 +44,7 @@ namespace DiscordCoreAPI {
 			workload.content = DiscordCoreInternal::JSONIFY(dataPackage.data);
 		}
 		workload.callStack = "Interactions::createInteractionResponseAsync";
-		DiscordCoreInternal::submitWorkloadAndGetResult<void>(*Interactions::httpClient, workload);
+		Interactions::httpClient->submitWorkloadAndGetResult<void>(workload);
 		GetInteractionResponseData dataPackage01{};
 		dataPackage01.applicationId = dataPackage.interactionPackage.applicationId;
 		dataPackage01.interactionToken = dataPackage.interactionPackage.interactionToken;
@@ -63,7 +63,7 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
 		workload.relativePath = "/webhooks/" + std::to_string(dataPackage.applicationId) + "/" + dataPackage.interactionToken + "/messages/@original";
 		workload.callStack = "Interactions::getInteractionResponseAsync";
-		co_return DiscordCoreInternal::submitWorkloadAndGetResult<Message>(*Interactions::httpClient, workload);
+		co_return Interactions::httpClient->submitWorkloadAndGetResult<Message>(workload);
 	}
 
 	CoRoutine<Message> Interactions::editInteractionResponseAsync(EditInteractionResponseData dataPackage) {
@@ -79,7 +79,7 @@ namespace DiscordCoreAPI {
 			workload.content = DiscordCoreInternal::JSONIFY(dataPackage.data);
 		}
 		workload.callStack = "Interactions::editInteractionResponseAsync";
-		co_return DiscordCoreInternal::submitWorkloadAndGetResult<Message>(*Interactions::httpClient, workload);
+		co_return Interactions::httpClient->submitWorkloadAndGetResult<Message>(workload);
 	}
 
 	CoRoutine<void> Interactions::deleteInteractionResponseAsync(DeleteInteractionResponseData dataPackage) {
@@ -91,7 +91,7 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Delete;
 		workload.relativePath = "/webhooks/" + std::to_string(dataPackage.interactionPackage.applicationId) + "/" + dataPackage.interactionPackage.interactionToken + "/messages/@original";
 		workload.callStack = "Interactions::deleteInteractionResponseAsync";
-		co_return DiscordCoreInternal::submitWorkloadAndGetResult<void>(*Interactions::httpClient, workload);
+		co_return Interactions::httpClient->submitWorkloadAndGetResult<void>(workload);
 	}
 
 	CoRoutine<Message> Interactions::createFollowUpMessageAsync(CreateFollowUpMessageData dataPackage) {
@@ -107,7 +107,7 @@ namespace DiscordCoreAPI {
 			workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
 		}
 		workload.callStack = "Interactions::createFollowUpMessageAsync";
-		co_return DiscordCoreInternal::submitWorkloadAndGetResult<Message>(*Interactions::httpClient, workload);
+		co_return Interactions::httpClient->submitWorkloadAndGetResult<Message>(workload);
 	}
 
 	CoRoutine<Message> Interactions::getFollowUpMessageAsync(GetFollowUpMessageData dataPackage) {
@@ -118,7 +118,7 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
 		workload.relativePath = "/webhooks/" + std::to_string(dataPackage.applicationId) + "/" + dataPackage.interactionToken + "/messages/" + std::to_string(dataPackage.messageId);
 		workload.callStack = "Interactions::getFollowUpMessageAsync";
-		co_return DiscordCoreInternal::submitWorkloadAndGetResult<Message>(*Interactions::httpClient, workload);
+		co_return Interactions::httpClient->submitWorkloadAndGetResult<Message>(workload);
 	}
 
 	CoRoutine<Message> Interactions::editFollowUpMessageAsync(EditFollowUpMessageData dataPackage) {
@@ -136,7 +136,7 @@ namespace DiscordCoreAPI {
 			workload.content = DiscordCoreInternal::JSONIFY(dataPackage.data);
 		}
 		workload.callStack = "Interactions::editFollowUpMessageAsync";
-		co_return DiscordCoreInternal::submitWorkloadAndGetResult<Message>(*Interactions::httpClient, workload);
+		co_return Interactions::httpClient->submitWorkloadAndGetResult<Message>(workload);
 	}
 
 	CoRoutine<void> Interactions::deleteFollowUpMessageAsync(DeleteFollowUpMessageData dataPackage) {
@@ -149,7 +149,7 @@ namespace DiscordCoreAPI {
 		workload.relativePath = "/webhooks/" + std::to_string(dataPackage.interactionPackage.applicationId) + "/" + dataPackage.interactionPackage.interactionToken + "/messages/" +
 			std::to_string(dataPackage.messagePackage.messageId);
 		workload.callStack = "Interactions::deleteFollowUpMessageToBeWrappe";
-		co_return DiscordCoreInternal::submitWorkloadAndGetResult<void>(*Interactions::httpClient, workload);
+		co_return Interactions::httpClient->submitWorkloadAndGetResult<void>(workload);
 	}
 
 	SelectMenuCollector::SelectMenuCollector(InputEventData& dataPackage) {
