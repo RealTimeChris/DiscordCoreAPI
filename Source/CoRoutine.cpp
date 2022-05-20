@@ -16,8 +16,6 @@
 /// https://discordcoreapi.com
 /// \file CoRoutine.cpp
 
-#pragma once
-
 #include <discordcoreapi/CoRoutine.hpp>
 
 namespace DiscordCoreAPI {
