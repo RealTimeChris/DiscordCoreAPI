@@ -555,9 +555,9 @@ namespace DiscordCoreInternal {
 				} else if (payload["t"] == "INTERACTION_CREATE") {
 					std::unique_ptr<DiscordCoreAPI::InteractionData> interactionData{ std::make_unique<DiscordCoreAPI::InteractionData>() };
 					if (payload["d"].contains("user")) {
-						*interactionData = DiscordCoreAPI::InteractionData(std::stoull(payload["d"]["user"]["id"].get<std::string>()));
+						interactionData->requesterId = std::stoull(payload["d"]["user"]["id"].get<std::string>());
 					} else if (payload["d"].contains("member")) {
-						*interactionData = DiscordCoreAPI::InteractionData(std::stoull(payload["d"]["member"]["user"]["id"].get<std::string>()));
+						interactionData->requesterId = std::stoull(payload["d"]["member"]["user"]["id"].get<std::string>());
 					}
 					DiscordCoreInternal::DataParser::parseObject(payload["d"], *interactionData.get());
 					std::unique_ptr<DiscordCoreAPI::InputEventData> eventData{ std::make_unique<DiscordCoreAPI::InputEventData>(*interactionData) };

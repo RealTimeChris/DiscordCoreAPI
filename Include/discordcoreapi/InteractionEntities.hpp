@@ -335,26 +335,6 @@ namespace DiscordCoreAPI {
 			this->data.data.flags = 64;
 		}
 
-		CreateInteractionResponseData(const RespondToInputEventData& dataPackage) {
-			this->data = dataPackage;
-			if (dataPackage.eventType == InteractionType::Message_Component && dataPackage.type == InputEventResponseType::Deferred_Response) {
-				this->data.type = InteractionCallbackType::Deferred_Update_Message;
-			} else if (dataPackage.eventType == InteractionType::Message_Component) {
-				this->data.type = InteractionCallbackType::Update_Message;
-			} else if (dataPackage.eventType == InteractionType::Application_Command_Autocomplete ||
-				dataPackage.type == InputEventResponseType::Application_Command_AutoComplete_Result) {
-				this->data.type = InteractionCallbackType::Application_Command_Autocomplete_Result;
-			} else if (dataPackage.type == InputEventResponseType::Modal_Interaction_Response || dataPackage.title != "") {
-				this->data.type = InteractionCallbackType::Modal;
-			} else {
-				this->data.type = InteractionCallbackType::Channel_Message_With_Source;
-			}
-			this->interactionPackage.interactionToken = dataPackage.interactionToken;
-			this->interactionPackage.applicationId = dataPackage.applicationId;
-			this->interactionPackage.interactionId = dataPackage.interactionId;
-			this->requesterId = dataPackage.requesterId;
-		}
-
 		CreateInteractionResponseData(RespondToInputEventData& dataPackage) {
 			this->data = dataPackage;
 			if (dataPackage.eventType == InteractionType::Message_Component && dataPackage.type == InputEventResponseType::Deferred_Response) {

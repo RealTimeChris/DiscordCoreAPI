@@ -2654,10 +2654,6 @@ namespace DiscordCoreAPI {
 		uint64_t guildId{};///< The Guild id of the Guild it was sent in.
 		UserData user{};///< The User data of the sender of the Interaction.
 
-		InteractionData(const uint64_t& requesterId) {
-			this->requesterId = requesterId;
-		}
-
 		InteractionData() = default;
 
 		virtual ~InteractionData() = default;
