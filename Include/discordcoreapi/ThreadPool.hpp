@@ -102,71 +102,45 @@ namespace DiscordCoreInternal {
 		std::thread::id threadId{};
 	};
 
-	struct ThreadWorker {
-		ThreadWorker& operator=(ThreadWorker&& other) {
-			this->theCoros = std::move(other.theCoros);
-			this->theThread.swap(other.theThread);
-			this->theMutex.swap(other.theMutex);
-			return *this;
-		}
-		ThreadWorker(ThreadWorker&& other) {
-			*this = std::move(other);
-		}
-		ThreadWorker() = default;
-		std::unique_ptr<std::recursive_mutex> theMutex{ std::make_unique<std::recursive_mutex>() };
-		std::queue<std::coroutine_handle<>> theCoros{};
-		std::unique_ptr<std::jthread> theThread{};
-	};
-
 	class DiscordCoreAPI_Dll CoRoutineThreadPool {
 	  public:
 		CoRoutineThreadPool() {
-			this->currentThreadCount = std::thread::hardware_concurrency();
-			for (uint32_t x = 0; x < this->currentThreadCount; ++x) {
-				ThreadWorker theThread{};
-				theThread.theThread= std::make_unique<std::jthread>([=,this]() {
+			for (uint32_t x = 0; x < std::thread::hardware_concurrency(); ++x) {
+				std::unique_ptr<std::jthread> workerThread = std::make_unique<std::jthread>([this]() {
 					auto thePtr = std::make_unique<HttpConnection>();
 					Globals::httpConnections.insert(std::make_pair(std::this_thread::get_id(), std::move(thePtr)));
-					this->threadFunction(static_cast<int8_t>(x));
+					this->threadFunction();
 				});
-				theThreads.push_back(std::move(theThread));
+				theThreads.push_back(std::move(workerThread));
 			}
 		}
 
 		void submitTask(std::coroutine_handle<> coro) noexcept {
-			std::unique_lock<std::recursive_mutex> theLock{ this->theMutex };
-			std::unique_lock<std::recursive_mutex> theLock1{};
-			int32_t currentIndexReal = this->currentIndex % this->currentThreadCount;
-			ThreadWorker* theWorker = &this->theThreads[currentIndexReal];
-			std::unique_lock<std::recursive_mutex> theLock2{ *theWorker->theMutex, std::defer_lock };
-			if (theLock2.try_lock()) {
-				theLock2.swap(theLock1);
-				theWorker->theCoros.emplace(coro);
-				this->currentIndex += 1;
-				return;
+			std::unique_lock<std::mutex> theLock(this->theMutex01);
+			bool areWeAllBusy{ true };
+			for (auto& [key, value]: this->theWorkingStatuses) {
+				if (!value.theCurrentStatus.load()) {
+					areWeAllBusy = false;
+				}
 			}
-			this->currentIndex += 1;
-			
-			if (this->currentIndex % this->currentThreadCount == 0) {
-				int32_t currentThreadCountNew = this->currentThreadCount;
-				ThreadWorker theThread{};
-				theThread.theThread = std::make_unique<std::jthread>([&]() mutable -> void {
+			if (areWeAllBusy) {
+				std::unique_ptr<std::jthread> workerThread = std::make_unique<std::jthread>([this]() {
 					auto thePtr = std::make_unique<HttpConnection>();
 					Globals::httpConnections.insert(std::make_pair(std::this_thread::get_id(), std::move(thePtr)));
-					this->threadFunction(static_cast<int8_t>(currentThreadCountNew));
+					this->threadFunction();
 				});
-				this->currentThreadCount += 1;
-				theThreads.push_back(std::move(theThread));
+				theThreads.push_back(std::move(workerThread));
 			}
-			submitTask(coro);
+			this->theCoroutineHandles.emplace(coro);
+			this->theCondVar.notify_one();
 		}
 
 		~CoRoutineThreadPool() {
 			this->areWeQuitting.store(true);
 			for (uint32_t x = 0; x < this->theThreads.size(); x += 1) {
-				ThreadWorker* thread = &this->theThreads.front();
-				if (thread->theThread->joinable()) {
-					thread->theThread->join();
+				std::jthread& thread = *this->theThreads[x];
+				if (thread.joinable()) {
+					thread.join();
 				}
 				this->theThreads.erase(this->theThreads.begin() + x);
 			}
@@ -174,31 +148,64 @@ namespace DiscordCoreInternal {
 
 	  private:
 		std::unordered_map<std::thread::id, WorkloadStatus> theWorkingStatuses{};
+		std::queue<std::coroutine_handle<>> theCoroutineHandles{};
 		std::atomic_bool areWeQuitting{ false };
-		std::vector<ThreadWorker> theThreads{};
-		std::recursive_mutex theMutex{};
-		int64_t currentThreadCount{};
-		int64_t currentIndex{};
-		
+		std::vector<std::unique_ptr<std::jthread>> theThreads{};
+		std::condition_variable theCondVar{};
+		std::mutex theMutex01{};
 
-		void threadFunction(int8_t theIndex) {
-			ThreadWorker* theWorker = &this->theThreads[theIndex];
+		void threadFunction() {
+			std::unique_lock<std::mutex> theLock00{ this->theMutex01 };
+			WorkloadStatus theStatus{ std::this_thread::get_id() };
+			this->theWorkingStatuses.insert_or_assign(std::this_thread::get_id(), theStatus);
+			auto theAtomicBoolPtr = &this->theWorkingStatuses[std::this_thread::get_id()].theCurrentStatus;
+			int32_t theThreadIndex{};
+			theLock00.unlock();
 			while (!this->areWeQuitting.load()) {
-				
-				std::this_thread::sleep_for(std::chrono::milliseconds{ 1 });
-				if (this->areWeQuitting.load()) { 
+				std::unique_lock<std::mutex> theLock01{ this->theMutex01 };
+				while (!this->areWeQuitting.load() && this->theCoroutineHandles.size() == 0) {
+					if (this->theThreads.size() > std::thread::hardware_concurrency()) {
+						for (auto& [key, value]: this->theWorkingStatuses) {
+							bool doWeBreak{ false };
+							if (value.theCurrentStatus.load() && value.threadId != std::this_thread::get_id()) {
+								for (uint32_t x = 0; x < this->theThreads.size(); x += 1) {
+									if (this->theThreads[x]->get_id() == key) {
+										this->theThreads[x]->detach();
+										doWeBreak = true;
+										value.doWeQuit.store(true);
+										theThreadIndex = x;
+										break;
+									}
+								}
+								if (doWeBreak) {
+									break;
+								}
+							}
+						}
+					}
+					this->theCondVar.wait_for(theLock01, std::chrono::microseconds(1000));
+				}
+				if (this->areWeQuitting.load()) {
 					break;
 				}
-				
-				std::unique_lock<std::recursive_mutex> theLock{ *theWorker->theMutex };
-				if (theWorker->theCoros.size() > 0) {
-					std::cout << "WERE HERE THIS IS IT!, THE INDEX: " << std::to_string(theIndex) << std::endl;
-					auto& coroHandle = theWorker->theCoros.front();
-					theWorker->theCoros.pop();
-					theLock.unlock();
-					coroHandle.resume();
+				auto& coroHandle = this->theCoroutineHandles.front();
+				this->theCoroutineHandles.pop();
+				theLock01.unlock();
+				if (theAtomicBoolPtr) {
+					theAtomicBoolPtr->store(true);
+				}
+				coroHandle.resume();
+				if (theAtomicBoolPtr) {
+					theAtomicBoolPtr->store(false);
+				}
+				if (this->theWorkingStatuses[std::this_thread::get_id()].doWeQuit.load()) {
+					break;
 				}
 			}
+			std::unique_lock<std::mutex> theLock02{ this->theMutex01 };
+			this->theWorkingStatuses.erase(std::this_thread::get_id());
+			this->theThreads.erase(this->theThreads.begin() + theThreadIndex);
+			theLock02.unlock();
 		}
 	};
 	/**@}*/
