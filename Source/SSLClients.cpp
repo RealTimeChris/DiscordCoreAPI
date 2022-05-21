@@ -26,19 +26,23 @@ namespace DiscordCoreInternal {
 		{
 			if (searchRoot == "") {
 #ifdef _WIN32
-				searchRoot = static_cast<char>(std::filesystem::current_path().c_str()[0]) + ":\\";
+				searchRoot = std::string{ static_cast<char>(std::filesystem::current_path().c_str()[0]) } + std::string{ ":\\" };
+				std::cout << "SEARCH ROOT: " << searchRoot << std::endl;
 #else
 				searchRoot = "/";
 #endif
 			}
-			for (const auto& entry: std::filesystem::recursive_directory_iterator(searchRoot, std::filesystem::directory_options::skip_permission_denied)) {
-				if (entry.path().string().find(pathPrefix) == std::string::npos) {
-					continue;
-				} else if (entry.path().string().find(pathPrefix) != std::string::npos) {
-					if (entry.path().string().find(fileName) != std::string::npos) {
-						return entry.path().string();
+			try {
+				for (const auto& entry: std::filesystem::recursive_directory_iterator(searchRoot, std::filesystem::directory_options::skip_permission_denied)) {
+					if (entry.path().string().find(pathPrefix) == std::string::npos) {
+						continue;
+					} else if (entry.path().string().find(pathPrefix) != std::string::npos) {
+						if (entry.path().string().find(fileName) != std::string::npos) {
+							return entry.path().string();
+						}
 					}
 				}
+			} catch (...) {
 			}
 		}
 		return std::string{};
