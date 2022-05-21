@@ -118,16 +118,11 @@ namespace DiscordCoreAPI {
 	}
 
 	void DiscordCoreClient::runBot() {
-		try {
-			if (!this->instantiateWebSockets()) {
-				return;
-			}
-			this->webSocketMap[std::to_string(this->shardingOptions.startingShard)]->getTheTask()->join();
-			DiscordCoreAPI::Globals::weveQuit.test_and_set();
-		} catch (std::runtime_error& e) {
-			std::cout << e.what() << std::endl;
+		if (!this->instantiateWebSockets()) {
 			return;
 		}
+		this->webSocketMap[std::to_string(this->shardingOptions.startingShard)]->getTheTask()->join();
+		DiscordCoreAPI::Globals::weveQuit.test_and_set();
 	}
 
 	bool DiscordCoreClient::instantiateWebSockets() {
