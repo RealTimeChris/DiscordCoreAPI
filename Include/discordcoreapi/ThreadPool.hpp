@@ -186,7 +186,7 @@ namespace DiscordCoreInternal {
 					this->theCondVar.wait_for(theLock01, std::chrono::microseconds(1000));
 				}
 				if (this->areWeQuitting.load()) {
-					break;
+					return;
 				}
 				auto& coroHandle = this->theCoroutineHandles.front();
 				this->theCoroutineHandles.pop();
