@@ -159,7 +159,6 @@ namespace DiscordCoreInternal {
 			WorkloadStatus theStatus{ std::this_thread::get_id() };
 			this->theWorkingStatuses.insert_or_assign(std::this_thread::get_id(), theStatus);
 			auto theAtomicBoolPtr = &this->theWorkingStatuses[std::this_thread::get_id()].theCurrentStatus;
-			int32_t theThreadIndex{};
 			theLock00.unlock();
 			while (!this->areWeQuitting.load()) {
 				std::unique_lock<std::mutex> theLock01{ this->theMutex01 };
@@ -172,8 +171,8 @@ namespace DiscordCoreInternal {
 									if (this->theThreads[x]->get_id() == key) {
 										this->theThreads[x]->detach();
 										doWeBreak = true;
+										this->theThreads.erase(this->theThreads.begin() + x);
 										value.doWeQuit.store(true);
-										theThreadIndex = x;
 										break;
 									}
 								}
@@ -204,7 +203,6 @@ namespace DiscordCoreInternal {
 			}
 			std::unique_lock<std::mutex> theLock02{ this->theMutex01 };
 			this->theWorkingStatuses.erase(std::this_thread::get_id());
-			this->theThreads.erase(this->theThreads.begin() + theThreadIndex);
 			theLock02.unlock();
 		}
 	};
