@@ -165,6 +165,9 @@ namespace DiscordCoreInternal {
 			nlohmann::json newData = JSONIFY(dataPackage);
 			this->sendMessage(newData);
 			std::this_thread::sleep_for(std::chrono::milliseconds{ 500 });
+			if (doWeCollect.channelId == 0) {
+				return;
+			}
 			dataPackage.channelId = doWeCollect.channelId;
 			newData = JSONIFY(dataPackage);
 			this->areWeCollectingData = true;
@@ -554,7 +557,7 @@ namespace DiscordCoreInternal {
 					this->eventManager->onIntegrationDeletionEvent(*dataPackage);
 				} else if (payload["t"] == "INTERACTION_CREATE") {
 					std::unique_ptr<DiscordCoreAPI::InteractionData> interactionData{ std::make_unique<DiscordCoreAPI::InteractionData>() };
-					DiscordCoreInternal::DataParser::parseObject(payload["d"], *interactionData.get());
+					DiscordCoreInternal::DataParser::parseObject(payload["d"], *interactionData);
 					std::unique_ptr<DiscordCoreAPI::InputEventData> eventData{ std::make_unique<DiscordCoreAPI::InputEventData>(*interactionData) };
 					if (interactionData->type == DiscordCoreAPI::InteractionType::Application_Command) {
 						eventData->responseType = DiscordCoreAPI::InputEventResponseType::Unset;
@@ -562,8 +565,7 @@ namespace DiscordCoreInternal {
 						std::unique_ptr<DiscordCoreAPI::OnInteractionCreationData> dataPackage{ std::make_unique<DiscordCoreAPI::OnInteractionCreationData>() };
 						dataPackage->interactionData = *interactionData;
 						std::unique_ptr<DiscordCoreAPI::CommandData> commandData{ std::make_unique<DiscordCoreAPI::CommandData>(*eventData) };
-						DiscordCoreAPI::CommandData commandDataNew = *commandData;
-						this->commandController->checkForAndRunCommand(commandDataNew);
+						this->commandController->checkForAndRunCommand(*commandData);
 						this->eventManager->onInteractionCreationEvent(*dataPackage);
 						std::unique_ptr<DiscordCoreAPI::OnInputEventCreationData> eventCreationData{ std::make_unique<DiscordCoreAPI::OnInputEventCreationData>() };
 						eventCreationData->inputEventData = *eventData;

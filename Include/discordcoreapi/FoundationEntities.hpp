@@ -2749,11 +2749,16 @@ namespace DiscordCoreAPI {
 			*this = other;
 		}
 
-		InputEventData() = default;
+		InputEventData& operator=(InteractionData& other) {
+			*this->interactionData = other;
+			return *this;
+		}
 
 		InputEventData(InteractionData& interactionData) {
-			*this->interactionData = interactionData;
+			*this = interactionData;
 		}
+
+		InputEventData() = default;
 
 		/// Returns the userName of the last User to trigger this input-event. \brief Returns the userName of the last User to trigger this input-event.
 		/// \returns A std::string containing the User name.
