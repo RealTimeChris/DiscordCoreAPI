@@ -163,13 +163,11 @@ namespace DiscordCoreInternal {
 		const bool doWePrintHttpError{};
 		const std::string botToken{};
 
-		HttpResponseData executeHttpRequest(const HttpWorkloadData& workload, HttpConnection& theConnection, RateLimitData* rateLimitDataPtr);
+		HttpResponseData httpRequestInternal(const HttpWorkloadData& workload, HttpConnection& theConnection, RateLimitData* rateLimitDataPtr);
 
 		HttpResponseData executeByRateLimitData(const HttpWorkloadData& workload, HttpConnection& theConnection);
 
 		HttpResponseData getResponse(HttpConnection& theConnection, RateLimitData* rateLimitDataPtr);
-
-		std::vector<HttpResponseData> executeHttpRequest(const std::vector<HttpWorkloadData>&);
 	};
 
 	

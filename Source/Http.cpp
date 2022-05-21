@@ -312,7 +312,7 @@ namespace DiscordCoreInternal {
 		}
 		rateLimitDataPtr->sampledTimeInMs =
 			static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
-		returnData = HttpClient::executeHttpRequest(workload, theConnection, rateLimitDataPtr);
+		returnData = HttpClient::httpRequestInternal(workload, theConnection, rateLimitDataPtr);
 
 		if (rateLimitDataPtr->tempBucket != "") {
 			rateLimitDataPtr->tempBucket = "";
@@ -350,7 +350,7 @@ namespace DiscordCoreInternal {
 		return returnData;
 	}
 
-	HttpResponseData HttpClient::executeHttpRequest(const HttpWorkloadData& workload, HttpConnection& theConnection, RateLimitData* rateLimitDataPtr) {
+	HttpResponseData HttpClient::httpRequestInternal(const HttpWorkloadData& workload, HttpConnection& theConnection, RateLimitData* rateLimitDataPtr) {
 		try {
 			theConnection.resetValues();
 			int64_t currentTimeDistance =
@@ -374,7 +374,7 @@ namespace DiscordCoreInternal {
 				}
 				theConnection.currentRecursionDepth += 1;
 				theConnection.doWeConnect = true;
-				return this->executeHttpRequest(workload, theConnection, rateLimitDataPtr);
+				return this->httpRequestInternal(workload, theConnection, rateLimitDataPtr);
 			} else {
 				theConnection.currentRecursionDepth = 0;
 				return result;
@@ -385,28 +385,8 @@ namespace DiscordCoreInternal {
 			if (this->doWePrintHttpError) {
 				DiscordCoreAPI::reportException(workload.callStack + "::HttpClient::executeHttpRequest()");
 			}
-			return this->executeHttpRequest(workload, theConnection, rateLimitDataPtr);
+			return this->httpRequestInternal(workload, theConnection, rateLimitDataPtr);
 		}
-	}
-
-	std::vector<HttpResponseData> HttpClient::executeHttpRequest(const std::vector<HttpWorkloadData>& workload) {
-		std::vector<HttpResponseData> returnVector{};
-		std::string currentBaseUrl{};
-		HttpConnection theConnection{};
-		auto rateLimitDataPtr = std::make_unique<RateLimitData>();
-		for (auto& value: workload) {
-			if (currentBaseUrl != value.baseUrl) {
-				if (!theConnection.connect(value.baseUrl, this->doWePrintHttpError)) {
-					continue;
-				};
-			}
-			auto theRequest = theConnection.buildRequest(value);
-			theConnection.writeData(theRequest);
-			HttpResponseData returnData = this->getResponse(theConnection, rateLimitDataPtr.get());
-			returnVector.push_back(returnData);
-			currentBaseUrl = value.baseUrl;
-		}
-		return returnVector;
 	}
 
 	HttpResponseData HttpClient::getResponse(HttpConnection& theConnection, RateLimitData* rateLimitDataPtr) {
@@ -433,7 +413,23 @@ namespace DiscordCoreInternal {
 	}
 
 	std::vector<HttpResponseData> HttpClient::httpRequest(const std::vector<HttpWorkloadData>& workload) {
-		return this->executeHttpRequest(workload);
+		std::vector<HttpResponseData> returnVector{};
+		std::string currentBaseUrl{};
+		HttpConnection theConnection{};
+		auto rateLimitDataPtr = std::make_unique<RateLimitData>();
+		for (auto& value: workload) {
+			if (currentBaseUrl != value.baseUrl) {
+				if (!theConnection.connect(value.baseUrl, this->doWePrintHttpError)) {
+					continue;
+				};
+			}
+			auto theRequest = theConnection.buildRequest(value);
+			theConnection.writeData(theRequest);
+			HttpResponseData returnData = this->getResponse(theConnection, rateLimitDataPtr.get());
+			returnVector.push_back(returnData);
+			currentBaseUrl = value.baseUrl;
+		}
+		return returnVector;
 	}
 
 	HttpResponseData HttpClient::httpRequest(HttpWorkloadData& workload) {
