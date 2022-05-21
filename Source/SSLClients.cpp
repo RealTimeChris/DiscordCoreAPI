@@ -32,17 +32,14 @@ namespace DiscordCoreInternal {
 				searchRoot = "/";
 #endif
 			}
-			try {
-				for (const auto& entry: std::filesystem::recursive_directory_iterator(searchRoot, std::filesystem::directory_options::skip_permission_denied)) {
-					if (entry.path().string().find(pathPrefix) == std::string::npos) {
-						continue;
-					} else if (entry.path().string().find(pathPrefix) != std::string::npos) {
-						if (entry.path().string().find(fileName) != std::string::npos) {
-							return entry.path().string();
-						}
+			for (const auto& entry: std::filesystem::recursive_directory_iterator(searchRoot, std::filesystem::directory_options::skip_permission_denied)) {
+				if (entry.path().string().find(pathPrefix) == std::string::npos) {
+					continue;
+				} else if (entry.path().string().find(pathPrefix) != std::string::npos) {
+					if (entry.path().string().find(fileName) != std::string::npos) {
+						return entry.path().string();
 					}
 				}
-			} catch (...) {
 			}
 		}
 		return std::string{};
