@@ -27,7 +27,6 @@ namespace DiscordCoreInternal {
 			if (searchRoot == "") {
 #ifdef _WIN32
 				searchRoot = std::string{ static_cast<char>(std::filesystem::current_path().c_str()[0]) } + std::string{ ":\\" };
-				std::cout << "SEARCH ROOT: " << searchRoot << std::endl;
 #else
 				searchRoot = "/";
 #endif
