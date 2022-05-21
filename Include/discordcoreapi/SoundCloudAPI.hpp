@@ -35,7 +35,7 @@ namespace DiscordCoreInternal {
 
 		DiscordCoreAPI::Song collectFinalSong(const DiscordCoreAPI::GuildMemberData& addedByGuildMember, const DiscordCoreAPI::Song& newSong);
 
-		std::vector<HttpData> submitWorkloadAndGetResultNew(const std::vector<HttpWorkloadData>& httpData);
+		std::vector<HttpResponseData> submitWorkloadAndGetResultNew(const std::vector<HttpWorkloadData>& httpData);
 
 		std::vector<DiscordCoreAPI::Song> collectSearchResults(const std::string& theString);
 
