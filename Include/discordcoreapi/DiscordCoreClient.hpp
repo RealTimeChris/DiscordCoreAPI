@@ -126,7 +126,6 @@ namespace DiscordCoreAPI {
 		std::vector<std::string> threadIds{};
 		ShardingOptions shardingOptions{};
 		LoggingOptions loggingOptions{};
-		bool didWeStartFine{ false };
 		CacheOptions cacheOptions{};
 		ThreadPool threadPool{};
 		std::string botToken{};
@@ -134,7 +133,7 @@ namespace DiscordCoreAPI {
 
 		GatewayBotData getGateWayBot();
 
-		void instantiateWebSockets();
+		bool instantiateWebSockets();
 
 		void run();
 	};

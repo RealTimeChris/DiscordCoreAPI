@@ -119,8 +119,7 @@ namespace DiscordCoreAPI {
 
 	void DiscordCoreClient::runBot() {
 		try {
-			this->instantiateWebSockets();
-			if (!this->didWeStartFine) {
+			if (!this->instantiateWebSockets()) {
 				return;
 			}
 			this->webSocketMap[std::to_string(this->shardingOptions.startingShard)]->getTheTask()->join();
@@ -131,23 +130,21 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	void DiscordCoreClient::instantiateWebSockets() {
+	bool DiscordCoreClient::instantiateWebSockets() {
 		GatewayBotData gatewayData = this->getGateWayBot();
-		if (gatewayData.url == "") {
-			throw std::runtime_error("Sorry, but failed to collect the connection URL - did you remember to properly set your bot token?");
-		}
 		if (gatewayData.url == "") {
 			if (this->loggingOptions.logGeneralErrorMessages) {
 				std::cout << shiftToBrightRed << "Failed to collect the connection URL! Closing! Did you remember to properly set your bot token?" << reset << std::endl;
 			}
 			std::this_thread::sleep_for(std::chrono::seconds{ 5 });
-			return;
+			return false;
 		}
 		if (this->shardingOptions.startingShard + this->shardingOptions.numberOfShardsForThisProcess > this->shardingOptions.totalNumberOfShards) {
 			if (this->loggingOptions.logGeneralErrorMessages) {
 				std::cout << shiftToBrightRed() << "Your sharding options are incorrect! Please fix it!" << reset() << std::endl;
 			}
-			return;
+			std::this_thread::sleep_for(std::chrono::seconds{ 5 });
+			return false;
 		}
 		int32_t shardGroupCount{ static_cast<int32_t>(
 			ceil(static_cast<float>(this->shardingOptions.numberOfShardsForThisProcess) / static_cast<float>(gatewayData.sessionStartLimit.maxConcurrency))) };
@@ -189,7 +186,7 @@ namespace DiscordCoreAPI {
 				ThreadPool::executeFunctionAfterTimePeriod(value.function, value.intervalInMs, false, this);
 			}
 		}
-		this->didWeStartFine = true;
+		return true;
 	}
 
 	GatewayBotData DiscordCoreClient::getGateWayBot() {
