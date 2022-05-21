@@ -238,6 +238,7 @@ namespace DiscordCoreAPI {
 
 	void VoiceConnection::run(std::stop_token theToken) {
 		while (!theToken.stop_requested()) {
+			std::this_thread::sleep_for(std::chrono::milliseconds{ 1 });
 			if (!this->didWeJustConnect) {
 				this->audioBuffer.clearContents();
 				this->clearAudioData();
