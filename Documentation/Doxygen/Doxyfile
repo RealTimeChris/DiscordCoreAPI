@@ -907,29 +907,29 @@ WARN_LOGFILE           =
 # Note: If this tag is empty the current directory is searched.
 
 INPUT                  = ./Documentation-Examples \
-				 ./Documentation-Examples/Application-Command-Stuff \
-				 ./Documentation-Examples/Autocomplete-Stuff \
-				 ./Documentation-Examples/Button-Stuff \
-				 ./Documentation-Examples/Channel-Stuff \
-				 ./Documentation-Examples/Guild-Stuff \
-				 ./Documentation-Examples/General-Usage \
-				 ./Documentation-Examples/Login-Setup \
-				 ./Documentation-Examples/Modal-Stuff \
-				 ./Documentation-Examples/Music-Bot \
-				 ./Documentation-Examples/Select-Menu-Stuff \
-				 ./Documentation-Examples/Voice-Connection-Stuff \
-				 ./Documentation-Examples/Guild-Scheduled-Event-Stuff \
-				 ./Documentation-Examples/Guild-Member-Stuff \
-				 ./Documentation-Examples/Input-Event-Stuff \
-				 ./Documentation-Examples/Interaction-Stuff \
-				 ./Documentation-Examples/Message-Stuff \
-				 ./Documentation-Examples/Reaction-Stuff \
-				 ./Documentation-Examples/Role-Stuff \
-				 ./Documentation-Examples/Stage-Instance-Stuff \
-				 ./Documentation-Examples/Sticker-Stuff \
-				 ./Documentation-Examples/Thread-Stuff \
-				 ./Documentation-Examples/User-Stuff \
-				 ./Documentation-Examples/Webhook-Stuff \
+                         ./Documentation-Examples/Application-Command-Stuff \
+                         ./Documentation-Examples/Autocomplete-Stuff \
+                         ./Documentation-Examples/Button-Stuff \
+                         ./Documentation-Examples/Channel-Stuff \
+                         ./Documentation-Examples/Guild-Stuff \
+                         ./Documentation-Examples/General-Usage \
+                         ./Documentation-Examples/Login-Setup \
+                         ./Documentation-Examples/Modal-Stuff \
+                         ./Documentation-Examples/Music-Bot \
+                         ./Documentation-Examples/Select-Menu-Stuff \
+                         ./Documentation-Examples/Voice-Connection-Stuff \
+                         ./Documentation-Examples/Guild-Scheduled-Event-Stuff \
+                         ./Documentation-Examples/Guild-Member-Stuff \
+                         ./Documentation-Examples/Input-Event-Stuff \
+                         ./Documentation-Examples/Interaction-Stuff \
+                         ./Documentation-Examples/Message-Stuff \
+                         ./Documentation-Examples/Reaction-Stuff \
+                         ./Documentation-Examples/Role-Stuff \
+                         ./Documentation-Examples/Stage-Instance-Stuff \
+                         ./Documentation-Examples/Sticker-Stuff \
+                         ./Documentation-Examples/Thread-Stuff \
+                         ./Documentation-Examples/User-Stuff \
+                         ./Documentation-Examples/Webhook-Stuff \
                          ../../Include/discordcoreapi \
                          ../../Source
 
@@ -1300,7 +1300,7 @@ HTML_FOOTER            = ./Custom/footer.html
 # obsolete.
 # This tag requires that the tag GENERATE_HTML is set to YES.
 
-HTML_STYLESHEET        = 
+HTML_STYLESHEET        =
 
 # The HTML_EXTRA_STYLESHEET tag can be used to specify additional user-defined
 # cascading style sheets that are included after the standard style sheets
@@ -1313,9 +1313,8 @@ HTML_STYLESHEET        =
 # list). For an example see the documentation.
 # This tag requires that the tag GENERATE_HTML is set to YES.
 
-
-HTML_EXTRA_STYLESHEET  = 	./Custom/doxygen-awesome.css \
-				./Custom/doxygen-awesome-darkmode-toggle.js
+HTML_EXTRA_STYLESHEET  = ./Custom/doxygen-awesome.css \
+                         ./Custom/doxygen-awesome-darkmode-toggle.js
 
 # The HTML_EXTRA_FILES tag can be used to specify one or more extra images or
 # other source files which should be copied to the HTML output directory. Note
