@@ -39,7 +39,7 @@ namespace DiscordCoreAPI {
 	}
 
 	Channel::Channel(ChannelData&& other) {
-		*this = other;
+		*this = std::move(other);
 	}
 
 	Channel& Channel::operator=(ChannelData& other) {

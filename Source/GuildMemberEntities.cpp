@@ -40,7 +40,7 @@ namespace DiscordCoreAPI {
 	};
 
 	GuildMember::GuildMember(GuildMemberData&& other) {
-		*this = other;
+		*this = std::move(other);
 	}
 
 	GuildMember& GuildMember::operator=(GuildMemberData& dataNew) {

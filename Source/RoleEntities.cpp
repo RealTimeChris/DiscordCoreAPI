@@ -35,7 +35,7 @@ namespace DiscordCoreAPI {
 	}
 
 	Role::Role(RoleData&& other) {
-		*this = other;
+		*this = std::move(other);
 	}
 
 	Role& Role::operator=(RoleData& other) {

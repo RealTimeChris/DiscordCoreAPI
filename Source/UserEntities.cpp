@@ -28,22 +28,22 @@ namespace DiscordCoreAPI {
 
 	User& User::operator=(UserData&& other) {
 		this->discriminator = other.discriminator;
-		this->flags = other.flags;
 		this->userName = other.userName;
 		this->avatar = other.avatar;
+		this->flags = other.flags;
 		this->id = other.id;
 		return *this;
 	}
 
-	User::User(UserData&& dataNew) {
-		*this = dataNew;
+	User::User(UserData&& other) {
+		*this = std::move(other);
 	}
 
 	User& User::operator=(UserData& other) {
 		this->discriminator = other.discriminator;
-		this->flags = other.flags;
 		this->userName = other.userName;
 		this->avatar = other.avatar;
+		this->flags = other.flags;
 		this->id = other.id;
 		return *this;
 	}
