@@ -2354,6 +2354,7 @@ namespace DiscordCoreAPI {
 		std::function<void(DiscordCoreClient*)> function{ nullptr };///< The std::function pointer to be loaded.
 		uint32_t intervalInMs{ 0 };///< The time interval at which to call the std::function.
 		bool repeated{ false };///< Whether or not the std::function is repeating.
+		int64_t dummyArg{ 0 };
 	};
 
 	/// Channel mention data. \brief Channel mention data.

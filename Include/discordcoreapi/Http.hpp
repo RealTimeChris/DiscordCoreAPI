@@ -24,6 +24,8 @@
 #include <discordcoreapi/SSLClients.hpp>
 #include <semaphore>
 
+namespace Globals {};
+
 namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll HttpConnectionManager;
@@ -103,10 +105,6 @@ namespace DiscordCoreInternal {
 
 		virtual ~HttpConnection() = default;
 	};
-
-	namespace Globals {
-		static std::unordered_map<std::thread::id, std::unique_ptr<HttpConnection>> httpConnections{};
-	}
 
 	class DiscordCoreAPI_Dll HttpConnectionManager {
 	  public:

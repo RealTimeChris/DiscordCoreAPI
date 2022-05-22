@@ -26,9 +26,13 @@ namespace DiscordCoreAPI {
 	 * \addtogroup utilities
 	 * @{
 	 */
-	extern std::unordered_map<std::thread::id, std::unique_ptr<DiscordCoreInternal::HttpConnection>> httpConnections;
 
-	using TimeElapsedHandler = std::function<void(void)>;
+	template<typename... ArgTypes>	
+	using TimeElapsedHandler = std::function<void(ArgTypes...)>;
+
+	using TimeElapsedHandlerTwo = std::function<void(void)>;
+
+	constexpr float thePercentage{ 10.0f / 100.0f };
 
 	class DiscordCoreAPI_Dll ThreadPool {
 	  public:
@@ -42,54 +46,94 @@ namespace DiscordCoreAPI {
 
 		ThreadPool() = default;
 
-		std::string storeThread(TimeElapsedHandler timeElapsedHandler, int32_t timeInterval);
+		template<typename... ArgTypes>
+		static std::string storeThread(TimeElapsedHandler<ArgTypes...> timeElapsedHandler, int32_t timeInterval, bool repeated, ArgTypes... args) {
+			std::string threadId = std::to_string(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
+
+			ThreadPool::threads.insert(std::make_pair(threadId, std::jthread([=](std::stop_token stopToken) {
+				DiscordCoreAPI::StopWatch stopWatch{ std::chrono::milliseconds{ timeInterval } };
+				while (true) {
+					stopWatch.resetTimer();
+					std::this_thread::sleep_for(std::chrono::milliseconds{ static_cast<int32_t>(std::ceil(static_cast<float>(timeInterval) * thePercentage)) });
+					while (!stopWatch.hasTimePassed() && !stopToken.stop_requested()) {
+						std::this_thread::sleep_for(std::chrono::milliseconds{ 1 });
+					}
+					if (stopToken.stop_requested()) {
+						return;
+					}
+					timeElapsedHandler(args...);
+					if (!repeated) {
+						return;
+					}
+					if (stopToken.stop_requested()) {
+						return;
+					}
+				}
+			})));
+			return threadId;
+		}
+
+		static std::string storeThread(TimeElapsedHandlerTwo timeElapsedHandler, int32_t timeInterval, bool repeated) {
+			std::string threadId = std::to_string(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
+
+			ThreadPool::threads.insert(std::make_pair(threadId, std::jthread([=](std::stop_token stopToken) {
+				DiscordCoreAPI::StopWatch stopWatch{ std::chrono::milliseconds{ timeInterval } };
+				while (true) {
+					stopWatch.resetTimer();
+					std::this_thread::sleep_for(std::chrono::milliseconds{ static_cast<int32_t>(std::ceil(static_cast<float>(timeInterval) * thePercentage)) });
+					while (!stopWatch.hasTimePassed() && !stopToken.stop_requested()) {
+						std::this_thread::sleep_for(std::chrono::milliseconds{ 1 });
+					}
+					if (stopToken.stop_requested()) {
+						return;
+					}
+					timeElapsedHandler();
+					if (!repeated) {
+						return;
+					}
+					if (stopToken.stop_requested()) {
+						return;
+					}
+				}
+			})));
+			return threadId;
+		}
 
 		void stopThread(const std::string& theKey);
 
-		/// For executing a chosen function of type std::function<void(ArgTypes...)> after a chosen time delay. \brief For executing a chosen function of type std::function<void(ArgTypes...)> after a chosen time delay.
-		/// \tparam ArgTypes The types of arguments that will be passed into the function.
-		/// \param theFunction A pointer to the chosen function to be executed.
-		/// \param timeDelayInMs The number of milliseconds to wait before executing the function.
-		/// \param waitForResult Do we wait for the thread to complete/block the current thread of execution?
-		/// \param args The set of arguments to be passed into the executing function.
-		template<typename... ArgTypes>
-		static void executeFunctionAfterTimePeriod(std::function<void(ArgTypes...)> theFunction, uint32_t timeDelayInMs, bool waitForResult, ArgTypes... args) {
-			std::jthread newThread{ [=]() {
-				if (timeDelayInMs > 0) {
-					std::this_thread::sleep_for(std::chrono::milliseconds{ timeDelayInMs });
-				}
-				theFunction(args...);
-			} };
-			if (waitForResult) {
-				newThread.join();
-			} else {
-				newThread.detach();
-			}
-		};
+		~ThreadPool();
 
 	  protected:
-		std::unordered_map<std::string, std::jthread> threads{};
+		inline static std::unordered_map<std::string, std::jthread> threads{};
 	};
 }
 
 namespace DiscordCoreInternal {
 
+	class DiscordCoreAPI_Dll CoRoutineThreadPool;
+
 	struct DiscordCoreAPI_Dll WorkerThread{
 		WorkerThread& operator=(WorkerThread& other);
 		
-		WorkerThread(WorkerThread& other);
+		WorkerThread(WorkerThread&);
+
+		WorkerThread(WorkerThread& other, CoRoutineThreadPool* thePtr);
 
 		WorkerThread();
 
 		~WorkerThread();
-
+		
 		std::unique_ptr<std::thread::id> threadId{};
 		std::atomic_bool theCurrentStatus{ false };
+		CoRoutineThreadPool* thePtr{ nullptr };
 		std::jthread theThread{};
+		int64_t theIndex{ 0 };
 	};
 
 	class DiscordCoreAPI_Dll CoRoutineThreadPool {
 	  public:
+		friend WorkerThread;
+
 		CoRoutineThreadPool();
 
 		void submitTask(std::coroutine_handle<> coro) noexcept;
@@ -106,6 +150,8 @@ namespace DiscordCoreInternal {
 		std::mutex theMutex02{};
 
 		void threadFunction(int64_t theIndex);
+
+		void clearContents();
 	};
 	/**@}*/
 }// namespace DiscordCoreAPI

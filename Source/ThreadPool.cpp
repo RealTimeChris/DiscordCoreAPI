@@ -20,44 +20,29 @@
 
 namespace DiscordCoreAPI {
 
-	constexpr float thePercentage{ 90.0f / 100.0f };
-
-	std::string ThreadPool::storeThread(TimeElapsedHandler timeElapsedHandler, int32_t timeInterval) {
-		std::string threadId = std::to_string(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
-
-		this->threads.insert(std::make_pair(threadId, std::jthread([=](std::stop_token stopToken) {
-			DiscordCoreAPI::StopWatch stopWatch{ std::chrono::milliseconds{ timeInterval } };
-			while (true) {
-				stopWatch.resetTimer();
-				std::this_thread::sleep_for(std::chrono::milliseconds{ static_cast<int32_t>(std::ceil(static_cast<float>(timeInterval) * thePercentage)) });
-				while (!stopWatch.hasTimePassed() && !stopToken.stop_requested()) {
-					std::this_thread::sleep_for(std::chrono::milliseconds{ 1 });
-				}
-				if (stopToken.stop_requested()) {
-					return;
-				}
-				timeElapsedHandler();
-				if (stopToken.stop_requested()) {
-					return;
-				}
+	void ThreadPool::stopThread(const std::string& theKey) {
+		if (ThreadPool::threads.contains(theKey)) {
+			ThreadPool::threads[theKey].request_stop();
+			if (ThreadPool::threads[theKey].joinable()) {
+				ThreadPool::threads[theKey].join();
 			}
-		})));
-		return threadId;
+			ThreadPool::threads.erase(theKey);
+		}
 	}
 
-	void ThreadPool::stopThread(const std::string& theKey) {
-		if (this->threads.contains(theKey)) {
-			this->threads[theKey].request_stop();
-			if (this->threads[theKey].joinable()) {
-				this->threads[theKey].join();
+	ThreadPool::~ThreadPool() {
+		for (auto& [key, value]: this->threads) {
+			value.request_stop();
+			if (value.joinable()) {
+				value.join();
 			}
-			this->threads.erase(theKey);
 		}
-	}	
-
+	}
 }
 
 namespace DiscordCoreInternal {
+
+	extern std::unordered_map<std::thread::id, std::unique_ptr<HttpConnection>> httpConnections{};
 
 	WorkerThread::WorkerThread() {
 		this->threadId = std::make_unique<std::thread::id>();
@@ -67,6 +52,7 @@ namespace DiscordCoreInternal {
 		this->theCurrentStatus.store(other.theCurrentStatus.load());
 		this->theThread.swap(other.theThread);
 		this->threadId.swap(other.threadId);
+		this->theIndex = other.theIndex;
 		return *this;
 	}
 
@@ -74,25 +60,27 @@ namespace DiscordCoreInternal {
 		*this = other;
 	}
 
-	WorkerThread::~WorkerThread() {
-		if (this->threadId != nullptr) {
-			if (Globals ::httpConnections.contains(*this->threadId)) {
-				Globals::httpConnections.erase(*this->threadId);
-			}
-		}
+	WorkerThread::WorkerThread(WorkerThread& other, CoRoutineThreadPool* thePtr) {
+		this->thePtr = thePtr;
+		*this = other;
 	}
+
+	WorkerThread::~WorkerThread() {}
 
 	CoRoutineThreadPool::CoRoutineThreadPool() {
 		for (uint32_t x = 0; x < std::thread::hardware_concurrency(); ++x) {
 			WorkerThread workerThread{};
 			this->currentIndex += 1;
 			int64_t currentIndex = this->currentIndex;
+			workerThread.theIndex = currentIndex;
 			workerThread.theThread = std::jthread([=, this]() {
 				auto thePtr = std::make_unique<HttpConnection>();
-				Globals::httpConnections.insert(std::make_pair(std::this_thread::get_id(), std::move(thePtr)));
+				httpConnections.insert(std::make_pair(std::this_thread::get_id(), std::move(thePtr)));
 				this->threadFunction(currentIndex);
 			});
 			this->workerThreads.insert_or_assign(currentIndex, workerThread);
+			for (auto& [key, value]: this->workerThreads) {
+			}
 		}
 	}
 
@@ -108,9 +96,10 @@ namespace DiscordCoreInternal {
 			WorkerThread workerThread{};
 			this->currentIndex += 1;
 			int64_t currentIndex = this->currentIndex;
+			workerThread.theIndex = currentIndex;
 			workerThread.theThread = std::jthread([=, this]() {
 				auto thePtr = std::make_unique<HttpConnection>();
-				Globals::httpConnections.insert(std::make_pair(std::this_thread::get_id(), std::move(thePtr)));
+				httpConnections.insert(std::make_pair(std::this_thread::get_id(), std::move(thePtr)));
 				this->threadFunction(currentIndex);
 			});
 			this->workerThreads.insert_or_assign(currentIndex, workerThread);
@@ -142,7 +131,8 @@ namespace DiscordCoreInternal {
 			}
 			
 			if (this->areWeQuitting.load()) {
-				return;
+				httpConnections.erase(std::this_thread::get_id());
+				break;
 			}
 			auto& coroHandle = this->theCoroutineHandles.front();
 			this->theCoroutineHandles.pop();
@@ -155,19 +145,31 @@ namespace DiscordCoreInternal {
 				theAtomicBoolPtr->store(false);
 			}
 			if (!this->workerThreads.contains(theIndex)) {
+				httpConnections.erase(std::this_thread::get_id());
 				return;
 			}
 		}
 	}
 
-	CoRoutineThreadPool::~CoRoutineThreadPool() {
-		this->areWeQuitting.store(true);
-		for (auto&[key, value]:this->workerThreads) {
-			if (value.theThread.joinable()) {
-				value.theThread.join();
-			}
-			this->workerThreads.erase(key);
+	void CoRoutineThreadPool::clearContents() {
+		if (this->workerThreads.size() == 0) {
+			return;
 		}
+		for (auto& [key, value]: this->workerThreads) {	
+			value.theThread.request_stop();
+			if (this->workerThreads.contains(key)) {
+				this->workerThreads.erase(key);
+				break;
+			}
+		}
+		return this->clearContents();
+	}
+
+	CoRoutineThreadPool::~CoRoutineThreadPool() {
+		this->clearContents();
+		this->areWeQuitting.store(true);
+		std::lock_guard<std::mutex> theLock00{ this->theMutex01 };
+		std::lock_guard<std::mutex> theLock01{ this->theMutex02 };
 	}
 
 }
