@@ -121,11 +121,13 @@ namespace DiscordCoreInternal {
 	  public:
 		HttpClient() = default;
 
-		HttpClient(const std::string& botTokenNew, bool doWePrintHttpSuccessNew, bool doWePrintHttpErrorNew, bool doWePrintFFMPEGSuccessNew, bool doWePrintFFMPEGErrorNew);
+		HttpClient(const std::string& botTokenNew, bool doWePrintHttpSuccessNew, bool doWePrintHttpErrorNew, bool doWePrintFFMPEGSuccessNew, bool doWePrintFFMPEGErrorNew, bool doWePrintWebSocketErrorNew);
 
 		std::vector<HttpResponseData> httpRequest(const std::vector<HttpWorkloadData>&);
 
 		HttpResponseData httpRequest(HttpWorkloadData&);
+
+		const bool getDoWePrintWebSocketError();
 
 		const bool getDoWePrintFFMPEGSuccess();
 
@@ -157,9 +159,10 @@ namespace DiscordCoreInternal {
 
 	  protected:
 		HttpConnectionManager connectionManager{};
+		const bool doWePrintWebSocketError{};
 		const bool doWePrintFFMPEGSuccess{};
-		const bool doWePrintHttpSuccess{};
 		const bool doWePrintFFMPEGError{};
+		const bool doWePrintHttpSuccess{};
 		const bool doWePrintHttpError{};
 		const std::string botToken{};
 

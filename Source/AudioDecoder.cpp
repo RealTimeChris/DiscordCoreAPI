@@ -22,11 +22,11 @@
 
 namespace DiscordCoreInternal {
 
-	AudioDecoder::AudioDecoder(const BuildAudioDecoderData& dataPackage, bool doWePrintSuccessNew, bool doWePrintErrorNew) {
+	AudioDecoder::AudioDecoder(const BuildAudioDecoderData& dataPackage) {
+		this->doWePrintSuccess = dataPackage.doWePrintSuccess;
+		this->doWePrintError = dataPackage.doWePrintError;
 		this->bufferMaxSize = dataPackage.bufferMaxSize;
 		this->totalFileSize = dataPackage.totalFileSize;
-		this->doWePrintSuccess = doWePrintSuccessNew;
-		this->doWePrintError = doWePrintErrorNew;
 	}
 
 	void AudioDecoder::submitDataForDecoding(const std::string& dataToDecode) {
