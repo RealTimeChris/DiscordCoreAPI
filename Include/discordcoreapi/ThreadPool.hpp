@@ -74,20 +74,18 @@ namespace DiscordCoreAPI {
 
 namespace DiscordCoreInternal {
 
-	struct DiscordCoreAPI_Dll WorkloadStatus {
-		WorkloadStatus& operator=(WorkloadStatus& other);
+	struct DiscordCoreAPI_Dll WorkerThread{
+		WorkerThread& operator=(WorkerThread& other);
 		
-		WorkloadStatus(WorkloadStatus& other);
+		WorkerThread(WorkerThread& other);
 
-		WorkloadStatus() = default;
+		WorkerThread();
 
-		WorkloadStatus(std::thread::id threadIdNew);
+		~WorkerThread();
 
-		~WorkloadStatus();
-
+		std::unique_ptr<std::thread::id> threadId{};
 		std::atomic_bool theCurrentStatus{ false };
-		std::atomic_bool doWeQuit{ false };
-		std::thread::id threadId{};
+		std::jthread theThread{};
 	};
 
 	class DiscordCoreAPI_Dll CoRoutineThreadPool {
@@ -99,14 +97,15 @@ namespace DiscordCoreInternal {
 		~CoRoutineThreadPool();
 
 	  private:
-		std::unordered_map<std::thread::id, WorkloadStatus> theWorkingStatuses{};
+		std::unordered_map<int64_t, WorkerThread> workerThreads{};
 		std::queue<std::coroutine_handle<>> theCoroutineHandles{};
 		std::atomic_bool areWeQuitting{ false };
-		std::vector<std::unique_ptr<std::jthread>> theThreads{};
 		std::condition_variable theCondVar{};
+		int64_t currentIndex{ 0 };
 		std::mutex theMutex01{};
+		std::mutex theMutex02{};
 
-		void threadFunction();
+		void threadFunction(int64_t theIndex);
 	};
 	/**@}*/
 }// namespace DiscordCoreAPI

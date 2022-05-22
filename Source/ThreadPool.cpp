@@ -59,81 +59,80 @@ namespace DiscordCoreAPI {
 
 namespace DiscordCoreInternal {
 
-	WorkloadStatus& WorkloadStatus::operator = (WorkloadStatus & other) {
-		this->theCurrentStatus.store(other.doWeQuit.load());
-		this->doWeQuit.store(other.doWeQuit.load());
-		this->threadId = other.threadId;
+	WorkerThread::WorkerThread() {
+		this->threadId = std::make_unique<std::thread::id>();
+	}
+
+	WorkerThread& WorkerThread::operator=(WorkerThread& other) {
+		this->theCurrentStatus.store(other.theCurrentStatus.load());
+		this->theThread.swap(other.theThread);
+		this->threadId.swap(other.threadId);
 		return *this;
 	}
 
-	WorkloadStatus::WorkloadStatus(WorkloadStatus& other) {
+	WorkerThread::WorkerThread(WorkerThread& other) {
 		*this = other;
 	}
 
-	WorkloadStatus::WorkloadStatus(std::thread::id threadIdNew) {
-		this->threadId = threadIdNew;
-	}
-
-	WorkloadStatus::~WorkloadStatus() {
-		if (Globals::httpConnections[this->threadId] != nullptr) {
-			Globals::httpConnections.erase(this->threadId);
+	WorkerThread::~WorkerThread() {
+		if (this->threadId != nullptr) {
+			if (Globals ::httpConnections.contains(*this->threadId)) {
+				Globals::httpConnections.erase(*this->threadId);
+			}
 		}
 	}
 
 	CoRoutineThreadPool::CoRoutineThreadPool() {
 		for (uint32_t x = 0; x < std::thread::hardware_concurrency(); ++x) {
-			std::unique_ptr<std::jthread> workerThread = std::make_unique<std::jthread>([this]() {
+			WorkerThread workerThread{};
+			this->currentIndex += 1;
+			int64_t currentIndex = this->currentIndex;
+			workerThread.theThread = std::jthread([=, this]() {
 				auto thePtr = std::make_unique<HttpConnection>();
 				Globals::httpConnections.insert(std::make_pair(std::this_thread::get_id(), std::move(thePtr)));
-				this->threadFunction();
+				this->threadFunction(currentIndex);
 			});
-			theThreads.push_back(std::move(workerThread));
+			this->workerThreads.insert_or_assign(currentIndex, workerThread);
 		}
 	}
 
 	void CoRoutineThreadPool::submitTask(std::coroutine_handle<> coro) noexcept {
 		std::unique_lock<std::mutex> theLock(this->theMutex01);
 		bool areWeAllBusy{ true };
-		for (auto& [key, value]: this->theWorkingStatuses) {
+		for (auto& [key, value]: this->workerThreads) {
 			if (!value.theCurrentStatus.load()) {
 				areWeAllBusy = false;
 			}
 		}
 		if (areWeAllBusy) {
-			std::unique_ptr<std::jthread> workerThread = std::make_unique<std::jthread>([this]() {
+			WorkerThread workerThread{};
+			this->currentIndex += 1;
+			int64_t currentIndex = this->currentIndex;
+			workerThread.theThread = std::jthread([=, this]() {
 				auto thePtr = std::make_unique<HttpConnection>();
 				Globals::httpConnections.insert(std::make_pair(std::this_thread::get_id(), std::move(thePtr)));
-				this->threadFunction();
+				this->threadFunction(currentIndex);
 			});
-			theThreads.push_back(std::move(workerThread));
+			this->workerThreads.insert_or_assign(currentIndex, workerThread);
 		}
 		this->theCoroutineHandles.emplace(coro);
 		this->theCondVar.notify_one();
 	}
 
-	void CoRoutineThreadPool::threadFunction() {
+	void CoRoutineThreadPool::threadFunction(int64_t theIndex) {
 		std::unique_lock<std::mutex> theLock00{ this->theMutex01 };
-		WorkloadStatus theStatus{ std::this_thread::get_id() };
-		this->theWorkingStatuses.insert_or_assign(std::this_thread::get_id(), theStatus);
-		auto theAtomicBoolPtr = &this->theWorkingStatuses[std::this_thread::get_id()].theCurrentStatus;
+		auto theAtomicBoolPtr = &this->workerThreads[theIndex].theCurrentStatus;
+		*this->workerThreads[theIndex].threadId = std::this_thread::get_id();
 		theLock00.unlock();
 		while (!this->areWeQuitting.load()) {
 			std::unique_lock<std::mutex> theLock01{ this->theMutex01 };
 			while (!this->areWeQuitting.load() && this->theCoroutineHandles.size() == 0) {
-				if (this->theThreads.size() > std::thread::hardware_concurrency()) {
-					for (auto& [key, value]: this->theWorkingStatuses) {
-						bool doWeBreak{ false };
-						if (value.theCurrentStatus.load() && value.threadId != std::this_thread::get_id()) {
-							for (uint32_t x = 0; x < this->theThreads.size(); x += 1) {
-								if (this->theThreads[x]->get_id() == key) {
-									this->theThreads[x]->detach();
-									doWeBreak = true;
-									this->theThreads.erase(this->theThreads.begin() + x);
-									value.doWeQuit.store(true);
-									break;
-								}
-							}
-							if (doWeBreak) {
+				if (this->workerThreads.size() > std::thread::hardware_concurrency()) {
+					for (auto& [key, value]: this->workerThreads) {
+						if (value.theCurrentStatus.load() && theIndex != key) {
+							if (value.theThread.joinable() && this->workerThreads.size() > std::thread::hardware_concurrency()) {
+								value.theThread.detach();
+								this->workerThreads.erase(key);
 								break;
 							}
 						}
@@ -141,6 +140,7 @@ namespace DiscordCoreInternal {
 				}
 				this->theCondVar.wait_for(theLock01, std::chrono::microseconds(1000));
 			}
+			
 			if (this->areWeQuitting.load()) {
 				return;
 			}
@@ -154,23 +154,19 @@ namespace DiscordCoreInternal {
 			if (theAtomicBoolPtr) {
 				theAtomicBoolPtr->store(false);
 			}
-			if (this->theWorkingStatuses[std::this_thread::get_id()].doWeQuit.load()) {
-				break;
+			if (!this->workerThreads.contains(theIndex)) {
+				return;
 			}
 		}
-		std::unique_lock<std::mutex> theLock02{ this->theMutex01 };
-		this->theWorkingStatuses.erase(std::this_thread::get_id());
-		theLock02.unlock();
 	}
 
 	CoRoutineThreadPool::~CoRoutineThreadPool() {
 		this->areWeQuitting.store(true);
-		for (uint32_t x = 0; x < this->theThreads.size(); x += 1) {
-			std::jthread& thread = *this->theThreads[x];
-			if (thread.joinable()) {
-				thread.join();
+		for (auto&[key, value]:this->workerThreads) {
+			if (value.theThread.joinable()) {
+				value.theThread.join();
 			}
-			this->theThreads.erase(this->theThreads.begin() + x);
+			this->workerThreads.erase(key);
 		}
 	}
 
