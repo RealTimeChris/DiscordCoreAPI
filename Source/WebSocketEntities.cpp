@@ -524,7 +524,7 @@ namespace DiscordCoreInternal {
 					}
 					if (payload["d"].contains("role_id") && !payload["d"]["role_id"].is_null()) {
 						dataPackage->roleOld =
-							DiscordCoreAPI::Roles::getCachedRoleAsync({ .guildId = dataPackage->guildId, .roleId = stoull(payload["d"]["role_id"].get<std::string>()) }).get()
+							DiscordCoreAPI::Roles::getCachedRoleAsync({ .guildId = dataPackage->guildId, .roleId = stoull(payload["d"]["role_id"].get<std::string>()) }).get();
 					}
 					this->eventManager->onRoleDeletionEvent(*dataPackage);
 				} else if (payload["t"] == "INTEGRATION_CREATE") {
