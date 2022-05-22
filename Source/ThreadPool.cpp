@@ -62,6 +62,7 @@ namespace DiscordCoreInternal {
 	WorkloadStatus& WorkloadStatus::operator = (WorkloadStatus & other) {
 		this->theCurrentStatus.store(other.doWeQuit.load());
 		this->doWeQuit.store(other.doWeQuit.load());
+		this->threadId = other.threadId;
 		return *this;
 	}
 
