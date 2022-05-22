@@ -146,7 +146,7 @@ namespace DiscordCoreInternal {
 		newSong.finalDownloadUrls.push_back(downloadUrl);
 		newSong.addedByUserId = guildMember.id;
 		newSong.type = DiscordCoreAPI::SongType::YouTube;
-		return newSong;	
+		return newSong;
 	}
 
 	DiscordCoreAPI::Song YouTubeRequestBuilder::constructFinalDownloadUrl(DiscordCoreAPI::Song& newSong) {

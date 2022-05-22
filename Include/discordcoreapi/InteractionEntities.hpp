@@ -113,8 +113,8 @@ namespace DiscordCoreAPI {
 		/// \param label A label for the modal.
 		/// \param placeholder A placeholder for the modal.
 		/// \returns RespondToInputEventData& A reference to this data structure.
-		InteractionResponse& addModal(const std::string& topTitleNew, const std::string& topCustomIdNew, const std::string& titleNew, const std::string& customIdNew, bool required, int32_t minLength,
-			int32_t maxLength, TextInputStyle inputStyle, const std::string& label = "", const std::string& placeholder = "") {
+		InteractionResponse& addModal(const std::string& topTitleNew, const std::string& topCustomIdNew, const std::string& titleNew, const std::string& customIdNew, bool required,
+			int32_t minLength, int32_t maxLength, TextInputStyle inputStyle, const std::string& label = "", const std::string& placeholder = "") {
 			this->data.data.title = topTitleNew;
 			this->data.data.customId = topCustomIdNew;
 			if (this->data.data.components.size() == 0) {
@@ -891,8 +891,8 @@ namespace DiscordCoreAPI {
 		/// \param dataPackage An InputEventData structure, from the response that came from the submitted button.
 		ModalCollector(InputEventData& dataPackage);
 
-		/// Used to collect the button inputs from one or more users. \brief Used to collect the button inputs from one or more users. 
-		/// \param maxWaitTimeInMsNew The maximum amount of time to wait for new inputs, in milliseconds. 
+		/// Used to collect the button inputs from one or more users. \brief Used to collect the button inputs from one or more users.
+		/// \param maxWaitTimeInMsNew The maximum amount of time to wait for new inputs, in milliseconds.
 		/// \returns A std::vector of ButtonResponseData.
 		CoRoutine<ModalResponseData> collectModalData(int32_t maxWaitTimeInMsNew);
 

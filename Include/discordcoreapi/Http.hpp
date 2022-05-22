@@ -170,6 +170,6 @@ namespace DiscordCoreInternal {
 		HttpResponseData getResponse(HttpConnection& theConnection, RateLimitData* rateLimitDataPtr);
 	};
 
-	
+
 
 }// namespace DiscordCoreInternal

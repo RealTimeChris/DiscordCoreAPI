@@ -65,7 +65,7 @@ namespace DiscordCoreAPI {
 
 	using SoundCloudAPIMap = std::unordered_map<uint64_t, std::unique_ptr<DiscordCoreInternal::SoundCloudAPI>>;
 
-	using YouTubeAPIMap = std::unordered_map<uint64_t,std::unique_ptr<DiscordCoreInternal::YouTubeAPI>>;
+	using YouTubeAPIMap = std::unordered_map<uint64_t, std::unique_ptr<DiscordCoreInternal::YouTubeAPI>>;
 
 	using SongAPIMap = std::unordered_map<uint64_t, std::unique_ptr<SongAPI>>;
 
@@ -76,7 +76,7 @@ namespace DiscordCoreAPI {
 	DiscordCoreAPI_Dll YouTubeAPIMap& getYouTubeAPIMap();
 
 	DiscordCoreAPI_Dll SongAPIMap& getSongAPIMap();
-	
+
 	/**
 	 * \addtogroup main_endpoints
 	 * @{

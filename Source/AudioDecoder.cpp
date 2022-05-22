@@ -156,9 +156,9 @@ namespace DiscordCoreInternal {
 				newString += av_get_media_type_string(type);
 				newString += " stream in input memory stream.";
 				this->haveWeFailedBool.store(true);
-					if (this->doWePrintError) {
+				if (this->doWePrintError) {
 					std::cout << DiscordCoreAPI::shiftToBrightRed() << newString << DiscordCoreAPI::reset() << std::endl;
-					}
+				}
 				return;
 			} else {
 				this->audioStreamIndex = ret;

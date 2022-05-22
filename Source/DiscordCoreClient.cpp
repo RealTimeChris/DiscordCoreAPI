@@ -69,9 +69,9 @@ namespace DiscordCoreAPI {
 			av_log_set_level(AV_LOG_QUIET);
 		}
 		if (sodium_init() == -1) {
-			if (this->loggingOptions.logGeneralErrorMessages){
+			if (this->loggingOptions.logGeneralErrorMessages) {
 				std::cout << DiscordCoreAPI::shiftToBrightRed() << "LibSodium failed to initialize!" << std::endl << std::endl << reset();
-			}			
+			}
 		}
 		this->shardingOptions = shardOptionsNew;
 		this->cacheOptions = cacheOptionsNew;

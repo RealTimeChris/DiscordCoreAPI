@@ -123,7 +123,6 @@ namespace DiscordCoreAPI {
 	/// A single Role.
 	class DiscordCoreAPI_Dll Role : public RoleData {
 	  public:
-
 		RoleTagsData tags{};///< Role tags for the Role.
 		std::string icon{};///< Icon representing the Role.
 

@@ -356,7 +356,7 @@ namespace DiscordCoreInternal {
 			int64_t currentTimeDistance =
 				std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - theConnection.lastTimeUsed;
 			if (theConnection.doWeConnect || (theConnection.lastTimeUsed != 0 && currentTimeDistance >= 30000)) {
-				if (!theConnection.connect(workload.baseUrl,this->doWePrintHttpError)) {
+				if (!theConnection.connect(workload.baseUrl, this->doWePrintHttpError)) {
 					return HttpResponseData{};
 				};
 				theConnection.doWeConnect = false;

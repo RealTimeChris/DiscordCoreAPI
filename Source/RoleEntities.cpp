@@ -23,7 +23,7 @@
 
 namespace DiscordCoreAPI {
 
-	Role& Role::operator=(RoleData&&other) {
+	Role& Role::operator=(RoleData&& other) {
 		this->unicodeEmoji = other.unicodeEmoji;
 		this->permissions = other.permissions;
 		this->position = other.position;
@@ -65,7 +65,8 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<void>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Put_Guild_Member_Role;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Put;
-		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/members/" + std::to_string(dataPackage.userId) + "/roles/" + std::to_string(dataPackage.roleId);
+		workload.relativePath =
+			"/guilds/" + std::to_string(dataPackage.guildId) + "/members/" + std::to_string(dataPackage.userId) + "/roles/" + std::to_string(dataPackage.roleId);
 		workload.callStack = "Roles::addGuildMemberRoleAsync";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));
@@ -79,7 +80,8 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<void>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Delete_Guild_Member_Role;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Delete;
-		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/members/" + std::to_string(dataPackage.userId) + "/roles/" + std::to_string(dataPackage.roleId);
+		workload.relativePath =
+			"/guilds/" + std::to_string(dataPackage.guildId) + "/members/" + std::to_string(dataPackage.userId) + "/roles/" + std::to_string(dataPackage.roleId);
 		workload.callStack = "Roles::removeGuildMemberRoleAsync";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));

@@ -293,7 +293,7 @@ namespace DiscordCoreInternal {
 		bool doWePrintError{ false };
 		std::string currentBuffer{};
 		bool areWeQuitting{ false };
-		bool haveWeBooted{ false };		
+		bool haveWeBooted{ false };
 
 		static int32_t FileStreamRead(void* opaque, uint8_t* buf, int32_t);
 

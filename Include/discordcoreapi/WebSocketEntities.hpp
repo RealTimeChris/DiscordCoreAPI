@@ -156,7 +156,7 @@ namespace DiscordCoreInternal {
 
 		uint64_t createHeader(char* outbuf, uint64_t sendlength, WebSocketOpCode opCode) noexcept;
 
-		std::vector<std::string> tokenize(const std::string& , const std::string& = "\r\n") noexcept;
+		std::vector<std::string> tokenize(const std::string&, const std::string& = "\r\n") noexcept;
 
 		void run(std::stop_token) noexcept;
 

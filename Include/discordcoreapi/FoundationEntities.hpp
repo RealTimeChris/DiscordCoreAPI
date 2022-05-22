@@ -672,7 +672,7 @@ namespace DiscordCoreAPI {
 
 	DiscordCoreAPI_Dll int64_t convertTimestampToMsInteger(const std::string& timeStamp);
 
-	DiscordCoreAPI_Dll std::string base64Encode(const std::string& , bool = false);
+	DiscordCoreAPI_Dll std::string base64Encode(const std::string&, bool = false);
 
 	DiscordCoreAPI_Dll std::string convertMsToDurationString(int32_t durationInMs);
 
@@ -752,7 +752,7 @@ namespace DiscordCoreAPI {
 
 	/**@}*/
 
-	std::ostream& operator<<(std::ostream& outputSttream, const std::string& (*theFunction)(void));
+	std::ostream& operator<<(std::ostream& outputSttream, const std::string& (*theFunction)( void ));
 
 	/**
 	 * \addtogroup utilities
@@ -969,7 +969,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// For ids of DiscordEntities. \brief For ids of DiscordEntities.
-	using Snowflake =uint64_t;
+	using Snowflake = uint64_t;
 
 	/// Base class DiscordCoreAPI_Dll for all Discord entities. \brief Base class DiscordCoreAPI_Dll for all Discord entities.
 	class DiscordCoreAPI_Dll DiscordEntity {
@@ -995,7 +995,6 @@ namespace DiscordCoreAPI {
 	/// Data structure representing a single Role. \brief Data structure representing a single Role.
 	class DiscordCoreAPI_Dll RoleData : public DiscordEntity {
 	  public:
-
 		std::string unicodeEmoji{};///< Emoji representing the Role.
 		Permissions permissions{};///< The Role's base Guild Permissions.
 		int32_t position{ 0 };///< Its position amongst the rest of the Guild's roles.
@@ -1037,11 +1036,10 @@ namespace DiscordCoreAPI {
 
 	/// Data structure representing a single User. \brief Data structure representing a single User.
 	class DiscordCoreAPI_Dll UserData : public DiscordEntity {
-	  public:		
-
+	  public:
 		UserData() = default;
-		
-		std::string discriminator{};///< The user's 4-digit discord-tag	identify.		
+
+		std::string discriminator{};///< The user's 4-digit discord-tag	identify.
 		std::string userName{};///< The user's userName, not unique across the platform	identify.
 		std::string avatar{};///< The user's avatar hash.
 		int32_t flags{};///< The public flags on a user' s account.
@@ -1319,7 +1317,6 @@ namespace DiscordCoreAPI {
 	/// Data structure representing a single Channel. \brief Data structure representing a single Channel.
 	class DiscordCoreAPI_Dll ChannelData : public DiscordEntity {
 	  public:
-
 		std::unordered_map<uint64_t, OverWriteData> permissionOverwrites{};///< Permission overwrites for the given Channel.
 		ChannelType type{ ChannelType::Dm };///< The type of the Channel.
 		int32_t memberCount{ 0 };///< Count of members active in the Channel.
@@ -1338,7 +1335,6 @@ namespace DiscordCoreAPI {
 	/// Data structure representing a single GuildMember. \brief Data structure representing a single GuildMember.
 	class DiscordCoreAPI_Dll GuildMemberData : public DiscordEntity {
 	  public:
-		
 		std::vector<uint64_t> roles{};///< The Guild roles that they have.
 		Permissions permissions{};///< Their base-level Permissions in the Guild.
 		TimeStamp joinedAt{ "" };///< When they joined the Guild.
@@ -1963,7 +1959,6 @@ namespace DiscordCoreAPI {
 	/// Data structure representing a single Guild. \brief Data structure representing a single Guild.
 	class DiscordCoreAPI_Dll GuildData : public DiscordEntity {
 	  public:
-
 		std::unordered_map<uint64_t, PresenceUpdateData> presences{};///< Array of presences for each GuildMember.
 		std::unordered_map<uint64_t, VoiceStateData> voiceStates{};///< Array of Guild-member voice-states.
 		DiscordCoreClient* discordCoreClient{ nullptr };///< A pointer to the DiscordCoreClient.
@@ -2093,7 +2088,7 @@ namespace DiscordCoreAPI {
 
 	/// WebHook data. \brief WebHook data.
 	class DiscordCoreAPI_Dll WebHookData : public DiscordEntity {
-	  public:		
+	  public:
 		ChannelData sourceChannel{};///< Channel for which th WebHook was issued.
 		uint64_t applicationId{};///< Application id.
 		GuildData sourceGuild{};///< Source Guild id.
@@ -2713,7 +2708,7 @@ namespace DiscordCoreAPI {
 		std::string nonce{};
 		uint64_t guildId{};
 	};
-	
+
 	/// Data representing an input-event, which is any Message or Interaction that is coming into the bot as an input. \brief Data representing an input-event, which is any Message or Interaction that is coming into the bot as an input.
 	class DiscordCoreAPI_Dll InputEventData {
 	  public:
@@ -2847,7 +2842,6 @@ namespace DiscordCoreAPI {
 	/// \brief Data for responding to an input-event.
 	class DiscordCoreAPI_Dll RespondToInputEventData {
 	  public:
-		
 		friend CreateEphemeralInteractionResponseData;
 		friend CreateDeferredInteractionResponseData;
 		friend CreateEphemeralFollowUpMessageData;
@@ -2899,7 +2893,8 @@ namespace DiscordCoreAPI {
 		/// \param emojiId An emoji id, if desired.
 		/// \param url A url, if applicable.
 		/// \returns RespondToInputEventData& A reference to this data structure.
-		RespondToInputEventData& addButton(bool disabled, const std::string& customIdNew, const std::string& buttonLabel, ButtonStyle buttonStyle, const std::string& emojiName = "", uint64_t emojiId = 0, const std::string& url = "") {
+		RespondToInputEventData& addButton(bool disabled, const std::string& customIdNew, const std::string& buttonLabel, ButtonStyle buttonStyle,
+			const std::string& emojiName = "", uint64_t emojiId = 0, const std::string& url = "") {
 			if (this->components.size() == 0) {
 				ActionRowData actionRowData;
 				this->components.push_back(actionRowData);
@@ -2932,8 +2927,8 @@ namespace DiscordCoreAPI {
 		/// \param maxValues Maximum number of selections that are possible.
 		/// \param minValues Minimum required number of selections that are required.
 		/// \returns RespondToInputEventData& A reference to this data structure.
-		RespondToInputEventData& addSelectMenu(bool disabled, const std::string& customIdNew, std::vector<SelectOptionData> options, const std::string& placeholder, int32_t maxValues,
-			int32_t minValues) {
+		RespondToInputEventData& addSelectMenu(bool disabled, const std::string& customIdNew, std::vector<SelectOptionData> options, const std::string& placeholder,
+			int32_t maxValues, int32_t minValues) {
 			if (this->components.size() == 0) {
 				ActionRowData actionRowData;
 				this->components.push_back(actionRowData);
@@ -3199,8 +3194,8 @@ namespace DiscordCoreAPI {
 		/// \param label A label for the modal.
 		/// \param placeholder A placeholder for the modal.
 		/// \returns RespondToInputEventData& A reference to this data structure.
-		MessageResponseBase& addModal(const std::string& topTitleNew, const std::string& topCustomIdNew, const std::string& titleNew, const std::string& customIdNew, bool required, int32_t minLength,
-			int32_t maxLength, TextInputStyle inputStyle, const std::string& label = "", const std::string& placeholder = "") {
+		MessageResponseBase& addModal(const std::string& topTitleNew, const std::string& topCustomIdNew, const std::string& titleNew, const std::string& customIdNew, bool required,
+			int32_t minLength, int32_t maxLength, TextInputStyle inputStyle, const std::string& label = "", const std::string& placeholder = "") {
 			this->title = topTitleNew;
 			this->customId = topCustomIdNew;
 			if (this->components.size() == 0) {

@@ -33,7 +33,8 @@ namespace DiscordCoreInternal {
 	constexpr uint8_t maxHeaderSize{ sizeof(uint64_t) + 2 };
 	constexpr unsigned char webSocketMaskBit{ (1u << 7u) };
 
-	BaseSocketAgent::BaseSocketAgent(const std::string& botTokenNew, const std::string& baseUrl, DiscordCoreAPI::EventManager* eventManager, DiscordCoreAPI::DiscordCoreClient* discordCoreClient, DiscordCoreAPI::CommandController* commandController, std::atomic_bool* doWeQuitNew, bool doWePrintSuccessMessages,
+	BaseSocketAgent::BaseSocketAgent(const std::string& botTokenNew, const std::string& baseUrl, DiscordCoreAPI::EventManager* eventManager,
+		DiscordCoreAPI::DiscordCoreClient* discordCoreClient, DiscordCoreAPI::CommandController* commandController, std::atomic_bool* doWeQuitNew, bool doWePrintSuccessMessages,
 		bool doWePrintErrorMessages, int32_t shardNumber, int32_t numberOfShards) noexcept {
 		this->printSuccessMessages = doWePrintSuccessMessages;
 		this->printErrorMessages = doWePrintErrorMessages;
@@ -245,7 +246,8 @@ namespace DiscordCoreInternal {
 				}
 			}
 
-			if (this->areWeCollectingData && payload["t"] == "VOICE_STATE_UPDATE" && !this->stateUpdateCollected && payload["d"]["member"]["user"]["id"] == std::to_string(this->userId)) {
+			if (this->areWeCollectingData && payload["t"] == "VOICE_STATE_UPDATE" && !this->stateUpdateCollected &&
+				payload["d"]["member"]["user"]["id"] == std::to_string(this->userId)) {
 				if (!this->stateUpdateCollected && !this->serverUpdateCollected) {
 					this->voiceConnectionData = VoiceConnectionData{};
 					this->voiceConnectionData.sessionId = payload["d"]["session_id"].get<std::string>();
@@ -576,7 +578,8 @@ namespace DiscordCoreInternal {
 							*eventData->interactionData = *interactionData;
 							std::unique_ptr<DiscordCoreAPI::OnInteractionCreationData> dataPackage{ std::make_unique<DiscordCoreAPI::OnInteractionCreationData>() };
 							dataPackage->interactionData = *interactionData;
-							if (DiscordCoreAPI::ButtonCollector::buttonInteractionBufferMap.contains(std::to_string(eventData->getChannelId()) + std::to_string(eventData->getMessageId()))) {
+							if (DiscordCoreAPI::ButtonCollector::buttonInteractionBufferMap.contains(
+									std::to_string(eventData->getChannelId()) + std::to_string(eventData->getMessageId()))) {
 								DiscordCoreAPI::ButtonCollector::buttonInteractionBufferMap[std::to_string(eventData->getChannelId()) + std::to_string(eventData->getMessageId())]
 									->send(*interactionData);
 							}
@@ -586,7 +589,8 @@ namespace DiscordCoreInternal {
 							*eventData->interactionData = *interactionData;
 							std::unique_ptr<DiscordCoreAPI::OnInteractionCreationData> dataPackage{ std::make_unique<DiscordCoreAPI::OnInteractionCreationData>() };
 							dataPackage->interactionData = *interactionData;
-							if (DiscordCoreAPI::SelectMenuCollector::selectMenuInteractionBufferMap.contains(std::to_string(eventData->getChannelId()) + std::to_string(eventData->getMessageId()))) {
+							if (DiscordCoreAPI::SelectMenuCollector::selectMenuInteractionBufferMap.contains(
+									std::to_string(eventData->getChannelId()) + std::to_string(eventData->getMessageId()))) {
 								DiscordCoreAPI::SelectMenuCollector::selectMenuInteractionBufferMap[std::to_string(eventData->getChannelId()) +
 									std::to_string(eventData->getMessageId())]
 									->send(*interactionData);

@@ -28,7 +28,8 @@
 
 namespace DiscordCoreAPI {
 
-	std::string getISO8601TimeStamp(const std::string& year, const std::string& month, const std::string& day, const std::string& hour, const std::string& minute, const std::string& second) {
+	std::string getISO8601TimeStamp(const std::string& year, const std::string& month, const std::string& day, const std::string& hour, const std::string& minute,
+		const std::string& second) {
 		std::string theTimeStamp{};
 		theTimeStamp += year + "-";
 		if (month.size() < 2) {
@@ -347,7 +348,7 @@ namespace DiscordCoreAPI {
 		return std::string("\033[0m");
 	}
 
-	std::ostream& operator<<(std::ostream& outputSttream, const std::string& (*theFunction)(void)) {
+	std::ostream& operator<<(std::ostream& outputSttream, const std::string& (*theFunction)( void )) {
 		outputSttream << theFunction();
 		return outputSttream;
 	}
@@ -698,8 +699,8 @@ namespace DiscordCoreAPI {
 		return permissions;
 	}
 
-	MoveThroughMessagePagesData moveThroughMessagePages(const std::string& userID, InputEventData originalEvent, uint32_t currentPageIndex,const std::vector<EmbedData>& messageEmbeds,
-		bool deleteAfter, uint32_t waitForMaxMs, bool returnResult) {
+	MoveThroughMessagePagesData moveThroughMessagePages(const std::string& userID, InputEventData originalEvent, uint32_t currentPageIndex,
+		const std::vector<EmbedData>& messageEmbeds, bool deleteAfter, uint32_t waitForMaxMs, bool returnResult) {
 		MoveThroughMessagePagesData returnData{};
 		uint32_t newCurrentPageIndex = currentPageIndex;
 		std::unique_ptr<RespondToInputEventData> dataPackage{ std::make_unique<RespondToInputEventData>(originalEvent) };

@@ -198,7 +198,7 @@ namespace DiscordCoreInternal {
 		this->doWePrintError = httpClient->getDoWePrintFFMPEGError();
 	}
 
-	DiscordCoreAPI::Song SoundCloudAPI::collectFinalSong(const DiscordCoreAPI::GuildMemberData& addedByGuildMember,const DiscordCoreAPI::Song& newSong) {
+	DiscordCoreAPI::Song SoundCloudAPI::collectFinalSong(const DiscordCoreAPI::GuildMemberData& addedByGuildMember, const DiscordCoreAPI::Song& newSong) {
 		return this->requestBuilder.collectFinalSong(addedByGuildMember, newSong);
 	}
 
@@ -263,7 +263,8 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void SoundCloudAPI::breakOutPlayMore(std::stop_token theToken, std::unique_ptr<AudioDecoder> audioDecoder, bool haveWeFailed, int32_t counter, SoundCloudAPI* soundCloudAPI, const DiscordCoreAPI::Song& newSong, int32_t currentRecursionDepth) {
+	void SoundCloudAPI::breakOutPlayMore(std::stop_token theToken, std::unique_ptr<AudioDecoder> audioDecoder, bool haveWeFailed, int32_t counter, SoundCloudAPI* soundCloudAPI,
+		const DiscordCoreAPI::Song& newSong, int32_t currentRecursionDepth) {
 		if (haveWeFailed && counter > 45 && !DiscordCoreAPI::getVoiceConnectionMap()[soundCloudAPI->guildId]->areWeCurrentlyPlaying()) {
 			audioDecoder.reset(nullptr);
 			SoundCloudAPI::weFailedToDownloadOrDecode(newSong, soundCloudAPI, theToken, currentRecursionDepth);

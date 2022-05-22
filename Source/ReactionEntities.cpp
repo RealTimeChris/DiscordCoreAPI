@@ -41,7 +41,8 @@ namespace DiscordCoreAPI {
 		}
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Put_Reaction;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Put;
-		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/messages/" + std::to_string(dataPackage.messageId) + "/reactions/" + urlEncode(emoji) + "/@me";
+		workload.relativePath =
+			"/channels/" + std::to_string(dataPackage.channelId) + "/messages/" + std::to_string(dataPackage.messageId) + "/reactions/" + urlEncode(emoji) + "/@me";
 		workload.callStack = "Reactions::createReactionAsync";
 		co_return Reactions::httpClient->submitWorkloadAndGetResult<Reaction>(workload);
 	}
@@ -58,7 +59,8 @@ namespace DiscordCoreAPI {
 		}
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Delete_Own_Reaction;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Delete;
-		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/messages/" + std::to_string(dataPackage.messageId) + "/reactions/" + urlEncode(emoji) + "/@me";
+		workload.relativePath =
+			"/channels/" + std::to_string(dataPackage.channelId) + "/messages/" + std::to_string(dataPackage.messageId) + "/reactions/" + urlEncode(emoji) + "/@me";
 		workload.callStack = "Reactions::deleteOwnReactionAsync";
 		co_return Reactions::httpClient->submitWorkloadAndGetResult<void>(workload);
 	}
@@ -76,7 +78,8 @@ namespace DiscordCoreAPI {
 		}
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Delete_User_Reaction;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Delete;
-		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/messages/" + std::to_string(dataPackage.messageId) + "/reactions/" + urlEncode(emoji) + "/" + std::to_string(dataPackage.userId);
+		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/messages/" + std::to_string(dataPackage.messageId) + "/reactions/" + urlEncode(emoji) +
+			"/" + std::to_string(dataPackage.userId);
 		workload.callStack = "Reactions::deleteUserReactionAsync";
 		co_return Reactions::httpClient->submitWorkloadAndGetResult<void>(workload);
 	}

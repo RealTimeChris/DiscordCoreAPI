@@ -617,7 +617,7 @@ namespace DiscordCoreInternal {
 		if (auto returnValue = getaddrinfo(baseUrlNew.c_str(), portNew.c_str(), hints, resultAddress); returnValue == SOCKET_ERROR) {
 			if (this->doWePrintError) {
 				reportError("getaddrinfo() Error: ", returnValue);
-			}			
+			}
 			return;
 		}
 

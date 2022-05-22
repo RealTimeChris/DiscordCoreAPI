@@ -3922,7 +3922,7 @@ namespace DiscordCoreInternal {
 			DataParser::parseObject(jsonObjectData["data"], pDataStructure.data);
 			pDataStructure.rawData = jsonObjectData["data"];
 		}
-		
+
 		if (jsonObjectData.contains("type") && !jsonObjectData["type"].is_null()) {
 			pDataStructure.type = jsonObjectData["type"].get<DiscordCoreAPI::InteractionType>();
 		}
@@ -3939,7 +3939,7 @@ namespace DiscordCoreInternal {
 		} else if (jsonObjectData.contains("user") && !jsonObjectData["user"].is_null()) {
 			DataParser::parseObject(jsonObjectData["user"], pDataStructure.user);
 		}
-		
+
 		if (jsonObjectData.contains("channel_id") && !jsonObjectData["channel_id"].is_null()) {
 			pDataStructure.channelId = stoull(jsonObjectData["channel_id"].get<std::string>());
 		}

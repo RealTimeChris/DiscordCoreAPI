@@ -36,8 +36,9 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<Message>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Post_Interaction_Response;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Post;
-		
-		workload.relativePath = "/interactions/" + std::to_string(dataPackage.interactionPackage.interactionId) + "/" + dataPackage.interactionPackage.interactionToken + "/callback";
+
+		workload.relativePath =
+			"/interactions/" + std::to_string(dataPackage.interactionPackage.interactionId) + "/" + dataPackage.interactionPackage.interactionToken + "/callback";
 		if (dataPackage.data.data.files.size() > 0) {
 			constructMultiPartData(workload, nlohmann::json::parse(DiscordCoreInternal::JSONIFY(dataPackage.data)), dataPackage.data.data.files);
 		} else {
@@ -72,7 +73,8 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<Message>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Patch_Interaction_Response;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Patch;
-		workload.relativePath = "/webhooks/" + std::to_string(dataPackage.interactionPackage.applicationId) + "/" + dataPackage.interactionPackage.interactionToken + "/messages/@original";
+		workload.relativePath =
+			"/webhooks/" + std::to_string(dataPackage.interactionPackage.applicationId) + "/" + dataPackage.interactionPackage.interactionToken + "/messages/@original";
 		if (dataPackage.data.files.size() > 0) {
 			constructMultiPartData(workload, nlohmann::json::parse(DiscordCoreInternal::JSONIFY(dataPackage.data)), dataPackage.data.files);
 		} else {
@@ -89,7 +91,8 @@ namespace DiscordCoreAPI {
 		std::this_thread::sleep_for(std::chrono::milliseconds{ dataPackage.timeDelay });
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Delete_Interaction_Response;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Delete;
-		workload.relativePath = "/webhooks/" + std::to_string(dataPackage.interactionPackage.applicationId) + "/" + dataPackage.interactionPackage.interactionToken + "/messages/@original";
+		workload.relativePath =
+			"/webhooks/" + std::to_string(dataPackage.interactionPackage.applicationId) + "/" + dataPackage.interactionPackage.interactionToken + "/messages/@original";
 		workload.callStack = "Interactions::deleteInteractionResponseAsync";
 		co_return Interactions::httpClient->submitWorkloadAndGetResult<void>(workload);
 	}
@@ -116,7 +119,8 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<Message>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Followup_Message;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
-		workload.relativePath = "/webhooks/" + std::to_string(dataPackage.applicationId) + "/" + dataPackage.interactionToken + "/messages/" + std::to_string(dataPackage.messageId);
+		workload.relativePath =
+			"/webhooks/" + std::to_string(dataPackage.applicationId) + "/" + dataPackage.interactionToken + "/messages/" + std::to_string(dataPackage.messageId);
 		workload.callStack = "Interactions::getFollowUpMessageAsync";
 		co_return Interactions::httpClient->submitWorkloadAndGetResult<Message>(workload);
 	}
@@ -161,7 +165,7 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<std::vector<SelectMenuResponseData>> SelectMenuCollector::collectSelectMenuData(bool getSelectMenuDataForAllNew, int32_t maxWaitTimeInMsNew,
-		int32_t maxCollectedSelectMenuCountNew,uint64_t targetUser) {
+		int32_t maxCollectedSelectMenuCountNew, uint64_t targetUser) {
 		co_await NewThreadAwaitable<std::vector<SelectMenuResponseData>>();
 		if (targetUser == 0 && !getSelectMenuDataForAllNew) {
 			this->getSelectMenuDataForAll = true;
@@ -206,7 +210,7 @@ namespace DiscordCoreAPI {
 					embedData->setColor("FEFEFE");
 					embedData->setTitle("__**Permission Issue:**__");
 					embedData->setTimeStamp(getTimeAndDate());
-					embedData->setDescription("Sorry, but that menu can only be selected by <@" +std::to_string( this->userId) + ">!");
+					embedData->setDescription("Sorry, but that menu can only be selected by <@" + std::to_string(this->userId) + ">!");
 					createResponseData->data.data.embeds.push_back(*embedData);
 					createResponseData->data.data.flags = 64;
 					createResponseData->data.type = InteractionCallbackType::Channel_Message_With_Source;
@@ -285,7 +289,7 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<std::vector<ButtonResponseData>> ButtonCollector::collectButtonData(bool getButtonDataForAllNew, int32_t maxWaitTimeInMsNew, int32_t maxNumberOfPressesNew,
-		 uint64_t targetUser) {
+		uint64_t targetUser) {
 		co_await NewThreadAwaitable<std::vector<ButtonResponseData>>();
 		if (targetUser == 0 && !getButtonDataForAllNew) {
 			throw std::runtime_error("You've failed to properly set the collectButtonData() parameters!");
@@ -390,7 +394,6 @@ namespace DiscordCoreAPI {
 					this->doWeQuit = true;
 				}
 			}
-
 		}
 		ButtonCollector::buttonInteractionBufferMap.erase(this->bufferMapKey);
 	}
