@@ -48,9 +48,11 @@ namespace DiscordCoreInternal {
 		this->doWeQuit = doWeQuitNew;
 		this->baseUrl = baseUrl;
 		this->doWeReconnect.set();
+		std::cout << "WERE LOSNIG LOSING LOSING!" << std::endl;
 		this->theTask = std::make_unique<std::jthread>([this](std::stop_token theToken) {
 			this->run(theToken);
 		});
+		std::cout << "WERE LOSNIG LOSING LOSING020202!" << std::endl;
 	}
 
 	BaseSocketAgent::BaseSocketAgent(nullptr_t) noexcept {};
@@ -190,6 +192,7 @@ namespace DiscordCoreInternal {
 			this->connect();
 			DiscordCoreAPI::StopWatch stopWatch{ std::chrono::milliseconds{ 0 } };
 			while (!theToken.stop_requested() && !this->doWeQuit->load()) {
+				std::cout << "WERE LEAVING LEAVING 020202" << std::endl;
 				if (this->heartbeatInterval != 0 && !this->areWeHeartBeating) {
 					this->areWeHeartBeating = true;
 					stopWatch = DiscordCoreAPI::StopWatch{ std::chrono::milliseconds{ this->heartbeatInterval } };
@@ -208,6 +211,7 @@ namespace DiscordCoreInternal {
 					this->handleBuffer();
 				}
 			}
+			std::cout << "WERE LEAVING LEAVING -4-44-4-4-" << std::endl;
 		} catch (...) {
 			if (this->printErrorMessages) {
 				DiscordCoreAPI::reportException("BaseSocketAgent::run()");
@@ -952,10 +956,14 @@ namespace DiscordCoreInternal {
 	}
 
 	BaseSocketAgent::~BaseSocketAgent() noexcept {
+		std::cout << "WERE GONE GONE GONE! 010101" << std::endl;
 		this->theTask->request_stop();
 		if (this->theTask->joinable()) {
+			std::cout << "WERE LEAVING LEAVING -5-5-5-5-5-" << std::endl;
 			this->theTask->join();
+			std::cout << "WERE LEAVING LEAVING -606060606-" << std::endl;
 		}
+		std::cout << "WERE GONE GONE GONE! 020202" << std::endl;
 	}
 
 	VoiceSocketAgent::VoiceSocketAgent(VoiceConnectInitData initDataNew, BaseSocketAgent* baseBaseSocketAgentNew, bool printMessagesNew) noexcept {

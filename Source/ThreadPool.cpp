@@ -24,6 +24,8 @@ namespace DiscordCoreAPI {
 
 	std::string ThreadPool::storeThread(TimeElapsedHandler timeElapsedHandler, int32_t timeInterval) {
 		std::string threadId = std::to_string(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
+		std::cout << "THE KEY REAL: " << threadId << std::endl;
+		std::this_thread::sleep_for(std::chrono::milliseconds{ 1 });
 
 		this->threads.insert(std::make_pair(threadId, std::jthread([=](std::stop_token stopToken) {
 			DiscordCoreAPI::StopWatch stopWatch{ std::chrono::milliseconds{ timeInterval } };
@@ -46,53 +48,89 @@ namespace DiscordCoreAPI {
 	}
 
 	void ThreadPool::stopThread(const std::string& theKey) {
+		std::cout << "THE KEY: " << theKey << std::endl;
+		std::cout << "THE SIZE: " << this->threads.size() << std::endl;
 		if (this->threads.contains(theKey)) {
 			this->threads[theKey].request_stop();
+			std::cout << "TGUIS US TGAY GAYT 030303" << std::endl;
 			if (this->threads[theKey].joinable()) {
-				this->threads[theKey].join();
+				std::cout << "TGUIS US TGAY GAYT 040404" << std::endl;
+				this->threads[theKey].detach();
+				std::cout << "TGUIS US TGAY GAYT 050505" << std::endl;
 			}
-			this->threads.erase(theKey);
 		}
-	}	
+	}
+
+	ThreadPool::~ThreadPool() {
+		std::lock_guard<std::mutex> theLock{ this->theMutex };
+		std::cout << "TGUIS US TGAY GAYT GAYA" << std::endl;
+		std::cout << "THE SIZE: " << this->threads.size() << std::endl;
+		for (auto& [key, value]: this->threads) {
+			if (this->threads.size() == 0) {
+				return;
+			}
+			std::cout << "THE SIZE: " << this->threads.size() << std::endl;
+			std::cout << "THE KEY REAL: " << key << std::endl;
+			std::cout << "TGUIS US TGAY GAYT GAYA020202" << std::endl;
+			this->stopThread(key);
+			if (this->threads.contains(key)) {
+				std::cout << "TGUIS US TGAY GAYT 023402342034" << std::endl;
+				this->threads.erase(key);
+			}
+			
+		}
+	}
 
 }
 
 namespace DiscordCoreInternal {
 
-	WorkerThread::WorkerThread() {
-		this->threadId = std::make_unique<std::thread::id>();
+	WorkerThread::WorkerThread(CoRoutineThreadPool*thePtrNew) {
+		this->thePtr = thePtrNew;
 	}
 
-	WorkerThread& WorkerThread::operator=(WorkerThread& other) {
+	WorkerThread& WorkerThread::operator=(WorkerThread&& other) noexcept {
 		this->theCurrentStatus.store(other.theCurrentStatus.load());
 		this->theThread.swap(other.theThread);
 		this->threadId.swap(other.threadId);
 		return *this;
 	}
 
-	WorkerThread::WorkerThread(WorkerThread& other) {
-		*this = other;
+	WorkerThread::WorkerThread(WorkerThread&& other) noexcept {
+		*this = std::move(other);
 	}
 
 	WorkerThread::~WorkerThread() {
-		if (this->threadId != nullptr) {
-			if (Globals ::httpConnections.contains(*this->threadId)) {
+		std::cout << "THE THREAD ID FOR NOW: " << *this->threadId << std::endl;
+		std::cout << "WERE HERE THIS IS IT!2020202" << std::endl;
+		if (Globals::httpConnections.size() > 0) {
+			if (Globals::httpConnections.contains(*this->threadId)) {
 				Globals::httpConnections.erase(*this->threadId);
 			}
+		}
+		this->theThread.request_stop();
+		if (this->theThread.joinable()) {
+			this->theThread.detach();
+		}
+		if (this->thePtr != nullptr && this->thePtr->workerThreads.contains(this->theIndex)) {
+			std::cout << "THE THREAD ID FOR NOW0404040: " << *this->threadId << std::endl;
+			std::cout << "WERE HERE THIS IS IT!030303" << std::endl;
+			this->thePtr->workerThreads.erase(this->theIndex);
 		}
 	}
 
 	CoRoutineThreadPool::CoRoutineThreadPool() {
 		for (uint32_t x = 0; x < std::thread::hardware_concurrency(); ++x) {
-			WorkerThread workerThread{};
+			WorkerThread workerThread{ this };
 			this->currentIndex += 1;
 			int64_t currentIndex = this->currentIndex;
-			workerThread.theThread = std::jthread([=, this]() {
+			workerThread.theIndex = currentIndex;
+			workerThread.theThread = std::jthread([=, this](std::stop_token theToken) {
 				auto thePtr = std::make_unique<HttpConnection>();
 				Globals::httpConnections.insert(std::make_pair(std::this_thread::get_id(), std::move(thePtr)));
-				this->threadFunction(currentIndex);
+				this->threadFunction(theToken, currentIndex);
 			});
-			this->workerThreads.insert_or_assign(currentIndex, workerThread);
+			this->workerThreads.insert_or_assign(currentIndex, std::move(workerThread));
 		}
 	}
 
@@ -105,34 +143,35 @@ namespace DiscordCoreInternal {
 			}
 		}
 		if (areWeAllBusy) {
-			WorkerThread workerThread{};
+			WorkerThread workerThread{ this };
 			this->currentIndex += 1;
 			int64_t currentIndex = this->currentIndex;
-			workerThread.theThread = std::jthread([=, this]() {
+			workerThread.theIndex = currentIndex;
+			workerThread.theThread = std::jthread([=, this](std::stop_token theToken) {
 				auto thePtr = std::make_unique<HttpConnection>();
 				Globals::httpConnections.insert(std::make_pair(std::this_thread::get_id(), std::move(thePtr)));
-				this->threadFunction(currentIndex);
+				this->threadFunction(theToken, currentIndex);
 			});
-			this->workerThreads.insert_or_assign(currentIndex, workerThread);
+			this->workerThreads.insert_or_assign(currentIndex, std::move(workerThread));
 		}
 		this->theCoroutineHandles.emplace(coro);
 		this->theCondVar.notify_one();
 	}
 
-	void CoRoutineThreadPool::threadFunction(int64_t theIndex) {
+	void CoRoutineThreadPool::threadFunction(std::stop_token theToken, int64_t theIndex) {
 		std::unique_lock<std::mutex> theLock00{ this->theMutex01 };
 		auto theAtomicBoolPtr = &this->workerThreads[theIndex].theCurrentStatus;
 		*this->workerThreads[theIndex].threadId = std::this_thread::get_id();
 		theLock00.unlock();
-		while (!this->areWeQuitting.load()) {
+		while (!this->areWeQuitting.load()&& !theToken.stop_requested()) {
 			std::unique_lock<std::mutex> theLock01{ this->theMutex01 };
-			while (!this->areWeQuitting.load() && this->theCoroutineHandles.size() == 0) {
+			while (!this->areWeQuitting.load() && this->theCoroutineHandles.size() == 0 && !theToken.stop_requested()) {
 				if (this->workerThreads.size() > std::thread::hardware_concurrency()) {
 					for (auto& [key, value]: this->workerThreads) {
 						if (value.theCurrentStatus.load() && theIndex != key) {
 							if (value.theThread.joinable() && this->workerThreads.size() > std::thread::hardware_concurrency()) {
 								value.theThread.detach();
-								this->workerThreads.erase(key);
+								//this->workerThreads.erase(key);
 								break;
 							}
 						}
@@ -161,10 +200,12 @@ namespace DiscordCoreInternal {
 	}
 
 	CoRoutineThreadPool::~CoRoutineThreadPool() {
+		std::cout << "THIS IS THE FINAL LEAVE!" << std::endl;
 		this->areWeQuitting.store(true);
 		for (auto&[key, value]:this->workerThreads) {
-			if (value.theThread.joinable()) {
-				value.theThread.join();
+			std::cout << "THE FINAL SIZE: " << this->workerThreads.size() << std::endl;
+			if (this->workerThreads.size() == 0) {
+				return;
 			}
 			this->workerThreads.erase(key);
 		}

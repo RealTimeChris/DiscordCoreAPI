@@ -42,6 +42,8 @@ namespace DiscordCoreAPI {
 
 		ThreadPool() = default;
 
+		~ThreadPool();
+
 		std::string storeThread(TimeElapsedHandler timeElapsedHandler, int32_t timeInterval);
 
 		void stopThread(const std::string& theKey);
@@ -54,9 +56,19 @@ namespace DiscordCoreAPI {
 		/// \param args The set of arguments to be passed into the executing function.
 		template<typename... ArgTypes>
 		static void executeFunctionAfterTimePeriod(std::function<void(ArgTypes...)> theFunction, uint32_t timeDelayInMs, bool waitForResult, ArgTypes... args) {
-			std::jthread newThread{ [=]() {
+			std::jthread newThread{ [=](std::stop_token theToken) {
 				if (timeDelayInMs > 0) {
-					std::this_thread::sleep_for(std::chrono::milliseconds{ timeDelayInMs });
+					int64_t timePassed{ 0 };
+					int64_t startTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+				
+					while (timePassed < timeDelayInMs) {
+						std::this_thread::sleep_for(std::chrono::milliseconds{ 1 });
+						int64_t currentTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+						timePassed = currentTime - startTime;
+						if (theToken.stop_requested()) {
+							return;
+						}
+					}
 				}
 				theFunction(args...);
 			} };
@@ -69,27 +81,36 @@ namespace DiscordCoreAPI {
 
 	  protected:
 		std::unordered_map<std::string, std::jthread> threads{};
+		std::mutex theMutex{};
 	};
 }
 
 namespace DiscordCoreInternal {
 
-	struct DiscordCoreAPI_Dll WorkerThread{
-		WorkerThread& operator=(WorkerThread& other);
-		
-		WorkerThread(WorkerThread& other);
+	class DiscordCoreAPI_Dll CoRoutineThreadPool;
 
-		WorkerThread();
+	struct DiscordCoreAPI_Dll WorkerThread{
+		WorkerThread& operator=(WorkerThread&& other) noexcept;
+		
+		WorkerThread(WorkerThread&& other) noexcept;
+
+		WorkerThread(CoRoutineThreadPool* thePtrNew);
+
+		WorkerThread() = default;
 
 		~WorkerThread();
 
-		std::unique_ptr<std::thread::id> threadId{};
+		std::unique_ptr<std::thread::id> threadId{ std::make_unique<std::thread::id>() };
 		std::atomic_bool theCurrentStatus{ false };
+		CoRoutineThreadPool* thePtr{ nullptr };
 		std::jthread theThread{};
+		int64_t theIndex{ 0 };
 	};
 
 	class DiscordCoreAPI_Dll CoRoutineThreadPool {
 	  public:
+		friend WorkerThread;
+
 		CoRoutineThreadPool();
 
 		void submitTask(std::coroutine_handle<> coro) noexcept;
@@ -105,7 +126,7 @@ namespace DiscordCoreInternal {
 		std::mutex theMutex01{};
 		std::mutex theMutex02{};
 
-		void threadFunction(int64_t theIndex);
+		void threadFunction(std::stop_token theToken, int64_t theIndex);
 	};
 	/**@}*/
 }// namespace DiscordCoreAPI

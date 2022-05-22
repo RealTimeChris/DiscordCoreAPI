@@ -19,6 +19,7 @@
 #include <discordcoreapi/Http.hpp>
 #include <discordcoreapi/CoRoutine.hpp>
 #include <discordcoreapi/DiscordCoreClient.hpp>
+#include <discordcoreapi/ThreadPool.hpp>
 
 namespace DiscordCoreInternal {
 
@@ -266,9 +267,9 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	HttpClient::HttpClient(const std::string& botTokenNew, bool doWePrintHttpSuccessNew, bool doWePrintHttpErrorNew, bool doWePrintFFMPEGSuccessNew, bool doWePrintFFMPEGErrorNew)
+	HttpClient::HttpClient(const std::string& botTokenNew, bool doWePrintHttpSuccessNew, bool doWePrintHttpErrorNew, bool doWePrintFFMPEGSuccessNew, bool doWePrintFFMPEGErrorNew, bool doWePrintWebSocketError)
 		: botToken(botTokenNew), doWePrintFFMPEGError(doWePrintFFMPEGErrorNew), doWePrintHttpSuccess(doWePrintHttpSuccessNew), doWePrintHttpError(doWePrintHttpErrorNew),
-		  doWePrintFFMPEGSuccess(doWePrintFFMPEGSuccessNew) {
+		  doWePrintFFMPEGSuccess(doWePrintFFMPEGSuccessNew), doWePrintWebSocketError(doWePrintWebSocketError) {
 		this->connectionManager.initialize();
 	};
 
@@ -456,6 +457,10 @@ namespace DiscordCoreInternal {
 		HttpWorkloadData::workloadIdsInternal[workload.workloadType].store(theValue + 1);
 		rateLimitDataPtr->theSemaphore.release();
 		return resultData;
+	}
+
+	const bool HttpClient::getDoWePrintWebSocketError() {
+		return this->doWePrintWebSocketError;
 	}
 
 	const bool HttpClient::getDoWePrintFFMPEGSuccess() {
