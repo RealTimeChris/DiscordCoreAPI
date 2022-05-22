@@ -256,15 +256,13 @@ namespace DiscordCoreInternal {
 
 	struct DiscordCoreAPI_Dll BuildAudioDecoderData {
 	  public:
-		bool doWePrintSuccess{ false };
-		bool doWePrintError{ false };
 		int64_t totalFileSize{ 0 };
 		int64_t bufferMaxSize{ 0 };
 	};
 
 	class DiscordCoreAPI_Dll AudioDecoder {
 	  public:
-		AudioDecoder(const BuildAudioDecoderData& dataPackage);
+		AudioDecoder(const BuildAudioDecoderData& dataPackage, bool doWePrintSuccess, bool doWePrintError);
 
 		void submitDataForDecoding(const std::string& dataToDecode);
 

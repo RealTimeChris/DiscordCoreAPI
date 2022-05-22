@@ -91,7 +91,7 @@ namespace DiscordCoreAPI {
 		this->eventManager.onVoiceStateUpdate(&EventHandler::onVoiceStateUpdate);
 		EventHandler::initialize(this->cacheOptions);
 		this->httpClient = std::make_unique<DiscordCoreInternal::HttpClient>(botTokenNew, this->loggingOptions.logHttpSuccessMessages, this->loggingOptions.logHttpErrorMessages,
-			this->loggingOptions.logFFMPEGSuccessMessages, this->loggingOptions.logFFMPEGErrorMessages, this->loggingOptions.logWebSocketErrorMessages);
+			this->loggingOptions.logFFMPEGSuccessMessages, this->loggingOptions.logFFMPEGErrorMessages);
 		ApplicationCommands::initialize(this->httpClient.get());
 		Channels::initialize(this->httpClient.get(), this->cacheOptions.cacheChannels);
 		Guilds::initialize(this->httpClient.get(), this, this->cacheOptions.cacheGuilds);
@@ -121,15 +121,12 @@ namespace DiscordCoreAPI {
 		if (!this->instantiateWebSockets()) {
 			return;
 		}
-		std::cout << "WERE GOING GOING GOING 060606" << std::endl;
 		this->webSocketMap[std::to_string(this->shardingOptions.startingShard)]->getTheTask()->join();
-		std::cout << "WERE GOING GOING GOING 07070707" << std::endl;
 		DiscordCoreAPI::Globals::weveQuit.test_and_set();
 	}
 
 	bool DiscordCoreClient::instantiateWebSockets() {
 		GatewayBotData gatewayData = this->getGateWayBot();
-		std::cout << "WERE GOING GOING GOING 07070707" << std::endl;
 		if (gatewayData.url == "") {
 			if (this->loggingOptions.logGeneralErrorMessages) {
 				std::cout << shiftToBrightRed() << "Failed to collect the connection URL! Closing! Did you remember to properly set your bot token?" << reset() << std::endl;
@@ -161,9 +158,7 @@ namespace DiscordCoreAPI {
 						&this->eventManager, this, &this->commandController, &Globals::doWeQuit, this->loggingOptions.logWebSocketSuccessMessages,
 						this->loggingOptions.logWebSocketErrorMessages, x * shardsPerGroup + y + this->shardingOptions.startingShard, this->shardingOptions.totalNumberOfShards },
 					WebSocketDeleter{});
-				std::cout << "WERE GOING GOING GOING 09090909" << std::endl;
 				this->webSocketMap.insert_or_assign(std::to_string(x * shardsPerGroup + y + this->shardingOptions.startingShard), std::move(thePtr));
-				std::cout << "WERE GOING GOING GOING 101010101010101" << std::endl;
 			}
 			if (shardGroupCount > 1 && x < shardGroupCount - 1) {
 				if (this->loggingOptions.logGeneralSuccessMessages) {
@@ -181,7 +176,6 @@ namespace DiscordCoreAPI {
 				TimeElapsedHandler onSend = [=, this](void) -> void {
 					value.function(this);
 				};
-				std::cout << "WERE GOING GOING GOING 080808" << std::endl;
 				this->threadIds.push_back(this->threadPool.storeThread(onSend, value.intervalInMs));
 			} else {
 				ThreadPool::executeFunctionAfterTimePeriod(value.function, value.intervalInMs, false, this);
@@ -206,13 +200,10 @@ namespace DiscordCoreAPI {
 	}
 
 	void signalHandler(int32_t) {
-		std::cout << "WERE GOING GOING GOING 0101" << std::endl;
 		std::atomic_signal_fence(std::memory_order_seq_cst);
-		std::cout << "WERE GOING GOING GOING 020202" << std::endl;
 		DiscordCoreAPI::Globals::doWeQuit.store(true);
 		while (!DiscordCoreAPI::Globals::weveQuit.test()) {
 			std::this_thread::sleep_for(std::chrono::milliseconds{ 1 });
 		}
-		std::cout << "WERE GOING GOING GOING 030303" << std::endl;
 	}
 }

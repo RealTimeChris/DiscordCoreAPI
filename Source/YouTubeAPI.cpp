@@ -396,9 +396,8 @@ namespace DiscordCoreInternal {
 	}
 
 	YouTubeAPI::YouTubeAPI(const uint64_t& guildIdNew, DiscordCoreInternal::HttpClient* httpClient) : requestBuilder(httpClient) {
-		this->doWePrintWebSocketError = httpClient->getDoWePrintWebSocketError();
-		this->doWePrintFFMPEGSuccess = httpClient->getDoWePrintFFMPEGSuccess();
-		this->doWePrintFFMPEGError = httpClient->getDoWePrintFFMPEGError();
+		this->doWePrintSuccess = httpClient->getDoWePrintFFMPEGSuccess();
+		this->doWePrintError = httpClient->getDoWePrintFFMPEGError();
 		this->guildId = guildIdNew;
 	}
 
@@ -474,7 +473,7 @@ namespace DiscordCoreInternal {
 	}
 
 	void YouTubeAPI::downloadAndStreamAudio(const DiscordCoreAPI::Song& newSong, YouTubeAPI* youtubeAPI, std::stop_token theToken, int32_t currentRecursionDepth) {
-		DiscordCoreInternal::WebSocketSSLClient streamSocket{ newSong.finalDownloadUrls[0].urlPath, "443", this->doWePrintWebSocketError, this->maxBufferSize };
+		DiscordCoreInternal::WebSocketSSLClient streamSocket{ newSong.finalDownloadUrls[0].urlPath, "443", this->doWePrintError, this->maxBufferSize };
 		bool areWeDoneHeaders{ false };
 		bool haveWeFailed{ false };
 		int64_t remainingDownloadContentLength{ newSong.contentLength };
@@ -490,10 +489,8 @@ namespace DiscordCoreInternal {
 		BuildAudioDecoderData dataPackage{};
 		dataPackage.totalFileSize = static_cast<uint64_t>(newSong.contentLength);
 		dataPackage.bufferMaxSize = youtubeAPI->maxBufferSize;
-		dataPackage.doWePrintSuccess = this->doWePrintFFMPEGSuccess;
-		dataPackage.doWePrintError = this->doWePrintFFMPEGError;
-		std::unique_ptr<AudioDecoder> audioDecoder = std::make_unique<AudioDecoder>(dataPackage);
-		AudioEncoder audioEncoder{};
+		std::unique_ptr<AudioDecoder> audioDecoder = std::make_unique<AudioDecoder>(dataPackage, this->doWePrintSuccess, this->doWePrintError);
+		AudioEncoder audioEncoder = AudioEncoder();
 		streamSocket.writeData(newSong.finalDownloadUrls[1].urlPath);
 		if (!streamSocket.processIO(ms600)) {
 			haveWeFailed = true;

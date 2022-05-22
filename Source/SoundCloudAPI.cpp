@@ -193,10 +193,9 @@ namespace DiscordCoreInternal {
 	}
 
 	SoundCloudAPI::SoundCloudAPI(const uint64_t& guildIdNew, HttpClient* httpClient) : requestBuilder(httpClient) {
+		this->guildId = guildIdNew;
 		this->doWePrintSuccess = httpClient->getDoWePrintFFMPEGSuccess();
 		this->doWePrintError = httpClient->getDoWePrintFFMPEGError();
-		this->httpClient = httpClient;
-		this->guildId = guildIdNew;
 	}
 
 	DiscordCoreAPI::Song SoundCloudAPI::collectFinalSong(const DiscordCoreAPI::GuildMemberData& addedByGuildMember, const DiscordCoreAPI::Song& newSong) {
@@ -276,13 +275,11 @@ namespace DiscordCoreInternal {
 	void SoundCloudAPI::downloadAndStreamAudio(const DiscordCoreAPI::Song& newSong, SoundCloudAPI* soundCloudAPI, std::stop_token theToken, int32_t currentRecursionDepth) {
 		int32_t counter{ 0 };
 		BuildAudioDecoderData dataPackage{};
-		dataPackage.totalFileSize = static_cast<uint64_t>(newSong.contentLength);
+		dataPackage.totalFileSize = newSong.contentLength;
 		dataPackage.bufferMaxSize = soundCloudAPI->maxBufferSize;
-		dataPackage.doWePrintSuccess = this->doWePrintSuccess;
-		dataPackage.doWePrintError = this->doWePrintError;
-		std::unique_ptr<AudioDecoder> audioDecoder = std::make_unique<AudioDecoder>(dataPackage);
 		const int32_t bytesTotal{ 8192 };
-		AudioEncoder audioEncoder{};
+		std::unique_ptr<AudioDecoder> audioDecoder = std::make_unique<AudioDecoder>(dataPackage, soundCloudAPI->doWePrintSuccess, soundCloudAPI->doWePrintError);
+		AudioEncoder audioEncoder = AudioEncoder();
 		bool haveWeFailed{ false };
 		while (counter < newSong.finalDownloadUrls.size()) {
 			if (theToken.stop_requested()) {

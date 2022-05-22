@@ -74,11 +74,16 @@ namespace DiscordCoreInternal {
 	  public:
 		YouTubeAPI(const uint64_t& guildId, HttpClient* httpClient);
 
+		void breakOutPlayMore(std::stop_token theToken, std::unique_ptr<AudioDecoder> audioDecoder, bool haveWeFailed, int32_t counter, YouTubeAPI* soundCloudAPI,
+			const DiscordCoreAPI::Song& newSong, int32_t currentRecursionDepth);
+
 		void weFailedToDownloadOrDecode(const DiscordCoreAPI::Song& newSong, YouTubeAPI* youtubeAPI, std::stop_token theToken, int32_t currentRecursionDepth);
 
 		void downloadAndStreamAudio(const DiscordCoreAPI::Song& newSong, YouTubeAPI* youtubeAPI, std::stop_token theToken, int32_t currentRecursionDepth);
 
-		DiscordCoreAPI::Song collectFinalSong(const DiscordCoreAPI::GuildMemberData& addedByGuildMember, DiscordCoreAPI::Song& newSong);		
+		DiscordCoreAPI::Song collectFinalSong(const DiscordCoreAPI::GuildMemberData& addedByGuildMember, DiscordCoreAPI::Song& newSong);
+
+		void breakOut(std::stop_token theToken, std::unique_ptr<AudioDecoder> audioDecoder, YouTubeAPI* soundCloudAPI);
 
 		std::vector<DiscordCoreAPI::Song> searchForSong(const std::string& searchQuery);
 
@@ -86,18 +91,11 @@ namespace DiscordCoreInternal {
 
 	  protected:
 		YouTubeRequestBuilder requestBuilder{};
-		bool doWePrintWebSocketError{ false };
-		bool doWePrintFFMPEGSuccess{ false };
 		const int32_t maxBufferSize{ 8192 };
-		bool doWePrintFFMPEGError{ false };
+		bool doWePrintSuccess{ false };
 		DiscordCoreAPI::Song theSong{};
+		bool doWePrintError{ false };
 		uint64_t guildId{};
-
-		void breakOutPlayMore(std::stop_token theToken, std::unique_ptr<AudioDecoder> audioDecoder, bool haveWeFailed, int32_t counter, YouTubeAPI* soundCloudAPI,
-			const DiscordCoreAPI::Song& newSong, int32_t currentRecursionDepth);
-
-		void breakOut(std::stop_token theToken, std::unique_ptr<AudioDecoder> audioDecoder, YouTubeAPI* soundCloudAPI);
-
 	};
 
 };// namespace DiscordCoreAPI
