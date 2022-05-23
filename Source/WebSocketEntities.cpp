@@ -78,6 +78,7 @@ namespace DiscordCoreInternal {
 		try {
 			DiscordCoreAPI::StopWatch stopWatch{ std::chrono::milliseconds{ 5500 } };
 			while (!this->areWeConnected.load() && !(dataToSend.contains("op") && (dataToSend["op"] == 2 || dataToSend["op"] == 6))) {
+				std::this_thread::sleep_for(std::chrono::milliseconds{ 1 });
 				if (stopWatch.hasTimePassed()) {
 					return;
 				}
@@ -106,7 +107,7 @@ namespace DiscordCoreInternal {
 	uint64_t BaseSocketAgent::createHeader(unsigned char* outBuffer, uint64_t sendlength, WebSocketOpCode opCode) noexcept {
 		try {
 			uint64_t size{ 0 };
-			outBuffer[size++] = webSocketFinishBit | static_cast<unsigned char>(opCode);
+			outBuffer[size++] = ~webSocketFinishBit | static_cast<unsigned char>(opCode);
 
 			if (sendlength <= webSocketMaxPayloadLengthSmall) {
 				outBuffer[size++] = static_cast<unsigned char>(sendlength);
@@ -210,6 +211,7 @@ namespace DiscordCoreInternal {
 					}
 					this->handleBuffer();
 				}
+				std::cout << "WERE HERE THIS IS IT!" << this->webSocket->getInputBuffer() << std::endl;
 			}
 		} catch (...) {
 			if (this->printErrorMessages) {
@@ -221,13 +223,19 @@ namespace DiscordCoreInternal {
 
 	void BaseSocketAgent::onMessageReceived() noexcept {
 		try {
-			std::string messageNew = this->webSocket->getInputBuffer();
+			std::cout << "WERE GONE GONE GONE 0910101" << std::endl;
+			auto theMessageNew = this->webSocket->getInputBuffer();
 			this->webSocket->getInputBuffer().clear();
+			std::cout << "WERE GONE GONE GONE 03030303" << theMessageNew << std::endl;
 			nlohmann::json payload{};
-
+			std::cout << "WERE GONE GONE GONE 04040404" << std::endl;
 			try {
-				payload = this->erlPacker.parseEtfToJson(&messageNew);
+				payload = this->erlPacker.parseEtfToJson(&theMessageNew);
+				std::cout << "WERE GONE GONE GONE 05050505" << payload << std::endl;
 			} catch (...) {
+				if (this->printErrorMessages) {
+					DiscordCoreAPI::reportException("BaseSocketAgent::onMessageReceived::ErlPacker::parseEtfToJson()");
+				}				
 				return;
 			}
 
@@ -843,11 +851,10 @@ namespace DiscordCoreInternal {
 	bool BaseSocketAgent::parseHeader() noexcept {
 		try {
 			std::string newVector = this->webSocket->getInputBuffer();
-			std::cout << "WERE HERE THIS IS IT!" << newVector << std::endl;
-			if (this->webSocket->getInputBuffer().size() < 4) {
+			if (this->webSocket->getInputBuffer().size() < 4 || (this->webSocket->getInputBuffer()[1] & webSocketMaskBit) ) {
 				return false;
 			} else {
-				switch (static_cast<WebSocketOpCode>(this->webSocket->getInputBuffer()[0] & ~webSocketMaskBit)) {
+				switch (static_cast<WebSocketOpCode>(this->webSocket->getInputBuffer()[0] & ~webSocketFinishBit)) {
 					std::cout << "WERE HERE THIS IS IT!" << newVector << std::endl;
 					case WebSocketOpCode::Op_Continuation:
 					case WebSocketOpCode::Op_Text:
@@ -857,11 +864,13 @@ namespace DiscordCoreInternal {
 						uint8_t length01 = this->webSocket->getInputBuffer()[1];
 						int32_t payloadStartOffset = 2;
 						if (length01 & webSocketMaskBit) {
+							std::cout << "WERE HERE THIS IS IT! 050505" << newVector << std::endl;
 							return false;
 						}
 						uint64_t length02 = length01;
 						if (length01 == webSocketPayloadLengthMagicLarge) {
 							if (this->webSocket->getInputBuffer().size() < 8) {
+								std::cout << "WERE HERE THIS IS IT! 040404" << newVector << std::endl;
 								return false;
 							}
 							uint8_t length03 = this->webSocket->getInputBuffer()[2];
@@ -870,6 +879,7 @@ namespace DiscordCoreInternal {
 							payloadStartOffset += 2;
 						} else if (length01 == webSocketPayloadLengthMagicHuge) {
 							if (this->webSocket->getInputBuffer().size() < 10) {
+								std::cout << "WERE HERE THIS IS IT! 03030303" << newVector << std::endl;
 								return false;
 							}
 							length02 = 0;
@@ -880,14 +890,16 @@ namespace DiscordCoreInternal {
 							payloadStartOffset += 8;
 						}
 						if (this->webSocket->getInputBuffer().size() < payloadStartOffset + length02) {
+							std::cout << "WERE HERE THIS IS IT! 020202" << newVector << std::endl;
 							return false;
 						} else {
 							std::string newerVector{};
 							newerVector.reserve(length02);
+							std::cout << "WERE HERE THIS IS IT! 0708080808" << newVector << std::endl;
 							for (uint32_t x = payloadStartOffset; x < payloadStartOffset + length02; x += 1) {
 								newerVector.push_back(this->webSocket->getInputBuffer()[x]);
 							}
-							this->webSocket->getInputBuffer() = std::move(newerVector);
+							this->webSocket->getInputBuffer().erase(this->webSocket->getInputBuffer().begin(), this->webSocket->getInputBuffer().begin() + 6);
 							this->onMessageReceived();
 							this->webSocket->getInputBuffer().insert(this->webSocket->getInputBuffer().begin(), newVector.begin() + payloadStartOffset + length02, newVector.end());
 						}
