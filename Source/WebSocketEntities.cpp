@@ -815,6 +815,7 @@ namespace DiscordCoreInternal {
 							std::vector<std::string> status = tokenize(statusLine, " ");
 							if (status.size() >= 3 && status[1] == "101") {
 								this->state = WebSocketState::Connected;
+								std::cout << "THE RESPONSE: " << this->webSocket->getInputBuffer() << std::endl;
 								this->webSocket->getInputBuffer().clear();
 								this->webSocket->getInputBuffer().insert(this->webSocket->getInputBuffer().end(), newVector.begin(), newVector.end());
 								this->parseHeader();

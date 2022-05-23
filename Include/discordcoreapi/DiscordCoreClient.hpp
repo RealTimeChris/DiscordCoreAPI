@@ -52,15 +52,6 @@ namespace DiscordCoreAPI {
 
 	extern "C" void signalHandler(int32_t);
 
-	struct DiscordCoreAPI_Dll WebSocketDeleter {
-		void operator()(DiscordCoreInternal::BaseSocketAgent* other) {
-			if (other != nullptr) {
-				delete other;
-				other = nullptr;
-			}
-		}
-	};
-
 	using VoiceConnectionMap = std::unordered_map<uint64_t, std::unique_ptr<VoiceConnection>>;
 
 	using SoundCloudAPIMap = std::unordered_map<uint64_t, std::unique_ptr<DiscordCoreInternal::SoundCloudAPI>>;
@@ -116,7 +107,7 @@ namespace DiscordCoreAPI {
 		~DiscordCoreClient();
 
 	  protected:
-		std::unordered_map<std::string, std::unique_ptr<DiscordCoreInternal::BaseSocketAgent, WebSocketDeleter>> webSocketMap{};
+		std::unordered_map<std::string, std::unique_ptr<DiscordCoreInternal::BaseSocketAgent>> webSocketMap{};
 		std::unique_ptr<DiscordCoreInternal::HttpClient> httpClient{};
 		std::vector<RepeatedFunctionData> functionsToExecute{};
 

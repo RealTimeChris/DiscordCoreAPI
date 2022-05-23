@@ -153,11 +153,9 @@ namespace DiscordCoreAPI {
 							std::to_string(this->shardingOptions.totalNumberOfShards) + std::string(" Shards total across all processes.)")
 							  << std::endl;
 				}
-				auto thePtr = std::unique_ptr<DiscordCoreInternal::BaseSocketAgent, WebSocketDeleter>(
-					new DiscordCoreInternal::BaseSocketAgent{ this->botToken, gatewayData.url.substr(gatewayData.url.find("wss://") + std::string("wss://").size()),
-						&this->eventManager, this, &this->commandController, &Globals::doWeQuit, this->loggingOptions.logWebSocketSuccessMessages,
-						this->loggingOptions.logWebSocketErrorMessages, x * shardsPerGroup + y + this->shardingOptions.startingShard, this->shardingOptions.totalNumberOfShards },
-					WebSocketDeleter{});
+				auto thePtr = std::make_unique<DiscordCoreInternal::BaseSocketAgent>(this->botToken, "127.0.0.1", &this->eventManager, this, &this->commandController,
+					&Globals::doWeQuit, this->loggingOptions.logWebSocketSuccessMessages, this->loggingOptions.logWebSocketErrorMessages,
+					x * shardsPerGroup + y + this->shardingOptions.startingShard, this->shardingOptions.totalNumberOfShards);
 				this->webSocketMap.insert_or_assign(std::to_string(x * shardsPerGroup + y + this->shardingOptions.startingShard), std::move(thePtr));
 			}
 			if (shardGroupCount > 1 && x < shardGroupCount - 1) {
