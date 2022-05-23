@@ -1,7 +1,6 @@
 /*
 *
 	Copyright 2021, 2022 Chris M. (RealTimeChris)
-
 	This file is part of DiscordCoreAPI.
 	DiscordCoreAPI is free software: you can redistribute it and/or modify it under the terms of the GNU
 	General Public License as published by the Free Software Foundation, either version 3 of the License,
@@ -10,14 +9,13 @@
 	even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 	You should have received a copy of the GNU General Public License along with DiscordCoreAPI.
 	If not, see <https://www.gnu.org/licenses/>.
-
 */
 /// WebSocketEntities.cpp - Source file for the webSocket related classes and structs.
 /// May 13, 2021
 /// Chris M.
 /// https://discordcoreapi.com
 /// \file WebSocketEntities.cpp
-
+/// 
 #include <discordcoreapi/WebSocketEntities.hpp>
 #include <discordcoreapi/JSONIfier.hpp>
 #include <discordcoreapi/EventManager.hpp>
@@ -78,7 +76,6 @@ namespace DiscordCoreInternal {
 		try {
 			DiscordCoreAPI::StopWatch stopWatch{ std::chrono::milliseconds{ 5500 } };
 			while (!this->areWeConnected.load() && !(dataToSend.contains("op") && (dataToSend["op"] == 2 || dataToSend["op"] == 6))) {
-				std::this_thread::sleep_for(std::chrono::milliseconds{ 1 });
 				if (stopWatch.hasTimePassed()) {
 					return;
 				}
@@ -103,11 +100,10 @@ namespace DiscordCoreInternal {
 			this->onClosedExternal();
 		}
 	}
-
 	uint64_t BaseSocketAgent::createHeader(unsigned char* outBuffer, uint64_t sendlength, WebSocketOpCode opCode) noexcept {
 		try {
 			uint64_t size{ 0 };
-			outBuffer[size++] = ~webSocketFinishBit | static_cast<unsigned char>(opCode);
+			outBuffer[size++] = webSocketFinishBit | static_cast<unsigned char>(opCode);
 
 			if (sendlength <= webSocketMaxPayloadLengthSmall) {
 				outBuffer[size++] = static_cast<unsigned char>(sendlength);
@@ -122,13 +118,11 @@ namespace DiscordCoreInternal {
 					outBuffer[size++] = ((length >> x * 8) & 0xff);
 				}
 			}
-
 			outBuffer[1] |= webSocketMaskBit;
 			outBuffer[size++] = 0;
 			outBuffer[size++] = 0;
 			outBuffer[size++] = 0;
 			outBuffer[size++] = 0;
-
 			return size;
 		} catch (...) {
 			if (this->printErrorMessages) {
@@ -211,7 +205,6 @@ namespace DiscordCoreInternal {
 					}
 					this->handleBuffer();
 				}
-				std::cout << "WERE HERE THIS IS IT!" << this->webSocket->getInputBuffer() << std::endl;
 			}
 		} catch (...) {
 			if (this->printErrorMessages) {
@@ -223,19 +216,13 @@ namespace DiscordCoreInternal {
 
 	void BaseSocketAgent::onMessageReceived() noexcept {
 		try {
-			std::cout << "WERE GONE GONE GONE 0910101" << std::endl;
-			auto theMessageNew = this->webSocket->getInputBuffer();
+			std::string messageNew = this->webSocket->getInputBuffer();
 			this->webSocket->getInputBuffer().clear();
-			std::cout << "WERE GONE GONE GONE 03030303" << theMessageNew << std::endl;
 			nlohmann::json payload{};
-			std::cout << "WERE GONE GONE GONE 04040404" << std::endl;
+
 			try {
-				payload = this->erlPacker.parseEtfToJson(&theMessageNew);
-				std::cout << "WERE GONE GONE GONE 05050505" << payload << std::endl;
+				payload = this->erlPacker.parseEtfToJson(&messageNew);
 			} catch (...) {
-				if (this->printErrorMessages) {
-					DiscordCoreAPI::reportException("BaseSocketAgent::onMessageReceived::ErlPacker::parseEtfToJson()");
-				}				
 				return;
 			}
 
@@ -256,7 +243,6 @@ namespace DiscordCoreInternal {
 					this->areWeCollectingData = false;
 				}
 			}
-
 			if (this->areWeCollectingData && payload["t"] == "VOICE_STATE_UPDATE" && !this->stateUpdateCollected &&
 				payload["d"]["member"]["user"]["id"] == std::to_string(this->userId)) {
 				if (!this->stateUpdateCollected && !this->serverUpdateCollected) {
@@ -273,17 +259,14 @@ namespace DiscordCoreInternal {
 					this->areWeCollectingData = false;
 				}
 			}
-
 			if (payload["s"] >= 0) {
 				this->lastNumberReceived = payload["s"];
 			}
-
 			if (payload["t"] == "RESUMED") {
 				this->areWeConnected.store(true);
 				this->currentReconnectTries = 0;
 				this->areWeReadyToConnectEvent.set();
 			}
-
 			if (payload["t"] == "READY") {
 				this->areWeConnected.store(true);
 				this->sessionId = payload["d"]["session_id"];
@@ -301,11 +284,9 @@ namespace DiscordCoreInternal {
 				this->areWeReadyToConnectEvent.set();
 				this->areWeAuthenticated = true;
 			}
-
 			if (payload["op"] == 1) {
 				this->sendHeartBeat();
 			}
-
 			if (payload["op"] == 7) {
 				if (this->printSuccessMessages) {
 					std::cout << DiscordCoreAPI::shiftToBrightBlue()
@@ -318,7 +299,6 @@ namespace DiscordCoreInternal {
 				this->webSocket.reset(nullptr);
 				this->connect();
 			}
-
 			if (payload["op"] == 9) {
 				if (this->printSuccessMessages) {
 					std::cout << DiscordCoreAPI::shiftToBrightBlue()
@@ -341,7 +321,6 @@ namespace DiscordCoreInternal {
 					this->connect();
 				}
 			}
-
 			if (payload["op"] == 10) {
 				this->heartbeatInterval = payload["d"]["heartbeat_interval"];
 				this->areWeHeartBeating = false;
@@ -358,7 +337,6 @@ namespace DiscordCoreInternal {
 			if (payload["op"] == 11) {
 				this->haveWeReceivedHeartbeatAck = true;
 			}
-
 			if (payload.contains("d") && !payload["d"].is_null() && payload.contains("t") && !payload["t"].is_null()) {
 				if (payload["t"] == "APPLICATION_COMMAND_CREATE") {
 					std::unique_ptr<DiscordCoreAPI::OnApplicationCommandCreationData> dataPackage{ std::make_unique<DiscordCoreAPI::OnApplicationCommandCreationData>() };
@@ -851,10 +829,11 @@ namespace DiscordCoreInternal {
 	bool BaseSocketAgent::parseHeader() noexcept {
 		try {
 			std::string newVector = this->webSocket->getInputBuffer();
-			if (this->webSocket->getInputBuffer().size() < 4 || (this->webSocket->getInputBuffer()[1] & webSocketMaskBit) ) {
+			std::cout << "WERE HERE THIS IS IT!" << newVector << std::endl;
+			if (this->webSocket->getInputBuffer().size() < 4) {
 				return false;
 			} else {
-				switch (static_cast<WebSocketOpCode>(this->webSocket->getInputBuffer()[0] & ~webSocketFinishBit)) {
+				switch (static_cast<WebSocketOpCode>(this->webSocket->getInputBuffer()[0] & ~webSocketMaskBit)) {
 					std::cout << "WERE HERE THIS IS IT!" << newVector << std::endl;
 					case WebSocketOpCode::Op_Continuation:
 					case WebSocketOpCode::Op_Text:
@@ -864,13 +843,11 @@ namespace DiscordCoreInternal {
 						uint8_t length01 = this->webSocket->getInputBuffer()[1];
 						int32_t payloadStartOffset = 2;
 						if (length01 & webSocketMaskBit) {
-							std::cout << "WERE HERE THIS IS IT! 050505" << newVector << std::endl;
 							return false;
 						}
 						uint64_t length02 = length01;
 						if (length01 == webSocketPayloadLengthMagicLarge) {
 							if (this->webSocket->getInputBuffer().size() < 8) {
-								std::cout << "WERE HERE THIS IS IT! 040404" << newVector << std::endl;
 								return false;
 							}
 							uint8_t length03 = this->webSocket->getInputBuffer()[2];
@@ -879,7 +856,6 @@ namespace DiscordCoreInternal {
 							payloadStartOffset += 2;
 						} else if (length01 == webSocketPayloadLengthMagicHuge) {
 							if (this->webSocket->getInputBuffer().size() < 10) {
-								std::cout << "WERE HERE THIS IS IT! 03030303" << newVector << std::endl;
 								return false;
 							}
 							length02 = 0;
@@ -890,16 +866,14 @@ namespace DiscordCoreInternal {
 							payloadStartOffset += 8;
 						}
 						if (this->webSocket->getInputBuffer().size() < payloadStartOffset + length02) {
-							std::cout << "WERE HERE THIS IS IT! 020202" << newVector << std::endl;
 							return false;
 						} else {
 							std::string newerVector{};
 							newerVector.reserve(length02);
-							std::cout << "WERE HERE THIS IS IT! 0708080808" << newVector << std::endl;
 							for (uint32_t x = payloadStartOffset; x < payloadStartOffset + length02; x += 1) {
 								newerVector.push_back(this->webSocket->getInputBuffer()[x]);
 							}
-							this->webSocket->getInputBuffer().erase(this->webSocket->getInputBuffer().begin(), this->webSocket->getInputBuffer().begin() + 6);
+							this->webSocket->getInputBuffer() = std::move(newerVector);
 							this->onMessageReceived();
 							this->webSocket->getInputBuffer().insert(this->webSocket->getInputBuffer().begin(), newVector.begin() + payloadStartOffset + length02, newVector.end());
 						}
@@ -975,7 +949,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	VoiceSocketAgent::VoiceSocketAgent(VoiceConnectInitData initDataNew, BaseSocketAgent* baseBaseSocketAgentNew, bool printMessagesNew) noexcept {
+	VoiceSocketAgent::VoiceSocketAgent(VoiceConnectInitData initDataNew, BaseSocketAgent * baseBaseSocketAgentNew, bool printMessagesNew) noexcept {
 		this->baseSocketAgent = baseBaseSocketAgentNew;
 		this->voiceConnectInitData = initDataNew;
 		this->printSuccessMessages = baseBaseSocketAgentNew->printSuccessMessages;
@@ -989,7 +963,7 @@ namespace DiscordCoreInternal {
 		});
 	}
 
-	void VoiceSocketAgent::sendVoiceData(std::string& responseData) noexcept {
+	void VoiceSocketAgent::sendVoiceData(std::string & responseData) noexcept {
 		try {
 			if (responseData.size() == 0) {
 				if (this->printErrorMessages) {
@@ -1253,7 +1227,7 @@ namespace DiscordCoreInternal {
 			this->onClosedExternal();
 		}
 	}
-
+	
 	void VoiceSocketAgent::handleBuffer() noexcept {
 		try {
 			std::string newVector{};

@@ -51,7 +51,9 @@ namespace DiscordCoreInternal {
 		ErlPackBuffer buffer{ dataToParse };
 		uint8_t version{};
 		ErlPacker::readBits(buffer, version);
-		return ErlPacker::singleValueETFToJson(buffer);
+		auto returnValue = ErlPacker::singleValueETFToJson(buffer);
+		std::cout << returnValue.dump();
+		return returnValue;
 	}
 
 	template<typename ReturnType> void ErlPacker::etfByteOrder(ReturnType x, ReturnType& theValue) {
