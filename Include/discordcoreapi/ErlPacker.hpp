@@ -114,8 +114,6 @@ namespace DiscordCoreInternal {
 
 		void appendDouble(ErlPackBuffer&, double&);
 
-		void appendString(ErlPackBuffer& buffer, std::vector<uint8_t>& bufferNewer);
-
 		void appendBinary(ErlPackBuffer&, const std::vector<uint8_t>&, uint32_t&);
 
 		void appendNilExt(ErlPackBuffer&);

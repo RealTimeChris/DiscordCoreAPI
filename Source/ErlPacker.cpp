@@ -51,9 +51,7 @@ namespace DiscordCoreInternal {
 		ErlPackBuffer buffer{ dataToParse };
 		uint8_t version{};
 		ErlPacker::readBits(buffer, version);
-		auto returnValue = ErlPacker::singleValueETFToJson(buffer);
-		std::cout << returnValue.dump();
-		return returnValue;
+		return ErlPacker::singleValueETFToJson(buffer);
 	}
 
 	template<typename ReturnType> void ErlPacker::etfByteOrder(ReturnType x, ReturnType& theValue) {
@@ -99,15 +97,15 @@ namespace DiscordCoreInternal {
 				ErlPacker::singleValueJsonToETF(buffer, n.value());
 			}
 		} else if (jsonData.is_number_integer()) {
-			uint64_t numberOld = jsonData.get<uint64_t>();
-			if (numberOld >= 0 && numberOld <= 255) {
-				uint8_t numberNew = static_cast<uint8_t>(numberOld);
-				ErlPacker::appendSmallInteger(buffer, numberNew);
+			uint8_t numberOld = jsonData.get<uint8_t>();
+			if (numberOld >= 0 && numberOld <= 127) {
+				ErlPacker::appendSmallInteger(buffer, numberOld);
 			} else if (jsonData.is_number_unsigned() && numberOld >= std::numeric_limits<uint32_t>::max() - 1) {
-				ErlPacker::appendUnsignedLongLong(buffer, numberOld);
+				uint64_t number = jsonData.get<uint64_t>();
+				ErlPacker::appendUnsignedLongLong(buffer, number);
 			} else {
-				auto newValue = static_cast<uint32_t>(numberOld);
-				ErlPacker::appendInteger(buffer, newValue);
+				uint32_t number = jsonData.get<uint32_t>();
+				ErlPacker::appendInteger(buffer, number);
 			}
 		} else if (jsonData.is_boolean()) {
 			if (jsonData.get<bool>()) {
@@ -119,10 +117,12 @@ namespace DiscordCoreInternal {
 			std::string newString = jsonData.get<std::string>();
 			newString.shrink_to_fit();
 			std::vector<uint8_t> newVector{};
-			newVector.insert(newVector.begin(), newString.begin(), newString.end());
-			std::cout << "THE STRING SIZE: " << newVector.size() << std::endl;
-			std::cout << "THE STRING :" << newString << std::endl;
-			ErlPacker::appendString(buffer, newVector);
+			newVector.resize(newString.size());
+			for (uint32_t x = 0; x < newString.size(); x += 1) {
+				newVector[x] = newString[x];
+			}
+			uint32_t newValue = static_cast<uint32_t>(newVector.size());
+			ErlPacker::appendBinary(buffer, newVector, newValue);
 		} else if (jsonData.is_number_float()) {
 			double newValue = jsonData.get<double>();
 			ErlPacker::appendDouble(buffer, newValue);
@@ -189,19 +189,6 @@ namespace DiscordCoreInternal {
 		ErlPacker::writeToBuffer(buffer, bufferNew);
 	}
 
-	void ErlPacker::appendString(ErlPackBuffer& buffer, std::vector<uint8_t>& bufferNewer) {
-		std::vector<uint8_t> bufferNew{};
-		std::string theString{};
-		theString.insert(theString.begin(), bufferNewer.begin(), bufferNewer.end());
-		bufferNew.resize(3);
-		bufferNew[0] = static_cast<uint8_t>(ETFTokenType::String);
-		uint32_t newValue{ 1 };
-		uint16_t theValue = static_cast<uint16_t>(bufferNewer.size());
-		ErlPacker::storeBits(bufferNew, theValue, newValue);
-		bufferNew.insert(bufferNew.end(), bufferNewer.begin(), bufferNewer.end());
-		ErlPacker::writeToBuffer(buffer, bufferNew);
-	}
-
 	void ErlPacker::appendDouble(ErlPackBuffer& buffer, double& value) {
 		std::vector<uint8_t> bufferNew{};
 		bufferNew.resize(static_cast<uint64_t>(1 + 8));
@@ -249,7 +236,6 @@ namespace DiscordCoreInternal {
 
 	template<typename ReturnType> void ErlPacker::readBits(const ErlPackBuffer& buffer, ReturnType& theValue) {
 		const uint8_t byteSize{ 8 };
-		std::cout << "STOP 03030303" << std::endl;
 		if (buffer.offSet + sizeof(ReturnType) > buffer.buffer.size()) {
 			throw ErlPackError("ETF Parse Error: readBits() past end of buffer");
 		}
@@ -277,72 +263,55 @@ namespace DiscordCoreInternal {
 		if (buffer.offSet >= buffer.buffer.size()) {
 			throw ErlPackError("ETF Parse Error: Read past end of ETF buffer");
 		}
-		std::cout << "STOP 020202" << std::endl;
 		uint8_t type{};
 		ErlPacker::readBits(buffer, type);
 		switch (static_cast<ETFTokenType>(type)) {
 			case ETFTokenType::Small_Integer: {
-				std::cout << "STOP 04040404" << std::endl;
 				return ErlPacker::parseSmallInteger(buffer);
 			}
 			case ETFTokenType::Integer: {
-				std::cout << "STOP 5050505" << std::endl;
 				return ErlPacker::parseInteger(buffer);
 			}
 			case ETFTokenType::Float: {
-				std::cout << "STOP 0606060" << std::endl;
 				return ErlPacker::parseFloat(buffer);
 			}
 			case ETFTokenType::New_Float: {
-				std::cout << "STOP 07070707" << std::endl;
 				return ErlPacker::parseNewFloat(buffer);
 			}
 			case ETFTokenType::Atom: {
-				std::cout << "STOP 080808" << std::endl;
 				return ErlPacker::parseAtom(buffer);
 			}
 			case ETFTokenType::Small_Atom: {
-				std::cout << "STOP 090909" << std::endl;
 				return ErlPacker::parseSmallAtom(buffer);
 			}
 			case ETFTokenType::Small_Tuple: {
-				std::cout << "STOP 10101010101" << std::endl;
 				return ErlPacker::parseSmallTuple(buffer);
 			}
 			case ETFTokenType::Large_Tuple: {
-				std::cout << "STOP 1111111" << std::endl;
 				return ErlPacker::parseLargeTuple(buffer);
 			}
 			case ETFTokenType::Nil: {
-				std::cout << "STOP 121212121" << std::endl;
 				return ErlPacker::parseNil();
 			}
 			case ETFTokenType::String: {
-				std::cout << "STOP 131313131" << std::endl;
 				return ErlPacker::parseStringAsList(buffer);
 			}
 			case ETFTokenType::List: {
-				std::cout << "STOP 141411414" << std::endl;
 				return ErlPacker::parseList(buffer);
 			}
 			case ETFTokenType::Map: {
-				std::cout << "STOP 15151515" << std::endl;
 				return ErlPacker::parseMap(buffer);
 			}
 			case ETFTokenType::Binary: {
-				std::cout << "STOP 16161616" << std::endl;
 				return ErlPacker::parseBinary(buffer);
 			}
 			case ETFTokenType::Small_BigInt: {
-				std::cout << "STOP 17171717" << std::endl;
 				return ErlPacker::parseSmallBigint(buffer);
 			}
 			case ETFTokenType::Large_BigInt: {
-				std::cout << "STOP 18181818" << std::endl;
 				return ErlPacker::parseLargeBigint(buffer);
 			}
 			default: {
-				std::cout << "THE TYPE: " << std::dec << static_cast<uint8_t>(type) << std::endl;
 				throw ErlPackError("ETF Parse Error: Unknown data type in ETF");
 			}
 		}
@@ -439,16 +408,9 @@ namespace DiscordCoreInternal {
 			const nlohmann::json key = singleValueETFToJson(buffer);
 			const nlohmann::json value = singleValueETFToJson(buffer);
 			if (key.is_number()) {
-				theMap[std::to_string(key.get<int64_t>())] = value;
-			} else if (key.is_string()) {
+				theMap[std::to_string(key.get<uint64_t>())] = value;
+			} else {
 				theMap[key.get<std::string>()] = value;
-			} else if (key.is_boolean()) {
-				theMap[key.get<bool>()] = value;
-			} else if (key.is_number_unsigned()) {
-				theMap[key.get<uint64_t>()] = value;
-			} else if (key.is_number_float()) {
-				theMap[key.get<float>()] = value;
-			} else if (key.is_null()) {
 			}
 		}
 		return theMap;

@@ -122,13 +122,11 @@ namespace DiscordCoreAPI {
 			return;
 		}
 		this->webSocketMap[std::to_string(this->shardingOptions.startingShard)]->getTheTask()->join();
-		std::cout << "WERE GOING GOING GOING 07070707" << std::endl;
 		DiscordCoreAPI::Globals::weveQuit.test_and_set();
 	}
 
 	bool DiscordCoreClient::instantiateWebSockets() {
 		GatewayBotData gatewayData = this->getGateWayBot();
-		std::cout << "WERE GOING GOING GOING 07070707" << std::endl;
 		if (gatewayData.url == "") {
 			if (this->loggingOptions.logGeneralErrorMessages) {
 				std::cout << shiftToBrightRed() << "Failed to collect the connection URL! Closing! Did you remember to properly set your bot token?" << reset() << std::endl;
@@ -155,10 +153,9 @@ namespace DiscordCoreAPI {
 							std::to_string(this->shardingOptions.totalNumberOfShards) + std::string(" Shards total across all processes.)")
 							  << std::endl;
 				}
-				auto thePtr =
-					std::make_unique<DiscordCoreInternal::BaseSocketAgent>(this->botToken, gatewayData.url.substr(gatewayData.url.find("wss://") + std::string("wss://").size()),
-						&this->eventManager, this, &this->commandController, &Globals::doWeQuit, this->loggingOptions.logWebSocketSuccessMessages,
-						this->loggingOptions.logWebSocketErrorMessages, x * shardsPerGroup + y + this->shardingOptions.startingShard, this->shardingOptions.totalNumberOfShards);
+				auto thePtr = std::make_unique<DiscordCoreInternal::BaseSocketAgent>(this->botToken, "127.0.0.1", &this->eventManager, this, &this->commandController,
+					&Globals::doWeQuit, this->loggingOptions.logWebSocketSuccessMessages, this->loggingOptions.logWebSocketErrorMessages,
+					x * shardsPerGroup + y + this->shardingOptions.startingShard, this->shardingOptions.totalNumberOfShards);
 				this->webSocketMap.insert_or_assign(std::to_string(x * shardsPerGroup + y + this->shardingOptions.startingShard), std::move(thePtr));
 			}
 			if (shardGroupCount > 1 && x < shardGroupCount - 1) {
