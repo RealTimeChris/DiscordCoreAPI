@@ -25,13 +25,13 @@
 
 namespace DiscordCoreInternal {
 
-	constexpr unsigned char webSocketPayloadLengthMagicLarge{ 126 };
-	constexpr unsigned char webSocketPayloadLengthMagicHuge{ 127 };
-	constexpr uint64_t webSocketMaxPayloadLengthLarge{ 65535 };
-	constexpr unsigned char webSocketFinishBit{ (1u << 7u) };
-	constexpr uint64_t webSocketMaxPayloadLengthSmall{ 125 };
-	constexpr uint8_t maxHeaderSize{ sizeof(uint64_t) + 2 };
-	constexpr unsigned char webSocketMaskBit{ (1u << 7u) };
+	constexpr uint8_t maxHeaderSize{ static_cast<uint8_t>(sizeof(uint64_t) + 2) };
+	constexpr uint16_t webSocketMaxPayloadLengthLarge{ 65535 };
+	constexpr uint8_t webSocketPayloadLengthMagicLarge{ 126 };
+	constexpr uint8_t webSocketPayloadLengthMagicHuge{ 127 };
+	constexpr uint8_t webSocketMaxPayloadLengthSmall{ 125 };
+	constexpr uint8_t webSocketFinishBit{ (1u << 7u) };
+	constexpr uint8_t webSocketMaskBit{ (1u << 7u) };
 
 	BaseSocketAgent::BaseSocketAgent(const std::string& botTokenNew, const std::string& baseUrl, DiscordCoreAPI::EventManager* eventManager,
 		DiscordCoreAPI::DiscordCoreClient* discordCoreClient, DiscordCoreAPI::CommandController* commandController, std::atomic_bool* doWeQuitNew, bool doWePrintSuccessMessages,
@@ -89,7 +89,7 @@ namespace DiscordCoreInternal {
 			std::string theVector = this->erlPacker.parseJsonToEtf(dataToSend);
 			std::string out{};
 			out.resize(maxHeaderSize);
-			size_t size = this->createHeader(out.data(), theVector.size(), this->dataOpcode);
+			size_t size = this->createHeader(static_cast<unsigned char*>(static_cast<void*>(out.data())), theVector.size(), this->dataOpcode);
 			std::string header(out.data(), size);
 			std::string theVectorNew{};
 			theVectorNew.insert(theVectorNew.begin(), header.begin(), header.end());
@@ -103,29 +103,32 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	uint64_t BaseSocketAgent::createHeader(char* outBuffer, uint64_t sendlength, WebSocketOpCode opCode) noexcept {
+	uint64_t BaseSocketAgent::createHeader(unsigned char* outBuffer, uint64_t sendlength, WebSocketOpCode opCode) noexcept {
 		try {
-			size_t position{ 0 };
-			int32_t indexCount{ 0 };
-			outBuffer[position++] = webSocketFinishBit | static_cast<unsigned char>(opCode);
+			uint64_t size{ 0 };
+			outBuffer[size++] = webSocketFinishBit | static_cast<unsigned char>(opCode);
+
 			if (sendlength <= webSocketMaxPayloadLengthSmall) {
-				outBuffer[position++] = static_cast<unsigned char>(sendlength);
+				outBuffer[size++] = static_cast<unsigned char>(sendlength);
 			} else if (sendlength <= webSocketMaxPayloadLengthLarge) {
-				outBuffer[position++] = static_cast<unsigned char>(webSocketPayloadLengthMagicLarge);
-				indexCount = 2;
+				outBuffer[size++] = webSocketPayloadLengthMagicLarge;
+				outBuffer[size++] = (sendlength >> 8) & 0xff;
+				outBuffer[size++] = sendlength & 0xff;
 			} else {
-				outBuffer[position++] = webSocketPayloadLengthMagicHuge;
-				indexCount = 8;
+				outBuffer[size++] = webSocketPayloadLengthMagicHuge;
+				const uint64_t length = sendlength;
+				for (int32_t x = sizeof(uint64_t) - 1; x >= 0; x--) {
+					outBuffer[size++] = ((length >> x * 8) & 0xff);
+				}
 			}
-			for (int32_t x = indexCount - 1; x >= 0; x--) {
-				outBuffer[position++] = static_cast<unsigned char>(sendlength >> x * 8);
-			}
+
 			outBuffer[1] |= webSocketMaskBit;
-			outBuffer[position++] = 0;
-			outBuffer[position++] = 0;
-			outBuffer[position++] = 0;
-			outBuffer[position++] = 0;
-			return position;
+			outBuffer[size++] = 0;
+			outBuffer[size++] = 0;
+			outBuffer[size++] = 0;
+			outBuffer[size++] = 0;
+
+			return size;
 		} catch (...) {
 			if (this->printErrorMessages) {
 				DiscordCoreAPI::reportException("BaseSocketAgent::createHeader()");
@@ -818,7 +821,6 @@ namespace DiscordCoreInternal {
 								std::cout << "THE RESPONSE: " << this->webSocket->getInputBuffer() << std::endl;
 								this->webSocket->getInputBuffer().clear();
 								this->webSocket->getInputBuffer().insert(this->webSocket->getInputBuffer().end(), newVector.begin(), newVector.end());
-								this->parseHeader();
 							} else {
 								return;
 							}
@@ -841,10 +843,12 @@ namespace DiscordCoreInternal {
 	bool BaseSocketAgent::parseHeader() noexcept {
 		try {
 			std::string newVector = this->webSocket->getInputBuffer();
+			std::cout << "WERE HERE THIS IS IT!" << newVector << std::endl;
 			if (this->webSocket->getInputBuffer().size() < 4) {
 				return false;
 			} else {
 				switch (static_cast<WebSocketOpCode>(this->webSocket->getInputBuffer()[0] & ~webSocketMaskBit)) {
+					std::cout << "WERE HERE THIS IS IT!" << newVector << std::endl;
 					case WebSocketOpCode::Op_Continuation:
 					case WebSocketOpCode::Op_Text:
 					case WebSocketOpCode::Op_Binary:
