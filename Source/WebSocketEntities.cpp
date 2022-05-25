@@ -48,9 +48,13 @@ namespace DiscordCoreInternal {
 		this->doWeQuit = doWeQuitNew;
 		this->baseUrl = baseUrl;
 		this->doWeReconnect.set();
+		this->connect();
 		this->theTask = std::make_unique<std::jthread>([this](std::stop_token theToken) {
 			this->run(theToken);
 		});
+		while (!this->areWeConnected.load()) {
+			std::this_thread::sleep_for(std::chrono::milliseconds{ 1 });
+		}
 	}
 
 	BaseSocketAgent::BaseSocketAgent(nullptr_t) noexcept {};
@@ -187,7 +191,6 @@ namespace DiscordCoreInternal {
 
 	void BaseSocketAgent::run(std::stop_token theToken) noexcept {
 		try {
-			this->connect();
 			DiscordCoreAPI::StopWatch stopWatch{ std::chrono::milliseconds{ 0 } };
 			while (!theToken.stop_requested() && !this->doWeQuit->load()) {
 				if (this->heartbeatInterval != 0 && !this->areWeHeartBeating) {

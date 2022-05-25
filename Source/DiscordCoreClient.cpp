@@ -147,7 +147,7 @@ namespace DiscordCoreAPI {
 		for (int32_t x = 0; x < shardGroupCount; x += 1) {
 			for (int32_t y = 0; y < shardsPerGroup; y += 1) {
 				if (this->loggingOptions.logGeneralSuccessMessages) {
-					std::cout << shiftToBrightBlue << "Connecting Shard " + std::to_string(x * shardsPerGroup + y + 1) << " of "
+					std::cout << shiftToBrightBlue() << "Connecting Shard " + std::to_string(x * shardsPerGroup + y + 1) << " of "
 							  << this->shardingOptions.numberOfShardsForThisProcess
 							  << std::string(" Shards for this process. (") + std::to_string(x * shardsPerGroup + y + 1 + this->shardingOptions.startingShard) + " of " +
 							std::to_string(this->shardingOptions.totalNumberOfShards) + std::string(" Shards total across all processes.)")
