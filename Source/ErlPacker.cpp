@@ -424,7 +424,7 @@ namespace DiscordCoreInternal {
 			}
 			const bool isSignBitAvailable = (value & 1ull << 31ull) == 0;
 			if (isSignBitAvailable) {
-				nlohmann::json jsonData = std::to_string(-static_cast<uint32_t>(value));
+				nlohmann::json jsonData = std::to_string(-static_cast<int32_t>(value));
 				return jsonData;
 			}
 		}
