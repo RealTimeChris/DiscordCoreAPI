@@ -43,7 +43,7 @@ namespace DiscordCoreInternal {
 		Pid = 103,
 		Small_Tuple = 104,
 		Large_Tuple = 105,
-		Nil = 106,
+		Nil_Ext = 106,
 		String = 107,
 		List = 108,
 		Binary = 109,
@@ -59,7 +59,7 @@ namespace DiscordCoreInternal {
 		Small_Utf8_Atom = 119
 	};
 
-	struct DiscordCoreAPI_Dll ErlPackBuffer {
+	struct ErlPackBuffer {
 	  public:
 		std::string buffer{};
 
@@ -82,7 +82,7 @@ namespace DiscordCoreInternal {
 		ErlPackBuffer(ErlPackBuffer&) = delete;
 	};
 
-	class DiscordCoreAPI_Dll ErlPacker {
+	class ErlPacker {
 	  public:
 		std::string parseJsonToEtf(const nlohmann::json&);
 
@@ -115,9 +115,9 @@ namespace DiscordCoreInternal {
 
 		void appendNilExt(ErlPackBuffer&);
 
-		void appendListHeader(ErlPackBuffer&, uint32_t&);
+		void appendListHeader(ErlPackBuffer&, uint32_t);
 
-		void appendMapHeader(ErlPackBuffer&, uint32_t&);
+		void appendMapHeader(ErlPackBuffer&, uint32_t);
 
 		template<typename ReturnType> void readBits(const ErlPackBuffer&, ReturnType&);
 
@@ -141,7 +141,7 @@ namespace DiscordCoreInternal {
 
 		nlohmann::json parseTuple(const ErlPackBuffer&, uint32_t&);
 
-		nlohmann::json parseNil();
+		nlohmann::json parseNilExt();
 
 		nlohmann::json parseMap(const ErlPackBuffer&);
 
