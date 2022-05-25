@@ -251,9 +251,8 @@ namespace DiscordCoreInternal {
 	}
 
 	nlohmann::json JSONIFY(const DiscordCoreAPI::UpdatePresenceData& dataPackage) {
-		nlohmann::json activitiesArray{};
 		nlohmann::json data{};
-		data["activities"] = nlohmann::json{};
+		data["d"]["activities"] = nlohmann::json{};
 		for (auto& value: dataPackage.activities) {
 			nlohmann::json dataNew{};
 			if (value.url != "") {
@@ -261,9 +260,8 @@ namespace DiscordCoreInternal {
 			}
 			dataNew["name"] = value.name;
 			dataNew["type"] = value.type;
-			activitiesArray.push_back(dataNew);
+			data["d"]["activities"].push_back(dataNew);
 		}
-		data["d"]["activities"] = activitiesArray;
 		data["d"]["status"] = dataPackage.status;
 		data["d"]["since"] = dataPackage.since;
 		data["d"]["afk"] = dataPackage.afk;
