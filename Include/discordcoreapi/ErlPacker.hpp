@@ -99,15 +99,13 @@ namespace DiscordCoreInternal {
 
 		void appendVersion(ErlPackBuffer&);
 
-		void appendNil(ErlPackBuffer&);
-
 		void appendFalse(ErlPackBuffer&);
 
 		void appendTrue(ErlPackBuffer&);
 
 		void appendSmallIntegerExt(ErlPackBuffer&, uint8_t&);
 
-		void appendInteger(ErlPackBuffer&, uint32_t&);
+		void appendIntegerExt(ErlPackBuffer&, int32_t&);
 
 		void appendUnsignedLongLong(ErlPackBuffer&, uint64_t&);
 
@@ -135,7 +133,7 @@ namespace DiscordCoreInternal {
 
 		nlohmann::json parseSmallIntegerExt(const ErlPackBuffer&);
 
-		nlohmann::json parseInteger(const ErlPackBuffer&);
+		nlohmann::json parseIntegerExt(const ErlPackBuffer&);
 
 		nlohmann::json parseArray(const ErlPackBuffer&, uint32_t&);
 
