@@ -133,10 +133,7 @@ namespace DiscordCoreInternal {
 
 	void ErlPacker::writeToBuffer(ErlPackBuffer& buffer, const std::vector<uint8_t>& bytes) {
 		buffer.buffer.reserve(buffer.offSet + bytes.size());
-		for (uint32_t x = 0; x < bytes.size(); x += 1) {
-			buffer.buffer.push_back(bytes[x]);
-		}
-		buffer.buffer.shrink_to_fit();
+		buffer.buffer.insert(buffer.buffer.end(), bytes.begin(), bytes.end());
 		buffer.offSet += static_cast<uint32_t>(bytes.size());
 	}
 
