@@ -22,22 +22,13 @@
 
 namespace DiscordCoreInternal {
 
-	ErlPackBuffer::ErlPackBuffer(const std::string* theBuffer) {
+	ErlPackBuffer& ErlPackBuffer::operator=(const std::string* theBuffer) {
 		this->buffer.insert(this->buffer.begin(), theBuffer->begin(), theBuffer->end());
+		return *this;
 	};
 
-	ErlPackBuffer& ErlPackBuffer::operator=(ErlPackBuffer&& other) noexcept {
-		if (this != &other) {
-			this->buffer = std::move(other.buffer);
-			other.buffer = std::string{};
-			this->offSet = other.offSet;
-			other.offSet = 0;
-		}
-		return *this;
-	}
-
-	ErlPackBuffer::ErlPackBuffer(ErlPackBuffer&& other) noexcept {
-		*this = std::move(other);
+	ErlPackBuffer::ErlPackBuffer(const std::string* theBuffer) {
+		*this = theBuffer;
 	}
 
 	std::string ErlPacker::parseJsonToEtf(const nlohmann::json& dataToParse) {

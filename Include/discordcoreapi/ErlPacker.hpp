@@ -66,12 +66,10 @@ namespace DiscordCoreInternal {
 		mutable uint64_t offSet{};
 
 		ErlPackBuffer() = default;
+		
+		ErlPackBuffer& operator=(const std::string*);
 
 		ErlPackBuffer(const std::string*);
-
-		ErlPackBuffer& operator=(ErlPackBuffer&&) noexcept;
-
-		ErlPackBuffer(ErlPackBuffer&&) noexcept;
 
 		ErlPackBuffer& operator=(const ErlPackBuffer&) = delete;
 
