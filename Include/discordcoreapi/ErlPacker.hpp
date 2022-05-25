@@ -152,11 +152,11 @@ namespace DiscordCoreInternal {
 
 		nlohmann::json parseNewFloat(const ErlPackBuffer&);
 
-		nlohmann::json parseBigint(const ErlPackBuffer&, uint32_t&);
+		nlohmann::json parseBigInt(const ErlPackBuffer&, uint32_t&);
 
-		nlohmann::json parseSmallBigint(const ErlPackBuffer&);
+		nlohmann::json parseSmallBigInt(const ErlPackBuffer&);
 
-		nlohmann::json parseLargeBigint(const ErlPackBuffer&);
+		nlohmann::json parseLargeBigInt(const ErlPackBuffer&);
 
 		nlohmann::json parseBinary(const ErlPackBuffer&);
 

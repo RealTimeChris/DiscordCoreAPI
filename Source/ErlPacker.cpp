@@ -41,9 +41,11 @@ namespace DiscordCoreInternal {
 	}
 
 	std::string ErlPacker::parseJsonToEtf(const nlohmann::json& dataToParse) {
+		std::cout << "WERE GOING GONE GONE GONE!23123" << std::endl;
 		ErlPackBuffer buffer{};
 		ErlPacker::appendVersion(buffer);
 		ErlPacker::singleValueJsonToETF(buffer, dataToParse);
+		std::cout << "WERE GOING GONE GONE GONE!23123" << std::endl;
 		return buffer.buffer;
 	}
 
@@ -117,10 +119,7 @@ namespace DiscordCoreInternal {
 			std::string newString = jsonData.get<std::string>();
 			newString.shrink_to_fit();
 			std::vector<uint8_t> newVector{};
-			newVector.resize(newString.size());
-			for (uint32_t x = 0; x < newString.size(); x += 1) {
-				newVector[x] = newString[x];
-			}
+			newVector.insert(newVector.begin(), newString.begin(), newString.end());
 			uint32_t newValue = static_cast<uint32_t>(newVector.size());
 			ErlPacker::appendBinary(buffer, newVector, newValue);
 		} else if (jsonData.is_number_float()) {
@@ -303,10 +302,10 @@ namespace DiscordCoreInternal {
 				return ErlPacker::parseBinary(buffer);
 			}
 			case ETFTokenType::Small_BigInt: {
-				return ErlPacker::parseSmallBigint(buffer);
+				return ErlPacker::parseSmallBigInt(buffer);
 			}
 			case ETFTokenType::Large_BigInt: {
-				return ErlPacker::parseLargeBigint(buffer);
+				return ErlPacker::parseLargeBigInt(buffer);
 			}
 			default: {
 				throw ErlPackError("ETF Parse Error: Unknown data type in ETF");
@@ -423,10 +422,7 @@ namespace DiscordCoreInternal {
 		}
 		double number{};
 		std::vector<char> nullTerminated{};
-		nullTerminated.resize(floatLength);
-		for (uint32_t x = 0; x < floatLength; x += 1) {
-			nullTerminated[x] = floatStr.data()[x];
-		}
+		nullTerminated.insert(nullTerminated.begin(), floatStr.begin(), floatStr.end());
 		auto count = sscanf(nullTerminated.data(), "%lf", &number);
 		if (!count) {
 			return jsonData;
@@ -443,7 +439,7 @@ namespace DiscordCoreInternal {
 		return jsonData;
 	}
 
-	nlohmann::json ErlPacker::parseBigint(const ErlPackBuffer& buffer, uint32_t& digits) {
+	nlohmann::json ErlPacker::parseBigInt(const ErlPackBuffer& buffer, uint32_t& digits) {
 		uint8_t sign{};
 		readBits(buffer, sign);
 		if (digits > 8) {
@@ -465,43 +461,43 @@ namespace DiscordCoreInternal {
 			}
 			const bool isSignBitAvailable = (value & 1ull << 31ull) == 0;
 			if (isSignBitAvailable) {
-				nlohmann::json jsonData = std::to_string(-static_cast<int32_t>(value));
+				nlohmann::json jsonData = std::to_string(-static_cast<uint32_t>(value));
 				return jsonData;
 			}
 		}
 		char outBuffer[32] = { 0 };
 		const char* formatString = sign == 0 ? "%llu" : "-%ll";
-		const int32_t res = sprintf(outBuffer, formatString, value);
+		const uint32_t res = sprintf(outBuffer, formatString, value);
 		if (res < 0) {
-			throw ErlPackError("ETF Parse Error: parse big integer failed.");
+			throw ErlPackError("ETF Parse Error: parse big Integer failed.");
 		}
 		const uint8_t length = static_cast<uint8_t>(res);
 		nlohmann::json jsonData = std::string(outBuffer, length);
 		return jsonData;
 	}
 
-	nlohmann::json ErlPacker::parseSmallBigint(const ErlPackBuffer& buffer) {
+	nlohmann::json ErlPacker::parseSmallBigInt(const ErlPackBuffer& buffer) {
 		uint8_t theValue{};
 		readBits(buffer, theValue);
 		uint32_t theValueNew = theValue;
-		return parseBigint(buffer, theValueNew);
+		return parseBigInt(buffer, theValueNew);
 	}
 
-	nlohmann::json ErlPacker::parseLargeBigint(const ErlPackBuffer& buffer) {
+	nlohmann::json ErlPacker::parseLargeBigInt(const ErlPackBuffer& buffer) {
 		uint32_t theValue{};
 		readBits(buffer, theValue);
-		return parseBigint(buffer, theValue);
+		return parseBigInt(buffer, theValue);
 	}
 
 	nlohmann::json ErlPacker::parseBinary(const ErlPackBuffer& buffer) {
 		uint32_t length{};
 		readBits(buffer, length);
-		std::vector<char> stringNew{};
-		readString(buffer, length, stringNew);
-		if (stringNew.size() == 0) {
+		if (length == 0) {
 			nlohmann::json jsonData{};
 			return jsonData;
 		}
+		std::vector<char> stringNew{};
+		readString(buffer, length, stringNew);
 		nlohmann::json jsonData = std::string(stringNew.data(), length);
 		return jsonData;
 	}
