@@ -369,7 +369,6 @@ namespace DiscordCoreInternal {
 	nlohmann::json ErlPacker::parseList(const ErlPackBuffer& buffer) {
 		uint32_t length{};
 		readBits(buffer, length);
-		std::cout << "THE LENGTH: " << length << std::endl;
 		nlohmann::json::array_t theArray = parseArray(buffer, length);
 		uint8_t theValue{};
 		readBits(buffer, theValue);
