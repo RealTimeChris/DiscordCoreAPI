@@ -847,14 +847,14 @@ namespace DiscordCoreInternal {
 			if (this->webSocket->getInputBuffer().size() < 4) {
 				return false;
 			} else {
-				switch (static_cast<WebSocketOpCode>(this->webSocket->getInputBuffer()[0] & ~webSocketMaskBit)) {
+				switch (static_cast<WebSocketOpCode>(this->webSocket->getInputBuffer()[0] & ~webSocketFinishBit)) {
 					case WebSocketOpCode::Op_Continuation:
 					case WebSocketOpCode::Op_Text:
 					case WebSocketOpCode::Op_Binary:
 					case WebSocketOpCode::Op_Ping:
 					case WebSocketOpCode::Op_Pong: {
 						uint8_t length01 = this->webSocket->getInputBuffer()[1];
-						int32_t payloadStartOffset = 2;
+						uint64_t payloadStartOffset = 2;
 						if (length01 & webSocketMaskBit) {
 							return false;
 						}
@@ -872,9 +872,9 @@ namespace DiscordCoreInternal {
 								return false;
 							}
 							length02 = 0;
-							for (int32_t value = 2, shift = 56; value < 10; ++value, shift -= 8) {
-								uint8_t length05 = static_cast<uint8_t>(this->webSocket->getInputBuffer()[value]);
-								length02 |= static_cast<uint64_t>(length05) << static_cast<uint64_t>(shift);
+							for (int x= 2, shift = 56; x < 10; ++x, shift -= 8) {
+								uint8_t lengthNew = static_cast<uint8_t>(this->webSocket->getInputBuffer()[x]);
+								length02 |= static_cast<uint64_t>((lengthNew & 0xff) << shift);
 							}
 							payloadStartOffset += 8;
 						}
