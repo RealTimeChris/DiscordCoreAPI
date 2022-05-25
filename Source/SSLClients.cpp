@@ -565,13 +565,6 @@ namespace DiscordCoreInternal {
 					if (readBytes > 0) {
 						this->inputBuffer.insert(this->inputBuffer.end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
 						this->bytesRead += readBytes;
-						std::cout << "THE SIZE: " << this->inputBuffer.size() << std::endl;
-						std::cout << "WERE HERE: " << this->inputBuffer << std::endl;
-						for (auto& value: this->inputBuffer) {
-							std::bitset<8> theValue = value;
-							std::cout << theValue << ", the VALUE" << theValue.to_ullong() << ", ";
-						}
-						std::cout << std::endl;
 					}
 					return true;
 				}

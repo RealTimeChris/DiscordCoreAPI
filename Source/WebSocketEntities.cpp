@@ -107,18 +107,18 @@ namespace DiscordCoreInternal {
 		try {
 			size_t position{ 0 };
 			int32_t indexCount{ 0 };
-			outBuffer[position++] = webSocketFinishBit | static_cast<unsigned char>(opCode);
+			outBuffer[position++] = webSocketFinishBit | static_cast<char>(opCode);
 			if (sendlength <= webSocketMaxPayloadLengthSmall) {
-				outBuffer[position++] = static_cast<unsigned char>(sendlength);
+				outBuffer[position++] = static_cast<char>(sendlength);
 			} else if (sendlength <= webSocketMaxPayloadLengthLarge) {
-				outBuffer[position++] = static_cast<unsigned char>(webSocketPayloadLengthMagicLarge);
+				outBuffer[position++] = static_cast<char>(webSocketPayloadLengthMagicLarge);
 				indexCount = 2;
 			} else {
 				outBuffer[position++] = webSocketPayloadLengthMagicHuge;
 				indexCount = 8;
 			}
 			for (int32_t x = indexCount - 1; x >= 0; x--) {
-				outBuffer[position++] = static_cast<unsigned char>(sendlength >> x * 8);
+				outBuffer[position++] = static_cast<char>(sendlength >> x * 8);
 			}
 			outBuffer[1] |= webSocketMaskBit;
 			outBuffer[position++] = 0;
@@ -816,7 +816,6 @@ namespace DiscordCoreInternal {
 							std::vector<std::string> status = tokenize(statusLine, " ");
 							if (status.size() >= 3 && status[1] == "101") {
 								this->state = WebSocketState::Connected;
-								std::cout << "THE RESPONSE: " << this->webSocket->getInputBuffer() << std::endl;
 								this->webSocket->getInputBuffer().clear();
 								this->webSocket->getInputBuffer().insert(this->webSocket->getInputBuffer().end(), newVector.begin(), newVector.end());
 								this->parseHeader();
@@ -842,9 +841,7 @@ namespace DiscordCoreInternal {
 	bool BaseSocketAgent::parseHeader() noexcept {
 		try {
 			std::string newVector = this->webSocket->getInputBuffer();
-			std::cout << "WERE WAITING -01-1-1=1" << newVector << std::endl;
 			if (this->webSocket->getInputBuffer().size() < 4) {
-				std::cout << "WERE WAITING 321231231231" << newVector << std::endl;
 				return false;
 			} else {
 				switch (static_cast<WebSocketOpCode>(this->webSocket->getInputBuffer()[0] & ~webSocketMaskBit)) {
