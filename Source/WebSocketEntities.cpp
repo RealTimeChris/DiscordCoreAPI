@@ -845,7 +845,6 @@ namespace DiscordCoreInternal {
 				return false;
 			} else {
 				switch (static_cast<WebSocketOpCode>(this->webSocket->getInputBuffer()[0] & ~webSocketMaskBit)) {
-					std::cout << "WERE WAITING 02020202" << std::endl;
 					case WebSocketOpCode::Op_Continuation:
 					case WebSocketOpCode::Op_Text:
 					case WebSocketOpCode::Op_Binary:
@@ -854,13 +853,11 @@ namespace DiscordCoreInternal {
 						uint8_t length01 = this->webSocket->getInputBuffer()[1];
 						int32_t payloadStartOffset = 2;
 						if (length01 & webSocketMaskBit) {
-							std::cout << "WERE WAITING 03030303" << std::endl;
 							return false;
 						}
 						uint64_t length02 = length01;
 						if (length01 == webSocketPayloadLengthMagicLarge) {
 							if (this->webSocket->getInputBuffer().size() < 8) {
-								std::cout << "WERE WAITING 04040404" << std::endl;
 								return false;
 							}
 							uint8_t length03 = this->webSocket->getInputBuffer()[2];
@@ -869,7 +866,6 @@ namespace DiscordCoreInternal {
 							payloadStartOffset += 2;
 						} else if (length01 == webSocketPayloadLengthMagicHuge) {
 							if (this->webSocket->getInputBuffer().size() < 10) {
-								std::cout << "WERE WAITING 05050505" << std::endl;
 								return false;
 							}
 							length02 = 0;
@@ -880,7 +876,6 @@ namespace DiscordCoreInternal {
 							payloadStartOffset += 8;
 						}
 						if (this->webSocket->getInputBuffer().size() < payloadStartOffset + length02) {
-							std::cout << "WERE WAITING 06060606" << std::endl;
 							return false;
 						} else {
 							std::string newerVector{};
