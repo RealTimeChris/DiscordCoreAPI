@@ -41,11 +41,9 @@ namespace DiscordCoreInternal {
 	}
 
 	std::string ErlPacker::parseJsonToEtf(const nlohmann::json& dataToParse) {
-		std::cout << "WERE GOING GONE GONE GONE!23123" << std::endl;
 		ErlPackBuffer buffer{};
 		ErlPacker::appendVersion(buffer);
 		ErlPacker::singleValueJsonToETF(buffer, dataToParse);
-		std::cout << "WERE GOING GONE GONE GONE!23123" << std::endl;
 		return buffer.buffer;
 	}
 
