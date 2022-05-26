@@ -89,10 +89,18 @@ namespace DiscordCoreInternal {
 			if (this->printSuccessMessages) {
 				std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Sending WebSocket Message: " << dataToSend.dump() << std::endl << DiscordCoreAPI::reset() << std::endl;
 			}
-			std::string theVector = this->erlPacker.parseJsonToEtf(dataToSend);
+			std::string theVector{};
 			std::string out{};
-			out.resize(maxHeaderSize);
-			size_t size = this->createHeader(out.data(), theVector.size(), this->dataOpcode);
+			size_t size{};
+			if (this->theFormat == DiscordCoreAPI::TextFormat::Etf) {
+				theVector = this->erlPacker.parseJsonToEtf(dataToSend);
+				out.resize(maxHeaderSize);
+				size = this->createHeader(out.data(), theVector.size(), this->dataOpcode);
+			} else {
+				theVector = dataToSend.dump();
+				out.resize(maxHeaderSize);
+				size = this->createHeader(out.data(), theVector.size(), this->dataOpcode);
+			}
 			std::string header(out.data(), size);
 			std::string theVectorNew{};
 			theVectorNew.insert(theVectorNew.begin(), header.begin(), header.end());
@@ -226,11 +234,15 @@ namespace DiscordCoreInternal {
 			this->webSocket->getInputBuffer().clear();
 			nlohmann::json payload{};
 
-			try {
-				payload = this->erlPacker.parseEtfToJson(&messageNew);
-			} catch (...) {
-				DiscordCoreAPI::reportException("ErlPacker::parseEtfToJson()");
-				return;
+			if (this->theFormat == DiscordCoreAPI::TextFormat::Etf) {
+				try {
+					payload = this->erlPacker.parseEtfToJson(&messageNew);
+				} catch (...) {
+					DiscordCoreAPI::reportException("ErlPacker::parseEtfToJson()");
+					return;
+				}
+			} else {
+				payload = nlohmann::json::parse(messageNew);
 			}
 
 			if (this->areWeCollectingData && payload["t"] == "VOICE_SERVER_UPDATE" && !this->serverUpdateCollected) {
@@ -944,9 +956,16 @@ namespace DiscordCoreInternal {
 			this->webSocket = std::make_unique<WebSocketSSLClient>(this->baseUrl, "443", this->printErrorMessages);
 			this->state = WebSocketState::Initializing;
 			this->doWeReconnect.set();
-			std::string sendString = "GET /?v=10&encoding=etf HTTP/1.1\r\nHost: " + this->baseUrl +
-				"\r\nPragma: no-cache\r\nUser-Agent: DiscordCoreAPI/1.0\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Key: " +
-				DiscordCoreAPI::generateBase64EncodedKey() + "\r\nSec-WebSocket-Version: 13\r\n\r\n";
+			std::string sendString{}; 
+			if (this->theFormat == DiscordCoreAPI::TextFormat::Etf) {
+				sendString = "GET /?v=10&encoding=etf HTTP/1.1\r\nHost: " + this->baseUrl +
+					"\r\nPragma: no-cache\r\nUser-Agent: DiscordCoreAPI/1.0\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Key: " +
+					DiscordCoreAPI::generateBase64EncodedKey() + "\r\nSec-WebSocket-Version: 13\r\n\r\n";
+			} else {
+				sendString = "GET /?v=10&encoding=json HTTP/1.1\r\nHost: " + this->baseUrl +
+					"\r\nPragma: no-cache\r\nUser-Agent: DiscordCoreAPI/1.0\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Key: " +
+					DiscordCoreAPI::generateBase64EncodedKey() + "\r\nSec-WebSocket-Version: 13\r\n\r\n";
+			}
 			this->sendMessage(sendString);
 		} catch (...) {
 			if (this->printErrorMessages) {

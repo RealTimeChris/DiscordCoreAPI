@@ -759,6 +759,11 @@ namespace DiscordCoreAPI {
 	 * @{
 	 */
 
+	enum class TextFormat {
+		Json = 0,///< Json format.
+		Etf = 1///< Etf format.
+	};
+
 	template<typename StoredAsType, typename FlagType> StoredAsType setBool(StoredAsType inputFlag, FlagType theFlag, bool enabled) {
 		if (enabled) {
 			inputFlag |= static_cast<StoredAsType>(theFlag);

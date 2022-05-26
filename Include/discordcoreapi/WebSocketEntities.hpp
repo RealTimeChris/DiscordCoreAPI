@@ -67,6 +67,7 @@ namespace DiscordCoreInternal {
 		std::atomic_bool areWeConnected{ false };
 		bool haveWeReceivedHeartbeatAck{ true };
 		EventWaiter areWeReadyToConnectEvent{};
+		DiscordCoreAPI::TextFormat theFormat{};
 		std::atomic_bool* doWeQuit{ nullptr };
 		const int32_t maxReconnectTries{ 10 };
 		std::binary_semaphore semaphore{ 1 };
