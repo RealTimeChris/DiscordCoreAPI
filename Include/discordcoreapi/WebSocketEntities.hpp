@@ -57,7 +57,7 @@ namespace DiscordCoreInternal {
 	  protected:
 		std::unordered_map<std::string, DiscordCoreAPI::TSUnboundedMessageBlock<VoiceConnectionData>*> voiceConnectionDataBufferMap{};
 		const DiscordCoreAPI::GatewayIntents intentsValue{ DiscordCoreAPI::GatewayIntents::All_Intents };
-		DiscordCoreAPI::TextFormat theFormat{ DiscordCoreAPI::TextFormat::Json };
+		DiscordCoreAPI::TextFormat theFormat{ DiscordCoreAPI::TextFormat::Etf };
 		DiscordCoreAPI::DiscordCoreClient* discordCoreClient{ nullptr };
 		DiscordCoreAPI::CommandController* commandController{ nullptr };
 		WebSocketOpCode dataOpcode{ WebSocketOpCode::Op_Binary };
