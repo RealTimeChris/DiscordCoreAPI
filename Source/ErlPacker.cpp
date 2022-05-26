@@ -89,10 +89,11 @@ namespace DiscordCoreInternal {
 				ErlPacker::singleValueJsonToETF(buffer, n.value());
 			}
 		} else if (jsonData.is_number_integer()) {
-			uint8_t numberOld = jsonData.get<uint8_t>();
+			uint64_t numberOld = jsonData.get<uint64_t>();
 			if (numberOld >= 0 && numberOld <= 127) {
-				ErlPacker::appendSmallIntegerExt(buffer, numberOld);
-			} else if (jsonData.is_number_unsigned() && numberOld >= std::numeric_limits<uint32_t>::max() - 1) {
+				uint8_t numberNew = jsonData.get<uint8_t>();
+				ErlPacker::appendSmallIntegerExt(buffer, numberNew);
+			} else if (numberOld >= std::numeric_limits<uint32_t>::max() - 1) {
 				uint64_t number = jsonData.get<uint64_t>();
 				ErlPacker::appendUnsignedLongLong(buffer, number);
 			} else {
