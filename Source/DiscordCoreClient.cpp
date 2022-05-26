@@ -161,7 +161,7 @@ namespace DiscordCoreAPI {
 			}
 			if (shardGroupCount > 1 && x < shardGroupCount - 1) {
 				if (this->loggingOptions.logGeneralSuccessMessages) {
-					std::cout << "Waiting to connect the subsequent group of shards..." << std::endl << std::endl;
+					std::cout << shiftToBrightBlue() << "Waiting to connect the subsequent group of shards..." << std::endl << std::endl;
 				}
 				std::this_thread::sleep_for(std::chrono::milliseconds{ 20000 });
 			}
