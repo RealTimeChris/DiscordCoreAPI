@@ -163,7 +163,7 @@ namespace DiscordCoreAPI {
 				if (this->loggingOptions.logGeneralSuccessMessages) {
 					std::cout << shiftToBrightBlue() << "Waiting to connect the subsequent group of shards..." << std::endl << std::endl;
 				}
-				std::this_thread::sleep_for(std::chrono::milliseconds{ 20000 });
+				std::this_thread::sleep_for(std::chrono::milliseconds{ 5000 });
 			}
 		}
 		this->currentUser = BotUser{ Users::getCurrentUserAsync().get(), this->webSocketMap[std::to_string(this->shardingOptions.startingShard)].get() };
