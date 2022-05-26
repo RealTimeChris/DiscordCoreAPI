@@ -145,11 +145,3 @@ if (WIN32)
 		OPTIONAL
 	)
 endif()
-
-install(
-	FILES 
-	"${CMAKE_SOURCE_DIR}/Certs/DiscordCert.pem"
-	"${CMAKE_SOURCE_DIR}/Certs/GoogleCert.pem"
-	"${CMAKE_SOURCE_DIR}/Certs/SoundCloudCert.pem" 
-	DESTINATION "share/discordcoreapi/data"
-)
