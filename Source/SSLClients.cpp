@@ -397,7 +397,9 @@ namespace DiscordCoreInternal {
 		FD_ZERO(&writeSet);
 		FD_ZERO(&readSet);
 
+		bool writing{ false };
 		if (this->outputBuffer.size() > 0 && !this->wantRead) {
+			writing = true;
 			FD_SET(this->theSocket, &writeSet);
 			nfds = this->theSocket > nfds ? this->theSocket : nfds;
 		} else {
@@ -456,6 +458,7 @@ namespace DiscordCoreInternal {
 #else
 		if (writing) {
 #endif
+			this->wantRead = false;
 			size_t writtenBytes{ 0 };
 			auto returnValue{ SSL_write_ex(this->ssl, this->outputBuffer.data(), this->outputBuffer.size(), &writtenBytes) };
 			auto errorValue{ SSL_get_error(this->ssl, returnValue) };
