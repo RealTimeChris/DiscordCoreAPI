@@ -32,18 +32,19 @@ namespace DiscordCoreInternal {
 	constexpr uint8_t formatVersion{ 131 };
 
 	enum class ETFTokenType : uint8_t {
-		New_Float_Ext = 70,
+		New_Float = 70,
 		Bit_Binary = 77,
 		Comressed = 80,
-		Small_Integer_Ext = 97,
-		Integer_Ext = 98,
+		Small_Integer = 97,
+		Integer = 98,
+		Float = 99,
 		Atom = 100,
 		Reference = 101,
 		Port = 102,
 		Pid = 103,
 		Small_Tuple = 104,
 		Large_Tuple = 105,
-		Nil_Ext = 106,
+		Nil = 106,
 		String = 107,
 		List = 108,
 		Binary = 109,
@@ -66,7 +67,7 @@ namespace DiscordCoreInternal {
 		mutable uint64_t offSet{};
 
 		ErlPackBuffer() = default;
-		
+
 		ErlPackBuffer& operator=(const std::string*);
 
 		ErlPackBuffer(const std::string*);
@@ -97,27 +98,27 @@ namespace DiscordCoreInternal {
 
 		void appendVersion(ErlPackBuffer&);
 
+		void appendNil(ErlPackBuffer&);
+
 		void appendFalse(ErlPackBuffer&);
 
 		void appendTrue(ErlPackBuffer&);
 
-		void appendSmallIntegerExt(ErlPackBuffer&, uint8_t&);
+		void appendSmallInteger(ErlPackBuffer&, uint8_t&);
 
-		void appendIntegerExt(ErlPackBuffer&, int32_t&);
-
-		void appendNil(ErlPackBuffer& buffer);
+		void appendInteger(ErlPackBuffer&, uint32_t&);
 
 		void appendUnsignedLongLong(ErlPackBuffer&, uint64_t&);
 
-		void appendNewFloatExt(ErlPackBuffer&, double&);
+		void appendDouble(ErlPackBuffer&, double&);
 
 		void appendBinary(ErlPackBuffer&, const std::vector<uint8_t>&, uint32_t&);
 
 		void appendNilExt(ErlPackBuffer&);
 
-		void appendListHeader(ErlPackBuffer&, uint32_t);
+		void appendListHeader(ErlPackBuffer&, uint32_t&);
 
-		void appendMapHeader(ErlPackBuffer&, uint32_t);
+		void appendMapHeader(ErlPackBuffer&, uint32_t&);
 
 		template<typename ReturnType> void readBits(const ErlPackBuffer&, ReturnType&);
 
@@ -131,9 +132,9 @@ namespace DiscordCoreInternal {
 
 		nlohmann::json parseSmallAtom(const ErlPackBuffer&);
 
-		nlohmann::json parseSmallIntegerExt(const ErlPackBuffer&);
+		nlohmann::json parseSmallInteger(const ErlPackBuffer&);
 
-		nlohmann::json parseIntegerExt(const ErlPackBuffer&);
+		nlohmann::json parseInteger(const ErlPackBuffer&);
 
 		nlohmann::json parseArray(const ErlPackBuffer&, uint32_t&);
 
@@ -141,17 +142,19 @@ namespace DiscordCoreInternal {
 
 		nlohmann::json parseTuple(const ErlPackBuffer&, uint32_t&);
 
-		nlohmann::json parseNilExt();
+		nlohmann::json parseNil();
 
 		nlohmann::json parseMap(const ErlPackBuffer&);
 
-		nlohmann::json parseNewFloatExt(const ErlPackBuffer&);
+		nlohmann::json parseFloat(const ErlPackBuffer&);
 
-		nlohmann::json parseBigInt(const ErlPackBuffer&, uint32_t&);
+		nlohmann::json parseNewFloat(const ErlPackBuffer&);
 
-		nlohmann::json parseSmallBigInt(const ErlPackBuffer&);
+		nlohmann::json parseBigint(const ErlPackBuffer&, uint32_t&);
 
-		nlohmann::json parseLargeBigInt(const ErlPackBuffer&);
+		nlohmann::json parseSmallBigint(const ErlPackBuffer&);
+
+		nlohmann::json parseLargeBigint(const ErlPackBuffer&);
 
 		nlohmann::json parseBinary(const ErlPackBuffer&);
 
