@@ -210,6 +210,7 @@ namespace DiscordCoreInternal {
 					}
 					this->handleBuffer();
 				}
+				std::this_thread::sleep_for(std::chrono::milliseconds{ 1 });
 			}
 		} catch (...) {
 			if (this->printErrorMessages) {
