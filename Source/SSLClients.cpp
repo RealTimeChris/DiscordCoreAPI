@@ -232,6 +232,7 @@ namespace DiscordCoreInternal {
 				case SSL_ERROR_SYSCALL: {
 					if (this->doWePrintError) {
 						reportSSLError("HttpSSLClient::processIO::SSL_write_ex() Error: ", returnValue, this->ssl);
+						reportError("HttpSSLClient::processIO::SSL_write_ex() Error: ", returnValue);
 					}
 					[[fallthrough]];
 				}
@@ -248,6 +249,7 @@ namespace DiscordCoreInternal {
 				default: {
 					if (this->doWePrintError) {
 						reportSSLError("HttpSSLClient::processIO::SSL_write_ex() Error: ", returnValue, this->ssl);
+						reportError("HttpSSLClient::processIO::SSL_write_ex() Error: ", returnValue);
 					}
 					return false;
 				}
@@ -274,6 +276,7 @@ namespace DiscordCoreInternal {
 				case SSL_ERROR_SYSCALL: {
 					if (this->doWePrintError) {
 						reportSSLError("HttpSSLClient::processIO::SSL_read_ex() Error: ", returnValue, this->ssl);
+						reportError("HttpSSLClient::processIO::SSL_read_ex() Error: ", returnValue);
 					}
 					[[fallthrough]];
 				}
@@ -290,6 +293,7 @@ namespace DiscordCoreInternal {
 				default: {
 					if (this->doWePrintError) {
 						reportSSLError("HttpSSLClient::processIO::SSL_read_ex() Error: ", returnValue, this->ssl);
+						reportError("HttpSSLClient::processIO::SSL_read_ex() Error: ", returnValue);
 					}
 					return false;
 				}
@@ -470,6 +474,7 @@ namespace DiscordCoreInternal {
 				case SSL_ERROR_SYSCALL: {
 					if (this->doWePrintError) {
 						reportSSLError("WebSocketSSLClient::processIO::SSL_write_ex() Error: ", returnValue, this->ssl);
+						reportError("WebSocketSSLClient::processIO::SSL_write_ex() Error: ", returnValue);
 					}
 					[[fallthrough]];
 				}
@@ -486,6 +491,7 @@ namespace DiscordCoreInternal {
 				default: {
 					if (this->doWePrintError) {
 						reportSSLError("WebSocketSSLClient::processIO::SSL_write_ex() Error: ", returnValue, this->ssl);
+						reportError("WebSocketSSLClient::processIO::SSL_write_ex() Error: ", returnValue);
 					}
 					return false;
 				}
@@ -513,6 +519,7 @@ namespace DiscordCoreInternal {
 				case SSL_ERROR_SYSCALL: {
 					if (this->doWePrintError) {
 						reportSSLError("WebSocketSSLClient::processIO::SSL_read_ex() Error: ", returnValue, this->ssl);
+						reportError("WebSocketSSLClient::processIO::SSL_read_ex() Error: ", returnValue);
 					}
 					[[fallthrough]];
 				}
@@ -529,6 +536,7 @@ namespace DiscordCoreInternal {
 				default: {
 					if (this->doWePrintError) {
 						reportSSLError("WebSocketSSLClient::processIO::SSL_read_ex() Error: ", returnValue, this->ssl);
+						reportError("WebSocketSSLClient::processIO::SSL_read_ex() Error: ", returnValue);
 					}
 					return false;
 				}
