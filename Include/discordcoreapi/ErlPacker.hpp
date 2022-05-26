@@ -59,7 +59,7 @@ namespace DiscordCoreInternal {
 		Small_Utf8_Atom = 119
 	};
 
-	struct ErlPackBuffer {
+	struct DiscordCoreAPI_Dll ErlPackBuffer {
 	  public:
 		std::string buffer{};
 
@@ -80,7 +80,7 @@ namespace DiscordCoreInternal {
 		ErlPackBuffer(ErlPackBuffer&) = delete;
 	};
 
-	class ErlPacker {
+	class DiscordCoreAPI_Dll ErlPacker {
 	  public:
 		std::string parseJsonToEtf(const nlohmann::json&);
 
