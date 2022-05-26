@@ -57,6 +57,7 @@ namespace DiscordCoreInternal {
 	  protected:
 		std::unordered_map<std::string, DiscordCoreAPI::TSUnboundedMessageBlock<VoiceConnectionData>*> voiceConnectionDataBufferMap{};
 		const DiscordCoreAPI::GatewayIntents intentsValue{ DiscordCoreAPI::GatewayIntents::All_Intents };
+		DiscordCoreAPI::TextFormat theFormat{ DiscordCoreAPI::TextFormat::Json };
 		DiscordCoreAPI::DiscordCoreClient* discordCoreClient{ nullptr };
 		DiscordCoreAPI::CommandController* commandController{ nullptr };
 		WebSocketOpCode dataOpcode{ WebSocketOpCode::Op_Binary };
@@ -67,7 +68,6 @@ namespace DiscordCoreInternal {
 		std::atomic_bool areWeConnected{ false };
 		bool haveWeReceivedHeartbeatAck{ true };
 		EventWaiter areWeReadyToConnectEvent{};
-		DiscordCoreAPI::TextFormat theFormat{};
 		std::atomic_bool* doWeQuit{ nullptr };
 		const int32_t maxReconnectTries{ 10 };
 		std::binary_semaphore semaphore{ 1 };
