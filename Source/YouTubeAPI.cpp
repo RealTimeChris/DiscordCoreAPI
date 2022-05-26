@@ -130,8 +130,7 @@ namespace DiscordCoreInternal {
 		std::string responseToPlayerGet02{};
 		if (responseMessage02[0].responseCode != 204 && responseMessage02[0].responseCode != 201 && responseMessage02[0].responseCode != 200 &&
 			this->httpClient->getDoWePrintHttpError()) {
-			
-			<< DiscordCoreAPI::shiftToBrightRed() << "YouTubeRequestBuilder::constructDownloadInfo() 02 Error: " << responseMessage02[0].responseCode << ", "
+			std::cout << DiscordCoreAPI::shiftToBrightRed() << "YouTubeRequestBuilder::constructDownloadInfo() 02 Error: " << responseMessage02[0].responseCode << ", "
 					  << responseMessage02[0].responseMessage << std::endl
 					  << DiscordCoreAPI::reset() << std::endl;
 		}
