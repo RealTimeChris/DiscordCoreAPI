@@ -48,7 +48,6 @@ namespace DiscordCoreInternal {
 		this->doWeQuit = doWeQuitNew;
 		this->baseUrl = baseUrl;
 		this->doWeReconnect.set();
-		this->connect();
 		this->theTask = std::make_unique<std::jthread>([this](std::stop_token theToken) {
 			this->run(theToken);
 		});
@@ -191,6 +190,7 @@ namespace DiscordCoreInternal {
 
 	void BaseSocketAgent::run(std::stop_token theToken) noexcept {
 		try {
+			this->connect();
 			DiscordCoreAPI::StopWatch stopWatch{ std::chrono::milliseconds{ 0 } };
 			while (!theToken.stop_requested() && !this->doWeQuit->load()) {
 				if (this->heartbeatInterval != 0 && !this->areWeHeartBeating) {
@@ -280,16 +280,16 @@ namespace DiscordCoreInternal {
 			if (payload["t"] == "READY") {
 				this->areWeConnected.store(true);
 				this->sessionId = payload["d"]["session_id"];
+				DiscordCoreAPI::UserData theUser{};
+				DataParser::parseObject(payload["d"]["user"], theUser);
+				this->discordCoreClient->currentUser = DiscordCoreAPI::BotUser{ theUser, this };
+				DiscordCoreAPI::Users::insertUser(theUser);
 				std::vector<DiscordCoreAPI::GuildData> theGuilds{};
 				DataParser::parseObject(payload["d"]["guilds"], theGuilds);
 				for (auto& value: theGuilds) {
 					value.discordCoreClient = this->discordCoreClient;
 					DiscordCoreAPI::Guilds::insertGuild(value);
-				}
-				DiscordCoreAPI::UserData theUser{};
-				DataParser::parseObject(payload["d"]["user"], theUser);
-				this->discordCoreClient->currentUser = DiscordCoreAPI::BotUser{ theUser, this };
-				DiscordCoreAPI::Users::insertUser(theUser);
+				}				
 				this->currentReconnectTries = 0;
 				this->areWeReadyToConnectEvent.set();
 				this->areWeAuthenticated = true;

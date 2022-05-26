@@ -218,8 +218,10 @@ namespace DiscordCoreAPI {
 		newFrame.data.push_back(0xfe);
 		newFrame.sampleCount = 960;
 		for (uint8_t x = 0; x < 5; x += 1) {
-			auto encryptedFrame = this->encryptSingleAudioFrame(newFrame, this->voiceConnectionData->audioSSRC, this->voiceConnectionData->secretKey);
-			this->sendSingleAudioFrame(encryptedFrame);
+			if (this->voiceConnectionData) {
+				auto encryptedFrame = this->encryptSingleAudioFrame(newFrame, this->voiceConnectionData->audioSSRC, this->voiceConnectionData->secretKey);
+				this->sendSingleAudioFrame(encryptedFrame);
+			}			
 		}
 	}
 

@@ -116,7 +116,7 @@ namespace DiscordCoreInternal {
 			double newValue = jsonData.get<double>();
 			ErlPacker::appendNewFloatExt(buffer, newValue);
 		} else if (jsonData.is_null()) {
-			ErlPacker::appendNilExt(buffer);
+			ErlPacker::appendNil(buffer);
 		}
 	}
 
@@ -194,6 +194,11 @@ namespace DiscordCoreInternal {
 		std::vector<uint8_t> bufferNew{};
 		bufferNew.resize(1);
 		bufferNew[0] = static_cast<uint8_t>(ETFTokenType::Nil_Ext);
+		ErlPacker::writeToBuffer(buffer, bufferNew);
+	}
+
+	void ErlPacker::appendNil(ErlPackBuffer& buffer) {
+		std::vector<uint8_t> bufferNew{ static_cast<uint8_t>(ETFTokenType::Small_Atom), 3, static_cast<uint8_t>('n'), static_cast<uint8_t>('i'), static_cast<uint8_t>('l') };
 		ErlPacker::writeToBuffer(buffer, bufferNew);
 	}
 

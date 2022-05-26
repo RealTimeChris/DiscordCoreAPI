@@ -105,6 +105,8 @@ namespace DiscordCoreInternal {
 
 		void appendIntegerExt(ErlPackBuffer&, int32_t&);
 
+		void appendNil(ErlPackBuffer& buffer);
+
 		void appendUnsignedLongLong(ErlPackBuffer&, uint64_t&);
 
 		void appendNewFloatExt(ErlPackBuffer&, double&);

@@ -22,28 +22,6 @@
 
 namespace DiscordCoreInternal {
 
-	auto getFilePath(const std::string& fileName, const std::string& pathPrefix, std::string searchRoot = "") {
-		{
-			if (searchRoot == "") {
-#ifdef _WIN32
-				searchRoot = std::string{ static_cast<char>(std::filesystem::current_path().c_str()[0]) } + std::string{ ":\\" };
-#else
-				searchRoot = "/";
-#endif
-			}
-			for (const auto& entry: std::filesystem::recursive_directory_iterator(searchRoot, std::filesystem::directory_options::skip_permission_denied)) {
-				if (entry.path().string().find(pathPrefix) == std::string::npos) {
-					continue;
-				} else if (entry.path().string().find(pathPrefix) != std::string::npos) {
-					if (entry.path().string().find(fileName) != std::string::npos) {
-						return entry.path().string();
-					}
-				}
-			}
-		}
-		return std::string{};
-	}
-
 	void reportSSLError(const std::string& errorPosition, int32_t errorValue = 0, SSL* ssl = nullptr) noexcept {
 		if (ssl) {
 			std::cout << DiscordCoreAPI::shiftToBrightRed() << errorPosition << SSL_get_error(ssl, errorValue) << std::endl;
@@ -57,25 +35,12 @@ namespace DiscordCoreInternal {
 	void reportError(const std::string& errorPosition, int32_t errorValue) noexcept {
 		std::cout << DiscordCoreAPI::shiftToBrightRed() << errorPosition << errorValue << ", ";
 #ifdef _WIN32
-		std::cout << WSAGetLastError() << std::endl << DiscordCoreAPI::reset();
+		char* s = NULL;
+		FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, WSAGetLastError(),
+			MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), static_cast<LPSTR>(static_cast<void*>(&s)), 0, NULL);
+		std::cout << WSAGetLastError() << ", " << s << std::endl << DiscordCoreAPI::reset();
 #else
 		std::cout << strerror(errno) << std::endl << DiscordCoreAPI::reset();
-#endif
-	}
-
-	void HttpSSLClient::initialize() {
-#ifdef _WIN32
-		HttpSSLClient::googleCertPathStatic = getFilePath("GoogleCert.pem", "share\\discordcoreapi\\data");
-		HttpSSLClient::defaultCertPathStatic = getFilePath("DiscordCert.pem", "share\\discordcoreapi\\data",
-			HttpSSLClient::googleCertPathStatic.substr(0, HttpSSLClient::googleCertPathStatic.find("GoogleCert.pem")));
-		HttpSSLClient::soundcloudCertPathStatic = getFilePath("SoundCloudCert.pem", "share\\discordcoreapi\\data",
-			HttpSSLClient::googleCertPathStatic.substr(0, HttpSSLClient::googleCertPathStatic.find("GoogleCert.pem")));
-#else
-		HttpSSLClient::googleCertPathStatic = getFilePath("GoogleCert.pem", "share/discordcoreapi/data");
-		HttpSSLClient::defaultCertPathStatic =
-			getFilePath("DiscordCert.pem", "share/discordcoreapi/data", HttpSSLClient::googleCertPathStatic.substr(0, HttpSSLClient::googleCertPathStatic.find("GoogleCert.pem")));
-		HttpSSLClient::soundcloudCertPathStatic = getFilePath("SoundCloudCert.pem", "share/discordcoreapi/data",
-			HttpSSLClient::googleCertPathStatic.substr(0, HttpSSLClient::googleCertPathStatic.find("GoogleCert.pem")));
 #endif
 	}
 
@@ -90,14 +55,50 @@ namespace DiscordCoreInternal {
 				baseUrl.substr(baseUrl.find("https://") + std::string("https://").size(), baseUrl.find(".org") + std::string(".org").size() - std::string("https://").size());
 		}
 
-		std::string certPath{};
-		if (stringNew.find("soundcloud") != std::string::npos || stringNew.find("sndcdn") != std::string::npos) {
-			certPath = HttpSSLClient::soundcloudCertPathStatic;
-		} else if (stringNew.find("youtube") != std::string::npos || stringNew.find("google") != std::string::npos) {
-			certPath = HttpSSLClient::googleCertPathStatic;
-		} else {
-			certPath = HttpSSLClient::defaultCertPathStatic;
+		addrinfo hints, *addrs;
+		memset(&hints, 0, sizeof(addrinfo));
+		hints.ai_family = AF_UNSPEC;
+		hints.ai_socktype = SOCK_STREAM;
+		hints.ai_protocol = IPPROTO_TCP;
+
+		if (auto returnValue = getaddrinfo(stringNew.c_str(), portNew.c_str(), &hints, &addrs); returnValue == SOCKET_ERROR) {
+			if (this->doWePrintError) {
+				reportError("getaddrinfo() Error: ", returnValue);
+			}
+			return false;
 		}
+
+		if (this->theSocket = socket(addrs->ai_family, addrs->ai_socktype, addrs->ai_protocol); this->theSocket == INVALID_SOCKET) {
+			if (this->doWePrintError) {
+				reportError("socket() Error: ", static_cast<int32_t>(this->theSocket));
+			}
+			return false;
+		}
+
+		if (auto returnValue = ::connect(this->theSocket, addrs->ai_addr, static_cast<int32_t>(addrs->ai_addrlen)); returnValue == SOCKET_ERROR) {
+			if (this->doWePrintError) {
+				reportError("connect() Error: ", returnValue);
+			}
+			return false;
+		}
+
+#ifdef _WIN32
+		char optionValue{ true };
+		if (auto returnValue = setsockopt(this->theSocket, IPPROTO_TCP, TCP_NODELAY, &optionValue, sizeof(optionValue)); returnValue == SOCKET_ERROR) {
+			if (this->doWePrintError) {
+				reportError("setsockopt() Error: ", returnValue);
+			}
+			return false;
+		}
+#else
+		int32_t optionValue{ 1 };
+		if (auto returnValue = setsockopt(this->theSocket, SOL_TCP, TCP_NODELAY, &optionValue, sizeof(optionValue)); returnValue == SOCKET_ERROR) {
+			if (this->doWePrintError) {
+				reportError("setsockopt() Error: ", returnValue);
+			}
+			return false;
+		}
+#endif
 
 		if (this->context = SSL_CTX_new(TLS_client_method()); this->context == nullptr) {
 			if (this->doWePrintError) {
@@ -114,59 +115,16 @@ namespace DiscordCoreInternal {
 			return false;
 		}
 
-		SSL_CTX_set_verify(this->context, SSL_VERIFY_PEER, nullptr);
-		SSL_CTX_set_verify_depth(this->context, 4);
-
-		std::unique_lock<std::mutex> theLock{ HttpSSLClient::theMutex };
-		if (!SSL_CTX_load_verify_locations(this->context, certPath.c_str(), NULL)) {
+		if (this->ssl = SSL_new(this->context); this->ssl == nullptr) {
 			if (this->doWePrintError) {
-				reportSSLError("SSL_CTX_load_verify_locations() Error: ");
-			}
-			return false;
-		}
-		theLock.unlock();
-
-		if (!SSL_CTX_set_cipher_list(this->context, "ALL")) {
-			if (this->doWePrintError) {
-				reportSSLError("SSL_CTX_set_cipher_list() Error: ");
+				reportSSLError("SSL_new() Error: ");
 			}
 			return false;
 		}
 
-		/* Do not allow SSL 3.0, TLS 1.0 or 1.1
-			 * https://www.packetlabs.net/posts/tls-1-1-no-longer-secure/
-			 */
-		if (!SSL_CTX_set_min_proto_version(this->context, TLS1_2_VERSION)) {
+		if (auto returnValue = SSL_set_fd(this->ssl, static_cast<int32_t>(this->theSocket)); !returnValue) {
 			if (this->doWePrintError) {
-				reportSSLError("SSL_CTX_set_min_proto_version() Error: ");
-			}
-			return false;
-		}
-
-		if (!SSL_CTX_set_ciphersuites(this->context, "TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256")) {
-			if (this->doWePrintError) {
-				reportSSLError("SSL_CTX_set_ciphersuites() Error: ");
-			}
-			return false;
-		}
-
-		if (this->connectionBio = BIO_new_ssl_connect(this->context); this->connectionBio == nullptr) {
-			if (this->doWePrintError) {
-				reportSSLError("BIO_new_ssl_connect() Error: ");
-			}
-			return false;
-		}
-
-		if (!BIO_set_conn_hostname(this->connectionBio, std::string(stringNew + ":" + portNew).c_str())) {
-			if (this->doWePrintError) {
-				reportSSLError("BIO_set_conn_hostname() Error: ");
-			}
-			return false;
-		}
-
-		if (BIO_get_ssl(this->connectionBio, &this->ssl); this->ssl == nullptr) {
-			if (this->doWePrintError) {
-				reportSSLError("BIO_get_ssl() Error: ");
+				reportSSLError("SSL_set_fd() Error: ", returnValue, this->ssl);
 			}
 			return false;
 		}
@@ -183,28 +141,9 @@ namespace DiscordCoreInternal {
 				reportSSLError("SSL_connect() Error: ", returnValue, this->ssl);
 			}
 			return false;
-		}
+		} 
+		freeaddrinfo(addrs);
 
-		if (std::unique_ptr<X509, X509Deleter> cert{ SSL_get1_peer_certificate(this->ssl) }; cert == nullptr) {
-			if (this->doWePrintError) {
-				reportSSLError("SSL_get_peer_certificate() Error: ", 0, this->ssl);
-			}
-			return false;
-		}
-
-		if (auto returnValue = SSL_get_verify_result(this->ssl); returnValue != X509_V_OK) {
-			if (this->doWePrintError) {
-				reportSSLError("SSL_get_verify_result() Error: ", returnValue, this->ssl);
-			}
-			return false;
-		}
-
-		if (this->theSocket = SSL_get_fd(this->ssl); this->theSocket == INVALID_SOCKET) {
-			if (this->doWePrintError) {
-				reportSSLError("SSL_get_fd() Error: ", static_cast<int32_t>(this->theSocket), this->ssl);
-			}
-			return false;
-		}
 		return true;
 	}
 

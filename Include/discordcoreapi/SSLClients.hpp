@@ -273,8 +273,6 @@ namespace DiscordCoreInternal {
 
 		bool processIO() noexcept;
 
-		static void initialize();
-
 		virtual ~HttpSSLClient() = default;
 
 	  protected:

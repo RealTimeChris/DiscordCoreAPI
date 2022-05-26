@@ -59,7 +59,6 @@ namespace DiscordCoreAPI {
 		std::signal(SIGABRT, &signalHandler);
 		std::signal(SIGFPE, &signalHandler);
 		this->functionsToExecute = functionsToExecuteNew;
-		DiscordCoreInternal::HttpSSLClient::initialize();
 		this->loggingOptions = loggingOptionsNew;
 		if (this->loggingOptions.logFFMPEGSuccessMessages) {
 			av_log_set_level(AV_LOG_VERBOSE);
@@ -159,6 +158,14 @@ namespace DiscordCoreAPI {
 						this->loggingOptions.logWebSocketErrorMessages, x * shardsPerGroup + y + this->shardingOptions.startingShard, this->shardingOptions.totalNumberOfShards);
 				this->webSocketMap.insert_or_assign(std::to_string(x * shardsPerGroup + y + this->shardingOptions.startingShard), std::move(thePtr));
 			}
+			if (x == 0) {
+				for (auto& value: this->functionsToExecute) {
+					TimeElapsedHandler<int64_t> onSend = [=, this](int64_t theArg) -> void {
+						value.function(this);
+					};
+					this->threadIds.push_back(ThreadPool::storeThread(onSend, value.intervalInMs, value.repeated, value.dummyArg));
+				}
+			}
 			if (shardGroupCount > 1 && x < shardGroupCount - 1) {
 				if (this->loggingOptions.logGeneralSuccessMessages) {
 					std::cout << shiftToBrightBlue() << "Waiting to connect the subsequent group of shards..." << std::endl << std::endl;
@@ -169,12 +176,6 @@ namespace DiscordCoreAPI {
 		this->currentUser = BotUser{ Users::getCurrentUserAsync().get(), this->webSocketMap[std::to_string(this->shardingOptions.startingShard)].get() };
 		if (this->loggingOptions.logGeneralSuccessMessages) {
 			std::cout << shiftToBrightGreen() << "All of the shards are connected for the current process!" << reset() << std::endl << std::endl;
-		}
-		for (auto& value: this->functionsToExecute) {
-			TimeElapsedHandler<int64_t> onSend = [=, this](int64_t theArg) -> void {
-				value.function(this);
-			};
-			this->threadIds.push_back(ThreadPool::storeThread(onSend, value.intervalInMs, value.repeated, value.dummyArg));
 		}
 		return true;
 	}
