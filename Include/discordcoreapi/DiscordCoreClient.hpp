@@ -84,13 +84,8 @@ namespace DiscordCoreAPI {
 		EventManager eventManager{};///< An EventManager.
 
 		/// DiscordCoreClient constructor. \brief DiscordCoreClient constructor.
-		/// \param botTokenNew A string containing your bot's token.
-		/// \param functionsToExecuteNew A vector of DiscordCoreAPI::RepeatedFunctionData, for potentially repeated functions.
-		/// \param cacheOptionsNew A DiscordCoreAPI::CacheOptions structure for cache settings.
-		/// \param shardOptionsNew A DiscordCoreAPI::ShardingOptions structure to select the shard configuration for this given process.
-		/// \param loggingOptionsNew A DiscordCoreAPI::LoggingOptions structure to select logging configuration options.
-		DiscordCoreClient(const std::string& botTokenNew, std::vector<RepeatedFunctionData> functionsToExecuteNew = std::vector<RepeatedFunctionData>{},
-			LoggingOptions loggingOptionsNew = LoggingOptions{}, CacheOptions cacheOptionsNew = CacheOptions{}, ShardingOptions shardOptionsNew = ShardingOptions{});
+		/// \param configData A DiscordCoreAPI::DiscordCoreClientConfig structure to select various library options.
+		DiscordCoreClient(DiscordCoreClientConfig configData);
 
 		/// For registering a function with the CommandController. \brief For registering a function with the CommandController.
 		/// \param functionNames A vector containing the possible names for activating this command/function.
@@ -120,6 +115,7 @@ namespace DiscordCoreAPI {
 		CacheOptions cacheOptions{};
 		ThreadPool threadPool{};
 		std::string botToken{};
+		TextFormat theFormat{};
 		BotUser currentUser{};
 
 		GatewayBotData getGateWayBot();

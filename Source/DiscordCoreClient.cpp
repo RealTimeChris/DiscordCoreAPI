@@ -49,8 +49,7 @@ namespace DiscordCoreAPI {
 		return Globals::songAPIMap;
 	}
 
-	DiscordCoreClient::DiscordCoreClient(const std::string& botTokenNew, std::vector<RepeatedFunctionData> functionsToExecuteNew, LoggingOptions loggingOptionsNew,
-		CacheOptions cacheOptionsNew, ShardingOptions shardOptionsNew) {
+	DiscordCoreClient::DiscordCoreClient(DiscordCoreClientConfig configData) {
 		curl_global_init(CURL_GLOBAL_NOTHING);
 		std::signal(SIGTERM, &signalHandler);
 		std::signal(SIGSEGV, &signalHandler);
@@ -58,8 +57,8 @@ namespace DiscordCoreAPI {
 		std::signal(SIGILL, &signalHandler);
 		std::signal(SIGABRT, &signalHandler);
 		std::signal(SIGFPE, &signalHandler);
-		this->functionsToExecute = functionsToExecuteNew;
-		this->loggingOptions = loggingOptionsNew;
+		this->functionsToExecute = configData.functionsToExecute;
+		this->loggingOptions = configData.logOptions;
 		if (this->loggingOptions.logFFMPEGSuccessMessages) {
 			av_log_set_level(AV_LOG_VERBOSE);
 		} else if (this->loggingOptions.logFFMPEGErrorMessages) {
@@ -72,8 +71,8 @@ namespace DiscordCoreAPI {
 				std::cout << DiscordCoreAPI::shiftToBrightRed() << "LibSodium failed to initialize!" << std::endl << std::endl << reset();
 			}
 		}
-		this->shardingOptions = shardOptionsNew;
-		this->cacheOptions = cacheOptionsNew;
+		this->shardingOptions = configData.shardOptions;
+		this->cacheOptions = configData.cacheOptions;
 		this->eventManager.onChannelCreation(&EventHandler::onChannelCreation);
 		this->eventManager.onChannelUpdate(&EventHandler::onChannelUpdate);
 		this->eventManager.onChannelDeletion(&EventHandler::onChannelDeletion);
@@ -89,7 +88,7 @@ namespace DiscordCoreAPI {
 		this->eventManager.onUserUpdate(&EventHandler::onUserUpdate);
 		this->eventManager.onVoiceStateUpdate(&EventHandler::onVoiceStateUpdate);
 		EventHandler::initialize(this->cacheOptions);
-		this->httpClient = std::make_unique<DiscordCoreInternal::HttpClient>(botTokenNew, this->loggingOptions.logHttpSuccessMessages, this->loggingOptions.logHttpErrorMessages,
+		this->httpClient = std::make_unique<DiscordCoreInternal::HttpClient>(configData.botToken, this->loggingOptions.logHttpSuccessMessages, this->loggingOptions.logHttpErrorMessages,
 			this->loggingOptions.logFFMPEGSuccessMessages, this->loggingOptions.logFFMPEGErrorMessages, this->loggingOptions.logWebSocketErrorMessages);
 		ApplicationCommands::initialize(this->httpClient.get());
 		Channels::initialize(this->httpClient.get(), this->cacheOptions.cacheChannels);
@@ -105,7 +104,8 @@ namespace DiscordCoreAPI {
 		Threads::initialize(this->httpClient.get());
 		Users::initialize(this->httpClient.get(), this->cacheOptions.cacheUsers);
 		WebHooks::initialize(this->httpClient.get());
-		this->botToken = botTokenNew;
+		this->botToken = configData.botToken;
+		this->theFormat = configData.textFormat;
 	}
 
 	void DiscordCoreClient::registerFunction(const std::vector<std::string>& functionNames, std::unique_ptr<BaseFunction> baseFunction) {
@@ -153,7 +153,7 @@ namespace DiscordCoreAPI {
 							  << std::endl;
 				}
 				auto thePtr =
-					std::make_unique<DiscordCoreInternal::BaseSocketAgent>(this->botToken, gatewayData.url.substr(gatewayData.url.find("wss://") + std::string("wss://").size()),
+					std::make_unique<DiscordCoreInternal::BaseSocketAgent>(this->botToken, "127.0.0.1",
 						&this->eventManager, this, &this->commandController, &Globals::doWeQuit, this->loggingOptions.logWebSocketSuccessMessages,
 						this->loggingOptions.logWebSocketErrorMessages, x * shardsPerGroup + y + this->shardingOptions.startingShard, this->shardingOptions.totalNumberOfShards);
 				this->webSocketMap.insert_or_assign(std::to_string(x * shardsPerGroup + y + this->shardingOptions.startingShard), std::move(thePtr));

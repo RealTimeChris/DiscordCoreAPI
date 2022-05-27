@@ -46,6 +46,12 @@ namespace DiscordCoreInternal {
 		this->currentShard = shardNumber;
 		this->botToken = botTokenNew;
 		this->doWeQuit = doWeQuitNew;
+		this->theFormat = this->discordCoreClient->theFormat;
+		if (this->theFormat == DiscordCoreAPI::TextFormat::Etf) {
+			this->dataOpcode = WebSocketOpCode::Op_Binary;
+		} else {
+			this->dataOpcode = WebSocketOpCode::Op_Text;
+		}
 		this->baseUrl = baseUrl;
 		this->doWeReconnect.set();
 		this->theTask = std::make_unique<std::jthread>([this](std::stop_token theToken) {

@@ -759,6 +759,7 @@ namespace DiscordCoreAPI {
 	 * @{
 	 */
 
+	/// Represents which text format to use for websocket transfer. \brief Represents which text format to use for websocket transfer.
 	enum class TextFormat {
 		Json = 0,///< Json format.
 		Etf = 1///< Etf format.
@@ -3448,6 +3449,16 @@ namespace DiscordCoreAPI {
 	 * \addtogroup utilities
 	 * @{
 	 */
+
+	/// Configuration data for the library's main class, DiscordCoreClient. \brief Configuration data for the library's main class, DiscordCoreClient.
+	struct DiscordCoreAPI_Dll DiscordCoreClientConfig {
+		std::vector<RepeatedFunctionData> functionsToExecute{};///< Functions to execute after a timer, or on a repetition.
+		ShardingOptions shardOptions{};///< Options for the sharding of your bot.
+		LoggingOptions logOptions{};///< Options for the output/logging of the library.
+		CacheOptions cacheOptions{};///< Options for the cache of the library.
+		TextFormat textFormat{};///< Use ETF or JSON format for websocket transfer?
+		std::string botToken{};///< Your bot's token.
+	};
 
 	/// Base arguments for the command classes. \brief Base arguments for the command classes.
 	struct DiscordCoreAPI_Dll BaseFunctionArguments {
