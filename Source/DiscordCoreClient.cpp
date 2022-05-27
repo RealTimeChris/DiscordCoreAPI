@@ -59,6 +59,7 @@ namespace DiscordCoreAPI {
 		std::signal(SIGFPE, &signalHandler);
 		this->functionsToExecute = configData.functionsToExecute;
 		this->loggingOptions = configData.logOptions;
+		this->altAddress = configData.alternateConnectionAddress;
 		if (this->loggingOptions.logFFMPEGSuccessMessages) {
 			av_log_set_level(AV_LOG_VERBOSE);
 		} else if (this->loggingOptions.logFFMPEGErrorMessages) {
@@ -152,10 +153,12 @@ namespace DiscordCoreAPI {
 							std::to_string(this->shardingOptions.totalNumberOfShards) + std::string(" Shards total across all processes.)")
 							  << std::endl;
 				}
-				auto thePtr =
-					std::make_unique<DiscordCoreInternal::BaseSocketAgent>(this->botToken, gatewayData.url.substr(gatewayData.url.find("wss://") + std::string("wss://").size()),
-						&this->eventManager, this, &this->commandController, &Globals::doWeQuit, this->loggingOptions.logWebSocketSuccessMessages,
-						this->loggingOptions.logWebSocketErrorMessages, x * shardsPerGroup + y + this->shardingOptions.startingShard, this->shardingOptions.totalNumberOfShards);
+				if (this->altAddress == "") {
+					this->altAddress = gatewayData.url.substr(gatewayData.url.find("wss://") + std::string("wss://").size());
+				}
+				auto thePtr = std::make_unique<DiscordCoreInternal::BaseSocketAgent>(this->botToken, this->altAddress, &this->eventManager, this, &this->commandController,
+					&Globals::doWeQuit, this->loggingOptions.logWebSocketSuccessMessages, this->loggingOptions.logWebSocketErrorMessages,
+					x * shardsPerGroup + y + this->shardingOptions.startingShard, this->shardingOptions.totalNumberOfShards);
 				this->webSocketMap.insert_or_assign(std::to_string(x * shardsPerGroup + y + this->shardingOptions.startingShard), std::move(thePtr));
 			}
 			if (x == 0) {
