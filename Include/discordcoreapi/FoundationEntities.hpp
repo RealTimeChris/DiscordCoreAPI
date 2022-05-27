@@ -3453,6 +3453,7 @@ namespace DiscordCoreAPI {
 	/// Configuration data for the library's main class, DiscordCoreClient. \brief Configuration data for the library's main class, DiscordCoreClient.
 	struct DiscordCoreAPI_Dll DiscordCoreClientConfig {
 		std::vector<RepeatedFunctionData> functionsToExecute{};///< Functions to execute after a timer, or on a repetition.
+		std::string alternateConnectionAddress{};///< A potentially alternative connection address for the websocket.
 		ShardingOptions shardOptions{};///< Options for the sharding of your bot.
 		LoggingOptions logOptions{};///< Options for the output/logging of the library.
 		CacheOptions cacheOptions{};///< Options for the cache of the library.

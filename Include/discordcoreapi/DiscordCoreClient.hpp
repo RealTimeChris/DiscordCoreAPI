@@ -113,6 +113,7 @@ namespace DiscordCoreAPI {
 		ShardingOptions shardingOptions{};
 		LoggingOptions loggingOptions{};
 		CacheOptions cacheOptions{};
+		std::string altAddress{};
 		ThreadPool threadPool{};
 		std::string botToken{};
 		TextFormat theFormat{};
