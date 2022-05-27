@@ -30,7 +30,6 @@ namespace DiscordCoreAPI {
 		YouTubeAPIMap youtubeAPIMap{};
 		SongAPIMap songAPIMap{};
 		std::atomic_bool doWeQuit{ false };
-		std::atomic_flag weveQuit{};
 	}
 
 	VoiceConnectionMap& getVoiceConnectionMap() {
@@ -60,11 +59,15 @@ namespace DiscordCoreAPI {
 		this->functionsToExecute = configData.functionsToExecute;
 		this->loggingOptions = configData.logOptions;
 		this->altAddress = configData.alternateConnectionAddress;
+		this->shardingOptions = configData.shardOptions;
+		this->cacheOptions = configData.cacheOptions;
 		if (this->loggingOptions.logFFMPEGSuccessMessages) {
-			av_log_set_level(AV_LOG_VERBOSE);
-		} else if (this->loggingOptions.logFFMPEGErrorMessages) {
+			av_log_set_level(AV_LOG_INFO);
+		} 
+		if (this->loggingOptions.logFFMPEGErrorMessages) {
 			av_log_set_level(AV_LOG_ERROR);
-		} else {
+		}
+		if (!this->loggingOptions.logFFMPEGErrorMessages && !this->loggingOptions.logFFMPEGSuccessMessages) {
 			av_log_set_level(AV_LOG_QUIET);
 		}
 		if (sodium_init() == -1) {
@@ -72,8 +75,6 @@ namespace DiscordCoreAPI {
 				std::cout << DiscordCoreAPI::shiftToBrightRed() << "LibSodium failed to initialize!" << std::endl << std::endl << reset();
 			}
 		}
-		this->shardingOptions = configData.shardOptions;
-		this->cacheOptions = configData.cacheOptions;
 		this->eventManager.onChannelCreation(&EventHandler::onChannelCreation);
 		this->eventManager.onChannelUpdate(&EventHandler::onChannelUpdate);
 		this->eventManager.onChannelDeletion(&EventHandler::onChannelDeletion);
@@ -122,7 +123,6 @@ namespace DiscordCoreAPI {
 			return;
 		}
 		this->webSocketMap[std::to_string(this->shardingOptions.startingShard)]->getTheTask()->join();
-		DiscordCoreAPI::Globals::weveQuit.test_and_set();
 	}
 
 	bool DiscordCoreClient::instantiateWebSockets() {

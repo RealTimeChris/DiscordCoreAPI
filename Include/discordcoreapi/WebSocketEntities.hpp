@@ -84,10 +84,9 @@ namespace DiscordCoreInternal {
 		std::mutex accessorMutex01{};
 		EventWaiter doWeReconnect{};
 		bool areWeResuming{ false };
-		int32_t currentShard{ 0 };
-		int32_t numOfShards{ 0 };
 		std::string sessionId{};
 		uint32_t closeCode{ 0 };
+		nlohmann::json shard{};
 		WebSocketState state{};
 		std::string botToken{};
 		ErlPacker erlPacker{};

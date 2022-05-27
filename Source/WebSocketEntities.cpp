@@ -25,13 +25,13 @@
 
 namespace DiscordCoreInternal {
 
-	constexpr unsigned char webSocketPayloadLengthMagicLarge{ 126 };
-	constexpr unsigned char webSocketPayloadLengthMagicHuge{ 127 };
-	constexpr uint64_t webSocketMaxPayloadLengthLarge{ 65535 };
-	constexpr unsigned char webSocketFinishBit{ (1u << 7u) };
-	constexpr uint64_t webSocketMaxPayloadLengthSmall{ 125 };
+	constexpr uint16_t webSocketMaxPayloadLengthLarge{ 65535 };
+	constexpr uint8_t webSocketPayloadLengthMagicLarge{ 126 };
+	constexpr uint8_t webSocketPayloadLengthMagicHuge{ 127 };
 	constexpr uint8_t maxHeaderSize{ sizeof(uint64_t) + 2 };
-	constexpr unsigned char webSocketMaskBit{ (1u << 7u) };
+	constexpr uint8_t webSocketMaxPayloadLengthSmall{ 125 };
+	constexpr uint8_t webSocketFinishBit{ (1u << 7u) };
+	constexpr uint8_t webSocketMaskBit{ (1u << 7u) };
 
 	BaseSocketAgent::BaseSocketAgent(const std::string& botTokenNew, const std::string& baseUrl, DiscordCoreAPI::EventManager* eventManager,
 		DiscordCoreAPI::DiscordCoreClient* discordCoreClient, DiscordCoreAPI::CommandController* commandController, std::atomic_bool* doWeQuitNew, bool doWePrintSuccessMessages,
@@ -41,9 +41,10 @@ namespace DiscordCoreInternal {
 		this->commandController = commandController;
 		this->discordCoreClient = discordCoreClient;
 		this->state = WebSocketState::Initializing;
-		this->numOfShards = numberOfShards;
 		this->eventManager = eventManager;
-		this->currentShard = shardNumber;
+		this->shard = nlohmann::json::array();
+		this->shard.push_back(shardNumber);
+		this->shard.push_back(numberOfShards);
 		this->botToken = botTokenNew;
 		this->doWeQuit = doWeQuitNew;
 		this->theFormat = this->discordCoreClient->theFormat;
@@ -68,7 +69,8 @@ namespace DiscordCoreInternal {
 		try {
 			std::lock_guard<std::mutex> accessLock{ this->accessorMutex01 };
 			if (this->printSuccessMessages) {
-				std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Sending WebSocket Message: " << std::endl << dataToSend << DiscordCoreAPI::reset();
+				std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Sending WebSocket " + this->shard.dump() + std::string("'s Message: ") << std::endl
+						  << dataToSend << DiscordCoreAPI::reset();
 			}
 			this->webSocket->writeData(dataToSend);
 		} catch (...) {
@@ -93,7 +95,8 @@ namespace DiscordCoreInternal {
 			}
 			std::lock_guard<std::mutex> accessLock{ this->accessorMutex01 };
 			if (this->printSuccessMessages) {
-				std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Sending WebSocket Message: " << dataToSend.dump() << std::endl << DiscordCoreAPI::reset() << std::endl;
+				std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Sending WebSocket " + this->shard.dump() + std::string("'s Message: ") << dataToSend.dump() << std::endl
+						  << DiscordCoreAPI::reset() << std::endl;
 			}
 			std::string theVector{};
 			std::string out{};
@@ -320,8 +323,7 @@ namespace DiscordCoreInternal {
 
 			if (payload["op"] == 7) {
 				if (this->printSuccessMessages) {
-					std::cout << DiscordCoreAPI::shiftToBrightBlue()
-							  << "Shard [" + std::to_string(this->currentShard) + ", " + std::to_string(this->numOfShards) + "] - Reconnecting (Type 7)!" << std::endl
+					std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Shard " + this->shard.dump() + " Reconnecting (Type 7)!" << std::endl
 							  << DiscordCoreAPI::reset() << std::endl;
 				}
 				this->areWeResuming = true;
@@ -333,8 +335,7 @@ namespace DiscordCoreInternal {
 
 			if (payload["op"] == 9) {
 				if (this->printSuccessMessages) {
-					std::cout << DiscordCoreAPI::shiftToBrightBlue()
-							  << "Shard [" + std::to_string(this->currentShard) + ", " + std::to_string(this->numOfShards) + "] - Reconnecting (Type 9)!" << std::endl
+					std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Shard " + this->shard.dump() + " Reconnecting (Type 9)!" << std::endl
 							  << DiscordCoreAPI::reset() << std::endl;
 				}
 				this->currentReconnectTries += 1;
@@ -343,7 +344,7 @@ namespace DiscordCoreInternal {
 					static_cast<int32_t>(1000.0f + ((static_cast<float>(randomEngine()) / static_cast<float>(randomEngine.max())) * static_cast<float>(4000.0f)));
 				std::this_thread::sleep_for(std::chrono::milliseconds{ numOfMsToWait });
 				if (payload["d"] == true) {
-					nlohmann::json identityJson = JSONIFY(this->botToken, static_cast<int32_t>(this->intentsValue), this->currentShard, this->numOfShards);
+					nlohmann::json identityJson = JSONIFY(this->botToken, static_cast<int32_t>(this->intentsValue), this->shard[0], this->shard[1]);
 					this->sendMessage(identityJson);
 				} else {
 					this->areWeConnected.store(false);
@@ -358,7 +359,7 @@ namespace DiscordCoreInternal {
 				this->heartbeatInterval = payload["d"]["heartbeat_interval"];
 				this->areWeHeartBeating = false;
 				if (!this->areWeAuthenticated) {
-					nlohmann::json identityJson = JSONIFY(this->botToken, static_cast<int32_t>(this->intentsValue), this->currentShard, this->numOfShards);
+					nlohmann::json identityJson = JSONIFY(this->botToken, static_cast<int32_t>(this->intentsValue), this->shard[0], this->shard[1]);
 					this->sendMessage(identityJson);
 				}
 				if (this->areWeResuming) {
@@ -794,7 +795,8 @@ namespace DiscordCoreInternal {
 				}
 			}
 			if (this->printSuccessMessages) {
-				std::cout << DiscordCoreAPI::shiftToBrightGreen() << "Message received from WebSocket: " << payload.dump() << std::endl << DiscordCoreAPI::reset() << std::endl;
+				std::cout << DiscordCoreAPI::shiftToBrightGreen() << "Message received from WebSocket " + this->shard.dump() + std::string(": ") << payload.dump() << std::endl
+						  << DiscordCoreAPI::reset() << std::endl;
 			}
 			return;
 		} catch (...) {
