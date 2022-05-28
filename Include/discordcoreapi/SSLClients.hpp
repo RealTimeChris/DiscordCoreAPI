@@ -47,7 +47,7 @@
 
 namespace DiscordCoreInternal {
 
-	using SOCKET = uint64_t;
+	using SOCKET = int32_t;
 
 #ifndef INVALID_SOCKET
 	#define INVALID_SOCKET static_cast<SOCKET>(~0)

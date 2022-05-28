@@ -54,13 +54,12 @@ namespace DiscordCoreInternal {
 				baseUrl.substr(baseUrl.find("https://") + std::string("https://").size(), baseUrl.find(".org") + std::string(".org").size() - std::string("https://").size());
 		}
 
-		addrinfo hints, *addrs;
-		memset(&hints, 0, sizeof(addrinfo));
-		hints.ai_family = AF_UNSPEC;
-		hints.ai_socktype = SOCK_STREAM;
-		hints.ai_protocol = IPPROTO_TCP;
+		addrinfoWrapper hints{ nullptr }, addrs{ nullptr };
+		hints->ai_family = AF_UNSPEC;
+		hints->ai_socktype = SOCK_STREAM;
+		hints->ai_protocol = IPPROTO_TCP;
 
-		if (auto returnValue = getaddrinfo(stringNew.c_str(), portNew.c_str(), &hints, &addrs); returnValue == SOCKET_ERROR) {
+		if (auto returnValue = getaddrinfo(stringNew.c_str(), portNew.c_str(), hints, addrs); returnValue == SOCKET_ERROR) {
 			if (this->doWePrintError) {
 				reportError("getaddrinfo() Error: ", returnValue);
 			}
@@ -69,12 +68,12 @@ namespace DiscordCoreInternal {
 
 		if (this->theSocket = socket(addrs->ai_family, addrs->ai_socktype, addrs->ai_protocol); this->theSocket == INVALID_SOCKET) {
 			if (this->doWePrintError) {
-				reportError("socket() Error: ", static_cast<int32_t>(this->theSocket));
+				reportError("socket() Error: ", this->theSocket);
 			}
 			return false;
 		}
 
-		if (auto returnValue = ::connect(this->theSocket, addrs->ai_addr, static_cast<int32_t>(addrs->ai_addrlen)); returnValue == SOCKET_ERROR) {
+		if (auto returnValue = ::connect(this->theSocket, addrs->ai_addr, addrs->ai_addrlen); returnValue == SOCKET_ERROR) {
 			if (this->doWePrintError) {
 				reportError("connect() Error: ", returnValue);
 			}
@@ -121,7 +120,7 @@ namespace DiscordCoreInternal {
 			return false;
 		}
 
-		if (auto returnValue = SSL_set_fd(this->ssl, static_cast<int32_t>(this->theSocket)); !returnValue) {
+		if (auto returnValue = SSL_set_fd(this->ssl, this->theSocket); !returnValue) {
 			if (this->doWePrintError) {
 				reportSSLError("SSL_set_fd() Error: ", returnValue, this->ssl);
 			}
@@ -140,8 +139,7 @@ namespace DiscordCoreInternal {
 				reportSSLError("SSL_connect() Error: ", returnValue, this->ssl);
 			}
 			return false;
-		} 
-		freeaddrinfo(addrs);
+		}
 
 		return true;
 	}
@@ -157,7 +155,7 @@ namespace DiscordCoreInternal {
 	bool HttpSSLClient::processIO() noexcept {
 #ifdef _WIN32
 		fd_set writeSet{}, readSet{};
-		uint64_t nfds{ 0 };
+		int32_t nfds{ 0 };
 		FD_ZERO(&writeSet);
 		FD_ZERO(&readSet);
 
@@ -170,7 +168,7 @@ namespace DiscordCoreInternal {
 		}
 
 		timeval checkTime{ .tv_usec = 1000 };
-		if (auto resultValue = select(static_cast<int32_t>(nfds + 1), &readSet, &writeSet, nullptr, &checkTime); resultValue == SOCKET_ERROR) {
+		if (auto resultValue = select(nfds + 1, &readSet, &writeSet, nullptr, &checkTime); resultValue == SOCKET_ERROR) {
 			if (this->doWePrintError) {
 				reportError("select() Error: ", resultValue);
 			}
@@ -318,12 +316,12 @@ namespace DiscordCoreInternal {
 
 		if (this->theSocket = socket(resultAddress->ai_family, resultAddress->ai_socktype, resultAddress->ai_protocol); this->theSocket == INVALID_SOCKET) {
 			if (this->doWePrintError) {
-				reportError("socket() Error: ", static_cast<int32_t>(this->theSocket));
+				reportError("socket() Error: ", this->theSocket);
 			}
 			return;
 		}
 
-		if (auto returnValue = connect(this->theSocket, resultAddress->ai_addr, static_cast<int32_t>(resultAddress->ai_addrlen)); returnValue == SOCKET_ERROR) {
+		if (auto returnValue = connect(this->theSocket, resultAddress->ai_addr, resultAddress->ai_addrlen); returnValue == SOCKET_ERROR) {
 			if (this->doWePrintError) {
 				reportError("connect() Error: ", returnValue);
 			}
@@ -370,7 +368,7 @@ namespace DiscordCoreInternal {
 			return;
 		}
 
-		if (auto returnValue = SSL_set_fd(this->ssl, static_cast<int32_t>(this->theSocket)); !returnValue) {
+		if (auto returnValue = SSL_set_fd(this->ssl, this->theSocket); !returnValue) {
 			if (this->doWePrintError) {
 				reportSSLError("SSL_set_fd() Error: ", returnValue, this->ssl);
 			}
@@ -396,7 +394,7 @@ namespace DiscordCoreInternal {
 	bool WebSocketSSLClient::processIO(int32_t waitTimeInMicroSeconds) noexcept {
 #ifdef _WIN32
 		fd_set writeSet{}, readSet{};
-		uint64_t nfds{ 0 };
+		int32_t nfds{ 0 };
 		FD_ZERO(&writeSet);
 		FD_ZERO(&readSet);
 
@@ -411,7 +409,7 @@ namespace DiscordCoreInternal {
 		}
 
 		timeval checkTime{ .tv_usec = waitTimeInMicroSeconds };
-		if (auto resultValue = select(static_cast<int32_t>(nfds + 1), &readSet, &writeSet, nullptr, &checkTime); resultValue == SOCKET_ERROR) {
+		if (auto resultValue = select(nfds + 1, &readSet, &writeSet, nullptr, &checkTime); resultValue == SOCKET_ERROR) {
 			if (this->doWePrintError) {
 				reportError("select() Error: ", resultValue);
 			}
@@ -577,7 +575,7 @@ namespace DiscordCoreInternal {
 			return;
 		}
 
-		if (auto returnValue = connect(this->theSocket, resultAddress->ai_addr, static_cast<int32_t>(resultAddress->ai_addrlen)); returnValue == SOCKET_ERROR) {
+		if (auto returnValue = connect(this->theSocket, resultAddress->ai_addr, resultAddress->ai_addrlen); returnValue == SOCKET_ERROR) {
 			if (this->doWePrintError) {
 				reportError("connect() Error: ", returnValue);
 			}
@@ -600,7 +598,7 @@ namespace DiscordCoreInternal {
 			return;
 		}
 #endif
-		if (this->datagramBio = BIO_new_dgram(static_cast<int32_t>(this->theSocket), BIO_CLOSE); this->datagramBio == nullptr) {
+		if (this->datagramBio = BIO_new_dgram(this->theSocket, BIO_CLOSE); this->datagramBio == nullptr) {
 			if (this->doWePrintError) {
 				reportSSLError("BIO_new_dgram() Error: ");
 			}
