@@ -73,7 +73,7 @@ namespace DiscordCoreInternal {
 			return false;
 		}
 
-		if (auto returnValue = ::connect(this->theSocket, addrs->ai_addr, addrs->ai_addrlen); returnValue == SOCKET_ERROR) {
+		if (auto returnValue = ::connect(this->theSocket, addrs->ai_addr, static_cast<int32_t>(addrs->ai_addrlen)); returnValue == SOCKET_ERROR) {
 			if (this->doWePrintError) {
 				reportError("connect() Error: ", returnValue);
 			}
@@ -321,7 +321,7 @@ namespace DiscordCoreInternal {
 			return;
 		}
 
-		if (auto returnValue = connect(this->theSocket, resultAddress->ai_addr, resultAddress->ai_addrlen); returnValue == SOCKET_ERROR) {
+		if (auto returnValue = connect(this->theSocket, resultAddress->ai_addr, static_cast<int32_t>(resultAddress->ai_addrlen)); returnValue == SOCKET_ERROR) {
 			if (this->doWePrintError) {
 				reportError("connect() Error: ", returnValue);
 			}
@@ -575,7 +575,7 @@ namespace DiscordCoreInternal {
 			return;
 		}
 
-		if (auto returnValue = connect(this->theSocket, resultAddress->ai_addr, resultAddress->ai_addrlen); returnValue == SOCKET_ERROR) {
+		if (auto returnValue = connect(this->theSocket, resultAddress->ai_addr, static_cast<int32_t>(resultAddress->ai_addrlen)); returnValue == SOCKET_ERROR) {
 			if (this->doWePrintError) {
 				reportError("connect() Error: ", returnValue);
 			}
