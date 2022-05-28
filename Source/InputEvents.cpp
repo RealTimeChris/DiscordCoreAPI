@@ -14,7 +14,6 @@
 */
 /// InputEvents.cpp - Source file for the input-event handler class.
 /// Aug 18, 2021
-/// Chris M.
 /// https://discordcoreapi.com
 /// \file InputEvents.cpp
 

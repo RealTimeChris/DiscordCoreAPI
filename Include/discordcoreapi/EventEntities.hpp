@@ -14,7 +14,6 @@
 */
 /// EventEntities.hpp - Header for the "Event-related stuff".
 /// Dec 12, 2021
-/// Chris M.
 /// https://discordcoreapi.com
 /// \file EventEntities.hpp
 

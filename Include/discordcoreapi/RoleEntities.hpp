@@ -14,7 +14,6 @@
 */
 /// RoleEntities.hpp - Header for the Role related classes and structs.
 /// May 13, 2021
-/// Chris M.
 /// https://discordcoreapi.com
 /// \file RoleEntities.hpp
 

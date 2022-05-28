@@ -14,7 +14,6 @@
 */
 /// InteractionEntities.cpp - Source file for the interaction related classes and structs.
 /// May 28, 2021
-/// Chris M.
 /// https://discordcoreapi.com
 /// \file InteractionEntities.cpp
 

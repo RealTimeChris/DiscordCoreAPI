@@ -14,7 +14,6 @@
 */
 /// ApplicationCommandEntities.cpp - Source file for the ApplicationCommand classes and structs.
 /// Aug 25, 2021
-/// Chris M.
 /// https://discordcoreapi.com
 /// \file ApplicationCommandEntities.cpp
 

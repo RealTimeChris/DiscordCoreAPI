@@ -14,7 +14,6 @@
 */
 /// FoundationEntities.cpp - Source file for the foundation entities.
 /// Oct 1, 2021
-/// Chris M.
 /// https://discordcoreapi.com
 /// \file FoundationEntities.cpp
 

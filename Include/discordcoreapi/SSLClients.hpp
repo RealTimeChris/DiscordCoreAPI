@@ -14,7 +14,6 @@
 */
 /// SSLClents.hpp - Header file for the "SSL Client" stuff.
 /// Dec 12, 2021
-/// Chris M.
 /// https://discordcoreapi.com
 /// \file SSLClients.hpp
 

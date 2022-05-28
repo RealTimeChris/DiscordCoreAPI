@@ -14,7 +14,6 @@
 */
 /// Http.hpp - Header file for the "Http Stuff".
 /// May 12, 2021
-/// Chris M.
 /// https://discordcoreapi.com
 /// \file Http.hpp
 

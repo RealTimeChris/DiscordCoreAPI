@@ -14,7 +14,6 @@
 */
 /// WebHookEntities.hpp - The header file for WebHook relate stuff.
 /// Dec 1, 2021
-/// Chris M.
 /// https://discordcoreapi.com
 /// \file WebHookEntities.hpp
 

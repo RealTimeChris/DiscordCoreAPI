@@ -14,7 +14,6 @@
 */
 /// ErlPacker.hpp - Header for the erlpacking class.
 /// Nov 8, 2021
-/// Chris M.
 /// https://discordcoreapi.com
 /// \file ErlPacker.hpp
 

@@ -14,7 +14,6 @@
 */
 /// VoiceConnection.cpp - Source file for the voice connection class.
 /// Jul 15, 2021
-/// Chris M.
 /// https://discordcoreapi.com
 /// \file VoiceConnection.cpp
 

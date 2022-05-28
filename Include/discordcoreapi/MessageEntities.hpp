@@ -14,7 +14,6 @@
 */
 /// MessageEntities.hpp - Header for the Message related classes and structs.
 /// May 13, 2021
-/// Chris M.
 /// https://discordcoreapi.com
 /// \file MessageEntities.hpp
 

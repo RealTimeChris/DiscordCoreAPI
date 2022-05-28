@@ -14,7 +14,6 @@
 */
 /// VoiceConnection.hpp - Header for the voice connection class.
 /// Jul 15, 2021
-/// Chris M.
 /// https://discordcoreapi.com
 /// \file VoiceConnection.hpp
 

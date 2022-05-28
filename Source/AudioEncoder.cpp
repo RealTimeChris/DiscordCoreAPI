@@ -14,7 +14,6 @@
 */
 /// AudioEncoder.cpp - Source file for the audio encoder class.
 /// Aug 22, 2021
-/// Chris M.
 /// https://discordcoreapi.com
 /// \file AudioEncoder.cpp
 

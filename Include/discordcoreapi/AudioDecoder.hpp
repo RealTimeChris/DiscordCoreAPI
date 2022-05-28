@@ -14,7 +14,6 @@
 */
 /// AudioDecoder.hpp - Header for the audio decoder class.
 /// Jul 29, 2021
-/// Chris M.
 /// https://discordcoreapi.com
 /// \file AudioDecoder.hpp
 

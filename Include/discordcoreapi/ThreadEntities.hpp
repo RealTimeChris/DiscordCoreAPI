@@ -14,7 +14,6 @@
 */
 /// ThreadEntities.hpp - Header file for the thread-related stuff.
 /// Nov 29, 2021
-/// Chris M.
 /// https://discordcoreapi.com
 /// \file ThreadEntities.hpp
 

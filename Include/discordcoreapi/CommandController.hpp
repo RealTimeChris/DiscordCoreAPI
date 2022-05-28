@@ -14,7 +14,6 @@
 */
 /// CommandController.hpp - Wrangler header for the command controller.
 /// May 20, 2021
-/// Chris M.
 /// https://discordcoreapi.com
 /// \file CommandController.hpp
 

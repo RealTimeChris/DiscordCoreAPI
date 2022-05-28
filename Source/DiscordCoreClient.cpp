@@ -14,7 +14,6 @@
 */
 /// DiscordCoreClient01.cpp - Source file for the main/exposed DiscordCoreClient class.
 /// May 12, 2021
-/// Chris M.
 /// https://discordcoreapi.com
 /// \file DiscordCoreClient.cpp
 

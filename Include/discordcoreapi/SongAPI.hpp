@@ -14,7 +14,6 @@
 */
 /// SongAPI.hpp - Header for the song api related stuff.
 /// Sep 17, 2021
-/// Chris M.
 /// https://discordcoreapi.com
 /// \file SongAPI.hpp
 

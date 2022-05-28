@@ -14,7 +14,6 @@
 */
 /// GuildScheduledEventEntities.cpp - Source file for the Guild Scheduled Events stuff.
 /// Nov 27, 2021
-/// Chris M.
 /// https://discordcoreapi.com
 /// \file GuildScheduledEventEntities.cpp
 

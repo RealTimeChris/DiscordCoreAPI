@@ -14,7 +14,6 @@
 */
 /// WebHookEntities.cpp - The source file for WebHook relate stuff.
 /// Dec 1, 2021
-/// Chris M.
 /// https://discordcoreapi.com
 /// \file WebHookEntities.cpp
 

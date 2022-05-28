@@ -14,7 +14,6 @@
 */
 /// SoundCloudAPI.hpp - Header for the SoundCloud api related stuff.
 /// Aug 25, 2021
-/// Chris M.
 /// https://discordcoreapi.com
 /// \file SoundCloudAPI.hpp
 

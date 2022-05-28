@@ -14,9 +14,7 @@
 */
 /// YouTubeAPI.hpp - Header for the YouTube API related stuff.
 /// Jun 30, 2021
-/// Chris M.
 /// https://discordcoreapi.com
-///
 /// \file YouTubeAPI.hpp
 
 #pragma once

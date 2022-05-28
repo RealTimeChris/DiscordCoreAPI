@@ -14,7 +14,6 @@
 */
 /// EventManager.hpp - Header for the event manager class.
 /// Jun 7, 2021
-/// Chris M.
 /// https://discordcoreapi.com
 /// \file EventManager.cpp
 

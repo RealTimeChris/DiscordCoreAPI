@@ -14,7 +14,6 @@
 */
 /// CommandController.cpp - Source file for the command controller.
 /// May 20, 2021
-/// Chris M.
 /// https://discordcoreapi.com
 /// \file CommandController.cpp
 

@@ -12,7 +12,6 @@
 */
 /// Http.cpp - Source file for the Http class.
 /// May 12, 2021
-/// Chris M.
 /// https://discordcoreapi.com
 /// \file Http.cpp
 

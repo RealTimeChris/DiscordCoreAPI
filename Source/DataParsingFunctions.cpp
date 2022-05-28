@@ -14,7 +14,6 @@
 */
 /// DataParsingFunctions.cpp - Source for the functions that will parse the Discord data into C++ types.
 /// Apr 21, 2021
-/// Chris M.
 /// https://discordcoreapi.com
 /// \file DataParsingFunctions.cpp
 

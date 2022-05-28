@@ -12,7 +12,6 @@
 */
 /// ThreadPool.hpp - Header for the "Thread-Pool" related stuff.
 /// Dec 18, 2021
-/// Chris M.
 /// https://discordcoreapi.com
 /// \file ThreadPool.hpp
 

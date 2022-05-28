@@ -14,7 +14,6 @@
 */
 /// JSONIfier.hpp - For all things related to JSON parsing etc.
 /// Apr 21, 2021
-/// Chris M.
 /// https://discordcoreapi.com
 /// \file JSONIfier.hpp
 

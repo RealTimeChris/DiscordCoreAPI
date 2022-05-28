@@ -12,7 +12,6 @@
 */
 /// CoRoutine.hpp - Header for the coroutine class.
 /// Oct 23, 2021
-/// Chris M.
 /// https://discordcoreapi.com
 /// \file CoRoutine.hpp
 

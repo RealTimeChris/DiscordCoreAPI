@@ -14,7 +14,6 @@
 */
 /// ReactionEntities.cpp - Source file for the reaction related classes and structs.
 /// May 13, 2021
-/// Chris M.
 /// https://discordcoreapi.com
 /// \file ReactionEntities.cpp
 

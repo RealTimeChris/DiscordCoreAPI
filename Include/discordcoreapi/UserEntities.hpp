@@ -14,7 +14,6 @@
 */
 /// UserEntities.hpp - Header for User related classes and structs.
 /// May 13, 2021
-/// Chris M.
 /// https://discordcoreapi.com
 /// \file UserEntities.hpp
 

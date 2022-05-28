@@ -14,7 +14,6 @@
 */
 /// DllMain.cpp : Defines the entry point for the DLL application.
 /// Feb 18, 2022
-/// Chris M.
 /// https://discordcoreapi.com
 /// \file DllMain.cpp
 

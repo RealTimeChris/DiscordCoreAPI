@@ -14,7 +14,6 @@
 */
 /// GuildEntities.hpp - Header for the Guild classes and structs.
 /// May 12, 2021
-/// Chris M.
 /// https://discordcoreapi.com
 /// \file GuildEntities.hpp
 

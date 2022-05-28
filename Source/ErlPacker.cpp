@@ -14,7 +14,6 @@
 */
 /// ErlPacker.cpp - Source file for the erlpacking class.
 /// Nov 8, 2021
-/// Chris M.
 /// https://discordcoreapi.com
 /// \file ErlPacker.cpp
 

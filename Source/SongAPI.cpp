@@ -14,7 +14,6 @@
 */
 /// SongAPI.cpp - Source file for the song api related stuff.
 /// Sep 17, 2021
-/// Chris M.
 /// https://discordcoreapi.com
 /// \file SongAPI.cpp
 
