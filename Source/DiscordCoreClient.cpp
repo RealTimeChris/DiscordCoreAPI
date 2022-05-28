@@ -47,7 +47,39 @@ namespace DiscordCoreAPI {
 		return Globals::songAPIMap;
 	}
 
+	void atexitHandler() {
+		Globals::doWeQuit.store(true);
+	}
+
+	void signalHandler(int32_t sig_int) {
+		Globals::doWeQuit.store(true);
+		switch (sig_int) {
+			case SIGINT: {
+				exit(EXIT_SUCCESS);
+			}
+			case SIGTERM: {
+				exit(EXIT_SUCCESS);
+			}
+			case SIGABRT: {
+				exit(EXIT_SUCCESS);
+			}
+			case SIGILL: {
+				exit(EXIT_SUCCESS);
+			}
+			case SIGSEGV: {
+				exit(EXIT_SUCCESS);
+			}
+			case SIGFPE: {
+				exit(EXIT_SUCCESS);
+			}
+			default: {
+				return;
+			}
+		}
+	}
+
 	DiscordCoreClient::DiscordCoreClient(DiscordCoreClientConfig configData) {
+		std::atexit(atexitHandler);
 		curl_global_init(CURL_GLOBAL_NOTHING);
 		std::signal(SIGTERM, &signalHandler);
 		std::signal(SIGSEGV, &signalHandler);
@@ -197,8 +229,5 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	void signalHandler(int32_t) {
-		std::atomic_signal_fence(std::memory_order_seq_cst);
-		DiscordCoreAPI::Globals::doWeQuit.store(true);
-	}
+	
 }
