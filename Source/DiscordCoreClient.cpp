@@ -53,7 +53,7 @@ namespace DiscordCoreAPI {
 
 	void signalHandler(int32_t sig_int) {
 		Globals::doWeQuit.store(true);
-		exit(EXIT_SUCCESS);
+		std::exit(EXIT_SUCCESS);
 	}
 
 	DiscordCoreClient::DiscordCoreClient(DiscordCoreClientConfig configData) {
