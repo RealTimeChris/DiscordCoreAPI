@@ -53,29 +53,7 @@ namespace DiscordCoreAPI {
 
 	void signalHandler(int32_t sig_int) {
 		Globals::doWeQuit.store(true);
-		switch (sig_int) {
-			case SIGINT: {
-				exit(EXIT_SUCCESS);
-			}
-			case SIGTERM: {
-				exit(EXIT_SUCCESS);
-			}
-			case SIGABRT: {
-				exit(EXIT_SUCCESS);
-			}
-			case SIGILL: {
-				exit(EXIT_SUCCESS);
-			}
-			case SIGSEGV: {
-				exit(EXIT_SUCCESS);
-			}
-			case SIGFPE: {
-				exit(EXIT_SUCCESS);
-			}
-			default: {
-				return;
-			}
-		}
+		exit(EXIT_SUCCESS);
 	}
 
 	DiscordCoreClient::DiscordCoreClient(DiscordCoreClientConfig configData) {
