@@ -85,6 +85,18 @@ namespace DiscordCoreInternal {
 		return this->theTask.get();
 	}
 
+	void BaseSocketAgent::sendCloseFrame() noexcept {
+		std::string theString{};
+		theString.push_back(static_cast<int8_t>(WebSocketOpCode::Op_Close) | static_cast<int8_t>(webSocketFinishBit));
+		theString.push_back(0);
+		theString.push_back(static_cast<uint16_t>(1000) >> 8);
+		theString.push_back(static_cast<uint8_t>(1000) & 0xff);
+		this->webSocket->writeData(theString);
+		this->webSocket->processIO(100000);
+		this->webSocket->processIO(100000);
+		this->webSocket->processIO(100000);
+	}
+
 	void BaseSocketAgent::sendMessage(const nlohmann::json& dataToSend) noexcept {
 		try {
 			DiscordCoreAPI::StopWatch stopWatch{ std::chrono::milliseconds{ 5500 } };
@@ -986,6 +998,8 @@ namespace DiscordCoreInternal {
 	}
 
 	BaseSocketAgent::~BaseSocketAgent() noexcept {
+		std::cout << "WERE LEAVING 02022" << std::endl;
+		this->sendCloseFrame();
 		this->theTask->request_stop();
 		if (this->theTask->joinable()) {
 			this->theTask->join();

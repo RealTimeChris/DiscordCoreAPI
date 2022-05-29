@@ -105,6 +105,8 @@ namespace DiscordCoreInternal {
 
 		void onClosedInternal() noexcept;
 
+		void sendCloseFrame() noexcept;
+
 		void sendHeartBeat() noexcept;
 
 		void handleBuffer() noexcept;
