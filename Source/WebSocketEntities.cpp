@@ -68,6 +68,7 @@ namespace DiscordCoreInternal {
 		try {
 			std::lock_guard<std::mutex> accessLock{ this->accessorMutex01 };
 			if (this->printSuccessMessages) {
+				std::lock_guard<std::mutex> theLock{ this->discordCoreClient->coutMutex };
 				std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Sending WebSocket " + this->shard.dump() + std::string("'s Message: ") << std::endl
 						  << dataToSend << DiscordCoreAPI::reset();
 			}
@@ -94,6 +95,7 @@ namespace DiscordCoreInternal {
 			}
 			std::lock_guard<std::mutex> accessLock{ this->accessorMutex01 };
 			if (this->printSuccessMessages) {
+				std::lock_guard<std::mutex> theLock{ this->discordCoreClient->coutMutex };
 				std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Sending WebSocket " + this->shard.dump() + std::string("'s Message: ") << dataToSend.dump() << std::endl
 						  << DiscordCoreAPI::reset() << std::endl;
 			}
@@ -794,6 +796,7 @@ namespace DiscordCoreInternal {
 				}
 			}
 			if (this->printSuccessMessages) {
+				std::lock_guard<std::mutex> theLock{ this->discordCoreClient->coutMutex };
 				std::cout << DiscordCoreAPI::shiftToBrightGreen() << "Message received from WebSocket " + this->shard.dump() + std::string(": ") << payload.dump() << std::endl
 						  << DiscordCoreAPI::reset() << std::endl;
 			}
