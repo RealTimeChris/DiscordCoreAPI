@@ -895,7 +895,7 @@ namespace DiscordCoreInternal {
 								return false;
 							}
 							length02 = 0;
-							for (int x= 2, shift = 56; x < 10; ++x, shift -= 8) {
+							for (int64_t x= 2, shift = 56; x < 10; ++x, shift -= 8) {
 								uint8_t lengthNew = static_cast<uint8_t>(this->webSocket->getInputBuffer()[x]);
 								length02 |= static_cast<uint64_t>((lengthNew & 0xff) << shift);
 							}
