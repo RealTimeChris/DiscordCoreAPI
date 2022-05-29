@@ -998,7 +998,6 @@ namespace DiscordCoreInternal {
 	}
 
 	BaseSocketAgent::~BaseSocketAgent() noexcept {
-		std::cout << "WERE LEAVING 02022" << std::endl;
 		this->sendCloseFrame();
 		this->theTask->request_stop();
 		if (this->theTask->joinable()) {
