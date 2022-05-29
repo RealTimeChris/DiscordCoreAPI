@@ -66,7 +66,7 @@ namespace DiscordCoreInternal {
 			return false;
 		}
 
-		if (this->theSocket = socket(addrs->ai_family, addrs->ai_socktype, addrs->ai_protocol); this->theSocket == INVALID_SOCKET) {
+		if (this->theSocket = socket(addrs->ai_family, addrs->ai_socktype, addrs->ai_protocol); this->theSocket == SOCKET_ERROR) {
 			if (this->doWePrintError) {
 				reportError("socket() Error: ", this->theSocket);
 			}
@@ -314,7 +314,7 @@ namespace DiscordCoreInternal {
 			return;
 		}
 
-		if (this->theSocket = socket(resultAddress->ai_family, resultAddress->ai_socktype, resultAddress->ai_protocol); this->theSocket == INVALID_SOCKET) {
+		if (this->theSocket = socket(resultAddress->ai_family, resultAddress->ai_socktype, resultAddress->ai_protocol); this->theSocket == SOCKET_ERROR) {
 			if (this->doWePrintError) {
 				reportError("socket() Error: ", this->theSocket);
 			}
@@ -568,7 +568,7 @@ namespace DiscordCoreInternal {
 			return;
 		}
 
-		if (this->theSocket = socket(resultAddress->ai_family, resultAddress->ai_socktype, resultAddress->ai_protocol); this->theSocket == INVALID_SOCKET) {
+		if (this->theSocket = socket(resultAddress->ai_family, resultAddress->ai_socktype, resultAddress->ai_protocol); this->theSocket == SOCKET_ERROR) {
 			if (this->doWePrintError) {
 				reportError("socket() Error: ", 0);
 			}
