@@ -223,20 +223,41 @@ namespace DiscordCoreInternal {
 		std::unique_ptr<SSL, SSLDeleter> sslPtr{ nullptr, SSLDeleter{} };
 	};
 
-	struct DiscordCoreAPI_Dll SOCKETWrapper {
-		struct DiscordCoreAPI_Dll SOCKETDeleter {
+	struct SOCKETWrapper {
+		struct SOCKETDeleter {
 			void operator()(SOCKET* other) {
 				if (other) {
 #ifdef _WIN32
 					shutdown(*other, SD_BOTH);
 					closesocket(*other);
 #else
+					shutdown(*other, SHUT_RDWR);
 					close(*other);
 #endif
-					other = nullptr;
+					*other = -1;
 				}
 			}
 		};
+
+		SOCKETWrapper& operator=(SOCKETWrapper&& other) noexcept {
+			*this->socketPtr = *other.socketPtr;
+			*other.socketPtr = SOCKET_ERROR;
+			return *this;
+		}
+
+		SOCKETWrapper(SOCKETWrapper&& other) noexcept {
+			*this = std::move(other);
+		}
+
+		SOCKETWrapper& operator=(SOCKETWrapper& other) noexcept {
+			*this->socketPtr = *other.socketPtr;
+			*other.socketPtr = SOCKET_ERROR;
+			return *this;
+		}
+
+		SOCKETWrapper(SOCKETWrapper& other) noexcept {
+			*this = std::move(other);
+		}
 
 		SOCKETWrapper& operator=(SOCKET other) {
 			*this->socketPtr = other;
@@ -251,7 +272,7 @@ namespace DiscordCoreInternal {
 		}
 
 	  protected:
-		std::unique_ptr<SOCKET, SOCKETDeleter> socketPtr{ new SOCKET{ INVALID_SOCKET }, SOCKETDeleter{} };
+		std::unique_ptr<SOCKET, SOCKETDeleter> socketPtr{ new SOCKET{ static_cast<SOCKET>(SOCKET_ERROR) }, SOCKETDeleter{} };
 	};
 
 	struct DiscordCoreAPI_Dll X509Deleter {
