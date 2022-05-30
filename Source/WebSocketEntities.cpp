@@ -53,7 +53,6 @@ namespace DiscordCoreInternal {
 			this->dataOpcode = WebSocketOpCode::Op_Text;
 		}
 		this->baseUrl = baseUrl;
-		this->doWeReconnect.set();
 		this->theTask = std::make_unique<std::jthread>([this](std::stop_token theToken) {
 			this->run(theToken);
 		});
@@ -93,12 +92,20 @@ namespace DiscordCoreInternal {
 		theString.push_back(static_cast<uint8_t>(1000) & 0xff);
 		if (this->webSocket != nullptr) {
 			this->webSocket->writeData(theString);
-			for (int32_t x = 0; x < 100; x += 1) {
+			for (int32_t x = 0; x < 10; x += 1) {
 				if (!this->webSocket->processIO(100000)) {
 					break;
 				}
 			}
 		}		
+		DiscordCoreAPI::StopWatch<std::chrono::milliseconds> theStopWatch{ std::chrono::milliseconds{ 5000 } };
+		while ((static_cast<int8_t>(this->dataOpcode) != (static_cast<int8_t>(WebSocketOpCode::Op_Close) | static_cast<int8_t>(webSocketFinishBit)))) {
+			if (theStopWatch.hasTimePassed()) {
+				break;
+			}
+			this->webSocket->processIO(100000);
+			this->handleBuffer();
+		};
 	}
 
 	void BaseSocketAgent::sendMessage(const nlohmann::json& dataToSend) noexcept {
@@ -234,9 +241,6 @@ namespace DiscordCoreInternal {
 				if (stopWatch.hasTimePassed() && this->areWeHeartBeating) {
 					stopWatch.resetTimer();
 					this->sendHeartBeat();
-				}
-				if (!this->doWeReconnect.wait(0)) {
-					this->onClosedInternal();
 				}
 				if (this->webSocket) {
 					if (!this->webSocket->processIO(1000)) {
@@ -938,6 +942,7 @@ namespace DiscordCoreInternal {
 						close <<= 8;
 						close |= this->webSocket->getInputBuffer()[3] & 0xff;
 						this->closeCode = close;
+						this->webSocket->getInputBuffer().clear();
 						this->onClosedExternal();
 						return false;
 					}
@@ -958,23 +963,18 @@ namespace DiscordCoreInternal {
 	}
 
 	void BaseSocketAgent::onClosedExternal() noexcept {
-		this->doWeReconnect.reset();
-	}
-
-	void BaseSocketAgent::onClosedInternal() noexcept {
 		this->areWeReadyToConnectEvent.reset();
 		if (this->maxReconnectTries > this->currentReconnectTries) {
 			if (this->printErrorMessages) {
 				std::cout << DiscordCoreAPI::shiftToBrightRed() << "WebSocket Closed; Code: " << this->closeCode << DiscordCoreAPI::reset() << std::endl;
 			}
 			this->closeCode = 0;
-			this->doWeReconnect.set();
 			this->sendCloseFrame();
 			this->areWeConnected.store(false);
 			this->currentReconnectTries += 1;
-			this->webSocket.reset(nullptr);
 			this->areWeAuthenticated = false;
 			this->haveWeReceivedHeartbeatAck = true;
+			this->webSocket.reset(nullptr);
 			if (this->closeCode & static_cast<int16_t>(ReconnectPossible::Yes)) {
 				this->connect();
 			} else {
@@ -989,7 +989,6 @@ namespace DiscordCoreInternal {
 		try {
 			this->webSocket = std::make_unique<WebSocketSSLClient>(this->baseUrl, "443", this->printErrorMessages);
 			this->state = WebSocketState::Initializing;
-			this->doWeReconnect.set();
 			std::string sendString{}; 
 			if (this->theFormat == DiscordCoreAPI::TextFormat::Etf) {
 				sendString = "GET /?v=10&encoding=etf HTTP/1.1\r\nHost: " + this->baseUrl +
@@ -1023,7 +1022,6 @@ namespace DiscordCoreInternal {
 		this->printErrorMessages = baseBaseSocketAgentNew->printErrorMessages;
 		this->baseSocketAgent->voiceConnectionDataBufferMap.insert_or_assign(std::to_string(this->voiceConnectInitData.guildId), &this->voiceConnectionDataBuffer);
 		this->baseSocketAgent->getVoiceConnectionData(this->voiceConnectInitData);
-		this->doWeReconnect.set();
 		this->areWeConnected.reset();
 		this->theTask = std::make_unique<std::jthread>([this](std::stop_token theToken) {
 			this->run(theToken);
@@ -1150,7 +1148,7 @@ namespace DiscordCoreInternal {
 					stopWatch.resetTimer();
 					this->sendHeartBeat();
 				}
-				if (!this->doWeReconnect.wait(0)) {
+				if (!this->doWeReconnect.load()) {
 					this->onClosedInternal();
 					return;
 				}
@@ -1409,7 +1407,7 @@ namespace DiscordCoreInternal {
 	}
 
 	void VoiceSocketAgent::onClosedExternal() noexcept {
-		this->doWeReconnect.reset();
+		this->doWeReconnect.store(true);
 	}
 
 	void VoiceSocketAgent::onClosedInternal() noexcept {

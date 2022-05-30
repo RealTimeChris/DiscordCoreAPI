@@ -113,7 +113,6 @@ namespace DiscordCoreInternal {
 		int32_t lastNumberReceived{ 0 };
 		int32_t heartbeatInterval{ 0 };
 		std::mutex accessorMutex01{};
-		EventWaiter doWeReconnect{};
 		bool areWeResuming{ false };
 		std::string sessionId{};
 		uint32_t closeCode{ 0 };
@@ -133,8 +132,6 @@ namespace DiscordCoreInternal {
 		void run(std::stop_token) noexcept;
 
 		void onMessageReceived() noexcept;
-
-		void onClosedInternal() noexcept;
 
 		void sendCloseFrame() noexcept;
 
@@ -173,6 +170,7 @@ namespace DiscordCoreInternal {
 		VoiceConnectInitData voiceConnectInitData{};
 		BaseSocketAgent* baseSocketAgent{ nullptr };
 		VoiceConnectionData voiceConnectionData{};
+		std::atomic_bool doWeReconnect{ false };
 		bool haveWeReceivedHeartbeatAck{ true };
 		int32_t currentReconnectionTries{ 0 };
 		int32_t maxReconnectionTries{ 10 };
@@ -182,7 +180,6 @@ namespace DiscordCoreInternal {
 		bool areWeHeartBeating{ false };
 		int32_t heartbeatInterval{ 0 };
 		EventWaiter areWeConnected{};
-		EventWaiter doWeReconnect{};
 		uint32_t closeCode{ 0 };
 		std::string baseUrl{};
 		std::string hostIp{};

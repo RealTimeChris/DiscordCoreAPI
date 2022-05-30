@@ -55,12 +55,12 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::BaseSocketAgent* baseSocketAgent{ nullptr };
 		DiscordCoreInternal::VoiceConnectInitData voiceConnectInitData{};
 		DiscordCoreInternal::VoiceConnectionData* voiceConnectionData{};
-		DiscordCoreInternal::EventWaiter* doWeReconnect{ nullptr };
 		TSUnboundedMessageBlock<AudioFrameData> audioBuffer{};
 		std::unique_ptr<std::jthread> theTask{ nullptr };
 		DiscordCoreInternal::EventWaiter playSetEvent{};
 		DiscordCoreInternal::EventWaiter stopSetEvent{};
 		DiscordCoreInternal::EventWaiter pauseEvent{};
+		std::atomic_bool* doWeReconnect{ nullptr };
 		std::atomic_bool areWeStopping{ false };
 		std::atomic_bool areWePlaying{ false };
 		const int32_t maxBufferSize{ 1276 };

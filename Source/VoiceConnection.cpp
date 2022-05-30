@@ -280,13 +280,13 @@ namespace DiscordCoreAPI {
 			this->sendSpeakingMessage(true);
 			while ((this->audioData.rawFrameData.sampleCount != 0 || this->audioData.encodedFrameData.sampleCount != 0) && !this->areWeStopping && !theToken.stop_requested()) {
 				this->areWePlaying.store(true);
-				if (!this->doWeReconnect->wait(0)) {
+				if (this->doWeReconnect->load()) {
 					this->areWeConnectedBool = false;
 					this->sendSpeakingMessage(false);
 					this->reconnect();
 					this->sendSpeakingMessage(true);
 					this->areWePlaying.store(true);
-					this->doWeReconnect->set();
+					this->doWeReconnect->store(false);
 				}
 				if (this->areWeStopping.load()) {
 					this->areWePlaying.store(false);
