@@ -33,6 +33,36 @@ namespace DiscordCoreInternal {
 
 	enum class WebSocketOpCode : uint8_t { Op_Continuation = 0x00, Op_Text = 0x01, Op_Binary = 0x02, Op_Close = 0x08, Op_Ping = 0x09, Op_Pong = 0x0a };
 
+	enum class WebSocketCloseCode : int16_t {
+		Normal_Close=1000,///< Normal close.
+		Unknown_Error = 4000,///<	We're not sure what went wrong. Try reconnecting?	true
+		Unknown_Opcode = 4001,///< You sent an invalid Gateway opcode or an invalid payload for an opcode. Don't do that!	true
+		Decode_Error = 4002,///< You sent an invalid payload to us. Don't do that!	true
+		Not_Authenticated = 4003,///< You sent us a payload prior to identifying.	true
+		Authentication_Failed = 4004,///< The account token sent with your identify payload is incorrect.	false
+		Already_Authenticated = 4005,///< You sent more than one identify payload. Don't do that!	true
+		Invalid_Seq = 4007,///<	The sequence sent when resuming the session was invalid. Reconnect and start a new session.	true
+		Rate_Limited = 4008,///< Woah nelly! You're sending payloads to us too quickly. Slow it down! You will be disconnected on receiving this.	true
+		Session_Timed = 4009,///< Your session timed out. Reconnect and start a new one.	true
+		Invalid_Shard = 4010,///< You sent us an invalid shard when identifying.	false
+		Sharding_Required = 4011,///< The session would have handled too many guilds - you are required to shard your connection in order to connect.	false
+		Invalid_API_Version = 4012,///< You sent an invalid version for the gateway.	false
+		Invalid_Intent = 4013,///< You sent an invalid intent for a Gateway Intent. You may have incorrectly calculated the bitwise value.	false
+		Disallowed_Intent =
+			4014,///< You sent a disallowed intent for a Gateway Intent. You may have tried to specify an intent that you have not enabled or are not approved for.	false
+	};
+
+	enum class ReconnectPossible : int16_t {
+		Yes = static_cast<int16_t>(WebSocketCloseCode::Unknown_Error) | static_cast<int16_t>(WebSocketCloseCode::Unknown_Opcode) |
+			static_cast<int16_t>(WebSocketCloseCode::Decode_Error) | static_cast<int16_t>(WebSocketCloseCode::Not_Authenticated) |
+			static_cast<int16_t>(WebSocketCloseCode::Already_Authenticated) | static_cast<int16_t>(WebSocketCloseCode::Invalid_Seq) |
+			static_cast<int16_t>(WebSocketCloseCode::Session_Timed),
+		No = static_cast<int16_t>(WebSocketCloseCode::Authentication_Failed) | static_cast<int16_t>(WebSocketCloseCode::Invalid_Shard) |
+			static_cast<int16_t>(WebSocketCloseCode::Sharding_Required) | static_cast<int16_t>(WebSocketCloseCode::Invalid_API_Version) |
+			static_cast<int16_t>(WebSocketCloseCode::Disallowed_Intent) | static_cast<int16_t>(WebSocketCloseCode::Invalid_Intent) |
+			static_cast<int16_t>(WebSocketCloseCode::Normal_Close)
+	};
+
 	class DiscordCoreAPI_Dll BaseSocketAgent {
 	  public:
 		friend class DiscordCoreAPI::VoiceConnection;

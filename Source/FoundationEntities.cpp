@@ -278,7 +278,7 @@ namespace DiscordCoreAPI {
 			}
 
 			escaped << std::uppercase;
-			escaped << '%' << std::setw(2) << int(static_cast<unsigned char>(c));
+			escaped << '%' << std::setw(2) << int32_t(static_cast<unsigned char>(c));
 			escaped << std::nouppercase;
 		}
 		return escaped.str();

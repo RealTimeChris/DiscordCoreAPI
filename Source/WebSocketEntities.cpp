@@ -91,10 +91,14 @@ namespace DiscordCoreInternal {
 		theString.push_back(0);
 		theString.push_back(static_cast<uint16_t>(1000) >> 8);
 		theString.push_back(static_cast<uint8_t>(1000) & 0xff);
-		this->webSocket->writeData(theString);
-		this->webSocket->processIO(100000);
-		this->webSocket->processIO(100000);
-		this->webSocket->processIO(100000);
+		if (this->webSocket != nullptr) {
+			this->webSocket->writeData(theString);
+			for (int32_t x = 0; x < 100; x += 1) {
+				if (!this->webSocket->processIO(100000)) {
+					break;
+				}
+			}
+		}		
 	}
 
 	void BaseSocketAgent::sendMessage(const nlohmann::json& dataToSend) noexcept {
@@ -242,6 +246,7 @@ namespace DiscordCoreInternal {
 				}
 				std::this_thread::sleep_for(std::chrono::milliseconds{ 1 });
 			}
+			this->sendCloseFrame();
 		} catch (...) {
 			if (this->printErrorMessages) {
 				DiscordCoreAPI::reportException("BaseSocketAgent::run()");
@@ -882,6 +887,7 @@ namespace DiscordCoreInternal {
 			if (this->webSocket->getInputBuffer().size() < 4) {
 				return false;
 			} else {
+				this->dataOpcode = static_cast<WebSocketOpCode>(this->webSocket->getInputBuffer()[0]);
 				switch (static_cast<WebSocketOpCode>(this->webSocket->getInputBuffer()[0] & ~webSocketFinishBit)) {
 					case WebSocketOpCode::Op_Continuation:
 					case WebSocketOpCode::Op_Text:
@@ -962,12 +968,18 @@ namespace DiscordCoreInternal {
 				std::cout << DiscordCoreAPI::shiftToBrightRed() << "WebSocket Closed; Code: " << this->closeCode << DiscordCoreAPI::reset() << std::endl;
 			}
 			this->closeCode = 0;
+			this->doWeReconnect.set();
+			this->sendCloseFrame();
 			this->areWeConnected.store(false);
 			this->currentReconnectTries += 1;
 			this->webSocket.reset(nullptr);
 			this->areWeAuthenticated = false;
 			this->haveWeReceivedHeartbeatAck = true;
-			this->connect();
+			if (this->closeCode & static_cast<int16_t>(ReconnectPossible::Yes)) {
+				this->connect();
+			} else {
+				this->doWeQuit->store(true);
+			}
 		} else if (this->maxReconnectTries <= this->currentReconnectTries) {
 			this->theTask->request_stop();
 		}
@@ -998,7 +1010,6 @@ namespace DiscordCoreInternal {
 	}
 
 	BaseSocketAgent::~BaseSocketAgent() noexcept {
-		this->sendCloseFrame();
 		this->theTask->request_stop();
 		if (this->theTask->joinable()) {
 			this->theTask->join();
