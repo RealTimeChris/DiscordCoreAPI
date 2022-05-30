@@ -107,10 +107,10 @@ namespace DiscordCoreInternal {
 		int32_t currentReconnectTries{ 0 };
 		bool printSuccessMessages{ false };
 		bool areWeCollectingData{ false };
-		uint32_t lastNumberReceived{ 0 };
 		bool areWeAuthenticated{ false };
 		bool printErrorMessages{ false };
 		bool areWeHeartBeating{ false };
+		int32_t lastNumberReceived{ 0 };
 		int32_t heartbeatInterval{ 0 };
 		std::mutex accessorMutex01{};
 		bool areWeResuming{ false };
@@ -121,7 +121,6 @@ namespace DiscordCoreInternal {
 		std::string botToken{};
 		ErlPacker erlPacker{};
 		std::string baseUrl{};
-		int32_t offset{ 0 };
 		uint64_t userId{};
 
 		std::vector<std::string> tokenize(const std::string&, const std::string& = "\r\n") noexcept;
