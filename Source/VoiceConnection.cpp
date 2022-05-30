@@ -220,7 +220,7 @@ namespace DiscordCoreAPI {
 			if (this->voiceConnectionData) {
 				auto encryptedFrame = this->encryptSingleAudioFrame(newFrame, this->voiceConnectionData->audioSSRC, this->voiceConnectionData->secretKey);
 				this->sendSingleAudioFrame(encryptedFrame);
-			}			
+			}
 		}
 	}
 

@@ -71,7 +71,7 @@ namespace DiscordCoreAPI {
 		this->cacheOptions = configData.cacheOptions;
 		if (this->loggingOptions.logFFMPEGSuccessMessages) {
 			av_log_set_level(AV_LOG_INFO);
-		} 
+		}
 		if (this->loggingOptions.logFFMPEGErrorMessages) {
 			av_log_set_level(AV_LOG_ERROR);
 		}
@@ -98,8 +98,9 @@ namespace DiscordCoreAPI {
 		this->eventManager.onUserUpdate(&EventHandler::onUserUpdate);
 		this->eventManager.onVoiceStateUpdate(&EventHandler::onVoiceStateUpdate);
 		EventHandler::initialize(this->cacheOptions);
-		this->httpClient = std::make_unique<DiscordCoreInternal::HttpClient>(configData.botToken, this->loggingOptions.logHttpSuccessMessages, this->loggingOptions.logHttpErrorMessages,
-			this->loggingOptions.logFFMPEGSuccessMessages, this->loggingOptions.logFFMPEGErrorMessages, this->loggingOptions.logWebSocketErrorMessages);
+		this->httpClient =
+			std::make_unique<DiscordCoreInternal::HttpClient>(configData.botToken, this->loggingOptions.logHttpSuccessMessages, this->loggingOptions.logHttpErrorMessages,
+				this->loggingOptions.logFFMPEGSuccessMessages, this->loggingOptions.logFFMPEGErrorMessages, this->loggingOptions.logWebSocketErrorMessages);
 		ApplicationCommands::initialize(this->httpClient.get());
 		Channels::initialize(this->httpClient.get(), this->cacheOptions.cacheChannels);
 		Guilds::initialize(this->httpClient.get(), this, this->cacheOptions.cacheGuilds);
@@ -206,5 +207,5 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	
+
 }

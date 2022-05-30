@@ -76,7 +76,7 @@ namespace DiscordCoreInternal {
 
 		void downloadAndStreamAudio(const DiscordCoreAPI::Song& newSong, YouTubeAPI* youtubeAPI, std::stop_token theToken, int32_t currentRecursionDepth);
 
-		DiscordCoreAPI::Song collectFinalSong(const DiscordCoreAPI::GuildMemberData& addedByGuildMember, DiscordCoreAPI::Song& newSong);		
+		DiscordCoreAPI::Song collectFinalSong(const DiscordCoreAPI::GuildMemberData& addedByGuildMember, DiscordCoreAPI::Song& newSong);
 
 		std::vector<DiscordCoreAPI::Song> searchForSong(const std::string& searchQuery);
 
@@ -95,7 +95,6 @@ namespace DiscordCoreInternal {
 			const DiscordCoreAPI::Song& newSong, int32_t currentRecursionDepth);
 
 		void breakOut(std::stop_token theToken, std::unique_ptr<AudioDecoder> audioDecoder, YouTubeAPI* soundCloudAPI);
-
 	};
 
 };// namespace DiscordCoreAPI

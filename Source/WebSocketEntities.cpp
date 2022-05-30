@@ -97,7 +97,7 @@ namespace DiscordCoreInternal {
 					break;
 				}
 			}
-		}		
+		}
 		DiscordCoreAPI::StopWatch<std::chrono::milliseconds> theStopWatch{ std::chrono::milliseconds{ 5000 } };
 		while ((static_cast<int8_t>(this->dataOpcode) != (static_cast<int8_t>(WebSocketOpCode::Op_Close) | static_cast<int8_t>(webSocketFinishBit)))) {
 			if (theStopWatch.hasTimePassed()) {
@@ -333,7 +333,7 @@ namespace DiscordCoreInternal {
 				for (auto& value: theGuilds) {
 					value.discordCoreClient = this->discordCoreClient;
 					DiscordCoreAPI::Guilds::insertGuild(value);
-				}				
+				}
 				this->currentReconnectTries = 0;
 				this->areWeReadyToConnectEvent.set();
 				this->areWeAuthenticated = true;
@@ -884,7 +884,7 @@ namespace DiscordCoreInternal {
 			this->onClosedExternal();
 		}
 	}
-	
+
 	bool BaseSocketAgent::parseHeader() noexcept {
 		try {
 			std::string newVector = this->webSocket->getInputBuffer();
@@ -917,7 +917,7 @@ namespace DiscordCoreInternal {
 								return false;
 							}
 							length02 = 0;
-							for (int64_t x= 2, shift = 56; x < 10; ++x, shift -= 8) {
+							for (int64_t x = 2, shift = 56; x < 10; ++x, shift -= 8) {
 								uint8_t lengthNew = static_cast<uint8_t>(this->webSocket->getInputBuffer()[x]);
 								length02 |= static_cast<uint64_t>((lengthNew & 0xff) << shift);
 							}
@@ -989,7 +989,7 @@ namespace DiscordCoreInternal {
 		try {
 			this->webSocket = std::make_unique<WebSocketSSLClient>(this->baseUrl, "443", this->printErrorMessages);
 			this->state = WebSocketState::Initializing;
-			std::string sendString{}; 
+			std::string sendString{};
 			if (this->theFormat == DiscordCoreAPI::TextFormat::Etf) {
 				sendString = "GET /?v=10&encoding=etf HTTP/1.1\r\nHost: " + this->baseUrl +
 					"\r\nPragma: no-cache\r\nUser-Agent: DiscordCoreAPI/1.0\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Key: " +

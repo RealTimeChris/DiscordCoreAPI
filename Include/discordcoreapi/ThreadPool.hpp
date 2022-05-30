@@ -26,8 +26,7 @@ namespace DiscordCoreAPI {
 	 * @{
 	 */
 
-	template<typename... ArgTypes>	
-	using TimeElapsedHandler = std::function<void(ArgTypes...)>;
+	template<typename... ArgTypes> using TimeElapsedHandler = std::function<void(ArgTypes...)>;
 
 	using TimeElapsedHandlerTwo = std::function<void(void)>;
 
@@ -45,8 +44,7 @@ namespace DiscordCoreAPI {
 
 		ThreadPool() = default;
 
-		template<typename... ArgTypes>
-		static std::string storeThread(TimeElapsedHandler<ArgTypes...> timeElapsedHandler, int32_t timeInterval, bool repeated, ArgTypes... args) {
+		template<typename... ArgTypes> static std::string storeThread(TimeElapsedHandler<ArgTypes...> timeElapsedHandler, int32_t timeInterval, bool repeated, ArgTypes... args) {
 			std::string threadId = std::to_string(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
 
 			ThreadPool::threads.insert(std::make_pair(threadId, std::jthread([=](std::stop_token stopToken) {
@@ -111,9 +109,9 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll CoRoutineThreadPool;
 
-	struct DiscordCoreAPI_Dll WorkerThread{
+	struct DiscordCoreAPI_Dll WorkerThread {
 		WorkerThread& operator=(WorkerThread& other);
-		
+
 		WorkerThread(WorkerThread&);
 
 		WorkerThread(WorkerThread& other, CoRoutineThreadPool* thePtr);
@@ -121,7 +119,7 @@ namespace DiscordCoreInternal {
 		WorkerThread();
 
 		~WorkerThread();
-		
+
 		std::unique_ptr<std::thread::id> threadId{};
 		std::atomic_bool theCurrentStatus{ false };
 		CoRoutineThreadPool* thePtr{ nullptr };

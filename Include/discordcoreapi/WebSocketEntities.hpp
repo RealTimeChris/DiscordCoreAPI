@@ -35,7 +35,7 @@ namespace DiscordCoreInternal {
 
 	/// Websocket close codes. \brief Websocket close codes.
 	enum class WebSocketCloseCode : int16_t {
-		Normal_Close=1000,///< Normal close.
+		Normal_Close = 1000,///< Normal close.
 		Unknown_Error = 4000,///<	We're not sure what went wrong. Try reconnecting?	true
 		Unknown_Opcode = 4001,///< You sent an invalid Gateway opcode or an invalid payload for an opcode. Don't do that!	true
 		Decode_Error = 4002,///< You sent an invalid payload to us. Don't do that!	true

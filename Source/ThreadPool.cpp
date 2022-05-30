@@ -64,7 +64,8 @@ namespace DiscordCoreInternal {
 		*this = other;
 	}
 
-	WorkerThread::~WorkerThread() {}
+	WorkerThread::~WorkerThread() {
+	}
 
 	CoRoutineThreadPool::CoRoutineThreadPool() {
 		for (uint32_t x = 0; x < std::thread::hardware_concurrency(); ++x) {
@@ -128,7 +129,7 @@ namespace DiscordCoreInternal {
 				}
 				this->theCondVar.wait_for(theLock01, std::chrono::microseconds(1000));
 			}
-			
+
 			if (this->areWeQuitting.load()) {
 				httpConnections.erase(std::this_thread::get_id());
 				break;
@@ -154,7 +155,7 @@ namespace DiscordCoreInternal {
 		if (this->workerThreads.size() == 0) {
 			return;
 		}
-		for (auto& [key, value]: this->workerThreads) {	
+		for (auto& [key, value]: this->workerThreads) {
 			value.theThread.request_stop();
 			if (this->workerThreads.contains(key)) {
 				this->workerThreads.erase(key);

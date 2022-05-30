@@ -24,7 +24,7 @@ namespace DiscordCoreInternal {
 
 	static std::unordered_map<std::thread::id, std::unique_ptr<HttpConnection>> httpConnections{};
 
-	namespace Globals {		
+	namespace Globals {
 		std::unordered_map<std::string, std::unique_ptr<RateLimitData>> rateLimitValues{};
 		std::unordered_map<HttpWorkloadType, std::string> rateLimitValueBuckets{};
 	}
@@ -268,7 +268,8 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	HttpClient::HttpClient(const std::string& botTokenNew, bool doWePrintHttpSuccessNew, bool doWePrintHttpErrorNew, bool doWePrintFFMPEGSuccessNew, bool doWePrintFFMPEGErrorNew, bool doWePrintWebSocketError)
+	HttpClient::HttpClient(const std::string& botTokenNew, bool doWePrintHttpSuccessNew, bool doWePrintHttpErrorNew, bool doWePrintFFMPEGSuccessNew, bool doWePrintFFMPEGErrorNew,
+		bool doWePrintWebSocketError)
 		: botToken(botTokenNew), doWePrintFFMPEGError(doWePrintFFMPEGErrorNew), doWePrintHttpSuccess(doWePrintHttpSuccessNew), doWePrintHttpError(doWePrintHttpErrorNew),
 		  doWePrintFFMPEGSuccess(doWePrintFFMPEGSuccessNew), doWePrintWebSocketError(doWePrintWebSocketError) {
 		this->connectionManager.initialize();

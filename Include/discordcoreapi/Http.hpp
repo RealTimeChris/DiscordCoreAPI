@@ -118,7 +118,8 @@ namespace DiscordCoreInternal {
 	  public:
 		HttpClient() = default;
 
-		HttpClient(const std::string& botTokenNew, bool doWePrintHttpSuccessNew, bool doWePrintHttpErrorNew, bool doWePrintFFMPEGSuccessNew, bool doWePrintFFMPEGErrorNew, bool doWePrintWebSocketErrorNew);
+		HttpClient(const std::string& botTokenNew, bool doWePrintHttpSuccessNew, bool doWePrintHttpErrorNew, bool doWePrintFFMPEGSuccessNew, bool doWePrintFFMPEGErrorNew,
+			bool doWePrintWebSocketErrorNew);
 
 		std::vector<HttpResponseData> httpRequest(const std::vector<HttpWorkloadData>&);
 
