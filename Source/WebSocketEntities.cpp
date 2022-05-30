@@ -66,7 +66,7 @@ namespace DiscordCoreInternal {
 	void BaseSocketAgent::sendMessage(const std::string& dataToSend) noexcept {
 		try {
 			std::lock_guard<std::mutex> accessLock{ this->accessorMutex01 };
-			if (this->printSuccessMessages) {
+			if (true) {
 				std::lock_guard<std::mutex> theLock{ this->discordCoreClient->coutMutex };
 				std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Sending WebSocket " + this->shard.dump() + std::string("'s Message: ") << std::endl
 						  << dataToSend << DiscordCoreAPI::reset();
@@ -117,7 +117,7 @@ namespace DiscordCoreInternal {
 				}
 			}
 			std::lock_guard<std::mutex> accessLock{ this->accessorMutex01 };
-			if (this->printSuccessMessages) {
+			if (true) {
 				std::lock_guard<std::mutex> theLock{ this->discordCoreClient->coutMutex };
 				std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Sending WebSocket " + this->shard.dump() + std::string("'s Message: ") << dataToSend.dump() << std::endl
 						  << DiscordCoreAPI::reset() << std::endl;
@@ -891,65 +891,71 @@ namespace DiscordCoreInternal {
 			if (this->webSocket->getInputBuffer().size() < 4) {
 				return false;
 			} else {
-				this->dataOpcode = static_cast<WebSocketOpCode>(this->webSocket->getInputBuffer()[0]);
-				switch (static_cast<WebSocketOpCode>(this->webSocket->getInputBuffer()[0] & ~webSocketFinishBit)) {
-					case WebSocketOpCode::Op_Continuation:
-					case WebSocketOpCode::Op_Text:
-					case WebSocketOpCode::Op_Binary:
-					case WebSocketOpCode::Op_Ping:
-					case WebSocketOpCode::Op_Pong: {
-						uint8_t length01 = this->webSocket->getInputBuffer()[1];
-						uint64_t payloadStartOffset = 2;
-						if (length01 & webSocketMaskBit) {
-							return false;
-						}
-						uint64_t length02 = length01;
-						if (length01 == webSocketPayloadLengthMagicLarge) {
-							if (this->webSocket->getInputBuffer().size() < 8) {
+				this->dataOpcode = static_cast<WebSocketOpCode>(this->webSocket->getInputBuffer()[this->offset - 1]);
+				if (static_cast<uint8_t>(this->dataOpcode) & webSocketFinishBit) {
+					this->offset = 0;
+					switch (static_cast<WebSocketOpCode>(this->webSocket->getInputBuffer()[0] & ~webSocketFinishBit)) {
+						case WebSocketOpCode::Op_Continuation:
+						case WebSocketOpCode::Op_Text:
+						case WebSocketOpCode::Op_Binary:
+						case WebSocketOpCode::Op_Ping:
+						case WebSocketOpCode::Op_Pong: {
+							uint8_t length01 = this->webSocket->getInputBuffer()[1];
+							uint64_t payloadStartOffset = 2;
+							if (length01 & webSocketMaskBit) {
 								return false;
 							}
-							uint8_t length03 = this->webSocket->getInputBuffer()[2];
-							uint8_t length04 = this->webSocket->getInputBuffer()[3];
-							length02 = static_cast<uint64_t>((length03 << 8) | length04);
-							payloadStartOffset += 2;
-						} else if (length01 == webSocketPayloadLengthMagicHuge) {
-							if (this->webSocket->getInputBuffer().size() < 10) {
+							uint64_t length02 = length01;
+							if (length01 == webSocketPayloadLengthMagicLarge) {
+								if (this->webSocket->getInputBuffer().size() < 8) {
+									return false;
+								}
+								uint8_t length03 = this->webSocket->getInputBuffer()[2];
+								uint8_t length04 = this->webSocket->getInputBuffer()[3];
+								length02 = static_cast<uint64_t>((length03 << 8) | length04);
+								payloadStartOffset += 2;
+							} else if (length01 == webSocketPayloadLengthMagicHuge) {
+								if (this->webSocket->getInputBuffer().size() < 10) {
+									return false;
+								}
+								length02 = 0;
+								for (int64_t x = 2, shift = 56; x < 10; ++x, shift -= 8) {
+									uint8_t lengthNew = static_cast<uint8_t>(this->webSocket->getInputBuffer()[x]);
+									length02 |= static_cast<uint64_t>((lengthNew & 0xff) << shift);
+								}
+								payloadStartOffset += 8;
+							}
+							if (this->webSocket->getInputBuffer().size() < payloadStartOffset + length02) {
 								return false;
+							} else {
+								std::string newerVector{};
+								newerVector.reserve(length02);
+								for (uint32_t x = payloadStartOffset; x < payloadStartOffset + length02; x += 1) {
+									newerVector.push_back(this->webSocket->getInputBuffer()[x]);
+								}
+								this->webSocket->getInputBuffer().clear();
+								this->webSocket->getInputBuffer().insert(this->webSocket->getInputBuffer().begin(), newerVector.begin(), newerVector.end());
+								this->onMessageReceived();
+								this->webSocket->getInputBuffer().insert(this->webSocket->getInputBuffer().begin(), newVector.begin() + payloadStartOffset + length02, newVector.end());
 							}
-							length02 = 0;
-							for (int64_t x = 2, shift = 56; x < 10; ++x, shift -= 8) {
-								uint8_t lengthNew = static_cast<uint8_t>(this->webSocket->getInputBuffer()[x]);
-								length02 |= static_cast<uint64_t>((lengthNew & 0xff) << shift);
-							}
-							payloadStartOffset += 8;
+							return true;
 						}
-						if (this->webSocket->getInputBuffer().size() < payloadStartOffset + length02) {
+						case WebSocketOpCode::Op_Close: {
+							uint16_t close = this->webSocket->getInputBuffer()[2] & 0xff;
+							close <<= 8;
+							close |= this->webSocket->getInputBuffer()[3] & 0xff;
+							this->closeCode = close;
+							this->webSocket->getInputBuffer().clear();
+							this->onClosedExternal();
 							return false;
-						} else {
-							std::string newerVector{};
-							newerVector.reserve(length02);
-							for (uint32_t x = payloadStartOffset; x < payloadStartOffset + length02; x += 1) {
-								newerVector.push_back(this->webSocket->getInputBuffer()[x]);
-							}
-							this->webSocket->getInputBuffer() = std::move(newerVector);
-							this->onMessageReceived();
-							this->webSocket->getInputBuffer().insert(this->webSocket->getInputBuffer().begin(), newVector.begin() + payloadStartOffset + length02, newVector.end());
 						}
-						return true;
+						default: {
+							this->closeCode = 0;
+							return false;
+						}
 					}
-					case WebSocketOpCode::Op_Close: {
-						uint16_t close = this->webSocket->getInputBuffer()[2] & 0xff;
-						close <<= 8;
-						close |= this->webSocket->getInputBuffer()[3] & 0xff;
-						this->closeCode = close;
-						this->webSocket->getInputBuffer().clear();
-						this->onClosedExternal();
-						return false;
-					}
-					default: {
-						this->closeCode = 0;
-						return false;
-					}
+				} else if (this->webSocket->getInputBuffer().size() > 0) {
+					this->offset = this->webSocket->getInputBuffer().size();
 				}
 			}
 			return false;
@@ -1266,7 +1272,7 @@ namespace DiscordCoreInternal {
 	void VoiceSocketAgent::sendHeartBeat() noexcept {
 		try {
 			if (this->haveWeReceivedHeartbeatAck) {
-				std::vector<uint8_t> heartbeatPayload = JSONIFY(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
+				std::vector<uint8_t> heartbeatPayload = JSONIFY(static_cast<uint64_t>(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count()));
 				if (this->webSocket) {
 					this->sendMessage(heartbeatPayload);
 				}

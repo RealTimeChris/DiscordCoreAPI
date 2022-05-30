@@ -268,7 +268,7 @@ namespace DiscordCoreInternal {
 		return data;
 	}
 
-	nlohmann::json JSONIFY(int32_t lastReceivedNumber) {
+	nlohmann::json JSONIFY(uint32_t lastReceivedNumber) {
 		nlohmann::json data{};
 		data["d"] = lastReceivedNumber;
 		data["op"] = 1;
@@ -316,7 +316,7 @@ namespace DiscordCoreInternal {
 		return newVector;
 	};
 
-	std::vector<uint8_t> JSONIFY(int64_t nonce) {
+	std::vector<uint8_t> JSONIFY(uint64_t nonce) {
 		nlohmann::json data{};
 		data["d"] = nonce;
 		data["op"] = int32_t(3);
