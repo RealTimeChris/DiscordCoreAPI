@@ -33,6 +33,7 @@ namespace DiscordCoreInternal {
 
 	enum class WebSocketOpCode : uint8_t { Op_Continuation = 0x00, Op_Text = 0x01, Op_Binary = 0x02, Op_Close = 0x08, Op_Ping = 0x09, Op_Pong = 0x0a };
 
+	/// Websocket close codes. \brief Websocket close codes.
 	enum class WebSocketCloseCode : int16_t {
 		Normal_Close=1000,///< Normal close.
 		Unknown_Error = 4000,///<	We're not sure what went wrong. Try reconnecting?	true
