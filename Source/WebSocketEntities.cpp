@@ -57,6 +57,7 @@ namespace DiscordCoreInternal {
 			this->run(theToken);
 		});
 		while (!this->areWeConnected.load()) {
+			std::cout << "THE MESSAGE 050505: " <<  std::endl;
 			std::this_thread::sleep_for(std::chrono::milliseconds{ 1 });
 		}
 	}
@@ -234,6 +235,7 @@ namespace DiscordCoreInternal {
 			this->connect();
 			DiscordCoreAPI::StopWatch stopWatch{ std::chrono::milliseconds{ 0 } };
 			while (!theToken.stop_requested() && !this->doWeQuit->load()) {
+				std::cout << "WERE HERE THIS IS IT!" << std::endl;
 				if (this->heartbeatInterval != 0 && !this->areWeHeartBeating) {
 					this->areWeHeartBeating = true;
 					stopWatch = DiscordCoreAPI::StopWatch{ std::chrono::milliseconds{ this->heartbeatInterval } };
@@ -262,7 +264,6 @@ namespace DiscordCoreInternal {
 	void BaseSocketAgent::onMessageReceived() noexcept {
 		try {
 			std::string messageNew = this->webSocket->getInputBuffer();
-			this->webSocket->getInputBuffer().clear();
 			nlohmann::json payload{};
 
 			if (this->theFormat == DiscordCoreAPI::TextFormat::Etf) {
@@ -901,11 +902,13 @@ namespace DiscordCoreInternal {
 						uint8_t length01 = this->webSocket->getInputBuffer()[1];
 						uint64_t payloadStartOffset = 2;
 						if (length01 & webSocketMaskBit) {
+							std::cout << "THE MESSAGE010101: " << this->webSocket->getInputBuffer() << std::endl;
 							return false;
 						}
 						uint64_t length02 = length01;
 						if (length01 == webSocketPayloadLengthMagicLarge) {
 							if (this->webSocket->getInputBuffer().size() < 8) {
+								std::cout << "THE MESSAGE 020202: " << this->webSocket->getInputBuffer() << std::endl;
 								return false;
 							}
 							uint8_t length03 = this->webSocket->getInputBuffer()[2];
@@ -914,6 +917,7 @@ namespace DiscordCoreInternal {
 							payloadStartOffset += 2;
 						} else if (length01 == webSocketPayloadLengthMagicHuge) {
 							if (this->webSocket->getInputBuffer().size() < 10) {
+								std::cout << "THE MESSAGE 030303: " << this->webSocket->getInputBuffer() << std::endl;
 								return false;
 							}
 							length02 = 0;
@@ -924,6 +928,7 @@ namespace DiscordCoreInternal {
 							payloadStartOffset += 8;
 						}
 						if (this->webSocket->getInputBuffer().size() < payloadStartOffset + length02) {
+							std::cout << "THE MESSAGE 040404: " << this->webSocket->getInputBuffer() << std::endl;
 							return false;
 						} else {
 							std::string newerVector{};
@@ -931,9 +936,12 @@ namespace DiscordCoreInternal {
 							for (uint32_t x = payloadStartOffset; x < payloadStartOffset + length02; x += 1) {
 								newerVector.push_back(this->webSocket->getInputBuffer()[x]);
 							}
+							std::cout << "STRING BEFORE: " << this->webSocket->getInputBuffer() << std::endl;
 							this->webSocket->getInputBuffer() = std::move(newerVector);
+							std::cout << "STRING BEFORESECOND: " << this->webSocket->getInputBuffer() << std::endl;
 							this->onMessageReceived();
 							this->webSocket->getInputBuffer().insert(this->webSocket->getInputBuffer().begin(), newVector.begin() + payloadStartOffset + length02, newVector.end());
+							std::cout << "STRING AFTER: " << this->webSocket->getInputBuffer() << std::endl;
 						}
 						return true;
 					}

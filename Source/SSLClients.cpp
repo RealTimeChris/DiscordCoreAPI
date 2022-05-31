@@ -510,6 +510,7 @@ namespace DiscordCoreInternal {
 					if (readBytes > 0) {
 						this->inputBuffer.insert(this->inputBuffer.end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
 						this->bytesRead += readBytes;
+						std::cout << "THE READ MESSAGE: " << serverToClientBuffer << std::endl;
 					}
 					return true;
 				}
