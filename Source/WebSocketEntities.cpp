@@ -24,13 +24,13 @@
 
 namespace DiscordCoreInternal {
 
-	constexpr int16_t webSocketMaxPayloadLengthLarge{ 65535 };
+	constexpr int8_t webSocketFinishBit{ static_cast<int8_t>(1 << 7) };
+	constexpr int8_t webSocketMaskBit{ static_cast<int8_t>(1 << 7) };
+	constexpr uint16_t webSocketMaxPayloadLengthLarge{ 65535 };
 	constexpr int8_t webSocketPayloadLengthMagicLarge{ 126 };
 	constexpr int8_t webSocketPayloadLengthMagicHuge{ 127 };
-	constexpr int8_t maxHeaderSize{ sizeof(int64_t) + 2 };
 	constexpr int8_t webSocketMaxPayloadLengthSmall{ 125 };
-	constexpr int8_t webSocketFinishBit{ (1 << 7) };
-	constexpr int8_t webSocketMaskBit{ (1 << 7) };
+	constexpr int8_t maxHeaderSize{ sizeof(int64_t) + 2 };
 
 	WSMessageCollector::WSMessageCollector(WebSocketSSLClient* thePtr){
 		this->theClientPtr = thePtr;
@@ -536,7 +536,7 @@ namespace DiscordCoreInternal {
 							  << DiscordCoreAPI::reset() << std::endl;
 				}
 				this->currentReconnectTries += 1;
-				std::mt19937_64 randomEngine{ static_cast<int64_t>(std::chrono::system_clock::now().time_since_epoch().count()) };
+				std::mt19937_64 randomEngine{ static_cast<uint64_t>(std::chrono::system_clock::now().time_since_epoch().count()) };
 				int32_t numOfMsToWait =
 					static_cast<int32_t>(1000.0f + ((static_cast<float>(randomEngine()) / static_cast<float>(randomEngine.max())) * static_cast<float>(4000.0f)));
 				std::this_thread::sleep_for(std::chrono::milliseconds{ numOfMsToWait });
