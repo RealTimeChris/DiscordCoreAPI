@@ -29,9 +29,9 @@
 
 namespace DiscordCoreInternal {
 
-	enum class WebSocketState : uint8_t { Initializing = 0, Connected = 1 };
+	enum class WebSocketState : int8_t { Initializing = 0, Connected = 1 };
 
-	enum class WebSocketOpCode : uint8_t { Op_Continuation = 0x00, Op_Text = 0x01, Op_Binary = 0x02, Op_Close = 0x08, Op_Ping = 0x09, Op_Pong = 0x0a };
+	enum class WebSocketOpCode : int8_t { Op_Continuation = 0x00, Op_Text = 0x01, Op_Binary = 0x02, Op_Close = 0x08, Op_Ping = 0x09, Op_Pong = 0x0a };
 
 	/// Websocket close codes. \brief Websocket close codes.
 	enum class WebSocketCloseCode : int16_t {
@@ -88,7 +88,7 @@ namespace DiscordCoreInternal {
 		WSMessageCollectorReturnData currentFinalMessage{};
 		WebSocketSSLClient* theClientPtr{ nullptr };
 		std::vector<std::string> messageCache{};
-		std::vector<uint64_t> theOffsets{};
+		std::vector<int64_t> theOffsets{};
 		WSMessageCollectorState theState{};
 		int8_t maxRecursionDepth{ 10 };
 		int8_t currentRecursionDepth{};
@@ -101,7 +101,7 @@ namespace DiscordCoreInternal {
 
 		bool parseHeaderAndMessage() noexcept;
 
-		uint64_t getTotalOffset() noexcept;
+		int64_t getTotalOffset() noexcept;
 
 		bool collectData() noexcept;
 	};
@@ -158,15 +158,15 @@ namespace DiscordCoreInternal {
 		std::mutex accessorMutex01{};
 		bool areWeResuming{ false };
 		std::string sessionId{};
-		uint32_t closeCode{ 0 };
+		int32_t closeCode{ 0 };
 		nlohmann::json shard{};
 		WebSocketState state{};
 		std::string botToken{};
 		ErlPacker erlPacker{};
 		std::string baseUrl{};
-		uint64_t userId{};
+		int64_t userId{};
 
-		uint64_t createHeader(int8_t* outbuf, uint64_t sendlength, WebSocketOpCode opCode) noexcept;
+		int64_t createHeader(char* outbuf, int64_t sendlength, WebSocketOpCode opCode) noexcept;
 
 		void getVoiceConnectionData(const VoiceConnectInitData& doWeCollect) noexcept;
 
@@ -187,7 +187,7 @@ namespace DiscordCoreInternal {
 
 		VoiceSocketAgent(VoiceConnectInitData initDataNew, BaseSocketAgent* baseBaseSocketAgentNew, bool doWePrintMessages = false) noexcept;
 
-		void sendMessage(const std::vector<uint8_t>& responseData) noexcept;
+		void sendMessage(const std::vector<int8_t>& responseData) noexcept;
 
 		void sendVoiceData(std::string& responseData) noexcept;
 
@@ -217,13 +217,13 @@ namespace DiscordCoreInternal {
 		bool areWeHeartBeating{ false };
 		int32_t heartbeatInterval{ 0 };
 		EventWaiter areWeConnected{};
-		uint32_t closeCode{ 0 };
+		int32_t closeCode{ 0 };
 		std::string baseUrl{};
 		std::string hostIp{};
 
-		uint64_t createHeader(char* outbuf, uint64_t sendlength, WebSocketOpCode opCode) noexcept;
-
 		std::vector<std::string> tokenize(const std::string&, const std::string& = "\r\n") noexcept;
+
+		int64_t createHeader(char* outbuf, int64_t sendlength, WebSocketOpCode opCode) noexcept;
 
 		void run(std::stop_token) noexcept;
 
