@@ -34,10 +34,10 @@ namespace DiscordCoreInternal {
 	void reportError(const std::string& errorPosition, int32_t errorValue) noexcept {
 		std::cout << DiscordCoreAPI::shiftToBrightRed() << errorPosition << errorValue << ", ";
 #ifdef _WIN32
-		char* s = NULL;
+		std::unique_ptr<char> s{ nullptr };
 		FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, WSAGetLastError(),
-			MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), static_cast<LPSTR>(static_cast<void*>(&s)), 0, NULL);
-		std::cout << WSAGetLastError() << ", " << s << std::endl << DiscordCoreAPI::reset();
+			MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), s.get(), 0, NULL);
+		std::cout << WSAGetLastError() << ", " << s.get() << std::endl << DiscordCoreAPI::reset();
 #else
 		std::cout << strerror(errno) << std::endl << DiscordCoreAPI::reset();
 #endif
@@ -510,6 +510,8 @@ namespace DiscordCoreInternal {
 					if (readBytes > 0) {
 						this->inputBuffer.insert(this->inputBuffer.end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
 						this->bytesRead += readBytes;
+						auto theOpCode = static_cast<uint8_t>(this->inputBuffer[0] & ~(1 << 7));
+						std::cout << "THE OPCODE: " << +theOpCode << std::endl;
 					}
 					return true;
 				}

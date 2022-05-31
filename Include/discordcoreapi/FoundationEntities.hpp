@@ -797,7 +797,7 @@ namespace DiscordCoreAPI {
 	DiscordCoreAPI_Dll std::string getFutureISO8601TimeStamp(int32_t minutesToAdd, int32_t hoursToAdd = 0, int32_t daysToAdd = 0, int32_t monthsToAdd = 0, int32_t yearsToAdd = 0);
 
 	/// Acquires a timestamp with the current time and date - suitable for use in message-embeds. \brief Acquires a timestamp with the current time and date - suitable for use in message-embeds.
-	/// \returns std::string A String containing the current date-time stamp.
+	/// \returns std::string A String_Ext containing the current date-time stamp.
 	DiscordCoreAPI_Dll std::string getTimeAndDate();
 
 	/// Class for representing a timestamp. \brief Class for representing a timestamp.
@@ -1384,8 +1384,8 @@ namespace DiscordCoreAPI {
 	enum class ApplicationCommandOptionType {
 		Sub_Command = 1,///< Sub-command.
 		Sub_Command_Group = 2,///< Sub-command group.
-		String = 3,///< String.
-		Integer = 4,///< Integer.
+		String = 3,///< String_Ext.
+		Integer = 4,///< Integer_Ext.
 		Boolean = 5,///< Boolean.
 		User = 6,///< User.
 		Channel = 7,///< Channel.
@@ -1969,7 +1969,7 @@ namespace DiscordCoreAPI {
 		std::unordered_map<uint64_t, VoiceStateData> voiceStates{};///< Array of Guild-member voice-states.
 		DiscordCoreClient* discordCoreClient{ nullptr };///< A pointer to the DiscordCoreClient.
 		VoiceConnection* voiceConnectionPtr{ nullptr };///< A pointer to the VoiceConnection, if present.
-		std::vector<std::string> features{};///< List of Guild features.
+		std::vector<std::string> features{};///< List_Ext of Guild features.
 		std::vector<uint64_t> channels{};///< Array of Guild channels.
 		std::vector<uint64_t> members{};///< Array of GuildMembers.
 		std::vector<uint64_t> roles{};///< Array of Guild roles.
@@ -2297,7 +2297,7 @@ namespace DiscordCoreAPI {
 		int32_t minLength{ 0 };///< The minimum input length for a text input.
 		int32_t maxLength{ 0 };///< The maximum input length for a text input.
 		bool required{ false };///< Whether this component is required to be filled.
-		ComponentType type{};///< Integer component type.
+		ComponentType type{};///< Integer_Ext component type.
 		std::string label{};///< The label for this component.
 		std::string value{};///< A pre-filled value for this component.
 		std::string title{};///< Url, for url types.

@@ -64,30 +64,34 @@ namespace DiscordCoreInternal {
 			static_cast<int16_t>(WebSocketCloseCode::Normal_Close)
 	};
 
-	enum class MessageCollectorState { Initializing = 0, Collecting = 1, Parsing = 2, Serving = 3 };
+	enum class WSMessageCollectorState { Initializing = 0, Collecting = 1, Parsing = 2, Serving = 3 };
 
-	struct DiscordCoreAPI_Dll MessageCollectorReturnData {
+	struct DiscordCoreAPI_Dll WSMessageCollectorReturnData {
 		WebSocketOpCode opCode{};
 		std::string theMessage{};
 		int16_t closeCode{};
 	};
 
-	class DiscordCoreAPI_Dll MessageCollector {
+	class DiscordCoreAPI_Dll WSMessageCollector {
 	  public:
-		MessageCollector(WebSocketSSLClient*);
+		WSMessageCollector(WebSocketSSLClient*);
 
-		MessageCollector() = default;
+		WSMessageCollector() = default;
 
-		MessageCollectorReturnData collectFinalMessage() noexcept;
+		WSMessageCollectorReturnData collectFinalMessage() noexcept;
 
 		bool runMessageCollector() noexcept;
 
 	  protected:
 		WebSocketState wsState{ WebSocketState::Initializing };
+		std::queue<WSMessageCollectorReturnData> finalMessages{};
+		WSMessageCollectorReturnData currentFinalMessage{};
 		WebSocketSSLClient* theClientPtr{ nullptr };
-		MessageCollectorReturnData finalMessage{};
 		std::vector<std::string> messageCache{};
-		MessageCollectorState theState{};
+		std::vector<uint64_t> theOffsets{};
+		WSMessageCollectorState theState{};
+		int8_t maxRecursionDepth{ 10 };
+		int8_t currentRecursionDepth{};
 		std::string currentMessage{};
 		WebSocketOpCode dataOpCode{};
 		int64_t messageLength{};
@@ -96,6 +100,8 @@ namespace DiscordCoreInternal {
 		std::vector<std::string> tokenize(const std::string&, const std::string& = "\r\n") noexcept;
 
 		bool parseHeaderAndMessage() noexcept;
+
+		uint64_t getTotalOffset() noexcept;
 
 		bool collectData() noexcept;
 	};
@@ -139,7 +145,7 @@ namespace DiscordCoreInternal {
 		const int32_t maxReconnectTries{ 10 };
 		std::binary_semaphore semaphore{ 1 };
 		bool serverUpdateCollected{ false };
-		MessageCollector messageCollector{};
+		WSMessageCollector messageCollector{};
 		bool stateUpdateCollected{ false };
 		int32_t currentReconnectTries{ 0 };
 		bool printSuccessMessages{ false };
@@ -160,7 +166,7 @@ namespace DiscordCoreInternal {
 		std::string baseUrl{};
 		uint64_t userId{};
 
-		uint64_t createHeader(char* outbuf, uint64_t sendlength, WebSocketOpCode opCode) noexcept;
+		uint64_t createHeader(int8_t* outbuf, uint64_t sendlength, WebSocketOpCode opCode) noexcept;
 
 		void getVoiceConnectionData(const VoiceConnectInitData& doWeCollect) noexcept;
 
