@@ -275,52 +275,52 @@ namespace DiscordCoreInternal {
 		return data;
 	};
 
-	std::vector<uint8_t> JSONIFY(const std::string& localPort, const std::string& localIp, const std::string& encryptionMode, int32_t) {
+	std::vector<int8_t> JSONIFY(const std::string& localPort, const std::string& localIp, const std::string& encryptionMode, int32_t) {
 		nlohmann::json data{};
 		data["d"]["data"]["port"] = stol(localPort);
 		data["d"]["data"]["mode"] = encryptionMode;
 		data["d"]["data"]["address"] = localIp;
 		data["d"]["protocol"] = "udp";
 		data["op"] = 1;
-		std::vector<uint8_t> newVector{};
+		std::vector<int8_t> newVector{};
 		std::string newString = data.dump();
 		newString.shrink_to_fit();
 		newVector.insert(newVector.begin(), newString.begin(), newString.end());
 		return newVector;
 	}
 
-	std::vector<uint8_t> JSONIFY(const DiscordCoreInternal::VoiceConnectionData& dataPackage, const VoiceConnectInitData& dataPackage02) {
+	std::vector<int8_t> JSONIFY(const DiscordCoreInternal::VoiceConnectionData& dataPackage, const VoiceConnectInitData& dataPackage02) {
 		nlohmann::json data{};
 		data["d"]["session_id"] = dataPackage.sessionId;
 		data["d"]["server_id"] = std::to_string(dataPackage02.guildId);
 		data["d"]["user_id"] = std::to_string(dataPackage02.userId);
 		data["d"]["token"] = dataPackage.token;
 		data["op"] = 0;
-		std::vector<uint8_t> newVector{};
+		std::vector<int8_t> newVector{};
 		std::string newString = data.dump();
 		newString.shrink_to_fit();
 		newVector.insert(newVector.begin(), newString.begin(), newString.end());
 		return newVector;
 	}
 
-	std::vector<uint8_t> JSONIFY(int32_t ssrc, int32_t delay) {
+	std::vector<int8_t> JSONIFY(int32_t ssrc, int32_t delay) {
 		nlohmann::json data{};
 		data["d"]["speaking"] = 1 << 0;
 		data["d"]["delay"] = delay;
 		data["d"]["ssrc"] = ssrc;
 		data["op"] = 5;
-		std::vector<uint8_t> newVector{};
+		std::vector<int8_t> newVector{};
 		std::string newString = data.dump();
 		newString.shrink_to_fit();
 		newVector.insert(newVector.begin(), newString.begin(), newString.end());
 		return newVector;
 	};
 
-	std::vector<uint8_t> JSONIFY(int64_t nonce) {
+	std::vector<int8_t> JSONIFY(int64_t nonce) {
 		nlohmann::json data{};
 		data["d"] = nonce;
 		data["op"] = int32_t(3);
-		std::vector<uint8_t> newVector{};
+		std::vector<int8_t> newVector{};
 		std::string newString = data.dump();
 		newString.shrink_to_fit();
 		newVector.insert(newVector.begin(), newString.begin(), newString.end());
