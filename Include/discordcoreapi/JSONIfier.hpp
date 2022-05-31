@@ -96,7 +96,7 @@ namespace DiscordCoreInternal {
 
 	nlohmann::json JSONIFY(const DiscordCoreAPI::UpdatePresenceData& dataPackage);
 
-	nlohmann::json JSONIFY(uint32_t lastReceivedNumber);
+	nlohmann::json JSONIFY(int32_t lastReceivedNumber);
 
 	std::vector<uint8_t> JSONIFY(const std::string& localPort, const std::string& localIp, const std::string& encryptionMode, int32_t testValue);
 
@@ -104,7 +104,7 @@ namespace DiscordCoreInternal {
 
 	std::vector<uint8_t> JSONIFY(int32_t ssrc, int32_t delay);
 
-	std::vector<uint8_t> JSONIFY(uint64_t nonce);
+	std::vector<uint8_t> JSONIFY(int64_t nonce);
 
 	void JSONIFY(const DiscordCoreAPI::ApplicationCommandOptionData& dataPackage, nlohmann::json* pJSONData);
 

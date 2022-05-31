@@ -398,7 +398,9 @@ namespace DiscordCoreInternal {
 		FD_ZERO(&writeSet);
 		FD_ZERO(&readSet);
 
-		if (this->outputBuffer.size() > 0 && (!this->wantRead || this->wantWrite)) {
+		bool writing{ false };
+		if (this->outputBuffer.size() > 0 && !this->wantRead) {
+			writing = true;
 			FD_SET(this->theSocket, &writeSet);
 			nfds = this->theSocket > nfds ? this->theSocket : nfds;
 		} else {
@@ -452,16 +454,14 @@ namespace DiscordCoreInternal {
 
 #endif
 
-
 #ifdef _WIN32
 		if (FD_ISSET(this->theSocket, &writeSet)) {
 #else
 		if (writing) {
-			#endif this->wantRead = false;
+#endif
+			this->wantRead = false;
 			size_t writtenBytes{ 0 };
-			std::string theString = std::move(this->outputBuffer.front());
-			size_t bytesToWrite = this->maxBufferSize < theString.size() ? this->maxBufferSize : theString.size();
-			auto returnValue{ SSL_write_ex(this->ssl, theString.data(), bytesToWrite, &writtenBytes) };
+			auto returnValue{ SSL_write_ex(this->ssl, this->outputBuffer.data(), this->outputBuffer.size(), &writtenBytes) };
 			auto errorValue{ SSL_get_error(this->ssl, returnValue) };
 			switch (errorValue) {
 				case SSL_ERROR_NONE: {
@@ -483,7 +483,6 @@ namespace DiscordCoreInternal {
 					[[fallthrough]];
 				}
 				case SSL_ERROR_WANT_WRITE: {
-					this->wantWrite = true;
 					return true;
 				}
 				default: {
@@ -501,7 +500,6 @@ namespace DiscordCoreInternal {
 		else {
 #endif
 			this->wantRead = false;
-			this->wantWrite = false;
 			std::string serverToClientBuffer{};
 			serverToClientBuffer.resize(this->maxBufferSize);
 			size_t readBytes{ 0 };
@@ -512,7 +510,6 @@ namespace DiscordCoreInternal {
 					if (readBytes > 0) {
 						this->inputBuffer.insert(this->inputBuffer.end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
 						this->bytesRead += readBytes;
-						std::cout << "THE READ MESSAGE: " << serverToClientBuffer << std::endl;
 					}
 					return true;
 				}
@@ -531,7 +528,6 @@ namespace DiscordCoreInternal {
 					[[fallthrough]];
 				}
 				case SSL_ERROR_WANT_WRITE: {
-					this->wantWrite = true;
 					return true;
 				}
 				default: {
@@ -547,7 +543,7 @@ namespace DiscordCoreInternal {
 	}
 
 	void WebSocketSSLClient::writeData(const std::string& data) noexcept {
-		this->outputBuffer.push_back(data);
+		this->outputBuffer.insert(this->outputBuffer.end(), data.begin(), data.end());
 	}
 
 	std::string& WebSocketSSLClient::getInputBuffer() noexcept {
