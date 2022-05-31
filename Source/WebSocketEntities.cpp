@@ -33,7 +33,6 @@ namespace DiscordCoreInternal {
 		auto newMessage = this->theClientPtr->getInputBuffer();
 		this->currentMessage.insert(this->currentMessage.end(), newMessage.begin(), newMessage.end());
 		this->theState = MessageCollectorState::Parsing;
-		std::cout << "WERE HERE THIS IS IT: " << this->currentMessage << std::endl;
 		if (!theBool) {
 			return theBool;
 		} else {
@@ -932,14 +931,12 @@ namespace DiscordCoreInternal {
 						uint8_t length01 = this->currentMessage[1];
 						this->messageOffset = 2;
 						if (length01 & webSocketMaskBit) {
-							std::cout << "WERE HERE 1010101" << std::endl;
 							this->theState = MessageCollectorState::Serving;
 							return this->runMessageCollector();
 						}
 						this->messageLength = length01;
 						if (length01 == webSocketPayloadLengthMagicLarge) {
 							if (this->currentMessage.size() < 8) {
-								std::cout << "WERE HERE 020202" << std::endl;
 								this->theState = MessageCollectorState::Serving;
 								return this->runMessageCollector();
 							}
@@ -949,7 +946,6 @@ namespace DiscordCoreInternal {
 							this->messageOffset += 2;
 						} else if (length01 == webSocketPayloadLengthMagicHuge) {
 							if (this->currentMessage.size() < 10) {
-								std::cout << "WERE HERE 030303" << std::endl;
 								this->theState = MessageCollectorState::Serving;
 								return this->runMessageCollector();
 							}
@@ -961,7 +957,6 @@ namespace DiscordCoreInternal {
 							this->messageOffset += 8;
 						}
 						if (this->currentMessage.size() < this->messageOffset + this->messageLength) {
-							std::cout << "WERE HERE 040404" << std::endl;
 							this->theState = MessageCollectorState::Serving;
 							return this->runMessageCollector();
 						} else {
