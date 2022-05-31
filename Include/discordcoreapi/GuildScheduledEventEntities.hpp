@@ -49,7 +49,7 @@ namespace DiscordCoreAPI {
 
 	/// For collecting a single Guild scheduled event. \brief For collecting a single Guild scheduled event.
 	struct DiscordCoreAPI_Dll GetGuildScheduledEventData {
-		uint64_t guildScheduledEventId{};///< The id of the desired scheduled event.
+		int64_t guildScheduledEventId{};///< The id of the desired scheduled event.
 		bool withUserCount{ false };///< Do we collect the user counts?
 		uint64_t guildId{};///< Guild from which we would like to collect the events.
 	};
@@ -60,7 +60,7 @@ namespace DiscordCoreAPI {
 		GuildScheduledEventStatus status{ GuildScheduledEventStatus::Active };///< The status of the scheduled event.
 		GuildScheduledEventMetadata entityMetadata{};///< The entity metadata of the scheduled event.
 		GuildScheduledEventEntityType entityType{};///< The entity type of the scheduled event.
-		uint64_t guildScheduledEventId{};///< The id of the event to modify.
+		int64_t guildScheduledEventId{};///< The id of the event to modify.
 		std::string scheduledStartTime{};///< The time to schedule the scheduled event.
 		std::string scheduledEndTime{};///< The time when the scheduled event is scheduled to end.
 		std::string description{};///< The description of the scheduled event.
@@ -71,18 +71,18 @@ namespace DiscordCoreAPI {
 
 	/// For deleting a single Guild Scheduled Event. \brief For deleting a single Guild Scheduled Event.
 	struct DiscordCoreAPI_Dll DeleteGuildScheduledEventData {
-		uint64_t guildScheduledEventId{};///< The id of the event to modify.
+		int64_t guildScheduledEventId{};///< The id of the event to modify.
 		uint64_t guildId{};///< The Guild within which to modify the event.
 	};
 
 	/// For collecting a list of Guild Scheduled Event Users. \brief For collecting a list of Guild Scheduled Event Users.
 	struct DiscordCoreAPI_Dll GetGuildScheduledEventUsersData {
-		uint64_t guildScheduledEventId{};///< The id of the event to modify.
+		int64_t guildScheduledEventId{};///< The id of the event to modify.
 		bool withMember{ false };///< Include Guild member responseData if it exists.
 		uint64_t guildId{};///< The Guild within which to modify the event.
-		uint64_t before{};///< Consider only users before given user id.
-		uint64_t after{};///< Consider only users after given user id.
-		uint32_t limit{ 0 };///< How many users to receive from the event.
+		int64_t before{};///< Consider only users before given user id.
+		int64_t after{};///< Consider only users after given user id.
+		int32_t limit{ 0 };///< How many users to receive from the event.
 	};
 
 	/// A single GuildScheduledEvent responseData structure. \brief A single GuildScheduledEvent responseData structure.

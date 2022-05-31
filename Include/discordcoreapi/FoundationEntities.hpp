@@ -1719,7 +1719,7 @@ namespace DiscordCoreAPI {
 		std::string createdTimeStamp{};///< Time at which this entry was created.
 		AuditLogEvent actionType{};///< Audit log action type.
 		std::string reason{};///< The reason that was entered for the given change.
-		uint64_t targetId{};///< Id of the target User.
+		int64_t targetId{};///< Id of the target User.
 		uint64_t userId{};///< Id of the executing User.
 
 		virtual ~AuditLogEntryData() = default;
@@ -1838,7 +1838,7 @@ namespace DiscordCoreAPI {
 		std::string description{};///< Description of the welcome Channel.
 		std::string emojiName{};///< Emoji name for the Channel.
 		uint64_t channelId{};///< Id of the welcome Channel.
-		uint64_t emojiId{};///< Emoji id for the Channel.
+		int64_t emojiId{};///< Emoji id for the Channel.
 	};
 
 	/// Welcome screen data. \brief Welcome screen data.
@@ -1887,14 +1887,14 @@ namespace DiscordCoreAPI {
 	  public:
 		void setAvailable(bool enabled) {
 			if (enabled) {
-				this->stickerFlags |= static_cast<uint8_t>(StickerFlags::Available);
+				this->stickerFlags |= static_cast<int8_t>(StickerFlags::Available);
 			} else {
-				this->stickerFlags &= ~static_cast<uint8_t>(StickerFlags::Available);
+				this->stickerFlags &= ~static_cast<int8_t>(StickerFlags::Available);
 			}
 		}
 
 		bool getAvailable() {
-			return this->stickerFlags & static_cast<uint8_t>(StickerFlags::Available);
+			return this->stickerFlags & static_cast<int8_t>(StickerFlags::Available);
 		}
 
 		StickerFormatType formatType{};///< Format type.
@@ -2024,7 +2024,7 @@ namespace DiscordCoreAPI {
 		std::string scheduledStartTime{};///< The time the scheduled event will start.
 		std::string scheduledEndTime{};///< The time the scheduled event will end, required if entity_type is External.
 		std::string description{};///< The description of the scheduled event(1 - 1000 characters.
-		uint32_t userCount{ 0 };///< The number of users subscribed to the scheduled event.
+		int32_t userCount{ 0 };///< The number of users subscribed to the scheduled event.
 		std::string creatorId{};///< The id of the User that created the scheduled event *.
 		std::string entityId{};///< The id of an entity associated with a Guild scheduled event.
 		uint64_t channelId{};///< The Channel id in which the scheduled event will be hosted, or null if scheduled entity type is External.
@@ -2069,7 +2069,7 @@ namespace DiscordCoreAPI {
 		GuildData serializedSourceGuild{};///< The Guild snapshot this template contains.
 		std::string sourceGuildId{};///< The ID of the Guild this template is based on.
 		std::string description{};///< The description for the template.
-		uint32_t usageCount{ 0 };///< Number of times this template has been used.
+		int32_t usageCount{ 0 };///< Number of times this template has been used.
 		std::string creatorId{};///< The ID of the User who created the template.
 		std::string createdAt{};///< When this template was created.
 		std::string updatedAt{};///< When this template was last synced to the source Guild.
@@ -2113,7 +2113,7 @@ namespace DiscordCoreAPI {
 	/// Audit log data. \brief Audit log data.
 	class DiscordCoreAPI_Dll AuditLogData {
 	  public:
-		auto getAuditLogData(const uint64_t& userIdOfChanger, AuditLogEvent auditLogType) {
+		auto getAuditLogData(const int64_t& userIdOfChanger, AuditLogEvent auditLogType) {
 			for (auto& value: this->auditLogEntries) {
 				if (value.id == userIdOfChanger && value.actionType == auditLogType) {
 					return value;
@@ -2121,7 +2121,7 @@ namespace DiscordCoreAPI {
 			}
 			return AuditLogEntryData();
 		}
-		auto getAuditLogData(AuditLogEvent auditLogType, const uint64_t& userIdOfTarget) {
+		auto getAuditLogData(AuditLogEvent auditLogType, const int64_t& userIdOfTarget) {
 			for (auto& value: this->auditLogEntries) {
 				if (value.targetId == userIdOfTarget && value.actionType == auditLogType) {
 					return value;
@@ -2358,7 +2358,7 @@ namespace DiscordCoreAPI {
 	/// Function data for repeated functions to be loaded. \brief Function data for repeated functions to be loaded.
 	struct DiscordCoreAPI_Dll RepeatedFunctionData {
 		std::function<void(DiscordCoreClient*)> function{ nullptr };///< The std::function pointer to be loaded.
-		uint32_t intervalInMs{ 0 };///< The time interval at which to call the std::function.
+		int32_t intervalInMs{ 0 };///< The time interval at which to call the std::function.
 		bool repeated{ false };///< Whether or not the std::function is repeating.
 		int64_t dummyArg{ 0 };
 	};
@@ -2500,7 +2500,7 @@ namespace DiscordCoreAPI {
 		GuildMemberData member{};///< The author's Guild member data.
 		std::string content{};///< The Message's content.
 		uint64_t channelId{};///< The Channel it was sent in.
-		uint64_t webhookId{};///< WebHook id of the Message, if applicable.
+		int64_t webhookId{};///< WebHook id of the Message, if applicable.
 		bool pinned{ false };///< Is it pinned?
 		ChannelData thread{};///< The Thread that the Message was sent in, if applicable.
 		std::string nonce{};///< Nonce.
@@ -2660,16 +2660,16 @@ namespace DiscordCoreAPI {
 
 	/// Data from the SessionStart info. \brief Data from the SessionStart info.
 	struct DiscordCoreAPI_Dll SessionStartData {
-		uint32_t maxConcurrency{ 0 };///< The number of identify requests allowed per 5 seconds.
-		uint32_t resetAfter{ 0 };///< The number of std::chrono::milliseconds after which the limit resets.
-		uint32_t remaining{ 0 };///< The remaining number of session starts the current User is allowed.
-		uint32_t total{ 0 };///< The total number of session starts the current User is allowed.
+		int32_t maxConcurrency{ 0 };///< The number of identify requests allowed per 5 seconds.
+		int32_t resetAfter{ 0 };///< The number of std::chrono::milliseconds after which the limit resets.
+		int32_t remaining{ 0 };///< The remaining number of session starts the current User is allowed.
+		int32_t total{ 0 };///< The total number of session starts the current User is allowed.
 	};
 
 	/// Data from the GetGatewatBot endpoint. \brief Data from the GetGatewatBot endpoint.
 	struct DiscordCoreAPI_Dll GatewayBotData {
 		SessionStartData sessionStartLimit{};///< Information on the current session start limit.
-		uint32_t shards{ 0 };///< The recommended number of shards to use when connecting.
+		int32_t shards{ 0 };///< The recommended number of shards to use when connecting.
 		std::string url{};///< The WSS Url that can be used for connecting to the gateway.
 	};
 
@@ -2788,25 +2788,25 @@ namespace DiscordCoreAPI {
 
 		/// Returns the User id of the last requester of this input-event. \brief Returns the User id of the last requester of this input-event.
 		/// \returns A std::string containing the author's id.
-		uint64_t getAuthorId() {
+		int64_t getAuthorId() {
 			return this->interactionData->user.id;
 		}
 
 		/// Returns the Interaction id, if appplicable, of this input-event. \brief Returns the Interaction id, if appplicable, of this input-event.
 		/// \returns A std::string containing the Interaction id.
-		uint64_t getInteractionId() {
+		int64_t getInteractionId() {
 			return this->interactionData->id;
 		}
 
 		/// Returns the application id. \brief Returns the application id.
 		/// \returns A std::string containing the application id.
-		uint64_t getApplicationId() {
+		int64_t getApplicationId() {
 			return this->interactionData->applicationId;
 		}
 
 		/// Returns the Channel id of this input-event. \brief Returns the Channel id of this input-event.
 		/// \returns A std::string containing the Channel id.
-		uint64_t getChannelId() {
+		int64_t getChannelId() {
 			return this->interactionData->channelId;
 		}
 
@@ -2818,13 +2818,13 @@ namespace DiscordCoreAPI {
 
 		/// Returns the Guild id, of this input-event. \brief Returns the Guild id, of this input-event.
 		/// \returns A std::string containing the Guild id.
-		uint64_t getGuildId() {
+		int64_t getGuildId() {
 			return this->interactionData->guildId;
 		}
 
 		/// Returns the Message id, if applicable, of this input-event. \brief Returns the Message id, if applicable, of this input-event.
 		/// \returns A std::string containing the Message id.
-		uint64_t getMessageId() {
+		int64_t getMessageId() {
 			return this->interactionData->message.id;
 		}
 
@@ -2901,7 +2901,7 @@ namespace DiscordCoreAPI {
 		/// \param url A url, if applicable.
 		/// \returns RespondToInputEventData& A reference to this data structure.
 		RespondToInputEventData& addButton(bool disabled, const std::string& customIdNew, const std::string& buttonLabel, ButtonStyle buttonStyle,
-			const std::string& emojiName = "", uint64_t emojiId = 0, const std::string& url = "") {
+			const std::string& emojiName = "", int64_t emojiId = 0, const std::string& url = "") {
 			if (this->components.size() == 0) {
 				ActionRowData actionRowData;
 				this->components.push_back(actionRowData);
@@ -3070,7 +3070,7 @@ namespace DiscordCoreAPI {
 		/// For setting the direct-Message User target of a response. \brief For setting the direct-Message User target of a response.
 		/// \param targetUserIdNew A std::string, containing the target User's id.
 		/// \returns RespondToInputEventData& A reference to this data structure.
-		RespondToInputEventData& setTargetUserID(const uint64_t& targetUserIdNew) {
+		RespondToInputEventData& setTargetUserID(const int64_t& targetUserIdNew) {
 			this->targetUserId = targetUserIdNew;
 			return *this;
 		}
@@ -3131,7 +3131,7 @@ namespace DiscordCoreAPI {
 		/// \param url A url, if applicable.
 		/// \returns RespondToInputEventData& A reference to this data structure.
 		MessageResponseBase& addButton(bool disabled, const std::string& customIdNew, const std::string& buttonLabel, ButtonStyle buttonStyle, const std::string& emojiName = "",
-			uint64_t emojiId = 0, const std::string& url = "") {
+			int64_t emojiId = 0, const std::string& url = "") {
 			if (this->components.size() == 0) {
 				ActionRowData actionRowData;
 				this->components.push_back(actionRowData);
@@ -3408,13 +3408,13 @@ namespace DiscordCoreAPI {
 		std::string firstDownloadUrl{};
 		std::string html5PlayerFile{};
 		std::string addedByUserName{};///< The User name of the individual who added this Song to the playlist.
-		uint64_t addedByUserId{};///< The User id of the individual who added this Song to the playlist.
+		int32_t contentLength{ 0 };
 		std::string thumbnailUrl{};///< The Url of the thumbnail image of this Song.
 		std::string html5Player{};
 		std::string description{};///< A description of the Song.
+		uint64_t addedByUserId{};///< The User id of the individual who added this Song to the playlist.
 		std::string songTitle{};///< The title of the Song.
 		std::string duration{};///< The duration of the Song.
-		int32_t contentLength{ 0 };
 		std::string viewUrl{};///< The url for listening to this Song through a browser.
 		std::string songId{};
 
@@ -3496,12 +3496,12 @@ namespace DiscordCoreAPI {
 
 	struct DiscordCoreAPI_Dll MoveThroughMessagePagesData {
 		InputEventData inputEventData{};
-		uint32_t currentPageIndex{};
+		int32_t currentPageIndex{};
 		std::string buttonId{};
 	};
 
-	DiscordCoreAPI_Dll MoveThroughMessagePagesData moveThroughMessagePages(const std::string& userID, InputEventData originalEvent, uint32_t currentPageIndex,
-		const std::vector<EmbedData>& messageEmbeds, bool deleteAfter, uint32_t waitForMaxMs, bool returnResult = false);
+	DiscordCoreAPI_Dll MoveThroughMessagePagesData moveThroughMessagePages(const std::string& userID, InputEventData originalEvent, int32_t currentPageIndex,
+		const std::vector<EmbedData>& messageEmbeds, bool deleteAfter, int32_t waitForMaxMs, bool returnResult = false);
 	/**@}*/
 
 };// namespace DiscordCoreAPI
@@ -3741,11 +3741,11 @@ namespace DiscordCoreInternal {
 	};
 
 	struct DiscordCoreAPI_Dll VoiceConnectInitData {
+		bool selfDeaf{ false };
+		bool selfMute{ false };
 		uint64_t channelId{};
 		uint64_t guildId{};
 		uint64_t userId{};
-		bool selfDeaf{ false };
-		bool selfMute{ false };
 	};
 
 	struct DiscordCoreAPI_Dll VoiceConnectionData {
@@ -3757,7 +3757,7 @@ namespace DiscordCoreInternal {
 		std::string endPoint{};
 		std::string voiceIp{};
 		std::string token{};
-		uint32_t audioSSRC{ 0 };
+		int32_t audioSSRC{ 0 };
 	};
 
 };// namespace DiscordCoreInternal

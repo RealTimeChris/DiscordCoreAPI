@@ -42,10 +42,10 @@ namespace DiscordCoreInternal {
 	DiscordCoreAPI::EncodedFrameData AudioEncoder::encodeSingleAudioFrame(DiscordCoreAPI::RawFrameData& inputFrame) {
 		std::vector<opus_int16> newVector{};
 		newVector.reserve(inputFrame.data.size() / 2);
-		for (uint32_t x = 0; x < inputFrame.data.size() / 2; x += 1) {
+		for (int32_t x = 0; x < inputFrame.data.size() / 2; x += 1) {
 			opus_int16 newValue{};
-			newValue |= inputFrame.data[static_cast<uint64_t>(x) * 2] << 0;
-			newValue |= inputFrame.data[static_cast<uint64_t>(x) * 2 + 1] << 8;
+			newValue |= inputFrame.data[static_cast<int64_t>(x) * 2] << 0;
+			newValue |= inputFrame.data[static_cast<int64_t>(x) * 2 + 1] << 8;
 			newVector.push_back(newValue);
 		}
 		newVector.shrink_to_fit();

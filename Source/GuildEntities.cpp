@@ -79,7 +79,7 @@ namespace DiscordCoreAPI {
 			this->voiceConnectionPtr = getVoiceConnectionMap()[this->id].get();
 			return this->voiceConnectionPtr;
 		} else if (guildMemberId != 0 || channelId != 0) {
-			uint64_t theChannelId{};
+			int64_t theChannelId{};
 			if (guildMemberId != 0) {
 				if (this->voiceStates.contains(guildMemberId)) {
 					theChannelId = this->voiceStates.at(guildMemberId).channelId;
@@ -726,7 +726,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	void Guilds::removeGuild(const uint64_t& guildId) {
+	void Guilds::removeGuild(const int64_t& guildId) {
 		std::lock_guard<std::mutex> theLock{ Guilds::theMutex };
 		Guilds::cache.erase(guildId);
 	};

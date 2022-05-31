@@ -31,9 +31,9 @@ namespace DiscordCoreAPI {
 
 	/// For getting a collection of Messages. \brief For getting a collection of Messages.
 	struct DiscordCoreAPI_Dll GetMessagesData {
-		uint64_t aroundThisId{};///< Around this id.
-		uint64_t beforeThisId{};///< Before this id.
-		uint64_t afterThisId{};///< After this id.
+		int64_t aroundThisId{};///< Around this id.
+		int64_t beforeThisId{};///< Before this id.
+		int64_t afterThisId{};///< After this id.
 		uint64_t channelId{};///< Channel from which to collect the Messages.
 		int32_t limit{ 0 };///< Limit of Messages to collect.
 	};
@@ -51,7 +51,7 @@ namespace DiscordCoreAPI {
 		friend InputEvents;
 		friend Messages;
 
-		CreateMessageData(const uint64_t& channelIdNew) {
+		CreateMessageData(const int64_t& channelIdNew) {
 			this->channelId = channelIdNew;
 		}
 

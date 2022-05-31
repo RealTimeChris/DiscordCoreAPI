@@ -191,7 +191,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	SoundCloudAPI::SoundCloudAPI(const uint64_t& guildIdNew, HttpClient* httpClient) : requestBuilder(httpClient) {
+	SoundCloudAPI::SoundCloudAPI(const int64_t& guildIdNew, HttpClient* httpClient) : requestBuilder(httpClient) {
 		this->doWePrintSuccess = httpClient->getDoWePrintFFMPEGSuccess();
 		this->doWePrintError = httpClient->getDoWePrintFFMPEGError();
 		this->httpClient = httpClient;
@@ -275,7 +275,7 @@ namespace DiscordCoreInternal {
 	void SoundCloudAPI::downloadAndStreamAudio(const DiscordCoreAPI::Song& newSong, SoundCloudAPI* soundCloudAPI, std::stop_token theToken, int32_t currentRecursionDepth) {
 		int32_t counter{ 0 };
 		BuildAudioDecoderData dataPackage{};
-		dataPackage.totalFileSize = static_cast<uint64_t>(newSong.contentLength);
+		dataPackage.totalFileSize = static_cast<int64_t>(newSong.contentLength);
 		dataPackage.bufferMaxSize = soundCloudAPI->maxBufferSize;
 		dataPackage.doWePrintSuccess = this->doWePrintSuccess;
 		dataPackage.doWePrintError = this->doWePrintError;
@@ -303,8 +303,8 @@ namespace DiscordCoreInternal {
 			std::vector<HttpWorkloadData> workloadVector{};
 			workloadVector.push_back(dataPackage03);
 			auto result = this->requestBuilder.submitWorkloadAndGetResultNew(workloadVector);
-			std::vector<uint8_t> newVector{};
-			for (uint64_t x = 0; x < result[0].responseMessage.size(); x += 1) {
+			std::vector<int8_t> newVector{};
+			for (int64_t x = 0; x < result[0].responseMessage.size(); x += 1) {
 				newVector.push_back(result[0].responseMessage[x]);
 			}
 			int64_t amountToSubmitRemaining{ static_cast<int64_t>(result[0].responseMessage.size()) };

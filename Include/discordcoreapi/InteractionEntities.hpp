@@ -44,7 +44,7 @@ namespace DiscordCoreAPI {
 		/// \param emojiId An emoji id, if desired.
 		/// \param url A url, if applicable.
 		InteractionResponse& addButton(bool disabled, const std::string& customIdNew, const std::string& buttonLabel, ButtonStyle buttonStyle, const std::string& emojiName = "",
-			uint64_t emojiId = 0, const std::string& url = "") {
+			int64_t emojiId = 0, const std::string& url = "") {
 			if (this->data.data.components.size() == 0) {
 				ActionRowData actionRowData;
 				this->data.data.components.push_back(actionRowData);
@@ -417,7 +417,7 @@ namespace DiscordCoreAPI {
 
 	  protected:
 		InteractionPackageData interactionPackage{};
-		uint32_t timeDelay{ 0 };
+		int32_t timeDelay{ 0 };
 	};
 
 	/// For creating an ephemeral follow up Message. \brief For creating an ephemeral follow up Message.
@@ -585,7 +585,7 @@ namespace DiscordCoreAPI {
 	  protected:
 		InteractionPackageData interactionPackage{};
 		MessagePackageData messagePackage{};
-		uint32_t timeDelay{ 0 };
+		int32_t timeDelay{ 0 };
 	};
 
 	/// A single Interaction.
@@ -742,7 +742,7 @@ namespace DiscordCoreAPI {
 		std::vector<std::string> values{};
 		std::string bufferMapKey{};
 		std::string selectMenuId{};
-		uint32_t maxTimeInMs{ 0 };
+		int32_t maxTimeInMs{ 0 };
 		bool doWeQuit{ false };
 		uint64_t channelId{};
 		uint64_t messageId{};
@@ -826,7 +826,7 @@ namespace DiscordCoreAPI {
 		bool getButtonDataForAll{ false };
 		std::vector<std::string> values{};
 		std::string bufferMapKey{};
-		uint32_t maxTimeInMs{ 0 };
+		int32_t maxTimeInMs{ 0 };
 		bool doWeQuit{ false };
 		std::string buttonId{};
 		uint64_t channelId{};
@@ -902,7 +902,7 @@ namespace DiscordCoreAPI {
 		UnboundedMessageBlock<InteractionData> modalIncomingInteractionBuffer{};
 		int32_t currentCollectedButtonCount{ 0 };
 		ModalResponseData responseData{};
-		uint32_t maxTimeInMs{ 0 };
+		int32_t maxTimeInMs{ 0 };
 		bool doWeQuit{ false };
 		uint64_t channelId{};
 

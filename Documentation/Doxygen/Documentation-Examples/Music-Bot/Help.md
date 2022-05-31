@@ -108,7 +108,7 @@ Help {#Help}
 					std::vector<std::string> numberEmojiId;
 
 					responseData.addMessageEmbed(msgEmbed);
-					for (uint32_t x = 0; x < selectOptionsNew.size(); x += 1) {
+					for (int32_t x = 0; x < selectOptionsNew.size(); x += 1) {
 						std::string customId {"select_page_" + std::to_string(x)};
 						responseData.addButton(false, customId, std::to_string(x), ButtonStyle::Success, numberEmojiNames[x]);
 						numberEmojiId.push_back(customId);
@@ -184,7 +184,7 @@ Help {#Help}
 							RespondToInputEventData responseData02(selectMenuReturnData.at(0).interactionData);
 							responseData02.setResponseType(InputEventResponseType::Edit_Ephemeral_Interaction_Response);
 							responseData02.addMessageEmbed(msgEmbed);
-							for (uint32_t x = 0; x < selectOptionsNew.size(); x += 1) {
+							for (int32_t x = 0; x < selectOptionsNew.size(); x += 1) {
 								std::string customId {"select_page_" + std::to_string(x)};
 								responseData02.addButton(false, customId, std::to_string(x), ButtonStyle::Success, numberEmojiNames[x]);
 								numberEmojiId.push_back(customId);

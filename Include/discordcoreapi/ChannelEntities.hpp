@@ -70,7 +70,7 @@ namespace DiscordCoreAPI {
 
 	/// For deleting the Permission overwrites of a given Channel for a given Role or User. \brief For deleting the Permission overwrites of a given Channel for a given Role or User.
 	struct DiscordCoreAPI_Dll DeleteChannelPermissionOverwritesData {
-		uint64_t roleOrUserId{};///< The Role or User id for whom to delete the Permission overwrites.
+		int64_t roleOrUserId{};///< The Role or User id for whom to delete the Permission overwrites.
 		uint64_t channelId{};///< The id of the Channel to modify permissions for.
 		std::string reason{};///< Reason for deleting these permission overwrites.
 	};
@@ -100,7 +100,7 @@ namespace DiscordCoreAPI {
 		int32_t position{ 0 };///< Sorting position of the Channel.
 		int32_t bitrate{ 0 };///< The bitrate(in bits) of the voice Channel(voice only).
 		std::string reason{};///< Reason for creating the Channel.
-		uint64_t parentId{};///< Id of the parent category for a Channel.
+		int64_t parentId{};///< Id of the parent category for a Channel.
 		std::string topic{};///< Channel topic(0 - 1024 characters).
 		std::string name{};///< The name of the Channel.
 		ChannelType type{};///< The type of Channel.
@@ -112,7 +112,7 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll ModifyGuildChannelPositionData {
 		bool lockPermissions{ false };///< Syncs the permission overwrites with the new parent, if moving to a new category.
 		int32_t position{ 0 };///< Sorting position of the Channel.
-		uint64_t parentId{};///< The new parent ID for the Channel that is moved.
+		int64_t parentId{};///< The new parent ID for the Channel that is moved.
 		uint64_t id{};///< Channel id.
 	};
 
@@ -279,7 +279,7 @@ namespace DiscordCoreAPI {
 
 		static void insertChannel(ChannelData dataPackage);
 
-		static void removeChannel(const uint64_t& channelId);
+		static void removeChannel(const int64_t& channelId);
 	};
 	/**@}*/
 }// namespace DiscordCoreAPI

@@ -137,7 +137,7 @@ Play {#Play}
 				}
 
 				std::vector<EmbedData> embedsFromSearch;
-				uint32_t x = 0;
+				int32_t x = 0;
 				for (Song& value: searchResults) {
 					x += 1;
 					EmbedData newEmbed;
@@ -151,7 +151,7 @@ Play {#Play}
 					embedsFromSearch.push_back(newEmbed);
 				}
 
-				uint32_t currentPageIndex = 0;
+				int32_t currentPageIndex = 0;
 				MoveThroughMessagePagesData returnData;
 				if (embedsFromSearch.size() > 0) {
 					RespondToInputEventData dataPackage(*args.eventData);
