@@ -282,8 +282,8 @@ namespace DiscordCoreInternal {
 		std::string theString{};
 		theString.push_back(static_cast<int8_t>(WebSocketOpCode::Op_Close) | static_cast<int8_t>(webSocketFinishBit));
 		theString.push_back(0);
-		theString.push_back(static_cast<int8_t>(static_cast<uint16_t>(1000) >> 8));
-		theString.push_back(static_cast<int8_t>(1000 & 0xff));
+		theString.push_back(static_cast<uint8_t>(1000) >> 8);
+		theString.push_back(static_cast<uint8_t>(1000) & 0xff);
 		if (this->webSocket != nullptr) {
 			this->webSocket->writeData(theString);
 			for (int32_t x = 0; x < 10; x += 1) {
