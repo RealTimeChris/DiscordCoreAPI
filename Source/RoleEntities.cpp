@@ -246,7 +246,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	void Roles::removeRole(const int64_t& roleId) {
+	void Roles::removeRole(const uint64_t& roleId) {
 		std::lock_guard<std::mutex> theLock{ Roles::theMutex };
 		Roles::cache.erase(roleId);
 	};

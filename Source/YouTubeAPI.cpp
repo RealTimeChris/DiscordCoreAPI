@@ -308,7 +308,7 @@ namespace DiscordCoreInternal {
 		keys.push_back(sliceKey);
 		keys.push_back(spliceKey);
 		keys.push_back(swapKey);
-		for (int32_t x = 0; x < keys.size(); x += 1) {
+		for (uint32_t x = 0; x < keys.size(); x += 1) {
 			if (x == 0 && keys[x] != "") {
 				keysNew += keys[x];
 			} else if (x > 0 && keys[x] != "") {
@@ -338,7 +338,7 @@ namespace DiscordCoreInternal {
 	}
 
 	std::vector<char> YouTubeRequestBuilder::reverseString(std::vector<char>& stringToReverse) {
-		int64_t n = stringToReverse.size();
+		uint64_t n = stringToReverse.size();
 		for (int32_t x = 0; x < n / 2; x++) {
 			std::swap(stringToReverse[x], stringToReverse[n - x - 1]);
 		}
@@ -394,7 +394,7 @@ namespace DiscordCoreInternal {
 		return newerSong;
 	}
 
-	YouTubeAPI::YouTubeAPI(const int64_t& guildIdNew, DiscordCoreInternal::HttpClient* httpClient) : requestBuilder(httpClient) {
+	YouTubeAPI::YouTubeAPI(const uint64_t& guildIdNew, DiscordCoreInternal::HttpClient* httpClient) : requestBuilder(httpClient) {
 		this->doWePrintWebSocketError = httpClient->getDoWePrintWebSocketError();
 		this->doWePrintFFMPEGSuccess = httpClient->getDoWePrintFFMPEGSuccess();
 		this->doWePrintFFMPEGError = httpClient->getDoWePrintFFMPEGError();
@@ -487,7 +487,7 @@ namespace DiscordCoreInternal {
 		const int32_t minimumIterations{ 9 };
 		const int32_t maximumIterations{ 20 };
 		BuildAudioDecoderData dataPackage{};
-		dataPackage.totalFileSize = static_cast<int64_t>(newSong.contentLength);
+		dataPackage.totalFileSize = static_cast<uint64_t>(newSong.contentLength);
 		dataPackage.bufferMaxSize = youtubeAPI->maxBufferSize;
 		dataPackage.doWePrintSuccess = this->doWePrintFFMPEGSuccess;
 		dataPackage.doWePrintError = this->doWePrintFFMPEGError;

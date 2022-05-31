@@ -118,7 +118,7 @@ namespace DiscordCoreInternal {
 				return;
 			}
 
-			this->ioContext = avio_alloc_context(fileStreamBuffer, static_cast<uint32_t>(this->bufferMaxSize), 0, this, &AudioDecoder::FileStreamRead, 0, 0);
+			this->ioContext = avio_alloc_context(fileStreamBuffer, static_cast<int32_t>(this->bufferMaxSize), 0, this, &AudioDecoder::FileStreamRead, 0, 0);
 
 			if (this->ioContext == nullptr) {
 				this->haveWeFailedBool.store(true);

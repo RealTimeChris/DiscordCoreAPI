@@ -72,7 +72,7 @@ namespace DiscordCoreAPI {
 			content += partStart + "name=\"file\"; filename=\"" + files[0].fileName + "\"" + "\r\n\r\n";
 			content += files[0].data;
 		} else {
-			for (int8_t x = 0; x < files.size(); x += 1) {
+			for (uint8_t x = 0; x < files.size(); x += 1) {
 				content += partStart + "name=\"files[" + std::to_string(x) + "]\"; filename=\"" + files[x].fileName + "\"\r\n\r\n";
 				content += files[x].data;
 				content += "\r\n";
@@ -210,15 +210,15 @@ namespace DiscordCoreAPI {
 		std::string returnString{};
 		returnString.reserve(len_encoded);
 
-		int64_t pos = 0;
+		uint64_t pos = 0;
 
 		while (pos < theString.size()) {
 			returnString.push_back(base64_chars_[(theString[static_cast<int64_t>(pos + 0)] & 0xfc) >> 2]);
 
-			if (static_cast<int64_t>(pos + 1) < theString.size()) {
+			if (static_cast<uint64_t>(pos + 1) < theString.size()) {
 				returnString.push_back(base64_chars_[((theString[static_cast<int64_t>(pos + 0)] & 0x03) << 4) + ((theString[static_cast<int64_t>(pos + 1)] & 0xf0) >> 4)]);
 
-				if (static_cast<int64_t>(pos + 2) < theString.size()) {
+				if (static_cast<uint64_t>(pos + 2) < theString.size()) {
 					returnString.push_back(base64_chars_[((theString[static_cast<int64_t>(pos + 1)] & 0x0f) << 2) + ((theString[static_cast<int64_t>(pos + 2)] & 0xc0) >> 6)]);
 					returnString.push_back(base64_chars_[theString[static_cast<int64_t>(pos + 2)] & 0x3f]);
 				} else {
@@ -304,8 +304,8 @@ namespace DiscordCoreAPI {
 		std::string returnString{};
 		returnString.resize(16);
 		std::mt19937_64 randomEngine{ static_cast<uint64_t>(std::chrono::system_clock::now().time_since_epoch().count()) };
-		for (int32_t x = 0; x < 16; x += 1) {
-			returnString[x] = static_cast<int8_t>((static_cast<float>(randomEngine()) / static_cast<float>(randomEngine.max())) * 255.0f);
+		for (uint32_t x = 0; x < 16; x += 1) {
+			returnString[x] = static_cast<uint8_t>((static_cast<float>(randomEngine()) / static_cast<float>(randomEngine.max())) * 255.0f);
 		}
 		returnString = base64Encode(returnString, false);
 		return returnString;
@@ -698,10 +698,10 @@ namespace DiscordCoreAPI {
 		return permissions;
 	}
 
-	MoveThroughMessagePagesData moveThroughMessagePages(const std::string& userID, InputEventData originalEvent, int32_t currentPageIndex,
-		const std::vector<EmbedData>& messageEmbeds, bool deleteAfter, int32_t waitForMaxMs, bool returnResult) {
+	MoveThroughMessagePagesData moveThroughMessagePages(const std::string& userID, InputEventData originalEvent, uint32_t currentPageIndex,
+		const std::vector<EmbedData>& messageEmbeds, bool deleteAfter, uint32_t waitForMaxMs, bool returnResult) {
 		MoveThroughMessagePagesData returnData{};
-		int32_t newCurrentPageIndex = currentPageIndex;
+		uint32_t newCurrentPageIndex = currentPageIndex;
 		std::unique_ptr<RespondToInputEventData> dataPackage{ std::make_unique<RespondToInputEventData>(originalEvent) };
 		if (messageEmbeds.size() > 0) {
 			dataPackage->addMessageEmbed(messageEmbeds[currentPageIndex]);
@@ -754,7 +754,7 @@ namespace DiscordCoreAPI {
 				} else if (buttonIntData.at(0).buttonId == "backwards" && (newCurrentPageIndex > 0)) {
 					newCurrentPageIndex -= 1;
 				} else if (buttonIntData.at(0).buttonId == "backwards" && (newCurrentPageIndex == 0)) {
-					newCurrentPageIndex = static_cast<int8_t>(messageEmbeds.size()) - 1;
+					newCurrentPageIndex = static_cast<uint8_t>(messageEmbeds.size()) - 1;
 				}
 				std::unique_ptr<InteractionData> interactionData = std::make_unique<InteractionData>(static_cast<InteractionData>(buttonIntData.at(0)));
 				*dataPackage = RespondToInputEventData{ *interactionData };

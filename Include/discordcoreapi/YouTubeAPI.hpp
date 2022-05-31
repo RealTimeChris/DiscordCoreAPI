@@ -70,7 +70,7 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll YouTubeAPI {
 	  public:
-		YouTubeAPI(const int64_t& guildId, HttpClient* httpClient);
+		YouTubeAPI(const uint64_t& guildId, HttpClient* httpClient);
 
 		void weFailedToDownloadOrDecode(const DiscordCoreAPI::Song& newSong, YouTubeAPI* youtubeAPI, std::stop_token theToken, int32_t currentRecursionDepth);
 

@@ -55,7 +55,7 @@ namespace DiscordCoreAPI {
 	/// For creating a new Role within a chosen Guild. \brief For creating a new Role within a chosen Guild.
 	struct DiscordCoreAPI_Dll CreateGuildRoleData {
 		std::string hexColorValue{};///< Hex color-value between 0 and ffffff.
-		std::vector<int8_t> icon{};///< Image data	the role's icon image (if the guild has the ROLE_ICONS feature)	null.
+		std::vector<uint8_t> icon{};///< Image data	the role's icon image (if the guild has the ROLE_ICONS feature)	null.
 		std::string unicodeEmoji{};///< The role's unicode emoji as a standard emoji.
 		Permissions permissions{};///< The base permissions to give the Role.
 		bool mentionable{ false };///< Is it mentionable by others in the Guild.
@@ -90,7 +90,7 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll ModifyGuildRoleData {
 		Permissions permissions{ "0" };///< Base Guild permissions for the Role.
 		std::string hexColorValue{};///< A hex-color value between 0x00 and 0xFFFFFF.
-		std::vector<int8_t> icon{};///< Image data	the role's icon image (if the guild has the ROLE_ICONS feature)	null.
+		std::vector<uint8_t> icon{};///< Image data	the role's icon image (if the guild has the ROLE_ICONS feature)	null.
 		std::string unicodeEmoji{};///< The role's unicode emoji as a standard emoji.
 		bool mentionable{ false };///< Is it mentionable?
 		uint64_t guildId{};///< The id of the Guild within which to update the Role.
@@ -212,7 +212,7 @@ namespace DiscordCoreAPI {
 
 		static void insertRole(RoleData dataPackage);
 
-		static void removeRole(const int64_t& roleId);
+		static void removeRole(const uint64_t& roleId);
 	};
 	/**@}*/
 

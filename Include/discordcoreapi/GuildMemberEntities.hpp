@@ -37,7 +37,7 @@ namespace DiscordCoreAPI {
 	/// For listing the GuildMembers of a chosen Guild. \brief For listing the GuildMembers of a chosen Guild.
 	struct DiscordCoreAPI_Dll ListGuildMembersData {
 		uint64_t guildId{};///< Guild from which to list the GuildMembers.
-		int64_t after{};///< The highest user id in the previous page.
+		uint64_t after{};///< The highest user id in the previous page.
 		int32_t limit{ 0 };///< Max number of members to return (1 - 1000).
 	};
 
@@ -53,8 +53,8 @@ namespace DiscordCoreAPI {
 		std::vector<uint64_t> roles{};///< Array of Role ids the member is assigned.
 		std::string accessToken{};///< An oauth2 access token granted with the guilds.join to the bot's application for the user you want to add.
 		uint64_t guildId{};///< The Guild to add the new GuildMember to.
-		std::string nick{};///< Value to set users nickname to.
 		uint64_t userId{};///< The User id of the user you wish to add.
+		std::string nick{};///< Value to set users nickname to.
 		bool mute{};///< Whether the user is muted in voice channels.
 		bool deaf{};///< Whether the user is deafened in voice channels.
 	};

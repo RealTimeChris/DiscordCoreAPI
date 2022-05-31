@@ -138,7 +138,7 @@ namespace DiscordCoreInternal {
 		~CoRoutineThreadPool();
 
 	  private:
-		std::unordered_map<uint64_t, WorkerThread> workerThreads{};
+		std::unordered_map<int64_t, WorkerThread> workerThreads{};
 		std::queue<std::coroutine_handle<>> theCoroutineHandles{};
 		std::atomic_bool areWeQuitting{ false };
 		std::condition_variable theCondVar{};

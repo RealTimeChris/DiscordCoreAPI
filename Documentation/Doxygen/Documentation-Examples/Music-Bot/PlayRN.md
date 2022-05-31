@@ -149,7 +149,7 @@ PlayRN {#Play-Right-Now}
 				}
 
 				std::vector<EmbedData> embedsFromSearch;
-				int32_t x = 0;
+				uint32_t x = 0;
 				for (Song& value: searchResults) {
 					x += 1;
 					EmbedData newEmbed;

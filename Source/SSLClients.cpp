@@ -510,7 +510,7 @@ namespace DiscordCoreInternal {
 					if (readBytes > 0) {
 						this->inputBuffer.insert(this->inputBuffer.end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
 						this->bytesRead += readBytes;
-						auto theOpCode = static_cast<int8_t>(this->inputBuffer[0] & ~(1 << 7));
+						auto theOpCode = static_cast<uint8_t>(this->inputBuffer[0] & ~(1 << 7));
 					}
 					return true;
 				}

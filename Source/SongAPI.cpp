@@ -25,11 +25,11 @@
 
 namespace DiscordCoreAPI {
 
-	SongAPI::SongAPI(const int64_t& guildId) {
+	SongAPI::SongAPI(const uint64_t& guildId) {
 		this->guildId = guildId;
 	}
 
-	void SongAPI::onSongCompletion(std::function<CoRoutine<void>(SongCompletionEventData)> handler, const int64_t& guildId) {
+	void SongAPI::onSongCompletion(std::function<CoRoutine<void>(SongCompletionEventData)> handler, const uint64_t& guildId) {
 		auto returnValue = getSongAPIMap()[guildId].get();
 		returnValue->onSongCompletionEvent.remove(returnValue->theToken);
 		returnValue->theToken = returnValue->onSongCompletionEvent.add(handler);
@@ -109,15 +109,15 @@ namespace DiscordCoreAPI {
 		return false;
 	}
 
-	bool SongAPI::play(const int64_t& guildId) {
+	bool SongAPI::play(const uint64_t& guildId) {
 		return getVoiceConnectionMap()[guildId]->play();
 	}
 
-	void SongAPI::pauseToggle(const int64_t& guildId) {
+	void SongAPI::pauseToggle(const uint64_t& guildId) {
 		getVoiceConnectionMap()[guildId]->pauseToggle();
 	}
 
-	bool SongAPI::areWeCurrentlyPlaying(const int64_t& guildId) {
+	bool SongAPI::areWeCurrentlyPlaying(const uint64_t& guildId) {
 		return getVoiceConnectionMap()[guildId]->areWeCurrentlyPlaying();
 	}
 
@@ -141,7 +141,7 @@ namespace DiscordCoreAPI {
 		getVoiceConnectionMap()[guildMember.guildId]->audioBuffer.send(frameData);
 	}
 
-	void SongAPI::stop(const int64_t& guildId) {
+	void SongAPI::stop(const uint64_t& guildId) {
 		getVoiceConnectionMap()[guildId]->stop();
 		if (SongAPI::getCurrentSong(guildId).type == SongType::SoundCloud) {
 			getSoundCloudAPIMap()[guildId]->cancelCurrentSong();
@@ -164,7 +164,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	std::vector<Song> SongAPI::searchForSong(const std::string& searchQuery, const int64_t& guildId) {
+	std::vector<Song> SongAPI::searchForSong(const std::string& searchQuery, const uint64_t& guildId) {
 		auto vector01 = getSoundCloudAPIMap()[guildId]->searchForSong(searchQuery);
 		auto vector02 = getYouTubeAPIMap()[guildId]->searchForSong(searchQuery);
 		int32_t totalLength = static_cast<int32_t>(vector01.size() + vector02.size());
@@ -185,23 +185,23 @@ namespace DiscordCoreAPI {
 		return newVector;
 	}
 
-	void SongAPI::setLoopAllStatus(bool enabled, const int64_t& guildId) {
+	void SongAPI::setLoopAllStatus(bool enabled, const uint64_t& guildId) {
 		getSongAPIMap()[guildId]->playlist.isLoopAllEnabled = enabled;
 	}
 
-	bool SongAPI::isLoopAllEnabled(const int64_t& guildId) {
+	bool SongAPI::isLoopAllEnabled(const uint64_t& guildId) {
 		return getSongAPIMap()[guildId]->playlist.isLoopAllEnabled;
 	}
 
-	void SongAPI::setLoopSongStatus(bool enabled, const int64_t& guildId) {
+	void SongAPI::setLoopSongStatus(bool enabled, const uint64_t& guildId) {
 		getSongAPIMap()[guildId]->playlist.isLoopSongEnabled = enabled;
 	}
 
-	bool SongAPI::isLoopSongEnabled(const int64_t& guildId) {
+	bool SongAPI::isLoopSongEnabled(const uint64_t& guildId) {
 		return getSongAPIMap()[guildId]->playlist.isLoopSongEnabled;
 	}
 
-	bool SongAPI::isThereAnySongs(const int64_t& guildId) {
+	bool SongAPI::isThereAnySongs(const uint64_t& guildId) {
 		if (!getSongAPIMap().contains(guildId)) {
 			getSongAPIMap()[guildId] = std::make_unique<SongAPI>(guildId);
 		}
@@ -227,7 +227,7 @@ namespace DiscordCoreAPI {
 		return song;
 	}
 
-	void SongAPI::setPlaylist(const Playlist& playlistNew, const int64_t& guildId) {
+	void SongAPI::setPlaylist(const Playlist& playlistNew, const uint64_t& guildId) {
 		getSongAPIMap()[guildId]->playlist.currentSong = playlistNew.currentSong;
 		getSongAPIMap()[guildId]->playlist.isLoopAllEnabled = playlistNew.isLoopAllEnabled;
 		getSongAPIMap()[guildId]->playlist.isLoopSongEnabled = playlistNew.isLoopSongEnabled;
@@ -235,17 +235,17 @@ namespace DiscordCoreAPI {
 		getSongAPIMap()[guildId]->playlist.currentSong = playlistNew.currentSong;
 	}
 
-	Playlist SongAPI::getPlaylist(const int64_t& guildId) {
+	Playlist SongAPI::getPlaylist(const uint64_t& guildId) {
 		return getSongAPIMap()[guildId]->playlist;
 	}
 
-	void SongAPI::modifyQueue(int32_t firstSongPosition, int32_t secondSongPosition, const int64_t& guildId) {
+	void SongAPI::modifyQueue(int32_t firstSongPosition, int32_t secondSongPosition, const uint64_t& guildId) {
 		Song tempSong = getSongAPIMap()[guildId]->playlist.songQueue[firstSongPosition];
 		getSongAPIMap()[guildId]->playlist.songQueue[firstSongPosition] = getSongAPIMap()[guildId]->playlist.songQueue[secondSongPosition];
 		getSongAPIMap()[guildId]->playlist.songQueue[secondSongPosition] = tempSong;
 	}
 
-	Song SongAPI::getCurrentSong(const int64_t& guildId) {
+	Song SongAPI::getCurrentSong(const uint64_t& guildId) {
 		if (getSongAPIMap()[guildId]->playlist.currentSong.songId != "") {
 			return getSongAPIMap()[guildId]->playlist.currentSong;
 		} else if (getSongAPIMap()[guildId]->playlist.songQueue.size() > 0) {
@@ -255,7 +255,7 @@ namespace DiscordCoreAPI {
 		};
 	}
 
-	void SongAPI::setCurrentSong(const Song& song, const int64_t& guildId) {
+	void SongAPI::setCurrentSong(const Song& song, const uint64_t& guildId) {
 		getSongAPIMap()[guildId]->playlist.currentSong = song;
 	}
 

@@ -272,7 +272,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	void Channels::removeChannel(const int64_t& channelId) {
+	void Channels::removeChannel(const uint64_t& channelId) {
 		std::lock_guard<std::mutex> theLock{ Channels::theMutex };
 		Channels::cache.erase(channelId);
 	};

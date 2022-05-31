@@ -342,8 +342,8 @@ namespace DiscordCoreAPI {
                                 auto oldSongArray = SongAPI::getPlaylist(guild.id);
                                 std::vector<Song> newVector;
                                 while (oldSongArray.songQueue.size() > 0) {
-                                    std::mt19937_64 randomEngine{ static_cast<int32_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count()) };
-                                    int32_t randomIndex = static_cast<int32_t>((static_cast<float>(randomEngine())/static_cast<float>(randomEngine.max()) * static_cast<float>(oldSongArray.songQueue.size())));
+                                    std::mt19937_64 randomEngine{ static_cast<uint32_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count()) };
+                                    int32_t randomIndex = static_cast<uint32_t>((static_cast<float>(randomEngine())/static_cast<float>(randomEngine.max()) * static_cast<float>(oldSongArray.songQueue.size())));
                                     newVector.push_back(oldSongArray.songQueue.at(randomIndex));
                                     oldSongArray.songQueue.erase(oldSongArray.songQueue.begin() + randomIndex, oldSongArray.songQueue.begin() + randomIndex + 1);
                                 }

@@ -191,9 +191,9 @@ namespace DiscordCoreInternal {
 				return;
 			}
 			std::string theValueString{};
-			int64_t hexIndex{ 0 };
+			uint64_t hexIndex{ 0 };
 			bool isThereHexValues{ false };
-			for (int64_t x = 0; x < other.size(); x += 1) {
+			for (uint64_t x = 0; x < other.size(); x += 1) {
 				if (isxdigit(other[x]) != 0 && static_cast<int32_t>(other[x]) != EOF) {
 					isThereHexValues = true;
 					theValueString.push_back(other[x]);
@@ -216,8 +216,8 @@ namespace DiscordCoreInternal {
 	}
 
 	void HttpRnRBuilder::clearCRLF(std::string& other) {
-		int64_t theCount{ 0 };
-		for (int64_t x = 0; x < other.size(); x += 1) {
+		uint64_t theCount{ 0 };
+		for (uint64_t x = 0; x < other.size(); x += 1) {
 			if (isspace(static_cast<unsigned char>(other[x])) != 0) {
 				theCount += 1;
 			} else {
@@ -229,8 +229,8 @@ namespace DiscordCoreInternal {
 
 	void HttpRnRBuilder::parseCode(std::string& other, HttpResponseData& theData) {
 		if (other.find("HTTP/1.") != std::string::npos) {
-			int64_t firstNumberIndex{ 0 };
-			int64_t lastNumberIndex{ 0 };
+			uint64_t firstNumberIndex{ 0 };
+			uint64_t lastNumberIndex{ 0 };
 			bool haveWeStarted{ false };
 			for (size_t x = other.find("HTTP/1.") + std::string("HTTP/1.").size() + 1; x < other.size(); x += 1) {
 				if (!haveWeStarted && (isalnum(static_cast<unsigned char>(other[x])) != 0)) {

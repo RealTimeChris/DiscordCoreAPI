@@ -83,12 +83,13 @@ namespace DiscordCoreInternal {
 		bool runMessageCollector() noexcept;
 
 	  protected:
-		WebSocketState theWsState{ WebSocketState::Initializing };
+		WebSocketState wsState{ WebSocketState::Initializing };
 		std::queue<WSMessageCollectorReturnData> finalMessages{};
 		WSMessageCollectorReturnData currentFinalMessage{};
 		WebSocketSSLClient* theClientPtr{ nullptr };
+		std::vector<std::string> messageCache{};
+		std::vector<int64_t> theOffsets{};
 		WSMessageCollectorState theState{};
-		std::vector<uint64_t> theOffsets{};
 		int8_t maxRecursionDepth{ 10 };
 		int8_t currentRecursionDepth{};
 		std::string currentMessage{};
@@ -97,8 +98,6 @@ namespace DiscordCoreInternal {
 		int64_t messageOffset{};
 
 		std::vector<std::string> tokenize(const std::string&, const std::string& = "\r\n") noexcept;
-
-		bool parseConnectionHeader() noexcept;
 
 		bool parseHeaderAndMessage() noexcept;
 
@@ -161,10 +160,11 @@ namespace DiscordCoreInternal {
 		std::string sessionId{};
 		int32_t closeCode{ 0 };
 		nlohmann::json shard{};
+		WebSocketState state{};
 		std::string botToken{};
 		ErlPacker erlPacker{};
 		std::string baseUrl{};
-		uint64_t userId{};
+		int64_t userId{};
 
 		int64_t createHeader(char* outbuf, int64_t sendlength, WebSocketOpCode opCode) noexcept;
 

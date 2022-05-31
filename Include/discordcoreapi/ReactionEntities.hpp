@@ -34,7 +34,7 @@ namespace DiscordCoreAPI {
 		uint64_t channelId{};///< The Channel for which to add the Reaction.
 		uint64_t messageId{};///< The Message on which to add the Reaction.
 		std::string emojiName{};///< The emoji name of the Reaction to add.
-		int64_t emojiId{};///< The emoji id of the Reaction to add.
+		uint64_t emojiId{};///< The emoji id of the Reaction to add.
 	};
 
 	/// For deleting one's own Reaction. \brief For deleting one's own Reaction.
@@ -42,7 +42,7 @@ namespace DiscordCoreAPI {
 		uint64_t channelId{};///< The Channel from which to remove the Reaction.
 		uint64_t messageId{};///< The Message from which to remove the Reaction.
 		std::string emojiName{};///< The emoji name for which to remove the emoji.
-		int64_t emojiId{};///< The emoji id for which to remove the emoji.
+		uint64_t emojiId{};///< The emoji id for which to remove the emoji.
 	};
 
 	/// For deleting a reaction, by User. \brief For deleting a reaction, by User.
@@ -50,7 +50,7 @@ namespace DiscordCoreAPI {
 		uint64_t channelId{};///< The Channel from which to remove the Reaction.
 		uint64_t messageId{};///< The Message from which to remove the Reaction.
 		std::string emojiName{};///< The name of which emoji to remove.
-		int64_t emojiId{};///< The id of which emoji to remove.
+		uint64_t emojiId{};///< The id of which emoji to remove.
 		uint64_t userId{};///< The User id for whom to remove their emoji.
 	};
 
@@ -58,7 +58,7 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll GetReactionsData {
 		uint64_t channelId{};///< The Channel from which to acquire the reactors.
 		uint64_t messageId{};///< The Message from which to acquire the reactors.
-		int64_t afterId{};///< Get users after this user ID.
+		uint64_t afterId{};///< Get users after this user ID.
 		std::string emoji{};///< The emoji name for which to acquire the reactors.
 		int32_t limit{ 0 };///< The maximum number of reactors to collect.
 	};
@@ -74,7 +74,7 @@ namespace DiscordCoreAPI {
 		uint64_t channelId{};///< The Channel from which you would like to remove the emoji.
 		uint64_t messageId{};///< The Message from which you would like to remove the emoji.
 		std::string emojiName{};///< The name of which emoji to remove.
-		int64_t emojiId{};///< The id of which emoji to remove.
+		uint64_t emojiId{};///< The id of which emoji to remove.
 	};
 
 	/// For collecting a list of Emoji from a Guild.
@@ -113,7 +113,7 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll ModifyGuildEmojiData {
 		std::vector<uint64_t> roles{};///< Roles that can use this Emoji.
 		uint64_t guildId{};///< The Guild within which to modify the Emoji.
-		int64_t emojiId{};///< The id of the Emoji to modify.
+		uint64_t emojiId{};///< The id of the Emoji to modify.
 		std::string reason{};///< Reason for modifying the Emoji.
 		std::string name{};///< Name of the Emoji.
 	};
@@ -121,7 +121,7 @@ namespace DiscordCoreAPI {
 	/// For deleting a Guild Emoji.
 	struct DiscordCoreAPI_Dll DeleteGuildEmojiData {
 		uint64_t guildId{};///< The Guild within which to delete the Emoji.
-		int64_t emojiId{};///< The id of the Emoji to delete.
+		uint64_t emojiId{};///< The id of the Emoji to delete.
 		std::string reason{};///< Reason for deleting the Emoji.
 	};
 

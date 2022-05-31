@@ -28,9 +28,9 @@ namespace DiscordCoreInternal {
 		ErlPackError(const std::string& message) : std::runtime_error(message.c_str()){};
 	};
 
-	constexpr int8_t formatVersion{ static_cast<int8_t>(131) };
+	constexpr uint8_t formatVersion{ 131 };
 
-	enum class ETFTokenType : int8_t {
+	enum class ETFTokenType : uint8_t {
 		Small_Integer_Ext = 97,
 		Integer_Ext = 98,
 		Float_Ext = 99,
@@ -52,7 +52,7 @@ namespace DiscordCoreInternal {
 	  public:
 		std::string buffer{};
 
-		mutable int64_t offSet{};
+		mutable uint64_t offSet{};
 
 		ErlPackBuffer() = default;
 
@@ -78,11 +78,11 @@ namespace DiscordCoreInternal {
 	  protected:
 		template<typename ReturnType> void etfByteOrder(ReturnType, ReturnType&);
 
-		template<typename ReturnType> void storeBits(std::vector<int8_t>&, ReturnType&, int32_t&);
+		template<typename ReturnType> void storeBits(std::vector<uint8_t>&, ReturnType&, uint32_t&);
 
 		void singleValueJsonToETF(ErlPackBuffer&, const nlohmann::json&);
 
-		void writeToBuffer(ErlPackBuffer&, const std::vector<int8_t>&);
+		void writeToBuffer(ErlPackBuffer&, const std::vector<uint8_t>&);
 
 		void appendVersion(ErlPackBuffer&);
 
@@ -92,29 +92,29 @@ namespace DiscordCoreInternal {
 
 		void appendTrue(ErlPackBuffer&);
 
-		void appendSmallIntegerExt(ErlPackBuffer&, int8_t&);
+		void appendSmallIntegerExt(ErlPackBuffer&, uint8_t&);
 
-		void appendIntegerExt(ErlPackBuffer&, int32_t&);
+		void appendIntegerExt(ErlPackBuffer&, uint32_t&);
 
-		void appendUnsignedLongLong(ErlPackBuffer&, int64_t&);
+		void appendUnsignedLongLong(ErlPackBuffer&, uint64_t&);
 
 		void appendFloatExt(ErlPackBuffer&, double&);
 
-		void appendBinaryExt(ErlPackBuffer&, const std::vector<int8_t>&, int32_t&);
+		void appendBinaryExt(ErlPackBuffer&, const std::vector<uint8_t>&, uint32_t&);
 
 		void appendNilExt(ErlPackBuffer&);
 
-		void appendListHeader(ErlPackBuffer&, int32_t&);
+		void appendListHeader(ErlPackBuffer&, uint32_t&);
 
-		void appendMapHeader(ErlPackBuffer&, int32_t&);
+		void appendMapHeader(ErlPackBuffer&, uint32_t&);
 
 		template<typename ReturnType> void readBits(const ErlPackBuffer&, ReturnType&);
 
-		void readString(const ErlPackBuffer&, int32_t&, std::vector<char>&);
+		void readString(const ErlPackBuffer&, uint32_t&, std::vector<char>&);
 
 		nlohmann::json singleValueETFToJson(const ErlPackBuffer&);
 
-		nlohmann::json processAtom(const std::vector<char>&, int32_t&);
+		nlohmann::json processAtom(const std::vector<char>&, uint32_t&);
 
 		nlohmann::json parseAtomUtf8Ext(const ErlPackBuffer&);
 
@@ -124,11 +124,11 @@ namespace DiscordCoreInternal {
 
 		nlohmann::json parseIntegerExt(const ErlPackBuffer&);
 
-		nlohmann::json parseArray(const ErlPackBuffer&, int32_t&);
+		nlohmann::json parseArray(const ErlPackBuffer&, uint32_t&);
 
 		nlohmann::json parseListExt(const ErlPackBuffer&);
 
-		nlohmann::json parseTuple(const ErlPackBuffer&, int32_t&);
+		nlohmann::json parseTuple(const ErlPackBuffer&, uint32_t&);
 
 		nlohmann::json parseNilExt();
 
@@ -138,7 +138,7 @@ namespace DiscordCoreInternal {
 
 		nlohmann::json parseNewFloat(const ErlPackBuffer&);
 
-		nlohmann::json parseBigint(const ErlPackBuffer&, int32_t&);
+		nlohmann::json parseBigint(const ErlPackBuffer&, uint32_t&);
 
 		nlohmann::json parseSmallBigExt(const ErlPackBuffer&);
 
