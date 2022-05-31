@@ -220,6 +220,8 @@ namespace DiscordCoreInternal {
 	template<typename ReturnType> void ErlPacker::readBits(const ErlPackBuffer& buffer, ReturnType& theValue) {
 		const uint8_t byteSize{ 8 };
 		if (buffer.offSet + sizeof(ReturnType) > buffer.buffer.size()) {
+			std::cout << "THE STRING: " << buffer.buffer << std::endl;
+			std::cout << "THE SIZE: " << buffer.buffer.size() << std::endl;
 			throw ErlPackError("ETF Parse Error: readBits() past end of buffer");
 		}
 		ReturnType newValue{ 0 };

@@ -325,12 +325,13 @@ namespace DiscordCoreInternal {
 
 	  protected:
 		const int64_t maxBufferSize{ 1024 * 16 };
+		std::vector<std::string> outputBuffer{};
 		SOCKETWrapper theSocket{ nullptr };
 		SSL_CTXWrapper context{ nullptr };
-		bool doWePrintError{ false };
-		std::string outputBuffer{};
+		bool doWePrintError{ false };		
 		SSLWrapper ssl{ nullptr };
 		std::string inputBuffer{};
+		bool wantWrite{ false };
 		bool wantRead{ false };
 		int64_t bytesRead{ 0 };
 	};
