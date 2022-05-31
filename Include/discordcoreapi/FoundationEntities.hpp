@@ -2788,25 +2788,25 @@ namespace DiscordCoreAPI {
 
 		/// Returns the User id of the last requester of this input-event. \brief Returns the User id of the last requester of this input-event.
 		/// \returns A std::string containing the author's id.
-		int64_t getAuthorId() {
+		uint64_t getAuthorId() {
 			return this->interactionData->user.id;
 		}
 
 		/// Returns the Interaction id, if appplicable, of this input-event. \brief Returns the Interaction id, if appplicable, of this input-event.
 		/// \returns A std::string containing the Interaction id.
-		int64_t getInteractionId() {
+		uint64_t getInteractionId() {
 			return this->interactionData->id;
 		}
 
 		/// Returns the application id. \brief Returns the application id.
 		/// \returns A std::string containing the application id.
-		int64_t getApplicationId() {
+		uint64_t getApplicationId() {
 			return this->interactionData->applicationId;
 		}
 
 		/// Returns the Channel id of this input-event. \brief Returns the Channel id of this input-event.
 		/// \returns A std::string containing the Channel id.
-		int64_t getChannelId() {
+		uint64_t getChannelId() {
 			return this->interactionData->channelId;
 		}
 
@@ -2818,13 +2818,13 @@ namespace DiscordCoreAPI {
 
 		/// Returns the Guild id, of this input-event. \brief Returns the Guild id, of this input-event.
 		/// \returns A std::string containing the Guild id.
-		int64_t getGuildId() {
+		uint64_t getGuildId() {
 			return this->interactionData->guildId;
 		}
 
 		/// Returns the Message id, if applicable, of this input-event. \brief Returns the Message id, if applicable, of this input-event.
 		/// \returns A std::string containing the Message id.
-		int64_t getMessageId() {
+		uint64_t getMessageId() {
 			return this->interactionData->message.id;
 		}
 
