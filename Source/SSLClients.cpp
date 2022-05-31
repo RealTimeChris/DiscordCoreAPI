@@ -511,7 +511,6 @@ namespace DiscordCoreInternal {
 						this->inputBuffer.insert(this->inputBuffer.end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
 						this->bytesRead += readBytes;
 						auto theOpCode = static_cast<uint8_t>(this->inputBuffer[0] & ~(1 << 7));
-						std::cout << "THE OPCODE: " << +theOpCode << std::endl;
 					}
 					return true;
 				}

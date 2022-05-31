@@ -106,7 +106,6 @@ namespace DiscordCoreInternal {
 					} else {
 						this->theState = WSMessageCollectorState::Collecting;
 						this->currentRecursionDepth += 1;
-						std::cout << "WERE HERE 020202" << std::endl;
 						return this->runMessageCollector();
 					}
 				}
@@ -116,7 +115,6 @@ namespace DiscordCoreInternal {
 			if (this->currentMessage.size() < 4) {
 				this->theState = WSMessageCollectorState::Collecting;
 				this->currentRecursionDepth += 1;
-				std::cout << "WERE HERE 010101" << std::endl;
 				return this->runMessageCollector();
 			} else {
 				this->dataOpCode = static_cast<WebSocketOpCode>(this->currentMessage[0] & ~webSocketFinishBit);
@@ -134,7 +132,6 @@ namespace DiscordCoreInternal {
 						this->messageOffset = 2;
 						if (length01 & webSocketMaskBit) {
 							this->theState = WSMessageCollectorState::Collecting;
-							std::cout << "WERE HERE 01010101, LENGTH: " << this->messageLength << " OFFSET: " << this->messageOffset << std::endl;
 							this->currentRecursionDepth += 1;
 							return this->runMessageCollector();
 						}
@@ -142,11 +139,9 @@ namespace DiscordCoreInternal {
 						if (length01 == webSocketPayloadLengthMagicLarge) {
 							if (this->currentMessage.size() < 8) {
 								this->theState = WSMessageCollectorState::Collecting;
-								std::cout << "WERE HERE 04040404, LENGTH: " << this->messageLength << " OFFSET: " << this->messageOffset << std::endl;
 								this->currentRecursionDepth += 1;
 								return this->runMessageCollector();
 							}
-							std::cout << "WERE HERE 505050505, LENGTH: " << this->messageLength << " OFFSET: " << this->messageOffset << std::endl;
 							uint8_t length03 = this->currentMessage[2];
 							uint8_t length04 = this->currentMessage[3];
 							this->messageLength = static_cast<uint64_t>((length03 << 8) | length04);
@@ -154,11 +149,9 @@ namespace DiscordCoreInternal {
 						} else if (length01 == webSocketPayloadLengthMagicHuge) {
 							if (this->currentMessage.size() < 10) {
 								this->theState = WSMessageCollectorState::Collecting;
-								std::cout << "WERE HERE 03030303, LENGTH: " << this->messageLength << " OFFSET: " << this->messageOffset << std::endl;
 								this->currentRecursionDepth += 1;
 								return this->runMessageCollector();
 							}
-							std::cout << "WERE HERE 070707, LENGTH: " << this->messageLength << " OFFSET: " << this->messageOffset << std::endl;
 							this->messageLength = 0;
 							for (int64_t x = 2, shift = 56; x < 10; ++x, shift -= 8) {
 								uint8_t lengthNew = static_cast<uint8_t>(this->currentMessage[x]);
@@ -168,18 +161,14 @@ namespace DiscordCoreInternal {
 						}
 						if (this->currentMessage.size() < this->messageOffset + this->messageLength) {
 							this->theState = WSMessageCollectorState::Collecting;
-							std::cout << "WERE HERE 060606, LENGTH: " << this->messageLength << " OFFSET: " << this->messageOffset << std::endl;
 							this->currentRecursionDepth += 1;
 							return this->runMessageCollector();
 						} else {
 							WSMessageCollectorReturnData returnData{};
 							returnData.theMessage.insert(returnData.theMessage.begin(), this->currentMessage.begin() + this->messageOffset,
 								this->currentMessage.begin() + this->messageOffset + this->messageLength);
-							std::cout << "WERE HERE 02020202, LENGTH: " << this->messageLength << " OFFSET: " << this->messageOffset
-									  << "ACTUAL LENGTH: " << this->currentMessage.size() << std::endl;
 							this->finalMessages.push(returnData);
 							this->currentMessage.erase(this->currentMessage.begin(), this->currentMessage.begin() + this->messageOffset + this->messageLength);
-							std::cout << "ACTUAL LENGTH: (NOW): " << this->currentMessage.size() << "ACTUAL STRING: " << this->currentMessage << std::endl;
 							this->theState = WSMessageCollectorState::Serving;
 							return this->runMessageCollector();
 						}
@@ -197,13 +186,11 @@ namespace DiscordCoreInternal {
 						this->finalMessages.push(WSMessageCollectorReturnData{ .closeCode = static_cast<uint8_t>(close) });
 						this->currentMessage.clear();
 						this->theState = WSMessageCollectorState::Serving;
-						std::cout << "WERE THERE THIS IT IS!010101" << std::endl;
 						return false;
 					}
 					default: {
 						this->theState = WSMessageCollectorState::Collecting;
 						this->currentRecursionDepth += 1;
-						std::cout << "WERE THERE THIS IT IS!" << std::endl;
 						return true;
 					}
 				}
@@ -218,8 +205,6 @@ namespace DiscordCoreInternal {
 		for (uint32_t x = 0; x < this->theOffsets.size() - 1; x += 1) {
 			theTotalOffset += this->theOffsets[x];
 		}
-		std::cout << "TOTAL OFFSET: " << theTotalOffset << std::endl;
-		std::cout << "TOTAL OFFSET (REAL): " << this->currentMessage.size() << std::endl;
 
 		return theTotalOffset;
 	}

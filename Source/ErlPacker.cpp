@@ -293,7 +293,6 @@ namespace DiscordCoreInternal {
 				return ErlPacker::parseLargeBigExt(buffer);
 			}
 			default: {
-				std::cout << "WERE HERE THIS IS IT: " << +type << ", THE OFFSET: " << buffer.offSet << "THE STRING: " << buffer.buffer << std::endl;
 				throw ErlPackError("ETF Parse Error: Unknown data type in ETF");
 			}
 		}
