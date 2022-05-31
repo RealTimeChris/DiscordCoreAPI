@@ -38,20 +38,18 @@ namespace DiscordCoreInternal {
 		std::vector<DiscordCoreInternal::HttpWorkloadData> workloadVector01{};
 		workloadVector01.push_back(dataPackage);
 		std::vector<DiscordCoreInternal::HttpResponseData> returnData = this->httpClient->submitWorkloadAndGetResult<std::vector<HttpResponseData>>(workloadVector01);
+		if (returnData[0].responseCode != 200 && this->httpClient->getDoWePrintHttpError()) {
+			std::cout << DiscordCoreAPI::shiftToBrightRed() << "YouTubeRequestBuilder::collectSearchResults() Error: " << returnData[0].responseCode
+					  << returnData[0].responseMessage.c_str() << DiscordCoreAPI::reset() << std::endl;
+		}
 		nlohmann::json partialSearchResultsJson{};
-		if (returnData.size() > 0) {
-			if (returnData[0].responseCode != 200 && this->httpClient->getDoWePrintHttpError()) {
-				std::cout << DiscordCoreAPI::shiftToBrightRed() << "YouTubeRequestBuilder::collectSearchResults() Error: " << returnData[0].responseCode
-						  << returnData[0].responseMessage.c_str() << DiscordCoreAPI::reset() << std::endl;
-			}
-			if (returnData[0].responseMessage.find("var ytInitialData = ") != std::string::npos) {
-				std::string newString00 = "var ytInitialData = ";
-				std::string newString = returnData[0].responseMessage.substr(returnData[0].responseMessage.find("var ytInitialData = ") + newString00.length());
-				std::string stringSequence = ";</script><script nonce=";
-				newString = newString.substr(0, newString.find(stringSequence));
-				partialSearchResultsJson = nlohmann::json::parse(newString);
-			}
-		}		
+		if (returnData[0].responseMessage.find("var ytInitialData = ") != std::string::npos) {
+			std::string newString00 = "var ytInitialData = ";
+			std::string newString = returnData[0].responseMessage.substr(returnData[0].responseMessage.find("var ytInitialData = ") + newString00.length());
+			std::string stringSequence = ";</script><script nonce=";
+			newString = newString.substr(0, newString.find(stringSequence));
+			partialSearchResultsJson = nlohmann::json::parse(newString);
+		}
 		std::vector<DiscordCoreAPI::Song> searchResults{};
 		if (partialSearchResultsJson.contains("contents") && !partialSearchResultsJson["contents"].is_null()) {
 			for (auto& value: partialSearchResultsJson["contents"]["twoColumnSearchResultsRenderer"]["primaryContents"]["sectionListRenderer"]["contents"][0]["itemSectionRenderer"]
