@@ -204,15 +204,19 @@ namespace DiscordCoreInternal {
 	}
 
 	bool WSMessageCollector::collectData() noexcept {
-		auto theBool = this->theClientPtr->processIO(100000);
-		auto newMessage = this->theClientPtr->getInputBuffer();
-		this->currentMessage.insert(this->currentMessage.end(), newMessage.begin(), newMessage.end());
-		this->theOffsets.push_back(newMessage.size());
-		this->theState = WSMessageCollectorState::Parsing;
-		if (!theBool) {
-			return theBool;
+		if (this->theClientPtr != nullptr) {
+			auto theBool = this->theClientPtr->processIO(100000);
+			auto newMessage = this->theClientPtr->getInputBuffer();
+			this->currentMessage.insert(this->currentMessage.end(), newMessage.begin(), newMessage.end());
+			this->theOffsets.push_back(newMessage.size());
+			this->theState = WSMessageCollectorState::Parsing;
+			if (!theBool) {
+				return theBool;
+			} else {
+				return this->runMessageCollector();
+			}
 		} else {
-			return this->runMessageCollector();
+			return false;
 		}
 	}
 
