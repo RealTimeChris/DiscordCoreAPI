@@ -46,8 +46,6 @@ namespace DiscordCoreInternal {
 				this->finalMessage = MessageCollectorReturnData{};
 				this->dataOpCode = WebSocketOpCode::Op_Binary;
 				this->theState = MessageCollectorState::Collecting;
-				this->messageLength = 0;
-				this->messageOffset = 0;
 				return this->runMessageCollector();
 			}
 			case MessageCollectorState::Collecting: {
@@ -922,6 +920,8 @@ namespace DiscordCoreInternal {
 				return this->runMessageCollector();
 			} else {
 				this->dataOpCode = static_cast<WebSocketOpCode>(this->currentMessage[0]);
+				auto theOpCode = static_cast<int8_t>(this->currentMessage[0] & ~webSocketFinishBit);
+				std::cout << "THE OPCODE: " << +theOpCode<<std::endl;
 				switch (static_cast<WebSocketOpCode>(this->currentMessage[0] & ~webSocketFinishBit)) {
 					case WebSocketOpCode::Op_Continuation:
 					case WebSocketOpCode::Op_Text:
@@ -975,11 +975,13 @@ namespace DiscordCoreInternal {
 						this->finalMessage.closeCode = close;
 						this->currentMessage.clear();
 						this->theState = MessageCollectorState::Serving;
+						std::cout << "WERE THERE THIS IT IS!010101" << std::endl;
 						return false;
 					}
 					default: {
 						this->finalMessage.closeCode = 0;
 						this->theState = MessageCollectorState::Serving;
+						std::cout << "WERE THERE THIS IT IS!" << std::endl;
 						return false;
 					}
 				}
