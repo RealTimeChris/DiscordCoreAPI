@@ -1120,7 +1120,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void VoiceSocketAgent::sendMessage(const std::vector<int8_t>& dataToSend) noexcept {
+	void VoiceSocketAgent::sendMessage(const std::vector<uint8_t>& dataToSend) noexcept {
 		try {
 			std::string newString{};
 			newString.insert(newString.begin(), dataToSend.begin(), dataToSend.end());
@@ -1265,7 +1265,7 @@ namespace DiscordCoreInternal {
 					}
 					this->voiceConnect();
 					this->collectExternalIP();
-					std::vector<int8_t> protocolPayloadSelectString =
+					std::vector<uint8_t> protocolPayloadSelectString =
 						JSONIFY(this->voiceConnectionData.voicePort, this->voiceConnectionData.externalIp, this->voiceConnectionData.voiceEncryptionMode, 0);
 					if (this->webSocket) {
 						this->sendMessage(protocolPayloadSelectString);
@@ -1285,7 +1285,7 @@ namespace DiscordCoreInternal {
 						this->areWeHeartBeating = false;
 					}
 					this->haveWeReceivedHeartbeatAck = true;
-					std::vector<int8_t> identifyPayload = JSONIFY(this->voiceConnectionData, this->voiceConnectInitData);
+					std::vector<uint8_t> identifyPayload = JSONIFY(this->voiceConnectionData, this->voiceConnectInitData);
 					if (this->webSocket) {
 						this->sendMessage(identifyPayload);
 					}
@@ -1338,7 +1338,7 @@ namespace DiscordCoreInternal {
 	void VoiceSocketAgent::sendHeartBeat() noexcept {
 		try {
 			if (this->haveWeReceivedHeartbeatAck) {
-				std::vector<int8_t> heartbeatPayload = JSONIFY(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
+				std::vector<uint8_t> heartbeatPayload = JSONIFY(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
 				if (this->webSocket) {
 					this->sendMessage(heartbeatPayload);
 				}

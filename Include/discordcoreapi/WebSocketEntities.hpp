@@ -187,7 +187,7 @@ namespace DiscordCoreInternal {
 
 		VoiceSocketAgent(VoiceConnectInitData initDataNew, BaseSocketAgent* baseBaseSocketAgentNew, bool doWePrintMessages = false) noexcept;
 
-		void sendMessage(const std::vector<int8_t>& responseData) noexcept;
+		void sendMessage(const std::vector<uint8_t>& responseData) noexcept;
 
 		void sendVoiceData(std::string& responseData) noexcept;
 
