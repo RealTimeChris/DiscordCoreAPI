@@ -311,6 +311,7 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll WebSocketSSLClient {
 	  public:
+
 		WebSocketSSLClient(const std::string& baseUrl, const std::string& port, bool doWePrintError, int64_t maxBufferSize = 16 * 1024) noexcept;
 
 		WebSocketSSLClient() noexcept = default;
@@ -319,7 +320,7 @@ namespace DiscordCoreInternal {
 
 		void writeData(const std::string& data) noexcept;
 
-		std::string& getInputBuffer() noexcept;
+		std::string getInputBuffer() noexcept;
 
 		int64_t getBytesRead() noexcept;
 

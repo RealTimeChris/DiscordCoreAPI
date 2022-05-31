@@ -24,6 +24,53 @@
 
 namespace DiscordCoreInternal {
 
+	MessageCollector::MessageCollector(WebSocketSSLClient* thePtr){
+		this->theClientPtr = thePtr;
+	};
+
+	bool MessageCollector::collectData() noexcept {
+		auto theBool = this->theClientPtr->processIO(100000);
+		auto newMessage = this->theClientPtr->getInputBuffer();
+		this->currentMessage.insert(this->currentMessage.end(), newMessage.begin(), newMessage.end());
+		this->theState = MessageCollectorState::Parsing;
+		std::cout << "WERE HERE THIS IS IT: " << this->currentMessage << std::endl;
+		if (!theBool) {
+			return theBool;
+		} else {
+			return this->runMessageCollector();
+		}
+	}
+
+	bool MessageCollector::runMessageCollector() noexcept {
+		switch (this->theState) {
+			case MessageCollectorState::Initializing: {
+				this->finalMessage = MessageCollectorReturnData{};
+				this->dataOpCode = WebSocketOpCode::Op_Binary;
+				this->theState = MessageCollectorState::Collecting;
+				this->messageLength = 0;
+				this->messageOffset = 0;
+				return this->runMessageCollector();
+			}
+			case MessageCollectorState::Collecting: {
+				return this->collectData();
+			}
+			case MessageCollectorState::Parsing: {
+				return this->parseHeaderAndMessage();
+			}
+			case MessageCollectorState::Serving: {
+				return true;
+			}
+			default: {
+				return true;
+			}
+		}
+	}
+
+	MessageCollectorReturnData MessageCollector::collectFinalMessage() noexcept {
+		this->theState = MessageCollectorState::Initializing;
+		return this->finalMessage;
+	}
+
 	constexpr uint16_t webSocketMaxPayloadLengthLarge{ 65535 };
 	constexpr uint8_t webSocketPayloadLengthMagicLarge{ 126 };
 	constexpr uint8_t webSocketPayloadLengthMagicHuge{ 127 };
@@ -104,7 +151,11 @@ namespace DiscordCoreInternal {
 				break;
 			}
 			this->webSocket->processIO(100000);
-			this->handleBuffer();
+			this->messageCollector.runMessageCollector();
+			auto returnData = this->messageCollector.collectFinalMessage();
+			if (returnData.theMessage != "") {
+				this->onMessageReceived(returnData.theMessage);
+			}			
 		};
 	}
 
@@ -179,23 +230,15 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	std::vector<std::string> BaseSocketAgent::tokenize(const std::string& dataIn, const std::string& separator) noexcept {
-		try {
-			std::string::size_type value{ 0 };
-			std::vector<std::string> dataOut{};
-			while ((value = dataIn.find_first_not_of(separator, value)) != std::string::npos) {
-				auto output = dataIn.find(separator, value);
-				dataOut.push_back(dataIn.substr(value, output - value));
-				value = output;
-			}
-			return dataOut;
-		} catch (...) {
-			if (this->printErrorMessages) {
-				DiscordCoreAPI::reportException("BaseSocketAgent::tokenize()");
-			}
-			this->onClosedExternal();
-			return std::vector<std::string>{};
+	std::vector<std::string> MessageCollector::tokenize(const std::string& dataIn, const std::string& separator) noexcept {
+		std::string::size_type value{ 0 };
+		std::vector<std::string> dataOut{};
+		while ((value = dataIn.find_first_not_of(separator, value)) != std::string::npos) {
+			auto output = dataIn.find(separator, value);
+			dataOut.push_back(dataIn.substr(value, output - value));
+			value = output;
 		}
+		return dataOut;
 	}
 
 	void BaseSocketAgent::getVoiceConnectionData(const VoiceConnectInitData& doWeCollect) noexcept {
@@ -232,6 +275,7 @@ namespace DiscordCoreInternal {
 	void BaseSocketAgent::run(std::stop_token theToken) noexcept {
 		try {
 			this->connect();
+			this->onMessageReceived(this->messageCollector.collectFinalMessage().theMessage);
 			DiscordCoreAPI::StopWatch stopWatch{ std::chrono::milliseconds{ 0 } };
 			while (!theToken.stop_requested() && !this->doWeQuit->load()) {
 				if (this->heartbeatInterval != 0 && !this->areWeHeartBeating) {
@@ -242,11 +286,12 @@ namespace DiscordCoreInternal {
 					stopWatch.resetTimer();
 					this->sendHeartBeat();
 				}
-				if (this->webSocket) {
-					if (!this->webSocket->processIO(1000)) {
-						this->onClosedExternal();
-					}
-					this->handleBuffer();
+				if (!this->messageCollector.runMessageCollector()) {
+					this->onClosedExternal();
+				}
+				auto theReturnMessage = this->messageCollector.collectFinalMessage();
+				if (theReturnMessage.theMessage != "") {
+					this->onMessageReceived(theReturnMessage.theMessage);
 				}
 				std::this_thread::sleep_for(std::chrono::milliseconds{ 1 });
 			}
@@ -259,10 +304,9 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void BaseSocketAgent::onMessageReceived() noexcept {
+	void BaseSocketAgent::onMessageReceived(std::string theMessage) noexcept {
 		try {
-			std::string messageNew = this->webSocket->getInputBuffer();
-			this->webSocket->getInputBuffer().clear();
+			std::string messageNew = theMessage;
 			nlohmann::json payload{};
 
 			if (this->theFormat == DiscordCoreAPI::TextFormat::Etf) {
@@ -848,118 +892,105 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void BaseSocketAgent::handleBuffer() noexcept {
-		try {
-			std::string newVector = this->webSocket->getInputBuffer();
-			switch (this->state) {
-				case WebSocketState::Initializing:
-					if (newVector.find("\r\n\r\n") != std::string::npos) {
-						std::string headers = newVector.substr(0, newVector.find("\r\n\r\n"));
-						newVector.erase(0, newVector.find("\r\n\r\n") + 4);
-						std::vector<std::string> headerOut = tokenize(headers);
-						if (headerOut.size()) {
-							std::string statusLine = headerOut[0];
-							headerOut.erase(headerOut.begin());
-							std::vector<std::string> status = tokenize(statusLine, " ");
-							if (status.size() >= 3 && status[1] == "101") {
-								this->state = WebSocketState::Connected;
-								this->webSocket->getInputBuffer().clear();
-								this->webSocket->getInputBuffer().insert(this->webSocket->getInputBuffer().end(), newVector.begin(), newVector.end());
-								this->parseHeader();
-							} else {
-								return;
-							}
-						}
-					}
-					break;
-				case WebSocketState::Connected:
-					while (this->parseHeader()) {
-					};
-					return;
-			}
-		} catch (...) {
-			if (this->printErrorMessages) {
-				DiscordCoreAPI::reportException("BaseSocketAgent::handleBuffer()");
-			}
-			this->onClosedExternal();
-		}
-	}
+	bool MessageCollector::parseHeaderAndMessage() noexcept {
 
-	bool BaseSocketAgent::parseHeader() noexcept {
-		try {
-			std::string newVector = this->webSocket->getInputBuffer();
-			if (this->webSocket->getInputBuffer().size() < 4) {
-				return false;
+		if (this->wsState == WebSocketState::Initializing) {
+			std::string newVector = this->currentMessage;
+			if (newVector.find("\r\n\r\n") != std::string::npos) {
+				std::string headers = newVector.substr(0, newVector.find("\r\n\r\n"));
+				newVector.erase(0, newVector.find("\r\n\r\n") + 4);
+				std::vector<std::string> headerOut = tokenize(headers);
+				if (headerOut.size()) {
+					std::string statusLine = headerOut[0];
+					headerOut.erase(headerOut.begin());
+					std::vector<std::string> status = tokenize(statusLine, " ");
+					if (status.size() >= 3 && status[1] == "101") {
+						this->wsState = WebSocketState::Connected;
+						this->currentMessage.clear();
+						this->currentMessage.insert(this->currentMessage.end(), newVector.begin(), newVector.end());
+						this->theState = MessageCollectorState::Serving;
+						return this->runMessageCollector();
+					} else {
+						this->theState = MessageCollectorState::Collecting;
+						return this->runMessageCollector();
+					}
+				}
+			}
+
+		} else {
+			if (this->currentMessage.size() < 4) {
+				this->theState = MessageCollectorState::Serving;
+				return this->runMessageCollector();
 			} else {
-				this->dataOpcode = static_cast<WebSocketOpCode>(this->webSocket->getInputBuffer()[0]);
-				switch (static_cast<WebSocketOpCode>(this->webSocket->getInputBuffer()[0] & ~webSocketFinishBit)) {
+				this->dataOpCode = static_cast<WebSocketOpCode>(this->currentMessage[0]);
+				switch (static_cast<WebSocketOpCode>(this->currentMessage[0] & ~webSocketFinishBit)) {
 					case WebSocketOpCode::Op_Continuation:
 					case WebSocketOpCode::Op_Text:
 					case WebSocketOpCode::Op_Binary:
 					case WebSocketOpCode::Op_Ping:
 					case WebSocketOpCode::Op_Pong: {
-						uint8_t length01 = this->webSocket->getInputBuffer()[1];
-						uint64_t payloadStartOffset = 2;
+						uint8_t length01 = this->currentMessage[1];
+						this->messageOffset = 2;
 						if (length01 & webSocketMaskBit) {
-							return false;
+							std::cout << "WERE HERE 1010101" << std::endl;
+							this->theState = MessageCollectorState::Serving;
+							return this->runMessageCollector();
 						}
-						uint64_t length02 = length01;
+						this->messageLength = length01;
 						if (length01 == webSocketPayloadLengthMagicLarge) {
-							if (this->webSocket->getInputBuffer().size() < 8) {
-								return false;
+							if (this->currentMessage.size() < 8) {
+								std::cout << "WERE HERE 020202" << std::endl;
+								this->theState = MessageCollectorState::Serving;
+								return this->runMessageCollector();
 							}
-							uint8_t length03 = this->webSocket->getInputBuffer()[2];
-							uint8_t length04 = this->webSocket->getInputBuffer()[3];
-							length02 = static_cast<uint64_t>((length03 << 8) | length04);
-							payloadStartOffset += 2;
+							uint8_t length03 = this->currentMessage[2];
+							uint8_t length04 = this->currentMessage[3];
+							this->messageLength = static_cast<uint64_t>((length03 << 8) | length04);
+							this->messageOffset += 2;
 						} else if (length01 == webSocketPayloadLengthMagicHuge) {
-							if (this->webSocket->getInputBuffer().size() < 10) {
-								return false;
+							if (this->currentMessage.size() < 10) {
+								std::cout << "WERE HERE 030303" << std::endl;
+								this->theState = MessageCollectorState::Serving;
+								return this->runMessageCollector();
 							}
-							length02 = 0;
+							this->messageLength = 0;
 							for (int64_t x = 2, shift = 56; x < 10; ++x, shift -= 8) {
-								uint8_t lengthNew = static_cast<uint8_t>(this->webSocket->getInputBuffer()[x]);
-								length02 |= static_cast<uint64_t>((lengthNew & 0xff) << shift);
+								uint8_t lengthNew = static_cast<uint8_t>(this->currentMessage[x]);
+								this->messageLength |= static_cast<uint64_t>((lengthNew & 0xff) << shift);
 							}
-							payloadStartOffset += 8;
+							this->messageOffset += 8;
 						}
-						if (this->webSocket->getInputBuffer().size() < payloadStartOffset + length02) {
-							return false;
+						if (this->currentMessage.size() < this->messageOffset + this->messageLength) {
+							std::cout << "WERE HERE 040404" << std::endl;
+							this->theState = MessageCollectorState::Serving;
+							return this->runMessageCollector();
 						} else {
-							std::string newerVector{};
-							newerVector.reserve(length02);
-							for (uint32_t x = payloadStartOffset; x < payloadStartOffset + length02; x += 1) {
-								newerVector.push_back(this->webSocket->getInputBuffer()[x]);
-							}
-							this->webSocket->getInputBuffer() = std::move(newerVector);
-							this->onMessageReceived();
-							this->webSocket->getInputBuffer().insert(this->webSocket->getInputBuffer().begin(), newVector.begin() + payloadStartOffset + length02, newVector.end());
+							this->finalMessage.theMessage.insert(this->finalMessage.theMessage.begin(), this->currentMessage.begin() + this->messageOffset,
+								this->currentMessage.begin() + this->messageOffset + this->messageLength);
+							this->currentMessage.erase(this->currentMessage.begin(), this->currentMessage.begin() + this->messageOffset + this->messageLength);
+							this->theState = MessageCollectorState::Serving;
+							return this->runMessageCollector();
 						}
-						return true;
+						return this->runMessageCollector();
 					}
 					case WebSocketOpCode::Op_Close: {
-						uint16_t close = this->webSocket->getInputBuffer()[2] & 0xff;
+						uint16_t close = this->currentMessage[2] & 0xff;
 						close <<= 8;
-						close |= this->webSocket->getInputBuffer()[3] & 0xff;
-						this->closeCode = close;
-						this->webSocket->getInputBuffer().clear();
-						this->onClosedExternal();
+						close |= this->currentMessage[3] & 0xff;
+						this->finalMessage.closeCode = close;
+						this->currentMessage.clear();
+						this->theState = MessageCollectorState::Serving;
 						return false;
 					}
 					default: {
-						this->closeCode = 0;
+						this->finalMessage.closeCode = 0;
+						this->theState = MessageCollectorState::Serving;
 						return false;
 					}
 				}
 			}
-			return false;
-		} catch (...) {
-			if (this->printErrorMessages) {
-				DiscordCoreAPI::reportException("BaseSocketAgent::parseHeader()");
-			}
-			this->onClosedExternal();
-			return false;
 		}
+		return true;
 	}
 
 	void BaseSocketAgent::onClosedExternal() noexcept {
@@ -988,6 +1019,7 @@ namespace DiscordCoreInternal {
 	void BaseSocketAgent::connect() noexcept {
 		try {
 			this->webSocket = std::make_unique<WebSocketSSLClient>(this->baseUrl, "443", this->printErrorMessages);
+			this->messageCollector = MessageCollector{ this->webSocket.get() };
 			this->state = WebSocketState::Initializing;
 			std::string sendString{};
 			if (this->theFormat == DiscordCoreAPI::TextFormat::Etf) {
@@ -1000,6 +1032,11 @@ namespace DiscordCoreInternal {
 					DiscordCoreAPI::generateBase64EncodedKey() + "\r\nSec-WebSocket-Version: 13\r\n\r\n";
 			}
 			this->sendMessage(sendString);
+			std::string theResult{};
+			while (theResult == "") {
+				this->messageCollector.runMessageCollector();
+				theResult = this->messageCollector.collectFinalMessage().theMessage;
+			}
 		} catch (...) {
 			if (this->printErrorMessages) {
 				DiscordCoreAPI::reportException("BaseSocketAgent::connect()");

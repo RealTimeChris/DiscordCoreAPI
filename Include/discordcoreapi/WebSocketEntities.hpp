@@ -64,6 +64,42 @@ namespace DiscordCoreInternal {
 			static_cast<int16_t>(WebSocketCloseCode::Normal_Close)
 	};
 
+	enum class MessageCollectorState { Initializing = 0, Collecting = 1, Parsing = 2, Serving = 3 };
+
+	struct DiscordCoreAPI_Dll MessageCollectorReturnData {
+		WebSocketOpCode opCode{};
+		std::string theMessage{};
+		int16_t closeCode{};
+	};
+
+	class DiscordCoreAPI_Dll MessageCollector {
+	  public:
+		MessageCollector(WebSocketSSLClient*);
+
+		MessageCollector() = default;
+
+		MessageCollectorReturnData collectFinalMessage() noexcept;
+
+		bool runMessageCollector() noexcept;
+
+	  protected:
+		WebSocketState wsState{ WebSocketState::Initializing };
+		WebSocketSSLClient* theClientPtr{ nullptr };
+		MessageCollectorReturnData finalMessage{};
+		std::vector<std::string> messageCache{};
+		MessageCollectorState theState{};
+		std::string currentMessage{};
+		WebSocketOpCode dataOpCode{};
+		int64_t messageLength{};
+		int64_t messageOffset{};
+
+		std::vector<std::string> tokenize(const std::string&, const std::string& = "\r\n") noexcept;
+
+		bool parseHeaderAndMessage() noexcept;
+
+		bool collectData() noexcept;
+	};
+
 	class DiscordCoreAPI_Dll BaseSocketAgent {
 	  public:
 		friend class DiscordCoreAPI::VoiceConnection;
@@ -103,6 +139,7 @@ namespace DiscordCoreInternal {
 		const int32_t maxReconnectTries{ 10 };
 		std::binary_semaphore semaphore{ 1 };
 		bool serverUpdateCollected{ false };
+		MessageCollector messageCollector{};
 		bool stateUpdateCollected{ false };
 		int32_t currentReconnectTries{ 0 };
 		bool printSuccessMessages{ false };
@@ -123,23 +160,17 @@ namespace DiscordCoreInternal {
 		std::string baseUrl{};
 		uint64_t userId{};
 
-		std::vector<std::string> tokenize(const std::string&, const std::string& = "\r\n") noexcept;
-
 		uint64_t createHeader(char* outbuf, uint64_t sendlength, WebSocketOpCode opCode) noexcept;
 
 		void getVoiceConnectionData(const VoiceConnectInitData& doWeCollect) noexcept;
 
-		void run(std::stop_token) noexcept;
+		void onMessageReceived(std::string theMessage) noexcept;
 
-		void onMessageReceived() noexcept;
+		void run(std::stop_token) noexcept;
 
 		void sendCloseFrame() noexcept;
 
 		void sendHeartBeat() noexcept;
-
-		void handleBuffer() noexcept;
-
-		bool parseHeader() noexcept;
 
 		void connect() noexcept;
 	};

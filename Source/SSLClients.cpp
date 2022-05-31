@@ -546,8 +546,10 @@ namespace DiscordCoreInternal {
 		this->outputBuffer.insert(this->outputBuffer.end(), data.begin(), data.end());
 	}
 
-	std::string& WebSocketSSLClient::getInputBuffer() noexcept {
-		return this->inputBuffer;
+	std::string WebSocketSSLClient::getInputBuffer() noexcept {
+		std::string returnString = this->inputBuffer;
+		this->inputBuffer.clear();
+		return returnString;
 	}
 
 	int64_t WebSocketSSLClient::getBytesRead() noexcept {
