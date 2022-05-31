@@ -159,7 +159,7 @@ namespace DiscordCoreInternal {
 							}
 							this->messageOffset += 8;
 						}
-						if (this->currentMessage.size() < this->messageOffset + this->messageLength) {
+						if (this->currentMessage.size() < static_cast<uint64_t>(this->messageOffset + this->messageLength)) {
 							this->theState = WSMessageCollectorState::Collecting;
 							this->currentRecursionDepth += 1;
 							return this->runMessageCollector();
@@ -278,7 +278,7 @@ namespace DiscordCoreInternal {
 		std::string theString{};
 		theString.push_back(static_cast<int8_t>(WebSocketOpCode::Op_Close) | static_cast<int8_t>(webSocketFinishBit));
 		theString.push_back(0);
-		theString.push_back(static_cast<uint16_t>(1000) >> 8);
+		theString.push_back(static_cast<uint8_t>(1000) >> 8);
 		theString.push_back(static_cast<uint8_t>(1000) & 0xff);
 		if (this->webSocket != nullptr) {
 			this->webSocket->writeData(theString);
