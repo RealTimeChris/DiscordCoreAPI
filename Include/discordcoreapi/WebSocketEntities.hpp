@@ -93,8 +93,6 @@ namespace DiscordCoreInternal {
 		int64_t messageLength{};
 		int64_t messageOffset{};
 
-		std::vector<std::string> tokenize(const std::string&, const std::string& = "\r\n") noexcept;
-
 		bool parseConnectionHeader() noexcept;
 
 		bool parseHeaderAndMessage() noexcept;
@@ -217,8 +215,6 @@ namespace DiscordCoreInternal {
 		uint32_t closeCode{ 0 };
 		std::string baseUrl{};
 		std::string hostIp{};
-
-		std::vector<std::string> tokenize(const std::string&, const std::string& = "\r\n") noexcept;
 
 		uint64_t createHeader(char* outbuf, uint64_t sendlength, WebSocketOpCode opCode) noexcept;
 

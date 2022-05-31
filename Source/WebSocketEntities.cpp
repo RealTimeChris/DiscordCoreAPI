@@ -79,17 +79,6 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	std::vector<std::string> WSMessageCollector::tokenize(const std::string& dataIn, const std::string& separator) noexcept {
-		std::string::size_type value{ 0 };
-		std::vector<std::string> dataOut{};
-		while ((value = dataIn.find_first_not_of(separator, value)) != std::string::npos) {
-			auto output = dataIn.find(separator, value);
-			dataOut.push_back(dataIn.substr(value, output - value));
-			value = output;
-		}
-		return dataOut;
-	}
-
 	bool WSMessageCollector ::parseConnectionHeader() noexcept {
 		std::string newVector = this->currentMessage;
 		if (newVector.find("\r\n\r\n") != std::string::npos) {
@@ -290,12 +279,12 @@ namespace DiscordCoreInternal {
 			if (theStopWatch.hasTimePassed()) {
 				break;
 			}
-			this->webSocket->processIO(100000);
+			std::this_thread::sleep_for(std::chrono::milliseconds{ 1 });
 			this->messageCollector.runMessageCollector();
 			auto returnData = this->messageCollector.collectFinalMessage();
 			if (returnData.theMessage != "") {
-				this->onMessageReceived(returnData.theMessage);
-			}			
+				break;
+			}
 		};
 	}
 
@@ -1176,24 +1165,6 @@ namespace DiscordCoreInternal {
 			}
 			this->onClosedExternal();
 			return size_t{};
-		}
-	}
-
-	std::vector<std::string> VoiceSocketAgent::tokenize(const std::string& dataIn, const std::string& separator) noexcept {
-		try {
-			std::vector<std::string> dataOut{};
-			for (auto value = 0; value != std::string::npos; value = static_cast<int32_t>(dataIn.find_first_not_of(separator, value))) {
-				auto output = static_cast<int32_t>(dataIn.find(separator, value));
-				dataOut.push_back(dataIn.substr(value, static_cast<std::basic_string<char, std::char_traits<char>, std::allocator<char>>::size_type>(output) - value));
-				value = output;
-			}
-			return dataOut;
-		} catch (...) {
-			if (this->printErrorMessages) {
-				DiscordCoreAPI::reportException("VoiceSocketAgent::tokenize()");
-			}
-			this->onClosedExternal();
-			return std::vector<std::string>{};
 		}
 	}
 
