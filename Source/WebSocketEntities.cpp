@@ -303,16 +303,13 @@ namespace DiscordCoreInternal {
 						  << DiscordCoreAPI::reset() << std::endl;
 			}
 			std::string theVector{};
-			std::string out{};
-			size_t size{};
+			std::string header{};
 			if (this->theFormat == DiscordCoreAPI::TextFormat::Etf) {
 				theVector = this->erlPacker.parseJsonToEtf(dataToSend);
 			} else {
 				theVector = dataToSend.dump();
 			}
-			out.resize(maxHeaderSize);
-			size = this->createHeader(reinterpret_cast<int8_t*>(out.data()), theVector.size(), this->dataOpcode);
-			std::string header(out.data(), size);
+			this->createHeader(header, theVector.size(), this->dataOpcode);
 			std::string theVectorNew{};
 			theVectorNew.insert(theVectorNew.begin(), header.begin(), header.end());
 			theVectorNew.insert(theVectorNew.begin() + header.size(), theVector.begin(), theVector.end());
@@ -325,35 +322,35 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	uint64_t BaseSocketAgent::createHeader(int8_t* outBuffer, uint64_t sendlength, WebSocketOpCode opCode) noexcept {
+	void BaseSocketAgent::createHeader(std::string& outBuffer, uint64_t sendLength, WebSocketOpCode opCode) noexcept {
 		try {
-			size_t position{ 0 };
+			outBuffer.push_back(static_cast<uint8_t>(opCode) | webSocketFinishBit);
+
 			uint32_t indexCount{ 0 };
-			outBuffer[position++] = webSocketFinishBit | static_cast<uint8_t>(opCode);
-			if (sendlength <= webSocketMaxPayloadLengthSmall) {
-				outBuffer[position++] = static_cast<uint8_t>(sendlength);
-			} else if (sendlength <= webSocketMaxPayloadLengthLarge) {
-				outBuffer[position++] = static_cast<uint8_t>(webSocketPayloadLengthMagicLarge);
+			if (sendLength <= webSocketMaxPayloadLengthSmall) {
+				outBuffer.push_back(static_cast<uint8_t>(sendLength));
+				indexCount = 0;
+			} else if (sendLength <= webSocketMaxPayloadLengthLarge) {
+				outBuffer.push_back(static_cast<uint8_t>(webSocketPayloadLengthMagicLarge));
 				indexCount = 2;
 			} else {
-				outBuffer[position++] = webSocketPayloadLengthMagicHuge;
+				outBuffer.push_back(static_cast<uint8_t>(webSocketPayloadLengthMagicHuge));
 				indexCount = 8;
 			}
 			for (int32_t x = indexCount - 1; x >= 0; x--) {
-				outBuffer[position++] = static_cast<uint8_t>(sendlength >> x * 8);
+				outBuffer.push_back(static_cast<uint8_t>(sendLength >> x * 8));
 			}
+
 			outBuffer[1] |= webSocketMaskBit;
-			outBuffer[position++] = 0;
-			outBuffer[position++] = 0;
-			outBuffer[position++] = 0;
-			outBuffer[position++] = 0;
-			return position;
+			outBuffer.push_back(0);
+			outBuffer.push_back(0);
+			outBuffer.push_back(0);
+			outBuffer.push_back(0);
 		} catch (...) {
 			if (this->printErrorMessages) {
 				DiscordCoreAPI::reportException("BaseSocketAgent::createHeader()");
 			}
 			this->onClosedExternal();
-			return uint64_t{};
 		}
 	}
 

@@ -161,7 +161,7 @@ namespace DiscordCoreInternal {
 		std::string baseUrl{};
 		uint64_t userId{};
 
-		uint64_t createHeader(int8_t* outbuf, uint64_t sendlength, WebSocketOpCode opCode) noexcept;
+		void createHeader(std::string& outbuf, uint64_t sendlength, WebSocketOpCode opCode) noexcept;
 
 		void getVoiceConnectionData(const VoiceConnectInitData& doWeCollect) noexcept;
 
