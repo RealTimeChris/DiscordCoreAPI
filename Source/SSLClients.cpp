@@ -34,10 +34,10 @@ namespace DiscordCoreInternal {
 	void reportError(const std::string& errorPosition, int32_t errorValue) noexcept {
 		std::cout << DiscordCoreAPI::shiftToBrightRed() << errorPosition << errorValue << ", ";
 #ifdef _WIN32
-		char* s{ nullptr };
+		std::unique_ptr<char> s{ nullptr };
 		FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, WSAGetLastError(),
-			MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), LPSTR(&s), 0, NULL);
-		std::cout << WSAGetLastError() << ", " << s << std::endl << DiscordCoreAPI::reset();
+			MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), s.get(), 0, NULL);
+		std::cout << WSAGetLastError() << ", " << s.get() << std::endl << DiscordCoreAPI::reset();
 #else
 		std::cout << strerror(errno) << std::endl << DiscordCoreAPI::reset();
 #endif
@@ -231,13 +231,13 @@ namespace DiscordCoreInternal {
 						reportSSLError("HttpSSLClient::processIO::SSL_write_ex() Error: ", returnValue, this->ssl);
 						reportError("HttpSSLClient::processIO::SSL_write_ex() Error: ", returnValue);
 					}
-					return false;
-				}				
-				case SSL_ERROR_WANT_READ: {
-					this->wantRead = true;
 					[[fallthrough]];
 				}
 				case SSL_ERROR_ZERO_RETURN: {
+					return false;
+				}
+				case SSL_ERROR_WANT_READ: {
+					this->wantRead = true;
 					[[fallthrough]];
 				}
 				case SSL_ERROR_WANT_WRITE: {
@@ -275,13 +275,13 @@ namespace DiscordCoreInternal {
 						reportSSLError("HttpSSLClient::processIO::SSL_read_ex() Error: ", returnValue, this->ssl);
 						reportError("HttpSSLClient::processIO::SSL_read_ex() Error: ", returnValue);
 					}
+					[[fallthrough]];
+				}
+				case SSL_ERROR_ZERO_RETURN: {
 					return false;
 				}
 				case SSL_ERROR_WANT_READ: {
 					this->wantRead = true;
-					[[fallthrough]];
-				}
-				case SSL_ERROR_ZERO_RETURN: {
 					[[fallthrough]];
 				}
 				case SSL_ERROR_WANT_WRITE: {
@@ -303,7 +303,7 @@ namespace DiscordCoreInternal {
 		: maxBufferSize(maxBufferSizeNew) {
 		this->doWePrintError = doWePrintErrorNew;
 		addrinfoWrapper resultAddress{ nullptr }, hints{ nullptr };
-		hints->ai_family = AF_UNSPEC;
+		hints->ai_family = AF_INET;
 		hints->ai_socktype = SOCK_STREAM;
 		hints->ai_protocol = IPPROTO_TCP;
 
@@ -413,7 +413,6 @@ namespace DiscordCoreInternal {
 			if (this->doWePrintError) {
 				reportError("select() Error: ", resultValue);
 			}
-			std::cout << "WERE LEAVING GONE GONE GONE!" << std::endl;
 			return false;
 		} else if (resultValue == 0) {
 			return true;
@@ -474,21 +473,24 @@ namespace DiscordCoreInternal {
 						reportSSLError("WebSocketSSLClient::processIO::SSL_write_ex() Error: ", returnValue, this->ssl);
 						reportError("WebSocketSSLClient::processIO::SSL_write_ex() Error: ", returnValue);
 					}
-					std::cout << "WERE LEAVING GONE GONE GONE!" << std::endl;
+					[[fallthrough]];
+				}
+				case SSL_ERROR_ZERO_RETURN: {
 					return false;
 				}
 				case SSL_ERROR_WANT_READ: {
 					this->wantRead = true;
 					[[fallthrough]];
 				}
-				case SSL_ERROR_ZERO_RETURN: {
-					[[fallthrough]];
-				}
 				case SSL_ERROR_WANT_WRITE: {
-					[[fallthrough]];
+					return true;
 				}
 				default: {
-					return true;
+					if (this->doWePrintError) {
+						reportSSLError("WebSocketSSLClient::processIO::SSL_write_ex() Error: ", returnValue, this->ssl);
+						reportError("WebSocketSSLClient::processIO::SSL_write_ex() Error: ", returnValue);
+					}
+					return false;
 				}
 			}
 		}
@@ -517,21 +519,24 @@ namespace DiscordCoreInternal {
 						reportSSLError("WebSocketSSLClient::processIO::SSL_read_ex() Error: ", returnValue, this->ssl);
 						reportError("WebSocketSSLClient::processIO::SSL_read_ex() Error: ", returnValue);
 					}
-					std::cout << "WERE LEAVING GONE GONE GONE!" << std::endl;
+					[[fallthrough]];
+				}
+				case SSL_ERROR_ZERO_RETURN: {
 					return false;
 				}
 				case SSL_ERROR_WANT_READ: {
 					this->wantRead = true;
 					[[fallthrough]];
 				}
-				case SSL_ERROR_ZERO_RETURN: {
-					[[fallthrough]];
-				}
 				case SSL_ERROR_WANT_WRITE: {
-					[[fallthrough]];
+					return true;
 				}
 				default: {
-					return true;
+					if (this->doWePrintError) {
+						reportSSLError("WebSocketSSLClient::processIO::SSL_read_ex() Error: ", returnValue, this->ssl);
+						reportError("WebSocketSSLClient::processIO::SSL_read_ex() Error: ", returnValue);
+					}
+					return false;
 				}
 			}
 		}
