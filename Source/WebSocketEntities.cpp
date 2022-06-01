@@ -965,7 +965,7 @@ namespace DiscordCoreInternal {
 					this->eventManager->onWebhookUpdateEvent(*dataPackage);
 				}
 			}
-			if (this->printSuccessMessages) {
+			if (this->printSuccessMessages && !payload.is_null()) {
 				std::lock_guard<std::mutex> theLock{ this->discordCoreClient->coutMutex };
 				std::cout << DiscordCoreAPI::shiftToBrightGreen() << "Message received from WebSocket " + this->shard.dump() + std::string(": ") << payload.dump() << std::endl
 						  << DiscordCoreAPI::reset() << std::endl;
