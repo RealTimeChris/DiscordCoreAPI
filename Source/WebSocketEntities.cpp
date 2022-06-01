@@ -679,7 +679,7 @@ namespace DiscordCoreInternal {
 					if (payload["d"].contains("guild_id") && !payload["d"]["guild_id"].is_null()) {
 						dataPackage->guildMemberNew.guildId = stoull(payload["d"]["guild_id"].get<std::string>());
 					}
-					if (payload["d"].contains("user") && payload["d"]["user"].contains("id")) {
+					if (payload["d"].contains("user") && payload["d"]["user"].contains("id") && !payload["d"]["user"]["id"].is_null()) {
 						dataPackage->guildMemberOld = DiscordCoreAPI::GuildMembers::getCachedGuildMemberAsync(
 							{ .guildMemberId = stoull(payload["d"]["user"]["id"].get<std::string>()), .guildId = stoull(payload["d"]["guild_id"].get<std::string>()) })
 														  .get();
