@@ -97,8 +97,6 @@ namespace DiscordCoreInternal {
 
 		bool parseHeaderAndMessage() noexcept;
 
-		uint64_t getTotalOffset() noexcept;
-
 		bool collectData() noexcept;
 	};
 
@@ -113,13 +111,15 @@ namespace DiscordCoreInternal {
 
 		BaseSocketAgent(nullptr_t) noexcept;
 
-		void sendMessage(const nlohmann::json& dataToSend) noexcept;
+		void sendMessage(const nlohmann::json& dataToSend, WebSocketOpCode opCode) noexcept;
 
 		void sendMessage(const std::string& dataToSend) noexcept;
 
+		WebSocketOpCode getOpCode() noexcept;
+
 		std::jthread* getTheTask() noexcept;
 
-		void onClosedExternal() noexcept;
+		void onClosed() noexcept;
 
 		~BaseSocketAgent() noexcept;
 
@@ -161,7 +161,7 @@ namespace DiscordCoreInternal {
 		std::string baseUrl{};
 		uint64_t userId{};
 
-		uint64_t createHeader(int8_t* outbuf, uint64_t sendlength, WebSocketOpCode opCode) noexcept;
+		void createHeader(std::string& outBuffer, uint64_t sendLength, WebSocketOpCode opCode) noexcept;
 
 		void getVoiceConnectionData(const VoiceConnectInitData& doWeCollect) noexcept;
 
@@ -188,7 +188,7 @@ namespace DiscordCoreInternal {
 
 		void sendMessage(const std::string& dataToSend) noexcept;
 
-		void onClosedExternal() noexcept;
+		void onClosed() noexcept;
 
 		~VoiceSocketAgent() noexcept;
 
