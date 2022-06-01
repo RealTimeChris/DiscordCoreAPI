@@ -97,8 +97,6 @@ namespace DiscordCoreInternal {
 
 		bool parseHeaderAndMessage() noexcept;
 
-		uint64_t getTotalOffset() noexcept;
-
 		bool collectData() noexcept;
 	};
 
@@ -216,7 +214,7 @@ namespace DiscordCoreInternal {
 		std::string baseUrl{};
 		std::string hostIp{};
 
-		uint64_t createHeader(char* outbuf, uint64_t sendlength, WebSocketOpCode opCode) noexcept;
+		void createHeader(std::string& outbuf, uint64_t sendlength, WebSocketOpCode opCode) noexcept;
 
 		void onMessageReceived(std::string theMessage) noexcept;
 

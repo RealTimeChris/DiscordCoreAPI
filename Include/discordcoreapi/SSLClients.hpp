@@ -246,16 +246,6 @@ namespace DiscordCoreInternal {
 			*this = std::move(other);
 		}
 
-		SOCKETWrapper& operator=(SOCKETWrapper& other) noexcept {
-			*this->socketPtr = *other.socketPtr;
-			*other.socketPtr = SOCKET_ERROR;
-			return *this;
-		}
-
-		SOCKETWrapper(SOCKETWrapper& other) noexcept {
-			*this = std::move(other);
-		}
-
 		SOCKETWrapper& operator=(SOCKET other) {
 			*this->socketPtr = other;
 			return *this;
