@@ -34,12 +34,11 @@ namespace DiscordCoreInternal {
 	void reportError(const std::string& errorPosition, int32_t errorValue) noexcept {
 		std::cout << DiscordCoreAPI::shiftToBrightRed() << errorPosition << errorValue << ", ";
 #ifdef _WIN32
-		std::unique_ptr<char> s{ nullptr };
-		FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, WSAGetLastError(),
-			MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), s.get(), 0, NULL);
-		std::cout << WSAGetLastError() << ", " << s.get() << std::endl << DiscordCoreAPI::reset();
+		std::unique_ptr<char[]> string{ std::make_unique<char[]>(1024) };
+		FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, WSAGetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), string.get(), 1024, NULL);
+		std::cout << WSAGetLastError() << ", " << string << std::endl << DiscordCoreAPI::reset();
 #else
-		std::cout << strerror(errno) << std::endl << DiscordCoreAPI::reset();
+		std::cout << strerror(errno) << std::endl << reset();
 #endif
 	}
 
