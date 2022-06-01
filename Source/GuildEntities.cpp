@@ -119,8 +119,9 @@ namespace DiscordCoreAPI {
 	}
 
 	bool Guild::areWeConnected() {
-		this->voiceConnectionPtr = getVoiceConnectionMap()[this->id].get();
-		return this->voiceConnectionPtr->areWeConnected();
+		
+		return getVoiceConnectionMap()[this->id]->areWeConnected();
+		
 	}
 
 	void GuildData::initialize(bool doWeShowIt) {
