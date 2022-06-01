@@ -525,7 +525,9 @@ namespace DiscordCoreInternal {
 			}
 
 			if (payload["op"] == 10) {
-				this->heartbeatInterval = payload["d"]["heartbeat_interval"];
+				if (payload["d"].contains("heartbeat_interval") && !payload["d"]["heartbeat_interval"].is_null()) {
+					this->heartbeatInterval = payload["d"]["heartbeat_interval"];
+				}
 				this->areWeHeartBeating = false;
 				if (!this->areWeAuthenticated) {
 					nlohmann::json identityJson = JSONIFY(this->botToken, static_cast<int32_t>(this->intentsValue), this->shard[0], this->shard[1]);
