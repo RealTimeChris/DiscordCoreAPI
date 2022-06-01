@@ -32,9 +32,8 @@ namespace DiscordCoreInternal {
 	constexpr uint8_t webSocketFinishBit{ (1u << 7u) };
 	constexpr uint8_t webSocketMaskBit{ (1u << 7u) };
 
-	WSMessageCollector::WSMessageCollector(WebSocketSSLClient* thePtr, WebSocketOpCode opCode) noexcept {
+	WSMessageCollector::WSMessageCollector(WebSocketSSLClient* thePtr){
 		this->theClientPtr = thePtr;
-		this->dataOpCode = opCode;
 	};
 
 	WSMessageCollectorReturnData WSMessageCollector::collectFinalMessage() noexcept {
@@ -58,8 +57,10 @@ namespace DiscordCoreInternal {
 				return this->parseConnectionHeader();
 			}
 			case WSMessageCollectorState::Initializing: {
+				this->dataOpCode = WebSocketOpCode::Op_Binary;
 				this->theState = WSMessageCollectorState::Collecting;
 				this->currentFinalMessage = WSMessageCollectorReturnData{};
+				this->theOffsets.clear();
 				return this->runMessageCollector();
 			}
 			case WSMessageCollectorState::Collecting: {
@@ -142,11 +143,11 @@ namespace DiscordCoreInternal {
 						}
 						this->messageOffset += 8;
 					}
-					while (this->currentMessage.size() < static_cast<uint64_t>(this->messageOffset + this->messageLength)) {
+					if (this->currentMessage.size() < static_cast<uint64_t>(this->messageOffset + this->messageLength)) {
 						this->theState = WSMessageCollectorState::Collecting;
-						this->runMessageCollector();
-					} 
-					{
+						this->currentRecursionDepth += 1;
+						return this->runMessageCollector();
+					} else {
 						WSMessageCollectorReturnData returnData{};
 						returnData.theMessage.insert(returnData.theMessage.begin(), this->currentMessage.begin() + this->messageOffset,
 							this->currentMessage.begin() + this->messageOffset + this->messageLength);
@@ -182,32 +183,17 @@ namespace DiscordCoreInternal {
 		return true;
 	}
 
-	void WSMessageCollector::setOpCode(WebSocketOpCode theCode) noexcept {
-		this->dataOpCode = theCode;
-	}
-
 	bool WSMessageCollector::collectData() noexcept {
 		if (this->theClientPtr != nullptr) {
 			auto theBool = this->theClientPtr->processIO(100000);
 			auto newMessage = this->theClientPtr->getInputBuffer();
 			this->currentMessage.insert(this->currentMessage.end(), newMessage.begin(), newMessage.end());
-			if (this->theState == WSMessageCollectorState::Connecting) {
-				if (!theBool) {
-					return theBool;
-				} else {
-					this->theState = WSMessageCollectorState::Parsing;
-					return this->runMessageCollector();
-				}
+			this->theOffsets.push_back(newMessage.size());
+			this->theState = WSMessageCollectorState::Parsing;
+			if (!theBool) {
+				return theBool;
 			} else {
-				if (!theBool) {
-					return theBool;
-				} else if (this->currentMessage.size() < (this->messageOffset + this->messageLength - 1)) {
-					this->theState = WSMessageCollectorState::Collecting;
-					return this->runMessageCollector();
-				} else {
-					this->theState = WSMessageCollectorState::Parsing;
-					return this->runMessageCollector();
-				}
+				return this->runMessageCollector();
 			}
 		} else {
 			return false;
@@ -1043,18 +1029,16 @@ namespace DiscordCoreInternal {
 	void BaseSocketAgent::connect() noexcept {
 		try {
 			this->webSocket = std::make_unique<WebSocketSSLClient>(this->baseUrl, "443", this->printErrorMessages);
-			this->messageCollector = WSMessageCollector{ this->webSocket.get(), this->dataOpcode };
+			this->messageCollector = WSMessageCollector{ this->webSocket.get() };
 			std::string sendString{};
 			if (this->theFormat == DiscordCoreAPI::TextFormat::Etf) {
 				sendString = "GET /?v=10&encoding=etf HTTP/1.1\r\nHost: " + this->baseUrl +
 					"\r\nPragma: no-cache\r\nUser-Agent: DiscordCoreAPI/1.0\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Key: " +
 					DiscordCoreAPI::generateBase64EncodedKey() + "\r\nSec-WebSocket-Version: 13\r\n\r\n";
-				this->messageCollector.setOpCode(WebSocketOpCode::Op_Binary);
 			} else {
 				sendString = "GET /?v=10&encoding=json HTTP/1.1\r\nHost: " + this->baseUrl +
 					"\r\nPragma: no-cache\r\nUser-Agent: DiscordCoreAPI/1.0\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Key: " +
 					DiscordCoreAPI::generateBase64EncodedKey() + "\r\nSec-WebSocket-Version: 13\r\n\r\n";
-				this->messageCollector.setOpCode(WebSocketOpCode::Op_Text);
 			}
 			this->sendMessage(sendString);
 			std::string theResult{};
@@ -1349,7 +1333,7 @@ namespace DiscordCoreInternal {
 			DiscordCoreAPI::waitForTimeToPass(this->voiceConnectionDataBuffer, this->voiceConnectionData, 20000);
 			this->baseUrl = this->voiceConnectionData.endPoint.substr(0, this->voiceConnectionData.endPoint.find(":"));
 			this->webSocket = std::make_unique<WebSocketSSLClient>(this->baseUrl, "443", this->printErrorMessages);
-			this->messageCollector = WSMessageCollector{ this->webSocket.get(), this->dataOpcode };
+			this->messageCollector = WSMessageCollector{ this->webSocket.get() };
 			std::string sendVector = "GET /?v=4 HTTP/1.1\r\nHost: " + this->baseUrl +
 				"\r\nPragma: no-cache\r\nUser-Agent: DiscordCoreAPI/1.0\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Key: " +
 				DiscordCoreAPI::generateBase64EncodedKey() + "\r\nSec-WebSocket-Version: 13\r\n\r\n";
