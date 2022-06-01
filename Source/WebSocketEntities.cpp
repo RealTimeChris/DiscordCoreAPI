@@ -423,125 +423,131 @@ namespace DiscordCoreInternal {
 				payload = nlohmann::json::parse(messageNew);
 			}
 
-			if (this->areWeCollectingData && payload["t"] == "VOICE_SERVER_UPDATE" && !this->serverUpdateCollected) {
-				if (!this->serverUpdateCollected && !this->stateUpdateCollected) {
-					this->voiceConnectionData = VoiceConnectionData{};
-					this->voiceConnectionData.endPoint = payload["d"]["endpoint"].get<std::string>();
-					this->voiceConnectionData.token = payload["d"]["token"].get<std::string>();
-					this->serverUpdateCollected = true;
-				} else {
-					this->voiceConnectionData.endPoint = payload["d"]["endpoint"].get<std::string>();
-					this->voiceConnectionData.token = payload["d"]["token"].get<std::string>();
-					if (this->voiceConnectionDataBufferMap.contains(payload["d"]["guild_id"])) {
-						this->voiceConnectionDataBufferMap[payload["d"]["guild_id"]]->send(this->voiceConnectionData);
+			if (payload.contains("t") && !payload["t"].is_null()) {
+				if (this->areWeCollectingData && payload["t"] == "VOICE_SERVER_UPDATE" && !this->serverUpdateCollected) {
+					if (!this->serverUpdateCollected && !this->stateUpdateCollected) {
+						this->voiceConnectionData = VoiceConnectionData{};
+						this->voiceConnectionData.endPoint = payload["d"]["endpoint"].get<std::string>();
+						this->voiceConnectionData.token = payload["d"]["token"].get<std::string>();
+						this->serverUpdateCollected = true;
+					} else {
+						this->voiceConnectionData.endPoint = payload["d"]["endpoint"].get<std::string>();
+						this->voiceConnectionData.token = payload["d"]["token"].get<std::string>();
+						if (this->voiceConnectionDataBufferMap.contains(payload["d"]["guild_id"])) {
+							this->voiceConnectionDataBufferMap[payload["d"]["guild_id"]]->send(this->voiceConnectionData);
+						}
+						this->serverUpdateCollected = false;
+						this->stateUpdateCollected = false;
+						this->areWeCollectingData = false;
 					}
-					this->serverUpdateCollected = false;
-					this->stateUpdateCollected = false;
-					this->areWeCollectingData = false;
 				}
-			}
 
-			if (this->areWeCollectingData && payload["t"] == "VOICE_STATE_UPDATE" && !this->stateUpdateCollected &&
-				payload["d"]["member"]["user"]["id"] == std::to_string(this->userId)) {
-				if (!this->stateUpdateCollected && !this->serverUpdateCollected) {
-					this->voiceConnectionData = VoiceConnectionData{};
-					this->voiceConnectionData.sessionId = payload["d"]["session_id"].get<std::string>();
-					this->stateUpdateCollected = true;
-				} else {
-					this->voiceConnectionData.sessionId = payload["d"]["session_id"].get<std::string>();
-					if (this->voiceConnectionDataBufferMap.contains(payload["d"]["guild_id"])) {
-						this->voiceConnectionDataBufferMap[payload["d"]["guild_id"]]->send(this->voiceConnectionData);
+				if (this->areWeCollectingData && payload["t"] == "VOICE_STATE_UPDATE" && !this->stateUpdateCollected &&
+					payload["d"]["member"]["user"]["id"] == std::to_string(this->userId)) {
+					if (!this->stateUpdateCollected && !this->serverUpdateCollected) {
+						this->voiceConnectionData = VoiceConnectionData{};
+						this->voiceConnectionData.sessionId = payload["d"]["session_id"].get<std::string>();
+						this->stateUpdateCollected = true;
+					} else {
+						this->voiceConnectionData.sessionId = payload["d"]["session_id"].get<std::string>();
+						if (this->voiceConnectionDataBufferMap.contains(payload["d"]["guild_id"])) {
+							this->voiceConnectionDataBufferMap[payload["d"]["guild_id"]]->send(this->voiceConnectionData);
+						}
+						this->serverUpdateCollected = false;
+						this->stateUpdateCollected = false;
+						this->areWeCollectingData = false;
 					}
-					this->serverUpdateCollected = false;
-					this->stateUpdateCollected = false;
-					this->areWeCollectingData = false;
+				}
+
+				if (payload["t"] == "RESUMED") {
+					this->areWeConnected.store(true);
+					this->currentReconnectTries = 0;
+					this->areWeReadyToConnectEvent.set();
+				}
+
+				if (payload["t"] == "READY") {
+					this->areWeConnected.store(true);
+					this->sessionId = payload["d"]["session_id"];
+					DiscordCoreAPI::UserData theUser{};
+					DataParser::parseObject(payload["d"]["user"], theUser);
+					this->discordCoreClient->currentUser = DiscordCoreAPI::BotUser{ theUser, this };
+					DiscordCoreAPI::Users::insertUser(theUser);
+					std::vector<DiscordCoreAPI::GuildData> theGuilds{};
+					DataParser::parseObject(payload["d"]["guilds"], theGuilds);
+					for (auto& value: theGuilds) {
+						value.discordCoreClient = this->discordCoreClient;
+						DiscordCoreAPI::Guilds::insertGuild(value);
+					}
+					this->currentReconnectTries = 0;
+					this->areWeReadyToConnectEvent.set();
+					this->areWeAuthenticated = true;
+				}
+			}
+			
+			if (payload.contains("s") && !payload["s"].is_null()) {
+				if (payload["s"] >= 0) {
+					this->lastNumberReceived = payload["s"];
 				}
 			}
 
-			if (payload["s"] >= 0) {
-				this->lastNumberReceived = payload["s"];
-			}
-
-			if (payload["t"] == "RESUMED") {
-				this->areWeConnected.store(true);
-				this->currentReconnectTries = 0;
-				this->areWeReadyToConnectEvent.set();
-			}
-
-			if (payload["t"] == "READY") {
-				this->areWeConnected.store(true);
-				this->sessionId = payload["d"]["session_id"];
-				DiscordCoreAPI::UserData theUser{};
-				DataParser::parseObject(payload["d"]["user"], theUser);
-				this->discordCoreClient->currentUser = DiscordCoreAPI::BotUser{ theUser, this };
-				DiscordCoreAPI::Users::insertUser(theUser);
-				std::vector<DiscordCoreAPI::GuildData> theGuilds{};
-				DataParser::parseObject(payload["d"]["guilds"], theGuilds);
-				for (auto& value: theGuilds) {
-					value.discordCoreClient = this->discordCoreClient;
-					DiscordCoreAPI::Guilds::insertGuild(value);
+			if (payload.contains("op") && !payload["op"].is_null()) {
+				if (payload["op"] == 1) {
+					this->sendHeartBeat();
 				}
-				this->currentReconnectTries = 0;
-				this->areWeReadyToConnectEvent.set();
-				this->areWeAuthenticated = true;
-			}
 
-			if (payload["op"] == 1) {
-				this->sendHeartBeat();
-			}
-
-			if (payload["op"] == 7) {
-				if (this->printSuccessMessages) {
-					std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Shard " + this->shard.dump() + " Reconnecting (Type 7)!" << std::endl
-							  << DiscordCoreAPI::reset() << std::endl;
-				}
-				this->areWeResuming = true;
-				this->currentReconnectTries += 1;
-				this->areWeConnected.store(false);
-				this->webSocket.reset(nullptr);
-				this->connect();
-			}
-
-			if (payload["op"] == 9) {
-				if (this->printSuccessMessages) {
-					std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Shard " + this->shard.dump() + " Reconnecting (Type 9)!" << std::endl
-							  << DiscordCoreAPI::reset() << std::endl;
-				}
-				this->currentReconnectTries += 1;
-				std::mt19937_64 randomEngine{ static_cast<uint64_t>(std::chrono::system_clock::now().time_since_epoch().count()) };
-				int32_t numOfMsToWait =
-					static_cast<int32_t>(1000.0f + ((static_cast<float>(randomEngine()) / static_cast<float>(randomEngine.max())) * static_cast<float>(4000.0f)));
-				std::this_thread::sleep_for(std::chrono::milliseconds{ numOfMsToWait });
-				if (payload["d"] == true) {
-					nlohmann::json identityJson = JSONIFY(this->botToken, static_cast<int32_t>(this->intentsValue), this->shard[0], this->shard[1]);
-					this->sendMessage(identityJson);
-				} else {
+				if (payload["op"] == 7) {
+					if (this->printSuccessMessages) {
+						std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Shard " + this->shard.dump() + " Reconnecting (Type 7)!" << std::endl
+								  << DiscordCoreAPI::reset() << std::endl;
+					}
+					this->areWeResuming = true;
+					this->currentReconnectTries += 1;
 					this->areWeConnected.store(false);
 					this->webSocket.reset(nullptr);
-					this->areWeResuming = false;
-					this->areWeAuthenticated = false;
 					this->connect();
 				}
-			}
 
-			if (payload["op"] == 10) {
-				if (payload["d"].contains("heartbeat_interval") && !payload["d"]["heartbeat_interval"].is_null()) {
-					this->heartbeatInterval = payload["d"]["heartbeat_interval"];
+				if (payload["op"] == 9) {
+					if (this->printSuccessMessages) {
+						std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Shard " + this->shard.dump() + " Reconnecting (Type 9)!" << std::endl
+								  << DiscordCoreAPI::reset() << std::endl;
+					}
+					this->currentReconnectTries += 1;
+					std::mt19937_64 randomEngine{ static_cast<uint64_t>(std::chrono::system_clock::now().time_since_epoch().count()) };
+					int32_t numOfMsToWait =
+						static_cast<int32_t>(1000.0f + ((static_cast<float>(randomEngine()) / static_cast<float>(randomEngine.max())) * static_cast<float>(4000.0f)));
+					std::this_thread::sleep_for(std::chrono::milliseconds{ numOfMsToWait });
+					if (payload["d"] == true) {
+						nlohmann::json identityJson = JSONIFY(this->botToken, static_cast<int32_t>(this->intentsValue), this->shard[0], this->shard[1]);
+						this->sendMessage(identityJson);
+					} else {
+						this->areWeConnected.store(false);
+						this->webSocket.reset(nullptr);
+						this->areWeResuming = false;
+						this->areWeAuthenticated = false;
+						this->connect();
+					}
 				}
-				this->areWeHeartBeating = false;
-				if (!this->areWeAuthenticated) {
-					nlohmann::json identityJson = JSONIFY(this->botToken, static_cast<int32_t>(this->intentsValue), this->shard[0], this->shard[1]);
-					this->sendMessage(identityJson);
+
+				if (payload["op"] == 10) {
+					if (payload["d"].contains("heartbeat_interval") && !payload["d"]["heartbeat_interval"].is_null()) {
+						this->heartbeatInterval = payload["d"]["heartbeat_interval"];
+					}
+					this->areWeHeartBeating = false;
+					if (!this->areWeAuthenticated) {
+						nlohmann::json identityJson = JSONIFY(this->botToken, static_cast<int32_t>(this->intentsValue), this->shard[0], this->shard[1]);
+						this->sendMessage(identityJson);
+					}
+					if (this->areWeResuming) {
+						std::this_thread::sleep_for(std::chrono::milliseconds{ 1500 });
+						nlohmann::json resumePayload = JSONIFY(this->botToken, this->sessionId, this->lastNumberReceived);
+						this->sendMessage(resumePayload);
+					}
 				}
-				if (this->areWeResuming) {
-					std::this_thread::sleep_for(std::chrono::milliseconds{ 1500 });
-					nlohmann::json resumePayload = JSONIFY(this->botToken, this->sessionId, this->lastNumberReceived);
-					this->sendMessage(resumePayload);
+				if (payload["op"] == 11) {
+					this->haveWeReceivedHeartbeatAck = true;
 				}
-			}
-			if (payload["op"] == 11) {
-				this->haveWeReceivedHeartbeatAck = true;
-			}
+			}			
 
 			if (payload.contains("d") && !payload["d"].is_null() && payload.contains("t") && !payload["t"].is_null()) {
 				if (payload["t"] == "APPLICATION_COMMAND_CREATE") {
@@ -708,7 +714,7 @@ namespace DiscordCoreInternal {
 					DiscordCoreInternal::DataParser::parseObject(payload["d"]["role"], dataPackage->roleNew);
 					if (payload["d"].contains("role") && !payload["d"]["role"].is_null()) {
 						dataPackage->roleOld =
-							DiscordCoreAPI::Roles::getCachedRoleAsync({ .guildId = dataPackage->guildId, .roleId = stoull(payload["d"]["role_id"].get<std::string>()) }).get();
+							DiscordCoreAPI::Roles::getCachedRoleAsync({ .guildId = dataPackage->guildId, .roleId = stoull(payload["d"]["role"]["id"].get<std::string>()) }).get();
 						dataPackage->roleNew = dataPackage->roleOld;
 					}
 					this->eventManager->onRoleUpdateEvent(*dataPackage);
@@ -1188,14 +1194,13 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void VoiceSocketAgent::onMessageReceived(std::string theMessage) noexcept {
+	void VoiceSocketAgent::onMessageReceived(const std::string& theMessage) noexcept {
 		try {
-			std::string message = theMessage;
-			nlohmann::json payload = payload.parse(message);
+			nlohmann::json payload = payload.parse(theMessage);
 			if (this->printSuccessMessages) {
-				std::cout << DiscordCoreAPI::shiftToBrightGreen() << "Message received from Voice WebSocket: " << message << std::endl << DiscordCoreAPI::reset() << std::endl;
+				std::cout << DiscordCoreAPI::shiftToBrightGreen() << "Message received from Voice WebSocket: " << theMessage << std::endl << DiscordCoreAPI::reset() << std::endl;
 			}
-			if (payload.contains("op")) {
+			if (payload.contains("op") && !payload["op"].is_null()) {
 				if (payload["op"] == 6) {
 					this->haveWeReceivedHeartbeatAck = true;
 				};

@@ -216,7 +216,7 @@ namespace DiscordCoreInternal {
 
 		void createHeader(std::string& outbuf, uint64_t sendlength, WebSocketOpCode opCode) noexcept;
 
-		void onMessageReceived(std::string theMessage) noexcept;
+		void onMessageReceived(const std::string& theMessage) noexcept;
 
 		void run(std::stop_token) noexcept;
 
