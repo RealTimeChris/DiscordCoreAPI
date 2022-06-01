@@ -119,9 +119,7 @@ namespace DiscordCoreAPI {
 	}
 
 	bool Guild::areWeConnected() {
-		
 		return getVoiceConnectionMap()[this->id]->areWeConnected();
-		
 	}
 
 	void GuildData::initialize(bool doWeShowIt) {
