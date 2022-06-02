@@ -286,6 +286,7 @@ namespace DiscordCoreInternal {
 				if (stopWatch.hasTimePassed()) {
 					return;
 				}
+				std::this_thread::sleep_for(std::chrono::milliseconds{ 1 });
 			}
 			std::lock_guard<std::mutex> accessLock{ this->accessorMutex01 };
 			if (this->printSuccessMessages) {
@@ -1045,6 +1046,7 @@ namespace DiscordCoreInternal {
 			while (theResult == "") {
 				this->messageCollector.runMessageCollector();
 				theResult = this->messageCollector.collectFinalMessage().theMessage;
+				std::this_thread::sleep_for(std::chrono::milliseconds{ 1 });
 			}
 			this->onMessageReceived(theResult);
 		} catch (...) {
@@ -1185,6 +1187,7 @@ namespace DiscordCoreInternal {
 				if (this->voiceSocket) {
 					this->voiceSocket->readData(true);
 				}
+				std::this_thread::sleep_for(std::chrono::milliseconds{ 1 });
 			}
 		} catch (...) {
 			if (this->printErrorMessages) {
