@@ -39,7 +39,8 @@ namespace DiscordCoreAPI {
 		workload.relativePath =
 			"/interactions/" + std::to_string(dataPackage.interactionPackage.interactionId) + "/" + dataPackage.interactionPackage.interactionToken + "/callback";
 		if (dataPackage.data.data.files.size() > 0) {
-			constructMultiPartData(workload, nlohmann::json::parse(DiscordCoreInternal::JSONIFY(dataPackage.data)), dataPackage.data.data.files);
+			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
+			workload.content = constructMultiPartData(nlohmann::json::parse(DiscordCoreInternal::JSONIFY(dataPackage.data)), dataPackage.data.data.files);
 		} else {
 			workload.content = DiscordCoreInternal::JSONIFY(dataPackage.data);
 		}
@@ -75,7 +76,8 @@ namespace DiscordCoreAPI {
 		workload.relativePath =
 			"/webhooks/" + std::to_string(dataPackage.interactionPackage.applicationId) + "/" + dataPackage.interactionPackage.interactionToken + "/messages/@original";
 		if (dataPackage.data.files.size() > 0) {
-			constructMultiPartData(workload, nlohmann::json::parse(DiscordCoreInternal::JSONIFY(dataPackage.data)), dataPackage.data.files);
+			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
+			workload.content = constructMultiPartData(nlohmann::json::parse(DiscordCoreInternal::JSONIFY(dataPackage.data)), dataPackage.data.files);
 		} else {
 			workload.content = DiscordCoreInternal::JSONIFY(dataPackage.data);
 		}
@@ -104,7 +106,8 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Post;
 		workload.relativePath = "/webhooks/" + std::to_string(dataPackage.interactionPackage.applicationId) + "/" + dataPackage.interactionPackage.interactionToken;
 		if (dataPackage.files.size() > 0) {
-			constructMultiPartData(workload, nlohmann::json::parse(DiscordCoreInternal::JSONIFY(dataPackage)), dataPackage.files);
+			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
+			workload.content = constructMultiPartData(nlohmann::json::parse(DiscordCoreInternal::JSONIFY(dataPackage)), dataPackage.files);
 		} else {
 			workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
 		}
@@ -134,7 +137,8 @@ namespace DiscordCoreAPI {
 		workload.relativePath = "/webhooks/" + std::to_string(dataPackage.interactionPackage.applicationId) + "/" + dataPackage.interactionPackage.interactionToken + "/messages/" +
 			std::to_string(dataPackage.messagePackage.messageId);
 		if (dataPackage.data.files.size() > 0) {
-			constructMultiPartData(workload, nlohmann::json::parse(DiscordCoreInternal::JSONIFY(dataPackage.data)), dataPackage.data.files);
+			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
+			workload.content = constructMultiPartData(nlohmann::json::parse(DiscordCoreInternal::JSONIFY(dataPackage.data)), dataPackage.data.files);
 		} else {
 			workload.content = DiscordCoreInternal::JSONIFY(dataPackage.data);
 		}

@@ -172,7 +172,8 @@ namespace DiscordCoreAPI {
 			workload.relativePath += "?thread_id=" + std::to_string(dataPackage.threadId);
 		}
 		if (dataPackage.files.size() > 0) {
-			constructMultiPartData(workload, nlohmann::json::parse(DiscordCoreInternal::JSONIFY(dataPackage)), dataPackage.files);
+			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
+			workload.content = constructMultiPartData(nlohmann::json::parse(DiscordCoreInternal::JSONIFY(dataPackage)), dataPackage.files);
 		} else {
 			workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
 		}
@@ -204,7 +205,8 @@ namespace DiscordCoreAPI {
 			workload.relativePath += "?thread_id=" + std::to_string(dataPackage.threadId);
 		}
 		if (dataPackage.files.size() > 0) {
-			constructMultiPartData(workload, nlohmann::json::parse(DiscordCoreInternal::JSONIFY(dataPackage)), dataPackage.files);
+			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
+			workload.content = constructMultiPartData(nlohmann::json::parse(DiscordCoreInternal::JSONIFY(dataPackage)), dataPackage.files);
 		} else {
 			workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
 		}

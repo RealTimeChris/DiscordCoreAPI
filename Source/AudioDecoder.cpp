@@ -268,21 +268,21 @@ namespace DiscordCoreInternal {
 					return;
 				}
 				if (this->packet->stream_index == this->audioStreamIndex) {
-					int32_t ret = avcodec_send_packet(this->audioDecodeContext, this->packet);
-					if (ret < 0) {
+					int32_t returnValue = avcodec_send_packet(this->audioDecodeContext, this->packet);
+					if (returnValue < 0) {
 						char charString[32];
-						av_strerror(ret, charString, 32);
-						std::string newString = "Error submitting a packet for decoding (" + std::to_string(ret) + "), " + charString + ".";
+						av_strerror(returnValue, charString, 32);
+						std::string newString = "Error submitting a packet for decoding (" + std::to_string(returnValue) + "), " + charString + ".";
 						this->haveWeFailedBool.store(true);
 						if (this->doWePrintError) {
 							std::cout << DiscordCoreAPI::shiftToBrightRed() << newString << DiscordCoreAPI::reset() << std::endl;
 						}
 						return;
 					}
-					if (ret >= 0) {
-						ret = avcodec_receive_frame(this->audioDecodeContext, this->frame);
-						if (ret < 0) {
-							std::string newString = "Error during decoding (" + std::to_string(ret) + ")";
+					if (returnValue >= 0) {
+						returnValue = avcodec_receive_frame(this->audioDecodeContext, this->frame);
+						if (returnValue < 0) {
+							std::string newString = "Error during decoding (" + std::to_string(returnValue) + ")";
 							this->haveWeFailedBool.store(true);
 							if (this->doWePrintError) {
 								std::cout << DiscordCoreAPI::shiftToBrightRed() << newString << DiscordCoreAPI::reset() << std::endl;
@@ -321,7 +321,7 @@ namespace DiscordCoreInternal {
 							rawFrame02.sampleCount = newFrame->nb_samples;
 							this->outDataBuffer.send(rawFrame02);
 						}
-						if (ret < 0 || newFrame->nb_samples == 0) {
+						if (returnValue < 0 || newFrame->nb_samples == 0) {
 							this->haveWeFailedBool.store(true);
 							if (this->doWePrintError) {
 								std::cout << DiscordCoreAPI::shiftToBrightRed() << "Return value is less than zero!" << DiscordCoreAPI::reset() << std::endl;
@@ -344,7 +344,6 @@ namespace DiscordCoreInternal {
 			if (this->doWePrintSuccess) {
 				std::cout << DiscordCoreAPI::shiftToBrightGreen() << "Completed decoding!" << std::endl << DiscordCoreAPI::reset() << std::endl;
 			}
-			return;
 		}
 		return;
 	}

@@ -662,9 +662,9 @@ namespace DiscordCoreAPI {
 	DiscordCoreAPI_Dll std::string getISO8601TimeStamp(const std::string& year, const std::string& month, const std::string& day, const std::string& hour,
 		const std::string& minute, const std::string& second);
 
-	DiscordCoreAPI_Dll void constructMultiPartData(DiscordCoreInternal::HttpWorkloadData& dataPackage, nlohmann::json theData, const std::vector<File>& files);
-
 	DiscordCoreAPI_Dll void reportException(const std::string& stackTrace, UnboundedMessageBlock<std::exception>* sendBuffer = nullptr, bool rethrow = false);
+
+	DiscordCoreAPI_Dll std::string constructMultiPartData(nlohmann::json theData, const std::vector<File>& files);
 
 	DiscordCoreAPI_Dll std::string convertTimeInMsToDateTimeString(int64_t timeInMs, TimeFormat timeFormat);
 

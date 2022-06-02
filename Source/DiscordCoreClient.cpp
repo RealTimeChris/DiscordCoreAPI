@@ -49,10 +49,12 @@ namespace DiscordCoreAPI {
 
 	void atexitHandler() {
 		Globals::doWeQuit.store(true);
+		std::exit(EXIT_SUCCESS);
 	}
 
 	void signalHandler(int32_t sig_int) {
 		Globals::doWeQuit.store(true);
+		std::exit(EXIT_SUCCESS);
 	}
 
 	DiscordCoreClient::DiscordCoreClient(DiscordCoreClientConfig configData) {

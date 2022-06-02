@@ -59,8 +59,7 @@ namespace DiscordCoreAPI {
 		return theTimeStamp;
 	}
 
-	void constructMultiPartData(DiscordCoreInternal::HttpWorkloadData& dataPackage, nlohmann::json theData, const std::vector<File>& files) {
-		dataPackage.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
+	std::string constructMultiPartData(nlohmann::json theData, const std::vector<File>& files) {
 		const std::string boundary("boundary25");
 		const std::string partStart("--" + boundary + "\r\nContent-Type: application/octet-stream\r\nContent-Disposition: form-data; ");
 
@@ -79,7 +78,7 @@ namespace DiscordCoreAPI {
 			}
 		}
 		content += "\r\n--" + boundary + "--";
-		dataPackage.content = content;
+		return content;
 	}
 
 	void reportException(const std::string& stackTrace, UnboundedMessageBlock<std::exception>* sendBuffer, bool rethrow) {
@@ -241,8 +240,7 @@ namespace DiscordCoreAPI {
 		std::ifstream file(filePath, std::ios::in | std::ios::binary);
 		std::ostringstream stream{};
 		stream << file.rdbuf();
-		std::string theString = stream.str();
-		return theString;
+		return stream.str();
 	}
 
 	std::string utf8MakeValid(const std::string& inputString) {
@@ -250,9 +248,13 @@ namespace DiscordCoreAPI {
 		for (auto& value: inputString) {
 			if (value >= 128) {
 				returnString.push_back(value - 128);
+			} else if (value < 0) {
+				int32_t theDifference = 0 - value;
+				returnString.push_back(value + theDifference);
 			} else {
 				returnString.push_back(value);
 			}
+			
 		}
 		return returnString;
 	}

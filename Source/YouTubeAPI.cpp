@@ -155,9 +155,12 @@ namespace DiscordCoreInternal {
 			downloadBaseUrl = newSong.finalDownloadUrls[0].urlPath.substr(newSong.finalDownloadUrls[0].urlPath.find("https://") + newString00.length(),
 				newSong.finalDownloadUrls[0].urlPath.find("/videoplayback?") - newString00.length());
 		}
-		std::string request = "GET " + newSong.finalDownloadUrls[0].urlPath +
-			" HTTP/1.1\n\rUser-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.88 Safari/537.36\n\r" +
-			"Host: " + newSong.finalDownloadUrls[0].urlPath.substr(0, newSong.finalDownloadUrls[0].urlPath.find(".com") + 4) + "\n\r\n\r";
+		std::string request = "GET " + DiscordCoreAPI::urlDecode(newSong.finalDownloadUrls[0].urlPath) +
+			" HTTP/1.1\n\rUser-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.88 Safari/537.36\n\r";
+		
+		request += "Authority: " + downloadBaseUrl + "\n\r";
+		std::string downloadBaseUrlNew = newSong.finalDownloadUrls[0].urlPath.substr(newSong.finalDownloadUrls[0].urlPath.find("/videoplayback?"));
+		request += "Path: " + downloadBaseUrlNew + "\n\r\n\r";
 		DiscordCoreAPI::DownloadUrl downloadUrl01{};
 		downloadUrl01.contentSize = 0;
 		downloadUrl01.urlPath = downloadBaseUrl;
@@ -378,7 +381,7 @@ namespace DiscordCoreInternal {
 
 	std::string YouTubeRequestBuilder::setDownloadUrl(const DiscordCoreAPI::YouTubeFormat& format) {
 		std::string downloadUrl = format.downloadUrl;
-		downloadUrl = DiscordCoreAPI::urlDecode(downloadUrl) + "&ratebypass=yes";
+		downloadUrl = DiscordCoreAPI::urlDecode(downloadUrl);
 		if (format.signature != "") {
 			downloadUrl += "&sig=" + format.signature;
 		}
@@ -473,7 +476,10 @@ namespace DiscordCoreInternal {
 	}
 
 	void YouTubeAPI::downloadAndStreamAudio(const DiscordCoreAPI::Song& newSong, YouTubeAPI* youtubeAPI, std::stop_token theToken, int32_t currentRecursionDepth) {
-		DiscordCoreInternal::WebSocketSSLClient streamSocket{ newSong.finalDownloadUrls[0].urlPath, "443", this->doWePrintWebSocketError, this->maxBufferSize };
+		DiscordCoreInternal::WebSocketSSLClient streamSocket{ newSong.finalDownloadUrls[0].urlPath, "443", this->doWePrintWebSocketError, true };
+		
+		std::cout << "THE URL: " << newSong.finalDownloadUrls[0].urlPath << std::endl;
+		std::cout << "THE URL: " << newSong.finalDownloadUrls[1].urlPath << std::endl;
 		bool areWeDoneHeaders{ false };
 		bool haveWeFailed{ false };
 		int64_t remainingDownloadContentLength{ newSong.contentLength };
@@ -483,7 +489,6 @@ namespace DiscordCoreInternal {
 		int32_t sameCounter{ 0 };
 		int32_t counter{ 0 };
 		const int32_t oneSecond{ 1000000 };
-		const int32_t ms600{ 600000 };
 		const int32_t minimumIterations{ 9 };
 		const int32_t maximumIterations{ 20 };
 		BuildAudioDecoderData dataPackage{};
@@ -494,7 +499,7 @@ namespace DiscordCoreInternal {
 		std::unique_ptr<AudioDecoder> audioDecoder = std::make_unique<AudioDecoder>(dataPackage);
 		AudioEncoder audioEncoder{};
 		streamSocket.writeData(newSong.finalDownloadUrls[1].urlPath);
-		if (!streamSocket.processIO(ms600)) {
+		if (!streamSocket.processIO(oneSecond)) {
 			haveWeFailed = true;
 			this->breakOutPlayMore(theToken, std::move(audioDecoder), haveWeFailed, counter, this, newSong, currentRecursionDepth);
 			return;
@@ -575,7 +580,7 @@ namespace DiscordCoreInternal {
 						}
 						bytesReadTotal01 = streamSocket.getBytesRead();
 						remainingDownloadContentLength = newSong.contentLength - bytesReadTotal01;
-						if (!streamSocket.processIO(ms600)) {
+						if (!streamSocket.processIO(oneSecond)) {
 							haveWeFailed = true;
 							this->breakOutPlayMore(theToken, std::move(audioDecoder), haveWeFailed, counter, this, newSong, currentRecursionDepth);
 							return;

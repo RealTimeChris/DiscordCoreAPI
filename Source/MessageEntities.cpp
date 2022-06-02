@@ -122,7 +122,8 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Post;
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/messages";
 		if (dataPackage.files.size() > 0) {
-			constructMultiPartData(workload, nlohmann::json::parse(DiscordCoreInternal::JSONIFY(dataPackage)), dataPackage.files);
+			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
+			workload.content = constructMultiPartData(nlohmann::json::parse(DiscordCoreInternal::JSONIFY(dataPackage)), dataPackage.files);
 		} else {
 			workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
 		}
@@ -150,7 +151,8 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Patch;
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/messages/" + std::to_string(dataPackage.messageId);
 		if (dataPackage.files.size() > 0) {
-			constructMultiPartData(workload, nlohmann::json::parse(DiscordCoreInternal::JSONIFY(dataPackage)), dataPackage.files);
+			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
+			workload.content = constructMultiPartData(nlohmann::json::parse(DiscordCoreInternal::JSONIFY(dataPackage)), dataPackage.files);
 		} else {
 			workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
 		}

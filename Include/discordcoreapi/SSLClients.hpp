@@ -302,7 +302,7 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll WebSocketSSLClient {
 	  public:
 
-		WebSocketSSLClient(const std::string& baseUrl, const std::string& port, bool doWePrintError, int64_t maxBufferSize = 16 * 1024) noexcept;
+		WebSocketSSLClient(const std::string& baseUrlNew, const std::string& portNew, bool doWePrintErrorNew, bool ipv6) noexcept;
 
 		WebSocketSSLClient() noexcept = default;
 
@@ -332,11 +332,13 @@ namespace DiscordCoreInternal {
 
 		DatagramSocketSSLClient() noexcept = default;
 
-		bool writeData(std::string& dataToWrite) noexcept;
+		bool writeData(const std::string& data) noexcept;
 
 		std::string& getInputBuffer() noexcept;
 
-		void readData(bool doWeClear) noexcept;
+		bool readData(bool doWeClear) noexcept;
+
+		int64_t getBytesRead() noexcept;
 
 	  protected:
 		const int32_t maxBufferSize{ 1024 * 16 };
@@ -344,5 +346,6 @@ namespace DiscordCoreInternal {
 		BIOWrapper datagramBio{ nullptr };
 		bool doWePrintError{ false };
 		std::string inputBuffer{};
+		int64_t bytesRead{ 0 };
 	};
 }// namespace DiscordCoreInternal
