@@ -161,10 +161,9 @@ namespace DiscordCoreInternal {
 		if (this->outputBuffer.size() > 0 && !this->wantRead) {
 			FD_SET(this->theSocket, &writeSet);
 			nfds = this->theSocket > nfds ? this->theSocket : nfds;
-		} else {
-			FD_SET(this->theSocket, &readSet);
-			nfds = this->theSocket > nfds ? this->theSocket : nfds;
 		}
+		FD_SET(this->theSocket, &readSet);
+		nfds = this->theSocket > nfds ? this->theSocket : nfds;
 
 		timeval checkTime{ .tv_usec = 1000 };
 		if (auto resultValue = select(nfds + 1, &readSet, &writeSet, nullptr, &checkTime); resultValue == SOCKET_ERROR) {
@@ -213,48 +212,9 @@ namespace DiscordCoreInternal {
 #endif
 
 #ifdef _WIN32
-		if (FD_ISSET(this->theSocket, &writeSet)) {
+		if (FD_ISSET(this->theSocket, &readSet)) {
 #else
-		if (writing) {
-#endif
-			size_t writtenBytes{ 0 };
-			auto returnValue{ SSL_write_ex(this->ssl, this->outputBuffer.data(), this->outputBuffer.size(), &writtenBytes) };
-			auto errorValue{ SSL_get_error(this->ssl, returnValue) };
-			switch (errorValue) {
-				case SSL_ERROR_NONE: {
-					this->outputBuffer.clear();
-					return true;
-				}
-				case SSL_ERROR_SYSCALL: {
-					if (this->doWePrintError) {
-						reportSSLError("HttpSSLClient::processIO::SSL_write_ex() Error: ", returnValue, this->ssl);
-						reportError("HttpSSLClient::processIO::SSL_write_ex() Error: ", returnValue);
-					}
-					[[fallthrough]];
-				}
-				case SSL_ERROR_ZERO_RETURN: {
-					return false;
-				}
-				case SSL_ERROR_WANT_READ: {
-					this->wantRead = true;
-					[[fallthrough]];
-				}
-				case SSL_ERROR_WANT_WRITE: {
-					return true;
-				}
-				default: {
-					if (this->doWePrintError) {
-						reportSSLError("HttpSSLClient::processIO::SSL_write_ex() Error: ", returnValue, this->ssl);
-						reportError("HttpSSLClient::processIO::SSL_write_ex() Error: ", returnValue);
-					}
-					return false;
-				}
-			}
-		}
-#ifdef _WIN32
-		else if (FD_ISSET(this->theSocket, &readSet)) {
-#else
-		else {
+		if (!writing) {
 #endif
 			this->wantRead = false;
 			std::string serverToClientBuffer{};
@@ -290,6 +250,45 @@ namespace DiscordCoreInternal {
 					if (this->doWePrintError) {
 						reportSSLError("HttpSSLClient::processIO::SSL_read_ex() Error: ", returnValue, this->ssl);
 						reportError("HttpSSLClient::processIO::SSL_read_ex() Error: ", returnValue);
+					}
+					return false;
+				}
+			}
+		}
+#ifdef _WIN32
+		else if (FD_ISSET(this->theSocket, &writeSet)) {
+#else
+		else {
+#endif
+			size_t writtenBytes{ 0 };
+			auto returnValue{ SSL_write_ex(this->ssl, this->outputBuffer.data(), this->outputBuffer.size(), &writtenBytes) };
+			auto errorValue{ SSL_get_error(this->ssl, returnValue) };
+			switch (errorValue) {
+				case SSL_ERROR_NONE: {
+					this->outputBuffer.clear();
+					return true;
+				}
+				case SSL_ERROR_SYSCALL: {
+					if (this->doWePrintError) {
+						reportSSLError("HttpSSLClient::processIO::SSL_write_ex() Error: ", returnValue, this->ssl);
+						reportError("HttpSSLClient::processIO::SSL_write_ex() Error: ", returnValue);
+					}
+					[[fallthrough]];
+				}
+				case SSL_ERROR_ZERO_RETURN: {
+					return false;
+				}
+				case SSL_ERROR_WANT_READ: {
+					this->wantRead = true;
+					[[fallthrough]];
+				}
+				case SSL_ERROR_WANT_WRITE: {
+					return true;
+				}
+				default: {
+					if (this->doWePrintError) {
+						reportSSLError("HttpSSLClient::processIO::SSL_write_ex() Error: ", returnValue, this->ssl);
+						reportError("HttpSSLClient::processIO::SSL_write_ex() Error: ", returnValue);
 					}
 					return false;
 				}
@@ -397,15 +396,12 @@ namespace DiscordCoreInternal {
 		FD_ZERO(&writeSet);
 		FD_ZERO(&readSet);
 
-		bool writing{ false };
 		if (this->outputBuffer.size() > 0 && !this->wantRead) {
-			writing = true;
 			FD_SET(this->theSocket, &writeSet);
 			nfds = this->theSocket > nfds ? this->theSocket : nfds;
-		} else {
-			FD_SET(this->theSocket, &readSet);
-			nfds = this->theSocket > nfds ? this->theSocket : nfds;
 		}
+		FD_SET(this->theSocket, &readSet);
+		nfds = this->theSocket > nfds ? this->theSocket : nfds;
 
 		timeval checkTime{ .tv_usec = waitTimeInMicroSeconds };
 		if (auto resultValue = select(nfds + 1, &readSet, &writeSet, nullptr, &checkTime); resultValue == SOCKET_ERROR) {
@@ -454,49 +450,9 @@ namespace DiscordCoreInternal {
 #endif
 
 #ifdef _WIN32
-		if (FD_ISSET(this->theSocket, &writeSet)) {
+		if (FD_ISSET(this->theSocket, &readSet)) {
 #else
-		if (writing) {
-#endif
-			this->wantRead = false;
-			size_t writtenBytes{ 0 };
-			auto returnValue{ SSL_write_ex(this->ssl, this->outputBuffer.data(), this->outputBuffer.size(), &writtenBytes) };
-			auto errorValue{ SSL_get_error(this->ssl, returnValue) };
-			switch (errorValue) {
-				case SSL_ERROR_NONE: {
-					this->outputBuffer.clear();
-					return true;
-				}
-				case SSL_ERROR_SYSCALL: {
-					if (this->doWePrintError) {
-						reportSSLError("WebSocketSSLClient::processIO::SSL_write_ex() Error: ", returnValue, this->ssl);
-						reportError("WebSocketSSLClient::processIO::SSL_write_ex() Error: ", returnValue);
-					}
-					[[fallthrough]];
-				}
-				case SSL_ERROR_ZERO_RETURN: {
-					return false;
-				}
-				case SSL_ERROR_WANT_READ: {
-					this->wantRead = true;
-					[[fallthrough]];
-				}
-				case SSL_ERROR_WANT_WRITE: {
-					return true;
-				}
-				default: {
-					if (this->doWePrintError) {
-						reportSSLError("WebSocketSSLClient::processIO::SSL_write_ex() Error: ", returnValue, this->ssl);
-						reportError("WebSocketSSLClient::processIO::SSL_write_ex() Error: ", returnValue);
-					}
-					return false;
-				}
-			}
-		}
-#ifdef _WIN32
-		else if (FD_ISSET(this->theSocket, &readSet)) {
-#else
-		else {
+		if (!writing) {
 #endif
 			this->wantRead = false;
 			std::string serverToClientBuffer{};
@@ -534,6 +490,46 @@ namespace DiscordCoreInternal {
 					if (this->doWePrintError) {
 						reportSSLError("WebSocketSSLClient::processIO::SSL_read_ex() Error: ", returnValue, this->ssl);
 						reportError("WebSocketSSLClient::processIO::SSL_read_ex() Error: ", returnValue);
+					}
+					return false;
+				}
+			}
+		}
+#ifdef _WIN32
+		else if (FD_ISSET(this->theSocket, &writeSet)) {
+#else
+		else {
+#endif
+			this->wantRead = false;
+			size_t writtenBytes{ 0 };
+			auto returnValue{ SSL_write_ex(this->ssl, this->outputBuffer.data(), this->outputBuffer.size(), &writtenBytes) };
+			auto errorValue{ SSL_get_error(this->ssl, returnValue) };
+			switch (errorValue) {
+				case SSL_ERROR_NONE: {
+					this->outputBuffer.clear();
+					return true;
+				}
+				case SSL_ERROR_SYSCALL: {
+					if (this->doWePrintError) {
+						reportSSLError("WebSocketSSLClient::processIO::SSL_write_ex() Error: ", returnValue, this->ssl);
+						reportError("WebSocketSSLClient::processIO::SSL_write_ex() Error: ", returnValue);
+					}
+					[[fallthrough]];
+				}
+				case SSL_ERROR_ZERO_RETURN: {
+					return false;
+				}
+				case SSL_ERROR_WANT_READ: {
+					this->wantRead = true;
+					[[fallthrough]];
+				}
+				case SSL_ERROR_WANT_WRITE: {
+					return true;
+				}
+				default: {
+					if (this->doWePrintError) {
+						reportSSLError("WebSocketSSLClient::processIO::SSL_write_ex() Error: ", returnValue, this->ssl);
+						reportError("WebSocketSSLClient::processIO::SSL_write_ex() Error: ", returnValue);
 					}
 					return false;
 				}
