@@ -320,6 +320,7 @@ namespace DiscordCoreInternal {
 						if (theCurrentString.size() >= youtubeAPI->maxBufferSize) {
 							submissionString.insert(submissionString.begin(), theCurrentString.begin(), theCurrentString.begin() + youtubeAPI->maxBufferSize);
 							theCurrentString.erase(theCurrentString.begin(), theCurrentString.begin() + youtubeAPI->maxBufferSize);
+						} else {
 							submissionString = theCurrentString;
 							theCurrentString.erase(theCurrentString.begin(), theCurrentString.end());
 						}
