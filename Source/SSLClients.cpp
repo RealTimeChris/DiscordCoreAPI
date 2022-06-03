@@ -403,167 +403,153 @@ namespace DiscordCoreInternal {
 			}
 			return;
 		}
-
-		this->areWeConnected = true;
 	};
 
 	bool WebSocketSSLClient::processIO(int32_t waitTimeInMicroSeconds) noexcept {
-		if (!this->areWeConnected) {
 #ifdef _WIN32
-			fd_set writeSet{}, readSet{};
-			int32_t nfds{ 0 };
-			FD_ZERO(&writeSet);
-			FD_ZERO(&readSet);
+		fd_set writeSet{}, readSet{};
+		int32_t nfds{ 0 };
+		FD_ZERO(&writeSet);
+		FD_ZERO(&readSet);
 
-			if (this->outputBuffer.size() > 0 && !this->wantRead) {
-				FD_SET(this->theSocket, &writeSet);
-				nfds = this->theSocket > nfds ? this->theSocket : nfds;
-			}
-			FD_SET(this->theSocket, &readSet);
+		if (this->outputBuffer.size() > 0 && !this->wantRead) {
+			FD_SET(this->theSocket, &writeSet);
 			nfds = this->theSocket > nfds ? this->theSocket : nfds;
-
-			timeval checkTime{ .tv_usec = waitTimeInMicroSeconds };
-			if (auto resultValue = select(nfds + 1, &readSet, &writeSet, nullptr, &checkTime); resultValue == SOCKET_ERROR) {
-				if (this->doWePrintError) {
-					reportError("select() Error: ", resultValue);
-				}
-				this->areWeConnected = false;
-				return false;
-			} else if (resultValue == 0) {
-				return true;
-			}
-#else
-			epoll_event writeEvent{}, readEvent{}, events[1]{};
-			epollWrapper epoll{ nullptr };
-			bool writing{ false };
-
-			if (this->outputBuffer.size() > 0 && !this->wantRead) {
-				writing = true;
-				writeEvent.events = EPOLLOUT;
-				writeEvent.data.fd = this->theSocket;
-				if (auto resultValue = epoll_ctl(epoll, EPOLL_CTL_ADD, this->theSocket, &writeEvent); resultValue == SOCKET_ERROR) {
-					if (this->doWePrintError) {
-						reportError("epoll_ctl() Error: ", resultValue);
-					}
-					this->areWeConnected = false;
-					return false;
-				}
-			} else {
-				readEvent.events = EPOLLIN;
-				readEvent.data.fd = this->theSocket;
-				if (auto resultValue = epoll_ctl(epoll, EPOLL_CTL_ADD, this->theSocket, &readEvent); resultValue == SOCKET_ERROR) {
-					if (this->doWePrintError) {
-						reportError("epoll_ctl() Error: ", resultValue);
-					}
-					this->areWeConnected = false;
-					return false;
-				}
-			}
-
-			if (auto resultValue = epoll_wait(epoll, events, 1, waitTimeInMicroSeconds / 1000); resultValue == SOCKET_ERROR) {
-				if (this->doWePrintError) {
-					reportError("epoll_wait() Error: ", resultValue);
-				}
-				this->areWeConnected = false;
-				return false;
-			} else if (resultValue == 0) {
-				return true;
-			}
-
-#endif
-
-#ifdef _WIN32
-			if (FD_ISSET(this->theSocket, &readSet)) {
-#else
-			if (!writing) {
-#endif
-				this->wantRead = false;
-				std::string serverToClientBuffer{};
-				serverToClientBuffer.resize(this->maxBufferSize);
-				size_t readBytes{ 0 };
-				auto returnValue{ SSL_read_ex(this->ssl, serverToClientBuffer.data(), this->maxBufferSize, &readBytes) };
-				auto errorValue{ SSL_get_error(this->ssl, returnValue) };
-				switch (errorValue) {
-					case SSL_ERROR_NONE: {
-						if (readBytes > 0) {
-							this->inputBuffer.insert(this->inputBuffer.end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
-						}
-						return true;
-					}
-					case SSL_ERROR_SYSCALL: {
-						[[fallthrough]];
-					}
-					case SSL_ERROR_ZERO_RETURN: {
-						if (this->doWePrintError) {
-							reportSSLError("WebSocketSSLClient::processIO::SSL_read_ex() Error: ", returnValue, this->ssl);
-							reportError("WebSocketSSLClient::processIO::SSL_read_ex() Error: ", returnValue);
-						}
-						this->areWeConnected = false;
-						return false;
-					}
-					case SSL_ERROR_WANT_READ: {
-						this->wantRead = true;
-						[[fallthrough]];
-					}
-					case SSL_ERROR_WANT_WRITE: {
-						return true;
-					}
-					default: {
-						if (this->doWePrintError) {
-							reportSSLError("WebSocketSSLClient::processIO::SSL_read_ex() Error: ", returnValue, this->ssl);
-							reportError("WebSocketSSLClient::processIO::SSL_read_ex() Error: ", returnValue);
-						}
-						this->areWeConnected = false;
-						return false;
-					}
-				}
-			}
-#ifdef _WIN32
-			else if (FD_ISSET(this->theSocket, &writeSet)) {
-#else
-			else {
-#endif
-				this->wantRead = false;
-				size_t writtenBytes{ 0 };
-				auto returnValue{ SSL_write_ex(this->ssl, this->outputBuffer.data(), this->outputBuffer.size(), &writtenBytes) };
-				auto errorValue{ SSL_get_error(this->ssl, returnValue) };
-				switch (errorValue) {
-					case SSL_ERROR_NONE: {
-						this->outputBuffer.clear();
-						return true;
-					}
-					case SSL_ERROR_SYSCALL: {
-						[[fallthrough]];
-					}
-					case SSL_ERROR_ZERO_RETURN: {
-						if (this->doWePrintError) {
-							reportSSLError("WebSocketSSLClient::processIO::SSL_write_ex() Error: ", returnValue, this->ssl);
-							reportError("WebSocketSSLClient::processIO::SSL_write_ex() Error: ", returnValue);
-						}
-						this->areWeConnected = false;
-						return false;
-					}
-					case SSL_ERROR_WANT_READ: {
-						this->wantRead = true;
-						[[fallthrough]];
-					}
-					case SSL_ERROR_WANT_WRITE: {
-						return true;
-					}
-					default: {
-						if (this->doWePrintError) {
-							reportSSLError("WebSocketSSLClient::processIO::SSL_write_ex() Error: ", returnValue, this->ssl);
-							reportError("WebSocketSSLClient::processIO::SSL_write_ex() Error: ", returnValue);
-						}
-						this->areWeConnected = false;
-						return false;
-					}
-				}
-			}
-			return true;
-		} else {
-			return false;
 		}
+		FD_SET(this->theSocket, &readSet);
+		nfds = this->theSocket > nfds ? this->theSocket : nfds;
+
+		timeval checkTime{ .tv_usec = waitTimeInMicroSeconds };
+		if (auto resultValue = select(nfds + 1, &readSet, &writeSet, nullptr, &checkTime); resultValue == SOCKET_ERROR) {
+			if (this->doWePrintError) {
+				reportError("select() Error: ", resultValue);
+			}
+			return false;
+		} else if (resultValue == 0) {
+			return true;
+		}
+#else
+		epoll_event writeEvent{}, readEvent{}, events[1]{};
+		epollWrapper epoll{ nullptr };
+		bool writing{ false };
+
+		if (this->outputBuffer.size() > 0 && !this->wantRead) {
+			writing = true;
+			writeEvent.events = EPOLLOUT;
+			writeEvent.data.fd = this->theSocket;
+			if (auto resultValue = epoll_ctl(epoll, EPOLL_CTL_ADD, this->theSocket, &writeEvent); resultValue == SOCKET_ERROR) {
+				if (this->doWePrintError) {
+					reportError("epoll_ctl() Error: ", resultValue);
+				}
+				return false;
+			}
+		} else {
+			readEvent.events = EPOLLIN;
+			readEvent.data.fd = this->theSocket;
+			if (auto resultValue = epoll_ctl(epoll, EPOLL_CTL_ADD, this->theSocket, &readEvent); resultValue == SOCKET_ERROR) {
+				if (this->doWePrintError) {
+					reportError("epoll_ctl() Error: ", resultValue);
+				}
+				return false;
+			}
+		}
+
+		if (auto resultValue = epoll_wait(epoll, events, 1, waitTimeInMicroSeconds / 1000); resultValue == SOCKET_ERROR) {
+			if (this->doWePrintError) {
+				reportError("epoll_wait() Error: ", resultValue);
+			}
+			return false;
+		} else if (resultValue == 0) {
+			return true;
+		}
+
+#endif
+
+#ifdef _WIN32
+		if (FD_ISSET(this->theSocket, &readSet)) {
+#else
+		if (!writing) {
+#endif
+			this->wantRead = false;
+			std::string serverToClientBuffer{};
+			serverToClientBuffer.resize(this->maxBufferSize);
+			size_t readBytes{ 0 };
+			auto returnValue{ SSL_read_ex(this->ssl, serverToClientBuffer.data(), this->maxBufferSize, &readBytes) };
+			auto errorValue{ SSL_get_error(this->ssl, returnValue) };
+			switch (errorValue) {
+				case SSL_ERROR_NONE: {
+					if (readBytes > 0) {
+						this->inputBuffer.insert(this->inputBuffer.end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
+					}
+					return true;
+				}
+				case SSL_ERROR_SYSCALL: {
+					[[fallthrough]];
+				}
+				case SSL_ERROR_ZERO_RETURN: {
+					if (this->doWePrintError) {
+						reportSSLError("WebSocketSSLClient::processIO::SSL_read_ex() Error: ", returnValue, this->ssl);
+						reportError("WebSocketSSLClient::processIO::SSL_read_ex() Error: ", returnValue);
+					}
+					return false;
+				}
+				case SSL_ERROR_WANT_READ: {
+					this->wantRead = true;
+					[[fallthrough]];
+				}
+				case SSL_ERROR_WANT_WRITE: {
+					return true;
+				}
+				default: {
+					if (this->doWePrintError) {
+						reportSSLError("WebSocketSSLClient::processIO::SSL_read_ex() Error: ", returnValue, this->ssl);
+						reportError("WebSocketSSLClient::processIO::SSL_read_ex() Error: ", returnValue);
+					}
+					return false;
+				}
+			}
+		}
+#ifdef _WIN32
+		else if (FD_ISSET(this->theSocket, &writeSet)) {
+#else
+		else {
+#endif
+			this->wantRead = false;
+			size_t writtenBytes{ 0 };
+			auto returnValue{ SSL_write_ex(this->ssl, this->outputBuffer.data(), this->outputBuffer.size(), &writtenBytes) };
+			auto errorValue{ SSL_get_error(this->ssl, returnValue) };
+			switch (errorValue) {
+				case SSL_ERROR_NONE: {
+					this->outputBuffer.clear();
+					return true;
+				}
+				case SSL_ERROR_SYSCALL: {
+					[[fallthrough]];
+				}
+				case SSL_ERROR_ZERO_RETURN: {
+					if (this->doWePrintError) {
+						reportSSLError("WebSocketSSLClient::processIO::SSL_write_ex() Error: ", returnValue, this->ssl);
+						reportError("WebSocketSSLClient::processIO::SSL_write_ex() Error: ", returnValue);
+					}
+					return false;
+				}
+				case SSL_ERROR_WANT_READ: {
+					this->wantRead = true;
+					[[fallthrough]];
+				}
+				case SSL_ERROR_WANT_WRITE: {
+					return true;
+				}
+				default: {
+					if (this->doWePrintError) {
+						reportSSLError("WebSocketSSLClient::processIO::SSL_write_ex() Error: ", returnValue, this->ssl);
+						reportError("WebSocketSSLClient::processIO::SSL_write_ex() Error: ", returnValue);
+					}
+					return false;
+				}
+			}
+		}
+		return true;
 	}
 
 	void WebSocketSSLClient::writeData(const std::string& data) noexcept {
@@ -578,10 +564,6 @@ namespace DiscordCoreInternal {
 
 	int64_t WebSocketSSLClient::getBytesRead() noexcept {
 		return this->bytesRead;
-	}
-
-	bool WebSocketSSLClient::didWeConnect() noexcept{
-		return this->areWeConnected;
 	}
 
 	DatagramSocketSSLClient::DatagramSocketSSLClient(const std::string& baseUrlNew, const std::string& portNew, bool doWePrintErrorNew) noexcept {

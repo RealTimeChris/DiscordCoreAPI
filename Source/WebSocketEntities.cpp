@@ -90,7 +90,6 @@ namespace DiscordCoreInternal {
 			this->theState = WSMessageCollectorState::Initializing;
 			this->currentMessage.clear();
 			this->currentMessage.insert(this->currentMessage.end(), newVector.begin(), newVector.end());
-			this->currentRecursionDepth += 1;
 			return this->runMessageCollector();
 		} else {
 			this->theState = WSMessageCollectorState::Collecting;
@@ -197,7 +196,6 @@ namespace DiscordCoreInternal {
 			if (!theBool) {
 				return theBool;
 			} else {
-				this->currentRecursionDepth += 1;
 				return this->runMessageCollector();
 			}
 		} else {
@@ -228,11 +226,7 @@ namespace DiscordCoreInternal {
 		this->theTask = std::make_unique<std::jthread>([this](std::stop_token theToken) {
 			this->run(theToken);
 		});
-		DiscordCoreAPI::StopWatch<std::chrono::milliseconds> theStopWatch{ std::chrono::milliseconds{ 5000 } };
 		while (!this->areWeConnected.load()) {
-			if (theStopWatch.hasTimePassed()) {
-				break;
-			}
 			std::this_thread::sleep_for(std::chrono::milliseconds{ 1 });
 		}
 	}
@@ -252,7 +246,7 @@ namespace DiscordCoreInternal {
 			if (this->printErrorMessages) {
 				DiscordCoreAPI::reportException("BaseSocketAgent::sendMessage()");
 			}
-			this->handleDroppedConnection();
+			this->onClosedExternal();
 		}
 	}
 
@@ -260,7 +254,7 @@ namespace DiscordCoreInternal {
 		return this->theTask.get();
 	}
 
-	void BaseSocketAgent::initDisconnect() noexcept {
+	void BaseSocketAgent::sendCloseFrame() noexcept {
 		std::string theString{};
 		theString.push_back(static_cast<int8_t>(WebSocketOpCode::Op_Close) | static_cast<int8_t>(webSocketFinishBit));
 		theString.push_back(0);
@@ -285,43 +279,10 @@ namespace DiscordCoreInternal {
 				break;
 			}
 			auto returnData = this->messageCollector.collectFinalMessage();
-			this->dataOpcode = returnData.opCode;
-			if (this->dataOpcode == WebSocketOpCode::Op_Close) {
+			if (returnData.theMessage != "") {
 				break;
 			}
 		};
-		this->doWeQuit->store(true);
-	}
-
-	void BaseSocketAgent::respondToDisconnect() noexcept {
-		std::string theString{};
-		theString.push_back(static_cast<int8_t>(WebSocketOpCode::Op_Close) | static_cast<int8_t>(webSocketFinishBit));
-		theString.push_back(0);
-		theString.push_back(static_cast<int8_t>(static_cast<uint16_t>(1000) >> 8));
-		theString.push_back(static_cast<int8_t>(1000 & 0xff));
-		if (this->webSocket != nullptr) {
-			this->webSocket->writeData(theString);
-			for (int32_t x = 0; x < 10; x += 1) {
-				if (!this->webSocket->processIO(100000)) {
-					break;
-				}
-			}
-		}
-		if (this->closeCode == static_cast<uint16_t>(ReconnectPossible::Yes)) {
-			this->handleDroppedConnection();
-		};
-	}
-
-	void BaseSocketAgent::handleDroppedConnection() noexcept {
-		if (this->currentReconnectTries <= this->maxReconnectTries) {
-			this->currentReconnectTries += 1;
-			this->areWeConnected.store(false);
-			this->webSocket.reset(nullptr);
-			this->didWeConnect = false;
-			this->connect();
-		} else {
-			this->doWeQuit->store(true);
-		}
 	}
 
 	void BaseSocketAgent::sendMessage(const nlohmann::json& dataToSend) noexcept {
@@ -355,7 +316,7 @@ namespace DiscordCoreInternal {
 			if (this->printErrorMessages) {
 				DiscordCoreAPI::reportException("BaseSocketAgent::sendMessage()");
 			}
-			this->handleDroppedConnection();
+			this->onClosedExternal();
 		}
 	}
 
@@ -387,7 +348,7 @@ namespace DiscordCoreInternal {
 			if (this->printErrorMessages) {
 				DiscordCoreAPI::reportException("BaseSocketAgent::createHeader()");
 			}
-			this->handleDroppedConnection();
+			this->onClosedExternal();
 		}
 	}
 
@@ -418,7 +379,7 @@ namespace DiscordCoreInternal {
 			if (this->printErrorMessages) {
 				DiscordCoreAPI::reportException("BaseSocketAgent::getVoiceConnectionData()");
 			}
-			this->handleDroppedConnection();
+			this->onClosedExternal();
 		}
 	}
 
@@ -427,17 +388,6 @@ namespace DiscordCoreInternal {
 			this->connect();
 			DiscordCoreAPI::StopWatch stopWatch{ std::chrono::milliseconds{ 0 } };
 			while (!theToken.stop_requested() && !this->doWeQuit->load()) {
-				if (!this->didWeConnect) {
-					this->currentReconnectTries += 1;
-					if (this->currentReconnectTries >= this->maxReconnectTries) {
-						std::cout << "WERE LEAVING LEAVING LEAVING!" << std::endl;
-						this->doWeQuit->store(true);
-					} else {
-						std::cout << "WERE LEAVING LEAVING LEAVING!020202" << std::endl;
-						this->connect();
-					}					
-					continue;
-				}
 				if (this->heartbeatInterval != 0 && !this->areWeHeartBeating) {
 					this->areWeHeartBeating = true;
 					stopWatch = DiscordCoreAPI::StopWatch{ std::chrono::milliseconds{ this->heartbeatInterval } };
@@ -447,28 +397,20 @@ namespace DiscordCoreInternal {
 					this->sendHeartBeat();
 				}
 				if (!this->messageCollector.runMessageCollector()) {
-					this->handleDroppedConnection();
+					this->onClosedExternal();
 				}
 				auto theReturnMessage = this->messageCollector.collectFinalMessage();
-				if (theReturnMessage.closeCode != static_cast<uint16_t>(WebSocketCloseCode::None) || theReturnMessage.opCode == WebSocketOpCode::Op_Close) {
-					this->closeCode = theReturnMessage.closeCode;
-					this->dataOpcode = theReturnMessage.opCode;
-					this->respondToDisconnect();
-				}
 				if (theReturnMessage.theMessage != "") {
 					this->onMessageReceived(theReturnMessage.theMessage);
 				}
 				std::this_thread::sleep_for(std::chrono::milliseconds{ 1 });
 			}
-			if (this->didWeConnect) {
-				this->initDisconnect();
-			}			
-			std::cout << "WERE LEAVING LEAVING LEAVING!0303030404" << std::endl;
+			this->sendCloseFrame();
 		} catch (...) {
 			if (this->printErrorMessages) {
 				DiscordCoreAPI::reportException("BaseSocketAgent::run()");
 			}
-			this->handleDroppedConnection();
+			this->onClosedExternal();
 		}
 	}
 
@@ -566,6 +508,10 @@ namespace DiscordCoreInternal {
 								  << DiscordCoreAPI::reset() << std::endl;
 					}
 					this->areWeResuming = true;
+					this->currentReconnectTries += 1;
+					this->areWeConnected.store(false);
+					this->webSocket.reset(nullptr);
+					this->connect();
 				}
 
 				if (payload["op"] == 9) {
@@ -582,9 +528,11 @@ namespace DiscordCoreInternal {
 						nlohmann::json identityJson = JSONIFY(this->botToken, static_cast<int32_t>(this->intentsValue), this->shard[0], this->shard[1]);
 						this->sendMessage(identityJson);
 					} else {
-						this->handleDroppedConnection();
+						this->areWeConnected.store(false);
+						this->webSocket.reset(nullptr);
 						this->areWeResuming = false;
 						this->areWeAuthenticated = false;
+						this->connect();
 					}
 				}
 
@@ -1040,7 +988,7 @@ namespace DiscordCoreInternal {
 			if (this->printErrorMessages) {
 				DiscordCoreAPI::reportException("BaseSocketAgent::onMessageReceived()");
 			}
-			this->handleDroppedConnection();
+			this->onClosedExternal();
 			return;
 		}
 	}
@@ -1052,24 +1000,42 @@ namespace DiscordCoreInternal {
 				this->sendMessage(heartbeat);
 				this->haveWeReceivedHeartbeatAck = false;
 			} else {
-				this->handleDroppedConnection();
+				this->onClosedExternal();
 			}
 		} catch (...) {
 			if (this->printErrorMessages) {
 				DiscordCoreAPI::reportException("BaseSocketAgent::sendHeartBeat()");
 			}
-			this->handleDroppedConnection();
+			this->onClosedExternal();
+		}
+	}
+
+	void BaseSocketAgent::onClosedExternal() noexcept {
+		this->areWeReadyToConnectEvent.reset();
+		if (this->maxReconnectTries > this->currentReconnectTries) {
+			if (this->printErrorMessages) {
+				std::cout << DiscordCoreAPI::shiftToBrightRed() << "WebSocket " + this->shard.dump() + " Closed; Code: " << this->closeCode << DiscordCoreAPI::reset() << std::endl;
+			}
+			this->closeCode = 0;
+			this->sendCloseFrame();
+			this->areWeConnected.store(false);
+			this->currentReconnectTries += 1;
+			this->areWeAuthenticated = false;
+			this->haveWeReceivedHeartbeatAck = true;
+			this->webSocket.reset(nullptr);
+			if (this->closeCode & static_cast<int16_t>(ReconnectPossible::Yes)) {
+				this->connect();
+			} else {
+				this->doWeQuit->store(true);
+			}
+		} else if (this->maxReconnectTries <= this->currentReconnectTries) {
+			this->theTask->request_stop();
 		}
 	}
 
 	void BaseSocketAgent::connect() noexcept {
 		try {
 			this->webSocket = std::make_unique<WebSocketSSLClient>(this->baseUrl, "443", this->printErrorMessages);
-			if (!this->webSocket->didWeConnect()) {
-				this->didWeConnect = false;
-				std::cout << "WERE HERE THIS IS IT!" << std::endl;
-				return;
-			}
 			this->messageCollector = WSMessageCollector{ this->webSocket.get() };
 			std::string sendString{};
 			if (this->theFormat == DiscordCoreAPI::TextFormat::Etf) {
@@ -1092,12 +1058,11 @@ namespace DiscordCoreInternal {
 				std::this_thread::sleep_for(std::chrono::milliseconds{ 1 });
 			}
 			this->onMessageReceived(theResult);
-			this->didWeConnect = true;
 		} catch (...) {
 			if (this->printErrorMessages) {
 				DiscordCoreAPI::reportException("BaseSocketAgent::connect()");
 			}
-			this->handleDroppedConnection();
+			this->onClosedExternal();
 		}
 	}
 

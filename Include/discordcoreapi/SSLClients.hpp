@@ -322,14 +322,11 @@ namespace DiscordCoreInternal {
 
 		int64_t getBytesRead() noexcept;
 
-		bool didWeConnect() noexcept;
-		
 	  protected:
 		int64_t maxBufferSize{ 1024 * 16 };
 		SOCKETWrapper theSocket{ nullptr };
 		SSL_CTXWrapper context{ nullptr };
 		bool doWePrintError{ false };
-		bool areWeConnected{ false };
 		std::string outputBuffer{};
 		SSLWrapper ssl{ nullptr };
 		std::string inputBuffer{};

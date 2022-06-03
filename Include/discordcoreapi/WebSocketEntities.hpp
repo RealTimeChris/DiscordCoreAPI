@@ -33,7 +33,6 @@ namespace DiscordCoreInternal {
 
 	/// Websocket close codes. \brief Websocket close codes.
 	enum class WebSocketCloseCode : int16_t {
-		None = 0,///< None.
 		Normal_Close = 1000,///< Normal close.
 		Unknown_Error = 4000,///<	We're not sure what went wrong. Try reconnecting?	true
 		Unknown_Opcode = 4001,///< You sent an invalid Gateway opcode or an invalid payload for an opcode. Don't do that!	true
@@ -118,6 +117,8 @@ namespace DiscordCoreInternal {
 
 		std::jthread* getTheTask() noexcept;
 
+		void onClosedExternal() noexcept;
+
 		~BaseSocketAgent() noexcept;
 
 	  protected:
@@ -150,7 +151,6 @@ namespace DiscordCoreInternal {
 		int32_t heartbeatInterval{ 0 };
 		std::mutex accessorMutex01{};
 		bool areWeResuming{ false };
-		bool didWeConnect{ false };
 		std::string sessionId{};
 		uint16_t closeCode{ 0 };
 		nlohmann::json shard{};
@@ -165,13 +165,9 @@ namespace DiscordCoreInternal {
 
 		void onMessageReceived(std::string theMessage) noexcept;
 
-		void handleDroppedConnection() noexcept;
-		
-		void respondToDisconnect() noexcept;
-
 		void run(std::stop_token) noexcept;
 
-		void initDisconnect() noexcept;
+		void sendCloseFrame() noexcept;
 
 		void sendHeartBeat() noexcept;
 
