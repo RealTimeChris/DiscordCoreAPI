@@ -25,6 +25,14 @@
 #include <discordcoreapi/CoRoutine.hpp>
 #include <discordcoreapi/InputEvents.hpp>
 
+#ifdef max
+	#undef max
+#endif
+
+#ifdef min
+	#undef min
+#endif
+
 namespace DiscordCoreAPI {
 
 	std::string getISO8601TimeStamp(const std::string& year, const std::string& month, const std::string& day, const std::string& hour, const std::string& minute,
@@ -256,13 +264,6 @@ namespace DiscordCoreAPI {
 			}
 			
 		}
-		return returnString;
-	}
-
-	std::string urlDecode(const std::string& inputString) {
-		CURLUWrapper urlHandle = curl_url();
-		int32_t outLength{ 0 };
-		std::string returnString = curl_easy_unescape(urlHandle, inputString.c_str(), static_cast<int32_t>(inputString.length()), &outLength);
 		return returnString;
 	}
 

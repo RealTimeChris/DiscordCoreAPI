@@ -3532,6 +3532,7 @@ namespace DiscordCoreInternal {
 	template<> void DataParser::parseObject(const nlohmann::json& jsonObjectData, std::vector<DiscordCoreAPI::YouTubeFormat>& pDataStructure) {
 		if (!jsonObjectData.is_null()) {
 			if (jsonObjectData.contains("streamingData") && !jsonObjectData["streamingData"].is_null() && jsonObjectData["streamingData"].contains("formats") &&
+				std::cout<< "WERE HERE THIS IS IT!"<< std::endl;
 				!jsonObjectData["streamingData"]["formats"].is_null()) {
 				for (auto& value: jsonObjectData["streamingData"]["formats"]) {
 					DiscordCoreAPI::YouTubeFormat newData{};
@@ -3574,6 +3575,10 @@ namespace DiscordCoreInternal {
 
 					if (value.contains("itag") && !value["itag"].is_null()) {
 						newData.itag = value["itag"].get<int32_t>();
+					}
+
+					if (value.contains("url") && !value["url"].is_null()) {
+						newData.downloadUrl= value["url"].get<std::string>();
 					}
 
 					if (value.contains("mimeType") && !value["mimeType"].is_null()) {

@@ -44,28 +44,6 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::Song constructDownloadInfo(const DiscordCoreAPI::GuildMemberData& guildMember, DiscordCoreAPI::Song& newSong);
 
 		DiscordCoreAPI::Song constructFinalDownloadUrl(DiscordCoreAPI::Song& newSong);
-
-		std::vector<char> sliceVector(const std::vector<char>& vectorToSlice, int32_t firstElement, int32_t lastElement = 0);
-
-		std::vector<char> swapHeadAndPosition(std::vector<char>& inputVector, int32_t position);
-
-		DiscordCoreAPI::YouTubeFormat decipherFormat(DiscordCoreAPI::YouTubeFormat& format, const std::string& html5playerFile);
-
-		std::string decipher(const std::vector<std::string>& tokens, const std::string& cipherSignature);
-
-		std::vector<std::string> extractActions(const std::string& html5PlayerPageBody);
-
-		std::vector<char> reverseString(std::vector<char>& stringToReverse);
-
-		std::string between(const std::string& body, const std::string& left, const std::string& right);
-
-		std::vector<std::string> getTokens(const std::string& html5PlayerFile);
-
-		std::vector<char> splitString(const std::string& stringToSplit);
-
-		std::string joinString(const std::vector<char>& stringToJoin);
-
-		std::string setDownloadUrl(const DiscordCoreAPI::YouTubeFormat& format);
 	};
 
 	class DiscordCoreAPI_Dll YouTubeAPI {

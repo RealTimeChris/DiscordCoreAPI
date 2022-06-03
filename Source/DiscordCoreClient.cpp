@@ -59,7 +59,6 @@ namespace DiscordCoreAPI {
 
 	DiscordCoreClient::DiscordCoreClient(DiscordCoreClientConfig configData) {
 		std::atexit(atexitHandler);
-		curl_global_init(CURL_GLOBAL_NOTHING);
 		std::signal(SIGTERM, &signalHandler);
 		std::signal(SIGSEGV, &signalHandler);
 		std::signal(SIGINT, &signalHandler);
@@ -203,11 +202,7 @@ namespace DiscordCoreAPI {
 		return this->httpClient->submitWorkloadAndGetResult<GatewayBotData>(workload);
 	}
 
-	DiscordCoreClient::~DiscordCoreClient() {
-		if (this) {
-			curl_global_cleanup();
-		}
-	}
+	DiscordCoreClient::~DiscordCoreClient() {}
 
 
 }

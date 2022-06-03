@@ -39,7 +39,6 @@ target_include_directories(
 	"$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Include/>"
 )
 
-include(FindCurl)
 include(FindFFMPEG)
 include(FindNlohmannJson)
 include(FindOpenSSL)
@@ -48,7 +47,6 @@ include(FindSodium)
 
 target_link_libraries(
 	"${LIB_NAME}" PUBLIC
-	$<$<TARGET_EXISTS:CURL::Curl>:CURL::Curl>
 	$<$<TARGET_EXISTS:FFMPEG::AVFormat>:FFMPEG::AVFormat>
 	$<$<TARGET_EXISTS:FFMPEG::AVCodec>:FFMPEG::AVCodec>
 	$<$<TARGET_EXISTS:FFMPEG::AVUtil>:FFMPEG::AVUtil>

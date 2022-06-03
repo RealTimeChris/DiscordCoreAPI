@@ -28,7 +28,7 @@ namespace DiscordCoreInternal {
 		this->totalFileSize = dataPackage.totalFileSize;
 	}
 
-	void AudioDecoder::submitDataForDecoding(const std::string& dataToDecode) {
+	void AudioDecoder::submitDataForDecoding(std::string dataToDecode) {
 		this->inputDataBuffer.send(dataToDecode);
 	}
 

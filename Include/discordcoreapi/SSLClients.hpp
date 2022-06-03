@@ -45,6 +45,14 @@
 #include <openssl/err.h>
 #include <openssl/ssl.h>
 
+#ifdef max
+	#undef max
+#endif
+
+#ifdef min
+	#undef min
+#endif
+
 namespace DiscordCoreInternal {
 
 	using SOCKET = int32_t;

@@ -49,7 +49,6 @@
 #include <condition_variable>
 #include <nlohmann/json.hpp>
 #include <unordered_map>
-#include <curl/curl.h>
 #include <functional>
 #include <semaphore>
 #include <coroutine>
@@ -168,68 +167,6 @@ namespace DiscordCoreAPI {
 	template<typename ReturnType, typename... ArgTypes> class Event;
 	template<typename ReturnType, typename... ArgTypes> class EventDelegate;
 	template<typename ReturnType> class CoRoutine;
-
-	struct DiscordCoreAPI_Dll CURLWrapper {
-		struct DiscordCoreAPI_Dll CURLDeleter {
-			void operator()(CURL* other) {
-				if (other) {
-					curl_easy_cleanup(other);
-					other = nullptr;
-				}
-			}
-		};
-
-		CURLWrapper& operator=(CURL* other) {
-			this->thePtr.reset(other);
-			return *this;
-		}
-
-		CURLWrapper(CURL* other) {
-			*this = other;
-		}
-
-		operator CURL*() {
-			return this->thePtr.get();
-		}
-
-		CURLWrapper(nullptr_t other) {
-			*this = other;
-		}
-
-	  protected:
-		std::unique_ptr<CURL, CURLDeleter> thePtr{ nullptr, CURLDeleter{} };
-	};
-
-	struct DiscordCoreAPI_Dll CURLUWrapper {
-		struct DiscordCoreAPI_Dll CURLUDeleter {
-			void operator()(CURLU* other) {
-				if (other) {
-					curl_url_cleanup(other);
-					other = nullptr;
-				}
-			}
-		};
-
-		CURLUWrapper& operator=(CURLU* other) {
-			this->thePtr.reset(other);
-			return *this;
-		}
-
-		CURLUWrapper(CURLU* other) {
-			*this = other;
-		}
-
-		operator CURLU*() {
-			return this->thePtr.get();
-		}
-
-		CURLUWrapper(nullptr_t other) {
-			*this = other;
-		}
-
-	  protected:
-		std::unique_ptr<CURLU, CURLUDeleter> thePtr{ nullptr, CURLUDeleter{} };
-	};
 
 	template<typename ObjectType> class ReferenceCountingPtr {
 	  public:
@@ -681,8 +618,6 @@ namespace DiscordCoreAPI {
 	DiscordCoreAPI_Dll std::string utf8MakeValid(const std::string& inputString);
 
 	DiscordCoreAPI_Dll std::string urlEncode(const std::string& inputString);
-
-	DiscordCoreAPI_Dll std::string urlDecode(const std::string& inputString);
 
 	DiscordCoreAPI_Dll void spinLock(int64_t timeInNsToSpinLockFor);
 
