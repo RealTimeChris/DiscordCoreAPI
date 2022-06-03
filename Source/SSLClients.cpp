@@ -38,7 +38,7 @@ namespace DiscordCoreInternal {
 		FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, WSAGetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), string.get(), 1024, NULL);
 		std::cout << WSAGetLastError() << ", " << string << std::endl << DiscordCoreAPI::reset();
 #else
-		std::cout << strerror(errno) << std::endl << reset();
+		std::cout << strerror(errno) << std::endl << DiscordCoreAPI::reset();
 #endif
 	}
 
