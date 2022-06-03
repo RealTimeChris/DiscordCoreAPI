@@ -24,11 +24,11 @@
 
 namespace DiscordCoreInternal {
 
-	constexpr uint16_t webSocketMaxPayloadLengthLarge{ 65535 };
-	constexpr uint8_t webSocketPayloadLengthMagicLarge{ 126 };
-	constexpr uint8_t webSocketPayloadLengthMagicHuge{ 127 };
-	constexpr uint8_t maxHeaderSize{ sizeof(uint64_t) + 2 };
-	constexpr uint8_t webSocketMaxPayloadLengthSmall{ 125 };
+	constexpr uint16_t webSocketMaxPayloadLengthLarge{ 65535u };
+	constexpr uint8_t webSocketPayloadLengthMagicLarge{ 126u };
+	constexpr uint8_t webSocketPayloadLengthMagicHuge{ 127u };
+	constexpr uint8_t maxHeaderSize{ sizeof(uint64_t) + 2u };
+	constexpr uint8_t webSocketMaxPayloadLengthSmall{ 125u };
 	constexpr uint8_t webSocketFinishBit{ (1u << 7u) };
 	constexpr uint8_t webSocketMaskBit{ (1u << 7u) };
 
@@ -155,6 +155,7 @@ namespace DiscordCoreInternal {
 						returnData.theMessage.insert(returnData.theMessage.begin(), this->currentMessage.begin() + this->messageOffset,
 							this->currentMessage.begin() + this->messageOffset + this->messageLength);
 						this->finalMessages.push(returnData);
+						returnData.opCode = this->dataOpCode;
 						this->currentMessage.erase(this->currentMessage.begin(), this->currentMessage.begin() + this->messageOffset + this->messageLength);
 						this->theState = WSMessageCollectorState::Serving;
 						return this->runMessageCollector();
@@ -170,7 +171,7 @@ namespace DiscordCoreInternal {
 					while (this->finalMessages.size() > 0) {
 						this->finalMessages.pop();
 					}
-					this->finalMessages.push(WSMessageCollectorReturnData{ .closeCode = static_cast<uint8_t>(close) });
+					this->finalMessages.push(WSMessageCollectorReturnData{ .opCode = this->dataOpCode, .closeCode = static_cast<uint16_t>(close) });
 					this->currentMessage.clear();
 					this->theState = WSMessageCollectorState::Serving;
 					return false;
@@ -226,7 +227,7 @@ namespace DiscordCoreInternal {
 		this->theTask = std::make_unique<std::jthread>([this](std::stop_token theToken) {
 			this->run(theToken);
 		});
-		while (!this->areWeConnected.load()) {
+		while (!this->areWeConnected.load() && !this->doWeQuit->load()) {
 			std::this_thread::sleep_for(std::chrono::milliseconds{ 1 });
 		}
 	}
@@ -241,7 +242,9 @@ namespace DiscordCoreInternal {
 				std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Sending WebSocket " + this->shard.dump() + std::string("'s Message: ") << std::endl
 						  << dataToSend << DiscordCoreAPI::reset();
 			}
-			this->webSocket->writeData(dataToSend);
+			if (this->webSocket) {
+				this->webSocket->writeData(dataToSend);
+			}
 		} catch (...) {
 			if (this->printErrorMessages) {
 				DiscordCoreAPI::reportException("BaseSocketAgent::sendMessage()");
@@ -260,29 +263,10 @@ namespace DiscordCoreInternal {
 		theString.push_back(0);
 		theString.push_back(static_cast<int8_t>(static_cast<uint16_t>(1000) >> 8));
 		theString.push_back(static_cast<int8_t>(1000 & 0xff));
-		if (this->webSocket != nullptr) {
+		if (this->webSocket) {
 			this->webSocket->writeData(theString);
-			for (int32_t x = 0; x < 10; x += 1) {
-				if (!this->webSocket->processIO(100000)) {
-					break;
-				}
-			}
+			this->webSocket->processIO(100000);
 		}
-		DiscordCoreAPI::StopWatch<std::chrono::milliseconds> theStopWatch{ std::chrono::milliseconds{ 5000 } };
-		while ((static_cast<int8_t>(this->dataOpcode) != (static_cast<int8_t>(WebSocketOpCode::Op_Close) | static_cast<int8_t>(webSocketFinishBit)))) {
-			if (theStopWatch.hasTimePassed()) {
-				break;
-			}
-			std::this_thread::sleep_for(std::chrono::milliseconds{ 1 });
-			auto returnValue = this->messageCollector.runMessageCollector();
-			if (!returnValue) {
-				break;
-			}
-			auto returnData = this->messageCollector.collectFinalMessage();
-			if (returnData.theMessage != "") {
-				break;
-			}
-		};
 	}
 
 	void BaseSocketAgent::sendMessage(const nlohmann::json& dataToSend) noexcept {
@@ -311,7 +295,9 @@ namespace DiscordCoreInternal {
 			std::string theVectorNew{};
 			theVectorNew.insert(theVectorNew.begin(), header.begin(), header.end());
 			theVectorNew.insert(theVectorNew.begin() + header.size(), theVector.begin(), theVector.end());
-			this->webSocket->writeData(theVectorNew);
+			if (this->webSocket) {
+				this->webSocket->writeData(theVectorNew);
+			}
 		} catch (...) {
 			if (this->printErrorMessages) {
 				DiscordCoreAPI::reportException("BaseSocketAgent::sendMessage()");
@@ -397,6 +383,10 @@ namespace DiscordCoreInternal {
 					this->sendHeartBeat();
 				}
 				if (!this->messageCollector.runMessageCollector()) {
+					auto theMessage = this->messageCollector.collectFinalMessage();
+					this->dataOpcode = theMessage.opCode;
+					this->closeCode = theMessage.closeCode;
+					std::cout << "WERE HERE THIS IS IT!" << std::endl;
 					this->onClosedExternal();
 				}
 				auto theReturnMessage = this->messageCollector.collectFinalMessage();
@@ -508,10 +498,7 @@ namespace DiscordCoreInternal {
 								  << DiscordCoreAPI::reset() << std::endl;
 					}
 					this->areWeResuming = true;
-					this->currentReconnectTries += 1;
-					this->areWeConnected.store(false);
-					this->webSocket.reset(nullptr);
-					this->connect();
+					this->onClosedExternal();
 				}
 
 				if (payload["op"] == 9) {
@@ -527,12 +514,10 @@ namespace DiscordCoreInternal {
 					if (payload["d"] == true) {
 						nlohmann::json identityJson = JSONIFY(this->botToken, static_cast<int32_t>(this->intentsValue), this->shard[0], this->shard[1]);
 						this->sendMessage(identityJson);
-					} else {
-						this->areWeConnected.store(false);
-						this->webSocket.reset(nullptr);
+					} else {					
 						this->areWeResuming = false;
 						this->areWeAuthenticated = false;
-						this->connect();
+						this->onClosedExternal();
 					}
 				}
 
@@ -1023,7 +1008,7 @@ namespace DiscordCoreInternal {
 			this->areWeAuthenticated = false;
 			this->haveWeReceivedHeartbeatAck = true;
 			this->webSocket.reset(nullptr);
-			if (this->closeCode & static_cast<int16_t>(ReconnectPossible::Yes)) {
+			if (this->closeCode & static_cast<uint16_t>(ReconnectPossible::Yes)) {
 				this->connect();
 			} else {
 				this->doWeQuit->store(true);
@@ -1190,6 +1175,11 @@ namespace DiscordCoreInternal {
 					this->onClosedExternal();
 				}
 				auto theReturnMessage = this->messageCollector.collectFinalMessage();
+				if (theReturnMessage.opCode == WebSocketOpCode::Op_Close) {
+					this->dataOpcode = theReturnMessage.opCode;
+					this->closeCode = theReturnMessage.closeCode;
+					this->onClosedExternal();
+				}
 				if (theReturnMessage.theMessage != "") {
 					this->onMessageReceived(theReturnMessage.theMessage);
 				}

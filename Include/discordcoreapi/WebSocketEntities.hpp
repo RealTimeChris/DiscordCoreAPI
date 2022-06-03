@@ -32,7 +32,7 @@ namespace DiscordCoreInternal {
 	enum class WebSocketOpCode : uint8_t { Op_Continuation = 0x00, Op_Text = 0x01, Op_Binary = 0x02, Op_Close = 0x08, Op_Ping = 0x09, Op_Pong = 0x0a };
 
 	/// Websocket close codes. \brief Websocket close codes.
-	enum class WebSocketCloseCode : int16_t {
+	enum class WebSocketCloseCode : uint16_t {
 		Normal_Close = 1000,///< Normal close.
 		Unknown_Error = 4000,///<	We're not sure what went wrong. Try reconnecting?	true
 		Unknown_Opcode = 4001,///< You sent an invalid Gateway opcode or an invalid payload for an opcode. Don't do that!	true
@@ -51,15 +51,15 @@ namespace DiscordCoreInternal {
 			4014,///< You sent a disallowed intent for a Gateway Intent. You may have tried to specify an intent that you have not enabled or are not approved for.	false
 	};
 
-	enum class ReconnectPossible : int16_t {
-		Yes = static_cast<int16_t>(WebSocketCloseCode::Unknown_Error) | static_cast<int16_t>(WebSocketCloseCode::Unknown_Opcode) |
-			static_cast<int16_t>(WebSocketCloseCode::Decode_Error) | static_cast<int16_t>(WebSocketCloseCode::Not_Authenticated) |
-			static_cast<int16_t>(WebSocketCloseCode::Already_Authenticated) | static_cast<int16_t>(WebSocketCloseCode::Invalid_Seq) |
-			static_cast<int16_t>(WebSocketCloseCode::Session_Timed),
-		No = static_cast<int16_t>(WebSocketCloseCode::Authentication_Failed) | static_cast<int16_t>(WebSocketCloseCode::Invalid_Shard) |
-			static_cast<int16_t>(WebSocketCloseCode::Sharding_Required) | static_cast<int16_t>(WebSocketCloseCode::Invalid_API_Version) |
-			static_cast<int16_t>(WebSocketCloseCode::Disallowed_Intent) | static_cast<int16_t>(WebSocketCloseCode::Invalid_Intent) |
-			static_cast<int16_t>(WebSocketCloseCode::Normal_Close)
+	enum class ReconnectPossible : uint16_t {
+		Yes = static_cast<uint16_t>(WebSocketCloseCode::Unknown_Error) | static_cast<uint16_t>(WebSocketCloseCode::Unknown_Opcode) |
+			static_cast<uint16_t>(WebSocketCloseCode::Decode_Error) | static_cast<uint16_t>(WebSocketCloseCode::Not_Authenticated) |
+			static_cast<uint16_t>(WebSocketCloseCode::Already_Authenticated) | static_cast<uint16_t>(WebSocketCloseCode::Invalid_Seq) |
+			static_cast<uint16_t>(WebSocketCloseCode::Session_Timed),
+		No = static_cast<uint16_t>(WebSocketCloseCode::Authentication_Failed) | static_cast<uint16_t>(WebSocketCloseCode::Invalid_Shard) |
+			static_cast<uint16_t>(WebSocketCloseCode::Sharding_Required) | static_cast<uint16_t>(WebSocketCloseCode::Invalid_API_Version) |
+			static_cast<uint16_t>(WebSocketCloseCode::Disallowed_Intent) | static_cast<uint16_t>(WebSocketCloseCode::Invalid_Intent) |
+			static_cast<uint16_t>(WebSocketCloseCode::Normal_Close)
 	};
 
 	enum class WSMessageCollectorState { Connecting = 0, Initializing = 1, Collecting = 2, Parsing = 3, Serving = 4 };
@@ -67,7 +67,7 @@ namespace DiscordCoreInternal {
 	struct DiscordCoreAPI_Dll WSMessageCollectorReturnData {
 		WebSocketOpCode opCode{};
 		std::string theMessage{};
-		int16_t closeCode{};
+		uint16_t closeCode{};
 	};
 
 	class DiscordCoreAPI_Dll WSMessageCollector {
