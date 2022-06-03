@@ -135,7 +135,7 @@ install(
 	DESTINATION "share/discordcoreapi"
 )
 
-if (_WIN32)
+if (WIN32)
 	install(
 		FILES 
 		"$<TARGET_PDB_FILE:${LIB_NAME}>"
