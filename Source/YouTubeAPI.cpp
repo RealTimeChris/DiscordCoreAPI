@@ -72,6 +72,9 @@ namespace DiscordCoreInternal {
 		}
 		std::vector<DiscordCoreInternal::HttpWorkloadData> dataPackageWorkload{};
 		std::string apiKey{ "AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8" };
+		DiscordCoreInternal::HttpWorkloadData dataPackage02{};
+		dataPackage02.baseUrl = YouTubeRequestBuilder::baseUrl;
+		dataPackage02.relativePath = "/youtubei/v1/player?key=" + apiKey;
 		nlohmann::json theRequest{};
 		theRequest["contentCheckOk"] = true;
 		theRequest["racyCheckOk"] = true;
@@ -82,16 +85,14 @@ namespace DiscordCoreInternal {
 		theRequest["context"]["client"]["clientVersion"] = "16.46.37";
 		theRequest["context"]["client"]["hl"] = "en";
 		theRequest["context"]["client"]["gl"] = "US";
-		theRequest["context"]["client"]["utcOffsetMinuntes"] = 0;
+		theRequest["context"]["client"]["utfOffsetMinuntes"] = 0;
 		theRequest["context"]["client"]["thirdParty"];
 		theRequest["context"]["client"]["thirdParty"]["embedUrl"] = "https://www.youtube.com";
-		DiscordCoreInternal::HttpWorkloadData dataPackage02{};
-		dataPackage02.baseUrl = YouTubeRequestBuilder::baseUrl;
-		dataPackage02.relativePath = "/youtubei/v1/player?key=" + apiKey;
 		dataPackage02.content = theRequest.dump();
 		dataPackage02.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Post;
 		dataPackageWorkload.push_back(dataPackage02);
 		std::vector<DiscordCoreInternal::HttpResponseData> responseData = this->httpClient->submitWorkloadAndGetResult<std::vector<HttpResponseData>>(dataPackageWorkload);
+		std::string resultStringHTMLBody{};
 		if (responseData[0].responseCode != 204 && responseData[0].responseCode != 201 && responseData[0].responseCode != 200 && this->httpClient->getDoWePrintHttpError()) {
 			std::cout << DiscordCoreAPI::shiftToBrightRed() << "YouTubeRequestBuilder::constructDownloadInfo() 01 Error: " << responseData[0].responseCode << ", "
 					  << responseData[0].responseMessage << std::endl
@@ -249,7 +250,8 @@ namespace DiscordCoreInternal {
 		bool haveWeFailed{ false };
 		int64_t remainingDownloadContentLength{ newSong.contentLength };
 		int64_t contentLengthCurrent{ youtubeAPI->maxBufferSize };
-		int64_t bytesSubmittedTotal{ 0 };
+		int64_t bytesReadLastIteration{ 1 };
+		int64_t bytesSubmittedTotal01{ 0 };
 		int32_t sameCounter{ 0 };
 		int32_t counter{ 0 };
 		const int32_t ms50{ 50000 };
@@ -267,9 +269,20 @@ namespace DiscordCoreInternal {
 			this->breakOutPlayMore(theToken, std::move(audioDecoder), haveWeFailed, counter, this, newSong, currentRecursionDepth);
 			return;
 		};
-		std::cout << "BYTES TOTAL: " << newSong.contentLength << std::endl;
-		while (newSong.contentLength > bytesSubmittedTotal) {
-			std::cout << "BYTES SUBMITTED: " << bytesSubmittedTotal << std::endl;
+		while (newSong.contentLength > bytesSubmittedTotal01) {
+			if (bytesReadLastIteration == bytesSubmittedTotal01) {
+				sameCounter += 1;
+			} else {
+				sameCounter = 0;
+			}
+			if (sameCounter > minimumIterations && counter >= maximumIterations) {
+				break;
+			} else if (sameCounter > minimumIterations) {
+				haveWeFailed = true;
+				this->breakOutPlayMore(theToken, std::move(audioDecoder), haveWeFailed, counter, this, newSong, currentRecursionDepth);
+				return;
+			}
+			bytesReadLastIteration = bytesSubmittedTotal01;
 			if (theToken.stop_requested()) {
 				this->breakOut(theToken, std::move(audioDecoder), this);
 				return;
