@@ -49,6 +49,7 @@ namespace DiscordCoreAPI {
 
 	void atexitHandler() {
 		Globals::doWeQuit.store(true);
+		std::exit(EXIT_SUCCESS);
 	}
 
 	void signalHandler(int32_t sig_int) {
@@ -131,7 +132,9 @@ namespace DiscordCoreAPI {
 		if (!this->instantiateWebSockets()) {
 			return;
 		}
+		std::cout << "WERE LEAVING LEAVING LEAVING!05060506" << std::endl;
 		this->webSocketMap[std::to_string(this->shardingOptions.startingShard)]->getTheTask()->join();
+		std::cout << "WERE LEAVING LEAVING LEAVING!0807080708" << std::endl;
 	}
 
 	bool DiscordCoreClient::instantiateWebSockets() {
