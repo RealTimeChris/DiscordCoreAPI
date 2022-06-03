@@ -1014,7 +1014,7 @@ namespace DiscordCoreInternal {
 		this->areWeReadyToConnectEvent.reset();
 		if (this->maxReconnectTries > this->currentReconnectTries) {
 			if (this->printErrorMessages) {
-				std::cout << DiscordCoreAPI::shiftToBrightRed() << "WebSocket Closed; Code: " << this->closeCode << DiscordCoreAPI::reset() << std::endl;
+				std::cout << DiscordCoreAPI::shiftToBrightRed() << "WebSocket " + this->shard.dump() + " Closed; Code: " << this->closeCode << DiscordCoreAPI::reset() << std::endl;
 			}
 			this->closeCode = 0;
 			this->sendCloseFrame();

@@ -22,7 +22,7 @@
 
 namespace DiscordCoreInternal {
 
-	static std::unordered_map<std::thread::id, std::unique_ptr<HttpConnection>> httpConnections{};
+	std::unordered_map<std::thread::id, std::unique_ptr<HttpConnection>> httpConnections{};
 
 	namespace Globals {
 		std::unordered_map<std::string, std::unique_ptr<RateLimitData>> rateLimitValues{};
