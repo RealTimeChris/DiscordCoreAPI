@@ -130,7 +130,6 @@ namespace DiscordCoreInternal {
 		newSong.finalDownloadUrls.push_back(downloadUrl);
 		newSong.addedByUserId = guildMember.id;
 		newSong.type = DiscordCoreAPI::SongType::YouTube;
-		std::cout << "THE DOWNLOAD URL (REAL): " << newSong.format.downloadUrl << std::endl;
 		return newSong;
 	}
 
@@ -140,15 +139,13 @@ namespace DiscordCoreInternal {
 			std::string newString00 = "https://";
 			downloadBaseUrl = newSong.finalDownloadUrls[0].urlPath.substr(newSong.finalDownloadUrls[0].urlPath.find("https://") + newString00.length(),
 				newSong.finalDownloadUrls[0].urlPath.find("/videoplayback?") - newString00.length());
-			std::cout << "THE DOWNLOAD URL: " << downloadBaseUrl << std::endl;
 		} else {
 			downloadBaseUrl = newSong.finalDownloadUrls[0].urlPath;
-			std::cout << "THE DOWNLOAD URL: " << downloadBaseUrl << std::endl;
 		}
-		std::string request = "GET " + newSong.finalDownloadUrls[0].urlPath +
+		std::string request = "GET " + newSong.format.downloadUrl +
 			" HTTP/1.1\n\rUser-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.88 Safari/537.36\n\r";
 		request += "Host: " + downloadBaseUrl + "\n\r\n\r";
-		std::cout << "THE DOWNLOAD REQUEST: " << request << std::endl;
+		newSong.finalDownloadUrls.resize(2);
 		DiscordCoreAPI::DownloadUrl downloadUrl01{};
 		downloadUrl01.contentSize = 0;
 		downloadUrl01.urlPath = downloadBaseUrl;
@@ -156,9 +153,7 @@ namespace DiscordCoreInternal {
 		downloadUrl02.contentSize = 0;
 		downloadUrl02.urlPath = request;
 		newSong.finalDownloadUrls[0] = downloadUrl01;
-		newSong.finalDownloadUrls.push_back(downloadUrl02);
-		downloadUrl02.urlPath = newSong.finalDownloadUrls[0].urlPath;
-		newSong.finalDownloadUrls.push_back(downloadUrl02);
+		newSong.finalDownloadUrls[1] = downloadUrl02;
 		return newSong;
 	}
 
