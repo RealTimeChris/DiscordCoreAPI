@@ -25,7 +25,8 @@ namespace DiscordCoreInternal {
 
 	DiscordCoreAPI::Song SoundCloudRequestBuilder::collectFinalSong(const DiscordCoreAPI::GuildMemberData& addedByGuildMember, const DiscordCoreAPI::Song& newerSong) {
 		DiscordCoreAPI::Song newSong = newerSong;
-		auto newesterSong = constructFinalDownloadUrl(newSong);
+		auto newestSong = constructSecondDownloadUrl(newSong);
+		auto newesterSong = constructFinalDownloadUrl(newestSong);
 		newesterSong.addedByUserId = addedByGuildMember.id;
 		newesterSong.addedByUserName = addedByGuildMember.userName;
 		return newesterSong;
@@ -61,8 +62,7 @@ namespace DiscordCoreInternal {
 					newString += "t500x500.jpg";
 					newSong.thumbnailUrl = newString;
 				}
-				auto newestSong = constructSecondDownloadUrl(newSong);
-				results.push_back(newestSong);
+				results.push_back(newSong);
 			}
 		}
 		return results;
@@ -303,11 +303,6 @@ namespace DiscordCoreInternal {
 			std::vector<HttpWorkloadData> workloadVector{};
 			workloadVector.push_back(dataPackage03);
 			auto result = this->requestBuilder.submitWorkloadAndGetResultNew(workloadVector);
-			if (result.size() < 1) {
-				haveWeFailed = true;
-				this->breakOutPlayMore(theToken, std::move(audioDecoder), haveWeFailed, counter, this, newSong, currentRecursionDepth);
-				return;
-			}
 			std::vector<uint8_t> newVector{};
 			for (uint64_t x = 0; x < result[0].responseMessage.size(); x += 1) {
 				newVector.push_back(result[0].responseMessage[x]);
