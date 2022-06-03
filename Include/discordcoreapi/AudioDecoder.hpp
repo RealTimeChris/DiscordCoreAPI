@@ -255,8 +255,8 @@ namespace DiscordCoreInternal {
 
 	struct DiscordCoreAPI_Dll BuildAudioDecoderData {
 	  public:
-		bool doWePrintSuccess{ false };
-		bool doWePrintError{ false };
+		bool doWePrintSuccessMessages{ false };
+		bool doWePrintErrorMessages{ false };
 		int64_t totalFileSize{ 0 };
 		int64_t bufferMaxSize{ 0 };
 	};
@@ -290,8 +290,8 @@ namespace DiscordCoreInternal {
 		AVStreamWrapper audioStream{ nullptr };
 		AVPacketWrapper packet{ nullptr };
 		AVCodecWrapper codec{ nullptr };
-		bool doWePrintSuccess{ false };
-		bool doWePrintError{ false };
+		bool doWePrintSuccessMessages{ false };
+		bool doWePrintErrorMessages{ false };
 		std::string currentBuffer{};
 		bool areWeQuitting{ false };
 		bool haveWeBooted{ false };

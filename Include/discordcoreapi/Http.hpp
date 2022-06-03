@@ -125,15 +125,15 @@ namespace DiscordCoreInternal {
 
 		HttpResponseData httpRequest(HttpWorkloadData&);
 
-		const bool getDoWePrintWebSocketError();
+		const bool getDoWePrintWebSocketErrorMessages();
 
-		const bool getDoWePrintFFMPEGSuccess();
+		const bool getDoWePrintFFMPEGSuccessMessages();
 
-		const bool getDoWePrintFFMPEGError();
+		const bool getDoWePrintFFMPEGErrorMessages();
 
-		const bool getDoWePrintHttpSuccess();
+		const bool getDoWePrintHttpSuccessMessages();
 
-		const bool getDoWePrintHttpError();
+		const bool getDoWePrintHttpErrorMessages();
 
 		template<typename ReturnType> ReturnType submitWorkloadAndGetResult(HttpWorkloadData& workload) {
 			ReturnType returnObject{};
@@ -157,11 +157,11 @@ namespace DiscordCoreInternal {
 
 	  protected:
 		HttpConnectionManager connectionManager{};
-		const bool doWePrintWebSocketError{};
-		const bool doWePrintFFMPEGSuccess{};
-		const bool doWePrintFFMPEGError{};
-		const bool doWePrintHttpSuccess{};
-		const bool doWePrintHttpError{};
+		const bool doWePrintWebSocketErrorMessages{};
+		const bool doWePrintFFMPEGSuccessMessages{};
+		const bool doWePrintFFMPEGErrorMessages{};
+		const bool doWePrintHttpSuccessMessages{};
+		const bool doWePrintHttpErrorMessages{};
 		const std::string botToken{};
 
 		HttpResponseData httpRequestInternal(const HttpWorkloadData& workload, HttpConnection& theConnection, RateLimitData* rateLimitDataPtr);

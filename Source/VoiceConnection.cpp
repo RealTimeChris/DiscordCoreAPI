@@ -55,7 +55,7 @@ namespace DiscordCoreAPI {
 			for (uint32_t x = 0; x < headerSize; x += 1) {
 				audioDataPacket[x] = headerFinal[x];
 			}
-			std::unique_ptr<unsigned char[]> encryptionKeys{ std::make_unique<unsigned char[]>(keys.size()) };
+			std::unique_ptr<uint8_t[]> encryptionKeys{ std::make_unique<uint8_t[]>(keys.size()) };
 			for (uint32_t x = 0; x < keys.size(); x += 1) {
 				encryptionKeys[x] = keys[x];
 			}
@@ -148,14 +148,14 @@ namespace DiscordCoreAPI {
 		this->stopSetEvent.set();
 		this->pauseEvent.set();
 		this->voiceConnectInitData = voiceConnectInitDataNew;
-		if (this->voiceSocketAgent) {
-			this->voiceSocketAgent.reset(nullptr);
-		}
 		if (!this->baseSocketAgent->areWeReadyToConnectEvent.wait(10000)) {
 			return;
 		}
+		if (this->voiceSocketAgent) {
+			this->voiceSocketAgent.reset(nullptr);
+		}
 		this->voiceSocketAgent =
-			std::make_unique<DiscordCoreInternal::VoiceSocketAgent>(this->voiceConnectInitData, this->baseSocketAgent, this->baseSocketAgent->printSuccessMessages);
+			std::make_unique<DiscordCoreInternal::VoiceSocketAgent>(this->voiceConnectInitData, this->baseSocketAgent, this->baseSocketAgent->doWePrintSuccessMessages);
 		this->doWeReconnect = &this->voiceSocketAgent->doWeReconnect;
 		if (!this->voiceSocketAgent->areWeConnected.wait(10000)) {
 			return;

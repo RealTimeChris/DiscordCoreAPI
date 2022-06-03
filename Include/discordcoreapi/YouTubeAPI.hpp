@@ -60,10 +60,10 @@ namespace DiscordCoreInternal {
 
 	  protected:
 		YouTubeRequestBuilder requestBuilder{};
-		bool doWePrintWebSocketError{ false };
-		bool doWePrintFFMPEGSuccess{ false };
+		bool doWePrintWebSocketErrorMessages{ false };
+		bool doWePrintFFMPEGSuccessMessages{ false };
 		const int32_t maxBufferSize{ 8192 };
-		bool doWePrintFFMPEGError{ false };
+		bool doWePrintFFMPEGErrorMessages{ false };
 		DiscordCoreAPI::Song theSong{};
 		uint64_t guildId{};
 

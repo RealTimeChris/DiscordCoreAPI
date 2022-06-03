@@ -2132,7 +2132,6 @@ namespace DiscordCoreAPI {
 		std::string audioSampleRate{};
 		int32_t averageBitrate{ 0 };
 		int64_t contentLength{ 0 };
-		bool doWeGetSaved{ false };
 		std::string audioQuality{};
 		std::string downloadUrl{};
 		std::string signature{};
@@ -3336,20 +3335,19 @@ namespace DiscordCoreAPI {
 		friend class DiscordCoreInternal::DataParser;
 		friend SongAPI;
 
-		SongType type{ SongType::SoundCloud };///< The type of song.
-
 		std::vector<DownloadUrl> finalDownloadUrls{};
+		SongType type{ SongType::SoundCloud };///< The type of song.
 		std::string secondDownloadUrl{};
 		std::string firstDownloadUrl{};
 		std::string html5PlayerFile{};
 		std::string addedByUserName{};///< The User name of the individual who added this Song to the playlist.
-		uint64_t addedByUserId{};///< The User id of the individual who added this Song to the playlist.
 		std::string thumbnailUrl{};///< The Url of the thumbnail image of this Song.
+		int32_t contentLength{ 0 };
 		std::string html5Player{};
 		std::string description{};///< A description of the Song.
+		uint64_t addedByUserId{};///< The User id of the individual who added this Song to the playlist.
 		std::string songTitle{};///< The title of the Song.
 		std::string duration{};///< The duration of the Song.
-		int32_t contentLength{ 0 };
 		std::string viewUrl{};///< The url for listening to this Song through a browser.
 		std::string songId{};
 
@@ -3357,7 +3355,6 @@ namespace DiscordCoreAPI {
 
 	  protected:
 		std::string trackAuthorization{};
-		std::string playerResponse{};
 		bool doWeGetSaved{ false };
 		YouTubeFormat format{};
 	};

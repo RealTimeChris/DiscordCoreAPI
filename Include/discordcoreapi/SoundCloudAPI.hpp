@@ -34,8 +34,6 @@ namespace DiscordCoreInternal {
 
 		DiscordCoreAPI::Song collectFinalSong(const DiscordCoreAPI::GuildMemberData& addedByGuildMember, const DiscordCoreAPI::Song& newSong);
 
-		std::vector<HttpResponseData> submitWorkloadAndGetResultNew(const std::vector<HttpWorkloadData>& httpData);
-
 		std::vector<DiscordCoreAPI::Song> collectSearchResults(const std::string& theString);
 
 	  protected:
@@ -46,9 +44,7 @@ namespace DiscordCoreInternal {
 		const std::string appVersion{ "1649920649" };
 		HttpClient* httpClient{ nullptr };
 
-		DiscordCoreAPI::Song constructSecondDownloadUrl(DiscordCoreAPI::Song& newSong);
-
-		DiscordCoreAPI::Song constructFinalDownloadUrl(DiscordCoreAPI::Song& newSong);
+		DiscordCoreAPI::Song constructDownloadInfo(DiscordCoreAPI::Song& newSong);
 
 		std::string collectClientId();
 	};
@@ -76,9 +72,9 @@ namespace DiscordCoreInternal {
 		SoundCloudRequestBuilder requestBuilder{};
 		const int32_t maxBufferSize{ 8192 };
 		HttpClient* httpClient{ nullptr };
-		bool doWePrintSuccess{ false };
+		bool doWePrintSuccessMessages{ false };
 		DiscordCoreAPI::Song theSong{};
-		bool doWePrintError{ false };
+		bool doWePrintErrorMessages{ false };
 		uint64_t guildId{};
 	};
 
