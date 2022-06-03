@@ -250,11 +250,12 @@ namespace DiscordCoreInternal {
 		bool haveWeFailed{ false };
 		int64_t remainingDownloadContentLength{ newSong.contentLength };
 		int64_t contentLengthCurrent{ youtubeAPI->maxBufferSize };
-		int64_t bytesReadLastIteration{ 1 };
 		int64_t bytesSubmittedTotal01{ 0 };
 		int32_t sameCounter{ 0 };
 		int32_t counter{ 0 };
-		const int32_t ms50{ 50000 };
+		const int32_t oneSecond{ 1000000 };
+		const int32_t minimumIterations{ 9 };
+		const int32_t maximumIterations{ 20 };
 		BuildAudioDecoderData dataPackage{};
 		std::string theCurrentString{};
 		dataPackage.totalFileSize = static_cast<uint64_t>(newSong.contentLength);
@@ -264,7 +265,7 @@ namespace DiscordCoreInternal {
 		std::unique_ptr<AudioDecoder> audioDecoder = std::make_unique<AudioDecoder>(dataPackage);
 		AudioEncoder audioEncoder{};
 		streamSocket.writeData(newSong.finalDownloadUrls[1].urlPath);
-		if (!streamSocket.processIO(ms50)) {
+		if (!streamSocket.processIO(oneSecond)) {
 			haveWeFailed = true;
 			this->breakOutPlayMore(theToken, std::move(audioDecoder), haveWeFailed, counter, this, newSong, currentRecursionDepth);
 			return;
@@ -298,14 +299,14 @@ namespace DiscordCoreInternal {
 			} else {
 				if (!areWeDoneHeaders) {
 					if (!theToken.stop_requested()) {
-						bytesSubmittedTotal = streamSocket.getBytesRead();
+						bytesSubmittedTotal01 = streamSocket.getBytesRead();
 					}
 					if (theToken.stop_requested()) {
 						this->breakOut(theToken, std::move(audioDecoder), this);
 						return;
 					}
-					remainingDownloadContentLength = newSong.contentLength - bytesSubmittedTotal;
-					if (!streamSocket.processIO(ms50)) {
+					remainingDownloadContentLength = newSong.contentLength - bytesSubmittedTotal01;
+					if (!streamSocket.processIO(oneSecond)) {
 						haveWeFailed = true;
 						this->breakOutPlayMore(theToken, std::move(audioDecoder), haveWeFailed, counter, this, newSong, currentRecursionDepth);
 						return;
@@ -315,7 +316,7 @@ namespace DiscordCoreInternal {
 						this->breakOut(theToken, std::move(audioDecoder), this);
 						return;
 					}
-					remainingDownloadContentLength = newSong.contentLength - bytesSubmittedTotal;
+					remainingDownloadContentLength = newSong.contentLength - bytesSubmittedTotal01;
 					areWeDoneHeaders = true;
 				}
 				if (theToken.stop_requested()) {
@@ -323,7 +324,7 @@ namespace DiscordCoreInternal {
 					return;
 				}
 				if (counter == 0) {
-					if (!streamSocket.processIO(ms50)) {
+					if (!streamSocket.processIO(oneSecond)) {
 						haveWeFailed = true;
 						this->breakOutPlayMore(theToken, std::move(audioDecoder), haveWeFailed, counter, this, newSong, currentRecursionDepth);
 						return;
@@ -337,9 +338,8 @@ namespace DiscordCoreInternal {
 							theCurrentString.erase(theCurrentString.begin(), theCurrentString.begin() + youtubeAPI->maxBufferSize);
 						} else {
 							submissionString = theCurrentString;
-							theCurrentString.erase(theCurrentString.begin(), theCurrentString.end());
 						}
-						bytesSubmittedTotal += submissionString.size();
+						bytesSubmittedTotal01 = theCurrentString.size();
 						audioDecoder->submitDataForDecoding(submissionString);
 					} else {
 						
@@ -353,8 +353,8 @@ namespace DiscordCoreInternal {
 							this->breakOut(theToken, std::move(audioDecoder), this);
 							return;
 						}
-						remainingDownloadContentLength = newSong.contentLength - bytesSubmittedTotal;
-						if (!streamSocket.processIO(ms50)) {
+						remainingDownloadContentLength = newSong.contentLength - bytesSubmittedTotal01;
+						if (!streamSocket.processIO(oneSecond)) {
 							haveWeFailed = true;
 							this->breakOutPlayMore(theToken, std::move(audioDecoder), haveWeFailed, counter, this, newSong, currentRecursionDepth);
 							return;
@@ -372,9 +372,8 @@ namespace DiscordCoreInternal {
 								theCurrentString.erase(theCurrentString.begin(), theCurrentString.begin() + youtubeAPI->maxBufferSize);
 							} else {
 								submissionString = theCurrentString;
-								theCurrentString.erase(theCurrentString.begin(), theCurrentString.end());
 							}
-							bytesSubmittedTotal += submissionString.size();
+							bytesSubmittedTotal01 = theCurrentString.size();
 							audioDecoder->submitDataForDecoding(submissionString);
 						}
 					}
