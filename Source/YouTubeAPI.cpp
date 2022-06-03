@@ -122,46 +122,35 @@ namespace DiscordCoreInternal {
 		if (isOpusFound) {
 			newSong.format = format;
 		}
-		DiscordCoreAPI::DownloadUrl downloadUrl{ .contentSize = newSong.contentLength, .urlPath = newSong.format.downloadUrl };
-		newSong.viewUrl = newSong.firstDownloadUrl;
-		newSong.addedByUserName = guildMember.userName;
-		newSong.contentLength = static_cast<int32_t>(newSong.format.contentLength);
-		newSong.finalDownloadUrls.push_back(downloadUrl);
-		newSong.addedByUserId = guildMember.id;
-		newSong.type = DiscordCoreAPI::SongType::YouTube;
-		return newSong;
-	}
-
-	DiscordCoreAPI::Song YouTubeRequestBuilder::constructFinalDownloadUrl(DiscordCoreAPI::Song& newSong) {
 		std::string downloadBaseUrl{};
 		if (newSong.format.downloadUrl.find("https://") != std::string::npos && newSong.format.downloadUrl.find("/videoplayback?") != std::string::npos) {
 			std::string newString00 = "https://";
 			downloadBaseUrl = newSong.format.downloadUrl.substr(newSong.format.downloadUrl.find("https://") + newString00.length(),
 				newSong.format.downloadUrl.find("/videoplayback?") - newString00.length());
-		} else {
-			downloadBaseUrl = newSong.finalDownloadUrls[0].urlPath;
 		}
 		std::string request = "GET " + newSong.format.downloadUrl +
 			" HTTP/1.1\n\rUser-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.88 Safari/537.36\n\r";
 		request += "Host: " + downloadBaseUrl + "\n\r\n\r";
 		newSong.finalDownloadUrls.resize(2);
 		DiscordCoreAPI::DownloadUrl downloadUrl01{};
-		downloadUrl01.contentSize = 0;
+		downloadUrl01.contentSize = newSong.contentLength;
 		downloadUrl01.urlPath = downloadBaseUrl;
 		DiscordCoreAPI::DownloadUrl downloadUrl02{};
-		downloadUrl02.contentSize = 0;
+		downloadUrl02.contentSize = newSong.contentLength;
 		downloadUrl02.urlPath = request;
 		newSong.finalDownloadUrls[0] = downloadUrl01;
 		newSong.finalDownloadUrls[1] = downloadUrl02;
+		newSong.viewUrl = newSong.firstDownloadUrl;
+		newSong.addedByUserName = guildMember.userName;
+		newSong.contentLength = newSong.format.contentLength;
+		newSong.addedByUserId = guildMember.id;
+		newSong.type = DiscordCoreAPI::SongType::YouTube;
 		return newSong;
 	}
 
 	DiscordCoreAPI::Song YouTubeRequestBuilder::collectFinalSong(const DiscordCoreAPI::GuildMemberData& addedByGuildMember, DiscordCoreAPI::Song& newSong) {
 		newSong.firstDownloadUrl = YouTubeRequestBuilder::baseUrl + "/watch?v=" + newSong.songId + "&hl=en";
 		auto newerSong = YouTubeRequestBuilder::constructDownloadInfo(addedByGuildMember, newSong);
-		newerSong = YouTubeRequestBuilder::constructFinalDownloadUrl(newerSong);
-		newerSong.addedByUserId = addedByGuildMember.id;
-		newerSong.addedByUserName = addedByGuildMember.userName;
 		return newerSong;
 	}
 
@@ -249,7 +238,10 @@ namespace DiscordCoreInternal {
 		bool haveWeFailed{ false };
 		int64_t remainingDownloadContentLength{ newSong.contentLength };
 		int64_t contentLengthCurrent{ youtubeAPI->maxBufferSize };
+		int64_t bytesSubmittedPrevious{ 0 };
 		int64_t bytesSubmittedTotal{ 0 };
+		const int8_t maxReruns{ 10 };
+		int8_t currentReruns{ 0 };
 		int32_t counter{ 0 };
 		const int32_t ms500{ 500000 };
 		const int32_t ms1000{ 1000000 };
@@ -268,6 +260,17 @@ namespace DiscordCoreInternal {
 			return;
 		};
 		while (newSong.contentLength > bytesSubmittedTotal) {
+			if (bytesSubmittedPrevious == bytesSubmittedTotal) {
+				currentReruns += 1;
+			} else {
+				currentReruns = 0;
+			}
+			if (currentReruns >= maxReruns) {
+				haveWeFailed = true;
+				this->breakOutPlayMore(theToken, std::move(audioDecoder), haveWeFailed, counter, this, newSong, currentRecursionDepth);
+				return;
+			}
+			bytesSubmittedPrevious = bytesSubmittedTotal;
 			if (theToken.stop_requested()) {
 				this->breakOut(theToken, std::move(audioDecoder), this);
 				return;

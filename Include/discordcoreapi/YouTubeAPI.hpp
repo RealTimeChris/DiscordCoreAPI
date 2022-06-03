@@ -42,8 +42,6 @@ namespace DiscordCoreInternal {
 		std::string baseUrl{ "https://www.youtube.com" };
 
 		DiscordCoreAPI::Song constructDownloadInfo(const DiscordCoreAPI::GuildMemberData& guildMember, DiscordCoreAPI::Song& newSong);
-
-		DiscordCoreAPI::Song constructFinalDownloadUrl(DiscordCoreAPI::Song& newSong);
 	};
 
 	class DiscordCoreAPI_Dll YouTubeAPI {
