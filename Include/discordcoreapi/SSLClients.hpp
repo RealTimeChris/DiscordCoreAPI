@@ -310,7 +310,7 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll WebSocketSSLClient {
 	  public:
 
-		WebSocketSSLClient(const std::string& baseUrlNew, const std::string& portNew, bool doWePrintErrorNew, bool ipv6) noexcept;
+		WebSocketSSLClient(const std::string& baseUrlNew, const std::string& portNew, bool doWePrintErrorNew, int32_t maxBufferSizeNew = 16 * 1024) noexcept;
 
 		WebSocketSSLClient() noexcept = default;
 
@@ -323,7 +323,7 @@ namespace DiscordCoreInternal {
 		int64_t getBytesRead() noexcept;
 
 	  protected:
-		const int64_t maxBufferSize{ 1024 * 16 };
+		int64_t maxBufferSize{ 1024 * 16 };
 		SOCKETWrapper theSocket{ nullptr };
 		SSL_CTXWrapper context{ nullptr };
 		bool doWePrintError{ false };

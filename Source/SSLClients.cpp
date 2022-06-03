@@ -305,14 +305,11 @@ namespace DiscordCoreInternal {
 		return true;
 	}
 
-	WebSocketSSLClient::WebSocketSSLClient(const std::string& baseUrlNew, const std::string& portNew, bool doWePrintErrorNew, bool ipv6) noexcept {
+	WebSocketSSLClient::WebSocketSSLClient(const std::string& baseUrlNew, const std::string& portNew, bool doWePrintErrorNew,  int32_t maxBufferSizeNew) noexcept {
 		this->doWePrintError = doWePrintErrorNew;
+		this->maxBufferSize = maxBufferSizeNew;
 		addrinfoWrapper hints{ nullptr }, address{ nullptr };
-		if (ipv6) {
-			hints->ai_family = AF_INET6;
-		} else {
-			hints->ai_family = AF_INET;
-		}
+		hints->ai_family = AF_INET;
 		hints->ai_socktype = SOCK_STREAM;
 		hints->ai_protocol = IPPROTO_TCP;
 
