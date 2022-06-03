@@ -101,6 +101,7 @@ namespace DiscordCoreInternal {
 				return DiscordCoreAPI::Song{};
 			}
 			newString.insert(newString.begin(), results[0].responseMessage.begin(), results[0].responseMessage.end());
+			newSong.finalDownloadUrls.clear();
 			while (newString.find("#EXTINF:") != std::string::npos) {
 				std::string newString01 = "#EXTINF:";
 				std::string newString02 = newString.substr(newString.find("#EXTINF:") + newString01.size());
@@ -283,7 +284,7 @@ namespace DiscordCoreInternal {
 
 	void SoundCloudAPI::breakOutPlayMore(std::stop_token theToken, std::unique_ptr<AudioDecoder> audioDecoder, bool haveWeFailed, int32_t counter, SoundCloudAPI* soundCloudAPI,
 		const DiscordCoreAPI::Song& newSong, int32_t currentRecursionDepth) {
-		if (haveWeFailed && counter > 45 && !DiscordCoreAPI::getVoiceConnectionMap()[soundCloudAPI->guildId]->areWeCurrentlyPlaying()) {
+		if (haveWeFailed && !DiscordCoreAPI::getVoiceConnectionMap()[soundCloudAPI->guildId]->areWeCurrentlyPlaying()) {
 			audioDecoder.reset(nullptr);
 			SoundCloudAPI::weFailedToDownloadOrDecode(newSong, soundCloudAPI, theToken, currentRecursionDepth);
 			return;
