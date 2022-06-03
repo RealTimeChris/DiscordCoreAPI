@@ -53,7 +53,10 @@ namespace DiscordCoreInternal {
 		}
 		switch (this->theState) {
 			case WSMessageCollectorState::Connecting: {
-				this->collectData();
+				auto returnValue = this->collectData();
+				if (!returnValue) {
+					return returnValue;
+				}
 				return this->parseConnectionHeader();
 			}
 			case WSMessageCollectorState::Initializing: {
@@ -271,7 +274,10 @@ namespace DiscordCoreInternal {
 				break;
 			}
 			std::this_thread::sleep_for(std::chrono::milliseconds{ 1 });
-			this->messageCollector.runMessageCollector();
+			auto returnValue = this->messageCollector.runMessageCollector();
+			if (!returnValue) {
+				break;
+			}
 			auto returnData = this->messageCollector.collectFinalMessage();
 			if (returnData.theMessage != "") {
 				break;
@@ -1044,7 +1050,10 @@ namespace DiscordCoreInternal {
 			this->sendMessage(sendString);
 			std::string theResult{};
 			while (theResult == "") {
-				this->messageCollector.runMessageCollector();
+				auto returnValue = this->messageCollector.runMessageCollector();
+				if (!returnValue) {
+					return;
+				}
 				theResult = this->messageCollector.collectFinalMessage().theMessage;
 				std::this_thread::sleep_for(std::chrono::milliseconds{ 1 });
 			}
