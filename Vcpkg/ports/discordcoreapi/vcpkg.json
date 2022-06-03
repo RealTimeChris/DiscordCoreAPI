@@ -6,7 +6,6 @@
   "license": "AGPL-3.0-or-later",
   "supports": "(windows & x64 & !static) | (linux & x64)",
   "dependencies": [
-    "curl",
     "ffmpeg",
     "libsodium",
     "nlohmann-json",
