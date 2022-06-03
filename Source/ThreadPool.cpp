@@ -41,7 +41,7 @@ namespace DiscordCoreAPI {
 
 namespace DiscordCoreInternal {
 
-	extern std::unordered_map<std::thread::id, std::unique_ptr<HttpConnection>> httpConnections{};
+	extern std::unordered_map<std::thread::id, std::unique_ptr<HttpConnection>> httpConnections;
 
 	WorkerThread::WorkerThread() {
 		this->threadId = std::make_unique<std::thread::id>();
