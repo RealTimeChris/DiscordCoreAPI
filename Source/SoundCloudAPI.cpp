@@ -33,7 +33,6 @@ namespace DiscordCoreInternal {
 	}
 
 	std::vector<DiscordCoreAPI::Song> SoundCloudRequestBuilder::collectSearchResults(const std::string& songQuery) {
-		std::vector<DiscordCoreAPI::Song> results{};
 		std::unordered_map<std::string, std::string> theHeaders{
 			std::make_pair("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.88 Safari/537.36"),
 		};
@@ -46,7 +45,11 @@ namespace DiscordCoreInternal {
 		std::vector<HttpWorkloadData> workloadVector01{};
 		workloadVector01.push_back(dataPackage);
 		std::vector<HttpResponseData> returnData = this->submitWorkloadAndGetResultNew(workloadVector01);
+		if (returnData.size() < 1) {
+			return std::vector<DiscordCoreAPI::Song>{};
+		}
 		nlohmann::json data = nlohmann::json::parse(returnData[0].responseMessage);
+		std::vector<DiscordCoreAPI::Song> results{};
 		if (data.contains("collection") && !data["collection"].is_null()) {
 			for (auto& value: data["collection"]) {
 				DiscordCoreAPI::Song newSong{};
@@ -75,6 +78,9 @@ namespace DiscordCoreInternal {
 		std::vector<HttpWorkloadData> workloadVector01{};
 		workloadVector01.push_back(dataPackage);
 		auto results = this->submitWorkloadAndGetResultNew(workloadVector01);
+		if (results.size() < 1) {
+			return DiscordCoreAPI::Song{};
+		}
 		nlohmann::json data = nlohmann::json::parse(results[0].responseMessage);
 		if (data.contains("url")) {
 			newSong.secondDownloadUrl = data["url"];
@@ -89,9 +95,12 @@ namespace DiscordCoreInternal {
 			dataPackage.workloadClass = HttpWorkloadClass::Get;
 			std::vector<HttpWorkloadData> workloadVector01{};
 			workloadVector01.push_back(dataPackage);
-			std::vector<HttpResponseData> results{ this->httpClient->submitWorkloadAndGetResult<std::vector<HttpResponseData>>(workloadVector01) };
+			std::vector<HttpResponseData> results = this->httpClient->submitWorkloadAndGetResult<std::vector<HttpResponseData>>(workloadVector01);
 			std::string newString{};
-			newString.insert(newString.begin(), (results)[0].responseMessage.begin(), (results)[0].responseMessage.end());
+			if (results.size() < 1) {
+				return DiscordCoreAPI::Song{};
+			}
+			newString.insert(newString.begin(), results[0].responseMessage.begin(), results[0].responseMessage.end());
 			while (newString.find("#EXTINF:") != std::string::npos) {
 				std::string newString01 = "#EXTINF:";
 				std::string newString02 = newString.substr(newString.find("#EXTINF:") + newString01.size());
@@ -125,6 +134,9 @@ namespace DiscordCoreInternal {
 			std::vector<HttpWorkloadData> workloadVector{};
 			workloadVector.push_back(dataPackage02);
 			auto headersNew = this->httpClient->submitWorkloadAndGetResult<std::vector<HttpResponseData>>(workloadVector);
+			if (headersNew.size() < 1) {
+				return DiscordCoreAPI::Song{};
+			}
 			auto valueBitRate = stoll(headersNew[0].responseHeaders.find("x-amz-meta-bitrate")->second);
 			auto valueLength = stoll(headersNew[0].responseHeaders.find("x-amz-meta-duration")->second);
 			DiscordCoreAPI::DownloadUrl downloadUrl{};
@@ -149,6 +161,9 @@ namespace DiscordCoreInternal {
 		std::vector<HttpWorkloadData> workloadVector{};
 		workloadVector.push_back(dataPackage02);
 		std::vector<HttpResponseData> returnData = this->httpClient->submitWorkloadAndGetResult<std::vector<HttpResponseData>>(workloadVector);
+		if (returnData.size() < 1) {
+			return std::string{};
+		}
 		std::vector<std::string> assetPaths{};
 		std::string newString01 = "crossorigin src=";
 		std::string newerString{};
@@ -167,6 +182,9 @@ namespace DiscordCoreInternal {
 		std::vector<HttpWorkloadData> workloadVector01{};
 		workloadVector01.push_back(dataPackage03);
 		std::vector<HttpResponseData> returnData02 = this->httpClient->submitWorkloadAndGetResult<std::vector<HttpResponseData>>(workloadVector01);
+		if (returnData02.size() < 1) {
+			return std::string{};
+		}
 		std::string newerString02{};
 		newerString02.insert(newerString02.begin(), returnData02[0].responseMessage.begin(), returnData02[0].responseMessage.end());
 
@@ -303,6 +321,11 @@ namespace DiscordCoreInternal {
 			std::vector<HttpWorkloadData> workloadVector{};
 			workloadVector.push_back(dataPackage03);
 			auto result = this->requestBuilder.submitWorkloadAndGetResultNew(workloadVector);
+			if (result.size() < 1) {
+				haveWeFailed = true;
+				this->breakOutPlayMore(theToken, std::move(audioDecoder), haveWeFailed, counter, this, newSong, currentRecursionDepth);
+				return;
+			}
 			std::vector<uint8_t> newVector{};
 			for (uint64_t x = 0; x < result[0].responseMessage.size(); x += 1) {
 				newVector.push_back(result[0].responseMessage[x]);

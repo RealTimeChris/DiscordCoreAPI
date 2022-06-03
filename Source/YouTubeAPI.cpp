@@ -38,6 +38,9 @@ namespace DiscordCoreInternal {
 		std::vector<DiscordCoreInternal::HttpWorkloadData> workloadVector01{};
 		workloadVector01.push_back(dataPackage);
 		std::vector<DiscordCoreInternal::HttpResponseData> returnData = this->httpClient->submitWorkloadAndGetResult<std::vector<HttpResponseData>>(workloadVector01);
+		if (returnData.size() < 1) {
+			return std::vector<DiscordCoreAPI::Song>{};
+		}
 		if (returnData[0].responseCode != 200 && this->httpClient->getDoWePrintHttpError()) {
 			std::cout << DiscordCoreAPI::shiftToBrightRed() << "YouTubeRequestBuilder::collectSearchResults() Error: " << returnData[0].responseCode
 					  << returnData[0].responseMessage.c_str() << DiscordCoreAPI::reset() << std::endl;
@@ -92,6 +95,9 @@ namespace DiscordCoreInternal {
 		dataPackage02.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Post;
 		dataPackageWorkload.push_back(dataPackage02);
 		std::vector<DiscordCoreInternal::HttpResponseData> responseData = this->httpClient->submitWorkloadAndGetResult<std::vector<HttpResponseData>>(dataPackageWorkload);
+		if (responseData.size() < 1) {
+			return DiscordCoreAPI::Song{};
+		}
 		if (responseData[0].responseCode != 204 && responseData[0].responseCode != 201 && responseData[0].responseCode != 200 && this->httpClient->getDoWePrintHttpError()) {
 			std::cout << DiscordCoreAPI::shiftToBrightRed() << "YouTubeRequestBuilder::constructDownloadInfo() 01 Error: " << responseData[0].responseCode << ", "
 					  << responseData[0].responseMessage << std::endl
