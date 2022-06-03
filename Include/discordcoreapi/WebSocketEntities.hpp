@@ -152,7 +152,7 @@ namespace DiscordCoreInternal {
 		std::mutex accessorMutex01{};
 		bool areWeResuming{ false };
 		std::string sessionId{};
-		uint32_t closeCode{ 0 };
+		uint16_t closeCode{ 0 };
 		nlohmann::json shard{};
 		std::string botToken{};
 		ErlPacker erlPacker{};
