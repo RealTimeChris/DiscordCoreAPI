@@ -134,10 +134,10 @@ namespace DiscordCoreInternal {
 
 	DiscordCoreAPI::Song YouTubeRequestBuilder::constructFinalDownloadUrl(DiscordCoreAPI::Song& newSong) {
 		std::string downloadBaseUrl{};
-		if (newSong.finalDownloadUrls[0].urlPath.find("https://") != std::string::npos && newSong.finalDownloadUrls[0].urlPath.find("/videoplayback?") != std::string::npos) {
+		if (newSong.format.downloadUrl.find("https://") != std::string::npos && newSong.format.downloadUrl.find("/videoplayback?") != std::string::npos) {
 			std::string newString00 = "https://";
-			downloadBaseUrl = newSong.finalDownloadUrls[0].urlPath.substr(newSong.finalDownloadUrls[0].urlPath.find("https://") + newString00.length(),
-				newSong.finalDownloadUrls[0].urlPath.find("/videoplayback?") - newString00.length());
+			downloadBaseUrl = newSong.format.downloadUrl.substr(newSong.format.downloadUrl.find("https://") + newString00.length(),
+				newSong.format.downloadUrl.find("/videoplayback?") - newString00.length());
 		} else {
 			downloadBaseUrl = newSong.finalDownloadUrls[0].urlPath;
 		}
@@ -251,8 +251,8 @@ namespace DiscordCoreInternal {
 		int64_t contentLengthCurrent{ youtubeAPI->maxBufferSize };
 		int64_t bytesSubmittedTotal{ 0 };
 		int32_t counter{ 0 };
-		const int32_t ms50{ 50000 };
 		const int32_t ms500{ 500000 };
+		const int32_t ms1000{ 1000000 };
 		BuildAudioDecoderData dataPackage{};
 		std::string theCurrentString{};
 		dataPackage.totalFileSize = static_cast<uint64_t>(newSong.contentLength);
@@ -262,7 +262,7 @@ namespace DiscordCoreInternal {
 		std::unique_ptr<AudioDecoder> audioDecoder = std::make_unique<AudioDecoder>(dataPackage);
 		AudioEncoder audioEncoder{};
 		streamSocket.writeData(newSong.finalDownloadUrls[1].urlPath);
-		if (!streamSocket.processIO(ms500)) {
+		if (!streamSocket.processIO(ms1000)) {
 			haveWeFailed = true;
 			this->breakOutPlayMore(theToken, std::move(audioDecoder), haveWeFailed, counter, this, newSong, currentRecursionDepth);
 			return;
@@ -282,18 +282,18 @@ namespace DiscordCoreInternal {
 				return;
 			} else {
 				if (!areWeDoneHeaders) {
-					if (!theToken.stop_requested()) {
-						bytesSubmittedTotal = streamSocket.getBytesRead();
-					}
 					if (theToken.stop_requested()) {
 						this->breakOut(theToken, std::move(audioDecoder), this);
 						return;
 					}
 					remainingDownloadContentLength = newSong.contentLength - bytesSubmittedTotal;
-					if (!streamSocket.processIO(ms50)) {
+					if (!streamSocket.processIO(ms1000)) {
 						haveWeFailed = true;
 						this->breakOutPlayMore(theToken, std::move(audioDecoder), haveWeFailed, counter, this, newSong, currentRecursionDepth);
 						return;
+					}
+					if (!theToken.stop_requested()) {
+						bytesSubmittedTotal = streamSocket.getBytesRead();
 					}
 					std::string newData = streamSocket.getInputBuffer();
 					if (theToken.stop_requested()) {
@@ -308,7 +308,7 @@ namespace DiscordCoreInternal {
 					return;
 				}
 				if (counter == 0) {
-					if (!streamSocket.processIO(ms50)) {
+					if (!streamSocket.processIO(ms500)) {
 						haveWeFailed = true;
 						this->breakOutPlayMore(theToken, std::move(audioDecoder), haveWeFailed, counter, this, newSong, currentRecursionDepth);
 						return;
@@ -320,7 +320,6 @@ namespace DiscordCoreInternal {
 						if (theCurrentString.size() >= youtubeAPI->maxBufferSize) {
 							submissionString.insert(submissionString.begin(), theCurrentString.begin(), theCurrentString.begin() + youtubeAPI->maxBufferSize);
 							theCurrentString.erase(theCurrentString.begin(), theCurrentString.begin() + youtubeAPI->maxBufferSize);
-						} else {
 							submissionString = theCurrentString;
 							theCurrentString.erase(theCurrentString.begin(), theCurrentString.end());
 						}
@@ -339,7 +338,7 @@ namespace DiscordCoreInternal {
 							return;
 						}
 						remainingDownloadContentLength = newSong.contentLength - bytesSubmittedTotal;
-						if (!streamSocket.processIO(ms50)) {
+						if (!streamSocket.processIO(ms500)) {
 							haveWeFailed = true;
 							this->breakOutPlayMore(theToken, std::move(audioDecoder), haveWeFailed, counter, this, newSong, currentRecursionDepth);
 							return;
