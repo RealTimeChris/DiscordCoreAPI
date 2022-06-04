@@ -399,7 +399,7 @@ namespace DiscordCoreInternal {
 		while (true) {
 			try {
 				theConnection.processIO();
-			} catch (ProcessingError& theError) {
+			} catch (ProcessingError&) {
 				if (this->doWePrintHttpErrorMessages) {
 					DiscordCoreAPI::reportException("HttpClient::getResponse()");
 					theConnection.doWeConnect = true;
@@ -429,7 +429,7 @@ namespace DiscordCoreInternal {
 			if (currentBaseUrl != value.baseUrl) {
 				try {
 					theConnection.connect(value.baseUrl);
-				} catch (ProcessingError& theError) {
+				} catch (ProcessingError&) {
 					if (this->doWePrintHttpErrorMessages) {
 						DiscordCoreAPI::reportException("HttpClient::httpRequest()");
 					}
