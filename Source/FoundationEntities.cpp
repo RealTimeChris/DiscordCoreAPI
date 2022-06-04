@@ -404,9 +404,9 @@ namespace DiscordCoreAPI {
 	}
 
 	void AudioFrameData::clearData() {
-		this->encodedFrameData.sampleCount = 0;
+		this->encodedFrameData.sampleCount = -1;
 		this->encodedFrameData.data.clear();
-		this->rawFrameData.sampleCount = 0;
+		this->rawFrameData.sampleCount = -1;
 		this->type = AudioFrameType::Unset;
 		this->rawFrameData.data.clear();
 		this->guildMemberId = 0;

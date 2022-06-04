@@ -114,10 +114,10 @@ namespace DiscordCoreInternal {
 
 		WorkerThread(WorkerThread&);
 
-		WorkerThread() = default;
+		WorkerThread();
 
-		~WorkerThread() = default;
-				
+		~WorkerThread();
+		
 		std::atomic_bool theCurrentStatus{ false };
 		std::thread::id threadId{};
 		std::jthread theThread{};
