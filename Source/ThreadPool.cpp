@@ -114,6 +114,9 @@ namespace DiscordCoreInternal {
 		*this->workerThreads[theIndex].threadId = std::this_thread::get_id();
 		theLock00.unlock();
 		while (!this->areWeQuitting.load()) {
+			if (theAtomicBoolPtr) {
+				theAtomicBoolPtr->store(false);
+			}
 			std::unique_lock<std::mutex> theLock01{ this->theMutex01 };
 			while (!this->areWeQuitting.load() && this->theCoroutineHandles.size() == 0) {
 				if (this->workerThreads.size() > std::thread::hardware_concurrency()) {
@@ -141,9 +144,6 @@ namespace DiscordCoreInternal {
 				theAtomicBoolPtr->store(true);
 			}
 			coroHandle.resume();
-			if (theAtomicBoolPtr) {
-				theAtomicBoolPtr->store(false);
-			}
 			if (!this->workerThreads.contains(theIndex)) {
 				httpConnections.erase(std::this_thread::get_id());
 				return;
