@@ -104,9 +104,9 @@ namespace DiscordCoreAPI {
 				sendBuffer->send(e);
 			} else {
 				if (stackTrace.back() == '\n') {
-					std::cout << shiftToBrightRed() << stackTrace + "Error: " << e.what() << reset() << "\n";
+					std::cout << shiftToBrightRed() << stackTrace + "Error: " << e.what() << reset() << std::endl;
 				} else {
-					std::cout << shiftToBrightRed() << stackTrace + " Error: " << e.what() << reset() << "\n";
+					std::cout << shiftToBrightRed() << stackTrace + " Error: " << e.what() << reset() << std::endl;
 				}
 			}
 		}
