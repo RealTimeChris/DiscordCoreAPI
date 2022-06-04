@@ -202,7 +202,7 @@ namespace DiscordCoreInternal {
 			}
 		} catch (ProcessingError& theError) {
 			if (this->doWePrintErrorMessages) {
-				DiscordCoreAPI::reportException("WSMessageCollector::collectData()");
+				DiscordCoreAPI::reportException(theError.what());
 			}
 			return false;
 		}
@@ -273,7 +273,7 @@ namespace DiscordCoreInternal {
 				this->webSocket->processIO(100000);
 			} catch (ProcessingError& theError) {
 				if (this->doWePrintErrorMessages) {
-					DiscordCoreAPI::reportException("BaseSocketAgent::sendCloseFrame()");
+					DiscordCoreAPI::reportException(theError.what());
 				}
 			}
 		}
