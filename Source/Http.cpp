@@ -302,7 +302,7 @@ namespace DiscordCoreInternal {
 		}
 		if (timeRemaining > 0) {
 			if (this->doWePrintHttpSuccessMessages) {
-				std::cout << DiscordCoreAPI::shiftToBrightBlue() << "We're waiting on rate-limit: " << timeRemaining << std::endl << DiscordCoreAPI::reset() << std::endl;
+				std::cout << DiscordCoreAPI::shiftToBrightBlue() << "We're waiting on rate-limit: " << timeRemaining << DiscordCoreAPI::reset() << std::endl << std::endl;
 			}
 			int64_t targetTime = currentTime + timeRemaining;
 			while (targetTime > currentTime) {
@@ -330,8 +330,9 @@ namespace DiscordCoreInternal {
 		}
 		if (returnData.responseCode == 204 || returnData.responseCode == 201 || returnData.responseCode == 200) {
 			if (this->doWePrintHttpSuccessMessages) {
-				std::cout << DiscordCoreAPI::shiftToBrightGreen() << workload.callStack + " Success: " << returnData.responseCode << ", " << returnData.responseMessage << std::endl
-						  << DiscordCoreAPI::reset() << std::endl;
+				std::cout << DiscordCoreAPI::shiftToBrightGreen() << workload.callStack + " Success: " << returnData.responseCode << ", " << returnData.responseMessage
+						  << DiscordCoreAPI::reset() << std::endl
+						  << std::endl;
 			}
 		} else {
 			if (returnData.responseCode == 429) {
@@ -341,14 +342,15 @@ namespace DiscordCoreInternal {
 					static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
 				if (this->doWePrintHttpErrorMessages) {
 					std::cout << DiscordCoreAPI::shiftToBrightRed() << workload.callStack + "::httpRequest(), We've hit rate limit! Time Remaining: "
-							  << std::to_string(Globals::rateLimitValues[Globals::rateLimitValueBuckets[workload.workloadType]]->msRemain) << std::endl
-							  << DiscordCoreAPI::reset() << std::endl;
+							  << std::to_string(Globals::rateLimitValues[Globals::rateLimitValueBuckets[workload.workloadType]]->msRemain) << DiscordCoreAPI::reset() << std::endl
+							  << std::endl;
 				}
 				returnData = this->executeByRateLimitData(workload, theConnection);
 			} else if (this->doWePrintHttpErrorMessages) {
 				std::cout << DiscordCoreAPI::shiftToBrightRed()
 						  << workload.callStack + " Error: Code = " << std::to_string(returnData.responseCode) + ", Message = " + returnData.responseMessage
-						  << DiscordCoreAPI::reset() << std::endl;
+						  << DiscordCoreAPI::reset() << std::endl
+						  << std::endl;
 			}
 		}
 		return returnData;

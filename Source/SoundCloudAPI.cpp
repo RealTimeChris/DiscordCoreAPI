@@ -200,7 +200,8 @@ namespace DiscordCoreInternal {
 		}
 		if (returnData[0].responseCode not_eq 200 && this->httpClient->getDoWePrintHttpErrorMessages()) {
 			std::cout << DiscordCoreAPI::shiftToBrightRed() << "SoundCloudAPI::searchForSong Error: " << returnData[0].responseCode << newerString02.c_str()
-					  << DiscordCoreAPI::reset() << std::endl;
+					  << DiscordCoreAPI::reset() << std::endl
+					  << std::endl;
 		}
 		return clientIdNew;
 	}

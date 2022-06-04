@@ -24,12 +24,11 @@ namespace DiscordCoreInternal {
 	std::string reportSSLError(const std::string& errorPosition, int32_t errorValue = 0, SSL* ssl = nullptr) noexcept {
 		std::stringstream theStream{};
 		if (ssl) {
-			theStream << DiscordCoreAPI::shiftToBrightRed() << errorPosition << SSL_get_error(ssl, errorValue) << std::endl;
+			theStream << DiscordCoreAPI::shiftToBrightRed() << errorPosition << SSL_get_error(ssl, errorValue) << DiscordCoreAPI::reset() << std::endl;
 		} else {
-			theStream << DiscordCoreAPI::shiftToBrightRed() << errorPosition << std::endl;
+			theStream << DiscordCoreAPI::shiftToBrightRed() << errorPosition << DiscordCoreAPI::reset() << std::endl;
 		}
 		ERR_print_errors_fp(stdout);
-		theStream << std::endl << DiscordCoreAPI::reset();
 		return theStream.str();
 	}
 
@@ -39,9 +38,9 @@ namespace DiscordCoreInternal {
 #ifdef _WIN32
 		std::unique_ptr<char[]> string{ std::make_unique<char[]>(1024) };
 		FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, WSAGetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), string.get(), 1024, NULL);
-		theStream << WSAGetLastError() << ", " << string << std::endl << DiscordCoreAPI::reset();
+		theStream << WSAGetLastError() << ", " << string << DiscordCoreAPI::reset() << std::endl;
 #else
-		theStream << strerror(errno) << std::endl << DiscordCoreAPI::reset();
+		theStream << strerror(errno) << DiscordCoreAPI::reset() << std::endl;
 #endif
 		return theStream.str();
 	}

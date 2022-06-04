@@ -74,7 +74,7 @@ namespace DiscordCoreAPI {
 		}
 		if (sodium_init() == -1) {
 			if (this->loggingOptions.logGeneralErrorMessages) {
-				std::cout << DiscordCoreAPI::shiftToBrightRed() << "LibSodium failed to initialize!" << std::endl << std::endl << reset();
+				std::cout << DiscordCoreAPI::shiftToBrightRed() << "LibSodium failed to initialize!" << reset() << std::endl << std::endl;
 			}
 		}
 		this->eventManager.onChannelCreation(&EventHandler::onChannelCreation);
@@ -132,14 +132,15 @@ namespace DiscordCoreAPI {
 		GatewayBotData gatewayData = this->getGateWayBot();
 		if (gatewayData.url == "") {
 			if (this->loggingOptions.logGeneralErrorMessages) {
-				std::cout << shiftToBrightRed() << "Failed to collect the connection URL! Closing! Did you remember to properly set your bot token?" << reset() << std::endl;
+				std::cout << shiftToBrightRed() << "Failed to collect the connection URL! Closing! Did you remember to properly set your bot token?" << reset() << std::endl
+						  << std::endl;
 			}
 			std::this_thread::sleep_for(std::chrono::seconds{ 5 });
 			return false;
 		}
 		if (this->shardingOptions.startingShard + this->shardingOptions.numberOfShardsForThisProcess > this->shardingOptions.totalNumberOfShards) {
 			if (this->loggingOptions.logGeneralErrorMessages) {
-				std::cout << shiftToBrightRed() << "Your sharding options are incorrect! Please fix it!" << reset() << std::endl;
+				std::cout << shiftToBrightRed() << "Your sharding options are incorrect! Please fix it!" << reset() << std::endl << std::endl;
 			}
 			std::this_thread::sleep_for(std::chrono::seconds{ 5 });
 			return false;
@@ -154,6 +155,7 @@ namespace DiscordCoreAPI {
 							  << this->shardingOptions.numberOfShardsForThisProcess
 							  << std::string(" Shards for this process. (") + std::to_string(x * shardsPerGroup + y + 1 + this->shardingOptions.startingShard) + " of " +
 							std::to_string(this->shardingOptions.totalNumberOfShards) + std::string(" Shards total across all processes.)")
+							  << std::endl
 							  << std::endl;
 				}
 				if (this->altAddress == "") {
@@ -174,7 +176,7 @@ namespace DiscordCoreAPI {
 			}
 			if (shardGroupCount > 1 && x < shardGroupCount - 1) {
 				if (this->loggingOptions.logGeneralSuccessMessages) {
-					std::cout << shiftToBrightBlue() << "Waiting to connect the subsequent group of shards..." << std::endl << std::endl;
+					std::cout << shiftToBrightBlue() << "Waiting to connect the subsequent group of shards..." << reset() << std::endl << std::endl;
 				}
 				std::this_thread::sleep_for(std::chrono::milliseconds{ 5000 });
 			}

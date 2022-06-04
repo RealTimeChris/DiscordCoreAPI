@@ -49,7 +49,8 @@ namespace DiscordCoreInternal {
 		}
 		if (returnData[0].responseCode != 200 && this->httpClient->getDoWePrintHttpErrorMessages()) {
 			std::cout << DiscordCoreAPI::shiftToBrightRed() << "YouTubeRequestBuilder::collectSearchResults() Error: " << returnData[0].responseCode
-					  << returnData[0].responseMessage.c_str() << DiscordCoreAPI::reset() << std::endl;
+					  << returnData[0].responseMessage.c_str() << DiscordCoreAPI::reset() << std::endl
+					  << std::endl;
 		}
 		nlohmann::json partialSearchResultsJson{};
 		if (returnData[0].responseMessage.find("var ytInitialData = ") != std::string::npos) {
@@ -108,8 +109,8 @@ namespace DiscordCoreInternal {
 		if (responseData[0].responseCode != 204 && responseData[0].responseCode != 201 && responseData[0].responseCode != 200 &&
 			this->httpClient->getDoWePrintHttpErrorMessages()) {
 			std::cout << DiscordCoreAPI::shiftToBrightRed() << "YouTubeRequestBuilder::constructDownloadInfo() 01 Error: " << responseData[0].responseCode << ", "
-					  << responseData[0].responseMessage << std::endl
-					  << DiscordCoreAPI::reset() << std::endl;
+					  << responseData[0].responseMessage << DiscordCoreAPI::reset() << std::endl
+					  << std::endl;
 		}
 		newSong.type = DiscordCoreAPI::SongType::YouTube;
 		nlohmann::json jsonObject = nlohmann::json::parse(responseData[0].responseMessage);
