@@ -364,14 +364,14 @@ namespace DiscordCoreInternal {
 				DiscordCoreAPI::getVoiceConnectionMap()[youtubeAPI->guildId]->audioBuffer.send(frameData);
 			} catch (ProcessingError& theError) {
 				if (this->doWePrintWebSocketErrorMessages) {
-					DiscordCoreAPI::reportException(theError.what());
+					DiscordCoreAPI::reportException("YouTubeAPI::downloadAndStreamAudio()");
 				}
 				haveWeFailed = true;
 				this->breakOutPlayMore(theToken, std::move(audioDecoder), haveWeFailed, counter, this, newSong, currentRecursionDepth);
 			}
 		} catch (std::runtime_error& theError) {
 			if (this->doWePrintWebSocketErrorMessages) {
-				DiscordCoreAPI::reportException(theError.what());
+				DiscordCoreAPI::reportException("YouTubeAPI::downloadAndStreamAudio()");
 			}
 			this->weFailedToDownloadOrDecode(newSong, youtubeAPI, theToken, currentRecursionDepth);
 		} 
