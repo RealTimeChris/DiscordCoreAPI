@@ -403,6 +403,15 @@ namespace DiscordCoreAPI {
 		return resultString;
 	}
 
+	void AudioFrameData::clearData() {
+		this->encodedFrameData.sampleCount = 0;
+		this->encodedFrameData.data.clear();
+		this->rawFrameData.sampleCount = 0;
+		this->type = AudioFrameType::Unset;
+		this->rawFrameData.data.clear();
+		this->guildMemberId = 0;
+	}
+
 	std::string getTimeAndDate() {
 		const time_t now = std::time(nullptr);
 		tm time = *std::localtime(&now);

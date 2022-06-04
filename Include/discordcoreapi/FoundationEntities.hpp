@@ -3324,6 +3324,7 @@ namespace DiscordCoreAPI {
 		EncodedFrameData encodedFrameData{};///< To be filled if it's already encoded.
 		uint64_t guildMemberId{};///< The Id of the GuildMember from which it was sent.
 		RawFrameData rawFrameData{};///< To be filled if it's raw audio data.
+		void clearData();
 	};
 
 	/// A song from the various platforms. \brief A song from the various platforms.

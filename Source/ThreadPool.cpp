@@ -43,28 +43,16 @@ namespace DiscordCoreInternal {
 
 	extern std::unordered_map<std::thread::id, std::unique_ptr<HttpConnection>> httpConnections;
 
-	WorkerThread::WorkerThread() {
-		this->threadId = std::make_unique<std::thread::id>();
-	}
-
 	WorkerThread& WorkerThread::operator=(WorkerThread& other) {
 		this->theCurrentStatus.store(other.theCurrentStatus.load());
 		this->theThread.swap(other.theThread);
-		this->threadId.swap(other.threadId);
+		this->threadId = other.threadId;
 		this->theIndex = other.theIndex;
 		return *this;
 	}
 
 	WorkerThread::WorkerThread(WorkerThread& other) {
 		*this = other;
-	}
-
-	WorkerThread::WorkerThread(WorkerThread& other, CoRoutineThreadPool* thePtr) {
-		this->thePtr = thePtr;
-		*this = other;
-	}
-
-	WorkerThread::~WorkerThread() {
 	}
 
 	CoRoutineThreadPool::CoRoutineThreadPool() {
@@ -109,7 +97,7 @@ namespace DiscordCoreInternal {
 	void CoRoutineThreadPool::threadFunction(std::stop_token theToken, int64_t theIndex) {
 		std::unique_lock<std::mutex> theLock00{ this->theMutex01 };
 		auto theAtomicBoolPtr = &this->workerThreads[theIndex].theCurrentStatus;
-		*this->workerThreads[theIndex].threadId = std::this_thread::get_id();
+		this->workerThreads[theIndex].threadId = std::this_thread::get_id();
 		theLock00.unlock();
 		while (!this->areWeQuitting.load() && !theToken.stop_requested()) {
 			std::unique_lock<std::mutex> theLock01{ this->theMutex01 };

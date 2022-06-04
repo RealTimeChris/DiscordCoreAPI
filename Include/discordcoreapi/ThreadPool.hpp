@@ -114,15 +114,12 @@ namespace DiscordCoreInternal {
 
 		WorkerThread(WorkerThread&);
 
-		WorkerThread(WorkerThread& other, CoRoutineThreadPool* thePtr);
+		WorkerThread() = default;
 
-		WorkerThread();
-
-		~WorkerThread();
-
-		std::unique_ptr<std::thread::id> threadId{};
+		~WorkerThread() = default;
+				
 		std::atomic_bool theCurrentStatus{ false };
-		CoRoutineThreadPool* thePtr{ nullptr };
+		std::thread::id threadId{};
 		std::jthread theThread{};
 		int64_t theIndex{ 0 };
 	};

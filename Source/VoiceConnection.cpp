@@ -193,9 +193,7 @@ namespace DiscordCoreAPI {
 
 	void VoiceConnection::clearAudioData() {
 		if (this->audioData.encodedFrameData.data.size() != 0 && this->audioData.rawFrameData.data.size() != 0) {
-			this->audioData.encodedFrameData.data.clear();
-			this->audioData.rawFrameData.data.clear();
-			this->audioData = AudioFrameData();
+			this->audioData.clearData();
 		}
 		AudioFrameData frameData{};
 		while (this->audioBuffer.tryReceive(frameData)) {
@@ -254,13 +252,12 @@ namespace DiscordCoreAPI {
 			};
 			this->playSetEvent.reset();
 		start:
+			std::this_thread::sleep_for(std::chrono::milliseconds{ 1 });
 			if (theToken.stop_requested()) {
 				this->areWePlaying.store(false);
 				return;
 			}
-			this->audioData.type = AudioFrameType::Unset;
-			this->audioData.encodedFrameData.data.clear();
-			this->audioData.rawFrameData.data.clear();
+			this->audioData.clearData();
 			this->audioBuffer.tryReceive(this->audioData);
 			if ((this->audioData.encodedFrameData.sampleCount == 0 && this->audioData.rawFrameData.sampleCount == 0) || this->audioData.type == AudioFrameType::Unset) {
 				this->areWePlaying.store(false);
@@ -334,9 +331,7 @@ namespace DiscordCoreAPI {
 					totalTime +=
 						static_cast<int64_t>(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - startingValue);
 					intervalCount = 20000000 - (totalTime / frameCounter);
-					this->audioData.type = AudioFrameType::Unset;
-					this->audioData.encodedFrameData.data.clear();
-					this->audioData.rawFrameData.data.clear();
+					this->audioData.clearData();
 				} else if (this->audioData.type == AudioFrameType::Skip && !this->areWeStopping) {
 					SongCompletionEventData completionEventData{};
 					completionEventData.guild = Guilds::getCachedGuildAsync({ .guildId = this->voiceConnectInitData.guildId }).get();
