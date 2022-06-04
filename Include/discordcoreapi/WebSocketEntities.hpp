@@ -150,6 +150,7 @@ namespace DiscordCoreInternal {
 		int32_t heartbeatInterval{ 0 };
 		std::mutex accessorMutex01{};
 		bool areWeResuming{ false };
+		bool didWeFail{ false };
 		std::string sessionId{};
 		nlohmann::json shard{};
 		std::string botToken{};

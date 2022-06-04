@@ -396,6 +396,7 @@ namespace DiscordCoreInternal {
 					auto theMessage = this->messageCollector.collectFinalMessage();
 					this->dataOpcode = theMessage.opCode;
 					this->closeCode = theMessage.closeCode;
+					this->didWeFail = true;
 					this->onClosedExternal();
 				}
 				auto theReturnMessage = this->messageCollector.collectFinalMessage();
@@ -1012,7 +1013,9 @@ namespace DiscordCoreInternal {
 				std::cout << DiscordCoreAPI::shiftToBrightRed() << "WebSocket " + this->shard.dump() + " Closed; Code: " << +static_cast<uint16_t>(this->closeCode)
 						  << DiscordCoreAPI::reset() << std::endl;
 			}
-			this->sendCloseFrame();
+			if (!this->didWeFail) {
+				this->sendCloseFrame();
+			}
 			this->areWeConnected.store(false);
 			this->currentReconnectTries += 1;
 			this->areWeAuthenticated = false;
