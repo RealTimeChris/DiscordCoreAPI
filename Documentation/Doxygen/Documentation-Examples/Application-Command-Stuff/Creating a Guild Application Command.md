@@ -38,9 +38,9 @@ namespace DiscordCoreAPI {
 			dataPackage.type = ApplicationCommandType::Chat_Input;
 			dataPackage.guildId = args.eventData.getGuildId();
 
-			auto returnValue = DiscordCoreAPI::ApplicationCommands::createGuildApplicationCommandAsync(dataPackage).get();
+			auto resultValue = DiscordCoreAPI::ApplicationCommands::createGuildApplicationCommandAsync(dataPackage).get();
 
-			cout << returnValue.name << endl;
+			cout << resultValue.name << endl;
 		}
 	};
 }

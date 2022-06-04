@@ -71,7 +71,7 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll WSMessageCollector {
 	  public:
-		WSMessageCollector(WebSocketSSLClient*);
+		WSMessageCollector(WebSocketSSLClient*, bool);
 
 		WSMessageCollector() = default;
 
@@ -82,6 +82,7 @@ namespace DiscordCoreInternal {
 	  protected:
 		std::queue<WSMessageCollectorReturnData> finalMessages{};
 		WebSocketSSLClient* theClientPtr{ nullptr };
+		bool doWePrintErrorMessages{ false };
 		WSMessageCollectorState theState{};
 		int8_t maxRecursionDepth{ 10 };
 		int8_t currentRecursionDepth{};

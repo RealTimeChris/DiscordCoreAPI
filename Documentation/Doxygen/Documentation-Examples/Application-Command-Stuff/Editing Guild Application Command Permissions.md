@@ -42,9 +42,9 @@ namespace DiscordCoreAPI {
 			dataPackage.permissions.push_back(dataPackage02);
 			dataPackage.guildId = args.eventData.getGuildId();
 
-			auto returnValue = DiscordCoreAPI::ApplicationCommands::editGuildApplicationCommandPermissionsAsync(dataPackage).get();
+			auto resultValue = DiscordCoreAPI::ApplicationCommands::editGuildApplicationCommandPermissionsAsync(dataPackage).get();
 
-			cout << returnValue.applicationId << endl;
+			cout << resultValue.applicationId << endl;
 		}
 	};
 }

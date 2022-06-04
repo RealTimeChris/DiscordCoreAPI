@@ -32,7 +32,8 @@ namespace DiscordCoreInternal {
 	constexpr uint8_t webSocketFinishBit{ (1u << 7u) };
 	constexpr uint8_t webSocketMaskBit{ (1u << 7u) };
 
-	WSMessageCollector::WSMessageCollector(WebSocketSSLClient* thePtr){
+	WSMessageCollector::WSMessageCollector(WebSocketSSLClient* thePtr, bool doWePrintErrorMessagesNew){
+		this->doWePrintErrorMessages = doWePrintErrorMessagesNew;
 		this->theClientPtr = thePtr;
 	};
 
@@ -53,9 +54,9 @@ namespace DiscordCoreInternal {
 		}
 		switch (this->theState) {
 			case WSMessageCollectorState::Connecting: {
-				auto returnValue = this->collectData();
-				if (!returnValue) {
-					return returnValue;
+				auto resultValue = this->collectData();
+				if (!resultValue) {
+					return resultValue;
 				}
 				return this->parseConnectionHeader();
 			}
@@ -189,17 +190,20 @@ namespace DiscordCoreInternal {
 	}
 
 	bool WSMessageCollector::collectData() noexcept {
-		if (this->theClientPtr != nullptr) {
-			auto theBool = this->theClientPtr->processIO(100000);
-			auto newMessage = this->theClientPtr->getInputBuffer();
-			this->currentMessage.insert(this->currentMessage.end(), newMessage.begin(), newMessage.end());
-			this->theState = WSMessageCollectorState::Parsing;
-			if (!theBool) {
-				return theBool;
-			} else {
+		try {
+			if (this->theClientPtr != nullptr) {
+				this->theClientPtr->processIO(100000);
+				auto newMessage = this->theClientPtr->getInputBuffer();
+				this->currentMessage.insert(this->currentMessage.end(), newMessage.begin(), newMessage.end());
+				this->theState = WSMessageCollectorState::Parsing;
 				return this->runMessageCollector();
+			} else {
+				return false;
 			}
-		} else {
+		} catch (ProcessingError& theError) {
+			if (this->doWePrintErrorMessages) {
+				DiscordCoreAPI::reportException("WSMessageCollector::collectData()");
+			}
 			return false;
 		}
 	}
@@ -265,7 +269,13 @@ namespace DiscordCoreInternal {
 		theString.push_back(static_cast<int8_t>(1000 & 0xff));
 		if (this->webSocket) {
 			this->webSocket->writeData(theString);
-			this->webSocket->processIO(100000);
+			try {
+				this->webSocket->processIO(100000);
+			} catch (ProcessingError& theError) {
+				if (this->doWePrintErrorMessages) {
+					DiscordCoreAPI::reportException("BaseSocketAgent::sendCloseFrame()");
+				}
+			}
 		}
 	}
 
@@ -386,7 +396,6 @@ namespace DiscordCoreInternal {
 					auto theMessage = this->messageCollector.collectFinalMessage();
 					this->dataOpcode = theMessage.opCode;
 					this->closeCode = theMessage.closeCode;
-					std::cout << "WERE HERE THIS IS IT!" << std::endl;
 					this->onClosedExternal();
 				}
 				auto theReturnMessage = this->messageCollector.collectFinalMessage();
@@ -1004,7 +1013,6 @@ namespace DiscordCoreInternal {
 				std::cout << DiscordCoreAPI::shiftToBrightRed() << "WebSocket " + this->shard.dump() + " Closed; Code: " << +static_cast<uint16_t>(this->closeCode)
 						  << DiscordCoreAPI::reset() << std::endl;
 			}
-			this->closeCode = static_cast<WebSocketCloseCode>(0);
 			this->sendCloseFrame();
 			this->areWeConnected.store(false);
 			this->currentReconnectTries += 1;
@@ -1016,6 +1024,7 @@ namespace DiscordCoreInternal {
 			} else {
 				this->doWeQuit->store(true);
 			}
+			this->closeCode = static_cast<WebSocketCloseCode>(0);
 		} else if (this->maxReconnectTries <= this->currentReconnectTries) {
 			this->theTask->request_stop();
 		}
@@ -1023,8 +1032,9 @@ namespace DiscordCoreInternal {
 
 	void BaseSocketAgent::connect() noexcept {
 		try {
-			this->webSocket = std::make_unique<WebSocketSSLClient>(this->baseUrl, "443", this->doWePrintErrorMessages);
-			this->messageCollector = WSMessageCollector{ this->webSocket.get() };
+			this->webSocket = std::make_unique<WebSocketSSLClient>();
+			this->webSocket->connect(this->baseUrl, "443");
+			this->messageCollector = WSMessageCollector{ this->webSocket.get(), this->doWePrintErrorMessages };
 			std::string sendString{};
 			if (this->theFormat == DiscordCoreAPI::TextFormat::Etf) {
 				sendString = "GET /?v=10&encoding=etf HTTP/1.1\r\nHost: " + this->baseUrl +
@@ -1038,8 +1048,8 @@ namespace DiscordCoreInternal {
 			this->sendMessage(sendString);
 			std::string theResult{};
 			while (theResult == "") {
-				auto returnValue = this->messageCollector.runMessageCollector();
-				if (!returnValue) {
+				auto resultValue = this->messageCollector.runMessageCollector();
+				if (!resultValue) {
 					return;
 				}
 				theResult = this->messageCollector.collectFinalMessage().theMessage;
@@ -1082,9 +1092,7 @@ namespace DiscordCoreInternal {
 				}
 				return;
 			} else {
-				if (!this->voiceSocket->writeData(responseData)) {
-					this->onClosedExternal();
-				}
+				this->voiceSocket->writeData(responseData);
 			}
 		} catch (...) {
 			if (this->doWePrintErrorMessages) {
@@ -1268,10 +1276,7 @@ namespace DiscordCoreInternal {
 			packet[5] = static_cast<uint8_t>(this->voiceConnectionData.audioSSRC >> 16);
 			packet[6] = static_cast<uint8_t>(this->voiceConnectionData.audioSSRC >> 8);
 			packet[7] = static_cast<uint8_t>(this->voiceConnectionData.audioSSRC);
-			if (!this->voiceSocket->writeData(packet)) {
-				this->onClosedExternal();
-				return;
-			};
+			this->voiceSocket->writeData(packet);
 			while (this->voiceSocket->getInputBuffer().size() < 74) {
 				this->voiceSocket->readData(false);
 			}
@@ -1309,7 +1314,8 @@ namespace DiscordCoreInternal {
 
 	void VoiceSocketAgent::voiceConnect() noexcept {
 		try {
-			this->voiceSocket = std::make_unique<DatagramSocketSSLClient>(this->voiceConnectionData.voiceIp, this->voiceConnectionData.voicePort, this->doWePrintErrorMessages);
+			this->voiceSocket = std::make_unique<DatagramSocketSSLClient>();
+			this->voiceSocket->connect(this->voiceConnectionData.voiceIp, this->voiceConnectionData.voicePort);
 		} catch (...) {
 			if (this->doWePrintErrorMessages) {
 				DiscordCoreAPI::reportException("VoiceSocketAgent::voiceConnect()");
@@ -1335,8 +1341,9 @@ namespace DiscordCoreInternal {
 		try {
 			DiscordCoreAPI::waitForTimeToPass(this->voiceConnectionDataBuffer, this->voiceConnectionData, 20000);
 			this->baseUrl = this->voiceConnectionData.endPoint.substr(0, this->voiceConnectionData.endPoint.find(":"));
-			this->webSocket = std::make_unique<WebSocketSSLClient>(this->baseUrl, "443", this->doWePrintErrorMessages);
-			this->messageCollector = WSMessageCollector{ this->webSocket.get() };
+			this->webSocket = std::make_unique<WebSocketSSLClient>();
+			this->messageCollector = WSMessageCollector{ this->webSocket.get(), this->doWePrintErrorMessages };
+			this->webSocket->connect(this->baseUrl, "443");
 			std::string sendVector = "GET /?v=4 HTTP/1.1\r\nHost: " + this->baseUrl +
 				"\r\nPragma: no-cache\r\nUser-Agent: DiscordCoreAPI/1.0\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Key: " +
 				DiscordCoreAPI::generateBase64EncodedKey() + "\r\nSec-WebSocket-Version: 13\r\n\r\n";

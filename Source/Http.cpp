@@ -360,9 +360,7 @@ namespace DiscordCoreInternal {
 			int64_t currentTimeDistance =
 				std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - theConnection.lastTimeUsed;
 			if (theConnection.doWeConnect || (theConnection.lastTimeUsed != 0 && currentTimeDistance >= 30000)) {
-				if (!theConnection.connect(workload.baseUrl, this->doWePrintHttpErrorMessages)) {
-					return HttpResponseData{};
-				};
+				theConnection.connect(workload.baseUrl);
 				theConnection.doWeConnect = false;
 			}
 			theConnection.lastTimeUsed = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
@@ -399,10 +397,16 @@ namespace DiscordCoreInternal {
 		theConnection.resetValues();
 		HttpResponseData theData{};
 		while (true) {
-			if (!theConnection.processIO()) {
-				theConnection.doWeConnect = true;
-				break;
+			try {
+				theConnection.processIO();
+			} catch (ProcessingError& theError) {
+				if (this->doWePrintHttpErrorMessages) {
+					DiscordCoreAPI::reportException("HttpClient::getResponse()");
+					theConnection.doWeConnect = true;
+					break;
+				}
 			}
+			
 			if (theConnection.checkForHeadersToParse(theConnection.getInputBuffer()) && !theConnection.doWeHaveHeaders && !stopWatch.hasTimePassed()) {
 				theConnection.parseHeaders(theConnection.getInputBuffer(), theData);
 			}
@@ -423,9 +427,16 @@ namespace DiscordCoreInternal {
 		auto rateLimitDataPtr = std::make_unique<RateLimitData>();
 		for (auto& value: workload) {
 			if (currentBaseUrl != value.baseUrl) {
-				if (!theConnection.connect(value.baseUrl, this->doWePrintHttpErrorMessages)) {
+				try {
+					theConnection.connect(value.baseUrl);
+				}
+				catch (ProcessingError& theError) {
+					if (this->doWePrintHttpErrorMessages) {
+						DiscordCoreAPI::reportException("HttpClient::httpRequest()");
+					}
 					continue;
-				};
+				}
+				
 			}
 			auto theRequest = theConnection.buildRequest(value);
 			theConnection.writeData(theRequest);

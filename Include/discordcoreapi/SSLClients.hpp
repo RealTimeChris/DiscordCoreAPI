@@ -61,7 +61,15 @@ namespace DiscordCoreInternal {
 	#define SOCKET_ERROR (-1)
 #endif
 
-	DiscordCoreAPI_Dll void reportError(const std::string& errorPosition, int32_t errorValue) noexcept;
+	struct ConnectionError : public std::runtime_error {
+		explicit ConnectionError(const std::string& theString) : std::runtime_error(theString){};
+	};
+
+	struct ProcessingError : public std::runtime_error {
+		explicit ProcessingError(const std::string& theString) : std::runtime_error(theString){};
+	};
+
+	DiscordCoreAPI_Dll std::string reportError(const std::string& errorPosition, int32_t errorValue) noexcept;
 #ifdef _WIN32
 	struct DiscordCoreAPI_Dll WSADataWrapper {
 		struct DiscordCoreAPI_Dll WSADataDeleter {
@@ -278,17 +286,17 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll HttpSSLClient {
 	  public:
-		HttpSSLClient() noexcept = default;
+		HttpSSLClient() = default;
 
-		bool connect(const std::string& baseUrl, bool doWePrintErrorMessages, const std::string& portNew = "443") noexcept;
+		void connect(const std::string& baseUrl, const std::string& portNew = "443");
 
 		void writeData(const std::string& theData) noexcept;
 
 		std::string& getInputBuffer() noexcept;
 
-		bool processIO() noexcept;
+		void processIO();
 
-		virtual ~HttpSSLClient() = default;
+		virtual ~HttpSSLClient() noexcept = default;
 
 	  protected:
 		static std::string soundcloudCertPathStatic;
@@ -297,7 +305,6 @@ namespace DiscordCoreInternal {
 		static std::mutex theMutex;
 
 		int32_t maxBufferSize{ (1024 * 16) - 1 };
-		bool doWePrintErrorMessages{ false };
 		BIOWrapper connectionBio{ nullptr };
 		SOCKETWrapper theSocket{ nullptr };
 		SSL_CTXWrapper context{ nullptr };
@@ -310,23 +317,26 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll WebSocketSSLClient {
 	  public:
 
-		WebSocketSSLClient(const std::string& baseUrlNew, const std::string& portNew, bool doWePrintErrorNew, int32_t maxBufferSizeNew = (1024 * 16) - 1) noexcept;
+		WebSocketSSLClient(int32_t maxBufferSizeNew) noexcept;
 
-		WebSocketSSLClient() noexcept = default;
+		WebSocketSSLClient() = default;
 
-		bool processIO(int32_t waitTimeInMicroSeconds) noexcept;
+		void connect(const std::string& baseUrlNew, const std::string& portNew);
 
 		void writeData(const std::string& data) noexcept;
+
+		void processIO(int32_t waitTimeInMicroSeconds);
 
 		std::string getInputBuffer() noexcept;
 
 		int64_t getBytesRead() noexcept;
 
 		bool didWeConnect() noexcept;
+
+		~WebSocketSSLClient() noexcept = default;
 		
 	  protected:
 		int32_t maxBufferSize{ (1024 * 16) - 1 };
-		bool doWePrintErrorMessages{ false };
 		SOCKETWrapper theSocket{ nullptr };
 		SSL_CTXWrapper context{ nullptr };
 		bool areWeConnected{ false };
@@ -339,11 +349,11 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll DatagramSocketSSLClient {
 	  public:
-		DatagramSocketSSLClient(const std::string& hostName, const std::string& port, bool doWePrintErrorMessages) noexcept;
-
 		DatagramSocketSSLClient() noexcept = default;
 
-		bool writeData(const std::string& data) noexcept;
+		void connect(const std::string& hostName, const std::string& port);
+
+		void writeData(const std::string& data);
 
 		std::string& getInputBuffer() noexcept;
 
@@ -351,11 +361,12 @@ namespace DiscordCoreInternal {
 
 		int64_t getBytesRead() noexcept;
 
+		~DatagramSocketSSLClient() noexcept = default;
+
 	  protected:
 		const int32_t maxBufferSize{ 1024 * 16 };
 		SOCKETWrapper theSocket{ nullptr };
 		BIOWrapper datagramBio{ nullptr };
-		bool doWePrintErrorMessages{ false };
 		std::string inputBuffer{};
 		int64_t bytesRead{ 0 };
 	};

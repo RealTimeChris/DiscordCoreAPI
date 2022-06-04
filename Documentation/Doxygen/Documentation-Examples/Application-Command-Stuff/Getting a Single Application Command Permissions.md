@@ -37,9 +37,9 @@ namespace DiscordCoreAPI {
 			dataPackage02.guildId = args.eventData.getGuildId();
 			dataPackage02.applicationId = args.discordCoreClient->getBotUser().id;
 
-			auto returnValue = DiscordCoreAPI::ApplicationCommands::getApplicationCommandPermissionsAsync(dataPackage02).get();
+			auto resultValue = DiscordCoreAPI::ApplicationCommands::getApplicationCommandPermissionsAsync(dataPackage02).get();
 
-			cout << returnValue.applicationId << endl;
+			cout << resultValue.applicationId << endl;
 		}
 	};
 }
