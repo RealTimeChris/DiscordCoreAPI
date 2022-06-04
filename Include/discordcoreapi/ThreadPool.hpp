@@ -142,11 +142,12 @@ namespace DiscordCoreInternal {
 		std::queue<std::coroutine_handle<>> theCoroutineHandles{};
 		std::atomic_bool areWeQuitting{ false };
 		std::condition_variable theCondVar{};
+		int64_t currentCount{ 0 };
 		int64_t currentIndex{ 0 };
 		std::mutex theMutex01{};
 		std::mutex theMutex02{};
 
-		void threadFunction(int64_t theIndex);
+		void threadFunction(std::stop_token theToken, int64_t theIndex);
 
 		void clearContents();
 	};
