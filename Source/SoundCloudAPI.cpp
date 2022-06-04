@@ -211,7 +211,7 @@ namespace DiscordCoreInternal {
 		this->httpClient = httpClient;
 		this->guildId = guildIdNew;
 	}
-	
+
 	void SoundCloudAPI::weFailedToDownloadOrDecode(const DiscordCoreAPI::Song& newSong, SoundCloudAPI* soundCloudAPI, std::stop_token theToken, int32_t currentRecursionDepth) {
 		currentRecursionDepth += 1;
 		DiscordCoreAPI::GuildMember guildMember =

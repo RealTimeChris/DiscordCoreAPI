@@ -406,7 +406,7 @@ namespace DiscordCoreInternal {
 					break;
 				}
 			}
-			
+
 			if (theConnection.checkForHeadersToParse(theConnection.getInputBuffer()) && !theConnection.doWeHaveHeaders && !stopWatch.hasTimePassed()) {
 				theConnection.parseHeaders(theConnection.getInputBuffer(), theData);
 			}
@@ -429,14 +429,12 @@ namespace DiscordCoreInternal {
 			if (currentBaseUrl != value.baseUrl) {
 				try {
 					theConnection.connect(value.baseUrl);
-				}
-				catch (ProcessingError& theError) {
+				} catch (ProcessingError& theError) {
 					if (this->doWePrintHttpErrorMessages) {
 						DiscordCoreAPI::reportException("HttpClient::httpRequest()");
 					}
 					continue;
 				}
-				
 			}
 			auto theRequest = theConnection.buildRequest(value);
 			theConnection.writeData(theRequest);

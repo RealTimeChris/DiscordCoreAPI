@@ -316,7 +316,6 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll WebSocketSSLClient {
 	  public:
-
 		WebSocketSSLClient(int32_t maxBufferSizeNew) noexcept;
 
 		WebSocketSSLClient() = default;
@@ -334,7 +333,7 @@ namespace DiscordCoreInternal {
 		bool didWeConnect() noexcept;
 
 		~WebSocketSSLClient() noexcept = default;
-		
+
 	  protected:
 		int32_t maxBufferSize{ (1024 * 16) - 1 };
 		SOCKETWrapper theSocket{ nullptr };

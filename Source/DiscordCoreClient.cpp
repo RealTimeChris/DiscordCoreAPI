@@ -200,7 +200,8 @@ namespace DiscordCoreAPI {
 		return this->httpClient->submitWorkloadAndGetResult<GatewayBotData>(workload);
 	}
 
-	DiscordCoreClient::~DiscordCoreClient() {}
+	DiscordCoreClient::~DiscordCoreClient() {
+	}
 
 
 }

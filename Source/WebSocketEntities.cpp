@@ -32,7 +32,7 @@ namespace DiscordCoreInternal {
 	constexpr uint8_t webSocketFinishBit{ (1u << 7u) };
 	constexpr uint8_t webSocketMaskBit{ (1u << 7u) };
 
-	WSMessageCollector::WSMessageCollector(WebSocketSSLClient* thePtr, bool doWePrintErrorMessagesNew){
+	WSMessageCollector::WSMessageCollector(WebSocketSSLClient* thePtr, bool doWePrintErrorMessagesNew) {
 		this->doWePrintErrorMessages = doWePrintErrorMessagesNew;
 		this->theClientPtr = thePtr;
 	};
@@ -209,8 +209,8 @@ namespace DiscordCoreInternal {
 	}
 
 	BaseSocketAgent::BaseSocketAgent(const std::string& botTokenNew, const std::string& baseUrlNew, DiscordCoreAPI::EventManager* eventManagerNew,
-		DiscordCoreAPI::DiscordCoreClient* discordCoreClientNew, DiscordCoreAPI::CommandController* commandControllerNew, std::atomic_bool* doWeQuitNew, bool doWePrintSuccessMessagesNew,
-		bool doWePrintErrorMessagesNew, int32_t shardNumber, int32_t numberOfShards) noexcept {
+		DiscordCoreAPI::DiscordCoreClient* discordCoreClientNew, DiscordCoreAPI::CommandController* commandControllerNew, std::atomic_bool* doWeQuitNew,
+		bool doWePrintSuccessMessagesNew, bool doWePrintErrorMessagesNew, int32_t shardNumber, int32_t numberOfShards) noexcept {
 		this->doWePrintSuccessMessages = doWePrintSuccessMessagesNew;
 		this->doWePrintErrorMessages = doWePrintErrorMessagesNew;
 		this->commandController = commandControllerNew;
@@ -489,7 +489,7 @@ namespace DiscordCoreInternal {
 					this->areWeAuthenticated = true;
 				}
 			}
-			
+
 			if (payload.contains("s") && !payload["s"].is_null()) {
 				if (payload["s"] >= 0) {
 					this->lastNumberReceived = payload["s"];
@@ -524,7 +524,7 @@ namespace DiscordCoreInternal {
 					if (payload["d"] == true) {
 						nlohmann::json identityJson = JSONIFY(this->botToken, static_cast<int32_t>(this->intentsValue), this->shard[0], this->shard[1]);
 						this->sendMessage(identityJson);
-					} else {					
+					} else {
 						this->areWeResuming = false;
 						this->areWeAuthenticated = false;
 						this->closeCode = static_cast<WebSocketCloseCode>(ReconnectPossible::Yes);
@@ -550,7 +550,7 @@ namespace DiscordCoreInternal {
 				if (payload["op"] == 11) {
 					this->haveWeReceivedHeartbeatAck = true;
 				}
-			}			
+			}
 
 			if (payload.contains("d") && !payload["d"].is_null() && payload.contains("t") && !payload["t"].is_null()) {
 				if (payload["t"] == "APPLICATION_COMMAND_CREATE") {

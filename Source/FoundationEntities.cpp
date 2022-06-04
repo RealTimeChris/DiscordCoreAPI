@@ -262,7 +262,6 @@ namespace DiscordCoreAPI {
 			} else {
 				returnString.push_back(value);
 			}
-			
 		}
 		return returnString;
 	}

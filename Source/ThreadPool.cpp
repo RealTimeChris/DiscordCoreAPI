@@ -110,7 +110,7 @@ namespace DiscordCoreInternal {
 		this->theCondVar.notify_one();
 	}
 
-	void CoRoutineThreadPool::threadFunction( std::stop_token theToken, int64_t theIndex) {
+	void CoRoutineThreadPool::threadFunction(std::stop_token theToken, int64_t theIndex) {
 		std::unique_lock<std::mutex> theLock00{ this->theMutex01 };
 		auto theAtomicBoolPtr = &this->workerThreads[theIndex].theCurrentStatus;
 		*this->workerThreads[theIndex].threadId = std::this_thread::get_id();

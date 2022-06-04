@@ -46,7 +46,7 @@ namespace DiscordCoreInternal {
 		return theStream.str();
 	}
 
-	void HttpSSLClient::connect(const std::string& baseUrl,  const std::string& portNew) {
+	void HttpSSLClient::connect(const std::string& baseUrl, const std::string& portNew) {
 		std::string stringNew{};
 		if (baseUrl.find(".com") != std::string::npos) {
 			stringNew =
@@ -498,7 +498,7 @@ namespace DiscordCoreInternal {
 		return this->bytesRead;
 	}
 
-	bool WebSocketSSLClient::didWeConnect() noexcept{
+	bool WebSocketSSLClient::didWeConnect() noexcept {
 		return this->areWeConnected;
 	}
 

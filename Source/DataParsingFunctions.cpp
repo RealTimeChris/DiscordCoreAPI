@@ -3577,7 +3577,7 @@ namespace DiscordCoreInternal {
 					}
 
 					if (value.contains("url") && !value["url"].is_null()) {
-						newData.downloadUrl= value["url"].get<std::string>();
+						newData.downloadUrl = value["url"].get<std::string>();
 					}
 
 					if (value.contains("mimeType") && !value["mimeType"].is_null()) {

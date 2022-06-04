@@ -25,7 +25,7 @@
 #include <discordcoreapi/DataParsingFunctions.hpp>
 
 namespace DiscordCoreInternal {
-	
+
 	YouTubeRequestBuilder::YouTubeRequestBuilder(DiscordCoreInternal::HttpClient* theClient) {
 		this->httpClient = theClient;
 	}
@@ -105,7 +105,8 @@ namespace DiscordCoreInternal {
 		if (responseData.size() < 1) {
 			return DiscordCoreAPI::Song{};
 		}
-		if (responseData[0].responseCode != 204 && responseData[0].responseCode != 201 && responseData[0].responseCode != 200 && this->httpClient->getDoWePrintHttpErrorMessages()) {
+		if (responseData[0].responseCode != 204 && responseData[0].responseCode != 201 && responseData[0].responseCode != 200 &&
+			this->httpClient->getDoWePrintHttpErrorMessages()) {
 			std::cout << DiscordCoreAPI::shiftToBrightRed() << "YouTubeRequestBuilder::constructDownloadInfo() 01 Error: " << responseData[0].responseCode << ", "
 					  << responseData[0].responseMessage << std::endl
 					  << DiscordCoreAPI::reset() << std::endl;
@@ -416,5 +417,5 @@ namespace DiscordCoreInternal {
 			DiscordCoreAPI::getVoiceConnectionMap()[youtubeAPI->guildId]->audioBuffer.send(frameData);
 		}
 	}
-	
+
 };
