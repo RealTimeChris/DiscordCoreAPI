@@ -1018,11 +1018,12 @@ namespace DiscordCoreInternal {
 			this->areWeAuthenticated = false;
 			this->haveWeReceivedHeartbeatAck = true;
 			this->webSocket.reset(nullptr);
-			if (static_cast<uint16_t>(this->closeCode) & static_cast<uint16_t>(ReconnectPossible::Yes) || this->areWeResuming) {
+			if ((static_cast<uint16_t>(this->closeCode) & static_cast<uint16_t>(ReconnectPossible::Yes)) || this->areWeResuming) {
 				this->connect();
 				if (this->areWeResuming) {
 					auto theResult = JSONIFY(this->botToken, this->sessionId, this->lastNumberReceived);
 					this->sendMessage(theResult);
+					this->areWeResuming = false;
 				}
 			} else {
 				this->doWeQuit->store(true);
