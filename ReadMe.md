@@ -93,7 +93,6 @@ DiscordCoreAPI::InputEvents::deleteInputEventResponseAsync(newEvent, 20000).get(
 # Dependencies
 - [CMake](https://cmake.org/) (Version 3.20 or greater)
 - NOTE: I installed these using the [vcpkg](https://github.com/microsoft/vcpkg) installer.
-- [Curl](https://github.com/curl/curl) (.\\vcpkg install curl:x64-windows_OR_linux)
 - [FFMPEG](https://github.com/FFmpeg/FFmpeg) (.\\vcpkg install ffmpeg:x64-windows_OR_linux)
 - [Nlohmann Json](https://github.com/nlohmann/json) (.\\vcpkg install nlohmann-json:x64-windows_OR_linux)
 - [OpenSSL](https://github.com/openssl/openssl) (.\\vcpkg install openssl:x64-windows_OR_linux)
