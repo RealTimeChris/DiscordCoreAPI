@@ -401,7 +401,7 @@ namespace DiscordCoreInternal {
 				theConnection.processIO();
 			} catch (ProcessingError& theError) {
 				if (this->doWePrintHttpErrorMessages) {
-					DiscordCoreAPI::reportException("HttpClient::getResponse()");
+					DiscordCoreAPI::reportException(theError.what());
 					theConnection.doWeConnect = true;
 					break;
 				}
@@ -431,7 +431,7 @@ namespace DiscordCoreInternal {
 					theConnection.connect(value.baseUrl);
 				} catch (ProcessingError& theError) {
 					if (this->doWePrintHttpErrorMessages) {
-						DiscordCoreAPI::reportException("HttpClient::httpRequest()");
+						DiscordCoreAPI::reportException(theError.what());
 					}
 					continue;
 				}
