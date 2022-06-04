@@ -228,6 +228,11 @@ namespace DiscordCoreInternal {
 					currentReruns = 0;
 				}
 				if (currentReruns >= maxReruns) {
+					DiscordCoreAPI::AudioFrameData frameData{};
+					frameData.type = DiscordCoreAPI::AudioFrameType::Skip;
+					frameData.rawFrameData.sampleCount = 0;
+					frameData.encodedFrameData.sampleCount = 0;
+					DiscordCoreAPI::getVoiceConnectionMap()[youtubeAPI->guildId]->audioBuffer.send(frameData);
 					return;
 				}
 				bytesSubmittedPrevious = bytesSubmittedTotal;
