@@ -47,20 +47,11 @@ namespace DiscordCoreAPI {
 		return Globals::songAPIMap;
 	}
 
-	void atexitHandler() {
-		std::cout << "File: " << __FILE__ << std::endl;
-		std::cout << "Line: " << __LINE__ << std::endl;
-		Globals::doWeQuit.store(true);
-	}
-
 	void signalHandler(int32_t sig_int) {
-		std::cout << "File: " << __FILE__ << std::endl;
-		std::cout << "Line: " << __LINE__ << std::endl;
 		Globals::doWeQuit.store(true);
 	}
 
 	DiscordCoreClient::DiscordCoreClient(DiscordCoreClientConfig configData) {
-		std::atexit(atexitHandler);
 		std::signal(SIGTERM, &signalHandler);
 		std::signal(SIGSEGV, &signalHandler);
 		std::signal(SIGINT, &signalHandler);
