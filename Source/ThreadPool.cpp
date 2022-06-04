@@ -72,16 +72,13 @@ namespace DiscordCoreInternal {
 			WorkerThread workerThread{};
 			this->currentIndex += 1;
 			this->currentCount += 1;
-			int64_t currentIndex = this->currentIndex;
-			workerThread.theIndex = currentIndex;
+			workerThread.theIndex = this->currentIndex;
 			workerThread.theThread = std::jthread([=, this](std::stop_token theToken) {
 				auto thePtr = std::make_unique<HttpConnection>();
 				httpConnections.insert(std::make_pair(std::this_thread::get_id(), std::move(thePtr)));
 				this->threadFunction(theToken, currentIndex);
 			});
 			this->workerThreads.insert_or_assign(currentIndex, workerThread);
-			for (auto& [key, value]: this->workerThreads) {
-			}
 		}
 	}
 
@@ -97,8 +94,7 @@ namespace DiscordCoreInternal {
 			WorkerThread workerThread{};
 			this->currentCount += 1;
 			this->currentIndex += 1;
-			int64_t currentIndex = this->currentIndex;
-			workerThread.theIndex = currentIndex;
+			workerThread.theIndex = this->currentIndex;
 			workerThread.theThread = std::jthread([=, this](std::stop_token theToken) {
 				auto thePtr = std::make_unique<HttpConnection>();
 				httpConnections.insert(std::make_pair(std::this_thread::get_id(), std::move(thePtr)));
@@ -136,7 +132,7 @@ namespace DiscordCoreInternal {
 			if (this->areWeQuitting.load() || theToken.stop_requested()) {
 				break;
 			}
-			auto& coroHandle = this->theCoroutineHandles.front();
+			auto coroHandle = this->theCoroutineHandles.front();
 			this->theCoroutineHandles.pop();
 			theLock01.unlock();
 			if (theAtomicBoolPtr) {
