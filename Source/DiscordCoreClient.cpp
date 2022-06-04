@@ -48,10 +48,14 @@ namespace DiscordCoreAPI {
 	}
 
 	void atexitHandler() {
+		std::cout << "File: " << __FILE__ << std::endl;
+		std::cout << "Line: " << __LINE__ << std::endl;
 		Globals::doWeQuit.store(true);
 	}
 
 	void signalHandler(int32_t sig_int) {
+		std::cout << "File: " << __FILE__ << std::endl;
+		std::cout << "Line: " << __LINE__ << std::endl;
 		Globals::doWeQuit.store(true);
 	}
 
