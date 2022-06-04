@@ -363,7 +363,7 @@ namespace DiscordCoreInternal {
 			DiscordCoreAPI::getVoiceConnectionMap()[youtubeAPI->guildId]->audioBuffer.send(frameData);
 		} catch (ProcessingError& theError) {
 			if (this->doWePrintWebSocketErrorMessages) {
-				DiscordCoreAPI::reportException("YouTubeAPI::downloadAndStreamAudio()");
+				DiscordCoreAPI::reportException(theError.what());
 			}
 			haveWeFailed = true;
 			this->breakOutPlayMore(theToken, std::move(audioDecoder), haveWeFailed, counter, this, newSong, currentRecursionDepth);
