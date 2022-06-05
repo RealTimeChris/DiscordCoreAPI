@@ -138,19 +138,21 @@ namespace DiscordCoreInternal {
 	void HttpSSLClient::processIO() {
 #ifdef _WIN32
 		fd_set writeSet{}, readSet{};
-		int32_t nfds{ 0 };
+		int32_t readNfds{ 0 }, writeNfds{ 0 }, finalNfds{ 0 };
 		FD_ZERO(&writeSet);
 		FD_ZERO(&readSet);
 
 		if (this->outputBuffer.size() > 0 && !this->wantRead) {
 			FD_SET(this->theSocket, &writeSet);
-			nfds = this->theSocket > nfds ? this->theSocket : nfds;
+			writeNfds = this->theSocket > writeNfds ? this->theSocket : writeNfds;
+			
 		}
 		FD_SET(this->theSocket, &readSet);
-		nfds = this->theSocket > nfds ? this->theSocket : nfds;
+		readNfds = this->theSocket > readNfds ? this->theSocket : readNfds;
+		finalNfds = readNfds > writeNfds ? readNfds : writeNfds;
 
 		timeval checkTime{ .tv_usec = 10000 };
-		if (auto resultValue = select(nfds + 1, &readSet, &writeSet, nullptr, &checkTime); resultValue == SOCKET_ERROR) {
+		if (auto resultValue = select(finalNfds + 1, &readSet, &writeSet, nullptr, &checkTime); resultValue == SOCKET_ERROR) {
 			ProcessingError theError{ reportError("select() Error: ", resultValue) };
 			throw theError;
 		} else if (resultValue == 0) {
@@ -347,20 +349,20 @@ namespace DiscordCoreInternal {
 		if (this->areWeConnected) {
 #ifdef _WIN32
 			fd_set writeSet{}, readSet{};
-			int32_t nfds{ 0 };
+			int32_t readNfds{ 0 }, writeNfds{ 0 }, finalNfds{ 0 };
 			FD_ZERO(&writeSet);
 			FD_ZERO(&readSet);
 
 			if (this->outputBuffer.size() > 0 && !this->wantRead) {
 				FD_SET(this->theSocket, &writeSet);
-				nfds = this->theSocket > nfds ? this->theSocket : nfds;
+				writeNfds = this->theSocket > writeNfds ? this->theSocket : writeNfds;
 			}
 			FD_SET(this->theSocket, &readSet);
-			nfds = this->theSocket > nfds ? this->theSocket : nfds;
+			readNfds = this->theSocket > readNfds ? this->theSocket : readNfds;
+			finalNfds = readNfds > writeNfds ? readNfds : writeNfds;
 
 			timeval checkTime{ .tv_usec = waitTimeInMicroSeconds };
-			if (auto resultValue = select(nfds + 1, &readSet, &writeSet, nullptr, &checkTime); resultValue == SOCKET_ERROR) {
-				this->areWeConnected = false;
+			if (auto resultValue = select(finalNfds + 1, &readSet, &writeSet, nullptr, &checkTime); resultValue == SOCKET_ERROR) {
 				ProcessingError theError{ reportError("select() Error: ", resultValue) };
 				throw theError;
 			} else if (resultValue == 0) {
