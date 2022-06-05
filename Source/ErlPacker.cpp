@@ -257,14 +257,8 @@ namespace DiscordCoreInternal {
 			case ETFTokenType::Float_Ext: {
 				return ErlPacker::parseFloatExt(buffer);
 			}
-			case ETFTokenType::Atom_Utf8_Ext: {
-				return ErlPacker::parseAtomUtf8Ext(buffer);
-			}
 			case ETFTokenType::Atom_Ext: {
 				return ErlPacker::parseAtomUtf8Ext(buffer);
-			}
-			case ETFTokenType::Small_Atom_Utf8_Ext: {
-				return ErlPacker::parseSmallAtomUtf8Ext(buffer);
 			}
 			case ETFTokenType::Small_Tuple_Ext: {
 				return ErlPacker::parseSmallTupleExt(buffer);
@@ -281,9 +275,6 @@ namespace DiscordCoreInternal {
 			case ETFTokenType::List_Ext: {
 				return ErlPacker::parseListExt(buffer);
 			}
-			case ETFTokenType::Map_Ext: {
-				return ErlPacker::parseMapExt(buffer);
-			}
 			case ETFTokenType::Binary_Ext: {
 				return ErlPacker::parseBinaryExt(buffer);
 			}
@@ -292,6 +283,15 @@ namespace DiscordCoreInternal {
 			}
 			case ETFTokenType::Large_Big_Ext: {
 				return ErlPacker::parseLargeBigExt(buffer);
+			}
+			case ETFTokenType::Map_Ext: {
+				return ErlPacker::parseMapExt(buffer);
+			}
+			case ETFTokenType::Atom_Utf8_Ext: {
+				return ErlPacker::parseAtomUtf8Ext(buffer);
+			}
+			case ETFTokenType::Small_Atom_Utf8_Ext: {
+				return ErlPacker::parseSmallAtomUtf8Ext(buffer);
 			}
 			default: {
 				throw ErlPackError("ETF Parse Error: Unknown data type in ETF");
