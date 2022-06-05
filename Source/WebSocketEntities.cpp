@@ -504,7 +504,7 @@ namespace DiscordCoreInternal {
 				}
 
 				if (payload["op"] == 7) {
-					if (this->doWePrintSuccessMessages) {
+					if (this->doWePrintErrorMessages) {
 						std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Shard " + this->shard.dump() + " Reconnecting (Type 7)!" << DiscordCoreAPI::reset() << std::endl
 								  << std::endl;
 					}
@@ -513,7 +513,7 @@ namespace DiscordCoreInternal {
 				}
 
 				if (payload["op"] == 9) {
-					if (this->doWePrintSuccessMessages) {
+					if (this->doWePrintErrorMessages) {
 						std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Shard " + this->shard.dump() + " Reconnecting (Type 9)!" << DiscordCoreAPI::reset() << std::endl
 								  << std::endl;
 					}
@@ -536,16 +536,17 @@ namespace DiscordCoreInternal {
 					if (payload["d"].contains("heartbeat_interval") && !payload["d"]["heartbeat_interval"].is_null()) {
 						this->heartbeatInterval = payload["d"]["heartbeat_interval"];
 					}
-					this->areWeHeartBeating = false;
-					if (!this->areWeAuthenticated) {
-						nlohmann::json identityJson = JSONIFY(this->botToken, static_cast<int32_t>(this->intentsValue), this->shard[0], this->shard[1]);
-						this->sendMessage(identityJson);
-					}
 					if (this->areWeResuming) {
 						std::this_thread::sleep_for(std::chrono::milliseconds{ 1500 });
 						nlohmann::json resumePayload = JSONIFY(this->botToken, this->sessionId, this->lastNumberReceived);
 						this->sendMessage(resumePayload);
+					} else {
+						if (!this->areWeAuthenticated) {
+							nlohmann::json identityJson = JSONIFY(this->botToken, static_cast<int32_t>(this->intentsValue), this->shard[0], this->shard[1]);
+							this->sendMessage(identityJson);
+						}
 					}
+					this->areWeHeartBeating = false;					
 				}
 				if (payload["op"] == 11) {
 					this->haveWeReceivedHeartbeatAck = true;
@@ -1020,6 +1021,9 @@ namespace DiscordCoreInternal {
 			}
 			this->areWeConnected.store(false);
 			this->currentReconnectTries += 1;
+			if (!this->areWeResuming) {
+				this->areWeAuthenticated = false;
+			}
 			this->haveWeReceivedHeartbeatAck = true;
 			this->webSocket.reset(nullptr);
 			this->connect();
