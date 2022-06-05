@@ -115,7 +115,7 @@ namespace DiscordCoreInternal {
 
 		std::jthread* getTheTask() noexcept;
 
-		void onClosedExternal() noexcept;
+		void onClosed() noexcept;
 
 		~BaseSocketAgent() noexcept;
 

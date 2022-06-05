@@ -253,7 +253,7 @@ namespace DiscordCoreInternal {
 			if (this->doWePrintErrorMessages) {
 				DiscordCoreAPI::reportException("BaseSocketAgent::sendMessage()");
 			}
-			this->onClosedExternal();
+			this->onClosed();
 		}
 	}
 
@@ -313,7 +313,7 @@ namespace DiscordCoreInternal {
 			if (this->doWePrintErrorMessages) {
 				DiscordCoreAPI::reportException("BaseSocketAgent::sendMessage()");
 			}
-			this->onClosedExternal();
+			this->onClosed();
 		}
 	}
 
@@ -345,7 +345,7 @@ namespace DiscordCoreInternal {
 			if (this->doWePrintErrorMessages) {
 				DiscordCoreAPI::reportException("BaseSocketAgent::createHeader()");
 			}
-			this->onClosedExternal();
+			this->onClosed();
 		}
 	}
 
@@ -376,7 +376,7 @@ namespace DiscordCoreInternal {
 			if (this->doWePrintErrorMessages) {
 				DiscordCoreAPI::reportException("BaseSocketAgent::getVoiceConnectionData()");
 			}
-			this->onClosedExternal();
+			this->onClosed();
 		}
 	}
 
@@ -398,7 +398,7 @@ namespace DiscordCoreInternal {
 					this->dataOpcode = theMessage.opCode;
 					this->closeCode = theMessage.closeCode;
 					this->didWeFail = true;
-					this->onClosedExternal();
+					this->onClosed();
 				}
 				auto theReturnMessage = this->messageCollector.collectFinalMessage();
 				if (theReturnMessage.theMessage != "") {
@@ -411,7 +411,7 @@ namespace DiscordCoreInternal {
 			if (this->doWePrintErrorMessages) {
 				DiscordCoreAPI::reportException("BaseSocketAgent::run()");
 			}
-			this->onClosedExternal();
+			this->onClosed();
 		}
 	}
 
@@ -509,7 +509,7 @@ namespace DiscordCoreInternal {
 								  << std::endl;
 					}
 					this->areWeResuming = true;
-					this->onClosedExternal();
+					this->onClosed();
 				}
 
 				if (payload["op"] == 9) {
@@ -528,8 +528,7 @@ namespace DiscordCoreInternal {
 					} else {
 						this->areWeResuming = false;
 						this->areWeAuthenticated = false;
-						this->closeCode = static_cast<WebSocketCloseCode>(ReconnectPossible::Yes);
-						this->onClosedExternal();
+						this->onClosed();
 					}
 				}
 
@@ -986,7 +985,7 @@ namespace DiscordCoreInternal {
 			if (this->doWePrintErrorMessages) {
 				DiscordCoreAPI::reportException("BaseSocketAgent::onMessageReceived()");
 			}
-			this->onClosedExternal();
+			this->onClosed();
 			return;
 		}
 	}
@@ -998,17 +997,17 @@ namespace DiscordCoreInternal {
 				this->sendMessage(heartbeat);
 				this->haveWeReceivedHeartbeatAck = false;
 			} else {
-				this->onClosedExternal();
+				this->onClosed();
 			}
 		} catch (...) {
 			if (this->doWePrintErrorMessages) {
 				DiscordCoreAPI::reportException("BaseSocketAgent::sendHeartBeat()");
 			}
-			this->onClosedExternal();
+			this->onClosed();
 		}
 	}
 
-	void BaseSocketAgent::onClosedExternal() noexcept {
+	void BaseSocketAgent::onClosed() noexcept {
 		this->areWeReadyToConnectEvent.reset();
 		if (this->maxReconnectTries > this->currentReconnectTries) {
 			if (this->doWePrintErrorMessages) {
@@ -1021,7 +1020,6 @@ namespace DiscordCoreInternal {
 			}
 			this->areWeConnected.store(false);
 			this->currentReconnectTries += 1;
-			this->areWeAuthenticated = false;
 			this->haveWeReceivedHeartbeatAck = true;
 			this->webSocket.reset(nullptr);
 			this->connect();
@@ -1062,7 +1060,7 @@ namespace DiscordCoreInternal {
 			if (this->doWePrintErrorMessages) {
 				DiscordCoreAPI::reportException("BaseSocketAgent::connect()");
 			}
-			this->onClosedExternal();
+			this->onClosed();
 		}
 	}
 
