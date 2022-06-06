@@ -177,12 +177,12 @@ namespace DiscordCoreAPI {
 						std::this_thread::sleep_for(std::chrono::milliseconds{ 1 });
 					}
 				}
-				this->result = this->coroutineHandle.promise().result;
-				return this->result;
 				std::exception_ptr exceptionPtr{};
 				while (this->exceptionBuffer->tryReceive(exceptionPtr)) {
 					std::rethrow_exception(exceptionPtr);
 				}
+				this->result = this->coroutineHandle.promise().result;
+				return this->result;
 			}
 			return ReturnType{};
 		}
