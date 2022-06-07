@@ -22,9 +22,8 @@
 
 namespace DiscordCoreInternal {
 
-	std::unordered_map<std::thread::id, std::unique_ptr<HttpConnection>> httpConnections{};
-
 	namespace Globals {
+		std::unordered_map<std::thread::id, std::unique_ptr<HttpConnection>> httpConnections{};
 		std::unordered_map<std::string, std::unique_ptr<RateLimitData>> rateLimitValues{};
 		std::unordered_map<HttpWorkloadType, std::string> rateLimitValueBuckets{};
 	}
@@ -252,10 +251,10 @@ namespace DiscordCoreInternal {
 
 	HttpConnection* HttpConnectionManager::getConnection() {
 		std::lock_guard<std::mutex> theLock{ this->theMutex };
-		if (!httpConnections.contains(std::this_thread::get_id())) {
-			httpConnections.insert(std::make_pair(std::this_thread::get_id(), std::make_unique<DiscordCoreInternal::HttpConnection>()));
+		if (!Globals::httpConnections.contains(std::this_thread::get_id())) {
+			Globals::httpConnections.insert(std::make_pair(std::this_thread::get_id(), std::make_unique<DiscordCoreInternal::HttpConnection>()));
 		}
-		return httpConnections[std::this_thread::get_id()].get();
+		return Globals::httpConnections[std::this_thread::get_id()].get();
 	}
 
 	void HttpConnectionManager::initialize() {

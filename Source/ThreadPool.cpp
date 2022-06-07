@@ -41,7 +41,9 @@ namespace DiscordCoreAPI {
 
 namespace DiscordCoreInternal {
 
-	extern std::unordered_map<std::thread::id, std::unique_ptr<HttpConnection>> httpConnections;
+	namespace Globals {
+		extern std::unordered_map<std::thread::id, std::unique_ptr<HttpConnection>> httpConnections;
+	}
 
 	WorkerThread& WorkerThread::operator=(WorkerThread& other) {
 		this->theCurrentStatus.store(other.theCurrentStatus.load());
@@ -63,7 +65,7 @@ namespace DiscordCoreInternal {
 			workerThread.theIndex = this->currentIndex;
 			workerThread.theThread = std::jthread([=, this](std::stop_token theToken) {
 				auto thePtr = std::make_unique<HttpConnection>();
-				httpConnections.insert(std::make_pair(std::this_thread::get_id(), std::move(thePtr)));
+				Globals::httpConnections.insert(std::make_pair(std::this_thread::get_id(), std::move(thePtr)));
 				this->threadFunction(theToken, currentIndex);
 			});
 			this->workerThreads.insert_or_assign(currentIndex, workerThread);
@@ -85,7 +87,7 @@ namespace DiscordCoreInternal {
 			workerThread.theIndex = this->currentIndex;
 			workerThread.theThread = std::jthread([=, this](std::stop_token theToken) {
 				auto thePtr = std::make_unique<HttpConnection>();
-				httpConnections.insert(std::make_pair(std::this_thread::get_id(), std::move(thePtr)));
+				Globals::httpConnections.insert(std::make_pair(std::this_thread::get_id(), std::move(thePtr)));
 				this->threadFunction(theToken, currentIndex);
 			});
 			this->workerThreads.insert_or_assign(currentIndex, workerThread);
@@ -131,7 +133,7 @@ namespace DiscordCoreInternal {
 				theAtomicBoolPtr->store(false);
 			}
 		}
-		httpConnections.erase(std::this_thread::get_id());
+		Globals::httpConnections.erase(std::this_thread::get_id());
 		this->workerThreads.erase(theIndex);
 	}
 
