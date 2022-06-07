@@ -546,7 +546,7 @@ namespace DiscordCoreInternal {
 							this->sendMessage(identityJson);
 						}
 					}
-					this->areWeHeartBeating = false;					
+					this->areWeHeartBeating = false;
 				}
 				if (payload["op"] == 11) {
 					this->haveWeReceivedHeartbeatAck = true;

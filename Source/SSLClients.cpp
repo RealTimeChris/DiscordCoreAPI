@@ -145,7 +145,6 @@ namespace DiscordCoreInternal {
 		if (this->outputBuffer.size() > 0 && !this->wantRead) {
 			FD_SET(this->theSocket, &writeSet);
 			writeNfds = this->theSocket > writeNfds ? this->theSocket : writeNfds;
-			
 		}
 		FD_SET(this->theSocket, &readSet);
 		readNfds = this->theSocket > readNfds ? this->theSocket : readNfds;

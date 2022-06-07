@@ -375,7 +375,7 @@ namespace DiscordCoreInternal {
 				DiscordCoreAPI::reportException("YouTubeAPI::downloadAndStreamAudio()");
 			}
 			this->weFailedToDownloadOrDecode(newSong, youtubeAPI, theToken, currentRecursionDepth);
-		} 
+		}
 	};
 
 	DiscordCoreAPI::Song YouTubeAPI::collectFinalSong(const DiscordCoreAPI::GuildMemberData& addedByGuildMember, DiscordCoreAPI::Song& newSong) {
