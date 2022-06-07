@@ -222,9 +222,9 @@ namespace DiscordCoreInternal {
 			while (DiscordCoreAPI::getVoiceConnectionMap()[soundCloudAPI->guildId]->audioBuffer.tryReceive(frameData)) {
 			};
 			DiscordCoreAPI::SongCompletionEventData eventData{};
-			auto resultValue = DiscordCoreAPI::getSongAPIMap()[soundCloudAPI->guildId].get();
-			if (resultValue) {
-				eventData.previousSong = resultValue->getCurrentSong(soundCloudAPI->guildId);
+			auto returnValue = DiscordCoreAPI::getSongAPIMap()[soundCloudAPI->guildId].get();
+			if (returnValue) {
+				eventData.previousSong = returnValue->getCurrentSong(soundCloudAPI->guildId);
 			}
 			eventData.wasItAFail = true;
 			eventData.guildMember = guildMember;

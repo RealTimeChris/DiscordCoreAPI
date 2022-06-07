@@ -46,9 +46,9 @@ namespace DiscordCoreAPI {
 			dataPackage02.commandId = returnVector[0].id;
 			dataPackage02.guildId = args.eventData.getGuildId();
 
-			auto resultValue = DiscordCoreAPI::ApplicationCommands::getGuildApplicationCommandAsync(dataPackage02).get();
+			auto returnValue = DiscordCoreAPI::ApplicationCommands::getGuildApplicationCommandAsync(dataPackage02).get();
 
-			cout << resultValue.name << endl;
+			cout << returnValue.name << endl;
 		}
 	};
 }

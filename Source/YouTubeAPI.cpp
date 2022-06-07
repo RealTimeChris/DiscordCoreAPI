@@ -180,9 +180,9 @@ namespace DiscordCoreInternal {
 			while (DiscordCoreAPI::getVoiceConnectionMap()[youtubeAPI->guildId]->audioBuffer.tryReceive(frameData)) {
 			};
 			DiscordCoreAPI::SongCompletionEventData eventData{};
-			auto resultValue = DiscordCoreAPI::getSongAPIMap()[youtubeAPI->guildId].get();
-			if (resultValue) {
-				eventData.previousSong = resultValue->getCurrentSong(youtubeAPI->guildId);
+			auto returnValue = DiscordCoreAPI::getSongAPIMap()[youtubeAPI->guildId].get();
+			if (returnValue) {
+				eventData.previousSong = returnValue->getCurrentSong(youtubeAPI->guildId);
 			}
 			eventData.wasItAFail = true;
 			eventData.guildMember = guildMember;

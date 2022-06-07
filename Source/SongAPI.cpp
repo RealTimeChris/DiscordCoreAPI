@@ -30,9 +30,9 @@ namespace DiscordCoreAPI {
 	}
 
 	void SongAPI::onSongCompletion(std::function<CoRoutine<void>(SongCompletionEventData)> handler, const uint64_t& guildId) {
-		auto resultValue = getSongAPIMap()[guildId].get();
-		resultValue->onSongCompletionEvent.remove(resultValue->theToken);
-		resultValue->theToken = resultValue->onSongCompletionEvent.add(handler);
+		auto returnValue = getSongAPIMap()[guildId].get();
+		returnValue->onSongCompletionEvent.remove(returnValue->theToken);
+		returnValue->theToken = returnValue->onSongCompletionEvent.add(handler);
 	}
 
 	bool SongAPI::sendNextSong() {
@@ -157,8 +157,8 @@ namespace DiscordCoreAPI {
 			newVector02.push_back(value);
 		}
 		getSongAPIMap()[guildId]->playlist.songQueue = newVector02;
-		auto resultValue = getSongAPIMap()[guildId].get();
-		if (resultValue) {
+		auto returnValue = getSongAPIMap()[guildId].get();
+		if (returnValue) {
 			getSongAPIMap()[guildId]->onSongCompletionEvent.remove(getSongAPIMap()[guildId]->theToken);
 			getSongAPIMap()[guildId]->theToken = DiscordCoreInternal::EventDelegateToken{};
 		}

@@ -47,9 +47,9 @@ namespace DiscordCoreAPI {
 			DiscordCoreAPI::BulkOverwriteGlobalApplicationCommandsData dataPackage;
 			dataPackage.data = newVector;
 
-			auto resultValue = DiscordCoreAPI::ApplicationCommands::bulkOverwriteGlobalApplicationCommandsAsync(dataPackage).get();
+			auto returnValue = DiscordCoreAPI::ApplicationCommands::bulkOverwriteGlobalApplicationCommandsAsync(dataPackage).get();
 
-			for (auto value: resultValue) {
+			for (auto value: returnValue) {
 				cout << "Command Name: " << value.name << endl;
 			}
 		}

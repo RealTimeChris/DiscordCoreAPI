@@ -40,9 +40,9 @@ namespace DiscordCoreAPI {
 			dataPackage.name = returnVector.at(0).name;
 			dataPackage.description = "a test description";
 
-			auto resultValue = DiscordCoreAPI::ApplicationCommands::editGuildApplicationCommandAsync(dataPackage).get();
+			auto returnValue = DiscordCoreAPI::ApplicationCommands::editGuildApplicationCommandAsync(dataPackage).get();
 
-			cout << resultValue.description << endl;
+			cout << returnValue.description << endl;
 		}
 	};
 }

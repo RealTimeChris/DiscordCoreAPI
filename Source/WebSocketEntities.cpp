@@ -54,9 +54,9 @@ namespace DiscordCoreInternal {
 		}
 		switch (this->theState) {
 			case WSMessageCollectorState::Connecting: {
-				auto resultValue = this->collectData();
-				if (!resultValue) {
-					return resultValue;
+				auto returnValue = this->collectData();
+				if (!returnValue) {
+					return returnValue;
 				}
 				return this->parseConnectionHeader();
 			}
@@ -1052,8 +1052,8 @@ namespace DiscordCoreInternal {
 			this->sendMessage(sendString);
 			std::string theResult{};
 			while (theResult == "") {
-				auto resultValue = this->messageCollector.runMessageCollector();
-				if (!resultValue) {
+				auto returnValue = this->messageCollector.runMessageCollector();
+				if (!returnValue) {
 					return;
 				}
 				theResult = this->messageCollector.collectFinalMessage().theMessage;

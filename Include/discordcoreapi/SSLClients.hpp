@@ -90,31 +90,6 @@ namespace DiscordCoreInternal {
 		std::unique_ptr<WSADATA, WSADataDeleter> thePtr{ new WSADATA{}, WSADataDeleter{} };
 	};
 #endif
-#ifndef _WIN32
-	struct DiscordCoreAPI_Dll epollWrapper {
-		struct DiscordCoreAPI_Dll epollDeleter {
-			void operator()(int32_t* other) {
-				if (auto resultValue = close(*other); resultValue == SOCKET_ERROR) {
-					reportError("close() Error: ", resultValue);
-				}
-			}
-		};
-
-		operator int32_t() {
-			return *this->thePtr;
-		}
-
-		epollWrapper(nullptr_t) {
-			*this->thePtr = epoll_create1(0);
-			if (*this->thePtr == SOCKET_ERROR) {
-				reportError("epoll_create1() Error: ", *this->thePtr);
-			}
-		};
-
-	  protected:
-		std::unique_ptr<int32_t, epollDeleter> thePtr{ new int32_t{ -1 }, epollDeleter{} };
-	};
-#endif
 
 	struct DiscordCoreAPI_Dll BIOWrapper {
 		struct DiscordCoreAPI_Dll BIODeleter {
