@@ -82,7 +82,7 @@ namespace DiscordCoreInternal {
 		WSADataWrapper() {
 			if (auto errorValue = WSAStartup(MAKEWORD(2, 2), this->thePtr.get()); errorValue != 0) {
 				std::cout << DiscordCoreAPI::shiftToBrightRed() << "WSAStartup() Error: " << errorValue << ", ";
-				std::cout << std::endl << DiscordCoreAPI::reset();
+				std::cout << DiscordCoreAPI::reset() << std::endl;
 			}
 		}
 
@@ -131,7 +131,7 @@ namespace DiscordCoreInternal {
 			if (!BIO_up_ref(other)) {
 				std::cout << DiscordCoreAPI::shiftToBrightRed() << "BIO_up_ref() Error: ";
 				ERR_print_errors_fp(stdout);
-				std::cout << std::endl << DiscordCoreAPI::reset();
+				std::cout << DiscordCoreAPI::reset() << std::endl;
 			};
 			return *this;
 		}
@@ -190,7 +190,7 @@ namespace DiscordCoreInternal {
 			if (!SSL_CTX_up_ref(other)) {
 				std::cout << DiscordCoreAPI::shiftToBrightRed() << "SSL_CTX_up_ref() Error: ";
 				ERR_print_errors_fp(stdout);
-				std::cout << std::endl << DiscordCoreAPI::reset();
+				std::cout << DiscordCoreAPI::reset() << std::endl;
 			}
 			return *this;
 		}
@@ -221,7 +221,7 @@ namespace DiscordCoreInternal {
 			if (!SSL_up_ref(other)) {
 				std::cout << DiscordCoreAPI::shiftToBrightRed() << "SSL_up_ref() Error: ";
 				ERR_print_errors_fp(stdout);
-				std::cout << std::endl << DiscordCoreAPI::reset();
+				std::cout << DiscordCoreAPI::reset() << std::endl;
 			}
 			return *this;
 		}
