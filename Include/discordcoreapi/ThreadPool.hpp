@@ -108,7 +108,7 @@ namespace DiscordCoreAPI {
 				if (stopToken.stop_requested()) {
 					return;
 				}
-				timeElapsedHandler();
+				timeElapsedHandler(args...);
 				if (stopToken.stop_requested()) {
 					return;
 				}
