@@ -255,7 +255,7 @@ namespace DiscordCoreInternal {
 			throw theError;
 		}
 
-		int32_t value{ this->maxBufferSize + 1 };
+		int32_t value{ this->maxBufferSize };
 		if (auto returnValue = setsockopt(this->theSocket, SOL_SOCKET, SO_SNDBUF, static_cast<char*>(static_cast<void*>(&value)), sizeof(value)); returnValue == SOCKET_ERROR) {
 			ConnectionError theError{ reportError("setsockopt() Error: ", returnValue) };
 			throw theError;
@@ -315,6 +315,7 @@ namespace DiscordCoreInternal {
 			ConnectionError theError{ reportSSLError("SSL_connect() Error: ", returnValue, this->ssl) };
 			throw theError;
 		}
+
 		this->areWeConnected = true;
 	}
 
@@ -328,11 +329,13 @@ namespace DiscordCoreInternal {
 			if ((this->outputBuffer.size() > 0 || this->wantWrite) && !this->wantRead) {
 				FD_SET(this->theSocket, &writeSet);
 				writeNfds = this->theSocket > writeNfds ? this->theSocket : writeNfds;
+			} 
+			if (!this->wantWrite) {
+				FD_SET(this->theSocket, &readSet);
 			}
-			FD_SET(this->theSocket, &readSet);
+			
 			readNfds = this->theSocket > readNfds ? this->theSocket : readNfds;
 			finalNfds = readNfds > writeNfds ? readNfds : writeNfds;
-
 			timeval checkTime{ .tv_usec = waitTimeInMicroSeconds };
 			if (auto returnValue = select(finalNfds + 1, &readSet, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
 				ProcessingError theError{ reportError("select() Error: ", returnValue) };

@@ -80,10 +80,10 @@ namespace DiscordCoreInternal {
 		bool runMessageCollector() noexcept;
 
 	  protected:
+		WSMessageCollectorState theState{ WSMessageCollectorState::Connecting };
 		std::queue<WSMessageCollectorReturnData> finalMessages{};
 		WebSocketSSLClient* theClientPtr{ nullptr };
 		bool doWePrintErrorMessages{ false };
-		WSMessageCollectorState theState{};
 		int8_t maxRecursionDepth{ 10 };
 		int8_t currentRecursionDepth{};
 		std::string currentMessage{};

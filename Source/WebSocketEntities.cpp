@@ -194,8 +194,8 @@ namespace DiscordCoreInternal {
 			if (this->theClientPtr != nullptr) {
 				this->theClientPtr->processIO(100000);
 				auto newMessage = this->theClientPtr->getInputBuffer();
-				this->currentMessage.insert(this->currentMessage.end(), newMessage.begin(), newMessage.end());
 				this->theState = WSMessageCollectorState::Parsing;
+				this->currentMessage.insert(this->currentMessage.end(), newMessage.begin(), newMessage.end());
 				return this->runMessageCollector();
 			} else {
 				return false;
