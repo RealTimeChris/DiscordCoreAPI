@@ -96,6 +96,34 @@ namespace DiscordCoreAPI {
 			return threadId;
 		}
 
+		template<typename... ArgTypes>
+		static void executeFunctionAfterTimePeriod(TimeElapsedHandler<ArgTypes...> timeElapsedHandler, int32_t timeInterval, bool blockForCompletion, ArgTypes... args) {
+			std::jthread theThread = std::jthread([=](std::stop_token stopToken) {
+				DiscordCoreAPI::StopWatch stopWatch{ std::chrono::milliseconds{ timeInterval } };
+				stopWatch.resetTimer();
+				std::this_thread::sleep_for(std::chrono::milliseconds{ static_cast<int32_t>(std::ceil(static_cast<float>(timeInterval) * thePercentage)) });
+				while (!stopWatch.hasTimePassed() && !stopToken.stop_requested()) {
+					std::this_thread::sleep_for(std::chrono::milliseconds{ 1 });
+				}
+				if (stopToken.stop_requested()) {
+					return;
+				}
+				timeElapsedHandler();
+				if (stopToken.stop_requested()) {
+					return;
+				}
+			});
+			if (blockForCompletion) {
+				if (theThread.joinable()) {
+					theThread.join();
+				}
+			} else {
+				if (theThread.joinable()) {
+					theThread.detach();
+				}
+			}
+		}
+
 		void stopThread(const std::string& theKey);
 
 		~ThreadPool();
