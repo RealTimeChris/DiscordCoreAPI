@@ -105,6 +105,11 @@ namespace DiscordCoreInternal {
 			throw theError;
 		}
 
+		if (!SSL_CTX_set_min_proto_version(this->context, TLS1_2_VERSION)) {
+			ConnectionError theError{ reportSSLError("SSL_CTX_set_min_proto_version() Error: ") };
+			throw theError;
+		}
+
 		if (this->ssl = SSL_new(this->context); this->ssl == nullptr) {
 			ConnectionError theError{ reportSSLError("SSL_new() Error: ") };
 			throw theError;
@@ -116,7 +121,7 @@ namespace DiscordCoreInternal {
 		}
 
 		/* SNI */
-		if (auto returnValue = SSL_set_tlsext_host_name(this->ssl, baseUrl.c_str()); !returnValue) {
+		if (auto returnValue = SSL_set_tlsext_host_name(this->ssl, stringNew.c_str()); !returnValue) {
 			ConnectionError theError{ reportSSLError("SSL_set_tlsext_host_name() Error: ", returnValue, this->ssl) };
 			throw theError;
 		}
@@ -285,6 +290,11 @@ namespace DiscordCoreInternal {
 			throw theError;
 		}
 
+		if (!SSL_CTX_set_min_proto_version(this->context, TLS1_2_VERSION)) {
+			ConnectionError theError{ reportSSLError("SSL_CTX_set_min_proto_version() Error: ") };
+			throw theError;
+		}
+
 		if (this->ssl = SSL_new(this->context); this->ssl == nullptr) {
 			ConnectionError theError{ reportSSLError("SSL_new() Error: ") };
 			throw theError;
@@ -323,7 +333,7 @@ namespace DiscordCoreInternal {
 			readNfds = this->theSocket > readNfds ? this->theSocket : readNfds;
 			finalNfds = readNfds > writeNfds ? readNfds : writeNfds;
 
-			timeval checkTime{ .tv_usec = 10000 };
+			timeval checkTime{ .tv_usec = waitTimeInMicroSeconds };
 			if (auto returnValue = select(finalNfds + 1, &readSet, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
 				ProcessingError theError{ reportError("select() Error: ", returnValue) };
 				throw theError;
