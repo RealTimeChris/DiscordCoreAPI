@@ -191,8 +191,7 @@ namespace DiscordCoreInternal {
 					throw ProcessingError{ theResultString };
 				}
 			}
-		}
-		else if (FD_ISSET(this->theSocket, &writeSet)) {
+		} else if (FD_ISSET(this->theSocket, &writeSet)) {
 			size_t writtenBytes{ 0 };
 			auto returnValue{ SSL_write_ex(this->ssl, this->outputBuffer.data(), this->outputBuffer.size(), &writtenBytes) };
 			auto errorValue{ SSL_get_error(this->ssl, returnValue) };
@@ -363,8 +362,7 @@ namespace DiscordCoreInternal {
 						throw ProcessingError{ theResultString };
 					}
 				}
-			}
-			else if (FD_ISSET(this->theSocket, &writeSet)) {
+			} else if (FD_ISSET(this->theSocket, &writeSet)) {
 				this->wantRead = false;
 				size_t writtenBytes{ 0 };
 				auto returnValue{ SSL_write_ex(this->ssl, this->outputBuffer.data(), this->outputBuffer.size(), &writtenBytes) };

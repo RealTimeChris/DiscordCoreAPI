@@ -501,5 +501,5 @@ namespace DiscordCoreInternal {
 		readString(buffer, lengthNew, atom);
 		return processAtom(atom, lengthNew);
 	}
-	
+
 }

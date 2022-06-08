@@ -103,7 +103,7 @@ namespace DiscordCoreInternal {
 		void appendUnsignedLongLong(ErlPackBuffer&, uint64_t&);
 
 		void appendBinaryExt(ErlPackBuffer&, const std::vector<uint8_t>&, uint32_t&);
-		
+
 		void appendListHeader(ErlPackBuffer&, uint32_t&);
 
 		void appendMapHeader(ErlPackBuffer&, uint32_t&);
@@ -149,6 +149,5 @@ namespace DiscordCoreInternal {
 		nlohmann::json parseAtomUtf8Ext(const ErlPackBuffer&);
 
 		nlohmann::json parseSmallAtomUtf8Ext(const ErlPackBuffer&);
-		
 	};
 }// namespace DiscordCoreInternal
