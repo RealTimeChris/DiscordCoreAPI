@@ -286,6 +286,7 @@ namespace DiscordCoreInternal {
 		std::string outputBuffer{};
 		std::string inputBuffer{};
 		SSLWrapper ssl{ nullptr };
+		bool wantWrite{ false };
 		bool wantRead{ false };
 	};
 
@@ -317,6 +318,7 @@ namespace DiscordCoreInternal {
 		std::string outputBuffer{};
 		SSLWrapper ssl{ nullptr };
 		std::string inputBuffer{};
+		bool wantWrite{ false };
 		bool wantRead{ false };
 		int64_t bytesRead{ 0 };
 	};
