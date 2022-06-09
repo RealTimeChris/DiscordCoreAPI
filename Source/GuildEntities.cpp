@@ -722,6 +722,7 @@ namespace DiscordCoreAPI {
 		guild.initialize(doWeShowIt);
 		if (Guilds::doWeCache) {
 			Guilds::cache.insert_or_assign(guild.id, guild);
+			std::cout << "THE GUILD COUNT: " << Guilds::cache.size() << ", THE GUILD SIZE: " << sizeof(guild) << std::endl;
 		}
 	}
 

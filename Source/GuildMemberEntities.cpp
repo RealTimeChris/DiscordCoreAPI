@@ -239,6 +239,7 @@ namespace DiscordCoreAPI {
 		std::string theString{ std::to_string(guildMember.guildId) + " + " + std::to_string(guildMember.id) };
 		if (GuildMembers::doWeCache) {
 			GuildMembers::cache.insert_or_assign(theString, guildMember);
+			std::cout << "THE GUILDMEMBER COUNT: " << GuildMembers::cache.size() << ", THE GUILDMEMBER SIZE: " << sizeof(guildMember) << std::endl;
 		}
 	}
 

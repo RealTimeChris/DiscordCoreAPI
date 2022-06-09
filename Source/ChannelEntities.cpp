@@ -269,6 +269,7 @@ namespace DiscordCoreAPI {
 		}
 		if (Channels::doWeCache) {
 			Channels::cache.insert_or_assign(channel.id, channel);
+			std::cout << "THE CHANNEL COUNT: " << Channels::cache.size() << ", THE CHANNEL SIZE: " << sizeof(channel) << std::endl;
 		}
 	}
 
