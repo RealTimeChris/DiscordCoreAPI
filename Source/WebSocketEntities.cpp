@@ -493,9 +493,7 @@ namespace DiscordCoreInternal {
 			}
 
 			if (payload.contains("s") && !payload["s"].is_null()) {
-				if (payload["s"] >= 0) {
-					this->lastNumberReceived = payload["s"];
-				}
+				this->lastNumberReceived = payload["s"].get<int32_t>();
 			}
 
 			if (payload.contains("op") && !payload["op"].is_null()) {
