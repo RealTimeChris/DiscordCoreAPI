@@ -243,7 +243,6 @@ namespace DiscordCoreAPI {
 		}
 		if (Roles::doWeCache) {
 			Roles::cache.insert_or_assign(role.id, role);
-			std::cout << "THE ROLE COUNT: " << Roles::cache.size() << ", THE ROLE SIZE: " << sizeof(role) << std::endl;
 		}
 	}
 

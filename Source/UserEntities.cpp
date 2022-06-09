@@ -209,7 +209,6 @@ namespace DiscordCoreAPI {
 		}
 		if (Users::doWeCache) {
 			Users::cache.insert_or_assign(user.id, user);
-			std::cout << "THE USER COUNT: " << Users::cache.size() << ", THE USER SIZE: " << sizeof(user) << std::endl;
 		}
 	}
 
