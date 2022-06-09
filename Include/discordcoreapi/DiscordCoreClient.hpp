@@ -99,7 +99,7 @@ namespace DiscordCoreAPI {
 		/// Executes the library, and waits for completion. \brief Executes the library, and waits for completion.
 		void runBot();
 
-		~DiscordCoreClient();
+		~DiscordCoreClient() = default;
 
 	  protected:
 		std::unordered_map<std::string, std::unique_ptr<DiscordCoreInternal::BaseSocketAgent>> webSocketMap{};
