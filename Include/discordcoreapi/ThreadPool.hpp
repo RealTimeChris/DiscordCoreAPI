@@ -135,8 +135,6 @@ namespace DiscordCoreAPI {
 
 namespace DiscordCoreInternal {
 
-	class DiscordCoreAPI_Dll CoRoutineThreadPool;
-
 	struct DiscordCoreAPI_Dll WorkerThread {
 		WorkerThread& operator=(WorkerThread& other);
 
@@ -154,7 +152,6 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll CoRoutineThreadPool {
 	  public:
-		friend WorkerThread;
 
 		CoRoutineThreadPool();
 
