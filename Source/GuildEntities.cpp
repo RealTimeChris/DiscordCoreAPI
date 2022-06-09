@@ -31,18 +31,18 @@ namespace DiscordCoreAPI {
 	Guild& Guild::operator=(GuildData&& other) {
 		this->voiceConnectionPtr = other.voiceConnectionPtr;
 		this->discordCoreClient = other.discordCoreClient;
-		this->voiceStates = other.voiceStates;
+		this->voiceStates = std::move(other.voiceStates);
+		this->presences = std::move(other.presences);
+		this->features = std::move(other.features);
+		this->channels = std::move(other.channels);
+		this->joinedAt = std::move(other.joinedAt);
+		this->ownerId = std::move(other.ownerId);
+		this->members = std::move(other.members);
 		this->memberCount = other.memberCount;
-		this->presences = other.presences;
-		this->features = other.features;
-		this->channels = other.channels;
-		this->joinedAt = other.joinedAt;
-		this->ownerId = other.ownerId;
-		this->members = other.members;
+		this->roles = std::move(other.roles);
+		this->icon = std::move(other.icon);
+		this->name = std::move(other.name);
 		this->flags = other.flags;
-		this->roles = other.roles;
-		this->icon = other.icon;
-		this->name = other.name;
 		this->id = other.id;
 		return *this;
 	}

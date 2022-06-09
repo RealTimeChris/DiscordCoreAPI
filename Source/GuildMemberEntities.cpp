@@ -26,14 +26,14 @@
 namespace DiscordCoreAPI {
 
 	GuildMember& GuildMember::operator=(GuildMemberData&& dataNew) {
-		this->permissions = dataNew.permissions;
-		this->userAvatar = dataNew.userAvatar;
-		this->userName = dataNew.userName;
-		this->joinedAt = dataNew.joinedAt;
+		this->permissions = std::move(dataNew.permissions);
+		this->userAvatar = std::move(dataNew.userAvatar);
+		this->userName = std::move(dataNew.userName);
+		this->joinedAt = std::move(dataNew.joinedAt);
+		this->roles = std::move(dataNew.roles);
+		this->nick = std::move(dataNew.nick);
 		this->guildId = dataNew.guildId;
-		this->roles = dataNew.roles;
 		this->flags = dataNew.flags;
-		this->nick = dataNew.nick;
 		this->id = dataNew.id;
 		return *this;
 	};

@@ -45,7 +45,7 @@ namespace DiscordCoreInternal {
 		extern std::unordered_map<std::thread::id, std::unique_ptr<HttpConnection>> httpConnections;
 	}
 
-	WorkerThread& WorkerThread::operator=(WorkerThread& other) {
+	WorkerThread& WorkerThread::operator=(WorkerThread&& other) noexcept {
 		this->theCurrentStatus.store(other.theCurrentStatus.load());
 		this->theThread.swap(other.theThread);
 		this->threadId = other.threadId;
@@ -53,8 +53,8 @@ namespace DiscordCoreInternal {
 		return *this;
 	}
 
-	WorkerThread::WorkerThread(WorkerThread& other) {
-		*this = other;
+	WorkerThread::WorkerThread(WorkerThread&& other) noexcept {
+		*this = std::move(other);
 	}
 
 	CoRoutineThreadPool::CoRoutineThreadPool() {
@@ -68,7 +68,7 @@ namespace DiscordCoreInternal {
 				Globals::httpConnections.insert(std::make_pair(std::this_thread::get_id(), std::move(thePtr)));
 				this->threadFunction(theToken, currentIndex);
 			});
-			this->workerThreads.insert_or_assign(currentIndex, workerThread);
+			this->workerThreads.insert_or_assign(currentIndex, std::move(workerThread));
 		}
 	}
 
@@ -90,9 +90,9 @@ namespace DiscordCoreInternal {
 				Globals::httpConnections.insert(std::make_pair(std::this_thread::get_id(), std::move(thePtr)));
 				this->threadFunction(theToken, currentIndex);
 			});
-			this->workerThreads.insert_or_assign(currentIndex, workerThread);
+			this->workerThreads.insert_or_assign(currentIndex, std::move(workerThread));
 		}
-		this->theCoroutineHandles.emplace(coro);
+		this->theCoroutineHandles.push(coro);
 		this->theCondVar.notify_one();
 	}
 
@@ -106,10 +106,10 @@ namespace DiscordCoreInternal {
 			while (!this->areWeQuitting.load() && this->theCoroutineHandles.size() == 0) {
 				if (this->currentCount > std::thread::hardware_concurrency()) {
 					for (auto& [key, value]: this->workerThreads) {
-						if (value.theCurrentStatus.load() && theIndex != key) {
-							if (value.theThread.joinable() && this->workerThreads.size() > std::thread::hardware_concurrency()) {
+						if (value.theCurrentStatus.load() && std::this_thread::get_id() != value.threadId) {
+							this->workerThreads[key].theThread.get_stop_source().request_stop();
+							if (value.theThread.joinable()) {
 								value.theThread.detach();
-								this->workerThreads[key].theThread.get_stop_source().request_stop();
 								this->currentCount -= 1;
 								break;
 							}

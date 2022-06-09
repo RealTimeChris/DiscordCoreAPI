@@ -228,9 +228,11 @@ namespace DiscordCoreInternal {
 		};
 
 		SOCKETWrapper& operator=(SOCKETWrapper&& other) noexcept {
-			*this->socketPtr = *other.socketPtr;
-			*other.socketPtr = SOCKET_ERROR;
-			return *this;
+			if (this != &other) {
+				this->socketPtr.swap(other.socketPtr);
+				*other.socketPtr = SOCKET_ERROR;
+				return *this;
+			}
 		}
 
 		SOCKETWrapper(SOCKETWrapper&& other) noexcept {

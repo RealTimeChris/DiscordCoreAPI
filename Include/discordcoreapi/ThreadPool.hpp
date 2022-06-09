@@ -136,9 +136,9 @@ namespace DiscordCoreAPI {
 namespace DiscordCoreInternal {
 
 	struct DiscordCoreAPI_Dll WorkerThread {
-		WorkerThread& operator=(WorkerThread& other);
+		WorkerThread& operator=(WorkerThread&& other);
 
-		WorkerThread(WorkerThread&);
+		WorkerThread(WorkerThread&&);
 
 		WorkerThread() = default;
 

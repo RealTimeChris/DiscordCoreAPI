@@ -23,12 +23,12 @@
 namespace DiscordCoreAPI {
 
 	Role& Role::operator=(RoleData&& other) {
-		this->unicodeEmoji = other.unicodeEmoji;
-		this->permissions = other.permissions;
+		this->unicodeEmoji = std::move(other.unicodeEmoji);
+		this->permissions = std::move(other.permissions);
+		this->name = std::move(other.name);
 		this->position = other.position;
 		this->flags = other.flags;
 		this->color = other.color;
-		this->name = other.name;
 		this->id = other.id;
 		return *this;
 	}
