@@ -238,47 +238,6 @@ namespace DiscordCoreInternal {
 
 	BaseSocketAgent::BaseSocketAgent(nullptr_t) noexcept {};
 
-	void BaseSocketAgent::sendMessage(const std::string& dataToSend) noexcept {
-		try {
-			std::lock_guard<std::mutex> accessLock{ this->accessorMutex01 };
-			if (this->doWePrintSuccessMessages) {
-				std::lock_guard<std::mutex> theLock{ this->discordCoreClient->coutMutex };
-				std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Sending WebSocket " + this->shard.dump() + std::string("'s Message: ") << std::endl
-						  << dataToSend << DiscordCoreAPI::reset();
-			}
-			if (this->webSocket) {
-				this->webSocket->writeData(dataToSend);
-			}
-		} catch (...) {
-			if (this->doWePrintErrorMessages) {
-				DiscordCoreAPI::reportException("BaseSocketAgent::sendMessage()");
-			}
-			this->onClosed();
-		}
-	}
-
-	std::jthread* BaseSocketAgent::getTheTask() noexcept {
-		return this->theTask.get();
-	}
-
-	void BaseSocketAgent::sendCloseFrame() noexcept {
-		std::string theString{};
-		theString.push_back(static_cast<int8_t>(WebSocketOpCode::Op_Close) | static_cast<int8_t>(webSocketFinishBit));
-		theString.push_back(0);
-		theString.push_back(static_cast<int8_t>(static_cast<uint16_t>(1000) >> 8));
-		theString.push_back(static_cast<int8_t>(1000 & 0xff));
-		if (this->webSocket) {
-			this->webSocket->writeData(theString);
-			try {
-				this->webSocket->processIO(100000);
-			} catch (ProcessingError&) {
-				if (this->doWePrintErrorMessages) {
-					DiscordCoreAPI::reportException("BaseSocketAgent::sendCloseFrame()");
-				}
-			}
-		}
-	}
-
 	void BaseSocketAgent::sendMessage(const nlohmann::json& dataToSend) noexcept {
 		try {
 			DiscordCoreAPI::StopWatch stopWatch{ std::chrono::milliseconds{ 5500 } };
@@ -314,6 +273,55 @@ namespace DiscordCoreInternal {
 				DiscordCoreAPI::reportException("BaseSocketAgent::sendMessage()");
 			}
 			this->onClosed();
+		}
+	}
+
+	void BaseSocketAgent::sendMessage(const std::string& dataToSend) noexcept {
+		try {
+			std::lock_guard<std::mutex> accessLock{ this->accessorMutex01 };
+			if (this->doWePrintSuccessMessages) {
+				std::lock_guard<std::mutex> theLock{ this->discordCoreClient->coutMutex };
+				std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Sending WebSocket " + this->shard.dump() + std::string("'s Message: ") << std::endl
+						  << dataToSend << DiscordCoreAPI::reset();
+			}
+			if (this->webSocket) {
+				this->webSocket->writeData(dataToSend);
+			}
+		} catch (...) {
+			if (this->doWePrintErrorMessages) {
+				DiscordCoreAPI::reportException("BaseSocketAgent::sendMessage()");
+			}
+			this->onClosed();
+		}
+	}
+
+	std::jthread* BaseSocketAgent::getTheTask() noexcept {
+		return this->theTask.get();
+	}
+
+	void BaseSocketAgent::onClosed() noexcept {
+		this->areWeReadyToConnectEvent.reset();
+		if (this->maxReconnectTries > this->currentReconnectTries) {
+			if (this->doWePrintErrorMessages) {
+				std::cout << DiscordCoreAPI::shiftToBrightRed() << "WebSocket " + this->shard.dump() + " Closed; Code: " << +static_cast<uint16_t>(this->closeCode)
+						  << DiscordCoreAPI::reset() << std::endl
+						  << std::endl;
+			}
+			if (!this->didWeFail) {
+				this->sendCloseFrame();
+			}
+			this->areWeConnected.store(false);
+			this->currentReconnectTries += 1;
+			if (!this->areWeResuming) {
+				this->areWeAuthenticated = false;
+			}
+			this->haveWeReceivedHeartbeatAck = true;
+			this->webSocket.reset(nullptr);
+			this->connect();
+			this->closeCode = static_cast<WebSocketCloseCode>(0);
+		} else {
+			this->doWeQuit->store(true);
+			this->theTask->request_stop();
 		}
 	}
 
@@ -375,41 +383,6 @@ namespace DiscordCoreInternal {
 		} catch (...) {
 			if (this->doWePrintErrorMessages) {
 				DiscordCoreAPI::reportException("BaseSocketAgent::getVoiceConnectionData()");
-			}
-			this->onClosed();
-		}
-	}
-
-	void BaseSocketAgent::run(std::stop_token theToken) noexcept {
-		try {
-			this->connect();
-			DiscordCoreAPI::StopWatch stopWatch{ std::chrono::milliseconds{ 0 } };
-			while (!theToken.stop_requested() && !this->doWeQuit->load()) {
-				if (this->heartbeatInterval != 0 && !this->areWeHeartBeating) {
-					this->areWeHeartBeating = true;
-					stopWatch = DiscordCoreAPI::StopWatch{ std::chrono::milliseconds{ this->heartbeatInterval } };
-				}
-				if (stopWatch.hasTimePassed() && this->areWeHeartBeating) {
-					stopWatch.resetTimer();
-					this->sendHeartBeat();
-				}
-				if (!this->messageCollector.runMessageCollector()) {
-					auto theMessage = this->messageCollector.collectFinalMessage();
-					this->dataOpcode = theMessage.opCode;
-					this->closeCode = theMessage.closeCode;
-					this->didWeFail = true;
-					this->onClosed();
-				}
-				auto theReturnMessage = this->messageCollector.collectFinalMessage();
-				if (theReturnMessage.theMessage != "") {
-					this->onMessageReceived(theReturnMessage.theMessage);
-				}
-				std::this_thread::sleep_for(std::chrono::milliseconds{ 1 });
-			}
-			this->sendCloseFrame();
-		} catch (...) {
-			if (this->doWePrintErrorMessages) {
-				DiscordCoreAPI::reportException("BaseSocketAgent::run()");
 			}
 			this->onClosed();
 		}
@@ -989,6 +962,59 @@ namespace DiscordCoreInternal {
 		}
 	}
 
+	void BaseSocketAgent::run(std::stop_token theToken) noexcept {
+		try {
+			this->connect();
+			DiscordCoreAPI::StopWatch stopWatch{ std::chrono::milliseconds{ 0 } };
+			while (!theToken.stop_requested() && !this->doWeQuit->load()) {
+				if (this->heartbeatInterval != 0 && !this->areWeHeartBeating) {
+					this->areWeHeartBeating = true;
+					stopWatch = DiscordCoreAPI::StopWatch{ std::chrono::milliseconds{ this->heartbeatInterval } };
+				}
+				if (stopWatch.hasTimePassed() && this->areWeHeartBeating) {
+					stopWatch.resetTimer();
+					this->sendHeartBeat();
+				}
+				if (!this->messageCollector.runMessageCollector()) {
+					auto theMessage = this->messageCollector.collectFinalMessage();
+					this->dataOpcode = theMessage.opCode;
+					this->closeCode = theMessage.closeCode;
+					this->didWeFail = true;
+					this->onClosed();
+				}
+				auto theReturnMessage = this->messageCollector.collectFinalMessage();
+				if (theReturnMessage.theMessage != "") {
+					this->onMessageReceived(theReturnMessage.theMessage);
+				}
+				std::this_thread::sleep_for(std::chrono::milliseconds{ 1 });
+			}
+			this->sendCloseFrame();
+		} catch (...) {
+			if (this->doWePrintErrorMessages) {
+				DiscordCoreAPI::reportException("BaseSocketAgent::run()");
+			}
+			this->onClosed();
+		}
+	}
+
+	void BaseSocketAgent::sendCloseFrame() noexcept {
+		std::string theString{};
+		theString.push_back(static_cast<int8_t>(WebSocketOpCode::Op_Close) | static_cast<int8_t>(webSocketFinishBit));
+		theString.push_back(0);
+		theString.push_back(static_cast<int8_t>(static_cast<uint16_t>(1000) >> 8));
+		theString.push_back(static_cast<int8_t>(1000 & 0xff));
+		if (this->webSocket) {
+			this->webSocket->writeData(theString);
+			try {
+				this->webSocket->processIO(100000);
+			} catch (ProcessingError&) {
+				if (this->doWePrintErrorMessages) {
+					DiscordCoreAPI::reportException("BaseSocketAgent::sendCloseFrame()");
+				}
+			}
+		}
+	}
+
 	void BaseSocketAgent::sendHeartBeat() noexcept {
 		try {
 			if (this->haveWeReceivedHeartbeatAck) {
@@ -1003,32 +1029,6 @@ namespace DiscordCoreInternal {
 				DiscordCoreAPI::reportException("BaseSocketAgent::sendHeartBeat()");
 			}
 			this->onClosed();
-		}
-	}
-
-	void BaseSocketAgent::onClosed() noexcept {
-		this->areWeReadyToConnectEvent.reset();
-		if (this->maxReconnectTries > this->currentReconnectTries) {
-			if (this->doWePrintErrorMessages) {
-				std::cout << DiscordCoreAPI::shiftToBrightRed() << "WebSocket " + this->shard.dump() + " Closed; Code: " << +static_cast<uint16_t>(this->closeCode)
-						  << DiscordCoreAPI::reset() << std::endl
-						  << std::endl;
-			}
-			if (!this->didWeFail) {
-				this->sendCloseFrame();
-			}
-			this->areWeConnected.store(false);
-			this->currentReconnectTries += 1;
-			if (!this->areWeResuming) {
-				this->areWeAuthenticated = false;
-			}
-			this->haveWeReceivedHeartbeatAck = true;
-			this->webSocket.reset(nullptr);
-			this->connect();
-			this->closeCode = static_cast<WebSocketCloseCode>(0);
-		} else {
-			this->doWeQuit->store(true);
-			this->theTask->request_stop();
 		}
 	}
 
@@ -1086,24 +1086,6 @@ namespace DiscordCoreInternal {
 		});
 	}
 
-	void VoiceSocketAgent::sendVoiceData(std::string& responseData) noexcept {
-		try {
-			if (responseData.size() == 0) {
-				if (this->doWePrintErrorMessages) {
-					std::cout << DiscordCoreAPI::shiftToBrightRed() << "Please specify voice data to send" << DiscordCoreAPI::reset() << std::endl << std::endl;
-				}
-				return;
-			} else {
-				this->voiceSocket->writeData(responseData);
-			}
-		} catch (...) {
-			if (this->doWePrintErrorMessages) {
-				DiscordCoreAPI::reportException("VoiceSocketAgent::sendVoiceData()");
-			}
-			this->onClosedExternal();
-		}
-	}
-
 	void VoiceSocketAgent::sendMessage(const std::vector<uint8_t>& dataToSend) noexcept {
 		try {
 			std::string newString{};
@@ -1143,6 +1125,28 @@ namespace DiscordCoreInternal {
 		}
 	}
 
+	void VoiceSocketAgent::sendVoiceData(std::string& responseData) noexcept {
+		try {
+			if (responseData.size() == 0) {
+				if (this->doWePrintErrorMessages) {
+					std::cout << DiscordCoreAPI::shiftToBrightRed() << "Please specify voice data to send" << DiscordCoreAPI::reset() << std::endl << std::endl;
+				}
+				return;
+			} else {
+				this->voiceSocket->writeData(responseData);
+			}
+		} catch (...) {
+			if (this->doWePrintErrorMessages) {
+				DiscordCoreAPI::reportException("VoiceSocketAgent::sendVoiceData()");
+			}
+			this->onClosedExternal();
+		}
+	}
+
+	void VoiceSocketAgent::onClosedExternal() noexcept {
+		this->doWeReconnect.store(true);
+	}
+
 	void VoiceSocketAgent::createHeader(std::string& outBuffer, uint64_t sendLength, WebSocketOpCode opCode) noexcept {
 		try {
 			outBuffer.push_back(static_cast<uint8_t>(opCode) | webSocketFinishBit);
@@ -1170,44 +1174,6 @@ namespace DiscordCoreInternal {
 		} catch (...) {
 			if (this->doWePrintErrorMessages) {
 				DiscordCoreAPI::reportException("BaseSocketAgent::createHeader()");
-			}
-			this->onClosedExternal();
-		}
-	}
-
-	void VoiceSocketAgent::run(std::stop_token theToken) noexcept {
-		try {
-			this->connect();
-			DiscordCoreAPI::StopWatch stopWatch{ std::chrono::milliseconds{ 0 } };
-			while (!theToken.stop_requested()) {
-				if (this->heartbeatInterval != 0 && !this->areWeHeartBeating) {
-					this->areWeHeartBeating = true;
-					stopWatch = DiscordCoreAPI::StopWatch{ std::chrono::milliseconds{ this->heartbeatInterval } };
-				}
-				if (stopWatch.hasTimePassed() && this->areWeHeartBeating) {
-					stopWatch.resetTimer();
-					this->sendHeartBeat();
-				}
-				if (!this->messageCollector.runMessageCollector()) {
-					this->onClosedExternal();
-				}
-				auto theReturnMessage = this->messageCollector.collectFinalMessage();
-				if (theReturnMessage.opCode == WebSocketOpCode::Op_Close) {
-					this->dataOpcode = theReturnMessage.opCode;
-					this->closeCode = theReturnMessage.closeCode;
-					this->onClosedExternal();
-				}
-				if (theReturnMessage.theMessage != "") {
-					this->onMessageReceived(theReturnMessage.theMessage);
-				}
-				if (this->voiceSocket) {
-					this->voiceSocket->readData(true);
-				}
-				std::this_thread::sleep_for(std::chrono::milliseconds{ 1 });
-			}
-		} catch (...) {
-			if (this->doWePrintErrorMessages) {
-				DiscordCoreAPI::reportException("VoiceSocketAgent::run()");
 			}
 			this->onClosedExternal();
 		}
@@ -1264,6 +1230,44 @@ namespace DiscordCoreInternal {
 		}
 	}
 
+	void VoiceSocketAgent::run(std::stop_token theToken) noexcept {
+		try {
+			this->connect();
+			DiscordCoreAPI::StopWatch stopWatch{ std::chrono::milliseconds{ 0 } };
+			while (!theToken.stop_requested()) {
+				if (this->heartbeatInterval != 0 && !this->areWeHeartBeating) {
+					this->areWeHeartBeating = true;
+					stopWatch = DiscordCoreAPI::StopWatch{ std::chrono::milliseconds{ this->heartbeatInterval } };
+				}
+				if (stopWatch.hasTimePassed() && this->areWeHeartBeating) {
+					stopWatch.resetTimer();
+					this->sendHeartBeat();
+				}
+				if (!this->messageCollector.runMessageCollector()) {
+					this->onClosedExternal();
+				}
+				auto theReturnMessage = this->messageCollector.collectFinalMessage();
+				if (theReturnMessage.opCode == WebSocketOpCode::Op_Close) {
+					this->dataOpcode = theReturnMessage.opCode;
+					this->closeCode = theReturnMessage.closeCode;
+					this->onClosedExternal();
+				}
+				if (theReturnMessage.theMessage != "") {
+					this->onMessageReceived(theReturnMessage.theMessage);
+				}
+				if (this->voiceSocket) {
+					this->voiceSocket->readData(true);
+				}
+				std::this_thread::sleep_for(std::chrono::milliseconds{ 1 });
+			}
+		} catch (...) {
+			if (this->doWePrintErrorMessages) {
+				DiscordCoreAPI::reportException("VoiceSocketAgent::run()");
+			}
+			this->onClosedExternal();
+		}
+	}
+
 	void VoiceSocketAgent::collectExternalIP() noexcept {
 		try {
 			std::string packet{};
@@ -1297,6 +1301,17 @@ namespace DiscordCoreInternal {
 		}
 	}
 
+	void VoiceSocketAgent::onClosedInternal() noexcept {
+		if (this->doWePrintErrorMessages) {
+			std::cout << DiscordCoreAPI::shiftToBrightRed() << "Voice WebSocket Closed; Code: " << +static_cast<uint16_t>(this->closeCode) << DiscordCoreAPI::reset() << std::endl
+					  << std::endl;
+		}
+		this->closeCode = static_cast<WebSocketCloseCode>(0);
+		this->voiceSocket.reset(nullptr);
+		this->webSocket.reset(nullptr);
+	}
+
+
 	void VoiceSocketAgent::sendHeartBeat() noexcept {
 		try {
 			if (this->haveWeReceivedHeartbeatAck) {
@@ -1324,20 +1339,6 @@ namespace DiscordCoreInternal {
 			}
 			this->onClosedExternal();
 		}
-	}
-
-	void VoiceSocketAgent::onClosedExternal() noexcept {
-		this->doWeReconnect.store(true);
-	}
-
-	void VoiceSocketAgent::onClosedInternal() noexcept {
-		if (this->doWePrintErrorMessages) {
-			std::cout << DiscordCoreAPI::shiftToBrightRed() << "Voice WebSocket Closed; Code: " << +static_cast<uint16_t>(this->closeCode) << DiscordCoreAPI::reset() << std::endl
-					  << std::endl;
-		}
-		this->closeCode = static_cast<WebSocketCloseCode>(0);
-		this->voiceSocket.reset(nullptr);
-		this->webSocket.reset(nullptr);
 	}
 
 	void VoiceSocketAgent::connect() noexcept {

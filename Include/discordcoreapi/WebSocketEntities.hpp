@@ -181,9 +181,9 @@ namespace DiscordCoreInternal {
 
 		void sendMessage(const std::vector<uint8_t>& responseData) noexcept;
 
-		void sendVoiceData(std::string& responseData) noexcept;
-
 		void sendMessage(const std::string& dataToSend) noexcept;
+
+		void sendVoiceData(std::string& responseData) noexcept;
 
 		void onClosedExternal() noexcept;
 
