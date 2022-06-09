@@ -123,8 +123,6 @@ namespace DiscordCoreAPI {
 		GatewayBotData getGateWayBot();
 
 		bool instantiateWebSockets();
-
-		void run();
 	};
 	/**@}*/
 }// namespace DiscordCoreAPI
