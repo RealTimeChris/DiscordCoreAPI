@@ -149,8 +149,9 @@ namespace DiscordCoreInternal {
 		if ((this->outputBuffer.size() > 0 || this->wantWrite) && !this->wantRead) {
 			FD_SET(this->theSocket, &writeSet);
 			writeNfds = this->theSocket > writeNfds ? this->theSocket : writeNfds;
+		} else if (!this->wantWrite) {
+			FD_SET(this->theSocket, &readSet);
 		}
-		FD_SET(this->theSocket, &readSet);
 		readNfds = this->theSocket > readNfds ? this->theSocket : readNfds;
 		finalNfds = readNfds > writeNfds ? readNfds : writeNfds;
 
@@ -175,23 +176,21 @@ namespace DiscordCoreInternal {
 					if (readBytes > 0) {
 						this->inputBuffer.insert(this->inputBuffer.end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
 					}
-					return;
+					break;
+				}
+				case SSL_ERROR_WANT_READ: {
+					this->wantRead = true;
+					break;
+				}
+				case SSL_ERROR_WANT_WRITE: {
+					this->wantWrite = true;
+					break;
 				}
 				case SSL_ERROR_SYSCALL: {
 					[[fallthrough]];
 				}
 				case SSL_ERROR_ZERO_RETURN: {
-					std::string theResultString{ reportSSLError("HttpSSLClient::processIO::SSL_read_ex() Error: ", returnValue, this->ssl) + "\n" +
-						reportError("HttpSSLClient::processIO::SSL_read_ex() Error: ", returnValue) };
-					throw ProcessingError{ theResultString };
-				}
-				case SSL_ERROR_WANT_READ: {
-					this->wantRead = true;
-					return;
-				}
-				case SSL_ERROR_WANT_WRITE: {
-					this->wantWrite = true;
-					return;
+					[[fallthrough]];
 				}
 				default: {
 					std::string theResultString{ reportSSLError("HttpSSLClient::processIO::SSL_read_ex() Error: ", returnValue, this->ssl) + "\n" +
@@ -199,7 +198,8 @@ namespace DiscordCoreInternal {
 					throw ProcessingError{ theResultString };
 				}
 			}
-		} else if (FD_ISSET(this->theSocket, &writeSet)) {
+		} 
+		if (FD_ISSET(this->theSocket, &writeSet)) {
 			this->wantRead = false;
 			this->wantWrite = false;
 			size_t writtenBytes{ 0 };
@@ -208,23 +208,21 @@ namespace DiscordCoreInternal {
 			switch (errorValue) {
 				case SSL_ERROR_NONE: {
 					this->outputBuffer.clear();
-					return;
+					break;
+				}
+				case SSL_ERROR_WANT_READ: {
+					this->wantRead = true;
+					break;
+				}
+				case SSL_ERROR_WANT_WRITE: {
+					this->wantWrite = true;
+					break;
 				}
 				case SSL_ERROR_SYSCALL: {
 					[[fallthrough]];
 				}
 				case SSL_ERROR_ZERO_RETURN: {
-					std::string theResultString{ reportSSLError("HttpSSLClient::processIO::SSL_write_ex() Error: ", returnValue, this->ssl) + "\n" +
-						reportError("HttpSSLClient::processIO::SSL_write_ex() Error: ", returnValue) };
-					throw ProcessingError{ theResultString };
-				}
-				case SSL_ERROR_WANT_READ: {
-					this->wantRead = true;
-					return;
-				}
-				case SSL_ERROR_WANT_WRITE: {
-					this->wantWrite = true;
-					return;
+					[[fallthrough]];
 				}
 				default: {
 					std::string theResultString{ reportSSLError("HttpSSLClient::processIO::SSL_write_ex() Error: ", returnValue, this->ssl) + "\n" +
@@ -329,13 +327,13 @@ namespace DiscordCoreInternal {
 			if ((this->outputBuffer.size() > 0 || this->wantWrite) && !this->wantRead) {
 				FD_SET(this->theSocket, &writeSet);
 				writeNfds = this->theSocket > writeNfds ? this->theSocket : writeNfds;
-			} 
-			if (!this->wantWrite) {
+			} else if (!this->wantWrite) {
 				FD_SET(this->theSocket, &readSet);
 			}
-			
+
 			readNfds = this->theSocket > readNfds ? this->theSocket : readNfds;
 			finalNfds = readNfds > writeNfds ? readNfds : writeNfds;
+
 			timeval checkTime{ .tv_usec = waitTimeInMicroSeconds };
 			if (auto returnValue = select(finalNfds + 1, &readSet, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
 				ProcessingError theError{ reportError("select() Error: ", returnValue) };
@@ -358,23 +356,21 @@ namespace DiscordCoreInternal {
 							this->inputBuffer.insert(this->inputBuffer.end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
 							this->bytesRead += readBytes;
 						}
-						return;
+						break;
+					}
+					case SSL_ERROR_WANT_READ: {
+						this->wantRead = true;
+						break;
+					}
+					case SSL_ERROR_WANT_WRITE: {
+						this->wantWrite = true;
+						break;
 					}
 					case SSL_ERROR_SYSCALL: {
 						[[fallthrough]];
 					}
 					case SSL_ERROR_ZERO_RETURN: {
-						std::string theResultString{ reportSSLError("WebSocketSSLClient::processIO::SSL_read_ex() Error: ", returnValue, this->ssl) + "\n" +
-							reportError("WebSocketSSLClient::processIO::SSL_read_ex() Error: ", returnValue) };
-						throw ProcessingError{ theResultString };
-					}
-					case SSL_ERROR_WANT_READ: {
-						this->wantRead = true;
-						return;
-					}
-					case SSL_ERROR_WANT_WRITE: {
-						this->wantWrite = true;
-						return;
+						[[fallthrough]];
 					}
 					default: {
 						std::string theResultString{ reportSSLError("WebSocketSSLClient::processIO::SSL_read_ex() Error: ", returnValue, this->ssl) + "\n" +
@@ -382,7 +378,8 @@ namespace DiscordCoreInternal {
 						throw ProcessingError{ theResultString };
 					}
 				}
-			} else if (FD_ISSET(this->theSocket, &writeSet)) {
+			} 
+			if (FD_ISSET(this->theSocket, &writeSet)) {
 				this->wantRead = false;
 				this->wantWrite = false;
 				size_t writtenBytes{ 0 };
@@ -391,23 +388,21 @@ namespace DiscordCoreInternal {
 				switch (errorValue) {
 					case SSL_ERROR_NONE: {
 						this->outputBuffer.clear();
-						return;
+						break;
+					}
+					case SSL_ERROR_WANT_READ: {
+						this->wantRead = true;
+						break;
+					}
+					case SSL_ERROR_WANT_WRITE: {
+						this->wantWrite = true;
+						break;
 					}
 					case SSL_ERROR_SYSCALL: {
 						[[fallthrough]];
 					}
 					case SSL_ERROR_ZERO_RETURN: {
-						std::string theResultString{ reportSSLError("WebSocketSSLClient::processIO::SSL_write_ex() Error: ", returnValue, this->ssl) + "\n" +
-							reportError("WebSocketSSLClient::processIO::SSL_write_ex() Error: ", returnValue) };
-						throw ProcessingError{ theResultString };
-					}
-					case SSL_ERROR_WANT_READ: {
-						this->wantRead = true;
-						return;
-					}
-					case SSL_ERROR_WANT_WRITE: {
-						this->wantWrite = true;
-						return;
+						[[fallthrough]];
 					}
 					default: {
 						std::string theResultString{ reportSSLError("WebSocketSSLClient::processIO::SSL_write_ex() Error: ", returnValue, this->ssl) + "\n" +
