@@ -141,7 +141,6 @@ namespace DiscordCoreAPI {
 		}
 		this->thePtr[theLength] = theChar;
 		this->thePtr[theLength + 1] = '\0';
-		std::cout << "THE STRING: " << this->thePtr << std::endl;
 	}
 
 	size_t StringWrapper::size() {
