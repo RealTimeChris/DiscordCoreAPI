@@ -37,7 +37,7 @@ namespace DiscordCoreAPI {
 		workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
 		workload.callStack = "Threads::startThreadWithMessageAsync";
 		if (dataPackage.reason != "") {
-			workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));
+			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
 		co_return Threads::httpClient->submitWorkloadAndGetResult<Thread>(workload);
 	}
@@ -52,7 +52,7 @@ namespace DiscordCoreAPI {
 		workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
 		workload.callStack = "Threads::startThreadWithoutMessageAsync";
 		if (dataPackage.reason != "") {
-			workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));
+			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
 		co_return Threads::httpClient->submitWorkloadAndGetResult<Thread>(workload);
 	}
@@ -67,7 +67,7 @@ namespace DiscordCoreAPI {
 		workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
 		workload.callStack = "Threads::startThreadInForumChannelAsync";
 		if (dataPackage.reason != "") {
-			workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));
+			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
 		co_return Threads::httpClient->submitWorkloadAndGetResult<Thread>(workload);
 	}

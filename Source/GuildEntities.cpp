@@ -125,17 +125,17 @@ namespace DiscordCoreAPI {
 	void GuildData::initialize(bool doWeShowIt) {
 		if (!getVoiceConnectionMap().contains(this->id)) {
 			std::string theShardId{ std::to_string((this->id >> 22) % this->discordCoreClient->shardingOptions.totalNumberOfShards) };
-			getVoiceConnectionMap().insert(std::make_pair(this->id, std::make_unique<VoiceConnection>(this->discordCoreClient->webSocketMap[theShardId].get())));
+			getVoiceConnectionMap()[this->id] = std::make_unique<VoiceConnection>(this->discordCoreClient->webSocketMap[theShardId].get());
 		}
 		this->voiceConnectionPtr = getVoiceConnectionMap()[this->id].get();
 		if (!getYouTubeAPIMap().contains(this->id)) {
-			getYouTubeAPIMap().insert(std::make_pair(this->id, std::make_unique<DiscordCoreInternal::YouTubeAPI>(this->id, this->discordCoreClient->httpClient.get())));
+			getYouTubeAPIMap()[this->id] = std::make_unique<DiscordCoreInternal::YouTubeAPI>(this->id, this->discordCoreClient->httpClient.get());
 		}
 		if (!getSoundCloudAPIMap().contains(this->id)) {
-			getSoundCloudAPIMap().insert(std::make_pair(this->id, std::make_unique<DiscordCoreInternal::SoundCloudAPI>(this->id, this->discordCoreClient->httpClient.get())));
+			getSoundCloudAPIMap()[this->id] = std::make_unique<DiscordCoreInternal::SoundCloudAPI>(this->id, this->discordCoreClient->httpClient.get());
 		}
 		if (!getSongAPIMap().contains(this->id)) {
-			getSongAPIMap().insert(std::make_pair(this->id, std::make_unique<SongAPI>(this->id)));
+			getSongAPIMap()[this->id] = std::make_unique<SongAPI>(this->id);
 		}
 	}
 
@@ -255,7 +255,7 @@ namespace DiscordCoreAPI {
 		workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
 		workload.callStack = "Guilds::modifyGuildAsync";
 		if (dataPackage.reason != "") {
-			workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));
+			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
 		auto guildNew = Guilds::httpClient->submitWorkloadAndGetResult<Guild>(workload);
 		guildNew.discordCoreClient = Guilds::discordCoreClient;
@@ -321,7 +321,7 @@ namespace DiscordCoreAPI {
 		workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
 		workload.callStack = "Guilds::createGuildBanAsync";
 		if (dataPackage.reason != "") {
-			workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));
+			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
 		co_return Guilds::httpClient->submitWorkloadAndGetResult<void>(workload);
 	}
@@ -335,7 +335,7 @@ namespace DiscordCoreAPI {
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/bans/" + std::to_string(dataPackage.userId);
 		workload.callStack = "Guilds::removeGuildBanAsync";
 		if (dataPackage.reason != "") {
-			workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));
+			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
 		co_return Guilds::httpClient->submitWorkloadAndGetResult<void>(workload);
 	}
@@ -381,7 +381,7 @@ namespace DiscordCoreAPI {
 		workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
 		workload.callStack = "Guilds::beginGuildPruneAsync";
 		if (dataPackage.reason != "") {
-			workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));
+			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
 		co_return Guilds::httpClient->submitWorkloadAndGetResult<GuildPruneCountData>(workload);
 	}
@@ -428,7 +428,7 @@ namespace DiscordCoreAPI {
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/integrations/" + std::to_string(dataPackage.integrationId);
 		workload.callStack = "Guilds::deleteGuildIntegrationAsync";
 		if (dataPackage.reason != "") {
-			workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));
+			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
 		co_return Guilds::httpClient->submitWorkloadAndGetResult<void>(workload);
 	}
@@ -455,7 +455,7 @@ namespace DiscordCoreAPI {
 		workload.content = responseData.dump();
 		workload.callStack = "Guilds::modifyGuildWidgetAsync";
 		if (dataPackage.reason != "") {
-			workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));
+			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
 		co_return Guilds::httpClient->submitWorkloadAndGetResult<GuildWidgetData>(workload);
 	}
@@ -536,7 +536,7 @@ namespace DiscordCoreAPI {
 		workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
 		workload.callStack = "Guilds::modifyGuildWelcomeScreenAsync";
 		if (dataPackage.reason != "") {
-			workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));
+			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
 		co_return Guilds::httpClient->submitWorkloadAndGetResult<WelcomeScreenData>(workload);
 	};
@@ -663,7 +663,7 @@ namespace DiscordCoreAPI {
 		workload.relativePath = "/invites/" + dataPackage.inviteId;
 		workload.callStack = "Guilds::deleteInviteAsync";
 		if (dataPackage.reason != "") {
-			workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));
+			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
 		co_return Guilds::httpClient->submitWorkloadAndGetResult<void>(workload);
 	}
@@ -721,7 +721,7 @@ namespace DiscordCoreAPI {
 		}
 		guild.initialize(doWeShowIt);
 		if (Guilds::doWeCache) {
-			Guilds::cache.insert_or_assign(guild.id, guild);
+			Guilds::cache[guild.id] = guild;
 		}
 	}
 

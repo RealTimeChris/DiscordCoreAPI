@@ -145,7 +145,7 @@ namespace DiscordCoreInternal {
 			EventDelegateToken eventToken{};
 			eventToken.handlerId = std::to_string(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
 			eventToken.eventId = this->eventId;
-			this->theFunctions.insert_or_assign(eventToken, std::move(eventDelegate));
+			this->theFunctions[eventToken] = std::move(eventDelegate);
 			return eventToken;
 		}
 

@@ -96,7 +96,7 @@ namespace DiscordCoreAPI {
 		workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
 		workload.callStack = "Channels::modifyChannelAsync";
 		if (dataPackage.reason != "") {
-			workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));
+			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
 		auto channelNew = Channels::httpClient->submitWorkloadAndGetResult<Channel>(workload);
 		Channels::insertChannel(channelNew);
@@ -112,7 +112,7 @@ namespace DiscordCoreAPI {
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId);
 		workload.callStack = "Channels::deleteOrCloseAChannelAsync";
 		if (dataPackage.reason != "") {
-			workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));
+			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
 		co_return Channels::httpClient->submitWorkloadAndGetResult<void>(workload);
 	}
@@ -127,7 +127,7 @@ namespace DiscordCoreAPI {
 		workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
 		workload.callStack = "Channels::editChannelPermissionOverwritesAsync";
 		if (dataPackage.reason != "") {
-			workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));
+			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
 		co_return Channels::httpClient->submitWorkloadAndGetResult<void>(workload);
 	}
@@ -153,7 +153,7 @@ namespace DiscordCoreAPI {
 		workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
 		workload.callStack = "Channels::createChannelInviteAsync";
 		if (dataPackage.reason != "") {
-			workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));
+			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
 		co_return Channels::httpClient->submitWorkloadAndGetResult<InviteData>(workload);
 	}
@@ -167,7 +167,7 @@ namespace DiscordCoreAPI {
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/permissions/" + std::to_string(dataPackage.roleOrUserId);
 		workload.callStack = "Channels::deleteChannelPermissionOverwritesAsync";
 		if (dataPackage.reason != "") {
-			workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));
+			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
 		co_return Channels::httpClient->submitWorkloadAndGetResult<void>(workload);
 	}
@@ -216,7 +216,7 @@ namespace DiscordCoreAPI {
 		workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
 		workload.callStack = "Channels::createGuildChannelAsync";
 		if (dataPackage.reason != "") {
-			workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));
+			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
 		auto channelNew = Channels::httpClient->submitWorkloadAndGetResult<Channel>(workload);
 		Channels::insertChannel(channelNew);
@@ -233,7 +233,7 @@ namespace DiscordCoreAPI {
 		workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
 		workload.callStack = "Channels::modifyGuildChannelPositionsAsync";
 		if (dataPackage.reason != "") {
-			workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));
+			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
 		co_return Channels::httpClient->submitWorkloadAndGetResult<void>(workload);
 	}
@@ -268,7 +268,7 @@ namespace DiscordCoreAPI {
 			return;
 		}
 		if (Channels::doWeCache) {
-			Channels::cache.insert_or_assign(channel.id, channel);
+			Channels::cache[channel.id] = channel;
 		}
 	}
 

@@ -187,7 +187,7 @@ namespace DiscordCoreAPI {
 		workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
 		workload.callStack = "Reactions::createGuildEmojiAsync";
 		if (dataPackage.reason != "") {
-			workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));
+			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
 		co_return Reactions::httpClient->submitWorkloadAndGetResult<EmojiData>(workload);
 	}
@@ -202,7 +202,7 @@ namespace DiscordCoreAPI {
 		workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
 		workload.callStack = "Reactions::modifyGuildEmojiAsync";
 		if (dataPackage.reason != "") {
-			workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));
+			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
 		co_return Reactions::httpClient->submitWorkloadAndGetResult<EmojiData>(workload);
 	}
@@ -216,7 +216,7 @@ namespace DiscordCoreAPI {
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/emojis/" + std::to_string(dataPackage.emojiId);
 		workload.callStack = "Reactions::deleteGuildEmojiAsync";
 		if (dataPackage.reason != "") {
-			workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));
+			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
 		co_return Reactions::httpClient->submitWorkloadAndGetResult<void>(workload);
 	}

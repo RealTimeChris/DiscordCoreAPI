@@ -31,7 +31,7 @@ namespace DiscordCoreAPI {
 		this->filteringFunction = filteringFunctionNew;
 		this->msToCollectFor = msToCollectForNew;
 		this->collectorId = std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
-		MessageCollector::messagesBufferMap.insert_or_assign(this->collectorId, &this->messagesBuffer);
+		MessageCollector::messagesBufferMap[this->collectorId] = &this->messagesBuffer;
 		this->run();
 		co_return this->messageReturnData;
 	}
@@ -177,7 +177,7 @@ namespace DiscordCoreAPI {
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/messages/" + std::to_string(dataPackage.messageId);
 		workload.callStack = "Messages::deleteMessageAsync";
 		if (dataPackage.reason != "") {
-			workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));
+			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
 		co_return Messages::httpClient->submitWorkloadAndGetResult<void>(workload);
 	}
@@ -192,7 +192,7 @@ namespace DiscordCoreAPI {
 		workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
 		workload.callStack = "Messages::deleteMessagesBulkAsync";
 		if (dataPackage.reason != "") {
-			workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));
+			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
 		co_return Messages::httpClient->submitWorkloadAndGetResult<void>(workload);
 	}
@@ -217,7 +217,7 @@ namespace DiscordCoreAPI {
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/pins/" + std::to_string(dataPackage.messageId);
 		workload.callStack = "Messages::pinMessageAsync";
 		if (dataPackage.reason != "") {
-			workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));
+			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
 		co_return Messages::httpClient->submitWorkloadAndGetResult<void>(workload);
 	}
@@ -231,7 +231,7 @@ namespace DiscordCoreAPI {
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/pins/" + std::to_string(dataPackage.messageId);
 		workload.callStack = "Messages::unpinMessageAsync";
 		if (dataPackage.reason != "") {
-			workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));
+			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
 		co_return Messages::httpClient->submitWorkloadAndGetResult<void>(workload);
 	}

@@ -577,7 +577,7 @@ namespace DiscordCoreAPI {
 	void EventHandler::onVoiceStateUpdate(OnVoiceStateUpdateData dataPackage) {
 		if (EventHandler::options.cacheGuildMembers && EventHandler::options.cacheGuilds) {
 			GuildData guild = Guilds::getCachedGuildAsync({ .guildId = dataPackage.voiceStateData.guildId }).get();
-			guild.voiceStates.insert_or_assign(dataPackage.voiceStateData.userId, dataPackage.voiceStateData);
+			guild.voiceStates[dataPackage.voiceStateData.userId] = dataPackage.voiceStateData;
 			Guilds::insertGuild(guild);
 		}
 	}

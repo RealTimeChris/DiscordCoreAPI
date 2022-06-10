@@ -164,7 +164,7 @@ namespace DiscordCoreAPI {
 		this->messageId = dataPackage.getMessageId();
 		*this->interactionData = dataPackage.getInteractionData();
 		this->bufferMapKey = std::to_string(this->channelId) + std::to_string(this->messageId);
-		SelectMenuCollector::selectMenuInteractionBufferMap.insert(std::make_pair(this->bufferMapKey, &this->selectMenuIncomingInteractionBuffer));
+		SelectMenuCollector::selectMenuInteractionBufferMap[this->bufferMapKey] = &this->selectMenuIncomingInteractionBuffer;
 	}
 
 	CoRoutine<std::vector<SelectMenuResponseData>> SelectMenuCollector::collectSelectMenuData(bool getSelectMenuDataForAllNew, int32_t maxWaitTimeInMsNew,
@@ -288,7 +288,7 @@ namespace DiscordCoreAPI {
 		this->messageId = dataPackage.getMessageId();
 		*this->interactionData = dataPackage.getInteractionData();
 		this->bufferMapKey = std::to_string(this->channelId) + std::to_string(this->messageId);
-		ButtonCollector::buttonInteractionBufferMap.insert_or_assign(this->bufferMapKey, &this->buttonIncomingInteractionBuffer);
+		ButtonCollector::buttonInteractionBufferMap[this->bufferMapKey] = &this->buttonIncomingInteractionBuffer;
 	}
 
 	CoRoutine<std::vector<ButtonResponseData>> ButtonCollector::collectButtonData(bool getButtonDataForAllNew, int32_t maxWaitTimeInMsNew, int32_t maxNumberOfPressesNew,
@@ -403,7 +403,7 @@ namespace DiscordCoreAPI {
 
 	ModalCollector::ModalCollector(InputEventData& dataPackage) {
 		this->channelId = dataPackage.getChannelId();
-		ModalCollector::modalInteractionBufferMap.insert_or_assign(std::to_string(this->channelId), &this->modalIncomingInteractionBuffer);
+		ModalCollector::modalInteractionBufferMap[std::to_string(this->channelId]= &this->modalIncomingInteractionBuffer;
 	}
 
 	CoRoutine<ModalResponseData> ModalCollector::collectModalData(int32_t maxWaitTimeInMsNew) {

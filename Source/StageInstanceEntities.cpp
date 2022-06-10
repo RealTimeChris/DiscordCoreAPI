@@ -38,7 +38,7 @@ namespace DiscordCoreAPI {
 		nlohmann::json responseData = { { "topic", dataPackage.topic }, { "privacy_level", dataPackage.privacyLevel }, { "channel_id", dataPackage.channelId } };
 		workload.content = responseData.dump();
 		if (dataPackage.reason != "") {
-			workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));
+			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
 		co_return StageInstances::httpClient->submitWorkloadAndGetResult<StageInstance>(workload);
 	}
@@ -65,7 +65,7 @@ namespace DiscordCoreAPI {
 		workload.content = responseData.dump();
 		workload.callStack = "StageInstances::modifyStageInstanceAsync";
 		if (dataPackage.reason != "") {
-			workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));
+			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
 		co_return StageInstances::httpClient->submitWorkloadAndGetResult<StageInstance>(workload);
 	}
@@ -79,7 +79,7 @@ namespace DiscordCoreAPI {
 		workload.relativePath = "/stage-instances/" + std::to_string(dataPackage.channelId);
 		workload.callStack = "StageInstances::deleteStageInstanceAsync";
 		if (dataPackage.reason != "") {
-			workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));
+			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
 		co_return StageInstances::httpClient->submitWorkloadAndGetResult<void>(workload);
 	}

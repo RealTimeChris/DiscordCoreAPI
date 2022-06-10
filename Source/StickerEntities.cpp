@@ -70,7 +70,7 @@ namespace DiscordCoreAPI {
 		workload.content = responseData.dump();
 		workload.callStack = "Stickers::createGuildStickerAsync";
 		if (dataPackage.reason != "") {
-			workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));
+			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
 		co_return Stickers::httpClient->submitWorkloadAndGetResult<Sticker>(workload);
 	}
@@ -86,7 +86,7 @@ namespace DiscordCoreAPI {
 		workload.content = responseData.dump();
 		workload.callStack = "Stickers::modifyGuildStickerAsync";
 		if (dataPackage.reason != "") {
-			workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));
+			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
 		co_return Stickers::httpClient->submitWorkloadAndGetResult<Sticker>(workload);
 	}
@@ -100,7 +100,7 @@ namespace DiscordCoreAPI {
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/stickers/" + dataPackage.stickerId;
 		workload.callStack = "Stickers::deleteGuildStickerAsync";
 		if (dataPackage.reason != "") {
-			workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));
+			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
 		co_return Stickers::httpClient->submitWorkloadAndGetResult<void>(workload);
 	}

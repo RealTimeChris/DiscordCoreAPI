@@ -124,7 +124,7 @@ namespace DiscordCoreInternal {
 					std::string key = lineString.substr(0, lineString.find(":"));
 					std::string value = lineString.substr(lineString.find(":") + 2, lineString.size() - key.size() - 2);
 					value = value.substr(0, value.find("\r\n"));
-					theData.responseHeaders.insert_or_assign(key, value);
+					theData.responseHeaders[key] = value;
 					std::string tempString{};
 					tempString.insert(tempString.begin(), newString.begin() + currentOffset, newString.end());
 					newString = tempString;
@@ -252,7 +252,7 @@ namespace DiscordCoreInternal {
 	HttpConnection* HttpConnectionManager::getConnection() {
 		std::lock_guard<std::mutex> theLock{ this->theMutex };
 		if (!Globals::httpConnections.contains(std::this_thread::get_id())) {
-			Globals::httpConnections.insert(std::make_pair(std::this_thread::get_id(), std::make_unique<DiscordCoreInternal::HttpConnection>()));
+			Globals::httpConnections[std::this_thread::get_id()] = std::make_unique<DiscordCoreInternal::HttpConnection>();
 		}
 		return Globals::httpConnections[std::this_thread::get_id()].get();
 	}
@@ -494,12 +494,12 @@ namespace DiscordCoreInternal {
 
 	template<> void HttpClient::submitWorkloadAndGetResult<void>(HttpWorkloadData& workloadNew) {
 		HttpWorkloadData workload = workloadNew;
-		workload.headersToInsert.insert(std::make_pair("Authorization", "Bot " + this->botToken));
-		workload.headersToInsert.insert(std::make_pair("User-Agent", "DiscordBot (https://discordcoreapi.com/ 1.0)"));
+		workload.headersToInsert["Authorization"] = "Bot " + this->botToken;
+		workload.headersToInsert["User-Agent"] = "DiscordBot (https://discordcoreapi.com/ 1.0)";
 		if (workload.payloadType == PayloadType::Application_Json) {
-			workload.headersToInsert.insert(std::make_pair("Content-Type", "application/json"));
+			workload.headersToInsert["Content-Type"] = "application/json";
 		} else if (workload.payloadType == PayloadType::Multipart_Form) {
-			workload.headersToInsert.insert(std::make_pair("Content-Type", "multipart/form-data; boundary=boundary25"));
+			workload.headersToInsert["Content-Type"] = "multipart/form-data; boundary=boundary25";
 		}
 		this->httpRequest(workload);
 		return;
@@ -512,12 +512,12 @@ namespace DiscordCoreInternal {
 
 	template<> HttpResponseData HttpClient::submitWorkloadAndGetResult(HttpWorkloadData& workloadNew) {
 		HttpWorkloadData workload = workloadNew;
-		workload.headersToInsert.insert(std::make_pair("Authorization", "Bot " + this->botToken));
-		workload.headersToInsert.insert(std::make_pair("User-Agent", "DiscordBot (https://discordcoreapi.com/ 1.0)"));
+		workload.headersToInsert["Authorization"] = "Bot " + this->botToken;
+		workload.headersToInsert["User-Agent"] = "DiscordBot (https://discordcoreapi.com/ 1.0)";
 		if (workload.payloadType == PayloadType::Application_Json) {
-			workload.headersToInsert.insert(std::make_pair("Content-Type", "application/json"));
+			workload.headersToInsert["Content-Type"] = "application/json";
 		} else if (workload.payloadType == PayloadType::Multipart_Form) {
-			workload.headersToInsert.insert(std::make_pair("Content-Type", "multipart/form-data; boundary=boundary25"));
+			workload.headersToInsert["Content-Type"] = "multipart/form-data; boundary=boundary25";
 		}
 		return this->httpRequest(workload);
 	}

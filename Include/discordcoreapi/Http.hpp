@@ -137,12 +137,12 @@ namespace DiscordCoreInternal {
 
 		template<typename ReturnType> ReturnType submitWorkloadAndGetResult(HttpWorkloadData& workload) {
 			ReturnType returnObject{};
-			workload.headersToInsert.insert(std::make_pair("Authorization", "Bot " + this->botToken));
-			workload.headersToInsert.insert(std::make_pair("User-Agent", "DiscordBot (https://discordcoreapi.com 1.0)"));
+			workload.headersToInsert["Authorization"] = "Bot " + this->botToken;
+			workload.headersToInsert["User-Agent"] = "DiscordBot (https://discordcoreapi.com 1.0)";
 			if (workload.payloadType == PayloadType::Application_Json) {
-				workload.headersToInsert.insert(std::make_pair("Content-Type", "application/json"));
+				workload.headersToInsert["Content-Type"] = "application/json";
 			} else if (workload.payloadType == PayloadType::Multipart_Form) {
-				workload.headersToInsert.insert(std::make_pair("Content-Type", "multipart/form-data; boundary=boundary25"));
+				workload.headersToInsert["Content-Type"] = "multipart/form-data; boundary=boundary25";
 			}
 			HttpResponseData returnData = this->httpRequest(workload);
 			DataParser::parseObject(returnData.responseData, returnObject);

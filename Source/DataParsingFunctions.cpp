@@ -274,7 +274,7 @@ namespace DiscordCoreInternal {
 				DiscordCoreAPI::OverWriteData newData{};
 				DataParser::parseObject(value, newData);
 				uint64_t overWriteId = newData.id;
-				pDataStructure.permissionOverwrites.insert_or_assign(overWriteId, newData);
+				pDataStructure.permissionOverwrites[overWriteId] = newData;
 			}
 		}
 
@@ -313,7 +313,7 @@ namespace DiscordCoreInternal {
 				DiscordCoreAPI::UserData newData{};
 				DataParser::parseObject(value, newData);
 				uint64_t userId = newData.id;
-				pDataStructure.recipients.insert_or_assign(userId, newData);
+				pDataStructure.recipients[userId] = newData;
 			}
 		}
 
@@ -401,7 +401,7 @@ namespace DiscordCoreInternal {
 				DiscordCoreAPI::OverWriteData newData{};
 				DataParser::parseObject(value, newData);
 				uint64_t overWriteId = newData.id;
-				pDataStructure.permissionOverwrites.insert_or_assign(overWriteId, newData);
+				pDataStructure.permissionOverwrites[overWriteId] = newData;
 			}
 		}
 
@@ -458,7 +458,7 @@ namespace DiscordCoreInternal {
 				DiscordCoreAPI::OverWriteData newData{};
 				DataParser::parseObject(value, newData);
 				uint64_t overWriteId = newData.id;
-				pDataStructure.permissionOverwrites.insert_or_assign(overWriteId, newData);
+				pDataStructure.permissionOverwrites[overWriteId] = newData;
 			}
 		}
 
@@ -501,7 +501,7 @@ namespace DiscordCoreInternal {
 				DiscordCoreAPI::UserData newData{};
 				DataParser::parseObject(value, newData);
 				uint64_t userId = newData.id;
-				pDataStructure.recipients.insert_or_assign(userId, newData);
+				pDataStructure.recipients[userId] = newData;
 			}
 		}
 
@@ -1553,7 +1553,7 @@ namespace DiscordCoreInternal {
 				DiscordCoreAPI::VoiceStateData newData{};
 				DataParser::parseObject(value, newData);
 				uint64_t userId = newData.userId;
-				pDataStructure.voiceStates.insert_or_assign(userId, newData);
+				pDataStructure.voiceStates[userId] = newData;
 			}
 		}
 
@@ -1583,7 +1583,7 @@ namespace DiscordCoreInternal {
 				DiscordCoreAPI::PresenceUpdateData newData{};
 				DataParser::parseObject(value, newData);
 				uint64_t presenceId = newData.user.id;
-				pDataStructure.presences.insert_or_assign(presenceId, newData);
+				pDataStructure.presences[presenceId] = newData;
 			}
 		}
 
@@ -1690,7 +1690,7 @@ namespace DiscordCoreInternal {
 				DiscordCoreAPI::VoiceStateData newData{};
 				DataParser::parseObject(value, newData);
 				uint64_t userId = newData.userId;
-				pDataStructure.voiceStates.insert_or_assign(userId, newData);
+				pDataStructure.voiceStates[userId] = newData;
 			}
 		}
 
@@ -1720,7 +1720,7 @@ namespace DiscordCoreInternal {
 				DiscordCoreAPI::PresenceUpdateData newData{};
 				DataParser::parseObject(value, newData);
 				uint64_t presenceId = newData.user.id;
-				pDataStructure.presences.insert_or_assign(presenceId, newData);
+				pDataStructure.presences[presenceId] = newData;
 			}
 		}
 	};
@@ -3261,7 +3261,7 @@ namespace DiscordCoreInternal {
 			pDataStructure.nameLocalizations.clear();
 			auto newMap = jsonObjectData["name_localizations"].get<std::unordered_map<std::string, std::string>>();
 			for (auto& [key, newValue]: newMap) {
-				pDataStructure.nameLocalizations.insert(std::make_pair(key, newValue));
+				pDataStructure.nameLocalizations[key] = newValue;
 			}
 		}
 	}
@@ -3275,7 +3275,7 @@ namespace DiscordCoreInternal {
 			pDataStructure.nameLocalizations.clear();
 			auto newMap = jsonObjectData["name_localizations"].get<std::unordered_map<std::string, std::string>>();
 			for (auto& [key, newValue]: newMap) {
-				pDataStructure.nameLocalizations.insert(std::make_pair(key, newValue));
+				pDataStructure.nameLocalizations[key] = newValue;
 			}
 		}
 
@@ -3283,7 +3283,7 @@ namespace DiscordCoreInternal {
 			pDataStructure.nameLocalizations.clear();
 			auto newMap = jsonObjectData["description_localizations"].get<std::unordered_map<std::string, std::string>>();
 			for (auto& [key, newValue]: newMap) {
-				pDataStructure.descriptionLocalizations.insert(std::make_pair(key, newValue));
+				pDataStructure.descriptionLocalizations[key] = newValue;
 			}
 		}
 
@@ -3370,7 +3370,7 @@ namespace DiscordCoreInternal {
 			pDataStructure.nameLocalizations.clear();
 			auto newMap = jsonObjectData["name_localizations"].get<std::unordered_map<std::string, std::string>>();
 			for (auto& [key, newValue]: newMap) {
-				pDataStructure.nameLocalizations.insert(std::make_pair(key, newValue));
+				pDataStructure.nameLocalizations[key] = newValue;
 			}
 		}
 
@@ -3378,7 +3378,7 @@ namespace DiscordCoreInternal {
 			pDataStructure.nameLocalizations.clear();
 			auto newMap = jsonObjectData["description_localizations"].get<std::unordered_map<std::string, std::string>>();
 			for (auto& [key, newValue]: newMap) {
-				pDataStructure.descriptionLocalizations.insert(std::make_pair(key, newValue));
+				pDataStructure.descriptionLocalizations[key] = newValue;
 			}
 		}
 
@@ -3434,7 +3434,7 @@ namespace DiscordCoreInternal {
 			pDataStructure.nameLocalizations.clear();
 			auto newMap = jsonObjectData["name_localizations"].get<std::unordered_map<std::string, std::string>>();
 			for (auto& [key, newValue]: newMap) {
-				pDataStructure.nameLocalizations.insert(std::make_pair(key, newValue));
+				pDataStructure.nameLocalizations[key] = newValue;
 			}
 		}
 
@@ -3442,7 +3442,7 @@ namespace DiscordCoreInternal {
 			pDataStructure.nameLocalizations.clear();
 			auto newMap = jsonObjectData["description_localizations"].get<std::unordered_map<std::string, std::string>>();
 			for (auto& [key, newValue]: newMap) {
-				pDataStructure.descriptionLocalizations.insert(std::make_pair(key, newValue));
+				pDataStructure.descriptionLocalizations[key] = newValue;
 			}
 		}
 
@@ -3804,7 +3804,7 @@ namespace DiscordCoreInternal {
 				for (auto& [key, newValue]: newMap) {
 					DiscordCoreAPI::AttachmentData newData{};
 					DataParser::parseObject(newValue, newData);
-					pDataStructure.resolved.attachments.insert(std::make_pair(stoull(key), newData));
+					pDataStructure.resolved.attachments[stoull(key)] = newData;
 				}
 			}
 
@@ -3814,7 +3814,7 @@ namespace DiscordCoreInternal {
 				for (auto& [key, newValue]: newMap) {
 					DiscordCoreAPI::UserData newData{};
 					DataParser::parseObject(newValue, newData);
-					pDataStructure.resolved.users.insert(std::make_pair(stoull(key), newData));
+					pDataStructure.resolved.users[stoull(key)] = newData;
 				}
 			}
 			if (value.contains("channels") && !value["channels"].is_null()) {
@@ -3823,7 +3823,7 @@ namespace DiscordCoreInternal {
 				for (auto& [key, newValue]: newMap) {
 					DiscordCoreAPI::ChannelData newData{};
 					DataParser::parseObject(newValue, newData);
-					pDataStructure.resolved.channels.insert(std::make_pair(stoull(key), newData));
+					pDataStructure.resolved.channels[stoull(key)] = newData;
 				}
 			}
 			if (value.contains("roles") && !value["roles"].is_null()) {
@@ -3832,7 +3832,7 @@ namespace DiscordCoreInternal {
 				for (auto& [key, newValue]: newMap) {
 					DiscordCoreAPI::RoleData newData{};
 					DataParser::parseObject(newValue, newData);
-					pDataStructure.resolved.roles.insert(std::make_pair(stoull(key), newData));
+					pDataStructure.resolved.roles[stoull(key)] = newData;
 				}
 			}
 			if (value.contains("members") && !value["members"].is_null()) {
@@ -3841,7 +3841,7 @@ namespace DiscordCoreInternal {
 				for (auto& [key, newValue]: newMap) {
 					DiscordCoreAPI::GuildMemberData newData{};
 					DataParser::parseObject(newValue, newData);
-					pDataStructure.resolved.members.insert(std::make_pair(stoull(key), newData));
+					pDataStructure.resolved.members[stoull(key)] = newData;
 				}
 			}
 			if (value.contains("messages") && !value["messages"].is_null()) {
@@ -3850,7 +3850,7 @@ namespace DiscordCoreInternal {
 				for (auto& [key, newValue]: newMap) {
 					DiscordCoreAPI::MessageData newData{};
 					DataParser::parseObject(newValue, newData);
-					pDataStructure.resolved.messages.insert(std::make_pair(stoull(key), newData));
+					pDataStructure.resolved.messages[stoull(key)] = newData;
 				}
 			}
 		}

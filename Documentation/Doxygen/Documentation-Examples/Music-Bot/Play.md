@@ -80,7 +80,7 @@ Play {#Play}
 				}
 
 				previousPlayedTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-				Play::timeOfLastPlay.insert_or_assign(args.eventData->getGuildId(), previousPlayedTime);
+				Play::timeOfLastPlay[args.eventData->getGuildId()] = previousPlayedTime;
 
 				VoiceConnection* voiceConnection = guild.connectToVoice(guildMember.voiceData.channelId, true, false);
 

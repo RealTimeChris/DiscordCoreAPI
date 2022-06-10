@@ -40,7 +40,7 @@ namespace DiscordCoreInternal {
 
 	std::vector<DiscordCoreAPI::Song> SoundCloudRequestBuilder::collectSearchResults(const std::string& songQuery) {
 		std::unordered_map<std::string, std::string> theHeaders{
-			std::make_pair("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.88 Safari/537.36"),
+			std::pair("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.88 Safari/537.36"),
 		};
 		HttpWorkloadData dataPackage{};
 		dataPackage.baseUrl = SoundCloudRequestBuilder::baseUrl02;
@@ -127,8 +127,8 @@ namespace DiscordCoreInternal {
 			}
 		} else {
 			std::unordered_map<std::string, std::string> theHeaders{
-				std::make_pair("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.88 Safari/537.36"),
-				std::make_pair("Path", newSong.secondDownloadUrl)
+				std::pair("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.88 Safari/537.36"),
+				std::pair("Path", newSong.secondDownloadUrl)
 			};
 			HttpWorkloadData dataPackage02{};
 			dataPackage02.baseUrl = newSong.secondDownloadUrl;
@@ -153,8 +153,8 @@ namespace DiscordCoreInternal {
 
 	std::string SoundCloudRequestBuilder::collectClientId() {
 		std::unordered_map<std::string, std::string> theHeaders{
-			std::make_pair("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.88 Safari/537.36"),
-			std::make_pair("Path", "/search?q=testValue")
+			std::pair("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.88 Safari/537.36"),
+			std::pair("Path", "/search?q=testValue")
 		};
 		HttpWorkloadData dataPackage02{};
 		dataPackage02.baseUrl = SoundCloudRequestBuilder::baseUrl;

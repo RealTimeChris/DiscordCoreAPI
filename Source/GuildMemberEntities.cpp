@@ -148,7 +148,7 @@ namespace DiscordCoreAPI {
 		workload.content = nlohmann::json{ { "nick", dataPackage.nick } }.dump();
 		workload.callStack = "GuildMembers::modifyCurrentGuildMemberAsync";
 		if (dataPackage.reason != "") {
-			workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));
+			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
 		co_return GuildMembers::httpClient->submitWorkloadAndGetResult<GuildMember>(workload);
 	}
@@ -163,7 +163,7 @@ namespace DiscordCoreAPI {
 		workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
 		workload.callStack = "GuildMembers::modifyGuildMemberAsync";
 		if (dataPackage.reason != "") {
-			workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));
+			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
 		auto guildMember = GuildMembers::httpClient->submitWorkloadAndGetResult<GuildMember>(workload);
 		GuildMembers::insertGuildMember(guildMember);
@@ -179,7 +179,7 @@ namespace DiscordCoreAPI {
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/members/" + std::to_string(dataPackage.guildMemberId);
 		workload.callStack = "GuildMembers::removeGuildMemberAsync";
 		if (dataPackage.reason != "") {
-			workload.headersToInsert.insert(std::make_pair("X-Audit-Log-Reason", dataPackage.reason));
+			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
 		co_return GuildMembers::httpClient->submitWorkloadAndGetResult<void>(workload);
 	}
@@ -238,7 +238,7 @@ namespace DiscordCoreAPI {
 		}
 		std::string theString{ std::to_string(guildMember.guildId) + " + " + std::to_string(guildMember.id) };
 		if (GuildMembers::doWeCache) {
-			GuildMembers::cache.insert_or_assign(theString, guildMember);
+			GuildMembers::cache[theString] = guildMember;
 		}
 	}
 

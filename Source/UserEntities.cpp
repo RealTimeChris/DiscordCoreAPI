@@ -208,7 +208,7 @@ namespace DiscordCoreAPI {
 			return;
 		}
 		if (Users::doWeCache) {
-			Users::cache.insert_or_assign(user.id, user);
+			Users::cache[user.id] = user;
 		}
 	}
 

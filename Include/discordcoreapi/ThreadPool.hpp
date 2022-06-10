@@ -47,7 +47,7 @@ namespace DiscordCoreAPI {
 		template<typename... ArgTypes> static std::string storeThread(TimeElapsedHandler<ArgTypes...> timeElapsedHandler, int32_t timeInterval, bool repeated, ArgTypes... args) {
 			std::string threadId = std::to_string(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
 
-			ThreadPool::threads.insert(std::make_pair(threadId, std::jthread([=](std::stop_token stopToken) {
+			ThreadPool::threads[threadId] = std::jthread([=](std::stop_token stopToken) {
 				DiscordCoreAPI::StopWatch stopWatch{ std::chrono::milliseconds{ timeInterval } };
 				while (true) {
 					stopWatch.resetTimer();
@@ -73,7 +73,7 @@ namespace DiscordCoreAPI {
 		static std::string storeThread(TimeElapsedHandlerTwo timeElapsedHandler, int32_t timeInterval, bool repeated) {
 			std::string threadId = std::to_string(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
 
-			ThreadPool::threads.insert(std::make_pair(threadId, std::jthread([=](std::stop_token stopToken) {
+			ThreadPool::threads[threadId] = std::jthread([=](std::stop_token stopToken) {
 				DiscordCoreAPI::StopWatch stopWatch{ std::chrono::milliseconds{ timeInterval } };
 				while (true) {
 					stopWatch.resetTimer();
