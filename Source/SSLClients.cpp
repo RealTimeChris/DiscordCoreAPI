@@ -198,7 +198,7 @@ namespace DiscordCoreInternal {
 					throw ProcessingError{ theResultString };
 				}
 			}
-		} 
+		}
 		if (FD_ISSET(this->theSocket, &writeSet)) {
 			this->wantRead = false;
 			this->wantWrite = false;
@@ -378,7 +378,7 @@ namespace DiscordCoreInternal {
 						throw ProcessingError{ theResultString };
 					}
 				}
-			} 
+			}
 			if (FD_ISSET(this->theSocket, &writeSet)) {
 				this->wantRead = false;
 				this->wantWrite = false;

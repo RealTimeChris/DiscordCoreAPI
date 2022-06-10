@@ -152,7 +152,6 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll CoRoutineThreadPool {
 	  public:
-
 		CoRoutineThreadPool();
 
 		void submitTask(std::coroutine_handle<> coro) noexcept;
