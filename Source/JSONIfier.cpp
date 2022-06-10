@@ -31,6 +31,16 @@
 
 namespace DiscordCoreAPI {
 
+	void to_json(nlohmann::json& jsonOut, const StringWrapper& valueNew) {
+		nlohmann::json newValue{};
+		std::string theValue{};
+		for (auto& value: static_cast<std::string>(static_cast<StringWrapper>(valueNew))) {
+			theValue.push_back(value);
+		}
+		newValue = theValue;
+		jsonOut = newValue;
+	}
+
 	void to_json(nlohmann::json& jsonOut, const MessageReferenceData& valueNew) {
 		nlohmann::json newValue{};
 		newValue["fail_if_not_exists"] = valueNew.failIfNotExists;
@@ -79,7 +89,8 @@ namespace DiscordCoreAPI {
 				if (valueNew.type == ComponentType::Button) {
 					nlohmann::json component{};
 					component["emoji"]["animated"] = valueNew.emoji.animated;
-					component["emoji"]["name"] = valueNew.emoji.name;
+					StringWrapper theString = valueNew.emoji.name;
+					component["emoji"]["name"] = static_cast<std::string>(theString);
 					if (valueNew.emoji.id != 0) {
 						component["emoji"]["id"] = valueNew.emoji.id;
 					}

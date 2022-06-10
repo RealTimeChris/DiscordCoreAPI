@@ -32,7 +32,7 @@ namespace DiscordCoreInternal {
 
 		SoundCloudRequestBuilder(HttpClient*);
 
-		DiscordCoreAPI::Song collectFinalSong(const DiscordCoreAPI::GuildMemberData& addedByGuildMember, const DiscordCoreAPI::Song& newSong);
+		DiscordCoreAPI::Song collectFinalSong(DiscordCoreAPI::GuildMemberData& addedByGuildMember, const DiscordCoreAPI::Song& newSong);
 
 		std::vector<DiscordCoreAPI::Song> collectSearchResults(const std::string& theString);
 

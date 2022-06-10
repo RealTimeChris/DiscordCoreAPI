@@ -35,6 +35,203 @@
 
 namespace DiscordCoreAPI {
 
+	StringWrapper& StringWrapper::operator=(const char* theString) {
+		if (theString != nullptr) {
+			std::stringstream theStream{};
+			theStream << theString;
+			int64_t theLength = theStream.str().size();
+			this->thePtr = std::make_unique<char[]>(theLength + 1);
+			for (int64_t x = 0; x < theLength; x += 1) {
+				this->thePtr[x] = theString[x];
+			}
+			this->thePtr[theLength] = '\0';
+		}
+		return *this;
+	}
+	StringWrapper::StringWrapper(const char* theString) {
+		*this = theString;
+	};
+	StringWrapper& StringWrapper::operator=(std::string& theString) {
+		auto theLength = theString.size();
+		this->thePtr = std::make_unique<char[]>(theLength + 1);
+		for (int32_t x = 0; x < theLength; x += 1) {
+			this->thePtr[x] = theString[x];
+		}
+		this->thePtr[theLength] = '\0';
+		return *this;
+	}
+	StringWrapper::StringWrapper(std::string& theString) {
+		*this = theString;
+	}
+	StringWrapper& StringWrapper::operator=(const std::string& theString) {
+		auto theLength = theString.size();
+		this->thePtr = std::make_unique<char[]>(theLength + 1);
+		for (int32_t x = 0; x < theLength; x += 1) {
+			this->thePtr[x] = theString[x];
+		}
+		this->thePtr[theLength] = '\0';
+		return *this;
+	}
+	StringWrapper::StringWrapper(const std::string& theString) {
+		*this = theString;
+	}
+	StringWrapper& StringWrapper::operator=(const StringWrapper& other) {
+		std::stringstream theStream{};
+		if (other.thePtr != nullptr) {
+			theStream << other.thePtr;
+		}
+		auto theLength = theStream.str().size();
+		this->thePtr = std::make_unique<char[]>(theLength + 1);
+		for (int64_t x = 0; x < theLength; x += 1) {
+			this->thePtr[x] = other.thePtr[x];
+		}
+		this->thePtr[theLength] = '\0';
+		return *this;
+	}
+	StringWrapper::StringWrapper(const StringWrapper& other) {
+		*this = other;
+	}
+
+	StringWrapper& StringWrapper::operator=(StringWrapper& other) {
+		std::stringstream theStream{};
+		if (other.thePtr != nullptr) {
+			theStream << other.thePtr;
+		}
+		auto theLength = theStream.str().size();
+		this->thePtr = std::make_unique<char[]>(theLength + 1);
+		for (int64_t x = 0; x < theLength; x += 1) {
+			this->thePtr[x] = static_cast<std::string>(other)[x];
+		}
+		this->thePtr[theLength] = '\0';
+		return *this;
+	}
+	StringWrapper::StringWrapper(StringWrapper& other) {
+		*this = other;
+	}
+	StringWrapper::operator std::string() {
+		std::stringstream theStream{};
+		if (this->thePtr != nullptr) {
+			theStream << this->thePtr;
+		}		
+		std::string theString{};
+		for (int32_t x = 0; x < theStream.str().size(); x += 1) {
+			theString.push_back(theStream.str()[x]);
+		}
+		return theString;
+	}
+	void StringWrapper::push_back(char theChar) {
+		std::stringstream theStream{};
+		int64_t theLength{};
+		if (this->thePtr != nullptr) {
+			theStream << this->thePtr;
+			theLength = theStream.str().size();
+		} else {
+			theLength = 0;
+		}		
+		this->thePtr = std::make_unique<char[]>(theLength + 2);
+		for (int64_t x = 0; x < theLength; x += 1) {
+			this->thePtr[x] = theStream.str()[x];
+		}
+		this->thePtr[theLength] = theChar;
+		this->thePtr[theLength + 1] = '\0';
+	}
+	size_t StringWrapper::size() {
+		std::stringstream theStream{};
+		if (this->thePtr != nullptr) {
+			theStream << this->thePtr;
+		}
+		auto theLength = theStream.str().size();
+		return theLength;
+	}
+	char* StringWrapper::data() {
+		return this->thePtr.get();
+	}
+
+	std::stringstream& operator<<(std::stringstream& lhs, const StringWrapper& rhs) {
+		std::stringstream theStream{};
+		theStream << rhs.thePtr;
+		for (auto& value: theStream.str()) {
+			lhs.put(value);
+		}
+		return lhs;
+	}
+
+	std::basic_ostream<char, std::char_traits<char>>& operator<<(std::basic_ostream<char, std::char_traits<char>>& lhs, const StringWrapper& rhs) {
+		for (auto& value: static_cast<std::string>(static_cast<StringWrapper>(rhs))) {
+			lhs.put(value);
+		}
+		return lhs;
+	}
+
+	std::basic_ostream<char, std::char_traits<char>>& operator<<(std::basic_ostream<char, std::char_traits<char>>& lhs, StringWrapper& rhs) {
+		for (auto& value: static_cast<std::string>(rhs)) {
+			lhs.put(value);
+		}
+		return lhs;
+	}
+
+	std::string operator+(const char* lhs, StringWrapper& rhs) {
+		std::stringstream theStream{};
+		const StringWrapper theString = lhs;
+		theStream << theString << static_cast<StringWrapper>(rhs);
+		std::string theStringReturn{};
+		for (int64_t x = 0; x < theStream.str().size(); x += 1) {
+			theStringReturn.push_back(theStream.str()[x]);
+		}
+		return theStringReturn.data();
+	}
+
+	std::string operator+(StringWrapper& lhs, const char* rhs) {
+		std::stringstream theStream{};
+		const StringWrapper theString = lhs;
+		theStream << theString << static_cast<StringWrapper>(rhs);
+		std::string theStringReturn{};
+		for (int64_t x = 0; x < theStream.str().size(); x += 1) {
+			theStringReturn.push_back(theStream.str()[x]);
+		}
+		return theStringReturn.data();
+	}
+
+	const char* operator+(const char* lhs, StringWrapper rhs) {
+		std::stringstream theStream{};
+		const StringWrapper theString = lhs;
+		theStream << theString << static_cast<StringWrapper>(rhs);
+		std::string theStringReturn{};
+		for (int64_t x = 0; x < theStream.str().size(); x += 1) {
+			theStringReturn.push_back(theStream.str()[x]);
+		}
+		return theStringReturn.data();
+	}
+
+	const char* operator+(StringWrapper lhs, const char* rhs) {
+		std::stringstream theStream{};
+		const StringWrapper theString = lhs;
+		theStream << theString << static_cast<StringWrapper>(rhs);
+		std::string theStringReturn{};
+		for (int64_t x = 0; x < theStream.str().size(); x += 1) {
+			theStringReturn.push_back(theStream.str()[x]);
+		}
+		return theStringReturn.data();
+	}
+
+	bool operator!=(StringWrapper lhs, const char* rhs) {
+		for (int64_t x = 0; x < static_cast<std::string>(rhs).size(); x += 1) {
+			if (static_cast<std::string>(lhs)[x] != static_cast<std::string>(rhs)[x]) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	bool operator==(std::string& lhs, StringWrapper& rhs) {
+		for (int64_t x = 0; x < static_cast<std::string>(rhs).size(); x += 1) {
+			if (lhs[x] != static_cast<std::string>(rhs)[x]) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	std::string getISO8601TimeStamp(const std::string& year, const std::string& month, const std::string& day, const std::string& hour, const std::string& minute,
 		const std::string& second) {
 		std::string theTimeStamp{};
@@ -447,7 +644,7 @@ namespace DiscordCoreAPI {
 		if (*this == "") {
 			this->push_back('0');
 		}
-		int64_t permissionsInteger = stoll(*this);
+		int64_t permissionsInteger = stoll(static_cast<std::string>(static_cast<StringWrapper>(*this)));
 		for (auto value: permissionsToAdd) {
 			permissionsInteger |= static_cast<int64_t>(value);
 		}
@@ -460,7 +657,7 @@ namespace DiscordCoreAPI {
 		if (*this == "") {
 			this->push_back('0');
 		}
-		int64_t permissionsInteger = stoll(*this);
+		int64_t permissionsInteger = stoll(static_cast<std::string>(static_cast<StringWrapper>(*this)));
 		for (auto value: permissionsToRemove) {
 			permissionsInteger &= ~static_cast<int64_t>(value);
 		}
@@ -474,7 +671,7 @@ namespace DiscordCoreAPI {
 		if (*this == "") {
 			this->push_back('0');
 		}
-		int64_t permissionsInteger = stoll(*this);
+		int64_t permissionsInteger =stoll(static_cast<std::string>(static_cast<StringWrapper>(*this)));
 		if (permissionsInteger & (1ll << 3)) {
 			for (int64_t x = 0; x < 41; x += 1) {
 				permissionsInteger |= 1ll << x;
@@ -637,7 +834,7 @@ namespace DiscordCoreAPI {
 
 	std::string Permissions::computeBasePermissions(const GuildMember& guildMember) {
 		GuildData guild = Guilds::getCachedGuildAsync({ .guildId = guildMember.guildId }).get();
-		if (guild.ownerId == std::to_string(guildMember.id)) {
+		if (static_cast<std::string>(guild.ownerId) == std::to_string(guildMember.id)) {
 			return Permissions::getAllPermissions();
 		}
 		auto guildRoles = Roles ::getGuildRolesAsync({ .guildId = guildMember.guildId }).get();
@@ -649,14 +846,14 @@ namespace DiscordCoreAPI {
 		}
 		int64_t permissions{};
 		if (roleEveryone.permissions != "") {
-			permissions = stoll(roleEveryone.permissions);
+			permissions = stoll(static_cast<std::string>(static_cast<StringWrapper>(roleEveryone.permissions)));
 		}
 		GetGuildMemberRolesData getRolesData{};
 		getRolesData.guildMember = guildMember;
 		getRolesData.guildId = guildMember.guildId;
 		auto guildMemberRoles = Roles::getGuildMemberRolesAsync(getRolesData).get();
 		for (auto& value: guildMemberRoles) {
-			permissions |= stoll(value.permissions);
+			permissions |= stoll(static_cast<std::string>(static_cast<StringWrapper>(value.permissions)));
 		}
 
 		if ((permissions & static_cast<int64_t>(Permission::Administrator)) == static_cast<int64_t>(Permission::Administrator)) {
@@ -679,8 +876,8 @@ namespace DiscordCoreAPI {
 		int64_t permissions = stoll(basePermissions);
 		if (channel.permissionOverwrites.contains(guildMember.guildId)) {
 			OverWriteData overWritesEveryone = channel.permissionOverwrites[guildMember.guildId];
-			permissions &= ~stoll(overWritesEveryone.deny);
-			permissions |= stoll(overWritesEveryone.allow);
+			permissions &= ~stoll(static_cast<std::string>(static_cast<StringWrapper>(overWritesEveryone.deny)));
+			permissions |= stoll(static_cast<std::string>(static_cast<StringWrapper>(overWritesEveryone.allow)));
 		}
 
 		auto guildMemberRoles = Roles::getGuildMemberRolesAsync({ .guildMember = guildMember, .guildId = guildMember.guildId }).get();
@@ -689,16 +886,16 @@ namespace DiscordCoreAPI {
 		for (auto& value: guildMemberRoles) {
 			if (channel.permissionOverwrites.contains(value.id)) {
 				OverWriteData currentChannelOverwrites = channel.permissionOverwrites[value.id];
-				allow |= stoll(currentChannelOverwrites.allow);
-				deny |= stoll(currentChannelOverwrites.deny);
+				allow |= stoll(static_cast<std::string>(static_cast<StringWrapper>(currentChannelOverwrites.allow)));
+				deny |= stoll(static_cast<std::string>(static_cast<StringWrapper>(currentChannelOverwrites.deny)));
 			}
 		}
 		permissions &= ~deny;
 		permissions |= allow;
 		if (channel.permissionOverwrites.contains(guildMember.id)) {
 			OverWriteData currentOverWrites = channel.permissionOverwrites[guildMember.id];
-			permissions &= ~stoll(currentOverWrites.deny);
-			permissions |= stoll(currentOverWrites.allow);
+			permissions &= ~stoll(static_cast<std::string>(static_cast<StringWrapper>(currentOverWrites.deny)));
+			permissions |= stoll(static_cast<std::string>(static_cast<StringWrapper>(currentOverWrites.allow)));
 		}
 		return std::to_string(permissions);
 	}

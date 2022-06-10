@@ -328,7 +328,9 @@ namespace DiscordCoreAPI {
 			this->afkChannelId = dataPackage.afkChannelId;
 			this->description = dataPackage.description;
 			this->afkTimeout = dataPackage.afkTimeOut;
-			this->features = dataPackage.features;
+			for (auto& value: dataPackage.features) {
+				this->features.push_back(value);
+			}
 			this->ownerId = dataPackage.ownerId;
 			this->guildId = dataPackage.id;
 			this->name = dataPackage.name;

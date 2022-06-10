@@ -607,7 +607,7 @@ namespace DiscordCoreInternal {
 			for (auto& value: theStream.str()) {
 				pDataStructure.unicodeEmoji.push_back(value);
 			}
-			pDataStructure.unicodeEmoji = pDataStructure.unicodeEmoji.substr(1, pDataStructure.unicodeEmoji.size() - 3);
+			pDataStructure.unicodeEmoji = static_cast<std::string>(pDataStructure.unicodeEmoji).substr(1, pDataStructure.unicodeEmoji.size() - 3);
 		}
 
 		if (jsonObjectData.contains("color") && !jsonObjectData["color"].is_null()) {
@@ -661,7 +661,7 @@ namespace DiscordCoreInternal {
 			for (auto& value: theStream.str()) {
 				pDataStructure.unicodeEmoji.push_back(value);
 			}
-			pDataStructure.unicodeEmoji = pDataStructure.unicodeEmoji.substr(1, pDataStructure.unicodeEmoji.size() - 3);
+			pDataStructure.unicodeEmoji = static_cast<std::string>(pDataStructure.unicodeEmoji).substr(1, pDataStructure.unicodeEmoji.size() - 3);
 		}
 
 		if (jsonObjectData.contains("color") && !jsonObjectData["color"].is_null()) {
@@ -1483,7 +1483,9 @@ namespace DiscordCoreInternal {
 		}
 
 		if (jsonObjectData.contains("features") && !jsonObjectData["features"].is_null()) {
-			pDataStructure.features = jsonObjectData["features"].get<std::vector<std::string>>();
+			for (auto& value: jsonObjectData["features"].get<std::vector<std::string>>()) {
+				pDataStructure.features.push_back(value);
+			}
 		}
 
 		if (jsonObjectData.contains("permissions") && !jsonObjectData["permissions"].is_null()) {
@@ -1653,7 +1655,9 @@ namespace DiscordCoreInternal {
 		}
 
 		if (jsonObjectData.contains("features") && !jsonObjectData["features"].is_null()) {
-			pDataStructure.features = jsonObjectData["features"].get<std::vector<std::string>>();
+			for (auto& value: jsonObjectData["features"].get<std::vector<std::string>>()) {
+				pDataStructure.features.push_back(value);
+			}
 		}
 
 		if (jsonObjectData.contains("roles") && !jsonObjectData["roles"].is_null()) {

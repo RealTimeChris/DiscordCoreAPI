@@ -263,6 +263,70 @@ namespace DiscordCoreAPI {
 	 * @{
 	 */
 
+	class DiscordCoreAPI_Dll StringWrapper {
+	  public:
+		StringWrapper() = default;
+		friend std::stringstream& operator<<(std::stringstream& lhs, const StringWrapper& rhs);
+		friend const char* operator+(StringWrapper lhs, const char* rhs);
+		friend const char* operator+(const char* rhs, StringWrapper lhs);
+		friend std::string operator+(const char* lhs, StringWrapper& rhs);
+		friend std::string operator+(StringWrapper& lhs, const char* rhs);
+		friend bool operator==(StringWrapper& rhs, const char* lhs);
+		
+		StringWrapper& operator=(const char* theString);
+		
+		StringWrapper(const char* theString);
+		
+		StringWrapper& operator=(std::string& theString);
+		
+		StringWrapper(std::string& theString);
+
+		StringWrapper& operator=(const std::string& theString);
+		
+		StringWrapper(const std::string& theString);
+		
+		StringWrapper& operator=(const StringWrapper& other);
+		
+		StringWrapper(const StringWrapper& other);
+
+		StringWrapper& operator=(StringWrapper& other);
+		
+		StringWrapper(StringWrapper& other);
+
+		operator std::string();
+		
+		void push_back(char theChar);
+		
+		size_t size();
+		
+		char* data();
+
+	  protected:
+		std::unique_ptr<char[]> thePtr{};
+	};
+
+	std::basic_ostream<char, std::char_traits<char>>& operator<<(std::basic_ostream<char, std::char_traits<char>>& lhs, StringWrapper& rhs);
+
+	const char* operator+(StringWrapper lhs, const char* rhs);
+
+	const char* operator+(const char* rhs, StringWrapper lhs);
+
+	std::string operator+(const char* lhs, StringWrapper& rhs);
+
+	std::string operator+(StringWrapper& lhs, const char* rhs);
+
+	bool operator!=(StringWrapper lhs, const char* rhs);
+
+	bool operator==(std::string& lhs, StringWrapper& rhs);
+
+	inline bool operator==(StringWrapper& lhs, const char* rhs) {
+		if (std::string(lhs) == std::string(rhs)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 	template<typename ObjectType>
 	concept Copyable = std::copyable<ObjectType>;
 
@@ -776,12 +840,12 @@ namespace DiscordCoreAPI {
 		}
 
 	  protected:
-		std::string originalTimeStamp{};
+		StringWrapper originalTimeStamp{};
 		int64_t timeStampInMs{ 0 };
 	};
 
 	/// Permissions class, for representing and manipulating Permission values. \brief Permissions class, for representing and manipulating Permission values.
-	class DiscordCoreAPI_Dll Permissions : public std::string {
+	class DiscordCoreAPI_Dll Permissions : public StringWrapper {
 	  public:
 		Permissions() = default;
 
@@ -936,10 +1000,10 @@ namespace DiscordCoreAPI {
 	/// Data structure representing a single Role. \brief Data structure representing a single Role.
 	class DiscordCoreAPI_Dll RoleData : public DiscordEntity {
 	  public:
-		std::string unicodeEmoji{};///< Emoji representing the Role.
+		StringWrapper unicodeEmoji{};///< Emoji representing the Role.
 		Permissions permissions{};///< The Role's base Guild Permissions.
 		int32_t position{ 0 };///< Its position amongst the rest of the Guild's roles.
-		std::string name{};///< The Role's name.
+		StringWrapper name{};///< The Role's name.
 		int32_t color{ 0 };///< The Role's color.
 		int8_t flags{ 0 };///< Role flags.
 
@@ -980,9 +1044,9 @@ namespace DiscordCoreAPI {
 	  public:
 		UserData() = default;
 
-		std::string discriminator{};///< The user's 4-digit discord-tag	identify.
-		std::string userName{};///< The user's userName, not unique across the platform	identify.
-		std::string avatar{};///< The user's avatar hash.
+		StringWrapper discriminator{};///< The user's 4-digit discord-tag	identify.
+		StringWrapper userName{};///< The user's userName, not unique across the platform	identify.
+		StringWrapper avatar{};///< The user's avatar hash.
 		int32_t flags{};///< The public flags on a user' s account.
 
 		virtual ~UserData() = default;
@@ -1261,10 +1325,10 @@ namespace DiscordCoreAPI {
 		std::unordered_map<uint64_t, OverWriteData> permissionOverwrites{};///< Permission overwrites for the given Channel.
 		ChannelType type{ ChannelType::Dm };///< The type of the Channel.
 		int32_t memberCount{ 0 };///< Count of members active in the Channel.
-		std::string parentId{};///< Id of the Channel's parent Channel/category.
-		std::string ownerId{};///< Id of the Channel's owner.
+		StringWrapper parentId{};///< Id of the Channel's parent Channel/category.
+		StringWrapper ownerId{};///< Id of the Channel's owner.
 		int32_t position{ 0 };///< The position of the Channel, in the Guild's Channel list.
-		std::string name{};///< Name of the Channel.
+		StringWrapper name{};///< Name of the Channel.
 		uint64_t guildId{};///< Id of the Channel's Guild, if applicable.
 		int8_t flags{ 0 };///< Channel flags combined as a bitfield.
 
@@ -1279,10 +1343,10 @@ namespace DiscordCoreAPI {
 		std::vector<uint64_t> roles{};///< The Guild roles that they have.
 		Permissions permissions{};///< Their base-level Permissions in the Guild.
 		TimeStamp joinedAt{ "" };///< When they joined the Guild.
-		std::string userAvatar{};///< This GuildMember's User Avatar.
-		std::string userName{};///< This GuildMember's UserName.
+		StringWrapper userAvatar{};///< This GuildMember's User Avatar.
+		StringWrapper userName{};///< This GuildMember's UserName.
 		uint64_t guildId{};///< The current Guild's id.
-		std::string nick{};///< Their nick/display name.
+		StringWrapper nick{};///< Their nick/display name.
 		int8_t flags{ 0 };///< GuildMember flags.
 
 		virtual ~GuildMemberData() = default;
@@ -1293,7 +1357,7 @@ namespace DiscordCoreAPI {
 		TimeStamp requestToSpeakTimestamp{ "" };///< The time at which the User requested to speak.
 		bool selfStream{ false };///< Whether this User is streaming using "Go Live".
 		GuildMemberData member{};///< The Guild member id this voice state is for.
-		std::string sessionId{};///< The session id for this voice state.
+		StringWrapper sessionId{};///< The session id for this voice state.
 		bool selfVideo{ false };///< Whether this User's camera is enabled.
 		bool selfDeaf{ false };///< Whether this User is locally deafened.
 		bool selfMute{ false };///< Whether this User is locally muted.
@@ -1365,7 +1429,7 @@ namespace DiscordCoreAPI {
 		bool available{ true };///< Is it available to be used?
 		bool animated{ false };///< Is it animated?
 		bool managed{ false };///< Is it managed?
-		std::string name{};///< What is its name?
+		StringWrapper name{};///< What is its name?
 		UserData user{};///< User that created this emoji.
 
 		virtual ~EmojiData() = default;
@@ -1670,17 +1734,17 @@ namespace DiscordCoreAPI {
 
 	/// Assets data. \brief Party data.
 	struct DiscordCoreAPI_Dll AssetsData {
-		std::string largeImage{};///< Keyname of an asset to display.
-		std::string smallImage{};///< Keyname of an asset to display.
-		std::string largeText{};///< Hover text for the large image.
-		std::string smallText{};///< Hover text for the small image.
+		StringWrapper largeImage{};///< Keyname of an asset to display.
+		StringWrapper smallImage{};///< Keyname of an asset to display.
+		StringWrapper largeText{};///< Hover text for the large image.
+		StringWrapper smallText{};///< Hover text for the small image.
 	};
 
 	/// Secrets data. \brief Secrets data.
 	struct DiscordCoreAPI_Dll SecretsData {
-		std::string spectate{};///< Unique hash for the given match context.
-		std::string match{};///< Unique hash for Spectate button.
-		std::string join{};///< Unique hash for chat invitesand Ask to Join.
+		StringWrapper spectate{};///< Unique hash for the given match context.
+		StringWrapper match{};///< Unique hash for Spectate button.
+		StringWrapper join{};///< Unique hash for chat invitesand Ask to Join.
 	};
 
 	/// Timestamp data. \brief Timestamp data.
@@ -1691,8 +1755,8 @@ namespace DiscordCoreAPI {
 
 	/// Button data. \brief Button data.
 	struct DiscordCoreAPI_Dll ButtonData {
-		std::string label{};///< Visible label of the button.
-		std::string url{};///< Url to display on the button.
+		StringWrapper label{};///< Visible label of the button.
+		StringWrapper url{};///< Url to display on the button.
 	};
 
 	/// Activity types. \brief Activity types.
@@ -1712,23 +1776,23 @@ namespace DiscordCoreAPI {
 		int32_t createdAt{ 0 };///< Timestamp of when the activity began.
 		bool instance{ false };///< Whether this activity is an instanced context, like a match.
 		SecretsData secrets{};///< Secrets data.
-		std::string details{};///< Details about the activity.
+		StringWrapper details{};///< Details about the activity.
 		ButtonData buttons{};///< Button Data.
 		ActivityType type{};///< Activity data.
 		AssetsData assets{};///< Assets data.
-		std::string state{};///< The player's current party status.
-		std::string name{};///< Name of the activity.
+		StringWrapper state{};///< The player's current party status.
+		StringWrapper name{};///< Name of the activity.
 		int32_t flags{ 0 };///< Flags.
-		std::string url{};///< Url associated with the activity.
+		StringWrapper url{};///< Url associated with the activity.
 		EmojiData emoji{};///< Emoji associated with the activity.
 		PartyData party{};///< Party data.
 	};
 
 	/// Client status data. \brief Client status data.
 	struct DiscordCoreAPI_Dll ClientStatusData {
-		std::string desktop{};///< Desktop name.
-		std::string mobile{};///< Mobile name.
-		std::string web{};///< Web link.
+		StringWrapper desktop{};///< Desktop name.
+		StringWrapper mobile{};///< Mobile name.
+		StringWrapper web{};///< Web link.
 	};
 
 	/// Premium tier levels. \brief Premium tier levels.
@@ -1786,7 +1850,7 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll PresenceUpdateData {
 		std::vector<ActivityData> activities{};///< Array of activities.
 		ClientStatusData clientStatus{};///< Current client status.
-		std::string status{};///< Status of the current presence.
+		StringWrapper status{};///< Status of the current presence.
 		uint64_t guildId{};///< Guild id for the current presence.
 		UserData user{};///< User data for the current presence.
 	};
@@ -1904,15 +1968,15 @@ namespace DiscordCoreAPI {
 		std::unordered_map<uint64_t, VoiceStateData> voiceStates{};///< Array of Guild-member voice-states.
 		DiscordCoreClient* discordCoreClient{ nullptr };///< A pointer to the DiscordCoreClient.
 		VoiceConnection* voiceConnectionPtr{ nullptr };///< A pointer to the VoiceConnection, if present.
-		std::vector<std::string> features{};///< List_Ext of Guild features.
+		std::vector<StringWrapper> features{};///< List_Ext of Guild features.
 		std::vector<uint64_t> channels{};///< Array of Guild channels.
 		std::vector<uint64_t> members{};///< Array of GuildMembers.
 		std::vector<uint64_t> roles{};///< Array of Guild roles.
 		TimeStamp joinedAt{ "" };///< When the bot joined this Guild.
 		int32_t memberCount{ 0 };///< Member count.
-		std::string ownerId{};///< User id of the Guild's owner.
-		std::string icon{};///< Url to the Guild's icon.
-		std::string name{};///< The Guild's name.
+		StringWrapper ownerId{};///< User id of the Guild's owner.
+		StringWrapper icon{};///< Url to the Guild's icon.
+		StringWrapper name{};///< The Guild's name.
 		int8_t flags{ 0 };///< Guild flags.
 
 		GuildData() = default;
@@ -3684,13 +3748,13 @@ namespace DiscordCoreInternal {
 	struct DiscordCoreAPI_Dll VoiceConnectionData {
 		std::string voiceEncryptionMode{};
 		std::string externalIp{};
+		uint32_t audioSSRC{ 0 };
 		std::string secretKey{};
 		std::string voicePort{};
 		std::string sessionId{};
 		std::string endPoint{};
 		std::string voiceIp{};
 		std::string token{};
-		uint32_t audioSSRC{ 0 };
 	};
 
 };// namespace DiscordCoreInternal

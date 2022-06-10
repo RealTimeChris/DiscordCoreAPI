@@ -156,7 +156,8 @@ namespace DiscordCoreInternal {
 		newSong.finalDownloadUrls[0] = downloadUrl01;
 		newSong.finalDownloadUrls[1] = downloadUrl02;
 		newSong.viewUrl = newSong.firstDownloadUrl;
-		newSong.addedByUserName = guildMember.userName;
+		DiscordCoreAPI::StringWrapper theString = guildMember.userName;
+		newSong.addedByUserName = theString; 
 		newSong.contentLength = newSong.format.contentLength;
 		newSong.addedByUserId = guildMember.id;
 		newSong.type = DiscordCoreAPI::SongType::YouTube;

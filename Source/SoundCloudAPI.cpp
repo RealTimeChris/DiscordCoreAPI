@@ -30,7 +30,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	DiscordCoreAPI::Song SoundCloudRequestBuilder::collectFinalSong(const DiscordCoreAPI::GuildMemberData& addedByGuildMember, const DiscordCoreAPI::Song& newSong) {
+	DiscordCoreAPI::Song SoundCloudRequestBuilder::collectFinalSong(DiscordCoreAPI::GuildMemberData& addedByGuildMember, const DiscordCoreAPI::Song& newSong) {
 		DiscordCoreAPI::Song newerSong = newSong;
 		auto newestSong = constructDownloadInfo(newerSong);
 		newestSong.addedByUserId = addedByGuildMember.id;
@@ -340,7 +340,8 @@ namespace DiscordCoreInternal {
 	};
 
 	DiscordCoreAPI::Song SoundCloudAPI::collectFinalSong(const DiscordCoreAPI::GuildMemberData& addedByGuildMember, const DiscordCoreAPI::Song& newSong) {
-		return this->requestBuilder.collectFinalSong(addedByGuildMember, newSong);
+		DiscordCoreAPI::GuildMemberData theData = addedByGuildMember;
+		return this->requestBuilder.collectFinalSong(theData, newSong);
 	}
 
 	std::vector<DiscordCoreAPI::Song> SoundCloudAPI::searchForSong(const std::string& searchQuery) {
