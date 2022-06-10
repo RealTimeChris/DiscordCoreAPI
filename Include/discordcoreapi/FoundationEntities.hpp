@@ -273,21 +273,21 @@ namespace DiscordCoreAPI {
 		friend std::string operator+(StringWrapper& lhs, const char* rhs);
 		friend bool operator==(StringWrapper& rhs, const char* lhs);
 		
-		StringWrapper& operator=(const char* theString);
-		
-		StringWrapper(const char* theString);
-		
+		StringWrapper& operator=(const std::string& theString);
+
+		StringWrapper(const std::string& theString);
+
+		StringWrapper& operator=(const StringWrapper& other);
+
+		StringWrapper(const StringWrapper& other);
+
 		StringWrapper& operator=(std::string& theString);
-		
+
 		StringWrapper(std::string& theString);
 
-		StringWrapper& operator=(const std::string& theString);
-		
-		StringWrapper(const std::string& theString);
-		
-		StringWrapper& operator=(const StringWrapper& other);
-		
-		StringWrapper(const StringWrapper& other);
+		StringWrapper& operator=(const char* theString);
+
+		StringWrapper(const char* theString);
 
 		StringWrapper& operator=(StringWrapper& other);
 		
