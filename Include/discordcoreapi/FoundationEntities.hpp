@@ -266,11 +266,6 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll StringWrapper {
 	  public:
 		StringWrapper() = default;
-		friend std::stringstream& operator<<(std::stringstream& lhs, const StringWrapper& rhs);
-		friend const char* operator+(StringWrapper lhs, const char* rhs);
-		friend const char* operator+(const char* rhs, StringWrapper lhs);
-		friend std::string operator+(const char* lhs, StringWrapper& rhs);
-		friend std::string operator+(StringWrapper& lhs, const char* rhs);
 		friend bool operator==(StringWrapper& rhs, const char* lhs);
 		
 		StringWrapper& operator=(const std::string& theString);
@@ -294,7 +289,7 @@ namespace DiscordCoreAPI {
 		StringWrapper(StringWrapper& other);
 
 		operator std::string();
-		
+
 		void push_back(char theChar);
 		
 		size_t size();
@@ -305,19 +300,87 @@ namespace DiscordCoreAPI {
 		std::unique_ptr<char[]> thePtr{};
 	};
 
-	std::basic_ostream<char, std::char_traits<char>>& operator<<(std::basic_ostream<char, std::char_traits<char>>& lhs, StringWrapper& rhs);
+	inline std::basic_ostream<char, std::char_traits<char>>& operator<<(std::basic_ostream<char, std::char_traits<char>>& lhs, const StringWrapper& rhs) {
+		for (auto& value: static_cast<std::string>(static_cast<StringWrapper>(rhs))) {
+			lhs.put(value);
+		}
+		return lhs;
+	}
 
-	const char* operator+(StringWrapper lhs, const char* rhs);
+	inline std::basic_ostream<char, std::char_traits<char>>& operator<<(std::basic_ostream<char, std::char_traits<char>>& lhs, StringWrapper& rhs) {
+		for (auto& value: static_cast<std::string>(rhs)) {
+			lhs.put(value);
+		}
+		return lhs;
+	}
+	
+	inline std::basic_string<char, std::char_traits<char>, std::allocator<char>> operator+(std::basic_string<char, std::char_traits<char>, std::allocator<char>>&lhs ,StringWrapper rhs){
+		std::stringstream theStream{};
+		theStream << lhs << rhs;
+		std::string theStringReturn{};
+		for (uint64_t x = 0; x < theStream.str().size(); x += 1) {
+			theStringReturn.push_back(theStream.str()[x]);
+		}
+		return theStringReturn;		
+	}
+		
+	template<typename ElemType> inline std::string operator+(StringWrapper lhs, ElemType rhs) {
+		std::stringstream theStream{};
+		theStream << lhs << rhs;
+		std::string theStringReturn{};
+		for (uint64_t x = 0; x < theStream.str().size(); x += 1) {
+			theStringReturn.push_back(theStream.str()[x]);
+		}
+		return theStringReturn;
+	}
 
-	const char* operator+(const char* rhs, StringWrapper lhs);
+	template<typename ElemType> inline std::string operator+(ElemType lhs, StringWrapper rhs) {
+		std::stringstream theStream{};
+		theStream << lhs << rhs;
+		std::string theStringReturn{};
+		for (uint64_t x = 0; x < theStream.str().size(); x += 1) {
+			theStringReturn.push_back(theStream.str()[x]);
+		}
+		return theStringReturn;
+	}
 
-	std::string operator+(const char* lhs, StringWrapper& rhs);
+	template<typename ElemType> inline std::string operator + (StringWrapper lhs, ElemType* rhs) {
+		std::stringstream theStream{};
+		theStream << lhs << rhs;
+		std::string theStringReturn{};
+		for (uint64_t x = 0; x < theStream.str().size(); x += 1) {
+			theStringReturn.push_back(theStream.str()[x]);
+		}
+		return theStringReturn;
+	}
 
-	std::string operator+(StringWrapper& lhs, const char* rhs);
+	template<typename ElemType> inline std::string operator+(ElemType* lhs, StringWrapper rhs) {
+		std::stringstream theStream{};
+		theStream << lhs << rhs;
+		std::string theStringReturn{};
+		for (uint64_t x = 0; x < theStream.str().size(); x += 1) {
+			theStringReturn.push_back(theStream.str()[x]);
+		}
+		return theStringReturn;
+	}
 
-	bool operator!=(StringWrapper lhs, const char* rhs);
+	inline bool operator!=(StringWrapper lhs, const char* rhs) {
+		for (uint64_t x = 0; x < static_cast<std::string>(rhs).size(); x += 1) {
+			if (static_cast<std::string>(lhs)[x] != static_cast<std::string>(rhs)[x]) {
+				return false;
+			}
+		}
+		return true;
+	}
 
-	bool operator==(std::string& lhs, StringWrapper& rhs);
+	inline bool operator==(std::string& lhs, StringWrapper& rhs) {
+		for (uint64_t x = 0; x < static_cast<std::string>(rhs).size(); x += 1) {
+			if (lhs[x] != static_cast<std::string>(rhs)[x]) {
+				return false;
+			}
+		}
+		return true;
+	}
 
 	inline bool operator==(StringWrapper& lhs, const char* rhs) {
 		if (std::string(lhs) == std::string(rhs)) {

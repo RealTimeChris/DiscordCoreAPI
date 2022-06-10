@@ -107,7 +107,7 @@ namespace DiscordCoreAPI {
 		auto theLength = theStream.str().size();
 		this->thePtr = std::make_unique<char[]>(theLength + 1);
 		for (uint64_t x = 0; x < theLength; x += 1) {
-			this->thePtr[x] = static_cast<std::string>(other)[x];
+			this->thePtr[x] = other.thePtr[x];
 		}
 		this->thePtr[theLength] = '\0';
 		return *this;
@@ -141,6 +141,7 @@ namespace DiscordCoreAPI {
 		}
 		this->thePtr[theLength] = theChar;
 		this->thePtr[theLength + 1] = '\0';
+		std::cout << "THE STRING: " << this->thePtr << std::endl;
 	}
 
 	size_t StringWrapper::size() {
@@ -154,91 +155,6 @@ namespace DiscordCoreAPI {
 
 	char* StringWrapper::data() {
 		return this->thePtr.get();
-	}
-
-	std::stringstream& operator<<(std::stringstream& lhs, const StringWrapper& rhs) {
-		std::stringstream theStream{};
-		theStream << rhs.thePtr;
-		for (auto& value: theStream.str()) {
-			lhs.put(value);
-		}
-		return lhs;
-	}
-
-	std::basic_ostream<char, std::char_traits<char>>& operator<<(std::basic_ostream<char, std::char_traits<char>>& lhs, const StringWrapper& rhs) {
-		for (auto& value: static_cast<std::string>(static_cast<StringWrapper>(rhs))) {
-			lhs.put(value);
-		}
-		return lhs;
-	}
-
-	std::basic_ostream<char, std::char_traits<char>>& operator<<(std::basic_ostream<char, std::char_traits<char>>& lhs, StringWrapper& rhs) {
-		for (auto& value: static_cast<std::string>(rhs)) {
-			lhs.put(value);
-		}
-		return lhs;
-	}
-
-	std::string operator+(const char* lhs, StringWrapper& rhs) {
-		std::stringstream theStream{};
-		const StringWrapper theString = lhs;
-		theStream << theString << static_cast<StringWrapper>(rhs);
-		std::string theStringReturn{};
-		for (uint64_t x = 0; x < theStream.str().size(); x += 1) {
-			theStringReturn.push_back(theStream.str()[x]);
-		}
-		return theStringReturn.data();
-	}
-
-	std::string operator+(StringWrapper& lhs, const char* rhs) {
-		std::stringstream theStream{};
-		const StringWrapper theString = lhs;
-		theStream << theString << static_cast<StringWrapper>(rhs);
-		std::string theStringReturn{};
-		for (uint64_t x = 0; x < theStream.str().size(); x += 1) {
-			theStringReturn.push_back(theStream.str()[x]);
-		}
-		return theStringReturn.data();
-	}
-
-	const char* operator+(const char* lhs, StringWrapper rhs) {
-		std::stringstream theStream{};
-		const StringWrapper theString = lhs;
-		theStream << theString << static_cast<StringWrapper>(rhs);
-		std::string theStringReturn{};
-		for (uint64_t x = 0; x < theStream.str().size(); x += 1) {
-			theStringReturn.push_back(theStream.str()[x]);
-		}
-		return theStringReturn.data();
-	}
-
-	const char* operator+(StringWrapper lhs, const char* rhs) {
-		std::stringstream theStream{};
-		const StringWrapper theString = lhs;
-		theStream << theString << static_cast<StringWrapper>(rhs);
-		std::string theStringReturn{};
-		for (uint64_t x = 0; x < theStream.str().size(); x += 1) {
-			theStringReturn.push_back(theStream.str()[x]);
-		}
-		return theStringReturn.data();
-	}
-
-	bool operator!=(StringWrapper lhs, const char* rhs) {
-		for (uint64_t x = 0; x < static_cast<std::string>(rhs).size(); x += 1) {
-			if (static_cast<std::string>(lhs)[x] != static_cast<std::string>(rhs)[x]) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	bool operator==(std::string& lhs, StringWrapper& rhs) {
-		for (uint64_t x = 0; x < static_cast<std::string>(rhs).size(); x += 1) {
-			if (lhs[x] != static_cast<std::string>(rhs)[x]) {
-				return false;
-			}
-		}
-		return true;
 	}
 
 	std::string getISO8601TimeStamp(const std::string& year, const std::string& month, const std::string& day, const std::string& hour, const std::string& minute,
