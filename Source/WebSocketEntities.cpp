@@ -1285,6 +1285,7 @@ namespace DiscordCoreInternal {
 			this->voiceSocket->writeData(packet);
 			while (this->voiceSocket->getInputBuffer().size() < 74) {
 				this->voiceSocket->readData(false);
+				std::this_thread::sleep_for(std::chrono::milliseconds{ 1 });
 			}
 			std::string message{};
 			message.insert(message.begin(), this->voiceSocket->getInputBuffer().begin() + 8, this->voiceSocket->getInputBuffer().begin() + 64);
@@ -1356,6 +1357,7 @@ namespace DiscordCoreInternal {
 			while (theResult == "") {
 				this->messageCollector.runMessageCollector();
 				theResult = this->messageCollector.collectFinalMessage().theMessage;
+				std::this_thread::sleep_for(std::chrono::milliseconds{ 1 });
 			}
 			this->onMessageReceived(theResult);
 		} catch (...) {

@@ -172,7 +172,6 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll EventWaiter {
 	  public:
-		DiscordCoreAPI::ReferenceCountingPtr<std::atomic_bool> theEventState{ nullptr };
 
 		EventWaiter() {
 			this->theEventState = new std::atomic_bool{};
@@ -207,6 +206,9 @@ namespace DiscordCoreInternal {
 		void reset() {
 			this->theEventState->store(false);
 		}
+
+	  protected:
+		DiscordCoreAPI::ReferenceCountingPtr<std::atomic_bool> theEventState{ nullptr };
 	};
 
 }// namespace DiscordCoreAPI

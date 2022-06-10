@@ -417,6 +417,7 @@ namespace DiscordCoreInternal {
 			if (stopWatch.hasTimePassed() || (theData.responseCode == -5 && theData.contentSize == -5) || !theConnection.parseChunk(theConnection.getInputBuffer(), theData)) {
 				break;
 			}
+			std::this_thread::sleep_for(std::chrono::milliseconds{ 1 });
 		};
 		return theConnection.finalizeReturnValues(rateLimitDataPtr, theData);
 	}
