@@ -130,13 +130,17 @@ namespace DiscordCoreAPI {
 	}
 
 	void StringWrapper::push_back(char theChar) {
-		std::string newString{ this->thePtr.get() };
-		newString.push_back(theChar);
-		this->thePtr = std::make_unique<char[]>(newString.size() + 1);
-		for (int64_t x = 0; x < newString.size(); x += 1) {
-			this->thePtr[x] = newString[x];
+		std::stringstream theStream{};
+		if (this->thePtr != nullptr) {
+			theStream << this->thePtr;
 		}
-		this->thePtr[newString.size()] = '\0';
+		auto theLength = theStream.str().size();
+		this->thePtr = std::make_unique<char[]>(theLength + 2);
+		for (int64_t x = 0; x < theLength; x += 1) {
+			this->thePtr[x] = theStream.str()[x];
+		}
+		this->thePtr[theLength] = theChar;
+		this->thePtr[theLength + 1] = '\0';
 	}
 
 	size_t StringWrapper::size() {
