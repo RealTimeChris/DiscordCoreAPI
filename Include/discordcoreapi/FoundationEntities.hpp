@@ -266,11 +266,7 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll StringWrapper {
 	  public:
 		StringWrapper() = default;
-		friend std::stringstream& operator<<(std::stringstream& lhs, const StringWrapper& rhs);
-		friend const char* operator+(StringWrapper lhs, const char* rhs);
-		friend const char* operator+(const char* rhs, StringWrapper lhs);
-		friend std::string operator+(const char* lhs, StringWrapper& rhs);
-		friend std::string operator+(StringWrapper& lhs, const char* rhs);
+		template<class _Elem, class _Traits> friend inline std::basic_ostream<_Elem, _Traits>& operator<<(std::basic_ostream<_Elem, _Traits>& _Ostr, StringWrapper& _Str);
 		friend bool operator==(StringWrapper& rhs, const char* lhs);
 		
 		StringWrapper& operator=(const std::string& theString);
@@ -293,6 +289,8 @@ namespace DiscordCoreAPI {
 		
 		StringWrapper(StringWrapper& other);
 
+		std::string operator+(StringWrapper& other);
+
 		operator std::string();
 		
 		void push_back(char theChar);
@@ -305,19 +303,45 @@ namespace DiscordCoreAPI {
 		std::unique_ptr<char[]> thePtr{};
 	};
 
-	std::basic_ostream<char, std::char_traits<char>>& operator<<(std::basic_ostream<char, std::char_traits<char>>& lhs, StringWrapper& rhs);
+	inline const char* operator+(const char* lhs, StringWrapper rhs) {
+		std::stringstream theStream{};
+		StringWrapper theString = lhs;
+		theStream << theString << rhs;
+		std::string theStringReturn{};
+		for (uint64_t x = 0; x < theStream.str().size(); x += 1) {
+			theStringReturn.push_back(theStream.str()[x]);
+		}
+		return theStringReturn.data();
+	}
 
-	const char* operator+(StringWrapper lhs, const char* rhs);
+	inline const char* operator+(StringWrapper lhs, const char* rhs) {
+		std::stringstream theStream{};
+		StringWrapper theString = lhs;
+		theStream << theString << rhs;
+		std::string theStringReturn{};
+		for (uint64_t x = 0; x < theStream.str().size(); x += 1) {
+			theStringReturn.push_back(theStream.str()[x]);
+		}
+		return theStringReturn.data();
+	}
 
-	const char* operator+(const char* rhs, StringWrapper lhs);
+	inline bool operator!=(StringWrapper lhs, const char* rhs) {
+		for (uint64_t x = 0; x < static_cast<std::string>(rhs).size(); x += 1) {
+			if (static_cast<std::string>(lhs)[x] != static_cast<std::string>(rhs)[x]) {
+				return false;
+			}
+		}
+		return true;
+	}
 
-	std::string operator+(const char* lhs, StringWrapper& rhs);
-
-	std::string operator+(StringWrapper& lhs, const char* rhs);
-
-	bool operator!=(StringWrapper lhs, const char* rhs);
-
-	bool operator==(std::string& lhs, StringWrapper& rhs);
+	inline bool operator==(std::string& lhs, StringWrapper& rhs) {
+		for (uint64_t x = 0; x < static_cast<std::string>(rhs).size(); x += 1) {
+			if (lhs[x] != static_cast<std::string>(rhs)[x]) {
+				return false;
+			}
+		}
+		return true;
+	}
 
 	inline bool operator==(StringWrapper& lhs, const char* rhs) {
 		if (std::string(lhs) == std::string(rhs)) {
@@ -325,6 +349,14 @@ namespace DiscordCoreAPI {
 		} else {
 			return false;
 		}
+	}
+
+	template<class _Elem, class _Traits> inline std::basic_stringstream<_Elem, _Traits>& operator<<(std::basic_stringstream<_Elem, _Traits>& _Ostr, StringWrapper& _Str) {
+		return std::_Insert_string(_Ostr, _Str.data(), _Str.size());
+	}
+
+	template<class _Elem, class _Traits> inline std::basic_ostream<_Elem, _Traits>& operator<<(std::basic_ostream<_Elem, _Traits>& _Ostr, StringWrapper& _Str) {
+		return std::_Insert_string(_Ostr, _Str.data(), _Str.size());
 	}
 
 	template<typename ObjectType>
