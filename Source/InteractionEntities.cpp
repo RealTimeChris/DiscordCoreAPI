@@ -403,7 +403,7 @@ namespace DiscordCoreAPI {
 
 	ModalCollector::ModalCollector(InputEventData& dataPackage) {
 		this->channelId = dataPackage.getChannelId();
-		ModalCollector::modalInteractionBufferMap[std::to_string(this->channelId]= &this->modalIncomingInteractionBuffer;
+		ModalCollector::modalInteractionBufferMap[std::to_string(this->channelId)] = &this->modalIncomingInteractionBuffer;
 	}
 
 	CoRoutine<ModalResponseData> ModalCollector::collectModalData(int32_t maxWaitTimeInMsNew) {

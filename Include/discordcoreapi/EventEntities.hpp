@@ -107,6 +107,8 @@ namespace DiscordCoreInternal {
 			*this = theFunctionNew;
 		}
 
+		EventDelegate() = default;
+
 	  protected:
 		std::function<ReturnType(ArgTypes...)> theFunction{};
 	};
