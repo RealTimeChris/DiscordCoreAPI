@@ -56,7 +56,7 @@ namespace DiscordCoreAPI {
 		}
 		auto theLength = theStream.str().size();
 		this->thePtr = std::make_unique<char[]>(theLength + 1);
-		for (int64_t x = 0; x < theLength; x += 1) {
+		for (uint64_t x = 0; x < theLength; x += 1) {
 			this->thePtr[x] = other.thePtr[x];
 		}
 		this->thePtr[theLength] = '\0';
@@ -106,7 +106,7 @@ namespace DiscordCoreAPI {
 		}
 		auto theLength = theStream.str().size();
 		this->thePtr = std::make_unique<char[]>(theLength + 1);
-		for (int64_t x = 0; x < theLength; x += 1) {
+		for (uint64_t x = 0; x < theLength; x += 1) {
 			this->thePtr[x] = static_cast<std::string>(other)[x];
 		}
 		this->thePtr[theLength] = '\0';
@@ -123,7 +123,7 @@ namespace DiscordCoreAPI {
 			theStream << this->thePtr;
 		}		
 		std::string theString{};
-		for (int32_t x = 0; x < theStream.str().size(); x += 1) {
+		for (uint32_t x = 0; x < theStream.str().size(); x += 1) {
 			theString.push_back(theStream.str()[x]);
 		}
 		return theString;
@@ -136,7 +136,7 @@ namespace DiscordCoreAPI {
 		}
 		auto theLength = theStream.str().size();
 		this->thePtr = std::make_unique<char[]>(theLength + 2);
-		for (int64_t x = 0; x < theLength; x += 1) {
+		for (uint64_t x = 0; x < theLength; x += 1) {
 			this->thePtr[x] = theStream.str()[x];
 		}
 		this->thePtr[theLength] = theChar;
@@ -184,7 +184,7 @@ namespace DiscordCoreAPI {
 		const StringWrapper theString = lhs;
 		theStream << theString << static_cast<StringWrapper>(rhs);
 		std::string theStringReturn{};
-		for (int64_t x = 0; x < theStream.str().size(); x += 1) {
+		for (uint64_t x = 0; x < theStream.str().size(); x += 1) {
 			theStringReturn.push_back(theStream.str()[x]);
 		}
 		return theStringReturn.data();
@@ -195,7 +195,7 @@ namespace DiscordCoreAPI {
 		const StringWrapper theString = lhs;
 		theStream << theString << static_cast<StringWrapper>(rhs);
 		std::string theStringReturn{};
-		for (int64_t x = 0; x < theStream.str().size(); x += 1) {
+		for (uint64_t x = 0; x < theStream.str().size(); x += 1) {
 			theStringReturn.push_back(theStream.str()[x]);
 		}
 		return theStringReturn.data();
@@ -206,7 +206,7 @@ namespace DiscordCoreAPI {
 		const StringWrapper theString = lhs;
 		theStream << theString << static_cast<StringWrapper>(rhs);
 		std::string theStringReturn{};
-		for (int64_t x = 0; x < theStream.str().size(); x += 1) {
+		for (uint64_t x = 0; x < theStream.str().size(); x += 1) {
 			theStringReturn.push_back(theStream.str()[x]);
 		}
 		return theStringReturn.data();
@@ -217,14 +217,14 @@ namespace DiscordCoreAPI {
 		const StringWrapper theString = lhs;
 		theStream << theString << static_cast<StringWrapper>(rhs);
 		std::string theStringReturn{};
-		for (int64_t x = 0; x < theStream.str().size(); x += 1) {
+		for (uint64_t x = 0; x < theStream.str().size(); x += 1) {
 			theStringReturn.push_back(theStream.str()[x]);
 		}
 		return theStringReturn.data();
 	}
 
 	bool operator!=(StringWrapper lhs, const char* rhs) {
-		for (int64_t x = 0; x < static_cast<std::string>(rhs).size(); x += 1) {
+		for (uint64_t x = 0; x < static_cast<std::string>(rhs).size(); x += 1) {
 			if (static_cast<std::string>(lhs)[x] != static_cast<std::string>(rhs)[x]) {
 				return false;
 			}
@@ -233,7 +233,7 @@ namespace DiscordCoreAPI {
 	}
 
 	bool operator==(std::string& lhs, StringWrapper& rhs) {
-		for (int64_t x = 0; x < static_cast<std::string>(rhs).size(); x += 1) {
+		for (uint64_t x = 0; x < static_cast<std::string>(rhs).size(); x += 1) {
 			if (lhs[x] != static_cast<std::string>(rhs)[x]) {
 				return false;
 			}
