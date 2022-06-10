@@ -66,7 +66,7 @@ namespace DiscordCoreAPI {
 						return;
 					}
 				}
-			})));
+			});
 			return threadId;
 		}
 
@@ -92,7 +92,7 @@ namespace DiscordCoreAPI {
 						return;
 					}
 				}
-			})));
+			});
 			return threadId;
 		}
 
