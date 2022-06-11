@@ -1,6 +1,9 @@
 /*
 *
-	Copyright 2021, 2022 Chris M. (RealTimeChris)
+	DiscordCoreAPI, A bot library for Discord, written in C++, and featuring explicit multithreading through the usage of custom, asynchronous C++ CoRoutines.
+
+	Copyright 2021, 2022 Chris M.
+
 	This file is part of DiscordCoreAPI.
 	DiscordCoreAPI is free software: you can redistribute it and/or modify it under the terms of the GNU
 	General Public License as published by the Free Software Foundation, either version 3 of the License,
@@ -9,6 +12,7 @@
 	even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 	You should have received a copy of the GNU General Public License along with DiscordCoreAPI.
 	If not, see <https://www.gnu.org/licenses/>.
+
 */
 /// ThreadPool.cpp - Source file for the "Thread-Pool" related stuff.
 /// Dec 18, 2021
