@@ -555,8 +555,8 @@ namespace DiscordCoreAPI {
 		static CoRoutine<void> leaveGuildAsync(LeaveGuildData dataPackage);
 
 	  protected:
+		static std::unique_ptr<std::unordered_map<uint64_t, std::unique_ptr<GuildData>>> cache;
 		static DiscordCoreAPI::DiscordCoreClient* discordCoreClient;
-		static std::unordered_map<uint64_t, GuildData> cache;
 		static DiscordCoreInternal::HttpClient* httpClient;
 		static std::mutex theMutex;
 		static bool doWeCache;

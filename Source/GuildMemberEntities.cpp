@@ -60,6 +60,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void GuildMembers::initialize(DiscordCoreInternal::HttpClient* theClient, bool doWeCacheNew) {
+		GuildMembers::cache = std::make_unique<std::map<GuildMemberId, std::unique_ptr<GuildMemberData>>>();
 		GuildMembers::doWeCache = doWeCacheNew;
 		GuildMembers::httpClient = theClient;
 	}
@@ -80,9 +81,11 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<GuildMemberData> GuildMembers::getCachedGuildMemberAsync(GetGuildMemberData dataPackage) {
 		co_await NewThreadAwaitable<GuildMemberData>();
-		std::string theString{ std::to_string(dataPackage.guildId) + " + " + std::to_string(dataPackage.guildMemberId) };
-		if (GuildMembers::cache.contains(theString)) {
-			co_return GuildMembers::cache[theString];
+		GuildMemberId theKey{};
+		theKey.guildId = dataPackage.guildId;
+		theKey.guildMemberId = dataPackage.guildMemberId;
+		if (GuildMembers::cache->contains(theKey)) {
+			co_return *(*GuildMembers::cache)[theKey];
 		} else {
 			co_return GuildMembers::getGuildMemberAsync(dataPackage).get();
 		}
@@ -187,7 +190,7 @@ namespace DiscordCoreAPI {
 	CoRoutine<GuildMember> GuildMembers::timeoutGuildMemberAsync(TimeoutGuildMemberData dataPackage) {
 		co_await NewThreadAwaitable<GuildMember>();
 		GuildMember guildMember = GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = dataPackage.guildMemberId, .guildId = dataPackage.guildId }).get();
-		auto voiceStateData = Guilds::getCachedGuildAsync({ dataPackage.guildId }).get().voiceStates.at(dataPackage.guildId);
+		auto& voiceStateData = Guilds::getCachedGuildAsync({ dataPackage.guildId }).get().voiceStates.at(dataPackage.guildId);
 		ModifyGuildMemberData dataPackage01{};
 		dataPackage01.currentChannelId = voiceStateData.channelId;
 		dataPackage01.deaf = getBool<int8_t, GuildMemberFlags>(guildMember.flags, GuildMemberFlags::Deaf);
@@ -236,20 +239,30 @@ namespace DiscordCoreAPI {
 		if (guildMember.id == 0) {
 			return;
 		}
-		std::string theString{ std::to_string(guildMember.guildId) + " + " + std::to_string(guildMember.id) };
-		if (GuildMembers::doWeCache) {
-			GuildMembers::cache[theString] = guildMember;
+		auto newCache = std::make_unique<std::map<GuildMemberId, std::unique_ptr<GuildMemberData>>>();
+		for (auto& [key, value] : *GuildMembers::cache) {
+			(*newCache)[key] = std::move(value);
 		}
+		if (GuildMembers::doWeCache) {
+			GuildMemberId theKey{};
+			theKey.guildId = guildMember.guildId;
+			theKey.guildMemberId = guildMember.id;
+			(*newCache)[theKey] = std::make_unique<GuildMemberData>(guildMember);
+		}
+		GuildMembers::cache.reset(nullptr);
+		GuildMembers::cache = std::move(newCache);
 	}
 
 	void GuildMembers::removeGuildMember(GuildMember& guildMember) {
 		std::lock_guard<std::mutex> theLock{ GuildMembers::theMutex };
-		std::string theString{ std::to_string(guildMember.guildId) + " + " + std::to_string(guildMember.id) };
-		GuildMembers::cache.erase(theString);
+		GuildMemberId theKey{};
+		theKey.guildId = guildMember.guildId;
+		theKey.guildMemberId = guildMember.id;
+		GuildMembers::cache->erase(theKey);
 	};
 
+	std::unique_ptr<std::map<GuildMemberId, std::unique_ptr<GuildMemberData>>> GuildMembers::cache{};
 	DiscordCoreInternal::HttpClient* GuildMembers::httpClient{ nullptr };
-	std::map<std::string, GuildMemberData> GuildMembers::cache{};
-	std::mutex GuildMembers::theMutex{};
 	bool GuildMembers::doWeCache{ false };
+	std::mutex GuildMembers::theMutex{};
 };

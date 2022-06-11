@@ -272,7 +272,7 @@ namespace DiscordCoreAPI {
 		static CoRoutine<std::vector<VoiceRegionData>> getVoiceRegionsAsync();
 
 	  protected:
-		static std::unordered_map<uint64_t, ChannelData> cache;
+		static std::unique_ptr<std::unordered_map<uint64_t, std::unique_ptr<ChannelData>>> cache;
 		static DiscordCoreInternal::HttpClient* httpClient;
 		static std::mutex theMutex;
 		static bool doWeCache;

@@ -188,7 +188,7 @@ namespace DiscordCoreAPI {
 		static CoRoutine<AuthorizationInfoData> getCurrentUserAuthorizationInfoAsync();
 
 	  protected:
-		static std::unordered_map<uint64_t, UserData> cache;
+		static std::unique_ptr<std::unordered_map<uint64_t, std::unique_ptr<UserData>>> cache;
 		static DiscordCoreInternal::HttpClient* httpClient;
 		static std::mutex theMutex;
 		static bool doWeCache;

@@ -140,6 +140,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void Guilds::initialize(DiscordCoreInternal::HttpClient* theClient, DiscordCoreClient* discordCoreClientNew, bool doWeCacheNew) {
+		Guilds::cache = std::make_unique<std::unordered_map<uint64_t, std::unique_ptr<GuildData>>>();
 		Guilds::discordCoreClient = discordCoreClientNew;
 		Guilds::doWeCache = doWeCacheNew;
 		Guilds::httpClient = theClient;
@@ -201,9 +202,9 @@ namespace DiscordCoreAPI {
 	CoRoutine<std::vector<GuildData>> Guilds::getAllGuildsAsync() {
 		co_await NewThreadAwaitable<std::vector<GuildData>>();
 		std::vector<GuildData> guildVector{};
-		for (auto& [key, value]: Guilds::cache) {
-			value.discordCoreClient = Guilds::discordCoreClient;
-			guildVector.push_back(value);
+		for (auto& [key, value]: *Guilds::cache) {
+			value->discordCoreClient = Guilds::discordCoreClient;
+			guildVector.push_back(*value);
 		}
 		co_return guildVector;
 	}
@@ -224,8 +225,8 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<GuildData> Guilds::getCachedGuildAsync(GetGuildData dataPackage) {
 		co_await NewThreadAwaitable<GuildData>();
-		if (Guilds::cache.contains(dataPackage.guildId)) {
-			co_return Guilds::cache[dataPackage.guildId];
+		if (Guilds::cache->contains(dataPackage.guildId)) {
+			co_return *(*Guilds::cache)[dataPackage.guildId];
 
 		} else {
 			auto guildNew = Guilds::getGuildAsync({ .guildId = dataPackage.guildId }).get();
@@ -715,23 +716,32 @@ namespace DiscordCoreAPI {
 		if (guild.id == 0) {
 			return;
 		}
+		auto newCache = std::make_unique<std::unordered_map<uint64_t, std::unique_ptr<GuildData>>>();
+		for (auto& [key, value]: *Guilds::cache) {
+			(*newCache)[key] = std::move(value);
+		}
 		bool doWeShowIt{ false };
-		if (!Guilds::cache.contains(guild.id) && Guilds::discordCoreClient->loggingOptions.logGeneralSuccessMessages) {
+		if (!Guilds::cache->contains(guild.id) && Guilds::discordCoreClient->loggingOptions.logGeneralSuccessMessages) {
 			doWeShowIt = true;
 		}
 		guild.initialize(doWeShowIt);
 		if (Guilds::doWeCache) {
-			Guilds::cache[guild.id] = guild;
+			(*newCache)[guild.id] = std::make_unique<GuildData>(guild);
+		}
+		Guilds::cache.reset(nullptr);
+		Guilds::cache = std::move(newCache);
+		if (guild.id == 0) {
+			return;
 		}
 	}
 
 	void Guilds::removeGuild(const uint64_t& guildId) {
 		std::lock_guard<std::mutex> theLock{ Guilds::theMutex };
-		Guilds::cache.erase(guildId);
+		Guilds::cache->erase(guildId);
 	};
 
+	std::unique_ptr<std::unordered_map<uint64_t, std::unique_ptr<GuildData>>> Guilds::cache{};
 	DiscordCoreInternal::HttpClient* Guilds::httpClient{ nullptr };
-	std::unordered_map<uint64_t, GuildData> Guilds::cache{};
 	DiscordCoreClient* Guilds::discordCoreClient{ nullptr };
 	bool Guilds::doWeCache{ false };
 	std::mutex Guilds::theMutex{};

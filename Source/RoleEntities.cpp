@@ -54,6 +54,7 @@ namespace DiscordCoreAPI {
 
 
 	void Roles::initialize(DiscordCoreInternal::HttpClient* theClient, bool doWeCacheNew) {
+		Roles::cache = std::make_unique<std::unordered_map<uint64_t, std::unique_ptr<RoleData>>>();
 		Roles::doWeCache = doWeCacheNew;
 		Roles::httpClient = theClient;
 	}
@@ -229,8 +230,8 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<RoleData> Roles::getCachedRoleAsync(GetRoleData dataPackage) {
 		co_await NewThreadAwaitable<RoleData>();
-		if (Roles::cache.contains(dataPackage.roleId)) {
-			co_return Roles::cache[dataPackage.roleId];
+		if (Roles::cache->contains(dataPackage.roleId)) {
+			co_return *(*Roles::cache)[dataPackage.roleId];
 		} else {
 			co_return Roles::getRoleAsync(dataPackage).get();
 		}
@@ -241,18 +242,24 @@ namespace DiscordCoreAPI {
 		if (role.id == 0) {
 			return;
 		}
-		if (Roles::doWeCache) {
-			Roles::cache[role.id] = role;
+		auto newCache = std::make_unique<std::unordered_map<uint64_t, std::unique_ptr<RoleData>>>();
+		for (auto& [key, value]: *Roles::cache) {
+			(*newCache)[key] = std::move(value);
 		}
+		if (Roles::doWeCache) {
+			(*newCache)[role.id] = std::make_unique<RoleData>(role);
+		}
+		Roles::cache.reset(nullptr);
+		Roles::cache = std::move(newCache);
 	}
 
 	void Roles::removeRole(const uint64_t& roleId) {
 		std::lock_guard<std::mutex> theLock{ Roles::theMutex };
-		Roles::cache.erase(roleId);
+		Roles::cache->erase(roleId);
 	};
 
+	std::unique_ptr<std::unordered_map<uint64_t, std::unique_ptr<RoleData>>> Roles::cache{};
 	DiscordCoreInternal::HttpClient* Roles::httpClient{ nullptr };
-	std::unordered_map<uint64_t, RoleData> Roles::cache{};
 	bool Roles::doWeCache{ false };
 	std::mutex Roles::theMutex{};
 }

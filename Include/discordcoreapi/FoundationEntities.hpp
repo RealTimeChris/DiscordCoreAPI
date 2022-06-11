@@ -1372,6 +1372,29 @@ namespace DiscordCoreAPI {
 
 	enum class GuildMemberFlags : int8_t { Pending = 1 << 0, Deaf = 1 << 1, Mute = 1 << 2 };
 
+	struct GuildMemberId {
+		GuildMemberId() = default;
+		uint64_t guildMemberId{};
+		uint64_t guildId{};
+		void operator()(){};
+	};
+
+	inline bool operator==(const GuildMemberId lhs, const GuildMemberId rhs) {
+		if (lhs.guildMemberId == rhs.guildMemberId && lhs.guildId == rhs.guildId) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	inline bool operator<(const GuildMemberId& lhs, const GuildMemberId& rhs) {
+		if (lhs.guildId < rhs.guildId && lhs.guildMemberId < rhs.guildMemberId) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 	/// Data structure representing a single GuildMember. \brief Data structure representing a single GuildMember.
 	class DiscordCoreAPI_Dll GuildMemberData : public DiscordEntity {
 	  public:

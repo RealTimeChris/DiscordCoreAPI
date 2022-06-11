@@ -46,7 +46,7 @@ namespace DiscordCoreInternal {
 		std::string eventId{};
 	};
 
-	bool operator==(const EventDelegateToken& lhs, const EventDelegateToken& rhs) {
+	inline bool operator==(const EventDelegateToken& lhs, const EventDelegateToken& rhs) {
 		if (lhs.eventId == rhs.eventId && lhs.handlerId == rhs.handlerId) {
 			return true;
 		} else {
@@ -54,7 +54,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	bool operator<(const EventDelegateToken& lhs, const EventDelegateToken& rhs) {
+	inline bool operator<(const EventDelegateToken& lhs, const EventDelegateToken& rhs) {
 		if (stoll(lhs.handlerId) < stoll(rhs.handlerId)) {
 			return true;
 		} else {

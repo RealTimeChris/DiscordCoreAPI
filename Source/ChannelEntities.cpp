@@ -60,6 +60,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void Channels::initialize(DiscordCoreInternal::HttpClient* theClient, bool doWeCacheNew) {
+		Channels::cache = std::make_unique<std::unordered_map<uint64_t, std::unique_ptr<ChannelData>>>();
 		Channels::doWeCache = doWeCacheNew;
 		Channels::httpClient = theClient;
 	}
@@ -79,8 +80,8 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<ChannelData> Channels::getCachedChannelAsync(GetChannelData dataPackage) {
 		co_await NewThreadAwaitable<ChannelData>();
-		if (Channels::cache.contains(dataPackage.channelId)) {
-			co_return Channels::cache[dataPackage.channelId];
+		if (Channels::cache->contains(dataPackage.channelId)) {
+			co_return *(*Channels::cache)[dataPackage.channelId];
 		} else {
 			co_return Channels::getChannelAsync(dataPackage).get();
 		}
@@ -267,18 +268,24 @@ namespace DiscordCoreAPI {
 		if (channel.id == 0) {
 			return;
 		}
-		if (Channels::doWeCache) {
-			Channels::cache[channel.id] = channel;
+		auto newCache = std::make_unique<std::unordered_map<uint64_t, std::unique_ptr<ChannelData>>>();
+		for (auto& [key, value]: *Channels::cache) {
+			(*newCache)[key] = std::move(value);
 		}
+		if (Channels::doWeCache) {
+			(*newCache)[channel.id] = std::make_unique<ChannelData>(channel);
+		}
+		Channels::cache.reset(nullptr);
+		Channels::cache = std::move(newCache);
 	}
 
 	void Channels::removeChannel(const uint64_t& channelId) {
 		std::lock_guard<std::mutex> theLock{ Channels::theMutex };
-		Channels::cache.erase(channelId);
+		Channels::cache->erase(channelId);
 	};
 
+	std::unique_ptr<std::unordered_map<uint64_t, std::unique_ptr<ChannelData>>> Channels::cache{};
 	DiscordCoreInternal::HttpClient* Channels::httpClient{ nullptr };
-	std::unordered_map<uint64_t, ChannelData> Channels::cache{};
 	bool Channels::doWeCache{ false };
 	std::mutex Channels::theMutex{};
 }

@@ -205,7 +205,7 @@ namespace DiscordCoreAPI {
 		static CoRoutine<RoleData> getCachedRoleAsync(GetRoleData dataPackage);
 
 	  protected:
-		static std::unordered_map<uint64_t, RoleData> cache;
+		static std::unique_ptr<std::unordered_map<uint64_t, std::unique_ptr<RoleData>>> cache;
 		static DiscordCoreInternal::HttpClient* httpClient;
 		static std::mutex theMutex;
 		static bool doWeCache;
