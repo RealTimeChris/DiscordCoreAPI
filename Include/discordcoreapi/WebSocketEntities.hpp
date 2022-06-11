@@ -107,7 +107,7 @@ namespace DiscordCoreInternal {
 			DiscordCoreAPI::DiscordCoreClient* discordCoreClient, DiscordCoreAPI::CommandController* commandController, std::atomic_bool* doWeQuitNew,
 			bool doWePrintSuccessMessages, bool doWePrintErrorMessages, int32_t shardNumber, int32_t numberOfShards) noexcept;
 
-		BaseSocketAgent(nullptr_t) noexcept;
+		BaseSocketAgent(std::nullptr_t) noexcept;
 
 		void sendMessage(const nlohmann::json& dataToSend) noexcept;
 

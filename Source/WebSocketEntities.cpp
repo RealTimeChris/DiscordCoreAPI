@@ -236,7 +236,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	BaseSocketAgent::BaseSocketAgent(nullptr_t) noexcept {};
+	BaseSocketAgent::BaseSocketAgent(std::nullptr_t) noexcept {};
 
 	void BaseSocketAgent::sendMessage(const nlohmann::json& dataToSend) noexcept {
 		try {

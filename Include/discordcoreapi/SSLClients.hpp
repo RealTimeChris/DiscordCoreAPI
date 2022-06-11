@@ -115,7 +115,7 @@ namespace DiscordCoreInternal {
 			return this->bioPtr.get();
 		}
 
-		BIOWrapper(nullptr_t){};
+		BIOWrapper(std::nullptr_t){};
 
 	  protected:
 		std::unique_ptr<BIO, BIODeleter> bioPtr{ nullptr, BIODeleter{} };
@@ -144,7 +144,7 @@ namespace DiscordCoreInternal {
 			return this->addrinfoPtrTwo;
 		}
 
-		addrinfoWrapper(nullptr_t){};
+		addrinfoWrapper(std::nullptr_t){};
 
 		~addrinfoWrapper() {
 			if (this->doWeClearAddrInfo) {
@@ -183,7 +183,7 @@ namespace DiscordCoreInternal {
 			return this->sslCTXPtr.get();
 		}
 
-		SSL_CTXWrapper(nullptr_t){};
+		SSL_CTXWrapper(std::nullptr_t){};
 
 	  protected:
 		std::unique_ptr<SSL_CTX, SSL_CTXDeleter> sslCTXPtr{ nullptr, SSL_CTXDeleter{} };
@@ -214,7 +214,7 @@ namespace DiscordCoreInternal {
 			return this->sslPtr.get();
 		}
 
-		SSLWrapper(nullptr_t){};
+		SSLWrapper(std::nullptr_t){};
 
 	  protected:
 		std::unique_ptr<SSL, SSLDeleter> sslPtr{ nullptr, SSLDeleter{} };
@@ -257,7 +257,7 @@ namespace DiscordCoreInternal {
 			return *this->socketPtr;
 		}
 
-		SOCKETWrapper(nullptr_t) {
+		SOCKETWrapper(std::nullptr_t) {
 		}
 
 	  protected:

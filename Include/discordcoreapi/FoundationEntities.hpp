@@ -234,7 +234,7 @@ namespace DiscordCoreAPI {
 			*this = ptr;
 		}
 
-		ReferenceCountingPtr(nullptr_t){};
+		ReferenceCountingPtr(std::nullptr_t){};
 
 		ObjectType* operator->() const {
 			return this->thePtr->get();

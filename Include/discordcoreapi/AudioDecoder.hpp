@@ -52,7 +52,7 @@ namespace DiscordCoreInternal {
 			return this->thePtr.get();
 		}
 
-		AVFrameWrapper(nullptr_t){};
+		AVFrameWrapper(std::nullptr_t){};
 
 	  protected:
 		std::unique_ptr<AVFrame, AVFrameDeleter> thePtr{ nullptr, AVFrameDeleter{} };
@@ -80,7 +80,7 @@ namespace DiscordCoreInternal {
 			return this->thePtr.get();
 		}
 
-		AVCodecContextWrapper(nullptr_t){};
+		AVCodecContextWrapper(std::nullptr_t){};
 
 	  protected:
 		std::unique_ptr<AVCodecContext, AVCodecContextDeleter> thePtr{ nullptr, AVCodecContextDeleter{} };
@@ -123,7 +123,7 @@ namespace DiscordCoreInternal {
 			return this->thePtr.get()->theContext;
 		}
 
-		AVFormatContextWrapper(nullptr_t){};
+		AVFormatContextWrapper(std::nullptr_t){};
 
 	  protected:
 		std::unique_ptr<AVFormatContextWrapper01, AVFormatContextDeleter> thePtr{ new AVFormatContextWrapper01{}, AVFormatContextDeleter{} };
@@ -147,7 +147,7 @@ namespace DiscordCoreInternal {
 			return this->thePtr.get();
 		}
 
-		SwrContextWrapper(nullptr_t){};
+		SwrContextWrapper(std::nullptr_t){};
 
 	  protected:
 		std::unique_ptr<SwrContext, SwrContextDeleter> thePtr{ nullptr, SwrContextDeleter{} };
@@ -175,7 +175,7 @@ namespace DiscordCoreInternal {
 			return this->thePtr.get();
 		}
 
-		AVIOContextWrapper(nullptr_t){};
+		AVIOContextWrapper(std::nullptr_t){};
 
 	  protected:
 		std::unique_ptr<AVIOContext, AVIOContextDeleter> thePtr{ nullptr, AVIOContextDeleter{} };
@@ -203,7 +203,7 @@ namespace DiscordCoreInternal {
 			return this->thePtr.get();
 		}
 
-		AVPacketWrapper(nullptr_t){};
+		AVPacketWrapper(std::nullptr_t){};
 
 	  protected:
 		std::unique_ptr<AVPacket, AVPacketDeleter> thePtr{ nullptr, AVPacketDeleter{} };
@@ -223,7 +223,7 @@ namespace DiscordCoreInternal {
 			return this->thePtr.get();
 		}
 
-		AVCodecWrapper(nullptr_t){};
+		AVCodecWrapper(std::nullptr_t){};
 
 	  protected:
 		std::unique_ptr<AVCodec, AVCodecDeleter> thePtr{ nullptr, AVCodecDeleter{} };
@@ -247,7 +247,7 @@ namespace DiscordCoreInternal {
 			return this->thePtr.get();
 		}
 
-		AVStreamWrapper(nullptr_t){};
+		AVStreamWrapper(std::nullptr_t){};
 
 	  protected:
 		std::unique_ptr<AVStream, AVStreamDeleter> thePtr{ nullptr, AVStreamDeleter{} };

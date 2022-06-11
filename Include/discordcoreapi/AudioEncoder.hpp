@@ -40,7 +40,7 @@ namespace DiscordCoreInternal {
 			return this->thePtr.get();
 		}
 
-		OpusEncoderWrapper(nullptr_t other) {
+		OpusEncoderWrapper(std::nullptr_t other) {
 			*this = other;
 		}
 
