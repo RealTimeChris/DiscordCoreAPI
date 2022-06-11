@@ -266,7 +266,6 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll StringWrapper {
 	  public:
 		StringWrapper() = default;
-		friend bool operator==(StringWrapper rhs, const char* lhs);
 		
 		StringWrapper& operator=(const std::string& theString);
 
@@ -302,13 +301,6 @@ namespace DiscordCoreAPI {
 
 	inline std::basic_ostream<char, std::char_traits<char>>& operator<<(std::basic_ostream<char, std::char_traits<char>>& lhs, const StringWrapper& rhs) {
 		for (auto& value: static_cast<std::string>(static_cast<StringWrapper>(rhs))) {
-			lhs.put(value);
-		}
-		return lhs;
-	}
-
-	inline std::basic_ostream<char, std::char_traits<char>>& operator<<(std::basic_ostream<char, std::char_traits<char>>& lhs, StringWrapper& rhs) {
-		for (auto& value: static_cast<std::string>(rhs)) {
 			lhs.put(value);
 		}
 		return lhs;
