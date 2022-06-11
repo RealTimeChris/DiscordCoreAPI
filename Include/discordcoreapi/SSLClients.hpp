@@ -123,15 +123,24 @@ namespace DiscordCoreInternal {
 
 	struct DiscordCoreAPI_Dll addrinfoWrapper {
 		addrinfo* operator->() {
+			if (this->addrinfoPtrTwo == nullptr) {
+				throw ConnectionError{ "Error: addrinfoPtrTwo was nullptr." };
+			}
 			return this->addrinfoPtrTwo;
 		}
 
 		operator addrinfo**() {
 			this->doWeClearAddrInfo = true;
+			if (this->addrinfoPtrTwo == nullptr) {
+				throw ConnectionError{ "Error: addrinfoPtrTwo was nullptr." };
+			}
 			return &this->addrinfoPtrTwo;
 		}
 
 		operator addrinfo*() {
+			if (this->addrinfoPtrTwo == nullptr) {
+				throw ConnectionError{ "Error: addrinfoPtrTwo was nullptr." };
+			}
 			return this->addrinfoPtrTwo;
 		}
 

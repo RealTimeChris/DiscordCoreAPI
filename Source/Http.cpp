@@ -360,6 +360,9 @@ namespace DiscordCoreInternal {
 			theConnection.resetValues();
 			int64_t currentTimeDistance =
 				std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - theConnection.lastTimeUsed;
+			if (theConnection.currentRecursionDepth >= theConnection.maxRecursion) {
+				return HttpResponseData{};
+			}
 			if (theConnection.doWeConnect || (theConnection.lastTimeUsed != 0 && currentTimeDistance >= 30000)) {
 				theConnection.connect(workload.baseUrl);
 				theConnection.doWeConnect = false;
@@ -367,9 +370,6 @@ namespace DiscordCoreInternal {
 			theConnection.lastTimeUsed = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 			auto theRequest = theConnection.buildRequest(workload);
 			theConnection.writeData(theRequest);
-			if (theConnection.currentRecursionDepth >= theConnection.maxRecursion) {
-				return HttpResponseData{};
-			}
 			auto result = this->getResponse(theConnection, rateLimitDataPtr);
 			if (result.responseCode == -1) {
 				if (theConnection.currentRecursionDepth >= 10) {
