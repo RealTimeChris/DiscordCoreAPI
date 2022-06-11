@@ -313,54 +313,22 @@ namespace DiscordCoreAPI {
 		}
 		return lhs;
 	}
-	
-	inline std::basic_string<char, std::char_traits<char>, std::allocator<char>> operator+(std::basic_string<char, std::char_traits<char>, std::allocator<char>>&lhs ,StringWrapper rhs){
+
+	inline std::basic_string<char, std::char_traits<char>, std::allocator<char>> operator+(std::basic_string<char, std::char_traits<char>, std::allocator<char>> lhs,
+		StringWrapper rhs) {
 		std::stringstream theStream{};
 		theStream << lhs << rhs;
 		std::string theReturnString{};
-		for (uint64_t x = 0; x < theStream.str().size(); x += 1) {
-			theReturnString.push_back(theStream.str()[x]);
-		}
-		return theReturnString;		
-	}
-	
-	template<typename ElemType> inline std::string operator+(StringWrapper lhs, ElemType rhs) {
-		std::stringstream theStream{};
-		theStream << lhs << rhs;
-		std::string theReturnString{};
-		for (uint64_t x = 0; x < theStream.str().size(); x += 1) {
-			theReturnString.push_back(theStream.str()[x]);
-		}
+		theReturnString.insert(theReturnString.begin(), theStream.str().begin(), theStream.str().end());
 		return theReturnString;
 	}
 
-	template<typename ElemType> inline std::string operator+(ElemType lhs, StringWrapper rhs) {
+	inline std::basic_string<char, std::char_traits<char>, std::allocator<char>> operator+(
+		const char* lhs, StringWrapper rhs) {
 		std::stringstream theStream{};
 		theStream << lhs << rhs;
 		std::string theReturnString{};
-		for (uint64_t x = 0; x < theStream.str().size(); x += 1) {
-			theReturnString.push_back(theStream.str()[x]);
-		}
-		return theReturnString;
-	}
-
-	template<typename ElemType> inline std::string operator+(StringWrapper lhs, ElemType* rhs) {
-		std::stringstream theStream{};
-		theStream << lhs << rhs;
-		std::string theReturnString{};
-		for (uint64_t x = 0; x < theStream.str().size(); x += 1) {
-			theReturnString.push_back(theStream.str()[x]);
-		}
-		return theReturnString;
-	}
-
-	template<typename ElemType> inline std::string operator+(ElemType* lhs, StringWrapper rhs) {
-		std::stringstream theStream{};
-		theStream << lhs << rhs;
-		std::string theReturnString{};
-		for (uint64_t x = 0; x < theStream.str().size(); x += 1) {
-			theReturnString.push_back(theStream.str()[x]);
-		}
+		theReturnString.insert(theReturnString.begin(), theStream.str().begin(), theStream.str().end());
 		return theReturnString;
 	}
 
