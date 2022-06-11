@@ -340,7 +340,7 @@ namespace DiscordCoreInternal {
 				outBuffer.push_back(static_cast<uint8_t>(webSocketPayloadLengthMagicHuge));
 				indexCount = 8;
 			}
-			for (int32_t x = indexCount - 1; x >= 0; x--) {
+			for (uint32_t x = indexCount - 1; x >= 0; x--) {
 				outBuffer.push_back(static_cast<uint8_t>(sendLength >> x * 8));
 			}
 
