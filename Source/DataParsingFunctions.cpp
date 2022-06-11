@@ -322,7 +322,7 @@ namespace DiscordCoreInternal {
 		}
 
 		if (jsonObjectData.contains("owner_id") && !jsonObjectData["owner_id"].is_null()) {
-			pDataStructure.ownerId = jsonObjectData["owner_id"].get<std::string>();
+			pDataStructure.ownerId = stoull(jsonObjectData["owner_id"].get<std::string>());
 		}
 
 		if (jsonObjectData.contains("application_id") && !jsonObjectData["application_id"].is_null()) {
@@ -331,9 +331,9 @@ namespace DiscordCoreInternal {
 
 		if (jsonObjectData.contains("parent_id") && !jsonObjectData["parent_id"].is_null()) {
 			if (jsonObjectData["parent_id"].is_string()) {
-				pDataStructure.parentId = jsonObjectData["parent_id"].get<std::string>();
+				pDataStructure.parentId = stoull(jsonObjectData["parent_id"].get<std::string>());
 			} else {
-				pDataStructure.parentId = std::to_string(jsonObjectData["parent_id"].get<int64_t>());
+				pDataStructure.parentId = jsonObjectData["parent_id"].get<int64_t>();
 			}
 		}
 
@@ -384,7 +384,7 @@ namespace DiscordCoreInternal {
 		}
 
 		if (jsonObjectData.contains("parent_id") && !jsonObjectData["parent_id"].is_null()) {
-			pDataStructure.parentId = jsonObjectData["parent_id"].get<std::string>();
+			pDataStructure.parentId = stoull(jsonObjectData["parent_id"].get<std::string>());
 		}
 
 		if (jsonObjectData.contains("guild_id") && !jsonObjectData["guild_id"].is_null()) {
@@ -415,7 +415,7 @@ namespace DiscordCoreInternal {
 		}
 
 		if (jsonObjectData.contains("owner_id") && !jsonObjectData["owner_id"].is_null()) {
-			pDataStructure.ownerId = jsonObjectData["owner_id"].get<std::string>();
+			pDataStructure.ownerId = stoull(jsonObjectData["owner_id"].get<std::string>());
 		}
 
 		if (jsonObjectData.contains("member_count") && !jsonObjectData["member_count"].is_null()) {
@@ -510,7 +510,7 @@ namespace DiscordCoreInternal {
 		}
 
 		if (jsonObjectData.contains("owner_id") && !jsonObjectData["owner_id"].is_null()) {
-			pDataStructure.ownerId = jsonObjectData["owner_id"].get<std::string>();
+			pDataStructure.ownerId = stoull(jsonObjectData["owner_id"].get<std::string>());
 		}
 
 		if (jsonObjectData.contains("application_id") && !jsonObjectData["application_id"].is_null()) {
@@ -519,9 +519,9 @@ namespace DiscordCoreInternal {
 
 		if (jsonObjectData.contains("parent_id") && !jsonObjectData["parent_id"].is_null()) {
 			if (jsonObjectData["parent_id"].is_string()) {
-				pDataStructure.parentId = jsonObjectData["parent_id"].get<std::string>();
+				pDataStructure.parentId = stoull(jsonObjectData["parent_id"].get<std::string>());
 			} else {
-				pDataStructure.parentId = std::to_string(jsonObjectData["parent_id"].get<int64_t>());
+				pDataStructure.parentId = jsonObjectData["parent_id"].get<int64_t>();
 			}
 		}
 
@@ -1425,7 +1425,7 @@ namespace DiscordCoreInternal {
 		}
 
 		if (jsonObjectData.contains("owner_id") && !jsonObjectData["owner_id"].is_null()) {
-			pDataStructure.ownerId = jsonObjectData["owner_id"].get<std::string>();
+			pDataStructure.ownerId = stoull(jsonObjectData["owner_id"].get<std::string>());
 		}
 
 		if (jsonObjectData.contains("preferred_locale") && !jsonObjectData["preferred_locale"].is_null()) {
@@ -1651,7 +1651,7 @@ namespace DiscordCoreInternal {
 		}
 
 		if (jsonObjectData.contains("owner_id") && !jsonObjectData["owner_id"].is_null()) {
-			pDataStructure.ownerId = jsonObjectData["owner_id"].get<std::string>();
+			pDataStructure.ownerId = stoull(jsonObjectData["owner_id"].get<std::string>());
 		}
 
 		if (jsonObjectData.contains("features") && !jsonObjectData["features"].is_null()) {

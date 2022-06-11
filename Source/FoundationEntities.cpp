@@ -117,11 +117,11 @@ namespace DiscordCoreAPI {
 		*this = other;
 	}
 
-	StringWrapper::operator std::string() {
+	StringWrapper::operator std::basic_string<char, std::char_traits<char>, std::allocator<char>>() {
 		std::stringstream theStream{};
 		if (this->thePtr != nullptr) {
 			theStream << this->thePtr;
-		}		
+		}
 		std::string theString{};
 		for (uint32_t x = 0; x < theStream.str().size(); x += 1) {
 			theString.push_back(theStream.str()[x]);
@@ -757,8 +757,8 @@ namespace DiscordCoreAPI {
 	}
 
 	std::string Permissions::computeBasePermissions(const GuildMember& guildMember) {
-		GuildData guild = Guilds::getCachedGuildAsync({ .guildId = guildMember.guildId }).get();
-		if (static_cast<std::string>(guild.ownerId) == std::to_string(guildMember.id)) {
+		const GuildData guild = Guilds::getCachedGuildAsync({ .guildId = guildMember.guildId }).get();
+		if (static_cast<uint64_t>(guild.ownerId) == guildMember.id) {
 			return Permissions::getAllPermissions();
 		}
 		auto guildRoles = Roles ::getGuildRolesAsync({ .guildId = guildMember.guildId }).get();

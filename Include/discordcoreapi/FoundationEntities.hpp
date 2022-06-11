@@ -266,7 +266,7 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll StringWrapper {
 	  public:
 		StringWrapper() = default;
-		friend bool operator==(StringWrapper& rhs, const char* lhs);
+		friend bool operator==(StringWrapper rhs, const char* lhs);
 		
 		StringWrapper& operator=(const std::string& theString);
 
@@ -288,8 +288,8 @@ namespace DiscordCoreAPI {
 		
 		StringWrapper(StringWrapper& other);
 
-		operator std::string();
-
+		operator std::basic_string<char, std::char_traits<char>, std::allocator<char>>();
+		
 		void push_back(char theChar);
 		
 		size_t size();
@@ -317,51 +317,51 @@ namespace DiscordCoreAPI {
 	inline std::basic_string<char, std::char_traits<char>, std::allocator<char>> operator+(std::basic_string<char, std::char_traits<char>, std::allocator<char>>&lhs ,StringWrapper rhs){
 		std::stringstream theStream{};
 		theStream << lhs << rhs;
-		std::string theStringReturn{};
+		std::string theReturnString{};
 		for (uint64_t x = 0; x < theStream.str().size(); x += 1) {
-			theStringReturn.push_back(theStream.str()[x]);
+			theReturnString.push_back(theStream.str()[x]);
 		}
-		return theStringReturn;		
+		return theReturnString;		
 	}
-		
+	
 	template<typename ElemType> inline std::string operator+(StringWrapper lhs, ElemType rhs) {
 		std::stringstream theStream{};
 		theStream << lhs << rhs;
-		std::string theStringReturn{};
+		std::string theReturnString{};
 		for (uint64_t x = 0; x < theStream.str().size(); x += 1) {
-			theStringReturn.push_back(theStream.str()[x]);
+			theReturnString.push_back(theStream.str()[x]);
 		}
-		return theStringReturn;
+		return theReturnString;
 	}
 
 	template<typename ElemType> inline std::string operator+(ElemType lhs, StringWrapper rhs) {
 		std::stringstream theStream{};
 		theStream << lhs << rhs;
-		std::string theStringReturn{};
+		std::string theReturnString{};
 		for (uint64_t x = 0; x < theStream.str().size(); x += 1) {
-			theStringReturn.push_back(theStream.str()[x]);
+			theReturnString.push_back(theStream.str()[x]);
 		}
-		return theStringReturn;
+		return theReturnString;
 	}
 
-	template<typename ElemType> inline std::string operator + (StringWrapper lhs, ElemType* rhs) {
+	template<typename ElemType> inline std::string operator+(StringWrapper lhs, ElemType* rhs) {
 		std::stringstream theStream{};
 		theStream << lhs << rhs;
-		std::string theStringReturn{};
+		std::string theReturnString{};
 		for (uint64_t x = 0; x < theStream.str().size(); x += 1) {
-			theStringReturn.push_back(theStream.str()[x]);
+			theReturnString.push_back(theStream.str()[x]);
 		}
-		return theStringReturn;
+		return theReturnString;
 	}
 
 	template<typename ElemType> inline std::string operator+(ElemType* lhs, StringWrapper rhs) {
 		std::stringstream theStream{};
 		theStream << lhs << rhs;
-		std::string theStringReturn{};
+		std::string theReturnString{};
 		for (uint64_t x = 0; x < theStream.str().size(); x += 1) {
-			theStringReturn.push_back(theStream.str()[x]);
+			theReturnString.push_back(theStream.str()[x]);
 		}
-		return theStringReturn;
+		return theReturnString;
 	}
 
 	inline bool operator!=(StringWrapper lhs, const char* rhs) {
@@ -382,7 +382,7 @@ namespace DiscordCoreAPI {
 		return true;
 	}
 
-	inline bool operator==(StringWrapper& lhs, const char* rhs) {
+	inline bool operator==(StringWrapper lhs, const char* rhs) {
 		if (std::string(lhs) == std::string(rhs)) {
 			return true;
 		} else {
@@ -1388,10 +1388,10 @@ namespace DiscordCoreAPI {
 		std::unordered_map<uint64_t, OverWriteData> permissionOverwrites{};///< Permission overwrites for the given Channel.
 		ChannelType type{ ChannelType::Dm };///< The type of the Channel.
 		int32_t memberCount{ 0 };///< Count of members active in the Channel.
-		StringWrapper parentId{};///< Id of the Channel's parent Channel/category.
-		StringWrapper ownerId{};///< Id of the Channel's owner.
 		int32_t position{ 0 };///< The position of the Channel, in the Guild's Channel list.
 		StringWrapper name{};///< Name of the Channel.
+		uint64_t parentId{};///< Id of the Channel's parent Channel/category.
+		uint64_t ownerId{};///< Id of the Channel's owner.
 		uint64_t guildId{};///< Id of the Channel's Guild, if applicable.
 		int8_t flags{ 0 };///< Channel flags combined as a bitfield.
 
@@ -2037,9 +2037,9 @@ namespace DiscordCoreAPI {
 		std::vector<uint64_t> roles{};///< Array of Guild roles.
 		TimeStamp joinedAt{ "" };///< When the bot joined this Guild.
 		int32_t memberCount{ 0 };///< Member count.
-		StringWrapper ownerId{};///< User id of the Guild's owner.
 		StringWrapper icon{};///< Url to the Guild's icon.
 		StringWrapper name{};///< The Guild's name.
+		uint64_t ownerId{};///< User id of the Guild's owner.
 		int8_t flags{ 0 };///< Guild flags.
 
 		GuildData() = default;

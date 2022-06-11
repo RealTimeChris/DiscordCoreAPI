@@ -937,7 +937,7 @@ namespace DiscordCoreInternal {
 		data["icon"] = dataPackage.icon;
 		for (auto& value: dataPackage.channels) {
 			nlohmann::json newData{};
-			newData["parent_id"] = std::string{ value.parentId };
+			newData["parent_id"] = std::to_string(value.parentId);
 			newData["name"] = std::string{ value.name };
 			newData["id"] = value.id;
 			newData["type"] = value.type;
