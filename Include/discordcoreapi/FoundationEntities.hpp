@@ -1368,7 +1368,6 @@ namespace DiscordCoreAPI {
 		GuildMemberId() = default;
 		uint64_t guildMemberId{};
 		uint64_t guildId{};
-		void operator()(){};
 	};
 
 	inline bool operator==(const GuildMemberId lhs, const GuildMemberId rhs) {
@@ -1380,7 +1379,7 @@ namespace DiscordCoreAPI {
 	}
 
 	inline bool operator<(const GuildMemberId& lhs, const GuildMemberId& rhs) {
-		if (lhs.guildId < rhs.guildId && lhs.guildMemberId < rhs.guildMemberId) {
+		if ((lhs.guildId + lhs.guildMemberId) < (rhs.guildId + rhs.guildMemberId)) {
 			return true;
 		} else {
 			return false;
