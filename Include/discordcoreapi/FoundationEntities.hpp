@@ -319,7 +319,9 @@ namespace DiscordCoreAPI {
 		std::stringstream theStream{};
 		theStream << lhs << rhs;
 		std::string theReturnString{};
-		theReturnString.insert(theReturnString.begin(), theStream.str().begin(), theStream.str().end());
+		for (uint64_t x = 0; x < theStream.str().size(); x += 1) {
+			theReturnString.push_back(theStream.str()[x]);
+		}
 		return theReturnString;
 	}
 
@@ -328,7 +330,9 @@ namespace DiscordCoreAPI {
 		std::stringstream theStream{};
 		theStream << lhs << rhs;
 		std::string theReturnString{};
-		theReturnString.insert(theReturnString.begin(), theStream.str().begin(), theStream.str().end());
+		for (uint64_t x = 0; x < theStream.str().size(); x += 1) {
+			theReturnString.push_back(theStream.str()[x]);
+		}
 		return theReturnString;
 	}
 
