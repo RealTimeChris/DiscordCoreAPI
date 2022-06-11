@@ -1,12 +1,8 @@
 /*
 *
-<<<<<<< Updated upstream
-	Copyright 2021, 2022 Chris M.
-=======
 	DiscordCoreAPI, A bot library for Discord, written in C++, and featuring explicit multithreading through the usage of custom, asynchronous C++ CoRoutines.
 
 	Copyright 2021, 2022 Chris M. (RealTimeChris)
->>>>>>> Stashed changes
 
 	This file is part of DiscordCoreAPI.
 	DiscordCoreAPI is free software: you can redistribute it and/or modify it under the terms of the GNU
