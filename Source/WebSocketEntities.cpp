@@ -334,10 +334,10 @@ namespace DiscordCoreInternal {
 				outBuffer.push_back(static_cast<uint8_t>(sendLength));
 				indexCount = 0;
 			} else if (sendLength <= webSocketMaxPayloadLengthLarge) {
-				outBuffer.push_back(static_cast<uint8_t>(webSocketPayloadLengthMagicLarge));
+				outBuffer.push_back(webSocketPayloadLengthMagicLarge);
 				indexCount = 2;
 			} else {
-				outBuffer.push_back(static_cast<uint8_t>(webSocketPayloadLengthMagicHuge));
+				outBuffer.push_back(webSocketPayloadLengthMagicHuge);
 				indexCount = 8;
 			}
 			for (uint32_t x = indexCount - 1; x >= 0; x--) {
