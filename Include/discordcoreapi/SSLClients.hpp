@@ -267,7 +267,7 @@ namespace DiscordCoreInternal {
 
 		void connect(const std::string& baseUrl, const std::string& portNew = "443");
 
-		void writeData(const std::string& theData) noexcept;
+		void writeData(std::string& data) noexcept;
 
 		std::string& getInputBuffer() noexcept;
 
@@ -282,10 +282,10 @@ namespace DiscordCoreInternal {
 		static std::mutex theMutex;
 
 		int32_t maxBufferSize{ (1024 * 16) - 1 };
+		std::vector<std::string> outputBuffer{};
 		BIOWrapper connectionBio{ nullptr };
 		SOCKETWrapper theSocket{ nullptr };
 		SSL_CTXWrapper context{ nullptr };
-		std::string outputBuffer{};
 		std::string inputBuffer{};
 		SSLWrapper ssl{ nullptr };
 		bool wantWrite{ false };
@@ -300,7 +300,7 @@ namespace DiscordCoreInternal {
 
 		void connect(const std::string& baseUrlNew, const std::string& portNew);
 
-		void writeData(const std::string& data) noexcept;
+		void writeData(std::string& data) noexcept;
 
 		void processIO(int32_t waitTimeInMicroSeconds);
 
@@ -314,10 +314,10 @@ namespace DiscordCoreInternal {
 
 	  protected:
 		int32_t maxBufferSize{ (1024 * 16) - 1 };
+		std::vector<std::string> outputBuffer{};
 		SOCKETWrapper theSocket{ nullptr };
 		SSL_CTXWrapper context{ nullptr };
 		bool areWeConnected{ false };
-		std::string outputBuffer{};
 		SSLWrapper ssl{ nullptr };
 		std::string inputBuffer{};
 		bool wantWrite{ true };

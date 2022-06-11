@@ -222,7 +222,8 @@ namespace DiscordCoreInternal {
 			dataPackage.doWePrintErrorMessages = this->doWePrintFFMPEGErrorMessages;
 			std::unique_ptr<AudioDecoder> audioDecoder = std::make_unique<AudioDecoder>(dataPackage);
 			AudioEncoder audioEncoder{};
-			streamSocket.writeData(newSong.finalDownloadUrls[1].urlPath);
+			std::string theString = newSong.finalDownloadUrls[1].urlPath;
+			streamSocket.writeData(theString);
 			try {
 				streamSocket.processIO(ms1000);
 				while (newSong.contentLength > bytesSubmittedTotal) {

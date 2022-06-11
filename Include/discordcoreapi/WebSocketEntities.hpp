@@ -111,7 +111,7 @@ namespace DiscordCoreInternal {
 
 		void sendMessage(const nlohmann::json& dataToSend) noexcept;
 
-		void sendMessage(const std::string& dataToSend) noexcept;
+		void sendMessage(std::string& dataToSend) noexcept;
 
 		std::jthread* getTheTask() noexcept;
 
@@ -181,7 +181,7 @@ namespace DiscordCoreInternal {
 
 		void sendMessage(const std::vector<uint8_t>& responseData) noexcept;
 
-		void sendMessage(const std::string& dataToSend) noexcept;
+		void sendMessage(std::string& dataToSend) noexcept;
 
 		void sendVoiceData(std::string& responseData) noexcept;
 

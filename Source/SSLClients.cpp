@@ -119,8 +119,25 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void HttpSSLClient::writeData(const std::string& data) noexcept {
-		this->outputBuffer.insert(this->outputBuffer.end(), data.begin(), data.end());
+	void HttpSSLClient::writeData(std::string& data) noexcept {
+		if (data.size() > 16 * 1024) {
+			size_t remainingBytes{ data.size() };
+			while (remainingBytes > 0) {
+				std::string newString{};
+				size_t amountToCollect{};
+				if (data.size() >= 1024 * 16) {
+					amountToCollect = 1024 * 16;
+				} else {
+					amountToCollect = data.size();
+				}
+				newString.insert(newString.begin(), data.begin(), data.begin() + amountToCollect);
+				this->outputBuffer.push_back(newString);
+				data.erase(data.begin(), data.begin() + amountToCollect);
+				remainingBytes = data.size();
+			}
+		} else {
+			this->outputBuffer.push_back(data);
+		}
 	}
 
 	std::string& HttpSSLClient::getInputBuffer() noexcept {
@@ -136,9 +153,8 @@ namespace DiscordCoreInternal {
 		if ((this->outputBuffer.size() > 0 || this->wantWrite) && !this->wantRead) {
 			FD_SET(this->theSocket, &writeSet);
 			writeNfds = this->theSocket > writeNfds ? this->theSocket : writeNfds;
-		} else if (!this->wantWrite) {
-			FD_SET(this->theSocket, &readSet);
 		}
+		FD_SET(this->theSocket, &readSet);
 		readNfds = this->theSocket > readNfds ? this->theSocket : readNfds;
 		finalNfds = readNfds > writeNfds ? readNfds : writeNfds;
 
@@ -188,11 +204,16 @@ namespace DiscordCoreInternal {
 			this->wantRead = false;
 			this->wantWrite = false;
 			size_t writtenBytes{ 0 };
-			auto returnValue{ SSL_write_ex(this->ssl, this->outputBuffer.data(), this->outputBuffer.size(), &writtenBytes) };
+			std::string writeString = std::move(this->outputBuffer.front());
+			auto returnValue{ SSL_write_ex(this->ssl, writeString.data(), writeString.size(), &writtenBytes) };
 			auto errorValue{ SSL_get_error(this->ssl, returnValue) };
 			switch (errorValue) {
 				case SSL_ERROR_NONE: {
-					this->outputBuffer.clear();
+					if (writtenBytes > 0) {
+						this->outputBuffer.erase(this->outputBuffer.begin());
+					} else {
+						this->outputBuffer[0] = std::move(writeString);
+					}
 					break;
 				}
 				case SSL_ERROR_WANT_READ: {
@@ -298,10 +319,8 @@ namespace DiscordCoreInternal {
 			if ((this->outputBuffer.size() > 0 || this->wantWrite) && !this->wantRead) {
 				FD_SET(this->theSocket, &writeSet);
 				writeNfds = this->theSocket > writeNfds ? this->theSocket : writeNfds;
-			} else if (!this->wantWrite) {
-				FD_SET(this->theSocket, &readSet);
 			}
-
+			FD_SET(this->theSocket, &readSet);
 			readNfds = this->theSocket > readNfds ? this->theSocket : readNfds;
 			finalNfds = readNfds > writeNfds ? readNfds : writeNfds;
 
@@ -352,11 +371,16 @@ namespace DiscordCoreInternal {
 				this->wantRead = false;
 				this->wantWrite = false;
 				size_t writtenBytes{ 0 };
-				auto returnValue{ SSL_write_ex(this->ssl, this->outputBuffer.data(), this->outputBuffer.size(), &writtenBytes) };
+				std::string writeString = std::move(this->outputBuffer.front());
+				auto returnValue{ SSL_write_ex(this->ssl, writeString.data(), writeString.size(), &writtenBytes) };
 				auto errorValue{ SSL_get_error(this->ssl, returnValue) };
 				switch (errorValue) {
 					case SSL_ERROR_NONE: {
-						this->outputBuffer.clear();
+						if (writtenBytes > 0) {
+							this->outputBuffer.erase(this->outputBuffer.begin());
+						} else {
+							this->outputBuffer[0] = std::move(writeString);
+						}
 						break;
 					}
 					case SSL_ERROR_WANT_READ: {
@@ -382,8 +406,25 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void WebSocketSSLClient::writeData(const std::string& data) noexcept {
-		this->outputBuffer.insert(this->outputBuffer.end(), data.begin(), data.end());
+	void WebSocketSSLClient::writeData(std::string& data) noexcept {
+		if (data.size() > 16 * 1024) {
+			size_t remainingBytes{ data.size() };
+			while (remainingBytes > 0) {
+				std::string newString{};
+				size_t amountToCollect{};
+				if (data.size() >= 1024 * 16) {
+					amountToCollect = 1024 * 16;
+				} else {
+					amountToCollect = data.size();
+				}
+				newString.insert(newString.begin(), data.begin(), data.begin() + amountToCollect);
+				this->outputBuffer.push_back(newString);
+				data.erase(data.begin(), data.begin() + amountToCollect);
+				remainingBytes = data.size();
+			}
+		} else {
+			this->outputBuffer.push_back(data);
+		}
 	}
 
 	std::string WebSocketSSLClient::getInputBuffer() noexcept {

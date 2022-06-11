@@ -276,7 +276,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void BaseSocketAgent::sendMessage(const std::string& dataToSend) noexcept {
+	void BaseSocketAgent::sendMessage(std::string& dataToSend) noexcept {
 		try {
 			std::lock_guard<std::mutex> accessLock{ this->accessorMutex01 };
 			if (this->doWePrintSuccessMessages) {
@@ -329,7 +329,7 @@ namespace DiscordCoreInternal {
 		try {
 			outBuffer.push_back(static_cast<uint8_t>(opCode) | webSocketFinishBit);
 
-			uint32_t indexCount{ 0 };
+			int32_t indexCount{ 0 };
 			if (sendLength <= webSocketMaxPayloadLengthSmall) {
 				outBuffer.push_back(static_cast<uint8_t>(sendLength));
 				indexCount = 0;
@@ -340,7 +340,7 @@ namespace DiscordCoreInternal {
 				outBuffer.push_back(webSocketPayloadLengthMagicHuge);
 				indexCount = 8;
 			}
-			for (uint32_t x = indexCount - 1; x >= 0; x--) {
+			for (int32_t x = indexCount - 1; x >= 0; x--) {
 				outBuffer.push_back(static_cast<uint8_t>(sendLength >> x * 8));
 			}
 
@@ -1109,7 +1109,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void VoiceSocketAgent::sendMessage(const std::string& dataToSend) noexcept {
+	void VoiceSocketAgent::sendMessage(std::string& dataToSend) noexcept {
 		try {
 			if (this->doWePrintSuccessMessages) {
 				std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Sending Voice WebSocket Message: " << std::endl << dataToSend << DiscordCoreAPI::reset();
