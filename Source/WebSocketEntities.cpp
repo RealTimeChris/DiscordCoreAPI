@@ -251,7 +251,7 @@ namespace DiscordCoreInternal {
 		});
 	}
 
-	void BaseSocketAgent::sendMessage(const nlohmann::json& dataToSend, SOCKET theIndex) noexcept {
+	void BaseSocketAgent::sendMessage(const nlohmann::json& dataToSend, int32_t theIndex) noexcept {
 		try {
 			DiscordCoreAPI::StopWatch stopWatch{ std::chrono::milliseconds{ 5500 } };
 			while (!this->areWeConnected.load() && !(dataToSend.contains("op") && (dataToSend["op"] == 2 || dataToSend["op"] == 6))) {
@@ -289,7 +289,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void BaseSocketAgent::sendMessage(std::string& dataToSend, SOCKET theIndex) noexcept {
+	void BaseSocketAgent::sendMessage(std::string& dataToSend, int32_t theIndex) noexcept {
 		try {
 			std::lock_guard<std::mutex> accessLock{ this->accessorMutex01 };
 			if (this->doWePrintSuccessMessages) {
@@ -312,9 +312,9 @@ namespace DiscordCoreInternal {
 		return this->theTask.get();
 	}
 
-	void BaseSocketAgent::onClosed(SOCKET theIndex) noexcept {
+	void BaseSocketAgent::onClosed(int32_t theIndex) noexcept {
 		this->areWeReadyToConnectEvent.reset();
-		if (this->maxReconnectTries > this->currentReconnectTries) {
+		if (this->maxReconnectTries > this->theClients[theIndex]->currentRecursionDepth) {
 			std::this_thread::sleep_for(std::chrono::milliseconds{ 500 });
 			if (this->doWePrintErrorMessages) {
 				std::cout << DiscordCoreAPI::shiftToBrightRed()
@@ -326,15 +326,15 @@ namespace DiscordCoreInternal {
 				this->sendCloseFrame(theIndex);
 			}
 			this->areWeConnected.store(false);
-			this->currentReconnectTries += 1;
-			if (!this->areWeResuming) {
-				this->areWeAuthenticated = false;
+			this->theClients[theIndex]->currentRecursionDepth += 1;
+			if (!this->theClients[theIndex]->areWeResuming) {
+				this->theClients[theIndex]->areWeAuthenticated= false;
 			}
 			DiscordCoreAPI::ReconnectionPackage theData{};
 			theData.currentShard = this->theClients[theIndex]->shard[0];
 			theData.currentBaseSocketAgent = this->currentBaseSocketAgent;
 			this->theClients[theIndex]->haveWeReceivedHeartbeatAck = true;
-			this->theClients[theIndex].reset(nullptr);
+			this->theClients.erase(theIndex);
 			this->reconnections.push(theData);
 			this->closeCode = static_cast<WebSocketCloseCode>(0);
 		} else {
@@ -343,7 +343,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void BaseSocketAgent::createHeader(std::string& outBuffer, uint64_t sendLength, WebSocketOpCode opCode, SOCKET theIndex) noexcept {
+	void BaseSocketAgent::createHeader(std::string& outBuffer, uint64_t sendLength, WebSocketOpCode opCode, int32_t theIndex) noexcept {
 		try {
 			outBuffer.push_back(static_cast<uint8_t>(opCode) | webSocketFinishBit);
 
@@ -375,7 +375,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void BaseSocketAgent::getVoiceConnectionData(const VoiceConnectInitData& doWeCollect, SOCKET theIndex) noexcept {
+	void BaseSocketAgent::getVoiceConnectionData(const VoiceConnectInitData& doWeCollect, int32_t theIndex) noexcept {
 		try {
 			this->semaphore.acquire();
 			DiscordCoreAPI::UpdateVoiceStateData dataPackage{};
@@ -406,7 +406,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void BaseSocketAgent::onMessageReceived(std::string theMessage, SOCKET theIndex) noexcept {
+	void BaseSocketAgent::onMessageReceived(std::string theMessage, int32_t theIndex) noexcept {
 		try {
 			std::string messageNew = theMessage;
 			nlohmann::json payload{};
@@ -460,7 +460,7 @@ namespace DiscordCoreInternal {
 
 				if (payload["t"] == "RESUMED") {
 					this->areWeConnected.store(true);
-					this->currentReconnectTries = 0;
+					this->theClients[theIndex]->currentRecursionDepth = 0;
 					this->areWeReadyToConnectEvent.set();
 				}
 
@@ -477,9 +477,9 @@ namespace DiscordCoreInternal {
 						value.discordCoreClient = this->discordCoreClient;
 						DiscordCoreAPI::Guilds::insertGuild(value);
 					}
-					this->currentReconnectTries = 0;
+					this->theClients[theIndex]->currentRecursionDepth = 0;
 					this->areWeReadyToConnectEvent.set();
-					this->areWeAuthenticated = true;
+					this->theClients[theIndex] ->areWeAuthenticated = true;
 				}
 			}
 
@@ -497,7 +497,7 @@ namespace DiscordCoreInternal {
 						std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Shard " + this->theClients[theIndex]->shard.dump() + " Reconnecting (Type 7)!" << DiscordCoreAPI::reset() << std::endl
 								  << std::endl;
 					}
-					this->areWeResuming = true;
+					this->theClients[theIndex]->areWeResuming = true;
 					this->onClosed(theIndex);
 				}
 
@@ -507,7 +507,7 @@ namespace DiscordCoreInternal {
 								  << DiscordCoreAPI::reset() << std::endl
 								  << std::endl;
 					}
-					this->currentReconnectTries += 1;
+					this->theClients[theIndex]->currentRecursionDepth += 1;
 					std::mt19937_64 randomEngine{ static_cast<uint64_t>(std::chrono::system_clock::now().time_since_epoch().count()) };
 					int32_t numOfMsToWait =
 						static_cast<int32_t>(1000.0f + ((static_cast<float>(randomEngine()) / static_cast<float>(randomEngine.max())) * static_cast<float>(4000.0f)));
@@ -517,8 +517,8 @@ namespace DiscordCoreInternal {
 							JSONIFY(this->botToken, static_cast<int32_t>(this->intentsValue), this->theClients[theIndex]->shard[0], this->theClients[theIndex]->shard[1]);
 						this->sendMessage(identityJson, theIndex);
 					} else {
-						this->areWeResuming = false;
-						this->areWeAuthenticated = false;
+						this->theClients[theIndex]->areWeResuming = false;
+						this->theClients[theIndex]->areWeAuthenticated = false;
 						this->onClosed(theIndex);
 					}
 				}
@@ -527,12 +527,12 @@ namespace DiscordCoreInternal {
 					if (payload["d"].contains("heartbeat_interval") && !payload["d"]["heartbeat_interval"].is_null()) {
 						this->heartbeatInterval = payload["d"]["heartbeat_interval"];
 					}
-					if (this->areWeResuming) {
+					if (this->theClients[theIndex]->areWeResuming) {
 						std::this_thread::sleep_for(std::chrono::milliseconds{ 1500 });
 						nlohmann::json resumePayload = JSONIFY(this->botToken, this->sessionId, this->theClients[theIndex]->lastNumberReceived);
 						this->sendMessage(resumePayload, theIndex);
 					} else {
-						if (!this->areWeAuthenticated) {
+						if (!this->theClients[theIndex]->areWeAuthenticated) {
 							nlohmann::json identityJson =
 								JSONIFY(this->botToken, static_cast<int32_t>(this->intentsValue), this->theClients[theIndex]->shard[0], this->theClients[theIndex]->shard[1]);
 							this->sendMessage(identityJson, theIndex);
@@ -1024,7 +1024,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void BaseSocketAgent::sendCloseFrame(SOCKET theIndex) noexcept {
+	void BaseSocketAgent::sendCloseFrame(int32_t theIndex) noexcept {
 		std::string theString{};
 		theString.push_back(static_cast<int8_t>(WebSocketOpCode::Op_Close) | static_cast<int8_t>(webSocketFinishBit));
 		theString.push_back(0);
@@ -1033,7 +1033,8 @@ namespace DiscordCoreInternal {
 		if (this->theClients[theIndex]) {
 			this->theClients[theIndex]->writeData(theString);
 			try {
-				this->theClients[theIndex]->processIO(this->theClients);
+				auto thePtr = this->theClients[theIndex].get();
+				thePtr->processIO(this->theClients);
 			} catch (ProcessingError&) {
 				if (this->doWePrintErrorMessages) {
 					DiscordCoreAPI::reportException("BaseSocketAgent::sendCloseFrame()");
@@ -1042,7 +1043,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void BaseSocketAgent::sendHeartBeat(SOCKET theIndex) noexcept {
+	void BaseSocketAgent::sendHeartBeat(int32_t theIndex) noexcept {
 		try {
 			if (this->theClients[theIndex]->haveWeReceivedHeartbeatAck) {
 				nlohmann::json heartbeat = JSONIFY(this->theClients[theIndex]->lastNumberReceived);
@@ -1064,9 +1065,15 @@ namespace DiscordCoreInternal {
 			if (this->theReconnectionTimer.hasTimePassed()) {
 				if (this->reconnections.size() > 0) {
 					auto reconnectionData = this->reconnections.front();
+					int32_t currentRecursionDepth{};
+					if (this->theClients.contains(reconnectionData.currentShard) && this->theClients[reconnectionData.currentShard] != nullptr) {
+						currentRecursionDepth = this->theClients[reconnectionData.currentShard]->currentRecursionDepth;
+					}
+					currentRecursionDepth += 1;
 					this->reconnections.pop();
 					auto theClient = std::make_unique<WebSocketSSLShard>(1024 * 16, reconnectionData.currentShard, this->discordCoreClient->shardingOptions.totalNumberOfShards,
 						this->doWePrintErrorMessages);
+					theClient->currentRecursionDepth = currentRecursionDepth;
 					std::this_thread::sleep_for(std::chrono::milliseconds{ 1 });
 					try {
 						theClient->connect(this->baseUrl, "443");
@@ -1075,11 +1082,10 @@ namespace DiscordCoreInternal {
 					}
 					
 					std::this_thread::sleep_for(std::chrono::milliseconds{ 1 });
-					SOCKET theSocket = theClient->theSocket;
-					this->theClients[theClient->theSocket] = std::move(theClient);
+					this->theClients[reconnectionData.currentShard] = std::move(theClient);
 					std::this_thread::sleep_for(std::chrono::milliseconds{ 1 });
 
-					this->theClients[theSocket]->areWeConnected = true;
+					this->theClients[reconnectionData.currentShard]->areWeConnected = true;
 					std::string sendString{};
 					if (this->theFormat == DiscordCoreAPI::TextFormat::Etf) {
 						sendString = "GET /?v=10&encoding=etf HTTP/1.1\r\nHost: " + this->baseUrl +
@@ -1091,17 +1097,17 @@ namespace DiscordCoreInternal {
 							DiscordCoreAPI::generateBase64EncodedKey() + "\r\nSec-WebSocket-Version: 13\r\n\r\n";
 					}
 					std::this_thread::sleep_for(std::chrono::milliseconds{ 1 });
-					this->sendMessage(sendString, theSocket);
+					this->sendMessage(sendString, reconnectionData.currentShard);
 					std::string theResult{};
 					while (theResult == "") {
 						auto returnValue = this->messageCollector.runMessageCollector();
 						if (!returnValue) {
 							return;
 						}
-						theResult = this->messageCollector.collectFinalMessage()[theSocket].theMessage;
+						theResult = this->messageCollector.collectFinalMessage()[reconnectionData.currentShard].theMessage;
 						std::this_thread::sleep_for(std::chrono::milliseconds{ 1 });
 					}
-					this->onMessageReceived(theResult, theSocket);
+					this->onMessageReceived(theResult, reconnectionData.currentShard);
 				}
 				this->theReconnectionTimer.resetTimer();
 			}
@@ -1123,7 +1129,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	VoiceSocketAgent::VoiceSocketAgent(VoiceConnectInitData initDataNew, BaseSocketAgent* baseBaseSocketAgentNew,SOCKET theIndex, bool printMessagesNew) noexcept {
+	VoiceSocketAgent::VoiceSocketAgent(VoiceConnectInitData initDataNew, BaseSocketAgent* baseBaseSocketAgentNew,int32_t theIndex, bool printMessagesNew) noexcept {
 		this->baseSocketAgent = baseBaseSocketAgentNew;
 		this->voiceConnectInitData = initDataNew;
 		this->doWePrintSuccessMessages = baseBaseSocketAgentNew->doWePrintSuccessMessages;

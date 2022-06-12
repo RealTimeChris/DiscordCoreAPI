@@ -263,7 +263,7 @@ namespace DiscordCoreInternal {
 		}
 
 	  protected:
-		std::unique_ptr<SOCKET, SOCKETDeleter> socketPtr{ new SOCKET{ static_cast<SOCKET>(SOCKET_ERROR) }, SOCKETDeleter{} };
+		std::unique_ptr<int32_t, SOCKETDeleter> socketPtr{ new SOCKET{ static_cast<int32_t>(SOCKET_ERROR) }, SOCKETDeleter{} };
 	};
 
 	struct DiscordCoreAPI_Dll X509Deleter {
@@ -305,12 +305,13 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll WebSocketSSLShard {
 	  public:
-		friend class BaseSocketAgent;
+		friend class DiscordCoreAPI::DiscordCoreClient;
 		friend class VoiceSocketAgent;
+		friend class BaseSocketAgent;
 
 		WebSocketSSLShard(int32_t maxBufferSizeNew, int32_t currentShard, int32_t totalShards, bool doWePrintErrors) noexcept;
 
-		static void processIO(std::unordered_map<SOCKET, std::unique_ptr<WebSocketSSLShard>>& theMap);
+		static void processIO(std::unordered_map<int32_t, std::unique_ptr<WebSocketSSLShard>>& theMap);
 
 		void connect(const std::string& baseUrlNew, const std::string& portNew);
 
@@ -326,12 +327,16 @@ namespace DiscordCoreInternal {
 		int32_t maxBufferSize{ (1024 * 16) - 1 };
 		std::vector<std::string> outputBuffer{};
 		bool haveWeReceivedHeartbeatAck{ true };
+		int32_t currentRecursionDepth{ 0 };
 		SOCKETWrapper theSocket{ nullptr };
 		SSL_CTXWrapper context{ nullptr };
+		bool areWeAuthenticated{ false };
+		int32_t maxRecursionDepth{ 10 };
 		bool areWeHeartBeating{ false };
-		int32_t lastNumberReceived{ 0 };
+		int32_t lastNumberReceived{ 0 };		
 		bool doWePrintErrors{ false };
 		bool areWeConnected{ false };
+		bool areWeResuming{ false };
 		SSLWrapper ssl{ nullptr };
 		std::string inputBuffer{};
 		nlohmann::json shard{};

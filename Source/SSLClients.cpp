@@ -252,23 +252,24 @@ namespace DiscordCoreInternal {
 		FD_ZERO(&writeSet);
 		for (auto& [key, value]: theMap) {
 			if (value->outputBuffer.size() > 0 || value->wantWrite) {
-				FD_SET(key, &writeSet);
-				writeNfds = key > writeNfds ? key : writeNfds;
+				FD_SET(value->theSocket, &writeSet);
+				writeNfds = value->theSocket > writeNfds ? value->theSocket : writeNfds;
 			}
 			if (!value->wantWrite) {
-				FD_SET(key, &readSet);
+				FD_SET(value->theSocket, &readSet);
 			}
-			readNfds = key > readNfds ? key : readNfds;
+			readNfds = value->theSocket > readNfds ? value->theSocket : readNfds;
 			finalNfds = readNfds > writeNfds ? readNfds : writeNfds;
 		}
 
 		timeval checkTime{ .tv_usec = 10000 };
 		if (auto resultValue = select(finalNfds + 1, &readSet, &writeSet, nullptr, &checkTime); resultValue == SOCKET_ERROR) {
+			std::cout << "WERE HERE THIS IS IT!" << reportError("select() Error: ", resultValue) <<std::endl;
 			throw ConnectionError{ reportError("select() Error: ", resultValue) };
 		}
 
 		for (auto& [key, value]: theMap) {
-			if (FD_ISSET(key, &readSet)) {
+			if (FD_ISSET(value->theSocket, &readSet)) {
 				value->wantRead = false;
 				value->wantWrite = false;
 				std::string serverToClientBuffer{};

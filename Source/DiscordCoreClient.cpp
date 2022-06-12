@@ -203,19 +203,30 @@ namespace DiscordCoreAPI {
 				if (this->loggingOptions.logGeneralSuccessMessages) {
 					std::cout << shiftToBrightBlue() << "Waiting to connect the subsequent group of shards..." << reset() << std::endl << std::endl;
 				}
+				if (!this->baseSocketAgentMap[std::to_string(currentBaseSocketAgent)]->theClients.contains(currentShard) &&
+					this->baseSocketAgentMap[std::to_string(currentBaseSocketAgent)]->theClients[currentShard] != nullptr) {
+					if (!this->baseSocketAgentMap[std::to_string(currentBaseSocketAgent)]->theClients[currentShard]->areWeConnected) {
+						if (this->loggingOptions.logGeneralErrorMessages) {
+							std::cout << shiftToBrightRed() << "Failed to connect shard " + std::to_string(currentShard) + ", attempting to reconnect..." << std::endl << std::endl;
+						}
+						ReconnectionPackage theData{};
+						theData.currentShard = currentShard;
+						theData.currentBaseSocketAgent = currentBaseSocketAgent;
+						this->baseSocketAgentMap[std::to_string(currentBaseSocketAgent)]->connect(theData);
+					}
+				}
 				std::this_thread::sleep_for(std::chrono::milliseconds{ 5000 });
 				currentShard += 1;
 			}
 			currentBaseSocketAgent += 1;
 		}
-
+		this->currentUser = BotUser{ Users::getCurrentUserAsync().get(), this->baseSocketAgentMap[std::to_string(this->shardingOptions.startingShard)].get() };
 		for (auto& value: this->functionsToExecute) {
 			TimeElapsedHandler<int64_t> onSend = [=, this](int64_t theArg) -> void {
 				value.function(this);
 			};
 			this->threadIds.push_back(ThreadPool::storeThread(onSend, value.intervalInMs, value.repeated, value.dummyArg));
 		}
-		this->currentUser = BotUser{ Users::getCurrentUserAsync().get(), this->baseSocketAgentMap[std::to_string(this->shardingOptions.startingShard)].get() };
 		if (this->loggingOptions.logGeneralSuccessMessages) {
 			std::cout << shiftToBrightGreen() << "All of the shards are connected for the current process!" << reset() << std::endl << std::endl;
 		}

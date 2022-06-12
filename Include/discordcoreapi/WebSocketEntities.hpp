@@ -73,22 +73,22 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll WSMessageCollector {
 	  public:
-		WSMessageCollector(bool doWePrintErrorMessagesNew, std::unordered_map<SOCKET, std::unique_ptr<WebSocketSSLShard>>* theClientsNew);
+		WSMessageCollector(bool doWePrintErrorMessagesNew, std::unordered_map<int32_t, std::unique_ptr<WebSocketSSLShard>>* theClientsNew);
 
 		WSMessageCollector() = default;
 
-		std::unordered_map<SOCKET, WSMessageCollectorReturnData> collectFinalMessage() noexcept;
+		std::unordered_map<int32_t, WSMessageCollectorReturnData> collectFinalMessage() noexcept;
 
 		bool runMessageCollector() noexcept;
 
 	  protected:
-		std::unordered_map<SOCKET, std::queue<WSMessageCollectorReturnData>> finalMessages{};
-		std::unordered_map<SOCKET, std::unique_ptr<WebSocketSSLShard>>* theClients{};
-		std::unordered_map<SOCKET, WSMessageCollectorState> theState{};
-		std::unordered_map<SOCKET, WebSocketOpCode> dataOpCodes{};
-		std::unordered_map<SOCKET, std::string> currentMessage{};
-		std::unordered_map<SOCKET, int64_t> messageLength{};
-		std::unordered_map<SOCKET, int64_t> messageOffset{};
+		std::unordered_map<int32_t, std::queue<WSMessageCollectorReturnData>> finalMessages{};
+		std::unordered_map<int32_t, std::unique_ptr<WebSocketSSLShard>>* theClients{};
+		std::unordered_map<int32_t, WSMessageCollectorState> theState{};
+		std::unordered_map<int32_t, WebSocketOpCode> dataOpCodes{};
+		std::unordered_map<int32_t, std::string> currentMessage{};
+		std::unordered_map<int32_t, int64_t> messageLength{};
+		std::unordered_map<int32_t, int64_t> messageOffset{};
 		bool doWePrintErrorMessages{ false };
 		int8_t maxRecursionDepth{ 10 };
 		int8_t currentRecursionDepth{};
@@ -102,6 +102,7 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll BaseSocketAgent {
 	  public:
+		friend class DiscordCoreAPI::DiscordCoreClient;
 		friend class DiscordCoreAPI::VoiceConnection;
 		friend class DiscordCoreAPI::BotUser;
 		friend VoiceSocketAgent;
@@ -110,13 +111,13 @@ namespace DiscordCoreInternal {
 			DiscordCoreAPI::DiscordCoreClient* discordCoreClient, DiscordCoreAPI::CommandController* commandController, std::atomic_bool* doWeQuitNew,
 			bool doWePrintSuccessMessages, bool doWePrintErrorMessages, int32_t currentBaseSocketAgent) noexcept;
 
-		void sendMessage(const nlohmann::json& dataToSend, SOCKET theIndex) noexcept;
+		void sendMessage(const nlohmann::json& dataToSend, int32_t theIndex) noexcept;
 
-		void sendMessage(std::string& dataToSend, SOCKET theIndex) noexcept;
+		void sendMessage(std::string& dataToSend, int32_t theIndex) noexcept;
 
 		void connect(DiscordCoreAPI::ReconnectionPackage) noexcept;
 
-		void onClosed(SOCKET theIndex) noexcept;
+		void onClosed(int32_t theIndex) noexcept;
 
 		std::jthread* getTheTask() noexcept;
 
@@ -126,7 +127,7 @@ namespace DiscordCoreInternal {
 		std::unordered_map<std::string, DiscordCoreAPI::TSUnboundedMessageBlock<VoiceConnectionData>*> voiceConnectionDataBufferMap{};
 		DiscordCoreAPI::StopWatch<std::chrono::milliseconds> theReconnectionTimer{ std::chrono::milliseconds{ 5000 } };
 		const DiscordCoreAPI::GatewayIntents intentsValue{ DiscordCoreAPI::GatewayIntents::All_Intents };
-		std::unordered_map<SOCKET, std::unique_ptr<WebSocketSSLShard>> theClients{};
+		std::unordered_map<int32_t, std::unique_ptr<WebSocketSSLShard>> theClients{};
 		DiscordCoreAPI::TextFormat theFormat{ DiscordCoreAPI::TextFormat::Etf };
 		DiscordCoreAPI::DiscordCoreClient* discordCoreClient{ nullptr };
 		DiscordCoreAPI::CommandController* commandController{ nullptr };
@@ -146,13 +147,10 @@ namespace DiscordCoreInternal {
 		int32_t currentBaseSocketAgent{ 0 };
 		bool serverUpdateCollected{ false };
 		bool stateUpdateCollected{ false };
-		int32_t currentReconnectTries{ 0 };
 		bool areWeCollectingData{ false };
-		bool areWeAuthenticated{ false };
 		WebSocketCloseCode closeCode{};
 		int32_t heartbeatInterval{ 0 };
 		std::mutex accessorMutex01{};
-		bool areWeResuming{ false };
 		bool didWeFail{ false };
 		std::string sessionId{};
 		std::string botToken{};
@@ -160,15 +158,15 @@ namespace DiscordCoreInternal {
 		std::string baseUrl{};
 		uint64_t userId{};
 
-		void createHeader(std::string& outbuf, uint64_t sendlength, WebSocketOpCode opCode, SOCKET theIndex) noexcept;
+		void createHeader(std::string& outbuf, uint64_t sendlength, WebSocketOpCode opCode, int32_t theIndex) noexcept;
 
-		void getVoiceConnectionData(const VoiceConnectInitData& doWeCollect, SOCKET theIndex) noexcept;
+		void getVoiceConnectionData(const VoiceConnectInitData& doWeCollect, int32_t theIndex) noexcept;
 
-		void onMessageReceived(std::string theMessage, SOCKET theIndex) noexcept;
+		void onMessageReceived(std::string theMessage, int32_t theIndex) noexcept;
 
-		void sendCloseFrame(SOCKET theIndex) noexcept;
+		void sendCloseFrame(int32_t theIndex) noexcept;
 
-		void sendHeartBeat(SOCKET theIndex) noexcept;
+		void sendHeartBeat(int32_t theIndex) noexcept;
 
 		void run(std::stop_token) noexcept;
 
@@ -179,7 +177,7 @@ namespace DiscordCoreInternal {
 	  public:
 		friend class DiscordCoreAPI::VoiceConnection;
 
-		VoiceSocketAgent(VoiceConnectInitData initDataNew, BaseSocketAgent* baseBaseSocketAgentNew, SOCKET theIndex, bool doWePrintMessages = false) noexcept;
+		VoiceSocketAgent(VoiceConnectInitData initDataNew, BaseSocketAgent* baseBaseSocketAgentNew, int32_t theIndex, bool doWePrintMessages = false) noexcept;
 
 		void sendMessage(const std::vector<uint8_t>& responseData) noexcept;
 
@@ -193,7 +191,7 @@ namespace DiscordCoreInternal {
 
 	  protected:
 		DiscordCoreAPI::TSUnboundedMessageBlock<DiscordCoreInternal::VoiceConnectionData> voiceConnectionDataBuffer{};
-		std::unordered_map<SOCKET, std::unique_ptr<WebSocketSSLShard>> theClients{};
+		std::unordered_map<int32_t, std::unique_ptr<WebSocketSSLShard>> theClients{};
 		std::unique_ptr<DatagramSocketSSLClient> voiceSocket{ nullptr };
 		WebSocketOpCode dataOpcode{ WebSocketOpCode::Op_Text };
 		std::unique_ptr<std::jthread> theTask{ nullptr };
