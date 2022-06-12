@@ -205,8 +205,8 @@ namespace DiscordCoreInternal {
 		try {
 			std::unique_ptr<DiscordCoreInternal::WebSocketSSLShard> streamSocket{ std::make_unique<DiscordCoreInternal::WebSocketSSLShard>(youtubeAPI->maxBufferSize, 0, 0,
 				this->doWePrintWebSocketErrorMessages) };
-			std::unordered_map<SOCKET, std::unique_ptr<WebSocketSSLShard>> theMap{};
-			theMap.insert_or_assign(static_cast<SOCKET>(streamSocket->getBytesRead()), std::move(streamSocket));
+			std::unordered_map<int32_t, std::unique_ptr<WebSocketSSLShard>> theMap{};
+			theMap.insert_or_assign(static_cast<int32_t>(streamSocket->getBytesRead()), std::move(streamSocket));
 			streamSocket->connect(newSong.finalDownloadUrls[0].urlPath, "443");
 			bool areWeDoneHeaders{ false };
 			bool haveWeFailed{ false };
@@ -230,7 +230,7 @@ namespace DiscordCoreInternal {
 			std::string theString = newSong.finalDownloadUrls[1].urlPath;
 			streamSocket->writeData(theString);
 			try {
-				streamSocket->processIO(theMap);
+				WebSocketSSLShard::processIO(theMap);
 				while (newSong.contentLength > bytesSubmittedTotal) {
 					std::this_thread::sleep_for(1ms);
 					if (bytesSubmittedPrevious == bytesSubmittedTotal) {
@@ -266,7 +266,7 @@ namespace DiscordCoreInternal {
 								return;
 							}
 							remainingDownloadContentLength = newSong.contentLength - bytesSubmittedTotal;
-							streamSocket->processIO(theMap);
+							WebSocketSSLShard::processIO(theMap);
 							if (!theToken.stop_requested()) {
 								bytesSubmittedTotal = streamSocket->getBytesRead();
 							}
@@ -283,7 +283,7 @@ namespace DiscordCoreInternal {
 							return;
 						}
 						if (counter == 0) {
-							streamSocket->processIO(theMap);
+							WebSocketSSLShard::processIO(theMap);
 							std::string streamBuffer = streamSocket->getInputBuffer();
 							if (streamBuffer.size() > 0) {
 								theCurrentString.insert(theCurrentString.end(), streamBuffer.begin(), streamBuffer.end());
@@ -309,7 +309,7 @@ namespace DiscordCoreInternal {
 									return;
 								}
 								remainingDownloadContentLength = newSong.contentLength - bytesSubmittedTotal;
-								streamSocket->processIO(theMap);
+								WebSocketSSLShard::processIO(theMap);
 								std::string newVector = streamSocket->getInputBuffer();
 								if (newVector.size() == 0) {
 									counter += 1;

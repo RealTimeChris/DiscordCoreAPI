@@ -760,6 +760,7 @@ namespace DiscordCoreAPI {
 
 	struct ReconnectionPackage {
 		int32_t currentBaseSocketAgent{};
+		int32_t lastNumberReceived{};
 		int32_t currentShard{};
 	};
 
@@ -3819,11 +3820,12 @@ namespace DiscordCoreInternal {
 	};
 
 	struct DiscordCoreAPI_Dll VoiceConnectInitData {
+		int32_t currentShard{};
+		bool selfDeaf{ false };
+		bool selfMute{ false };
 		uint64_t channelId{};
 		uint64_t guildId{};
 		uint64_t userId{};
-		bool selfDeaf{ false };
-		bool selfMute{ false };
 	};
 
 	struct DiscordCoreAPI_Dll VoiceConnectionData {

@@ -63,6 +63,8 @@ namespace DiscordCoreInternal {
 	#define SOCKET_ERROR (-1)
 #endif
 
+	enum class WebSocketState : int8_t { Connecting = 0, Connected = 1, Disconnected = 2 };
+
 	struct ConnectionError : public std::runtime_error {
 		explicit ConnectionError(const std::string& theString) : std::runtime_error(theString){};
 	};
@@ -325,7 +327,9 @@ namespace DiscordCoreInternal {
 
 	  protected:
 		DiscordCoreAPI::StopWatch<std::chrono::milliseconds> stopWatch{ 0ms };
+		WebSocketState theState{ WebSocketState::Connecting };
 		int32_t maxBufferSize{ (1024 * 16) - 1 };
+		std::atomic_bool areWeConnected{ false };
 		std::vector<std::string> outputBuffer{};
 		bool haveWeReceivedHeartbeatAck{ true };
 		int32_t currentRecursionDepth{ 0 };
@@ -336,7 +340,6 @@ namespace DiscordCoreInternal {
 		bool areWeHeartBeating{ false };
 		int32_t lastNumberReceived{ 0 };		
 		bool doWePrintErrors{ false };
-		bool areWeConnected{ false };
 		bool areWeResuming{ false };
 		SSLWrapper ssl{ nullptr };
 		std::string inputBuffer{};
@@ -344,6 +347,7 @@ namespace DiscordCoreInternal {
 		bool wantWrite{ true };
 		bool wantRead{ false };
 		int64_t bytesRead{ 0 };
+		uint64_t sessionId{};
 	};
 
 	class DiscordCoreAPI_Dll DatagramSocketSSLClient {
