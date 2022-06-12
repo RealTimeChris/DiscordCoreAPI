@@ -326,7 +326,6 @@ namespace DiscordCoreInternal {
 			if (!this->wantWrite) {
 				FD_SET(this->theSocket, &readSet);
 			}
-
 			readNfds = this->theSocket > readNfds ? this->theSocket : readNfds;
 			finalNfds = readNfds > writeNfds ? readNfds : writeNfds;
 
@@ -388,6 +387,7 @@ namespace DiscordCoreInternal {
 						if (writtenBytes > 0) {
 							this->outputBuffer.erase(this->outputBuffer.begin());
 							std::cout << "WRITTEN BYTES: " << writeString << std::endl;
+
 
 						} else {
 							this->outputBuffer[0] = std::move(writeString);
