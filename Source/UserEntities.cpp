@@ -61,7 +61,6 @@ namespace DiscordCoreAPI {
 	void BotUser::updatePresence(UpdatePresenceData& dataPackage) {
 		dataPackage.since = static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
 		nlohmann::json payload = DiscordCoreInternal::JSONIFY(dataPackage);
-		std::cout << "THE INDEX: " << this->baseSocketAgent->theClients.begin().operator*().first << std::endl;
 		if (this->baseSocketAgent) {
 			this->baseSocketAgent->sendMessage(payload, this->baseSocketAgent->theClients.begin().operator*().first);
 		}

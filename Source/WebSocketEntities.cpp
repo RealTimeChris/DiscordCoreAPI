@@ -210,13 +210,12 @@ namespace DiscordCoreInternal {
 			WebSocketSSLShard::processIO(*this->theClients);
 			for (auto& [key, value]: *this->theClients) {
 				if (value->areWeConnected.load()) {
-					if (value != nullptr) {
-						std::string newMessage = value->getInputBuffer();
-						this->theState[key] = WSMessageCollectorState::Parsing;
-						this->currentMessage[key].insert(this->currentMessage[key].end(), newMessage.begin(), newMessage.end());
-						return this->runMessageCollector();
-					}
-				} else {
+					auto newMessage = value->getInputBuffer();
+					this->theState[key] = WSMessageCollectorState::Parsing;
+					this->currentMessage[key].insert(this->currentMessage[key].end(), newMessage.begin(), newMessage.end());
+					return this->runMessageCollector();
+				}
+				else{
 					return false;
 				}
 			}
@@ -1068,7 +1067,7 @@ namespace DiscordCoreInternal {
 					} catch (...) {
 						this->reconnections.push(reconnectionData);
 					}
-
+		
 					std::string sendString{};
 					if (this->theFormat == DiscordCoreAPI::TextFormat::Etf) {
 						sendString = "GET /?v=10&encoding=etf HTTP/1.1\r\nHost: " + this->baseUrl +
@@ -1137,6 +1136,7 @@ namespace DiscordCoreInternal {
 		this->doWePrintSuccessMessages = baseBaseSocketAgentNew->doWePrintSuccessMessages;
 		this->doWePrintErrorMessages = baseBaseSocketAgentNew->doWePrintErrorMessages;
 		this->baseSocketAgent->voiceConnectionDataBufferMap[std::to_string(this->voiceConnectInitData.guildId)] = &this->voiceConnectionDataBuffer;
+		this->messageCollector = WSMessageCollector{ this->doWePrintErrorMessages, &this->theClients };
 		this->baseSocketAgent->getVoiceConnectionData(this->voiceConnectInitData, theIndex);
 		this->areWeConnected.reset();
 		this->theTask = std::make_unique<std::jthread>([this](std::stop_token theToken) {
@@ -1156,8 +1156,8 @@ namespace DiscordCoreInternal {
 			std::string theVectorNew{};
 			theVectorNew.insert(theVectorNew.begin(), header.begin(), header.end());
 			theVectorNew.insert(theVectorNew.begin() + header.size(), newString.begin(), newString.end());
-			if (this->theClients[0]) {
-				this->theClients[0]->writeData(theVectorNew);
+			if (this->theClients[1]) {
+				this->theClients[1]->writeData(theVectorNew);
 			}
 		} catch (...) {
 			if (this->doWePrintErrorMessages) {
@@ -1172,8 +1172,8 @@ namespace DiscordCoreInternal {
 			if (this->doWePrintSuccessMessages) {
 				std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Sending Voice WebSocket Message: " << std::endl << dataToSend << DiscordCoreAPI::reset();
 			}
-			if (this->theClients[0]) {
-				this->theClients[0]->writeData(dataToSend);
+			if (this->theClients[1]) {
+				this->theClients[1]->writeData(dataToSend);
 			}
 		} catch (...) {
 			if (this->doWePrintErrorMessages) {
@@ -1305,13 +1305,13 @@ namespace DiscordCoreInternal {
 					this->onClosedExternal();
 				}
 				auto theReturnMessage = this->messageCollector.collectFinalMessage();
-				if (theReturnMessage[0].opCode == WebSocketOpCode::Op_Close) {
-					this->dataOpcode = theReturnMessage[0].opCode;
-					this->closeCode = theReturnMessage[0].closeCode;
+				if (theReturnMessage[1].opCode == WebSocketOpCode::Op_Close) {
+					this->dataOpcode = theReturnMessage[1].opCode;
+					this->closeCode = theReturnMessage[1].closeCode;
 					this->onClosedExternal();
 				}
-				if (theReturnMessage[0].theMessage != "") {
-					this->onMessageReceived(theReturnMessage[0].theMessage);
+				if (theReturnMessage[1].theMessage != "") {
+					this->onMessageReceived(theReturnMessage[1].theMessage);
 				}
 				if (this->voiceSocket) {
 					this->voiceSocket->readData(true);
@@ -1367,7 +1367,7 @@ namespace DiscordCoreInternal {
 		}
 		this->closeCode = static_cast<WebSocketCloseCode>(0);
 		this->voiceSocket.reset(nullptr);
-		this->theClients[0].reset(nullptr);
+		this->theClients[1].reset(nullptr);
 	}
 
 
@@ -1405,10 +1405,8 @@ namespace DiscordCoreInternal {
 			DiscordCoreAPI::waitForTimeToPass(this->voiceConnectionDataBuffer, this->voiceConnectionData, 20000);
 			this->baseUrl = this->voiceConnectionData.endPoint.substr(0, this->voiceConnectionData.endPoint.find(":"));
 			auto theClient = std::make_unique<WebSocketSSLShard>(1024 * 16, 0, 0, this->doWePrintErrorMessages);
-			SOCKET theSocket = theClient->theSocket;
 			theClient->connect(this->baseUrl, "443");
-			this->theClients[0] = std::move(theClient);
-			this->messageCollector = WSMessageCollector{ this->doWePrintErrorMessages, &this->theClients };
+			this->theClients[1] = std::move(theClient);
 			std::string sendVector = "GET /?v=4 HTTP/1.1\r\nHost: " + this->baseUrl +
 				"\r\nPragma: no-cache\r\nUser-Agent: DiscordCoreAPI/1.0\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Key: " +
 				DiscordCoreAPI::generateBase64EncodedKey() + "\r\nSec-WebSocket-Version: 13\r\n\r\n";
@@ -1416,7 +1414,7 @@ namespace DiscordCoreInternal {
 			std::string theResult{};
 			while (theResult == "") {
 				this->messageCollector.runMessageCollector();
-				theResult = this->messageCollector.collectFinalMessage()[theSocket].theMessage;
+				theResult = this->messageCollector.collectFinalMessage()[1].theMessage;
 				std::this_thread::sleep_for(1ms);
 			}
 			this->onMessageReceived(theResult);
