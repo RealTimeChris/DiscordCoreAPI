@@ -66,11 +66,11 @@ DiscordCoreAPI_shared_lib = shared_library(
 )
 
 DiscordCoreAPI_static_dep = declare_dependency(
-	link_with : DiscordCoreAPI_lib,
+	link_with : DiscordCoreAPI_static_lib,
 	include_directories : INCLUDE
 )
 
 DiscordCoreAPI_shared_dep = declare_dependency(
-	link_with : DiscordCoreAPI_lib,
+	link_with : DiscordCoreAPI_shared_lib,
 	include_directories : INCLUDE
 )
