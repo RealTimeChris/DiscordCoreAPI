@@ -170,8 +170,8 @@ namespace DiscordCoreAPI {
 	class Guild;
 	class Test;
 
-	template<typename ReturnType, typename... ArgTypes> class Event;
 	template<typename ReturnType, typename... ArgTypes> class EventDelegate;
+	template<typename ReturnType, typename... ArgTypes> class Event;
 	template<typename ReturnType> class CoRoutine;
 
 	template<typename ObjectType> class ReferenceCountingPtr {

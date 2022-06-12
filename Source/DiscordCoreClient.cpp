@@ -215,7 +215,6 @@ namespace DiscordCoreAPI {
 						this->baseSocketAgentMap[std::to_string(currentBaseSocketAgent)]->connect(theData);
 					}
 				}
-				std::this_thread::sleep_for(5000ms);
 				currentShard += 1;
 			}
 			currentBaseSocketAgent += 1;

@@ -260,8 +260,6 @@ namespace DiscordCoreInternal {
 			}
 			readNfds = value->theSocket > readNfds ? value->theSocket : readNfds;
 			finalNfds = readNfds > writeNfds ? readNfds : writeNfds;
-			readNfds = value->theSocket > readNfds ? value->theSocket : readNfds;
-			finalNfds = readNfds > writeNfds ? readNfds : writeNfds;
 		}
 
 		timeval checkTime{ .tv_usec = 10000 };
@@ -284,15 +282,15 @@ namespace DiscordCoreInternal {
 							value->inputBuffer.insert(value->inputBuffer.end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
 							value->bytesRead += readBytes;
 						}
-						return;
+						break;
 					}
 					case SSL_ERROR_WANT_READ: {
 						value->wantRead = true;
-						return;
+						break;
 					}
 					case SSL_ERROR_WANT_WRITE: {
 						value->wantWrite = true;
-						return;
+						break;
 					}
 					case SSL_ERROR_SYSCALL: {
 						[[fallthrough]];
@@ -328,15 +326,15 @@ namespace DiscordCoreInternal {
 								std::cout << "THE WRITTEN BYTES: " << theString << std::endl;
 								value->outputBuffer.erase(value->outputBuffer.begin());
 							}
-							return;
+							break;
 						}
 						case SSL_ERROR_WANT_READ: {
 							value->wantRead = true;
-							return;
+							break;
 						}
 						case SSL_ERROR_WANT_WRITE: {
 							value->wantWrite = true;
-							return;
+							break;
 						}
 						case SSL_ERROR_SYSCALL: {
 							[[fallthrough]];

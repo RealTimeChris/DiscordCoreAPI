@@ -157,7 +157,7 @@ namespace DiscordCoreAPI {
 		ReturnType get() {
 			if (this && this->coroutineHandle) {
 				while (!this->theFlag->test()) {
-					std::this_thread::sleep_for(1ms);
+					std::this_thread::sleep_for(std::chrono::milliseconds{ 1 });
 				}
 				std::exception_ptr exceptionPtr{};
 				while (this->exceptionBuffer->tryReceive(exceptionPtr)) {
@@ -178,7 +178,7 @@ namespace DiscordCoreAPI {
 				if (!this->coroutineHandle.done()) {
 					this->coroutineHandle.promise().requestStop();
 					while (!this->theFlag->test()) {
-						std::this_thread::sleep_for(1ms);
+						std::this_thread::sleep_for(std::chrono::milliseconds{ 1 });
 					}
 				}
 				std::exception_ptr exceptionPtr{};
@@ -300,7 +300,7 @@ namespace DiscordCoreAPI {
 		void get() {
 			if (this && this->coroutineHandle) {
 				while (!this->theFlag->test()) {
-					std::this_thread::sleep_for(1ms);
+					std::this_thread::sleep_for(std::chrono::milliseconds{ 1 });
 				}
 				std::exception_ptr exceptionPtr{};
 				while (this->exceptionBuffer->tryReceive(exceptionPtr)) {
@@ -317,7 +317,7 @@ namespace DiscordCoreAPI {
 				if (!this->coroutineHandle.done()) {
 					this->coroutineHandle.promise().requestStop();
 					while (!this->theFlag->test()) {
-						std::this_thread::sleep_for(1ms);
+						std::this_thread::sleep_for(std::chrono::milliseconds{ 1 });
 					}
 				}
 				std::exception_ptr exceptionPtr{};
