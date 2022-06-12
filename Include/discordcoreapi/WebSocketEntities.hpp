@@ -73,32 +73,31 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll WSMessageCollector {
 	  public:
-		WSMessageCollector(WebSocketSSLShard*, bool, std::unordered_map<SOCKET, std::unique_ptr<WebSocketSSLShard>>* theClients);
+		WSMessageCollector(bool doWePrintErrorMessagesNew, std::unordered_map<SOCKET, std::unique_ptr<WebSocketSSLShard>>* theClientsNew);
 
 		WSMessageCollector() = default;
 
-		WSMessageCollectorReturnData collectFinalMessage() noexcept;
+		std::unordered_map<SOCKET, WSMessageCollectorReturnData> collectFinalMessage(std::unordered_map<SOCKET, std::unique_ptr<WebSocketSSLShard>>& theMap) noexcept;
 
-		bool runMessageCollector() noexcept;
+		bool runMessageCollector(std::unordered_map<SOCKET, std::unique_ptr<WebSocketSSLShard>>& theMap) noexcept;
 
 	  protected:
+		std::unordered_map<SOCKET, std::queue<WSMessageCollectorReturnData>> finalMessages{};
 		std::unordered_map<SOCKET, std::unique_ptr<WebSocketSSLShard>>* theClients{};
-		WSMessageCollectorState theState{ WSMessageCollectorState::Connecting };
-		std::queue<WSMessageCollectorReturnData> finalMessages{};
-		WebSocketSSLShard* theClientPtr{ nullptr };
+		std::unordered_map<SOCKET, WSMessageCollectorState> theState{};
+		std::unordered_map<SOCKET, std::string> currentMessage{};
+		std::unordered_map<SOCKET, int64_t> messageLength{};
+		std::unordered_map<SOCKET, int64_t> messageOffset{};
 		bool doWePrintErrorMessages{ false };
 		int8_t maxRecursionDepth{ 10 };
 		int8_t currentRecursionDepth{};
-		std::string currentMessage{};
 		WebSocketOpCode dataOpCode{};
-		int64_t messageLength{};
-		int64_t messageOffset{};
 
-		bool parseConnectionHeader() noexcept;
+		bool parseConnectionHeader(std::unordered_map<SOCKET, std::unique_ptr<WebSocketSSLShard>>& theMap) noexcept;
 
-		bool parseHeaderAndMessage() noexcept;
+		bool parseHeaderAndMessage(std::unordered_map<SOCKET, std::unique_ptr<WebSocketSSLShard>>& theMap) noexcept;
 
-		bool collectData() noexcept;
+		bool collectData(std::unordered_map<SOCKET, std::unique_ptr<WebSocketSSLShard>>& theMap) noexcept;
 	};
 
 	class DiscordCoreAPI_Dll BaseSocketAgent {
@@ -130,7 +129,7 @@ namespace DiscordCoreInternal {
 		const DiscordCoreAPI::GatewayIntents intentsValue{ DiscordCoreAPI::GatewayIntents::All_Intents };
 		std::unordered_map<SOCKET, std::unique_ptr<WebSocketSSLShard>> theClients{};
 		DiscordCoreAPI::TextFormat theFormat{ DiscordCoreAPI::TextFormat::Etf };
-		std::unordered_map<SOCKET, WSMessageCollector> messageCollectors{};
+		WSMessageCollector messageCollector{};
 		DiscordCoreAPI::DiscordCoreClient* discordCoreClient{ nullptr };
 		DiscordCoreAPI::CommandController* commandController{ nullptr };
 		WebSocketOpCode dataOpcode{ WebSocketOpCode::Op_Binary };

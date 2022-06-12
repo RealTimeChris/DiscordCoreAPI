@@ -200,16 +200,14 @@ namespace DiscordCoreAPI {
 			this->altAddress = gatewayData.url.substr(gatewayData.url.find("wss://") + std::string("wss://").size());
 		}
 		for (auto& value: shardsPerWorkerVect) {
-			std::cout << "WERE HERE VALUE: " << value << std::endl;
 			auto thePtr = std::make_unique<DiscordCoreInternal::BaseSocketAgent>(this->botToken, this->altAddress, &this->eventManager, this, &this->commandController,
 				&Globals::doWeQuit, this->loggingOptions.logWebSocketSuccessMessages, this->loggingOptions.logWebSocketErrorMessages, currentBaseSocketAgent);
 			this->baseSocketAgentMap[std::to_string(currentBaseSocketAgent)] = std::move(thePtr);
 			for (int32_t x = 0; x < value; x += 1) {
-				std::cout << "WERE HERE VALUE: " << x << std::endl;
 				if (this->loggingOptions.logGeneralSuccessMessages) {
-					std::cout << shiftToBrightBlue() << "Connecting Shard " + std::to_string(currentShard) << " of " << this->shardingOptions.numberOfShardsForThisProcess
-							  << std::string(" Shards for this process. (") + std::to_string(currentShard) + " of " + std::to_string(this->shardingOptions.totalNumberOfShards) +
-							std::string(" Shards total across all processes.)")
+					std::cout << shiftToBrightBlue() << "Connecting Shard " + std::to_string(currentShard + 1) << " of " << this->shardingOptions.numberOfShardsForThisProcess
+							  << std::string(" Shards for this process. (") + std::to_string(currentShard + 1) + " of " +
+							std::to_string(this->shardingOptions.totalNumberOfShards) + std::string(" Shards total across all processes.)")
 							  << std::endl
 							  << std::endl;
 				}

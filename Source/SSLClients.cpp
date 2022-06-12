@@ -1,5 +1,4 @@
 /*
-*
 	DiscordCoreAPI, A bot library for Discord, written in C++, and featuring explicit multithreading through the usage of custom, asynchronous C++ CoRoutines.
 
 	Copyright 2021, 2022 Chris M. (RealTimeChris)
@@ -12,13 +11,12 @@
 	even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 	You should have received a copy of the GNU General Public License along with DiscordCoreAPI.
 	If not, see <https://www.gnu.org/licenses/>.
-
 */
 /// SSLClents.cpp - Source file for the "SSL Client" stuff.
 /// Dec 12, 2021
 /// https://discordcoreapi.com
 /// \file SSLClients.cpp
-
+/// 
 #include <discordcoreapi/SSLClients.hpp>
 
 namespace DiscordCoreInternal {
@@ -66,7 +64,7 @@ namespace DiscordCoreInternal {
 			throw ConnectionError{ reportError("getaddrinfo() Error: ", returnValue) };
 		}
 
-		if (this->theSocket = socket(address->ai_family, address->ai_socktype, address->ai_protocol); this->theSocket == SOCKET_ERROR) {			
+		if (this->theSocket = socket(address->ai_family, address->ai_socktype, address->ai_protocol); this->theSocket == SOCKET_ERROR) {
 			throw ConnectionError{ reportError("socket() Error: ", this->theSocket) };
 		}
 
@@ -86,7 +84,6 @@ namespace DiscordCoreInternal {
 			throw ConnectionError{ reportError("setsockopt() Error: ", returnValue) };
 		}
 #endif
-
 		if (auto returnValue = ::connect(this->theSocket, address->ai_addr, static_cast<int32_t>(address->ai_addrlen)); returnValue == SOCKET_ERROR) {
 			throw ConnectionError{ reportError("connect() Error: ", returnValue) };
 		}
@@ -95,12 +92,16 @@ namespace DiscordCoreInternal {
 			throw ConnectionError{ reportSSLError("SSL_CTX_new() Error: ") };
 		}
 
-		if (SSL_CTX_set_options(this->context, SSL_OP_IGNORE_UNEXPECTED_EOF) != (SSL_CTX_get_options(this->context) | SSL_OP_IGNORE_UNEXPECTED_EOF)) {
-			throw ConnectionError{ reportSSLError("SSL_CTX_set_options() Error: ") };
-		}
-
 		if (!SSL_CTX_set_min_proto_version(this->context, TLS1_2_VERSION)) {
 			throw ConnectionError{ reportSSLError("SSL_CTX_set_min_proto_version() Error: ") };
+		}
+
+		if (!SSL_CTX_set_ciphersuites(this->context, "TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256")) {
+			throw ConnectionError{ reportSSLError("SSL_CTX_set_ciphersuites() Error: ") };
+		}
+
+		if (SSL_CTX_set_options(this->context, SSL_OP_IGNORE_UNEXPECTED_EOF) != (SSL_CTX_get_options(this->context) | SSL_OP_IGNORE_UNEXPECTED_EOF)) {
+			throw ConnectionError{ reportSSLError("SSL_CTX_set_options() Error: ") };
 		}
 
 		if (this->ssl = SSL_new(this->context); this->ssl == nullptr) {
@@ -121,14 +122,14 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void HttpSSLClient::writeData(std::string& data) noexcept {
-		if (data.size() > 16 * 1024) {
+	void HttpSSLClient::writeData(std::string & data) noexcept {
+		if (data.size() > static_cast<size_t>(16 * 1024)) {
 			size_t remainingBytes{ data.size() };
 			while (remainingBytes > 0) {
 				std::string newString{};
 				size_t amountToCollect{};
-				if (data.size() >= 1024 * 16) {
-					amountToCollect = 1024 * 16;
+				if (data.size() >= static_cast<size_t>(1024 * 16)) {
+					amountToCollect = static_cast<size_t>(1024 * 16);
 				} else {
 					amountToCollect = data.size();
 				}
@@ -240,12 +241,15 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	WebSocketSSLClient::WebSocketSSLClient(int32_t maxBufferSizeNew) noexcept {
+	WebSocketSSLShard::WebSocketSSLShard(int32_t maxBufferSizeNew, int32_t currentShard, int32_t totalShards) noexcept {
+		this->shard.push_back(currentShard);
+		this->shard.push_back(totalShards);
 		this->maxBufferSize = maxBufferSizeNew;
 	};
 
-	void WebSocketSSLClient::connect(const std::string& baseUrlNew, const std::string& portNew) {
+	void WebSocketSSLShard::connect(const std::string& baseUrlNew, const std::string& portNew) {
 		addrinfoWrapper hints{ nullptr }, address{ nullptr };
+
 		hints->ai_family = AF_INET;
 		hints->ai_socktype = SOCK_STREAM;
 		hints->ai_protocol = IPPROTO_TCP;
@@ -274,7 +278,6 @@ namespace DiscordCoreInternal {
 			throw ConnectionError{ reportError("setsockopt() Error: ", returnValue) };
 		}
 #endif
-
 		if (auto returnValue = ::connect(this->theSocket, address->ai_addr, static_cast<int32_t>(address->ai_addrlen)); returnValue == SOCKET_ERROR) {
 			throw ConnectionError{ reportError("connect() Error: ", returnValue) };
 		}
@@ -283,12 +286,16 @@ namespace DiscordCoreInternal {
 			throw ConnectionError{ reportSSLError("SSL_CTX_new() Error: ") };
 		}
 
-		if (SSL_CTX_set_options(this->context, SSL_OP_IGNORE_UNEXPECTED_EOF) != (SSL_CTX_get_options(this->context) | SSL_OP_IGNORE_UNEXPECTED_EOF)) {
-			throw ConnectionError{ reportSSLError("SSL_CTX_set_options() Error: ") };
-		}
-
 		if (!SSL_CTX_set_min_proto_version(this->context, TLS1_2_VERSION)) {
 			throw ConnectionError{ reportSSLError("SSL_CTX_set_min_proto_version() Error: ") };
+		}
+
+		if (!SSL_CTX_set_ciphersuites(this->context, "TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256")) {
+			throw ConnectionError{ reportSSLError("SSL_CTX_set_ciphersuites() Error: ") };
+		}
+
+		if (SSL_CTX_set_options(this->context, SSL_OP_IGNORE_UNEXPECTED_EOF) != (SSL_CTX_get_options(this->context) | SSL_OP_IGNORE_UNEXPECTED_EOF)) {
+			throw ConnectionError{ reportSSLError("SSL_CTX_set_options() Error: ") };
 		}
 
 		if (this->ssl = SSL_new(this->context); this->ssl == nullptr) {
@@ -307,59 +314,56 @@ namespace DiscordCoreInternal {
 		if (auto returnValue = SSL_connect(this->ssl); !returnValue) {
 			throw ConnectionError{ reportSSLError("SSL_connect() Error: ", returnValue, this->ssl) };
 		}
-
-		this->areWeConnected = true;
 	}
 
-	void WebSocketSSLClient::processIO(int32_t waitTimeInMicroSeconds) {
-		if (this->areWeConnected) {
-			fd_set readSet{}, writeSet{};
+	bool WebSocketSSLShard::processIO(std::unordered_map<SOCKET, std::unique_ptr<WebSocketSSLShard>> & theMap) noexcept {
+		fd_set readSet{}, writeSet{};
 
-			int32_t readNfds{ 0 }, writeNfds{ 0 }, finalNfds{ 0 };
-			FD_ZERO(&readSet);
-			FD_ZERO(&writeSet);
-			if (this->outputBuffer.size() > 0 || this->wantWrite) {
-				FD_SET(this->theSocket, &writeSet);
-				writeNfds = this->theSocket > writeNfds ? this->theSocket : writeNfds;
-				std::cout << "WERE ATTEMPTING TO WRITE" << std::endl;
+		int32_t readNfds{ 0 }, writeNfds{ 0 }, finalNfds{ 0 };
+		FD_ZERO(&readSet);
+		FD_ZERO(&writeSet);
+		for (auto& [key, value]: theMap) {
+			if ((value->outputBuffer.size() > 0 || value->wantWrite)) {
+				FD_SET(key, &writeSet);
+				writeNfds = key > writeNfds ? key : writeNfds;
 			}
 			if (!this->wantWrite) {
-				FD_SET(this->theSocket, &readSet);
+				FD_SET(key, &readSet);
 			}
-			readNfds = this->theSocket > readNfds ? this->theSocket : readNfds;
+			readNfds = key > readNfds ? key : readNfds;
 			finalNfds = readNfds > writeNfds ? readNfds : writeNfds;
+		}
 
-			timeval checkTime{ .tv_usec = waitTimeInMicroSeconds };
-			if (auto returnValue = select(finalNfds + 1, &readSet, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
-				throw ProcessingError{ reportError("select() Error: ", returnValue) };
+		timeval checkTime{ .tv_usec = 0 };
+		if (auto resultValue = select(finalNfds + 1, &readSet, &writeSet, nullptr, &checkTime); resultValue == SOCKET_ERROR) {
+			reportError("select() Error: ", resultValue);
+			return false;
+		}
 
-			} else if (returnValue == 0) {
-				return;
-			}
-
-			if (FD_ISSET(this->theSocket, &readSet)) {
-				this->wantRead = false;
-				this->wantWrite = false;
+		for (auto& [key, value]: theMap) {
+			if (FD_ISSET(key, &readSet)) {
+				value->wantRead = false;
+				value->wantWrite = false;
 				std::string serverToClientBuffer{};
-				serverToClientBuffer.resize(this->maxBufferSize);
+				serverToClientBuffer.resize(value->maxBufferSize);
 				size_t readBytes{ 0 };
-				auto returnValue{ SSL_read_ex(this->ssl, serverToClientBuffer.data(), this->maxBufferSize, &readBytes) };
-				auto errorValue{ SSL_get_error(this->ssl, returnValue) };
+				auto returnValue{ SSL_read_ex(value->ssl, serverToClientBuffer.data(), value->maxBufferSize, &readBytes) };
+				auto errorValue{ SSL_get_error(value->ssl, returnValue) };
 				switch (errorValue) {
 					case SSL_ERROR_NONE: {
 						if (readBytes > 0) {
-							this->inputBuffer.insert(this->inputBuffer.end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
-							this->bytesRead += readBytes;
+							value->inputBuffer.insert(value->inputBuffer.end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
+							value->bytesRead += readBytes;
 						}
-						break;
+						return true;
 					}
 					case SSL_ERROR_WANT_READ: {
-						this->wantRead = true;
-						break;
+						value->wantRead = true;
+						return true;
 					}
 					case SSL_ERROR_WANT_WRITE: {
-						this->wantWrite = true;
-						break;
+						value->wantWrite = true;
+						return true;
 					}
 					case SSL_ERROR_SYSCALL: {
 						[[fallthrough]];
@@ -368,39 +372,39 @@ namespace DiscordCoreInternal {
 						[[fallthrough]];
 					}
 					default: {
-						throw ProcessingError{ reportSSLError("WebSocketSSLClient::processIO::SSL_read_ex() Error: ", returnValue, this->ssl) + "\n" +
-							reportError("WebSocketSSLClient::processIO::SSL_read_ex() Error: ", returnValue) };
+						reportSSLError("WebSocketSSLServerMain::processIO::SSL_read_ex() Error: ", returnValue, value->ssl);
+						reportError("WebSocketSSLServerMain::processIO::SSL_read_ex() Error: ", returnValue);
+						return false;
 					}
 				}
 			}
-			if (FD_ISSET(this->theSocket, &writeSet)) {
-				std::cout << "WRITTEN BYTES: " << std::endl;
-
-				this->wantRead = false;
-				this->wantWrite = false;
+			if (FD_ISSET(value->theSocket, &writeSet)) {
+				value->wantRead = false;
+				value->wantWrite = false;
 				size_t writtenBytes{ 0 };
-				std::string writeString = std::move(this->outputBuffer.front());
-				auto returnValue{ SSL_write_ex(this->ssl, writeString.data(), writeString.size(), &writtenBytes) };
-				auto errorValue{ SSL_get_error(this->ssl, returnValue) };
+				std::string theString{};
+				if (value->outputBuffer.size() > 0) {
+					theString = std::move(value->outputBuffer.front());
+				}
+				size_t bytesToWrite = value->maxBufferSize < theString.size() ? value->maxBufferSize : theString.size();
+				auto returnValue{ SSL_write_ex(value->ssl, theString.data(), bytesToWrite, &writtenBytes) };
+				auto errorValue{ SSL_get_error(value->ssl, returnValue) };
 				switch (errorValue) {
 					case SSL_ERROR_NONE: {
-						if (writtenBytes > 0) {
-							this->outputBuffer.erase(this->outputBuffer.begin());
-							std::cout << "WRITTEN BYTES: " << writeString << std::endl;
-
-
-						} else {
-							this->outputBuffer[0] = std::move(writeString);
+						if (value->outputBuffer.size() > 0 && writtenBytes > 0) {
+							value->outputBuffer.erase(value->outputBuffer.begin());
+						} else if (value->outputBuffer.size() > 0 && writtenBytes == 0) {
+							value->outputBuffer[0] = std::move(theString);
 						}
-						break;
+						return true;
 					}
 					case SSL_ERROR_WANT_READ: {
-						this->wantRead = true;
-						break;
+						value->wantRead = true;
+						return true;
 					}
 					case SSL_ERROR_WANT_WRITE: {
-						this->wantWrite = true;
-						break;
+						value->wantWrite = true;
+						return true;
 					}
 					case SSL_ERROR_SYSCALL: {
 						[[fallthrough]];
@@ -409,22 +413,24 @@ namespace DiscordCoreInternal {
 						[[fallthrough]];
 					}
 					default: {
-						throw ProcessingError{ reportSSLError("WebSocketSSLClient::processIO::SSL_write_ex() Error: ", returnValue, this->ssl) + "\n" +
-							reportError("WebSocketSSLClient::processIO::SSL_write_ex() Error: ", returnValue) };
+						reportSSLError("WebSocketSSLServerMain::processIO::SSL_write_ex() Error: ", returnValue, value->ssl);
+						reportError("WebSocketSSLServerMain::processIO::SSL_write_ex() Error: ", returnValue);
+						return false;
 					}
 				}
 			}
 		}
+		return true;
 	}
 
-	void WebSocketSSLClient::writeData(std::string& data) noexcept {
-		if (data.size() > 16 * 1024) {
+	void WebSocketSSLShard::writeData(std::string & data) noexcept {
+		if (data.size() > static_cast<size_t>(16 * 1024)) {
 			size_t remainingBytes{ data.size() };
 			while (remainingBytes > 0) {
 				std::string newString{};
 				size_t amountToCollect{};
-				if (data.size() >= 1024 * 16) {
-					amountToCollect = 1024 * 16;
+				if (data.size() >= static_cast<size_t>(1024 * 16)) {
+					amountToCollect = static_cast<size_t>(1024 * 16);
 				} else {
 					amountToCollect = data.size();
 				}
@@ -438,18 +444,19 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	std::string WebSocketSSLClient::getInputBuffer() noexcept {
+	std::string WebSocketSSLShard::getInputBuffer() noexcept {
 		std::string returnString = this->inputBuffer;
 		this->inputBuffer.clear();
 		return returnString;
 	}
 
-	int64_t WebSocketSSLClient::getBytesRead() noexcept {
+	int64_t WebSocketSSLShard::getBytesRead() noexcept {
 		return this->bytesRead;
 	}
 
 	void DatagramSocketSSLClient::connect(const std::string& baseUrlNew, const std::string& portNew) {
 		addrinfoWrapper hints{ nullptr }, address{ nullptr };
+
 		hints->ai_family = AF_INET;
 		hints->ai_socktype = SOCK_DGRAM;
 		hints->ai_protocol = IPPROTO_UDP;

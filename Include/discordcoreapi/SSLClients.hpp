@@ -306,6 +306,7 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll WebSocketSSLShard {
 	  public:
 		friend class BaseSocketAgent;
+		friend class VoiceSocketAgent;
 
 		WebSocketSSLShard(int32_t maxBufferSizeNew, int32_t currentShard, int32_t totalShards) noexcept;
 
