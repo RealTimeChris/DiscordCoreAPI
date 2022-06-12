@@ -119,11 +119,6 @@ namespace DiscordCoreAPI {
 		this->commandController.registerFunction(functionNames, std::move(baseFunction));
 	}
 
-	void DiscordCoreClient::submitReconnectionPackage(ReconnectionPackage theData) noexcept {
-		std::lock_guard<std::mutex> theLock{ this->reconnectionMutex };
-		this->theReconnections.push(theData);
-	}
-
 	BotUser DiscordCoreClient::getBotUser() {
 		return this->currentUser;
 	}
@@ -132,20 +127,7 @@ namespace DiscordCoreAPI {
 		if (!this->instantiateWebSockets()) {
 			return;
 		}
-		while (!Globals::doWeQuit.load()) {
-			std::this_thread::sleep_for(std::chrono::milliseconds{ 1 });
-			if (this->theReconnectionTimer.hasTimePassed()){
-				if (this->theReconnections.size() > 0) {
-					std::lock_guard<std::mutex> theLock{ this->reconnectionMutex };
-					DiscordCoreAPI::ReconnectionPackage reconnectionData = this->theReconnections.front();
-					this->theReconnections.pop();
-					this->baseSocketAgentMap[std::to_string(reconnectionData.currentBaseSocketAgent)]->connect(reconnectionData.currentShard,
-						this->shardingOptions.totalNumberOfShards);
-					this->theReconnectionTimer.resetTimer();
-				}
-			}
-		}
-		this->baseSocketAgentMap[std::to_string(this->shardingOptions.startingShard)]->getTheTask()->join();
+		this->webSocketMap[std::to_string(this->shardingOptions.startingShard)]->getTheTask()->join();
 	}
 
 	GatewayBotData DiscordCoreClient::getGateWayBot() {
@@ -174,62 +156,43 @@ namespace DiscordCoreAPI {
 			std::this_thread::sleep_for(std::chrono::seconds{ 5 });
 			return false;
 		}
-		this->shardingOptions.numberOfShardsForThisProcess = this->shardingOptions.totalNumberOfShards;
-		auto workerCount = static_cast<int32_t>(std::thread::hardware_concurrency()) - 1;
-		int32_t shardsPerWorker{ static_cast<int32_t>(floor(static_cast<float>(this->shardingOptions.totalNumberOfShards) / static_cast<float>(workerCount))) };
-		int32_t leftOverShards{ this->shardingOptions.totalNumberOfShards - shardsPerWorker * workerCount };
-		
-		std::vector<int32_t> shardsPerWorkerVect{};
-		for (int32_t x = 0; x < workerCount; x += 1) {
-			int32_t newShardAmount{};
-			shardsPerWorkerVect.push_back(shardsPerWorker);
-			if (leftOverShards == 0) {
-				continue;
-			}
-			newShardAmount = static_cast<int32_t>(ceil(static_cast<float>(leftOverShards) / static_cast<float>(std::thread::hardware_concurrency())));
-			shardsPerWorkerVect[x] += newShardAmount;
-
-			if (x == static_cast<int32_t>(std::thread::hardware_concurrency()) - 1) {
-				shardsPerWorkerVect[0] += leftOverShards;
-			}
-			leftOverShards -= newShardAmount;
-		}
-		int32_t currentBaseSocketAgent{ 0 };
-		int32_t currentShard{ 0 };
-		if (this->altAddress == "") {
-			this->altAddress = gatewayData.url.substr(gatewayData.url.find("wss://") + std::string("wss://").size());
-		}
-		for (auto& value: shardsPerWorkerVect) {
-			std::cout << "WERE HERE VALUE: " << value << std::endl;
-			auto thePtr = std::make_unique<DiscordCoreInternal::BaseSocketAgent>(this->botToken, this->altAddress, &this->eventManager, this, &this->commandController,
-				&Globals::doWeQuit, this->loggingOptions.logWebSocketSuccessMessages, this->loggingOptions.logWebSocketErrorMessages, currentBaseSocketAgent);
-			this->baseSocketAgentMap[std::to_string(currentBaseSocketAgent)] = std::move(thePtr);
-			for (int32_t x = 0; x < value; x += 1) {
-				std::cout << "WERE HERE VALUE: " << x << std::endl;
+		int32_t shardGroupCount{ static_cast<int32_t>(
+			ceil(static_cast<float>(this->shardingOptions.numberOfShardsForThisProcess) / static_cast<float>(gatewayData.sessionStartLimit.maxConcurrency))) };
+		int32_t shardsPerGroup{ static_cast<int32_t>(ceil(static_cast<float>(this->shardingOptions.numberOfShardsForThisProcess) / static_cast<float>(shardGroupCount))) };
+		for (int32_t x = 0; x < shardGroupCount; x += 1) {
+			for (int32_t y = 0; y < shardsPerGroup; y += 1) {
 				if (this->loggingOptions.logGeneralSuccessMessages) {
-					std::cout << shiftToBrightBlue() << "Connecting Shard " + std::to_string(currentShard) << " of " << this->shardingOptions.numberOfShardsForThisProcess
-							  << std::string(" Shards for this process. (") + std::to_string(currentShard) + " of " + std::to_string(this->shardingOptions.totalNumberOfShards) +
-							std::string(" Shards total across all processes.)")
+					std::cout << shiftToBrightBlue() << "Connecting Shard " + std::to_string(x * shardsPerGroup + y + 1) << " of "
+							  << this->shardingOptions.numberOfShardsForThisProcess
+							  << std::string(" Shards for this process. (") + std::to_string(x * shardsPerGroup + y + 1 + this->shardingOptions.startingShard) + " of " +
+							std::to_string(this->shardingOptions.totalNumberOfShards) + std::string(" Shards total across all processes.)")
 							  << std::endl
 							  << std::endl;
 				}
-				this->baseSocketAgentMap[std::to_string(currentBaseSocketAgent)]->connect(currentShard, this->shardingOptions.totalNumberOfShards);
+				if (this->altAddress == "") {
+					this->altAddress = gatewayData.url.substr(gatewayData.url.find("wss://") + std::string("wss://").size());
+				}
+				auto thePtr = std::make_unique<DiscordCoreInternal::BaseSocketAgent>(this->botToken, this->altAddress, &this->eventManager, this, &this->commandController,
+					&Globals::doWeQuit, this->loggingOptions.logWebSocketSuccessMessages, this->loggingOptions.logWebSocketErrorMessages,
+					x * shardsPerGroup + y + this->shardingOptions.startingShard, this->shardingOptions.totalNumberOfShards);
+				this->webSocketMap[std::to_string(x * shardsPerGroup + y + this->shardingOptions.startingShard)] = std::move(thePtr);
+			}
+			if (x == 0) {
+				for (auto& value: this->functionsToExecute) {
+					TimeElapsedHandler<int64_t> onSend = [=, this](int64_t theArg) -> void {
+						value.function(this);
+					};
+					this->threadIds.push_back(ThreadPool::storeThread(onSend, value.intervalInMs, value.repeated, value.dummyArg));
+				}
+			}
+			if (shardGroupCount > 1 && x < shardGroupCount - 1) {
 				if (this->loggingOptions.logGeneralSuccessMessages) {
 					std::cout << shiftToBrightBlue() << "Waiting to connect the subsequent group of shards..." << reset() << std::endl << std::endl;
 				}
 				std::this_thread::sleep_for(std::chrono::milliseconds{ 5000 });
-				currentShard += 1;
 			}
-			currentBaseSocketAgent += 1;
 		}
-
-		for (auto& value: this->functionsToExecute) {
-			TimeElapsedHandler<int64_t> onSend = [=, this](int64_t theArg) -> void {
-				value.function(this);
-			};
-			this->threadIds.push_back(ThreadPool::storeThread(onSend, value.intervalInMs, value.repeated, value.dummyArg));
-		}
-		this->currentUser = BotUser{ Users::getCurrentUserAsync().get(), this->baseSocketAgentMap[std::to_string(this->shardingOptions.startingShard)].get() };
+		this->currentUser = BotUser{ Users::getCurrentUserAsync().get(), this->webSocketMap[std::to_string(this->shardingOptions.startingShard)].get() };
 		if (this->loggingOptions.logGeneralSuccessMessages) {
 			std::cout << shiftToBrightGreen() << "All of the shards are connected for the current process!" << reset() << std::endl << std::endl;
 		}
