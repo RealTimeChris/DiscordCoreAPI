@@ -44,9 +44,9 @@ SRCS = [
 DEPS = [
 	dependency('opus'),
 	dependency('threads'),
-	dependency('openssl'),
 	dependency('libsodium'),
 	dependency('libavformat'),
+	subproject('openssl').get_variable('openssl_dep'),
 	subproject('nlohmann_json').get_variable('nlohmann_json_dep')
 ]
 
