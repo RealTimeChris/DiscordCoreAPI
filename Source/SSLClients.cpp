@@ -379,36 +379,38 @@ namespace DiscordCoreInternal {
 				if (value->outputBuffer.size() > 0) {
 					theString = std::move(value->outputBuffer.front());
 				}
-				size_t bytesToWrite = value->maxBufferSize < theString.size() ? value->maxBufferSize : theString.size();
-				auto returnValue{ SSL_write_ex(value->ssl, theString.data(), bytesToWrite, &writtenBytes) };
-				auto errorValue{ SSL_get_error(value->ssl, returnValue) };
-				switch (errorValue) {
-					case SSL_ERROR_NONE: {
-						if (value->outputBuffer.size() > 0 && writtenBytes > 0) {
-							value->outputBuffer.erase(value->outputBuffer.begin());
-						} else if (value->outputBuffer.size() > 0 && writtenBytes == 0) {
-							value->outputBuffer[0] = std::move(theString);
+				if (theString.size() > 0) {
+					size_t bytesToWrite = value->maxBufferSize < theString.size() ? value->maxBufferSize : theString.size();
+					auto returnValue{ SSL_write_ex(value->ssl, theString.data(), bytesToWrite, &writtenBytes) };
+					auto errorValue{ SSL_get_error(value->ssl, returnValue) };
+					switch (errorValue) {
+						case SSL_ERROR_NONE: {
+							if (value->outputBuffer.size() > 0 && writtenBytes > 0) {
+								value->outputBuffer.erase(value->outputBuffer.begin());
+							} else if (value->outputBuffer.size() > 0 && writtenBytes == 0) {
+								value->outputBuffer[0] = std::move(theString);
+							}
+							return true;
 						}
-						return true;
-					}
-					case SSL_ERROR_WANT_READ: {
-						value->wantRead = true;
-						return true;
-					}
-					case SSL_ERROR_WANT_WRITE: {
-						value->wantWrite = true;
-						return true;
-					}
-					case SSL_ERROR_SYSCALL: {
-						[[fallthrough]];
-					}
-					case SSL_ERROR_ZERO_RETURN: {
-						[[fallthrough]];
-					}
-					default: {
-						reportSSLError("WebSocketSSLServerMain::processIO::SSL_write_ex() Error: ", returnValue, value->ssl);
-						reportError("WebSocketSSLServerMain::processIO::SSL_write_ex() Error: ", returnValue);
-						return false;
+						case SSL_ERROR_WANT_READ: {
+							value->wantRead = true;
+							return true;
+						}
+						case SSL_ERROR_WANT_WRITE: {
+							value->wantWrite = true;
+							return true;
+						}
+						case SSL_ERROR_SYSCALL: {
+							[[fallthrough]];
+						}
+						case SSL_ERROR_ZERO_RETURN: {
+							[[fallthrough]];
+						}
+						default: {
+							reportSSLError("WebSocketSSLServerMain::processIO::SSL_write_ex() Error: ", returnValue, value->ssl);
+							reportError("WebSocketSSLServerMain::processIO::SSL_write_ex() Error: ", returnValue);
+							return false;
+						}
 					}
 				}
 			}
