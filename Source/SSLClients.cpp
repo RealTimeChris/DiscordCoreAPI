@@ -323,7 +323,6 @@ namespace DiscordCoreInternal {
 					switch (errorValue) {
 						case SSL_ERROR_NONE: {
 							if (value->outputBuffer.size() > 0 && writtenBytes > 0) {
-								std::cout << "THE WRITTEN BYTES: " << theString << std::endl;
 								value->outputBuffer.erase(value->outputBuffer.begin());
 							}
 							break;

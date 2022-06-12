@@ -281,7 +281,6 @@ namespace DiscordCoreInternal {
 			theVectorNew.insert(theVectorNew.begin(), header.begin(), header.end());
 			theVectorNew.insert(theVectorNew.begin() + header.size(), theVector.begin(), theVector.end());
 			if (this->theClients[theIndex]){
-				std::cout << "THE MESSAGE: " << dataToSend << std::endl;
 				this->theClients[theIndex]->writeData(theVectorNew);
 			}
 		} catch (...) {
@@ -1006,11 +1005,9 @@ namespace DiscordCoreInternal {
 						}
 						if (this->theClients[key] != nullptr && this->theClients[key]->stopWatch.hasTimePassed() && this->theClients[key]->areWeHeartBeating) {
 							this->theClients[key]->stopWatch.resetTimer();
-							std::cout << "WERE SENDING THE HEARTBEAT!" << std::endl;
 							this->sendHeartBeat(key);
 						}
 						if (this->theClients[key] != nullptr && this->heartbeatInterval != 0 && !this->theClients[key]->areWeHeartBeating) {
-							std::cout << "WERE HEARTBEATING!" << std::endl;
 							this->theClients[key]->areWeHeartBeating = true;
 							this->theClients[key]->stopWatch = DiscordCoreAPI::StopWatch{ std::chrono::milliseconds{ this->heartbeatInterval } };
 						}
