@@ -326,16 +326,19 @@ namespace DiscordCoreInternal {
 			if (!this->wantWrite) {
 				FD_SET(this->theSocket, &readSet);
 			}
+
 			readNfds = this->theSocket > readNfds ? this->theSocket : readNfds;
 			finalNfds = readNfds > writeNfds ? readNfds : writeNfds;
 
 			timeval checkTime{ .tv_usec = waitTimeInMicroSeconds };
 			if (auto returnValue = select(finalNfds + 1, &readSet, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
 				throw ProcessingError{ reportError("select() Error: ", returnValue) };
+
+			} else if (returnValue == 0) {
+				return;
 			}
 
 			if (FD_ISSET(this->theSocket, &readSet)) {
-				std::cout << "READ BYTES: " << std::endl;
 				this->wantRead = false;
 				this->wantWrite = false;
 				std::string serverToClientBuffer{};
@@ -373,6 +376,7 @@ namespace DiscordCoreInternal {
 			}
 			if (FD_ISSET(this->theSocket, &writeSet)) {
 				std::cout << "WRITTEN BYTES: " << std::endl;
+
 				this->wantRead = false;
 				this->wantWrite = false;
 				size_t writtenBytes{ 0 };
@@ -384,6 +388,7 @@ namespace DiscordCoreInternal {
 						if (writtenBytes > 0) {
 							this->outputBuffer.erase(this->outputBuffer.begin());
 							std::cout << "WRITTEN BYTES: " << writeString << std::endl;
+
 						} else {
 							this->outputBuffer[0] = std::move(writeString);
 						}
