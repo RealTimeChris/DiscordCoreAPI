@@ -304,6 +304,7 @@ namespace DiscordCoreInternal {
 	void BaseSocketAgent::onClosed() noexcept {
 		this->areWeReadyToConnectEvent.reset();
 		if (this->maxReconnectTries > this->currentReconnectTries) {
+			std::this_thread::sleep_for(std::chrono::milliseconds{ 500 });
 			if (this->doWePrintErrorMessages) {
 				std::cout << DiscordCoreAPI::shiftToBrightRed() << "WebSocket " + this->shard.dump() + " Closed; Code: " << +static_cast<uint16_t>(this->closeCode)
 						  << DiscordCoreAPI::reset() << std::endl

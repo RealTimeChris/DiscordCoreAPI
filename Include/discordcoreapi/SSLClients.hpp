@@ -319,8 +319,6 @@ namespace DiscordCoreInternal {
 
 		int64_t getBytesRead() noexcept;
 
-		bool didWeConnect() noexcept;
-
 		~WebSocketSSLClient() noexcept = default;
 
 	  protected:

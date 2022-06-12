@@ -439,10 +439,6 @@ namespace DiscordCoreInternal {
 		return this->bytesRead;
 	}
 
-	bool WebSocketSSLClient::didWeConnect() noexcept {
-		return this->areWeConnected;
-	}
-
 	void DatagramSocketSSLClient::connect(const std::string& baseUrlNew, const std::string& portNew) {
 		addrinfoWrapper hints{ nullptr }, address{ nullptr };
 		hints->ai_family = AF_INET;
