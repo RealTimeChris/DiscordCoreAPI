@@ -303,38 +303,32 @@ namespace DiscordCoreInternal {
 		bool wantRead{ false };
 	};
 
-	class DiscordCoreAPI_Dll WebSocketSSLShard {
+	class DiscordCoreAPI_Dll WebSocketSSLClient {
 	  public:
-		friend class BaseSocketAgent;
+		WebSocketSSLClient(int32_t maxBufferSizeNew) noexcept;
 
-		WebSocketSSLShard(int32_t maxBufferSizeNew, int32_t currentShard, int32_t totalShards) noexcept;
-
-		WebSocketSSLShard() = default;
+		WebSocketSSLClient() = default;
 
 		void connect(const std::string& baseUrlNew, const std::string& portNew);
 
-		bool processIO(std::unordered_map<SOCKET, std::unique_ptr<WebSocketSSLShard>>& theMap) noexcept;
-
 		void writeData(std::string& data) noexcept;
+
+		void processIO(int32_t waitTimeInMicroSeconds);
 
 		std::string getInputBuffer() noexcept;
 
 		int64_t getBytesRead() noexcept;
 
-		~WebSocketSSLShard() noexcept = default;
+		~WebSocketSSLClient() noexcept = default;
 
 	  protected:
 		int32_t maxBufferSize{ (1024 * 16) - 1 };
 		std::vector<std::string> outputBuffer{};
-		bool haveWeReceivedHeartbeatAck{ true };
 		SOCKETWrapper theSocket{ nullptr };
 		SSL_CTXWrapper context{ nullptr };
-		bool areWeHeartBeating{ false };
-		int32_t lastNumberReceived{ 0 };
 		bool areWeConnected{ false };
 		SSLWrapper ssl{ nullptr };
 		std::string inputBuffer{};
-		nlohmann::json shard{};
 		bool wantWrite{ true };
 		bool wantRead{ false };
 		int64_t bytesRead{ 0 };
