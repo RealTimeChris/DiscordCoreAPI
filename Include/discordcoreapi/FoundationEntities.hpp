@@ -102,6 +102,7 @@
  */
 namespace DiscordCoreInternal {
 
+	template<typename ParseType> void parseObject(const nlohmann::json&, ParseType&);
 	struct HttpWorkloadData;
 	class SoundCloudRequestBuilder;
 	class YouTubeRequestBuilder;
@@ -110,7 +111,6 @@ namespace DiscordCoreInternal {
 	class SoundCloudAPI;
 	class YouTubeAPI;
 	class HttpClient;
-	class DataParser;
 
 }// namespace DiscordCoreInternal
 
@@ -3444,11 +3444,11 @@ namespace DiscordCoreAPI {
 
 	/// A song from the various platforms. \brief A song from the various platforms.
 	struct DiscordCoreAPI_Dll Song {
+		template<typename ParseType> friend void DiscordCoreInternal::parseObject(const nlohmann::json&, ParseType&);
 		friend class DiscordCoreInternal::SoundCloudRequestBuilder;
 		friend class DiscordCoreInternal::YouTubeRequestBuilder;
 		friend class DiscordCoreInternal::SoundCloudAPI;
 		friend class DiscordCoreInternal::YouTubeAPI;
-		friend class DiscordCoreInternal::DataParser;
 		friend SongAPI;
 
 		std::vector<DownloadUrl> finalDownloadUrls{};

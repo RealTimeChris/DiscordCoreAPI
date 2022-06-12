@@ -61,7 +61,7 @@ namespace DiscordCoreInternal {
 		if (data.contains("collection") && !data["collection"].is_null()) {
 			for (auto& value: data["collection"]) {
 				DiscordCoreAPI::Song newSong{};
-				DataParser::parseObject(value, newSong);
+				parseObject(value, newSong);
 				if (!newSong.doWeGetSaved || newSong.songTitle == "") {
 					continue;
 				}

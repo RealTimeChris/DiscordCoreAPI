@@ -147,7 +147,7 @@ namespace DiscordCoreInternal {
 				workload.headersToInsert["Content-Type"] = "multipart/form-data; boundary=boundary25";
 			}
 			HttpResponseData returnData = this->httpRequest(workload);
-			DataParser::parseObject(returnData.responseData, returnObject);
+			parseObject(returnData.responseData, returnObject);
 			return returnObject;
 		}
 

@@ -191,7 +191,7 @@ namespace DiscordCoreAPI {
 	/// An interface class for the Channel related endpoints. \brief An interface class for the Channel-related endpoints.
 	class DiscordCoreAPI_Dll Channels {
 	  public:
-		friend class DiscordCoreInternal::DataParser;
+		template<typename ParseType> friend void DiscordCoreInternal::parseObject(const nlohmann::json&, ParseType&);
 		friend DiscordCoreClient;
 		friend EventHandler;
 		friend Guild;
