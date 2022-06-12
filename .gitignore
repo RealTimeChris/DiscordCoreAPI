@@ -1,2 +1,4 @@
 .vs/
 Build/
+.vscode/
+subprojects/*/
