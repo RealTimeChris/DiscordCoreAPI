@@ -614,23 +614,44 @@ namespace DiscordCoreAPI {
 
 	template<typename TimeType> class StopWatch {
 	  public:
+
+		StopWatch& operator=(StopWatch&& other) {
+			this->maxNumberOfMs.store(other.maxNumberOfMs.load());
+			this->startTime.store(other.startTime.load());
+			return *this;
+		}
+
+		StopWatch(StopWatch&& other) {
+			*this = std::move(other);
+		}
+
+		StopWatch& operator=(StopWatch& other) {
+			this->maxNumberOfMs.store(other.maxNumberOfMs.load());
+			this->startTime.store(other.startTime.load());
+			return *this;
+		}
+
+		StopWatch(StopWatch& other) {
+			*this=other;
+		}
+
 		StopWatch() = delete;
 
 		StopWatch(TimeType maxNumberOfMsNew) {
-			this->maxNumberOfMs = maxNumberOfMsNew.count();
-			this->startTime = static_cast<int64_t>(std::chrono::duration_cast<TimeType>(std::chrono::system_clock::now().time_since_epoch()).count());
+			this->maxNumberOfMs.store(maxNumberOfMsNew.count());
+			this->startTime.store(static_cast<int64_t>(std::chrono::duration_cast<TimeType>(std::chrono::system_clock::now().time_since_epoch()).count()));
 		}
 
 		int64_t totalTimePassed() {
 			int64_t currentTime = static_cast<int64_t>(std::chrono::duration_cast<TimeType>(std::chrono::system_clock::now().time_since_epoch()).count());
-			int64_t elapsedTime = currentTime - this->startTime;
+			int64_t elapsedTime = currentTime - this->startTime.load();
 			return elapsedTime;
 		}
 
 		bool hasTimePassed() {
 			int64_t currentTime = static_cast<int64_t>(std::chrono::duration_cast<TimeType>(std::chrono::system_clock::now().time_since_epoch()).count());
-			int64_t elapsedTime = currentTime - this->startTime;
-			if (elapsedTime >= this->maxNumberOfMs) {
+			int64_t elapsedTime = currentTime - this->startTime.load();
+			if (elapsedTime >= this->maxNumberOfMs.load()) {
 				return true;
 			} else {
 				return false;
@@ -638,12 +659,12 @@ namespace DiscordCoreAPI {
 		}
 
 		void resetTimer() {
-			this->startTime = static_cast<int64_t>(std::chrono::duration_cast<TimeType>(std::chrono::system_clock::now().time_since_epoch()).count());
+			this->startTime.store(static_cast<int64_t>(std::chrono::duration_cast<TimeType>(std::chrono::system_clock::now().time_since_epoch()).count()));
 		}
 
 	  protected:
-		int64_t maxNumberOfMs{ 0 };
-		int64_t startTime{ 0 };
+		std::atomic_int64_t maxNumberOfMs{ 0 };
+		std::atomic_int64_t startTime{ 0 };
 	};
 
 	template<typename ObjectType> bool waitForTimeToPass(UnboundedMessageBlock<ObjectType>& outBuffer, ObjectType& argOne, int32_t timeInMsNew) {
@@ -732,6 +753,11 @@ namespace DiscordCoreAPI {
 	 * \addtogroup foundation_entities
 	 * @{
 	 */
+
+	struct ReconnectionPackage {
+		int32_t currentBaseSocketAgent{};
+		int32_t currentShard{};
+	};
 
 	/// Permission values, for a given Channel, by Role or GuildMember. \brief Permission values, for a given Channel, by Role or GuildMember.
 	enum class Permission : int64_t {

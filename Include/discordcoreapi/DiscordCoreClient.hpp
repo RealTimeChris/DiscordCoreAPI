@@ -70,11 +70,6 @@ namespace DiscordCoreAPI {
 
 	DiscordCoreAPI_Dll SongAPIMap& getSongAPIMap();
 
-	struct ReconnectionPackage {
-		int32_t currentBaseSocketAgent{};
-		int32_t currentShard{};
-	};
-
 	/**
 	 * \addtogroup main_endpoints
 	 * @{
@@ -99,8 +94,6 @@ namespace DiscordCoreAPI {
 		/// \param baseFunction A unique_ptr to the command to be registered.
 		void registerFunction(const std::vector<std::string>& functionNames, std::unique_ptr<BaseFunction> baseFunction);
 
-		void submitReconnectionPackage(ReconnectionPackage) noexcept;
-
 		/// For collecting a copy of the current bot's User. \brief For collecting a copy of the current bot's User.
 		/// \returns BotUser An instance of BotUser.
 		BotUser getBotUser();
@@ -112,10 +105,8 @@ namespace DiscordCoreAPI {
 
 	  protected:
 		std::unordered_map<std::string, std::unique_ptr<DiscordCoreInternal::BaseSocketAgent>> baseSocketAgentMap{};
-		StopWatch<std::chrono::milliseconds> theReconnectionTimer{ std::chrono::milliseconds{ 5000 } };
 		std::unique_ptr<DiscordCoreInternal::HttpClient> httpClient{};
 		std::vector<RepeatedFunctionData> functionsToExecute{};
-		std::queue<ReconnectionPackage> theReconnections{};
 #ifdef _WIN32
 		DiscordCoreInternal::WSADataWrapper theWSAData{};
 #endif

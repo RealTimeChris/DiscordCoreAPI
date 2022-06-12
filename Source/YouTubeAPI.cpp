@@ -203,7 +203,8 @@ namespace DiscordCoreInternal {
 
 	void YouTubeAPI::downloadAndStreamAudio(const DiscordCoreAPI::Song& newSong, YouTubeAPI* youtubeAPI, std::stop_token theToken, int32_t currentRecursionDepth) {
 		try {
-			std::unique_ptr<DiscordCoreInternal::WebSocketSSLShard> streamSocket{ std::make_unique<DiscordCoreInternal::WebSocketSSLShard>(youtubeAPI->maxBufferSize, 0, 0) };
+			std::unique_ptr<DiscordCoreInternal::WebSocketSSLShard> streamSocket{ std::make_unique<DiscordCoreInternal::WebSocketSSLShard>(youtubeAPI->maxBufferSize, 0, 0,
+				this->doWePrintWebSocketErrorMessages) };
 			std::unordered_map<SOCKET, std::unique_ptr<WebSocketSSLShard>> theMap{};
 			theMap.insert_or_assign(static_cast<SOCKET>(streamSocket->getBytesRead()), std::move(streamSocket));
 			streamSocket->connect(newSong.finalDownloadUrls[0].urlPath, "443");

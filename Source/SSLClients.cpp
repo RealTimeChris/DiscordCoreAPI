@@ -96,10 +96,6 @@ namespace DiscordCoreInternal {
 			throw ConnectionError{ reportSSLError("SSL_CTX_set_min_proto_version() Error: ") };
 		}
 
-		if (!SSL_CTX_set_ciphersuites(this->context, "TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256")) {
-			throw ConnectionError{ reportSSLError("SSL_CTX_set_ciphersuites() Error: ") };
-		}
-
 		if (SSL_CTX_set_options(this->context, SSL_OP_IGNORE_UNEXPECTED_EOF) != (SSL_CTX_get_options(this->context) | SSL_OP_IGNORE_UNEXPECTED_EOF)) {
 			throw ConnectionError{ reportSSLError("SSL_CTX_set_options() Error: ") };
 		}
@@ -241,11 +237,114 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	WebSocketSSLShard::WebSocketSSLShard(int32_t maxBufferSizeNew, int32_t currentShard, int32_t totalShards) noexcept {
+	WebSocketSSLShard::WebSocketSSLShard(int32_t maxBufferSizeNew, int32_t currentShard, int32_t totalShards, bool doWePrintErrorsNew) noexcept {
+		this->doWePrintErrors = doWePrintErrorsNew;
+		this->maxBufferSize = maxBufferSizeNew;
 		this->shard.push_back(currentShard);
 		this->shard.push_back(totalShards);
-		this->maxBufferSize = maxBufferSizeNew;
 	};
+
+	void WebSocketSSLShard::processIO(std::unordered_map<SOCKET, std::unique_ptr<WebSocketSSLShard>>& theMap) {
+		fd_set readSet{}, writeSet{};
+
+		int32_t readNfds{ 0 }, writeNfds{ 0 }, finalNfds{ 0 };
+		FD_ZERO(&readSet);
+		FD_ZERO(&writeSet);
+		for (auto& [key, value]: theMap) {
+			if (value->outputBuffer.size() > 0 || value->wantWrite) {
+				FD_SET(key, &writeSet);
+				writeNfds = key > writeNfds ? key : writeNfds;
+			}
+			if (!value->wantWrite) {
+				FD_SET(key, &readSet);
+			}
+			readNfds = key > readNfds ? key : readNfds;
+			finalNfds = readNfds > writeNfds ? readNfds : writeNfds;
+		}
+
+		timeval checkTime{ .tv_usec = 10000 };
+		if (auto resultValue = select(finalNfds + 1, &readSet, &writeSet, nullptr, &checkTime); resultValue == SOCKET_ERROR) {
+			throw ConnectionError{ reportError("select() Error: ", resultValue) };
+		}
+
+		for (auto& [key, value]: theMap) {
+			if (FD_ISSET(key, &readSet)) {
+				value->wantRead = false;
+				value->wantWrite = false;
+				std::string serverToClientBuffer{};
+				serverToClientBuffer.resize(value->maxBufferSize);
+				size_t readBytes{ 0 };
+				auto returnValue{ SSL_read_ex(value->ssl, serverToClientBuffer.data(), value->maxBufferSize, &readBytes) };
+				auto errorValue{ SSL_get_error(value->ssl, returnValue) };
+				switch (errorValue) {
+					case SSL_ERROR_NONE: {
+						if (readBytes > 0) {
+							value->inputBuffer.insert(value->inputBuffer.end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
+							value->bytesRead += readBytes;
+						}
+						return;
+					}
+					case SSL_ERROR_WANT_READ: {
+						value->wantRead = true;
+						return;
+					}
+					case SSL_ERROR_WANT_WRITE: {
+						value->wantWrite = true;
+						return;
+					}
+					case SSL_ERROR_SYSCALL: {
+						[[fallthrough]];
+					}
+					case SSL_ERROR_ZERO_RETURN: {
+						[[fallthrough]];
+					}
+					default: {
+						throw ConnectionError{ reportSSLError("WebSocketSSLServerMain::processIO::SSL_read_ex() Error: ", returnValue, value->ssl) +
+							reportError("WebSocketSSLServerMain::processIO::SSL_read_ex() Error: ", returnValue) };
+					}
+				}
+			}
+			if (FD_ISSET(value->theSocket, &writeSet)) {
+				value->wantRead = false;
+				value->wantWrite = false;
+				size_t writtenBytes{ 0 };
+				std::string theString{};
+				if (value->outputBuffer.size() > 0) {
+					theString = std::move(value->outputBuffer.front());
+				}
+				if (theString.size() > 0) {
+					auto returnValue{ SSL_write_ex(value->ssl, theString.data(), theString.size(), &writtenBytes) };
+					auto errorValue{ SSL_get_error(value->ssl, returnValue) };
+					switch (errorValue) {
+						case SSL_ERROR_NONE: {
+							if (value->outputBuffer.size() > 0 && writtenBytes > 0) {
+								value->outputBuffer.erase(value->outputBuffer.begin());
+							}
+							return;
+						}
+						case SSL_ERROR_WANT_READ: {
+							value->wantRead = true;
+							return;
+						}
+						case SSL_ERROR_WANT_WRITE: {
+							value->wantWrite = true;
+							return;
+						}
+						case SSL_ERROR_SYSCALL: {
+							[[fallthrough]];
+						}
+						case SSL_ERROR_ZERO_RETURN: {
+							[[fallthrough]];
+						}
+						default: {
+							throw ConnectionError{ reportSSLError("WebSocketSSLServerMain::processIO::SSL_write_ex() Error: ", returnValue, value->ssl) +
+								reportError("WebSocketSSLServerMain::processIO::SSL_write_ex() Error: ", returnValue) };
+						}
+					}
+				}
+			}
+		}
+	}
 
 	void WebSocketSSLShard::connect(const std::string& baseUrlNew, const std::string& portNew) {
 		addrinfoWrapper hints{ nullptr }, address{ nullptr };
@@ -290,10 +389,6 @@ namespace DiscordCoreInternal {
 			throw ConnectionError{ reportSSLError("SSL_CTX_set_min_proto_version() Error: ") };
 		}
 
-		if (!SSL_CTX_set_ciphersuites(this->context, "TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256")) {
-			throw ConnectionError{ reportSSLError("SSL_CTX_set_ciphersuites() Error: ") };
-		}
-
 		if (SSL_CTX_set_options(this->context, SSL_OP_IGNORE_UNEXPECTED_EOF) != (SSL_CTX_get_options(this->context) | SSL_OP_IGNORE_UNEXPECTED_EOF)) {
 			throw ConnectionError{ reportSSLError("SSL_CTX_set_options() Error: ") };
 		}
@@ -314,113 +409,8 @@ namespace DiscordCoreInternal {
 		if (auto returnValue = SSL_connect(this->ssl); !returnValue) {
 			throw ConnectionError{ reportSSLError("SSL_connect() Error: ", returnValue, this->ssl) };
 		}
-	}
 
-	bool WebSocketSSLShard::processIO(std::unordered_map<SOCKET, std::unique_ptr<WebSocketSSLShard>> & theMap) noexcept {
-		fd_set readSet{}, writeSet{};
-
-		int32_t readNfds{ 0 }, writeNfds{ 0 }, finalNfds{ 0 };
-		FD_ZERO(&readSet);
-		FD_ZERO(&writeSet);
-		for (auto& [key, value]: theMap) {
-			if ((value->outputBuffer.size() > 0 || value->wantWrite)) {
-				FD_SET(key, &writeSet);
-				writeNfds = key > writeNfds ? key : writeNfds;
-			}
-			if (!this->wantWrite) {
-				FD_SET(key, &readSet);
-			}
-			readNfds = key > readNfds ? key : readNfds;
-			finalNfds = readNfds > writeNfds ? readNfds : writeNfds;
-		}
-
-		timeval checkTime{ .tv_usec = 0 };
-		if (auto resultValue = select(finalNfds + 1, &readSet, &writeSet, nullptr, &checkTime); resultValue == SOCKET_ERROR) {
-			reportError("select() Error: ", resultValue);
-			return false;
-		}
-
-		for (auto& [key, value]: theMap) {
-			if (FD_ISSET(key, &readSet)) {
-				value->wantRead = false;
-				value->wantWrite = false;
-				std::string serverToClientBuffer{};
-				serverToClientBuffer.resize(value->maxBufferSize);
-				size_t readBytes{ 0 };
-				auto returnValue{ SSL_read_ex(value->ssl, serverToClientBuffer.data(), value->maxBufferSize, &readBytes) };
-				auto errorValue{ SSL_get_error(value->ssl, returnValue) };
-				switch (errorValue) {
-					case SSL_ERROR_NONE: {
-						if (readBytes > 0) {
-							value->inputBuffer.insert(value->inputBuffer.end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
-							value->bytesRead += readBytes;
-						}
-						return true;
-					}
-					case SSL_ERROR_WANT_READ: {
-						value->wantRead = true;
-						return true;
-					}
-					case SSL_ERROR_WANT_WRITE: {
-						value->wantWrite = true;
-						return true;
-					}
-					case SSL_ERROR_SYSCALL: {
-						[[fallthrough]];
-					}
-					case SSL_ERROR_ZERO_RETURN: {
-						[[fallthrough]];
-					}
-					default: {
-						reportSSLError("WebSocketSSLServerMain::processIO::SSL_read_ex() Error: ", returnValue, value->ssl);
-						reportError("WebSocketSSLServerMain::processIO::SSL_read_ex() Error: ", returnValue);
-						return false;
-					}
-				}
-			}
-			if (FD_ISSET(value->theSocket, &writeSet)) {
-				value->wantRead = false;
-				value->wantWrite = false;
-				size_t writtenBytes{ 0 };
-				std::string theString{};
-				if (value->outputBuffer.size() > 0) {
-					theString = std::move(value->outputBuffer.front());
-				}
-				size_t bytesToWrite = value->maxBufferSize < theString.size() ? value->maxBufferSize : theString.size();
-				auto returnValue{ SSL_write_ex(value->ssl, theString.data(), bytesToWrite, &writtenBytes) };
-				auto errorValue{ SSL_get_error(value->ssl, returnValue) };
-				switch (errorValue) {
-					case SSL_ERROR_NONE: {
-						if (value->outputBuffer.size() > 0 && writtenBytes > 0) {
-							value->outputBuffer.erase(value->outputBuffer.begin());
-						} else if (value->outputBuffer.size() > 0 && writtenBytes == 0) {
-							value->outputBuffer[0] = std::move(theString);
-						}
-						return true;
-					}
-					case SSL_ERROR_WANT_READ: {
-						value->wantRead = true;
-						return true;
-					}
-					case SSL_ERROR_WANT_WRITE: {
-						value->wantWrite = true;
-						return true;
-					}
-					case SSL_ERROR_SYSCALL: {
-						[[fallthrough]];
-					}
-					case SSL_ERROR_ZERO_RETURN: {
-						[[fallthrough]];
-					}
-					default: {
-						reportSSLError("WebSocketSSLServerMain::processIO::SSL_write_ex() Error: ", returnValue, value->ssl);
-						reportError("WebSocketSSLServerMain::processIO::SSL_write_ex() Error: ", returnValue);
-						return false;
-					}
-				}
-			}
-		}
-		return true;
+		this->areWeConnected = true;
 	}
 
 	void WebSocketSSLShard::writeData(std::string & data) noexcept {

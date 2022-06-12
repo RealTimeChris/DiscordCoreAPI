@@ -308,13 +308,11 @@ namespace DiscordCoreInternal {
 		friend class BaseSocketAgent;
 		friend class VoiceSocketAgent;
 
-		WebSocketSSLShard(int32_t maxBufferSizeNew, int32_t currentShard, int32_t totalShards) noexcept;
+		WebSocketSSLShard(int32_t maxBufferSizeNew, int32_t currentShard, int32_t totalShards, bool doWePrintErrors) noexcept;
 
-		WebSocketSSLShard() = default;
+		static void processIO(std::unordered_map<SOCKET, std::unique_ptr<WebSocketSSLShard>>& theMap);
 
 		void connect(const std::string& baseUrlNew, const std::string& portNew);
-
-		bool processIO(std::unordered_map<SOCKET, std::unique_ptr<WebSocketSSLShard>>& theMap) noexcept;
 
 		void writeData(std::string& data) noexcept;
 
@@ -332,6 +330,7 @@ namespace DiscordCoreInternal {
 		SSL_CTXWrapper context{ nullptr };
 		bool areWeHeartBeating{ false };
 		int32_t lastNumberReceived{ 0 };
+		bool doWePrintErrors{ false };
 		bool areWeConnected{ false };
 		SSLWrapper ssl{ nullptr };
 		std::string inputBuffer{};

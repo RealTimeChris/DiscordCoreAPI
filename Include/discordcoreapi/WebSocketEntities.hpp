@@ -77,27 +77,27 @@ namespace DiscordCoreInternal {
 
 		WSMessageCollector() = default;
 
-		std::unordered_map<SOCKET, WSMessageCollectorReturnData> collectFinalMessage(std::unordered_map<SOCKET, std::unique_ptr<WebSocketSSLShard>>& theMap) noexcept;
+		std::unordered_map<SOCKET, WSMessageCollectorReturnData> collectFinalMessage() noexcept;
 
-		bool runMessageCollector(std::unordered_map<SOCKET, std::unique_ptr<WebSocketSSLShard>>& theMap) noexcept;
+		bool runMessageCollector() noexcept;
 
 	  protected:
 		std::unordered_map<SOCKET, std::queue<WSMessageCollectorReturnData>> finalMessages{};
 		std::unordered_map<SOCKET, std::unique_ptr<WebSocketSSLShard>>* theClients{};
 		std::unordered_map<SOCKET, WSMessageCollectorState> theState{};
+		std::unordered_map<SOCKET, WebSocketOpCode> dataOpCodes{};
 		std::unordered_map<SOCKET, std::string> currentMessage{};
 		std::unordered_map<SOCKET, int64_t> messageLength{};
 		std::unordered_map<SOCKET, int64_t> messageOffset{};
 		bool doWePrintErrorMessages{ false };
 		int8_t maxRecursionDepth{ 10 };
 		int8_t currentRecursionDepth{};
-		WebSocketOpCode dataOpCode{};
 
-		bool parseConnectionHeader(std::unordered_map<SOCKET, std::unique_ptr<WebSocketSSLShard>>& theMap) noexcept;
+		bool parseConnectionHeader() noexcept;
 
-		bool parseHeaderAndMessage(std::unordered_map<SOCKET, std::unique_ptr<WebSocketSSLShard>>& theMap) noexcept;
+		bool parseHeaderAndMessage() noexcept;
 
-		bool collectData(std::unordered_map<SOCKET, std::unique_ptr<WebSocketSSLShard>>& theMap) noexcept;
+		bool collectData() noexcept;
 	};
 
 	class DiscordCoreAPI_Dll BaseSocketAgent {
@@ -110,13 +110,11 @@ namespace DiscordCoreInternal {
 			DiscordCoreAPI::DiscordCoreClient* discordCoreClient, DiscordCoreAPI::CommandController* commandController, std::atomic_bool* doWeQuitNew,
 			bool doWePrintSuccessMessages, bool doWePrintErrorMessages, int32_t currentBaseSocketAgent) noexcept;
 
-		BaseSocketAgent(std::nullptr_t) noexcept;
-
 		void sendMessage(const nlohmann::json& dataToSend, SOCKET theIndex) noexcept;
 
-		void connect(int32_t currentShard, int32_t totalShardCount) noexcept;
-
 		void sendMessage(std::string& dataToSend, SOCKET theIndex) noexcept;
+
+		void connect(DiscordCoreAPI::ReconnectionPackage) noexcept;
 
 		void onClosed(SOCKET theIndex) noexcept;
 
@@ -126,12 +124,13 @@ namespace DiscordCoreInternal {
 
 	  protected:
 		std::unordered_map<std::string, DiscordCoreAPI::TSUnboundedMessageBlock<VoiceConnectionData>*> voiceConnectionDataBufferMap{};
+		DiscordCoreAPI::StopWatch<std::chrono::milliseconds> theReconnectionTimer{ std::chrono::milliseconds{ 5000 } };
 		const DiscordCoreAPI::GatewayIntents intentsValue{ DiscordCoreAPI::GatewayIntents::All_Intents };
 		std::unordered_map<SOCKET, std::unique_ptr<WebSocketSSLShard>> theClients{};
 		DiscordCoreAPI::TextFormat theFormat{ DiscordCoreAPI::TextFormat::Etf };
-		WSMessageCollector messageCollector{};
 		DiscordCoreAPI::DiscordCoreClient* discordCoreClient{ nullptr };
 		DiscordCoreAPI::CommandController* commandController{ nullptr };
+		std::queue<DiscordCoreAPI::ReconnectionPackage> reconnections{};
 		WebSocketOpCode dataOpcode{ WebSocketOpCode::Op_Binary };
 		std::unique_ptr<std::jthread> theTask{ nullptr };
 		DiscordCoreAPI::EventManager* eventManager{};
@@ -139,6 +138,7 @@ namespace DiscordCoreInternal {
 		std::atomic_bool areWeConnected{ false };
 		EventWaiter areWeReadyToConnectEvent{};
 		bool doWePrintSuccessMessages{ false };
+		WSMessageCollector messageCollector{};
 		std::atomic_bool* doWeQuit{ nullptr };
 		const int32_t maxReconnectTries{ 10 };
 		bool doWePrintErrorMessages{ false };
@@ -171,6 +171,8 @@ namespace DiscordCoreInternal {
 		void sendHeartBeat(SOCKET theIndex) noexcept;
 
 		void run(std::stop_token) noexcept;
+
+		void internalConnect() noexcept;
 	};
 
 	class DiscordCoreAPI_Dll VoiceSocketAgent {
@@ -191,8 +193,8 @@ namespace DiscordCoreInternal {
 
 	  protected:
 		DiscordCoreAPI::TSUnboundedMessageBlock<DiscordCoreInternal::VoiceConnectionData> voiceConnectionDataBuffer{};
+		std::unordered_map<SOCKET, std::unique_ptr<WebSocketSSLShard>> theClients{};
 		std::unique_ptr<DatagramSocketSSLClient> voiceSocket{ nullptr };
-		std::unique_ptr<WebSocketSSLShard> webSocket{ nullptr };
 		WebSocketOpCode dataOpcode{ WebSocketOpCode::Op_Text };
 		std::unique_ptr<std::jthread> theTask{ nullptr };
 		VoiceConnectInitData voiceConnectInitData{};

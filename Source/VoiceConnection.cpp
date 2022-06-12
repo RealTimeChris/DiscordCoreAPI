@@ -232,7 +232,7 @@ namespace DiscordCoreAPI {
 		} else {
 			if (this->voiceSocketAgent) {
 				std::vector<uint8_t> newString = DiscordCoreInternal::JSONIFY(this->voiceSocketAgent->voiceConnectionData.audioSSRC, 0);
-				if (this->voiceSocketAgent->webSocket) {
+				if (this->voiceSocketAgent->theClients.begin().operator*().second) {
 					this->voiceSocketAgent->sendMessage(newString);
 				}
 			}

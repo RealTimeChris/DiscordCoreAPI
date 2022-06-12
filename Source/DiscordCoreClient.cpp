@@ -119,11 +119,6 @@ namespace DiscordCoreAPI {
 		this->commandController.registerFunction(functionNames, std::move(baseFunction));
 	}
 
-	void DiscordCoreClient::submitReconnectionPackage(ReconnectionPackage theData) noexcept {
-		std::lock_guard<std::mutex> theLock{ this->reconnectionMutex };
-		this->theReconnections.push(theData);
-	}
-
 	BotUser DiscordCoreClient::getBotUser() {
 		return this->currentUser;
 	}
@@ -134,16 +129,6 @@ namespace DiscordCoreAPI {
 		}
 		while (!Globals::doWeQuit.load()) {
 			std::this_thread::sleep_for(std::chrono::milliseconds{ 1 });
-			if (this->theReconnectionTimer.hasTimePassed()){
-				if (this->theReconnections.size() > 0) {
-					std::lock_guard<std::mutex> theLock{ this->reconnectionMutex };
-					DiscordCoreAPI::ReconnectionPackage reconnectionData = this->theReconnections.front();
-					this->theReconnections.pop();
-					this->baseSocketAgentMap[std::to_string(reconnectionData.currentBaseSocketAgent)]->connect(reconnectionData.currentShard,
-						this->shardingOptions.totalNumberOfShards);
-					this->theReconnectionTimer.resetTimer();
-				}
-			}
 		}
 		this->baseSocketAgentMap[std::to_string(this->shardingOptions.startingShard)]->getTheTask()->join();
 	}
@@ -211,7 +196,10 @@ namespace DiscordCoreAPI {
 							  << std::endl
 							  << std::endl;
 				}
-				this->baseSocketAgentMap[std::to_string(currentBaseSocketAgent)]->connect(currentShard, this->shardingOptions.totalNumberOfShards);
+				ReconnectionPackage theData{};
+				theData.currentShard = currentShard;
+				theData.currentBaseSocketAgent = currentBaseSocketAgent;
+				this->baseSocketAgentMap[std::to_string(currentBaseSocketAgent)]->connect(theData);
 				if (this->loggingOptions.logGeneralSuccessMessages) {
 					std::cout << shiftToBrightBlue() << "Waiting to connect the subsequent group of shards..." << reset() << std::endl << std::endl;
 				}
