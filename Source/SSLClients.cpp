@@ -313,27 +313,29 @@ namespace DiscordCoreInternal {
 
 	void WebSocketSSLClient::processIO(int32_t waitTimeInMicroSeconds) {
 		if (this->areWeConnected) {
-			fd_set writeSet{}, readSet{};
-			int32_t readNfds{ 0 }, writeNfds{ 0 }, finalNfds{ 0 };
-			FD_ZERO(&writeSet);
-			FD_ZERO(&readSet);
+			fd_set readSet{}, writeSet{};
 
-			if ((this->outputBuffer.size() > 0 || this->wantWrite) && !this->wantRead) {
+			int32_t readNfds{ 0 }, writeNfds{ 0 }, finalNfds{ 0 };
+			FD_ZERO(&readSet);
+			FD_ZERO(&writeSet);
+			if (this->outputBuffer.size() > 0 || this->wantWrite) {
 				FD_SET(this->theSocket, &writeSet);
 				writeNfds = this->theSocket > writeNfds ? this->theSocket : writeNfds;
+				std::cout << "WERE ATTEMPTING TO WRITE" << std::endl;
 			}
-			FD_SET(this->theSocket, &readSet);
+			if (!this->wantWrite) {
+				FD_SET(this->theSocket, &readSet);
+			}
 			readNfds = this->theSocket > readNfds ? this->theSocket : readNfds;
 			finalNfds = readNfds > writeNfds ? readNfds : writeNfds;
 
 			timeval checkTime{ .tv_usec = waitTimeInMicroSeconds };
 			if (auto returnValue = select(finalNfds + 1, &readSet, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
 				throw ProcessingError{ reportError("select() Error: ", returnValue) };
-			} else if (returnValue == 0) {
-				return;
 			}
 
 			if (FD_ISSET(this->theSocket, &readSet)) {
+				std::cout << "READ BYTES: " << std::endl;
 				this->wantRead = false;
 				this->wantWrite = false;
 				std::string serverToClientBuffer{};
@@ -370,6 +372,7 @@ namespace DiscordCoreInternal {
 				}
 			}
 			if (FD_ISSET(this->theSocket, &writeSet)) {
+				std::cout << "WRITTEN BYTES: " << std::endl;
 				this->wantRead = false;
 				this->wantWrite = false;
 				size_t writtenBytes{ 0 };
@@ -380,6 +383,7 @@ namespace DiscordCoreInternal {
 					case SSL_ERROR_NONE: {
 						if (writtenBytes > 0) {
 							this->outputBuffer.erase(this->outputBuffer.begin());
+							std::cout << "WRITTEN BYTES: " << writeString << std::endl;
 						} else {
 							this->outputBuffer[0] = std::move(writeString);
 						}
