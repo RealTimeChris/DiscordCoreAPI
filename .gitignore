@@ -1,4 +1,4 @@
 .vs/
 Build/
 .vscode/
-subprojects/*/
+External/*/

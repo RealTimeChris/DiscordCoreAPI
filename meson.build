@@ -1,6 +1,6 @@
 
-project('DiscordCoreAPI', 'cpp',
-		license: 'AGPL-3.0', meson_version: '>=0.60',
+project('DiscordCoreAPI', 'cpp', license: 'AGPL-3.0',
+		subproject_dir: 'External', meson_version: '>=0.60',
 		default_options: ['optimization=2', 'debug=false',
 						  'strip=true', 'b_lto=true',
 						  'warning_level=3', 'cpp_std=c++20'])
