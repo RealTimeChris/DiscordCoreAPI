@@ -136,7 +136,6 @@ namespace DiscordCoreInternal {
 		std::unique_ptr<std::jthread> theTask{ nullptr };
 		DiscordCoreAPI::EventManager* eventManager{};
 		VoiceConnectionData voiceConnectionData{};
-		std::atomic_bool areWeConnected{ false };
 		EventWaiter areWeReadyToConnectEvent{};
 		bool doWePrintSuccessMessages{ false };
 		WSMessageCollector messageCollector{};
@@ -152,7 +151,6 @@ namespace DiscordCoreInternal {
 		int32_t heartbeatInterval{ 0 };
 		std::mutex accessorMutex01{};
 		bool didWeFail{ false };
-		std::string sessionId{};
 		std::string botToken{};
 		ErlPacker erlPacker{};
 		std::string baseUrl{};

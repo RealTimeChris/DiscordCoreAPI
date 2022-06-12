@@ -306,6 +306,7 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll WebSocketSSLShard {
 	  public:
 		friend class DiscordCoreAPI::DiscordCoreClient;
+		friend class WSMessageCollector;
 		friend class VoiceSocketAgent;
 		friend class BaseSocketAgent;
 
@@ -325,6 +326,7 @@ namespace DiscordCoreInternal {
 
 	  protected:
 		DiscordCoreAPI::StopWatch<std::chrono::milliseconds> stopWatch{ 0ms };
+		std::atomic_bool areWeConnected{ false };
 		int32_t maxBufferSize{ (1024 * 16) - 1 };
 		std::vector<std::string> outputBuffer{};
 		bool haveWeReceivedHeartbeatAck{ true };
@@ -336,7 +338,6 @@ namespace DiscordCoreInternal {
 		bool areWeHeartBeating{ false };
 		int32_t lastNumberReceived{ 0 };		
 		bool doWePrintErrors{ false };
-		bool areWeConnected{ false };
 		bool areWeResuming{ false };
 		SSLWrapper ssl{ nullptr };
 		std::string inputBuffer{};
@@ -344,6 +345,7 @@ namespace DiscordCoreInternal {
 		bool wantWrite{ true };
 		bool wantRead{ false };
 		int64_t bytesRead{ 0 };
+		uint64_t sessionId{};
 	};
 
 	class DiscordCoreAPI_Dll DatagramSocketSSLClient {

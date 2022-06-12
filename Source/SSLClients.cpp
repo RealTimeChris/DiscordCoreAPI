@@ -251,15 +251,21 @@ namespace DiscordCoreInternal {
 		FD_ZERO(&readSet);
 		FD_ZERO(&writeSet);
 		for (auto& [key, value]: theMap) {
-			if ((value->outputBuffer.size() > 0 || value->wantWrite) && !value->wantRead) {
-				FD_SET(value->theSocket, &writeSet);
-				writeNfds = value->theSocket > writeNfds ? value->theSocket : writeNfds;
+			if (value->areWeConnected.load()) {
+				if ((value->outputBuffer.size() > 0 || value->wantWrite) && !value->wantRead) {
+					FD_SET(value->theSocket, &writeSet);
+					writeNfds = value->theSocket > writeNfds ? value->theSocket : writeNfds;
+				}
+				if (!value->wantWrite) {
+					FD_SET(value->theSocket, &readSet);
+				}
+				readNfds = value->theSocket > readNfds ? value->theSocket : readNfds;
+				finalNfds = readNfds > writeNfds ? readNfds : writeNfds;
 			}
-			if (!value->wantWrite) {
-				FD_SET(value->theSocket, &readSet);
-			}
-			readNfds = value->theSocket > readNfds ? value->theSocket : readNfds;
-			finalNfds = readNfds > writeNfds ? readNfds : writeNfds;
+		}
+
+		if (readSet.fd_count == 0 && writeSet.fd_count == 0) {
+			return;
 		}
 
 		timeval checkTime{ .tv_usec = 10000 };

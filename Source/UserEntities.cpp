@@ -61,6 +61,7 @@ namespace DiscordCoreAPI {
 	void BotUser::updatePresence(UpdatePresenceData& dataPackage) {
 		dataPackage.since = static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
 		nlohmann::json payload = DiscordCoreInternal::JSONIFY(dataPackage);
+		std::cout << "THE INDEX: " << this->baseSocketAgent->theClients.begin().operator*().first << std::endl;
 		if (this->baseSocketAgent) {
 			this->baseSocketAgent->sendMessage(payload, this->baseSocketAgent->theClients.begin().operator*().first);
 		}
@@ -134,6 +135,7 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<UserData> Users::getCachedUserAsync(GetUserData dataPackage) {
 		co_await NewThreadAwaitable<UserData>();
+		std::lock_guard<std::recursive_mutex> theLock{ Users::theMutex };
 		if (Users::cache->contains(dataPackage.userId)) {
 			co_return *(*Users::cache)[dataPackage.userId];
 		} else {
@@ -206,7 +208,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void Users::insertUser(UserData user) {
-		std::lock_guard<std::mutex> theLock{ Users::theMutex };
+		std::lock_guard<std::recursive_mutex> theLock{ Users::theMutex };
 		if (user.id == 0) {
 			return;
 		}
@@ -223,7 +225,7 @@ namespace DiscordCoreAPI {
 
 	std::unique_ptr<std::unordered_map<uint64_t, std::unique_ptr<UserData>>> Users::cache{};
 	DiscordCoreInternal::HttpClient* Users::httpClient{ nullptr };
+	std::recursive_mutex Users::theMutex{};
 	bool Users::doWeCache{ false };
-	std::mutex Users::theMutex{};
 
 }
