@@ -122,13 +122,13 @@ namespace DiscordCoreInternal {
 	}
 
 	void HttpSSLClient::writeData(std::string& data) noexcept {
-		if (data.size() > 16 * 1024) {
+		if (data.size() > static_cast<size_t>(16 * 1024)) {
 			size_t remainingBytes{ data.size() };
 			while (remainingBytes > 0) {
 				std::string newString{};
 				size_t amountToCollect{};
-				if (data.size() >= 1024 * 16) {
-					amountToCollect = 1024 * 16;
+				if (data.size() >= static_cast<size_t>(1024 * 16)) {
+					amountToCollect = static_cast<size_t>(1024 * 16);
 				} else {
 					amountToCollect = data.size();
 				}
@@ -240,11 +240,13 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	WebSocketSSLClient::WebSocketSSLClient(int32_t maxBufferSizeNew) noexcept {
+	WebSocketSSLShard::WebSocketSSLShard(int32_t maxBufferSizeNew, int32_t currentShard, int32_t totalShards) noexcept {
+		this->shard.push_back(currentShard);
+		this->shard.push_back(totalShards);
 		this->maxBufferSize = maxBufferSizeNew;
 	};
 
-	void WebSocketSSLClient::connect(const std::string& baseUrlNew, const std::string& portNew) {
+	void WebSocketSSLShard::connect(const std::string& baseUrlNew, const std::string& portNew) {
 		addrinfoWrapper hints{ nullptr }, address{ nullptr };
 		hints->ai_family = AF_INET;
 		hints->ai_socktype = SOCK_STREAM;
@@ -307,55 +309,54 @@ namespace DiscordCoreInternal {
 		if (auto returnValue = SSL_connect(this->ssl); !returnValue) {
 			throw ConnectionError{ reportSSLError("SSL_connect() Error: ", returnValue, this->ssl) };
 		}
-
-		this->areWeConnected = true;
 	}
 
-	void WebSocketSSLClient::processIO(int32_t waitTimeInMicroSeconds) {
-		if (this->areWeConnected) {
-			fd_set writeSet{}, readSet{};
-			int32_t readNfds{ 0 }, writeNfds{ 0 }, finalNfds{ 0 };
-			FD_ZERO(&writeSet);
-			FD_ZERO(&readSet);
+	bool WebSocketSSLShard::processIO(std::unordered_map<SOCKET, std::unique_ptr<WebSocketSSLShard>>& theMap) noexcept {
+		fd_set readSet{}, writeSet{};
 
-			if ((this->outputBuffer.size() > 0 || this->wantWrite) && !this->wantRead) {
-				FD_SET(this->theSocket, &writeSet);
-				writeNfds = this->theSocket > writeNfds ? this->theSocket : writeNfds;
+		int32_t readNfds{ 0 }, writeNfds{ 0 }, finalNfds{ 0 };
+		FD_ZERO(&readSet);
+		FD_ZERO(&writeSet);
+		for (auto& [key, value]: theMap) {
+			if ((value->outputBuffer.size() > 0 || value->wantWrite)) {
+				FD_SET(key, &writeSet);
+				writeNfds = key > writeNfds ? key : writeNfds;
 			}
-			FD_SET(this->theSocket, &readSet);
-			readNfds = this->theSocket > readNfds ? this->theSocket : readNfds;
+			FD_SET(key, &readSet);
+			readNfds = key > readNfds ? key : readNfds;
 			finalNfds = readNfds > writeNfds ? readNfds : writeNfds;
+		}
 
-			timeval checkTime{ .tv_usec = waitTimeInMicroSeconds };
-			if (auto returnValue = select(finalNfds + 1, &readSet, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
-				throw ProcessingError{ reportError("select() Error: ", returnValue) };
-			} else if (returnValue == 0) {
-				return;
-			}
+		timeval checkTime{ .tv_usec = 0 };
+		if (auto resultValue = select(finalNfds + 1, &readSet, &writeSet, nullptr, &checkTime); resultValue == SOCKET_ERROR) {
+			reportError("select() Error: ", resultValue);
+			return false;
+		}
 
-			if (FD_ISSET(this->theSocket, &readSet)) {
-				this->wantRead = false;
-				this->wantWrite = false;
+		for (auto& [key, value]: theMap) {
+			if (FD_ISSET(key, &readSet)) {
+				value->wantRead = false;
+				value->wantWrite = false;
 				std::string serverToClientBuffer{};
-				serverToClientBuffer.resize(this->maxBufferSize);
+				serverToClientBuffer.resize(value->maxBufferSize);
 				size_t readBytes{ 0 };
-				auto returnValue{ SSL_read_ex(this->ssl, serverToClientBuffer.data(), this->maxBufferSize, &readBytes) };
-				auto errorValue{ SSL_get_error(this->ssl, returnValue) };
+				auto returnValue{ SSL_read_ex(value->ssl, serverToClientBuffer.data(), value->maxBufferSize, &readBytes) };
+				auto errorValue{ SSL_get_error(value->ssl, returnValue) };
 				switch (errorValue) {
 					case SSL_ERROR_NONE: {
 						if (readBytes > 0) {
-							this->inputBuffer.insert(this->inputBuffer.end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
-							this->bytesRead += readBytes;
+							value->inputBuffer.insert(value->inputBuffer.end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
+							value->bytesRead += readBytes;
 						}
-						break;
+						return true;
 					}
 					case SSL_ERROR_WANT_READ: {
-						this->wantRead = true;
-						break;
+						value->wantRead = true;
+						return true;
 					}
 					case SSL_ERROR_WANT_WRITE: {
-						this->wantWrite = true;
-						break;
+						value->wantWrite = true;
+						return true;
 					}
 					case SSL_ERROR_SYSCALL: {
 						[[fallthrough]];
@@ -364,34 +365,39 @@ namespace DiscordCoreInternal {
 						[[fallthrough]];
 					}
 					default: {
-						throw ProcessingError{ reportSSLError("WebSocketSSLClient::processIO::SSL_read_ex() Error: ", returnValue, this->ssl) + "\n" +
-							reportError("WebSocketSSLClient::processIO::SSL_read_ex() Error: ", returnValue) };
+						reportSSLError("WebSocketSSLServerMain::processIO::SSL_read_ex() Error: ", returnValue, value->ssl);
+						reportError("WebSocketSSLServerMain::processIO::SSL_read_ex() Error: ", returnValue);
+						return false;
 					}
 				}
 			}
-			if (FD_ISSET(this->theSocket, &writeSet)) {
-				this->wantRead = false;
-				this->wantWrite = false;
+			if (FD_ISSET(value->theSocket, &writeSet)) {
+				value->wantRead = false;
+				value->wantWrite = false;
 				size_t writtenBytes{ 0 };
-				std::string writeString = std::move(this->outputBuffer.front());
-				auto returnValue{ SSL_write_ex(this->ssl, writeString.data(), writeString.size(), &writtenBytes) };
-				auto errorValue{ SSL_get_error(this->ssl, returnValue) };
+				std::string theString{};
+				if (value->outputBuffer.size() > 0) {
+					theString = std::move(value->outputBuffer.front());
+				}
+				size_t bytesToWrite = value->maxBufferSize < theString.size() ? value->maxBufferSize : theString.size();
+				auto returnValue{ SSL_write_ex(value->ssl, theString.data(), bytesToWrite, &writtenBytes) };
+				auto errorValue{ SSL_get_error(value->ssl, returnValue) };
 				switch (errorValue) {
 					case SSL_ERROR_NONE: {
-						if (writtenBytes > 0) {
-							this->outputBuffer.erase(this->outputBuffer.begin());
-						} else {
-							this->outputBuffer[0] = std::move(writeString);
+						if (value->outputBuffer.size() > 0 && writtenBytes > 0) {
+							value->outputBuffer.erase(value->outputBuffer.begin());
+						} else if (value->outputBuffer.size() > 0 && writtenBytes == 0) {
+							value->outputBuffer[0] = std::move(theString);
 						}
-						break;
+						return true;
 					}
 					case SSL_ERROR_WANT_READ: {
-						this->wantRead = true;
-						break;
+						value->wantRead = true;
+						return true;
 					}
 					case SSL_ERROR_WANT_WRITE: {
-						this->wantWrite = true;
-						break;
+						value->wantWrite = true;
+						return true;
 					}
 					case SSL_ERROR_SYSCALL: {
 						[[fallthrough]];
@@ -400,22 +406,24 @@ namespace DiscordCoreInternal {
 						[[fallthrough]];
 					}
 					default: {
-						throw ProcessingError{ reportSSLError("WebSocketSSLClient::processIO::SSL_write_ex() Error: ", returnValue, this->ssl) + "\n" +
-							reportError("WebSocketSSLClient::processIO::SSL_write_ex() Error: ", returnValue) };
+						reportSSLError("WebSocketSSLServerMain::processIO::SSL_write_ex() Error: ", returnValue, value->ssl);
+						reportError("WebSocketSSLServerMain::processIO::SSL_write_ex() Error: ", returnValue);
+						return false;
 					}
 				}
 			}
 		}
+		return true;
 	}
 
-	void WebSocketSSLClient::writeData(std::string& data) noexcept {
-		if (data.size() > 16 * 1024) {
+	void WebSocketSSLShard::writeData(std::string& data) noexcept {
+		if (data.size() > static_cast<size_t>(16 * 1024)) {
 			size_t remainingBytes{ data.size() };
 			while (remainingBytes > 0) {
 				std::string newString{};
 				size_t amountToCollect{};
-				if (data.size() >= 1024 * 16) {
-					amountToCollect = 1024 * 16;
+				if (data.size() >= static_cast<size_t>(1024 * 16)) {
+					amountToCollect = static_cast<size_t>(1024 * 16);
 				} else {
 					amountToCollect = data.size();
 				}
@@ -429,13 +437,13 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	std::string WebSocketSSLClient::getInputBuffer() noexcept {
+	std::string WebSocketSSLShard::getInputBuffer() noexcept {
 		std::string returnString = this->inputBuffer;
 		this->inputBuffer.clear();
 		return returnString;
 	}
 
-	int64_t WebSocketSSLClient::getBytesRead() noexcept {
+	int64_t WebSocketSSLShard::getBytesRead() noexcept {
 		return this->bytesRead;
 	}
 
