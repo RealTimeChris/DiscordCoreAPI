@@ -233,7 +233,7 @@ namespace DiscordCoreInternal {
 		return data;
 	};
 
-	nlohmann::json JSONIFY(const std::string& botToken, uint64_t sessionID, int32_t lastReceivedNumber) {
+	nlohmann::json JSONIFY(const std::string& botToken, std::string sessionID, int32_t lastReceivedNumber) {
 		nlohmann::json data{};
 		data["d"]["seq"] = lastReceivedNumber;
 		data["d"]["session_id"] = sessionID;

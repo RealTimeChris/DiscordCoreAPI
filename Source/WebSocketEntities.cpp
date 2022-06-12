@@ -467,7 +467,7 @@ namespace DiscordCoreInternal {
 
 				if (payload["t"] == "READY") {
 					this->theClients[theIndex]->areWeConnected.store(true);
-					this->theClients[theIndex]->sessionId = stoull(payload["d"]["session_id"].get<std::string>());
+					this->theClients[theIndex]->sessionId = payload["d"]["session_id"].get<std::string>();
 					DiscordCoreAPI::UserData theUser{};
 					parseObject(payload["d"]["user"], theUser);
 					this->discordCoreClient->currentUser = DiscordCoreAPI::BotUser{ theUser, this };
@@ -1105,7 +1105,7 @@ namespace DiscordCoreInternal {
 	void BaseSocketAgent::connect(DiscordCoreAPI::ReconnectionPackage thePackage) noexcept {
 		int32_t currentRecursionDepth{};
 		int32_t lastSentNumber{};
-		int64_t sessionId{};
+		std::string sessionId{};
 		if (this->theClients.contains(thePackage.currentShard) && this->theClients[thePackage.currentShard] != nullptr) {
 			currentRecursionDepth = this->theClients[thePackage.currentShard]->currentRecursionDepth;
 			lastSentNumber = this->theClients[thePackage.currentShard]->lastNumberReceived;

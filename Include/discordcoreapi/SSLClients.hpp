@@ -341,11 +341,11 @@ namespace DiscordCoreInternal {
 		bool areWeResuming{ false };
 		SSLWrapper ssl{ nullptr };
 		std::string inputBuffer{};
+		std::string sessionId{};
 		nlohmann::json shard{};
 		bool wantWrite{ true };
 		bool wantRead{ false };
 		int64_t bytesRead{ 0 };
-		uint64_t sessionId{};
 	};
 
 	class DiscordCoreAPI_Dll DatagramSocketSSLClient {

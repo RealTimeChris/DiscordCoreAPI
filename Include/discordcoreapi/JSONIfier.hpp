@@ -92,7 +92,7 @@ namespace DiscordCoreInternal {
 
 	nlohmann::json JSONIFY(const std::string& botToken, int64_t intents, int32_t currentShard, int32_t numberOfShards);
 
-	nlohmann::json JSONIFY(const std::string& botToken, uint64_t sessionID, int32_t lastReceivedNumber);
+	nlohmann::json JSONIFY(const std::string& botToken, std::string sessionID, int32_t lastReceivedNumber);
 
 	nlohmann::json JSONIFY(const DiscordCoreAPI::UpdateVoiceStateData& dataPackage);
 
