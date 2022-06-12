@@ -66,7 +66,7 @@ namespace DiscordCoreInternal {
 	enum class WSMessageCollectorState { Connecting = 0, Initializing = 1, Collecting = 2, Parsing = 3, Serving = 4 };
 
 	struct DiscordCoreAPI_Dll WSMessageCollectorReturnData {
-		WebSocketCloseCode closeCode{};
+		WebSocketCloseCode closeCode{ WebSocketCloseCode{ 0 } };
 		WebSocketOpCode opCode{};
 		std::string theMessage{};
 	};
@@ -125,8 +125,8 @@ namespace DiscordCoreInternal {
 
 	  protected:
 		std::unordered_map<std::string, DiscordCoreAPI::TSUnboundedMessageBlock<VoiceConnectionData>*> voiceConnectionDataBufferMap{};
-		DiscordCoreAPI::StopWatch<std::chrono::milliseconds> theReconnectionTimer{ std::chrono::milliseconds{ 5000 } };
 		const DiscordCoreAPI::GatewayIntents intentsValue{ DiscordCoreAPI::GatewayIntents::All_Intents };
+		DiscordCoreAPI::StopWatch<std::chrono::milliseconds> theReconnectionTimer{ 5000ms };
 		std::unordered_map<int32_t, std::unique_ptr<WebSocketSSLShard>> theClients{};
 		DiscordCoreAPI::TextFormat theFormat{ DiscordCoreAPI::TextFormat::Etf };
 		DiscordCoreAPI::DiscordCoreClient* discordCoreClient{ nullptr };

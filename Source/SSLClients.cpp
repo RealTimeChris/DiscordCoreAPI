@@ -251,7 +251,7 @@ namespace DiscordCoreInternal {
 		FD_ZERO(&readSet);
 		FD_ZERO(&writeSet);
 		for (auto& [key, value]: theMap) {
-			if (value->outputBuffer.size() > 0 || value->wantWrite) {
+			if ((value->outputBuffer.size() > 0 || value->wantWrite) && !value->wantRead) {
 				FD_SET(value->theSocket, &writeSet);
 				writeNfds = value->theSocket > writeNfds ? value->theSocket : writeNfds;
 			}
@@ -260,11 +260,12 @@ namespace DiscordCoreInternal {
 			}
 			readNfds = value->theSocket > readNfds ? value->theSocket : readNfds;
 			finalNfds = readNfds > writeNfds ? readNfds : writeNfds;
+			readNfds = value->theSocket > readNfds ? value->theSocket : readNfds;
+			finalNfds = readNfds > writeNfds ? readNfds : writeNfds;
 		}
 
 		timeval checkTime{ .tv_usec = 10000 };
 		if (auto resultValue = select(finalNfds + 1, &readSet, &writeSet, nullptr, &checkTime); resultValue == SOCKET_ERROR) {
-			std::cout << "WERE HERE THIS IS IT!" << reportError("select() Error: ", resultValue) <<std::endl;
 			throw ConnectionError{ reportError("select() Error: ", resultValue) };
 		}
 
@@ -300,8 +301,13 @@ namespace DiscordCoreInternal {
 						[[fallthrough]];
 					}
 					default: {
-						throw ConnectionError{ reportSSLError("WebSocketSSLServerMain::processIO::SSL_read_ex() Error: ", returnValue, value->ssl) +
-							reportError("WebSocketSSLServerMain::processIO::SSL_read_ex() Error: ", returnValue) };
+						if (value->doWePrintErrors) {
+							std::cout << reportSSLError("WebSocketSSLServerMain::processIO::SSL_read_ex() Error: ", returnValue, value->ssl) +
+									reportError("WebSocketSSLServerMain::processIO::SSL_read_ex() Error: ", returnValue)
+									  << std::endl;
+						}
+						theMap[key].reset(nullptr);
+						continue;
 					}
 				}
 			}
@@ -319,6 +325,7 @@ namespace DiscordCoreInternal {
 					switch (errorValue) {
 						case SSL_ERROR_NONE: {
 							if (value->outputBuffer.size() > 0 && writtenBytes > 0) {
+								std::cout << "THE WRITTEN BYTES: " << theString << std::endl;
 								value->outputBuffer.erase(value->outputBuffer.begin());
 							}
 							return;
@@ -338,8 +345,12 @@ namespace DiscordCoreInternal {
 							[[fallthrough]];
 						}
 						default: {
-							throw ConnectionError{ reportSSLError("WebSocketSSLServerMain::processIO::SSL_write_ex() Error: ", returnValue, value->ssl) +
-								reportError("WebSocketSSLServerMain::processIO::SSL_write_ex() Error: ", returnValue) };
+							if (value->doWePrintErrors) {
+								std::cout << reportSSLError("WebSocketSSLServerMain::processIO::SSL_write_ex() Error: ", returnValue, value->ssl) +
+										reportError("WebSocketSSLServerMain::processIO::SSL_write_ex() Error: ", returnValue)
+										  << std::endl;
+							}
+							theMap[key].reset(nullptr);
 						}
 					}
 				}

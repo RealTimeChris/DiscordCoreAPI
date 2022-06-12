@@ -267,7 +267,7 @@ namespace DiscordCoreInternal {
 			rateLimitData->tempBucket = std::to_string(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
 			Globals::rateLimitValueBuckets[static_cast<HttpWorkloadType>(enumOne)] = rateLimitData->tempBucket;
 			Globals::rateLimitValues[rateLimitData->tempBucket] = std::move(rateLimitData);
-			std::this_thread::sleep_for(std::chrono::milliseconds{ 1 });
+			std::this_thread::sleep_for(1ms);
 		}
 	}
 
@@ -397,7 +397,7 @@ namespace DiscordCoreInternal {
 	}
 
 	HttpResponseData HttpClient::getResponse(HttpConnection& theConnection, RateLimitData* rateLimitDataPtr) {
-		DiscordCoreAPI::StopWatch stopWatch{ std::chrono::milliseconds{ 3500 } };
+		DiscordCoreAPI::StopWatch stopWatch{ 3500ms };
 		theConnection.getInputBuffer().resize(0);
 		theConnection.resetValues();
 		HttpResponseData theData{};
@@ -456,17 +456,17 @@ namespace DiscordCoreInternal {
 		}
 		RateLimitData* rateLimitDataPtr = Globals::rateLimitValues[Globals::rateLimitValueBuckets[workload.workloadType]].get();
 		if (!rateLimitDataPtr->haveWeGoneYet) {
-			std::this_thread::sleep_for(std::chrono::milliseconds{ 500 });
+			std::this_thread::sleep_for(500ms);
 			rateLimitDataPtr->haveWeGoneYet = true;
 		}
 		while (HttpWorkloadData::workloadIdsInternal[workload.workloadType].load() < workload.thisWorkerId.load() && workload.thisWorkerId.load() != 0) {
-			std::this_thread::sleep_for(std::chrono::milliseconds{ 1 });
+			std::this_thread::sleep_for(1ms);
 		}
 
 		HttpConnection* theConnectionNew = this->connectionManager.getConnection();
 
 		while (!rateLimitDataPtr->theSemaphore.try_acquire()) {
-			std::this_thread::sleep_for(std::chrono::milliseconds{ 1 });
+			std::this_thread::sleep_for(1ms);
 		}
 
 		HttpResponseData resultData = this->executeByRateLimitData(workload, *theConnectionNew);

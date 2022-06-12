@@ -80,7 +80,7 @@ namespace DiscordCoreInternal {
 
 	DiscordCoreAPI::Song YouTubeRequestBuilder::constructDownloadInfo(const DiscordCoreAPI::GuildMemberData& guildMember, DiscordCoreAPI::Song& newSong) {
 		if (newSong.firstDownloadUrl != "") {
-			std::this_thread::sleep_for(std::chrono::milliseconds{ 500 });
+			std::this_thread::sleep_for(500ms);
 		}
 		std::vector<DiscordCoreInternal::HttpWorkloadData> dataPackageWorkload{};
 		std::string apiKey{ "AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8" };
@@ -232,7 +232,7 @@ namespace DiscordCoreInternal {
 			try {
 				streamSocket->processIO(theMap);
 				while (newSong.contentLength > bytesSubmittedTotal) {
-					std::this_thread::sleep_for(std::chrono::milliseconds{ 1 });
+					std::this_thread::sleep_for(1ms);
 					if (bytesSubmittedPrevious == bytesSubmittedTotal) {
 						currentReruns += 1;
 					} else {

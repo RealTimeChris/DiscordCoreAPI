@@ -324,6 +324,7 @@ namespace DiscordCoreInternal {
 		~WebSocketSSLShard() noexcept = default;
 
 	  protected:
+		DiscordCoreAPI::StopWatch<std::chrono::milliseconds> stopWatch{ 0ms };
 		int32_t maxBufferSize{ (1024 * 16) - 1 };
 		std::vector<std::string> outputBuffer{};
 		bool haveWeReceivedHeartbeatAck{ true };

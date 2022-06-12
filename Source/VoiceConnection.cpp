@@ -241,7 +241,7 @@ namespace DiscordCoreAPI {
 
 	void VoiceConnection::run(std::stop_token theToken) {
 		while (!theToken.stop_requested()) {
-			std::this_thread::sleep_for(std::chrono::milliseconds{ 1 });
+			std::this_thread::sleep_for(1ms);
 			if (!this->didWeJustConnect) {
 				this->audioBuffer.clearContents();
 				this->clearAudioData();
@@ -256,7 +256,7 @@ namespace DiscordCoreAPI {
 			};
 			this->playSetEvent.reset();
 		start:
-			std::this_thread::sleep_for(std::chrono::milliseconds{ 1 });
+			std::this_thread::sleep_for(1ms);
 			if (theToken.stop_requested()) {
 				this->areWePlaying.store(false);
 				return;

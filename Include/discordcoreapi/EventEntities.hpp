@@ -187,7 +187,7 @@ namespace DiscordCoreInternal {
 					return true;
 				} else if (millisecondsMaxToWait - millisecondsWaited <= 20) {
 				} else {
-					std::this_thread::sleep_for(std::chrono::milliseconds{ 1 });
+					std::this_thread::sleep_for(1ms);
 				}
 				int64_t currentTime = std::chrono::duration_cast<std::chrono::milliseconds, int64_t>(std::chrono::system_clock::now().time_since_epoch()).count();
 				millisecondsWaited = currentTime - startTime;

@@ -253,7 +253,7 @@ namespace DiscordCoreInternal {
 		AudioEncoder audioEncoder{};
 		bool haveWeFailed{ false };
 		while (counter < newSong.finalDownloadUrls.size()) {
-			std::this_thread::sleep_for(std::chrono::milliseconds{ 1 });
+			std::this_thread::sleep_for(1ms);
 			if (theToken.stop_requested()) {
 				this->breakOut(theToken, std::move(audioDecoder), this);
 				return;
@@ -286,7 +286,7 @@ namespace DiscordCoreInternal {
 			int64_t amountToSubmitRemainingFinal{ 0 };
 			int64_t amountSubmitted{ 0 };
 			while (amountToSubmitRemaining > 0) {
-				std::this_thread::sleep_for(std::chrono::milliseconds{ 1 });
+				std::this_thread::sleep_for(1ms);
 				std::string newerVector{};
 				if (amountToSubmitRemaining >= bytesTotal) {
 					for (int64_t x = 0; x < bytesTotal; x += 1) {

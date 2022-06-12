@@ -57,7 +57,7 @@ namespace DiscordCoreAPI {
 					stopWatch.resetTimer();
 					std::this_thread::sleep_for(std::chrono::milliseconds{ static_cast<int32_t>(std::ceil(static_cast<float>(timeInterval) * thePercentage)) });
 					while (!stopWatch.hasTimePassed() && !stopToken.stop_requested()) {
-						std::this_thread::sleep_for(std::chrono::milliseconds{ 1 });
+						std::this_thread::sleep_for(1ms);
 					}
 					if (stopToken.stop_requested()) {
 						return;
@@ -83,7 +83,7 @@ namespace DiscordCoreAPI {
 					stopWatch.resetTimer();
 					std::this_thread::sleep_for(std::chrono::milliseconds{ static_cast<int32_t>(std::ceil(static_cast<float>(timeInterval) * thePercentage)) });
 					while (!stopWatch.hasTimePassed() && !stopToken.stop_requested()) {
-						std::this_thread::sleep_for(std::chrono::milliseconds{ 1 });
+						std::this_thread::sleep_for(1ms);
 					}
 					if (stopToken.stop_requested()) {
 						return;
@@ -107,7 +107,7 @@ namespace DiscordCoreAPI {
 				stopWatch.resetTimer();
 				std::this_thread::sleep_for(std::chrono::milliseconds{ static_cast<int32_t>(std::ceil(static_cast<float>(timeInterval) * thePercentage)) });
 				while (!stopWatch.hasTimePassed() && !stopToken.stop_requested()) {
-					std::this_thread::sleep_for(std::chrono::milliseconds{ 1 });
+					std::this_thread::sleep_for(1ms);
 				}
 				if (stopToken.stop_requested()) {
 					return;

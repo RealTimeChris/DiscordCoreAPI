@@ -102,6 +102,8 @@
  */
 namespace DiscordCoreInternal {
 
+	using namespace std::literals;
+
 	template<typename ParseType> void parseObject(const nlohmann::json&, ParseType&);
 	struct HttpWorkloadData;
 	class SoundCloudRequestBuilder;
@@ -121,6 +123,8 @@ namespace DiscordCoreInternal {
 /// The main namespace for this library. \brief The main namespace for this
 /// library.
 namespace DiscordCoreAPI {
+
+	using namespace std::literals;
 
 	struct RecurseThroughMessagePagesData;
 	struct DeleteInteractionResponseData;
@@ -671,7 +675,7 @@ namespace DiscordCoreAPI {
 		StopWatch stopWatch{ std::chrono::milliseconds{ timeInMsNew } };
 		bool didTimePass{ false };
 		while (!outBuffer.tryReceive(argOne)) {
-			std::this_thread::sleep_for(std::chrono::milliseconds{ 1 });
+			std::this_thread::sleep_for(1ms);
 			if (stopWatch.hasTimePassed()) {
 				didTimePass = true;
 				break;
@@ -684,7 +688,7 @@ namespace DiscordCoreAPI {
 		StopWatch stopWatch{ std::chrono::milliseconds{ timeInMsNew } };
 		bool didTimePass{ false };
 		while (!outBuffer.tryReceive(argOne)) {
-			std::this_thread::sleep_for(std::chrono::milliseconds{ 1 });
+			std::this_thread::sleep_for(1ms);
 			if (stopWatch.hasTimePassed()) {
 				didTimePass = true;
 				break;
