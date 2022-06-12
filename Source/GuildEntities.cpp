@@ -90,13 +90,9 @@ namespace DiscordCoreAPI {
 				theChannelId = channelId;
 			}
 			std::string theShardId{ std::to_string((this->id >> 22) % this->discordCoreClient->shardingOptions.totalNumberOfShards) };
-			auto theBaseSocketAgentIndex{ static_cast<int32_t>(
-				floor(static_cast<float>(stod(theShardId)) / static_cast<float>(this->discordCoreClient->shardingOptions.totalNumberOfShards)) *
-				static_cast<float>(std::thread::hardware_concurrency())) };
-			getVoiceConnectionMap()[this->id] = std::make_unique<VoiceConnection>(this->discordCoreClient->baseSocketAgentMap[std::to_string(theBaseSocketAgentIndex)].get());
+			getVoiceConnectionMap()[this->id] = std::make_unique<VoiceConnection>(this->discordCoreClient->baseSocketAgentMap[theShardId].get());
 			this->voiceConnectionPtr = getVoiceConnectionMap()[this->id].get();
 			DiscordCoreInternal::VoiceConnectInitData voiceConnectInitData{};
-			voiceConnectInitData.currentShard = stoll(theShardId);
 			voiceConnectInitData.channelId = theChannelId;
 			voiceConnectInitData.guildId = this->id;
 			voiceConnectInitData.userId = this->discordCoreClient->getBotUser().id;
@@ -231,7 +227,6 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<GuildData> Guilds::getCachedGuildAsync(GetGuildData dataPackage) {
 		co_await NewThreadAwaitable<GuildData>();
-		std::lock_guard<std::recursive_mutex> theLock{ Guilds::theMutex };
 		if (Guilds::cache->contains(dataPackage.guildId)) {
 			co_return *(*Guilds::cache)[dataPackage.guildId];
 
@@ -719,7 +714,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void Guilds::insertGuild(GuildData guild) {
-		std::lock_guard<std::recursive_mutex> theLock{ Guilds::theMutex };
+		std::lock_guard<std::mutex> theLock{ Guilds::theMutex };
 		if (guild.id == 0) {
 			return;
 		}
@@ -737,17 +732,20 @@ namespace DiscordCoreAPI {
 		}
 		Guilds::cache.reset(nullptr);
 		Guilds::cache = std::move(newCache);
+		if (guild.id == 0) {
+			return;
+		}
 	}
 
 	void Guilds::removeGuild(const uint64_t& guildId) {
-		std::lock_guard<std::recursive_mutex> theLock{ Guilds::theMutex };
+		std::lock_guard<std::mutex> theLock{ Guilds::theMutex };
 		Guilds::cache->erase(guildId);
 	};
 
 	std::unique_ptr<std::unordered_map<uint64_t, std::unique_ptr<GuildData>>> Guilds::cache{};
 	DiscordCoreInternal::HttpClient* Guilds::httpClient{ nullptr };
 	DiscordCoreClient* Guilds::discordCoreClient{ nullptr };
-	std::recursive_mutex Guilds::theMutex{};
 	bool Guilds::doWeCache{ false };
+	std::mutex Guilds::theMutex{};
 
 }

@@ -560,7 +560,7 @@ namespace DiscordCoreAPI {
 		static std::unique_ptr<std::unordered_map<uint64_t, std::unique_ptr<GuildData>>> cache;
 		static DiscordCoreAPI::DiscordCoreClient* discordCoreClient;
 		static DiscordCoreInternal::HttpClient* httpClient;
-		static std::recursive_mutex theMutex;
+		static std::mutex theMutex;
 		static bool doWeCache;
 
 		static void insertGuild(GuildData guild);

@@ -209,7 +209,7 @@ namespace DiscordCoreAPI {
 	  protected:
 		static std::unique_ptr<std::unordered_map<uint64_t, std::unique_ptr<RoleData>>> cache;
 		static DiscordCoreInternal::HttpClient* httpClient;
-		static std::recursive_mutex theMutex;
+		static std::mutex theMutex;
 		static bool doWeCache;
 
 		static void insertRole(RoleData dataPackage);

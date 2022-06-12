@@ -251,28 +251,20 @@ namespace DiscordCoreInternal {
 		FD_ZERO(&readSet);
 		FD_ZERO(&writeSet);
 		for (auto& [key, value]: theMap) {
-			if (value->theState == WebSocketState::Connected) {
-				std::cout << "THE SOCKET: " << value->theSocket << std::endl;
-				if ((value->outputBuffer.size() > 0 || value->wantWrite) && !value->wantRead) {
-					FD_SET(value->theSocket, &writeSet);
-					writeNfds = value->theSocket > writeNfds ? value->theSocket : writeNfds;
-				}
-				if (!value->wantWrite) {
-					FD_SET(value->theSocket, &readSet);
-				}
-				readNfds = value->theSocket > readNfds ? value->theSocket : readNfds;
-				finalNfds = readNfds > writeNfds ? readNfds : writeNfds;
+			if ((value->outputBuffer.size() > 0 || value->wantWrite) && !value->wantRead) {
+				FD_SET(value->theSocket, &writeSet);
+				writeNfds = value->theSocket > writeNfds ? value->theSocket : writeNfds;
 			}
-		}
-
-		if (readSet.fd_count == 0 && writeSet.fd_count == 0) {
-			return;
+			if (!value->wantWrite) {
+				FD_SET(value->theSocket, &readSet);
+			}
+			readNfds = value->theSocket > readNfds ? value->theSocket : readNfds;
+			finalNfds = readNfds > writeNfds ? readNfds : writeNfds;
 		}
 
 		timeval checkTime{ .tv_usec = 10000 };
 		if (auto resultValue = select(finalNfds + 1, &readSet, &writeSet, nullptr, &checkTime); resultValue == SOCKET_ERROR) {
-			std::cout << reportError("select() Error: ", resultValue) << std::endl << std::endl;
-			return;
+			throw ConnectionError{ reportError("select() Error: ", resultValue) };
 		}
 
 		for (auto& [key, value]: theMap) {
@@ -312,6 +304,7 @@ namespace DiscordCoreInternal {
 									reportError("WebSocketSSLServerMain::processIO::SSL_read_ex() Error: ", returnValue)
 									  << std::endl;
 						}
+						theMap[key].reset(nullptr);
 						continue;
 					}
 				}
@@ -354,6 +347,7 @@ namespace DiscordCoreInternal {
 										reportError("WebSocketSSLServerMain::processIO::SSL_write_ex() Error: ", returnValue)
 										  << std::endl;
 							}
+							theMap[key].reset(nullptr);
 						}
 					}
 				}
@@ -425,7 +419,7 @@ namespace DiscordCoreInternal {
 			throw ConnectionError{ reportSSLError("SSL_connect() Error: ", returnValue, this->ssl) };
 		}
 
-		this->theState = WebSocketState::Connected;
+		this->areWeConnected = true;
 	}
 
 	void WebSocketSSLShard::writeData(std::string & data) noexcept {

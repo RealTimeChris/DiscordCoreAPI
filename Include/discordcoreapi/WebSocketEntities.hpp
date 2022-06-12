@@ -136,10 +136,12 @@ namespace DiscordCoreInternal {
 		std::unique_ptr<std::jthread> theTask{ nullptr };
 		DiscordCoreAPI::EventManager* eventManager{};
 		VoiceConnectionData voiceConnectionData{};
+		std::atomic_bool areWeConnected{ false };
 		EventWaiter areWeReadyToConnectEvent{};
 		bool doWePrintSuccessMessages{ false };
 		WSMessageCollector messageCollector{};
 		std::atomic_bool* doWeQuit{ nullptr };
+		const int32_t maxReconnectTries{ 10 };
 		bool doWePrintErrorMessages{ false };
 		std::binary_semaphore semaphore{ 1 };
 		int32_t currentBaseSocketAgent{ 0 };
@@ -150,12 +152,13 @@ namespace DiscordCoreInternal {
 		int32_t heartbeatInterval{ 0 };
 		std::mutex accessorMutex01{};
 		bool didWeFail{ false };
+		std::string sessionId{};
 		std::string botToken{};
 		ErlPacker erlPacker{};
 		std::string baseUrl{};
 		uint64_t userId{};
 
-		void createHeader(std::string& outBuffer, uint64_t sendLength, WebSocketOpCode opCode) noexcept;
+		void createHeader(std::string& outbuf, uint64_t sendlength, WebSocketOpCode opCode, int32_t theIndex) noexcept;
 
 		void getVoiceConnectionData(const VoiceConnectInitData& doWeCollect, int32_t theIndex) noexcept;
 
@@ -174,13 +177,13 @@ namespace DiscordCoreInternal {
 	  public:
 		friend class DiscordCoreAPI::VoiceConnection;
 
-		VoiceSocketAgent(VoiceConnectInitData initDataNew, BaseSocketAgent* baseBaseSocketAgentNew, int32_t theIndex, bool doWePrintMessages) noexcept;
+		VoiceSocketAgent(VoiceConnectInitData initDataNew, BaseSocketAgent* baseBaseSocketAgentNew, int32_t theIndex, bool doWePrintMessages = false) noexcept;
 
 		void sendMessage(const std::vector<uint8_t>& responseData) noexcept;
 
-		void sendVoiceData(std::string& responseData) noexcept;
-
 		void sendMessage(std::string& dataToSend) noexcept;
+
+		void sendVoiceData(std::string& responseData) noexcept;
 
 		void onClosedExternal() noexcept;
 

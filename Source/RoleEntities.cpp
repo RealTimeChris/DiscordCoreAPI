@@ -232,7 +232,6 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<RoleData> Roles::getCachedRoleAsync(GetRoleData dataPackage) {
 		co_await NewThreadAwaitable<RoleData>();
-		std::lock_guard<std::recursive_mutex> theLock{ Roles::theMutex };
 		if (Roles::cache->contains(dataPackage.roleId)) {
 			co_return *(*Roles::cache)[dataPackage.roleId];
 		} else {
@@ -241,7 +240,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void Roles::insertRole(RoleData role) {
-		std::lock_guard<std::recursive_mutex> theLock{ Roles::theMutex };
+		std::lock_guard<std::mutex> theLock{ Roles::theMutex };
 		if (role.id == 0) {
 			return;
 		}
@@ -257,12 +256,12 @@ namespace DiscordCoreAPI {
 	}
 
 	void Roles::removeRole(const uint64_t& roleId) {
-		std::lock_guard<std::recursive_mutex> theLock{ Roles::theMutex };
+		std::lock_guard<std::mutex> theLock{ Roles::theMutex };
 		Roles::cache->erase(roleId);
 	};
 
 	std::unique_ptr<std::unordered_map<uint64_t, std::unique_ptr<RoleData>>> Roles::cache{};
 	DiscordCoreInternal::HttpClient* Roles::httpClient{ nullptr };
-	std::recursive_mutex Roles::theMutex{};
 	bool Roles::doWeCache{ false };
+	std::mutex Roles::theMutex{};
 }

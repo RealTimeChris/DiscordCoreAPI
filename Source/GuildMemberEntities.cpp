@@ -83,7 +83,6 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<GuildMemberData> GuildMembers::getCachedGuildMemberAsync(GetGuildMemberData dataPackage) {
 		co_await NewThreadAwaitable<GuildMemberData>();
-		std::lock_guard<std::recursive_mutex> theLock{ GuildMembers::theMutex };
 		GuildMemberId theKey{};
 		theKey.guildId = dataPackage.guildId;
 		theKey.guildMemberId = dataPackage.guildMemberId;
@@ -238,7 +237,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void GuildMembers::insertGuildMember(GuildMemberData guildMember) {
-		std::lock_guard<std::recursive_mutex> theLock{ GuildMembers::theMutex };
+		std::lock_guard<std::mutex> theLock{ GuildMembers::theMutex };
 		if (guildMember.id == 0) {
 			return;
 		}
@@ -257,7 +256,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void GuildMembers::removeGuildMember(GuildMember& guildMember) {
-		std::lock_guard<std::recursive_mutex> theLock{ GuildMembers::theMutex };
+		std::lock_guard<std::mutex> theLock{ GuildMembers::theMutex };
 		GuildMemberId theKey{};
 		theKey.guildId = guildMember.guildId;
 		theKey.guildMemberId = guildMember.id;
@@ -266,6 +265,6 @@ namespace DiscordCoreAPI {
 
 	std::unique_ptr<std::map<GuildMemberId, std::unique_ptr<GuildMemberData>>> GuildMembers::cache{};
 	DiscordCoreInternal::HttpClient* GuildMembers::httpClient{ nullptr };
-	std::recursive_mutex GuildMembers::theMutex{};
 	bool GuildMembers::doWeCache{ false };
+	std::mutex GuildMembers::theMutex{};
 };
