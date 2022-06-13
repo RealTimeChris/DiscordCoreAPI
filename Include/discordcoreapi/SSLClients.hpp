@@ -282,7 +282,7 @@ namespace DiscordCoreInternal {
 
 		std::string& getInputBuffer() noexcept;
 
-		void processIO();
+		void processIO(int32_t waitTimeInMs = 10000);
 
 		virtual ~HttpSSLClient() noexcept = default;
 
@@ -312,7 +312,7 @@ namespace DiscordCoreInternal {
 
 		WebSocketSSLShard(int32_t maxBufferSizeNew, int32_t currentShard, int32_t totalShards, bool doWePrintErrors) noexcept;
 
-		static void processIO(std::unordered_map<int32_t, std::unique_ptr<WebSocketSSLShard>>& theMap);
+		static void processIO(std::unordered_map<int32_t, std::unique_ptr<WebSocketSSLShard>>& theMap, int32_t = 10000);
 
 		void connect(const std::string& baseUrlNew, const std::string& portNew);
 

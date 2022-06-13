@@ -63,7 +63,7 @@ namespace DiscordCoreInternal {
 			static_cast<uint16_t>(WebSocketCloseCode::Normal_Close)
 	};
 
-	enum class WSMessageCollectorState { Connecting = 0, Initializing = 1, Collecting = 2, Parsing = 3, Serving = 4 };
+	enum class WSMessageCollectorState : int8_t { Connecting = 0, Initializing = 1, Collecting = 2, Parsing = 3, Serving = 4 };
 
 	struct DiscordCoreAPI_Dll WSMessageCollectorReturnData {
 		WebSocketCloseCode closeCode{ WebSocketCloseCode{ 0 } };
@@ -82,9 +82,9 @@ namespace DiscordCoreInternal {
 		bool runMessageCollector() noexcept;
 
 	  protected:
+		std::unordered_map<int32_t, WSMessageCollectorState> theState{ std::pair{ 0, WSMessageCollectorState::Connecting } };
 		std::unordered_map<int32_t, std::queue<WSMessageCollectorReturnData>> finalMessages{};
 		std::unordered_map<int32_t, std::unique_ptr<WebSocketSSLShard>>* theClients{};
-		std::unordered_map<int32_t, WSMessageCollectorState> theState{};
 		std::unordered_map<int32_t, WebSocketOpCode> dataOpCodes{};
 		std::unordered_map<int32_t, std::string> currentMessage{};
 		std::unordered_map<int32_t, int64_t> messageLength{};
@@ -138,6 +138,7 @@ namespace DiscordCoreInternal {
 		VoiceConnectionData voiceConnectionData{};
 		EventWaiter areWeReadyToConnectEvent{};
 		bool doWePrintSuccessMessages{ false };
+		std::recursive_mutex accessorMutex01{};
 		WSMessageCollector messageCollector{};
 		std::atomic_bool* doWeQuit{ nullptr };
 		const int32_t maxReconnectTries{ 10 };
@@ -149,7 +150,6 @@ namespace DiscordCoreInternal {
 		bool areWeCollectingData{ false };
 		WebSocketCloseCode closeCode{};
 		int32_t heartbeatInterval{ 0 };
-		std::mutex accessorMutex01{};
 		bool didWeFail{ false };
 		std::string botToken{};
 		ErlPacker erlPacker{};

@@ -231,7 +231,7 @@ namespace DiscordCoreInternal {
 			std::string theString = newSong.finalDownloadUrls[1].urlPath;
 			theMap[bytesRead]->writeData(theString);
 			try {
-				WebSocketSSLShard::processIO(theMap);
+				WebSocketSSLShard::processIO(theMap, ms1000);
 				while (newSong.contentLength > bytesSubmittedTotal) {
 					std::this_thread::sleep_for(1ms);
 					if (bytesSubmittedPrevious == bytesSubmittedTotal) {
@@ -267,7 +267,7 @@ namespace DiscordCoreInternal {
 								return;
 							}
 							remainingDownloadContentLength = newSong.contentLength - bytesSubmittedTotal;
-							WebSocketSSLShard::processIO(theMap);
+							WebSocketSSLShard::processIO(theMap, ms500);
 							if (!theToken.stop_requested()) {
 								bytesSubmittedTotal = theMap[bytesRead]->getBytesRead();
 							}
@@ -284,7 +284,7 @@ namespace DiscordCoreInternal {
 							return;
 						}
 						if (counter == 0) {
-							WebSocketSSLShard::processIO(theMap);
+							WebSocketSSLShard::processIO(theMap, ms500);
 							std::string streamBuffer = theMap[bytesRead]->getInputBuffer();
 							if (streamBuffer.size() > 0) {
 								theCurrentString.insert(theCurrentString.end(), streamBuffer.begin(), streamBuffer.end());
@@ -310,7 +310,7 @@ namespace DiscordCoreInternal {
 									return;
 								}
 								remainingDownloadContentLength = newSong.contentLength - bytesSubmittedTotal;
-								WebSocketSSLShard::processIO(theMap);
+								WebSocketSSLShard::processIO(theMap, ms500);
 								std::string newVector = theMap[bytesRead]->getInputBuffer();
 								if (newVector.size() == 0) {
 									counter += 1;

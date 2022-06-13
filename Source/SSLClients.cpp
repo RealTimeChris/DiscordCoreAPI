@@ -143,7 +143,7 @@ namespace DiscordCoreInternal {
 		return this->inputBuffer;
 	}
 
-	void HttpSSLClient::processIO() {
+	void HttpSSLClient::processIO(int32_t theWaitTimeInms) {
 		fd_set writeSet{}, readSet{};
 		int32_t readNfds{ 0 }, writeNfds{ 0 }, finalNfds{ 0 };
 		FD_ZERO(&writeSet);
@@ -157,7 +157,7 @@ namespace DiscordCoreInternal {
 		readNfds = this->theSocket > readNfds ? this->theSocket : readNfds;
 		finalNfds = readNfds > writeNfds ? readNfds : writeNfds;
 
-		timeval checkTime{ .tv_usec = 10000 };
+		timeval checkTime{ .tv_usec = theWaitTimeInms };
 		if (auto returnValue = select(finalNfds + 1, &readSet, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
 			throw ProcessingError{ reportError("select() Error: ", returnValue) };
 		} else if (returnValue == 0) {
@@ -244,7 +244,7 @@ namespace DiscordCoreInternal {
 		this->shard.push_back(totalShards);
 	};
 
-	void WebSocketSSLShard::processIO(std::unordered_map<SOCKET, std::unique_ptr<WebSocketSSLShard>>& theMap) {
+	void WebSocketSSLShard::processIO(std::unordered_map<SOCKET, std::unique_ptr<WebSocketSSLShard>>& theMap, int32_t waitTimeInms) {
 		int32_t readNfds{ 0 }, writeNfds{ 0 }, finalNfds{ 0 };
 		fd_set readSet{}, writeSet{};
 		FD_ZERO(&readSet);
@@ -267,7 +267,7 @@ namespace DiscordCoreInternal {
 			return;
 		}
 
-		timeval checkTime{ .tv_usec = 1000 };
+		timeval checkTime{ .tv_usec = waitTimeInms };
 		if (auto resultValue = select(finalNfds + 1, &readSet, &writeSet, nullptr, &checkTime); resultValue == SOCKET_ERROR) {
 			throw ConnectionError{ reportError("select() Error: ", resultValue) };
 		}
@@ -424,7 +424,7 @@ namespace DiscordCoreInternal {
 			throw ConnectionError{ reportSSLError("SSL_connect() Error: ", returnValue, this->ssl) };
 		}
 
-		this->areWeConnected = true;
+		this->areWeConnected.store(true);
 	}
 
 	void WebSocketSSLShard::writeData(std::string & data) noexcept {
