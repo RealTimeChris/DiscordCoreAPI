@@ -1186,7 +1186,7 @@ namespace DiscordCoreInternal {
 					this->sendHeartBeat();
 				}
 				WebSocketSSLShard::processIO(this->theClients);
-				if (this->theClients[3] != nullptr) {
+				if (this->theClients.contains(3)) {
 					this->baseSocketAgent->parseHeadersAndMessage(*this->theClients[3]);
 					if (this->theClients[3]->processedMessages.size() > 0) {
 						this->onMessageReceived(this->theClients[3]->processedMessages.front());
