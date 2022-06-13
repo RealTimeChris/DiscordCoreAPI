@@ -162,8 +162,6 @@ namespace DiscordCoreInternal {
 
 		void collectExternalIP() noexcept;
 
-		void onClosedInternal() noexcept;
-
 		void sendHeartBeat() noexcept;
 
 		void voiceConnect() noexcept;

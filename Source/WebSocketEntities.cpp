@@ -1186,13 +1186,17 @@ namespace DiscordCoreInternal {
 					this->sendHeartBeat();
 				}
 				WebSocketSSLShard::processIO(this->theClients);
-				this->baseSocketAgent->parseHeadersAndMessage(*this->theClients[3]);
-				if (this->theClients[3]->processedMessages.size() > 0) {
-					this->onMessageReceived(this->theClients[3]->processedMessages.front());
-					this->theClients[3]->processedMessages.pop();
-				}
-				if (this->voiceSocket) {
-					this->voiceSocket->readData(true);
+				if (this->theClients[3] != nullptr) {
+					this->baseSocketAgent->parseHeadersAndMessage(*this->theClients[3]);
+					if (this->theClients[3]->processedMessages.size() > 0) {
+						this->onMessageReceived(this->theClients[3]->processedMessages.front());
+						this->theClients[3]->processedMessages.pop();
+					}
+					if (this->voiceSocket) {
+						this->voiceSocket->readData(true);
+					}
+				} else {
+					this->onClosedExternal();
 				}
 				std::this_thread::sleep_for(1ms);
 			}
@@ -1237,17 +1241,6 @@ namespace DiscordCoreInternal {
 			this->onClosedExternal();
 		}
 	}
-
-	void VoiceSocketAgent::onClosedInternal() noexcept {
-		if (this->doWePrintErrorMessages) {
-			std::cout << DiscordCoreAPI::shiftToBrightRed() << "Voice WebSocket Closed; Code: " << +static_cast<uint16_t>(this->closeCode) << DiscordCoreAPI::reset() << std::endl
-					  << std::endl;
-		}
-		this->closeCode = static_cast<WebSocketCloseCode>(0);
-		this->voiceSocket.reset(nullptr);
-		this->theClients[3].reset(nullptr);
-	}
-
 
 	void VoiceSocketAgent::sendHeartBeat() noexcept {
 		try {
