@@ -230,16 +230,14 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<GuildData> Guilds::getCachedGuildAsync(GetGuildData dataPackage) {
-		Guilds::theMutex.lock_shared();
+		std::shared_lock<std::shared_mutex> theLock{ Guilds::theMutex };
 		co_await NewThreadAwaitable<GuildData>();
 		if (Guilds::cache->contains(dataPackage.guildId)) {
-			Guilds::theMutex.unlock_shared();
 			co_return *(*Guilds::cache)[dataPackage.guildId];
 
 		} else {
 			auto guildNew = Guilds::getGuildAsync({ .guildId = dataPackage.guildId }).get();
 			Guilds::insertGuild(guildNew);
-			Guilds::theMutex.unlock_shared();
 			co_return guildNew;
 		}
 	}
@@ -721,7 +719,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void Guilds::insertGuild(GuildData guild) {
-		Guilds::theMutex.lock();
+		std::unique_lock<std::shared_mutex> theLock{ Guilds::theMutex };
 		if (guild.id == 0) {
 			return;
 		}
@@ -739,13 +737,11 @@ namespace DiscordCoreAPI {
 		}
 		Guilds::cache.reset(nullptr);
 		Guilds::cache = std::move(newCache);
-		Guilds::theMutex.unlock();
 	}
 
 	void Guilds::removeGuild(const uint64_t& guildId) {
-		Guilds::theMutex.lock();
+		std::unique_lock<std::shared_mutex> theLock{ Guilds::theMutex };
 		Guilds::cache->erase(guildId);
-		Guilds::theMutex.unlock();
 	};
 
 	std::unique_ptr<std::unordered_map<uint64_t, std::unique_ptr<GuildData>>> Guilds::cache{};

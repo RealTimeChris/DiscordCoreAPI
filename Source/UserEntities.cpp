@@ -133,13 +133,11 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<UserData> Users::getCachedUserAsync(GetUserData dataPackage) {
-		Users::theMutex.lock_shared();
+		std::shared_lock<std::shared_mutex> theLock{ Users::theMutex };
 		co_await NewThreadAwaitable<UserData>();
 		if (Users::cache->contains(dataPackage.userId)) {
-			Users::theMutex.unlock_shared();
 			co_return *(*Users::cache)[dataPackage.userId];
 		} else {
-			Users::theMutex.unlock_shared();
 			co_return getUserAsync(dataPackage).get();
 		}
 	}
@@ -209,9 +207,8 @@ namespace DiscordCoreAPI {
 	}
 
 	void Users::insertUser(UserData user) {
-		Users::theMutex.lock();
+		std::unique_lock<std::shared_mutex> theLock{ Users::theMutex };
 		if (user.id == 0) {
-			Users::theMutex.unlock();
 			return;
 		}
 		auto newCache = std::make_unique<std::unordered_map<uint64_t, std::unique_ptr<UserData>>>();
@@ -223,7 +220,6 @@ namespace DiscordCoreAPI {
 		}
 		Users::cache.reset(nullptr);
 		Users::cache = std::move(newCache);
-		Users::theMutex.unlock();
 	}
 
 	std::unique_ptr<std::unordered_map<uint64_t, std::unique_ptr<UserData>>> Users::cache{};

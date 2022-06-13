@@ -82,16 +82,14 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<GuildMemberData> GuildMembers::getCachedGuildMemberAsync(GetGuildMemberData dataPackage) {
-		GuildMembers::theMutex.lock_shared();
+		std::shared_lock<std::shared_mutex> theLock{ GuildMembers::theMutex };
 		co_await NewThreadAwaitable<GuildMemberData>();
 		GuildMemberId theKey{};
 		theKey.guildId = dataPackage.guildId;
 		theKey.guildMemberId = dataPackage.guildMemberId;
 		if (GuildMembers::cache->contains(theKey)) {
-			GuildMembers::theMutex.unlock_shared();
 			co_return *(*GuildMembers::cache)[theKey];
 		} else {
-			GuildMembers::theMutex.unlock_shared();
 			co_return GuildMembers::getGuildMemberAsync(dataPackage).get();
 		}
 	}
@@ -240,9 +238,8 @@ namespace DiscordCoreAPI {
 	}
 
 	void GuildMembers::insertGuildMember(GuildMemberData guildMember) {
-		GuildMembers::theMutex.lock();
+		std::unique_lock<std::shared_mutex> theLock{ GuildMembers::theMutex };
 		if (guildMember.id == 0) {
-			GuildMembers::theMutex.unlock();
 			return;
 		}
 		auto newCache = std::make_unique<std::map<GuildMemberId, std::unique_ptr<GuildMemberData>>>();
@@ -257,16 +254,14 @@ namespace DiscordCoreAPI {
 		}
 		GuildMembers::cache.reset(nullptr);
 		GuildMembers::cache = std::move(newCache);
-		GuildMembers::theMutex.unlock();
 	}
 
 	void GuildMembers::removeGuildMember(GuildMember& guildMember) {
-		GuildMembers::theMutex.lock();
+		std::unique_lock<std::shared_mutex> theLock{ GuildMembers::theMutex };
 		GuildMemberId theKey{};
 		theKey.guildId = guildMember.guildId;
 		theKey.guildMemberId = guildMember.id;
 		GuildMembers::cache->erase(theKey);
-		GuildMembers::theMutex.unlock();
 	};
 
 	std::unique_ptr<std::map<GuildMemberId, std::unique_ptr<GuildMemberData>>> GuildMembers::cache{};

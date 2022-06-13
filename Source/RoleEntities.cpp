@@ -231,21 +231,18 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<RoleData> Roles::getCachedRoleAsync(GetRoleData dataPackage) {
-		Roles::theMutex.lock_shared();
+		std::shared_lock<std::shared_mutex> theLock{ Roles::theMutex };
 		co_await NewThreadAwaitable<RoleData>();
 		if (Roles::cache->contains(dataPackage.roleId)) {
-			Roles::theMutex.unlock_shared();
 			co_return *(*Roles::cache)[dataPackage.roleId];
 		} else {
-			Roles::theMutex.unlock_shared();
 			co_return Roles::getRoleAsync(dataPackage).get();
 		}
 	}
 
 	void Roles::insertRole(RoleData role) {
-		Roles::theMutex.lock();
+		std::unique_lock<std::shared_mutex> theLock{ Roles::theMutex };
 		if (role.id == 0) {
-			Roles::theMutex.unlock();
 			return;
 		}
 		auto newCache = std::make_unique<std::unordered_map<uint64_t, std::unique_ptr<RoleData>>>();
@@ -257,13 +254,11 @@ namespace DiscordCoreAPI {
 		}
 		Roles::cache.reset(nullptr);
 		Roles::cache = std::move(newCache);
-		Roles::theMutex.unlock();
 	}
 
 	void Roles::removeRole(const uint64_t& roleId) {
-		Roles::theMutex.lock();
+		std::unique_lock<std::shared_mutex> theLock{ Roles::theMutex };
 		Roles::cache->erase(roleId);
-		Roles::theMutex.unlock();
 	};
 
 	std::unique_ptr<std::unordered_map<uint64_t, std::unique_ptr<RoleData>>> Roles::cache{};
