@@ -1291,7 +1291,7 @@ namespace DiscordCoreInternal {
 				"\r\nPragma: no-cache\r\nUser-Agent: DiscordCoreAPI/1.0\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Key: " +
 				DiscordCoreAPI::generateBase64EncodedKey() + "\r\nSec-WebSocket-Version: 13\r\n\r\n";
 			this->sendMessage(sendVector);
-			WebSocketSSLShard::processIO(this->theClients);
+			WebSocketSSLShard::processIO(this->theClients, 1000);
 			bool areWeDone{ false };
 			while (!areWeDone) {
 				if (this->theClients[3]->inputBuffer.size() > 0) {
@@ -1304,8 +1304,7 @@ namespace DiscordCoreInternal {
 				if (this->theClients[3]->theState == WebSocketState::Connected) {
 					break;
 				}
-				WebSocketSSLShard::processIO(this->theClients);
-				std::this_thread::sleep_for(1ms);
+				WebSocketSSLShard::processIO(this->theClients, 1000);
 			}
 		} catch (...) {
 			if (this->doWePrintErrorMessages) {
