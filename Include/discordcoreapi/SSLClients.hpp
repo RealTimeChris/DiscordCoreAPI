@@ -25,6 +25,10 @@
 	#define OPENSSL_NO_DEPRECATED
 #endif
 
+#ifndef FD_SETSIZE
+	#define FD_SETSIZE 400
+#endif
+
 #ifdef _WIN32
 	#pragma comment(lib, "Ws2_32.lib")
 	#include <WS2tcpip.h>
@@ -303,6 +307,8 @@ namespace DiscordCoreInternal {
 		bool wantRead{ false };
 	};
 
+	class DiscordCoreAPI_Dll WebSocketSSLShard;
+	
 	class DiscordCoreAPI_Dll WebSocketSSLShard {
 	  public:
 		friend class DiscordCoreAPI::DiscordCoreClient;
@@ -310,9 +316,10 @@ namespace DiscordCoreInternal {
 		friend class VoiceSocketAgent;
 		friend class BaseSocketAgent;
 
-		WebSocketSSLShard(int32_t maxBufferSizeNew, int32_t currentShard, int32_t totalShards, bool doWePrintErrors) noexcept;
+		WebSocketSSLShard(std::queue<DiscordCoreAPI::ConnectionPackage>* connectionsNew, int32_t currentBaseSocketAgentNew, int32_t currentShardNew, int32_t totalShardsNew,
+			bool doWePrintErrorsNew) noexcept;
 
-		static void processIO(std::unordered_map<int32_t, std::unique_ptr<WebSocketSSLShard>>& theMap, int32_t = 10000);
+		static void processIO(std::unordered_map<int32_t, std::unique_ptr<WebSocketSSLShard>>& theMap, int32_t waitTimeInms = 10000);
 
 		void connect(const std::string& baseUrlNew, const std::string& portNew);
 
@@ -320,25 +327,28 @@ namespace DiscordCoreInternal {
 
 		std::string getInputBuffer() noexcept;
 
-		int64_t getBytesRead() noexcept;
+		int64_t getBytesRead() noexcept;		
 
 		~WebSocketSSLShard() noexcept = default;
 
 	  protected:
-		WSMessageCollectorState theState{ WSMessageCollectorState::Connecting };
-		DiscordCoreAPI::StopWatch<std::chrono::milliseconds> stopWatch{ 0ms };
-		std::queue<WSMessageCollectorReturnData> finalMessages{};
+		DiscordCoreAPI::StopWatch<std::chrono::milliseconds> heartBeatStopWatch{ 0ms };
+		std::queue<DiscordCoreAPI::ConnectionPackage>* connections{ nullptr };
+		WebSocketState theState{ WebSocketState::Connecting };
+		std::queue<std::string> processedMessages{};
 		std::atomic_bool areWeConnected{ false };
 		int32_t maxBufferSize{ (1024 * 16) - 1 };
 		std::vector<std::string> outputBuffer{};
 		bool haveWeReceivedHeartbeatAck{ true };
+		int32_t currentBaseSocketAgent{ 0 };
 		int32_t currentRecursionDepth{ 0 };
 		SOCKETWrapper theSocket{ nullptr };
 		SSL_CTXWrapper context{ nullptr };
 		bool areWeAuthenticated{ false };
 		int32_t maxRecursionDepth{ 10 };
 		bool areWeHeartBeating{ false };
-		int32_t lastNumberReceived{ 0 };		
+		int32_t lastNumberReceived{ 0 };
+		WebSocketCloseCode closeCode{};
 		bool doWePrintErrors{ false };
 		std::string currentMessage{};
 		WebSocketOpCode dataOpCode{};

@@ -119,7 +119,7 @@ namespace DiscordCoreInternal {
 
 	enum class WebSocketOpCode : uint8_t { Op_Continuation = 0x00, Op_Text = 0x01, Op_Binary = 0x02, Op_Close = 0x08, Op_Ping = 0x09, Op_Pong = 0x0a };
 
-	enum class WSMessageCollectorState : int8_t { Connecting = 0, Initializing = 1, Collecting = 2, Parsing = 3, Serving = 4 };
+	enum class WebSocketState : int8_t { Connecting = 0, Connected = 1 };
 
 	/// Websocket close codes. \brief Websocket close codes.
 	enum class WebSocketCloseCode : uint16_t {
@@ -138,12 +138,6 @@ namespace DiscordCoreInternal {
 		Invalid_API_Version = 4012,///< You sent an invalid version for the gateway.
 		Invalid_Intent = 4013,///< You sent an invalid intent for a Gateway Intent. You may have incorrectly calculated the bitwise value.
 		Disallowed_Intent = 4014,///< You sent a disallowed intent for a Gateway Intent. You may have tried to specify an intent that you have not enabled or are not approved for.
-	};
-
-	struct DiscordCoreAPI_Dll WSMessageCollectorReturnData {
-		WebSocketCloseCode closeCode{ WebSocketCloseCode{ 0 } };
-		WebSocketOpCode opCode{};
-		std::string theMessage{};
 	};
 
 }// namespace DiscordCoreInternal
@@ -790,9 +784,10 @@ namespace DiscordCoreAPI {
 	 * @{
 	 */
 
-	struct ReconnectionPackage {
+	struct ConnectionPackage {
 		int32_t currentBaseSocketAgent{};
 		int32_t lastNumberReceived{};
+		std::string sessionId{};
 		int32_t currentShard{};
 	};
 

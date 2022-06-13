@@ -185,15 +185,13 @@ namespace DiscordCoreAPI {
 			this->altAddress = gatewayData.url.substr(gatewayData.url.find("wss://") + std::string("wss://").size());
 		}
 
-		for (auto& value: shardsPerWorkerVect) {
-			std::cout << "THE VALUE: " << value << std::endl;
-		}
-
+		this->theStopWatch.resetTimer();
 		for (auto& value: shardsPerWorkerVect) {
 			auto thePtr = std::make_unique<DiscordCoreInternal::BaseSocketAgent>(this->botToken, this->altAddress, &this->eventManager, this, &this->commandController,
 				&Globals::doWeQuit, this->loggingOptions.logWebSocketSuccessMessages, this->loggingOptions.logWebSocketErrorMessages, currentBaseSocketAgent);
 			this->baseSocketAgentMap[std::to_string(currentBaseSocketAgent)] = std::move(thePtr);
 			for (int32_t x = 0; x < value; x += 1) {
+				
 				if (this->loggingOptions.logGeneralSuccessMessages) {
 					std::cout << shiftToBrightBlue() << "Connecting Shard " + std::to_string(currentShard + 1) << " of " << this->shardingOptions.numberOfShardsForThisProcess
 							  << std::string(" Shards for this process. (") + std::to_string(currentShard + 1) + " of " +
@@ -201,18 +199,17 @@ namespace DiscordCoreAPI {
 							  << std::endl
 							  << std::endl;
 				}
-				ReconnectionPackage theData{};
+				ConnectionPackage theData{};
 				theData.currentShard = currentShard;
-				std::cout << "THE CURRENT SHARD: " << currentShard << std::endl;
 				theData.currentBaseSocketAgent = currentBaseSocketAgent;
 				this->baseSocketAgentMap[std::to_string(currentBaseSocketAgent)]->connect(theData);
 				if (!this->baseSocketAgentMap[std::to_string(currentBaseSocketAgent)]->theClients.contains(currentShard) &&
 					this->baseSocketAgentMap[std::to_string(currentBaseSocketAgent)]->theClients[currentShard] != nullptr) {
 					if (!this->baseSocketAgentMap[std::to_string(currentBaseSocketAgent)]->theClients[currentShard]->areWeConnected) {
+						std::cout << shiftToBrightRed() << "Failed to connect shard " + std::to_string(currentShard) + ", attempting to reconnect..." << std::endl << std::endl;
 						if (this->loggingOptions.logGeneralErrorMessages) {
-							std::cout << shiftToBrightRed() << "Failed to connect shard " + std::to_string(currentShard) + ", attempting to reconnect..." << std::endl << std::endl;
 						}
-						ReconnectionPackage theData{};
+						ConnectionPackage theData{};
 						theData.currentShard = currentShard;
 						theData.currentBaseSocketAgent = currentBaseSocketAgent;
 						this->baseSocketAgentMap[std::to_string(currentBaseSocketAgent)]->connect(theData);

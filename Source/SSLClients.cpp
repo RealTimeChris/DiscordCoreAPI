@@ -16,8 +16,9 @@
 /// Dec 12, 2021
 /// https://discordcoreapi.com
 /// \file SSLClients.cpp
-/// 
+
 #include <discordcoreapi/SSLClients.hpp>
+#include <discordcoreapi/WebSocketEntities.hpp>
 
 namespace DiscordCoreInternal {
 
@@ -237,13 +238,14 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	WebSocketSSLShard::WebSocketSSLShard(int32_t maxBufferSizeNew, int32_t currentShard, int32_t totalShards, bool doWePrintErrorsNew) noexcept {
+	WebSocketSSLShard::WebSocketSSLShard(std::queue<DiscordCoreAPI::ConnectionPackage>* connectionsNew, int32_t currentBaseSocketAgentNew, int32_t currentShardNew, int32_t totalShardsNew, bool doWePrintErrorsNew) noexcept {
+		this->heartBeatStopWatch = DiscordCoreAPI::StopWatch<std::chrono::milliseconds>{ 10000ms };
+		this->currentBaseSocketAgent = currentBaseSocketAgentNew;
 		this->doWePrintErrors = doWePrintErrorsNew;
-		this->maxBufferSize = maxBufferSizeNew;
-		this->shard.push_back(currentShard);
-		this->shard.push_back(totalShards);
-		this->stopWatch = DiscordCoreAPI::StopWatch<std::chrono::milliseconds>{ 10000ms };
-		this->stopWatch.resetTimer();
+		this->shard.push_back(currentShardNew);
+		this->shard.push_back(totalShardsNew);
+		this->connections = connectionsNew;
+		this->heartBeatStopWatch.resetTimer();
 	};
 
 	void WebSocketSSLShard::processIO(std::unordered_map<SOCKET, std::unique_ptr<WebSocketSSLShard>>& theMap, int32_t waitTimeInms) {
@@ -288,7 +290,6 @@ namespace DiscordCoreInternal {
 						if (readBytes > 0) {
 							value->inputBuffer.insert(value->inputBuffer.end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
 							value->bytesRead += readBytes;
-							std::cout << "READ BYTES: " << value->inputBuffer << std::endl;
 						}
 						break;
 					}
@@ -308,11 +309,20 @@ namespace DiscordCoreInternal {
 					}
 					default: {
 						if (value->doWePrintErrors) {
-							std::cout << reportSSLError("WebSocketSSLServerMain::processIO::SSL_read_ex() Error: ", returnValue, value->ssl) +
-									reportError("WebSocketSSLServerMain::processIO::SSL_read_ex() Error: ", returnValue)
-									  << std::endl;
+							std::cout << reportSSLError("Error, on Shard [" + std::to_string(key) + "], in WebSocketSSLServerMain::processIO::SSL_read_ex(): ", returnValue,
+											 value->ssl) +
+									reportError("Error, on Shard [" + std::to_string(key) + "], in WebSocketSSLServerMain::processIO::SSL_read_ex(): ", returnValue)<< std::endl;
 						}
 						value->areWeConnected.store(false);
+						DiscordCoreAPI::ConnectionPackage theData{};
+						theData.currentBaseSocketAgent = value->currentBaseSocketAgent;
+						theData.lastNumberReceived = value->lastNumberReceived;
+						theData.sessionId = value->sessionId;
+						theData.currentShard = key;
+						theMap.erase(key);
+						if (value->connections != nullptr) {
+							value->connections->push(theData);
+						}
 						continue;
 					}
 				}
@@ -332,7 +342,6 @@ namespace DiscordCoreInternal {
 						case SSL_ERROR_NONE: {
 							if (value->outputBuffer.size() > 0 && writtenBytes > 0) {
 								value->outputBuffer.erase(value->outputBuffer.begin());
-								std::cout << "WRITTEN BYTES: " << theString<< std::endl;
 							}
 							break;
 						}
@@ -352,11 +361,22 @@ namespace DiscordCoreInternal {
 						}
 						default: {
 							if (value->doWePrintErrors) {
-								std::cout << reportSSLError("WebSocketSSLServerMain::processIO::SSL_write_ex() Error: ", returnValue, value->ssl) +
-										reportError("WebSocketSSLServerMain::processIO::SSL_write_ex() Error: ", returnValue)
+								std::cout << reportSSLError("Error, on Shard [" + std::to_string(key) + "], in WebSocketSSLServerMain::processIO::SSL_write_ex(): ", returnValue,
+												 value->ssl) +
+										reportError("Error, on Shard [" + std::to_string(key) + "], in WebSocketSSLServerMain::processIO::SSL_write_ex(): ", returnValue)
 										  << std::endl;
 							}
 							value->areWeConnected.store(false);
+							DiscordCoreAPI::ConnectionPackage theData{};
+							theData.currentBaseSocketAgent = value->currentBaseSocketAgent;
+							theData.lastNumberReceived = value->lastNumberReceived;
+							theData.sessionId = value->sessionId;
+							theData.currentShard = key;
+							theMap.erase(key);
+							if (value->connections != nullptr) {
+								value->connections->push(theData);
+							}
+							continue;
 						}
 					}
 				}
