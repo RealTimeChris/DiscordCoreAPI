@@ -43,7 +43,7 @@ namespace DiscordCoreInternal {
 
 		const std::string baseUrl02{ "https://api-v2.soundcloud.com" };
 		const std::string baseUrl{ "https://soundcloud.com" };
-		const std::string appVersion{ "1649920649" };
+		const std::string appVersion{ "1654762087" };
 		HttpClient* httpClient{ nullptr };
 
 		DiscordCoreAPI::Song constructDownloadInfo(DiscordCoreAPI::Song& newSong);

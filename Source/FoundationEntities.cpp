@@ -35,17 +35,6 @@
 	#undef min
 #endif
 
-namespace DiscordCoreInternal {
-
-	std::string logLocation() {
-		std::source_location theLocation{};
-		std::stringstream theStream{};
-		theStream << "File: " << theLocation.file_name() << " (" << std::to_string(theLocation.line()) << ":" << std::to_string(theLocation.column()) << "), " << theLocation.function_name() << ", ";
-		std::string returnString{ theStream.str() };
-		return returnString;
-	}
-}
-
 namespace DiscordCoreAPI {
 
 	StringWrapper& StringWrapper::operator=(const std::string& theString) {
@@ -237,10 +226,21 @@ namespace DiscordCoreAPI {
 			if (sendBuffer) {
 				sendBuffer->send(e);
 			} else {
+				std::string returnString{};
 				if (stackTrace.back() == '\n') {
-					std::cout << shiftToBrightRed() << DiscordCoreInternal::logLocation() + "Error: " << e.what() << reset() << std::endl;
+					std::source_location theLocation = std::source_location::current();
+					std::stringstream theStream{};
+					theStream << stackTrace << ", File: " << theLocation.file_name() << " (" << std::to_string(theLocation.line()) << ":" << std::to_string(theLocation.column())
+							  << "), " << theLocation.function_name() << ",";
+					returnString = theStream.str();
+					std::cout << shiftToBrightRed() << returnString + "Error: " << e.what() << reset() << std::endl;
 				} else {
-					std::cout << shiftToBrightRed() << DiscordCoreInternal::logLocation() + " Error: " << e.what() << reset() << std::endl;
+					std::source_location theLocation = std::source_location::current();
+					std::stringstream theStream{};
+					theStream << stackTrace << ", File: " << theLocation.file_name() << " (" << std::to_string(theLocation.line()) << ":" << std::to_string(theLocation.column())
+							  << "), " << theLocation.function_name() << ",";
+					returnString = theStream.str();
+					std::cout << shiftToBrightRed() << returnString + " Error: " << e.what() << reset() << std::endl;
 				}
 			}
 		}

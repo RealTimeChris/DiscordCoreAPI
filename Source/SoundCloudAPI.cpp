@@ -149,7 +149,6 @@ namespace DiscordCoreInternal {
 			downloadUrl.urlPath = newSong.secondDownloadUrl;
 			newSong.finalDownloadUrls.push_back(downloadUrl);
 		}
-
 		return newSong;
 	}
 
@@ -193,14 +192,14 @@ namespace DiscordCoreInternal {
 		std::string newerString02{};
 		newerString02.insert(newerString02.begin(), returnData02[0].responseMessage.begin(), returnData02[0].responseMessage.end());
 
-		std::string newString03 = newerString02.substr(newerString02.find("client_id=") + std::string{ "client_id=" }.size());
+		std::string newString03 = newerString02.substr(newerString02.find("i.push(\"client_id=") + std::string{ "i.push(\"client_id=" }.size());
 		std::string clientIdNew{};
-		if (newString03.find("\"),i.push") != std::string::npos) {
-			clientIdNew = newString03.substr(0, newString03.find("\"),i.push"));
-		} else if (newString03.find("\"),o.push") != std::string::npos) {
-			clientIdNew = newString03.substr(0, newString03.find("\"),o.push"));
+		if (newString03.find("\"),i.push(\"device") != std::string::npos) {
+			clientIdNew = newString03.substr(0, newString03.find("\"),i.push(\"device"));
+		} else if (newString03.find("\"),i.push(\"device") != std::string::npos) {
+			clientIdNew = newString03.substr(0, newString03.find("\"),i.push(\"device"));
 		}
-		if (returnData[0].responseCode not_eq 200 && this->httpClient->getDoWePrintHttpErrorMessages()) {
+		if (returnData02[0].responseCode not_eq 200 && this->httpClient->getDoWePrintHttpErrorMessages()) {
 			std::cout << DiscordCoreAPI::shiftToBrightRed() << "SoundCloudAPI::searchForSong Error: " << returnData[0].responseCode << newerString02.c_str()
 					  << DiscordCoreAPI::reset() << std::endl
 					  << std::endl;

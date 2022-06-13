@@ -160,7 +160,7 @@ namespace DiscordCoreAPI {
 			return false;
 		}
 		this->shardingOptions.numberOfShardsForThisProcess = this->shardingOptions.totalNumberOfShards;
-		auto workerCount = static_cast<int32_t>(std::thread::hardware_concurrency()) - 1;
+		auto workerCount = static_cast<int32_t>((std::thread::hardware_concurrency()) / 2) - 1;
 		int32_t shardsPerWorker{ static_cast<int32_t>(floor(static_cast<float>(this->shardingOptions.totalNumberOfShards) / static_cast<float>(workerCount))) };
 		int32_t leftOverShards{ this->shardingOptions.totalNumberOfShards - shardsPerWorker * workerCount };
 		
