@@ -904,7 +904,7 @@ namespace DiscordCoreInternal {
 	void BaseSocketAgent::sendCloseFrame(int32_t theIndex) noexcept {
 		if (this->theClients.contains(theIndex)) {
 			std::string theString{};
-			theString.push_back(static_cast<int8_t>(WebSocketOpCode::Op_Close) | webSocketFinishBit);
+			theString.push_back(static_cast<int8_t>(WebSocketOpCode::Op_Close) | static_cast<int8_t>(webSocketFinishBit));
 			theString.push_back(0);
 			theString.push_back(static_cast<int8_t>(static_cast<uint16_t>(1000) >> 8));
 			theString.push_back(static_cast<int8_t>(1000 & 0xff));
