@@ -929,10 +929,10 @@ namespace DiscordCoreInternal {
 				}
 				for (auto& [key, value]: this->theClients) {
 					WebSocketSSLShard::processIO(this->theClients);
-					if (value->inputBuffer.size() > 0 && this->theClients.contains(key)) {
+					if (this->theClients.contains(key) &&value->inputBuffer.size() > 0) {
 						this->parseHeadersAndMessage(*value);
 					}
-					if (value->processedMessages.size() > 0 && this->theClients.contains(key)) {
+					if (this->theClients.contains(key) && value->processedMessages.size() > 0) {
 						this->onMessageReceived(key);
 					}
 					if (this->theClients.contains(key)) {
