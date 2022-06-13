@@ -253,21 +253,24 @@ namespace DiscordCoreInternal {
 		fd_set readSet{}, writeSet{};
 		FD_ZERO(&readSet);
 		FD_ZERO(&writeSet);
+		bool didWeSetASocket{ false };
 		for (auto& [key, value]: theMap) {
 			if (value != nullptr) {
 				if ((value->outputBuffer.size() > 0 || value->wantWrite) && !value->wantRead) {
 					FD_SET(value->theSocket, &writeSet);
 					writeNfds = value->theSocket > writeNfds ? value->theSocket : writeNfds;
+					didWeSetASocket = true;
 				}
 				if (!value->wantWrite) {
 					FD_SET(value->theSocket, &readSet);
 					readNfds = value->theSocket > readNfds ? value->theSocket : readNfds;
+					didWeSetASocket = true;
 				}
 				finalNfds = readNfds > writeNfds ? readNfds : writeNfds;
 			}
 		}
 
-		if (readSet.fd_count == 0 && writeSet.fd_count == 0) {
+		if (!didWeSetASocket) {
 			return;
 		}
 
