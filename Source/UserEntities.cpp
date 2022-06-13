@@ -133,8 +133,9 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<UserData> Users::getCachedUserAsync(GetUserData dataPackage) {
+		SharedMutexWrapper theLock{ Users::theMutex };
+		theLock.lockShared();
 		co_await NewThreadAwaitable<UserData>();
-		std::lock_guard<std::recursive_mutex> theLock{ Users::theMutex };
 		if (Users::cache->contains(dataPackage.userId)) {
 			co_return *(*Users::cache)[dataPackage.userId];
 		} else {
@@ -207,7 +208,8 @@ namespace DiscordCoreAPI {
 	}
 
 	void Users::insertUser(UserData user) {
-		std::lock_guard<std::recursive_mutex> theLock{ Users::theMutex };
+		SharedMutexWrapper theLock{ Users::theMutex };
+		theLock.lock();
 		if (user.id == 0) {
 			return;
 		}
@@ -224,7 +226,7 @@ namespace DiscordCoreAPI {
 
 	std::unique_ptr<std::unordered_map<uint64_t, std::unique_ptr<UserData>>> Users::cache{};
 	DiscordCoreInternal::HttpClient* Users::httpClient{ nullptr };
-	std::recursive_mutex Users::theMutex{};
+	std::shared_mutex Users::theMutex{};
 	bool Users::doWeCache{ false };
 
 }

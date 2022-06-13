@@ -213,7 +213,6 @@ namespace DiscordCoreInternal {
 		} else if (newString03.find("\"),i.push(\"device") != std::string::npos) {
 			clientIdNew = newString03.substr(0, newString03.find("\"),i.push(\"device"));
 		}
-		std::cout << "THE CLIENT ID: " << clientIdNew << std::endl;
 		if (returnData02[0].responseCode not_eq 200 && this->httpClient->getDoWePrintHttpErrorMessages()) {
 			std::cout << DiscordCoreAPI::shiftToBrightRed() << "SoundCloudAPI::searchForSong Error: " << returnData[0].responseCode << newerString02.c_str()
 					  << DiscordCoreAPI::reset() << std::endl

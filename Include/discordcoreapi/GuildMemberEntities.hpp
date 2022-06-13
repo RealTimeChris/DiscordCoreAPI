@@ -180,7 +180,7 @@ namespace DiscordCoreAPI {
 	  protected:
 		static std::unique_ptr<std::map<GuildMemberId, std::unique_ptr<GuildMemberData>>> cache;
 		static DiscordCoreInternal::HttpClient* httpClient;
-		static std::recursive_mutex theMutex;
+		static std::shared_mutex theMutex;
 		static bool doWeCache;
 
 		static void insertGuildMember(GuildMemberData dataPackage);

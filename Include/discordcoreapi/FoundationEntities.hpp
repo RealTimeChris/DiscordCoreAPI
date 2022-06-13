@@ -52,6 +52,7 @@
 #include <nlohmann/json.hpp>
 #include <source_location>
 #include <unordered_map>
+#include <shared_mutex>
 #include <functional>
 #include <semaphore>
 #include <coroutine>
@@ -195,6 +196,42 @@ namespace DiscordCoreAPI {
 	class Roles;
 	class Guild;
 	class Test;
+
+	struct SharedMutexWrapper {
+		SharedMutexWrapper(std::shared_mutex& theMutexNew) : theMutex(theMutexNew) {}
+
+		bool tryLock() {
+			return this->theMutex.try_lock();
+		}
+
+		bool tryLockShared() {
+			return this->theMutex.try_lock_shared();
+		}
+
+		void unlock() {
+			this->theMutex.unlock();
+		}
+
+		void unlockShared() {
+			this->theMutex.unlock_shared();
+		}
+
+		void lock() {
+			this->theMutex.lock();
+		}
+
+		void lockShared() {
+			this->theMutex.lock_shared();
+		}
+
+		~SharedMutexWrapper() {
+			this->theMutex.unlock_shared();
+			this->theMutex.unlock();
+		}
+
+	  protected:
+		std::shared_mutex& theMutex;
+	};
 
 	template<typename ReturnType, typename... ArgTypes> class EventDelegate;
 	template<typename ReturnType, typename... ArgTypes> class Event;
