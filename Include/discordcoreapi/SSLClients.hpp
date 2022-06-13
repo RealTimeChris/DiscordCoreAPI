@@ -327,7 +327,7 @@ namespace DiscordCoreInternal {
 
 		std::string getInputBuffer() noexcept;
 
-		int64_t getBytesRead() noexcept;		
+		int64_t getBytesRead() noexcept;
 
 		~WebSocketSSLShard() noexcept = default;
 
