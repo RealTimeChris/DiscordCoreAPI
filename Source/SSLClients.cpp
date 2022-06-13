@@ -322,10 +322,8 @@ namespace DiscordCoreInternal {
 						if (value->connections != nullptr) {
 							value->connections->push(theData);
 						}
-						std::erase_if(theMap, [&](const auto &item) mutable {
-							return (item.second.operator*().theSocket == key);
-						});
-						continue;
+						theMap.erase(key);
+						return;
 					}
 				}
 			}
@@ -377,10 +375,8 @@ namespace DiscordCoreInternal {
 							if (value->connections != nullptr) {
 								value->connections->push(theData);
 							}
-							std::erase_if(theMap, [&](const auto& item) mutable {
-								return (item.second.operator*().theSocket == key);
-							});
-							continue;
+							theMap.erase(key);
+							break;
 						}
 					}
 				}

@@ -871,7 +871,8 @@ namespace DiscordCoreInternal {
 
 	void BaseSocketAgent::checkForAndSendHeartBeat(int32_t theIndex, bool isImmediate) noexcept {
 		try {
-			if ((this->theClients[theIndex]->heartBeatStopWatch.hasTimePassed() && this->theClients[theIndex]->haveWeReceivedHeartbeatAck) || isImmediate) {
+			if ((this->theClients.contains(theIndex) && this->theClients[theIndex]->heartBeatStopWatch.hasTimePassed() && this->theClients[theIndex]->haveWeReceivedHeartbeatAck) ||
+				isImmediate) {
 				nlohmann::json heartbeat = JSONIFY(this->theClients[theIndex]->lastNumberReceived);
 				std::string theString{};
 				this->stringifyJsonData(heartbeat, theString);
@@ -895,16 +896,18 @@ namespace DiscordCoreInternal {
 				}
 				for (auto& [key, value]: this->theClients) {
 					WebSocketSSLShard::processIO(this->theClients);
-					if (value->inputBuffer.size() > 0) {
+					if (value->inputBuffer.size() > 0 && this->theClients.contains(key)) {
 						this->parseHeadersAndMessage(*value);
 					}
-					if (value->processedMessages.size() > 0) {
+					if (value->processedMessages.size() > 0 && this->theClients.contains(key)) {
 						this->onMessageReceived(key);
 					}
-					this->checkForAndSendHeartBeat(key);
-					if (this->theClients[key] != nullptr && this->heartbeatInterval != 0 && !this->theClients[key]->areWeHeartBeating) {
-						this->theClients[key]->areWeHeartBeating = true;
-						this->theClients[key]->heartBeatStopWatch = DiscordCoreAPI::StopWatch{ std::chrono::milliseconds{ this->heartbeatInterval } };
+					if (this->theClients.contains(key)) {
+						this->checkForAndSendHeartBeat(key);
+						if (this->theClients[key] != nullptr && this->heartbeatInterval != 0 && !this->theClients[key]->areWeHeartBeating) {
+							this->theClients[key]->areWeHeartBeating = true;
+							this->theClients[key]->heartBeatStopWatch = DiscordCoreAPI::StopWatch{ std::chrono::milliseconds{ this->heartbeatInterval } };
+						}
 					}
 				}
 				std::this_thread::sleep_for(1ms);

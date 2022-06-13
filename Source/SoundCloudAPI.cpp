@@ -41,115 +41,129 @@ namespace DiscordCoreInternal {
 	}
 
 	std::vector<DiscordCoreAPI::Song> SoundCloudRequestBuilder::collectSearchResults(const std::string& songQuery) {
-		std::unordered_map<std::string, std::string> theHeaders{
-			std::pair("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.88 Safari/537.36"),
-		};
-		HttpWorkloadData dataPackage{};
-		dataPackage.baseUrl = SoundCloudRequestBuilder::baseUrl02;
-		dataPackage.relativePath = "/search?q=" + DiscordCoreAPI::urlEncode(songQuery.c_str()) + "&facet=model&client_id=" + SoundCloudRequestBuilder::clientId +
-			"&limit=20&offset=0&linked_partitioning=1&app_version=" + SoundCloudRequestBuilder::appVersion + "&app_locale=en";
-		dataPackage.headersToInsert = theHeaders;
-		dataPackage.workloadClass = HttpWorkloadClass::Get;
-		std::vector<HttpWorkloadData> workloadVector01{};
-		workloadVector01.push_back(dataPackage);
-		std::vector<HttpResponseData> returnData = this->httpClient->submitWorkloadAndGetResult<std::vector<HttpResponseData>>(workloadVector01);
-		if (returnData.size() < 1) {
-			return std::vector<DiscordCoreAPI::Song>{};
-		}
-		nlohmann::json data = nlohmann::json::parse(returnData[0].responseMessage);
-		std::vector<DiscordCoreAPI::Song> results{};
-		if (data.contains("collection") && !data["collection"].is_null()) {
-			for (auto& value: data["collection"]) {
-				DiscordCoreAPI::Song newSong{};
-				parseObject(value, newSong);
-				if (!newSong.doWeGetSaved || newSong.songTitle == "") {
-					continue;
-				}
-				newSong.type = DiscordCoreAPI::SongType::SoundCloud;
-				newSong.firstDownloadUrl += "?client_id=" + SoundCloudRequestBuilder::clientId + "&track_authorization=" + newSong.trackAuthorization;
-				if (newSong.thumbnailUrl.find_first_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890 ") != std::string::npos &&
-					newSong.thumbnailUrl.find("https") != std::string::npos) {
-					std::string newString = newSong.thumbnailUrl.substr(0, newSong.thumbnailUrl.find_last_of("-t") + 1);
-					newString += "t500x500.jpg";
-					newSong.thumbnailUrl = newString;
-				}
-				results.push_back(newSong);
-			}
-		}
-		return results;
-	}
-
-	DiscordCoreAPI::Song SoundCloudRequestBuilder::constructDownloadInfo(DiscordCoreAPI::Song& newSong) {
-		HttpWorkloadData dataPackage01{};
-		dataPackage01.baseUrl = newSong.firstDownloadUrl;
-		dataPackage01.workloadClass = HttpWorkloadClass::Get;
-		std::vector<HttpWorkloadData> workloadVector00{};
-		workloadVector00.push_back(dataPackage01);
-		auto results = this->httpClient->submitWorkloadAndGetResult<std::vector<HttpResponseData>>(workloadVector00);
-		if (results.size() < 1) {
-			return DiscordCoreAPI::Song{};
-		}
-		nlohmann::json data = nlohmann::json::parse(results[0].responseMessage);
-		if (data.contains("url")) {
-			newSong.secondDownloadUrl = data["url"];
-		}
-		if (newSong.secondDownloadUrl.find("/playlist") != std::string::npos) {
+		try {
+			std::unordered_map<std::string, std::string> theHeaders{
+				std::pair("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.88 Safari/537.36"),
+			};
 			HttpWorkloadData dataPackage{};
-			dataPackage.baseUrl = newSong.secondDownloadUrl;
+			dataPackage.baseUrl = SoundCloudRequestBuilder::baseUrl02;
+			dataPackage.relativePath = "/search?q=" + DiscordCoreAPI::urlEncode(songQuery.c_str()) + "&facet=model&client_id=" + SoundCloudRequestBuilder::clientId +
+				"&limit=20&offset=0&linked_partitioning=1&app_version=" + SoundCloudRequestBuilder::appVersion + "&app_locale=en";
+			dataPackage.headersToInsert = theHeaders;
 			dataPackage.workloadClass = HttpWorkloadClass::Get;
 			std::vector<HttpWorkloadData> workloadVector01{};
 			workloadVector01.push_back(dataPackage);
-			std::vector<HttpResponseData> results = this->httpClient->submitWorkloadAndGetResult<std::vector<HttpResponseData>>(workloadVector01);
-			std::string newString{};
+			std::vector<HttpResponseData> returnData = this->httpClient->submitWorkloadAndGetResult<std::vector<HttpResponseData>>(workloadVector01);
+			if (returnData.size() < 1) {
+				return std::vector<DiscordCoreAPI::Song>{};
+			}
+			nlohmann::json data = nlohmann::json::parse(returnData[0].responseMessage);
+			std::vector<DiscordCoreAPI::Song> results{};
+			if (data.contains("collection") && !data["collection"].is_null()) {
+				for (auto& value: data["collection"]) {
+					DiscordCoreAPI::Song newSong{};
+					parseObject(value, newSong);
+					if (!newSong.doWeGetSaved || newSong.songTitle == "") {
+						continue;
+					}
+					newSong.type = DiscordCoreAPI::SongType::SoundCloud;
+					newSong.firstDownloadUrl += "?client_id=" + SoundCloudRequestBuilder::clientId + "&track_authorization=" + newSong.trackAuthorization;
+					if (newSong.thumbnailUrl.find_first_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890 ") != std::string::npos &&
+						newSong.thumbnailUrl.find("https") != std::string::npos) {
+						std::string newString = newSong.thumbnailUrl.substr(0, newSong.thumbnailUrl.find_last_of("-t") + 1);
+						newString += "t500x500.jpg";
+						newSong.thumbnailUrl = newString;
+					}
+					results.push_back(newSong);
+				}
+			}
+			return results;
+		} catch (...) {
+			if (this->httpClient->getDoWePrintHttpErrorMessages()) {
+				DiscordCoreAPI::reportException("SoundCloudRequestBuilder::collectSearchResults()");
+			}
+		}
+		return std::vector<DiscordCoreAPI::Song>{};	
+	}
+
+	DiscordCoreAPI::Song SoundCloudRequestBuilder::constructDownloadInfo(DiscordCoreAPI::Song& newSong) {
+		try {
+			HttpWorkloadData dataPackage01{};
+			dataPackage01.baseUrl = newSong.firstDownloadUrl;
+			dataPackage01.workloadClass = HttpWorkloadClass::Get;
+			std::vector<HttpWorkloadData> workloadVector00{};
+			workloadVector00.push_back(dataPackage01);
+			auto results = this->httpClient->submitWorkloadAndGetResult<std::vector<HttpResponseData>>(workloadVector00);
 			if (results.size() < 1) {
 				return DiscordCoreAPI::Song{};
 			}
-			newString.insert(newString.begin(), results[0].responseMessage.begin(), results[0].responseMessage.end());
-			newSong.finalDownloadUrls.clear();
-			while (newString.find("#EXTINF:") != std::string::npos) {
-				std::string newString01 = "#EXTINF:";
-				std::string newString02 = newString.substr(newString.find("#EXTINF:") + newString01.size());
-				std::string newString00 = newString02.substr(0, newString02.find(","));
-				std::string newString03 = newString02.substr(newString02.find(",") + 2, newString02.find("#EXTINF:") - (newString00.size() + 3));
-				newString = newString02.substr(newString02.find(","));
-				if (newString03.find("#EXT-X-ENDLIST") != std::string::npos) {
-					newString03 = newString03.substr(0, newString03.find("#EXT-X-ENDLIST"));
+			nlohmann::json data = nlohmann::json::parse(results[0].responseMessage);
+			if (data.contains("url")) {
+				newSong.secondDownloadUrl = data["url"];
+			}
+			if (newSong.secondDownloadUrl.find("/playlist") != std::string::npos) {
+				HttpWorkloadData dataPackage{};
+				dataPackage.baseUrl = newSong.secondDownloadUrl;
+				dataPackage.workloadClass = HttpWorkloadClass::Get;
+				std::vector<HttpWorkloadData> workloadVector01{};
+				workloadVector01.push_back(dataPackage);
+				std::vector<HttpResponseData> results = this->httpClient->submitWorkloadAndGetResult<std::vector<HttpResponseData>>(workloadVector01);
+				std::string newString{};
+				if (results.size() < 1) {
+					return DiscordCoreAPI::Song{};
 				}
-				std::string newString04 = newString03.substr(newString03.find_first_of("1234567890"));
-				int32_t firstNumber01 = stoi(newString04.substr(0, newString04.find("/")));
-				std::string newString05 = newString04.substr(newString04.find("/") + 1);
-				int32_t secondNumber = stoi(newString05.substr(0, newString05.find("/")));
+				newString.insert(newString.begin(), results[0].responseMessage.begin(), results[0].responseMessage.end());
+				newSong.finalDownloadUrls.clear();
+				while (newString.find("#EXTINF:") != std::string::npos) {
+					std::string newString01 = "#EXTINF:";
+					std::string newString02 = newString.substr(newString.find("#EXTINF:") + newString01.size());
+					std::string newString00 = newString02.substr(0, newString02.find(","));
+					std::string newString03 = newString02.substr(newString02.find(",") + 2, newString02.find("#EXTINF:") - (newString00.size() + 3));
+					newString = newString02.substr(newString02.find(","));
+					if (newString03.find("#EXT-X-ENDLIST") != std::string::npos) {
+						newString03 = newString03.substr(0, newString03.find("#EXT-X-ENDLIST"));
+					}
+					std::string newString04 = newString03.substr(newString03.find_first_of("1234567890"));
+					int32_t firstNumber01 = stoi(newString04.substr(0, newString04.find("/")));
+					std::string newString05 = newString04.substr(newString04.find("/") + 1);
+					int32_t secondNumber = stoi(newString05.substr(0, newString05.find("/")));
+					DiscordCoreAPI::DownloadUrl downloadUrl{};
+					downloadUrl.urlPath = newString03;
+					downloadUrl.contentSize = secondNumber - firstNumber01;
+					newSong.finalDownloadUrls.push_back(downloadUrl);
+				}
+				for (auto& value: newSong.finalDownloadUrls) {
+					newSong.contentLength += value.contentSize;
+				}
+			} else {
+				std::unordered_map<std::string, std::string> theHeaders{
+					std::pair("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.88 Safari/537.36"),
+					std::pair("Path", newSong.secondDownloadUrl)
+				};
+				HttpWorkloadData dataPackage02{};
+				dataPackage02.baseUrl = newSong.secondDownloadUrl;
+				dataPackage02.headersToInsert = theHeaders;
+				dataPackage02.workloadClass = HttpWorkloadClass::Get;
+				std::vector<HttpWorkloadData> workloadVector{};
+				workloadVector.push_back(dataPackage02);
+				auto headersNew = this->httpClient->submitWorkloadAndGetResult<std::vector<HttpResponseData>>(workloadVector);
+				if (headersNew.size() < 1) {
+					return DiscordCoreAPI::Song{};
+				}
+				auto valueBitRate = stoll(headersNew[0].responseHeaders.find("x-amz-meta-bitrate")->second);
+				auto valueLength = stoll(headersNew[0].responseHeaders.find("x-amz-meta-duration")->second);
 				DiscordCoreAPI::DownloadUrl downloadUrl{};
-				downloadUrl.urlPath = newString03;
-				downloadUrl.contentSize = secondNumber - firstNumber01;
+				downloadUrl.contentSize = static_cast<int32_t>(((valueBitRate * valueLength) / 8) - 193);
+				downloadUrl.urlPath = newSong.secondDownloadUrl;
 				newSong.finalDownloadUrls.push_back(downloadUrl);
 			}
-			for (auto& value: newSong.finalDownloadUrls) {
-				newSong.contentLength += value.contentSize;
-			}
-		} else {
-			std::unordered_map<std::string, std::string> theHeaders{
-				std::pair("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.88 Safari/537.36"),
-				std::pair("Path", newSong.secondDownloadUrl)
-			};
-			HttpWorkloadData dataPackage02{};
-			dataPackage02.baseUrl = newSong.secondDownloadUrl;
-			dataPackage02.headersToInsert = theHeaders;
-			dataPackage02.workloadClass = HttpWorkloadClass::Get;
-			std::vector<HttpWorkloadData> workloadVector{};
-			workloadVector.push_back(dataPackage02);
-			auto headersNew = this->httpClient->submitWorkloadAndGetResult<std::vector<HttpResponseData>>(workloadVector);
-			if (headersNew.size() < 1) {
-				return DiscordCoreAPI::Song{};
-			}
-			auto valueBitRate = stoll(headersNew[0].responseHeaders.find("x-amz-meta-bitrate")->second);
-			auto valueLength = stoll(headersNew[0].responseHeaders.find("x-amz-meta-duration")->second);
-			DiscordCoreAPI::DownloadUrl downloadUrl{};
-			downloadUrl.contentSize = static_cast<int32_t>(((valueBitRate * valueLength) / 8) - 193);
-			downloadUrl.urlPath = newSong.secondDownloadUrl;
-			newSong.finalDownloadUrls.push_back(downloadUrl);
+			return newSong;
+		} catch (...) {
+			if (this->httpClient->getDoWePrintHttpErrorMessages()) {
+				DiscordCoreAPI::reportException("SoundCloudRequestBuilder::constructDownloadInfo()");
+			}		
 		}
-		return newSong;
+		return DiscordCoreAPI::Song{};
 	}
 
 	std::string SoundCloudRequestBuilder::collectClientId() {
@@ -199,6 +213,7 @@ namespace DiscordCoreInternal {
 		} else if (newString03.find("\"),i.push(\"device") != std::string::npos) {
 			clientIdNew = newString03.substr(0, newString03.find("\"),i.push(\"device"));
 		}
+		std::cout << "THE CLIENT ID: " << clientIdNew << std::endl;
 		if (returnData02[0].responseCode not_eq 200 && this->httpClient->getDoWePrintHttpErrorMessages()) {
 			std::cout << DiscordCoreAPI::shiftToBrightRed() << "SoundCloudAPI::searchForSong Error: " << returnData[0].responseCode << newerString02.c_str()
 					  << DiscordCoreAPI::reset() << std::endl
