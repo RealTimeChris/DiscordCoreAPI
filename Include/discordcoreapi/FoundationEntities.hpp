@@ -2025,21 +2025,21 @@ namespace DiscordCoreAPI {
 		Guild = 2///< Guild.
 	};
 
-	enum class StickerFlags { Available = 1 << 0 };
+	enum class StickerFlags : int8_t { Available = 1 << 0 };
 
 	/// Data representing a single Sticker. \brief Data representing a single Sticker.
 	class DiscordCoreAPI_Dll StickerData : public DiscordEntity {
 	  public:
 		void setAvailable(bool enabled) {
 			if (enabled) {
-				this->stickerFlags |= std::to_underlying(StickerFlags::Available);
+				this->stickerFlags |= static_cast<int8_t>(StickerFlags::Available);
 			} else {
-				this->stickerFlags &= ~std::to_underlying(StickerFlags::Available);
+				this->stickerFlags &= ~static_cast<int8_t>(StickerFlags::Available);
 			}
 		}
 
 		bool getAvailable() {
-			return this->stickerFlags & std::to_underlying(StickerFlags::Available);
+			return this->stickerFlags & static_cast<int8_t>(StickerFlags::Available);
 		}
 
 		StickerFormatType formatType{};///< Format type.

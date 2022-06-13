@@ -178,7 +178,7 @@ namespace DiscordCoreInternal {
 
 	void BaseSocketAgent::createHeader(std::string& outBuffer, uint64_t sendLength, WebSocketOpCode opCode) noexcept {
 		try {
-			outBuffer.push_back(std::to_underlying(opCode) | webSocketFinishBit);
+			outBuffer.push_back(static_cast<uint8_t>(opCode) | webSocketFinishBit);
 
 			int32_t indexCount{ 0 };
 			if (sendLength <= webSocketMaxPayloadLengthSmall) {
@@ -901,7 +901,7 @@ namespace DiscordCoreInternal {
 	
 	void BaseSocketAgent::sendCloseFrame(int32_t theIndex) noexcept {
 		std::string theString{};
-		theString.push_back(std::to_underlying(WebSocketOpCode::Op_Close) | webSocketFinishBit);
+		theString.push_back(static_cast<int8_t>(WebSocketOpCode::Op_Close) | webSocketFinishBit);
 		theString.push_back(0);
 		theString.push_back(static_cast<int8_t>(static_cast<uint16_t>(1000) >> 8));
 		theString.push_back(static_cast<int8_t>(1000 & 0xff));
@@ -1093,7 +1093,7 @@ namespace DiscordCoreInternal {
 
 	void VoiceSocketAgent::createHeader(std::string& outBuffer, uint64_t sendLength, WebSocketOpCode opCode) noexcept {
 		try {
-			outBuffer.push_back(std::to_underlying(opCode) | webSocketFinishBit);
+			outBuffer.push_back(static_cast<uint8_t>(opCode) | webSocketFinishBit);
 
 			uint32_t indexCount{ 0 };
 			if (sendLength <= webSocketMaxPayloadLengthSmall) {
