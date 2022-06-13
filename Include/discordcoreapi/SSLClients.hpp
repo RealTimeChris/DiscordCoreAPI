@@ -344,7 +344,6 @@ namespace DiscordCoreInternal {
 		int32_t currentRecursionDepth{ 0 };
 		SOCKETWrapper theSocket{ nullptr };
 		SSL_CTXWrapper context{ nullptr };
-		bool areWeAuthenticated{ false };
 		int32_t maxRecursionDepth{ 10 };
 		bool areWeHeartBeating{ false };
 		int32_t lastNumberReceived{ 0 };

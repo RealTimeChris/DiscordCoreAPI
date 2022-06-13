@@ -91,7 +91,6 @@ namespace DiscordCoreInternal {
 		bool areWeCollectingData{ false };
 		int32_t heartbeatInterval{ 0 };
 		std::mutex accessorMutex01{};
-		bool didWeFail{ false };
 		std::string botToken{};
 		ErlPacker erlPacker{};
 		std::string baseUrl{};

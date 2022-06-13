@@ -822,10 +822,12 @@ namespace DiscordCoreAPI {
 	 */
 
 	struct ConnectionPackage {
-		int32_t currentBaseSocketAgent{};
-		int32_t lastNumberReceived{};
+		int8_t currentReconnectionDepth{ 0 };
+		int32_t currentBaseSocketAgent{ 0 };
+		int32_t lastNumberReceived{ 0 };
+		bool areWeResuming{ false };
+		int32_t currentShard{ 0 };
 		std::string sessionId{};
-		int32_t currentShard{};
 	};
 
 	/// Permission values, for a given Channel, by Role or GuildMember. \brief Permission values, for a given Channel, by Role or GuildMember.

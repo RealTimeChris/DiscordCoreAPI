@@ -316,10 +316,11 @@ namespace DiscordCoreInternal {
 											 value->ssl) +
 									reportError("Error, on Shard [" + std::to_string(key) + "], in WebSocketSSLServerMain::processIO::SSL_read_ex(): ", returnValue)<< std::endl;
 						}
-						value->areWeConnected.store(false);
 						DiscordCoreAPI::ConnectionPackage theData{};
+						theData.currentReconnectionDepth = value->currentRecursionDepth;
 						theData.currentBaseSocketAgent = value->currentBaseSocketAgent;
 						theData.lastNumberReceived = value->lastNumberReceived;
+						theData.areWeResuming = value->areWeResuming;
 						theData.sessionId = value->sessionId;
 						theData.currentShard = key;
 						if (value->connections != nullptr) {
@@ -369,10 +370,11 @@ namespace DiscordCoreInternal {
 										reportError("Error, on Shard [" + std::to_string(key) + "], in WebSocketSSLServerMain::processIO::SSL_write_ex(): ", returnValue)
 										  << std::endl;
 							}
-							value->areWeConnected.store(false);
 							DiscordCoreAPI::ConnectionPackage theData{};
+							theData.currentReconnectionDepth = value->currentRecursionDepth;
 							theData.currentBaseSocketAgent = value->currentBaseSocketAgent;
 							theData.lastNumberReceived = value->lastNumberReceived;
+							theData.areWeResuming = value->areWeResuming;
 							theData.sessionId = value->sessionId;
 							theData.currentShard = key;
 							if (value->connections != nullptr) {

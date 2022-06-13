@@ -203,18 +203,6 @@ namespace DiscordCoreAPI {
 				theData.currentShard = currentShard;
 				theData.currentBaseSocketAgent = currentBaseSocketAgent;
 				this->baseSocketAgentMap[std::to_string(currentBaseSocketAgent)]->connect(theData);
-				if (!this->baseSocketAgentMap[std::to_string(currentBaseSocketAgent)]->theClients.contains(currentShard) &&
-					this->baseSocketAgentMap[std::to_string(currentBaseSocketAgent)]->theClients[currentShard] != nullptr) {
-					if (!this->baseSocketAgentMap[std::to_string(currentBaseSocketAgent)]->theClients[currentShard]->areWeConnected) {
-						std::cout << shiftToBrightRed() << "Failed to connect shard " + std::to_string(currentShard) + ", attempting to reconnect..." << std::endl << std::endl;
-						if (this->loggingOptions.logGeneralErrorMessages) {
-						}
-						ConnectionPackage theData{};
-						theData.currentShard = currentShard;
-						theData.currentBaseSocketAgent = currentBaseSocketAgent;
-						this->baseSocketAgentMap[std::to_string(currentBaseSocketAgent)]->connect(theData);
-					}
-				}
 				currentShard += 1;
 			}
 			currentBaseSocketAgent += 1;
