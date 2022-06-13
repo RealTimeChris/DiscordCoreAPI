@@ -268,7 +268,8 @@ namespace DiscordCoreAPI {
 	}
 
 	void Channels::insertChannel(ChannelData channel) {
-		Channels::theMutex.lock();
+		SharedMutexWrapper theLock{ Channels::theMutex };
+		theLock.lock();
 		if (channel.id == 0) {
 			return;
 		}
@@ -284,7 +285,8 @@ namespace DiscordCoreAPI {
 	}
 
 	void Channels::removeChannel(const uint64_t& channelId) {
-		Channels::theMutex.lock();
+		SharedMutexWrapper theLock{ Channels::theMutex };
+		theLock.lock();
 		Channels::cache->erase(channelId);
 	};
 
