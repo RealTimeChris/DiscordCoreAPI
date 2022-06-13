@@ -35,6 +35,17 @@
 	#undef min
 #endif
 
+namespace DiscordCoreInternal {
+
+	std::string logLocation() {
+		std::source_location theLocation{};
+		std::stringstream theStream{};
+		theStream << "File: " << theLocation.file_name() << " (" << std::to_string(theLocation.line()) << ":" << std::to_string(theLocation.column()) << "), " << theLocation.function_name() << ", ";
+		std::string returnString{ theStream.str() };
+		return returnString;
+	}
+}
+
 namespace DiscordCoreAPI {
 
 	StringWrapper& StringWrapper::operator=(const std::string& theString) {
@@ -227,9 +238,9 @@ namespace DiscordCoreAPI {
 				sendBuffer->send(e);
 			} else {
 				if (stackTrace.back() == '\n') {
-					std::cout << shiftToBrightRed() << stackTrace + "Error: " << e.what() << reset() << std::endl;
+					std::cout << shiftToBrightRed() << DiscordCoreInternal::logLocation() + "Error: " << e.what() << reset() << std::endl;
 				} else {
-					std::cout << shiftToBrightRed() << stackTrace + " Error: " << e.what() << reset() << std::endl;
+					std::cout << shiftToBrightRed() << DiscordCoreInternal::logLocation() + " Error: " << e.what() << reset() << std::endl;
 				}
 			}
 		}

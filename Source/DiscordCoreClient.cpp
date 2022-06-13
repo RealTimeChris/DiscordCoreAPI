@@ -184,6 +184,11 @@ namespace DiscordCoreAPI {
 		if (this->altAddress == "") {
 			this->altAddress = gatewayData.url.substr(gatewayData.url.find("wss://") + std::string("wss://").size());
 		}
+
+		for (auto& value: shardsPerWorkerVect) {
+			std::cout << "THE VALUE: " << value << std::endl;
+		}
+
 		for (auto& value: shardsPerWorkerVect) {
 			auto thePtr = std::make_unique<DiscordCoreInternal::BaseSocketAgent>(this->botToken, this->altAddress, &this->eventManager, this, &this->commandController,
 				&Globals::doWeQuit, this->loggingOptions.logWebSocketSuccessMessages, this->loggingOptions.logWebSocketErrorMessages, currentBaseSocketAgent);
@@ -198,6 +203,7 @@ namespace DiscordCoreAPI {
 				}
 				ReconnectionPackage theData{};
 				theData.currentShard = currentShard;
+				std::cout << "THE CURRENT SHARD: " << currentShard << std::endl;
 				theData.currentBaseSocketAgent = currentBaseSocketAgent;
 				this->baseSocketAgentMap[std::to_string(currentBaseSocketAgent)]->connect(theData);
 				if (!this->baseSocketAgentMap[std::to_string(currentBaseSocketAgent)]->theClients.contains(currentShard) &&

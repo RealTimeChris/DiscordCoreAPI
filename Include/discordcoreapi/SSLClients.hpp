@@ -326,6 +326,7 @@ namespace DiscordCoreInternal {
 
 	  protected:
 		DiscordCoreAPI::StopWatch<std::chrono::milliseconds> stopWatch{ 0ms };
+		std::queue<WSMessageCollectorReturnData> finalMessages{};
 		std::atomic_bool areWeConnected{ false };
 		int32_t maxBufferSize{ (1024 * 16) - 1 };
 		std::vector<std::string> outputBuffer{};
@@ -338,9 +339,13 @@ namespace DiscordCoreInternal {
 		bool areWeHeartBeating{ false };
 		int32_t lastNumberReceived{ 0 };		
 		bool doWePrintErrors{ false };
+		std::string currentMessage{};
+		WebSocketOpCode dataOpCode{};
 		bool areWeResuming{ false };
 		SSLWrapper ssl{ nullptr };
 		std::string inputBuffer{};
+		int64_t messageLength{};
+		int64_t messageOffset{};
 		std::string sessionId{};
 		nlohmann::json shard{};
 		bool wantWrite{ true };

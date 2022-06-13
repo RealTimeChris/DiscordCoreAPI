@@ -131,12 +131,12 @@ namespace DiscordCoreInternal {
 	}
 
 	void ErlPacker::appendSmallIntegerExt(ErlPackBuffer& buffer, uint8_t& value) {
-		std::vector<uint8_t> bufferNew{ static_cast<uint8_t>(ETFTokenType::Small_Integer_Ext), value };
+		std::vector<uint8_t> bufferNew{ std::to_underlying(ETFTokenType::Small_Integer_Ext), value };
 		ErlPacker::writeToBuffer(buffer, bufferNew);
 	}
 
 	void ErlPacker::appendIntegerExt(ErlPackBuffer& buffer, uint32_t& value) {
-		std::vector<uint8_t> bufferNew{ static_cast<uint8_t>(ETFTokenType::Integer_Ext), 0, 0, 0, 0 };
+		std::vector<uint8_t> bufferNew{ std::to_underlying(ETFTokenType::Integer_Ext), 0, 0, 0, 0 };
 		uint32_t newValue{ 1 };
 		ErlPacker::storeBits(bufferNew, value, newValue);
 		ErlPacker::writeToBuffer(buffer, bufferNew);
@@ -145,7 +145,7 @@ namespace DiscordCoreInternal {
 	void ErlPacker::appendFloatExt(ErlPackBuffer& buffer, double& value) {
 		std::vector<uint8_t> bufferNew{};
 		bufferNew.resize(static_cast<uint64_t>(1 + 8));
-		bufferNew[0] = static_cast<uint8_t>(ETFTokenType::Float_Ext);
+		bufferNew[0] = std::to_underlying(ETFTokenType::Float_Ext);
 		void* doubleValue{ &value };
 		uint32_t newValue{ 1 };
 		ErlPacker::storeBits(bufferNew, *static_cast<uint64_t*>(doubleValue), newValue);
@@ -155,24 +155,24 @@ namespace DiscordCoreInternal {
 	void ErlPacker::appendNilExt(ErlPackBuffer& buffer) {
 		std::vector<uint8_t> bufferNew{};
 		bufferNew.resize(1);
-		bufferNew[0] = static_cast<uint8_t>(ETFTokenType::Nil_Ext);
+		bufferNew[0] = std::to_underlying(ETFTokenType::Nil_Ext);
 		ErlPacker::writeToBuffer(buffer, bufferNew);
 	}
 
 	void ErlPacker::appendNil(ErlPackBuffer& buffer) {
-		std::vector<uint8_t> bufferNew{ static_cast<uint8_t>(ETFTokenType::Small_Atom_Utf8_Ext), 3, static_cast<uint8_t>('n'), static_cast<uint8_t>('i'),
+		std::vector<uint8_t> bufferNew{ std::to_underlying(ETFTokenType::Small_Atom_Utf8_Ext), 3, static_cast<uint8_t>('n'), static_cast<uint8_t>('i'),
 			static_cast<uint8_t>('l') };
 		ErlPacker::writeToBuffer(buffer, bufferNew);
 	}
 
 	void ErlPacker::appendFalse(ErlPackBuffer& buffer) {
-		std::vector<uint8_t> bufferNew{ static_cast<uint8_t>(ETFTokenType::Small_Atom_Utf8_Ext), 5, static_cast<uint8_t>('f'), static_cast<uint8_t>('a'), static_cast<uint8_t>('l'),
+		std::vector<uint8_t> bufferNew{ std::to_underlying(ETFTokenType::Small_Atom_Utf8_Ext), 5, static_cast<uint8_t>('f'), static_cast<uint8_t>('a'), static_cast<uint8_t>('l'),
 			static_cast<uint8_t>('s'), static_cast<uint8_t>('e') };
 		ErlPacker::writeToBuffer(buffer, bufferNew);
 	}
 
 	void ErlPacker::appendTrue(ErlPackBuffer& buffer) {
-		std::vector<uint8_t> bufferNew{ static_cast<uint8_t>(ETFTokenType::Small_Atom_Utf8_Ext), 4, static_cast<uint8_t>('t'), static_cast<uint8_t>('r'), static_cast<uint8_t>('u'),
+		std::vector<uint8_t> bufferNew{ std::to_underlying(ETFTokenType::Small_Atom_Utf8_Ext), 4, static_cast<uint8_t>('t'), static_cast<uint8_t>('r'), static_cast<uint8_t>('u'),
 			static_cast<uint8_t>('e') };
 		ErlPacker::writeToBuffer(buffer, bufferNew);
 	}
@@ -180,7 +180,7 @@ namespace DiscordCoreInternal {
 	void ErlPacker::appendUnsignedLongLong(ErlPackBuffer& buffer, uint64_t& value) {
 		std::vector<uint8_t> bufferNew{};
 		bufferNew.resize(static_cast<uint64_t>(1) + 2 + sizeof(uint64_t));
-		bufferNew[0] = static_cast<uint8_t>(ETFTokenType::Small_Big_Ext);
+		bufferNew[0] = std::to_underlying(ETFTokenType::Small_Big_Ext);
 		uint8_t bytesToEncode = 0;
 		while (value > 0) {
 			bufferNew[static_cast<size_t>(3) + bytesToEncode] = value & 0xF;
@@ -195,7 +195,7 @@ namespace DiscordCoreInternal {
 	void ErlPacker::appendBinaryExt(ErlPackBuffer& buffer, const std::vector<uint8_t>& bytes, uint32_t& size) {
 		std::vector<uint8_t> bufferNew{};
 		bufferNew.resize(5);
-		bufferNew[0] = static_cast<uint8_t>(ETFTokenType::Binary_Ext);
+		bufferNew[0] = std::to_underlying(ETFTokenType::Binary_Ext);
 		uint32_t newValue{ 1 };
 		ErlPacker::storeBits(bufferNew, size, newValue);
 		ErlPacker::writeToBuffer(buffer, bufferNew);
@@ -205,7 +205,7 @@ namespace DiscordCoreInternal {
 	void ErlPacker::appendListHeader(ErlPackBuffer& buffer, uint32_t& size) {
 		std::vector<uint8_t> bufferNew{};
 		bufferNew.resize(5);
-		bufferNew[0] = static_cast<uint8_t>(ETFTokenType::List_Ext);
+		bufferNew[0] = std::to_underlying(ETFTokenType::List_Ext);
 		uint32_t newValue{ 1 };
 		ErlPacker::storeBits(bufferNew, size, newValue);
 		ErlPacker::writeToBuffer(buffer, bufferNew);
@@ -214,7 +214,7 @@ namespace DiscordCoreInternal {
 	void ErlPacker::appendMapHeader(ErlPackBuffer& buffer, uint32_t& size) {
 		std::vector<uint8_t> bufferNew{};
 		bufferNew.resize(5);
-		bufferNew[0] = static_cast<uint8_t>(ETFTokenType::Map_Ext);
+		bufferNew[0] = std::to_underlying(ETFTokenType::Map_Ext);
 		uint32_t newValue{ 1 };
 		ErlPacker::storeBits(bufferNew, size, newValue);
 		ErlPacker::writeToBuffer(buffer, bufferNew);

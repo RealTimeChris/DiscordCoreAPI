@@ -286,6 +286,7 @@ namespace DiscordCoreInternal {
 						if (readBytes > 0) {
 							value->inputBuffer.insert(value->inputBuffer.end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
 							value->bytesRead += readBytes;
+							std::cout << "READ BYTES: " << value->inputBuffer << std::endl;
 						}
 						break;
 					}
@@ -309,7 +310,7 @@ namespace DiscordCoreInternal {
 									reportError("WebSocketSSLServerMain::processIO::SSL_read_ex() Error: ", returnValue)
 									  << std::endl;
 						}
-						theMap[key].reset(nullptr);
+						value->areWeConnected.store(false);
 						continue;
 					}
 				}
@@ -329,6 +330,7 @@ namespace DiscordCoreInternal {
 						case SSL_ERROR_NONE: {
 							if (value->outputBuffer.size() > 0 && writtenBytes > 0) {
 								value->outputBuffer.erase(value->outputBuffer.begin());
+								std::cout << "WRITTEN BYTES: " << theString<< std::endl;
 							}
 							break;
 						}
@@ -352,7 +354,7 @@ namespace DiscordCoreInternal {
 										reportError("WebSocketSSLServerMain::processIO::SSL_write_ex() Error: ", returnValue)
 										  << std::endl;
 							}
-							theMap[key].reset(nullptr);
+							value->areWeConnected.store(false);
 						}
 					}
 				}
@@ -423,8 +425,6 @@ namespace DiscordCoreInternal {
 		if (auto returnValue = SSL_connect(this->ssl); !returnValue) {
 			throw ConnectionError{ reportSSLError("SSL_connect() Error: ", returnValue, this->ssl) };
 		}
-
-		this->areWeConnected.store(true);
 	}
 
 	void WebSocketSSLShard::writeData(std::string & data) noexcept {

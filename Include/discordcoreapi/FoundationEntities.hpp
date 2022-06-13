@@ -50,6 +50,7 @@
 
 #include <condition_variable>
 #include <nlohmann/json.hpp>
+#include <source_location>
 #include <unordered_map>
 #include <functional>
 #include <semaphore>
@@ -102,6 +103,8 @@
  */
 namespace DiscordCoreInternal {
 
+	std::string logLocation();
+
 	using namespace std::literals;
 
 	template<typename ParseType> void parseObject(const nlohmann::json&, ParseType&);
@@ -113,6 +116,33 @@ namespace DiscordCoreInternal {
 	class SoundCloudAPI;
 	class YouTubeAPI;
 	class HttpClient;
+
+	enum class WebSocketOpCode : uint8_t { Op_Continuation = 0x00, Op_Text = 0x01, Op_Binary = 0x02, Op_Close = 0x08, Op_Ping = 0x09, Op_Pong = 0x0a };
+
+	/// Websocket close codes. \brief Websocket close codes.
+	enum class WebSocketCloseCode : uint16_t {
+		Normal_Close = 1000,///< Normal close.
+		Unknown_Error = 4000,///<	We're not sure what went wrong. Try reconnecting?
+		Unknown_Opcode = 4001,///< You sent an invalid Gateway opcode or an invalid payload for an opcode. Don't do that!
+		Decode_Error = 4002,///< You sent an invalid payload to us. Don't do that!
+		Not_Authenticated = 4003,///< You sent us a payload prior to identifying.
+		Authentication_Failed = 4004,///< The account token sent with your identify payload is incorrect.
+		Already_Authenticated = 4005,///< You sent more than one identify payload. Don't do that!
+		Invalid_Seq = 4007,///<	The sequence sent when resuming the session was invalid. Reconnect and start a new session.
+		Rate_Limited = 4008,///< Woah nelly! You're sending payloads to us too quickly. Slow it down! You will be disconnected on receiving this.
+		Session_Timed = 4009,///< Your session timed out. Reconnect and start a new one.
+		Invalid_Shard = 4010,///< You sent us an invalid shard when identifying.
+		Sharding_Required = 4011,///< The session would have handled too many guilds - you are required to shard your connection in order to connect.
+		Invalid_API_Version = 4012,///< You sent an invalid version for the gateway.
+		Invalid_Intent = 4013,///< You sent an invalid intent for a Gateway Intent. You may have incorrectly calculated the bitwise value.
+		Disallowed_Intent = 4014,///< You sent a disallowed intent for a Gateway Intent. You may have tried to specify an intent that you have not enabled or are not approved for.
+	};
+
+	struct DiscordCoreAPI_Dll WSMessageCollectorReturnData {
+		WebSocketCloseCode closeCode{ WebSocketCloseCode{ 0 } };
+		WebSocketOpCode opCode{};
+		std::string theMessage{};
+	};
 
 }// namespace DiscordCoreInternal
 
@@ -619,24 +649,24 @@ namespace DiscordCoreAPI {
 	template<typename TimeType> class StopWatch {
 	  public:
 
-		StopWatch& operator=(StopWatch&& other) {
+		StopWatch& operator=(StopWatch&& other) noexcept {
 			this->maxNumberOfMs.store(other.maxNumberOfMs.load());
 			this->startTime.store(other.startTime.load());
 			return *this;
 		}
 
-		StopWatch(StopWatch&& other) {
+		StopWatch(StopWatch&& other) noexcept {
 			*this = std::move(other);
 		}
 
-		StopWatch& operator=(StopWatch& other) {
+		StopWatch& operator=(StopWatch& other) noexcept {
 			this->maxNumberOfMs.store(other.maxNumberOfMs.load());
 			this->startTime.store(other.startTime.load());
 			return *this;
 		}
 
-		StopWatch(StopWatch& other) {
-			*this=other;
+		StopWatch(StopWatch& other) noexcept {
+			*this = other;
 		}
 
 		StopWatch() = delete;
@@ -1968,14 +1998,14 @@ namespace DiscordCoreAPI {
 	  public:
 		void setAvailable(bool enabled) {
 			if (enabled) {
-				this->stickerFlags |= static_cast<uint8_t>(StickerFlags::Available);
+				this->stickerFlags |= std::to_underlying(StickerFlags::Available);
 			} else {
-				this->stickerFlags &= ~static_cast<uint8_t>(StickerFlags::Available);
+				this->stickerFlags &= ~std::to_underlying(StickerFlags::Available);
 			}
 		}
 
 		bool getAvailable() {
-			return this->stickerFlags & static_cast<uint8_t>(StickerFlags::Available);
+			return this->stickerFlags & std::to_underlying(StickerFlags::Available);
 		}
 
 		StickerFormatType formatType{};///< Format type.

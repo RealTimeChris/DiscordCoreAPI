@@ -31,27 +31,6 @@
 
 namespace DiscordCoreInternal {
 
-	enum class WebSocketOpCode : uint8_t { Op_Continuation = 0x00, Op_Text = 0x01, Op_Binary = 0x02, Op_Close = 0x08, Op_Ping = 0x09, Op_Pong = 0x0a };
-
-	/// Websocket close codes. \brief Websocket close codes.
-	enum class WebSocketCloseCode : uint16_t {
-		Normal_Close = 1000,///< Normal close.
-		Unknown_Error = 4000,///<	We're not sure what went wrong. Try reconnecting?
-		Unknown_Opcode = 4001,///< You sent an invalid Gateway opcode or an invalid payload for an opcode. Don't do that!
-		Decode_Error = 4002,///< You sent an invalid payload to us. Don't do that!
-		Not_Authenticated = 4003,///< You sent us a payload prior to identifying.
-		Authentication_Failed = 4004,///< The account token sent with your identify payload is incorrect.
-		Already_Authenticated = 4005,///< You sent more than one identify payload. Don't do that!
-		Invalid_Seq = 4007,///<	The sequence sent when resuming the session was invalid. Reconnect and start a new session.
-		Rate_Limited = 4008,///< Woah nelly! You're sending payloads to us too quickly. Slow it down! You will be disconnected on receiving this.
-		Session_Timed = 4009,///< Your session timed out. Reconnect and start a new one.
-		Invalid_Shard = 4010,///< You sent us an invalid shard when identifying.
-		Sharding_Required = 4011,///< The session would have handled too many guilds - you are required to shard your connection in order to connect.
-		Invalid_API_Version = 4012,///< You sent an invalid version for the gateway.
-		Invalid_Intent = 4013,///< You sent an invalid intent for a Gateway Intent. You may have incorrectly calculated the bitwise value.
-		Disallowed_Intent = 4014,///< You sent a disallowed intent for a Gateway Intent. You may have tried to specify an intent that you have not enabled or are not approved for.
-	};
-
 	enum class ReconnectPossible : uint16_t {
 		Yes = static_cast<uint16_t>(WebSocketCloseCode::Unknown_Error) | static_cast<uint16_t>(WebSocketCloseCode::Unknown_Opcode) |
 			static_cast<uint16_t>(WebSocketCloseCode::Decode_Error) | static_cast<uint16_t>(WebSocketCloseCode::Not_Authenticated) |
@@ -65,15 +44,11 @@ namespace DiscordCoreInternal {
 
 	enum class WSMessageCollectorState : int8_t { Connecting = 0, Initializing = 1, Collecting = 2, Parsing = 3, Serving = 4 };
 
-	struct DiscordCoreAPI_Dll WSMessageCollectorReturnData {
-		WebSocketCloseCode closeCode{ WebSocketCloseCode{ 0 } };
-		WebSocketOpCode opCode{};
-		std::string theMessage{};
-	};
-
 	class DiscordCoreAPI_Dll WSMessageCollector {
 	  public:
-		WSMessageCollector(bool doWePrintErrorMessagesNew, std::unordered_map<int32_t, std::unique_ptr<WebSocketSSLShard>>* theClientsNew);
+		friend class BaseSocketAgent;
+
+		WSMessageCollector(bool doWePrintErrorMessagesNew, std::unordered_map<int32_t, std::unique_ptr<WebSocketSSLShard>>* theClientsNew, WebSocketOpCode theOpCode);
 
 		WSMessageCollector() = default;
 
@@ -82,17 +57,13 @@ namespace DiscordCoreInternal {
 		bool runMessageCollector() noexcept;
 
 	  protected:
-		std::unordered_map<int32_t, WSMessageCollectorState> theState{ std::pair{ 0, WSMessageCollectorState::Connecting } };
-		std::unordered_map<int32_t, std::queue<WSMessageCollectorReturnData>> finalMessages{};
 		std::unordered_map<int32_t, std::unique_ptr<WebSocketSSLShard>>* theClients{};
-		std::unordered_map<int32_t, WebSocketOpCode> dataOpCodes{};
-		std::unordered_map<int32_t, std::string> currentMessage{};
-		std::unordered_map<int32_t, int64_t> messageLength{};
-		std::unordered_map<int32_t, int64_t> messageOffset{};
+		WSMessageCollectorState theState{ WSMessageCollectorState::Connecting };
 		bool doWePrintErrorMessages{ false };
 		int8_t maxRecursionDepth{ 10 };
 		int8_t currentRecursionDepth{};
-
+		WebSocketOpCode theOpCode{};
+		
 		bool parseConnectionHeader() noexcept;
 
 		bool parseHeaderAndMessage() noexcept;
@@ -139,6 +110,7 @@ namespace DiscordCoreInternal {
 		EventWaiter areWeReadyToConnectEvent{};
 		bool doWePrintSuccessMessages{ false };
 		std::recursive_mutex accessorMutex01{};
+		std::recursive_mutex accessorMutex02{};
 		WSMessageCollector messageCollector{};
 		std::atomic_bool* doWeQuit{ nullptr };
 		const int32_t maxReconnectTries{ 10 };
