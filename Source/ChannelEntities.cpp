@@ -81,12 +81,13 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<ChannelData> Channels::getCachedChannelAsync(GetChannelData dataPackage) {
-		SharedMutexWrapper theLock{ Channels::theMutex };
-		theLock.lockShared();
+		Channels::theMutex.lock_shared();
 		co_await NewThreadAwaitable<ChannelData>();
 		if (Channels::cache->contains(dataPackage.channelId)) {
+			Channels::theMutex.unlock_shared();
 			co_return *(*Channels::cache)[dataPackage.channelId];
 		} else {
+			Channels::theMutex.unlock_shared();
 			co_return Channels::getChannelAsync(dataPackage).get();
 		}
 	}
@@ -268,9 +269,9 @@ namespace DiscordCoreAPI {
 	}
 
 	void Channels::insertChannel(ChannelData channel) {
-		SharedMutexWrapper theLock{ Channels::theMutex };
-		theLock.lock();
+		Channels::theMutex.lock();
 		if (channel.id == 0) {
+			Channels::theMutex.unlock();
 			return;
 		}
 		auto newCache = std::make_unique<std::unordered_map<uint64_t, std::unique_ptr<ChannelData>>>();
@@ -282,12 +283,13 @@ namespace DiscordCoreAPI {
 		}
 		Channels::cache.reset(nullptr);
 		Channels::cache = std::move(newCache);
+		Channels::theMutex.unlock();
 	}
 
 	void Channels::removeChannel(const uint64_t& channelId) {
-		SharedMutexWrapper theLock{ Channels::theMutex };
-		theLock.lock();
+		Channels::theMutex.lock();
 		Channels::cache->erase(channelId);
+		Channels::theMutex.unlock();
 	};
 
 	std::unique_ptr<std::unordered_map<uint64_t, std::unique_ptr<ChannelData>>> Channels::cache{};
