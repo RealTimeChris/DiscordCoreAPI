@@ -325,6 +325,7 @@ namespace DiscordCoreInternal {
 		~WebSocketSSLShard() noexcept = default;
 
 	  protected:
+		WSMessageCollectorState theState{ WSMessageCollectorState::Connecting };
 		DiscordCoreAPI::StopWatch<std::chrono::milliseconds> stopWatch{ 0ms };
 		std::queue<WSMessageCollectorReturnData> finalMessages{};
 		std::atomic_bool areWeConnected{ false };

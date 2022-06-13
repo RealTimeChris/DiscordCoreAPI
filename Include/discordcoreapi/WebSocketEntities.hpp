@@ -42,13 +42,12 @@ namespace DiscordCoreInternal {
 			static_cast<uint16_t>(WebSocketCloseCode::Normal_Close)
 	};
 
-	enum class WSMessageCollectorState : int8_t { Connecting = 0, Initializing = 1, Collecting = 2, Parsing = 3, Serving = 4 };
-
 	class DiscordCoreAPI_Dll WSMessageCollector {
 	  public:
 		friend class BaseSocketAgent;
 
-		WSMessageCollector(bool doWePrintErrorMessagesNew, std::unordered_map<int32_t, std::unique_ptr<WebSocketSSLShard>>* theClientsNew, WebSocketOpCode theOpCode);
+		WSMessageCollector(BaseSocketAgent*, bool doWePrintErrorMessagesNew, std::unordered_map<int32_t, std::unique_ptr<WebSocketSSLShard>>* theClientsNew,
+			WebSocketOpCode theOpCode);
 
 		WSMessageCollector() = default;
 
@@ -58,7 +57,7 @@ namespace DiscordCoreInternal {
 
 	  protected:
 		std::unordered_map<int32_t, std::unique_ptr<WebSocketSSLShard>>* theClients{};
-		WSMessageCollectorState theState{ WSMessageCollectorState::Connecting };
+		BaseSocketAgent* theAgent{ nullptr };
 		bool doWePrintErrorMessages{ false };
 		int8_t maxRecursionDepth{ 10 };
 		int8_t currentRecursionDepth{};
@@ -76,6 +75,7 @@ namespace DiscordCoreInternal {
 		friend class DiscordCoreAPI::DiscordCoreClient;
 		friend class DiscordCoreAPI::VoiceConnection;
 		friend class DiscordCoreAPI::BotUser;
+		friend class WSMessageCollector;
 		friend VoiceSocketAgent;
 
 		BaseSocketAgent(const std::string& botTokenNew, const std::string& baseUrl, DiscordCoreAPI::EventManager* eventManager,

@@ -242,6 +242,8 @@ namespace DiscordCoreInternal {
 		this->maxBufferSize = maxBufferSizeNew;
 		this->shard.push_back(currentShard);
 		this->shard.push_back(totalShards);
+		this->stopWatch = DiscordCoreAPI::StopWatch<std::chrono::milliseconds>{ 10000ms };
+		this->stopWatch.resetTimer();
 	};
 
 	void WebSocketSSLShard::processIO(std::unordered_map<SOCKET, std::unique_ptr<WebSocketSSLShard>>& theMap, int32_t waitTimeInms) {

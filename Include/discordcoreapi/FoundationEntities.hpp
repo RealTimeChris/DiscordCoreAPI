@@ -119,6 +119,8 @@ namespace DiscordCoreInternal {
 
 	enum class WebSocketOpCode : uint8_t { Op_Continuation = 0x00, Op_Text = 0x01, Op_Binary = 0x02, Op_Close = 0x08, Op_Ping = 0x09, Op_Pong = 0x0a };
 
+	enum class WSMessageCollectorState : int8_t { Connecting = 0, Initializing = 1, Collecting = 2, Parsing = 3, Serving = 4 };
+
 	/// Websocket close codes. \brief Websocket close codes.
 	enum class WebSocketCloseCode : uint16_t {
 		Normal_Close = 1000,///< Normal close.

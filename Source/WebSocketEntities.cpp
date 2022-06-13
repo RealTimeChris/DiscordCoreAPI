@@ -35,11 +35,12 @@ namespace DiscordCoreInternal {
 	constexpr uint8_t webSocketFinishBit{ (1u << 7u) };
 	constexpr uint8_t webSocketMaskBit{ (1u << 7u) };
 
-	WSMessageCollector::WSMessageCollector(bool doWePrintErrorMessagesNew, std::unordered_map<SOCKET, std::unique_ptr<WebSocketSSLShard>>* theClientsNew,
+	WSMessageCollector::WSMessageCollector(BaseSocketAgent* theAgentNew, bool doWePrintErrorMessagesNew, std::unordered_map<SOCKET, std::unique_ptr<WebSocketSSLShard>>* theClientsNew,
 		WebSocketOpCode theOpCodeNew) {
 		this->doWePrintErrorMessages = doWePrintErrorMessagesNew;
 		this->theClients = theClientsNew;
 		this->theOpCode = theOpCodeNew;
+		this->theAgent = theAgentNew;
 	};
 
 	std::unordered_map<SOCKET,WSMessageCollectorReturnData> WSMessageCollector::collectFinalMessage() noexcept {
@@ -50,7 +51,7 @@ namespace DiscordCoreInternal {
 				if (value->finalMessages.size() > 0) {
 					theMessage = value->finalMessages.front();
 					value->finalMessages.pop();
-					this->theState = WSMessageCollectorState::Initializing;
+					value->theState = WSMessageCollectorState::Initializing;
 					theMapToReturn[key] = theMessage;
 				}
 			}
@@ -63,39 +64,42 @@ namespace DiscordCoreInternal {
 			this->currentRecursionDepth = 0;
 			return true;
 		}
-		std::cout << "WERE WINNING WINNING WINNING!" << std::endl;
 		for (auto& [key, value]: *this->theClients) {
 			if (value != nullptr) {
 				value->dataOpCode = this->theOpCode;
 			}
-		}
-		switch (this->theState) {
-			case WSMessageCollectorState::Connecting: {
-				if (!this->collectData()) {
-					this->parseConnectionHeader();
-					return false;
-				} else {
-					return this->parseConnectionHeader();
+			if (value->stopWatch.hasTimePassed()) {
+				this->theAgent->sendHeartBeat(key);
+				value->stopWatch.resetTimer();
+			}
+			switch (value->theState) {
+				case WSMessageCollectorState::Connecting: {
+					if (!this->collectData()) {
+						this->parseConnectionHeader();
+						return false;
+					} else {
+						return this->parseConnectionHeader();
+					}
+				}
+				case WSMessageCollectorState::Initializing: {
+					value->theState = WSMessageCollectorState::Collecting;
+					return this->runMessageCollector();
+				}
+				case WSMessageCollectorState::Collecting: {
+					return this->collectData();
+				}
+				case WSMessageCollectorState::Parsing: {
+					return this->parseHeaderAndMessage();
+				}
+				case WSMessageCollectorState::Serving: {
+					value->theState = WSMessageCollectorState::Initializing;
+					return true;
+				}
+				default: {
+					return true;
 				}
 			}
-			case WSMessageCollectorState::Initializing: {
-				this->theState = WSMessageCollectorState::Collecting;
-				return this->runMessageCollector();
-			}
-			case WSMessageCollectorState::Collecting: {
-				return this->collectData();
-			}
-			case WSMessageCollectorState::Parsing: {
-				return this->parseHeaderAndMessage();
-			}
-			case WSMessageCollectorState::Serving: {
-				this->theState = WSMessageCollectorState::Initializing;
-				return true;
-			}
-			default: {
-				return true;
-			}
-		}
+		}		
 		return true;
 	}
 
@@ -106,12 +110,12 @@ namespace DiscordCoreInternal {
 				if (newVector.find("\r\n\r\n") != std::string::npos) {
 					std::string headers = newVector.substr(0, newVector.find("\r\n\r\n"));
 					newVector.erase(0, newVector.find("\r\n\r\n") + 4);
-					this->theState = WSMessageCollectorState::Initializing;
+					value->theState = WSMessageCollectorState::Initializing;
 					value->currentMessage.clear();
 					value->currentMessage.insert(value->currentMessage.end(), newVector.begin(), newVector.end());
 					return this->runMessageCollector();
 				} else {
-					this->theState = WSMessageCollectorState::Connecting;
+					value->theState = WSMessageCollectorState::Connecting;
 					this->currentRecursionDepth += 1;
 					return this->runMessageCollector();
 				}
@@ -124,7 +128,7 @@ namespace DiscordCoreInternal {
 		for (auto& [key, value]: *this->theClients) {
 			if (value != nullptr) {
 				if (value->currentMessage.size() < 4) {
-					this->theState = WSMessageCollectorState::Collecting;
+					value->theState = WSMessageCollectorState::Collecting;
 					this->currentRecursionDepth += 1;
 					return this->runMessageCollector();
 				} else {
@@ -142,14 +146,14 @@ namespace DiscordCoreInternal {
 							uint8_t length01 = value->currentMessage[1];
 							value->messageOffset = 2;
 							if (length01 & webSocketMaskBit) {
-								this->theState = WSMessageCollectorState::Collecting;
+								value->theState = WSMessageCollectorState::Collecting;
 								this->currentRecursionDepth += 1;
 								return this->runMessageCollector();
 							}
 							value->messageLength = length01;
 							if (length01 == webSocketPayloadLengthMagicLarge) {
 								if (value->currentMessage.size() < 8) {
-									this->theState = WSMessageCollectorState::Collecting;
+									value->theState = WSMessageCollectorState::Collecting;
 									this->currentRecursionDepth += 1;
 									return this->runMessageCollector();
 								}
@@ -159,7 +163,7 @@ namespace DiscordCoreInternal {
 								value->messageOffset += 2;
 							} else if (length01 == webSocketPayloadLengthMagicHuge) {
 								if (value->currentMessage.size() < 10) {
-									this->theState = WSMessageCollectorState::Collecting;
+									value->theState = WSMessageCollectorState::Collecting;
 									this->currentRecursionDepth += 1;
 									return this->runMessageCollector();
 								}
@@ -171,7 +175,7 @@ namespace DiscordCoreInternal {
 								value->messageOffset += 8;
 							}
 							if (value->currentMessage.size() < static_cast<uint64_t>(value->messageOffset) + static_cast<uint64_t>(value->messageLength)) {
-								this->theState = WSMessageCollectorState::Collecting;
+								value->theState = WSMessageCollectorState::Collecting;
 								this->currentRecursionDepth += 1;
 								return this->runMessageCollector();
 							} else {
@@ -182,10 +186,10 @@ namespace DiscordCoreInternal {
 								value->finalMessages.push(returnData);
 								value->currentMessage.erase(value->currentMessage.begin(),
 									value->currentMessage.begin() + value->messageOffset + value->messageLength);
-								this->theState = WSMessageCollectorState::Serving;
+								value->theState = WSMessageCollectorState::Serving;
 								return this->runMessageCollector();
 							}
-							this->theState = WSMessageCollectorState::Collecting;
+							value->theState = WSMessageCollectorState::Collecting;
 							this->currentRecursionDepth += 1;
 							return this->runMessageCollector();
 						}
@@ -201,17 +205,17 @@ namespace DiscordCoreInternal {
 							returnData.opCode = value->dataOpCode;
 							value->finalMessages.push(returnData);
 							value->currentMessage.clear();
-							this->theState = WSMessageCollectorState::Serving;
+							value->theState = WSMessageCollectorState::Serving;
 							return false;
 						}
 						default: {
-							this->theState = WSMessageCollectorState::Collecting;
+							value->theState = WSMessageCollectorState::Collecting;
 							this->currentRecursionDepth += 1;
 							return true;
 						}
 					}
 				}
-				this->theState = WSMessageCollectorState::Collecting;
+				value->theState = WSMessageCollectorState::Collecting;
 				return true;
 			}
 		}
@@ -226,7 +230,7 @@ namespace DiscordCoreInternal {
 				if (value != nullptr) {
 					areTheyAllNull = false;
 					auto newMessage = value->getInputBuffer();
-					this->theState = WSMessageCollectorState::Parsing;
+					value->theState = WSMessageCollectorState::Parsing;
 					value->currentMessage.insert(value->currentMessage.end(), newMessage.begin(), newMessage.end());
 				}
 			}
@@ -261,7 +265,7 @@ namespace DiscordCoreInternal {
 		} else {
 			this->dataOpcode = WebSocketOpCode::Op_Text;
 		}
-		this->messageCollector = WSMessageCollector{ this->doWePrintErrorMessages, &this->theClients, this->dataOpcode };
+		this->messageCollector = WSMessageCollector{ this, this->doWePrintErrorMessages, &this->theClients, this->dataOpcode };
 		this->baseUrl = baseUrlNew;
 		this->theTask = std::make_unique<std::jthread>([this](std::stop_token theToken) {
 			this->run(theToken);
@@ -1118,9 +1122,8 @@ namespace DiscordCoreInternal {
 							DiscordCoreAPI::generateBase64EncodedKey() + "\r\nSec-WebSocket-Version: 13\r\n\r\n";
 					}
 					std::this_thread::sleep_for(1ms);
-					this->messageCollector.theState = WSMessageCollectorState::Connecting;
+					this->theClients[reconnectionData.currentShard]->areWeConnected.store(true);
 					this->sendMessage(sendString, reconnectionData.currentShard);
-					
 					std::string theResult{};
 					while (theResult == "") {
 						auto returnValue = this->messageCollector.runMessageCollector();
@@ -1132,7 +1135,6 @@ namespace DiscordCoreInternal {
 					}
 					
 					this->onMessageReceived(theResult, reconnectionData.currentShard);
-					this->theClients[reconnectionData.currentShard]->areWeConnected.store(true);
 				}
 				this->discordCoreClient->theStopWatch.resetTimer();
 			}
@@ -1144,10 +1146,9 @@ namespace DiscordCoreInternal {
 	}
 
 	void BaseSocketAgent::connect(DiscordCoreAPI::ReconnectionPackage thePackage) noexcept {
-		//std::unique_lock<std::recursive_mutex> theLock{ this->accessorMutex02 };
-		this->messageCollector.theState = WSMessageCollectorState::Connecting;
+		std::unique_lock<std::recursive_mutex> theLock{ this->accessorMutex02 };
 		this->connections.push(thePackage);
-		//theLock.unlock();
+		theLock.unlock();
 		while (!this->theClients.contains(thePackage.currentShard)) {
 			std::this_thread::sleep_for(1ms);
 		}
@@ -1169,7 +1170,7 @@ namespace DiscordCoreInternal {
 		this->doWePrintSuccessMessages = baseBaseSocketAgentNew->doWePrintSuccessMessages;
 		this->doWePrintErrorMessages = baseBaseSocketAgentNew->doWePrintErrorMessages;
 		this->baseSocketAgent->voiceConnectionDataBufferMap[std::to_string(this->voiceConnectInitData.guildId)] = &this->voiceConnectionDataBuffer;
-		this->messageCollector = WSMessageCollector{ this->doWePrintErrorMessages, &this->theClients, this->dataOpcode };
+		this->messageCollector = WSMessageCollector{ this->baseSocketAgent, this->doWePrintErrorMessages, &this->theClients, this->dataOpcode };
 		this->baseSocketAgent->getVoiceConnectionData(this->voiceConnectInitData, theIndex);
 		this->areWeConnected.reset();
 		this->theTask = std::make_unique<std::jthread>([this](std::stop_token theToken) {
