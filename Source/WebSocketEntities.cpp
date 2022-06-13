@@ -36,9 +36,6 @@ namespace DiscordCoreInternal {
 	constexpr uint8_t webSocketMaskBit{ (1u << 7u) };
 
 	void BaseSocketAgent::parseHeadersAndMessage(WebSocketSSLShard& theShard) noexcept {
-		if (theShard.inputBuffer.size() < 4) {
-			return;
-		}		
 		if (theShard.theState == WebSocketState::Connecting) {
 			std::string newVector{};
 			if (theShard.inputBuffer.find("\r\n\r\n") != std::string::npos) {
@@ -48,6 +45,9 @@ namespace DiscordCoreInternal {
 				theShard.inputBuffer.insert(theShard.inputBuffer.end(), newVector.begin(), newVector.end());
 				theShard.theState = WebSocketState::Connected;
 			}
+		}
+		if (theShard.inputBuffer.size() < 4) {
+			return;
 		}
 		theShard.dataOpCode = static_cast<WebSocketOpCode>(theShard.inputBuffer[0] & ~webSocketFinishBit);
 		switch (theShard.dataOpCode) {
@@ -218,6 +218,7 @@ namespace DiscordCoreInternal {
 			}
 			DiscordCoreAPI::ConnectionPackage theData{};
 			theData.currentShard = this->theClients[theIndex]->shard[0];
+			theData.sessionId = this->theClients[theIndex]->sessionId;
 			theData.currentBaseSocketAgent = this->currentBaseSocketAgent;
 			this->theClients[theIndex]->haveWeReceivedHeartbeatAck = true;
 			this->connections.push(theData);
@@ -877,8 +878,6 @@ namespace DiscordCoreInternal {
 				this->theClients[theIndex]->writeData(theString);
 				this->theClients[theIndex]->haveWeReceivedHeartbeatAck = false;
 				this->theClients[theIndex]->heartBeatStopWatch.resetTimer();
-			} else {
-				this->onClosed(theIndex);
 			}
 		} catch (...) {
 			if (this->doWePrintErrorMessages) {

@@ -319,10 +319,12 @@ namespace DiscordCoreInternal {
 						theData.lastNumberReceived = value->lastNumberReceived;
 						theData.sessionId = value->sessionId;
 						theData.currentShard = key;
-						theMap.erase(key);
 						if (value->connections != nullptr) {
 							value->connections->push(theData);
 						}
+						std::erase_if(theMap, [&](const auto &item) mutable {
+							return (item.second.operator*().theSocket == key);
+						});
 						continue;
 					}
 				}
@@ -372,10 +374,12 @@ namespace DiscordCoreInternal {
 							theData.lastNumberReceived = value->lastNumberReceived;
 							theData.sessionId = value->sessionId;
 							theData.currentShard = key;
-							theMap.erase(key);
 							if (value->connections != nullptr) {
 								value->connections->push(theData);
 							}
+							std::erase_if(theMap, [&](const auto& item) mutable {
+								return (item.second.operator*().theSocket == key);
+							});
 							continue;
 						}
 					}
