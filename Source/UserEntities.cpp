@@ -210,7 +210,6 @@ namespace DiscordCoreAPI {
 
 	void Users::insertUser(UserData user) {
 		Users::theMutex.lock();
-		std::cout << "WERE HERE THIS IS IT!" << std::endl;
 		if (user.id == 0) {
 			Users::theMutex.unlock();
 			return;
