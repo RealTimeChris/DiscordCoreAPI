@@ -206,8 +206,9 @@ namespace DiscordCoreInternal {
 			std::unique_ptr<DiscordCoreInternal::WebSocketSSLShard> streamSocket{ std::make_unique<DiscordCoreInternal::WebSocketSSLShard>(youtubeAPI->maxBufferSize, 0, 0,
 				this->doWePrintWebSocketErrorMessages) };
 			std::unordered_map<int32_t, std::unique_ptr<WebSocketSSLShard>> theMap{};
-			theMap.insert_or_assign(static_cast<int32_t>(streamSocket->getBytesRead()), std::move(streamSocket));
-			streamSocket->connect(newSong.finalDownloadUrls[0].urlPath, "443");
+			auto bytesRead{ static_cast<int32_t>(streamSocket->getBytesRead()) };
+			theMap[bytesRead] = std::move(streamSocket);
+			theMap[bytesRead]->connect(newSong.finalDownloadUrls[0].urlPath, "443");
 			bool areWeDoneHeaders{ false };
 			bool haveWeFailed{ false };
 			int64_t remainingDownloadContentLength{ newSong.contentLength };
@@ -228,7 +229,7 @@ namespace DiscordCoreInternal {
 			std::unique_ptr<AudioDecoder> audioDecoder = std::make_unique<AudioDecoder>(dataPackage);
 			AudioEncoder audioEncoder{};
 			std::string theString = newSong.finalDownloadUrls[1].urlPath;
-			streamSocket->writeData(theString);
+			theMap[bytesRead]->writeData(theString);
 			try {
 				WebSocketSSLShard::processIO(theMap);
 				while (newSong.contentLength > bytesSubmittedTotal) {
@@ -268,9 +269,9 @@ namespace DiscordCoreInternal {
 							remainingDownloadContentLength = newSong.contentLength - bytesSubmittedTotal;
 							WebSocketSSLShard::processIO(theMap);
 							if (!theToken.stop_requested()) {
-								bytesSubmittedTotal = streamSocket->getBytesRead();
+								bytesSubmittedTotal = theMap[bytesRead]->getBytesRead();
 							}
-							std::string newData = streamSocket->getInputBuffer();
+							std::string newData = theMap[bytesRead]->getInputBuffer();
 							if (theToken.stop_requested()) {
 								this->breakOut(theToken, std::move(audioDecoder), this);
 								return;
@@ -284,7 +285,7 @@ namespace DiscordCoreInternal {
 						}
 						if (counter == 0) {
 							WebSocketSSLShard::processIO(theMap);
-							std::string streamBuffer = streamSocket->getInputBuffer();
+							std::string streamBuffer = theMap[bytesRead]->getInputBuffer();
 							if (streamBuffer.size() > 0) {
 								theCurrentString.insert(theCurrentString.end(), streamBuffer.begin(), streamBuffer.end());
 								std::string submissionString{};
@@ -310,7 +311,7 @@ namespace DiscordCoreInternal {
 								}
 								remainingDownloadContentLength = newSong.contentLength - bytesSubmittedTotal;
 								WebSocketSSLShard::processIO(theMap);
-								std::string newVector = streamSocket->getInputBuffer();
+								std::string newVector = theMap[bytesRead]->getInputBuffer();
 								if (newVector.size() == 0) {
 									counter += 1;
 									continue;

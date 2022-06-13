@@ -42,12 +42,14 @@ namespace DiscordCoreInternal {
 	std::unordered_map<SOCKET,WSMessageCollectorReturnData> WSMessageCollector::collectFinalMessage() noexcept {
 		std::unordered_map<SOCKET, WSMessageCollectorReturnData> theMapToReturn{};
 		for (auto& [key, value]: *this->theClients) {
-			WSMessageCollectorReturnData theMessage{};
-			if (this->finalMessages[key].size() > 0) {
-				theMessage = this->finalMessages[key].front();
-				this->finalMessages[key].pop();
-				this->theState[key] = WSMessageCollectorState::Initializing;
-				theMapToReturn[key] = theMessage;
+			if (value != nullptr) {
+				WSMessageCollectorReturnData theMessage{};
+				if (this->finalMessages[key].size() > 0) {
+					theMessage = this->finalMessages[key].front();
+					this->finalMessages[key].pop();
+					this->theState[key] = WSMessageCollectorState::Initializing;
+					theMapToReturn[key] = theMessage;
+				}
 			}
 		}
 		return theMapToReturn;
@@ -59,31 +61,35 @@ namespace DiscordCoreInternal {
 			return true;
 		}
 		for (auto& [key, value]: *this->theClients) {
-			switch (this->theState[key]) {
-				case WSMessageCollectorState::Connecting: {
-					auto returnValue = this->collectData();
-					if (!returnValue) {
-						return returnValue;
+			if (value != nullptr) {
+				if (value->areWeConnected.load()) {
+					switch (this->theState[key]) {
+						case WSMessageCollectorState::Connecting: {
+							auto returnValue = this->collectData();
+							if (!returnValue) {
+								return returnValue;
+							}
+							return this->parseConnectionHeader();
+						}
+						case WSMessageCollectorState::Initializing: {
+							this->dataOpCodes[key] = WebSocketOpCode::Op_Binary;
+							this->theState[key] = WSMessageCollectorState::Collecting;
+							return this->runMessageCollector();
+						}
+						case WSMessageCollectorState::Collecting: {
+							return this->collectData();
+						}
+						case WSMessageCollectorState::Parsing: {
+							return this->parseHeaderAndMessage();
+						}
+						case WSMessageCollectorState::Serving: {
+							this->theState[key] = WSMessageCollectorState::Initializing;
+							return true;
+						}
+						default: {
+							return true;
+						}
 					}
-					return this->parseConnectionHeader();
-				}
-				case WSMessageCollectorState::Initializing: {
-					this->dataOpCodes[key] = WebSocketOpCode::Op_Binary;
-					this->theState[key] = WSMessageCollectorState::Collecting;
-					return this->runMessageCollector();
-				}
-				case WSMessageCollectorState::Collecting: {
-					return this->collectData();
-				}
-				case WSMessageCollectorState::Parsing: {
-					return this->parseHeaderAndMessage();
-				}
-				case WSMessageCollectorState::Serving: {
-					this->theState[key] = WSMessageCollectorState::Initializing;
-					return true;
-				}
-				default: {
-					return true;
 				}
 			}
 		}
@@ -92,18 +98,20 @@ namespace DiscordCoreInternal {
 
 	bool WSMessageCollector::parseConnectionHeader() noexcept {
 		for (auto& [key, value]: *this->theClients) {
-			std::string newVector = this->currentMessage[key];
-			if (newVector.find("\r\n\r\n") != std::string::npos) {
-				std::string headers = newVector.substr(0, newVector.find("\r\n\r\n"));
-				newVector.erase(0, newVector.find("\r\n\r\n") + 4);
-				this->theState[key] = WSMessageCollectorState::Initializing;
-				this->currentMessage[key].clear();
-				this->currentMessage[key].insert(this->currentMessage[key].end(), newVector.begin(), newVector.end());
-				return this->runMessageCollector();
-			} else {
-				this->theState[key] = WSMessageCollectorState::Collecting;
-				this->currentRecursionDepth += 1;
-				return this->runMessageCollector();
+			if (value != nullptr) {
+				std::string newVector = this->currentMessage[key];
+				if (newVector.find("\r\n\r\n") != std::string::npos) {
+					std::string headers = newVector.substr(0, newVector.find("\r\n\r\n"));
+					newVector.erase(0, newVector.find("\r\n\r\n") + 4);
+					this->theState[key] = WSMessageCollectorState::Initializing;
+					this->currentMessage[key].clear();
+					this->currentMessage[key].insert(this->currentMessage[key].end(), newVector.begin(), newVector.end());
+					return this->runMessageCollector();
+				} else {
+					this->theState[key] = WSMessageCollectorState::Collecting;
+					this->currentRecursionDepth += 1;
+					return this->runMessageCollector();
+				}
 			}
 		}
 		return true;
@@ -111,96 +119,98 @@ namespace DiscordCoreInternal {
 
 	bool WSMessageCollector::parseHeaderAndMessage() noexcept {
 		for (auto& [key, value]: *this->theClients) {
-			if (this->currentMessage[key].size() < 4) {
-				this->theState[key] = WSMessageCollectorState::Collecting;
-				this->currentRecursionDepth += 1;
-				return this->runMessageCollector();
-			} else {
-				this->dataOpCodes[key] = static_cast<WebSocketOpCode>(this->currentMessage[key][0] & ~webSocketFinishBit);
-				switch (this->dataOpCodes[key]) {
-					case WebSocketOpCode::Op_Continuation:
-						[[fallthrough]];
-					case WebSocketOpCode::Op_Text:
-						[[fallthrough]];
-					case WebSocketOpCode::Op_Binary:
-						[[fallthrough]];
-					case WebSocketOpCode::Op_Ping:
-						[[fallthrough]];
-					case WebSocketOpCode::Op_Pong: {
-						uint8_t length01 = this->currentMessage[key][1];
-						this->messageOffset[key] = 2;
-						if (length01 & webSocketMaskBit) {
-							this->theState[key] = WSMessageCollectorState::Collecting;
-							this->currentRecursionDepth += 1;
-							return this->runMessageCollector();
-						}
-						this->messageLength[key] = length01;
-						if (length01 == webSocketPayloadLengthMagicLarge) {
-							if (this->currentMessage[key].size() < 8) {
+			if (value != nullptr) {
+				if (this->currentMessage[key].size() < 4) {
+					this->theState[key] = WSMessageCollectorState::Collecting;
+					this->currentRecursionDepth += 1;
+					return this->runMessageCollector();
+				} else {
+					this->dataOpCodes[key] = static_cast<WebSocketOpCode>(this->currentMessage[key][0] & ~webSocketFinishBit);
+					switch (this->dataOpCodes[key]) {
+						case WebSocketOpCode::Op_Continuation:
+							[[fallthrough]];
+						case WebSocketOpCode::Op_Text:
+							[[fallthrough]];
+						case WebSocketOpCode::Op_Binary:
+							[[fallthrough]];
+						case WebSocketOpCode::Op_Ping:
+							[[fallthrough]];
+						case WebSocketOpCode::Op_Pong: {
+							uint8_t length01 = this->currentMessage[key][1];
+							this->messageOffset[key] = 2;
+							if (length01 & webSocketMaskBit) {
 								this->theState[key] = WSMessageCollectorState::Collecting;
 								this->currentRecursionDepth += 1;
 								return this->runMessageCollector();
 							}
-							uint8_t length03 = this->currentMessage[key][2];
-							uint8_t length04 = this->currentMessage[key][3];
-							this->messageLength[key] = static_cast<uint64_t>((length03 << 8) | length04);
-							this->messageOffset[key] += 2;
-						} else if (length01 == webSocketPayloadLengthMagicHuge) {
-							if (this->currentMessage[key].size() < 10) {
+							this->messageLength[key] = length01;
+							if (length01 == webSocketPayloadLengthMagicLarge) {
+								if (this->currentMessage[key].size() < 8) {
+									this->theState[key] = WSMessageCollectorState::Collecting;
+									this->currentRecursionDepth += 1;
+									return this->runMessageCollector();
+								}
+								uint8_t length03 = this->currentMessage[key][2];
+								uint8_t length04 = this->currentMessage[key][3];
+								this->messageLength[key] = static_cast<uint64_t>((length03 << 8) | length04);
+								this->messageOffset[key] += 2;
+							} else if (length01 == webSocketPayloadLengthMagicHuge) {
+								if (this->currentMessage[key].size() < 10) {
+									this->theState[key] = WSMessageCollectorState::Collecting;
+									this->currentRecursionDepth += 1;
+									return this->runMessageCollector();
+								}
+								this->messageLength[key] = 0;
+								for (int64_t x = 2, shift = 56; x < 10; ++x, shift -= 8) {
+									uint8_t lengthNew = static_cast<uint8_t>(this->currentMessage[key][x]);
+									this->messageLength[key] |= static_cast<uint64_t>((lengthNew & 0xff) << shift);
+								}
+								this->messageOffset[key] += 8;
+							}
+							if (this->currentMessage[key].size() < static_cast<uint64_t>(this->messageOffset[key] + this->messageLength[key])) {
 								this->theState[key] = WSMessageCollectorState::Collecting;
 								this->currentRecursionDepth += 1;
 								return this->runMessageCollector();
+							} else {
+								WSMessageCollectorReturnData returnData{};
+								returnData.theMessage.insert(returnData.theMessage.begin(), this->currentMessage[key].begin() + this->messageOffset[key],
+									this->currentMessage[key].begin() + this->messageOffset[key] + this->messageLength[key]);
+								returnData.opCode = this->dataOpCodes[key];
+								this->finalMessages[key].push(returnData);
+								this->currentMessage[key].erase(this->currentMessage[key].begin(),
+									this->currentMessage[key].begin() + this->messageOffset[key] + this->messageLength[key]);
+								this->theState[key] = WSMessageCollectorState::Serving;
+								return this->runMessageCollector();
 							}
-							this->messageLength[key] = 0;
-							for (int64_t x = 2, shift = 56; x < 10; ++x, shift -= 8) {
-								uint8_t lengthNew = static_cast<uint8_t>(this->currentMessage[key][x]);
-								this->messageLength[key] |= static_cast<uint64_t>((lengthNew & 0xff) << shift);
-							}
-							this->messageOffset[key] += 8;
-						}
-						if (this->currentMessage[key].size() < static_cast<uint64_t>(this->messageOffset[key] + this->messageLength[key])) {
 							this->theState[key] = WSMessageCollectorState::Collecting;
 							this->currentRecursionDepth += 1;
 							return this->runMessageCollector();
-						} else {
+						}
+						case WebSocketOpCode::Op_Close: {
+							uint16_t close = this->currentMessage[key][2] & 0xff;
+							close <<= 8;
+							close |= this->currentMessage[key][3] & 0xff;
+							while (this->finalMessages[key].size() > 0) {
+								this->finalMessages[key].pop();
+							}
 							WSMessageCollectorReturnData returnData{};
-							returnData.theMessage.insert(returnData.theMessage.begin(), this->currentMessage[key].begin() + this->messageOffset[key],
-								this->currentMessage[key].begin() + this->messageOffset[key] + this->messageLength[key]);
+							returnData.closeCode = static_cast<WebSocketCloseCode>(close);
 							returnData.opCode = this->dataOpCodes[key];
 							this->finalMessages[key].push(returnData);
-							this->currentMessage[key].erase(this->currentMessage[key].begin(),
-								this->currentMessage[key].begin() + this->messageOffset[key] + this->messageLength[key]);
+							this->currentMessage[key].clear();
 							this->theState[key] = WSMessageCollectorState::Serving;
-							return this->runMessageCollector();
+							return false;
 						}
-						this->theState[key] = WSMessageCollectorState::Collecting;
-						this->currentRecursionDepth += 1;
-						return this->runMessageCollector();
-					}
-					case WebSocketOpCode::Op_Close: {
-						uint16_t close = this->currentMessage[key][2] & 0xff;
-						close <<= 8;
-						close |= this->currentMessage[key][3] & 0xff;
-						while (this->finalMessages[key].size() > 0) {
-							this->finalMessages[key].pop();
+						default: {
+							this->theState[key] = WSMessageCollectorState::Collecting;
+							this->currentRecursionDepth += 1;
+							return true;
 						}
-						WSMessageCollectorReturnData returnData{};
-						returnData.closeCode = static_cast<WebSocketCloseCode>(close);
-						returnData.opCode = this->dataOpCodes[key];
-						this->finalMessages[key].push(returnData);
-						this->currentMessage[key].clear();
-						this->theState[key] = WSMessageCollectorState::Serving;
-						return false;
-					}
-					default: {
-						this->theState[key] = WSMessageCollectorState::Collecting;
-						this->currentRecursionDepth += 1;
-						return true;
 					}
 				}
+				this->theState[key] = WSMessageCollectorState::Collecting;
+				return true;
 			}
-			this->theState[key] = WSMessageCollectorState::Collecting;
-			return true;
 		}
 		return true;
 	}
@@ -209,7 +219,7 @@ namespace DiscordCoreInternal {
 		try {
 			WebSocketSSLShard::processIO(*this->theClients);
 			for (auto& [key, value]: *this->theClients) {
-				if (value->areWeConnected.load()) {
+				if (value != nullptr) {
 					auto newMessage = value->getInputBuffer();
 					this->theState[key] = WSMessageCollectorState::Parsing;
 					this->currentMessage[key].insert(this->currentMessage[key].end(), newMessage.begin(), newMessage.end());
@@ -335,7 +345,7 @@ namespace DiscordCoreInternal {
 			theData.currentShard = this->theClients[theIndex]->shard[0];
 			theData.currentBaseSocketAgent = this->currentBaseSocketAgent;
 			this->theClients[theIndex]->haveWeReceivedHeartbeatAck = true;
-			this->reconnections.push(theData);
+			this->connections.push(theData);
 			this->closeCode = static_cast<WebSocketCloseCode>(0);
 		} else {
 			this->doWeQuit->store(true);
@@ -986,7 +996,7 @@ namespace DiscordCoreInternal {
 	void BaseSocketAgent::run(std::stop_token theToken) noexcept {
 		try {
 			while (!theToken.stop_requested() && !this->doWeQuit->load()) {
-				if (this->reconnections.size() > 0) {
+				if (this->connections.size() > 0) {
 					this->internalConnect();
 				}
 				this->messageCollector.runMessageCollector();
@@ -1058,14 +1068,37 @@ namespace DiscordCoreInternal {
 	void BaseSocketAgent::internalConnect() noexcept {
 		try {
 			if (this->theReconnectionTimer.hasTimePassed()) {
-				if (this->reconnections.size() > 0) {
-					auto reconnectionData = this->reconnections.front();
-					this->reconnections.pop();
+				std::unique_lock<std::mutex> theLock{ this->accessorMutex01 };
+				if (this->connections.size() > 0) {
+					auto reconnectionData = this->connections.front();
+					this->connections.pop();
+					theLock.unlock();
+					int32_t currentRecursionDepth{};
+					int32_t lastSentNumber{};
+					std::string sessionId{};
+					if (this->theClients.contains(reconnectionData.currentShard) && this->theClients[reconnectionData.currentShard] != nullptr) {
+						currentRecursionDepth = this->theClients[reconnectionData.currentShard]->currentRecursionDepth;
+						lastSentNumber = this->theClients[reconnectionData.currentShard]->lastNumberReceived;
+						sessionId = this->theClients[reconnectionData.currentShard]->sessionId;
+					}
+					currentRecursionDepth += 1;
+					this->theClients[reconnectionData.currentShard] = std::make_unique<WebSocketSSLShard>(1024 * 16, reconnectionData.currentShard,
+						this->discordCoreClient->shardingOptions.totalNumberOfShards, this->doWePrintErrorMessages);
+					this->theClients[reconnectionData.currentShard]->currentRecursionDepth = currentRecursionDepth;
+					this->theClients[reconnectionData.currentShard]->lastNumberReceived = lastSentNumber;
+					this->theClients[reconnectionData.currentShard]->sessionId = sessionId;
+					this->theClients[reconnectionData.currentShard]->areWeConnected.store(false);
+
+					
 					std::this_thread::sleep_for(1ms);
 					try {
 						this->theClients[reconnectionData.currentShard]->connect(this->baseUrl, "443");
 					} catch (...) {
-						this->reconnections.push(reconnectionData);
+						this->theClients[reconnectionData.currentShard]->currentRecursionDepth += 1;
+						if (this->maxReconnectTries <= this->theClients[reconnectionData.currentShard]->currentRecursionDepth) {
+							return;
+						}
+						this->connections.push(reconnectionData);
 					}
 		
 					std::string sendString{};
@@ -1102,22 +1135,12 @@ namespace DiscordCoreInternal {
 	}
 
 	void BaseSocketAgent::connect(DiscordCoreAPI::ReconnectionPackage thePackage) noexcept {
-		int32_t currentRecursionDepth{};
-		int32_t lastSentNumber{};
-		std::string sessionId{};
-		if (this->theClients.contains(thePackage.currentShard) && this->theClients[thePackage.currentShard] != nullptr) {
-			currentRecursionDepth = this->theClients[thePackage.currentShard]->currentRecursionDepth;
-			lastSentNumber = this->theClients[thePackage.currentShard]->lastNumberReceived;
-			sessionId = this->theClients[thePackage.currentShard]->sessionId;
+		std::unique_lock<std::mutex> theLock{ this->accessorMutex01 };
+		this->connections.push(thePackage);
+		theLock.unlock();
+		while (!this->theClients.contains(thePackage.currentShard)) {
+			std::this_thread::sleep_for(1ms);
 		}
-		currentRecursionDepth += 1;
-		this->theClients[thePackage.currentShard] =
-			std::make_unique<WebSocketSSLShard>(1024 * 16, thePackage.currentShard, this->discordCoreClient->shardingOptions.totalNumberOfShards, this->doWePrintErrorMessages);
-		this->theClients[thePackage.currentShard]->currentRecursionDepth = currentRecursionDepth;
-		this->theClients[thePackage.currentShard]->lastNumberReceived = lastSentNumber;
-		this->theClients[thePackage.currentShard]->sessionId = sessionId;
-		this->theClients[thePackage.currentShard]->areWeConnected.store(false);
-		this->reconnections.push(thePackage);
 		while (!this->theClients[thePackage.currentShard]->areWeConnected.load()) {
 			std::this_thread::sleep_for(1ms);
 		}

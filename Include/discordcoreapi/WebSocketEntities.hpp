@@ -131,7 +131,7 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::TextFormat theFormat{ DiscordCoreAPI::TextFormat::Etf };
 		DiscordCoreAPI::DiscordCoreClient* discordCoreClient{ nullptr };
 		DiscordCoreAPI::CommandController* commandController{ nullptr };
-		std::queue<DiscordCoreAPI::ReconnectionPackage> reconnections{};
+		std::queue<DiscordCoreAPI::ReconnectionPackage> connections{};
 		WebSocketOpCode dataOpcode{ WebSocketOpCode::Op_Binary };
 		std::unique_ptr<std::jthread> theTask{ nullptr };
 		DiscordCoreAPI::EventManager* eventManager{};

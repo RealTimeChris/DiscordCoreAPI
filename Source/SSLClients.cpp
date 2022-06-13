@@ -245,21 +245,20 @@ namespace DiscordCoreInternal {
 	};
 
 	void WebSocketSSLShard::processIO(std::unordered_map<SOCKET, std::unique_ptr<WebSocketSSLShard>>& theMap) {
-		fd_set readSet{}, writeSet{};
-
 		int32_t readNfds{ 0 }, writeNfds{ 0 }, finalNfds{ 0 };
+		fd_set readSet{}, writeSet{};
 		FD_ZERO(&readSet);
 		FD_ZERO(&writeSet);
 		for (auto& [key, value]: theMap) {
-			if (value->areWeConnected.load()) {
+			if (value != nullptr) {
 				if ((value->outputBuffer.size() > 0 || value->wantWrite) && !value->wantRead) {
 					FD_SET(value->theSocket, &writeSet);
 					writeNfds = value->theSocket > writeNfds ? value->theSocket : writeNfds;
 				}
 				if (!value->wantWrite) {
 					FD_SET(value->theSocket, &readSet);
+					readNfds = value->theSocket > readNfds ? value->theSocket : readNfds;
 				}
-				readNfds = value->theSocket > readNfds ? value->theSocket : readNfds;
 				finalNfds = readNfds > writeNfds ? readNfds : writeNfds;
 			}
 		}
@@ -268,7 +267,7 @@ namespace DiscordCoreInternal {
 			return;
 		}
 
-		timeval checkTime{ .tv_usec = 10000 };
+		timeval checkTime{ .tv_usec = 1000 };
 		if (auto resultValue = select(finalNfds + 1, &readSet, &writeSet, nullptr, &checkTime); resultValue == SOCKET_ERROR) {
 			throw ConnectionError{ reportError("select() Error: ", resultValue) };
 		}
