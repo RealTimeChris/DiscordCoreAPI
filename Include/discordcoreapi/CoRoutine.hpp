@@ -166,7 +166,7 @@ namespace DiscordCoreAPI {
 				this->result = this->coroutineHandle.promise().result;
 				return this->result;
 			} else {
-				throw CoRoutineError("You called get() on a CoRoutine that is not in a valid state.");
+				throw CoRoutineError("CoRoutine::get(), You called get() on a CoRoutine that is not in a valid state.");
 			}
 			return ReturnType{};
 		}
@@ -307,7 +307,7 @@ namespace DiscordCoreAPI {
 					std::rethrow_exception(exceptionPtr);
 				}
 			} else {
-				throw CoRoutineError("You called get() on a CoRoutine that is not in a valid state.");
+				throw CoRoutineError("CoRoutine::get(), You called get() on a CoRoutine that is not in a valid state.");
 			}
 		}
 

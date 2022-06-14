@@ -212,24 +212,20 @@ namespace DiscordCoreAPI {
 		return content;
 	}
 
-	std::string logFunction(std::string callStack, std::string theError, std::source_location theLocation) {
-		std::stringstream theStream{};
-		theStream << shiftToBrightRed() << callStack << ", File: " << theLocation.file_name() << " (" << std::to_string(theLocation.line()) << ":"
-				  << std::to_string(theLocation.column()) << "), "
-				  << "Error: " << theError << std::endl
-				  << std::endl;
-		auto theReturnString = theStream.str();
-		return theReturnString;
-	}
-
-	void reportException(const std::string& callStack, std::source_location theLocation) {
+	void reportException(const std::string& currentFunctionName, std::source_location theLocation) {
 		try {
 			auto currentException = std::current_exception();
 			if (currentException) {
 				std::rethrow_exception(currentException);
 			}
 		} catch (const std::exception& e) {
-			std::cout << logFunction(callStack, e.what(), theLocation);
+			std::stringstream theStream{};
+			theStream << shiftToBrightRed() << currentFunctionName << ", File: " << theLocation.file_name() << " (" << std::to_string(theLocation.line()) << ":"
+					  << std::to_string(theLocation.column()) << "), "
+					  << "Error: " << e.what() << std::endl
+					  << std::endl;
+			auto theReturnString = theStream.str();
+			std::cout << theReturnString;
 		}
 	}
 

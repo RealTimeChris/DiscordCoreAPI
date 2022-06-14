@@ -31,17 +31,6 @@
 
 namespace DiscordCoreInternal {
 
-	enum class ReconnectPossible : uint16_t {
-		Yes = static_cast<uint16_t>(WebSocketCloseCode::Unknown_Error) | static_cast<uint16_t>(WebSocketCloseCode::Unknown_Opcode) |
-			static_cast<uint16_t>(WebSocketCloseCode::Decode_Error) | static_cast<uint16_t>(WebSocketCloseCode::Not_Authenticated) |
-			static_cast<uint16_t>(WebSocketCloseCode::Already_Authenticated) | static_cast<uint16_t>(WebSocketCloseCode::Invalid_Seq) |
-			static_cast<uint16_t>(WebSocketCloseCode::Session_Timed),
-		No = static_cast<uint16_t>(WebSocketCloseCode::Authentication_Failed) | static_cast<uint16_t>(WebSocketCloseCode::Invalid_Shard) |
-			static_cast<uint16_t>(WebSocketCloseCode::Sharding_Required) | static_cast<uint16_t>(WebSocketCloseCode::Invalid_API_Version) |
-			static_cast<uint16_t>(WebSocketCloseCode::Disallowed_Intent) | static_cast<uint16_t>(WebSocketCloseCode::Invalid_Intent) |
-			static_cast<uint16_t>(WebSocketCloseCode::Normal_Close)
-	};
-
 	class DiscordCoreAPI_Dll BaseSocketAgent {
 	  public:
 		friend class WebSocketSSLShard;

@@ -231,7 +231,14 @@ namespace DiscordCoreInternal {
 			std::string theString = newSong.finalDownloadUrls[1].urlPath;
 			theMap[0]->writeData(theString);
 			try {
-				WebSocketSSLShard::processIO(theMap, ms1000);
+				try {
+					WebSocketSSLShard::processIO(theMap, ms1000);
+				} catch (...) {
+					if (this->doWePrintWebSocketErrorMessages) {
+						DiscordCoreAPI::reportException("BaseSocketAgent::getVoiceConnectionData()");
+					}
+					return;
+				}
 				while (newSong.contentLength > bytesSubmittedTotal) {
 					std::this_thread::sleep_for(1ms);
 					if (bytesSubmittedPrevious == bytesSubmittedTotal) {
@@ -267,7 +274,14 @@ namespace DiscordCoreInternal {
 								return;
 							}
 							remainingDownloadContentLength = newSong.contentLength - bytesSubmittedTotal;
-							WebSocketSSLShard::processIO(theMap, ms500);
+							try {
+								WebSocketSSLShard::processIO(theMap, ms500);
+							} catch (...) {
+								if (this->doWePrintWebSocketErrorMessages) {
+									DiscordCoreAPI::reportException("BaseSocketAgent::getVoiceConnectionData()");
+								}
+								return;
+							}
 							if (!theToken.stop_requested()) {
 								if (theMap.contains(0)) {
 									bytesSubmittedTotal = theMap[0]->getBytesRead();
@@ -286,7 +300,14 @@ namespace DiscordCoreInternal {
 							return;
 						}
 						if (counter == 0) {
-							WebSocketSSLShard::processIO(theMap, ms500);
+							try {
+								WebSocketSSLShard::processIO(theMap, ms500);
+							} catch (...) {
+								if (this->doWePrintWebSocketErrorMessages) {
+									DiscordCoreAPI::reportException("BaseSocketAgent::getVoiceConnectionData()");
+								}
+								return;
+							}
 							std::string streamBuffer{};
 							if (theMap.contains(0)) {
 								streamBuffer = theMap[0]->getInputBuffer();
@@ -315,7 +336,14 @@ namespace DiscordCoreInternal {
 									return;
 								}
 								remainingDownloadContentLength = newSong.contentLength - bytesSubmittedTotal;
-								WebSocketSSLShard::processIO(theMap, ms500);
+								try {
+									WebSocketSSLShard::processIO(theMap, ms500);
+								} catch (...) {
+									if (this->doWePrintWebSocketErrorMessages) {
+										DiscordCoreAPI::reportException("BaseSocketAgent::getVoiceConnectionData()");
+									}
+									return;
+								}
 								std::string newVector{}; 
 								if (theMap.contains(0)) {
 									newVector = theMap[0]->getInputBuffer();

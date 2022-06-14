@@ -155,7 +155,13 @@ namespace DiscordCoreInternal {
 			this->userId = doWeCollect.userId;
 			nlohmann::json newData = JSONIFY(dataPackage);
 			this->sendMessage(newData, theIndex);
-			WebSocketSSLShard::processIO(this->theClients, 100000);
+			try {
+				WebSocketSSLShard::processIO(this->theClients, 100000);
+			} catch (...) {
+				if (this->doWePrintErrorMessages) {
+					DiscordCoreAPI::reportException("BaseSocketAgent::getVoiceConnectionData()");
+				}
+			}
 			std::this_thread::sleep_for(500ms);
 			if (doWeCollect.channelId == 0) {
 				return;
@@ -164,7 +170,13 @@ namespace DiscordCoreInternal {
 			newData = JSONIFY(dataPackage);
 			this->areWeCollectingData = true;
 			this->sendMessage(newData, theIndex);
-			WebSocketSSLShard::processIO(this->theClients, 100000);
+			try {
+				WebSocketSSLShard::processIO(this->theClients, 100000);
+			} catch (...) {
+				if (this->doWePrintErrorMessages) {
+					DiscordCoreAPI::reportException("BaseSocketAgent::getVoiceConnectionData()");
+				}
+			}
 			DiscordCoreAPI::StopWatch<std::chrono::milliseconds> theStopWatch{ 5000ms };
 			while (this->areWeCollectingData) {
 				if (theStopWatch.hasTimePassed()) {
@@ -933,7 +945,13 @@ namespace DiscordCoreInternal {
 					this->internalConnect();
 				}
 				for (auto& [key, value]: this->theClients) {
-					WebSocketSSLShard::processIO(this->theClients);
+					try {
+						WebSocketSSLShard::processIO(this->theClients);
+					} catch (...) {
+						if (this->doWePrintErrorMessages) {
+							DiscordCoreAPI::reportException("BaseSocketAgent::getVoiceConnectionData()");
+						}
+					}
 					if (this->theClients.contains(key) &&value->inputBuffer.size() > 0) {
 						this->parseHeadersAndMessage(*value);
 					}
@@ -1007,7 +1025,13 @@ namespace DiscordCoreInternal {
 						if (this->theClients[reconnectionData.currentShard]->theState == WebSocketState::Connected) {
 							break;
 						}
-						WebSocketSSLShard::processIO(this->theClients);
+						try {
+							WebSocketSSLShard::processIO(this->theClients);
+						} catch (...) {
+							if (this->doWePrintErrorMessages) {
+								DiscordCoreAPI::reportException("BaseSocketAgent::getVoiceConnectionData()");
+							}
+						}
 						std::this_thread::sleep_for(1ms);
 						if (currentDepth >= 5000) {
 							this->theClients.erase(reconnectionData.currentShard);
@@ -1209,7 +1233,13 @@ namespace DiscordCoreInternal {
 					stopWatch.resetTimer();
 					this->sendHeartBeat();
 				}
-				WebSocketSSLShard::processIO(this->theClients);
+				try {
+					WebSocketSSLShard::processIO(this->theClients);
+				} catch (...) {
+					if (this->doWePrintErrorMessages) {
+						DiscordCoreAPI::reportException("BaseSocketAgent::getVoiceConnectionData()");
+					}
+				}
 				if (this->theClients.contains(3)) {
 					this->baseSocketAgent->parseHeadersAndMessage(*this->theClients[3]);
 					if (this->theClients[3]->processedMessages.size() > 0) {
@@ -1306,7 +1336,13 @@ namespace DiscordCoreInternal {
 				"\r\nPragma: no-cache\r\nUser-Agent: DiscordCoreAPI/1.0\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Key: " +
 				DiscordCoreAPI::generateBase64EncodedKey() + "\r\nSec-WebSocket-Version: 13\r\n\r\n";
 			this->sendMessage(sendVector);
-			WebSocketSSLShard::processIO(this->theClients, 1000);
+			try {
+				WebSocketSSLShard::processIO(this->theClients);
+			} catch (...) {
+				if (this->doWePrintErrorMessages) {
+					DiscordCoreAPI::reportException("BaseSocketAgent::getVoiceConnectionData()");
+				}
+			}
 			int32_t currentDepth{ 0 };
 			while (true) {
 				currentDepth += 1;
@@ -1316,7 +1352,13 @@ namespace DiscordCoreInternal {
 				if (this->theClients[3]->theState == WebSocketState::Connected) {
 					break;
 				}
-				WebSocketSSLShard::processIO(this->theClients);
+				try {
+					WebSocketSSLShard::processIO(this->theClients);
+				} catch (...) {
+					if (this->doWePrintErrorMessages) {
+						DiscordCoreAPI::reportException("BaseSocketAgent::getVoiceConnectionData()");
+					}
+				}
 				std::this_thread::sleep_for(1ms);
 				if (currentDepth >= 5000) {
 					this->theClients.erase(3);
