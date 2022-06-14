@@ -218,8 +218,8 @@ namespace DiscordCoreAPI {
 				  << std::to_string(theLocation.column()) << "), "
 				  << "Error: " << theError << std::endl
 				  << std::endl;
-		auto returnString = theStream.str();
-		return returnString;
+		auto theReturnString = theStream.str();
+		return theReturnString;
 	}
 
 	void reportException(const std::string& callStack, std::source_location theLocation) {
@@ -335,34 +335,34 @@ namespace DiscordCoreAPI {
 
 		const char* base64_chars_ = base64_chars[url];
 
-		std::string returnString{};
-		returnString.reserve(len_encoded);
+		std::string theReturnString{};
+		theReturnString.reserve(len_encoded);
 
 		uint64_t pos = 0;
 
 		while (pos < theString.size()) {
-			returnString.push_back(base64_chars_[(theString[static_cast<int64_t>(pos + 0)] & 0xfc) >> 2]);
+			theReturnString.push_back(base64_chars_[(theString[static_cast<int64_t>(pos + 0)] & 0xfc) >> 2]);
 
 			if (static_cast<uint64_t>(pos + 1) < theString.size()) {
-				returnString.push_back(base64_chars_[((theString[static_cast<int64_t>(pos + 0)] & 0x03) << 4) + ((theString[static_cast<int64_t>(pos + 1)] & 0xf0) >> 4)]);
+				theReturnString.push_back(base64_chars_[((theString[static_cast<int64_t>(pos + 0)] & 0x03) << 4) + ((theString[static_cast<int64_t>(pos + 1)] & 0xf0) >> 4)]);
 
 				if (static_cast<uint64_t>(pos + 2) < theString.size()) {
-					returnString.push_back(base64_chars_[((theString[static_cast<int64_t>(pos + 1)] & 0x0f) << 2) + ((theString[static_cast<int64_t>(pos + 2)] & 0xc0) >> 6)]);
-					returnString.push_back(base64_chars_[theString[static_cast<int64_t>(pos + 2)] & 0x3f]);
+					theReturnString.push_back(base64_chars_[((theString[static_cast<int64_t>(pos + 1)] & 0x0f) << 2) + ((theString[static_cast<int64_t>(pos + 2)] & 0xc0) >> 6)]);
+					theReturnString.push_back(base64_chars_[theString[static_cast<int64_t>(pos + 2)] & 0x3f]);
 				} else {
-					returnString.push_back(base64_chars_[(theString[static_cast<int64_t>(pos + 1)] & 0x0f) << 2]);
-					returnString.push_back(trailing_char);
+					theReturnString.push_back(base64_chars_[(theString[static_cast<int64_t>(pos + 1)] & 0x0f) << 2]);
+					theReturnString.push_back(trailing_char);
 				}
 			} else {
-				returnString.push_back(base64_chars_[(theString[static_cast<int64_t>(pos + 0)] & 0x03) << 4]);
-				returnString.push_back(trailing_char);
-				returnString.push_back(trailing_char);
+				theReturnString.push_back(base64_chars_[(theString[static_cast<int64_t>(pos + 0)] & 0x03) << 4]);
+				theReturnString.push_back(trailing_char);
+				theReturnString.push_back(trailing_char);
 			}
 
 			pos += 3;
 		}
 
-		return returnString;
+		return theReturnString;
 	}
 
 	std::string loadFileContents(const std::string& filePath) {
@@ -373,18 +373,18 @@ namespace DiscordCoreAPI {
 	}
 
 	std::string utf8MakeValid(const std::string& inputString) {
-		std::string returnString{};
+		std::string theReturnString{};
 		for (auto& value: inputString) {
 			if (value >= 128) {
-				returnString.push_back(value - 128);
+				theReturnString.push_back(value - 128);
 			} else if (value < 0) {
 				int32_t theDifference = 0 - value;
-				returnString.push_back(value + theDifference);
+				theReturnString.push_back(value + theDifference);
 			} else {
-				returnString.push_back(value);
+				theReturnString.push_back(value);
 			}
 		}
-		return returnString;
+		return theReturnString;
 	}
 
 	std::string urlEncode(const std::string& inputString) {
@@ -418,20 +418,20 @@ namespace DiscordCoreAPI {
 	std::string getCurrentISO8601TimeStamp() {
 		std::time_t result = std::time(nullptr);
 		auto resultTwo = std::localtime(&result);
-		std::string resultString = getISO8601TimeStamp(std::to_string(resultTwo->tm_year + 1900), std::to_string(resultTwo->tm_mon), std::to_string(resultTwo->tm_mday),
+		std::string theReturnString = getISO8601TimeStamp(std::to_string(resultTwo->tm_year + 1900), std::to_string(resultTwo->tm_mon), std::to_string(resultTwo->tm_mday),
 			std::to_string(resultTwo->tm_hour), std::to_string(resultTwo->tm_min), std::to_string(resultTwo->tm_sec));
-		return resultString;
+		return theReturnString;
 	}
 
 	std::string generateBase64EncodedKey() {
-		std::string returnString{};
-		returnString.resize(16);
+		std::string theReturnString{};
+		theReturnString.resize(16);
 		std::mt19937_64 randomEngine{ static_cast<uint64_t>(std::chrono::system_clock::now().time_since_epoch().count()) };
 		for (uint32_t x = 0; x < 16; x += 1) {
-			returnString[x] = static_cast<uint8_t>((static_cast<float>(randomEngine()) / static_cast<float>(randomEngine.max())) * 255.0f);
+			theReturnString[x] = static_cast<uint8_t>((static_cast<float>(randomEngine()) / static_cast<float>(randomEngine.max())) * 255.0f);
 		}
-		returnString = base64Encode(returnString, false);
-		return returnString;
+		theReturnString = base64Encode(theReturnString, false);
+		return theReturnString;
 	}
 
 	std::string shiftToBrightGreen() {
@@ -505,23 +505,23 @@ namespace DiscordCoreAPI {
 			(yearsToAdd * secondsPerYear) + (monthsToAdd * secondsPerMonth) + (daysToAdd * secondsPerDay) + (hoursToAdd * secondsPerHour) + (minutesToAdd * secondsPerMinute);
 		result += secondsToAdd;
 		auto resultTwo = std::localtime(&result);
-		std::string resultString{};
+		std::string theReturnString{};
 		if (resultTwo->tm_isdst) {
 			if (resultTwo->tm_hour + 4 >= 24) {
 				resultTwo->tm_hour = resultTwo->tm_hour - 24;
 				resultTwo->tm_mday += 1;
 			}
-			resultString = getISO8601TimeStamp(std::to_string(resultTwo->tm_year + 1900), std::to_string(resultTwo->tm_mon + 1), std::to_string(resultTwo->tm_mday),
+			theReturnString = getISO8601TimeStamp(std::to_string(resultTwo->tm_year + 1900), std::to_string(resultTwo->tm_mon + 1), std::to_string(resultTwo->tm_mday),
 				std::to_string(resultTwo->tm_hour + 4), std::to_string(resultTwo->tm_min), std::to_string(resultTwo->tm_sec));
 		} else {
 			if (resultTwo->tm_hour + 5 >= 24) {
 				resultTwo->tm_hour = resultTwo->tm_hour - 24;
 				resultTwo->tm_mday += 1;
 			}
-			resultString = getISO8601TimeStamp(std::to_string(resultTwo->tm_year + 1900), std::to_string(resultTwo->tm_mon + 1), std::to_string(resultTwo->tm_mday),
+			theReturnString = getISO8601TimeStamp(std::to_string(resultTwo->tm_year + 1900), std::to_string(resultTwo->tm_mon + 1), std::to_string(resultTwo->tm_mday),
 				std::to_string(resultTwo->tm_hour + 5), std::to_string(resultTwo->tm_min), std::to_string(resultTwo->tm_sec));
 		}
-		return resultString;
+		return theReturnString;
 	}
 
 	void AudioFrameData::clearData() {
@@ -558,10 +558,10 @@ namespace DiscordCoreAPI {
 	}
 
 	std::string DiscordEntity::getCreatedAtTimestamp(TimeFormat timeFormat) {
-		std::string returnString{};
+		std::string theReturnString{};
 		int64_t timeInMs = (this->id >> 22) + 1420070400000;
-		returnString = convertTimeInMsToDateTimeString(timeInMs, timeFormat);
-		return returnString;
+		theReturnString = convertTimeInMsToDateTimeString(timeInMs, timeFormat);
+		return theReturnString;
 	}
 
 	void Permissions::addPermissions(const std::vector<Permission>& permissionsToAdd) {
@@ -788,8 +788,8 @@ namespace DiscordCoreAPI {
 	}
 
 	std::string Permissions::getCurrentPermissionString() {
-		std::string returnString = *this;
-		return returnString;
+		std::string theReturnString = *this;
+		return theReturnString;
 	}
 
 	std::string Permissions::computeOverwrites(const std::string& basePermissions, const GuildMember& guildMember, ChannelData& channel) {

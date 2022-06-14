@@ -273,7 +273,7 @@ namespace DiscordCoreInternal {
 					theShard.messageLength = 0;
 					for (int64_t x = 2, shift = 56; x < 10; ++x, shift -= 8) {
 						uint8_t lengthNew = static_cast<uint8_t>(theShard.inputBuffer[x]);
-						theShard.messageLength |= static_cast<uint64_t>((lengthNew & 0xff) << shift);
+						theShard.messageLength |= static_cast<uint64_t>((lengthNew & 0xff) << static_cast<uint64_t>(shift));
 					}
 					theShard.messageOffset += 8;
 				}

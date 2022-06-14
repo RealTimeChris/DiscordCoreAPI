@@ -67,35 +67,35 @@ namespace DiscordCoreInternal {
 			baseUrlNew = workload.baseUrl.substr(workload.baseUrl.find("https://") + std::string("https://").size(),
 				workload.baseUrl.find(".org") + std::string(".org").size() - std::string("https://").size());
 		}
-		std::string returnString{};
+		std::string theReturnString{};
 		if (workload.workloadClass == HttpWorkloadClass::Get || workload.workloadClass == HttpWorkloadClass::Delete) {
 			if (workload.workloadClass == HttpWorkloadClass::Get) {
-				returnString += "GET " + workload.baseUrl + workload.relativePath + " HTTP/1.1\r\n";
+				theReturnString += "GET " + workload.baseUrl + workload.relativePath + " HTTP/1.1\r\n";
 			} else if (workload.workloadClass == HttpWorkloadClass::Delete) {
-				returnString += "DELETE " + workload.baseUrl + workload.relativePath + " HTTP/1.1\r\n";
+				theReturnString += "DELETE " + workload.baseUrl + workload.relativePath + " HTTP/1.1\r\n";
 			}
 			for (auto& [key, value]: workload.headersToInsert) {
-				returnString += key + ": " + value + "\r\n";
+				theReturnString += key + ": " + value + "\r\n";
 			}
-			returnString += "Connection: Keep-Alive\r\n";
-			returnString += "Host: " + baseUrlNew + "\r\n\r\n";
+			theReturnString += "Connection: Keep-Alive\r\n";
+			theReturnString += "Host: " + baseUrlNew + "\r\n\r\n";
 		} else {
 			if (workload.workloadClass == HttpWorkloadClass::Patch) {
-				returnString += "PATCH " + workload.baseUrl + workload.relativePath + " HTTP/1.1\r\n";
+				theReturnString += "PATCH " + workload.baseUrl + workload.relativePath + " HTTP/1.1\r\n";
 			} else if (workload.workloadClass == HttpWorkloadClass::Post) {
-				returnString += "POST " + workload.baseUrl + workload.relativePath + " HTTP/1.1\r\n";
+				theReturnString += "POST " + workload.baseUrl + workload.relativePath + " HTTP/1.1\r\n";
 			} else if (workload.workloadClass == HttpWorkloadClass::Put) {
-				returnString = "PUT " + workload.baseUrl + workload.relativePath + " HTTP/1.1\r\n";
+				theReturnString = "PUT " + workload.baseUrl + workload.relativePath + " HTTP/1.1\r\n";
 			}
 			for (auto& [key, value]: workload.headersToInsert) {
-				returnString += key + ": " + value + "\r\n";
+				theReturnString += key + ": " + value + "\r\n";
 			}
-			returnString += "Connection: Keep-Alive\r\n";
-			returnString += "Host: " + baseUrlNew + "\r\n";
-			returnString += "Content-Length: " + std::to_string(workload.content.size()) + "\r\n\r\n";
-			returnString += workload.content;
+			theReturnString += "Connection: Keep-Alive\r\n";
+			theReturnString += "Host: " + baseUrlNew + "\r\n";
+			theReturnString += "Content-Length: " + std::to_string(workload.content.size()) + "\r\n\r\n";
+			theReturnString += workload.content;
 		}
-		return returnString;
+		return theReturnString;
 	}
 
 	void HttpRnRBuilder::resetValues() {
