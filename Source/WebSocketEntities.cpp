@@ -70,7 +70,6 @@ namespace DiscordCoreInternal {
 				}
 				std::lock_guard<std::mutex> accessLock{ this->accessorMutex01 };
 				if (this->doWePrintSuccessMessages) {
-					std::lock_guard<std::mutex> theLock{ this->discordCoreClient->coutMutex };
 					std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Sending WebSocket " + this->theClients[theIndex]->shard.dump() + std::string("'s Message: ")
 							  << dataToSend.dump() << DiscordCoreAPI::reset() << std::endl
 							  << std::endl;
@@ -156,6 +155,7 @@ namespace DiscordCoreInternal {
 			this->userId = doWeCollect.userId;
 			nlohmann::json newData = JSONIFY(dataPackage);
 			this->sendMessage(newData, theIndex);
+			WebSocketSSLShard::processIO(this->theClients, 100000);
 			std::this_thread::sleep_for(500ms);
 			if (doWeCollect.channelId == 0) {
 				return;
@@ -164,7 +164,12 @@ namespace DiscordCoreInternal {
 			newData = JSONIFY(dataPackage);
 			this->areWeCollectingData = true;
 			this->sendMessage(newData, theIndex);
+			WebSocketSSLShard::processIO(this->theClients, 100000);
+			DiscordCoreAPI::StopWatch<std::chrono::milliseconds> theStopWatch{ 5000ms };
 			while (this->areWeCollectingData) {
+				if (theStopWatch.hasTimePassed()) {
+					break;
+				}
 				std::this_thread::sleep_for(1ms);
 			}
 			this->semaphore.release();
@@ -1113,15 +1118,15 @@ namespace DiscordCoreInternal {
 		try {
 			outBuffer.push_back(static_cast<uint8_t>(opCode) | webSocketFinishBit);
 
-			uint32_t indexCount{ 0 };
+			int32_t indexCount{ 0 };
 			if (sendLength <= webSocketMaxPayloadLengthSmall) {
 				outBuffer.push_back(static_cast<uint8_t>(sendLength));
 				indexCount = 0;
 			} else if (sendLength <= webSocketMaxPayloadLengthLarge) {
-				outBuffer.push_back(static_cast<uint8_t>(webSocketPayloadLengthMagicLarge));
+				outBuffer.push_back(webSocketPayloadLengthMagicLarge);
 				indexCount = 2;
 			} else {
-				outBuffer.push_back(static_cast<uint8_t>(webSocketPayloadLengthMagicHuge));
+				outBuffer.push_back(webSocketPayloadLengthMagicHuge);
 				indexCount = 8;
 			}
 			for (int32_t x = indexCount - 1; x >= 0; x--) {
@@ -1137,7 +1142,6 @@ namespace DiscordCoreInternal {
 			if (this->doWePrintErrorMessages) {
 				DiscordCoreAPI::reportException("BaseSocketAgent::createHeader()");
 			}
-			this->onClosedExternal();
 		}
 	}
 
