@@ -22,7 +22,8 @@
 #include <discordcoreapi/InputEvents.hpp>
 #include <discordcoreapi/ChannelEntities.hpp>
 #include <discordcoreapi/CoRoutine.hpp>
-DiscordCoreInternal::namespace DiscordCoreAPI {
+
+namespace DiscordCoreAPI {
 
 	CoRoutine<InputEventData> InputEvents::respondToInputEventAsync(RespondToInputEventData dataPackage) {
 		co_await NewThreadAwaitable<InputEventData>();
