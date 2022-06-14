@@ -958,6 +958,7 @@ namespace DiscordCoreInternal {
 				if (this->connections.size() > 0) {
 					DiscordCoreAPI::ConnectionPackage reconnectionData = this->connections.front();
 					this->connections.pop();
+					reconnectionData.currentReconnectionDepth += 1;
 					this->theClients[reconnectionData.currentShard] = std::make_unique<WebSocketSSLShard>(&this->connections, this->currentBaseSocketAgent,
 						reconnectionData.currentShard, this->discordCoreClient->shardingOptions.totalNumberOfShards, this->doWePrintErrorMessages);
 					this->theClients[reconnectionData.currentShard]->currentRecursionDepth = reconnectionData.currentReconnectionDepth;
@@ -965,10 +966,21 @@ namespace DiscordCoreInternal {
 					this->theClients[reconnectionData.currentShard]->lastNumberReceived = reconnectionData.lastNumberReceived;
 					this->theClients[reconnectionData.currentShard]->areWeResuming = reconnectionData.areWeResuming;
 					this->theClients[reconnectionData.currentShard]->sessionId = reconnectionData.sessionId;
-					this->theClients[reconnectionData.currentShard]->currentRecursionDepth += 1;
 
-					this->theClients[reconnectionData.currentShard]->connect(this->baseUrl, "443");
-
+					try {
+						this->theClients[reconnectionData.currentShard]->connect(this->baseUrl, "443");
+					} catch (...) {
+						if (this->doWePrintErrorMessages) {
+							DiscordCoreAPI::reportException("BaseSocketAgent::intneralConnect()");
+						}
+						if (reconnectionData.currentReconnectionDepth >= this->maxReconnectTries) {
+							this->doWeQuit->store(true);
+						} else {
+							this->connections.push(reconnectionData);
+						}
+						return;
+					}
+					
 					std::string sendString{};
 					if (this->theFormat == DiscordCoreAPI::TextFormat::Etf) {
 						sendString = "GET /?v=10&encoding=etf HTTP/1.1\r\nHost: " + this->baseUrl +
@@ -997,13 +1009,21 @@ namespace DiscordCoreInternal {
 							this->discordCoreClient->theStopWatch.resetTimer();
 							return;
 						}
+						if (!this->theClients.contains(reconnectionData.currentShard)) {
+							if (reconnectionData.currentReconnectionDepth >= this->maxReconnectTries) {
+								this->doWeQuit->store(true);
+							}
+							else {
+								this->connections.push(reconnectionData);
+							}
+						}
 					}
 				}
 				this->discordCoreClient->theStopWatch.resetTimer();
 			}
 		} catch (...) {
 			if (this->doWePrintErrorMessages) {
-				DiscordCoreAPI::reportException("BaseSocketAgent::connect()");
+				DiscordCoreAPI::reportException("BaseSocketAgent::intneralConnect()");
 			}
 		}
 	}
@@ -1296,7 +1316,11 @@ namespace DiscordCoreInternal {
 				std::this_thread::sleep_for(1ms);
 				if (currentDepth >= 5000) {
 					this->theClients.erase(3);
-					break;
+				}
+				if (!this->theClients.contains(3)) {
+					if (this->currentReconnectionTries>= this->maxReconnectionTries) {
+						return;
+					}
 				}
 			}
 		} catch (...) {

@@ -744,7 +744,8 @@ namespace DiscordCoreAPI {
 	DiscordCoreAPI_Dll std::string getISO8601TimeStamp(const std::string& year, const std::string& month, const std::string& day, const std::string& hour,
 		const std::string& minute, const std::string& second);
 
-	DiscordCoreAPI_Dll void reportException(const std::string& stackTrace, UnboundedMessageBlock<std::exception>* sendBuffer = nullptr, bool rethrow = false);
+	DiscordCoreAPI_Dll void reportException(const std::string& stackTrace, UnboundedMessageBlock<std::exception>* sendBuffer = nullptr, bool rethrow = false,
+		std::source_location theLocation = std::source_location::current());
 
 	DiscordCoreAPI_Dll std::string constructMultiPartData(nlohmann::json theData, const std::vector<File>& files);
 

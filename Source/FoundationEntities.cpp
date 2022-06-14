@@ -212,7 +212,18 @@ namespace DiscordCoreAPI {
 		return content;
 	}
 
-	void reportException(const std::string& stackTrace, UnboundedMessageBlock<std::exception>* sendBuffer, bool rethrow) {
+	std::string logFunction(std::string callStack, std::string theError, std::source_location theLocation) {
+		std::stringstream theStream{};
+		theStream << shiftToBrightRed() << callStack << ", File: " << theLocation.file_name() << " (" << std::to_string(theLocation.line()) << ":"
+				  << std::to_string(theLocation.column()) << "), " << theLocation.function_name() << ", "
+				  << "Error: " << theError << std::endl
+				  << std::endl;
+		auto returnString = theStream.str();
+		return returnString;
+	}
+
+	void reportException(const std::string& stackTrace, UnboundedMessageBlock<std::exception>* sendBuffer, bool rethrow,
+		std::source_location theLocation) {
 		try {
 			auto currentException = std::current_exception();
 			if (currentException) {
@@ -226,22 +237,7 @@ namespace DiscordCoreAPI {
 			if (sendBuffer) {
 				sendBuffer->send(e);
 			} else {
-				std::string returnString{};
-				if (stackTrace.back() == '\n') {
-					std::source_location theLocation = std::source_location::current();
-					std::stringstream theStream{};
-					theStream << stackTrace << ", File: " << theLocation.file_name() << " (" << std::to_string(theLocation.line()) << ":" << std::to_string(theLocation.column())
-							  << "), " << theLocation.function_name() << ",";
-					returnString = theStream.str();
-					std::cout << shiftToBrightRed() << returnString + "Error: " << e.what() << reset() << std::endl;
-				} else {
-					std::source_location theLocation = std::source_location::current();
-					std::stringstream theStream{};
-					theStream << stackTrace << ", File: " << theLocation.file_name() << " (" << std::to_string(theLocation.line()) << ":" << std::to_string(theLocation.column())
-							  << "), " << theLocation.function_name() << ",";
-					returnString = theStream.str();
-					std::cout << shiftToBrightRed() << returnString + " Error: " << e.what() << reset() << std::endl;
-				}
+				std::cout << logFunction(stackTrace, e.what(), theLocation);
 			}
 		}
 	}
