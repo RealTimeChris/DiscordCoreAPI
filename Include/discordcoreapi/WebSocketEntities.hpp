@@ -44,7 +44,7 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll BaseSocketAgent {
 	  public:
-		friend class DiscordCoreInternal::WebSocketSSLShard;
+		friend class WebSocketSSLShard;
 		friend class DiscordCoreAPI::DiscordCoreClient;
 		friend class DiscordCoreAPI::VoiceConnection;
 		friend class DiscordCoreAPI::BotUser;
@@ -132,7 +132,7 @@ namespace DiscordCoreInternal {
 		~VoiceSocketAgent() noexcept;
 
 	  protected:
-		DiscordCoreAPI::TSUnboundedMessageBlock<DiscordCoreInternal::VoiceConnectionData> voiceConnectionDataBuffer{};
+		DiscordCoreAPI::TSUnboundedMessageBlock<VoiceConnectionData> voiceConnectionDataBuffer{};
 		std::unordered_map<int32_t, std::unique_ptr<WebSocketSSLShard>> theClients{};
 		std::unique_ptr<DatagramSocketSSLClient> voiceSocket{ nullptr };
 		WebSocketOpCode dataOpcode{ WebSocketOpCode::Op_Text };

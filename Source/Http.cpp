@@ -256,7 +256,7 @@ namespace DiscordCoreInternal {
 	HttpConnection* HttpConnectionManager::getConnection() {
 		std::lock_guard<std::mutex> theLock{ this->theMutex };
 		if (!Globals::httpConnections.contains(std::this_thread::get_id())) {
-			Globals::httpConnections[std::this_thread::get_id()] = std::make_unique<DiscordCoreInternal::HttpConnection>();
+			Globals::httpConnections[std::this_thread::get_id()] = std::make_unique<HttpConnection>();
 		}
 		return Globals::httpConnections[std::this_thread::get_id()].get();
 	}

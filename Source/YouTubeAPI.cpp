@@ -28,7 +28,7 @@
 
 namespace DiscordCoreInternal {
 
-	YouTubeRequestBuilder::YouTubeRequestBuilder(DiscordCoreInternal::HttpClient* theClient) {
+	YouTubeRequestBuilder::YouTubeRequestBuilder(HttpClient* theClient) {
 		this->httpClient = theClient;
 	}
 
@@ -39,13 +39,13 @@ namespace DiscordCoreInternal {
 	}
 
 	std::vector<DiscordCoreAPI::Song> YouTubeRequestBuilder::collectSearchResults(const std::string& searchQuery) {
-		DiscordCoreInternal::HttpWorkloadData dataPackage{};
+		HttpWorkloadData dataPackage{};
 		dataPackage.baseUrl = YouTubeRequestBuilder::baseUrl;
 		dataPackage.relativePath = "/results?search_query=" + DiscordCoreAPI::urlEncode(searchQuery.c_str());
-		dataPackage.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
-		std::vector<DiscordCoreInternal::HttpWorkloadData> workloadVector01{};
+		dataPackage.workloadClass = HttpWorkloadClass::Get;
+		std::vector<HttpWorkloadData> workloadVector01{};
 		workloadVector01.push_back(dataPackage);
-		std::vector<DiscordCoreInternal::HttpResponseData> returnData = this->httpClient->submitWorkloadAndGetResult<std::vector<HttpResponseData>>(workloadVector01);
+		std::vector<HttpResponseData> returnData = this->httpClient->submitWorkloadAndGetResult<std::vector<HttpResponseData>>(workloadVector01);
 		if (returnData.size() < 1) {
 			return std::vector<DiscordCoreAPI::Song>{};
 		}
@@ -68,7 +68,7 @@ namespace DiscordCoreInternal {
 													  ["contents"]) {
 				DiscordCoreAPI::Song searchResult{};
 				if (value.contains("videoRenderer") && !value["videoRenderer"].is_null()) {
-					DiscordCoreInternal::parseObject(value["videoRenderer"], searchResult);
+					parseObject(value["videoRenderer"], searchResult);
 					searchResult.type = DiscordCoreAPI::SongType::YouTube;
 					searchResult.viewUrl = YouTubeRequestBuilder::baseUrl + "/watch?v=" + searchResult.songId + "&hl=en";
 					searchResults.push_back(searchResult);
@@ -82,7 +82,7 @@ namespace DiscordCoreInternal {
 		if (newSong.firstDownloadUrl != "") {
 			std::this_thread::sleep_for(500ms);
 		}
-		std::vector<DiscordCoreInternal::HttpWorkloadData> dataPackageWorkload{};
+		std::vector<HttpWorkloadData> dataPackageWorkload{};
 		std::string apiKey{ "AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8" };
 		nlohmann::json theRequest{};
 		theRequest["videoId"] = newSong.songId;
@@ -98,13 +98,13 @@ namespace DiscordCoreInternal {
 		theRequest["context"]["client"]["utcOffsetMinutes"] = 0;
 		theRequest["context"]["thirdParty"];
 		theRequest["context"]["thirdParty"]["embedUrl"] = "https://www.youtube.com";
-		DiscordCoreInternal::HttpWorkloadData dataPackage02{};
+		HttpWorkloadData dataPackage02{};
 		dataPackage02.baseUrl = YouTubeRequestBuilder::baseUrl;
 		dataPackage02.relativePath = "/youtubei/v1/player?key=" + apiKey;
 		dataPackage02.content = theRequest.dump();
-		dataPackage02.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Post;
+		dataPackage02.workloadClass = HttpWorkloadClass::Post;
 		dataPackageWorkload.push_back(dataPackage02);
-		std::vector<DiscordCoreInternal::HttpResponseData> responseData = this->httpClient->submitWorkloadAndGetResult<std::vector<HttpResponseData>>(dataPackageWorkload);
+		std::vector<HttpResponseData> responseData = this->httpClient->submitWorkloadAndGetResult<std::vector<HttpResponseData>>(dataPackageWorkload);
 		if (responseData.size() < 1) {
 			return DiscordCoreAPI::Song{};
 		}
@@ -117,7 +117,7 @@ namespace DiscordCoreInternal {
 		newSong.type = DiscordCoreAPI::SongType::YouTube;
 		nlohmann::json jsonObject = nlohmann::json::parse(responseData[0].responseMessage);
 		std::vector<DiscordCoreAPI::YouTubeFormat> theVector{};
-		DiscordCoreInternal::parseObject(jsonObject, theVector);
+		parseObject(jsonObject, theVector);
 		DiscordCoreAPI::YouTubeFormat format{};
 		bool isOpusFound{ false };
 		for (auto& value: theVector) {
@@ -166,7 +166,7 @@ namespace DiscordCoreInternal {
 		return newSong;
 	}
 
-	YouTubeAPI::YouTubeAPI(const uint64_t& guildIdNew, DiscordCoreInternal::HttpClient* httpClient) : requestBuilder(httpClient) {
+	YouTubeAPI::YouTubeAPI(const uint64_t& guildIdNew, HttpClient* httpClient) : requestBuilder(httpClient) {
 		this->doWePrintWebSocketErrorMessages = httpClient->getDoWePrintWebSocketErrorMessages();
 		this->doWePrintFFMPEGSuccessMessages = httpClient->getDoWePrintFFMPEGSuccessMessages();
 		this->doWePrintFFMPEGErrorMessages = httpClient->getDoWePrintFFMPEGErrorMessages();
@@ -195,7 +195,7 @@ namespace DiscordCoreInternal {
 		} else {
 			DiscordCoreAPI::getSongAPIMap()[youtubeAPI->guildId].get()->sendNextSong();
 			auto thePtr = DiscordCoreAPI::getSongAPIMap()[youtubeAPI->guildId].get();
-			auto newerSong = thePtr->getCurrentSong(youtubeAPI->guildId);
+			newerSong = thePtr->getCurrentSong(youtubeAPI->guildId);
 			newerSong = youtubeAPI->requestBuilder.collectFinalSong(guildMember, newerSong);
 			YouTubeAPI::downloadAndStreamAudio(newerSong, youtubeAPI, theToken, currentRecursionDepth);
 		}
@@ -203,7 +203,7 @@ namespace DiscordCoreInternal {
 
 	void YouTubeAPI::downloadAndStreamAudio(const DiscordCoreAPI::Song& newSong, YouTubeAPI* youtubeAPI, std::stop_token theToken, int32_t currentRecursionDepth) {
 		try {
-			std::unique_ptr<DiscordCoreInternal::WebSocketSSLShard> streamSocket{ std::make_unique<DiscordCoreInternal::WebSocketSSLShard>(nullptr, youtubeAPI->maxBufferSize, 0, 0,
+			std::unique_ptr<WebSocketSSLShard> streamSocket{ std::make_unique<WebSocketSSLShard>(nullptr, youtubeAPI->maxBufferSize, 0, 0,
 				this->doWePrintWebSocketErrorMessages) };
 			std::unordered_map<int32_t, std::unique_ptr<WebSocketSSLShard>> theMap{};
 			auto bytesRead{ static_cast<int32_t>(streamSocket->getBytesRead()) };

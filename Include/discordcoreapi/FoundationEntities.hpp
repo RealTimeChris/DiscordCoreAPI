@@ -3598,7 +3598,7 @@ namespace DiscordCoreAPI {
 
 		/// The base function for the command's execute function. \brief The base function for the command's execute function.
 		/// \param args A reference to an instance of BaseFunctionArguments.
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) = 0;
+		virtual void execute(BaseFunctionArguments& args) = 0;
 		virtual std::unique_ptr<BaseFunction> create() = 0;
 		virtual ~BaseFunction() = default;
 	};
@@ -3843,8 +3843,8 @@ namespace DiscordCoreInternal {
 
 		static int64_t getAndIncrementWorkloadId(HttpWorkloadType workloadType) {
 			std::lock_guard<std::mutex> theLock{ HttpWorkloadData::accessMutex };
-			int64_t theValue = DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[workloadType].load();
-			DiscordCoreInternal::HttpWorkloadData::workloadIdsExternal[workloadType].store(theValue + 1);
+			int64_t theValue = HttpWorkloadData::workloadIdsExternal[workloadType].load();
+			HttpWorkloadData::workloadIdsExternal[workloadType].store(theValue + 1);
 			return theValue;
 		}
 	};

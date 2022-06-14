@@ -102,7 +102,7 @@ namespace DiscordCoreInternal {
 
 	std::vector<uint8_t> JSONIFY(const std::string& localPort, const std::string& localIp, const std::string& encryptionMode, int32_t testValue);
 
-	std::vector<uint8_t> JSONIFY(const DiscordCoreInternal::VoiceConnectionData& dataPackage, const VoiceConnectInitData& dataPackage02);
+	std::vector<uint8_t> JSONIFY(const VoiceConnectionData& dataPackage, const VoiceConnectInitData& dataPackage02);
 
 	std::vector<uint8_t> JSONIFY(int32_t ssrc, int32_t delay);
 

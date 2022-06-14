@@ -76,7 +76,7 @@ namespace DiscordCoreAPI {
 		}
 		if (sodium_init() == -1) {
 			if (this->loggingOptions.logGeneralErrorMessages) {
-				std::cout << DiscordCoreAPI::shiftToBrightRed() << "LibSodium failed to initialize!" << reset() << std::endl << std::endl;
+				std::cout << shiftToBrightRed() << "LibSodium failed to initialize!" << reset() << std::endl << std::endl;
 			}
 		}
 		this->eventManager.onChannelCreation(&EventHandler::onChannelCreation);

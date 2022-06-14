@@ -86,7 +86,7 @@ namespace DiscordCoreAPI {
 		EventManager eventManager{};///< An EventManager.
 
 		/// DiscordCoreClient constructor. \brief DiscordCoreClient constructor.
-		/// \param configData A DiscordCoreAPI::DiscordCoreClientConfig structure to select various library options.
+		/// \param configData A DiscordCoreClientConfig structure to select various library options.
 		DiscordCoreClient(DiscordCoreClientConfig configData);
 
 		/// For registering a function with the CommandController. \brief For registering a function with the CommandController.

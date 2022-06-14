@@ -296,7 +296,7 @@ namespace DiscordCoreInternal {
 		return newVector;
 	}
 
-	std::vector<uint8_t> JSONIFY(const DiscordCoreInternal::VoiceConnectionData& dataPackage, const VoiceConnectInitData& dataPackage02) {
+	std::vector<uint8_t> JSONIFY(const VoiceConnectionData& dataPackage, const VoiceConnectInitData& dataPackage02) {
 		nlohmann::json data{};
 		data["d"]["session_id"] = dataPackage.sessionId;
 		data["d"]["server_id"] = std::to_string(dataPackage02.guildId);
