@@ -1009,13 +1009,11 @@ namespace DiscordCoreInternal {
 					std::string sendString{};
 					if (this->theFormat == DiscordCoreAPI::TextFormat::Etf) {
 						sendString = "GET /?v=10&encoding=etf HTTP/1.1\r\nHost: " + this->baseUrl +
-							"\r\nPragma: no-cache\r\nUser-Agent: DiscordCoreAPI/1.0\r\nUpgrade: "
-							"WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Key: " +
+							"\r\nPragma: no-cache\r\nUser-Agent: DiscordCoreAPI/1.0\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Key: " +
 							DiscordCoreAPI::generateBase64EncodedKey() + "\r\nSec-WebSocket-Version: 13\r\n\r\n";
 					} else {
 						sendString = "GET /?v=10&encoding=json HTTP/1.1\r\nHost: " + this->baseUrl +
-							"\r\nPragma: no-cache\r\nUser-Agent: DiscordCoreAPI/1.0\r\nUpgrade: "
-							"WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Key: " +
+							"\r\nPragma: no-cache\r\nUser-Agent: DiscordCoreAPI/1.0\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Key: " +
 							DiscordCoreAPI::generateBase64EncodedKey() + "\r\nSec-WebSocket-Version: 13\r\n\r\n";
 					}
 
@@ -1085,6 +1083,82 @@ namespace DiscordCoreInternal {
 		this->theTask = std::make_unique<std::jthread>([this](std::stop_token theToken) {
 			this->run(theToken);
 		});
+	}
+
+	void VoiceSocketAgent::parseHeadersAndMessage(WebSocketSSLShard& theShard) noexcept {
+		if (theShard.theState == WebSocketState::Connecting) {
+			std::string newVector{};
+			if (theShard.inputBuffer.find("\r\n\r\n") != std::string::npos) {
+				std::string headers = newVector.substr(0, newVector.find("\r\n\r\n"));
+				newVector.erase(0, newVector.find("\r\n\r\n") + 4);
+				theShard.inputBuffer.clear();
+				theShard.inputBuffer.insert(theShard.inputBuffer.end(), newVector.begin(), newVector.end());
+				theShard.theState = WebSocketState::Connected;
+			}
+		}
+		if (theShard.inputBuffer.size() < 4) {
+			return;
+		}
+		theShard.dataOpCode = static_cast<WebSocketOpCode>(theShard.inputBuffer[0] & ~webSocketFinishBit);
+		switch (theShard.dataOpCode) {
+			case WebSocketOpCode::Op_Continuation:
+				[[fallthrough]];
+			case WebSocketOpCode::Op_Text:
+				[[fallthrough]];
+			case WebSocketOpCode::Op_Binary:
+				[[fallthrough]];
+			case WebSocketOpCode::Op_Ping:
+				[[fallthrough]];
+			case WebSocketOpCode::Op_Pong: {
+				uint8_t length01 = theShard.inputBuffer[1];
+				theShard.messageOffset = 2;
+				if (length01 & webSocketMaskBit) {
+					return;
+				}
+				theShard.messageLength = length01;
+				if (length01 == webSocketPayloadLengthMagicLarge) {
+					if (theShard.inputBuffer.size() < 8) {
+						return;
+					}
+					uint8_t length03 = theShard.inputBuffer[2];
+					uint8_t length04 = theShard.inputBuffer[3];
+					theShard.messageLength = static_cast<uint64_t>((length03 << 8) | length04);
+					theShard.messageOffset += 2;
+				} else if (length01 == webSocketPayloadLengthMagicHuge) {
+					if (theShard.inputBuffer.size() < 10) {
+						return;
+					}
+					theShard.messageLength = 0;
+					for (int64_t x = 2, shift = 56; x < 10; ++x, shift -= 8) {
+						uint8_t lengthNew = static_cast<uint8_t>(theShard.inputBuffer[x]);
+						theShard.messageLength |= static_cast<uint64_t>((lengthNew & static_cast<uint64_t>(0xff)) << static_cast<uint64_t>(shift));
+					}
+					theShard.messageOffset += 8;
+				}
+				if (theShard.inputBuffer.size() < static_cast<uint64_t>(theShard.messageOffset) + static_cast<uint64_t>(theShard.messageLength)) {
+					return;
+				} else {
+					std::string finalMessage{};
+					finalMessage.insert(finalMessage.begin(), theShard.inputBuffer.begin() + theShard.messageOffset,
+						theShard.inputBuffer.begin() + theShard.messageOffset + theShard.messageLength);
+					theShard.processedMessages.push(finalMessage);
+					theShard.inputBuffer.erase(theShard.inputBuffer.begin(), theShard.inputBuffer.begin() + theShard.messageOffset + theShard.messageLength);
+					return;
+				}
+			}
+			case WebSocketOpCode::Op_Close: {
+				uint16_t close = theShard.inputBuffer[2] & 0xff;
+				close <<= 8;
+				close |= theShard.inputBuffer[3] & 0xff;
+				theShard.closeCode = static_cast<WebSocketCloseCode>(close);
+				theShard.inputBuffer.erase(theShard.inputBuffer.begin(), theShard.inputBuffer.begin() + 4);
+				this->onClosed(*this->theClients[theShard.shard[0]]);
+				return;
+			}
+			default: {
+				return;
+			}
+		}
 	}
 
 	void VoiceSocketAgent::sendMessage(const std::vector<uint8_t>& dataToSend) noexcept {
@@ -1189,82 +1263,6 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void VoiceSocketAgent::parseHeadersAndMessage(WebSocketSSLShard& theShard) noexcept {
-		if (theShard.theState == WebSocketState::Connecting) {
-			std::string newVector{};
-			if (theShard.inputBuffer.find("\r\n\r\n") != std::string::npos) {
-				std::string headers = newVector.substr(0, newVector.find("\r\n\r\n"));
-				newVector.erase(0, newVector.find("\r\n\r\n") + 4);
-				theShard.inputBuffer.clear();
-				theShard.inputBuffer.insert(theShard.inputBuffer.end(), newVector.begin(), newVector.end());
-				theShard.theState = WebSocketState::Connected;
-			}
-		}
-		if (theShard.inputBuffer.size() < 4) {
-			return;
-		}
-		theShard.dataOpCode = static_cast<WebSocketOpCode>(theShard.inputBuffer[0] & ~webSocketFinishBit);
-		switch (theShard.dataOpCode) {
-			case WebSocketOpCode::Op_Continuation:
-				[[fallthrough]];
-			case WebSocketOpCode::Op_Text:
-				[[fallthrough]];
-			case WebSocketOpCode::Op_Binary:
-				[[fallthrough]];
-			case WebSocketOpCode::Op_Ping:
-				[[fallthrough]];
-			case WebSocketOpCode::Op_Pong: {
-				uint8_t length01 = theShard.inputBuffer[1];
-				theShard.messageOffset = 2;
-				if (length01 & webSocketMaskBit) {
-					return;
-				}
-				theShard.messageLength = length01;
-				if (length01 == webSocketPayloadLengthMagicLarge) {
-					if (theShard.inputBuffer.size() < 8) {
-						return;
-					}
-					uint8_t length03 = theShard.inputBuffer[2];
-					uint8_t length04 = theShard.inputBuffer[3];
-					theShard.messageLength = static_cast<uint64_t>((length03 << 8) | length04);
-					theShard.messageOffset += 2;
-				} else if (length01 == webSocketPayloadLengthMagicHuge) {
-					if (theShard.inputBuffer.size() < 10) {
-						return;
-					}
-					theShard.messageLength = 0;
-					for (int64_t x = 2, shift = 56; x < 10; ++x, shift -= 8) {
-						uint8_t lengthNew = static_cast<uint8_t>(theShard.inputBuffer[x]);
-						theShard.messageLength |= static_cast<uint64_t>((lengthNew & static_cast<uint64_t>(0xff)) << static_cast<uint64_t>(shift));
-					}
-					theShard.messageOffset += 8;
-				}
-				if (theShard.inputBuffer.size() < static_cast<uint64_t>(theShard.messageOffset) + static_cast<uint64_t>(theShard.messageLength)) {
-					return;
-				} else {
-					std::string finalMessage{};
-					finalMessage.insert(finalMessage.begin(), theShard.inputBuffer.begin() + theShard.messageOffset,
-						theShard.inputBuffer.begin() + theShard.messageOffset + theShard.messageLength);
-					theShard.processedMessages.push(finalMessage);
-					theShard.inputBuffer.erase(theShard.inputBuffer.begin(), theShard.inputBuffer.begin() + theShard.messageOffset + theShard.messageLength);
-					return;
-				}
-			}
-			case WebSocketOpCode::Op_Close: {
-				uint16_t close = theShard.inputBuffer[2] & 0xff;
-				close <<= 8;
-				close |= theShard.inputBuffer[3] & 0xff;
-				theShard.closeCode = static_cast<WebSocketCloseCode>(close);
-				theShard.inputBuffer.erase(theShard.inputBuffer.begin(), theShard.inputBuffer.begin() + 4);
-				this->onClosed(*this->theClients[theShard.shard[0]]);
-				return;
-			}
-			default: {
-				return;
-			}
-		}
-	}
-
 	void VoiceSocketAgent::onMessageReceived(const std::string& theMessage) noexcept {
 		try {
 			nlohmann::json payload = payload.parse(theMessage);
@@ -1336,9 +1334,9 @@ namespace DiscordCoreInternal {
 						DiscordCoreAPI::reportException("VoiceSocketAgent::run()");
 					}
 				}
-				if (this->theClients.contains(3)) {
+				if (this->theClients.contains(3) && this->theClients[3] != nullptr) {
 					this->parseHeadersAndMessage(*this->theClients[3]);
-					if (this->theClients.contains(3) && this->theClients[3]->processedMessages.size() > 0) {
+					if (this->theClients.contains(3) && this->theClients[3] != nullptr && this->theClients[3]->processedMessages.size() > 0) {
 						this->onMessageReceived(this->theClients[3]->processedMessages.front());
 						this->theClients[3]->processedMessages.pop();
 					}
@@ -1429,8 +1427,7 @@ namespace DiscordCoreInternal {
 			theClient->connect(this->baseUrl, "443");
 			this->theClients[3] = std::move(theClient);
 			std::string sendVector = "GET /?v=4 HTTP/1.1\r\nHost: " + this->baseUrl +
-				"\r\nPragma: no-cache\r\nUser-Agent: DiscordCoreAPI/1.0\r\nUpgrade: "
-				"WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Key: " +
+				"\r\nPragma: no-cache\r\nUser-Agent: DiscordCoreAPI/1.0\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Key: " +
 				DiscordCoreAPI::generateBase64EncodedKey() + "\r\nSec-WebSocket-Version: 13\r\n\r\n";
 			this->sendMessage(sendVector);
 			try {
