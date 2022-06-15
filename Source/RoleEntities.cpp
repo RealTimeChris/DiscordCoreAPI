@@ -96,7 +96,7 @@ namespace DiscordCoreAPI {
 		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Get_Guild_Roles);
 		co_await NewThreadAwaitable<std::vector<Role>>();
 		if (dataPackage.guildId == 0) {
-			throw std::runtime_error{ "Roles::getRoleAsync Error: Sorry, but you forgot to set the guildId!" };
+			throw std::runtime_error{ "Roles::getRoleAsync(), Sorry, but you forgot to set the guildId!" };
 		}
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Guild_Roles;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
@@ -214,7 +214,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<Role>();
 		auto roles = getGuildRolesAsync({ .guildId = dataPackage.guildId }).get();
 		if (dataPackage.guildId == 0) {
-			throw std::runtime_error{ "Roles::getAsync Error: Sorry, but you forgot to set the guildId!" };
+			throw std::runtime_error{ "Roles::getAsync(), Sorry, but you forgot to set the guildId!" };
 		}
 		Role newRole{};
 		for (auto& value: roles) {
