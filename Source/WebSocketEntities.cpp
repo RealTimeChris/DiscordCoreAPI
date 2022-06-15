@@ -37,15 +37,15 @@ namespace DiscordCoreInternal {
 
 	BaseSocketAgent::BaseSocketAgent(DiscordCoreAPI::DiscordCoreClient* discordCoreClientNew,  std::atomic_bool* doWeQuitNew, int32_t currentBaseSocketAgentNew) noexcept {
 		this->doWePrintSuccessMessages = discordCoreClientNew->loggingOptions.logWebSocketSuccessMessages;
-		this->currentBaseSocketAgent = currentBaseSocketAgentNew;
 		this->doWePrintErrorMessages = discordCoreClientNew->loggingOptions.logWebSocketErrorMessages;
 		this->commandController = &discordCoreClientNew->commandController;
-		this->discordCoreClient = discordCoreClientNew;
 		this->eventManager = &discordCoreClientNew->eventManager;
-		this->botToken = discordCoreClientNew->botToken;
+		this->currentBaseSocketAgent = currentBaseSocketAgentNew;
 		this->intentsValue = discordCoreClientNew->theIntents;
-		this->doWeQuit = doWeQuitNew;
 		this->theFormat = this->discordCoreClient->theFormat;
+		this->botToken = discordCoreClientNew->botToken;
+		this->discordCoreClient = discordCoreClientNew;
+		this->doWeQuit = doWeQuitNew;
 		if (this->theFormat == DiscordCoreAPI::TextFormat::Etf) {
 			this->dataOpcode = WebSocketOpCode::Op_Binary;
 		} else {
