@@ -237,7 +237,7 @@ namespace DiscordCoreInternal {
 					if (this->doWePrintWebSocketErrorMessages) {
 						DiscordCoreAPI::reportException("BaseSocketAgent::getVoiceConnectionData()");
 					}
-					return;
+					this->breakOutPlayMore(theToken, std::move(audioDecoder), haveWeFailed, counter, this, newSong, currentRecursionDepth);
 				}
 				while (newSong.contentLength > bytesSubmittedTotal) {
 					std::this_thread::sleep_for(1ms);
@@ -280,7 +280,7 @@ namespace DiscordCoreInternal {
 								if (this->doWePrintWebSocketErrorMessages) {
 									DiscordCoreAPI::reportException("BaseSocketAgent::getVoiceConnectionData()");
 								}
-								return;
+								this->breakOutPlayMore(theToken, std::move(audioDecoder), haveWeFailed, counter, this, newSong, currentRecursionDepth);
 							}
 							if (!theToken.stop_requested()) {
 								if (theMap.contains(0)) {
@@ -306,7 +306,7 @@ namespace DiscordCoreInternal {
 								if (this->doWePrintWebSocketErrorMessages) {
 									DiscordCoreAPI::reportException("BaseSocketAgent::getVoiceConnectionData()");
 								}
-								return;
+								this->breakOutPlayMore(theToken, std::move(audioDecoder), haveWeFailed, counter, this, newSong, currentRecursionDepth);
 							}
 							std::string streamBuffer{};
 							if (theMap.contains(0)) {
@@ -342,7 +342,7 @@ namespace DiscordCoreInternal {
 									if (this->doWePrintWebSocketErrorMessages) {
 										DiscordCoreAPI::reportException("BaseSocketAgent::getVoiceConnectionData()");
 									}
-									return;
+									this->breakOutPlayMore(theToken, std::move(audioDecoder), haveWeFailed, counter, this, newSong, currentRecursionDepth);
 								}
 								std::string newVector{}; 
 								if (theMap.contains(0)) {
