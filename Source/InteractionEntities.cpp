@@ -298,7 +298,7 @@ namespace DiscordCoreAPI {
 		uint64_t targetUser) {
 		co_await NewThreadAwaitable<std::vector<ButtonResponseData>>();
 		if (targetUser == 0 && !getButtonDataForAllNew) {
-			throw std::runtime_error("You've failed to properly set the collectButtonData() parameters!");
+			throw std::runtime_error{ "You've failed to properly set the collectButtonData() parameters!" };
 		}
 		if (targetUser != 0) {
 			this->userId = targetUser;
