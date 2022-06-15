@@ -30,7 +30,8 @@ namespace DiscordCoreAPI {
 	  public:
 		CommandController(DiscordCoreClient*);
 
-		void registerFunction(const std::vector<std::string>& functionNames, std::unique_ptr<BaseFunction> baseFunction);
+		void registerFunction(const std::vector<std::string>& functionNames,
+			std::unique_ptr<BaseFunction> baseFunction);
 
 		std::map<std::vector<std::string>, std::unique_ptr<BaseFunction>>& getFunctions();
 

@@ -69,7 +69,8 @@ namespace DiscordCoreInternal {
 	  public:
 		template<typename ReturnType02, typename... ArgTypes02> friend class Event;
 
-		EventDelegate<ReturnType, ArgTypes...>& operator=(EventDelegate<ReturnType, ArgTypes...>&& other) noexcept {
+		EventDelegate<ReturnType, ArgTypes...>& operator=(
+			EventDelegate<ReturnType, ArgTypes...>&& other) noexcept {
 			if (this != &other) {
 				this->theFunction.swap(other.theFunction);
 				other.theFunction = std::function<ReturnType(ArgTypes...)>{};
@@ -81,15 +82,18 @@ namespace DiscordCoreInternal {
 			*this = std::move(other);
 		}
 
-		EventDelegate<ReturnType, ArgTypes...>& operator=(const EventDelegate<ReturnType, ArgTypes...>& other) = delete;
+		EventDelegate<ReturnType, ArgTypes...>& operator=(
+			const EventDelegate<ReturnType, ArgTypes...>& other) = delete;
 
 		EventDelegate(const EventDelegate<ReturnType, ArgTypes...>& other) = delete;
 
-		EventDelegate<ReturnType, ArgTypes...>& operator=(EventDelegate<ReturnType, ArgTypes...>& other) = delete;
+		EventDelegate<ReturnType, ArgTypes...>& operator=(
+			EventDelegate<ReturnType, ArgTypes...>& other) = delete;
 
 		EventDelegate(EventDelegate<ReturnType, ArgTypes...>& other) = delete;
 
-		EventDelegate<ReturnType, ArgTypes...>& operator=(std::function<ReturnType(ArgTypes...)> theFunctionNew) {
+		EventDelegate<ReturnType, ArgTypes...>& operator=(
+			std::function<ReturnType(ArgTypes...)> theFunctionNew) {
 			this->theFunction = theFunctionNew;
 			return *this;
 		}
@@ -99,7 +103,8 @@ namespace DiscordCoreInternal {
 			*this = theFunctionNew;
 		}
 
-		EventDelegate<ReturnType, ArgTypes...>& operator=(ReturnType (*theFunctionNew)(ArgTypes...)) {
+		EventDelegate<ReturnType, ArgTypes...>& operator=(
+			ReturnType (*theFunctionNew)(ArgTypes...)) {
 			this->theFunction = theFunctionNew;
 			return *this;
 		}
@@ -122,7 +127,8 @@ namespace DiscordCoreInternal {
 		Event<ReturnType, ArgTypes...>& operator=(Event<ReturnType, ArgTypes...>&& other) noexcept {
 			if (this != &other) {
 				this->theFunctions.swap(other.theFunctions);
-				other.theFunctions = std::map<EventDelegateToken, EventDelegate<ReturnType, ArgTypes...>>{};
+				other.theFunctions =
+					std::map<EventDelegateToken, EventDelegate<ReturnType, ArgTypes...>>{};
 				this->eventId = std::move(other.eventId);
 				other.eventId = std::string{};
 			}
@@ -142,12 +148,17 @@ namespace DiscordCoreInternal {
 		Event(Event<ReturnType, ArgTypes...>&) = delete;
 
 		Event() {
-			this->eventId = std::to_string(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
+			this->eventId = std::to_string(std::chrono::duration_cast<std::chrono::microseconds>(
+				std::chrono::system_clock::now().time_since_epoch())
+											   .count());
 		}
 
 		EventDelegateToken add(EventDelegate<ReturnType, ArgTypes...> eventDelegate) {
 			EventDelegateToken eventToken{};
-			eventToken.handlerId = std::to_string(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
+			eventToken.handlerId =
+				std::to_string(std::chrono::duration_cast<std::chrono::microseconds>(
+					std::chrono::system_clock::now().time_since_epoch())
+								   .count());
 			eventToken.eventId = this->eventId;
 			this->theFunctions[eventToken] = std::move(eventDelegate);
 			return eventToken;
@@ -174,14 +185,15 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll EventWaiter {
 	  public:
-
 		EventWaiter() {
 			this->theEventState = new std::atomic_bool{};
 		}
 
 		bool wait(int64_t millisecondsMaxToWait = INT64_MAX) {
 			int64_t millisecondsWaited{ 0 };
-			int64_t startTime = std::chrono::duration_cast<std::chrono::milliseconds, int64_t>(std::chrono::system_clock::now().time_since_epoch()).count();
+			int64_t startTime = std::chrono::duration_cast<std::chrono::milliseconds, int64_t>(
+				std::chrono::system_clock::now().time_since_epoch())
+									.count();
 			while (true) {
 				if (this->theEventState->load()) {
 					return true;
@@ -189,7 +201,10 @@ namespace DiscordCoreInternal {
 				} else {
 					std::this_thread::sleep_for(1ms);
 				}
-				int64_t currentTime = std::chrono::duration_cast<std::chrono::milliseconds, int64_t>(std::chrono::system_clock::now().time_since_epoch()).count();
+				int64_t currentTime =
+					std::chrono::duration_cast<std::chrono::milliseconds, int64_t>(
+						std::chrono::system_clock::now().time_since_epoch())
+						.count();
 				millisecondsWaited = currentTime - startTime;
 				if (millisecondsWaited >= millisecondsMaxToWait) {
 					return false;

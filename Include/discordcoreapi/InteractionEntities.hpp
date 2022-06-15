@@ -45,14 +45,16 @@ namespace DiscordCoreAPI {
 		/// \param emojiName An emoji name, if desired.
 		/// \param emojiId An emoji id, if desired.
 		/// \param url A url, if applicable.
-		InteractionResponse& addButton(bool disabled, const std::string& customIdNew, const std::string& buttonLabel, ButtonStyle buttonStyle, const std::string& emojiName = "",
-			uint64_t emojiId = 0, const std::string& url = "") {
+		InteractionResponse& addButton(bool disabled, const std::string& customIdNew,
+			const std::string& buttonLabel, ButtonStyle buttonStyle,
+			const std::string& emojiName = "", uint64_t emojiId = 0, const std::string& url = "") {
 			if (this->data.data.components.size() == 0) {
 				ActionRowData actionRowData;
 				this->data.data.components.push_back(actionRowData);
 			}
 			if (this->data.data.components.size() < 5) {
-				if (this->data.data.components[this->data.data.components.size() - 1].components.size() < 5) {
+				if (this->data.data.components[this->data.data.components.size() - 1]
+						.components.size() < 5) {
 					ComponentData component;
 					component.type = ComponentType::Button;
 					component.emoji.name = emojiName;
@@ -62,8 +64,10 @@ namespace DiscordCoreAPI {
 					component.disabled = disabled;
 					component.emoji.id = emojiId;
 					component.url = url;
-					this->data.data.components[this->data.data.components.size() - 1].components.push_back(component);
-				} else if (this->data.data.components[this->data.data.components.size() - 1].components.size() == 5) {
+					this->data.data.components[this->data.data.components.size() - 1]
+						.components.push_back(component);
+				} else if (this->data.data.components[this->data.data.components.size() - 1]
+							   .components.size() == 5) {
 					ActionRowData actionRowData;
 					this->data.data.components.push_back(actionRowData);
 				}
@@ -78,14 +82,16 @@ namespace DiscordCoreAPI {
 		/// \param placeholder Custom placeholder text if nothing is selected, max 100 characters.
 		/// \param maxValues Maximum number of selections that are possible.
 		/// \param minValues Minimum required number of selections that are required.
-		InteractionResponse& addSelectMenu(bool disabled, const std::string& customIdNew, std::vector<SelectOptionData> options, const std::string& placeholder, int32_t maxValues,
-			int32_t minValues) {
+		InteractionResponse& addSelectMenu(bool disabled, const std::string& customIdNew,
+			std::vector<SelectOptionData> options, const std::string& placeholder,
+			int32_t maxValues, int32_t minValues) {
 			if (this->data.data.components.size() == 0) {
 				ActionRowData actionRowData;
 				this->data.data.components.push_back(actionRowData);
 			}
 			if (this->data.data.components.size() < 5) {
-				if (this->data.data.components[this->data.data.components.size() - 1].components.size() < 5) {
+				if (this->data.data.components[this->data.data.components.size() - 1]
+						.components.size() < 5) {
 					ComponentData componentData;
 					componentData.type = ComponentType::SelectMenu;
 					componentData.placeholder = placeholder;
@@ -94,8 +100,10 @@ namespace DiscordCoreAPI {
 					componentData.disabled = disabled;
 					componentData.customId = customIdNew;
 					componentData.options = options;
-					this->data.data.components[this->data.data.components.size() - 1].components.push_back(componentData);
-				} else if (this->data.data.components[this->data.data.components.size() - 1].components.size() == 5) {
+					this->data.data.components[this->data.data.components.size() - 1]
+						.components.push_back(componentData);
+				} else if (this->data.data.components[this->data.data.components.size() - 1]
+							   .components.size() == 5) {
 					ActionRowData actionRowData;
 					this->data.data.components.push_back(actionRowData);
 				}
@@ -115,8 +123,11 @@ namespace DiscordCoreAPI {
 		/// \param label A label for the modal.
 		/// \param placeholder A placeholder for the modal.
 		/// \returns RespondToInputEventData& A reference to this data structure.
-		InteractionResponse& addModal(const std::string& topTitleNew, const std::string& topCustomIdNew, const std::string& titleNew, const std::string& customIdNew, bool required,
-			int32_t minLength, int32_t maxLength, TextInputStyle inputStyle, const std::string& label = "", const std::string& placeholder = "") {
+		InteractionResponse& addModal(const std::string& topTitleNew,
+			const std::string& topCustomIdNew, const std::string& titleNew,
+			const std::string& customIdNew, bool required, int32_t minLength, int32_t maxLength,
+			TextInputStyle inputStyle, const std::string& label = "",
+			const std::string& placeholder = "") {
 			this->data.data.title = topTitleNew;
 			this->data.data.customId = topCustomIdNew;
 			if (this->data.data.components.size() == 0) {
@@ -124,7 +135,8 @@ namespace DiscordCoreAPI {
 				this->data.data.components.push_back(actionRowData);
 			}
 			if (this->data.data.components.size() < 5) {
-				if (this->data.data.components[this->data.data.components.size() - 1].components.size() < 5) {
+				if (this->data.data.components[this->data.data.components.size() - 1]
+						.components.size() < 5) {
 					ComponentData component{};
 					component.type = ComponentType::TextInput;
 					component.customId = customIdNew;
@@ -135,8 +147,10 @@ namespace DiscordCoreAPI {
 					component.label = label;
 					component.required = required;
 					component.placeholder = placeholder;
-					this->data.data.components[this->data.data.components.size() - 1].components.push_back(component);
-				} else if (this->data.data.components[this->data.data.components.size() - 1].components.size() == 5) {
+					this->data.data.components[this->data.data.components.size() - 1]
+						.components.push_back(component);
+				} else if (this->data.data.components[this->data.data.components.size() - 1]
+							   .components.size() == 5) {
 					ActionRowData actionRowData;
 					this->data.data.components.push_back(actionRowData);
 				}
@@ -290,7 +304,8 @@ namespace DiscordCoreAPI {
 		friend InputEvents;
 
 		CreateInteractionResponseData(const CreateDeferredInteractionResponseData& dataPackage) {
-			this->interactionPackage.interactionToken = dataPackage.interactionPackage.interactionToken;
+			this->interactionPackage.interactionToken =
+				dataPackage.interactionPackage.interactionToken;
 			this->interactionPackage.applicationId = dataPackage.interactionPackage.applicationId;
 			this->interactionPackage.interactionId = dataPackage.interactionPackage.interactionId;
 			this->data.data.components = dataPackage.data.data.components;
@@ -299,7 +314,8 @@ namespace DiscordCoreAPI {
 		}
 
 		CreateInteractionResponseData(CreateDeferredInteractionResponseData& dataPackage) {
-			this->interactionPackage.interactionToken = dataPackage.interactionPackage.interactionToken;
+			this->interactionPackage.interactionToken =
+				dataPackage.interactionPackage.interactionToken;
 			this->interactionPackage.applicationId = dataPackage.interactionPackage.applicationId;
 			this->interactionPackage.interactionId = dataPackage.interactionPackage.interactionId;
 			this->data.data.components = dataPackage.data.data.components;
@@ -308,7 +324,8 @@ namespace DiscordCoreAPI {
 		}
 
 		CreateInteractionResponseData(const CreateEphemeralInteractionResponseData& dataPackage) {
-			this->interactionPackage.interactionToken = dataPackage.interactionPackage.interactionToken;
+			this->interactionPackage.interactionToken =
+				dataPackage.interactionPackage.interactionToken;
 			this->interactionPackage.applicationId = dataPackage.interactionPackage.applicationId;
 			this->interactionPackage.interactionId = dataPackage.interactionPackage.interactionId;
 			this->data.data.components = dataPackage.data.data.components;
@@ -318,7 +335,8 @@ namespace DiscordCoreAPI {
 		}
 
 		CreateInteractionResponseData(CreateEphemeralInteractionResponseData& dataPackage) {
-			this->interactionPackage.interactionToken = dataPackage.interactionPackage.interactionToken;
+			this->interactionPackage.interactionToken =
+				dataPackage.interactionPackage.interactionToken;
 			this->interactionPackage.applicationId = dataPackage.interactionPackage.applicationId;
 			this->interactionPackage.interactionId = dataPackage.interactionPackage.interactionId;
 			this->data.data.components = dataPackage.data.data.components;
@@ -329,17 +347,20 @@ namespace DiscordCoreAPI {
 
 		CreateInteractionResponseData(RespondToInputEventData& dataPackage) {
 			this->data = dataPackage;
-			if (dataPackage.eventType == InteractionType::Message_Component && dataPackage.type == InputEventResponseType::Deferred_Response) {
+			if (dataPackage.eventType == InteractionType::Message_Component &&
+				dataPackage.type == InputEventResponseType::Deferred_Response) {
 				this->data.type = InteractionCallbackType::Deferred_Update_Message;
 			} else if (dataPackage.eventType == InteractionType::Message_Component) {
 				this->data.type = InteractionCallbackType::Update_Message;
 			} else if (dataPackage.eventType == InteractionType::Application_Command_Autocomplete ||
-				dataPackage.type == InputEventResponseType::Application_Command_AutoComplete_Result) {
+				dataPackage.type ==
+					InputEventResponseType::Application_Command_AutoComplete_Result) {
 				this->data.type = InteractionCallbackType::Application_Command_Autocomplete_Result;
 			} else {
 				this->data.type = InteractionCallbackType::Channel_Message_With_Source;
 			}
-			if (dataPackage.type == InputEventResponseType::Modal_Interaction_Response || dataPackage.title != "") {
+			if (dataPackage.type == InputEventResponseType::Modal_Interaction_Response ||
+				dataPackage.title != "") {
 				this->data.type = InteractionCallbackType::Modal;
 			}
 			this->interactionPackage.interactionToken = dataPackage.interactionToken;
@@ -618,22 +639,26 @@ namespace DiscordCoreAPI {
 		/// Creates a response to an input Interaction. \brief Creates a response to an input Interaction.
 		/// \param dataPackage A CreateInteractionResponseData structure.
 		/// \returns A CoRoutine containing a MessageData.
-		static CoRoutine<Message> createInteractionResponseAsync(CreateInteractionResponseData dataPackage);
+		static CoRoutine<Message> createInteractionResponseAsync(
+			CreateInteractionResponseData dataPackage);
 
 		/// Collects an Interaction response. \brief Collects an Interaction response.
 		/// \param dataPackage A GetInteractionResponseData structure.
 		/// \returns A CoRoutine containing an InteractionResponseData.
-		static CoRoutine<Message> getInteractionResponseAsync(GetInteractionResponseData dataPackage);
+		static CoRoutine<Message> getInteractionResponseAsync(
+			GetInteractionResponseData dataPackage);
 
 		/// Edits an Interaction response. \brief Edits an Interaction response.
 		/// \param dataPackage A EditInteractionResponseData structure.
 		/// \returns A CoRoutine containing a MessageData.
-		static CoRoutine<Message> editInteractionResponseAsync(EditInteractionResponseData dataPackage);
+		static CoRoutine<Message> editInteractionResponseAsync(
+			EditInteractionResponseData dataPackage);
 
 		/// Deletes an Interaction respnose. \brief Deletes an Interaction respnose.
 		/// \param dataPackage A DeleteInteractionResponseData structure.
 		/// \returns A CoRoutine containing void.
-		static CoRoutine<void> deleteInteractionResponseAsync(DeleteInteractionResponseData dataPackage);
+		static CoRoutine<void> deleteInteractionResponseAsync(
+			DeleteInteractionResponseData dataPackage);
 
 		/// Creates a follow up Message to an input Interaction. \brief Creates a follow up Message to an input Interaction.
 		/// \param dataPackage A CreateFollowUpMessageData structure.
@@ -702,7 +727,9 @@ namespace DiscordCoreAPI {
 
 		SelectMenuResponseData() = default;
 
-		std::unique_ptr<InteractionData> interactionData{ std::make_unique<InteractionData>() };///< Interaction data.
+		std::unique_ptr<InteractionData> interactionData{
+			std::make_unique<InteractionData>()
+		};///< Interaction data.
 		std::vector<std::string> values{};///< A std::vector of the chosen values.
 		std::string selectionId{};///< Selection id.
 		uint64_t channelId{};///< The Channel id where it took place.
@@ -717,7 +744,8 @@ namespace DiscordCoreAPI {
 	  public:
 		friend DiscordCoreClient;
 
-		static std::unordered_map<std::string, UnboundedMessageBlock<InteractionData>*> selectMenuInteractionBufferMap;
+		static std::unordered_map<std::string, UnboundedMessageBlock<InteractionData>*>
+			selectMenuInteractionBufferMap;
 
 		/// Constructor. \brief Constructor.
 		/// \param dataPackage An InputEventData structure, from the response that came from the submitted select-menu.
@@ -729,8 +757,9 @@ namespace DiscordCoreAPI {
 		/// \param maxCollectedSelectMenuCountNew The maximum number of inputs to collect before stopping.
 		/// \param targetUserId The id of the single User to collect inputs from, if getSelectMenuDataForAllNew is set to false.
 		/// \returns A std::vector of SelectMenuResponseData.
-		CoRoutine<std::vector<SelectMenuResponseData>> collectSelectMenuData(bool getSelectMenuDataForAllNew, int32_t maxWaitTimeInMsNew, int32_t maxCollectedSelectMenuCountNew,
-			uint64_t targetUserId = 0);
+		CoRoutine<std::vector<SelectMenuResponseData>> collectSelectMenuData(
+			bool getSelectMenuDataForAllNew, int32_t maxWaitTimeInMsNew,
+			int32_t maxCollectedSelectMenuCountNew, uint64_t targetUserId = 0);
 
 		~SelectMenuCollector();
 
@@ -789,7 +818,9 @@ namespace DiscordCoreAPI {
 
 		ButtonResponseData() = default;
 
-		std::unique_ptr<InteractionData> interactionData{ std::make_unique<InteractionData>() };///< Interaction data.
+		std::unique_ptr<InteractionData> interactionData{
+			std::make_unique<InteractionData>()
+		};///< Interaction data.
 		std::string emojiName{};///< The emoji name, if applicable.
 		std::string buttonId{};///< The id of the button, for identification.
 		uint64_t channelId{};///< The Channel id where it took place.
@@ -802,7 +833,8 @@ namespace DiscordCoreAPI {
 	  public:
 		friend DiscordCoreClient;
 
-		static std::unordered_map<std::string, UnboundedMessageBlock<InteractionData>*> buttonInteractionBufferMap;
+		static std::unordered_map<std::string, UnboundedMessageBlock<InteractionData>*>
+			buttonInteractionBufferMap;
 
 		/// Constructor. \brief Constructor.
 		/// \param dataPackage An InputEventData structure, from the response that came from the submitted button.
@@ -814,8 +846,8 @@ namespace DiscordCoreAPI {
 		/// \param maxNumberOfPressesNew The maximum number of inputs to collect before stopping.
 		/// \param targetUserId The id of the single User to collect inputs from, if getButtonDataForAllNew is set to false.
 		/// \returns A std::vector of ButtonResponseData.
-		CoRoutine<std::vector<ButtonResponseData>> collectButtonData(bool getButtonDataForAllNew, int32_t maxWaitTimeInMsNew, int32_t maxNumberOfPressesNew,
-			uint64_t targetUserId = 0);
+		CoRoutine<std::vector<ButtonResponseData>> collectButtonData(bool getButtonDataForAllNew,
+			int32_t maxWaitTimeInMsNew, int32_t maxNumberOfPressesNew, uint64_t targetUserId = 0);
 
 		~ButtonCollector();
 
@@ -874,7 +906,9 @@ namespace DiscordCoreAPI {
 
 		ModalResponseData() = default;
 
-		std::unique_ptr<InteractionData> interactionData{ std::make_unique<InteractionData>() };///< Interaction data.
+		std::unique_ptr<InteractionData> interactionData{
+			std::make_unique<InteractionData>()
+		};///< Interaction data.
 		std::string customIdSmall{};///< The customId of the particular input.
 		std::string customId{};///< The customId of the modal component.
 		uint64_t channelId{};///< The Channel id where it took place.
@@ -887,7 +921,8 @@ namespace DiscordCoreAPI {
 	  public:
 		friend DiscordCoreClient;
 
-		static std::unordered_map<std::string, UnboundedMessageBlock<InteractionData>*> modalInteractionBufferMap;
+		static std::unordered_map<std::string, UnboundedMessageBlock<InteractionData>*>
+			modalInteractionBufferMap;
 
 		/// Constructor. \brief Constructor.
 		/// \param dataPackage An InputEventData structure, from the response that came from the submitted button.

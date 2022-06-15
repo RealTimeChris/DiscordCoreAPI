@@ -25,10 +25,12 @@ namespace DiscordCoreInternal {
 
 	AudioEncoder::AudioEncoder() {
 		int32_t error;
-		this->encoder = opus_encoder_create(this->sampleRate, this->nChannels, OPUS_APPLICATION_AUDIO, &error);
+		this->encoder =
+			opus_encoder_create(this->sampleRate, this->nChannels, OPUS_APPLICATION_AUDIO, &error);
 	}
 
-	std::vector<DiscordCoreAPI::AudioFrameData> AudioEncoder::encodeFrames(std::vector<DiscordCoreAPI::RawFrameData>& rawFrames) {
+	std::vector<DiscordCoreAPI::AudioFrameData> AudioEncoder::encodeFrames(
+		std::vector<DiscordCoreAPI::RawFrameData>& rawFrames) {
 		std::vector<DiscordCoreAPI::AudioFrameData> newData{};
 		newData.reserve(rawFrames.size());
 		for (int32_t x = 0; x < rawFrames.size(); x += 1) {
@@ -41,7 +43,8 @@ namespace DiscordCoreInternal {
 		return newData;
 	}
 
-	DiscordCoreAPI::EncodedFrameData AudioEncoder::encodeSingleAudioFrame(DiscordCoreAPI::RawFrameData& inputFrame) {
+	DiscordCoreAPI::EncodedFrameData AudioEncoder::encodeSingleAudioFrame(
+		DiscordCoreAPI::RawFrameData& inputFrame) {
 		std::vector<opus_int16> newVector{};
 		newVector.reserve(inputFrame.data.size() / 2);
 		for (uint32_t x = 0; x < inputFrame.data.size() / 2; x += 1) {
@@ -53,12 +56,14 @@ namespace DiscordCoreInternal {
 		newVector.shrink_to_fit();
 		std::vector<uint8_t> newBuffer{};
 		newBuffer.resize(this->maxBufferSize);
-		int32_t count = opus_encode(this->encoder, newVector.data(), inputFrame.sampleCount, newBuffer.data(), this->maxBufferSize);
+		int32_t count = opus_encode(this->encoder, newVector.data(), inputFrame.sampleCount,
+			newBuffer.data(), this->maxBufferSize);
 		if (count <= 0 || count > newBuffer.size()) {
 			return DiscordCoreAPI::EncodedFrameData();
 		}
 		DiscordCoreAPI::EncodedFrameData encodedFrame{};
-		encodedFrame.data.insert(encodedFrame.data.begin(), newBuffer.begin(), newBuffer.begin() + count);
+		encodedFrame.data.insert(encodedFrame.data.begin(), newBuffer.begin(),
+			newBuffer.begin() + count);
 		encodedFrame.sampleCount = inputFrame.sampleCount;
 		return encodedFrame;
 	}

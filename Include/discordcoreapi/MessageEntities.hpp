@@ -153,7 +153,9 @@ namespace DiscordCoreAPI {
 		TimeStamp timeStamp{ "" };///< The created-at timestamp of the original message.
 		uint64_t channelId{};///< The channel Id of the Message to delete.
 		uint64_t messageId{};///< The message Id of the Message to delete.
-		int32_t timeDelay{ 0 };///< Number of std::chrono::milliseconds to wait before deleting the Message.
+		int32_t timeDelay{
+			0
+		};///< Number of std::chrono::milliseconds to wait before deleting the Message.
 		std::string reason{};///< The reason for deleting the Message.
 	};
 
@@ -218,7 +220,8 @@ namespace DiscordCoreAPI {
 		/// \param msToCollectForNew Maximum number of std::chrono::milliseconds to wait for Messages before returning the results.
 		/// \param messageFilter A filter function to apply to new Messages, where returning "true" from the function results in a Message being stored.
 		/// \returns A MessageCollectorReturnData structure.
-		CoRoutine<MessageCollectorReturnData> collectMessages(int32_t quantityToCollect, int32_t msToCollectForNew, MessageFilter messageFilter);
+		CoRoutine<MessageCollectorReturnData> collectMessages(int32_t quantityToCollect,
+			int32_t msToCollectForNew, MessageFilter messageFilter);
 
 		~MessageCollector();
 
@@ -281,7 +284,8 @@ namespace DiscordCoreAPI {
 		/// Collects a collection of pinned Messages from the Discord servers. \brief Collects a collection of pinned Messages from the Discord servers.
 		/// \param dataPackage A GetPinnedMessagesData structure.
 		/// \returns A CoRoutine containing a vector<Message>.
-		static CoRoutine<std::vector<Message>> getPinnedMessagesAsync(GetPinnedMessagesData dataPackage);
+		static CoRoutine<std::vector<Message>> getPinnedMessagesAsync(
+			GetPinnedMessagesData dataPackage);
 
 		/// Pins a Message to a given Channel. \brief Pins a Message to a given Channel.
 		/// \param dataPackage A PinMessageData structure.

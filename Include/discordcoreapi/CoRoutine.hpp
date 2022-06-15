@@ -76,7 +76,9 @@ namespace DiscordCoreAPI {
 			}
 
 			auto get_return_object() {
-				return CoRoutine<ReturnType>{ std::coroutine_handle<CoRoutine<ReturnType>::promise_type>::from_promise(*this) };
+				return CoRoutine<ReturnType>{
+					std::coroutine_handle<CoRoutine<ReturnType>::promise_type>::from_promise(*this)
+				};
 			}
 
 			auto initial_suspend() {
@@ -96,7 +98,9 @@ namespace DiscordCoreAPI {
 			}
 
 		  protected:
-			std::unique_ptr<UnboundedMessageBlock<std::exception_ptr>> exceptionBuffer{ std::make_unique<UnboundedMessageBlock<std::exception_ptr>>() };
+			std::unique_ptr<UnboundedMessageBlock<std::exception_ptr>> exceptionBuffer{
+				std::make_unique<UnboundedMessageBlock<std::exception_ptr>>()
+			};
 			std::unique_ptr<std::atomic_flag> theFlag{ std::make_unique<std::atomic_flag>() };
 			std::atomic_bool areWeStopped{ false };
 			ReturnType result{};
@@ -126,7 +130,8 @@ namespace DiscordCoreAPI {
 
 		CoRoutine(CoRoutine<ReturnType>& other) = delete;
 
-		CoRoutine(std::coroutine_handle<CoRoutine<ReturnType>::promise_type> coroutineHandleNew) : coroutineHandle(coroutineHandleNew) {
+		CoRoutine(std::coroutine_handle<CoRoutine<ReturnType>::promise_type> coroutineHandleNew)
+			: coroutineHandle(coroutineHandleNew) {
 			this->exceptionBuffer = this->coroutineHandle.promise().exceptionBuffer.get();
 			this->theFlag = this->coroutineHandle.promise().theFlag.get();
 		};
@@ -166,7 +171,8 @@ namespace DiscordCoreAPI {
 				this->result = this->coroutineHandle.promise().result;
 				return this->result;
 			} else {
-				throw CoRoutineError("CoRoutine::get(), You called get() on a CoRoutine that is not in a valid state.");
+				throw CoRoutineError("CoRoutine::get(), You called get() on a CoRoutine that is "
+									 "not in a valid state.");
 			}
 			return ReturnType{};
 		}
@@ -221,7 +227,9 @@ namespace DiscordCoreAPI {
 			}
 
 			auto get_return_object() {
-				return CoRoutine<void>{ std::coroutine_handle<CoRoutine<void>::promise_type>::from_promise(*this) };
+				return CoRoutine<void>{
+					std::coroutine_handle<CoRoutine<void>::promise_type>::from_promise(*this)
+				};
 			}
 
 			auto initial_suspend() {
@@ -241,7 +249,9 @@ namespace DiscordCoreAPI {
 			}
 
 		  protected:
-			std::unique_ptr<UnboundedMessageBlock<std::exception_ptr>> exceptionBuffer{ std::make_unique<UnboundedMessageBlock<std::exception_ptr>>() };
+			std::unique_ptr<UnboundedMessageBlock<std::exception_ptr>> exceptionBuffer{
+				std::make_unique<UnboundedMessageBlock<std::exception_ptr>>()
+			};
 			std::unique_ptr<std::atomic_flag> theFlag{ std::make_unique<std::atomic_flag>() };
 			std::atomic_bool areWeStopped{ false };
 		};
@@ -270,7 +280,8 @@ namespace DiscordCoreAPI {
 
 		CoRoutine(CoRoutine<void>& other) = delete;
 
-		CoRoutine(std::coroutine_handle<CoRoutine<void>::promise_type> coroutineHandleNew) : coroutineHandle(coroutineHandleNew) {
+		CoRoutine(std::coroutine_handle<CoRoutine<void>::promise_type> coroutineHandleNew)
+			: coroutineHandle(coroutineHandleNew) {
 			this->exceptionBuffer = this->coroutineHandle.promise().exceptionBuffer.get();
 			this->theFlag = this->coroutineHandle.promise().theFlag.get();
 		};
@@ -307,7 +318,8 @@ namespace DiscordCoreAPI {
 					std::rethrow_exception(exceptionPtr);
 				}
 			} else {
-				throw CoRoutineError("CoRoutine::get(), You called get() on a CoRoutine that is not in a valid state.");
+				throw CoRoutineError("CoRoutine::get(), You called get() on a CoRoutine that is "
+									 "not in a valid state.");
 			}
 		}
 
@@ -343,7 +355,8 @@ namespace DiscordCoreAPI {
 			return false;
 		}
 
-		void await_suspend(std::coroutine_handle<typename CoRoutine<ReturnType>::promise_type> coroHandleNew) noexcept {
+		void await_suspend(std::coroutine_handle<typename CoRoutine<ReturnType>::promise_type>
+				coroHandleNew) noexcept {
 			CoRoutine<ReturnType>::threadPool.submitTask(coroHandleNew);
 			this->coroHandle = coroHandleNew;
 		}

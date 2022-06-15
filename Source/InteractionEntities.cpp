@@ -32,18 +32,23 @@ namespace DiscordCoreAPI {
 		Interactions::httpClient = theClient;
 	}
 
-	CoRoutine<Message> Interactions::createInteractionResponseAsync(CreateInteractionResponseData dataPackage) {
+	CoRoutine<Message> Interactions::createInteractionResponseAsync(
+		CreateInteractionResponseData dataPackage) {
 		DiscordCoreInternal::HttpWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Post_Interaction_Response);
+		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(
+			DiscordCoreInternal::HttpWorkloadType::Post_Interaction_Response);
 		co_await NewThreadAwaitable<Message>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Post_Interaction_Response;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Post;
 
-		workload.relativePath =
-			"/interactions/" + std::to_string(dataPackage.interactionPackage.interactionId) + "/" + dataPackage.interactionPackage.interactionToken + "/callback";
+		workload.relativePath = "/interactions/" +
+			std::to_string(dataPackage.interactionPackage.interactionId) + "/" +
+			dataPackage.interactionPackage.interactionToken + "/callback";
 		if (dataPackage.data.data.files.size() > 0) {
 			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
-			workload.content = constructMultiPartData(nlohmann::json::parse(DiscordCoreInternal::JSONIFY(dataPackage.data)), dataPackage.data.data.files);
+			workload.content = constructMultiPartData(
+				nlohmann::json::parse(DiscordCoreInternal::JSONIFY(dataPackage.data)),
+				dataPackage.data.data.files);
 		} else {
 			workload.content = DiscordCoreInternal::JSONIFY(dataPackage.data);
 		}
@@ -52,35 +57,44 @@ namespace DiscordCoreAPI {
 		GetInteractionResponseData dataPackage01{};
 		dataPackage01.applicationId = dataPackage.interactionPackage.applicationId;
 		dataPackage01.interactionToken = dataPackage.interactionPackage.interactionToken;
-		if (dataPackage.data.type != InteractionCallbackType::Application_Command_Autocomplete_Result) {
+		if (dataPackage.data.type !=
+			InteractionCallbackType::Application_Command_Autocomplete_Result) {
 			co_return Interactions::getInteractionResponseAsync(dataPackage01).get();
 		} else {
 			co_return Message{};
 		}
 	}
 
-	CoRoutine<Message> Interactions::getInteractionResponseAsync(GetInteractionResponseData dataPackage) {
+	CoRoutine<Message> Interactions::getInteractionResponseAsync(
+		GetInteractionResponseData dataPackage) {
 		DiscordCoreInternal::HttpWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Get_Interaction_Response);
+		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(
+			DiscordCoreInternal::HttpWorkloadType::Get_Interaction_Response);
 		co_await NewThreadAwaitable<Message>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Interaction_Response;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
-		workload.relativePath = "/webhooks/" + std::to_string(dataPackage.applicationId) + "/" + dataPackage.interactionToken + "/messages/@original";
+		workload.relativePath = "/webhooks/" + std::to_string(dataPackage.applicationId) + "/" +
+			dataPackage.interactionToken + "/messages/@original";
 		workload.callStack = "Interactions::getInteractionResponseAsync";
 		co_return Interactions::httpClient->submitWorkloadAndGetResult<Message>(workload);
 	}
 
-	CoRoutine<Message> Interactions::editInteractionResponseAsync(EditInteractionResponseData dataPackage) {
+	CoRoutine<Message> Interactions::editInteractionResponseAsync(
+		EditInteractionResponseData dataPackage) {
 		DiscordCoreInternal::HttpWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Patch_Interaction_Response);
+		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(
+			DiscordCoreInternal::HttpWorkloadType::Patch_Interaction_Response);
 		co_await NewThreadAwaitable<Message>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Patch_Interaction_Response;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Patch;
-		workload.relativePath =
-			"/webhooks/" + std::to_string(dataPackage.interactionPackage.applicationId) + "/" + dataPackage.interactionPackage.interactionToken + "/messages/@original";
+		workload.relativePath = "/webhooks/" +
+			std::to_string(dataPackage.interactionPackage.applicationId) + "/" +
+			dataPackage.interactionPackage.interactionToken + "/messages/@original";
 		if (dataPackage.data.files.size() > 0) {
 			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
-			workload.content = constructMultiPartData(nlohmann::json::parse(DiscordCoreInternal::JSONIFY(dataPackage.data)), dataPackage.data.files);
+			workload.content = constructMultiPartData(
+				nlohmann::json::parse(DiscordCoreInternal::JSONIFY(dataPackage.data)),
+				dataPackage.data.files);
 		} else {
 			workload.content = DiscordCoreInternal::JSONIFY(dataPackage.data);
 		}
@@ -88,29 +102,38 @@ namespace DiscordCoreAPI {
 		co_return Interactions::httpClient->submitWorkloadAndGetResult<Message>(workload);
 	}
 
-	CoRoutine<void> Interactions::deleteInteractionResponseAsync(DeleteInteractionResponseData dataPackage) {
+	CoRoutine<void> Interactions::deleteInteractionResponseAsync(
+		DeleteInteractionResponseData dataPackage) {
 		DiscordCoreInternal::HttpWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Delete_Interaction_Response);
+		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(
+			DiscordCoreInternal::HttpWorkloadType::Delete_Interaction_Response);
 		co_await NewThreadAwaitable<void>();
 		std::this_thread::sleep_for(std::chrono::milliseconds{ dataPackage.timeDelay });
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Delete_Interaction_Response;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Delete;
-		workload.relativePath =
-			"/webhooks/" + std::to_string(dataPackage.interactionPackage.applicationId) + "/" + dataPackage.interactionPackage.interactionToken + "/messages/@original";
+		workload.relativePath = "/webhooks/" +
+			std::to_string(dataPackage.interactionPackage.applicationId) + "/" +
+			dataPackage.interactionPackage.interactionToken + "/messages/@original";
 		workload.callStack = "Interactions::deleteInteractionResponseAsync";
 		co_return Interactions::httpClient->submitWorkloadAndGetResult<void>(workload);
 	}
 
-	CoRoutine<Message> Interactions::createFollowUpMessageAsync(CreateFollowUpMessageData dataPackage) {
+	CoRoutine<Message> Interactions::createFollowUpMessageAsync(
+		CreateFollowUpMessageData dataPackage) {
 		DiscordCoreInternal::HttpWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Post_Followup_Message);
+		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(
+			DiscordCoreInternal::HttpWorkloadType::Post_Followup_Message);
 		co_await NewThreadAwaitable<Message>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Post_Followup_Message;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Post;
-		workload.relativePath = "/webhooks/" + std::to_string(dataPackage.interactionPackage.applicationId) + "/" + dataPackage.interactionPackage.interactionToken;
+		workload.relativePath = "/webhooks/" +
+			std::to_string(dataPackage.interactionPackage.applicationId) + "/" +
+			dataPackage.interactionPackage.interactionToken;
 		if (dataPackage.files.size() > 0) {
 			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
-			workload.content = constructMultiPartData(nlohmann::json::parse(DiscordCoreInternal::JSONIFY(dataPackage)), dataPackage.files);
+			workload.content = constructMultiPartData(
+				nlohmann::json::parse(DiscordCoreInternal::JSONIFY(dataPackage)),
+				dataPackage.files);
 		} else {
 			workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
 		}
@@ -120,28 +143,34 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<Message> Interactions::getFollowUpMessageAsync(GetFollowUpMessageData dataPackage) {
 		DiscordCoreInternal::HttpWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Get_Followup_Message);
+		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(
+			DiscordCoreInternal::HttpWorkloadType::Get_Followup_Message);
 		co_await NewThreadAwaitable<Message>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Followup_Message;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
-		workload.relativePath =
-			"/webhooks/" + std::to_string(dataPackage.applicationId) + "/" + dataPackage.interactionToken + "/messages/" + std::to_string(dataPackage.messageId);
+		workload.relativePath = "/webhooks/" + std::to_string(dataPackage.applicationId) + "/" +
+			dataPackage.interactionToken + "/messages/" + std::to_string(dataPackage.messageId);
 		workload.callStack = "Interactions::getFollowUpMessageAsync";
 		co_return Interactions::httpClient->submitWorkloadAndGetResult<Message>(workload);
 	}
 
 	CoRoutine<Message> Interactions::editFollowUpMessageAsync(EditFollowUpMessageData dataPackage) {
 		DiscordCoreInternal::HttpWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Patch_Followup_Message);
+		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(
+			DiscordCoreInternal::HttpWorkloadType::Patch_Followup_Message);
 		co_await NewThreadAwaitable<Message>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Patch_Followup_Message;
 		;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Patch;
-		workload.relativePath = "/webhooks/" + std::to_string(dataPackage.interactionPackage.applicationId) + "/" + dataPackage.interactionPackage.interactionToken + "/messages/" +
+		workload.relativePath = "/webhooks/" +
+			std::to_string(dataPackage.interactionPackage.applicationId) + "/" +
+			dataPackage.interactionPackage.interactionToken + "/messages/" +
 			std::to_string(dataPackage.messagePackage.messageId);
 		if (dataPackage.data.files.size() > 0) {
 			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
-			workload.content = constructMultiPartData(nlohmann::json::parse(DiscordCoreInternal::JSONIFY(dataPackage.data)), dataPackage.data.files);
+			workload.content = constructMultiPartData(
+				nlohmann::json::parse(DiscordCoreInternal::JSONIFY(dataPackage.data)),
+				dataPackage.data.files);
 		} else {
 			workload.content = DiscordCoreInternal::JSONIFY(dataPackage.data);
 		}
@@ -149,14 +178,18 @@ namespace DiscordCoreAPI {
 		co_return Interactions::httpClient->submitWorkloadAndGetResult<Message>(workload);
 	}
 
-	CoRoutine<void> Interactions::deleteFollowUpMessageAsync(DeleteFollowUpMessageData dataPackage) {
+	CoRoutine<void> Interactions::deleteFollowUpMessageAsync(
+		DeleteFollowUpMessageData dataPackage) {
 		DiscordCoreInternal::HttpWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Delete_Followup_Message);
+		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(
+			DiscordCoreInternal::HttpWorkloadType::Delete_Followup_Message);
 		co_await NewThreadAwaitable<void>();
 		std::this_thread::sleep_for(std::chrono::milliseconds{ dataPackage.timeDelay });
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Delete_Followup_Message;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Delete;
-		workload.relativePath = "/webhooks/" + std::to_string(dataPackage.interactionPackage.applicationId) + "/" + dataPackage.interactionPackage.interactionToken + "/messages/" +
+		workload.relativePath = "/webhooks/" +
+			std::to_string(dataPackage.interactionPackage.applicationId) + "/" +
+			dataPackage.interactionPackage.interactionToken + "/messages/" +
 			std::to_string(dataPackage.messagePackage.messageId);
 		workload.callStack = "Interactions::deleteFollowUpMessageToBeWrappe";
 		co_return Interactions::httpClient->submitWorkloadAndGetResult<void>(workload);
@@ -167,10 +200,12 @@ namespace DiscordCoreAPI {
 		this->messageId = dataPackage.getMessageId();
 		*this->interactionData = dataPackage.getInteractionData();
 		this->bufferMapKey = std::to_string(this->channelId) + std::to_string(this->messageId);
-		SelectMenuCollector::selectMenuInteractionBufferMap[this->bufferMapKey] = &this->selectMenuIncomingInteractionBuffer;
+		SelectMenuCollector::selectMenuInteractionBufferMap[this->bufferMapKey] =
+			&this->selectMenuIncomingInteractionBuffer;
 	}
 
-	CoRoutine<std::vector<SelectMenuResponseData>> SelectMenuCollector::collectSelectMenuData(bool getSelectMenuDataForAllNew, int32_t maxWaitTimeInMsNew,
+	CoRoutine<std::vector<SelectMenuResponseData>> SelectMenuCollector::collectSelectMenuData(
+		bool getSelectMenuDataForAllNew, int32_t maxWaitTimeInMsNew,
 		int32_t maxCollectedSelectMenuCountNew, uint64_t targetUser) {
 		co_await NewThreadAwaitable<std::vector<SelectMenuResponseData>>();
 		if (targetUser == 0 && !getSelectMenuDataForAllNew) {
@@ -198,7 +233,8 @@ namespace DiscordCoreAPI {
 		while (!this->doWeQuit) {
 			if (this->getSelectMenuDataForAll == false) {
 				auto selectMenuInteractionData = std::make_unique<InteractionData>();
-				if (waitForTimeToPass(this->selectMenuIncomingInteractionBuffer, *selectMenuInteractionData.get(), this->maxTimeInMs)) {
+				if (waitForTimeToPass(this->selectMenuIncomingInteractionBuffer,
+						*selectMenuInteractionData.get(), this->maxTimeInMs)) {
 					this->selectMenuId = "empty";
 					auto response = std::make_unique<SelectMenuResponseData>();
 					response->selectionId = this->selectMenuId;
@@ -211,15 +247,18 @@ namespace DiscordCoreAPI {
 					break;
 				}
 				if (selectMenuInteractionData->user.id != this->userId) {
-					auto createResponseData = std::make_unique<CreateInteractionResponseData>(*selectMenuInteractionData);
+					auto createResponseData =
+						std::make_unique<CreateInteractionResponseData>(*selectMenuInteractionData);
 					auto embedData = std::make_unique<EmbedData>();
 					embedData->setColor("FEFEFE");
 					embedData->setTitle("__**Permission Issue:**__");
 					embedData->setTimeStamp(getTimeAndDate());
-					embedData->setDescription("Sorry, but that menu can only be selected by <@" + std::to_string(this->userId) + ">!");
+					embedData->setDescription("Sorry, but that menu can only be selected by <@" +
+						std::to_string(this->userId) + ">!");
 					createResponseData->data.data.embeds.push_back(*embedData);
 					createResponseData->data.data.flags = 64;
-					createResponseData->data.type = InteractionCallbackType::Channel_Message_With_Source;
+					createResponseData->data.type =
+						InteractionCallbackType::Channel_Message_With_Source;
 					Interactions::createInteractionResponseAsync(*createResponseData).get();
 				} else {
 					*this->interactionData = *selectMenuInteractionData;
@@ -233,12 +272,17 @@ namespace DiscordCoreAPI {
 					*response->interactionData = *selectMenuInteractionData;
 					this->responseVector.push_back(*response);
 					this->currentCollectedSelectMenuCount += 1;
-					if (this->maxCollectedSelectMenuCount > 1 && this->currentCollectedSelectMenuCount < this->maxCollectedSelectMenuCount - 1) {
-						auto createResponseData = std::make_unique<CreateInteractionResponseData>(*selectMenuInteractionData);
-						createResponseData->data.type = InteractionCallbackType::Deferred_Update_Message;
+					if (this->maxCollectedSelectMenuCount > 1 &&
+						this->currentCollectedSelectMenuCount <
+							this->maxCollectedSelectMenuCount - 1) {
+						auto createResponseData = std::make_unique<CreateInteractionResponseData>(
+							*selectMenuInteractionData);
+						createResponseData->data.type =
+							InteractionCallbackType::Deferred_Update_Message;
 						Interactions::createInteractionResponseAsync(*createResponseData).get();
 					}
-					if (this->currentCollectedSelectMenuCount >= this->maxCollectedSelectMenuCount) {
+					if (this->currentCollectedSelectMenuCount >=
+						this->maxCollectedSelectMenuCount) {
 						for (auto& value: this->responseVector) {
 							*value.interactionData = *selectMenuInteractionData;
 						}
@@ -247,7 +291,8 @@ namespace DiscordCoreAPI {
 				}
 			} else {
 				auto selectMenuInteractionData = std::make_unique<InteractionData>();
-				if (waitForTimeToPass(this->selectMenuIncomingInteractionBuffer, *selectMenuInteractionData.get(), this->maxTimeInMs)) {
+				if (waitForTimeToPass(this->selectMenuIncomingInteractionBuffer,
+						*selectMenuInteractionData.get(), this->maxTimeInMs)) {
 					this->selectMenuId = "empty";
 					auto response = std::make_unique<SelectMenuResponseData>();
 					response->selectionId = this->selectMenuId;
@@ -270,9 +315,12 @@ namespace DiscordCoreAPI {
 				response->values = this->interactionData->data.componentData.values;
 				this->responseVector.push_back(*response);
 				this->currentCollectedSelectMenuCount += 1;
-				if (this->maxCollectedSelectMenuCount > 1 && this->currentCollectedSelectMenuCount < this->maxCollectedSelectMenuCount - 1) {
-					auto createResponseData = std::make_unique<CreateInteractionResponseData>(*selectMenuInteractionData);
-					createResponseData->data.type = InteractionCallbackType::Deferred_Update_Message;
+				if (this->maxCollectedSelectMenuCount > 1 &&
+					this->currentCollectedSelectMenuCount < this->maxCollectedSelectMenuCount - 1) {
+					auto createResponseData =
+						std::make_unique<CreateInteractionResponseData>(*selectMenuInteractionData);
+					createResponseData->data.type =
+						InteractionCallbackType::Deferred_Update_Message;
 					Interactions::createInteractionResponseAsync(*createResponseData).get();
 				}
 				if (this->currentCollectedSelectMenuCount >= this->maxCollectedSelectMenuCount) {
@@ -291,14 +339,17 @@ namespace DiscordCoreAPI {
 		this->messageId = dataPackage.getMessageId();
 		*this->interactionData = dataPackage.getInteractionData();
 		this->bufferMapKey = std::to_string(this->channelId) + std::to_string(this->messageId);
-		ButtonCollector::buttonInteractionBufferMap[this->bufferMapKey] = &this->buttonIncomingInteractionBuffer;
+		ButtonCollector::buttonInteractionBufferMap[this->bufferMapKey] =
+			&this->buttonIncomingInteractionBuffer;
 	}
 
-	CoRoutine<std::vector<ButtonResponseData>> ButtonCollector::collectButtonData(bool getButtonDataForAllNew, int32_t maxWaitTimeInMsNew, int32_t maxNumberOfPressesNew,
+	CoRoutine<std::vector<ButtonResponseData>> ButtonCollector::collectButtonData(
+		bool getButtonDataForAllNew, int32_t maxWaitTimeInMsNew, int32_t maxNumberOfPressesNew,
 		uint64_t targetUser) {
 		co_await NewThreadAwaitable<std::vector<ButtonResponseData>>();
 		if (targetUser == 0 && !getButtonDataForAllNew) {
-			throw std::runtime_error{ "ButtonCollector::collectButtonData(), You've failed to properly set the collectButtonData() parameters!" };
+			throw std::runtime_error{ "ButtonCollector::collectButtonData(), You've failed to "
+									  "properly set the collectButtonData() parameters!" };
 		}
 		if (targetUser != 0) {
 			this->userId = targetUser;
@@ -320,7 +371,8 @@ namespace DiscordCoreAPI {
 		while (!this->doWeQuit) {
 			if (this->getButtonDataForAll == false) {
 				auto buttonInteractionData = std::make_unique<InteractionData>();
-				if (waitForTimeToPass(this->buttonIncomingInteractionBuffer, *buttonInteractionData.get(), this->maxTimeInMs)) {
+				if (waitForTimeToPass(this->buttonIncomingInteractionBuffer,
+						*buttonInteractionData.get(), this->maxTimeInMs)) {
 					this->buttonId = "empty";
 					auto response = std::make_unique<ButtonResponseData>();
 					response->buttonId = this->buttonId;
@@ -332,15 +384,18 @@ namespace DiscordCoreAPI {
 					break;
 				}
 				if (buttonInteractionData->user.id != this->userId) {
-					auto createResponseData = std::make_unique<CreateInteractionResponseData>(*buttonInteractionData);
+					auto createResponseData =
+						std::make_unique<CreateInteractionResponseData>(*buttonInteractionData);
 					auto embedData = std::make_unique<EmbedData>();
 					embedData->setColor("FEFEFE");
 					embedData->setTitle("__**Permission Issue:**__");
 					embedData->setTimeStamp(getTimeAndDate());
-					embedData->setDescription("Sorry, but that button can only be pressed by <@" + std::to_string(this->userId) + ">!");
+					embedData->setDescription("Sorry, but that button can only be pressed by <@" +
+						std::to_string(this->userId) + ">!");
 					createResponseData->data.data.embeds.push_back(*embedData);
 					createResponseData->data.data.flags = 64;
-					createResponseData->data.type = InteractionCallbackType::Channel_Message_With_Source;
+					createResponseData->data.type =
+						InteractionCallbackType::Channel_Message_With_Source;
 					Interactions::createInteractionResponseAsync(*createResponseData).get();
 				} else {
 					*this->interactionData = *buttonInteractionData;
@@ -353,9 +408,12 @@ namespace DiscordCoreAPI {
 					*response->interactionData = *buttonInteractionData;
 					this->responseVector.push_back(*response);
 					this->currentCollectedButtonCount += 1;
-					if (this->maxCollectedButtonCount > 1 && this->currentCollectedButtonCount < this->maxCollectedButtonCount) {
-						auto createResponseData = std::make_unique<CreateInteractionResponseData>(*buttonInteractionData);
-						createResponseData->data.type = InteractionCallbackType::Deferred_Update_Message;
+					if (this->maxCollectedButtonCount > 1 &&
+						this->currentCollectedButtonCount < this->maxCollectedButtonCount) {
+						auto createResponseData =
+							std::make_unique<CreateInteractionResponseData>(*buttonInteractionData);
+						createResponseData->data.type =
+							InteractionCallbackType::Deferred_Update_Message;
 						Interactions::createInteractionResponseAsync(*createResponseData).get();
 					}
 					if (this->currentCollectedButtonCount >= this->maxCollectedButtonCount) {
@@ -367,7 +425,8 @@ namespace DiscordCoreAPI {
 				}
 			} else {
 				auto buttonInteractionData = std::make_unique<InteractionData>();
-				if (waitForTimeToPass(this->buttonIncomingInteractionBuffer, *buttonInteractionData.get(), this->maxTimeInMs)) {
+				if (waitForTimeToPass(this->buttonIncomingInteractionBuffer,
+						*buttonInteractionData.get(), this->maxTimeInMs)) {
 					this->buttonId = "empty";
 					auto response = std::make_unique<ButtonResponseData>();
 					response->buttonId = this->buttonId;
@@ -388,9 +447,12 @@ namespace DiscordCoreAPI {
 				*response->interactionData = *buttonInteractionData;
 				this->responseVector.push_back(*response);
 				this->currentCollectedButtonCount += 1;
-				if (this->maxCollectedButtonCount > 1 && this->currentCollectedButtonCount < this->maxCollectedButtonCount) {
-					auto createResponseData = std::make_unique<CreateInteractionResponseData>(*buttonInteractionData);
-					createResponseData->data.type = InteractionCallbackType::Deferred_Update_Message;
+				if (this->maxCollectedButtonCount > 1 &&
+					this->currentCollectedButtonCount < this->maxCollectedButtonCount) {
+					auto createResponseData =
+						std::make_unique<CreateInteractionResponseData>(*buttonInteractionData);
+					createResponseData->data.type =
+						InteractionCallbackType::Deferred_Update_Message;
 					Interactions::createInteractionResponseAsync(*createResponseData).get();
 				}
 				if (this->currentCollectedButtonCount >= this->maxCollectedButtonCount) {
@@ -406,7 +468,8 @@ namespace DiscordCoreAPI {
 
 	ModalCollector::ModalCollector(InputEventData& dataPackage) {
 		this->channelId = dataPackage.getChannelId();
-		ModalCollector::modalInteractionBufferMap[std::to_string(this->channelId)] = &this->modalIncomingInteractionBuffer;
+		ModalCollector::modalInteractionBufferMap[std::to_string(this->channelId)] =
+			&this->modalIncomingInteractionBuffer;
 	}
 
 	CoRoutine<ModalResponseData> ModalCollector::collectModalData(int32_t maxWaitTimeInMsNew) {
@@ -425,11 +488,13 @@ namespace DiscordCoreAPI {
 	void ModalCollector::run() {
 		while (!this->doWeQuit) {
 			auto buttonInteractionData = std::make_unique<InteractionData>();
-			if (waitForTimeToPass(this->modalIncomingInteractionBuffer, *buttonInteractionData.get(), this->maxTimeInMs)) {
+			if (waitForTimeToPass(this->modalIncomingInteractionBuffer,
+					*buttonInteractionData.get(), this->maxTimeInMs)) {
 				*this->responseData.interactionData = *buttonInteractionData;
 				this->responseData.channelId = buttonInteractionData->channelId;
 				this->responseData.customId = buttonInteractionData->data.modalData.customId;
-				this->responseData.customIdSmall = buttonInteractionData->data.modalData.customIdSmall;
+				this->responseData.customIdSmall =
+					buttonInteractionData->data.modalData.customIdSmall;
 				this->responseData.userId = buttonInteractionData->user.id;
 				this->responseData.value = buttonInteractionData->data.modalData.value;
 				break;
@@ -437,7 +502,8 @@ namespace DiscordCoreAPI {
 				*this->responseData.interactionData = *buttonInteractionData;
 				this->responseData.channelId = buttonInteractionData->channelId;
 				this->responseData.customId = buttonInteractionData->data.modalData.customId;
-				this->responseData.customIdSmall = buttonInteractionData->data.modalData.customIdSmall;
+				this->responseData.customIdSmall =
+					buttonInteractionData->data.modalData.customIdSmall;
 				this->responseData.userId = buttonInteractionData->user.id;
 				this->responseData.value = buttonInteractionData->data.modalData.value;
 				break;
@@ -447,8 +513,11 @@ namespace DiscordCoreAPI {
 		ButtonCollector::buttonInteractionBufferMap.erase(std::to_string(this->channelId));
 	}
 
-	std::unordered_map<std::string, UnboundedMessageBlock<InteractionData>*> SelectMenuCollector::selectMenuInteractionBufferMap{};
-	std::unordered_map<std::string, UnboundedMessageBlock<InteractionData>*> ButtonCollector::buttonInteractionBufferMap{};
-	std::unordered_map<std::string, UnboundedMessageBlock<InteractionData>*> ModalCollector::modalInteractionBufferMap{};
+	std::unordered_map<std::string, UnboundedMessageBlock<InteractionData>*>
+		SelectMenuCollector::selectMenuInteractionBufferMap{};
+	std::unordered_map<std::string, UnboundedMessageBlock<InteractionData>*>
+		ButtonCollector::buttonInteractionBufferMap{};
+	std::unordered_map<std::string, UnboundedMessageBlock<InteractionData>*>
+		ModalCollector::modalInteractionBufferMap{};
 	DiscordCoreInternal::HttpClient* Interactions::httpClient{ nullptr };
 };

@@ -39,7 +39,8 @@ namespace DiscordCoreAPI {
 		friend class DiscordCoreInternal::SoundCloudAPI;
 		friend class DiscordCoreInternal::YouTubeAPI;
 
-		DiscordCoreInternal::Event<CoRoutine<void>, SongCompletionEventData> onSongCompletionEvent{};
+		DiscordCoreInternal::Event<CoRoutine<void>, SongCompletionEventData>
+			onSongCompletionEvent{};
 		DiscordCoreInternal::EventDelegateToken theToken{};
 		Playlist playlist{};
 
@@ -48,13 +49,16 @@ namespace DiscordCoreAPI {
 		/// For setting up behavior in response to a completed song. \brief For setting up behavior in response to a completed song
 		/// \param handler A delegate taking a SongCompletionEventData structure as an argument.
 		/// \param guildId The id of the Guild for which you would like to instantiate this event.
-		static void onSongCompletion(std::function<CoRoutine<void>(SongCompletionEventData)> handler, const uint64_t& guildId);
+		static void onSongCompletion(
+			std::function<CoRoutine<void>(SongCompletionEventData)> handler,
+			const uint64_t& guildId);
 
 		/// Search for a Song to play. \brief Search for a Song to play.
 		/// \param searchQuery The Song to search for.
 		/// \param guildId The Guild id to search for the Song within.
 		/// \returns A std::vector of Song objects representing the search results.
-		static std::vector<Song> searchForSong(const std::string& searchQuery, const uint64_t& guildId);
+		static std::vector<Song> searchForSong(const std::string& searchQuery,
+			const uint64_t& guildId);
 
 		/// Adds a Song to the current Playlist's queue. \brief Adds a Song to the current Playlist's queue.
 		/// \param guildMember The GuildMember that is adding the Song to the queue.
@@ -128,7 +132,8 @@ namespace DiscordCoreAPI {
 		/// \param firstSongPosition The first Song's initial position.
 		/// \param secondSongPosition The first Song's final position.
 		/// \param guildId The id of the desired Guild to update the Song positions in.
-		static void modifyQueue(int32_t firstSongPosition, int32_t secondSongPosition, const uint64_t& guildId);
+		static void modifyQueue(int32_t firstSongPosition, int32_t secondSongPosition,
+			const uint64_t& guildId);
 
 		/// Collects the currently playing Song. \brief Collects the currently playing Song.
 		/// \param guildId The id for which Guild to collect the current Song of.

@@ -88,11 +88,14 @@ namespace DiscordCoreAPI {
 
 namespace DiscordCoreInternal {
 
-	nlohmann::json JSONIFY(const std::string& serverId, const std::string& sessionId, const std::string& token, const std::string& testString);
+	nlohmann::json JSONIFY(const std::string& serverId, const std::string& sessionId,
+		const std::string& token, const std::string& testString);
 
-	nlohmann::json JSONIFY(const std::string& botToken, int64_t intents, int32_t currentShard, int32_t numberOfShards);
+	nlohmann::json JSONIFY(const std::string& botToken, int64_t intents, int32_t currentShard,
+		int32_t numberOfShards);
 
-	nlohmann::json JSONIFY(const std::string& botToken, std::string sessionID, int32_t lastReceivedNumber);
+	nlohmann::json JSONIFY(const std::string& botToken, std::string sessionID,
+		int32_t lastReceivedNumber);
 
 	nlohmann::json JSONIFY(const DiscordCoreAPI::UpdateVoiceStateData& dataPackage);
 
@@ -100,17 +103,21 @@ namespace DiscordCoreInternal {
 
 	nlohmann::json JSONIFY(int32_t lastReceivedNumber);
 
-	std::vector<uint8_t> JSONIFY(const std::string& localPort, const std::string& localIp, const std::string& encryptionMode, int32_t testValue);
+	std::vector<uint8_t> JSONIFY(const std::string& localPort, const std::string& localIp,
+		const std::string& encryptionMode, int32_t testValue);
 
-	std::vector<uint8_t> JSONIFY(const VoiceConnectionData& dataPackage, const VoiceConnectInitData& dataPackage02);
+	std::vector<uint8_t> JSONIFY(const VoiceConnectionData& dataPackage,
+		const VoiceConnectInitData& dataPackage02);
 
 	std::vector<uint8_t> JSONIFY(int32_t ssrc, int32_t delay);
 
 	std::vector<uint8_t> JSONIFY(int64_t nonce);
 
-	void JSONIFY(const DiscordCoreAPI::ApplicationCommandOptionData& dataPackage, nlohmann::json* pJSONData);
+	void JSONIFY(const DiscordCoreAPI::ApplicationCommandOptionData& dataPackage,
+		nlohmann::json* pJSONData);
 
-	std::string JSONIFY(const DiscordCoreAPI::EditGuildApplicationCommandPermissionsData& dataPackage);
+	std::string JSONIFY(
+		const DiscordCoreAPI::EditGuildApplicationCommandPermissionsData& dataPackage);
 
 	std::string JSONIFY(const DiscordCoreAPI::EditChannelPermissionOverwritesData& dataPackage);
 

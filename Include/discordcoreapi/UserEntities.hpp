@@ -77,14 +77,17 @@ namespace DiscordCoreAPI {
 	/// For modifying the Bot's User responseData. \brief For modifying the Bot's User responseData.
 	struct DiscordCoreAPI_Dll ModifyCurrentUserData {
 		std::vector<uint8_t> avatar{};///< If passed, modifies the user's avatar.
-		std::string userName{};///< User's userName, if changed may cause the user's discriminator to be randomized.
+		std::string
+			userName{};///< User's userName, if changed may cause the user's discriminator to be randomized.
 	};
 
 	/// A single User. \brief A single User.
 	class DiscordCoreAPI_Dll User : public UserData {
 	  public:
 		PremiumType premiumType{};///< The type of Nitro subscription on a user ' s account.
-		int32_t accentColor{ 0 };///< The user 's banner color encoded as an integer representation of hexadecimal color code.
+		int32_t accentColor{
+			0
+		};///< The user 's banner color encoded as an integer representation of hexadecimal color code.
 		std::string banner{};///< The user's banner hash.
 		std::string locale{};///< The user' s chosen language option.
 		std::string email{};///< The user's email.
@@ -107,7 +110,8 @@ namespace DiscordCoreAPI {
 	  public:
 		friend DiscordCoreClient;
 
-		BotUser(UserData dataPackage, DiscordCoreInternal::BaseSocketAgent* pBaseBaseSocketAgentNew);
+		BotUser(UserData dataPackage,
+			DiscordCoreInternal::BaseSocketAgent* pBaseBaseSocketAgentNew);
 
 		/// Updates the bot's current voice-status. Joins/leaves a Channel, and/or self deafens/mutes. \brief Updates the bot's current voice-status. Joins/leaves a Channel, and/or self deafens/mutes.
 		void updateVoiceStatus(const UpdateVoiceStateData& datdataPackageaPackage);
@@ -129,7 +133,8 @@ namespace DiscordCoreAPI {
 	/// An interface class for the User related Discord endpoints. \brief An interface class for the User related Discord endpoints.
 	class DiscordCoreAPI_Dll Users {
 	  public:
-		template<typename ParseType> friend void DiscordCoreInternal::parseObject(const nlohmann::json&, ParseType&);
+		template<typename ParseType>
+		friend void DiscordCoreInternal::parseObject(const nlohmann::json&, ParseType&);
 		friend class DiscordCoreInternal::BaseSocketAgent;
 		friend DiscordCoreClient;
 		friend EventHandler;
@@ -145,12 +150,14 @@ namespace DiscordCoreAPI {
 		/// Removes a chosen recipient from a group Dm. \brief Removes a chosen recipient from a group Dm.
 		/// \param dataPackage A RemoveRecipientFromGroupDMData structure.
 		/// \returns A CoRoutine containing void.
-		static CoRoutine<void> removeRecipientFromGroupDMAsync(RemoveRecipientFromGroupDMData dataPackage);
+		static CoRoutine<void> removeRecipientFromGroupDMAsync(
+			RemoveRecipientFromGroupDMData dataPackage);
 
 		/// Sets the bot's current voice state. \brief Sets the bot's current voice state.
 		/// \param dataPackage A ModifyCurrentUserVoiceStateData structure.
 		/// \returns A CoRoutine containing void.
-		static CoRoutine<void> modifyCurrentUserVoiceStateAsync(ModifyCurrentUserVoiceStateData dataPackage);
+		static CoRoutine<void> modifyCurrentUserVoiceStateAsync(
+			ModifyCurrentUserVoiceStateData dataPackage);
 
 		/// Sets another user's current voice state. \brief Sets another user's current voice state.
 		/// \param dataPackage A ModifyUserVoiceStateData structure.

@@ -37,12 +37,14 @@ namespace DiscordCoreAPI {
 
 	/// For collecting a list of Stickers from a chosen Guild. \brief For collecting a list of Stickers from a chosen Guild.
 	struct DiscordCoreAPI_Dll GetGuildStickersData {
-		uint64_t guildId{};///< The chosen Guild from which you would like to collect the Stickers from.
+		uint64_t
+			guildId{};///< The chosen Guild from which you would like to collect the Stickers from.
 	};
 
 	/// For creating a single Sticker. \brief For creating a single Sticker.
 	struct DiscordCoreAPI_Dll CreateGuildStickerData {
-		std::vector<uint8_t> file{};///< The sticker file to upload, must be a Png, Apng, or Lottie JSON file, max 500 KB.
+		std::vector<uint8_t>
+			file{};///< The sticker file to upload, must be a Png, Apng, or Lottie JSON file, max 500 KB.
 		std::string description{};///< Description of the Sticker.
 		uint64_t guildId{};///< The Guild within which to create the Sticker.
 		std::string reason{};///< The reason for creating the Sticker.
@@ -98,7 +100,8 @@ namespace DiscordCoreAPI {
 		/// Gets a list of Stickers from a Guild. \brief Gets a list of Stickers from a Guild.
 		/// \param dataPackage A GetGuildStickersData structure.
 		/// \returns A CoRoutine containing a std::vector<Sticker>.
-		static CoRoutine<std::vector<Sticker>> getGuildStickersAsync(GetGuildStickersData dataPackage);
+		static CoRoutine<std::vector<Sticker>> getGuildStickersAsync(
+			GetGuildStickersData dataPackage);
 
 		/// Creates a new Sticker within a chosen Guild. \brief Creates a new Sticker within a chosen Guild.
 		/// \param dataPackage A CreateGuildStickerData structure.

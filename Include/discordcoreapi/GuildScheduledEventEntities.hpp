@@ -38,7 +38,9 @@ namespace DiscordCoreAPI {
 
 	/// For creating a GuildScheduledEvent. \brief For creating a GuildScheduledEvent.
 	struct DiscordCoreAPI_Dll CreateGuildScheduledEventData {
-		GuildScheduledEventPrivacyLevel privacyLevel{ GuildScheduledEventPrivacyLevel::Guild_Only };///< The privacy level of the scheduled event.
+		GuildScheduledEventPrivacyLevel privacyLevel{
+			GuildScheduledEventPrivacyLevel::Guild_Only
+		};///< The privacy level of the scheduled event.
 		GuildScheduledEventMetadata entityMetadata{};/// The entity metadata of the scheduled event.
 		GuildScheduledEventEntityType entityType{};///< The entity type of the scheduled event.
 		std::string scheduledStartTime{};///< The time to schedule the scheduled event.
@@ -58,15 +60,21 @@ namespace DiscordCoreAPI {
 
 	/// For modifying a single Guild Scheduled Event. \brief For modifying a single Guild Scheduled Event.
 	struct DiscordCoreAPI_Dll ModifyGuildScheduledEventData {
-		GuildScheduledEventPrivacyLevel privacyLevel{ GuildScheduledEventPrivacyLevel::Guild_Only };///< The privacy level of the scheduled event.
-		GuildScheduledEventStatus status{ GuildScheduledEventStatus::Active };///< The status of the scheduled event.
-		GuildScheduledEventMetadata entityMetadata{};///< The entity metadata of the scheduled event.
+		GuildScheduledEventPrivacyLevel privacyLevel{
+			GuildScheduledEventPrivacyLevel::Guild_Only
+		};///< The privacy level of the scheduled event.
+		GuildScheduledEventStatus status{
+			GuildScheduledEventStatus::Active
+		};///< The status of the scheduled event.
+		GuildScheduledEventMetadata
+			entityMetadata{};///< The entity metadata of the scheduled event.
 		GuildScheduledEventEntityType entityType{};///< The entity type of the scheduled event.
 		uint64_t guildScheduledEventId{};///< The id of the event to modify.
 		std::string scheduledStartTime{};///< The time to schedule the scheduled event.
 		std::string scheduledEndTime{};///< The time when the scheduled event is scheduled to end.
 		std::string description{};///< The description of the scheduled event.
-		uint64_t channelId{};///< The Channel id of the scheduled event, set to null if changing entity type to External.
+		uint64_t
+			channelId{};///< The Channel id of the scheduled event, set to null if changing entity type to External.
 		uint64_t guildId{};///< The Guild within which to modify the event.
 		std::string name{};///< The name of the scheduled event.
 	};
@@ -109,32 +117,38 @@ namespace DiscordCoreAPI {
 		/// Gets a list of a given Guild's scheduled events. \brief Gets a list of a given Guild's scheduled events.
 		/// \param dataPackage A GetGuildScheduledEventsDatastructure.
 		/// \returns A CoRoutine containing a std::vector<GuildScheduledEvent>.
-		static CoRoutine<std::vector<GuildScheduledEvent>> getGuildScheduledEventsAsync(GetGuildScheduledEventsData dataPackage);
+		static CoRoutine<std::vector<GuildScheduledEvent>> getGuildScheduledEventsAsync(
+			GetGuildScheduledEventsData dataPackage);
 
 		/// Creates a new GuildScheduledEvent within a chosen Guild. \brief Creates a new GuildScheduledEvent within a chosen Guild.
 		/// \param dataPackage A CreateGuildScheduledEventData structure.
 		/// \returns A CoRoutine containing a GuildScheduledEvent.
-		static CoRoutine<GuildScheduledEvent> createGuildScheduledEventAsync(CreateGuildScheduledEventData dataPackage);
+		static CoRoutine<GuildScheduledEvent> createGuildScheduledEventAsync(
+			CreateGuildScheduledEventData dataPackage);
 
 		/// Collects a single GuildScheduledEvent. \brief Collects a single GuildScheduledEvent.
 		/// \param dataPackage A GetGuildScheduledEventData structure.
 		/// \returns A CoRoutine containing a GuildScheduledEvent.
-		static CoRoutine<GuildScheduledEvent> getGuildScheduledEventAsync(GetGuildScheduledEventData dataPackage);
+		static CoRoutine<GuildScheduledEvent> getGuildScheduledEventAsync(
+			GetGuildScheduledEventData dataPackage);
 
 		/// Modifies a single GuildScheduledEvent. \brief Modifies a single GuildScheduledEvent.
 		/// \param dataPackage A ModifyGuildScheduledEventData structure.
 		/// \returns A CoRoutine containing a GuildScheduledEvent.
-		static CoRoutine<GuildScheduledEvent> modifyGuildScheduledEventAsync(ModifyGuildScheduledEventData dataPackage);
+		static CoRoutine<GuildScheduledEvent> modifyGuildScheduledEventAsync(
+			ModifyGuildScheduledEventData dataPackage);
 
 		/// Deletes a single GuildScheduledEvent. \brief Deletes a single GuildScheduledEvent.
 		/// \param dataPackage A DeleteGuildScheduledEventData structure.
 		/// \returns A CoRoutine containing void.
-		static CoRoutine<void> deleteGuildScheduledEventAsync(DeleteGuildScheduledEventData dataPackage);
+		static CoRoutine<void> deleteGuildScheduledEventAsync(
+			DeleteGuildScheduledEventData dataPackage);
 
 		/// Collects a list of Users for a given GuildScheduledEvent. \brief Collects a list of Users for a given GuildScheduledEvent.
 		/// \param dataPackage A GetGuildScheduledEventUsersData structure.
 		/// \returns A CoRoutine containing a std::vector<GuildScheduledEventUser>.
-		static CoRoutine<std::vector<GuildScheduledEventUserData>> getGuildScheduledEventUsersAsync(GetGuildScheduledEventUsersData dataPackage);
+		static CoRoutine<std::vector<GuildScheduledEventUserData>> getGuildScheduledEventUsersAsync(
+			GetGuildScheduledEventUsersData dataPackage);
 
 	  protected:
 		static DiscordCoreInternal::HttpClient* httpClient;

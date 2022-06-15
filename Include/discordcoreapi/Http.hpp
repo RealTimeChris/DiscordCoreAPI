@@ -48,9 +48,11 @@ namespace DiscordCoreInternal {
 	  public:
 		friend HttpClient;
 
-		void updateRateLimitData(std::unordered_map<std::string, std::string>& headers, RateLimitData* theConnection);
+		void updateRateLimitData(std::unordered_map<std::string, std::string>& headers,
+			RateLimitData* theConnection);
 
-		HttpResponseData finalizeReturnValues(RateLimitData* rateLimitDataPtr, HttpResponseData& theData);
+		HttpResponseData finalizeReturnValues(RateLimitData* rateLimitDataPtr,
+			HttpResponseData& theData);
 
 		std::string buildRequest(const HttpWorkloadData& workload);
 
@@ -120,8 +122,9 @@ namespace DiscordCoreInternal {
 	  public:
 		HttpClient() = default;
 
-		HttpClient(const std::string& botTokenNew, bool doWePrintHttpSuccessNew, bool doWePrintHttpErrorNew, bool doWePrintFFMPEGSuccessNew, bool doWePrintFFMPEGErrorNew,
-			bool doWePrintWebSocketErrorNew);
+		HttpClient(const std::string& botTokenNew, bool doWePrintHttpSuccessNew,
+			bool doWePrintHttpErrorNew, bool doWePrintFFMPEGSuccessNew,
+			bool doWePrintFFMPEGErrorNew, bool doWePrintWebSocketErrorNew);
 
 		std::vector<HttpResponseData> httpRequest(const std::vector<HttpWorkloadData>&);
 
@@ -137,25 +140,30 @@ namespace DiscordCoreInternal {
 
 		const bool getDoWePrintHttpErrorMessages();
 
-		template<typename ReturnType> ReturnType submitWorkloadAndGetResult(HttpWorkloadData& workload) {
+		template<typename ReturnType>
+		ReturnType submitWorkloadAndGetResult(HttpWorkloadData& workload) {
 			ReturnType returnObject{};
 			workload.headersToInsert["Authorization"] = "Bot " + this->botToken;
 			workload.headersToInsert["User-Agent"] = "DiscordBot (https://discordcoreapi.com 1.0)";
 			if (workload.payloadType == PayloadType::Application_Json) {
 				workload.headersToInsert["Content-Type"] = "application/json";
 			} else if (workload.payloadType == PayloadType::Multipart_Form) {
-				workload.headersToInsert["Content-Type"] = "multipart/form-data; boundary=boundary25";
+				workload.headersToInsert["Content-Type"] =
+					"multipart/form-data; boundary=boundary25";
 			}
 			HttpResponseData returnData = this->httpRequest(workload);
 			parseObject(returnData.responseData, returnObject);
 			return returnObject;
 		}
 
-		template<std::same_as<std::vector<HttpResponseData>> Type> Type submitWorkloadAndGetResult(const std::vector<HttpWorkloadData>& workload);
+		template<std::same_as<std::vector<HttpResponseData>> Type>
+		Type submitWorkloadAndGetResult(const std::vector<HttpWorkloadData>& workload);
 
-		template<std::same_as<void> Type> Type submitWorkloadAndGetResult(HttpWorkloadData& workload);
+		template<std::same_as<void> Type>
+		Type submitWorkloadAndGetResult(HttpWorkloadData& workload);
 
-		template<std::same_as<HttpResponseData> Type> Type submitWorkloadAndGetResult(HttpWorkloadData& workload);
+		template<std::same_as<HttpResponseData> Type>
+		Type submitWorkloadAndGetResult(HttpWorkloadData& workload);
 
 	  protected:
 		HttpConnectionManager connectionManager{};
@@ -166,11 +174,14 @@ namespace DiscordCoreInternal {
 		const bool doWePrintHttpErrorMessages{};
 		const std::string botToken{};
 
-		HttpResponseData httpRequestInternal(const HttpWorkloadData& workload, HttpConnection& theConnection, RateLimitData* rateLimitDataPtr);
+		HttpResponseData httpRequestInternal(const HttpWorkloadData& workload,
+			HttpConnection& theConnection, RateLimitData* rateLimitDataPtr);
 
-		HttpResponseData executeByRateLimitData(const HttpWorkloadData& workload, HttpConnection& theConnection);
+		HttpResponseData executeByRateLimitData(const HttpWorkloadData& workload,
+			HttpConnection& theConnection);
 
-		HttpResponseData getResponse(HttpConnection& theConnection, RateLimitData* rateLimitDataPtr);
+		HttpResponseData getResponse(HttpConnection& theConnection,
+			RateLimitData* rateLimitDataPtr);
 	};
 
 

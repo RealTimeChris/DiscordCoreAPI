@@ -27,7 +27,8 @@ namespace DiscordCoreAPI {
 
 	/// For creating a StageInstance. \brief For creating a StageInstance.
 	struct DiscordCoreAPI_Dll CreateStageInstanceData {
-		StageInstancePrivacyLevel privacyLevel{};///< The privacy level of the Stage instance(default Guild_Only).
+		StageInstancePrivacyLevel
+			privacyLevel{};///< The privacy level of the Stage instance(default Guild_Only).
 		uint64_t channelId{};///< The id of the Stage Channel.
 		std::string reason{};///< The reason for starting it.
 		std::string topic{};///< The topic of the Stage instance(1 - 120 characters).
@@ -35,7 +36,8 @@ namespace DiscordCoreAPI {
 
 	/// For collecting a single StageInstance. \brief For collecting a single StageInstance.
 	struct DiscordCoreAPI_Dll GetStageInstanceData {
-		uint64_t channelId{};///< The Channel id from which you would like to collect the StageInstance.
+		uint64_t
+			channelId{};///< The Channel id from which you would like to collect the StageInstance.
 	};
 
 	/// For modifying a single StageInstance. \brief For modifying a single StageInstance.
@@ -72,7 +74,8 @@ namespace DiscordCoreAPI {
 		/// Creates a StageInstance. \brief Creates a StageInstance.
 		/// \param dataPackage A CreateStageInstanceData structure.
 		/// \returns A CoRoutine containing a StageInstance.
-		static CoRoutine<StageInstance> createStageInstanceAsync(CreateStageInstanceData dataPackage);
+		static CoRoutine<StageInstance> createStageInstanceAsync(
+			CreateStageInstanceData dataPackage);
 
 		/// Collects a StageInstance. \brief Collects a StageInstance.
 		/// \param dataPackage A GetStageInstanceData structure.
@@ -82,7 +85,8 @@ namespace DiscordCoreAPI {
 		/// Modifies a StageInstance. \brief Modifies a StageInstance.
 		/// \param dataPackage A ModifyStageInstanceData structure.
 		/// \returns A CoRoutine containing a StageInstance.
-		static CoRoutine<StageInstance> modifyStageInstanceAsync(ModifyStageInstanceData dataPackage);
+		static CoRoutine<StageInstance> modifyStageInstanceAsync(
+			ModifyStageInstanceData dataPackage);
 
 		/// Deletes a StageInstance. \brief Deletes a StageInstance.
 		/// \param dataPackage A DeleteStageInstanceData structure.

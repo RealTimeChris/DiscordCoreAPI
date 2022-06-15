@@ -56,9 +56,11 @@ namespace DiscordCoreAPI {
 
 	using VoiceConnectionMap = std::unordered_map<uint64_t, std::unique_ptr<VoiceConnection>>;
 
-	using SoundCloudAPIMap = std::unordered_map<uint64_t, std::unique_ptr<DiscordCoreInternal::SoundCloudAPI>>;
+	using SoundCloudAPIMap =
+		std::unordered_map<uint64_t, std::unique_ptr<DiscordCoreInternal::SoundCloudAPI>>;
 
-	using YouTubeAPIMap = std::unordered_map<uint64_t, std::unique_ptr<DiscordCoreInternal::YouTubeAPI>>;
+	using YouTubeAPIMap =
+		std::unordered_map<uint64_t, std::unique_ptr<DiscordCoreInternal::YouTubeAPI>>;
 
 	using SongAPIMap = std::unordered_map<uint64_t, std::unique_ptr<SongAPI>>;
 
@@ -92,7 +94,8 @@ namespace DiscordCoreAPI {
 		/// For registering a function with the CommandController. \brief For registering a function with the CommandController.
 		/// \param functionNames A vector containing the possible names for activating this command/function.
 		/// \param baseFunction A unique_ptr to the command to be registered.
-		void registerFunction(const std::vector<std::string>& functionNames, std::unique_ptr<BaseFunction> baseFunction);
+		void registerFunction(const std::vector<std::string>& functionNames,
+			std::unique_ptr<BaseFunction> baseFunction);
 
 		/// For collecting a copy of the current bot's User. \brief For collecting a copy of the current bot's User.
 		/// \returns BotUser An instance of BotUser.
@@ -104,7 +107,8 @@ namespace DiscordCoreAPI {
 		~DiscordCoreClient() = default;
 
 	  protected:
-		std::unordered_map<std::string, std::unique_ptr<DiscordCoreInternal::BaseSocketAgent>> baseSocketAgentMap{};
+		std::unordered_map<std::string, std::unique_ptr<DiscordCoreInternal::BaseSocketAgent>>
+			baseSocketAgentMap{};
 		std::unique_ptr<DiscordCoreInternal::HttpClient> httpClient{};
 		StopWatch<std::chrono::milliseconds> theStopWatch{ 5000ms };
 		std::vector<RepeatedFunctionData> functionsToExecute{};

@@ -49,11 +49,13 @@ namespace DiscordCoreInternal {
 	template<typename ReturnType> void ErlPacker::etfByteOrder(ReturnType x, ReturnType& theValue) {
 		const uint8_t byteSize{ 8 };
 		for (uint32_t y = 0; y < sizeof(ReturnType); y += 1) {
-			theValue |= static_cast<ReturnType>(static_cast<uint8_t>(x >> (byteSize * y))) << byteSize * (sizeof(ReturnType) - y - 1);
+			theValue |= static_cast<ReturnType>(static_cast<uint8_t>(x >> (byteSize * y)))
+				<< byteSize * (sizeof(ReturnType) - y - 1);
 		}
 	}
 
-	template<typename ReturnType> void ErlPacker::storeBits(std::vector<uint8_t>& to, ReturnType& num, uint32_t& offSet) {
+	template<typename ReturnType>
+	void ErlPacker::storeBits(std::vector<uint8_t>& to, ReturnType& num, uint32_t& offSet) {
 		const uint8_t byteSize{ 8 };
 		ReturnType newVal{};
 		ErlPacker::etfByteOrder(num, newVal);
@@ -69,7 +71,9 @@ namespace DiscordCoreInternal {
 				ErlPacker::appendNilExt(buffer);
 			} else {
 				if (length > std::numeric_limits<uint32_t>::max() - 1) {
-					throw ErlPackError{ "ErlPacker::singleValueJsonToETF(), List_Ext too large for ETF" };
+					throw ErlPackError{
+						"ErlPacker::singleValueJsonToETF(), List_Ext too large for ETF"
+					};
 				}
 			}
 			ErlPacker::appendListHeader(buffer, length);
@@ -93,7 +97,8 @@ namespace DiscordCoreInternal {
 			if (numberOld >= 0 && numberOld <= 127) {
 				uint8_t number = jsonData.get<uint8_t>();
 				ErlPacker::appendSmallIntegerExt(buffer, number);
-			} else if (jsonData.is_number_unsigned() && (numberOld >= std::numeric_limits<uint32_t>::max() - static_cast<size_t>(1))) {
+			} else if (jsonData.is_number_unsigned() &&
+				(numberOld >= std::numeric_limits<uint32_t>::max() - static_cast<size_t>(1))) {
 				uint64_t number = jsonData.get<uint64_t>();
 				ErlPacker::appendUnsignedLongLong(buffer, number);
 			} else {
@@ -131,12 +136,14 @@ namespace DiscordCoreInternal {
 	}
 
 	void ErlPacker::appendSmallIntegerExt(ErlPackBuffer& buffer, uint8_t& value) {
-		std::vector<uint8_t> bufferNew{ static_cast<uint8_t> (ETFTokenType::Small_Integer_Ext), value };
+		std::vector<uint8_t> bufferNew{ static_cast<uint8_t>(ETFTokenType::Small_Integer_Ext),
+			value };
 		ErlPacker::writeToBuffer(buffer, bufferNew);
 	}
 
 	void ErlPacker::appendIntegerExt(ErlPackBuffer& buffer, uint32_t& value) {
-		std::vector<uint8_t> bufferNew{ static_cast<uint8_t>(ETFTokenType::Integer_Ext), 0, 0, 0, 0 };
+		std::vector<uint8_t> bufferNew{ static_cast<uint8_t>(ETFTokenType::Integer_Ext), 0, 0, 0,
+			0 };
 		uint32_t newValue{ 1 };
 		ErlPacker::storeBits(bufferNew, value, newValue);
 		ErlPacker::writeToBuffer(buffer, bufferNew);
@@ -160,19 +167,21 @@ namespace DiscordCoreInternal {
 	}
 
 	void ErlPacker::appendNil(ErlPackBuffer& buffer) {
-		std::vector<uint8_t> bufferNew{ static_cast<uint8_t>(ETFTokenType::Small_Atom_Utf8_Ext), 3, static_cast<uint8_t>('n'), static_cast<uint8_t>('i'),
-			static_cast<uint8_t>('l') };
+		std::vector<uint8_t> bufferNew{ static_cast<uint8_t>(ETFTokenType::Small_Atom_Utf8_Ext), 3,
+			static_cast<uint8_t>('n'), static_cast<uint8_t>('i'), static_cast<uint8_t>('l') };
 		ErlPacker::writeToBuffer(buffer, bufferNew);
 	}
 
 	void ErlPacker::appendFalse(ErlPackBuffer& buffer) {
-		std::vector<uint8_t> bufferNew{ static_cast<uint8_t>(ETFTokenType::Small_Atom_Utf8_Ext), 5, static_cast<uint8_t>('f'), static_cast<uint8_t>('a'), static_cast<uint8_t>('l'),
+		std::vector<uint8_t> bufferNew{ static_cast<uint8_t>(ETFTokenType::Small_Atom_Utf8_Ext), 5,
+			static_cast<uint8_t>('f'), static_cast<uint8_t>('a'), static_cast<uint8_t>('l'),
 			static_cast<uint8_t>('s'), static_cast<uint8_t>('e') };
 		ErlPacker::writeToBuffer(buffer, bufferNew);
 	}
 
 	void ErlPacker::appendTrue(ErlPackBuffer& buffer) {
-		std::vector<uint8_t> bufferNew{ static_cast<uint8_t>(ETFTokenType::Small_Atom_Utf8_Ext), 4, static_cast<uint8_t>('t'), static_cast<uint8_t>('r'), static_cast<uint8_t>('u'),
+		std::vector<uint8_t> bufferNew{ static_cast<uint8_t>(ETFTokenType::Small_Atom_Utf8_Ext), 4,
+			static_cast<uint8_t>('t'), static_cast<uint8_t>('r'), static_cast<uint8_t>('u'),
 			static_cast<uint8_t>('e') };
 		ErlPacker::writeToBuffer(buffer, bufferNew);
 	}
@@ -192,7 +201,8 @@ namespace DiscordCoreInternal {
 		ErlPacker::writeToBuffer(buffer, bufferNew);
 	}
 
-	void ErlPacker::appendBinaryExt(ErlPackBuffer& buffer, const std::vector<uint8_t>& bytes, uint32_t& size) {
+	void ErlPacker::appendBinaryExt(ErlPackBuffer& buffer, const std::vector<uint8_t>& bytes,
+		uint32_t& size) {
 		std::vector<uint8_t> bufferNew{};
 		bufferNew.resize(5);
 		bufferNew[0] = static_cast<uint8_t>(ETFTokenType::Binary_Ext);
@@ -220,25 +230,30 @@ namespace DiscordCoreInternal {
 		ErlPacker::writeToBuffer(buffer, bufferNew);
 	}
 
-	template<typename ReturnType> void ErlPacker::readBits(const ErlPackBuffer& buffer, ReturnType& theValue) {
+	template<typename ReturnType>
+	void ErlPacker::readBits(const ErlPackBuffer& buffer, ReturnType& theValue) {
 		const uint8_t byteSize{ 8 };
 		if (buffer.offSet + sizeof(ReturnType) > buffer.buffer.size()) {
 			throw ErlPackError{ "ErlPacker::readBits(), readBits() past end of buffer" };
 		}
 		ReturnType newValue{ 0 };
 		for (uint64_t x = 0; x < sizeof(ReturnType); x += 1) {
-			newValue |= static_cast<ReturnType>(static_cast<uint64_t>(buffer.buffer.data()[buffer.offSet + x]) << (x * static_cast<uint64_t>(byteSize)));
+			newValue |= static_cast<ReturnType>(
+				static_cast<uint64_t>(buffer.buffer.data()[buffer.offSet + x])
+				<< (x * static_cast<uint64_t>(byteSize)));
 		}
 		buffer.offSet += sizeof(ReturnType);
 		ErlPacker::etfByteOrder(newValue, theValue);
 	}
 
-	void ErlPacker::readString(const ErlPackBuffer& buffer, uint32_t& length, std::vector<char>& theString) {
+	void ErlPacker::readString(const ErlPackBuffer& buffer, uint32_t& length,
+		std::vector<char>& theString) {
 		if (buffer.offSet + static_cast<uint64_t>(length) > buffer.buffer.size()) {
 			throw ErlPackError{ "ErlPacker::readString(), readString() past end of buffer" };
 		}
 		std::vector<char> str{};
-		str.insert(str.begin(), buffer.buffer.begin() + buffer.offSet, buffer.buffer.begin() + buffer.offSet + length);
+		str.insert(str.begin(), buffer.buffer.begin() + buffer.offSet,
+			buffer.buffer.begin() + buffer.offSet + length);
 		buffer.offSet += length;
 		theString = std::move(str);
 	}
@@ -312,7 +327,9 @@ namespace DiscordCoreInternal {
 		uint8_t sign{};
 		readBits(buffer, sign);
 		if (digits > 8) {
-			throw ErlPackError{ "ErlPacker::parseBigint(), Integers larger than 8 bytes are not supported." };
+			throw ErlPackError{
+				"ErlPacker::parseBigint(), Integers larger than 8 bytes are not supported."
+			};
 		}
 		uint64_t value = 0;
 		uint64_t b = 1;
@@ -362,7 +379,8 @@ namespace DiscordCoreInternal {
 		}
 		double number{};
 		std::vector<char> nullTerminated{};
-		nullTerminated.insert(nullTerminated.begin(), floatStr.begin(), floatStr.begin() + floatLength);
+		nullTerminated.insert(nullTerminated.begin(), floatStr.begin(),
+			floatStr.begin() + floatLength);
 		auto count = sscanf(nullTerminated.data(), "%lf", &number);
 		if (!count) {
 			return jsonData;
