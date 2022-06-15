@@ -35,7 +35,7 @@ namespace DiscordCoreInternal {
 
 	std::string reportError(const std::string& errorPosition, int32_t errorValue) noexcept {
 		std::stringstream theStream{};
-		theStream << DiscordCoreAPI::shiftToBrightRed() << errorPosition << errorValue << ", ";
+		theStream << DiscordCoreAPI::shiftToBrightRed() << errorPosition;
 #ifdef _WIN32
 		std::unique_ptr<char[]> string{ std::make_unique<char[]>(1024) };
 		FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, WSAGetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), string.get(), 1024, NULL);
