@@ -1026,7 +1026,7 @@ namespace DiscordCoreInternal {
 							break;
 						}
 						try {
-							this->theClients[reconnectionData.currentShard]->connect(this->baseUrl, "443");
+							this->theClients[reconnectionData.currentShard]->processIO(this->theClients, 10000);
 						} catch (...) {
 							if (this->doWePrintErrorMessages) {
 								DiscordCoreAPI::reportException("BaseSocketAgent::internalConnect()");
