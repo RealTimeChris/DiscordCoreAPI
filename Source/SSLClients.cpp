@@ -34,7 +34,7 @@ namespace DiscordCoreInternal {
 		return theStream.str();
 	}
 
-	std::string reportError(const std::string& errorPosition, int32_t errorValue) noexcept {
+	std::string reportError(const std::string& errorPosition) noexcept {
 		std::stringstream theStream{};
 		theStream << DiscordCoreAPI::shiftToBrightRed() << errorPosition;
 #ifdef _WIN32
@@ -63,31 +63,31 @@ namespace DiscordCoreInternal {
 		hints->ai_protocol = IPPROTO_TCP;
 
 		if (auto returnValue = getaddrinfo(stringNew.c_str(), portNew.c_str(), hints, address); returnValue == SOCKET_ERROR) {
-			throw ConnectionError{ reportError("getaddrinfo(), ", returnValue) };
+			throw ConnectionError{ reportError("getaddrinfo(), ") };
 		}
 
 		if (this->theSocket = socket(address->ai_family, address->ai_socktype, address->ai_protocol); this->theSocket == SOCKET_ERROR) {
-			throw ConnectionError{ reportError("socket(), ", this->theSocket) };
+			throw ConnectionError{ reportError("socket(), ") };
 		}
 
 		int32_t value{ this->maxBufferSize + 1 };
 		if (auto returnValue = setsockopt(this->theSocket, SOL_SOCKET, SO_SNDBUF, static_cast<char*>(static_cast<void*>(&value)), sizeof(value)); returnValue == SOCKET_ERROR) {
-			throw ConnectionError{ reportError("setsockopt(), ", returnValue) };
+			throw ConnectionError{ reportError("setsockopt(), ") };
 		}
 
 #ifdef _WIN32
 		char optionValue{ true };
 		if (auto returnValue = setsockopt(this->theSocket, IPPROTO_TCP, TCP_NODELAY, &optionValue, sizeof(optionValue)); returnValue == SOCKET_ERROR) {
-			throw ConnectionError{ reportError("setsockopt(), ", returnValue) };
+			throw ConnectionError{ reportError("setsockopt(), ") };
 		}
 #else
 		int32_t optionValue{ 1 };
 		if (auto returnValue = setsockopt(this->theSocket, SOL_TCP, TCP_NODELAY, &optionValue, sizeof(optionValue)); returnValue == SOCKET_ERROR) {
-			throw ConnectionError{ reportError("setsockopt(), ", returnValue) };
+			throw ConnectionError{ reportError("setsockopt(), ");
 		}
 #endif
 		if (auto returnValue = ::connect(this->theSocket, address->ai_addr, static_cast<int32_t>(address->ai_addrlen)); returnValue == SOCKET_ERROR) {
-			throw ConnectionError{ reportError("connect(), ", returnValue) };
+			throw ConnectionError{ reportError("connect(), ") };
 		}
 
 		if (this->context = SSL_CTX_new(TLS_client_method()); this->context == nullptr) {
@@ -161,7 +161,7 @@ namespace DiscordCoreInternal {
 
 		timeval checkTime{ .tv_usec = theWaitTimeInms };
 		if (auto returnValue = select(finalNfds + 1, &readSet, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
-			throw ProcessingError{ reportError("select(), ", returnValue) };
+			throw ProcessingError{ reportError("select(), ") };
 		} else if (returnValue == 0) {
 			return;
 		}
@@ -197,7 +197,7 @@ namespace DiscordCoreInternal {
 				}
 				default: {
 					throw ProcessingError{ reportSSLError("HttpSSLClient::processIO::SSL_read_ex(), ", errorValue, this->ssl) + "\n" +
-						reportError("HttpSSLClient::processIO::SSL_read_ex(), ", returnValue) };
+						reportError("HttpSSLClient::processIO::SSL_read_ex(), ") };
 				}
 			}
 		}
@@ -233,7 +233,7 @@ namespace DiscordCoreInternal {
 				}
 				default: {
 					throw ProcessingError{ reportSSLError("HttpSSLClient::processIO::SSL_write_ex(), ", errorValue, this->ssl) + "\n" +
-						reportError("HttpSSLClient::processIO::SSL_write_ex(), ", returnValue) };
+						reportError("HttpSSLClient::processIO::SSL_write_ex(), ") };
 				}
 			}
 		}
@@ -276,8 +276,8 @@ namespace DiscordCoreInternal {
 		}
 
 		timeval checkTime{ .tv_usec = waitTimeInms };
-		if (auto resultValue = select(finalNfds + 1, &readSet, &writeSet, nullptr, &checkTime); resultValue == SOCKET_ERROR) {
-			throw ConnectionError{ reportError("select(), ", resultValue) };
+		if (auto returnValue = select(finalNfds + 1, &readSet, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
+			throw ConnectionError{ reportError("select(), ") };
 		}
 
 		for (auto& [key, value]: theMap) {
@@ -324,7 +324,7 @@ namespace DiscordCoreInternal {
 						}
 						theMap.erase(key);
 						throw ProcessingError{ reportSSLError("Shard [" + std::to_string(key) + "], in WebSocketSSLShard::processIO::SSL_read_ex(), ", errorValue, value->ssl) +
-							reportError("Shard [" + std::to_string(key) + "], in WebSocketSSLShard::processIO::SSL_read_ex(), ", returnValue) };
+							reportError("Shard [" + std::to_string(key) + "], in WebSocketSSLShard::processIO::SSL_read_ex(), ") };
 					}
 				}
 			}
@@ -374,7 +374,7 @@ namespace DiscordCoreInternal {
 							theMap.erase(key);
 							throw ProcessingError{ reportSSLError("Shard [" + std::to_string(key) + "], in WebSocketSSLShard::processIO::SSL_write_ex(), ", errorValue,
 													   value->ssl) +
-								reportError("Shard [" + std::to_string(key) + "], in WebSocketSSLShard::processIO::SSL_write_ex(), ", returnValue) };
+								reportError("Shard [" + std::to_string(key) + "], in WebSocketSSLShard::processIO::SSL_write_ex(), ") };
 						}
 					}
 				}
@@ -390,31 +390,31 @@ namespace DiscordCoreInternal {
 		hints->ai_protocol = IPPROTO_TCP;
 
 		if (auto returnValue = getaddrinfo(baseUrlNew.c_str(), portNew.c_str(), hints, address); returnValue == SOCKET_ERROR) {
-			throw ConnectionError{ reportError("getaddrinfo(), ", returnValue) };
+			throw ConnectionError{ reportError("getaddrinfo(), ") };
 		}
 
 		if (this->theSocket = socket(address->ai_family, address->ai_socktype, address->ai_protocol); this->theSocket == SOCKET_ERROR) {
-			throw ConnectionError{ reportError("socket(), ", this->theSocket) };
+			throw ConnectionError{ reportError("socket(), ") };
 		}
 
 		int32_t value{ this->maxBufferSize };
 		if (auto returnValue = setsockopt(this->theSocket, SOL_SOCKET, SO_SNDBUF, static_cast<char*>(static_cast<void*>(&value)), sizeof(value)); returnValue == SOCKET_ERROR) {
-			throw ConnectionError{ reportError("setsockopt(), ", returnValue) };
+			throw ConnectionError{ reportError("setsockopt(), ") };
 		}
 
 #ifdef _WIN32
 		char optionValue{ true };
 		if (auto returnValue = setsockopt(this->theSocket, IPPROTO_TCP, TCP_NODELAY, &optionValue, sizeof(optionValue)); returnValue == SOCKET_ERROR) {
-			throw ConnectionError{ reportError("setsockopt(), ", returnValue) };
+			throw ConnectionError{ reportError("setsockopt(), ") };
 		}
 #else
 		int32_t optionValue{ 1 };
 		if (auto returnValue = setsockopt(this->theSocket, SOL_TCP, TCP_NODELAY, &optionValue, sizeof(optionValue)); returnValue == SOCKET_ERROR) {
-			throw ConnectionError{ reportError("setsockopt(), ", returnValue) };
+			throw ConnectionError{ reportError("setsockopt(), ") };
 		}
 #endif
 		if (auto returnValue = ::connect(this->theSocket, address->ai_addr, static_cast<int32_t>(address->ai_addrlen)); returnValue == SOCKET_ERROR) {
-			throw ConnectionError{ reportError("connect(), ", returnValue) };
+			throw ConnectionError{ reportError("connect(), ") };
 		}
 
 		if (this->context = SSL_CTX_new(TLS_client_method()); this->context == nullptr) {
@@ -486,21 +486,21 @@ namespace DiscordCoreInternal {
 		hints->ai_protocol = IPPROTO_UDP;
 
 		if (auto returnValue = getaddrinfo(baseUrlNew.c_str(), portNew.c_str(), hints, address); returnValue == SOCKET_ERROR) {
-			throw ConnectionError{ reportError("getaddrinfo(), ", this->theSocket) };
+			throw ConnectionError{ reportError("getaddrinfo(), ") };
 		}
 
 		if (this->theSocket = socket(address->ai_family, address->ai_socktype, address->ai_protocol); this->theSocket == SOCKET_ERROR) {
-			throw ConnectionError{ reportError("socket(), ", this->theSocket) };
+			throw ConnectionError{ reportError("socket(), ") };
 		}
 
 		if (auto returnValue = ::connect(this->theSocket, address->ai_addr, static_cast<int32_t>(address->ai_addrlen)); returnValue == SOCKET_ERROR) {
-			throw ConnectionError{ reportError("connect(), ", this->theSocket) };
+			throw ConnectionError{ reportError("connect(), ") };
 		}
 
 #ifdef _WIN32
 		u_long value{ 1 };
 		if (auto returnValue = ioctlsocket(this->theSocket, FIONBIO, &value); returnValue == SOCKET_ERROR) {
-			throw ConnectionError{ reportError("ioctlsocket(), ", this->theSocket) };
+			throw ConnectionError{ reportError("ioctlsocket(), ") };
 		}
 #else
 		if (auto returnValue = fcntl(this->theSocket, F_SETFL, fcntl(this->theSocket, F_GETFL, 0) | O_NONBLOCK); returnValue == SOCKET_ERROR) {
@@ -520,7 +520,7 @@ namespace DiscordCoreInternal {
 		size_t writtenBytes{ 0 };
 		if (auto returnValue = BIO_write_ex(this->datagramBio, data.data(), data.size(), &writtenBytes); !returnValue) {
 			throw ProcessingError{ reportSSLError("DatagramSocketSSLClient::writeData::BIO_write_ex(), ", returnValue) + "\n" +
-				reportError("DatagramSocketSSLClient::writeData::BIO_write_ex(), ", returnValue) };
+				reportError("DatagramSocketSSLClient::writeData::BIO_write_ex(), ") };
 		}
 		return;
 	}
