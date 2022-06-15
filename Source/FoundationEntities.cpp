@@ -220,9 +220,11 @@ namespace DiscordCoreAPI {
 			}
 		} catch (const std::exception& e) {
 			std::stringstream theStream{};
-			theStream << shiftToBrightRed() << currentFunctionName << ", File: " << theLocation.file_name() << " (" << std::to_string(theLocation.line()) << ":"
-					  << std::to_string(theLocation.column()) << "), "
-					  << "Error: " << e.what() << std::endl
+			theStream << shiftToBrightRed() << "Error Report: \n"
+					  << "Caught At: " << currentFunctionName << ", in File: " << theLocation.file_name() << " (" << std::to_string(theLocation.line()) << ":"
+					  << std::to_string(theLocation.column()) << ")"
+					  << "\nThe Error: \n"
+					  << e.what() << reset() << std::endl
 					  << std::endl;
 			auto theReturnString = theStream.str();
 			std::cout << theReturnString;
