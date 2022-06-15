@@ -75,7 +75,7 @@ namespace DiscordCoreInternal {
 		explicit ProcessingError(const std::string& theString) : std::runtime_error(theString){};
 	};
 
-	DiscordCoreAPI_Dll std::string reportError(const std::string& errorPosition) noexcept;S
+	DiscordCoreAPI_Dll std::string reportError(const std::string& errorPosition) noexcept;
 #ifdef _WIN32
 	struct DiscordCoreAPI_Dll WSADataWrapper {
 		struct DiscordCoreAPI_Dll WSADataDeleter {
