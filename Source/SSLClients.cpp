@@ -372,9 +372,9 @@ namespace DiscordCoreInternal {
 								value->connections->push(theData);
 							}
 							theMap.erase(key);
-							throw ProcessingError{ reportSSLError("Error, on Shard [" + std::to_string(key) + "], in WebSocketSSLShard::processIO::SSL_write_ex(), ",
+							throw ProcessingError{ reportSSLError("Shard [" + std::to_string(key) + "], in WebSocketSSLShard::processIO::SSL_write_ex(), ",
 													   returnValue, value->ssl) +
-								reportError("Error, on Shard [" + std::to_string(key) + "], in WebSocketSSLShard::processIO::SSL_write_ex(), ", returnValue) };
+								reportError("Shard [" + std::to_string(key) + "], in WebSocketSSLShard::processIO::SSL_write_ex(), ", returnValue) };
 						}
 					}
 				}
