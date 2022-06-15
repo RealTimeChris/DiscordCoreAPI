@@ -949,7 +949,7 @@ namespace DiscordCoreInternal {
 						WebSocketSSLShard::processIO(this->theClients);
 					} catch (...) {
 						if (this->doWePrintErrorMessages) {
-							DiscordCoreAPI::reportException("BaseSocketAgent::getVoiceConnectionData()");
+							DiscordCoreAPI::reportException("BaseSocketAgent::run()");
 						}
 					}
 					if (this->theClients.contains(key) &&value->inputBuffer.size() > 0) {
@@ -1029,7 +1029,7 @@ namespace DiscordCoreInternal {
 							WebSocketSSLShard::processIO(this->theClients);
 						} catch (...) {
 							if (this->doWePrintErrorMessages) {
-								DiscordCoreAPI::reportException("BaseSocketAgent::getVoiceConnectionData()");
+								DiscordCoreAPI::reportException("BaseSocketAgent::internalConnect()");
 							}
 						}
 						std::this_thread::sleep_for(1ms);
@@ -1237,7 +1237,7 @@ namespace DiscordCoreInternal {
 					WebSocketSSLShard::processIO(this->theClients);
 				} catch (...) {
 					if (this->doWePrintErrorMessages) {
-						DiscordCoreAPI::reportException("BaseSocketAgent::getVoiceConnectionData()");
+						DiscordCoreAPI::reportException("VoiceSocketAgent::run()");
 					}
 				}
 				if (this->theClients.contains(3)) {
@@ -1340,7 +1340,7 @@ namespace DiscordCoreInternal {
 				WebSocketSSLShard::processIO(this->theClients);
 			} catch (...) {
 				if (this->doWePrintErrorMessages) {
-					DiscordCoreAPI::reportException("BaseSocketAgent::getVoiceConnectionData()");
+					DiscordCoreAPI::reportException("VoiceSocketAgent::connect()");
 				}
 			}
 			int32_t currentDepth{ 0 };
@@ -1356,7 +1356,7 @@ namespace DiscordCoreInternal {
 					WebSocketSSLShard::processIO(this->theClients);
 				} catch (...) {
 					if (this->doWePrintErrorMessages) {
-						DiscordCoreAPI::reportException("BaseSocketAgent::getVoiceConnectionData()");
+						DiscordCoreAPI::reportException("VoiceSocketAgent::connect()");
 					}
 				}
 				std::this_thread::sleep_for(1ms);

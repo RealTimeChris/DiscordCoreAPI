@@ -739,11 +739,12 @@ namespace DiscordCoreAPI {
 		ShortTime = 't',///< "16:20" - Short Time
 	};
 
-	/**@}*/
-
 	DiscordCoreAPI_Dll std::string getISO8601TimeStamp(const std::string& year, const std::string& month, const std::string& day, const std::string& hour,
 		const std::string& minute, const std::string& second);
 
+	/// Prints the current file, line, and column from which the function is being called - typically from within an exception's "catch" block. \brief Prints the current file, line, and column from which the function is being called - typically from within an exception's "catch" block.
+	/// \param currentFunctionName A std::string to display the current function's name.
+	/// \param theLocation For deriving the current file, line, and column - do not set this value.
 	DiscordCoreAPI_Dll void reportException(const std::string& currentFunctionName, std::source_location theLocation = std::source_location::current());
 
 	DiscordCoreAPI_Dll std::string constructMultiPartData(nlohmann::json theData, const std::vector<File>& files);
@@ -779,6 +780,8 @@ namespace DiscordCoreAPI {
 	DiscordCoreAPI_Dll bool nanoSleep(int64_t ns);
 
 	DiscordCoreAPI_Dll std::string reset();
+
+	/**@}*/
 
 	/**
 	 * \addtogroup foundation_entities

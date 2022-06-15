@@ -234,7 +234,7 @@ namespace DiscordCoreInternal {
 					WebSocketSSLShard::processIO(theMap, ms1000);
 				} catch (...) {
 					if (this->doWePrintWebSocketErrorMessages) {
-						DiscordCoreAPI::reportException("BaseSocketAgent::getVoiceConnectionData()");
+						DiscordCoreAPI::reportException("YouTubeAPI::downloadAndStreamAudio()");
 					}
 					this->breakOutPlayMore(theToken, std::move(audioDecoder), haveWeFailed, counter, this, newSong, currentRecursionDepth);
 					return;
@@ -278,7 +278,7 @@ namespace DiscordCoreInternal {
 								WebSocketSSLShard::processIO(theMap, ms500);
 							} catch (...) {
 								if (this->doWePrintWebSocketErrorMessages) {
-									DiscordCoreAPI::reportException("BaseSocketAgent::getVoiceConnectionData()");
+									DiscordCoreAPI::reportException("YouTubeAPI::downloadAndStreamAudio()");
 								}
 								this->breakOutPlayMore(theToken, std::move(audioDecoder), haveWeFailed, counter, this, newSong, currentRecursionDepth);
 								return;
@@ -305,7 +305,7 @@ namespace DiscordCoreInternal {
 								WebSocketSSLShard::processIO(theMap, ms500);
 							} catch (...) {
 								if (this->doWePrintWebSocketErrorMessages) {
-									DiscordCoreAPI::reportException("BaseSocketAgent::getVoiceConnectionData()");
+									DiscordCoreAPI::reportException("YouTubeAPI::downloadAndStreamAudio()");
 								}
 								this->breakOutPlayMore(theToken, std::move(audioDecoder), haveWeFailed, counter, this, newSong, currentRecursionDepth);
 								return;
@@ -341,7 +341,7 @@ namespace DiscordCoreInternal {
 									WebSocketSSLShard::processIO(theMap, ms500);
 								} catch (...) {
 									if (this->doWePrintWebSocketErrorMessages) {
-										DiscordCoreAPI::reportException("BaseSocketAgent::getVoiceConnectionData()");
+										DiscordCoreAPI::reportException("YouTubeAPI::downloadAndStreamAudio()");
 									}
 									this->breakOutPlayMore(theToken, std::move(audioDecoder), haveWeFailed, counter, this, newSong, currentRecursionDepth);
 									return;
