@@ -994,7 +994,7 @@ namespace DiscordCoreInternal {
 						this->theClients[reconnectionData.currentShard]->connect(this->baseUrl, "443");
 					} catch (...) {
 						if (this->doWePrintErrorMessages) {
-							DiscordCoreAPI::reportException("BaseSocketAgent::intneralConnect()");
+							DiscordCoreAPI::reportException("BaseSocketAgent::internalConnect()");
 						}
 						if (reconnectionData.currentReconnectionDepth >= this->maxReconnectTries) {
 							this->doWeQuit->store(true);
@@ -1026,11 +1026,17 @@ namespace DiscordCoreInternal {
 							break;
 						}
 						try {
-							WebSocketSSLShard::processIO(this->theClients);
+							this->theClients[reconnectionData.currentShard]->connect(this->baseUrl, "443");
 						} catch (...) {
 							if (this->doWePrintErrorMessages) {
 								DiscordCoreAPI::reportException("BaseSocketAgent::internalConnect()");
 							}
+							if (reconnectionData.currentReconnectionDepth >= this->maxReconnectTries) {
+								this->doWeQuit->store(true);
+							} else {
+								this->connections.push(reconnectionData);
+							}
+							return;
 						}
 						std::this_thread::sleep_for(1ms);
 						if (currentDepth >= 5000) {
@@ -1052,7 +1058,7 @@ namespace DiscordCoreInternal {
 			}
 		} catch (...) {
 			if (this->doWePrintErrorMessages) {
-				DiscordCoreAPI::reportException("BaseSocketAgent::intneralConnect()");
+				DiscordCoreAPI::reportException("BaseSocketAgent::internalConnect()");
 			}
 		}
 	}
