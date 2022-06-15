@@ -50,7 +50,7 @@ namespace DiscordCoreInternal {
 
 		void connect(DiscordCoreAPI::ConnectionPackage) noexcept;
 
-		void onClosed(int32_t theIndex) noexcept;
+		void onClosed(WebSocketSSLShard& theShard) noexcept;
 
 		std::jthread* getTheTask() noexcept;
 
@@ -145,7 +145,11 @@ namespace DiscordCoreInternal {
 
 		void createHeader(std::string& outbuf, uint64_t sendlength, WebSocketOpCode opCode) noexcept;
 
+		void parseHeadersAndMessage(WebSocketSSLShard& theShard) noexcept;
+
 		void onMessageReceived(const std::string& theMessage) noexcept;
+
+		void onClosed(WebSocketSSLShard& theShard) noexcept;
 
 		void run(std::stop_token) noexcept;
 
