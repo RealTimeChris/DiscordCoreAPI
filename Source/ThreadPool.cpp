@@ -68,9 +68,9 @@ namespace DiscordCoreInternal {
 			workerThread.theThread = std::jthread([=, this](std::stop_token theToken) {
 				auto thePtr = std::make_unique<HttpConnection>();
 				Globals::httpConnections[std::this_thread::get_id()] = std::move(thePtr);
-				this->threadFunction(theToken, currentIndex);
+				this->threadFunction(theToken, this->currentIndex);
 			});
-			this->workerThreads[currentIndex] = std::move(workerThread);
+			this->workerThreads[this->currentIndex] = std::move(workerThread);
 		}
 	}
 
@@ -89,9 +89,9 @@ namespace DiscordCoreInternal {
 			workerThread.theThread = std::jthread([=, this](std::stop_token theToken) {
 				auto thePtr = std::make_unique<HttpConnection>();
 				Globals::httpConnections[std::this_thread::get_id()] = std::move(thePtr);
-				this->threadFunction(theToken, currentIndex);
+				this->threadFunction(theToken, this->currentIndex);
 			});
-			this->workerThreads[currentIndex] = std::move(workerThread);
+			this->workerThreads[this->currentIndex] = std::move(workerThread);
 		}
 		this->theCoroutineHandles.push(coro);
 		this->theCondVar.notify_one();
