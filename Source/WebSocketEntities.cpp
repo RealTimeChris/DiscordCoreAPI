@@ -35,14 +35,14 @@ namespace DiscordCoreInternal {
 	constexpr uint8_t webSocketFinishBit{ (1u << 7u) };
 	constexpr uint8_t webSocketMaskBit{ (1u << 7u) };
 
-	BaseSocketAgent::BaseSocketAgent(DiscordCoreAPI::DiscordCoreClient* discordCoreClientNew,  std::atomic_bool* doWeQuitNew, int32_t currentBaseSocketAgentNew) noexcept {
+	BaseSocketAgent::BaseSocketAgent(DiscordCoreAPI::DiscordCoreClient* discordCoreClientNew, std::atomic_bool* doWeQuitNew, int32_t currentBaseSocketAgentNew) noexcept {
 		this->doWePrintSuccessMessages = discordCoreClientNew->loggingOptions.logWebSocketSuccessMessages;
 		this->doWePrintErrorMessages = discordCoreClientNew->loggingOptions.logWebSocketErrorMessages;
 		this->commandController = &discordCoreClientNew->commandController;
 		this->eventManager = &discordCoreClientNew->eventManager;
 		this->currentBaseSocketAgent = currentBaseSocketAgentNew;
 		this->intentsValue = discordCoreClientNew->theIntents;
-		this->theFormat = this->discordCoreClient->theFormat;
+		this->theFormat = discordCoreClientNew->theFormat;
 		this->botToken = discordCoreClientNew->botToken;
 		this->discordCoreClient = discordCoreClientNew;
 		this->doWeQuit = doWeQuitNew;
