@@ -49,11 +49,8 @@ namespace DiscordCoreAPI {
 		friend class Interactions;
 		friend WebHooks;
 
-		uint64_t
-			threadId{};///< Send a message to the specified thread within a webhook's Channel. The thread will automatically be unarchived.
-		bool wait{
-			false
-		};///< Waits for server confirmation of message send before response, and returns the created message body.
+		uint64_t threadId{};///< Send a message to the specified thread within a webhook's Channel. The thread will automatically be unarchived.
+		bool wait{ false };///< Waits for server confirmation of message send before response, and returns the created message body.
 
 		ExecuteWebHookData() = default;
 
@@ -70,9 +67,8 @@ namespace DiscordCoreAPI {
 		/// \param emojiName An emoji name, if desired.
 		/// \param emojiId An emoji id, if desired.
 		/// \param url A url, if applicable.
-		ExecuteWebHookData& addButton(bool disabled, const std::string& customIdNew,
-			const std::string& buttonLabel, ButtonStyle buttonStyle,
-			const std::string& emojiName = "", uint64_t emojiId = 0, const std::string& url = "") {
+		ExecuteWebHookData& addButton(bool disabled, const std::string& customIdNew, const std::string& buttonLabel, ButtonStyle buttonStyle, const std::string& emojiName = "",
+			uint64_t emojiId = 0, const std::string& url = "") {
 			if (this->components.size() == 0) {
 				ActionRowData actionRowData;
 				this->components.push_back(actionRowData);
@@ -104,9 +100,8 @@ namespace DiscordCoreAPI {
 		/// \param placeholder Custom placeholder text if nothing is selected, max 100 characters.
 		/// \param maxValues Maximum number of selections that are possible.
 		/// \param minValues Minimum required number of selections that are required.
-		ExecuteWebHookData addSelectMenu(bool disabled, const std::string& customIdNew,
-			std::vector<SelectOptionData> options, const std::string& placeholder,
-			int32_t maxValues, int32_t minValues) {
+		ExecuteWebHookData addSelectMenu(bool disabled, const std::string& customIdNew, std::vector<SelectOptionData> options, const std::string& placeholder, int32_t maxValues,
+			int32_t minValues) {
 			if (this->components.size() == 0) {
 				ActionRowData actionRowData;
 				this->components.push_back(actionRowData);
@@ -121,8 +116,7 @@ namespace DiscordCoreAPI {
 					componentData.disabled = disabled;
 					componentData.customId = customIdNew;
 					componentData.options = options;
-					this->components[this->components.size() - 1].components.push_back(
-						componentData);
+					this->components[this->components.size() - 1].components.push_back(componentData);
 				} else if (this->components[this->components.size() - 1].components.size() == 5) {
 					ActionRowData actionRowData;
 					this->components.push_back(actionRowData);
@@ -143,11 +137,8 @@ namespace DiscordCoreAPI {
 		/// \param label A label for the modal.
 		/// \param placeholder A placeholder for the modal.
 		/// \returns RespondToInputEventData& A reference to this data structure.
-		ExecuteWebHookData& addModal(const std::string& topTitleNew,
-			const std::string& topCustomIdNew, const std::string& titleNew,
-			const std::string& customIdNew, bool required, int32_t minLength, int32_t maxLength,
-			TextInputStyle inputStyle, const std::string& label = "",
-			const std::string& placeholder = "") {
+		ExecuteWebHookData& addModal(const std::string& topTitleNew, const std::string& topCustomIdNew, const std::string& titleNew, const std::string& customIdNew, bool required,
+			int32_t minLength, int32_t maxLength, TextInputStyle inputStyle, const std::string& label = "", const std::string& placeholder = "") {
 			this->title = topTitleNew;
 			this->customId = topCustomIdNew;
 			if (this->components.size() == 0) {
@@ -220,10 +211,8 @@ namespace DiscordCoreAPI {
 		}
 
 	  protected:
-		std::vector<AttachmentData>
-			attachments{};///< Array of partial attachment objects attachment objects with filename and description.
-		std::vector<ActionRowData>
-			components{};///< Array of message component the components to include with the message.
+		std::vector<AttachmentData> attachments{};///< Array of partial attachment objects attachment objects with filename and description.
+		std::vector<ActionRowData> components{};///< Array of message component the components to include with the message.
 		AllowedMentionsData allowedMentions{};///< Allowed mention object.
 		std::vector<EmbedData> embeds{};///< Array of up to 10 embed objects.
 		std::string webhookToken{};///< The WebHook token you would like to execute.
@@ -232,8 +221,7 @@ namespace DiscordCoreAPI {
 		uint64_t webhookId{};///< The WebHook you would like to execute.
 		std::string userName{};///< Override the default userName of the webhook.
 		std::string customId{};///< Custom id for the modal.
-		std::string
-			content{};///< The message contents (up to 2000 characters)	one of content, file, embeds.
+		std::string content{};///< The message contents (up to 2000 characters)	one of content, file, embeds.
 		std::string title{};///< Title for the modal.
 		int32_t flags{ 0 };///< Flags combined as a bitfield.
 		bool tts{ false };///< True if this is a TTS message.
@@ -249,11 +237,8 @@ namespace DiscordCoreAPI {
 		friend WebHooks;
 
 		uint64_t messageId{};///< The Message Id to collect.
-		uint64_t
-			threadId{};///< Send a message to the specified thread within a webhook's Channel. The thread will automatically be unarchived.
-		bool wait{
-			false
-		};///< Waits for server confirmation of message send before response, and returns the created message body.
+		uint64_t threadId{};///< Send a message to the specified thread within a webhook's Channel. The thread will automatically be unarchived.
+		bool wait{ false };///< Waits for server confirmation of message send before response, and returns the created message body.
 
 		ExecuteWebHookData& setTTSStatus(bool) = delete;
 
@@ -327,8 +312,7 @@ namespace DiscordCoreAPI {
 		std::string webhookToken{};///< The WebHook token you would like to collect.
 		uint64_t webhookId{};///< The WebHook you would like to collect.
 		uint64_t messageId{};///< The Message Id to collect.
-		uint64_t
-			threadId{};///< Send a message to the specified thread within a webhook's Channel. The thread will automatically be unarchived.
+		uint64_t threadId{};///< Send a message to the specified thread within a webhook's Channel. The thread will automatically be unarchived.
 	};
 
 	/// A single WebHook. \brief A single WebHook.
@@ -357,14 +341,12 @@ namespace DiscordCoreAPI {
 		/// Collects a list of WebHooks from a chosen Channel. \brief Collects a list of WebHooks from a chosen Channel.
 		/// \param dataPackage A GetChannelWebHooksData structure.
 		/// \returns A CoRoutine containing a std::vector<WebHook>.
-		static CoRoutine<std::vector<WebHook>> getChannelWebHooksAsync(
-			GetChannelWebHooksData dataPackage);
+		static CoRoutine<std::vector<WebHook>> getChannelWebHooksAsync(GetChannelWebHooksData dataPackage);
 
 		/// Collects a list of WebHooks from a chosen Guild. \brief Collects a list of WebHooks from a chosen Guild.
 		/// \param dataPackage A GetGuildWebHooksData structure.
 		/// \returns A CoRoutine containing a std::vector<WebHook>.
-		static CoRoutine<std::vector<WebHook>> getGuildWebHooksAsync(
-			GetGuildWebHooksData dataPackage);
+		static CoRoutine<std::vector<WebHook>> getGuildWebHooksAsync(GetGuildWebHooksData dataPackage);
 
 		/// Collects a single WebHook. \brief Collects a single WebHook.
 		/// \param dataPackage A GetWebHookData structure.
@@ -384,8 +366,7 @@ namespace DiscordCoreAPI {
 		/// Modifies a single WebHook, using its Token. \brief Modifies a single WebHook, using its Token.
 		/// \param dataPackage A ModifyWebHookWithTokenData structure.
 		/// \returns A CoRoutine containing a WebHook.
-		static CoRoutine<WebHook> modifyWebHookWithTokenAsync(
-			ModifyWebHookWithTokenData dataPackage);
+		static CoRoutine<WebHook> modifyWebHookWithTokenAsync(ModifyWebHookWithTokenData dataPackage);
 
 		/// Deletes a single WebHook. \brief Deletes a single WebHook.
 		/// \param dataPackage A DeleteWebHookData structure.

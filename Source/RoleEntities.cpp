@@ -63,13 +63,12 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<void> Roles::addGuildMemberRoleAsync(AddGuildMemberRoleData dataPackage) {
 		DiscordCoreInternal::HttpWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(
-			DiscordCoreInternal::HttpWorkloadType::Put_Guild_Member_Role);
+		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Put_Guild_Member_Role);
 		co_await NewThreadAwaitable<void>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Put_Guild_Member_Role;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Put;
-		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/members/" +
-			std::to_string(dataPackage.userId) + "/roles/" + std::to_string(dataPackage.roleId);
+		workload.relativePath =
+			"/guilds/" + std::to_string(dataPackage.guildId) + "/members/" + std::to_string(dataPackage.userId) + "/roles/" + std::to_string(dataPackage.roleId);
 		workload.callStack = "Roles::addGuildMemberRoleAsync";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
@@ -79,13 +78,12 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<void> Roles::removeGuildMemberRoleAsync(RemoveGuildMemberRoleData dataPackage) {
 		DiscordCoreInternal::HttpWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(
-			DiscordCoreInternal::HttpWorkloadType::Delete_Guild_Member_Role);
+		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Delete_Guild_Member_Role);
 		co_await NewThreadAwaitable<void>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Delete_Guild_Member_Role;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Delete;
-		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/members/" +
-			std::to_string(dataPackage.userId) + "/roles/" + std::to_string(dataPackage.roleId);
+		workload.relativePath =
+			"/guilds/" + std::to_string(dataPackage.guildId) + "/members/" + std::to_string(dataPackage.userId) + "/roles/" + std::to_string(dataPackage.roleId);
 		workload.callStack = "Roles::removeGuildMemberRoleAsync";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
@@ -95,13 +93,10 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<std::vector<Role>> Roles::getGuildRolesAsync(GetGuildRolesData dataPackage) {
 		DiscordCoreInternal::HttpWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(
-			DiscordCoreInternal::HttpWorkloadType::Get_Guild_Roles);
+		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Get_Guild_Roles);
 		co_await NewThreadAwaitable<std::vector<Role>>();
 		if (dataPackage.guildId == 0) {
-			throw std::runtime_error{
-				"Roles::getRoleAsync(), Sorry, but you forgot to set the guildId!"
-			};
+			throw std::runtime_error{ "Roles::getRoleAsync(), Sorry, but you forgot to set the guildId!" };
 		}
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Guild_Roles;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
@@ -112,8 +107,7 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<Role> Roles::createGuildRoleAsync(CreateGuildRoleData dataPackage) {
 		DiscordCoreInternal::HttpWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(
-			DiscordCoreInternal::HttpWorkloadType::Post_Guild_Role);
+		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Post_Guild_Role);
 		co_await NewThreadAwaitable<Role>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Post_Guild_Role;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Post;
@@ -133,14 +127,11 @@ namespace DiscordCoreAPI {
 		co_return result;
 	}
 
-	CoRoutine<std::vector<Role>> Roles::modifyGuildRolePositionsAsync(
-		ModifyGuildRolePositionsData dataPackage) {
+	CoRoutine<std::vector<Role>> Roles::modifyGuildRolePositionsAsync(ModifyGuildRolePositionsData dataPackage) {
 		DiscordCoreInternal::HttpWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(
-			DiscordCoreInternal::HttpWorkloadType::Patch_Guild_Role_Positions);
+		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Patch_Guild_Role_Positions);
 		co_await NewThreadAwaitable<std::vector<Role>>();
-		std::vector<Role> currentRoles =
-			Roles::getGuildRolesAsync({ .guildId = dataPackage.guildId }).get();
+		std::vector<Role> currentRoles = Roles::getGuildRolesAsync({ .guildId = dataPackage.guildId }).get();
 		Role newRole = Roles::getCachedRoleAsync({ .roleId = dataPackage.roleId }).get();
 		for (auto& value: currentRoles) {
 			if (value.id == newRole.id) {
@@ -148,15 +139,13 @@ namespace DiscordCoreAPI {
 			}
 			RolePositionData newData;
 			if (newRole.position < dataPackage.newPosition) {
-				if (value.position <= dataPackage.newPosition &&
-					value.position > newRole.position) {
+				if (value.position <= dataPackage.newPosition && value.position > newRole.position) {
 					newData.roleId = value.id;
 					newData.rolePosition = value.position - 1;
 					dataPackage.rolePositions.push_back(newData);
 				}
 			} else {
-				if (value.position >= dataPackage.newPosition &&
-					value.position < newRole.position) {
+				if (value.position >= dataPackage.newPosition && value.position < newRole.position) {
 					newData.roleId = value.id;
 					newData.rolePosition = value.position + 1;
 					dataPackage.rolePositions.push_back(newData);
@@ -180,13 +169,11 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<Role> Roles::modifyGuildRoleAsync(ModifyGuildRoleData dataPackage) {
 		DiscordCoreInternal::HttpWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(
-			DiscordCoreInternal::HttpWorkloadType::Patch_Guild_Role);
+		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Patch_Guild_Role);
 		co_await NewThreadAwaitable<Role>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Patch_Guild_Role;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Patch;
-		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/roles/" +
-			std::to_string(dataPackage.roleId);
+		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/roles/" + std::to_string(dataPackage.roleId);
 		workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
 		workload.callStack = "Roles::modifyGuildRoleAsync";
 		if (dataPackage.reason != "") {
@@ -197,13 +184,11 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<void> Roles::removeGuildRoleAsync(RemoveGuildRoleData dataPackage) {
 		DiscordCoreInternal::HttpWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(
-			DiscordCoreInternal::HttpWorkloadType::Delete_Guild_Role);
+		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Delete_Guild_Role);
 		co_await NewThreadAwaitable<void>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Delete_Guild_Role;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Delete;
-		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/roles/" +
-			std::to_string(dataPackage.roleId);
+		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/roles/" + std::to_string(dataPackage.roleId);
 		workload.callStack = "Roles::removeGuildRoleAsync";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
@@ -211,11 +196,9 @@ namespace DiscordCoreAPI {
 		co_return Roles::httpClient->submitWorkloadAndGetResult<void>(workload);
 	}
 
-	CoRoutine<std::vector<Role>> Roles::getGuildMemberRolesAsync(
-		GetGuildMemberRolesData dataPackage) {
+	CoRoutine<std::vector<Role>> Roles::getGuildMemberRolesAsync(GetGuildMemberRolesData dataPackage) {
 		co_await NewThreadAwaitable<std::vector<Role>>();
-		std::vector<Role> rolesVector =
-			getGuildRolesAsync({ .guildId = dataPackage.guildId }).get();
+		std::vector<Role> rolesVector = getGuildRolesAsync({ .guildId = dataPackage.guildId }).get();
 		std::vector<Role> rolesVectorNew{};
 		for (auto& value: rolesVector) {
 			for (auto& value2: dataPackage.guildMember.roles) {
@@ -231,9 +214,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<Role>();
 		auto roles = getGuildRolesAsync({ .guildId = dataPackage.guildId }).get();
 		if (dataPackage.guildId == 0) {
-			throw std::runtime_error{
-				"Roles::getAsync(), Sorry, but you forgot to set the guildId!"
-			};
+			throw std::runtime_error{ "Roles::getAsync(), Sorry, but you forgot to set the guildId!" };
 		}
 		Role newRole{};
 		for (auto& value: roles) {

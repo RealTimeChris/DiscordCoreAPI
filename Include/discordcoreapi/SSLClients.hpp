@@ -87,8 +87,7 @@ namespace DiscordCoreInternal {
 
 		WSADataWrapper() {
 			if (auto errorValue = WSAStartup(MAKEWORD(2, 2), this->thePtr.get()); errorValue != 0) {
-				std::cout << DiscordCoreAPI::shiftToBrightRed()
-						  << "WSAStartup() Error: " << errorValue << ", ";
+				std::cout << DiscordCoreAPI::shiftToBrightRed() << "WSAStartup() Error: " << errorValue << ", ";
 				std::cout << DiscordCoreAPI::reset() << std::endl;
 			}
 		}
@@ -268,9 +267,7 @@ namespace DiscordCoreInternal {
 		}
 
 	  protected:
-		std::unique_ptr<int32_t, SOCKETDeleter> socketPtr{
-			new SOCKET{ static_cast<int32_t>(SOCKET_ERROR) }, SOCKETDeleter{}
-		};
+		std::unique_ptr<int32_t, SOCKETDeleter> socketPtr{ new SOCKET{ static_cast<int32_t>(SOCKET_ERROR) }, SOCKETDeleter{} };
 	};
 
 	struct DiscordCoreAPI_Dll X509Deleter {
@@ -319,13 +316,10 @@ namespace DiscordCoreInternal {
 		friend class VoiceSocketAgent;
 		friend class BaseSocketAgent;
 
-		WebSocketSSLShard(std::queue<DiscordCoreAPI::ConnectionPackage>* connectionsNew,
-			int32_t currentBaseSocketAgentNew, int32_t currentShardNew, int32_t totalShardsNew,
+		WebSocketSSLShard(std::queue<DiscordCoreAPI::ConnectionPackage>* connectionsNew, int32_t currentBaseSocketAgentNew, int32_t currentShardNew, int32_t totalShardsNew,
 			bool doWePrintErrorsNew) noexcept;
 
-		static void processIO(
-			std::unordered_map<int32_t, std::unique_ptr<WebSocketSSLShard>>& theMap,
-			int32_t waitTimeInms = 10000);
+		static void processIO(std::unordered_map<int32_t, std::unique_ptr<WebSocketSSLShard>>& theMap, int32_t waitTimeInms = 10000);
 
 		void connect(const std::string& baseUrlNew, const std::string& portNew);
 

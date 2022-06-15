@@ -35,9 +35,7 @@ namespace DiscordCoreInternal {
 
 		YouTubeRequestBuilder(HttpClient*);
 
-		DiscordCoreAPI::Song collectFinalSong(
-			const DiscordCoreAPI::GuildMemberData& addedByGuildMember,
-			DiscordCoreAPI::Song& newSong);
+		DiscordCoreAPI::Song collectFinalSong(const DiscordCoreAPI::GuildMemberData& addedByGuildMember, DiscordCoreAPI::Song& newSong);
 
 		std::vector<DiscordCoreAPI::Song> collectSearchResults(const std::string& theString);
 
@@ -45,23 +43,18 @@ namespace DiscordCoreInternal {
 		HttpClient* httpClient{ nullptr };
 		std::string baseUrl{ "https://www.youtube.com" };
 
-		DiscordCoreAPI::Song constructDownloadInfo(
-			const DiscordCoreAPI::GuildMemberData& guildMember, DiscordCoreAPI::Song& newSong);
+		DiscordCoreAPI::Song constructDownloadInfo(const DiscordCoreAPI::GuildMemberData& guildMember, DiscordCoreAPI::Song& newSong);
 	};
 
 	class DiscordCoreAPI_Dll YouTubeAPI {
 	  public:
 		YouTubeAPI(const uint64_t& guildId, HttpClient* httpClient);
 
-		void weFailedToDownloadOrDecode(const DiscordCoreAPI::Song& newSong, YouTubeAPI* youtubeAPI,
-			std::stop_token theToken, int32_t currentRecursionDepth);
+		void weFailedToDownloadOrDecode(const DiscordCoreAPI::Song& newSong, YouTubeAPI* youtubeAPI, std::stop_token theToken, int32_t currentRecursionDepth);
 
-		void downloadAndStreamAudio(const DiscordCoreAPI::Song& newSong, YouTubeAPI* youtubeAPI,
-			std::stop_token theToken, int32_t currentRecursionDepth);
+		void downloadAndStreamAudio(const DiscordCoreAPI::Song& newSong, YouTubeAPI* youtubeAPI, std::stop_token theToken, int32_t currentRecursionDepth);
 
-		DiscordCoreAPI::Song collectFinalSong(
-			const DiscordCoreAPI::GuildMemberData& addedByGuildMember,
-			DiscordCoreAPI::Song& newSong);
+		DiscordCoreAPI::Song collectFinalSong(const DiscordCoreAPI::GuildMemberData& addedByGuildMember, DiscordCoreAPI::Song& newSong);
 
 		std::vector<DiscordCoreAPI::Song> searchForSong(const std::string& searchQuery);
 
@@ -76,12 +69,10 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::Song theSong{};
 		uint64_t guildId{};
 
-		void breakOutPlayMore(std::stop_token theToken, std::unique_ptr<AudioDecoder> audioDecoder,
-			bool haveWeFailed, int32_t counter, YouTubeAPI* soundCloudAPI,
+		void breakOutPlayMore(std::stop_token theToken, std::unique_ptr<AudioDecoder> audioDecoder, bool haveWeFailed, int32_t counter, YouTubeAPI* soundCloudAPI,
 			const DiscordCoreAPI::Song& newSong, int32_t currentRecursionDepth);
 
-		void breakOut(std::stop_token theToken, std::unique_ptr<AudioDecoder> audioDecoder,
-			YouTubeAPI* soundCloudAPI);
+		void breakOut(std::stop_token theToken, std::unique_ptr<AudioDecoder> audioDecoder, YouTubeAPI* soundCloudAPI);
 	};
 
 };// namespace DiscordCoreAPI

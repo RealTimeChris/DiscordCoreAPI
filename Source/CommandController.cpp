@@ -32,20 +32,17 @@ namespace DiscordCoreAPI {
 		this->discordCoreClient = discordCoreClientNew;
 	}
 
-	void CommandController::registerFunction(const std::vector<std::string>& functionNames,
-		std::unique_ptr<BaseFunction> baseFunction) {
+	void CommandController::registerFunction(const std::vector<std::string>& functionNames, std::unique_ptr<BaseFunction> baseFunction) {
 		Globals::functions[functionNames] = std::move(baseFunction);
 	}
 
-	std::map<std::vector<std::string>, std::unique_ptr<BaseFunction>>&
-	CommandController::getFunctions() {
+	std::map<std::vector<std::string>, std::unique_ptr<BaseFunction>>& CommandController::getFunctions() {
 		return Globals::functions;
 	};
 
 	CoRoutine<void> CommandController::checkForAndRunCommand(CommandData commandData) {
 		co_await NewThreadAwaitable<void>();
-		std::unique_ptr<BaseFunction> functionPointer{ this->getCommand(
-			convertToLowerCase(commandData.commandName)) };
+		std::unique_ptr<BaseFunction> functionPointer{ this->getCommand(convertToLowerCase(commandData.commandName)) };
 		if (functionPointer == nullptr) {
 			co_return;
 		}
@@ -76,8 +73,7 @@ namespace DiscordCoreAPI {
 		return nullptr;
 	}
 
-	std::unique_ptr<BaseFunction> CommandController::createFunction(
-		const std::string& functionName) {
+	std::unique_ptr<BaseFunction> CommandController::createFunction(const std::string& functionName) {
 		for (auto& [key01, value01]: Globals::functions) {
 			for (auto& value02: key01) {
 				if (functionName == value02) {

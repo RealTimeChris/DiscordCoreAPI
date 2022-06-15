@@ -34,12 +34,8 @@ namespace DiscordCoreAPI {
 
 	/// For starting a Thread, based on a Message. \brief For starting a Thread, based on a Message.
 	struct DiscordCoreAPI_Dll StartThreadWithMessageData {
-		ThreadAutoArchiveDuration autoArchiveDuration{
-			ThreadAutoArchiveDuration::Shortest
-		};///< The duration before it is auto-archived, in minutes.
-		int32_t rateLimitPerUser{
-			0
-		};///< Integer amount of seconds a user has to wait before sending another message(0 - 21600).
+		ThreadAutoArchiveDuration autoArchiveDuration{ ThreadAutoArchiveDuration::Shortest };///< The duration before it is auto-archived, in minutes.
+		int32_t rateLimitPerUser{ 0 };///< Integer amount of seconds a user has to wait before sending another message(0 - 21600).
 		std::string threadName{};///< The name of the new Thread.
 		uint64_t messageId{};///< The Message Id to base the Thread off of.
 		uint64_t channelId{};///< The Channel to start the Thread in.
@@ -48,30 +44,20 @@ namespace DiscordCoreAPI {
 
 	/// For starting a Thread, not based on a Message. \brief For starting a Thread, not based on a Message.
 	struct DiscordCoreAPI_Dll StartThreadWithoutMessageData {
-		ThreadAutoArchiveDuration autoArchiveDuration{
-			ThreadAutoArchiveDuration::Shortest
-		};///< The duration before it is auto-archived, in minutes.
+		ThreadAutoArchiveDuration autoArchiveDuration{ ThreadAutoArchiveDuration::Shortest };///< The duration before it is auto-archived, in minutes.
 		ThreadType type{ ThreadType::Guild_Public_Thread };///< Type of Thread to create.
-		int32_t rateLimitPerUser{
-			0
-		};///< Integer amount of seconds a user has to wait before sending another message(0 - 21600).
+		int32_t rateLimitPerUser{ 0 };///< Integer amount of seconds a user has to wait before sending another message(0 - 21600).
 		std::string threadName{};///< The name of the new Thread.
 		uint64_t channelId{};///< The Channel to start the Thread in.
-		bool invitable{
-			false
-		};///< Whether non-moderators can add other non - moderators to a thread; only available when creating a private thread.
+		bool invitable{ false };///< Whether non-moderators can add other non - moderators to a thread; only available when creating a private thread.
 		std::string reason{};///< Reason for starting the Thread.
 	};
 
 	/// For starting a Thread, in a forum channel. \brief For starting a Thread, in a forum channel.
 	struct DiscordCoreAPI_Dll StartThreadInForumChannelData {
-		ThreadAutoArchiveDuration autoArchiveDuration{
-			ThreadAutoArchiveDuration::Longest
-		};/// Duration in minutes to automatically archive the thread.
-		ForumThreadMessageData
-			message{};///< A forum thread message params object contents of the first message in the forum thread.
-		int32_t
-			rateLimitPerUser{};///< Integer amount of seconds a user has to wait before sending another message(0 - 21600).
+		ThreadAutoArchiveDuration autoArchiveDuration{ ThreadAutoArchiveDuration::Longest };/// Duration in minutes to automatically archive the thread.
+		ForumThreadMessageData message{};///< A forum thread message params object contents of the first message in the forum thread.
+		int32_t rateLimitPerUser{};///< Integer amount of seconds a user has to wait before sending another message(0 - 21600).
 		uint64_t channelId{};///< The id of the channel.
 		std::string reason{};///< Reason for starting the Thread.
 		std::string name{};///< 1-100 character channel name auto_archive_duration.
@@ -163,20 +149,17 @@ namespace DiscordCoreAPI {
 		/// Starts a Thread, based on a starting Message. \brief Starts a Thread, based on a starting Message.
 		/// \param dataPackage A StartThreadWithMessageData structure.
 		/// \returns A CoRoutine containing a Channel.
-		static CoRoutine<Thread> startThreadWithMessageAsync(
-			StartThreadWithMessageData dataPackage);
+		static CoRoutine<Thread> startThreadWithMessageAsync(StartThreadWithMessageData dataPackage);
 
 		/// Starts a Thread, not based on a starting Message. \brief Starts a Thread, not based on a starting Message.
 		/// \param dataPackage A StartThreadWithoutMessageData structure.
 		/// \returns A CoRoutine containing a Channel.
-		static CoRoutine<Thread> startThreadWithoutMessageAsync(
-			StartThreadWithoutMessageData dataPackage);
+		static CoRoutine<Thread> startThreadWithoutMessageAsync(StartThreadWithoutMessageData dataPackage);
 
 		/// Starts a Thread, in a forum channel. \brief Starts a Thread, in a forum channel.
 		/// \param dataPackage A StartThreadInForumChannelData structure.
 		/// \returns A CoRoutine containing a Channel.
-		static CoRoutine<Thread> startThreadInForumChannelAsync(
-			StartThreadInForumChannelData dataPackage);
+		static CoRoutine<Thread> startThreadInForumChannelAsync(StartThreadInForumChannelData dataPackage);
 
 		/// Joins a Thread. \brief Joins a Thread.
 		/// \param dataPackage A JoinThreadData structure.
@@ -206,8 +189,7 @@ namespace DiscordCoreAPI {
 		/// Collects a list of ThreadMembers if they exist. \brief Collects a list of ThreadMembers if they exist.
 		/// \param dataPackage A GetThreadMembersData structure.
 		/// returns A CoRoutine containing a std::vector<ThreadMemberData>.
-		static CoRoutine<std::vector<ThreadMemberData>> getThreadMembersAsync(
-			GetThreadMembersData dataPackage);
+		static CoRoutine<std::vector<ThreadMemberData>> getThreadMembersAsync(GetThreadMembersData dataPackage);
 
 		/// Collects a list of Threads from a given Channel. \brief Collects a list of Threads from a given Channel.
 		/// \param dataPackage A GetActiveThreadsData structure.
@@ -217,26 +199,22 @@ namespace DiscordCoreAPI {
 		/// Collects a list of public archived Threads from a given Channel. \brief Collects a list of public archived Threads from a given Channel.
 		/// \param dataPackage A GetPublicArchivedThreadsData structure.
 		/// \returns A CoRoutine containing a ArchivedThreadsData.
-		static CoRoutine<ArchivedThreadsData> getPublicArchivedThreadsAsync(
-			GetPublicArchivedThreadsData dataPackage);
+		static CoRoutine<ArchivedThreadsData> getPublicArchivedThreadsAsync(GetPublicArchivedThreadsData dataPackage);
 
 		/// Collects a list of private archived Threads from a given Channel. \brief Collects a list of private archived Threads from a given Channel.
 		/// \param dataPackage A GetPrivateArchivedThreadsData structure.
 		/// \returns A CoRoutine containing a ArchivedThreadsData.
-		static CoRoutine<ArchivedThreadsData> getPrivateArchivedThreadsAsync(
-			GetPrivateArchivedThreadsData dataPackage);
+		static CoRoutine<ArchivedThreadsData> getPrivateArchivedThreadsAsync(GetPrivateArchivedThreadsData dataPackage);
 
 		/// Collects a list of joined private archived Threads from a given Channel. \brief Collects a list of joined private archived Threads from a given Channel.
 		/// \param dataPackage A GetPrivateArchivedThreadsData structure.
 		/// \returns A CoRoutine containing a ArchivedThreadsData.
-		static CoRoutine<ArchivedThreadsData> getJoinedPrivateArchivedThreadsAsync(
-			GetJoinedPrivateArchivedThreadsData dataPackage);
+		static CoRoutine<ArchivedThreadsData> getJoinedPrivateArchivedThreadsAsync(GetJoinedPrivateArchivedThreadsData dataPackage);
 
 		/// Lists all of the active Threads of a chosen Guild. \brief Lists all of the active Threads of a chosen Guild.
 		/// \param dataPackage A ListActiveThreadsData structure.
 		/// \returns A CoRoutine containing a std::vector<Channel>.
-		static CoRoutine<ActiveThreadsData> getActiveGuildThreadsAsync(
-			GetActiveGuildThreadsData dataPackage);
+		static CoRoutine<ActiveThreadsData> getActiveGuildThreadsAsync(GetActiveGuildThreadsData dataPackage);
 
 	  protected:
 		static DiscordCoreInternal::HttpClient* httpClient;

@@ -26,8 +26,7 @@
 
 namespace DiscordCoreAPI {
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onAutoCompleteEntry(
-		DiscordCoreInternal::EventDelegate<void, OnAutoCompleteEntryData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onAutoCompleteEntry(DiscordCoreInternal::EventDelegate<void, OnAutoCompleteEntryData> handler) {
 		return onAutoCompleteEntryEvent.add(std::move(handler));
 	}
 
@@ -35,8 +34,7 @@ namespace DiscordCoreAPI {
 		return onInputEventCreationEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onInputEventCreation(
-		DiscordCoreInternal::EventDelegate<void, OnInputEventCreationData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onInputEventCreation(DiscordCoreInternal::EventDelegate<void, OnInputEventCreationData> handler) {
 		return onInputEventCreationEvent.add(std::move(handler));
 	}
 
@@ -44,18 +42,15 @@ namespace DiscordCoreAPI {
 		return onInputEventCreationEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onApplicationCommandCreation(
-		DiscordCoreInternal::EventDelegate<void, OnApplicationCommandCreationData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onApplicationCommandCreation(DiscordCoreInternal::EventDelegate<void, OnApplicationCommandCreationData> handler) {
 		return onApplicationCommandCreationEvent.add(std::move(handler));
 	}
 
-	void EventManager::onApplicationCommandCreation(
-		DiscordCoreInternal::EventDelegateToken& token) {
+	void EventManager::onApplicationCommandCreation(DiscordCoreInternal::EventDelegateToken& token) {
 		return onApplicationCommandCreationEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onApplicationCommandUpdate(
-		DiscordCoreInternal::EventDelegate<void, OnApplicationCommandUpdateData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onApplicationCommandUpdate(DiscordCoreInternal::EventDelegate<void, OnApplicationCommandUpdateData> handler) {
 		return onApplicationCommandUpdateEvent.add(std::move(handler));
 	}
 
@@ -63,18 +58,15 @@ namespace DiscordCoreAPI {
 		return onApplicationCommandUpdateEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onApplicationCommandDeletion(
-		DiscordCoreInternal::EventDelegate<void, OnApplicationCommandDeletionData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onApplicationCommandDeletion(DiscordCoreInternal::EventDelegate<void, OnApplicationCommandDeletionData> handler) {
 		return onApplicationCommandDeletionEvent.add(std::move(handler));
 	}
 
-	void EventManager::onApplicationCommandDeletion(
-		DiscordCoreInternal::EventDelegateToken& token) {
+	void EventManager::onApplicationCommandDeletion(DiscordCoreInternal::EventDelegateToken& token) {
 		return onApplicationCommandDeletionEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onChannelCreation(
-		DiscordCoreInternal::EventDelegate<void, OnChannelCreationData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onChannelCreation(DiscordCoreInternal::EventDelegate<void, OnChannelCreationData> handler) {
 		return onChannelCreationEvent.add(std::move(handler));
 	}
 
@@ -82,8 +74,7 @@ namespace DiscordCoreAPI {
 		onChannelCreationEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onChannelUpdate(
-		DiscordCoreInternal::EventDelegate<void, OnChannelUpdateData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onChannelUpdate(DiscordCoreInternal::EventDelegate<void, OnChannelUpdateData> handler) {
 		return onChannelUpdateEvent.add(std::move(handler));
 	}
 
@@ -91,8 +82,7 @@ namespace DiscordCoreAPI {
 		onChannelUpdateEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onChannelDeletion(
-		DiscordCoreInternal::EventDelegate<void, OnChannelDeletionData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onChannelDeletion(DiscordCoreInternal::EventDelegate<void, OnChannelDeletionData> handler) {
 		return onChannelDeletionEvent.add(std::move(handler));
 	}
 
@@ -100,8 +90,7 @@ namespace DiscordCoreAPI {
 		onChannelDeletionEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onChannelPinsUpdate(
-		DiscordCoreInternal::EventDelegate<void, OnChannelPinsUpdateData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onChannelPinsUpdate(DiscordCoreInternal::EventDelegate<void, OnChannelPinsUpdateData> handler) {
 		return onChannelPinsUpdateEvent.add(std::move(handler));
 	}
 
@@ -109,8 +98,7 @@ namespace DiscordCoreAPI {
 		return onChannelPinsUpdateEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onThreadCreation(
-		DiscordCoreInternal::EventDelegate<void, OnThreadCreationData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onThreadCreation(DiscordCoreInternal::EventDelegate<void, OnThreadCreationData> handler) {
 		return onThreadCreationEvent.add(std::move(handler));
 	}
 
@@ -118,8 +106,7 @@ namespace DiscordCoreAPI {
 		return onThreadCreationEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onThreadUpdate(
-		DiscordCoreInternal::EventDelegate<void, OnThreadUpdateData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onThreadUpdate(DiscordCoreInternal::EventDelegate<void, OnThreadUpdateData> handler) {
 		return onThreadUpdateEvent.add(std::move(handler));
 	}
 
@@ -127,8 +114,7 @@ namespace DiscordCoreAPI {
 		return onThreadUpdateEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onThreadDeletion(
-		DiscordCoreInternal::EventDelegate<void, OnThreadDeletionData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onThreadDeletion(DiscordCoreInternal::EventDelegate<void, OnThreadDeletionData> handler) {
 		return onThreadDeletionEvent.add(std::move(handler));
 	}
 
@@ -136,8 +122,7 @@ namespace DiscordCoreAPI {
 		return onThreadDeletionEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onThreadListSync(
-		DiscordCoreInternal::EventDelegate<void, OnThreadListSyncData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onThreadListSync(DiscordCoreInternal::EventDelegate<void, OnThreadListSyncData> handler) {
 		return onThreadListSyncEvent.add(std::move(handler));
 	}
 
@@ -145,8 +130,7 @@ namespace DiscordCoreAPI {
 		return onThreadListSyncEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onThreadMemberUpdate(
-		DiscordCoreInternal::EventDelegate<void, OnThreadMemberUpdateData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onThreadMemberUpdate(DiscordCoreInternal::EventDelegate<void, OnThreadMemberUpdateData> handler) {
 		return onThreadMemberUpdateEvent.add(std::move(handler));
 	}
 
@@ -154,8 +138,7 @@ namespace DiscordCoreAPI {
 		return onThreadMemberUpdateEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onThreadMembersUpdate(
-		DiscordCoreInternal::EventDelegate<void, OnThreadMembersUpdateData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onThreadMembersUpdate(DiscordCoreInternal::EventDelegate<void, OnThreadMembersUpdateData> handler) {
 		return onThreadMembersUpdateEvent.add(std::move(handler));
 	}
 
@@ -163,8 +146,7 @@ namespace DiscordCoreAPI {
 		return onThreadMembersUpdateEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onGuildCreation(
-		DiscordCoreInternal::EventDelegate<void, OnGuildCreationData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onGuildCreation(DiscordCoreInternal::EventDelegate<void, OnGuildCreationData> handler) {
 		return onGuildCreationEvent.add(std::move(handler));
 	}
 
@@ -172,8 +154,7 @@ namespace DiscordCoreAPI {
 		onGuildCreationEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onGuildUpdate(
-		DiscordCoreInternal::EventDelegate<void, OnGuildUpdateData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onGuildUpdate(DiscordCoreInternal::EventDelegate<void, OnGuildUpdateData> handler) {
 		return onGuildUpdateEvent.add(std::move(handler));
 	}
 
@@ -181,8 +162,7 @@ namespace DiscordCoreAPI {
 		onGuildUpdateEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onGuildDeletion(
-		DiscordCoreInternal::EventDelegate<void, OnGuildDeletionData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onGuildDeletion(DiscordCoreInternal::EventDelegate<void, OnGuildDeletionData> handler) {
 		return onGuildDeletionEvent.add(std::move(handler));
 	}
 
@@ -190,8 +170,7 @@ namespace DiscordCoreAPI {
 		onGuildDeletionEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onGuildBanAdd(
-		DiscordCoreInternal::EventDelegate<void, OnGuildBanAddData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onGuildBanAdd(DiscordCoreInternal::EventDelegate<void, OnGuildBanAddData> handler) {
 		return onGuildBanAddEvent.add(std::move(handler));
 	}
 
@@ -199,8 +178,7 @@ namespace DiscordCoreAPI {
 		onGuildBanAddEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onGuildBanRemove(
-		DiscordCoreInternal::EventDelegate<void, OnGuildBanRemoveData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onGuildBanRemove(DiscordCoreInternal::EventDelegate<void, OnGuildBanRemoveData> handler) {
 		return onGuildBanRemoveEvent.add(std::move(handler));
 	}
 
@@ -208,8 +186,7 @@ namespace DiscordCoreAPI {
 		onGuildBanRemoveEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onGuildEmojisUpdate(
-		DiscordCoreInternal::EventDelegate<void, OnGuildEmojisUpdateData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onGuildEmojisUpdate(DiscordCoreInternal::EventDelegate<void, OnGuildEmojisUpdateData> handler) {
 		return onGuildEmojisUpdateEvent.add(std::move(handler));
 	}
 
@@ -217,8 +194,7 @@ namespace DiscordCoreAPI {
 		onGuildEmojisUpdateEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onGuildStickersUpdate(
-		DiscordCoreInternal::EventDelegate<void, OnGuildStickersUpdateData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onGuildStickersUpdate(DiscordCoreInternal::EventDelegate<void, OnGuildStickersUpdateData> handler) {
 		return onGuildStickersUpdateEvent.add(std::move(handler));
 	}
 
@@ -226,8 +202,7 @@ namespace DiscordCoreAPI {
 		onGuildStickersUpdateEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onGuildIntegrationsUpdate(
-		DiscordCoreInternal::EventDelegate<void, OnGuildIntegrationsUpdateData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onGuildIntegrationsUpdate(DiscordCoreInternal::EventDelegate<void, OnGuildIntegrationsUpdateData> handler) {
 		return onGuildIntegrationsUpdateEvent.add(std::move(handler));
 	}
 
@@ -235,8 +210,7 @@ namespace DiscordCoreAPI {
 		onGuildIntegrationsUpdateEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onGuildMembersChunk(
-		DiscordCoreInternal::EventDelegate<void, OnGuildMembersChunkData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onGuildMembersChunk(DiscordCoreInternal::EventDelegate<void, OnGuildMembersChunkData> handler) {
 		return onGuildMembersChunkEvent.add(std::move(handler));
 	}
 
@@ -244,8 +218,7 @@ namespace DiscordCoreAPI {
 		onGuildMembersChunkEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onGuildMemberAdd(
-		DiscordCoreInternal::EventDelegate<void, OnGuildMemberAddData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onGuildMemberAdd(DiscordCoreInternal::EventDelegate<void, OnGuildMemberAddData> handler) {
 		return onGuildMemberAddEvent.add(std::move(handler));
 	}
 
@@ -253,8 +226,7 @@ namespace DiscordCoreAPI {
 		onGuildMemberAddEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onGuildMemberRemove(
-		DiscordCoreInternal::EventDelegate<void, OnGuildMemberRemoveData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onGuildMemberRemove(DiscordCoreInternal::EventDelegate<void, OnGuildMemberRemoveData> handler) {
 		return onGuildMemberRemoveEvent.add(std::move(handler));
 	}
 
@@ -262,8 +234,7 @@ namespace DiscordCoreAPI {
 		onGuildMemberRemoveEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onGuildMemberUpdate(
-		DiscordCoreInternal::EventDelegate<void, OnGuildMemberUpdateData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onGuildMemberUpdate(DiscordCoreInternal::EventDelegate<void, OnGuildMemberUpdateData> handler) {
 		return onGuildMemberUpdateEvent.add(std::move(handler));
 	}
 
@@ -271,8 +242,7 @@ namespace DiscordCoreAPI {
 		onGuildMemberUpdateEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onRoleCreation(
-		DiscordCoreInternal::EventDelegate<void, OnRoleCreationData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onRoleCreation(DiscordCoreInternal::EventDelegate<void, OnRoleCreationData> handler) {
 		return onRoleCreationEvent.add(std::move(handler));
 	}
 
@@ -280,8 +250,7 @@ namespace DiscordCoreAPI {
 		onRoleCreationEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onRoleUpdate(
-		DiscordCoreInternal::EventDelegate<void, OnRoleUpdateData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onRoleUpdate(DiscordCoreInternal::EventDelegate<void, OnRoleUpdateData> handler) {
 		return onRoleUpdateEvent.add(std::move(handler));
 	}
 
@@ -289,8 +258,7 @@ namespace DiscordCoreAPI {
 		onRoleUpdateEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onRoleDeletion(
-		DiscordCoreInternal::EventDelegate<void, OnRoleDeletionData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onRoleDeletion(DiscordCoreInternal::EventDelegate<void, OnRoleDeletionData> handler) {
 		return onRoleDeletionEvent.add(std::move(handler));
 	}
 
@@ -298,8 +266,7 @@ namespace DiscordCoreAPI {
 		onRoleDeletionEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onIntegrationCreation(
-		DiscordCoreInternal::EventDelegate<void, OnIntegrationCreationData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onIntegrationCreation(DiscordCoreInternal::EventDelegate<void, OnIntegrationCreationData> handler) {
 		return onIntegrationCreationEvent.add(std::move(handler));
 	}
 
@@ -307,8 +274,7 @@ namespace DiscordCoreAPI {
 		onIntegrationCreationEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onIntegrationUpdate(
-		DiscordCoreInternal::EventDelegate<void, OnIntegrationUpdateData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onIntegrationUpdate(DiscordCoreInternal::EventDelegate<void, OnIntegrationUpdateData> handler) {
 		return onIntegrationUpdateEvent.add(std::move(handler));
 	}
 
@@ -316,8 +282,7 @@ namespace DiscordCoreAPI {
 		onIntegrationUpdateEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onIntegrationDeletion(
-		DiscordCoreInternal::EventDelegate<void, OnIntegrationDeletionData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onIntegrationDeletion(DiscordCoreInternal::EventDelegate<void, OnIntegrationDeletionData> handler) {
 		return onIntegrationDeletionEvent.add(std::move(handler));
 	}
 
@@ -325,8 +290,7 @@ namespace DiscordCoreAPI {
 		onIntegrationDeletionEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onInteractionCreation(
-		DiscordCoreInternal::EventDelegate<void, OnInteractionCreationData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onInteractionCreation(DiscordCoreInternal::EventDelegate<void, OnInteractionCreationData> handler) {
 		return onInteractionCreationEvent.add(std::move(handler));
 	}
 
@@ -334,8 +298,7 @@ namespace DiscordCoreAPI {
 		onInteractionCreationEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onInviteCreation(
-		DiscordCoreInternal::EventDelegate<void, OnInviteCreationData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onInviteCreation(DiscordCoreInternal::EventDelegate<void, OnInviteCreationData> handler) {
 		return onInviteCreationEvent.add(std::move(handler));
 	}
 
@@ -343,8 +306,7 @@ namespace DiscordCoreAPI {
 		onInviteCreationEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onInviteDeletion(
-		DiscordCoreInternal::EventDelegate<void, OnInviteDeletionData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onInviteDeletion(DiscordCoreInternal::EventDelegate<void, OnInviteDeletionData> handler) {
 		return onInviteDeletionEvent.add(std::move(handler));
 	}
 
@@ -352,8 +314,7 @@ namespace DiscordCoreAPI {
 		onInviteDeletionEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onMessageCreation(
-		DiscordCoreInternal::EventDelegate<void, OnMessageCreationData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onMessageCreation(DiscordCoreInternal::EventDelegate<void, OnMessageCreationData> handler) {
 		return onMessageCreationEvent.add(std::move(handler));
 	}
 
@@ -361,8 +322,7 @@ namespace DiscordCoreAPI {
 		onMessageCreationEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onMessageUpdate(
-		DiscordCoreInternal::EventDelegate<void, OnMessageUpdateData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onMessageUpdate(DiscordCoreInternal::EventDelegate<void, OnMessageUpdateData> handler) {
 		return onMessageUpdateEvent.add(std::move(handler));
 	}
 
@@ -370,8 +330,7 @@ namespace DiscordCoreAPI {
 		onMessageUpdateEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onMessageDeletion(
-		DiscordCoreInternal::EventDelegate<void, OnMessageDeletionData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onMessageDeletion(DiscordCoreInternal::EventDelegate<void, OnMessageDeletionData> handler) {
 		return onMessageDeletionEvent.add(std::move(handler));
 	}
 
@@ -379,8 +338,7 @@ namespace DiscordCoreAPI {
 		onMessageDeletionEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onMessageDeleteBulk(
-		DiscordCoreInternal::EventDelegate<void, OnMessageDeleteBulkData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onMessageDeleteBulk(DiscordCoreInternal::EventDelegate<void, OnMessageDeleteBulkData> handler) {
 		return onMessageDeleteBulkEvent.add(std::move(handler));
 	}
 
@@ -388,8 +346,7 @@ namespace DiscordCoreAPI {
 		onMessageDeleteBulkEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onReactionAdd(
-		DiscordCoreInternal::EventDelegate<void, OnReactionAddData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onReactionAdd(DiscordCoreInternal::EventDelegate<void, OnReactionAddData> handler) {
 		return onReactionAddEvent.add(std::move(handler));
 	}
 
@@ -397,8 +354,7 @@ namespace DiscordCoreAPI {
 		onReactionAddEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onReactionRemove(
-		DiscordCoreInternal::EventDelegate<void, OnReactionRemoveData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onReactionRemove(DiscordCoreInternal::EventDelegate<void, OnReactionRemoveData> handler) {
 		return onReactionRemoveEvent.add(std::move(handler));
 	}
 
@@ -406,8 +362,7 @@ namespace DiscordCoreAPI {
 		onReactionRemoveEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onReactionRemoveAll(
-		DiscordCoreInternal::EventDelegate<void, OnReactionRemoveAllData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onReactionRemoveAll(DiscordCoreInternal::EventDelegate<void, OnReactionRemoveAllData> handler) {
 		return onReactionRemoveAllEvent.add(std::move(handler));
 	}
 
@@ -415,8 +370,7 @@ namespace DiscordCoreAPI {
 		onReactionRemoveAllEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onReactionRemoveEmoji(
-		DiscordCoreInternal::EventDelegate<void, OnReactionRemoveEmojiData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onReactionRemoveEmoji(DiscordCoreInternal::EventDelegate<void, OnReactionRemoveEmojiData> handler) {
 		return onReactionRemoveEmojiEvent.add(std::move(handler));
 	}
 
@@ -424,8 +378,7 @@ namespace DiscordCoreAPI {
 		onReactionRemoveEmojiEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onPresenceUpdate(
-		DiscordCoreInternal::EventDelegate<void, OnPresenceUpdateData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onPresenceUpdate(DiscordCoreInternal::EventDelegate<void, OnPresenceUpdateData> handler) {
 		return onPresenceUpdateEvent.add(std::move(handler));
 	}
 
@@ -433,8 +386,7 @@ namespace DiscordCoreAPI {
 		onPresenceUpdateEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onStageInstanceCreation(
-		DiscordCoreInternal::EventDelegate<void, OnStageInstanceCreationData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onStageInstanceCreation(DiscordCoreInternal::EventDelegate<void, OnStageInstanceCreationData> handler) {
 		return onStageInstanceCreationEvent.add(std::move(handler));
 	}
 
@@ -442,8 +394,7 @@ namespace DiscordCoreAPI {
 		onStageInstanceCreationEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onStageInstanceUpdate(
-		DiscordCoreInternal::EventDelegate<void, OnStageInstanceUpdateData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onStageInstanceUpdate(DiscordCoreInternal::EventDelegate<void, OnStageInstanceUpdateData> handler) {
 		return onStageInstanceUpdateEvent.add(std::move(handler));
 	}
 
@@ -451,8 +402,7 @@ namespace DiscordCoreAPI {
 		onStageInstanceUpdateEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onStageInstanceDeletion(
-		DiscordCoreInternal::EventDelegate<void, OnStageInstanceDeletionData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onStageInstanceDeletion(DiscordCoreInternal::EventDelegate<void, OnStageInstanceDeletionData> handler) {
 		return onStageInstanceDeletionEvent.add(std::move(handler));
 	}
 
@@ -460,8 +410,7 @@ namespace DiscordCoreAPI {
 		onStageInstanceDeletionEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onTypingStart(
-		DiscordCoreInternal::EventDelegate<void, OnTypingStartData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onTypingStart(DiscordCoreInternal::EventDelegate<void, OnTypingStartData> handler) {
 		return onTypingStartEvent.add(std::move(handler));
 	}
 
@@ -469,8 +418,7 @@ namespace DiscordCoreAPI {
 		onTypingStartEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onUserUpdate(
-		DiscordCoreInternal::EventDelegate<void, OnUserUpdateData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onUserUpdate(DiscordCoreInternal::EventDelegate<void, OnUserUpdateData> handler) {
 		return onUserUpdateEvent.add(std::move(handler));
 	}
 
@@ -478,8 +426,7 @@ namespace DiscordCoreAPI {
 		onUserUpdateEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onVoiceStateUpdate(
-		DiscordCoreInternal::EventDelegate<void, OnVoiceStateUpdateData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onVoiceStateUpdate(DiscordCoreInternal::EventDelegate<void, OnVoiceStateUpdateData> handler) {
 		return onVoiceStateUpdateEvent.add(std::move(handler));
 	}
 
@@ -487,8 +434,7 @@ namespace DiscordCoreAPI {
 		onVoiceStateUpdateEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onVoiceServerUpdate(
-		DiscordCoreInternal::EventDelegate<void, OnVoiceServerUpdateData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onVoiceServerUpdate(DiscordCoreInternal::EventDelegate<void, OnVoiceServerUpdateData> handler) {
 		return onVoiceServerUpdateEvent.add(std::move(handler));
 	}
 
@@ -496,8 +442,7 @@ namespace DiscordCoreAPI {
 		onVoiceServerUpdateEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onWebhookUpdate(
-		DiscordCoreInternal::EventDelegate<void, OnWebhookUpdateData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onWebhookUpdate(DiscordCoreInternal::EventDelegate<void, OnWebhookUpdateData> handler) {
 		return onWebhookUpdateEvent.add(std::move(handler));
 	}
 
@@ -552,9 +497,7 @@ namespace DiscordCoreAPI {
 	void EventHandler::onGuildDeletion(OnGuildDeletionData dataPackage) {
 		if (EventHandler::options.cacheGuilds) {
 			for (auto& value: dataPackage.guild.members) {
-				GuildMember guildMember = GuildMembers::getCachedGuildMemberAsync(
-					{ .guildMemberId = value, .guildId = dataPackage.guild.id })
-											  .get();
+				GuildMember guildMember = GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = value, .guildId = dataPackage.guild.id }).get();
 				GuildMembers::removeGuildMember(guildMember);
 			}
 			for (auto& value: dataPackage.guild.channels) {
@@ -570,8 +513,7 @@ namespace DiscordCoreAPI {
 	void EventHandler::onGuildMemberAdd(OnGuildMemberAddData dataPackage) {
 		if (EventHandler::options.cacheGuildMembers) {
 			GuildMembers::insertGuildMember(dataPackage.guildMember);
-			GuildData guild =
-				Guilds::getCachedGuildAsync({ dataPackage.guildMember.guildId }).get();
+			GuildData guild = Guilds::getCachedGuildAsync({ dataPackage.guildMember.guildId }).get();
 			guild.members.push_back(dataPackage.guildMember.id);
 			guild.memberCount += 1;
 			Guilds::insertGuild(guild);
@@ -580,11 +522,8 @@ namespace DiscordCoreAPI {
 
 	void EventHandler::onGuildMemberRemove(OnGuildMemberRemoveData dataPackage) {
 		if (EventHandler::options.cacheGuildMembers) {
-			GuildMember guildMember = GuildMembers::getCachedGuildMemberAsync(
-				{ .guildMemberId = dataPackage.user.id, .guildId = dataPackage.guildId })
-										  .get();
-			std::string globalId =
-				std::to_string(guildMember.guildId) + " + " + std::to_string(guildMember.id);
+			GuildMember guildMember = GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = dataPackage.user.id, .guildId = dataPackage.guildId }).get();
+			std::string globalId = std::to_string(guildMember.guildId) + " + " + std::to_string(guildMember.id);
 			GuildMembers::removeGuildMember(guildMember);
 			GuildData guild = Guilds::getCachedGuildAsync({ dataPackage.guildId }).get();
 			for (uint64_t x = 0; x < guild.members.size(); x += 1) {
@@ -639,9 +578,7 @@ namespace DiscordCoreAPI {
 
 	void EventHandler::onVoiceStateUpdate(OnVoiceStateUpdateData dataPackage) {
 		if (EventHandler::options.cacheGuildMembers && EventHandler::options.cacheGuilds) {
-			GuildData guild =
-				Guilds::getCachedGuildAsync({ .guildId = dataPackage.voiceStateData.guildId })
-					.get();
+			GuildData guild = Guilds::getCachedGuildAsync({ .guildId = dataPackage.voiceStateData.guildId }).get();
 			guild.voiceStates[dataPackage.voiceStateData.userId] = dataPackage.voiceStateData;
 			Guilds::insertGuild(guild);
 		}

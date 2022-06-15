@@ -44,15 +44,13 @@ namespace DiscordCoreAPI {
 	/// For creating a Guild. \brief For creating a Guild.
 	struct DiscordCoreAPI_Dll CreateGuildData {
 		AfkTimeOutDurations afkTimeout{ AfkTimeOutDurations::Shortest };///< Afk timeout in seconds.
-		DefaultMessageNotificationLevel
-			defaultMessageNotifications{};///< Default message notification level.
+		DefaultMessageNotificationLevel defaultMessageNotifications{};///< Default message notification level.
 		ExplicitContentFilterLevel explicitContentFilter{};///< Explicit content filter level.
 		std::vector<ChannelData> channels{};///< Array of partial Channel objects.
 		int32_t systemChannelFlags{ 0 };///< System Channel flags.
 		int32_t verificationLevel{ 0 };///< Verification level.
 		std::vector<Role> roles{};///< Array of Role objects.
-		std::string
-			systemChannelId{};///< The id of the Channel where Guild notices such as welcome messages and boost events are posted.
+		std::string systemChannelId{};///< The id of the Channel where Guild notices such as welcome messages and boost events are posted.
 		std::vector<uint8_t> icon{};///< base64 128x128 image for the Guild icon.
 		std::string afkChannelId{};///< Id for afk Channel.
 		std::string region{};///< The region that the servers are in.
@@ -113,9 +111,7 @@ namespace DiscordCoreAPI {
 	/// For pruning a number of GuildMembers from the Guild. \brief For pruning a number of GuildMembers from the Guild.
 	struct DiscordCoreAPI_Dll BeginGuildPruneData {
 		std::vector<uint64_t> includeRoles{};/// Roles to be included in the prune.
-		bool computePruneCount{
-			false
-		};/// Whether 'pruned' is returned, discouraged for large guilds.
+		bool computePruneCount{ false };/// Whether 'pruned' is returned, discouraged for large guilds.
 		std::string reason{};///< Reason for pruning the GuildMembers.
 		uint64_t guildId{};///< Guild within which to perform the prune.
 		int32_t days{ 0 };/// Number of days after which to prune a given GuildMember.
@@ -178,8 +174,7 @@ namespace DiscordCoreAPI {
 
 	/// For modifying a Guild's welcome screen. \brief For modifying a Guild's welcome screen.
 	struct DiscordCoreAPI_Dll ModifyGuildWelcomeScreenData {
-		std::vector<WelcomeScreenChannelData>
-			welcomeChannels{};///< Welcome channels for the welcome screen.
+		std::vector<WelcomeScreenChannelData> welcomeChannels{};///< Welcome channels for the welcome screen.
 		std::string description{};///< The description of the welcome screen.
 		bool enabled{ false };///< Is it enabled?
 		std::string reason{};///< The reason for modifying the welcome screen.
@@ -261,11 +256,9 @@ namespace DiscordCoreAPI {
 	  public:
 		friend Guilds;
 
-		DefaultMessageNotificationLevel
-			defaultMessageNotifications{};///< Default Message notification level.
+		DefaultMessageNotificationLevel defaultMessageNotifications{};///< Default Message notification level.
 		GuildNSFWLevel nsfwLevel{ GuildNSFWLevel::Default };///< NSFW warning level.
-		ExplicitContentFilterLevel
-			explicitContentFilter{};///< Explicit content filtering level, by default.
+		ExplicitContentFilterLevel explicitContentFilter{};///< Explicit content filtering level, by default.
 		SystemChannelFlags systemChannelFlags{};///< System Channel flags.
 		int32_t premiumSubscriptionCount{ 0 };///< Premium subscription count.
 		int32_t approximatePresenceCount{ 0 };///< Approximate quantity of presences.
@@ -310,8 +303,7 @@ namespace DiscordCoreAPI {
 		/// \param selfDeaf Self-deafen the bot?
 		/// \param selfMute Self-mute the bot?
 		/// \returns A pointer containing the voice connection.
-		VoiceConnection* connectToVoice(const uint64_t guildMemberId, const uint64_t channelId = 0,
-			bool selfDeaf = false, bool selfMute = false);
+		VoiceConnection* connectToVoice(const uint64_t guildMemberId, const uint64_t channelId = 0, bool selfDeaf = false, bool selfMute = false);
 
 		/// Disconnects from a voice Channel. \brief Disconnects from a voice Channel.
 		void disconnect();
@@ -326,8 +318,7 @@ namespace DiscordCoreAPI {
 	/// For modifying the properties of a chosen Guild. \brief For modifying the properties of a chosen Guild.
 	struct DiscordCoreAPI_Dll ModifyGuildData {
 		ModifyGuildData(Guild dataPackage) {
-			this->premiumProgressBarEnabled = getBool<int8_t, GuildFlags>(dataPackage.flags,
-				GuildFlags::Premium_Progress_Bar_Enabled);
+			this->premiumProgressBarEnabled = getBool<int8_t, GuildFlags>(dataPackage.flags, GuildFlags::Premium_Progress_Bar_Enabled);
 			this->defaultMessageNotifications = dataPackage.defaultMessageNotifications;
 			this->publicUpdatesChannelId = dataPackage.publicUpdatesChannelId;
 			this->explicitContentFilter = dataPackage.explicitContentFilter;
@@ -346,31 +337,21 @@ namespace DiscordCoreAPI {
 			this->guildId = dataPackage.id;
 			this->name = dataPackage.name;
 		}
-		DefaultMessageNotificationLevel
-			defaultMessageNotifications{};///< Default message notification level.
+		DefaultMessageNotificationLevel defaultMessageNotifications{};///< Default message notification level.
 		ExplicitContentFilterLevel explicitContentFilter{};///< Explicit content filter level.
 		SystemChannelFlags systemChannelFlags{ 0 };///< System Channel flags.
 		bool premiumProgressBarEnabled{ false };///< Whether or not the progress bar is enabled.
-		std::vector<uint8_t>
-			discoverySplash{};/// Base64 16 : 9 png / jpeg image for the Guild discovery splash(when the server has the DISCOVERABLE feature).
+		std::vector<uint8_t> discoverySplash{};/// Base64 16 : 9 png / jpeg image for the Guild discovery splash(when the server has the DISCOVERABLE feature).
 		VerificationLevel verificationLevel{};///< Verification level.
-		std::string
-			publicUpdatesChannelId{};///< The id of the Channel where admins and moderators of Community guilds receive notices from Discord.
-		std::vector<std::string>
-			features{};///< Array of Guild feature strings enabled Guild features.
+		std::string publicUpdatesChannelId{};///< The id of the Channel where admins and moderators of Community guilds receive notices from Discord.
+		std::vector<std::string> features{};///< Array of Guild feature strings enabled Guild features.
 		AfkTimeOutDurations afkTimeout{};///< Afk timeout in seconds.
-		std::vector<uint8_t>
-			banner{};///< Base64 16 : 9 png / jpeg image for the Guild banner (when the server has the BANNER feature).
-		std::vector<uint8_t>
-			splash{};///< Base64 16 : 9 png / jpeg image for the Guild splash (when the server has the INVITE_SPLASH feature).
-		std::string
-			preferredLocale{};///< The preferred locale of a Community Guild used in server discovery and notices from Discord; defaults to "en-US".
-		std::string
-			systemChannelId{};///< The id of the Channel where Guild notices such as welcome messages and boost events are posted.
-		std::string
-			rulesChannelId{};///< The id of the Channel where Community guilds display rules and /or guidelines.
-		std::vector<uint8_t>
-			icon{};///< Base64 1024x1024 png / jpeg / gif image for the Guild icon (can be animated gif when the server has the ANIMATED_ICON).
+		std::vector<uint8_t> banner{};///< Base64 16 : 9 png / jpeg image for the Guild banner (when the server has the BANNER feature).
+		std::vector<uint8_t> splash{};///< Base64 16 : 9 png / jpeg image for the Guild splash (when the server has the INVITE_SPLASH feature).
+		std::string preferredLocale{};///< The preferred locale of a Community Guild used in server discovery and notices from Discord; defaults to "en-US".
+		std::string systemChannelId{};///< The id of the Channel where Guild notices such as welcome messages and boost events are posted.
+		std::string rulesChannelId{};///< The id of the Channel where Community guilds display rules and /or guidelines.
+		std::vector<uint8_t> icon{};///< Base64 1024x1024 png / jpeg / gif image for the Guild icon (can be animated gif when the server has the ANIMATED_ICON).
 		std::string afkChannelId{};///< Id for afk channels.
 		std::string description{};///< The description for the Guild, if the Guild is discoverable.
 		std::string ownerId{};///< User id to transfer Guild ownership to (must be owner).
@@ -389,14 +370,12 @@ namespace DiscordCoreAPI {
 	/// An interface class for the Guild related Discord endpoints. \brief An interface class for the Guild related Discord endpoints.
 	class DiscordCoreAPI_Dll Guilds {
 	  public:
-		template<typename ParseType>
-		friend void DiscordCoreInternal::parseObject(const nlohmann::json&, ParseType&);
+		template<typename ParseType> friend void DiscordCoreInternal::parseObject(const nlohmann::json&, ParseType&);
 		friend class DiscordCoreInternal::BaseSocketAgent;
 		friend DiscordCoreClient;
 		friend EventHandler;
 
-		static void initialize(DiscordCoreInternal::HttpClient* theClient,
-			DiscordCoreClient* discordCoreClientNew, bool doWeCacheNew);
+		static void initialize(DiscordCoreInternal::HttpClient* theClient, DiscordCoreClient* discordCoreClientNew, bool doWeCacheNew);
 
 		/// Gets an audit log from the Discord servers. \brief Gets an audit log from the Discord servers.
 		/// \param dataPackage A GetGuildAuditLogsData structure.
@@ -460,8 +439,7 @@ namespace DiscordCoreAPI {
 		/// For collecting the Guild prune count. \brief For collecting the Guild prune count.
 		/// \param dataPackage A GetGuildPruneCountData structure.
 		/// \returns A CoRoutine containing GuildPruneCountData.
-		static CoRoutine<GuildPruneCountData> getGuildPruneCountAsync(
-			GetGuildPruneCountData dataPackage);
+		static CoRoutine<GuildPruneCountData> getGuildPruneCountAsync(GetGuildPruneCountData dataPackage);
 
 		/// For performing a pruning of the GuildMembers of the Guild, based on days of inactivity. \brief For performing a pruning of the GuildMembers of the Guild, based on days of inactivity.
 		/// \param dataPackage A BeginGuildPruneData structure.
@@ -471,20 +449,17 @@ namespace DiscordCoreAPI {
 		/// Gets the list of voice regions for a particular server. \brief Gets the list of voice regions for a particular server.
 		/// \param dataPackage A GetGuildVoiceRegionsData structure.
 		/// \returns A CoRoutine containing a std::vector<VoiceRegionData>.
-		static CoRoutine<std::vector<VoiceRegionData>> getGuildVoiceRegionsAsync(
-			GetGuildVoiceRegionsData dataPackage);
+		static CoRoutine<std::vector<VoiceRegionData>> getGuildVoiceRegionsAsync(GetGuildVoiceRegionsData dataPackage);
 
 		/// Gets multiple invites from the Discord servers. \brief Gets multiple invites from the Discord servers.
 		/// \param dataPackage A GetGuildInvitesData structure.
 		/// \returns A CoRoutine containing a std::vector<InviteData>.
-		static CoRoutine<std::vector<InviteData>> getGuildInvitesAsync(
-			GetGuildInvitesData dataPackage);
+		static CoRoutine<std::vector<InviteData>> getGuildInvitesAsync(GetGuildInvitesData dataPackage);
 
 		/// Gets the list of Guild integrations for a particular server. \brief Gets the list of Guild integrations for a particular server.
 		/// \param dataPackage A GetGuildIntegrationsData structure.
 		/// \returns A CoRoutine containing a std::vector<IntegrationData>.
-		static CoRoutine<std::vector<IntegrationData>> getGuildIntegrationsAsync(
-			GetGuildIntegrationsData dataPackage);
+		static CoRoutine<std::vector<IntegrationData>> getGuildIntegrationsAsync(GetGuildIntegrationsData dataPackage);
 
 		/// Deletes an integration from a Guild. \brief Deletes an integration from a Guild.
 		/// \param dataPackage A DeleteGuildIntegrationData structure.
@@ -494,8 +469,7 @@ namespace DiscordCoreAPI {
 		/// Gets the Guild widget's settings for a particular server. \brief Gets the Guild widget's settings for a particular server.
 		/// \param dataPackage A GetGuildWidgetSettingsData structure.
 		/// \returns A CoRoutine containing a GuildWidgetData.
-		static CoRoutine<GuildWidgetData> getGuildWidgetSettingsAsync(
-			GetGuildWidgetSettingsData dataPackage);
+		static CoRoutine<GuildWidgetData> getGuildWidgetSettingsAsync(GetGuildWidgetSettingsData dataPackage);
 
 		/// Modifies the Guild widget for a particular server. \brief Modifies the Guild widget for a particular server.
 		/// \param dataPackage A ModifyGuildWidgetData structure.
@@ -510,26 +484,22 @@ namespace DiscordCoreAPI {
 		/// Gets the vanity invite responseData from a particular server. \brief Gets the vanity invite responseData from a particular server.
 		/// \param dataPackage A GetGuildVanityInviteData structure.
 		/// \returns A CoRoutine containing InviteData.
-		static CoRoutine<InviteData> getGuildVanityInviteAsync(
-			GetGuildVanityInviteData dataPackage);
+		static CoRoutine<InviteData> getGuildVanityInviteAsync(GetGuildVanityInviteData dataPackage);
 
 		/// Gets the Guild widget image for a particular server. \brief Gets the Guild widget image for a particular server.
 		/// \param dataPackage A GetGuildWidgetImageData structure.
 		/// \returns A CoRoutine containing a GuildWidgetImageData.
-		static CoRoutine<GuildWidgetImageData> getGuildWidgetImageAsync(
-			GetGuildWidgetImageData dataPackage);
+		static CoRoutine<GuildWidgetImageData> getGuildWidgetImageAsync(GetGuildWidgetImageData dataPackage);
 
 		/// Gets the Guild welcome screen for a particular server. \brief Gets the Guild welcome screen for a particular server.
 		/// \param dataPackage A GetGuildWelcomeScreenData structure.
 		/// \returns A CoRoutine containing a WelcomeScreenData.
-		static CoRoutine<WelcomeScreenData> getGuildWelcomeScreenAsync(
-			GetGuildWelcomeScreenData dataPackage);
+		static CoRoutine<WelcomeScreenData> getGuildWelcomeScreenAsync(GetGuildWelcomeScreenData dataPackage);
 
 		/// Modifies the Guild welcome screen. \brief Modifies the Guild welcome screen.
 		/// \param dataPackage A ModifyGuildWelcomeScreenData structure.
 		/// \returns A CoRoutine containing a WelcomeScreenData.
-		static CoRoutine<WelcomeScreenData> modifyGuildWelcomeScreenAsync(
-			ModifyGuildWelcomeScreenData dataPackage);
+		static CoRoutine<WelcomeScreenData> modifyGuildWelcomeScreenAsync(ModifyGuildWelcomeScreenData dataPackage);
 
 		/// Gets the Guild Template from a particular server. \brief Gets the Guild Template from a particular server.
 		/// \param dataPackage A GetGuildTemplateData structure.
@@ -539,32 +509,27 @@ namespace DiscordCoreAPI {
 		/// Creates a Guild from the Guild Template. \brief Creates a Guild from the Guild Template.
 		/// \param dataPackage A CreateGuildFromGuildTemplateData structure.
 		/// \returns A CoRoutine containing a Guild.
-		static CoRoutine<Guild> createGuildFromGuildTemplateAsync(
-			CreateGuildFromGuildTemplateData dataPackage);
+		static CoRoutine<Guild> createGuildFromGuildTemplateAsync(CreateGuildFromGuildTemplateData dataPackage);
 
 		/// Collects a list of Guild Templates from a chosen Guild. \brief Collects a list of Guild Templates from a chosen Guild.
 		/// \param dataPackage A GetGuildTemplatesData structure.
 		/// \returns A CoRoutine containing a std::vector<GuiildTemplateData>.
-		static CoRoutine<std::vector<GuildTemplateData>> getGuildTemplatesAsync(
-			GetGuildTemplatesData dataPackage);
+		static CoRoutine<std::vector<GuildTemplateData>> getGuildTemplatesAsync(GetGuildTemplatesData dataPackage);
 
 		/// Creates a Guild Template. \brief Creates a Guild Template.
 		/// \param dataPackage A CreateGuildTemplateData structure.
 		/// \returns A CoRoutine containing a GuiildTemplateData.
-		static CoRoutine<GuildTemplateData> createGuildTemplateAsync(
-			CreateGuildTemplateData dataPackage);
+		static CoRoutine<GuildTemplateData> createGuildTemplateAsync(CreateGuildTemplateData dataPackage);
 
 		/// Syncs a Guild Template. \brief Syncs a Guild Template.
 		/// \param dataPackage A SyncGuildTemplateData structure.
 		/// \returns A CoRoutine containing a GuiildTemplateData.
-		static CoRoutine<GuildTemplateData> syncGuildTemplateAsync(
-			SyncGuildTemplateData dataPackage);
+		static CoRoutine<GuildTemplateData> syncGuildTemplateAsync(SyncGuildTemplateData dataPackage);
 
 		/// Modifies a Guild Template. \brief Modifies a Guild Template.
 		/// \param dataPackage A ModifyGuildTemplateData structure.
 		/// \returns A CoRoutine containing a GuiildTemplateData.
-		static CoRoutine<GuildTemplateData> modifyGuildTemplateAsync(
-			ModifyGuildTemplateData dataPackage);
+		static CoRoutine<GuildTemplateData> modifyGuildTemplateAsync(ModifyGuildTemplateData dataPackage);
 
 		/// Deletes a Guild Template. \brief Deletes a Guild Template.
 		/// \param dataPackage A DeleteGuildTemplateData structure.
@@ -584,8 +549,7 @@ namespace DiscordCoreAPI {
 		/// Collects a list of Guilds that the Bot is in. \brief Collects a list of Guilds that the Bot is in.
 		/// \param dataPackage A GetCurrentUserGuildsData structure.
 		/// \returns A CoRoutine containing a std::vector<Guild>.
-		static CoRoutine<std::vector<Guild>> getCurrentUserGuildsAsync(
-			GetCurrentUserGuildsData dataPackage);
+		static CoRoutine<std::vector<Guild>> getCurrentUserGuildsAsync(GetCurrentUserGuildsData dataPackage);
 
 		/// Removes the bot from a chosen Guild. \brief Removes the bot from a chosen Guild.
 		/// \param dataPackage A LeaveGuildData structure.

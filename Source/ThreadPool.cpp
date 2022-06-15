@@ -110,8 +110,7 @@ namespace DiscordCoreInternal {
 			while (!this->areWeQuitting.load() && this->theCoroutineHandles.size() == 0) {
 				if (this->currentCount > std::thread::hardware_concurrency()) {
 					for (auto& [key, value]: this->workerThreads) {
-						if (value.theCurrentStatus.load() &&
-							std::this_thread::get_id() != value.threadId) {
+						if (value.theCurrentStatus.load() && std::this_thread::get_id() != value.threadId) {
 							this->workerThreads[key].theThread.get_stop_source().request_stop();
 							if (value.theThread.joinable()) {
 								value.theThread.detach();

@@ -85,8 +85,7 @@ namespace DiscordCoreInternal {
 		AVCodecContextWrapper(std::nullptr_t){};
 
 	  protected:
-		std::unique_ptr<AVCodecContext, AVCodecContextDeleter> thePtr{ nullptr,
-			AVCodecContextDeleter{} };
+		std::unique_ptr<AVCodecContext, AVCodecContextDeleter> thePtr{ nullptr, AVCodecContextDeleter{} };
 	};
 
 	struct DiscordCoreAPI_Dll AVFormatContextWrapper01 {
@@ -129,9 +128,7 @@ namespace DiscordCoreInternal {
 		AVFormatContextWrapper(std::nullptr_t){};
 
 	  protected:
-		std::unique_ptr<AVFormatContextWrapper01, AVFormatContextDeleter> thePtr{
-			new AVFormatContextWrapper01{}, AVFormatContextDeleter{}
-		};
+		std::unique_ptr<AVFormatContextWrapper01, AVFormatContextDeleter> thePtr{ new AVFormatContextWrapper01{}, AVFormatContextDeleter{} };
 	};
 
 	struct DiscordCoreAPI_Dll SwrContextWrapper {

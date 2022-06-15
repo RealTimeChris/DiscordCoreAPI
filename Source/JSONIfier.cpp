@@ -206,8 +206,7 @@ namespace DiscordCoreInternal {
 		return finalValue;
 	};
 
-	nlohmann::json JSONIFY(const std::string& serverId, const std::string& sessionId,
-		const std::string& token, std::string) {
+	nlohmann::json JSONIFY(const std::string& serverId, const std::string& sessionId, const std::string& token, std::string) {
 		nlohmann::json data{};
 		data["d"]["server_id"] = serverId;
 		data["d"]["session_id"] = sessionId;
@@ -216,8 +215,7 @@ namespace DiscordCoreInternal {
 		return data;
 	}
 
-	nlohmann::json JSONIFY(const std::string& botToken, int64_t intents, int32_t currentShard,
-		int32_t numberOfShards) {
+	nlohmann::json JSONIFY(const std::string& botToken, int64_t intents, int32_t currentShard, int32_t numberOfShards) {
 		nlohmann::json data{};
 		data["d"]["properties"]["$browser"] = "DiscordCoreAPI";
 		data["d"]["properties"]["$device"] = "DiscordCoreAPI";
@@ -235,8 +233,7 @@ namespace DiscordCoreInternal {
 		return data;
 	};
 
-	nlohmann::json JSONIFY(const std::string& botToken, std::string sessionID,
-		int32_t lastReceivedNumber) {
+	nlohmann::json JSONIFY(const std::string& botToken, std::string sessionID, int32_t lastReceivedNumber) {
 		nlohmann::json data{};
 		data["d"]["seq"] = lastReceivedNumber;
 		data["d"]["session_id"] = sessionID;
@@ -285,8 +282,7 @@ namespace DiscordCoreInternal {
 		return data;
 	};
 
-	std::vector<uint8_t> JSONIFY(const std::string& localPort, const std::string& localIp,
-		const std::string& encryptionMode, int32_t) {
+	std::vector<uint8_t> JSONIFY(const std::string& localPort, const std::string& localIp, const std::string& encryptionMode, int32_t) {
 		nlohmann::json data{};
 		data["d"]["data"]["port"] = stol(localPort);
 		data["d"]["data"]["mode"] = encryptionMode;
@@ -300,8 +296,7 @@ namespace DiscordCoreInternal {
 		return newVector;
 	}
 
-	std::vector<uint8_t> JSONIFY(const VoiceConnectionData& dataPackage,
-		const VoiceConnectInitData& dataPackage02) {
+	std::vector<uint8_t> JSONIFY(const VoiceConnectionData& dataPackage, const VoiceConnectInitData& dataPackage02) {
 		nlohmann::json data{};
 		data["d"]["session_id"] = dataPackage.sessionId;
 		data["d"]["server_id"] = std::to_string(dataPackage02.guildId);
@@ -339,14 +334,12 @@ namespace DiscordCoreInternal {
 		return newVector;
 	};
 
-	void JSONIFY(const DiscordCoreAPI::ApplicationCommandOptionData& dataPackage,
-		nlohmann::json* pJSONData) {
+	void JSONIFY(const DiscordCoreAPI::ApplicationCommandOptionData& dataPackage, nlohmann::json* pJSONData) {
 		nlohmann::json newOption{};
 		if (dataPackage.type == DiscordCoreAPI::ApplicationCommandOptionType::Channel) {
 			newOption["channel_types"] = dataPackage.channelTypes;
 		}
-		if (dataPackage.type != DiscordCoreAPI::ApplicationCommandOptionType::Sub_Command &&
-			dataPackage.type != DiscordCoreAPI::ApplicationCommandOptionType::Sub_Command_Group) {
+		if (dataPackage.type != DiscordCoreAPI::ApplicationCommandOptionType::Sub_Command && dataPackage.type != DiscordCoreAPI::ApplicationCommandOptionType::Sub_Command_Group) {
 			newOption["required"] = dataPackage.required;
 		}
 		newOption["description_localizations"] = dataPackage.descriptionLocalizations;
@@ -380,8 +373,7 @@ namespace DiscordCoreInternal {
 		return;
 	}
 
-	std::string JSONIFY(
-		const DiscordCoreAPI::EditGuildApplicationCommandPermissionsData& dataPackage) {
+	std::string JSONIFY(const DiscordCoreAPI::EditGuildApplicationCommandPermissionsData& dataPackage) {
 		nlohmann::json newDataArray{};
 		for (auto& value: dataPackage.permissions) {
 			nlohmann::json newData{};
@@ -678,8 +670,7 @@ namespace DiscordCoreInternal {
 
 	std::string JSONIFY(DiscordCoreAPI::CreateGuildChannelData& dataPackage) {
 		nlohmann::json data{};
-		if (dataPackage.type == DiscordCoreAPI::ChannelType::Guild_Voice ||
-			dataPackage.type == DiscordCoreAPI::ChannelType::Guild_Stage_Voice) {
+		if (dataPackage.type == DiscordCoreAPI::ChannelType::Guild_Voice || dataPackage.type == DiscordCoreAPI::ChannelType::Guild_Stage_Voice) {
 			data["user_limit"] = dataPackage.userLimit;
 			data["bitrate"] = dataPackage.bitrate;
 		}
@@ -961,14 +952,11 @@ namespace DiscordCoreInternal {
 			newData["permissions"] = value.permissions.getCurrentPermissionString();
 			newData["tags"]["premium_subscriber"] = value.tags.premiumSubscriber;
 			newData["tags"]["integration_id"] = value.tags.integrationId;
-			newData["mentionable"] = DiscordCoreAPI::getBool<int8_t, DiscordCoreAPI::RoleFlags>(
-				value.flags, DiscordCoreAPI::RoleFlags::Mentionable);
+			newData["mentionable"] = DiscordCoreAPI::getBool<int8_t, DiscordCoreAPI::RoleFlags>(value.flags, DiscordCoreAPI::RoleFlags::Mentionable);
 			newData["tags"]["bot_id"] = value.tags.botId;
-			newData["managed"] = DiscordCoreAPI::getBool<int8_t, DiscordCoreAPI::RoleFlags>(
-				value.flags, DiscordCoreAPI::RoleFlags::Managed);
+			newData["managed"] = DiscordCoreAPI::getBool<int8_t, DiscordCoreAPI::RoleFlags>(value.flags, DiscordCoreAPI::RoleFlags::Managed);
 			newData["position"] = value.position;
-			newData["hoist"] = DiscordCoreAPI::getBool<int8_t, DiscordCoreAPI::RoleFlags>(
-				value.flags, DiscordCoreAPI::RoleFlags::Hoist);
+			newData["hoist"] = DiscordCoreAPI::getBool<int8_t, DiscordCoreAPI::RoleFlags>(value.flags, DiscordCoreAPI::RoleFlags::Hoist);
 			newData["color"] = value.color;
 			newData["name"] = value.name;
 			data["roles"].push_back(newData);

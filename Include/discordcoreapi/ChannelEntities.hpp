@@ -46,8 +46,7 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll EditChannelPermissionOverwritesData {
 		PermissionOverwritesType type{};///< The type of overwrite.
 		uint64_t roleOrUserId{};///< The Role or User Id to modify the permissions for.
-		uint64_t
-			channelId{};///< The Channel id of the desired Channel to modify the permissions for.
+		uint64_t channelId{};///< The Channel id of the desired Channel to modify the permissions for.
 		std::string reason{};///< Reason for editing the permission overwrites.
 		std::string allow{};///< The permissions to list as "allowed".
 		std::string deny{};///< The permissions to list as "deny".
@@ -60,27 +59,20 @@ namespace DiscordCoreAPI {
 
 	/// For creating an invite to a given Channel. \brief For creating an invite to a given Channel.
 	struct DiscordCoreAPI_Dll CreateChannelInviteData {
-		uint64_t
-			targetApplicationId{};///< The id of the embedded application to open for this invite, required if target_type is 2.
+		uint64_t targetApplicationId{};///< The id of the embedded application to open for this invite, required if target_type is 2.
 		InviteTargetTypes targetType{};///<	The type of target for this voice Channel invite.
-		uint64_t
-			targetUserId{};///< Id of the user whose stream to display for this invite, required if target_type is 1.
+		uint64_t targetUserId{};///< Id of the user whose stream to display for this invite, required if target_type is 1.
 		bool temporary{ false };///< Whether this invite only grants temporary membership.
 		uint64_t channelId{};///< The id of the Channel to create the invite for.
 		std::string reason{};///< Reason for creating the invite.
-		bool unique{
-			false
-		};///< If true, don't try to reuse a similar invite (useful for creating many unique one time use invites).
+		bool unique{ false };///< If true, don't try to reuse a similar invite (useful for creating many unique one time use invites).
 		int32_t maxUses{ 0 };///< Max number of uses or 0 for unlimited.between 0 and 100.
-		int32_t maxAge{
-			0
-		};///< Duration of invite in seconds before expiry, or 0 for never.between 0 and 604800 (7 days)	86400 (24 hours).
+		int32_t maxAge{ 0 };///< Duration of invite in seconds before expiry, or 0 for never.between 0 and 604800 (7 days)	86400 (24 hours).
 	};
 
 	/// For deleting the Permission overwrites of a given Channel for a given Role or User. \brief For deleting the Permission overwrites of a given Channel for a given Role or User.
 	struct DiscordCoreAPI_Dll DeleteChannelPermissionOverwritesData {
-		uint64_t
-			roleOrUserId{};///< The Role or User id for whom to delete the Permission overwrites.
+		uint64_t roleOrUserId{};///< The Role or User id for whom to delete the Permission overwrites.
 		uint64_t channelId{};///< The id of the Channel to modify permissions for.
 		std::string reason{};///< Reason for deleting these permission overwrites.
 	};
@@ -103,14 +95,9 @@ namespace DiscordCoreAPI {
 
 	/// For creating a new Channel within a chosen Guild. \brief For creating a new Channel within a chosen Guild.
 	struct DiscordCoreAPI_Dll CreateGuildChannelData {
-		std::vector<OverWriteData>
-			permissionOverwrites{};///< Array of overwrite objects	the Channel's permission overwrites.
-		int32_t defaultAutoArchiveDuration{
-			0
-		};///< Defualt duration of time before archiving a thread.
-		int32_t rateLimitPerUser{
-			0
-		};///< Amount of seconds a user has to wait before sending another message(0 - 21600).
+		std::vector<OverWriteData> permissionOverwrites{};///< Array of overwrite objects	the Channel's permission overwrites.
+		int32_t defaultAutoArchiveDuration{ 0 };///< Defualt duration of time before archiving a thread.
+		int32_t rateLimitPerUser{ 0 };///< Amount of seconds a user has to wait before sending another message(0 - 21600).
 		int32_t userLimit{ 0 };///< The user limit of the voice Channel(voice only).
 		int32_t position{ 0 };///< Sorting position of the Channel.
 		int32_t bitrate{ 0 };///< The bitrate(in bits) of the voice Channel(voice only).
@@ -125,9 +112,7 @@ namespace DiscordCoreAPI {
 
 	/// For modifying the Channel position responseData of a single Channel. \brief For modifying the Channel position responseData of a single Channel.
 	struct DiscordCoreAPI_Dll ModifyGuildChannelPositionData {
-		bool lockPermissions{
-			false
-		};///< Syncs the permission overwrites with the new parent, if moving to a new category.
+		bool lockPermissions{ false };///< Syncs the permission overwrites with the new parent, if moving to a new category.
 		int32_t position{ 0 };///< Sorting position of the Channel.
 		uint64_t parentId{};///< The new parent ID for the Channel that is moved.
 		uint64_t id{};///< Channel id.
@@ -135,8 +120,7 @@ namespace DiscordCoreAPI {
 
 	/// For modifying the current positions of one or more Channels in the Guild. \brief For modifying the current positions of one or more Channels in the Guild.
 	struct DiscordCoreAPI_Dll ModifyGuildChannelPositionsData {
-		std::vector<ModifyGuildChannelPositionData>
-			modifyChannelData{};///< Array of new Channel position's responseData.
+		std::vector<ModifyGuildChannelPositionData> modifyChannelData{};///< Array of new Channel position's responseData.
 		std::string reason{};///< Reason for re-ordering the Channel positions.
 		uint64_t guildId{};///< Guild within which to re-order the Channel positions.
 	};
@@ -149,23 +133,16 @@ namespace DiscordCoreAPI {
 	/// A Channel object. \brief A Channel object.
 	class DiscordCoreAPI_Dll Channel : public ChannelData {
 	  public:
-		std::unordered_map<uint64_t, UserData>
-			recipients{};///< Recipients, in the case of a group Dm or Dm.
+		std::unordered_map<uint64_t, UserData> recipients{};///< Recipients, in the case of a group Dm or Dm.
 		int32_t defaultAutoArchiveDuration{ 0 };///< Default time it takes to archive a thread.
 		ThreadMetadataData threadMetadata{};///< Metadata in the case that this Channel is a Thread.
 		TimeStamp lastPinTimestamp{ "" };///< Timestamp of the last pinned Message.
 		int32_t videoQualityMode{ 0 };///< Video quality mode.
-		int32_t rateLimitPerUser{
-			0
-		};///< Amount of seconds a User has to wait before sending another Message.
+		int32_t rateLimitPerUser{ 0 };///< Amount of seconds a User has to wait before sending another Message.
 		std::string lastMessageId{};///< Id of the last Message.
-		ThreadMemberData
-			member{};///< Thread member object for the current User, if they have joined the Thread.
-		int32_t messageCount{
-			0
-		};///< An approximate count of Messages in a Thread stops counting at 50.
-		std::string
-			permissions{};///< Computed permissions for the invoking user in the channel, including overwrites.
+		ThreadMemberData member{};///< Thread member object for the current User, if they have joined the Thread.
+		int32_t messageCount{ 0 };///< An approximate count of Messages in a Thread stops counting at 50.
+		std::string permissions{};///< Computed permissions for the invoking user in the channel, including overwrites.
 		uint64_t applicationId{};///< Application id of the current application.
 		std::string rtcRegion{};///< Real-time clock region.
 		int32_t userLimit{ 0 };///< User limit, in the case of voice channels.
@@ -189,8 +166,7 @@ namespace DiscordCoreAPI {
 	/// For modifying a Channel's properties. \brief For modifying a Channel's properties.
 	struct DiscordCoreAPI_Dll ModifyChannelData {
 		ModifyChannelData(Channel newData) {
-			this->channelData.nsfw =
-				getBool<int8_t, ChannelFlags>(newData.flags, ChannelFlags::NSFW);
+			this->channelData.nsfw = getBool<int8_t, ChannelFlags>(newData.flags, ChannelFlags::NSFW);
 			this->channelData.permissionOverwrites = newData.permissionOverwrites;
 			this->channelData.rateLimitPerUser = newData.rateLimitPerUser;
 			this->channelData.userLimit = newData.userLimit;
@@ -215,8 +191,7 @@ namespace DiscordCoreAPI {
 	/// An interface class for the Channel related endpoints. \brief An interface class for the Channel-related endpoints.
 	class DiscordCoreAPI_Dll Channels {
 	  public:
-		template<typename ParseType>
-		friend void DiscordCoreInternal::parseObject(const nlohmann::json&, ParseType&);
+		template<typename ParseType> friend void DiscordCoreInternal::parseObject(const nlohmann::json&, ParseType&);
 		friend DiscordCoreClient;
 		friend EventHandler;
 		friend Guild;
@@ -246,14 +221,12 @@ namespace DiscordCoreAPI {
 		/// Edit the given Permissions overwrites for a given User or Role. \brief Edit the given Permissions overwrites for a given User or Role.
 		/// \param dataPackage An EditChannelPermissionOverwritesData structure.
 		/// \returns A CoRoutine containing void.
-		static CoRoutine<void> editChannelPermissionOverwritesAsync(
-			EditChannelPermissionOverwritesData dataPackage);
+		static CoRoutine<void> editChannelPermissionOverwritesAsync(EditChannelPermissionOverwritesData dataPackage);
 
 		/// Collects a std::vector of the invites to a given Channel. \brief Collects a std::vector of the invites to a given Channel.
 		/// \param dataPackage A GetChannelInvitesData structure.
 		/// \returns A CoRoutine containing a std::vector<InviteData>.
-		static CoRoutine<std::vector<InviteData>> getChannelInvitesAsync(
-			GetChannelInvitesData dataPackage);
+		static CoRoutine<std::vector<InviteData>> getChannelInvitesAsync(GetChannelInvitesData dataPackage);
 
 		/// Creates an invite to a selected Channel. \brief Creates an invite to a selected Channel.
 		/// \param dataPackage A CreateChannelInviteData structure.
@@ -263,8 +236,7 @@ namespace DiscordCoreAPI {
 		/// Delete the given Permissions overwrites for a given User or Role. \brief Delete the given Permissions overwrites for a given User or Role.
 		/// \param dataPackage A DeleteChannelPermissionOverwritesData structure
 		/// \returns A CoRoutine containing void.
-		static CoRoutine<void> deleteChannelPermissionOverwritesAsync(
-			DeleteChannelPermissionOverwritesData dataPackage);
+		static CoRoutine<void> deleteChannelPermissionOverwritesAsync(DeleteChannelPermissionOverwritesData dataPackage);
 
 		/// Follows a given new Channel with another Channel. \brief Follows a given new Channel with another Channel.
 		/// \param dataPackage A FollowNewsChannelData structure.
@@ -279,8 +251,7 @@ namespace DiscordCoreAPI {
 		/// Collects a list of Channels from a chosen Guild. \brief Collects a list of Channels from a chosen Guild.
 		/// \param dataPackage A GetGuildChannelsData structure.
 		/// \returns A CoRoutine containing a std::vector<Channel>.
-		static CoRoutine<std::vector<Channel>> getGuildChannelsAsync(
-			GetGuildChannelsData dataPackage);
+		static CoRoutine<std::vector<Channel>> getGuildChannelsAsync(GetGuildChannelsData dataPackage);
 
 		/// Creates a new Channel within a chosen Guild. \brief Creates a new Channel within a chosen Guild.
 		/// \param dataPackage A CreateGuildChannelData structure.
@@ -290,8 +261,7 @@ namespace DiscordCoreAPI {
 		/// Re-orders the Channel positions, within a chosen Guild. \brief Re-orders the Channel positions, within a chosen Guild.
 		/// \param dataPackage A ModifyGuildChannelPositionsData  structure.
 		/// \returns A CoRoutine containing void.
-		static CoRoutine<void> modifyGuildChannelPositionsAsync(
-			ModifyGuildChannelPositionsData dataPackage);
+		static CoRoutine<void> modifyGuildChannelPositionsAsync(ModifyGuildChannelPositionsData dataPackage);
 
 		/// Collect a direct-Message Channel between the bot and the User. \brief Collect a direct-Message Channel between the bot and the User.
 		/// \param dataPackage A CreateDMChannelData structure.

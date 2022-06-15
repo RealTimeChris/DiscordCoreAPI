@@ -53,8 +53,7 @@ namespace DiscordCoreAPI {
 	/// For adding a new GuildMember to a chosen Guild. \brief For adding a new GuildMember to a chosen Guild.
 	struct DiscordCoreAPI_Dll AddGuildMemberData {
 		std::vector<uint64_t> roles{};///< Array of Role ids the member is assigned.
-		std::string
-			accessToken{};///< An oauth2 access token granted with the guilds.join to the bot's application for the user you want to add.
+		std::string accessToken{};///< An oauth2 access token granted with the guilds.join to the bot's application for the user you want to add.
 		uint64_t guildId{};///< The Guild to add the new GuildMember to.
 		uint64_t userId{};///< The User id of the user you wish to add.
 		std::string nick{};///< Value to set users nickname to.
@@ -71,9 +70,7 @@ namespace DiscordCoreAPI {
 
 	/// For modifying a GuildMember's values. \brief For modifying a GuildMember's values.
 	struct DiscordCoreAPI_Dll ModifyGuildMemberData {
-		TimeStamp communicationDisabledUntil{
-			""
-		};///< When the user's timeout will expire and the user will be able to communicate in the guild again.
+		TimeStamp communicationDisabledUntil{ "" };///< When the user's timeout will expire and the user will be able to communicate in the guild again.
 		std::vector<uint64_t> roleIds{};///< A collection of Role id's to be applied to them.
 		uint64_t newVoiceChannelId{};///< The new voice Channel to move them into.
 		uint64_t currentChannelId{};///< The current voice Channel, if applicaple.
@@ -94,8 +91,7 @@ namespace DiscordCoreAPI {
 
 	/// For timing out a GuildMember. \brief For timing out a GuildMember.
 	struct DiscordCoreAPI_Dll TimeoutGuildMemberData {
-		TimeoutDurations
-			numOfMinutesToTimeoutFor{};///< The number of minutes to time-out the GuildMember for.
+		TimeoutDurations numOfMinutesToTimeoutFor{};///< The number of minutes to time-out the GuildMember for.
 		uint64_t guildMemberId{};///< The id of the GuildMember to be timed-out.
 		uint64_t guildId{};///< The id of the Guild from which you would like to acquire a member.
 		std::string reason{};///< Reason for timing them out.
@@ -104,9 +100,7 @@ namespace DiscordCoreAPI {
 	/// A single GuildMember. \brief A single GuildMember.
 	class DiscordCoreAPI_Dll GuildMember : public GuildMemberData {
 	  public:
-		TimeStamp communicationDisabledUntil{
-			""
-		};///< When the user's timeout will expire and the user will be able to communicate in the guild again.
+		TimeStamp communicationDisabledUntil{ "" };///< When the user's timeout will expire and the user will be able to communicate in the guild again.
 		std::string premiumSince{};///< If applicable, when they first boosted the server.
 		std::string avatar{};///< The member's guild avatar hash.
 
@@ -131,8 +125,7 @@ namespace DiscordCoreAPI {
 	/// An interface class for the GuildMember related Discord endpoints. \brief An interface class for the GuildMember related Discord endpoints.
 	class DiscordCoreAPI_Dll GuildMembers {
 	  public:
-		template<typename ParseType>
-		friend void DiscordCoreInternal::parseObject(const nlohmann::json&, ParseType&);
+		template<typename ParseType> friend void DiscordCoreInternal::parseObject(const nlohmann::json&, ParseType&);
 		friend DiscordCoreClient;
 		friend EventHandler;
 		friend Guild;
@@ -152,14 +145,12 @@ namespace DiscordCoreAPI {
 		/// Lists all of the GuildMembers of a chosen Guild. \brief Lists all of the GuildMembers of a chosen Guild.
 		/// \param dataPackage A ListGuildMembersData structure.
 		/// \returns A CoRoutine containing a std::vector<GuildMembers>.
-		static CoRoutine<std::vector<GuildMember>> listGuildMembersAsync(
-			ListGuildMembersData dataPackage);
+		static CoRoutine<std::vector<GuildMember>> listGuildMembersAsync(ListGuildMembersData dataPackage);
 
 		/// Searches for a list of GuildMembers of a chosen Guild. \brief Searches for a list of GuildMembers of a chosen Guild.
 		/// \param dataPackage A SearchGuildMembersData structure.
 		/// \returns A CoRoutine containing a std::vector<GuildMembers>.
-		static CoRoutine<std::vector<GuildMember>> searchGuildMembersAsync(
-			SearchGuildMembersData dataPackage);
+		static CoRoutine<std::vector<GuildMember>> searchGuildMembersAsync(SearchGuildMembersData dataPackage);
 
 		/// Adds a GuildMember to a chosen Guild. \brief Adds a GuildMember to a chosen Guild.
 		/// \param dataPackage An AddGuildMemberData structure.
@@ -174,8 +165,7 @@ namespace DiscordCoreAPI {
 		/// Modifies the current GuildMember's properties. \brief Modifies the current GuildMember's properties.
 		/// \param dataPackage A ModifyCurrentGuildMemberData structure.
 		/// \returns A CoRoutine containing a GuildMember.
-		static CoRoutine<GuildMember> modifyCurrentGuildMemberAsync(
-			ModifyCurrentGuildMemberData dataPackage);
+		static CoRoutine<GuildMember> modifyCurrentGuildMemberAsync(ModifyCurrentGuildMemberData dataPackage);
 
 		/// Removes a chosen GuildMember from a chosen Guild. \brief Removes a chosen GuildMember from a chosen Guild.
 		/// \param dataPackage A RemoveGuildMemberData structure.

@@ -31,8 +31,7 @@ namespace DiscordCoreAPI {
 		this->guildId = guildId;
 	}
 
-	void SongAPI::onSongCompletion(std::function<CoRoutine<void>(SongCompletionEventData)> handler,
-		const uint64_t& guildId) {
+	void SongAPI::onSongCompletion(std::function<CoRoutine<void>(SongCompletionEventData)> handler, const uint64_t& guildId) {
 		auto returnValue = getSongAPIMap()[guildId].get();
 		returnValue->onSongCompletionEvent.remove(returnValue->theToken);
 		returnValue->theToken = returnValue->onSongCompletionEvent.add(handler);
@@ -46,25 +45,19 @@ namespace DiscordCoreAPI {
 					if (x == this->playlist.songQueue.size() - 1) {
 						break;
 					}
-					this->playlist.songQueue[x] =
-						this->playlist.songQueue[static_cast<int64_t>(x + static_cast<int64_t>(1))];
+					this->playlist.songQueue[x] = this->playlist.songQueue[static_cast<int64_t>(x + static_cast<int64_t>(1))];
 				}
-				this->playlist.songQueue.erase(this->playlist.songQueue.end() - 1,
-					this->playlist.songQueue.end());
+				this->playlist.songQueue.erase(this->playlist.songQueue.end() - 1, this->playlist.songQueue.end());
 				return true;
-			} else if (this->playlist.songQueue.size() > 0 &&
-				this->playlist.currentSong.songId == "") {
+			} else if (this->playlist.songQueue.size() > 0 && this->playlist.currentSong.songId == "") {
 				this->playlist.currentSong = this->playlist.currentSong;
 				return true;
-			} else if (this->playlist.currentSong.songId != "" &&
-				this->playlist.songQueue.size() == 0) {
+			} else if (this->playlist.currentSong.songId != "" && this->playlist.songQueue.size() == 0) {
 				this->playlist.currentSong = this->playlist.currentSong;
 				return true;
-			} else if (this->playlist.songQueue.size() == 1 &&
-				this->playlist.currentSong.songId == "") {
+			} else if (this->playlist.songQueue.size() == 1 && this->playlist.currentSong.songId == "") {
 				this->playlist.currentSong = this->playlist.songQueue[0];
-				this->playlist.songQueue.erase(this->playlist.songQueue.begin(),
-					this->playlist.songQueue.begin() + 1);
+				this->playlist.songQueue.erase(this->playlist.songQueue.begin(), this->playlist.songQueue.begin() + 1);
 				return true;
 			} else if (this->playlist.currentSong.songId == "") {
 				return false;
@@ -76,51 +69,39 @@ namespace DiscordCoreAPI {
 					if (x == this->playlist.songQueue.size() - 1) {
 						break;
 					}
-					this->playlist.songQueue[x] =
-						this->playlist.songQueue[static_cast<int64_t>(x + static_cast<int64_t>(1))];
+					this->playlist.songQueue[x] = this->playlist.songQueue[static_cast<int64_t>(x + static_cast<int64_t>(1))];
 				}
-				this->playlist.songQueue.erase(this->playlist.songQueue.end() - 1,
-					this->playlist.songQueue.end());
+				this->playlist.songQueue.erase(this->playlist.songQueue.end() - 1, this->playlist.songQueue.end());
 				return true;
-			} else if (this->playlist.songQueue.size() > 0 &&
-				this->playlist.currentSong.songId != "") {
+			} else if (this->playlist.songQueue.size() > 0 && this->playlist.currentSong.songId != "") {
 				Song tempSong02 = this->playlist.currentSong;
 				this->playlist.currentSong = this->playlist.songQueue[0];
 				for (int32_t x = 0; x < this->playlist.songQueue.size(); x += 1) {
 					if (x == this->playlist.songQueue.size() - 1) {
 						break;
 					}
-					this->playlist.songQueue[x] =
-						this->playlist.songQueue[static_cast<int64_t>(x + static_cast<int64_t>(1))];
+					this->playlist.songQueue[x] = this->playlist.songQueue[static_cast<int64_t>(x + static_cast<int64_t>(1))];
 				}
 				this->playlist.songQueue[this->playlist.songQueue.size() - 1] = tempSong02;
 				return true;
-			} else if (this->playlist.currentSong.songId != "" &&
-				this->playlist.songQueue.size() == 0) {
+			} else if (this->playlist.currentSong.songId != "" && this->playlist.songQueue.size() == 0) {
 				return true;
-			} else if (this->playlist.songQueue.size() == 1 &&
-				this->playlist.currentSong.songId == "") {
+			} else if (this->playlist.songQueue.size() == 1 && this->playlist.currentSong.songId == "") {
 				this->playlist.currentSong = this->playlist.songQueue[0];
-				this->playlist.songQueue.erase(this->playlist.songQueue.begin(),
-					this->playlist.songQueue.begin() + 1);
+				this->playlist.songQueue.erase(this->playlist.songQueue.begin(), this->playlist.songQueue.begin() + 1);
 				return true;
 			} else if (this->playlist.currentSong.songId == "") {
 				return false;
 			}
 		} else {
-			if (this->playlist.songQueue.size() > 0 &&
-				(this->playlist.currentSong.songId != "" ||
-					this->playlist.currentSong.songId == "")) {
+			if (this->playlist.songQueue.size() > 0 && (this->playlist.currentSong.songId != "" || this->playlist.currentSong.songId == "")) {
 				this->playlist.currentSong = this->playlist.songQueue[0];
 				for (int32_t x = 0; x < this->playlist.songQueue.size() - 1; x += 1) {
-					this->playlist.songQueue[x] =
-						this->playlist.songQueue[static_cast<int64_t>(x + static_cast<int64_t>(1))];
+					this->playlist.songQueue[x] = this->playlist.songQueue[static_cast<int64_t>(x + static_cast<int64_t>(1))];
 				}
-				this->playlist.songQueue.erase(this->playlist.songQueue.end() - 1,
-					this->playlist.songQueue.end());
+				this->playlist.songQueue.erase(this->playlist.songQueue.end() - 1, this->playlist.songQueue.end());
 				return true;
-			} else if (this->playlist.currentSong.songId != "" &&
-				this->playlist.songQueue.size() == 0) {
+			} else if (this->playlist.currentSong.songId != "" && this->playlist.songQueue.size() == 0) {
 				this->playlist.currentSong = Song();
 				return true;
 			} else if (this->playlist.currentSong.songId == "") {
@@ -148,10 +129,8 @@ namespace DiscordCoreAPI {
 		} else {
 			getYouTubeAPIMap()[guildMember.guildId]->cancelCurrentSong();
 		}
-		if (SongAPI::isLoopAllEnabled(guildMember.guildId) ||
-			SongAPI::isLoopSongEnabled(guildMember.guildId)) {
-			getSongAPIMap()[guildMember.guildId]->playlist.songQueue.push_back(
-				getSongAPIMap()[guildMember.guildId]->playlist.currentSong);
+		if (SongAPI::isLoopAllEnabled(guildMember.guildId) || SongAPI::isLoopSongEnabled(guildMember.guildId)) {
+			getSongAPIMap()[guildMember.guildId]->playlist.songQueue.push_back(getSongAPIMap()[guildMember.guildId]->playlist.currentSong);
 			SongAPI::setCurrentSong(Song(), guildMember.guildId);
 		} else {
 			SongAPI::setCurrentSong(Song(), guildMember.guildId);
@@ -182,14 +161,12 @@ namespace DiscordCoreAPI {
 		getSongAPIMap()[guildId]->playlist.songQueue = newVector02;
 		auto returnValue = getSongAPIMap()[guildId].get();
 		if (returnValue) {
-			getSongAPIMap()[guildId]->onSongCompletionEvent.remove(
-				getSongAPIMap()[guildId]->theToken);
+			getSongAPIMap()[guildId]->onSongCompletionEvent.remove(getSongAPIMap()[guildId]->theToken);
 			getSongAPIMap()[guildId]->theToken = DiscordCoreInternal::EventDelegateToken{};
 		}
 	}
 
-	std::vector<Song> SongAPI::searchForSong(const std::string& searchQuery,
-		const uint64_t& guildId) {
+	std::vector<Song> SongAPI::searchForSong(const std::string& searchQuery, const uint64_t& guildId) {
 		auto vector01 = getSoundCloudAPIMap()[guildId]->searchForSong(searchQuery);
 		auto vector02 = getYouTubeAPIMap()[guildId]->searchForSong(searchQuery);
 		int32_t totalLength = static_cast<int32_t>(vector01.size() + vector02.size());
@@ -230,10 +207,8 @@ namespace DiscordCoreAPI {
 		if (!getSongAPIMap().contains(guildId)) {
 			getSongAPIMap()[guildId] = std::make_unique<SongAPI>(guildId);
 		}
-		if (getSongAPIMap()[guildId]->playlist.isLoopAllEnabled ||
-			getSongAPIMap()[guildId]->playlist.isLoopSongEnabled) {
-			if (getSongAPIMap()[guildId]->playlist.songQueue.size() == 0 &&
-				getSongAPIMap()[guildId]->playlist.currentSong.songId == "") {
+		if (getSongAPIMap()[guildId]->playlist.isLoopAllEnabled || getSongAPIMap()[guildId]->playlist.isLoopSongEnabled) {
+			if (getSongAPIMap()[guildId]->playlist.songQueue.size() == 0 && getSongAPIMap()[guildId]->playlist.currentSong.songId == "") {
 				return false;
 			} else {
 				return true;
@@ -267,11 +242,9 @@ namespace DiscordCoreAPI {
 		return getSongAPIMap()[guildId]->playlist;
 	}
 
-	void SongAPI::modifyQueue(int32_t firstSongPosition, int32_t secondSongPosition,
-		const uint64_t& guildId) {
+	void SongAPI::modifyQueue(int32_t firstSongPosition, int32_t secondSongPosition, const uint64_t& guildId) {
 		Song tempSong = getSongAPIMap()[guildId]->playlist.songQueue[firstSongPosition];
-		getSongAPIMap()[guildId]->playlist.songQueue[firstSongPosition] =
-			getSongAPIMap()[guildId]->playlist.songQueue[secondSongPosition];
+		getSongAPIMap()[guildId]->playlist.songQueue[firstSongPosition] = getSongAPIMap()[guildId]->playlist.songQueue[secondSongPosition];
 		getSongAPIMap()[guildId]->playlist.songQueue[secondSongPosition] = tempSong;
 	}
 
@@ -290,29 +263,21 @@ namespace DiscordCoreAPI {
 	}
 
 	void SongAPI::sendNextSongFinal(const GuildMember& guildMember) {
-		if (getSongAPIMap()[guildMember.guildId]->playlist.currentSong.type ==
-			SongType::SoundCloud) {
+		if (getSongAPIMap()[guildMember.guildId]->playlist.currentSong.type == SongType::SoundCloud) {
 			getSoundCloudAPIMap()[guildMember.guildId]->cancelCurrentSong();
-			auto newerSong = getSoundCloudAPIMap()[guildMember.guildId]->collectFinalSong(
-				guildMember, getSongAPIMap()[guildMember.guildId]->playlist.currentSong);
+			auto newerSong = getSoundCloudAPIMap()[guildMember.guildId]->collectFinalSong(guildMember, getSongAPIMap()[guildMember.guildId]->playlist.currentSong);
 			newerSong.addedByUserId = guildMember.id;
-			getSongAPIMap()[this->guildId]->theTask =
-				std::make_unique<std::jthread>([=, this](std::stop_token theToken) {
-					getSoundCloudAPIMap()[this->guildId]->downloadAndStreamAudio(newerSong,
-						getSoundCloudAPIMap()[this->guildId].get(), theToken, 0);
-				});
+			getSongAPIMap()[this->guildId]->theTask = std::make_unique<std::jthread>([=, this](std::stop_token theToken) {
+				getSoundCloudAPIMap()[this->guildId]->downloadAndStreamAudio(newerSong, getSoundCloudAPIMap()[this->guildId].get(), theToken, 0);
+			});
 
-		} else if (getSongAPIMap()[guildMember.guildId]->playlist.currentSong.type ==
-			SongType::YouTube) {
+		} else if (getSongAPIMap()[guildMember.guildId]->playlist.currentSong.type == SongType::YouTube) {
 			getYouTubeAPIMap()[guildMember.guildId]->cancelCurrentSong();
-			Song newerSong = getYouTubeAPIMap()[guildMember.guildId]->collectFinalSong(guildMember,
-				getSongAPIMap()[guildMember.guildId]->playlist.currentSong);
+			Song newerSong = getYouTubeAPIMap()[guildMember.guildId]->collectFinalSong(guildMember, getSongAPIMap()[guildMember.guildId]->playlist.currentSong);
 			newerSong.addedByUserId = guildMember.id;
-			getSongAPIMap()[this->guildId]->theTask =
-				std::make_unique<std::jthread>([=, this](std::stop_token theToken) {
-					getYouTubeAPIMap()[this->guildId]->downloadAndStreamAudio(newerSong,
-						getYouTubeAPIMap()[this->guildId].get(), theToken, 0);
-				});
+			getSongAPIMap()[this->guildId]->theTask = std::make_unique<std::jthread>([=, this](std::stop_token theToken) {
+				getYouTubeAPIMap()[this->guildId]->downloadAndStreamAudio(newerSong, getYouTubeAPIMap()[this->guildId].get(), theToken, 0);
+			});
 		};
 	}
 

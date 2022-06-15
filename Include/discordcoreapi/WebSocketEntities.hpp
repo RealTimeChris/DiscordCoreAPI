@@ -40,12 +40,9 @@ namespace DiscordCoreInternal {
 		friend class WSMessageCollector;
 		friend VoiceSocketAgent;
 
-		BaseSocketAgent(const std::string& botTokenNew, const std::string& baseUrl,
-			DiscordCoreAPI::EventManager* eventManager,
-			DiscordCoreAPI::DiscordCoreClient* discordCoreClient,
-			DiscordCoreAPI::CommandController* commandController, std::atomic_bool* doWeQuitNew,
-			bool doWePrintSuccessMessages, bool doWePrintErrorMessages,
-			int32_t currentBaseSocketAgent) noexcept;
+		BaseSocketAgent(const std::string& botTokenNew, const std::string& baseUrl, DiscordCoreAPI::EventManager* eventManager,
+			DiscordCoreAPI::DiscordCoreClient* discordCoreClient, DiscordCoreAPI::CommandController* commandController, std::atomic_bool* doWeQuitNew,
+			bool doWePrintSuccessMessages, bool doWePrintErrorMessages, int32_t currentBaseSocketAgent) noexcept;
 
 		void sendMessage(const nlohmann::json& dataToSend, int32_t theIndex) noexcept;
 
@@ -60,12 +57,8 @@ namespace DiscordCoreInternal {
 		~BaseSocketAgent() noexcept;
 
 	  protected:
-		std::unordered_map<std::string,
-			DiscordCoreAPI::TSUnboundedMessageBlock<VoiceConnectionData>*>
-			voiceConnectionDataBufferMap{};
-		const DiscordCoreAPI::GatewayIntents intentsValue{
-			DiscordCoreAPI::GatewayIntents::All_Intents
-		};
+		std::unordered_map<std::string, DiscordCoreAPI::TSUnboundedMessageBlock<VoiceConnectionData>*> voiceConnectionDataBufferMap{};
+		const DiscordCoreAPI::GatewayIntents intentsValue{ DiscordCoreAPI::GatewayIntents::All_Intents };
 		std::unordered_map<int32_t, std::unique_ptr<WebSocketSSLShard>> theClients{};
 		DiscordCoreAPI::TextFormat theFormat{ DiscordCoreAPI::TextFormat::Etf };
 		DiscordCoreAPI::DiscordCoreClient* discordCoreClient{ nullptr };
@@ -92,11 +85,9 @@ namespace DiscordCoreInternal {
 		std::string baseUrl{};
 		uint64_t userId{};
 
-		void getVoiceConnectionData(const VoiceConnectInitData& doWeCollect,
-			int32_t theIndex) noexcept;
+		void getVoiceConnectionData(const VoiceConnectInitData& doWeCollect, int32_t theIndex) noexcept;
 
-		void createHeader(std::string& outBuffer, uint64_t sendLength,
-			WebSocketOpCode opCode) noexcept;
+		void createHeader(std::string& outBuffer, uint64_t sendLength, WebSocketOpCode opCode) noexcept;
 
 		void stringifyJsonData(const nlohmann::json& dataToSend, std::string&) noexcept;
 
@@ -117,8 +108,7 @@ namespace DiscordCoreInternal {
 	  public:
 		friend class DiscordCoreAPI::VoiceConnection;
 
-		VoiceSocketAgent(VoiceConnectInitData initDataNew, BaseSocketAgent* baseBaseSocketAgentNew,
-			int32_t theIndex, bool doWePrintMessages = false) noexcept;
+		VoiceSocketAgent(VoiceConnectInitData initDataNew, BaseSocketAgent* baseBaseSocketAgentNew, int32_t theIndex, bool doWePrintMessages = false) noexcept;
 
 		void sendMessage(const std::vector<uint8_t>& responseData) noexcept;
 
@@ -153,8 +143,7 @@ namespace DiscordCoreInternal {
 		std::string baseUrl{};
 		std::string hostIp{};
 
-		void createHeader(std::string& outbuf, uint64_t sendlength,
-			WebSocketOpCode opCode) noexcept;
+		void createHeader(std::string& outbuf, uint64_t sendlength, WebSocketOpCode opCode) noexcept;
 
 		void parseHeadersAndMessage(WebSocketSSLShard& theShard) noexcept;
 

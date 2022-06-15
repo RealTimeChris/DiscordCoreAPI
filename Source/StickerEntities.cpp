@@ -30,8 +30,7 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<Sticker> Stickers::getStickerAsync(GetStickerData dataPackage) {
 		DiscordCoreInternal::HttpWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(
-			DiscordCoreInternal::HttpWorkloadType::Get_Sticker);
+		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Get_Sticker);
 		co_await NewThreadAwaitable<Sticker>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Sticker;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
@@ -42,22 +41,18 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<std::vector<StickerPackData>> Stickers::getNitroStickerPacksAsync() {
 		DiscordCoreInternal::HttpWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(
-			DiscordCoreInternal::HttpWorkloadType::Get_Nitro_Sticker_Packs);
+		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Get_Nitro_Sticker_Packs);
 		co_await NewThreadAwaitable<std::vector<StickerPackData>>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Nitro_Sticker_Packs;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
 		workload.relativePath = "/sticker-packs";
 		workload.callStack = "Stickers::getNitroStickerPacksAsync";
-		co_return Stickers::httpClient->submitWorkloadAndGetResult<std::vector<StickerPackData>>(
-			workload);
+		co_return Stickers::httpClient->submitWorkloadAndGetResult<std::vector<StickerPackData>>(workload);
 	}
 
-	CoRoutine<std::vector<Sticker>> Stickers::getGuildStickersAsync(
-		GetGuildStickersData dataPackage) {
+	CoRoutine<std::vector<Sticker>> Stickers::getGuildStickersAsync(GetGuildStickersData dataPackage) {
 		DiscordCoreInternal::HttpWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(
-			DiscordCoreInternal::HttpWorkloadType::Get_Guild_Stickers);
+		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Get_Guild_Stickers);
 		co_await NewThreadAwaitable<std::vector<Sticker>>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Guild_Stickers;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
@@ -68,15 +63,12 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<Sticker> Stickers::createGuildStickerAsync(CreateGuildStickerData dataPackage) {
 		DiscordCoreInternal::HttpWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(
-			DiscordCoreInternal::HttpWorkloadType::Post_Guild_Sticker);
+		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Post_Guild_Sticker);
 		co_await NewThreadAwaitable<Sticker>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Post_Guild_Sticker;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Post;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/stickers";
-		nlohmann::json responseData = { { "description", dataPackage.description },
-			{ "name", dataPackage.name }, { "tags", dataPackage.tags },
-			{ "file", dataPackage.file } };
+		nlohmann::json responseData = { { "description", dataPackage.description }, { "name", dataPackage.name }, { "tags", dataPackage.tags }, { "file", dataPackage.file } };
 		workload.content = responseData.dump();
 		workload.callStack = "Stickers::createGuildStickerAsync";
 		if (dataPackage.reason != "") {
@@ -87,15 +79,12 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<Sticker> Stickers::modifyGuildStickerAsync(ModifyGuildStickerData dataPackage) {
 		DiscordCoreInternal::HttpWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(
-			DiscordCoreInternal::HttpWorkloadType::Patch_Guild_Sticker);
+		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Patch_Guild_Sticker);
 		co_await NewThreadAwaitable<Sticker>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Patch_Guild_Sticker;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Patch;
-		workload.relativePath =
-			"/guilds/" + std::to_string(dataPackage.guildId) + "/stickers/" + dataPackage.stickerId;
-		nlohmann::json responseData = { { "description", dataPackage.description },
-			{ "name", dataPackage.name }, { "tags", dataPackage.tags } };
+		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/stickers/" + dataPackage.stickerId;
+		nlohmann::json responseData = { { "description", dataPackage.description }, { "name", dataPackage.name }, { "tags", dataPackage.tags } };
 		workload.content = responseData.dump();
 		workload.callStack = "Stickers::modifyGuildStickerAsync";
 		if (dataPackage.reason != "") {
@@ -106,13 +95,11 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<void> Stickers::deleteGuildStickerAsync(DeleteGuildStickerData dataPackage) {
 		DiscordCoreInternal::HttpWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(
-			DiscordCoreInternal::HttpWorkloadType::Delete_Guild_Sticker);
+		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Delete_Guild_Sticker);
 		co_await NewThreadAwaitable<void>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Delete_Guild_Sticker;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Delete;
-		workload.relativePath =
-			"/guilds/" + std::to_string(dataPackage.guildId) + "/stickers/" + dataPackage.stickerId;
+		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/stickers/" + dataPackage.stickerId;
 		workload.callStack = "Stickers::deleteGuildStickerAsync";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;

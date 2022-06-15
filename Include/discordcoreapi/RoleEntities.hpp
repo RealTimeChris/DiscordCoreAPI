@@ -57,8 +57,7 @@ namespace DiscordCoreAPI {
 	/// For creating a new Role within a chosen Guild. \brief For creating a new Role within a chosen Guild.
 	struct DiscordCoreAPI_Dll CreateGuildRoleData {
 		std::string hexColorValue{};///< Hex color-value between 0 and ffffff.
-		std::vector<uint8_t>
-			icon{};///< Image data	the role's icon image (if the guild has the ROLE_ICONS feature)	null.
+		std::vector<uint8_t> icon{};///< Image data	the role's icon image (if the guild has the ROLE_ICONS feature)	null.
 		std::string unicodeEmoji{};///< The role's unicode emoji as a standard emoji.
 		Permissions permissions{};///< The base permissions to give the Role.
 		bool mentionable{ false };///< Is it mentionable by others in the Guild.
@@ -77,8 +76,7 @@ namespace DiscordCoreAPI {
 
 	/// For updating the Role positions. \brief For updating the Role positions.
 	struct DiscordCoreAPI_Dll ModifyGuildRolePositionsData {
-		friend std::string DiscordCoreInternal::JSONIFY(
-			const ModifyGuildRolePositionsData& dataPackage);
+		friend std::string DiscordCoreInternal::JSONIFY(const ModifyGuildRolePositionsData& dataPackage);
 		friend Roles;
 
 		uint64_t guildId{};///< The Guild within which to move the Role.
@@ -94,8 +92,7 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll ModifyGuildRoleData {
 		Permissions permissions{ "0" };///< Base Guild permissions for the Role.
 		std::string hexColorValue{};///< A hex-color value between 0x00 and 0xFFFFFF.
-		std::vector<uint8_t>
-			icon{};///< Image data	the role's icon image (if the guild has the ROLE_ICONS feature)	null.
+		std::vector<uint8_t> icon{};///< Image data	the role's icon image (if the guild has the ROLE_ICONS feature)	null.
 		std::string unicodeEmoji{};///< The role's unicode emoji as a standard emoji.
 		bool mentionable{ false };///< Is it mentionable?
 		uint64_t guildId{};///< The id of the Guild within which to update the Role.
@@ -152,8 +149,7 @@ namespace DiscordCoreAPI {
 	/// An interface class for the Role related Discord endpoints. \brief An interface class for the Role related Discord endpoints.
 	class DiscordCoreAPI_Dll Roles {
 	  public:
-		template<typename ParseType>
-		friend void DiscordCoreInternal::parseObject(const nlohmann::json&, ParseType&);
+		template<typename ParseType> friend void DiscordCoreInternal::parseObject(const nlohmann::json&, ParseType&);
 		friend DiscordCoreClient;
 		friend EventHandler;
 		friend Guild;
@@ -183,8 +179,7 @@ namespace DiscordCoreAPI {
 		/// Updates a Role's positions. \brief Updates a Role's positions.
 		/// \param dataPackage A ModifyGuildRolePositionsData structure.
 		/// \returns A CoRoutine containing a std::vector<Role>.
-		static CoRoutine<std::vector<Role>> modifyGuildRolePositionsAsync(
-			ModifyGuildRolePositionsData dataPackage);
+		static CoRoutine<std::vector<Role>> modifyGuildRolePositionsAsync(ModifyGuildRolePositionsData dataPackage);
 
 		/// Updates a given Role's properties. \brief Updates a given Role's properties.
 		/// \param dataPackage A ModifyGuildRoleData structure.
@@ -199,8 +194,7 @@ namespace DiscordCoreAPI {
 		/// Collects the Roles that a GuildMember has. \brief Collects the Roles that a GuildMember has.
 		/// \param dataPackage A GetGuildMemberRolesData structure.
 		/// \returns A CoRoutine containing a std::vector<Role>.
-		static CoRoutine<std::vector<Role>> getGuildMemberRolesAsync(
-			GetGuildMemberRolesData dataPackage);
+		static CoRoutine<std::vector<Role>> getGuildMemberRolesAsync(GetGuildMemberRolesData dataPackage);
 
 		/// Collects a Role from the Discord servers. \brief Collects a Role from the Discord servers.
 		/// \param dataPackage A GetRoleData structure.
