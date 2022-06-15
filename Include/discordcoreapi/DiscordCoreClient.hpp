@@ -114,6 +114,7 @@ namespace DiscordCoreAPI {
 		std::vector<std::string> threadIds{};
 		ShardingOptions shardingOptions{};
 		LoggingOptions loggingOptions{};
+		GatewayIntents theIntents{};
 		CacheOptions cacheOptions{};
 		std::string altAddress{};
 		ThreadPool threadPool{};

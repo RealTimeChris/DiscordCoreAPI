@@ -65,6 +65,7 @@ namespace DiscordCoreAPI {
 		this->altAddress = configData.alternateConnectionAddress;
 		this->shardingOptions = configData.shardOptions;
 		this->cacheOptions = configData.cacheOptions;
+		this->theIntents = configData.theIntents;
 		if (this->loggingOptions.logFFMPEGSuccessMessages) {
 			av_log_set_level(AV_LOG_INFO);
 		}

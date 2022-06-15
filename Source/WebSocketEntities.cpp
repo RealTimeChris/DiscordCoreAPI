@@ -43,6 +43,7 @@ namespace DiscordCoreInternal {
 		this->discordCoreClient = discordCoreClientNew;
 		this->eventManager = &discordCoreClientNew->eventManager;
 		this->botToken = discordCoreClientNew->botToken;
+		this->intentsValue = discordCoreClientNew->theIntents;
 		this->doWeQuit = doWeQuitNew;
 		this->theFormat = this->discordCoreClient->theFormat;
 		if (this->theFormat == DiscordCoreAPI::TextFormat::Etf) {
