@@ -206,6 +206,7 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<std::vector<GuildData>> Guilds::getAllGuildsAsync() {
+		std::shared_lock<std::shared_mutex> theLock{ Guilds::theMutex };
 		co_await NewThreadAwaitable<std::vector<GuildData>>();
 		std::vector<GuildData> guildVector{};
 		for (auto& [key, value]: *Guilds::cache) {
