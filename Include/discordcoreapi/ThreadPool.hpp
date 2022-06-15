@@ -151,7 +151,6 @@ namespace DiscordCoreInternal {
 		std::atomic_bool theCurrentStatus{ false };
 		std::thread::id threadId{};
 		std::jthread theThread{};
-		int64_t theIndex{ 0 };
 	};
 
 	class DiscordCoreAPI_Dll CoRoutineThreadPool {

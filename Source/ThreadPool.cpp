@@ -53,7 +53,6 @@ namespace DiscordCoreInternal {
 		this->theCurrentStatus.store(other.theCurrentStatus.load());
 		this->theThread.swap(other.theThread);
 		this->threadId = other.threadId;
-		this->theIndex = other.theIndex;
 		return *this;
 	}
 
@@ -66,7 +65,6 @@ namespace DiscordCoreInternal {
 			WorkerThread workerThread{};
 			this->currentIndex += 1;
 			this->currentCount += 1;
-			workerThread.theIndex = this->currentIndex;
 			workerThread.theThread = std::jthread([=, this](std::stop_token theToken) {
 				auto thePtr = std::make_unique<HttpConnection>();
 				Globals::httpConnections[std::this_thread::get_id()] = std::move(thePtr);
@@ -88,7 +86,6 @@ namespace DiscordCoreInternal {
 			WorkerThread workerThread{};
 			this->currentCount += 1;
 			this->currentIndex += 1;
-			workerThread.theIndex = this->currentIndex;
 			workerThread.theThread = std::jthread([=, this](std::stop_token theToken) {
 				auto thePtr = std::make_unique<HttpConnection>();
 				Globals::httpConnections[std::this_thread::get_id()] = std::move(thePtr);
