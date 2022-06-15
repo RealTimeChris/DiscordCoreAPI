@@ -159,7 +159,7 @@ namespace DiscordCoreInternal {
 		newSong.finalDownloadUrls[1] = downloadUrl02;
 		newSong.viewUrl = newSong.firstDownloadUrl;
 		DiscordCoreAPI::StringWrapper theString = guildMember.userName;
-		newSong.addedByUserName = theString; 
+		newSong.addedByUserName = theString;
 		newSong.contentLength = newSong.format.contentLength;
 		newSong.addedByUserId = guildMember.id;
 		newSong.type = DiscordCoreAPI::SongType::YouTube;
@@ -203,8 +203,7 @@ namespace DiscordCoreInternal {
 
 	void YouTubeAPI::downloadAndStreamAudio(const DiscordCoreAPI::Song& newSong, YouTubeAPI* youtubeAPI, std::stop_token theToken, int32_t currentRecursionDepth) {
 		try {
-			std::unique_ptr<WebSocketSSLShard> streamSocket{ std::make_unique<WebSocketSSLShard>(nullptr, youtubeAPI->maxBufferSize, 0, 0,
-				this->doWePrintWebSocketErrorMessages) };
+			std::unique_ptr<WebSocketSSLShard> streamSocket{ std::make_unique<WebSocketSSLShard>(nullptr, youtubeAPI->maxBufferSize, 0, 0, this->doWePrintWebSocketErrorMessages) };
 			std::unordered_map<int32_t, std::unique_ptr<WebSocketSSLShard>> theMap{};
 			auto bytesRead{ static_cast<int32_t>(streamSocket->getBytesRead()) };
 			theMap[0] = std::move(streamSocket);
@@ -238,6 +237,7 @@ namespace DiscordCoreInternal {
 						DiscordCoreAPI::reportException("BaseSocketAgent::getVoiceConnectionData()");
 					}
 					this->breakOutPlayMore(theToken, std::move(audioDecoder), haveWeFailed, counter, this, newSong, currentRecursionDepth);
+					return;
 				}
 				while (newSong.contentLength > bytesSubmittedTotal) {
 					std::this_thread::sleep_for(1ms);
@@ -281,13 +281,14 @@ namespace DiscordCoreInternal {
 									DiscordCoreAPI::reportException("BaseSocketAgent::getVoiceConnectionData()");
 								}
 								this->breakOutPlayMore(theToken, std::move(audioDecoder), haveWeFailed, counter, this, newSong, currentRecursionDepth);
+								return;
 							}
 							if (!theToken.stop_requested()) {
 								if (theMap.contains(0)) {
 									bytesSubmittedTotal = theMap[0]->getBytesRead();
 									std::string newData = theMap[0]->getInputBuffer();
-								}								
-							}							
+								}
+							}
 							if (theToken.stop_requested()) {
 								this->breakOut(theToken, std::move(audioDecoder), this);
 								return;
@@ -307,6 +308,7 @@ namespace DiscordCoreInternal {
 									DiscordCoreAPI::reportException("BaseSocketAgent::getVoiceConnectionData()");
 								}
 								this->breakOutPlayMore(theToken, std::move(audioDecoder), haveWeFailed, counter, this, newSong, currentRecursionDepth);
+								return;
 							}
 							std::string streamBuffer{};
 							if (theMap.contains(0)) {
@@ -328,8 +330,7 @@ namespace DiscordCoreInternal {
 								continue;
 							}
 							audioDecoder->startMe();
-						}
-						else if (counter > 0) {
+						} else if (counter > 0) {
 							if (contentLengthCurrent > 0) {
 								if (theToken.stop_requested()) {
 									this->breakOut(theToken, std::move(audioDecoder), this);
@@ -343,8 +344,9 @@ namespace DiscordCoreInternal {
 										DiscordCoreAPI::reportException("BaseSocketAgent::getVoiceConnectionData()");
 									}
 									this->breakOutPlayMore(theToken, std::move(audioDecoder), haveWeFailed, counter, this, newSong, currentRecursionDepth);
+									return;
 								}
-								std::string newVector{}; 
+								std::string newVector{};
 								if (theMap.contains(0)) {
 									newVector = theMap[0]->getInputBuffer();
 								}
