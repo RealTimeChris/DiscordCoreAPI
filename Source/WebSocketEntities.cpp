@@ -305,6 +305,7 @@ namespace DiscordCoreInternal {
 				close <<= 8;
 				close |= theShard.inputBuffer[3] & 0xff;
 				theShard.closeCode = static_cast<WebSocketCloseCode>(close);
+				this->onClosed(theShard.shard[0]);
 				return;
 			}
 			default: {
