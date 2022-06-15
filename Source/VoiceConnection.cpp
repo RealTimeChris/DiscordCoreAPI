@@ -145,11 +145,11 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::connect(const DiscordCoreInternal::VoiceConnectInitData& voiceConnectInitDataNew) {
-		this->areWeConnectedBool = true;
+		this->voiceConnectInitData = voiceConnectInitDataNew;
 		this->areWeStopping.store(false);
+		this->areWeConnectedBool = true;
 		this->stopSetEvent.set();
 		this->pauseEvent.set();
-		this->voiceConnectInitData = voiceConnectInitDataNew;
 		if (!this->baseSocketAgent->areWeReadyToConnectEvent.wait(10000)) {
 			return;
 		}

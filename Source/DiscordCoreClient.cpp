@@ -187,8 +187,7 @@ namespace DiscordCoreAPI {
 
 		this->theStopWatch.resetTimer();
 		for (auto& value: shardsPerWorkerVect) {
-			auto thePtr = std::make_unique<DiscordCoreInternal::BaseSocketAgent>(this->botToken, this->altAddress, &this->eventManager, this, &this->commandController,
-				&Globals::doWeQuit, this->loggingOptions.logWebSocketSuccessMessages, this->loggingOptions.logWebSocketErrorMessages, currentBaseSocketAgent);
+			auto thePtr = std::make_unique<DiscordCoreInternal::BaseSocketAgent>(this, &Globals::doWeQuit, currentBaseSocketAgent);
 			this->baseSocketAgentMap[std::to_string(currentBaseSocketAgent)] = std::move(thePtr);
 			for (int32_t x = 0; x < value; x += 1) {
 				if (this->loggingOptions.logGeneralSuccessMessages) {

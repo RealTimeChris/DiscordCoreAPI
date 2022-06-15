@@ -40,9 +40,7 @@ namespace DiscordCoreInternal {
 		friend class WSMessageCollector;
 		friend VoiceSocketAgent;
 
-		BaseSocketAgent(const std::string& botTokenNew, const std::string& baseUrl, DiscordCoreAPI::EventManager* eventManager,
-			DiscordCoreAPI::DiscordCoreClient* discordCoreClient, DiscordCoreAPI::CommandController* commandController, std::atomic_bool* doWeQuitNew,
-			bool doWePrintSuccessMessages, bool doWePrintErrorMessages, int32_t currentBaseSocketAgent) noexcept;
+		BaseSocketAgent(DiscordCoreAPI::DiscordCoreClient* discordCoreClientNew, std::atomic_bool* doWeQuitNew, int32_t currentBaseSocketAgentNew) noexcept;
 
 		void sendMessage(const nlohmann::json& dataToSend, int32_t theIndex) noexcept;
 

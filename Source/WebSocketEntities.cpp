@@ -35,16 +35,14 @@ namespace DiscordCoreInternal {
 	constexpr uint8_t webSocketFinishBit{ (1u << 7u) };
 	constexpr uint8_t webSocketMaskBit{ (1u << 7u) };
 
-	BaseSocketAgent::BaseSocketAgent(const std::string& botTokenNew, const std::string& baseUrlNew, DiscordCoreAPI::EventManager* eventManagerNew,
-		DiscordCoreAPI::DiscordCoreClient* discordCoreClientNew, DiscordCoreAPI::CommandController* commandControllerNew, std::atomic_bool* doWeQuitNew,
-		bool doWePrintSuccessMessagesNew, bool doWePrintErrorMessagesNew, int32_t currentBaseSocketAgentNew) noexcept {
-		this->doWePrintSuccessMessages = doWePrintSuccessMessagesNew;
+	BaseSocketAgent::BaseSocketAgent(DiscordCoreAPI::DiscordCoreClient* discordCoreClientNew, std::atomic_bool* doWeQuitNew, int32_t currentBaseSocketAgentNew) noexcept {
+		this->doWePrintSuccessMessages = discordCoreClientNew->loggingOptions.logWebSocketSuccessMessages;
+		this->doWePrintErrorMessages = discordCoreClientNew->loggingOptions.logWebSocketErrorMessages;
 		this->currentBaseSocketAgent = currentBaseSocketAgentNew;
-		this->doWePrintErrorMessages = doWePrintErrorMessagesNew;
-		this->commandController = commandControllerNew;
+		this->commandController = &discordCoreClientNew->commandController;
 		this->discordCoreClient = discordCoreClientNew;
-		this->eventManager = eventManagerNew;
-		this->botToken = botTokenNew;
+		this->eventManager = &discordCoreClientNew->eventManager;
+		this->botToken = discordCoreClientNew->botToken;
 		this->doWeQuit = doWeQuitNew;
 		this->theFormat = this->discordCoreClient->theFormat;
 		if (this->theFormat == DiscordCoreAPI::TextFormat::Etf) {
@@ -52,7 +50,7 @@ namespace DiscordCoreInternal {
 		} else {
 			this->dataOpcode = WebSocketOpCode::Op_Text;
 		}
-		this->baseUrl = baseUrlNew;
+		this->baseUrl = discordCoreClientNew->altAddress;
 		this->theTask = std::make_unique<std::jthread>([this](std::stop_token theToken) {
 			this->run(theToken);
 		});
@@ -1073,12 +1071,12 @@ namespace DiscordCoreInternal {
 	}
 
 	VoiceSocketAgent::VoiceSocketAgent(VoiceConnectInitData initDataNew, BaseSocketAgent* baseBaseSocketAgentNew, int32_t theIndex, bool printMessagesNew) noexcept {
-		this->baseSocketAgent = baseBaseSocketAgentNew;
-		this->voiceConnectInitData = initDataNew;
 		this->doWePrintSuccessMessages = baseBaseSocketAgentNew->doWePrintSuccessMessages;
 		this->doWePrintErrorMessages = baseBaseSocketAgentNew->doWePrintErrorMessages;
-		this->baseSocketAgent->voiceConnectionDataBufferMap[std::to_string(this->voiceConnectInitData.guildId)] = &this->voiceConnectionDataBuffer;
-		this->baseSocketAgent->getVoiceConnectionData(this->voiceConnectInitData, theIndex);
+		this->baseSocketAgent = baseBaseSocketAgentNew;
+		this->baseSocketAgent->getVoiceConnectionData(initDataNew, theIndex);
+		this->baseSocketAgent->voiceConnectionDataBufferMap[std::to_string(initDataNew.guildId)] = &this->voiceConnectionDataBuffer;
+		this->voiceConnectInitData = initDataNew;
 		this->areWeConnected.reset();
 		this->theTask = std::make_unique<std::jthread>([this](std::stop_token theToken) {
 			this->run(theToken);
