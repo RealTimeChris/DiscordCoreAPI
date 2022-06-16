@@ -105,7 +105,6 @@ namespace DiscordCoreInternal {
 		while (!this->discordCoreClient->theStopWatch.hasTimePassed()) {
 			std::this_thread::sleep_for(1ms);
 		}
-		std::cout << "WERE CONNECCTING TO THIS SHIT! FOR SHARD: " << thePackage.currentShard << std::endl;
 		this->discordCoreClient->theStopWatch.resetTimer();
 		this->connections.push(thePackage);
 		while (!this->theClients.contains(thePackage.currentShard)) {
@@ -1022,9 +1021,7 @@ namespace DiscordCoreInternal {
 				int32_t currentDepth{ 0 };
 				while (true) {
 					currentDepth += 1;
-					std::cout << "WERE LEAVING NOW NOW NOW 010101" << std::endl;
 					if (theMap[reconnectionData.currentShard]->theState == WebSocketState::Connected) {
-						std::cout << "WERE LEAVING NOW NOW NOW" << std::endl;
 						break;
 					}
 					try {
