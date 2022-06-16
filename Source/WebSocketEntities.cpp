@@ -944,14 +944,14 @@ namespace DiscordCoreInternal {
 				if (this->connections.size() > 0) {
 					this->internalConnect();
 				}
-				try {
-					WebSocketSSLShard::processIO(this->theClients);
-				} catch (...) {
-					if (this->doWePrintErrorMessages) {
-						DiscordCoreAPI::reportException("BaseSocketAgent::run()");
-					}
-				}
 				for (auto& [key, value]: this->theClients) {
+					try {
+						WebSocketSSLShard::processIO(this->theClients);
+					} catch (...) {
+						if (this->doWePrintErrorMessages) {
+							DiscordCoreAPI::reportException("BaseSocketAgent::run()");
+						}
+					}
 					if (this->connections.size() > 0) {
 						this->internalConnect();
 					}
