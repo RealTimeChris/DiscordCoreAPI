@@ -38,20 +38,16 @@ namespace DiscordCoreInternal {
 	BaseSocketAgent::BaseSocketAgent(DiscordCoreAPI::DiscordCoreClient* discordCoreClientNew, std::atomic_bool* doWeQuitNew, int32_t currentBaseSocketAgentNew) noexcept {
 		this->doWePrintSuccessMessages = discordCoreClientNew->loggingOptions.logWebSocketSuccessMessages;
 		this->doWePrintErrorMessages = discordCoreClientNew->loggingOptions.logWebSocketErrorMessages;
+		this->dataOpcode = static_cast<WebSocketOpCode>(discordCoreClientNew->theFormat);
 		this->commandController = &discordCoreClientNew->commandController;
 		this->eventManager = &discordCoreClientNew->eventManager;
 		this->currentBaseSocketAgent = currentBaseSocketAgentNew;
 		this->intentsValue = discordCoreClientNew->theIntents;
 		this->theFormat = discordCoreClientNew->theFormat;
+		this->baseUrl = discordCoreClientNew->altAddress;
 		this->botToken = discordCoreClientNew->botToken;
 		this->discordCoreClient = discordCoreClientNew;
 		this->doWeQuit = doWeQuitNew;
-		if (this->theFormat == DiscordCoreAPI::TextFormat::Etf) {
-			this->dataOpcode = WebSocketOpCode::Op_Binary;
-		} else {
-			this->dataOpcode = WebSocketOpCode::Op_Text;
-		}
-		this->baseUrl = discordCoreClientNew->altAddress;
 		this->theTask = std::make_unique<std::jthread>([this](std::stop_token theToken) {
 			this->run(theToken);
 		});
@@ -320,7 +316,7 @@ namespace DiscordCoreInternal {
 			if ((this->theClients.contains(theIndex) && this->theClients[theIndex]->heartBeatStopWatch.hasTimePassed() && this->theClients[theIndex]->haveWeReceivedHeartbeatAck) ||
 				isImmediate) {
 				nlohmann::json heartbeat = JSONIFY(this->theClients[theIndex]->lastNumberReceived);
-				if (this->doWePrintSuccessMessages) {
+				if (true) {
 					std::lock_guard<std::mutex> theLock{ this->discordCoreClient->coutMutex };
 					std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Sending WebSocket " + this->theClients[theIndex]->shard.dump() + std::string("'s Message: ")
 							  << heartbeat.dump() << DiscordCoreAPI::reset() << std::endl
@@ -1015,7 +1011,7 @@ namespace DiscordCoreInternal {
 							"\r\nPragma: no-cache\r\nUser-Agent: DiscordCoreAPI/1.0\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Key: " +
 							DiscordCoreAPI::generateBase64EncodedKey() + "\r\nSec-WebSocket-Version: 13\r\n\r\n";
 					}
-
+					std::cout << "WERE HERE THIS IS IT!" << std::endl;
 					this->sendMessage(sendString, reconnectionData.currentShard);
 					int32_t currentDepth{ 0 };
 					while (true) {
@@ -1072,12 +1068,12 @@ namespace DiscordCoreInternal {
 	}
 
 	VoiceSocketAgent::VoiceSocketAgent(VoiceConnectInitData initDataNew, BaseSocketAgent* baseBaseSocketAgentNew, int32_t theIndex, bool printMessagesNew) noexcept {
-		this->baseSocketAgent = baseBaseSocketAgentNew;
-		this->voiceConnectInitData = initDataNew;
+		this->baseSocketAgent->voiceConnectionDataBufferMap[std::to_string(initDataNew.guildId)] = &this->voiceConnectionDataBuffer;
 		this->doWePrintSuccessMessages = baseBaseSocketAgentNew->doWePrintSuccessMessages;
 		this->doWePrintErrorMessages = baseBaseSocketAgentNew->doWePrintErrorMessages;
-		this->baseSocketAgent->voiceConnectionDataBufferMap[std::to_string(this->voiceConnectInitData.guildId)] = &this->voiceConnectionDataBuffer;
-		this->baseSocketAgent->getVoiceConnectionData(this->voiceConnectInitData, theIndex);
+		this->baseSocketAgent->getVoiceConnectionData(initDataNew, theIndex);
+		this->baseSocketAgent = baseBaseSocketAgentNew;
+		this->voiceConnectInitData = initDataNew;
 		this->areWeConnected.reset();
 		this->theTask = std::make_unique<std::jthread>([this](std::stop_token theToken) {
 			this->run(theToken);

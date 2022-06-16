@@ -161,7 +161,7 @@ namespace DiscordCoreAPI {
 			return false;
 		}
 		this->shardingOptions.numberOfShardsForThisProcess = this->shardingOptions.totalNumberOfShards;
-		auto workerCount = static_cast<int32_t>((std::thread::hardware_concurrency()) / 2);
+		auto workerCount = static_cast<int32_t>((std::thread::hardware_concurrency()));
 		int32_t shardsPerWorker{ static_cast<int32_t>(floor(static_cast<float>(this->shardingOptions.totalNumberOfShards) / static_cast<float>(workerCount))) };
 		int32_t leftOverShards{ this->shardingOptions.totalNumberOfShards - (shardsPerWorker * workerCount) };
 
@@ -172,10 +172,10 @@ namespace DiscordCoreAPI {
 			if (leftOverShards == 0) {
 				continue;
 			}
-			newShardAmount = static_cast<int32_t>(ceil(static_cast<float>(leftOverShards) / static_cast<float>(std::thread::hardware_concurrency() / 2)));
+			newShardAmount = static_cast<int32_t>(ceil(static_cast<float>(leftOverShards) / static_cast<float>(std::thread::hardware_concurrency())));
 			shardsPerWorkerVect[x] += newShardAmount;
 
-			if (x == static_cast<int32_t>(std::thread::hardware_concurrency() / 2) - 1) {
+			if (x == static_cast<int32_t>(std::thread::hardware_concurrency()) - 1) {
 				shardsPerWorkerVect[0] += leftOverShards;
 			}
 			leftOverShards -= newShardAmount;

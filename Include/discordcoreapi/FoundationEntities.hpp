@@ -104,8 +104,6 @@
  */
 namespace DiscordCoreInternal {
 
-	std::string logLocation();
-
 	using namespace std::literals;
 
 	template<typename ParseType> void parseObject(const nlohmann::json&, ParseType&);
@@ -125,7 +123,7 @@ namespace DiscordCoreInternal {
 	/// Websocket close codes. \brief Websocket close codes.
 	enum class WebSocketCloseCode : uint16_t {
 		Normal_Close = 1000,///< Normal close.
-		Unknown_Error = 4000,///<	We're not sure what went wrong. Try reconnecting?
+		Unknown_Error = 4000,///< We're not sure what went wrong. Try reconnecting?
 		Unknown_Opcode = 4001,///< You sent an invalid Gateway opcode or an invalid payload for an opcode. Don't do that!
 		Decode_Error = 4002,///< You sent an invalid payload to us. Don't do that!
 		Not_Authenticated = 4003,///< You sent us a payload prior to identifying.
@@ -153,7 +151,6 @@ namespace DiscordCoreAPI {
 
 	using namespace std::literals;
 
-	struct RecurseThroughMessagePagesData;
 	struct DeleteInteractionResponseData;
 	struct DeleteFollowUpMessageData;
 	struct OnInteractionCreationData;
@@ -448,7 +445,7 @@ namespace DiscordCoreAPI {
 
 		/// Tries to receive an object of type ObjectType to be placed into a reference. \brief Tries to receive an object of type ObjectType to be placed into a reference.
 		/// \param theObject A reference of type ObjectType for placing the potentially received object.
-		/// \returns A bool, denoting whether or not we received an object.
+		/// \returns bool A bool, denoting whether or not we received an object.
 		bool tryReceive(ObjectType& theObject) {
 			if (this->theArray.size() == 0) {
 				return false;
@@ -527,7 +524,7 @@ namespace DiscordCoreAPI {
 
 		/// Tries to receive an object of type ObjectType to be placed into a reference. \brief Tries to receive an object of type ObjectType to be placed into a reference.
 		/// \param theObject A reference of type ObjectType for placing the potentially received object.
-		/// \returns A bool, denoting whether or not we received an object.
+		/// \returns bool A bool, denoting whether or not we received an object.
 		bool tryReceive(ObjectType& theObject) {
 			std::lock_guard<std::mutex> theLock{ this->accessMutex };
 			if (this->theArray.size() == 0) {
@@ -850,9 +847,9 @@ namespace DiscordCoreAPI {
 	 */
 
 	/// Represents which text format to use for websocket transfer. \brief Represents which text format to use for websocket transfer.
-	enum class TextFormat {
-		Etf = 0,///< Json format.
-		Json = 1///< Etf format.
+	enum class TextFormat : int8_t {
+		Etf = 0x02,
+		Json = 0x01///< Etf format.
 	};
 
 	template<typename StoredAsType, typename FlagType> StoredAsType setBool(StoredAsType inputFlag, FlagType theFlag, bool enabled) {
@@ -984,33 +981,33 @@ namespace DiscordCoreAPI {
 		void removePermissions(const std::vector<Permission>& permissionsToRemove);
 
 		/// Displays the currently present Permissions in a std::string, and returns a std::vector with each of them stored in std::string format. \brief Displays the currently present Permissions in a std::string, and returns a std::vector with each of them stored in std::string format.
-		/// \returns A std::vector full of strings of the Permissions that are in the input std::string's value.
+		/// \returns std::vector A std::vector full of strings of the Permissions that are in the input std::string's value.
 		std::vector<std::string> displayPermissions();
 
 		/// Returns a std::string containing ALL of the possible Permissions. \brief Returns a std::string containing ALL of the possible Permissions.
-		/// \returns A std::string containing all of the possible Permissions.
+		/// \returns std::string A std::string containing all of the possible Permissions.
 		static std::string getAllPermissions();
 
 		/// Returns a std::string containing the currently held Permissions. \brief Returns a std::string containing the currently held Permissions.
-		/// \returns A std::string containing the current Permissions.
+		/// \returns std::string A std::string containing the current Permissions.
 		std::string getCurrentPermissionString();
 
 		/// Returns a std::string containing the currently held Permissions in a given Guild. \brief Returns a std::string containing the currently held Permissions in a given Guild.
 		/// \param guildMember The GuildMember who's Permissions are to be evaluated.
-		/// \returns A std::string containing the current Permissions.
+		/// \returns std::string A std::string containing the current Permissions.
 		static std::string getCurrentGuildPermissions(const GuildMember& guildMember);
 
 		/// Returns a std::string containing all of a given User's Permissions for a given Channel. \brief Returns a std::string containing all of a given User's Permissions for a given Channel.
 		/// \param guildMember The GuildMember who's Permissions to analyze.
 		/// \param channel The Channel withint which to check for Permissions.
-		/// \returns A std::string containing the final Permission's value for a given Channel.
+		/// \returns std::string A std::string containing the final Permission's value for a given Channel.
 		static std::string getCurrentChannelPermissions(const GuildMember& guildMember, ChannelData& channel);
 
 		/// Checks for a given Permission in a chosen Channel, for a specific User. \brief Checks for a given Permission in a chosen Channel, for a specific User.
 		/// \param guildMember The GuildMember who to check the Permissions of.
 		/// \param channel The Channel within which to check for the Permission's presence.
 		/// \param permission A Permission to check the current Channel for.
-		/// \returns A bool suggesting the presence of the chosen Permission.
+		/// \returns bool A bool suggesting the presence of the chosen Permission.
 		bool checkForPermission(const GuildMember& guildMember, ChannelData& channel, Permission permission);
 
 	  protected:
@@ -2831,7 +2828,6 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll InputEventData {
 	  public:
 		friend class DiscordCoreInternal::BaseSocketAgent;
-		friend RecurseThroughMessagePagesData;
 		friend OnInteractionCreationData;
 		friend RespondToInputEventData;
 		friend BaseFunctionArguments;
@@ -2874,79 +2870,79 @@ namespace DiscordCoreAPI {
 		InputEventData() = default;
 
 		/// Returns the userName of the last User to trigger this input-event. \brief Returns the userName of the last User to trigger this input-event.
-		/// \returns A std::string containing the User name.
+		/// \returns std::string A std::string containing the User name.
 		std::string getUserName() {
 			return this->interactionData->user.userName;
 		}
 
 		/// Gets the avatar Url of the last User to trigger this input-event. \brief Gets the avatar Url of the last User to trigger this input-event.
-		/// \returns A std::string containing the avatar Url.
+		/// \returns std::string A std::string containing the avatar Url.
 		std::string getAvatarUrl() {
 			return this->interactionData->user.avatar;
 		}
 
 		/// Returns the Message embeds that are on the Message, if applicable. \brief Returns the Message embeds that are on the Message, if applicable.
-		/// \returns A std::vector containing the EmbedData.
+		/// \returns std::vector A std::vector containing the EmbedData.
 		std::vector<EmbedData> getEmbeds() {
 			return this->interactionData->message.embeds;
 		}
 
 		/// Returns the Message components that are on the Message, if applicable. \brief Returns the Message components that are on the Message, if applicable.
-		/// \returns A std::vector containing ActionRowData.
+		/// \returns std::vector A std::vector containing ActionRowData.
 		std::vector<ActionRowData> getComponents() {
 			return this->interactionData->message.components;
 		}
 
 		/// Returns the User id of the last requester of this input-event. \brief Returns the User id of the last requester of this input-event.
-		/// \returns A std::string containing the author's id.
+		/// \returns uint64_t An uint64_t containing the author's id.
 		uint64_t getAuthorId() {
 			return this->interactionData->user.id;
 		}
 
 		/// Returns the Interaction id, if appplicable, of this input-event. \brief Returns the Interaction id, if appplicable, of this input-event.
-		/// \returns A std::string containing the Interaction id.
+		/// \returns uint64_t An uint64_t containing the Interaction id.
 		uint64_t getInteractionId() {
 			return this->interactionData->id;
 		}
 
 		/// Returns the application id. \brief Returns the application id.
-		/// \returns A std::string containing the application id.
+		/// \returns uint64_t An uint64_t containing the application id.
 		uint64_t getApplicationId() {
 			return this->interactionData->applicationId;
 		}
 
 		/// Returns the Channel id of this input-event. \brief Returns the Channel id of this input-event.
-		/// \returns A std::string containing the Channel id.
+		/// \returns uint64_t An uint64_t containing the Channel id.
 		uint64_t getChannelId() {
 			return this->interactionData->channelId;
 		}
 
 		/// Returns the Interaction token, if applicable, of this input-event. \brief Returns the Interaction token, if applicable, of this input-event.
-		/// \returns A std::string containing the Interaction token.
+		/// \returns std::string A std::string containing the Interaction token.
 		std::string getInteractionToken() {
 			return this->interactionData->token;
 		}
 
 		/// Returns the Guild id, of this input-event. \brief Returns the Guild id, of this input-event.
-		/// \returns A std::string containing the Guild id.
+		/// \returns uint64_t An uint64_t containing the Guild id.
 		uint64_t getGuildId() {
 			return this->interactionData->guildId;
 		}
 
 		/// Returns the Message id, if applicable, of this input-event. \brief Returns the Message id, if applicable, of this input-event.
-		/// \returns A std::string containing the Message id.
+		/// \returns uint64_t An uint64_t containing the Message id.
 		uint64_t getMessageId() {
 			return this->interactionData->message.id;
 		}
 
 		/// Returns the Interaction data, if applicable, of this input-event. \brief Returns the InteractionData, if applicable, of this input-event.
-		/// \returns An InteractionData structure.
+		/// \returns InteractionData An InteractionData structure.
 		InteractionData getInteractionData() {
 			return *this->interactionData;
 		}
 
 		/// Returns the Message data, if applicable, of this input-event. \brief Returns the Message data, if applicable, of this input-event.
-		/// \returns A MessageData structure.
+		/// \returns MessageData A MessageData structure.
 		MessageData getMessageData() {
 			return this->interactionData->message;
 		}
@@ -3230,6 +3226,7 @@ namespace DiscordCoreAPI {
 		InteractionCallbackType type{};///< Interaction callback type.
 	};
 
+	/// Message response base, for responding to messages. \brief Message response base, for responding to messages.
 	class DiscordCoreAPI_Dll MessageResponseBase {
 	  public:
 		/// Adds a button to the response Message. \brief Adds a button to the response Message.
@@ -3240,7 +3237,7 @@ namespace DiscordCoreAPI {
 		/// \param emojiName An emoji name, if desired.
 		/// \param emojiId An emoji id, if desired.
 		/// \param url A url, if applicable.
-		/// \returns RespondToInputEventData& A reference to this data structure.
+		/// \returns MessageResponseBase& A reference to this data structure.
 		MessageResponseBase& addButton(bool disabled, const std::string& customIdNew, const std::string& buttonLabel, ButtonStyle buttonStyle, const std::string& emojiName = "",
 			uint64_t emojiId = 0, const std::string& url = "") {
 			if (this->components.size() == 0) {
@@ -3274,7 +3271,7 @@ namespace DiscordCoreAPI {
 		/// \param placeholder Custom placeholder text if nothing is selected, max 100 characters.
 		/// \param maxValues Maximum number of selections that are possible.
 		/// \param minValues Minimum required number of selections that are required.
-		/// \returns RespondToInputEventData& A reference to this data structure.
+		/// \returns MessageResponseBase& A reference to this data structure.
 		MessageResponseBase& addSelectMenu(bool disabled, const std::string& customIdNew, std::vector<SelectOptionData> options, const std::string& placeholder, int32_t maxValues,
 			int32_t minValues) {
 			if (this->components.size() == 0) {
@@ -3311,7 +3308,7 @@ namespace DiscordCoreAPI {
 		/// \param inputStyle The input style.
 		/// \param label A label for the modal.
 		/// \param placeholder A placeholder for the modal.
-		/// \returns RespondToInputEventData& A reference to this data structure.
+		/// \returns MessageResponseBase& A reference to this data structure.
 		MessageResponseBase& addModal(const std::string& topTitleNew, const std::string& topCustomIdNew, const std::string& titleNew, const std::string& customIdNew, bool required,
 			int32_t minLength, int32_t maxLength, TextInputStyle inputStyle, const std::string& label = "", const std::string& placeholder = "") {
 			this->title = topTitleNew;
@@ -3343,7 +3340,7 @@ namespace DiscordCoreAPI {
 
 		/// Adds a file to the current collection of files for this message response. \brief Adds a file to the current collection of files for this message response.
 		/// \param theFile The file to be added.
-		/// \returns RespondToInputEventData& A reference to this data structure.
+		/// \returns MessageResponseBase& A reference to this data structure.
 		MessageResponseBase& addFile(File theFile) {
 			this->files.push_back(theFile);
 			return *this;
@@ -3351,7 +3348,7 @@ namespace DiscordCoreAPI {
 
 		/// For setting the allowable mentions in a response. \brief For setting the allowable mentions in a response.
 		/// \param dataPackage An AllowedMentionsData structure.
-		/// \returns RespondToInputEventData& A reference to this data structure.
+		/// \returns MessageResponseBase& A reference to this data structure.
 		MessageResponseBase& addAllowedMentions(AllowedMentionsData dataPackage) {
 			this->allowedMentions = dataPackage;
 			return *this;
@@ -3359,7 +3356,7 @@ namespace DiscordCoreAPI {
 
 		/// For setting the components in a response. \brief For setting the components in a response.
 		/// \param dataPackage An ActionRowData structure.
-		/// \returns RespondToInputEventData& A reference to this data structure.
+		/// \returns MessageResponseBase& A reference to this data structure.
 		MessageResponseBase& addComponentRow(ActionRowData dataPackage) {
 			this->components.push_back(dataPackage);
 			return *this;
@@ -3367,7 +3364,7 @@ namespace DiscordCoreAPI {
 
 		/// For setting the embeds in a response. \brief For setting the embeds in a response.
 		/// \param dataPackage An EmbedData structure.
-		/// \returns RespondToInputEventData& A reference to this data structure.
+		/// \returns MessageResponseBase& A reference to this data structure.
 		MessageResponseBase& addMessageEmbed(EmbedData dataPackage) {
 			this->embeds.push_back(dataPackage);
 			return *this;
@@ -3375,7 +3372,7 @@ namespace DiscordCoreAPI {
 
 		/// For setting the Message content in a response. \brief For setting the Message content in a response.
 		/// \param dataPackage A std::string, containing the content.
-		/// \returns RespondToInputEventData& A reference to this data structure.
+		/// \returns MessageResponseBase& A reference to this data structure.
 		MessageResponseBase& addContent(const std::string& dataPackage) {
 			this->content = dataPackage;
 			return *this;
@@ -3383,7 +3380,7 @@ namespace DiscordCoreAPI {
 
 		/// For setting the tts status of a response. \brief For setting the tts status of a response.
 		/// \param enabledTTs A bool.
-		/// \returns RespondToInputEventData& A reference to this data structure.
+		/// \returns MessageResponseBase& A reference to this data structure.
 		MessageResponseBase& setTTSStatus(bool enabledTTs) {
 			this->tts = enabledTTs;
 			return *this;

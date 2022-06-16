@@ -46,7 +46,7 @@ namespace DiscordCoreAPI {
 		VoiceConnection() = default;
 
 		/// Collects the currently connected-to voice Channel's id. \brief Collects the currently connected-to voice Channel's id.
-		/// \returns A std::string containing the Channel's id.
+		/// \returns uint64_t An uint64_t containing the Channel's id.
 		uint64_t getChannelId();
 
 		~VoiceConnection();
