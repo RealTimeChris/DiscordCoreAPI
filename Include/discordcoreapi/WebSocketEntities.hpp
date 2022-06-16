@@ -42,9 +42,9 @@ namespace DiscordCoreInternal {
 
 		BaseSocketAgent(DiscordCoreAPI::DiscordCoreClient* discordCoreClientNew, std::atomic_bool* doWeQuitNew, int32_t currentBaseSocketAgentNew) noexcept;
 
-		void sendMessage(const nlohmann::json& dataToSend, int32_t theIndex) noexcept;
+		void sendMessage(const nlohmann::json& dataToSend, WebSocketSSLShard& theIndex) noexcept;
 
-		void sendMessage(std::string& dataToSend, int32_t theIndex) noexcept;
+		void sendMessage(std::string& dataToSend, WebSocketSSLShard& theIndex) noexcept;
 
 		void connect(DiscordCoreAPI::ConnectionPackage) noexcept;
 
@@ -83,19 +83,19 @@ namespace DiscordCoreInternal {
 		std::string baseUrl{};
 		uint64_t userId{};
 
-		void getVoiceConnectionData(const VoiceConnectInitData& doWeCollect, int32_t theIndex) noexcept;
+		void getVoiceConnectionData(const VoiceConnectInitData& doWeCollect, WebSocketSSLShard& theIndex) noexcept;
 
 		void createHeader(std::string& outBuffer, uint64_t sendLength, WebSocketOpCode opCode) noexcept;
+
+		void checkForAndSendHeartBeat(WebSocketSSLShard& theIndex, bool = false) noexcept;
 
 		void stringifyJsonData(const nlohmann::json& dataToSend, std::string&) noexcept;
 
 		void parseHeadersAndMessage(WebSocketSSLShard& theShard) noexcept;
 
-		void checkForAndSendHeartBeat(int32_t, bool = false) noexcept;
+		void onMessageReceived(WebSocketSSLShard& theIndex) noexcept;
 
-		void onMessageReceived(int32_t theIndex) noexcept;
-
-		void sendCloseFrame(int32_t theIndex) noexcept;
+		void sendCloseFrame(WebSocketSSLShard& theIndex) noexcept;
 
 		void run(std::stop_token) noexcept;
 

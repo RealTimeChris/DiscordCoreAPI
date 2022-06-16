@@ -264,7 +264,7 @@ namespace DiscordCoreInternal {
 					writeNfds = value->theSocket > writeNfds ? value->theSocket : writeNfds;
 					didWeSetASocket = true;
 				}
-				if (!value->wantWrite) {
+				else if (!value->wantWrite) {
 					FD_SET(value->theSocket, &readSet);
 					readNfds = value->theSocket > readNfds ? value->theSocket : readNfds;
 					didWeSetASocket = true;
@@ -449,24 +449,53 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void WebSocketSSLShard::writeData(std::string& data) noexcept {
-		if (data.size() > static_cast<size_t>(16 * 1024)) {
-			size_t remainingBytes{ data.size() };
-			while (remainingBytes > 0) {
-				std::string newString{};
-				size_t amountToCollect{};
-				if (data.size() >= static_cast<size_t>(1024 * 16)) {
-					amountToCollect = static_cast<size_t>(1024 * 16);
-				} else {
-					amountToCollect = data.size();
+	void WebSocketSSLShard::writeData(std::string& data, bool priority) noexcept {
+		if (priority) {
+			std::vector<std::string> theOldStrings{};
+			for (auto& value: this->outputBuffer) {
+				theOldStrings.push_back(value);
+			}
+			this->outputBuffer.clear();
+			if (data.size() > static_cast<size_t>(16 * 1024)) {
+				size_t remainingBytes{ data.size() };
+				while (remainingBytes > 0) {
+					std::string newString{};
+					size_t amountToCollect{};
+					if (data.size() >= static_cast<size_t>(1024 * 16)) {
+						amountToCollect = static_cast<size_t>(1024 * 16);
+					} else {
+						amountToCollect = data.size();
+					}
+					newString.insert(newString.begin(), data.begin(), data.begin() + amountToCollect);
+					this->outputBuffer.push_back(newString);
+					data.erase(data.begin(), data.begin() + amountToCollect);
+					remainingBytes = data.size();
 				}
-				newString.insert(newString.begin(), data.begin(), data.begin() + amountToCollect);
-				this->outputBuffer.push_back(newString);
-				data.erase(data.begin(), data.begin() + amountToCollect);
-				remainingBytes = data.size();
+			} else {
+				this->outputBuffer.push_back(data);
+			}
+			for (auto& value: theOldStrings) {
+				this->outputBuffer.push_back(value);
 			}
 		} else {
-			this->outputBuffer.push_back(data);
+			if (data.size() > static_cast<size_t>(16 * 1024)) {
+				size_t remainingBytes{ data.size() };
+				while (remainingBytes > 0) {
+					std::string newString{};
+					size_t amountToCollect{};
+					if (data.size() >= static_cast<size_t>(1024 * 16)) {
+						amountToCollect = static_cast<size_t>(1024 * 16);
+					} else {
+						amountToCollect = data.size();
+					}
+					newString.insert(newString.begin(), data.begin(), data.begin() + amountToCollect);
+					this->outputBuffer.push_back(newString);
+					data.erase(data.begin(), data.begin() + amountToCollect);
+					remainingBytes = data.size();
+				}
+			} else {
+				this->outputBuffer.push_back(data);
+			}
 		}
 	}
 

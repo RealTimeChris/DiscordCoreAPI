@@ -229,7 +229,7 @@ namespace DiscordCoreInternal {
 			std::unique_ptr<AudioDecoder> audioDecoder = std::make_unique<AudioDecoder>(dataPackage);
 			AudioEncoder audioEncoder{};
 			std::string theString = newSong.finalDownloadUrls[1].urlPath;
-			theMap[0]->writeData(theString);
+			theMap[0]->writeData(theString, false);
 			try {
 				try {
 					WebSocketSSLShard::processIO(theMap, ms1000);

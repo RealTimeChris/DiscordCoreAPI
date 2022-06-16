@@ -323,7 +323,7 @@ namespace DiscordCoreInternal {
 
 		void connect(const std::string& baseUrlNew, const std::string& portNew);
 
-		void writeData(std::string& data) noexcept;
+		void writeData(std::string& data, bool priority) noexcept;
 
 		std::string getInputBuffer() noexcept;
 
@@ -334,7 +334,7 @@ namespace DiscordCoreInternal {
 	  protected:
 		DiscordCoreAPI::StopWatch<std::chrono::milliseconds> heartBeatStopWatch{ 0ms };
 		std::queue<DiscordCoreAPI::ConnectionPackage>* connections{ nullptr };
-		WebSocketState theState{ WebSocketState::Connecting };
+		WebSocketState theState{ WebSocketState::Connecting01 };
 		std::queue<std::string> processedMessages{};
 		std::atomic_bool areWeConnected{ false };
 		int32_t maxBufferSize{ (1024 * 16) - 1 };

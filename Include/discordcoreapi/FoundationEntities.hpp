@@ -116,9 +116,9 @@ namespace DiscordCoreInternal {
 	class YouTubeAPI;
 	class HttpClient;
 
-	enum class WebSocketOpCode : uint8_t { Op_Continuation = 0x00, Op_Text = 0x01, Op_Binary = 0x02, Op_Close = 0x08, Op_Ping = 0x09, Op_Pong = 0x0a };
+	enum class WebSocketOpCode : int8_t { Op_Continuation = 0x00, Op_Text = 0x01, Op_Binary = 0x02, Op_Close = 0x08, Op_Ping = 0x09, Op_Pong = 0x0a };
 
-	enum class WebSocketState : int8_t { Connecting = 0, Connected = 1 };
+	enum class WebSocketState : int8_t { Connecting01 = 0, Connecting02 = 1, Connected = 2 };
 
 	/// Websocket close codes. \brief Websocket close codes.
 	enum class WebSocketCloseCode : uint16_t {
