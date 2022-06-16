@@ -97,7 +97,7 @@ namespace DiscordCoreInternal {
 
 		void sendCloseFrame(int32_t theIndex) noexcept;
 
-		void run(std::stop_token) noexcept;
+		void run(std::stop_token, bool) noexcept;
 
 		void internalConnect() noexcept;
 	};
