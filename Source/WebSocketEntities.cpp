@@ -53,7 +53,7 @@ namespace DiscordCoreInternal {
 		}
 		this->baseUrl = discordCoreClientNew->altAddress;
 		this->theTask = std::make_unique<std::jthread>([this](std::stop_token theToken) {
-			this->run(theToken, true);
+			this->run(theToken);
 		});
 	}
 
@@ -408,7 +408,7 @@ namespace DiscordCoreInternal {
 						this->discordCoreClient->currentUser = DiscordCoreAPI::BotUser{ theUser, this };
 						DiscordCoreAPI::Users::insertUser(theUser);
 						std::vector<DiscordCoreAPI::GuildData> theGuilds{};
-						//parseObject(payload["d"]["guilds"], theGuilds);
+						parseObject(payload["d"]["guilds"], theGuilds);
 						for (auto& value: theGuilds) {
 							value.discordCoreClient = this->discordCoreClient;
 							DiscordCoreAPI::Guilds::insertGuild(value);
@@ -939,16 +939,13 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void BaseSocketAgent::run(std::stop_token theToken, bool doWeLoop) noexcept {
+	void BaseSocketAgent::run(std::stop_token theToken) noexcept {
 		try {
 			while (!theToken.stop_requested() && !this->doWeQuit->load()) {
 				if (this->connections.size() > 0) {
 					this->internalConnect();
 				}
 				for (auto& [key, value]: this->theClients) {
-					if (this->connections.size() > 0) {
-						this->internalConnect();
-					}
 					try {
 						WebSocketSSLShard::processIO(this->theClients);
 					} catch (...) {
@@ -970,9 +967,6 @@ namespace DiscordCoreInternal {
 						}
 					}
 				}
-				if (!doWeLoop) {
-					break;
-				}
 				std::this_thread::sleep_for(1ms);
 			}
 		} catch (...) {
@@ -984,56 +978,21 @@ namespace DiscordCoreInternal {
 
 	void BaseSocketAgent::internalConnect() noexcept {
 		try {
-			if (this->connections.size() > 0) {
-				DiscordCoreAPI::ConnectionPackage reconnectionData = this->connections.front();
-				this->connections.pop();
-				reconnectionData.currentReconnectionDepth += 1;
-				this->theClients[reconnectionData.currentShard] = std::make_unique<WebSocketSSLShard>(&this->connections, this->currentBaseSocketAgent,
-					reconnectionData.currentShard, this->discordCoreClient->shardingOptions.totalNumberOfShards, this->doWePrintErrorMessages);
-				this->theClients[reconnectionData.currentShard]->currentRecursionDepth = reconnectionData.currentReconnectionDepth;
-				this->theClients[reconnectionData.currentShard]->currentBaseSocketAgent = reconnectionData.currentBaseSocketAgent;
-				this->theClients[reconnectionData.currentShard]->lastNumberReceived = reconnectionData.lastNumberReceived;
-				this->theClients[reconnectionData.currentShard]->areWeResuming = reconnectionData.areWeResuming;
-				this->theClients[reconnectionData.currentShard]->sessionId = reconnectionData.sessionId;
+			if (this->discordCoreClient->theStopWatch.hasTimePassed()) {
+				if (this->connections.size() > 0) {
+					DiscordCoreAPI::ConnectionPackage reconnectionData = this->connections.front();
+					this->connections.pop();
+					reconnectionData.currentReconnectionDepth += 1;
+					this->theClients[reconnectionData.currentShard] = std::make_unique<WebSocketSSLShard>(&this->connections, this->currentBaseSocketAgent,
+						reconnectionData.currentShard, this->discordCoreClient->shardingOptions.totalNumberOfShards, this->doWePrintErrorMessages);
+					this->theClients[reconnectionData.currentShard]->currentRecursionDepth = reconnectionData.currentReconnectionDepth;
+					this->theClients[reconnectionData.currentShard]->currentBaseSocketAgent = reconnectionData.currentBaseSocketAgent;
+					this->theClients[reconnectionData.currentShard]->lastNumberReceived = reconnectionData.lastNumberReceived;
+					this->theClients[reconnectionData.currentShard]->areWeResuming = reconnectionData.areWeResuming;
+					this->theClients[reconnectionData.currentShard]->sessionId = reconnectionData.sessionId;
 
-				try {
-					this->theClients[reconnectionData.currentShard]->connect(this->baseUrl, "443");
-				} catch (...) {
-					if (this->doWePrintErrorMessages) {
-						DiscordCoreAPI::reportException("BaseSocketAgent::internalConnect()");
-					}
-					if (reconnectionData.currentReconnectionDepth >= this->maxReconnectTries) {
-						this->doWeQuit->store(true);
-					} else {
-						this->connections.push(reconnectionData);
-					}
-					return;
-				}
-
-				std::string sendString{};
-				if (this->theFormat == DiscordCoreAPI::TextFormat::Etf) {
-					sendString = "GET /?v=10&encoding=etf HTTP/1.1\r\nHost: " + this->baseUrl +
-						"\r\nPragma: no-cache\r\nUser-Agent: DiscordCoreAPI/1.0\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Key: " +
-						DiscordCoreAPI::generateBase64EncodedKey() + "\r\nSec-WebSocket-Version: 13\r\n\r\n";
-				} else {
-					sendString = "GET /?v=10&encoding=json HTTP/1.1\r\nHost: " + this->baseUrl +
-						"\r\nPragma: no-cache\r\nUser-Agent: DiscordCoreAPI/1.0\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Key: " +
-						DiscordCoreAPI::generateBase64EncodedKey() + "\r\nSec-WebSocket-Version: 13\r\n\r\n";
-				}
-
-				this->sendMessage(sendString, reconnectionData.currentShard);
-				int32_t currentDepth{ 0 };
-				while (true) {
-					currentDepth += 1;
-					if (this->theClients[reconnectionData.currentShard]->inputBuffer.size() > 0) {
-						this->parseHeadersAndMessage(*this->theClients[reconnectionData.currentShard]);
-					}
-					if (this->theClients[reconnectionData.currentShard]->theState == WebSocketState::Connected) {
-						break;
-					}
 					try {
-						auto thePtr = this->theClients[reconnectionData.currentShard].get();
-						thePtr->processIO(this->theClients, 10000);
+						this->theClients[reconnectionData.currentShard]->connect(this->baseUrl, "443");
 					} catch (...) {
 						if (this->doWePrintErrorMessages) {
 							DiscordCoreAPI::reportException("BaseSocketAgent::internalConnect()");
@@ -1045,17 +1004,54 @@ namespace DiscordCoreInternal {
 						}
 						return;
 					}
-					std::this_thread::sleep_for(1ms);
-					if (currentDepth >= 5000) {
-						this->theClients.erase(reconnectionData.currentShard);
-						this->discordCoreClient->theStopWatch.resetTimer();
-						return;
+
+					std::string sendString{};
+					if (this->theFormat == DiscordCoreAPI::TextFormat::Etf) {
+						sendString = "GET /?v=10&encoding=etf HTTP/1.1\r\nHost: " + this->baseUrl +
+							"\r\nPragma: no-cache\r\nUser-Agent: DiscordCoreAPI/1.0\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Key: " +
+							DiscordCoreAPI::generateBase64EncodedKey() + "\r\nSec-WebSocket-Version: 13\r\n\r\n";
+					} else {
+						sendString = "GET /?v=10&encoding=json HTTP/1.1\r\nHost: " + this->baseUrl +
+							"\r\nPragma: no-cache\r\nUser-Agent: DiscordCoreAPI/1.0\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Key: " +
+							DiscordCoreAPI::generateBase64EncodedKey() + "\r\nSec-WebSocket-Version: 13\r\n\r\n";
 					}
-					if (!this->theClients.contains(reconnectionData.currentShard)) {
-						if (reconnectionData.currentReconnectionDepth >= this->maxReconnectTries) {
-							this->doWeQuit->store(true);
-						} else {
-							this->connections.push(reconnectionData);
+
+					this->sendMessage(sendString, reconnectionData.currentShard);
+					int32_t currentDepth{ 0 };
+					while (true) {
+						currentDepth += 1;
+						if (this->theClients[reconnectionData.currentShard]->inputBuffer.size() > 0) {
+							this->parseHeadersAndMessage(*this->theClients[reconnectionData.currentShard]);
+						}
+						if (this->theClients[reconnectionData.currentShard]->theState == WebSocketState::Connected) {
+							break;
+						}
+						try {
+							auto thePtr = this->theClients[reconnectionData.currentShard].get();
+							thePtr->processIO(this->theClients, 10000);
+						} catch (...) {
+							if (this->doWePrintErrorMessages) {
+								DiscordCoreAPI::reportException("BaseSocketAgent::internalConnect()");
+							}
+							if (reconnectionData.currentReconnectionDepth >= this->maxReconnectTries) {
+								this->doWeQuit->store(true);
+							} else {
+								this->connections.push(reconnectionData);
+							}
+							return;
+						}
+						std::this_thread::sleep_for(1ms);
+						if (currentDepth >= 5000) {
+							this->theClients.erase(reconnectionData.currentShard);
+							this->discordCoreClient->theStopWatch.resetTimer();
+							return;
+						}
+						if (!this->theClients.contains(reconnectionData.currentShard)) {
+							if (reconnectionData.currentReconnectionDepth >= this->maxReconnectTries) {
+								this->doWeQuit->store(true);
+							} else {
+								this->connections.push(reconnectionData);
+							}
 						}
 					}
 				}
