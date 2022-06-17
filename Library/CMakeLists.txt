@@ -39,8 +39,8 @@ target_include_directories(
 	"$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Include/>"
 )
 
-include(FindFFMPEG)
 include(FindNlohmannJson)
+include(FindFFMPEG)
 include(FindOpenSSL)
 include(FindOpus)
 include(FindSodium)
