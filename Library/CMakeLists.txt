@@ -78,7 +78,7 @@ target_compile_options(
 	"${LIB_NAME}" PUBLIC
 	"$<$<NOT:$<PLATFORM_ID:Linux>>:/bigobj>"
 	"$<$<PLATFORM_ID:Windows>:/MP>"
-	"$<PLATFORM_ID:Linux>:-O3>"
+	"$<$<PLATFORM_ID:Linux>:-O3>"
 )
 
 target_link_options(

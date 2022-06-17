@@ -67,7 +67,8 @@ namespace DiscordCoreAPI {
 		std::signal(SIGFPE, &signalHandler);
 		this->functionsToExecute = configData.functionsToExecute;
 		this->loggingOptions = configData.logOptions;
-		this->altAddress = configData.alternateConnectionAddress;
+		this->theAddress = configData.alternateConnectionAddress;
+		this->thePort = configData.alternateConnectionPort;
 		this->shardingOptions = configData.shardOptions;
 		this->cacheOptions = configData.cacheOptions;
 		this->theIntents = configData.theIntents;
@@ -187,8 +188,8 @@ namespace DiscordCoreAPI {
 			leftOverShards -= newShardAmount;
 		}
 		int32_t currentShard{ 0 };
-		if (this->altAddress == "") {
-			this->altAddress = gatewayData.url.substr(gatewayData.url.find("wss://") + std::string("wss://").size());
+		if (this->theAddress == "") {
+			this->theAddress = gatewayData.url.substr(gatewayData.url.find("wss://") + std::string("wss://").size());
 		}
 
 		this->theStopWatch.resetTimer();

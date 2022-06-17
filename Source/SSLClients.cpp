@@ -39,7 +39,7 @@ namespace DiscordCoreInternal {
 		theStream << DiscordCoreAPI::shiftToBrightRed() << errorPosition;
 #ifdef _WIN32
 		std::unique_ptr<char[]> string{ std::make_unique<char[]>(1024) };
-		FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, WSAGetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), ( LPWSTR )string.get(), 1024,
+		FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, WSAGetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), ( LPSTR )string.get(), 1024,
 			NULL);
 		theStream << WSAGetLastError() << ", " << string << DiscordCoreAPI::reset();
 #else

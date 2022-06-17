@@ -118,9 +118,10 @@ namespace DiscordCoreAPI {
 		ShardingOptions shardingOptions{};
 		LoggingOptions loggingOptions{};
 		CacheOptions cacheOptions{};
-		std::string altAddress{};
+		std::string theAddress{};
 		ThreadPool threadPool{};
 		std::string botToken{};
+		std::string thePort{};
 		BotUser currentUser{};
 
 		GatewayBotData getGateWayBot();
