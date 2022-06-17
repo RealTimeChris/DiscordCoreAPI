@@ -141,15 +141,25 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	template<> void parseObject(const nlohmann::json& jsonObjectData, std::vector<DiscordCoreAPI::ActionMetaData>& pDataStructure) {
+	template<> void parseObject(const nlohmann::json& jsonObjectData, DiscordCoreAPI::ActionMetaData& pDataStructure) {
+		if (jsonObjectData.contains("channel_id") && !jsonObjectData["channel_id"].is_null()) {
+			pDataStructure.channelId = stoull(jsonObjectData["channel_id"].get<std::string>());
+		}
+
+		if (jsonObjectData.contains("duration_seconds") && !jsonObjectData["duration_seconds"].is_null()) {
+			pDataStructure.durationSeconds = jsonObjectData["duration_seconds"].get<int64_t>();
+		}
+	}
+
+	template<> void parseObject(const nlohmann::json& jsonObjectData, std::vector<DiscordCoreAPI::ActionData>& pDataStructure) {
 		for (auto& value: jsonObjectData) {
-			DiscordCoreAPI::ActionMetaData theData{};
-			if (jsonObjectData.contains("channel_id") && !jsonObjectData["channel_id"].is_null()) {
-				theData.channelId = stoull(jsonObjectData["channel_id"].get<std::string>());
+			DiscordCoreAPI::ActionData theData{};
+			if (jsonObjectData.contains("metadata") && !jsonObjectData["metadata"].is_null()) {
+				parseObject(jsonObjectData["metadata"], theData.metadata);
 			}
 
-			if (jsonObjectData.contains("duration_seconds") && !jsonObjectData["duration_seconds"].is_null()) {
-				theData.durationSeconds = jsonObjectData["duration_seconds"].get<int64_t>();
+			if (jsonObjectData.contains("type") && !jsonObjectData["type"].is_null()) {
+				theData.type = static_cast<DiscordCoreAPI::ActionType>(jsonObjectData["type"].get<int64_t>());
 			}
 			pDataStructure.push_back(theData);
 		}

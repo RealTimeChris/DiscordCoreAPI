@@ -80,15 +80,15 @@ namespace DiscordCoreAPI {
 	/// Represents an auto-moderation-rule. \brief Represents an auto-moderation-rule.
 	struct AutoModerationRule : public DiscordEntity {
 		std::vector<uint64_t> exemptChannels{};///< The channel ids that should not be affected by the rule(Maximum of 50).
-		std::vector<ActionMetaData> actions{};///< Actions which will execute when the rule is triggered.
 		std::vector<uint64_t> exemptRoles{};///< The role ids that should not be affected by the rule(Maximum of 20).
+		std::vector<ActionData> actions{};///< Actions which will execute when the rule is triggered.
 		TriggerMetaData triggerMetaData{};///< The rule trigger metadata actions array of action objects the.
 		TriggerType triggerType{};///< The rule trigger type.
 		EventType eventType{};///< The rule event type.
 		uint64_t creatorId{};///< The user which first created this rule.
 		uint64_t guildId{};///< The guild which this rule belongs to.
 		std::string name{};///< The rule name.
-		bool enabled{};///< Whether the rule is enabled.		
+		bool enabled{};///< Whether the rule is enabled.
 	};
 
 	/// For listing all of the auto-moderation-rules for a particular Guild. \brief For listing all of the auto-moderation-rules for a particular Guild.
