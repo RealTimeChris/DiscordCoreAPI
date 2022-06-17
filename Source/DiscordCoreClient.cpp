@@ -191,6 +191,9 @@ namespace DiscordCoreAPI {
 		if (this->theAddress == "") {
 			this->theAddress = gatewayData.url.substr(gatewayData.url.find("wss://") + std::string("wss://").size());
 		}
+		if (this->thePort == "") {
+			this->thePort = "443";
+		}
 
 		this->theStopWatch.resetTimer();
 		for (int32_t x = 0; x < shardsPerBaseSocketAgentVect.size(); x += 1) {
