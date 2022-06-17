@@ -56,7 +56,7 @@ namespace DiscordCoreAPI {
 		std::unique_ptr<DiscordCoreInternal::AudioEncoder> encoder{ nullptr };
 		DiscordCoreInternal::BaseSocketAgent* baseSocketAgent{ nullptr };
 		DiscordCoreInternal::VoiceConnectInitData voiceConnectInitData{};
-		DiscordCoreInternal::VoiceConnectionData* voiceConnectionData{};
+		DiscordCoreInternal::VoiceConnectionData voiceConnectionData{};
 		TSUnboundedMessageBlock<AudioFrameData> audioBuffer{};
 		std::unique_ptr<std::jthread> theTask{ nullptr };
 		DiscordCoreInternal::EventWaiter playSetEvent{};
@@ -65,7 +65,6 @@ namespace DiscordCoreAPI {
 		std::atomic_bool* doWeReconnect{ nullptr };
 		std::atomic_bool areWeStopping{ false };
 		std::atomic_bool areWePlaying{ false };
-		const int32_t maxBufferSize{ 1276 };
 		int64_t disconnectStartTime{ 0 };
 		bool areWeConnectedBool{ false };
 		uint64_t currentGuildMemberId{};

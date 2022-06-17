@@ -45,8 +45,6 @@
 	#include <unistd.h>
 #endif
 
-#include <algorithm>
-#include <filesystem>
 #include <discordcoreapi/FoundationEntities.hpp>
 #include <openssl/err.h>
 #include <openssl/ssl.h>

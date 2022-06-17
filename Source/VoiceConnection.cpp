@@ -162,7 +162,7 @@ namespace DiscordCoreAPI {
 		if (!this->voiceSocketAgent->areWeConnected.wait(10000)) {
 			return;
 		}
-		this->voiceConnectionData = &this->voiceSocketAgent->voiceConnectionData;
+		this->voiceConnectionData = this->voiceSocketAgent->voiceConnectionData;
 		if (this->theTask == nullptr) {
 			this->theTask = std::make_unique<std::jthread>([=, this](std::stop_token theToken) {
 				this->run(theToken);
@@ -219,10 +219,8 @@ namespace DiscordCoreAPI {
 		newFrame.data.push_back(0xfe);
 		newFrame.sampleCount = 960;
 		for (uint8_t x = 0; x < 5; x += 1) {
-			if (this->voiceConnectionData) {
-				auto encryptedFrame = this->encryptSingleAudioFrame(newFrame, this->voiceConnectionData->audioSSRC, this->voiceConnectionData->secretKey);
-				this->sendSingleAudioFrame(encryptedFrame);
-			}
+			auto encryptedFrame = this->encryptSingleAudioFrame(newFrame, this->voiceConnectionData.audioSSRC, this->voiceConnectionData.secretKey);
+			this->sendSingleAudioFrame(encryptedFrame);
 		}
 	}
 
@@ -316,9 +314,9 @@ namespace DiscordCoreAPI {
 						std::vector<RawFrameData> rawFrames{};
 						rawFrames.push_back(this->audioData.rawFrameData);
 						auto encodedFrameData = this->encoder->encodeFrames(rawFrames);
-						newFrame = this->encryptSingleAudioFrame(encodedFrameData[0].encodedFrameData, this->voiceConnectionData->audioSSRC, this->voiceConnectionData->secretKey);
+						newFrame = this->encryptSingleAudioFrame(encodedFrameData[0].encodedFrameData, this->voiceConnectionData.audioSSRC, this->voiceConnectionData.secretKey);
 					} else {
-						newFrame = this->encryptSingleAudioFrame(this->audioData.encodedFrameData, this->voiceConnectionData->audioSSRC, this->voiceConnectionData->secretKey);
+						newFrame = this->encryptSingleAudioFrame(this->audioData.encodedFrameData, this->voiceConnectionData.audioSSRC, this->voiceConnectionData.secretKey);
 					}
 					if (newFrame.size() == 0) {
 						continue;

@@ -105,8 +105,10 @@ namespace DiscordCoreAPI {
 
 	  protected:
 		std::unordered_map<std::string, std::unique_ptr<DiscordCoreInternal::BaseSocketAgent>> baseSocketAgentMap{};
-		std::unique_ptr<DiscordCoreInternal::HttpClient> httpClient{};
+		GatewayIntents theIntents{ DiscordCoreAPI::GatewayIntents::All_Intents };
+		std::unique_ptr<DiscordCoreInternal::HttpClient> httpClient{ nullptr };
 		StopWatch<std::chrono::milliseconds> theStopWatch{ 5100ms };
+		TextFormat theFormat{ DiscordCoreAPI::TextFormat::Etf };
 		std::vector<RepeatedFunctionData> functionsToExecute{};
 #ifdef _WIN32
 		DiscordCoreInternal::WSADataWrapper theWSAData{};
@@ -114,12 +116,10 @@ namespace DiscordCoreAPI {
 		std::vector<std::string> threadIds{};
 		ShardingOptions shardingOptions{};
 		LoggingOptions loggingOptions{};
-		GatewayIntents theIntents{};
 		CacheOptions cacheOptions{};
 		std::string altAddress{};
 		ThreadPool threadPool{};
 		std::string botToken{};
-		TextFormat theFormat{};
 		BotUser currentUser{};
 
 		GatewayBotData getGateWayBot();

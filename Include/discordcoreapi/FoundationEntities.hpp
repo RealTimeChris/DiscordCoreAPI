@@ -54,8 +54,8 @@
 #include <unordered_map>
 #include <shared_mutex>
 #include <functional>
-#include <semaphore>
 #include <coroutine>
+#include <semaphore>
 #include <concepts>
 #include <iostream>
 #include <fstream>
@@ -67,7 +67,6 @@
 #include <thread>
 #include <mutex>
 #include <queue>
-#include <list>
 #include <map>
 
 #ifdef max

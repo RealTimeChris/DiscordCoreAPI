@@ -558,8 +558,8 @@ namespace DiscordCoreAPI {
 
 	  protected:
 		static std::unique_ptr<std::unordered_map<uint64_t, std::unique_ptr<GuildData>>> cache;
-		static DiscordCoreClient* discordCoreClient;
 		static DiscordCoreInternal::HttpClient* httpClient;
+		static DiscordCoreClient* discordCoreClient;
 		static std::shared_mutex theMutex;
 		static bool doWeCache;
 

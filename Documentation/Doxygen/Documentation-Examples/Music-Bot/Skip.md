@@ -77,7 +77,7 @@ Skip {#Skip}
 				}
 
 				previousSkippedTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-				Skip::timeOfLastSkip.insert_or_assign(args.eventData->getGuildId(), previousSkippedTime);
+				Skip::timeOfLastSkip[args.eventData->getGuildId()] = previousSkippedTime;
 
 				VoiceConnection* voiceConnection = guild.connectToVoice(guildMember.voiceData.channelId, true, false);
 				loadPlaylist(discordGuild);

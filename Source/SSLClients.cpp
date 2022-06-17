@@ -400,7 +400,7 @@ namespace DiscordCoreInternal {
 			throw ConnectionError{ reportError("WebSocketSSLShard::connect()::socket(), ") };
 		}
 
-		int32_t value{ this->maxBufferSize };
+		int32_t value{ this->maxBufferSize + 1 };
 		if (auto returnValue = setsockopt(this->theSocket, SOL_SOCKET, SO_SNDBUF, static_cast<char*>(static_cast<void*>(&value)), sizeof(value)); returnValue == SOCKET_ERROR) {
 			throw ConnectionError{ reportError("WebSocketSSLShard::connect()::setsockopt(), ") };
 		}

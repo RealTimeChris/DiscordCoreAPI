@@ -92,9 +92,6 @@ namespace DiscordCoreAPI {
 				this->exceptionBuffer.send(std::current_exception());
 			}
 
-			~promise_type() {
-			}
-
 		  protected:
 			UnboundedMessageBlock<std::exception_ptr> exceptionBuffer{};
 			std::atomic_bool areWeStopped{ false };
@@ -236,9 +233,6 @@ namespace DiscordCoreAPI {
 
 			void unhandled_exception() {
 				this->exceptionBuffer.send(std::current_exception());
-			}
-
-			~promise_type() {
 			}
 
 		  protected:

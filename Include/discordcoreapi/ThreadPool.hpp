@@ -48,14 +48,14 @@ namespace DiscordCoreAPI {
 
 		ThreadPool() = default;
 
-		template<typename... ArgTypes> static std::string storeThread(TimeElapsedHandler<ArgTypes...> timeElapsedHandler, int32_t timeInterval, bool repeated, ArgTypes... args) {
+		template<typename... ArgTypes> static std::string storeThread(TimeElapsedHandler<ArgTypes...> timeElapsedHandler, int64_t timeInterval, bool repeated, ArgTypes... args) {
 			std::string threadId = std::to_string(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
 
 			ThreadPool::threads[threadId] = std::jthread([=](std::stop_token stopToken) {
 				StopWatch stopWatch{ std::chrono::milliseconds{ timeInterval } };
 				while (true) {
 					stopWatch.resetTimer();
-					std::this_thread::sleep_for(std::chrono::milliseconds{ static_cast<int32_t>(std::ceil(static_cast<float>(timeInterval) * thePercentage)) });
+					std::this_thread::sleep_for(std::chrono::milliseconds{ static_cast<int64_t>(std::ceil(static_cast<float>(timeInterval) * thePercentage)) });
 					while (!stopWatch.hasTimePassed() && !stopToken.stop_requested()) {
 						std::this_thread::sleep_for(1ms);
 					}
@@ -74,14 +74,14 @@ namespace DiscordCoreAPI {
 			return threadId;
 		}
 
-		static std::string storeThread(TimeElapsedHandlerTwo timeElapsedHandler, int32_t timeInterval, bool repeated) {
+		static std::string storeThread(TimeElapsedHandlerTwo timeElapsedHandler, int64_t timeInterval, bool repeated) {
 			std::string threadId = std::to_string(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
 
 			ThreadPool::threads[threadId] = std::jthread([=](std::stop_token stopToken) {
 				StopWatch stopWatch{ std::chrono::milliseconds{ timeInterval } };
 				while (true) {
 					stopWatch.resetTimer();
-					std::this_thread::sleep_for(std::chrono::milliseconds{ static_cast<int32_t>(std::ceil(static_cast<float>(timeInterval) * thePercentage)) });
+					std::this_thread::sleep_for(std::chrono::milliseconds{ static_cast<int64_t>(std::ceil(static_cast<float>(timeInterval) * thePercentage)) });
 					while (!stopWatch.hasTimePassed() && !stopToken.stop_requested()) {
 						std::this_thread::sleep_for(1ms);
 					}
@@ -101,11 +101,11 @@ namespace DiscordCoreAPI {
 		}
 
 		template<typename... ArgTypes>
-		static void executeFunctionAfterTimePeriod(TimeElapsedHandler<ArgTypes...> timeElapsedHandler, int32_t timeInterval, bool blockForCompletion, ArgTypes... args) {
+		static void executeFunctionAfterTimePeriod(TimeElapsedHandler<ArgTypes...> timeElapsedHandler, int64_t timeInterval, bool blockForCompletion, ArgTypes... args) {
 			std::jthread theThread = std::jthread([=](std::stop_token stopToken) {
 				StopWatch stopWatch{ std::chrono::milliseconds{ timeInterval } };
 				stopWatch.resetTimer();
-				std::this_thread::sleep_for(std::chrono::milliseconds{ static_cast<int32_t>(std::ceil(static_cast<float>(timeInterval) * thePercentage)) });
+				std::this_thread::sleep_for(std::chrono::milliseconds{ static_cast<int64_t>(std::ceil(static_cast<float>(timeInterval) * thePercentage)) });
 				while (!stopWatch.hasTimePassed() && !stopToken.stop_requested()) {
 					std::this_thread::sleep_for(1ms);
 				}

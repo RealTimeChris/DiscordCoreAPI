@@ -56,15 +56,11 @@ namespace DiscordCoreInternal {
 
 	  protected:
 		std::unordered_map<std::string, DiscordCoreAPI::TSUnboundedMessageBlock<VoiceConnectionData>*> voiceConnectionDataBufferMap{};
-		DiscordCoreAPI::GatewayIntents intentsValue{ DiscordCoreAPI::GatewayIntents::All_Intents };
 		std::unordered_map<int32_t, std::unique_ptr<WebSocketSSLShard>> theClients{};
-		DiscordCoreAPI::TextFormat theFormat{ DiscordCoreAPI::TextFormat::Etf };
 		DiscordCoreAPI::DiscordCoreClient* discordCoreClient{ nullptr };
-		DiscordCoreAPI::CommandController* commandController{ nullptr };
 		std::queue<DiscordCoreAPI::ConnectionPackage> connections{};
 		WebSocketOpCode dataOpcode{ WebSocketOpCode::Op_Binary };
 		std::unique_ptr<std::jthread> theTask{ nullptr };
-		DiscordCoreAPI::EventManager* eventManager{};
 		VoiceConnectionData voiceConnectionData{};
 		EventWaiter areWeReadyToConnectEvent{};
 		bool doWePrintSuccessMessages{ false };
@@ -78,9 +74,7 @@ namespace DiscordCoreInternal {
 		bool areWeCollectingData{ false };
 		int32_t heartbeatInterval{ 0 };
 		std::mutex accessorMutex01{};
-		std::string botToken{};
 		ErlPacker erlPacker{};
-		std::string baseUrl{};
 		uint64_t userId{};
 
 		void getVoiceConnectionData(const VoiceConnectInitData& doWeCollect, int32_t& theIndex) noexcept;
