@@ -108,9 +108,7 @@ namespace DiscordCoreInternal {
 		BIOWrapper& operator=(BIO* other) {
 			this->bioPtr.reset(other);
 			if (!BIO_up_ref(other)) {
-				std::cout << DiscordCoreAPI::shiftToBrightRed() << "BIO_up_ref() Error: ";
-				ERR_print_errors_fp(stdout);
-				std::cout << DiscordCoreAPI::reset() << std::endl;
+				std::cout << DiscordCoreAPI::shiftToBrightRed() << "BIO_up_ref() Error: " << ERR_error_string(errorValue, nullptr) << DiscordCoreAPI::reset() << std::endl;
 			};
 			return *this;
 		}
@@ -176,9 +174,7 @@ namespace DiscordCoreInternal {
 		SSL_CTXWrapper& operator=(SSL_CTX* other) {
 			this->sslCTXPtr.reset(other);
 			if (!SSL_CTX_up_ref(other)) {
-				std::cout << DiscordCoreAPI::shiftToBrightRed() << "SSL_CTX_up_ref() Error: ";
-				ERR_print_errors_fp(stdout);
-				std::cout << DiscordCoreAPI::reset() << std::endl;
+				std::cout << DiscordCoreAPI::shiftToBrightRed() << "SSL_CTX_up_ref() Error: " << ERR_error_string(errorValue, nullptr) << DiscordCoreAPI::reset() << std::endl;
 			}
 			return *this;
 		}
@@ -207,9 +203,7 @@ namespace DiscordCoreInternal {
 		SSLWrapper& operator=(SSL* other) {
 			this->sslPtr.reset(other);
 			if (!SSL_up_ref(other)) {
-				std::cout << DiscordCoreAPI::shiftToBrightRed() << "SSL_up_ref() Error: ";
-				ERR_print_errors_fp(stdout);
-				std::cout << DiscordCoreAPI::reset() << std::endl;
+				std::cout << DiscordCoreAPI::shiftToBrightRed() << "SSL_up_ref() Error: " << ERR_error_string(errorValue, nullptr) << DiscordCoreAPI::reset() << std::endl;
 			}
 			return *this;
 		}
