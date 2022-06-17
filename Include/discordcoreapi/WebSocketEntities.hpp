@@ -77,7 +77,7 @@ namespace DiscordCoreInternal {
 		ErlPacker erlPacker{};
 		uint64_t userId{};
 
-		void getVoiceConnectionData(const VoiceConnectInitData& doWeCollect, int32_t& theIndex) noexcept;
+		void getVoiceConnectionData(const VoiceConnectInitData& doWeCollect, WebSocketSSLShard& theIndex) noexcept;
 
 		void createHeader(std::string& outBuffer, uint64_t sendLength, WebSocketOpCode opCode) noexcept;
 
@@ -100,7 +100,7 @@ namespace DiscordCoreInternal {
 	  public:
 		friend class DiscordCoreAPI::VoiceConnection;
 
-		VoiceSocketAgent(VoiceConnectInitData initDataNew, BaseSocketAgent* baseBaseSocketAgentNew, int32_t theIndex, bool doWePrintMessages = false) noexcept;
+		VoiceSocketAgent(VoiceConnectInitData initDataNew, BaseSocketAgent* baseBaseSocketAgentNew, WebSocketSSLShard& theIndex, bool printMessagesNew) noexcept;
 
 		void sendMessage(const std::vector<uint8_t>& responseData) noexcept;
 

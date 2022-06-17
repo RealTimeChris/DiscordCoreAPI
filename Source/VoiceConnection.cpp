@@ -156,8 +156,8 @@ namespace DiscordCoreAPI {
 		if (this->voiceSocketAgent) {
 			this->voiceSocketAgent.reset(nullptr);
 		}
-		this->voiceSocketAgent = std::make_unique<DiscordCoreInternal::VoiceSocketAgent>(this->voiceConnectInitData, this->baseSocketAgent, voiceConnectInitDataNew.currentShard,
-			this->baseSocketAgent->doWePrintSuccessMessages);
+		this->voiceSocketAgent = std::make_unique<DiscordCoreInternal::VoiceSocketAgent>(this->voiceConnectInitData, this->baseSocketAgent,
+			*this->baseSocketAgent->theClients[voiceConnectInitDataNew.currentShard], this->baseSocketAgent->doWePrintSuccessMessages);
 		this->doWeReconnect = &this->voiceSocketAgent->doWeReconnect;
 		if (!this->voiceSocketAgent->areWeConnected.wait(10000)) {
 			return;

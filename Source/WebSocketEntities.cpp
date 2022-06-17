@@ -114,9 +114,7 @@ namespace DiscordCoreInternal {
 						  << DiscordCoreAPI::reset() << std::endl
 						  << std::endl;
 			}
-			if (this->theClients.contains(theShard.shard[0])) {
-				this->sendCloseFrame(theShard);
-			}
+			this->sendCloseFrame(theShard);
 			DiscordCoreAPI::ConnectionPackage theData{};
 			theData.currentShard = theShard.shard[0];
 			theData.currentReconnectionDepth = theShard.currentRecursionDepth;
@@ -138,7 +136,7 @@ namespace DiscordCoreInternal {
 		return this->theTask.get();
 	}
 
-	void BaseSocketAgent::getVoiceConnectionData(const VoiceConnectInitData& doWeCollect, int32_t& theIndex) noexcept {
+	void BaseSocketAgent::getVoiceConnectionData(const VoiceConnectInitData& doWeCollect, WebSocketSSLShard& theIndex) noexcept {
 		try {
 			this->semaphore.acquire();
 			DiscordCoreAPI::UpdateVoiceStateData dataPackage{};
@@ -148,7 +146,7 @@ namespace DiscordCoreInternal {
 			dataPackage.selfMute = doWeCollect.selfMute;
 			this->userId = doWeCollect.userId;
 			nlohmann::json newData = JSONIFY(dataPackage);
-			this->sendMessage(newData, *this->theClients[theIndex]);
+			this->sendMessage(newData, theIndex);
 			try {
 				WebSocketSSLShard::processIO(this->theClients, 100000);
 			} catch (...) {
@@ -163,7 +161,7 @@ namespace DiscordCoreInternal {
 			dataPackage.channelId = doWeCollect.channelId;
 			newData = JSONIFY(dataPackage);
 			this->areWeCollectingData = true;
-			this->sendMessage(newData, *this->theClients[theIndex]);
+			this->sendMessage(newData, theIndex);
 			try {
 				WebSocketSSLShard::processIO(this->theClients, 100000);
 			} catch (...) {
@@ -183,7 +181,7 @@ namespace DiscordCoreInternal {
 			if (this->doWePrintErrorMessages) {
 				DiscordCoreAPI::reportException("BaseSocketAgent::getVoiceConnectionData()");
 			}
-			this->onClosed(*this->theClients[theIndex]);
+			this->onClosed(theIndex);
 		}
 	}
 
@@ -1061,7 +1059,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	VoiceSocketAgent::VoiceSocketAgent(VoiceConnectInitData initDataNew, BaseSocketAgent* baseBaseSocketAgentNew, int32_t theIndex, bool printMessagesNew) noexcept {
+	VoiceSocketAgent::VoiceSocketAgent(VoiceConnectInitData initDataNew, BaseSocketAgent* baseBaseSocketAgentNew,WebSocketSSLShard& theIndex, bool printMessagesNew) noexcept {
 		this->doWePrintSuccessMessages = baseBaseSocketAgentNew->doWePrintSuccessMessages;
 		this->doWePrintErrorMessages = baseBaseSocketAgentNew->doWePrintErrorMessages;
 		this->baseSocketAgent = baseBaseSocketAgentNew;
@@ -1141,7 +1139,7 @@ namespace DiscordCoreInternal {
 				close |= theShard.inputBuffer[3] & 0xff;
 				theShard.closeCode = static_cast<WebSocketCloseCode>(close);
 				theShard.inputBuffer.erase(theShard.inputBuffer.begin(), theShard.inputBuffer.begin() + 4);
-				this->onClosed(*this->theClients[theShard.shard[0]]);
+				this->onClosed(theShard);
 				return;
 			}
 			default: {
@@ -1180,7 +1178,7 @@ namespace DiscordCoreInternal {
 					  << DiscordCoreAPI::reset() << std::endl
 					  << std::endl;
 		}
-		this->theClients.erase(theShard.shard[0]);
+		this->theClients.erase(3);
 	}
 
 	void VoiceSocketAgent::sendVoiceData(std::string& responseData) noexcept {
