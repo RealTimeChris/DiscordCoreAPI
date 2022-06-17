@@ -69,8 +69,8 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::Song theSong{};
 		uint64_t guildId{};
 
-		void breakOutPlayMore(std::stop_token theToken, std::unique_ptr<AudioDecoder> audioDecoder, bool haveWeFailed, int32_t counter, YouTubeAPI* soundCloudAPI,
-			const DiscordCoreAPI::Song& newSong, int32_t currentRecursionDepth);
+		void breakOutPlayMore(std::stop_token theToken, std::unique_ptr<AudioDecoder> audioDecoder, int32_t counter, YouTubeAPI* youtubeAPI, const DiscordCoreAPI::Song& newSong,
+			int32_t currentRecursionDepth);
 
 		void breakOut(std::stop_token theToken, std::unique_ptr<AudioDecoder> audioDecoder, YouTubeAPI* soundCloudAPI);
 	};

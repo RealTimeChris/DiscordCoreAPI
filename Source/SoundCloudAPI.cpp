@@ -266,7 +266,6 @@ namespace DiscordCoreInternal {
 		std::unique_ptr<AudioDecoder> audioDecoder = std::make_unique<AudioDecoder>(dataPackage);
 		const int32_t bytesTotal{ 8192 };
 		AudioEncoder audioEncoder{};
-		bool haveWeFailed{ false };
 		while (counter < newSong.finalDownloadUrls.size()) {
 			std::this_thread::sleep_for(1ms);
 			if (theToken.stop_requested()) {
@@ -274,8 +273,7 @@ namespace DiscordCoreInternal {
 				return;
 			}
 			if (audioDecoder->haveWeFailed()) {
-				haveWeFailed = true;
-				this->breakOutPlayMore(theToken, std::move(audioDecoder), haveWeFailed, counter, this, newSong, currentRecursionDepth);
+				this->breakOutPlayMore(theToken, std::move(audioDecoder), counter, this, newSong, currentRecursionDepth);
 				return;
 			}
 			if (theToken.stop_requested()) {
@@ -289,8 +287,7 @@ namespace DiscordCoreInternal {
 			workloadVector.push_back(dataPackage03);
 			auto result = this->httpClient->submitWorkloadAndGetResult<std::vector<HttpResponseData>>(workloadVector);
 			if (result.size() < 1) {
-				haveWeFailed = true;
-				this->breakOutPlayMore(theToken, std::move(audioDecoder), haveWeFailed, counter, this, newSong, currentRecursionDepth);
+				this->breakOutPlayMore(theToken, std::move(audioDecoder), counter, this, newSong, currentRecursionDepth);
 				return;
 			}
 			std::vector<uint8_t> newVector{};
@@ -382,12 +379,10 @@ namespace DiscordCoreInternal {
 		};
 	}
 
-	void SoundCloudAPI::breakOutPlayMore(std::stop_token theToken, std::unique_ptr<AudioDecoder> audioDecoder, bool haveWeFailed, int32_t counter, SoundCloudAPI* soundCloudAPI,
+	void SoundCloudAPI::breakOutPlayMore(std::stop_token theToken, std::unique_ptr<AudioDecoder> audioDecoder, int32_t counter, SoundCloudAPI* soundCloudAPI,
 		const DiscordCoreAPI::Song& newSong, int32_t currentRecursionDepth) {
-		if (haveWeFailed) {
-			audioDecoder.reset(nullptr);
-			SoundCloudAPI::weFailedToDownloadOrDecode(newSong, soundCloudAPI, theToken, currentRecursionDepth);
-		}
+		audioDecoder.reset(nullptr);
+		SoundCloudAPI::weFailedToDownloadOrDecode(newSong, soundCloudAPI, theToken, currentRecursionDepth);
 	}
 
 	void SoundCloudAPI::breakOut(std::stop_token theToken, std::unique_ptr<AudioDecoder> audioDecoder, SoundCloudAPI* soundCloudAPI) {

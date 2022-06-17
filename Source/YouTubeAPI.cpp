@@ -210,7 +210,6 @@ namespace DiscordCoreInternal {
 			theMap[0] = std::move(streamSocket);
 			theMap[0]->connect(newSong.finalDownloadUrls[0].urlPath, "443");
 			bool areWeDoneHeaders{ false };
-			bool haveWeFailed{ false };
 			int64_t remainingDownloadContentLength{ newSong.contentLength };
 			int64_t contentLengthCurrent{ youtubeAPI->maxBufferSize };
 			int64_t bytesSubmittedPrevious{ 0 };
@@ -237,7 +236,7 @@ namespace DiscordCoreInternal {
 					if (this->doWePrintWebSocketErrorMessages) {
 						DiscordCoreAPI::reportException("YouTubeAPI::downloadAndStreamAudio()");
 					}
-					this->breakOutPlayMore(theToken, std::move(audioDecoder), haveWeFailed, counter, this, newSong, currentRecursionDepth);
+					this->breakOutPlayMore(theToken, std::move(audioDecoder), counter, this, newSong, currentRecursionDepth);
 					return;
 				}
 				while (newSong.contentLength > bytesSubmittedTotal) {
@@ -261,8 +260,7 @@ namespace DiscordCoreInternal {
 						return;
 					}
 					if (audioDecoder->haveWeFailed()) {
-						haveWeFailed = true;
-						this->breakOutPlayMore(theToken, std::move(audioDecoder), haveWeFailed, counter, this, newSong, currentRecursionDepth);
+						this->breakOutPlayMore(theToken, std::move(audioDecoder), counter, this, newSong, currentRecursionDepth);
 						return;
 					}
 					if (theToken.stop_requested()) {
@@ -281,7 +279,7 @@ namespace DiscordCoreInternal {
 								if (this->doWePrintWebSocketErrorMessages) {
 									DiscordCoreAPI::reportException("YouTubeAPI::downloadAndStreamAudio()");
 								}
-								this->breakOutPlayMore(theToken, std::move(audioDecoder), haveWeFailed, counter, this, newSong, currentRecursionDepth);
+								this->breakOutPlayMore(theToken, std::move(audioDecoder), counter, this, newSong, currentRecursionDepth);
 								return;
 							}
 							if (!theToken.stop_requested()) {
@@ -308,7 +306,7 @@ namespace DiscordCoreInternal {
 								if (this->doWePrintWebSocketErrorMessages) {
 									DiscordCoreAPI::reportException("YouTubeAPI::downloadAndStreamAudio()");
 								}
-								this->breakOutPlayMore(theToken, std::move(audioDecoder), haveWeFailed, counter, this, newSong, currentRecursionDepth);
+								this->breakOutPlayMore(theToken, std::move(audioDecoder), counter, this, newSong, currentRecursionDepth);
 								return;
 							}
 							std::string streamBuffer{};
@@ -344,7 +342,7 @@ namespace DiscordCoreInternal {
 									if (this->doWePrintWebSocketErrorMessages) {
 										DiscordCoreAPI::reportException("YouTubeAPI::downloadAndStreamAudio()");
 									}
-									this->breakOutPlayMore(theToken, std::move(audioDecoder), haveWeFailed, counter, this, newSong, currentRecursionDepth);
+									this->breakOutPlayMore(theToken, std::move(audioDecoder), counter, this, newSong, currentRecursionDepth);
 									return;
 								}
 								std::string newVector{};
@@ -415,8 +413,7 @@ namespace DiscordCoreInternal {
 				if (this->doWePrintWebSocketErrorMessages) {
 					DiscordCoreAPI::reportException("YouTubeAPI::downloadAndStreamAudio()");
 				}
-				haveWeFailed = true;
-				this->breakOutPlayMore(theToken, std::move(audioDecoder), haveWeFailed, counter, this, newSong, currentRecursionDepth);
+				this->breakOutPlayMore(theToken, std::move(audioDecoder), counter, this, newSong, currentRecursionDepth);
 			}
 		} catch (std::runtime_error&) {
 			if (this->doWePrintWebSocketErrorMessages) {
@@ -451,12 +448,10 @@ namespace DiscordCoreInternal {
 		};
 	}
 
-	void YouTubeAPI::breakOutPlayMore(std::stop_token theToken, std::unique_ptr<AudioDecoder> audioDecoder, bool haveWeFailed, int32_t counter, YouTubeAPI* youtubeAPI,
+	void YouTubeAPI::breakOutPlayMore(std::stop_token theToken, std::unique_ptr<AudioDecoder> audioDecoder, int32_t counter, YouTubeAPI* youtubeAPI,
 		const DiscordCoreAPI::Song& newSong, int32_t currentRecursionDepth) {
-		if (haveWeFailed) {
-			audioDecoder.reset(nullptr);
-			YouTubeAPI::weFailedToDownloadOrDecode(newSong, youtubeAPI, theToken, currentRecursionDepth);
-		}
+		audioDecoder.reset(nullptr);
+		YouTubeAPI::weFailedToDownloadOrDecode(newSong, youtubeAPI, theToken, currentRecursionDepth);
 	}
 
 	void YouTubeAPI::breakOut(std::stop_token theToken, std::unique_ptr<AudioDecoder> audioDecoder, YouTubeAPI* youtubeAPI) {
