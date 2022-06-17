@@ -49,11 +49,16 @@ namespace DiscordCoreAPI {
 		return Globals::songAPIMap;
 	}
 
-	void signalHandler(int32_t sig_int) {
+	void atexitHandler() {
 		Globals::doWeQuit.store(true);
 	}
 
+	void signalHandler(int32_t) {
+		std::exit(EXIT_SUCCESS);
+	}
+
 	DiscordCoreClient::DiscordCoreClient(DiscordCoreClientConfig configData) {
+		std::atexit(&atexitHandler);
 		std::signal(SIGTERM, &signalHandler);
 		std::signal(SIGSEGV, &signalHandler);
 		std::signal(SIGINT, &signalHandler);
