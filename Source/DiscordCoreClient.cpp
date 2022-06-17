@@ -199,8 +199,8 @@ namespace DiscordCoreAPI {
 				if (this->loggingOptions.logGeneralSuccessMessages) {
 					std::cout << shiftToBrightBlue() << "Connecting Shard " + std::to_string(currentShard + 1) << " of " << this->shardingOptions.numberOfShardsForThisProcess
 							  << std::string(" Shards for this process. (") + std::to_string(currentShard + 1) + " of " +
-							std::to_string(this->shardingOptions.totalNumberOfShards) + std::string(" Shards total across all processes.)")
-							  << std::endl
+							std::to_string(this->shardingOptions.totalNumberOfShards) + std::string(" Shards total across all processes)")
+							  << reset() << std::endl
 							  << std::endl;
 				}
 				ConnectionPackage theData{};
