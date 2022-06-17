@@ -40,6 +40,8 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll StartThreadInForumChannelData;
 	struct DiscordCoreAPI_Dll ModifyGuildWelcomeScreenData;
 	struct DiscordCoreAPI_Dll ModifyGuildRolePositionsData;
+	struct DiscordCoreAPI_Dll CreateAutoModerationRuleData;
+	struct DiscordCoreAPI_Dll ModifyAutoModerationRuleData;
 	struct DiscordCoreAPI_Dll EditApplicationCommandData;
 	struct DiscordCoreAPI_Dll StartThreadWithMessageData;
 	struct DiscordCoreAPI_Dll AddRecipientToGroupDMData;
@@ -133,6 +135,10 @@ namespace DiscordCoreInternal {
 	std::string JSONIFY(const DiscordCoreAPI::ModifyGuildScheduledEventData& dataPackage);
 
 	std::string JSONIFY(const DiscordCoreAPI::ModifyGuildRolePositionsData& dataPackage);
+
+	std::string JSONIFY(const DiscordCoreAPI::CreateAutoModerationRuleData& dataPackage);
+
+	std::string JSONIFY(const DiscordCoreAPI::ModifyAutoModerationRuleData& dataPackage);
 
 	std::string JSONIFY(const DiscordCoreAPI::ModifyGuildWelcomeScreenData& dataPackage);
 

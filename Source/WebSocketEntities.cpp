@@ -124,7 +124,9 @@ namespace DiscordCoreInternal {
 			theData.areWeResuming = theShard.areWeResuming;
 			theData.currentBaseSocketAgent = this->currentBaseSocketAgent;
 			theData.lastNumberReceived = theShard.lastNumberReceived;
-			this->theClients.erase(theShard.shard[0]);
+			if (this->theClients.contains(theShard.shard[0])) {
+				this->theClients.erase(theShard.shard[0]);
+			}
 			this->connections.push(theData);
 		} else if (this->maxReconnectTries <= theShard.currentRecursionDepth) {
 			this->doWeQuit->store(true);
@@ -298,7 +300,7 @@ namespace DiscordCoreInternal {
 				close |= theShard.inputBuffer[3] & 0xff;
 				theShard.closeCode = static_cast<WebSocketCloseCode>(close);
 				theShard.inputBuffer.erase(theShard.inputBuffer.begin(), theShard.inputBuffer.begin() + 4);
-				this->onClosed(*this->theClients[theShard.shard[0]]);
+				this->onClosed(theShard);
 				return;
 			}
 			default: {

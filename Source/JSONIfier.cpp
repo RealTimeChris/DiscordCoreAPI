@@ -27,6 +27,7 @@
 #include <discordcoreapi/RoleEntities.hpp>
 #include <discordcoreapi/WebHookEntities.hpp>
 #include <discordcoreapi/ReactionEntities.hpp>
+#include <discordcoreapi/AutoModerationEntities.hpp>
 #include <discordcoreapi/InteractionEntities.hpp>
 #include <discordcoreapi/ApplicationCommandEntities.hpp>
 #include <discordcoreapi/UserEntities.hpp>
@@ -552,6 +553,59 @@ namespace DiscordCoreInternal {
 		}
 		return dataArray.dump();
 	};
+
+	std::string JSONIFY(const DiscordCoreAPI::CreateAutoModerationRuleData& dataPackage) {
+		nlohmann::json data{};
+		data["actions"];
+		for (auto& value: dataPackage.actions) {
+			nlohmann::json dataNew{};
+			dataNew["metadata"]["channel_id"] = value.metadata.channelId;
+			dataNew["metadata"]["duration_seconds"] = value.metadata.durationSeconds;
+			dataNew["type"] = value.type;
+			data["actions"].push_back(dataNew);
+		}
+		data["enabled"] = dataPackage.enabled;
+		data["event_type"] = dataPackage.eventType;
+		data["exempt_channels"];
+		for (auto& value: dataPackage.exemptChannels) {
+			data["exempt_channels"].push_back(value);
+		}
+		data["exempt_roles"];
+		for (auto& value: dataPackage.exemptRoles) {
+			data["exempt_roles"].push_back(value);
+		}
+		data["name"] = dataPackage.name;
+		data["trigger_metadata"]["keyword_filter"] = dataPackage.triggerMetadata.keywordFilter;
+		data["trigger_metadata"]["presets"] = dataPackage.triggerMetadata.presets;
+		data["trigger_type"] = dataPackage.triggerType;
+		return data.dump();
+	}
+
+	std::string JSONIFY(const DiscordCoreAPI::ModifyAutoModerationRuleData& dataPackage) {
+		nlohmann::json data{};
+		data["actions"];
+		for (auto& value: dataPackage.actions) {
+			nlohmann::json dataNew{};
+			dataNew["metadata"]["channel_id"] = value.metadata.channelId;
+			dataNew["metadata"]["duration_seconds"] = value.metadata.durationSeconds;
+			dataNew["type"] = value.type;
+			data["actions"].push_back(dataNew);
+		}
+		data["enabled"] = dataPackage.enabled;
+		data["event_type"] = dataPackage.eventType;
+		data["exempt_channels"];
+		for (auto& value: dataPackage.exemptChannels) {
+			data["exempt_channels"].push_back(value);
+		}
+		data["exempt_roles"];
+		for (auto& value: dataPackage.exemptRoles) {
+			data["exempt_roles"].push_back(value);
+		}
+		data["name"] = dataPackage.name;
+		data["trigger_metadata"]["keyword_filter"] = dataPackage.triggerMetadata.keywordFilter;
+		data["trigger_metadata"]["presets"] = dataPackage.triggerMetadata.presets;
+		return data.dump();
+	}
 
 	std::string JSONIFY(const DiscordCoreAPI::ModifyGuildScheduledEventData& dataPackage) {
 		nlohmann::json data{};

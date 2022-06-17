@@ -3787,7 +3787,10 @@ namespace DiscordCoreInternal {
 		Post_Thread_In_Forum_Channel = 162,
 		Get_Auto_Moderation_Rules = 163,
 		Get_Auto_Moderation_Rule = 164,
-		LAST = 165
+		Post_Auto_Moderation_Rule = 165,
+		Patch_Auto_Moderation_Rule = 166,
+		Delete_Auto_Moderation_Rule = 167,
+		LAST = 168
 	};
 
 	struct DiscordCoreAPI_Dll HttpWorkloadData {

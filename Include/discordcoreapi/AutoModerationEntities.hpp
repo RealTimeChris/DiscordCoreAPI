@@ -71,6 +71,12 @@ namespace DiscordCoreAPI {
 		std::vector<KeywordPresetType> presets{};///< The internally pre-defined wordsets which will be searched for in content.
 	};
 
+	/// For representing a single auto-moderation-rule-action. \brief For representing a single auto-moderation-rule-action.
+	struct ActionData {
+		ActionType type{};///< The type of action.
+		ActionMetaData metadata{};///< Additional metadata needed during execution for this specific action type.
+	};
+
 	/// Represents an auto-moderation-rule. \brief Represents an auto-moderation-rule.
 	struct AutoModerationRule : public DiscordEntity {
 		std::vector<uint64_t> exemptChannels{};///< The channel ids that should not be affected by the rule(Maximum of 50).
@@ -92,8 +98,40 @@ namespace DiscordCoreAPI {
 
 	/// For collecting an auto-moderation-rule for a particular Guild. \brief For collecting an auto-moderation-rule for a particular Guild.
 	struct GetAutoModerationRuleData {
-		uint64_t guildId{};///< The id of the Guild from which you would like to collect the auto-moderation-rule from.
 		uint64_t autoModerationRuleId{};///< The id of the auto-moderation-rule you would like to collect.
+		uint64_t guildId{};///< The id of the Guild from which you would like to collect the auto-moderation-rule from.
+	};
+
+	/// For creating an auto-moderation-rule. \brief For creating an auto-moderation-rule.
+	struct CreateAutoModerationRuleData {
+		std::vector<uint64_t> exemptChannels{};///< The channel ids that should not be affected by the rule(Maximum of 50).
+		std::vector<uint64_t> exemptRoles{};///< The role ids that should not be affected by the rule(Maximum of 20).
+		TriggerMetaData triggerMetadata{};///< The trigger metadata.
+		std::vector<ActionData> actions{};///< The actions which will execute when the rule is triggered 
+		TriggerType triggerType{};///< The trigger type.
+		EventType eventType{};///< The event type.
+		uint64_t guildId{};///< The Guild within which to create the auto-moderation-rule.
+		std::string name{};///< The rule name.
+		bool enabled{};///< Whether the rule is enabled(False by default).
+	};
+
+	/// For modifying an auto-moderation-rule. \brief For modifying an auto-moderation-rule.
+	struct ModifyAutoModerationRuleData {
+		std::vector<uint64_t> exemptChannels{};///< The channel ids that should not be affected by the rule(Maximum of 50).
+		std::vector<uint64_t> exemptRoles{};///< The role ids that should not be affected by the rule(Maximum of 20).
+		TriggerMetaData triggerMetadata{};///< The trigger metadata.
+		std::vector<ActionData> actions{};///< The actions which will execute when the rule is triggered
+		uint64_t autoModerationRuleId{};///< The id of the auto-moderation-rule you would like to modify.
+		EventType eventType{};///< The event type.
+		uint64_t guildId{};///< The Guild within which to modify the auto-moderation-rule.
+		std::string name{};///< The rule name.
+		bool enabled{};///< Whether the rule is enabled(False by default).
+	};
+
+	/// For deleting an auto-moderation-rule. \brief For deleting an auto-moderation-rule.
+	struct DeleteAutoModerationRuleData {
+		uint64_t autoModerationRuleId{};///< The id of the auto-moderation-rule you would like to delete.
+		uint64_t guildId{};///< The Guild within which to delete the auto-moderation-rule.
 	};
 
 	/**@}*/
@@ -111,6 +149,12 @@ namespace DiscordCoreAPI {
 		CoRoutine<std::vector<AutoModerationRule>> listAutoModerationRulesForGuildAsync(ListAutoModerationRulesForGuildData dataPackage);
 
 		CoRoutine<AutoModerationRule> getAutoModerationRuleAsync(GetAutoModerationRuleData dataPackage);
+
+		CoRoutine<AutoModerationRule> createAutoModerationRuleAsync(CreateAutoModerationRuleData dataPackage);
+
+		CoRoutine<AutoModerationRule> modifyAutoModerationRuleAsync(ModifyAutoModerationRuleData dataPackage);
+
+		CoRoutine<void> deleteAutoModerationRuleAsync(DeleteAutoModerationRuleData dataPackage);
 
 	  protected:
 		static DiscordCoreInternal::HttpClient* httpClient;
