@@ -22,6 +22,7 @@
 #pragma once
 
 #include <discordcoreapi/ApplicationCommandEntities.hpp>
+#include <discordcoreapi/AutoModerationEntities.hpp>
 #include <discordcoreapi/ChannelEntities.hpp>
 #include <discordcoreapi/EventEntities.hpp>
 #include <discordcoreapi/FoundationEntities.hpp>
@@ -44,19 +45,29 @@ namespace DiscordCoreAPI {
 		InputEventData inputEventData{};///< InputEventData representing the input-event.
 	};
 
-	/// Data that is received as part of an ApplicationCommand creation event. \brief Data that is received as part of an ApplicationCommand creation event.
-	struct DiscordCoreAPI_Dll OnApplicationCommandCreationData {
-		ApplicationCommand applicationCommand{};///< The new ApplicationCommand.
+	/// Data that is received as part of an ApplicationCommandPermissions update event. \brief Data that is received as part of an ApplicationCommandPermissions update event.
+	struct DiscordCoreAPI_Dll OnApplicationCommandPermissionsUpdateData {
+		GuildApplicationCommandPermissionsData permissionData{};
 	};
 
-	/// Data that is received as part of an ApplicationCommand update event. \brief Data that is received as part of an ApplicationCommand update event.
-	struct DiscordCoreAPI_Dll OnApplicationCommandUpdateData {
-		ApplicationCommand applicationCommand{};///< The new ApplicationCommand.
+	/// Data that is received as part of an AutoModerationRule creation event. \brief Data that is received as part of an AutoModerationRule creation event.
+	struct DiscordCoreAPI_Dll OnAutoModerationRuleCreationData {
+		AutoModerationRule theRule{};
 	};
 
-	/// Data that is received as part of an ApplicationCommand deletion event. \brief Data that is received as part of an ApplicationCommand deletion event.
-	struct DiscordCoreAPI_Dll OnApplicationCommandDeletionData {
-		ApplicationCommand applicationCommand{};///< The deleted ApplicationCommand.
+	/// Data that is received as part of an AutoModerationRule update event. \brief Data that is received as part of an AutoModerationRule update event.
+	struct DiscordCoreAPI_Dll OnAutoModerationRuleUpdateData {
+		AutoModerationRule theRule{};
+	};
+
+	/// Data that is received as part of an AutoModerationRule delete event. \brief Data that is received as part of an AutoModerationRule delete event.
+	struct DiscordCoreAPI_Dll OnAutoModerationRuleDeletionData {
+		AutoModerationRule theRule{};
+	};
+
+	/// Data that is received as part of an AutoModerationAction execution event. \brief Data that is received as part of an AutoModerationAction execution event.
+	struct DiscordCoreAPI_Dll OnAutoModerationActionExecutionData {
+		AutoModerationActionExecutionEventData theData{};
 	};
 
 	/// Data that is received as part of a Channel creation event. \brief Data that is received as part of a Channel creation event.
@@ -337,6 +348,47 @@ namespace DiscordCoreAPI {
 	/// Class for handling the assignment of event-handling functions. \brief Class for handling the assignment of event-handling functions.int32_t
 	class DiscordCoreAPI_Dll EventManager {
 	  public:
+		/// For adding a function to handle this event. \brief For adding a function to handle this event.
+		/// \param handler A delegate taking an OnApplicationCommandPermissionsUpdateData structure as an argument.
+		/// \returns An event_token for later de-registering the event.
+		DiscordCoreInternal::EventDelegateToken onApplicationCommandsPermissionsUpdate(
+			const DiscordCoreInternal::EventDelegate<void, OnApplicationCommandPermissionsUpdateData> handler);
+		/// For removing a function from handling this event. \brief For removing a function from handling this event.
+		/// \param token An DiscordCoreInternal::EventDelegateToken, from the original event registration.
+		void onApplicationCommandsPermissionsUpdate(DiscordCoreInternal::EventDelegateToken& token);
+
+		/// For adding a function to handle this event. \brief For adding a function to handle this event.
+		/// \param handler A delegate taking an OnAutoModerationRuleCreationData structure as an argument.
+		/// \returns An event_token for later de-registering the event.
+		DiscordCoreInternal::EventDelegateToken onAutoModerationRuleCreation(const DiscordCoreInternal::EventDelegate<void, OnAutoModerationRuleCreationData> handler);
+		/// For removing a function from handling this event. \brief For removing a function from handling this event.
+		/// \param token An DiscordCoreInternal::EventDelegateToken, from the original event registration.
+		void onAutoModerationRuleCreation(DiscordCoreInternal::EventDelegateToken& token);
+
+		/// For adding a function to handle this event. \brief For adding a function to handle this event.
+		/// \param handler A delegate taking an OnAutoModerationRuleUpdateData structure as an argument.
+		/// \returns An event_token for later de-registering the event.
+		DiscordCoreInternal::EventDelegateToken onAutoModerationRuleUpdate(const DiscordCoreInternal::EventDelegate<void, OnAutoModerationRuleUpdateData> handler);
+		/// For removing a function from handling this event. \brief For removing a function from handling this event.
+		/// \param token An DiscordCoreInternal::EventDelegateToken, from the original event registration.
+		void onAutoModerationRuleUpdate(DiscordCoreInternal::EventDelegateToken& token);
+
+		/// For adding a function to handle this event. \brief For adding a function to handle this event.
+		/// \param handler A delegate taking an OnAutoModerationRuleDeletionData structure as an argument.
+		/// \returns An event_token for later de-registering the event.
+		DiscordCoreInternal::EventDelegateToken onAutoModerationRuleDeletion(const DiscordCoreInternal::EventDelegate<void, OnAutoModerationRuleDeletionData> handler);
+		/// For removing a function from handling this event. \brief For removing a function from handling this event.
+		/// \param token An DiscordCoreInternal::EventDelegateToken, from the original event registration.
+		void onAutoModerationRuleDeletion(DiscordCoreInternal::EventDelegateToken& token);
+
+		/// For adding a function to handle this event. \brief For adding a function to handle this event.
+		/// \param handler A delegate taking an OnAutoModerationActionExecutionData structure as an argument.
+		/// \returns An event_token for later de-registering the event.
+		DiscordCoreInternal::EventDelegateToken onAutoModerationActionExecution(const DiscordCoreInternal::EventDelegate<void, OnAutoModerationActionExecutionData> handler);
+		/// For removing a function from handling this event. \brief For removing a function from handling this event.
+		/// \param token An DiscordCoreInternal::EventDelegateToken, from the original event registration.
+		void onAutoModerationActionExecution(DiscordCoreInternal::EventDelegateToken& token);
+
 		// For adding a function to handle this event. \brief For adding a function to handle this event.
 		/// \param handler A delegate taking an OnInputEventCreationData structure as an argument.
 		/// \returns An event_token for later de-registering the event.
@@ -352,30 +404,6 @@ namespace DiscordCoreAPI {
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
 		/// \param token An DiscordCoreInternal::EventDelegateToken, from the original event registration.
 		void onInputEventCreation(DiscordCoreInternal::EventDelegateToken& token);
-
-		/// For adding a function to handle this event. \brief For adding a function to handle this event.
-		/// \param handler A delegate taking an OnApplicationCommandCreationData structure as an argument.
-		/// \returns An event_token for later de-registering the event.
-		DiscordCoreInternal::EventDelegateToken onApplicationCommandCreation(const DiscordCoreInternal::EventDelegate<void, OnApplicationCommandCreationData> handler);
-		/// For removing a function from handling this event. \brief For removing a function from handling this event.
-		/// \param token An DiscordCoreInternal::EventDelegateToken, from the original event registration.
-		void onApplicationCommandCreation(DiscordCoreInternal::EventDelegateToken& token);
-
-		/// For adding a function to handle this event. \brief For adding a function to handle this event.
-		/// \param handler A delegate taking an OnApplicationCommandUpdateData structure as an argument.
-		/// \returns An event_token for later de-registering the event.
-		DiscordCoreInternal::EventDelegateToken onApplicationCommandUpdate(const DiscordCoreInternal::EventDelegate<void, OnApplicationCommandUpdateData> handler);
-		/// For removing a function from handling this event. \brief For removing a function from handling this event.
-		/// \param token An DiscordCoreInternal::EventDelegateToken, from the original event registration.
-		void onApplicationCommandUpdate(DiscordCoreInternal::EventDelegateToken& token);
-
-		/// For adding a function to handle this event. \brief For adding a function to handle this event.
-		/// \param handler A delegate taking an OnApplicationCommandDeletionData structure as an argument.
-		/// \returns An event_token for later de-registering the event.
-		DiscordCoreInternal::EventDelegateToken onApplicationCommandDeletion(const DiscordCoreInternal::EventDelegate<void, OnApplicationCommandDeletionData> handler);
-		/// For removing a function from handling this event. \brief For removing a function from handling this event.
-		/// \param token An DiscordCoreInternal::EventDelegateToken, from the original event registration.
-		void onApplicationCommandDeletion(DiscordCoreInternal::EventDelegateToken& token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
 		/// \param handler A delegate taking an OnChannelCreationData structure as an argument.
@@ -761,15 +789,19 @@ namespace DiscordCoreAPI {
 		/// \param token An DiscordCoreInternal::EventDelegateToken, from the original event registration.
 		void onWebhookUpdate(DiscordCoreInternal::EventDelegateToken& token);
 
+		DiscordCoreInternal::Event<void, OnApplicationCommandPermissionsUpdateData> onApplicationCommandPermissionsUpdateEvent{};
+
+		DiscordCoreInternal::Event<void, OnAutoModerationRuleCreationData> onAutoModerationRuleCreationEvent{};
+
+		DiscordCoreInternal::Event<void, OnAutoModerationRuleUpdateData> onAutoModerationRuleUpdateEvent{};
+
+		DiscordCoreInternal::Event<void, OnAutoModerationRuleDeletionData> onAutoModerationRuleDeletionEvent{};
+
+		DiscordCoreInternal::Event<void, OnAutoModerationActionExecutionData> onAutoModerationActionExecutionEvent{};
+
 		DiscordCoreInternal::Event<void, OnAutoCompleteEntryData> onAutoCompleteEntryEvent{};
 
 		DiscordCoreInternal::Event<void, OnInputEventCreationData> onInputEventCreationEvent{};
-
-		DiscordCoreInternal::Event<void, OnApplicationCommandCreationData> onApplicationCommandCreationEvent{};
-
-		DiscordCoreInternal::Event<void, OnApplicationCommandUpdateData> onApplicationCommandUpdateEvent{};
-
-		DiscordCoreInternal::Event<void, OnApplicationCommandDeletionData> onApplicationCommandDeletionEvent{};
 
 		DiscordCoreInternal::Event<void, OnChannelCreationData> onChannelCreationEvent{};
 

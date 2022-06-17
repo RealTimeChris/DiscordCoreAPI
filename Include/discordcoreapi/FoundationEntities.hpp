@@ -1510,6 +1510,65 @@ namespace DiscordCoreAPI {
 		Channel = 3///< Channel.
 	};
 
+	/// Event types for auto-moderation. \brief Event types for auto-moderation.
+	enum class EventType {
+		Message_Send = 1,///< When a member sends or edits a message in the guild.
+	};
+
+	/// Trigger types for auto-moderation. \brief Trigger types for auto-moderation.
+	enum class TriggerType {
+		Keyword = 1,///< Check if content contains words from a user defined list of keywords.
+		Harmful_Link = 2,///< Check if content contains any harmful links.
+		Spam = 3,///< Check if content represents generic spam.
+		Keyword_Preset = 4///< Check if content contains words from internal pre-defined wordsets.
+	};
+
+	/// Keyword preset types for auto-moderation. \brief Keyword preset types for auto-moderation.
+	enum class KeywordPresetType {
+		Profanity = 1,///< Words that may be considered forms of swearing or cursing.
+		Sexual_Content = 2,///< Words that refer to sexually explicit behavior or activity
+		Slurs = 3///< Personal insults or words that may be considered hate speech.
+	};
+
+	/// Action types for auto-moderation. \brief Action types for auto-moderation.
+	enum class ActionType {
+		Block_Message = 1,///< Blocks the content of a message according to the rule.
+		Send_Alert_Message = 2,///< Logs user content to a specified channel.
+		Timeout = 3///< Timeout user for a specified duration.
+	};
+
+	/// Action metadata for auto-moderation-rules. \brief Action metadata for auto-moderation-rules.
+	struct ActionMetaData {
+		uint64_t channelId{};///< Channel to which user content should be logged.
+		int64_t durationSeconds{};///< Timeout duration in seconds.
+	};
+
+	/// Trigger metadata for auto-moderation-rules. \brief Trigger metadata for auto-moderation-rules.
+	struct TriggerMetaData {
+		std::vector<std::string> keywordFilter{};///< Substrings which will be searched for in content.
+		std::vector<KeywordPresetType> presets{};///< The internally pre-defined wordsets which will be searched for in content.
+	};
+
+	/// For representing a single auto-moderation-rule-action. \brief For representing a single auto-moderation-rule-action.
+	struct ActionData {
+		ActionType type{};///< The type of action.
+		ActionMetaData metadata{};///< Additional metadata needed during execution for this specific action type.
+	};
+
+	/// Represents an auto-moderation-rule. \brief Represents an auto-moderation-rule.
+	struct AutoModerationRuleData : public DiscordEntity {
+		std::vector<uint64_t> exemptChannels{};///< The channel ids that should not be affected by the rule(Maximum of 50).
+		std::vector<uint64_t> exemptRoles{};///< The role ids that should not be affected by the rule(Maximum of 20).
+		std::vector<ActionData> actions{};///< Actions which will execute when the rule is triggered.
+		TriggerMetaData triggerMetaData{};///< The rule trigger metadata actions array of action objects the.
+		TriggerType triggerType{};///< The rule trigger type.
+		EventType eventType{};///< The rule event type.
+		uint64_t creatorId{};///< The user which first created this rule.
+		uint64_t guildId{};///< The guild which this rule belongs to.
+		std::string name{};///< The rule name.
+		bool enabled{};///< Whether the rule is enabled.
+	};
+
 	/// Permissions data for an ApplicationCommand. \brief Permissions data for an ApplicationCommand.
 	class DiscordCoreAPI_Dll ApplicationCommandPermissionData : public DiscordEntity {
 	  public:
@@ -1789,7 +1848,11 @@ namespace DiscordCoreAPI {
 		Thread_Create = 110,///< Thread create.
 		Thread_Update = 111,///< Thread update.
 		Thread_Delete = 112,///< Thread delete.
-		Application_Command_Permission_Update = 121///< Permissions were updated for a command.
+		Application_Command_Permission_Update = 121,///< Permissions were updated for a command.
+		Auto_Moderation_Rule_Create = 140,///< Auto Moderation rule was created.
+		Auto_Moderation_Rule_Update = 141,///< Auto Moderation rule was updated.
+		Auto_Moderation_Rule_Delete = 142,///< Auto Moderation rule was deleted.
+		Auto_Moderation_Block_Message = 143///< Message was blocked by AutoMod (according to a rule).
 	};
 
 	/// Audit log entry info data \brief Audit log entry info data.
@@ -2238,6 +2301,7 @@ namespace DiscordCoreAPI {
 			return AuditLogEntryData();
 		}
 		std::vector<GuildScheduledEventData> guildScheduledEvents{};///< Array of guild scheduled event objects.
+		std::vector<AutoModerationRuleData> autoModerationRules{};///< List of auto moderation rules referenced in the audit log.
 		std::vector<AuditLogEntryData> auditLogEntries{};///< Array of audit log entry objects.
 		std::vector<IntegrationData> integrations{};///< Array of partial integration objects.
 		std::vector<WebHookData> webhooks{};///< Array of webhook objects.

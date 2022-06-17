@@ -31,65 +31,9 @@ namespace DiscordCoreAPI {
 	 * \addtogroup foundation_entities
 	 * @{
 	 */
-	
-	/// Event types for auto-moderation. \brief Event types for auto-moderation.
-	enum class EventType {
-		Message_Send = 1,///< When a member sends or edits a message in the guild.
-	};
-
-	/// Trigger types for auto-moderation. \brief Trigger types for auto-moderation.
-	enum class TriggerType {
-		Keyword = 1,///< Check if content contains words from a user defined list of keywords.
-		Harmful_Link = 2,///< Check if content contains any harmful links.
-		Spam = 3,///< Check if content represents generic spam.
-		Keyword_Preset = 4///< Check if content contains words from internal pre-defined wordsets.
-	};
-
-	/// Keyword preset types for auto-moderation. \brief Keyword preset types for auto-moderation.
-	enum class KeywordPresetType {
-		Profanity = 1,///< Words that may be considered forms of swearing or cursing.
-		Sexual_Content = 2,///< Words that refer to sexually explicit behavior or activity
-		Slurs = 3///< Personal insults or words that may be considered hate speech.
-	};
-
-	/// Action types for auto-moderation. \brief Action types for auto-moderation.
-	enum class ActionType {
-		Block_Message = 1,///< Blocks the content of a message according to the rule.
-		Send_Alert_Message = 2,///< Logs user content to a specified channel.
-		Timeout = 3///< Timeout user for a specified duration.
-	};
-
-	/// Action metadata for auto-moderation-rules. \brief Action metadata for auto-moderation-rules.
-	struct ActionMetaData {
-		uint64_t channelId{};///< Channel to which user content should be logged.
-		int64_t durationSeconds{};///< Timeout duration in seconds.
-	};
-
-	/// Trigger metadata for auto-moderation-rules. \brief Trigger metadata for auto-moderation-rules.
-	struct TriggerMetaData {
-		std::vector<std::string> keywordFilter{};///< Substrings which will be searched for in content.
-		std::vector<KeywordPresetType> presets{};///< The internally pre-defined wordsets which will be searched for in content.
-	};
-
-	/// For representing a single auto-moderation-rule-action. \brief For representing a single auto-moderation-rule-action.
-	struct ActionData {
-		ActionType type{};///< The type of action.
-		ActionMetaData metadata{};///< Additional metadata needed during execution for this specific action type.
-	};
 
 	/// Represents an auto-moderation-rule. \brief Represents an auto-moderation-rule.
-	struct AutoModerationRule : public DiscordEntity {
-		std::vector<uint64_t> exemptChannels{};///< The channel ids that should not be affected by the rule(Maximum of 50).
-		std::vector<uint64_t> exemptRoles{};///< The role ids that should not be affected by the rule(Maximum of 20).
-		std::vector<ActionData> actions{};///< Actions which will execute when the rule is triggered.
-		TriggerMetaData triggerMetaData{};///< The rule trigger metadata actions array of action objects the.
-		TriggerType triggerType{};///< The rule trigger type.
-		EventType eventType{};///< The rule event type.
-		uint64_t creatorId{};///< The user which first created this rule.
-		uint64_t guildId{};///< The guild which this rule belongs to.
-		std::string name{};///< The rule name.
-		bool enabled{};///< Whether the rule is enabled.
-	};
+	struct AutoModerationRule : public AutoModerationRuleData {};
 
 	/// For listing all of the auto-moderation-rules for a particular Guild. \brief For listing all of the auto-moderation-rules for a particular Guild.
 	struct ListAutoModerationRulesForGuildData {
@@ -113,6 +57,21 @@ namespace DiscordCoreAPI {
 		uint64_t guildId{};///< The Guild within which to create the auto-moderation-rule.
 		std::string name{};///< The rule name.
 		bool enabled{};///< Whether the rule is enabled(False by default).
+	};
+
+	/// For when an auto-moderation-rule is executed. \brief For when an auto-moderation-rule is executed.
+	struct AutoModerationActionExecutionEventData {
+		uint64_t alertSystemMessageId{};///< The id of any system auto moderation messages posted as a result of this action.
+		TriggerType ruleTriggerType{};///< The trigger type of rule which was triggered.
+		std::string matchedKeyword{};///< The word or phrase configured in the rule that triggered the rule
+		std::string matchedContent{};///< The substring in content that triggered the rule.
+		std::string content{};///< The user generated text content.
+		uint64_t channelId{};///< The id of the channel in which user content was posted.
+		uint64_t messageId{};///< The id of any user message which content belongs to.
+		ActionData action{};///< The action which was executed.
+		uint64_t guildId{};///< The id of the guild in which action was executed.
+		uint64_t ruleId{};///< The id of the rule which action belongs to.
+		uint64_t userId{};///< The id of the user which generated the content which triggered the rule.
 	};
 
 	/// For modifying an auto-moderation-rule. \brief For modifying an auto-moderation-rule.

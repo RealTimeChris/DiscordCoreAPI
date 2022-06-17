@@ -471,18 +471,28 @@ namespace DiscordCoreInternal {
 			}
 
 			if (payload.contains("d") && !payload["d"].is_null() && payload.contains("t") && !payload["t"].is_null()) {
-				if (payload["t"] == "APPLICATION_COMMAND_CREATE") {
-					std::unique_ptr<DiscordCoreAPI::OnApplicationCommandCreationData> dataPackage{ std::make_unique<DiscordCoreAPI::OnApplicationCommandCreationData>() };
-					parseObject(payload["d"], dataPackage->applicationCommand);
-					this->discordCoreClient->eventManager.onApplicationCommandCreationEvent(*dataPackage);
-				} else if (payload["t"] == "APPLICATION_COMMAND_UPDATE") {
-					std::unique_ptr<DiscordCoreAPI::OnApplicationCommandUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnApplicationCommandUpdateData>() };
-					parseObject(payload["d"], dataPackage->applicationCommand);
-					this->discordCoreClient->eventManager.onApplicationCommandUpdateEvent(*dataPackage);
-				} else if (payload["t"] == "APPLICATION_COMMAND_DELETE") {
-					std::unique_ptr<DiscordCoreAPI::OnApplicationCommandDeletionData> dataPackage{ std::make_unique<DiscordCoreAPI::OnApplicationCommandDeletionData>() };
-					parseObject(payload["d"], dataPackage->applicationCommand);
-					this->discordCoreClient->eventManager.onApplicationCommandDeletionEvent(*dataPackage);
+				if (payload["t"] == "APPLICATION_COMMAND_PERMISSIONS_UPDATE") {
+					std::unique_ptr<DiscordCoreAPI::OnApplicationCommandPermissionsUpdateData> dataPackage{
+						std::make_unique<DiscordCoreAPI::OnApplicationCommandPermissionsUpdateData>()
+					};
+					parseObject(payload["d"], dataPackage->permissionData);
+					this->discordCoreClient->eventManager.onApplicationCommandPermissionsUpdateEvent(*dataPackage);
+				} else if (payload["t"] == "AUTO_MODERATION_RULE_CREATE") {
+					std::unique_ptr<DiscordCoreAPI::OnAutoModerationRuleCreationData> dataPackage{ std::make_unique<DiscordCoreAPI::OnAutoModerationRuleCreationData>() };
+					parseObject(payload["d"], dataPackage->theRule);
+					this->discordCoreClient->eventManager.onAutoModerationRuleCreationEvent(*dataPackage);
+				} else if (payload["t"] == "AUTO_MODERATION_RULE_UPDATE") {
+					std::unique_ptr<DiscordCoreAPI::OnAutoModerationRuleUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnAutoModerationRuleUpdateData>() };
+					parseObject(payload["d"], dataPackage->theRule);
+					this->discordCoreClient->eventManager.onAutoModerationRuleUpdateEvent(*dataPackage);
+				} else if (payload["t"] == "AUTO_MODERATION_RULE_DELETE") {
+					std::unique_ptr<DiscordCoreAPI::OnAutoModerationRuleDeletionData> dataPackage{ std::make_unique<DiscordCoreAPI::OnAutoModerationRuleDeletionData>() };
+					parseObject(payload["d"], dataPackage->theRule);
+					this->discordCoreClient->eventManager.onAutoModerationRuleDeletionEvent(*dataPackage);
+				} else if (payload["t"] == "AUTO_MODERATION_ACTION_EXECUTION") {
+					std::unique_ptr<DiscordCoreAPI::OnAutoModerationActionExecutionData> dataPackage{ std::make_unique<DiscordCoreAPI::OnAutoModerationActionExecutionData>() };
+					parseObject(payload["d"], dataPackage->theData);
+					this->discordCoreClient->eventManager.onAutoModerationActionExecutionEvent(*dataPackage);
 				} else if (payload["t"] == "CHANNEL_CREATE") {
 					std::unique_ptr<DiscordCoreAPI::OnChannelCreationData> dataPackage{ std::make_unique<DiscordCoreAPI::OnChannelCreationData>() };
 					parseObject(payload["d"], dataPackage->channel);
