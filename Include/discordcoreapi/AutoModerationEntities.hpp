@@ -85,9 +85,15 @@ namespace DiscordCoreAPI {
 		bool enabled{};///< Whether the rule is enabled.		
 	};
 
-	/// For listing all of the auto-moderation-rules for a particular Guild.
+	/// For listing all of the auto-moderation-rules for a particular Guild. \brief For listing all of the auto-moderation-rules for a particular Guild.
 	struct ListAutoModerationRulesForGuildData {
 		uint64_t guildId{};///< The id of the guild for which you would like to list the auto-moderation rules.
+	};
+
+	/// For collecting an auto-moderation-rule for a particular Guild. \brief For collecting an auto-moderation-rule for a particular Guild.
+	struct GetAutoModerationRuleData {
+		uint64_t guildId{};///< The id of the Guild from which you would like to collect the auto-moderation-rule from.
+		uint64_t autoModerationRuleId{};///< The id of the auto-moderation-rule you would like to collect.
 	};
 
 	/**@}*/
@@ -103,6 +109,8 @@ namespace DiscordCoreAPI {
 		static void initialize(DiscordCoreInternal::HttpClient*);
 
 		CoRoutine<std::vector<AutoModerationRule>> listAutoModerationRulesForGuildAsync(ListAutoModerationRulesForGuildData dataPackage);
+
+		CoRoutine<AutoModerationRule> getAutoModerationRuleAsync(GetAutoModerationRuleData dataPackage);
 
 	  protected:
 		static DiscordCoreInternal::HttpClient* httpClient;
