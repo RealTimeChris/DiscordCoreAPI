@@ -175,7 +175,7 @@ namespace DiscordCoreInternal {
 		}
 
 		if (jsonObjectData.contains("matched_content") && !jsonObjectData["matched_content"].is_null()) {
-			pDataStructure.matchedContent= jsonObjectData["matched_content"].get<std::string>();
+			pDataStructure.matchedContent = jsonObjectData["matched_content"].get<std::string>();
 		}
 
 		if (jsonObjectData.contains("action") && !jsonObjectData["action"].is_null()) {
@@ -205,7 +205,6 @@ namespace DiscordCoreInternal {
 		if (jsonObjectData.contains("user_id") && !jsonObjectData["user_id"].is_null()) {
 			pDataStructure.userId = stoull(jsonObjectData["user_id"].get<std::string>());
 		}
-
 	}
 
 	template<> void parseObject(const nlohmann::json& jsonObjectData, DiscordCoreAPI::AutoModerationRule& pDataStructure) {

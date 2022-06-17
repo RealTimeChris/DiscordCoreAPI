@@ -73,7 +73,7 @@ namespace DiscordCoreAPI {
 		workload.callStack = "AutoModerationRules::modifyAutoModerationRuleAsync";
 		co_return AutoModerationRules::httpClient->submitWorkloadAndGetResult<AutoModerationRule>(workload);
 	}
-	
+
 	CoRoutine<void> AutoModerationRules::deleteAutoModerationRuleAsync(DeleteAutoModerationRuleData dataPackage) {
 		DiscordCoreInternal::HttpWorkloadData workload{};
 		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Delete_Auto_Moderation_Rule);

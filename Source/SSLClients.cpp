@@ -233,7 +233,7 @@ namespace DiscordCoreInternal {
 					[[fallthrough]];
 				}
 				default: {
-					throw ProcessingError{ reportSSLError("HttpSSLClient::processIO()::SSL_write_ex(), ", errorValue, this->ssl)  +
+					throw ProcessingError{ reportSSLError("HttpSSLClient::processIO()::SSL_write_ex(), ", errorValue, this->ssl) +
 						reportError("HttpSSLClient::processIO()::SSL_write_ex(), ") };
 				}
 			}
@@ -263,8 +263,7 @@ namespace DiscordCoreInternal {
 					FD_SET(value->theSocket, &writeSet);
 					writeNfds = value->theSocket > writeNfds ? value->theSocket : writeNfds;
 					didWeSetASocket = true;
-				}
-				else if (!value->wantWrite) {
+				} else if (!value->wantWrite) {
 					FD_SET(value->theSocket, &readSet);
 					readNfds = value->theSocket > readNfds ? value->theSocket : readNfds;
 					didWeSetASocket = true;

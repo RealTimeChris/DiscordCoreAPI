@@ -14,7 +14,7 @@
 	If not, see <https://www.gnu.org/licenses/>.
 
 */
-/// AutoModerationEntities.hpp - Header for the Auto-Moderation related classes and structs. 
+/// AutoModerationEntities.hpp - Header for the Auto-Moderation related classes and structs.
 /// Jun 17, 2022 Chris M.
 /// https://discordcoreapi.com
 /// \file AutoModerationEntities.hpp
@@ -51,7 +51,7 @@ namespace DiscordCoreAPI {
 		std::vector<uint64_t> exemptChannels{};///< The channel ids that should not be affected by the rule(Maximum of 50).
 		std::vector<uint64_t> exemptRoles{};///< The role ids that should not be affected by the rule(Maximum of 20).
 		TriggerMetaData triggerMetadata{};///< The trigger metadata.
-		std::vector<ActionData> actions{};///< The actions which will execute when the rule is triggered 
+		std::vector<ActionData> actions{};///< The actions which will execute when the rule is triggered
 		TriggerType triggerType{};///< The trigger type.
 		EventType eventType{};///< The event type.
 		uint64_t guildId{};///< The Guild within which to create the auto-moderation-rule.
@@ -102,7 +102,6 @@ namespace DiscordCoreAPI {
 
 	class AutoModerationRules {
 	  public:
-
 		static void initialize(DiscordCoreInternal::HttpClient*);
 
 		CoRoutine<std::vector<AutoModerationRule>> listAutoModerationRulesForGuildAsync(ListAutoModerationRulesForGuildData dataPackage);

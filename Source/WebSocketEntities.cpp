@@ -62,9 +62,9 @@ namespace DiscordCoreInternal {
 			}
 			std::lock_guard<std::mutex> accessLock{ this->accessorMutex01 };
 			if (this->doWePrintSuccessMessages) {
-				std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Sending WebSocket " + theIndex.shard.dump() + std::string("'s Message: ")
-							<< dataToSend.dump() << DiscordCoreAPI::reset() << std::endl
-							<< std::endl;
+				std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Sending WebSocket " + theIndex.shard.dump() + std::string("'s Message: ") << dataToSend.dump()
+						  << DiscordCoreAPI::reset() << std::endl
+						  << std::endl;
 			}
 			std::string theVectorNew{};
 			this->stringifyJsonData(dataToSend, theVectorNew);
@@ -332,14 +332,14 @@ namespace DiscordCoreInternal {
 
 	void BaseSocketAgent::onMessageReceived(WebSocketSSLShard& theIndex) noexcept {
 		try {
-			std::string messageNew{}; 
+			std::string messageNew{};
 			if (theIndex.processedMessages.size() > 0) {
 				messageNew = theIndex.processedMessages.front();
 				theIndex.processedMessages.pop();
 			} else {
 				return;
 			}
-			
+
 			nlohmann::json payload{};
 
 			if (this->discordCoreClient->theFormat == DiscordCoreAPI::TextFormat::Etf) {
@@ -907,13 +907,12 @@ namespace DiscordCoreInternal {
 						  << DiscordCoreAPI::reset() << std::endl
 						  << std::endl;
 			}
-			} catch (...) {
-				if (this->doWePrintErrorMessages) {
-					DiscordCoreAPI::reportException("BaseSocketAgent::onMessageReceived()");
-				}
-				this->onClosed(theIndex);
+		} catch (...) {
+			if (this->doWePrintErrorMessages) {
+				DiscordCoreAPI::reportException("BaseSocketAgent::onMessageReceived()");
 			}
-		
+			this->onClosed(theIndex);
+		}
 	}
 
 	void BaseSocketAgent::sendCloseFrame(WebSocketSSLShard& theIndex) noexcept {
@@ -976,8 +975,8 @@ namespace DiscordCoreInternal {
 				this->connections.pop();
 				connectData.currentReconnectionDepth += 1;
 				std::unordered_map<int32_t, std::unique_ptr<DiscordCoreInternal::WebSocketSSLShard>> theMap{};
-				theMap[connectData.currentShard] = std::make_unique<WebSocketSSLShard>(&this->connections, this->currentBaseSocketAgent,
-					connectData.currentShard, this->discordCoreClient->shardingOptions.totalNumberOfShards, this->doWePrintErrorMessages);
+				theMap[connectData.currentShard] = std::make_unique<WebSocketSSLShard>(&this->connections, this->currentBaseSocketAgent, connectData.currentShard,
+					this->discordCoreClient->shardingOptions.totalNumberOfShards, this->doWePrintErrorMessages);
 				theMap[connectData.currentShard]->currentRecursionDepth = connectData.currentReconnectionDepth;
 				theMap[connectData.currentShard]->currentBaseSocketAgent = connectData.currentBaseSocketAgent;
 				theMap[connectData.currentShard]->lastNumberReceived = connectData.lastNumberReceived;
@@ -1069,7 +1068,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	VoiceSocketAgent::VoiceSocketAgent(VoiceConnectInitData initDataNew, BaseSocketAgent* baseBaseSocketAgentNew,WebSocketSSLShard& theIndex, bool printMessagesNew) noexcept {
+	VoiceSocketAgent::VoiceSocketAgent(VoiceConnectInitData initDataNew, BaseSocketAgent* baseBaseSocketAgentNew, WebSocketSSLShard& theIndex, bool printMessagesNew) noexcept {
 		this->doWePrintSuccessMessages = baseBaseSocketAgentNew->doWePrintSuccessMessages;
 		this->doWePrintErrorMessages = baseBaseSocketAgentNew->doWePrintErrorMessages;
 		this->baseSocketAgent = baseBaseSocketAgentNew;
