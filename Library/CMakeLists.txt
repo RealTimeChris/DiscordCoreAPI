@@ -126,7 +126,7 @@ install(
 install(
 	TARGETS "${LIB_NAME}"
 	EXPORT "${EXPORTED_TARGETS_NAME}"
-	RUNTIME DESTINATION "$<$<PLATFORM_ID:Windows>:$<IF:$<CONFIG:Debug>,debug/bin,bin>>"
+	RUNTIME DESTINATION "$<$<NOT:$<PLATFORM_ID:Linux>>:$<IF:$<CONFIG:Debug>,debug/bin,bin>>"
 	ARCHIVE DESTINATION "$<IF:$<CONFIG:Debug>,debug/lib,lib>"
 	PUBLIC_HEADER DESTINATION "include/discordcoreapi"
 )
