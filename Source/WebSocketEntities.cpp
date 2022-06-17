@@ -423,6 +423,7 @@ namespace DiscordCoreInternal {
 					}
 					theIndex.areWeResuming = true;
 					this->onClosed(theIndex);
+					return;
 				}
 
 				if (payload["op"] == 9) {
@@ -442,6 +443,7 @@ namespace DiscordCoreInternal {
 					} else {
 						theIndex.areWeResuming = false;
 						this->onClosed(theIndex);
+						return;
 					}
 				}
 
@@ -895,13 +897,11 @@ namespace DiscordCoreInternal {
 						  << DiscordCoreAPI::reset() << std::endl
 						  << std::endl;
 			}
-				return;
 			} catch (...) {
 				if (this->doWePrintErrorMessages) {
 					DiscordCoreAPI::reportException("BaseSocketAgent::onMessageReceived()");
 				}
 				this->onClosed(theIndex);
-				return;
 			}
 		
 	}
@@ -1140,10 +1140,8 @@ namespace DiscordCoreInternal {
 				theShard.closeCode = static_cast<WebSocketCloseCode>(close);
 				theShard.inputBuffer.erase(theShard.inputBuffer.begin(), theShard.inputBuffer.begin() + 4);
 				this->onClosed(theShard);
-				return;
 			}
 			default: {
-				return;
 			}
 		}
 	}
