@@ -22,6 +22,8 @@
 #pragma once
 
 #include <discordcoreapi/FoundationEntities.hpp>
+#include <discordcoreapi/CoRoutine.hpp>
+#include <discordcoreapi/Http.hpp>
 
 namespace DiscordCoreAPI {
 
@@ -83,6 +85,11 @@ namespace DiscordCoreAPI {
 		bool enabled{};///< Whether the rule is enabled.		
 	};
 
+	/// For listing all of the auto-moderation-rules for a particular Guild.
+	struct ListAutoModerationRulesForGuildData {
+		uint64_t guildId{};///< The id of the guild for which you would like to list the auto-moderation rules.
+	};
+
 	/**@}*/
 
 	/**
@@ -92,7 +99,10 @@ namespace DiscordCoreAPI {
 
 	class AutoModerationRules {
 	  public:
+
 		static void initialize(DiscordCoreInternal::HttpClient*);
+
+		CoRoutine<std::vector<AutoModerationRule>> listAutoModerationRulesForGuildAsync(ListAutoModerationRulesForGuildData dataPackage);
 
 	  protected:
 		static DiscordCoreInternal::HttpClient* httpClient;

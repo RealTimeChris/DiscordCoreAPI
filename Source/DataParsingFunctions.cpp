@@ -21,6 +21,7 @@
 
 #include <discordcoreapi/DataParsingFunctions.hpp>
 #include <discordcoreapi/ApplicationCommandEntities.hpp>
+#include <discordcoreapi/AutoModerationEntities.hpp>
 #include <discordcoreapi/Http.hpp>
 #include <discordcoreapi/GuildEntities.hpp>
 #include <discordcoreapi/GuildMemberEntities.hpp>
@@ -124,6 +125,94 @@ namespace DiscordCoreInternal {
 		if (jsonObjectData.contains("public_flags") && !jsonObjectData["public_flags"].is_null()) {
 			pDataStructure.flags = jsonObjectData["public_flags"].get<int32_t>();
 		}
+	}
+
+	template<> void parseObject(const nlohmann::json& jsonObjectData, DiscordCoreAPI::TriggerMetaData& pDataStructure) {
+		if (jsonObjectData.contains("keyword_filter") && !jsonObjectData["keyword_filter"].is_null()) {
+			for (auto& value: jsonObjectData["keyword_filter"]) {
+				pDataStructure.keywordFilter.push_back(value.get<std::string>());
+			}
+		}
+
+		if (jsonObjectData.contains("presets") && !jsonObjectData["presets"].is_null()) {
+			for (auto& value: jsonObjectData["presets"]) {
+				pDataStructure.presets.push_back(static_cast<DiscordCoreAPI::KeywordPresetType>(value.get<uint64_t>()));
+			}
+		}
+	}
+
+	template<> void parseObject(const nlohmann::json& jsonObjectData, std::vector<DiscordCoreAPI::ActionMetaData>& pDataStructure) {
+		for (auto& value: jsonObjectData) {
+			DiscordCoreAPI::ActionMetaData theData{};
+			if (jsonObjectData.contains("channel_id") && !jsonObjectData["channel_id"].is_null()) {
+				theData.channelId = stoull(jsonObjectData["channel_id"].get<std::string>());
+			}
+
+			if (jsonObjectData.contains("duration_seconds") && !jsonObjectData["duration_seconds"].is_null()) {
+				theData.durationSeconds = jsonObjectData["duration_seconds"].get<int64_t>();
+			}
+			pDataStructure.push_back(theData);
+		}
+	}
+
+	template<> void parseObject(const nlohmann::json& jsonObjectData, DiscordCoreAPI::AutoModerationRule& pDataStructure) {
+		if (jsonObjectData.contains("name") && !jsonObjectData["name"].is_null()) {
+			pDataStructure.name = jsonObjectData["name"].get<std::string>();
+		}
+
+		if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
+			pDataStructure.id = stoull(jsonObjectData["id"].get<std::string>());
+		}
+
+		if (jsonObjectData.contains("enabled") && !jsonObjectData["enabled"].is_null()) {
+			pDataStructure.enabled = jsonObjectData["enabled"].get<bool>();
+		}
+
+		if (jsonObjectData.contains("trigger_type") && !jsonObjectData["trigger_type"].is_null()) {
+			pDataStructure.triggerType = static_cast<DiscordCoreAPI::TriggerType>(jsonObjectData["trigger_type"].get<uint64_t>());
+		}
+
+		if (jsonObjectData.contains("event_type") && !jsonObjectData["event_type"].is_null()) {
+			pDataStructure.eventType = static_cast<DiscordCoreAPI::EventType>(jsonObjectData["event_type"].get<uint64_t>());
+		}
+
+		if (jsonObjectData.contains("creator_id") && !jsonObjectData["creator_id"].is_null()) {
+			pDataStructure.creatorId = jsonObjectData["creator_id"].get<uint64_t>();
+		}
+
+		if (jsonObjectData.contains("actions") && !jsonObjectData["actions"].is_null()) {
+			parseObject(jsonObjectData["actions"], pDataStructure.actions);
+		}
+
+		if (jsonObjectData.contains("exempt_roles") && !jsonObjectData["exempt_roles"].is_null()) {
+			for (auto& value: jsonObjectData["exempt_roles"]) {
+				pDataStructure.exemptRoles.push_back(value.get<uint64_t>());
+			}
+		}
+
+		if (jsonObjectData.contains("trigger_metadata") && !jsonObjectData["trigger_metadata"].is_null()) {
+			parseObject(jsonObjectData["trigger_metadata"], pDataStructure.triggerMetaData);
+		}
+
+		if (jsonObjectData.contains("exempt_channels") && !jsonObjectData["exempt_channels"].is_null()) {
+			for (auto& value: jsonObjectData["exempt_channels"]) {
+				pDataStructure.exemptChannels.push_back(value.get<uint64_t>());
+			}
+		}
+
+		if (jsonObjectData.contains("guild_id") && !jsonObjectData["guild_id"].is_null()) {
+			pDataStructure.guildId = jsonObjectData["guild_id"].get<uint64_t>();
+		}
+	}
+
+	template<> void parseObject(const nlohmann::json& jsonObjectData, std::vector<DiscordCoreAPI::AutoModerationRule>& pDataStructure) {
+		pDataStructure.reserve(jsonObjectData.size());
+		for (auto& value: jsonObjectData) {
+			DiscordCoreAPI::AutoModerationRule newData{};
+			parseObject(value, newData);
+			pDataStructure.push_back(newData);
+		}
+		pDataStructure.shrink_to_fit();
 	}
 
 	template<> void parseObject(const nlohmann::json& jsonObjectData, DiscordCoreAPI::UserData& pDataStructure) {

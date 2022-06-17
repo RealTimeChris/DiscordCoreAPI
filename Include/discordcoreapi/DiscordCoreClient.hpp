@@ -22,6 +22,7 @@
 #pragma once
 
 #include <discordcoreapi/ApplicationCommandEntities.hpp>
+#include <discordcoreapi/AutoModerationEntities.hpp>
 #include <discordcoreapi/ChannelEntities.hpp>
 #include <discordcoreapi/CoRoutine.hpp>
 #include <discordcoreapi/CommandController.hpp>

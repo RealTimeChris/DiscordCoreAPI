@@ -99,6 +99,7 @@ namespace DiscordCoreAPI {
 			std::make_unique<DiscordCoreInternal::HttpClient>(configData.botToken, this->loggingOptions.logHttpSuccessMessages, this->loggingOptions.logHttpErrorMessages,
 				this->loggingOptions.logFFMPEGSuccessMessages, this->loggingOptions.logFFMPEGErrorMessages, this->loggingOptions.logWebSocketErrorMessages);
 		ApplicationCommands::initialize(this->httpClient.get());
+		AutoModerationRules::initialize(this->httpClient.get());
 		Channels::initialize(this->httpClient.get(), this->cacheOptions.cacheChannels);
 		Guilds::initialize(this->httpClient.get(), this, this->cacheOptions.cacheGuilds);
 		GuildMembers::initialize(this->httpClient.get(), this->cacheOptions.cacheGuildMembers);
