@@ -43,9 +43,7 @@ namespace DiscordCoreInternal {
 	std::vector<DiscordCoreAPI::Song> SoundCloudRequestBuilder::collectSearchResults(const std::string& songQuery) {
 		try {
 			std::unordered_map<std::string, std::string> theHeaders{
-				std::pair("User-Agent",
-					"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like "
-					"Gecko) Chrome/100.0.4896.88 Safari/537.36"),
+				std::pair("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36"),
 			};
 			HttpWorkloadData dataPackage{};
 			dataPackage.baseUrl = SoundCloudRequestBuilder::baseUrl02;
@@ -138,10 +136,10 @@ namespace DiscordCoreInternal {
 					newSong.contentLength += value.contentSize;
 				}
 			} else {
-				std::unordered_map<std::string, std::string> theHeaders{ std::pair("User-Agent",
-																			 "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like "
-																			 "Gecko) Chrome/100.0.4896.88 Safari/537.36"),
-					std::pair("Path", newSong.secondDownloadUrl) };
+				std::unordered_map<std::string, std::string> theHeaders{
+					std::pair("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36"),
+					std::pair("Path", newSong.secondDownloadUrl)
+				};
 				HttpWorkloadData dataPackage02{};
 				dataPackage02.baseUrl = newSong.secondDownloadUrl;
 				dataPackage02.headersToInsert = theHeaders;
@@ -169,10 +167,10 @@ namespace DiscordCoreInternal {
 	}
 
 	std::string SoundCloudRequestBuilder::collectClientId() {
-		std::unordered_map<std::string, std::string> theHeaders{ std::pair("User-Agent",
-																	 "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
-																	 "Chrome/100.0.4896.88 Safari/537.36"),
-			std::pair("Path", "/search?q=testValue") };
+		std::unordered_map<std::string, std::string> theHeaders{
+			std::pair("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36"),
+			std::pair("Path", "/search?q=testValue")
+		};
 		HttpWorkloadData dataPackage02{};
 		dataPackage02.baseUrl = SoundCloudRequestBuilder::baseUrl;
 		dataPackage02.relativePath = "/search?q=testValue";

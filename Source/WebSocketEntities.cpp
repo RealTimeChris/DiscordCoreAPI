@@ -1431,7 +1431,7 @@ namespace DiscordCoreInternal {
 			int32_t currentDepth{ 0 };
 			while (!this->doWeQuit.load()) {
 				currentDepth += 1;
-				if (this->theClients[3]->inputBuffer.size() > 0) {
+				if (this->theClients.contains(3) && this->theClients[3]->inputBuffer.size() > 0) {
 					this->parseHeadersAndMessage(*this->theClients[3]);
 				}
 				if (this->theClients[3]->processedMessages.size() > 0) {
@@ -1451,7 +1451,7 @@ namespace DiscordCoreInternal {
 					return;
 				}
 				std::this_thread::sleep_for(1ms);
-				if (currentDepth >= 5000) {
+				if (this->theClients.contains(3) && currentDepth >= 5000) {
 					this->theClients.erase(3);
 				}
 			}
