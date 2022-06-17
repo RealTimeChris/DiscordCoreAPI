@@ -1314,11 +1314,11 @@ namespace DiscordCoreInternal {
 		try {
 			this->connect();
 			while (!theToken.stop_requested() && !this->doWeQuit.load()) {
-				if (this->heartbeatInterval != 0 && !this->areWeHeartBeating) {
+				if (this->theClients.contains(3) && this->heartbeatInterval != 0 && !this->areWeHeartBeating) {
 					this->areWeHeartBeating = true;
 					this->theClients[3]->heartBeatStopWatch = DiscordCoreAPI::StopWatch{ std::chrono::milliseconds{ this->heartbeatInterval } };
 				}
-				if (this->theClients[3]->heartBeatStopWatch.hasTimePassed() && this->areWeHeartBeating) {
+				if (this->theClients.contains(3) && this->theClients[3]->heartBeatStopWatch.hasTimePassed() && this->areWeHeartBeating) {
 					this->theClients[3]->heartBeatStopWatch.resetTimer();
 					this->sendHeartBeat();
 				}
