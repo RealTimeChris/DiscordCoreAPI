@@ -1313,19 +1313,18 @@ namespace DiscordCoreInternal {
 	void VoiceSocketAgent::run(std::stop_token theToken) noexcept {
 		try {
 			this->connect();
-			DiscordCoreAPI::StopWatch stopWatch{ 0ms };
 			while (!theToken.stop_requested() && !this->doWeQuit.load()) {
 				if (this->heartbeatInterval != 0 && !this->areWeHeartBeating) {
 					this->areWeHeartBeating = true;
-					stopWatch = DiscordCoreAPI::StopWatch{ std::chrono::milliseconds{ this->heartbeatInterval } };
+					this->theClients[3]->heartBeatStopWatch = DiscordCoreAPI::StopWatch{ std::chrono::milliseconds{ this->heartbeatInterval } };
 				}
-				if (stopWatch.hasTimePassed() && this->areWeHeartBeating) {
-					stopWatch.resetTimer();
+				if (this->theClients[3]->heartBeatStopWatch.hasTimePassed() && this->areWeHeartBeating) {
+					this->theClients[3]->heartBeatStopWatch.resetTimer();
 					this->sendHeartBeat();
 				}
 				try {
 					if (this->theClients.contains(3) && !this->doWeQuit.load()) {
-						WebSocketSSLShard::processIO(this->theClients);
+						WebSocketSSLShard::processIO(this->theClients, 1000);
 					}
 				} catch (...) {
 					if (this->doWePrintErrorMessages) {
@@ -1338,11 +1337,11 @@ namespace DiscordCoreInternal {
 						this->onMessageReceived(this->theClients[3]->processedMessages.front());
 						this->theClients[3]->processedMessages.pop();
 					}
-					if (this->voiceSocket) {
-						this->voiceSocket->readData(true);
-					}
 				} else {
 					this->onClosedExternal();
+				}
+				if (this->voiceSocket) {
+					this->voiceSocket->readData(true);
 				}
 				std::this_thread::sleep_for(1ms);
 			}

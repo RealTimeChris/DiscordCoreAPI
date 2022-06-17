@@ -302,8 +302,6 @@ namespace DiscordCoreInternal {
 		bool wantRead{ false };
 	};
 
-	class DiscordCoreAPI_Dll WebSocketSSLShard;
-
 	class DiscordCoreAPI_Dll WebSocketSSLShard {
 	  public:
 		friend class DiscordCoreAPI::DiscordCoreClient;

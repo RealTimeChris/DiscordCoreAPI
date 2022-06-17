@@ -718,7 +718,7 @@ namespace DiscordCoreAPI {
 		workload.callStack = "Users::leaveGuildAsync";
 		co_return Guilds::httpClient->submitWorkloadAndGetResult<void>(workload);
 	}
-
+	
 	void Guilds::insertGuild(GuildData guild) {
 		std::unique_lock<std::shared_mutex> theLock{ Guilds::theMutex };
 		if (guild.id == 0) {
