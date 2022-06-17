@@ -180,17 +180,16 @@ namespace DiscordCoreAPI {
 			}
 			leftOverShards -= newShardAmount;
 		}
-		int32_t currentBaseSocketAgent{ 0 };
 		int32_t currentShard{ 0 };
 		if (this->altAddress == "") {
 			this->altAddress = gatewayData.url.substr(gatewayData.url.find("wss://") + std::string("wss://").size());
 		}
 
 		this->theStopWatch.resetTimer();
-		for (auto& value: shardsPerWorkerVect) {
-			auto thePtr = std::make_unique<DiscordCoreInternal::BaseSocketAgent>(this, &Globals::doWeQuit, currentBaseSocketAgent);
-			this->baseSocketAgentMap[std::to_string(currentBaseSocketAgent)] = std::move(thePtr);
-			for (int32_t x = 0; x < value; x += 1) {
+		for (int32_t x = 0; x < shardsPerWorkerVect.size(); x += 1) {
+			auto thePtr = std::make_unique<DiscordCoreInternal::BaseSocketAgent>(this, &Globals::doWeQuit, x);
+			this->baseSocketAgentMap[std::to_string(x)] = std::move(thePtr);
+			for (int32_t y = 0; y < shardsPerWorkerVect[x]; y += 1) {
 				if (this->loggingOptions.logGeneralSuccessMessages) {
 					std::cout << shiftToBrightBlue() << "Connecting Shard " + std::to_string(currentShard + 1) << " of " << this->shardingOptions.numberOfShardsForThisProcess
 							  << std::string(" Shards for this process. (") + std::to_string(currentShard + 1) + " of " +
@@ -200,11 +199,10 @@ namespace DiscordCoreAPI {
 				}
 				ConnectionPackage theData{};
 				theData.currentShard = currentShard;
-				theData.currentBaseSocketAgent = currentBaseSocketAgent;
-				this->baseSocketAgentMap[std::to_string(currentBaseSocketAgent)]->connect(theData);
+				theData.currentBaseSocketAgent = x;
+				this->baseSocketAgentMap[std::to_string(x)]->connect(theData);
 				currentShard += 1;
 			}
-			currentBaseSocketAgent += 1;
 		}
 		this->currentUser = BotUser{ Users::getCurrentUserAsync().get(), this->baseSocketAgentMap[std::to_string(this->shardingOptions.startingShard)].get() };
 		for (auto& value: this->functionsToExecute) {

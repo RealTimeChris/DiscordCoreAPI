@@ -119,7 +119,6 @@ namespace DiscordCoreAPI {
 		std::string altAddress{};
 		ThreadPool threadPool{};
 		std::string botToken{};
-		std::mutex coutMutex{};
 		TextFormat theFormat{};
 		BotUser currentUser{};
 

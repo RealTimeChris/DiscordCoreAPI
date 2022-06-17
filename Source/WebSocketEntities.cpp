@@ -88,7 +88,6 @@ namespace DiscordCoreInternal {
 		try {
 			std::lock_guard<std::mutex> accessLock{ this->accessorMutex01 };
 			if (this->doWePrintSuccessMessages) {
-				std::lock_guard<std::mutex> theLock{ this->discordCoreClient->coutMutex };
 				std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Sending WebSocket " + theIndex.shard.dump() + std::string("'s Message: ") << std::endl
 						  << dataToSend << DiscordCoreAPI::reset();
 			}
@@ -319,7 +318,6 @@ namespace DiscordCoreInternal {
 			if (theIndex.heartBeatStopWatch.hasTimePassed() && theIndex.haveWeReceivedHeartbeatAck || isImmediate) {
 				nlohmann::json heartbeat = JSONIFY(theIndex.lastNumberReceived);
 				if (true) {
-					std::lock_guard<std::mutex> theLock{ this->discordCoreClient->coutMutex };
 					std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Sending WebSocket " + theIndex.shard.dump() + std::string("'s Message: ")
 							  << heartbeat.dump() << DiscordCoreAPI::reset() << std::endl
 							  << std::endl;
@@ -410,15 +408,6 @@ namespace DiscordCoreInternal {
 					parseObject(payload["d"]["user"], theUser);
 					this->discordCoreClient->currentUser = DiscordCoreAPI::BotUser{ theUser, this };
 					DiscordCoreAPI::Users::insertUser(theUser);
-					std::vector<DiscordCoreAPI::GuildData> theGuilds{};
-					parseObject(payload["d"]["guilds"], theGuilds);
-					for (auto& value: theGuilds) {
-						if (this->connections.size() > 0) {
-							this->internalConnect();
-						}
-						value.discordCoreClient = this->discordCoreClient;
-						DiscordCoreAPI::Guilds::insertGuild(value);
-					}
 					theIndex.currentRecursionDepth = 0;
 					this->areWeReadyToConnectEvent.set();
 				}
@@ -463,7 +452,7 @@ namespace DiscordCoreInternal {
 
 				if (payload["op"] == 10) {
 					if (payload["d"].contains("heartbeat_interval") && !payload["d"]["heartbeat_interval"].is_null()) {
-						this->heartbeatInterval = payload["d"]["heartbeat_interval"];
+						theIndex.heartBeatStopWatch = DiscordCoreAPI::StopWatch<std::chrono::milliseconds>{ std::chrono::milliseconds{ payload["d"]["heartbeat_interval"] } };
 					}
 					if (theIndex.areWeResuming) {
 						std::this_thread::sleep_for(1500ms);
@@ -906,7 +895,6 @@ namespace DiscordCoreInternal {
 				}
 			}
 			if (this->doWePrintSuccessMessages && !payload.is_null()) {
-				std::lock_guard<std::mutex> theLock{ this->discordCoreClient->coutMutex };
 				std::cout << DiscordCoreAPI::shiftToBrightGreen() << "Message received from WebSocket " + theIndex.shard.dump() + std::string(": ") << payload.dump()
 						  << DiscordCoreAPI::reset() << std::endl
 						  << std::endl;
@@ -944,17 +932,14 @@ namespace DiscordCoreInternal {
 				if (this->connections.size() > 0) {
 					this->internalConnect();
 				}
+				try {
+					WebSocketSSLShard::processIO(this->theClients);
+				} catch (...) {
+					if (this->doWePrintErrorMessages) {
+						DiscordCoreAPI::reportException("BaseSocketAgent::run()");
+					}
+				}
 				for (auto& [key, value]: this->theClients) {
-					try {
-						WebSocketSSLShard::processIO(this->theClients);
-					} catch (...) {
-						if (this->doWePrintErrorMessages) {
-							DiscordCoreAPI::reportException("BaseSocketAgent::run()");
-						}
-					}
-					if (this->connections.size() > 0) {
-						this->internalConnect();
-					}
 					if (this->theClients.contains(key) && value->inputBuffer.size() > 0) {
 						this->parseHeadersAndMessage(*value);
 					}
@@ -1040,10 +1025,6 @@ namespace DiscordCoreInternal {
 					this->parseHeadersAndMessage(*theMap[reconnectionData.currentShard]);
 					this->onMessageReceived(*theMap[reconnectionData.currentShard]);
 					std::this_thread::sleep_for(1ms);
-					if (currentDepth >= 15000) {
-						theMap.erase(reconnectionData.currentShard);
-						break;
-					}
 				}
 				int32_t currentCount{ 0 };
 				while (currentCount < 10) {
@@ -1061,14 +1042,6 @@ namespace DiscordCoreInternal {
 						}
 						return;
 					}
-				}
-				if (!theMap.contains(reconnectionData.currentShard)) {
-					if (reconnectionData.currentReconnectionDepth >= this->maxReconnectTries) {
-						this->doWeQuit->store(true);
-					} else {
-						this->connections.push(reconnectionData);
-					}
-					return;
 				}
 				this->theClients[reconnectionData.currentShard] = std::move(theMap[reconnectionData.currentShard]);
 			}
