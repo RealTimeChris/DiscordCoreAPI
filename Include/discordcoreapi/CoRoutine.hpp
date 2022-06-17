@@ -84,21 +84,21 @@ namespace DiscordCoreAPI {
 			}
 
 			auto final_suspend() noexcept {
-				this->theFlag->test_and_set();
+				this->theFlag.test_and_set();
 				return std::suspend_always{};
 			}
 
 			void unhandled_exception() {
-				this->exceptionBuffer->send(std::current_exception());
+				this->exceptionBuffer.send(std::current_exception());
 			}
 
 			~promise_type() {
 			}
 
 		  protected:
-			std::unique_ptr<UnboundedMessageBlock<std::exception_ptr>> exceptionBuffer{ std::make_unique<UnboundedMessageBlock<std::exception_ptr>>() };
-			std::unique_ptr<std::atomic_flag> theFlag{ std::make_unique<std::atomic_flag>() };
+			UnboundedMessageBlock<std::exception_ptr> exceptionBuffer{};
 			std::atomic_bool areWeStopped{ false };
+			std::atomic_flag theFlag{};
 			ReturnType result{};
 		};
 
@@ -106,8 +106,8 @@ namespace DiscordCoreAPI {
 			if (this != &other) {
 				this->coroutineHandle = other.coroutineHandle;
 				other.coroutineHandle = nullptr;
-				this->exceptionBuffer = this->coroutineHandle.promise().exceptionBuffer.get();
-				this->theFlag = this->coroutineHandle.promise().theFlag.get();
+				this->exceptionBuffer = &this->coroutineHandle.promise().exceptionBuffer;
+				this->theFlag = &this->coroutineHandle.promise().theFlag;
 				this->currentStatus = other.currentStatus;
 				other.currentStatus = CoRoutineStatus::Cancelled;
 			}
@@ -127,8 +127,8 @@ namespace DiscordCoreAPI {
 		CoRoutine(CoRoutine<ReturnType>& other) = delete;
 
 		CoRoutine(std::coroutine_handle<CoRoutine<ReturnType>::promise_type> coroutineHandleNew) : coroutineHandle(coroutineHandleNew) {
-			this->exceptionBuffer = this->coroutineHandle.promise().exceptionBuffer.get();
-			this->theFlag = this->coroutineHandle.promise().theFlag.get();
+			this->exceptionBuffer = &this->coroutineHandle.promise().exceptionBuffer;
+			this->theFlag = &this->coroutineHandle.promise().theFlag;
 		};
 
 		~CoRoutine() {
@@ -230,29 +230,29 @@ namespace DiscordCoreAPI {
 			}
 
 			auto final_suspend() noexcept {
-				this->theFlag->test_and_set();
+				this->theFlag.test_and_set();
 				return std::suspend_always{};
 			}
 
 			void unhandled_exception() {
-				this->exceptionBuffer->send(std::current_exception());
+				this->exceptionBuffer.send(std::current_exception());
 			}
 
 			~promise_type() {
 			}
 
 		  protected:
-			std::unique_ptr<UnboundedMessageBlock<std::exception_ptr>> exceptionBuffer{ std::make_unique<UnboundedMessageBlock<std::exception_ptr>>() };
-			std::unique_ptr<std::atomic_flag> theFlag{ std::make_unique<std::atomic_flag>() };
+			UnboundedMessageBlock<std::exception_ptr> exceptionBuffer{};
 			std::atomic_bool areWeStopped{ false };
+			std::atomic_flag theFlag{};
 		};
 
 		CoRoutine<void>& operator=(CoRoutine<void>&& other) noexcept {
 			if (this != &other) {
 				this->coroutineHandle = other.coroutineHandle;
 				other.coroutineHandle = nullptr;
-				this->exceptionBuffer = this->coroutineHandle.promise().exceptionBuffer.get();
-				this->theFlag = this->coroutineHandle.promise().theFlag.get();
+				this->exceptionBuffer = &this->coroutineHandle.promise().exceptionBuffer;
+				this->theFlag = &this->coroutineHandle.promise().theFlag;
 				this->currentStatus = other.currentStatus;
 				other.currentStatus = CoRoutineStatus::Cancelled;
 			}
@@ -272,8 +272,8 @@ namespace DiscordCoreAPI {
 		CoRoutine(CoRoutine<void>& other) = delete;
 
 		CoRoutine(std::coroutine_handle<CoRoutine<void>::promise_type> coroutineHandleNew) : coroutineHandle(coroutineHandleNew) {
-			this->exceptionBuffer = this->coroutineHandle.promise().exceptionBuffer.get();
-			this->theFlag = this->coroutineHandle.promise().theFlag.get();
+			this->exceptionBuffer = &this->coroutineHandle.promise().exceptionBuffer;
+			this->theFlag = &this->coroutineHandle.promise().theFlag;
 		};
 
 		~CoRoutine() {

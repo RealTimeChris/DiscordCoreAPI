@@ -83,7 +83,7 @@ namespace DiscordCoreInternal {
 		std::string baseUrl{};
 		uint64_t userId{};
 
-		void getVoiceConnectionData(const VoiceConnectInitData& doWeCollect, WebSocketSSLShard& theIndex) noexcept;
+		void getVoiceConnectionData(const VoiceConnectInitData& doWeCollect, int32_t& theIndex) noexcept;
 
 		void createHeader(std::string& outBuffer, uint64_t sendLength, WebSocketOpCode opCode) noexcept;
 
@@ -132,6 +132,7 @@ namespace DiscordCoreInternal {
 		bool doWePrintSuccessMessages{ false };
 		int32_t currentReconnectionTries{ 0 };
 		bool doWePrintErrorMessages{ false };
+		std::atomic_bool doWeQuit{ false };
 		int32_t maxReconnectionTries{ 10 };
 		int32_t lastNumberReceived{ 0 };
 		bool areWeHeartBeating{ false };
