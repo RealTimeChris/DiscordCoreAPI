@@ -317,9 +317,9 @@ namespace DiscordCoreInternal {
 		try {
 			if (theIndex.heartBeatStopWatch.hasTimePassed() && theIndex.haveWeReceivedHeartbeatAck || isImmediate) {
 				nlohmann::json heartbeat = JSONIFY(theIndex.lastNumberReceived);
-				if (true) {
-					std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Sending WebSocket " + theIndex.shard.dump() + std::string("'s Message: ")
-							  << heartbeat.dump() << DiscordCoreAPI::reset() << std::endl
+				if (this->doWePrintSuccessMessages) {
+					std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Sending WebSocket " + theIndex.shard.dump() + std::string("'s Message: ") << heartbeat.dump()
+							  << DiscordCoreAPI::reset() << std::endl
 							  << std::endl;
 				}
 				std::string theString{};
