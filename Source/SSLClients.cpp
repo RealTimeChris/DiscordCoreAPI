@@ -268,7 +268,8 @@ namespace DiscordCoreInternal {
 					FD_SET(value->theSocket, &writeSet);
 					writeNfds = value->theSocket > writeNfds ? value->theSocket : writeNfds;
 					didWeSetASocket = true;
-				} else if (!value->wantWrite) {
+				}
+				if (!value->wantWrite) {
 					FD_SET(value->theSocket, &readSet);
 					readNfds = value->theSocket > readNfds ? value->theSocket : readNfds;
 					didWeSetASocket = true;
@@ -287,54 +288,6 @@ namespace DiscordCoreInternal {
 		}
 
 		for (auto& [key, value]: theMap) {
-			if (FD_ISSET(value->theSocket, &readSet)) {
-				value->wantRead = false;
-				value->wantWrite = false;
-				std::string serverToClientBuffer{};
-				serverToClientBuffer.resize(value->maxBufferSize);
-				size_t readBytes{ 0 };
-				auto returnValue{ SSL_read_ex(value->ssl, serverToClientBuffer.data(), value->maxBufferSize, &readBytes) };
-				auto errorValue{ SSL_get_error(value->ssl, returnValue) };
-				switch (errorValue) {
-					case SSL_ERROR_NONE: {
-						if (readBytes > 0) {
-							value->inputBuffer.insert(value->inputBuffer.end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
-							value->bytesRead += readBytes;
-						}
-						break;
-					}
-					case SSL_ERROR_WANT_READ: {
-						value->wantRead = true;
-						break;
-					}
-					case SSL_ERROR_WANT_WRITE: {
-						value->wantWrite = true;
-						break;
-					}
-					case SSL_ERROR_SYSCALL: {
-						[[fallthrough]];
-					}
-					case SSL_ERROR_ZERO_RETURN: {
-						[[fallthrough]];
-					}
-					default: {
-						DiscordCoreAPI::ConnectionPackage theData{};
-						theData.currentReconnectionDepth = value->currentRecursionDepth;
-						theData.currentBaseSocketAgent = value->currentBaseSocketAgent;
-						theData.lastNumberReceived = value->lastNumberReceived;
-						theData.areWeResuming = value->areWeResuming;
-						theData.sessionId = value->sessionId;
-						theData.currentShard = key;
-						if (value->connections != nullptr) {
-							value->connections->push(theData);
-						}
-						auto theSSL = std::move(value->ssl);
-						theMap.erase(key);
-						throw ProcessingError{ reportSSLError("Shard [" + std::to_string(key) + "], in WebSocketSSLShard::processIO()::SSL_read_ex(), ", errorValue, theSSL) +
-							reportError("Shard [" + std::to_string(key) + "], in WebSocketSSLShard::processIO()::SSL_read_ex(), ") };
-					}
-				}
-			}
 			if (FD_ISSET(value->theSocket, &writeSet)) {
 				value->wantRead = false;
 				value->wantWrite = false;
@@ -383,6 +336,57 @@ namespace DiscordCoreInternal {
 							throw ProcessingError{ reportSSLError("Shard [" + std::to_string(key) + "], in WebSocketSSLShard::processIO()::SSL_write_ex(), ", errorValue, theSSL) +
 								reportError("Shard [" + std::to_string(key) + "], in WebSocketSSLShard::processIO()::SSL_write_ex(), ") };
 						}
+					}
+				}
+			}
+		}
+
+		for (auto& [key, value]: theMap) {
+			if (FD_ISSET(value->theSocket, &readSet)) {
+				value->wantRead = false;
+				value->wantWrite = false;
+				std::string serverToClientBuffer{};
+				serverToClientBuffer.resize(value->maxBufferSize);
+				size_t readBytes{ 0 };
+				auto returnValue{ SSL_read_ex(value->ssl, serverToClientBuffer.data(), value->maxBufferSize, &readBytes) };
+				auto errorValue{ SSL_get_error(value->ssl, returnValue) };
+				switch (errorValue) {
+					case SSL_ERROR_NONE: {
+						if (readBytes > 0) {
+							value->inputBuffer.insert(value->inputBuffer.end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
+							value->bytesRead += readBytes;
+						}
+						break;
+					}
+					case SSL_ERROR_WANT_READ: {
+						value->wantRead = true;
+						break;
+					}
+					case SSL_ERROR_WANT_WRITE: {
+						value->wantWrite = true;
+						break;
+					}
+					case SSL_ERROR_SYSCALL: {
+						[[fallthrough]];
+					}
+					case SSL_ERROR_ZERO_RETURN: {
+						[[fallthrough]];
+					}
+					default: {
+						DiscordCoreAPI::ConnectionPackage theData{};
+						theData.currentReconnectionDepth = value->currentRecursionDepth;
+						theData.currentBaseSocketAgent = value->currentBaseSocketAgent;
+						theData.lastNumberReceived = value->lastNumberReceived;
+						theData.areWeResuming = value->areWeResuming;
+						theData.sessionId = value->sessionId;
+						theData.currentShard = key;
+						if (value->connections != nullptr) {
+							value->connections->push(theData);
+						}
+						auto theSSL = std::move(value->ssl);
+						theMap.erase(key);
+						throw ProcessingError{ reportSSLError("Shard [" + std::to_string(key) + "], in WebSocketSSLShard::processIO()::SSL_read_ex(), ", errorValue, theSSL) +
+							reportError("Shard [" + std::to_string(key) + "], in WebSocketSSLShard::processIO()::SSL_read_ex(), ") };
 					}
 				}
 			}

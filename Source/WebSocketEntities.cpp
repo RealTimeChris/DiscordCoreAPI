@@ -946,6 +946,13 @@ namespace DiscordCoreInternal {
 					}
 				}
 				for (auto& [key, value]: this->theClients) {
+					try {
+						WebSocketSSLShard::processIO(this->theClients);
+					} catch (...) {
+						if (this->doWePrintErrorMessages) {
+							DiscordCoreAPI::reportException("BaseSocketAgent::run()");
+						}
+					}
 					if (this->theClients.contains(key) && value->inputBuffer.size() > 0) {
 						this->parseHeadersAndMessage(*value);
 					}
