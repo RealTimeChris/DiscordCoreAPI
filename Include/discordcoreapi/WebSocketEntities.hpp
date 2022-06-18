@@ -31,13 +31,25 @@
 
 namespace DiscordCoreInternal {
 
+	class DiscordCoreAPI_Dll ParserAgent {
+	  public:
+		ParserAgent(DiscordCoreAPI::DiscordCoreClient*);
+
+	  protected:
+		DiscordCoreAPI::DiscordCoreClient* thePtr{ nullptr };
+		std::jthread theTask{};
+		ErlPacker erlPacker{};
+
+		void run(std::stop_token) noexcept;
+	};
+
 	class DiscordCoreAPI_Dll BaseSocketAgent {
 	  public:
-		friend class WebSocketSSLShard;
 		friend class DiscordCoreAPI::DiscordCoreClient;
 		friend class DiscordCoreAPI::VoiceConnection;
 		friend class DiscordCoreAPI::BotUser;
-		friend class WSMessageCollector;
+		friend class WebSocketSSLShard;
+		friend class ParserAgent;
 		friend VoiceSocketAgent;
 
 		BaseSocketAgent(DiscordCoreAPI::DiscordCoreClient* discordCoreClientNew, std::atomic_bool* doWeQuitNew, int32_t currentBaseSocketAgentNew) noexcept;
@@ -154,4 +166,5 @@ namespace DiscordCoreInternal {
 
 		void connect() noexcept;
 	};
+
 }// namespace DiscordCoreInternal

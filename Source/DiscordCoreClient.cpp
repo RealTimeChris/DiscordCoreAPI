@@ -168,7 +168,7 @@ namespace DiscordCoreAPI {
 			return false;
 		}
 		this->shardingOptions.numberOfShardsForThisProcess = this->shardingOptions.totalNumberOfShards;
-		auto baseSocketAgentCount = static_cast<int32_t>((std::thread::hardware_concurrency()));
+		auto baseSocketAgentCount = 1;
 		int32_t shardsPerBaseSocketAgent{ static_cast<int32_t>(floor(static_cast<float>(this->shardingOptions.totalNumberOfShards) / static_cast<float>(baseSocketAgentCount))) };
 		int32_t leftOverShards{ this->shardingOptions.totalNumberOfShards - (shardsPerBaseSocketAgent * baseSocketAgentCount) };
 
@@ -199,6 +199,9 @@ namespace DiscordCoreAPI {
 		for (int32_t x = 0; x < shardsPerBaseSocketAgentVect.size(); x += 1) {
 			auto thePtr = std::make_unique<DiscordCoreInternal::BaseSocketAgent>(this, &Globals::doWeQuit, x);
 			this->baseSocketAgentMap[std::to_string(x)] = std::move(thePtr);
+			if (x == 0) {
+				this->parserAgent = std::make_unique<DiscordCoreInternal::ParserAgent>(this);
+			}
 			for (int32_t y = 0; y < shardsPerBaseSocketAgentVect[x]; y += 1) {
 				if (this->loggingOptions.logGeneralSuccessMessages) {
 					std::cout << shiftToBrightBlue() << "Connecting Shard " + std::to_string(currentShard + 1) << " of " << this->shardingOptions.numberOfShardsForThisProcess

@@ -247,6 +247,15 @@ namespace DiscordCoreInternal {
 		}
 	}
 
+	std::vector<nlohmann::json> WebSocketSSLShard::getProcessedMessages() noexcept {
+		std::vector<nlohmann::json> theVector{};
+		while (this->processedMessages.size() > 0) {
+			theVector.push_back(this->processedMessages.front());
+			this->processedMessages.pop();
+		}
+		return theVector;
+	}
+
 	WebSocketSSLShard::WebSocketSSLShard(std::queue<DiscordCoreAPI::ConnectionPackage>* connectionsNew, int32_t currentBaseSocketAgentNew, int32_t currentShardNew,
 		int32_t totalShardsNew, bool doWePrintErrorsNew) noexcept {
 		this->heartBeatStopWatch = DiscordCoreAPI::StopWatch<std::chrono::milliseconds>{ 10000ms };
@@ -291,6 +300,7 @@ namespace DiscordCoreInternal {
 
 		for (auto& [key, value]: theMap) {
 			if (FD_ISSET(value->theSocket, &writeSet)) {
+				std::lock_guard<std::mutex> theLock{ value->theMutex };
 				value->wantRead = false;
 				value->wantWrite = false;
 				size_t writtenBytes{ 0 };
@@ -345,6 +355,7 @@ namespace DiscordCoreInternal {
 
 		for (auto& [key, value]: theMap) {
 			if (FD_ISSET(value->theSocket, &readSet)) {
+				std::lock_guard<std::mutex> theLock{ value->theMutex };
 				value->wantRead = false;
 				value->wantWrite = false;
 				std::string serverToClientBuffer{};
