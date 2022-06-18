@@ -271,6 +271,7 @@ namespace DiscordCoreInternal {
 			this->connections = other.connections;
 			this->closeCode.swap(other.closeCode);
 			this->theState.swap(other.theState);
+			this->theMutex.swap(other.theMutex);
 			this->bytesRead = other.bytesRead;
 			this->sessionId = other.sessionId;
 			this->wantWrite = other.wantWrite;

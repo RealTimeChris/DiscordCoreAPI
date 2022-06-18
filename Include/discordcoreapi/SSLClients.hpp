@@ -357,6 +357,7 @@ namespace DiscordCoreInternal {
 		std::unique_ptr<WebSocketOpCode> opCode{ std::make_unique<WebSocketOpCode>() };
 		DiscordCoreAPI::StopWatch<std::chrono::milliseconds> heartBeatStopWatch{ 0ms };
 		std::unique_ptr<std::string> inputBuffer{ std::make_unique<std::string>() };
+		std::unique_ptr<std::mutex> theMutex{ std::make_unique<std::mutex>() };
 		std::queue<DiscordCoreAPI::ConnectionPackage>* connections{ nullptr };
 		int32_t maxBufferSize{ (1024 * 16) - 1 };
 		int32_t currentBaseSocketAgent{ 0 };

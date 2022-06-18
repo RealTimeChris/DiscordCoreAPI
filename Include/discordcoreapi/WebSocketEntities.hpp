@@ -56,6 +56,7 @@ namespace DiscordCoreInternal {
 		std::string inputBuffer{};
 		std::string sessionId{};
 		nlohmann::json shard{};
+		std::mutex* theMutex{};
 	};
 
 	class ParserAgent {
