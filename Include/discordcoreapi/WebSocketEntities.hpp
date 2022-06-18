@@ -31,46 +31,16 @@
 
 namespace DiscordCoreInternal {
 
-	class ParserAgent {
-	  public:
-		friend class VoiceSocketAgent;
-		friend class BaseSocketAgent;
-		
-		ParserAgent(DiscordCoreAPI::DiscordCoreClient* theClientNew);
-
-		void createHeader(std::string& outBuffer, uint64_t sendLength, WebSocketOpCode opCode) noexcept;
-
-		void submitStringForProcessing(WebSocketSSLShard& theShard, int32_t theIndex) noexcept;
-
-		void stringifyJsonData(const nlohmann::json& dataToSend, std::string&) noexcept;
-
-		void collectOutputData(WebSocketSSLShard& theShard, int32_t theIndex) noexcept;
-
-	  protected:
-		std::unordered_map<uint64_t, DiscordCoreAPI::TSUnboundedMessageBlock<VoiceConnectionData>*> voiceConnectionDataBufferMap{};
-		std::unordered_map<uint64_t, WebSocketSSLShard*> messagePackages{};
-		DiscordCoreAPI::DiscordCoreClient* discordCoreClient{ nullptr };
-		std::jthread theTask{};
-		ErlPacker erlPacker{};
-		std::mutex theMutex{};
-
-		void parseHeadersAndMessage(int32_t) noexcept;
-
-		void run(std::stop_token theToken) noexcept;
-
-		void onMessageReceived(int32_t) noexcept;
-	};
-
 	class DiscordCoreAPI_Dll BaseSocketAgent {
 	  public:
+		friend class WebSocketSSLShard;
 		friend class DiscordCoreAPI::DiscordCoreClient;
 		friend class DiscordCoreAPI::VoiceConnection;
 		friend class DiscordCoreAPI::BotUser;
-		friend class WebSocketSSLShard;
-		friend class VoiceSocketAgent;
-		friend class ParserAgent;
+		friend class WSMessageCollector;
+		friend VoiceSocketAgent;
 
-		BaseSocketAgent(DiscordCoreAPI::DiscordCoreClient* discordCoreClientNew, std::atomic_bool* doWeQuitNew, int32_t currentBaseSocketAgentNew, ParserAgent* parserAgentNew) noexcept;
+		BaseSocketAgent(DiscordCoreAPI::DiscordCoreClient* discordCoreClientNew, std::atomic_bool* doWeQuitNew, int32_t currentBaseSocketAgentNew) noexcept;
 
 		void sendMessage(const nlohmann::json& dataToSend, WebSocketSSLShard& theIndex) noexcept;
 
@@ -85,25 +55,39 @@ namespace DiscordCoreInternal {
 		~BaseSocketAgent() noexcept;
 
 	  protected:
+		std::unordered_map<std::string, DiscordCoreAPI::TSUnboundedMessageBlock<VoiceConnectionData>*> voiceConnectionDataBufferMap{};
 		std::unordered_map<int32_t, std::unique_ptr<WebSocketSSLShard>> theClients{};
 		DiscordCoreAPI::DiscordCoreClient* discordCoreClient{ nullptr };
 		std::queue<DiscordCoreAPI::ConnectionPackage> connections{};
 		WebSocketOpCode dataOpcode{ WebSocketOpCode::Op_Binary };
 		std::unique_ptr<std::jthread> theTask{ nullptr };
+		VoiceConnectionData voiceConnectionData{};
+		EventWaiter areWeReadyToConnectEvent{};
 		bool doWePrintSuccessMessages{ false };
 		std::atomic_bool* doWeQuit{ nullptr };
 		const int32_t maxReconnectTries{ 10 };
 		bool doWePrintErrorMessages{ false };
 		std::binary_semaphore semaphore{ 1 };
-		ParserAgent* parserAgent{ nullptr };
 		int32_t currentBaseSocketAgent{ 0 };
+		bool serverUpdateCollected{ false };
+		bool stateUpdateCollected{ false };
+		bool areWeCollectingData{ false };
 		int32_t heartbeatInterval{ 0 };
 		std::mutex accessorMutex01{};
+		ErlPacker erlPacker{};
 		uint64_t userId{};
 
 		void getVoiceConnectionData(const VoiceConnectInitData& doWeCollect, WebSocketSSLShard& theIndex) noexcept;
 
+		void createHeader(std::string& outBuffer, uint64_t sendLength, WebSocketOpCode opCode) noexcept;
+
 		void checkForAndSendHeartBeat(WebSocketSSLShard& theIndex, bool = false) noexcept;
+
+		void stringifyJsonData(const nlohmann::json& dataToSend, std::string&) noexcept;
+
+		void parseHeadersAndMessage(WebSocketSSLShard& theShard) noexcept;
+
+		void onMessageReceived(WebSocketSSLShard& theIndex) noexcept;
 
 		void sendCloseFrame(WebSocketSSLShard& theIndex) noexcept;
 

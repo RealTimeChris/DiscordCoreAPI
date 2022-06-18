@@ -79,7 +79,6 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll DiscordCoreClient {
 	  public:
 		friend class DiscordCoreInternal::BaseSocketAgent;
-		friend class DiscordCoreInternal::ParserAgent;
 		friend GuildData;
 		friend Guilds;
 		friend Guild;
@@ -106,11 +105,10 @@ namespace DiscordCoreAPI {
 		~DiscordCoreClient() = default;
 
 	  protected:
-		std::unique_ptr<DiscordCoreInternal::BaseSocketAgent> baseSocketAgent{ nullptr };
+		std::unordered_map<std::string, std::unique_ptr<DiscordCoreInternal::BaseSocketAgent>> baseSocketAgentMap{};
 		GatewayIntents theIntents{ DiscordCoreAPI::GatewayIntents::All_Intents };
-		std::unique_ptr<DiscordCoreInternal::ParserAgent> parserAgent{ nullptr };
 		std::unique_ptr<DiscordCoreInternal::HttpClient> httpClient{ nullptr };
-		StopWatch<std::chrono::milliseconds> theStopWatch{ 5500ms };
+		StopWatch<std::chrono::milliseconds> theStopWatch{ 5100ms };
 		TextFormat theFormat{ DiscordCoreAPI::TextFormat::Etf };
 		std::vector<RepeatedFunctionData> functionsToExecute{};
 #ifdef _WIN32
