@@ -38,6 +38,7 @@ namespace DiscordCoreInternal {
 		friend class DiscordCoreAPI::VoiceConnection;
 		friend class DiscordCoreAPI::BotUser;
 		friend class WSMessageCollector;
+		friend class ParserAgent;
 		friend VoiceSocketAgent;
 
 		BaseSocketAgent(DiscordCoreAPI::DiscordCoreClient* discordCoreClientNew, std::atomic_bool* doWeQuitNew, int32_t currentBaseSocketAgentNew) noexcept;
@@ -61,6 +62,7 @@ namespace DiscordCoreInternal {
 		std::queue<DiscordCoreAPI::ConnectionPackage> connections{};
 		WebSocketOpCode dataOpcode{ WebSocketOpCode::Op_Binary };
 		std::unique_ptr<std::jthread> theTask{ nullptr };
+		std::queue<std::string> theMessageQueue{};
 		VoiceConnectionData voiceConnectionData{};
 		EventWaiter areWeReadyToConnectEvent{};
 		bool doWePrintSuccessMessages{ false };
@@ -84,6 +86,8 @@ namespace DiscordCoreInternal {
 		void checkForAndSendHeartBeat(WebSocketSSLShard& theIndex, bool = false) noexcept;
 
 		void stringifyJsonData(const nlohmann::json& dataToSend, std::string&) noexcept;
+
+		void submitDataForProcessing(WebSocketSSLShard& theIndex) noexcept;
 
 		void parseHeadersAndMessage(WebSocketSSLShard& theShard) noexcept;
 
@@ -154,4 +158,28 @@ namespace DiscordCoreInternal {
 
 		void connect() noexcept;
 	};
+
+	class DiscordCoreAPI_Dll ParserAgent {
+	  public:
+		ParserAgent(DiscordCoreAPI::DiscordCoreClient* discordCoreClientNew, std::atomic_bool* doWeQuitNew,
+			std::unordered_map<int32_t, std::unique_ptr<WebSocketSSLShard>>* theClientsNew, BaseSocketAgent* baseSocketAgentNew) noexcept;
+
+	  protected:
+		std::unordered_map<int32_t, std::unique_ptr<WebSocketSSLShard>>* theClients{};
+		DiscordCoreAPI::DiscordCoreClient* discordCoreClient{ nullptr };
+		std::unordered_map<int32_t, std::string> theInputBuffers{};
+		BaseSocketAgent* baseSocketAgent{ nullptr };
+		std::atomic_bool* doWeQuit{ nullptr };
+		std::jthread theTask{};
+		ErlPacker erlPacker{};
+		std::mutex theMutex{};
+
+		void parseHeadersAndMessage(WebSocketSSLShard& theShard) noexcept;
+
+		void onMessageReceived(WebSocketSSLShard& theIndex) noexcept;
+
+		void run() noexcept;
+
+	};
+
 }// namespace DiscordCoreInternal

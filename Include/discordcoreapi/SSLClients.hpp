@@ -308,6 +308,7 @@ namespace DiscordCoreInternal {
 		friend class WSMessageCollector;
 		friend class VoiceSocketAgent;
 		friend class BaseSocketAgent;
+		friend class ParserAgent;
 
 		WebSocketSSLShard(std::queue<DiscordCoreAPI::ConnectionPackage>* connectionsNew, int32_t currentBaseSocketAgentNew, int32_t currentShardNew, int32_t totalShardsNew,
 			bool doWePrintErrorsNew) noexcept;
@@ -318,7 +319,7 @@ namespace DiscordCoreInternal {
 
 		void writeData(std::string& data, bool priority) noexcept;
 
-		std::string getInputBuffer() noexcept;
+		std::string& getInputBuffer() noexcept;
 
 		int64_t getBytesRead() noexcept;
 
@@ -354,6 +355,7 @@ namespace DiscordCoreInternal {
 		bool wantWrite{ true };
 		bool wantRead{ false };
 		int64_t bytesRead{ 0 };
+		std::mutex theMutex{};
 	};
 
 	class DiscordCoreAPI_Dll DatagramSocketSSLClient {
