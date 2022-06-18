@@ -50,6 +50,7 @@ namespace DiscordCoreInternal {
 		friend class DiscordCoreAPI::BotUser;
 		friend class WebSocketSSLShard;
 		friend class ParserAgent;
+
 		friend VoiceSocketAgent;
 
 		BaseSocketAgent(DiscordCoreAPI::DiscordCoreClient* discordCoreClientNew, std::atomic_bool* doWeQuitNew, int32_t currentBaseSocketAgentNew) noexcept;
