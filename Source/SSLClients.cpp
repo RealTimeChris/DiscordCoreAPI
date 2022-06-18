@@ -1,5 +1,4 @@
 /*
-*
 	DiscordCoreAPI, A bot library for Discord, written in C++, and featuring explicit multithreading through the usage of custom, asynchronous C++ CoRoutines.
 
 	Copyright 2021, 2022 Chris M. (RealTimeChris)
@@ -12,7 +11,6 @@
 	even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 	You should have received a copy of the GNU General Public License along with DiscordCoreAPI.
 	If not, see <https://www.gnu.org/licenses/>.
-
 */
 /// SSLClents.cpp - Source file for the "SSL Client" stuff.
 /// Dec 12, 2021
@@ -247,15 +245,6 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	std::vector<nlohmann::json> WebSocketSSLShard::getProcessedMessages() noexcept {
-		std::vector<nlohmann::json> theVector{};
-		while (this->processedMessages.size() > 0) {
-			theVector.push_back(this->processedMessages.front());
-			this->processedMessages.pop();
-		}
-		return theVector;
-	}
-
 	WebSocketSSLShard::WebSocketSSLShard(std::queue<DiscordCoreAPI::ConnectionPackage>* connectionsNew, int32_t currentBaseSocketAgentNew, int32_t currentShardNew,
 		int32_t totalShardsNew, bool doWePrintErrorsNew) noexcept {
 		this->heartBeatStopWatch = DiscordCoreAPI::StopWatch<std::chrono::milliseconds>{ 10000ms };
@@ -300,7 +289,6 @@ namespace DiscordCoreInternal {
 
 		for (auto& [key, value]: theMap) {
 			if (FD_ISSET(value->theSocket, &writeSet)) {
-				std::lock_guard<std::mutex> theLock{ value->theMutex };
 				value->wantRead = false;
 				value->wantWrite = false;
 				size_t writtenBytes{ 0 };
@@ -355,7 +343,6 @@ namespace DiscordCoreInternal {
 
 		for (auto& [key, value]: theMap) {
 			if (FD_ISSET(value->theSocket, &readSet)) {
-				std::lock_guard<std::mutex> theLock{ value->theMutex };
 				value->wantRead = false;
 				value->wantWrite = false;
 				std::string serverToClientBuffer{};
@@ -521,10 +508,8 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	std::string WebSocketSSLShard::getInputBuffer() noexcept {
-		std::string theReturnString = this->inputBuffer;
-		this->inputBuffer.clear();
-		return theReturnString;
+	std::string& WebSocketSSLShard::getInputBuffer() noexcept {
+		return this->inputBuffer;
 	}
 
 	int64_t WebSocketSSLShard::getBytesRead() noexcept {

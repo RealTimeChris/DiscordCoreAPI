@@ -308,19 +308,18 @@ namespace DiscordCoreInternal {
 		friend class WSMessageCollector;
 		friend class VoiceSocketAgent;
 		friend class BaseSocketAgent;
+		friend class ParserAgent;
 
 		WebSocketSSLShard(std::queue<DiscordCoreAPI::ConnectionPackage>* connectionsNew, int32_t currentBaseSocketAgentNew, int32_t currentShardNew, int32_t totalShardsNew,
 			bool doWePrintErrorsNew) noexcept;
-		
+
 		static void processIO(std::unordered_map<int32_t, std::unique_ptr<WebSocketSSLShard>>& theMap, int32_t waitTimeInms = 10000);
 
 		void connect(const std::string& baseUrlNew, const std::string& portNew);
 
-		std::vector<nlohmann::json> getProcessedMessages() noexcept;
-
 		void writeData(std::string& data, bool priority) noexcept;
 
-		std::string getInputBuffer() noexcept;
+		std::string& getInputBuffer() noexcept;
 
 		int64_t getBytesRead() noexcept;
 
@@ -330,9 +329,7 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::StopWatch<std::chrono::milliseconds> heartBeatStopWatch{ 0ms };
 		std::queue<DiscordCoreAPI::ConnectionPackage>* connections{ nullptr };
 		WebSocketState theState{ WebSocketState::Connecting01 };
-		std::queue<std::string> messagesToBeProcessed{};
-		std::queue<nlohmann::json> processedMessages{};
-		VoiceConnectionData voiceConnectionData{};
+		std::queue<std::string> processedMessages{};
 		std::atomic_bool areWeConnected{ false };
 		int32_t maxBufferSize{ (1024 * 16) - 1 };
 		std::vector<std::string> outputBuffer{};
@@ -341,13 +338,12 @@ namespace DiscordCoreInternal {
 		int32_t currentRecursionDepth{ 0 };
 		SOCKETWrapper theSocket{ nullptr };
 		SSL_CTXWrapper context{ nullptr };
-		bool areWeCollectingData{ false };
 		int32_t maxRecursionDepth{ 10 };
 		bool areWeHeartBeating{ false };
 		int32_t lastNumberReceived{ 0 };
-		int32_t heartbeatInterval{ 0 };
 		WebSocketCloseCode closeCode{};
 		bool doWePrintErrors{ false };
+		std::string currentMessage{};
 		WebSocketOpCode dataOpCode{};
 		bool areWeResuming{ false };
 		SSLWrapper ssl{ nullptr };
@@ -360,8 +356,6 @@ namespace DiscordCoreInternal {
 		bool wantRead{ false };
 		int64_t bytesRead{ 0 };
 		std::mutex theMutex{};
-		uint64_t userId{};
-
 	};
 
 	class DiscordCoreAPI_Dll DatagramSocketSSLClient {
