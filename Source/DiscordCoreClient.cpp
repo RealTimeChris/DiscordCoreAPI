@@ -168,7 +168,7 @@ namespace DiscordCoreAPI {
 			return false;
 		}
 		this->shardingOptions.numberOfShardsForThisProcess = this->shardingOptions.totalNumberOfShards;
-		auto baseSocketAgentCount = 1;
+		auto baseSocketAgentCount = static_cast<int32_t>((std::thread::hardware_concurrency()));
 		int32_t shardsPerBaseSocketAgent{ static_cast<int32_t>(floor(static_cast<float>(this->shardingOptions.totalNumberOfShards) / static_cast<float>(baseSocketAgentCount))) };
 		int32_t leftOverShards{ this->shardingOptions.totalNumberOfShards - (shardsPerBaseSocketAgent * baseSocketAgentCount) };
 
@@ -212,8 +212,6 @@ namespace DiscordCoreAPI {
 				theData.currentBaseSocketAgent = x;
 				this->baseSocketAgentMap[std::to_string(x)]->connect(theData);
 				currentShard += 1;
-				this->parserAgent = std::make_unique<DiscordCoreInternal::ParserAgent>(this, &Globals::doWeQuit, &this->baseSocketAgentMap[std::to_string(x)]->theClients,
-					this->baseSocketAgentMap[std::to_string(x)].get());
 			}
 		}
 		this->currentUser = BotUser{ Users::getCurrentUserAsync().get(), this->baseSocketAgentMap[std::to_string(this->shardingOptions.startingShard)].get() };

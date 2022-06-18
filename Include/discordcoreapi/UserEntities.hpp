@@ -131,7 +131,6 @@ namespace DiscordCoreAPI {
 	  public:
 		template<typename ParseType> friend void DiscordCoreInternal::parseObject(const nlohmann::json&, ParseType&);
 		friend class DiscordCoreInternal::BaseSocketAgent;
-		friend class DiscordCoreInternal::ParserAgent;
 		friend DiscordCoreClient;
 		friend EventHandler;
 		friend Guild;
