@@ -1471,7 +1471,6 @@ namespace DiscordCoreInternal {
 	}
 
 	VoiceSocketAgent::~VoiceSocketAgent() noexcept {
-		this->doWeQuit.store(true);
 		this->theTask->request_stop();
 		if (this->theTask->joinable()) {
 			this->theTask->join();
