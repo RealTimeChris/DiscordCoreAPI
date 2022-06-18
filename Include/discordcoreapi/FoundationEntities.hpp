@@ -112,6 +112,7 @@ namespace DiscordCoreInternal {
 	class VoiceSocketAgent;
 	class BaseSocketAgent;
 	class SoundCloudAPI;
+	class ParserAgent;
 	class YouTubeAPI;
 	class HttpClient;
 
@@ -2891,6 +2892,7 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll InputEventData {
 	  public:
 		friend class DiscordCoreInternal::BaseSocketAgent;
+		friend class DiscordCoreInternal::ParserAgent;
 		friend OnInteractionCreationData;
 		friend RespondToInputEventData;
 		friend BaseFunctionArguments;
