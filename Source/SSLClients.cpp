@@ -269,7 +269,7 @@ namespace DiscordCoreInternal {
 					writeNfds = value->theSocket > writeNfds ? value->theSocket : writeNfds;
 					didWeSetASocket = true;
 				}
-				if (!value->wantWrite) {
+				else if (!value->wantWrite) {
 					FD_SET(value->theSocket, &readSet);
 					readNfds = value->theSocket > readNfds ? value->theSocket : readNfds;
 					didWeSetASocket = true;
