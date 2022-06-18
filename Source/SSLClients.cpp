@@ -335,13 +335,14 @@ namespace DiscordCoreInternal {
 				size_t writtenBytes{ 0 };
 				std::string theString{};
 				if (value->outputBuffer.size() > 0) {
-					theString = std::move(value->outputBuffer.front());
+					theString = value->outputBuffer.front();
 				}
 				if (theString.size() > 0) {
 					auto returnValue{ SSL_write_ex(value->ssl, theString.data(), theString.size(), &writtenBytes) };
 					auto errorValue{ SSL_get_error(value->ssl, returnValue) };
 					switch (errorValue) {
 						case SSL_ERROR_NONE: {
+							std::lock_guard<std::mutex> theLock{ value->theMutex };
 							if (value->outputBuffer.size() > 0 && writtenBytes > 0) {
 								value->outputBuffer.erase(value->outputBuffer.begin());
 								std::cout << "WRITTEN BYTES: " << theString << std::endl;
@@ -395,9 +396,9 @@ namespace DiscordCoreInternal {
 				switch (errorValue) {
 					case SSL_ERROR_NONE: {
 						if (readBytes > 0) {
+							std::lock_guard<std::mutex> theLock{ value->theMutex };
 							value->inputBuffer.insert(value->inputBuffer.end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
 							value->bytesRead += readBytes;
-							std::cout << "READ BYTES: " << value->inputBuffer << std::endl;
 						}
 						break;
 					}

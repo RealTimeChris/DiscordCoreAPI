@@ -75,7 +75,7 @@ namespace DiscordCoreInternal {
 	}
 
 	void ParserAgent::collectOutputData(WebSocketSSLShard& theShard, int32_t theIndex) noexcept {
-		std::lock_guard<std::mutex> theLock{ this->theMutex };
+		std::lock_guard<std::mutex> theLock{ theShard.theMutex };
 		if (this->messagePackages.contains(theIndex)) {
 			auto theStringNew = this->messagePackages[theIndex]->outputToBeProcessed;
 			for (auto& value: theStringNew) {
@@ -87,7 +87,7 @@ namespace DiscordCoreInternal {
 
 	void ParserAgent::submitStringForProcessing(WebSocketSSLShard& theShard, int32_t theIndex) noexcept {
 		std::this_thread::sleep_for(1ms);
-		std::lock_guard<std::mutex> theLock{ this->theMutex };
+		std::lock_guard<std::mutex> theLock{ theShard.theMutex };
 		if (!this->messagePackages.contains(theIndex)) {
 			this->messagePackages[theIndex] = &theShard;
 		}
@@ -279,6 +279,7 @@ namespace DiscordCoreInternal {
 	}
 
 	void ParserAgent::parseHeadersAndMessage(int32_t theIndex) noexcept {
+		std::lock_guard<std::mutex> theLock{ this->messagePackages[theIndex]->theMutex };
 		if (this->messagePackages[theIndex]->theState == WebSocketState::Connecting01) {
 			std::string newVector{};
 			if (this->messagePackages[theIndex]->inputToBeProcessed.find("\r\n\r\n") != std::string::npos) {
@@ -1008,13 +1009,6 @@ namespace DiscordCoreInternal {
 					}
 				}
 				for (auto& [key, value]: this->theClients) {
-					try {
-						WebSocketSSLShard::processIO(this->theClients, 10000);
-					} catch (...) {
-						if (this->doWePrintErrorMessages) {
-							DiscordCoreAPI::reportException("BaseSocketAgent::run()");
-						}
-					}
 					if (this->theClients.contains(key) && value->inputBuffer.size() > 0) {
 						this->parserAgent->submitStringForProcessing(*value, key);
 					}
