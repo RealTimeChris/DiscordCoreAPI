@@ -221,8 +221,8 @@ namespace DiscordCoreInternal {
 		std::unique_ptr<SSL, SSLDeleter> sslPtr{ nullptr, SSLDeleter{} };
 	};
 
-	struct SOCKETWrapper {
-		struct SOCKETDeleter {
+	struct DiscordCoreAPI_Dll SOCKETWrapper {
+		struct DiscordCoreAPI_Dll SOCKETDeleter {
 			void operator()(SOCKET* other) {
 				if (other) {
 #ifdef _WIN32
@@ -337,39 +337,43 @@ namespace DiscordCoreInternal {
 		~WebSocketSSLShard() noexcept = default;
 
 	  protected:
-		std::unique_ptr<DiscordCoreAPI::TSUnboundedMessageBlock<WebSocketCommand>> commandBuffer{ std::make_unique<DiscordCoreAPI::TSUnboundedMessageBlock<WebSocketCommand>>() };
-		std::unique_ptr<WebSocketState> theState{ std::make_unique<WebSocketState>(WebSocketState::Connecting01) };
-		std::unique_ptr<std::queue<std::string>> processedMessages{ std::make_unique<std::queue<std::string>>() };
-		std::unique_ptr<std::atomic_bool> haveWeReceivedHeartbeatAck{ std::make_unique<std::atomic_bool>(true) };
-		std::unique_ptr<std::atomic_int32_t> currentRecursionDepth{ std::make_unique<std::atomic_int32_t>(0) };
-		std::unique_ptr<std::vector<std::string>> outputBuffer{ std::make_unique<std::vector<std::string>>() };
-		std::unique_ptr<std::atomic_bool> serverUpdateCollected{ std::make_unique<std::atomic_bool>(false) };
-		std::unique_ptr<std::atomic_bool> stateUpdateCollected{ std::make_unique<std::atomic_bool>(false) };
-		std::unique_ptr<std::atomic_int32_t> lastNumberReceived{ std::make_unique<std::atomic_int32_t>(0) };
-		std::unique_ptr<std::atomic_bool> areWeCollectingData{ std::make_unique<std::atomic_bool>(false) };
-		std::unique_ptr<std::atomic_bool> areWeHeartBeating{ std::make_unique<std::atomic_bool>(false) };
-		std::unique_ptr<std::atomic_bool> doWePrintErrors{ std::make_unique<std::atomic_bool>(false) };
-		std::unique_ptr<std::atomic_bool> areWeConnected{ std::make_unique<std::atomic_bool>(false) };
-		std::unique_ptr<std::atomic_int64_t> messageLength{ std::make_unique<std::atomic_int64_t>() };
-		std::unique_ptr<std::atomic_int64_t> messageOffset{ std::make_unique<std::atomic_int64_t>() };
-		std::unique_ptr<std::atomic_bool> areWeResuming{ std::make_unique<std::atomic_bool>(false) };
-		std::unique_ptr<WebSocketCloseCode> closeCode{ std::make_unique<WebSocketCloseCode>() };
-		std::unique_ptr<WebSocketOpCode> opCode{ std::make_unique<WebSocketOpCode>() };
 		DiscordCoreAPI::StopWatch<std::chrono::milliseconds> heartBeatStopWatch{ 0ms };
-		std::unique_ptr<std::string> inputBuffer{ std::make_unique<std::string>() };
-		std::unique_ptr<std::mutex> theMutex{ std::make_unique<std::mutex>() };
+		DiscordCoreAPI::TSUnboundedMessageBlock<WebSocketCommand> commandBuffer{};
 		std::queue<DiscordCoreAPI::ConnectionPackage>* connections{ nullptr };
+		WebSocketState theState{ WebSocketState::Connecting01 };
+		std::vector<std::string> outputToBeProcessed{};
+		std::atomic_bool haveWeReceivedHeartbeatAck{};
+		std::queue<std::string> processedMessages{};
+		std::atomic_int32_t currentRecursionDepth{};
+		VoiceConnectionData voiceConnectionData{};
 		int32_t maxBufferSize{ (1024 * 16) - 1 };
+		std::atomic_int32_t lastNumberReceived{};
+		std::atomic_bool serverUpdateCollected{};
+		std::vector<std::string> outputBuffer{};
+		std::atomic_bool stateUpdateCollected{};
+		std::atomic_bool areWeCollectingData{};
+		std::atomic_bool areWeHeartBeating{};
+		std::atomic_int64_t messageLength{};
+		std::atomic_int64_t messageOffset{};
 		int32_t currentBaseSocketAgent{ 0 };
 		SOCKETWrapper theSocket{ nullptr };
+		std::atomic_bool doWePrintErrors{};		
+		std::atomic_bool areWeConnected{};
 		SSL_CTXWrapper context{ nullptr };
+		std::string inputToBeProcessed{};
+		std::atomic_bool areWeResuming{};
 		int32_t maxRecursionDepth{ 10 };
+		WebSocketCloseCode closeCode{};
+		std::atomic_int64_t userId{};
 		SSLWrapper ssl{ nullptr };
+		std::string inputBuffer{};
+		WebSocketOpCode opCode{};
 		std::string sessionId{};
 		nlohmann::json shard{};
 		bool wantWrite{ true };
 		bool wantRead{ false };
 		int64_t bytesRead{ 0 };
+		std::mutex theMutex{};
 	};
 
 	class DiscordCoreAPI_Dll DatagramSocketSSLClient {

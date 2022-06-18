@@ -31,34 +31,6 @@
 
 namespace DiscordCoreInternal {
 
-	struct WebSocketMessagePackage {
-		DiscordCoreAPI::StopWatch<std::chrono::milliseconds>* heartBeatStopWatch{ nullptr };
-		DiscordCoreAPI::TSUnboundedMessageBlock<WebSocketCommand>* commandBufferPtr{};
-		std::atomic_bool* haveWeReceivedHeartbeatAck{ nullptr };
-		std::atomic_bool* serverUpdateCollected{ nullptr };
-		std::atomic_bool* stateUpdateCollected{ nullptr };
-		EventWaiter* areWeReadyToConnectEvent{ nullptr };
-		std::atomic_bool* areWeCollectingData{ nullptr };
-		std::atomic_int32_t* currentRecursionDepth{ 0 };
-		std::atomic_bool* areWeHeartBeating{ nullptr };
-		std::atomic_int32_t* lastNumberReceived{ 0 };
-		std::queue<std::string>* processedMessages{};
-		std::atomic_bool* areWeConnected{ nullptr };
-		VoiceConnectionData* voiceConnectionData{};
-		std::atomic_bool* areWeResuming{ nullptr };
-		WebSocketCloseCode* closeCode{ nullptr };
-		std::atomic_int64_t* messageLength{};
-		std::atomic_int64_t* messageOffset{};
-		WebSocketState* theState{ nullptr };
-		WebSocketOpCode* opCode{ nullptr };
-		std::atomic_int64_t* userId{};
-		std::string outputBuffer{};
-		std::string inputBuffer{};
-		std::string sessionId{};
-		nlohmann::json shard{};
-		std::mutex* theMutex{};
-	};
-
 	class ParserAgent {
 	  public:
 		friend class VoiceSocketAgent;
@@ -76,7 +48,7 @@ namespace DiscordCoreInternal {
 
 	  protected:
 		std::unordered_map<uint64_t, DiscordCoreAPI::TSUnboundedMessageBlock<VoiceConnectionData>*> voiceConnectionDataBufferMap{};
-		std::unordered_map<uint64_t, WebSocketMessagePackage> messagePackages{};
+		std::unordered_map<uint64_t, WebSocketSSLShard*> messagePackages{};
 		DiscordCoreAPI::DiscordCoreClient* discordCoreClient{ nullptr };
 		std::jthread theTask{};
 		ErlPacker erlPacker{};
@@ -118,8 +90,6 @@ namespace DiscordCoreInternal {
 		std::queue<DiscordCoreAPI::ConnectionPackage> connections{};
 		WebSocketOpCode dataOpcode{ WebSocketOpCode::Op_Binary };
 		std::unique_ptr<std::jthread> theTask{ nullptr };
-		VoiceConnectionData voiceConnectionData{};
-		EventWaiter areWeReadyToConnectEvent{};
 		bool doWePrintSuccessMessages{ false };
 		std::atomic_bool* doWeQuit{ nullptr };
 		const int32_t maxReconnectTries{ 10 };
