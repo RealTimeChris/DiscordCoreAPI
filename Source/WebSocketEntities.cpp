@@ -189,7 +189,7 @@ namespace DiscordCoreInternal {
 		try {
 			outBuffer.push_back(static_cast<uint8_t>(opCode) | webSocketFinishBit);
 
-			int32_t indexCount{ 0 };
+			uint32_t indexCount{ 0 };
 			if (sendLength <= webSocketMaxPayloadLengthSmall) {
 				outBuffer.push_back(static_cast<uint8_t>(sendLength));
 				indexCount = 0;
@@ -200,7 +200,7 @@ namespace DiscordCoreInternal {
 				outBuffer.push_back(webSocketPayloadLengthMagicHuge);
 				indexCount = 8;
 			}
-			for (int32_t x = indexCount - 1; x >= 0; x--) {
+			for (uint32_t x = indexCount - 1; x >= 0; x--) {
 				outBuffer.push_back(static_cast<uint8_t>(sendLength >> x * 8));
 			}
 
@@ -1231,7 +1231,7 @@ namespace DiscordCoreInternal {
 		try {
 			outBuffer.push_back(static_cast<uint8_t>(opCode) | webSocketFinishBit);
 
-			int32_t indexCount{ 0 };
+			uint32_t indexCount{ 0 };
 			if (sendLength <= webSocketMaxPayloadLengthSmall) {
 				outBuffer.push_back(static_cast<uint8_t>(sendLength));
 				indexCount = 0;
@@ -1242,7 +1242,7 @@ namespace DiscordCoreInternal {
 				outBuffer.push_back(webSocketPayloadLengthMagicHuge);
 				indexCount = 8;
 			}
-			for (int32_t x = indexCount - 1; x >= 0; x--) {
+			for (uint32_t x = indexCount - 1; x >= 0; x--) {
 				outBuffer.push_back(static_cast<uint8_t>(sendLength >> x * 8));
 			}
 
@@ -1253,7 +1253,7 @@ namespace DiscordCoreInternal {
 			outBuffer.push_back(0);
 		} catch (...) {
 			if (this->doWePrintErrorMessages) {
-				DiscordCoreAPI::reportException("BaseSocketAgent::createHeader()");
+				DiscordCoreAPI::reportException("VoiceSocketAgent::createHeader()");
 			}
 		}
 	}
