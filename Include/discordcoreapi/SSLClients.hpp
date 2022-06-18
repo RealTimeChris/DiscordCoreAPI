@@ -302,6 +302,12 @@ namespace DiscordCoreInternal {
 		bool wantRead{ false };
 	};
 
+	enum class WebSocketCommand {
+		Heartbeat = 0,///< Send a heartbeat.
+		Close = 1,///< Close the connection.
+		Send_Message = 2///< Send a message.
+	};
+
 	class DiscordCoreAPI_Dll WebSocketSSLShard {
 	  public:
 		friend class DiscordCoreAPI::DiscordCoreClient;
@@ -319,7 +325,7 @@ namespace DiscordCoreInternal {
 
 		void writeData(std::string& data, bool priority) noexcept;
 
-		std::string& getInputBuffer() noexcept;
+		std::string getInputBuffer() noexcept;
 
 		int64_t getBytesRead() noexcept;
 
@@ -327,35 +333,37 @@ namespace DiscordCoreInternal {
 
 	  protected:
 		DiscordCoreAPI::StopWatch<std::chrono::milliseconds> heartBeatStopWatch{ 0ms };
+		DiscordCoreAPI::TSUnboundedMessageBlock<WebSocketCommand> commandBuffer{};
 		std::queue<DiscordCoreAPI::ConnectionPackage>* connections{ nullptr };
 		WebSocketState theState{ WebSocketState::Connecting01 };
+		std::atomic_bool haveWeReceivedHeartbeatAck{ true };
+		std::atomic_bool serverUpdateCollected{ false };
+		std::atomic_bool stateUpdateCollected{ false };
+		std::atomic_int32_t currentRecursionDepth{ 0 };
+		std::atomic_bool areWeCollectingData{ false };
 		std::queue<std::string> processedMessages{};
+		std::atomic_bool areWeHeartBeating{ false };
+		std::atomic_int32_t lastNumberReceived{ 0 };
+		std::atomic_bool doWePrintErrors{ false };
 		std::atomic_bool areWeConnected{ false };
 		int32_t maxBufferSize{ (1024 * 16) - 1 };
 		std::vector<std::string> outputBuffer{};
-		bool haveWeReceivedHeartbeatAck{ true };
+		std::atomic_bool areWeResuming{ false };
+		std::atomic_int64_t messageLength{};
+		std::atomic_int64_t messageOffset{};
 		int32_t currentBaseSocketAgent{ 0 };
-		int32_t currentRecursionDepth{ 0 };
 		SOCKETWrapper theSocket{ nullptr };
 		SSL_CTXWrapper context{ nullptr };
 		int32_t maxRecursionDepth{ 10 };
-		bool areWeHeartBeating{ false };
-		int32_t lastNumberReceived{ 0 };
 		WebSocketCloseCode closeCode{};
-		bool doWePrintErrors{ false };
-		std::string currentMessage{};
-		WebSocketOpCode dataOpCode{};
-		bool areWeResuming{ false };
 		SSLWrapper ssl{ nullptr };
 		std::string inputBuffer{};
-		int64_t messageLength{};
-		int64_t messageOffset{};
+		WebSocketOpCode opCode{};
 		std::string sessionId{};
 		nlohmann::json shard{};
 		bool wantWrite{ true };
 		bool wantRead{ false };
 		int64_t bytesRead{ 0 };
-		std::mutex theMutex{};
 	};
 
 	class DiscordCoreAPI_Dll DatagramSocketSSLClient {
