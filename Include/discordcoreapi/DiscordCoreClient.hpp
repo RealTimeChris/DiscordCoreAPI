@@ -106,10 +106,11 @@ namespace DiscordCoreAPI {
 		~DiscordCoreClient() = default;
 
 	  protected:
-		std::unordered_map<std::string, std::unique_ptr<DiscordCoreInternal::BaseSocketAgent>> baseSocketAgentMap{};
+		std::unique_ptr<DiscordCoreInternal::BaseSocketAgent> baseSocketAgent{ nullptr };
 		GatewayIntents theIntents{ DiscordCoreAPI::GatewayIntents::All_Intents };
+		std::unique_ptr<DiscordCoreInternal::ParserAgent> parserAgent{ nullptr };
 		std::unique_ptr<DiscordCoreInternal::HttpClient> httpClient{ nullptr };
-		StopWatch<std::chrono::milliseconds> theStopWatch{ 5100ms };
+		StopWatch<std::chrono::milliseconds> theStopWatch{ 5500ms };
 		TextFormat theFormat{ DiscordCoreAPI::TextFormat::Etf };
 		std::vector<RepeatedFunctionData> functionsToExecute{};
 #ifdef _WIN32

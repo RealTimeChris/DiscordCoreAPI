@@ -135,7 +135,7 @@ namespace DiscordCoreAPI {
 		if (!this->instantiateWebSockets()) {
 			return;
 		}
-		this->baseSocketAgentMap[std::to_string(this->shardingOptions.startingShard)]->getTheTask()->join();
+		this->baseSocketAgent->getTheTask()->join();
 	}
 
 	GatewayBotData DiscordCoreClient::getGateWayBot() {
@@ -168,25 +168,10 @@ namespace DiscordCoreAPI {
 			return false;
 		}
 		this->shardingOptions.numberOfShardsForThisProcess = this->shardingOptions.totalNumberOfShards;
-		auto baseSocketAgentCount = static_cast<int32_t>((std::thread::hardware_concurrency()));
-		int32_t shardsPerBaseSocketAgent{ static_cast<int32_t>(floor(static_cast<float>(this->shardingOptions.totalNumberOfShards) / static_cast<float>(baseSocketAgentCount))) };
-		int32_t leftOverShards{ this->shardingOptions.totalNumberOfShards - (shardsPerBaseSocketAgent * baseSocketAgentCount) };
+		auto baseSocketAgentCount{ 1 };
+		int32_t shardsPerBaseSocketAgent{ this->shardingOptions.totalNumberOfShards };
 
-		std::vector<int32_t> shardsPerBaseSocketAgentVect{};
-		for (int32_t x = 0; x < baseSocketAgentCount; x += 1) {
-			int32_t newShardAmount{};
-			shardsPerBaseSocketAgentVect.push_back(shardsPerBaseSocketAgent);
-			if (leftOverShards == 0) {
-				continue;
-			}
-			newShardAmount = static_cast<int32_t>(ceil(static_cast<float>(leftOverShards) / static_cast<float>(std::thread::hardware_concurrency())));
-			shardsPerBaseSocketAgentVect[x] += newShardAmount;
-
-			if (x == static_cast<int32_t>(std::thread::hardware_concurrency()) - 1) {
-				shardsPerBaseSocketAgentVect[0] += leftOverShards;
-			}
-			leftOverShards -= newShardAmount;
-		}
+		this->parserAgent = std::make_unique<DiscordCoreInternal::ParserAgent>(this);
 		int32_t currentShard{ 0 };
 		if (this->theAddress == "") {
 			this->theAddress = gatewayData.url.substr(gatewayData.url.find("wss://") + std::string("wss://").size());
@@ -196,25 +181,23 @@ namespace DiscordCoreAPI {
 		}
 
 		this->theStopWatch.resetTimer();
-		for (int32_t x = 0; x < shardsPerBaseSocketAgentVect.size(); x += 1) {
-			auto thePtr = std::make_unique<DiscordCoreInternal::BaseSocketAgent>(this, &Globals::doWeQuit, x);
-			this->baseSocketAgentMap[std::to_string(x)] = std::move(thePtr);
-			for (int32_t y = 0; y < shardsPerBaseSocketAgentVect[x]; y += 1) {
-				if (this->loggingOptions.logGeneralSuccessMessages) {
-					std::cout << shiftToBrightBlue() << "Connecting Shard " + std::to_string(currentShard + 1) << " of " << this->shardingOptions.numberOfShardsForThisProcess
-							  << std::string(" Shards for this process. (") + std::to_string(currentShard + 1) + " of " +
-							std::to_string(this->shardingOptions.totalNumberOfShards) + std::string(" Shards total across all processes)")
-							  << reset() << std::endl
-							  << std::endl;
-				}
-				ConnectionPackage theData{};
-				theData.currentShard = currentShard;
-				theData.currentBaseSocketAgent = x;
-				this->baseSocketAgentMap[std::to_string(x)]->connect(theData);
-				currentShard += 1;
+		this->baseSocketAgent = std::make_unique<DiscordCoreInternal::BaseSocketAgent>(this, &Globals::doWeQuit, 0, this->parserAgent.get());
+		for (int32_t y = 0; y < shardsPerBaseSocketAgent; y += 1) {
+			if (this->loggingOptions.logGeneralSuccessMessages) {
+				std::cout << shiftToBrightBlue() << "Connecting Shard " + std::to_string(currentShard + 1) << " of " << this->shardingOptions.numberOfShardsForThisProcess
+						  << std::string(" Shards for this process. (") + std::to_string(currentShard + 1) + " of " + std::to_string(this->shardingOptions.totalNumberOfShards) +
+						std::string(" Shards total across all processes)")
+						  << reset() << std::endl
+						  << std::endl;
 			}
+			ConnectionPackage theData{};
+			theData.currentShard = currentShard;
+			theData.currentBaseSocketAgent = 0;
+			this->baseSocketAgent->connect(theData);
+			currentShard += 1;
 		}
-		this->currentUser = BotUser{ Users::getCurrentUserAsync().get(), this->baseSocketAgentMap[std::to_string(this->shardingOptions.startingShard)].get() };
+		
+		this->currentUser = BotUser{ Users::getCurrentUserAsync().get(), this->baseSocketAgent.get() };
 		for (auto& value: this->functionsToExecute) {
 			TimeElapsedHandler<int64_t> onSend = [=, this](int64_t theArg) -> void {
 				value.function(this);

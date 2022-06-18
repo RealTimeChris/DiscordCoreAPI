@@ -245,11 +245,52 @@ namespace DiscordCoreInternal {
 		}
 	}
 
+	WebSocketSSLShard& WebSocketSSLShard::operator=(WebSocketSSLShard&& other) {
+		if (this != &other) {
+			this->haveWeReceivedHeartbeatAck.swap(other.haveWeReceivedHeartbeatAck);
+			this->serverUpdateCollected.swap(other.serverUpdateCollected);
+			this->currentBaseSocketAgent = other.currentBaseSocketAgent;
+			this->stateUpdateCollected.swap(other.stateUpdateCollected);
+			this->areWeCollectingData.swap(other.areWeCollectingData);
+			this->lastNumberReceived.swap(other.lastNumberReceived);
+			this->areWeHeartBeating.swap(other.areWeHeartBeating);
+			this->processedMessages.swap(other.processedMessages);
+			this->heartBeatStopWatch = other.heartBeatStopWatch;
+			this->maxRecursionDepth = other.maxRecursionDepth;
+			this->doWePrintErrors.swap(other.doWePrintErrors);
+			this->areWeConnected.swap(other.areWeConnected);
+			this->commandBuffer.swap(other.commandBuffer);
+			this->areWeResuming.swap(other.areWeResuming);
+			this->messageLength.swap(other.messageLength);
+			this->messageOffset.swap(other.messageOffset);
+			this->theSocket = std::move(other.theSocket);
+			this->outputBuffer.swap(other.outputBuffer);
+			this->maxBufferSize = other.maxBufferSize;
+			this->inputBuffer.swap(other.inputBuffer);
+			this->context = std::move(other.context);
+			this->connections = other.connections;
+			this->closeCode.swap(other.closeCode);
+			this->theState.swap(other.theState);
+			this->bytesRead = other.bytesRead;
+			this->sessionId = other.sessionId;
+			this->wantWrite = other.wantWrite;
+			this->ssl = std::move(other.ssl);
+			this->wantRead = other.wantRead;
+			this->opCode.swap(other.opCode);
+			this->shard = other.shard;
+		}
+		return *this;
+	}
+
+	WebSocketSSLShard::WebSocketSSLShard(WebSocketSSLShard&& other) {
+		*this = std::move(other);
+	}
+
 	WebSocketSSLShard::WebSocketSSLShard(std::queue<DiscordCoreAPI::ConnectionPackage>* connectionsNew, int32_t currentBaseSocketAgentNew, int32_t currentShardNew,
 		int32_t totalShardsNew, bool doWePrintErrorsNew) noexcept {
 		this->heartBeatStopWatch = DiscordCoreAPI::StopWatch<std::chrono::milliseconds>{ 10000ms };
 		this->currentBaseSocketAgent = currentBaseSocketAgentNew;
-		this->doWePrintErrors = doWePrintErrorsNew;
+		*this->doWePrintErrors = doWePrintErrorsNew;
 		this->shard.push_back(currentShardNew);
 		this->shard.push_back(totalShardsNew);
 		this->connections = connectionsNew;
@@ -264,7 +305,7 @@ namespace DiscordCoreInternal {
 		bool didWeSetASocket{ false };
 		for (auto& [key, value]: theMap) {
 			if (value != nullptr) {
-				if ((value->outputBuffer.size() > 0 || value->wantWrite) && !value->wantRead) {
+				if ((value->outputBuffer->size() > 0 || value->wantWrite) && !value->wantRead) {
 					FD_SET(value->theSocket, &writeSet);
 					writeNfds = value->theSocket > writeNfds ? value->theSocket : writeNfds;
 					didWeSetASocket = true;
@@ -293,16 +334,16 @@ namespace DiscordCoreInternal {
 				value->wantWrite = false;
 				size_t writtenBytes{ 0 };
 				std::string theString{};
-				if (value->outputBuffer.size() > 0) {
-					theString = std::move(value->outputBuffer.front());
+				if (value->outputBuffer->size() > 0) {
+					theString = std::move(value->outputBuffer->front());
 				}
 				if (theString.size() > 0) {
 					auto returnValue{ SSL_write_ex(value->ssl, theString.data(), theString.size(), &writtenBytes) };
 					auto errorValue{ SSL_get_error(value->ssl, returnValue) };
 					switch (errorValue) {
 						case SSL_ERROR_NONE: {
-							if (value->outputBuffer.size() > 0 && writtenBytes > 0) {
-								value->outputBuffer.erase(value->outputBuffer.begin());
+							if (value->outputBuffer->size() > 0 && writtenBytes > 0) {
+								value->outputBuffer->erase(value->outputBuffer->begin());
 							}
 							break;
 						}
@@ -322,10 +363,10 @@ namespace DiscordCoreInternal {
 						}
 						default: {
 							DiscordCoreAPI::ConnectionPackage theData{};
-							theData.currentReconnectionDepth = value->currentRecursionDepth;
+							theData.currentReconnectionDepth = *value->currentRecursionDepth;
 							theData.currentBaseSocketAgent = value->currentBaseSocketAgent;
-							theData.lastNumberReceived = value->lastNumberReceived;
-							theData.areWeResuming = value->areWeResuming;
+							theData.lastNumberReceived = *value->lastNumberReceived;
+							theData.areWeResuming = *value->areWeResuming;
 							theData.sessionId = value->sessionId;
 							theData.currentShard = key;
 							if (value->connections != nullptr) {
@@ -353,7 +394,7 @@ namespace DiscordCoreInternal {
 				switch (errorValue) {
 					case SSL_ERROR_NONE: {
 						if (readBytes > 0) {
-							value->inputBuffer.insert(value->inputBuffer.end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
+							value->inputBuffer->insert(value->inputBuffer->end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
 							value->bytesRead += readBytes;
 						}
 						break;
@@ -374,10 +415,10 @@ namespace DiscordCoreInternal {
 					}
 					default: {
 						DiscordCoreAPI::ConnectionPackage theData{};
-						theData.currentReconnectionDepth = value->currentRecursionDepth;
+						theData.currentReconnectionDepth = *value->currentRecursionDepth;
 						theData.currentBaseSocketAgent = value->currentBaseSocketAgent;
-						theData.lastNumberReceived = value->lastNumberReceived;
-						theData.areWeResuming = value->areWeResuming;
+						theData.lastNumberReceived = *value->lastNumberReceived;
+						theData.areWeResuming = *value->areWeResuming;
 						theData.sessionId = value->sessionId;
 						theData.currentShard = key;
 						if (value->connections != nullptr) {
@@ -461,10 +502,10 @@ namespace DiscordCoreInternal {
 	void WebSocketSSLShard::writeData(std::string& data, bool priority) noexcept {
 		if (priority) {
 			std::vector<std::string> theOldStrings{};
-			for (auto& value: this->outputBuffer) {
+			for (auto& value: *this->outputBuffer) {
 				theOldStrings.push_back(value);
 			}
-			this->outputBuffer.clear();
+			this->outputBuffer->clear();
 			if (data.size() > static_cast<size_t>(16 * 1024)) {
 				size_t remainingBytes{ data.size() };
 				while (remainingBytes > 0) {
@@ -476,15 +517,15 @@ namespace DiscordCoreInternal {
 						amountToCollect = data.size();
 					}
 					newString.insert(newString.begin(), data.begin(), data.begin() + amountToCollect);
-					this->outputBuffer.push_back(newString);
+					this->outputBuffer->push_back(newString);
 					data.erase(data.begin(), data.begin() + amountToCollect);
 					remainingBytes = data.size();
 				}
 			} else {
-				this->outputBuffer.push_back(data);
+				this->outputBuffer->push_back(data);
 			}
 			for (auto& value: theOldStrings) {
-				this->outputBuffer.push_back(value);
+				this->outputBuffer->push_back(value);
 			}
 		} else {
 			if (data.size() > static_cast<size_t>(16 * 1024)) {
@@ -498,19 +539,19 @@ namespace DiscordCoreInternal {
 						amountToCollect = data.size();
 					}
 					newString.insert(newString.begin(), data.begin(), data.begin() + amountToCollect);
-					this->outputBuffer.push_back(newString);
+					this->outputBuffer->push_back(newString);
 					data.erase(data.begin(), data.begin() + amountToCollect);
 					remainingBytes = data.size();
 				}
 			} else {
-				this->outputBuffer.push_back(data);
+				this->outputBuffer->push_back(data);
 			}
 		}
 	}
 
 	std::string WebSocketSSLShard::getInputBuffer() noexcept {
-		std::string theReturnString = this->inputBuffer;
-		this->inputBuffer.clear();
+		std::string theReturnString = *this->inputBuffer;
+		this->inputBuffer->clear();
 		return theReturnString;
 	}
 

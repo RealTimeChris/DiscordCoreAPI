@@ -241,8 +241,8 @@ namespace DiscordCoreInternal {
 			if (this != &other) {
 				this->socketPtr.swap(other.socketPtr);
 				*other.socketPtr = SOCKET_ERROR;
-				return *this;
 			}
+			return *this;
 		}
 
 		SOCKETWrapper(SOCKETWrapper&& other) noexcept {
@@ -303,9 +303,10 @@ namespace DiscordCoreInternal {
 	};
 
 	enum class WebSocketCommand {
-		Heartbeat = 0,///< Send a heartbeat.
-		Close = 1,///< Close the connection.
-		Send_Message = 2///< Send a message.
+		Unset = 0,///< Unset.
+		Heartbeat = 1,///< Send a heartbeat.
+		Close = 2,///< Close the connection.
+		Send_Message = 3///< Send a message.
 	};
 
 	class DiscordCoreAPI_Dll WebSocketSSLShard {
@@ -315,6 +316,10 @@ namespace DiscordCoreInternal {
 		friend class VoiceSocketAgent;
 		friend class BaseSocketAgent;
 		friend class ParserAgent;
+
+		WebSocketSSLShard& operator=(WebSocketSSLShard&&);
+
+		WebSocketSSLShard(WebSocketSSLShard&&);
 
 		WebSocketSSLShard(std::queue<DiscordCoreAPI::ConnectionPackage>* connectionsNew, int32_t currentBaseSocketAgentNew, int32_t currentShardNew, int32_t totalShardsNew,
 			bool doWePrintErrorsNew) noexcept;
@@ -332,33 +337,33 @@ namespace DiscordCoreInternal {
 		~WebSocketSSLShard() noexcept = default;
 
 	  protected:
+		std::unique_ptr<DiscordCoreAPI::TSUnboundedMessageBlock<WebSocketCommand>> commandBuffer{ std::make_unique<DiscordCoreAPI::TSUnboundedMessageBlock<WebSocketCommand>>() };
+		std::unique_ptr<WebSocketState> theState{ std::make_unique<WebSocketState>(WebSocketState::Connecting01) };
+		std::unique_ptr<std::queue<std::string>> processedMessages{ std::make_unique<std::queue<std::string>>() };
+		std::unique_ptr<std::atomic_bool> haveWeReceivedHeartbeatAck{ std::make_unique<std::atomic_bool>(true) };
+		std::unique_ptr<std::atomic_int32_t> currentRecursionDepth{ std::make_unique<std::atomic_int32_t>(0) };
+		std::unique_ptr<std::vector<std::string>> outputBuffer{ std::make_unique<std::vector<std::string>>() };
+		std::unique_ptr<std::atomic_bool> serverUpdateCollected{ std::make_unique<std::atomic_bool>(false) };
+		std::unique_ptr<std::atomic_bool> stateUpdateCollected{ std::make_unique<std::atomic_bool>(false) };
+		std::unique_ptr<std::atomic_int32_t> lastNumberReceived{ std::make_unique<std::atomic_int32_t>(0) };
+		std::unique_ptr<std::atomic_bool> areWeCollectingData{ std::make_unique<std::atomic_bool>(false) };
+		std::unique_ptr<std::atomic_bool> areWeHeartBeating{ std::make_unique<std::atomic_bool>(false) };
+		std::unique_ptr<std::atomic_bool> doWePrintErrors{ std::make_unique<std::atomic_bool>(false) };
+		std::unique_ptr<std::atomic_bool> areWeConnected{ std::make_unique<std::atomic_bool>(false) };
+		std::unique_ptr<std::atomic_int64_t> messageLength{ std::make_unique<std::atomic_int64_t>() };
+		std::unique_ptr<std::atomic_int64_t> messageOffset{ std::make_unique<std::atomic_int64_t>() };
+		std::unique_ptr<std::atomic_bool> areWeResuming{ std::make_unique<std::atomic_bool>(false) };
+		std::unique_ptr<WebSocketCloseCode> closeCode{ std::make_unique<WebSocketCloseCode>() };
+		std::unique_ptr<WebSocketOpCode> opCode{ std::make_unique<WebSocketOpCode>() };
 		DiscordCoreAPI::StopWatch<std::chrono::milliseconds> heartBeatStopWatch{ 0ms };
-		DiscordCoreAPI::TSUnboundedMessageBlock<WebSocketCommand> commandBuffer{};
+		std::unique_ptr<std::string> inputBuffer{ std::make_unique<std::string>() };
 		std::queue<DiscordCoreAPI::ConnectionPackage>* connections{ nullptr };
-		WebSocketState theState{ WebSocketState::Connecting01 };
-		std::atomic_bool haveWeReceivedHeartbeatAck{ true };
-		std::atomic_bool serverUpdateCollected{ false };
-		std::atomic_bool stateUpdateCollected{ false };
-		std::atomic_int32_t currentRecursionDepth{ 0 };
-		std::atomic_bool areWeCollectingData{ false };
-		std::queue<std::string> processedMessages{};
-		std::atomic_bool areWeHeartBeating{ false };
-		std::atomic_int32_t lastNumberReceived{ 0 };
-		std::atomic_bool doWePrintErrors{ false };
-		std::atomic_bool areWeConnected{ false };
 		int32_t maxBufferSize{ (1024 * 16) - 1 };
-		std::vector<std::string> outputBuffer{};
-		std::atomic_bool areWeResuming{ false };
-		std::atomic_int64_t messageLength{};
-		std::atomic_int64_t messageOffset{};
 		int32_t currentBaseSocketAgent{ 0 };
 		SOCKETWrapper theSocket{ nullptr };
 		SSL_CTXWrapper context{ nullptr };
 		int32_t maxRecursionDepth{ 10 };
-		WebSocketCloseCode closeCode{};
 		SSLWrapper ssl{ nullptr };
-		std::string inputBuffer{};
-		WebSocketOpCode opCode{};
 		std::string sessionId{};
 		nlohmann::json shard{};
 		bool wantWrite{ true };

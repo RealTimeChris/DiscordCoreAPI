@@ -71,6 +71,8 @@ namespace DiscordCoreInternal {
 
 		void stringifyJsonData(const nlohmann::json& dataToSend, std::string&) noexcept;
 
+		void collectOutputData(WebSocketSSLShard& theShard, int32_t theIndex) noexcept;
+
 	  protected:
 		std::unordered_map<uint64_t, DiscordCoreAPI::TSUnboundedMessageBlock<VoiceConnectionData>*> voiceConnectionDataBufferMap{};
 		std::unordered_map<uint64_t, WebSocketMessagePackage> messagePackages{};
@@ -95,7 +97,7 @@ namespace DiscordCoreInternal {
 		friend class VoiceSocketAgent;
 		friend class ParserAgent;
 
-		BaseSocketAgent(DiscordCoreAPI::DiscordCoreClient* discordCoreClientNew, std::atomic_bool* doWeQuitNew, int32_t currentBaseSocketAgentNew) noexcept;
+		BaseSocketAgent(DiscordCoreAPI::DiscordCoreClient* discordCoreClientNew, std::atomic_bool* doWeQuitNew, int32_t currentBaseSocketAgentNew, ParserAgent* parserAgentNew) noexcept;
 
 		void sendMessage(const nlohmann::json& dataToSend, WebSocketSSLShard& theIndex) noexcept;
 
