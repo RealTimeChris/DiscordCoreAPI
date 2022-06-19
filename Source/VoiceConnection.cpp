@@ -156,17 +156,19 @@ namespace DiscordCoreAPI {
 		if (this->voiceSocketAgent) {
 			this->voiceSocketAgent.reset(nullptr);
 		}
-		this->voiceSocketAgent = std::make_unique<DiscordCoreInternal::VoiceSocketAgent>(this->voiceConnectInitData, this->baseSocketAgent,
-			this->baseSocketAgent->theClients[voiceConnectInitDataNew.currentShard].get(), this->baseSocketAgent->doWePrintSuccessMessages);
-		this->doWeReconnect = &this->voiceSocketAgent->doWeReconnect;
-		if (!this->voiceSocketAgent->areWeConnected.wait(10000)) {
-			return;
-		}
-		this->voiceConnectionData = this->voiceSocketAgent->voiceConnectionData;
-		if (this->theTask == nullptr) {
-			this->theTask = std::make_unique<std::jthread>([=, this](std::stop_token theToken) {
-				this->run(theToken);
-			});
+		if (this->baseSocketAgent != nullptr && this->baseSocketAgent->theClients[voiceConnectInitDataNew.currentShard] != nullptr) {
+			this->voiceSocketAgent = std::make_unique<DiscordCoreInternal::VoiceSocketAgent>(this->voiceConnectInitData, this->baseSocketAgent,
+				this->baseSocketAgent->theClients[voiceConnectInitDataNew.currentShard].get(), this->baseSocketAgent->doWePrintSuccessMessages);
+			this->doWeReconnect = &this->voiceSocketAgent->doWeReconnect;
+			if (!this->voiceSocketAgent->areWeConnected.wait(10000)) {
+				return;
+			}
+			this->voiceConnectionData = this->voiceSocketAgent->voiceConnectionData;
+			if (this->theTask == nullptr) {
+				this->theTask = std::make_unique<std::jthread>([=, this](std::stop_token theToken) {
+					this->run(theToken);
+				});
+			}
 		}
 	}
 
