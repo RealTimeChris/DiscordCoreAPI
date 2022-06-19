@@ -950,16 +950,20 @@ namespace DiscordCoreInternal {
 				}
 				for (auto& [key, value]: this->theClients) {
 					if (this->theClients.contains(key) && value->inputBuffer.size() > 0) {
-						this->parseHeadersAndMessage(*value);
+						if (value != nullptr) {
+							this->parseHeadersAndMessage(*value);
+						}
 					}
 					if (this->theClients.contains(key) && value->processedMessages.size() > 0) {
-						this->onMessageReceived(*value);
+						if (value != nullptr) {
+							this->onMessageReceived(*value);
+						}
 					}
 					if (this->theClients.contains(key)) {
 						this->checkForAndSendHeartBeat(*value);
-						if (this->theClients[key] != nullptr && this->heartbeatInterval != 0 && !this->theClients[key]->areWeHeartBeating) {
-							this->theClients[key]->areWeHeartBeating = true;
-							this->theClients[key]->heartBeatStopWatch = DiscordCoreAPI::StopWatch{ std::chrono::milliseconds{ this->heartbeatInterval } };
+						if (value != nullptr && this->heartbeatInterval != 0 && !value->areWeHeartBeating) {
+							value->areWeHeartBeating = true;
+							value->heartBeatStopWatch = DiscordCoreAPI::StopWatch{ std::chrono::milliseconds{ this->heartbeatInterval } };
 						}
 					}
 				}
