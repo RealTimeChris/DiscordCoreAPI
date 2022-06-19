@@ -68,8 +68,10 @@ namespace DiscordCoreInternal {
 			}
 			std::string theVectorNew{};
 			this->stringifyJsonData(dataToSend, theVectorNew);
-
-			theIndex.writeData(theVectorNew, false);
+			if (this->theClients.contains(theIndex.shard[0])) {
+				theIndex.writeData(theVectorNew, false);
+			}
+			
 		} catch (...) {
 			if (this->doWePrintErrorMessages) {
 				DiscordCoreAPI::reportException("BaseSocketAgent::sendMessage()");
@@ -85,7 +87,9 @@ namespace DiscordCoreInternal {
 				std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Sending WebSocket " + theIndex.shard.dump() + std::string("'s Message: ") << std::endl
 						  << dataToSend << DiscordCoreAPI::reset();
 			}
-			theIndex.writeData(dataToSend, false);
+			if (this->theClients.contains(theIndex.shard[0])) {
+				theIndex.writeData(dataToSend, false);
+			}
 		} catch (...) {
 			if (this->doWePrintErrorMessages) {
 				DiscordCoreAPI::reportException("BaseSocketAgent::sendMessage()");
@@ -146,6 +150,7 @@ namespace DiscordCoreInternal {
 			dataPackage.selfMute = doWeCollect.selfMute;
 			this->userId = doWeCollect.userId;
 			nlohmann::json newData = JSONIFY(dataPackage);
+			this->areWeReadyToConnectEvent.wait(10000);
 			this->sendMessage(newData, theIndex);
 			try {
 				WebSocketSSLShard::processIO(this->theClients, 100000);
@@ -155,6 +160,8 @@ namespace DiscordCoreInternal {
 				}
 				this->onClosed(theIndex);
 				this->areWeReadyToConnectEvent.wait(10000);
+				this->getVoiceConnectionData(doWeCollect, theIndex);
+				return;
 			}
 			std::this_thread::sleep_for(500ms);
 			if (doWeCollect.channelId == 0) {
@@ -163,6 +170,7 @@ namespace DiscordCoreInternal {
 			dataPackage.channelId = doWeCollect.channelId;
 			newData = JSONIFY(dataPackage);
 			this->areWeCollectingData = true;
+			this->areWeReadyToConnectEvent.wait(10000);
 			this->sendMessage(newData, theIndex);
 			try {
 				WebSocketSSLShard::processIO(this->theClients, 100000);
@@ -172,6 +180,8 @@ namespace DiscordCoreInternal {
 				}
 				this->onClosed(theIndex);
 				this->areWeReadyToConnectEvent.wait(10000);
+				this->getVoiceConnectionData(doWeCollect, theIndex);
+				return;
 			}
 			DiscordCoreAPI::StopWatch<std::chrono::milliseconds> theStopWatch{ 5000ms };
 			while (this->areWeCollectingData) {
@@ -1081,7 +1091,9 @@ namespace DiscordCoreInternal {
 		this->doWePrintErrorMessages = baseBaseSocketAgentNew->doWePrintErrorMessages;
 		this->baseSocketAgent = baseBaseSocketAgentNew;
 		this->baseSocketAgent->voiceConnectionDataBufferMap[std::to_string(initDataNew.guildId)] = &this->voiceConnectionDataBuffer;
-		this->baseSocketAgent->getVoiceConnectionData(initDataNew, theIndex);
+		if (this->baseSocketAgent->theClients.contains(theIndex.shard[0])) {
+			this->baseSocketAgent->getVoiceConnectionData(initDataNew, theIndex);
+		}
 		this->voiceConnectInitData = initDataNew;
 		this->areWeConnected.reset();
 		this->theTask = std::make_unique<std::jthread>([this](std::stop_token theToken) {
