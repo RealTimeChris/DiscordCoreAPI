@@ -42,13 +42,13 @@ namespace DiscordCoreInternal {
 
 		BaseSocketAgent(DiscordCoreAPI::DiscordCoreClient* discordCoreClientNew, std::atomic_bool* doWeQuitNew, int32_t currentBaseSocketAgentNew) noexcept;
 
-		void sendMessage(const nlohmann::json& dataToSend, WebSocketSSLShard& theIndex) noexcept;
+		void sendMessage(const nlohmann::json& dataToSend, WebSocketSSLShard* theIndex) noexcept;
 
-		void sendMessage(std::string& dataToSend, WebSocketSSLShard& theIndex) noexcept;
+		void sendMessage(std::string& dataToSend, WebSocketSSLShard* theIndex) noexcept;
 
 		void connect(DiscordCoreAPI::ConnectionPackage) noexcept;
 
-		void onClosed(WebSocketSSLShard& theShard) noexcept;
+		void onClosed(WebSocketSSLShard* theShard) noexcept;
 
 		std::jthread* getTheTask() noexcept;
 
@@ -77,19 +77,19 @@ namespace DiscordCoreInternal {
 		ErlPacker erlPacker{};
 		uint64_t userId{};
 
-		void getVoiceConnectionData(const VoiceConnectInitData& doWeCollect, WebSocketSSLShard& theIndex) noexcept;
+		void getVoiceConnectionData(const VoiceConnectInitData& doWeCollect, WebSocketSSLShard* theIndex) noexcept;
 
 		void createHeader(std::string& outBuffer, uint64_t sendLength, WebSocketOpCode opCode) noexcept;
 
-		void checkForAndSendHeartBeat(WebSocketSSLShard& theIndex, bool = false) noexcept;
+		void checkForAndSendHeartBeat(WebSocketSSLShard* theIndex, bool = false) noexcept;
 
 		void stringifyJsonData(const nlohmann::json& dataToSend, std::string&) noexcept;
 
-		void parseHeadersAndMessage(WebSocketSSLShard& theShard) noexcept;
+		void parseHeadersAndMessage(WebSocketSSLShard* theShard) noexcept;
 
-		void onMessageReceived(WebSocketSSLShard& theIndex) noexcept;
+		void onMessageReceived(WebSocketSSLShard* theIndex) noexcept;
 
-		void sendCloseFrame(WebSocketSSLShard& theIndex) noexcept;
+		void sendCloseFrame(WebSocketSSLShard* theIndex) noexcept;
 
 		void run(std::stop_token) noexcept;
 
@@ -100,7 +100,7 @@ namespace DiscordCoreInternal {
 	  public:
 		friend class DiscordCoreAPI::VoiceConnection;
 
-		VoiceSocketAgent(VoiceConnectInitData initDataNew, BaseSocketAgent* baseBaseSocketAgentNew, WebSocketSSLShard& theIndex, bool printMessagesNew) noexcept;
+		VoiceSocketAgent(VoiceConnectInitData initDataNew, BaseSocketAgent* baseBaseSocketAgentNew, WebSocketSSLShard* theIndex, bool printMessagesNew) noexcept;
 
 		void sendMessage(const std::vector<uint8_t>& responseData) noexcept;
 
@@ -138,11 +138,11 @@ namespace DiscordCoreInternal {
 
 		void createHeader(std::string& outbuf, uint64_t sendlength, WebSocketOpCode opCode) noexcept;
 
-		void parseHeadersAndMessage(WebSocketSSLShard& theShard) noexcept;
+		void parseHeadersAndMessage(WebSocketSSLShard* theShard) noexcept;
 
 		void onMessageReceived(const std::string& theMessage) noexcept;
 
-		void onClosed(WebSocketSSLShard& theShard) noexcept;
+		void onClosed(WebSocketSSLShard* theShard) noexcept;
 
 		void run(std::stop_token) noexcept;
 

@@ -212,8 +212,12 @@ namespace DiscordCoreInternal {
 			std::unique_ptr<WebSocketSSLShard> streamSocket{ std::make_unique<WebSocketSSLShard>(nullptr, youtubeAPI->maxBufferSize, 0, 0, this->doWePrintWebSocketErrorMessages) };
 			std::unordered_map<int32_t, std::unique_ptr<WebSocketSSLShard>> theMap{};
 			auto bytesRead{ static_cast<int32_t>(streamSocket->getBytesRead()) };
-			theMap[0] = std::move(streamSocket);
-			theMap[0]->connect(newSong.finalDownloadUrls[0].urlPath, "443");
+			if (newSong.finalDownloadUrls.size() > 0) {
+				theMap[0] = std::move(streamSocket);
+				theMap[0]->connect(newSong.finalDownloadUrls[0].urlPath, "443");
+			} else {
+				return;
+			}
 			bool areWeDoneHeaders{ false };
 			int64_t remainingDownloadContentLength{ newSong.contentLength };
 			int64_t contentLengthCurrent{ youtubeAPI->maxBufferSize };
