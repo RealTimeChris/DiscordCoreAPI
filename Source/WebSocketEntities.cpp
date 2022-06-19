@@ -153,6 +153,8 @@ namespace DiscordCoreInternal {
 				if (this->doWePrintErrorMessages) {
 					DiscordCoreAPI::reportException("BaseSocketAgent::getVoiceConnectionData()");
 				}
+				this->onClosed(theIndex);
+				this->areWeReadyToConnectEvent.wait(10000);
 			}
 			std::this_thread::sleep_for(500ms);
 			if (doWeCollect.channelId == 0) {
@@ -168,6 +170,8 @@ namespace DiscordCoreInternal {
 				if (this->doWePrintErrorMessages) {
 					DiscordCoreAPI::reportException("BaseSocketAgent::getVoiceConnectionData()");
 				}
+				this->onClosed(theIndex);
+				this->areWeReadyToConnectEvent.wait(10000);
 			}
 			DiscordCoreAPI::StopWatch<std::chrono::milliseconds> theStopWatch{ 5000ms };
 			while (this->areWeCollectingData) {
