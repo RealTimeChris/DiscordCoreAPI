@@ -107,7 +107,7 @@ namespace DiscordCoreInternal {
 
 		BIOWrapper& operator=(BIO* other) {
 			this->bioPtr.reset(other);
-			auto errorValue= BIO_up_ref(other);
+			auto errorValue = BIO_up_ref(other);
 			if (!errorValue) {
 				std::cout << DiscordCoreAPI::shiftToBrightRed() << "BIO_up_ref() Error: " << ERR_error_string(errorValue, nullptr) << DiscordCoreAPI::reset() << std::endl;
 			};
