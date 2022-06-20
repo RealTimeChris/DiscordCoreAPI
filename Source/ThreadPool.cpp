@@ -50,9 +50,11 @@ namespace DiscordCoreInternal {
 	}
 
 	WorkerThread& WorkerThread::operator=(WorkerThread&& other) noexcept {
-		this->theCurrentStatus.store(other.theCurrentStatus.load());
-		this->theThread.swap(other.theThread);
-		this->threadId = other.threadId;
+		if (this != &other) {
+			this->theCurrentStatus.store(other.theCurrentStatus.load());
+			this->theThread.swap(other.theThread);
+			this->threadId = other.threadId;
+		}
 		return *this;
 	}
 

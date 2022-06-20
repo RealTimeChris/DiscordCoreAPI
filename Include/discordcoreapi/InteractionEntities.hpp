@@ -673,12 +673,14 @@ namespace DiscordCoreAPI {
 		}
 
 		SelectMenuResponseData& operator=(const SelectMenuResponseData& other) {
-			*this->interactionData = *other.interactionData;
-			this->selectionId = other.selectionId;
-			this->messageId = other.messageId;
-			this->channelId = other.channelId;
-			this->values = other.values;
-			this->userId = other.userId;
+			if (this != &other) {
+				*this->interactionData = *other.interactionData;
+				this->selectionId = other.selectionId;
+				this->messageId = other.messageId;
+				this->channelId = other.channelId;
+				this->values = other.values;
+				this->userId = other.userId;
+			}
 			return *this;
 		}
 
@@ -687,12 +689,14 @@ namespace DiscordCoreAPI {
 		}
 
 		SelectMenuResponseData& operator=(SelectMenuResponseData& other) {
-			*this->interactionData = *other.interactionData;
-			this->selectionId = other.selectionId;
-			this->messageId = other.messageId;
-			this->channelId = other.channelId;
-			this->values = other.values;
-			this->userId = other.userId;
+			if (this != &other) {
+				*this->interactionData = *other.interactionData;
+				this->selectionId = other.selectionId;
+				this->messageId = other.messageId;
+				this->channelId = other.channelId;
+				this->values = other.values;
+				this->userId = other.userId;
+			}
 			return *this;
 		}
 
@@ -760,12 +764,14 @@ namespace DiscordCoreAPI {
 		}
 
 		ButtonResponseData& operator=(const ButtonResponseData& other) {
-			*this->interactionData = *other.interactionData;
-			this->messageId = other.messageId;
-			this->channelId = other.channelId;
-			this->emojiName = other.emojiName;
-			this->buttonId = other.buttonId;
-			this->userId = other.userId;
+			if (this != &other) {
+				*this->interactionData = *other.interactionData;
+				this->messageId = other.messageId;
+				this->channelId = other.channelId;
+				this->emojiName = other.emojiName;
+				this->buttonId = other.buttonId;
+				this->userId = other.userId;
+			}
 			return *this;
 		}
 
@@ -774,12 +780,14 @@ namespace DiscordCoreAPI {
 		}
 
 		ButtonResponseData& operator=(ButtonResponseData& other) {
-			*this->interactionData = *other.interactionData;
-			this->messageId = other.messageId;
-			this->channelId = other.channelId;
-			this->emojiName = other.emojiName;
-			this->buttonId = other.buttonId;
-			this->userId = other.userId;
+			if (this != &other) {
+				*this->interactionData = *other.interactionData;
+				this->messageId = other.messageId;
+				this->channelId = other.channelId;
+				this->emojiName = other.emojiName;
+				this->buttonId = other.buttonId;
+				this->userId = other.userId;
+			}
 			return *this;
 		}
 
@@ -845,12 +853,14 @@ namespace DiscordCoreAPI {
 		}
 
 		ModalResponseData& operator=(const ModalResponseData& other) {
-			*this->interactionData = *other.interactionData;
-			this->customIdSmall = other.customIdSmall;
-			this->channelId = other.channelId;
-			this->customId = other.customId;
-			this->userId = other.userId;
-			this->value = other.value;
+			if (this != &other) {
+				*this->interactionData = *other.interactionData;
+				this->customIdSmall = other.customIdSmall;
+				this->channelId = other.channelId;
+				this->customId = other.customId;
+				this->userId = other.userId;
+				this->value = other.value;
+			}
 			return *this;
 		}
 
@@ -859,12 +869,14 @@ namespace DiscordCoreAPI {
 		}
 
 		ModalResponseData& operator=(ModalResponseData& other) {
-			*this->interactionData = *other.interactionData;
-			this->customIdSmall = other.customIdSmall;
-			this->channelId = other.channelId;
-			this->customId = other.customId;
-			this->userId = other.userId;
-			this->value = other.value;
+			if (this != &other) {
+				*this->interactionData = *other.interactionData;
+				this->customIdSmall = other.customIdSmall;
+				this->channelId = other.channelId;
+				this->customId = other.customId;
+				this->userId = other.userId;
+				this->value = other.value;
+			}
 			return *this;
 		}
 

@@ -52,16 +52,18 @@ namespace DiscordCoreAPI {
 	}
 
 	StringWrapper& StringWrapper::operator=(const StringWrapper& other) {
-		std::stringstream theStream{};
-		if (other.thePtr != nullptr) {
-			theStream << other.thePtr;
+		if (this != &other) {
+			std::stringstream theStream{};
+			if (other.thePtr != nullptr) {
+				theStream << other.thePtr;
+			}
+			auto theLength = theStream.str().size();
+			this->thePtr = std::make_unique<char[]>(theLength + 1);
+			for (uint64_t x = 0; x < theLength; x += 1) {
+				this->thePtr[x] = other.thePtr[x];
+			}
+			this->thePtr[theLength] = '\0';
 		}
-		auto theLength = theStream.str().size();
-		this->thePtr = std::make_unique<char[]>(theLength + 1);
-		for (uint64_t x = 0; x < theLength; x += 1) {
-			this->thePtr[x] = other.thePtr[x];
-		}
-		this->thePtr[theLength] = '\0';
 		return *this;
 	}
 
@@ -102,16 +104,18 @@ namespace DiscordCoreAPI {
 	};
 
 	StringWrapper& StringWrapper::operator=(StringWrapper& other) {
-		std::stringstream theStream{};
-		if (other.thePtr != nullptr) {
-			theStream << other.thePtr;
+		if (this != &other) {
+			std::stringstream theStream{};
+			if (other.thePtr != nullptr) {
+				theStream << other.thePtr;
+			}
+			auto theLength = theStream.str().size();
+			this->thePtr = std::make_unique<char[]>(theLength + 1);
+			for (uint64_t x = 0; x < theLength; x += 1) {
+				this->thePtr[x] = other.thePtr[x];
+			}
+			this->thePtr[theLength] = '\0';
 		}
-		auto theLength = theStream.str().size();
-		this->thePtr = std::make_unique<char[]>(theLength + 1);
-		for (uint64_t x = 0; x < theLength; x += 1) {
-			this->thePtr[x] = other.thePtr[x];
-		}
-		this->thePtr[theLength] = '\0';
 		return *this;
 	}
 

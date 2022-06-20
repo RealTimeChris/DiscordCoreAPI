@@ -28,11 +28,13 @@
 namespace DiscordCoreAPI {
 
 	User& User::operator=(UserData&& other) {
-		this->discriminator = std::move(other.discriminator);
-		this->userName = std::move(other.userName);
-		this->avatar = std::move(other.avatar);
-		this->flags = other.flags;
-		this->id = other.id;
+		if (this != &other) {
+			this->discriminator = std::move(other.discriminator);
+			this->userName = std::move(other.userName);
+			this->avatar = std::move(other.avatar);
+			this->flags = other.flags;
+			this->id = other.id;
+		}
 		return *this;
 	}
 
@@ -41,11 +43,13 @@ namespace DiscordCoreAPI {
 	}
 
 	User& User::operator=(UserData& other) {
-		this->discriminator = other.discriminator;
-		this->userName = other.userName;
-		this->avatar = other.avatar;
-		this->flags = other.flags;
-		this->id = other.id;
+		if (this != &other) {
+			this->discriminator = other.discriminator;
+			this->userName = other.userName;
+			this->avatar = other.avatar;
+			this->flags = other.flags;
+			this->id = other.id;
+		}
 		return *this;
 	}
 

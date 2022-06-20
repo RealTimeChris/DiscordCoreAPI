@@ -641,9 +641,11 @@ namespace DiscordCoreAPI {
 	template<typename TimeType> class StopWatch {
 	  public:
 		StopWatch& operator=(StopWatch&& other) noexcept {
-			this->maxNumberOfMs.store(other.maxNumberOfMs.load());
-			this->startTime.store(other.startTime.load());
-			return *this;
+			if (this != &other) {
+				this->maxNumberOfMs.store(other.maxNumberOfMs.load());
+				this->startTime.store(other.startTime.load());
+				return *this;
+			}
 		}
 
 		StopWatch(StopWatch&& other) noexcept {
@@ -651,8 +653,10 @@ namespace DiscordCoreAPI {
 		}
 
 		StopWatch& operator=(StopWatch& other) noexcept {
-			this->maxNumberOfMs.store(other.maxNumberOfMs.load());
-			this->startTime.store(other.startTime.load());
+			if (this != &other) {
+				this->maxNumberOfMs.store(other.maxNumberOfMs.load());
+				this->startTime.store(other.startTime.load());
+			}
 			return *this;
 		}
 
@@ -2692,37 +2696,39 @@ namespace DiscordCoreAPI {
 		std::unique_ptr<MessageDataOld> referencedMessage{ std::make_unique<MessageDataOld>() };///< The referenced Message, to reply to.
 
 		MessageData& operator=(const MessageData& other) {
-			*this->referencedMessage = *other.referencedMessage;
-			this->messageReference = other.messageReference;
-			this->mentionEveryone = other.mentionEveryone;
-			this->mentionChannels = other.mentionChannels;
-			this->editedTimestamp = other.editedTimestamp;
-			this->applicationId = other.applicationId;
-			this->stickerItems = other.stickerItems;
-			this->mentionRoles = other.mentionRoles;
-			this->application = other.application;
-			this->interaction = other.interaction;
-			this->attachments = other.attachments;
-			this->components = other.components;
-			this->timestamp = other.timestamp;
-			this->channelId = other.channelId;
-			this->webhookId = other.webhookId;
-			this->reactions = other.reactions;
-			this->activity = other.activity;
-			this->mentions = other.mentions;
-			this->stickers = other.stickers;
-			this->content = other.content;
-			this->guildId = other.guildId;
-			this->member = other.member;
-			this->thread = other.thread;
-			this->pinned = other.pinned;
-			this->author = other.author;
-			this->embeds = other.embeds;
-			this->nonce = other.nonce;
-			this->flags = other.flags;
-			this->type = other.type;
-			this->tts = other.tts;
-			this->id = other.id;
+			if (this != &other) {
+				*this->referencedMessage = *other.referencedMessage;
+				this->messageReference = other.messageReference;
+				this->mentionEveryone = other.mentionEveryone;
+				this->mentionChannels = other.mentionChannels;
+				this->editedTimestamp = other.editedTimestamp;
+				this->applicationId = other.applicationId;
+				this->stickerItems = other.stickerItems;
+				this->mentionRoles = other.mentionRoles;
+				this->application = other.application;
+				this->interaction = other.interaction;
+				this->attachments = other.attachments;
+				this->components = other.components;
+				this->timestamp = other.timestamp;
+				this->channelId = other.channelId;
+				this->webhookId = other.webhookId;
+				this->reactions = other.reactions;
+				this->activity = other.activity;
+				this->mentions = other.mentions;
+				this->stickers = other.stickers;
+				this->content = other.content;
+				this->guildId = other.guildId;
+				this->member = other.member;
+				this->thread = other.thread;
+				this->pinned = other.pinned;
+				this->author = other.author;
+				this->embeds = other.embeds;
+				this->nonce = other.nonce;
+				this->flags = other.flags;
+				this->type = other.type;
+				this->tts = other.tts;
+				this->id = other.id;
+			}
 			return *this;
 		}
 
@@ -2902,8 +2908,10 @@ namespace DiscordCoreAPI {
 		InputEventResponseType responseType{};///< The type of response that this input value represents.
 
 		InputEventData& operator=(const InputEventData& other) {
-			*this->interactionData = *other.interactionData;
-			this->responseType = other.responseType;
+			if (this != &other) {
+				*this->interactionData = *other.interactionData;
+				this->responseType = other.responseType;
+			}
 			return *this;
 		}
 
@@ -2912,8 +2920,10 @@ namespace DiscordCoreAPI {
 		}
 
 		InputEventData& operator=(InputEventData& other) {
-			*this->interactionData = *other.interactionData;
-			this->responseType = other.responseType;
+			if (this != &other) {
+				*this->interactionData = *other.interactionData;
+				this->responseType = other.responseType;
+			}
 			return *this;
 		}
 
@@ -3874,15 +3884,17 @@ namespace DiscordCoreInternal {
 		std::string baseUrl{};
 
 		HttpWorkloadData& operator=(const HttpWorkloadData& other) {
-			this->thisWorkerId.store(this->thisWorkerId.load());
-			this->headersToInsert = other.headersToInsert;
-			this->workloadClass = other.workloadClass;
-			this->workloadType = other.workloadType;
-			this->relativePath = other.relativePath;
-			this->payloadType = other.payloadType;
-			this->callStack = other.callStack;
-			this->baseUrl = other.baseUrl;
-			this->content = other.content;
+			if (this != &other) {
+				this->thisWorkerId.store(this->thisWorkerId.load());
+				this->headersToInsert = other.headersToInsert;
+				this->workloadClass = other.workloadClass;
+				this->workloadType = other.workloadType;
+				this->relativePath = other.relativePath;
+				this->payloadType = other.payloadType;
+				this->callStack = other.callStack;
+				this->baseUrl = other.baseUrl;
+				this->content = other.content;
+			}
 			return *this;
 		}
 
@@ -3891,15 +3903,17 @@ namespace DiscordCoreInternal {
 		}
 
 		HttpWorkloadData& operator=(HttpWorkloadData& other) {
-			this->thisWorkerId.store(this->thisWorkerId.load());
-			this->headersToInsert = other.headersToInsert;
-			this->workloadClass = other.workloadClass;
-			this->workloadType = other.workloadType;
-			this->relativePath = other.relativePath;
-			this->payloadType = other.payloadType;
-			this->callStack = other.callStack;
-			this->baseUrl = other.baseUrl;
-			this->content = other.content;
+			if (this != &other) {
+				this->thisWorkerId.store(this->thisWorkerId.load());
+				this->headersToInsert = other.headersToInsert;
+				this->workloadClass = other.workloadClass;
+				this->workloadType = other.workloadType;
+				this->relativePath = other.relativePath;
+				this->payloadType = other.payloadType;
+				this->callStack = other.callStack;
+				this->baseUrl = other.baseUrl;
+				this->content = other.content;
+			}
 			return *this;
 		}
 

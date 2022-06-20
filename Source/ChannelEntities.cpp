@@ -26,16 +26,18 @@
 namespace DiscordCoreAPI {
 
 	Channel& Channel::operator=(ChannelData&& other) {
-		this->permissionOverwrites = std::move(other.permissionOverwrites);
-		this->memberCount = other.memberCount;
-		this->name = std::move(other.name);
-		this->parentId = other.parentId;
-		this->position = other.position;
-		this->guildId = other.guildId;
-		this->ownerId = other.ownerId;
-		this->flags = other.flags;
-		this->type = other.type;
-		this->id = other.id;
+		if (this != &other) {
+			this->permissionOverwrites = std::move(other.permissionOverwrites);
+			this->memberCount = other.memberCount;
+			this->name = std::move(other.name);
+			this->parentId = other.parentId;
+			this->position = other.position;
+			this->guildId = other.guildId;
+			this->ownerId = other.ownerId;
+			this->flags = other.flags;
+			this->type = other.type;
+			this->id = other.id;
+		}
 		return *this;
 	}
 
@@ -44,16 +46,18 @@ namespace DiscordCoreAPI {
 	}
 
 	Channel& Channel::operator=(ChannelData& other) {
-		this->permissionOverwrites = other.permissionOverwrites;
-		this->memberCount = other.memberCount;
-		this->parentId = other.parentId;
-		this->position = other.position;
-		this->guildId = other.guildId;
-		this->ownerId = other.ownerId;
-		this->flags = other.flags;
-		this->name = other.name;
-		this->type = other.type;
-		this->id = other.id;
+		if (this != &other) {
+			this->permissionOverwrites = other.permissionOverwrites;
+			this->memberCount = other.memberCount;
+			this->parentId = other.parentId;
+			this->position = other.position;
+			this->guildId = other.guildId;
+			this->ownerId = other.ownerId;
+			this->flags = other.flags;
+			this->name = other.name;
+			this->type = other.type;
+			this->id = other.id;
+		}
 		return *this;
 	}
 
