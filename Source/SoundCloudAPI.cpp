@@ -268,7 +268,8 @@ namespace DiscordCoreInternal {
 				return;
 			}
 			if (audioDecoder->haveWeFailed()) {
-				this->breakOutPlayMore(theToken, std::move(audioDecoder), counter, this, newSong, currentRecursionDepth);
+				audioDecoder.reset(nullptr);
+				SoundCloudAPI::weFailedToDownloadOrDecode(newSong, soundCloudAPI, theToken, currentRecursionDepth);
 				return;
 			}
 			if (theToken.stop_requested()) {
@@ -282,7 +283,8 @@ namespace DiscordCoreInternal {
 			workloadVector.push_back(dataPackage03);
 			auto result = this->httpClient->submitWorkloadAndGetResult<std::vector<HttpResponseData>>(workloadVector);
 			if (result.size() < 1) {
-				this->breakOutPlayMore(theToken, std::move(audioDecoder), counter, this, newSong, currentRecursionDepth);
+				audioDecoder.reset(nullptr);
+				SoundCloudAPI::weFailedToDownloadOrDecode(newSong, soundCloudAPI, theToken, currentRecursionDepth);
 				return;
 			}
 			std::vector<uint8_t> newVector{};
@@ -372,12 +374,6 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::AudioFrameData dataFrame{};
 		while (DiscordCoreAPI::getVoiceConnectionMap()[this->guildId]->audioBuffer.tryReceive(dataFrame)) {
 		};
-	}
-
-	void SoundCloudAPI::breakOutPlayMore(std::stop_token theToken, std::unique_ptr<AudioDecoder> audioDecoder, int32_t counter, SoundCloudAPI* soundCloudAPI,
-		const DiscordCoreAPI::Song& newSong, int32_t currentRecursionDepth) {
-		audioDecoder.reset(nullptr);
-		SoundCloudAPI::weFailedToDownloadOrDecode(newSong, soundCloudAPI, theToken, currentRecursionDepth);
 	}
 
 	void SoundCloudAPI::breakOut(std::stop_token theToken, std::unique_ptr<AudioDecoder> audioDecoder, SoundCloudAPI* soundCloudAPI) {

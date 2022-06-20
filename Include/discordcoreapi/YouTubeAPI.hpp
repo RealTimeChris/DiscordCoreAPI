@@ -61,16 +61,14 @@ namespace DiscordCoreInternal {
 		void cancelCurrentSong();
 
 	  protected:
-		YouTubeRequestBuilder requestBuilder{};
+		
 		bool doWePrintWebSocketErrorMessages{ false };
 		bool doWePrintFFMPEGSuccessMessages{ false };
-		const int32_t maxBufferSize{ 8192 };
 		bool doWePrintFFMPEGErrorMessages{ false };
+		YouTubeRequestBuilder requestBuilder{};
+		const int32_t maxBufferSize{ 8192 };
 		DiscordCoreAPI::Song theSong{};
 		uint64_t guildId{};
-
-		void breakOutPlayMore(std::stop_token theToken, std::unique_ptr<AudioDecoder> audioDecoder, int32_t counter, YouTubeAPI* youtubeAPI, const DiscordCoreAPI::Song& newSong,
-			int32_t currentRecursionDepth);
 
 		void breakOut(std::stop_token theToken, std::unique_ptr<AudioDecoder> audioDecoder, YouTubeAPI* soundCloudAPI);
 	};

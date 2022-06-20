@@ -74,9 +74,6 @@ namespace DiscordCoreInternal {
 		bool doWePrintErrorMessages{ false };
 		uint64_t guildId{};
 
-		void breakOutPlayMore(std::stop_token theToken, std::unique_ptr<AudioDecoder> audioDecoder, int32_t counter, SoundCloudAPI* soundCloudAPI,
-			const DiscordCoreAPI::Song& newSong, int32_t currentRecursionDepth);
-
 		void breakOut(std::stop_token theToken, std::unique_ptr<AudioDecoder> audioDecoder, SoundCloudAPI* soundCloudAPI);
 	};
 
