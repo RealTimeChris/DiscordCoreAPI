@@ -732,11 +732,7 @@ namespace DiscordCoreAPI {
 		for (auto& [key, value]: *Guilds::cache) {
 			(*newCache)[key] = std::move(value);
 		}
-		bool doWeShowIt{ false };
-		if (!Guilds::cache->contains(guild.id) && Guilds::discordCoreClient->loggingOptions.logGeneralSuccessMessages) {
-			doWeShowIt = true;
-		}
-		guild.initialize(doWeShowIt);
+		guild.initialize();
 		if (Guilds::doWeCache) {
 			(*newCache)[guild.id] = std::make_unique<GuildData>(guild);
 		}
