@@ -430,60 +430,65 @@ namespace DiscordCoreInternal {
 				}
 
 				if (payload.contains("op") && !payload["op"].is_null()) {
-					if (payload["op"] == 1) {
-						this->checkForAndSendHeartBeat(theShard, true);
-					}
-
-					if (payload["op"] == 7) {
-						if (this->doWePrintErrorMessages) {
-							std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Shard " + theShard->shard.dump() + " Reconnecting (Type 7)!" << DiscordCoreAPI::reset()
-									  << std::endl
-									  << std::endl;
+					switch (payload["op"].get<int32_t>()) {
+						case 1: {
+							this->checkForAndSendHeartBeat(theShard, true);
 						}
-						theShard->areWeResuming = true;
-						this->onClosed(theShard);
-						return;
-					}
-
-					if (payload["op"] == 9) {
-						if (this->doWePrintErrorMessages) {
-							std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Shard " + theShard->shard.dump() + " Reconnecting (Type 9)!" << DiscordCoreAPI::reset()
-									  << std::endl
-									  << std::endl;
-						}
-						theShard->currentRecursionDepth += 1;
-						std::mt19937_64 randomEngine{ static_cast<uint64_t>(std::chrono::system_clock::now().time_since_epoch().count()) };
-						int32_t numOfMsToWait =
-							static_cast<int32_t>(1000.0f + ((static_cast<float>(randomEngine()) / static_cast<float>(randomEngine.max())) * static_cast<float>(4000.0f)));
-						std::this_thread::sleep_for(std::chrono::milliseconds{ numOfMsToWait });
-						if (payload["d"] == true) {
+						case 7: {
+							if (this->doWePrintErrorMessages) {
+								std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Shard " + theShard->shard.dump() + " Reconnecting (Type 7)!" << DiscordCoreAPI::reset()
+										  << std::endl
+										  << std::endl;
+							}
 							theShard->areWeResuming = true;
-						} else {
-							theShard->areWeResuming = false;
+							this->onClosed(theShard);
+							return;
 						}
-						this->onClosed(theShard);
-					}
-
-					if (payload["op"] == 10) {
-						if (payload["d"].contains("heartbeat_interval") && !payload["d"]["heartbeat_interval"].is_null()) {
-							theShard->heartBeatStopWatch = DiscordCoreAPI::StopWatch<std::chrono::milliseconds>{ std::chrono::milliseconds{ payload["d"]["heartbeat_interval"] } };
+						case 9:{
+							if (this->doWePrintErrorMessages) {
+								std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Shard " + theShard->shard.dump() + " Reconnecting (Type 9)!" << DiscordCoreAPI::reset()
+										  << std::endl
+										  << std::endl;
+							}
+							theShard->currentRecursionDepth += 1;
+							std::mt19937_64 randomEngine{ static_cast<uint64_t>(std::chrono::system_clock::now().time_since_epoch().count()) };
+							int32_t numOfMsToWait =
+								static_cast<int32_t>(1000.0f + ((static_cast<float>(randomEngine()) / static_cast<float>(randomEngine.max())) * static_cast<float>(4000.0f)));
+							std::this_thread::sleep_for(std::chrono::milliseconds{ numOfMsToWait });
+							if (payload["d"] == true) {
+								theShard->areWeResuming = true;
+							} else {
+								theShard->areWeResuming = false;
+							}
+							this->onClosed(theShard);
+							return;
 						}
-						if (theShard->areWeResuming) {
-							std::this_thread::sleep_for(1500ms);
-							nlohmann::json resumePayload = JSONIFY(this->discordCoreClient->botToken, theShard->sessionId, theShard->lastNumberReceived);
-							this->sendMessage(resumePayload, theShard);
-						} else {
-							nlohmann::json identityJson =
-								JSONIFY(this->discordCoreClient->botToken, static_cast<int32_t>(this->discordCoreClient->theIntents), theShard->shard[0], theShard->shard[1]);
-							std::string theString{};
-							this->stringifyJsonData(identityJson, theString, theShard->dataOpCode);
-							theShard->writeData(theString, true);
-							theShard->theState = WebSocketState::Connected;
+						case 10: {
+							if (payload["d"].contains("heartbeat_interval") && !payload["d"]["heartbeat_interval"].is_null()) {
+								theShard->heartBeatStopWatch =
+									DiscordCoreAPI::StopWatch<std::chrono::milliseconds>{ std::chrono::milliseconds{ payload["d"]["heartbeat_interval"] } };
+							}
+							if (theShard->areWeResuming) {
+								std::this_thread::sleep_for(1500ms);
+								nlohmann::json resumePayload = JSONIFY(this->discordCoreClient->botToken, theShard->sessionId, theShard->lastNumberReceived);
+								std::string theString{};
+								this->stringifyJsonData(resumePayload, theString, theShard->dataOpCode);
+								theShard->writeData(theString, true);
+							} else {
+								nlohmann::json identityJson =
+									JSONIFY(this->discordCoreClient->botToken, static_cast<int32_t>(this->discordCoreClient->theIntents), theShard->shard[0], theShard->shard[1]);
+								std::string theString{};
+								this->stringifyJsonData(identityJson, theString, theShard->dataOpCode);
+								theShard->writeData(theString, true);
+								theShard->theState = WebSocketState::Connected;
+							}
+							theShard->areWeHeartBeating = false;
+							return;
 						}
-						theShard->areWeHeartBeating = false;
-					}
-					if (payload["op"] == 11) {
-						theShard->haveWeReceivedHeartbeatAck = true;
+						case 11: {
+							theShard->haveWeReceivedHeartbeatAck = true;
+							return;
+						}
 					}
 				}
 
