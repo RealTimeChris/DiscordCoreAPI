@@ -1035,9 +1035,7 @@ namespace DiscordCoreInternal {
 						DiscordCoreAPI::generateBase64EncodedKey() + "\r\nSec-WebSocket-Version: 13\r\n\r\n";
 				}
 				theMap[connectData.currentShard]->writeData(sendString, true);
-				int32_t currentDepth{ 0 };
 				while (!this->doWeQuit->load()) {
-					currentDepth += 1;
 					if (theMap[connectData.currentShard]->theState == WebSocketState::Connected) {
 						break;
 					}
@@ -1057,19 +1055,6 @@ namespace DiscordCoreInternal {
 						this->onMessageReceived(theMap[connectData.currentShard].get());
 					}
 					std::this_thread::sleep_for(1ms);
-				}
-				int32_t currentCount{ 0 };
-				while (currentCount < 10) {
-					currentCount += 1;
-					try {
-						WebSocketSSLShard::processIO(theMap, 10000);
-					} catch (...) {
-						if (this->doWePrintErrorMessages) {
-							DiscordCoreAPI::reportException("BaseSocketAgent::internalConnect()");
-						}
-						this->onClosed(theMap[connectData.currentShard].get());
-						return;
-					}
 				}
 				this->theClients[connectData.currentShard] = std::move(theMap[connectData.currentShard]);
 			}

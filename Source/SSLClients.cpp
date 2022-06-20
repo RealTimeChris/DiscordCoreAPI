@@ -330,9 +330,7 @@ namespace DiscordCoreInternal {
 						if (value->connections != nullptr) {
 							value->connections->push(theData);
 						}
-						auto theSSL = std::move(value->ssl);
-						theMap.erase(key);
-						throw ProcessingError{ reportSSLError("Shard [" + std::to_string(key) + "], in WebSocketSSLShard::processIO()::SSL_read_ex(), ", errorValue, theSSL) +
+						throw ProcessingError{ reportSSLError("Shard [" + std::to_string(key) + "], in WebSocketSSLShard::processIO()::SSL_read_ex(), ", errorValue, value->ssl) +
 							reportError("Shard [" + std::to_string(key) + "], in WebSocketSSLShard::processIO()::SSL_read_ex(), ") };
 					}
 				}
@@ -380,9 +378,8 @@ namespace DiscordCoreInternal {
 							if (value->connections != nullptr) {
 								value->connections->push(theData);
 							}
-							auto theSSL = std::move(value->ssl);
-							theMap.erase(key);
-							throw ProcessingError{ reportSSLError("Shard [" + std::to_string(key) + "], in WebSocketSSLShard::processIO()::SSL_write_ex(), ", errorValue, theSSL) +
+							throw ProcessingError{ reportSSLError("Shard [" + std::to_string(key) + "], in WebSocketSSLShard::processIO()::SSL_write_ex(), ", errorValue,
+													   value->ssl) +
 								reportError("Shard [" + std::to_string(key) + "], in WebSocketSSLShard::processIO()::SSL_write_ex(), ") };
 						}
 					}
