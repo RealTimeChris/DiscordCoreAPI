@@ -1510,6 +1510,7 @@ namespace DiscordCoreInternal {
 	}
 
 	VoiceSocketAgent::~VoiceSocketAgent() noexcept {
+		this->onClosedExternal();
 		this->theTask->request_stop();
 		if (this->theTask->joinable()) {
 			this->theTask->join();
