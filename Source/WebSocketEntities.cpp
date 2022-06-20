@@ -465,9 +465,8 @@ namespace DiscordCoreInternal {
 							theShard->areWeResuming = true;
 						} else {
 							theShard->areWeResuming = false;
-							this->onClosed(theShard);
-							return;
 						}
+						this->onClosed(theShard);
 					}
 
 					if (payload["op"] == 10) {
