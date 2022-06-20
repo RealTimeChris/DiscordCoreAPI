@@ -132,7 +132,7 @@ namespace DiscordCoreAPI {
 		return getVoiceConnectionMap()[this->id]->areWeConnected();
 	}
 
-	void GuildData::initialize(bool doWeShowIt) {
+	void GuildData::initialize() {
 		if (!getVoiceConnectionMap().contains(this->id)) {
 			std::string theShardId{ std::to_string((this->id >> 22) % this->discordCoreClient->shardingOptions.totalNumberOfShards) };
 			getVoiceConnectionMap()[this->id] = std::make_unique<VoiceConnection>(this->discordCoreClient->baseSocketAgentMap[theShardId].get());

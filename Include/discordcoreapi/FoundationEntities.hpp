@@ -2157,7 +2157,7 @@ namespace DiscordCoreAPI {
 
 		GuildData() = default;
 
-		void initialize(bool doWeShowIt);
+		void initialize();
 
 		virtual ~GuildData() = default;
 	};
