@@ -887,7 +887,7 @@ namespace DiscordCoreAPI {
 	DiscordCoreAPI_Dll std::string getFutureISO8601TimeStamp(int32_t minutesToAdd, int32_t hoursToAdd = 0, int32_t daysToAdd = 0, int32_t monthsToAdd = 0, int32_t yearsToAdd = 0);
 
 	/// Acquires a timestamp with the current time and date - suitable for use in message-embeds. \brief Acquires a timestamp with the current time and date - suitable for use in message-embeds.
-	/// \returns std::string A String_Ext containing the current date-time stamp.
+	/// \returns std::string A string containing the current date-time stamp.
 	DiscordCoreAPI_Dll std::string getTimeAndDate();
 
 	/// Class for representing a timestamp. \brief Class for representing a timestamp.
@@ -917,7 +917,7 @@ namespace DiscordCoreAPI {
 
 		/// Collects a timestamp using the format TimeFormat, as a string. \brief Collects a timestamp using the format TimeFormat, as a string.
 		/// \param timeFormat A TimeFormat value, for selecting the output type.
-		/// \returns string A string containing the returned timestamp.
+		/// \returns std::string A string containing the returned timestamp.
 		std::string getDateTimeStamp(TimeFormat timeFormat) {
 			this->timeStampInMs = convertTimestampToMsInteger(this->originalTimeStamp);
 			std::string newString = convertTimeInMsToDateTimeString(this->timeStampInMs, timeFormat);
@@ -925,7 +925,7 @@ namespace DiscordCoreAPI {
 		}
 
 		/// Returns the original timestamp, from a Discord entity. \brief Returns the original timestamp, from a Discord entity.
-		/// \returns string A string containing the returned timestamp.
+		/// \returns std::string A string containing the returned timestamp.
 		std::string getOriginalTimeStamp() {
 			return this->originalTimeStamp;
 		}
@@ -1496,8 +1496,8 @@ namespace DiscordCoreAPI {
 	enum class ApplicationCommandOptionType {
 		Sub_Command = 1,///< Sub-command.
 		Sub_Command_Group = 2,///< Sub-command group.
-		String = 3,///< String_Ext.
-		Integer = 4,///< Integer_Ext.
+		String = 3,///< String.
+		Integer = 4,///< Integer.
 		Boolean = 5,///< Boolean.
 		User = 6,///< User.
 		Channel = 7,///< Channel.
