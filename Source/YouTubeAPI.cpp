@@ -422,7 +422,6 @@ namespace DiscordCoreInternal {
 				if (this->doWePrintWebSocketErrorMessages) {
 					DiscordCoreAPI::reportException("YouTubeAPI::downloadAndStreamAudio()");
 				}
-				this->breakOutPlayMore(theToken, std::move(audioDecoder), counter, this, newSong, currentRecursionDepth);
 			}
 		} catch (std::runtime_error&) {
 			if (this->doWePrintWebSocketErrorMessages) {
