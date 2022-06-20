@@ -65,7 +65,6 @@ namespace DiscordCoreAPI {
 		std::atomic_bool* doWeReconnect{ nullptr };
 		std::atomic_bool areWeStopping{ false };
 		std::atomic_bool areWePlaying{ false };
-		int64_t disconnectStartTime{ 0 };
 		bool areWeConnectedBool{ false };
 		uint64_t currentGuildMemberId{};
 		bool didWeJustConnect{ true };

@@ -644,8 +644,8 @@ namespace DiscordCoreAPI {
 			if (this != &other) {
 				this->maxNumberOfMs.store(other.maxNumberOfMs.load());
 				this->startTime.store(other.startTime.load());
-				return *this;
 			}
+			return *this;
 		}
 
 		StopWatch(StopWatch&& other) noexcept {
