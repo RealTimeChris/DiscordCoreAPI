@@ -462,9 +462,7 @@ namespace DiscordCoreInternal {
 							static_cast<int32_t>(1000.0f + ((static_cast<float>(randomEngine()) / static_cast<float>(randomEngine.max())) * static_cast<float>(4000.0f)));
 						std::this_thread::sleep_for(std::chrono::milliseconds{ numOfMsToWait });
 						if (payload["d"] == true) {
-							nlohmann::json identityJson =
-								JSONIFY(this->discordCoreClient->botToken, static_cast<int32_t>(this->discordCoreClient->theIntents), theShard->shard[0], theShard->shard[1]);
-							this->sendMessage(identityJson, theShard);
+							theShard->areWeResuming = true;
 						} else {
 							theShard->areWeResuming = false;
 							this->onClosed(theShard);
