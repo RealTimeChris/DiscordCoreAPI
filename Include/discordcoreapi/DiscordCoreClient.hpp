@@ -53,8 +53,6 @@
 
 namespace DiscordCoreAPI {
 
-	extern "C" void signalHandler(int32_t);
-
 	using VoiceConnectionMap = std::unordered_map<uint64_t, std::unique_ptr<VoiceConnection>>;
 
 	using SoundCloudAPIMap = std::unordered_map<uint64_t, std::unique_ptr<DiscordCoreInternal::SoundCloudAPI>>;
