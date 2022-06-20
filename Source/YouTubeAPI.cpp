@@ -346,6 +346,7 @@ namespace DiscordCoreInternal {
 							if (contentLengthCurrent > 0) {
 								if (theToken.stop_requested()) {
 									this->breakOut(theToken, std::move(audioDecoder));
+									return;
 								}
 								remainingDownloadContentLength = newSong.contentLength - bytesSubmittedTotal;
 								try {
