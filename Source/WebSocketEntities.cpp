@@ -1020,11 +1020,7 @@ namespace DiscordCoreInternal {
 					if (this->doWePrintErrorMessages) {
 						DiscordCoreAPI::reportException("BaseSocketAgent::internalConnect()");
 					}
-					if (connectData.currentReconnectionDepth >= this->maxReconnectTries) {
-						this->onClosed(theMap[connectData.currentShard].get());
-					} else {
-						this->connections.push(connectData);
-					}
+					this->onClosed(theMap[connectData.currentShard].get());
 					return;
 				}
 
@@ -1051,11 +1047,7 @@ namespace DiscordCoreInternal {
 						if (this->doWePrintErrorMessages) {
 							DiscordCoreAPI::reportException("BaseSocketAgent::internalConnect()");
 						}
-						if (connectData.currentReconnectionDepth >= this->maxReconnectTries) {
-							this->onClosed(theMap[connectData.currentShard].get());
-						} else {
-							this->connections.push(connectData);
-						}
+						this->onClosed(theMap[connectData.currentShard].get());
 						return;
 					}
 					if (theMap.contains(connectData.currentShard)) {
@@ -1075,11 +1067,7 @@ namespace DiscordCoreInternal {
 						if (this->doWePrintErrorMessages) {
 							DiscordCoreAPI::reportException("BaseSocketAgent::internalConnect()");
 						}
-						if (connectData.currentReconnectionDepth >= this->maxReconnectTries) {
-							this->onClosed(theMap[connectData.currentShard].get());
-						} else {
-							this->connections.push(connectData);
-						}
+						this->onClosed(theMap[connectData.currentShard].get());
 						return;
 					}
 				}
