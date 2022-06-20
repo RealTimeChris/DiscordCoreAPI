@@ -225,37 +225,37 @@ namespace DiscordCoreInternal {
 		this->guildId = guildIdNew;
 	}
 
-	void SoundCloudAPI::weFailedToDownloadOrDecode(const DiscordCoreAPI::Song& newSong, SoundCloudAPI* soundCloudAPI, std::stop_token theToken, int32_t currentRecursionDepth) {
+	void SoundCloudAPI::weFailedToDownloadOrDecode(const DiscordCoreAPI::Song& newSong, std::stop_token theToken, int32_t currentRecursionDepth) {
 		currentRecursionDepth += 1;
 		DiscordCoreAPI::GuildMember guildMember =
-			DiscordCoreAPI::GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = newSong.addedByUserId, .guildId = soundCloudAPI->guildId }).get();
+			DiscordCoreAPI::GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = newSong.addedByUserId, .guildId = this->guildId }).get();
 		if (currentRecursionDepth > 9) {
 			DiscordCoreAPI::AudioFrameData frameData{};
-			while (DiscordCoreAPI::getVoiceConnectionMap()[soundCloudAPI->guildId]->audioBuffer.tryReceive(frameData)) {
+			while (DiscordCoreAPI::getVoiceConnectionMap()[this->guildId]->audioBuffer.tryReceive(frameData)) {
 			};
 			DiscordCoreAPI::SongCompletionEventData eventData{};
-			auto returnValue = DiscordCoreAPI::getSongAPIMap()[soundCloudAPI->guildId].get();
+			auto returnValue = DiscordCoreAPI::getSongAPIMap()[this->guildId].get();
 			if (returnValue) {
-				eventData.previousSong = returnValue->getCurrentSong(soundCloudAPI->guildId);
+				eventData.previousSong = returnValue->getCurrentSong(this->guildId);
 			}
 			eventData.wasItAFail = true;
 			eventData.guildMember = guildMember;
-			eventData.guild = DiscordCoreAPI::Guilds::getGuildAsync({ .guildId = soundCloudAPI->guildId }).get();
-			DiscordCoreAPI::getSongAPIMap()[soundCloudAPI->guildId]->onSongCompletionEvent(eventData);
+			eventData.guild = DiscordCoreAPI::Guilds::getGuildAsync({ .guildId = this->guildId }).get();
+			DiscordCoreAPI::getSongAPIMap()[this->guildId]->onSongCompletionEvent(eventData);
 		} else {
-			DiscordCoreAPI::getSongAPIMap()[soundCloudAPI->guildId].get()->sendNextSong();
-			auto thePtr = DiscordCoreAPI::getSongAPIMap()[soundCloudAPI->guildId].get();
-			auto newerSong = thePtr->getCurrentSong(soundCloudAPI->guildId);
-			newerSong = soundCloudAPI->requestBuilder.collectFinalSong(guildMember, newerSong);
-			SoundCloudAPI::downloadAndStreamAudio(newerSong, soundCloudAPI, theToken, currentRecursionDepth);
+			DiscordCoreAPI::getSongAPIMap()[this->guildId].get()->sendNextSong();
+			auto thePtr = DiscordCoreAPI::getSongAPIMap()[this->guildId].get();
+			auto newerSong = thePtr->getCurrentSong(this->guildId);
+			newerSong = this->requestBuilder.collectFinalSong(guildMember, newerSong);
+			SoundCloudAPI::downloadAndStreamAudio(newerSong, theToken, currentRecursionDepth);
 		}
 	}
 
-	void SoundCloudAPI::downloadAndStreamAudio(const DiscordCoreAPI::Song& newSong, SoundCloudAPI* soundCloudAPI, std::stop_token theToken, int32_t currentRecursionDepth) {
+	void SoundCloudAPI::downloadAndStreamAudio(const DiscordCoreAPI::Song& newSong, std::stop_token theToken, int32_t currentRecursionDepth) {
 		int32_t counter{ 0 };
 		BuildAudioDecoderData dataPackage{};
 		dataPackage.totalFileSize = static_cast<uint64_t>(newSong.contentLength);
-		dataPackage.bufferMaxSize = soundCloudAPI->maxBufferSize;
+		dataPackage.bufferMaxSize = this->maxBufferSize;
 		dataPackage.doWePrintSuccessMessages = this->doWePrintSuccessMessages;
 		dataPackage.doWePrintErrorMessages = this->doWePrintErrorMessages;
 		std::unique_ptr<AudioDecoder> audioDecoder = std::make_unique<AudioDecoder>(dataPackage);
@@ -269,7 +269,7 @@ namespace DiscordCoreInternal {
 			}
 			if (audioDecoder->haveWeFailed()) {
 				audioDecoder.reset(nullptr);
-				SoundCloudAPI::weFailedToDownloadOrDecode(newSong, soundCloudAPI, theToken, currentRecursionDepth);
+				SoundCloudAPI::weFailedToDownloadOrDecode(newSong, theToken, currentRecursionDepth);
 				return;
 			}
 			if (theToken.stop_requested()) {
@@ -284,7 +284,7 @@ namespace DiscordCoreInternal {
 			auto result = this->httpClient->submitWorkloadAndGetResult<std::vector<HttpResponseData>>(workloadVector);
 			if (result.size() < 1) {
 				audioDecoder.reset(nullptr);
-				SoundCloudAPI::weFailedToDownloadOrDecode(newSong, soundCloudAPI, theToken, currentRecursionDepth);
+				SoundCloudAPI::weFailedToDownloadOrDecode(newSong, theToken, currentRecursionDepth);
 				return;
 			}
 			std::vector<uint8_t> newVector{};
@@ -330,7 +330,7 @@ namespace DiscordCoreInternal {
 				auto encodedFrames = audioEncoder.encodeFrames(frames);
 				for (auto& value: encodedFrames) {
 					value.guildMemberId = newSong.addedByUserId;
-					DiscordCoreAPI::getVoiceConnectionMap()[soundCloudAPI->guildId]->audioBuffer.send(value);
+					DiscordCoreAPI::getVoiceConnectionMap()[this->guildId]->audioBuffer.send(value);
 				}
 			}
 			if (theToken.stop_requested()) {
@@ -347,7 +347,7 @@ namespace DiscordCoreInternal {
 		frameData.type = DiscordCoreAPI::AudioFrameType::Skip;
 		frameData.rawFrameData.sampleCount = 0;
 		frameData.encodedFrameData.sampleCount = 0;
-		DiscordCoreAPI::getVoiceConnectionMap()[soundCloudAPI->guildId]->audioBuffer.send(frameData);
+		DiscordCoreAPI::getVoiceConnectionMap()[this->guildId]->audioBuffer.send(frameData);
 	};
 
 	DiscordCoreAPI::Song SoundCloudAPI::collectFinalSong(const DiscordCoreAPI::GuildMemberData& addedByGuildMember, const DiscordCoreAPI::Song& newSong) {

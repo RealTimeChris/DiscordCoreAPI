@@ -50,9 +50,9 @@ namespace DiscordCoreInternal {
 	  public:
 		YouTubeAPI(const uint64_t& guildId, HttpClient* httpClient);
 
-		void weFailedToDownloadOrDecode(const DiscordCoreAPI::Song& newSong, YouTubeAPI* youtubeAPI, std::stop_token theToken, int32_t currentRecursionDepth);
+		void weFailedToDownloadOrDecode(const DiscordCoreAPI::Song& newSong, std::stop_token theToken, int32_t currentRecursionDepth);
 
-		void downloadAndStreamAudio(const DiscordCoreAPI::Song& newSong, YouTubeAPI* youtubeAPI, std::stop_token theToken, int32_t currentRecursionDepth);
+		void downloadAndStreamAudio(const DiscordCoreAPI::Song& newSong, std::stop_token theToken, int32_t currentRecursionDepth);
 
 		DiscordCoreAPI::Song collectFinalSong(const DiscordCoreAPI::GuildMemberData& addedByGuildMember, DiscordCoreAPI::Song& newSong);
 
@@ -70,7 +70,7 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::Song theSong{};
 		uint64_t guildId{};
 
-		void breakOut(std::stop_token theToken, std::unique_ptr<AudioDecoder> audioDecoder, YouTubeAPI* soundCloudAPI);
+		void breakOut(std::stop_token theToken, std::unique_ptr<AudioDecoder> audioDecoder);
 	};
 
 };// namespace DiscordCoreAPI

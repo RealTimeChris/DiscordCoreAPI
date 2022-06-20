@@ -55,9 +55,9 @@ namespace DiscordCoreInternal {
 	  public:
 		SoundCloudAPI(const uint64_t& guildId, HttpClient* httpClient);
 
-		void weFailedToDownloadOrDecode(const DiscordCoreAPI::Song& newSong, SoundCloudAPI* youtubeAPI, std::stop_token theToken, int32_t currentRecursionDepth);
+		void weFailedToDownloadOrDecode(const DiscordCoreAPI::Song& newSong, std::stop_token theToken, int32_t currentRecursionDepth);
 
-		void downloadAndStreamAudio(const DiscordCoreAPI::Song& newSong, SoundCloudAPI* soundCloudAPI, std::stop_token theToken, int32_t currentRecursionDepth);
+		void downloadAndStreamAudio(const DiscordCoreAPI::Song& newSong, std::stop_token theToken, int32_t currentRecursionDepth);
 
 		DiscordCoreAPI::Song collectFinalSong(const DiscordCoreAPI::GuildMemberData& addedByGuildMember, const DiscordCoreAPI::Song& newSong);
 
@@ -67,14 +67,14 @@ namespace DiscordCoreInternal {
 
 	  protected:
 		SoundCloudRequestBuilder requestBuilder{};
+		bool doWePrintSuccessMessages{ false };
+		bool doWePrintErrorMessages{ false };
 		const int32_t maxBufferSize{ 8192 };
 		HttpClient* httpClient{ nullptr };
-		bool doWePrintSuccessMessages{ false };
 		DiscordCoreAPI::Song theSong{};
-		bool doWePrintErrorMessages{ false };
 		uint64_t guildId{};
 
-		void breakOut(std::stop_token theToken, std::unique_ptr<AudioDecoder> audioDecoder, SoundCloudAPI* soundCloudAPI);
+		void breakOut(std::stop_token theToken, std::unique_ptr<AudioDecoder> audioDecoder);
 	};
 
 };// namespace DiscordCoreAPI
