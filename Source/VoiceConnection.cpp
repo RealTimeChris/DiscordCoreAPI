@@ -272,6 +272,12 @@ namespace DiscordCoreAPI {
 			int64_t intervalCount{ 20000000 };
 			int32_t frameCounter{ 0 };
 			int64_t totalTime{ 0 };
+			if (this->disconnectStartTime != 0) {
+				int64_t currentTime = static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
+				if (currentTime - this->disconnectStartTime >= 60000) {
+					this->reconnect();
+				}
+			}
 			this->sendSpeakingMessage(true);
 			while ((this->audioData.rawFrameData.sampleCount != 0 || this->audioData.encodedFrameData.sampleCount != 0) && !this->areWeStopping && !theToken.stop_requested()) {
 				this->areWePlaying.store(true);
@@ -343,6 +349,7 @@ namespace DiscordCoreAPI {
 				}
 			}
 			this->areWePlaying.store(false);
+			this->disconnectStartTime = static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
 			this->sendSpeakingMessage(false);
 			this->clearAudioData();
 			if (this->areWeStopping.load()) {
