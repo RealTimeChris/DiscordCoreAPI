@@ -59,7 +59,6 @@ namespace DiscordCoreInternal {
 		std::unordered_map<int32_t, std::unique_ptr<WebSocketSSLShard>> theClients{};
 		DiscordCoreAPI::DiscordCoreClient* discordCoreClient{ nullptr };
 		std::queue<DiscordCoreAPI::ConnectionPackage> connections{};
-		WebSocketOpCode dataOpcode{ WebSocketOpCode::Op_Binary };
 		std::unique_ptr<std::jthread> theTask{ nullptr };
 		VoiceConnectionData voiceConnectionData{};
 		EventWaiter areWeReadyToConnectEvent{};
@@ -77,13 +76,13 @@ namespace DiscordCoreInternal {
 		ErlPacker erlPacker{};
 		uint64_t userId{};
 
+		void stringifyJsonData(const nlohmann::json& dataToSend, std::string& theString, WebSocketOpCode theOpCode) noexcept;
+
 		void getVoiceConnectionData(const VoiceConnectInitData& doWeCollect, WebSocketSSLShard* theIndex) noexcept;
 
 		void createHeader(std::string& outBuffer, uint64_t sendLength, WebSocketOpCode opCode) noexcept;
 
 		void checkForAndSendHeartBeat(WebSocketSSLShard* theIndex, bool = false) noexcept;
-
-		void stringifyJsonData(const nlohmann::json& dataToSend, std::string&) noexcept;
 
 		void parseHeadersAndMessage(WebSocketSSLShard* theShard) noexcept;
 

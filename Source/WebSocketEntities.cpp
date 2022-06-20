@@ -38,11 +38,6 @@ namespace DiscordCoreInternal {
 	BaseSocketAgent::BaseSocketAgent(DiscordCoreAPI::DiscordCoreClient* discordCoreClientNew, std::atomic_bool* doWeQuitNew, int32_t currentBaseSocketAgentNew) noexcept {
 		this->doWePrintSuccessMessages = discordCoreClientNew->loggingOptions.logWebSocketSuccessMessages;
 		this->doWePrintErrorMessages = discordCoreClientNew->loggingOptions.logWebSocketErrorMessages;
-		if (discordCoreClientNew->theFormat == DiscordCoreAPI::TextFormat::Etf) {
-			this->dataOpcode = WebSocketOpCode::Op_Binary;
-		} else {
-			this->dataOpcode = WebSocketOpCode::Op_Text;
-		}
 		this->currentBaseSocketAgent = currentBaseSocketAgentNew;
 		this->discordCoreClient = discordCoreClientNew;
 		this->doWeQuit = doWeQuitNew;
@@ -68,7 +63,7 @@ namespace DiscordCoreInternal {
 							  << std::endl;
 				}
 				std::string theVectorNew{};
-				this->stringifyJsonData(dataToSend, theVectorNew);
+				this->stringifyJsonData(dataToSend, theVectorNew, theShard->dataOpCode);
 				theShard->writeData(theVectorNew, false);
 			}
 			catch (...) {
@@ -234,7 +229,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void BaseSocketAgent::stringifyJsonData(const nlohmann::json& dataToSend, std::string& theString) noexcept {
+	void BaseSocketAgent::stringifyJsonData(const nlohmann::json& dataToSend, std::string& theString, WebSocketOpCode theOpCode) noexcept {
 		std::string theVector{};
 		std::string header{};
 		if (this->discordCoreClient->theFormat == DiscordCoreAPI::TextFormat::Etf) {
@@ -242,7 +237,7 @@ namespace DiscordCoreInternal {
 		} else {
 			theVector = dataToSend.dump();
 		}
-		this->createHeader(header, theVector.size(), this->dataOpcode);
+		this->createHeader(header, theVector.size(), theOpCode);
 		std::string theVectorNew{};
 		theVectorNew.insert(theVectorNew.begin(), header.begin(), header.end());
 		theVectorNew.insert(theVectorNew.begin() + header.size(), theVector.begin(), theVector.end());
@@ -338,7 +333,7 @@ namespace DiscordCoreInternal {
 								  << std::endl;
 					}
 					std::string theString{};
-					this->stringifyJsonData(heartbeat, theString);
+					this->stringifyJsonData(heartbeat, theString, theShard->dataOpCode);
 					theShard->writeData(theString, true);
 					theShard->haveWeReceivedHeartbeatAck = false;
 					theShard->heartBeatStopWatch.resetTimer();
@@ -481,7 +476,7 @@ namespace DiscordCoreInternal {
 							nlohmann::json identityJson =
 								JSONIFY(this->discordCoreClient->botToken, static_cast<int32_t>(this->discordCoreClient->theIntents), theShard->shard[0], theShard->shard[1]);
 							std::string theString{};
-							this->stringifyJsonData(identityJson, theString);
+							this->stringifyJsonData(identityJson, theString, theShard->dataOpCode);
 							theShard->writeData(theString, true);
 							theShard->theState = WebSocketState::Connected;
 						}
@@ -1007,7 +1002,7 @@ namespace DiscordCoreInternal {
 				connectData.currentReconnectionDepth += 1;
 				std::unordered_map<int32_t, std::unique_ptr<DiscordCoreInternal::WebSocketSSLShard>> theMap{};
 				theMap[connectData.currentShard] = std::make_unique<WebSocketSSLShard>(&this->connections, this->currentBaseSocketAgent, connectData.currentShard,
-					this->discordCoreClient->shardingOptions.totalNumberOfShards, this->doWePrintErrorMessages);
+					this->discordCoreClient->shardingOptions.totalNumberOfShards, this->doWePrintErrorMessages, this->discordCoreClient->theFormat);
 				theMap[connectData.currentShard]->currentRecursionDepth = connectData.currentReconnectionDepth;
 				theMap[connectData.currentShard]->currentBaseSocketAgent = connectData.currentBaseSocketAgent;
 				theMap[connectData.currentShard]->lastNumberReceived = connectData.lastNumberReceived;

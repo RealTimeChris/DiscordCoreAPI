@@ -310,7 +310,7 @@ namespace DiscordCoreInternal {
 		friend class BaseSocketAgent;
 
 		WebSocketSSLShard(std::queue<DiscordCoreAPI::ConnectionPackage>* connectionsNew, int32_t currentBaseSocketAgentNew, int32_t currentShardNew, int32_t totalShardsNew,
-			bool doWePrintErrorsNew) noexcept;
+			bool doWePrintErrorsNew, DiscordCoreAPI::TextFormat theFormat) noexcept;
 
 		static void processIO(std::unordered_map<int32_t, std::unique_ptr<WebSocketSSLShard>>& theMap, int32_t waitTimeInms = 10000);
 

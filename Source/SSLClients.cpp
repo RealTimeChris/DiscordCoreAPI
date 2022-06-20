@@ -248,7 +248,7 @@ namespace DiscordCoreInternal {
 	}
 
 	WebSocketSSLShard::WebSocketSSLShard(std::queue<DiscordCoreAPI::ConnectionPackage>* connectionsNew, int32_t currentBaseSocketAgentNew, int32_t currentShardNew,
-		int32_t totalShardsNew, bool doWePrintErrorsNew) noexcept {
+		int32_t totalShardsNew, bool doWePrintErrorsNew, DiscordCoreAPI::TextFormat theFormat) noexcept	{
 		this->heartBeatStopWatch = DiscordCoreAPI::StopWatch<std::chrono::milliseconds>{ 10000ms };
 		this->currentBaseSocketAgent = currentBaseSocketAgentNew;
 		this->doWePrintErrors = doWePrintErrorsNew;
@@ -256,6 +256,11 @@ namespace DiscordCoreInternal {
 		this->shard.push_back(totalShardsNew);
 		this->connections = connectionsNew;
 		this->heartBeatStopWatch.resetTimer();
+		if (theFormat == DiscordCoreAPI::TextFormat::Etf) {
+			this->dataOpCode = WebSocketOpCode::Op_Binary;
+		} else {
+			this->dataOpCode = WebSocketOpCode::Op_Text;
+		}
 	};
 
 	void WebSocketSSLShard::processIO(std::unordered_map<SOCKET, std::unique_ptr<WebSocketSSLShard>>& theMap, int32_t waitTimeInms) {
