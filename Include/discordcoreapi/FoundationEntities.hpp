@@ -3634,12 +3634,12 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll DiscordCoreClientConfig {
 		GatewayIntents theIntents{ GatewayIntents ::All_Intents };///< The gateway intents to be used for this instance.
 		std::vector<RepeatedFunctionData> functionsToExecute{};///< Functions to execute after a timer, or on a repetition.
+		TextFormat textFormat{ TextFormat::Etf };///< Use ETF or JSON format for websocket transfer?
 		std::string alternateConnectionAddress{};///< A potentially alternative connection address for the websocket.
 		std::string alternateConnectionPort{};///< A potentially alternative connection port for the websocket.
 		ShardingOptions shardOptions{};///< Options for the sharding of your bot.
 		LoggingOptions logOptions{};///< Options for the output/logging of the library.
 		CacheOptions cacheOptions{};///< Options for the cache of the library.
-		TextFormat textFormat{};///< Use ETF or JSON format for websocket transfer?
 		std::string botToken{};///< Your bot's token.
 	};
 
