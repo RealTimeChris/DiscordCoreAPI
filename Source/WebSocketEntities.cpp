@@ -1352,17 +1352,17 @@ namespace DiscordCoreInternal {
 	void VoiceSocketAgent::run(std::stop_token theToken) noexcept {
 		try {
 			this->connect();
-			while (!theToken.stop_requested() && !this->doWeQuit.load()) {
+			while (!theToken.stop_requested() && !this->doWeQuit.load() && !this->doWeReconnect.load()) {
 				if (this->heartbeatInterval != 0 && !this->areWeHeartBeating) {
 					this->areWeHeartBeating = true;
 					this->theClients[3]->heartBeatStopWatch = DiscordCoreAPI::StopWatch{ std::chrono::milliseconds{ this->heartbeatInterval } };
 				}
-				if (this->theClients.contains(3) && this->theClients[3]->heartBeatStopWatch.hasTimePassed() && this->areWeHeartBeating) {
+				if (this->theClients.contains(3) && this->theClients[3]->heartBeatStopWatch.hasTimePassed() && this->areWeHeartBeating && !this->doWeReconnect.load()) {
 					this->theClients[3]->heartBeatStopWatch.resetTimer();
 					this->sendHeartBeat();
 				}
 				try {
-					if (this->theClients.contains(3) && !this->doWeQuit.load()) {
+					if (this->theClients.contains(3) && !this->doWeQuit.load() && !this->doWeReconnect.load()) {
 						WebSocketSSLShard::processIO(this->theClients, 1000);
 					}
 				} catch (...) {
@@ -1370,7 +1370,7 @@ namespace DiscordCoreInternal {
 						DiscordCoreAPI::reportException("VoiceSocketAgent::run()");
 					}
 				}
-				if (this->theClients.contains(3) && this->theClients[3] != nullptr && !this->doWeQuit.load()) {
+				if (this->theClients.contains(3) && this->theClients[3] != nullptr && !this->doWeQuit.load() && !this->doWeReconnect.load()) {
 					this->parseHeadersAndMessage(this->theClients[3].get());
 					if (this->theClients.contains(3) && this->theClients[3] != nullptr && this->theClients[3]->processedMessages.size() > 0) {
 						this->onMessageReceived(this->theClients[3]->processedMessages.front());
