@@ -169,7 +169,6 @@ namespace DiscordCoreInternal {
 		int64_t currentCount{ 0 };
 		int64_t currentIndex{ 0 };
 		std::mutex theMutex01{};
-		std::mutex theMutex02{};
 
 		void threadFunction(std::stop_token theToken, int64_t theIndex);
 
