@@ -346,7 +346,6 @@ namespace DiscordCoreInternal {
 		int32_t lastNumberReceived{ 0 };
 		WebSocketCloseCode closeCode{};
 		bool doWePrintErrors{ false };
-		std::string currentMessage{};
 		WebSocketOpCode dataOpCode{};
 		bool areWeResuming{ false };
 		SSLWrapper ssl{ nullptr };

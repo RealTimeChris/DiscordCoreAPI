@@ -253,9 +253,10 @@ namespace DiscordCoreInternal {
 		this->currentBaseSocketAgent = currentBaseSocketAgentNew;
 		this->doWePrintErrors = doWePrintErrorsNew;
 		this->shard.push_back(currentShardNew);
+		this->heartBeatStopWatch.resetTimer();
 		this->shard.push_back(totalShardsNew);
 		this->connections = connectionsNew;
-		this->heartBeatStopWatch.resetTimer();
+		this->areWeConnected.store(false);
 		if (theFormat == DiscordCoreAPI::TextFormat::Etf) {
 			this->dataOpCode = WebSocketOpCode::Op_Binary;
 		} else {
@@ -517,11 +518,14 @@ namespace DiscordCoreInternal {
 			close(this->theSocket);
 #endif
 			this->theSocket = SOCKET_ERROR;
-
-			DiscordCoreAPI::ConnectionPackage theData{};
-			theData.currentBaseSocketAgent = this->currentBaseSocketAgent;
-			theData.currentShard = this->shard[0];
+			this->inputBuffer.clear();
+			this->outputBuffer.clear();
+			this->theState = WebSocketState::Connecting01;
+			this->areWeHeartBeating = false;
 			if (this->connections != nullptr) {
+				DiscordCoreAPI::ConnectionPackage theData{};
+				theData.currentBaseSocketAgent = this->currentBaseSocketAgent;
+				theData.currentShard = this->shard[0];
 				this->connections->push(theData);
 			}
 		}
