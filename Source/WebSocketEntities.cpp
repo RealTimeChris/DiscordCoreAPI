@@ -114,7 +114,6 @@ namespace DiscordCoreInternal {
 							  << DiscordCoreAPI::reset() << std::endl
 							  << std::endl;
 				}
-				this->sendCloseFrame(theShard);
 				DiscordCoreAPI::ConnectionPackage theData{};
 				theData.currentShard = theShard->shard[0];
 				theData.currentReconnectionDepth = theShard->currentRecursionDepth;
@@ -446,7 +445,7 @@ namespace DiscordCoreInternal {
 							this->onClosed(theShard);
 							return;
 						}
-						case 9:{
+						case 9: {
 							if (this->doWePrintErrorMessages) {
 								std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Shard " + theShard->shard.dump() + " Reconnecting (Type 9)!" << DiscordCoreAPI::reset()
 										  << std::endl
@@ -938,24 +937,6 @@ namespace DiscordCoreInternal {
 					DiscordCoreAPI::reportException("BaseSocketAgent::onMessageReceived()");
 				}
 				this->onClosed(theShard);
-			}
-		}
-	}
-
-	void BaseSocketAgent::sendCloseFrame(WebSocketSSLShard* theShard) noexcept {
-		if (theShard != nullptr) {
-			std::string theString{};
-			theString.push_back(static_cast<int8_t>(WebSocketOpCode::Op_Close) | static_cast<int8_t>(webSocketFinishBit));
-			theString.push_back(0);
-			theString.push_back(static_cast<int8_t>(static_cast<uint16_t>(1000) >> 8));
-			theString.push_back(static_cast<int8_t>(1000 & 0xff));
-			theShard->writeData(theString, true);
-			try {
-				WebSocketSSLShard::processIO(this->theClients);
-			} catch (ProcessingError&) {
-				if (this->doWePrintErrorMessages) {
-					DiscordCoreAPI::reportException("BaseSocketAgent::sendCloseFrame()");
-				}
 			}
 		}
 	}

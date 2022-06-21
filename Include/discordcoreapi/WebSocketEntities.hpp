@@ -88,8 +88,6 @@ namespace DiscordCoreInternal {
 
 		void onMessageReceived(WebSocketSSLShard* theIndex) noexcept;
 
-		void sendCloseFrame(WebSocketSSLShard* theIndex) noexcept;
-
 		void run(std::stop_token) noexcept;
 
 		void internalConnect() noexcept;
