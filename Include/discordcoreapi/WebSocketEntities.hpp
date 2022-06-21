@@ -61,7 +61,6 @@ namespace DiscordCoreInternal {
 		std::queue<DiscordCoreAPI::ConnectionPackage> connections{};
 		std::unique_ptr<std::jthread> theTask{ nullptr };
 		VoiceConnectionData voiceConnectionData{};
-		EventWaiter areWeReadyToConnectEvent{};
 		bool doWePrintSuccessMessages{ false };
 		std::atomic_bool* doWeQuit{ nullptr };
 		const int32_t maxReconnectTries{ 10 };

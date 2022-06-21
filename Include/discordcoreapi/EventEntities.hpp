@@ -21,7 +21,6 @@
 
 #pragma once
 
-#include <discordcoreapi/CoRoutine.hpp>
 #include <discordcoreapi/FoundationEntities.hpp>
 
 namespace DiscordCoreInternal {

@@ -106,7 +106,7 @@ namespace DiscordCoreInternal {
 
 	void BaseSocketAgent::onClosed(WebSocketSSLShard* theShard) noexcept {
 		if (theShard != nullptr) {
-			this->areWeReadyToConnectEvent.reset();
+			theShard->areWeReadyToConnectEvent.reset();
 			if (this->maxReconnectTries > theShard->currentRecursionDepth) {
 				std::this_thread::sleep_for(500ms);
 				if (this->doWePrintErrorMessages) {
@@ -147,7 +147,7 @@ namespace DiscordCoreInternal {
 				dataPackage.selfMute = doWeCollect.selfMute;
 				this->userId = doWeCollect.userId;
 				nlohmann::json newData = JSONIFY(dataPackage);
-				this->areWeReadyToConnectEvent.wait(10000);
+				theShard->areWeReadyToConnectEvent.wait(10000);
 				std::this_thread::sleep_for(500ms);
 				this->sendMessage(newData, theShard);
 				try {
@@ -156,8 +156,7 @@ namespace DiscordCoreInternal {
 					if (this->doWePrintErrorMessages) {
 						DiscordCoreAPI::reportException("BaseSocketAgent::getVoiceConnectionData()");
 					}
-					this->onClosed(theShard);
-					this->areWeReadyToConnectEvent.wait(10000);
+					theShard->areWeReadyToConnectEvent.wait(10000);
 					this->getVoiceConnectionData(doWeCollect, theShard);
 					return;
 				}
@@ -168,7 +167,7 @@ namespace DiscordCoreInternal {
 				dataPackage.channelId = doWeCollect.channelId;
 				newData = JSONIFY(dataPackage);
 				this->areWeCollectingData = true;
-				this->areWeReadyToConnectEvent.wait(10000);
+				theShard->areWeReadyToConnectEvent.wait(10000);
 				this->sendMessage(newData, theShard);
 				try {
 					WebSocketSSLShard::processIO(this->theClients, 100000);
@@ -176,8 +175,7 @@ namespace DiscordCoreInternal {
 					if (this->doWePrintErrorMessages) {
 						DiscordCoreAPI::reportException("BaseSocketAgent::getVoiceConnectionData()");
 					}
-					this->onClosed(theShard);
-					this->areWeReadyToConnectEvent.wait(10000);
+					theShard->areWeReadyToConnectEvent.wait(10000);
 					this->getVoiceConnectionData(doWeCollect, theShard);
 					return;
 				}
@@ -410,7 +408,7 @@ namespace DiscordCoreInternal {
 					if (payload["t"] == "RESUMED") {
 						theShard->areWeConnected.store(true);
 						theShard->currentRecursionDepth = 0;
-						this->areWeReadyToConnectEvent.set();
+						theShard->areWeReadyToConnectEvent.set();
 					}
 
 					if (payload["t"] == "READY") {
@@ -421,7 +419,7 @@ namespace DiscordCoreInternal {
 						this->discordCoreClient->currentUser = DiscordCoreAPI::BotUser{ theUser, this };
 						DiscordCoreAPI::Users::insertUser(theUser);
 						theShard->currentRecursionDepth = 0;
-						this->areWeReadyToConnectEvent.set();
+						theShard->areWeReadyToConnectEvent.set();
 					}
 				}
 
@@ -1028,7 +1026,6 @@ namespace DiscordCoreInternal {
 						if (this->doWePrintErrorMessages) {
 							DiscordCoreAPI::reportException("BaseSocketAgent::internalConnect()");
 						}
-						this->onClosed(theMap[connectData.currentShard].get());
 						return;
 					}
 					if (theMap.contains(connectData.currentShard)) {

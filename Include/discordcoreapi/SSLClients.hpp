@@ -46,6 +46,7 @@
 #endif
 
 #include <discordcoreapi/FoundationEntities.hpp>
+#include <discordcoreapi/EventEntities.hpp>
 #include <openssl/err.h>
 #include <openssl/ssl.h>
 
@@ -305,6 +306,7 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll WebSocketSSLShard {
 	  public:
 		friend class DiscordCoreAPI::DiscordCoreClient;
+		friend class DiscordCoreAPI::VoiceConnection;
 		friend class WSMessageCollector;
 		friend class VoiceSocketAgent;
 		friend class BaseSocketAgent;
@@ -333,6 +335,7 @@ namespace DiscordCoreInternal {
 		int32_t maxBufferSize{ (1024 * 16) - 1 };
 		std::vector<std::string> outputBuffer{};
 		bool haveWeReceivedHeartbeatAck{ true };
+		EventWaiter areWeReadyToConnectEvent{};
 		int32_t currentBaseSocketAgent{ 0 };
 		int32_t currentRecursionDepth{ 0 };
 		SOCKETWrapper theSocket{ nullptr };

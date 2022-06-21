@@ -335,6 +335,9 @@ namespace DiscordCoreInternal {
 						if (value->connections != nullptr) {
 							value->connections->push(theData);
 						}
+						if (theMap.contains(theData.currentShard)) {
+							theMap.erase(theData.currentShard);
+						}
 						throw ProcessingError{ reportSSLError("Shard [" + std::to_string(key) + "], in WebSocketSSLShard::processIO()::SSL_read_ex(), ", errorValue, value->ssl) +
 							reportError("Shard [" + std::to_string(key) + "], in WebSocketSSLShard::processIO()::SSL_read_ex(), ") };
 					}
@@ -382,6 +385,9 @@ namespace DiscordCoreInternal {
 							theData.currentShard = key;
 							if (value->connections != nullptr) {
 								value->connections->push(theData);
+							}
+							if (theMap.contains(theData.currentShard)) {
+								theMap.erase(theData.currentShard);
 							}
 							throw ProcessingError{ reportSSLError("Shard [" + std::to_string(key) + "], in WebSocketSSLShard::processIO()::SSL_write_ex(), ", errorValue,
 													   value->ssl) +

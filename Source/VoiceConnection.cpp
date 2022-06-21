@@ -150,7 +150,7 @@ namespace DiscordCoreAPI {
 		this->areWeConnectedBool = true;
 		this->stopSetEvent.set();
 		this->pauseEvent.set();
-		if (!this->baseSocketAgent->areWeReadyToConnectEvent.wait(10000)) {
+		if (!this->baseSocketAgent->theClients[voiceConnectInitData.currentShard]->areWeReadyToConnectEvent.wait(10000)) {
 			return;
 		}
 		if (this->voiceSocketAgent) {
