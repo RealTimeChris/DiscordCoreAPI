@@ -307,7 +307,6 @@ namespace DiscordCoreInternal {
 	  public:
 		friend class DiscordCoreAPI::DiscordCoreClient;
 		friend class DiscordCoreAPI::VoiceConnection;
-		friend class WSMessageCollector;
 		friend class VoiceSocketAgent;
 		friend class BaseSocketAgent;
 
