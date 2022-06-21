@@ -923,7 +923,6 @@ namespace DiscordCoreInternal {
 					this->internalConnect();
 				}
 				try {
-					std::unique_lock<std::recursive_mutex> theLock{ this->accessorMutex01 };
 					WebSocketSSLShard::processIO(this->theClients);
 				} catch (...) {
 					if (this->doWePrintErrorMessages) {
@@ -991,6 +990,7 @@ namespace DiscordCoreInternal {
 				this->theClients[connectData.currentShard]->writeData(sendString, true);
 				while (!this->doWeQuit->load()) {
 					if (this->theClients[connectData.currentShard]->theState == WebSocketState::Connected) {
+						this->theClients[connectData.currentShard]->areWeConnected.store(true);
 						break;
 					}
 					try {
