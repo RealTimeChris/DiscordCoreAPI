@@ -149,6 +149,7 @@ namespace DiscordCoreInternal {
 				this->userId = doWeCollect.userId;
 				nlohmann::json newData = JSONIFY(dataPackage);
 				this->areWeReadyToConnectEvent.wait(10000);
+				std::this_thread::sleep_for(500ms);
 				this->sendMessage(newData, theShard);
 				try {
 					WebSocketSSLShard::processIO(this->theClients, 100000);
