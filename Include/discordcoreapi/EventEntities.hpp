@@ -174,7 +174,7 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll EventWaiter {
 	  public:
 		EventWaiter() {
-			this->theEventState = new std::atomic_bool{};
+			this->theEventState = new std::atomic_bool{ false };
 		}
 
 		bool wait(int64_t millisecondsMaxToWait = INT64_MAX) {

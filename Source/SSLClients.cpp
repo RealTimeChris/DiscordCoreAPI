@@ -252,6 +252,7 @@ namespace DiscordCoreInternal {
 		this->heartBeatStopWatch = DiscordCoreAPI::StopWatch<std::chrono::milliseconds>{ 10000ms };
 		this->currentBaseSocketAgent = currentBaseSocketAgentNew;
 		this->doWePrintErrors = doWePrintErrorsNew;
+		this->areWeReadyToConnectEvent.reset();
 		this->shard.push_back(currentShardNew);
 		this->shard.push_back(totalShardsNew);
 		this->connections = connectionsNew;
