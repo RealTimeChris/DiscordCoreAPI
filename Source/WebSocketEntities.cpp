@@ -139,6 +139,7 @@ namespace DiscordCoreInternal {
 	void BaseSocketAgent::getVoiceConnectionData(const VoiceConnectInitData& doWeCollect, WebSocketSSLShard* theShard) noexcept {
 		if (theShard != nullptr) {
 			try {
+				int32_t theCurrentIndex = theShard->shard[0];
 				this->semaphore.acquire();
 				DiscordCoreAPI::UpdateVoiceStateData dataPackage{};
 				dataPackage.channelId = 0;
@@ -156,12 +157,21 @@ namespace DiscordCoreInternal {
 					if (this->doWePrintErrorMessages) {
 						DiscordCoreAPI::reportException("BaseSocketAgent::getVoiceConnectionData()");
 					}
+					DiscordCoreAPI::StopWatch<std::chrono::milliseconds> theStopWatch{ 5000ms };
+					while (!this->theClients.contains(theCurrentIndex)) {
+						if (theStopWatch.hasTimePassed()) {
+							break;
+						}
+						std::this_thread::sleep_for(1ms);
+					}
 					theShard->areWeReadyToConnectEvent.wait(10000);
+					this->semaphore.release();
 					this->getVoiceConnectionData(doWeCollect, theShard);
 					return;
 				}
 				std::this_thread::sleep_for(500ms);
 				if (doWeCollect.channelId == 0) {
+					this->semaphore.release();
 					return;
 				}
 				dataPackage.channelId = doWeCollect.channelId;
@@ -175,7 +185,15 @@ namespace DiscordCoreInternal {
 					if (this->doWePrintErrorMessages) {
 						DiscordCoreAPI::reportException("BaseSocketAgent::getVoiceConnectionData()");
 					}
+					DiscordCoreAPI::StopWatch<std::chrono::milliseconds> theStopWatch{ 5000ms };
+					while (!this->theClients.contains(theCurrentIndex)) {
+						if (theStopWatch.hasTimePassed()) {
+							break;
+						}
+						std::this_thread::sleep_for(1ms);
+					}
 					theShard->areWeReadyToConnectEvent.wait(10000);
+					this->semaphore.release();
 					this->getVoiceConnectionData(doWeCollect, theShard);
 					return;
 				}
