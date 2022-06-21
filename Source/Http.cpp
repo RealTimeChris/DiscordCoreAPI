@@ -376,9 +376,6 @@ namespace DiscordCoreInternal {
 			theConnection.writeData(theRequest);
 			auto result = this->getResponse(theConnection, rateLimitDataPtr);
 			if (result.responseCode == -1) {
-				if (theConnection.currentRecursionDepth >= 10) {
-					return HttpResponseData{};
-				}
 				theConnection.currentRecursionDepth += 1;
 				theConnection.doWeConnect = true;
 				return this->httpRequestInternal(workload, theConnection, rateLimitDataPtr);
@@ -387,11 +384,11 @@ namespace DiscordCoreInternal {
 				return result;
 			}
 		} catch (...) {
-			theConnection.doWeConnect = true;
-			theConnection.currentRecursionDepth += 1;
 			if (this->doWePrintHttpErrorMessages) {
 				DiscordCoreAPI::reportException(workload.callStack + "::HttpClient::executeHttpRequest()");
 			}
+			theConnection.currentRecursionDepth += 1;
+			theConnection.doWeConnect = true;
 			return this->httpRequestInternal(workload, theConnection, rateLimitDataPtr);
 		}
 	}
