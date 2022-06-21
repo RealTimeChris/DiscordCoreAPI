@@ -411,11 +411,13 @@ namespace DiscordCoreInternal {
 			switch (theData.theCurrentState) {
 				case HttpState::Collecting_Code: {
 					theConnection.parseCode(theConnection.getInputBuffer(), theData);
+					break;
 				}
 				case HttpState::Collecting_Headers: {
 					if (theConnection.checkForHeadersToParse(theConnection.getInputBuffer()) && !theConnection.doWeHaveHeaders && !stopWatch.hasTimePassed()) {
 						theConnection.parseHeaders(theConnection.getInputBuffer(), theData);
 					}
+					break;
 				} 
 				case HttpState::Collecting_Size: {
 					if (!theConnection.doWeHaveContentSize) {
@@ -423,6 +425,7 @@ namespace DiscordCoreInternal {
 						theConnection.parseSize(theConnection.getInputBuffer(), theData);
 						theConnection.clearCRLF(theConnection.getInputBuffer());
 					}
+					break;
 				}
 				case HttpState::Collecting_Contents: {
 					if (static_cast<int64_t>(theConnection.getInputBuffer().size()) >= theData.contentSize && !theConnection.parseChunk(theConnection.getInputBuffer(), theData) ||
