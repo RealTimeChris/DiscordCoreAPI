@@ -100,6 +100,7 @@ namespace DiscordCoreInternal {
 
 	void HttpRnRBuilder::resetValues() {
 		this->doWeHaveContentSize = false;
+		this->inputBufferReal.clear();
 		this->doWeHaveHeaders = false;
 		this->isItChunked = false;
 	}
@@ -400,6 +401,10 @@ namespace DiscordCoreInternal {
 		while (true) {
 			try {
 				theConnection.processIO();
+				std::string theString = theConnection.getInputBuffer();
+				if (theString.size() > 0) {
+					theConnection.inputBufferReal.insert(theConnection.inputBufferReal.end(), theString.begin(), theString.end());
+				}
 			} catch (ProcessingError&) {
 				if (this->doWePrintHttpErrorMessages) {
 					DiscordCoreAPI::reportException("HttpClient::getResponse()");
@@ -414,7 +419,7 @@ namespace DiscordCoreInternal {
 						doWeBreak = true;
 						break;
 					}
-					theConnection.parseCode(theConnection.getInputBuffer(), theData);
+					theConnection.parseCode(theConnection.inputBufferReal, theData);
 					break;
 				}
 				case HttpState::Collecting_Headers: {
@@ -422,8 +427,8 @@ namespace DiscordCoreInternal {
 						doWeBreak = true;
 						break;
 					}
-					if (theConnection.checkForHeadersToParse(theConnection.getInputBuffer()) && !theConnection.doWeHaveHeaders) {
-						theConnection.parseHeaders(theConnection.getInputBuffer(), theData);
+					if (theConnection.checkForHeadersToParse(theConnection.inputBufferReal) && !theConnection.doWeHaveHeaders) {
+						theConnection.parseHeaders(theConnection.inputBufferReal, theData);
 						stopWatch.resetTimer();
 					}
 					break;
@@ -434,15 +439,15 @@ namespace DiscordCoreInternal {
 						break;
 					}
 					if (!theConnection.doWeHaveContentSize) {
-						theConnection.clearCRLF(theConnection.getInputBuffer());
-						theConnection.parseSize(theConnection.getInputBuffer(), theData);
-						theConnection.clearCRLF(theConnection.getInputBuffer());
+						theConnection.clearCRLF(theConnection.inputBufferReal);
+						theConnection.parseSize(theConnection.inputBufferReal, theData);
+						theConnection.clearCRLF(theConnection.inputBufferReal);
 						stopWatch.resetTimer();
 					}
 					break;
 				}
 				case HttpState::Collecting_Contents: {
-					if (static_cast<int64_t>(theConnection.getInputBuffer().size()) >= theData.contentSize && !theConnection.parseChunk(theConnection.getInputBuffer(), theData) ||
+					if (static_cast<int64_t>(theConnection.inputBufferReal.size()) >= theData.contentSize && !theConnection.parseChunk(theConnection.inputBufferReal, theData) ||
 						stopWatch.hasTimePassed() || (theData.responseCode == -5 && theData.contentSize == -5)) {
 						doWeBreak = true;
 						break;

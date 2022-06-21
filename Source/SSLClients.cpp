@@ -128,31 +128,6 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void HttpSSLClient::writeData(std::string& data) noexcept {
-		if (data.size() > static_cast<size_t>(16 * 1024)) {
-			size_t remainingBytes{ data.size() };
-			while (remainingBytes > 0) {
-				std::string newString{};
-				size_t amountToCollect{};
-				if (data.size() >= static_cast<size_t>(1024 * 16)) {
-					amountToCollect = static_cast<size_t>(1024 * 16);
-				} else {
-					amountToCollect = data.size();
-				}
-				newString.insert(newString.begin(), data.begin(), data.begin() + amountToCollect);
-				this->outputBuffer.push_back(newString);
-				data.erase(data.begin(), data.begin() + amountToCollect);
-				remainingBytes = data.size();
-			}
-		} else {
-			this->outputBuffer.push_back(data);
-		}
-	}
-
-	std::string& HttpSSLClient::getInputBuffer() noexcept {
-		return this->inputBuffer;
-	}
-
 	void HttpSSLClient::processIO(int32_t theWaitTimeInms) {
 		fd_set writeSet{}, readSet{};
 		int32_t readNfds{ 0 }, writeNfds{ 0 }, finalNfds{ 0 };
@@ -245,6 +220,33 @@ namespace DiscordCoreInternal {
 				}
 			}
 		}
+	}
+
+	void HttpSSLClient::writeData(std::string& data) noexcept {
+		if (data.size() > static_cast<size_t>(16 * 1024)) {
+			size_t remainingBytes{ data.size() };
+			while (remainingBytes > 0) {
+				std::string newString{};
+				size_t amountToCollect{};
+				if (data.size() >= static_cast<size_t>(1024 * 16)) {
+					amountToCollect = static_cast<size_t>(1024 * 16);
+				} else {
+					amountToCollect = data.size();
+				}
+				newString.insert(newString.begin(), data.begin(), data.begin() + amountToCollect);
+				this->outputBuffer.push_back(newString);
+				data.erase(data.begin(), data.begin() + amountToCollect);
+				remainingBytes = data.size();
+			}
+		} else {
+			this->outputBuffer.push_back(data);
+		}
+	}
+
+	std::string HttpSSLClient::getInputBuffer() noexcept {
+		std::string theReturnString = this->inputBuffer;
+		this->inputBuffer.clear();
+		return theReturnString;
 	}
 
 	WebSocketSSLShard::WebSocketSSLShard(std::queue<DiscordCoreAPI::ConnectionPackage>* connectionsNew, int32_t currentBaseSocketAgentNew, int32_t currentShardNew,
