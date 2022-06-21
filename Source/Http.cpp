@@ -410,16 +410,25 @@ namespace DiscordCoreInternal {
 			bool doWeBreak{ false };
 			switch (theData.theCurrentState) {
 				case HttpState::Collecting_Code: {
+					if (stopWatch.hasTimePassed()) {
+						break;
+					}
 					theConnection.parseCode(theConnection.getInputBuffer(), theData);
 					break;
 				}
 				case HttpState::Collecting_Headers: {
+					if (stopWatch.hasTimePassed()) {
+						break;
+					}
 					if (theConnection.checkForHeadersToParse(theConnection.getInputBuffer()) && !theConnection.doWeHaveHeaders && !stopWatch.hasTimePassed()) {
 						theConnection.parseHeaders(theConnection.getInputBuffer(), theData);
 					}
 					break;
 				} 
 				case HttpState::Collecting_Size: {
+					if (stopWatch.hasTimePassed()) {
+						break;
+					}
 					if (!theConnection.doWeHaveContentSize) {
 						theConnection.clearCRLF(theConnection.getInputBuffer());
 						theConnection.parseSize(theConnection.getInputBuffer(), theData);
