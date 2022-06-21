@@ -1061,11 +1061,8 @@ namespace DiscordCoreInternal {
 		this->doWePrintErrorMessages = baseBaseSocketAgentNew->doWePrintErrorMessages;
 		this->baseSocketAgent = baseBaseSocketAgentNew;
 		this->baseSocketAgent->voiceConnectionDataBufferMap[std::to_string(initDataNew.guildId)] = &this->voiceConnectionDataBuffer;
-		if (this->baseSocketAgent->theClients.contains(theShard->shard[0]) && this->baseSocketAgent->theClients[theShard->shard[0]] != nullptr) {
-			this->baseSocketAgent->getVoiceConnectionData(initDataNew, theShard);
-		}
 		this->voiceConnectInitData = initDataNew;
-		this->areWeConnected.reset();
+		this->theBaseClient = theShard;
 		this->theTask = std::make_unique<std::jthread>([this](std::stop_token theToken) {
 			this->run(theToken);
 		});
@@ -1283,7 +1280,7 @@ namespace DiscordCoreInternal {
 					for (uint32_t x = 0; x < payload["d"]["secret_key"].size(); x += 1) {
 						this->voiceConnectionData.secretKey.push_back(payload["d"]["secret_key"][x].get<uint8_t>());
 					}
-					this->areWeConnected.set();
+					this->areWeConnected.store(true);
 				}
 				if (payload["op"] == 9) {
 				};
@@ -1414,6 +1411,9 @@ namespace DiscordCoreInternal {
 
 	void VoiceSocketAgent::connect() noexcept {
 		try {
+			if (this->baseSocketAgent->theClients.contains(this->theBaseClient->shard[0]) && this->baseSocketAgent->theClients[this->theBaseClient->shard[0]] != nullptr) {
+				this->baseSocketAgent->getVoiceConnectionData(this->voiceConnectInitData, this->theBaseClient);
+			}
 			DiscordCoreAPI::waitForTimeToPass(this->voiceConnectionDataBuffer, this->voiceConnectionData, 20000);
 			this->baseUrl = this->voiceConnectionData.endPoint.substr(0, this->voiceConnectionData.endPoint.find(":"));
 			auto theClient = std::make_unique<WebSocketSSLShard>(nullptr, 0, 3, 0, this->doWePrintErrorMessages, DiscordCoreAPI::TextFormat::Json);

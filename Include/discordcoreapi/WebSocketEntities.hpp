@@ -116,7 +116,9 @@ namespace DiscordCoreInternal {
 		std::unique_ptr<std::jthread> theTask{ nullptr };
 		VoiceConnectInitData voiceConnectInitData{};
 		BaseSocketAgent* baseSocketAgent{ nullptr };
+		WebSocketSSLShard* theBaseClient{ nullptr };
 		VoiceConnectionData voiceConnectionData{};
+		std::atomic_bool areWeConnected{ false };
 		std::atomic_bool doWeReconnect{ false };
 		bool haveWeReceivedHeartbeatAck{ true };
 		bool doWePrintSuccessMessages{ false };
@@ -128,7 +130,6 @@ namespace DiscordCoreInternal {
 		bool areWeHeartBeating{ false };
 		int32_t heartbeatInterval{ 0 };
 		WebSocketCloseCode closeCode{};
-		EventWaiter areWeConnected{};
 		std::string baseUrl{};
 		std::string hostIp{};
 
