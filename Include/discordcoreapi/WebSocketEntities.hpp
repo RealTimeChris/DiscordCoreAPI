@@ -42,9 +42,9 @@ namespace DiscordCoreInternal {
 
 		BaseSocketAgent(DiscordCoreAPI::DiscordCoreClient* discordCoreClientNew, std::atomic_bool* doWeQuitNew, int32_t currentBaseSocketAgentNew) noexcept;
 
-		void sendMessage(const nlohmann::json& dataToSend, WebSocketSSLShard* theIndex) noexcept;
+		void sendMessage(const nlohmann::json& dataToSend, WebSocketSSLShard* theShard) noexcept;
 
-		void sendMessage(std::string& dataToSend, WebSocketSSLShard* theIndex) noexcept;
+		void sendMessage(std::string& dataToSend, WebSocketSSLShard* theShard) noexcept;
 
 		void connect(DiscordCoreAPI::ConnectionPackage) noexcept;
 
@@ -71,15 +71,15 @@ namespace DiscordCoreInternal {
 
 		void stringifyJsonData(const nlohmann::json& dataToSend, std::string& theString, WebSocketOpCode theOpCode) noexcept;
 
-		void getVoiceConnectionData(const VoiceConnectInitData& doWeCollect, WebSocketSSLShard* theIndex) noexcept;
+		void getVoiceConnectionData(const VoiceConnectInitData& doWeCollect, WebSocketSSLShard* theShard) noexcept;
 
 		void createHeader(std::string& outBuffer, uint64_t sendLength, WebSocketOpCode opCode) noexcept;
 
-		void checkForAndSendHeartBeat(WebSocketSSLShard* theIndex, bool = false) noexcept;
+		void checkForAndSendHeartBeat(WebSocketSSLShard* theShard, bool = false) noexcept;
 
 		void parseHeadersAndMessage(WebSocketSSLShard* theShard) noexcept;
 
-		void onMessageReceived(WebSocketSSLShard* theIndex) noexcept;
+		void onMessageReceived(WebSocketSSLShard* theShard) noexcept;
 
 		void run(std::stop_token) noexcept;
 
@@ -90,15 +90,13 @@ namespace DiscordCoreInternal {
 	  public:
 		friend class DiscordCoreAPI::VoiceConnection;
 
-		VoiceSocketAgent(VoiceConnectInitData initDataNew, BaseSocketAgent* baseBaseSocketAgentNew, WebSocketSSLShard* theIndex, bool printMessagesNew) noexcept;
+		VoiceSocketAgent(VoiceConnectInitData initDataNew, BaseSocketAgent* baseBaseSocketAgentNew, WebSocketSSLShard* theShard, bool printMessagesNew) noexcept;
 
-		void sendMessage(const std::vector<uint8_t>& responseData) noexcept;
+		void sendMessage(const std::vector<uint8_t>& responseData, WebSocketSSLShard* theShard) noexcept;
+
+		void sendMessage(std::string& dataToSend, WebSocketSSLShard* theShard) noexcept;
 
 		void sendVoiceData(std::string& responseData) noexcept;
-
-		void sendMessage(std::string& dataToSend) noexcept;
-
-		void onClosedExternal() noexcept;
 
 		~VoiceSocketAgent() noexcept;
 
@@ -106,40 +104,34 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::TSUnboundedMessageBlock<VoiceConnectionData> voiceConnectionDataBuffer{};
 		std::unordered_map<int32_t, std::unique_ptr<WebSocketSSLShard>> theClients{};
 		std::unique_ptr<DatagramSocketSSLClient> voiceSocket{ nullptr };
-		WebSocketOpCode dataOpcode{ WebSocketOpCode::Op_Text };
+		std::queue<DiscordCoreAPI::ConnectionPackage> connections{};
 		std::unique_ptr<std::jthread> theTask{ nullptr };
-		VoiceConnectInitData voiceConnectInitData{};
 		BaseSocketAgent* baseSocketAgent{ nullptr };
 		WebSocketSSLShard* theBaseClient{ nullptr };
-		VoiceConnectionData voiceConnectionData{};
-		std::atomic_bool areWeConnected{ false };
 		std::atomic_bool doWeReconnect{ false };
-		bool haveWeReceivedHeartbeatAck{ true };
 		bool doWePrintSuccessMessages{ false };
-		int32_t currentReconnectionTries{ 0 };
 		bool doWePrintErrorMessages{ false };
 		std::atomic_bool doWeQuit{ false };
 		int32_t maxReconnectionTries{ 10 };
 		int32_t lastNumberReceived{ 0 };
 		bool areWeHeartBeating{ false };
 		int32_t heartbeatInterval{ 0 };
-		WebSocketCloseCode closeCode{};
 		std::string baseUrl{};
 		std::string hostIp{};
 
 		void createHeader(std::string& outbuf, uint64_t sendlength, WebSocketOpCode opCode) noexcept;
 
+		void onMessageReceived(const std::string& theMessage, WebSocketSSLShard* theShard) noexcept;
+
 		void parseHeadersAndMessage(WebSocketSSLShard* theShard) noexcept;
 
-		void onMessageReceived(const std::string& theMessage) noexcept;
+		void sendHeartBeat(WebSocketSSLShard* theShard) noexcept;
 
 		void onClosed(WebSocketSSLShard* theShard) noexcept;
 
 		void run(std::stop_token) noexcept;
 
 		void collectExternalIP() noexcept;
-
-		void sendHeartBeat() noexcept;
 
 		void voiceConnect() noexcept;
 
