@@ -148,40 +148,6 @@ namespace DiscordCoreInternal {
 				}
 				theStopWatch.resetTimer();
 				this->sendMessage(newData, theShard);
-				try {
-					WebSocketSSLShard::processIO(this->theClients, 100000);
-				} catch (...) {
-					if (this->doWePrintErrorMessages) {
-						DiscordCoreAPI::reportException("BaseSocketAgent::getVoiceConnectionData()");
-					}
-					while (!this->theClients.contains(theCurrentIndex)) {
-						if (theStopWatch.hasTimePassed()) {
-							break;
-						}
-						std::this_thread::sleep_for(1ms);
-					}
-					this->semaphore.release();
-					theLock.unlock();
-					this->getVoiceConnectionData(doWeCollect, this->theClients[theCurrentIndex].get());
-					return;
-				}
-				if (this->theClients.contains(theShard->shard[0]) && this->theClients[theShard->shard[0]] != nullptr && theShard->inputBuffer.size() > 0) {
-					if (theShard != nullptr) {
-						this->parseHeadersAndMessage(theShard);
-					}
-				}
-				if (this->theClients.contains(theShard->shard[0]) && this->theClients[theShard->shard[0]] != nullptr && theShard->processedMessages.size() > 0) {
-					if (theShard!= nullptr) {
-						this->onMessageReceived(theShard);
-					}
-				}
-				if (this->theClients.contains(theShard->shard[0]) && this->theClients[theShard->shard[0]] != nullptr) {
-					this->checkForAndSendHeartBeat(theShard);
-					if (theShard != nullptr && this->heartbeatInterval != 0 && !theShard->areWeHeartBeating) {
-						theShard->areWeHeartBeating = true;
-						theShard->heartBeatStopWatch = DiscordCoreAPI::StopWatch{ std::chrono::milliseconds{ this->heartbeatInterval } };
-					}
-				}
 				std::this_thread::sleep_for(500ms);
 				if (doWeCollect.channelId == 0) {
 					this->semaphore.release();
@@ -191,39 +157,12 @@ namespace DiscordCoreInternal {
 				newData = JSONIFY(dataPackage);
 				theShard->areWeCollectingData = true;
 				this->sendMessage(newData, theShard);
-				try {
-					WebSocketSSLShard::processIO(this->theClients, 100000);
-				} catch (...) {
-					if (this->doWePrintErrorMessages) {
-						DiscordCoreAPI::reportException("BaseSocketAgent::getVoiceConnectionData()");
+				theStopWatch.resetTimer();
+				while (theShard->areWeCollectingData) {
+					if (theStopWatch.hasTimePassed()) {
+						break;
 					}
-					while (!this->theClients.contains(theCurrentIndex)) {
-						if (theStopWatch.hasTimePassed()) {
-							break;
-						}
-						std::this_thread::sleep_for(1ms);
-					}
-					this->semaphore.release();
-					theLock.unlock();
-					this->getVoiceConnectionData(doWeCollect, this->theClients[theCurrentIndex].get());
-					return;
-				}
-				if (this->theClients.contains(theShard->shard[0]) && this->theClients[theShard->shard[0]] != nullptr && theShard->inputBuffer.size() > 0) {
-					if (theShard != nullptr) {
-						this->parseHeadersAndMessage(theShard);
-					}
-				}
-				if (this->theClients.contains(theShard->shard[0]) && this->theClients[theShard->shard[0]] != nullptr && theShard->processedMessages.size() > 0) {
-					if (theShard != nullptr) {
-						this->onMessageReceived(theShard);
-					}
-				}
-				if (this->theClients.contains(theShard->shard[0]) && this->theClients[theShard->shard[0]] != nullptr) {
-					this->checkForAndSendHeartBeat(theShard);
-					if (theShard != nullptr && this->heartbeatInterval != 0 && !theShard->areWeHeartBeating) {
-						theShard->areWeHeartBeating = true;
-						theShard->heartBeatStopWatch = DiscordCoreAPI::StopWatch{ std::chrono::milliseconds{ this->heartbeatInterval } };
-					}
+					std::this_thread::sleep_for(1ms);
 				}
 				this->semaphore.release();
 			} catch (...) {
