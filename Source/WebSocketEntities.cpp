@@ -131,6 +131,7 @@ namespace DiscordCoreInternal {
 	void BaseSocketAgent::getVoiceConnectionData(const VoiceConnectInitData& doWeCollect, WebSocketSSLShard* theShard) noexcept {
 		if (theShard != nullptr) {
 			try {
+				DiscordCoreAPI::StopWatch<std::chrono::milliseconds> theStopWatch{ 5000ms };
 				int32_t theCurrentIndex = theShard->shard[0];
 				this->semaphore.acquire();
 				DiscordCoreAPI::UpdateVoiceStateData dataPackage{};
@@ -141,8 +142,12 @@ namespace DiscordCoreInternal {
 				this->userId = doWeCollect.userId;
 				nlohmann::json newData = JSONIFY(dataPackage);
 				while (!theShard->areWeConnected.load()) {
+					if (theStopWatch.hasTimePassed()) {
+						break;
+					}
 					std::this_thread::sleep_for(1ms);
 				}
+				theStopWatch.resetTimer();
 				this->sendMessage(newData, theShard);
 				try {
 					WebSocketSSLShard::processIO(this->theClients, 100000);
@@ -150,7 +155,6 @@ namespace DiscordCoreInternal {
 					if (this->doWePrintErrorMessages) {
 						DiscordCoreAPI::reportException("BaseSocketAgent::getVoiceConnectionData()");
 					}
-					DiscordCoreAPI::StopWatch<std::chrono::milliseconds> theStopWatch{ 5000ms };
 					while (!this->theClients.contains(theCurrentIndex)) {
 						if (theStopWatch.hasTimePassed()) {
 							break;
@@ -176,7 +180,6 @@ namespace DiscordCoreInternal {
 					if (this->doWePrintErrorMessages) {
 						DiscordCoreAPI::reportException("BaseSocketAgent::getVoiceConnectionData()");
 					}
-					DiscordCoreAPI::StopWatch<std::chrono::milliseconds> theStopWatch{ 5000ms };
 					while (!this->theClients.contains(theCurrentIndex)) {
 						if (theStopWatch.hasTimePassed()) {
 							break;
@@ -187,7 +190,6 @@ namespace DiscordCoreInternal {
 					this->getVoiceConnectionData(doWeCollect, this->theClients[theCurrentIndex].get());
 					return;
 				}
-				DiscordCoreAPI::StopWatch<std::chrono::milliseconds> theStopWatch{ 5000ms };
 				while (this->areWeCollectingData) {
 					if (theStopWatch.hasTimePassed()) {
 						break;
@@ -1137,7 +1139,7 @@ namespace DiscordCoreInternal {
 					close |= theShard->inputBuffer[3] & 0xff;
 					theShard->closeCode = static_cast<WebSocketCloseCode>(close);
 					theShard->inputBuffer.erase(theShard->inputBuffer.begin(), theShard->inputBuffer.begin() + 4);
-					this->onClosed(theShard);
+					this->onClosedExternal();
 				}
 				default: {
 				}
@@ -1176,7 +1178,7 @@ namespace DiscordCoreInternal {
 						  << DiscordCoreAPI::reset() << std::endl
 						  << std::endl;
 			}
-			this->theClients.erase(3);
+			this->theClients[3].reset(nullptr);
 		}
 	}
 
@@ -1216,6 +1218,9 @@ namespace DiscordCoreInternal {
 
 	void VoiceSocketAgent::onClosedExternal() noexcept {
 		this->doWeReconnect.store(true);
+		if (this->theClients.contains(3)) {
+			this->onClosed(this->theClients[3].get());
+		}
 	}
 
 	void VoiceSocketAgent::createHeader(std::string& outBuffer, uint64_t sendLength, WebSocketOpCode opCode) noexcept {
