@@ -33,10 +33,10 @@ namespace DiscordCoreInternal {
 	struct DiscordCoreAPI_Dll RateLimitData;
 
 	enum class HttpState {
-		Collecting_Code = 0,///< Collecting the code.
-		Collecting_Headers = 1,///< Collecting the headers.
-		Collecting_Size = 2,///< Collecting the size.
-		Collecting_Contents = 3///< Collecting the chunk/content.
+		Collecting_Code = 0,
+		Collecting_Headers = 1,
+		Collecting_Size = 2,
+		Collecting_Contents = 3
 	};
 
 	struct DiscordCoreAPI_Dll HttpResponseData {
