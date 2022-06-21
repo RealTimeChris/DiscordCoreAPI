@@ -63,7 +63,7 @@ namespace DiscordCoreInternal {
 	}
 
 	CoRoutineThreadPool::CoRoutineThreadPool() {
-		uint32_t threadCount = (std::thread::hardware_concurrency());
+		uint32_t threadCount = std::thread::hardware_concurrency();
 		if (threadCount < 1) {
 			threadCount = 1;
 		}
@@ -72,7 +72,7 @@ namespace DiscordCoreInternal {
 			this->currentIndex += 1;
 			this->currentCount += 1;
 			int64_t theIndexNew = this->currentIndex;
-			workerThread.theThread = std::jthread([=, this](std::stop_token theToken) {
+			workerThread.theThread = std::jthread([=](std::stop_token theToken) {
 				Globals::httpConnections[std::this_thread::get_id()] = std::make_unique<HttpConnection>();
 				this->threadFunction(theToken, theIndexNew);
 			});
@@ -91,10 +91,10 @@ namespace DiscordCoreInternal {
 		}
 		if (areWeAllBusy) {
 			WorkerThread workerThread{};
-			this->currentCount += 1;
 			this->currentIndex += 1;
+			this->currentCount += 1;
 			int64_t theIndexNew = this->currentIndex;
-			workerThread.theThread = std::jthread([=, this](std::stop_token theToken) {
+			workerThread.theThread = std::jthread([=](std::stop_token theToken) {
 				Globals::httpConnections[std::this_thread::get_id()] = std::make_unique<HttpConnection>();
 				this->threadFunction(theToken, theIndexNew);
 			});
