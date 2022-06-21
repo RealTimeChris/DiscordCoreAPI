@@ -909,6 +909,7 @@ WARN_LOGFILE           =
 INPUT                  = ./Documentation-Examples \
                          ./Documentation-Examples/Application-Command-Stuff \
                          ./Documentation-Examples/Autocomplete-Stuff \
+                         ./Documentation-Examples/Auto-Moderation-Rule-Stuff \
                          ./Documentation-Examples/Button-Stuff \
                          ./Documentation-Examples/Channel-Stuff \
                          ./Documentation-Examples/Guild-Stuff \

@@ -20,6 +20,8 @@ Docs/Examples {#Examples}
 
 - \subpage guildstuff
 
+- \subpage automoderationrulestuff
+
 - \subpage guildmemberstuff
 
 - \subpage guildscheduledeventstuff

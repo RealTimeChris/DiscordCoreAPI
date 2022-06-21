@@ -218,8 +218,8 @@ namespace DiscordCoreInternal {
 
 	nlohmann::json JSONIFY(const std::string& botToken, int64_t intents, int32_t currentShard, int32_t numberOfShards) {
 		nlohmann::json data{};
-		data["d"]["properties"]["$browser"] = "DiscordCoreAPI";
-		data["d"]["properties"]["$device"] = "DiscordCoreAPI";
+		data["d"]["properties"]["browser"] = "DiscordCoreAPI";
+		data["d"]["properties"]["device"] = "DiscordCoreAPI";
 		data["d"]["shard"] = { currentShard, numberOfShards };
 		data["d"]["large_threshold"] = 250;
 		data["d"]["intents"] = intents;
@@ -227,9 +227,9 @@ namespace DiscordCoreInternal {
 		data["d"]["token"] = botToken;
 		data["op"] = 2;
 #ifdef _WIN32
-		data["d"]["properties"]["$os"] = "Windows";
+		data["d"]["properties"]["os"] = "Windows";
 #else
-		data["d"]["properties"]["$os"] = "Linux";
+		data["d"]["properties"]["os"] = "Linux";
 #endif
 		return data;
 	};
