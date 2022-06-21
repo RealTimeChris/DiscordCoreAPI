@@ -76,7 +76,6 @@ namespace DiscordCoreInternal {
 	  protected:
 		bool doWeHaveContentSize{ false };
 		bool doWeHaveHeaders{ false };
-		std::string inputBufferReal{};
 		bool isItChunked{ false };
 
 		void parseSize(std::string&, HttpResponseData& theData);

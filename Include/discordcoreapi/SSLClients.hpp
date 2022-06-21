@@ -278,11 +278,11 @@ namespace DiscordCoreInternal {
 
 		void connect(const std::string& baseUrl, const std::string& portNew = "443");
 
-		void processIO(int32_t waitTimeInMs = 10000);
-
 		void writeData(std::string& data) noexcept;
 
-		std::string getInputBuffer() noexcept;
+		std::string& getInputBuffer() noexcept;
+
+		void processIO(int32_t waitTimeInMs = 10000);
 
 		virtual ~HttpSSLClient() noexcept = default;
 
