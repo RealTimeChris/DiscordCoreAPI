@@ -284,6 +284,10 @@ namespace DiscordCoreInternal {
 
 		std::string getInputBuffer() noexcept;
 
+		bool areWeStillConnected() noexcept;
+
+		void disconnect() noexcept;
+
 		virtual ~HttpSSLClient() noexcept = default;
 
 	  protected:
@@ -297,6 +301,7 @@ namespace DiscordCoreInternal {
 		BIOWrapper connectionBio{ nullptr };
 		SOCKETWrapper theSocket{ nullptr };
 		SSL_CTXWrapper context{ nullptr };
+		int64_t connectionTime{ 0 };
 		std::string inputBuffer{};
 		SSLWrapper ssl{ nullptr };
 		bool wantWrite{ false };
@@ -328,17 +333,22 @@ namespace DiscordCoreInternal {
 		~WebSocketSSLShard() noexcept = default;
 
 	  protected:
+		std::unordered_map<uint64_t, DiscordCoreAPI::TSUnboundedMessageBlock<VoiceConnectionData>*> voiceConnectionDataBufferMap{};
 		DiscordCoreAPI::StopWatch<std::chrono::milliseconds> heartBeatStopWatch{ 0ms };
 		std::queue<DiscordCoreAPI::ConnectionPackage>* connections{ nullptr };
 		WebSocketState theState{ WebSocketState::Connecting01 };
 		std::queue<std::string> processedMessages{};
+		VoiceConnectionData voiceConnectionData{};
 		std::atomic_bool areWeConnected{ false };
 		int32_t maxBufferSize{ (1024 * 16) - 1 };
 		std::vector<std::string> outputBuffer{};
 		bool haveWeReceivedHeartbeatAck{ true };
+		bool serverUpdateCollected{ false };
 		int32_t currentBaseSocketAgent{ 0 };
+		bool stateUpdateCollected{ false };
 		int32_t currentRecursionDepth{ 0 };
 		SOCKETWrapper theSocket{ nullptr };
+		bool areWeCollectingData{ false };
 		SSL_CTXWrapper context{ nullptr };
 		int32_t maxRecursionDepth{ 10 };
 		bool areWeHeartBeating{ false };
@@ -356,6 +366,7 @@ namespace DiscordCoreInternal {
 		bool wantWrite{ true };
 		bool wantRead{ false };
 		int64_t bytesRead{ 0 };
+		uint64_t userId{ 0 };
 	};
 
 	class DiscordCoreAPI_Dll DatagramSocketSSLClient {

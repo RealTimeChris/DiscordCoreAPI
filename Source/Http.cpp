@@ -362,16 +362,14 @@ namespace DiscordCoreInternal {
 	HttpResponseData HttpClient::httpRequestInternal(const HttpWorkloadData& workload, HttpConnection& theConnection, RateLimitData& rateLimitData) {
 		try {
 			theConnection.resetValues();
-			int64_t currentTimeDistance =
-				std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - theConnection.lastTimeUsed;
 			if (theConnection.currentRecursionDepth >= theConnection.maxRecursion) {
 				return HttpResponseData{};
 			}
-			if (theConnection.doWeConnect || (theConnection.lastTimeUsed != 0 && currentTimeDistance >= 30000)) {
+			if (!theConnection.areWeStillConnected() || theConnection.doWeConnect) {
+				theConnection.disconnect();
 				theConnection.connect(workload.baseUrl);
 				theConnection.doWeConnect = false;
 			}
-			theConnection.lastTimeUsed = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 			auto theRequest = theConnection.buildRequest(workload);
 			theConnection.writeData(theRequest);
 			auto result = this->getResponse(theConnection, rateLimitData);
@@ -408,8 +406,8 @@ namespace DiscordCoreInternal {
 			} catch (ProcessingError&) {
 				if (this->doWePrintHttpErrorMessages) {
 					DiscordCoreAPI::reportException("HttpClient::getResponse()");
-					theConnection.doWeConnect = true;
-					break;
+					theData.responseCode = -1;
+					return theData;
 				}
 			}
 			bool doWeBreak{ false };

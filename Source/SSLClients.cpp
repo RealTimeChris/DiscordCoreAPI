@@ -126,6 +126,8 @@ namespace DiscordCoreInternal {
 		if (auto returnValue = SSL_connect(this->ssl); !returnValue) {
 			throw ConnectionError{ reportSSLError("HttpSSLClient::connect()::SSL_connect(), ", returnValue, this->ssl) };
 		}
+		
+		this->connectionTime = std::time(nullptr);
 	}
 
 	void HttpSSLClient::processIO(int32_t theWaitTimeInms) {
@@ -247,6 +249,48 @@ namespace DiscordCoreInternal {
 		std::string theReturnString = this->inputBuffer;
 		this->inputBuffer.clear();
 		return theReturnString;
+	}
+
+	bool HttpSSLClient::areWeStillConnected() noexcept {
+		fd_set errorfds{};
+		int32_t nfds{};
+		FD_ZERO(&errorfds);
+		if (this->theSocket != SOCKET_ERROR) {
+			FD_SET(this->theSocket, &errorfds);
+			nfds = this->theSocket;
+			timeval checkTime{ .tv_usec = 1 };
+			if (auto returnValue = select(nfds + 1, nullptr, nullptr, &errorfds, &checkTime); returnValue == SOCKET_ERROR) {
+				return false;
+			}
+			if (time(nullptr) - this->connectionTime > 60) {
+				return false;
+			}
+			if (FD_ISSET(this->theSocket, &errorfds)) {
+				return false;
+			}
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	void HttpSSLClient::disconnect() noexcept {
+		if (this->ssl != nullptr) {
+			SSL_shutdown(this->ssl);
+			SSL_free(this->ssl);
+		}
+		if (this->theSocket != SOCKET_ERROR) {
+#ifdef _WIN32
+			shutdown(this->theSocket, SD_BOTH);
+			closesocket(this->theSocket);
+#else
+			shutdown(this->theSocket, SHUT_RDWR);
+			close(this->theSocket);
+#endif
+		}
+		this->theSocket = SOCKET_ERROR;
+		this->outputBuffer.clear();
+		this->inputBuffer.clear();
 	}
 
 	WebSocketSSLShard::WebSocketSSLShard(std::queue<DiscordCoreAPI::ConnectionPackage>* connectionsNew, int32_t currentBaseSocketAgentNew, int32_t currentShardNew,
@@ -447,31 +491,35 @@ namespace DiscordCoreInternal {
 
 	void WebSocketSSLShard::writeData(std::string& data, bool priority) noexcept {
 		if (priority) {
-			std::vector<std::string> theOldStrings{};
-			for (auto& value: this->outputBuffer) {
-				theOldStrings.push_back(value);
-			}
-			this->outputBuffer.clear();
-			if (data.size() > static_cast<size_t>(16 * 1024)) {
-				size_t remainingBytes{ data.size() };
-				while (remainingBytes > 0) {
-					std::string newString{};
-					size_t amountToCollect{};
-					if (data.size() >= static_cast<size_t>(1024 * 16)) {
-						amountToCollect = static_cast<size_t>(1024 * 16);
-					} else {
-						amountToCollect = data.size();
+			size_t writtenBytes{ 0 };
+			if (data.size() > 0) {
+				auto returnValue{ SSL_write_ex(this->ssl, data.data(), data.size(), &writtenBytes) };
+				auto errorValue{ SSL_get_error(this->ssl, returnValue) };
+				switch (errorValue) {
+					case SSL_ERROR_NONE: {
+						if (this->outputBuffer.size() > 0 && writtenBytes > 0) {
+							this->outputBuffer.erase(this->outputBuffer.begin());
+						}
+						break;
 					}
-					newString.insert(newString.begin(), data.begin(), data.begin() + amountToCollect);
-					this->outputBuffer.push_back(newString);
-					data.erase(data.begin(), data.begin() + amountToCollect);
-					remainingBytes = data.size();
+					case SSL_ERROR_WANT_READ: {
+						this->wantRead = true;
+						break;
+					}
+					case SSL_ERROR_WANT_WRITE: {
+						this->wantWrite = true;
+						break;
+					}
+					case SSL_ERROR_SYSCALL: {
+						[[fallthrough]];
+					}
+					case SSL_ERROR_ZERO_RETURN: {
+						[[fallthrough]];
+					}
+					default: {
+						this->reconnect();
+					}
 				}
-			} else {
-				this->outputBuffer.push_back(data);
-			}
-			for (auto& value: theOldStrings) {
-				this->outputBuffer.push_back(value);
 			}
 		} else {
 			if (data.size() > static_cast<size_t>(16 * 1024)) {
@@ -511,7 +559,6 @@ namespace DiscordCoreInternal {
 
 			SSL_shutdown(this->ssl);
 			SSL_free(this->ssl);
-
 #ifdef _WIN32
 			shutdown(this->theSocket, SD_BOTH);
 			closesocket(this->theSocket);
@@ -519,17 +566,17 @@ namespace DiscordCoreInternal {
 			shutdown(this->theSocket, SHUT_RDWR);
 			close(this->theSocket);
 #endif
-			this->theSocket = SOCKET_ERROR;
-			this->inputBuffer.clear();
-			this->outputBuffer.clear();
-			this->theState = WebSocketState::Connecting01;
-			this->areWeHeartBeating = false;
-			if (this->connections != nullptr) {
-				DiscordCoreAPI::ConnectionPackage theData{};
-				theData.currentBaseSocketAgent = this->currentBaseSocketAgent;
-				theData.currentShard = this->shard[0];
-				this->connections->push(theData);
-			}
+		}
+		this->theSocket = SOCKET_ERROR;
+		this->inputBuffer.clear();
+		this->outputBuffer.clear();
+		this->theState = WebSocketState::Connecting01;
+		this->areWeHeartBeating = false;	
+		if (this->connections != nullptr) {
+			DiscordCoreAPI::ConnectionPackage theData{};
+			theData.currentBaseSocketAgent = this->currentBaseSocketAgent;
+			theData.currentShard = this->shard[0];
+			this->connections->push(theData);
 		}
 	}
 

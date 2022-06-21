@@ -150,14 +150,14 @@ namespace DiscordCoreAPI {
 		this->areWeConnectedBool = true;
 		this->stopSetEvent.set();
 		this->pauseEvent.set();
-		StopWatch theStopWatch{ 5000ms };
+		StopWatch theStopWatch{ 10000ms };
 		if (this->voiceSocketAgent) {
 			this->voiceSocketAgent.reset(nullptr);
 		}
 		if (this->baseSocketAgent != nullptr && this->baseSocketAgent->theClients[voiceConnectInitDataNew.currentShard] != nullptr) {
 			while (!this->baseSocketAgent->theClients[voiceConnectInitData.currentShard]->areWeConnected.load()) {
 				std::this_thread::sleep_for(1ms);
-				if (theStopWatch.hasTimePassed()) {
+				if (theStopWatch.hasTimePassed()) {;
 					return;
 				}
 			}
