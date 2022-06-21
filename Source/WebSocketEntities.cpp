@@ -102,11 +102,13 @@ namespace DiscordCoreInternal {
 		while (!this->theClients.contains(thePackage.currentShard)) {
 			std::this_thread::sleep_for(1ms);
 		}
+		while (!this->theClients[thePackage.currentShard]->areWeConnected.load()) {
+			std::this_thread::sleep_for(1ms);
+		}
 	}
 
 	void BaseSocketAgent::onClosed(WebSocketSSLShard* theShard) noexcept {
 		if (theShard != nullptr) {
-			theShard->areWeReadyToConnectEvent.reset();
 			if (this->maxReconnectTries > theShard->currentRecursionDepth) {
 				std::this_thread::sleep_for(500ms);
 				if (this->doWePrintErrorMessages) {
@@ -114,17 +116,7 @@ namespace DiscordCoreInternal {
 							  << DiscordCoreAPI::reset() << std::endl
 							  << std::endl;
 				}
-				DiscordCoreAPI::ConnectionPackage theData{};
-				theData.currentShard = theShard->shard[0];
-				theData.currentReconnectionDepth = theShard->currentRecursionDepth;
-				theData.sessionId = theShard->sessionId;
-				theData.areWeResuming = theShard->areWeResuming;
-				theData.currentBaseSocketAgent = this->currentBaseSocketAgent;
-				theData.lastNumberReceived = theShard->lastNumberReceived;
-				if (this->theClients.contains(theShard->shard[0])) {
-					this->theClients.erase(theShard->shard[0]);
-				}
-				this->connections.push(theData);
+				theShard->reconnect();
 			} else if (this->maxReconnectTries <= theShard->currentRecursionDepth) {
 				this->doWeQuit->store(true);
 				this->theTask->request_stop();
@@ -148,8 +140,9 @@ namespace DiscordCoreInternal {
 				dataPackage.selfMute = doWeCollect.selfMute;
 				this->userId = doWeCollect.userId;
 				nlohmann::json newData = JSONIFY(dataPackage);
-				theShard->areWeReadyToConnectEvent.wait(10000);
-				std::this_thread::sleep_for(500ms);
+				while (!theShard->areWeConnected.load()) {
+					std::this_thread::sleep_for(1ms);
+				}
 				this->sendMessage(newData, theShard);
 				try {
 					WebSocketSSLShard::processIO(this->theClients, 100000);
@@ -176,7 +169,6 @@ namespace DiscordCoreInternal {
 				dataPackage.channelId = doWeCollect.channelId;
 				newData = JSONIFY(dataPackage);
 				this->areWeCollectingData = true;
-				theShard->areWeReadyToConnectEvent.wait(10000);
 				this->sendMessage(newData, theShard);
 				try {
 					WebSocketSSLShard::processIO(this->theClients, 100000);
@@ -424,7 +416,6 @@ namespace DiscordCoreInternal {
 					if (payload["t"] == "RESUMED") {
 						theShard->areWeConnected.store(true);
 						theShard->currentRecursionDepth = 0;
-						theShard->areWeReadyToConnectEvent.set();
 					}
 
 					if (payload["t"] == "READY") {
@@ -435,7 +426,6 @@ namespace DiscordCoreInternal {
 						this->discordCoreClient->currentUser = DiscordCoreAPI::BotUser{ theUser, this };
 						DiscordCoreAPI::Users::insertUser(theUser);
 						theShard->currentRecursionDepth = 0;
-						theShard->areWeReadyToConnectEvent.set();
 					}
 				}
 
@@ -1001,23 +991,19 @@ namespace DiscordCoreInternal {
 			if (this->connections.size() > 0) {
 				DiscordCoreAPI::ConnectionPackage connectData = this->connections.front();
 				this->connections.pop();
-				connectData.currentReconnectionDepth += 1;
-				std::unordered_map<int32_t, std::unique_ptr<DiscordCoreInternal::WebSocketSSLShard>> theMap{};
-				theMap[connectData.currentShard] = std::make_unique<WebSocketSSLShard>(&this->connections, this->currentBaseSocketAgent, connectData.currentShard,
-					this->discordCoreClient->shardingOptions.totalNumberOfShards, this->doWePrintErrorMessages, this->discordCoreClient->theFormat);
-				theMap[connectData.currentShard]->currentRecursionDepth = connectData.currentReconnectionDepth;
-				theMap[connectData.currentShard]->currentBaseSocketAgent = connectData.currentBaseSocketAgent;
-				theMap[connectData.currentShard]->lastNumberReceived = connectData.lastNumberReceived;
-				theMap[connectData.currentShard]->areWeResuming = connectData.areWeResuming;
-				theMap[connectData.currentShard]->sessionId = connectData.sessionId;
+				if (!this->theClients.contains(connectData.currentShard)) {
+					this->theClients[connectData.currentShard] = std::make_unique<WebSocketSSLShard>(&this->connections, this->currentBaseSocketAgent, connectData.currentShard,
+						this->discordCoreClient->shardingOptions.totalNumberOfShards, this->doWePrintErrorMessages, this->discordCoreClient->theFormat);
+				}
+				this->theClients[connectData.currentShard]->currentRecursionDepth += 1;
 
 				try {
-					theMap[connectData.currentShard]->connect(this->discordCoreClient->theAddress, this->discordCoreClient->thePort);
+					this->theClients[connectData.currentShard]->connect(this->discordCoreClient->theAddress, this->discordCoreClient->thePort);
 				} catch (...) {
 					if (this->doWePrintErrorMessages) {
 						DiscordCoreAPI::reportException("BaseSocketAgent::internalConnect()");
 					}
-					this->onClosed(theMap[connectData.currentShard].get());
+					this->onClosed(this->theClients[connectData.currentShard].get());
 					return;
 				}
 
@@ -1031,28 +1017,28 @@ namespace DiscordCoreInternal {
 						"\r\nPragma: no-cache\r\nUser-Agent: DiscordCoreAPI/1.0\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Key: " +
 						DiscordCoreAPI::generateBase64EncodedKey() + "\r\nSec-WebSocket-Version: 13\r\n\r\n";
 				}
-				theMap[connectData.currentShard]->writeData(sendString, true);
+				this->theClients[connectData.currentShard]->writeData(sendString, true);
 				while (!this->doWeQuit->load()) {
-					if (theMap[connectData.currentShard]->theState == WebSocketState::Connected) {
+					if (this->theClients[connectData.currentShard]->theState == WebSocketState::Connected) {
 						break;
 					}
 					try {
-						WebSocketSSLShard::processIO(theMap, 10000);
+						WebSocketSSLShard::processIO(this->theClients, 10000);
 					} catch (...) {
 						if (this->doWePrintErrorMessages) {
 							DiscordCoreAPI::reportException("BaseSocketAgent::internalConnect()");
 						}
 						return;
 					}
-					if (theMap.contains(connectData.currentShard)) {
-						this->parseHeadersAndMessage(theMap[connectData.currentShard].get());
+					if (this->theClients.contains(connectData.currentShard)) {
+						this->parseHeadersAndMessage(this->theClients[connectData.currentShard].get());
 					}
-					if (theMap.contains(connectData.currentShard)) {
-						this->onMessageReceived(theMap[connectData.currentShard].get());
+					if (this->theClients.contains(connectData.currentShard)) {
+						this->onMessageReceived(this->theClients[connectData.currentShard].get());
 					}
 					std::this_thread::sleep_for(1ms);
 				}
-				this->theClients[connectData.currentShard] = std::move(theMap[connectData.currentShard]);
+				this->theClients[connectData.currentShard] = std::move(this->theClients[connectData.currentShard]);
 			}
 		} catch (...) {
 			if (this->doWePrintErrorMessages) {

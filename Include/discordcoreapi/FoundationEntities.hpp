@@ -786,13 +786,9 @@ namespace DiscordCoreAPI {
 	 * @{
 	 */
 
-	struct ConnectionPackage {
-		int8_t currentReconnectionDepth{ 0 };
+	struct ConnectionPackage {;
 		int32_t currentBaseSocketAgent{ 0 };
-		int32_t lastNumberReceived{ 0 };
-		bool areWeResuming{ false };
 		int32_t currentShard{ 0 };
-		std::string sessionId{};
 	};
 
 	/// Permission values, for a given Channel, by Role or GuildMember. \brief Permission values, for a given Channel, by Role or GuildMember.

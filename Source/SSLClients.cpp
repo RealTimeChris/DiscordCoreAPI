@@ -252,7 +252,6 @@ namespace DiscordCoreInternal {
 		this->heartBeatStopWatch = DiscordCoreAPI::StopWatch<std::chrono::milliseconds>{ 10000ms };
 		this->currentBaseSocketAgent = currentBaseSocketAgentNew;
 		this->doWePrintErrors = doWePrintErrorsNew;
-		this->areWeReadyToConnectEvent.reset();
 		this->shard.push_back(currentShardNew);
 		this->shard.push_back(totalShardsNew);
 		this->connections = connectionsNew;
@@ -272,16 +271,18 @@ namespace DiscordCoreInternal {
 		bool didWeSetASocket{ false };
 		for (auto& [key, value]: theMap) {
 			if (value != nullptr) {
-				if ((value->outputBuffer.size() > 0 || value->wantWrite) && !value->wantRead) {
-					FD_SET(value->theSocket, &writeSet);
-					writeNfds = value->theSocket > writeNfds ? value->theSocket : writeNfds;
-					didWeSetASocket = true;
-				} else if (!value->wantWrite) {
-					FD_SET(value->theSocket, &readSet);
-					readNfds = value->theSocket > readNfds ? value->theSocket : readNfds;
-					didWeSetASocket = true;
+				if (value->theSocket != SOCKET_ERROR) {
+					if ((value->outputBuffer.size() > 0 || value->wantWrite) && !value->wantRead) {
+						FD_SET(value->theSocket, &writeSet);
+						writeNfds = value->theSocket > writeNfds ? value->theSocket : writeNfds;
+						didWeSetASocket = true;
+					} else if (!value->wantWrite) {
+						FD_SET(value->theSocket, &readSet);
+						readNfds = value->theSocket > readNfds ? value->theSocket : readNfds;
+						didWeSetASocket = true;
+					}
+					finalNfds = readNfds > writeNfds ? readNfds : writeNfds;
 				}
-				finalNfds = readNfds > writeNfds ? readNfds : writeNfds;
 			}
 		}
 
@@ -326,19 +327,7 @@ namespace DiscordCoreInternal {
 						[[fallthrough]];
 					}
 					default: {
-						DiscordCoreAPI::ConnectionPackage theData{};
-						theData.currentReconnectionDepth = value->currentRecursionDepth;
-						theData.currentBaseSocketAgent = value->currentBaseSocketAgent;
-						theData.lastNumberReceived = value->lastNumberReceived;
-						theData.areWeResuming = value->areWeResuming;
-						theData.sessionId = value->sessionId;
-						theData.currentShard = key;
-						if (value->connections != nullptr) {
-							value->connections->push(theData);
-						}
-						if (theMap.contains(theData.currentShard)) {
-							theMap.erase(theData.currentShard);
-						}
+						value->reconnect();
 						throw ProcessingError{ reportSSLError("Shard [" + std::to_string(key) + "], in WebSocketSSLShard::processIO()::SSL_read_ex(), ", errorValue, value->ssl) +
 							reportError("Shard [" + std::to_string(key) + "], in WebSocketSSLShard::processIO()::SSL_read_ex(), ") };
 					}
@@ -377,19 +366,7 @@ namespace DiscordCoreInternal {
 							[[fallthrough]];
 						}
 						default: {
-							DiscordCoreAPI::ConnectionPackage theData{};
-							theData.currentReconnectionDepth = value->currentRecursionDepth;
-							theData.currentBaseSocketAgent = value->currentBaseSocketAgent;
-							theData.lastNumberReceived = value->lastNumberReceived;
-							theData.areWeResuming = value->areWeResuming;
-							theData.sessionId = value->sessionId;
-							theData.currentShard = key;
-							if (value->connections != nullptr) {
-								value->connections->push(theData);
-							}
-							if (theMap.contains(theData.currentShard)) {
-								theMap.erase(theData.currentShard);
-							}
+							value->reconnect();
 							throw ProcessingError{ reportSSLError("Shard [" + std::to_string(key) + "], in WebSocketSSLShard::processIO()::SSL_write_ex(), ", errorValue,
 													   value->ssl) +
 								reportError("Shard [" + std::to_string(key) + "], in WebSocketSSLShard::processIO()::SSL_write_ex(), ") };
@@ -523,6 +500,31 @@ namespace DiscordCoreInternal {
 
 	int64_t WebSocketSSLShard::getBytesRead() noexcept {
 		return this->bytesRead;
+	}
+
+	void WebSocketSSLShard::reconnect() noexcept {
+		if (this->areWeConnected.load()) {
+			this->areWeConnected.store(false);
+
+			SSL_shutdown(this->ssl);
+			SSL_free(this->ssl);
+
+#ifdef _WIN32
+			shutdown(this->theSocket, SD_BOTH);
+			closesocket(this->theSocket);
+#else
+			shutdown(this->theSocket, SHUT_RDWR);
+			close(this->theSocket);
+#endif
+			this->theSocket = SOCKET_ERROR;
+
+			DiscordCoreAPI::ConnectionPackage theData{};
+			theData.currentBaseSocketAgent = this->currentBaseSocketAgent;
+			theData.currentShard = this->shard[0];
+			if (this->connections != nullptr) {
+				this->connections->push(theData);
+			}
+		}
 	}
 
 	void DatagramSocketSSLClient::connect(const std::string& baseUrlNew, const std::string& portNew) {

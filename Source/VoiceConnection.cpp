@@ -150,16 +150,13 @@ namespace DiscordCoreAPI {
 		this->areWeConnectedBool = true;
 		this->stopSetEvent.set();
 		this->pauseEvent.set();
-		while (!this->baseSocketAgent->theClients.contains(voiceConnectInitData.currentShard)) {
-			std::this_thread::sleep_for(1ms);
-		}
-		if (!this->baseSocketAgent->theClients[voiceConnectInitData.currentShard]->areWeReadyToConnectEvent.wait(10000)) {
-			return;
-		}
 		if (this->voiceSocketAgent) {
 			this->voiceSocketAgent.reset(nullptr);
 		}
 		if (this->baseSocketAgent != nullptr && this->baseSocketAgent->theClients[voiceConnectInitDataNew.currentShard] != nullptr) {
+			while (!this->baseSocketAgent->theClients[voiceConnectInitData.currentShard]->areWeConnected.load()) {
+				std::this_thread::sleep_for(1ms);
+			}
 			this->voiceSocketAgent = std::make_unique<DiscordCoreInternal::VoiceSocketAgent>(this->voiceConnectInitData, this->baseSocketAgent,
 				this->baseSocketAgent->theClients[voiceConnectInitDataNew.currentShard].get(), this->baseSocketAgent->doWePrintSuccessMessages);
 			this->doWeReconnect = &this->voiceSocketAgent->doWeReconnect;

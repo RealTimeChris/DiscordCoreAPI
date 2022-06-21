@@ -233,7 +233,7 @@ namespace DiscordCoreInternal {
 					shutdown(*other, SHUT_RDWR);
 					close(*other);
 #endif
-					*other = -1;
+					*other = SOCKET_ERROR;
 				}
 			}
 		};
@@ -324,6 +324,8 @@ namespace DiscordCoreInternal {
 
 		int64_t getBytesRead() noexcept;
 
+		void reconnect() noexcept;
+
 		~WebSocketSSLShard() noexcept = default;
 
 	  protected:
@@ -335,7 +337,6 @@ namespace DiscordCoreInternal {
 		int32_t maxBufferSize{ (1024 * 16) - 1 };
 		std::vector<std::string> outputBuffer{};
 		bool haveWeReceivedHeartbeatAck{ true };
-		EventWaiter areWeReadyToConnectEvent{};
 		int32_t currentBaseSocketAgent{ 0 };
 		int32_t currentRecursionDepth{ 0 };
 		SOCKETWrapper theSocket{ nullptr };
