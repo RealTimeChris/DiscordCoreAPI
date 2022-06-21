@@ -48,9 +48,9 @@ namespace DiscordCoreInternal {
 	  public:
 		friend HttpClient;
 
-		void updateRateLimitData(std::unordered_map<std::string, std::string>& headers, RateLimitData* theConnection);
+		void updateRateLimitData(std::unordered_map<std::string, std::string>& headers, RateLimitData& theConnection);
 
-		HttpResponseData finalizeReturnValues(RateLimitData* rateLimitDataPtr, HttpResponseData& theData);
+		HttpResponseData finalizeReturnValues(RateLimitData& rateLimitData, HttpResponseData& theData);
 
 		std::string buildRequest(const HttpWorkloadData& workload);
 
@@ -166,11 +166,11 @@ namespace DiscordCoreInternal {
 		const bool doWePrintHttpErrorMessages{};
 		const std::string botToken{};
 
-		HttpResponseData httpRequestInternal(const HttpWorkloadData& workload, HttpConnection& theConnection, RateLimitData* rateLimitDataPtr);
+		HttpResponseData httpRequestInternal(const HttpWorkloadData& workload, HttpConnection& theConnection, RateLimitData& rateLimitData);
 
 		HttpResponseData executeByRateLimitData(const HttpWorkloadData& workload, HttpConnection& theConnection);
 
-		HttpResponseData getResponse(HttpConnection& theConnection, RateLimitData* rateLimitDataPtr);
+		HttpResponseData getResponse(HttpConnection& theConnection, RateLimitData& rateLimitData);
 	};
 
 
