@@ -412,10 +412,8 @@ namespace DiscordCoreInternal {
 			if (theConnection.checkForHeadersToParse(theConnection.getInputBuffer()) && !theConnection.doWeHaveHeaders && !stopWatch.hasTimePassed()) {
 				theConnection.parseHeaders(theConnection.getInputBuffer(), theData);
 			}
-			if (static_cast<int64_t>(theConnection.getInputBuffer().size()) >= theData.contentSize && !theConnection.parseChunk(theConnection.getInputBuffer(), theData)) {
-				break;
-			}
-			if (stopWatch.hasTimePassed() || (theData.responseCode == -5 && theData.contentSize == -5) || !theConnection.parseChunk(theConnection.getInputBuffer(), theData)) {
+			if (static_cast<int64_t>(theConnection.getInputBuffer().size()) >= theData.contentSize && !theConnection.parseChunk(theConnection.getInputBuffer(), theData) ||
+				stopWatch.hasTimePassed() || (theData.responseCode == -5 && theData.contentSize == -5)) {
 				break;
 			}
 		};
