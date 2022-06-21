@@ -164,9 +164,8 @@ namespace DiscordCoreInternal {
 						}
 						std::this_thread::sleep_for(1ms);
 					}
-					theShard->areWeReadyToConnectEvent.wait(10000);
 					this->semaphore.release();
-					this->getVoiceConnectionData(doWeCollect, theShard);
+					this->getVoiceConnectionData(doWeCollect, this->theClients[theCurrentIndex].get());
 					return;
 				}
 				std::this_thread::sleep_for(500ms);
@@ -192,9 +191,8 @@ namespace DiscordCoreInternal {
 						}
 						std::this_thread::sleep_for(1ms);
 					}
-					theShard->areWeReadyToConnectEvent.wait(10000);
 					this->semaphore.release();
-					this->getVoiceConnectionData(doWeCollect, theShard);
+					this->getVoiceConnectionData(doWeCollect, this->theClients[theCurrentIndex].get());
 					return;
 				}
 				DiscordCoreAPI::StopWatch<std::chrono::milliseconds> theStopWatch{ 5000ms };
