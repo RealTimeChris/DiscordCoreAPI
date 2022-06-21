@@ -72,8 +72,7 @@ namespace DiscordCoreInternal {
 			this->currentIndex += 1;
 			this->currentCount += 1;
 			workerThread.theThread = std::jthread([=, this](std::stop_token theToken) {
-				auto thePtr = std::make_unique<HttpConnection>();
-				Globals::httpConnections[std::this_thread::get_id()] = std::move(thePtr);
+				Globals::httpConnections[std::this_thread::get_id()] = std::make_unique<HttpConnection>();
 				this->threadFunction(theToken, this->currentIndex);
 			});
 			this->workerThreads[this->currentIndex] = std::move(workerThread);
@@ -93,8 +92,7 @@ namespace DiscordCoreInternal {
 			this->currentCount += 1;
 			this->currentIndex += 1;
 			workerThread.theThread = std::jthread([=, this](std::stop_token theToken) {
-				auto thePtr = std::make_unique<HttpConnection>();
-				Globals::httpConnections[std::this_thread::get_id()] = std::move(thePtr);
+				Globals::httpConnections[std::this_thread::get_id()] = std::make_unique<HttpConnection>();
 				this->threadFunction(theToken, this->currentIndex);
 			});
 			this->workerThreads[this->currentIndex] = std::move(workerThread);
