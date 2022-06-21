@@ -851,8 +851,8 @@ namespace DiscordCoreAPI {
 
 	/// Represents which text format to use for websocket transfer. \brief Represents which text format to use for websocket transfer.
 	enum class TextFormat : int8_t {
-		Etf = 0x02,
-		Json = 0x01///< Etf format.
+		Etf = 0x00,///< Etf format.
+		Json = 0x01///< Json format.
 	};
 
 	template<typename StoredAsType, typename FlagType> StoredAsType setBool(StoredAsType inputFlag, FlagType theFlag, bool enabled) {
