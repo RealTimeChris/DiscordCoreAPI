@@ -433,6 +433,7 @@ namespace DiscordCoreInternal {
 					switch (payload["op"].get<int32_t>()) {
 						case 1: {
 							this->checkForAndSendHeartBeat(theShard, true);
+							return;
 						}
 						case 7: {
 							if (this->doWePrintErrorMessages) {
