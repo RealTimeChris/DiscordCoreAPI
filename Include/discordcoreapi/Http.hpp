@@ -32,10 +32,19 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll HttpConnectionManager;
 	struct DiscordCoreAPI_Dll RateLimitData;
 
+	enum class HttpState {
+		Collecting_Code = 0,///< Collecting the code.
+		Collecting_Headers = 1,///< Collecting the headers.
+		Collecting_Size = 2,///< Collecting the size.
+		Collecting_Contents = 3///< Collecting the chunk/content.
+	};
+
 	struct DiscordCoreAPI_Dll HttpResponseData {
 		friend class HttpRnRBuilder;
 		friend class HttpClient;
+		
 		std::unordered_map<std::string, std::string> responseHeaders{};
+		HttpState theCurrentState{ HttpState::Collecting_Headers };
 		std::string responseMessage{};
 		nlohmann::json responseData{};
 		int64_t responseCode{ -1 };

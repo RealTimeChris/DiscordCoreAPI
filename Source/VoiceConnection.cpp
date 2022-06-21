@@ -150,6 +150,9 @@ namespace DiscordCoreAPI {
 		this->areWeConnectedBool = true;
 		this->stopSetEvent.set();
 		this->pauseEvent.set();
+		while (!this->baseSocketAgent->theClients.contains(voiceConnectInitData.currentShard)) {
+			std::this_thread::sleep_for(1ms);
+		}
 		if (!this->baseSocketAgent->theClients[voiceConnectInitData.currentShard]->areWeReadyToConnectEvent.wait(10000)) {
 			return;
 		}
