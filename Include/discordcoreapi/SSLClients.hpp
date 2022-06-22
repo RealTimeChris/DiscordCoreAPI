@@ -337,7 +337,6 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::StopWatch<std::chrono::milliseconds> heartBeatStopWatch{ 0ms };
 		std::queue<DiscordCoreAPI::ConnectionPackage>* connections{ nullptr };
 		WebSocketState theState{ WebSocketState::Connecting01 };
-		std::atomic_bool haveWeBeenConnected{ false };
 		std::queue<std::string> processedMessages{};
 		VoiceConnectionData voiceConnectionData{};
 		std::atomic_bool areWeConnected{ false };
