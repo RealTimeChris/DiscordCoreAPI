@@ -195,7 +195,6 @@ namespace DiscordCoreAPI {
 			this->thePort = "443";
 		}
 
-		this->theStopWatch.resetTimer();
 		for (int32_t x = 0; x < shardsPerBaseSocketAgentVect.size(); x += 1) {
 			auto thePtr = std::make_unique<DiscordCoreInternal::BaseSocketAgent>(this, &Globals::doWeQuit, x);
 			this->baseSocketAgentMap[std::to_string(x)] = std::move(thePtr);

@@ -42,9 +42,9 @@ namespace DiscordCoreInternal {
 
 		BaseSocketAgent(DiscordCoreAPI::DiscordCoreClient* discordCoreClientNew, std::atomic_bool* doWeQuitNew, int32_t currentBaseSocketAgentNew) noexcept;
 
-		void sendMessage(const nlohmann::json& dataToSend, WebSocketSSLShard* theIndex) noexcept;
+		void sendMessage(const nlohmann::json& dataToSend, WebSocketSSLShard* theIndex, bool priority) noexcept;
 
-		void sendMessage(std::string& dataToSend, WebSocketSSLShard* theIndex) noexcept;
+		void sendMessage(std::string& dataToSend, WebSocketSSLShard* theIndex, bool priority) noexcept;
 
 		void connect(DiscordCoreAPI::ConnectionPackage) noexcept;
 
