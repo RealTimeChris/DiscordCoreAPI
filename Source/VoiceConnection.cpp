@@ -140,13 +140,8 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::reconnect() {
-		while (!this->voiceSocketAgent->areWeConnected.load()) {
-			std::this_thread::sleep_for(1ms);
-		}
-		this->areWeStopping.store(false);
-		this->areWeConnectedBool = true;
-		this->stopSetEvent.set();
-		this->pauseEvent.set();
+		std::cout << "WERE HERE THIS IS IT WERE DONE DONE DONE DONE" << std::endl;
+		this->connect(this->voiceConnectInitData);
 		this->play();
 	}
 
@@ -157,17 +152,17 @@ namespace DiscordCoreAPI {
 		this->stopSetEvent.set();
 		this->pauseEvent.set();
 		StopWatch theStopWatch{ 10000ms };
+		if (this->voiceSocketAgent) {
+			this->voiceSocketAgent.reset(nullptr);
+		}
 		while (!this->baseSocketAgent->theClients[voiceConnectInitData.currentShard]->areWeConnected.load()) {
 			std::this_thread::sleep_for(1ms);
+			std::cout << "WERE HERE THIS IS IT!020202" << std::endl;
 			if (theStopWatch.hasTimePassed()) {
 				return;
 			}
 		}
-		if (this->voiceSocketAgent) {
-			this->voiceSocketAgent.reset(nullptr);
-		}
 		if (this->baseSocketAgent != nullptr && this->baseSocketAgent->theClients[voiceConnectInitDataNew.currentShard] != nullptr) {
-			theStopWatch.resetTimer();
 			this->voiceSocketAgent = std::make_unique<DiscordCoreInternal::VoiceSocketAgent>(this->voiceConnectInitData, this->baseSocketAgent,
 				this->baseSocketAgent->theClients[voiceConnectInitDataNew.currentShard].get(), this->baseSocketAgent->doWePrintSuccessMessages);
 			theStopWatch.resetTimer();
@@ -196,6 +191,9 @@ namespace DiscordCoreAPI {
 		this->areWePlaying.store(false);
 		this->areWeStopping.store(true);
 		this->sendSpeakingMessage(false);
+		while (this->voiceSocketAgent->connections.size() > 0) {
+			this->voiceSocketAgent->connections.pop();
+		}
 		if (this->voiceSocketAgent) {
 			this->voiceSocketAgent.reset(nullptr);
 		}
@@ -246,7 +244,7 @@ namespace DiscordCoreAPI {
 		} else {
 			if (this->voiceSocketAgent) {
 				std::vector<uint8_t> newString = DiscordCoreInternal::JSONIFY(this->voiceSocketAgent->voiceConnectionData.audioSSRC, 0);
-				if (this->voiceSocketAgent->theClients.begin().operator*().second) {
+				if (this->voiceSocketAgent->theClients[3]) {
 					this->voiceSocketAgent->sendMessage(newString);
 				}
 			}
@@ -299,12 +297,9 @@ namespace DiscordCoreAPI {
 				this->areWePlaying.store(true);
 				if (this->doWeReconnect->load()) {
 					this->areWeConnectedBool = false;
-					this->sendSpeakingMessage(false);
 					this->reconnect();
-					this->sendSilence();
-					this->sendSpeakingMessage(true);
 					this->areWePlaying.store(true);
-					this->doWeReconnect->store(false);
+					this->sendSpeakingMessage(true);
 				}
 				if (this->areWeStopping.load()) {
 					this->areWePlaying.store(false);

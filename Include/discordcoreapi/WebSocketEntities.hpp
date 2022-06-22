@@ -137,11 +137,11 @@ namespace DiscordCoreInternal {
 
 		void onClosed(WebSocketSSLShard* theShard) noexcept;
 
+		void checkForAndSendHeartBeat() noexcept;
+
 		void run(std::stop_token) noexcept;
 
 		void collectExternalIP() noexcept;
-
-		void sendHeartBeat() noexcept;
 
 		void voiceConnect() noexcept;
 
