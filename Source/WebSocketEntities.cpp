@@ -49,7 +49,6 @@ namespace DiscordCoreInternal {
 	void BaseSocketAgent::sendMessage(const nlohmann::json& dataToSend, WebSocketSSLShard* theShard) noexcept {
 		if (theShard != nullptr) {
 			try {
-				std::unique_lock<std::recursive_mutex> theLock{ this->accessorMutex01 };
 				DiscordCoreAPI::StopWatch stopWatch{ 5500ms };
 				while (!theShard->areWeConnected.load() && !(dataToSend.contains("op") && (dataToSend["op"] == 2 || dataToSend["op"] == 6))) {
 					if (stopWatch.hasTimePassed()) {
@@ -78,7 +77,6 @@ namespace DiscordCoreInternal {
 	void BaseSocketAgent::sendMessage(std::string& dataToSend, WebSocketSSLShard* theShard) noexcept {
 		if (theShard != nullptr) {
 			try {
-				std::unique_lock<std::recursive_mutex> theLock{ this->accessorMutex01 };
 				if (this->doWePrintSuccessMessages) {
 					std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Sending WebSocket " + theShard->shard.dump() + std::string("'s Message: ") << std::endl
 							  << dataToSend << DiscordCoreAPI::reset();
@@ -131,6 +129,7 @@ namespace DiscordCoreInternal {
 	void BaseSocketAgent::getVoiceConnectionData(const VoiceConnectInitData& doWeCollect, WebSocketSSLShard* theShard) noexcept {
 		if (theShard != nullptr) {
 			try {
+				std::unique_lock<std::recursive_mutex> theLock{ this->accessorMutex01 };
 				DiscordCoreAPI::StopWatch<std::chrono::milliseconds> theStopWatch{ 5000ms };
 				int32_t theCurrentIndex = theShard->shard[0];
 				this->semaphore.acquire();
