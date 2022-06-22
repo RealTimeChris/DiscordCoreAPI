@@ -109,7 +109,6 @@ namespace DiscordCoreInternal {
 		std::unique_ptr<DatagramSocketSSLClient> voiceSocket{ nullptr };
 		std::unique_ptr<std::jthread> theTask{ nullptr };
 		VoiceConnectInitData voiceConnectInitData{};
-		BaseSocketAgent* baseSocketAgent{ nullptr };
 		WebSocketSSLShard* theBaseShard{ nullptr };
 		VoiceConnectionData voiceConnectionData{};
 		std::atomic_bool areWeConnected{ false };

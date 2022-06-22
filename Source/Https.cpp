@@ -403,9 +403,9 @@ namespace DiscordCoreInternal {
 			} catch (ProcessingError&) {
 				if (this->doWePrintHttpErrorMessages) {
 					DiscordCoreAPI::reportException("HttpClient::getResponse()");
-					theData.responseCode = -1;
-					return theData;
 				}
+				theData.responseCode = -1;
+				return theData;
 			}
 			bool doWeBreak{ false };
 			switch (theData.theCurrentState) {

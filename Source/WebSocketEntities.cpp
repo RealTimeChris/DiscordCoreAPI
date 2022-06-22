@@ -50,7 +50,7 @@ namespace DiscordCoreInternal {
 		if (theShard != nullptr) {
 			try {
 				DiscordCoreAPI::StopWatch stopWatch{ 5500ms };
-				while (!theShard->areWeConnected.load() && !(dataToSend.contains("op") && (dataToSend["op"] == 2 || dataToSend["op"] == 6))) {
+				while (!theShard->areWeConnected02.load() && !(dataToSend.contains("op") && (dataToSend["op"] == 2 || dataToSend["op"] == 6))) {
 					if (stopWatch.hasTimePassed()) {
 						return;
 					}
@@ -100,7 +100,7 @@ namespace DiscordCoreInternal {
 		while (!this->theClients.contains(thePackage.currentShard)) {
 			std::this_thread::sleep_for(1ms);
 		}
-		while (!this->theClients[thePackage.currentShard]->areWeConnected.load()) {
+		while (!this->theClients[thePackage.currentShard]->areWeConnected01.load()) {
 			std::this_thread::sleep_for(1ms);
 		}
 	}
@@ -114,6 +114,8 @@ namespace DiscordCoreInternal {
 							  << std::endl;
 				}
 				theShard->reconnect();
+				theShard->areWeConnected01.store(false);
+				theShard->areWeConnected02.store(false);
 			} else if (this->maxReconnectTries <= theShard->currentRecursionDepth) {
 				this->doWeQuit->store(true);
 				this->theTask->request_stop();
@@ -381,12 +383,12 @@ namespace DiscordCoreInternal {
 					}
 
 					if (payload["t"] == "RESUMED") {
-						theShard->areWeConnected.store(true);
+						theShard->areWeConnected02.store(true);
 						theShard->currentRecursionDepth = 0;
 					}
 
 					if (payload["t"] == "READY") {
-						theShard->areWeConnected.store(true);
+						theShard->areWeConnected02.store(true);
 						theShard->sessionId = payload["d"]["session_id"].get<std::string>();
 						DiscordCoreAPI::UserData theUser{};
 						parseObject(payload["d"]["user"], theUser);
@@ -985,6 +987,7 @@ namespace DiscordCoreInternal {
 						DiscordCoreAPI::generateBase64EncodedKey() + "\r\nSec-WebSocket-Version: 13\r\n\r\n";
 				}
 				this->theClients[connectData.currentShard]->writeData(sendString, true);
+				this->theClients[connectData.currentShard]->areWeConnected01.store(true);
 				while (!this->doWeQuit->load()) {
 					if (this->theClients[connectData.currentShard]->theState == WebSocketState::Connected) {
 						break;
@@ -1005,7 +1008,6 @@ namespace DiscordCoreInternal {
 					}
 					std::this_thread::sleep_for(1ms);
 				}
-				this->theClients[connectData.currentShard] = std::move(this->theClients[connectData.currentShard]);
 			}
 		} catch (...) {
 			if (this->doWePrintErrorMessages) {
@@ -1025,14 +1027,13 @@ namespace DiscordCoreInternal {
 		theShard->voiceConnectionDataBufferMap[initDataNew.guildId] = &this->voiceConnectionDataBuffer;
 		this->doWePrintSuccessMessages = baseBaseSocketAgentNew->doWePrintSuccessMessages;
 		this->doWePrintErrorMessages = baseBaseSocketAgentNew->doWePrintErrorMessages;
-		this->baseSocketAgent = baseBaseSocketAgentNew;
 		this->voiceConnectInitData = initDataNew;
 		this->theBaseShard = theShard;
 		this->doWeQuit = doWeQuitNew;
 		this->theTask = std::make_unique<std::jthread>([this](std::stop_token theToken) {
 			this->run(theToken);
 		});
-		this->baseSocketAgent->getVoiceConnectionData(initDataNew, theShard);
+		baseBaseSocketAgentNew->getVoiceConnectionData(initDataNew, theShard);
 	}
 
 	void VoiceSocketAgent::parseHeadersAndMessage(WebSocketSSLShard* theShard) noexcept {

@@ -338,8 +338,9 @@ namespace DiscordCoreInternal {
 		std::queue<DiscordCoreAPI::ConnectionPackage>* connections{ nullptr };
 		WebSocketState theState{ WebSocketState::Connecting01 };
 		std::queue<std::string> processedMessages{};
+		std::atomic_bool areWeConnected02{ false };
+		std::atomic_bool areWeConnected01{ false };
 		VoiceConnectionData voiceConnectionData{};
-		std::atomic_bool areWeConnected{ false };
 		int32_t maxBufferSize{ (1024 * 16) - 1 };
 		std::vector<std::string> outputBuffer{};
 		bool haveWeReceivedHeartbeatAck{ true };

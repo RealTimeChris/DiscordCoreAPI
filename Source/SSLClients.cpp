@@ -302,7 +302,6 @@ namespace DiscordCoreInternal {
 		this->heartBeatStopWatch.resetTimer();
 		this->shard.push_back(totalShardsNew);
 		this->connections = connectionsNew;
-		this->areWeConnected.store(false);
 		if (theFormat == DiscordCoreAPI::TextFormat::Etf) {
 			this->dataOpCode = WebSocketOpCode::Op_Binary;
 		} else {
@@ -554,8 +553,9 @@ namespace DiscordCoreInternal {
 	}
 
 	void WebSocketSSLShard::reconnect() noexcept {
-		if (this->areWeConnected.load()) {
-			this->areWeConnected.store(false);
+		if (this->areWeConnected01.load()) {
+			this->areWeConnected01.store(false);
+			this->areWeConnected02.store(false);
 
 			SSL_shutdown(this->ssl);
 			SSL_free(this->ssl);
@@ -566,17 +566,17 @@ namespace DiscordCoreInternal {
 			shutdown(this->theSocket, SHUT_RDWR);
 			close(this->theSocket);
 #endif
-		}
-		this->theSocket = SOCKET_ERROR;
-		this->inputBuffer.clear();
-		this->outputBuffer.clear();
-		this->theState = WebSocketState::Connecting01;
-		this->areWeHeartBeating = false;	
-		if (this->connections != nullptr) {
-			DiscordCoreAPI::ConnectionPackage theData{};
-			theData.currentBaseSocketAgent = this->currentBaseSocketAgent;
-			theData.currentShard = this->shard[0];
-			this->connections->push(theData);
+			this->theSocket = SOCKET_ERROR;
+			this->inputBuffer.clear();
+			this->outputBuffer.clear();
+			this->theState = WebSocketState::Connecting01;
+			this->areWeHeartBeating = false;
+			if (this->connections != nullptr) {
+				DiscordCoreAPI::ConnectionPackage theData{};
+				theData.currentBaseSocketAgent = this->currentBaseSocketAgent;
+				theData.currentShard = this->shard[0];
+				this->connections->push(theData);
+			}
 		}
 	}
 
