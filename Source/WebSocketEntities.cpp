@@ -1228,6 +1228,7 @@ namespace DiscordCoreInternal {
 					this->theClients[3]->haveWeReceivedHeartbeatAck = true;
 				};
 				if (payload["op"] == 2) {
+					this->areWeConnected.store(true);
 					this->voiceConnectionData.audioSSRC = payload["d"]["ssrc"].get<uint32_t>();
 					this->voiceConnectionData.voiceIp = payload["d"]["ip"].get<std::string>();
 					this->voiceConnectionData.voicePort = std::to_string(payload["d"]["port"].get<int64_t>());
@@ -1251,7 +1252,6 @@ namespace DiscordCoreInternal {
 				};
 				if (payload["op"] == 8) {
 					this->theClients[3]->theState = WebSocketState::Connected;
-					this->areWeConnected.store(true);
 					if (payload["d"].contains("heartbeat_interval")) {
 						this->heartbeatInterval = static_cast<int32_t>(payload["d"]["heartbeat_interval"].get<float>());
 						this->theClients[3]->areWeHeartBeating = false;
