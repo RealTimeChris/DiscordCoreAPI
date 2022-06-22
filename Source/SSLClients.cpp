@@ -275,7 +275,7 @@ namespace DiscordCoreInternal {
 	}
 
 	void HttpSSLClient::disconnect() noexcept {
-		if (this->ssl != nullptr) {
+		if (this->ssl) {
 			SSL_shutdown(this->ssl);
 			SSL_free(this->ssl);
 		}
@@ -316,7 +316,7 @@ namespace DiscordCoreInternal {
 		FD_ZERO(&writeSet);
 		bool didWeSetASocket{ false };
 		for (auto& [key, value]: theMap) {
-			if (value != nullptr) {
+			if (value) {
 				if (value->theSocket != SOCKET_ERROR) {
 					if ((value->outputBuffer.size() > 0 || value->wantWrite) && !value->wantRead) {
 						FD_SET(value->theSocket, &writeSet);
@@ -591,7 +591,7 @@ namespace DiscordCoreInternal {
 			this->outputBuffer.clear();
 			this->theState = WebSocketState::Connecting01;
 			this->areWeHeartBeating = false;
-			if (this->connections != nullptr) {
+			if (this->connections) {
 				DiscordCoreAPI::ConnectionPackage theData{};
 				theData.currentBaseSocketAgent = this->currentBaseSocketAgent;
 				theData.currentShard = this->shard[0];

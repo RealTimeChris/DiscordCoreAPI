@@ -54,7 +54,7 @@ namespace DiscordCoreAPI {
 	StringWrapper& StringWrapper::operator=(const StringWrapper& other) {
 		if (this != &other) {
 			std::stringstream theStream{};
-			if (other.thePtr != nullptr) {
+			if (other.thePtr) {
 				theStream << other.thePtr;
 			}
 			auto theLength = theStream.str().size();
@@ -86,7 +86,7 @@ namespace DiscordCoreAPI {
 	}
 
 	StringWrapper& StringWrapper::operator=(const char* theString) {
-		if (theString != nullptr) {
+		if (theString) {
 			std::stringstream theStream{};
 			theStream << theString;
 			int64_t theLength = theStream.str().size();
@@ -106,7 +106,7 @@ namespace DiscordCoreAPI {
 	StringWrapper& StringWrapper::operator=(StringWrapper& other) {
 		if (this != &other) {
 			std::stringstream theStream{};
-			if (other.thePtr != nullptr) {
+			if (other.thePtr) {
 				theStream << other.thePtr;
 			}
 			auto theLength = theStream.str().size();
@@ -125,7 +125,7 @@ namespace DiscordCoreAPI {
 
 	StringWrapper::operator std::basic_string<char, std::char_traits<char>, std::allocator<char>>() {
 		std::stringstream theStream{};
-		if (this->thePtr != nullptr) {
+		if (this->thePtr) {
 			theStream << this->thePtr;
 		}
 		std::string theString{};
@@ -137,7 +137,7 @@ namespace DiscordCoreAPI {
 
 	void StringWrapper::push_back(char theChar) {
 		std::stringstream theStream{};
-		if (this->thePtr != nullptr) {
+		if (this->thePtr) {
 			theStream << this->thePtr;
 		}
 		auto theLength = theStream.str().size();
@@ -151,7 +151,7 @@ namespace DiscordCoreAPI {
 
 	size_t StringWrapper::size() {
 		std::stringstream theStream{};
-		if (this->thePtr != nullptr) {
+		if (this->thePtr) {
 			theStream << this->thePtr;
 		}
 		auto theLength = theStream.str().size();

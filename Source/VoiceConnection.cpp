@@ -158,7 +158,7 @@ namespace DiscordCoreAPI {
 		if (this->voiceSocketAgent) {
 			this->voiceSocketAgent.reset(nullptr);
 		}
-		if (this->baseSocketAgent != nullptr && this->baseSocketAgent->theClients[voiceConnectInitDataNew.currentShard] != nullptr) {
+		if (this->baseSocketAgent && this->baseSocketAgent->theClients[voiceConnectInitDataNew.currentShard]) {
 			while (!this->baseSocketAgent->theClients[voiceConnectInitData.currentShard]->areWeConnected02.load()) {
 				std::this_thread::sleep_for(1ms);
 				if (theStopWatch.hasTimePassed()) {;
