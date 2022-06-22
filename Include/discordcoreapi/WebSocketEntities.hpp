@@ -90,7 +90,8 @@ namespace DiscordCoreInternal {
 	  public:
 		friend class DiscordCoreAPI::VoiceConnection;
 
-		VoiceSocketAgent(VoiceConnectInitData initDataNew, BaseSocketAgent* baseBaseSocketAgentNew, WebSocketSSLShard* theIndex, bool printMessagesNew) noexcept;
+		VoiceSocketAgent(VoiceConnectInitData initDataNew, BaseSocketAgent* baseBaseSocketAgentNew, WebSocketSSLShard* theIndex, bool printMessagesNew,
+			std::atomic_bool* doWeQuit) noexcept;
 
 		void sendMessage(const std::vector<uint8_t>& responseData) noexcept;
 
@@ -106,24 +107,18 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::TSUnboundedMessageBlock<VoiceConnectionData> voiceConnectionDataBuffer{};
 		std::unordered_map<int32_t, std::unique_ptr<WebSocketSSLShard>> theClients{};
 		std::unique_ptr<DatagramSocketSSLClient> voiceSocket{ nullptr };
-		WebSocketOpCode dataOpcode{ WebSocketOpCode::Op_Text };
 		std::unique_ptr<std::jthread> theTask{ nullptr };
 		VoiceConnectInitData voiceConnectInitData{};
 		BaseSocketAgent* baseSocketAgent{ nullptr };
-		WebSocketSSLShard* theBaseClient{ nullptr };
+		WebSocketSSLShard* theBaseShard{ nullptr };
 		VoiceConnectionData voiceConnectionData{};
 		std::atomic_bool areWeConnected{ false };
 		std::atomic_bool doWeReconnect{ false };
-		bool haveWeReceivedHeartbeatAck{ true };
 		bool doWePrintSuccessMessages{ false };
-		int32_t currentReconnectionTries{ 0 };
+		std::atomic_bool* doWeQuit{ nullptr };
 		bool doWePrintErrorMessages{ false };
-		std::atomic_bool doWeQuit{ false };
 		int32_t maxReconnectionTries{ 10 };
-		int32_t lastNumberReceived{ 0 };
-		bool areWeHeartBeating{ false };
 		int32_t heartbeatInterval{ 0 };
-		WebSocketCloseCode closeCode{};
 		std::string baseUrl{};
 		std::string hostIp{};
 

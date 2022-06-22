@@ -25,6 +25,10 @@
 
 namespace DiscordCoreAPI {
 
+	namespace Globals {
+		extern std::atomic_bool doWeQuit;
+	}
+
 	std::string VoiceConnection::encryptSingleAudioFrame(EncodedFrameData& bufferToSend, int32_t audioSSRC, const std::string& keys) {
 		if (keys.size() > 0) {
 			this->sequenceIndex += 1;
@@ -163,7 +167,7 @@ namespace DiscordCoreAPI {
 			}
 			theStopWatch.resetTimer();
 			this->voiceSocketAgent = std::make_unique<DiscordCoreInternal::VoiceSocketAgent>(this->voiceConnectInitData, this->baseSocketAgent,
-				this->baseSocketAgent->theClients[voiceConnectInitDataNew.currentShard].get(), this->baseSocketAgent->doWePrintSuccessMessages);
+				this->baseSocketAgent->theClients[voiceConnectInitDataNew.currentShard].get(), this->baseSocketAgent->doWePrintSuccessMessages, &Globals::doWeQuit);
 			this->doWeReconnect = &this->voiceSocketAgent->doWeReconnect;
 			while(!this->voiceSocketAgent->areWeConnected.load()) {
 				std::this_thread::sleep_for(1ms);

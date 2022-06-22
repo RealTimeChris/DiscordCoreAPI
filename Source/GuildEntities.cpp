@@ -115,14 +115,14 @@ namespace DiscordCoreAPI {
 
 	void Guild::disconnect() {
 		if (getVoiceConnectionMap().contains(this->id) && getVoiceConnectionMap()[this->id]) {
-			getVoiceConnectionMap()[this->id]->disconnect();
-			SongAPI::stop(this->id);
 			UpdateVoiceStateData updateVoiceData{};
 			updateVoiceData.channelId = 0;
 			updateVoiceData.selfDeaf = false;
 			updateVoiceData.selfMute = false;
 			updateVoiceData.guildId = this->id;
 			this->discordCoreClient->getBotUser().updateVoiceStatus(updateVoiceData);
+			getVoiceConnectionMap()[this->id]->disconnect();
+			SongAPI::stop(this->id);
 			getVoiceConnectionMap()[this->id].reset(nullptr);
 			this->voiceConnectionPtr = nullptr;
 		}
