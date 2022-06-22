@@ -552,6 +552,26 @@ namespace DiscordCoreInternal {
 		return this->bytesRead;
 	}
 
+	bool WebSocketSSLShard::areWeStillConnected() noexcept {
+		fd_set errorfds{};
+		int32_t nfds{};
+		FD_ZERO(&errorfds);
+		if (this->theSocket != SOCKET_ERROR) {
+			FD_SET(this->theSocket, &errorfds);
+			nfds = this->theSocket;
+			timeval checkTime{ .tv_usec = 1 };
+			if (auto returnValue = select(nfds + 1, nullptr, nullptr, &errorfds, &checkTime); returnValue == SOCKET_ERROR) {
+				return false;
+			}
+			if (FD_ISSET(this->theSocket, &errorfds)) {
+				return false;
+			}
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 	void WebSocketSSLShard::reconnect() noexcept {
 		if (this->areWeConnected01.load()) {
 			this->areWeConnected01.store(false);

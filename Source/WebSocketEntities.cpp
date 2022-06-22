@@ -1350,7 +1350,7 @@ namespace DiscordCoreInternal {
 
 	void VoiceSocketAgent::sendHeartBeat() noexcept {
 		try {
-			if (this->theClients[3]->haveWeReceivedHeartbeatAck) {
+			if (this->theClients[3] && this->theClients[3]->areWeStillConnected() && this->theClients[3]->haveWeReceivedHeartbeatAck) {
 				std::vector<uint8_t> heartbeatPayload = JSONIFY(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
 				this->sendMessage(heartbeatPayload);
 				this->theClients[3]->haveWeReceivedHeartbeatAck = false;
