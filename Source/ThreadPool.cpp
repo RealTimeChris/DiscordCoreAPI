@@ -46,7 +46,7 @@ namespace DiscordCoreAPI {
 namespace DiscordCoreInternal {
 
 	namespace Globals {
-		extern std::unordered_map<std::thread::id, std::unique_ptr<HttpConnection>> httpConnections{};
+		extern std::unordered_map<std::thread::id, std::unique_ptr<HttpConnection>> httpConnections;
 	}
 
 	WorkerThread& WorkerThread::operator=(WorkerThread&& other) noexcept {

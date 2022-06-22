@@ -134,8 +134,6 @@ namespace DiscordCoreInternal {
 
 		void onMessageReceived(const std::string& theMessage) noexcept;
 
-		void onClosed(WebSocketSSLShard* theShard) noexcept;
-
 		void run(std::stop_token) noexcept;
 
 		void collectExternalIP() noexcept;
@@ -143,6 +141,8 @@ namespace DiscordCoreInternal {
 		void sendHeartBeat() noexcept;
 
 		void voiceConnect() noexcept;
+
+		void onClosed() noexcept;
 
 		void connect() noexcept;
 	};

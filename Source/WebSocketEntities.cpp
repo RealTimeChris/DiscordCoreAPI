@@ -1137,15 +1137,16 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void VoiceSocketAgent::onClosed(WebSocketSSLShard* theShard) noexcept {
-		if (this->theClients.contains(3) && theShard != nullptr) {
+	void VoiceSocketAgent::onClosed() noexcept {
+		if (this->theClients.contains(3) && this->theClients[3] != nullptr) {
 			std::this_thread::sleep_for(500ms);
 			if (this->doWePrintErrorMessages) {
-				std::cout << DiscordCoreAPI::shiftToBrightRed() << "WebSocket " + theShard->shard.dump() + " Closed; Code: " << +static_cast<uint16_t>(theShard->closeCode)
+				std::cout << DiscordCoreAPI::shiftToBrightRed()
+						  << "WebSocket " + this->theClients[3]->shard.dump() + " Closed; Code: " << +static_cast<uint16_t>(this->theClients[3]->closeCode)
 						  << DiscordCoreAPI::reset() << std::endl
 						  << std::endl;
 			}
-			this->theClients[3].reset(nullptr);
+			this->theClients[3]->reconnect();
 		}
 	}
 
@@ -1186,7 +1187,7 @@ namespace DiscordCoreInternal {
 	void VoiceSocketAgent::onClosedExternal() noexcept {
 		this->doWeReconnect.store(true);
 		if (this->theClients.contains(3)) {
-			this->onClosed(this->theClients[3].get());
+			this->onClosed();
 		}
 	}
 
@@ -1250,7 +1251,7 @@ namespace DiscordCoreInternal {
 					for (uint32_t x = 0; x < payload["d"]["secret_key"].size(); x += 1) {
 						this->voiceConnectionData.secretKey.push_back(payload["d"]["secret_key"][x].get<uint8_t>());
 					}
-					theShard->areWeConnected.store(true);
+					this->theClients[3]->areWeConnected.store(true);
 				}
 				if (payload["op"] == 9) {
 				};
@@ -1258,7 +1259,7 @@ namespace DiscordCoreInternal {
 					this->theClients[3]->theState = WebSocketState::Connected;
 					if (payload["d"].contains("heartbeat_interval")) {
 						this->heartbeatInterval = static_cast<int32_t>(payload["d"]["heartbeat_interval"].get<float>());
-						this->areWeHeartBeating = false;
+						this->theClients[3]->areWeHeartBeating = false;
 					}
 					this->haveWeReceivedHeartbeatAck = true;
 					std::vector<uint8_t> identifyPayload = JSONIFY(this->voiceConnectionData, this->voiceConnectInitData);
@@ -1425,6 +1426,7 @@ namespace DiscordCoreInternal {
 					this->theClients.erase(3);
 				}
 			}
+			this->theClients[3]->areWeConnected.store(true);
 		} catch (...) {
 			if (this->doWePrintErrorMessages) {
 				DiscordCoreAPI::reportException("VoiceSocketAgent::connect()");
