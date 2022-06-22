@@ -106,10 +106,8 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::TSUnboundedMessageBlock<VoiceConnectionData> voiceConnectionDataBuffer{};
 		std::unordered_map<int32_t, std::unique_ptr<WebSocketSSLShard>> theClients{};
 		std::unique_ptr<DatagramSocketSSLClient> voiceSocket{ nullptr };
-		std::queue<DiscordCoreAPI::ConnectionPackage> connections{};
 		WebSocketOpCode dataOpcode{ WebSocketOpCode::Op_Text };
 		std::unique_ptr<std::jthread> theTask{ nullptr };
-		std::atomic_bool areWeFullyConnected{ false };
 		VoiceConnectInitData voiceConnectInitData{};
 		BaseSocketAgent* baseSocketAgent{ nullptr };
 		WebSocketSSLShard* theBaseClient{ nullptr };
@@ -137,11 +135,11 @@ namespace DiscordCoreInternal {
 
 		void onClosed(WebSocketSSLShard* theShard) noexcept;
 
-		void checkForAndSendHeartBeat() noexcept;
-
 		void run(std::stop_token) noexcept;
 
 		void collectExternalIP() noexcept;
+
+		void sendHeartBeat() noexcept;
 
 		void voiceConnect() noexcept;
 

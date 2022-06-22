@@ -573,7 +573,6 @@ namespace DiscordCoreInternal {
 		this->theState = WebSocketState::Connecting01;
 		this->areWeHeartBeating = false;	
 		if (this->connections != nullptr) {
-			std::cout << "WERE PLACING THE NEW CONNECTION DATA" << std::endl;
 			DiscordCoreAPI::ConnectionPackage theData{};
 			theData.currentBaseSocketAgent = this->currentBaseSocketAgent;
 			theData.currentShard = this->shard[0];
