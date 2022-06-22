@@ -140,7 +140,13 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::reconnect() {
-		this->connect(this->voiceConnectInitData);
+		while (!this->voiceSocketAgent->areWeFullyConnected.load()) {
+			std::this_thread::sleep_for(1ms);
+		}
+		this->areWeStopping.store(false);
+		this->areWeConnectedBool = true;
+		this->stopSetEvent.set();
+		this->pauseEvent.set();
 		this->play();
 	}
 
@@ -151,22 +157,24 @@ namespace DiscordCoreAPI {
 		this->stopSetEvent.set();
 		this->pauseEvent.set();
 		StopWatch theStopWatch{ 10000ms };
+		while (!this->baseSocketAgent->theClients[voiceConnectInitData.currentShard]->areWeConnected.load()) {
+			std::this_thread::sleep_for(1ms);
+			if (theStopWatch.hasTimePassed()) {
+				return;
+			}
+		}
 		if (this->voiceSocketAgent) {
 			this->voiceSocketAgent.reset(nullptr);
 		}
 		if (this->baseSocketAgent != nullptr && this->baseSocketAgent->theClients[voiceConnectInitDataNew.currentShard] != nullptr) {
-			while (!this->baseSocketAgent->theClients[voiceConnectInitData.currentShard]->areWeConnected.load()) {
-				std::this_thread::sleep_for(1ms);
-				if (theStopWatch.hasTimePassed()) {;
-					return;
-				}
-			}
 			theStopWatch.resetTimer();
 			this->voiceSocketAgent = std::make_unique<DiscordCoreInternal::VoiceSocketAgent>(this->voiceConnectInitData, this->baseSocketAgent,
 				this->baseSocketAgent->theClients[voiceConnectInitDataNew.currentShard].get(), this->baseSocketAgent->doWePrintSuccessMessages);
+			theStopWatch.resetTimer();
 			this->doWeReconnect = &this->voiceSocketAgent->doWeReconnect;
-			while(!this->voiceSocketAgent->areWeConnected.load()) {
+			while (!this->voiceSocketAgent->areWeConnected.load()) {
 				std::this_thread::sleep_for(1ms);
+				std::cout << "WERE HERE THIS IS IT!020202" << std::endl;
 				if (theStopWatch.hasTimePassed()) {
 					return;
 				}
@@ -293,6 +301,7 @@ namespace DiscordCoreAPI {
 					this->areWeConnectedBool = false;
 					this->sendSpeakingMessage(false);
 					this->reconnect();
+					this->sendSilence();
 					this->sendSpeakingMessage(true);
 					this->areWePlaying.store(true);
 					this->doWeReconnect->store(false);
