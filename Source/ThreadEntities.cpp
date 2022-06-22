@@ -20,7 +20,7 @@
 /// \file ThreadEntities.cpp
 
 #include <discordcoreapi/ThreadEntities.hpp>
-#include <discordcoreapi/Http.hpp>
+#include <discordcoreapi/Https.hpp>
 #include <discordcoreapi/JSONIfier.hpp>
 
 namespace DiscordCoreAPI {

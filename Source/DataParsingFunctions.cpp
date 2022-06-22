@@ -22,7 +22,7 @@
 #include <discordcoreapi/DataParsingFunctions.hpp>
 #include <discordcoreapi/ApplicationCommandEntities.hpp>
 #include <discordcoreapi/AutoModerationEntities.hpp>
-#include <discordcoreapi/Http.hpp>
+#include <discordcoreapi/Https.hpp>
 #include <discordcoreapi/GuildEntities.hpp>
 #include <discordcoreapi/GuildMemberEntities.hpp>
 #include <discordcoreapi/ChannelEntities.hpp>

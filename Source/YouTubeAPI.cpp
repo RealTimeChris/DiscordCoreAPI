@@ -20,7 +20,7 @@
 /// \file YouTubeAPI.cpp
 
 #include <discordcoreapi/YouTubeAPI.hpp>
-#include <discordcoreapi/Http.hpp>
+#include <discordcoreapi/Https.hpp>
 #include <discordcoreapi/DiscordCoreClient.hpp>
 #include <discordcoreapi/SSLClients.hpp>
 #include <discordcoreapi/VoiceConnection.hpp>

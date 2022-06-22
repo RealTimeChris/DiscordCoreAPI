@@ -24,7 +24,7 @@
 #include <discordcoreapi/AudioDecoder.hpp>
 #include <discordcoreapi/AudioEncoder.hpp>
 #include <discordcoreapi/CoRoutine.hpp>
-#include <discordcoreapi/Http.hpp>
+#include <discordcoreapi/Https.hpp>
 
 namespace DiscordCoreInternal {
 

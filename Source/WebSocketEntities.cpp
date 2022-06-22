@@ -366,12 +366,15 @@ namespace DiscordCoreInternal {
 							theShard->areWeCollectingData = false;
 						}
 					}
-
+					if (payload["d"].contains("session_id")) {
+						std::cout << payload["d"]["session_id"].get<std::string>() << std::endl;
+					}
 					if (theShard->areWeCollectingData && payload["t"] == "VOICE_STATE_UPDATE" && !theShard->stateUpdateCollected &&
 						payload["d"]["member"]["user"]["id"] == std::to_string(theShard->userId)) {
 						if (!theShard->stateUpdateCollected && !theShard->serverUpdateCollected) {
 							theShard->voiceConnectionData = VoiceConnectionData{};
 							theShard->voiceConnectionData.sessionId = payload["d"]["session_id"].get<std::string>();
+							std::cout << "SESSIONID: " << theShard->voiceConnectionData.sessionId << std::endl;
 							theShard->stateUpdateCollected = true;
 						} else {
 							theShard->voiceConnectionData.sessionId = payload["d"]["session_id"].get<std::string>();
@@ -1260,6 +1263,7 @@ namespace DiscordCoreInternal {
 						this->areWeHeartBeating = false;
 					}
 					theShard->haveWeReceivedHeartbeatAck = true;
+					std::cout << "SESSION ID: " << theShard->voiceConnectionData.sessionId << std::endl;
 					std::vector<uint8_t> identifyPayload = JSONIFY(theShard->voiceConnectionData, theShard->voiceConnectInitData);
 					this->sendMessage(identifyPayload, theShard);
 				}
@@ -1276,9 +1280,6 @@ namespace DiscordCoreInternal {
 		try {
 			this->connect();
 			while (!theToken.stop_requested() && !this->doWeQuit.load() && !this->doWeReconnect.load()) {
-				if (this->doWeReconnect.load()) {
-					this->connect();
-				}
 				if (this->heartbeatInterval != 0 && !this->areWeHeartBeating) {
 					this->areWeHeartBeating = true;
 					this->theClients[3]->heartBeatStopWatch = DiscordCoreAPI::StopWatch{ std::chrono::milliseconds{ this->heartbeatInterval } };
@@ -1383,13 +1384,14 @@ namespace DiscordCoreInternal {
 	
 	void VoiceSocketAgent::connect() noexcept {
 		try {
-			if (!this->theClients.contains(3)) {
-				this->theClients[3] = std::make_unique<WebSocketSSLShard>(nullptr, 0, 3, 0, this->doWePrintErrorMessages, DiscordCoreAPI::TextFormat::Json);
-			}
-			DiscordCoreAPI::waitForTimeToPass(this->voiceConnectionDataBuffer, theClients[3]->voiceConnectionData, 20000);
-			this->baseUrl = theClients[3]->voiceConnectionData.endPoint.substr(0, theClients[3]->voiceConnectionData.endPoint.find(":"));
+			this->theClients[3] = std::make_unique<WebSocketSSLShard>(nullptr, 0, 3, 0, this->doWePrintErrorMessages, DiscordCoreAPI::TextFormat::Json);
+			DiscordCoreAPI::waitForTimeToPass(this->voiceConnectionDataBuffer, this->theClients[3]->voiceConnectionData, 20000);
+			this->baseUrl = this->theClients[3]->voiceConnectionData.endPoint.substr(0, this->theClients[3]->voiceConnectionData.endPoint.find(":"));
+			this->theClients[3]->connect(this->baseUrl, "443");
 			
-			theClients[3]->connect(this->baseUrl, "443");
+			std::cout << "THE URL: " << this->baseUrl << std::endl;
+			
+			
 			std::string sendVector = "GET /?v=4 HTTP/1.1\r\nHost: " + this->baseUrl +
 				"\r\nPragma: no-cache\r\nUser-Agent: DiscordCoreAPI/1.0\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Key: " +
 				DiscordCoreAPI::generateBase64EncodedKey() + "\r\nSec-WebSocket-Version: 13\r\n\r\n";

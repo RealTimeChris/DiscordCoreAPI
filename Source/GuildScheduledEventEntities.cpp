@@ -22,7 +22,7 @@
 #include <discordcoreapi/GuildScheduledEventEntities.hpp>
 #include <discordcoreapi/DataParsingFunctions.hpp>
 #include <discordcoreapi/JSONIfier.hpp>
-#include <discordcoreapi/Http.hpp>
+#include <discordcoreapi/Https.hpp>
 
 namespace DiscordCoreAPI {
 

@@ -26,7 +26,7 @@
 #include <discordcoreapi/YouTubeAPI.hpp>
 #include <discordcoreapi/SoundCloudAPI.hpp>
 #include <discordcoreapi/RoleEntities.hpp>
-#include <discordcoreapi/Http.hpp>
+#include <discordcoreapi/Https.hpp>
 
 namespace DiscordCoreAPI {
 

@@ -21,7 +21,7 @@
 
 #include <discordcoreapi/ReactionEntities.hpp>
 #include <discordcoreapi/CoRoutine.hpp>
-#include <discordcoreapi/Http.hpp>
+#include <discordcoreapi/Https.hpp>
 #include <fstream>
 
 namespace DiscordCoreAPI {

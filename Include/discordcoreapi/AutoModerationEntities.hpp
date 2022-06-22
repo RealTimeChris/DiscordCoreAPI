@@ -23,7 +23,7 @@
 
 #include <discordcoreapi/FoundationEntities.hpp>
 #include <discordcoreapi/CoRoutine.hpp>
-#include <discordcoreapi/Http.hpp>
+#include <discordcoreapi/Https.hpp>
 
 namespace DiscordCoreAPI {
 

@@ -24,7 +24,7 @@
 #include <discordcoreapi/EventEntities.hpp>
 #include <discordcoreapi/ThreadPool.hpp>
 #include <discordcoreapi/CoRoutine.hpp>
-#include <discordcoreapi/Http.hpp>
+#include <discordcoreapi/Https.hpp>
 
 namespace DiscordCoreAPI {
 

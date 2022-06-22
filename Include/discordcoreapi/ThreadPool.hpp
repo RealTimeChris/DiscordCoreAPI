@@ -22,7 +22,7 @@
 #pragma once
 
 #include <discordcoreapi/FoundationEntities.hpp>
-#include <discordcoreapi/Http.hpp>
+#include <discordcoreapi/Https.hpp>
 
 namespace DiscordCoreAPI {
 	/**

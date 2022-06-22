@@ -14,10 +14,10 @@
 	If not, see <https://www.gnu.org/licenses/>.
 
 */
-/// Http.hpp - Header file for the "Http Stuff".
+/// Https.hpp - Header file for the "Http Stuff".
 /// May 12, 2021
 /// https://discordcoreapi.com
-/// \file Http.hpp
+/// \file Https.hpp
 
 #pragma once
 

@@ -22,7 +22,7 @@
 #include <discordcoreapi/GuildMemberEntities.hpp>
 #include <discordcoreapi/GuildEntities.hpp>
 #include <discordcoreapi/CoRoutine.hpp>
-#include <discordcoreapi/Http.hpp>
+#include <discordcoreapi/Https.hpp>
 #include <discordcoreapi/JSONIfier.hpp>
 
 namespace DiscordCoreAPI {

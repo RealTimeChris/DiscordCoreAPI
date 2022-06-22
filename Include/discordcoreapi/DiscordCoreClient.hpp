@@ -32,7 +32,7 @@
 #include <discordcoreapi/GuildEntities.hpp>
 #include <discordcoreapi/GuildMemberEntities.hpp>
 #include <discordcoreapi/GuildScheduledEventEntities.hpp>
-#include <discordcoreapi/Http.hpp>
+#include <discordcoreapi/Https.hpp>
 #include <discordcoreapi/InputEvents.hpp>
 #include <discordcoreapi/InteractionEntities.hpp>
 #include <discordcoreapi/MessageEntities.hpp>

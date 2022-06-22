@@ -20,7 +20,7 @@
 /// \file WebHookEntities.cpp
 
 #include <discordcoreapi/WebHookEntities.hpp>
-#include <discordcoreapi/Http.hpp>
+#include <discordcoreapi/Https.hpp>
 #include <discordcoreapi/DataParsingFunctions.hpp>
 #include <discordcoreapi/CoRoutine.hpp>
 

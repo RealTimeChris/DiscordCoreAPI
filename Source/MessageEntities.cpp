@@ -22,7 +22,7 @@
 #include <discordcoreapi/MessageEntities.hpp>
 #include <discordcoreapi/DiscordCoreClient.hpp>
 #include <discordcoreapi/CoRoutine.hpp>
-#include <discordcoreapi/Http.hpp>
+#include <discordcoreapi/Https.hpp>
 #include <discordcoreapi/EventEntities.hpp>
 
 namespace DiscordCoreAPI {

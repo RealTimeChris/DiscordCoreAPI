@@ -19,7 +19,7 @@
 /// https://discordcoreapi.com
 /// \file Http.cpp
 
-#include <discordcoreapi/Http.hpp>
+#include <discordcoreapi/Https.hpp>
 #include <discordcoreapi/CoRoutine.hpp>
 #include <discordcoreapi/DiscordCoreClient.hpp>
 #include <discordcoreapi/ThreadPool.hpp>
