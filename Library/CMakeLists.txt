@@ -126,8 +126,8 @@ install(
 install(
 	TARGETS "${LIB_NAME}"
 	EXPORT "${EXPORTED_TARGETS_NAME}"
-	RUNTIME DESTINATION "$<$<NOT:$<PLATFORM_ID:Linux>>:$<IF:$<CONFIG:Debug>,debug/bin,bin>>"
-	ARCHIVE DESTINATION "$<IF:$<CONFIG:Debug>,debug/lib,lib>"
+	RUNTIME DESTINATION "$<$<NOT:$<PLATFORM_ID:Linux>>:$<IF:$<CONFIG:Debug>,${DEBUG_PREFIX}bin,bin>>"
+	ARCHIVE DESTINATION "$<IF:$<CONFIG:Debug>,${DEBUG_PREFIX}lib,lib>"
 	PUBLIC_HEADER DESTINATION "include/discordcoreapi"
 )
 
@@ -142,7 +142,7 @@ if (WIN32)
 	install(
 		FILES 
 		"$<TARGET_PDB_FILE:${LIB_NAME}>"
-		DESTINATION "$<IF:$<CONFIG:Debug>,debug/bin,bin>"
+		DESTINATION "$<IF:$<CONFIG:Debug>,${DEBUG_PREFIX}bin,bin>"
 		OPTIONAL
 	)
 endif()
