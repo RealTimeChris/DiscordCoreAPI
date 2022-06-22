@@ -142,7 +142,7 @@ namespace DiscordCoreInternal {
 				theStopWatch.resetTimer();
 				std::string theString{};
 				this->stringifyJsonData(newData, theString, theShard->dataOpCode);
-				theShard->writeData(theString, false);
+				theShard->writeData(theString, true);
 				std::this_thread::sleep_for(500ms);
 				if (doWeCollect.channelId == 0) {
 					this->semaphore.release();
@@ -153,7 +153,7 @@ namespace DiscordCoreInternal {
 				theShard->areWeCollectingData = true;
 				std::string theString02{};
 				this->stringifyJsonData(newData, theString02, theShard->dataOpCode);
-				theShard->writeData(theString02, false);
+				theShard->writeData(theString02, true);
 				theStopWatch.resetTimer();
 				while (theShard->areWeCollectingData) {
 					if (theStopWatch.hasTimePassed()) {
@@ -1228,7 +1228,6 @@ namespace DiscordCoreInternal {
 					this->theClients[3]->haveWeReceivedHeartbeatAck = true;
 				};
 				if (payload["op"] == 2) {
-					this->areWeConnected.store(true);
 					this->voiceConnectionData.audioSSRC = payload["d"]["ssrc"].get<uint32_t>();
 					this->voiceConnectionData.voiceIp = payload["d"]["ip"].get<std::string>();
 					this->voiceConnectionData.voicePort = std::to_string(payload["d"]["port"].get<int64_t>());
@@ -1244,6 +1243,7 @@ namespace DiscordCoreInternal {
 					this->sendMessage(protocolPayloadSelectString);
 				}
 				if (payload["op"] == 4) {
+					this->areWeConnected.store(true);
 					for (uint32_t x = 0; x < payload["d"]["secret_key"].size(); x += 1) {
 						this->voiceConnectionData.secretKey.push_back(payload["d"]["secret_key"][x].get<uint8_t>());
 					}
