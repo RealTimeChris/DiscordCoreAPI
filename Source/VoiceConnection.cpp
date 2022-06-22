@@ -167,6 +167,13 @@ namespace DiscordCoreAPI {
 			this->voiceSocketAgent = std::make_unique<DiscordCoreInternal::VoiceSocketAgent>(this->voiceConnectInitData, this->baseSocketAgent,
 				this->baseSocketAgent->theClients[voiceConnectInitDataNew.currentShard].get(), this->baseSocketAgent->doWePrintSuccessMessages);
 			this->doWeReconnect = &this->voiceSocketAgent->doWeReconnect;
+			while (!this->voiceSocketAgent->theClients.contains(3)) {
+				std::this_thread::sleep_for(1ms);
+				if (theStopWatch.hasTimePassed()) {
+					return;
+				}
+			}
+			theStopWatch.resetTimer();
 			while (!this->voiceSocketAgent->theClients[3]->areWeConnected.load()) {
 				std::this_thread::sleep_for(1ms);
 				if (theStopWatch.hasTimePassed()) {
@@ -240,7 +247,7 @@ namespace DiscordCoreAPI {
 			if (this->voiceSocketAgent) {
 				std::vector<uint8_t> newString = DiscordCoreInternal::JSONIFY(this->voiceSocketAgent->theClients[3]->voiceConnectionData.audioSSRC, 0);
 				if (this->voiceSocketAgent->theClients.begin().operator*().second) {
-					this->voiceSocketAgent->sendMessage(newString, this->voiceSocketAgent->theClients[3].get());
+					this->voiceSocketAgent->sendMessage(newString);
 				}
 			}
 		}
