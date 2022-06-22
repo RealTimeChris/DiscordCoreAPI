@@ -14,10 +14,10 @@
 	If not, see <https://www.gnu.org/licenses/>.
 
 */
-/// Http.cpp - Source file for the Http class.
+/// Https.cpp - Source file for the Http class.
 /// May 12, 2021
 /// https://discordcoreapi.com
-/// \file Http.cpp
+/// \file Https.cpp
 
 #include <discordcoreapi/Https.hpp>
 #include <discordcoreapi/CoRoutine.hpp>
