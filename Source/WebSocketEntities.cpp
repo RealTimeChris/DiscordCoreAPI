@@ -1246,12 +1246,12 @@ namespace DiscordCoreInternal {
 					for (uint32_t x = 0; x < payload["d"]["secret_key"].size(); x += 1) {
 						this->voiceConnectionData.secretKey.push_back(payload["d"]["secret_key"][x].get<uint8_t>());
 					}
-					this->areWeConnected.store(true);
 				}
 				if (payload["op"] == 9) {
 				};
 				if (payload["op"] == 8) {
 					this->theClients[3]->theState = WebSocketState::Connected;
+					this->areWeConnected.store(true);
 					if (payload["d"].contains("heartbeat_interval")) {
 						this->heartbeatInterval = static_cast<int32_t>(payload["d"]["heartbeat_interval"].get<float>());
 						this->theClients[3]->areWeHeartBeating = false;
