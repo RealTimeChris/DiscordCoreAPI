@@ -140,7 +140,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::reconnect() {
-		while (!this->voiceSocketAgent->areWeFullyConnected.load()) {
+		while (!this->voiceSocketAgent->areWeConnected.load()) {
 			std::this_thread::sleep_for(1ms);
 		}
 		this->areWeStopping.store(false);
