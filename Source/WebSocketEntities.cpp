@@ -830,6 +830,7 @@ namespace DiscordCoreInternal {
 									this->discordCoreClient->eventManager.onWebhookUpdateEvent(*dataPackage);
 								}
 							}
+							break;
 						}
 						case 1: {
 							this->checkForAndSendHeartBeat(theShard, true);
@@ -1160,8 +1161,8 @@ namespace DiscordCoreInternal {
 	}
 
 	void VoiceSocketAgent::onClosedExternal() noexcept {
-		this->doWeReconnect.store(true);
-		if (this->theClients.contains(3) && this->theClients[3]) {
+		if (this->theClients.contains(3) && this->theClients[3] && this->theClients[3]->areWeStillConnected() && !this->doWeReconnect.load()) {
+			this->doWeReconnect.store(true);
 			if (this->doWePrintErrorMessages) {
 				std::cout << DiscordCoreAPI::shiftToBrightRed()
 						  << "Voice WebSocket " + this->theClients[3]->shard.dump() + " Closed; Code: " << +static_cast<uint16_t>(this->theClients[3]->closeCode)
