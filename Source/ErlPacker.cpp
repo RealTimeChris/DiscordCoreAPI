@@ -48,7 +48,7 @@ namespace DiscordCoreInternal {
 
 	template<typename ReturnType> void ErlPacker::etfByteOrder(ReturnType x, ReturnType& theValue) {
 		const uint8_t byteSize{ 8 };
-		for (uint32_t y = 0; y < sizeof(ReturnType); y += 1) {
+		for (uint32_t y = 0; y < sizeof(ReturnType); y++) {
 			theValue |= static_cast<ReturnType>(static_cast<uint8_t>(x >> (byteSize * y))) << byteSize * (sizeof(ReturnType) - y - 1);
 		}
 	}
@@ -57,7 +57,7 @@ namespace DiscordCoreInternal {
 		const uint8_t byteSize{ 8 };
 		ReturnType newVal{};
 		ErlPacker::etfByteOrder(num, newVal);
-		for (uint32_t x = 0; x < sizeof(ReturnType); x += 1) {
+		for (uint32_t x = 0; x < sizeof(ReturnType); x++) {
 			to[offSet + static_cast<size_t>(x)] = static_cast<uint8_t>(newVal >> (byteSize * x));
 		}
 	}
@@ -226,7 +226,7 @@ namespace DiscordCoreInternal {
 			throw ErlPackError{ "ErlPacker::readBits(), readBits() past end of buffer" };
 		}
 		ReturnType newValue{ 0 };
-		for (uint64_t x = 0; x < sizeof(ReturnType); x += 1) {
+		for (uint64_t x = 0; x < sizeof(ReturnType); x++) {
 			newValue |= static_cast<ReturnType>(static_cast<uint64_t>(buffer.buffer.data()[buffer.offSet + x]) << (x * static_cast<uint64_t>(byteSize)));
 		}
 		buffer.offSet += sizeof(ReturnType);

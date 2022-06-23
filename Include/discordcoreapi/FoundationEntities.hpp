@@ -221,7 +221,7 @@ namespace DiscordCoreAPI {
 			}
 
 			void incrementCount() const {
-				this->refCount += 1;
+				this->refCount++;
 			}
 
 			void release() const {
@@ -340,7 +340,7 @@ namespace DiscordCoreAPI {
 		std::stringstream theStream{};
 		theStream << lhs << rhs;
 		std::string theReturnString{};
-		for (uint64_t x = 0; x < theStream.str().size(); x += 1) {
+		for (uint64_t x = 0; x < theStream.str().size(); x++) {
 			theReturnString.push_back(theStream.str()[x]);
 		}
 		return theReturnString;
@@ -350,14 +350,14 @@ namespace DiscordCoreAPI {
 		std::stringstream theStream{};
 		theStream << lhs << rhs;
 		std::string theReturnString{};
-		for (uint64_t x = 0; x < theStream.str().size(); x += 1) {
+		for (uint64_t x = 0; x < theStream.str().size(); x++) {
 			theReturnString.push_back(theStream.str()[x]);
 		}
 		return theReturnString;
 	}
 
 	inline bool operator!=(StringWrapper lhs, const char* rhs) {
-		for (uint64_t x = 0; x < static_cast<std::string>(rhs).size(); x += 1) {
+		for (uint64_t x = 0; x < static_cast<std::string>(rhs).size(); x++) {
 			if (static_cast<std::string>(lhs)[x] != static_cast<std::string>(rhs)[x]) {
 				return false;
 			}
@@ -366,7 +366,7 @@ namespace DiscordCoreAPI {
 	}
 
 	inline bool operator==(std::string& lhs, StringWrapper& rhs) {
-		for (uint64_t x = 0; x < static_cast<std::string>(rhs).size(); x += 1) {
+		for (uint64_t x = 0; x < static_cast<std::string>(rhs).size(); x++) {
 			if (lhs[x] != static_cast<std::string>(rhs)[x]) {
 				return false;
 			}
@@ -555,7 +555,7 @@ namespace DiscordCoreAPI {
 
 		int64_t getTime() {
 			int64_t theValue{};
-			for (int32_t x = 1970; x < this->year; x += 1) {
+			for (int32_t x = 1970; x < this->year; x++) {
 				theValue += this->secondsInJan;
 				theValue += this->secondsInFeb;
 				theValue += this->secondsInMar;

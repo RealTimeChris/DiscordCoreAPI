@@ -853,7 +853,7 @@ namespace DiscordCoreInternal {
 										  << std::endl
 										  << std::endl;
 							}
-							theShard->currentRecursionDepth += 1;
+							theShard->currentRecursionDepth++;
 							std::mt19937_64 randomEngine{ static_cast<uint64_t>(std::chrono::system_clock::now().time_since_epoch().count()) };
 							int32_t numOfMsToWait =
 								static_cast<int32_t>(1000.0f + ((static_cast<float>(randomEngine()) / static_cast<float>(randomEngine.max())) * static_cast<float>(4000.0f)));
@@ -955,7 +955,7 @@ namespace DiscordCoreInternal {
 					this->theClients[connectData.currentShard] = std::make_unique<WebSocketSSLShard>(&this->connections, this->currentBaseSocketAgent, connectData.currentShard,
 						this->discordCoreClient->shardingOptions.totalNumberOfShards, this->doWePrintErrorMessages, this->discordCoreClient->theFormat);
 				}
-				this->theClients[connectData.currentShard]->currentRecursionDepth += 1;
+				this->theClients[connectData.currentShard]->currentRecursionDepth++;
 
 				try {
 					this->theClients[connectData.currentShard]->connect(this->discordCoreClient->theAddress, this->discordCoreClient->thePort);
@@ -1235,7 +1235,7 @@ namespace DiscordCoreInternal {
 					if (payload["op"] == 4) {
 						this->areWeConnected.store(true);
 						this->theClients[3]->areWeConnected01.store(true);
-						for (uint32_t x = 0; x < payload["d"]["secret_key"].size(); x += 1) {
+						for (uint32_t x = 0; x < payload["d"]["secret_key"].size(); x++) {
 							this->voiceConnectionData.secretKey.push_back(payload["d"]["secret_key"][x].get<uint8_t>());
 						}
 					}
@@ -1394,7 +1394,7 @@ namespace DiscordCoreInternal {
 			}
 			int32_t currentDepth{ 0 };
 			while (!this->doWeQuit->load()) {
-				currentDepth += 1;
+				currentDepth++;
 				if (this->theClients[3]->theState == WebSocketState::Connected) {
 					break;
 				}

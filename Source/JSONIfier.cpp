@@ -354,7 +354,7 @@ namespace DiscordCoreInternal {
 		newOption["options"] = nlohmann::json{};
 		newOption["choices"] = nlohmann::json{};
 		if (dataPackage.choices.size() > 0) {
-			for (int32_t x = 0; x < dataPackage.choices.size(); x += 1) {
+			for (int32_t x = 0; x < dataPackage.choices.size(); x++) {
 				nlohmann::json jsonValue{};
 				jsonValue["name_localizations"] = dataPackage.choices[x].nameLocalizations;
 				jsonValue["value"] = dataPackage.choices[x].value;
@@ -406,7 +406,7 @@ namespace DiscordCoreInternal {
 		data["name"] = dataPackage.name;
 		data["type"] = dataPackage.type;
 		if (dataPackage.options.size() > 0) {
-			for (int32_t x = 0; x < dataPackage.options.size(); x += 1) {
+			for (int32_t x = 0; x < dataPackage.options.size(); x++) {
 				JSONIFY(dataPackage.options[x], &data["options"]);
 			}
 		}
@@ -425,7 +425,7 @@ namespace DiscordCoreInternal {
 		data["name"] = dataPackage.name;
 		data["type"] = dataPackage.type;
 		if (dataPackage.options.size() > 0) {
-			for (int32_t x = 0; x < dataPackage.options.size(); x += 1) {
+			for (int32_t x = 0; x < dataPackage.options.size(); x++) {
 				JSONIFY(dataPackage.options[x], &data["options"]);
 			}
 			data["options"] = nlohmann::json{};
@@ -444,7 +444,7 @@ namespace DiscordCoreInternal {
 		data["description"] = dataPackage.description;
 		data["name"] = dataPackage.name;
 		if (dataPackage.options.size() > 0) {
-			for (int32_t x = 0; x < dataPackage.options.size(); x += 1) {
+			for (int32_t x = 0; x < dataPackage.options.size(); x++) {
 				JSONIFY(dataPackage.options[x], &data["options"]);
 			}
 		}
@@ -462,7 +462,7 @@ namespace DiscordCoreInternal {
 		data["description"] = dataPackage.description;
 		data["name"] = dataPackage.name;
 		if (dataPackage.options.size() > 0) {
-			for (int32_t x = 0; x < dataPackage.options.size(); x += 1) {
+			for (int32_t x = 0; x < dataPackage.options.size(); x++) {
 				JSONIFY(dataPackage.options[x], &data["options"]);
 			}
 			data["options"] = nlohmann::json{};

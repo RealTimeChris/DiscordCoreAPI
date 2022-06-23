@@ -63,10 +63,10 @@ namespace DiscordCoreInternal {
 		if (threadCount < 1) {
 			threadCount = 1;
 		}
-		for (uint32_t x = 0; x < threadCount; x += 1) {
+		for (uint32_t x = 0; x < threadCount; x++) {
 			WorkerThread workerThread{};
-			this->currentIndex += 1;
-			this->currentCount += 1;
+			this->currentIndex++;
+			this->currentCount++;
 			int64_t theIndexNew = this->currentIndex;
 			workerThread.theThread = std::jthread([=](std::stop_token theToken) {
 				this->threadFunction(theToken, theIndexNew);
@@ -86,8 +86,8 @@ namespace DiscordCoreInternal {
 		}
 		if (areWeAllBusy) {
 			WorkerThread workerThread{};
-			this->currentIndex += 1;
-			this->currentCount += 1;
+			this->currentIndex++;
+			this->currentCount++;
 			int64_t theIndexNew = this->currentIndex;
 			workerThread.theThread = std::jthread([=](std::stop_token theToken) {
 				this->threadFunction(theToken, theIndexNew);

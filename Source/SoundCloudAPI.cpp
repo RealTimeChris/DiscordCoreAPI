@@ -226,7 +226,7 @@ namespace DiscordCoreInternal {
 	}
 
 	void SoundCloudAPI::weFailedToDownloadOrDecode(const DiscordCoreAPI::Song& newSong, std::stop_token theToken, int32_t currentRecursionDepth) {
-		currentRecursionDepth += 1;
+		currentRecursionDepth++;
 		DiscordCoreAPI::GuildMember guildMember =
 			DiscordCoreAPI::GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = newSong.addedByUserId, .guildId = this->guildId }).get();
 		if (currentRecursionDepth > 9) {
@@ -288,7 +288,7 @@ namespace DiscordCoreInternal {
 				return;
 			}
 			std::vector<uint8_t> newVector{};
-			for (uint64_t x = 0; x < result[0].responseMessage.size(); x += 1) {
+			for (uint64_t x = 0; x < result[0].responseMessage.size(); x++) {
 				newVector.push_back(result[0].responseMessage[x]);
 			}
 			int64_t amountToSubmitRemaining{ static_cast<int64_t>(result[0].responseMessage.size()) };
@@ -298,16 +298,16 @@ namespace DiscordCoreInternal {
 				std::this_thread::sleep_for(1ms);
 				std::string newerVector{};
 				if (amountToSubmitRemaining >= bytesTotal) {
-					for (int64_t x = 0; x < bytesTotal; x += 1) {
+					for (int64_t x = 0; x < bytesTotal; x++) {
 						newerVector.push_back(newVector[amountSubmitted]);
-						amountSubmitted += 1;
+						amountSubmitted++;
 						amountToSubmitRemaining -= 1;
 					}
 				} else {
 					amountToSubmitRemainingFinal = amountToSubmitRemaining;
-					for (int64_t x = 0; x < amountToSubmitRemainingFinal; x += 1) {
+					for (int64_t x = 0; x < amountToSubmitRemainingFinal; x++) {
 						newerVector.push_back(newVector[amountSubmitted]);
-						amountSubmitted += 1;
+						amountSubmitted++;
 						amountToSubmitRemaining -= 1;
 					}
 				}
@@ -337,7 +337,7 @@ namespace DiscordCoreInternal {
 				this->breakOut(theToken, std::move(audioDecoder));
 				return;
 			}
-			counter += 1;
+			counter++;
 		}
 		DiscordCoreAPI::RawFrameData frameData01{};
 		while (audioDecoder->getFrame(frameData01)) {

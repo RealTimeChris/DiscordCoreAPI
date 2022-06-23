@@ -173,7 +173,7 @@ namespace DiscordCoreAPI {
 		int32_t leftOverShards{ this->shardingOptions.totalNumberOfShards - (shardsPerBaseSocketAgent * baseSocketAgentCount) };
 
 		std::vector<int32_t> shardsPerBaseSocketAgentVect{};
-		for (int32_t x = 0; x < baseSocketAgentCount; x += 1) {
+		for (int32_t x = 0; x < baseSocketAgentCount; x++) {
 			int32_t newShardAmount{};
 			shardsPerBaseSocketAgentVect.push_back(shardsPerBaseSocketAgent);
 			if (leftOverShards == 0) {
@@ -195,10 +195,10 @@ namespace DiscordCoreAPI {
 			this->thePort = "443";
 		}
 
-		for (int32_t x = 0; x < shardsPerBaseSocketAgentVect.size(); x += 1) {
+		for (int32_t x = 0; x < shardsPerBaseSocketAgentVect.size(); x++) {
 			auto thePtr = std::make_unique<DiscordCoreInternal::BaseSocketAgent>(this, &Globals::doWeQuit, x);
 			this->baseSocketAgentMap[std::to_string(x)] = std::move(thePtr);
-			for (int32_t y = 0; y < shardsPerBaseSocketAgentVect[x]; y += 1) {
+			for (int32_t y = 0; y < shardsPerBaseSocketAgentVect[x]; y++) {
 				if (this->loggingOptions.logGeneralSuccessMessages) {
 					std::cout << shiftToBrightBlue() << "Connecting Shard " + std::to_string(currentShard + 1) << " of " << this->shardingOptions.numberOfShardsForThisProcess
 							  << std::string(" Shards for this process. (") + std::to_string(currentShard + 1) + " of " +
@@ -210,7 +210,7 @@ namespace DiscordCoreAPI {
 				theData.currentShard = currentShard;
 				theData.currentBaseSocketAgent = x;
 				this->baseSocketAgentMap[std::to_string(x)]->connect(theData);
-				currentShard += 1;
+				currentShard++;
 			}
 		}
 		this->currentUser = BotUser{ Users::getCurrentUserAsync().get(), this->baseSocketAgentMap[std::to_string(this->shardingOptions.startingShard)].get() };

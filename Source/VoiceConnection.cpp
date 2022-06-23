@@ -31,7 +31,7 @@ namespace DiscordCoreAPI {
 
 	std::string VoiceConnection::encryptSingleAudioFrame(EncodedFrameData& bufferToSend, int32_t audioSSRC, const std::string& keys) {
 		if (keys.size() > 0) {
-			this->sequenceIndex += 1;
+			this->sequenceIndex++;
 			this->timeStamp += 960;
 			const int32_t nonceSize{ crypto_secretbox_NONCEBYTES };
 			const int32_t headerSize{ 12 };
@@ -50,19 +50,19 @@ namespace DiscordCoreAPI {
 			headerFinal[10] = static_cast<uint8_t>(audioSSRC >> (byteSize * 1));
 			headerFinal[11] = static_cast<uint8_t>(audioSSRC >> (byteSize * 0));
 			uint8_t nonceForLibSodium[nonceSize]{};
-			for (uint32_t x = 0; x < headerSize; x += 1) {
+			for (uint32_t x = 0; x < headerSize; x++) {
 				nonceForLibSodium[x] = headerFinal[x];
 			}
-			for (int32_t x = headerSize; x < nonceSize; x += 1) {
+			for (int32_t x = headerSize; x < nonceSize; x++) {
 				nonceForLibSodium[x] = 0;
 			}
 			uint64_t numOfBytes{ headerSize + bufferToSend.data.size() + crypto_secretbox_MACBYTES };
 			std::unique_ptr<uint8_t[]> audioDataPacket{ std::make_unique<uint8_t[]>(numOfBytes) };
-			for (uint32_t x = 0; x < headerSize; x += 1) {
+			for (uint32_t x = 0; x < headerSize; x++) {
 				audioDataPacket[x] = headerFinal[x];
 			}
 			std::unique_ptr<uint8_t[]> encryptionKeys{ std::make_unique<uint8_t[]>(keys.size()) };
-			for (uint32_t x = 0; x < keys.size(); x += 1) {
+			for (uint32_t x = 0; x < keys.size(); x++) {
 				encryptionKeys[x] = keys[x];
 			}
 			if (crypto_secretbox_easy(audioDataPacket.get() + headerSize, bufferToSend.data.data(), bufferToSend.data.size(), nonceForLibSodium, encryptionKeys.get()) != 0) {
@@ -315,7 +315,7 @@ namespace DiscordCoreAPI {
 					this->areWePlaying.store(false);
 					return;
 				}
-				frameCounter += 1;
+				frameCounter++;
 				this->audioBuffer.tryReceive(this->audioData);
 				if (this->audioData.guildMemberId != 0) {
 					this->currentGuildMemberId = this->audioData.guildMemberId;

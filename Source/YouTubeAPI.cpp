@@ -181,7 +181,7 @@ namespace DiscordCoreInternal {
 
 	void YouTubeAPI::weFailedToDownloadOrDecode(const DiscordCoreAPI::Song& newSong, std::stop_token theToken, int32_t currentRecursionDepth) {
 		DiscordCoreAPI::Song newerSong = newSong;
-		currentRecursionDepth += 1;
+		currentRecursionDepth++;
 		DiscordCoreAPI::GuildMember guildMember =
 			DiscordCoreAPI::GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = newSong.addedByUserId, .guildId = this->guildId }).get();
 		if (currentRecursionDepth > 9) {
@@ -253,7 +253,7 @@ namespace DiscordCoreInternal {
 				while (newSong.contentLength > bytesSubmittedTotal) {
 					std::this_thread::sleep_for(1ms);
 					if (bytesSubmittedPrevious == bytesSubmittedTotal) {
-						currentReruns += 1;
+						currentReruns++;
 					} else {
 						currentReruns = 0;
 					}
@@ -365,7 +365,7 @@ namespace DiscordCoreInternal {
 									newVector = theMap[0]->getInputBuffer();
 								}
 								if (newVector.size() == 0) {
-									counter += 1;
+									counter++;
 									continue;
 								}
 								if (newVector.size() > 0) {
@@ -394,7 +394,7 @@ namespace DiscordCoreInternal {
 								}
 							}
 							if (frames.size() == 0) {
-								counter += 1;
+								counter++;
 								continue;
 							}
 							if (theToken.stop_requested()) {
@@ -413,7 +413,7 @@ namespace DiscordCoreInternal {
 							contentLengthCurrent = remainingDownloadContentLength;
 						}
 					}
-					counter += 1;
+					counter++;
 				}
 				DiscordCoreAPI::RawFrameData frameData01{};
 				while (audioDecoder->getFrame(frameData01)) {
