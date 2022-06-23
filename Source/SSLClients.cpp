@@ -668,6 +668,7 @@ namespace DiscordCoreInternal {
 			auto readBytes{ recv(this->theSocket, serverToClientBuffer.data(), this->maxBufferSize, 0) };
 			if (readBytes > 0) {
 				this->inputBuffer.insert(this->inputBuffer.end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
+				this->bytesRead += readBytes;
 			} else {
 				throw ProcessingError{ reportError("DatagramSocketSSLClient::processIO()::recv(), ") };
 			}
