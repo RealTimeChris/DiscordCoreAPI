@@ -102,7 +102,7 @@ namespace DiscordCoreAPI {
 		this->eventManager.onVoiceStateUpdate(&EventHandler::onVoiceStateUpdate);
 		EventHandler::initialize(this->cacheOptions);
 		this->httpsClient =
-			std::make_unique<DiscordCoreInternal::HttpsClient>(configData.botToken, this->loggingOptions.logHttpSuccessMessages, this->loggingOptions.logHttpErrorMessages,
+			std::make_unique<DiscordCoreInternal::HttpsClient>(configData.botToken, this->loggingOptions.logHttpsSuccessMessages, this->loggingOptions.logHttpsErrorMessages,
 				this->loggingOptions.logFFMPEGSuccessMessages, this->loggingOptions.logFFMPEGErrorMessages, this->loggingOptions.logWebSocketErrorMessages);
 		ApplicationCommands::initialize(this->httpsClient.get());
 		AutoModerationRules::initialize(this->httpsClient.get());
@@ -139,7 +139,7 @@ namespace DiscordCoreAPI {
 	}
 
 	GatewayBotData DiscordCoreClient::getGateWayBot() {
-		DiscordCoreInternal::HttpWorkloadData workload{};
+		DiscordCoreInternal::HttpsWorkloadData workload{};
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Gateway_Bot;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
 		workload.relativePath = "/gateway/bot";

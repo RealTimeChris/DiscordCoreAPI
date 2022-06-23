@@ -29,22 +29,22 @@ namespace Globals {};
 
 namespace DiscordCoreInternal {
 
-	class DiscordCoreAPI_Dll HttpConnectionManager;
+	class DiscordCoreAPI_Dll HttpsConnectionManager;
 	struct DiscordCoreAPI_Dll RateLimitData;
 
-	enum class HttpState {
+	enum class HttpsState {
 		Collecting_Code = 0,
 		Collecting_Headers = 1,
 		Collecting_Size = 2,
 		Collecting_Contents = 3
 	};
 
-	struct DiscordCoreAPI_Dll HttpResponseData {
-		friend class HttpRnRBuilder;
+	struct DiscordCoreAPI_Dll HttpsResponseData {
+		friend class HttpsRnRBuilder;
 		friend class HttpsClient;
 		
 		std::unordered_map<std::string, std::string> responseHeaders{};
-		HttpState theCurrentState{ HttpState::Collecting_Headers };
+		HttpsState theCurrentState{ HttpsState::Collecting_Headers };
 		std::string responseMessage{};
 		nlohmann::json responseData{};
 		int64_t responseCode{ -1 };
@@ -53,25 +53,25 @@ namespace DiscordCoreInternal {
 		int64_t contentSize{ 0 };
 	};
 
-	class DiscordCoreAPI_Dll HttpRnRBuilder {
+	class DiscordCoreAPI_Dll HttpsRnRBuilder {
 	  public:
 		friend HttpsClient;
 
 		void updateRateLimitData(std::unordered_map<std::string, std::string>& headers, RateLimitData& theConnection);
 
-		HttpResponseData finalizeReturnValues(RateLimitData& rateLimitData, HttpResponseData& theData);
+		HttpsResponseData finalizeReturnValues(RateLimitData& rateLimitData, HttpsResponseData& theData);
 
-		std::string buildRequest(const HttpWorkloadData& workload);
+		std::string buildRequest(const HttpsWorkloadData& workload);
 
 		bool checkForHeadersToParse(const std::string&);
 
-		void parseHeaders(std::string&, HttpResponseData& theData);
+		void parseHeaders(std::string&, HttpsResponseData& theData);
 
-		bool parseChunk(std::string&, HttpResponseData& theData);
+		bool parseChunk(std::string&, HttpsResponseData& theData);
 
 		void resetValues();
 
-		virtual ~HttpRnRBuilder() = default;
+		virtual ~HttpsRnRBuilder() = default;
 
 	  protected:
 		bool doWeHaveContentSize{ false };
@@ -79,17 +79,17 @@ namespace DiscordCoreInternal {
 		std::string inputBufferReal{};
 		bool isItChunked{ false };
 
-		void parseSize(std::string&, HttpResponseData& theData);
+		void parseSize(std::string&, HttpsResponseData& theData);
 
-		void parseCode(std::string&, HttpResponseData& theData);
+		void parseCode(std::string&, HttpsResponseData& theData);
 
 		void clearCRLF(std::string&);
 	};
 
 	struct DiscordCoreAPI_Dll RateLimitData {
 	  public:
-		friend HttpConnectionManager;
-		friend HttpRnRBuilder;
+		friend HttpsConnectionManager;
+		friend HttpsRnRBuilder;
 		friend HttpsClient;
 
 		RateLimitData() = default;
@@ -107,16 +107,16 @@ namespace DiscordCoreInternal {
 		std::string bucket{};
 	};
 
-	struct DiscordCoreAPI_Dll HttpConnection : public HttpSSLClient, public HttpRnRBuilder {
+	struct DiscordCoreAPI_Dll HttpsConnection : public HttpSSLClient, public HttpsRnRBuilder {
 	  public:
 		int32_t currentRecursionDepth{ 0 };
 		const int32_t maxRecursion{ 10 };
 		bool doWeConnect{ true };
 
-		virtual ~HttpConnection() = default;
+		virtual ~HttpsConnection() = default;
 	};
 
-	class DiscordCoreAPI_Dll HttpConnectionManager {
+	class DiscordCoreAPI_Dll HttpsConnectionManager {
 	  public:
 		std::mutex theMutex{};
 
@@ -130,9 +130,9 @@ namespace DiscordCoreInternal {
 		HttpsClient(const std::string& botTokenNew, bool doWePrintHttpSuccessNew, bool doWePrintHttpErrorNew, bool doWePrintFFMPEGSuccessNew, bool doWePrintFFMPEGErrorNew,
 			bool doWePrintWebSocketErrorNew);
 
-		std::vector<HttpResponseData> httpRequest(const std::vector<HttpWorkloadData>&);
+		std::vector<HttpsResponseData> httpRequest(const std::vector<HttpsWorkloadData>&);
 
-		HttpResponseData httpRequest(HttpWorkloadData&);
+		HttpsResponseData httpRequest(HttpsWorkloadData&);
 
 		const bool getDoWePrintWebSocketErrorMessages();
 
@@ -140,11 +140,11 @@ namespace DiscordCoreInternal {
 
 		const bool getDoWePrintFFMPEGErrorMessages();
 
-		const bool getDoWePrintHttpSuccessMessages();
+		const bool getDoWePrintHttpsSuccessMessages();
 
-		const bool getDoWePrintHttpErrorMessages();
+		const bool getDoWePrintHttpsErrorMessages();
 
-		template<typename ReturnType> ReturnType submitWorkloadAndGetResult(HttpWorkloadData& workload) {
+		template<typename ReturnType> ReturnType submitWorkloadAndGetResult(HttpsWorkloadData& workload) {
 			ReturnType returnObject{};
 			workload.headersToInsert["Authorization"] = "Bot " + this->botToken;
 			workload.headersToInsert["User-Agent"] = "DiscordBot (https://discordcoreapi.com 1.0)";
@@ -153,31 +153,31 @@ namespace DiscordCoreInternal {
 			} else if (workload.payloadType == PayloadType::Multipart_Form) {
 				workload.headersToInsert["Content-Type"] = "multipart/form-data; boundary=boundary25";
 			}
-			HttpResponseData returnData = this->httpRequest(workload);
+			HttpsResponseData returnData = this->httpRequest(workload);
 			parseObject(returnData.responseData, returnObject);
 			return returnObject;
 		}
 
-		template<std::same_as<std::vector<HttpResponseData>> Type> Type submitWorkloadAndGetResult(const std::vector<HttpWorkloadData>& workload);
+		template<std::same_as<std::vector<HttpsResponseData>> Type> Type submitWorkloadAndGetResult(const std::vector<HttpsWorkloadData>& workload);
 
-		template<std::same_as<void> Type> Type submitWorkloadAndGetResult(HttpWorkloadData& workload);
+		template<std::same_as<void> Type> Type submitWorkloadAndGetResult(HttpsWorkloadData& workload);
 
-		template<std::same_as<HttpResponseData> Type> Type submitWorkloadAndGetResult(HttpWorkloadData& workload);
+		template<std::same_as<HttpsResponseData> Type> Type submitWorkloadAndGetResult(HttpsWorkloadData& workload);
 
 	  protected:
-		HttpConnectionManager connectionManager{};
+		HttpsConnectionManager connectionManager{};
 		const bool doWePrintWebSocketErrorMessages{};
 		const bool doWePrintFFMPEGSuccessMessages{};
 		const bool doWePrintFFMPEGErrorMessages{};
-		const bool doWePrintHttpSuccessMessages{};
-		const bool doWePrintHttpErrorMessages{};
+		const bool doWePrintHttpsSuccessMessages{};
+		const bool doWePrintHttpsErrorMessages{};
 		const std::string botToken{};
 
-		HttpResponseData httpRequestInternal(const HttpWorkloadData& workload, RateLimitData& rateLimitData);
+		HttpsResponseData httpRequestInternal(const HttpsWorkloadData& workload, RateLimitData& rateLimitData);
 
-		HttpResponseData executeByRateLimitData(const HttpWorkloadData& workload);
+		HttpsResponseData executeByRateLimitData(const HttpsWorkloadData& workload);
 
-		HttpResponseData getResponse(RateLimitData& rateLimitData);
+		HttpsResponseData getResponse(RateLimitData& rateLimitData);
 	};
 
 

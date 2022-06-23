@@ -66,8 +66,8 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<std::vector<Message>> Messages::getMessagesAsync(GetMessagesData dataPackage) {
-		DiscordCoreInternal::HttpWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Get_Messages);
+		DiscordCoreInternal::HttpsWorkloadData workload{};
+		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Get_Messages);
 		co_await NewThreadAwaitable<std::vector<Message>>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Messages;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
@@ -105,8 +105,8 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<Message> Messages::getMessageAsync(GetMessageData dataPackage) {
-		DiscordCoreInternal::HttpWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Get_Message);
+		DiscordCoreInternal::HttpsWorkloadData workload{};
+		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Get_Message);
 		co_await NewThreadAwaitable<Message>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Message;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
@@ -117,8 +117,8 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<Message> Messages::createMessageAsync(CreateMessageData dataPackage) {
-		DiscordCoreInternal::HttpWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Post_Message);
+		DiscordCoreInternal::HttpsWorkloadData workload{};
+		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Post_Message);
 		co_await NewThreadAwaitable<Message>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Post_Message;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Post;
@@ -135,8 +135,8 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<Message> Messages::crosspostMessageAsync(CrosspostMessageData dataPackage) {
-		DiscordCoreInternal::HttpWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Crosspost_Message);
+		DiscordCoreInternal::HttpsWorkloadData workload{};
+		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Crosspost_Message);
 		co_await NewThreadAwaitable<Message>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Crosspost_Message;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Post;
@@ -146,8 +146,8 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<Message> Messages::editMessageAsync(EditMessageData dataPackage) {
-		DiscordCoreInternal::HttpWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Patch_Message);
+		DiscordCoreInternal::HttpsWorkloadData workload{};
+		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Patch_Message);
 		co_await NewThreadAwaitable<Message>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Patch_Message;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Patch;
@@ -164,13 +164,13 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<void> Messages::deleteMessageAsync(DeleteMessageData dataPackage) {
-		DiscordCoreInternal::HttpWorkloadData workload{};
+		DiscordCoreInternal::HttpsWorkloadData workload{};
 		bool hasTimeElapsedNew = hasTimeElapsed(dataPackage.timeStamp.getOriginalTimeStamp(), 14);
 		if (hasTimeElapsedNew) {
-			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Delete_Message_Old);
+			workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Delete_Message_Old);
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Delete_Message_Old;
 		} else {
-			workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Delete_Message);
+			workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Delete_Message);
 			workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Delete_Message;
 		}
 		co_await NewThreadAwaitable<void>();
@@ -185,8 +185,8 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<void> Messages::deleteMessagesBulkAsync(DeleteMessagesBulkData dataPackage) {
-		DiscordCoreInternal::HttpWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Bulk_Delete_Messages);
+		DiscordCoreInternal::HttpsWorkloadData workload{};
+		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Bulk_Delete_Messages);
 		co_await NewThreadAwaitable<void>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Bulk_Delete_Messages;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Post;
@@ -200,8 +200,8 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<std::vector<Message>> Messages::getPinnedMessagesAsync(GetPinnedMessagesData dataPackage) {
-		DiscordCoreInternal::HttpWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Get_Pinned_Messages);
+		DiscordCoreInternal::HttpsWorkloadData workload{};
+		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Get_Pinned_Messages);
 		co_await NewThreadAwaitable<std::vector<Message>>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Pinned_Messages;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
@@ -211,8 +211,8 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<void> Messages::pinMessageAsync(PinMessageData dataPackage) {
-		DiscordCoreInternal::HttpWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Put_Pin_Message);
+		DiscordCoreInternal::HttpsWorkloadData workload{};
+		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Put_Pin_Message);
 		co_await NewThreadAwaitable<void>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Put_Pin_Message;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Put;
@@ -225,8 +225,8 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<void> Messages::unpinMessageAsync(UnpinMessageData dataPackage) {
-		DiscordCoreInternal::HttpWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Delete_Pin_Message);
+		DiscordCoreInternal::HttpsWorkloadData workload{};
+		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Delete_Pin_Message);
 		co_await NewThreadAwaitable<void>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Delete_Pin_Message;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Delete;

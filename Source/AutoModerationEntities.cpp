@@ -29,8 +29,8 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<std::vector<AutoModerationRule>> AutoModerationRules::listAutoModerationRulesForGuildAsync(ListAutoModerationRulesForGuildData dataPackage) {
-		DiscordCoreInternal::HttpWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Get_Auto_Moderation_Rules);
+		DiscordCoreInternal::HttpsWorkloadData workload{};
+		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Get_Auto_Moderation_Rules);
 		co_await NewThreadAwaitable<std::vector<AutoModerationRule>>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Auto_Moderation_Rules;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
@@ -40,8 +40,8 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<AutoModerationRule> AutoModerationRules::getAutoModerationRuleAsync(GetAutoModerationRuleData dataPackage) {
-		DiscordCoreInternal::HttpWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Get_Auto_Moderation_Rule);
+		DiscordCoreInternal::HttpsWorkloadData workload{};
+		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Get_Auto_Moderation_Rule);
 		co_await NewThreadAwaitable<AutoModerationRule>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Auto_Moderation_Rule;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
@@ -51,8 +51,8 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<AutoModerationRule> AutoModerationRules::createAutoModerationRuleAsync(CreateAutoModerationRuleData dataPackage) {
-		DiscordCoreInternal::HttpWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Post_Auto_Moderation_Rule);
+		DiscordCoreInternal::HttpsWorkloadData workload{};
+		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Post_Auto_Moderation_Rule);
 		co_await NewThreadAwaitable<AutoModerationRule>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Post_Auto_Moderation_Rule;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Post;
@@ -63,8 +63,8 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<AutoModerationRule> AutoModerationRules::modifyAutoModerationRuleAsync(ModifyAutoModerationRuleData dataPackage) {
-		DiscordCoreInternal::HttpWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Patch_Auto_Moderation_Rule);
+		DiscordCoreInternal::HttpsWorkloadData workload{};
+		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Patch_Auto_Moderation_Rule);
 		co_await NewThreadAwaitable<AutoModerationRule>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Patch_Auto_Moderation_Rule;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Patch;
@@ -75,8 +75,8 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<void> AutoModerationRules::deleteAutoModerationRuleAsync(DeleteAutoModerationRuleData dataPackage) {
-		DiscordCoreInternal::HttpWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Delete_Auto_Moderation_Rule);
+		DiscordCoreInternal::HttpsWorkloadData workload{};
+		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Delete_Auto_Moderation_Rule);
 		co_await NewThreadAwaitable<void>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Delete_Auto_Moderation_Rule;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Delete;

@@ -27,12 +27,12 @@
 namespace DiscordCoreInternal {
 
 	namespace Globals {
-		thread_local std::unique_ptr<HttpConnection> httpConnection{ std::make_unique<HttpConnection>() };
+		thread_local std::unique_ptr<HttpsConnection> httpsConnection{ std::make_unique<HttpsConnection>() };
 		std::unordered_map<std::string, std::unique_ptr<RateLimitData>> rateLimitValues{};
 		std::unordered_map<HttpWorkloadType, std::string> rateLimitValueBuckets{};
 	}
 
-	void HttpRnRBuilder::updateRateLimitData(std::unordered_map<std::string, std::string>& headersNew, RateLimitData& rateLimitData) {
+	void HttpsRnRBuilder::updateRateLimitData(std::unordered_map<std::string, std::string>& headersNew, RateLimitData& rateLimitData) {
 		if (headersNew.contains("x-ratelimit-bucket")) {
 			rateLimitData.bucket = headersNew["x-ratelimit-bucket"];
 		}
@@ -47,7 +47,7 @@ namespace DiscordCoreInternal {
 		}
 	};
 
-	HttpResponseData HttpRnRBuilder::finalizeReturnValues(RateLimitData& rateLimitData, HttpResponseData& theData) {
+	HttpsResponseData HttpsRnRBuilder::finalizeReturnValues(RateLimitData& rateLimitData, HttpsResponseData& theData) {
 		if (theData.responseMessage.size() > 0) {
 			if ((theData.responseMessage[0] == '{' && theData.responseMessage[theData.responseMessage.size() - 1] == '}') ||
 				(theData.responseMessage[0] == '[' && theData.responseMessage[theData.responseMessage.size() - 1] == ']')) {
@@ -58,7 +58,7 @@ namespace DiscordCoreInternal {
 		return theData;
 	}
 
-	std::string HttpRnRBuilder::buildRequest(const HttpWorkloadData& workload) {
+	std::string HttpsRnRBuilder::buildRequest(const HttpsWorkloadData& workload) {
 		std::string baseUrlNew{};
 		if (workload.baseUrl.find(".com") != std::string::npos) {
 			baseUrlNew = workload.baseUrl.substr(workload.baseUrl.find("https://") + std::string("https://").size(),
@@ -98,14 +98,14 @@ namespace DiscordCoreInternal {
 		return theReturnString;
 	}
 
-	void HttpRnRBuilder::resetValues() {
+	void HttpsRnRBuilder::resetValues() {
 		this->doWeHaveContentSize = false;
 		this->inputBufferReal.clear();
 		this->doWeHaveHeaders = false;
 		this->isItChunked = false;
 	}
 
-	bool HttpRnRBuilder::checkForHeadersToParse(const std::string& other) {
+	bool HttpsRnRBuilder::checkForHeadersToParse(const std::string& other) {
 		if (other.find("HTTP/1.") != std::string::npos) {
 			return true;
 		} else {
@@ -113,7 +113,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void HttpRnRBuilder::parseHeaders(std::string& other, HttpResponseData& theData) {
+	void HttpsRnRBuilder::parseHeaders(std::string& other, HttpsResponseData& theData) {
 		try {
 			if (other.find("\r\n\r\n") != std::string::npos) {
 				if (theData.responseCode == -1) {
@@ -138,7 +138,7 @@ namespace DiscordCoreInternal {
 					this->isItChunked = true;
 				}
 				this->doWeHaveHeaders = true;
-				theData.theCurrentState = HttpState::Collecting_Contents;
+				theData.theCurrentState = HttpsState::Collecting_Contents;
 			} else {
 			}
 		} catch (...) {
@@ -146,7 +146,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	bool HttpRnRBuilder::parseChunk(std::string& other, HttpResponseData& theData) {
+	bool HttpsRnRBuilder::parseChunk(std::string& other, HttpsResponseData& theData) {
 		if (this->doWeHaveHeaders) {
 			if (this->isItChunked) {
 				if (other.find("\r\n0\r\n\r\n") != std::string::npos) {
@@ -183,12 +183,12 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void HttpRnRBuilder::parseSize(std::string& other, HttpResponseData& theData) {
+	void HttpsRnRBuilder::parseSize(std::string& other, HttpsResponseData& theData) {
 		try {
 			if (theData.responseHeaders.contains("Content-Length")) {
 				theData.contentSize = stoll(theData.responseHeaders["Content-Length"]);
 				this->doWeHaveContentSize = true;
-				theData.theCurrentState = HttpState::Collecting_Contents;
+				theData.theCurrentState = HttpsState::Collecting_Contents;
 				return;
 			}
 			std::string theValueString{};
@@ -210,14 +210,14 @@ namespace DiscordCoreInternal {
 				theData.contentSize += stoll(theValueString, nullptr, 16);
 				other.erase(other.begin(), other.begin() + hexIndex);
 				this->doWeHaveContentSize = true;
-				theData.theCurrentState = HttpState::Collecting_Contents;
+				theData.theCurrentState = HttpsState::Collecting_Contents;
 			}
 		} catch (...) {
 			theData.contentSize = -5;
 		}
 	}
 
-	void HttpRnRBuilder::clearCRLF(std::string& other) {
+	void HttpsRnRBuilder::clearCRLF(std::string& other) {
 		uint64_t theCount{ 0 };
 		for (uint64_t x = 0; x < other.size(); x += 1) {
 			if (isspace(static_cast<unsigned char>(other[x])) != 0) {
@@ -229,7 +229,7 @@ namespace DiscordCoreInternal {
 		other.erase(other.begin(), other.begin() + theCount);
 	}
 
-	void HttpRnRBuilder::parseCode(std::string& other, HttpResponseData& theData) {
+	void HttpsRnRBuilder::parseCode(std::string& other, HttpsResponseData& theData) {
 		if (other.find("HTTP/1.") != std::string::npos) {
 			uint64_t firstNumberIndex{ 0 };
 			uint64_t lastNumberIndex{ 0 };
@@ -246,14 +246,14 @@ namespace DiscordCoreInternal {
 			theData.responseCode = stoll(other.substr(firstNumberIndex, lastNumberIndex - firstNumberIndex));
 			std::string tempString = other.substr(0, other.find("\r\n", lastNumberIndex) + 2);
 			other.erase(other.begin(), other.begin() + tempString.size());
-			theData.theCurrentState = HttpState::Collecting_Headers;
+			theData.theCurrentState = HttpsState::Collecting_Headers;
 		} else if (other.size() <= 5) {
 		} else {
 			theData.responseCode = -5;
 		}
 	}
 
-	void HttpConnectionManager::initialize() {
+	void HttpsConnectionManager::initialize() {
 		for (int64_t enumOne = static_cast<int64_t>(HttpWorkloadType::Unset); enumOne != static_cast<int64_t>(HttpWorkloadType::LAST); enumOne++) {
 			std::unique_ptr<RateLimitData> rateLimitData{ std::make_unique<RateLimitData>() };
 			rateLimitData->tempBucket = std::to_string(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
@@ -263,17 +263,17 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	HttpsClient::HttpsClient(const std::string& botTokenNew, bool doWePrintHttpSuccessMessagesNew, bool doWePrintHttpErrorMessagesNew, bool doWePrintFFMPEGSuccessMessagesNew,
+	HttpsClient::HttpsClient(const std::string& botTokenNew, bool doWePrintHttpsSuccessMessagesNew, bool doWePrintHttpsErrorMessagesNew, bool doWePrintFFMPEGSuccessMessagesNew,
 		bool doWePrintFFMPEGErrorMessagesNew, bool doWePrintWebSocketErrorMessagesNew)
-		: botToken(botTokenNew), doWePrintFFMPEGErrorMessages(doWePrintFFMPEGErrorMessagesNew), doWePrintHttpSuccessMessages(doWePrintHttpSuccessMessagesNew),
-		  doWePrintHttpErrorMessages(doWePrintHttpErrorMessagesNew), doWePrintFFMPEGSuccessMessages(doWePrintFFMPEGSuccessMessagesNew),
+		: botToken(botTokenNew), doWePrintFFMPEGErrorMessages(doWePrintFFMPEGErrorMessagesNew), doWePrintHttpsSuccessMessages(doWePrintHttpsSuccessMessagesNew),
+		  doWePrintHttpsErrorMessages(doWePrintHttpsErrorMessagesNew), doWePrintFFMPEGSuccessMessages(doWePrintFFMPEGSuccessMessagesNew),
 		  doWePrintWebSocketErrorMessages(doWePrintWebSocketErrorMessagesNew) {
 		this->connectionManager.initialize();
 	};
 
-	HttpResponseData HttpsClient::executeByRateLimitData(const HttpWorkloadData& workload) {
-		HttpResponseData returnData{};
-		Globals::httpConnection->resetValues();
+	HttpsResponseData HttpsClient::executeByRateLimitData(const HttpsWorkloadData& workload) {
+		HttpsResponseData returnData{};
+		Globals::httpsConnection->resetValues();
 		RateLimitData& rateLimitData = *Globals::rateLimitValues[Globals::rateLimitValueBuckets[workload.workloadType]].get();
 		int64_t timeRemaining{};
 		int64_t currentTime = static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
@@ -296,7 +296,7 @@ namespace DiscordCoreInternal {
 			rateLimitData.doWeWait = false;
 		}
 		if (timeRemaining > 0) {
-			if (this->doWePrintHttpSuccessMessages) {
+			if (this->doWePrintHttpsSuccessMessages) {
 				std::cout << DiscordCoreAPI::shiftToBrightBlue() << "We're waiting on rate-limit: " << timeRemaining << DiscordCoreAPI::reset() << std::endl << std::endl;
 			}
 			int64_t targetTime = currentTime + timeRemaining;
@@ -324,7 +324,7 @@ namespace DiscordCoreInternal {
 			Globals::rateLimitValues[currentBucket] = std::move(rateLimitData);
 		}
 		if (returnData.responseCode == 204 || returnData.responseCode == 201 || returnData.responseCode == 200) {
-			if (this->doWePrintHttpSuccessMessages) {
+			if (this->doWePrintHttpsSuccessMessages) {
 				std::cout << DiscordCoreAPI::shiftToBrightGreen() << workload.callStack + " Success: " << returnData.responseCode << ", " << returnData.responseMessage
 						  << DiscordCoreAPI::reset() << std::endl
 						  << std::endl;
@@ -335,13 +335,13 @@ namespace DiscordCoreInternal {
 				rateLimitData.didWeHitRateLimit = true;
 				rateLimitData.sampledTimeInMs =
 					static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
-				if (this->doWePrintHttpErrorMessages) {
+				if (this->doWePrintHttpsErrorMessages) {
 					std::cout << DiscordCoreAPI::shiftToBrightRed() << workload.callStack + "::httpRequest(), We've hit rate limit! Time Remaining: "
 							  << std::to_string(Globals::rateLimitValues[Globals::rateLimitValueBuckets[workload.workloadType]]->msRemain) << DiscordCoreAPI::reset() << std::endl
 							  << std::endl;
 				}
 				returnData = this->executeByRateLimitData(workload);
-			} else if (this->doWePrintHttpErrorMessages) {
+			} else if (this->doWePrintHttpsErrorMessages) {
 				std::cout << DiscordCoreAPI::shiftToBrightRed()
 						  << workload.callStack + " Error: Code = " << std::to_string(returnData.responseCode) + ", Message = " + returnData.responseMessage
 						  << DiscordCoreAPI::reset() << std::endl
@@ -351,52 +351,52 @@ namespace DiscordCoreInternal {
 		return returnData;
 	}
 
-	HttpResponseData HttpsClient::httpRequestInternal(const HttpWorkloadData& workload, RateLimitData& rateLimitData) {
+	HttpsResponseData HttpsClient::httpRequestInternal(const HttpsWorkloadData& workload, RateLimitData& rateLimitData) {
 		try {
-			Globals::httpConnection->resetValues();
-			if (Globals::httpConnection->currentRecursionDepth >= Globals::httpConnection->maxRecursion) {
-				return HttpResponseData{};
+			Globals::httpsConnection->resetValues();
+			if (Globals::httpsConnection->currentRecursionDepth >= Globals::httpsConnection->maxRecursion) {
+				return HttpsResponseData{};
 			}
-			if (!Globals::httpConnection->areWeStillConnected() || Globals::httpConnection->doWeConnect) {
-				Globals::httpConnection->disconnect();
-				Globals::httpConnection->connect(workload.baseUrl);
-				Globals::httpConnection->doWeConnect = false;
+			if (!Globals::httpsConnection->areWeStillConnected() || Globals::httpsConnection->doWeConnect) {
+				Globals::httpsConnection->disconnect();
+				Globals::httpsConnection->connect(workload.baseUrl);
+				Globals::httpsConnection->doWeConnect = false;
 			}
-			auto theRequest = Globals::httpConnection->buildRequest(workload);
-			Globals::httpConnection->writeData(theRequest);
+			auto theRequest = Globals::httpsConnection->buildRequest(workload);
+			Globals::httpsConnection->writeData(theRequest);
 			auto result = this->getResponse(rateLimitData);
 			if (result.responseCode == -1) {
-				Globals::httpConnection->currentRecursionDepth += 1;
-				Globals::httpConnection->doWeConnect = true;
+				Globals::httpsConnection->currentRecursionDepth += 1;
+				Globals::httpsConnection->doWeConnect = true;
 				return this->httpRequestInternal(workload, rateLimitData);
 			} else {
-				Globals::httpConnection->currentRecursionDepth = 0;
+				Globals::httpsConnection->currentRecursionDepth = 0;
 				return result;
 			}
 		} catch (...) {
-			if (this->doWePrintHttpErrorMessages) {
+			if (this->doWePrintHttpsErrorMessages) {
 				DiscordCoreAPI::reportException(workload.callStack + "::HttpsClient::executeHttpRequest()");
 			}
-			Globals::httpConnection->currentRecursionDepth += 1;
-			Globals::httpConnection->doWeConnect = true;
+			Globals::httpsConnection->currentRecursionDepth += 1;
+			Globals::httpsConnection->doWeConnect = true;
 			return this->httpRequestInternal(workload, rateLimitData);
 		}
 	}
 
-	HttpResponseData HttpsClient::getResponse( RateLimitData& rateLimitData) {
+	HttpsResponseData HttpsClient::getResponse( RateLimitData& rateLimitData) {
 		DiscordCoreAPI::StopWatch stopWatch{ 3500ms };
-		Globals::httpConnection->getInputBuffer().clear();
-		Globals::httpConnection->resetValues();
-		HttpResponseData theData{};
+		Globals::httpsConnection->getInputBuffer().clear();
+		Globals::httpsConnection->resetValues();
+		HttpsResponseData theData{};
 		while (true) {
 			try {
-				Globals::httpConnection->processIO();
-				std::string theString = Globals::httpConnection->getInputBuffer();
+				Globals::httpsConnection->processIO();
+				std::string theString = Globals::httpsConnection->getInputBuffer();
 				if (theString.size() > 0) {
-					Globals::httpConnection->inputBufferReal.insert(Globals::httpConnection->inputBufferReal.end(), theString.begin(), theString.end());
+					Globals::httpsConnection->inputBufferReal.insert(Globals::httpsConnection->inputBufferReal.end(), theString.begin(), theString.end());
 				}
 			} catch (ProcessingError&) {
-				if (this->doWePrintHttpErrorMessages) {
+				if (this->doWePrintHttpsErrorMessages) {
 					DiscordCoreAPI::reportException("HttpsClient::getResponse()");
 				}
 				theData.responseCode = -1;
@@ -404,40 +404,40 @@ namespace DiscordCoreInternal {
 			}
 			bool doWeBreak{ false };
 			switch (theData.theCurrentState) {
-				case HttpState::Collecting_Code: {
+				case HttpsState::Collecting_Code: {
 					if (stopWatch.hasTimePassed()) {
 						doWeBreak = true;
 						break;
 					}
-					Globals::httpConnection->parseCode(Globals::httpConnection->inputBufferReal, theData);
+					Globals::httpsConnection->parseCode(Globals::httpsConnection->inputBufferReal, theData);
 					break;
 				}
-				case HttpState::Collecting_Headers: {
+				case HttpsState::Collecting_Headers: {
 					if (stopWatch.hasTimePassed()) {
 						doWeBreak = true;
 						break;
 					}
-					if (Globals::httpConnection->checkForHeadersToParse(Globals::httpConnection->inputBufferReal) && !Globals::httpConnection->doWeHaveHeaders) {
-						Globals::httpConnection->parseHeaders(Globals::httpConnection->inputBufferReal, theData);
+					if (Globals::httpsConnection->checkForHeadersToParse(Globals::httpsConnection->inputBufferReal) && !Globals::httpsConnection->doWeHaveHeaders) {
+						Globals::httpsConnection->parseHeaders(Globals::httpsConnection->inputBufferReal, theData);
 						stopWatch.resetTimer();
 					}
 					break;
 				} 
-				case HttpState::Collecting_Size: {
+				case HttpsState::Collecting_Size: {
 					if (stopWatch.hasTimePassed()) {
 						doWeBreak = true;
 						break;
 					}
-					if (!Globals::httpConnection->doWeHaveContentSize) {
-						Globals::httpConnection->clearCRLF(Globals::httpConnection->inputBufferReal);
-						Globals::httpConnection->parseSize(Globals::httpConnection->inputBufferReal, theData);
-						Globals::httpConnection->clearCRLF(Globals::httpConnection->inputBufferReal);
+					if (!Globals::httpsConnection->doWeHaveContentSize) {
+						Globals::httpsConnection->clearCRLF(Globals::httpsConnection->inputBufferReal);
+						Globals::httpsConnection->parseSize(Globals::httpsConnection->inputBufferReal, theData);
+						Globals::httpsConnection->clearCRLF(Globals::httpsConnection->inputBufferReal);
 						stopWatch.resetTimer();
 					}
 					break;
 				}
-				case HttpState::Collecting_Contents: {
-					if (static_cast<int64_t>(Globals::httpConnection->inputBufferReal.size()) >= theData.contentSize && !Globals::httpConnection->parseChunk(Globals::httpConnection->inputBufferReal, theData) ||
+				case HttpsState::Collecting_Contents: {
+					if (static_cast<int64_t>(Globals::httpsConnection->inputBufferReal.size()) >= theData.contentSize && !Globals::httpsConnection->parseChunk(Globals::httpsConnection->inputBufferReal, theData) ||
 						stopWatch.hasTimePassed() || (theData.responseCode == -5 && theData.contentSize == -5)) {
 						doWeBreak = true;
 						break;
@@ -450,34 +450,34 @@ namespace DiscordCoreInternal {
 			
 			
 		};
-		return Globals::httpConnection->finalizeReturnValues(rateLimitData, theData);
+		return Globals::httpsConnection->finalizeReturnValues(rateLimitData, theData);
 	}
 
-	std::vector<HttpResponseData> HttpsClient::httpRequest(const std::vector<HttpWorkloadData>& workload) {
-		std::vector<HttpResponseData> returnVector{};
+	std::vector<HttpsResponseData> HttpsClient::httpRequest(const std::vector<HttpsWorkloadData>& workload) {
+		std::vector<HttpsResponseData> returnVector{};
 		std::string currentBaseUrl{};
 		auto rateLimitData = std::make_unique<RateLimitData>();
 		for (auto& value: workload) {
 			if (currentBaseUrl != value.baseUrl) {
 				try {
-					Globals::httpConnection->connect(value.baseUrl);
+					Globals::httpsConnection->connect(value.baseUrl);
 				} catch (ProcessingError&) {
-					if (this->doWePrintHttpErrorMessages) {
+					if (this->doWePrintHttpsErrorMessages) {
 						DiscordCoreAPI::reportException("HttpsClient::httpRequest()");
 					}
 					continue;
 				}
 			}
-			auto theRequest = Globals::httpConnection->buildRequest(value);
-			Globals::httpConnection->writeData(theRequest);
-			HttpResponseData returnData = this->getResponse(*rateLimitData);
+			auto theRequest = Globals::httpsConnection->buildRequest(value);
+			Globals::httpsConnection->writeData(theRequest);
+			HttpsResponseData returnData = this->getResponse(*rateLimitData);
 			returnVector.push_back(returnData);
 			currentBaseUrl = value.baseUrl;
 		}
 		return returnVector;
 	}
 
-	HttpResponseData HttpsClient::httpRequest(HttpWorkloadData& workload) {
+	HttpsResponseData HttpsClient::httpRequest(HttpsWorkloadData& workload) {
 		if (workload.baseUrl == "") {
 			workload.baseUrl = "https://discord.com/api/v10";
 		}
@@ -486,19 +486,19 @@ namespace DiscordCoreInternal {
 			std::this_thread::sleep_for(500ms);
 			rateLimitData.haveWeGoneYet = true;
 		}
-		while (HttpWorkloadData::workloadIdsInternal[workload.workloadType].load() < workload.thisWorkerId.load() && workload.thisWorkerId.load() != 0) {
+		while (HttpsWorkloadData::workloadIdsInternal[workload.workloadType].load() < workload.thisWorkerId.load() && workload.thisWorkerId.load() != 0) {
 			std::this_thread::sleep_for(1ms);
 		}
 
-		HttpConnection* theConnectionNew = Globals::httpConnection.get();
+		HttpsConnection* theConnectionNew = Globals::httpsConnection.get();
 
 		while (!rateLimitData.theSemaphore.try_acquire()) {
 			std::this_thread::sleep_for(1ms);
 		}
 
-		HttpResponseData resultData = this->executeByRateLimitData(workload);
-		auto theValue = HttpWorkloadData::workloadIdsInternal[workload.workloadType].load();
-		HttpWorkloadData::workloadIdsInternal[workload.workloadType].store(theValue + 1);
+		HttpsResponseData resultData = this->executeByRateLimitData(workload);
+		auto theValue = HttpsWorkloadData::workloadIdsInternal[workload.workloadType].load();
+		HttpsWorkloadData::workloadIdsInternal[workload.workloadType].store(theValue + 1);
 		rateLimitData.theSemaphore.release();
 		return resultData;
 	}
@@ -515,16 +515,16 @@ namespace DiscordCoreInternal {
 		return this->doWePrintFFMPEGErrorMessages;
 	}
 
-	const bool HttpsClient::getDoWePrintHttpSuccessMessages() {
-		return this->doWePrintHttpSuccessMessages;
+	const bool HttpsClient::getDoWePrintHttpsSuccessMessages() {
+		return this->doWePrintHttpsSuccessMessages;
 	}
 
-	const bool HttpsClient::getDoWePrintHttpErrorMessages() {
-		return this->doWePrintHttpErrorMessages;
+	const bool HttpsClient::getDoWePrintHttpsErrorMessages() {
+		return this->doWePrintHttpsErrorMessages;
 	}
 
-	template<> void HttpsClient::submitWorkloadAndGetResult<void>(HttpWorkloadData& workloadNew) {
-		HttpWorkloadData workload = workloadNew;
+	template<> void HttpsClient::submitWorkloadAndGetResult<void>(HttpsWorkloadData& workloadNew) {
+		HttpsWorkloadData workload = workloadNew;
 		workload.headersToInsert["Authorization"] = "Bot " + this->botToken;
 		workload.headersToInsert["User-Agent"] = "DiscordBot (https://discordcoreapi.com/ 1.0)";
 		if (workload.payloadType == PayloadType::Application_Json) {
@@ -536,13 +536,13 @@ namespace DiscordCoreInternal {
 		return;
 	}
 
-	template<> std::vector<HttpResponseData> HttpsClient::submitWorkloadAndGetResult(const std::vector<HttpWorkloadData>& workloadNew) {
-		std::vector<HttpWorkloadData> workload = workloadNew;
+	template<> std::vector<HttpsResponseData> HttpsClient::submitWorkloadAndGetResult(const std::vector<HttpsWorkloadData>& workloadNew) {
+		std::vector<HttpsWorkloadData> workload = workloadNew;
 		return this->httpRequest(workload);
 	}
 
-	template<> HttpResponseData HttpsClient::submitWorkloadAndGetResult(HttpWorkloadData& workloadNew) {
-		HttpWorkloadData workload = workloadNew;
+	template<> HttpsResponseData HttpsClient::submitWorkloadAndGetResult(HttpsWorkloadData& workloadNew) {
+		HttpsWorkloadData workload = workloadNew;
 		workload.headersToInsert["Authorization"] = "Bot " + this->botToken;
 		workload.headersToInsert["User-Agent"] = "DiscordBot (https://discordcoreapi.com/ 1.0)";
 		if (workload.payloadType == PayloadType::Application_Json) {

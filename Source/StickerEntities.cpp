@@ -29,8 +29,8 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<Sticker> Stickers::getStickerAsync(GetStickerData dataPackage) {
-		DiscordCoreInternal::HttpWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Get_Sticker);
+		DiscordCoreInternal::HttpsWorkloadData workload{};
+		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Get_Sticker);
 		co_await NewThreadAwaitable<Sticker>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Sticker;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
@@ -40,8 +40,8 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<std::vector<StickerPackData>> Stickers::getNitroStickerPacksAsync() {
-		DiscordCoreInternal::HttpWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Get_Nitro_Sticker_Packs);
+		DiscordCoreInternal::HttpsWorkloadData workload{};
+		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Get_Nitro_Sticker_Packs);
 		co_await NewThreadAwaitable<std::vector<StickerPackData>>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Nitro_Sticker_Packs;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
@@ -51,8 +51,8 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<std::vector<Sticker>> Stickers::getGuildStickersAsync(GetGuildStickersData dataPackage) {
-		DiscordCoreInternal::HttpWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Get_Guild_Stickers);
+		DiscordCoreInternal::HttpsWorkloadData workload{};
+		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Get_Guild_Stickers);
 		co_await NewThreadAwaitable<std::vector<Sticker>>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Guild_Stickers;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
@@ -62,8 +62,8 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<Sticker> Stickers::createGuildStickerAsync(CreateGuildStickerData dataPackage) {
-		DiscordCoreInternal::HttpWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Post_Guild_Sticker);
+		DiscordCoreInternal::HttpsWorkloadData workload{};
+		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Post_Guild_Sticker);
 		co_await NewThreadAwaitable<Sticker>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Post_Guild_Sticker;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Post;
@@ -78,8 +78,8 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<Sticker> Stickers::modifyGuildStickerAsync(ModifyGuildStickerData dataPackage) {
-		DiscordCoreInternal::HttpWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Patch_Guild_Sticker);
+		DiscordCoreInternal::HttpsWorkloadData workload{};
+		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Patch_Guild_Sticker);
 		co_await NewThreadAwaitable<Sticker>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Patch_Guild_Sticker;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Patch;
@@ -94,8 +94,8 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<void> Stickers::deleteGuildStickerAsync(DeleteGuildStickerData dataPackage) {
-		DiscordCoreInternal::HttpWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Delete_Guild_Sticker);
+		DiscordCoreInternal::HttpsWorkloadData workload{};
+		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Delete_Guild_Sticker);
 		co_await NewThreadAwaitable<void>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Delete_Guild_Sticker;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Delete;

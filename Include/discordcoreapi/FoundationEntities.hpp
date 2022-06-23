@@ -106,7 +106,7 @@ namespace DiscordCoreInternal {
 	using namespace std::literals;
 
 	template<typename ParseType> void parseObject(const nlohmann::json&, ParseType&);
-	struct HttpWorkloadData;
+	struct HttpsWorkloadData;
 	class SoundCloudRequestBuilder;
 	class YouTubeRequestBuilder;
 	class VoiceSocketAgent;
@@ -3498,9 +3498,9 @@ namespace DiscordCoreAPI {
 		bool logGeneralSuccessMessages{ false };///< Do we log general success messages to cout?
 		bool logFFMPEGSuccessMessages{ false };///< Do we log FFMPEG success messages to cout?
 		bool logGeneralErrorMessages{ false };///< Do we log general error messages to cout?
-		bool logHttpSuccessMessages{ false };///< Do we log Http response success messages to cout?
+		bool logHttpsSuccessMessages{ false };///< Do we log Http response success messages to cout?
 		bool logFFMPEGErrorMessages{ false };///< Do we log FFMPEG error messages to cout?
-		bool logHttpErrorMessages{ false };///< Do we log Http response error messages to cout?
+		bool logHttpsErrorMessages{ false };///< Do we log Http response error messages to cout?
 	};
 
 	/// For selecting the caching style of the library. \brief For selecting the caching style of the library.
@@ -3864,7 +3864,7 @@ namespace DiscordCoreInternal {
 		LAST = 168
 	};
 
-	struct DiscordCoreAPI_Dll HttpWorkloadData {
+	struct DiscordCoreAPI_Dll HttpsWorkloadData {
 		static std::unordered_map<HttpWorkloadType, std::atomic_int64_t> workloadIdsExternal;
 		static std::unordered_map<HttpWorkloadType, std::atomic_int64_t> workloadIdsInternal;
 		static std::mutex accessMutex;
@@ -3879,7 +3879,7 @@ namespace DiscordCoreInternal {
 		std::string content{};
 		std::string baseUrl{};
 
-		HttpWorkloadData& operator=(const HttpWorkloadData& other) {
+		HttpsWorkloadData& operator=(const HttpsWorkloadData& other) {
 			if (this != &other) {
 				this->thisWorkerId.store(this->thisWorkerId.load());
 				this->headersToInsert = other.headersToInsert;
@@ -3894,11 +3894,11 @@ namespace DiscordCoreInternal {
 			return *this;
 		}
 
-		HttpWorkloadData(const HttpWorkloadData& other) {
+		HttpsWorkloadData(const HttpsWorkloadData& other) {
 			*this = other;
 		}
 
-		HttpWorkloadData& operator=(HttpWorkloadData& other) {
+		HttpsWorkloadData& operator=(HttpsWorkloadData& other) {
 			if (this != &other) {
 				this->thisWorkerId.store(this->thisWorkerId.load());
 				this->headersToInsert = other.headersToInsert;
@@ -3913,16 +3913,16 @@ namespace DiscordCoreInternal {
 			return *this;
 		}
 
-		HttpWorkloadData(HttpWorkloadData& other) {
+		HttpsWorkloadData(HttpsWorkloadData& other) {
 			*this = other;
 		}
 
-		HttpWorkloadData() = default;
+		HttpsWorkloadData() = default;
 
 		static int64_t getAndIncrementWorkloadId(HttpWorkloadType workloadType) {
-			std::lock_guard<std::mutex> theLock{ HttpWorkloadData::accessMutex };
-			int64_t theValue = HttpWorkloadData::workloadIdsExternal[workloadType].load();
-			HttpWorkloadData::workloadIdsExternal[workloadType].store(theValue + 1);
+			std::lock_guard<std::mutex> theLock{ HttpsWorkloadData::accessMutex };
+			int64_t theValue = HttpsWorkloadData::workloadIdsExternal[workloadType].load();
+			HttpsWorkloadData::workloadIdsExternal[workloadType].store(theValue + 1);
 			return theValue;
 		}
 	};

@@ -39,17 +39,17 @@ namespace DiscordCoreInternal {
 	}
 
 	std::vector<DiscordCoreAPI::Song> YouTubeRequestBuilder::collectSearchResults(const std::string& searchQuery) {
-		HttpWorkloadData dataPackage{};
+		HttpsWorkloadData dataPackage{};
 		dataPackage.baseUrl = YouTubeRequestBuilder::baseUrl;
 		dataPackage.relativePath = "/results?search_query=" + DiscordCoreAPI::urlEncode(searchQuery.c_str());
 		dataPackage.workloadClass = HttpWorkloadClass::Get;
-		std::vector<HttpWorkloadData> workloadVector01{};
+		std::vector<HttpsWorkloadData> workloadVector01{};
 		workloadVector01.push_back(dataPackage);
-		std::vector<HttpResponseData> returnData = this->httpsClient->submitWorkloadAndGetResult<std::vector<HttpResponseData>>(workloadVector01);
+		std::vector<HttpsResponseData> returnData = this->httpsClient->submitWorkloadAndGetResult<std::vector<HttpsResponseData>>(workloadVector01);
 		if (returnData.size() < 1) {
 			return std::vector<DiscordCoreAPI::Song>{};
 		}
-		if (returnData[0].responseCode != 200 && this->httpsClient->getDoWePrintHttpErrorMessages()) {
+		if (returnData[0].responseCode != 200 && this->httpsClient->getDoWePrintHttpsErrorMessages()) {
 			std::cout << DiscordCoreAPI::shiftToBrightRed() << "YouTubeRequestBuilder::collectSearchResults() Error: " << returnData[0].responseCode
 					  << returnData[0].responseMessage.c_str() << DiscordCoreAPI::reset() << std::endl
 					  << std::endl;
@@ -83,7 +83,7 @@ namespace DiscordCoreInternal {
 			if (newSong.firstDownloadUrl != "") {
 				std::this_thread::sleep_for(500ms);
 			}
-			std::vector<HttpWorkloadData> dataPackageWorkload{};
+			std::vector<HttpsWorkloadData> dataPackageWorkload{};
 			std::string apiKey{ "AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8" };
 			nlohmann::json theRequest{};
 			theRequest["videoId"] = newSong.songId;
@@ -99,18 +99,18 @@ namespace DiscordCoreInternal {
 			theRequest["context"]["client"]["utcOffsetMinutes"] = 0;
 			theRequest["context"]["thirdParty"];
 			theRequest["context"]["thirdParty"]["embedUrl"] = "https://www.youtube.com";
-			HttpWorkloadData dataPackage02{};
+			HttpsWorkloadData dataPackage02{};
 			dataPackage02.baseUrl = YouTubeRequestBuilder::baseUrl;
 			dataPackage02.relativePath = "/youtubei/v1/player?key=" + apiKey;
 			dataPackage02.content = theRequest.dump();
 			dataPackage02.workloadClass = HttpWorkloadClass::Post;
 			dataPackageWorkload.push_back(dataPackage02);
-			std::vector<HttpResponseData> responseData = this->httpsClient->submitWorkloadAndGetResult<std::vector<HttpResponseData>>(dataPackageWorkload);
+			std::vector<HttpsResponseData> responseData = this->httpsClient->submitWorkloadAndGetResult<std::vector<HttpsResponseData>>(dataPackageWorkload);
 			if (responseData.size() < 1) {
 				return DiscordCoreAPI::Song{};
 			}
 			if (responseData[0].responseCode != 204 && responseData[0].responseCode != 201 && responseData[0].responseCode != 200 &&
-				this->httpsClient->getDoWePrintHttpErrorMessages()) {
+				this->httpsClient->getDoWePrintHttpsErrorMessages()) {
 				std::cout << DiscordCoreAPI::shiftToBrightRed() << "YouTubeRequestBuilder::constructDownloadInfo() 01 Error: " << responseData[0].responseCode << ", "
 						  << responseData[0].responseMessage << DiscordCoreAPI::reset() << std::endl
 						  << std::endl;

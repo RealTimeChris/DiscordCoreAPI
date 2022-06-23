@@ -30,8 +30,8 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<Thread> Threads::startThreadWithMessageAsync(StartThreadWithMessageData dataPackage) {
-		DiscordCoreInternal::HttpWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Post_Thread_With_Message);
+		DiscordCoreInternal::HttpsWorkloadData workload{};
+		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Post_Thread_With_Message);
 		co_await NewThreadAwaitable<Thread>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Post_Thread_With_Message;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Post;
@@ -45,8 +45,8 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<Thread> Threads::startThreadWithoutMessageAsync(StartThreadWithoutMessageData dataPackage) {
-		DiscordCoreInternal::HttpWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Post_Thread_Without_Message);
+		DiscordCoreInternal::HttpsWorkloadData workload{};
+		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Post_Thread_Without_Message);
 		co_await NewThreadAwaitable<Thread>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Post_Thread_Without_Message;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Post;
@@ -60,8 +60,8 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<Thread> Threads::startThreadInForumChannelAsync(StartThreadInForumChannelData dataPackage) {
-		DiscordCoreInternal::HttpWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Post_Thread_In_Forum_Channel);
+		DiscordCoreInternal::HttpsWorkloadData workload{};
+		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Post_Thread_In_Forum_Channel);
 		co_await NewThreadAwaitable<Thread>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Post_Thread_In_Forum_Channel;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Post;
@@ -75,8 +75,8 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<void> Threads::joinThreadAsync(JoinThreadData dataPackage) {
-		DiscordCoreInternal::HttpWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Put_Self_In_Thread);
+		DiscordCoreInternal::HttpsWorkloadData workload{};
+		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Put_Self_In_Thread);
 		co_await NewThreadAwaitable<void>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Put_Self_In_Thread;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Put;
@@ -86,8 +86,8 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<void> Threads::addThreadMemberAsync(AddThreadMemberData dataPackage) {
-		DiscordCoreInternal::HttpWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Put_Thread_Member);
+		DiscordCoreInternal::HttpsWorkloadData workload{};
+		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Put_Thread_Member);
 		co_await NewThreadAwaitable<void>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Put_Thread_Member;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Put;
@@ -97,8 +97,8 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<void> Threads::leaveThreadAsync(LeaveThreadData dataPackage) {
-		DiscordCoreInternal::HttpWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Delete_Self_From_Thread);
+		DiscordCoreInternal::HttpsWorkloadData workload{};
+		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Delete_Self_From_Thread);
 		co_await NewThreadAwaitable<void>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Delete_Self_From_Thread;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Delete;
@@ -108,8 +108,8 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<void> Threads::removeThreadMemberAsync(RemoveThreadMemberData dataPackage) {
-		DiscordCoreInternal::HttpWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Delete_Thread_Member);
+		DiscordCoreInternal::HttpsWorkloadData workload{};
+		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Delete_Thread_Member);
 		co_await NewThreadAwaitable<void>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Delete_Thread_Member;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Delete;
@@ -119,8 +119,8 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<ThreadMemberData> Threads::getThreadMemberAsync(GetThreadMemberData dataPackage) {
-		DiscordCoreInternal::HttpWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Get_Thread_Member);
+		DiscordCoreInternal::HttpsWorkloadData workload{};
+		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Get_Thread_Member);
 		co_await NewThreadAwaitable<ThreadMemberData>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Thread_Member;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
@@ -130,8 +130,8 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<std::vector<ThreadMemberData>> Threads::getThreadMembersAsync(GetThreadMembersData dataPackage) {
-		DiscordCoreInternal::HttpWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Get_Thread_Members);
+		DiscordCoreInternal::HttpsWorkloadData workload{};
+		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Get_Thread_Members);
 		co_await NewThreadAwaitable<std::vector<ThreadMemberData>>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Thread_Members;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
@@ -141,8 +141,8 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<ActiveThreadsData> Threads::getActiveThreadsAsync(GetActiveThreadsData dataPackage) {
-		DiscordCoreInternal::HttpWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Get_Active_Threads);
+		DiscordCoreInternal::HttpsWorkloadData workload{};
+		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Get_Active_Threads);
 		co_await NewThreadAwaitable<ActiveThreadsData>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Active_Threads;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
@@ -152,8 +152,8 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<ArchivedThreadsData> Threads::getPublicArchivedThreadsAsync(GetPublicArchivedThreadsData dataPackage) {
-		DiscordCoreInternal::HttpWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Get_Public_Archived_Threads);
+		DiscordCoreInternal::HttpsWorkloadData workload{};
+		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Get_Public_Archived_Threads);
 		co_await NewThreadAwaitable<ArchivedThreadsData>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Public_Archived_Threads;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
@@ -171,8 +171,8 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<ArchivedThreadsData> Threads::getPrivateArchivedThreadsAsync(GetPrivateArchivedThreadsData dataPackage) {
-		DiscordCoreInternal::HttpWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Get_Private_Archived_Threads);
+		DiscordCoreInternal::HttpsWorkloadData workload{};
+		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Get_Private_Archived_Threads);
 		co_await NewThreadAwaitable<ArchivedThreadsData>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Private_Archived_Threads;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
@@ -190,8 +190,8 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<ArchivedThreadsData> Threads::getJoinedPrivateArchivedThreadsAsync(GetJoinedPrivateArchivedThreadsData dataPackage) {
-		DiscordCoreInternal::HttpWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Get_Joined_Private_Archived_Threads);
+		DiscordCoreInternal::HttpsWorkloadData workload{};
+		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Get_Joined_Private_Archived_Threads);
 		co_await NewThreadAwaitable<ArchivedThreadsData>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Joined_Private_Archived_Threads;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
@@ -209,8 +209,8 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<ActiveThreadsData> Threads::getActiveGuildThreadsAsync(GetActiveGuildThreadsData dataPackage) {
-		DiscordCoreInternal::HttpWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Get_Guild_Active_Threads);
+		DiscordCoreInternal::HttpsWorkloadData workload{};
+		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Get_Guild_Active_Threads);
 		co_await NewThreadAwaitable<ActiveThreadsData>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Guild_Active_Threads;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;

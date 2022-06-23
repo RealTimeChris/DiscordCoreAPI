@@ -31,8 +31,8 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<Reaction> Reactions::createReactionAsync(CreateReactionData dataPackage) {
-		DiscordCoreInternal::HttpWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Put_Reaction);
+		DiscordCoreInternal::HttpsWorkloadData workload{};
+		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Put_Reaction);
 		co_await NewThreadAwaitable<Reaction>();
 		std::string emoji;
 		if (dataPackage.emojiId != 0) {
@@ -49,8 +49,8 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<void> Reactions::deleteOwnReactionAsync(DeleteOwnReactionData dataPackage) {
-		DiscordCoreInternal::HttpWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Delete_Own_Reaction);
+		DiscordCoreInternal::HttpsWorkloadData workload{};
+		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Delete_Own_Reaction);
 		co_await NewThreadAwaitable<void>();
 		std::string emoji;
 		if (dataPackage.emojiId != 0) {
@@ -67,8 +67,8 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<void> Reactions::deleteUserReactionAsync(DeleteUserReactionData dataPackage) {
-		DiscordCoreInternal::HttpWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Delete_User_Reaction);
+		DiscordCoreInternal::HttpsWorkloadData workload{};
+		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Delete_User_Reaction);
 		co_await NewThreadAwaitable<void>();
 		std::string emoji;
 		if (dataPackage.emojiId != 0) {
@@ -86,8 +86,8 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<std::vector<User>> Reactions::getReactionsAsync(GetReactionsData dataPackage) {
-		DiscordCoreInternal::HttpWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Get_Reactions);
+		DiscordCoreInternal::HttpsWorkloadData workload{};
+		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Get_Reactions);
 		co_await NewThreadAwaitable<std::vector<User>>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Reactions;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
@@ -106,8 +106,8 @@ namespace DiscordCoreAPI {
 
 
 	CoRoutine<void> Reactions::deleteAllReactionsAsync(DeleteAllReactionsData dataPackage) {
-		DiscordCoreInternal::HttpWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Delete_All_Reactions);
+		DiscordCoreInternal::HttpsWorkloadData workload{};
+		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Delete_All_Reactions);
 		co_await NewThreadAwaitable<void>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Delete_All_Reactions;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Delete;
@@ -117,8 +117,8 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<void> Reactions::deleteReactionsByEmojiAsync(DeleteReactionsByEmojiData dataPackage) {
-		DiscordCoreInternal::HttpWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Delete_Reactions_By_Emoji);
+		DiscordCoreInternal::HttpsWorkloadData workload{};
+		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Delete_Reactions_By_Emoji);
 		co_await NewThreadAwaitable<void>();
 		std::string emoji;
 		if (dataPackage.emojiId != 0) {
@@ -134,8 +134,8 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<std::vector<EmojiData>> Reactions::getEmojiListAsync(GetEmojiListData dataPackage) {
-		DiscordCoreInternal::HttpWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Get_Emoji_List);
+		DiscordCoreInternal::HttpsWorkloadData workload{};
+		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Get_Emoji_List);
 		co_await NewThreadAwaitable<std::vector<EmojiData>>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Emoji_List;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
@@ -145,8 +145,8 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<EmojiData> Reactions::getGuildEmojiAsync(GetGuildEmojiData dataPackage) {
-		DiscordCoreInternal::HttpWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Get_Guild_Emoji);
+		DiscordCoreInternal::HttpsWorkloadData workload{};
+		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Get_Guild_Emoji);
 		co_await NewThreadAwaitable<EmojiData>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Guild_Emoji;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
@@ -156,8 +156,8 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<EmojiData> Reactions::createGuildEmojiAsync(CreateGuildEmojiData dataPackage) {
-		DiscordCoreInternal::HttpWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Post_Guild_Emoji);
+		DiscordCoreInternal::HttpsWorkloadData workload{};
+		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Post_Guild_Emoji);
 		co_await NewThreadAwaitable<EmojiData>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Post_Guild_Emoji;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Post;
@@ -195,8 +195,8 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<EmojiData> Reactions::modifyGuildEmojiAsync(ModifyGuildEmojiData dataPackage) {
-		DiscordCoreInternal::HttpWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Patch_Guild_Emoji);
+		DiscordCoreInternal::HttpsWorkloadData workload{};
+		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Patch_Guild_Emoji);
 		co_await NewThreadAwaitable<EmojiData>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Patch_Guild_Emoji;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Patch;
@@ -210,8 +210,8 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<void> Reactions::deleteGuildEmojiAsync(DeleteGuildEmojiData dataPackage) {
-		DiscordCoreInternal::HttpWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Delete_Guild_Emoji);
+		DiscordCoreInternal::HttpsWorkloadData workload{};
+		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Delete_Guild_Emoji);
 		co_await NewThreadAwaitable<void>();
 		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Delete_Guild_Emoji;
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Delete;
