@@ -496,8 +496,8 @@ namespace DiscordCoreInternal {
 				auto errorValue{ SSL_get_error(this->ssl, returnValue) };
 				switch (errorValue) {
 					case SSL_ERROR_NONE: {
-						if (this->outputBuffer.size() > 0 && writtenBytes > 0) {
-							this->outputBuffer.erase(this->outputBuffer.begin());
+						if (writtenBytes > 0) {
+							data.clear();
 						}
 						break;
 					}
