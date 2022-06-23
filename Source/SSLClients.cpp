@@ -636,7 +636,7 @@ namespace DiscordCoreInternal {
 		if (writtenBytes > 0) {
 			return;
 		} else {
-			throw ProcessingError{ reportError("DatagramSocketSSLClient::processIO()::send(), ") };
+			throw ProcessingError{ reportError("DatagramSocketSSLClient::writeData(), ") };
 		}
 	}
 
