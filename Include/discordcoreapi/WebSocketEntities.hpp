@@ -59,12 +59,10 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::DiscordCoreClient* discordCoreClient{ nullptr };
 		std::queue<DiscordCoreAPI::ConnectionPackage> connections{};
 		std::unique_ptr<std::jthread> theTask{ nullptr };
-		std::recursive_mutex accessorMutex01{};
 		bool doWePrintSuccessMessages{ false };
 		std::atomic_bool* doWeQuit{ nullptr };
 		const int32_t maxReconnectTries{ 10 };
 		bool doWePrintErrorMessages{ false };
-		std::binary_semaphore semaphore{ 1 };
 		int32_t currentBaseSocketAgent{ 0 };
 		int32_t heartbeatInterval{ 0 };
 		ErlPacker erlPacker{};

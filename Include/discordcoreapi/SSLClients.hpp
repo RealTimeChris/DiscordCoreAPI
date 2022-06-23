@@ -360,6 +360,7 @@ namespace DiscordCoreInternal {
 		bool doWePrintErrors{ false };
 		WebSocketOpCode dataOpCode{};
 		bool areWeResuming{ false };
+		std::mutex accessorMutex{};
 		SSLWrapper ssl{ nullptr };
 		std::string inputBuffer{};
 		int64_t messageLength{};

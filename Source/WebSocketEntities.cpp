@@ -132,7 +132,6 @@ namespace DiscordCoreInternal {
 			try {
 				DiscordCoreAPI::StopWatch<std::chrono::milliseconds> theStopWatch{ 5000ms };
 				int32_t theCurrentIndex = theShard->shard[0];
-				this->semaphore.acquire();
 				DiscordCoreAPI::UpdateVoiceStateData dataPackage{};
 				dataPackage.channelId = 0;
 				dataPackage.guildId = doWeCollect.guildId;
@@ -144,7 +143,6 @@ namespace DiscordCoreInternal {
 				this->sendMessage(newData, theShard, true);
 				std::this_thread::sleep_for(500ms);
 				if (doWeCollect.channelId == 0) {
-					this->semaphore.release();
 					return;
 				}
 				dataPackage.channelId = doWeCollect.channelId;
@@ -158,7 +156,6 @@ namespace DiscordCoreInternal {
 					}
 					std::this_thread::sleep_for(1ms);
 				}
-				this->semaphore.release();
 			} catch (...) {
 				if (this->doWePrintErrorMessages) {
 					DiscordCoreAPI::reportException("BaseSocketAgent::getVoiceConnectionData()");
