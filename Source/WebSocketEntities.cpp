@@ -1292,7 +1292,10 @@ namespace DiscordCoreInternal {
 				if (this->theClients.contains(3) && this->theClients[3] && !this->doWeQuit->load() && !this->doWeReconnect.load()) {
 					this->parseHeadersAndMessage(this->theClients[3].get());
 					if (this->theClients.contains(3) && this->theClients[3] && this->theClients[3]->processedMessages.size() > 0) {
-						this->onMessageReceived(this->theClients[3]->processedMessages.front());
+						std::string theMessage = this->theClients[3]->processedMessages.front();
+						if (theMessage.size() > 0) {
+							this->onMessageReceived(theMessage);
+						}
 						this->theClients[3]->processedMessages.pop();
 					}
 				}
@@ -1401,7 +1404,7 @@ namespace DiscordCoreInternal {
 					this->parseHeadersAndMessage(this->theClients[3].get());
 				}
 				if (this->theClients[3]->processedMessages.size() > 0) {
-					auto& theMessage = this->theClients[3]->processedMessages.front();
+					std::string theMessage = this->theClients[3]->processedMessages.front();
 					this->theClients[3]->processedMessages.pop();
 					this->onMessageReceived(theMessage);
 				}

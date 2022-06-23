@@ -120,8 +120,6 @@ namespace DiscordCoreInternal {
 	  public:
 		std::mutex theMutex{};
 
-		HttpConnection* getConnection();
-
 		void initialize();
 	};
 
@@ -175,11 +173,11 @@ namespace DiscordCoreInternal {
 		const bool doWePrintHttpErrorMessages{};
 		const std::string botToken{};
 
-		HttpResponseData httpRequestInternal(const HttpWorkloadData& workload, HttpConnection& theConnection, RateLimitData& rateLimitData);
+		HttpResponseData httpRequestInternal(const HttpWorkloadData& workload, RateLimitData& rateLimitData);
 
-		HttpResponseData executeByRateLimitData(const HttpWorkloadData& workload, HttpConnection& theConnection);
+		HttpResponseData executeByRateLimitData(const HttpWorkloadData& workload);
 
-		HttpResponseData getResponse(HttpConnection& theConnection, RateLimitData& rateLimitData);
+		HttpResponseData getResponse(RateLimitData& rateLimitData);
 	};
 
 
