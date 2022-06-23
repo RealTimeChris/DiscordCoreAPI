@@ -1234,6 +1234,7 @@ namespace DiscordCoreInternal {
 					}
 					if (payload["op"] == 4) {
 						this->areWeConnected.store(true);
+						this->theClients[3]->areWeConnected01.store(true);
 						for (uint32_t x = 0; x < payload["d"]["secret_key"].size(); x += 1) {
 							this->voiceConnectionData.secretKey.push_back(payload["d"]["secret_key"][x].get<uint8_t>());
 						}
