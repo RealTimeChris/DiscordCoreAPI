@@ -1161,13 +1161,15 @@ namespace DiscordCoreInternal {
 	}
 
 	void VoiceSocketAgent::onClosedExternal() noexcept {
-		if (this->theClients.contains(3) && this->theClients[3] && this->theClients[3]->areWeStillConnected() && !this->doWeReconnect.load()) {
+		if (this->theClients.contains(3) && this->theClients[3] && this->theClients[3]->areWeConnected01.load() && !this->doWeReconnect.load()) {
 			this->doWeReconnect.store(true);
 			if (this->doWePrintErrorMessages) {
 				std::cout << DiscordCoreAPI::shiftToBrightRed()
 						  << "Voice WebSocket " + this->theClients[3]->shard.dump() + " Closed; Code: " << +static_cast<uint16_t>(this->theClients[3]->closeCode)
 						  << DiscordCoreAPI::reset() << std::endl
 						  << std::endl;
+				this->theClients[3]->areWeConnected01.store(false);
+				this->theClients[3]->areWeConnected02.store(false);
 			}
 		}
 	}
@@ -1281,6 +1283,7 @@ namespace DiscordCoreInternal {
 					if (this->doWePrintErrorMessages) {
 						DiscordCoreAPI::reportException("VoiceSocketAgent::run()");
 					}
+					this->doWeReconnect.store(true);
 				}
 				if (this->theClients.contains(3) && this->theClients[3] && !this->doWeQuit->load() && !this->doWeReconnect.load() && !theToken.stop_requested()) {
 					this->parseHeadersAndMessage(this->theClients[3].get());
