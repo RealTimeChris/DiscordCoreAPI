@@ -572,7 +572,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void WebSocketSSLShard::reconnect() noexcept {
+	void WebSocketSSLShard::disconnect() noexcept {
 		if (this->areWeConnected01.load()) {
 			this->areWeConnected01.store(false);
 			this->areWeConnected02.store(false);
@@ -591,12 +591,6 @@ namespace DiscordCoreInternal {
 			this->outputBuffers.clear();
 			this->theState = WebSocketState::Connecting01;
 			this->areWeHeartBeating = false;
-			if (this->connections) {
-				DiscordCoreAPI::ConnectionPackage theData{};
-				theData.currentBaseSocketAgent = this->currentBaseSocketAgent;
-				theData.currentShard = this->shard[0];
-				this->connections->push(theData);
-			}
 		}
 	}
 
