@@ -299,11 +299,11 @@ namespace DiscordCoreAPI {
 				this->areWePlaying.store(true);
 				if (this->doWeReconnect->load()) {
 					this->areWeConnectedBool = false;
+					this->doWeReconnect->store(false);
 					this->sendSpeakingMessage(false);
 					this->reconnect();
 					this->sendSpeakingMessage(true);
 					this->areWePlaying.store(true);
-					this->doWeReconnect->store(false);
 				}
 				if (this->areWeStopping.load()) {
 					this->areWePlaying.store(false);
