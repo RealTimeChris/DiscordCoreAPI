@@ -29,7 +29,7 @@ namespace DiscordCoreInternal {
 	namespace Globals {
 		thread_local std::unique_ptr<HttpsConnection> httpsConnection{ std::make_unique<HttpsConnection>() };
 		std::unordered_map<std::string, std::unique_ptr<RateLimitData>> rateLimitValues{};
-		std::unordered_map<HttpWorkloadType, std::string> rateLimitValueBuckets{};
+		std::unordered_map<HttpsWorkloadType, std::string> rateLimitValueBuckets{};
 	}
 
 	void HttpsRnRBuilder::updateRateLimitData(std::unordered_map<std::string, std::string>& headersNew, RateLimitData& rateLimitData) {
@@ -254,10 +254,10 @@ namespace DiscordCoreInternal {
 	}
 
 	void HttpsConnectionManager::initialize() {
-		for (int64_t enumOne = static_cast<int64_t>(HttpWorkloadType::Unset); enumOne != static_cast<int64_t>(HttpWorkloadType::LAST); enumOne++) {
+		for (int64_t enumOne = static_cast<int64_t>(HttpsWorkloadType::Unset); enumOne != static_cast<int64_t>(HttpsWorkloadType::LAST); enumOne++) {
 			std::unique_ptr<RateLimitData> rateLimitData{ std::make_unique<RateLimitData>() };
 			rateLimitData->tempBucket = std::to_string(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
-			Globals::rateLimitValueBuckets[static_cast<HttpWorkloadType>(enumOne)] = rateLimitData->tempBucket;
+			Globals::rateLimitValueBuckets[static_cast<HttpsWorkloadType>(enumOne)] = rateLimitData->tempBucket;
 			Globals::rateLimitValues[rateLimitData->tempBucket] = std::move(rateLimitData);
 			std::this_thread::sleep_for(1ms);
 		}
@@ -277,9 +277,9 @@ namespace DiscordCoreInternal {
 		RateLimitData& rateLimitData = *Globals::rateLimitValues[Globals::rateLimitValueBuckets[workload.workloadType]].get();
 		int64_t timeRemaining{};
 		int64_t currentTime = static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
-		if (workload.workloadType == HttpWorkloadType::Delete_Message_Old) {
+		if (workload.workloadType == HttpsWorkloadType::Delete_Message_Old) {
 			rateLimitData.msRemain = 4000;
-		} else if (workload.workloadType == HttpWorkloadType::Delete_Message || workload.workloadType == HttpWorkloadType::Patch_Message) {
+		} else if (workload.workloadType == HttpsWorkloadType::Delete_Message || workload.workloadType == HttpsWorkloadType::Patch_Message) {
 			rateLimitData.areWeASpecialBucket = true;
 		}
 		if (rateLimitData.areWeASpecialBucket) {
