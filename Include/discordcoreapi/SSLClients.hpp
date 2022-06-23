@@ -297,7 +297,7 @@ namespace DiscordCoreInternal {
 		static std::mutex theMutex;
 
 		int32_t maxBufferSize{ (1024 * 16) - 1 };
-		std::vector<std::string> outputBuffer{};
+		std::queue<std::string> outputBuffers{};
 		BIOWrapper connectionBio{ nullptr };
 		SOCKETWrapper theSocket{ nullptr };
 		SSL_CTXWrapper context{ nullptr };
@@ -344,7 +344,7 @@ namespace DiscordCoreInternal {
 		std::atomic_bool areWeConnected01{ false };
 		VoiceConnectionData voiceConnectionData{};
 		int32_t maxBufferSize{ (1024 * 16) - 1 };
-		std::vector<std::string> outputBuffer{};
+		std::queue<std::string> outputBuffers{};
 		bool haveWeReceivedHeartbeatAck{ true };
 		bool serverUpdateCollected{ false };
 		int32_t currentBaseSocketAgent{ 0 };
@@ -383,16 +383,16 @@ namespace DiscordCoreInternal {
 
 		std::string& getInputBuffer() noexcept;
 
-		bool readData(bool doWeClear) noexcept;
-
 		int64_t getBytesRead() noexcept;
+
+		void processIO();
 
 		~DatagramSocketSSLClient() noexcept = default;
 
 	  protected:
 		const int32_t maxBufferSize{ 1024 * 16 };
+		std::queue<std::string> outputBuffers{};
 		SOCKETWrapper theSocket{ nullptr };
-		BIOWrapper datagramBio{ nullptr };
 		std::string inputBuffer{};
 		int64_t bytesRead{ 0 };
 	};

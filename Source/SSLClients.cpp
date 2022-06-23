@@ -136,7 +136,7 @@ namespace DiscordCoreInternal {
 		FD_ZERO(&writeSet);
 		FD_ZERO(&readSet);
 
-		if ((this->outputBuffer.size() > 0 || this->wantWrite) && !this->wantRead) {
+		if ((this->outputBuffers.size() > 0 || this->wantWrite) && !this->wantRead) {
 			FD_SET(this->theSocket, &writeSet);
 			writeNfds = this->theSocket > writeNfds ? this->theSocket : writeNfds;
 		}
@@ -190,35 +190,35 @@ namespace DiscordCoreInternal {
 			this->wantRead = false;
 			this->wantWrite = false;
 			size_t writtenBytes{ 0 };
-			std::string writeString = std::move(this->outputBuffer.front());
-			auto returnValue{ SSL_write_ex(this->ssl, writeString.data(), writeString.size(), &writtenBytes) };
-			auto errorValue{ SSL_get_error(this->ssl, returnValue) };
-			switch (errorValue) {
-				case SSL_ERROR_NONE: {
-					if (writtenBytes > 0) {
-						this->outputBuffer.erase(this->outputBuffer.begin());
-					} else {
-						this->outputBuffer[0] = std::move(writeString);
+			if (this->outputBuffers.size() > 0) {
+				std::string writeString = std::move(this->outputBuffers.front());
+				auto returnValue{ SSL_write_ex(this->ssl, writeString.data(), writeString.size(), &writtenBytes) };
+				auto errorValue{ SSL_get_error(this->ssl, returnValue) };
+				switch (errorValue) {
+					case SSL_ERROR_NONE: {
+						if (writtenBytes > 0) {
+							this->outputBuffers.pop();
+						}
+						break;
 					}
-					break;
-				}
-				case SSL_ERROR_WANT_READ: {
-					this->wantRead = true;
-					break;
-				}
-				case SSL_ERROR_WANT_WRITE: {
-					this->wantWrite = true;
-					break;
-				}
-				case SSL_ERROR_SYSCALL: {
-					[[fallthrough]];
-				}
-				case SSL_ERROR_ZERO_RETURN: {
-					[[fallthrough]];
-				}
-				default: {
-					throw ProcessingError{ reportSSLError("HttpSSLClient::processIO()::SSL_write_ex(), ", errorValue, this->ssl) +
-						reportError("HttpSSLClient::processIO()::SSL_write_ex(), ") };
+					case SSL_ERROR_WANT_READ: {
+						this->wantRead = true;
+						break;
+					}
+					case SSL_ERROR_WANT_WRITE: {
+						this->wantWrite = true;
+						break;
+					}
+					case SSL_ERROR_SYSCALL: {
+						[[fallthrough]];
+					}
+					case SSL_ERROR_ZERO_RETURN: {
+						[[fallthrough]];
+					}
+					default: {
+						throw ProcessingError{ reportSSLError("HttpSSLClient::processIO()::SSL_write_ex(), ", errorValue, this->ssl) +
+							reportError("HttpSSLClient::processIO()::SSL_write_ex(), ") };
+					}
 				}
 			}
 		}
@@ -236,12 +236,12 @@ namespace DiscordCoreInternal {
 					amountToCollect = data.size();
 				}
 				newString.insert(newString.begin(), data.begin(), data.begin() + amountToCollect);
-				this->outputBuffer.push_back(newString);
+				this->outputBuffers.push(newString);
 				data.erase(data.begin(), data.begin() + amountToCollect);
 				remainingBytes = data.size();
 			}
 		} else {
-			this->outputBuffer.push_back(data);
+			this->outputBuffers.push(data);
 		}
 	}
 
@@ -289,7 +289,9 @@ namespace DiscordCoreInternal {
 #endif
 		}
 		this->theSocket = SOCKET_ERROR;
-		this->outputBuffer.clear();
+		while (this->outputBuffers.size() > 0) {
+			this->outputBuffers.pop();
+		}
 		this->inputBuffer.clear();
 	}
 
@@ -318,7 +320,7 @@ namespace DiscordCoreInternal {
 		for (auto& [key, value]: theMap) {
 			if (value) {
 				if (value->theSocket != SOCKET_ERROR) {
-					if ((value->outputBuffer.size() > 0 || value->wantWrite) && !value->wantRead) {
+					if ((value->outputBuffers.size() > 0 || value->wantWrite) && !value->wantRead) {
 						FD_SET(value->theSocket, &writeSet);
 						writeNfds = value->theSocket > writeNfds ? value->theSocket : writeNfds;
 						didWeSetASocket = true;
@@ -383,17 +385,14 @@ namespace DiscordCoreInternal {
 				value->wantRead = false;
 				value->wantWrite = false;
 				size_t writtenBytes{ 0 };
-				std::string theString{};
-				if (value->outputBuffer.size() > 0) {
-					theString = std::move(value->outputBuffer.front());
-				}
-				if (theString.size() > 0) {
+				if (value->outputBuffers.size() > 0) {
+					std::string theString = std::move(value->outputBuffers.front());
 					auto returnValue{ SSL_write_ex(value->ssl, theString.data(), theString.size(), &writtenBytes) };
 					auto errorValue{ SSL_get_error(value->ssl, returnValue) };
 					switch (errorValue) {
 						case SSL_ERROR_NONE: {
-							if (value->outputBuffer.size() > 0 && writtenBytes > 0) {
-								value->outputBuffer.erase(value->outputBuffer.begin());
+							if (value->outputBuffers.size() > 0 && writtenBytes > 0) {
+								value->outputBuffers.pop();
 							}
 							break;
 						}
@@ -532,12 +531,12 @@ namespace DiscordCoreInternal {
 						amountToCollect = data.size();
 					}
 					newString.insert(newString.begin(), data.begin(), data.begin() + amountToCollect);
-					this->outputBuffer.push_back(newString);
+					this->outputBuffers.push(newString);
 					data.erase(data.begin(), data.begin() + amountToCollect);
 					remainingBytes = data.size();
 				}
 			} else {
-				this->outputBuffer.push_back(data);
+				this->outputBuffers.push(data);
 			}
 		}
 	}
@@ -588,7 +587,9 @@ namespace DiscordCoreInternal {
 #endif
 			this->theSocket = SOCKET_ERROR;
 			this->inputBuffer.clear();
-			this->outputBuffer.clear();
+			while (this->outputBuffers.size() > 0) {
+				this->outputBuffers.pop();
+			}
 			this->theState = WebSocketState::Connecting01;
 			this->areWeHeartBeating = false;
 			if (this->connections) {
@@ -629,46 +630,78 @@ namespace DiscordCoreInternal {
 				throw ConnectionError{ reportError("DatagramSocketSSLClient::connect()::fcntl(), ", this->theSocket) };
 			}
 #endif
-		if (this->datagramBio = BIO_new_dgram(this->theSocket, BIO_CLOSE); this->datagramBio == nullptr) {
-			throw ConnectionError{ reportSSLError("DatagramSocketSSLClient::connect()::BIO_new_dgram(), ") };
-		}
-
-		if (auto returnValue = BIO_ctrl(this->datagramBio, BIO_CTRL_DGRAM_SET_CONNECTED, 0, &address); returnValue == 0) {
-			throw ConnectionError{ reportSSLError("DatagramSocketSSLClient::connect()::BIO_ctrl(), ") };
-		}
 	}
 
-	void DatagramSocketSSLClient::writeData(const std::string& data) {
-		size_t writtenBytes{ 0 };
-		if (auto returnValue = BIO_write_ex(this->datagramBio, data.data(), data.size(), &writtenBytes); !returnValue) {
-			throw ProcessingError{ reportSSLError("DatagramSocketSSLClient::writeData()::BIO_write_ex(), ", returnValue) + "\n" +
-				reportError("DatagramSocketSSLClient::writeData()::BIO_write_ex(), ") };
+	void DatagramSocketSSLClient::writeData(const std::string& dataToWrite) {
+		std::string data = dataToWrite;
+		if (data.size() > static_cast<size_t>(16 * 1024)) {
+			size_t remainingBytes{ data.size() };
+			while (remainingBytes > 0) {
+				std::string newString{};
+				size_t amountToCollect{};
+				if (data.size() >= static_cast<size_t>(1024 * 16)) {
+					amountToCollect = static_cast<size_t>(1024 * 16);
+				} else {
+					amountToCollect = data.size();
+				}
+				newString.insert(newString.begin(), data.begin(), data.begin() + amountToCollect);
+				this->outputBuffers.push(newString);
+				data.erase(data.begin(), data.begin() + amountToCollect);
+				remainingBytes = data.size();
+			}
+		} else {
+			this->outputBuffers.push(data);
 		}
-		return;
 	}
 
 	std::string& DatagramSocketSSLClient::getInputBuffer() noexcept {
 		return this->inputBuffer;
 	}
 
-	bool DatagramSocketSSLClient::readData(bool doWeClear) noexcept {
-		std::string serverToClientBuffer{};
-		serverToClientBuffer.resize(this->maxBufferSize);
-		size_t readBytes{ 0 };
-		if (auto returnValue = BIO_read_ex(this->datagramBio, serverToClientBuffer.data(), this->maxBufferSize, &readBytes); returnValue == 1) {
-			if (readBytes > 0) {
-				this->inputBuffer.insert(this->inputBuffer.end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
-				if (doWeClear) {
-					this->inputBuffer.clear();
-				}
-			}
-			return true;
-		}
-		return true;
-	}
-
 	int64_t DatagramSocketSSLClient::getBytesRead() noexcept {
 		return this->bytesRead;
+	}
+
+	void DatagramSocketSSLClient::processIO() {
+		fd_set writeSet{}, readSet{};
+		int32_t readNfds{ 0 }, writeNfds{ 0 }, finalNfds{ 0 };
+		FD_ZERO(&writeSet);
+		FD_ZERO(&readSet);
+
+		if (this->outputBuffers.size() > 0) {
+			FD_SET(this->theSocket, &writeSet);
+			writeNfds = this->theSocket > writeNfds ? this->theSocket : writeNfds;
+		}
+		FD_SET(this->theSocket, &readSet);
+		readNfds = this->theSocket > readNfds ? this->theSocket : readNfds;
+		finalNfds = readNfds > writeNfds ? readNfds : writeNfds;
+
+		timeval checkTime{ .tv_usec = 1000 };
+		if (auto returnValue = select(finalNfds + 1, &readSet, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
+			throw ProcessingError{ reportError("DatagramSocketSSLClient::processIO()::select(), ") };
+		} else if (returnValue == 0) {
+			return;
+		}
+
+		if (FD_ISSET(this->theSocket, &readSet)) {
+			std::string serverToClientBuffer{};
+			serverToClientBuffer.resize(this->maxBufferSize);
+			auto readBytes{ recv(this->theSocket, serverToClientBuffer.data(), this->maxBufferSize, 0) };
+			if (readBytes > 0) {
+				this->inputBuffer.insert(this->inputBuffer.end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
+			} else {
+				throw ProcessingError{ reportError("DatagramSocketSSLClient::processIO()::recv(), ") };
+			}
+		}
+		if (FD_ISSET(this->theSocket, &writeSet)) {
+			std::string writeString = std::move(this->outputBuffers.front());
+			auto writtenBytes{ send(this->theSocket, writeString.data(), writeString.size(), 0) };
+			if (writtenBytes > 0) {
+				this->outputBuffers.pop();
+			} else {
+				throw ProcessingError{ reportError("DatagramSocketSSLClient::processIO()::send(), ") };
+			}
+		}
 	}
 
 	std::string HttpSSLClient::soundcloudCertPathStatic{};
