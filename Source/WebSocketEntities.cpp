@@ -399,7 +399,7 @@ namespace DiscordCoreInternal {
 							}
 							theShard->areWeResuming = true;
 							this->onClosed(theShard);
-							break;
+							return;
 						}
 						case 9: {
 							if (this->doWePrintErrorMessages) {
@@ -418,7 +418,7 @@ namespace DiscordCoreInternal {
 								theShard->areWeResuming = false;
 							}
 							this->onClosed(theShard);
-							break;
+							return;
 						}
 						case 10: {
 							if (payload["d"].contains("heartbeat_interval") && !payload["d"]["heartbeat_interval"].is_null()) {
