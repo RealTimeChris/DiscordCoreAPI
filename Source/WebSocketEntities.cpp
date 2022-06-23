@@ -130,7 +130,6 @@ namespace DiscordCoreInternal {
 	void BaseSocketAgent::getVoiceConnectionData(const VoiceConnectInitData& doWeCollect, WebSocketSSLShard* theShard) noexcept {
 		if (theShard) {
 			try {
-				std::unique_lock<std::recursive_mutex> theLock{ this->accessorMutex01 };
 				DiscordCoreAPI::StopWatch<std::chrono::milliseconds> theStopWatch{ 5000ms };
 				int32_t theCurrentIndex = theShard->shard[0];
 				this->semaphore.acquire();
@@ -298,11 +297,6 @@ namespace DiscordCoreInternal {
 			try {
 				if (theShard->heartBeatStopWatch.hasTimePassed() && theShard->haveWeReceivedHeartbeatAck || isImmediate) {
 					nlohmann::json heartbeat = JSONIFY(theShard->lastNumberReceived);
-					if (this->doWePrintSuccessMessages) {
-						std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Sending WebSocket " + theShard->shard.dump() + std::string("'s Message: ") << heartbeat.dump()
-								  << DiscordCoreAPI::reset() << std::endl
-								  << std::endl;
-					}
 					this->sendMessage(heartbeat, theShard, true);
 					theShard->haveWeReceivedHeartbeatAck = false;
 					theShard->heartBeatStopWatch.resetTimer();
@@ -911,7 +905,6 @@ namespace DiscordCoreInternal {
 					this->internalConnect();
 				}
 				try {
-					std::unique_lock<std::recursive_mutex> theLock{ this->accessorMutex01 };
 					WebSocketSSLShard::processIO(this->theClients);
 				} catch (...) {
 					if (this->doWePrintErrorMessages) {
@@ -1281,7 +1274,7 @@ namespace DiscordCoreInternal {
 					this->sendHeartBeat();
 				}
 				try {
-					if (this->theClients.contains(3) && !this->doWeQuit->load() && !this->doWeReconnect.load()) {
+					if (this->theClients.contains(3) && this->theClients[3]->areWeStillConnected() && !this->doWeQuit->load() && !this->doWeReconnect.load()) {
 						WebSocketSSLShard::processIO(this->theClients, 1000);
 					}
 				} catch (...) {

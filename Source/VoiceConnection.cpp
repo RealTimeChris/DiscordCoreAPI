@@ -149,6 +149,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::connect(const DiscordCoreInternal::VoiceConnectInitData& voiceConnectInitDataNew) {
+		std::lock_guard<std::recursive_mutex> theLock{ this->baseSocketAgent->accessorMutex01 };
 		this->voiceConnectInitData = voiceConnectInitDataNew;
 		this->areWeStopping.store(false);
 		this->areWeConnectedBool = true;
