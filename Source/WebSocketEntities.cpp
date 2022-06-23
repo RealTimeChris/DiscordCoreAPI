@@ -1115,18 +1115,6 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void VoiceSocketAgent::onClosed(WebSocketSSLShard* theShard) noexcept {
-		if (this->theClients.contains(3) && theShard) {
-			if (this->doWePrintErrorMessages) {
-				std::cout << DiscordCoreAPI::shiftToBrightRed() << "Voice WebSocket " + theShard->shard.dump() + " Closed; Code: " << +static_cast<uint16_t>(theShard->closeCode)
-						  << DiscordCoreAPI::reset() << std::endl
-						  << std::endl;
-			}
-			this->voiceSocket.reset(nullptr);
-			this->theClients[3].reset(nullptr);
-		}
-	}
-
 	void VoiceSocketAgent::sendVoiceData(std::string& responseData) noexcept {
 		try {
 			if (responseData.size() == 0) {
@@ -1165,8 +1153,13 @@ namespace DiscordCoreInternal {
 
 	void VoiceSocketAgent::onClosedExternal() noexcept {
 		this->doWeReconnect.store(true);
-		if (this->theClients.contains(3)) {
-			this->onClosed(this->theClients[3].get());
+		if (this->theClients.contains(3) && this->theClients[3]) {
+			if (this->doWePrintErrorMessages) {
+				std::cout << DiscordCoreAPI::shiftToBrightRed()
+						  << "Voice WebSocket " + this->theClients[3]->shard.dump() + " Closed; Code: " << +static_cast<uint16_t>(this->theClients[3]->closeCode)
+						  << DiscordCoreAPI::reset() << std::endl
+						  << std::endl;
+			}
 		}
 	}
 
@@ -1266,12 +1259,13 @@ namespace DiscordCoreInternal {
 					this->theClients[3]->heartBeatStopWatch = DiscordCoreAPI::StopWatch{ std::chrono::milliseconds{ this->heartbeatInterval } };
 				}
 				if (this->theClients.contains(3) && this->theClients[3]->heartBeatStopWatch.hasTimePassed() && this->theClients[3]->areWeHeartBeating &&
-					!this->doWeReconnect.load()) {
+					!this->doWeReconnect.load() && !theToken.stop_requested()) {
 					this->theClients[3]->heartBeatStopWatch.resetTimer();
 					this->sendHeartBeat();
 				}
 				try {
-					if (this->theClients.contains(3) && this->theClients[3]->areWeStillConnected() && !this->doWeQuit->load() && !this->doWeReconnect.load()) {
+					if (this->theClients.contains(3) && this->theClients[3]->areWeStillConnected() && !this->doWeQuit->load() && !this->doWeReconnect.load() &&
+						!theToken.stop_requested()) {
 						WebSocketSSLShard::processIO(this->theClients, 1000);
 					}
 				} catch (...) {
@@ -1279,7 +1273,7 @@ namespace DiscordCoreInternal {
 						DiscordCoreAPI::reportException("VoiceSocketAgent::run()");
 					}
 				}
-				if (this->theClients.contains(3) && this->theClients[3] && !this->doWeQuit->load() && !this->doWeReconnect.load()) {
+				if (this->theClients.contains(3) && this->theClients[3] && !this->doWeQuit->load() && !this->doWeReconnect.load() && !theToken.stop_requested()) {
 					this->parseHeadersAndMessage(this->theClients[3].get());
 					if (this->theClients.contains(3) && this->theClients[3] && this->theClients[3]->processedMessages.size() > 0) {
 						std::string theMessage = this->theClients[3]->processedMessages.front();
