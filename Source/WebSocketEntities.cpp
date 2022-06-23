@@ -114,8 +114,6 @@ namespace DiscordCoreInternal {
 							  << std::endl;
 				}
 				theShard->reconnect();
-				theShard->areWeConnected01.store(false);
-				theShard->areWeConnected02.store(false);
 			} else if (this->maxReconnectTries <= theShard->currentRecursionDepth) {
 				this->doWeQuit->store(true);
 				this->theTask->request_stop();
