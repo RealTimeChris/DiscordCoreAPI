@@ -226,7 +226,7 @@ namespace DiscordCoreAPI {
 
 			void release() const {
 				assert(this->refCount > 0);
-				this->refCount -= 1;
+				this->refCount--;
 				if (this->refCount == 0) {
 					delete this;
 				};
@@ -2348,7 +2348,7 @@ namespace DiscordCoreAPI {
 		ApplicationCommandOptionType type{};///< The type of command option.
 		bool autocomplete{ false };///< If autocomplete interactions are enabled for this STRING, INTEGER, or NUMBER type option.
 		std::string description{};///< A description of the current ApplicationCommand option.
-		bool required{ false };///< If the parameter is required or optional -- default false.
+		bool required{ false };///< If the parameter is required or optional-- default false.
 		int32_t minValue{ 0 };///< If the option is an INTEGER or NUMBER type, the minimum value permitted.
 		int32_t maxValue{ 0 };///< If the option is an INTEGER or NUMBER type, the maximum value permitted.
 		std::string name{};///< Name of the current ApplicationCommand option.

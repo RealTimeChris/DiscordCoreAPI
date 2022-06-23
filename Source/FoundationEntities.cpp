@@ -887,7 +887,7 @@ namespace DiscordCoreAPI {
 				} else if (buttonIntData.at(0).buttonId == "forwards" && (newCurrentPageIndex < messageEmbeds.size())) {
 					newCurrentPageIndex++;
 				} else if (buttonIntData.at(0).buttonId == "backwards" && (newCurrentPageIndex > 0)) {
-					newCurrentPageIndex -= 1;
+					newCurrentPageIndex--;
 				} else if (buttonIntData.at(0).buttonId == "backwards" && (newCurrentPageIndex == 0)) {
 					newCurrentPageIndex = static_cast<uint8_t>(messageEmbeds.size()) - 1;
 				}

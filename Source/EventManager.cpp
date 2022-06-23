@@ -548,7 +548,7 @@ namespace DiscordCoreAPI {
 					guild.members.erase(guild.members.begin() + x);
 				}
 			}
-			guild.memberCount -= 1;
+			guild.memberCount--;
 			Guilds::insertGuild(guild);
 		}
 	}

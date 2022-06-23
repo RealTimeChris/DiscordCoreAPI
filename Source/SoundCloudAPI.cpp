@@ -301,14 +301,14 @@ namespace DiscordCoreInternal {
 					for (int64_t x = 0; x < bytesTotal; x++) {
 						newerVector.push_back(newVector[amountSubmitted]);
 						amountSubmitted++;
-						amountToSubmitRemaining -= 1;
+						amountToSubmitRemaining--;
 					}
 				} else {
 					amountToSubmitRemainingFinal = amountToSubmitRemaining;
 					for (int64_t x = 0; x < amountToSubmitRemainingFinal; x++) {
 						newerVector.push_back(newVector[amountSubmitted]);
 						amountSubmitted++;
-						amountToSubmitRemaining -= 1;
+						amountToSubmitRemaining--;
 					}
 				}
 				audioDecoder->submitDataForDecoding(newerVector);

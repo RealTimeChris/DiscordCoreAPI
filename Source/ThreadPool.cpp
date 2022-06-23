@@ -112,7 +112,7 @@ namespace DiscordCoreInternal {
 							this->workerThreads[key].theThread.get_stop_source().request_stop();
 							if (value.theThread.joinable()) {
 								value.theThread.detach();
-								this->currentCount -= 1;
+								this->currentCount--;
 								break;
 							}
 						}
