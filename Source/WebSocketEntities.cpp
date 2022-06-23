@@ -214,7 +214,6 @@ namespace DiscordCoreInternal {
 			if (theShard->theState == WebSocketState::Connecting01) {
 				std::string newVector{};
 				if (theShard->inputBuffer.find("\r\n\r\n") != std::string::npos) {
-					std::string headers = newVector.substr(0, newVector.find("\r\n\r\n"));
 					newVector.erase(0, newVector.find("\r\n\r\n") + 4);
 					theShard->inputBuffer.clear();
 					theShard->inputBuffer.insert(theShard->inputBuffer.end(), newVector.begin(), newVector.end());
@@ -1030,7 +1029,6 @@ namespace DiscordCoreInternal {
 			if (theShard->theState == WebSocketState::Connecting01) {
 				std::string newVector{};
 				if (theShard->inputBuffer.find("\r\n\r\n") != std::string::npos) {
-					std::string headers = newVector.substr(0, newVector.find("\r\n\r\n"));
 					newVector.erase(0, newVector.find("\r\n\r\n") + 4);
 					theShard->inputBuffer.clear();
 					theShard->inputBuffer.insert(theShard->inputBuffer.end(), newVector.begin(), newVector.end());
