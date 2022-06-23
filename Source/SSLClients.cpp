@@ -54,7 +54,7 @@ namespace DiscordCoreInternal {
 		return theStream.str();
 	}
 
-	void HttpSSLClient::connect(const std::string& baseUrl, const std::string& portNew) {
+	void HttpsSSLClient::connect(const std::string& baseUrl, const std::string& portNew) {
 		std::string stringNew{};
 		if (baseUrl.find(".com") != std::string::npos) {
 			stringNew =
@@ -70,67 +70,67 @@ namespace DiscordCoreInternal {
 		hints->ai_protocol = IPPROTO_TCP;
 
 		if (auto returnValue = getaddrinfo(stringNew.c_str(), portNew.c_str(), hints, address); returnValue == SOCKET_ERROR) {
-			throw ConnectionError{ reportError("HttpSSLClient::connect()::getaddrinfo(), ") };
+			throw ConnectionError{ reportError("HttpsSSLClient::connect()::getaddrinfo(), ") };
 		}
 
 		if (this->theSocket = socket(address->ai_family, address->ai_socktype, address->ai_protocol); this->theSocket == SOCKET_ERROR) {
-			throw ConnectionError{ reportError("HttpSSLClient::connect()::socket(), ") };
+			throw ConnectionError{ reportError("HttpsSSLClient::connect()::socket(), ") };
 		}
 
 		int32_t value{ this->maxBufferSize + 1 };
 		if (auto returnValue = setsockopt(this->theSocket, SOL_SOCKET, SO_SNDBUF, static_cast<char*>(static_cast<void*>(&value)), sizeof(value)); returnValue == SOCKET_ERROR) {
-			throw ConnectionError{ reportError("HttpSSLClient::connect()::setsockopt(), ") };
+			throw ConnectionError{ reportError("HttpsSSLClient::connect()::setsockopt(), ") };
 		}
 
 #ifdef _WIN32
 		char optionValue{ true };
 		if (auto returnValue = setsockopt(this->theSocket, IPPROTO_TCP, TCP_NODELAY, &optionValue, sizeof(optionValue)); returnValue == SOCKET_ERROR) {
-			throw ConnectionError{ reportError("HttpSSLClient::connect()::setsockopt(), ") };
+			throw ConnectionError{ reportError("HttpsSSLClient::connect()::setsockopt(), ") };
 		}
 #else
 		int32_t optionValue{ 1 };
 		if (auto returnValue = setsockopt(this->theSocket, SOL_TCP, TCP_NODELAY, &optionValue, sizeof(optionValue)); returnValue == SOCKET_ERROR) {
 			throw ConnectionError {
-				reportError("HttpSSLClient::connect()::setsockopt(), ");
+				reportError("HttpsSSLClient::connect()::setsockopt(), ");
 			}
 #endif
 		if (auto returnValue = ::connect(this->theSocket, address->ai_addr, static_cast<int32_t>(address->ai_addrlen)); returnValue == SOCKET_ERROR) {
-			throw ConnectionError{ reportError("HttpSSLClient::connect()::connect(), ") };
+			throw ConnectionError{ reportError("HttpsSSLClient::connect()::connect(), ") };
 		}
 
 		if (this->context = SSL_CTX_new(TLS_client_method()); this->context == nullptr) {
-			throw ConnectionError{ reportSSLError("HttpSSLClient::connect()::SSL_CTX_new(), ") };
+			throw ConnectionError{ reportSSLError("HttpsSSLClient::connect()::SSL_CTX_new(), ") };
 		}
 
 		if (!SSL_CTX_set_min_proto_version(this->context, TLS1_2_VERSION)) {
-			throw ConnectionError{ reportSSLError("HttpSSLClient::connect()::SSL_CTX_set_min_proto_version(), ") };
+			throw ConnectionError{ reportSSLError("HttpsSSLClient::connect()::SSL_CTX_set_min_proto_version(), ") };
 		}
 
 		if (SSL_CTX_set_options(this->context, SSL_OP_IGNORE_UNEXPECTED_EOF) != (SSL_CTX_get_options(this->context) | SSL_OP_IGNORE_UNEXPECTED_EOF)) {
-			throw ConnectionError{ reportSSLError("HttpSSLClient::connect()::SSL_CTX_set_options(), ") };
+			throw ConnectionError{ reportSSLError("HttpsSSLClient::connect()::SSL_CTX_set_options(), ") };
 		}
 
 		if (this->ssl = SSL_new(this->context); this->ssl == nullptr) {
-			throw ConnectionError{ reportSSLError("HttpSSLClient::connect()::SSL_new(), ") };
+			throw ConnectionError{ reportSSLError("HttpsSSLClient::connect()::SSL_new(), ") };
 		}
 
 		if (auto returnValue = SSL_set_fd(this->ssl, this->theSocket); !returnValue) {
-			throw ConnectionError{ reportSSLError("HttpSSLClient::connect()::SSL_set_fd(), ", returnValue, this->ssl) };
+			throw ConnectionError{ reportSSLError("HttpsSSLClient::connect()::SSL_set_fd(), ", returnValue, this->ssl) };
 		}
 
 		/* SNI */
 		if (auto returnValue = SSL_set_tlsext_host_name(this->ssl, stringNew.c_str()); !returnValue) {
-			throw ConnectionError{ reportSSLError("HttpSSLClient::connect()::SSL_set_tlsext_host_name(), ", returnValue, this->ssl) };
+			throw ConnectionError{ reportSSLError("HttpsSSLClient::connect()::SSL_set_tlsext_host_name(), ", returnValue, this->ssl) };
 		}
 
 		if (auto returnValue = SSL_connect(this->ssl); !returnValue) {
-			throw ConnectionError{ reportSSLError("HttpSSLClient::connect()::SSL_connect(), ", returnValue, this->ssl) };
+			throw ConnectionError{ reportSSLError("HttpsSSLClient::connect()::SSL_connect(), ", returnValue, this->ssl) };
 		}
 		
 		this->connectionTime = std::time(nullptr);
 	}
 
-	void HttpSSLClient::processIO(int32_t theWaitTimeInms) {
+	void HttpsSSLClient::processIO(int32_t theWaitTimeInms) {
 		fd_set writeSet{}, readSet{};
 		int32_t readNfds{ 0 }, writeNfds{ 0 }, finalNfds{ 0 };
 		FD_ZERO(&writeSet);
@@ -146,7 +146,7 @@ namespace DiscordCoreInternal {
 
 		timeval checkTime{ .tv_usec = theWaitTimeInms };
 		if (auto returnValue = select(finalNfds + 1, &readSet, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
-			throw ProcessingError{ reportError("HttpSSLClient::processIO()::select(), ") };
+			throw ProcessingError{ reportError("HttpsSSLClient::processIO()::select(), ") };
 		} else if (returnValue == 0) {
 			return;
 		}
@@ -181,8 +181,8 @@ namespace DiscordCoreInternal {
 					[[fallthrough]];
 				}
 				default: {
-					throw ProcessingError{ reportSSLError("HttpSSLClient::processIO()::SSL_read_ex(), ", errorValue, this->ssl) +
-						reportError("HttpSSLClient::processIO()::SSL_read_ex(), ") };
+					throw ProcessingError{ reportSSLError("HttpsSSLClient::processIO()::SSL_read_ex(), ", errorValue, this->ssl) +
+						reportError("HttpsSSLClient::processIO()::SSL_read_ex(), ") };
 				}
 			}
 		}
@@ -217,14 +217,14 @@ namespace DiscordCoreInternal {
 					[[fallthrough]];
 				}
 				default: {
-					throw ProcessingError{ reportSSLError("HttpSSLClient::processIO()::SSL_write_ex(), ", errorValue, this->ssl) +
-						reportError("HttpSSLClient::processIO()::SSL_write_ex(), ") };
+					throw ProcessingError{ reportSSLError("HttpsSSLClient::processIO()::SSL_write_ex(), ", errorValue, this->ssl) +
+						reportError("HttpsSSLClient::processIO()::SSL_write_ex(), ") };
 				}
 			}
 		}
 	}
 
-	void HttpSSLClient::writeData(std::string& data) noexcept {
+	void HttpsSSLClient::writeData(std::string& data) noexcept {
 		if (data.size() > static_cast<size_t>(16 * 1024)) {
 			size_t remainingBytes{ data.size() };
 			while (remainingBytes > 0) {
@@ -245,13 +245,13 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	std::string HttpSSLClient::getInputBuffer() noexcept {
+	std::string HttpsSSLClient::getInputBuffer() noexcept {
 		std::string theReturnString = this->inputBuffer;
 		this->inputBuffer.clear();
 		return theReturnString;
 	}
 
-	bool HttpSSLClient::areWeStillConnected() noexcept {
+	bool HttpsSSLClient::areWeStillConnected() noexcept {
 		fd_set errorfds{};
 		int32_t nfds{};
 		FD_ZERO(&errorfds);
@@ -274,7 +274,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void HttpSSLClient::disconnect() noexcept {
+	void HttpsSSLClient::disconnect() noexcept {
 		if (this->ssl) {
 			SSL_shutdown(this->ssl);
 			SSL_free(this->ssl);

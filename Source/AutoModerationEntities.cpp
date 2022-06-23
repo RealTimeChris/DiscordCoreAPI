@@ -30,10 +30,10 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<std::vector<AutoModerationRule>> AutoModerationRules::listAutoModerationRulesForGuildAsync(ListAutoModerationRulesForGuildData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Get_Auto_Moderation_Rules);
+		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Get_Auto_Moderation_Rules);
 		co_await NewThreadAwaitable<std::vector<AutoModerationRule>>();
-		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Auto_Moderation_Rules;
-		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
+		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Get_Auto_Moderation_Rules;
+		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/auto-moderation/rules";
 		workload.callStack = "AutoModerationRules::listAutoModerationRulesForGuildAsync";
 		co_return AutoModerationRules::httpsClient->submitWorkloadAndGetResult<std::vector<AutoModerationRule>>(workload);
@@ -41,10 +41,10 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<AutoModerationRule> AutoModerationRules::getAutoModerationRuleAsync(GetAutoModerationRuleData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Get_Auto_Moderation_Rule);
+		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Get_Auto_Moderation_Rule);
 		co_await NewThreadAwaitable<AutoModerationRule>();
-		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Auto_Moderation_Rule;
-		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
+		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Get_Auto_Moderation_Rule;
+		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/auto-moderation/rules/" + std::to_string(dataPackage.autoModerationRuleId);
 		workload.callStack = "AutoModerationRules::getAutoModerationRuleAsync";
 		co_return AutoModerationRules::httpsClient->submitWorkloadAndGetResult<AutoModerationRule>(workload);
@@ -52,10 +52,10 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<AutoModerationRule> AutoModerationRules::createAutoModerationRuleAsync(CreateAutoModerationRuleData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Post_Auto_Moderation_Rule);
+		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Post_Auto_Moderation_Rule);
 		co_await NewThreadAwaitable<AutoModerationRule>();
-		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Post_Auto_Moderation_Rule;
-		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Post;
+		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Post_Auto_Moderation_Rule;
+		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/auto-moderation/rules";
 		workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
 		workload.callStack = "AutoModerationRules::createAutoModerationRuleAsync";
@@ -64,10 +64,10 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<AutoModerationRule> AutoModerationRules::modifyAutoModerationRuleAsync(ModifyAutoModerationRuleData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Patch_Auto_Moderation_Rule);
+		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Patch_Auto_Moderation_Rule);
 		co_await NewThreadAwaitable<AutoModerationRule>();
-		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Patch_Auto_Moderation_Rule;
-		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Patch;
+		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Patch_Auto_Moderation_Rule;
+		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/auto-moderation/rules/" + std::to_string(dataPackage.autoModerationRuleId);
 		workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
 		workload.callStack = "AutoModerationRules::modifyAutoModerationRuleAsync";
@@ -76,10 +76,10 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<void> AutoModerationRules::deleteAutoModerationRuleAsync(DeleteAutoModerationRuleData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Delete_Auto_Moderation_Rule);
+		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Delete_Auto_Moderation_Rule);
 		co_await NewThreadAwaitable<void>();
-		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Delete_Auto_Moderation_Rule;
-		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Delete;
+		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Delete_Auto_Moderation_Rule;
+		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Delete;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/auto-moderation/rules/" + std::to_string(dataPackage.autoModerationRuleId);
 		workload.callStack = "AutoModerationRules::deleteAutoModerationRuleAsync";
 		co_return AutoModerationRules::httpsClient->submitWorkloadAndGetResult<void>(workload);

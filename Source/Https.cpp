@@ -68,10 +68,10 @@ namespace DiscordCoreInternal {
 				workload.baseUrl.find(".org") + std::string(".org").size() - std::string("https://").size());
 		}
 		std::string theReturnString{};
-		if (workload.workloadClass == HttpWorkloadClass::Get || workload.workloadClass == HttpWorkloadClass::Delete) {
-			if (workload.workloadClass == HttpWorkloadClass::Get) {
+		if (workload.workloadClass == HttpsWorkloadClass::Get || workload.workloadClass == HttpsWorkloadClass::Delete) {
+			if (workload.workloadClass == HttpsWorkloadClass::Get) {
 				theReturnString += "GET " + workload.baseUrl + workload.relativePath + " HTTP/1.1\r\n";
-			} else if (workload.workloadClass == HttpWorkloadClass::Delete) {
+			} else if (workload.workloadClass == HttpsWorkloadClass::Delete) {
 				theReturnString += "DELETE " + workload.baseUrl + workload.relativePath + " HTTP/1.1\r\n";
 			}
 			for (auto& [key, value]: workload.headersToInsert) {
@@ -80,11 +80,11 @@ namespace DiscordCoreInternal {
 			theReturnString += "Connection: Keep-Alive\r\n";
 			theReturnString += "Host: " + baseUrlNew + "\r\n\r\n";
 		} else {
-			if (workload.workloadClass == HttpWorkloadClass::Patch) {
+			if (workload.workloadClass == HttpsWorkloadClass::Patch) {
 				theReturnString += "PATCH " + workload.baseUrl + workload.relativePath + " HTTP/1.1\r\n";
-			} else if (workload.workloadClass == HttpWorkloadClass::Post) {
+			} else if (workload.workloadClass == HttpsWorkloadClass::Post) {
 				theReturnString += "POST " + workload.baseUrl + workload.relativePath + " HTTP/1.1\r\n";
-			} else if (workload.workloadClass == HttpWorkloadClass::Put) {
+			} else if (workload.workloadClass == HttpsWorkloadClass::Put) {
 				theReturnString = "PUT " + workload.baseUrl + workload.relativePath + " HTTP/1.1\r\n";
 			}
 			for (auto& [key, value]: workload.headersToInsert) {

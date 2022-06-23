@@ -107,7 +107,7 @@ namespace DiscordCoreInternal {
 		std::string bucket{};
 	};
 
-	struct DiscordCoreAPI_Dll HttpsConnection : public HttpSSLClient, public HttpsRnRBuilder {
+	struct DiscordCoreAPI_Dll HttpsConnection : public HttpsSSLClient, public HttpsRnRBuilder {
 	  public:
 		int32_t currentRecursionDepth{ 0 };
 		const int32_t maxRecursion{ 10 };

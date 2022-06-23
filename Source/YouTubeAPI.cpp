@@ -42,7 +42,7 @@ namespace DiscordCoreInternal {
 		HttpsWorkloadData dataPackage{};
 		dataPackage.baseUrl = YouTubeRequestBuilder::baseUrl;
 		dataPackage.relativePath = "/results?search_query=" + DiscordCoreAPI::urlEncode(searchQuery.c_str());
-		dataPackage.workloadClass = HttpWorkloadClass::Get;
+		dataPackage.workloadClass = HttpsWorkloadClass::Get;
 		std::vector<HttpsWorkloadData> workloadVector01{};
 		workloadVector01.push_back(dataPackage);
 		std::vector<HttpsResponseData> returnData = this->httpsClient->submitWorkloadAndGetResult<std::vector<HttpsResponseData>>(workloadVector01);
@@ -103,7 +103,7 @@ namespace DiscordCoreInternal {
 			dataPackage02.baseUrl = YouTubeRequestBuilder::baseUrl;
 			dataPackage02.relativePath = "/youtubei/v1/player?key=" + apiKey;
 			dataPackage02.content = theRequest.dump();
-			dataPackage02.workloadClass = HttpWorkloadClass::Post;
+			dataPackage02.workloadClass = HttpsWorkloadClass::Post;
 			dataPackageWorkload.push_back(dataPackage02);
 			std::vector<HttpsResponseData> responseData = this->httpsClient->submitWorkloadAndGetResult<std::vector<HttpsResponseData>>(dataPackageWorkload);
 			if (responseData.size() < 1) {

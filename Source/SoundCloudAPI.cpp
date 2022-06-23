@@ -50,7 +50,7 @@ namespace DiscordCoreInternal {
 			dataPackage.relativePath = "/search?q=" + DiscordCoreAPI::urlEncode(songQuery.c_str()) + "&facet=model&client_id=" + SoundCloudRequestBuilder::clientId +
 				"&limit=20&offset=0&linked_partitioning=1&app_version=" + SoundCloudRequestBuilder::appVersion + "&app_locale=en";
 			dataPackage.headersToInsert = theHeaders;
-			dataPackage.workloadClass = HttpWorkloadClass::Get;
+			dataPackage.workloadClass = HttpsWorkloadClass::Get;
 			std::vector<HttpsWorkloadData> workloadVector01{};
 			workloadVector01.push_back(dataPackage);
 			std::vector<HttpsResponseData> returnData = this->httpsClient->submitWorkloadAndGetResult<std::vector<HttpsResponseData>>(workloadVector01);
@@ -90,7 +90,7 @@ namespace DiscordCoreInternal {
 		try {
 			HttpsWorkloadData dataPackage01{};
 			dataPackage01.baseUrl = newSong.firstDownloadUrl;
-			dataPackage01.workloadClass = HttpWorkloadClass::Get;
+			dataPackage01.workloadClass = HttpsWorkloadClass::Get;
 			std::vector<HttpsWorkloadData> workloadVector00{};
 			workloadVector00.push_back(dataPackage01);
 			auto results = this->httpsClient->submitWorkloadAndGetResult<std::vector<HttpsResponseData>>(workloadVector00);
@@ -104,7 +104,7 @@ namespace DiscordCoreInternal {
 			if (newSong.secondDownloadUrl.find("/playlist") != std::string::npos) {
 				HttpsWorkloadData dataPackage{};
 				dataPackage.baseUrl = newSong.secondDownloadUrl;
-				dataPackage.workloadClass = HttpWorkloadClass::Get;
+				dataPackage.workloadClass = HttpsWorkloadClass::Get;
 				std::vector<HttpsWorkloadData> workloadVector01{};
 				workloadVector01.push_back(dataPackage);
 				std::vector<HttpsResponseData> results = this->httpsClient->submitWorkloadAndGetResult<std::vector<HttpsResponseData>>(workloadVector01);
@@ -143,7 +143,7 @@ namespace DiscordCoreInternal {
 				HttpsWorkloadData dataPackage02{};
 				dataPackage02.baseUrl = newSong.secondDownloadUrl;
 				dataPackage02.headersToInsert = theHeaders;
-				dataPackage02.workloadClass = HttpWorkloadClass::Get;
+				dataPackage02.workloadClass = HttpsWorkloadClass::Get;
 				std::vector<HttpsWorkloadData> workloadVector{};
 				workloadVector.push_back(dataPackage02);
 				auto headersNew = this->httpsClient->submitWorkloadAndGetResult<std::vector<HttpsResponseData>>(workloadVector);
@@ -175,7 +175,7 @@ namespace DiscordCoreInternal {
 		dataPackage02.baseUrl = SoundCloudRequestBuilder::baseUrl;
 		dataPackage02.relativePath = "/search?q=testValue";
 		dataPackage02.headersToInsert = theHeaders;
-		dataPackage02.workloadClass = HttpWorkloadClass::Get;
+		dataPackage02.workloadClass = HttpsWorkloadClass::Get;
 		std::vector<HttpsWorkloadData> workloadVector{};
 		workloadVector.push_back(dataPackage02);
 		std::vector<HttpsResponseData> returnData = this->httpsClient->submitWorkloadAndGetResult<std::vector<HttpsResponseData>>(workloadVector);
@@ -196,7 +196,7 @@ namespace DiscordCoreInternal {
 		}
 		HttpsWorkloadData dataPackage03{};
 		dataPackage03.baseUrl = assetPaths[5];
-		dataPackage03.workloadClass = HttpWorkloadClass::Get;
+		dataPackage03.workloadClass = HttpsWorkloadClass::Get;
 		std::vector<HttpsWorkloadData> workloadVector01{};
 		workloadVector01.push_back(dataPackage03);
 		std::vector<HttpsResponseData> returnData02 = this->httpsClient->submitWorkloadAndGetResult<std::vector<HttpsResponseData>>(workloadVector01);
@@ -278,7 +278,7 @@ namespace DiscordCoreInternal {
 			}
 			HttpsWorkloadData dataPackage03{};
 			dataPackage03.baseUrl = newSong.finalDownloadUrls[counter].urlPath;
-			dataPackage03.workloadClass = HttpWorkloadClass::Get;
+			dataPackage03.workloadClass = HttpsWorkloadClass::Get;
 			std::vector<HttpsWorkloadData> workloadVector{};
 			workloadVector.push_back(dataPackage03);
 			auto result = this->httpsClient->submitWorkloadAndGetResult<std::vector<HttpsResponseData>>(workloadVector);

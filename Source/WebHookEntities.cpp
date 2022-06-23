@@ -32,10 +32,10 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<WebHook> WebHooks::createWebHookAsync(CreateWebHookData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Post_Webhook);
+		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Post_Webhook);
 		co_await NewThreadAwaitable<WebHook>();
-		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Post_Webhook;
-		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Post;
+		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Post_Webhook;
+		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/webhooks";
 		workload.callStack = "WebHooks::createWebHookAsync";
 		nlohmann::json responseData = { { "name", dataPackage.name } };
@@ -48,10 +48,10 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<std::vector<WebHook>> WebHooks::getChannelWebHooksAsync(GetChannelWebHooksData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Get_Channel_Webhooks);
+		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Get_Channel_Webhooks);
 		co_await NewThreadAwaitable<std::vector<WebHook>>();
-		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Channel_Webhooks;
-		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
+		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Get_Channel_Webhooks;
+		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/webhooks";
 		workload.callStack = "WebHooks::getChannelWebHooksAsync";
 		co_return WebHooks::httpsClient->submitWorkloadAndGetResult<std::vector<WebHook>>(workload);
@@ -59,10 +59,10 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<std::vector<WebHook>> WebHooks::getGuildWebHooksAsync(GetGuildWebHooksData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Get_Guild_Webhooks);
+		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Webhooks);
 		co_await NewThreadAwaitable<std::vector<WebHook>>();
-		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Guild_Webhooks;
-		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
+		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Webhooks;
+		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/webhooks";
 		workload.callStack = "WebHooks::getGuildWebHooksAsync";
 		co_return WebHooks::httpsClient->submitWorkloadAndGetResult<std::vector<WebHook>>(workload);
@@ -70,10 +70,10 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<WebHook> WebHooks::getWebHookAsync(GetWebHookData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Get_Webhook);
+		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Get_Webhook);
 		co_await NewThreadAwaitable<WebHook>();
-		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Webhook;
-		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
+		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Get_Webhook;
+		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/webhooks/" + std::to_string(dataPackage.webhookId);
 		workload.callStack = "WebHooks::getWebHookAsync";
 		co_return WebHooks::httpsClient->submitWorkloadAndGetResult<WebHook>(workload);
@@ -81,10 +81,10 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<WebHook> WebHooks::getWebHookWithTokenAsync(GetWebHookWithTokenData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Get_Webhook_With_Token);
+		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Get_Webhook_With_Token);
 		co_await NewThreadAwaitable<WebHook>();
-		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Webhook_With_Token;
-		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
+		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Get_Webhook_With_Token;
+		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/webhooks/" + std::to_string(dataPackage.webhookId) + "/" + dataPackage.webhookToken;
 		workload.callStack = "WebHooks::getWebHookWithTokenAsync";
 		co_return WebHooks::httpsClient->submitWorkloadAndGetResult<WebHook>(workload);
@@ -92,10 +92,10 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<WebHook> WebHooks::modifyWebHookAsync(ModifyWebHookData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Patch_Webhook);
+		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Patch_Webhook);
 		co_await NewThreadAwaitable<WebHook>();
-		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Patch_Webhook;
-		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Patch;
+		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Patch_Webhook;
+		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/webhooks/" + std::to_string(dataPackage.webhookId);
 		nlohmann::json responseData{};
 		if (dataPackage.avatar.size() > 0) {
@@ -114,10 +114,10 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<WebHook> WebHooks::modifyWebHookWithTokenAsync(ModifyWebHookWithTokenData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Patch_Webhook_With_Token);
+		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Patch_Webhook_With_Token);
 		co_await NewThreadAwaitable<WebHook>();
-		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Patch_Webhook_With_Token;
-		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Patch;
+		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Patch_Webhook_With_Token;
+		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/webhooks/" + std::to_string(dataPackage.webhookId) + "/" + dataPackage.webhookToken;
 		nlohmann::json responseData{};
 		if (dataPackage.avatar.size() > 0) {
@@ -136,10 +136,10 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<void> WebHooks::deleteWebHookAsync(DeleteWebHookData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Delete_Webhook);
+		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Delete_Webhook);
 		co_await NewThreadAwaitable<void>();
-		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Delete_Webhook;
-		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Delete;
+		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Delete_Webhook;
+		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Delete;
 		workload.relativePath = "/webhooks/" + std::to_string(dataPackage.webhookId);
 		workload.callStack = "WebHooks::deleteWebHookAsync";
 		co_return WebHooks::httpsClient->submitWorkloadAndGetResult<void>(workload);
@@ -147,10 +147,10 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<void> WebHooks::deleteWebHookWithTokenAsync(DeleteWebHookWithTokenData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Delete_Webhook_With_Token);
+		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Delete_Webhook_With_Token);
 		co_await NewThreadAwaitable<void>();
-		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Delete_Webhook_With_Token;
-		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Delete;
+		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Delete_Webhook_With_Token;
+		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Delete;
 		workload.relativePath = "/webhooks/" + std::to_string(dataPackage.webhookId) + "/" + dataPackage.webhookToken;
 		workload.callStack = "WebHooks::deleteWebHookWithTokenAsync";
 		co_return WebHooks::httpsClient->submitWorkloadAndGetResult<void>(workload);
@@ -158,10 +158,10 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<Message> WebHooks::executeWebHookAsync(ExecuteWebHookData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Post_Execute_Webhook);
+		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Post_Execute_Webhook);
 		co_await NewThreadAwaitable<Message>();
-		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Post_Execute_Webhook;
-		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Post;
+		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Post_Execute_Webhook;
+		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath = "/webhooks/" + std::to_string(dataPackage.webhookId) + "/" + dataPackage.webhookToken;
 		workload.callStack = "WebHooks::executeWebHookAsync";
 		if (dataPackage.wait) {
@@ -184,10 +184,10 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<Message> WebHooks::getWebHookMessageAsync(GetWebHookMessageData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Get_Webhook_Message);
+		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Get_Webhook_Message);
 		co_await NewThreadAwaitable<Message>();
-		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Get_Webhook_Message;
-		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
+		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Get_Webhook_Message;
+		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/webhooks/" + std::to_string(dataPackage.webhookId) + "/" + dataPackage.webhookToken + "/messages/" + std::to_string(dataPackage.messageId);
 		if (dataPackage.threadId != 0) {
 			workload.relativePath += "?thread_id=" + std::to_string(dataPackage.threadId);
@@ -198,10 +198,10 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<Message> WebHooks::editWebHookMessageAsync(EditWebHookData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Patch_Webhook_Message);
+		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Patch_Webhook_Message);
 		co_await NewThreadAwaitable<Message>();
-		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Patch_Webhook_Message;
-		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Patch;
+		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Patch_Webhook_Message;
+		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/webhooks/" + std::to_string(dataPackage.webhookId) + "/" + dataPackage.webhookToken + "/messages/" + std::to_string(dataPackage.messageId);
 		if (dataPackage.threadId != 0) {
 			workload.relativePath += "?thread_id=" + std::to_string(dataPackage.threadId);
@@ -218,10 +218,10 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<void> WebHooks::deleteWebHookMessageAsync(DeleteWebHookMessageData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpWorkloadType::Delete_Webhook_Message);
+		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Delete_Webhook_Message);
 		co_await NewThreadAwaitable<void>();
-		workload.workloadType = DiscordCoreInternal::HttpWorkloadType::Delete_Webhook_Message;
-		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Delete;
+		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Delete_Webhook_Message;
+		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Delete;
 		workload.relativePath = "/webhooks/" + std::to_string(dataPackage.webhookId) + "/" + dataPackage.webhookToken + "/messages/" + std::to_string(dataPackage.messageId);
 		if (dataPackage.threadId != 0) {
 			workload.relativePath += "?thread_id=" + std::to_string(dataPackage.threadId);

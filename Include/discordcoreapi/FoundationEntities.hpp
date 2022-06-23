@@ -3688,11 +3688,11 @@ namespace DiscordCoreAPI {
 
 namespace DiscordCoreInternal {
 
-	enum class HttpWorkloadClass { Get = 0, Put = 1, Post = 2, Patch = 3, Delete = 4 };
+	enum class HttpsWorkloadClass { Get = 0, Put = 1, Post = 2, Patch = 3, Delete = 4 };
 
 	enum class PayloadType { Application_Json = 1, Multipart_Form = 2 };
 
-	enum class HttpWorkloadType : int64_t {
+	enum class HttpsWorkloadType : int64_t {
 		Unset = 0,
 		Get_Global_Application_Commands = 1,
 		Post_Global_Application_Command = 2,
@@ -3865,15 +3865,15 @@ namespace DiscordCoreInternal {
 	};
 
 	struct DiscordCoreAPI_Dll HttpsWorkloadData {
-		static std::unordered_map<HttpWorkloadType, std::atomic_int64_t> workloadIdsExternal;
-		static std::unordered_map<HttpWorkloadType, std::atomic_int64_t> workloadIdsInternal;
+		static std::unordered_map<HttpsWorkloadType, std::atomic_int64_t> workloadIdsExternal;
+		static std::unordered_map<HttpsWorkloadType, std::atomic_int64_t> workloadIdsInternal;
 		static std::mutex accessMutex;
 
 		std::unordered_map<std::string, std::string> headersToInsert{};
 		PayloadType payloadType{ PayloadType::Application_Json };
 		std::atomic_int64_t thisWorkerId{ 0 };
-		HttpWorkloadClass workloadClass{};
-		HttpWorkloadType workloadType{};
+		HttpsWorkloadClass workloadClass{};
+		HttpsWorkloadType workloadType{};
 		std::string relativePath{};
 		std::string callStack{};
 		std::string content{};
@@ -3919,7 +3919,7 @@ namespace DiscordCoreInternal {
 
 		HttpsWorkloadData() = default;
 
-		static int64_t getAndIncrementWorkloadId(HttpWorkloadType workloadType) {
+		static int64_t getAndIncrementWorkloadId(HttpsWorkloadType workloadType) {
 			std::lock_guard<std::mutex> theLock{ HttpsWorkloadData::accessMutex };
 			int64_t theValue = HttpsWorkloadData::workloadIdsExternal[workloadType].load();
 			HttpsWorkloadData::workloadIdsExternal[workloadType].store(theValue + 1);

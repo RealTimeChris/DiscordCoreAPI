@@ -272,9 +272,9 @@ namespace DiscordCoreInternal {
 		}
 	};
 
-	class DiscordCoreAPI_Dll HttpSSLClient {
+	class DiscordCoreAPI_Dll HttpsSSLClient {
 	  public:
-		HttpSSLClient() = default;
+		HttpsSSLClient() = default;
 
 		void connect(const std::string& baseUrl, const std::string& portNew = "443");
 
@@ -288,7 +288,7 @@ namespace DiscordCoreInternal {
 
 		void disconnect() noexcept;
 
-		virtual ~HttpSSLClient() noexcept = default;
+		virtual ~HttpsSSLClient() noexcept = default;
 
 	  protected:
 
