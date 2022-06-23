@@ -144,6 +144,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::reconnect() {
+		this->doWeReconnect->store(false);
 		this->connect(this->voiceConnectInitData);
 		this->play();
 	}
@@ -172,6 +173,7 @@ namespace DiscordCoreAPI {
 				this->voiceSocketAgent = std::make_unique<DiscordCoreInternal::VoiceSocketAgent>(this->voiceConnectInitData, this->baseSocketAgent,
 					this->baseSocketAgent->theClients[voiceConnectInitDataNew.currentShard].get(), this->baseSocketAgent->doWePrintSuccessMessages, &Globals::doWeQuit);
 				this->doWeReconnect = &this->voiceSocketAgent->doWeReconnect;
+				this->doWeReconnect->store(false);
 				while (!this->voiceSocketAgent->areWeConnected.load()) {
 					std::this_thread::sleep_for(1ms);
 					if (theStopWatch.hasTimePassed()) {
@@ -299,7 +301,6 @@ namespace DiscordCoreAPI {
 				this->areWePlaying.store(true);
 				if (this->doWeReconnect->load()) {
 					this->areWeConnectedBool = false;
-					this->doWeReconnect->store(false);
 					this->sendSpeakingMessage(false);
 					this->reconnect();
 					this->sendSpeakingMessage(true);
