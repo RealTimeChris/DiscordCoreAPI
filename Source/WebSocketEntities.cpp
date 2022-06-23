@@ -1297,8 +1297,7 @@ namespace DiscordCoreInternal {
 					}
 				}
 				if (this->voiceSocket) {
-					this->voiceSocket->processIO();
-					this->voiceSocket->getInputBuffer().clear();
+					this->voiceSocket->readData(true);
 				}
 				std::this_thread::sleep_for(1ms);
 			}
@@ -1326,7 +1325,7 @@ namespace DiscordCoreInternal {
 			packet[7] = static_cast<uint8_t>(this->voiceConnectionData.audioSSRC);
 			this->voiceSocket->writeData(packet);
 			while (this->voiceSocket->getInputBuffer().size() < 74) {
-				this->voiceSocket->processIO();
+				this->voiceSocket->readData(false);
 				std::this_thread::sleep_for(1ms);
 			}
 			std::string message{};
