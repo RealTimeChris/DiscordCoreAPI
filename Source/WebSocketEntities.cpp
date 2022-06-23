@@ -276,7 +276,9 @@ namespace DiscordCoreInternal {
 					close |= theShard->inputBuffer[3] & 0xff;
 					theShard->closeCode = static_cast<WebSocketCloseCode>(close);
 					theShard->inputBuffer.erase(theShard->inputBuffer.begin(), theShard->inputBuffer.begin() + 4);
-					this->onClosed(theShard);
+					if (theShard->areWeConnected01.load()) {
+						this->onClosed(theShard);
+					}
 					return;
 				}
 				default: {
