@@ -291,10 +291,6 @@ namespace DiscordCoreInternal {
 		virtual ~HttpSSLClient() noexcept = default;
 
 	  protected:
-		static std::string soundcloudCertPathStatic;
-		static std::string defaultCertPathStatic;
-		static std::string googleCertPathStatic;
-		static std::mutex theMutex;
 
 		int32_t maxBufferSize{ (1024 * 16) - 1 };
 		std::vector<std::string> outputBuffers{};
