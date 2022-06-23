@@ -26,8 +26,8 @@
 
 namespace DiscordCoreAPI {
 
-	void StageInstances::initialize(DiscordCoreInternal::HttpClient* theClient) {
-		StageInstances::httpClient = theClient;
+	void StageInstances::initialize(DiscordCoreInternal::HttpsClient* theClient) {
+		StageInstances::httpsClient = theClient;
 	}
 
 	CoRoutine<StageInstance> StageInstances::createStageInstanceAsync(CreateStageInstanceData dataPackage) {
@@ -43,7 +43,7 @@ namespace DiscordCoreAPI {
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
-		co_return StageInstances::httpClient->submitWorkloadAndGetResult<StageInstance>(workload);
+		co_return StageInstances::httpsClient->submitWorkloadAndGetResult<StageInstance>(workload);
 	}
 
 	CoRoutine<StageInstance> StageInstances::getStageInstanceAsync(GetStageInstanceData dataPackage) {
@@ -54,7 +54,7 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
 		workload.relativePath = "/stage-instances/" + std::to_string(dataPackage.channelId);
 		workload.callStack = "StageInstances::getStageInstanceAsync";
-		co_return StageInstances::httpClient->submitWorkloadAndGetResult<StageInstance>(workload);
+		co_return StageInstances::httpsClient->submitWorkloadAndGetResult<StageInstance>(workload);
 	}
 
 	CoRoutine<StageInstance> StageInstances::modifyStageInstanceAsync(ModifyStageInstanceData dataPackage) {
@@ -70,7 +70,7 @@ namespace DiscordCoreAPI {
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
-		co_return StageInstances::httpClient->submitWorkloadAndGetResult<StageInstance>(workload);
+		co_return StageInstances::httpsClient->submitWorkloadAndGetResult<StageInstance>(workload);
 	}
 
 	CoRoutine<void> StageInstances::deleteStageInstanceAsync(DeleteStageInstanceData dataPackage) {
@@ -84,7 +84,7 @@ namespace DiscordCoreAPI {
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
-		co_return StageInstances::httpClient->submitWorkloadAndGetResult<void>(workload);
+		co_return StageInstances::httpsClient->submitWorkloadAndGetResult<void>(workload);
 	}
-	DiscordCoreInternal::HttpClient* StageInstances::httpClient{ nullptr };
+	DiscordCoreInternal::HttpsClient* StageInstances::httpsClient{ nullptr };
 }

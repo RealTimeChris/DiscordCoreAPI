@@ -59,10 +59,10 @@ namespace DiscordCoreAPI {
 	}
 
 
-	void Roles::initialize(DiscordCoreInternal::HttpClient* theClient, bool doWeCacheNew) {
+	void Roles::initialize(DiscordCoreInternal::HttpsClient* theClient, bool doWeCacheNew) {
 		Roles::cache = std::make_unique<std::unordered_map<uint64_t, std::unique_ptr<RoleData>>>();
 		Roles::doWeCache = doWeCacheNew;
-		Roles::httpClient = theClient;
+		Roles::httpsClient = theClient;
 	}
 
 	CoRoutine<void> Roles::addGuildMemberRoleAsync(AddGuildMemberRoleData dataPackage) {
@@ -77,7 +77,7 @@ namespace DiscordCoreAPI {
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
-		co_return Roles::httpClient->submitWorkloadAndGetResult<void>(workload);
+		co_return Roles::httpsClient->submitWorkloadAndGetResult<void>(workload);
 	}
 
 	CoRoutine<void> Roles::removeGuildMemberRoleAsync(RemoveGuildMemberRoleData dataPackage) {
@@ -92,7 +92,7 @@ namespace DiscordCoreAPI {
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
-		co_return Roles::httpClient->submitWorkloadAndGetResult<void>(workload);
+		co_return Roles::httpsClient->submitWorkloadAndGetResult<void>(workload);
 	}
 
 	CoRoutine<std::vector<Role>> Roles::getGuildRolesAsync(GetGuildRolesData dataPackage) {
@@ -106,7 +106,7 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/roles";
 		workload.callStack = "Roles::getGuildRolesAsync";
-		co_return Roles::httpClient->submitWorkloadAndGetResult<std::vector<Role>>(workload);
+		co_return Roles::httpsClient->submitWorkloadAndGetResult<std::vector<Role>>(workload);
 	}
 
 	CoRoutine<Role> Roles::createGuildRoleAsync(CreateGuildRoleData dataPackage) {
@@ -121,7 +121,7 @@ namespace DiscordCoreAPI {
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
-		auto roleNew = Roles::httpClient->submitWorkloadAndGetResult<Role>(workload);
+		auto roleNew = Roles::httpsClient->submitWorkloadAndGetResult<Role>(workload);
 		Role result{ roleNew };
 		ModifyGuildRolePositionsData newDataPackage{};
 		newDataPackage.guildId = dataPackage.guildId;
@@ -168,7 +168,7 @@ namespace DiscordCoreAPI {
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
-		co_return Roles::httpClient->submitWorkloadAndGetResult<std::vector<Role>>(workload);
+		co_return Roles::httpsClient->submitWorkloadAndGetResult<std::vector<Role>>(workload);
 	}
 
 	CoRoutine<Role> Roles::modifyGuildRoleAsync(ModifyGuildRoleData dataPackage) {
@@ -183,7 +183,7 @@ namespace DiscordCoreAPI {
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
-		co_return Roles::httpClient->submitWorkloadAndGetResult<Role>(workload);
+		co_return Roles::httpsClient->submitWorkloadAndGetResult<Role>(workload);
 	}
 
 	CoRoutine<void> Roles::removeGuildRoleAsync(RemoveGuildRoleData dataPackage) {
@@ -197,7 +197,7 @@ namespace DiscordCoreAPI {
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
-		co_return Roles::httpClient->submitWorkloadAndGetResult<void>(workload);
+		co_return Roles::httpsClient->submitWorkloadAndGetResult<void>(workload);
 	}
 
 	CoRoutine<std::vector<Role>> Roles::getGuildMemberRolesAsync(GetGuildMemberRolesData dataPackage) {
@@ -264,7 +264,7 @@ namespace DiscordCoreAPI {
 	};
 
 	std::unique_ptr<std::unordered_map<uint64_t, std::unique_ptr<RoleData>>> Roles::cache{};
-	DiscordCoreInternal::HttpClient* Roles::httpClient{ nullptr };
+	DiscordCoreInternal::HttpsClient* Roles::httpsClient{ nullptr };
 	std::shared_mutex Roles::theMutex{};
 	bool Roles::doWeCache{ false };
 }

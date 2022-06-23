@@ -113,7 +113,7 @@ namespace DiscordCoreInternal {
 	class BaseSocketAgent;
 	class SoundCloudAPI;
 	class YouTubeAPI;
-	class HttpClient;
+	class HttpsClient;
 
 	enum class WebSocketOpCode : int8_t { Op_Continuation = 0x00, Op_Text = 0x01, Op_Binary = 0x02, Op_Close = 0x08, Op_Ping = 0x09, Op_Pong = 0x0a };
 

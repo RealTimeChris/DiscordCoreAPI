@@ -135,7 +135,7 @@ namespace DiscordCoreAPI {
 		friend EventHandler;
 		friend Guild;
 
-		static void initialize(DiscordCoreInternal::HttpClient*, bool doWeCacheNew);
+		static void initialize(DiscordCoreInternal::HttpsClient*, bool doWeCacheNew);
 
 		/// Adds a chosen recipient to a group Dm. \brief Adds a chosen recipient to a group Dm.
 		/// \param dataPackage An AddRecipientToGroupDMData  structure.
@@ -191,7 +191,7 @@ namespace DiscordCoreAPI {
 
 	  protected:
 		static std::unique_ptr<std::unordered_map<uint64_t, std::unique_ptr<UserData>>> cache;
-		static DiscordCoreInternal::HttpClient* httpClient;
+		static DiscordCoreInternal::HttpsClient* httpsClient;
 		static std::shared_mutex theMutex;
 		static bool doWeCache;
 

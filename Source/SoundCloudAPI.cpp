@@ -25,8 +25,8 @@
 
 namespace DiscordCoreInternal {
 
-	SoundCloudRequestBuilder::SoundCloudRequestBuilder(HttpClient* httpClient) {
-		this->httpClient = httpClient;
+	SoundCloudRequestBuilder::SoundCloudRequestBuilder(HttpsClient* httpsClient) {
+		this->httpsClient = httpsClient;
 		if (SoundCloudRequestBuilder::clientId == "") {
 			SoundCloudRequestBuilder::clientId = this->collectClientId();
 		}
@@ -53,7 +53,7 @@ namespace DiscordCoreInternal {
 			dataPackage.workloadClass = HttpWorkloadClass::Get;
 			std::vector<HttpWorkloadData> workloadVector01{};
 			workloadVector01.push_back(dataPackage);
-			std::vector<HttpResponseData> returnData = this->httpClient->submitWorkloadAndGetResult<std::vector<HttpResponseData>>(workloadVector01);
+			std::vector<HttpResponseData> returnData = this->httpsClient->submitWorkloadAndGetResult<std::vector<HttpResponseData>>(workloadVector01);
 			if (returnData.size() < 1) {
 				return std::vector<DiscordCoreAPI::Song>{};
 			}
@@ -79,7 +79,7 @@ namespace DiscordCoreInternal {
 			}
 			return results;
 		} catch (...) {
-			if (this->httpClient->getDoWePrintHttpErrorMessages()) {
+			if (this->httpsClient->getDoWePrintHttpErrorMessages()) {
 				DiscordCoreAPI::reportException("SoundCloudRequestBuilder::collectSearchResults()");
 			}
 		}
@@ -93,7 +93,7 @@ namespace DiscordCoreInternal {
 			dataPackage01.workloadClass = HttpWorkloadClass::Get;
 			std::vector<HttpWorkloadData> workloadVector00{};
 			workloadVector00.push_back(dataPackage01);
-			auto results = this->httpClient->submitWorkloadAndGetResult<std::vector<HttpResponseData>>(workloadVector00);
+			auto results = this->httpsClient->submitWorkloadAndGetResult<std::vector<HttpResponseData>>(workloadVector00);
 			if (results.size() < 1) {
 				return DiscordCoreAPI::Song{};
 			}
@@ -107,7 +107,7 @@ namespace DiscordCoreInternal {
 				dataPackage.workloadClass = HttpWorkloadClass::Get;
 				std::vector<HttpWorkloadData> workloadVector01{};
 				workloadVector01.push_back(dataPackage);
-				std::vector<HttpResponseData> results = this->httpClient->submitWorkloadAndGetResult<std::vector<HttpResponseData>>(workloadVector01);
+				std::vector<HttpResponseData> results = this->httpsClient->submitWorkloadAndGetResult<std::vector<HttpResponseData>>(workloadVector01);
 				std::string newString{};
 				if (results.size() < 1) {
 					return DiscordCoreAPI::Song{};
@@ -146,7 +146,7 @@ namespace DiscordCoreInternal {
 				dataPackage02.workloadClass = HttpWorkloadClass::Get;
 				std::vector<HttpWorkloadData> workloadVector{};
 				workloadVector.push_back(dataPackage02);
-				auto headersNew = this->httpClient->submitWorkloadAndGetResult<std::vector<HttpResponseData>>(workloadVector);
+				auto headersNew = this->httpsClient->submitWorkloadAndGetResult<std::vector<HttpResponseData>>(workloadVector);
 				if (headersNew.size() < 1) {
 					return DiscordCoreAPI::Song{};
 				}
@@ -159,7 +159,7 @@ namespace DiscordCoreInternal {
 			}
 			return newSong;
 		} catch (...) {
-			if (this->httpClient->getDoWePrintHttpErrorMessages()) {
+			if (this->httpsClient->getDoWePrintHttpErrorMessages()) {
 				DiscordCoreAPI::reportException("SoundCloudRequestBuilder::constructDownloadInfo()");
 			}
 		}
@@ -178,7 +178,7 @@ namespace DiscordCoreInternal {
 		dataPackage02.workloadClass = HttpWorkloadClass::Get;
 		std::vector<HttpWorkloadData> workloadVector{};
 		workloadVector.push_back(dataPackage02);
-		std::vector<HttpResponseData> returnData = this->httpClient->submitWorkloadAndGetResult<std::vector<HttpResponseData>>(workloadVector);
+		std::vector<HttpResponseData> returnData = this->httpsClient->submitWorkloadAndGetResult<std::vector<HttpResponseData>>(workloadVector);
 		if (returnData.size() < 1) {
 			return std::string{};
 		}
@@ -199,7 +199,7 @@ namespace DiscordCoreInternal {
 		dataPackage03.workloadClass = HttpWorkloadClass::Get;
 		std::vector<HttpWorkloadData> workloadVector01{};
 		workloadVector01.push_back(dataPackage03);
-		std::vector<HttpResponseData> returnData02 = this->httpClient->submitWorkloadAndGetResult<std::vector<HttpResponseData>>(workloadVector01);
+		std::vector<HttpResponseData> returnData02 = this->httpsClient->submitWorkloadAndGetResult<std::vector<HttpResponseData>>(workloadVector01);
 		if (returnData02.size() < 1) {
 			return std::string{};
 		}
@@ -210,7 +210,7 @@ namespace DiscordCoreInternal {
 		if (newString03.find("\",nonce:_})))),s.push(") != std::string::npos) {
 			clientIdNew = newString03.substr(0, newString03.find("\",nonce:_})))),s.push("));
 		}
-		if (returnData02[0].responseCode not_eq 200 && this->httpClient->getDoWePrintHttpErrorMessages()) {
+		if (returnData02[0].responseCode not_eq 200 && this->httpsClient->getDoWePrintHttpErrorMessages()) {
 			std::cout << DiscordCoreAPI::shiftToBrightRed() << "SoundCloudAPI::searchForSong Error: " << returnData[0].responseCode << newerString02.c_str()
 					  << DiscordCoreAPI::reset() << std::endl
 					  << std::endl;
@@ -218,10 +218,10 @@ namespace DiscordCoreInternal {
 		return clientIdNew;
 	}
 
-	SoundCloudAPI::SoundCloudAPI(const uint64_t& guildIdNew, HttpClient* httpClient) : requestBuilder(httpClient) {
-		this->doWePrintSuccessMessages = httpClient->getDoWePrintFFMPEGSuccessMessages();
-		this->doWePrintErrorMessages = httpClient->getDoWePrintFFMPEGErrorMessages();
-		this->httpClient = httpClient;
+	SoundCloudAPI::SoundCloudAPI(const uint64_t& guildIdNew, HttpsClient* httpsClient) : requestBuilder(httpsClient) {
+		this->doWePrintSuccessMessages = httpsClient->getDoWePrintFFMPEGSuccessMessages();
+		this->doWePrintErrorMessages = httpsClient->getDoWePrintFFMPEGErrorMessages();
+		this->httpsClient = httpsClient;
 		this->guildId = guildIdNew;
 	}
 
@@ -281,7 +281,7 @@ namespace DiscordCoreInternal {
 			dataPackage03.workloadClass = HttpWorkloadClass::Get;
 			std::vector<HttpWorkloadData> workloadVector{};
 			workloadVector.push_back(dataPackage03);
-			auto result = this->httpClient->submitWorkloadAndGetResult<std::vector<HttpResponseData>>(workloadVector);
+			auto result = this->httpsClient->submitWorkloadAndGetResult<std::vector<HttpResponseData>>(workloadVector);
 			if (result.size() < 1) {
 				audioDecoder.reset(nullptr);
 				SoundCloudAPI::weFailedToDownloadOrDecode(newSong, theToken, currentRecursionDepth);

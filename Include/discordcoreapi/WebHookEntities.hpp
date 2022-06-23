@@ -331,7 +331,7 @@ namespace DiscordCoreAPI {
 	/// An interface class for the WebHook related Discord endpoints. \brief An interface class for the WebHook related Discord endpoints;
 	class DiscordCoreAPI_Dll WebHooks {
 	  public:
-		static void initialize(DiscordCoreInternal::HttpClient*);
+		static void initialize(DiscordCoreInternal::HttpsClient*);
 
 		/// Creates a new WebHook. \brief Creates a new WebHook.
 		/// \param dataPackage A GetMessageData structure.
@@ -399,7 +399,7 @@ namespace DiscordCoreAPI {
 		static CoRoutine<void> deleteWebHookMessageAsync(DeleteWebHookMessageData dataPackage);
 
 	  protected:
-		static DiscordCoreInternal::HttpClient* httpClient;
+		static DiscordCoreInternal::HttpsClient* httpsClient;
 	};
 	/**@}*/
 

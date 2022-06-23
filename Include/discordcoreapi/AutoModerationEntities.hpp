@@ -102,7 +102,7 @@ namespace DiscordCoreAPI {
 
 	class AutoModerationRules {
 	  public:
-		static void initialize(DiscordCoreInternal::HttpClient*);
+		static void initialize(DiscordCoreInternal::HttpsClient*);
 
 		CoRoutine<std::vector<AutoModerationRule>> listAutoModerationRulesForGuildAsync(ListAutoModerationRulesForGuildData dataPackage);
 
@@ -115,7 +115,7 @@ namespace DiscordCoreAPI {
 		CoRoutine<void> deleteAutoModerationRuleAsync(DeleteAutoModerationRuleData dataPackage);
 
 	  protected:
-		static DiscordCoreInternal::HttpClient* httpClient;
+		static DiscordCoreInternal::HttpsClient* httpsClient;
 	};
 
 	/**@}*/

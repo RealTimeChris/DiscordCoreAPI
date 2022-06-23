@@ -105,7 +105,7 @@ namespace DiscordCoreAPI {
 	  protected:
 		std::unordered_map<std::string, std::unique_ptr<DiscordCoreInternal::BaseSocketAgent>> baseSocketAgentMap{};
 		GatewayIntents theIntents{ DiscordCoreAPI::GatewayIntents::All_Intents };
-		std::unique_ptr<DiscordCoreInternal::HttpClient> httpClient{ nullptr };
+		std::unique_ptr<DiscordCoreInternal::HttpsClient> httpsClient{ nullptr };
 		StopWatch<std::chrono::milliseconds> theStopWatch{ 5100ms };
 		TextFormat theFormat{ DiscordCoreAPI::TextFormat::Etf };
 		std::vector<RepeatedFunctionData> functionsToExecute{};

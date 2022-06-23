@@ -375,7 +375,7 @@ namespace DiscordCoreAPI {
 		friend DiscordCoreClient;
 		friend EventHandler;
 
-		static void initialize(DiscordCoreInternal::HttpClient* theClient, DiscordCoreClient* discordCoreClientNew, bool doWeCacheNew);
+		static void initialize(DiscordCoreInternal::HttpsClient* theClient, DiscordCoreClient* discordCoreClientNew, bool doWeCacheNew);
 
 		/// Gets an audit log from the Discord servers. \brief Gets an audit log from the Discord servers.
 		/// \param dataPackage A GetGuildAuditLogsData structure.
@@ -558,7 +558,7 @@ namespace DiscordCoreAPI {
 
 	  protected:
 		static std::unique_ptr<std::unordered_map<uint64_t, std::unique_ptr<GuildData>>> cache;
-		static DiscordCoreInternal::HttpClient* httpClient;
+		static DiscordCoreInternal::HttpsClient* httpsClient;
 		static DiscordCoreClient* discordCoreClient;
 		static std::shared_mutex theMutex;
 		static bool doWeCache;

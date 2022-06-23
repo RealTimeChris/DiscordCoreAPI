@@ -84,7 +84,7 @@ namespace DiscordCoreAPI {
 	/// An interface class for the Sticker related Discord endpoints. \brief An interface class for the Sticker related Discord endpoints.
 	class DiscordCoreAPI_Dll Stickers {
 	  public:
-		static void initialize(DiscordCoreInternal::HttpClient*);
+		static void initialize(DiscordCoreInternal::HttpsClient*);
 
 		/// Gets a single Sticker item. \brief Gets a single Sticker item.
 		/// \param dataPackage A GetStickerData structure.
@@ -116,7 +116,7 @@ namespace DiscordCoreAPI {
 		static CoRoutine<void> deleteGuildStickerAsync(DeleteGuildStickerData dataPackage);
 
 	  protected:
-		static DiscordCoreInternal::HttpClient* httpClient;
+		static DiscordCoreInternal::HttpsClient* httpsClient;
 	};
 	/**@}*/
 };// namespace DiscordCoreAPI

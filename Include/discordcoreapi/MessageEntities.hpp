@@ -241,7 +241,7 @@ namespace DiscordCoreAPI {
 	/// An interface class for the Message related Discord endpoints. \brief An interface class for the Message related Discord endpoints;
 	class DiscordCoreAPI_Dll Messages {
 	  public:
-		static void initialize(DiscordCoreInternal::HttpClient*);
+		static void initialize(DiscordCoreInternal::HttpsClient*);
 
 		/// Collects a collection of Message from the Discord servers. \brief Collects a collection of Message from the Discord servers
 		/// \param dataPackage A GetMessagesData structure.
@@ -294,7 +294,7 @@ namespace DiscordCoreAPI {
 		static CoRoutine<void> unpinMessageAsync(UnpinMessageData dataPackage);
 
 	  protected:
-		static DiscordCoreInternal::HttpClient* httpClient;
+		static DiscordCoreInternal::HttpsClient* httpsClient;
 	};
 	/**@}*/
 

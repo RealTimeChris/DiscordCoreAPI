@@ -65,10 +65,10 @@ namespace DiscordCoreAPI {
 		*this = other;
 	}
 
-	void GuildMembers::initialize(DiscordCoreInternal::HttpClient* theClient, bool doWeCacheNew) {
+	void GuildMembers::initialize(DiscordCoreInternal::HttpsClient* theClient, bool doWeCacheNew) {
 		GuildMembers::cache = std::make_unique<std::map<GuildMemberId, std::unique_ptr<GuildMemberData>>>();
 		GuildMembers::doWeCache = doWeCacheNew;
-		GuildMembers::httpClient = theClient;
+		GuildMembers::httpsClient = theClient;
 	}
 
 	CoRoutine<GuildMember> GuildMembers::getGuildMemberAsync(GetGuildMemberData dataPackage) {
@@ -79,7 +79,7 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/members/" + std::to_string(dataPackage.guildMemberId);
 		workload.callStack = "GuildMembers::getGuildMemberAsync";
-		auto guildMember = GuildMembers::httpClient->submitWorkloadAndGetResult<GuildMember>(workload);
+		auto guildMember = GuildMembers::httpsClient->submitWorkloadAndGetResult<GuildMember>(workload);
 		guildMember.guildId = dataPackage.guildId;
 		GuildMembers::insertGuildMember(guildMember);
 		co_return guildMember;
@@ -114,7 +114,7 @@ namespace DiscordCoreAPI {
 			workload.relativePath += "?limit=" + std::to_string(dataPackage.limit);
 		}
 		workload.callStack = "GuildMembers::listGuildMembersAsync";
-		co_return GuildMembers::httpClient->submitWorkloadAndGetResult<std::vector<GuildMember>>(workload);
+		co_return GuildMembers::httpsClient->submitWorkloadAndGetResult<std::vector<GuildMember>>(workload);
 	}
 
 	CoRoutine<std::vector<GuildMember>> GuildMembers::searchGuildMembersAsync(SearchGuildMembersData dataPackage) {
@@ -133,7 +133,7 @@ namespace DiscordCoreAPI {
 			workload.relativePath += "?limit=" + std::to_string(dataPackage.limit);
 		}
 		workload.callStack = "GuildMembers::searchGuildMembersAsync";
-		co_return GuildMembers::httpClient->submitWorkloadAndGetResult<std::vector<GuildMember>>(workload);
+		co_return GuildMembers::httpsClient->submitWorkloadAndGetResult<std::vector<GuildMember>>(workload);
 	}
 
 	CoRoutine<GuildMember> GuildMembers::addGuildMemberAsync(AddGuildMemberData dataPackage) {
@@ -145,7 +145,7 @@ namespace DiscordCoreAPI {
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/members/" + std::to_string(dataPackage.userId);
 		workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
 		workload.callStack = "GuildMembers::addGuildMemberAsync";
-		co_return GuildMembers::httpClient->submitWorkloadAndGetResult<GuildMember>(workload);
+		co_return GuildMembers::httpsClient->submitWorkloadAndGetResult<GuildMember>(workload);
 	}
 
 	CoRoutine<GuildMember> GuildMembers::modifyCurrentGuildMemberAsync(ModifyCurrentGuildMemberData dataPackage) {
@@ -160,7 +160,7 @@ namespace DiscordCoreAPI {
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
-		co_return GuildMembers::httpClient->submitWorkloadAndGetResult<GuildMember>(workload);
+		co_return GuildMembers::httpsClient->submitWorkloadAndGetResult<GuildMember>(workload);
 	}
 
 	CoRoutine<GuildMember> GuildMembers::modifyGuildMemberAsync(ModifyGuildMemberData dataPackage) {
@@ -175,7 +175,7 @@ namespace DiscordCoreAPI {
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
-		auto guildMember = GuildMembers::httpClient->submitWorkloadAndGetResult<GuildMember>(workload);
+		auto guildMember = GuildMembers::httpsClient->submitWorkloadAndGetResult<GuildMember>(workload);
 		GuildMembers::insertGuildMember(guildMember);
 		co_return guildMember;
 	}
@@ -191,7 +191,7 @@ namespace DiscordCoreAPI {
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
-		co_return GuildMembers::httpClient->submitWorkloadAndGetResult<void>(workload);
+		co_return GuildMembers::httpsClient->submitWorkloadAndGetResult<void>(workload);
 	}
 
 	CoRoutine<GuildMember> GuildMembers::timeoutGuildMemberAsync(TimeoutGuildMemberData dataPackage) {
@@ -269,7 +269,7 @@ namespace DiscordCoreAPI {
 	};
 
 	std::unique_ptr<std::map<GuildMemberId, std::unique_ptr<GuildMemberData>>> GuildMembers::cache{};
-	DiscordCoreInternal::HttpClient* GuildMembers::httpClient{ nullptr };
+	DiscordCoreInternal::HttpsClient* GuildMembers::httpsClient{ nullptr };
 	std::shared_mutex GuildMembers::theMutex{};
 	bool GuildMembers::doWeCache{ false };
 };

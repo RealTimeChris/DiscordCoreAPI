@@ -41,7 +41,7 @@ namespace DiscordCoreInternal {
 
 	struct DiscordCoreAPI_Dll HttpResponseData {
 		friend class HttpRnRBuilder;
-		friend class HttpClient;
+		friend class HttpsClient;
 		
 		std::unordered_map<std::string, std::string> responseHeaders{};
 		HttpState theCurrentState{ HttpState::Collecting_Headers };
@@ -55,7 +55,7 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll HttpRnRBuilder {
 	  public:
-		friend HttpClient;
+		friend HttpsClient;
 
 		void updateRateLimitData(std::unordered_map<std::string, std::string>& headers, RateLimitData& theConnection);
 
@@ -90,7 +90,7 @@ namespace DiscordCoreInternal {
 	  public:
 		friend HttpConnectionManager;
 		friend HttpRnRBuilder;
-		friend HttpClient;
+		friend HttpsClient;
 
 		RateLimitData() = default;
 
@@ -123,11 +123,11 @@ namespace DiscordCoreInternal {
 		void initialize();
 	};
 
-	class DiscordCoreAPI_Dll HttpClient {
+	class DiscordCoreAPI_Dll HttpsClient {
 	  public:
-		HttpClient() = default;
+		HttpsClient() = default;
 
-		HttpClient(const std::string& botTokenNew, bool doWePrintHttpSuccessNew, bool doWePrintHttpErrorNew, bool doWePrintFFMPEGSuccessNew, bool doWePrintFFMPEGErrorNew,
+		HttpsClient(const std::string& botTokenNew, bool doWePrintHttpSuccessNew, bool doWePrintHttpErrorNew, bool doWePrintFFMPEGSuccessNew, bool doWePrintFFMPEGErrorNew,
 			bool doWePrintWebSocketErrorNew);
 
 		std::vector<HttpResponseData> httpRequest(const std::vector<HttpWorkloadData>&);

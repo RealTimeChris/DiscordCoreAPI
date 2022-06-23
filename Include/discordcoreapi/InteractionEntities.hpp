@@ -613,7 +613,7 @@ namespace DiscordCoreAPI {
 		friend EventHandler;
 		friend EventManager;
 
-		static void initialize(DiscordCoreInternal::HttpClient*);
+		static void initialize(DiscordCoreInternal::HttpsClient*);
 
 		/// Creates a response to an input Interaction. \brief Creates a response to an input Interaction.
 		/// \param dataPackage A CreateInteractionResponseData structure.
@@ -656,7 +656,7 @@ namespace DiscordCoreAPI {
 		static CoRoutine<void> deleteFollowUpMessageAsync(DeleteFollowUpMessageData dataPackage);
 
 	  protected:
-		static DiscordCoreInternal::HttpClient* httpClient;
+		static DiscordCoreInternal::HttpsClient* httpsClient;
 	};
 
 	/**@}*/

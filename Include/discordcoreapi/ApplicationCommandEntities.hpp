@@ -180,7 +180,7 @@ namespace DiscordCoreAPI {
 	/// An interface class for the ApplicationCommand related Discord endpoints. \brief An interface class for the ApplicationCommand related Discord endpoints.
 	class DiscordCoreAPI_Dll ApplicationCommands {
 	  public:
-		static void initialize(DiscordCoreInternal::HttpClient*);
+		static void initialize(DiscordCoreInternal::HttpsClient*);
 
 		/// Get all of the global ApplicationCommands for this bot. \brief Get all of the global ApplicationCommands for this bot.
 		/// \returns A CoRoutine containing a std::vector<ApplicationCommand>.
@@ -257,7 +257,7 @@ namespace DiscordCoreAPI {
 		static CoRoutine<GuildApplicationCommandPermissionsData> editGuildApplicationCommandPermissionsAsync(EditGuildApplicationCommandPermissionsData dataPackage);
 
 	  protected:
-		static DiscordCoreInternal::HttpClient* httpClient;
+		static DiscordCoreInternal::HttpsClient* httpsClient;
 	};
 	/**@}*/
 

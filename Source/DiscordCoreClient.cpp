@@ -101,24 +101,24 @@ namespace DiscordCoreAPI {
 		this->eventManager.onUserUpdate(&EventHandler::onUserUpdate);
 		this->eventManager.onVoiceStateUpdate(&EventHandler::onVoiceStateUpdate);
 		EventHandler::initialize(this->cacheOptions);
-		this->httpClient =
-			std::make_unique<DiscordCoreInternal::HttpClient>(configData.botToken, this->loggingOptions.logHttpSuccessMessages, this->loggingOptions.logHttpErrorMessages,
+		this->httpsClient =
+			std::make_unique<DiscordCoreInternal::HttpsClient>(configData.botToken, this->loggingOptions.logHttpSuccessMessages, this->loggingOptions.logHttpErrorMessages,
 				this->loggingOptions.logFFMPEGSuccessMessages, this->loggingOptions.logFFMPEGErrorMessages, this->loggingOptions.logWebSocketErrorMessages);
-		ApplicationCommands::initialize(this->httpClient.get());
-		AutoModerationRules::initialize(this->httpClient.get());
-		Channels::initialize(this->httpClient.get(), this->cacheOptions.cacheChannels);
-		Guilds::initialize(this->httpClient.get(), this, this->cacheOptions.cacheGuilds);
-		GuildMembers::initialize(this->httpClient.get(), this->cacheOptions.cacheGuildMembers);
-		GuildScheduledEvents::initialize(this->httpClient.get());
-		Interactions::initialize(this->httpClient.get());
-		Messages::initialize(this->httpClient.get());
-		Reactions::initialize(this->httpClient.get());
-		Roles::initialize(this->httpClient.get(), this->cacheOptions.cacheRoles);
-		Stickers::initialize(this->httpClient.get());
-		StageInstances::initialize(this->httpClient.get());
-		Threads::initialize(this->httpClient.get());
-		Users::initialize(this->httpClient.get(), this->cacheOptions.cacheUsers);
-		WebHooks::initialize(this->httpClient.get());
+		ApplicationCommands::initialize(this->httpsClient.get());
+		AutoModerationRules::initialize(this->httpsClient.get());
+		Channels::initialize(this->httpsClient.get(), this->cacheOptions.cacheChannels);
+		Guilds::initialize(this->httpsClient.get(), this, this->cacheOptions.cacheGuilds);
+		GuildMembers::initialize(this->httpsClient.get(), this->cacheOptions.cacheGuildMembers);
+		GuildScheduledEvents::initialize(this->httpsClient.get());
+		Interactions::initialize(this->httpsClient.get());
+		Messages::initialize(this->httpsClient.get());
+		Reactions::initialize(this->httpsClient.get());
+		Roles::initialize(this->httpsClient.get(), this->cacheOptions.cacheRoles);
+		Stickers::initialize(this->httpsClient.get());
+		StageInstances::initialize(this->httpsClient.get());
+		Threads::initialize(this->httpsClient.get());
+		Users::initialize(this->httpsClient.get(), this->cacheOptions.cacheUsers);
+		WebHooks::initialize(this->httpsClient.get());
 		this->botToken = configData.botToken;
 		this->theFormat = configData.textFormat;
 	}
@@ -144,7 +144,7 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
 		workload.relativePath = "/gateway/bot";
 		workload.callStack = "DiscordCoreClient::getGateWayBot";
-		return this->httpClient->submitWorkloadAndGetResult<GatewayBotData>(workload);
+		return this->httpsClient->submitWorkloadAndGetResult<GatewayBotData>(workload);
 	}
 
 	bool DiscordCoreClient::instantiateWebSockets() {

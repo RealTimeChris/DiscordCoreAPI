@@ -104,7 +104,7 @@ namespace DiscordCoreAPI {
 	/// An interface class for the GuildScheduledEvent related Discord endpoints. \brief An interface class for the GuildScheduledEvent related Discord endpoints.
 	class DiscordCoreAPI_Dll GuildScheduledEvents {
 	  public:
-		static void initialize(DiscordCoreInternal::HttpClient*);
+		static void initialize(DiscordCoreInternal::HttpsClient*);
 
 		/// Gets a list of a given Guild's scheduled events. \brief Gets a list of a given Guild's scheduled events.
 		/// \param dataPackage A GetGuildScheduledEventsDatastructure.
@@ -137,7 +137,7 @@ namespace DiscordCoreAPI {
 		static CoRoutine<std::vector<GuildScheduledEventUserData>> getGuildScheduledEventUsersAsync(GetGuildScheduledEventUsersData dataPackage);
 
 	  protected:
-		static DiscordCoreInternal::HttpClient* httpClient;
+		static DiscordCoreInternal::HttpsClient* httpsClient;
 	};
 	/**@}*/
 }// namespace DiscordCoreAPI

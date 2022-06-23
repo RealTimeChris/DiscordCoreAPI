@@ -61,8 +61,8 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	void Messages::initialize(DiscordCoreInternal::HttpClient* theClient) {
-		Messages::httpClient = theClient;
+	void Messages::initialize(DiscordCoreInternal::HttpsClient* theClient) {
+		Messages::httpsClient = theClient;
 	}
 
 	CoRoutine<std::vector<Message>> Messages::getMessagesAsync(GetMessagesData dataPackage) {
@@ -101,7 +101,7 @@ namespace DiscordCoreAPI {
 			}
 		}
 		workload.callStack = "Messages::getMessagesAsync";
-		co_return Messages::httpClient->submitWorkloadAndGetResult<std::vector<Message>>(workload);
+		co_return Messages::httpsClient->submitWorkloadAndGetResult<std::vector<Message>>(workload);
 	}
 
 	CoRoutine<Message> Messages::getMessageAsync(GetMessageData dataPackage) {
@@ -112,7 +112,7 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/messages/" + std::to_string(dataPackage.id);
 		workload.callStack = "Messages::getMessageAsync";
-		auto result = Messages::httpClient->submitWorkloadAndGetResult<Message>(workload);
+		auto result = Messages::httpsClient->submitWorkloadAndGetResult<Message>(workload);
 		co_return result;
 	}
 
@@ -130,7 +130,7 @@ namespace DiscordCoreAPI {
 			workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
 		}
 		workload.callStack = "Messages::createMessageAsync";
-		auto result = Messages::httpClient->submitWorkloadAndGetResult<Message>(workload);
+		auto result = Messages::httpsClient->submitWorkloadAndGetResult<Message>(workload);
 		co_return result;
 	}
 
@@ -142,7 +142,7 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Post;
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/messages/" + std::to_string(dataPackage.messageId) + "/crosspost";
 		workload.callStack = "Messages::crosspostMessageAsync";
-		co_return Messages::httpClient->submitWorkloadAndGetResult<Message>(workload);
+		co_return Messages::httpsClient->submitWorkloadAndGetResult<Message>(workload);
 	}
 
 	CoRoutine<Message> Messages::editMessageAsync(EditMessageData dataPackage) {
@@ -159,7 +159,7 @@ namespace DiscordCoreAPI {
 			workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
 		}
 		workload.callStack = "Messages::editMessageAsync";
-		auto result = Messages::httpClient->submitWorkloadAndGetResult<Message>(workload);
+		auto result = Messages::httpsClient->submitWorkloadAndGetResult<Message>(workload);
 		co_return result;
 	}
 
@@ -181,7 +181,7 @@ namespace DiscordCoreAPI {
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
-		co_return Messages::httpClient->submitWorkloadAndGetResult<void>(workload);
+		co_return Messages::httpsClient->submitWorkloadAndGetResult<void>(workload);
 	}
 
 	CoRoutine<void> Messages::deleteMessagesBulkAsync(DeleteMessagesBulkData dataPackage) {
@@ -196,7 +196,7 @@ namespace DiscordCoreAPI {
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
-		co_return Messages::httpClient->submitWorkloadAndGetResult<void>(workload);
+		co_return Messages::httpsClient->submitWorkloadAndGetResult<void>(workload);
 	}
 
 	CoRoutine<std::vector<Message>> Messages::getPinnedMessagesAsync(GetPinnedMessagesData dataPackage) {
@@ -207,7 +207,7 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/pins";
 		workload.callStack = "Messages::getPinnedMessagesAsync";
-		co_return Messages::httpClient->submitWorkloadAndGetResult<std::vector<Message>>(workload);
+		co_return Messages::httpsClient->submitWorkloadAndGetResult<std::vector<Message>>(workload);
 	}
 
 	CoRoutine<void> Messages::pinMessageAsync(PinMessageData dataPackage) {
@@ -221,7 +221,7 @@ namespace DiscordCoreAPI {
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
-		co_return Messages::httpClient->submitWorkloadAndGetResult<void>(workload);
+		co_return Messages::httpsClient->submitWorkloadAndGetResult<void>(workload);
 	}
 
 	CoRoutine<void> Messages::unpinMessageAsync(UnpinMessageData dataPackage) {
@@ -235,9 +235,9 @@ namespace DiscordCoreAPI {
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
-		co_return Messages::httpClient->submitWorkloadAndGetResult<void>(workload);
+		co_return Messages::httpsClient->submitWorkloadAndGetResult<void>(workload);
 	}
 
 	std::unordered_map<std::string, UnboundedMessageBlock<Message>*> MessageCollector::messagesBufferMap{};
-	DiscordCoreInternal::HttpClient* Messages::httpClient{ nullptr };
+	DiscordCoreInternal::HttpsClient* Messages::httpsClient{ nullptr };
 }

@@ -263,7 +263,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	HttpClient::HttpClient(const std::string& botTokenNew, bool doWePrintHttpSuccessMessagesNew, bool doWePrintHttpErrorMessagesNew, bool doWePrintFFMPEGSuccessMessagesNew,
+	HttpsClient::HttpsClient(const std::string& botTokenNew, bool doWePrintHttpSuccessMessagesNew, bool doWePrintHttpErrorMessagesNew, bool doWePrintFFMPEGSuccessMessagesNew,
 		bool doWePrintFFMPEGErrorMessagesNew, bool doWePrintWebSocketErrorMessagesNew)
 		: botToken(botTokenNew), doWePrintFFMPEGErrorMessages(doWePrintFFMPEGErrorMessagesNew), doWePrintHttpSuccessMessages(doWePrintHttpSuccessMessagesNew),
 		  doWePrintHttpErrorMessages(doWePrintHttpErrorMessagesNew), doWePrintFFMPEGSuccessMessages(doWePrintFFMPEGSuccessMessagesNew),
@@ -271,7 +271,7 @@ namespace DiscordCoreInternal {
 		this->connectionManager.initialize();
 	};
 
-	HttpResponseData HttpClient::executeByRateLimitData(const HttpWorkloadData& workload) {
+	HttpResponseData HttpsClient::executeByRateLimitData(const HttpWorkloadData& workload) {
 		HttpResponseData returnData{};
 		Globals::httpConnection->resetValues();
 		RateLimitData& rateLimitData = *Globals::rateLimitValues[Globals::rateLimitValueBuckets[workload.workloadType]].get();
@@ -311,7 +311,7 @@ namespace DiscordCoreInternal {
 		}
 		rateLimitData.sampledTimeInMs =
 			static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
-		returnData = HttpClient::httpRequestInternal(workload, rateLimitData);
+		returnData = HttpsClient::httpRequestInternal(workload, rateLimitData);
 
 		if (rateLimitData.tempBucket != "") {
 			rateLimitData.tempBucket = "";
@@ -351,7 +351,7 @@ namespace DiscordCoreInternal {
 		return returnData;
 	}
 
-	HttpResponseData HttpClient::httpRequestInternal(const HttpWorkloadData& workload, RateLimitData& rateLimitData) {
+	HttpResponseData HttpsClient::httpRequestInternal(const HttpWorkloadData& workload, RateLimitData& rateLimitData) {
 		try {
 			Globals::httpConnection->resetValues();
 			if (Globals::httpConnection->currentRecursionDepth >= Globals::httpConnection->maxRecursion) {
@@ -375,7 +375,7 @@ namespace DiscordCoreInternal {
 			}
 		} catch (...) {
 			if (this->doWePrintHttpErrorMessages) {
-				DiscordCoreAPI::reportException(workload.callStack + "::HttpClient::executeHttpRequest()");
+				DiscordCoreAPI::reportException(workload.callStack + "::HttpsClient::executeHttpRequest()");
 			}
 			Globals::httpConnection->currentRecursionDepth += 1;
 			Globals::httpConnection->doWeConnect = true;
@@ -383,7 +383,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	HttpResponseData HttpClient::getResponse( RateLimitData& rateLimitData) {
+	HttpResponseData HttpsClient::getResponse( RateLimitData& rateLimitData) {
 		DiscordCoreAPI::StopWatch stopWatch{ 3500ms };
 		Globals::httpConnection->getInputBuffer().clear();
 		Globals::httpConnection->resetValues();
@@ -397,7 +397,7 @@ namespace DiscordCoreInternal {
 				}
 			} catch (ProcessingError&) {
 				if (this->doWePrintHttpErrorMessages) {
-					DiscordCoreAPI::reportException("HttpClient::getResponse()");
+					DiscordCoreAPI::reportException("HttpsClient::getResponse()");
 				}
 				theData.responseCode = -1;
 				return theData;
@@ -453,7 +453,7 @@ namespace DiscordCoreInternal {
 		return Globals::httpConnection->finalizeReturnValues(rateLimitData, theData);
 	}
 
-	std::vector<HttpResponseData> HttpClient::httpRequest(const std::vector<HttpWorkloadData>& workload) {
+	std::vector<HttpResponseData> HttpsClient::httpRequest(const std::vector<HttpWorkloadData>& workload) {
 		std::vector<HttpResponseData> returnVector{};
 		std::string currentBaseUrl{};
 		auto rateLimitData = std::make_unique<RateLimitData>();
@@ -463,7 +463,7 @@ namespace DiscordCoreInternal {
 					Globals::httpConnection->connect(value.baseUrl);
 				} catch (ProcessingError&) {
 					if (this->doWePrintHttpErrorMessages) {
-						DiscordCoreAPI::reportException("HttpClient::httpRequest()");
+						DiscordCoreAPI::reportException("HttpsClient::httpRequest()");
 					}
 					continue;
 				}
@@ -477,7 +477,7 @@ namespace DiscordCoreInternal {
 		return returnVector;
 	}
 
-	HttpResponseData HttpClient::httpRequest(HttpWorkloadData& workload) {
+	HttpResponseData HttpsClient::httpRequest(HttpWorkloadData& workload) {
 		if (workload.baseUrl == "") {
 			workload.baseUrl = "https://discord.com/api/v10";
 		}
@@ -503,27 +503,27 @@ namespace DiscordCoreInternal {
 		return resultData;
 	}
 
-	const bool HttpClient::getDoWePrintWebSocketErrorMessages() {
+	const bool HttpsClient::getDoWePrintWebSocketErrorMessages() {
 		return this->doWePrintWebSocketErrorMessages;
 	}
 
-	const bool HttpClient::getDoWePrintFFMPEGSuccessMessages() {
+	const bool HttpsClient::getDoWePrintFFMPEGSuccessMessages() {
 		return this->doWePrintFFMPEGSuccessMessages;
 	}
 
-	const bool HttpClient::getDoWePrintFFMPEGErrorMessages() {
+	const bool HttpsClient::getDoWePrintFFMPEGErrorMessages() {
 		return this->doWePrintFFMPEGErrorMessages;
 	}
 
-	const bool HttpClient::getDoWePrintHttpSuccessMessages() {
+	const bool HttpsClient::getDoWePrintHttpSuccessMessages() {
 		return this->doWePrintHttpSuccessMessages;
 	}
 
-	const bool HttpClient::getDoWePrintHttpErrorMessages() {
+	const bool HttpsClient::getDoWePrintHttpErrorMessages() {
 		return this->doWePrintHttpErrorMessages;
 	}
 
-	template<> void HttpClient::submitWorkloadAndGetResult<void>(HttpWorkloadData& workloadNew) {
+	template<> void HttpsClient::submitWorkloadAndGetResult<void>(HttpWorkloadData& workloadNew) {
 		HttpWorkloadData workload = workloadNew;
 		workload.headersToInsert["Authorization"] = "Bot " + this->botToken;
 		workload.headersToInsert["User-Agent"] = "DiscordBot (https://discordcoreapi.com/ 1.0)";
@@ -536,12 +536,12 @@ namespace DiscordCoreInternal {
 		return;
 	}
 
-	template<> std::vector<HttpResponseData> HttpClient::submitWorkloadAndGetResult(const std::vector<HttpWorkloadData>& workloadNew) {
+	template<> std::vector<HttpResponseData> HttpsClient::submitWorkloadAndGetResult(const std::vector<HttpWorkloadData>& workloadNew) {
 		std::vector<HttpWorkloadData> workload = workloadNew;
 		return this->httpRequest(workload);
 	}
 
-	template<> HttpResponseData HttpClient::submitWorkloadAndGetResult(HttpWorkloadData& workloadNew) {
+	template<> HttpResponseData HttpsClient::submitWorkloadAndGetResult(HttpWorkloadData& workloadNew) {
 		HttpWorkloadData workload = workloadNew;
 		workload.headersToInsert["Authorization"] = "Bot " + this->botToken;
 		workload.headersToInsert["User-Agent"] = "DiscordBot (https://discordcoreapi.com/ 1.0)";

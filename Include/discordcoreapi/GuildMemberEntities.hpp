@@ -130,7 +130,7 @@ namespace DiscordCoreAPI {
 		friend EventHandler;
 		friend Guild;
 
-		static void initialize(DiscordCoreInternal::HttpClient*, bool doWeCacheNew);
+		static void initialize(DiscordCoreInternal::HttpsClient*, bool doWeCacheNew);
 
 		/// Collects a GuildMember from the Discord servers. \brief Collects a GuildMember from the Discord servers.
 		/// \param dataPackage A GetGuildMemberData structure.
@@ -179,7 +179,7 @@ namespace DiscordCoreAPI {
 
 	  protected:
 		static std::unique_ptr<std::map<GuildMemberId, std::unique_ptr<GuildMemberData>>> cache;
-		static DiscordCoreInternal::HttpClient* httpClient;
+		static DiscordCoreInternal::HttpsClient* httpsClient;
 		static std::shared_mutex theMutex;
 		static bool doWeCache;
 

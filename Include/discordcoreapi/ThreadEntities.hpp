@@ -144,7 +144,7 @@ namespace DiscordCoreAPI {
 	/// An interface class for the Thread related endpoints. \brief An interface class for the Thread related endpoints.
 	class DiscordCoreAPI_Dll Threads {
 	  public:
-		static void initialize(DiscordCoreInternal::HttpClient*);
+		static void initialize(DiscordCoreInternal::HttpsClient*);
 
 		/// Starts a Thread, based on a starting Message. \brief Starts a Thread, based on a starting Message.
 		/// \param dataPackage A StartThreadWithMessageData structure.
@@ -217,7 +217,7 @@ namespace DiscordCoreAPI {
 		static CoRoutine<ActiveThreadsData> getActiveGuildThreadsAsync(GetActiveGuildThreadsData dataPackage);
 
 	  protected:
-		static DiscordCoreInternal::HttpClient* httpClient;
+		static DiscordCoreInternal::HttpsClient* httpsClient;
 	};
 	/**@}*/
 };// namespace DiscordCoreAPI

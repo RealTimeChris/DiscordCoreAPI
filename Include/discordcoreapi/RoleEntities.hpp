@@ -154,7 +154,7 @@ namespace DiscordCoreAPI {
 		friend EventHandler;
 		friend Guild;
 
-		static void initialize(DiscordCoreInternal::HttpClient*, bool doWeCacheNew);
+		static void initialize(DiscordCoreInternal::HttpsClient*, bool doWeCacheNew);
 
 		/// Adds a Role to a chosen Guild member. \brief Adds a Role to a chosen Guild member.
 		/// \param dataPackage An AddGuildMemberRoleData structure.
@@ -208,7 +208,7 @@ namespace DiscordCoreAPI {
 
 	  protected:
 		static std::unique_ptr<std::unordered_map<uint64_t, std::unique_ptr<RoleData>>> cache;
-		static DiscordCoreInternal::HttpClient* httpClient;
+		static DiscordCoreInternal::HttpsClient* httpsClient;
 		static std::shared_mutex theMutex;
 		static bool doWeCache;
 

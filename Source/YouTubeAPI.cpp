@@ -28,8 +28,8 @@
 
 namespace DiscordCoreInternal {
 
-	YouTubeRequestBuilder::YouTubeRequestBuilder(HttpClient* theClient) {
-		this->httpClient = theClient;
+	YouTubeRequestBuilder::YouTubeRequestBuilder(HttpsClient* theClient) {
+		this->httpsClient = theClient;
 	}
 
 	DiscordCoreAPI::Song YouTubeRequestBuilder::collectFinalSong(const DiscordCoreAPI::GuildMemberData& addedByGuildMember, DiscordCoreAPI::Song& newSong) {
@@ -45,11 +45,11 @@ namespace DiscordCoreInternal {
 		dataPackage.workloadClass = HttpWorkloadClass::Get;
 		std::vector<HttpWorkloadData> workloadVector01{};
 		workloadVector01.push_back(dataPackage);
-		std::vector<HttpResponseData> returnData = this->httpClient->submitWorkloadAndGetResult<std::vector<HttpResponseData>>(workloadVector01);
+		std::vector<HttpResponseData> returnData = this->httpsClient->submitWorkloadAndGetResult<std::vector<HttpResponseData>>(workloadVector01);
 		if (returnData.size() < 1) {
 			return std::vector<DiscordCoreAPI::Song>{};
 		}
-		if (returnData[0].responseCode != 200 && this->httpClient->getDoWePrintHttpErrorMessages()) {
+		if (returnData[0].responseCode != 200 && this->httpsClient->getDoWePrintHttpErrorMessages()) {
 			std::cout << DiscordCoreAPI::shiftToBrightRed() << "YouTubeRequestBuilder::collectSearchResults() Error: " << returnData[0].responseCode
 					  << returnData[0].responseMessage.c_str() << DiscordCoreAPI::reset() << std::endl
 					  << std::endl;
@@ -105,12 +105,12 @@ namespace DiscordCoreInternal {
 			dataPackage02.content = theRequest.dump();
 			dataPackage02.workloadClass = HttpWorkloadClass::Post;
 			dataPackageWorkload.push_back(dataPackage02);
-			std::vector<HttpResponseData> responseData = this->httpClient->submitWorkloadAndGetResult<std::vector<HttpResponseData>>(dataPackageWorkload);
+			std::vector<HttpResponseData> responseData = this->httpsClient->submitWorkloadAndGetResult<std::vector<HttpResponseData>>(dataPackageWorkload);
 			if (responseData.size() < 1) {
 				return DiscordCoreAPI::Song{};
 			}
 			if (responseData[0].responseCode != 204 && responseData[0].responseCode != 201 && responseData[0].responseCode != 200 &&
-				this->httpClient->getDoWePrintHttpErrorMessages()) {
+				this->httpsClient->getDoWePrintHttpErrorMessages()) {
 				std::cout << DiscordCoreAPI::shiftToBrightRed() << "YouTubeRequestBuilder::constructDownloadInfo() 01 Error: " << responseData[0].responseCode << ", "
 						  << responseData[0].responseMessage << DiscordCoreAPI::reset() << std::endl
 						  << std::endl;
@@ -172,10 +172,10 @@ namespace DiscordCoreInternal {
 		return DiscordCoreAPI::Song{};
 	}
 
-	YouTubeAPI::YouTubeAPI(const uint64_t& guildIdNew, HttpClient* httpClient) : requestBuilder(httpClient) {
-		this->doWePrintWebSocketErrorMessages = httpClient->getDoWePrintWebSocketErrorMessages();
-		this->doWePrintFFMPEGSuccessMessages = httpClient->getDoWePrintFFMPEGSuccessMessages();
-		this->doWePrintFFMPEGErrorMessages = httpClient->getDoWePrintFFMPEGErrorMessages();
+	YouTubeAPI::YouTubeAPI(const uint64_t& guildIdNew, HttpsClient* httpsClient) : requestBuilder(httpsClient) {
+		this->doWePrintWebSocketErrorMessages = httpsClient->getDoWePrintWebSocketErrorMessages();
+		this->doWePrintFFMPEGSuccessMessages = httpsClient->getDoWePrintFFMPEGSuccessMessages();
+		this->doWePrintFFMPEGErrorMessages = httpsClient->getDoWePrintFFMPEGErrorMessages();
 		this->guildId = guildIdNew;
 	}
 

@@ -65,10 +65,10 @@ namespace DiscordCoreAPI {
 		*this = other;
 	}
 
-	void Channels::initialize(DiscordCoreInternal::HttpClient* theClient, bool doWeCacheNew) {
+	void Channels::initialize(DiscordCoreInternal::HttpsClient* theClient, bool doWeCacheNew) {
 		Channels::cache = std::make_unique<std::unordered_map<uint64_t, std::unique_ptr<ChannelData>>>();
 		Channels::doWeCache = doWeCacheNew;
-		Channels::httpClient = theClient;
+		Channels::httpsClient = theClient;
 	}
 
 	CoRoutine<Channel> Channels::getChannelAsync(GetChannelData dataPackage) {
@@ -79,7 +79,7 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId);
 		workload.callStack = "Channels::getChannelAsync";
-		auto channelNew = Channels::httpClient->submitWorkloadAndGetResult<Channel>(workload);
+		auto channelNew = Channels::httpsClient->submitWorkloadAndGetResult<Channel>(workload);
 		Channels::insertChannel(channelNew);
 		co_return channelNew;
 	}
@@ -106,7 +106,7 @@ namespace DiscordCoreAPI {
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
-		auto channelNew = Channels::httpClient->submitWorkloadAndGetResult<Channel>(workload);
+		auto channelNew = Channels::httpsClient->submitWorkloadAndGetResult<Channel>(workload);
 		Channels::insertChannel(channelNew);
 		co_return channelNew;
 	}
@@ -122,7 +122,7 @@ namespace DiscordCoreAPI {
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
-		co_return Channels::httpClient->submitWorkloadAndGetResult<void>(workload);
+		co_return Channels::httpsClient->submitWorkloadAndGetResult<void>(workload);
 	}
 
 	CoRoutine<void> Channels::editChannelPermissionOverwritesAsync(EditChannelPermissionOverwritesData dataPackage) {
@@ -137,7 +137,7 @@ namespace DiscordCoreAPI {
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
-		co_return Channels::httpClient->submitWorkloadAndGetResult<void>(workload);
+		co_return Channels::httpsClient->submitWorkloadAndGetResult<void>(workload);
 	}
 
 	CoRoutine<std::vector<InviteData>> Channels::getChannelInvitesAsync(GetChannelInvitesData dataPackage) {
@@ -148,7 +148,7 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/invites";
 		workload.callStack = "Channels::getChannelInvitesAsync";
-		co_return Channels::httpClient->submitWorkloadAndGetResult<std::vector<InviteData>>(workload);
+		co_return Channels::httpsClient->submitWorkloadAndGetResult<std::vector<InviteData>>(workload);
 	}
 
 	CoRoutine<InviteData> Channels::createChannelInviteAsync(CreateChannelInviteData dataPackage) {
@@ -163,7 +163,7 @@ namespace DiscordCoreAPI {
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
-		co_return Channels::httpClient->submitWorkloadAndGetResult<InviteData>(workload);
+		co_return Channels::httpsClient->submitWorkloadAndGetResult<InviteData>(workload);
 	}
 
 	CoRoutine<void> Channels::deleteChannelPermissionOverwritesAsync(DeleteChannelPermissionOverwritesData dataPackage) {
@@ -177,7 +177,7 @@ namespace DiscordCoreAPI {
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
-		co_return Channels::httpClient->submitWorkloadAndGetResult<void>(workload);
+		co_return Channels::httpsClient->submitWorkloadAndGetResult<void>(workload);
 	}
 
 	CoRoutine<Channel> Channels::followNewsChannelAsync(FollowNewsChannelData dataPackage) {
@@ -189,7 +189,7 @@ namespace DiscordCoreAPI {
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/followers";
 		workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
 		workload.callStack = "Channels::followNewsChannelAsync";
-		co_return Channels::httpClient->submitWorkloadAndGetResult<Channel>(workload);
+		co_return Channels::httpsClient->submitWorkloadAndGetResult<Channel>(workload);
 	}
 
 	CoRoutine<void> Channels::triggerTypingIndicatorAsync(TriggerTypingIndicatorData dataPackage) {
@@ -200,7 +200,7 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Post;
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/typing";
 		workload.callStack = "Channels::triggerTypingIndicatorAsync";
-		co_return Channels::httpClient->submitWorkloadAndGetResult<void>(workload);
+		co_return Channels::httpsClient->submitWorkloadAndGetResult<void>(workload);
 	}
 
 	CoRoutine<std::vector<Channel>> Channels::getGuildChannelsAsync(GetGuildChannelsData dataPackage) {
@@ -211,7 +211,7 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/channels";
 		workload.callStack = "Channels::getGuildChannelsAsync";
-		co_return Channels::httpClient->submitWorkloadAndGetResult<std::vector<Channel>>(workload);
+		co_return Channels::httpsClient->submitWorkloadAndGetResult<std::vector<Channel>>(workload);
 	}
 
 	CoRoutine<Channel> Channels::createGuildChannelAsync(CreateGuildChannelData dataPackage) {
@@ -226,7 +226,7 @@ namespace DiscordCoreAPI {
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
-		auto channelNew = Channels::httpClient->submitWorkloadAndGetResult<Channel>(workload);
+		auto channelNew = Channels::httpsClient->submitWorkloadAndGetResult<Channel>(workload);
 		Channels::insertChannel(channelNew);
 		co_return channelNew;
 	}
@@ -243,7 +243,7 @@ namespace DiscordCoreAPI {
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
-		co_return Channels::httpClient->submitWorkloadAndGetResult<void>(workload);
+		co_return Channels::httpsClient->submitWorkloadAndGetResult<void>(workload);
 	}
 
 	CoRoutine<Channel> Channels::createDMChannelAsync(CreateDMChannelData dataPackage) {
@@ -256,7 +256,7 @@ namespace DiscordCoreAPI {
 		workload.callStack = "Channels::createDMChannelAsync";
 		nlohmann::json theValue = { { "recipient_id", dataPackage.userId } };
 		workload.content = theValue.dump();
-		co_return Channels::httpClient->submitWorkloadAndGetResult<Channel>(workload);
+		co_return Channels::httpsClient->submitWorkloadAndGetResult<Channel>(workload);
 	}
 
 	CoRoutine<std::vector<VoiceRegionData>> Channels::getVoiceRegionsAsync() {
@@ -267,7 +267,7 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpWorkloadClass::Get;
 		workload.relativePath = "/voice/regions";
 		workload.callStack = "Channels::getVoiceRegions";
-		co_return Channels::httpClient->submitWorkloadAndGetResult<std::vector<VoiceRegionData>>(workload);
+		co_return Channels::httpsClient->submitWorkloadAndGetResult<std::vector<VoiceRegionData>>(workload);
 	}
 
 	void Channels::insertChannel(ChannelData channel) {
@@ -292,7 +292,7 @@ namespace DiscordCoreAPI {
 	};
 
 	std::unique_ptr<std::unordered_map<uint64_t, std::unique_ptr<ChannelData>>> Channels::cache{};
-	DiscordCoreInternal::HttpClient* Channels::httpClient{ nullptr };
+	DiscordCoreInternal::HttpsClient* Channels::httpsClient{ nullptr };
 	std::shared_mutex Channels::theMutex{};
 	bool Channels::doWeCache{ false };
 }

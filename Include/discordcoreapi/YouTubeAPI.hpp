@@ -33,14 +33,14 @@ namespace DiscordCoreInternal {
 	  public:
 		YouTubeRequestBuilder() = default;
 
-		YouTubeRequestBuilder(HttpClient*);
+		YouTubeRequestBuilder(HttpsClient*);
 
 		DiscordCoreAPI::Song collectFinalSong(const DiscordCoreAPI::GuildMemberData& addedByGuildMember, DiscordCoreAPI::Song& newSong);
 
 		std::vector<DiscordCoreAPI::Song> collectSearchResults(const std::string& theString);
 
 	  protected:
-		HttpClient* httpClient{ nullptr };
+		HttpsClient* httpsClient{ nullptr };
 		std::string baseUrl{ "https://www.youtube.com" };
 
 		DiscordCoreAPI::Song constructDownloadInfo(const DiscordCoreAPI::GuildMemberData& guildMember, DiscordCoreAPI::Song& newSong);
@@ -48,7 +48,7 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll YouTubeAPI {
 	  public:
-		YouTubeAPI(const uint64_t& guildId, HttpClient* httpClient);
+		YouTubeAPI(const uint64_t& guildId, HttpsClient* httpsClient);
 
 		void weFailedToDownloadOrDecode(const DiscordCoreAPI::Song& newSong, std::stop_token theToken, int32_t currentRecursionDepth);
 

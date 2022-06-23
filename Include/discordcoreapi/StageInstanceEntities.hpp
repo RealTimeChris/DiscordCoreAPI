@@ -67,7 +67,7 @@ namespace DiscordCoreAPI {
 	/// An interface class for the StageInstance related Discord endpoints. \brief An interface class for the StageInstance related Discord endpoints.
 	class DiscordCoreAPI_Dll StageInstances {
 	  public:
-		static void initialize(DiscordCoreInternal::HttpClient*);
+		static void initialize(DiscordCoreInternal::HttpsClient*);
 
 		/// Creates a StageInstance. \brief Creates a StageInstance.
 		/// \param dataPackage A CreateStageInstanceData structure.
@@ -90,7 +90,7 @@ namespace DiscordCoreAPI {
 		static CoRoutine<void> deleteStageInstanceAsync(DeleteStageInstanceData dataPackage);
 
 	  protected:
-		static DiscordCoreInternal::HttpClient* httpClient;
+		static DiscordCoreInternal::HttpsClient* httpsClient;
 	};
 
 	/**@}*/
