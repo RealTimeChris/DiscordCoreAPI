@@ -326,7 +326,7 @@ namespace DiscordCoreInternal {
 
 		int64_t getBytesRead() noexcept;
 
-		void disconnect() noexcept;
+		void reconnect() noexcept;
 
 		~WebSocketSSLShard() noexcept = default;
 
