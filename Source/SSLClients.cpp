@@ -632,24 +632,11 @@ namespace DiscordCoreInternal {
 	}
 
 	void DatagramSocketSSLClient::writeData(const std::string& dataToWrite) {
-		std::string data = dataToWrite;
-		if (data.size() > static_cast<size_t>(16 * 1024)) {
-			size_t remainingBytes{ data.size() };
-			while (remainingBytes > 0) {
-				std::string newString{};
-				size_t amountToCollect{};
-				if (data.size() >= static_cast<size_t>(1024 * 16)) {
-					amountToCollect = static_cast<size_t>(1024 * 16);
-				} else {
-					amountToCollect = data.size();
-				}
-				newString.insert(newString.begin(), data.begin(), data.begin() + amountToCollect);
-				this->outputBuffers.push(newString);
-				data.erase(data.begin(), data.begin() + amountToCollect);
-				remainingBytes = data.size();
-			}
+		auto writtenBytes{ send(this->theSocket, dataToWrite.data(), dataToWrite.size(), 0) };
+		if (writtenBytes > 0) {
+			return;
 		} else {
-			this->outputBuffers.push(data);
+			throw ProcessingError{ reportError("DatagramSocketSSLClient::processIO()::send(), ") };
 		}
 	}
 
@@ -662,21 +649,15 @@ namespace DiscordCoreInternal {
 	}
 
 	void DatagramSocketSSLClient::processIO() {
-		fd_set writeSet{}, readSet{};
-		int32_t readNfds{ 0 }, writeNfds{ 0 }, finalNfds{ 0 };
-		FD_ZERO(&writeSet);
+		fd_set readSet{};
+		int32_t readNfds{ 0 };
 		FD_ZERO(&readSet);
 
-		if (this->outputBuffers.size() > 0) {
-			FD_SET(this->theSocket, &writeSet);
-			writeNfds = this->theSocket > writeNfds ? this->theSocket : writeNfds;
-		}
 		FD_SET(this->theSocket, &readSet);
 		readNfds = this->theSocket > readNfds ? this->theSocket : readNfds;
-		finalNfds = readNfds > writeNfds ? readNfds : writeNfds;
 
 		timeval checkTime{ .tv_usec = 1000 };
-		if (auto returnValue = select(finalNfds + 1, &readSet, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
+		if (auto returnValue = select(readNfds+ 1, &readSet, nullptr, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
 			throw ProcessingError{ reportError("DatagramSocketSSLClient::processIO()::select(), ") };
 		} else if (returnValue == 0) {
 			return;
@@ -690,15 +671,6 @@ namespace DiscordCoreInternal {
 				this->inputBuffer.insert(this->inputBuffer.end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
 			} else {
 				throw ProcessingError{ reportError("DatagramSocketSSLClient::processIO()::recv(), ") };
-			}
-		}
-		if (FD_ISSET(this->theSocket, &writeSet)) {
-			std::string writeString = std::move(this->outputBuffers.front());
-			auto writtenBytes{ send(this->theSocket, writeString.data(), writeString.size(), 0) };
-			if (writtenBytes > 0) {
-				this->outputBuffers.pop();
-			} else {
-				throw ProcessingError{ reportError("DatagramSocketSSLClient::processIO()::send(), ") };
 			}
 		}
 	}
