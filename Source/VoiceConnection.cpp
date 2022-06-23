@@ -299,6 +299,7 @@ namespace DiscordCoreAPI {
 			while ((this->audioData.rawFrameData.sampleCount != 0 || this->audioData.encodedFrameData.sampleCount != 0) && !this->areWeStopping && !theToken.stop_requested()) {
 				this->areWePlaying.store(true);
 				if (this->doWeReconnect->load()) {
+					this->doWeReconnect->store(false);
 					this->areWeConnectedBool = false;
 					this->sendSpeakingMessage(false);
 					this->reconnect();
