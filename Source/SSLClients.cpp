@@ -632,8 +632,7 @@ namespace DiscordCoreInternal {
 	}
 
 	void DatagramSocketSSLClient::writeData(const std::string& dataToWrite) {
-		auto writtenBytes{ send(this->theSocket, dataToWrite.data(), dataToWrite.size(), 0) };
-		if (writtenBytes > 0) {
+		if (send(this->theSocket, dataToWrite.data(), dataToWrite.size(), 0) > 0) {
 			return;
 		} else {
 			throw ProcessingError{ reportError("DatagramSocketSSLClient::writeData(), ") };
