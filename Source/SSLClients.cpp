@@ -674,9 +674,4 @@ namespace DiscordCoreInternal {
 			}
 		}
 	}
-
-	std::string HttpSSLClient::soundcloudCertPathStatic{};
-	std::string HttpSSLClient::defaultCertPathStatic{};
-	std::string HttpSSLClient::googleCertPathStatic{};
-	std::mutex HttpSSLClient::theMutex{};
 }
