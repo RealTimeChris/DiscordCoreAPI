@@ -111,6 +111,7 @@ namespace DiscordCoreInternal {
 	  public:
 		int32_t currentRecursionDepth{ 0 };
 		const int32_t maxRecursion{ 10 };
+		std::string currentBaseUrl{};
 		bool doWeConnect{ true };
 
 		virtual ~HttpsConnection() = default;

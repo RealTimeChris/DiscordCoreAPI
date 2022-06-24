@@ -180,7 +180,8 @@ namespace DiscordCoreInternal {
 					[[fallthrough]];
 				}
 				case SSL_ERROR_ZERO_RETURN: {
-					[[fallthrough]];
+					this->connectionTime = 0; 
+					break;
 				}
 				default: {
 					throw ProcessingError{ reportSSLError("HttpsSSLClient::processIO()::SSL_read_ex(), ", errorValue, this->ssl) +
@@ -216,7 +217,8 @@ namespace DiscordCoreInternal {
 					[[fallthrough]];
 				}
 				case SSL_ERROR_ZERO_RETURN: {
-					[[fallthrough]];
+					this->connectionTime = 0;
+					break;
 				}
 				default: {
 					throw ProcessingError{ reportSSLError("HttpsSSLClient::processIO()::SSL_write_ex(), ", errorValue, this->ssl) +
@@ -254,25 +256,10 @@ namespace DiscordCoreInternal {
 	}
 
 	bool HttpsSSLClient::areWeStillConnected() noexcept {
-		fd_set errorfds{};
-		int32_t nfds{};
-		FD_ZERO(&errorfds);
-		if (this->theSocket != SOCKET_ERROR) {
-			FD_SET(this->theSocket, &errorfds);
-			nfds = this->theSocket;
-			timeval checkTime{ .tv_usec = 1 };
-			if (auto returnValue = select(nfds + 1, nullptr, nullptr, &errorfds, &checkTime); returnValue == SOCKET_ERROR) {
-				return false;
-			}
-			if (time(nullptr) > this->connectionTime + 60) {
-				return false;
-			}
-			if (FD_ISSET(this->theSocket, &errorfds)) {
-				return false;
-			}
-			return true;
-		} else {
+		if (time(nullptr) > this->connectionTime + 60) {
 			return false;
+		} else {
+			return true;
 		}
 	}
 

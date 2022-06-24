@@ -97,7 +97,7 @@ namespace DiscordCoreInternal {
 
 		void sendMessage(std::string& dataToSend) noexcept;
 
-		void onClosedExternal() noexcept;
+		void onClosed() noexcept;
 
 		~VoiceSocketAgent() noexcept;
 
