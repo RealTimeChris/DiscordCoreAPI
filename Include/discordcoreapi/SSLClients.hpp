@@ -242,8 +242,8 @@ namespace DiscordCoreInternal {
 			if (this != &other) {
 				this->socketPtr.swap(other.socketPtr);
 				*other.socketPtr = SOCKET_ERROR;
-				return *this;
 			}
+			return *this;
 		}
 
 		SOCKETWrapper(SOCKETWrapper&& other) noexcept {
