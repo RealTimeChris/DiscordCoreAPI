@@ -262,7 +262,7 @@ namespace DiscordCoreInternal {
 			if (auto returnValue = select(nfds + 1, nullptr, nullptr, &errorfds, &checkTime); returnValue == SOCKET_ERROR) {
 				return false;
 			}
-			if (time(nullptr) - this->connectionTime > 60) {
+			if (time(nullptr) - this->connectionTime > 30) {
 				return false;
 			}
 			if (FD_ISSET(this->theSocket, &errorfds)) {
