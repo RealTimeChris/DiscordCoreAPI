@@ -599,7 +599,7 @@ namespace DiscordCoreInternal {
 		fd_set writeSet{};
 		int32_t writeNfds{ 0 };
 		FD_ZERO(&writeSet);
-		int32_t bytesToWrite = this->outputBuffer.size() > this->maxBufferSize ? this->maxBufferSize : this->outputBuffer.size();
+		int64_t bytesToWrite = this->outputBuffer.size() > this->maxBufferSize ? this->maxBufferSize : this->outputBuffer.size();
 		FD_SET(this->theSocket, &writeSet);
 		writeNfds = this->theSocket > writeNfds ? this->theSocket : writeNfds;
 
@@ -611,7 +611,7 @@ namespace DiscordCoreInternal {
 		}
 
 		if (FD_ISSET(this->theSocket, &writeSet)) {
-			auto writtenBytes{ send(this->theSocket, this->outputBuffer.data(), bytesToWrite, 0) };
+			auto writtenBytes{ send(this->theSocket, this->outputBuffer.data(), static_cast<int32_t>(bytesToWrite), 0) };
 			if (writtenBytes > 0) {
 				this->outputBuffer.erase(this->outputBuffer.begin(), this->outputBuffer.begin() + writtenBytes);
 				return;
