@@ -64,8 +64,7 @@ namespace DiscordCoreInternal {
 				std::string theVectorNew{};
 				this->stringifyJsonData(dataToSend, theVectorNew, theShard->dataOpCode);
 				theShard->writeData(theVectorNew, priority);
-			}
-			catch (...) {
+			} catch (...) {
 				if (this->doWePrintErrorMessages) {
 					DiscordCoreAPI::reportException("BaseSocketAgent::sendMessage()");
 				}
@@ -926,12 +925,12 @@ namespace DiscordCoreInternal {
 							this->parseHeadersAndMessage(value.get());
 						}
 					}
-					if (this->theClients.contains(key) && this->theClients[key] &&value->processedMessages.size() > 0) {
+					if (this->theClients.contains(key) && this->theClients[key] && value->processedMessages.size() > 0) {
 						if (value) {
 							this->onMessageReceived(value.get());
 						}
 					}
-					if (this->theClients.contains(key) && this->theClients[key] ){
+					if (this->theClients.contains(key) && this->theClients[key]) {
 						this->checkForAndSendHeartBeat(value.get());
 						if (value && this->heartbeatInterval != 0 && !value->areWeHeartBeating) {
 							value->areWeHeartBeating = true;
@@ -1015,7 +1014,8 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	VoiceSocketAgent::VoiceSocketAgent(VoiceConnectInitData initDataNew, BaseSocketAgent* baseBaseSocketAgentNew, WebSocketSSLShard* theShard, bool printMessagesNew, std::atomic_bool* doWeQuitNew) noexcept {
+	VoiceSocketAgent::VoiceSocketAgent(VoiceConnectInitData initDataNew, BaseSocketAgent* baseBaseSocketAgentNew, WebSocketSSLShard* theShard, bool printMessagesNew,
+		std::atomic_bool* doWeQuitNew) noexcept {
 		theShard->voiceConnectionDataBufferMap[initDataNew.guildId] = &this->voiceConnectionDataBuffer;
 		this->doWePrintSuccessMessages = baseBaseSocketAgentNew->doWePrintSuccessMessages;
 		this->doWePrintErrorMessages = baseBaseSocketAgentNew->doWePrintErrorMessages;
@@ -1253,8 +1253,7 @@ namespace DiscordCoreInternal {
 					}
 				}
 			}
-		}
-		catch (...) {
+		} catch (...) {
 			if (this->doWePrintErrorMessages) {
 				DiscordCoreAPI::reportException("VoiceSocketAgent::onMessageReceived()");
 			}
@@ -1270,14 +1269,14 @@ namespace DiscordCoreInternal {
 					this->theClients[3]->areWeHeartBeating = true;
 					this->theClients[3]->heartBeatStopWatch = DiscordCoreAPI::StopWatch{ std::chrono::milliseconds{ this->heartbeatInterval } };
 				}
-				if (this->theClients.contains(3) && this->theClients[3]->heartBeatStopWatch.hasTimePassed() && this->theClients[3]->areWeHeartBeating &&
-					!this->doWeReconnect.load() && !theToken.stop_requested()) {
+				if (!theToken.stop_requested() && this->theClients.contains(3) && this->theClients[3]->heartBeatStopWatch.hasTimePassed() &&
+					this->theClients[3]->areWeHeartBeating && !this->doWeReconnect.load()) {
 					this->theClients[3]->heartBeatStopWatch.resetTimer();
 					this->sendHeartBeat();
 				}
 				try {
-					if (this->theClients.contains(3) && this->theClients[3]->areWeStillConnected() && !this->doWeQuit->load() && !this->doWeReconnect.load() &&
-						!theToken.stop_requested()) {
+					if (!theToken.stop_requested() && this->theClients.contains(3) && this->theClients[3]->areWeStillConnected() && !this->doWeQuit->load() &&
+						!this->doWeReconnect.load()) {
 						WebSocketSSLShard::processIO(this->theClients, 1000);
 					}
 				} catch (...) {
@@ -1286,7 +1285,7 @@ namespace DiscordCoreInternal {
 					}
 					this->doWeReconnect.store(true);
 				}
-				if (this->theClients.contains(3) && this->theClients[3] && !this->doWeQuit->load() && !this->doWeReconnect.load() && !theToken.stop_requested()) {
+				if (!theToken.stop_requested() && this->theClients.contains(3) && this->theClients[3] && !this->doWeQuit->load() && !this->doWeReconnect.load()) {
 					this->parseHeadersAndMessage(this->theClients[3].get());
 					if (this->theClients.contains(3) && this->theClients[3] && this->theClients[3]->processedMessages.size() > 0) {
 						std::string theMessage = this->theClients[3]->processedMessages.front();
@@ -1372,7 +1371,7 @@ namespace DiscordCoreInternal {
 			this->onClosed();
 		}
 	}
-	
+
 	void VoiceSocketAgent::connect() noexcept {
 		try {
 			DiscordCoreAPI::waitForTimeToPass(this->voiceConnectionDataBuffer, this->voiceConnectionData, 20000);
