@@ -288,8 +288,6 @@ namespace DiscordCoreInternal {
 
 		bool areWeStillConnected() noexcept;
 
-		void disconnect() noexcept;
-
 		virtual ~HttpsSSLClient() noexcept = default;
 
 	  protected:

@@ -276,25 +276,6 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void HttpsSSLClient::disconnect() noexcept {
-		if (this->ssl) {
-			SSL_shutdown(this->ssl);
-			SSL_free(this->ssl);
-		}
-		if (this->theSocket != SOCKET_ERROR) {
-#ifdef _WIN32
-			shutdown(this->theSocket, SD_BOTH);
-			closesocket(this->theSocket);
-#else
-			shutdown(this->theSocket, SHUT_RDWR);
-			close(this->theSocket);
-#endif
-		}
-		this->theSocket = SOCKET_ERROR;
-		this->outputBuffers.clear();
-		this->inputBuffer.clear();
-	}
-
 	WebSocketSSLShard::WebSocketSSLShard(std::queue<DiscordCoreAPI::ConnectionPackage>* connectionsNew, int32_t currentBaseSocketAgentNew, int32_t currentShardNew,
 		int32_t totalShardsNew, bool doWePrintErrorsNew, DiscordCoreAPI::TextFormat theFormat) noexcept	{
 		this->heartBeatStopWatch = DiscordCoreAPI::StopWatch<std::chrono::milliseconds>{ 10000ms };

@@ -358,7 +358,6 @@ namespace DiscordCoreInternal {
 				return HttpsResponseData{};
 			}
 			if (!Globals::httpsConnection->areWeStillConnected() || Globals::httpsConnection->doWeConnect) {
-				Globals::httpsConnection->disconnect();
 				Globals::httpsConnection->connect(workload.baseUrl);
 				Globals::httpsConnection->doWeConnect = false;
 			}
