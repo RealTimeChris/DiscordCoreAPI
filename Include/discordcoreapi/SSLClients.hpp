@@ -273,9 +273,9 @@ namespace DiscordCoreInternal {
 		friend class VoiceSocketAgent;
 		friend class BaseSocketAgent;
 
-		virtual void connect(const std::string& baseUrl) = 0;
-
 		virtual void writeData(const std::string& data, bool priority = false) = 0;
+
+		virtual void connect(const std::string& baseUrl) = 0;
 
 		virtual std::string getInputBuffer() noexcept = 0;
 
