@@ -306,15 +306,14 @@ namespace DiscordCoreInternal {
 	}
 
 	WebSocketSSLShard::WebSocketSSLShard(std::queue<DiscordCoreAPI::ConnectionPackage>* connectionsNew, int32_t currentBaseSocketAgentNew, int32_t currentShardNew,
-		int32_t totalShardsNew, bool doWePrintErrorsNew, DiscordCoreAPI::TextFormat theFormat) noexcept	{
+			DiscordCoreAPI::ConfigManager* configManagerNew) noexcept	{
 		this->heartBeatStopWatch = DiscordCoreAPI::StopWatch<std::chrono::milliseconds>{ 10000ms };
 		this->currentBaseSocketAgent = currentBaseSocketAgentNew;
-		this->doWePrintErrors = doWePrintErrorsNew;
 		this->shard.push_back(currentShardNew);
 		this->heartBeatStopWatch.resetTimer();
-		this->shard.push_back(totalShardsNew);
+		this->shard.push_back(configManagerNew->getTotalShardCount());
 		this->connections = connectionsNew;
-		if (theFormat == DiscordCoreAPI::TextFormat::Etf) {
+		if (configManagerNew->getTextFormat() == DiscordCoreAPI::TextFormat::Etf) {
 			this->dataOpCode = WebSocketOpCode::Op_Binary;
 		} else {
 			this->dataOpCode = WebSocketOpCode::Op_Text;

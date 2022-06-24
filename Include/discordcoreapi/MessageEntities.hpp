@@ -23,6 +23,7 @@
 
 #include <discordcoreapi/FoundationEntities.hpp>
 #include <discordcoreapi/JSONIfier.hpp>
+#include <discordcoreapi/Https.hpp>
 
 namespace DiscordCoreAPI {
 

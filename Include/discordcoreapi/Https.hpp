@@ -125,26 +125,15 @@ namespace DiscordCoreInternal {
 	  public:
 		HttpsClient() = default;
 
-		HttpsClient(const std::string& botTokenNew, bool doWePrintHttpSuccessNew, bool doWePrintHttpErrorNew, bool doWePrintFFMPEGSuccessNew, bool doWePrintFFMPEGErrorNew,
-			bool doWePrintWebSocketErrorNew);
+		HttpsClient(DiscordCoreAPI::ConfigManager* configManager);
 
 		std::vector<HttpsResponseData> httpRequest(const std::vector<HttpsWorkloadData>&);
 
 		HttpsResponseData httpRequest(HttpsWorkloadData&);
 
-		const bool getDoWePrintWebSocketErrorMessages();
-
-		const bool getDoWePrintFFMPEGSuccessMessages();
-
-		const bool getDoWePrintFFMPEGErrorMessages();
-
-		const bool getDoWePrintHttpsSuccessMessages();
-
-		const bool getDoWePrintHttpsErrorMessages();
-
 		template<typename ReturnType> ReturnType submitWorkloadAndGetResult(HttpsWorkloadData& workload) {
 			ReturnType returnObject{};
-			workload.headersToInsert["Authorization"] = "Bot " + this->botToken;
+			workload.headersToInsert["Authorization"] = "Bot " + this->configManager->getBotToken();
 			workload.headersToInsert["User-Agent"] = "DiscordBot (https://discordcoreapi.com 1.0)";
 			if (workload.payloadType == PayloadType::Application_Json) {
 				workload.headersToInsert["Content-Type"] = "application/json";
@@ -163,13 +152,8 @@ namespace DiscordCoreInternal {
 		template<std::same_as<HttpsResponseData> Type> Type submitWorkloadAndGetResult(HttpsWorkloadData& workload);
 
 	  protected:
+		DiscordCoreAPI::ConfigManager* configManager{ nullptr };
 		HttpsConnectionManager connectionManager{};
-		const bool doWePrintWebSocketErrorMessages{};
-		const bool doWePrintFFMPEGSuccessMessages{};
-		const bool doWePrintFFMPEGErrorMessages{};
-		const bool doWePrintHttpsSuccessMessages{};
-		const bool doWePrintHttpsErrorMessages{};
-		const std::string botToken{};
 
 		HttpsResponseData httpRequestInternal(const HttpsWorkloadData& workload, RateLimitData& rateLimitData);
 

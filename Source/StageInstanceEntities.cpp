@@ -22,7 +22,6 @@
 #include <discordcoreapi/StageInstanceEntities.hpp>
 #include <discordcoreapi/DataParsingFunctions.hpp>
 #include <discordcoreapi/CoRoutine.hpp>
-#include <discordcoreapi/Https.hpp>
 
 namespace DiscordCoreAPI {
 

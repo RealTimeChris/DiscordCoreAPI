@@ -25,7 +25,8 @@
 
 namespace DiscordCoreInternal {
 
-	SoundCloudRequestBuilder::SoundCloudRequestBuilder(HttpsClient* httpsClient) {
+	SoundCloudRequestBuilder::SoundCloudRequestBuilder(HttpsClient* httpsClient, DiscordCoreAPI::ConfigManager*configManagerNew) {
+		this->configManager = configManagerNew;
 		this->httpsClient = httpsClient;
 		if (SoundCloudRequestBuilder::clientId == "") {
 			SoundCloudRequestBuilder::clientId = this->collectClientId();
@@ -79,7 +80,7 @@ namespace DiscordCoreInternal {
 			}
 			return results;
 		} catch (...) {
-			if (this->httpsClient->getDoWePrintHttpsErrorMessages()) {
+			if (this->configManager->doWePrintHttpsErrorMessages()) {
 				DiscordCoreAPI::reportException("SoundCloudRequestBuilder::collectSearchResults()");
 			}
 		}
@@ -159,7 +160,7 @@ namespace DiscordCoreInternal {
 			}
 			return newSong;
 		} catch (...) {
-			if (this->httpsClient->getDoWePrintHttpsErrorMessages()) {
+			if (this->configManager->doWePrintHttpsErrorMessages()) {
 				DiscordCoreAPI::reportException("SoundCloudRequestBuilder::constructDownloadInfo()");
 			}
 		}
@@ -210,7 +211,7 @@ namespace DiscordCoreInternal {
 		if (newString03.find("\",nonce:_})))),s.push(") != std::string::npos) {
 			clientIdNew = newString03.substr(0, newString03.find("\",nonce:_})))),s.push("));
 		}
-		if (returnData02[0].responseCode not_eq 200 && this->httpsClient->getDoWePrintHttpsErrorMessages()) {
+		if (returnData02[0].responseCode not_eq 200 && this->configManager->doWePrintHttpsErrorMessages()) {
 			std::cout << DiscordCoreAPI::shiftToBrightRed() << "SoundCloudAPI::searchForSong Error: " << returnData[0].responseCode << newerString02.c_str()
 					  << DiscordCoreAPI::reset() << std::endl
 					  << std::endl;
@@ -218,9 +219,9 @@ namespace DiscordCoreInternal {
 		return clientIdNew;
 	}
 
-	SoundCloudAPI::SoundCloudAPI(const uint64_t& guildIdNew, HttpsClient* httpsClient) : requestBuilder(httpsClient) {
-		this->doWePrintSuccessMessages = httpsClient->getDoWePrintFFMPEGSuccessMessages();
-		this->doWePrintErrorMessages = httpsClient->getDoWePrintFFMPEGErrorMessages();
+	SoundCloudAPI::SoundCloudAPI(const uint64_t& guildIdNew, HttpsClient* httpsClient, DiscordCoreAPI::ConfigManager* configManagerNew)
+		: requestBuilder(httpsClient, configManagerNew) {
+		this->configManager = configManagerNew;
 		this->httpsClient = httpsClient;
 		this->guildId = guildIdNew;
 	}
@@ -256,8 +257,7 @@ namespace DiscordCoreInternal {
 		BuildAudioDecoderData dataPackage{};
 		dataPackage.totalFileSize = static_cast<uint64_t>(newSong.contentLength);
 		dataPackage.bufferMaxSize = this->maxBufferSize;
-		dataPackage.doWePrintSuccessMessages = this->doWePrintSuccessMessages;
-		dataPackage.doWePrintErrorMessages = this->doWePrintErrorMessages;
+		dataPackage.configManager = this->configManager;
 		std::unique_ptr<AudioDecoder> audioDecoder = std::make_unique<AudioDecoder>(dataPackage);
 		const int32_t bytesTotal{ 8192 };
 		AudioEncoder audioEncoder{};

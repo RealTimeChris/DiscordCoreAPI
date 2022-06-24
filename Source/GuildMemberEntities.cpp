@@ -22,7 +22,6 @@
 #include <discordcoreapi/GuildMemberEntities.hpp>
 #include <discordcoreapi/GuildEntities.hpp>
 #include <discordcoreapi/CoRoutine.hpp>
-#include <discordcoreapi/Https.hpp>
 #include <discordcoreapi/JSONIfier.hpp>
 
 namespace DiscordCoreAPI {
@@ -65,9 +64,9 @@ namespace DiscordCoreAPI {
 		*this = other;
 	}
 
-	void GuildMembers::initialize(DiscordCoreInternal::HttpsClient* theClient, bool doWeCacheNew) {
+	void GuildMembers::initialize(DiscordCoreInternal::HttpsClient* theClient, ConfigManager* configManagerNew) {
 		GuildMembers::cache = std::make_unique<std::map<GuildMemberId, std::unique_ptr<GuildMemberData>>>();
-		GuildMembers::doWeCache = doWeCacheNew;
+		GuildMembers::configManager = configManagerNew;
 		GuildMembers::httpsClient = theClient;
 	}
 
@@ -250,7 +249,7 @@ namespace DiscordCoreAPI {
 		for (auto& [key, value]: *GuildMembers::cache) {
 			(*newCache)[key] = std::move(value);
 		}
-		if (GuildMembers::doWeCache) {
+		if (GuildMembers::configManager->doWeCacheGuildMembers()) {
 			GuildMemberId theKey{};
 			theKey.guildId = guildMember.guildId;
 			theKey.guildMemberId = guildMember.id;
@@ -270,6 +269,6 @@ namespace DiscordCoreAPI {
 
 	std::unique_ptr<std::map<GuildMemberId, std::unique_ptr<GuildMemberData>>> GuildMembers::cache{};
 	DiscordCoreInternal::HttpsClient* GuildMembers::httpsClient{ nullptr };
+	ConfigManager* GuildMembers::configManager{ nullptr };
 	std::shared_mutex GuildMembers::theMutex{};
-	bool GuildMembers::doWeCache{ false };
 };

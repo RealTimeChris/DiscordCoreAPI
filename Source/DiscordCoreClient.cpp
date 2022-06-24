@@ -67,24 +67,18 @@ namespace DiscordCoreAPI {
 		std::signal(SIGFPE, &signalHandler);
 		DiscordCoreInternal::HttpsSSLClient::initialize();
 		DiscordCoreInternal::WebSocketSSLShard::initialize();
-		this->functionsToExecute = configData.functionsToExecute;
-		this->loggingOptions = configData.logOptions;
-		this->theAddress = configData.alternateConnectionAddress;
-		this->thePort = configData.alternateConnectionPort;
-		this->shardingOptions = configData.shardOptions;
-		this->cacheOptions = configData.cacheOptions;
-		this->theIntents = configData.theIntents;
-		if (this->loggingOptions.logFFMPEGSuccessMessages) {
+		this->configManager = configData;
+		if (this->configManager.doWePrintFFMPEGSuccessMessages()) {
 			av_log_set_level(AV_LOG_INFO);
 		}
-		if (this->loggingOptions.logFFMPEGErrorMessages) {
+		if (this->configManager.doWePrintFFMPEGErrorMessages()) {
 			av_log_set_level(AV_LOG_ERROR);
 		}
-		if (!this->loggingOptions.logFFMPEGErrorMessages && !this->loggingOptions.logFFMPEGSuccessMessages) {
+		if (!this->configManager.doWePrintFFMPEGErrorMessages() && !this->configManager.doWePrintFFMPEGSuccessMessages()) {
 			av_log_set_level(AV_LOG_QUIET);
 		}
 		if (sodium_init() == -1) {
-			if (this->loggingOptions.logGeneralErrorMessages) {
+			if (this->configManager.doWePrintGeneralErrorMessages()) {
 				std::cout << shiftToBrightRed() << "LibSodium failed to initialize!" << reset() << std::endl << std::endl;
 			}
 		}
@@ -102,27 +96,23 @@ namespace DiscordCoreAPI {
 		this->eventManager.onRoleDeletion(&EventHandler::onRoleDeletion);
 		this->eventManager.onUserUpdate(&EventHandler::onUserUpdate);
 		this->eventManager.onVoiceStateUpdate(&EventHandler::onVoiceStateUpdate);
-		EventHandler::initialize(this->cacheOptions);
-		this->httpsClient =
-			std::make_unique<DiscordCoreInternal::HttpsClient>(configData.botToken, this->loggingOptions.logHttpsSuccessMessages, this->loggingOptions.logHttpsErrorMessages,
-				this->loggingOptions.logFFMPEGSuccessMessages, this->loggingOptions.logFFMPEGErrorMessages, this->loggingOptions.logWebSocketErrorMessages);
+		EventHandler::initialize(&this->configManager);
+		this->httpsClient = std::make_unique<DiscordCoreInternal::HttpsClient>(&this->configManager);
 		ApplicationCommands::initialize(this->httpsClient.get());
 		AutoModerationRules::initialize(this->httpsClient.get());
-		Channels::initialize(this->httpsClient.get(), this->cacheOptions.cacheChannels);
-		Guilds::initialize(this->httpsClient.get(), this, this->cacheOptions.cacheGuilds);
-		GuildMembers::initialize(this->httpsClient.get(), this->cacheOptions.cacheGuildMembers);
+		Channels::initialize(this->httpsClient.get(), &this->configManager);
+		Guilds::initialize(this->httpsClient.get(), this, &this->configManager);
+		GuildMembers::initialize(this->httpsClient.get(), &this->configManager);
 		GuildScheduledEvents::initialize(this->httpsClient.get());
 		Interactions::initialize(this->httpsClient.get());
 		Messages::initialize(this->httpsClient.get());
 		Reactions::initialize(this->httpsClient.get());
-		Roles::initialize(this->httpsClient.get(), this->cacheOptions.cacheRoles);
+		Roles::initialize(this->httpsClient.get(), &this->configManager);
 		Stickers::initialize(this->httpsClient.get());
 		StageInstances::initialize(this->httpsClient.get());
 		Threads::initialize(this->httpsClient.get());
-		Users::initialize(this->httpsClient.get(), this->cacheOptions.cacheUsers);
+		Users::initialize(this->httpsClient.get(), &this->configManager);
 		WebHooks::initialize(this->httpsClient.get());
-		this->botToken = configData.botToken;
-		this->theFormat = configData.textFormat;
 	}
 
 	void DiscordCoreClient::registerFunction(const std::vector<std::string>& functionNames, std::unique_ptr<BaseFunction> baseFunction) {
@@ -137,7 +127,7 @@ namespace DiscordCoreAPI {
 		if (!this->instantiateWebSockets()) {
 			return;
 		}
-		this->baseSocketAgentMap[std::to_string(this->shardingOptions.startingShard)]->getTheTask()->join();
+		this->baseSocketAgentMap[std::to_string(this->configManager.getStartingShard())]->getTheTask()->join();
 	}
 
 	GatewayBotData DiscordCoreClient::getGateWayBot() {
@@ -152,7 +142,7 @@ namespace DiscordCoreAPI {
 	bool DiscordCoreClient::instantiateWebSockets() {
 		GatewayBotData gatewayData = this->getGateWayBot();
 		if (gatewayData.url == "") {
-			if (this->loggingOptions.logGeneralErrorMessages) {
+			if (this->configManager.doWePrintGeneralErrorMessages()) {
 				std::cout << shiftToBrightRed()
 						  << "Failed to collect the connection URL! Closing! Did you remember to "
 							 "properly set your bot token?"
@@ -162,19 +152,18 @@ namespace DiscordCoreAPI {
 			std::this_thread::sleep_for(5s);
 			return false;
 		}
-		if (this->shardingOptions.startingShard + this->shardingOptions.numberOfShardsForThisProcess > this->shardingOptions.totalNumberOfShards) {
-			if (this->loggingOptions.logGeneralErrorMessages) {
+		if (this->configManager.getStartingShard() + this->configManager.getShardCountForThisProcess() > this->configManager.getTotalShardCount()) {
+			if (this->configManager.doWePrintGeneralErrorMessages()) {
 				std::cout << shiftToBrightRed() << "Your sharding options are incorrect! Please fix it!" << reset() << std::endl << std::endl;
 			}
 			std::this_thread::sleep_for(5s);
 			return false;
 		}
-		this->shardingOptions.numberOfShardsForThisProcess = this->shardingOptions.totalNumberOfShards;
-		auto baseSocketAgentCount = static_cast<int32_t>(std::thread::hardware_concurrency()) > this->shardingOptions.totalNumberOfShards
-			? this->shardingOptions.totalNumberOfShards
+		auto baseSocketAgentCount = static_cast<int32_t>(std::thread::hardware_concurrency()) > this->configManager.getTotalShardCount()
+			? this->configManager.getTotalShardCount()
 			: static_cast<int32_t>(std::thread::hardware_concurrency());
-		int32_t shardsPerBaseSocketAgent{ static_cast<int32_t>(floor(static_cast<float>(this->shardingOptions.totalNumberOfShards) / static_cast<float>(baseSocketAgentCount))) };
-		int32_t leftOverShards{ this->shardingOptions.totalNumberOfShards - (shardsPerBaseSocketAgent * baseSocketAgentCount) };
+		int32_t shardsPerBaseSocketAgent{ static_cast<int32_t>(floor(static_cast<float>(this->configManager.getTotalShardCount()) / static_cast<float>(baseSocketAgentCount))) };
+		int32_t leftOverShards{ this->configManager.getTotalShardCount() - (shardsPerBaseSocketAgent * baseSocketAgentCount) };
 
 		std::vector<int32_t> shardsPerBaseSocketAgentVect{};
 		for (int32_t x = 0; x < baseSocketAgentCount; x++) {
@@ -192,21 +181,21 @@ namespace DiscordCoreAPI {
 			leftOverShards -= newShardAmount;
 		}
 		int32_t currentShard{ 0 };
-		if (this->theAddress == "") {
-			this->theAddress = gatewayData.url.substr(gatewayData.url.find("wss://") + std::string("wss://").size());
+		if (this->configManager.getConnectionAddress() == "") {
+			this->configManager.setConnectionAddress(gatewayData.url.substr(gatewayData.url.find("wss://") + std::string("wss://").size()));
 		}
-		if (this->thePort == "") {
-			this->thePort = "443";
+		if (this->configManager.getConnectionPort() == "") {
+			this->configManager.setConnectionPort("443");
 		}
 
 		for (int32_t x = 0; x < shardsPerBaseSocketAgentVect.size(); x++) {
 			auto thePtr = std::make_unique<DiscordCoreInternal::BaseSocketAgent>(this, &Globals::doWeQuit, x);
 			this->baseSocketAgentMap[std::to_string(x)] = std::move(thePtr);
 			for (int32_t y = 0; y < shardsPerBaseSocketAgentVect[x]; y++) {
-				if (this->loggingOptions.logGeneralSuccessMessages) {
-					std::cout << shiftToBrightBlue() << "Connecting Shard " + std::to_string(currentShard + 1) << " of " << this->shardingOptions.numberOfShardsForThisProcess
+				if (this->configManager.doWePrintGeneralSuccessMessages()) {
+					std::cout << shiftToBrightBlue() << "Connecting Shard " + std::to_string(currentShard + 1) << " of " << this->configManager.getShardCountForThisProcess()
 							  << std::string(" Shards for this process. (") + std::to_string(currentShard + 1) + " of " +
-							std::to_string(this->shardingOptions.totalNumberOfShards) + std::string(" Shards total across all processes)")
+							std::to_string(this->configManager.getTotalShardCount()) + std::string(" Shards total across all processes)")
 							  << reset() << std::endl
 							  << std::endl;
 				}
@@ -217,14 +206,14 @@ namespace DiscordCoreAPI {
 				currentShard++;
 			}
 		}
-		this->currentUser = BotUser{ Users::getCurrentUserAsync().get(), this->baseSocketAgentMap[std::to_string(this->shardingOptions.startingShard)].get() };
-		for (auto& value: this->functionsToExecute) {
+		this->currentUser = BotUser{ Users::getCurrentUserAsync().get(), this->baseSocketAgentMap[std::to_string(this->configManager.getStartingShard())].get() };
+		for (auto& value: this->configManager.getFunctionsToExecute()) {
 			TimeElapsedHandler<int64_t> onSend = [=, this](int64_t theArg) -> void {
 				value.function(this);
 			};
 			this->threadIds.push_back(ThreadPool::storeThread(onSend, value.intervalInMs, value.repeated, value.dummyArg));
 		}
-		if (this->loggingOptions.logGeneralSuccessMessages) {
+		if (this->configManager.doWePrintGeneralSuccessMessages()) {
 			std::cout << shiftToBrightGreen() << "All of the shards are connected for the current process!" << reset() << std::endl << std::endl;
 		}
 		return true;

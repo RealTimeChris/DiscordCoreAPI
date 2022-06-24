@@ -263,11 +263,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	HttpsClient::HttpsClient(const std::string& botTokenNew, bool doWePrintHttpsSuccessMessagesNew, bool doWePrintHttpsErrorMessagesNew, bool doWePrintFFMPEGSuccessMessagesNew,
-		bool doWePrintFFMPEGErrorMessagesNew, bool doWePrintWebSocketErrorMessagesNew)
-		: botToken(botTokenNew), doWePrintFFMPEGErrorMessages(doWePrintFFMPEGErrorMessagesNew), doWePrintHttpsSuccessMessages(doWePrintHttpsSuccessMessagesNew),
-		  doWePrintHttpsErrorMessages(doWePrintHttpsErrorMessagesNew), doWePrintFFMPEGSuccessMessages(doWePrintFFMPEGSuccessMessagesNew),
-		  doWePrintWebSocketErrorMessages(doWePrintWebSocketErrorMessagesNew) {
+	HttpsClient::HttpsClient(DiscordCoreAPI::ConfigManager* configManagerNew) : configManager(configManagerNew) {
 		this->connectionManager.initialize();
 	};
 
@@ -296,7 +292,7 @@ namespace DiscordCoreInternal {
 			rateLimitData.doWeWait = false;
 		}
 		if (timeRemaining > 0) {
-			if (this->doWePrintHttpsSuccessMessages) {
+			if (this->configManager->doWePrintHttpsSuccessMessages()) {
 				std::cout << DiscordCoreAPI::shiftToBrightBlue() << "We're waiting on rate-limit: " << timeRemaining << DiscordCoreAPI::reset() << std::endl << std::endl;
 			}
 			int64_t targetTime = currentTime + timeRemaining;
@@ -324,7 +320,7 @@ namespace DiscordCoreInternal {
 			Globals::rateLimitValues[currentBucket] = std::move(rateLimitData);
 		}
 		if (returnData.responseCode == 204 || returnData.responseCode == 201 || returnData.responseCode == 200) {
-			if (this->doWePrintHttpsSuccessMessages) {
+			if (this->configManager->doWePrintHttpsSuccessMessages()) {
 				std::cout << DiscordCoreAPI::shiftToBrightGreen() << workload.callStack + " Success: " << returnData.responseCode << ", " << returnData.responseMessage
 						  << DiscordCoreAPI::reset() << std::endl
 						  << std::endl;
@@ -335,13 +331,13 @@ namespace DiscordCoreInternal {
 				rateLimitData.didWeHitRateLimit = true;
 				rateLimitData.sampledTimeInMs =
 					static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
-				if (this->doWePrintHttpsErrorMessages) {
+				if (this->configManager->doWePrintHttpsErrorMessages()) {
 					std::cout << DiscordCoreAPI::shiftToBrightRed() << workload.callStack + "::httpRequest(), We've hit rate limit! Time Remaining: "
 							  << std::to_string(Globals::rateLimitValues[Globals::rateLimitValueBuckets[workload.workloadType]]->msRemain) << DiscordCoreAPI::reset() << std::endl
 							  << std::endl;
 				}
 				returnData = this->executeByRateLimitData(workload);
-			} else if (this->doWePrintHttpsErrorMessages) {
+			} else if (this->configManager->doWePrintHttpsErrorMessages()) {
 				std::cout << DiscordCoreAPI::shiftToBrightRed()
 						  << workload.callStack + " Error: Code = " << std::to_string(returnData.responseCode) + ", Message = " + returnData.responseMessage
 						  << DiscordCoreAPI::reset() << std::endl
@@ -374,7 +370,7 @@ namespace DiscordCoreInternal {
 				return result;
 			}
 		} catch (...) {
-			if (this->doWePrintHttpsErrorMessages) {
+			if (this->configManager->doWePrintHttpsErrorMessages()) {
 				DiscordCoreAPI::reportException(workload.callStack + "::HttpsClient::executeHttpRequest()");
 			}
 			Globals::httpsConnection->currentRecursionDepth += 1;
@@ -396,7 +392,7 @@ namespace DiscordCoreInternal {
 					Globals::httpsConnection->inputBufferReal.insert(Globals::httpsConnection->inputBufferReal.end(), theString.begin(), theString.end());
 				}
 			} catch (ProcessingError&) {
-				if (this->doWePrintHttpsErrorMessages) {
+				if (this->configManager->doWePrintHttpsErrorMessages()) {
 					DiscordCoreAPI::reportException("HttpsClient::getResponse()");
 				}
 				theData.responseCode = -1;
@@ -461,7 +457,7 @@ namespace DiscordCoreInternal {
 				try {
 					Globals::httpsConnection->connect(value.baseUrl);
 				} catch (ProcessingError&) {
-					if (this->doWePrintHttpsErrorMessages) {
+					if (this->configManager->doWePrintHttpsErrorMessages()) {
 						DiscordCoreAPI::reportException("HttpsClient::httpRequest()");
 					}
 					continue;
@@ -502,29 +498,9 @@ namespace DiscordCoreInternal {
 		return resultData;
 	}
 
-	const bool HttpsClient::getDoWePrintWebSocketErrorMessages() {
-		return this->doWePrintWebSocketErrorMessages;
-	}
-
-	const bool HttpsClient::getDoWePrintFFMPEGSuccessMessages() {
-		return this->doWePrintFFMPEGSuccessMessages;
-	}
-
-	const bool HttpsClient::getDoWePrintFFMPEGErrorMessages() {
-		return this->doWePrintFFMPEGErrorMessages;
-	}
-
-	const bool HttpsClient::getDoWePrintHttpsSuccessMessages() {
-		return this->doWePrintHttpsSuccessMessages;
-	}
-
-	const bool HttpsClient::getDoWePrintHttpsErrorMessages() {
-		return this->doWePrintHttpsErrorMessages;
-	}
-
 	template<> void HttpsClient::submitWorkloadAndGetResult<void>(HttpsWorkloadData& workloadNew) {
 		HttpsWorkloadData workload = workloadNew;
-		workload.headersToInsert["Authorization"] = "Bot " + this->botToken;
+		workload.headersToInsert["Authorization"] = "Bot " + this->configManager->getBotToken();
 		workload.headersToInsert["User-Agent"] = "DiscordBot (https://discordcoreapi.com/ 1.0)";
 		if (workload.payloadType == PayloadType::Application_Json) {
 			workload.headersToInsert["Content-Type"] = "application/json";
@@ -542,7 +518,7 @@ namespace DiscordCoreInternal {
 
 	template<> HttpsResponseData HttpsClient::submitWorkloadAndGetResult(HttpsWorkloadData& workloadNew) {
 		HttpsWorkloadData workload = workloadNew;
-		workload.headersToInsert["Authorization"] = "Bot " + this->botToken;
+		workload.headersToInsert["Authorization"] = "Bot " + this->configManager->getBotToken();
 		workload.headersToInsert["User-Agent"] = "DiscordBot (https://discordcoreapi.com/ 1.0)";
 		if (workload.payloadType == PayloadType::Application_Json) {
 			workload.headersToInsert["Content-Type"] = "application/json";

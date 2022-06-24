@@ -28,7 +28,8 @@
 
 namespace DiscordCoreInternal {
 
-	YouTubeRequestBuilder::YouTubeRequestBuilder(HttpsClient* theClient) {
+	YouTubeRequestBuilder::YouTubeRequestBuilder(HttpsClient* theClient, DiscordCoreAPI::ConfigManager* configManagerNew) {
+		this->configManager = configManagerNew;
 		this->httpsClient = theClient;
 	}
 
@@ -49,7 +50,7 @@ namespace DiscordCoreInternal {
 		if (returnData.size() < 1) {
 			return std::vector<DiscordCoreAPI::Song>{};
 		}
-		if (returnData[0].responseCode != 200 && this->httpsClient->getDoWePrintHttpsErrorMessages()) {
+		if (returnData[0].responseCode != 200 && this->configManager->doWePrintHttpsErrorMessages()) {
 			std::cout << DiscordCoreAPI::shiftToBrightRed() << "YouTubeRequestBuilder::collectSearchResults() Error: " << returnData[0].responseCode
 					  << returnData[0].responseMessage.c_str() << DiscordCoreAPI::reset() << std::endl
 					  << std::endl;
@@ -110,7 +111,7 @@ namespace DiscordCoreInternal {
 				return DiscordCoreAPI::Song{};
 			}
 			if (responseData[0].responseCode != 204 && responseData[0].responseCode != 201 && responseData[0].responseCode != 200 &&
-				this->httpsClient->getDoWePrintHttpsErrorMessages()) {
+				this->configManager->doWePrintHttpsErrorMessages()) {
 				std::cout << DiscordCoreAPI::shiftToBrightRed() << "YouTubeRequestBuilder::constructDownloadInfo() 01 Error: " << responseData[0].responseCode << ", "
 						  << responseData[0].responseMessage << DiscordCoreAPI::reset() << std::endl
 						  << std::endl;
@@ -172,10 +173,8 @@ namespace DiscordCoreInternal {
 		return DiscordCoreAPI::Song{};
 	}
 
-	YouTubeAPI::YouTubeAPI(const uint64_t& guildIdNew, HttpsClient* httpsClient) : requestBuilder(httpsClient) {
-		this->doWePrintWebSocketErrorMessages = httpsClient->getDoWePrintWebSocketErrorMessages();
-		this->doWePrintFFMPEGSuccessMessages = httpsClient->getDoWePrintFFMPEGSuccessMessages();
-		this->doWePrintFFMPEGErrorMessages = httpsClient->getDoWePrintFFMPEGErrorMessages();
+	YouTubeAPI::YouTubeAPI(const uint64_t& guildIdNew, HttpsClient* httpsClient, DiscordCoreAPI::ConfigManager* configManagerNew) : requestBuilder(httpsClient, configManagerNew) {
+		this->configManager = configManagerNew;
 		this->guildId = guildIdNew;
 	}
 
@@ -209,8 +208,7 @@ namespace DiscordCoreInternal {
 
 	void YouTubeAPI::downloadAndStreamAudio(const DiscordCoreAPI::Song& newSong, std::stop_token theToken, int32_t currentRecursionDepth) {
 		try {
-			std::unique_ptr<WebSocketSSLShard> streamSocket{ std::make_unique<WebSocketSSLShard>(nullptr, this->maxBufferSize, 0, 0, this->doWePrintWebSocketErrorMessages,
-				DiscordCoreAPI::TextFormat::Json) };
+			std::unique_ptr<WebSocketSSLShard> streamSocket{ std::make_unique<WebSocketSSLShard>(nullptr, this->maxBufferSize, 0, this->configManager) };
 			std::unordered_map<int32_t, std::unique_ptr<SSLEntity>> theMap{};
 			auto bytesRead{ static_cast<int32_t>(streamSocket->getBytesRead()) };
 			if (newSong.finalDownloadUrls.size() > 0) {
@@ -233,8 +231,7 @@ namespace DiscordCoreInternal {
 			std::string theCurrentString{};
 			dataPackage.totalFileSize = static_cast<uint64_t>(newSong.contentLength);
 			dataPackage.bufferMaxSize = this->maxBufferSize;
-			dataPackage.doWePrintSuccessMessages = this->doWePrintFFMPEGSuccessMessages;
-			dataPackage.doWePrintErrorMessages = this->doWePrintFFMPEGErrorMessages;
+			dataPackage.configManager = this->configManager;
 			std::unique_ptr<AudioDecoder> audioDecoder = std::make_unique<AudioDecoder>(dataPackage);
 			AudioEncoder audioEncoder{};
 			std::string theString = newSong.finalDownloadUrls[1].urlPath;
@@ -243,7 +240,7 @@ namespace DiscordCoreInternal {
 				try {
 					WebSocketSSLShard::processIO(theMap, ms1000);
 				} catch (...) {
-					if (this->doWePrintWebSocketErrorMessages) {
+					if (this->configManager->doWePrintWebSocketErrorMessages()) {
 						DiscordCoreAPI::reportException("YouTubeAPI::downloadAndStreamAudio()");
 					}
 					audioDecoder.reset(nullptr);
@@ -288,7 +285,7 @@ namespace DiscordCoreInternal {
 							try {
 								WebSocketSSLShard::processIO(theMap, ms500);
 							} catch (...) {
-								if (this->doWePrintWebSocketErrorMessages) {
+								if (this->configManager->doWePrintWebSocketErrorMessages()) {
 									DiscordCoreAPI::reportException("YouTubeAPI::downloadAndStreamAudio()");
 								}
 								audioDecoder.reset(nullptr);
@@ -316,7 +313,7 @@ namespace DiscordCoreInternal {
 							try {
 								WebSocketSSLShard::processIO(theMap, ms500);
 							} catch (...) {
-								if (this->doWePrintWebSocketErrorMessages) {
+								if (this->configManager->doWePrintWebSocketErrorMessages()) {
 									DiscordCoreAPI::reportException("YouTubeAPI::downloadAndStreamAudio()");
 								}
 								audioDecoder.reset(nullptr);
@@ -353,7 +350,7 @@ namespace DiscordCoreInternal {
 								try {
 									WebSocketSSLShard::processIO(theMap, ms500);
 								} catch (...) {
-									if (this->doWePrintWebSocketErrorMessages) {
+									if (this->configManager->doWePrintWebSocketErrorMessages()) {
 										DiscordCoreAPI::reportException("YouTubeAPI::downloadAndStreamAudio()");
 									}
 									audioDecoder.reset(nullptr);
@@ -425,13 +422,13 @@ namespace DiscordCoreInternal {
 				frameData.encodedFrameData.sampleCount = 0;
 				DiscordCoreAPI::getVoiceConnectionMap()[this->guildId]->audioBuffer.send(frameData);
 			} catch (ProcessingError&) {
-				if (this->doWePrintWebSocketErrorMessages) {
+				if (this->configManager->doWePrintWebSocketErrorMessages()) {
 					DiscordCoreAPI::reportException("YouTubeAPI::downloadAndStreamAudio()");
 				}
 				this->weFailedToDownloadOrDecode(newSong, theToken, currentRecursionDepth);
 			}
 		} catch (std::runtime_error&) {
-			if (this->doWePrintWebSocketErrorMessages) {
+			if (this->configManager->doWePrintWebSocketErrorMessages()) {
 				DiscordCoreAPI::reportException("YouTubeAPI::downloadAndStreamAudio()");
 			}
 			this->weFailedToDownloadOrDecode(newSong, theToken, currentRecursionDepth);

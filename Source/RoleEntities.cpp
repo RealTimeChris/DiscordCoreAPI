@@ -59,9 +59,9 @@ namespace DiscordCoreAPI {
 	}
 
 
-	void Roles::initialize(DiscordCoreInternal::HttpsClient* theClient, bool doWeCacheNew) {
+	void Roles::initialize(DiscordCoreInternal::HttpsClient* theClient, ConfigManager* configManagerNew) {
 		Roles::cache = std::make_unique<std::unordered_map<uint64_t, std::unique_ptr<RoleData>>>();
-		Roles::doWeCache = doWeCacheNew;
+		Roles::configManager = configManagerNew;
 		Roles::httpsClient = theClient;
 	}
 
@@ -251,7 +251,7 @@ namespace DiscordCoreAPI {
 		for (auto& [key, value]: *Roles::cache) {
 			(*newCache)[key] = std::move(value);
 		}
-		if (Roles::doWeCache) {
+		if (Roles::configManager->doWeCacheRoles()) {
 			(*newCache)[role.id] = std::make_unique<RoleData>(role);
 		}
 		Roles::cache.reset(nullptr);
@@ -265,6 +265,6 @@ namespace DiscordCoreAPI {
 
 	std::unique_ptr<std::unordered_map<uint64_t, std::unique_ptr<RoleData>>> Roles::cache{};
 	DiscordCoreInternal::HttpsClient* Roles::httpsClient{ nullptr };
+	ConfigManager* Roles::configManager{ nullptr };
 	std::shared_mutex Roles::theMutex{};
-	bool Roles::doWeCache{ false };
 }

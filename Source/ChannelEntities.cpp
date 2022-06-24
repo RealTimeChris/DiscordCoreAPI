@@ -65,9 +65,9 @@ namespace DiscordCoreAPI {
 		*this = other;
 	}
 
-	void Channels::initialize(DiscordCoreInternal::HttpsClient* theClient, bool doWeCacheNew) {
+	void Channels::initialize(DiscordCoreInternal::HttpsClient* theClient, ConfigManager* configManagerNew) {
 		Channels::cache = std::make_unique<std::unordered_map<uint64_t, std::unique_ptr<ChannelData>>>();
-		Channels::doWeCache = doWeCacheNew;
+		Channels::configManager = configManagerNew;
 		Channels::httpsClient = theClient;
 	}
 
@@ -279,7 +279,7 @@ namespace DiscordCoreAPI {
 		for (auto& [key, value]: *Channels::cache) {
 			(*newCache)[key] = std::move(value);
 		}
-		if (Channels::doWeCache) {
+		if (Channels::configManager->doWeCacheChannels()) {
 			(*newCache)[channel.id] = std::make_unique<ChannelData>(channel);
 		}
 		Channels::cache.reset(nullptr);
@@ -293,6 +293,6 @@ namespace DiscordCoreAPI {
 
 	std::unique_ptr<std::unordered_map<uint64_t, std::unique_ptr<ChannelData>>> Channels::cache{};
 	DiscordCoreInternal::HttpsClient* Channels::httpsClient{ nullptr };
+	ConfigManager* Channels::configManager{ nullptr };
 	std::shared_mutex Channels::theMutex{};
-	bool Channels::doWeCache{ false };
 }

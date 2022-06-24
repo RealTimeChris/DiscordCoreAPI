@@ -902,7 +902,7 @@ namespace DiscordCoreAPI {
 	/**@}*/
 	class DiscordCoreAPI_Dll EventHandler {
 	  public:
-		static void initialize(CacheOptions options);
+		static void initialize(ConfigManager* config);
 
 		static void onChannelCreation(OnChannelCreationData dataPackage);
 
@@ -933,6 +933,6 @@ namespace DiscordCoreAPI {
 		static void onVoiceStateUpdate(OnVoiceStateUpdateData dataPackage);
 
 	  protected:
-		static CacheOptions options;
+		static ConfigManager* configManager;
 	};
 }// namespace DiscordCoreAPI

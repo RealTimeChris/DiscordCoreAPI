@@ -32,7 +32,7 @@ namespace DiscordCoreInternal {
 	  public:
 		SoundCloudRequestBuilder() = default;
 
-		SoundCloudRequestBuilder(HttpsClient*);
+		SoundCloudRequestBuilder(HttpsClient*, DiscordCoreAPI::ConfigManager* configManagerNew);
 
 		DiscordCoreAPI::Song collectFinalSong(DiscordCoreAPI::GuildMemberData& addedByGuildMember, const DiscordCoreAPI::Song& newSong);
 
@@ -40,8 +40,9 @@ namespace DiscordCoreInternal {
 
 	  protected:
 		inline static std::string clientId{};
-
+		
 		const std::string baseUrl02{ "https://api-v2.soundcloud.com" };
+		DiscordCoreAPI::ConfigManager* configManager{ nullptr };
 		const std::string baseUrl{ "https://soundcloud.com" };
 		const std::string appVersion{ "1654762087" };
 		HttpsClient* httpsClient{ nullptr };
@@ -53,7 +54,7 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll SoundCloudAPI {
 	  public:
-		SoundCloudAPI(const uint64_t& guildId, HttpsClient* httpsClient);
+		SoundCloudAPI(const uint64_t& guildId, HttpsClient* httpsClient, DiscordCoreAPI::ConfigManager* configManagerNew);
 
 		void weFailedToDownloadOrDecode(const DiscordCoreAPI::Song& newSong, std::stop_token theToken, int32_t currentRecursionDepth);
 
@@ -66,9 +67,8 @@ namespace DiscordCoreInternal {
 		void cancelCurrentSong();
 
 	  protected:
+		DiscordCoreAPI::ConfigManager* configManager{ nullptr };
 		SoundCloudRequestBuilder requestBuilder{};
-		bool doWePrintSuccessMessages{ false };
-		bool doWePrintErrorMessages{ false };
 		const int32_t maxBufferSize{ 8192 };
 		HttpsClient* httpsClient{ nullptr };
 		DiscordCoreAPI::Song theSong{};

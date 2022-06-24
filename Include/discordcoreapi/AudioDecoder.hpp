@@ -257,8 +257,7 @@ namespace DiscordCoreInternal {
 
 	struct DiscordCoreAPI_Dll BuildAudioDecoderData {
 	  public:
-		bool doWePrintSuccessMessages{ false };
-		bool doWePrintErrorMessages{ false };
+		DiscordCoreAPI::ConfigManager* configManager{ nullptr };
 		int64_t totalFileSize{ 0 };
 		int64_t bufferMaxSize{ 0 };
 	};
@@ -281,6 +280,7 @@ namespace DiscordCoreInternal {
 		int64_t audioStreamIndex{ 0 }, bufferMaxSize{ 0 }, bytesRead{ 0 }, totalFileSize{ 0 };
 		DiscordCoreAPI::TSUnboundedMessageBlock<DiscordCoreAPI::RawFrameData> outDataBuffer{};
 		DiscordCoreAPI::TSUnboundedMessageBlock<std::string> inputDataBuffer{};
+		DiscordCoreAPI::ConfigManager* configManager{ nullptr };
 		AVFrameWrapper frame{ nullptr }, newFrame{ nullptr };
 		AVCodecContextWrapper audioDecodeContext{ nullptr };
 		std::atomic_int32_t refreshTimeForBuffer{ 10000 };
@@ -292,8 +292,6 @@ namespace DiscordCoreInternal {
 		AVStreamWrapper audioStream{ nullptr };
 		AVPacketWrapper packet{ nullptr };
 		AVCodecWrapper codec{ nullptr };
-		bool doWePrintSuccessMessages{ false };
-		bool doWePrintErrorMessages{ false };
 		std::string currentBuffer{};
 		bool areWeQuitting{ false };
 		bool haveWeBooted{ false };

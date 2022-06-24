@@ -22,6 +22,7 @@
 #pragma once
 
 #include <discordcoreapi/FoundationEntities.hpp>
+#include <discordcoreapi/Https.hpp>
 
 namespace DiscordCoreAPI {
 
@@ -130,7 +131,7 @@ namespace DiscordCoreAPI {
 		friend EventHandler;
 		friend Guild;
 
-		static void initialize(DiscordCoreInternal::HttpsClient*, bool doWeCacheNew);
+		static void initialize(DiscordCoreInternal::HttpsClient*, ConfigManager* configManagerNew);
 
 		/// Collects a GuildMember from the Discord servers. \brief Collects a GuildMember from the Discord servers.
 		/// \param dataPackage A GetGuildMemberData structure.
@@ -180,8 +181,8 @@ namespace DiscordCoreAPI {
 	  protected:
 		static std::unique_ptr<std::map<GuildMemberId, std::unique_ptr<GuildMemberData>>> cache;
 		static DiscordCoreInternal::HttpsClient* httpsClient;
+		static ConfigManager* configManager;
 		static std::shared_mutex theMutex;
-		static bool doWeCache;
 
 		static void insertGuildMember(GuildMemberData dataPackage);
 

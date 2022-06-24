@@ -33,22 +33,23 @@ namespace DiscordCoreInternal {
 	  public:
 		YouTubeRequestBuilder() = default;
 
-		YouTubeRequestBuilder(HttpsClient*);
+		YouTubeRequestBuilder(HttpsClient*, DiscordCoreAPI::ConfigManager*);
 
 		DiscordCoreAPI::Song collectFinalSong(const DiscordCoreAPI::GuildMemberData& addedByGuildMember, DiscordCoreAPI::Song& newSong);
 
 		std::vector<DiscordCoreAPI::Song> collectSearchResults(const std::string& theString);
 
 	  protected:
-		HttpsClient* httpsClient{ nullptr };
+		DiscordCoreAPI::ConfigManager* configManager{ nullptr };
 		std::string baseUrl{ "https://www.youtube.com" };
+		HttpsClient* httpsClient{ nullptr };
 
 		DiscordCoreAPI::Song constructDownloadInfo(const DiscordCoreAPI::GuildMemberData& guildMember, DiscordCoreAPI::Song& newSong);
 	};
 
 	class DiscordCoreAPI_Dll YouTubeAPI {
 	  public:
-		YouTubeAPI(const uint64_t& guildId, HttpsClient* httpsClient);
+		YouTubeAPI(const uint64_t& guildId, HttpsClient* httpsClient, DiscordCoreAPI::ConfigManager*);
 
 		void weFailedToDownloadOrDecode(const DiscordCoreAPI::Song& newSong, std::stop_token theToken, int32_t currentRecursionDepth);
 
@@ -61,10 +62,8 @@ namespace DiscordCoreInternal {
 		void cancelCurrentSong();
 
 	  protected:
-		
-		bool doWePrintWebSocketErrorMessages{ false };
-		bool doWePrintFFMPEGSuccessMessages{ false };
-		bool doWePrintFFMPEGErrorMessages{ false };
+
+		DiscordCoreAPI::ConfigManager* configManager{ nullptr };
 		YouTubeRequestBuilder requestBuilder{};
 		const int32_t maxBufferSize{ 8192 };
 		DiscordCoreAPI::Song theSong{};

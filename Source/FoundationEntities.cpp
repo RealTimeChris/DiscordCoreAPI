@@ -37,6 +37,106 @@
 
 namespace DiscordCoreAPI {
 
+	ConfigManager::ConfigManager(const DiscordCoreClientConfig& theConfigNew) {
+		this->theConfig = theConfigNew;
+	}
+
+	const bool ConfigManager::doWePrintWebSocketSuccessMessages() {
+		return this->theConfig.logOptions.logWebSocketSuccessMessages;
+	}
+
+	const bool ConfigManager::doWePrintWebSocketErrorMessages() {
+		return this->theConfig.logOptions.logWebSocketErrorMessages;
+	}
+
+	const bool ConfigManager::doWePrintHttpsSuccessMessages() {
+		return this->theConfig.logOptions.logHttpsSuccessMessages;
+	}
+
+	const bool ConfigManager::doWePrintHttpsErrorMessages() {
+		return this->theConfig.logOptions.logHttpsErrorMessages;
+	}
+
+	const bool ConfigManager::doWePrintFFMPEGSuccessMessages() {
+		return this->theConfig.logOptions.logFFMPEGSuccessMessages;
+	}
+
+	const bool ConfigManager::doWePrintFFMPEGErrorMessages() {
+		return this->theConfig.logOptions.logFFMPEGErrorMessages;
+	}
+
+	const bool ConfigManager::doWePrintGeneralSuccessMessages() {
+		return this->theConfig.logOptions.logGeneralSuccessMessages;
+	}
+
+	const bool ConfigManager::doWePrintGeneralErrorMessages() {
+		return this->theConfig.logOptions.logGeneralErrorMessages;
+	}
+
+	const bool ConfigManager::doWeCacheChannels() {
+		return this->theConfig.cacheOptions.cacheChannels;
+	}
+
+	const bool ConfigManager::doWeCacheUsers() {
+		return this->theConfig.cacheOptions.cacheUsers;
+	}
+
+	const bool ConfigManager::doWeCacheGuilds() {
+		return this->theConfig.cacheOptions.cacheGuilds;
+	}
+
+	const bool ConfigManager::doWeCacheGuildMembers() {
+		return this->theConfig.cacheOptions.cacheGuildMembers;
+	}
+
+	const bool ConfigManager::doWeCacheRoles() {
+		return this->theConfig.cacheOptions.cacheRoles;
+	}
+
+	const std::string ConfigManager::getBotToken() {
+		return this->theConfig.botToken;
+	}
+
+	const int32_t ConfigManager::getTotalShardCount() {
+		return this->theConfig.shardOptions.totalNumberOfShards;
+	}
+
+	const int32_t ConfigManager::getStartingShard() {
+		return this->theConfig.shardOptions.startingShard;
+	}
+
+	const int32_t ConfigManager::getShardCountForThisProcess() {
+		return this->theConfig.shardOptions.numberOfShardsForThisProcess;
+	}
+
+	const std::string ConfigManager::getConnectionAddress() {
+		return this->theConfig.connectionAddress;
+	}
+
+	void ConfigManager::setConnectionAddress(const std::string& connectionAddressNew) {
+		this->theConfig.connectionAddress = connectionAddressNew;
+	}
+
+	const std::string ConfigManager::getConnectionPort() {
+		return this->theConfig.connectionPort;
+	}
+
+	void ConfigManager::setConnectionPort(const std::string & connectionPortNew) {
+		this->theConfig.connectionPort = connectionPortNew;
+	}
+
+	const std::vector<RepeatedFunctionData> ConfigManager::getFunctionsToExecute() {
+		return this->theConfig.functionsToExecute;
+	}
+
+	const TextFormat ConfigManager::getTextFormat() {
+		return this->theConfig.textFormat;
+	}
+
+	const GatewayIntents ConfigManager::getGatewayIntents() {
+		return this->theConfig.theIntents;
+	}
+
 	StringWrapper& StringWrapper::operator=(const std::string& theString) {
 		auto theLength = theString.size();
 		this->thePtr = std::make_unique<char[]>(theLength + 1);

@@ -175,7 +175,7 @@ namespace DiscordCoreAPI {
 				}
 				theStopWatch.resetTimer();
 				this->voiceSocketAgent = std::make_unique<DiscordCoreInternal::VoiceSocketAgent>(this->voiceConnectInitData, this->baseSocketAgent,
-					this->baseSocketAgent->theClients[voiceConnectInitDataNew.currentShard].get(), this->baseSocketAgent->doWePrintSuccessMessages, &Globals::doWeQuit);
+					this->baseSocketAgent->theClients[voiceConnectInitDataNew.currentShard].get(), this->baseSocketAgent->configManager, &Globals::doWeQuit);
 				this->doWeReconnect = &this->voiceSocketAgent->doWeReconnect;
 				this->doWeReconnect->store(false);
 				while (!this->voiceSocketAgent->areWeConnected.load()) {

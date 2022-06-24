@@ -58,11 +58,10 @@ namespace DiscordCoreInternal {
 		std::unordered_map<int32_t, std::unique_ptr<SSLEntity>> theClients{};
 		DiscordCoreAPI::DiscordCoreClient* discordCoreClient{ nullptr };
 		std::queue<DiscordCoreAPI::ConnectionPackage> connections{};
+		DiscordCoreAPI::ConfigManager* configManager{ nullptr };
 		std::unique_ptr<std::jthread> theTask{ nullptr };
-		bool doWePrintSuccessMessages{ false };
 		std::atomic_bool* doWeQuit{ nullptr };
 		const int32_t maxReconnectTries{ 10 };
-		bool doWePrintErrorMessages{ false };
 		int32_t currentBaseSocketAgent{ 0 };
 		int32_t heartbeatInterval{ 0 };
 		ErlPacker erlPacker{};
@@ -88,7 +87,7 @@ namespace DiscordCoreInternal {
 	  public:
 		friend class DiscordCoreAPI::VoiceConnection;
 
-		VoiceSocketAgent(VoiceConnectInitData initDataNew, BaseSocketAgent* baseBaseSocketAgentNew, SSLEntity* theIndex, bool printMessagesNew,
+		VoiceSocketAgent(VoiceConnectInitData initDataNew, BaseSocketAgent* baseBaseSocketAgentNew, SSLEntity* theIndex, DiscordCoreAPI::ConfigManager*configManagerNew,
 			std::atomic_bool* doWeQuit) noexcept;
 
 		void sendMessage(const std::vector<uint8_t>& responseData) noexcept;
@@ -105,15 +104,14 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::TSUnboundedMessageBlock<VoiceConnectionData> voiceConnectionDataBuffer{};
 		std::unordered_map<int32_t, std::unique_ptr<SSLEntity>> theClients{};
 		std::unique_ptr<DatagramSocketSSLClient> voiceSocket{ nullptr };
+		DiscordCoreAPI::ConfigManager* configManager{ nullptr };
 		std::unique_ptr<std::jthread> theTask{ nullptr };
 		VoiceConnectInitData voiceConnectInitData{};
 		WebSocketSSLShard* theBaseShard{ nullptr };
 		VoiceConnectionData voiceConnectionData{};
 		std::atomic_bool areWeConnected{ false };
 		std::atomic_bool doWeReconnect{ false };
-		bool doWePrintSuccessMessages{ false };
 		std::atomic_bool* doWeQuit{ nullptr };
-		bool doWePrintErrorMessages{ false };
 		int32_t maxReconnectionTries{ 10 };
 		int32_t heartbeatInterval{ 0 };
 		std::string baseUrl{};

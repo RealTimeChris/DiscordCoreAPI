@@ -309,7 +309,6 @@ namespace DiscordCoreInternal {
 		bool areWeHeartBeating{ false };
 		int32_t lastNumberReceived{ 0 };
 		WebSocketCloseCode closeCode{};
-		bool doWePrintErrors{ false };
 		WebSocketOpCode dataOpCode{};
 		bool areWeResuming{ false };
 		std::mutex accessorMutex{};
@@ -361,8 +360,8 @@ namespace DiscordCoreInternal {
 		friend class VoiceSocketAgent;
 		friend class BaseSocketAgent;
 
-		WebSocketSSLShard(std::queue<DiscordCoreAPI::ConnectionPackage>* connectionsNew, int32_t currentBaseSocketAgentNew, int32_t currentShardNew, int32_t totalShardsNew,
-			bool doWePrintErrorsNew, DiscordCoreAPI::TextFormat theFormat) noexcept;
+		WebSocketSSLShard(std::queue<DiscordCoreAPI::ConnectionPackage>* connectionsNew, int32_t currentBaseSocketAgentNew, int32_t currentShardNew,
+			DiscordCoreAPI::ConfigManager* configManagerNew) noexcept;
 
 		static void processIO(std::unordered_map<int32_t, std::unique_ptr<SSLEntity>>& theMap, int32_t waitTimeInms = 10000);
 

@@ -197,6 +197,151 @@ namespace DiscordCoreAPI {
 	template<typename ReturnType, typename... ArgTypes> class Event;
 	template<typename ReturnType> class CoRoutine;
 
+	/**
+	 * \addtogroup utilities
+	 * @{
+	 */
+
+	/// Gateway intents. \brief Gateway intents.
+	enum class GatewayIntents : int32_t {
+		Guilds = 1 << 0,///< Intent for receipt of Guild information.
+		Guild_Members = 1 << 1,///< Intent for receipt of Guild members.
+		Guild_Bans = 1 << 2,///< Intent for receipt of Guild bans.
+		Guild_Emojis = 1 << 3,///< Intent for receipt of Guild emojis.
+		Guild_Integrations = 1 << 4,///< Intent for receipt of Guild integrations.
+		Guild_Webhooks = 1 << 5,///< Intent for receipt of Guild webhooks.
+		Guild_Invites = 1 << 6,///< Intent for receipt of Guild invites.
+		Guild_VoiceStates = 1 << 7,///< Intent for receipt of Guild voice states.
+		Guild_Presences = 1 << 8,///< Intent for receipt of Guild presences.
+		Guild_Messages = 1 << 9,///< Intent for receipt of Guild messages.
+		Guild_Message_Reactions = 1 << 10,///< Intent for receipt of Guild message reactions.
+		Guild_Message_Typing = 1 << 11,///< Intent for receipt of Guild message typing notifications.
+		Direct_Messages = 1 << 12,///< Intent for receipt of direct messages (DMs).
+		Direct_Message_Reactions = 1 << 13,///< Intent for receipt of direct message reactions.
+		Direct_Message_Typing = 1 << 14,///< Intent for receipt of direct message typing notifications.
+		Message_Content = 1 << 15,///< Intent for receipt of message content.
+		Guild_Scheduled_Events = 1 << 16,///< Scheduled events.
+		Default_Intents = Guilds | Guild_Bans | Guild_Emojis | Guild_Integrations | Guild_Webhooks | Guild_Invites | Guild_VoiceStates | Guild_Messages | Guild_Message_Reactions |
+			Guild_Message_Typing | Direct_Messages | Direct_Message_Reactions | Direct_Message_Typing | Guild_Scheduled_Events,///< Default intents (all non-privileged intents).
+		Privileged_Intents = Guild_Members | Guild_Presences | Message_Content,///< Privileged intents requiring ID.
+		All_Intents = Default_Intents | Privileged_Intents///< Every single intent.
+	};
+
+	/// Function data for repeated functions to be loaded. \brief Function data for repeated functions to be loaded.
+	struct DiscordCoreAPI_Dll RepeatedFunctionData {
+		std::function<void(DiscordCoreClient*)> function{ nullptr };///< The std::function pointer to be loaded.
+		uint32_t intervalInMs{ 0 };///< The time interval at which to call the std::function.
+		bool repeated{ false };///< Whether or not the std::function is repeating.
+		int64_t dummyArg{ 0 };
+	};
+
+	/// Represents which text format to use for websocket transfer. \brief Represents which text format to use for websocket transfer.
+	enum class TextFormat : int8_t {
+		Etf = 0x00,///< Etf format.
+		Json = 0x01///< Json format.
+	};
+
+	/// Sharding options for the library. \brief Sharding options for the library.
+	struct DiscordCoreAPI_Dll ShardingOptions {
+		int32_t numberOfShardsForThisProcess{ 1 };///< The number of shards to launch on the current process.
+		int32_t totalNumberOfShards{ 1 };///< The total number of shards that will be launched across all processes.
+		int32_t startingShard{ 0 };///< The first shard to start on this process.
+	};
+
+	/// Logging options for the library. \brief Loggin options for the library.
+	struct DiscordCoreAPI_Dll LoggingOptions {
+		bool logWebSocketSuccessMessages{ false };///< Do we log the websocket success messages to cout?
+		bool logWebSocketErrorMessages{ false };///< Do we log the websocket error messages to cout?
+		bool logGeneralSuccessMessages{ false };///< Do we log general success messages to cout?
+		bool logFFMPEGSuccessMessages{ false };///< Do we log FFMPEG success messages to cout?
+		bool logGeneralErrorMessages{ false };///< Do we log general error messages to cout?
+		bool logHttpsSuccessMessages{ false };///< Do we log Http response success messages to cout?
+		bool logFFMPEGErrorMessages{ false };///< Do we log FFMPEG error messages to cout?
+		bool logHttpsErrorMessages{ false };///< Do we log Http response error messages to cout?
+	};
+
+	/// For selecting the caching style of the library. \brief For selecting the caching style of the library.
+	struct DiscordCoreAPI_Dll CacheOptions {
+		bool cacheGuildMembers{ true };///< Do we cache GuildMembers?
+		bool cacheChannels{ true };///< Do we cache Channels?
+		bool cacheGuilds{ true };///< Do we cache Guilds?
+		bool cacheRoles{ true };///< Do we cache Roles?
+		bool cacheUsers{ true };///< Do we cache Users?
+	};
+
+	/// Configuration data for the library's main class, DiscordCoreClient. \brief Configuration data for the library's main class, DiscordCoreClient.
+	struct DiscordCoreAPI_Dll DiscordCoreClientConfig {
+		GatewayIntents theIntents{ GatewayIntents::All_Intents };///< The gateway intents to be used for this instance.
+		std::vector<RepeatedFunctionData> functionsToExecute{};///< Functions to execute after a timer, or on a repetition.
+		TextFormat textFormat{ TextFormat::Etf };///< Use ETF or JSON format for websocket transfer?
+		std::string connectionAddress{};///< A potentially alternative connection address for the websocket.
+		ShardingOptions shardOptions{};///< Options for the sharding of your bot.
+		std::string connectionPort{};///< A potentially alternative connection port for the websocket.
+		LoggingOptions logOptions{};///< Options for the output/logging of the library.
+		CacheOptions cacheOptions{};///< Options for the cache of the library.
+		std::string botToken{};///< Your bot's token.
+	};
+
+	class ConfigManager {
+	  public:
+		ConfigManager() = default;
+
+		ConfigManager(const DiscordCoreClientConfig&);
+
+		const bool doWePrintWebSocketSuccessMessages();
+
+		const bool doWePrintWebSocketErrorMessages();
+
+		const bool doWePrintHttpsSuccessMessages();
+
+		const bool doWePrintHttpsErrorMessages();
+
+		const bool doWePrintFFMPEGSuccessMessages();
+
+		const bool doWePrintFFMPEGErrorMessages();
+
+		const bool doWePrintGeneralSuccessMessages();
+
+		const bool doWePrintGeneralErrorMessages();
+
+		const bool doWeCacheChannels();
+
+		const bool doWeCacheUsers();
+
+		const bool doWeCacheGuilds();
+
+		const bool doWeCacheGuildMembers();
+
+		const bool doWeCacheRoles();
+
+		const std::string getBotToken();
+
+		const int32_t getTotalShardCount();
+
+		const int32_t getStartingShard();
+
+		const int32_t getShardCountForThisProcess();
+
+		const std::string getConnectionAddress();
+
+		void setConnectionAddress(const std::string& connectionAddressNew);
+
+		const std::string getConnectionPort();
+
+		void setConnectionPort(const std::string& connectionPortNew);
+
+		const std::vector<RepeatedFunctionData> getFunctionsToExecute();
+
+		const TextFormat getTextFormat();
+
+		const GatewayIntents getGatewayIntents();
+
+	  protected:
+		DiscordCoreClientConfig theConfig{};
+	};
+
+	/**@}*/
+
 	template<typename ObjectType> class ReferenceCountingPtr {
 	  public:
 		class DiscordCoreAPI_Dll ObjectWrapper {
@@ -873,12 +1018,6 @@ namespace DiscordCoreAPI {
 	 * @{
 	 */
 
-	/// Represents which text format to use for websocket transfer. \brief Represents which text format to use for websocket transfer.
-	enum class TextFormat : int8_t {
-		Etf = 0x00,///< Etf format.
-		Json = 0x01///< Json format.
-	};
-
 	template<typename StoredAsType, typename FlagType> StoredAsType setBool(StoredAsType inputFlag, FlagType theFlag, bool enabled) {
 		if (enabled) {
 			inputFlag |= static_cast<StoredAsType>(theFlag);
@@ -999,31 +1138,6 @@ namespace DiscordCoreAPI {
 		Hour = 60,///< 1 Hour timeout.
 		Day = 1440,///< 1 Day timeout.
 		Week = 10080///< 1 Week timeout.
-	};
-
-	/// Gateway intents. \brief Gateway intents.
-	enum class GatewayIntents : int32_t {
-		Guilds = 1 << 0,///< Intent for receipt of Guild information.
-		Guild_Members = 1 << 1,///< Intent for receipt of Guild members.
-		Guild_Bans = 1 << 2,///< Intent for receipt of Guild bans.
-		Guild_Emojis = 1 << 3,///< Intent for receipt of Guild emojis.
-		Guild_Integrations = 1 << 4,///< Intent for receipt of Guild integrations.
-		Guild_Webhooks = 1 << 5,///< Intent for receipt of Guild webhooks.
-		Guild_Invites = 1 << 6,///< Intent for receipt of Guild invites.
-		Guild_VoiceStates = 1 << 7,///< Intent for receipt of Guild voice states.
-		Guild_Presences = 1 << 8,///< Intent for receipt of Guild presences.
-		Guild_Messages = 1 << 9,///< Intent for receipt of Guild messages.
-		Guild_Message_Reactions = 1 << 10,///< Intent for receipt of Guild message reactions.
-		Guild_Message_Typing = 1 << 11,///< Intent for receipt of Guild message typing notifications.
-		Direct_Messages = 1 << 12,///< Intent for receipt of direct messages (DMs).
-		Direct_Message_Reactions = 1 << 13,///< Intent for receipt of direct message reactions.
-		Direct_Message_Typing = 1 << 14,///< Intent for receipt of direct message typing notifications.
-		Message_Content = 1 << 15,///< Intent for receipt of message content.
-		Guild_Scheduled_Events = 1 << 16,///< Scheduled events.
-		Default_Intents = Guilds | Guild_Bans | Guild_Emojis | Guild_Integrations | Guild_Webhooks | Guild_Invites | Guild_VoiceStates | Guild_Messages | Guild_Message_Reactions |
-			Guild_Message_Typing | Direct_Messages | Direct_Message_Reactions | Direct_Message_Typing | Guild_Scheduled_Events,///< Default intents (all non-privileged intents).
-		Privileged_Intents = Guild_Members | Guild_Presences | Message_Content,///< Privileged intents requiring ID.
-		All_Intents = Default_Intents | Privileged_Intents///< Every single intent.
 	};
 
 	/// For ids of DiscordEntities. \brief For ids of DiscordEntities.
@@ -2492,14 +2606,6 @@ namespace DiscordCoreAPI {
 		virtual ~ApplicationCommandData() = default;
 	};
 
-	/// Function data for repeated functions to be loaded. \brief Function data for repeated functions to be loaded.
-	struct DiscordCoreAPI_Dll RepeatedFunctionData {
-		std::function<void(DiscordCoreClient*)> function{ nullptr };///< The std::function pointer to be loaded.
-		uint32_t intervalInMs{ 0 };///< The time interval at which to call the std::function.
-		bool repeated{ false };///< Whether or not the std::function is repeating.
-		int64_t dummyArg{ 0 };
-	};
-
 	/// Channel mention data. \brief Channel mention data.
 	class DiscordCoreAPI_Dll ChannelMentionData : public DiscordEntity {
 	  public:
@@ -3450,34 +3556,6 @@ namespace DiscordCoreAPI {
 		InputEventData eventData{};
 	};
 
-	/// Sharding options for the library. \brief Sharding options for the library.
-	struct DiscordCoreAPI_Dll ShardingOptions {
-		int32_t numberOfShardsForThisProcess{ 1 };///< The number of shards to launch on the current process.
-		int32_t totalNumberOfShards{ 1 };///< The total number of shards that will be launched across all processes.
-		int32_t startingShard{ 0 };///< The first shard to start on this process.
-	};
-
-	/// Logging options for the library. \brief Loggin options for the library.
-	struct DiscordCoreAPI_Dll LoggingOptions {
-		bool logWebSocketSuccessMessages{ false };///< Do we log the websocket success messages to cout?
-		bool logWebSocketErrorMessages{ false };///< Do we log the websocket error messages to cout?
-		bool logGeneralSuccessMessages{ false };///< Do we log general success messages to cout?
-		bool logFFMPEGSuccessMessages{ false };///< Do we log FFMPEG success messages to cout?
-		bool logGeneralErrorMessages{ false };///< Do we log general error messages to cout?
-		bool logHttpsSuccessMessages{ false };///< Do we log Http response success messages to cout?
-		bool logFFMPEGErrorMessages{ false };///< Do we log FFMPEG error messages to cout?
-		bool logHttpsErrorMessages{ false };///< Do we log Http response error messages to cout?
-	};
-
-	/// For selecting the caching style of the library. \brief For selecting the caching style of the library.
-	struct DiscordCoreAPI_Dll CacheOptions {
-		bool cacheGuildMembers{ true };///< Do we cache GuildMembers?
-		bool cacheChannels{ true };///< Do we cache Channels?
-		bool cacheGuilds{ true };///< Do we cache Guilds?
-		bool cacheRoles{ true };///< Do we cache Roles?
-		bool cacheUsers{ true };///< Do we cache Users?
-	};
-
 	/// Guild application command permissions data. \brief Guild application command permissions data.
 	class DiscordCoreAPI_Dll GuildApplicationCommandPermissionData : public DiscordEntity {
 	  public:
@@ -3591,19 +3669,6 @@ namespace DiscordCoreAPI {
 	 * \addtogroup utilities
 	 * @{
 	 */
-
-	/// Configuration data for the library's main class, DiscordCoreClient. \brief Configuration data for the library's main class, DiscordCoreClient.
-	struct DiscordCoreAPI_Dll DiscordCoreClientConfig {
-		GatewayIntents theIntents{ GatewayIntents ::All_Intents };///< The gateway intents to be used for this instance.
-		std::vector<RepeatedFunctionData> functionsToExecute{};///< Functions to execute after a timer, or on a repetition.
-		TextFormat textFormat{ TextFormat::Etf };///< Use ETF or JSON format for websocket transfer?
-		std::string alternateConnectionAddress{};///< A potentially alternative connection address for the websocket.
-		std::string alternateConnectionPort{};///< A potentially alternative connection port for the websocket.
-		ShardingOptions shardOptions{};///< Options for the sharding of your bot.
-		LoggingOptions logOptions{};///< Options for the output/logging of the library.
-		CacheOptions cacheOptions{};///< Options for the cache of the library.
-		std::string botToken{};///< Your bot's token.
-	};
 
 	/// Base arguments for the command classes. \brief Base arguments for the command classes.
 	struct DiscordCoreAPI_Dll BaseFunctionArguments {
