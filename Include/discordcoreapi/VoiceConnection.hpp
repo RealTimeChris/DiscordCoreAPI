@@ -38,6 +38,7 @@ namespace DiscordCoreAPI {
 	  public:
 		friend class DiscordCoreInternal::SoundCloudAPI;
 		friend class DiscordCoreInternal::YouTubeAPI;
+		friend class DiscordCoreClient;
 		friend SongAPI;
 		friend Guild;
 

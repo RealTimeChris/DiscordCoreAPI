@@ -153,7 +153,6 @@ namespace DiscordCoreAPI {
 			std::lock_guard<std::mutex> theLock{ this->baseSocketAgent->theClients[voiceConnectInitDataNew.currentShard]->accessorMutex };
 			this->voiceConnectInitData = voiceConnectInitDataNew;
 			this->areWeStopping.store(false);
-			this->areWeConnectedBool = true;
 			this->stopSetEvent.set();
 			this->pauseEvent.set();
 			StopWatch theStopWatch{ 10000ms };
@@ -177,7 +176,6 @@ namespace DiscordCoreAPI {
 				this->voiceSocketAgent = std::make_unique<DiscordCoreInternal::VoiceSocketAgent>(this->voiceConnectInitData, this->baseSocketAgent,
 					this->baseSocketAgent->theClients[voiceConnectInitDataNew.currentShard].get(), this->baseSocketAgent->configManager, &Globals::doWeQuit);
 				this->doWeReconnect = &this->voiceSocketAgent->doWeReconnect;
-				this->doWeReconnect->store(false);
 				while (!this->voiceSocketAgent->areWeConnected.load()) {
 					std::this_thread::sleep_for(1ms);
 					if (theStopWatch.hasTimePassed()) {
@@ -192,6 +190,7 @@ namespace DiscordCoreAPI {
 				}
 			}
 			this->sendSilence();
+			this->areWeConnectedBool = true;
 		}
 	}
 
@@ -307,7 +306,13 @@ namespace DiscordCoreAPI {
 					this->doWeReconnect->store(false);
 					this->areWeConnectedBool = false;
 					this->sendSpeakingMessage(false);
-					this->reconnect();
+					StopWatch theStopWatch{ 10000ms };
+					while (!this->areWeConnectedBool) {
+						if (theStopWatch.hasTimePassed()) {
+							return;
+						}
+						std::this_thread::sleep_for(1ms);
+					}
 					this->sendSpeakingMessage(true);
 					this->areWePlaying.store(true);
 				}
