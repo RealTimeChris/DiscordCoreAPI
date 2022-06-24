@@ -69,6 +69,7 @@ namespace DiscordCoreInternal {
 	}
 
 	void HttpsSSLClient::connect(const std::string& baseUrl, const std::string& portNew) {
+		std::cout << "WERE CONNECTING!" << std::endl;
 		std::string stringNew{};
 		if (baseUrl.find(".com") != std::string::npos) {
 			stringNew =
@@ -228,24 +229,58 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void HttpsSSLClient::writeData(std::string& data) noexcept {
-		if (data.size() > static_cast<size_t>(16 * 1024)) {
-			size_t remainingBytes{ data.size() };
-			while (remainingBytes > 0) {
-				std::string newString{};
-				size_t amountToCollect{};
-				if (data.size() >= static_cast<size_t>(1024 * 16)) {
-					amountToCollect = static_cast<size_t>(1024 * 16);
-				} else {
-					amountToCollect = data.size();
+	void HttpsSSLClient::writeData(const std::string& dataToWrite, bool priority) noexcept {
+		std::string data = dataToWrite;
+		if (priority) {
+			size_t writtenBytes{ 0 };
+			if (data.size() > 0) {
+				auto returnValue{ SSL_write_ex(this->ssl, data.data(), data.size(), &writtenBytes) };
+				auto errorValue{ SSL_get_error(this->ssl, returnValue) };
+				switch (errorValue) {
+					case SSL_ERROR_NONE: {
+						if (writtenBytes > 0) {
+							data.clear();
+						}
+						break;
+					}
+					case SSL_ERROR_WANT_READ: {
+						this->wantRead = true;
+						break;
+					}
+					case SSL_ERROR_WANT_WRITE: {
+						this->wantWrite = true;
+						break;
+					}
+					case SSL_ERROR_SYSCALL: {
+						[[fallthrough]];
+					}
+					case SSL_ERROR_ZERO_RETURN: {
+						[[fallthrough]];
+					}
+					default: {
+						this->connectionTime = 0;
+					}
 				}
-				newString.insert(newString.begin(), data.begin(), data.begin() + amountToCollect);
-				this->outputBuffers.push_back(newString);
-				data.erase(data.begin(), data.begin() + amountToCollect);
-				remainingBytes = data.size();
 			}
 		} else {
-			this->outputBuffers.push_back(data);
+			if (data.size() > static_cast<size_t>(16 * 1024)) {
+				size_t remainingBytes{ data.size() };
+				while (remainingBytes > 0) {
+					std::string newString{};
+					size_t amountToCollect{};
+					if (data.size() >= static_cast<size_t>(1024 * 16)) {
+						amountToCollect = static_cast<size_t>(1024 * 16);
+					} else {
+						amountToCollect = data.size();
+					}
+					newString.insert(newString.begin(), data.begin(), data.begin() + amountToCollect);
+					this->outputBuffers.push_back(newString);
+					data.erase(data.begin(), data.begin() + amountToCollect);
+					remainingBytes = data.size();
+				}
+			} else {
+				this->outputBuffers.push_back(data);
+			}
 		}
 	}
 
@@ -261,6 +296,10 @@ namespace DiscordCoreInternal {
 		} else {
 			return true;
 		}
+	}
+
+	int64_t HttpsSSLClient::getBytesRead() noexcept {
+		return this->bytesRead;
 	}
 
 	WebSocketSSLShard::WebSocketSSLShard(std::queue<DiscordCoreAPI::ConnectionPackage>* connectionsNew, int32_t currentBaseSocketAgentNew, int32_t currentShardNew,
@@ -460,7 +499,8 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void WebSocketSSLShard::writeData(std::string& data, bool priority) noexcept {
+	void WebSocketSSLShard::writeData(const std::string& dataToWrite, bool priority) noexcept {
+		std::string data = dataToWrite;
 		if (priority) {
 			size_t writtenBytes{ 0 };
 			if (data.size() > 0) {
@@ -593,7 +633,7 @@ namespace DiscordCoreInternal {
 #endif
 	}
 
-	void DatagramSocketSSLClient::writeData(const std::string& dataToWrite) {
+	void DatagramSocketSSLClient::writeData(const std::string& dataToWrite, bool) {
 		this->outputBuffer.insert(this->outputBuffer.end(), dataToWrite.begin(), dataToWrite.end());
 
 		fd_set writeSet{};
@@ -621,8 +661,10 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	std::string& DatagramSocketSSLClient::getInputBuffer() noexcept {
-		return this->inputBuffer;
+	std::string DatagramSocketSSLClient::getInputBuffer() noexcept {
+		std::string theReturnString = this->inputBuffer;
+		this->inputBuffer.clear();
+		return theReturnString;
 	}
 
 	int64_t DatagramSocketSSLClient::getBytesRead() noexcept {

@@ -1296,7 +1296,7 @@ namespace DiscordCoreInternal {
 				}
 				if (!theToken.stop_requested() && !this->doWeReconnect.load() && this->voiceSocket) {
 					this->voiceSocket->processIO();
-					this->voiceSocket->getInputBuffer().clear();
+					this->voiceSocket->getInputBuffer();
 				}
 				std::this_thread::sleep_for(1ms);
 			}
@@ -1323,12 +1323,14 @@ namespace DiscordCoreInternal {
 			packet[6] = static_cast<uint8_t>(this->voiceConnectionData.audioSSRC >> 8);
 			packet[7] = static_cast<uint8_t>(this->voiceConnectionData.audioSSRC);
 			this->voiceSocket->writeData(packet);
-			while (this->voiceSocket->getInputBuffer().size() < 74) {
+			std::string inputString{};
+			while (inputString.size() < 74) {
+				inputString.insert(inputString.end(), this->voiceSocket->getInputBuffer().begin(), this->voiceSocket->getInputBuffer().end());
 				this->voiceSocket->processIO();
 				std::this_thread::sleep_for(1ms);
 			}
 			std::string message{};
-			message.insert(message.begin(), this->voiceSocket->getInputBuffer().begin() + 8, this->voiceSocket->getInputBuffer().begin() + 64);
+			message.insert(message.begin(), inputString.begin() + 8, inputString.begin() + 64);
 			if (message.find('\u0000') != std::string::npos) {
 				message = message.substr(0, message.find('\u0000', 5));
 			}

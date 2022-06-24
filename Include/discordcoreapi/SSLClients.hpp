@@ -272,21 +272,39 @@ namespace DiscordCoreInternal {
 		}
 	};
 
-	class DiscordCoreAPI_Dll HttpsSSLClient {
+	class DiscordCoreAPI_Dll SSLEntity {
+	  public:
+
+		virtual void connect(const std::string& baseUrl, const std::string& portNew = "443") = 0;
+
+		virtual void writeData(const std::string& data, bool priority = false) = 0;
+
+		virtual std::string getInputBuffer() noexcept = 0;
+
+		virtual bool areWeStillConnected() noexcept = 0;
+
+		virtual int64_t getBytesRead() noexcept = 0;
+
+		virtual ~SSLEntity() noexcept = default;
+	};
+
+	class DiscordCoreAPI_Dll HttpsSSLClient : public SSLEntity {
 	  public:
 		HttpsSSLClient() noexcept = default;
 
 		static void initialize();
 
-		void connect(const std::string& baseUrl, const std::string& portNew = "443");
+		virtual void connect(const std::string& baseUrl, const std::string& portNew = "443");
+
+		virtual void writeData(const std::string& data, bool priority = false) noexcept;
 
 		void processIO(int32_t waitTimeInMs = 10000);
 
-		void writeData(std::string& data) noexcept;
+		virtual std::string getInputBuffer() noexcept;
 
-		std::string getInputBuffer() noexcept;
+		virtual bool areWeStillConnected() noexcept;
 
-		bool areWeStillConnected() noexcept;
+		virtual int64_t getBytesRead() noexcept;
 
 		virtual ~HttpsSSLClient() noexcept = default;
 
@@ -303,9 +321,10 @@ namespace DiscordCoreInternal {
 		SSLWrapper ssl{ nullptr };
 		bool wantWrite{ false };
 		bool wantRead{ false };
+		int64_t bytesRead{};
 	};
 
-	class DiscordCoreAPI_Dll WebSocketSSLShard {
+	class DiscordCoreAPI_Dll WebSocketSSLShard : public SSLEntity {
 	  public:
 		friend class DiscordCoreAPI::DiscordCoreClient;
 		friend class DiscordCoreAPI::VoiceConnection;
@@ -319,19 +338,19 @@ namespace DiscordCoreInternal {
 
 		static void initialize();
 
-		void connect(const std::string& baseUrlNew, const std::string& portNew);
+		virtual void connect(const std::string& baseUrl, const std::string& portNew = "443");
+		
+		virtual void writeData(const std::string& data, bool priority = false) noexcept;
 
-		void writeData(std::string& data, bool priority) noexcept;
+		virtual std::string getInputBuffer() noexcept;
 
-		std::string getInputBuffer() noexcept;
+		virtual bool areWeStillConnected() noexcept;
 
-		bool areWeStillConnected() noexcept;
-
-		int64_t getBytesRead() noexcept;
+		virtual int64_t getBytesRead() noexcept;
 
 		void reconnect() noexcept;
 
-		~WebSocketSSLShard() noexcept = default;
+		virtual ~WebSocketSSLShard() noexcept = default;
 
 	  protected:
 		static SSL_CTXWrapper context;
@@ -377,11 +396,11 @@ namespace DiscordCoreInternal {
 	  public:
 		DatagramSocketSSLClient() noexcept = default;
 
-		void connect(const std::string& hostName, const std::string& port);
+		void connect(const std::string& baseUrl, const std::string& portNew = "443");
 
-		void writeData(const std::string& data);
+		void writeData(const std::string& data, bool priority = false);
 
-		std::string& getInputBuffer() noexcept;
+		std::string getInputBuffer() noexcept;
 
 		int64_t getBytesRead() noexcept;
 
