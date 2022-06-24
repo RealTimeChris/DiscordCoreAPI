@@ -142,7 +142,7 @@ namespace DiscordCoreInternal {
 			} else {
 			}
 		} catch (...) {
-			theData.theCurrentState = HttpsState::Error;
+			theData.contentSize = -5;
 		}
 	}
 
@@ -213,7 +213,7 @@ namespace DiscordCoreInternal {
 				theData.theCurrentState = HttpsState::Collecting_Contents;
 			}
 		} catch (...) {
-			theData.theCurrentState = HttpsState::Error;
+			theData.contentSize = -5;
 		}
 	}
 
@@ -249,7 +249,7 @@ namespace DiscordCoreInternal {
 			theData.theCurrentState = HttpsState::Collecting_Headers;
 		} else if (other.size() <= 5) {
 		} else {
-			theData.theCurrentState = HttpsState::Error;
+			theData.responseCode = -5;
 		}
 	}
 
@@ -439,14 +439,10 @@ namespace DiscordCoreInternal {
 				case HttpsState::Collecting_Contents: {
 					if (static_cast<int64_t>(Globals::httpsConnection->inputBufferReal.size()) >= theData.contentSize &&
 							!Globals::httpsConnection->parseChunk(Globals::httpsConnection->inputBufferReal, theData) ||
-						stopWatch.hasTimePassed()) {
+						stopWatch.hasTimePassed() || (theData.responseCode == -5 && theData.contentSize == -5)) {
 						doWeBreak = true;
 						break;
 					}
-				}
-				case HttpsState::Error: {
-					theData.responseCode = -1;
-					return theData;
 				}
 			}
 			if (doWeBreak) {
