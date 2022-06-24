@@ -136,7 +136,6 @@ namespace DiscordCoreInternal {
 				dataPackage.selfMute = doWeCollect.selfMute;
 				theShard->userId = doWeCollect.userId;
 				nlohmann::json newData = JSONIFY(dataPackage);
-				std::cout << "WERE COLLECTING VOICE DATA 0101" << std::endl;
 				theStopWatch.resetTimer();
 				this->sendMessage(newData, theShard, true);
 				std::this_thread::sleep_for(500ms);
@@ -147,7 +146,6 @@ namespace DiscordCoreInternal {
 				newData = JSONIFY(dataPackage);
 				theShard->areWeCollectingData = true;
 				this->sendMessage(newData, theShard, true);
-				std::cout << "WERE COLLECTING VOICE DATA 0202" << std::endl;
 				theStopWatch.resetTimer();
 				while (theShard->areWeCollectingData) {
 					if (theStopWatch.hasTimePassed()) {
@@ -155,7 +153,6 @@ namespace DiscordCoreInternal {
 					}
 					std::this_thread::sleep_for(1ms);
 				}
-				std::cout << "WERE COLLECTING VOICE DATA 0303" << std::endl;
 			} catch (...) {
 				if (this->doWePrintErrorMessages) {
 					DiscordCoreAPI::reportException("BaseSocketAgent::getVoiceConnectionData()");
@@ -879,6 +876,7 @@ namespace DiscordCoreInternal {
 								std::this_thread::sleep_for(1500ms);
 								nlohmann::json resumePayload = JSONIFY(this->discordCoreClient->botToken, theShard->sessionId, theShard->lastNumberReceived);
 								this->sendMessage(resumePayload, theShard, true);
+								theShard->theState = WebSocketState::Connected;
 							} else {
 								nlohmann::json identityJson =
 									JSONIFY(this->discordCoreClient->botToken, static_cast<int32_t>(this->discordCoreClient->theIntents), theShard->shard[0], theShard->shard[1]);
@@ -970,7 +968,6 @@ namespace DiscordCoreInternal {
 					this->onClosed(this->theClients[connectData.currentShard].get());
 					return;
 				}
-				std::cout << "WERE CONNECTING 0101" << std::endl;
 				std::string sendString{};
 				if (this->discordCoreClient->theFormat == DiscordCoreAPI::TextFormat::Etf) {
 					sendString = "GET /?v=10&encoding=etf HTTP/1.1\r\nHost: " + this->discordCoreClient->theAddress +
@@ -1003,7 +1000,6 @@ namespace DiscordCoreInternal {
 					}
 					std::this_thread::sleep_for(1ms);
 				}
-				std::cout << "WERE CONNECTING 0202" << std::endl;
 			}
 		} catch (...) {
 			if (this->doWePrintErrorMessages) {
@@ -1388,7 +1384,6 @@ namespace DiscordCoreInternal {
 				DiscordCoreAPI::generateBase64EncodedKey() + "\r\nSec-WebSocket-Version: 13\r\n\r\n";
 			this->theClients[3] = std::move(theClient);
 			this->theClients[3]->writeData(sendVector, true);
-			std::cout << "WERE VOCIE CONNECTING 0101" << std::endl;
 			try {
 				WebSocketSSLShard::processIO(this->theClients);
 			} catch (...) {
@@ -1397,7 +1392,6 @@ namespace DiscordCoreInternal {
 				}
 				return;
 			}
-			std::cout << "WERE VOCIE CONNECTING 0202" << std::endl;
 			int32_t currentDepth{ 0 };
 			while (!this->doWeQuit->load()) {
 				currentDepth++;
@@ -1425,7 +1419,6 @@ namespace DiscordCoreInternal {
 					this->theClients.erase(3);
 				}
 			}
-			std::cout << "WERE VOCIE CONNECTING 0303" << std::endl;
 		} catch (...) {
 			if (this->doWePrintErrorMessages) {
 				DiscordCoreAPI::reportException("VoiceSocketAgent::connect()");
