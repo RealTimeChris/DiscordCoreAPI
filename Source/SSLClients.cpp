@@ -54,7 +54,7 @@ namespace DiscordCoreInternal {
 		return theStream.str();
 	}
 
-	void HttpsSSLClient::initialize() noexcept{
+	void HttpsSSLClient::initialize() {
 		if (HttpsSSLClient::context = SSL_CTX_new(TLS_client_method()); HttpsSSLClient::context == nullptr) {
 			throw ConnectionError{ reportSSLError("HttpsSSLClient::connect()::SSL_CTX_new(), ") };
 		}
@@ -425,7 +425,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void WebSocketSSLShard::initialize() noexcept {
+	void WebSocketSSLShard::initialize() {
 		if (WebSocketSSLShard::context = SSL_CTX_new(TLS_client_method()); WebSocketSSLShard::context == nullptr) {
 			throw ConnectionError{ reportSSLError("HttpsSSLClient::connect()::SSL_CTX_new(), ") };
 		}

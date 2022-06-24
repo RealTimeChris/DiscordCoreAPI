@@ -276,7 +276,7 @@ namespace DiscordCoreInternal {
 	  public:
 		HttpsSSLClient() = default;
 
-		static void initialize() noexcept;
+		static void initialize();
 
 		void connect(const std::string& baseUrl, const std::string& portNew = "443");
 
@@ -319,7 +319,7 @@ namespace DiscordCoreInternal {
 
 		static void processIO(std::unordered_map<int32_t, std::unique_ptr<WebSocketSSLShard>>& theMap, int32_t waitTimeInms = 10000);
 
-		static void initialize() noexcept;
+		static void initialize();
 
 		void connect(const std::string& baseUrlNew, const std::string& portNew);
 
