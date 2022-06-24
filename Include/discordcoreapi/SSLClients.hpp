@@ -276,6 +276,8 @@ namespace DiscordCoreInternal {
 	  public:
 		HttpsSSLClient() = default;
 
+		static void initialize() noexcept;
+
 		void connect(const std::string& baseUrl, const std::string& portNew = "443");
 
 		void processIO(int32_t waitTimeInMs = 10000);
@@ -292,11 +294,12 @@ namespace DiscordCoreInternal {
 
 	  protected:
 
+		static SSL_CTXWrapper context;
+
 		int32_t maxBufferSize{ (1024 * 16) - 1 };
 		std::vector<std::string> outputBuffers{};
 		BIOWrapper connectionBio{ nullptr };
 		SOCKETWrapper theSocket{ nullptr };
-		SSL_CTXWrapper context{ nullptr };
 		int64_t connectionTime{ 0 };
 		std::string inputBuffer{};
 		SSLWrapper ssl{ nullptr };
@@ -316,6 +319,8 @@ namespace DiscordCoreInternal {
 
 		static void processIO(std::unordered_map<int32_t, std::unique_ptr<WebSocketSSLShard>>& theMap, int32_t waitTimeInms = 10000);
 
+		static void initialize() noexcept;
+
 		void connect(const std::string& baseUrlNew, const std::string& portNew);
 
 		void writeData(std::string& data, bool priority) noexcept;
@@ -331,6 +336,8 @@ namespace DiscordCoreInternal {
 		~WebSocketSSLShard() noexcept = default;
 
 	  protected:
+		static SSL_CTXWrapper context;
+
 		std::unordered_map<uint64_t, DiscordCoreAPI::TSUnboundedMessageBlock<VoiceConnectionData>*> voiceConnectionDataBufferMap{};
 		DiscordCoreAPI::StopWatch<std::chrono::milliseconds> heartBeatStopWatch{ 0ms };
 		std::queue<DiscordCoreAPI::ConnectionPackage>* connections{ nullptr };
@@ -348,7 +355,6 @@ namespace DiscordCoreInternal {
 		int32_t currentRecursionDepth{ 0 };
 		SOCKETWrapper theSocket{ nullptr };
 		bool areWeCollectingData{ false };
-		SSL_CTXWrapper context{ nullptr };
 		int32_t maxRecursionDepth{ 10 };
 		bool areWeHeartBeating{ false };
 		int32_t lastNumberReceived{ 0 };

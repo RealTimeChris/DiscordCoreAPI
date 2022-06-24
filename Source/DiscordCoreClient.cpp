@@ -65,6 +65,8 @@ namespace DiscordCoreAPI {
 		std::signal(SIGILL, &signalHandler);
 		std::signal(SIGABRT, &signalHandler);
 		std::signal(SIGFPE, &signalHandler);
+		DiscordCoreInternal::HttpsSSLClient::initialize();
+		DiscordCoreInternal::WebSocketSSLShard::initialize();
 		this->functionsToExecute = configData.functionsToExecute;
 		this->loggingOptions = configData.logOptions;
 		this->theAddress = configData.alternateConnectionAddress;

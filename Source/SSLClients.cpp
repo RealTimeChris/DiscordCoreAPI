@@ -54,6 +54,20 @@ namespace DiscordCoreInternal {
 		return theStream.str();
 	}
 
+	void HttpsSSLClient::initialize() noexcept{
+		if (HttpsSSLClient::context = SSL_CTX_new(TLS_client_method()); HttpsSSLClient::context == nullptr) {
+			throw ConnectionError{ reportSSLError("HttpsSSLClient::connect()::SSL_CTX_new(), ") };
+		}
+
+		if (!SSL_CTX_set_min_proto_version(HttpsSSLClient::context, TLS1_2_VERSION)) {
+			throw ConnectionError{ reportSSLError("HttpsSSLClient::connect()::SSL_CTX_set_min_proto_version(), ") };
+		}
+
+		if (SSL_CTX_set_options(HttpsSSLClient::context, SSL_OP_IGNORE_UNEXPECTED_EOF) != (SSL_CTX_get_options(HttpsSSLClient::context) | SSL_OP_IGNORE_UNEXPECTED_EOF)) {
+			throw ConnectionError{ reportSSLError("HttpsSSLClient::connect()::SSL_CTX_set_options(), ") };
+		}
+	}
+
 	void HttpsSSLClient::connect(const std::string& baseUrl, const std::string& portNew) {
 		std::string stringNew{};
 		if (baseUrl.find(".com") != std::string::npos) {
@@ -98,19 +112,7 @@ namespace DiscordCoreInternal {
 			throw ConnectionError{ reportError("HttpsSSLClient::connect()::connect(), ") };
 		}
 
-		if (this->context = SSL_CTX_new(TLS_client_method()); this->context == nullptr) {
-			throw ConnectionError{ reportSSLError("HttpsSSLClient::connect()::SSL_CTX_new(), ") };
-		}
-
-		if (!SSL_CTX_set_min_proto_version(this->context, TLS1_2_VERSION)) {
-			throw ConnectionError{ reportSSLError("HttpsSSLClient::connect()::SSL_CTX_set_min_proto_version(), ") };
-		}
-
-		if (SSL_CTX_set_options(this->context, SSL_OP_IGNORE_UNEXPECTED_EOF) != (SSL_CTX_get_options(this->context) | SSL_OP_IGNORE_UNEXPECTED_EOF)) {
-			throw ConnectionError{ reportSSLError("HttpsSSLClient::connect()::SSL_CTX_set_options(), ") };
-		}
-
-		if (this->ssl = SSL_new(this->context); this->ssl == nullptr) {
+		if (this->ssl = SSL_new(HttpsSSLClient::context); this->ssl == nullptr) {
 			throw ConnectionError{ reportSSLError("HttpsSSLClient::connect()::SSL_new(), ") };
 		}
 
@@ -423,6 +425,20 @@ namespace DiscordCoreInternal {
 		}
 	}
 
+	void WebSocketSSLShard::initialize() noexcept {
+		if (WebSocketSSLShard::context = SSL_CTX_new(TLS_client_method()); WebSocketSSLShard::context == nullptr) {
+			throw ConnectionError{ reportSSLError("HttpsSSLClient::connect()::SSL_CTX_new(), ") };
+		}
+
+		if (!SSL_CTX_set_min_proto_version(WebSocketSSLShard::context, TLS1_2_VERSION)) {
+			throw ConnectionError{ reportSSLError("HttpsSSLClient::connect()::SSL_CTX_set_min_proto_version(), ") };
+		}
+
+		if (SSL_CTX_set_options(WebSocketSSLShard::context, SSL_OP_IGNORE_UNEXPECTED_EOF) != (SSL_CTX_get_options(WebSocketSSLShard::context) | SSL_OP_IGNORE_UNEXPECTED_EOF)) {
+			throw ConnectionError{ reportSSLError("HttpsSSLClient::connect()::SSL_CTX_set_options(), ") };
+		}
+	}
+
 	void WebSocketSSLShard::connect(const std::string& baseUrlNew, const std::string& portNew) {
 		addrinfoWrapper hints{ nullptr }, address{ nullptr };
 
@@ -458,19 +474,7 @@ namespace DiscordCoreInternal {
 			throw ConnectionError{ reportError("WebSocketSSLShard::connect()::connect(), ") };
 		}
 
-		if (this->context = SSL_CTX_new(TLS_client_method()); this->context == nullptr) {
-			throw ConnectionError{ reportSSLError("WebSocketSSLShard::connect()::SSL_CTX_new(), ") };
-		}
-
-		if (!SSL_CTX_set_min_proto_version(this->context, TLS1_2_VERSION)) {
-			throw ConnectionError{ reportSSLError("WebSocketSSLShard::connect()::SSL_CTX_set_min_proto_version(), ") };
-		}
-
-		if (SSL_CTX_set_options(this->context, SSL_OP_IGNORE_UNEXPECTED_EOF) != (SSL_CTX_get_options(this->context) | SSL_OP_IGNORE_UNEXPECTED_EOF)) {
-			throw ConnectionError{ reportSSLError("WebSocketSSLShard::connect()::SSL_CTX_set_options(), ") };
-		}
-
-		if (this->ssl = SSL_new(this->context); this->ssl == nullptr) {
+		if (this->ssl = SSL_new(WebSocketSSLShard::context); this->ssl == nullptr) {
 			throw ConnectionError{ reportSSLError("WebSocketSSLShard::connect()::SSL_new(), ") };
 		}
 
@@ -672,4 +676,7 @@ namespace DiscordCoreInternal {
 			}
 		}
 	}
+
+	SSL_CTXWrapper WebSocketSSLShard::context{ nullptr };
+	SSL_CTXWrapper HttpsSSLClient::context{ nullptr };
 }
