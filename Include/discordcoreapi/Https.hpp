@@ -36,7 +36,8 @@ namespace DiscordCoreInternal {
 		Collecting_Code = 0,
 		Collecting_Headers = 1,
 		Collecting_Size = 2,
-		Collecting_Contents = 3
+		Collecting_Contents = 3,
+		Error = 4
 	};
 
 	struct DiscordCoreAPI_Dll HttpsResponseData {
