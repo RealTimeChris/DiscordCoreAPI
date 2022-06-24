@@ -355,10 +355,6 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll WebSocketSSLShard : public SSLEntity {
 	  public:
-		friend class DiscordCoreAPI::DiscordCoreClient;
-		friend class DiscordCoreAPI::VoiceConnection;
-		friend class VoiceSocketAgent;
-		friend class BaseSocketAgent;
 
 		WebSocketSSLShard(std::queue<DiscordCoreAPI::ConnectionPackage>* connectionsNew, int32_t currentBaseSocketAgentNew, int32_t currentShardNew,
 			DiscordCoreAPI::ConfigManager* configManagerNew) noexcept;
