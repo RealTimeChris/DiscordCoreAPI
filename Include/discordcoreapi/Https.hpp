@@ -87,12 +87,9 @@ namespace DiscordCoreInternal {
 	};
 
 	struct DiscordCoreAPI_Dll RateLimitData {
-	  public:
 		friend HttpsConnectionManager;
 		friend HttpsRnRBuilder;
 		friend HttpsClient;
-
-		RateLimitData() = default;
 
 	  protected:
 		std::counting_semaphore<1> theSemaphore{ 1 };
@@ -107,7 +104,7 @@ namespace DiscordCoreInternal {
 		std::string bucket{};
 	};
 
-	struct DiscordCoreAPI_Dll HttpsConnection : public HttpsSSLClient, public HttpsRnRBuilder {
+	class DiscordCoreAPI_Dll HttpsConnection : public HttpsSSLClient, public HttpsRnRBuilder {
 	  public:
 		int32_t currentRecursionDepth{ 0 };
 		const int32_t maxRecursion{ 10 };

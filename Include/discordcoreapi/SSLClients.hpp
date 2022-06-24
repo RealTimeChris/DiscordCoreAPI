@@ -222,8 +222,8 @@ namespace DiscordCoreInternal {
 		std::unique_ptr<SSL, SSLDeleter> sslPtr{ nullptr, SSLDeleter{} };
 	};
 
-	struct SOCKETWrapper {
-		struct SOCKETDeleter {
+	struct DiscordCoreAPI_Dll SOCKETWrapper {
+		struct DiscordCoreAPI_Dll SOCKETDeleter {
 			void operator()(SOCKET* other) {
 				if (other) {
 #ifdef _WIN32
