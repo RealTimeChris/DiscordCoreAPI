@@ -113,11 +113,7 @@ namespace DiscordCoreInternal {
 							  << DiscordCoreAPI::reset() << std::endl
 							  << std::endl;
 				}
-				DiscordCoreAPI::ConnectionPackage theData{};
-				theData.currentBaseSocketAgent = theShard->currentBaseSocketAgent;
-				theData.currentShard = theShard->shard[0];
-				theShard->disconnect();
-				this->connections.push(theData);
+				theShard->reconnect();
 			} else if (this->maxReconnectTries <= theShard->currentRecursionDepth) {
 				this->doWeQuit->store(true);
 				this->theTask->request_stop();
