@@ -98,6 +98,7 @@ namespace DiscordCoreInternal {
 	}
 
 	void CoRoutineThreadPool::threadFunction(std::stop_token theToken, int64_t theIndex) {
+		auto theAtomicBoolPtr = &this->workerThreads[theIndex].theCurrentStatus;
 		while (!this->areWeQuitting.load() && !theToken.stop_requested()) {
 			std::unique_lock<std::mutex> theLock01{ this->theMutex01 };
 			while (!this->areWeQuitting.load() && this->theCoroutineHandles.size() == 0) {
@@ -120,12 +121,12 @@ namespace DiscordCoreInternal {
 			auto coroHandle = this->theCoroutineHandles.front();
 			this->theCoroutineHandles.pop();
 			theLock01.unlock();
-			if (this->workerThreads[theIndex].theCurrentStatus) {
-				this->workerThreads[theIndex].theCurrentStatus.store(true);
+			if (theAtomicBoolPtr) {
+				theAtomicBoolPtr->store(true);
 			}
 			coroHandle.resume();
-			if (this->workerThreads[theIndex].theCurrentStatus) {
-				this->workerThreads[theIndex].theCurrentStatus.store(false);
+			if (theAtomicBoolPtr) {
+				theAtomicBoolPtr->store(false);
 			}
 		}
 		this->workerThreads.erase(theIndex);
