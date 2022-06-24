@@ -1853,7 +1853,7 @@ namespace DiscordCoreAPI {
 	  public:
 		std::vector<AuditLogChangeData> changes{};///< Array of audit log change data.
 		OptionalAuditEntryInfoData options{};///< Audit log entry info data.
-		std::string createdTimeStamp{};///< Time at which this entry was created.
+		TimeStamp createdTimeStamp{};///< Time at which this entry was created.
 		AuditLogEvent actionType{};///< Audit log action type.
 		std::string reason{};///< The reason that was entered for the given change.
 		uint64_t targetId{};///< Id of the target User.
