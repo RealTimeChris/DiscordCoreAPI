@@ -49,7 +49,6 @@ namespace DiscordCoreInternal {
 		if (this != &other) {
 			this->theCurrentStatus.store(other.theCurrentStatus.load());
 			this->theThread.swap(other.theThread);
-			this->threadId = other.threadId;
 		}
 		return *this;
 	}
@@ -101,20 +100,17 @@ namespace DiscordCoreInternal {
 	void CoRoutineThreadPool::threadFunction(std::stop_token theToken, int64_t theIndex) {
 		std::unique_lock<std::mutex> theLock00{ this->theMutex01 };
 		auto theAtomicBoolPtr = &this->workerThreads[theIndex].theCurrentStatus;
-		this->workerThreads[theIndex].threadId = std::this_thread::get_id();
 		theLock00.unlock();
 		while (!this->areWeQuitting.load() && !theToken.stop_requested()) {
 			std::unique_lock<std::mutex> theLock01{ this->theMutex01 };
 			while (!this->areWeQuitting.load() && this->theCoroutineHandles.size() == 0) {
 				if (this->currentCount > std::thread::hardware_concurrency()) {
 					for (auto& [key, value]: this->workerThreads) {
-						if (value.theCurrentStatus.load() && std::this_thread::get_id() != value.threadId) {
+						if (value.theCurrentStatus.load() && value.theThread.joinable()) {
 							this->workerThreads[key].theThread.get_stop_source().request_stop();
-							if (value.theThread.joinable()) {
-								value.theThread.detach();
-								this->currentCount--;
-								break;
-							}
+							value.theThread.detach();
+							this->currentCount--;
+							break;
 						}
 					}
 				}
