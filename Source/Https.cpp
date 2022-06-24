@@ -389,66 +389,70 @@ namespace DiscordCoreInternal {
 		Globals::httpsConnection->resetValues();
 		HttpsResponseData theData{};
 		while (true) {
-			try {
-				Globals::httpsConnection->processIO();
-				std::string theString = Globals::httpsConnection->getInputBuffer();
-				if (theString.size() > 0) {
-					Globals::httpsConnection->inputBufferReal.insert(Globals::httpsConnection->inputBufferReal.end(), theString.begin(), theString.end());
+			if (Globals::httpsConnection->areWeStillConnected()) {
+				try {
+					Globals::httpsConnection->processIO();
+					std::string theString = Globals::httpsConnection->getInputBuffer();
+					if (theString.size() > 0) {
+						Globals::httpsConnection->inputBufferReal.insert(Globals::httpsConnection->inputBufferReal.end(), theString.begin(), theString.end());
+					}
+				} catch (ProcessingError&) {
+					if (this->doWePrintHttpsErrorMessages) {
+						DiscordCoreAPI::reportException("HttpsClient::getResponse()");
+					}
+					theData.responseCode = -1;
+					return theData;
 				}
-			} catch (ProcessingError&) {
-				if (this->doWePrintHttpsErrorMessages) {
-					DiscordCoreAPI::reportException("HttpsClient::getResponse()");
+				bool doWeBreak{ false };
+				switch (theData.theCurrentState) {
+					case HttpsState::Collecting_Code: {
+						if (stopWatch.hasTimePassed()) {
+							doWeBreak = true;
+							break;
+						}
+						Globals::httpsConnection->parseCode(Globals::httpsConnection->inputBufferReal, theData);
+						break;
+					}
+					case HttpsState::Collecting_Headers: {
+						if (stopWatch.hasTimePassed()) {
+							doWeBreak = true;
+							break;
+						}
+						if (Globals::httpsConnection->checkForHeadersToParse(Globals::httpsConnection->inputBufferReal) && !Globals::httpsConnection->doWeHaveHeaders) {
+							Globals::httpsConnection->parseHeaders(Globals::httpsConnection->inputBufferReal, theData);
+							stopWatch.resetTimer();
+						}
+						break;
+					}
+					case HttpsState::Collecting_Size: {
+						if (stopWatch.hasTimePassed()) {
+							doWeBreak = true;
+							break;
+						}
+						if (!Globals::httpsConnection->doWeHaveContentSize) {
+							Globals::httpsConnection->clearCRLF(Globals::httpsConnection->inputBufferReal);
+							Globals::httpsConnection->parseSize(Globals::httpsConnection->inputBufferReal, theData);
+							Globals::httpsConnection->clearCRLF(Globals::httpsConnection->inputBufferReal);
+							stopWatch.resetTimer();
+						}
+						break;
+					}
+					case HttpsState::Collecting_Contents: {
+						if (static_cast<int64_t>(Globals::httpsConnection->inputBufferReal.size()) >= theData.contentSize &&
+								!Globals::httpsConnection->parseChunk(Globals::httpsConnection->inputBufferReal, theData) ||
+							stopWatch.hasTimePassed() || (theData.responseCode == -5 && theData.contentSize == -5)) {
+							doWeBreak = true;
+							break;
+						}
+					}
 				}
+				if (doWeBreak) {
+					break;
+				}
+			} else {
 				theData.responseCode = -1;
 				return theData;
 			}
-			bool doWeBreak{ false };
-			switch (theData.theCurrentState) {
-				case HttpsState::Collecting_Code: {
-					if (stopWatch.hasTimePassed()) {
-						doWeBreak = true;
-						break;
-					}
-					Globals::httpsConnection->parseCode(Globals::httpsConnection->inputBufferReal, theData);
-					break;
-				}
-				case HttpsState::Collecting_Headers: {
-					if (stopWatch.hasTimePassed()) {
-						doWeBreak = true;
-						break;
-					}
-					if (Globals::httpsConnection->checkForHeadersToParse(Globals::httpsConnection->inputBufferReal) && !Globals::httpsConnection->doWeHaveHeaders) {
-						Globals::httpsConnection->parseHeaders(Globals::httpsConnection->inputBufferReal, theData);
-						stopWatch.resetTimer();
-					}
-					break;
-				} 
-				case HttpsState::Collecting_Size: {
-					if (stopWatch.hasTimePassed()) {
-						doWeBreak = true;
-						break;
-					}
-					if (!Globals::httpsConnection->doWeHaveContentSize) {
-						Globals::httpsConnection->clearCRLF(Globals::httpsConnection->inputBufferReal);
-						Globals::httpsConnection->parseSize(Globals::httpsConnection->inputBufferReal, theData);
-						Globals::httpsConnection->clearCRLF(Globals::httpsConnection->inputBufferReal);
-						stopWatch.resetTimer();
-					}
-					break;
-				}
-				case HttpsState::Collecting_Contents: {
-					if (static_cast<int64_t>(Globals::httpsConnection->inputBufferReal.size()) >= theData.contentSize && !Globals::httpsConnection->parseChunk(Globals::httpsConnection->inputBufferReal, theData) ||
-						stopWatch.hasTimePassed() || (theData.responseCode == -5 && theData.contentSize == -5)) {
-						doWeBreak = true;
-						break;
-					}
-				}
-			}
-			if (doWeBreak) {
-				break;
-			}
-			
-			
 		};
 		return Globals::httpsConnection->finalizeReturnValues(rateLimitData, theData);
 	}
