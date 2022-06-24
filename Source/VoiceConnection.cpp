@@ -144,7 +144,6 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::reconnect() {
-		this->doWeReconnect->store(false);
 		this->connect(this->voiceConnectInitData);
 		this->play();
 	}

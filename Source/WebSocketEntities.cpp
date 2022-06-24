@@ -1163,9 +1163,9 @@ namespace DiscordCoreInternal {
 	}
 
 	void VoiceSocketAgent::onClosed() noexcept {
-		if (this->theClients.contains(3) && this->theClients[3] && !this->doWeReconnect.load()) {
-			this->areWeConnected.store(false);
+		if (this->theClients.contains(3) && this->theClients[3] && !this->doWeReconnect.load() && this->areWeConnected.load()) {
 			this->doWeReconnect.store(true);
+			this->areWeConnected.store(false);
 			if (this->doWePrintErrorMessages) {
 				std::cout << DiscordCoreAPI::shiftToBrightRed()
 						  << "Voice WebSocket " + this->theClients[3]->shard.dump() + " Closed; Code: " << +static_cast<uint16_t>(this->theClients[3]->closeCode)
