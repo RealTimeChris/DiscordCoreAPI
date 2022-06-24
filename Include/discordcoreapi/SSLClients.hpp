@@ -274,7 +274,7 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll HttpsSSLClient {
 	  public:
-		HttpsSSLClient() = default;
+		HttpsSSLClient() noexcept = default;
 
 		static void initialize();
 
