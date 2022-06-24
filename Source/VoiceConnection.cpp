@@ -158,6 +158,12 @@ namespace DiscordCoreAPI {
 			this->pauseEvent.set();
 			StopWatch theStopWatch{ 10000ms };
 			if (this->voiceSocketAgent) {
+				if (this->voiceSocketAgent->theTask) {
+					this->voiceSocketAgent->theTask->get_stop_source().request_stop();
+					if (this->voiceSocketAgent->theTask->joinable()) {
+						this->voiceSocketAgent->theTask->join();
+					}
+				}
 				this->voiceSocketAgent.reset(nullptr);
 			}
 			if (this->baseSocketAgent && this->baseSocketAgent->theClients[voiceConnectInitDataNew.currentShard]) {
