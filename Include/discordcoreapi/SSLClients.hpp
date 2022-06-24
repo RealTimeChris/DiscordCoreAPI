@@ -392,6 +392,7 @@ namespace DiscordCoreInternal {
 	  protected:
 		const int32_t maxBufferSize{ 1024 * 16 };
 		SOCKETWrapper theSocket{ nullptr };
+		std::string outputBuffer{};
 		std::string inputBuffer{};
 		int64_t bytesRead{ 0 };
 	};

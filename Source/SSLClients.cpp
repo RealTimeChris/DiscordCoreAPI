@@ -594,8 +594,30 @@ namespace DiscordCoreInternal {
 	}
 
 	void DatagramSocketSSLClient::writeData(const std::string& dataToWrite) {
-		if (send(this->theSocket, dataToWrite.data(), static_cast<int32_t>(dataToWrite.size()), 0) <= 0) {
-			throw ProcessingError{ reportError("DatagramSocketSSLClient::writeData(), ") };
+		this->outputBuffer.insert(this->outputBuffer.end(), dataToWrite.begin(), dataToWrite.end());
+
+		fd_set writeSet{};
+		int32_t writeNfds{ 0 };
+		FD_ZERO(&writeSet);
+		int32_t bytesToWrite = this->outputBuffer.size() > this->maxBufferSize ? this->maxBufferSize : this->outputBuffer.size();
+		FD_SET(this->theSocket, &writeSet);
+		writeNfds = this->theSocket > writeNfds ? this->theSocket : writeNfds;
+
+		timeval checkTime{ .tv_usec = 1000 };
+		if (auto returnValue = select(writeNfds + 1, nullptr, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
+			throw ProcessingError{ reportError("DatagramSocketSSLClient::writeData()::select(), ") };
+		} else if (returnValue == 0) {
+			return;
+		}
+
+		if (FD_ISSET(this->theSocket, &writeSet)) {
+			auto writtenBytes{ send(this->theSocket, this->outputBuffer.data(), bytesToWrite, 0) };
+			if (writtenBytes > 0) {
+				this->outputBuffer.erase(this->outputBuffer.begin(), this->outputBuffer.begin() + writtenBytes);
+				return;
+			} else {
+				throw ProcessingError{ reportError("DatagramSocketSSLClient::writeData()::send(), ") };
+			}
 		}
 	}
 
