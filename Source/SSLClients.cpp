@@ -56,15 +56,15 @@ namespace DiscordCoreInternal {
 
 	void HttpsSSLClient::initialize() {
 		if (HttpsSSLClient::context = SSL_CTX_new(TLS_client_method()); HttpsSSLClient::context == nullptr) {
-			throw ConnectionError{ reportSSLError("HttpsSSLClient::connect()::SSL_CTX_new(), ") };
+			throw ConnectionError{ reportSSLError("HttpsSSLClient::initialize()::SSL_CTX_new(), ") };
 		}
 
 		if (!SSL_CTX_set_min_proto_version(HttpsSSLClient::context, TLS1_2_VERSION)) {
-			throw ConnectionError{ reportSSLError("HttpsSSLClient::connect()::SSL_CTX_set_min_proto_version(), ") };
+			throw ConnectionError{ reportSSLError("HttpsSSLClient::initialize()::SSL_CTX_set_min_proto_version(), ") };
 		}
 
 		if (SSL_CTX_set_options(HttpsSSLClient::context, SSL_OP_IGNORE_UNEXPECTED_EOF) != (SSL_CTX_get_options(HttpsSSLClient::context) | SSL_OP_IGNORE_UNEXPECTED_EOF)) {
-			throw ConnectionError{ reportSSLError("HttpsSSLClient::connect()::SSL_CTX_set_options(), ") };
+			throw ConnectionError{ reportSSLError("HttpsSSLClient::initialize()::SSL_CTX_set_options(), ") };
 		}
 	}
 
@@ -427,15 +427,15 @@ namespace DiscordCoreInternal {
 
 	void WebSocketSSLShard::initialize() {
 		if (WebSocketSSLShard::context = SSL_CTX_new(TLS_client_method()); WebSocketSSLShard::context == nullptr) {
-			throw ConnectionError{ reportSSLError("HttpsSSLClient::connect()::SSL_CTX_new(), ") };
+			throw ConnectionError{ reportSSLError("WebSocketSSLShard::initialize()::SSL_CTX_new(), ") };
 		}
 
 		if (!SSL_CTX_set_min_proto_version(WebSocketSSLShard::context, TLS1_2_VERSION)) {
-			throw ConnectionError{ reportSSLError("HttpsSSLClient::connect()::SSL_CTX_set_min_proto_version(), ") };
+			throw ConnectionError{ reportSSLError("WebSocketSSLShard::initialize()::SSL_CTX_set_min_proto_version(), ") };
 		}
 
 		if (SSL_CTX_set_options(WebSocketSSLShard::context, SSL_OP_IGNORE_UNEXPECTED_EOF) != (SSL_CTX_get_options(WebSocketSSLShard::context) | SSL_OP_IGNORE_UNEXPECTED_EOF)) {
-			throw ConnectionError{ reportSSLError("HttpsSSLClient::connect()::SSL_CTX_set_options(), ") };
+			throw ConnectionError{ reportSSLError("WebSocketSSLShard::initialize()::SSL_CTX_set_options(), ") };
 		}
 	}
 
