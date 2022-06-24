@@ -433,10 +433,10 @@ namespace DiscordCoreInternal {
 			throw ConnectionError{ reportError("WebSocketSSLShard::connect()::setsockopt(), ") };
 		}
 #else
-			int32_t optionValue{ 1 };
-			if (auto returnValue = setsockopt(this->theSocket, SOL_TCP, TCP_NODELAY, &optionValue, sizeof(optionValue)); returnValue == SOCKET_ERROR) {
-				throw ConnectionError{ reportError("WebSocketSSLShard::connect()::setsockopt(), ") };
-			}
+		int32_t optionValue{ 1 };
+		if (auto returnValue = setsockopt(this->theSocket, SOL_TCP, TCP_NODELAY, &optionValue, sizeof(optionValue)); returnValue == SOCKET_ERROR) {
+			throw ConnectionError{ reportError("WebSocketSSLShard::connect()::setsockopt(), ") };
+		}
 #endif
 		if (auto returnValue = ::connect(this->theSocket, address->ai_addr, static_cast<int32_t>(address->ai_addrlen)); returnValue == SOCKET_ERROR) {
 			throw ConnectionError{ reportError("WebSocketSSLShard::connect()::connect(), ") };
