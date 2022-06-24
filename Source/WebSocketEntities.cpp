@@ -1264,18 +1264,18 @@ namespace DiscordCoreInternal {
 		try {
 			this->connect();
 			while (!theToken.stop_requested() && !this->doWeQuit->load() && !this->doWeReconnect.load()) {
-				if (this->heartbeatInterval != 0 && !this->theClients[3]->areWeHeartBeating) {
+				if (this->heartbeatInterval != 0 && !this->doWeReconnect.load() && !this->theClients[3]->areWeHeartBeating) {
 					this->theClients[3]->areWeHeartBeating = true;
 					this->theClients[3]->heartBeatStopWatch = DiscordCoreAPI::StopWatch{ std::chrono::milliseconds{ this->heartbeatInterval } };
 				}
-				if (!theToken.stop_requested() && this->theClients.contains(3) && this->theClients[3]->heartBeatStopWatch.hasTimePassed() &&
-					this->theClients[3]->areWeHeartBeating && !this->doWeReconnect.load()) {
+				if (!theToken.stop_requested() && !this->doWeReconnect.load() && this->theClients.contains(3) && this->theClients[3]->heartBeatStopWatch.hasTimePassed() &&
+					this->theClients[3]->areWeHeartBeating ) {
 					this->theClients[3]->heartBeatStopWatch.resetTimer();
 					this->sendHeartBeat();
 				}
 				try {
-					if (!theToken.stop_requested() && this->theClients.contains(3) && this->theClients[3]->areWeStillConnected() && !this->doWeQuit->load() &&
-						!this->doWeReconnect.load()) {
+					if (!theToken.stop_requested() && !this->doWeReconnect.load() && this->theClients.contains(3) && this->theClients[3]->areWeStillConnected() &&
+						!this->doWeQuit->load()) {
 						WebSocketSSLShard::processIO(this->theClients, 1000);
 					}
 				} catch (...) {
@@ -1284,7 +1284,7 @@ namespace DiscordCoreInternal {
 					}
 					this->doWeReconnect.store(true);
 				}
-				if (!theToken.stop_requested() && this->theClients.contains(3) && this->theClients[3] && !this->doWeQuit->load() && !this->doWeReconnect.load()) {
+				if (!theToken.stop_requested() && !this->doWeReconnect.load() && this->theClients.contains(3) && this->theClients[3] && !this->doWeQuit->load()) {
 					this->parseHeadersAndMessage(this->theClients[3].get());
 					if (this->theClients.contains(3) && this->theClients[3] && this->theClients[3]->processedMessages.size() > 0) {
 						std::string theMessage = this->theClients[3]->processedMessages.front();
@@ -1294,7 +1294,7 @@ namespace DiscordCoreInternal {
 						this->theClients[3]->processedMessages.pop();
 					}
 				}
-				if (this->voiceSocket) {
+				if (!theToken.stop_requested() && !this->doWeReconnect.load() && this->voiceSocket) {
 					this->voiceSocket->processIO();
 					this->voiceSocket->getInputBuffer().clear();
 				}
