@@ -81,14 +81,14 @@ namespace DiscordCoreAPI {
 	}
 
 	VoiceConnection* Guild::connectToVoice(const uint64_t guildMemberId, const uint64_t channelId, bool selfDeaf, bool selfMute) {
-		if (getVoiceConnectionMap()[this->id] && getVoiceConnectionMap()[this->id]->areWeConnected()) {
+		if (getVoiceConnectionMap().contains(this->id) && getVoiceConnectionMap()[this->id] && getVoiceConnectionMap()[this->id]->areWeConnected()) {
 			this->voiceConnectionPtr = getVoiceConnectionMap()[this->id].get();
 			return this->voiceConnectionPtr;
 		} else if (guildMemberId != 0 || channelId != 0) {
 			uint64_t theChannelId{};
 			if (guildMemberId != 0) {
 				if (this->voiceStates.contains(guildMemberId)) {
-					theChannelId = this->voiceStates.at(guildMemberId).channelId;
+					theChannelId = this->voiceStates[guildMemberId].channelId;
 				}
 			} else {
 				theChannelId = channelId;
