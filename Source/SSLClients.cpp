@@ -297,7 +297,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void HttpsSSLClient::reconnect() noexcept {
+	void HttpsSSLClient::disconnect() noexcept {
 		return;
 	}
 
@@ -320,7 +320,7 @@ namespace DiscordCoreInternal {
 		}
 	};
 
-	void WebSocketSSLShard::processIO(std::unordered_map<SOCKET, std::unique_ptr<SSLEntity>>& theMap, int32_t waitTimeInms) {
+	void WebSocketSSLShard::processIO(std::unordered_map<SOCKET, std::unique_ptr<WebSocketSSLShard>>& theMap, int32_t waitTimeInms) {
 		int32_t readNfds{ 0 }, writeNfds{ 0 }, finalNfds{ 0 };
 		fd_set readSet{}, writeSet{};
 		FD_ZERO(&readSet);
@@ -384,7 +384,7 @@ namespace DiscordCoreInternal {
 						[[fallthrough]];
 					}
 					default: {
-						value->reconnect();
+						value->disconnect();
 						throw ProcessingError{ reportSSLError("Shard [" + std::to_string(key) + "], in WebSocketSSLShard::processIO()::SSL_read_ex(), ", errorValue, value->ssl) +
 							reportError("Shard [" + std::to_string(key) + "], in WebSocketSSLShard::processIO()::SSL_read_ex(), ") };
 					}
@@ -423,7 +423,7 @@ namespace DiscordCoreInternal {
 							[[fallthrough]];
 						}
 						default: {
-							value->reconnect();
+							value->disconnect();
 							throw ProcessingError{ reportSSLError("Shard [" + std::to_string(key) + "], in WebSocketSSLShard::processIO()::SSL_write_ex(), ", errorValue,
 													   value->ssl) +
 								reportError("Shard [" + std::to_string(key) + "], in WebSocketSSLShard::processIO()::SSL_write_ex(), ") };
@@ -434,17 +434,18 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void WebSocketSSLShard::initialize() {
-		if (WebSocketSSLShard::context = SSL_CTX_new(TLS_client_method()); WebSocketSSLShard::context == nullptr) {
-			throw ConnectionError{ reportSSLError("WebSocketSSLShard::initialize()::SSL_CTX_new(), ") };
+	void SSLConnectionInterface::initialize() {
+		if (SSLConnectionInterface::context = SSL_CTX_new(TLS_client_method()); SSLConnectionInterface::context == nullptr) {
+			throw ConnectionError{ reportSSLError("SSLConnectionInterface::initialize()::SSL_CTX_new(), ") };
 		}
 
-		if (!SSL_CTX_set_min_proto_version(WebSocketSSLShard::context, TLS1_2_VERSION)) {
-			throw ConnectionError{ reportSSLError("WebSocketSSLShard::initialize()::SSL_CTX_set_min_proto_version(), ") };
+		if (!SSL_CTX_set_min_proto_version(SSLConnectionInterface::context, TLS1_2_VERSION)) {
+			throw ConnectionError{ reportSSLError("SSLConnectionInterface::initialize()::SSL_CTX_set_min_proto_version(), ") };
 		}
 
-		if (SSL_CTX_set_options(WebSocketSSLShard::context, SSL_OP_IGNORE_UNEXPECTED_EOF) != (SSL_CTX_get_options(WebSocketSSLShard::context) | SSL_OP_IGNORE_UNEXPECTED_EOF)) {
-			throw ConnectionError{ reportSSLError("WebSocketSSLShard::initialize()::SSL_CTX_set_options(), ") };
+		if (SSL_CTX_set_options(SSLConnectionInterface::context, SSL_OP_IGNORE_UNEXPECTED_EOF) !=
+			(SSL_CTX_get_options(SSLConnectionInterface::context) | SSL_OP_IGNORE_UNEXPECTED_EOF)) {
+			throw ConnectionError{ reportSSLError("SSLConnectionInterface::initialize()::SSL_CTX_set_options(), ") };
 		}
 	}
 
@@ -530,7 +531,7 @@ namespace DiscordCoreInternal {
 						[[fallthrough]];
 					}
 					default: {
-						this->reconnect();
+						this->disconnect();
 					}
 				}
 			}
@@ -586,7 +587,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void WebSocketSSLShard::reconnect() noexcept {
+	void WebSocketSSLShard::disconnect() noexcept {
 		if (this->areWeConnected01.load()) {
 			this->areWeConnected01.store(false);
 			this->areWeConnected02.store(false);
@@ -701,6 +702,5 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	SSL_CTXWrapper WebSocketSSLShard::context{ nullptr };
-	SSL_CTXWrapper HttpsSSLClient::context{ nullptr };
+	SSL_CTXWrapper SSLConnectionInterface::context{ nullptr };
 }

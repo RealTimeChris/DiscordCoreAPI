@@ -266,16 +266,11 @@ namespace DiscordCoreInternal {
 		std::unique_ptr<int32_t, SOCKETDeleter> socketPtr{ new SOCKET{ static_cast<int32_t>(SOCKET_ERROR) }, SOCKETDeleter{} };
 	};
 
-	class DiscordCoreAPI_Dll SSLEntity {
+	class DiscordCoreAPI_Dll SSLDataInterface {
 	  public:
-		friend class DiscordCoreAPI::VoiceConnection;
-		friend class WebSocketSSLShard;
-		friend class VoiceSocketAgent;
-		friend class BaseSocketAgent;
+		SSLDataInterface() = default;
 
-		virtual void writeData(const std::string& data, bool priority = false) = 0;
-
-		virtual void connect(const std::string& baseUrl) = 0;
+		virtual void writeData(const std::string& data, bool priority = false) noexcept = 0;
 
 		virtual std::string getInputBuffer() noexcept = 0;
 
@@ -283,27 +278,77 @@ namespace DiscordCoreInternal {
 
 		virtual int64_t getBytesRead() noexcept = 0;
 
-		virtual void reconnect() noexcept = 0;
+		virtual ~SSLDataInterface() = default;
 
-		virtual ~SSLEntity() noexcept = default;
+	  protected:
+		int32_t maxBufferSize{ (1024 * 16) - 1 };
+		std::vector<std::string> outputBuffers{};
+		std::string inputBuffer{};
+		bool wantWrite{ true };
+		bool wantRead{ false };
+		int64_t bytesRead{ 0 };
+	};
+
+	class DiscordCoreAPI_Dll SSLConnectionInterface {
+	  public:
+		SSLConnectionInterface() = default;
+
+		static void initialize();
+
+		virtual void connect(const std::string&) = 0;
+
+		virtual void disconnect() noexcept = 0;
+
+		virtual ~SSLConnectionInterface() = default;
+
+	  protected:
+
+		static SSL_CTXWrapper context;
+
+		std::queue<DiscordCoreAPI::ConnectionPackage>* connections{ nullptr };
+		std::atomic_bool areWeConnected02{ false };
+		std::atomic_bool areWeConnected01{ false };
+		SOCKETWrapper theSocket{ nullptr };
+		SSLWrapper ssl{ nullptr };
+	};
+
+	class DiscordCoreAPI_Dll WebSocketSSLShard : public SSLConnectionInterface, public SSLDataInterface {
+	  public:
+		friend class DiscordCoreAPI::VoiceConnection;
+		friend class WebSocketSSLShard;
+		friend class VoiceSocketAgent;
+		friend class BaseSocketAgent;
+
+		WebSocketSSLShard(std::queue<DiscordCoreAPI::ConnectionPackage>* connectionsNew, int32_t currentBaseSocketAgentNew, int32_t currentShardNew,
+			DiscordCoreAPI::ConfigManager* configManagerNew) noexcept;
+
+		static void processIO(std::unordered_map<int32_t, std::unique_ptr<WebSocketSSLShard>>& theMap, int32_t waitTimeInms = 10000);
+
+		void writeData(const std::string& data, bool priority = false) noexcept;
+
+		void connect(const std::string& baseUrl);
+
+		std::string getInputBuffer() noexcept;
+
+		bool areWeStillConnected() noexcept;
+
+		int64_t getBytesRead() noexcept;
+
+		void disconnect() noexcept;
+
+		~WebSocketSSLShard() noexcept = default;
 
 	  protected:
 		std::unordered_map<uint64_t, DiscordCoreAPI::TSUnboundedMessageBlock<VoiceConnectionData>*> voiceConnectionDataBufferMap{};
 		DiscordCoreAPI::StopWatch<std::chrono::milliseconds> heartBeatStopWatch{ 0ms };
-		std::queue<DiscordCoreAPI::ConnectionPackage>* connections{ nullptr };
 		WebSocketState theState{ WebSocketState::Connecting01 };
 		std::queue<std::string> processedMessages{};
-		std::atomic_bool areWeConnected02{ false };
-		std::atomic_bool areWeConnected01{ false };
 		VoiceConnectionData voiceConnectionData{};
-		int32_t maxBufferSize{ (1024 * 16) - 1 };
-		std::vector<std::string> outputBuffers{};
 		bool haveWeReceivedHeartbeatAck{ true };
 		bool serverUpdateCollected{ false };
 		int32_t currentBaseSocketAgent{ 0 };
 		bool stateUpdateCollected{ false };
 		int32_t currentRecursionDepth{ 0 };
-		SOCKETWrapper theSocket{ nullptr };
 		bool areWeCollectingData{ false };
 		int32_t maxRecursionDepth{ 10 };
 		bool areWeHeartBeating{ false };
@@ -312,19 +357,15 @@ namespace DiscordCoreInternal {
 		WebSocketOpCode dataOpCode{};
 		bool areWeResuming{ false };
 		std::mutex accessorMutex{};
-		SSLWrapper ssl{ nullptr };
-		std::string inputBuffer{};
 		int64_t messageLength{};
 		int64_t messageOffset{};
 		std::string sessionId{};
 		nlohmann::json shard{};
-		bool wantWrite{ true };
-		bool wantRead{ false };
-		int64_t bytesRead{ 0 };
 		uint64_t userId{ 0 };
+
 	};
 
-	class DiscordCoreAPI_Dll HttpsSSLClient : public SSLEntity {
+	class DiscordCoreAPI_Dll HttpsSSLClient : public SSLConnectionInterface, public SSLDataInterface {
 	  public:
 		HttpsSSLClient() noexcept = default;
 
@@ -342,43 +383,13 @@ namespace DiscordCoreInternal {
 
 		int64_t getBytesRead() noexcept;
 
-		void reconnect() noexcept;
+		void disconnect() noexcept;
 
 		~HttpsSSLClient() noexcept = default;
 
 	  protected:
 
-		static SSL_CTXWrapper context;
-
 		int64_t connectionTime{ 0 };
-	};
-
-	class DiscordCoreAPI_Dll WebSocketSSLShard : public SSLEntity {
-	  public:
-
-		WebSocketSSLShard(std::queue<DiscordCoreAPI::ConnectionPackage>* connectionsNew, int32_t currentBaseSocketAgentNew, int32_t currentShardNew,
-			DiscordCoreAPI::ConfigManager* configManagerNew) noexcept;
-
-		static void processIO(std::unordered_map<int32_t, std::unique_ptr<SSLEntity>>& theMap, int32_t waitTimeInms = 10000);
-
-		static void initialize();
-		
-		void writeData(const std::string& data, bool priority = false) noexcept;
-
-		void connect(const std::string& baseUrl);
-
-		std::string getInputBuffer() noexcept;
-
-		bool areWeStillConnected() noexcept;
-
-		int64_t getBytesRead() noexcept;
-
-		void reconnect() noexcept;
-
-		~WebSocketSSLShard() noexcept = default;
-
-	  protected:
-		static SSL_CTXWrapper context;
 	};
 
 	class DiscordCoreAPI_Dll DatagramSocketSSLClient {

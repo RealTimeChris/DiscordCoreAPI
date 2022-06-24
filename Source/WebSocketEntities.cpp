@@ -45,7 +45,7 @@ namespace DiscordCoreInternal {
 		});
 	}
 
-	void BaseSocketAgent::sendMessage(const nlohmann::json& dataToSend, SSLEntity* theShard, bool priority) noexcept {
+	void BaseSocketAgent::sendMessage(const nlohmann::json& dataToSend, WebSocketSSLShard* theShard, bool priority) noexcept {
 		if (theShard && theShard->areWeConnected01.load()) {
 			try {
 				DiscordCoreAPI::StopWatch stopWatch{ 5500ms };
@@ -72,7 +72,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void BaseSocketAgent::sendMessage(std::string& dataToSend, SSLEntity* theShard, bool priority) noexcept {
+	void BaseSocketAgent::sendMessage(std::string& dataToSend, WebSocketSSLShard* theShard, bool priority) noexcept {
 		if (theShard && theShard->areWeConnected01.load()) {
 			try {
 				if (this->configManager->doWePrintWebSocketSuccessMessages()) {
@@ -103,7 +103,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void BaseSocketAgent::onClosed(SSLEntity* theShard) noexcept {
+	void BaseSocketAgent::onClosed(WebSocketSSLShard* theShard) noexcept {
 		if (theShard && this->theClients.contains(theShard->shard[0])) {
 			if (this->maxReconnectTries > theShard->currentRecursionDepth) {
 				if (this->configManager->doWePrintWebSocketErrorMessages()) {
@@ -111,7 +111,7 @@ namespace DiscordCoreInternal {
 							  << DiscordCoreAPI::reset() << std::endl
 							  << std::endl;
 				}
-				theShard->reconnect();
+				theShard->disconnect();
 			} else if (this->maxReconnectTries <= theShard->currentRecursionDepth) {
 				this->doWeQuit->store(true);
 				this->theTask->request_stop();
@@ -123,7 +123,7 @@ namespace DiscordCoreInternal {
 		return this->theTask.get();
 	}
 
-	void BaseSocketAgent::getVoiceConnectionData(const VoiceConnectInitData& doWeCollect, SSLEntity* theShard) noexcept {
+	void BaseSocketAgent::getVoiceConnectionData(const VoiceConnectInitData& doWeCollect, WebSocketSSLShard* theShard) noexcept {
 		if (theShard && theShard->areWeConnected02.load()) {
 			try {
 				DiscordCoreAPI::StopWatch<std::chrono::milliseconds> theStopWatch{ 5000ms };
@@ -206,7 +206,7 @@ namespace DiscordCoreInternal {
 		theString = theVectorNew;
 	}
 
-	void BaseSocketAgent::parseHeadersAndMessage(SSLEntity* theShard) noexcept {
+	void BaseSocketAgent::parseHeadersAndMessage(WebSocketSSLShard* theShard) noexcept {
 		if (theShard && theShard->areWeConnected01.load()) {
 			if (theShard->theState == WebSocketState::Connecting01) {
 				std::string newVector = theShard->getInputBuffer();
@@ -285,7 +285,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void BaseSocketAgent::checkForAndSendHeartBeat(SSLEntity* theShard, bool isImmediate) noexcept {
+	void BaseSocketAgent::checkForAndSendHeartBeat(WebSocketSSLShard* theShard, bool isImmediate) noexcept {
 		if (theShard && theShard->areWeConnected02.load()) {
 			try {
 				if (theShard->heartBeatStopWatch.hasTimePassed() && theShard->haveWeReceivedHeartbeatAck || isImmediate) {
@@ -303,7 +303,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void BaseSocketAgent::onMessageReceived(SSLEntity* theShard) noexcept {
+	void BaseSocketAgent::onMessageReceived(WebSocketSSLShard* theShard) noexcept {
 		if (theShard && theShard->areWeConnected01.load()) {
 			try {
 				std::string messageNew{};
@@ -1012,7 +1012,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	VoiceSocketAgent::VoiceSocketAgent(VoiceConnectInitData initDataNew, BaseSocketAgent* baseBaseSocketAgentNew, SSLEntity* theShard,
+	VoiceSocketAgent::VoiceSocketAgent(VoiceConnectInitData initDataNew, BaseSocketAgent* baseBaseSocketAgentNew, WebSocketSSLShard* theShard,
 		DiscordCoreAPI::ConfigManager* configManagerNew, std::atomic_bool* doWeQuitNew) noexcept {
 		theShard->voiceConnectionDataBufferMap[initDataNew.guildId] = &this->voiceConnectionDataBuffer;
 		this->voiceConnectInitData = initDataNew;
@@ -1025,7 +1025,7 @@ namespace DiscordCoreInternal {
 		baseBaseSocketAgentNew->getVoiceConnectionData(initDataNew, theShard);
 	}
 
-	void VoiceSocketAgent::parseHeadersAndMessage(SSLEntity* theShard) noexcept {
+	void VoiceSocketAgent::parseHeadersAndMessage(WebSocketSSLShard* theShard) noexcept {
 		if (theShard) {
 			if (theShard->theState == WebSocketState::Connecting01) {
 				std::string newVector = theShard->getInputBuffer();
