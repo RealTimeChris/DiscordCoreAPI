@@ -170,7 +170,9 @@ namespace DiscordCoreAPI {
 			return false;
 		}
 		this->shardingOptions.numberOfShardsForThisProcess = this->shardingOptions.totalNumberOfShards;
-		auto baseSocketAgentCount = static_cast<int32_t>((std::thread::hardware_concurrency()));
+		auto baseSocketAgentCount = static_cast<int32_t>(std::thread::hardware_concurrency()) > this->shardingOptions.totalNumberOfShards
+			? this->shardingOptions.totalNumberOfShards
+			: static_cast<int32_t>(std::thread::hardware_concurrency());
 		int32_t shardsPerBaseSocketAgent{ static_cast<int32_t>(floor(static_cast<float>(this->shardingOptions.totalNumberOfShards) / static_cast<float>(baseSocketAgentCount))) };
 		int32_t leftOverShards{ this->shardingOptions.totalNumberOfShards - (shardsPerBaseSocketAgent * baseSocketAgentCount) };
 
