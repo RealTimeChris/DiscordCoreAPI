@@ -4973,8 +4973,7 @@ namespace DiscordCoreInternal {
 		}
 
 		if (jsonObjectData.contains("duration") && !jsonObjectData["duration"].is_null()) {
-			int32_t durationNew = jsonObjectData["duration"].get<int32_t>();
-			pDataStructure.duration = DiscordCoreAPI::convertMsToDurationString(durationNew);
+			pDataStructure.duration = DiscordCoreAPI::TimeStamp::convertMsToDurationString(jsonObjectData["duration"].get<int32_t>());
 		}
 
 		if (jsonObjectData.contains("permalink_url") && !jsonObjectData["permalink_url"].is_null()) {

@@ -542,102 +542,6 @@ namespace DiscordCoreAPI {
 
 	/**@}*/
 
-	class DiscordCoreAPI_Dll Time {
-	  public:
-		Time(int32_t year, int32_t month, int32_t day, int32_t hour, int32_t minute, int32_t second) {
-			this->second = second;
-			this->minute = minute;
-			this->month = month;
-			this->year = year;
-			this->hour = hour;
-			this->day = day;
-		};
-
-		int64_t getTime() {
-			int64_t theValue{};
-			for (int32_t x = 1970; x < this->year; x++) {
-				theValue += this->secondsInJan;
-				theValue += this->secondsInFeb;
-				theValue += this->secondsInMar;
-				theValue += this->secondsInApr;
-				theValue += this->secondsInMay;
-				theValue += this->secondsInJun;
-				theValue += this->secondsInJul;
-				theValue += this->secondsInAug;
-				theValue += this->secondsInSep;
-				theValue += this->secondsInOct;
-				theValue += this->secondsInNov;
-				theValue += this->secondsInDec;
-				if (x % 4 == 0) {
-					theValue += this->secondsPerDay;
-				}
-			}
-			if (this->month > 0) {
-				theValue += static_cast<int64_t>((this->day - 1) * this->secondsPerDay);
-				theValue += static_cast<int64_t>(this->hour * this->secondsPerHour);
-				theValue += static_cast<int64_t>(this->minute * this->secondsPerMinute);
-				theValue += this->second;
-			}
-			if (this->month > 1) {
-				theValue += this->secondsInJan;
-			}
-			if (this->month > 2) {
-				theValue += this->secondsInFeb;
-			}
-			if (this->month > 3) {
-				theValue += this->secondsInMar;
-			}
-			if (this->month > 4) {
-				theValue += this->secondsInApr;
-			}
-			if (this->month > 5) {
-				theValue += this->secondsInMay;
-			}
-			if (this->month > 6) {
-				theValue += this->secondsInJun;
-			}
-			if (this->month > 7) {
-				theValue += this->secondsInJul;
-			}
-			if (this->month > 8) {
-				theValue += this->secondsInAug;
-			}
-			if (this->month > 9) {
-				theValue += this->secondsInSep;
-			}
-			if (this->month > 10) {
-				theValue += this->secondsInOct;
-			}
-			if (this->month > 11) {
-				theValue += this->secondsInNov;
-			}
-			return theValue;
-		}
-
-	  protected:
-		int64_t year{ 0 };
-		int64_t month{ 0 };
-		int64_t day{ 0 };
-		int64_t hour{ 0 };
-		int64_t minute{ 0 };
-		int64_t second{ 0 };
-		const int32_t secondsInJan{ 31 * 24 * 60 * 60 };
-		const int32_t secondsInFeb{ 28 * 24 * 60 * 60 };
-		const int32_t secondsInMar{ 31 * 24 * 60 * 60 };
-		const int32_t secondsInApr{ 30 * 24 * 60 * 60 };
-		const int32_t secondsInMay{ 31 * 24 * 60 * 60 };
-		const int32_t secondsInJun{ 30 * 24 * 60 * 60 };
-		const int32_t secondsInJul{ 31 * 24 * 60 * 60 };
-		const int32_t secondsInAug{ 31 * 24 * 60 * 60 };
-		const int32_t secondsInSep{ 30 * 24 * 60 * 60 };
-		const int32_t secondsInOct{ 31 * 24 * 60 * 60 };
-		const int32_t secondsInNov{ 30 * 24 * 60 * 60 };
-		const int32_t secondsInDec{ 31 * 24 * 60 * 60 };
-		const int32_t secondsPerMinute{ 60 };
-		const int32_t secondsPerHour{ 60 * 60 };
-		const int32_t secondsPerDay{ 60 * 60 * 24 };
-	};
-
 	template<typename TimeType> class StopWatch {
 	  public:
 		StopWatch& operator=(StopWatch&& other) noexcept {
@@ -737,8 +641,140 @@ namespace DiscordCoreAPI {
 		ShortTime = 't',///< "16:20" - Short Time
 	};
 
-	DiscordCoreAPI_Dll std::string getISO8601TimeStamp(const std::string& year, const std::string& month, const std::string& day, const std::string& hour,
-		const std::string& minute, const std::string& second);
+	/// Class for representing a timestamp, as well as working with time-related values. \brief Class for representing a timestamp, as well as working with time-related values.
+	class DiscordCoreAPI_Dll TimeStamp {
+	  public:
+		operator std::string() {
+			return this->originalTimeStamp;
+		}
+
+		TimeStamp& operator=(std::string&& originalTimeStampNew) {
+			this->originalTimeStamp = std::move(originalTimeStampNew);
+			return *this;
+		}
+
+		TimeStamp(std::string&& originalTimeStampNew) {
+			*this = std::move(originalTimeStampNew);
+		}
+
+		TimeStamp& operator=(std::string& originalTimeStampNew) {
+			this->originalTimeStamp = originalTimeStampNew;
+			return *this;
+		}
+
+		TimeStamp(std::string& originalTimeStampNew) {
+			*this = originalTimeStampNew;
+		}
+
+		TimeStamp& operator=(const TimeStamp& other) {
+			this->originalTimeStamp = other.originalTimeStamp;
+			this->timeStampInMs = other.timeStampInMs;
+			this->minute = other.minute;
+			this->second = other.second;
+			this->month = other.month;
+			this->hour = other.hour;
+			this->year = other.year;
+			this->day = other.day;
+			return *this;
+		}
+
+		TimeStamp(const TimeStamp& other) {
+			*this = other;
+		}
+
+		TimeStamp& operator=(TimeStamp& other) {
+			this->originalTimeStamp = other.originalTimeStamp;
+			this->timeStampInMs = other.timeStampInMs;
+			this->minute = other.minute;
+			this->second = other.second;
+			this->month = other.month;
+			this->hour = other.hour;
+			this->year = other.year;
+			this->day = other.day;
+			return *this;
+		}
+
+		TimeStamp(TimeStamp& other) {
+			*this = other;
+		}
+
+		TimeStamp(int32_t year, int32_t month, int32_t day, int32_t hour, int32_t minute, int32_t second) {
+			this->second = second;
+			this->minute = minute;
+			this->month = month;
+			this->year = year;
+			this->hour = hour;
+			this->day = day;
+		};
+
+		TimeStamp(uint64_t timeInMs) {
+			this->timeStampInMs = timeInMs;
+		}
+
+		static std::string getISO8601TimeStamp(const std::string& year, const std::string& month, const std::string& day, const std::string& hour, const std::string& minute,
+			const std::string& second);
+
+		/// Collects a timestamp that is a chosen number of minutes ahead of the current time. \brief Collects a timestamp that is a chosen number of minutes ahead of the current time.
+		/// \param minutesToAdd An int32_t containing the number of minutes to increment the timestamp forward for.
+		/// \param hoursToAdd An int32_t containing the number of hours to increment the timestamp forward for.
+		/// \param daysToAdd An int32_t containing the number of days to increment the timestamp forward for.
+		/// \param monthsToAdd An int32_t containing the number of months to increment the timestamp forward for.
+		/// \param yearsToAdd An int32_t containing the number of years to increment the timestamp forward for.
+		/// \returns std::string A string containing the new ISO8601 timestamp.
+		static std::string getFutureISO8601TimeStamp(int32_t minutesToAdd, int32_t hoursToAdd = 0, int32_t daysToAdd = 0, int32_t monthsToAdd = 0, int32_t yearsToAdd = 0);
+
+		/// Deduces whether or not a chosen period of time has passed, for a chosen timestamp. \brief Deduces whether or not a chosen period of time has passed, for a chosen timestamp.
+		/// \param timeStamp A std::string representing the timestamp that you would like to check for time-elapsement.
+		/// \param days An int64_t representing the number of days to check for.
+		/// \param hours An int64_t representing the number of hours to check for.
+		/// \param minutes An int64_t representing the number of minutes to check for.
+		/// \returns bool A bool denoting whether or not the input period of time has elapsed since the supplied timestamp.
+		bool hasTimeElapsed(uint64_t days = 0, uint64_t hours = 0, uint64_t minutes = 0);
+
+		static std::string convertMsToDurationString(uint64_t durationInMs);
+
+		std::string convertTimeInMsToDateTimeString(TimeFormat timeFormat);
+
+		/// Collects a timestamp using the format TimeFormat, as a string. \brief Collects a timestamp using the format TimeFormat, as a string.
+		/// \param timeFormat A TimeFormat value, for selecting the output type.
+		/// \returns std::string A string containing the returned timestamp.
+		std::string getDateTimeStamp(TimeFormat timeFormat);
+
+		std::string getCurrentISO8601TimeStamp();
+
+		uint64_t convertTimestampToMsInteger();
+
+		/// Returns the original timestamp, from a Discord entity. \brief Returns the original timestamp, from a Discord entity.
+		/// \returns std::string A string containing the returned timestamp.
+		std::string getOriginalTimeStamp();
+
+		uint64_t getTime();
+
+	  protected:
+		StringWrapper originalTimeStamp{};
+		uint64_t timeStampInMs{ 0 };
+		uint64_t year{ 0 };
+		uint64_t month{ 0 };
+		uint64_t day{ 0 };
+		uint64_t hour{ 0 };
+		uint64_t minute{ 0 };
+		uint64_t second{ 0 };
+		const uint32_t secondsInJan{ 31 * 24 * 60 * 60 };
+		const uint32_t secondsInFeb{ 28 * 24 * 60 * 60 };
+		const uint32_t secondsInMar{ 31 * 24 * 60 * 60 };
+		const uint32_t secondsInApr{ 30 * 24 * 60 * 60 };
+		const uint32_t secondsInMay{ 31 * 24 * 60 * 60 };
+		const uint32_t secondsInJun{ 30 * 24 * 60 * 60 };
+		const uint32_t secondsInJul{ 31 * 24 * 60 * 60 };
+		const uint32_t secondsInAug{ 31 * 24 * 60 * 60 };
+		const uint32_t secondsInSep{ 30 * 24 * 60 * 60 };
+		const uint32_t secondsInOct{ 31 * 24 * 60 * 60 };
+		const uint32_t secondsInNov{ 30 * 24 * 60 * 60 };
+		const uint32_t secondsInDec{ 31 * 24 * 60 * 60 };
+		const uint32_t secondsPerMinute{ 60 };
+		const uint32_t secondsPerHour{ 60 * 60 };
+		const uint32_t secondsPerDay{ 60 * 60 * 24 };
+	};
 
 	/// Prints the current file, line, and column from which the function is being called - typically from within an exception's "catch" block. \brief Prints the current file, line, and column from which the function is being called - typically from within an exception's "catch" block.
 	/// \param currentFunctionName A std::string to display the current function's name.
@@ -747,15 +783,9 @@ namespace DiscordCoreAPI {
 
 	DiscordCoreAPI_Dll std::string constructMultiPartData(nlohmann::json theData, const std::vector<File>& files);
 
-	DiscordCoreAPI_Dll std::string convertTimeInMsToDateTimeString(int64_t timeInMs, TimeFormat timeFormat);
-
 	DiscordCoreAPI_Dll std::string convertToLowerCase(const std::string& stringToConvert);
 
-	DiscordCoreAPI_Dll int64_t convertTimestampToMsInteger(const std::string& timeStamp);
-
 	DiscordCoreAPI_Dll std::string base64Encode(const std::string&, bool = false);
-
-	DiscordCoreAPI_Dll std::string convertMsToDurationString(int32_t durationInMs);
 
 	DiscordCoreAPI_Dll std::string loadFileContents(const std::string& filePath);
 
@@ -764,8 +794,6 @@ namespace DiscordCoreAPI {
 	DiscordCoreAPI_Dll std::string urlEncode(const std::string& inputString);
 
 	DiscordCoreAPI_Dll void spinLock(int64_t timeInNsToSpinLockFor);
-
-	DiscordCoreAPI_Dll std::string getCurrentISO8601TimeStamp();
 
 	DiscordCoreAPI_Dll std::string generateBase64EncodedKey();
 
@@ -865,71 +893,9 @@ namespace DiscordCoreAPI {
 		return static_cast<StoredAsType>(inputFlag) & static_cast<StoredAsType>(theFlag);
 	}
 
-	/// Deduces whether or not a chosen period of time has passed, for a chosen timestamp. \brief Deduces whether or not a chosen period of time has passed, for a chosen timestamp.
-	/// \param timeStamp A std::string representing the timestamp that you would like to check for time-elapsement.
-	/// \param days An int64_t representing the number of days to check for.
-	/// \param hours An int64_t representing the number of hours to check for.
-	/// \param minutes An int64_t representing the number of minutes to check for.
-	/// \returns bool A bool denoting whether or not the input period of time has elapsed since the supplied timestamp.
-	DiscordCoreAPI_Dll bool hasTimeElapsed(const std::string& timeStamp, int64_t days = 0, int64_t hours = 0, int64_t minutes = 0);
-
-	/// Collects a timestamp that is a chosen number of minutes ahead of the current time. \brief Collects a timestamp that is a chosen number of minutes ahead of the current time.
-	/// \param minutesToAdd An int32_t containing the number of minutes to increment the timestamp forward for.
-	/// \param hoursToAdd An int32_t containing the number of hours to increment the timestamp forward for.
-	/// \param daysToAdd An int32_t containing the number of days to increment the timestamp forward for.
-	/// \param monthsToAdd An int32_t containing the number of months to increment the timestamp forward for.
-	/// \param yearsToAdd An int32_t containing the number of years to increment the timestamp forward for.
-	/// \returns std::string A string containing the new ISO8601 timestamp.
-	DiscordCoreAPI_Dll std::string getFutureISO8601TimeStamp(int32_t minutesToAdd, int32_t hoursToAdd = 0, int32_t daysToAdd = 0, int32_t monthsToAdd = 0, int32_t yearsToAdd = 0);
-
 	/// Acquires a timestamp with the current time and date - suitable for use in message-embeds. \brief Acquires a timestamp with the current time and date - suitable for use in message-embeds.
 	/// \returns std::string A string containing the current date-time stamp.
 	DiscordCoreAPI_Dll std::string getTimeAndDate();
-
-	/// Class for representing a timestamp. \brief Class for representing a timestamp.
-	class DiscordCoreAPI_Dll TimeStamp {
-	  public:
-		operator std::string() {
-			return this->originalTimeStamp;
-		}
-
-		TimeStamp& operator=(std::string&& originalTimeStampNew) {
-			this->originalTimeStamp = std::move(originalTimeStampNew);
-			return *this;
-		}
-
-		TimeStamp(std::string&& originalTimeStampNew) {
-			*this = std::move(originalTimeStampNew);
-		}
-
-		TimeStamp& operator=(std::string& originalTimeStampNew) {
-			this->originalTimeStamp = originalTimeStampNew;
-			return *this;
-		}
-
-		TimeStamp(std::string& originalTimeStampNew) {
-			*this = originalTimeStampNew;
-		}
-
-		/// Collects a timestamp using the format TimeFormat, as a string. \brief Collects a timestamp using the format TimeFormat, as a string.
-		/// \param timeFormat A TimeFormat value, for selecting the output type.
-		/// \returns std::string A string containing the returned timestamp.
-		std::string getDateTimeStamp(TimeFormat timeFormat) {
-			this->timeStampInMs = convertTimestampToMsInteger(this->originalTimeStamp);
-			std::string newString = convertTimeInMsToDateTimeString(this->timeStampInMs, timeFormat);
-			return newString;
-		}
-
-		/// Returns the original timestamp, from a Discord entity. \brief Returns the original timestamp, from a Discord entity.
-		/// \returns std::string A string containing the returned timestamp.
-		std::string getOriginalTimeStamp() {
-			return this->originalTimeStamp;
-		}
-
-	  protected:
-		StringWrapper originalTimeStamp{};
-		int64_t timeStampInMs{ 0 };
-	};
 
 	/// Permissions class, for representing and manipulating Permission values. \brief Permissions class, for representing and manipulating Permission values.
 	class DiscordCoreAPI_Dll Permissions : public StringWrapper {

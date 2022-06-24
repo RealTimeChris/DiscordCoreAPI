@@ -165,7 +165,7 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<void> Messages::deleteMessageAsync(DeleteMessageData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{};
-		bool hasTimeElapsedNew = hasTimeElapsed(dataPackage.timeStamp.getOriginalTimeStamp(), 14);
+		bool hasTimeElapsedNew = dataPackage.timeStamp.hasTimeElapsed(14);
 		if (hasTimeElapsedNew) {
 			workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Delete_Message_Old);
 			workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Delete_Message_Old;
