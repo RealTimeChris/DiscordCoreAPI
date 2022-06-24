@@ -50,7 +50,7 @@ namespace DiscordCoreAPI {
 	/// For creating a Message. \brief For creating a Message.
 	class DiscordCoreAPI_Dll CreateMessageData : public MessageResponseBase {
 	  public:
-		friend std::string DiscordCoreInternal::JSONIFY(CreateMessageData& dataPackage);
+		friend class DiscordCoreInternal::JSONIfier;
 		friend InputEvents;
 		friend Messages;
 
@@ -117,7 +117,7 @@ namespace DiscordCoreAPI {
 	/// For editing a Message. \brief For editing a Message.
 	class DiscordCoreAPI_Dll EditMessageData : public MessageResponseBase {
 	  public:
-		friend std::string DiscordCoreInternal::JSONIFY(EditMessageData& dataPackage);
+		friend class DiscordCoreInternal::JSONIfier;
 		friend InputEvents;
 		friend Messages;
 

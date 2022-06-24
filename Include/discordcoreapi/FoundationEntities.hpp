@@ -105,15 +105,15 @@ namespace DiscordCoreInternal {
 
 	using namespace std::literals;
 
-	template<typename ParseType> void parseObject(const nlohmann::json&, ParseType&);
 	struct HttpsWorkloadData;
 	class SoundCloudRequestBuilder;
 	class YouTubeRequestBuilder;
 	class VoiceSocketAgent;
 	class BaseSocketAgent;
 	class SoundCloudAPI;
-	class YouTubeAPI;
 	class HttpsClient;
+	class YouTubeAPI;
+	class DataParser;
 
 	enum class WebSocketOpCode : int8_t { Op_Continuation = 0x00, Op_Text = 0x01, Op_Binary = 0x02, Op_Close = 0x08, Op_Ping = 0x09, Op_Pong = 0x0a };
 
@@ -3616,7 +3616,7 @@ namespace DiscordCoreAPI {
 
 	/// A song from the various platforms. \brief A song from the various platforms.
 	struct DiscordCoreAPI_Dll Song {
-		template<typename ParseType> friend void DiscordCoreInternal::parseObject(const nlohmann::json&, ParseType&);
+		friend class DiscordCoreInternal::DataParser;
 		friend class DiscordCoreInternal::SoundCloudRequestBuilder;
 		friend class DiscordCoreInternal::YouTubeRequestBuilder;
 		friend class DiscordCoreInternal::SoundCloudAPI;

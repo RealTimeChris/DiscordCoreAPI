@@ -124,9 +124,9 @@ namespace DiscordCoreAPI {
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/messages";
 		if (dataPackage.files.size() > 0) {
 			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
-			workload.content = constructMultiPartData(nlohmann::json::parse(DiscordCoreInternal::JSONIFY(dataPackage)), dataPackage.files);
+			workload.content = constructMultiPartData(nlohmann::json::parse(DiscordCoreInternal::JSONIfier::JSONIFY(dataPackage)), dataPackage.files);
 		} else {
-			workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
+			workload.content = DiscordCoreInternal::JSONIfier::JSONIFY(dataPackage);
 		}
 		workload.callStack = "Messages::createMessageAsync";
 		auto result = Messages::httpsClient->submitWorkloadAndGetResult<Message>(workload);
@@ -153,9 +153,9 @@ namespace DiscordCoreAPI {
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/messages/" + std::to_string(dataPackage.messageId);
 		if (dataPackage.files.size() > 0) {
 			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
-			workload.content = constructMultiPartData(nlohmann::json::parse(DiscordCoreInternal::JSONIFY(dataPackage)), dataPackage.files);
+			workload.content = constructMultiPartData(nlohmann::json::parse(DiscordCoreInternal::JSONIfier::JSONIFY(dataPackage)), dataPackage.files);
 		} else {
-			workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
+			workload.content = DiscordCoreInternal::JSONIfier::JSONIFY(dataPackage);
 		}
 		workload.callStack = "Messages::editMessageAsync";
 		auto result = Messages::httpsClient->submitWorkloadAndGetResult<Message>(workload);
@@ -190,7 +190,7 @@ namespace DiscordCoreAPI {
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Bulk_Delete_Messages;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/messages/bulk-delete";
-		workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
+		workload.content = DiscordCoreInternal::JSONIfier::JSONIFY(dataPackage);
 		workload.callStack = "Messages::deleteMessagesBulkAsync";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;

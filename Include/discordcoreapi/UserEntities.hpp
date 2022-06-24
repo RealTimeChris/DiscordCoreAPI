@@ -128,9 +128,9 @@ namespace DiscordCoreAPI {
 	 */
 	/// An interface class for the User related Discord endpoints. \brief An interface class for the User related Discord endpoints.
 	class DiscordCoreAPI_Dll Users {
-	  public:
-		template<typename ParseType> friend void DiscordCoreInternal::parseObject(const nlohmann::json&, ParseType&);
+	  public:		
 		friend class DiscordCoreInternal::BaseSocketAgent;
+		friend class DiscordCoreInternal::DataParser;
 		friend DiscordCoreClient;
 		friend EventHandler;
 		friend Guild;

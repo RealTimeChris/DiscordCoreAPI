@@ -90,101 +90,104 @@ namespace DiscordCoreAPI {
 
 namespace DiscordCoreInternal {
 
-	nlohmann::json JSONIFY(const std::string& serverId, const std::string& sessionId, const std::string& token, const std::string& testString);
+	class JSONIfier {
+	  public:
+		static nlohmann::json JSONIFY(const std::string& serverId, const std::string& sessionId, const std::string& token, const std::string& testString);
 
-	nlohmann::json JSONIFY(const std::string& botToken, int64_t intents, int32_t currentShard, int32_t numberOfShards);
+		static nlohmann::json JSONIFY(const std::string& botToken, int64_t intents, int32_t currentShard, int32_t numberOfShards);
 
-	nlohmann::json JSONIFY(const std::string& botToken, std::string sessionID, int32_t lastReceivedNumber);
+		static nlohmann::json JSONIFY(const std::string& botToken, std::string sessionID, int32_t lastReceivedNumber);
 
-	nlohmann::json JSONIFY(const DiscordCoreAPI::UpdateVoiceStateData& dataPackage);
+		static nlohmann::json JSONIFY(const DiscordCoreAPI::UpdateVoiceStateData& dataPackage);
 
-	nlohmann::json JSONIFY(const DiscordCoreAPI::UpdatePresenceData& dataPackage);
+		static nlohmann::json JSONIFY(const DiscordCoreAPI::UpdatePresenceData& dataPackage);
 
-	nlohmann::json JSONIFY(int32_t lastReceivedNumber);
+		static nlohmann::json JSONIFY(int32_t lastReceivedNumber);
 
-	std::vector<uint8_t> JSONIFY(const std::string& localPort, const std::string& localIp, const std::string& encryptionMode, int32_t testValue);
+		static std::vector<uint8_t> JSONIFY(const std::string& localPort, const std::string& localIp, const std::string& encryptionMode, int32_t testValue);
 
-	std::vector<uint8_t> JSONIFY(const VoiceConnectionData& dataPackage, const VoiceConnectInitData& dataPackage02);
+		static std::vector<uint8_t> JSONIFY(const VoiceConnectionData& dataPackage, const VoiceConnectInitData& dataPackage02);
 
-	std::vector<uint8_t> JSONIFY(int32_t ssrc, int32_t delay);
+		static std::vector<uint8_t> JSONIFY(int32_t ssrc, int32_t delay);
 
-	std::vector<uint8_t> JSONIFY(int64_t nonce);
+		static std::vector<uint8_t> JSONIFY(int64_t nonce);
 
-	void JSONIFY(const DiscordCoreAPI::ApplicationCommandOptionData& dataPackage, nlohmann::json* pJSONData);
+		static void JSONIFY(const DiscordCoreAPI::ApplicationCommandOptionData& dataPackage, nlohmann::json* pJSONData);
 
-	std::string JSONIFY(const DiscordCoreAPI::EditGuildApplicationCommandPermissionsData& dataPackage);
+		static std::string JSONIFY(const DiscordCoreAPI::EditGuildApplicationCommandPermissionsData& dataPackage);
 
-	std::string JSONIFY(const DiscordCoreAPI::EditChannelPermissionOverwritesData& dataPackage);
+		static std::string JSONIFY(const DiscordCoreAPI::EditChannelPermissionOverwritesData& dataPackage);
 
-	std::string JSONIFY(const DiscordCoreAPI::CreateGlobalApplicationCommandData& dataPackage);
+		static std::string JSONIFY(const DiscordCoreAPI::CreateGlobalApplicationCommandData& dataPackage);
 
-	std::string JSONIFY(const DiscordCoreAPI::CreateGuildApplicationCommandData& dataPackage);
+		static std::string JSONIFY(const DiscordCoreAPI::CreateGuildApplicationCommandData& dataPackage);
 
-	std::string JSONIFY(const DiscordCoreAPI::EditGlobalApplicationCommandData& dataPackage);
+		static std::string JSONIFY(const DiscordCoreAPI::EditGlobalApplicationCommandData& dataPackage);
 
-	std::string JSONIFY(const DiscordCoreAPI::EditGuildApplicationCommandData& dataPackage);
+		static std::string JSONIFY(const DiscordCoreAPI::EditGuildApplicationCommandData& dataPackage);
 
-	std::string JSONIFY(const DiscordCoreAPI::ModifyGuildChannelPositionsData& dataPackage);
+		static std::string JSONIFY(const DiscordCoreAPI::ModifyGuildChannelPositionsData& dataPackage);
 
-	std::string JSONIFY(const DiscordCoreAPI::StartThreadWithoutMessageData& dataPackage);
+		static std::string JSONIFY(const DiscordCoreAPI::StartThreadWithoutMessageData& dataPackage);
 
-	std::string JSONIFY(const DiscordCoreAPI::StartThreadInForumChannelData& dataPackage);
+		static std::string JSONIFY(const DiscordCoreAPI::StartThreadInForumChannelData& dataPackage);
 
-	std::string JSONIFY(const DiscordCoreAPI::CreateGuildScheduledEventData& dataPackage);
+		static std::string JSONIFY(const DiscordCoreAPI::CreateGuildScheduledEventData& dataPackage);
 
-	std::string JSONIFY(const DiscordCoreAPI::ModifyGuildScheduledEventData& dataPackage);
+		static std::string JSONIFY(const DiscordCoreAPI::ModifyGuildScheduledEventData& dataPackage);
 
-	std::string JSONIFY(const DiscordCoreAPI::ModifyGuildRolePositionsData& dataPackage);
+		static std::string JSONIFY(const DiscordCoreAPI::ModifyGuildRolePositionsData& dataPackage);
 
-	std::string JSONIFY(const DiscordCoreAPI::CreateAutoModerationRuleData& dataPackage);
+		static std::string JSONIFY(const DiscordCoreAPI::CreateAutoModerationRuleData& dataPackage);
 
-	std::string JSONIFY(const DiscordCoreAPI::ModifyAutoModerationRuleData& dataPackage);
+		static std::string JSONIFY(const DiscordCoreAPI::ModifyAutoModerationRuleData& dataPackage);
 
-	std::string JSONIFY(const DiscordCoreAPI::ModifyGuildWelcomeScreenData& dataPackage);
+		static std::string JSONIFY(const DiscordCoreAPI::ModifyGuildWelcomeScreenData& dataPackage);
 
-	std::string JSONIFY(const DiscordCoreAPI::StartThreadWithMessageData& dataPackage);
+		static std::string JSONIFY(const DiscordCoreAPI::StartThreadWithMessageData& dataPackage);
 
-	std::string JSONIFY(const DiscordCoreAPI::AddRecipientToGroupDMData& dataPackage);
+		static std::string JSONIFY(const DiscordCoreAPI::AddRecipientToGroupDMData& dataPackage);
 
-	std::string JSONIFY(const DiscordCoreAPI::InteractionResponseData& dataPackage);
+		static std::string JSONIFY(const DiscordCoreAPI::InteractionResponseData& dataPackage);
 
-	std::string JSONIFY(const DiscordCoreAPI::CreateChannelInviteData& dataPackage);
+		static std::string JSONIFY(const DiscordCoreAPI::CreateChannelInviteData& dataPackage);
 
-	std::string JSONIFY(const DiscordCoreAPI::DeleteMessagesBulkData& dataPackage);
+		static std::string JSONIFY(const DiscordCoreAPI::DeleteMessagesBulkData& dataPackage);
 
-	std::string JSONIFY(const DiscordCoreAPI::FollowNewsChannelData& dataPackage);
+		static std::string JSONIFY(const DiscordCoreAPI::FollowNewsChannelData& dataPackage);
 
-	std::string JSONIFY(const DiscordCoreAPI::CreateGuildEmojiData& dataPackage);
+		static std::string JSONIFY(const DiscordCoreAPI::CreateGuildEmojiData& dataPackage);
 
-	std::string JSONIFY(const DiscordCoreAPI::ModifyGuildEmojiData& dataPackage);
+		static std::string JSONIFY(const DiscordCoreAPI::ModifyGuildEmojiData& dataPackage);
 
-	std::string JSONIFY(const DiscordCoreAPI::BeginGuildPruneData& dataPackage);
+		static std::string JSONIFY(const DiscordCoreAPI::BeginGuildPruneData& dataPackage);
 
-	std::string JSONIFY(const DiscordCoreAPI::CreateGuildBanData& dataPackage);
+		static std::string JSONIFY(const DiscordCoreAPI::CreateGuildBanData& dataPackage);
 
-	std::string JSONIFY(const DiscordCoreAPI::AddGuildMemberData& dataPackage);
+		static std::string JSONIFY(const DiscordCoreAPI::AddGuildMemberData& dataPackage);
 
-	std::string JSONIFY(DiscordCoreAPI::CreateGuildChannelData& dataPackage);
+		static std::string JSONIFY(DiscordCoreAPI::CreateGuildChannelData& dataPackage);
 
-	std::string JSONIFY(const DiscordCoreAPI::ModifyGuildData& dataPackage);
+		static std::string JSONIFY(const DiscordCoreAPI::ModifyGuildData& dataPackage);
 
-	std::string JSONIFY(const DiscordCoreAPI::EditWebHookData& dataPackage);
+		static std::string JSONIFY(const DiscordCoreAPI::EditWebHookData& dataPackage);
 
-	std::string JSONIFY(DiscordCoreAPI::ModifyGuildMemberData& dataPackage);
+		static std::string JSONIFY(DiscordCoreAPI::ModifyGuildMemberData& dataPackage);
 
-	std::string JSONIFY(DiscordCoreAPI::ModifyGuildRoleData& dataPackage);
+		static std::string JSONIFY(DiscordCoreAPI::ModifyGuildRoleData& dataPackage);
 
-	std::string JSONIFY(DiscordCoreAPI::CreateGuildRoleData& dataPackage);
+		static std::string JSONIFY(DiscordCoreAPI::CreateGuildRoleData& dataPackage);
 
-	std::string JSONIFY(DiscordCoreAPI::ExecuteWebHookData& dataPackage);
+		static std::string JSONIFY(DiscordCoreAPI::ExecuteWebHookData& dataPackage);
 
-	std::string JSONIFY(DiscordCoreAPI::CreateMessageData& dataPackage);
+		static std::string JSONIFY(DiscordCoreAPI::CreateMessageData& dataPackage);
 
-	std::string JSONIFY(DiscordCoreAPI::ModifyChannelData& channelData);
+		static std::string JSONIFY(DiscordCoreAPI::ModifyChannelData& channelData);
 
-	std::string JSONIFY(DiscordCoreAPI::CreateGuildData& dataPackage);
+		static std::string JSONIFY(DiscordCoreAPI::CreateGuildData& dataPackage);
 
-	std::string JSONIFY(DiscordCoreAPI::EditMessageData& dataPackage);
+		static std::string JSONIFY(DiscordCoreAPI::EditMessageData& dataPackage);
 
+	};
 
 }// namespace DiscordCoreInternal

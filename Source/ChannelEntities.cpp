@@ -101,7 +101,7 @@ namespace DiscordCoreAPI {
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Patch_Channel;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId);
-		workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
+		workload.content = DiscordCoreInternal::JSONIfier::JSONIFY(dataPackage);
 		workload.callStack = "Channels::modifyChannelAsync";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
@@ -132,7 +132,7 @@ namespace DiscordCoreAPI {
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Put_Channel_Permission_Overwrites;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Put;
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/permissions/" + std::to_string(dataPackage.roleOrUserId);
-		workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
+		workload.content = DiscordCoreInternal::JSONIfier::JSONIFY(dataPackage);
 		workload.callStack = "Channels::editChannelPermissionOverwritesAsync";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
@@ -158,7 +158,7 @@ namespace DiscordCoreAPI {
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Post_Channel_Invite;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/invites";
-		workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
+		workload.content = DiscordCoreInternal::JSONIfier::JSONIFY(dataPackage);
 		workload.callStack = "Channels::createChannelInviteAsync";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
@@ -187,7 +187,7 @@ namespace DiscordCoreAPI {
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Post_Follow_News_Channel;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/followers";
-		workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
+		workload.content = DiscordCoreInternal::JSONIfier::JSONIFY(dataPackage);
 		workload.callStack = "Channels::followNewsChannelAsync";
 		co_return Channels::httpsClient->submitWorkloadAndGetResult<Channel>(workload);
 	}
@@ -221,7 +221,7 @@ namespace DiscordCoreAPI {
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Post_Guild_Channel;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/channels";
-		workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
+		workload.content = DiscordCoreInternal::JSONIfier::JSONIFY(dataPackage);
 		workload.callStack = "Channels::createGuildChannelAsync";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
@@ -238,7 +238,7 @@ namespace DiscordCoreAPI {
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Patch_Guild_Channel_Positions;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/channels";
-		workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
+		workload.content = DiscordCoreInternal::JSONIfier::JSONIFY(dataPackage);
 		workload.callStack = "Channels::modifyGuildChannelPositionsAsync";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;

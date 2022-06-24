@@ -43,9 +43,9 @@ namespace DiscordCoreAPI {
 			"/interactions/" + std::to_string(dataPackage.interactionPackage.interactionId) + "/" + dataPackage.interactionPackage.interactionToken + "/callback";
 		if (dataPackage.data.data.files.size() > 0) {
 			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
-			workload.content = constructMultiPartData(nlohmann::json::parse(DiscordCoreInternal::JSONIFY(dataPackage.data)), dataPackage.data.data.files);
+			workload.content = constructMultiPartData(nlohmann::json::parse(DiscordCoreInternal::JSONIfier::JSONIFY(dataPackage.data)), dataPackage.data.data.files);
 		} else {
-			workload.content = DiscordCoreInternal::JSONIFY(dataPackage.data);
+			workload.content = DiscordCoreInternal::JSONIfier::JSONIFY(dataPackage.data);
 		}
 		workload.callStack = "Interactions::createInteractionResponseAsync";
 		Interactions::httpsClient->submitWorkloadAndGetResult<void>(workload);
@@ -80,9 +80,9 @@ namespace DiscordCoreAPI {
 			"/webhooks/" + std::to_string(dataPackage.interactionPackage.applicationId) + "/" + dataPackage.interactionPackage.interactionToken + "/messages/@original";
 		if (dataPackage.data.files.size() > 0) {
 			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
-			workload.content = constructMultiPartData(nlohmann::json::parse(DiscordCoreInternal::JSONIFY(dataPackage.data)), dataPackage.data.files);
+			workload.content = constructMultiPartData(nlohmann::json::parse(DiscordCoreInternal::JSONIfier::JSONIFY(dataPackage.data)), dataPackage.data.files);
 		} else {
-			workload.content = DiscordCoreInternal::JSONIFY(dataPackage.data);
+			workload.content = DiscordCoreInternal::JSONIfier::JSONIFY(dataPackage.data);
 		}
 		workload.callStack = "Interactions::editInteractionResponseAsync";
 		co_return Interactions::httpsClient->submitWorkloadAndGetResult<Message>(workload);
@@ -110,9 +110,9 @@ namespace DiscordCoreAPI {
 		workload.relativePath = "/webhooks/" + std::to_string(dataPackage.interactionPackage.applicationId) + "/" + dataPackage.interactionPackage.interactionToken;
 		if (dataPackage.files.size() > 0) {
 			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
-			workload.content = constructMultiPartData(nlohmann::json::parse(DiscordCoreInternal::JSONIFY(dataPackage)), dataPackage.files);
+			workload.content = constructMultiPartData(nlohmann::json::parse(DiscordCoreInternal::JSONIfier::JSONIFY(dataPackage)), dataPackage.files);
 		} else {
-			workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
+			workload.content = DiscordCoreInternal::JSONIfier::JSONIFY(dataPackage);
 		}
 		workload.callStack = "Interactions::createFollowUpMessageAsync";
 		co_return Interactions::httpsClient->submitWorkloadAndGetResult<Message>(workload);
@@ -141,9 +141,9 @@ namespace DiscordCoreAPI {
 			std::to_string(dataPackage.messagePackage.messageId);
 		if (dataPackage.data.files.size() > 0) {
 			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
-			workload.content = constructMultiPartData(nlohmann::json::parse(DiscordCoreInternal::JSONIFY(dataPackage.data)), dataPackage.data.files);
+			workload.content = constructMultiPartData(nlohmann::json::parse(DiscordCoreInternal::JSONIfier::JSONIFY(dataPackage.data)), dataPackage.data.files);
 		} else {
-			workload.content = DiscordCoreInternal::JSONIFY(dataPackage.data);
+			workload.content = DiscordCoreInternal::JSONIfier::JSONIFY(dataPackage.data);
 		}
 		workload.callStack = "Interactions::editFollowUpMessageAsync";
 		co_return Interactions::httpsClient->submitWorkloadAndGetResult<Message>(workload);

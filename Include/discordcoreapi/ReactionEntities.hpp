@@ -98,7 +98,7 @@ namespace DiscordCoreAPI {
 
 	/// For creating a new Guild Emoji.
 	struct DiscordCoreAPI_Dll CreateGuildEmojiData {
-		friend std::string DiscordCoreInternal::JSONIFY(const CreateGuildEmojiData& dataPackage);
+		friend class DiscordCoreInternal::JSONIfier;
 		friend Reactions;
 
 		std::vector<uint64_t> roles{};///< Roles that can use this Emoji.

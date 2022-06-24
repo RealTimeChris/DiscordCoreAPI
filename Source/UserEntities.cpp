@@ -58,13 +58,13 @@ namespace DiscordCoreAPI {
 	}
 
 	void BotUser::updateVoiceStatus(const UpdateVoiceStateData& dataPackage) {
-		nlohmann::json payload = DiscordCoreInternal::JSONIFY(dataPackage);
+		nlohmann::json payload = DiscordCoreInternal::JSONIfier::JSONIFY(dataPackage);
 		this->baseSocketAgent->sendMessage(payload, this->baseSocketAgent->theClients.begin().operator*().second.get(), false);
 	}
 
 	void BotUser::updatePresence(UpdatePresenceData& dataPackage) {
 		dataPackage.since = static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
-		nlohmann::json payload = DiscordCoreInternal::JSONIFY(dataPackage);
+		nlohmann::json payload = DiscordCoreInternal::JSONIfier::JSONIFY(dataPackage);
 		if (this->baseSocketAgent) {
 			this->baseSocketAgent->sendMessage(payload, this->baseSocketAgent->theClients.begin().operator*().second.get(), false);
 		}
@@ -87,7 +87,7 @@ namespace DiscordCoreAPI {
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Put_Recipient_To_Group_Dm;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Put;
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/recipients/" + std::to_string(dataPackage.userId);
-		workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
+		workload.content = DiscordCoreInternal::JSONIfier::JSONIFY(dataPackage);
 		workload.callStack = "Users::addRecipientToGroupDMAsync";
 		co_return Users::httpsClient->submitWorkloadAndGetResult<void>(workload);
 	}

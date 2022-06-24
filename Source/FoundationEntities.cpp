@@ -1113,7 +1113,7 @@ namespace DiscordCoreAPI {
 			this->optionsArgs.push_back(inputEventData.interactionData->data.userInteractionData.targetId);
 		}
 		this->eventData = inputEventData;
-		DiscordCoreInternal::parseObject(inputEventData.getInteractionData().rawData, *this);
+		DiscordCoreInternal::DataParser::parseObject(inputEventData.getInteractionData().rawData, *this);
 	}
 };
 

@@ -41,9 +41,9 @@ namespace DiscordCoreAPI {
 
 	/// For executing a WebHook. \brief For executing a WebHook.
 	class DiscordCoreAPI_Dll ExecuteWebHookData {
-	  public:
-		friend std::string DiscordCoreInternal::JSONIFY(ExecuteWebHookData& dataPackage);
+	  public:		
 		friend class CreateEphemeralFollowUpMessageData;
+		friend class DiscordCoreInternal::JSONIfier;
 		friend class CreateFollowUpMessageData;
 		friend class EditFollowUpMessageData;
 		friend class Interactions;
@@ -230,7 +230,7 @@ namespace DiscordCoreAPI {
 	/// For editing a WebHook Message. \brief For editing a WebHook Message.
 	class DiscordCoreAPI_Dll EditWebHookData : public ExecuteWebHookData {
 	  public:
-		friend std::string DiscordCoreInternal::JSONIFY(const EditWebHookData& dataPackage);
+		friend class DiscordCoreInternal::JSONIfier;
 		friend class EditInteractionResponseData;
 		friend class EditFollowUpMessageData;
 		friend class Interactions;

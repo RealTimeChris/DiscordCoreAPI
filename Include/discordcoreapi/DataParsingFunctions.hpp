@@ -25,7 +25,11 @@
 
 namespace DiscordCoreInternal {
 
-	template<typename Type> void parseObject(const nlohmann::json&, Type&);
+	class DataParser {
+	  public:
+		template<typename Type> static void parseObject(const nlohmann::json&, Type&);
+	};
+	
 
 
 }// namespace DiscordCoreInternal

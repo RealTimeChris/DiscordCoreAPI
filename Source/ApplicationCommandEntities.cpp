@@ -53,7 +53,7 @@ namespace DiscordCoreAPI {
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Post_Global_Application_Command;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath = "/applications/" + std::to_string(dataPackage.applicationId) + "/commands";
-		workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
+		workload.content = DiscordCoreInternal::JSONIfier::JSONIFY(dataPackage);
 		workload.callStack = "ApplicationCommands::createGlobalApplicationCommandAsync";
 		co_return ApplicationCommands::httpsClient->submitWorkloadAndGetResult<ApplicationCommand>(workload);
 	}
@@ -88,7 +88,7 @@ namespace DiscordCoreAPI {
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Patch_Global_Application_Command;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/applications/" + std::to_string(dataPackage.applicationId) + "/commands/" + appCommandId;
-		workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
+		workload.content = DiscordCoreInternal::JSONIfier::JSONIFY(dataPackage);
 		workload.callStack = "ApplicationCommands::editGlobalApplicationCommandAsync";
 		co_return ApplicationCommands::httpsClient->submitWorkloadAndGetResult<ApplicationCommand>(workload);
 	}
@@ -134,7 +134,7 @@ namespace DiscordCoreAPI {
 			newVector.push_back(dataPackageNew);
 		}
 		for (auto& value: newVector) {
-			nlohmann::json newData = nlohmann::json::parse(DiscordCoreInternal::JSONIFY(value));
+			nlohmann::json newData = nlohmann::json::parse(DiscordCoreInternal::JSONIfier::JSONIFY(value));
 			newDataArray.push_back(newData);
 		}
 		nlohmann::json dataNew = newDataArray;
@@ -168,7 +168,7 @@ namespace DiscordCoreAPI {
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Post_Guild_Application_Command;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath = "/applications/" + std::to_string(dataPackage.applicationId) + "/guilds/" + std::to_string(dataPackage.guildId) + "/commands";
-		workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
+		workload.content = DiscordCoreInternal::JSONIfier::JSONIFY(dataPackage);
 		workload.callStack = "ApplicationCommands::createGuildApplicationCommandAsync";
 		co_return ApplicationCommands::httpsClient->submitWorkloadAndGetResult<ApplicationCommand>(workload);
 	}
@@ -204,7 +204,7 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/applications/" + std::to_string(dataPackage.applicationId) + "/guilds/" + std::to_string(dataPackage.guildId) + "/commands/" + appCommandId;
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Patch_Guild_Application_Command;
-		workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
+		workload.content = DiscordCoreInternal::JSONIfier::JSONIFY(dataPackage);
 		workload.callStack = "ApplicationCommands::editGuildApplicationCommandAsync";
 		co_return ApplicationCommands::httpsClient->submitWorkloadAndGetResult<ApplicationCommand>(workload);
 	}
@@ -250,7 +250,7 @@ namespace DiscordCoreAPI {
 			newVector.push_back(dataPackageNew);
 		}
 		for (auto& value: newVector) {
-			nlohmann::json newData = nlohmann::json::parse(DiscordCoreInternal::JSONIFY(value));
+			nlohmann::json newData = nlohmann::json::parse(DiscordCoreInternal::JSONIfier::JSONIFY(value));
 			newDataArray.push_back(newData);
 		}
 		nlohmann::json dataNew = newDataArray;
@@ -318,7 +318,7 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Put;
 		workload.relativePath =
 			"/applications/" + std::to_string(dataPackage.applicationId) + "/guilds/" + std::to_string(dataPackage.guildId) + "/commands/" + commandId + "/permissions";
-		nlohmann::json newData = { { "permissions", nlohmann::json::parse(DiscordCoreInternal::JSONIFY(dataPackage)) } };
+		nlohmann::json newData = { { "permissions", nlohmann::json::parse(DiscordCoreInternal::JSONIfier::JSONIFY(dataPackage)) } };
 		workload.content = newData.dump();
 		workload.callStack = "ApplicationCommands::editGuildApplicationCommandPermissionsAsync";
 		co_return ApplicationCommands::httpsClient->submitWorkloadAndGetResult<GuildApplicationCommandPermissionsData>(workload);

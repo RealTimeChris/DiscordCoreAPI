@@ -48,7 +48,7 @@ namespace DiscordCoreAPI {
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Post_Guild_Scheduled_Event;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/scheduled-events";
-		workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
+		workload.content = DiscordCoreInternal::JSONIfier::JSONIFY(dataPackage);
 		workload.callStack = "GuildScheduledEvents::createGuildScheduledEventAsync";
 		co_return GuildScheduledEvents::httpsClient->submitWorkloadAndGetResult<GuildScheduledEvent>(workload);
 	}
@@ -75,7 +75,7 @@ namespace DiscordCoreAPI {
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Patch_Guild_Scheduled_Event;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/scheduled-events/" + std::to_string(dataPackage.guildScheduledEventId);
-		workload.content = DiscordCoreInternal::JSONIFY(dataPackage);
+		workload.content = DiscordCoreInternal::JSONIfier::JSONIFY(dataPackage);
 		workload.callStack = "GuildScheduledEvents::modifyGuildScheduledEventAsync";
 		co_return GuildScheduledEvents::httpsClient->submitWorkloadAndGetResult<GuildScheduledEvent>(workload);
 	}

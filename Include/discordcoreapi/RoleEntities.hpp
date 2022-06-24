@@ -76,7 +76,7 @@ namespace DiscordCoreAPI {
 
 	/// For updating the Role positions. \brief For updating the Role positions.
 	struct DiscordCoreAPI_Dll ModifyGuildRolePositionsData {
-		friend std::string DiscordCoreInternal::JSONIFY(const ModifyGuildRolePositionsData& dataPackage);
+		friend class DiscordCoreInternal::JSONIfier;
 		friend Roles;
 
 		uint64_t guildId{};///< The Guild within which to move the Role.
@@ -149,7 +149,7 @@ namespace DiscordCoreAPI {
 	/// An interface class for the Role related Discord endpoints. \brief An interface class for the Role related Discord endpoints.
 	class DiscordCoreAPI_Dll Roles {
 	  public:
-		template<typename ParseType> friend void DiscordCoreInternal::parseObject(const nlohmann::json&, ParseType&);
+		friend class DiscordCoreInternal::DataParser;
 		friend DiscordCoreClient;
 		friend EventHandler;
 		friend Guild;
