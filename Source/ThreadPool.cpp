@@ -98,9 +98,7 @@ namespace DiscordCoreInternal {
 	}
 
 	void CoRoutineThreadPool::threadFunction(std::stop_token theToken, int64_t theIndex) {
-		std::unique_lock<std::mutex> theLock00{ this->theMutex01 };
 		auto theAtomicBoolPtr = &this->workerThreads[theIndex].theCurrentStatus;
-		theLock00.unlock();
 		while (!this->areWeQuitting.load() && !theToken.stop_requested()) {
 			std::unique_lock<std::mutex> theLock01{ this->theMutex01 };
 			while (!this->areWeQuitting.load() && this->theCoroutineHandles.size() == 0) {
