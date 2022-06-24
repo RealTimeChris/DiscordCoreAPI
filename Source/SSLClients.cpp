@@ -561,16 +561,6 @@ namespace DiscordCoreInternal {
 		if (this->areWeConnected01.load()) {
 			this->areWeConnected01.store(false);
 			this->areWeConnected02.store(false);
-
-			SSL_shutdown(this->ssl);
-			SSL_free(this->ssl);
-#ifdef _WIN32
-			shutdown(this->theSocket, SD_BOTH);
-			closesocket(this->theSocket);
-#else
-			shutdown(this->theSocket, SHUT_RDWR);
-			close(this->theSocket);
-#endif
 			this->theSocket = SOCKET_ERROR;
 			this->inputBuffer.clear();
 			this->outputBuffers.clear();
