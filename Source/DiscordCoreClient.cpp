@@ -129,7 +129,7 @@ namespace DiscordCoreAPI {
 		}
 		while (!Globals::doWeQuit.load()) {
 			for (auto& [key, value]: getVoiceConnectionMap()) {
-				if (value->doWeReconnect->load()) {
+				if (value && value->doWeReconnect && value->doWeReconnect->load()) {
 					value->reconnect();
 				}
 			}
