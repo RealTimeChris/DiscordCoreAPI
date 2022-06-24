@@ -138,7 +138,6 @@ namespace DiscordCoreInternal {
 				nlohmann::json newData = JSONIFY(dataPackage);
 				theStopWatch.resetTimer();
 				this->sendMessage(newData, theShard, true);
-				std::this_thread::sleep_for(500ms);
 				if (doWeCollect.channelId == 0) {
 					return;
 				}
@@ -873,7 +872,6 @@ namespace DiscordCoreInternal {
 									DiscordCoreAPI::StopWatch<std::chrono::milliseconds>{ std::chrono::milliseconds{ payload["d"]["heartbeat_interval"] } };
 							}
 							if (theShard->areWeResuming) {
-								std::this_thread::sleep_for(1500ms);
 								nlohmann::json resumePayload = JSONIFY(this->discordCoreClient->botToken, theShard->sessionId, theShard->lastNumberReceived);
 								this->sendMessage(resumePayload, theShard, true);
 								theShard->theState = WebSocketState::Connected;
