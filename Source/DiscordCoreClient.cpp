@@ -65,8 +65,7 @@ namespace DiscordCoreAPI {
 		std::signal(SIGILL, &signalHandler);
 		std::signal(SIGABRT, &signalHandler);
 		std::signal(SIGFPE, &signalHandler);
-		DiscordCoreInternal::HttpsSSLClient::initialize();
-		DiscordCoreInternal::WebSocketSSLShard::initialize();
+		DiscordCoreInternal::SSLConnectionInterface::initialize();
 		this->configManager = configData;
 		if (this->configManager.doWePrintFFMPEGSuccessMessages()) {
 			av_log_set_level(AV_LOG_INFO);
