@@ -317,7 +317,7 @@ namespace DiscordCoreInternal {
 					return;
 				}
 				nlohmann::json payload{};
-
+				std::cout << "WERE HERE THIS IS IT!:" << messageNew << std::endl;
 				if (this->configManager->getTextFormat() == DiscordCoreAPI::TextFormat::Etf) {
 					try {
 						payload = this->erlPacker.parseEtfToJson(&messageNew);
@@ -899,7 +899,6 @@ namespace DiscordCoreInternal {
 				if (this->configManager->doWePrintWebSocketErrorMessages()) {
 					DiscordCoreAPI::reportException("BaseSocketAgent::onMessageReceived()");
 				}
-				this->onClosed(theShard);
 			}
 		}
 	}
