@@ -252,8 +252,20 @@ namespace DiscordCoreInternal {
 		}
 
 #ifdef _WIN32
-		char optionValue{ true };
+		const char optionValue{ true };
 		if (auto returnValue = setsockopt(this->theSocket, IPPROTO_TCP, TCP_NODELAY, &optionValue, sizeof(optionValue)); returnValue == SOCKET_ERROR) {
+			throw ConnectionError{ reportError("HttpsSSLClient::connect()::setsockopt(), ") };
+		}
+
+		linger optionValue02{};
+		optionValue02.l_onoff = 0;
+		if (auto returnValue = setsockopt(this->theSocket, SOL_SOCKET, SO_LINGER, static_cast<char*>(static_cast<void*>(&optionValue02)), sizeof(optionValue02));
+			returnValue == SOCKET_ERROR) {
+			throw ConnectionError{ reportError("HttpsSSLClient::connect()::setsockopt(), ") };
+		}
+
+		const char optionValue03{ 1 };
+		if (auto returnValue = setsockopt(this->theSocket, SOL_SOCKET, SO_KEEPALIVE, &optionValue03, sizeof(optionValue03)); returnValue == SOCKET_ERROR) {
 			throw ConnectionError{ reportError("HttpsSSLClient::connect()::setsockopt(), ") };
 		}
 #else
@@ -294,17 +306,14 @@ namespace DiscordCoreInternal {
 	}
 
 	bool HttpsSSLClient::areWeStillConnected() noexcept {
-		fd_set errorfds{};
-		int32_t nfds{};
-		FD_ZERO(&errorfds);
 		if (this->theSocket != SOCKET_ERROR) {
+			int32_t nfds{};
+			fd_set errorfds{};
+			FD_ZERO(&errorfds);
 			FD_SET(this->theSocket, &errorfds);
 			nfds = this->theSocket;
 			timeval checkTime{ .tv_usec = 1 };
 			if (auto returnValue = select(nfds + 1, nullptr, nullptr, &errorfds, &checkTime); returnValue == SOCKET_ERROR) {
-				return false;
-			}
-			if (time(nullptr) > this->connectionTime + 60) {
 				return false;
 			}
 			if (FD_ISSET(this->theSocket, &errorfds)) {
@@ -530,9 +539,22 @@ namespace DiscordCoreInternal {
 		}
 
 #ifdef _WIN32
-		char optionValue{ true };
+		const char optionValue{ true };
 		if (auto returnValue = setsockopt(this->theSocket, IPPROTO_TCP, TCP_NODELAY, &optionValue, sizeof(optionValue)); returnValue == SOCKET_ERROR) {
-			throw ConnectionError{ reportError("WebSocketSSLShard::connect()::setsockopt(), ") };
+			throw ConnectionError{ reportError("HttpsSSLClient::connect()::setsockopt(), ") };
+		}
+
+		linger optionValue02{};
+		optionValue02.l_onoff = 0;
+		if (auto returnValue = setsockopt(this->theSocket, SOL_SOCKET, SO_LINGER, static_cast<char*>(static_cast<void*>(&optionValue02)), sizeof(optionValue02));
+			returnValue == SOCKET_ERROR) {
+			throw ConnectionError{ reportError("HttpsSSLClient::connect()::setsockopt(), ") };
+		}
+
+		const char optionValue03{ 1 };
+		if (auto returnValue = setsockopt(this->theSocket, SOL_SOCKET, SO_KEEPALIVE, &optionValue03, sizeof(optionValue03));
+			returnValue == SOCKET_ERROR) {
+			throw ConnectionError{ reportError("HttpsSSLClient::connect()::setsockopt(), ") };
 		}
 #else
 		int32_t optionValue{ 1 };
@@ -569,10 +591,10 @@ namespace DiscordCoreInternal {
 	}
 
 	bool WebSocketSSLShard::areWeStillConnected() noexcept {
-		fd_set errorfds{};
-		int32_t nfds{};
-		FD_ZERO(&errorfds);
 		if (this->theSocket != SOCKET_ERROR) {
+			int32_t nfds{};
+			fd_set errorfds{};
+			FD_ZERO(&errorfds);
 			FD_SET(this->theSocket, &errorfds);
 			nfds = this->theSocket;
 			timeval checkTime{ .tv_usec = 1 };
@@ -599,6 +621,8 @@ namespace DiscordCoreInternal {
 			this->theSocket = SOCKET_ERROR;
 			this->inputBuffer.clear();
 			this->outputBuffers.clear();
+			this->closeCode = static_cast<WebSocketCloseCode>(0);
+			this->dataOpCode = WebSocketOpCode::Op_Binary;
 			this->theState = WebSocketState::Connecting01;
 			this->areWeHeartBeating = false;
 			while (this->processedMessages.size() > 0) {

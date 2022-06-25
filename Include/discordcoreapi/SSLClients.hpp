@@ -31,8 +31,9 @@
 
 #ifdef _WIN32
 	#pragma comment(lib, "Ws2_32.lib")
-	#include <WS2tcpip.h>
 	#include <WinSock2.h>
+	#include <WS2tcpip.h>
+
 #else
 	#include <fcntl.h>
 	#include <netdb.h>
@@ -227,7 +228,7 @@ namespace DiscordCoreInternal {
 			void operator()(SOCKET* other) {
 				if (other) {
 #ifdef _WIN32
-					shutdown(*other, SD_BOTH);
+					shutdown(*other, SD_SEND);
 					closesocket(*other);
 #else
 					shutdown(*other, SHUT_RDWR);
@@ -245,7 +246,7 @@ namespace DiscordCoreInternal {
 			}
 			return *this;
 		}
-
+		
 		SOCKETWrapper(SOCKETWrapper&& other) noexcept {
 			*this = std::move(other);
 		}

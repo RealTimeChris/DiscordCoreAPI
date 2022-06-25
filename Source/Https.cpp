@@ -455,7 +455,7 @@ namespace DiscordCoreInternal {
 		std::unique_ptr<HttpsConnection> httpsConnection{ std::make_unique<HttpsConnection>() };
 		for (auto& value: workload) {
 			try {
-				if (currentConnectionAddress != value.baseUrl) {
+				if (currentConnectionAddress != value.baseUrl || !httpsConnection->areWeStillConnected()) {
 					httpsConnection->connect(value.baseUrl);
 				}
 			} catch (ProcessingError&) {
