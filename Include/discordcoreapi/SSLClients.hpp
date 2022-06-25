@@ -340,7 +340,6 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll WebSocketSSLShard : public SSLConnectionInterface, public SSLDataInterface {
 	  public:
 		friend class DiscordCoreAPI::VoiceConnection;
-		friend class WebSocketSSLShard;
 		friend class VoiceSocketAgent;
 		friend class BaseSocketAgent;
 
