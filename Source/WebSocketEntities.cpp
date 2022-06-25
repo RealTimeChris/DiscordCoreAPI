@@ -1391,7 +1391,7 @@ namespace DiscordCoreInternal {
 				}
 				return;
 			}
-			DiscordCoreAPI::StopWatch theStopWatch{10000ms};
+			DiscordCoreAPI::StopWatch theStopWatch{ 10000ms };
 			while (!this->doWeQuit->load()) {
 				if (this->theClients[0]->theState == WebSocketState::Connected) {
 					break;
