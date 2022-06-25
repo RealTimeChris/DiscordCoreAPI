@@ -273,6 +273,8 @@ namespace DiscordCoreInternal {
 
 		static void initialize();
 
+		virtual bool areWeStillConnected() noexcept = 0;
+
 		virtual void connect(const std::string&) = 0;
 
 		virtual void disconnect() noexcept = 0;
@@ -296,8 +298,6 @@ namespace DiscordCoreInternal {
 		virtual void writeData(const std::string& data, bool priority = false) noexcept = 0;
 
 		virtual std::string getInputBuffer() noexcept = 0;
-
-		virtual bool areWeStillConnected() noexcept = 0;
 
 		virtual int64_t getBytesRead() noexcept = 0;
 
