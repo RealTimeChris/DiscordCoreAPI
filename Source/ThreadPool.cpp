@@ -67,7 +67,7 @@ namespace DiscordCoreInternal {
 			this->currentIndex++;
 			this->currentCount++;
 			int64_t theIndexNew = this->currentIndex;
-			workerThread.theThread = std::jthread([=](std::stop_token theToken) {
+			workerThread.theThread = std::jthread([=, this](std::stop_token theToken) {
 				this->threadFunction(theToken, theIndexNew);
 			});
 			this->workerThreads[this->currentIndex] = std::move(workerThread);
@@ -88,7 +88,7 @@ namespace DiscordCoreInternal {
 			this->currentIndex++;
 			this->currentCount++;
 			int64_t theIndexNew = this->currentIndex;
-			workerThread.theThread = std::jthread([=](std::stop_token theToken) {
+			workerThread.theThread = std::jthread([=, this](std::stop_token theToken) {
 				this->threadFunction(theToken, theIndexNew);
 			});
 			this->workerThreads[this->currentIndex] = std::move(workerThread);
