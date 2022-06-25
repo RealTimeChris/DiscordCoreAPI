@@ -315,7 +315,6 @@ namespace DiscordCoreAPI {
 					}
 					this->sendSpeakingMessage(true);
 					this->areWePlaying.store(true);
-					this->doWeReconnect->store(false);
 				}
 				if (this->areWeStopping.load()) {
 					this->areWePlaying.store(false);
