@@ -1280,7 +1280,7 @@ namespace DiscordCoreInternal {
 					if (this->configManager->doWePrintWebSocketErrorMessages()) {
 						DiscordCoreAPI::reportException("VoiceSocketAgent::run()");
 					}
-					this->doWeReconnect.store(true);
+					this->onClosed();
 				}
 				if (!theToken.stop_requested() && !this->doWeReconnect.load() && this->theClients.contains(0) && this->theClients[0] && !this->doWeQuit->load()) {
 					this->parseHeadersAndMessage(this->theClients[0].get());
