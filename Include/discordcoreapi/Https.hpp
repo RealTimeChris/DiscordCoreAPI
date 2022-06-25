@@ -117,7 +117,10 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll HttpsConnectionManager {
 	  public:
+		int64_t currentIndex{};
 		std::mutex theMutex{};
+
+		HttpsConnection* getConnection();
 
 		void initialize();
 	};

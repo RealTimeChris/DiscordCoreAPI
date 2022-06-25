@@ -266,20 +266,18 @@ namespace DiscordCoreInternal {
 	HttpsClient::HttpsClient(DiscordCoreAPI::ConfigManager* configManagerNew) : configManager(configManagerNew) {
 		this->connectionManager.initialize();
 	};
-		
-	std::mutex theMutex{};
-	int64_t currentIndex{};
-	HttpsConnection* getConnection() {
-		std::lock_guard<std::mutex> theLock{ theMutex };
+	
+	HttpsConnection* HttpsConnectionManager::getConnection() {
+		std::lock_guard<std::mutex> theLock{ this->theMutex };
 		for (auto& [key, value]: Globals::httpsConnections) {
 			if (!value->areWeCheckedOut.load()) {
 				value->areWeCheckedOut.store(true);
 				return value.get();
 			}
 		}
-		currentIndex++;
-		Globals::httpsConnections[currentIndex] = std::make_unique<HttpsConnection>();
-		return Globals::httpsConnections[currentIndex].get();
+		this->currentIndex++;
+		Globals::httpsConnections[this->currentIndex] = std::make_unique<HttpsConnection>();
+		return Globals::httpsConnections[this->currentIndex].get();
 	}
 
 	HttpsResponseData HttpsClient::executeByRateLimitData(const HttpsWorkloadData& workload) {
@@ -362,7 +360,7 @@ namespace DiscordCoreInternal {
 	}
 
 	HttpsResponseData HttpsClient::httpRequestInternal(const HttpsWorkloadData& workload, RateLimitData& rateLimitData) {
-		auto httpsConnection = getConnection();
+		auto httpsConnection = this->connectionManager.getConnection();
 		try {			
 			httpsConnection->resetValues();
 			if (httpsConnection->currentRecursionDepth >= httpsConnection->maxRecursion) {
