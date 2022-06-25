@@ -188,8 +188,6 @@ namespace DiscordCoreInternal {
 			std::string writeString{}; 
 			if (this->outputBuffers.size() > 0) {
 				writeString = std::move(this->outputBuffers.front());
-			}
-			if (writeString.size() > 0) {
 				auto returnValue{ SSL_write_ex(this->ssl, writeString.data(), writeString.size(), &writtenBytes) };
 				auto errorValue{ SSL_get_error(this->ssl, returnValue) };
 				switch (errorValue) {
@@ -278,7 +276,7 @@ namespace DiscordCoreInternal {
 		}
 
 		/* SNI */
-		if (auto returnValue = SSL_set_tlsext_host_name(this->ssl, baseUrl.c_str()); !returnValue) {
+		if (auto returnValue = SSL_set_tlsext_host_name(this->ssl, stringNew.c_str()); !returnValue) {
 			throw ConnectionError{ reportSSLError("HttpsSSLClient::connect()::SSL_set_tlsext_host_name(), ", returnValue, this->ssl) };
 		}
 
@@ -296,23 +294,10 @@ namespace DiscordCoreInternal {
 	}
 
 	bool HttpsSSLClient::areWeStillConnected() noexcept {
-		if (this->theSocket != SOCKET_ERROR) {
-			fd_set errorfds{};
-			FD_ZERO(&errorfds);
-			FD_SET(this->theSocket, &errorfds);
-			timeval checkTime{ .tv_usec = 1 };
-			if (auto returnValue = select(this->theSocket + 1, nullptr, nullptr, &errorfds, &checkTime); returnValue == SOCKET_ERROR) {
-				return false;
-			}
-			if (time(nullptr) > this->connectionTime + 60) {
-				return false;
-			}
-			if (FD_ISSET(this->theSocket, &errorfds)) {
-				return false;
-			}
-			return true;
-		} else {
+		if (time(nullptr) > this->connectionTime + 60) {
 			return false;
+		} else {
+			return true;
 		}
 	}
 
@@ -568,12 +553,14 @@ namespace DiscordCoreInternal {
 	}
 
 	bool WebSocketSSLShard::areWeStillConnected() noexcept {
+		fd_set errorfds{};
+		int32_t nfds{};
+		FD_ZERO(&errorfds);
 		if (this->theSocket != SOCKET_ERROR) {
-			fd_set errorfds{};
-			FD_ZERO(&errorfds);
 			FD_SET(this->theSocket, &errorfds);
+			nfds = this->theSocket;
 			timeval checkTime{ .tv_usec = 1 };
-			if (auto returnValue = select(this->theSocket + 1, nullptr, nullptr, &errorfds, &checkTime); returnValue == SOCKET_ERROR) {
+			if (auto returnValue = select(nfds + 1, nullptr, nullptr, &errorfds, &checkTime); returnValue == SOCKET_ERROR) {
 				return false;
 			}
 			if (FD_ISSET(this->theSocket, &errorfds)) {

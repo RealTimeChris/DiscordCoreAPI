@@ -355,8 +355,6 @@ namespace DiscordCoreInternal {
 			}
 			if (!Globals::httpsConnection->areWeStillConnected() || Globals::httpsConnection->doWeConnect || workload.baseUrl != Globals::httpsConnection->currentBaseUrl) {
 				Globals::httpsConnection->currentBaseUrl = workload.baseUrl;
-				std::cout << "BASE URL CURRENT: " << Globals::httpsConnection->currentBaseUrl << std::endl;
-				std::cout << "BASE URL NEW: " << workload.baseUrl << std::endl;
 				Globals::httpsConnection->connect(workload.baseUrl);
 				Globals::httpsConnection->doWeConnect = false;
 			}
@@ -452,20 +450,22 @@ namespace DiscordCoreInternal {
 
 	std::vector<HttpsResponseData> HttpsClient::httpRequest(const std::vector<HttpsWorkloadData>& workload) {
 		std::vector<HttpsResponseData> returnVector{};
+		std::string currentBaseUrl{};
 		auto rateLimitData = std::make_unique<RateLimitData>();
-		std::unique_ptr<HttpsConnection> httpsConnection{ std::make_unique<HttpsConnection>() };
 		for (auto& value: workload) {
-			try {
-				std::cout << "THE BASE URL: " << value.baseUrl << std::endl;
-				httpsConnection->connect(value.baseUrl);
-			} catch (ProcessingError&) {
-				if (this->configManager->doWePrintHttpsErrorMessages()) {
-					DiscordCoreAPI::reportException("HttpsClient::httpRequest()");
+			if (currentBaseUrl != value.baseUrl) {
+				try {
+					Globals::httpsConnection->connect(value.baseUrl);
+				} catch (ProcessingError&) {
+					if (this->configManager->doWePrintHttpsErrorMessages()) {
+						DiscordCoreAPI::reportException("HttpsClient::httpRequest()");
+					}
+					continue;
 				}
-				continue;
 			}
-			auto theRequest = httpsConnection->buildRequest(value);
-			httpsConnection->writeData(theRequest, true);
+			currentBaseUrl = value.baseUrl;
+			auto theRequest = Globals::httpsConnection->buildRequest(value);
+			Globals::httpsConnection->writeData(theRequest, true);
 			HttpsResponseData returnData = this->getResponse(*rateLimitData);
 			returnVector.push_back(returnData);
 		}
@@ -484,6 +484,8 @@ namespace DiscordCoreInternal {
 		while (HttpsWorkloadData::workloadIdsInternal[workload.workloadType].load() < workload.thisWorkerId.load() && workload.thisWorkerId.load() != 0) {
 			std::this_thread::sleep_for(1ms);
 		}
+
+		HttpsConnection* theConnectionNew = Globals::httpsConnection.get();
 
 		while (!rateLimitData.theSemaphore.try_acquire()) {
 			std::this_thread::sleep_for(1ms);
