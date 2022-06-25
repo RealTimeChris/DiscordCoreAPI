@@ -386,10 +386,15 @@ namespace DiscordCoreInternal {
 		HttpsResponseData theData{};
 		while (true) {
 			try {
-				theConnection->processIO();
-				std::string theString = theConnection->getInputBuffer();
-				if (theString.size() > 0) {
-					theConnection->inputBufferReal.insert(theConnection->inputBufferReal.end(), theString.begin(), theString.end());
+				if (theConnection->areWeStillConnected()) {
+					theConnection->processIO();
+					std::string theString = theConnection->getInputBuffer();
+					if (theString.size() > 0) {
+						theConnection->inputBufferReal.insert(theConnection->inputBufferReal.end(), theString.begin(), theString.end());
+					}
+				} else {
+					theData.responseCode = -1;
+					return theData;
 				}
 			} catch (ProcessingError&) {
 				if (this->configManager->doWePrintHttpsErrorMessages()) {
@@ -445,7 +450,7 @@ namespace DiscordCoreInternal {
 				break;
 			}
 		};
-		return Globals::httpsConnection->finalizeReturnValues(rateLimitData, theData);
+		return theConnection->finalizeReturnValues(rateLimitData, theData);
 	}
 
 	std::vector<HttpsResponseData> HttpsClient::httpRequest(const std::vector<HttpsWorkloadData>& workload) {
