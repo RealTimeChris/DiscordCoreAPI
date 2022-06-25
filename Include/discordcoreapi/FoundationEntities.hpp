@@ -2214,8 +2214,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Data structure representing a single Guild. \brief Data structure representing a single Guild.
-	class DiscordCoreAPI_Dll GuildData : public DiscordEntity {
-	  public:
+	template<class GuildDerived> struct GuildDataBase : public DiscordEntity {		
 		std::unordered_map<uint64_t, PresenceUpdateData> presences{};///< Array of presences for each GuildMember.
 		std::unordered_map<uint64_t, VoiceStateData> voiceStates{};///< Array of Guild-member voice-states.
 		DiscordCoreClient* discordCoreClient{ nullptr };///< A pointer to the DiscordCoreClient.
@@ -2231,12 +2230,29 @@ namespace DiscordCoreAPI {
 		uint64_t ownerId{};///< User id of the Guild's owner.
 		int8_t flags{ 0 };///< Guild flags.
 
-		GuildData() = default;
+		GuildDataBase() = default;
 
-		void initialize();
+		VoiceConnection* connectToVoice(const uint64_t guildMemberId, const uint64_t channelId, bool selfDeaf, bool selfMute) {
+			return static_cast<GuildDerived*>(this)->connectToVoice(guildMemberId, channelId, selfDeaf, selfMute);
+		}
 
-		virtual ~GuildData() = default;
+		void areWeConnected() {
+			static_cast<GuildDerived*>(this)->areWeConnected();
+		}
+
+		void initialize() {
+			static_cast<GuildDerived*>(this)->initialize();
+		}
+
+		void disconnect() {
+			static_cast<GuildDerived*>(this)->disconnect();
+		}
+
+		virtual ~GuildDataBase() = default;
+
 	};
+
+	using GuildData = GuildDataBase<Guild>;
 
 	/// Guild scheduled event privacy levels. \brief Guild scheduled event privacy levels.
 	enum class GuildScheduledEventPrivacyLevel {

@@ -132,7 +132,7 @@ namespace DiscordCoreAPI {
 		return getVoiceConnectionMap()[this->id]->areWeConnected();
 	}
 
-	void GuildData::initialize() {
+	void Guild::initialize() {
 		if (!getVoiceConnectionMap().contains(this->id)) {
 			std::string theShardId{ std::to_string((this->id >> 22) % this->discordCoreClient->configManager.getTotalShardCount()) };
 			getVoiceConnectionMap()[this->id] = std::make_unique<VoiceConnection>(this->discordCoreClient->baseSocketAgentMap[theShardId].get());
@@ -725,7 +725,7 @@ namespace DiscordCoreAPI {
 		co_return Guilds::httpsClient->submitWorkloadAndGetResult<void>(workload);
 	}
 
-	void Guilds::insertGuild(GuildData guild) {
+	void Guilds::insertGuild(GuildData  guild) {
 		std::unique_lock<std::shared_mutex> theLock{ Guilds::theMutex };
 		if (guild.id == 0) {
 			return;

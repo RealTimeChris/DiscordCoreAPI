@@ -252,7 +252,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// A discord Guild. Used to connect to/disconnect from voice. \brief A discord Guild. Used to connect to/disconnect from voice.
-	class DiscordCoreAPI_Dll Guild : public GuildData {
+	class DiscordCoreAPI_Dll Guild : public GuildDataBase<Guild> {
 	  public:
 		friend Guilds;
 
@@ -307,6 +307,9 @@ namespace DiscordCoreAPI {
 
 		/// Disconnects from a voice Channel. \brief Disconnects from a voice Channel.
 		void disconnect();
+
+		/// Initializes this guild. \brief Initializes this guild.
+		void initialize();
 
 		/// Checks if we are currently connected to a voice Channel. \brief Checks if we are currently connected to a voice Channel.
 		/// \returns A bool telling us if we are connected.
