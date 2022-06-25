@@ -550,12 +550,6 @@ namespace DiscordCoreInternal {
 			returnValue == SOCKET_ERROR) {
 			throw ConnectionError{ reportError("HttpsSSLClient::connect()::setsockopt(), ") };
 		}
-
-		const char optionValue03{ 1 };
-		if (auto returnValue = setsockopt(this->theSocket, SOL_SOCKET, SO_KEEPALIVE, &optionValue03, sizeof(optionValue03));
-			returnValue == SOCKET_ERROR) {
-			throw ConnectionError{ reportError("HttpsSSLClient::connect()::setsockopt(), ") };
-		}
 #else
 		int32_t optionValue{ 1 };
 		if (auto returnValue = setsockopt(this->theSocket, SOL_TCP, TCP_NODELAY, &optionValue, sizeof(optionValue)); returnValue == SOCKET_ERROR) {
