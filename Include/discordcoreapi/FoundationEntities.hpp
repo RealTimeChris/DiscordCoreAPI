@@ -869,7 +869,6 @@ namespace DiscordCoreAPI {
 		static std::string getFutureISO8601TimeStamp(int32_t minutesToAdd, int32_t hoursToAdd = 0, int32_t daysToAdd = 0, int32_t monthsToAdd = 0, int32_t yearsToAdd = 0);
 
 		/// Deduces whether or not a chosen period of time has passed, for a chosen timestamp. \brief Deduces whether or not a chosen period of time has passed, for a chosen timestamp.
-		/// \param timeStamp A std::string representing the timestamp that you would like to check for time-elapsement.
 		/// \param days An int64_t representing the number of days to check for.
 		/// \param hours An int64_t representing the number of hours to check for.
 		/// \param minutes An int64_t representing the number of minutes to check for.
