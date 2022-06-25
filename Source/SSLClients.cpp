@@ -73,7 +73,7 @@ namespace DiscordCoreInternal {
 		std::string data = dataToWrite;
 		if (priority) {
 			size_t writtenBytes{ 0 };
-			if (data.size() > 0) {
+			if (data.size() > 0 && this->ssl) {
 				auto returnValue{ SSL_write_ex(this->ssl, data.data(), data.size(), &writtenBytes) };
 				auto errorValue{ SSL_get_error(this->ssl, returnValue) };
 				switch (errorValue) {
@@ -185,36 +185,39 @@ namespace DiscordCoreInternal {
 			this->wantRead = false;
 			this->wantWrite = false;
 			size_t writtenBytes{ 0 };
-			std::string writeString = std::move(this->outputBuffers.front());
-			auto returnValue{ SSL_write_ex(this->ssl, writeString.data(), writeString.size(), &writtenBytes) };
-			auto errorValue{ SSL_get_error(this->ssl, returnValue) };
-			switch (errorValue) {
-				case SSL_ERROR_NONE: {
-					if (writtenBytes > 0) {
-						this->outputBuffers.erase(this->outputBuffers.begin());
-					} else {
-						this->outputBuffers[0] = std::move(writeString);
+			std::string writeString{}; 
+			if (this->outputBuffers.size() > 0) {
+				writeString = std::move(this->outputBuffers.front());
+				auto returnValue{ SSL_write_ex(this->ssl, writeString.data(), writeString.size(), &writtenBytes) };
+				auto errorValue{ SSL_get_error(this->ssl, returnValue) };
+				switch (errorValue) {
+					case SSL_ERROR_NONE: {
+						if (writtenBytes > 0) {
+							this->outputBuffers.erase(this->outputBuffers.begin());
+						} else {
+							this->outputBuffers[0] = std::move(writeString);
+						}
+						break;
 					}
-					break;
-				}
-				case SSL_ERROR_WANT_READ: {
-					this->wantRead = true;
-					break;
-				}
-				case SSL_ERROR_WANT_WRITE: {
-					this->wantWrite = true;
-					break;
-				}
-				case SSL_ERROR_SYSCALL: {
-					[[fallthrough]];
-				}
-				case SSL_ERROR_ZERO_RETURN: {
-					this->connectionTime = 0;
-					break;
-				}
-				default: {
-					throw ProcessingError{ reportSSLError("HttpsSSLClient::processIO()::SSL_write_ex(), ", errorValue, this->ssl) +
-						reportError("HttpsSSLClient::processIO()::SSL_write_ex(), ") };
+					case SSL_ERROR_WANT_READ: {
+						this->wantRead = true;
+						break;
+					}
+					case SSL_ERROR_WANT_WRITE: {
+						this->wantWrite = true;
+						break;
+					}
+					case SSL_ERROR_SYSCALL: {
+						[[fallthrough]];
+					}
+					case SSL_ERROR_ZERO_RETURN: {
+						this->connectionTime = 0;
+						break;
+					}
+					default: {
+						throw ProcessingError{ reportSSLError("HttpsSSLClient::processIO()::SSL_write_ex(), ", errorValue, this->ssl) +
+							reportError("HttpsSSLClient::processIO()::SSL_write_ex(), ") };
+					}
 				}
 			}
 		}

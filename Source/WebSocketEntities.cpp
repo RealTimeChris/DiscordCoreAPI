@@ -1376,7 +1376,7 @@ namespace DiscordCoreInternal {
 		try {
 			DiscordCoreAPI::waitForTimeToPass(this->voiceConnectionDataBuffer, this->voiceConnectionData, 20000);
 			this->baseUrl = this->voiceConnectionData.endPoint.substr(0, this->voiceConnectionData.endPoint.find(":"));
-			auto theClient = std::make_unique<WebSocketSSLShard>(nullptr, 0, 3, this->configManager);
+			auto theClient = std::make_unique<WebSocketSSLShard>(nullptr, 0, 0, this->configManager);
 			theClient->connect(this->baseUrl);
 			std::string sendVector = "GET /?v=4 HTTP/1.1\r\nHost: " + this->baseUrl +
 				"\r\nPragma: no-cache\r\nUser-Agent: DiscordCoreAPI/1.0\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Key: " +
@@ -1414,7 +1414,7 @@ namespace DiscordCoreInternal {
 				}
 				std::this_thread::sleep_for(1ms);
 				if (this->theClients.contains(0) && theStopWatch.hasTimePassed()) {
-					this->theClients.erase(3);
+					this->theClients.erase(0);
 					this->doWeReconnect.store(true);
 				}
 			}
@@ -1427,7 +1427,6 @@ namespace DiscordCoreInternal {
 	}
 
 	VoiceSocketAgent::~VoiceSocketAgent() noexcept {
-		this->onClosed();
 		this->theTask->request_stop();
 		if (this->theTask->joinable()) {
 			this->theTask->join();

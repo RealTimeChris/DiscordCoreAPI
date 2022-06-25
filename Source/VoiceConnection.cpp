@@ -300,10 +300,10 @@ namespace DiscordCoreAPI {
 				}
 			}
 			this->sendSpeakingMessage(true);
-			while ((this->audioData.rawFrameData.sampleCount != 0 || this->audioData.encodedFrameData.sampleCount != 0) && !this->areWeStopping && !theToken.stop_requested()) {
+			while (
+				(this->audioData.rawFrameData.sampleCount != 0 || this->audioData.encodedFrameData.sampleCount != 0) && !this->areWeStopping.load() && !theToken.stop_requested()) {
 				this->areWePlaying.store(true);
 				if (this->doWeReconnect->load()) {
-					this->doWeReconnect->store(false);
 					this->areWeConnectedBool = false;
 					this->sendSpeakingMessage(false);
 					StopWatch theStopWatch{ 10000ms };
@@ -315,6 +315,7 @@ namespace DiscordCoreAPI {
 					}
 					this->sendSpeakingMessage(true);
 					this->areWePlaying.store(true);
+					this->doWeReconnect->store(false);
 				}
 				if (this->areWeStopping.load()) {
 					this->areWePlaying.store(false);
@@ -335,7 +336,7 @@ namespace DiscordCoreAPI {
 					this->areWePlaying.store(false);
 					return;
 				}
-				if (this->audioData.type != AudioFrameType::Unset && this->audioData.type != AudioFrameType::Skip && !this->areWeStopping) {
+				if (this->audioData.type != AudioFrameType::Unset && this->audioData.type != AudioFrameType::Skip && !this->areWeStopping.load()) {
 					std::string newFrame{};
 					if (this->audioData.type == AudioFrameType::RawPCM) {
 						std::vector<RawFrameData> rawFrames{};
@@ -365,7 +366,7 @@ namespace DiscordCoreAPI {
 					this->audioData.type = AudioFrameType::Unset;
 					this->audioData.encodedFrameData.data.clear();
 					this->audioData.rawFrameData.data.clear();
-				} else if (this->audioData.type == AudioFrameType::Skip && !this->areWeStopping) {
+				} else if (this->audioData.type == AudioFrameType::Skip && !this->areWeStopping.load()) {
 					SongCompletionEventData completionEventData{};
 					completionEventData.guild = Guilds::getCachedGuildAsync({ .guildId = this->voiceConnectInitData.guildId }).get();
 					completionEventData.guildMember =

@@ -463,11 +463,11 @@ namespace DiscordCoreInternal {
 					continue;
 				}
 			}
+			currentBaseUrl = value.baseUrl;
 			auto theRequest = Globals::httpsConnection->buildRequest(value);
-			Globals::httpsConnection->writeData(theRequest);
+			Globals::httpsConnection->writeData(theRequest, true);
 			HttpsResponseData returnData = this->getResponse(*rateLimitData);
 			returnVector.push_back(returnData);
-			currentBaseUrl = value.baseUrl;
 		}
 		return returnVector;
 	}
