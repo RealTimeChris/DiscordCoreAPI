@@ -1391,9 +1391,8 @@ namespace DiscordCoreInternal {
 				}
 				return;
 			}
-			int32_t currentDepth{ 0 };
+			DiscordCoreAPI::StopWatch theStopWatch{10000ms};
 			while (!this->doWeQuit->load()) {
-				currentDepth++;
 				if (this->theClients[0]->theState == WebSocketState::Connected) {
 					break;
 				}
@@ -1414,8 +1413,9 @@ namespace DiscordCoreInternal {
 					return;
 				}
 				std::this_thread::sleep_for(1ms);
-				if (this->theClients.contains(0) && currentDepth >= 5000) {
+				if (this->theClients.contains(0) && theStopWatch.hasTimePassed()) {
 					this->theClients.erase(3);
+					this->doWeReconnect.store(true);
 				}
 			}
 		} catch (...) {
