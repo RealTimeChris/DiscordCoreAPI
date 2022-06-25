@@ -943,7 +943,7 @@ namespace DiscordCoreAPI {
 		if (static_cast<uint64_t>(guild.ownerId) == guildMember.id) {
 			return Permissions::getAllPermissions();
 		}
-		auto guildRoles = Roles ::getGuildRolesAsync({ .guildId = guildMember.guildId }).get();
+		auto guildRoles = Roles::getGuildRolesAsync({ .guildId = guildMember.guildId }).get();
 		RoleData roleEveryone{};
 		for (auto& value: guildRoles) {
 			if (value.id == guild.id) {

@@ -27,8 +27,8 @@
 namespace DiscordCoreInternal {
 
 	namespace Globals {
-		thread_local std::unique_ptr<HttpsConnection> httpsConnection{ std::make_unique<HttpsConnection>() };
 		std::unordered_map<std::string, std::unique_ptr<RateLimitData>> rateLimitValues{};
+		std::unordered_map<int64_t, std::unique_ptr<HttpsConnection>> httpsConnections{};
 		std::unordered_map<HttpsWorkloadType, std::string> rateLimitValueBuckets{};
 	}
 
@@ -266,10 +266,24 @@ namespace DiscordCoreInternal {
 	HttpsClient::HttpsClient(DiscordCoreAPI::ConfigManager* configManagerNew) : configManager(configManagerNew) {
 		this->connectionManager.initialize();
 	};
+		
+	std::mutex theMutex{};
+	int64_t currentIndex{};
+	HttpsConnection* getConnection() {
+		std::lock_guard<std::mutex> theLock{ theMutex };
+		for (auto& [key, value]: Globals::httpsConnections) {
+			if (!value->areWeCheckedOut.load()) {
+				value->areWeCheckedOut.store(true);
+				return value.get();
+			}
+		}
+		currentIndex++;
+		Globals::httpsConnections[currentIndex] = std::make_unique<HttpsConnection>();
+		return Globals::httpsConnections[currentIndex].get();
+	}
 
 	HttpsResponseData HttpsClient::executeByRateLimitData(const HttpsWorkloadData& workload) {
 		HttpsResponseData returnData{};
-		Globals::httpsConnection->resetValues();
 		RateLimitData& rateLimitData = *Globals::rateLimitValues[Globals::rateLimitValueBuckets[workload.workloadType]].get();
 		int64_t timeRemaining{};
 		int64_t currentTime = static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
@@ -348,33 +362,37 @@ namespace DiscordCoreInternal {
 	}
 
 	HttpsResponseData HttpsClient::httpRequestInternal(const HttpsWorkloadData& workload, RateLimitData& rateLimitData) {
-		try {
-			Globals::httpsConnection->resetValues();
-			if (Globals::httpsConnection->currentRecursionDepth >= Globals::httpsConnection->maxRecursion) {
+		auto httpsConnection = getConnection();
+		try {			
+			httpsConnection->resetValues();
+			if (httpsConnection->currentRecursionDepth >= httpsConnection->maxRecursion) {
+				httpsConnection->currentRecursionDepth = 0;
+				httpsConnection->areWeCheckedOut.store(false);
 				return HttpsResponseData{};
 			}
-			if (!Globals::httpsConnection->areWeStillConnected() || Globals::httpsConnection->doWeConnect || workload.baseUrl != Globals::httpsConnection->currentBaseUrl) {
-				Globals::httpsConnection->currentBaseUrl = workload.baseUrl;
-				Globals::httpsConnection->connect(workload.baseUrl);
-				Globals::httpsConnection->doWeConnect = false;
+			if (!httpsConnection->areWeStillConnected() || httpsConnection->doWeConnect || workload.baseUrl != httpsConnection->currentBaseUrl) {
+				httpsConnection->currentBaseUrl = workload.baseUrl;
+				httpsConnection->connect(workload.baseUrl);
+				httpsConnection->doWeConnect = false;
 			}
-			auto theRequest = Globals::httpsConnection->buildRequest(workload);
-			Globals::httpsConnection->writeData(theRequest);
-			auto result = this->getResponse(rateLimitData, Globals::httpsConnection.get());
+			auto theRequest = httpsConnection->buildRequest(workload);
+			httpsConnection->writeData(theRequest);
+			auto result = this->getResponse(rateLimitData, httpsConnection);
 			if (result.responseCode == -1) {
-				Globals::httpsConnection->currentRecursionDepth += 1;
-				Globals::httpsConnection->doWeConnect = true;
+				httpsConnection->currentRecursionDepth += 1;
+				httpsConnection->doWeConnect = true;
 				return this->httpRequestInternal(workload, rateLimitData);
 			} else {
-				Globals::httpsConnection->currentRecursionDepth = 0;
+				httpsConnection->currentRecursionDepth = 0;
+				httpsConnection->areWeCheckedOut.store(false);
 				return result;
 			}
 		} catch (...) {
 			if (this->configManager->doWePrintHttpsErrorMessages()) {
 				DiscordCoreAPI::reportException(workload.callStack + "::HttpsClient::executeHttpRequest()");
 			}
-			Globals::httpsConnection->currentRecursionDepth += 1;
-			Globals::httpsConnection->doWeConnect = true;
+			httpsConnection->currentRecursionDepth += 1;
+			httpsConnection->doWeConnect = true;
 			return this->httpRequestInternal(workload, rateLimitData);
 		}
 	}

@@ -106,6 +106,7 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll HttpsConnection : public HttpsSSLClient, public HttpsRnRBuilder {
 	  public:
+		std::atomic_bool areWeCheckedOut{ false };
 		int32_t currentRecursionDepth{ 0 };
 		const int32_t maxRecursion{ 10 };
 		std::string currentBaseUrl{};

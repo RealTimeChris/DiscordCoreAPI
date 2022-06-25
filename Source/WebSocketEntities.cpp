@@ -924,8 +924,10 @@ namespace DiscordCoreInternal {
 						}
 					}
 					if (this->theClients.contains(key) && this->theClients[key] && value->processedMessages.size() > 0) {
-						if (value) {
-							this->onMessageReceived(value.get());
+						while (value->processedMessages.size() > 0){
+							if (value) {
+								this->onMessageReceived(value.get());
+							}
 						}
 					}
 					if (this->theClients.contains(key) && this->theClients[key]) {

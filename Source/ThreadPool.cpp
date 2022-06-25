@@ -94,6 +94,7 @@ namespace DiscordCoreInternal {
 			this->workerThreads[this->currentIndex] = std::move(workerThread);
 		}
 		this->theCoroutineHandles.push(coro);
+		theLock.unlock();
 		this->theCondVar.notify_one();
 	}
 
@@ -112,8 +113,9 @@ namespace DiscordCoreInternal {
 						}
 					}
 				}
-				this->theCondVar.wait_for(theLock01, std::chrono::microseconds(1000));
+				this->theCondVar.wait_for(theLock01, std::chrono::microseconds(100000));
 			}
+			
 
 			if (this->areWeQuitting.load() || theToken.stop_requested()) {
 				break;

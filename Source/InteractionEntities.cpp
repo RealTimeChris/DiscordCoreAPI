@@ -445,7 +445,7 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-		ButtonCollector::buttonInteractionBufferMap.erase(std::to_string(this->channelId));
+		ModalCollector::modalInteractionBufferMap.erase(std::to_string(this->channelId));
 	}
 
 	std::unordered_map<std::string, UnboundedMessageBlock<InteractionData>*> SelectMenuCollector::selectMenuInteractionBufferMap{};
