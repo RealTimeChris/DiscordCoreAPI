@@ -451,16 +451,20 @@ namespace DiscordCoreInternal {
 	std::vector<HttpsResponseData> HttpsClient::httpRequest(const std::vector<HttpsWorkloadData>& workload) {
 		std::vector<HttpsResponseData> returnVector{};
 		auto rateLimitData = std::make_unique<RateLimitData>();
+		std::string currentConnectionAddress{};
 		std::unique_ptr<HttpsConnection> httpsConnection{ std::make_unique<HttpsConnection>() };
 		for (auto& value: workload) {
 			try {
-				httpsConnection->connect(value.baseUrl);
+				if (currentConnectionAddress != value.baseUrl) {
+					httpsConnection->connect(value.baseUrl);
+				}
 			} catch (ProcessingError&) {
 				if (this->configManager->doWePrintHttpsErrorMessages()) {
 					DiscordCoreAPI::reportException("HttpsClient::httpRequest()");
 				}
 				continue;
 			}
+			currentConnectionAddress = value.baseUrl; 
 			auto theRequest = httpsConnection->buildRequest(value);
 			httpsConnection->writeData(theRequest, true);
 			HttpsResponseData returnData = this->getResponse(*rateLimitData, httpsConnection.get());
