@@ -386,15 +386,10 @@ namespace DiscordCoreInternal {
 		HttpsResponseData theData{};
 		while (true) {
 			try {
-				if (theConnection->areWeStillConnected()) {
-					theConnection->processIO();
-					std::string theString = theConnection->getInputBuffer();
-					if (theString.size() > 0) {
-						theConnection->inputBufferReal.insert(theConnection->inputBufferReal.end(), theString.begin(), theString.end());
-					}
-				} else {
-					theData.responseCode = -1;
-					return theData;
+				theConnection->processIO();
+				std::string theString = theConnection->getInputBuffer();
+				if (theString.size() > 0) {
+					theConnection->inputBufferReal.insert(theConnection->inputBufferReal.end(), theString.begin(), theString.end());
 				}
 			} catch (ProcessingError&) {
 				if (this->configManager->doWePrintHttpsErrorMessages()) {
