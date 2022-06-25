@@ -274,6 +274,7 @@ namespace DiscordCoreInternal {
 			throw ConnectionError {
 				reportError("HttpsSSLClient::connect()::setsockopt(), ");
 			}
+		}
 #endif
 		if (auto returnValue = ::connect(this->theSocket, address->ai_addr, static_cast<int32_t>(address->ai_addrlen)); returnValue == SOCKET_ERROR) {
 			throw ConnectionError{ reportError("HttpsSSLClient::connect()::connect(), ") };
