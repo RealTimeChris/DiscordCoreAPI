@@ -355,8 +355,6 @@ namespace DiscordCoreInternal {
 			}
 			if (!Globals::httpsConnection->areWeStillConnected() || Globals::httpsConnection->doWeConnect || workload.baseUrl != Globals::httpsConnection->currentBaseUrl) {
 				Globals::httpsConnection->currentBaseUrl = workload.baseUrl;
-				std::cout << "BASE URL CURRENT: " << Globals::httpsConnection->currentBaseUrl << std::endl;
-				std::cout << "BASE URL NEW: " << workload.baseUrl << std::endl;
 				Globals::httpsConnection->connect(workload.baseUrl);
 				Globals::httpsConnection->doWeConnect = false;
 			}
@@ -392,7 +390,6 @@ namespace DiscordCoreInternal {
 				std::string theString = theConnection->getInputBuffer();
 				if (theString.size() > 0) {
 					theConnection->inputBufferReal.insert(theConnection->inputBufferReal.end(), theString.begin(), theString.end());
-					std::cout << "THE STRING: " << theString << std::endl;
 				}
 			} catch (ProcessingError&) {
 				if (this->configManager->doWePrintHttpsErrorMessages()) {
@@ -448,7 +445,7 @@ namespace DiscordCoreInternal {
 				break;
 			}
 		};
-		return theConnection->finalizeReturnValues(rateLimitData, theData);
+		return Globals::httpsConnection->finalizeReturnValues(rateLimitData, theData);
 	}
 
 	std::vector<HttpsResponseData> HttpsClient::httpRequest(const std::vector<HttpsWorkloadData>& workload) {
@@ -456,8 +453,6 @@ namespace DiscordCoreInternal {
 		auto rateLimitData = std::make_unique<RateLimitData>();
 		std::unique_ptr<HttpsConnection> httpsConnection{ std::make_unique<HttpsConnection>() };
 		for (auto& value: workload) {
-			std::vector<HttpsResponseData> returnVector{};
-			auto rateLimitData = std::make_unique<RateLimitData>();
 			try {
 				httpsConnection->connect(value.baseUrl);
 			} catch (ProcessingError&) {
