@@ -157,9 +157,9 @@ namespace DiscordCoreInternal {
 
 		HttpsResponseData httpRequestInternal(const HttpsWorkloadData& workload, RateLimitData& rateLimitData);
 
-		HttpsResponseData executeByRateLimitData(const HttpsWorkloadData& workload);
+		HttpsResponseData getResponse(RateLimitData& rateLimitData, HttpsConnection* theConnection);
 
-		HttpsResponseData getResponse(RateLimitData& rateLimitData);
+		HttpsResponseData executeByRateLimitData(const HttpsWorkloadData& workload);
 	};
 
 

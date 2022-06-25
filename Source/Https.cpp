@@ -362,7 +362,7 @@ namespace DiscordCoreInternal {
 			}
 			auto theRequest = Globals::httpsConnection->buildRequest(workload);
 			Globals::httpsConnection->writeData(theRequest);
-			auto result = this->getResponse(rateLimitData);
+			auto result = this->getResponse(rateLimitData, Globals::httpsConnection.get());
 			if (result.responseCode == -1) {
 				Globals::httpsConnection->currentRecursionDepth += 1;
 				Globals::httpsConnection->doWeConnect = true;
@@ -381,17 +381,18 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	HttpsResponseData HttpsClient::getResponse( RateLimitData& rateLimitData) {
+	HttpsResponseData HttpsClient::getResponse(RateLimitData& rateLimitData, HttpsConnection* theConnection) {
 		DiscordCoreAPI::StopWatch stopWatch{ 5500ms };
-		Globals::httpsConnection->getInputBuffer().clear();
-		Globals::httpsConnection->resetValues();
+		theConnection->getInputBuffer().clear();
+		theConnection->resetValues();
 		HttpsResponseData theData{};
 		while (true) {
 			try {
-				Globals::httpsConnection->processIO();
-				std::string theString = Globals::httpsConnection->getInputBuffer();
+				theConnection->processIO();
+				std::string theString = theConnection->getInputBuffer();
 				if (theString.size() > 0) {
-					Globals::httpsConnection->inputBufferReal.insert(Globals::httpsConnection->inputBufferReal.end(), theString.begin(), theString.end());
+					theConnection->inputBufferReal.insert(theConnection->inputBufferReal.end(), theString.begin(), theString.end());
+					std::cout << "THE STRING: " << theString << std::endl;
 				}
 			} catch (ProcessingError&) {
 				if (this->configManager->doWePrintHttpsErrorMessages()) {
@@ -407,7 +408,7 @@ namespace DiscordCoreInternal {
 						doWeBreak = true;
 						break;
 					}
-					Globals::httpsConnection->parseCode(Globals::httpsConnection->inputBufferReal, theData);
+					theConnection->parseCode(theConnection->inputBufferReal, theData);
 					break;
 				}
 				case HttpsState::Collecting_Headers: {
@@ -415,8 +416,8 @@ namespace DiscordCoreInternal {
 						doWeBreak = true;
 						break;
 					}
-					if (Globals::httpsConnection->checkForHeadersToParse(Globals::httpsConnection->inputBufferReal) && !Globals::httpsConnection->doWeHaveHeaders) {
-						Globals::httpsConnection->parseHeaders(Globals::httpsConnection->inputBufferReal, theData);
+					if (theConnection->checkForHeadersToParse(theConnection->inputBufferReal) && !theConnection->doWeHaveHeaders) {
+						theConnection->parseHeaders(theConnection->inputBufferReal, theData);
 						stopWatch.resetTimer();
 					}
 					break;
@@ -426,17 +427,17 @@ namespace DiscordCoreInternal {
 						doWeBreak = true;
 						break;
 					}
-					if (!Globals::httpsConnection->doWeHaveContentSize) {
-						Globals::httpsConnection->clearCRLF(Globals::httpsConnection->inputBufferReal);
-						Globals::httpsConnection->parseSize(Globals::httpsConnection->inputBufferReal, theData);
-						Globals::httpsConnection->clearCRLF(Globals::httpsConnection->inputBufferReal);
+					if (!theConnection->doWeHaveContentSize) {
+						theConnection->clearCRLF(theConnection->inputBufferReal);
+						theConnection->parseSize(theConnection->inputBufferReal, theData);
+						theConnection->clearCRLF(theConnection->inputBufferReal);
 						stopWatch.resetTimer();
 					}
 					break;
 				}
 				case HttpsState::Collecting_Contents: {
-					if (static_cast<int64_t>(Globals::httpsConnection->inputBufferReal.size()) >= theData.contentSize &&
-							!Globals::httpsConnection->parseChunk(Globals::httpsConnection->inputBufferReal, theData) ||
+					if (static_cast<int64_t>(theConnection->inputBufferReal.size()) >= theData.contentSize &&
+							!theConnection->parseChunk(theConnection->inputBufferReal, theData) ||
 						stopWatch.hasTimePassed() || (theData.responseCode == -5 && theData.contentSize == -5)) {
 						doWeBreak = true;
 						break;
@@ -447,7 +448,7 @@ namespace DiscordCoreInternal {
 				break;
 			}
 		};
-		return Globals::httpsConnection->finalizeReturnValues(rateLimitData, theData);
+		return theConnection->finalizeReturnValues(rateLimitData, theData);
 	}
 
 	std::vector<HttpsResponseData> HttpsClient::httpRequest(const std::vector<HttpsWorkloadData>& workload) {
@@ -455,8 +456,9 @@ namespace DiscordCoreInternal {
 		auto rateLimitData = std::make_unique<RateLimitData>();
 		std::unique_ptr<HttpsConnection> httpsConnection{ std::make_unique<HttpsConnection>() };
 		for (auto& value: workload) {
+			std::vector<HttpsResponseData> returnVector{};
+			auto rateLimitData = std::make_unique<RateLimitData>();
 			try {
-				std::cout << "THE BASE URL: " << value.baseUrl << std::endl;
 				httpsConnection->connect(value.baseUrl);
 			} catch (ProcessingError&) {
 				if (this->configManager->doWePrintHttpsErrorMessages()) {
@@ -466,7 +468,7 @@ namespace DiscordCoreInternal {
 			}
 			auto theRequest = httpsConnection->buildRequest(value);
 			httpsConnection->writeData(theRequest, true);
-			HttpsResponseData returnData = this->getResponse(*rateLimitData);
+			HttpsResponseData returnData = this->getResponse(*rateLimitData, httpsConnection.get());
 			returnVector.push_back(returnData);
 		}
 		return returnVector;
