@@ -656,7 +656,7 @@ namespace DiscordCoreInternal {
 		}
 #else
 		if (auto returnValue = fcntl(this->theSocket, F_SETFL, fcntl(this->theSocket, F_GETFL, 0) | O_NONBLOCK); returnValue == SOCKET_ERROR) {
-			throw ConnectionError{ reportError("DatagramSocketSSLClient::connect()::fcntl(), ", this->theSocket) };
+			throw ConnectionError{ reportError("DatagramSocketSSLClient::connect()::fcntl(), ") };
 		}
 #endif
 	}
