@@ -101,7 +101,7 @@ namespace DiscordCoreInternal {
 		~VoiceSocketAgent() noexcept;
 
 	  protected:
-		DiscordCoreAPI::TSUnboundedMessageBlock<VoiceConnectionData> voiceConnectionDataBuffer{};
+		DiscordCoreAPI::UnboundedMessageBlock<VoiceConnectionData> voiceConnectionDataBuffer{};
 		std::unordered_map<int32_t, std::unique_ptr<WebSocketSSLShard>> theClients{};
 		std::unique_ptr<DatagramSocketSSLClient> voiceSocket{ nullptr };
 		DiscordCoreAPI::ConfigManager* configManager{ nullptr };

@@ -58,7 +58,7 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::BaseSocketAgent* baseSocketAgent{ nullptr };
 		DiscordCoreInternal::VoiceConnectInitData voiceConnectInitData{};
 		DiscordCoreInternal::VoiceConnectionData voiceConnectionData{};
-		TSUnboundedMessageBlock<AudioFrameData> audioBuffer{};
+		UnboundedMessageBlock<AudioFrameData> audioBuffer{};
 		std::unique_ptr<std::jthread> theTask{ nullptr };
 		DiscordCoreInternal::EventWaiter playSetEvent{};
 		DiscordCoreInternal::EventWaiter stopSetEvent{};
@@ -80,7 +80,7 @@ namespace DiscordCoreAPI {
 
 		void sendSingleAudioFrame(std::string& audioDataPacketNew);
 
-		TSUnboundedMessageBlock<AudioFrameData>& getAudioBuffer();
+		UnboundedMessageBlock<AudioFrameData>& getAudioBuffer();
 
 		void sendSingleFrame(const AudioFrameData& frameData);
 

@@ -88,7 +88,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	TSUnboundedMessageBlock<AudioFrameData>& VoiceConnection::getAudioBuffer() {
+	UnboundedMessageBlock<AudioFrameData>& VoiceConnection::getAudioBuffer() {
 		return this->audioBuffer;
 	}
 

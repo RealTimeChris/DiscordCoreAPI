@@ -530,11 +530,11 @@ namespace DiscordCoreAPI {
 	template<typename ObjectType>
 	concept Copyable = std::copyable<ObjectType>;
 
-	/// A messaging block for data-structures. \brief A messaging block for data-structures.
+	/// A thread-safe messaging block for data-structures. \brief A thread-safe messaging block for data-structures.
 	/// \tparam ObjectType The type of object that will be sent over the message block.
 	template<Copyable ObjectType> class UnboundedMessageBlock {
 	  public:
-		UnboundedMessageBlock<ObjectType>& operator=(UnboundedMessageBlock<ObjectType>&& other) {
+		UnboundedMessageBlock<ObjectType>& operator=(UnboundedMessageBlock<ObjectType>&& other) noexcept {
 			if (this != &other) {
 				this->theArray = std::move(other.theArray);
 				other.theArray = std::queue<ObjectType>{};
@@ -542,7 +542,7 @@ namespace DiscordCoreAPI {
 			return *this;
 		}
 
-		UnboundedMessageBlock(UnboundedMessageBlock<ObjectType>&& other) {
+		UnboundedMessageBlock(UnboundedMessageBlock<ObjectType>&& other) noexcept {
 			*this = std::move(other);
 		}
 
@@ -555,80 +555,6 @@ namespace DiscordCoreAPI {
 		UnboundedMessageBlock(UnboundedMessageBlock<ObjectType>&) = delete;
 
 		UnboundedMessageBlock() = default;
-
-		/// Sends an object of type ObjectType to the "recipient". \brief Sends an object of type ObjectType to the "recipient".
-		/// \param theObject An object of ObjectType.
-		void send(const ObjectType&& theObject) {
-			this->theArray.push(theObject);
-		}
-
-		/// Sends an object of type ObjectType to the "recipient". \brief Sends an object of type ObjectType to the "recipient".
-		/// \param theObject An object of ObjectType.
-		void send(ObjectType&& theObject) {
-			this->theArray.push(std::move(theObject));
-		}
-
-		/// Sends an object of type ObjectType to the "recipient". \brief Sends an object of type ObjectType to the "recipient".
-		/// \param theObject An object of ObjectType.
-		void send(const ObjectType& theObject) {
-			ObjectType newValue = theObject;
-			this->theArray.push(newValue);
-		}
-
-		/// Sends an object of type ObjectType to the "recipient". \brief Sends an object of type ObjectType to the "recipient".
-		/// \param theObject An object of ObjectType.
-		void send(ObjectType& theObject) {
-			ObjectType newValue = theObject;
-			this->theArray.push(newValue);
-		}
-
-		/// Clears the contents of the messaging block. \brief Clears the contents of the messaging block.
-		void clearContents() {
-			this->theArray = std::queue<ObjectType>{};
-		}
-
-		/// Tries to receive an object of type ObjectType to be placed into a reference. \brief Tries to receive an object of type ObjectType to be placed into a reference.
-		/// \param theObject A reference of type ObjectType for placing the potentially received object.
-		/// \returns bool A bool, denoting whether or not we received an object.
-		bool tryReceive(ObjectType& theObject) {
-			if (this->theArray.size() == 0) {
-				return false;
-			} else {
-				theObject = this->theArray.front();
-				this->theArray.pop();
-				return true;
-			}
-		}
-
-	  protected:
-		std::queue<ObjectType> theArray{};
-	};
-
-	/// A thread-safe messaging block for data-structures. \brief A thread-safe messaging block for data-structures.
-	/// \tparam ObjectType The type of object that will be sent over the message block.
-	template<Copyable ObjectType> class TSUnboundedMessageBlock {
-	  public:
-		TSUnboundedMessageBlock<ObjectType>& operator=(TSUnboundedMessageBlock<ObjectType>&& other) noexcept {
-			if (this != &other) {
-				this->theArray = std::move(other.theArray);
-				other.theArray = std::queue<ObjectType>{};
-			}
-			return *this;
-		}
-
-		TSUnboundedMessageBlock(TSUnboundedMessageBlock<ObjectType>&& other) noexcept {
-			*this = std::move(other);
-		}
-
-		TSUnboundedMessageBlock<ObjectType>& operator=(const TSUnboundedMessageBlock<ObjectType>&) = delete;
-
-		TSUnboundedMessageBlock(const TSUnboundedMessageBlock<ObjectType>&) = delete;
-
-		TSUnboundedMessageBlock<ObjectType>& operator=(TSUnboundedMessageBlock<ObjectType>&) = delete;
-
-		TSUnboundedMessageBlock(TSUnboundedMessageBlock<ObjectType>&) = delete;
-
-		TSUnboundedMessageBlock() = default;
 
 		/// Sends an object of type ObjectType to the "recipient". \brief Sends an object of type ObjectType to the "recipient".
 		/// \param theObject An object of ObjectType.
@@ -689,7 +615,7 @@ namespace DiscordCoreAPI {
 
 	template<typename TimeType> class StopWatch {
 	  public:
-		StopWatch& operator=(StopWatch&& other) noexcept {
+		StopWatch<TimeType>& operator=(StopWatch<TimeType>&& other) noexcept {
 			if (this != &other) {
 				this->maxNumberOfMs.store(other.maxNumberOfMs.load());
 				this->startTime.store(other.startTime.load());
@@ -697,11 +623,11 @@ namespace DiscordCoreAPI {
 			return *this;
 		}
 
-		StopWatch(StopWatch&& other) noexcept {
+		StopWatch(StopWatch<TimeType>&& other) noexcept {
 			*this = std::move(other);
 		}
 
-		StopWatch& operator=(StopWatch& other) noexcept {
+		StopWatch<TimeType>& operator=(StopWatch<TimeType>& other) noexcept {
 			if (this != &other) {
 				this->maxNumberOfMs.store(other.maxNumberOfMs.load());
 				this->startTime.store(other.startTime.load());
@@ -709,7 +635,7 @@ namespace DiscordCoreAPI {
 			return *this;
 		}
 
-		StopWatch(StopWatch& other) noexcept {
+		StopWatch(StopWatch<TimeType>& other) noexcept {
 			*this = other;
 		}
 
@@ -746,19 +672,6 @@ namespace DiscordCoreAPI {
 	};
 
 	template<typename ObjectType> bool waitForTimeToPass(UnboundedMessageBlock<ObjectType>& outBuffer, ObjectType& argOne, int32_t timeInMsNew) {
-		StopWatch stopWatch{ std::chrono::milliseconds{ timeInMsNew } };
-		bool didTimePass{ false };
-		while (!outBuffer.tryReceive(argOne)) {
-			std::this_thread::sleep_for(1ms);
-			if (stopWatch.hasTimePassed()) {
-				didTimePass = true;
-				break;
-			}
-		};
-		return didTimePass;
-	}
-
-	template<typename ObjectType> bool waitForTimeToPass(TSUnboundedMessageBlock<ObjectType>& outBuffer, ObjectType& argOne, int32_t timeInMsNew) {
 		StopWatch stopWatch{ std::chrono::milliseconds{ timeInMsNew } };
 		bool didTimePass{ false };
 		while (!outBuffer.tryReceive(argOne)) {

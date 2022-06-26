@@ -53,7 +53,6 @@ namespace DiscordCoreAPI {
 	/// \tparam ReturnType The type of parameter that is returned by the CoRoutine.
 	template<typename ReturnType> class CoRoutine : public CoRoutineBase {
 	  public:
-		friend class promise_type;
 
 		class promise_type {
 		  public:
@@ -201,7 +200,6 @@ namespace DiscordCoreAPI {
 	/// \tparam void The type of parameter that is returned by the CoRoutine.
 	template<> class CoRoutine<void> : public CoRoutineBase {
 	  public:
-		friend class promise_type;
 
 		class promise_type {
 		  public:

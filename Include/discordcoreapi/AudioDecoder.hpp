@@ -278,8 +278,8 @@ namespace DiscordCoreInternal {
 
 	  protected:
 		int64_t audioStreamIndex{ 0 }, bufferMaxSize{ 0 }, bytesRead{ 0 }, totalFileSize{ 0 };
-		DiscordCoreAPI::TSUnboundedMessageBlock<DiscordCoreAPI::RawFrameData> outDataBuffer{};
-		DiscordCoreAPI::TSUnboundedMessageBlock<std::string> inputDataBuffer{};
+		DiscordCoreAPI::UnboundedMessageBlock<DiscordCoreAPI::RawFrameData> outDataBuffer{};
+		DiscordCoreAPI::UnboundedMessageBlock<std::string> inputDataBuffer{};
 		DiscordCoreAPI::ConfigManager* configManager{ nullptr };
 		AVFrameWrapper frame{ nullptr }, newFrame{ nullptr };
 		AVCodecContextWrapper audioDecodeContext{ nullptr };
