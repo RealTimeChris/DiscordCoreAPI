@@ -65,7 +65,6 @@ namespace DiscordCoreInternal {
 		int32_t currentBaseSocketAgent{ 0 };
 		int32_t heartbeatInterval{ 0 };
 		ErlPacker erlPacker{};
-		std::mutex theMutex{};
 
 		void stringifyJsonData(const nlohmann::json& dataToSend, std::string& theString, WebSocketOpCode theOpCode) noexcept;
 
@@ -105,11 +104,9 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::UnboundedMessageBlock<VoiceConnectionData> voiceConnectionDataBuffer{};
 		std::unordered_map<int32_t, std::unique_ptr<WebSocketSSLShard>> theClients{};
 		std::unique_ptr<DatagramSocketSSLClient> voiceSocket{ nullptr };
-		std::queue<DiscordCoreAPI::ConnectionPackage> connections{};
 		DiscordCoreAPI::ConfigManager* configManager{ nullptr };
 		std::unique_ptr<std::jthread> theTask{ nullptr };
 		VoiceConnectInitData voiceConnectInitData{};
-		BaseSocketAgent* baseSocketAgent{ nullptr };
 		WebSocketSSLShard* theBaseShard{ nullptr };
 		VoiceConnectionData voiceConnectionData{};
 		std::atomic_bool areWeConnected{ false };

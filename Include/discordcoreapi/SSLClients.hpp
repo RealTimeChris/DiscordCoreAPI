@@ -366,7 +366,6 @@ namespace DiscordCoreInternal {
 		std::unordered_map<uint64_t, DiscordCoreAPI::UnboundedMessageBlock<VoiceConnectionData>*> voiceConnectionDataBufferMap{};
 		DiscordCoreAPI::StopWatch<std::chrono::milliseconds> heartBeatStopWatch{ 0ms };
 		WebSocketState theState{ WebSocketState::Connecting01 };
-		std::atomic_bool areWeCollectingData{ false };
 		std::queue<std::string> processedMessages{};
 		VoiceConnectionData voiceConnectionData{};
 		bool haveWeReceivedHeartbeatAck{ true };
@@ -374,6 +373,7 @@ namespace DiscordCoreInternal {
 		int32_t currentBaseSocketAgent{ 0 };
 		bool stateUpdateCollected{ false };
 		int32_t currentRecursionDepth{ 0 };
+		bool areWeCollectingData{ false };
 		int32_t maxRecursionDepth{ 10 };
 		bool areWeHeartBeating{ false };
 		int32_t lastNumberReceived{ 0 };

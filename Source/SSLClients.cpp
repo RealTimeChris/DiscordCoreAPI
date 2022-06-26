@@ -598,7 +598,6 @@ namespace DiscordCoreInternal {
 				theData.currentBaseSocketAgent = this->currentBaseSocketAgent;
 				theData.currentShard = this->shard[0];
 				this->connections->push(theData);
-				std::cout << "WERE NOT HER EHIT SINSTST" << std::endl;
 			}
 		}
 	}
@@ -648,7 +647,7 @@ namespace DiscordCoreInternal {
 		FD_SET(this->theSocket, &writeSet);
 		writeNfds = this->theSocket > writeNfds ? this->theSocket : writeNfds;
 
-		timeval checkTime{ .tv_usec = 0 };
+		timeval checkTime{ .tv_usec = 1000 };
 		if (auto returnValue = select(writeNfds + 1, nullptr, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
 			throw ProcessingError{ reportError("DatagramSocketSSLClient::writeData()::select(), ") };
 		} else if (returnValue == 0) {
@@ -656,7 +655,6 @@ namespace DiscordCoreInternal {
 		}
 
 		if (FD_ISSET(this->theSocket, &writeSet)) {
-			std::cout << "THE WRITTEN BYTES: " << this->outputBuffer << std::endl;
 			auto writtenBytes{ sendto(this->theSocket, this->outputBuffer.data(), this->outputBuffer.size(), 0, reinterpret_cast<sockaddr*>(&this->theAddress), sizeof(sockaddr)) };
 			if (writtenBytes > 0) {
 				this->outputBuffer.erase(this->outputBuffer.begin(), this->outputBuffer.begin() + writtenBytes);

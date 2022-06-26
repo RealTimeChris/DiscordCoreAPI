@@ -144,17 +144,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::reconnect() {
-		StopWatch theStopWatch{ 10000ms };
-		while (!this->voiceSocketAgent->areWeConnected.load()) {
-			if (theStopWatch.hasTimePassed()) {
-				break;
-			}
-			std::this_thread::sleep_for(1ms);
-		}
-		this->areWeStopping.store(false);
-		this->stopSetEvent.set();
-		this->pauseEvent.set();
-		this->areWeConnectedBool = true;
+		this->connect(this->voiceConnectInitData);
 		this->play();
 	}
 
@@ -314,12 +304,12 @@ namespace DiscordCoreAPI {
 				(this->audioData.rawFrameData.sampleCount != 0 || this->audioData.encodedFrameData.sampleCount != 0) && !this->areWeStopping.load() && !theToken.stop_requested()) {
 				this->areWePlaying.store(true);
 				if (this->doWeReconnect->load()) {
+					this->areWeConnectedBool = false;
 					this->sendSpeakingMessage(false);
 					this->reconnect();
 					this->sendSpeakingMessage(true);
 					this->areWePlaying.store(true);
 				}
-				std::cout << "WERE GONE GONE GONE" << std::endl;
 				if (this->areWeStopping.load()) {
 					this->areWePlaying.store(false);
 					break;
