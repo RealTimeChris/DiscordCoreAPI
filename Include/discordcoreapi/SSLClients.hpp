@@ -295,7 +295,7 @@ namespace DiscordCoreInternal {
 	  public:
 		SSLDataInterface() = default;
 
-		virtual void writeData(const std::string& data, bool priority = false) noexcept = 0;
+		virtual bool writeData(const std::string& data, bool priority = false) noexcept = 0;
 
 		virtual std::string getInputBuffer() noexcept = 0;
 
@@ -316,7 +316,7 @@ namespace DiscordCoreInternal {
 	  public:
 		HttpsSSLClient() noexcept = default;
 
-		void writeData(const std::string& data, bool priority = false) noexcept;
+		bool writeData(const std::string& data, bool priority = false) noexcept;
 
 		void processIO(int32_t waitTimeInMs = 10000);
 
@@ -348,7 +348,7 @@ namespace DiscordCoreInternal {
 
 		static void processIO(std::unordered_map<int32_t, std::unique_ptr<WebSocketSSLShard>>& theMap, int32_t waitTimeInms = 10000);
 
-		void writeData(const std::string& data, bool priority = false) noexcept;
+		bool writeData(const std::string& data, bool priority = false) noexcept;
 
 		void connect(const std::string& baseUrl);
 
@@ -409,6 +409,7 @@ namespace DiscordCoreInternal {
 		SOCKETWrapper theSocket{ nullptr };
 		std::string outputBuffer{};
 		std::string inputBuffer{};
+		sockaddr_in theAddress{};
 		int64_t bytesRead{ 0 };
 	};
 }// namespace DiscordCoreInterna

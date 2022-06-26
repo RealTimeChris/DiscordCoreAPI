@@ -38,7 +38,6 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<Message>();
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Post_Interaction_Response;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
-
 		workload.relativePath =
 			"/interactions/" + std::to_string(dataPackage.interactionPackage.interactionId) + "/" + dataPackage.interactionPackage.interactionToken + "/callback";
 		if (dataPackage.data.data.files.size() > 0) {
@@ -195,7 +194,8 @@ namespace DiscordCoreAPI {
 	}
 
 	void SelectMenuCollector::run() {
-		while (!this->doWeQuit) {
+		StopWatch theStopWatch{ std::chrono::milliseconds{ this->maxTimeInMs } };
+		while (!this->doWeQuit && !theStopWatch.hasTimePassed()) {
 			if (this->getSelectMenuDataForAll == false) {
 				auto selectMenuInteractionData = std::make_unique<InteractionData>();
 				if (waitForTimeToPass(this->selectMenuIncomingInteractionBuffer, *selectMenuInteractionData.get(), this->maxTimeInMs)) {
@@ -233,6 +233,7 @@ namespace DiscordCoreAPI {
 					*response->interactionData = *selectMenuInteractionData;
 					this->responseVector.push_back(*response);
 					this->currentCollectedSelectMenuCount++;
+					theStopWatch.resetTimer();
 					if (this->maxCollectedSelectMenuCount > 1 && this->currentCollectedSelectMenuCount < this->maxCollectedSelectMenuCount - 1) {
 						auto createResponseData = std::make_unique<CreateInteractionResponseData>(*selectMenuInteractionData);
 						createResponseData->data.type = InteractionCallbackType::Deferred_Update_Message;
@@ -270,6 +271,7 @@ namespace DiscordCoreAPI {
 				response->values = this->interactionData->data.componentData.values;
 				this->responseVector.push_back(*response);
 				this->currentCollectedSelectMenuCount++;
+				theStopWatch.resetTimer();
 				if (this->maxCollectedSelectMenuCount > 1 && this->currentCollectedSelectMenuCount < this->maxCollectedSelectMenuCount - 1) {
 					auto createResponseData = std::make_unique<CreateInteractionResponseData>(*selectMenuInteractionData);
 					createResponseData->data.type = InteractionCallbackType::Deferred_Update_Message;
@@ -318,7 +320,8 @@ namespace DiscordCoreAPI {
 	}
 
 	void ButtonCollector::run() {
-		while (!this->doWeQuit) {
+		StopWatch theStopWatch{ std::chrono::milliseconds{ this->maxTimeInMs } };
+		while (!this->doWeQuit && !theStopWatch.hasTimePassed()) {
 			if (this->getButtonDataForAll == false) {
 				auto buttonInteractionData = std::make_unique<InteractionData>();
 				if (waitForTimeToPass(this->buttonIncomingInteractionBuffer, *buttonInteractionData.get(), this->maxTimeInMs)) {
@@ -354,6 +357,7 @@ namespace DiscordCoreAPI {
 					*response->interactionData = *buttonInteractionData;
 					this->responseVector.push_back(*response);
 					this->currentCollectedButtonCount++;
+					theStopWatch.resetTimer();
 					if (this->maxCollectedButtonCount > 1 && this->currentCollectedButtonCount < this->maxCollectedButtonCount) {
 						auto createResponseData = std::make_unique<CreateInteractionResponseData>(*buttonInteractionData);
 						createResponseData->data.type = InteractionCallbackType::Deferred_Update_Message;
@@ -389,6 +393,7 @@ namespace DiscordCoreAPI {
 				*response->interactionData = *buttonInteractionData;
 				this->responseVector.push_back(*response);
 				this->currentCollectedButtonCount++;
+				theStopWatch.resetTimer();
 				if (this->maxCollectedButtonCount > 1 && this->currentCollectedButtonCount < this->maxCollectedButtonCount) {
 					auto createResponseData = std::make_unique<CreateInteractionResponseData>(*buttonInteractionData);
 					createResponseData->data.type = InteractionCallbackType::Deferred_Update_Message;

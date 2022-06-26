@@ -538,8 +538,6 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	
-
 	std::string convertToLowerCase(const std::string& stringToConvert) {
 		std::string newString;
 		for (auto& value: stringToConvert) {
@@ -551,8 +549,6 @@ namespace DiscordCoreAPI {
 		}
 		return newString;
 	}
-
-	
 
 	std::string base64Encode(const std::string& theString, bool url) {
 		const char* base64_chars[2] = { "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -650,8 +646,6 @@ namespace DiscordCoreAPI {
 			timePassed = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - startTime;
 		}
 	}
-
-	
 
 	std::string generateBase64EncodedKey() {
 		std::string theReturnString{};
@@ -943,7 +937,10 @@ namespace DiscordCoreAPI {
 		if (static_cast<uint64_t>(guild.ownerId) == guildMember.id) {
 			return Permissions::getAllPermissions();
 		}
-		auto guildRoles = Roles::getGuildRolesAsync({ .guildId = guildMember.guildId }).get();
+		std::vector<RoleData> guildRoles{};
+		for (auto& value: guild.roles) {
+			guildRoles.push_back(Roles::getCachedRoleAsync({ .guildId = guild.id, .roleId = value }).get());
+		}
 		RoleData roleEveryone{};
 		for (auto& value: guildRoles) {
 			if (value.id == guild.id) {
@@ -957,7 +954,10 @@ namespace DiscordCoreAPI {
 		GetGuildMemberRolesData getRolesData{};
 		getRolesData.guildMember = guildMember;
 		getRolesData.guildId = guildMember.guildId;
-		auto guildMemberRoles = Roles::getGuildMemberRolesAsync(getRolesData).get();
+		std::vector<RoleData> guildMemberRoles{};
+		for (auto& value: guildMember.roles) {
+			guildMemberRoles.push_back(Roles::getCachedRoleAsync({ .guildId = guild.id, .roleId = value }).get());
+		}
 		for (auto& value: guildMemberRoles) {
 			permissions |= stoll(static_cast<std::string>(static_cast<StringWrapper>(value.permissions)));
 		}
@@ -986,7 +986,10 @@ namespace DiscordCoreAPI {
 			permissions |= stoll(static_cast<std::string>(static_cast<StringWrapper>(overWritesEveryone.allow)));
 		}
 
-		auto guildMemberRoles = Roles::getGuildMemberRolesAsync({ .guildMember = guildMember, .guildId = guildMember.guildId }).get();
+		std::vector<RoleData> guildMemberRoles{};
+		for (auto& value: guildMember.roles) {
+			guildMemberRoles.push_back(Roles::getCachedRoleAsync({ .guildId = guildMember.guildId, .roleId = value }).get());
+		}
 		int64_t allow{ 0 };
 		int64_t deny{ 0 };
 		for (auto& value: guildMemberRoles) {

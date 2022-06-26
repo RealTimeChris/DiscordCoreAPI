@@ -160,7 +160,7 @@ namespace DiscordCoreAPI {
 				if (this->voiceSocketAgent->theTask) {
 					this->voiceSocketAgent->theTask->get_stop_source().request_stop();
 					if (this->voiceSocketAgent->theTask->joinable()) {
-						this->voiceSocketAgent->theTask->join();
+						this->voiceSocketAgent->theTask->detach();
 					}
 				}
 				this->voiceSocketAgent.reset(nullptr);
@@ -306,13 +306,7 @@ namespace DiscordCoreAPI {
 				if (this->doWeReconnect->load()) {
 					this->areWeConnectedBool = false;
 					this->sendSpeakingMessage(false);
-					StopWatch theStopWatch{ 10000ms };
-					while (!this->areWeConnectedBool) {
-						if (theStopWatch.hasTimePassed()) {
-							return;
-						}
-						std::this_thread::sleep_for(1ms);
-					}
+					this->reconnect();
 					this->sendSpeakingMessage(true);
 					this->areWePlaying.store(true);
 				}

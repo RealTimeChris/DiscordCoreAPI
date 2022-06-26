@@ -126,14 +126,6 @@ namespace DiscordCoreAPI {
 		if (!this->instantiateWebSockets()) {
 			return;
 		}
-		while (!Globals::doWeQuit.load()) {
-			for (auto& [key, value]: getVoiceConnectionMap()) {
-				if (value && value->doWeReconnect && value->doWeReconnect->load()) {
-					value->reconnect();
-				}
-			}
-			std::this_thread::sleep_for(1ms);
-		}
 		this->baseSocketAgentMap[std::to_string(this->configManager.getStartingShard())]->getTheTask()->join();
 	}
 
