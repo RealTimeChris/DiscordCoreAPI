@@ -605,6 +605,7 @@ namespace DiscordCoreInternal {
 									}
 									this->discordCoreClient->eventManager.onIntegrationDeletionEvent(*dataPackage);
 								} else if (payload["t"] == "INTERACTION_CREATE") {
+									std::cout << "INTERACTION CREATION  0101" << std::endl;
 									std::unique_ptr<DiscordCoreAPI::InteractionData> interactionData{ std::make_unique<DiscordCoreAPI::InteractionData>() };
 									DataParser::parseObject(payload["d"], *interactionData);
 									std::unique_ptr<DiscordCoreAPI::InputEventData> eventData{ std::make_unique<DiscordCoreAPI::InputEventData>(*interactionData) };
@@ -614,7 +615,9 @@ namespace DiscordCoreInternal {
 										std::unique_ptr<DiscordCoreAPI::OnInteractionCreationData> dataPackage{ std::make_unique<DiscordCoreAPI::OnInteractionCreationData>() };
 										dataPackage->interactionData = *interactionData;
 										std::unique_ptr<DiscordCoreAPI::CommandData> commandData{ std::make_unique<DiscordCoreAPI::CommandData>(*eventData) };
+										std::cout << "INTERACTION CREATION  0202" << std::endl;
 										this->discordCoreClient->commandController.checkForAndRunCommand(*commandData);
+										std::cout << "INTERACTION CREATION  0303" << std::endl;
 										this->discordCoreClient->eventManager.onInteractionCreationEvent(*dataPackage);
 										std::unique_ptr<DiscordCoreAPI::OnInputEventCreationData> eventCreationData{ std::make_unique<DiscordCoreAPI::OnInputEventCreationData>() };
 										eventCreationData->inputEventData = *eventData;
@@ -1055,7 +1058,7 @@ namespace DiscordCoreInternal {
 		this->theTask = std::make_unique<std::jthread>([this](std::stop_token theToken) {
 			this->run(theToken);
 		});
-		baseBaseSocketAgentNew->getVoiceConnectionData(initDataNew, theShard);
+		//baseBaseSocketAgentNew->getVoiceConnectionData(initDataNew, theShard);
 	}
 
 	void VoiceSocketAgent::parseHeadersAndMessage(WebSocketSSLShard* theShard) noexcept {
@@ -1313,8 +1316,11 @@ namespace DiscordCoreInternal {
 
 	void VoiceSocketAgent::run(std::stop_token theToken) noexcept {
 		try {
-			this->connect();
-			while (!theToken.stop_requested() && !this->doWeQuit->load() && !this->doWeReconnect.load()) {
+			while (!this->theClients.contains(0)) {
+			}
+			while (!this->theClients[0]->areWeConnected01.load()) {
+			}
+			while (!theToken.stop_requested() && !this->doWeQuit->load()) {
 				if (this->heartbeatInterval != 0 && !this->doWeReconnect.load() && !this->theClients[0]->areWeHeartBeating) {
 					this->theClients[0]->areWeHeartBeating = true;
 					this->theClients[0]->heartBeatStopWatch = DiscordCoreAPI::StopWatch{ std::chrono::milliseconds{ this->heartbeatInterval } };
@@ -1482,6 +1488,8 @@ namespace DiscordCoreInternal {
 					this->doWeReconnect.store(true);
 				}
 			}
+			this->theClients[0]->areWeConnected01.store(true);
+			this->doWeReconnect.store(false);
 		} catch (...) {
 			if (this->configManager->doWePrintWebSocketErrorMessages()) {
 				DiscordCoreAPI::reportException("VoiceSocketAgent::connect()");

@@ -156,15 +156,6 @@ namespace DiscordCoreAPI {
 			this->stopSetEvent.set();
 			this->pauseEvent.set();
 			StopWatch theStopWatch{ 10000ms };
-			if (this->voiceSocketAgent) {
-				if (this->voiceSocketAgent->theTask) {
-					this->voiceSocketAgent->theTask->get_stop_source().request_stop();
-					if (this->voiceSocketAgent->theTask->joinable()) {
-						this->voiceSocketAgent->theTask->detach();
-					}
-				}
-				this->voiceSocketAgent.reset(nullptr);
-			}
 			if (this->baseSocketAgent && this->baseSocketAgent->theClients[voiceConnectInitDataNew.currentShard]) {
 				while (!this->baseSocketAgent->theClients[voiceConnectInitData.currentShard]->areWeConnected02.load()) {
 					std::this_thread::sleep_for(1ms);
@@ -173,8 +164,12 @@ namespace DiscordCoreAPI {
 					}
 				}
 				theStopWatch.resetTimer();
-				this->voiceSocketAgent = std::make_unique<DiscordCoreInternal::VoiceSocketAgent>(this->voiceConnectInitData, this->baseSocketAgent,
-					this->baseSocketAgent->theClients[voiceConnectInitDataNew.currentShard].get(), this->baseSocketAgent->configManager, &Globals::doWeQuit);
+				if (!this->voiceSocketAgent) {
+					this->voiceSocketAgent = std::make_unique<DiscordCoreInternal::VoiceSocketAgent>(this->voiceConnectInitData, this->baseSocketAgent,
+						this->baseSocketAgent->theClients[voiceConnectInitDataNew.currentShard].get(), this->baseSocketAgent->configManager, &Globals::doWeQuit);
+				}
+				this->baseSocketAgent->getVoiceConnectionData(voiceConnectInitDataNew, this->baseSocketAgent->theClients[voiceConnectInitDataNew.currentShard].get());
+				this->voiceSocketAgent->connect();
 				this->doWeReconnect = &this->voiceSocketAgent->doWeReconnect;
 				while (!this->voiceSocketAgent->areWeConnected.load()) {
 					std::this_thread::sleep_for(1ms);
@@ -183,7 +178,7 @@ namespace DiscordCoreAPI {
 					}
 				}
 				this->voiceConnectionData = this->voiceSocketAgent->voiceConnectionData;
-				if (this->theTask == nullptr) {
+				if (!this->theTask) {
 					this->theTask = std::make_unique<std::jthread>([=, this](std::stop_token theToken) {
 						this->run(theToken);
 					});
