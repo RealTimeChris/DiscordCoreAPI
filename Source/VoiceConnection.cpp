@@ -156,8 +156,8 @@ namespace DiscordCoreAPI {
 			this->stopSetEvent.set();
 			this->pauseEvent.set();
 			StopWatch theStopWatch{ 10000ms };
-			if (this->baseSocketAgent && this->baseSocketAgent->theClients[voiceConnectInitDataNew.currentShard]) {
-				while (!this->baseSocketAgent->theClients[voiceConnectInitData.currentShard]->areWeConnected02.load()) {
+			if (this->baseSocketAgent && this->baseSocketAgent->theClients[this->voiceConnectInitData.currentShard]) {
+				while (!this->baseSocketAgent->theClients[this->voiceConnectInitData.currentShard]->areWeConnected02.load()) {
 					std::this_thread::sleep_for(1ms);
 					if (theStopWatch.hasTimePassed()) {
 						return;
@@ -166,9 +166,9 @@ namespace DiscordCoreAPI {
 				theStopWatch.resetTimer();
 				if (!this->voiceSocketAgent) {
 					this->voiceSocketAgent = std::make_unique<DiscordCoreInternal::VoiceSocketAgent>(this->voiceConnectInitData, this->baseSocketAgent,
-						this->baseSocketAgent->theClients[voiceConnectInitDataNew.currentShard].get(), this->baseSocketAgent->configManager, &Globals::doWeQuit);
+						this->baseSocketAgent->theClients[this->voiceConnectInitData.currentShard].get(), this->baseSocketAgent->configManager, &Globals::doWeQuit);
 				}
-				this->baseSocketAgent->getVoiceConnectionData(voiceConnectInitDataNew, this->baseSocketAgent->theClients[voiceConnectInitDataNew.currentShard].get());
+				this->baseSocketAgent->getVoiceConnectionData(this->voiceConnectInitData, this->baseSocketAgent->theClients[this->voiceConnectInitData.currentShard].get());
 				this->voiceSocketAgent->connect();
 				this->doWeReconnect = &this->voiceSocketAgent->doWeReconnect;
 				while (!this->voiceSocketAgent->areWeConnected.load()) {
