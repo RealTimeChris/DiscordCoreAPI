@@ -33,7 +33,44 @@ namespace DiscordCoreAPI {
 	 */
 
 	/// Represents an auto-moderation-rule. \brief Represents an auto-moderation-rule.
-	struct AutoModerationRule : public AutoModerationRuleData {};
+	struct AutoModerationRule : public AutoModerationRuleData {
+		AutoModerationRule() = default;
+
+		AutoModerationRule& operator=(const nlohmann::json& jsonObjectData) {
+			this->parseObject(jsonObjectData, this);
+			return *this;
+		}
+
+		AutoModerationRule(const nlohmann::json& jsonObjectData) {
+			*this = jsonObjectData;
+		}
+
+		virtual ~AutoModerationRule() = default;
+
+	  	void parseObjectReal(const nlohmann::json& jsonObjectData, AutoModerationRule* pDataStructure);
+
+		void parseObjectReal(const nlohmann::json& jsonObjectData, std::vector<AutoModerationRule>* pDataStructure);
+	};
+
+	class AutoModerationRuleVector : public DiscordCoreInternal::DataParserTwo<AutoModerationRuleVector> {
+	  public:
+		std::vector<AutoModerationRule> theAutoModerationRules{};
+
+		AutoModerationRuleVector() = default;
+
+		AutoModerationRuleVector& operator=(const nlohmann::json& jsonObjectData) {
+			this->parseObject(jsonObjectData, this);
+			return *this;
+		}
+
+		AutoModerationRuleVector(const nlohmann::json& jsonObjectData) {
+			*this = jsonObjectData;
+		}
+
+		virtual ~AutoModerationRuleVector() = default;
+
+		void parseObjectReal(const nlohmann::json&, AutoModerationRuleVector*);
+	};
 
 	/// For listing all of the auto-moderation-rules for a particular Guild. \brief For listing all of the auto-moderation-rules for a particular Guild.
 	struct ListAutoModerationRulesForGuildData {
@@ -60,7 +97,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// For when an auto-moderation-rule is executed. \brief For when an auto-moderation-rule is executed.
-	struct AutoModerationActionExecutionEventData {
+	struct AutoModerationActionExecutionEventData : public DiscordCoreInternal::DataParserTwo<AutoModerationActionExecutionEventData>{
 		uint64_t alertSystemMessageId{};///< The id of any system auto moderation messages posted as a result of this action.
 		TriggerType ruleTriggerType{};///< The trigger type of rule which was triggered.
 		std::string matchedKeyword{};///< The word or phrase configured in the rule that triggered the rule
@@ -72,6 +109,21 @@ namespace DiscordCoreAPI {
 		uint64_t guildId{};///< The id of the guild in which action was executed.
 		uint64_t ruleId{};///< The id of the rule which action belongs to.
 		uint64_t userId{};///< The id of the user which generated the content which triggered the rule.
+
+		AutoModerationActionExecutionEventData() = default;
+
+		AutoModerationActionExecutionEventData& operator=(const nlohmann::json& jsonObjectData) {
+			this->parseObject(jsonObjectData, this);
+			return *this;
+		}
+
+		AutoModerationActionExecutionEventData(const nlohmann::json& jsonObjectData) {
+			*this = jsonObjectData;
+		}
+
+		virtual ~AutoModerationActionExecutionEventData() = default;
+
+	  	void parseObjectReal(const nlohmann::json& jsonObjectData, AutoModerationActionExecutionEventData* pDataStructure);
 	};
 
 	/// For modifying an auto-moderation-rule. \brief For modifying an auto-moderation-rule.
@@ -104,7 +156,7 @@ namespace DiscordCoreAPI {
 	  public:
 		static void initialize(DiscordCoreInternal::HttpsClient*);
 
-		CoRoutine<std::vector<AutoModerationRule>> listAutoModerationRulesForGuildAsync(ListAutoModerationRulesForGuildData dataPackage);
+		CoRoutine<AutoModerationRuleVector> listAutoModerationRulesForGuildAsync(ListAutoModerationRulesForGuildData dataPackage);
 
 		CoRoutine<AutoModerationRule> getAutoModerationRuleAsync(GetAutoModerationRuleData dataPackage);
 

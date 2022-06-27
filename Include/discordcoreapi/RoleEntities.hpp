@@ -137,7 +137,18 @@ namespace DiscordCoreAPI {
 
 		Role() = default;
 
+		Role& operator=(const nlohmann::json& jsonObjectData) {
+			this->parseObject(jsonObjectData, this);
+			return *this;
+		}
+
+		Role(const nlohmann::json& jsonObjectData) {
+			*this = jsonObjectData;
+		}
+
 		virtual ~Role() = default;
+
+	  	void parseObjectReal(const nlohmann::json& jsonObjectData, Role* pDataStructure);
 	};
 
 	/**@}*/
@@ -206,15 +217,15 @@ namespace DiscordCoreAPI {
 		/// \returns A CoRoutine containing a Role.
 		static CoRoutine<RoleData> getCachedRoleAsync(GetRoleData dataPackage);
 
+		static void insertRole(RoleData dataPackage);
+
+		static void removeRole(const uint64_t& roleId);
+
 	  protected:
 		static std::unique_ptr<std::unordered_map<uint64_t, std::unique_ptr<RoleData>>> cache;
 		static DiscordCoreInternal::HttpsClient* httpsClient;
 		static ConfigManager* configManager;
 		static std::shared_mutex theMutex;
-
-		static void insertRole(RoleData dataPackage);
-
-		static void removeRole(const uint64_t& roleId);
 	};
 	/**@}*/
 

@@ -115,7 +115,17 @@ namespace DiscordCoreAPI {
 
 		GuildMember() = default;
 
-		~GuildMember() = default;
+		GuildMember& operator=(const nlohmann::json& jsonObjectData) {
+			this->parseObject(jsonObjectData, this);
+			return *this;
+		}
+
+		GuildMember(const nlohmann::json& jsonObjectData) {
+			*this = jsonObjectData;
+		}
+		virtual ~GuildMember() = default;
+
+	  	void parseObjectReal(const nlohmann::json& jsonObjectData, GuildMember* pDataStructure);
 	};
 	/**@}*/
 
@@ -178,15 +188,15 @@ namespace DiscordCoreAPI {
 		/// \returns A CoRoutine containing GuildMember.
 		static CoRoutine<GuildMember> timeoutGuildMemberAsync(TimeoutGuildMemberData dataPackage);
 
+		static void insertGuildMember(GuildMemberData dataPackage);
+
+		static void removeGuildMember(GuildMember& globalId);
+
 	  protected:
 		static std::unique_ptr<std::map<GuildMemberId, std::unique_ptr<GuildMemberData>>> cache;
 		static DiscordCoreInternal::HttpsClient* httpsClient;
 		static ConfigManager* configManager;
 		static std::shared_mutex theMutex;
-
-		static void insertGuildMember(GuildMemberData dataPackage);
-
-		static void removeGuildMember(GuildMember& globalId);
 	};
 	/**@}*/
 };// namespace DiscordCoreAPI

@@ -24,6 +24,7 @@
 #include <discordcoreapi/FoundationEntities.hpp>
 #include <discordcoreapi/VoiceConnection.hpp>
 #include <discordcoreapi/RoleEntities.hpp>
+#include <discordcoreapi/ChannelEntities.hpp>
 
 namespace DiscordCoreAPI {
 
@@ -315,7 +316,38 @@ namespace DiscordCoreAPI {
 		/// \returns A bool telling us if we are connected.
 		bool areWeConnected();
 
-		~Guild() = default;
+		Guild& operator=(const nlohmann::json& jsonObjectData) {
+			this->parseObject(jsonObjectData, this);
+			return *this;
+		}
+
+		Guild(const nlohmann::json& jsonObjectData) {
+			*this = jsonObjectData;
+		}
+
+		virtual ~Guild() = default;
+
+	  	void parseObjectReal(const nlohmann::json& jsonObjectData, Guild* pDataStructure);
+	};
+
+	class GuildVector : public DiscordCoreInternal::DataParserTwo<GuildVector> {
+	  public:
+		std::vector<Guild> theGuilds{};
+
+		GuildVector() = default;
+
+		GuildVector& operator=(const nlohmann::json& jsonObjectData) {
+			this->parseObject(jsonObjectData, this);
+			return *this;
+		}
+
+		GuildVector(const nlohmann::json& jsonObjectData) {
+			*this = jsonObjectData;
+		}
+
+		virtual ~GuildVector() = default;
+
+		void parseObjectReal(const nlohmann::json&, GuildVector*);
 	};
 
 	/// For modifying the properties of a chosen Guild. \brief For modifying the properties of a chosen Guild.
@@ -552,7 +584,7 @@ namespace DiscordCoreAPI {
 		/// Collects a list of Guilds that the Bot is in. \brief Collects a list of Guilds that the Bot is in.
 		/// \param dataPackage A GetCurrentUserGuildsData structure.
 		/// \returns A CoRoutine containing a std::vector<Guild>.
-		static CoRoutine<std::vector<Guild>> getCurrentUserGuildsAsync(GetCurrentUserGuildsData dataPackage);
+		static CoRoutine<GuildVector> getCurrentUserGuildsAsync(GetCurrentUserGuildsData dataPackage);
 
 		/// Removes the bot from a chosen Guild. \brief Removes the bot from a chosen Guild.
 		/// \param dataPackage A LeaveGuildData structure.

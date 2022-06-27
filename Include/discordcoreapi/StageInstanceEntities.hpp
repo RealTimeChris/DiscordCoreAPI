@@ -58,7 +58,17 @@ namespace DiscordCoreAPI {
 	  public:
 		StageInstance() = default;
 
+		StageInstance& operator=(const nlohmann::json& jsonObjectData) {
+			this->parseObject(jsonObjectData, this);
+			return *this;
+		}
+
+		StageInstance(const nlohmann::json& jsonObjectData) {
+			*this = jsonObjectData;
+		}
 		virtual ~StageInstance() = default;
+
+	  	void parseObjectReal(const nlohmann::json&, StageInstance*);
 	};
 
 	/**

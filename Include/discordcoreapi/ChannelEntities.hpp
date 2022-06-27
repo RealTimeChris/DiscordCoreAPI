@@ -150,6 +150,15 @@ namespace DiscordCoreAPI {
 		std::string topic{};///< The Channel's topic.
 		std::string icon{};///< Icon for the Channel, if applicable.
 
+		Channel& operator=(const nlohmann::json& jsonObjectData) {
+			this->parseObject(jsonObjectData, this);
+			return *this;
+		}
+
+		Channel(const nlohmann::json& jsonObjectData) {
+			*this = jsonObjectData;
+		}
+
 		Channel& operator=(ChannelData&&);
 
 		Channel(ChannelData&&);
@@ -161,6 +170,8 @@ namespace DiscordCoreAPI {
 		Channel() = default;
 
 		~Channel() = default;
+
+	  	void parseObjectReal(const nlohmann::json& jsonObjectData, Channel* pDataStructure);
 	};
 
 	/// For modifying a Channel's properties. \brief For modifying a Channel's properties.
@@ -273,15 +284,15 @@ namespace DiscordCoreAPI {
 		/// \returns A CoRoutine containing a std::vector<VoiceRegionData>.
 		static CoRoutine<std::vector<VoiceRegionData>> getVoiceRegionsAsync();
 
+		static void insertChannel(ChannelData dataPackage);
+
+		static void removeChannel(const uint64_t& channelId);
+
 	  protected:
 		static std::unique_ptr<std::unordered_map<uint64_t, std::unique_ptr<ChannelData>>> cache;
 		static DiscordCoreInternal::HttpsClient* httpsClient;
 		static ConfigManager* configManager;
 		static std::shared_mutex theMutex;
-
-		static void insertChannel(ChannelData dataPackage);
-
-		static void removeChannel(const uint64_t& channelId);
 	};
 	/**@}*/
 }// namespace DiscordCoreAPI

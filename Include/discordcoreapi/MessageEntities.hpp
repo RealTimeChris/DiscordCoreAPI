@@ -189,7 +189,18 @@ namespace DiscordCoreAPI {
 	  public:
 		Message() = default;
 
+		Message& operator=(const nlohmann::json& jsonObjectData) {
+			this->parseObject(jsonObjectData, this);
+			return *this;
+		}
+
+		Message(const nlohmann::json& jsonObjectData) {
+			*this = jsonObjectData;
+		}
+
 		virtual ~Message() = default;
+
+	  	void parseObjectReal(const nlohmann::json&, Message*);
 	};
 
 	/**@}*/

@@ -28,15 +28,15 @@ namespace DiscordCoreAPI {
 		AutoModerationRules::httpsClient = HttpsClientNew;
 	}
 
-	CoRoutine<std::vector<AutoModerationRule>> AutoModerationRules::listAutoModerationRulesForGuildAsync(ListAutoModerationRulesForGuildData dataPackage) {
+	CoRoutine<AutoModerationRuleVector> AutoModerationRules::listAutoModerationRulesForGuildAsync(ListAutoModerationRulesForGuildData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{};
 		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Get_Auto_Moderation_Rules);
-		co_await NewThreadAwaitable<std::vector<AutoModerationRule>>();
+		co_await NewThreadAwaitable<AutoModerationRuleVector>();
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Get_Auto_Moderation_Rules;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/auto-moderation/rules";
 		workload.callStack = "AutoModerationRules::listAutoModerationRulesForGuildAsync";
-		co_return AutoModerationRules::httpsClient->submitWorkloadAndGetResult<std::vector<AutoModerationRule>>(workload);
+		co_return AutoModerationRules::httpsClient->submitWorkloadAndGetResult<AutoModerationRuleVector>(workload);
 	}
 
 	CoRoutine<AutoModerationRule> AutoModerationRules::getAutoModerationRuleAsync(GetAutoModerationRuleData dataPackage) {

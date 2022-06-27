@@ -21,7 +21,7 @@
 
 #pragma once
 
-#include <discordcoreapi/FoundationEntities.hpp>
+#include <nlohmann/json.hpp>
 
 namespace DiscordCoreInternal {
 

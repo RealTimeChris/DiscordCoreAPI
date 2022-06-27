@@ -92,7 +92,18 @@ namespace DiscordCoreAPI {
 	  public:
 		GuildScheduledEvent() = default;
 
+		GuildScheduledEvent& operator=(const nlohmann::json& jsonObjectData) {
+			this->parseObject(jsonObjectData, this);
+			return *this;
+		}
+
+		GuildScheduledEvent(const nlohmann::json& jsonObjectData) {
+			*this = jsonObjectData;
+		}
+
 		virtual ~GuildScheduledEvent() = default;
+
+	  	void parseObjectReal(const nlohmann::json&, GuildScheduledEvent*);
 	};
 
 	/**@}*/

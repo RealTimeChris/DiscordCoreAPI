@@ -70,9 +70,21 @@ namespace DiscordCoreAPI {
 	/// A single Sticker. \brief A single Sticker.
 	class DiscordCoreAPI_Dll Sticker : public StickerData {
 	  public:
+
 		Sticker() = default;
 
+		Sticker& operator=(const nlohmann::json& jsonObjectData) {
+			this->parseObject(jsonObjectData, this);
+			return *this;
+		}
+
+		Sticker(const nlohmann::json& jsonObjectData) {
+			*this = jsonObjectData;
+		}
+
 		virtual ~Sticker() = default;
+
+	  	void parseObjectReal(const nlohmann::json&, Sticker*);
 	};
 
 	/**@}*/

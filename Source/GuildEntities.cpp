@@ -682,10 +682,10 @@ namespace DiscordCoreAPI {
 		co_return Guilds::httpsClient->submitWorkloadAndGetResult<void>(workload);
 	}
 
-	CoRoutine<std::vector<Guild>> Guilds::getCurrentUserGuildsAsync(GetCurrentUserGuildsData dataPackage) {
+	CoRoutine<GuildVector> Guilds::getCurrentUserGuildsAsync(GetCurrentUserGuildsData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{};
 		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Get_Current_User_Guilds);
-		co_await NewThreadAwaitable<std::vector<Guild>>();
+		co_await NewThreadAwaitable<GuildVector>();
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Get_Current_User_Guilds;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/users/@me/guilds";
@@ -706,8 +706,8 @@ namespace DiscordCoreAPI {
 			workload.relativePath += "?limit=" + std::to_string(dataPackage.limit);
 		}
 		workload.callStack = "Users::getCurrentUserGuildsAsync";
-		auto guildVector = Guilds::httpsClient->submitWorkloadAndGetResult<std::vector<Guild>>(workload);
-		for (auto& value: guildVector) {
+		auto guildVector = Guilds::httpsClient->submitWorkloadAndGetResult<GuildVector>(workload);
+		for (auto& value: guildVector.theGuilds) {
 			value.discordCoreClient = Guilds::discordCoreClient;
 		}
 		co_return guildVector;

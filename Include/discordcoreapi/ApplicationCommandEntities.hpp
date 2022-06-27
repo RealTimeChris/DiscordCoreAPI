@@ -167,9 +167,21 @@ namespace DiscordCoreAPI {
 	/// A single ApplicationCommand. \brief A single ApplicationCommand.
 	class DiscordCoreAPI_Dll ApplicationCommand : public ApplicationCommandData {
 	  public:
+
 		ApplicationCommand() = default;
 
+		ApplicationCommand& operator=(const nlohmann::json& jsonObjectData) {
+			this->parseObject(jsonObjectData, this);
+			return *this;
+		}
+
+		ApplicationCommand(const nlohmann::json& jsonObjectData) {
+			*this = jsonObjectData;
+		}
+
 		virtual ~ApplicationCommand() = default;
+
+	  	void parseObjectReal(const nlohmann::json&, ApplicationCommand*);
 	};
 
 	/**@}*/

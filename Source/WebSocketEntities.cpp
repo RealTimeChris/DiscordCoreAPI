@@ -1321,9 +1321,19 @@ namespace DiscordCoreInternal {
 
 	void VoiceSocketAgent::run(std::stop_token theToken) noexcept {
 		try {
+			DiscordCoreAPI::StopWatch theStopWatch{ 10000ms };
 			while (!this->theClients.contains(0)) {
+				if (theStopWatch.hasTimePassed()) {
+					return;
+				}
+				std::this_thread::sleep_for(1ms);
 			}
+			theStopWatch.resetTimer();
 			while (!this->theClients[0]->areWeConnected01.load()) {
+				if (theStopWatch.hasTimePassed()) {
+					return;
+				}
+				std::this_thread::sleep_for(1ms);
 			}
 			while (!theToken.stop_requested() && !this->doWeQuit->load()) {
 				if (!theToken.stop_requested() && !this->doWeReconnect.load() && this->voiceSocket) {
