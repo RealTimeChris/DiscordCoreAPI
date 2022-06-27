@@ -231,7 +231,6 @@ namespace DiscordCoreAPI {
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "?with_counts=true";
 		workload.callStack = "Guilds::getGuildAsync";
 		auto guildNew = Guilds::httpsClient->submitWorkloadAndGetResult<Guild>(workload);
-		guildNew = Guilds::getCachedGuildAsync({ .guildId = dataPackage.guildId }).get();
 		guildNew.discordCoreClient = Guilds::discordCoreClient;
 		co_return guildNew;
 	}

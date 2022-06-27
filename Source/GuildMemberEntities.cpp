@@ -80,7 +80,6 @@ namespace DiscordCoreAPI {
 		workload.callStack = "GuildMembers::getGuildMemberAsync";
 		auto guildMember = GuildMembers::httpsClient->submitWorkloadAndGetResult<GuildMember>(workload);
 		guildMember.guildId = dataPackage.guildId;
-		GuildMembers::insertGuildMember(guildMember);
 		co_return guildMember;
 	}
 

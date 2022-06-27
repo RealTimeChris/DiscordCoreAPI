@@ -226,9 +226,6 @@ namespace DiscordCoreAPI {
 				newRole = value;
 			}
 		}
-		if (newRole.id != 0) {
-			Roles::insertRole(newRole);
-		}
 		co_return newRole;
 	}
 
