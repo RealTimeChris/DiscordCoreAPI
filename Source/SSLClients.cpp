@@ -515,7 +515,6 @@ namespace DiscordCoreInternal {
 		}
 
 		const char optionValue{ true };
-#ifdef _WIN32
 		if (auto returnValue = setsockopt(this->theSocket, IPPROTO_TCP, TCP_NODELAY, &optionValue, sizeof(int32_t)); returnValue == SOCKET_ERROR) {
 			throw ConnectionError{ reportError("HttpsSSLClient::connect()::setsockopt(), ") };
 		}
@@ -525,11 +524,7 @@ namespace DiscordCoreInternal {
 		if (auto returnValue = setsockopt(this->theSocket, SOL_SOCKET, SO_LINGER, reinterpret_cast<char*>(&optionValue02), sizeof(linger)); returnValue == SOCKET_ERROR) {
 			throw ConnectionError{ reportError("HttpsSSLClient::connect()::setsockopt(), ") };
 		}
-#else
-		if (auto returnValue = setsockopt(this->theSocket, SOL_TCP, TCP_NODELAY, &optionValue, sizeof(int32_t)); returnValue == SOCKET_ERROR) {
-			throw ConnectionError{ reportError("WebSocketSSLShard::connect()::setsockopt(), ") };
-		}
-#endif
+
 		if (::connect(this->theSocket, address->ai_addr, static_cast<int32_t>(address->ai_addrlen)) == SOCKET_ERROR) {
 			throw ConnectionError{ reportError("WebSocketSSLShard::connect()::connect(), ") };
 		}
