@@ -1269,41 +1269,41 @@ namespace DiscordCoreInternal {
 							  << std::endl;
 				}
 				if (payload.contains("op") && !payload["op"].is_null()) {
-					if (payload["op"] == 6) {
-						this->theClients[0]->haveWeReceivedHeartbeatAck = true;
-					};
-					if (payload["op"] == 2) {
-						this->voiceConnectionData.audioSSRC = payload["d"]["ssrc"].get<uint32_t>();
-						this->voiceConnectionData.voiceIp = payload["d"]["ip"].get<std::string>();
-						this->voiceConnectionData.voicePort = std::to_string(payload["d"]["port"].get<int64_t>());
-						for (auto& value: payload["d"]["modes"]) {
-							if (value == "xsalsa20_poly1305") {
-								this->voiceConnectionData.voiceEncryptionMode = value;
+					switch (payload["op"].get<int32_t>()) {
+						case 2: {
+							this->voiceConnectionData.audioSSRC = payload["d"]["ssrc"].get<uint32_t>();
+							this->voiceConnectionData.voiceIp = payload["d"]["ip"].get<std::string>();
+							this->voiceConnectionData.voicePort = std::to_string(payload["d"]["port"].get<int64_t>());
+							for (auto& value: payload["d"]["modes"]) {
+								if (value == "xsalsa20_poly1305") {
+									this->voiceConnectionData.voiceEncryptionMode = value;
+								}
+							}
+							this->voiceConnect();
+							this->collectExternalIP();
+							std::vector<uint8_t> protocolPayloadSelectString =
+								JSONIfier::JSONIFY(this->voiceConnectionData.voicePort, this->voiceConnectionData.externalIp, this->voiceConnectionData.voiceEncryptionMode, 0);
+							this->sendMessage(protocolPayloadSelectString);
+						}
+						case 4: {
+							this->areWeConnected.store(true);
+							for (uint32_t x = 0; x < payload["d"]["secret_key"].size(); x++) {
+								this->voiceConnectionData.secretKey.push_back(payload["d"]["secret_key"][x].get<uint8_t>());
 							}
 						}
-						this->voiceConnect();
-						this->collectExternalIP();
-						std::vector<uint8_t> protocolPayloadSelectString =
-							JSONIfier::JSONIFY(this->voiceConnectionData.voicePort, this->voiceConnectionData.externalIp, this->voiceConnectionData.voiceEncryptionMode, 0);
-						this->sendMessage(protocolPayloadSelectString);
-					}
-					if (payload["op"] == 4) {
-						this->areWeConnected.store(true);
-						for (uint32_t x = 0; x < payload["d"]["secret_key"].size(); x++) {
-							this->voiceConnectionData.secretKey.push_back(payload["d"]["secret_key"][x].get<uint8_t>());
+						case 6: {
+							this->theClients[0]->haveWeReceivedHeartbeatAck = true;
 						}
-					}
-					if (payload["op"] == 9) {
-					};
-					if (payload["op"] == 8) {
-						this->theClients[0]->theState = WebSocketState::Connected;
-						if (payload["d"].contains("heartbeat_interval")) {
-							this->heartbeatInterval = static_cast<int32_t>(payload["d"]["heartbeat_interval"].get<float>());
-							this->theClients[0]->areWeHeartBeating = false;
+						case 8: {
+							this->theClients[0]->theState = WebSocketState::Connected;
+							if (payload["d"].contains("heartbeat_interval")) {
+								this->heartbeatInterval = static_cast<int32_t>(payload["d"]["heartbeat_interval"].get<float>());
+								this->theClients[0]->areWeHeartBeating = false;
+							}
+							this->theClients[0]->haveWeReceivedHeartbeatAck = true;
+							std::vector<uint8_t> identifyPayload = JSONIfier::JSONIFY(this->voiceConnectionData, this->voiceConnectInitData);
+							this->sendMessage(identifyPayload);
 						}
-						this->theClients[0]->haveWeReceivedHeartbeatAck = true;
-						std::vector<uint8_t> identifyPayload = JSONIfier::JSONIFY(this->voiceConnectionData, this->voiceConnectInitData);
-						this->sendMessage(identifyPayload);
 					}
 				}
 			}
