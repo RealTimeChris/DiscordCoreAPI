@@ -124,10 +124,9 @@ namespace DiscordCoreInternal {
 
 	void HttpsSSLClient::processIO(int32_t theWaitTimeInms) {
 		int32_t readNfds{ 0 }, writeNfds{ 0 }, finalNfds{ 0 };
-		fd_set writeSet{};
-		fd_set readSet{};
-		FD_ZERO(&writeSet), FD_ZERO(&readSet);
-
+		fd_set writeSet{}, readSet{};
+		FD_ZERO(&writeSet);
+		FD_ZERO(&readSet);
 		if ((this->outputBuffers.size() > 0 || this->wantWrite) && !this->wantRead) {
 			FD_SET(this->theSocket, &writeSet);
 			writeNfds = this->theSocket > writeNfds ? this->theSocket : writeNfds;
@@ -344,9 +343,9 @@ namespace DiscordCoreInternal {
 
 	void WebSocketSSLShard::processIO(std::unordered_map<SOCKET, std::unique_ptr<WebSocketSSLShard>>& theMap, int32_t waitTimeInms) {
 		int32_t writeNfds{ 0 }, readNfds{ 0 }, finalNfds{ 0 };
-		fd_set writeSet{};
-		fd_set readSet{};
-		FD_ZERO(&readSet), FD_ZERO(&writeSet);
+		fd_set writeSet{}, readSet{};
+		FD_ZERO(&writeSet);
+		FD_ZERO(&readSet);
 		bool didWeSetASocket{ false };
 		for (auto& [key, value]: theMap) {
 			if (value) {
