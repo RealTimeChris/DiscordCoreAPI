@@ -126,11 +126,6 @@ namespace DiscordCoreInternal {
 	void BaseSocketAgent::onClosed(WebSocketSSLShard* theShard) noexcept {
 		if (theShard && this->theClients.contains(theShard->shard[0])) {
 			if (this->maxReconnectTries > theShard->currentRecursionDepth) {
-				if (this->configManager->doWePrintWebSocketErrorMessages()) {
-					std::cout << DiscordCoreAPI::shiftToBrightRed() << "WebSocket " + theShard->shard.dump() + " Closed; Code: " << +static_cast<uint16_t>(theShard->closeCode)
-							  << DiscordCoreAPI::reset() << std::endl
-							  << std::endl;
-				}
 				theShard->disconnect();
 			} else if (this->maxReconnectTries <= theShard->currentRecursionDepth) {
 				this->doWeQuit->store(true);
@@ -293,6 +288,12 @@ namespace DiscordCoreInternal {
 					close |= theShard->inputBuffer[3] & 0xff;
 					theShard->closeCode = static_cast<WebSocketCloseCode>(close);
 					theShard->inputBuffer.erase(theShard->inputBuffer.begin(), theShard->inputBuffer.begin() + 4);
+					if (this->configManager->doWePrintWebSocketErrorMessages()) {
+						std::cout << DiscordCoreAPI::shiftToBrightRed()
+								  << "WebSocket " + this->theClients[0]->shard.dump() + " Closed; Code: " << +static_cast<uint16_t>(this->theClients[0]->closeCode)
+								  << DiscordCoreAPI::reset() << std::endl
+								  << std::endl;
+					}
 					if (theShard->areWeConnected01.load()) {
 						this->onClosed(theShard);
 					}
@@ -1128,6 +1129,12 @@ namespace DiscordCoreInternal {
 					close |= theShard->inputBuffer[3] & 0xff;
 					theShard->closeCode = static_cast<WebSocketCloseCode>(close);
 					theShard->inputBuffer.erase(theShard->inputBuffer.begin(), theShard->inputBuffer.begin() + 4);
+					if (this->configManager->doWePrintWebSocketErrorMessages()) {
+						std::cout << DiscordCoreAPI::shiftToBrightRed()
+								  << "Voice WebSocket " + this->theClients[0]->shard.dump() + " Closed; Code: " << +static_cast<uint16_t>(this->theClients[0]->closeCode)
+								  << DiscordCoreAPI::reset() << std::endl
+								  << std::endl;
+					}
 					this->onClosed();
 				}
 				default: {
@@ -1219,12 +1226,6 @@ namespace DiscordCoreInternal {
 		if (this->theClients.contains(0) && this->theClients[0] && !this->doWeReconnect.load() && this->areWeConnected.load()) {
 			this->doWeReconnect.store(true);
 			this->areWeConnected.store(false);
-			if (this->configManager->doWePrintWebSocketErrorMessages()) {
-				std::cout << DiscordCoreAPI::shiftToBrightRed()
-						  << "Voice WebSocket " + this->theClients[0]->shard.dump() + " Closed; Code: " << +static_cast<uint16_t>(this->theClients[0]->closeCode)
-						  << DiscordCoreAPI::reset() << std::endl
-						  << std::endl;
-			}
 		}
 	}
 
@@ -1321,6 +1322,10 @@ namespace DiscordCoreInternal {
 			while (!this->theClients[0]->areWeConnected01.load()) {
 			}
 			while (!theToken.stop_requested() && !this->doWeQuit->load()) {
+				if (!theToken.stop_requested() && !this->doWeReconnect.load() && this->voiceSocket) {
+					this->voiceSocket->processIO();
+					this->voiceSocket->getInputBuffer();
+				}
 				if (this->heartbeatInterval != 0 && !this->doWeReconnect.load() && !this->theClients[0]->areWeHeartBeating) {
 					this->theClients[0]->areWeHeartBeating = true;
 					this->theClients[0]->heartBeatStopWatch = DiscordCoreAPI::StopWatch{ std::chrono::milliseconds{ this->heartbeatInterval } };
