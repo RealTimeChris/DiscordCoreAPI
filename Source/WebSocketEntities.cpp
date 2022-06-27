@@ -1284,15 +1284,18 @@ namespace DiscordCoreInternal {
 							std::vector<uint8_t> protocolPayloadSelectString =
 								JSONIfier::JSONIFY(this->voiceConnectionData.voicePort, this->voiceConnectionData.externalIp, this->voiceConnectionData.voiceEncryptionMode, 0);
 							this->sendMessage(protocolPayloadSelectString);
+							break;
 						}
 						case 4: {
 							this->areWeConnected.store(true);
 							for (uint32_t x = 0; x < payload["d"]["secret_key"].size(); x++) {
 								this->voiceConnectionData.secretKey.push_back(payload["d"]["secret_key"][x].get<uint8_t>());
 							}
+							break;
 						}
 						case 6: {
 							this->theClients[0]->haveWeReceivedHeartbeatAck = true;
+							break;
 						}
 						case 8: {
 							this->theClients[0]->theState = WebSocketState::Connected;
@@ -1303,6 +1306,7 @@ namespace DiscordCoreInternal {
 							this->theClients[0]->haveWeReceivedHeartbeatAck = true;
 							std::vector<uint8_t> identifyPayload = JSONIfier::JSONIFY(this->voiceConnectionData, this->voiceConnectInitData);
 							this->sendMessage(identifyPayload);
+							break;
 						}
 					}
 				}
