@@ -41,6 +41,7 @@
 	#include <netinet/tcp.h>
 	#include <stdint.h>
 	#include <sys/epoll.h>
+	#include <arpa/inet.h>
 	#include <sys/socket.h>
 	#include <sys/types.h>
 	#include <unistd.h>

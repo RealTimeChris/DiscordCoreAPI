@@ -243,7 +243,7 @@ namespace DiscordCoreInternal {
 
 		linger optionValue02{};
 		optionValue02.l_onoff = 0;
-		if (auto returnValue = setsockopt(this->theSocket, SOL_SOCKET, SO_LINGER, &optionValue02, sizeof(linger));
+		if (auto returnValue = setsockopt(this->theSocket, SOL_SOCKET, SO_LINGER, reinterpret_cast<char*>(&optionValue02), sizeof(linger));
 			returnValue == SOCKET_ERROR) {
 			throw ConnectionError{ reportError("HttpsSSLClient::connect()::setsockopt(), ") };
 		}
@@ -521,7 +521,7 @@ namespace DiscordCoreInternal {
 
 		linger optionValue02{};
 		optionValue02.l_onoff = 0;
-		if (auto returnValue = setsockopt(this->theSocket, SOL_SOCKET, SO_LINGER, &optionValue02, sizeof(linger)); returnValue == SOCKET_ERROR) {
+		if (auto returnValue = setsockopt(this->theSocket, SOL_SOCKET, SO_LINGER, reinterpret_cast<char*>(&optionValue02), sizeof(linger)); returnValue == SOCKET_ERROR) {
 			throw ConnectionError{ reportError("HttpsSSLClient::connect()::setsockopt(), ") };
 		}
 #else
