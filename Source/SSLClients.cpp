@@ -606,7 +606,11 @@ namespace DiscordCoreInternal {
 	}
 
 	void DatagramSocketSSLClient::connect(const std::string& baseUrlNew, const std::string& portNew) {
+#ifdef _WIN32
 		this->theAddress.sin_addr.S_un.S_addr = inet_addr(baseUrlNew.c_str());
+#else
+		this->theAddress.sin_addr.S_addr = inet_addr(baseUrlNew.c_str());
+#endif
 		this->theAddress.sin_port = htons(stoi(portNew));
 		this->theAddress.sin_family = AF_INET;
 
