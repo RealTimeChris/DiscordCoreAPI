@@ -701,12 +701,9 @@ namespace DiscordCoreInternal {
 		}
 
 		if (FD_ISSET(this->theSocket, &writeSet)) {
-
-			
 			if (this->outputBuffers.size() > 0) {
 				std::string theString = this->outputBuffers.front();
 				int32_t bytesToWrite{ static_cast<int32_t>(theString.size()) > this->maxBufferSize ? this->maxBufferSize : static_cast<int32_t>(theString.size()) };
-
 				auto writtenBytes{ sendto(this->theSocket, theString.data(), bytesToWrite, 0, reinterpret_cast<sockaddr*>(&this->theAddress), sizeof(sockaddr)) };
 				if (writtenBytes >= 0) {
 					this->outputBuffers.erase(this->outputBuffers.begin());
