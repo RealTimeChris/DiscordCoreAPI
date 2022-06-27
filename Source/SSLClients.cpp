@@ -241,7 +241,9 @@ namespace DiscordCoreInternal {
 			throw ConnectionError{ reportError("HttpsSSLClient::connect()::setsockopt(), ") };
 		}
 
-		if (auto returnValue = setsockopt(this->theSocket, SOL_SOCKET, SO_DONTLINGER, &optionValue, sizeof(int32_t));
+		linger optionValue02{};
+		optionValue02.l_onoff = 0;
+		if (auto returnValue = setsockopt(this->theSocket, SOL_SOCKET, SO_LINGER, &optionValue02, sizeof(linger));
 			returnValue == SOCKET_ERROR) {
 			throw ConnectionError{ reportError("HttpsSSLClient::connect()::setsockopt(), ") };
 		}
@@ -517,8 +519,9 @@ namespace DiscordCoreInternal {
 			throw ConnectionError{ reportError("HttpsSSLClient::connect()::setsockopt(), ") };
 		}
 
-		if (auto returnValue = setsockopt(this->theSocket, SOL_SOCKET, SO_DONTLINGER, &optionValue, sizeof(int32_t));
-			returnValue == SOCKET_ERROR) {
+		linger optionValue02{};
+		optionValue02.l_onoff = 0;
+		if (auto returnValue = setsockopt(this->theSocket, SOL_SOCKET, SO_LINGER, &optionValue02, sizeof(linger)); returnValue == SOCKET_ERROR) {
 			throw ConnectionError{ reportError("HttpsSSLClient::connect()::setsockopt(), ") };
 		}
 #else
