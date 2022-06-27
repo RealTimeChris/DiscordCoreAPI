@@ -316,6 +316,12 @@ namespace DiscordCoreAPI {
 		/// \returns A bool telling us if we are connected.
 		bool areWeConnected();
 
+		void insertGuildMember(GuildMemberData theChannel);
+		
+		void insertChannel(ChannelData theChannel);
+
+		void insertRole(RoleData theChannel);
+
 		Guild& operator=(const nlohmann::json& jsonObjectData) {
 			this->parseObject(jsonObjectData, this);
 			return *this;
@@ -489,12 +495,12 @@ namespace DiscordCoreAPI {
 		/// Gets multiple invites from the Discord servers. \brief Gets multiple invites from the Discord servers.
 		/// \param dataPackage A GetGuildInvitesData structure.
 		/// \returns A CoRoutine containing a std::vector<InviteData>.
-		static CoRoutine<std::vector<InviteData>> getGuildInvitesAsync(GetGuildInvitesData dataPackage);
+		static CoRoutine<InviteDataVector> getGuildInvitesAsync(GetGuildInvitesData dataPackage);
 
 		/// Gets the list of Guild integrations for a particular server. \brief Gets the list of Guild integrations for a particular server.
 		/// \param dataPackage A GetGuildIntegrationsData structure.
 		/// \returns A CoRoutine containing a std::vector<IntegrationData>.
-		static CoRoutine<std::vector<IntegrationData>> getGuildIntegrationsAsync(GetGuildIntegrationsData dataPackage);
+		static CoRoutine<IntegrationDataVector> getGuildIntegrationsAsync(GetGuildIntegrationsData dataPackage);
 
 		/// Deletes an integration from a Guild. \brief Deletes an integration from a Guild.
 		/// \param dataPackage A DeleteGuildIntegrationData structure.

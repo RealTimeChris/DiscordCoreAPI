@@ -132,6 +132,18 @@ namespace DiscordCoreAPI {
 		return getVoiceConnectionMap()[this->id]->areWeConnected();
 	}
 
+	void Guild::insertGuildMember(GuildMemberData theData) {
+		GuildMembers::insertGuildMember(theData);
+	}
+
+	void Guild::insertChannel(ChannelData theChannel) {
+		Channels::insertChannel(theChannel);
+	}
+
+	void Guild::insertRole(RoleData theData) {
+		Roles::insertRole(theData);
+	}
+
 	void Guild::initialize() {
 		if (!getVoiceConnectionMap().contains(this->id)) {
 			std::string theShardId{ std::to_string((this->id >> 22) % this->discordCoreClient->configManager.getTotalShardCount()) };
@@ -411,26 +423,26 @@ namespace DiscordCoreAPI {
 		co_return Guilds::httpsClient->submitWorkloadAndGetResult<std::vector<VoiceRegionData>>(workload);
 	}
 
-	CoRoutine<std::vector<InviteData>> Guilds::getGuildInvitesAsync(GetGuildInvitesData dataPackage) {
+	CoRoutine<InviteDataVector> Guilds::getGuildInvitesAsync(GetGuildInvitesData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{};
 		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Invites);
-		co_await NewThreadAwaitable<std::vector<InviteData>>();
+		co_await NewThreadAwaitable<InviteDataVector>();
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Invites;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/invites";
 		workload.callStack = "Guilds::getGuildInvitesAsync";
-		co_return Guilds::httpsClient->submitWorkloadAndGetResult<std::vector<InviteData>>(workload);
+		co_return Guilds::httpsClient->submitWorkloadAndGetResult<InviteDataVector>(workload);
 	}
 
-	CoRoutine<std::vector<IntegrationData>> Guilds::getGuildIntegrationsAsync(GetGuildIntegrationsData dataPackage) {
+	CoRoutine<IntegrationDataVector> Guilds::getGuildIntegrationsAsync(GetGuildIntegrationsData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{};
 		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Integrations);
-		co_await NewThreadAwaitable<std::vector<IntegrationData>>();
+		co_await NewThreadAwaitable<IntegrationDataVector>();
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Integrations;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/integrations";
 		workload.callStack = "Guilds::getGuildIntegrationsAsync";
-		co_return Guilds::httpsClient->submitWorkloadAndGetResult<std::vector<IntegrationData>>(workload);
+		co_return Guilds::httpsClient->submitWorkloadAndGetResult<IntegrationDataVector>(workload);
 	}
 
 	CoRoutine<void> Guilds::deleteGuildIntegrationAsync(DeleteGuildIntegrationData dataPackage) {

@@ -351,7 +351,14 @@ namespace DiscordCoreAPI {
 
 		virtual ~WebHookVector() = default;
 
-		void parseObjectReal(const nlohmann::json&, WebHookVector*);
+		void parseObjectReal(const nlohmann::json& jsonObjectData, WebHookVector* pDataStructure) {
+			pDataStructure->theWebHooks.reserve(jsonObjectData.size());
+			for (auto& value: jsonObjectData) {
+				DiscordCoreAPI::WebHook newData{ value };
+				pDataStructure->theWebHooks.push_back(newData);
+			}
+			pDataStructure->theWebHooks.shrink_to_fit();
+		}
 	};
 
 	/**@}*/
