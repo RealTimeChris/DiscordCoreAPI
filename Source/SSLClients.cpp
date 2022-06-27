@@ -232,23 +232,22 @@ namespace DiscordCoreInternal {
 		}
 
 		int32_t value{ this->maxBufferSize + 1 };
-		if (auto returnValue = setsockopt(this->theSocket, SOL_SOCKET, SO_SNDBUF, static_cast<char*>(static_cast<void*>(&value)), sizeof(value)); returnValue == SOCKET_ERROR) {
+		if (setsockopt(this->theSocket, SOL_SOCKET, SO_SNDBUF, static_cast<char*>(static_cast<void*>(&value)), sizeof(value))) {
 			throw ConnectionError{ reportError("HttpsSSLClient::connect()::setsockopt(), ") };
 		}
 
 		const char optionValue{ true };
-		if (auto returnValue = setsockopt(this->theSocket, IPPROTO_TCP, TCP_NODELAY, &optionValue, sizeof(int32_t)); returnValue == SOCKET_ERROR) {
+		if (setsockopt(this->theSocket, IPPROTO_TCP, TCP_NODELAY, &optionValue, sizeof(int32_t))) {
 			throw ConnectionError{ reportError("HttpsSSLClient::connect()::setsockopt(), ") };
 		}
 
 		linger optionValue02{};
 		optionValue02.l_onoff = 0;
-		if (auto returnValue = setsockopt(this->theSocket, SOL_SOCKET, SO_LINGER, reinterpret_cast<char*>(&optionValue02), sizeof(linger));
-			returnValue == SOCKET_ERROR) {
+		if (setsockopt(this->theSocket, SOL_SOCKET, SO_LINGER, reinterpret_cast<char*>(&optionValue02), sizeof(linger))) {
 			throw ConnectionError{ reportError("HttpsSSLClient::connect()::setsockopt(), ") };
 		}
 
-		if (auto returnValue = setsockopt(this->theSocket, SOL_SOCKET, SO_KEEPALIVE, &optionValue, sizeof(int32_t)); returnValue == SOCKET_ERROR) {
+		if (setsockopt(this->theSocket, SOL_SOCKET, SO_KEEPALIVE, &optionValue, sizeof(int32_t))) {
 			throw ConnectionError{ reportError("HttpsSSLClient::connect()::setsockopt(), ") };
 		}
 
@@ -510,18 +509,18 @@ namespace DiscordCoreInternal {
 		}
 
 		int32_t value{ this->maxBufferSize + 1 };
-		if (auto returnValue = setsockopt(this->theSocket, SOL_SOCKET, SO_SNDBUF, static_cast<char*>(static_cast<void*>(&value)), sizeof(value)); returnValue == SOCKET_ERROR) {
+		if (setsockopt(this->theSocket, SOL_SOCKET, SO_SNDBUF, static_cast<char*>(static_cast<void*>(&value)), sizeof(value))) {
 			throw ConnectionError{ reportError("WebSocketSSLShard::connect()::setsockopt(), ") };
 		}
 
 		const char optionValue{ true };
-		if (auto returnValue = setsockopt(this->theSocket, IPPROTO_TCP, TCP_NODELAY, &optionValue, sizeof(int32_t)); returnValue == SOCKET_ERROR) {
+		if (setsockopt(this->theSocket, IPPROTO_TCP, TCP_NODELAY, &optionValue, sizeof(int32_t))) {
 			throw ConnectionError{ reportError("HttpsSSLClient::connect()::setsockopt(), ") };
 		}
 
 		linger optionValue02{};
 		optionValue02.l_onoff = 0;
-		if (auto returnValue = setsockopt(this->theSocket, SOL_SOCKET, SO_LINGER, reinterpret_cast<char*>(&optionValue02), sizeof(linger)); returnValue == SOCKET_ERROR) {
+		if (setsockopt(this->theSocket, SOL_SOCKET, SO_LINGER, reinterpret_cast<char*>(&optionValue02), sizeof(linger))) {
 			throw ConnectionError{ reportError("HttpsSSLClient::connect()::setsockopt(), ") };
 		}
 

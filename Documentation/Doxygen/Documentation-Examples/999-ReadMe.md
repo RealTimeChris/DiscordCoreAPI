@@ -85,6 +85,7 @@ DiscordCoreAPI::InputEvents::deleteInputEventResponseAsync(newEvent, 20000).get(
 
 # Build Instructions (Full-Vcpkg)
 - [Install vcpkg](https://vcpkg.io/en/getting-started.html), if need be.
+- Make sure to run `vcpkg integrate install`.
 - Enter within a terminal `vcpkg install discordcoreapi:x64-windows_OR_linux`.
 - Set up a console project in your IDE and make sure to set the C++ standard to C++20 or later - and include `discordcoreapi/Index.hpp`.
 - Build and run!
