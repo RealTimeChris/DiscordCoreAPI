@@ -712,7 +712,6 @@ namespace DiscordCoreInternal {
 					throw ProcessingError{ reportError("DatagramSocketSSLClient::writeData()::send(), ") };
 				}
 			}
-			
 		}
 	}
 
