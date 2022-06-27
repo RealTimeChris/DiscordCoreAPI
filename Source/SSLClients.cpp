@@ -699,7 +699,7 @@ namespace DiscordCoreInternal {
 		if (FD_ISSET(this->theSocket, &readSet)) {
 			std::string serverToClientBuffer{};
 			serverToClientBuffer.resize(this->maxBufferSize);
-			auto readBytes{ recv(this->theSocket, serverToClientBuffer.data(), serverToClientBuffer.size(), 0) };
+			auto readBytes{ recv(this->theSocket, serverToClientBuffer.data(), static_cast<int32_t>(serverToClientBuffer.size()), 0) };
 			if (readBytes > 0) {
 				this->inputBuffer.insert(this->inputBuffer.end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
 				this->bytesRead += readBytes;
