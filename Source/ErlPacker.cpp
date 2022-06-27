@@ -69,7 +69,7 @@ namespace DiscordCoreInternal {
 				ErlPacker::appendNilExt(buffer);
 			} else {
 				if (length > std::numeric_limits<uint32_t>::max() - 1) {
-					throw ErlPackError{ "ErlPacker::singleValueJsonToETF(), List_Ext too large for ETF" };
+					throw ErlPackError{ "ErlPacker::singleValueJsonToETF(), List too large for ETF" };
 				}
 			}
 			ErlPacker::appendListHeader(buffer, length);

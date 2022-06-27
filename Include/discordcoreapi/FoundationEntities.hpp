@@ -2127,11 +2127,11 @@ namespace DiscordCoreAPI {
 
 	/// Data structure representing a single Guild. \brief Data structure representing a single Guild.
 	template<typename GuildDerived> struct GuildDataBase : public DiscordEntity {		
-		std::unordered_map<uint64_t, PresenceUpdateData> presences{};///< Array of presences for each GuildMember.
-		std::unordered_map<uint64_t, VoiceStateData> voiceStates{};///< Array of Guild-member voice-states.
+		std::unordered_map<uint64_t, PresenceUpdateData> presences{};///< Map of presences for each GuildMember.
+		std::unordered_map<uint64_t, VoiceStateData> voiceStates{};///< Map of Guild-member voice-states.
 		DiscordCoreClient* discordCoreClient{ nullptr };///< A pointer to the DiscordCoreClient.
 		VoiceConnection* voiceConnectionPtr{ nullptr };///< A pointer to the VoiceConnection, if present.
-		std::vector<StringWrapper> features{};///< List_Ext of Guild features.
+		std::vector<StringWrapper> features{};///< List of Guild features.
 		std::vector<uint64_t> channels{};///< Array of Guild channels.
 		std::vector<uint64_t> members{};///< Array of GuildMembers.
 		std::vector<uint64_t> roles{};///< Array of Guild roles.
