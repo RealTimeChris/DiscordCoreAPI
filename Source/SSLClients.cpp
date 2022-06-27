@@ -259,11 +259,11 @@ namespace DiscordCoreInternal {
 			throw ConnectionError{ reportError("HttpsSSLClient::connect()::setsockopt(), ") };
 		}
 #endif
-		if (auto returnValue = ::connect(this->theSocket, address->ai_addr, static_cast<int32_t>(address->ai_addrlen)); returnValue == SOCKET_ERROR) {
+		if (::connect(this->theSocket, address->ai_addr, static_cast<int32_t>(address->ai_addrlen)) == SOCKET_ERROR) {	
 			throw ConnectionError{ reportError("HttpsSSLClient::connect()::connect(), ") };
 		}
 
-		if (this->ssl = SSL_new(SSLConnectionInterface::context); this->ssl == nullptr) {
+		if ((this->ssl = SSL_new(SSLConnectionInterface::context)) == nullptr) {
 			throw ConnectionError{ reportSSLError("HttpsSSLClient::connect()::SSL_new(), ") };
 		}
 
@@ -523,11 +523,11 @@ namespace DiscordCoreInternal {
 			throw ConnectionError{ reportError("WebSocketSSLShard::connect()::setsockopt(), ") };
 		}
 #endif
-		if (auto returnValue = ::connect(this->theSocket, address->ai_addr, static_cast<int32_t>(address->ai_addrlen)); returnValue == SOCKET_ERROR) {
+		if (::connect(this->theSocket, address->ai_addr, static_cast<int32_t>(address->ai_addrlen)) == SOCKET_ERROR) {
 			throw ConnectionError{ reportError("WebSocketSSLShard::connect()::connect(), ") };
 		}
 
-		if (this->ssl = SSL_new(SSLConnectionInterface::context); this->ssl == nullptr) {
+		if ((this->ssl = SSL_new(SSLConnectionInterface::context)) == nullptr) {
 			throw ConnectionError{ reportSSLError("WebSocketSSLShard::connect()::SSL_new(), ") };
 		}
 
