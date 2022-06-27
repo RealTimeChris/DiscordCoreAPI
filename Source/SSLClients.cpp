@@ -680,7 +680,7 @@ namespace DiscordCoreInternal {
 		finalNfds = writeNfds > readNfds ? writeNfds : readNfds;
 
 		timeval checkTime{ .tv_usec = 1000 };
-		if (auto returnValue = select(readNfds+ 1, &readSet, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
+		if (auto returnValue = select(finalNfds + 1, &readSet, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
 			throw ProcessingError{ reportError("DatagramSocketSSLClient::processIO()::select(), ") };
 		} else if (returnValue == 0) {
 			return;
