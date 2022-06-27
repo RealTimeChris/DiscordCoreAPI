@@ -2476,7 +2476,7 @@ namespace DiscordCoreAPI {
 		int32_t minLength{ 0 };///< The minimum input length for a text input.
 		int32_t maxLength{ 0 };///< The maximum input length for a text input.
 		bool required{ false };///< Whether this component is required to be filled.
-		ComponentType type{};///< Integer_Ext component type.
+		ComponentType type{};///< Integer component type.
 		std::string label{};///< The label for this component.
 		std::string value{};///< A pre-filled value for this component.
 		std::string title{};///< Url, for url types.
