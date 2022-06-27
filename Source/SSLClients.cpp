@@ -238,14 +238,12 @@ namespace DiscordCoreInternal {
 
 #ifdef _WIN32
 		const char optionValue{ true };
-		if (auto returnValue = setsockopt(this->theSocket, IPPROTO_TCP, TCP_NODELAY, &optionValue, sizeof(optionValue)); returnValue == SOCKET_ERROR) {
+		if (auto returnValue = setsockopt(this->theSocket, IPPROTO_TCP, TCP_NODELAY, &optionValue, sizeof(int32_t)); returnValue == SOCKET_ERROR) {
 			throw ConnectionError{ reportError("HttpsSSLClient::connect()::setsockopt(), ") };
 		}
 
-		linger optionValue02{};
-		optionValue02.l_onoff = 1;
-		optionValue02.l_linger = 0;
-		if (auto returnValue = setsockopt(this->theSocket, SOL_SOCKET, SO_LINGER, static_cast<char*>(static_cast<void*>(&optionValue02)), sizeof(optionValue02));
+		char optionValue02{ true };
+		if (auto returnValue = setsockopt(this->theSocket, SOL_SOCKET, SO_DONTLINGER, &optionValue02, sizeof(int32_t));
 			returnValue == SOCKET_ERROR) {
 			throw ConnectionError{ reportError("HttpsSSLClient::connect()::setsockopt(), ") };
 		}
@@ -280,6 +278,17 @@ namespace DiscordCoreInternal {
 		if (auto returnValue = SSL_connect(this->ssl); !returnValue) {
 			throw ConnectionError{ reportSSLError("HttpsSSLClient::connect()::SSL_connect(), ", returnValue, this->ssl) };
 		}
+
+#ifdef _WIN32
+		u_long value02{ 1 };
+		if (auto returnValue = ioctlsocket(this->theSocket, FIONBIO, &value02); returnValue == SOCKET_ERROR) {
+			throw ConnectionError{ reportError("DatagramSocketSSLClient::connect()::ioctlsocket(), ") };
+		}
+#else
+		if (auto returnValue = fcntl(this->theSocket, F_SETFL, fcntl(this->theSocket, F_GETFL, 0) | O_NONBLOCK); returnValue == SOCKET_ERROR) {
+			throw ConnectionError{ reportError("DatagramSocketSSLClient::connect()::fcntl(), ") };
+		}
+#endif
 		
 		this->connectionTime = std::time(nullptr);
 	}
@@ -512,14 +521,12 @@ namespace DiscordCoreInternal {
 
 #ifdef _WIN32
 		const char optionValue{ true };
-		if (auto returnValue = setsockopt(this->theSocket, IPPROTO_TCP, TCP_NODELAY, &optionValue, sizeof(optionValue)); returnValue == SOCKET_ERROR) {
+		if (auto returnValue = setsockopt(this->theSocket, IPPROTO_TCP, TCP_NODELAY, &optionValue, sizeof(int32_t)); returnValue == SOCKET_ERROR) {
 			throw ConnectionError{ reportError("HttpsSSLClient::connect()::setsockopt(), ") };
 		}
 
-		linger optionValue02{};
-		optionValue02.l_onoff = 1;
-		optionValue02.l_linger = 0;
-		if (auto returnValue = setsockopt(this->theSocket, SOL_SOCKET, SO_LINGER, static_cast<char*>(static_cast<void*>(&optionValue02)), sizeof(optionValue02));
+		char optionValue02{ true };
+		if (auto returnValue = setsockopt(this->theSocket, SOL_SOCKET, SO_DONTLINGER, &optionValue02, sizeof(int32_t));
 			returnValue == SOCKET_ERROR) {
 			throw ConnectionError{ reportError("HttpsSSLClient::connect()::setsockopt(), ") };
 		}

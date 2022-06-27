@@ -229,11 +229,18 @@ namespace DiscordCoreInternal {
 				if (other) {
 #ifdef _WIN32
 					shutdown(*other, SD_SEND);
+					char theArray[1024];
+					while (recv(*other, theArray, 1024, 0) > 0) {
+					};
 					closesocket(*other);
 #else
 					shutdown(*other, SHUT_RDWR);
+					char theArray[1024];
+					while (recv(*other, theArray, 1024, 0) > 0) {
+					};
 					close(*other);
 #endif
+					
 					*other = SOCKET_ERROR;
 				}
 			}
