@@ -113,7 +113,7 @@ namespace DiscordCoreInternal {
 						}
 					}
 				}
-				this->theCondVar.wait_for(theLock01, std::chrono::microseconds(100000));
+				this->theCondVar.wait_for(theLock01, std::chrono::milliseconds(1));
 			}
 			
 
