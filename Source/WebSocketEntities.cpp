@@ -1327,8 +1327,8 @@ namespace DiscordCoreInternal {
 				}
 				if (!theToken.stop_requested() && !this->doWeReconnect.load() && this->theClients.contains(0) && this->theClients[0]->heartBeatStopWatch.hasTimePassed() &&
 					this->theClients[0]->areWeHeartBeating ) {
-					this->theClients[0]->heartBeatStopWatch.resetTimer();
 					this->sendHeartBeat();
+					this->theClients[0]->heartBeatStopWatch.resetTimer();
 				}
 				try {
 					if (!theToken.stop_requested() && !this->doWeReconnect.load() && this->theClients.contains(0) && this->theClients[0]->areWeStillConnected() &&
@@ -1340,6 +1340,10 @@ namespace DiscordCoreInternal {
 						DiscordCoreAPI::reportException("VoiceSocketAgent::run()");
 					}
 					this->onClosed();
+				}
+				if (!theToken.stop_requested() && !this->doWeReconnect.load() && this->voiceSocket) {
+					this->voiceSocket->processIO();
+					this->voiceSocket->getInputBuffer();
 				}
 				if (!theToken.stop_requested() && !this->doWeReconnect.load() && this->theClients.contains(0) && this->theClients[0] && !this->doWeQuit->load()) {
 					this->parseHeadersAndMessage(this->theClients[0].get());

@@ -394,9 +394,9 @@ namespace DiscordCoreInternal {
 
 		void connect(const std::string& baseUrl, const std::string& portNew = "443");
 
-		void writeData(const std::string& data, bool priority = false);
-
 		std::string getInputBuffer() noexcept;
+
+		void writeData(std::string& data);
 
 		int64_t getBytesRead() noexcept;
 
@@ -406,8 +406,8 @@ namespace DiscordCoreInternal {
 
 	  protected:
 		const int32_t maxBufferSize{ 1024 * 16 };
+		std::vector<std::string> outputBuffers{};
 		SOCKETWrapper theSocket{ nullptr };
-		std::string outputBuffer{};
 		std::string inputBuffer{};
 		sockaddr_in theAddress{};
 		int64_t bytesRead{ 0 };
