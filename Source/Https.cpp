@@ -221,7 +221,7 @@ namespace DiscordCoreInternal {
 		uint64_t theCount{ 0 };
 		for (uint64_t x = 0; x < other.size(); x += 1) {
 			if (isspace(static_cast<unsigned char>(other[x])) != 0) {
-				theCount += 1;
+				theCount++;
 			} else {
 				break;
 			}
@@ -377,7 +377,7 @@ namespace DiscordCoreInternal {
 			httpsConnection->writeData(theRequest);
 			auto result = this->getResponse(rateLimitData, httpsConnection);
 			if (result.responseCode == -1) {
-				httpsConnection->currentRecursionDepth += 1;
+				httpsConnection->currentRecursionDepth++;
 				httpsConnection->doWeConnect = true;
 				return this->httpRequestInternal(workload, rateLimitData);
 			} else {
@@ -389,7 +389,7 @@ namespace DiscordCoreInternal {
 			if (this->configManager->doWePrintHttpsErrorMessages()) {
 				DiscordCoreAPI::reportException(workload.callStack + "::HttpsClient::executeHttpRequest()");
 			}
-			httpsConnection->currentRecursionDepth += 1;
+			httpsConnection->currentRecursionDepth++;
 			httpsConnection->doWeConnect = true;
 			return this->httpRequestInternal(workload, rateLimitData);
 		}
