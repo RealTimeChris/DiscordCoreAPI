@@ -243,7 +243,8 @@ namespace DiscordCoreInternal {
 		}
 
 		linger optionValue02{};
-		optionValue02.l_onoff = 0;
+		optionValue02.l_onoff = 1;
+		optionValue02.l_linger = 0;
 		if (auto returnValue = setsockopt(this->theSocket, SOL_SOCKET, SO_LINGER, static_cast<char*>(static_cast<void*>(&optionValue02)), sizeof(optionValue02));
 			returnValue == SOCKET_ERROR) {
 			throw ConnectionError{ reportError("HttpsSSLClient::connect()::setsockopt(), ") };
@@ -298,14 +299,18 @@ namespace DiscordCoreInternal {
 			nfds = this->theSocket;
 			timeval checkTime{ .tv_usec = 1 };
 			if (auto returnValue = select(nfds + 1, nullptr, nullptr, &errorfds, &checkTime); returnValue == SOCKET_ERROR) {
+				std::cout << "WERE NOT CONNECTED SELECT FAILED" << std::endl;
 				return false;
 			}
 			if (FD_ISSET(this->theSocket, &errorfds)) {
+				std::cout << "WERE NOT CONNECTED ERRORFDS" << std::endl;
 				return false;
 			}
+			std::cout << "WERE ARE CONNECTED" << std::endl;
 			return true;
 		}
 		else {
+			std::cout << "WERE NOT CONNECTED SOCKET ERROR" << std::endl;
 			return false;
 		}
 	}
@@ -512,7 +517,8 @@ namespace DiscordCoreInternal {
 		}
 
 		linger optionValue02{};
-		optionValue02.l_onoff = 0;
+		optionValue02.l_onoff = 1;
+		optionValue02.l_linger = 0;
 		if (auto returnValue = setsockopt(this->theSocket, SOL_SOCKET, SO_LINGER, static_cast<char*>(static_cast<void*>(&optionValue02)), sizeof(optionValue02));
 			returnValue == SOCKET_ERROR) {
 			throw ConnectionError{ reportError("HttpsSSLClient::connect()::setsockopt(), ") };
