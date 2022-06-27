@@ -6,7 +6,7 @@
 Hello, and welcome to DiscordCoreAPI! This is a Discord bot library that leverages custom asynchronous [CoRoutines](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Include/discordcoreapi/CoRoutine.hpp), as well as a home-brew set of [Https](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Source/Https.cpp#L266), [WebSocket](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Source/WebSocketEntities.cpp#L38), and [Datagram](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Source/WebSocketEntities.cpp#L1052) socket clients - all to deliver the utmost performance and efficiency for your bot. It uses roughly 0.1% of an Intel i7 9750h CPU to stream audio in high quality (Opus @ 48Khz, 16-bit) to a single server.
 
 # Documentation/Examples
-[Documentation/Examples](https://discordcoreapi.com/da/d70/a05940.html)
+[Documentation/Examples](https://discordcoreapi.com/db/d0b/a05952.html)
 
 # Discord Server
 [This is a link to the Discord server!](https://discord.gg/adgMqeBuhP)
