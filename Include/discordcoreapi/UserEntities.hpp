@@ -180,9 +180,12 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll UserVector {
 	  public:
-		std::vector<User> theUsers{};
 
 		UserVector() = default;
+
+		operator std::vector<User>() {
+			return this->theUsers;
+		}
 
 		UserVector& operator=(const nlohmann::json& jsonObjectData) {
 			this->parseObject(jsonObjectData, this);
@@ -194,6 +197,9 @@ namespace DiscordCoreAPI {
 		}
 
 		virtual ~UserVector() = default;
+
+	  protected:
+		std::vector<User> theUsers{};
 
 		inline void parseObject(const nlohmann::json& jsonObjectData, UserVector* pDataStructure) {
 			pDataStructure->theUsers.reserve(jsonObjectData.size());
@@ -280,7 +286,7 @@ namespace DiscordCoreAPI {
 
 		/// Collects the User's Connections. \brief Collects the User's Connections.
 		/// \returns A CoRoutine containing a std::vector<ConnectionData>.
-		static CoRoutine<ConnectionDataVector> getUserConnectionsAsync();
+		static CoRoutine<std::vector<ConnectionData>> getUserConnectionsAsync();
 
 		/// Collects the Application responseData associated with the current Bot.
 		/// \brief Collects the Application responseData associated with the current Bot.

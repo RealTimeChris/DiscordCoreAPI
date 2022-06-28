@@ -132,9 +132,12 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll StickerVector {
 	  public:
-		std::vector<Sticker> theStickers{};
 
 		StickerVector() = default;
+
+		operator std::vector<Sticker>() {
+			return this->theStickers;
+		}
 
 		StickerVector& operator=(const nlohmann::json& jsonObjectData) {
 			this->parseObject(jsonObjectData, this);
@@ -146,6 +149,9 @@ namespace DiscordCoreAPI {
 		}
 
 		virtual ~StickerVector() = default;
+
+	  protected:
+		std::vector<Sticker> theStickers{};
 
 		inline void parseObject(const nlohmann::json& jsonObjectData, StickerVector* pDataStructure) {
 			pDataStructure->theStickers.reserve(jsonObjectData.size());
@@ -176,12 +182,12 @@ namespace DiscordCoreAPI {
 
 		/// Gets a list of nitro-available Sticker packs. \brief Gets a list of nitro-available Sticker packs
 		/// \returns A CoRoutine containing a StickerPackDataVector.
-		static CoRoutine<StickerPackDataVector> getNitroStickerPacksAsync();
+		static CoRoutine<std::vector<StickerPackData>> getNitroStickerPacksAsync();
 
 		/// Gets a list of Stickers from a Guild. \brief Gets a list of Stickers from a Guild.
 		/// \param dataPackage A GetGuildStickersData structure.
 		/// \returns A CoRoutine containing a StickerVector.
-		static CoRoutine<StickerVector> getGuildStickersAsync(GetGuildStickersData dataPackage);
+		static CoRoutine<std::vector<Sticker>> getGuildStickersAsync(GetGuildStickersData dataPackage);
 
 		/// Creates a new Sticker within a chosen Guild. \brief Creates a new Sticker within a chosen Guild.
 		/// \param dataPackage A CreateGuildStickerData structure.

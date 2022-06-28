@@ -960,9 +960,12 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll ThreadMemberDataVector {
 	  public:
-		std::vector<ThreadMemberData> theThreadMemberDatas{};
 
 		ThreadMemberDataVector() = default;
+
+		operator std::vector<ThreadMemberData>() {
+			return this->theThreadMemberDatas;
+		}
 
 		ThreadMemberDataVector& operator=(const nlohmann::json& jsonObjectData) {
 			this->parseObject(jsonObjectData, this);
@@ -973,6 +976,11 @@ namespace DiscordCoreAPI {
 			*this = jsonObjectData;
 		}
 
+		virtual ~ThreadMemberDataVector() = default;
+
+	  protected:
+		std::vector<ThreadMemberData> theThreadMemberDatas{};
+
 		inline void parseObject(const nlohmann::json& jsonObjectData, ThreadMemberDataVector* pDataStructure) {
 			pDataStructure->theThreadMemberDatas.reserve(jsonObjectData.size());
 			for (auto& value: jsonObjectData) {
@@ -981,8 +989,6 @@ namespace DiscordCoreAPI {
 			}
 			pDataStructure->theThreadMemberDatas.shrink_to_fit();
 		}
-
-		virtual ~ThreadMemberDataVector() = default;
 	};
 
 	/// Thread types. \brief Thread types.
@@ -3943,9 +3949,12 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll GuildScheduledEventUserDataVector {
 	  public:
-		std::vector<GuildScheduledEventUserData> theGuildScheduledEventUserDatas{};
-
+		
 		GuildScheduledEventUserDataVector() = default;
+
+		operator std::vector<GuildScheduledEventUserData>() {
+			return this->theGuildScheduledEventUserDatas;
+		}
 
 		GuildScheduledEventUserDataVector& operator=(const nlohmann::json& jsonObjectData) {
 			this->parseObject(jsonObjectData, this);
@@ -3957,6 +3966,9 @@ namespace DiscordCoreAPI {
 		}
 
 		virtual ~GuildScheduledEventUserDataVector() = default;
+
+		protected:
+		std::vector<GuildScheduledEventUserData> theGuildScheduledEventUserDatas{};
 
 		inline void parseObject(const nlohmann::json& jsonObjectData, GuildScheduledEventUserDataVector* pDataStructure) {
 			pDataStructure->theGuildScheduledEventUserDatas.reserve(jsonObjectData.size());
@@ -6299,9 +6311,12 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll StickerPackDataVector {
 	  public:
-		std::vector<StickerPackData> theStickerPackDatas{};
 
 		StickerPackDataVector() = default;
+
+		operator std::vector<StickerPackData>() {
+			return this->theStickerPackDatas;
+		}
 
 		StickerPackDataVector& operator=(const nlohmann::json& jsonObjectData) {
 			this->parseObject(jsonObjectData, this);
@@ -6313,6 +6328,9 @@ namespace DiscordCoreAPI {
 		}
 
 		virtual ~StickerPackDataVector() = default;
+
+	  protected:
+		std::vector<StickerPackData> theStickerPackDatas{};
 
 		inline void parseObject(const nlohmann::json& jsonObjectData, StickerPackDataVector* pDataStructure) {
 			pDataStructure->theStickerPackDatas.reserve(jsonObjectData.size());
@@ -6402,9 +6420,12 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll ConnectionDataVector {
 	  public:
-		std::vector<ConnectionData> theConnectionDatas{};
 
 		ConnectionDataVector() = default;
+
+		operator std::vector<ConnectionData>() {
+			return this->theConnectionDatas;
+		}
 
 		ConnectionDataVector& operator=(const nlohmann::json& jsonObjectData) {
 			this->parseObject(jsonObjectData, this);
@@ -6416,6 +6437,9 @@ namespace DiscordCoreAPI {
 		}
 
 		virtual ~ConnectionDataVector() = default;
+
+	  protected:
+		std::vector<ConnectionData> theConnectionDatas{};
 
 		inline void parseObject(const nlohmann::json& jsonObjectData, ConnectionDataVector* pDataStructure) {
 			pDataStructure->theConnectionDatas.reserve(jsonObjectData.size());

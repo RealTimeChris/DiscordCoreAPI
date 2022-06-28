@@ -64,10 +64,10 @@ namespace DiscordCoreAPI {
 		Messages::httpsClient = theClient;
 	}
 
-	CoRoutine<MessageVector> Messages::getMessagesAsync(GetMessagesData dataPackage) {
+	CoRoutine<std::vector<Message>> Messages::getMessagesAsync(GetMessagesData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{};
 		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Get_Messages);
-		co_await NewThreadAwaitable<MessageVector>();
+		co_await NewThreadAwaitable<std::vector<Message>>();
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Get_Messages;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/messages";
@@ -198,10 +198,10 @@ namespace DiscordCoreAPI {
 		co_return Messages::httpsClient->submitWorkloadAndGetResult<void>(workload);
 	}
 
-	CoRoutine<MessageVector> Messages::getPinnedMessagesAsync(GetPinnedMessagesData dataPackage) {
+	CoRoutine<std::vector<Message>> Messages::getPinnedMessagesAsync(GetPinnedMessagesData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{};
 		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Get_Pinned_Messages);
-		co_await NewThreadAwaitable<MessageVector>();
+		co_await NewThreadAwaitable<std::vector<Message>>();
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Get_Pinned_Messages;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/pins";

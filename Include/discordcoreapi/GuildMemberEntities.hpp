@@ -249,12 +249,12 @@ namespace DiscordCoreAPI {
 		/// Lists all of the GuildMembers of a chosen Guild. \brief Lists all of the GuildMembers of a chosen Guild.
 		/// \param dataPackage A ListGuildMembersData structure.
 		/// \returns A CoRoutine containing a std::vector<GuildMembers>.
-		static CoRoutine<GuildMemberVector> listGuildMembersAsync(ListGuildMembersData dataPackage);
+		static CoRoutine<std::vector<GuildMember>> listGuildMembersAsync(ListGuildMembersData dataPackage);
 
 		/// Searches for a list of GuildMembers of a chosen Guild. \brief Searches for a list of GuildMembers of a chosen Guild.
 		/// \param dataPackage A SearchGuildMembersData structure.
 		/// \returns A CoRoutine containing a std::vector<GuildMembers>.
-		static CoRoutine<GuildMemberVector> searchGuildMembersAsync(SearchGuildMembersData dataPackage);
+		static CoRoutine<std::vector<GuildMember>> searchGuildMembersAsync(SearchGuildMembersData dataPackage);
 
 		/// Adds a GuildMember to a chosen Guild. \brief Adds a GuildMember to a chosen Guild.
 		/// \param dataPackage An AddGuildMemberData structure.

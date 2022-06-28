@@ -378,9 +378,12 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll MessageVector {
 	  public:
-		std::vector<Message> theMessages{};
 
 		MessageVector() = default;
+
+		operator std::vector<Message>() {
+			return this->theMessages;
+		}
 
 		MessageVector& operator=(const nlohmann::json& jsonObjectData) {
 			this->parseObject(jsonObjectData, this);
@@ -392,6 +395,9 @@ namespace DiscordCoreAPI {
 		}
 
 		virtual ~MessageVector() = default;
+
+	  protected:		  
+		std::vector<Message> theMessages{};
 
 		inline void parseObject(const nlohmann::json& jsonObjectData, MessageVector* pDataStructure) {
 			pDataStructure->theMessages.reserve(jsonObjectData.size());
@@ -458,7 +464,7 @@ namespace DiscordCoreAPI {
 		/// Collects a collection of Message from the Discord servers. \brief Collects a collection of Message from the Discord servers
 		/// \param dataPackage A GetMessagesData structure.
 		/// \returns A CoRoutine containing a MessageVector.
-		static CoRoutine<MessageVector> getMessagesAsync(GetMessagesData dataPackage);
+		static CoRoutine<std::vector<Message>> getMessagesAsync(GetMessagesData dataPackage);
 
 		/// Collects a Message from the Discord servers. \brief Collects a Message from the Discord servers.
 		/// \param dataPackage A GetMessageData structure.
@@ -493,7 +499,7 @@ namespace DiscordCoreAPI {
 		/// Collects a collection of pinned Messages from the Discord servers. \brief Collects a collection of pinned Messages from the Discord servers.
 		/// \param dataPackage A GetPinnedMessagesData structure.
 		/// \returns A CoRoutine containing a MessageVector.
-		static CoRoutine<MessageVector> getPinnedMessagesAsync(GetPinnedMessagesData dataPackage);
+		static CoRoutine<std::vector<Message>> getPinnedMessagesAsync(GetPinnedMessagesData dataPackage);
 
 		/// Pins a Message to a given Channel. \brief Pins a Message to a given Channel.
 		/// \param dataPackage A PinMessageData structure.

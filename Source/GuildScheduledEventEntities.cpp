@@ -128,7 +128,7 @@ namespace DiscordCoreAPI {
 			workload.relativePath += "?with_member=true";
 		}
 		workload.callStack = "GuildScheduledEvents::getGuildScheduledEventUsersAsync";
-		co_return GuildScheduledEvents::httpsClient->submitWorkloadAndGetResult<std::vector<GuildScheduledEventUserData>>(workload);
+		co_return GuildScheduledEvents::httpsClient->submitWorkloadAndGetResult<GuildScheduledEventUserDataVector>(workload);
 	}
 	DiscordCoreInternal::HttpsClient* GuildScheduledEvents::httpsClient{ nullptr };
 }

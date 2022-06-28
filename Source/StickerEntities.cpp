@@ -39,10 +39,10 @@ namespace DiscordCoreAPI {
 		co_return Stickers::httpsClient->submitWorkloadAndGetResult<Sticker>(workload);
 	}
 
-	CoRoutine<StickerPackDataVector> Stickers::getNitroStickerPacksAsync() {
+	CoRoutine<std::vector<StickerPackData>> Stickers::getNitroStickerPacksAsync() {
 		DiscordCoreInternal::HttpsWorkloadData workload{};
 		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Get_Nitro_Sticker_Packs);
-		co_await NewThreadAwaitable<StickerPackDataVector>();
+		co_await NewThreadAwaitable<std::vector<StickerPackData>>();
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Get_Nitro_Sticker_Packs;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/sticker-packs";
@@ -50,10 +50,10 @@ namespace DiscordCoreAPI {
 		co_return Stickers::httpsClient->submitWorkloadAndGetResult<StickerPackDataVector>(workload);
 	}
 
-	CoRoutine<StickerVector> Stickers::getGuildStickersAsync(GetGuildStickersData dataPackage) {
+	CoRoutine<std::vector<Sticker>> Stickers::getGuildStickersAsync(GetGuildStickersData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{};
 		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Stickers);
-		co_await NewThreadAwaitable<StickerVector>();
+		co_await NewThreadAwaitable<std::vector<Sticker>>();
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Stickers;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/stickers";

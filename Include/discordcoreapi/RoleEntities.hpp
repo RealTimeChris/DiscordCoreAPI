@@ -206,9 +206,12 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll RoleVector {
 	  public:
-		std::vector<Role> theRoles{};
 
 		RoleVector() = default;
+
+		operator std::vector<Role>() {
+			return this->theRoles;
+		}
 
 		RoleVector& operator=(const nlohmann::json& jsonObjectData) {
 			this->parseObject(jsonObjectData, this);
@@ -219,6 +222,11 @@ namespace DiscordCoreAPI {
 			*this = jsonObjectData;
 		}
 
+		virtual ~RoleVector() = default;
+
+		protected:
+		std::vector<Role> theRoles{};
+
 		inline void parseObject(const nlohmann::json& jsonObjectData, RoleVector* pDataStructure) {
 			pDataStructure->theRoles.reserve(jsonObjectData.size());
 			for (auto& value: jsonObjectData) {
@@ -227,8 +235,6 @@ namespace DiscordCoreAPI {
 			}
 			pDataStructure->theRoles.shrink_to_fit();
 		}
-
-		virtual ~RoleVector() = default;
 	};
 
 	/**@}*/
@@ -259,7 +265,7 @@ namespace DiscordCoreAPI {
 		/// Collects the Roles that a Guild has. \brief Collects the Roles that a Guild has.
 		/// \param dataPackage A GetGuildRolesData structure.
 		/// \returns A CoRoutine containing a RoleVector.
-		static CoRoutine<RoleVector> getGuildRolesAsync(GetGuildRolesData dataPackage);
+		static CoRoutine<std::vector<Role>> getGuildRolesAsync(GetGuildRolesData dataPackage);
 
 		/// Creates a new Role within the given Guild. \brief Creates a new Role within the given Guild.
 		/// \param dataPackage A CreateGuildRoleData structure.
@@ -269,7 +275,7 @@ namespace DiscordCoreAPI {
 		/// Updates a Role's positions. \brief Updates a Role's positions.
 		/// \param dataPackage A ModifyGuildRolePositionsData structure.
 		/// \returns A CoRoutine containing a RoleVector.
-		static CoRoutine<RoleVector> modifyGuildRolePositionsAsync(ModifyGuildRolePositionsData dataPackage);
+		static CoRoutine<std::vector<Role>> modifyGuildRolePositionsAsync(ModifyGuildRolePositionsData dataPackage);
 
 		/// Updates a given Role's properties. \brief Updates a given Role's properties.
 		/// \param dataPackage A ModifyGuildRoleData structure.
@@ -284,7 +290,7 @@ namespace DiscordCoreAPI {
 		/// Collects the Roles that a GuildMember has. \brief Collects the Roles that a GuildMember has.
 		/// \param dataPackage A GetGuildMemberRolesData structure.
 		/// \returns A CoRoutine containing a RoleVector.
-		static CoRoutine<RoleVector> getGuildMemberRolesAsync(GetGuildMemberRolesData dataPackage);
+		static CoRoutine<std::vector<Role>> getGuildMemberRolesAsync(GetGuildMemberRolesData dataPackage);
 
 		/// Collects a Role from the Discord servers. \brief Collects a Role from the Discord servers.
 		/// \param dataPackage A GetRoleData structure.

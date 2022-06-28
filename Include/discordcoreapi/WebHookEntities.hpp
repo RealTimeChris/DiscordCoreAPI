@@ -384,9 +384,12 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll WebHookVector {
 	  public:
-		std::vector<WebHook> theWebHooks{};
 
 		WebHookVector() = default;
+
+		operator std::vector<WebHook>() {
+			return this->theWebHooks;
+		}
 
 		WebHookVector& operator=(const nlohmann::json& jsonObjectData) {
 			this->parseObject(jsonObjectData, this);
@@ -398,6 +401,9 @@ namespace DiscordCoreAPI {
 		}
 
 		virtual ~WebHookVector() = default;
+
+	  protected:
+		std::vector<WebHook> theWebHooks{};
 
 		inline void parseObject(const nlohmann::json& jsonObjectData, WebHookVector* pDataStructure) {
 			pDataStructure->theWebHooks.reserve(jsonObjectData.size());
@@ -428,12 +434,12 @@ namespace DiscordCoreAPI {
 		/// Collects a list of WebHooks from a chosen Channel. \brief Collects a list of WebHooks from a chosen Channel.
 		/// \param dataPackage A GetChannelWebHooksData structure.
 		/// \returns A CoRoutine containing a WebHookVector.
-		static CoRoutine<WebHookVector> getChannelWebHooksAsync(GetChannelWebHooksData dataPackage);
+		static CoRoutine<std::vector<WebHook>> getChannelWebHooksAsync(GetChannelWebHooksData dataPackage);
 
 		/// Collects a list of WebHooks from a chosen Guild. \brief Collects a list of WebHooks from a chosen Guild.
 		/// \param dataPackage A GetGuildWebHooksData structure.
 		/// \returns A CoRoutine containing a WebHookVector.
-		static CoRoutine<WebHookVector> getGuildWebHooksAsync(GetGuildWebHooksData dataPackage);
+		static CoRoutine<std::vector<WebHook>> getGuildWebHooksAsync(GetGuildWebHooksData dataPackage);
 
 		/// Collects a single WebHook. \brief Collects a single WebHook.
 		/// \param dataPackage A GetWebHookData structure.
