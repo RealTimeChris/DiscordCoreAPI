@@ -256,7 +256,7 @@ namespace DiscordCoreInternal {
 		}
 
 		std::unique_lock<std::mutex> theLock{ SSLConnectionInterface::theMutex };
-		if ((this->ssl = SSL_new(SSLConnectionInterface::context)) == nullptr) {
+		if (this->ssl = SSL_new(SSLConnectionInterface::context); this->ssl == nullptr) {
 			throw ConnectionError{ reportSSLError("HttpSSLClient::connect()::SSL_new(), ") };
 		}
 		theLock.unlock();
@@ -526,7 +526,7 @@ namespace DiscordCoreInternal {
 		}
 
 		std::unique_lock<std::mutex> theLock{ SSLConnectionInterface::theMutex };
-		if ((this->ssl = SSL_new(SSLConnectionInterface::context)) == nullptr) {
+		if (this->ssl = SSL_new(SSLConnectionInterface::context); this->ssl == nullptr) {
 			throw ConnectionError{ reportSSLError("WebSocketSSLShard::connect()::SSL_new(), ") };
 		}
 		theLock.unlock();
