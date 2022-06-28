@@ -25,6 +25,15 @@
 
 namespace DiscordCoreAPI {
 
+	GuildScheduledEvent& GuildScheduledEvent::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData, this);
+		return *this;
+	}
+
+	GuildScheduledEvent::GuildScheduledEvent(const nlohmann::json& jsonObjectData) {
+		*this = jsonObjectData;
+	}
+
 	void GuildScheduledEvents::initialize(DiscordCoreInternal::HttpsClient* theClient) {
 		GuildScheduledEvents::httpsClient = theClient;
 	}

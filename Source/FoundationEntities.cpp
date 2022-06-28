@@ -40,6 +40,14 @@
 
 namespace DiscordCoreAPI {
 
+	InputEventData& InputEventData::operator=(const InputEventData& other) {
+		if (this != &other) {
+			*this->interactionData = *other.interactionData;
+			this->responseType = other.responseType;
+		}
+		return *this;
+	}
+
 	InputEventData::InputEventData(const InputEventData& other) {
 		*this = other;
 	}

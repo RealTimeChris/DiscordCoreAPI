@@ -26,6 +26,28 @@
 
 namespace DiscordCoreAPI {
 
+	Reaction& Reaction::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData, this);
+		return *this;
+	}
+
+	Reaction::Reaction(const nlohmann::json& jsonObjectData) {
+		*this = jsonObjectData;
+	}
+
+	ReactionVector::operator std::vector<Reaction>() {
+		return this->theReactions;
+	}
+
+	ReactionVector& ReactionVector::operator = (const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData, this);
+		return *this;
+	}
+
+	ReactionVector::ReactionVector(const nlohmann::json& jsonObjectData) {
+		*this = jsonObjectData;
+	}
+
 	void Reactions::initialize(DiscordCoreInternal::HttpsClient* theClient) {
 		Reactions::httpsClient = theClient;
 	}

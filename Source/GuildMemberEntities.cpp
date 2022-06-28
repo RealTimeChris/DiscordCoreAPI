@@ -26,6 +26,10 @@
 
 namespace DiscordCoreAPI {
 
+	void GuildMemberData::insertUser(UserData theUser) {
+		Users::insertUser(theUser);
+	}
+
 	GuildMember& GuildMember::operator=(GuildMemberData&& other) {
 		if (this != &other) {
 			this->permissions = std::move(other.permissions);
@@ -64,8 +68,26 @@ namespace DiscordCoreAPI {
 		*this = other;
 	}
 
-	void GuildMemberData::insertUser(UserData theUser) {
-		Users::insertUser(theUser);
+	GuildMember& GuildMember::operator = (const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData, this);
+		return *this;
+	}
+
+	GuildMember::GuildMember(const nlohmann::json& jsonObjectData) {
+		*this = jsonObjectData;
+	}
+
+	GuildMemberVector::operator std::vector<GuildMember>() {
+		return this->theGuildMembers;
+	}
+
+	GuildMemberVector& GuildMemberVector::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData, this);
+		return *this;
+	}
+
+	GuildMemberVector::GuildMemberVector(const nlohmann::json& jsonObjectData) {
+		*this = jsonObjectData;
 	}
 
 	void GuildMembers::initialize(DiscordCoreInternal::HttpsClient* theClient, ConfigManager* configManagerNew) {

@@ -58,6 +58,28 @@ namespace DiscordCoreAPI {
 		*this = other;
 	}
 
+	Role& Role::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData, this);
+		return *this;
+	}
+
+	Role::Role(const nlohmann::json& jsonObjectData) {
+		*this = jsonObjectData;
+	}
+
+	RoleVector::operator std::vector<Role>() {
+		return this->theRoles;
+	}
+
+	RoleVector& RoleVector::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData, this);
+		return *this;
+	}
+
+	RoleVector::RoleVector(const nlohmann::json& jsonObjectData) {
+		*this = jsonObjectData;
+	}
+
 	void Roles::initialize(DiscordCoreInternal::HttpsClient* theClient, ConfigManager* configManagerNew) {
 		Roles::cache = std::make_unique<std::unordered_map<uint64_t, std::unique_ptr<RoleData>>>();
 		Roles::configManager = configManagerNew;

@@ -116,109 +116,32 @@ namespace DiscordCoreAPI {
 
 		GuildMember() = default;
 
-		inline GuildMember& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
+		GuildMember& operator=(const nlohmann::json& jsonObjectData);
 
-		inline GuildMember(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
-
+		GuildMember(const nlohmann::json& jsonObjectData);
+		
 		~GuildMember() = default;
 
 	  protected:
-		inline void parseObject(const nlohmann::json& jsonObjectData, GuildMember* pDataStructure) {
-			if (jsonObjectData.contains("communication_disabled_until") && !jsonObjectData["communication_disabled_until"].is_null()) {
-				pDataStructure->communicationDisabledUntil = jsonObjectData["communication_disabled_until"];
-			}
-
-			if (jsonObjectData.contains("roles") && !jsonObjectData["roles"].is_null()) {
-				for (auto& value: jsonObjectData["roles"].get<std::vector<std::string>>()) {
-					pDataStructure->roles.push_back(stoull(value));
-				}
-			}
-
-			if (jsonObjectData.contains("flags") && !jsonObjectData["flags"].is_null()) {
-				pDataStructure->flags = jsonObjectData["flags"].get<int8_t>();
-			}
-
-			if (jsonObjectData.contains("premium_since") && !jsonObjectData["premium_since"].is_null()) {
-				pDataStructure->premiumSince = jsonObjectData["premium_since"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("permissions") && !jsonObjectData["permissions"].is_null()) {
-				pDataStructure->permissions = jsonObjectData["permissions"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("joined_at") && !jsonObjectData["joined_at"].is_null()) {
-				pDataStructure->joinedAt = jsonObjectData["joined_at"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("guild_id") && !jsonObjectData["guild_id"].is_null()) {
-				pDataStructure->guildId = stoull(jsonObjectData["guild_id"].get<std::string>());
-			}
-
-			if (jsonObjectData.contains("avatar") && !jsonObjectData["avatar"].is_null()) {
-				pDataStructure->avatar = jsonObjectData["avatar"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("nick") && !jsonObjectData["nick"].is_null()) {
-				pDataStructure->nick = jsonObjectData["nick"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("user") && !jsonObjectData["user"].is_null()) {
-				User theUser{ jsonObjectData["user"] };
-				this->insertUser(theUser);
-				pDataStructure->id = theUser.id;
-				pDataStructure->userAvatar = theUser.avatar;
-				pDataStructure->userName = theUser.userName;
-			}
-
-			if (jsonObjectData.contains("pending") && !jsonObjectData["pending"].is_null()) {
-				pDataStructure->flags = setBool<int8_t, GuildMemberFlags>(pDataStructure->flags, GuildMemberFlags::Pending, jsonObjectData["pending"].get<bool>());
-			}
-
-			if (jsonObjectData.contains("mute") && !jsonObjectData["mute"].is_null()) {
-				pDataStructure->flags = setBool<int8_t, GuildMemberFlags>(pDataStructure->flags, GuildMemberFlags::Mute, jsonObjectData["mute"].get<bool>());
-			}
-
-			if (jsonObjectData.contains("deaf") && !jsonObjectData["deaf"].is_null()) {
-				pDataStructure->flags = setBool<int8_t, GuildMemberFlags>(pDataStructure->flags, GuildMemberFlags::Deaf, jsonObjectData["deaf"].get<bool>());
-			}
-		}
+		void parseObject(const nlohmann::json& jsonObjectData, GuildMember* pDataStructure);
 	};
 
 	class DiscordCoreAPI_Dll GuildMemberVector {
 	  public:
 		GuildMemberVector() = default;
 
-		operator std::vector<GuildMember>() {
-			return this->theGuildMembers;
-		}
+		operator std::vector<GuildMember>();
 
-		GuildMemberVector& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
-
-		GuildMemberVector(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
+		GuildMemberVector& operator=(const nlohmann::json& jsonObjectData);
+		
+		GuildMemberVector(const nlohmann::json& jsonObjectData);
 
 		virtual ~GuildMemberVector() = default;
 
 	  protected:
 		std::vector<GuildMember> theGuildMembers{};
 
-		inline void parseObject(const nlohmann::json& jsonObjectData, GuildMemberVector* pDataStructure) {
-			pDataStructure->theGuildMembers.reserve(jsonObjectData.size());
-			for (auto& value: jsonObjectData) {
-				DiscordCoreAPI::GuildMember newData{ value };
-				pDataStructure->theGuildMembers.push_back(newData);
-			}
-			pDataStructure->theGuildMembers.shrink_to_fit();
-		}
+		void parseObject(const nlohmann::json& jsonObjectData, GuildMemberVector* pDataStructure);
 	};
 
 	/**@}*/

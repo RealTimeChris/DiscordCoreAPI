@@ -132,49 +132,14 @@ namespace DiscordCoreAPI {
 	  public:
 		Reaction() = default;
 
-		Reaction& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
+		Reaction& operator=(const nlohmann::json& jsonObjectData);
 
-		Reaction(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
+		Reaction(const nlohmann::json& jsonObjectData);
+		
 		virtual ~Reaction() = default;
 
-		inline void parseObject(const nlohmann::json& jsonObjectData, Reaction* pDataStructure) {
-			if (jsonObjectData.contains("count") && !jsonObjectData["count"].is_null()) {
-				pDataStructure->count = jsonObjectData["count"].get<int32_t>();
-			}
-
-			if (jsonObjectData.contains("me") && !jsonObjectData["me"].is_null()) {
-				pDataStructure->count = jsonObjectData["me"].get<bool>();
-			}
-
-			if (jsonObjectData.contains("emoji") && !jsonObjectData["emoji"].is_null()) {
-				pDataStructure->emoji = jsonObjectData["emoji"];
-			}
-
-			if (jsonObjectData.contains("guild_id") && !jsonObjectData["guild_id"].is_null()) {
-				pDataStructure->guildId = stoull(jsonObjectData["guild_id"].get<std::string>());
-			}
-
-			if (jsonObjectData.contains("channel_id") && !jsonObjectData["channel_id"].is_null()) {
-				pDataStructure->channelId = stoull(jsonObjectData["channel_id"].get<std::string>());
-			}
-
-			if (jsonObjectData.contains("user_id") && !jsonObjectData["user_id"].is_null()) {
-				pDataStructure->userId = stoull(jsonObjectData["user_id"].get<std::string>());
-			}
-
-			if (jsonObjectData.contains("message_id") && !jsonObjectData["message_id"].is_null()) {
-				pDataStructure->messageId = stoull(jsonObjectData["message_id"].get<std::string>());
-			}
-
-			if (jsonObjectData.contains("member") && !jsonObjectData["member"].is_null()) {
-				pDataStructure->member = jsonObjectData["member"];
-			}
-		}
+	  protected:
+		void parseObject(const nlohmann::json& jsonObjectData, Reaction* pDataStructure);
 	};
 
 	class DiscordCoreAPI_Dll ReactionVector {
@@ -182,32 +147,18 @@ namespace DiscordCoreAPI {
 
 		ReactionVector() = default;
 
-		operator std::vector<Reaction>() {
-			return this->theReactions;
-		}
-
-		ReactionVector& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
-
-		ReactionVector(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
+		operator std::vector<Reaction>();
+		
+		ReactionVector& operator=(const nlohmann::json& jsonObjectData);
+		
+		ReactionVector(const nlohmann::json& jsonObjectData);
 
 		virtual ~ReactionVector() = default;
 
 	  protected:
 		std::vector<Reaction> theReactions{};
 
-		inline void parseObject(const nlohmann::json& jsonObjectData, ReactionVector* pDataStructure) {
-			pDataStructure->theReactions.reserve(jsonObjectData.size());
-			for (auto& value: jsonObjectData) {
-				DiscordCoreAPI::Reaction newData{ value };
-				pDataStructure->theReactions.push_back(newData);
-			}
-			pDataStructure->theReactions.shrink_to_fit();
-		}
+		void parseObject(const nlohmann::json& jsonObjectData, ReactionVector* pDataStructure);
 	};
 
 	/**@}*/

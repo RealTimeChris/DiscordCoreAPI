@@ -83,7 +83,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~Sticker() = default;
 
-		inline void parseObject(const nlohmann::json& jsonObjectData, Sticker* pDataStructure) {
+		void parseObject(const nlohmann::json& jsonObjectData, Sticker* pDataStructure) {
 			if (jsonObjectData.contains("asset") && !jsonObjectData["asset"].is_null()) {
 				pDataStructure->asset = jsonObjectData["asset"].get<std::string>();
 			}
@@ -153,7 +153,7 @@ namespace DiscordCoreAPI {
 	  protected:
 		std::vector<Sticker> theStickers{};
 
-		inline void parseObject(const nlohmann::json& jsonObjectData, StickerVector* pDataStructure) {
+		void parseObject(const nlohmann::json& jsonObjectData, StickerVector* pDataStructure) {
 			pDataStructure->theStickers.reserve(jsonObjectData.size());
 			for (auto& value: jsonObjectData) {
 				DiscordCoreAPI::Sticker newData{ value };
