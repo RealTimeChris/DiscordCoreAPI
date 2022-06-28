@@ -208,7 +208,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void HttpsSSLClient::connect(const std::string& baseUrl) {
+	void HttpsSSLClient::connect(const std::string& baseUrl, const std::string& portNew) {
 		std::string stringNew{};
 		if (baseUrl.find(".com") != std::string::npos) {
 			stringNew =
@@ -223,7 +223,7 @@ namespace DiscordCoreInternal {
 		hints->ai_socktype = SOCK_STREAM;
 		hints->ai_protocol = IPPROTO_TCP;
 
-		if (auto returnValue = getaddrinfo(stringNew.c_str(), "443", hints, address); returnValue == SOCKET_ERROR) {
+		if (auto returnValue = getaddrinfo(stringNew.c_str(), portNew.c_str(), hints, address); returnValue == SOCKET_ERROR) {
 			throw ConnectionError{ reportError("HttpsSSLClient::connect()::getaddrinfo(), ") };
 		}
 
@@ -493,14 +493,14 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void WebSocketSSLShard::connect(const std::string& baseUrlNew) {
+	void WebSocketSSLShard::connect(const std::string& baseUrlNew, const std::string& portNew) {
 		addrinfoWrapper hints{ nullptr }, address{ nullptr };
 
 		hints->ai_family = AF_INET;
 		hints->ai_socktype = SOCK_STREAM;
 		hints->ai_protocol = IPPROTO_TCP;
 
-		if (auto returnValue = getaddrinfo(baseUrlNew.c_str(), "443", hints, address); returnValue == SOCKET_ERROR) {
+		if (auto returnValue = getaddrinfo(baseUrlNew.c_str(), portNew.c_str(), hints, address); returnValue == SOCKET_ERROR) {
 			throw ConnectionError{ reportError("WebSocketSSLShard::connect()::getaddrinfo(), ") };
 		}
 

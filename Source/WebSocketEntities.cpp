@@ -46,7 +46,7 @@ namespace DiscordCoreInternal {
 	}
 
 	void BaseSocketAgent::sendMessage(const nlohmann::json& dataToSend, WebSocketSSLShard* theShard, bool priority) noexcept {
-		if (theShard && theShard->areWeConnected01.load()) {
+		if (theShard) {
 			try {
 				DiscordCoreAPI::StopWatch stopWatch{ 5500ms };
 				while (!theShard->areWeConnected01.load() && !(dataToSend.contains("op") && (dataToSend["op"] == 2 || dataToSend["op"] == 6))) {
@@ -294,9 +294,7 @@ namespace DiscordCoreInternal {
 								  << DiscordCoreAPI::reset() << std::endl
 								  << std::endl;
 					}
-					if (theShard->areWeConnected01.load()) {
-						this->onClosed(theShard);
-					}
+					this->onClosed(theShard);
 					return;
 				}
 				default: {
@@ -983,7 +981,7 @@ namespace DiscordCoreInternal {
 				this->theClients[connectData.currentShard]->currentRecursionDepth++;
 
 				try {
-					this->theClients[connectData.currentShard]->connect(this->configManager->getConnectionAddress());
+					this->theClients[connectData.currentShard]->connect(this->configManager->getConnectionAddress(), this->configManager->getConnectionPort());
 				} catch (...) {
 					if (this->configManager->doWePrintWebSocketErrorMessages()) {
 						DiscordCoreAPI::reportException("BaseSocketAgent::internalConnect()");
@@ -1449,7 +1447,7 @@ namespace DiscordCoreInternal {
 			DiscordCoreAPI::waitForTimeToPass(this->voiceConnectionDataBuffer, this->voiceConnectionData, 20000);
 			this->baseUrl = this->voiceConnectionData.endPoint.substr(0, this->voiceConnectionData.endPoint.find(":"));
 			auto theClient = std::make_unique<WebSocketSSLShard>(nullptr, 0, 0, this->configManager);
-			theClient->connect(this->baseUrl);
+			theClient->connect(this->baseUrl, "443");
 			std::string sendVector = "GET /?v=4 HTTP/1.1\r\nHost: " + this->baseUrl +
 				"\r\nPragma: no-cache\r\nUser-Agent: DiscordCoreAPI/1.0\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Key: " +
 				DiscordCoreAPI::generateBase64EncodedKey() + "\r\nSec-WebSocket-Version: 13\r\n\r\n";

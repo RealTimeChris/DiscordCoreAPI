@@ -213,7 +213,7 @@ namespace DiscordCoreInternal {
 			auto bytesRead{ static_cast<int32_t>(streamSocket->getBytesRead()) };
 			if (newSong.finalDownloadUrls.size() > 0) {
 				theMap[0] = std::move(streamSocket);
-				theMap[0]->connect(newSong.finalDownloadUrls[0].urlPath);
+				theMap[0]->connect(newSong.finalDownloadUrls[0].urlPath, "443");
 			} else {
 				return;
 			}

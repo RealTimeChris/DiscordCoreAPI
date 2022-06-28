@@ -370,7 +370,7 @@ namespace DiscordCoreInternal {
 			}
 			if (!httpsConnection->areWeStillConnected() || httpsConnection->doWeConnect || workload.baseUrl != httpsConnection->currentBaseUrl) {
 				httpsConnection->currentBaseUrl = workload.baseUrl;
-				httpsConnection->connect(workload.baseUrl);
+				httpsConnection->connect(workload.baseUrl, "443");
 				httpsConnection->doWeConnect = false;
 			}
 			auto theRequest = httpsConnection->buildRequest(workload);
@@ -472,7 +472,7 @@ namespace DiscordCoreInternal {
 		for (auto& value: workload) {
 			try {
 				if (currentConnectionAddress != value.baseUrl || !httpsConnection->areWeStillConnected()) {
-					httpsConnection->connect(value.baseUrl);
+					httpsConnection->connect(value.baseUrl, "443");
 				}
 			} catch (ProcessingError&) {
 				if (this->configManager->doWePrintHttpsErrorMessages()) {

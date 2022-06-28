@@ -281,9 +281,9 @@ namespace DiscordCoreInternal {
 
 		static void initialize();
 
-		virtual bool areWeStillConnected() noexcept = 0;
+		virtual void connect(const std::string& baseUrl, const std::string& portNew) = 0;
 
-		virtual void connect(const std::string&) = 0;
+		virtual bool areWeStillConnected() noexcept = 0;
 
 		virtual void disconnect() noexcept = 0;
 
@@ -326,9 +326,9 @@ namespace DiscordCoreInternal {
 
 		bool writeData(const std::string& data, bool priority = false) noexcept;
 
-		void processIO(int32_t waitTimeInMs = 10000);
+		void connect(const std::string& baseUrl, const std::string& portNew);
 
-		void connect(const std::string& baseUrl);
+		void processIO(int32_t waitTimeInMs = 10000);
 
 		std::string getInputBuffer() noexcept;
 
@@ -358,7 +358,7 @@ namespace DiscordCoreInternal {
 
 		bool writeData(const std::string& data, bool priority = false) noexcept;
 
-		void connect(const std::string& baseUrl);
+		void connect(const std::string& baseUrl, const std::string& portNew);
 
 		std::string getInputBuffer() noexcept;
 
@@ -400,7 +400,7 @@ namespace DiscordCoreInternal {
 	  public:
 		DatagramSocketSSLClient() noexcept = default;
 
-		void connect(const std::string& baseUrl, const std::string& portNew = "443");
+		void connect(const std::string& baseUrl, const std::string& portNew);
 
 		std::string getInputBuffer() noexcept;
 
