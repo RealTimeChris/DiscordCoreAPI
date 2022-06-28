@@ -84,7 +84,51 @@ namespace DiscordCoreAPI {
 
 		virtual ~Sticker() = default;
 
-	  	void parseObjectReal(const nlohmann::json&, Sticker*);
+	  	void parseObjectReal(const nlohmann::json& jsonObjectData, Sticker* pDataStructure) {
+			if (jsonObjectData.contains("asset") && !jsonObjectData["asset"].is_null()) {
+				pDataStructure->asset = jsonObjectData["asset"].get<std::string>();
+			}
+
+			if (jsonObjectData.contains("description") && !jsonObjectData["description"].is_null()) {
+				pDataStructure->description = jsonObjectData["description"].get<std::string>();
+			}
+
+			if (jsonObjectData.contains("format_type") && !jsonObjectData["format_type"].is_null()) {
+				pDataStructure->formatType = jsonObjectData["format_type"].get<StickerFormatType>();
+			}
+
+			if (jsonObjectData.contains("available") && !jsonObjectData["available"].is_null()) {
+				pDataStructure->stickerFlags = setBool<int32_t, StickerFlags>(pDataStructure->stickerFlags, StickerFlags::Available, jsonObjectData["available"].get<bool>());
+			}
+
+			if (jsonObjectData.contains("guild_id") && !jsonObjectData["guild_id"].is_null()) {
+				pDataStructure->guildId = stoull(jsonObjectData["guild_id"].get<std::string>());
+			}
+
+			if (jsonObjectData.contains("pack_id") && !jsonObjectData["pack_id"].is_null()) {
+				pDataStructure->packId = jsonObjectData["pack_id"].get<std::string>();
+			}
+
+			if (jsonObjectData.contains("type") && !jsonObjectData["type"].is_null()) {
+				pDataStructure->type = jsonObjectData["type"].get<StickerType>();
+			}
+
+			if (jsonObjectData.contains("sort_value") && !jsonObjectData["sort_value"].is_null()) {
+				pDataStructure->sortValue = jsonObjectData["sort_value"].get<int32_t>();
+			}
+
+			if (jsonObjectData.contains("name") && !jsonObjectData["name"].is_null()) {
+				pDataStructure->name = jsonObjectData["name"].get<std::string>();
+			}
+
+			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
+				pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
+			}
+
+			if (jsonObjectData.contains("user") && !jsonObjectData["user"].is_null()) {
+				pDataStructure->user = jsonObjectData["user"];
+			}
+		}
 	};
 
 	/**@}*/

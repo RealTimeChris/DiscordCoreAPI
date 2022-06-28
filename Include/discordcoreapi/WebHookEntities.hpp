@@ -331,7 +331,55 @@ namespace DiscordCoreAPI {
 
 		virtual ~WebHook() = default;
 
-	  	void parseObjectReal(const nlohmann::json&, WebHook*);
+	  	void parseObjectReal(const nlohmann::json& jsonObjectData, WebHook* pDataStructure) {
+			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
+				pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
+			}
+
+			if (jsonObjectData.contains("type") && !jsonObjectData["type"].is_null()) {
+				pDataStructure->type = jsonObjectData["type"].get<WebHookType>();
+			}
+
+			if (jsonObjectData.contains("guild_id") && !jsonObjectData["guild_id"].is_null()) {
+				pDataStructure->guildId = stoull(jsonObjectData["guild_id"].get<std::string>());
+			}
+
+			if (jsonObjectData.contains("channel_id") && !jsonObjectData["channel_id"].is_null()) {
+				pDataStructure->channelId = stoull(jsonObjectData["channel_id"].get<std::string>());
+			}
+
+			if (jsonObjectData.contains("user") && !jsonObjectData["user"].is_null()) {
+				pDataStructure->user = jsonObjectData["user"];
+			}
+
+			if (jsonObjectData.contains("name") && !jsonObjectData["name"].is_null()) {
+				pDataStructure->name = jsonObjectData["name"].get<std::string>();
+			}
+
+			if (jsonObjectData.contains("avatar") && !jsonObjectData["avatar"].is_null()) {
+				pDataStructure->avatar = jsonObjectData["avatar"].get<std::string>();
+			}
+
+			if (jsonObjectData.contains("token") && !jsonObjectData["token"].is_null()) {
+				pDataStructure->token = jsonObjectData["token"].get<std::string>();
+			}
+
+			if (jsonObjectData.contains("application_id") && !jsonObjectData["application_id"].is_null()) {
+				pDataStructure->applicationId = stoull(jsonObjectData["application_id"].get<std::string>());
+			}
+
+			if (jsonObjectData.contains("source_guild") && !jsonObjectData["source_guild"].is_null()) {
+				pDataStructure->sourceGuild = jsonObjectData["source_guild"];
+			}
+
+			if (jsonObjectData.contains("source_channel") && !jsonObjectData["source_channel"].is_null()) {
+				pDataStructure->sourceChannel = jsonObjectData["source_channel"];
+			}
+
+			if (jsonObjectData.contains("url") && !jsonObjectData["url"].is_null()) {
+				pDataStructure->url = jsonObjectData["url"].get<std::string>();
+			}
+		}
 	};
 
 	class WebHookVector : public DiscordCoreInternal::DataParserTwo<WebHookVector> {

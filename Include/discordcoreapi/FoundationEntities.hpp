@@ -1097,7 +1097,16 @@ namespace DiscordCoreAPI {
 
 		virtual ~RoleTagsData() = default;
 
-		void parseObjectReal(const nlohmann::json&, RoleTagsData*);
+		void parseObjectReal(const nlohmann::json& jsonObjectData, RoleTagsData* pDataStructure) {
+			if (jsonObjectData.contains("bot_id") && !jsonObjectData["bot_id"].is_null()) {
+				pDataStructure->botId = jsonObjectData["bot_id"].get<std::string>();
+			}
+
+			if (jsonObjectData.contains("integration_id") && !jsonObjectData["integration_id"].is_null()) {
+				pDataStructure->integrationId = jsonObjectData["integration_id"].get<std::string>();
+			}
+		}
+
 	};
 
 	enum class RoleFlags : int8_t { Mentionable = 1 << 0, Managed = 1 << 1, Hoist = 1 << 2 };
@@ -2205,7 +2214,31 @@ namespace DiscordCoreAPI {
 
 		virtual ~ActiveThreadsData() = default;
 
-		void parseObjectReal(const nlohmann::json&, ActiveThreadsData*);
+		void parseObjectReal(const nlohmann::json& jsonObjectData, ActiveThreadsData* pDataStructure) {
+			if (jsonObjectData.contains("threads") && !jsonObjectData["threads"].is_null()) {
+				pDataStructure->threads.clear();
+				pDataStructure->threads.reserve(jsonObjectData["threads"].size());
+				for (auto& value: jsonObjectData["threads"]) {
+					ChannelData newData{ value };
+					pDataStructure->threads.push_back(newData);
+				}
+				pDataStructure->threads.shrink_to_fit();
+			}
+
+			if (jsonObjectData.contains("members") && !jsonObjectData["members"].is_null()) {
+				pDataStructure->members.clear();
+				pDataStructure->members.reserve(jsonObjectData["members"].size());
+				for (auto& value: jsonObjectData["members"]) {
+					ThreadMemberData newData{};
+					pDataStructure->members.push_back(newData);
+				}
+				pDataStructure->members.shrink_to_fit();
+			}
+
+			if (jsonObjectData.contains("has_more") && !jsonObjectData["has_more"].is_null()) {
+				pDataStructure->hasMore = jsonObjectData["has_more"].get<bool>();
+			}
+		}
 	};
 
 	/// Data representing an archived Thread. \brief Data representing an archived Thread.
@@ -2227,7 +2260,31 @@ namespace DiscordCoreAPI {
 
 		virtual ~ArchivedThreadsData() = default;
 
-		void parseObjectReal(const nlohmann::json&, ArchivedThreadsData*);
+		void parseObjectReal(const nlohmann::json& jsonObjectData, ArchivedThreadsData* pDataStructure) {
+			if (jsonObjectData.contains("threads") && !jsonObjectData["threads"].is_null()) {
+				pDataStructure->threads.clear();
+				pDataStructure->threads.reserve(jsonObjectData["threads"].size());
+				for (auto& value: jsonObjectData["threads"]) {
+					ChannelData newData{ value };
+					pDataStructure->threads.push_back(newData);
+				}
+				pDataStructure->threads.shrink_to_fit();
+			}
+
+			if (jsonObjectData.contains("members") && !jsonObjectData["members"].is_null()) {
+				pDataStructure->members.clear();
+				pDataStructure->members.reserve(jsonObjectData["members"].size());
+				for (auto& value: jsonObjectData["members"]) {
+					ThreadMemberData newData{ value };
+					pDataStructure->members.push_back(newData);
+				}
+				pDataStructure->members.shrink_to_fit();
+			}
+
+			if (jsonObjectData.contains("has_more") && !jsonObjectData["has_more"].is_null()) {
+				pDataStructure->hasMore = jsonObjectData["has_more"].get<bool>();
+			}
+		}
 	};
 
 	/// Application command-option types. \brief Application command-option types.
@@ -2467,7 +2524,19 @@ namespace DiscordCoreAPI {
 			*this = jsonObjectData;
 		}
 
-	  	void parseObjectReal(const nlohmann::json&, ApplicationCommandPermissionData*);
+	  	void parseObjectReal(const nlohmann::json& jsonObjectData, ApplicationCommandPermissionData* pDataStructure) {
+			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
+				pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
+			}
+
+			if (jsonObjectData.contains("permission") && !jsonObjectData["permission"].is_null()) {
+				pDataStructure->permission = jsonObjectData["permission"].get<bool>();
+			}
+
+			if (jsonObjectData.contains("type") && !jsonObjectData["type"].is_null()) {
+				pDataStructure->type = jsonObjectData["type"].get<ApplicationCommandPermissionType>();
+			}
+		}
 	};
 
 	/// Represents the Permissions for accessing an ApplicationCommand from within a Guild. \brief Represents the Permissions for accessing an ApplicationCommand from within a Guild.
@@ -2488,9 +2557,29 @@ namespace DiscordCoreAPI {
 			*this = jsonObjectData;
 		}
 
-	  	void parseObjectReal(const nlohmann::json&, GuildApplicationCommandPermissionsData*);
+	  	void parseObjectReal(const nlohmann::json& jsonObjectData, GuildApplicationCommandPermissionsData* pDataStructure) {
+			if (jsonObjectData.contains("guild_id") && !jsonObjectData["guild_id"].is_null()) {
+				pDataStructure->guildId = stoull(jsonObjectData["guild_id"].get<std::string>());
+			}
 
-		void parseObjectReall(const nlohmann::json&, std::vector<GuildApplicationCommandPermissionsData>*);
+			if (jsonObjectData.contains("application_id") && !jsonObjectData["application_id"].is_null()) {
+				pDataStructure->applicationId = stoull(jsonObjectData["application_id"].get<std::string>());
+			}
+
+			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
+				pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
+			}
+
+			if (jsonObjectData.contains("permissions") && !jsonObjectData["permissions"].is_null()) {
+				pDataStructure->permissions.clear();
+				pDataStructure->permissions.reserve(jsonObjectData["permissions"].size());
+				for (auto& value: jsonObjectData["permissions"]) {
+					ApplicationCommandPermissionData newData{ value };
+					pDataStructure->permissions.push_back(newData);
+				}
+				pDataStructure->permissions.shrink_to_fit();
+			}
+		}
 	};
 
 	class GuildApplicationCommandPermissionsDataVector : public DiscordCoreInternal::DataParserTwo<GuildApplicationCommandPermissionsDataVector> {
@@ -2510,7 +2599,14 @@ namespace DiscordCoreAPI {
 
 		virtual ~GuildApplicationCommandPermissionsDataVector() = default;
 
-		void parseObjectReal(const nlohmann::json&, GuildApplicationCommandPermissionsDataVector*);
+		void parseObjectReal(const nlohmann::json& jsonObjectData, GuildApplicationCommandPermissionsDataVector* pDataStructure) {
+			pDataStructure->theGuildApplicationCommandPermissionsDatas.reserve(jsonObjectData.size());
+			for (auto& value: jsonObjectData) {
+				DiscordCoreAPI::GuildApplicationCommandPermissionsData newData{ value };
+				pDataStructure->theGuildApplicationCommandPermissionsDatas.push_back(newData);
+			}
+			pDataStructure->theGuildApplicationCommandPermissionsDatas.shrink_to_fit();
+		}
 	};
 
 	/// Data structure representing a single emoji. \brief Data structure representing a single emoji.
@@ -2678,7 +2774,27 @@ namespace DiscordCoreAPI {
 
 		virtual ~VoiceRegionData() = default;
 
-	  	void parseObjectReal(const nlohmann::json&, VoiceRegionData*);
+	  	void parseObjectReal(const nlohmann::json& jsonObjectData, VoiceRegionData* pDataStructure) {
+			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
+				pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
+			}
+
+			if (jsonObjectData.contains("custom") && !jsonObjectData["custom"].is_null()) {
+				pDataStructure->custom = jsonObjectData["custom"].get<bool>();
+			}
+
+			if (jsonObjectData.contains("deprecated") && !jsonObjectData["deprecated"].is_null()) {
+				pDataStructure->deprecated = jsonObjectData["deprecated"].get<bool>();
+			}
+
+			if (jsonObjectData.contains("optimal") && !jsonObjectData["optimal"].is_null()) {
+				pDataStructure->optimal = jsonObjectData["optimal"].get<bool>();
+			}
+
+			if (jsonObjectData.contains("name") && !jsonObjectData["name"].is_null()) {
+				pDataStructure->name = jsonObjectData["name"].get<std::string>();
+			}
+		}
 	};
 
 	/// Message activity types. \brief Message activity types.
@@ -2737,7 +2853,15 @@ namespace DiscordCoreAPI {
 
 		virtual ~BanData() = default;
 
-		void parseObjectReal(const nlohmann::json&, BanData*);
+		void parseObjectReal(const nlohmann::json& jsonObjectData, BanData* pDataStructure) {
+			if (jsonObjectData.contains("user") && !jsonObjectData["user"].is_null()) {
+				pDataStructure->user = jsonObjectData["user"];
+			}
+
+			if (jsonObjectData.contains("reason") && !jsonObjectData["reason"].is_null()) {
+				pDataStructure->reason = jsonObjectData["reason"].get<std::string>();
+			}
+		}
 	};
 
 	class BanDataVector : public DiscordCoreInternal::DataParserTwo<BanDataVector> {
@@ -2757,7 +2881,14 @@ namespace DiscordCoreAPI {
 
 		virtual ~BanDataVector() = default;
 
-		void parseObjectReal(const nlohmann::json&, BanDataVector*);
+		void parseObjectReal(const nlohmann::json& jsonObjectData, BanDataVector* pDataStructure) {
+			pDataStructure->theBanDatas.reserve(jsonObjectData.size());
+			for (auto& value: jsonObjectData) {
+				DiscordCoreAPI::BanData newData{ value };
+				pDataStructure->theBanDatas.push_back(newData);
+			}
+			pDataStructure->theBanDatas.shrink_to_fit();
+		}
 	};
 
 	/// Team members object data. \brief Team members object data.
@@ -3043,7 +3174,23 @@ namespace DiscordCoreAPI {
 
 		virtual ~AuthorizationInfoData() = default;
 
-		void parseObjectReal(const nlohmann::json&, AuthorizationInfoData*);
+		void parseObjectReal(const nlohmann::json& jsonObjectData, AuthorizationInfoData* pDataStructure) {
+			if (jsonObjectData.contains("application") && !jsonObjectData["application"].is_null()) {
+				pDataStructure->application = jsonObjectData["application"];
+			}
+
+			if (jsonObjectData.contains("scopes") && !jsonObjectData["scopes"].is_null()) {
+				pDataStructure->scopes = jsonObjectData["scopes"].get<std::vector<std::string>>();
+			}
+
+			if (jsonObjectData.contains("expires") && !jsonObjectData["expires"].is_null()) {
+				pDataStructure->expires = jsonObjectData["expires"];
+			}
+
+			if (jsonObjectData.contains("user") && !jsonObjectData["user"].is_null()) {
+				pDataStructure->user = jsonObjectData["user"];
+			}
+		};
 	};
 
 	/// Account data. \brief Account data.
@@ -3249,7 +3396,14 @@ namespace DiscordCoreAPI {
 
 		virtual ~IntegrationDataVector() = default;
 
-		void parseObjectReal(const nlohmann::json&, IntegrationDataVector*);
+		void parseObjectReal(const nlohmann::json& jsonObjectData, IntegrationDataVector* pDataStructure) {
+			pDataStructure->theIntegrationDatas.reserve(jsonObjectData.size());
+			for (auto& value: jsonObjectData) {
+				DiscordCoreAPI::IntegrationData newData{ value };
+				pDataStructure->theIntegrationDatas.push_back(newData);
+			}
+			pDataStructure->theIntegrationDatas.shrink_to_fit();
+		}
 	};
 
 	/// Audit log events. \brief Audit log events.
@@ -3333,7 +3487,39 @@ namespace DiscordCoreAPI {
 
 		virtual ~OptionalAuditEntryInfoData() = default;
 
-		void parseObjectReal(const nlohmann::json&, OptionalAuditEntryInfoData*);
+		void parseObjectReal(const nlohmann::json& jsonObjectData, OptionalAuditEntryInfoData* pDataStructure) {
+			if (jsonObjectData.contains("delete_member_days") && !jsonObjectData["delete_member_days"].is_null()) {
+				pDataStructure->deleteMemberDays = jsonObjectData["delete_member_days"].get<std::string>();
+			}
+
+			if (jsonObjectData.contains("members_removed") && !jsonObjectData["members_removed"].is_null()) {
+				pDataStructure->membersRemoved = jsonObjectData["members_removed"].get<std::string>();
+			}
+
+			if (jsonObjectData.contains("channel_id") && !jsonObjectData["channel_id"].is_null()) {
+				pDataStructure->channelId = stoull(jsonObjectData["channel_id"].get<std::string>());
+			}
+
+			if (jsonObjectData.contains("message_id") && !jsonObjectData["message_id"].is_null()) {
+				pDataStructure->messageId = stoull(jsonObjectData["message_id"].get<std::string>());
+			}
+
+			if (jsonObjectData.contains("count") && !jsonObjectData["count"].is_null()) {
+				pDataStructure->count = jsonObjectData["count"].get<std::string>();
+			}
+
+			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
+				pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
+			}
+
+			if (jsonObjectData.contains("type") && !jsonObjectData["type"].is_null()) {
+				pDataStructure->type = jsonObjectData["type"].get<std::string>();
+			}
+
+			if (jsonObjectData.contains("role_name") && !jsonObjectData["role_name"].is_null()) {
+				pDataStructure->roleName = jsonObjectData["role_name"].get<std::string>();
+			}
+		}
 	};
 
 	/// Audit log change data. \brief Audit log change data.
@@ -3355,7 +3541,19 @@ namespace DiscordCoreAPI {
 
 		virtual ~AuditLogChangeData() = default;
 
-		void parseObjectReal(const nlohmann::json&, AuditLogChangeData*);
+		void parseObjectReal(const nlohmann::json& jsonObjectData, AuditLogChangeData* pDataStructure) {
+			if (jsonObjectData.contains("new_value") && !jsonObjectData["new_value"].is_null()) {
+				pDataStructure->newValue = jsonObjectData["new_value"];
+			}
+
+			if (jsonObjectData.contains("old_value") && !jsonObjectData["old_value"].is_null()) {
+				pDataStructure->oldValue = jsonObjectData["old_value"];
+			}
+
+			if (jsonObjectData.contains("key") && !jsonObjectData["key"].is_null()) {
+				pDataStructure->key = jsonObjectData["key"].get<std::string>();
+			}
+		}
 	};
 
 	/// Guild prune count data. \brief Guild prune count data.
@@ -3375,7 +3573,11 @@ namespace DiscordCoreAPI {
 
 		virtual ~GuildPruneCountData() = default;
 
-	  	void parseObjectReal(const nlohmann::json&, GuildPruneCountData*);
+	  	void parseObjectReal(const nlohmann::json& jsonObjectData, GuildPruneCountData* pDataStructure) {
+			if (jsonObjectData.contains("pruned") && !jsonObjectData["pruned"].is_null()) {
+				pDataStructure->count = jsonObjectData["pruned"].get<int32_t>();
+			}
+		}
 	};
 
 	/// Audit log entry data. \brief Audit log entry data.
@@ -3402,7 +3604,42 @@ namespace DiscordCoreAPI {
 
 		virtual ~AuditLogEntryData() = default;
 
-		void parseObjectReal(const nlohmann::json&, AuditLogEntryData*);
+		void parseObjectReal(const nlohmann::json& jsonObjectData, AuditLogEntryData* pDataStructure) {
+			if (jsonObjectData.contains("target_id") && !jsonObjectData["target_id"].is_null()) {
+				pDataStructure->targetId = stoull(jsonObjectData["target_id"].get<std::string>());
+			}
+
+			if (jsonObjectData.contains("changes") && !jsonObjectData["changes"].is_null()) {
+				pDataStructure->changes.clear();
+				pDataStructure->changes.reserve(jsonObjectData["changes"].size());
+				for (auto& value: jsonObjectData["changes"]) {
+					AuditLogChangeData newData{ value };
+					pDataStructure->changes.push_back(newData);
+				}
+				pDataStructure->changes.shrink_to_fit();
+			}
+
+			if (jsonObjectData.contains("user_id") && !jsonObjectData["user_id"].is_null()) {
+				pDataStructure->userId = stoull(jsonObjectData["user_id"].get<std::string>());
+			}
+
+			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
+				pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
+				pDataStructure->createdTimeStamp = pDataStructure->getCreatedAtTimestamp(TimeFormat::LongDateTime);
+			}
+
+			if (jsonObjectData.contains("action_type") && !jsonObjectData["action_type"].is_null()) {
+				pDataStructure->actionType = jsonObjectData["action_type"].get<AuditLogEvent>();
+			}
+
+			if (jsonObjectData.contains("options") && !jsonObjectData["options"].is_null()) {
+				pDataStructure->options = jsonObjectData["options"];
+			}
+
+			if (jsonObjectData.contains("reason") && !jsonObjectData["reason"].is_null()) {
+				pDataStructure->reason = jsonObjectData["reason"].get<std::string>();
+			}
+		}
 	};
 
 	/// Party data. \brief Party data.
@@ -3642,7 +3879,19 @@ namespace DiscordCoreAPI {
 
 		virtual ~ClientStatusData() = default;
 
-	  	void parseObjectReal(const nlohmann::json&, ClientStatusData*);
+	  	void parseObjectReal(const nlohmann::json& jsonObjectData, ClientStatusData* pDataStructure) {
+			if (jsonObjectData.contains("desktop") && !jsonObjectData["desktop"].is_null()) {
+				pDataStructure->desktop = jsonObjectData["desktop"].get<std::string>();
+			}
+
+			if (jsonObjectData.contains("mobile") && !jsonObjectData["mobile"].is_null()) {
+				pDataStructure->mobile = jsonObjectData["mobile"].get<std::string>();
+			}
+
+			if (jsonObjectData.contains("web") && !jsonObjectData["web"].is_null()) {
+				pDataStructure->web = jsonObjectData["web"].get<std::string>();
+			}
+		}
 	};
 
 	/// Premium tier levels. \brief Premium tier levels.
@@ -3834,7 +4083,31 @@ namespace DiscordCoreAPI {
 
 		virtual ~StageInstanceData() = default;
 
-	  	void parseObjectReal(const nlohmann::json&, StageInstanceData*);
+	  	void parseObjectReal(const nlohmann::json& jsonObjectData, StageInstanceData* pDataStructure) {
+			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
+				pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
+			}
+
+			if (jsonObjectData.contains("guild_id") && !jsonObjectData["guild_id"].is_null()) {
+				pDataStructure->guildId = stoull(jsonObjectData["guild_id"].get<std::string>());
+			}
+
+			if (jsonObjectData.contains("channel_id") && !jsonObjectData["channel_id"].is_null()) {
+				pDataStructure->channelId = stoull(jsonObjectData["channel_id"].get<std::string>());
+			}
+
+			if (jsonObjectData.contains("topic") && !jsonObjectData["topic"].is_null()) {
+				pDataStructure->topic = jsonObjectData["topic"].get<std::string>();
+			}
+
+			if (jsonObjectData.contains("privacy_level") && !jsonObjectData["privacy_level"].is_null()) {
+				pDataStructure->privacyLevel = jsonObjectData["privacy_level"].get<StageInstancePrivacyLevel>();
+			}
+
+			if (jsonObjectData.contains("discoverable_disabled") && !jsonObjectData["discoverable_disabled"].is_null()) {
+				pDataStructure->discoverableDisabled = jsonObjectData["discoverable_disabled"].get<bool>();
+			}
+		}
 	};
 
 	/// Sticker types. \brief Sticker types.
@@ -3948,7 +4221,63 @@ namespace DiscordCoreAPI {
 
 		virtual ~GuildPreviewData() = default;
 
-	  	void parseObjectReal(const nlohmann::json&, GuildPreviewData*);
+	  	void parseObjectReal(const nlohmann::json& jsonObjectData, GuildPreviewData* pDataStructure) {
+			if (jsonObjectData.contains("approximate_presence_count") && !jsonObjectData["approximate_presence_count"].is_null()) {
+				pDataStructure->approximatePresenceCount = jsonObjectData["approximate_presence_count"].get<int32_t>();
+			}
+
+			if (jsonObjectData.contains("approximate_member_count") && !jsonObjectData["approximate_member_count"].is_null()) {
+				pDataStructure->approximateMemberCount = jsonObjectData["approximate_member_count"].get<int32_t>();
+			}
+
+			if (jsonObjectData.contains("discovery_splash") && !jsonObjectData["discovery_splash"].is_null()) {
+				pDataStructure->discoverySplash = jsonObjectData["discovery_splash"].get<std::string>();
+			}
+
+			if (jsonObjectData.contains("emojis") && !jsonObjectData["emojis"].is_null()) {
+				pDataStructure->emojis.clear();
+				pDataStructure->emojis.reserve(jsonObjectData["emojis"].size());
+				for (auto& value: jsonObjectData["emojis"]) {
+					EmojiData newData{ value };
+					pDataStructure->emojis.push_back(newData);
+				}
+				pDataStructure->emojis.shrink_to_fit();
+			}
+
+			if (jsonObjectData.contains("stickers") && !jsonObjectData["stickers"].is_null()) {
+				pDataStructure->emojis.clear();
+				pDataStructure->emojis.reserve(jsonObjectData["stickers"].size());
+				for (auto& value: jsonObjectData["stickers"]) {
+					StickerData newData{ value };
+					pDataStructure->stickers.push_back(newData);
+				}
+				pDataStructure->stickers.shrink_to_fit();
+			}
+
+			if (jsonObjectData.contains("features") && !jsonObjectData["features"].is_null()) {
+				pDataStructure->features = jsonObjectData["features"].get<std::vector<std::string>>();
+			}
+
+			if (jsonObjectData.contains("description") && !jsonObjectData["description"].is_null()) {
+				pDataStructure->description = jsonObjectData["description"].get<std::string>();
+			}
+
+			if (jsonObjectData.contains("splash") && !jsonObjectData["splash"].is_null()) {
+				pDataStructure->splash = jsonObjectData["splash"].get<std::string>();
+			}
+
+			if (jsonObjectData.contains("icon") && !jsonObjectData["icon"].is_null()) {
+				pDataStructure->icon = jsonObjectData["icon"].get<std::string>();
+			}
+
+			if (jsonObjectData.contains("name") && !jsonObjectData["name"].is_null()) {
+				pDataStructure->name = jsonObjectData["name"].get<std::string>();
+			}
+
+			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
+				pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
+			}
+		}
 	};
 
 	/// Afk timeout durations. \brief Afk timeout durations.
@@ -4335,7 +4664,14 @@ namespace DiscordCoreAPI {
 
 		virtual ~GuildScheduledEventUserDataVector() = default;
 
-		void parseObjectReal(const nlohmann::json&, GuildScheduledEventUserDataVector*);
+		void parseObjectReal(const nlohmann::json& jsonObjectData, GuildScheduledEventUserDataVector* pDataStructure) {
+			pDataStructure->theGuildScheduledEventUserDatas.reserve(jsonObjectData.size());
+			for (auto& value: jsonObjectData) {
+				DiscordCoreAPI::GuildScheduledEventUserData newData{ value };
+				pDataStructure->theGuildScheduledEventUserDatas.push_back(newData);
+			}
+			pDataStructure->theGuildScheduledEventUserDatas.shrink_to_fit();
+		}
 	};
 
 	/// Invite data. \brief Invite data.
@@ -4372,7 +4708,81 @@ namespace DiscordCoreAPI {
 
 		virtual ~InviteData() = default;
 
-		void parseObjectReal(const nlohmann::json&, InviteData*);
+		void parseObjectReal(const nlohmann::json& jsonObjectData, InviteData* pDataStructure) {
+			if (jsonObjectData.contains("code") && !jsonObjectData["code"].is_null() && jsonObjectData["code"].is_string()) {
+				pDataStructure->code = jsonObjectData["code"].get<std::string>();
+			} else if (jsonObjectData.contains("code") && !jsonObjectData["code"].is_null() && jsonObjectData["code"].is_number_integer()) {
+				pDataStructure->code = std::to_string(jsonObjectData["code"].get<int32_t>());
+			}
+
+			if (jsonObjectData.contains("guild") && !jsonObjectData["guild"].is_null()) {
+				pDataStructure->guild = jsonObjectData["guild"];
+			}
+
+			if (jsonObjectData.contains("channel") && !jsonObjectData["channel"].is_null()) {
+				pDataStructure->channel = jsonObjectData["channel"];
+			}
+
+			if (jsonObjectData.contains("inviter") && !jsonObjectData["inviter"].is_null()) {
+				pDataStructure->inviter = jsonObjectData["inviter"];
+			}
+
+			if (jsonObjectData.contains("target_type") && !jsonObjectData["target_type"].is_null()) {
+				pDataStructure->targetType = jsonObjectData["target_type"].get<int32_t>();
+			}
+
+			if (jsonObjectData.contains("target_user") && !jsonObjectData["target_user"].is_null()) {
+				pDataStructure->targetUser = jsonObjectData["target_user"];
+			}
+
+			if (jsonObjectData.contains("target_application") && !jsonObjectData["target_application"].is_null()) {
+				pDataStructure->targetApplication = jsonObjectData["target_application"];
+			}
+
+			if (jsonObjectData.contains("approximate_presence_count") && !jsonObjectData["approximate_presence_count"].is_null()) {
+				pDataStructure->approximatePresenceCount = jsonObjectData["approximate_presence_count"].get<int32_t>();
+			}
+
+			if (jsonObjectData.contains("approximate_member_count") && !jsonObjectData["approximate_member_count"].is_null()) {
+				pDataStructure->approximateMemberCount = jsonObjectData["approximate_member_count"].get<int32_t>();
+			}
+
+			if (jsonObjectData.contains("guild_id") && !jsonObjectData["guild_id"].is_null()) {
+				pDataStructure->guildId = stoull(jsonObjectData["guild_id"].get<std::string>());
+			}
+
+			if (jsonObjectData.contains("expires_at") && !jsonObjectData["expires_at"].is_null()) {
+				pDataStructure->expiresAt = jsonObjectData["expires_at"].get<std::string>();
+			}
+
+			if (jsonObjectData.contains("stage_instance") && !jsonObjectData["stage_instance"].is_null()) {
+				pDataStructure->stageInstance = jsonObjectData["stage_instance"];
+			}
+
+			if (jsonObjectData.contains("guild_scheduled_event") && !jsonObjectData["guild_scheduled_event"].is_null()) {
+				pDataStructure->guildScheduledEvent = jsonObjectData["guild_scheduled_event"];
+			}
+
+			if (jsonObjectData.contains("uses") && !jsonObjectData["uses"].is_null()) {
+				pDataStructure->uses = jsonObjectData["uses"].get<int32_t>();
+			}
+
+			if (jsonObjectData.contains("max_uses") && !jsonObjectData["max_uses"].is_null()) {
+				pDataStructure->maxUses = jsonObjectData["max_uses"].get<int32_t>();
+			}
+
+			if (jsonObjectData.contains("max_age") && !jsonObjectData["max_age"].is_null()) {
+				pDataStructure->maxAge = jsonObjectData["max_age"].get<int32_t>();
+			}
+
+			if (jsonObjectData.contains("temporary") && !jsonObjectData["temporary"].is_null()) {
+				pDataStructure->temporary = jsonObjectData["temporary"].get<bool>();
+			}
+
+			if (jsonObjectData.contains("created_at") && !jsonObjectData["created_at"].is_null()) {
+				pDataStructure->createdAt = jsonObjectData["created_at"].get<std::string>();
+			}
+		}
 	};
 
 	class InviteDataVector : public DiscordCoreInternal::DataParserTwo<InviteDataVector> {
@@ -4392,7 +4802,14 @@ namespace DiscordCoreAPI {
 
 		virtual ~InviteDataVector() = default;
 
-		void parseObjectReal(const nlohmann::json&, InviteDataVector*);
+		void parseObjectReal(const nlohmann::json& jsonObjectData, InviteDataVector* pDataStructure) {
+			pDataStructure->theInviteDatas.reserve(jsonObjectData.size());
+			for (auto& value: jsonObjectData) {
+				DiscordCoreAPI::InviteData newData{ value };
+				pDataStructure->theInviteDatas.push_back(newData);
+			}
+			pDataStructure->theInviteDatas.shrink_to_fit();
+		}
 	};
 
 	/// Represents a Guild Template. \brief Represents a Guild Template.
@@ -4584,7 +5001,77 @@ namespace DiscordCoreAPI {
 
 		virtual ~AuditLogData() = default;
 
-		void parseObjectReal(const nlohmann::json&, AuditLogData*);
+		void parseObjectReal(const nlohmann::json& jsonObjectData, AuditLogData* pDataStructure) {
+			if (jsonObjectData.contains("webhooks") && !jsonObjectData["webhooks"].is_null()) {
+				pDataStructure->webhooks.clear();
+				pDataStructure->webhooks.reserve(jsonObjectData["webhooks"].size());
+				for (auto& value: jsonObjectData["webhooks"]) {
+					WebHookData newData{ value };
+					pDataStructure->webhooks.push_back(newData);
+				}
+				pDataStructure->webhooks.shrink_to_fit();
+			}
+
+			if (jsonObjectData.contains("guild_scheduled_events") && !jsonObjectData["guild_scheduled_events"].is_null()) {
+				pDataStructure->webhooks.clear();
+				pDataStructure->webhooks.reserve(jsonObjectData["guild_scheduled_events"].size());
+				for (auto& value: jsonObjectData["guild_scheduled_events"]) {
+					GuildScheduledEventData newData{ value };
+					pDataStructure->guildScheduledEvents.push_back(newData);
+				}
+				pDataStructure->webhooks.shrink_to_fit();
+			}
+
+			if (jsonObjectData.contains("auto_moderation_rules") && !jsonObjectData["auto_moderation_rules"].is_null()) {
+				pDataStructure->users.clear();
+				pDataStructure->users.reserve(jsonObjectData["auto_moderation_rules"].size());
+				for (auto& value: jsonObjectData["auto_moderation_rules"]) {
+					AutoModerationRule newData{ value };
+					pDataStructure->autoModerationRules.push_back(newData);
+				}
+				pDataStructure->autoModerationRules.shrink_to_fit();
+			}
+
+			if (jsonObjectData.contains("users") && !jsonObjectData["users"].is_null()) {
+				pDataStructure->users.clear();
+				pDataStructure->users.reserve(jsonObjectData["users"].size());
+				for (auto& value: jsonObjectData["users"]) {
+					UserData newData{ value };
+					pDataStructure->users.push_back(newData);
+				}
+				pDataStructure->users.shrink_to_fit();
+			}
+
+			if (jsonObjectData.contains("audit_log_entries") && !jsonObjectData["audit_log_entries"].is_null()) {
+				pDataStructure->auditLogEntries.clear();
+				pDataStructure->auditLogEntries.reserve(jsonObjectData["audit_log_entries"].size());
+				for (auto& value: jsonObjectData["audit_log_entries"]) {
+					AuditLogEntryData newData{ value };
+					pDataStructure->auditLogEntries.push_back(newData);
+				}
+				pDataStructure->auditLogEntries.shrink_to_fit();
+			}
+
+			if (jsonObjectData.contains("integrations") && !jsonObjectData["integrations"].is_null()) {
+				pDataStructure->integrations.clear();
+				pDataStructure->integrations.reserve(jsonObjectData["integrations"].size());
+				for (auto& value: jsonObjectData["integrations"]) {
+					IntegrationData newData{ value };
+					pDataStructure->integrations.push_back(newData);
+				}
+				pDataStructure->integrations.shrink_to_fit();
+			}
+
+			if (jsonObjectData.contains("threads") && !jsonObjectData["threads"].is_null()) {
+				pDataStructure->threads.clear();
+				pDataStructure->threads.reserve(jsonObjectData["threads"].size());
+				for (auto& value: jsonObjectData["threads"]) {
+					ChannelData newData{ value };
+					pDataStructure->threads.push_back(newData);
+				}
+				pDataStructure->threads.shrink_to_fit();
+			}
+		}
 	};
 
 	/// For removing a reaction. \brief For removing a reaction.
@@ -4608,7 +5095,27 @@ namespace DiscordCoreAPI {
 
 		virtual ~ReactionRemoveData() = default;
 
-	  	void parseObjectReal(const nlohmann::json& jsonObjectData, ReactionRemoveData* pDataStructure);
+	  	void parseObjectReal(const nlohmann::json& jsonObjectData, ReactionRemoveData* pDataStructure) {
+			if (jsonObjectData.contains("user_id") && !jsonObjectData["user_id"].is_null()) {
+				pDataStructure->userId = stoull(jsonObjectData["user_id"].get<std::string>());
+			}
+
+			if (jsonObjectData.contains("channel_id") && !jsonObjectData["channel_id"].is_null()) {
+				pDataStructure->channelId = stoull(jsonObjectData["channel_id"].get<std::string>());
+			}
+
+			if (jsonObjectData.contains("message_id") && !jsonObjectData["message_id"].is_null()) {
+				pDataStructure->messageId = stoull(jsonObjectData["message_id"].get<std::string>());
+			}
+
+			if (jsonObjectData.contains("guild_id") && !jsonObjectData["guild_id"].is_null()) {
+				pDataStructure->guildId = stoull(jsonObjectData["guild_id"].get<std::string>());
+			}
+
+			if (jsonObjectData.contains("emoji") && !jsonObjectData["emoji"].is_null()) {
+				pDataStructure->emoji = jsonObjectData["emoji"];
+			}
+		}
 	};
 
 	/// For storing Interaction-related values. \brief For storing Interaction-related values.
@@ -4794,7 +5301,27 @@ namespace DiscordCoreAPI {
 
 		virtual ~TypingStartData() = default;
 
-		void parseObjectReal(const nlohmann::json&, TypingStartData*);
+		void parseObjectReal(const nlohmann::json& jsonObjectData, TypingStartData* pDataStructure) {
+			if (jsonObjectData.contains("channel_id") && !jsonObjectData["channel_id"].is_null()) {
+				pDataStructure->channelId = stoull(jsonObjectData["channel_id"].get<std::string>());
+			}
+
+			if (jsonObjectData.contains("guild_id") && !jsonObjectData["guild_id"].is_null()) {
+				pDataStructure->guildId = stoull(jsonObjectData["guild_id"].get<std::string>());
+			}
+
+			if (jsonObjectData.contains("member") && !jsonObjectData["member"].is_null()) {
+				pDataStructure->member = jsonObjectData["member"];
+			}
+
+			if (jsonObjectData.contains("user_id") && !jsonObjectData["user_id"].is_null()) {
+				pDataStructure->userId = stoull(jsonObjectData["user_id"].get<std::string>());
+			}
+
+			if (jsonObjectData.contains("timestamp") && !jsonObjectData["timestamp"].is_null()) {
+				pDataStructure->timestamp = jsonObjectData["timestamp"].get<int32_t>();
+			}
+		}
 	};
 
 	/// YouTube format data. \brief YouTube format data.
@@ -5085,7 +5612,24 @@ namespace DiscordCoreAPI {
 
 		virtual ~ComponentInteractionData() = default;
 
-	  	void parseObjectReal(const nlohmann::json&, ComponentInteractionData*);
+	  	void parseObjectReal(const nlohmann::json& jsonObjectData, ComponentInteractionData* pDataStructure) {
+			if (jsonObjectData.contains("values") && !jsonObjectData["values"].is_null()) {
+				pDataStructure->values.clear();
+				pDataStructure->values.reserve(jsonObjectData["values"].size());
+				for (auto& value: jsonObjectData["values"]) {
+					pDataStructure->values.push_back(value);
+				}
+				pDataStructure->values.shrink_to_fit();
+			}
+
+			if (jsonObjectData.contains("custom_id") && !jsonObjectData["custom_id"].is_null()) {
+				pDataStructure->customId = jsonObjectData["custom_id"].get<std::string>();
+			}
+
+			if (jsonObjectData.contains("component_type") && !jsonObjectData["component_type"].is_null()) {
+				pDataStructure->componentType = jsonObjectData["component_type"].get<ComponentType>();
+			}
+		}
 	};
 
 	/// Modal interaction data, for inputs from text modals. \brief Modal interaction data, for inputs from text modals.
@@ -5107,7 +5651,19 @@ namespace DiscordCoreAPI {
 
 		virtual ~ModalInteractionData() = default;
 
-	  	void parseObjectReal(const nlohmann::json&, ModalInteractionData*);
+	  	void parseObjectReal(const nlohmann::json& jsonObjectData, ModalInteractionData* pDataStructure) {
+			if (jsonObjectData.contains("components") && !jsonObjectData["components"].is_null()) {
+				pDataStructure->value = jsonObjectData["components"][0]["components"][0]["value"].get<std::string>();
+			}
+
+			if (jsonObjectData.contains("custom_id") && !jsonObjectData["custom_id"].is_null()) {
+				pDataStructure->customId = jsonObjectData["custom_id"].get<std::string>();
+			}
+
+			if (jsonObjectData.contains("components") && !jsonObjectData["components"].is_null()) {
+				pDataStructure->customIdSmall = jsonObjectData["components"][0]["components"][0]["custom_id"].get<std::string>();
+			}
+		}
 	};
 
 	/// Allowable mentions for a Message. \brief Allowable mentions for a Message.
@@ -5562,7 +6118,19 @@ namespace DiscordCoreAPI {
 
 		virtual ~ChannelPinsUpdateEventData() = default;
 
-		void parseObjectReal(const nlohmann::json&, ChannelPinsUpdateEventData*);
+		void parseObjectReal(const nlohmann::json& jsonObjectData, ChannelPinsUpdateEventData* pDataStructre) {
+			if (jsonObjectData.contains("guild_id") && !jsonObjectData["guild_id"].is_null()) {
+				pDataStructre->guildId = stoull(jsonObjectData["guild_id"].get<std::string>());
+			}
+
+			if (jsonObjectData.contains("channel_id") && !jsonObjectData["channel_id"].is_null()) {
+				pDataStructre->channelId = stoull(jsonObjectData["channel_id"].get<std::string>());
+			}
+
+			if (jsonObjectData.contains("last_pin_timestamp") && !jsonObjectData["last_pin_timestamp"].is_null()) {
+				pDataStructre->lastPinTimestamp = jsonObjectData["last_pin_timestamp"].get<std::string>();
+			}
+		}
 	};
 
 	/// Data for when threads are synced. \brief Data for when threads are synced.
@@ -5585,7 +6153,40 @@ namespace DiscordCoreAPI {
 
 		virtual ~ThreadListSyncData() = default;
 
-		void parseObjectReal(const nlohmann::json&, ThreadListSyncData*);
+		void parseObjectReal(const nlohmann::json& jsonObjectData, ThreadListSyncData* pDataStructure) {
+			if (jsonObjectData.contains("guild_id") && !jsonObjectData["guild_id"].is_null()) {
+				pDataStructure->guildId = stoull(jsonObjectData["guild_id"].get<std::string>());
+			}
+
+			if (jsonObjectData.contains("channel_ids") && !jsonObjectData["channel_ids"].is_null()) {
+				pDataStructure->channelIds.clear();
+				pDataStructure->channelIds.reserve(jsonObjectData["channel_ids"].size());
+				for (auto& value: jsonObjectData["channel_ids"]) {
+					pDataStructure->channelIds.push_back(value.get<std::string>());
+				}
+				pDataStructure->channelIds.shrink_to_fit();
+			}
+
+			if (jsonObjectData.contains("members") && !jsonObjectData["members"].is_null()) {
+				pDataStructure->members.clear();
+				pDataStructure->members.reserve(jsonObjectData["members"].size());
+				for (auto& value: jsonObjectData["members"]) {
+					ThreadMemberData newData{ value };
+					pDataStructure->members.push_back(newData);
+				}
+				pDataStructure->members.shrink_to_fit();
+			}
+
+			if (jsonObjectData.contains("threads") && !jsonObjectData["threads"].is_null()) {
+				pDataStructure->threads.clear();
+				pDataStructure->threads.reserve(jsonObjectData["threads"].size());
+				for (auto& value: jsonObjectData["threads"]) {
+					ChannelData newData{ value };
+					pDataStructure->threads.push_back(newData);
+				}
+				pDataStructure->threads.shrink_to_fit();
+			}
+		}
 	};
 
 	/// Represents a Thread-members-update. \brief Represents a Thread-members-update.
@@ -5609,7 +6210,38 @@ namespace DiscordCoreAPI {
 
 		virtual ~ThreadMembersUpdateData() = default;
 
-		void parseObjectReal(const nlohmann::json&, ThreadMembersUpdateData*);
+		void parseObjectReal(const nlohmann::json& jsonObjectData, ThreadMembersUpdateData* pDataStructure) {
+			if (jsonObjectData.contains("guild_id") && !jsonObjectData["guild_id"].is_null()) {
+				pDataStructure->guildId = stoull(jsonObjectData["guild_id"].get<std::string>());
+			}
+
+			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
+				pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
+			}
+
+			if (jsonObjectData.contains("member_count") && !jsonObjectData["member_count"].is_null()) {
+				pDataStructure->memberCount = jsonObjectData["member_count"].get<int32_t>();
+			}
+
+			if (jsonObjectData.contains("added_members") && !jsonObjectData["added_members"].is_null()) {
+				pDataStructure->addedMembers.clear();
+				pDataStructure->addedMembers.reserve(jsonObjectData["added_members"].size());
+				for (auto& value: jsonObjectData["added_members"]) {
+					ThreadMemberData newData{ value };
+					pDataStructure->addedMembers.push_back(newData);
+				}
+				pDataStructure->addedMembers.shrink_to_fit();
+			}
+
+			if (jsonObjectData.contains("removed_member_ids") && !jsonObjectData["removed_member_ids"].is_null()) {
+				pDataStructure->removedMemberIds.clear();
+				pDataStructure->removedMemberIds.reserve(jsonObjectData["removed_member_ids"].size());
+				for (auto& value: jsonObjectData["removed_member_ids"]) {
+					pDataStructure->removedMemberIds.push_back(value);
+				}
+				pDataStructure->removedMemberIds.shrink_to_fit();
+			}
+		}
 	};
 
 	/// Message Interaction data. \brief Message Interaction data.
@@ -6101,7 +6733,49 @@ namespace DiscordCoreAPI {
 
 		virtual ~ConnectionData() = default;
 
-		void parseObjectReal(const nlohmann::json&, ConnectionData*);
+		void parseObjectReal(const nlohmann::json& jsonObjectData, ConnectionData* pDataStructure) {
+			if (jsonObjectData.contains("name") && !jsonObjectData["name"].is_null()) {
+				pDataStructure->name = jsonObjectData["name"].get<std::string>();
+			}
+
+			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
+				pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
+			}
+
+			if (jsonObjectData.contains("type") && !jsonObjectData["type"].is_null()) {
+				pDataStructure->type = jsonObjectData["type"].get<std::string>();
+			}
+
+			if (jsonObjectData.contains("show_activity") && !jsonObjectData["show_activity"].is_null()) {
+				pDataStructure->showActivity = jsonObjectData["show_activity"].get<bool>();
+			}
+
+			if (jsonObjectData.contains("friend_sync") && !jsonObjectData["friend_sync"].is_null()) {
+				pDataStructure->friendSync = jsonObjectData["friend_sync"].get<bool>();
+			}
+
+			if (jsonObjectData.contains("revoked") && !jsonObjectData["revoked"].is_null()) {
+				pDataStructure->revoked = jsonObjectData["revoked"].get<bool>();
+			}
+
+			if (jsonObjectData.contains("verified") && !jsonObjectData["verified"].is_null()) {
+				pDataStructure->verified = jsonObjectData["verified"].get<bool>();
+			}
+
+			if (jsonObjectData.contains("visibility") && !jsonObjectData["visibility"].is_null()) {
+				pDataStructure->visibility = jsonObjectData["visibility"].get<ConnectionVisibilityTypes>();
+			}
+
+			if (jsonObjectData.contains("integrations") && !jsonObjectData["integrations"].is_null()) {
+				pDataStructure->integrations.clear();
+				pDataStructure->integrations.reserve(jsonObjectData["integrations"].size());
+				for (auto& value: jsonObjectData["integrations"]) {
+					IntegrationData newData{ value };
+					pDataStructure->integrations.push_back(newData);
+				}
+				pDataStructure->integrations.shrink_to_fit();
+			}
+		}
 	};
 
 	class ConnectionDataVector : public DiscordCoreInternal::DataParserTwo<ConnectionDataVector> {
@@ -6121,7 +6795,14 @@ namespace DiscordCoreAPI {
 
 		virtual ~ConnectionDataVector() = default;
 
-		void parseObjectReal(const nlohmann::json&, ConnectionDataVector*);
+		void parseObjectReal(const nlohmann::json& jsonObjectData, ConnectionDataVector* pDataStructure) {
+			pDataStructure->theConnectionDatas.reserve(jsonObjectData.size());
+			for (auto& value: jsonObjectData) {
+				DiscordCoreAPI::ConnectionData newData{ value };
+				pDataStructure->theConnectionDatas.push_back(newData);
+			}
+			pDataStructure->theConnectionDatas.shrink_to_fit();
+		}
 	};
 
 	/// ApplicationCommand Interaction data option. \brief ApplicationCommand Interaction data option.
@@ -6196,7 +6877,24 @@ namespace DiscordCoreAPI {
 
 		virtual ~InteractionDataData() = default;
 
-	  	void parseObjectReal(const nlohmann::json&, InteractionDataData*);
+	  	void parseObjectReal(const nlohmann::json& jsonObjectData, InteractionDataData* pDataStructure) {
+			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
+				pDataStructure->applicationCommandData = jsonObjectData;
+			}
+
+			if (jsonObjectData.contains("target_id") && !jsonObjectData["target_id"].is_null()) {
+				pDataStructure->messageInteractionData = jsonObjectData;
+				pDataStructure->userInteractionData = jsonObjectData;
+			}
+
+			if (jsonObjectData.contains("component_type") && !jsonObjectData["component_type"].is_null()) {
+				pDataStructure->componentData = jsonObjectData;
+			}
+
+			if (jsonObjectData.contains("components") && !jsonObjectData["components"].is_null()) {
+				pDataStructure->modalData = jsonObjectData;
+			}
+		}
 	};
 
 	/// Interaction data. \brief Interaction data.
@@ -6229,7 +6927,61 @@ namespace DiscordCoreAPI {
 
 		virtual ~InteractionData() = default;
 
-	  	void parseObjectReal(const nlohmann::json&, InteractionData*);
+	  	void parseObjectReal(const nlohmann::json& jsonObjectData, InteractionData* pDataStructure) {
+			if (jsonObjectData.contains("data") && !jsonObjectData["data"].is_null()) {
+				pDataStructure->data = jsonObjectData["data"];
+				pDataStructure->rawData = jsonObjectData["data"];
+			}
+
+			if (jsonObjectData.contains("type") && !jsonObjectData["type"].is_null()) {
+				pDataStructure->type = jsonObjectData["type"].get<InteractionType>();
+			}
+
+			if (jsonObjectData.contains("token") && !jsonObjectData["token"].is_null()) {
+				pDataStructure->token = jsonObjectData["token"].get<std::string>();
+			}
+
+			if (jsonObjectData.contains("member") && !jsonObjectData["member"].is_null()) {
+				pDataStructure->member = jsonObjectData["member"];
+				pDataStructure->user.avatar = pDataStructure->member.userAvatar;
+				pDataStructure->user.id = pDataStructure->member.id;
+				pDataStructure->user.userName = pDataStructure->member.userName;
+			} else if (jsonObjectData.contains("user") && !jsonObjectData["user"].is_null()) {
+				pDataStructure->user = jsonObjectData["user"];
+			}
+
+			if (jsonObjectData.contains("channel_id") && !jsonObjectData["channel_id"].is_null()) {
+				pDataStructure->channelId = stoull(jsonObjectData["channel_id"].get<std::string>());
+			}
+
+			if (jsonObjectData.contains("guild_id") && !jsonObjectData["guild_id"].is_null()) {
+				pDataStructure->guildId = stoull(jsonObjectData["guild_id"].get<std::string>());
+			}
+
+			if (jsonObjectData.contains("locale") && !jsonObjectData["locale"].is_null()) {
+				pDataStructure->locale = jsonObjectData["locale"].get<std::string>();
+			}
+
+			if (jsonObjectData.contains("guild_locale") && !jsonObjectData["guild_locale"].is_null()) {
+				pDataStructure->guildLocale = jsonObjectData["guild_locale"].get<std::string>();
+			}
+
+			if (jsonObjectData.contains("message") && !jsonObjectData["message"].is_null()) {
+				pDataStructure->message = jsonObjectData["message"];
+			}
+
+			if (jsonObjectData.contains("version") && !jsonObjectData["version"].is_null()) {
+				pDataStructure->version = jsonObjectData["version"].get<int32_t>();
+			}
+
+			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
+				pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
+			}
+
+			if (jsonObjectData.contains("application_id") && !jsonObjectData["application_id"].is_null()) {
+				pDataStructure->applicationId = stoull(jsonObjectData["application_id"].get<std::string>());
+			}
+		}
 	};
 
 	/// Data from the SessionStart info. \brief Data from the SessionStart info.
@@ -6252,7 +7004,23 @@ namespace DiscordCoreAPI {
 
 		virtual ~SessionStartData() = default;
 
-	  	void parseObjectReal(const nlohmann::json&, SessionStartData*);
+	  	void parseObjectReal(const nlohmann::json& jsonObjectData, SessionStartData* pDataStructure) {
+			if (jsonObjectData.contains("max_concurrency") && !jsonObjectData["max_concurrency"].is_null()) {
+				pDataStructure->maxConcurrency = jsonObjectData["max_concurrency"].get<uint32_t>();
+			}
+
+			if (jsonObjectData.contains("remaining") && !jsonObjectData["remaining"].is_null()) {
+				pDataStructure->remaining = jsonObjectData["remaining"].get<uint32_t>();
+			}
+
+			if (jsonObjectData.contains("reset_after") && !jsonObjectData["reset_after"].is_null()) {
+				pDataStructure->resetAfter = jsonObjectData["reset_after"].get<uint32_t>();
+			}
+
+			if (jsonObjectData.contains("total") && !jsonObjectData["total"].is_null()) {
+				pDataStructure->total = jsonObjectData["total"].get<uint32_t>();
+			}
+		}
 	};
 
 	/// Data from the GetGatewatBot endpoint. \brief Data from the GetGatewatBot endpoint.
@@ -6274,7 +7042,19 @@ namespace DiscordCoreAPI {
 
 		virtual ~GatewayBotData() = default;
 
-	  	void parseObjectReal(const nlohmann::json&, GatewayBotData*);
+	  	void parseObjectReal(const nlohmann::json& jsonObjectData, GatewayBotData* pDataStructure) {
+			if (jsonObjectData.contains("session_start_limit") && !jsonObjectData["session_start_limit"].is_null()) {
+				pDataStructure->sessionStartLimit = jsonObjectData["session_start_limit"];
+			}
+
+			if (jsonObjectData.contains("shards") && !jsonObjectData["shards"].is_null()) {
+				pDataStructure->shards = jsonObjectData["shards"].get<uint32_t>();
+			}
+
+			if (jsonObjectData.contains("url") && !jsonObjectData["url"].is_null()) {
+				pDataStructure->url = jsonObjectData["url"].get<std::string>();
+			}
+		}
 	};
 
 	/// Text input style for modals. \brief Text input style for modals.
@@ -6314,7 +7094,21 @@ namespace DiscordCoreAPI {
 			*this = jsonObjectData;
 		}
 
-		void parseObjectReal(const nlohmann::json&, GuildEmojisUpdateEventData*);
+		void parseObjectReal(const nlohmann::json& jsonObjectData, GuildEmojisUpdateEventData* pDataStructure) {
+			if (jsonObjectData.contains("guild_id") && !jsonObjectData["guild_id"].is_null()) {
+				pDataStructure->guildId = stoull(jsonObjectData["guild_id"].get<std::string>());
+			}
+
+			if (jsonObjectData.contains("emojis") && !jsonObjectData["emojis"].is_null()) {
+				pDataStructure->emojis.clear();
+				pDataStructure->emojis.reserve(jsonObjectData["emojis"].size());
+				for (auto& value: jsonObjectData["emojis"]) {
+					EmojiData newData{ value };
+					pDataStructure->emojis.push_back(newData);
+				}
+				pDataStructure->emojis.shrink_to_fit();
+			}
+		}
 
 		virtual ~GuildEmojisUpdateEventData() = default;
 	};
@@ -6335,7 +7129,21 @@ namespace DiscordCoreAPI {
 			*this = jsonObjectData;
 		}
 
-		void parseObjectReal(const nlohmann::json&, GuildStickersUpdateEventData*);
+		void parseObjectReal(const nlohmann::json& jsonObjectData, GuildStickersUpdateEventData* pDataStructure) {
+			if (jsonObjectData.contains("guild_id") && !jsonObjectData["guild_id"].is_null()) {
+				pDataStructure->guildId = stoull(jsonObjectData["guild_id"].get<std::string>());
+			}
+
+			if (jsonObjectData.contains("stickers") && !jsonObjectData["stickers"].is_null()) {
+				pDataStructure->stickers.clear();
+				pDataStructure->stickers.reserve(jsonObjectData["stickers"].size());
+				for (auto& value: jsonObjectData["stickers"]) {
+					StickerData newData{ value };
+					pDataStructure->stickers.push_back(newData);
+				}
+				pDataStructure->stickers.shrink_to_fit();
+			}
+		}
 
 		virtual ~GuildStickersUpdateEventData() = default;
 	};
@@ -6360,7 +7168,53 @@ namespace DiscordCoreAPI {
 			*this = jsonObjectData;
 		}
 
-		void parseObjectReal(const nlohmann::json&, GuildMembersChunkEventData*);
+		void parseObjectReal(const nlohmann::json& jsonObjectData, GuildMembersChunkEventData* pDataStructure) {
+			if (jsonObjectData.contains("guild_id") && !jsonObjectData["guild_id"].is_null()) {
+				pDataStructure->guildId = stoull(jsonObjectData["guild_id"].get<std::string>());
+			}
+
+			if (jsonObjectData.contains("nonce") && !jsonObjectData["nonce"].is_null()) {
+				pDataStructure->nonce = jsonObjectData["nonce"].get<std::string>();
+			}
+
+			if (jsonObjectData.contains("chunk_index") && !jsonObjectData["chunk_index"].is_null()) {
+				pDataStructure->chunkIndex = jsonObjectData["chunk_index"].get<int32_t>();
+			}
+
+			if (jsonObjectData.contains("chunk_count") && !jsonObjectData["chunk_count"].is_null()) {
+				pDataStructure->chunkCount = jsonObjectData["chunk_count"].get<int32_t>();
+			}
+
+			if (jsonObjectData.contains("presences") && !jsonObjectData["presences"].is_null()) {
+				pDataStructure->presences.clear();
+				pDataStructure->presences.reserve(jsonObjectData["presences"].size());
+				for (auto& value: jsonObjectData["presences"]) {
+					PresenceUpdateData newData{ value };
+					pDataStructure->presences.push_back(newData);
+				}
+				pDataStructure->presences.shrink_to_fit();
+			}
+
+			if (jsonObjectData.contains("not_found") && !jsonObjectData["not_found"].is_null()) {
+				pDataStructure->notFound.clear();
+				pDataStructure->notFound.reserve(jsonObjectData["not_found"].size());
+				for (auto& value: jsonObjectData["not_found"]) {
+					pDataStructure->notFound.push_back(value);
+				}
+				pDataStructure->notFound.shrink_to_fit();
+			}
+
+			if (jsonObjectData.contains("members") && !jsonObjectData["members"].is_null()) {
+				pDataStructure->members.clear();
+				pDataStructure->members.reserve(jsonObjectData["members"].size());
+				for (auto& value: jsonObjectData["members"]) {
+					GuildMemberData newData{ value };
+					pDataStructure->members.push_back(newData);
+				}
+				pDataStructure->members.shrink_to_fit();
+			}
+		}
+
 
 		virtual ~GuildMembersChunkEventData() = default;
 	};

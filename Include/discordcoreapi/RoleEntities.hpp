@@ -148,7 +148,60 @@ namespace DiscordCoreAPI {
 
 		virtual ~Role() = default;
 
-	  	void parseObjectReal(const nlohmann::json& jsonObjectData, Role* pDataStructure);
+	  	void parseObjectReal(const nlohmann::json& jsonObjectData, Role* pDataStructure) {
+			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
+				if (jsonObjectData["id"].is_string()) {
+					pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
+				} else {
+					pDataStructure->id = jsonObjectData["id"].get<int64_t>();
+				}
+			}
+
+			if (jsonObjectData.contains("icon") && !jsonObjectData["icon"].is_null()) {
+				pDataStructure->icon = jsonObjectData["icon"].get<std::string>();
+			}
+
+			if (jsonObjectData.contains("name") && !jsonObjectData["name"].is_null()) {
+				pDataStructure->name = jsonObjectData["name"].get<std::string>();
+			}
+
+			if (jsonObjectData.contains("unicode_emoji") && !jsonObjectData["unicode_emoji"].is_null()) {
+				std::stringstream theStream{};
+				theStream << jsonObjectData["unicode_emoji"] << std::endl;
+				for (auto& value: theStream.str()) {
+					pDataStructure->unicodeEmoji.push_back(value);
+				}
+				pDataStructure->unicodeEmoji = static_cast<std::string>(pDataStructure->unicodeEmoji).substr(1, pDataStructure->unicodeEmoji.size() - 3);
+			}
+
+			if (jsonObjectData.contains("color") && !jsonObjectData["color"].is_null()) {
+				pDataStructure->color = jsonObjectData["color"].get<int32_t>();
+			}
+
+			if (jsonObjectData.contains("hoist") && !jsonObjectData["hoist"].is_null()) {
+				pDataStructure->flags = setBool<int8_t, RoleFlags>(pDataStructure->flags, RoleFlags::Hoist, jsonObjectData["hoist"].get<bool>());
+			}
+
+			if (jsonObjectData.contains("position") && !jsonObjectData["position"].is_null()) {
+				pDataStructure->position = jsonObjectData["position"].get<int32_t>();
+			}
+
+			if (jsonObjectData.contains("permissions") && !jsonObjectData["permissions"].is_null()) {
+				pDataStructure->permissions = jsonObjectData["permissions"].get<std::string>();
+			}
+
+			if (jsonObjectData.contains("managed") && !jsonObjectData["managed"].is_null()) {
+				pDataStructure->flags = setBool<int8_t, RoleFlags>(pDataStructure->flags, RoleFlags::Managed, jsonObjectData["managed"].get<bool>());
+			}
+
+			if (jsonObjectData.contains("mentionable") && !jsonObjectData["mentionable"].is_null()) {
+				pDataStructure->flags = setBool<int8_t, RoleFlags>(pDataStructure->flags, RoleFlags::Mentionable, jsonObjectData["mentionable"].get<bool>());
+			}
+
+			if (jsonObjectData.contains("tags") && !jsonObjectData["tags"].is_null()) {
+				pDataStructure->tags = jsonObjectData["tags"];
+			}
+		}
 	};
 
 	/**@}*/
