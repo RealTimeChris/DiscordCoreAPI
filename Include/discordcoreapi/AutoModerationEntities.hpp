@@ -47,9 +47,58 @@ namespace DiscordCoreAPI {
 
 		virtual ~AutoModerationRule() = default;
 
-	  	void parseObjectReal(const nlohmann::json& jsonObjectData, AutoModerationRule* pDataStructure);
+		void parseObjectReal(const nlohmann::json& jsonObjectData, AutoModerationRule* pDataStructure) {
+			if (jsonObjectData.contains("name") && !jsonObjectData["name"].is_null()) {
+				pDataStructure->name = jsonObjectData["name"].get<std::string>();
+			}
 
-		void parseObjectReal(const nlohmann::json& jsonObjectData, std::vector<AutoModerationRule>* pDataStructure);
+			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
+				pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
+			}
+
+			if (jsonObjectData.contains("enabled") && !jsonObjectData["enabled"].is_null()) {
+				pDataStructure->enabled = jsonObjectData["enabled"].get<bool>();
+			}
+
+			if (jsonObjectData.contains("trigger_type") && !jsonObjectData["trigger_type"].is_null()) {
+				pDataStructure->triggerType = static_cast<TriggerType>(jsonObjectData["trigger_type"].get<uint64_t>());
+			}
+
+			if (jsonObjectData.contains("event_type") && !jsonObjectData["event_type"].is_null()) {
+				pDataStructure->eventType = static_cast<EventType>(jsonObjectData["event_type"].get<uint64_t>());
+			}
+
+			if (jsonObjectData.contains("creator_id") && !jsonObjectData["creator_id"].is_null()) {
+				pDataStructure->creatorId = jsonObjectData["creator_id"].get<uint64_t>();
+			}
+
+			if (jsonObjectData.contains("actions") && !jsonObjectData["actions"].is_null()) {
+				for (auto& value: jsonObjectData["actions"]) {
+					ActionData newData{ value };
+					pDataStructure->actions.push_back(newData);
+				}
+			}
+
+			if (jsonObjectData.contains("exempt_roles") && !jsonObjectData["exempt_roles"].is_null()) {
+				for (auto& value: jsonObjectData["exempt_roles"]) {
+					pDataStructure->exemptRoles.push_back(value.get<uint64_t>());
+				}
+			}
+
+			if (jsonObjectData.contains("trigger_metadata") && !jsonObjectData["trigger_metadata"].is_null()) {
+				pDataStructure->triggerMetaData = jsonObjectData["trigger_metadata"];
+			}
+
+			if (jsonObjectData.contains("exempt_channels") && !jsonObjectData["exempt_channels"].is_null()) {
+				for (auto& value: jsonObjectData["exempt_channels"]) {
+					pDataStructure->exemptChannels.push_back(value.get<uint64_t>());
+				}
+			}
+
+			if (jsonObjectData.contains("guild_id") && !jsonObjectData["guild_id"].is_null()) {
+				pDataStructure->guildId = jsonObjectData["guild_id"].get<uint64_t>();
+			}
+		}
 	};
 
 	class AutoModerationRuleVector : public DiscordCoreInternal::DataParserTwo<AutoModerationRuleVector> {
@@ -69,18 +118,25 @@ namespace DiscordCoreAPI {
 
 		virtual ~AutoModerationRuleVector() = default;
 
-		void parseObjectReal(const nlohmann::json&, AutoModerationRuleVector*);
+		void parseObjectReal(const nlohmann::json& jsonObjectData, AutoModerationRuleVector* pDataStructure) {
+			pDataStructure->theAutoModerationRules.reserve(jsonObjectData.size());
+			for (auto& value: jsonObjectData) {
+				DiscordCoreAPI::AutoModerationRule newData{ value };
+				pDataStructure->theAutoModerationRules.push_back(newData);
+			}
+			pDataStructure->theAutoModerationRules.shrink_to_fit();
+		}
 	};
 
-	/// For listing all of the auto-moderation-rules for a particular Guild. \brief For listing all of the auto-moderation-rules for a particular Guild.
-	struct ListAutoModerationRulesForGuildData {
+	/// For listing all of the auto-moderation-rules for a particular AutoModerationRule. \brief For listing all of the auto-moderation-rules for a particular AutoModerationRule.
+	struct ListAutoModerationRulesForAutoModerationRuleData {
 		uint64_t guildId{};///< The id of the guild for which you would like to list the auto-moderation rules.
 	};
 
-	/// For collecting an auto-moderation-rule for a particular Guild. \brief For collecting an auto-moderation-rule for a particular Guild.
+	/// For collecting an auto-moderation-rule for a particular AutoModerationRule. \brief For collecting an auto-moderation-rule for a particular AutoModerationRule.
 	struct GetAutoModerationRuleData {
 		uint64_t autoModerationRuleId{};///< The id of the auto-moderation-rule you would like to collect.
-		uint64_t guildId{};///< The id of the Guild from which you would like to collect the auto-moderation-rule from.
+		uint64_t guildId{};///< The id of the AutoModerationRule from which you would like to collect the auto-moderation-rule from.
 	};
 
 	/// For creating an auto-moderation-rule. \brief For creating an auto-moderation-rule.
@@ -91,7 +147,7 @@ namespace DiscordCoreAPI {
 		std::vector<ActionData> actions{};///< The actions which will execute when the rule is triggered
 		TriggerType triggerType{};///< The trigger type.
 		EventType eventType{};///< The event type.
-		uint64_t guildId{};///< The Guild within which to create the auto-moderation-rule.
+		uint64_t guildId{};///< The AutoModerationRule within which to create the auto-moderation-rule.
 		std::string name{};///< The rule name.
 		bool enabled{};///< Whether the rule is enabled(False by default).
 	};
@@ -123,7 +179,51 @@ namespace DiscordCoreAPI {
 
 		virtual ~AutoModerationActionExecutionEventData() = default;
 
-	  	void parseObjectReal(const nlohmann::json& jsonObjectData, AutoModerationActionExecutionEventData* pDataStructure);
+	  	void parseObjectReal(const nlohmann::json& jsonObjectData, AutoModerationActionExecutionEventData* pDataStructure) {
+			if (jsonObjectData.contains("alert_system_message_id") && !jsonObjectData["alert_system_message_id"].is_null()) {
+				pDataStructure->alertSystemMessageId = stoull(jsonObjectData["alert_system_message_id"].get<std::string>());
+			}
+
+			if (jsonObjectData.contains("rule_trigger_type") && !jsonObjectData["rule_trigger_type"].is_null()) {
+				pDataStructure->ruleTriggerType = jsonObjectData["rule_trigger_type"].get<TriggerType>();
+			}
+
+			if (jsonObjectData.contains("matched_keyword") && !jsonObjectData["matched_keyword"].is_null()) {
+				pDataStructure->matchedKeyword = jsonObjectData["matched_keyword"].get<std::string>();
+			}
+
+			if (jsonObjectData.contains("matched_content") && !jsonObjectData["matched_content"].is_null()) {
+				pDataStructure->matchedContent = jsonObjectData["matched_content"].get<std::string>();
+			}
+
+			if (jsonObjectData.contains("action") && !jsonObjectData["action"].is_null()) {
+				pDataStructure->action = jsonObjectData["action"];
+			}
+
+			if (jsonObjectData.contains("content") && !jsonObjectData["content"].is_null()) {
+				pDataStructure->content = jsonObjectData["content"].get<std::string>();
+			}
+
+			if (jsonObjectData.contains("message_id") && !jsonObjectData["message_id"].is_null()) {
+				pDataStructure->messageId = stoull(jsonObjectData["message_id"].get<std::string>());
+			}
+
+			if (jsonObjectData.contains("channel_id") && !jsonObjectData["channel_id"].is_null()) {
+				pDataStructure->channelId = stoull(jsonObjectData["channel_id"].get<std::string>());
+			}
+
+			if (jsonObjectData.contains("guild_id") && !jsonObjectData["guild_id"].is_null()) {
+				pDataStructure->guildId = stoull(jsonObjectData["guild_id"].get<std::string>());
+			}
+
+			if (jsonObjectData.contains("rule_id") && !jsonObjectData["rule_id"].is_null()) {
+				pDataStructure->ruleId = stoull(jsonObjectData["rule_id"].get<std::string>());
+			}
+
+			if (jsonObjectData.contains("user_id") && !jsonObjectData["user_id"].is_null()) {
+				pDataStructure->userId = stoull(jsonObjectData["user_id"].get<std::string>());
+			}
+		}
 	};
 
 	/// For modifying an auto-moderation-rule. \brief For modifying an auto-moderation-rule.
@@ -134,7 +234,7 @@ namespace DiscordCoreAPI {
 		std::vector<ActionData> actions{};///< The actions which will execute when the rule is triggered
 		uint64_t autoModerationRuleId{};///< The id of the auto-moderation-rule you would like to modify.
 		EventType eventType{};///< The event type.
-		uint64_t guildId{};///< The Guild within which to modify the auto-moderation-rule.
+		uint64_t guildId{};///< The AutoModerationRule within which to modify the auto-moderation-rule.
 		std::string name{};///< The rule name.
 		bool enabled{};///< Whether the rule is enabled(False by default).
 	};
@@ -142,7 +242,7 @@ namespace DiscordCoreAPI {
 	/// For deleting an auto-moderation-rule. \brief For deleting an auto-moderation-rule.
 	struct DeleteAutoModerationRuleData {
 		uint64_t autoModerationRuleId{};///< The id of the auto-moderation-rule you would like to delete.
-		uint64_t guildId{};///< The Guild within which to delete the auto-moderation-rule.
+		uint64_t guildId{};///< The AutoModerationRule within which to delete the auto-moderation-rule.
 	};
 
 	/**@}*/
@@ -156,7 +256,7 @@ namespace DiscordCoreAPI {
 	  public:
 		static void initialize(DiscordCoreInternal::HttpsClient*);
 
-		CoRoutine<AutoModerationRuleVector> listAutoModerationRulesForGuildAsync(ListAutoModerationRulesForGuildData dataPackage);
+		CoRoutine<AutoModerationRuleVector> listAutoModerationRulesForAutoModerationRuleAsync(ListAutoModerationRulesForAutoModerationRuleData dataPackage);
 
 		CoRoutine<AutoModerationRule> getAutoModerationRuleAsync(GetAutoModerationRuleData dataPackage);
 
