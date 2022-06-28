@@ -23,7 +23,10 @@
 #include <discordcoreapi/GuildEntities.hpp>
 #include <discordcoreapi/GuildMemberEntities.hpp>
 #include <discordcoreapi/InteractionEntities.hpp>
+#include <discordcoreapi/GuildScheduledEventEntities.hpp>
 #include <discordcoreapi/RoleEntities.hpp>
+#include <discordcoreapi/UserEntities.hpp>
+#include <discordcoreapi/ChannelEntities.hpp>
 #include <discordcoreapi/CoRoutine.hpp>
 #include <discordcoreapi/InputEvents.hpp>
 
@@ -1116,7 +1119,7 @@ namespace DiscordCoreAPI {
 			this->optionsArgs.push_back(inputEventData.interactionData->data.userInteractionData.targetId);
 		}
 		this->eventData = inputEventData;
-		DiscordCoreInternal::DataParser::parseObject(inputEventData.getInteractionData().rawData, *this);
+		this->parseObject(inputEventData.getInteractionData().rawData, this);
 	}
 };
 

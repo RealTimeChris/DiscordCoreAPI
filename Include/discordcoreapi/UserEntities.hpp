@@ -99,7 +99,110 @@ namespace DiscordCoreAPI {
 
 		User(UserData&);
 
-		~User() = default;
+		User& operator=(const nlohmann::json& jsonObjectData) {
+			this->parseObject(jsonObjectData, this);
+			return *this;
+		}
+
+		User(const nlohmann::json& jsonObjectData) {
+			*this = jsonObjectData;
+		}
+
+		virtual ~User() = default;
+
+	  	void parseObject(const nlohmann::json& jsonObjectData, DiscordCoreAPI::User* pDataStructure) {
+			if (jsonObjectData.contains("username") && !jsonObjectData["username"].is_null()) {
+				pDataStructure->userName = jsonObjectData["username"].get<std::string>();
+			}
+
+			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
+				if (jsonObjectData["id"].is_string()) {
+					pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
+				} else {
+					pDataStructure->id = jsonObjectData["id"].get<int64_t>();
+				}
+			}
+
+			if (jsonObjectData.contains("accent_color") && !jsonObjectData["accent_color"].is_null()) {
+				pDataStructure->accentColor = jsonObjectData["accent_color"].get<int32_t>();
+			}
+
+			if (jsonObjectData.contains("banner") && !jsonObjectData["banner"].is_null()) {
+				pDataStructure->banner = jsonObjectData["banner"].get<std::string>();
+			}
+
+			if (jsonObjectData.contains("discriminator") && !jsonObjectData["discriminator"].is_null()) {
+				pDataStructure->discriminator = jsonObjectData["discriminator"].get<std::string>();
+			}
+
+			if (jsonObjectData.contains("avatar") && !jsonObjectData["avatar"].is_null()) {
+				std::string avatarString = "https://cdn.discordapp.com/avatars/" + std::to_string(pDataStructure->id) + "/" + jsonObjectData["avatar"].get<std::string>();
+				pDataStructure->avatar = avatarString;
+			}
+
+			if (jsonObjectData.contains("bot") && !jsonObjectData["bot"].is_null()) {
+				pDataStructure->flags =
+					DiscordCoreAPI::setBool<int32_t, DiscordCoreAPI::UserFlags>(pDataStructure->flags, DiscordCoreAPI::UserFlags::Bot, jsonObjectData["bot"].get<bool>());
+			}
+
+			if (jsonObjectData.contains("system") && !jsonObjectData["system"].is_null()) {
+				pDataStructure->flags =
+					DiscordCoreAPI::setBool<int32_t, DiscordCoreAPI::UserFlags>(pDataStructure->flags, DiscordCoreAPI::UserFlags::System, jsonObjectData["system"].get<bool>());
+			}
+
+			if (jsonObjectData.contains("mfa_enabled") && !jsonObjectData["mfa_enabled"].is_null()) {
+				pDataStructure->flags = DiscordCoreAPI::setBool<int32_t, DiscordCoreAPI::UserFlags>(pDataStructure->flags, DiscordCoreAPI::UserFlags::MFAEnabled,
+					jsonObjectData["mfa_enabled"].get<bool>());
+			}
+
+			if (jsonObjectData.contains("verified") && !jsonObjectData["verified"].is_null()) {
+				pDataStructure->flags =
+					DiscordCoreAPI::setBool<int32_t, DiscordCoreAPI::UserFlags>(pDataStructure->flags, DiscordCoreAPI::UserFlags::Verified, jsonObjectData["verified"].get<bool>());
+			}
+
+			if (jsonObjectData.contains("locale") && !jsonObjectData["locale"].is_null()) {
+				pDataStructure->locale = jsonObjectData["locale"].get<std::string>();
+			}
+
+			if (jsonObjectData.contains("email") && !jsonObjectData["email"].is_null()) {
+				pDataStructure->email = jsonObjectData["email"].get<std::string>();
+			}
+
+			if (jsonObjectData.contains("premium_type") && !jsonObjectData["premium_type"].is_null()) {
+				pDataStructure->premiumType = jsonObjectData["premium_type"].get<DiscordCoreAPI::PremiumType>();
+			}
+
+			if (jsonObjectData.contains("public_flags") && !jsonObjectData["public_flags"].is_null()) {
+				pDataStructure->flags = jsonObjectData["public_flags"].get<int32_t>();
+			}
+		}
+	};
+
+	class UserVector {
+	  public:
+		std::vector<User> theUsers{};
+
+		UserVector() = default;
+
+		UserVector& operator=(const nlohmann::json& jsonObjectData) {
+			this->parseObject(jsonObjectData, this);
+			return *this;
+		}
+
+		UserVector(const nlohmann::json& jsonObjectData) {
+			*this = jsonObjectData;
+		}
+
+		virtual ~UserVector() = default;
+
+		inline void parseObject(const nlohmann::json& jsonObjectData, UserVector* pDataStructure) {
+			pDataStructure->theUsers.reserve(jsonObjectData.size());
+			for (auto& value: jsonObjectData) {
+				DiscordCoreAPI::User newData{ value };
+				pDataStructure->theUsers.push_back(newData);
+			}
+			pDataStructure->theUsers.shrink_to_fit();
+		}
 	};
 
 	/// A type of User, to represent the Bot and some of its associated endpoints. \brief A type of User, to represent the Bot and some of its associated endpoints.
@@ -130,7 +233,6 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll Users {
 	  public:		
 		friend class DiscordCoreInternal::BaseSocketAgent;
-		friend class DiscordCoreInternal::DataParser;
 		friend DiscordCoreClient;
 		friend EventHandler;
 		friend Guild;
@@ -178,7 +280,7 @@ namespace DiscordCoreAPI {
 
 		/// Collects the User's Connections. \brief Collects the User's Connections.
 		/// \returns A CoRoutine containing a std::vector<ConnectionData>.
-		static CoRoutine<std::vector<ConnectionData>> getUserConnectionsAsync();
+		static CoRoutine<ConnectionDataVector> getUserConnectionsAsync();
 
 		/// Collects the Application responseData associated with the current Bot.
 		/// \brief Collects the Application responseData associated with the current Bot.
@@ -189,13 +291,13 @@ namespace DiscordCoreAPI {
 		/// \returns A CoRoutine containing an AuthorizationInfoData.
 		static CoRoutine<AuthorizationInfoData> getCurrentUserAuthorizationInfoAsync();
 
+		static void insertUser(UserData user);
+
 	  protected:
 		static std::unique_ptr<std::unordered_map<uint64_t, std::unique_ptr<UserData>>> cache;
 		static DiscordCoreInternal::HttpsClient* httpsClient;
 		static ConfigManager* configManager;
 		static std::shared_mutex theMutex;
-
-		static void insertUser(UserData user);
 	};
 	/**@}*/
 

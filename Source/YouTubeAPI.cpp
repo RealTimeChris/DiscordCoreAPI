@@ -24,7 +24,6 @@
 #include <discordcoreapi/DiscordCoreClient.hpp>
 #include <discordcoreapi/SSLClients.hpp>
 #include <discordcoreapi/VoiceConnection.hpp>
-#include <discordcoreapi/DataParsingFunctions.hpp>
 
 namespace DiscordCoreInternal {
 
@@ -67,9 +66,9 @@ namespace DiscordCoreInternal {
 		if (partialSearchResultsJson.contains("contents") && !partialSearchResultsJson["contents"].is_null()) {
 			for (auto& value: partialSearchResultsJson["contents"]["twoColumnSearchResultsRenderer"]["primaryContents"]["sectionListRenderer"]["contents"][0]["itemSectionRenderer"]
 													  ["contents"]) {
-				DiscordCoreAPI::Song searchResult{};
+				
 				if (value.contains("videoRenderer") && !value["videoRenderer"].is_null()) {
-					DataParser::parseObject(value["videoRenderer"], searchResult);
+					DiscordCoreAPI::Song searchResult{ value["videoRenderer"] };
 					searchResult.type = DiscordCoreAPI::SongType::YouTube;
 					searchResult.viewUrl = YouTubeRequestBuilder::baseUrl + "/watch?v=" + searchResult.songId + "&hl=en";
 					searchResults.push_back(searchResult);
@@ -118,11 +117,10 @@ namespace DiscordCoreInternal {
 			}
 			newSong.type = DiscordCoreAPI::SongType::YouTube;
 			nlohmann::json jsonObject = nlohmann::json::parse(responseData[0].responseMessage);
-			std::vector<DiscordCoreAPI::YouTubeFormat> theVector{};
-			DataParser::parseObject(jsonObject, theVector);
-			DiscordCoreAPI::YouTubeFormat format{};
+			DiscordCoreAPI::YouTubeFormatVector theVector{ jsonObject };
+			DiscordCoreAPI::YouTubeFormat format{ jsonObject };
 			bool isOpusFound{ false };
-			for (auto& value: theVector) {
+			for (auto& value: theVector.theYouTubeFormats) {
 				if (value.mimeType.find("opus") != std::string::npos) {
 					if (value.audioQuality == "AUDIO_QUALITY_LOW") {
 						isOpusFound = true;

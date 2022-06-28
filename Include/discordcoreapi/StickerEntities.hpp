@@ -70,10 +70,94 @@ namespace DiscordCoreAPI {
 	/// A single Sticker. \brief A single Sticker.
 	class DiscordCoreAPI_Dll Sticker : public StickerData {
 	  public:
+
 		Sticker() = default;
 
+		Sticker& operator=(const nlohmann::json& jsonObjectData) {
+			this->parseObject(jsonObjectData, this);
+			return *this;
+		}
+
+		Sticker(const nlohmann::json& jsonObjectData) {
+			*this = jsonObjectData;
+		}
+
 		virtual ~Sticker() = default;
+
+	  	inline void parseObject(const nlohmann::json& jsonObjectData, Sticker* pDataStructure) {
+			if (jsonObjectData.contains("asset") && !jsonObjectData["asset"].is_null()) {
+				pDataStructure->asset = jsonObjectData["asset"].get<std::string>();
+			}
+
+			if (jsonObjectData.contains("description") && !jsonObjectData["description"].is_null()) {
+				pDataStructure->description = jsonObjectData["description"].get<std::string>();
+			}
+
+			if (jsonObjectData.contains("format_type") && !jsonObjectData["format_type"].is_null()) {
+				pDataStructure->formatType = jsonObjectData["format_type"].get<StickerFormatType>();
+			}
+
+			if (jsonObjectData.contains("available") && !jsonObjectData["available"].is_null()) {
+				pDataStructure->stickerFlags = setBool<int32_t, StickerFlags>(pDataStructure->stickerFlags, StickerFlags::Available, jsonObjectData["available"].get<bool>());
+			}
+
+			if (jsonObjectData.contains("guild_id") && !jsonObjectData["guild_id"].is_null()) {
+				pDataStructure->guildId = stoull(jsonObjectData["guild_id"].get<std::string>());
+			}
+
+			if (jsonObjectData.contains("pack_id") && !jsonObjectData["pack_id"].is_null()) {
+				pDataStructure->packId = jsonObjectData["pack_id"].get<std::string>();
+			}
+
+			if (jsonObjectData.contains("type") && !jsonObjectData["type"].is_null()) {
+				pDataStructure->type = jsonObjectData["type"].get<StickerType>();
+			}
+
+			if (jsonObjectData.contains("sort_value") && !jsonObjectData["sort_value"].is_null()) {
+				pDataStructure->sortValue = jsonObjectData["sort_value"].get<int32_t>();
+			}
+
+			if (jsonObjectData.contains("name") && !jsonObjectData["name"].is_null()) {
+				pDataStructure->name = jsonObjectData["name"].get<std::string>();
+			}
+
+			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
+				pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
+			}
+
+			if (jsonObjectData.contains("user") && !jsonObjectData["user"].is_null()) {
+				pDataStructure->user = jsonObjectData["user"];
+			}
+		}
 	};
+
+	class StickerVector {
+	  public:
+		std::vector<Sticker> theStickers{};
+
+		StickerVector() = default;
+
+		StickerVector& operator=(const nlohmann::json& jsonObjectData) {
+			this->parseObject(jsonObjectData, this);
+			return *this;
+		}
+
+		StickerVector(const nlohmann::json& jsonObjectData) {
+			*this = jsonObjectData;
+		}
+
+		virtual ~StickerVector() = default;
+
+		inline void parseObject(const nlohmann::json& jsonObjectData, StickerVector* pDataStructure) {
+			pDataStructure->theStickers.reserve(jsonObjectData.size());
+			for (auto& value: jsonObjectData) {
+				DiscordCoreAPI::Sticker newData{ value };
+				pDataStructure->theStickers.push_back(newData);
+			}
+			pDataStructure->theStickers.shrink_to_fit();
+		}
+	};
+
 
 	/**@}*/
 
@@ -92,13 +176,13 @@ namespace DiscordCoreAPI {
 		static CoRoutine<Sticker> getStickerAsync(GetStickerData dataPackage);
 
 		/// Gets a list of nitro-available Sticker packs. \brief Gets a list of nitro-available Sticker packs
-		/// \returns A CoRoutine containing a std::vector<StickerPackData>.
-		static CoRoutine<std::vector<StickerPackData>> getNitroStickerPacksAsync();
+		/// \returns A CoRoutine containing a StickerPackDataVector.
+		static CoRoutine<StickerPackDataVector> getNitroStickerPacksAsync();
 
 		/// Gets a list of Stickers from a Guild. \brief Gets a list of Stickers from a Guild.
 		/// \param dataPackage A GetGuildStickersData structure.
-		/// \returns A CoRoutine containing a std::vector<Sticker>.
-		static CoRoutine<std::vector<Sticker>> getGuildStickersAsync(GetGuildStickersData dataPackage);
+		/// \returns A CoRoutine containing a StickerVector.
+		static CoRoutine<StickerVector> getGuildStickersAsync(GetGuildStickersData dataPackage);
 
 		/// Creates a new Sticker within a chosen Guild. \brief Creates a new Sticker within a chosen Guild.
 		/// \param dataPackage A CreateGuildStickerData structure.

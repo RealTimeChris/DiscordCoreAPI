@@ -320,8 +320,95 @@ namespace DiscordCoreAPI {
 	  public:
 		WebHook() = default;
 
+		WebHook& operator=(const nlohmann::json& jsonObjectData) {
+			this->parseObject(jsonObjectData, this);
+			return *this;
+		}
+
+		WebHook(const nlohmann::json& jsonObjectData) {
+			*this = jsonObjectData;
+		}
+
 		virtual ~WebHook() = default;
+
+	  	inline void parseObject(const nlohmann::json& jsonObjectData, WebHook* pDataStructure) {
+			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
+				pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
+			}
+
+			if (jsonObjectData.contains("type") && !jsonObjectData["type"].is_null()) {
+				pDataStructure->type = jsonObjectData["type"].get<WebHookType>();
+			}
+
+			if (jsonObjectData.contains("guild_id") && !jsonObjectData["guild_id"].is_null()) {
+				pDataStructure->guildId = stoull(jsonObjectData["guild_id"].get<std::string>());
+			}
+
+			if (jsonObjectData.contains("channel_id") && !jsonObjectData["channel_id"].is_null()) {
+				pDataStructure->channelId = stoull(jsonObjectData["channel_id"].get<std::string>());
+			}
+
+			if (jsonObjectData.contains("user") && !jsonObjectData["user"].is_null()) {
+				pDataStructure->user = jsonObjectData["user"];
+			}
+
+			if (jsonObjectData.contains("name") && !jsonObjectData["name"].is_null()) {
+				pDataStructure->name = jsonObjectData["name"].get<std::string>();
+			}
+
+			if (jsonObjectData.contains("avatar") && !jsonObjectData["avatar"].is_null()) {
+				pDataStructure->avatar = jsonObjectData["avatar"].get<std::string>();
+			}
+
+			if (jsonObjectData.contains("token") && !jsonObjectData["token"].is_null()) {
+				pDataStructure->token = jsonObjectData["token"].get<std::string>();
+			}
+
+			if (jsonObjectData.contains("application_id") && !jsonObjectData["application_id"].is_null()) {
+				pDataStructure->applicationId = stoull(jsonObjectData["application_id"].get<std::string>());
+			}
+
+			if (jsonObjectData.contains("source_guild") && !jsonObjectData["source_guild"].is_null()) {
+				pDataStructure->sourceGuild = jsonObjectData["source_guild"];
+			}
+
+			if (jsonObjectData.contains("source_channel") && !jsonObjectData["source_channel"].is_null()) {
+				pDataStructure->sourceChannel = jsonObjectData["source_channel"];
+			}
+
+			if (jsonObjectData.contains("url") && !jsonObjectData["url"].is_null()) {
+				pDataStructure->url = jsonObjectData["url"].get<std::string>();
+			}
+		}
 	};
+
+	class WebHookVector {
+	  public:
+		std::vector<WebHook> theWebHooks{};
+
+		WebHookVector() = default;
+
+		WebHookVector& operator=(const nlohmann::json& jsonObjectData) {
+			this->parseObject(jsonObjectData, this);
+			return *this;
+		}
+
+		WebHookVector(const nlohmann::json& jsonObjectData) {
+			*this = jsonObjectData;
+		}
+
+		virtual ~WebHookVector() = default;
+
+		inline void parseObject(const nlohmann::json& jsonObjectData, WebHookVector* pDataStructure) {
+			pDataStructure->theWebHooks.reserve(jsonObjectData.size());
+			for (auto& value: jsonObjectData) {
+				DiscordCoreAPI::WebHook newData{ value };
+				pDataStructure->theWebHooks.push_back(newData);
+			}
+			pDataStructure->theWebHooks.shrink_to_fit();
+		}
+	};
+
 	/**@}*/
 
 	/**
@@ -340,13 +427,13 @@ namespace DiscordCoreAPI {
 
 		/// Collects a list of WebHooks from a chosen Channel. \brief Collects a list of WebHooks from a chosen Channel.
 		/// \param dataPackage A GetChannelWebHooksData structure.
-		/// \returns A CoRoutine containing a std::vector<WebHook>.
-		static CoRoutine<std::vector<WebHook>> getChannelWebHooksAsync(GetChannelWebHooksData dataPackage);
+		/// \returns A CoRoutine containing a WebHookVector.
+		static CoRoutine<WebHookVector> getChannelWebHooksAsync(GetChannelWebHooksData dataPackage);
 
 		/// Collects a list of WebHooks from a chosen Guild. \brief Collects a list of WebHooks from a chosen Guild.
 		/// \param dataPackage A GetGuildWebHooksData structure.
-		/// \returns A CoRoutine containing a std::vector<WebHook>.
-		static CoRoutine<std::vector<WebHook>> getGuildWebHooksAsync(GetGuildWebHooksData dataPackage);
+		/// \returns A CoRoutine containing a WebHookVector.
+		static CoRoutine<WebHookVector> getGuildWebHooksAsync(GetGuildWebHooksData dataPackage);
 
 		/// Collects a single WebHook. \brief Collects a single WebHook.
 		/// \param dataPackage A GetWebHookData structure.

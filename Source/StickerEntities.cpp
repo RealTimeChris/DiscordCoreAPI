@@ -39,26 +39,26 @@ namespace DiscordCoreAPI {
 		co_return Stickers::httpsClient->submitWorkloadAndGetResult<Sticker>(workload);
 	}
 
-	CoRoutine<std::vector<StickerPackData>> Stickers::getNitroStickerPacksAsync() {
+	CoRoutine<StickerPackDataVector> Stickers::getNitroStickerPacksAsync() {
 		DiscordCoreInternal::HttpsWorkloadData workload{};
 		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Get_Nitro_Sticker_Packs);
-		co_await NewThreadAwaitable<std::vector<StickerPackData>>();
+		co_await NewThreadAwaitable<StickerPackDataVector>();
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Get_Nitro_Sticker_Packs;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/sticker-packs";
 		workload.callStack = "Stickers::getNitroStickerPacksAsync";
-		co_return Stickers::httpsClient->submitWorkloadAndGetResult<std::vector<StickerPackData>>(workload);
+		co_return Stickers::httpsClient->submitWorkloadAndGetResult<StickerPackDataVector>(workload);
 	}
 
-	CoRoutine<std::vector<Sticker>> Stickers::getGuildStickersAsync(GetGuildStickersData dataPackage) {
+	CoRoutine<StickerVector> Stickers::getGuildStickersAsync(GetGuildStickersData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{};
 		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Stickers);
-		co_await NewThreadAwaitable<std::vector<Sticker>>();
+		co_await NewThreadAwaitable<StickerVector>();
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Stickers;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/stickers";
 		workload.callStack = "Stickers::getGuildStickersAsync";
-		co_return Stickers::httpsClient->submitWorkloadAndGetResult<std::vector<Sticker>>(workload);
+		co_return Stickers::httpsClient->submitWorkloadAndGetResult<StickerVector>(workload);
 	}
 
 	CoRoutine<Sticker> Stickers::createGuildStickerAsync(CreateGuildStickerData dataPackage) {

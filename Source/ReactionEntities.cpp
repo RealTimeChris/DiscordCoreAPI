@@ -85,10 +85,10 @@ namespace DiscordCoreAPI {
 		co_return Reactions::httpsClient->submitWorkloadAndGetResult<void>(workload);
 	}
 
-	CoRoutine<std::vector<User>> Reactions::getReactionsAsync(GetReactionsData dataPackage) {
+	CoRoutine<UserVector> Reactions::getReactionsAsync(GetReactionsData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{};
 		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Get_Reactions);
-		co_await NewThreadAwaitable<std::vector<User>>();
+		co_await NewThreadAwaitable<UserVector>();
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Get_Reactions;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/messages/" + std::to_string(dataPackage.messageId) + "/reactions/" + dataPackage.emoji;
@@ -101,7 +101,7 @@ namespace DiscordCoreAPI {
 			workload.relativePath += "?limit=" + std::to_string(dataPackage.limit);
 		}
 		workload.callStack = "Reactions::getReactionsAsync";
-		co_return Reactions::httpsClient->submitWorkloadAndGetResult<std::vector<User>>(workload);
+		co_return Reactions::httpsClient->submitWorkloadAndGetResult<UserVector>(workload);
 	}
 
 
@@ -133,15 +133,15 @@ namespace DiscordCoreAPI {
 		co_return Reactions::httpsClient->submitWorkloadAndGetResult<void>(workload);
 	}
 
-	CoRoutine<std::vector<EmojiData>> Reactions::getEmojiListAsync(GetEmojiListData dataPackage) {
+	CoRoutine<EmojiDataVector> Reactions::getEmojiListAsync(GetEmojiListData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{};
 		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Get_Emoji_List);
-		co_await NewThreadAwaitable<std::vector<EmojiData>>();
+		co_await NewThreadAwaitable<EmojiDataVector>();
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Get_Emoji_List;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/emojis";
 		workload.callStack = "Reactions::getEmojiListAsync";
-		co_return Reactions::httpsClient->submitWorkloadAndGetResult<std::vector<EmojiData>>(workload);
+		co_return Reactions::httpsClient->submitWorkloadAndGetResult<EmojiDataVector>(workload);
 	}
 
 	CoRoutine<EmojiData> Reactions::getGuildEmojiAsync(GetGuildEmojiData dataPackage) {

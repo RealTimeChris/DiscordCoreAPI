@@ -21,7 +21,6 @@
 
 #pragma once
 
-#include <discordcoreapi/DataParsingFunctions.hpp>
 #include <discordcoreapi/SSLClients.hpp>
 #include <semaphore>
 
@@ -136,7 +135,6 @@ namespace DiscordCoreInternal {
 		HttpsResponseData httpRequest(HttpsWorkloadData&);
 
 		template<typename ReturnType> ReturnType submitWorkloadAndGetResult(HttpsWorkloadData& workload) {
-			ReturnType returnObject{};
 			workload.headersToInsert["Authorization"] = "Bot " + this->configManager->getBotToken();
 			workload.headersToInsert["User-Agent"] = "DiscordBot (https://discordcoreapi.com 1.0)";
 			if (workload.payloadType == PayloadType::Application_Json) {
@@ -145,7 +143,7 @@ namespace DiscordCoreInternal {
 				workload.headersToInsert["Content-Type"] = "multipart/form-data; boundary=boundary25";
 			}
 			HttpsResponseData returnData = this->httpRequest(workload);
-			DataParser::parseObject(returnData.responseData, returnObject);
+			ReturnType returnObject{ returnData.responseData };
 			return returnObject;
 		}
 

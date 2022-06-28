@@ -132,7 +132,76 @@ namespace DiscordCoreAPI {
 	  public:
 		Reaction() = default;
 
+		Reaction& operator=(const nlohmann::json& jsonObjectData) {
+			this->parseObject(jsonObjectData, this);
+			return *this;
+		}
+
+		Reaction(const nlohmann::json& jsonObjectData) {
+			*this = jsonObjectData;
+		}
 		virtual ~Reaction() = default;
+
+	  	inline void parseObject(const nlohmann::json& jsonObjectData, Reaction* pDataStructure) {
+			if (jsonObjectData.contains("count") && !jsonObjectData["count"].is_null()) {
+				pDataStructure->count = jsonObjectData["count"].get<int32_t>();
+			}
+
+			if (jsonObjectData.contains("me") && !jsonObjectData["me"].is_null()) {
+				pDataStructure->count = jsonObjectData["me"].get<bool>();
+			}
+
+			if (jsonObjectData.contains("emoji") && !jsonObjectData["emoji"].is_null()) {
+				pDataStructure->emoji = jsonObjectData["emoji"];
+			}
+
+			if (jsonObjectData.contains("guild_id") && !jsonObjectData["guild_id"].is_null()) {
+				pDataStructure->guildId = stoull(jsonObjectData["guild_id"].get<std::string>());
+			}
+
+			if (jsonObjectData.contains("channel_id") && !jsonObjectData["channel_id"].is_null()) {
+				pDataStructure->channelId = stoull(jsonObjectData["channel_id"].get<std::string>());
+			}
+
+			if (jsonObjectData.contains("user_id") && !jsonObjectData["user_id"].is_null()) {
+				pDataStructure->userId = stoull(jsonObjectData["user_id"].get<std::string>());
+			}
+
+			if (jsonObjectData.contains("message_id") && !jsonObjectData["message_id"].is_null()) {
+				pDataStructure->messageId = stoull(jsonObjectData["message_id"].get<std::string>());
+			}
+
+			if (jsonObjectData.contains("member") && !jsonObjectData["member"].is_null()) {
+				pDataStructure->member = jsonObjectData["member"];
+			}
+		}
+	};
+
+	class ReactionVector {
+	  public:
+		std::vector<Reaction> theReactions{};
+
+		ReactionVector() = default;
+
+		ReactionVector& operator=(const nlohmann::json& jsonObjectData) {
+			this->parseObject(jsonObjectData, this);
+			return *this;
+		}
+
+		ReactionVector(const nlohmann::json& jsonObjectData) {
+			*this = jsonObjectData;
+		}
+
+		virtual ~ReactionVector() = default;
+
+		inline void parseObject(const nlohmann::json& jsonObjectData, ReactionVector* pDataStructure) {
+			pDataStructure->theReactions.reserve(jsonObjectData.size());
+			for (auto& value: jsonObjectData) {
+				DiscordCoreAPI::Reaction newData{ value };
+				pDataStructure->theReactions.push_back(newData);
+			}
+			pDataStructure->theReactions.shrink_to_fit();
+		}
 	};
 
 	/**@}*/
@@ -163,8 +232,8 @@ namespace DiscordCoreAPI {
 
 		/// Get a list of users that reacted with this emoji. Returns an array of user objects on success. \brief Get a list of users that reacted with this emoji. Returns an array of user objects on success.
 		/// \param dataPackage A GetReactionsData structure.
-		/// \returns A CoRoutine containing a std::vector<User>.
-		static CoRoutine<std::vector<User>> getReactionsAsync(GetReactionsData dataPackage);
+		/// \returns A CoRoutine containing a UserVector.
+		static CoRoutine<UserVector> getReactionsAsync(GetReactionsData dataPackage);
 
 		/// Deletes all of the Reactions from a given Message. \brief Deletes all of the Reactions from a given Message.
 		/// \param dataPackage A DeleteAllReactionsData structure.
@@ -179,8 +248,8 @@ namespace DiscordCoreAPI {
 
 		/// Collects a list of Guild Emoji from a chosen Guild. \brief Collects a list of Guild Emoji from a chosen Guild.
 		/// \param dataPackage A GetEmojiListData structure.
-		/// \returns A CoRoutine containing a std::vector<EmojiData>.
-		static CoRoutine<std::vector<EmojiData>> getEmojiListAsync(GetEmojiListData dataPackage);
+		/// \returns A CoRoutine containing a EmojiDataVector.
+		static CoRoutine<EmojiDataVector> getEmojiListAsync(GetEmojiListData dataPackage);
 
 		/// Collects a single Guild Emoji from a chosen Guild. \brief Collects a single Guild Emoji from a chosen Guild.
 		/// \param dataPackage A GetGuildEmojiData structure.

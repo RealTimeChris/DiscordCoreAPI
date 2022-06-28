@@ -20,6 +20,7 @@
 /// \file JSONIfier.cpp
 
 #include <discordcoreapi/JSONIfier.hpp>
+#include <discordcoreapi/FoundationEntities.hpp>
 #include <discordcoreapi/GuildEntities.hpp>
 #include <discordcoreapi/GuildMemberEntities.hpp>
 #include <discordcoreapi/ChannelEntities.hpp>
@@ -157,7 +158,7 @@ namespace DiscordCoreAPI {
 	void to_json(nlohmann::json& jsonOut, const EmbedData& valueNew) {
 		nlohmann::json fields{};
 		for (auto& value2: valueNew.fields) {
-			fields.push_back(value2);
+			fields.push_back(EmbedFieldData{ value2 });
 		}
 		int32_t colorValInt = stol(valueNew.hexColorValue, 0, 16);
 		std::stringstream stream;
@@ -480,14 +481,14 @@ namespace DiscordCoreInternal {
 	std::string JSONIfier::JSONIFY(const DiscordCoreAPI::StartThreadInForumChannelData& dataPackage) {
 		nlohmann::json data{};
 		for (auto& value: dataPackage.message.attachments) {
-			data["message"]["attachments"].push_back(value);
+			data["message"]["attachments"].push_back(DiscordCoreAPI::AttachmentData{ value });
 		}
 		if (dataPackage.message.components.size() == 0) {
 			data["message"]["components"] = nlohmann::json::array();
 		} else {
 			data["message"]["components"] = nlohmann::json{ dataPackage.message.components };
 		}
-		data["message"]["allowed_mentions"] = dataPackage.message.allowedMentions;
+		data["message"]["allowed_mentions"] = DiscordCoreAPI::AllowedMentionsData{ dataPackage.message.allowedMentions };
 		for (auto& value: dataPackage.message.stickerIds) {
 			data["message"]["sticker_ids"].push_back(value);
 		}
@@ -495,7 +496,7 @@ namespace DiscordCoreInternal {
 			data["message"]["embeds"] = nlohmann::json::array();
 		} else {
 			for (auto& value: dataPackage.message.embeds) {
-				data["message"]["embeds"].push_back(value);
+				data["message"]["embeds"].push_back(DiscordCoreAPI::EmbedData{ value });
 			}
 		}
 		if (dataPackage.message.content != "") {
@@ -643,14 +644,14 @@ namespace DiscordCoreInternal {
 	std::string JSONIfier::JSONIFY(const DiscordCoreAPI::InteractionResponseData& dataPackage) {
 		nlohmann::json data{};
 		for (auto& value: dataPackage.data.attachments) {
-			data["data"]["attachments"].push_back(value);
+			data["data"]["attachments"].push_back(DiscordCoreAPI::AttachmentData{ value });
 		}
 		if (dataPackage.data.components.size() == 0) {
 			data["data"]["components"] = nlohmann::json::array();
 		} else {
 			data["data"]["components"] = nlohmann::json{ dataPackage.data.components };
 		}
-		data["data"]["allowed_mentions"] = dataPackage.data.allowedMentions;
+		data["data"]["allowed_mentions"] = DiscordCoreAPI::AllowedMentionsData{ dataPackage.data.allowedMentions };
 		if (dataPackage.data.choices.size() > 0) {
 			nlohmann::json::array_t theArray{};
 			for (auto& value: dataPackage.data.choices) {
@@ -666,7 +667,7 @@ namespace DiscordCoreInternal {
 			data["data"]["embeds"] = nlohmann::json::array();
 		} else {
 			for (auto& value: dataPackage.data.embeds) {
-				data["data"]["embeds"].push_back(value);
+				data["data"]["embeds"].push_back(DiscordCoreAPI::EmbedData{ value });
 			}
 		}
 		if (dataPackage.data.customId != "") {
@@ -1041,19 +1042,19 @@ namespace DiscordCoreInternal {
 	std::string JSONIfier::JSONIFY(const DiscordCoreAPI::EditWebHookData& dataPackage) {
 		nlohmann::json data{};
 		for (auto& value: dataPackage.attachments) {
-			data["attachments"].push_back(value);
+			data["attachments"].push_back(DiscordCoreAPI::AttachmentData{ value });
 		}
 		if (dataPackage.components.size() == 0) {
 			data["components"] = nlohmann::json::array();
 		} else {
 			data["components"] = nlohmann::json{ dataPackage.components };
 		}
-		data["allowed_mentions"] = dataPackage.allowedMentions;
+		data["allowed_mentions"] = DiscordCoreAPI::AllowedMentionsData{ dataPackage.allowedMentions };
 		if (dataPackage.embeds.size() == 0) {
 			data["embeds"] = nlohmann::json::array();
 		} else {
 			for (auto& value: dataPackage.embeds) {
-				data["embeds"].push_back(value);
+				data["embeds"].push_back(DiscordCoreAPI::EmbedData{ value });
 			}
 		}
 		if (dataPackage.content != "") {

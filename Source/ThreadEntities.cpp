@@ -129,15 +129,15 @@ namespace DiscordCoreAPI {
 		co_return Threads::httpsClient->submitWorkloadAndGetResult<ThreadMemberData>(workload);
 	}
 
-	CoRoutine<std::vector<ThreadMemberData>> Threads::getThreadMembersAsync(GetThreadMembersData dataPackage) {
+	CoRoutine<ThreadMemberDataVector> Threads::getThreadMembersAsync(GetThreadMembersData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{};
 		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Get_Thread_Members);
-		co_await NewThreadAwaitable<std::vector<ThreadMemberData>>();
+		co_await NewThreadAwaitable<ThreadMemberDataVector>();
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Get_Thread_Members;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/thread-members";
 		workload.callStack = "Threads::getThreadMembersAsync";
-		co_return Threads::httpsClient->submitWorkloadAndGetResult<std::vector<ThreadMemberData>>(workload);
+		co_return Threads::httpsClient->submitWorkloadAndGetResult<ThreadMemberDataVector>(workload);
 	}
 
 	CoRoutine<ActiveThreadsData> Threads::getActiveThreadsAsync(GetActiveThreadsData dataPackage) {
