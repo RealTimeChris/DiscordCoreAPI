@@ -46,26 +46,26 @@ namespace DiscordCoreAPI {
 		co_return WebHooks::httpsClient->submitWorkloadAndGetResult<WebHook>(workload);
 	}
 
-	CoRoutine<std::vector<WebHook>> WebHooks::getChannelWebHooksAsync(GetChannelWebHooksData dataPackage) {
+	CoRoutine<WebHookVector> WebHooks::getChannelWebHooksAsync(GetChannelWebHooksData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{};
 		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Get_Channel_Webhooks);
-		co_await NewThreadAwaitable<std::vector<WebHook>>();
+		co_await NewThreadAwaitable<WebHookVector>();
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Get_Channel_Webhooks;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/webhooks";
 		workload.callStack = "WebHooks::getChannelWebHooksAsync";
-		co_return WebHooks::httpsClient->submitWorkloadAndGetResult<std::vector<WebHook>>(workload);
+		co_return WebHooks::httpsClient->submitWorkloadAndGetResult<WebHookVector>(workload);
 	}
 
-	CoRoutine<std::vector<WebHook>> WebHooks::getGuildWebHooksAsync(GetGuildWebHooksData dataPackage) {
+	CoRoutine<WebHookVector> WebHooks::getGuildWebHooksAsync(GetGuildWebHooksData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{};
 		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Webhooks);
-		co_await NewThreadAwaitable<std::vector<WebHook>>();
+		co_await NewThreadAwaitable<WebHookVector>();
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Webhooks;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/webhooks";
 		workload.callStack = "WebHooks::getGuildWebHooksAsync";
-		co_return WebHooks::httpsClient->submitWorkloadAndGetResult<std::vector<WebHook>>(workload);
+		co_return WebHooks::httpsClient->submitWorkloadAndGetResult<WebHookVector>(workload);
 	}
 
 	CoRoutine<WebHook> WebHooks::getWebHookAsync(GetWebHookData dataPackage) {

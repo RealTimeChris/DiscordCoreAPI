@@ -281,7 +281,7 @@ namespace DiscordCoreAPI {
 
 		/// Collects the User's Connections. \brief Collects the User's Connections.
 		/// \returns A CoRoutine containing a std::vector<ConnectionData>.
-		static CoRoutine<std::vector<ConnectionData>> getUserConnectionsAsync();
+		static CoRoutine<ConnectionDataVector> getUserConnectionsAsync();
 
 		/// Collects the Application responseData associated with the current Bot.
 		/// \brief Collects the Application responseData associated with the current Bot.

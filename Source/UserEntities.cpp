@@ -175,15 +175,15 @@ namespace DiscordCoreAPI {
 		co_return Users::httpsClient->submitWorkloadAndGetResult<User>(workload);
 	}
 
-	CoRoutine<std::vector<ConnectionData>> Users::getUserConnectionsAsync() {
+	CoRoutine<ConnectionDataVector> Users::getUserConnectionsAsync() {
 		DiscordCoreInternal::HttpsWorkloadData workload{};
 		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Get_User_Connections);
-		co_await NewThreadAwaitable<std::vector<ConnectionData>>();
+		co_await NewThreadAwaitable<ConnectionDataVector>();
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Get_User_Connections;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/users/@me/connections";
 		workload.callStack = "Users::getUserConnectionsAsync";
-		co_return Users::httpsClient->submitWorkloadAndGetResult<std::vector<ConnectionData>>(workload);
+		co_return Users::httpsClient->submitWorkloadAndGetResult<ConnectionDataVector>(workload);
 	}
 
 	CoRoutine<ApplicationData> Users::getCurrentUserApplicationInfoAsync() {

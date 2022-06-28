@@ -427,13 +427,13 @@ namespace DiscordCoreAPI {
 
 		/// Collects a list of WebHooks from a chosen Channel. \brief Collects a list of WebHooks from a chosen Channel.
 		/// \param dataPackage A GetChannelWebHooksData structure.
-		/// \returns A CoRoutine containing a std::vector<WebHook>.
-		static CoRoutine<std::vector<WebHook>> getChannelWebHooksAsync(GetChannelWebHooksData dataPackage);
+		/// \returns A CoRoutine containing a WebHookVector.
+		static CoRoutine<WebHookVector> getChannelWebHooksAsync(GetChannelWebHooksData dataPackage);
 
 		/// Collects a list of WebHooks from a chosen Guild. \brief Collects a list of WebHooks from a chosen Guild.
 		/// \param dataPackage A GetGuildWebHooksData structure.
-		/// \returns A CoRoutine containing a std::vector<WebHook>.
-		static CoRoutine<std::vector<WebHook>> getGuildWebHooksAsync(GetGuildWebHooksData dataPackage);
+		/// \returns A CoRoutine containing a WebHookVector.
+		static CoRoutine<WebHookVector> getGuildWebHooksAsync(GetGuildWebHooksData dataPackage);
 
 		/// Collects a single WebHook. \brief Collects a single WebHook.
 		/// \param dataPackage A GetWebHookData structure.
