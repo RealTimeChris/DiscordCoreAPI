@@ -1767,6 +1767,11 @@ namespace DiscordCoreAPI {
 		OverWriteData(const nlohmann::json& jsonObjectData) {
 			*this = jsonObjectData;
 		}
+		void GuildWidgetImageData::parseObjectReal(const nlohmann::json& jsonObjectData, GuildWidgetImageData* pDataStructure) {
+			if (jsonObjectData.contains("widget_image") && !jsonObjectData["widget_image"].is_null()) {
+				pDataStructure->url = jsonObjectData["widget_image"].get<bool>();
+			}
+		}
 
 		virtual ~OverWriteData() = default;
 
@@ -2016,9 +2021,9 @@ namespace DiscordCoreAPI {
 			return false;
 		}
 	}
-
+	template<typename DerivedType>
 	/// Data structure representing a single GuildMember. \brief Data structure representing a single GuildMember.
-	class DiscordCoreAPI_Dll GuildMemberData : public DiscordEntity , public DiscordCoreInternal::DataParserTwo<GuildMemberData> {
+	class DiscordCoreAPI_Dll GuildMemberDataBase : public DiscordEntity, public DiscordCoreInternal::DataParserTwo<DerivedType> {
 	  public:
 		std::vector<uint64_t> roles{};///< The Guild roles that they have.
 		Permissions permissions{};///< Their base-level Permissions in the Guild.
@@ -2029,19 +2034,24 @@ namespace DiscordCoreAPI {
 		StringWrapper nick{};///< Their nick/display name.
 		int8_t flags{ 0 };///< GuildMember flags.
 
-		GuildMemberData() = default;
+		GuildMemberDataBase() = default;
 
-		GuildMemberData& operator=(const nlohmann::json& jsonObjectData) {
+		GuildMemberDataBase& operator=(const nlohmann::json& jsonObjectData) {
 			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
-		GuildMemberData(const nlohmann::json& jsonObjectData) {
+		void insertUser(UserData theUser) {
+			static_cast<DerivedType*>(this)->insertUser(theUser);
+		}
+
+		GuildMemberDataBase(const nlohmann::json& jsonObjectData) {
 			*this = jsonObjectData;
 		}
-		virtual ~GuildMemberData() = default;
 
-	  	void parseObjectReal(const nlohmann::json& jsonObjectData, GuildMemberData* pDataStructure) {
+		virtual ~GuildMemberDataBase() = default;
+
+	  	void parseObjectReal(const nlohmann::json& jsonObjectData, GuildMemberDataBase<DerivedType>* pDataStructure) {
 			if (jsonObjectData.contains("roles") && !jsonObjectData["roles"].is_null()) {
 				for (auto& value: jsonObjectData["roles"].get<std::vector<std::string>>()) {
 					pDataStructure->roles.push_back(stoull(value));
@@ -2089,6 +2099,8 @@ namespace DiscordCoreAPI {
 			}
 		}
 	};
+
+	using GuildMemberData = GuildMemberDataBase<GuildMember>;
 
 	/// Voice state data. \brief Voice state data.
 	struct DiscordCoreAPI_Dll VoiceStateData : public DiscordCoreInternal::DataParserTwo<VoiceStateData> {
@@ -3119,7 +3131,11 @@ namespace DiscordCoreAPI {
 
 		virtual ~GuildWidgetImageData() = default;
 
-	  	void parseObjectReal(const nlohmann::json&, GuildWidgetImageData*);
+	  	void parseObjectReal(const nlohmann::json& jsonObjectData, GuildWidgetImageData* pDataStructure) {
+			if (jsonObjectData.contains("widget_image") && !jsonObjectData["widget_image"].is_null()) {
+				pDataStructure->url = jsonObjectData["widget_image"].get<bool>();
+			}
+		}
 	};
 
 	/// Integration data. \brief Integration data.
