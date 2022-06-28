@@ -39,8 +39,8 @@ namespace DiscordCoreInternal {
 	};
 
 	struct DiscordCoreAPI_Dll HttpsResponseData {
-		friend class HttpsRnRBuilder;
-		friend class HttpsClient;
+		friend class  HttpsRnRBuilder;
+		friend class  HttpsClient;
 		
 		std::unordered_map<std::string, std::string> responseHeaders{};
 		HttpsState theCurrentState{ HttpsState::Collecting_Headers };
@@ -124,7 +124,7 @@ namespace DiscordCoreInternal {
 		void initialize();
 	};
 
-	class DiscordCoreAPI_Dll HttpsClient {
+	class HttpsClient {
 	  public:
 		HttpsClient() = default;
 

@@ -298,24 +298,6 @@ namespace DiscordCoreAPI {
 
 		Guild(GuildData&);
 
-		/// Connects to a given voice Channel. \brief Connects to a given voice Channel.
-		/// \param guildMemberId The Id of the user who's voice channel you would like to join. OR...
-		/// \param channelId The Id of the channel you would like to join.
-		/// \param selfDeaf Self-deafen the bot?
-		/// \param selfMute Self-mute the bot?
-		/// \returns A pointer containing the voice connection.
-		VoiceConnection* connectToVoice(const uint64_t guildMemberId, const uint64_t channelId = 0, bool selfDeaf = false, bool selfMute = false);
-
-		/// Disconnects from a voice Channel. \brief Disconnects from a voice Channel.
-		void disconnect();
-
-		/// Initializes this guild. \brief Initializes this guild.
-		void initialize();
-
-		/// Checks if we are currently connected to a voice Channel. \brief Checks if we are currently connected to a voice Channel.
-		/// \returns A bool telling us if we are connected.
-		bool areWeConnected();
-
 		Guild& operator=(const nlohmann::json& jsonObjectData) {
 			this->parseObject(jsonObjectData, this);
 			return *this;
@@ -565,7 +547,7 @@ namespace DiscordCoreAPI {
 		}
 	};
 
-	class GuildVector {
+	class DiscordCoreAPI_Dll GuildVector {
 	  public:
 		std::vector<Guild> theGuilds{};
 
@@ -644,10 +626,10 @@ namespace DiscordCoreAPI {
 	 * @{
 	 */
 
-	/// An interface class for the Guild related Discord endpoints. \brief An interface class for the Guild related Discord endpoints.
+	/// An interface class DiscordCoreAPI_Dll for the Guild related Discord endpoints. \brief An interface class DiscordCoreAPI_Dll for the Guild related Discord endpoints.
 	class DiscordCoreAPI_Dll Guilds {
 	  public:
-		friend class DiscordCoreInternal::BaseSocketAgent;
+		friend class  DiscordCoreInternal::BaseSocketAgent;
 		friend DiscordCoreClient;
 		friend EventHandler;
 

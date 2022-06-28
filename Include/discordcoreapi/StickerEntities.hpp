@@ -131,7 +131,7 @@ namespace DiscordCoreAPI {
 		}
 	};
 
-	class StickerVector {
+	class DiscordCoreAPI_Dll StickerVector {
 	  public:
 		std::vector<Sticker> theStickers{};
 
@@ -165,7 +165,7 @@ namespace DiscordCoreAPI {
 	 * \addtogroup main_endpoints
 	 * @{
 	 */
-	/// An interface class for the Sticker related Discord endpoints. \brief An interface class for the Sticker related Discord endpoints.
+	/// An interface class DiscordCoreAPI_Dll for the Sticker related Discord endpoints. \brief An interface class DiscordCoreAPI_Dll for the Sticker related Discord endpoints.
 	class DiscordCoreAPI_Dll Stickers {
 	  public:
 		static void initialize(DiscordCoreInternal::HttpsClient*);

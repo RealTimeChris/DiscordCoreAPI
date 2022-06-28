@@ -68,11 +68,11 @@ namespace DiscordCoreInternal {
 	#define SOCKET_ERROR (-1)
 #endif
 
-	struct ConnectionError : public std::runtime_error {
+	struct DiscordCoreAPI_Dll ConnectionError : public std::runtime_error {
 		explicit ConnectionError(const std::string& theString) : std::runtime_error(theString){};
 	};
 
-	struct ProcessingError : public std::runtime_error {
+	struct DiscordCoreAPI_Dll ProcessingError : public std::runtime_error {
 		explicit ProcessingError(const std::string& theString) : std::runtime_error(theString){};
 	};
 
@@ -347,9 +347,9 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll WebSocketSSLShard : public SSLConnectionInterface, public SSLDataInterface {
 	  public:
-		friend class DiscordCoreAPI::VoiceConnection;
-		friend class VoiceSocketAgent;
-		friend class BaseSocketAgent;
+		friend class  DiscordCoreAPI::VoiceConnection;
+		friend class  VoiceSocketAgent;
+		friend class  BaseSocketAgent;
 
 		WebSocketSSLShard(std::queue<DiscordCoreAPI::ConnectionPackage>* connectionsNew, int32_t currentBaseSocketAgentNew, int32_t currentShardNew,
 			DiscordCoreAPI::ConfigManager* configManagerNew) noexcept;

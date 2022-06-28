@@ -100,7 +100,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// A single GuildMember. \brief A single GuildMember.
-	class DiscordCoreAPI_Dll GuildMember : public GuildMemberDataBase<GuildMember> {
+	class DiscordCoreAPI_Dll GuildMember : public GuildMemberData {
 	  public:
 		TimeStamp communicationDisabledUntil{ "" };///< When the user's timeout will expire and the user will be able to communicate in the guild again.
 		std::string premiumSince{};///< If applicable, when they first boosted the server.
@@ -124,8 +124,6 @@ namespace DiscordCoreAPI {
 		GuildMember(const nlohmann::json& jsonObjectData) {
 			*this = jsonObjectData;
 		}
-
-		void insertUser(UserData*);
 
 		~GuildMember() = default;
 
@@ -170,7 +168,7 @@ namespace DiscordCoreAPI {
 
 			if (jsonObjectData.contains("user") && !jsonObjectData["user"].is_null()) {
 				User theUser{ jsonObjectData["user"] };
-				this->insertUser(&theUser);
+				this->insertUser(theUser);
 				pDataStructure->id = theUser.id;
 				pDataStructure->userAvatar = theUser.avatar;
 				pDataStructure->userName = theUser.userName;
@@ -190,7 +188,7 @@ namespace DiscordCoreAPI {
 		}
 	};
 
-	class GuildMemberVector {
+	class DiscordCoreAPI_Dll GuildMemberVector {
 	  public:
 		std::vector<GuildMember> theGuildMembers{};
 
@@ -223,7 +221,7 @@ namespace DiscordCoreAPI {
 	 * \addtogroup main_endpoints
 	 * @{
 	 */
-	/// An interface class for the GuildMember related Discord endpoints. \brief An interface class for the GuildMember related Discord endpoints.
+	/// An interface class DiscordCoreAPI_Dll for the GuildMember related Discord endpoints. \brief An interface class DiscordCoreAPI_Dll for the GuildMember related Discord endpoints.
 	class DiscordCoreAPI_Dll GuildMembers {
 	  public:
 		friend DiscordCoreClient;

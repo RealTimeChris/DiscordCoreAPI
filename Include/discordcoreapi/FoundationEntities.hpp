@@ -281,7 +281,7 @@ namespace DiscordCoreAPI {
 		std::string botToken{};///< Your bot's token.
 	};
 
-	class ConfigManager {
+	class DiscordCoreAPI_Dll ConfigManager {
 	  public:
 		ConfigManager() = default;
 
@@ -870,7 +870,7 @@ namespace DiscordCoreAPI {
 	 * @{
 	 */
 
-	struct ConnectionPackage {;
+	struct DiscordCoreAPI_Dll ConnectionPackage {;
 		int32_t currentBaseSocketAgent{ 0 };
 		int32_t currentShard{ 0 };
 	};
@@ -1842,7 +1842,7 @@ namespace DiscordCoreAPI {
 		}
 	};
 
-	class ThreadMemberDataVector  {
+	class DiscordCoreAPI_Dll ThreadMemberDataVector  {
 	  public:
 		std::vector<ThreadMemberData> theThreadMemberDatas{};
 
@@ -1886,7 +1886,7 @@ namespace DiscordCoreAPI {
 
 	enum class GuildMemberFlags : int8_t { Pending = 1 << 0, Deaf = 1 << 1, Mute = 1 << 2 };
 
-	struct GuildMemberId {
+	struct DiscordCoreAPI_Dll GuildMemberId {
 		GuildMemberId() = default;
 		uint64_t guildMemberId{};
 		uint64_t guildId{};
@@ -1908,7 +1908,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	class GuildMember;
+	class DiscordCoreAPI_Dll GuildMember;
 	/// Permissions class, for representing and manipulating Permission values. \brief Permissions class, for representing and manipulating Permission values.
 	class DiscordCoreAPI_Dll Permissions : public StringWrapper {
 	  public:
@@ -1995,35 +1995,9 @@ namespace DiscordCoreAPI {
 		static std::string computePermissions(const GuildMember& guildMember, ChannelData& channel);
 	};
 
-	template<typename GuildMemberDerivedMock> class GuildMemberDataMock :public DiscordEntity{ 
-	    public:
-		GuildMemberDataMock() = default;
-
-		void insertUser(UserData theData) {
-			guildMemberDerivedMock().insertUserReal(theData);
-		}
-
-		protected:
-		auto guildMemberDerivedMock() noexcept -> GuildMemberDerivedMock& {
-			  return *static_cast<GuildMemberDerivedMock*>(this);
-		}
-		auto guildMemberDerivedMock() const noexcept -> GuildMemberDerivedMock  const& {
-			return *static_cast<GuildMemberDerivedMock const*>(this);
-		}
-
-
-	};
-
-	class GuildMemberMock :public GuildMemberDataMock<GuildMemberMock>{
-	  public:
-		void insertUserReal(UserData theData) {
-			std::cout << "WERE HERE THIS SI TI!" << std::endl;
-		}
-	};
-
 	/// Data structure representing a single GuildMember. \brief Data structure representing a single GuildMember.
 	/// Data structure representing a single Guild. \brief Data structure representing a single Guild.
-	template<typename GuildMemberDerived> class GuildMemberDataBase : public DiscordEntity {
+	class DiscordCoreAPI_Dll GuildMemberData : public DiscordEntity {
 	  public:
 		std::vector<uint64_t> roles{};///< The Guild roles that they have.
 		Permissions permissions{};///< Their base-level Permissions in the Guild.
@@ -2034,24 +2008,20 @@ namespace DiscordCoreAPI {
 		StringWrapper nick{};///< Their nick/display name.
 		int8_t flags{ 0 };///< GuildMember flags.
 
-		GuildMemberDataBase() = default;
+		GuildMemberData() = default;
 
-		GuildMemberDataBase<GuildMemberDerived>& operator=(const nlohmann::json& jsonObjectData) {
+		GuildMemberData& operator=(const nlohmann::json& jsonObjectData) {
 			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
-		GuildMemberDataBase(const nlohmann::json& jsonObjectData) {
+		GuildMemberData(const nlohmann::json& jsonObjectData) {
 			*this = jsonObjectData;
 		}
 
-		void insertUserReal(UserData* theUser) {
-			//guildMemberDerived().insertUser(theUser);
-		}
+		void insertUser(UserData theUser);
 
-		virtual ~GuildMemberDataBase() = default;
-
-	  	inline void parseObject(const nlohmann::json& jsonObjectData, GuildMemberDataBase<GuildMemberDerived>* pDataStructure) {
+	  	inline void parseObject(const nlohmann::json& jsonObjectData, GuildMemberData* pDataStructure) {
 			if (jsonObjectData.contains("roles") && !jsonObjectData["roles"].is_null()) {
 				for (auto& value: jsonObjectData["roles"].get<std::vector<std::string>>()) {
 					pDataStructure->roles.push_back(stoull(value));
@@ -2076,7 +2046,7 @@ namespace DiscordCoreAPI {
 
 			if (jsonObjectData.contains("user") && !jsonObjectData["user"].is_null()) {
 				UserData theUser{ jsonObjectData["user"] };
-				this->insertUserReal(&theUser);
+				this->insertUser(theUser);
 				pDataStructure->id = theUser.id;
 				pDataStructure->userAvatar = theUser.avatar;
 				pDataStructure->userName = theUser.userName;
@@ -2098,16 +2068,9 @@ namespace DiscordCoreAPI {
 				pDataStructure->flags = setBool<int8_t, GuildMemberFlags>(pDataStructure->flags, GuildMemberFlags::Deaf, jsonObjectData["deaf"].get<bool>());
 			}
 		}
-	  protected:
-		auto guildMemberDerived() noexcept -> GuildMemberDerived& {
-			return *static_cast<GuildMemberDerived*>(this);
-		}
-		auto guildMemberDerived() const noexcept -> GuildMemberDerived const& {
-			return *static_cast<GuildMemberDerived const*>(this);
-		}
-	};
 
-	using GuildMemberData = GuildMemberDataBase<GuildMember>;
+		virtual ~GuildMemberData() = default;
+	};
 
 	/// Voice state data. \brief Voice state data.
 	struct DiscordCoreAPI_Dll VoiceStateData {
@@ -2543,7 +2506,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Action metadata for auto-moderation-rules. \brief Action metadata for auto-moderation-rules.
-	struct ActionMetaData {
+	struct DiscordCoreAPI_Dll ActionMetaData {
 		uint64_t channelId{};///< Channel to which user content should be logged.
 		int64_t durationSeconds{};///< Timeout duration in seconds.
 
@@ -2572,7 +2535,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Trigger metadata for auto-moderation-rules. \brief Trigger metadata for auto-moderation-rules.
-	struct TriggerMetaData {
+	struct DiscordCoreAPI_Dll TriggerMetaData {
 		std::vector<std::string> keywordFilter{};///< Substrings which will be searched for in content.
 		std::vector<KeywordPresetType> presets{};///< The internally pre-defined wordsets which will be searched for in content.
 
@@ -2605,7 +2568,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// For representing a single auto-moderation-rule-action. \brief For representing a single auto-moderation-rule-action.
-	struct ActionData {
+	struct DiscordCoreAPI_Dll ActionData {
 		ActionType type{};///< The type of action.
 		ActionMetaData metadata{};///< Additional metadata needed during execution for this specific action type.
 
@@ -2634,7 +2597,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Represents an auto-moderation-rule. \brief Represents an auto-moderation-rule.
-	struct AutoModerationRuleData : public DiscordEntity {
+	struct DiscordCoreAPI_Dll AutoModerationRuleData : public DiscordEntity {
 		std::vector<uint64_t> exemptChannels{};///< The channel ids that should not be affected by the rule(Maximum of 50).
 		std::vector<uint64_t> exemptRoles{};///< The role ids that should not be affected by the rule(Maximum of 20).
 		std::vector<ActionData> actions{};///< Actions which will execute when the rule is triggered.
@@ -2788,7 +2751,7 @@ namespace DiscordCoreAPI {
 		}
 	};
 
-	class GuildApplicationCommandPermissionsDataVector {
+	class DiscordCoreAPI_Dll GuildApplicationCommandPermissionsDataVector {
 	  public:
 		std::vector<GuildApplicationCommandPermissionsData> theGuildApplicationCommandPermissionsDatas{};
 
@@ -2882,7 +2845,7 @@ namespace DiscordCoreAPI {
 
 	};
 
-	class EmojiDataVector {
+	class DiscordCoreAPI_Dll EmojiDataVector {
 	  public:
 		std::vector<EmojiData> theEmojiDatas{};
 
@@ -3030,7 +2993,7 @@ namespace DiscordCoreAPI {
 		}
 	};
 
-	class VoiceRegionDataVector {
+	class DiscordCoreAPI_Dll VoiceRegionDataVector {
 	  public:
 		std::vector<VoiceRegionData> theVoiceRegionDatas{};
 
@@ -3124,7 +3087,7 @@ namespace DiscordCoreAPI {
 		}
 	};
 
-	class BanDataVector {
+	class DiscordCoreAPI_Dll BanDataVector {
 	  public:
 		std::vector<BanData> theBanDatas{};
 
@@ -3647,7 +3610,7 @@ namespace DiscordCoreAPI {
 		}
 	};
 
-	class IntegrationDataVector {
+	class DiscordCoreAPI_Dll IntegrationDataVector {
 	  public:
 		std::vector<IntegrationData> theIntegrationDatas{};
 
@@ -4583,8 +4546,8 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Data structure representing a single Guild. \brief Data structure representing a single Guild.
-	template<typename GuildDerived> struct GuildDataBase : public DiscordEntity {
-
+	class DiscordCoreAPI_Dll GuildData: public DiscordEntity {
+	  public:
 		std::unordered_map<uint64_t, PresenceUpdateData> presences{};///< Map of presences for each GuildMember.
 		std::unordered_map<uint64_t, VoiceStateData> voiceStates{};///< Map of Guild-member voice-states.
 		DiscordCoreClient* discordCoreClient{ nullptr };///< A pointer to the DiscordCoreClient.
@@ -4600,36 +4563,34 @@ namespace DiscordCoreAPI {
 		uint64_t ownerId{};///< User id of the Guild's owner.
 		int8_t flags{ 0 };///< Guild flags.
 
-		GuildDataBase() = default;
+		GuildData() = default;
 
-		GuildDataBase<GuildDerived>& operator=(const nlohmann::json& jsonObjectData) {
+		GuildData& operator=(const nlohmann::json& jsonObjectData) {
 			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
-		GuildDataBase(const nlohmann::json& jsonObjectData) {
+		GuildData(const nlohmann::json& jsonObjectData) {
 			*this = jsonObjectData;
 		}
 
-		VoiceConnection* connectToVoice(const uint64_t guildMemberId, const uint64_t channelId, bool selfDeaf, bool selfMute) {
-			return static_cast<GuildDerived*>(this)->connectToVoice(guildMemberId, channelId, selfDeaf, selfMute);
-		}
+		VoiceConnection* connectToVoice(const uint64_t guildMemberId, const uint64_t channelId = 0, bool selfDeaf = false, bool selfMute = false);
+		
+		void insertGuildMember(GuildMemberData theData);
 
-		void areWeConnected() {
-			static_cast<GuildDerived*>(this)->areWeConnected();
-		}
+		void insertChannel(ChannelData theData);
 
-		void initialize() {
-			static_cast<GuildDerived*>(this)->initialize();
-		}
+		void insertRole(RoleData theData);
+		
+		bool areWeConnected();
 
-		void disconnect() {
-			static_cast<GuildDerived*>(this)->disconnect();
-		}
+		void initialize();
 
-		virtual ~GuildDataBase() = default;
+		void disconnect();
 
-	  	inline void parseObject(const nlohmann::json& jsonObjectData, GuildDataBase<GuildDerived>* pDataStructure) {
+		virtual ~GuildData() = default;
+
+	  	inline void parseObject(const nlohmann::json& jsonObjectData, GuildData* pDataStructure) {
 			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
 				pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
 			}
@@ -4666,6 +4627,7 @@ namespace DiscordCoreAPI {
 				for (auto& value: jsonObjectData["roles"]) {
 					RoleData newData{ value };
 					pDataStructure->roles.push_back(newData.id);
+					this->insertRole(newData);
 				}
 			}
 
@@ -4695,10 +4657,13 @@ namespace DiscordCoreAPI {
 			}
 
 			if (jsonObjectData.contains("members") && !jsonObjectData["members"].is_null()) {
+				std::cout << "WERE HER ECOLLECTIGNG MEMBERS!" << std::endl;
 				for (auto& value: jsonObjectData["members"]) {
 					GuildMemberData newData{ value };
+					std::cout << "THEIR NAME IS: " << newData.userName << std::endl;
 					newData.guildId = pDataStructure->id;
 					pDataStructure->members.push_back(newData.id);
+					this->insertGuildMember(newData);
 				}
 			}
 
@@ -4707,6 +4672,7 @@ namespace DiscordCoreAPI {
 					ChannelData newData{ value };
 					newData.guildId = pDataStructure->id;
 					pDataStructure->channels.push_back(newData.id);
+					this->insertChannel(newData);
 				}
 			}
 
@@ -4719,12 +4685,9 @@ namespace DiscordCoreAPI {
 				}
 			}
 		}
-
 	};
 
-	using GuildData = GuildDataBase<Guild>;
-
-	class GuildDataVector {
+	class DiscordCoreAPI_Dll GuildDataVector {
 	  public:
 		std::vector<GuildData> theGuildDatas{};
 
@@ -4925,7 +4888,7 @@ namespace DiscordCoreAPI {
 		}
 	};
 
-	class GuildScheduledEventUserDataVector {
+	class DiscordCoreAPI_Dll GuildScheduledEventUserDataVector {
 	  public:
 		std::vector<GuildScheduledEventUserData> theGuildScheduledEventUserDatas{};
 
@@ -5063,7 +5026,7 @@ namespace DiscordCoreAPI {
 		}
 	};
 
-	class InviteDataVector {
+	class DiscordCoreAPI_Dll InviteDataVector {
 	  public:
 		std::vector<InviteData> theInviteDatas{};
 
@@ -5165,7 +5128,7 @@ namespace DiscordCoreAPI {
 
 	};
 
-	class GuildTemplateDataVector  {
+	class DiscordCoreAPI_Dll GuildTemplateDataVector  {
 	  public:
 		std::vector<GuildTemplateData> theGuildTemplateDatas{};
 
@@ -5284,7 +5247,7 @@ namespace DiscordCoreAPI {
 		}
 	};
 
-	class WebHookDataVector  {
+	class DiscordCoreAPI_Dll WebHookDataVector  {
 	  public:
 		std::vector<WebHookData> theWebHookDatas{};
 
@@ -5674,8 +5637,7 @@ namespace DiscordCoreAPI {
 		}
 	};
 
-	/// YouTube format data. \brief YouTube format data.
-	struct DiscordCoreAPI_Dll YouTubeFormat  {
+	struct DiscordCoreAPI_Dll YouTubeFormat {
 		std::string signatureCipher{};
 		std::string audioSampleRate{};
 		int32_t averageBitrate{ 0 };
@@ -5692,21 +5654,26 @@ namespace DiscordCoreAPI {
 		int32_t width{ 0 };
 		int32_t itag{ 0 };
 		int32_t fps{ 0 };
+	};
 
-		YouTubeFormat() = default;
+	/// YouTube format data. \brief YouTube format data.
+	struct DiscordCoreAPI_Dll YouTubeFormatVector  {
+		std::vector<YouTubeFormat> theFormats{};
 
-		YouTubeFormat& operator=(const nlohmann::json& jsonObjectData) {
+		YouTubeFormatVector() = default;
+
+		YouTubeFormatVector& operator=(const nlohmann::json& jsonObjectData) {
 			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
-		YouTubeFormat(const nlohmann::json& jsonObjectData) {
+		YouTubeFormatVector(const nlohmann::json& jsonObjectData) {
 			*this = jsonObjectData;
 		}
 
-		virtual ~YouTubeFormat() = default;
+		virtual ~YouTubeFormatVector() = default;
 
-	  	inline void parseObject(const nlohmann::json&jsonObjectData, YouTubeFormat*pDataStructure) {
+	  	inline void parseObject(const nlohmann::json&jsonObjectData, YouTubeFormatVector* pDataStructure) {
 			if (!jsonObjectData.is_null()) {
 				if (jsonObjectData.contains("streamingData") && !jsonObjectData["streamingData"].is_null() && jsonObjectData["streamingData"].contains("formats") &&
 					!jsonObjectData["streamingData"]["formats"].is_null()) {
@@ -5781,7 +5748,7 @@ namespace DiscordCoreAPI {
 							newData.downloadUrl = value["url"];
 						}
 
-						*pDataStructure = newData;
+						pDataStructure->theFormats.push_back(newData);
 					}
 				}
 
@@ -5853,39 +5820,11 @@ namespace DiscordCoreAPI {
 						} else if (value.contains("url") && !value["url"].is_null()) {
 							newData.downloadUrl = value["url"];
 						}
-						*pDataStructure = newData;
+						pDataStructure->theFormats.push_back(newData);
 					}
 				}
 			}
 		}
-	};
-
-	class YouTubeFormatVector  {
-	  public:
-		std::vector<YouTubeFormat> theYouTubeFormats{};
-
-		YouTubeFormatVector() = default;
-
-		YouTubeFormatVector& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
-
-		YouTubeFormatVector(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
-
-		virtual ~YouTubeFormatVector() = default;
-
-		inline void parseObject(const nlohmann::json& jsonObjectData, YouTubeFormatVector* pDataStructure) {
-			pDataStructure->theYouTubeFormats.reserve(jsonObjectData.size());
-			for (auto& value: jsonObjectData) {
-				DiscordCoreAPI::YouTubeFormat newData{ value };
-				pDataStructure->theYouTubeFormats.push_back(newData);
-			}
-			pDataStructure->theYouTubeFormats.shrink_to_fit();
-		}
-
 	};
 
 	/// Application command types. \brief Application command types.
@@ -7297,7 +7236,7 @@ namespace DiscordCoreAPI {
 		}
 	};
 
-	class StickerPackDataVector {
+	class DiscordCoreAPI_Dll StickerPackDataVector {
 	  public:
 		std::vector<StickerPackData> theStickerPackDatas{};
 
@@ -7400,7 +7339,7 @@ namespace DiscordCoreAPI {
 		}
 	};
 
-	class ConnectionDataVector {
+	class DiscordCoreAPI_Dll ConnectionDataVector {
 	  public:
 		std::vector<ConnectionData> theConnectionDatas{};
 
@@ -7955,7 +7894,7 @@ namespace DiscordCoreAPI {
 	/// Data representing an input-event, which is any Message or Interaction that is coming into the bot as an input. \brief Data representing an input-event, which is any Message or Interaction that is coming into the bot as an input.
 	class DiscordCoreAPI_Dll InputEventData {
 	  public:
-		friend class DiscordCoreInternal::BaseSocketAgent;
+		friend class  DiscordCoreInternal::BaseSocketAgent;
 		friend OnInteractionCreationData;
 		friend RespondToInputEventData;
 		friend BaseFunctionArguments;
@@ -8091,7 +8030,7 @@ namespace DiscordCoreAPI {
 		friend CreateEphemeralInteractionResponseData;
 		friend CreateDeferredInteractionResponseData;
 		friend CreateEphemeralFollowUpMessageData;
-		friend struct InteractionResponseData;
+		friend struct DiscordCoreAPI_Dll InteractionResponseData;
 		friend DeleteInteractionResponseData;
 		friend CreateInteractionResponseData;
 		friend EditInteractionResponseData;
@@ -8657,10 +8596,10 @@ namespace DiscordCoreAPI {
 
 	/// A song from the various platforms. \brief A song from the various platforms.
 	struct DiscordCoreAPI_Dll Song {
-		friend class DiscordCoreInternal::SoundCloudRequestBuilder;
-		friend class DiscordCoreInternal::YouTubeRequestBuilder;
-		friend class DiscordCoreInternal::SoundCloudAPI;
-		friend class DiscordCoreInternal::YouTubeAPI;
+		friend class  DiscordCoreInternal::SoundCloudRequestBuilder;
+		friend class  DiscordCoreInternal::YouTubeRequestBuilder;
+		friend class  DiscordCoreInternal::SoundCloudAPI;
+		friend class  DiscordCoreInternal::YouTubeAPI;
 		friend SongAPI;
 
 		std::vector<DownloadUrl> finalDownloadUrls{};

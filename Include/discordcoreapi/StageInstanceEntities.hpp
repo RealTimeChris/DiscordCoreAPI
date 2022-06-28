@@ -99,7 +99,7 @@ namespace DiscordCoreAPI {
 	 * \addtogroup main_endpoints
 	 * @{
 	 */
-	/// An interface class for the StageInstance related Discord endpoints. \brief An interface class for the StageInstance related Discord endpoints.
+	/// An interface class DiscordCoreAPI_Dll for the StageInstance related Discord endpoints. \brief An interface class DiscordCoreAPI_Dll for the StageInstance related Discord endpoints.
 	class DiscordCoreAPI_Dll StageInstances {
 	  public:
 		static void initialize(DiscordCoreInternal::HttpsClient*);

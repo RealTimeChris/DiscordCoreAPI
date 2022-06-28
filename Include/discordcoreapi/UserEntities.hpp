@@ -178,7 +178,7 @@ namespace DiscordCoreAPI {
 		}
 	};
 
-	class UserVector {
+	class DiscordCoreAPI_Dll UserVector {
 	  public:
 		std::vector<User> theUsers{};
 
@@ -229,10 +229,10 @@ namespace DiscordCoreAPI {
 	 * \addtogroup main_endpoints
 	 * @{
 	 */
-	/// An interface class for the User related Discord endpoints. \brief An interface class for the User related Discord endpoints.
+	/// An interface class DiscordCoreAPI_Dll for the User related Discord endpoints. \brief An interface class DiscordCoreAPI_Dll for the User related Discord endpoints.
 	class DiscordCoreAPI_Dll Users {
 	  public:		
-		friend class DiscordCoreInternal::BaseSocketAgent;
+		friend class  DiscordCoreInternal::BaseSocketAgent;
 		friend DiscordCoreClient;
 		friend EventHandler;
 		friend Guild;

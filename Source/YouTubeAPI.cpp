@@ -118,9 +118,9 @@ namespace DiscordCoreInternal {
 			newSong.type = DiscordCoreAPI::SongType::YouTube;
 			nlohmann::json jsonObject = nlohmann::json::parse(responseData[0].responseMessage);
 			DiscordCoreAPI::YouTubeFormatVector theVector{ jsonObject };
-			DiscordCoreAPI::YouTubeFormat format{ jsonObject };
+			DiscordCoreAPI::YouTubeFormat format{};
 			bool isOpusFound{ false };
-			for (auto& value: theVector.theYouTubeFormats) {
+			for (auto& value: theVector.theFormats) {
 				if (value.mimeType.find("opus") != std::string::npos) {
 					if (value.audioQuality == "AUDIO_QUALITY_LOW") {
 						isOpusFound = true;

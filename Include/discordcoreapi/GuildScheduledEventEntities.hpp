@@ -172,7 +172,7 @@ namespace DiscordCoreAPI {
 	 * \addtogroup main_endpoints
 	 * @{
 	 */
-	/// An interface class for the GuildScheduledEvent related Discord endpoints. \brief An interface class for the GuildScheduledEvent related Discord endpoints.
+	/// An interface class DiscordCoreAPI_Dll for the GuildScheduledEvent related Discord endpoints. \brief An interface class DiscordCoreAPI_Dll for the GuildScheduledEvent related Discord endpoints.
 	class DiscordCoreAPI_Dll GuildScheduledEvents {
 	  public:
 		static void initialize(DiscordCoreInternal::HttpsClient*);

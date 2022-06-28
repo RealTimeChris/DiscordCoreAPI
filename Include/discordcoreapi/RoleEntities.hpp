@@ -76,7 +76,7 @@ namespace DiscordCoreAPI {
 
 	/// For updating the Role positions. \brief For updating the Role positions.
 	struct DiscordCoreAPI_Dll ModifyGuildRolePositionsData {
-		friend class DiscordCoreInternal::JSONIfier;
+		friend class  DiscordCoreInternal::JSONIfier;
 		friend Roles;
 
 		uint64_t guildId{};///< The Guild within which to move the Role.
@@ -204,7 +204,7 @@ namespace DiscordCoreAPI {
 		}
 	};
 
-	class RoleVector {
+	class DiscordCoreAPI_Dll RoleVector {
 	  public:
 		std::vector<Role> theRoles{};
 
@@ -237,7 +237,7 @@ namespace DiscordCoreAPI {
 	 * \addtogroup main_endpoints
 	 * @{
 	 */
-	/// An interface class for the Role related Discord endpoints. \brief An interface class for the Role related Discord endpoints.
+	/// An interface class DiscordCoreAPI_Dll for the Role related Discord endpoints. \brief An interface class DiscordCoreAPI_Dll for the Role related Discord endpoints.
 	class DiscordCoreAPI_Dll Roles {
 	  public:
 		friend DiscordCoreClient;

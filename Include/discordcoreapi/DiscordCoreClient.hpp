@@ -73,13 +73,12 @@ namespace DiscordCoreAPI {
 	 * \addtogroup main_endpoints
 	 * @{
 	 */
-	/// DiscordCoreClient - The main class for this library. \brief DiscordCoreClient - The main class for this library.
+	/// DiscordCoreClient - The main class DiscordCoreAPI_Dll for this library. \brief DiscordCoreClient - The main class DiscordCoreAPI_Dll for this library.
 	class DiscordCoreAPI_Dll DiscordCoreClient {
 	  public:
-		friend class DiscordCoreInternal::BaseSocketAgent;
+		friend class  DiscordCoreInternal::BaseSocketAgent;
 		friend GuildData;
 		friend Guilds;
-		friend Guild;
 
 		CommandController commandController{ this };///< A command controller.
 		EventManager eventManager{};///< An EventManager.

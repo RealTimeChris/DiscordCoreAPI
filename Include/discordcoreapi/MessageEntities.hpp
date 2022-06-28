@@ -50,7 +50,7 @@ namespace DiscordCoreAPI {
 	/// For creating a Message. \brief For creating a Message.
 	class DiscordCoreAPI_Dll CreateMessageData : public MessageResponseBase {
 	  public:
-		friend class DiscordCoreInternal::JSONIfier;
+		friend class  DiscordCoreInternal::JSONIfier;
 		friend InputEvents;
 		friend Messages;
 
@@ -117,7 +117,7 @@ namespace DiscordCoreAPI {
 	/// For editing a Message. \brief For editing a Message.
 	class DiscordCoreAPI_Dll EditMessageData : public MessageResponseBase {
 	  public:
-		friend class DiscordCoreInternal::JSONIfier;
+		friend class  DiscordCoreInternal::JSONIfier;
 		friend InputEvents;
 		friend Messages;
 
@@ -376,7 +376,7 @@ namespace DiscordCoreAPI {
 		}
 	};
 
-	class MessageVector {
+	class DiscordCoreAPI_Dll MessageVector {
 	  public:
 		std::vector<Message> theMessages{};
 
@@ -450,7 +450,7 @@ namespace DiscordCoreAPI {
 	 * \addtogroup main_endpoints
 	 * @{
 	 */
-	/// An interface class for the Message related Discord endpoints. \brief An interface class for the Message related Discord endpoints;
+	/// An interface class DiscordCoreAPI_Dll for the Message related Discord endpoints. \brief An interface class DiscordCoreAPI_Dll for the Message related Discord endpoints;
 	class DiscordCoreAPI_Dll Messages {
 	  public:
 		static void initialize(DiscordCoreInternal::HttpsClient*);

@@ -80,7 +80,19 @@ namespace DiscordCoreAPI {
 		*this = other;
 	}
 
-	VoiceConnection* Guild::connectToVoice(const uint64_t guildMemberId, const uint64_t channelId, bool selfDeaf, bool selfMute) {
+	void GuildData::insertChannel(ChannelData theData) {
+		Channels::insertChannel(theData);
+	}
+
+	void GuildData::insertRole(RoleData theData) {
+		Roles::insertRole(theData);
+	}
+
+	void GuildData::insertGuildMember (GuildMemberData theData) {
+		GuildMembers::insertGuildMember(theData);
+	}
+
+	VoiceConnection* GuildData::connectToVoice(const uint64_t guildMemberId, const uint64_t channelId, bool selfDeaf, bool selfMute) {
 		if (getVoiceConnectionMap().contains(this->id) && getVoiceConnectionMap()[this->id] && getVoiceConnectionMap()[this->id]->areWeConnected()) {
 			this->voiceConnectionPtr = getVoiceConnectionMap()[this->id].get();
 			return this->voiceConnectionPtr;
@@ -113,7 +125,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	void Guild::disconnect() {
+	void GuildData::disconnect() {
 		if (getVoiceConnectionMap().contains(this->id) && getVoiceConnectionMap()[this->id]) {
 			UpdateVoiceStateData updateVoiceData{};
 			updateVoiceData.channelId = 0;
@@ -128,11 +140,11 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	bool Guild::areWeConnected() {
+	bool GuildData::areWeConnected() {
 		return getVoiceConnectionMap()[this->id]->areWeConnected();
 	}
 
-	void Guild::initialize() {
+	void GuildData::initialize() {
 		if (!getVoiceConnectionMap().contains(this->id)) {
 			std::string theShardId{ std::to_string((this->id >> 22) % this->discordCoreClient->configManager.getTotalShardCount()) };
 			getVoiceConnectionMap()[this->id] = std::make_unique<VoiceConnection>(this->discordCoreClient->baseSocketAgentMap[theShardId].get());

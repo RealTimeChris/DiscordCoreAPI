@@ -23,8 +23,6 @@
 
 #ifdef _WIN32
 bool __stdcall DllMain(void*, unsigned long fdwReason, void*) {
-	DiscordCoreAPI::GuildData theGuild{};
-	theGuild.disconnect();
 	switch (fdwReason) {
 		case DLL_PROCESS_ATTACH: {
 			break;

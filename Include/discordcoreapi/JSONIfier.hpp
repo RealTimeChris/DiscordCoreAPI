@@ -90,7 +90,7 @@ namespace DiscordCoreAPI {
 
 namespace DiscordCoreInternal {
 
-	class JSONIfier {
+	class DiscordCoreAPI_Dll JSONIfier {
 	  public:
 		static nlohmann::json JSONIFY(const std::string& serverId, const std::string& sessionId, const std::string& token, const std::string& testString);
 

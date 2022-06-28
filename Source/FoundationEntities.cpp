@@ -702,8 +702,6 @@ namespace DiscordCoreAPI {
 		return outputSttream;
 	}
 
-
-
 	void AudioFrameData::clearData() {
 		this->encodedFrameData.sampleCount = -1;
 		this->encodedFrameData.data.clear();

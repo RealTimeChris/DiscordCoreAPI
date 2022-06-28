@@ -33,11 +33,11 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll BaseSocketAgent {
 	  public:
-		friend class WebSocketSSLShard;
-		friend class DiscordCoreAPI::DiscordCoreClient;
-		friend class DiscordCoreAPI::VoiceConnection;
-		friend class DiscordCoreAPI::BotUser;
-		friend class WSMessageCollector;
+		friend class  WebSocketSSLShard;
+		friend class  DiscordCoreAPI::DiscordCoreClient;
+		friend class  DiscordCoreAPI::VoiceConnection;
+		friend class  DiscordCoreAPI::BotUser;
+		friend class  WSMessageCollector;
 		friend VoiceSocketAgent;
 
 		BaseSocketAgent(DiscordCoreAPI::DiscordCoreClient* discordCoreClientNew, std::atomic_bool* doWeQuitNew, int32_t currentBaseSocketAgentNew) noexcept;
@@ -85,7 +85,7 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll VoiceSocketAgent {
 	  public:
-		friend class DiscordCoreAPI::VoiceConnection;
+		friend class  DiscordCoreAPI::VoiceConnection;
 
 		VoiceSocketAgent(VoiceConnectInitData initDataNew, BaseSocketAgent* baseBaseSocketAgentNew, WebSocketSSLShard* theIndex, DiscordCoreAPI::ConfigManager*configManagerNew,
 			std::atomic_bool* doWeQuit) noexcept;

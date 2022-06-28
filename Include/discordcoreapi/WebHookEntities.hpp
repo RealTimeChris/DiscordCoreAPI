@@ -42,11 +42,11 @@ namespace DiscordCoreAPI {
 	/// For executing a WebHook. \brief For executing a WebHook.
 	class DiscordCoreAPI_Dll ExecuteWebHookData {
 	  public:		
-		friend class CreateEphemeralFollowUpMessageData;
-		friend class DiscordCoreInternal::JSONIfier;
-		friend class CreateFollowUpMessageData;
-		friend class EditFollowUpMessageData;
-		friend class Interactions;
+		friend class  CreateEphemeralFollowUpMessageData;
+		friend class  DiscordCoreInternal::JSONIfier;
+		friend class  CreateFollowUpMessageData;
+		friend class  EditFollowUpMessageData;
+		friend class  Interactions;
 		friend WebHooks;
 
 		uint64_t threadId{};///< Send a message to the specified thread within a webhook's Channel. The thread will automatically be unarchived.
@@ -230,10 +230,10 @@ namespace DiscordCoreAPI {
 	/// For editing a WebHook Message. \brief For editing a WebHook Message.
 	class DiscordCoreAPI_Dll EditWebHookData : public ExecuteWebHookData {
 	  public:
-		friend class DiscordCoreInternal::JSONIfier;
-		friend class EditInteractionResponseData;
-		friend class EditFollowUpMessageData;
-		friend class Interactions;
+		friend class  DiscordCoreInternal::JSONIfier;
+		friend class  EditInteractionResponseData;
+		friend class  EditFollowUpMessageData;
+		friend class  Interactions;
 		friend WebHooks;
 
 		uint64_t messageId{};///< The Message Id to collect.
@@ -382,7 +382,7 @@ namespace DiscordCoreAPI {
 		}
 	};
 
-	class WebHookVector {
+	class DiscordCoreAPI_Dll WebHookVector {
 	  public:
 		std::vector<WebHook> theWebHooks{};
 
@@ -415,7 +415,7 @@ namespace DiscordCoreAPI {
 	 * \addtogroup main_endpoints
 	 * @{
 	 */
-	/// An interface class for the WebHook related Discord endpoints. \brief An interface class for the WebHook related Discord endpoints;
+	/// An interface class DiscordCoreAPI_Dll for the WebHook related Discord endpoints. \brief An interface class DiscordCoreAPI_Dll for the WebHook related Discord endpoints;
 	class DiscordCoreAPI_Dll WebHooks {
 	  public:
 		static void initialize(DiscordCoreInternal::HttpsClient*);

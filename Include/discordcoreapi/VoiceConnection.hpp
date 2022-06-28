@@ -33,14 +33,14 @@ namespace DiscordCoreAPI {
 	 * \addtogroup voice_connection
 	 * @{
 	 */
-	/// VoiceConnection class - represents the connection to a given voice Channel. \brief VoiceConnection class - represents the connection to a given voice Channel.
+	/// VoiceConnection class DiscordCoreAPI_Dll - represents the connection to a given voice Channel. \brief VoiceConnection class DiscordCoreAPI_Dll - represents the connection to a given voice Channel.
 	class DiscordCoreAPI_Dll VoiceConnection {
 	  public:
-		friend class DiscordCoreInternal::SoundCloudAPI;
-		friend class DiscordCoreInternal::YouTubeAPI;
-		friend class DiscordCoreClient;
+		friend class  DiscordCoreInternal::SoundCloudAPI;
+		friend class  DiscordCoreInternal::YouTubeAPI;
+		friend class  DiscordCoreClient;
+		friend GuildData;
 		friend SongAPI;
-		friend Guild;
 
 		VoiceConnection(DiscordCoreInternal::BaseSocketAgent* BaseSocketAgentNew);
 

@@ -64,8 +64,8 @@ namespace DiscordCoreAPI {
 		*this = other;
 	}
 
-	void GuildMember::insertUser(UserData* theUser) {
-		Users::insertUser(*theUser);
+	void GuildMemberData::insertUser(UserData theUser) {
+		Users::insertUser(theUser);
 	}
 
 	void GuildMembers::initialize(DiscordCoreInternal::HttpsClient* theClient, ConfigManager* configManagerNew) {
@@ -93,6 +93,7 @@ namespace DiscordCoreAPI {
 		GuildMemberId theKey{};
 		theKey.guildId = dataPackage.guildId;
 		theKey.guildMemberId = dataPackage.guildMemberId;
+		std::cout << "THE CACHE SIZE: " << GuildMembers::cache->size() << std::endl;
 		if (GuildMembers::cache->contains(theKey)) {
 			co_return *(*GuildMembers::cache)[theKey];
 		} else {
