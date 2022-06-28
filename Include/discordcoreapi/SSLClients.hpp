@@ -291,6 +291,7 @@ namespace DiscordCoreInternal {
 
 	  protected:
 		static SSL_CTXWrapper context;
+		static std::mutex theMutex;
 
 		std::queue<DiscordCoreAPI::ConnectionPackage>* connections{ nullptr };
 		std::atomic_bool areWeConnected02{ false };

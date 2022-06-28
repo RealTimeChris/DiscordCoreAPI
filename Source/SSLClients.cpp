@@ -255,9 +255,11 @@ namespace DiscordCoreInternal {
 			throw ConnectionError{ reportError("HttpsSSLClient::connect()::connect(), ") };
 		}
 
+		std::unique_lock<std::mutex> theLock{ SSLConnectionInterface::theMutex };
 		if ((this->ssl = SSL_new(SSLConnectionInterface::context)) == nullptr) {
-			throw ConnectionError{ reportSSLError("HttpsSSLClient::connect()::SSL_new(), ") };
+			throw ConnectionError{ reportSSLError("HttpSSLClient::connect()::SSL_new(), ") };
 		}
+		theLock.unlock();
 
 		if (auto returnValue = SSL_set_fd(this->ssl, this->theSocket); !returnValue) {
 			throw ConnectionError{ reportSSLError("HttpsSSLClient::connect()::SSL_set_fd(), ", returnValue, this->ssl) };
@@ -523,9 +525,11 @@ namespace DiscordCoreInternal {
 			throw ConnectionError{ reportError("WebSocketSSLShard::connect()::connect(), ") };
 		}
 
+		std::unique_lock<std::mutex> theLock{ SSLConnectionInterface::theMutex };
 		if ((this->ssl = SSL_new(SSLConnectionInterface::context)) == nullptr) {
 			throw ConnectionError{ reportSSLError("WebSocketSSLShard::connect()::SSL_new(), ") };
 		}
+		theLock.unlock();
 
 		if (auto returnValue = SSL_set_fd(this->ssl, this->theSocket); !returnValue) {
 			throw ConnectionError{ reportSSLError("WebSocketSSLShard::connect()::SSL_set_fd(), ", returnValue, this->ssl) };
@@ -710,6 +714,7 @@ namespace DiscordCoreInternal {
 			}
 		}
 	}
-
+	
 	SSL_CTXWrapper SSLConnectionInterface::context{ nullptr };
+	std::mutex SSLConnectionInterface::theMutex{};
 }
