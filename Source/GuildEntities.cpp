@@ -132,18 +132,6 @@ namespace DiscordCoreAPI {
 		return getVoiceConnectionMap()[this->id]->areWeConnected();
 	}
 
-	void Guild::insertGuildMember(GuildMemberData theData) {
-		GuildMembers::insertGuildMember(theData);
-	}
-
-	void Guild::insertChannel(ChannelData theChannel) {
-		Channels::insertChannel(theChannel);
-	}
-
-	void Guild::insertRole(RoleData theData) {
-		Roles::insertRole(theData);
-	}
-
 	void Guild::initialize() {
 		if (!getVoiceConnectionMap().contains(this->id)) {
 			std::string theShardId{ std::to_string((this->id >> 22) % this->discordCoreClient->configManager.getTotalShardCount()) };

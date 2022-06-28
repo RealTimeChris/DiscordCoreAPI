@@ -316,12 +316,6 @@ namespace DiscordCoreAPI {
 		/// \returns A bool telling us if we are connected.
 		bool areWeConnected();
 
-		void insertGuildMember(GuildMemberData theChannel);
-		
-		void insertChannel(ChannelData theChannel);
-
-		void insertRole(RoleData theChannel);
-
 		Guild& operator=(const nlohmann::json& jsonObjectData) {
 			this->parseObject(jsonObjectData, this);
 			return *this;

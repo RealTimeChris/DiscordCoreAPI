@@ -39,6 +39,389 @@
 
 namespace DiscordCoreAPI {
 
+	void ApplicationCommandData::parseObjectReal(const nlohmann::json& jsonObjectData, ApplicationCommandData* pDataStructure) {
+		if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
+			pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
+		}
+
+		if (jsonObjectData.contains("default_member_permissions") && !jsonObjectData["default_member_permissions"].is_null()) {
+			pDataStructure->defaultMemberPermissions = jsonObjectData["default_member_permissions"].get<std::string>();
+		}
+
+		if (jsonObjectData.contains("dm_permission") && !jsonObjectData["dm_permission"].is_null()) {
+			pDataStructure->dmPermission = jsonObjectData["dm_permission"].get<bool>();
+		}
+
+		if (jsonObjectData.contains("version") && !jsonObjectData["version"].is_null()) {
+			pDataStructure->version = jsonObjectData["version"].get<std::string>();
+		}
+
+		if (jsonObjectData.contains("type") && !jsonObjectData["type"].is_null()) {
+			pDataStructure->type = jsonObjectData["type"].get<ApplicationCommandType>();
+		}
+
+		if (jsonObjectData.contains("name_localizations") && !jsonObjectData["name_localizations"].is_null()) {
+			pDataStructure->nameLocalizations.clear();
+			auto newMap = jsonObjectData["name_localizations"].get<std::unordered_map<std::string, std::string>>();
+			for (auto& [key, newValue]: newMap) {
+				pDataStructure->nameLocalizations[key] = newValue;
+			}
+		}
+
+		if (jsonObjectData.contains("description_localizations") && !jsonObjectData["description_localizations"].is_null()) {
+			pDataStructure->nameLocalizations.clear();
+			auto newMap = jsonObjectData["description_localizations"].get<std::unordered_map<std::string, std::string>>();
+			for (auto& [key, newValue]: newMap) {
+				pDataStructure->descriptionLocalizations[key] = newValue;
+			}
+		}
+
+		if (jsonObjectData.contains("application_id") && !jsonObjectData["application_id"].is_null()) {
+			pDataStructure->applicationId = stoull(jsonObjectData["application_id"].get<std::string>());
+		}
+
+		if (jsonObjectData.contains("name") && !jsonObjectData["name"].is_null()) {
+			pDataStructure->name = jsonObjectData["name"].get<std::string>();
+		}
+
+		if (jsonObjectData.contains("description") && !jsonObjectData["description"].is_null()) {
+			pDataStructure->description = jsonObjectData["description"].get<std::string>();
+		}
+
+		if (jsonObjectData.contains("version") && !jsonObjectData["version"].is_null()) {
+			pDataStructure->version = jsonObjectData["version"].get<std::string>();
+		}
+
+		if (jsonObjectData.contains("options") && !jsonObjectData["options"].is_null()) {
+			pDataStructure->options.reserve(jsonObjectData["options"].size());
+			for (auto& value: jsonObjectData["options"]) {
+				ApplicationCommandOptionData newData{ value };
+				pDataStructure->options.push_back(newData);
+			}
+			pDataStructure->options.shrink_to_fit();
+		}
+	}
+
+	void ReactionData::parseObjectReal(const nlohmann::json& jsonObjectData, ReactionData* pDataStructure) {
+		if (jsonObjectData.contains("count") && !jsonObjectData["count"].is_null()) {
+			pDataStructure->count = jsonObjectData["count"].get<int32_t>();
+		}
+
+		if (jsonObjectData.contains("me") && !jsonObjectData["me"].is_null()) {
+			pDataStructure->count = jsonObjectData["me"].get<bool>();
+		}
+
+		if (jsonObjectData.contains("emoji") && !jsonObjectData["emoji"].is_null()) {
+			pDataStructure->emoji = jsonObjectData["emoji"];
+		}
+
+		if (jsonObjectData.contains("guild_id") && !jsonObjectData["guild_id"].is_null()) {
+			pDataStructure->guildId = stoull(jsonObjectData["guild_id"].get<std::string>());
+		}
+
+		if (jsonObjectData.contains("channel_id") && !jsonObjectData["channel_id"].is_null()) {
+			pDataStructure->channelId = stoull(jsonObjectData["channel_id"].get<std::string>());
+		}
+
+		if (jsonObjectData.contains("user_id") && !jsonObjectData["user_id"].is_null()) {
+			pDataStructure->userId = stoull(jsonObjectData["user_id"].get<std::string>());
+		}
+
+		if (jsonObjectData.contains("message_id") && !jsonObjectData["message_id"].is_null()) {
+			pDataStructure->messageId = stoull(jsonObjectData["message_id"].get<std::string>());
+		}
+
+		if (jsonObjectData.contains("member") && !jsonObjectData["member"].is_null()) {
+			pDataStructure->member = jsonObjectData["member"];
+		}
+	}
+
+	void EmojiData::parseObjectReal(const nlohmann::json& jsonObjectData, EmojiData* pDataStructure) {
+		if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
+			pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
+		}
+
+		if (jsonObjectData.contains("name") && !jsonObjectData["name"].is_null()) {
+			pDataStructure->name = jsonObjectData["name"].get<std::string>();
+		}
+
+		if (jsonObjectData.contains("roles") && !jsonObjectData["roles"].is_null()) {
+			pDataStructure->roles.clear();
+			pDataStructure->roles.reserve(jsonObjectData["roles"].size());
+			for (auto& value: jsonObjectData["roles"]) {
+				RoleData newData{ value };
+				pDataStructure->roles.push_back(newData);
+			}
+			pDataStructure->roles.shrink_to_fit();
+		}
+
+		if (jsonObjectData.contains("user") && !jsonObjectData["user"].is_null()) {
+			pDataStructure->user = jsonObjectData["user"];
+		}
+
+		if (jsonObjectData.contains("require_colons") && !jsonObjectData["require_colons"].is_null()) {
+			pDataStructure->requireColons = jsonObjectData["require_colons"].get<bool>();
+		}
+
+		if (jsonObjectData.contains("managed") && !jsonObjectData["managed"].is_null()) {
+			pDataStructure->managed = jsonObjectData["managed"].get<bool>();
+		}
+
+		if (jsonObjectData.contains("animated") && !jsonObjectData["animated"].is_null()) {
+			pDataStructure->animated = jsonObjectData["animated"].get<bool>();
+		}
+
+		if (jsonObjectData.contains("available") && !jsonObjectData["available"].is_null()) {
+			pDataStructure->available = jsonObjectData["available"].get<bool>();
+		}
+	}
+
+	void RoleData::parseObjectReal(const nlohmann::json& jsonObjectData, RoleData* pDataStructure) {
+		if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
+			if (jsonObjectData["id"].is_string()) {
+				pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
+			} else {
+				pDataStructure->id = jsonObjectData["id"].get<int64_t>();
+			}
+		}
+
+		if (jsonObjectData.contains("name") && !jsonObjectData["name"].is_null()) {
+			pDataStructure->name = jsonObjectData["name"].get<std::string>();
+		}
+
+		if (jsonObjectData.contains("unicode_emoji") && !jsonObjectData["unicode_emoji"].is_null()) {
+			std::stringstream theStream{};
+			theStream << jsonObjectData["unicode_emoji"] << std::endl;
+			for (auto& value: theStream.str()) {
+				pDataStructure->unicodeEmoji.push_back(value);
+			}
+			pDataStructure->unicodeEmoji = static_cast<std::string>(pDataStructure->unicodeEmoji).substr(1, pDataStructure->unicodeEmoji.size() - 3);
+		}
+
+		if (jsonObjectData.contains("color") && !jsonObjectData["color"].is_null()) {
+			pDataStructure->color = jsonObjectData["color"].get<int32_t>();
+		}
+
+		if (jsonObjectData.contains("hoist") && !jsonObjectData["hoist"].is_null()) {
+			pDataStructure->flags =
+				setBool<int8_t, RoleFlags>(pDataStructure->flags, RoleFlags::Hoist, jsonObjectData["hoist"].get<bool>());
+		}
+
+		if (jsonObjectData.contains("managed") && !jsonObjectData["managed"].is_null()) {
+			pDataStructure->flags =
+				setBool<int8_t, RoleFlags>(pDataStructure->flags, RoleFlags::Managed, jsonObjectData["managed"].get<bool>());
+		}
+
+		if (jsonObjectData.contains("mentionable") && !jsonObjectData["mentionable"].is_null()) {
+			pDataStructure->flags = setBool<int8_t, RoleFlags>(pDataStructure->flags, RoleFlags::Mentionable,
+				jsonObjectData["mentionable"].get<bool>());
+		}
+
+		if (jsonObjectData.contains("position") && !jsonObjectData["position"].is_null()) {
+			pDataStructure->position = jsonObjectData["position"].get<int32_t>();
+		}
+
+		if (jsonObjectData.contains("permissions") && !jsonObjectData["permissions"].is_null()) {
+			pDataStructure->permissions = jsonObjectData["permissions"].get<std::string>();
+		}
+	}
+
+	void UserData::parseObjectReal(const nlohmann::json& jsonObjectData, UserData* pDataStructure) {
+		if (jsonObjectData.contains("username") && !jsonObjectData["username"].is_null()) {
+			pDataStructure->userName = jsonObjectData["username"].get<std::string>();
+		}
+
+		if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
+			if (jsonObjectData["id"].is_string()) {
+				pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
+			} else {
+				pDataStructure->id = jsonObjectData["id"].get<int64_t>();
+			}
+		}
+
+		if (jsonObjectData.contains("discriminator") && !jsonObjectData["discriminator"].is_null()) {
+			pDataStructure->discriminator = jsonObjectData["discriminator"].get<std::string>();
+		}
+
+		if (jsonObjectData.contains("avatar") && !jsonObjectData["avatar"].is_null()) {
+			std::string avatarString = "https://cdn.discordapp.com/avatars/" + std::to_string(pDataStructure->id) + "/" + jsonObjectData["avatar"].get<std::string>();
+			pDataStructure->avatar = avatarString;
+		}
+
+		if (jsonObjectData.contains("bot") && !jsonObjectData["bot"].is_null()) {
+			pDataStructure->flags = setBool<int32_t, UserFlags>(pDataStructure->flags, UserFlags::Bot, jsonObjectData["bot"].get<bool>());
+		}
+
+		if (jsonObjectData.contains("system") && !jsonObjectData["system"].is_null()) {
+			pDataStructure->flags = setBool<int32_t, UserFlags>(pDataStructure->flags, UserFlags::System, jsonObjectData["system"].get<bool>());
+		}
+
+		if (jsonObjectData.contains("mfa_enabled") && !jsonObjectData["mfa_enabled"].is_null()) {
+			pDataStructure->flags = setBool<int32_t, UserFlags>(pDataStructure->flags, UserFlags::MFAEnabled, jsonObjectData["mfa_enabled"].get<bool>());
+		}
+
+		if (jsonObjectData.contains("verified") && !jsonObjectData["verified"].is_null()) {
+			pDataStructure->flags = setBool<int32_t, UserFlags>(pDataStructure->flags, UserFlags::Verified, jsonObjectData["verified"].get<bool>());
+		}
+
+		if (jsonObjectData.contains("public_flags") && !jsonObjectData["public_flags"].is_null()) {
+			pDataStructure->flags = jsonObjectData["public_flags"].get<int32_t>();
+		}
+	}
+
+	void ChannelData::parseObjectReal(const nlohmann::json& jsonObjectData, ChannelData* pDataStructure) {
+		if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
+			if (jsonObjectData["id"].is_string()) {
+				pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
+			} else {
+				pDataStructure->id = jsonObjectData["id"].get<int64_t>();
+			}
+		}
+
+		if (jsonObjectData.contains("flags") && !jsonObjectData["flags"].is_null()) {
+			pDataStructure->flags = jsonObjectData["flags"].get<int8_t>();
+		}
+
+		if (jsonObjectData.contains("type") && !jsonObjectData["type"].is_null()) {
+			pDataStructure->type = jsonObjectData["type"].get<ChannelType>();
+		}
+
+		if (jsonObjectData.contains("parent_id") && !jsonObjectData["parent_id"].is_null()) {
+			pDataStructure->parentId = stoull(jsonObjectData["parent_id"].get<std::string>());
+		}
+
+		if (jsonObjectData.contains("guild_id") && !jsonObjectData["guild_id"].is_null()) {
+			pDataStructure->guildId = stoull(jsonObjectData["guild_id"].get<std::string>());
+		}
+
+		if (jsonObjectData.contains("position") && !jsonObjectData["position"].is_null()) {
+			pDataStructure->position = jsonObjectData["position"].get<int32_t>();
+		}
+
+		if (jsonObjectData.contains("permission_overwrites") && !jsonObjectData["permission_overwrites"].is_null()) {
+			pDataStructure->permissionOverwrites.clear();
+			for (auto& value: jsonObjectData["permission_overwrites"]) {
+				OverWriteData newData{ value };
+				uint64_t overWriteId = newData.id;
+				pDataStructure->permissionOverwrites[overWriteId] = newData;
+			}
+		}
+
+		if (jsonObjectData.contains("name") && !jsonObjectData["name"].is_null()) {
+			pDataStructure->name = jsonObjectData["name"].get<std::string>();
+		}
+
+		if (jsonObjectData.contains("nsfw") && !jsonObjectData["nsfw"].is_null()) {
+			pDataStructure->flags =
+				setBool<int8_t, ChannelFlags>(pDataStructure->flags, ChannelFlags::NSFW, jsonObjectData["nsfw"].get<bool>());
+		}
+
+		if (jsonObjectData.contains("owner_id") && !jsonObjectData["owner_id"].is_null()) {
+			pDataStructure->ownerId = stoull(jsonObjectData["owner_id"].get<std::string>());
+		}
+
+		if (jsonObjectData.contains("member_count") && !jsonObjectData["member_count"].is_null()) {
+			pDataStructure->memberCount = jsonObjectData["member_count"].get<int32_t>();
+		}
+	}
+
+	void GuildMemberData::parseObjectReal(const nlohmann::json& jsonObjectData, GuildMemberData* pDataStructure) {
+		if (jsonObjectData.contains("roles") && !jsonObjectData["roles"].is_null()) {
+			for (auto& value: jsonObjectData["roles"].get<std::vector<std::string>>()) {
+				pDataStructure->roles.push_back(stoull(value));
+			}
+		}
+
+		if (jsonObjectData.contains("permissions") && !jsonObjectData["permissions"].is_null()) {
+			pDataStructure->permissions = jsonObjectData["permissions"].get<std::string>();
+		}
+
+		if (jsonObjectData.contains("joined_at") && !jsonObjectData["joined_at"].is_null()) {
+			pDataStructure->joinedAt = jsonObjectData["joined_at"].get<std::string>();
+		}
+
+		if (jsonObjectData.contains("guild_id") && !jsonObjectData["guild_id"].is_null()) {
+			pDataStructure->guildId = stoull(jsonObjectData["guild_id"].get<std::string>());
+		}
+
+		if (jsonObjectData.contains("nick") && !jsonObjectData["nick"].is_null()) {
+			pDataStructure->nick = jsonObjectData["nick"].get<std::string>();
+		}
+
+		if (jsonObjectData.contains("user") && !jsonObjectData["user"].is_null()) {
+			UserData theUser{ jsonObjectData["user"] };
+			Users::insertUser(theUser);
+			pDataStructure->id = theUser.id;
+			pDataStructure->userAvatar = theUser.avatar;
+			pDataStructure->userName = theUser.userName;
+		}
+
+		if (jsonObjectData.contains("flags") && !jsonObjectData["flags"].is_null()) {
+			pDataStructure->flags = jsonObjectData["flags"].get<int8_t>();
+		}
+
+		if (jsonObjectData.contains("pending") && !jsonObjectData["pending"].is_null()) {
+			pDataStructure->flags = setBool<int8_t, GuildMemberFlags>(pDataStructure->flags, GuildMemberFlags::Pending,
+				jsonObjectData["pending"].get<bool>());
+		}
+
+		if (jsonObjectData.contains("mute") && !jsonObjectData["mute"].is_null()) {
+			pDataStructure->flags = setBool<int8_t, GuildMemberFlags>(pDataStructure->flags, GuildMemberFlags::Mute,
+				jsonObjectData["mute"].get<bool>());
+		}
+
+		if (jsonObjectData.contains("deaf") && !jsonObjectData["deaf"].is_null()) {
+			pDataStructure->flags = setBool<int8_t, GuildMemberFlags>(pDataStructure->flags, GuildMemberFlags::Deaf,
+				jsonObjectData["deaf"].get<bool>());
+		}
+	}
+
+	void AutoModerationActionExecutionEventData::parseObjectReal(const nlohmann::json& jsonObjectData, AutoModerationActionExecutionEventData* pDataStructure) {
+		if (jsonObjectData.contains("alert_system_message_id") && !jsonObjectData["alert_system_message_id"].is_null()) {
+			pDataStructure->alertSystemMessageId = stoull(jsonObjectData["alert_system_message_id"].get<std::string>());
+		}
+
+		if (jsonObjectData.contains("rule_trigger_type") && !jsonObjectData["rule_trigger_type"].is_null()) {
+			pDataStructure->ruleTriggerType = jsonObjectData["rule_trigger_type"].get<TriggerType>();
+		}
+
+		if (jsonObjectData.contains("matched_keyword") && !jsonObjectData["matched_keyword"].is_null()) {
+			pDataStructure->matchedKeyword = jsonObjectData["matched_keyword"].get<std::string>();
+		}
+
+		if (jsonObjectData.contains("matched_content") && !jsonObjectData["matched_content"].is_null()) {
+			pDataStructure->matchedContent = jsonObjectData["matched_content"].get<std::string>();
+		}
+
+		if (jsonObjectData.contains("action") && !jsonObjectData["action"].is_null()) {
+			pDataStructure->action = jsonObjectData["action"];
+		}
+
+		if (jsonObjectData.contains("content") && !jsonObjectData["content"].is_null()) {
+			pDataStructure->content = jsonObjectData["content"].get<std::string>();
+		}
+
+		if (jsonObjectData.contains("message_id") && !jsonObjectData["message_id"].is_null()) {
+			pDataStructure->messageId = stoull(jsonObjectData["message_id"].get<std::string>());
+		}
+
+		if (jsonObjectData.contains("channel_id") && !jsonObjectData["channel_id"].is_null()) {
+			pDataStructure->channelId = stoull(jsonObjectData["channel_id"].get<std::string>());
+		}
+
+		if (jsonObjectData.contains("guild_id") && !jsonObjectData["guild_id"].is_null()) {
+			pDataStructure->guildId = stoull(jsonObjectData["guild_id"].get<std::string>());
+		}
+
+		if (jsonObjectData.contains("rule_id") && !jsonObjectData["rule_id"].is_null()) {
+			pDataStructure->ruleId = stoull(jsonObjectData["rule_id"].get<std::string>());
+		}
+
+		if (jsonObjectData.contains("user_id") && !jsonObjectData["user_id"].is_null()) {
+			pDataStructure->userId = stoull(jsonObjectData["user_id"].get<std::string>());
+		}
+	}
+
 	void AutoModerationRule::parseObjectReal(const nlohmann::json& jsonObjectData, AutoModerationRule* pDataStructure) {
 		if (jsonObjectData.contains("name") && !jsonObjectData["name"].is_null()) {
 			pDataStructure->name = jsonObjectData["name"].get<std::string>();
@@ -1649,41 +2032,6 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	void CommandData::parseObjectReal(const nlohmann::json& jsonObjectData, CommandData* pDataStructure) {
-		if (jsonObjectData.contains("options") && !jsonObjectData["options"].is_null()) {
-			pDataStructure->optionsArgs.reserve(jsonObjectData["options"].size());
-			for (auto& value: jsonObjectData["options"]) {
-				if (value.contains("type") && value["type"] == 1) {
-					if (value.contains("name")) {
-						pDataStructure->subCommandName = value["name"];
-					}
-				} else if (value.contains("type") && value["type"] == 2) {
-					if (value.contains("name")) {
-						pDataStructure->subCommandGroupName = value["name"];
-					}
-				}
-				if (value.contains("options")) {
-					parseObjectReal(value, pDataStructure);
-				}
-				if (value.contains("value") && !value["value"].is_null()) {
-					auto& newValueNew = value["value"];
-					if (newValueNew.is_string()) {
-						pDataStructure->optionsArgs.push_back(newValueNew);
-					} else if (newValueNew.is_number()) {
-						pDataStructure->optionsArgs.push_back(std::to_string(newValueNew.get<int64_t>()));
-					} else if (newValueNew.is_boolean()) {
-						pDataStructure->optionsArgs.push_back(std::to_string(newValueNew.get<bool>()));
-					}
-				}
-			}
-			pDataStructure->optionsArgs.shrink_to_fit();
-		}
-
-		if (jsonObjectData.contains("name") && !jsonObjectData["name"].is_null()) {
-			pDataStructure->commandName = jsonObjectData["name"].get<std::string>();
-		}
-	}
-
 	void StickerPackData::parseObjectReal(const nlohmann::json& jsonObjectData, StickerPackData* pDataStructure) {
 		if (jsonObjectData.contains("stickers") && !jsonObjectData["stickers"].is_null()) {
 			pDataStructure->stickers.clear();
@@ -2581,111 +2929,6 @@ namespace DiscordCoreAPI {
 			pDataStructure->stickers.shrink_to_fit();
 		}
 	}
-
-	void Song::parseObjectReal(const nlohmann::json& jsonObjectData, Song* pDataStructure) {
-		if (jsonObjectData.contains("lengthText") && !jsonObjectData["lengthText"].is_null()) {
-			pDataStructure->duration = jsonObjectData["lengthText"]["accessibility"]["accessibilityData"]["label"].get<std::string>();
-		}
-
-		if (jsonObjectData.contains("detailedMetadataSnippets") && !jsonObjectData["detailedMetadataSnippets"].is_null()) {
-			for (auto& value: jsonObjectData["detailedMetadataSnippets"][0]["snippetText"]["runs"]) {
-				std::string newString = value["text"].get<std::string>();
-				if (newString.size() > 256) {
-					newString = newString.substr(0, 256);
-				}
-				pDataStructure->description = utf8MakeValid(newString);
-			}
-		}
-
-		if (jsonObjectData.contains("thumbnail") && !jsonObjectData["thumbnail"].is_null()) {
-			pDataStructure->thumbnailUrl = jsonObjectData["thumbnail"]["thumbnails"][0]["url"].get<std::string>();
-		}
-
-		if (jsonObjectData.contains("title") && !jsonObjectData["title"].is_null()) {
-			if (jsonObjectData["title"].contains("runs")) {
-				std::string newString = jsonObjectData["title"]["runs"][0]["text"].get<std::string>();
-				if (newString.size() > 256) {
-					newString = newString.substr(0, 256);
-				}
-				pDataStructure->songTitle = utf8MakeValid(newString);
-				;
-			} else if (jsonObjectData["title"].contains("simpleText")) {
-				std::string newString = jsonObjectData["title"]["simpleText"].get<std::string>();
-				if (newString.size() > 256) {
-					newString = newString.substr(0, 256);
-				}
-				pDataStructure->songTitle = utf8MakeValid(newString);
-			}
-		}
-		if (jsonObjectData.contains("videoId") && !jsonObjectData["videoId"].is_null()) {
-			pDataStructure->songId = jsonObjectData["videoId"].get<std::string>();
-		}
-
-		if (jsonObjectData.contains("track_authorization") && !jsonObjectData["track_authorization"].is_null()) {
-			pDataStructure->trackAuthorization = jsonObjectData["track_authorization"].get<std::string>();
-		}
-
-		if (jsonObjectData.contains("media") && !jsonObjectData["media"].is_null()) {
-			bool isItFound{ false };
-			for (auto& value: jsonObjectData["media"]["transcodings"]) {
-				if (value["preset"] == "opus_0_0") {
-					isItFound = true;
-					pDataStructure->firstDownloadUrl = value["url"].get<std::string>();
-					pDataStructure->songId = value["url"].get<std::string>();
-					pDataStructure->doWeGetSaved = true;
-				}
-			}
-			bool isItFound2{ false };
-			if (!isItFound) {
-				for (auto& value: jsonObjectData["media"]["transcodings"]) {
-					if (value["preset"] == "mp3_0_0") {
-						pDataStructure->firstDownloadUrl = value["url"].get<std::string>();
-						pDataStructure->songId = value["url"].get<std::string>();
-						isItFound2 = true;
-					}
-				}
-			}
-			if (!isItFound2 && !isItFound) {
-				for (auto& value: jsonObjectData["media"]["transcodings"]) {
-					pDataStructure->firstDownloadUrl = value["url"].get<std::string>();
-					pDataStructure->songId = value["url"].get<std::string>();
-				}
-			}
-		}
-
-		if (jsonObjectData.contains("title") && !jsonObjectData["title"].is_null() && !jsonObjectData["title"].is_object()) {
-			std::string newString = jsonObjectData["title"].get<std::string>();
-			if (newString.size() > 256) {
-				newString = newString.substr(0, 256);
-			}
-			pDataStructure->songTitle = utf8MakeValid(newString);
-		}
-
-		if (jsonObjectData.contains("description") && !jsonObjectData["description"].is_null()) {
-			std::string newString = jsonObjectData["description"].get<std::string>();
-			if (newString.size() > 256) {
-				newString = newString.substr(0, 256);
-			}
-			pDataStructure->description = utf8MakeValid(newString);
-			pDataStructure->description += "...";
-		}
-
-		if (jsonObjectData.contains("artwork_url") && !jsonObjectData["artwork_url"].is_null()) {
-			pDataStructure->thumbnailUrl = jsonObjectData["artwork_url"].get<std::string>();
-		} else if (jsonObjectData.contains("user") && !jsonObjectData["user"].is_null()) {
-			if (jsonObjectData["user"].contains("avatar_url") && !jsonObjectData["user"]["avatar_url"].is_null()) {
-				pDataStructure->thumbnailUrl = jsonObjectData["user"]["avatar_url"].get<std::string>();
-			}
-		}
-
-		if (jsonObjectData.contains("duration") && !jsonObjectData["duration"].is_null()) {
-			pDataStructure->duration = TimeStamp::convertMsToDurationString(jsonObjectData["duration"].get<int32_t>());
-		}
-
-		if (jsonObjectData.contains("permalink_url") && !jsonObjectData["permalink_url"].is_null()) {
-			pDataStructure->viewUrl = jsonObjectData["permalink_url"].get<std::string>();
-		}
-	}	
 
 	void GuildMembersChunkEventData::parseObjectReal(const nlohmann::json& jsonObjectData, GuildMembersChunkEventData* pDataStructure) {
 		if (jsonObjectData.contains("guild_id") && !jsonObjectData["guild_id"].is_null()) {

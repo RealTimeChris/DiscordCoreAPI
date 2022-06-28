@@ -142,7 +142,7 @@ namespace DiscordCoreInternal {
 		friend class HttpsClient;
 
 		void parseObject(const nlohmann::json&jsonObjectData, Type* pDataStructure) {
-			static_cast<Type*>(this)->parseObjectReal(jsonObjectData, pDataStructure);
+			static_cast<Type*>(this)->parseObjectReal(jsonObjectData, reinterpret_cast<Type*>(pDataStructure));
 		}
 
 		virtual ~DataParserTwo() = default;
@@ -1831,8 +1831,8 @@ namespace DiscordCoreAPI {
 
 		virtual ~ThreadMetadataData() = default;
 
-	  	
-	void parseObjectReal(const nlohmann::json& jsonObjectData, ThreadMetadataData* pDataStructure) {
+		void parseObjectReal(const nlohmann::json& jsonObjectData, ThreadMetadataData* pDataStructure) {
+
 			if (jsonObjectData.contains("archived") && !jsonObjectData["archived"].is_null()) {
 				pDataStructure->archived = jsonObjectData["archived"].get<bool>();
 			}
@@ -2346,8 +2346,8 @@ namespace DiscordCoreAPI {
 		}
 
 		virtual ~ActionData() = default;
-
-	  	void parseObjectReal(const nlohmann::json& jsonObjectData, ActionData* pDataStructure) {
+	  	
+		void parseObjectReal(const nlohmann::json& jsonObjectData, ActionData* pDataStructure) {
 			if (jsonObjectData.contains("metadata") && !jsonObjectData["metadata"].is_null()) {
 				pDataStructure->metadata = jsonObjectData["metadata"];
 			}
@@ -3970,7 +3970,8 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Data structure representing a single Guild. \brief Data structure representing a single Guild.
-	template<typename GuildDerived> struct GuildDataBase : public DiscordEntity, public DiscordCoreInternal::DataParserTwo<GuildDataBase<GuildDerived>> {		
+	template<typename GuildDerived> struct GuildDataBase : public DiscordEntity, public DiscordCoreInternal::DataParserTwo<GuildDataBase<GuildDerived>> {
+
 		std::unordered_map<uint64_t, PresenceUpdateData> presences{};///< Map of presences for each GuildMember.
 		std::unordered_map<uint64_t, VoiceStateData> voiceStates{};///< Map of Guild-member voice-states.
 		DiscordCoreClient* discordCoreClient{ nullptr };///< A pointer to the DiscordCoreClient.
@@ -3988,7 +3989,7 @@ namespace DiscordCoreAPI {
 
 		GuildDataBase() = default;
 
-		GuildDataBase& operator=(const nlohmann::json& jsonObjectData) {
+		GuildDataBase<GuildDerived>& operator=(const nlohmann::json& jsonObjectData) {
 			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
@@ -4015,7 +4016,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~GuildDataBase() = default;
 
-	  	void parseObjectReal(const nlohmann::json& jsonObjectData, GuildDataBase<Guild>* pDataStructure) {
+	  	void parseObjectReal(const nlohmann::json& jsonObjectData, GuildDataBase<GuildDerived>* pDataStructure) {
 			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
 				pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
 			}
@@ -4109,6 +4110,33 @@ namespace DiscordCoreAPI {
 	};
 
 	using GuildData = GuildDataBase<Guild>;
+
+	class GuildDataVector : public DiscordCoreInternal::DataParserTwo<GuildDataVector> {
+	  public:
+		std::vector<GuildData> theGuildDatas{};
+
+		GuildDataVector() = default;
+
+		GuildDataVector& operator=(const nlohmann::json& jsonObjectData) {
+			this->parseObject(jsonObjectData, this);
+			return *this;
+		}
+
+		GuildDataVector(const nlohmann::json& jsonObjectData) {
+			*this = jsonObjectData;
+		}
+
+		virtual ~GuildDataVector() = default;
+
+		void parseObjectReal(const nlohmann::json& jsonObjectData, GuildDataVector* pDataStructure) {
+			pDataStructure->theGuildDatas.reserve(jsonObjectData.size());
+			for (auto& value: jsonObjectData) {
+				DiscordCoreAPI::GuildData newData{ value };
+				pDataStructure->theGuildDatas.push_back(newData);
+			}
+			pDataStructure->theGuildDatas.shrink_to_fit();
+		}
+	};
 
 	/// Guild scheduled event privacy levels. \brief Guild scheduled event privacy levels.
 	enum class GuildScheduledEventPrivacyLevel : int8_t {
@@ -4964,6 +4992,7 @@ namespace DiscordCoreAPI {
 			}
 			pDataStructure->theYouTubeFormats.shrink_to_fit();
 		}
+
 	};
 
 	/// Application command types. \brief Application command types.
@@ -6924,7 +6953,40 @@ namespace DiscordCoreAPI {
 			*this = jsonObjectData;
 		}
 
-		void parseObjectReal(const nlohmann::json&, CommandData*);
+		void parseObjectReal(const nlohmann::json& jsonObjectData, CommandData* pDataStructure) {
+			if (jsonObjectData.contains("options") && !jsonObjectData["options"].is_null()) {
+				pDataStructure->optionsArgs.reserve(jsonObjectData["options"].size());
+				for (auto& value: jsonObjectData["options"]) {
+					if (value.contains("type") && value["type"] == 1) {
+						if (value.contains("name")) {
+							pDataStructure->subCommandName = value["name"];
+						}
+					} else if (value.contains("type") && value["type"] == 2) {
+						if (value.contains("name")) {
+							pDataStructure->subCommandGroupName = value["name"];
+						}
+					}
+					if (value.contains("options")) {
+						parseObjectReal(value, pDataStructure);
+					}
+					if (value.contains("value") && !value["value"].is_null()) {
+						auto& newValueNew = value["value"];
+						if (newValueNew.is_string()) {
+							pDataStructure->optionsArgs.push_back(newValueNew);
+						} else if (newValueNew.is_number()) {
+							pDataStructure->optionsArgs.push_back(std::to_string(newValueNew.get<int64_t>()));
+						} else if (newValueNew.is_boolean()) {
+							pDataStructure->optionsArgs.push_back(std::to_string(newValueNew.get<bool>()));
+						}
+					}
+				}
+				pDataStructure->optionsArgs.shrink_to_fit();
+			}
+
+			if (jsonObjectData.contains("name") && !jsonObjectData["name"].is_null()) {
+				pDataStructure->commandName = jsonObjectData["name"].get<std::string>();
+			}
+		}
 
 		virtual ~CommandData() = default;
 
@@ -7025,7 +7087,110 @@ namespace DiscordCoreAPI {
 			*this = jsonObjectData;
 		}
 
-		void parseObjectReal(const nlohmann::json&, Song*);
+		void parseObjectReal(const nlohmann::json& jsonObjectData, Song* pDataStructure) {
+			if (jsonObjectData.contains("lengthText") && !jsonObjectData["lengthText"].is_null()) {
+				pDataStructure->duration = jsonObjectData["lengthText"]["accessibility"]["accessibilityData"]["label"].get<std::string>();
+			}
+
+			if (jsonObjectData.contains("detailedMetadataSnippets") && !jsonObjectData["detailedMetadataSnippets"].is_null()) {
+				for (auto& value: jsonObjectData["detailedMetadataSnippets"][0]["snippetText"]["runs"]) {
+					std::string newString = value["text"].get<std::string>();
+					if (newString.size() > 256) {
+						newString = newString.substr(0, 256);
+					}
+					pDataStructure->description = utf8MakeValid(newString);
+				}
+			}
+
+			if (jsonObjectData.contains("thumbnail") && !jsonObjectData["thumbnail"].is_null()) {
+				pDataStructure->thumbnailUrl = jsonObjectData["thumbnail"]["thumbnails"][0]["url"].get<std::string>();
+			}
+
+			if (jsonObjectData.contains("title") && !jsonObjectData["title"].is_null()) {
+				if (jsonObjectData["title"].contains("runs")) {
+					std::string newString = jsonObjectData["title"]["runs"][0]["text"].get<std::string>();
+					if (newString.size() > 256) {
+						newString = newString.substr(0, 256);
+					}
+					pDataStructure->songTitle = utf8MakeValid(newString);
+					;
+				} else if (jsonObjectData["title"].contains("simpleText")) {
+					std::string newString = jsonObjectData["title"]["simpleText"].get<std::string>();
+					if (newString.size() > 256) {
+						newString = newString.substr(0, 256);
+					}
+					pDataStructure->songTitle = utf8MakeValid(newString);
+				}
+			}
+			if (jsonObjectData.contains("videoId") && !jsonObjectData["videoId"].is_null()) {
+				pDataStructure->songId = jsonObjectData["videoId"].get<std::string>();
+			}
+
+			if (jsonObjectData.contains("track_authorization") && !jsonObjectData["track_authorization"].is_null()) {
+				pDataStructure->trackAuthorization = jsonObjectData["track_authorization"].get<std::string>();
+			}
+
+			if (jsonObjectData.contains("media") && !jsonObjectData["media"].is_null()) {
+				bool isItFound{ false };
+				for (auto& value: jsonObjectData["media"]["transcodings"]) {
+					if (value["preset"] == "opus_0_0") {
+						isItFound = true;
+						pDataStructure->firstDownloadUrl = value["url"].get<std::string>();
+						pDataStructure->songId = value["url"].get<std::string>();
+						pDataStructure->doWeGetSaved = true;
+					}
+				}
+				bool isItFound2{ false };
+				if (!isItFound) {
+					for (auto& value: jsonObjectData["media"]["transcodings"]) {
+						if (value["preset"] == "mp3_0_0") {
+							pDataStructure->firstDownloadUrl = value["url"].get<std::string>();
+							pDataStructure->songId = value["url"].get<std::string>();
+							isItFound2 = true;
+						}
+					}
+				}
+				if (!isItFound2 && !isItFound) {
+					for (auto& value: jsonObjectData["media"]["transcodings"]) {
+						pDataStructure->firstDownloadUrl = value["url"].get<std::string>();
+						pDataStructure->songId = value["url"].get<std::string>();
+					}
+				}
+			}
+
+			if (jsonObjectData.contains("title") && !jsonObjectData["title"].is_null() && !jsonObjectData["title"].is_object()) {
+				std::string newString = jsonObjectData["title"].get<std::string>();
+				if (newString.size() > 256) {
+					newString = newString.substr(0, 256);
+				}
+				pDataStructure->songTitle = utf8MakeValid(newString);
+			}
+
+			if (jsonObjectData.contains("description") && !jsonObjectData["description"].is_null()) {
+				std::string newString = jsonObjectData["description"].get<std::string>();
+				if (newString.size() > 256) {
+					newString = newString.substr(0, 256);
+				}
+				pDataStructure->description = utf8MakeValid(newString);
+				pDataStructure->description += "...";
+			}
+
+			if (jsonObjectData.contains("artwork_url") && !jsonObjectData["artwork_url"].is_null()) {
+				pDataStructure->thumbnailUrl = jsonObjectData["artwork_url"].get<std::string>();
+			} else if (jsonObjectData.contains("user") && !jsonObjectData["user"].is_null()) {
+				if (jsonObjectData["user"].contains("avatar_url") && !jsonObjectData["user"]["avatar_url"].is_null()) {
+					pDataStructure->thumbnailUrl = jsonObjectData["user"]["avatar_url"].get<std::string>();
+				}
+			}
+
+			if (jsonObjectData.contains("duration") && !jsonObjectData["duration"].is_null()) {
+				pDataStructure->duration = TimeStamp::convertMsToDurationString(jsonObjectData["duration"].get<int32_t>());
+			}
+
+			if (jsonObjectData.contains("permalink_url") && !jsonObjectData["permalink_url"].is_null()) {
+				pDataStructure->viewUrl = jsonObjectData["permalink_url"].get<std::string>();
+			}
+		}	
 
 		virtual ~Song() = default;
 
