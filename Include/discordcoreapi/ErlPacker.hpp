@@ -25,7 +25,7 @@
 
 namespace DiscordCoreInternal {
 
-	struct DiscordCoreAPI_Dll ErlPackError : public std::runtime_error {
+	struct ErlPackError : public std::runtime_error {
 	  public:
 		ErlPackError(const std::string& message) : std::runtime_error(message.c_str()){};
 	};

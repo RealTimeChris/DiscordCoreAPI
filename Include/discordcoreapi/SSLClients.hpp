@@ -68,11 +68,11 @@ namespace DiscordCoreInternal {
 	#define SOCKET_ERROR (-1)
 #endif
 
-	struct DiscordCoreAPI_Dll ConnectionError : public std::runtime_error {
+	struct ConnectionError : public std::runtime_error {
 		explicit ConnectionError(const std::string& theString) : std::runtime_error(theString){};
 	};
 
-	struct DiscordCoreAPI_Dll ProcessingError : public std::runtime_error {
+	struct ProcessingError : public std::runtime_error {
 		explicit ProcessingError(const std::string& theString) : std::runtime_error(theString){};
 	};
 
