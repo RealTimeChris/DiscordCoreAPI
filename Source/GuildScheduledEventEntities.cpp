@@ -20,7 +20,6 @@
 /// \file GuildScheduledEventEntities.cpp
 
 #include <discordcoreapi/GuildScheduledEventEntities.hpp>
-#include <discordcoreapi/DataParsingFunctions.hpp>
 #include <discordcoreapi/JSONIfier.hpp>
 #include <discordcoreapi/Https.hpp>
 

@@ -100,7 +100,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// A single GuildMember. \brief A single GuildMember.
-	class DiscordCoreAPI_Dll GuildMember : public virtual GuildMemberData {
+	class DiscordCoreAPI_Dll GuildMember : public GuildMemberDataBase<GuildMember> {
 	  public:
 		TimeStamp communicationDisabledUntil{ "" };///< When the user's timeout will expire and the user will be able to communicate in the guild again.
 		std::string premiumSince{};///< If applicable, when they first boosted the server.
@@ -117,7 +117,7 @@ namespace DiscordCoreAPI {
 		GuildMember() = default;
 
 		GuildMember& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -125,11 +125,11 @@ namespace DiscordCoreAPI {
 			*this = jsonObjectData;
 		}
 
-		void insertUser(UserData* theUser);
+		void insertUser(UserData*);
 
 		~GuildMember() = default;
 
-	  	void parseObjectReal(const nlohmann::json& jsonObjectData, GuildMember* pDataStructure) {
+	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, GuildMember* pDataStructure) {
 			if (jsonObjectData.contains("communication_disabled_until") && !jsonObjectData["communication_disabled_until"].is_null()) {
 				pDataStructure->communicationDisabledUntil = jsonObjectData["communication_disabled_until"];
 			}
@@ -190,14 +190,14 @@ namespace DiscordCoreAPI {
 		}
 	};
 
-	class GuildMemberVector : public DiscordCoreInternal::DataParserTwo<GuildMemberVector> {
+	class GuildMemberVector {
 	  public:
 		std::vector<GuildMember> theGuildMembers{};
 
 		GuildMemberVector() = default;
 
 		GuildMemberVector& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -207,7 +207,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~GuildMemberVector() = default;
 
-		void parseObjectReal(const nlohmann::json& jsonObjectData, GuildMemberVector* pDataStructure) {
+		inline void parseObjectReal(const nlohmann::json& jsonObjectData, GuildMemberVector* pDataStructure) {
 			pDataStructure->theGuildMembers.reserve(jsonObjectData.size());
 			for (auto& value: jsonObjectData) {
 				DiscordCoreAPI::GuildMember newData{ value };
@@ -226,7 +226,6 @@ namespace DiscordCoreAPI {
 	/// An interface class for the GuildMember related Discord endpoints. \brief An interface class for the GuildMember related Discord endpoints.
 	class DiscordCoreAPI_Dll GuildMembers {
 	  public:
-		friend class DiscordCoreInternal::DataParser;
 		friend DiscordCoreClient;
 		friend EventHandler;
 		friend Guild;

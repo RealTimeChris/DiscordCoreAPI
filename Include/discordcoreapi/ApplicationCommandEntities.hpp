@@ -171,7 +171,7 @@ namespace DiscordCoreAPI {
 		ApplicationCommand() = default;
 
 		ApplicationCommand& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -181,7 +181,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~ApplicationCommand() = default;
 
-	  	void parseObjectReal(const nlohmann::json& jsonObjectData, ApplicationCommand* pDataStructure) {
+	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, ApplicationCommand* pDataStructure) {
 			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
 				pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
 			}

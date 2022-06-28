@@ -190,7 +190,7 @@ namespace DiscordCoreAPI {
 		Message() = default;
 
 		Message& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -200,7 +200,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~Message() = default;
 
-	  	void parseObjectReal(const nlohmann::json& jsonObjectData, Message* pDataStructure) {
+	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, Message* pDataStructure) {
 			if (jsonObjectData.contains("content") && !jsonObjectData["content"].is_null()) {
 				pDataStructure->content = jsonObjectData["content"].get<std::string>();
 			}
@@ -376,14 +376,14 @@ namespace DiscordCoreAPI {
 		}
 	};
 
-	class MessageVector : public DiscordCoreInternal::DataParserTwo<MessageVector> {
+	class MessageVector {
 	  public:
 		std::vector<Message> theMessages{};
 
 		MessageVector() = default;
 
 		MessageVector& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -393,7 +393,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~MessageVector() = default;
 
-		void parseObjectReal(const nlohmann::json& jsonObjectData, MessageVector* pDataStructure) {
+		inline void parseObjectReal(const nlohmann::json& jsonObjectData, MessageVector* pDataStructure) {
 			pDataStructure->theMessages.reserve(jsonObjectData.size());
 			for (auto& value: jsonObjectData) {
 				DiscordCoreAPI::Message newData{ value };

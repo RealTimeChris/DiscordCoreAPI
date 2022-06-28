@@ -21,7 +21,6 @@
 
 #pragma once
 
-#include <discordcoreapi/DataParsingFunctions.hpp>
 #include <discordcoreapi/SSLClients.hpp>
 #include <semaphore>
 

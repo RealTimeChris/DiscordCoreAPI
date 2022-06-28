@@ -20,7 +20,6 @@
 /// \file CommandController.cpp
 
 #include <discordcoreapi/CommandController.hpp>
-#include <discordcoreapi/DataParsingFunctions.hpp>
 
 namespace DiscordCoreAPI {
 

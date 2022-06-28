@@ -21,7 +21,6 @@
 
 #include <discordcoreapi/WebHookEntities.hpp>
 #include <discordcoreapi/Https.hpp>
-#include <discordcoreapi/DataParsingFunctions.hpp>
 #include <discordcoreapi/CoRoutine.hpp>
 
 namespace DiscordCoreAPI {

@@ -321,7 +321,7 @@ namespace DiscordCoreAPI {
 		WebHook() = default;
 
 		WebHook& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -331,7 +331,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~WebHook() = default;
 
-	  	void parseObjectReal(const nlohmann::json& jsonObjectData, WebHook* pDataStructure) {
+	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, WebHook* pDataStructure) {
 			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
 				pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
 			}
@@ -382,14 +382,14 @@ namespace DiscordCoreAPI {
 		}
 	};
 
-	class WebHookVector : public DiscordCoreInternal::DataParserTwo<WebHookVector> {
+	class WebHookVector {
 	  public:
 		std::vector<WebHook> theWebHooks{};
 
 		WebHookVector() = default;
 
 		WebHookVector& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -399,7 +399,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~WebHookVector() = default;
 
-		void parseObjectReal(const nlohmann::json& jsonObjectData, WebHookVector* pDataStructure) {
+		inline void parseObjectReal(const nlohmann::json& jsonObjectData, WebHookVector* pDataStructure) {
 			pDataStructure->theWebHooks.reserve(jsonObjectData.size());
 			for (auto& value: jsonObjectData) {
 				DiscordCoreAPI::WebHook newData{ value };

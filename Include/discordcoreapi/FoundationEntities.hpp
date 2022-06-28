@@ -137,17 +137,6 @@ namespace DiscordCoreInternal {
 		Disallowed_Intent = 4014,///< You sent a disallowed intent for a Gateway Intent. You may have tried to specify an intent that you have not enabled or are not approved for.
 	};
 
-	template<typename Type> class DataParserTwo {
-	  public:
-		friend class HttpsClient;
-
-		void parseObject(const nlohmann::json&jsonObjectData, Type* pDataStructure) {
-			static_cast<Type*>(this)->parseObjectReal(jsonObjectData, reinterpret_cast<Type*>(pDataStructure));
-		}
-
-		virtual ~DataParserTwo() = default;
-	};
-
 }// namespace DiscordCoreInternal
 
 /**
@@ -188,10 +177,10 @@ namespace DiscordCoreAPI {
 	class EventManager;
 	class EventHandler;
 	class GuildMembers;
-	class GuildMember;
 	class ChannelData;
 	class InputEvents;
 	class EventWaiter;
+	class Permissions;
 	class SendDMData;
 	class Reactions;
 	class Messages;
@@ -199,8 +188,8 @@ namespace DiscordCoreAPI {
 	class SongAPI;
 	class BotUser;
 	class Guilds;
-	class Roles;
 	class Guild;
+	class Roles;
 	class Test;
 
 	template<typename ReturnType, typename... ArgTypes> class EventDelegate;
@@ -958,92 +947,6 @@ namespace DiscordCoreAPI {
 	/// \returns std::string A string containing the current date-time stamp.
 	DiscordCoreAPI_Dll std::string getTimeAndDate();
 
-	/// Permissions class, for representing and manipulating Permission values. \brief Permissions class, for representing and manipulating Permission values.
-	class DiscordCoreAPI_Dll Permissions : public StringWrapper {
-	  public:
-		Permissions() = default;
-
-		Permissions& operator=(std::string&& other) {
-			if (other.size() == 0) {
-				this->push_back('0');
-			} else {
-				for (auto& value: other) {
-					this->push_back(value);
-				}
-			}
-			other = "";
-			return *this;
-		}
-
-		Permissions(std::string&& permsNew) {
-			*this = std::move(permsNew);
-		}
-
-		Permissions& operator=(std::string& other) {
-			if (other.size() == 0) {
-				this->push_back('0');
-			} else {
-				for (auto& value: other) {
-					this->push_back(value);
-				}
-			}
-			return *this;
-		}
-
-		Permissions(std::string& permsNew) {
-			*this = permsNew;
-		}
-
-		operator const char*() {
-			return this->data();
-		}
-
-		/// Adds one or more Permissions to the current Permissions value. \brief Adds one or more Permissions to the current Permissions value.
-		/// \param permissionsToAdd A std::vector containing the Permissions you wish to add.
-		void addPermissions(const std::vector<Permission>& permissionsToAdd);
-
-		/// Removes one or more Permissions from the current Permissions value. \brief Removes one or more Permissions from the current Permissions value.
-		/// \param permissionsToRemove A std::vector containing the Permissions you wish to remove.
-		void removePermissions(const std::vector<Permission>& permissionsToRemove);
-
-		/// Displays the currently present Permissions in a std::string, and returns a std::vector with each of them stored in std::string format. \brief Displays the currently present Permissions in a std::string, and returns a std::vector with each of them stored in std::string format.
-		/// \returns std::vector A std::vector full of strings of the Permissions that are in the input std::string's value.
-		std::vector<std::string> displayPermissions();
-
-		/// Returns a std::string containing ALL of the possible Permissions. \brief Returns a std::string containing ALL of the possible Permissions.
-		/// \returns std::string A std::string containing all of the possible Permissions.
-		static std::string getAllPermissions();
-
-		/// Returns a std::string containing the currently held Permissions. \brief Returns a std::string containing the currently held Permissions.
-		/// \returns std::string A std::string containing the current Permissions.
-		std::string getCurrentPermissionString();
-
-		/// Returns a std::string containing the currently held Permissions in a given Guild. \brief Returns a std::string containing the currently held Permissions in a given Guild.
-		/// \param guildMember The GuildMember who's Permissions are to be evaluated.
-		/// \returns std::string A std::string containing the current Permissions.
-		static std::string getCurrentGuildPermissions(const GuildMember& guildMember);
-
-		/// Returns a std::string containing all of a given User's Permissions for a given Channel. \brief Returns a std::string containing all of a given User's Permissions for a given Channel.
-		/// \param guildMember The GuildMember who's Permissions to analyze.
-		/// \param channel The Channel withint which to check for Permissions.
-		/// \returns std::string A std::string containing the final Permission's value for a given Channel.
-		static std::string getCurrentChannelPermissions(const GuildMember& guildMember, ChannelData& channel);
-
-		/// Checks for a given Permission in a chosen Channel, for a specific User. \brief Checks for a given Permission in a chosen Channel, for a specific User.
-		/// \param guildMember The GuildMember who to check the Permissions of.
-		/// \param channel The Channel within which to check for the Permission's presence.
-		/// \param permission A Permission to check the current Channel for.
-		/// \returns bool A bool suggesting the presence of the chosen Permission.
-		bool checkForPermission(const GuildMember& guildMember, ChannelData& channel, Permission permission);
-
-	  protected:
-		static std::string computeBasePermissions(const GuildMember& guildMember);
-
-		static std::string computeOverwrites(const std::string& basePermissions, const GuildMember& guildMember, ChannelData& channel);
-
-		static std::string computePermissions(const GuildMember& guildMember, ChannelData& channel);
-	};
-
 	/**@}*/
 
 	/**
@@ -1078,7 +981,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Role tags data. \brief Role tags data.
-	struct DiscordCoreAPI_Dll RoleTagsData : DiscordCoreInternal::DataParserTwo<RoleTagsData> {
+	struct DiscordCoreAPI_Dll RoleTagsData {
 
 		std::string premiumSubscriber{};///< Are they a premium subscriber?
 		std::string integrationId{};///< What is the integration id?
@@ -1087,7 +990,7 @@ namespace DiscordCoreAPI {
 		RoleTagsData() = default;
 
 		RoleTagsData& operator=(const nlohmann ::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -1097,7 +1000,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~RoleTagsData() = default;
 
-		void parseObjectReal(const nlohmann::json& jsonObjectData, RoleTagsData* pDataStructure) {
+		inline void parseObjectReal(const nlohmann::json& jsonObjectData, RoleTagsData* pDataStructure) {
 			if (jsonObjectData.contains("bot_id") && !jsonObjectData["bot_id"].is_null()) {
 				pDataStructure->botId = jsonObjectData["bot_id"].get<std::string>();
 			}
@@ -1107,79 +1010,6 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-	};
-
-	enum class RoleFlags : int8_t { Mentionable = 1 << 0, Managed = 1 << 1, Hoist = 1 << 2 };
-
-	/// Data structure representing a single Role. \brief Data structure representing a single Role.
-	class DiscordCoreAPI_Dll RoleData : public DiscordEntity, public DiscordCoreInternal::DataParserTwo<RoleData> {
-	  public:
-		StringWrapper unicodeEmoji{};///< Emoji representing the Role.
-		Permissions permissions{};///< The Role's base Guild Permissions.
-		int32_t position{ 0 };///< Its position amongst the rest of the Guild's roles.
-		StringWrapper name{};///< The Role's name.
-		int32_t color{ 0 };///< The Role's color.
-		int8_t flags{ 0 };///< Role flags.
-
-		RoleData() = default;
-
-		RoleData& operator=(const nlohmann ::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
-
-		RoleData(const nlohmann ::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
-
-		virtual ~RoleData() = default;
-
-	  	void parseObjectReal(const nlohmann::json& jsonObjectData, RoleData* pDataStructure) {
-			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
-				if (jsonObjectData["id"].is_string()) {
-					pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
-				} else {
-					pDataStructure->id = jsonObjectData["id"].get<int64_t>();
-				}
-			}
-
-			if (jsonObjectData.contains("name") && !jsonObjectData["name"].is_null()) {
-				pDataStructure->name = jsonObjectData["name"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("unicode_emoji") && !jsonObjectData["unicode_emoji"].is_null()) {
-				std::stringstream theStream{};
-				theStream << jsonObjectData["unicode_emoji"] << std::endl;
-				for (auto& value: theStream.str()) {
-					pDataStructure->unicodeEmoji.push_back(value);
-				}
-				pDataStructure->unicodeEmoji = static_cast<std::string>(pDataStructure->unicodeEmoji).substr(1, pDataStructure->unicodeEmoji.size() - 3);
-			}
-
-			if (jsonObjectData.contains("color") && !jsonObjectData["color"].is_null()) {
-				pDataStructure->color = jsonObjectData["color"].get<int32_t>();
-			}
-
-			if (jsonObjectData.contains("hoist") && !jsonObjectData["hoist"].is_null()) {
-				pDataStructure->flags = setBool<int8_t, RoleFlags>(pDataStructure->flags, RoleFlags::Hoist, jsonObjectData["hoist"].get<bool>());
-			}
-
-			if (jsonObjectData.contains("managed") && !jsonObjectData["managed"].is_null()) {
-				pDataStructure->flags = setBool<int8_t, RoleFlags>(pDataStructure->flags, RoleFlags::Managed, jsonObjectData["managed"].get<bool>());
-			}
-
-			if (jsonObjectData.contains("mentionable") && !jsonObjectData["mentionable"].is_null()) {
-				pDataStructure->flags = setBool<int8_t, RoleFlags>(pDataStructure->flags, RoleFlags::Mentionable, jsonObjectData["mentionable"].get<bool>());
-			}
-
-			if (jsonObjectData.contains("position") && !jsonObjectData["position"].is_null()) {
-				pDataStructure->position = jsonObjectData["position"].get<int32_t>();
-			}
-
-			if (jsonObjectData.contains("permissions") && !jsonObjectData["permissions"].is_null()) {
-				pDataStructure->permissions = jsonObjectData["permissions"].get<std::string>();
-			}
-		}
 	};
 
 	/// User flags. \brief User flags.
@@ -1212,7 +1042,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Data structure representing a single User. \brief Data structure representing a single User.
-	class DiscordCoreAPI_Dll UserData : public DiscordEntity, public DiscordCoreInternal::DataParserTwo <UserData> {
+	class DiscordCoreAPI_Dll UserData : public DiscordEntity {
 	  public:
 		StringWrapper discriminator{};///< The user's 4-digit discord-tag	identify.
 		StringWrapper userName{};///< The user's userName, not unique across the platform	identify.
@@ -1222,7 +1052,7 @@ namespace DiscordCoreAPI {
 		UserData() = default;
 
 		UserData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -1232,7 +1062,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~UserData() = default;
 
-	  	void parseObjectReal(const nlohmann::json& jsonObjectData, UserData* pDataStructure) {
+	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, UserData* pDataStructure) {
 			if (jsonObjectData.contains("username") && !jsonObjectData["username"].is_null()) {
 				pDataStructure->userName = jsonObjectData["username"].get<std::string>();
 			}
@@ -1277,7 +1107,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Attachment data. \brief Attachment data.
-	class DiscordCoreAPI_Dll AttachmentData : public DiscordEntity, public DiscordCoreInternal::DataParserTwo<AttachmentData>{
+	class DiscordCoreAPI_Dll AttachmentData : public DiscordEntity {
 	  public:
 		std::string contentType{};///< Type of content for the attachment.
 		std::string description{};///< A description of the attachment.
@@ -1306,7 +1136,7 @@ namespace DiscordCoreAPI {
 		}
 
 		AttachmentData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -1316,7 +1146,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~AttachmentData() = default;
 
-	  	void parseObjectReal(const nlohmann::json& jsonObjectData, AttachmentData* pDataStructure) {
+	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, AttachmentData* pDataStructure) {
 			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
 				pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
 			}
@@ -1368,14 +1198,14 @@ namespace DiscordCoreAPI {
 	
 
 	/// Embed footer data. \brief Embed footer data.
-	struct DiscordCoreAPI_Dll EmbedFooterData : public DiscordCoreInternal::DataParserTwo<EmbedFooterData> {
+	struct DiscordCoreAPI_Dll EmbedFooterData  {
 		std::string proxyIconUrl{};///< Proxy icon url.
 		std::string iconUrl{};///< Icon url.
 		std::string text{};///< Footer text.
 		EmbedFooterData() = default;
 
 		EmbedFooterData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -1385,7 +1215,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~EmbedFooterData() = default;
 
-	  	void parseObjectReal(const nlohmann::json& jsonObjectData, EmbedFooterData* pDataStructure) {
+	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, EmbedFooterData* pDataStructure) {
 			if (jsonObjectData.contains("text") && !jsonObjectData["text"].is_null()) {
 				pDataStructure->text = jsonObjectData["text"].get<std::string>();
 			}
@@ -1401,7 +1231,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Embed image data. \brief Embed image data.
-	struct DiscordCoreAPI_Dll EmbedImageData : public DiscordCoreInternal::DataParserTwo<EmbedImageData> {
+	struct DiscordCoreAPI_Dll EmbedImageData  {
 		std::string proxyUrl{};///< Proxy url.
 		int32_t height{ 0 };///< Image height.
 		int32_t width{ 0 };///< Image width.
@@ -1410,7 +1240,7 @@ namespace DiscordCoreAPI {
 		EmbedImageData() = default;
 
 		EmbedImageData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -1420,7 +1250,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~EmbedImageData() = default;
 
-  		void parseObjectReal(const nlohmann::json& jsonObjectData, EmbedImageData* pDataStructure) {
+  		inline void parseObjectReal(const nlohmann::json& jsonObjectData, EmbedImageData* pDataStructure) {
 			if (jsonObjectData.contains("url") && !jsonObjectData["url"].is_null()) {
 				pDataStructure->url = jsonObjectData["url"].get<std::string>();
 			}
@@ -1440,7 +1270,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Embed thumbnail data. \brief Embed thumbnail data.
-	struct DiscordCoreAPI_Dll EmbedThumbnailData : public DiscordCoreInternal::DataParserTwo<EmbedThumbnailData> {
+	struct DiscordCoreAPI_Dll EmbedThumbnailData  {
 		std::string proxyUrl{};///< Proxy url.
 		int32_t height{ 0 };///< Image height.
 		int32_t width{ 0 };///< Image width.
@@ -1449,7 +1279,7 @@ namespace DiscordCoreAPI {
 		EmbedThumbnailData() = default;
 
 		EmbedThumbnailData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -1459,7 +1289,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~EmbedThumbnailData() = default;
 
-	  	void parseObjectReal(const nlohmann::json& jsonObjectData, EmbedThumbnailData* pDataStructure) {
+	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, EmbedThumbnailData* pDataStructure) {
 			if (jsonObjectData.contains("url") && !jsonObjectData["url"].is_null()) {
 				pDataStructure->url = jsonObjectData["url"].get<std::string>();
 			}
@@ -1479,7 +1309,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Embed video data. \brief Embed video data.
-	struct DiscordCoreAPI_Dll EmbedVideoData : public DiscordCoreInternal::DataParserTwo<EmbedVideoData> {
+	struct DiscordCoreAPI_Dll EmbedVideoData {
 		std::string proxyUrl{};///< Proxy url.
 		int32_t height{ 0 };///< Image height.
 		int32_t width{ 0 };///< Image width.
@@ -1488,7 +1318,7 @@ namespace DiscordCoreAPI {
 		EmbedVideoData() = default;
 
 		EmbedVideoData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -1498,7 +1328,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~EmbedVideoData() = default;
 
-	  	void parseObjectReal(const nlohmann::json& jsonObjectData, EmbedVideoData* pDataStructure) {
+	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, EmbedVideoData* pDataStructure) {
 			if (jsonObjectData.contains("url") && !jsonObjectData["url"].is_null()) {
 				pDataStructure->url = jsonObjectData["url"].get<std::string>();
 			}
@@ -1518,14 +1348,14 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Embed provider data. \brief Embed provider data.
-	struct DiscordCoreAPI_Dll EmbedProviderData : public DiscordCoreInternal::DataParserTwo<EmbedProviderData> {
+	struct DiscordCoreAPI_Dll EmbedProviderData  {
 		std::string name{};///< Name.
 		std::string url{};///< Url.
 
 		EmbedProviderData() = default;
 
 		EmbedProviderData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -1535,7 +1365,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~EmbedProviderData() = default;
 
-	  	void parseObjectReal(const nlohmann::json& jsonObjectData, EmbedProviderData* pDataStructure) {
+	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, EmbedProviderData* pDataStructure) {
 			if (jsonObjectData.contains("url") && !jsonObjectData["url"].is_null()) {
 				pDataStructure->url = jsonObjectData["url"].get<std::string>();
 			}
@@ -1547,7 +1377,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Embed author data. \brief Embed author data.
-	struct DiscordCoreAPI_Dll EmbedAuthorData : public DiscordCoreInternal::DataParserTwo<EmbedAuthorData> {
+	struct DiscordCoreAPI_Dll EmbedAuthorData  {
 		std::string proxyIconUrl{};///< Proxy icon url.
 		std::string iconUrl{};///< Icon url.
 		std::string name{};///< Name.
@@ -1556,7 +1386,7 @@ namespace DiscordCoreAPI {
 		EmbedAuthorData() = default;
 
 		EmbedAuthorData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -1566,7 +1396,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~EmbedAuthorData() = default;
 
-	  	void parseObjectReal(const nlohmann::json& jsonObjectData, EmbedAuthorData* pDataStructure) {
+	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, EmbedAuthorData* pDataStructure) {
 			if (jsonObjectData.contains("url") && !jsonObjectData["url"].is_null()) {
 				pDataStructure->url = jsonObjectData["url"].get<std::string>();
 			}
@@ -1586,7 +1416,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Embed field data. \brief Embed field data.
-	struct DiscordCoreAPI_Dll EmbedFieldData : public DiscordCoreInternal::DataParserTwo<EmbedFieldData> {
+	struct DiscordCoreAPI_Dll EmbedFieldData {
 		bool Inline{ false };///< Is the field inline with the rest of them?
 		std::string value{};///< The text on the field.
 		std::string name{};///< The title of the field.
@@ -1602,7 +1432,7 @@ namespace DiscordCoreAPI {
 		}
 
 		EmbedFieldData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -1612,7 +1442,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~EmbedFieldData() = default;
 
-	  	void parseObjectReal(const nlohmann::json& jsonObjectData, EmbedFieldData* pDataStructure) {
+	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, EmbedFieldData* pDataStructure) {
 			if (jsonObjectData.contains("inline") && !jsonObjectData["inline"].is_null()) {
 				pDataStructure->Inline = jsonObjectData["inline"].get<bool>();
 			}
@@ -1638,7 +1468,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Embed data. \brief Embed data.
-	class DiscordCoreAPI_Dll EmbedData : public DiscordCoreInternal::DataParserTwo<EmbedData> {
+	class DiscordCoreAPI_Dll EmbedData  {
 	  public:
 		std::string hexColorValue{ "000000" };///< Hex color value of the embed.
 		std::vector<EmbedFieldData> fields{};///< Array of embed fields.
@@ -1698,7 +1528,7 @@ namespace DiscordCoreAPI {
 		}
 
 		EmbedData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -1790,7 +1620,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~EmbedData() = default;
 
-	  	void parseObjectReal(const nlohmann::json& jsonObjectData, EmbedData* pDataStructure) {
+	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, EmbedData* pDataStructure) {
 			if (jsonObjectData.contains("title") && !jsonObjectData["title"].is_null()) {
 				pDataStructure->title = jsonObjectData["title"].get<std::string>();
 			}
@@ -1856,7 +1686,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Message reference data.\brief Message reference data.
-	struct DiscordCoreAPI_Dll MessageReferenceData : public DiscordCoreInternal::DataParserTwo<MessageReferenceData>{
+	struct DiscordCoreAPI_Dll MessageReferenceData {
 		bool failIfNotExists{ false };///< Fail if the Message doesn't exist?
 		uint64_t messageId{};///< Id of the Message to reference.
 		uint64_t channelId{};///< Id of the Channel that the referenced Message was sent in.
@@ -1874,7 +1704,7 @@ namespace DiscordCoreAPI {
 		}
 
 		MessageReferenceData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -1884,7 +1714,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~MessageReferenceData() = default;
 
-	  	void parseObjectReal(const nlohmann::json& jsonObjectData, MessageReferenceData* pDataStructure) {
+	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, MessageReferenceData* pDataStructure) {
 			if (jsonObjectData.contains("message_id") && !jsonObjectData["message_id"].is_null()) {
 				pDataStructure->messageId = stoull(jsonObjectData["message_id"].get<std::string>());
 			}
@@ -1911,56 +1741,6 @@ namespace DiscordCoreAPI {
 		std::string data{};///< The data of the file.
 	};
 
-	/// Permission overwrites types. \brief Permission overwrites types.
-	enum class PermissionOverwritesType : int8_t {
-		Role = 0,///< Role.
-		User = 1///< User.
-	};
-
-	/// A Permission overwrite, for a given Channel. \brief A Permission overwrite, for a given Channel.
-	class DiscordCoreAPI_Dll OverWriteData : public DiscordEntity, public DiscordCoreInternal::DataParserTwo<OverWriteData> {
-	  public:
-		PermissionOverwritesType type{};///< Role or User type.
-		uint64_t channelId{};///< Channel id for which Channel this overwrite belongs to.
-		Permissions allow{};///< Collection of Permissions to allow.
-		Permissions deny{};///< Collection of Permissions to deny.
-
-		OverWriteData() = default;
-
-		OverWriteData& operator=(const nlohmann::json&jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
-
-		OverWriteData(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
-
-		virtual ~OverWriteData() = default;
-
-	  	void parseObjectReal(const nlohmann::json& jsonObjectData, OverWriteData* pDataStructure) {
-			if (jsonObjectData.contains("type") && !jsonObjectData["type"].is_null()) {
-				pDataStructure->type = jsonObjectData["type"].get<PermissionOverwritesType>();
-			}
-
-			if (jsonObjectData.contains("allow") && !jsonObjectData["allow"].is_null()) {
-				pDataStructure->allow = jsonObjectData["allow"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("deny") && !jsonObjectData["deny"].is_null()) {
-				pDataStructure->deny = jsonObjectData["deny"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
-				if (jsonObjectData["id"].is_string()) {
-					pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
-				} else {
-					pDataStructure->id = jsonObjectData["id"].get<int64_t>();
-				}
-			}
-		}
-	};
-
 	/// Channel types. \brief Channel types.
 	enum class ChannelType : int8_t {
 		Guild_Text = 0,///< Guild text.
@@ -1979,7 +1759,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Meta data for a Thread type of Channel. \brief Meta data for a Thread type of Channel.
-	struct DiscordCoreAPI_Dll ThreadMetadataData : public DiscordCoreInternal::DataParserTwo<ThreadMetadataData> {
+	struct DiscordCoreAPI_Dll ThreadMetadataData {
 		int32_t autoArchiveDuration{ 0 };///< How int64_t before archiving this Thread.
 		TimeStamp archiveTimestamp{ "" };///< (Where applicable) the time at which this Thread was archived.
 		bool invitable{ false };///< The id of the individual who archived this Thread.
@@ -1989,7 +1769,7 @@ namespace DiscordCoreAPI {
 		ThreadMetadataData() = default;
 
 		ThreadMetadataData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -1999,7 +1779,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~ThreadMetadataData() = default;
 
-		void parseObjectReal(const nlohmann::json& jsonObjectData, ThreadMetadataData* pDataStructure) {
+		inline void parseObjectReal(const nlohmann::json& jsonObjectData, ThreadMetadataData* pDataStructure) {
 
 			if (jsonObjectData.contains("archived") && !jsonObjectData["archived"].is_null()) {
 				pDataStructure->archived = jsonObjectData["archived"].get<bool>();
@@ -2024,7 +1804,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Data for a single member of a Thread. \brief Data for a single member of a Thread.
-	class DiscordCoreAPI_Dll ThreadMemberData : public DiscordEntity, public DiscordCoreInternal::DataParserTwo<ThreadMemberData> {
+	class DiscordCoreAPI_Dll ThreadMemberData : public DiscordEntity {
 	  public:
 		TimeStamp joinTimestamp{ "" };///< The time at which the member joined this Thread.
 		int32_t flags{ 0 };///< Flags.
@@ -2033,7 +1813,7 @@ namespace DiscordCoreAPI {
 		ThreadMemberData() = default;
 
 		ThreadMemberData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -2043,7 +1823,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~ThreadMemberData() = default;
 
-	  	void parseObjectReal(const nlohmann::json& jsonObjectData, ThreadMemberData* pDataStructure) {
+	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, ThreadMemberData* pDataStructure) {
 			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
 				pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
 			}
@@ -2062,14 +1842,14 @@ namespace DiscordCoreAPI {
 		}
 	};
 
-	class ThreadMemberDataVector : public DiscordCoreInternal::DataParserTwo<ThreadMemberDataVector> {
+	class ThreadMemberDataVector  {
 	  public:
 		std::vector<ThreadMemberData> theThreadMemberDatas{};
 
 		ThreadMemberDataVector() = default;
 
 		ThreadMemberDataVector& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -2079,7 +1859,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~ThreadMemberDataVector() = default;
 
-		void parseObjectReal(const nlohmann::json& jsonObjectData, ThreadMemberDataVector* pDataStructure) {
+		inline void parseObjectReal(const nlohmann::json& jsonObjectData, ThreadMemberDataVector* pDataStructure) {
 			pDataStructure->theThreadMemberDatas.reserve(jsonObjectData.size());
 			for (auto& value: jsonObjectData) {
 				DiscordCoreAPI::ThreadMemberData newData{ value };
@@ -2104,10 +1884,369 @@ namespace DiscordCoreAPI {
 		Longest = 10080///< Longest.
 	};
 
+	enum class GuildMemberFlags : int8_t { Pending = 1 << 0, Deaf = 1 << 1, Mute = 1 << 2 };
+
+	struct GuildMemberId {
+		GuildMemberId() = default;
+		uint64_t guildMemberId{};
+		uint64_t guildId{};
+	};
+
+	inline bool operator==(const GuildMemberId lhs, const GuildMemberId rhs) {
+		if (lhs.guildMemberId == rhs.guildMemberId && lhs.guildId == rhs.guildId) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	inline bool operator<(const GuildMemberId& lhs, const GuildMemberId& rhs) {
+		if ((lhs.guildId + lhs.guildMemberId) < (rhs.guildId + rhs.guildMemberId)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	class GuildMember;
+	/// Permissions class, for representing and manipulating Permission values. \brief Permissions class, for representing and manipulating Permission values.
+	class DiscordCoreAPI_Dll Permissions : public StringWrapper {
+	  public:
+		Permissions() = default;
+
+		Permissions& operator=(std::string&& other) {
+			if (other.size() == 0) {
+				this->push_back('0');
+			} else {
+				for (auto& value: other) {
+					this->push_back(value);
+				}
+			}
+			other = "";
+			return *this;
+		}
+
+		Permissions(std::string&& permsNew) {
+			*this = std::move(permsNew);
+		}
+
+		Permissions& operator=(std::string& other) {
+			if (other.size() == 0) {
+				this->push_back('0');
+			} else {
+				for (auto& value: other) {
+					this->push_back(value);
+				}
+			}
+			return *this;
+		}
+
+		Permissions(std::string& permsNew) {
+			*this = permsNew;
+		}
+
+		operator const char*() {
+			return this->data();
+		}
+
+		/// Adds one or more Permissions to the current Permissions value. \brief Adds one or more Permissions to the current Permissions value.
+		/// \param permissionsToAdd A std::vector containing the Permissions you wish to add.
+		void addPermissions(const std::vector<Permission>& permissionsToAdd);
+
+		/// Removes one or more Permissions from the current Permissions value. \brief Removes one or more Permissions from the current Permissions value.
+		/// \param permissionsToRemove A std::vector containing the Permissions you wish to remove.
+		void removePermissions(const std::vector<Permission>& permissionsToRemove);
+
+		/// Displays the currently present Permissions in a std::string, and returns a std::vector with each of them stored in std::string format. \brief Displays the currently present Permissions in a std::string, and returns a std::vector with each of them stored in std::string format.
+		/// \returns std::vector A std::vector full of strings of the Permissions that are in the input std::string's value.
+		std::vector<std::string> displayPermissions();
+
+		/// Returns a std::string containing ALL of the possible Permissions. \brief Returns a std::string containing ALL of the possible Permissions.
+		/// \returns std::string A std::string containing all of the possible Permissions.
+		static std::string getAllPermissions();
+
+		/// Returns a std::string containing the currently held Permissions. \brief Returns a std::string containing the currently held Permissions.
+		/// \returns std::string A std::string containing the current Permissions.
+		std::string getCurrentPermissionString();
+
+		/// Returns a std::string containing the currently held Permissions in a given Guild. \brief Returns a std::string containing the currently held Permissions in a given Guild.
+		/// \param guildMember The GuildMember who's Permissions are to be evaluated.
+		/// \returns std::string A std::string containing the current Permissions.
+		static std::string getCurrentGuildPermissions(const GuildMember& guildMember);
+
+		/// Returns a std::string containing all of a given User's Permissions for a given Channel. \brief Returns a std::string containing all of a given User's Permissions for a given Channel.
+		/// \param guildMember The GuildMember who's Permissions to analyze.
+		/// \param channel The Channel withint which to check for Permissions.
+		/// \returns std::string A std::string containing the final Permission's value for a given Channel.
+		static std::string getCurrentChannelPermissions(const GuildMember& guildMember, ChannelData& channel);
+
+		/// Checks for a given Permission in a chosen Channel, for a specific User. \brief Checks for a given Permission in a chosen Channel, for a specific User.
+		/// \param guildMember The GuildMember who to check the Permissions of.
+		/// \param channel The Channel within which to check for the Permission's presence.
+		/// \param permission A Permission to check the current Channel for.
+		/// \returns bool A bool suggesting the presence of the chosen Permission.
+		bool checkForPermission(const GuildMember& guildMember, ChannelData& channel, Permission permission);
+
+	  protected:
+		static std::string computeBasePermissions(const GuildMember& guildMember);
+
+		static std::string computeOverwrites(const std::string& basePermissions, const GuildMember& guildMember, ChannelData& channel);
+
+		static std::string computePermissions(const GuildMember& guildMember, ChannelData& channel);
+	};
+
+	template<typename GuildMemberDerivedMock> class GuildMemberDataMock :public DiscordEntity{ 
+	    public:
+		GuildMemberDataMock() = default;
+
+		void theFunction() {
+			guildMemberDerivedMock().testFunction();
+		}
+
+		protected:
+		auto guildMemberDerivedMock() noexcept -> GuildMemberDerivedMock& {
+			  return *static_cast<GuildMemberDerivedMock*>(this);
+		}
+		auto guildMemberDerivedMock() const noexcept -> GuildMemberDerivedMock  const& {
+			return *static_cast<GuildMemberDerivedMock const*>(this);
+		}
+
+
+	};
+
+	class GuildMemberMock :public GuildMemberDataMock<GuildMemberMock>{
+	  public:
+		void testFunction() {
+			std::cout << "WERE HERE THIS SI TI!" << std::endl;
+		}
+	};
+
+	/// Data structure representing a single GuildMember. \brief Data structure representing a single GuildMember.
+	/// Data structure representing a single Guild. \brief Data structure representing a single Guild.
+	template<typename GuildMemberDerived> class GuildMemberDataBase : public DiscordEntity {
+	  public:
+		std::vector<uint64_t> roles{};///< The Guild roles that they have.
+		Permissions permissions{};///< Their base-level Permissions in the Guild.
+		TimeStamp joinedAt{ "" };///< When they joined the Guild.
+		StringWrapper userAvatar{};///< This GuildMember's User Avatar.
+		StringWrapper userName{};///< This GuildMember's UserName.
+		uint64_t guildId{};///< The current Guild's id.
+		StringWrapper nick{};///< Their nick/display name.
+		int8_t flags{ 0 };///< GuildMember flags.
+
+		GuildMemberDataBase() = default;
+
+		GuildMemberDataBase<GuildMemberDerived>& operator=(const nlohmann::json& jsonObjectData) {
+			this->parseObjectReal(jsonObjectData, this);
+			return *this;
+		}
+
+		GuildMemberDataBase(const nlohmann::json& jsonObjectData) {
+			*this = jsonObjectData;
+		}
+
+		void insertUserReal(UserData* theUser) {
+			//guildMemberDerived().insertUser(theUser);
+		}
+
+		virtual ~GuildMemberDataBase() = default;
+
+	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, GuildMemberDataBase<GuildMemberDerived>* pDataStructure) {
+			if (jsonObjectData.contains("roles") && !jsonObjectData["roles"].is_null()) {
+				for (auto& value: jsonObjectData["roles"].get<std::vector<std::string>>()) {
+					pDataStructure->roles.push_back(stoull(value));
+				}
+			}
+
+			if (jsonObjectData.contains("permissions") && !jsonObjectData["permissions"].is_null()) {
+				pDataStructure->permissions = jsonObjectData["permissions"].get<std::string>();
+			}
+
+			if (jsonObjectData.contains("joined_at") && !jsonObjectData["joined_at"].is_null()) {
+				pDataStructure->joinedAt = jsonObjectData["joined_at"].get<std::string>();
+			}
+
+			if (jsonObjectData.contains("guild_id") && !jsonObjectData["guild_id"].is_null()) {
+				pDataStructure->guildId = stoull(jsonObjectData["guild_id"].get<std::string>());
+			}
+
+			if (jsonObjectData.contains("nick") && !jsonObjectData["nick"].is_null()) {
+				pDataStructure->nick = jsonObjectData["nick"].get<std::string>();
+			}
+
+			if (jsonObjectData.contains("user") && !jsonObjectData["user"].is_null()) {
+				UserData theUser{ jsonObjectData["user"] };
+				this->insertUserReal(&theUser);
+				pDataStructure->id = theUser.id;
+				pDataStructure->userAvatar = theUser.avatar;
+				pDataStructure->userName = theUser.userName;
+			}
+
+			if (jsonObjectData.contains("flags") && !jsonObjectData["flags"].is_null()) {
+				pDataStructure->flags = jsonObjectData["flags"].get<int8_t>();
+			}
+
+			if (jsonObjectData.contains("pending") && !jsonObjectData["pending"].is_null()) {
+				pDataStructure->flags = setBool<int8_t, GuildMemberFlags>(pDataStructure->flags, GuildMemberFlags::Pending, jsonObjectData["pending"].get<bool>());
+			}
+
+			if (jsonObjectData.contains("mute") && !jsonObjectData["mute"].is_null()) {
+				pDataStructure->flags = setBool<int8_t, GuildMemberFlags>(pDataStructure->flags, GuildMemberFlags::Mute, jsonObjectData["mute"].get<bool>());
+			}
+
+			if (jsonObjectData.contains("deaf") && !jsonObjectData["deaf"].is_null()) {
+				pDataStructure->flags = setBool<int8_t, GuildMemberFlags>(pDataStructure->flags, GuildMemberFlags::Deaf, jsonObjectData["deaf"].get<bool>());
+			}
+		}
+	  protected:
+		auto guildMemberDerived() noexcept -> GuildMemberDerived& {
+			return *static_cast<GuildMemberDerived*>(this);
+		}
+		auto guildMemberDerived() const noexcept -> GuildMemberDerived const& {
+			return *static_cast<GuildMemberDerived const*>(this);
+		}
+	};
+
+	using GuildMemberData = GuildMemberDataBase<GuildMember>;
+
+	/// Voice state data. \brief Voice state data.
+	struct DiscordCoreAPI_Dll VoiceStateData {
+		TimeStamp requestToSpeakTimestamp{ "" };///< The time at which the User requested to speak.
+		GuildMemberData member{};///< The Guild member id this voice state is for.
+		StringWrapper sessionId{};///< The session id for this voice state.
+		bool selfStream{ false };///< Whether this User is streaming using "Go Live".
+		bool selfVideo{ false };///< Whether this User's camera is enabled.
+		bool selfDeaf{ false };///< Whether this User is locally deafened.
+		bool selfMute{ false };///< Whether this User is locally muted.
+		bool suppress{ false };///< Whether this User is muted by the current User.
+		uint64_t channelId{};///< The Channel id this User is connected to.
+		bool deaf{ false };///< Whether this User is deafened by the server.
+		bool mute{ false };///< Whether this User is muted by the server.
+		uint64_t guildId{};///< The Guild id this voice state is for.
+		uint64_t userId{};///< The User id this voice state is for.
+
+		VoiceStateData() = default;
+
+		VoiceStateData& operator=(const nlohmann::json& jsonObjectData) {
+			this->parseObjectReal(jsonObjectData, this);
+			return *this;
+		}
+
+		VoiceStateData(const nlohmann::json& jsonObjectData) {
+			*this = jsonObjectData;
+		}
+
+		virtual ~VoiceStateData() = default;
+
+	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, VoiceStateData* pDataStructure) {
+			if (jsonObjectData.contains("guild_id") && !jsonObjectData["guild_id"].is_null()) {
+				pDataStructure->guildId = stoull(jsonObjectData["guild_id"].get<std::string>());
+			}
+
+			if (jsonObjectData.contains("channel_id") && !jsonObjectData["channel_id"].is_null()) {
+				pDataStructure->channelId = stoull(jsonObjectData["channel_id"].get<std::string>());
+			}
+
+			if (jsonObjectData.contains("user_id") && !jsonObjectData["user_id"].is_null()) {
+				pDataStructure->userId = stoull(jsonObjectData["user_id"].get<std::string>());
+			}
+
+			if (jsonObjectData.contains("member") && !jsonObjectData["member"].is_null()) {
+				pDataStructure->member = jsonObjectData["member"];
+			}
+
+			if (jsonObjectData.contains("session_id") && !jsonObjectData["session_id"].is_null()) {
+				pDataStructure->sessionId = jsonObjectData["session_id"].get<std::string>();
+			}
+
+			if (jsonObjectData.contains("deaf") && !jsonObjectData["deaf"].is_null()) {
+				pDataStructure->deaf = jsonObjectData["deaf"].get<bool>();
+			}
+
+			if (jsonObjectData.contains("mute") && !jsonObjectData["mute"].is_null()) {
+				pDataStructure->mute = jsonObjectData["mute"].get<bool>();
+			}
+
+			if (jsonObjectData.contains("self_deaf") && !jsonObjectData["self_deaf"].is_null()) {
+				pDataStructure->selfDeaf = jsonObjectData["self_deaf"].get<bool>();
+			}
+
+			if (jsonObjectData.contains("self_mute") && !jsonObjectData["self_mute"].is_null()) {
+				pDataStructure->selfMute = jsonObjectData["self_mute"].get<bool>();
+			}
+
+			if (jsonObjectData.contains("self_stream") && !jsonObjectData["self_stream"].is_null()) {
+				pDataStructure->selfStream = jsonObjectData["self_stream"].get<bool>();
+			}
+
+			if (jsonObjectData.contains("self_video") && !jsonObjectData["self_video"].is_null()) {
+				pDataStructure->selfVideo = jsonObjectData["self_video"].get<bool>();
+			}
+
+			if (jsonObjectData.contains("suppress") && !jsonObjectData["suppress"].is_null()) {
+				pDataStructure->suppress = jsonObjectData["suppress"].get<bool>();
+			}
+
+			if (jsonObjectData.contains("request_to_speak_timestamp") && !jsonObjectData["request_to_speak_timestamp"].is_null()) {
+				pDataStructure->requestToSpeakTimestamp = jsonObjectData["request_to_speak_timestamp"].get<std::string>();
+			}
+		}
+	};
+
+	/// Permission overwrites types. \brief Permission overwrites types.
+	enum class PermissionOverwritesType : int8_t {
+		Role = 0,///< Role.
+		User = 1///< User.
+	};
+
+	/// A Permission overwrite, for a given Channel. \brief A Permission overwrite, for a given Channel.
+	class DiscordCoreAPI_Dll OverWriteData : public DiscordEntity {
+	  public:
+		PermissionOverwritesType type{};///< Role or User type.
+		uint64_t channelId{};///< Channel id for which Channel this overwrite belongs to.
+		Permissions allow{};///< Collection of Permissions to allow.
+		Permissions deny{};///< Collection of Permissions to deny.
+
+		OverWriteData() = default;
+
+		OverWriteData& operator=(const nlohmann::json& jsonObjectData) {
+			this->parseObjectReal(jsonObjectData, this);
+			return *this;
+		}
+
+		OverWriteData(const nlohmann::json& jsonObjectData) {
+			*this = jsonObjectData;
+		}
+
+		virtual ~OverWriteData() = default;
+
+		inline void parseObjectReal(const nlohmann::json& jsonObjectData, OverWriteData* pDataStructure) {
+			if (jsonObjectData.contains("type") && !jsonObjectData["type"].is_null()) {
+				pDataStructure->type = jsonObjectData["type"].get<PermissionOverwritesType>();
+			}
+
+			if (jsonObjectData.contains("allow") && !jsonObjectData["allow"].is_null()) {
+				pDataStructure->allow = jsonObjectData["allow"].get<std::string>();
+			}
+
+			if (jsonObjectData.contains("deny") && !jsonObjectData["deny"].is_null()) {
+				pDataStructure->deny = jsonObjectData["deny"].get<std::string>();
+			}
+
+			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
+				if (jsonObjectData["id"].is_string()) {
+					pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
+				} else {
+					pDataStructure->id = jsonObjectData["id"].get<int64_t>();
+				}
+			}
+		}
+	};
+
 	enum class ChannelFlags : int8_t { NSFW = 1 << 0 };
 
 	/// Data structure representing a single Channel. \brief Data structure representing a single Channel.
-	class DiscordCoreAPI_Dll ChannelData : public DiscordEntity, public DiscordCoreInternal::DataParserTwo<ChannelData> {
+	class DiscordCoreAPI_Dll ChannelData : public DiscordEntity { 
 	  public:
 		std::unordered_map<uint64_t, OverWriteData> permissionOverwrites{};///< Permission overwrites for the given Channel.
 		ChannelType type{ ChannelType::Dm };///< The type of the Channel.
@@ -2122,7 +2261,7 @@ namespace DiscordCoreAPI {
 		ChannelData() = default;
 
 		ChannelData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -2132,7 +2271,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~ChannelData() = default;
 
-	  	void parseObjectReal(const nlohmann::json& jsonObjectData, ChannelData* pDataStructure) {
+		inline void parseObjectReal(const nlohmann::json& jsonObjectData, ChannelData* pDataStructure) {
 			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
 				if (jsonObjectData["id"].is_string()) {
 					pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
@@ -2188,196 +2327,9 @@ namespace DiscordCoreAPI {
 		}
 	};
 
-	enum class GuildMemberFlags : int8_t { Pending = 1 << 0, Deaf = 1 << 1, Mute = 1 << 2 };
-
-	struct GuildMemberId {
-		GuildMemberId() = default;
-		uint64_t guildMemberId{};
-		uint64_t guildId{};
-	};
-
-	inline bool operator==(const GuildMemberId lhs, const GuildMemberId rhs) {
-		if (lhs.guildMemberId == rhs.guildMemberId && lhs.guildId == rhs.guildId) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	inline bool operator<(const GuildMemberId& lhs, const GuildMemberId& rhs) {
-		if ((lhs.guildId + lhs.guildMemberId) < (rhs.guildId + rhs.guildMemberId)) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-	/// Data structure representing a single GuildMember. \brief Data structure representing a single GuildMember.
-	template<typename GuildMemberDerived>
-	struct GuildMemberDataBase : public DiscordEntity, public DiscordCoreInternal::DataParserTwo<GuildMemberDataBase<GuildMemberDerived>> {
-	  public:
-		std::vector<uint64_t> roles{};///< The Guild roles that they have.
-		Permissions permissions{};///< Their base-level Permissions in the Guild.
-		TimeStamp joinedAt{ "" };///< When they joined the Guild.
-		StringWrapper userAvatar{};///< This GuildMember's User Avatar.
-		StringWrapper userName{};///< This GuildMember's UserName.
-		uint64_t guildId{};///< The current Guild's id.
-		StringWrapper nick{};///< Their nick/display name.
-		int8_t flags{ 0 };///< GuildMember flags.
-
-		GuildMemberDataBase() = default;
-
-		GuildMemberDataBase<GuildMemberDerived>& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
-
-		void insertUser(UserData* theUser) {
-			this->insertUser(theUser);
-		}
-
-		GuildMemberDataBase(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
-
-		virtual ~GuildMemberDataBase() = default;
-
-	  	void parseObjectReal(const nlohmann::json& jsonObjectData, GuildMemberDataBase<GuildMemberDerived>* pDataStructure) {
-			if (jsonObjectData.contains("roles") && !jsonObjectData["roles"].is_null()) {
-				for (auto& value: jsonObjectData["roles"].get<std::vector<std::string>>()) {
-					pDataStructure->roles.push_back(stoull(value));
-				}
-			}
-
-			if (jsonObjectData.contains("permissions") && !jsonObjectData["permissions"].is_null()) {
-				pDataStructure->permissions = jsonObjectData["permissions"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("joined_at") && !jsonObjectData["joined_at"].is_null()) {
-				pDataStructure->joinedAt = jsonObjectData["joined_at"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("guild_id") && !jsonObjectData["guild_id"].is_null()) {
-				pDataStructure->guildId = stoull(jsonObjectData["guild_id"].get<std::string>());
-			}
-
-			if (jsonObjectData.contains("nick") && !jsonObjectData["nick"].is_null()) {
-				pDataStructure->nick = jsonObjectData["nick"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("user") && !jsonObjectData["user"].is_null()) {
-				UserData theUser{ jsonObjectData["user"] };
-				this->insertUser(&theUser);
-				pDataStructure->id = theUser.id;
-				pDataStructure->userAvatar = theUser.avatar;
-				pDataStructure->userName = theUser.userName;
-			}
-
-			if (jsonObjectData.contains("flags") && !jsonObjectData["flags"].is_null()) {
-				pDataStructure->flags = jsonObjectData["flags"].get<int8_t>();
-			}
-
-			if (jsonObjectData.contains("pending") && !jsonObjectData["pending"].is_null()) {
-				pDataStructure->flags = setBool<int8_t, GuildMemberFlags>(pDataStructure->flags, GuildMemberFlags::Pending, jsonObjectData["pending"].get<bool>());
-			}
-
-			if (jsonObjectData.contains("mute") && !jsonObjectData["mute"].is_null()) {
-				pDataStructure->flags = setBool<int8_t, GuildMemberFlags>(pDataStructure->flags, GuildMemberFlags::Mute, jsonObjectData["mute"].get<bool>());
-			}
-
-			if (jsonObjectData.contains("deaf") && !jsonObjectData["deaf"].is_null()) {
-				pDataStructure->flags = setBool<int8_t, GuildMemberFlags>(pDataStructure->flags, GuildMemberFlags::Deaf, jsonObjectData["deaf"].get<bool>());
-			}
-		}
-	};
-
-	using GuildMemberData = GuildMemberDataBase<GuildMember>;
-
-	/// Voice state data. \brief Voice state data.
-	struct DiscordCoreAPI_Dll VoiceStateData : public DiscordCoreInternal::DataParserTwo<VoiceStateData> {
-		TimeStamp requestToSpeakTimestamp{ "" };///< The time at which the User requested to speak.
-		bool selfStream{ false };///< Whether this User is streaming using "Go Live".
-		GuildMemberData member{};///< The Guild member id this voice state is for.
-		StringWrapper sessionId{};///< The session id for this voice state.
-		bool selfVideo{ false };///< Whether this User's camera is enabled.
-		bool selfDeaf{ false };///< Whether this User is locally deafened.
-		bool selfMute{ false };///< Whether this User is locally muted.
-		bool suppress{ false };///< Whether this User is muted by the current User.
-		uint64_t channelId{};///< The Channel id this User is connected to.
-		bool deaf{ false };///< Whether this User is deafened by the server.
-		bool mute{ false };///< Whether this User is muted by the server.
-		uint64_t guildId{};///< The Guild id this voice state is for.
-		uint64_t userId{};///< The User id this voice state is for.
-
-		VoiceStateData() = default;
-
-		VoiceStateData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
-
-		VoiceStateData(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
-
-		virtual ~VoiceStateData() = default;
-
-	  	void parseObjectReal(const nlohmann::json& jsonObjectData, VoiceStateData* pDataStructure) {
-			if (jsonObjectData.contains("guild_id") && !jsonObjectData["guild_id"].is_null()) {
-				pDataStructure->guildId = stoull(jsonObjectData["guild_id"].get<std::string>());
-			}
-
-			if (jsonObjectData.contains("channel_id") && !jsonObjectData["channel_id"].is_null()) {
-				pDataStructure->channelId = stoull(jsonObjectData["channel_id"].get<std::string>());
-			}
-
-			if (jsonObjectData.contains("user_id") && !jsonObjectData["user_id"].is_null()) {
-				pDataStructure->userId = stoull(jsonObjectData["user_id"].get<std::string>());
-			}
-
-			if (jsonObjectData.contains("member") && !jsonObjectData["member"].is_null()) {
-				pDataStructure->member = jsonObjectData["member"];
-			}
-
-			if (jsonObjectData.contains("session_id") && !jsonObjectData["session_id"].is_null()) {
-				pDataStructure->sessionId = jsonObjectData["session_id"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("deaf") && !jsonObjectData["deaf"].is_null()) {
-				pDataStructure->deaf = jsonObjectData["deaf"].get<bool>();
-			}
-
-			if (jsonObjectData.contains("mute") && !jsonObjectData["mute"].is_null()) {
-				pDataStructure->mute = jsonObjectData["mute"].get<bool>();
-			}
-
-			if (jsonObjectData.contains("self_deaf") && !jsonObjectData["self_deaf"].is_null()) {
-				pDataStructure->selfDeaf = jsonObjectData["self_deaf"].get<bool>();
-			}
-
-			if (jsonObjectData.contains("self_mute") && !jsonObjectData["self_mute"].is_null()) {
-				pDataStructure->selfMute = jsonObjectData["self_mute"].get<bool>();
-			}
-
-			if (jsonObjectData.contains("self_stream") && !jsonObjectData["self_stream"].is_null()) {
-				pDataStructure->selfStream = jsonObjectData["self_stream"].get<bool>();
-			}
-
-			if (jsonObjectData.contains("self_video") && !jsonObjectData["self_video"].is_null()) {
-				pDataStructure->selfVideo = jsonObjectData["self_video"].get<bool>();
-			}
-
-			if (jsonObjectData.contains("suppress") && !jsonObjectData["suppress"].is_null()) {
-				pDataStructure->suppress = jsonObjectData["suppress"].get<bool>();
-			}
-
-			if (jsonObjectData.contains("request_to_speak_timestamp") && !jsonObjectData["request_to_speak_timestamp"].is_null()) {
-				pDataStructure->requestToSpeakTimestamp = jsonObjectData["request_to_speak_timestamp"].get<std::string>();
-			}
-		}
-	};
 
 	/// Data representing an active Thread. \brief Data representing an active Thread.
-	struct DiscordCoreAPI_Dll ActiveThreadsData : public DiscordCoreInternal::DataParserTwo<ActiveThreadsData> {
+	struct DiscordCoreAPI_Dll ActiveThreadsData {
 		std::vector<ThreadMemberData> members{};
 		std::vector<ChannelData> threads{};
 		bool hasMore{ false };
@@ -2385,7 +2337,7 @@ namespace DiscordCoreAPI {
 		ActiveThreadsData() = default;
 
 		ActiveThreadsData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -2395,7 +2347,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~ActiveThreadsData() = default;
 
-		void parseObjectReal(const nlohmann::json& jsonObjectData, ActiveThreadsData* pDataStructure) {
+		inline void parseObjectReal(const nlohmann::json& jsonObjectData, ActiveThreadsData* pDataStructure) {
 			if (jsonObjectData.contains("threads") && !jsonObjectData["threads"].is_null()) {
 				pDataStructure->threads.clear();
 				pDataStructure->threads.reserve(jsonObjectData["threads"].size());
@@ -2423,7 +2375,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Data representing an archived Thread. \brief Data representing an archived Thread.
-	struct DiscordCoreAPI_Dll ArchivedThreadsData : public DiscordCoreInternal::DataParserTwo<ArchivedThreadsData> {
+	struct DiscordCoreAPI_Dll ArchivedThreadsData {
 		std::vector<ThreadMemberData> members{};
 		std::vector<ChannelData> threads{};
 		bool hasMore{ false };
@@ -2431,7 +2383,7 @@ namespace DiscordCoreAPI {
 		ArchivedThreadsData() = default;
 
 		ArchivedThreadsData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -2441,7 +2393,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~ArchivedThreadsData() = default;
 
-		void parseObjectReal(const nlohmann::json& jsonObjectData, ArchivedThreadsData* pDataStructure) {
+		inline void parseObjectReal(const nlohmann::json& jsonObjectData, ArchivedThreadsData* pDataStructure) {
 			if (jsonObjectData.contains("threads") && !jsonObjectData["threads"].is_null()) {
 				pDataStructure->threads.clear();
 				pDataStructure->threads.reserve(jsonObjectData["threads"].size());
@@ -2464,6 +2416,79 @@ namespace DiscordCoreAPI {
 
 			if (jsonObjectData.contains("has_more") && !jsonObjectData["has_more"].is_null()) {
 				pDataStructure->hasMore = jsonObjectData["has_more"].get<bool>();
+			}
+		}
+	};
+
+	enum class RoleFlags : int8_t { Mentionable = 1 << 0, Managed = 1 << 1, Hoist = 1 << 2 };
+
+	/// Data structure representing a single Role. \brief Data structure representing a single Role.
+	class DiscordCoreAPI_Dll RoleData : public DiscordEntity {
+	  public:
+		StringWrapper unicodeEmoji{};///< Emoji representing the Role.
+		Permissions permissions{};///< The Role's base Guild Permissions.
+		int32_t position{ 0 };///< Its position amongst the rest of the Guild's roles.
+		StringWrapper name{};///< The Role's name.
+		int32_t color{ 0 };///< The Role's color.
+		int8_t flags{ 0 };///< Role flags.
+
+		RoleData() = default;
+
+		RoleData& operator=(const nlohmann ::json& jsonObjectData) {
+			this->parseObjectReal(jsonObjectData, this);
+			return *this;
+		}
+
+		RoleData(const nlohmann ::json& jsonObjectData) {
+			*this = jsonObjectData;
+		}
+
+		virtual ~RoleData() = default;
+
+		inline void parseObjectReal(const nlohmann::json& jsonObjectData, RoleData* pDataStructure) {
+			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
+				if (jsonObjectData["id"].is_string()) {
+					pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
+				} else {
+					pDataStructure->id = jsonObjectData["id"].get<int64_t>();
+				}
+			}
+
+			if (jsonObjectData.contains("name") && !jsonObjectData["name"].is_null()) {
+				pDataStructure->name = jsonObjectData["name"].get<std::string>();
+			}
+
+			if (jsonObjectData.contains("unicode_emoji") && !jsonObjectData["unicode_emoji"].is_null()) {
+				std::stringstream theStream{};
+				theStream << jsonObjectData["unicode_emoji"] << std::endl;
+				for (auto& value: theStream.str()) {
+					pDataStructure->unicodeEmoji.push_back(value);
+				}
+				pDataStructure->unicodeEmoji = static_cast<std::string>(pDataStructure->unicodeEmoji).substr(1, pDataStructure->unicodeEmoji.size() - 3);
+			}
+
+			if (jsonObjectData.contains("color") && !jsonObjectData["color"].is_null()) {
+				pDataStructure->color = jsonObjectData["color"].get<int32_t>();
+			}
+
+			if (jsonObjectData.contains("hoist") && !jsonObjectData["hoist"].is_null()) {
+				pDataStructure->flags = setBool<int8_t, RoleFlags>(pDataStructure->flags, RoleFlags::Hoist, jsonObjectData["hoist"].get<bool>());
+			}
+
+			if (jsonObjectData.contains("managed") && !jsonObjectData["managed"].is_null()) {
+				pDataStructure->flags = setBool<int8_t, RoleFlags>(pDataStructure->flags, RoleFlags::Managed, jsonObjectData["managed"].get<bool>());
+			}
+
+			if (jsonObjectData.contains("mentionable") && !jsonObjectData["mentionable"].is_null()) {
+				pDataStructure->flags = setBool<int8_t, RoleFlags>(pDataStructure->flags, RoleFlags::Mentionable, jsonObjectData["mentionable"].get<bool>());
+			}
+
+			if (jsonObjectData.contains("position") && !jsonObjectData["position"].is_null()) {
+				pDataStructure->position = jsonObjectData["position"].get<int32_t>();
+			}
+
+			if (jsonObjectData.contains("permissions") && !jsonObjectData["permissions"].is_null()) {
+				pDataStructure->permissions = jsonObjectData["permissions"].get<std::string>();
 			}
 		}
 	};
@@ -2518,14 +2543,14 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Action metadata for auto-moderation-rules. \brief Action metadata for auto-moderation-rules.
-	struct ActionMetaData : public DiscordCoreInternal::DataParserTwo<ActionMetaData> {
+	struct ActionMetaData {
 		uint64_t channelId{};///< Channel to which user content should be logged.
 		int64_t durationSeconds{};///< Timeout duration in seconds.
 
 		ActionMetaData() = default;
 
 		ActionMetaData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -2535,7 +2560,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~ActionMetaData() = default;
 
-	  	void parseObjectReal(const nlohmann::json& jsonObjectData, ActionMetaData* pDataStructure) {
+	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, ActionMetaData* pDataStructure) {
 			if (jsonObjectData.contains("channel_id") && !jsonObjectData["channel_id"].is_null()) {
 				pDataStructure->channelId = stoull(jsonObjectData["channel_id"].get<std::string>());
 			}
@@ -2547,14 +2572,14 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Trigger metadata for auto-moderation-rules. \brief Trigger metadata for auto-moderation-rules.
-	struct TriggerMetaData : public DiscordCoreInternal::DataParserTwo<TriggerMetaData> {
+	struct TriggerMetaData {
 		std::vector<std::string> keywordFilter{};///< Substrings which will be searched for in content.
 		std::vector<KeywordPresetType> presets{};///< The internally pre-defined wordsets which will be searched for in content.
 
 		TriggerMetaData() = default;
 
 		TriggerMetaData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -2564,7 +2589,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~TriggerMetaData() = default;
 
-	  	void parseObjectReal(const nlohmann::json& jsonObjectData, TriggerMetaData* pDataStructure) {
+	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, TriggerMetaData* pDataStructure) {
 			if (jsonObjectData.contains("keyword_filter") && !jsonObjectData["keyword_filter"].is_null()) {
 				for (auto& value: jsonObjectData["keyword_filter"]) {
 					pDataStructure->keywordFilter.push_back(value.get<std::string>());
@@ -2580,14 +2605,14 @@ namespace DiscordCoreAPI {
 	};
 
 	/// For representing a single auto-moderation-rule-action. \brief For representing a single auto-moderation-rule-action.
-	struct ActionData : public DiscordCoreInternal::DataParserTwo<ActionData> {
+	struct ActionData {
 		ActionType type{};///< The type of action.
 		ActionMetaData metadata{};///< Additional metadata needed during execution for this specific action type.
 
 		ActionData() = default;
 
 		ActionData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -2597,7 +2622,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~ActionData() = default;
 	  	
-		void parseObjectReal(const nlohmann::json& jsonObjectData, ActionData* pDataStructure) {
+		inline void parseObjectReal(const nlohmann::json& jsonObjectData, ActionData* pDataStructure) {
 			if (jsonObjectData.contains("metadata") && !jsonObjectData["metadata"].is_null()) {
 				pDataStructure->metadata = jsonObjectData["metadata"];
 			}
@@ -2609,7 +2634,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Represents an auto-moderation-rule. \brief Represents an auto-moderation-rule.
-	struct AutoModerationRuleData : public DiscordEntity, public DiscordCoreInternal::DataParserTwo<AutoModerationRuleData> {
+	struct AutoModerationRuleData : public DiscordEntity {
 		std::vector<uint64_t> exemptChannels{};///< The channel ids that should not be affected by the rule(Maximum of 50).
 		std::vector<uint64_t> exemptRoles{};///< The role ids that should not be affected by the rule(Maximum of 20).
 		std::vector<ActionData> actions{};///< Actions which will execute when the rule is triggered.
@@ -2624,7 +2649,7 @@ namespace DiscordCoreAPI {
 		AutoModerationRuleData() = default;
 
 		AutoModerationRuleData& operator=(const nlohmann::json& jsonObjectData){
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -2634,7 +2659,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~AutoModerationRuleData() = default;
 
-	  	void parseObjectReal(const nlohmann::json& jsonObjectData, AutoModerationRuleData* pDataStructure) {
+	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, AutoModerationRuleData* pDataStructure) {
 			if (jsonObjectData.contains("name") && !jsonObjectData["name"].is_null()) {
 				pDataStructure->name = jsonObjectData["name"].get<std::string>();
 			}
@@ -2689,7 +2714,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Permissions data for an ApplicationCommand. \brief Permissions data for an ApplicationCommand.
-	class DiscordCoreAPI_Dll ApplicationCommandPermissionData : public DiscordEntity, public DiscordCoreInternal::DataParserTwo<ApplicationCommandPermissionData> {
+	class DiscordCoreAPI_Dll ApplicationCommandPermissionData : public DiscordEntity {
 	  public:
 		ApplicationCommandPermissionType type{ ApplicationCommandPermissionType::Role };///< The type of Permission.
 		bool permission{ false };///< Whether the Permission is active or not.
@@ -2697,7 +2722,7 @@ namespace DiscordCoreAPI {
 		ApplicationCommandPermissionData() = default;
 
 		ApplicationCommandPermissionData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -2705,7 +2730,7 @@ namespace DiscordCoreAPI {
 			*this = jsonObjectData;
 		}
 
-	  	void parseObjectReal(const nlohmann::json& jsonObjectData, ApplicationCommandPermissionData* pDataStructure) {
+	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, ApplicationCommandPermissionData* pDataStructure) {
 			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
 				pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
 			}
@@ -2721,7 +2746,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Represents the Permissions for accessing an ApplicationCommand from within a Guild. \brief Represents the Permissions for accessing an ApplicationCommand from within a Guild.
-	class DiscordCoreAPI_Dll GuildApplicationCommandPermissionsData : public DiscordEntity, public DiscordCoreInternal::DataParserTwo<GuildApplicationCommandPermissionsData> {
+	class DiscordCoreAPI_Dll GuildApplicationCommandPermissionsData : public DiscordEntity {
 	  public:
 		std::vector<ApplicationCommandPermissionData> permissions{};///< The Permissions.
 		uint64_t applicationId{};///< The application's id.
@@ -2730,7 +2755,7 @@ namespace DiscordCoreAPI {
 		GuildApplicationCommandPermissionsData() = default;
 
 		GuildApplicationCommandPermissionsData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -2738,7 +2763,7 @@ namespace DiscordCoreAPI {
 			*this = jsonObjectData;
 		}
 
-	  	void parseObjectReal(const nlohmann::json& jsonObjectData, GuildApplicationCommandPermissionsData* pDataStructure) {
+	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, GuildApplicationCommandPermissionsData* pDataStructure) {
 			if (jsonObjectData.contains("guild_id") && !jsonObjectData["guild_id"].is_null()) {
 				pDataStructure->guildId = stoull(jsonObjectData["guild_id"].get<std::string>());
 			}
@@ -2763,14 +2788,14 @@ namespace DiscordCoreAPI {
 		}
 	};
 
-	class GuildApplicationCommandPermissionsDataVector : public DiscordCoreInternal::DataParserTwo<GuildApplicationCommandPermissionsDataVector> {
+	class GuildApplicationCommandPermissionsDataVector {
 	  public:
 		std::vector<GuildApplicationCommandPermissionsData> theGuildApplicationCommandPermissionsDatas{};
 
 		GuildApplicationCommandPermissionsDataVector() = default;
 
 		GuildApplicationCommandPermissionsDataVector& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -2780,7 +2805,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~GuildApplicationCommandPermissionsDataVector() = default;
 
-		void parseObjectReal(const nlohmann::json& jsonObjectData, GuildApplicationCommandPermissionsDataVector* pDataStructure) {
+		inline void parseObjectReal(const nlohmann::json& jsonObjectData, GuildApplicationCommandPermissionsDataVector* pDataStructure) {
 			pDataStructure->theGuildApplicationCommandPermissionsDatas.reserve(jsonObjectData.size());
 			for (auto& value: jsonObjectData) {
 				DiscordCoreAPI::GuildApplicationCommandPermissionsData newData{ value };
@@ -2791,7 +2816,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Data structure representing a single emoji. \brief Data structure representing a single emoji.
-	class DiscordCoreAPI_Dll EmojiData : public DiscordEntity, public DiscordCoreInternal::DataParserTwo<EmojiData> {
+	class DiscordCoreAPI_Dll EmojiData : public DiscordEntity {
 	  public:
 		std::wstring unicodeName{ L"" };///< What is its unicode name?
 		std::vector<RoleData> roles{};///< Roles that are allowed to use this emoji.
@@ -2805,7 +2830,7 @@ namespace DiscordCoreAPI {
 		EmojiData() = default;
 
 		EmojiData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -2815,7 +2840,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~EmojiData() = default;
 
-	  	void parseObjectReal(const nlohmann::json& jsonObjectData, EmojiData* pDataStructure) {
+	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, EmojiData* pDataStructure) {
 			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
 				pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
 			}
@@ -2857,14 +2882,14 @@ namespace DiscordCoreAPI {
 
 	};
 
-	class EmojiDataVector : public DiscordCoreInternal::DataParserTwo<EmojiDataVector> {
+	class EmojiDataVector {
 	  public:
 		std::vector<EmojiData> theEmojiDatas{};
 
 		EmojiDataVector() = default;
 
 		EmojiDataVector& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -2874,7 +2899,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~EmojiDataVector() = default;
 
-		void parseObjectReal(const nlohmann::json& jsonObjectData, EmojiDataVector* pDataStructure) {
+		inline void parseObjectReal(const nlohmann::json& jsonObjectData, EmojiDataVector* pDataStructure) {
 			pDataStructure->theEmojiDatas.reserve(jsonObjectData.size());
 			for (auto& value: jsonObjectData) {
 				DiscordCoreAPI::EmojiData newData{ value };
@@ -2902,7 +2927,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Data structure representing a single reaction. \brief/// Data structure representing a single reaction.
-	class DiscordCoreAPI_Dll ReactionData : public DiscordEntity, public DiscordCoreInternal::DataParserTwo<ReactionData> {
+	class DiscordCoreAPI_Dll ReactionData : public DiscordEntity {
 	  public:
 		GuildMemberData member{};///< The GuildMember who placed the reaction.
 		uint64_t channelId{};///< The id of the Channel where it was placed.
@@ -2916,7 +2941,7 @@ namespace DiscordCoreAPI {
 		ReactionData() = default;
 
 		ReactionData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -2926,7 +2951,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~ReactionData() = default;
 
-	  	void parseObjectReal(const nlohmann::json& jsonObjectData, ReactionData* pDataStructure) {
+	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, ReactionData* pDataStructure) {
 			if (jsonObjectData.contains("count") && !jsonObjectData["count"].is_null()) {
 				pDataStructure->count = jsonObjectData["count"].get<int32_t>();
 			}
@@ -2962,7 +2987,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Structure representing Voice Region Data. \brief Structure representing Voice Region Data.
-	struct DiscordCoreAPI_Dll VoiceRegionData : public DiscordCoreInternal::DataParserTwo<VoiceRegionData> {
+	struct DiscordCoreAPI_Dll VoiceRegionData {
 		bool deprecated{ false };///< Whether this is a deprecated voice region(avoid switching to these).
 		bool optimal{ false };///< True for a single server that is closest to the current User's client.
 		bool custom{ false };///< Whether this is a custom voice region(used for events / etc).
@@ -2972,7 +2997,7 @@ namespace DiscordCoreAPI {
 		VoiceRegionData() = default;
 
 		VoiceRegionData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -2982,7 +3007,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~VoiceRegionData() = default;
 
-	  	void parseObjectReal(const nlohmann::json& jsonObjectData, VoiceRegionData* pDataStructure) {
+	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, VoiceRegionData* pDataStructure) {
 			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
 				pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
 			}
@@ -3005,14 +3030,14 @@ namespace DiscordCoreAPI {
 		}
 	};
 
-	class VoiceRegionDataVector : public DiscordCoreInternal::DataParserTwo<VoiceRegionDataVector> {
+	class VoiceRegionDataVector {
 	  public:
 		std::vector<VoiceRegionData> theVoiceRegionDatas{};
 
 		VoiceRegionDataVector() = default;
 
 		VoiceRegionDataVector& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -3022,7 +3047,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~VoiceRegionDataVector() = default;
 
-		void parseObjectReal(const nlohmann::json& jsonObjectData, VoiceRegionDataVector* pDataStructure) {
+		inline void parseObjectReal(const nlohmann::json& jsonObjectData, VoiceRegionDataVector* pDataStructure) {
 			pDataStructure->theVoiceRegionDatas.reserve(jsonObjectData.size());
 			for (auto& value: jsonObjectData) {
 				DiscordCoreAPI::VoiceRegionData newData{ value };
@@ -3041,14 +3066,14 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Message activity data. \brief Message activity data.
-	struct DiscordCoreAPI_Dll MessageActivityData : public DiscordCoreInternal::DataParserTwo<MessageActivityData>	{
+	struct DiscordCoreAPI_Dll MessageActivityData {
 		MessageActivityType type{ MessageActivityType::Join };///< Message activity type.
 		std::string partyId{};///< Party id.
 
 		MessageActivityData() = default;
 
 		MessageActivityData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -3058,7 +3083,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~MessageActivityData() = default;
 
-	  	void parseObjectReal(const nlohmann::json& jsonObjectData, MessageActivityData* pDataStructure) {
+	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, MessageActivityData* pDataStructure) {
 			if (jsonObjectData.contains("type") && !jsonObjectData["type"].is_null()) {
 				pDataStructure->type = jsonObjectData["type"].get<MessageActivityType>();
 			}
@@ -3070,7 +3095,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Ban data. \brief Ban data.
-	struct DiscordCoreAPI_Dll BanData : public DiscordCoreInternal::DataParserTwo<BanData> {
+	struct DiscordCoreAPI_Dll BanData {
 		bool failedDueToPerms{ false };///< Failed due to perms?
 		std::string reason{};///< Reason for the ban.
 		UserData user{};///< User that was banned.
@@ -3078,7 +3103,7 @@ namespace DiscordCoreAPI {
 		BanData() = default;
 
 		BanData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -3088,7 +3113,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~BanData() = default;
 
-		void parseObjectReal(const nlohmann::json& jsonObjectData, BanData* pDataStructure) {
+		inline void parseObjectReal(const nlohmann::json& jsonObjectData, BanData* pDataStructure) {
 			if (jsonObjectData.contains("user") && !jsonObjectData["user"].is_null()) {
 				pDataStructure->user = jsonObjectData["user"];
 			}
@@ -3099,14 +3124,14 @@ namespace DiscordCoreAPI {
 		}
 	};
 
-	class BanDataVector : public DiscordCoreInternal::DataParserTwo<BanDataVector> {
+	class BanDataVector {
 	  public:
 		std::vector<BanData> theBanDatas{};
 
 		BanDataVector() = default;
 
 		BanDataVector& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -3116,7 +3141,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~BanDataVector() = default;
 
-		void parseObjectReal(const nlohmann::json& jsonObjectData, BanDataVector* pDataStructure) {
+		inline void parseObjectReal(const nlohmann::json& jsonObjectData, BanDataVector* pDataStructure) {
 			pDataStructure->theBanDatas.reserve(jsonObjectData.size());
 			for (auto& value: jsonObjectData) {
 				DiscordCoreAPI::BanData newData{ value };
@@ -3127,7 +3152,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Team members object data. \brief Team members object data.
-	struct DiscordCoreAPI_Dll TeamMembersObjectData : public DiscordCoreInternal::DataParserTwo<TeamMembersObjectData> {
+	struct DiscordCoreAPI_Dll TeamMembersObjectData {
 		std::vector<Permissions> permissions{};///< Permissions for the team.
 		int32_t membershipState{ 0 };///< Current state.
 		std::string teamId{};///< Id of the current team.
@@ -3136,7 +3161,7 @@ namespace DiscordCoreAPI {
 		TeamMembersObjectData() = default;
 
 		TeamMembersObjectData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -3147,7 +3172,7 @@ namespace DiscordCoreAPI {
 		virtual ~TeamMembersObjectData() = default;
 
 	  	
-		void parseObjectReal(const nlohmann::json& jsonObjectData, TeamMembersObjectData* pDataStructure) {
+		inline void parseObjectReal(const nlohmann::json& jsonObjectData, TeamMembersObjectData* pDataStructure) {
 			if (jsonObjectData.contains("membership_state") && !jsonObjectData["membership_state"].is_null()) {
 				pDataStructure->membershipState = jsonObjectData["membership_state"].get<int32_t>();
 			}
@@ -3180,7 +3205,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Team object data. \brief Team object data.
-	class DiscordCoreAPI_Dll TeamObjectData : public DiscordEntity, public DiscordCoreInternal::DataParserTwo<TeamObjectData> {
+	class DiscordCoreAPI_Dll TeamObjectData : public DiscordEntity {
 	  public:
 		std::vector<TeamMembersObjectData> members{};///< Array of team members object data.
 		std::string ownerUserId{};///< User id of the team owner.
@@ -3189,7 +3214,7 @@ namespace DiscordCoreAPI {
 		TeamObjectData() = default;
 
 		TeamObjectData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -3199,7 +3224,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~TeamObjectData() = default;
 
-	  	void parseObjectReal(const nlohmann::json& jsonObjectData, TeamObjectData* pDataStructure) {
+	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, TeamObjectData* pDataStructure) {
 			if (jsonObjectData.contains("icon") && !jsonObjectData["icon"].is_null()) {
 				pDataStructure->icon = jsonObjectData["icon"].get<std::string>();
 			}
@@ -3237,14 +3262,14 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Install params data, for application data. \brief Install params data, for application data.
-	struct DiscordCoreAPI_Dll InstallParamsData :public DiscordCoreInternal::DataParserTwo<InstallParamsData>{
+	struct DiscordCoreAPI_Dll InstallParamsData {
 		std::vector<std::string> scopes{};///< The scopes to add the application to the server with.
 		std::string permissions{};///< The permissions to request for the bot role.
 
 		InstallParamsData() = default;
 
 		InstallParamsData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -3254,7 +3279,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~InstallParamsData() = default;
 
-	  	void parseObjectReal(const nlohmann::json& jsonObjectData, InstallParamsData* pDataStructure) {
+	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, InstallParamsData* pDataStructure) {
 			if (jsonObjectData.contains("scopes") && !jsonObjectData["scopes"].is_null()) {
 				pDataStructure->scopes = jsonObjectData["scopes"].get<std::vector<std::string>>();
 			}
@@ -3266,7 +3291,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Application data. \brief Application data.
-	class DiscordCoreAPI_Dll ApplicationData : public DiscordEntity, public DiscordCoreInternal::DataParserTwo<ApplicationData> {
+	class DiscordCoreAPI_Dll ApplicationData : public DiscordEntity {
 	  public:
 		std::vector<std::string> rpcOrigins{};///< Array of RPC origin strings.
 		bool botRequireCodeGrant{ false };///< Does the bot require a code grant?
@@ -3291,7 +3316,7 @@ namespace DiscordCoreAPI {
 		ApplicationData() = default;
 
 		ApplicationData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -3301,7 +3326,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~ApplicationData() = default;
 
-	  	void parseObjectReal(const nlohmann::json& jsonObjectData, ApplicationData* pDataStructure) {
+	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, ApplicationData* pDataStructure) {
 			if (jsonObjectData.contains("params") && !jsonObjectData["params"].is_null()) {
 				pDataStructure->params = jsonObjectData["params"];
 			}
@@ -3390,7 +3415,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Authorization info structure. \brief Authorization info structure.
-	struct DiscordCoreAPI_Dll AuthorizationInfoData : public DiscordCoreInternal::DataParserTwo<AuthorizationInfoData> {
+	struct DiscordCoreAPI_Dll AuthorizationInfoData {
 		std::vector<std::string> scopes{};///< Array of strings - the scopes the User has authorized the application for.
 		ApplicationData application{};///< Partial application object the current application.
 		std::string expires{};///< When the access token expires.
@@ -3399,7 +3424,7 @@ namespace DiscordCoreAPI {
 		AuthorizationInfoData() = default;
 
 		AuthorizationInfoData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -3409,7 +3434,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~AuthorizationInfoData() = default;
 
-		void parseObjectReal(const nlohmann::json& jsonObjectData, AuthorizationInfoData* pDataStructure) {
+		inline void parseObjectReal(const nlohmann::json& jsonObjectData, AuthorizationInfoData* pDataStructure) {
 			if (jsonObjectData.contains("application") && !jsonObjectData["application"].is_null()) {
 				pDataStructure->application = jsonObjectData["application"];
 			}
@@ -3429,14 +3454,14 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Account data. \brief Account data.
-	class DiscordCoreAPI_Dll AccountData : public DiscordEntity, public DiscordCoreInternal::DataParserTwo<AccountData> {
+	class DiscordCoreAPI_Dll AccountData : public DiscordEntity {
 	  public:
 		std::string name{};///< Name of the account.
 
 		AccountData() = default;
 
 		AccountData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -3446,7 +3471,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~AccountData() = default;
 
-	  	void parseObjectReal(const nlohmann::json& jsonObjectData, AccountData* pDataStructure) {
+	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, AccountData* pDataStructure) {
 			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
 				pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
 			}
@@ -3458,14 +3483,14 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Guild Widget Data. \brief Guild Widget Data.
-	struct DiscordCoreAPI_Dll GuildWidgetData : public DiscordCoreInternal::DataParserTwo<GuildWidgetData> {
+	struct DiscordCoreAPI_Dll GuildWidgetData {
 		bool enabled{ false };///< Whether the widget is enabled.
 		uint64_t channelId{};///< The widget Channel id.
 
 		GuildWidgetData() = default;
 
 		GuildWidgetData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -3475,7 +3500,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~GuildWidgetData() = default;
 
-	  	void parseObjectReal(const nlohmann::json& jsonObjectData, GuildWidgetData* pDataStructure) {
+	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, GuildWidgetData* pDataStructure) {
 			if (jsonObjectData.contains("enabled") && !jsonObjectData["enabled"].is_null()) {
 				pDataStructure->enabled = jsonObjectData["enabled"].get<bool>();
 			}
@@ -3505,13 +3530,13 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Guild widget image data. \brief Guild widget image data.
-	struct DiscordCoreAPI_Dll GuildWidgetImageData : public DiscordCoreInternal::DataParserTwo<GuildWidgetImageData> {
+	struct DiscordCoreAPI_Dll GuildWidgetImageData {
 		std::string url{};
 
 		GuildWidgetImageData() = default;
 
 		GuildWidgetImageData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -3521,7 +3546,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~GuildWidgetImageData() = default;
 
-	  	void parseObjectReal(const nlohmann::json& jsonObjectData, GuildWidgetImageData* pDataStructure) {
+	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, GuildWidgetImageData* pDataStructure) {
 			if (jsonObjectData.contains("widget_image") && !jsonObjectData["widget_image"].is_null()) {
 				pDataStructure->url = jsonObjectData["widget_image"].get<bool>();
 			}
@@ -3529,7 +3554,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Integration data. \brief Integration data.
-	class DiscordCoreAPI_Dll IntegrationData : public DiscordEntity, public DiscordCoreInternal::DataParserTwo<IntegrationData> {
+	class DiscordCoreAPI_Dll IntegrationData : public DiscordEntity {
 	  public:
 		int32_t expireGracePeriod{ 0 };///< How int64_t before the integration expires.
 		ApplicationData application{};///< Application data.
@@ -3549,7 +3574,7 @@ namespace DiscordCoreAPI {
 		IntegrationData() = default;
 
 		IntegrationData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -3559,7 +3584,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~IntegrationData() = default;
 
-	  	void parseObjectReal(const nlohmann::json& jsonObjectData, IntegrationData* pDataStructure) {
+	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, IntegrationData* pDataStructure) {
 			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
 				pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
 			}
@@ -3622,14 +3647,14 @@ namespace DiscordCoreAPI {
 		}
 	};
 
-	class IntegrationDataVector : public DiscordCoreInternal::DataParserTwo<IntegrationDataVector> {
+	class IntegrationDataVector {
 	  public:
 		std::vector<IntegrationData> theIntegrationDatas{};
 
 		IntegrationDataVector() = default;
 
 		IntegrationDataVector& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -3639,7 +3664,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~IntegrationDataVector() = default;
 
-		void parseObjectReal(const nlohmann::json& jsonObjectData, IntegrationDataVector* pDataStructure) {
+		inline void parseObjectReal(const nlohmann::json& jsonObjectData, IntegrationDataVector* pDataStructure) {
 			pDataStructure->theIntegrationDatas.reserve(jsonObjectData.size());
 			for (auto& value: jsonObjectData) {
 				DiscordCoreAPI::IntegrationData newData{ value };
@@ -3706,7 +3731,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Audit log entry info data \brief Audit log entry info data.
-	class DiscordCoreAPI_Dll OptionalAuditEntryInfoData : public DiscordEntity, public DiscordCoreInternal::DataParserTwo<OptionalAuditEntryInfoData> {
+	class DiscordCoreAPI_Dll OptionalAuditEntryInfoData : public DiscordEntity {
 	  public:
 		std::string deleteMemberDays{};///< Number of days for which the member's Messages were deleted.
 		std::string membersRemoved{};///< Number of members that were removed upon a prune.
@@ -3720,7 +3745,7 @@ namespace DiscordCoreAPI {
 		OptionalAuditEntryInfoData() = default;
 
 		OptionalAuditEntryInfoData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -3730,7 +3755,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~OptionalAuditEntryInfoData() = default;
 
-		void parseObjectReal(const nlohmann::json& jsonObjectData, OptionalAuditEntryInfoData* pDataStructure) {
+		inline void parseObjectReal(const nlohmann::json& jsonObjectData, OptionalAuditEntryInfoData* pDataStructure) {
 			if (jsonObjectData.contains("delete_member_days") && !jsonObjectData["delete_member_days"].is_null()) {
 				pDataStructure->deleteMemberDays = jsonObjectData["delete_member_days"].get<std::string>();
 			}
@@ -3766,7 +3791,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Audit log change data. \brief Audit log change data.
-	struct DiscordCoreAPI_Dll AuditLogChangeData : public DiscordCoreInternal::DataParserTwo<AuditLogChangeData> {
+	struct DiscordCoreAPI_Dll AuditLogChangeData {
 		nlohmann::json newValue{};///< New value.
 		nlohmann::json oldValue{};///< Old value.
 		std::string key{};///< The key of the audit log change.
@@ -3774,7 +3799,7 @@ namespace DiscordCoreAPI {
 		AuditLogChangeData() = default;
 
 		AuditLogChangeData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -3784,7 +3809,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~AuditLogChangeData() = default;
 
-		void parseObjectReal(const nlohmann::json& jsonObjectData, AuditLogChangeData* pDataStructure) {
+		inline void parseObjectReal(const nlohmann::json& jsonObjectData, AuditLogChangeData* pDataStructure) {
 			if (jsonObjectData.contains("new_value") && !jsonObjectData["new_value"].is_null()) {
 				pDataStructure->newValue = jsonObjectData["new_value"];
 			}
@@ -3800,13 +3825,13 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Guild prune count data. \brief Guild prune count data.
-	struct DiscordCoreAPI_Dll GuildPruneCountData : public DiscordCoreInternal::DataParserTwo<GuildPruneCountData>{
+	struct DiscordCoreAPI_Dll GuildPruneCountData {
 		int32_t count{ 0 };
 
 		GuildPruneCountData() = default;
 
 		GuildPruneCountData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -3816,7 +3841,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~GuildPruneCountData() = default;
 
-	  	void parseObjectReal(const nlohmann::json& jsonObjectData, GuildPruneCountData* pDataStructure) {
+	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, GuildPruneCountData* pDataStructure) {
 			if (jsonObjectData.contains("pruned") && !jsonObjectData["pruned"].is_null()) {
 				pDataStructure->count = jsonObjectData["pruned"].get<int32_t>();
 			}
@@ -3824,7 +3849,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Audit log entry data. \brief Audit log entry data.
-	class DiscordCoreAPI_Dll AuditLogEntryData : public DiscordEntity, public DiscordCoreInternal::DataParserTwo<AuditLogEntryData> {
+	class DiscordCoreAPI_Dll AuditLogEntryData : public DiscordEntity {
 	  public:
 		std::vector<AuditLogChangeData> changes{};///< Array of audit log change data.
 		OptionalAuditEntryInfoData options{};///< Audit log entry info data.
@@ -3837,7 +3862,7 @@ namespace DiscordCoreAPI {
 		AuditLogEntryData() = default;
 
 		AuditLogEntryData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -3847,7 +3872,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~AuditLogEntryData() = default;
 
-		void parseObjectReal(const nlohmann::json& jsonObjectData, AuditLogEntryData* pDataStructure) {
+		inline void parseObjectReal(const nlohmann::json& jsonObjectData, AuditLogEntryData* pDataStructure) {
 			if (jsonObjectData.contains("target_id") && !jsonObjectData["target_id"].is_null()) {
 				pDataStructure->targetId = stoull(jsonObjectData["target_id"].get<std::string>());
 			}
@@ -3886,14 +3911,14 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Party data. \brief Party data.
-	class DiscordCoreAPI_Dll PartyData : public DiscordEntity, public DiscordCoreInternal::DataParserTwo<PartyData> {
+	class DiscordCoreAPI_Dll PartyData : public DiscordEntity {
 	  public:
 		std::vector<int32_t> size{ 0, 0 };///< The size of the party.
 
 		PartyData() = default;
 
 		PartyData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -3903,7 +3928,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~PartyData() = default;
 
-	  	void parseObjectReal(const nlohmann::json& jsonObjectData, PartyData* pDataStructure) {
+	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, PartyData* pDataStructure) {
 			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
 				pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
 			}
@@ -3916,7 +3941,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Assets data. \brief Party data.
-	struct DiscordCoreAPI_Dll AssetsData:public DiscordCoreInternal::DataParserTwo<AssetsData> {
+	struct DiscordCoreAPI_Dll AssetsData {
 		StringWrapper largeImage{};///< Keyname of an asset to display.
 		StringWrapper smallImage{};///< Keyname of an asset to display.
 		StringWrapper largeText{};///< Hover text for the large image.
@@ -3925,7 +3950,7 @@ namespace DiscordCoreAPI {
 		AssetsData() = default;
 
 		AssetsData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -3935,7 +3960,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~AssetsData() = default;
 
-	  	void parseObjectReal(const nlohmann::json& jsonObjectData, AssetsData* pDataStructure) {
+	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, AssetsData* pDataStructure) {
 			if (jsonObjectData.contains("LargeImage") && !jsonObjectData["LargeImage"].is_null()) {
 				pDataStructure->largeImage = jsonObjectData["LargeImage"].get<std::string>();
 			}
@@ -3955,7 +3980,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Secrets data. \brief Secrets data.
-	struct DiscordCoreAPI_Dll SecretsData : public DiscordCoreInternal::DataParserTwo<SecretsData> {
+	struct DiscordCoreAPI_Dll SecretsData {
 		StringWrapper spectate{};///< Unique hash for the given match context.
 		StringWrapper match{};///< Unique hash for Spectate button.
 		StringWrapper join{};///< Unique hash for chat invitesand Ask to Join.
@@ -3963,7 +3988,7 @@ namespace DiscordCoreAPI {
 		SecretsData() = default;
 
 		SecretsData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -3973,7 +3998,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~SecretsData() = default;
 
-	  	void parseObjectReal(const nlohmann::json& jsonObjectData, SecretsData* pDataStructure) {
+	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, SecretsData* pDataStructure) {
 			if (jsonObjectData.contains("Join") && !jsonObjectData["Join"].is_null()) {
 				pDataStructure->join = jsonObjectData["Join"].get<std::string>();
 			}
@@ -3989,14 +4014,14 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Timestamp data. \brief Timestamp data.
-	struct DiscordCoreAPI_Dll TimestampData :public DiscordCoreInternal::DataParserTwo<TimestampData>{
+	struct DiscordCoreAPI_Dll TimestampData {
 		int64_t start{ 0 };///< Unix timestamp - Send this to have an "elapsed" timer.
 		int64_t end{ 0 };///< Unix timestamp - send this to have a "remaining" timer.
 
 		TimestampData() = default;
 
 		TimestampData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -4006,7 +4031,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~TimestampData() = default;
 
-	  	void parseObjectReal(const nlohmann::json& jsonObjectData, TimestampData* pDataStructure) {
+	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, TimestampData* pDataStructure) {
 			if (jsonObjectData.contains("Start") && !jsonObjectData["Start"].is_null()) {
 				pDataStructure->start = jsonObjectData["Start"].get<int64_t>();
 			}
@@ -4034,7 +4059,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Activity data. \brief Activity data.
-	struct DiscordCoreAPI_Dll ActivityData :public DiscordCoreInternal::DataParserTwo<ActivityData> {
+	struct DiscordCoreAPI_Dll ActivityData {
 		uint64_t applicationId{};///< Application id for the current application.
 		TimestampData timestamps{};///< Timestamp data.
 		int32_t createdAt{ 0 };///< Timestamp of when the activity began.
@@ -4054,7 +4079,7 @@ namespace DiscordCoreAPI {
 		ActivityData() = default;
 
 		ActivityData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -4064,7 +4089,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~ActivityData() = default;
 
-	  	void parseObjectReal(const nlohmann::json& jsonObjectData, ActivityData* pDataStructure) {
+	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, ActivityData* pDataStructure) {
 			if (jsonObjectData.contains("Name") && !jsonObjectData["Name"].is_null()) {
 				pDataStructure->name = jsonObjectData["Name"].get<std::string>();
 			}
@@ -4104,7 +4129,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Client status data. \brief Client status data.
-	struct DiscordCoreAPI_Dll ClientStatusData :public  DiscordCoreInternal::DataParserTwo<ClientStatusData>{
+	struct DiscordCoreAPI_Dll ClientStatusData {
 		StringWrapper desktop{};///< Desktop name.
 		StringWrapper mobile{};///< Mobile name.
 		StringWrapper web{};///< Web link.
@@ -4112,7 +4137,7 @@ namespace DiscordCoreAPI {
 		ClientStatusData() = default;
 
 		ClientStatusData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -4122,7 +4147,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~ClientStatusData() = default;
 
-	  	void parseObjectReal(const nlohmann::json& jsonObjectData, ClientStatusData* pDataStructure) {
+	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, ClientStatusData* pDataStructure) {
 			if (jsonObjectData.contains("desktop") && !jsonObjectData["desktop"].is_null()) {
 				pDataStructure->desktop = jsonObjectData["desktop"].get<std::string>();
 			}
@@ -4175,7 +4200,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Welcome screen Channel data. \brief Welcome screen Channel data.
-	struct DiscordCoreAPI_Dll WelcomeScreenChannelData : public DiscordCoreInternal::DataParserTwo<WelcomeScreenChannelData> {
+	struct DiscordCoreAPI_Dll WelcomeScreenChannelData {
 		std::string description{};///< Description of the welcome Channel.
 		std::string emojiName{};///< Emoji name for the Channel.
 		uint64_t channelId{};///< Id of the welcome Channel.
@@ -4184,7 +4209,7 @@ namespace DiscordCoreAPI {
 		WelcomeScreenChannelData() = default;
 
 		WelcomeScreenChannelData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -4194,7 +4219,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~WelcomeScreenChannelData() = default;
 
-	  	void parseObjectReal(const nlohmann::json& jsonObjectData, WelcomeScreenChannelData* pDataStructure) {
+	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, WelcomeScreenChannelData* pDataStructure) {
 			if (jsonObjectData.contains("channel_id") && !jsonObjectData["channel_id"].is_null()) {
 				pDataStructure->channelId = stoull(jsonObjectData["channel_id"].get<std::string>());
 			}
@@ -4214,14 +4239,14 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Welcome screen data. \brief Welcome screen data.
-	struct DiscordCoreAPI_Dll WelcomeScreenData : public DiscordCoreInternal::DataParserTwo<WelcomeScreenData> {
+	struct DiscordCoreAPI_Dll WelcomeScreenData {
 		std::vector<WelcomeScreenChannelData> welcomeChannels{};///< Welcome screen Channel data.
 		std::string description{};///< Description of the welcome screen.
 
 		WelcomeScreenData() = default;
 
 		WelcomeScreenData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -4231,7 +4256,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~WelcomeScreenData() = default;
 
-	  	void parseObjectReal(const nlohmann::json& jsonObjectData, WelcomeScreenData* pDataStructure) {
+	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, WelcomeScreenData* pDataStructure) {
 			if (jsonObjectData.contains("description") && !jsonObjectData["description"].is_null()) {
 				pDataStructure->description = jsonObjectData["description"].get<std::string>();
 			}
@@ -4249,7 +4274,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Presence update data. \brief Presence update data.
-	struct DiscordCoreAPI_Dll PresenceUpdateData : public DiscordCoreInternal::DataParserTwo<PresenceUpdateData>{
+	struct DiscordCoreAPI_Dll PresenceUpdateData {
 		std::vector<ActivityData> activities{};///< Array of activities.
 		ClientStatusData clientStatus{};///< Current client status.
 		StringWrapper status{};///< Status of the current presence.
@@ -4259,7 +4284,7 @@ namespace DiscordCoreAPI {
 		PresenceUpdateData() = default;
 
 		PresenceUpdateData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -4269,7 +4294,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~PresenceUpdateData() = default;
 
-	  	void parseObjectReal(const nlohmann::json& jsonObjectData, PresenceUpdateData* pDataStructure) {
+	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, PresenceUpdateData* pDataStructure) {
 			if (jsonObjectData.contains("user") && !jsonObjectData["user"].is_null()) {
 				pDataStructure->user = jsonObjectData["user"];
 			}
@@ -4305,7 +4330,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Stage instance data. \brief Stage instance data.
-	class DiscordCoreAPI_Dll StageInstanceData : public DiscordEntity, public DiscordCoreInternal::DataParserTwo<StageInstanceData>{
+	class DiscordCoreAPI_Dll StageInstanceData : public DiscordEntity {
 	  public:
 		StageInstancePrivacyLevel privacyLevel{ 0 };///< Privacy level of the Channel.
 		bool discoverableDisabled{ false };///< Is it discoverable?
@@ -4316,7 +4341,7 @@ namespace DiscordCoreAPI {
 		StageInstanceData() = default;
 
 		StageInstanceData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -4326,7 +4351,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~StageInstanceData() = default;
 
-	  	void parseObjectReal(const nlohmann::json& jsonObjectData, StageInstanceData* pDataStructure) {
+	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, StageInstanceData* pDataStructure) {
 			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
 				pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
 			}
@@ -4362,7 +4387,7 @@ namespace DiscordCoreAPI {
 	enum class StickerFlags : int8_t { Available = 1 << 0 };
 
 	/// Data representing a single Sticker. \brief Data representing a single Sticker.
-	class DiscordCoreAPI_Dll StickerData : public DiscordEntity, public DiscordCoreInternal::DataParserTwo<StickerData> {
+	class DiscordCoreAPI_Dll StickerData : public DiscordEntity {
 	  public:
 		StickerFormatType formatType{};///< Format type.
 		std::string description{};///< Description of the Sticker.
@@ -4380,7 +4405,7 @@ namespace DiscordCoreAPI {
 		StickerData() = default;
 
 		StickerData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -4390,7 +4415,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~StickerData() = default;
 
-	  	void parseObjectReal(const nlohmann::json& jsonObjectData, StickerData* pDataStructure) {
+	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, StickerData* pDataStructure) {
 			if (jsonObjectData.contains("asset") && !jsonObjectData["asset"].is_null()) {
 				pDataStructure->asset = jsonObjectData["asset"].get<std::string>();
 			}
@@ -4438,7 +4463,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Data representing a single Guild preview. \brief Data representing a single Guild preview.
-	struct DiscordCoreAPI_Dll GuildPreviewData :public DiscordCoreInternal::DataParserTwo<GuildPreviewData>{
+	struct DiscordCoreAPI_Dll GuildPreviewData {
 		int32_t approximatePresenceCount{ 0 };
 		std::vector<std::string> features{};
 		std::vector<StickerData> stickers{};
@@ -4454,7 +4479,7 @@ namespace DiscordCoreAPI {
 		GuildPreviewData() = default;
 
 		GuildPreviewData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -4464,7 +4489,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~GuildPreviewData() = default;
 
-	  	void parseObjectReal(const nlohmann::json& jsonObjectData, GuildPreviewData* pDataStructure) {
+	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, GuildPreviewData* pDataStructure) {
 			if (jsonObjectData.contains("approximate_presence_count") && !jsonObjectData["approximate_presence_count"].is_null()) {
 				pDataStructure->approximatePresenceCount = jsonObjectData["approximate_presence_count"].get<int32_t>();
 			}
@@ -4558,7 +4583,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Data structure representing a single Guild. \brief Data structure representing a single Guild.
-	template<typename GuildDerived> struct GuildDataBase : public DiscordEntity, public DiscordCoreInternal::DataParserTwo<GuildDataBase<GuildDerived>> {
+	template<typename GuildDerived> struct GuildDataBase : public DiscordEntity {
 
 		std::unordered_map<uint64_t, PresenceUpdateData> presences{};///< Map of presences for each GuildMember.
 		std::unordered_map<uint64_t, VoiceStateData> voiceStates{};///< Map of Guild-member voice-states.
@@ -4578,7 +4603,7 @@ namespace DiscordCoreAPI {
 		GuildDataBase() = default;
 
 		GuildDataBase<GuildDerived>& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -4604,7 +4629,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~GuildDataBase() = default;
 
-	  	void parseObjectReal(const nlohmann::json& jsonObjectData, GuildDataBase<GuildDerived>* pDataStructure) {
+	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, GuildDataBase<GuildDerived>* pDataStructure) {
 			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
 				pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
 			}
@@ -4699,14 +4724,14 @@ namespace DiscordCoreAPI {
 
 	using GuildData = GuildDataBase<Guild>;
 
-	class GuildDataVector : public DiscordCoreInternal::DataParserTwo<GuildDataVector> {
+	class GuildDataVector {
 	  public:
 		std::vector<GuildData> theGuildDatas{};
 
 		GuildDataVector() = default;
 
 		GuildDataVector& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -4716,7 +4741,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~GuildDataVector() = default;
 
-		void parseObjectReal(const nlohmann::json& jsonObjectData, GuildDataVector* pDataStructure) {
+		inline void parseObjectReal(const nlohmann::json& jsonObjectData, GuildDataVector* pDataStructure) {
 			pDataStructure->theGuildDatas.reserve(jsonObjectData.size());
 			for (auto& value: jsonObjectData) {
 				DiscordCoreAPI::GuildData newData{ value };
@@ -4749,13 +4774,13 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Guild scheduled event entity metadata. \brief Guild scheduled event entity metadata.
-	struct DiscordCoreAPI_Dll GuildScheduledEventMetadata : public DiscordCoreInternal::DataParserTwo<GuildScheduledEventMetadata> {
+	struct DiscordCoreAPI_Dll GuildScheduledEventMetadata {
 		std::string location{};
 
 		GuildScheduledEventMetadata() = default;
 
 		GuildScheduledEventMetadata& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -4765,7 +4790,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~GuildScheduledEventMetadata() = default;
 
-	  	void parseObjectReal(const nlohmann::json& jsonObjectData, GuildScheduledEventMetadata* pDataStructure) {
+	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, GuildScheduledEventMetadata* pDataStructure) {
 			if (jsonObjectData.contains("location") && !jsonObjectData["location"].is_null()) {
 				pDataStructure->location = jsonObjectData["location"].get<std::string>();
 			}
@@ -4773,7 +4798,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Data representing a Guild Scheduled Event. \brief Data representing a Guild Scheduled Event.
-	class DiscordCoreAPI_Dll GuildScheduledEventData : public DiscordEntity, public DiscordCoreInternal::DataParserTwo<GuildScheduledEventData> {
+	class DiscordCoreAPI_Dll GuildScheduledEventData : public DiscordEntity {
 	  public:
 		GuildScheduledEventPrivacyLevel privacyLevel{};///< The privacy level of the scheduled event.
 		GuildScheduledEventMetadata entityMetadata{};///< Additional metadata for the Guild scheduled event.
@@ -4793,7 +4818,7 @@ namespace DiscordCoreAPI {
 		GuildScheduledEventData() = default;
 
 		GuildScheduledEventData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -4803,7 +4828,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~GuildScheduledEventData() = default;
 
-	  	void parseObjectReal(const nlohmann::json& jsonObjectData, GuildScheduledEventData* pDataStructure) {
+	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, GuildScheduledEventData* pDataStructure) {
 			if (jsonObjectData.contains("privacy_level") && !jsonObjectData["privacy_level"].is_null()) {
 				pDataStructure->privacyLevel = jsonObjectData["privacy_level"].get<GuildScheduledEventPrivacyLevel>();
 			}
@@ -4867,7 +4892,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Data representing a single GuildScheduledEventUser. \brief Data representing a single GuildScheduledEventUser.
-	struct DiscordCoreAPI_Dll GuildScheduledEventUserData : public DiscordCoreInternal::DataParserTwo<GuildScheduledEventUserData> {
+	struct DiscordCoreAPI_Dll GuildScheduledEventUserData {
 		std::string guildScheduledEventId{};///< The scheduled event id which the User subscribed to/
 		GuildMemberData member{};///< Guild member data for this User for the Guild which this event belongs to, if any.
 		UserData user{};///< User which subscribed to an event.
@@ -4875,7 +4900,7 @@ namespace DiscordCoreAPI {
 		GuildScheduledEventUserData() = default;
 
 		GuildScheduledEventUserData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -4885,7 +4910,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~GuildScheduledEventUserData() = default;
 
-	  	void parseObjectReal(const nlohmann::json& jsonObjectData, GuildScheduledEventUserData* pDataStructure) {
+	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, GuildScheduledEventUserData* pDataStructure) {
 			if (jsonObjectData.contains("guild_scheduled_event_id") && !jsonObjectData["guild_scheduled_event_id"].is_null()) {
 				pDataStructure->guildScheduledEventId = jsonObjectData["guild_scheduled_event_id"].get<std::string>();
 			}
@@ -4900,14 +4925,14 @@ namespace DiscordCoreAPI {
 		}
 	};
 
-	class GuildScheduledEventUserDataVector : public DiscordCoreInternal::DataParserTwo<GuildScheduledEventUserDataVector> {
+	class GuildScheduledEventUserDataVector {
 	  public:
 		std::vector<GuildScheduledEventUserData> theGuildScheduledEventUserDatas{};
 
 		GuildScheduledEventUserDataVector() = default;
 
 		GuildScheduledEventUserDataVector& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -4917,7 +4942,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~GuildScheduledEventUserDataVector() = default;
 
-		void parseObjectReal(const nlohmann::json& jsonObjectData, GuildScheduledEventUserDataVector* pDataStructure) {
+		inline void parseObjectReal(const nlohmann::json& jsonObjectData, GuildScheduledEventUserDataVector* pDataStructure) {
 			pDataStructure->theGuildScheduledEventUserDatas.reserve(jsonObjectData.size());
 			for (auto& value: jsonObjectData) {
 				DiscordCoreAPI::GuildScheduledEventUserData newData{ value };
@@ -4928,7 +4953,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Invite data. \brief Invite data.
-	struct DiscordCoreAPI_Dll InviteData : public DiscordCoreInternal::DataParserTwo<InviteData> {
+	struct DiscordCoreAPI_Dll InviteData {
 		GuildScheduledEventData guildScheduledEvent{};///< Scheduled Guild event.
 		int32_t approximatePresenceCount{ 0 };///< Approximate presence count.
 		ApplicationData targetApplication{};///< Application data.
@@ -4951,7 +4976,7 @@ namespace DiscordCoreAPI {
 		InviteData() = default;
 
 		InviteData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -4961,7 +4986,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~InviteData() = default;
 
-		void parseObjectReal(const nlohmann::json& jsonObjectData, InviteData* pDataStructure) {
+		inline void parseObjectReal(const nlohmann::json& jsonObjectData, InviteData* pDataStructure) {
 			if (jsonObjectData.contains("code") && !jsonObjectData["code"].is_null() && jsonObjectData["code"].is_string()) {
 				pDataStructure->code = jsonObjectData["code"].get<std::string>();
 			} else if (jsonObjectData.contains("code") && !jsonObjectData["code"].is_null() && jsonObjectData["code"].is_number_integer()) {
@@ -5038,14 +5063,14 @@ namespace DiscordCoreAPI {
 		}
 	};
 
-	class InviteDataVector : public DiscordCoreInternal::DataParserTwo<InviteDataVector> {
+	class InviteDataVector {
 	  public:
 		std::vector<InviteData> theInviteDatas{};
 
 		InviteDataVector() = default;
 
 		InviteDataVector& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -5055,7 +5080,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~InviteDataVector() = default;
 
-		void parseObjectReal(const nlohmann::json& jsonObjectData, InviteDataVector* pDataStructure) {
+		inline void parseObjectReal(const nlohmann::json& jsonObjectData, InviteDataVector* pDataStructure) {
 			pDataStructure->theInviteDatas.reserve(jsonObjectData.size());
 			for (auto& value: jsonObjectData) {
 				DiscordCoreAPI::InviteData newData{ value };
@@ -5066,7 +5091,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Represents a Guild Template. \brief Represents a Guild Template.
-	struct DiscordCoreAPI_Dll GuildTemplateData : public DiscordCoreInternal::DataParserTwo<GuildTemplateData> {
+	struct DiscordCoreAPI_Dll GuildTemplateData {
 		GuildData serializedSourceGuild{};///< The Guild snapshot this template contains.
 		std::string sourceGuildId{};///< The ID of the Guild this template is based on.
 		std::string description{};///< The description for the template.
@@ -5082,7 +5107,7 @@ namespace DiscordCoreAPI {
 		GuildTemplateData() = default;
 
 		GuildTemplateData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -5092,7 +5117,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~GuildTemplateData() = default;
 
-	  	void parseObjectReal(const nlohmann::json& jsonObjectData, GuildTemplateData* pDataStructure) {
+	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, GuildTemplateData* pDataStructure) {
 			if (jsonObjectData.contains("serialized_source_guild") && !jsonObjectData["serialized_source_guild"].is_null()) {
 				pDataStructure->serializedSourceGuild = jsonObjectData["serialized_source_guild"];
 			}
@@ -5140,14 +5165,14 @@ namespace DiscordCoreAPI {
 
 	};
 
-	class GuildTemplateDataVector : public DiscordCoreInternal::DataParserTwo<GuildTemplateDataVector> {
+	class GuildTemplateDataVector  {
 	  public:
 		std::vector<GuildTemplateData> theGuildTemplateDatas{};
 
 		GuildTemplateDataVector() = default;
 
 		GuildTemplateDataVector& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -5157,7 +5182,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~GuildTemplateDataVector() = default;
 
-		void parseObjectReal(const nlohmann::json& jsonObjectData, GuildTemplateDataVector* pDataStructure) {
+		inline void parseObjectReal(const nlohmann::json& jsonObjectData, GuildTemplateDataVector* pDataStructure) {
 			pDataStructure->theGuildTemplateDatas.reserve(jsonObjectData.size());
 			for (auto& value: jsonObjectData) {
 				DiscordCoreAPI::GuildTemplateData newData{ value };
@@ -5181,7 +5206,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// WebHook data. \brief WebHook data.
-	class DiscordCoreAPI_Dll WebHookData : public DiscordEntity, public DiscordCoreInternal::DataParserTwo<WebHookData>	{
+	class DiscordCoreAPI_Dll WebHookData : public DiscordEntity {
 	  public:
 		ChannelData sourceChannel{};///< Channel for which th WebHook was issued.
 		uint64_t applicationId{};///< Application id.
@@ -5198,7 +5223,7 @@ namespace DiscordCoreAPI {
 		WebHookData() = default;
 
 		WebHookData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -5208,7 +5233,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~WebHookData() = default;
 
-	  	void parseObjectReal(const nlohmann::json& jsonObjectData, WebHookData* pDataStructure) {
+	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, WebHookData* pDataStructure) {
 			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
 				pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
 			}
@@ -5259,14 +5284,14 @@ namespace DiscordCoreAPI {
 		}
 	};
 
-	class WebHookDataVector : public DiscordCoreInternal::DataParserTwo<WebHookDataVector> {
+	class WebHookDataVector  {
 	  public:
 		std::vector<WebHookData> theWebHookDatas{};
 
 		WebHookDataVector() = default;
 
 		WebHookDataVector& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -5276,7 +5301,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~WebHookDataVector() = default;
 
-		void parseObjectReal(const nlohmann::json& jsonObjectData, WebHookDataVector* pDataStructure) {
+		inline void parseObjectReal(const nlohmann::json& jsonObjectData, WebHookDataVector* pDataStructure) {
 			pDataStructure->theWebHookDatas.reserve(jsonObjectData.size());
 			for (auto& value: jsonObjectData) {
 				DiscordCoreAPI::WebHookData newData{ value };
@@ -5287,7 +5312,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Audit log data. \brief Audit log data.
-	class DiscordCoreAPI_Dll AuditLogData : public DiscordCoreInternal::DataParserTwo<AuditLogData> {
+	class DiscordCoreAPI_Dll AuditLogData  {
 	  public:
 		std::vector<GuildScheduledEventData> guildScheduledEvents{};///< Array of guild scheduled event objects.
 		std::vector<AutoModerationRuleData> autoModerationRules{};///< List of auto moderation rules referenced in the audit log.
@@ -5316,7 +5341,7 @@ namespace DiscordCoreAPI {
 		AuditLogData() = default;
 
 		AuditLogData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -5326,7 +5351,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~AuditLogData() = default;
 
-		void parseObjectReal(const nlohmann::json& jsonObjectData, AuditLogData* pDataStructure) {
+		inline void parseObjectReal(const nlohmann::json& jsonObjectData, AuditLogData* pDataStructure) {
 			if (jsonObjectData.contains("webhooks") && !jsonObjectData["webhooks"].is_null()) {
 				pDataStructure->webhooks.clear();
 				pDataStructure->webhooks.reserve(jsonObjectData["webhooks"].size());
@@ -5400,7 +5425,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// For removing a reaction. \brief For removing a reaction.
-	struct DiscordCoreAPI_Dll ReactionRemoveData : public DiscordCoreInternal::DataParserTwo<ReactionRemoveData> {
+	struct DiscordCoreAPI_Dll ReactionRemoveData {
 		uint64_t channelId{};
 		uint64_t messageId{};
 		uint64_t guildId{};
@@ -5410,7 +5435,7 @@ namespace DiscordCoreAPI {
 		ReactionRemoveData() = default;
 
 		ReactionRemoveData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -5420,7 +5445,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~ReactionRemoveData() = default;
 
-	  	void parseObjectReal(const nlohmann::json& jsonObjectData, ReactionRemoveData* pDataStructure) {
+	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, ReactionRemoveData* pDataStructure) {
 			if (jsonObjectData.contains("user_id") && !jsonObjectData["user_id"].is_null()) {
 				pDataStructure->userId = stoull(jsonObjectData["user_id"].get<std::string>());
 			}
@@ -5457,7 +5482,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Data structure representing an ApplicationCommand's option choice. \brief Data structure representing an ApplicationCommand's option choice.
-	struct DiscordCoreAPI_Dll ApplicationCommandOptionChoiceData : public DiscordCoreInternal::DataParserTwo<ApplicationCommandOptionChoiceData> {
+	struct DiscordCoreAPI_Dll ApplicationCommandOptionChoiceData {
 		std::unordered_map<std::string, std::string> nameLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the name field.
 		nlohmann::json value{};///< The value of the option.
 		std::string name{};///< The name of the current choice.
@@ -5465,7 +5490,7 @@ namespace DiscordCoreAPI {
 		ApplicationCommandOptionChoiceData() = default;
 
 		ApplicationCommandOptionChoiceData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -5475,7 +5500,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~ApplicationCommandOptionChoiceData() = default;
 
-	  	void parseObjectReal(const nlohmann::json& jsonObjectData, ApplicationCommandOptionChoiceData* pDataStructure) {
+	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, ApplicationCommandOptionChoiceData* pDataStructure) {
 			if (jsonObjectData.contains("value") && !jsonObjectData["value"].is_null() && jsonObjectData["value"].is_string()) {
 				if (jsonObjectData["value"].is_string()) {
 					pDataStructure->value = jsonObjectData["value"].get<std::string>();
@@ -5501,7 +5526,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Data structure representing an ApplicationCommand's option. \brief Data structure representing an ApplicationCommand's option.
-	struct DiscordCoreAPI_Dll ApplicationCommandOptionData : public DiscordCoreInternal::DataParserTwo<ApplicationCommandOptionData> {
+	struct DiscordCoreAPI_Dll ApplicationCommandOptionData {
 		std::unordered_map<std::string, std::string> descriptionLocalizations{};///< Dictionary for the description localizations field.
 		std::unordered_map<std::string, std::string> nameLocalizations{};///< Dictionary for the name localizations field.
 		std::vector<ApplicationCommandOptionChoiceData> choices{};///< A std::vector of possible choices for the current ApplicationCommand option.
@@ -5518,7 +5543,7 @@ namespace DiscordCoreAPI {
 		ApplicationCommandOptionData() = default;
 
 		ApplicationCommandOptionData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -5528,7 +5553,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~ApplicationCommandOptionData() = default;
 
-	  	void parseObjectReal(const nlohmann::json& jsonObjectData, ApplicationCommandOptionData* pDataStructure) {
+	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, ApplicationCommandOptionData* pDataStructure) {
 			if (jsonObjectData.contains("name") && !jsonObjectData["name"].is_null()) {
 				pDataStructure->name = jsonObjectData["name"].get<std::string>();
 			}
@@ -5606,7 +5631,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Representing "TypingStart" data. \brief Representing "TypingStart" data.
-	struct DiscordCoreAPI_Dll TypingStartData : public DiscordCoreInternal::DataParserTwo<TypingStartData> {
+	struct DiscordCoreAPI_Dll TypingStartData  {
 		GuildMemberData member{};
 		int32_t timestamp{ 0 };
 		uint64_t channelId{};
@@ -5616,7 +5641,7 @@ namespace DiscordCoreAPI {
 		TypingStartData() = default;
 
 		TypingStartData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -5626,7 +5651,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~TypingStartData() = default;
 
-		void parseObjectReal(const nlohmann::json& jsonObjectData, TypingStartData* pDataStructure) {
+		inline void parseObjectReal(const nlohmann::json& jsonObjectData, TypingStartData* pDataStructure) {
 			if (jsonObjectData.contains("channel_id") && !jsonObjectData["channel_id"].is_null()) {
 				pDataStructure->channelId = stoull(jsonObjectData["channel_id"].get<std::string>());
 			}
@@ -5650,7 +5675,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// YouTube format data. \brief YouTube format data.
-	struct DiscordCoreAPI_Dll YouTubeFormat : public DiscordCoreInternal::DataParserTwo<YouTubeFormat> {
+	struct DiscordCoreAPI_Dll YouTubeFormat  {
 		std::string signatureCipher{};
 		std::string audioSampleRate{};
 		int32_t averageBitrate{ 0 };
@@ -5671,7 +5696,7 @@ namespace DiscordCoreAPI {
 		YouTubeFormat() = default;
 
 		YouTubeFormat& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -5681,7 +5706,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~YouTubeFormat() = default;
 
-	  	void parseObjectReal(const nlohmann::json&jsonObjectData, YouTubeFormat*pDataStructure) {
+	  	inline void parseObjectReal(const nlohmann::json&jsonObjectData, YouTubeFormat*pDataStructure) {
 			if (!jsonObjectData.is_null()) {
 				if (jsonObjectData.contains("streamingData") && !jsonObjectData["streamingData"].is_null() && jsonObjectData["streamingData"].contains("formats") &&
 					!jsonObjectData["streamingData"]["formats"].is_null()) {
@@ -5835,14 +5860,14 @@ namespace DiscordCoreAPI {
 		}
 	};
 
-	class YouTubeFormatVector : public DiscordCoreInternal::DataParserTwo<YouTubeFormatVector> {
+	class YouTubeFormatVector  {
 	  public:
 		std::vector<YouTubeFormat> theYouTubeFormats{};
 
 		YouTubeFormatVector() = default;
 
 		YouTubeFormatVector& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -5852,7 +5877,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~YouTubeFormatVector() = default;
 
-		void parseObjectReal(const nlohmann::json& jsonObjectData, YouTubeFormatVector* pDataStructure) {
+		inline void parseObjectReal(const nlohmann::json& jsonObjectData, YouTubeFormatVector* pDataStructure) {
 			pDataStructure->theYouTubeFormats.reserve(jsonObjectData.size());
 			for (auto& value: jsonObjectData) {
 				DiscordCoreAPI::YouTubeFormat newData{ value };
@@ -5871,13 +5896,13 @@ namespace DiscordCoreAPI {
 	};
 
 	/// User command Interaction data. \brief User command Interaction data.
-	struct DiscordCoreAPI_Dll UserCommandInteractionData : public DiscordCoreInternal::DataParserTwo<UserCommandInteractionData> {
+	struct DiscordCoreAPI_Dll UserCommandInteractionData  {
 		std::string targetId{};///< The target User's id.
 
 		UserCommandInteractionData() = default;
 
 		UserCommandInteractionData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -5887,7 +5912,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~UserCommandInteractionData() = default;
 
-	  	void parseObjectReal(const nlohmann::json& jsonObjectData, UserCommandInteractionData* pDataStructure) {
+	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, UserCommandInteractionData* pDataStructure) {
 			if (jsonObjectData.contains("target_id") && !jsonObjectData["target_id"].is_null()) {
 				pDataStructure->targetId = jsonObjectData["target_id"].get<std::string>();
 			}
@@ -5895,13 +5920,13 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Message command interacction data. \brief Message command interacction data.
-	struct DiscordCoreAPI_Dll MessageCommandInteractionData : public DiscordCoreInternal::DataParserTwo<MessageCommandInteractionData> {
+	struct DiscordCoreAPI_Dll MessageCommandInteractionData {
 		std::string targetId{};///< The target Message's id.
 
 		MessageCommandInteractionData() = default;
 
 		MessageCommandInteractionData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -5911,7 +5936,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~MessageCommandInteractionData() = default;
 
-	  	void parseObjectReal(const nlohmann::json& jsonObjectData, MessageCommandInteractionData* pDataStructure) {
+	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, MessageCommandInteractionData* pDataStructure) {
 			if (jsonObjectData.contains("target_id") && !jsonObjectData["target_id"].is_null()) {
 				pDataStructure->targetId = jsonObjectData["target_id"].get<std::string>();
 			}
@@ -5927,7 +5952,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Component Interaction data. \brief Component Interaction data.
-	struct DiscordCoreAPI_Dll ComponentInteractionData : public DiscordCoreInternal::DataParserTwo<ComponentInteractionData> {
+	struct DiscordCoreAPI_Dll ComponentInteractionData {
 		std::vector<std::string> values{};///< The values of the components.
 		ComponentType componentType{};///< The type of component.
 		std::string customId{};///< The custom id of the Interaction entity.
@@ -5935,7 +5960,7 @@ namespace DiscordCoreAPI {
 		ComponentInteractionData() = default;
 
 		ComponentInteractionData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -5945,7 +5970,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~ComponentInteractionData() = default;
 
-	  	void parseObjectReal(const nlohmann::json& jsonObjectData, ComponentInteractionData* pDataStructure) {
+	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, ComponentInteractionData* pDataStructure) {
 			if (jsonObjectData.contains("values") && !jsonObjectData["values"].is_null()) {
 				pDataStructure->values.clear();
 				pDataStructure->values.reserve(jsonObjectData["values"].size());
@@ -5966,7 +5991,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Modal interaction data, for inputs from text modals. \brief Modal interaction data, for inputs from text modals.
-	struct DiscordCoreAPI_Dll ModalInteractionData : public DiscordCoreInternal::DataParserTwo<ModalInteractionData> {
+	struct DiscordCoreAPI_Dll ModalInteractionData  {
 		std::string customIdSmall{};///< The custom id of a particular modal input.
 		std::string customId{};///< The custom id of the Interaction entity.
 		std::string value{};///< The input value of the modal.
@@ -5974,7 +5999,7 @@ namespace DiscordCoreAPI {
 		ModalInteractionData() = default;
 
 		ModalInteractionData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -5984,7 +6009,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~ModalInteractionData() = default;
 
-	  	void parseObjectReal(const nlohmann::json& jsonObjectData, ModalInteractionData* pDataStructure) {
+	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, ModalInteractionData* pDataStructure) {
 			if (jsonObjectData.contains("components") && !jsonObjectData["components"].is_null()) {
 				pDataStructure->value = jsonObjectData["components"][0]["components"][0]["value"].get<std::string>();
 			}
@@ -6000,7 +6025,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Allowable mentions for a Message. \brief Allowable mentions for a Message.
-	struct DiscordCoreAPI_Dll AllowedMentionsData : public DiscordCoreInternal::DataParserTwo<AllowedMentionsData> {
+	struct DiscordCoreAPI_Dll AllowedMentionsData  {
 		std::vector<std::string> parse{};///< A std::vector of allowed mention types to parse from the content.
 		std::vector<std::string> roles{};///< Array of role_ids to mention (Max size of 100)
 		std::vector<std::string> users{};///< Array of user_ids to mention (Max size of 100)
@@ -6018,7 +6043,7 @@ namespace DiscordCoreAPI {
 		}
 
 		AllowedMentionsData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -6028,7 +6053,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~AllowedMentionsData() = default;
 
-	  	void parseObjectReal(const nlohmann::json& jsonObjectData, AllowedMentionsData* pDataStructure) {
+	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, AllowedMentionsData* pDataStructure) {
 			if (jsonObjectData.contains("parse") && !jsonObjectData["parse"].is_null()) {
 				pDataStructure->parse.clear();
 				pDataStructure->parse.reserve(jsonObjectData["parse"].size());
@@ -6072,7 +6097,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Represents a single selection from a select-menu. \brief Represents a single selection from a select-menu.
-	struct DiscordCoreAPI_Dll SelectOptionData :public DiscordCoreInternal::DataParserTwo<SelectOptionData>{
+	struct DiscordCoreAPI_Dll SelectOptionData {
 		std::string description{};///< Description of the select-menu-option.
 		bool _default{ false };///< Is it the default option?
 		std::string label{};///< A visible label for the select-menu-option.
@@ -6082,7 +6107,7 @@ namespace DiscordCoreAPI {
 		SelectOptionData() = default;
 
 		SelectOptionData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -6092,7 +6117,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~SelectOptionData() = default;
 
-	  	void parseObjectReal(const nlohmann::json& jsonObjectData, SelectOptionData* pDataStructure) {
+	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, SelectOptionData* pDataStructure) {
 			if (jsonObjectData.contains("label") && !jsonObjectData["label"].is_null()) {
 				pDataStructure->label = jsonObjectData["label"].get<std::string>();
 			}
@@ -6145,13 +6170,13 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Action row data of Message components. \brief Action row data of Message components.
-	struct DiscordCoreAPI_Dll ActionRowData : public DiscordCoreInternal::DataParserTwo<ActionRowData>{
+	struct DiscordCoreAPI_Dll ActionRowData {
 		std::vector<ComponentData> components{};///< Array of components to make up the action-row.
 
 		ActionRowData() = default;
 
 		ActionRowData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -6227,7 +6252,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~ActionRowData() = default;
 
-	  	void parseObjectReal(const nlohmann::json& jsonObjectData, ActionRowData* pDataStructure) {
+	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, ActionRowData* pDataStructure) {
 			if (jsonObjectData.contains("components") && !jsonObjectData["components"].is_null()) {
 				pDataStructure->components.clear();
 				pDataStructure->components.reserve(jsonObjectData["components"].size());
@@ -6332,7 +6357,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Data structure representing an ApplicationCommand. \brief Data structure representing an ApplicationCommand.
-	class DiscordCoreAPI_Dll ApplicationCommandData : public DiscordEntity, public DiscordCoreInternal::DataParserTwo<ApplicationCommandData> {
+	class DiscordCoreAPI_Dll ApplicationCommandData : public DiscordEntity  {
 	  public:
 		std::unordered_map<std::string, std::string> descriptionLocalizations{};///< Dictionary with keys in available locales Localization dictionary for name field.
 		std::unordered_map<std::string, std::string> nameLocalizations{};///< Dictionary with keys in available locales Localization dictionary for name field.
@@ -6349,7 +6374,7 @@ namespace DiscordCoreAPI {
 		ApplicationCommandData() = default;
 
 		ApplicationCommandData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -6359,7 +6384,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~ApplicationCommandData() = default;
 
-	  	void parseObjectReal(const nlohmann::json& jsonObjectData, ApplicationCommandData* pDataStructure) {
+	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, ApplicationCommandData* pDataStructure) {
 			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
 				pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
 			}
@@ -6425,7 +6450,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Channel mention data. \brief Channel mention data.
-	class DiscordCoreAPI_Dll ChannelMentionData : public DiscordEntity, public DiscordCoreInternal::DataParserTwo<ChannelMentionData> {
+	class DiscordCoreAPI_Dll ChannelMentionData : public DiscordEntity  {
 	  public:
 		uint64_t guildId{};///< The id of the Guild where it took place.
 		std::string name{};///< The name of the Channel that was mentioned.
@@ -6434,7 +6459,7 @@ namespace DiscordCoreAPI {
 		ChannelMentionData() = default;
 
 		ChannelMentionData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -6444,7 +6469,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~ChannelMentionData() = default;
 
-	  	void parseObjectReal(const nlohmann::json& jsonObjectData, ChannelMentionData* pDataStructure) {
+	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, ChannelMentionData* pDataStructure) {
 			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
 				pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
 			}
@@ -6464,7 +6489,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Data for when some Channel pins are updated. \brief Data for when some Channel pins are updated.
-	struct DiscordCoreAPI_Dll ChannelPinsUpdateEventData : public DiscordCoreInternal::DataParserTwo<ChannelPinsUpdateEventData> {
+	struct DiscordCoreAPI_Dll ChannelPinsUpdateEventData {
 		TimeStamp lastPinTimestamp{ "" };///< The time of the last pinned Message.
 		uint64_t channelId{};///< The id of the Channel within which the Message was pinned.
 		uint64_t guildId{};///< The id of the Guild within which the Message was pinned.
@@ -6472,7 +6497,7 @@ namespace DiscordCoreAPI {
 		ChannelPinsUpdateEventData() = default;
 
 		ChannelPinsUpdateEventData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -6482,7 +6507,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~ChannelPinsUpdateEventData() = default;
 
-		void parseObjectReal(const nlohmann::json& jsonObjectData, ChannelPinsUpdateEventData* pDataStructre) {
+		inline void parseObjectReal(const nlohmann::json& jsonObjectData, ChannelPinsUpdateEventData* pDataStructre) {
 			if (jsonObjectData.contains("guild_id") && !jsonObjectData["guild_id"].is_null()) {
 				pDataStructre->guildId = stoull(jsonObjectData["guild_id"].get<std::string>());
 			}
@@ -6498,7 +6523,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Data for when threads are synced. \brief Data for when threads are synced.
-	struct DiscordCoreAPI_Dll ThreadListSyncData : public DiscordCoreInternal::DataParserTwo<ThreadListSyncData> {
+	struct DiscordCoreAPI_Dll ThreadListSyncData {
 		std::vector<ThreadMemberData> members{};///< Array of members that are a part of the Thread.
 		std::vector<std::string> channelIds{};///< The parent Channel ids whose threads are being synced. If omitted, then threads were synced for entire Guild.
 		std::vector<ChannelData> threads{};///< All active threads in the given channels that the current User can access.
@@ -6507,7 +6532,7 @@ namespace DiscordCoreAPI {
 		ThreadListSyncData() = default;
 
 		ThreadListSyncData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -6517,7 +6542,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~ThreadListSyncData() = default;
 
-		void parseObjectReal(const nlohmann::json& jsonObjectData, ThreadListSyncData* pDataStructure) {
+		inline void parseObjectReal(const nlohmann::json& jsonObjectData, ThreadListSyncData* pDataStructure) {
 			if (jsonObjectData.contains("guild_id") && !jsonObjectData["guild_id"].is_null()) {
 				pDataStructure->guildId = stoull(jsonObjectData["guild_id"].get<std::string>());
 			}
@@ -6554,7 +6579,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Represents a Thread-members-update. \brief Represents a Thread-members-update.
-	class DiscordCoreAPI_Dll ThreadMembersUpdateData : public DiscordEntity, public DiscordCoreInternal::DataParserTwo<ThreadMembersUpdateData> {
+	class DiscordCoreAPI_Dll ThreadMembersUpdateData : public DiscordEntity  {
 	  public:
 		std::vector<ThreadMemberData> addedMembers{};///< New members added to the Thread.
 		std::vector<std::string> removedMemberIds{};///< Members who have been removed.
@@ -6564,7 +6589,7 @@ namespace DiscordCoreAPI {
 		ThreadMembersUpdateData() = default;
 
 		ThreadMembersUpdateData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -6574,7 +6599,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~ThreadMembersUpdateData() = default;
 
-		void parseObjectReal(const nlohmann::json& jsonObjectData, ThreadMembersUpdateData* pDataStructure) {
+		inline void parseObjectReal(const nlohmann::json& jsonObjectData, ThreadMembersUpdateData* pDataStructure) {
 			if (jsonObjectData.contains("guild_id") && !jsonObjectData["guild_id"].is_null()) {
 				pDataStructure->guildId = stoull(jsonObjectData["guild_id"].get<std::string>());
 			}
@@ -6609,7 +6634,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Message Interaction data. \brief Message Interaction data.
-	class DiscordCoreAPI_Dll MessageInteractionData : public DiscordEntity, public DiscordCoreInternal::DataParserTwo<MessageInteractionData> {
+	class DiscordCoreAPI_Dll MessageInteractionData : public DiscordEntity {
 	  public:
 		GuildMemberData member{};
 		InteractionType type{};
@@ -6619,7 +6644,7 @@ namespace DiscordCoreAPI {
 		MessageInteractionData() = default;
 
 		MessageInteractionData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -6629,7 +6654,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~MessageInteractionData() = default;
 
-	  	void parseObjectReal(const nlohmann::json& jsonObjectData, MessageInteractionData* pDataStructure) {
+	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, MessageInteractionData* pDataStructure) {
 			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
 				pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
 			}
@@ -6711,7 +6736,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Message Sticker item data. \brief Message Sticker item data.
-	class DiscordCoreAPI_Dll StickerItemData : public DiscordEntity, public DiscordCoreInternal::DataParserTwo<StickerItemData>	{
+	class DiscordCoreAPI_Dll StickerItemData : public DiscordEntity {
 	  public:
 		StickerItemType formatType{};///< Message Sticker item type.
 		std::string name{};///< The name of the Sticker.
@@ -6729,7 +6754,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~StickerItemData() = default;
 
-	  	void parseObjectReal(const nlohmann::json& jsonObjectData, StickerItemData* pDataStructure) {
+	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, StickerItemData* pDataStructure) {
 			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
 				pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
 			}
@@ -6745,7 +6770,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// The core of a Message's data structure. \brief The core of a Message's data structure.
-	class DiscordCoreAPI_Dll MessageDataOld : public DiscordEntity, public DiscordCoreInternal::DataParserTwo<MessageDataOld> {
+	class DiscordCoreAPI_Dll MessageDataOld : public DiscordEntity {
 	  public:
 		std::vector<ChannelMentionData> mentionChannels{};///< array of Channel mention data.
 		std::vector<StickerItemData> stickerItems{};///< Array of Message Sticker item data.
@@ -6790,7 +6815,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~MessageDataOld() = default;
 
-	  	void parseObjectReal(const nlohmann::json& jsonObjectData, MessageDataOld* pDataStructure) {
+	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, MessageDataOld* pDataStructure) {
 			if (jsonObjectData.contains("content") && !jsonObjectData["content"].is_null()) {
 				pDataStructure->content = jsonObjectData["content"].get<std::string>();
 			}
@@ -7026,7 +7051,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~MessageData() = default;
 
-	  	void parseObjectReal(const nlohmann::json& jsonObjectData, MessageData* pDataStructure) {
+	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, MessageData* pDataStructure) {
 			if (jsonObjectData.contains("content") && !jsonObjectData["content"].is_null()) {
 				pDataStructure->content = jsonObjectData["content"].get<std::string>();
 			}
@@ -7213,7 +7238,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Represents a Sticker pack. \brief Represents a Sticker pack.
-	struct DiscordCoreAPI_Dll StickerPackData : public DiscordCoreInternal::DataParserTwo<StickerPackData> {
+	struct DiscordCoreAPI_Dll StickerPackData {
 		std::vector<StickerData> stickers{};///< Array of Sticker objects	the stickers in the pack.
 		std::string coverStickerId{};///< Id of a Sticker in the pack which is shown as the pack's icon.
 		std::string bannerAssetId{};///< Id of the Sticker pack's banner image.
@@ -7235,7 +7260,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~StickerPackData() = default;
 
-	  	void parseObjectReal(const nlohmann::json& jsonObjectData, StickerPackData* pDataStructure) {
+	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, StickerPackData* pDataStructure) {
 			if (jsonObjectData.contains("stickers") && !jsonObjectData["stickers"].is_null()) {
 				pDataStructure->stickers.clear();
 				pDataStructure->stickers.reserve(jsonObjectData["stickers"].size());
@@ -7272,14 +7297,14 @@ namespace DiscordCoreAPI {
 		}
 	};
 
-	class StickerPackDataVector : public DiscordCoreInternal::DataParserTwo<StickerPackDataVector> {
+	class StickerPackDataVector {
 	  public:
 		std::vector<StickerPackData> theStickerPackDatas{};
 
 		StickerPackDataVector() = default;
 
 		StickerPackDataVector& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -7289,7 +7314,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~StickerPackDataVector() = default;
 
-		void parseObjectReal(const nlohmann::json& jsonObjectData, StickerPackDataVector* pDataStructure) {
+		inline void parseObjectReal(const nlohmann::json& jsonObjectData, StickerPackDataVector* pDataStructure) {
 			pDataStructure->theStickerPackDatas.reserve(jsonObjectData.size());
 			for (auto& value: jsonObjectData) {
 				DiscordCoreAPI::StickerPackData newData{ value };
@@ -7306,7 +7331,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Represents a single User Connection. \brief Represents a single User Connection.
-	struct DiscordCoreAPI_Dll ConnectionData : public DiscordCoreInternal::DataParserTwo<ConnectionData> {
+	struct DiscordCoreAPI_Dll ConnectionData  {
 		std::vector<IntegrationData> integrations{};///< An array of partial server integrations.
 		ConnectionVisibilityTypes visibility{};///< Visibility of this connection.
 		bool showActivity{ false };///< Whether activities related to this connection will be shown in presence updates.
@@ -7330,7 +7355,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~ConnectionData() = default;
 
-		void parseObjectReal(const nlohmann::json& jsonObjectData, ConnectionData* pDataStructure) {
+		inline void parseObjectReal(const nlohmann::json& jsonObjectData, ConnectionData* pDataStructure) {
 			if (jsonObjectData.contains("name") && !jsonObjectData["name"].is_null()) {
 				pDataStructure->name = jsonObjectData["name"].get<std::string>();
 			}
@@ -7375,14 +7400,14 @@ namespace DiscordCoreAPI {
 		}
 	};
 
-	class ConnectionDataVector : public DiscordCoreInternal::DataParserTwo<ConnectionDataVector> {
+	class ConnectionDataVector {
 	  public:
 		std::vector<ConnectionData> theConnectionDatas{};
 
 		ConnectionDataVector() = default;
 
 		ConnectionDataVector& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -7392,7 +7417,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~ConnectionDataVector() = default;
 
-		void parseObjectReal(const nlohmann::json& jsonObjectData, ConnectionDataVector* pDataStructure) {
+		inline void parseObjectReal(const nlohmann::json& jsonObjectData, ConnectionDataVector* pDataStructure) {
 			pDataStructure->theConnectionDatas.reserve(jsonObjectData.size());
 			for (auto& value: jsonObjectData) {
 				DiscordCoreAPI::ConnectionData newData{ value };
@@ -7403,7 +7428,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// ApplicationCommand Interaction data option. \brief ApplicationCommand Interaction data option.
-	struct DiscordCoreAPI_Dll ApplicationCommandInteractionDataOption : public DiscordCoreInternal::DataParserTwo<ApplicationCommandInteractionDataOption> {
+	struct DiscordCoreAPI_Dll ApplicationCommandInteractionDataOption {
 		std::vector<ApplicationCommandInteractionDataOption> options{};///< ApplicationCommand Interaction data options.
 		ApplicationCommandOptionType type{};///< The type of ApplicationCommand options.
 		std::string valueString{};///< The value if it's a std::string.
@@ -7415,7 +7440,7 @@ namespace DiscordCoreAPI {
 		ApplicationCommandInteractionDataOption() = default;
 
 		ApplicationCommandInteractionDataOption& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -7425,7 +7450,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~ApplicationCommandInteractionDataOption() = default;
 
-	  	void parseObjectReal(const nlohmann::json& jsonObjectData, ApplicationCommandInteractionDataOption* pDataStructure) {
+	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, ApplicationCommandInteractionDataOption* pDataStructure) {
 			if (jsonObjectData.contains("name") && !jsonObjectData["name"].is_null()) {
 				pDataStructure->name = jsonObjectData["name"].get<std::string>();
 			}
@@ -7462,7 +7487,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// ApplicationCommand Interaction data. \brief ApplicationCommand Interaction data.
-	class DiscordCoreAPI_Dll ApplicationCommandInteractionData : public DiscordEntity, public DiscordCoreInternal::DataParserTwo<ApplicationCommandInteractionData> {
+	class DiscordCoreAPI_Dll ApplicationCommandInteractionData : public DiscordEntity {
 	  public:
 		std::vector<ApplicationCommandInteractionDataOption> options{};///< ApplicationCommand Interaction data options.
 		ApplicationCommandType type{};///< The type of ApplicationCommand.
@@ -7473,7 +7498,7 @@ namespace DiscordCoreAPI {
 		ApplicationCommandInteractionData() = default;
 
 		ApplicationCommandInteractionData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -7483,7 +7508,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~ApplicationCommandInteractionData() = default;
 
-	  	void parseObjectReal(const nlohmann::json& jsonObjectData, ApplicationCommandInteractionData* pDataStructure) {
+	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, ApplicationCommandInteractionData* pDataStructure) {
 			if (jsonObjectData.contains("type") && !jsonObjectData["type"].is_null()) {
 				pDataStructure->type = jsonObjectData["type"].get<ApplicationCommandType>();
 			}
@@ -7566,7 +7591,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Interaction data data. \brief Interaction data data.
-	struct DiscordCoreAPI_Dll InteractionDataData : public DiscordCoreInternal::DataParserTwo<InteractionDataData> {
+	struct DiscordCoreAPI_Dll InteractionDataData {
 		ApplicationCommandInteractionData applicationCommandData{};///< ApplicationCommand Interaction data.
 		MessageCommandInteractionData messageInteractionData{};///< Message command Interaction data.
 		UserCommandInteractionData userInteractionData{};///< User command Interaction data.
@@ -7576,7 +7601,7 @@ namespace DiscordCoreAPI {
 		InteractionDataData() = default;
 
 		InteractionDataData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -7586,7 +7611,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~InteractionDataData() = default;
 
-	  	void parseObjectReal(const nlohmann::json& jsonObjectData, InteractionDataData* pDataStructure) {
+	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, InteractionDataData* pDataStructure) {
 			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
 				pDataStructure->applicationCommandData = jsonObjectData;
 			}
@@ -7607,7 +7632,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Interaction data. \brief Interaction data.
-	class DiscordCoreAPI_Dll InteractionData : public DiscordEntity, public DiscordCoreInternal::DataParserTwo<InteractionData> {
+	class DiscordCoreAPI_Dll InteractionData : public DiscordEntity {
 	  public:
 		InteractionDataData data{};///< The Interaction's data.
 		std::string guildLocale{};///< The guild's preferred locale, if invoked in a guild.
@@ -7626,7 +7651,7 @@ namespace DiscordCoreAPI {
 		InteractionData() = default;
 
 		InteractionData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -7636,7 +7661,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~InteractionData() = default;
 
-	  	void parseObjectReal(const nlohmann::json& jsonObjectData, InteractionData* pDataStructure) {
+	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, InteractionData* pDataStructure) {
 			if (jsonObjectData.contains("data") && !jsonObjectData["data"].is_null()) {
 				pDataStructure->data = jsonObjectData["data"];
 				pDataStructure->rawData = jsonObjectData["data"];
@@ -7694,7 +7719,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Data from the SessionStart info. \brief Data from the SessionStart info.
-	struct DiscordCoreAPI_Dll SessionStartData :public DiscordCoreInternal::DataParserTwo<SessionStartData> {
+	struct DiscordCoreAPI_Dll SessionStartData {
 		uint32_t maxConcurrency{ 0 };///< The number of identify requests allowed per 5 seconds.
 		uint32_t resetAfter{ 0 };///< The number of std::chrono::milliseconds after which the limit resets.
 		uint32_t remaining{ 0 };///< The remaining number of session starts the current User is allowed.
@@ -7703,7 +7728,7 @@ namespace DiscordCoreAPI {
 		SessionStartData() = default;
 
 		SessionStartData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -7713,7 +7738,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~SessionStartData() = default;
 
-	  	void parseObjectReal(const nlohmann::json& jsonObjectData, SessionStartData* pDataStructure) {
+	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, SessionStartData* pDataStructure) {
 			if (jsonObjectData.contains("max_concurrency") && !jsonObjectData["max_concurrency"].is_null()) {
 				pDataStructure->maxConcurrency = jsonObjectData["max_concurrency"].get<uint32_t>();
 			}
@@ -7733,7 +7758,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Data from the GetGatewatBot endpoint. \brief Data from the GetGatewatBot endpoint.
-	struct DiscordCoreAPI_Dll GatewayBotData : public DiscordCoreInternal::DataParserTwo<GatewayBotData> {
+	struct DiscordCoreAPI_Dll GatewayBotData  {
 		SessionStartData sessionStartLimit{};///< Information on the current session start limit.
 		uint32_t shards{ 0 };///< The recommended number of shards to use when connecting.
 		std::string url{};///< The WSS Url that can be used for connecting to the gateway.
@@ -7741,7 +7766,7 @@ namespace DiscordCoreAPI {
 		GatewayBotData() = default;
 
 		GatewayBotData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -7751,7 +7776,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~GatewayBotData() = default;
 
-	  	void parseObjectReal(const nlohmann::json& jsonObjectData, GatewayBotData* pDataStructure) {
+	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, GatewayBotData* pDataStructure) {
 			if (jsonObjectData.contains("session_start_limit") && !jsonObjectData["session_start_limit"].is_null()) {
 				pDataStructure->sessionStartLimit = jsonObjectData["session_start_limit"];
 			}
@@ -7788,14 +7813,14 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Data representing a Guild Emoji Update event. \brief Data representing a Guild Emoji Update event.
-	struct DiscordCoreAPI_Dll GuildEmojisUpdateEventData : public DiscordCoreInternal::DataParserTwo<GuildEmojisUpdateEventData> {
+	struct DiscordCoreAPI_Dll GuildEmojisUpdateEventData {
 		std::vector<EmojiData> emojis{};
 		uint64_t guildId{};
 
 		GuildEmojisUpdateEventData() = default;
 
 		GuildEmojisUpdateEventData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -7803,7 +7828,7 @@ namespace DiscordCoreAPI {
 			*this = jsonObjectData;
 		}
 
-		void parseObjectReal(const nlohmann::json& jsonObjectData, GuildEmojisUpdateEventData* pDataStructure) {
+		inline void parseObjectReal(const nlohmann::json& jsonObjectData, GuildEmojisUpdateEventData* pDataStructure) {
 			if (jsonObjectData.contains("guild_id") && !jsonObjectData["guild_id"].is_null()) {
 				pDataStructure->guildId = stoull(jsonObjectData["guild_id"].get<std::string>());
 			}
@@ -7823,14 +7848,14 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Data representing a Guild Sticker Update event. \brief Data representing a Guild Stickers Update event.
-	struct DiscordCoreAPI_Dll GuildStickersUpdateEventData : public DiscordCoreInternal::DataParserTwo<GuildStickersUpdateEventData> {
+	struct DiscordCoreAPI_Dll GuildStickersUpdateEventData  {
 		std::vector<StickerData> stickers{};
 		uint64_t guildId{};
 
 		GuildStickersUpdateEventData() = default;
 
 		GuildStickersUpdateEventData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -7838,7 +7863,7 @@ namespace DiscordCoreAPI {
 			*this = jsonObjectData;
 		}
 
-		void parseObjectReal(const nlohmann::json& jsonObjectData, GuildStickersUpdateEventData* pDataStructure) {
+		inline void parseObjectReal(const nlohmann::json& jsonObjectData, GuildStickersUpdateEventData* pDataStructure) {
 			if (jsonObjectData.contains("guild_id") && !jsonObjectData["guild_id"].is_null()) {
 				pDataStructure->guildId = stoull(jsonObjectData["guild_id"].get<std::string>());
 			}
@@ -7857,7 +7882,7 @@ namespace DiscordCoreAPI {
 		virtual ~GuildStickersUpdateEventData() = default;
 	};
 
-	struct DiscordCoreAPI_Dll GuildMembersChunkEventData : public DiscordCoreInternal::DataParserTwo<GuildMembersChunkEventData> {
+	struct DiscordCoreAPI_Dll GuildMembersChunkEventData  {
 		std::vector<PresenceUpdateData> presences{};
 		std::vector<GuildMemberData> members{};
 		std::vector<std::string> notFound{};
@@ -7869,7 +7894,7 @@ namespace DiscordCoreAPI {
 		GuildMembersChunkEventData() = default;
 
 		GuildMembersChunkEventData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -7877,7 +7902,7 @@ namespace DiscordCoreAPI {
 			*this = jsonObjectData;
 		}
 
-		void parseObjectReal(const nlohmann::json& jsonObjectData, GuildMembersChunkEventData* pDataStructure) {
+		inline void parseObjectReal(const nlohmann::json& jsonObjectData, GuildMembersChunkEventData* pDataStructure) {
 			if (jsonObjectData.contains("guild_id") && !jsonObjectData["guild_id"].is_null()) {
 				pDataStructure->guildId = stoull(jsonObjectData["guild_id"].get<std::string>());
 			}
@@ -7923,7 +7948,6 @@ namespace DiscordCoreAPI {
 				pDataStructure->members.shrink_to_fit();
 			}
 		}
-
 
 		virtual ~GuildMembersChunkEventData() = default;
 	};
@@ -8511,7 +8535,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Command data, for functions executed by the CommandController. \brief Command data, for functions executed by the CommandController.
-	struct DiscordCoreAPI_Dll CommandData : public DiscordCoreInternal::DataParserTwo<CommandData>{
+	struct DiscordCoreAPI_Dll CommandData {
 		friend struct DiscordCoreAPI_Dll BaseFunctionArguments;
 
 		std::vector<std::string> optionsArgs{};
@@ -8524,7 +8548,7 @@ namespace DiscordCoreAPI {
 		CommandData(InputEventData inputEventData);
 
 		CommandData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -8532,7 +8556,7 @@ namespace DiscordCoreAPI {
 			*this = jsonObjectData;
 		}
 
-		void parseObjectReal(const nlohmann::json& jsonObjectData, CommandData* pDataStructure) {
+		inline void parseObjectReal(const nlohmann::json& jsonObjectData, CommandData* pDataStructure) {
 			if (jsonObjectData.contains("options") && !jsonObjectData["options"].is_null()) {
 				pDataStructure->optionsArgs.reserve(jsonObjectData["options"].size());
 				for (auto& value: jsonObjectData["options"]) {
@@ -8632,7 +8656,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// A song from the various platforms. \brief A song from the various platforms.
-	struct DiscordCoreAPI_Dll Song : public DiscordCoreInternal::DataParserTwo<Song> {
+	struct DiscordCoreAPI_Dll Song {
 		friend class DiscordCoreInternal::SoundCloudRequestBuilder;
 		friend class DiscordCoreInternal::YouTubeRequestBuilder;
 		friend class DiscordCoreInternal::SoundCloudAPI;
@@ -8658,7 +8682,7 @@ namespace DiscordCoreAPI {
 		Song() = default;
 
 		Song& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -8666,7 +8690,7 @@ namespace DiscordCoreAPI {
 			*this = jsonObjectData;
 		}
 
-		void parseObjectReal(const nlohmann::json& jsonObjectData, Song* pDataStructure) {
+		inline void parseObjectReal(const nlohmann::json& jsonObjectData, Song* pDataStructure) {
 			if (jsonObjectData.contains("lengthText") && !jsonObjectData["lengthText"].is_null()) {
 				pDataStructure->duration = jsonObjectData["lengthText"]["accessibility"]["accessibilityData"]["label"].get<std::string>();
 			}

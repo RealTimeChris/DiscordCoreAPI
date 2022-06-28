@@ -74,7 +74,7 @@ namespace DiscordCoreAPI {
 		Sticker() = default;
 
 		Sticker& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -84,7 +84,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~Sticker() = default;
 
-	  	void parseObjectReal(const nlohmann::json& jsonObjectData, Sticker* pDataStructure) {
+	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, Sticker* pDataStructure) {
 			if (jsonObjectData.contains("asset") && !jsonObjectData["asset"].is_null()) {
 				pDataStructure->asset = jsonObjectData["asset"].get<std::string>();
 			}
@@ -131,14 +131,14 @@ namespace DiscordCoreAPI {
 		}
 	};
 
-	class StickerVector : public DiscordCoreInternal::DataParserTwo<StickerVector> {
+	class StickerVector {
 	  public:
 		std::vector<Sticker> theStickers{};
 
 		StickerVector() = default;
 
 		StickerVector& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -148,7 +148,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~StickerVector() = default;
 
-		void parseObjectReal(const nlohmann::json& jsonObjectData, StickerVector* pDataStructure) {
+		inline void parseObjectReal(const nlohmann::json& jsonObjectData, StickerVector* pDataStructure) {
 			pDataStructure->theStickers.reserve(jsonObjectData.size());
 			for (auto& value: jsonObjectData) {
 				DiscordCoreAPI::Sticker newData{ value };

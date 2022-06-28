@@ -37,7 +37,7 @@ namespace DiscordCoreAPI {
 		AutoModerationRule() = default;
 
 		AutoModerationRule& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -47,7 +47,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~AutoModerationRule() = default;
 
-		void parseObjectReal(const nlohmann::json& jsonObjectData, AutoModerationRule* pDataStructure) {
+		inline void parseObjectReal(const nlohmann::json& jsonObjectData, AutoModerationRule* pDataStructure) {
 			if (jsonObjectData.contains("name") && !jsonObjectData["name"].is_null()) {
 				pDataStructure->name = jsonObjectData["name"].get<std::string>();
 			}
@@ -101,14 +101,14 @@ namespace DiscordCoreAPI {
 		}
 	};
 
-	class AutoModerationRuleVector : public DiscordCoreInternal::DataParserTwo<AutoModerationRuleVector> {
+	class AutoModerationRuleVector {
 	  public:
 		std::vector<AutoModerationRule> theAutoModerationRules{};
 
 		AutoModerationRuleVector() = default;
 
 		AutoModerationRuleVector& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -118,7 +118,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~AutoModerationRuleVector() = default;
 
-		void parseObjectReal(const nlohmann::json& jsonObjectData, AutoModerationRuleVector* pDataStructure) {
+		inline void parseObjectReal(const nlohmann::json& jsonObjectData, AutoModerationRuleVector* pDataStructure) {
 			pDataStructure->theAutoModerationRules.reserve(jsonObjectData.size());
 			for (auto& value: jsonObjectData) {
 				DiscordCoreAPI::AutoModerationRule newData{ value };
@@ -153,7 +153,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// For when an auto-moderation-rule is executed. \brief For when an auto-moderation-rule is executed.
-	struct AutoModerationActionExecutionEventData : public DiscordCoreInternal::DataParserTwo<AutoModerationActionExecutionEventData>{
+	struct AutoModerationActionExecutionEventData {
 		uint64_t alertSystemMessageId{};///< The id of any system auto moderation messages posted as a result of this action.
 		TriggerType ruleTriggerType{};///< The trigger type of rule which was triggered.
 		std::string matchedKeyword{};///< The word or phrase configured in the rule that triggered the rule
@@ -169,7 +169,7 @@ namespace DiscordCoreAPI {
 		AutoModerationActionExecutionEventData() = default;
 
 		AutoModerationActionExecutionEventData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
+			this->parseObjectReal(jsonObjectData, this);
 			return *this;
 		}
 
@@ -179,7 +179,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~AutoModerationActionExecutionEventData() = default;
 
-	  	void parseObjectReal(const nlohmann::json& jsonObjectData, AutoModerationActionExecutionEventData* pDataStructure) {
+	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, AutoModerationActionExecutionEventData* pDataStructure) {
 			if (jsonObjectData.contains("alert_system_message_id") && !jsonObjectData["alert_system_message_id"].is_null()) {
 				pDataStructure->alertSystemMessageId = stoull(jsonObjectData["alert_system_message_id"].get<std::string>());
 			}

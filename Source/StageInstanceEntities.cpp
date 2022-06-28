@@ -20,7 +20,6 @@
 /// \file StageInstanceEntities.cpp
 
 #include <discordcoreapi/StageInstanceEntities.hpp>
-#include <discordcoreapi/DataParsingFunctions.hpp>
 #include <discordcoreapi/CoRoutine.hpp>
 
 namespace DiscordCoreAPI {
