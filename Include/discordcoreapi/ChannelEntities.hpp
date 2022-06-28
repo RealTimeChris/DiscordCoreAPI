@@ -301,6 +301,33 @@ namespace DiscordCoreAPI {
 		}
 	};
 
+	class ChannelVector : public DiscordCoreInternal::DataParserTwo<ChannelVector> {
+	  public:
+		std::vector<Channel> theChannels{};
+
+		ChannelVector() = default;
+
+		ChannelVector& operator=(const nlohmann::json& jsonObjectData) {
+			this->parseObject(jsonObjectData, this);
+			return *this;
+		}
+
+		ChannelVector(const nlohmann::json& jsonObjectData) {
+			*this = jsonObjectData;
+		}
+
+		virtual ~ChannelVector() = default;
+
+		void parseObjectReal(const nlohmann::json& jsonObjectData, ChannelVector* pDataStructure) {
+			pDataStructure->theChannels.reserve(jsonObjectData.size());
+			for (auto& value: jsonObjectData) {
+				DiscordCoreAPI::Channel newData{ value };
+				pDataStructure->theChannels.push_back(newData);
+			}
+			pDataStructure->theChannels.shrink_to_fit();
+		}
+	};
+
 	/// For modifying a Channel's properties. \brief For modifying a Channel's properties.
 	struct DiscordCoreAPI_Dll ModifyChannelData {
 		ModifyChannelData(Channel newData) {
@@ -363,8 +390,8 @@ namespace DiscordCoreAPI {
 
 		/// Collects a std::vector of the invites to a given Channel. \brief Collects a std::vector of the invites to a given Channel.
 		/// \param dataPackage A GetChannelInvitesData structure.
-		/// \returns A CoRoutine containing a std::vector<InviteData>.
-		static CoRoutine<std::vector<InviteData>> getChannelInvitesAsync(GetChannelInvitesData dataPackage);
+		/// \returns A CoRoutine containing a InviteDataVector.
+		static CoRoutine<InviteDataVector> getChannelInvitesAsync(GetChannelInvitesData dataPackage);
 
 		/// Creates an invite to a selected Channel. \brief Creates an invite to a selected Channel.
 		/// \param dataPackage A CreateChannelInviteData structure.
@@ -388,12 +415,12 @@ namespace DiscordCoreAPI {
 
 		/// Collects a list of Channels from a chosen Guild. \brief Collects a list of Channels from a chosen Guild.
 		/// \param dataPackage A GetGuildChannelsData structure.
-		/// \returns A CoRoutine containing a std::vector<Channel>.
-		static CoRoutine<std::vector<Channel>> getGuildChannelsAsync(GetGuildChannelsData dataPackage);
+		/// \returns A CoRoutine containing a ChannelVector.
+		static CoRoutine<ChannelVector> getGuildChannelsAsync(GetGuildChannelsData dataPackage);
 
 		/// Creates a new Channel within a chosen Guild. \brief Creates a new Channel within a chosen Guild.
 		/// \param dataPackage A CreateGuildChannelData structure.
-		/// \returns A CoRoutine containing a std::vector<Channel>.
+		/// \returns A CoRoutine containing a Channel.
 		static CoRoutine<Channel> createGuildChannelAsync(CreateGuildChannelData dataPackage);
 
 		/// Re-orders the Channel positions, within a chosen Guild. \brief Re-orders the Channel positions, within a chosen Guild.
@@ -408,8 +435,8 @@ namespace DiscordCoreAPI {
 
 		/// Collect a list of voice regions that are usable for the RTC-Region option of a given Channel.
 		/// \brief Collect a list of voice regions that are usable for the RTC-Region option of a given Channel.
-		/// \returns A CoRoutine containing a std::vector<VoiceRegionData>.
-		static CoRoutine<std::vector<VoiceRegionData>> getVoiceRegionsAsync();
+		/// \returns A CoRoutine containing a VoiceRegionDataVector.
+		static CoRoutine<VoiceRegionDataVector> getVoiceRegionsAsync();
 
 		static void insertChannel(ChannelData dataPackage);
 

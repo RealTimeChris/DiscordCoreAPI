@@ -129,7 +129,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// For listing all of the auto-moderation-rules for a particular AutoModerationRule. \brief For listing all of the auto-moderation-rules for a particular AutoModerationRule.
-	struct ListAutoModerationRulesForAutoModerationRuleData {
+	struct ListAutoModerationRulesForGuildData {
 		uint64_t guildId{};///< The id of the guild for which you would like to list the auto-moderation rules.
 	};
 
@@ -256,7 +256,7 @@ namespace DiscordCoreAPI {
 	  public:
 		static void initialize(DiscordCoreInternal::HttpsClient*);
 
-		CoRoutine<AutoModerationRuleVector> listAutoModerationRulesForAutoModerationRuleAsync(ListAutoModerationRulesForAutoModerationRuleData dataPackage);
+		CoRoutine<AutoModerationRuleVector> listAutoModerationRulesForGuildAsync(ListAutoModerationRulesForGuildData dataPackage);
 
 		CoRoutine<AutoModerationRule> getAutoModerationRuleAsync(GetAutoModerationRuleData dataPackage);
 

@@ -138,15 +138,15 @@ namespace DiscordCoreAPI {
 		co_return Channels::httpsClient->submitWorkloadAndGetResult<void>(workload);
 	}
 
-	CoRoutine<std::vector<InviteData>> Channels::getChannelInvitesAsync(GetChannelInvitesData dataPackage) {
+	CoRoutine<InviteDataVector> Channels::getChannelInvitesAsync(GetChannelInvitesData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{};
 		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Get_Channel_Invites);
-		co_await NewThreadAwaitable<std::vector<InviteData>>();
+		co_await NewThreadAwaitable<InviteDataVector>();
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Get_Channel_Invites;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/invites";
 		workload.callStack = "Channels::getChannelInvitesAsync";
-		co_return Channels::httpsClient->submitWorkloadAndGetResult<std::vector<InviteData>>(workload);
+		co_return Channels::httpsClient->submitWorkloadAndGetResult<InviteDataVector>(workload);
 	}
 
 	CoRoutine<InviteData> Channels::createChannelInviteAsync(CreateChannelInviteData dataPackage) {
@@ -201,15 +201,15 @@ namespace DiscordCoreAPI {
 		co_return Channels::httpsClient->submitWorkloadAndGetResult<void>(workload);
 	}
 
-	CoRoutine<std::vector<Channel>> Channels::getGuildChannelsAsync(GetGuildChannelsData dataPackage) {
+	CoRoutine<ChannelVector> Channels::getGuildChannelsAsync(GetGuildChannelsData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{};
 		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Channels);
-		co_await NewThreadAwaitable<std::vector<Channel>>();
+		co_await NewThreadAwaitable<ChannelVector>();
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Channels;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/channels";
 		workload.callStack = "Channels::getGuildChannelsAsync";
-		co_return Channels::httpsClient->submitWorkloadAndGetResult<std::vector<Channel>>(workload);
+		co_return Channels::httpsClient->submitWorkloadAndGetResult<ChannelVector>(workload);
 	}
 
 	CoRoutine<Channel> Channels::createGuildChannelAsync(CreateGuildChannelData dataPackage) {
@@ -257,15 +257,15 @@ namespace DiscordCoreAPI {
 		co_return Channels::httpsClient->submitWorkloadAndGetResult<Channel>(workload);
 	}
 
-	CoRoutine<std::vector<VoiceRegionData>> Channels::getVoiceRegionsAsync() {
+	CoRoutine<VoiceRegionDataVector> Channels::getVoiceRegionsAsync() {
 		DiscordCoreInternal::HttpsWorkloadData workload{};
 		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Get_Voice_Regions);
-		co_await NewThreadAwaitable<std::vector<VoiceRegionData>>();
+		co_await NewThreadAwaitable<VoiceRegionDataVector>();
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Get_Voice_Regions;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/voice/regions";
 		workload.callStack = "Channels::getVoiceRegions";
-		co_return Channels::httpsClient->submitWorkloadAndGetResult<std::vector<VoiceRegionData>>(workload);
+		co_return Channels::httpsClient->submitWorkloadAndGetResult<VoiceRegionDataVector>(workload);
 	}
 
 	void Channels::insertChannel(ChannelData channel) {

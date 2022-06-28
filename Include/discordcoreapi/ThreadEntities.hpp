@@ -313,7 +313,7 @@ namespace DiscordCoreAPI {
 		/// Collects a list of ThreadMembers if they exist. \brief Collects a list of ThreadMembers if they exist.
 		/// \param dataPackage A GetThreadMembersData structure.
 		/// returns A CoRoutine containing a std::vector<ThreadMemberData>.
-		static CoRoutine<std::vector<ThreadMemberData>> getThreadMembersAsync(GetThreadMembersData dataPackage);
+		static CoRoutine<ThreadMemberDataVector> getThreadMembersAsync(GetThreadMembersData dataPackage);
 
 		/// Collects a list of Threads from a given Channel. \brief Collects a list of Threads from a given Channel.
 		/// \param dataPackage A GetActiveThreadsData structure.

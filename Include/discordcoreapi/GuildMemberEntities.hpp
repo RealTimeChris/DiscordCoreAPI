@@ -22,6 +22,7 @@
 #pragma once
 
 #include <discordcoreapi/FoundationEntities.hpp>
+#include <discordcoreapi/UserEntities.hpp>
 #include <discordcoreapi/Https.hpp>
 
 namespace DiscordCoreAPI {
@@ -99,7 +100,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// A single GuildMember. \brief A single GuildMember.
-	class DiscordCoreAPI_Dll GuildMember : public GuildMemberData {
+	class DiscordCoreAPI_Dll GuildMember : public virtual GuildMemberData {
 	  public:
 		TimeStamp communicationDisabledUntil{ "" };///< When the user's timeout will expire and the user will be able to communicate in the guild again.
 		std::string premiumSince{};///< If applicable, when they first boosted the server.
@@ -124,11 +125,9 @@ namespace DiscordCoreAPI {
 			*this = jsonObjectData;
 		}
 
-		void insertUser(UserData theUser) {
-			Users::insertUser(theUser);
-		}
+		void insertUser(UserData* theUser);
 
-		virtual ~GuildMember() = default;
+		~GuildMember() = default;
 
 	  	void parseObjectReal(const nlohmann::json& jsonObjectData, GuildMember* pDataStructure) {
 			if (jsonObjectData.contains("communication_disabled_until") && !jsonObjectData["communication_disabled_until"].is_null()) {
@@ -171,7 +170,7 @@ namespace DiscordCoreAPI {
 
 			if (jsonObjectData.contains("user") && !jsonObjectData["user"].is_null()) {
 				User theUser{ jsonObjectData["user"] };
-				Users::insertUser(theUser);
+				this->insertUser(&theUser);
 				pDataStructure->id = theUser.id;
 				pDataStructure->userAvatar = theUser.avatar;
 				pDataStructure->userName = theUser.userName;
@@ -190,6 +189,34 @@ namespace DiscordCoreAPI {
 			}
 		}
 	};
+
+	class GuildMemberVector : public DiscordCoreInternal::DataParserTwo<GuildMemberVector> {
+	  public:
+		std::vector<GuildMember> theGuildMembers{};
+
+		GuildMemberVector() = default;
+
+		GuildMemberVector& operator=(const nlohmann::json& jsonObjectData) {
+			this->parseObject(jsonObjectData, this);
+			return *this;
+		}
+
+		GuildMemberVector(const nlohmann::json& jsonObjectData) {
+			*this = jsonObjectData;
+		}
+
+		virtual ~GuildMemberVector() = default;
+
+		void parseObjectReal(const nlohmann::json& jsonObjectData, GuildMemberVector* pDataStructure) {
+			pDataStructure->theGuildMembers.reserve(jsonObjectData.size());
+			for (auto& value: jsonObjectData) {
+				DiscordCoreAPI::GuildMember newData{ value };
+				pDataStructure->theGuildMembers.push_back(newData);
+			}
+			pDataStructure->theGuildMembers.shrink_to_fit();
+		}
+	};
+
 	/**@}*/
 
 	/**
@@ -219,12 +246,12 @@ namespace DiscordCoreAPI {
 		/// Lists all of the GuildMembers of a chosen Guild. \brief Lists all of the GuildMembers of a chosen Guild.
 		/// \param dataPackage A ListGuildMembersData structure.
 		/// \returns A CoRoutine containing a std::vector<GuildMembers>.
-		static CoRoutine<std::vector<GuildMember>> listGuildMembersAsync(ListGuildMembersData dataPackage);
+		static CoRoutine<GuildMemberVector> listGuildMembersAsync(ListGuildMembersData dataPackage);
 
 		/// Searches for a list of GuildMembers of a chosen Guild. \brief Searches for a list of GuildMembers of a chosen Guild.
 		/// \param dataPackage A SearchGuildMembersData structure.
 		/// \returns A CoRoutine containing a std::vector<GuildMembers>.
-		static CoRoutine<std::vector<GuildMember>> searchGuildMembersAsync(SearchGuildMembersData dataPackage);
+		static CoRoutine<GuildMemberVector> searchGuildMembersAsync(SearchGuildMembersData dataPackage);
 
 		/// Adds a GuildMember to a chosen Guild. \brief Adds a GuildMember to a chosen Guild.
 		/// \param dataPackage An AddGuildMemberData structure.

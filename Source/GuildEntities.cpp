@@ -211,13 +211,13 @@ namespace DiscordCoreAPI {
 		co_return guildNew;
 	}
 
-	CoRoutine<std::vector<GuildData>> Guilds::getAllGuildsAsync() {
+	CoRoutine<GuildDataVector> Guilds::getAllGuildsAsync() {
 		std::shared_lock<std::shared_mutex> theLock{ Guilds::theMutex };
-		co_await NewThreadAwaitable<std::vector<GuildData>>();
-		std::vector<GuildData> guildVector{};
+		co_await NewThreadAwaitable<GuildDataVector>();
+		GuildDataVector guildVector{};
 		for (auto& [key, value]: *Guilds::cache) {
 			value->discordCoreClient = Guilds::discordCoreClient;
-			guildVector.push_back(*value);
+			guildVector.theGuildDatas.push_back(*value);
 		}
 		co_return guildVector;
 	}
@@ -287,10 +287,10 @@ namespace DiscordCoreAPI {
 		co_return Guilds::httpsClient->submitWorkloadAndGetResult<void>(workload);
 	}
 
-	CoRoutine<std::vector<BanData>> Guilds::getGuildBansAsync(GetGuildBansData dataPackage) {
+	CoRoutine<BanDataVector> Guilds::getGuildBansAsync(GetGuildBansData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{};
 		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Bans);
-		co_await NewThreadAwaitable<std::vector<BanData>>();
+		co_await NewThreadAwaitable<BanDataVector>();
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Bans;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/bans";
@@ -311,7 +311,7 @@ namespace DiscordCoreAPI {
 			workload.relativePath += "?limit=" + std::to_string(dataPackage.limit);
 		}
 		workload.callStack = "Guilds::getGuildBansAsync";
-		co_return Guilds::httpsClient->submitWorkloadAndGetResult<std::vector<BanData>>(workload);
+		co_return Guilds::httpsClient->submitWorkloadAndGetResult<BanDataVector>(workload);
 	}
 
 	CoRoutine<BanData> Guilds::getGuildBanAsync(GetGuildBanData dataPackage) {
@@ -400,15 +400,15 @@ namespace DiscordCoreAPI {
 		co_return Guilds::httpsClient->submitWorkloadAndGetResult<GuildPruneCountData>(workload);
 	}
 
-	CoRoutine<std::vector<VoiceRegionData>> Guilds::getGuildVoiceRegionsAsync(GetGuildVoiceRegionsData dataPackage) {
+	CoRoutine<VoiceRegionDataVector> Guilds::getGuildVoiceRegionsAsync(GetGuildVoiceRegionsData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{};
 		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Voice_Regions);
-		co_await NewThreadAwaitable<std::vector<VoiceRegionData>>();
+		co_await NewThreadAwaitable<VoiceRegionDataVector>();
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Voice_Regions;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/regions";
 		workload.callStack = "Guilds::getGuildVoiceRegionsAsync";
-		co_return Guilds::httpsClient->submitWorkloadAndGetResult<std::vector<VoiceRegionData>>(workload);
+		co_return Guilds::httpsClient->submitWorkloadAndGetResult<VoiceRegionDataVector>(workload);
 	}
 
 	CoRoutine<InviteDataVector> Guilds::getGuildInvitesAsync(GetGuildInvitesData dataPackage) {
@@ -581,15 +581,15 @@ namespace DiscordCoreAPI {
 		co_return newGuild;
 	}
 
-	CoRoutine<std::vector<GuildTemplateData>> Guilds::getGuildTemplatesAsync(GetGuildTemplatesData dataPackage) {
+	CoRoutine<GuildTemplateDataVector> Guilds::getGuildTemplatesAsync(GetGuildTemplatesData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{};
 		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Templates);
-		co_await NewThreadAwaitable<std::vector<GuildTemplateData>>();
+		co_await NewThreadAwaitable<GuildTemplateDataVector>();
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Templates;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/templates";
 		workload.callStack = "Guilds::getGuildTemplatesAsync";
-		co_return Guilds::httpsClient->submitWorkloadAndGetResult<std::vector<GuildTemplateData>>(workload);
+		co_return Guilds::httpsClient->submitWorkloadAndGetResult<GuildTemplateDataVector>(workload);
 	}
 
 	CoRoutine<GuildTemplateData> Guilds::createGuildTemplateAsync(CreateGuildTemplateData dataPackage) {

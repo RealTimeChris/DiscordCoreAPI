@@ -103,7 +103,67 @@ namespace DiscordCoreAPI {
 
 		virtual ~GuildScheduledEvent() = default;
 
-	  	void parseObjectReal(const nlohmann::json&, GuildScheduledEvent*);
+	  	void parseObjectReal(const nlohmann::json& jsonObjectData, GuildScheduledEvent* pDataStructure) {
+			if (jsonObjectData.contains("privacy_level") && !jsonObjectData["privacy_level"].is_null()) {
+				pDataStructure->privacyLevel = jsonObjectData["privacy_level"].get<GuildScheduledEventPrivacyLevel>();
+			}
+
+			if (jsonObjectData.contains("entity_type") && !jsonObjectData["entity_type"].is_null()) {
+				pDataStructure->entityType = jsonObjectData["entity_type"].get<GuildScheduledEventEntityType>();
+			}
+
+			if (jsonObjectData.contains("status") && !jsonObjectData["status"].is_null()) {
+				pDataStructure->status = jsonObjectData["status"].get<GuildScheduledEventStatus>();
+			}
+
+			if (jsonObjectData.contains("entity_metadata") && !jsonObjectData["entity_metadata"].is_null()) {
+				pDataStructure->entityMetadata = jsonObjectData["entity_metadata"];
+			}
+
+			if (jsonObjectData.contains("scheduled_start_time") && !jsonObjectData["scheduled_start_time"].is_null()) {
+				pDataStructure->scheduledStartTime = jsonObjectData["scheduled_start_time"].get<std::string>();
+			}
+
+			if (jsonObjectData.contains("scheduled_end_time") && !jsonObjectData["scheduled_end_time"].is_null()) {
+				pDataStructure->scheduledEndTime = jsonObjectData["scheduled_end_time"].get<std::string>();
+			}
+
+			if (jsonObjectData.contains("user_count") && !jsonObjectData["user_count"].is_null()) {
+				pDataStructure->userCount = jsonObjectData["user_count"].get<uint32_t>();
+			}
+
+			if (jsonObjectData.contains("description") && !jsonObjectData["description"].is_null()) {
+				pDataStructure->description = jsonObjectData["description"].get<std::string>();
+			}
+
+			if (jsonObjectData.contains("channel_id") && !jsonObjectData["channel_id"].is_null()) {
+				pDataStructure->channelId = stoull(jsonObjectData["channel_id"].get<std::string>());
+			}
+
+			if (jsonObjectData.contains("creator_id") && !jsonObjectData["creator_id"].is_null()) {
+				pDataStructure->creatorId = jsonObjectData["creator_id"].get<std::string>();
+			}
+
+			if (jsonObjectData.contains("entity_id") && !jsonObjectData["entity_id"].is_null()) {
+				pDataStructure->entityId = jsonObjectData["entity_id"].get<std::string>();
+			}
+
+			if (jsonObjectData.contains("guild_id") && !jsonObjectData["guild_id"].is_null()) {
+				pDataStructure->guildId = stoull(jsonObjectData["guild_id"].get<std::string>());
+			}
+
+			if (jsonObjectData.contains("creator") && !jsonObjectData["creator"].is_null()) {
+				pDataStructure->creator = jsonObjectData["creator"];
+			}
+
+			if (jsonObjectData.contains("name") && !jsonObjectData["name"].is_null()) {
+				pDataStructure->name = jsonObjectData["name"].get<std::string>();
+			}
+
+			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
+				pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
+			}
+		}
 	};
 
 	/**@}*/
