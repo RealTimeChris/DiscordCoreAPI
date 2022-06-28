@@ -76,7 +76,7 @@ namespace DiscordCoreAPI {
 	/// DiscordCoreClient - The main class DiscordCoreAPI_Dll for this library. \brief DiscordCoreClient - The main class DiscordCoreAPI_Dll for this library.
 	class DiscordCoreAPI_Dll DiscordCoreClient {
 	  public:
-		friend class  DiscordCoreInternal::BaseSocketAgent;
+		friend class DiscordCoreInternal::BaseSocketAgent;
 		friend GuildData;
 		friend Guilds;
 
@@ -108,7 +108,7 @@ namespace DiscordCoreAPI {
 #ifdef _WIN32
 		DiscordCoreInternal::WSADataWrapper theWSAData{};
 #endif
-		
+
 		std::vector<std::string> threadIds{};
 		ConfigManager configManager{};
 		ThreadPool threadPool{};

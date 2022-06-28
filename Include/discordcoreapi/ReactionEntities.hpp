@@ -98,7 +98,7 @@ namespace DiscordCoreAPI {
 
 	/// For creating a new Guild Emoji.
 	struct DiscordCoreAPI_Dll CreateGuildEmojiData {
-		friend class  DiscordCoreInternal::JSONIfier;
+		friend class DiscordCoreInternal::JSONIfier;
 		friend Reactions;
 
 		std::vector<uint64_t> roles{};///< Roles that can use this Emoji.
@@ -142,7 +142,7 @@ namespace DiscordCoreAPI {
 		}
 		virtual ~Reaction() = default;
 
-	  	inline void parseObject(const nlohmann::json& jsonObjectData, Reaction* pDataStructure) {
+		inline void parseObject(const nlohmann::json& jsonObjectData, Reaction* pDataStructure) {
 			if (jsonObjectData.contains("count") && !jsonObjectData["count"].is_null()) {
 				pDataStructure->count = jsonObjectData["count"].get<int32_t>();
 			}

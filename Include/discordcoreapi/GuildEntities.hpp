@@ -309,7 +309,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~Guild() = default;
 
-	  	inline void parseObject(const nlohmann::json& jsonObjectData, Guild* pDataStructure) {
+		inline void parseObject(const nlohmann::json& jsonObjectData, Guild* pDataStructure) {
 			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
 				pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
 			}
@@ -629,7 +629,7 @@ namespace DiscordCoreAPI {
 	/// An interface class DiscordCoreAPI_Dll for the Guild related Discord endpoints. \brief An interface class DiscordCoreAPI_Dll for the Guild related Discord endpoints.
 	class DiscordCoreAPI_Dll Guilds {
 	  public:
-		friend class  DiscordCoreInternal::BaseSocketAgent;
+		friend class DiscordCoreInternal::BaseSocketAgent;
 		friend DiscordCoreClient;
 		friend EventHandler;
 

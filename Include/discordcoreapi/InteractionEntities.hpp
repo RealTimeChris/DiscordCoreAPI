@@ -608,7 +608,7 @@ namespace DiscordCoreAPI {
 	/// An interface class DiscordCoreAPI_Dll for the Interaction related Discord endpoints. \brief An interface class DiscordCoreAPI_Dll for the Interaction related Discord endpoints.
 	class DiscordCoreAPI_Dll Interactions {
 	  public:
-		friend class  DiscordCoreInternal::BaseSocketAgent;
+		friend class DiscordCoreInternal::BaseSocketAgent;
 		friend DiscordCoreClient;
 		friend EventHandler;
 		friend EventManager;

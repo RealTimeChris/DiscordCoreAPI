@@ -193,8 +193,8 @@ namespace DiscordCoreAPI {
 			for (int32_t y = 0; y < shardsPerBaseSocketAgentVect[x]; y++) {
 				if (this->configManager.doWePrintGeneralSuccessMessages()) {
 					std::cout << shiftToBrightBlue() << "Connecting Shard " + std::to_string(currentShard + 1) << " of " << this->configManager.getShardCountForThisProcess()
-							  << std::string(" Shards for this process. (") + std::to_string(currentShard + 1) + " of " +
-							std::to_string(this->configManager.getTotalShardCount()) + std::string(" Shards total across all processes)")
+							  << std::string(" Shards for this process. (") + std::to_string(currentShard + 1) + " of " + std::to_string(this->configManager.getTotalShardCount()) +
+							std::string(" Shards total across all processes)")
 							  << reset() << std::endl
 							  << std::endl;
 				}

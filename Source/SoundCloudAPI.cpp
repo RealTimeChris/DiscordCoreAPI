@@ -25,7 +25,7 @@
 
 namespace DiscordCoreInternal {
 
-	SoundCloudRequestBuilder::SoundCloudRequestBuilder(HttpsClient* httpsClient, DiscordCoreAPI::ConfigManager*configManagerNew) {
+	SoundCloudRequestBuilder::SoundCloudRequestBuilder(HttpsClient* httpsClient, DiscordCoreAPI::ConfigManager* configManagerNew) {
 		this->configManager = configManagerNew;
 		this->httpsClient = httpsClient;
 		if (SoundCloudRequestBuilder::clientId == "") {

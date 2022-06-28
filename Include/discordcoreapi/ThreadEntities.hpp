@@ -142,7 +142,7 @@ namespace DiscordCoreAPI {
 		}
 		virtual ~Thread() = default;
 
-	  	inline void parseObject(const nlohmann::json& jsonObjectData, Thread* pDataStructure) {
+		inline void parseObject(const nlohmann::json& jsonObjectData, Thread* pDataStructure) {
 			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
 				if (jsonObjectData["id"].is_string()) {
 					pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());

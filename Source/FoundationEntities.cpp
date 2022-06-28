@@ -124,7 +124,7 @@ namespace DiscordCoreAPI {
 		return this->theConfig.connectionPort;
 	}
 
-	void ConfigManager::setConnectionPort(const std::string & connectionPortNew) {
+	void ConfigManager::setConnectionPort(const std::string& connectionPortNew) {
 		this->theConfig.connectionPort = connectionPortNew;
 	}
 

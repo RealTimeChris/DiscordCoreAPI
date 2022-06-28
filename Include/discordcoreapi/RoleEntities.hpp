@@ -76,7 +76,7 @@ namespace DiscordCoreAPI {
 
 	/// For updating the Role positions. \brief For updating the Role positions.
 	struct DiscordCoreAPI_Dll ModifyGuildRolePositionsData {
-		friend class  DiscordCoreInternal::JSONIfier;
+		friend class DiscordCoreInternal::JSONIfier;
 		friend Roles;
 
 		uint64_t guildId{};///< The Guild within which to move the Role.
@@ -148,7 +148,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~Role() = default;
 
-	  	inline void parseObject(const nlohmann::json& jsonObjectData, Role* pDataStructure) {
+		inline void parseObject(const nlohmann::json& jsonObjectData, Role* pDataStructure) {
 			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
 				if (jsonObjectData["id"].is_string()) {
 					pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());

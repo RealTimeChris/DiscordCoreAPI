@@ -62,7 +62,6 @@ namespace DiscordCoreInternal {
 		void cancelCurrentSong();
 
 	  protected:
-
 		DiscordCoreAPI::ConfigManager* configManager{ nullptr };
 		YouTubeRequestBuilder requestBuilder{};
 		const int32_t maxBufferSize{ 8192 };

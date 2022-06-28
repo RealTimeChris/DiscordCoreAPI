@@ -88,7 +88,7 @@ namespace DiscordCoreAPI {
 		Roles::insertRole(theData);
 	}
 
-	void GuildData::insertGuildMember (GuildMemberData theData) {
+	void GuildData::insertGuildMember(GuildMemberData theData) {
 		GuildMembers::insertGuildMember(theData);
 	}
 
@@ -163,7 +163,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	void Guilds::initialize(DiscordCoreInternal::HttpsClient* theClient, DiscordCoreClient* discordCoreClientNew, ConfigManager *configManagerNew) {
+	void Guilds::initialize(DiscordCoreInternal::HttpsClient* theClient, DiscordCoreClient* discordCoreClientNew, ConfigManager* configManagerNew) {
 		Guilds::cache = std::make_unique<std::unordered_map<uint64_t, std::unique_ptr<GuildData>>>();
 		Guilds::discordCoreClient = discordCoreClientNew;
 		Guilds::configManager = configManagerNew;
@@ -736,7 +736,7 @@ namespace DiscordCoreAPI {
 		co_return Guilds::httpsClient->submitWorkloadAndGetResult<void>(workload);
 	}
 
-	void Guilds::insertGuild(GuildData  guild) {
+	void Guilds::insertGuild(GuildData guild) {
 		std::unique_lock<std::shared_mutex> theLock{ Guilds::theMutex };
 		if (guild.id == 0) {
 			return;

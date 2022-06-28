@@ -127,7 +127,7 @@ namespace DiscordCoreAPI {
 
 		~GuildMember() = default;
 
-	  	inline void parseObject(const nlohmann::json& jsonObjectData, GuildMember* pDataStructure) {
+		inline void parseObject(const nlohmann::json& jsonObjectData, GuildMember* pDataStructure) {
 			if (jsonObjectData.contains("communication_disabled_until") && !jsonObjectData["communication_disabled_until"].is_null()) {
 				pDataStructure->communicationDisabledUntil = jsonObjectData["communication_disabled_until"];
 			}

@@ -266,7 +266,7 @@ namespace DiscordCoreInternal {
 	HttpsClient::HttpsClient(DiscordCoreAPI::ConfigManager* configManagerNew) : configManager(configManagerNew) {
 		this->connectionManager.initialize();
 	};
-	
+
 	HttpsConnection* HttpsConnectionManager::getConnection() {
 		std::lock_guard<std::mutex> theLock{ this->theMutex };
 		for (auto& [key, value]: Globals::httpsConnections) {
@@ -317,8 +317,7 @@ namespace DiscordCoreInternal {
 				}
 			}
 		}
-		rateLimitData.sampledTimeInMs =
-			static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
+		rateLimitData.sampledTimeInMs = static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
 		returnData = HttpsClient::httpRequestInternal(workload, rateLimitData);
 
 		if (rateLimitData.tempBucket != "") {
@@ -361,7 +360,7 @@ namespace DiscordCoreInternal {
 
 	HttpsResponseData HttpsClient::httpRequestInternal(const HttpsWorkloadData& workload, RateLimitData& rateLimitData) {
 		auto httpsConnection = this->connectionManager.getConnection();
-		try {			
+		try {
 			httpsConnection->resetValues();
 			if (httpsConnection->currentRecursionDepth >= httpsConnection->maxRecursion) {
 				httpsConnection->currentRecursionDepth = 0;
@@ -449,8 +448,7 @@ namespace DiscordCoreInternal {
 					break;
 				}
 				case HttpsState::Collecting_Contents: {
-					if (static_cast<int64_t>(theConnection->inputBufferReal.size()) >= theData.contentSize &&
-							!theConnection->parseChunk(theConnection->inputBufferReal, theData) ||
+					if (static_cast<int64_t>(theConnection->inputBufferReal.size()) >= theData.contentSize && !theConnection->parseChunk(theConnection->inputBufferReal, theData) ||
 						stopWatch.hasTimePassed() || (theData.responseCode == -5 && theData.contentSize == -5)) {
 						doWeBreak = true;
 						break;
@@ -480,7 +478,7 @@ namespace DiscordCoreInternal {
 				}
 				continue;
 			}
-			currentConnectionAddress = value.baseUrl; 
+			currentConnectionAddress = value.baseUrl;
 			auto theRequest = httpsConnection->buildRequest(value);
 			httpsConnection->writeData(theRequest, true);
 			HttpsResponseData returnData = this->getResponse(*rateLimitData, httpsConnection.get());

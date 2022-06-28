@@ -68,7 +68,7 @@ namespace DiscordCoreAPI {
 		}
 		virtual ~StageInstance() = default;
 
-	  	inline void parseObject(const nlohmann::json& jsonObjectData, StageInstance* pDataStructure) {
+		inline void parseObject(const nlohmann::json& jsonObjectData, StageInstance* pDataStructure) {
 			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
 				pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
 			}

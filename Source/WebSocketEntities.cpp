@@ -896,8 +896,8 @@ namespace DiscordCoreInternal {
 								this->sendMessage(resumePayload, theShard, true);
 								theShard->theState = WebSocketState::Connected;
 							} else {
-								nlohmann::json identityJson =
-									JSONIfier::JSONIFY(this->configManager->getBotToken(), static_cast<int32_t>(this->configManager->getGatewayIntents()), theShard->shard[0], theShard->shard[1]);
+								nlohmann::json identityJson = JSONIfier::JSONIFY(this->configManager->getBotToken(), static_cast<int32_t>(this->configManager->getGatewayIntents()),
+									theShard->shard[0], theShard->shard[1]);
 								this->sendMessage(identityJson, theShard, true);
 								theShard->theState = WebSocketState::Connected;
 							}
@@ -945,7 +945,7 @@ namespace DiscordCoreInternal {
 						}
 					}
 					if (this->theClients.contains(key) && this->theClients[key] && value->processedMessages.size() > 0) {
-						while (value->processedMessages.size() > 0){
+						while (value->processedMessages.size() > 0) {
 							if (value) {
 								this->onMessageReceived(value.get());
 							}
@@ -1009,7 +1009,7 @@ namespace DiscordCoreInternal {
 				if (!didWeWrite) {
 					throw ProcessingError{ "Failed to write to the websocket." };
 				}
-				
+
 				this->theClients[connectData.currentShard]->areWeConnected01.store(true);
 				while (!this->doWeQuit->load()) {
 					if (this->theClients[connectData.currentShard]->theState == WebSocketState::Connected) {
@@ -1342,7 +1342,7 @@ namespace DiscordCoreInternal {
 					this->theClients[0]->heartBeatStopWatch = DiscordCoreAPI::StopWatch{ std::chrono::milliseconds{ this->heartbeatInterval } };
 				}
 				if (!theToken.stop_requested() && !this->doWeReconnect.load() && this->theClients.contains(0) && this->theClients[0]->heartBeatStopWatch.hasTimePassed() &&
-					this->theClients[0]->areWeHeartBeating ) {
+					this->theClients[0]->areWeHeartBeating) {
 					this->sendHeartBeat();
 					this->theClients[0]->heartBeatStopWatch.resetTimer();
 				}
@@ -1425,7 +1425,8 @@ namespace DiscordCoreInternal {
 	void VoiceSocketAgent::sendHeartBeat() noexcept {
 		try {
 			if (this->theClients[0] && this->theClients[0]->areWeStillConnected() && this->theClients[0]->haveWeReceivedHeartbeatAck) {
-				std::vector<uint8_t> heartbeatPayload = JSONIfier::JSONIFY(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
+				std::vector<uint8_t> heartbeatPayload =
+					JSONIfier::JSONIFY(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
 				this->sendMessage(heartbeatPayload);
 				this->theClients[0]->haveWeReceivedHeartbeatAck = false;
 			} else {
@@ -1472,7 +1473,7 @@ namespace DiscordCoreInternal {
 			if (!didWeWrite) {
 				throw ProcessingError{ "Failed to write to the websocket." };
 			}
-			
+
 			try {
 				WebSocketSSLShard::processIO(this->theClients);
 			} catch (...) {

@@ -41,12 +41,12 @@ namespace DiscordCoreAPI {
 
 	/// For executing a WebHook. \brief For executing a WebHook.
 	class DiscordCoreAPI_Dll ExecuteWebHookData {
-	  public:		
-		friend class  CreateEphemeralFollowUpMessageData;
-		friend class  DiscordCoreInternal::JSONIfier;
-		friend class  CreateFollowUpMessageData;
-		friend class  EditFollowUpMessageData;
-		friend class  Interactions;
+	  public:
+		friend class CreateEphemeralFollowUpMessageData;
+		friend class DiscordCoreInternal::JSONIfier;
+		friend class CreateFollowUpMessageData;
+		friend class EditFollowUpMessageData;
+		friend class Interactions;
 		friend WebHooks;
 
 		uint64_t threadId{};///< Send a message to the specified thread within a webhook's Channel. The thread will automatically be unarchived.
@@ -230,10 +230,10 @@ namespace DiscordCoreAPI {
 	/// For editing a WebHook Message. \brief For editing a WebHook Message.
 	class DiscordCoreAPI_Dll EditWebHookData : public ExecuteWebHookData {
 	  public:
-		friend class  DiscordCoreInternal::JSONIfier;
-		friend class  EditInteractionResponseData;
-		friend class  EditFollowUpMessageData;
-		friend class  Interactions;
+		friend class DiscordCoreInternal::JSONIfier;
+		friend class EditInteractionResponseData;
+		friend class EditFollowUpMessageData;
+		friend class Interactions;
 		friend WebHooks;
 
 		uint64_t messageId{};///< The Message Id to collect.
@@ -331,7 +331,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~WebHook() = default;
 
-	  	inline void parseObject(const nlohmann::json& jsonObjectData, WebHook* pDataStructure) {
+		inline void parseObject(const nlohmann::json& jsonObjectData, WebHook* pDataStructure) {
 			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
 				pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
 			}

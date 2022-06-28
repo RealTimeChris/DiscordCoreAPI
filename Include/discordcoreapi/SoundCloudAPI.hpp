@@ -40,7 +40,7 @@ namespace DiscordCoreInternal {
 
 	  protected:
 		inline static std::string clientId{};
-		
+
 		const std::string baseUrl02{ "https://api-v2.soundcloud.com" };
 		DiscordCoreAPI::ConfigManager* configManager{ nullptr };
 		const std::string baseUrl{ "https://soundcloud.com" };

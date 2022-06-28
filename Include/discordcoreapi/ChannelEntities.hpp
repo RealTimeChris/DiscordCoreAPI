@@ -171,7 +171,7 @@ namespace DiscordCoreAPI {
 
 		~Channel() = default;
 
-	  	inline void parseObject(const nlohmann::json& jsonObjectData, Channel* pDataStructure) {
+		inline void parseObject(const nlohmann::json& jsonObjectData, Channel* pDataStructure) {
 			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
 				if (jsonObjectData["id"].is_string()) {
 					pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());

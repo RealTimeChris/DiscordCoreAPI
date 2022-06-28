@@ -167,7 +167,6 @@ namespace DiscordCoreAPI {
 	/// A single ApplicationCommand. \brief A single ApplicationCommand.
 	class DiscordCoreAPI_Dll ApplicationCommand : public ApplicationCommandData {
 	  public:
-
 		ApplicationCommand() = default;
 
 		ApplicationCommand& operator=(const nlohmann::json& jsonObjectData) {
@@ -181,7 +180,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~ApplicationCommand() = default;
 
-	  	inline void parseObject(const nlohmann::json& jsonObjectData, ApplicationCommand* pDataStructure) {
+		inline void parseObject(const nlohmann::json& jsonObjectData, ApplicationCommand* pDataStructure) {
 			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
 				pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
 			}

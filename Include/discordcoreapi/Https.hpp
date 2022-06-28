@@ -31,17 +31,12 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll HttpsConnectionManager;
 	struct DiscordCoreAPI_Dll RateLimitData;
 
-	enum class HttpsState {
-		Collecting_Code = 0,
-		Collecting_Headers = 1,
-		Collecting_Size = 2,
-		Collecting_Contents = 3
-	};
+	enum class HttpsState { Collecting_Code = 0, Collecting_Headers = 1, Collecting_Size = 2, Collecting_Contents = 3 };
 
 	struct DiscordCoreAPI_Dll HttpsResponseData {
-		friend class  HttpsRnRBuilder;
-		friend class  HttpsClient;
-		
+		friend class HttpsRnRBuilder;
+		friend class HttpsClient;
+
 		std::unordered_map<std::string, std::string> responseHeaders{};
 		HttpsState theCurrentState{ HttpsState::Collecting_Headers };
 		std::string responseMessage{};

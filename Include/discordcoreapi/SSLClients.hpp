@@ -241,7 +241,7 @@ namespace DiscordCoreInternal {
 					};
 					close(*other);
 #endif
-					
+
 					*other = SOCKET_ERROR;
 				}
 			}
@@ -254,7 +254,7 @@ namespace DiscordCoreInternal {
 			}
 			return *this;
 		}
-		
+
 		SOCKETWrapper(SOCKETWrapper&& other) noexcept {
 			*this = std::move(other);
 		}
@@ -341,15 +341,14 @@ namespace DiscordCoreInternal {
 		~HttpsSSLClient() noexcept = default;
 
 	  protected:
-
 		int64_t connectionTime{ 0 };
 	};
 
 	class DiscordCoreAPI_Dll WebSocketSSLShard : public SSLConnectionInterface, public SSLDataInterface {
 	  public:
-		friend class  DiscordCoreAPI::VoiceConnection;
-		friend class  VoiceSocketAgent;
-		friend class  BaseSocketAgent;
+		friend class DiscordCoreAPI::VoiceConnection;
+		friend class VoiceSocketAgent;
+		friend class BaseSocketAgent;
 
 		WebSocketSSLShard(std::queue<DiscordCoreAPI::ConnectionPackage>* connectionsNew, int32_t currentBaseSocketAgentNew, int32_t currentShardNew,
 			DiscordCoreAPI::ConfigManager* configManagerNew) noexcept;

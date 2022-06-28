@@ -110,7 +110,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~User() = default;
 
-	  	void parseObject(const nlohmann::json& jsonObjectData, DiscordCoreAPI::User* pDataStructure) {
+		void parseObject(const nlohmann::json& jsonObjectData, DiscordCoreAPI::User* pDataStructure) {
 			if (jsonObjectData.contains("username") && !jsonObjectData["username"].is_null()) {
 				pDataStructure->userName = jsonObjectData["username"].get<std::string>();
 			}
@@ -231,8 +231,8 @@ namespace DiscordCoreAPI {
 	 */
 	/// An interface class DiscordCoreAPI_Dll for the User related Discord endpoints. \brief An interface class DiscordCoreAPI_Dll for the User related Discord endpoints.
 	class DiscordCoreAPI_Dll Users {
-	  public:		
-		friend class  DiscordCoreInternal::BaseSocketAgent;
+	  public:
+		friend class DiscordCoreInternal::BaseSocketAgent;
 		friend DiscordCoreClient;
 		friend EventHandler;
 		friend Guild;

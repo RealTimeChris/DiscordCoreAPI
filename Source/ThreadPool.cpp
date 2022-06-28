@@ -115,7 +115,7 @@ namespace DiscordCoreInternal {
 				}
 				this->theCondVar.wait_for(theLock01, std::chrono::milliseconds(1));
 			}
-			
+
 
 			if (this->areWeQuitting.load() || theToken.stop_requested()) {
 				break;

@@ -33,11 +33,11 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll BaseSocketAgent {
 	  public:
-		friend class  WebSocketSSLShard;
-		friend class  DiscordCoreAPI::DiscordCoreClient;
-		friend class  DiscordCoreAPI::VoiceConnection;
-		friend class  DiscordCoreAPI::BotUser;
-		friend class  WSMessageCollector;
+		friend class WebSocketSSLShard;
+		friend class DiscordCoreAPI::DiscordCoreClient;
+		friend class DiscordCoreAPI::VoiceConnection;
+		friend class DiscordCoreAPI::BotUser;
+		friend class WSMessageCollector;
 		friend VoiceSocketAgent;
 
 		BaseSocketAgent(DiscordCoreAPI::DiscordCoreClient* discordCoreClientNew, std::atomic_bool* doWeQuitNew, int32_t currentBaseSocketAgentNew) noexcept;
@@ -54,7 +54,7 @@ namespace DiscordCoreInternal {
 
 		~BaseSocketAgent() noexcept;
 
-	   protected:
+	  protected:
 		std::unordered_map<int32_t, std::unique_ptr<WebSocketSSLShard>> theClients{};
 		DiscordCoreAPI::DiscordCoreClient* discordCoreClient{ nullptr };
 		std::queue<DiscordCoreAPI::ConnectionPackage> connections{};
@@ -85,9 +85,9 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll VoiceSocketAgent {
 	  public:
-		friend class  DiscordCoreAPI::VoiceConnection;
+		friend class DiscordCoreAPI::VoiceConnection;
 
-		VoiceSocketAgent(VoiceConnectInitData initDataNew, BaseSocketAgent* baseBaseSocketAgentNew, WebSocketSSLShard* theIndex, DiscordCoreAPI::ConfigManager*configManagerNew,
+		VoiceSocketAgent(VoiceConnectInitData initDataNew, BaseSocketAgent* baseBaseSocketAgentNew, WebSocketSSLShard* theIndex, DiscordCoreAPI::ConfigManager* configManagerNew,
 			std::atomic_bool* doWeQuit) noexcept;
 
 		void sendMessage(const std::vector<uint8_t>& responseData) noexcept;

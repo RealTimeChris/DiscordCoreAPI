@@ -176,7 +176,7 @@ namespace DiscordCoreInternal {
 			this->wantRead = false;
 			this->wantWrite = false;
 			size_t writtenBytes{ 0 };
-			std::string writeString{}; 
+			std::string writeString{};
 			if (this->outputBuffers.size() > 0) {
 				writeString = std::move(this->outputBuffers.front());
 				auto returnValue{ SSL_write_ex(this->ssl, writeString.data(), writeString.size(), &writtenBytes) };
@@ -251,7 +251,7 @@ namespace DiscordCoreInternal {
 			throw ConnectionError{ reportError("HttpsSSLClient::connect()::setsockopt(), ") };
 		}
 
-		if (::connect(this->theSocket, address->ai_addr, static_cast<int32_t>(address->ai_addrlen)) == SOCKET_ERROR) {	
+		if (::connect(this->theSocket, address->ai_addr, static_cast<int32_t>(address->ai_addrlen)) == SOCKET_ERROR) {
 			throw ConnectionError{ reportError("HttpsSSLClient::connect()::connect(), ") };
 		}
 
@@ -282,7 +282,7 @@ namespace DiscordCoreInternal {
 			throw ConnectionError{ reportError("DatagramSocketSSLClient::connect()::fcntl(), ") };
 		}
 #endif
-		
+
 		this->connectionTime = std::time(nullptr);
 	}
 
@@ -310,8 +310,7 @@ namespace DiscordCoreInternal {
 			}
 			std::cout << "WERE ARE CONNECTED" << std::endl;
 			return true;
-		}
-		else {
+		} else {
 			std::cout << "WERE NOT CONNECTED SOCKET ERROR" << std::endl;
 			return false;
 		}
@@ -326,7 +325,7 @@ namespace DiscordCoreInternal {
 	}
 
 	WebSocketSSLShard::WebSocketSSLShard(std::queue<DiscordCoreAPI::ConnectionPackage>* connectionsNew, int32_t currentBaseSocketAgentNew, int32_t currentShardNew,
-			DiscordCoreAPI::ConfigManager* configManagerNew) noexcept	{
+		DiscordCoreAPI::ConfigManager* configManagerNew) noexcept {
 		this->heartBeatStopWatch = DiscordCoreAPI::StopWatch<std::chrono::milliseconds>{ 10000ms };
 		this->currentBaseSocketAgent = currentBaseSocketAgentNew;
 		this->shard.push_back(currentShardNew);
@@ -617,7 +616,7 @@ namespace DiscordCoreInternal {
 		if (auto returnValue = getaddrinfo(baseUrlNew.c_str(), portNew.c_str(), hints, address); returnValue == SOCKET_ERROR) {
 			throw ConnectionError{ reportError("DatagramSocketSSLClient::connect()::getaddrinfo(), ") };
 		}
-		
+
 		if (this->theSocket = socket(address->ai_family, address->ai_socktype, address->ai_protocol); this->theSocket == SOCKET_ERROR) {
 			throw ConnectionError{ reportError("DatagramSocketSSLClient::connect()::socket(), ") };
 		}

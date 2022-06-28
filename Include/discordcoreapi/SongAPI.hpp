@@ -35,9 +35,9 @@ namespace DiscordCoreAPI {
 	/// A class DiscordCoreAPI_Dll representing the Song APIs. \brief A class DiscordCoreAPI_Dll representing the Song APIs.
 	class DiscordCoreAPI_Dll SongAPI {
 	  public:
-		friend class  VoiceConnection;
-		friend class  DiscordCoreInternal::SoundCloudAPI;
-		friend class  DiscordCoreInternal::YouTubeAPI;
+		friend class VoiceConnection;
+		friend class DiscordCoreInternal::SoundCloudAPI;
+		friend class DiscordCoreInternal::YouTubeAPI;
 
 		DiscordCoreInternal::Event<CoRoutine<void>, SongCompletionEventData> onSongCompletionEvent{};
 		DiscordCoreInternal::EventDelegateToken theToken{};

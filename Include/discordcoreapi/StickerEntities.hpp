@@ -70,7 +70,6 @@ namespace DiscordCoreAPI {
 	/// A single Sticker. \brief A single Sticker.
 	class DiscordCoreAPI_Dll Sticker : public StickerData {
 	  public:
-
 		Sticker() = default;
 
 		Sticker& operator=(const nlohmann::json& jsonObjectData) {
@@ -84,7 +83,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~Sticker() = default;
 
-	  	inline void parseObject(const nlohmann::json& jsonObjectData, Sticker* pDataStructure) {
+		inline void parseObject(const nlohmann::json& jsonObjectData, Sticker* pDataStructure) {
 			if (jsonObjectData.contains("asset") && !jsonObjectData["asset"].is_null()) {
 				pDataStructure->asset = jsonObjectData["asset"].get<std::string>();
 			}

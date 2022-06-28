@@ -66,7 +66,6 @@ namespace DiscordCoreInternal {
 		if (partialSearchResultsJson.contains("contents") && !partialSearchResultsJson["contents"].is_null()) {
 			for (auto& value: partialSearchResultsJson["contents"]["twoColumnSearchResultsRenderer"]["primaryContents"]["sectionListRenderer"]["contents"][0]["itemSectionRenderer"]
 													  ["contents"]) {
-				
 				if (value.contains("videoRenderer") && !value["videoRenderer"].is_null()) {
 					DiscordCoreAPI::Song searchResult{ value["videoRenderer"] };
 					searchResult.type = DiscordCoreAPI::SongType::YouTube;

@@ -187,7 +187,6 @@ namespace DiscordCoreInternal {
 		static std::string JSONIFY(DiscordCoreAPI::CreateGuildData& dataPackage);
 
 		static std::string JSONIFY(DiscordCoreAPI::EditMessageData& dataPackage);
-
 	};
 
 }// namespace DiscordCoreInternal

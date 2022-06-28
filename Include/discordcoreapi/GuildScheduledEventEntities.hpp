@@ -103,7 +103,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~GuildScheduledEvent() = default;
 
-	  	inline void parseObject(const nlohmann::json& jsonObjectData, GuildScheduledEvent* pDataStructure) {
+		inline void parseObject(const nlohmann::json& jsonObjectData, GuildScheduledEvent* pDataStructure) {
 			if (jsonObjectData.contains("privacy_level") && !jsonObjectData["privacy_level"].is_null()) {
 				pDataStructure->privacyLevel = jsonObjectData["privacy_level"].get<GuildScheduledEventPrivacyLevel>();
 			}
