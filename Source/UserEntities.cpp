@@ -56,6 +56,28 @@ namespace DiscordCoreAPI {
 		*this = dataNew;
 	}
 
+	User& User::operator = (const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData, this);
+		return *this;
+	}
+
+	User::User(const nlohmann::json& jsonObjectData) {
+		*this = jsonObjectData;
+	}
+
+	UserVector::operator std::vector<User>() {
+		return this->theUsers;
+	}
+
+	UserVector& UserVector::operator = (const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData, this);
+		return *this;
+	}
+
+	UserVector::UserVector(const nlohmann::json& jsonObjectData) {
+		*this = jsonObjectData;
+	}
+
 	void BotUser::updateVoiceStatus(const UpdateVoiceStateData& dataPackage) {
 		nlohmann::json payload = DiscordCoreInternal::JSONIfier::JSONIFY(dataPackage);
 		this->baseSocketAgent->sendMessage(payload, this->baseSocketAgent->theClients.begin().operator*().second.get(), false);

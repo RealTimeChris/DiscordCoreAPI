@@ -54,10 +54,7 @@ namespace DiscordCoreAPI {
 
 		ExecuteWebHookData() = default;
 
-		ExecuteWebHookData(WebHookData dataNew) {
-			this->webhookToken = dataNew.token;
-			this->webhookId = dataNew.id;
-		}
+		ExecuteWebHookData(WebHookData dataNew);
 
 		/// Adds a button to the response Message. \brief Adds a button to the response Message.
 		/// \param disabled Whether the button is active or not.
@@ -68,31 +65,8 @@ namespace DiscordCoreAPI {
 		/// \param emojiId An emoji id, if desired.
 		/// \param url A url, if applicable.
 		ExecuteWebHookData& addButton(bool disabled, const std::string& customIdNew, const std::string& buttonLabel, ButtonStyle buttonStyle, const std::string& emojiName = "",
-			uint64_t emojiId = 0, const std::string& url = "") {
-			if (this->components.size() == 0) {
-				ActionRowData actionRowData;
-				this->components.push_back(actionRowData);
-			}
-			if (this->components.size() < 5) {
-				if (this->components[this->components.size() - 1].components.size() < 5) {
-					ComponentData component;
-					component.type = ComponentType::Button;
-					component.emoji.name = emojiName;
-					component.label = buttonLabel;
-					component.style = static_cast<int32_t>(buttonStyle);
-					component.customId = customIdNew;
-					component.disabled = disabled;
-					component.emoji.id = emojiId;
-					component.url = url;
-					this->components[this->components.size() - 1].components.push_back(component);
-				} else if (this->components[this->components.size() - 1].components.size() == 5) {
-					ActionRowData actionRowData;
-					this->components.push_back(actionRowData);
-				}
-			}
-			return *this;
-		}
-
+			uint64_t emojiId = 0, const std::string& url = "");
+		
 		/// Adds a select-menu to the response Message. \brief Adds a select-menu to the response Message.
 		/// \param disabled Whether the select-menu is active or not.
 		/// \param customIdNew A custom id to give for identifying the select-menu.
@@ -101,30 +75,8 @@ namespace DiscordCoreAPI {
 		/// \param maxValues Maximum number of selections that are possible.
 		/// \param minValues Minimum required number of selections that are required.
 		ExecuteWebHookData addSelectMenu(bool disabled, const std::string& customIdNew, std::vector<SelectOptionData> options, const std::string& placeholder, int32_t maxValues,
-			int32_t minValues) {
-			if (this->components.size() == 0) {
-				ActionRowData actionRowData;
-				this->components.push_back(actionRowData);
-			}
-			if (this->components.size() < 5) {
-				if (this->components[this->components.size() - 1].components.size() < 5) {
-					ComponentData componentData;
-					componentData.type = ComponentType::SelectMenu;
-					componentData.placeholder = placeholder;
-					componentData.maxValues = maxValues;
-					componentData.minValues = minValues;
-					componentData.disabled = disabled;
-					componentData.customId = customIdNew;
-					componentData.options = options;
-					this->components[this->components.size() - 1].components.push_back(componentData);
-				} else if (this->components[this->components.size() - 1].components.size() == 5) {
-					ActionRowData actionRowData;
-					this->components.push_back(actionRowData);
-				}
-			}
-			return *this;
-		}
-
+			int32_t minValues);
+		
 		/// Adds a modal to the response Message. \brief Adds a modal to the response Message.
 		/// \param topTitleNew A title for the modal.
 		/// \param topCustomIdNew A custom id to give for the modal.
@@ -138,78 +90,33 @@ namespace DiscordCoreAPI {
 		/// \param placeholder A placeholder for the modal.
 		/// \returns RespondToInputEventData& A reference to this data structure.
 		ExecuteWebHookData& addModal(const std::string& topTitleNew, const std::string& topCustomIdNew, const std::string& titleNew, const std::string& customIdNew, bool required,
-			int32_t minLength, int32_t maxLength, TextInputStyle inputStyle, const std::string& label = "", const std::string& placeholder = "") {
-			this->title = topTitleNew;
-			this->customId = topCustomIdNew;
-			if (this->components.size() == 0) {
-				ActionRowData actionRowData;
-				this->components.push_back(actionRowData);
-			}
-			if (this->components.size() < 5) {
-				if (this->components[this->components.size() - 1].components.size() < 5) {
-					ComponentData component{};
-					component.type = ComponentType::TextInput;
-					component.customId = customIdNew;
-					component.style = static_cast<int32_t>(inputStyle);
-					component.title = titleNew;
-					component.maxLength = maxLength;
-					component.minLength = minLength;
-					component.label = label;
-					component.required = required;
-					component.placeholder = placeholder;
-					this->components[this->components.size() - 1].components.push_back(component);
-				} else if (this->components[this->components.size() - 1].components.size() == 5) {
-					ActionRowData actionRowData;
-					this->components.push_back(actionRowData);
-				}
-			}
-			return *this;
-		}
-
-
+			int32_t minLength, int32_t maxLength, TextInputStyle inputStyle, const std::string& label = "", const std::string& placeholder = "");
+		
 		/// Adds a file to the current collection of files for this message response. \brief Adds a file to the current collection of files for this message response.
 		/// \param theFile The file to be added.
 		/// \returns MessageResponseBase& A reference to this data structure.
-		ExecuteWebHookData& addFile(File theFile) {
-			this->files.push_back(theFile);
-			return *this;
-		}
-
+		ExecuteWebHookData& addFile(File theFile);
+		
 		/// For setting the allowable mentions in a response. \brief For setting the allowable mentions in a response.
 		/// \param dataPackage An AllowedMentionsData structure.
-		ExecuteWebHookData& addAllowedMentions(AllowedMentionsData dataPackage) {
-			this->allowedMentions = dataPackage;
-			return *this;
-		}
+		ExecuteWebHookData& addAllowedMentions(AllowedMentionsData dataPackage);
 
 		/// For setting the components in a response. \brief For setting the components in a response.
 		/// \param dataPackage An ActionRowData structure.
-		ExecuteWebHookData& addComponentRow(ActionRowData dataPackage) {
-			this->components.push_back(dataPackage);
-			return *this;
-		}
+		ExecuteWebHookData& addComponentRow(ActionRowData dataPackage);
 
 		/// For setting the embeds in a response. \brief For setting the embeds in a response.
 		/// \param dataPackage An EmbedData structure.
-		ExecuteWebHookData& addMessageEmbed(EmbedData dataPackage) {
-			this->embeds.push_back(dataPackage);
-			return *this;
-		}
+		ExecuteWebHookData& addMessageEmbed(EmbedData dataPackage);
 
 		/// For setting the Message content in a response. \brief For setting the content in a response.
 		/// \param dataPackage A std::string, containing the content.
-		ExecuteWebHookData& addContent(const std::string& dataPackage) {
-			this->content = dataPackage;
-			return *this;
-		}
+		ExecuteWebHookData& addContent(const std::string& dataPackage);
 
 		/// For setting the tts status of a response. \brief For setting the tts status of a response.
 		/// \param enabledTTs A bool.
-		ExecuteWebHookData& setTTSStatus(bool enabledTTs) {
-			this->tts = enabledTTs;
-			return *this;
-		}
-
+		ExecuteWebHookData& setTTSStatus(bool enabledTTs);
+		
 	  protected:
 		std::vector<AttachmentData> attachments{};///< Array of partial attachment objects attachment objects with filename and description.
 		std::vector<ActionRowData> components{};///< Array of message component the components to include with the message.
@@ -244,10 +151,7 @@ namespace DiscordCoreAPI {
 
 		EditWebHookData() = default;
 
-		EditWebHookData(WebHookData dataNew) {
-			this->webhookToken = dataNew.token;
-			this->webhookId = dataNew.id;
-		}
+		EditWebHookData(WebHookData dataNew);
 	};
 
 	/// For collecting a list of WebHooks from a chosen Channel. \brief For collecting a list of WebHooks from a chosen Channel.
@@ -320,66 +224,14 @@ namespace DiscordCoreAPI {
 	  public:
 		WebHook() = default;
 
-		WebHook& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
+		WebHook& operator=(const nlohmann::json& jsonObjectData);
 
-		WebHook(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
-
+		WebHook(const nlohmann::json& jsonObjectData);
+		
 		virtual ~WebHook() = default;
 
-		void parseObject(const nlohmann::json& jsonObjectData, WebHook* pDataStructure) {
-			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
-				pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
-			}
-
-			if (jsonObjectData.contains("type") && !jsonObjectData["type"].is_null()) {
-				pDataStructure->type = jsonObjectData["type"].get<WebHookType>();
-			}
-
-			if (jsonObjectData.contains("guild_id") && !jsonObjectData["guild_id"].is_null()) {
-				pDataStructure->guildId = stoull(jsonObjectData["guild_id"].get<std::string>());
-			}
-
-			if (jsonObjectData.contains("channel_id") && !jsonObjectData["channel_id"].is_null()) {
-				pDataStructure->channelId = stoull(jsonObjectData["channel_id"].get<std::string>());
-			}
-
-			if (jsonObjectData.contains("user") && !jsonObjectData["user"].is_null()) {
-				pDataStructure->user = jsonObjectData["user"];
-			}
-
-			if (jsonObjectData.contains("name") && !jsonObjectData["name"].is_null()) {
-				pDataStructure->name = jsonObjectData["name"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("avatar") && !jsonObjectData["avatar"].is_null()) {
-				pDataStructure->avatar = jsonObjectData["avatar"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("token") && !jsonObjectData["token"].is_null()) {
-				pDataStructure->token = jsonObjectData["token"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("application_id") && !jsonObjectData["application_id"].is_null()) {
-				pDataStructure->applicationId = stoull(jsonObjectData["application_id"].get<std::string>());
-			}
-
-			if (jsonObjectData.contains("source_guild") && !jsonObjectData["source_guild"].is_null()) {
-				pDataStructure->sourceGuild = jsonObjectData["source_guild"];
-			}
-
-			if (jsonObjectData.contains("source_channel") && !jsonObjectData["source_channel"].is_null()) {
-				pDataStructure->sourceChannel = jsonObjectData["source_channel"];
-			}
-
-			if (jsonObjectData.contains("url") && !jsonObjectData["url"].is_null()) {
-				pDataStructure->url = jsonObjectData["url"].get<std::string>();
-			}
-		}
+	  protected:
+		void parseObject(const nlohmann::json& jsonObjectData, WebHook* pDataStructure);
 	};
 
 	class DiscordCoreAPI_Dll WebHookVector {
@@ -387,32 +239,18 @@ namespace DiscordCoreAPI {
 
 		WebHookVector() = default;
 
-		operator std::vector<WebHook>() {
-			return this->theWebHooks;
-		}
-
-		WebHookVector& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
-
-		WebHookVector(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
-
+		operator std::vector<WebHook>();
+		
+		WebHookVector& operator=(const nlohmann::json& jsonObjectData);
+		
+		WebHookVector(const nlohmann::json& jsonObjectData);
+		
 		virtual ~WebHookVector() = default;
 
 	  protected:
 		std::vector<WebHook> theWebHooks{};
 
-		void parseObject(const nlohmann::json& jsonObjectData, WebHookVector* pDataStructure) {
-			pDataStructure->theWebHooks.reserve(jsonObjectData.size());
-			for (auto& value: jsonObjectData) {
-				DiscordCoreAPI::WebHook newData{ value };
-				pDataStructure->theWebHooks.push_back(newData);
-			}
-			pDataStructure->theWebHooks.shrink_to_fit();
-		}
+		void parseObject(const nlohmann::json& jsonObjectData, WebHookVector* pDataStructure);
 	};
 
 	/**@}*/

@@ -72,62 +72,14 @@ namespace DiscordCoreAPI {
 	  public:
 		Sticker() = default;
 
-		Sticker& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
+		Sticker& operator=(const nlohmann::json& jsonObjectData);
 
-		Sticker(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
-
+		Sticker(const nlohmann::json& jsonObjectData);
+		
 		virtual ~Sticker() = default;
 
-		void parseObject(const nlohmann::json& jsonObjectData, Sticker* pDataStructure) {
-			if (jsonObjectData.contains("asset") && !jsonObjectData["asset"].is_null()) {
-				pDataStructure->asset = jsonObjectData["asset"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("description") && !jsonObjectData["description"].is_null()) {
-				pDataStructure->description = jsonObjectData["description"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("format_type") && !jsonObjectData["format_type"].is_null()) {
-				pDataStructure->formatType = jsonObjectData["format_type"].get<StickerFormatType>();
-			}
-
-			if (jsonObjectData.contains("available") && !jsonObjectData["available"].is_null()) {
-				pDataStructure->stickerFlags = setBool<int32_t, StickerFlags>(pDataStructure->stickerFlags, StickerFlags::Available, jsonObjectData["available"].get<bool>());
-			}
-
-			if (jsonObjectData.contains("guild_id") && !jsonObjectData["guild_id"].is_null()) {
-				pDataStructure->guildId = stoull(jsonObjectData["guild_id"].get<std::string>());
-			}
-
-			if (jsonObjectData.contains("pack_id") && !jsonObjectData["pack_id"].is_null()) {
-				pDataStructure->packId = jsonObjectData["pack_id"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("type") && !jsonObjectData["type"].is_null()) {
-				pDataStructure->type = jsonObjectData["type"].get<StickerType>();
-			}
-
-			if (jsonObjectData.contains("sort_value") && !jsonObjectData["sort_value"].is_null()) {
-				pDataStructure->sortValue = jsonObjectData["sort_value"].get<int32_t>();
-			}
-
-			if (jsonObjectData.contains("name") && !jsonObjectData["name"].is_null()) {
-				pDataStructure->name = jsonObjectData["name"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
-				pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
-			}
-
-			if (jsonObjectData.contains("user") && !jsonObjectData["user"].is_null()) {
-				pDataStructure->user = jsonObjectData["user"];
-			}
-		}
+	  protected:
+		void parseObject(const nlohmann::json& jsonObjectData, Sticker* pDataStructure);
 	};
 
 	class DiscordCoreAPI_Dll StickerVector {
@@ -135,34 +87,19 @@ namespace DiscordCoreAPI {
 
 		StickerVector() = default;
 
-		operator std::vector<Sticker>() {
-			return this->theStickers;
-		}
+		operator std::vector<Sticker>();
 
-		StickerVector& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
-
-		StickerVector(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
+		StickerVector& operator=(const nlohmann::json& jsonObjectData);
+		
+		StickerVector(const nlohmann::json& jsonObjectData);
 
 		virtual ~StickerVector() = default;
 
 	  protected:
 		std::vector<Sticker> theStickers{};
 
-		void parseObject(const nlohmann::json& jsonObjectData, StickerVector* pDataStructure) {
-			pDataStructure->theStickers.reserve(jsonObjectData.size());
-			for (auto& value: jsonObjectData) {
-				DiscordCoreAPI::Sticker newData{ value };
-				pDataStructure->theStickers.push_back(newData);
-			}
-			pDataStructure->theStickers.shrink_to_fit();
-		}
+		void parseObject(const nlohmann::json& jsonObjectData, StickerVector* pDataStructure);
 	};
-
 
 	/**@}*/
 

@@ -58,41 +58,14 @@ namespace DiscordCoreAPI {
 	  public:
 		StageInstance() = default;
 
-		StageInstance& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
+		StageInstance& operator=(const nlohmann::json& jsonObjectData);
 
-		StageInstance(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
+		StageInstance(const nlohmann::json& jsonObjectData);
+		
 		virtual ~StageInstance() = default;
 
-		void parseObject(const nlohmann::json& jsonObjectData, StageInstance* pDataStructure) {
-			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
-				pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
-			}
-
-			if (jsonObjectData.contains("guild_id") && !jsonObjectData["guild_id"].is_null()) {
-				pDataStructure->guildId = stoull(jsonObjectData["guild_id"].get<std::string>());
-			}
-
-			if (jsonObjectData.contains("channel_id") && !jsonObjectData["channel_id"].is_null()) {
-				pDataStructure->channelId = stoull(jsonObjectData["channel_id"].get<std::string>());
-			}
-
-			if (jsonObjectData.contains("topic") && !jsonObjectData["topic"].is_null()) {
-				pDataStructure->topic = jsonObjectData["topic"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("privacy_level") && !jsonObjectData["privacy_level"].is_null()) {
-				pDataStructure->privacyLevel = jsonObjectData["privacy_level"].get<StageInstancePrivacyLevel>();
-			}
-
-			if (jsonObjectData.contains("discoverable_disabled") && !jsonObjectData["discoverable_disabled"].is_null()) {
-				pDataStructure->discoverableDisabled = jsonObjectData["discoverable_disabled"].get<bool>();
-			}
-		}
+	  protected:
+		void parseObject(const nlohmann::json& jsonObjectData, StageInstance* pDataStructure);
 	};
 
 	/**

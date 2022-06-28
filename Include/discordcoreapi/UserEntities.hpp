@@ -99,83 +99,14 @@ namespace DiscordCoreAPI {
 
 		User(UserData&);
 
-		User& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
+		User& operator=(const nlohmann::json& jsonObjectData);
 
-		User(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
-
+		User(const nlohmann::json& jsonObjectData);
+		
 		virtual ~User() = default;
 
-		void parseObject(const nlohmann::json& jsonObjectData, DiscordCoreAPI::User* pDataStructure) {
-			if (jsonObjectData.contains("username") && !jsonObjectData["username"].is_null()) {
-				pDataStructure->userName = jsonObjectData["username"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
-				if (jsonObjectData["id"].is_string()) {
-					pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
-				} else {
-					pDataStructure->id = jsonObjectData["id"].get<int64_t>();
-				}
-			}
-
-			if (jsonObjectData.contains("accent_color") && !jsonObjectData["accent_color"].is_null()) {
-				pDataStructure->accentColor = jsonObjectData["accent_color"].get<int32_t>();
-			}
-
-			if (jsonObjectData.contains("banner") && !jsonObjectData["banner"].is_null()) {
-				pDataStructure->banner = jsonObjectData["banner"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("discriminator") && !jsonObjectData["discriminator"].is_null()) {
-				pDataStructure->discriminator = jsonObjectData["discriminator"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("avatar") && !jsonObjectData["avatar"].is_null()) {
-				std::string avatarString = "https://cdn.discordapp.com/avatars/" + std::to_string(pDataStructure->id) + "/" + jsonObjectData["avatar"].get<std::string>();
-				pDataStructure->avatar = avatarString;
-			}
-
-			if (jsonObjectData.contains("bot") && !jsonObjectData["bot"].is_null()) {
-				pDataStructure->flags =
-					DiscordCoreAPI::setBool<int32_t, DiscordCoreAPI::UserFlags>(pDataStructure->flags, DiscordCoreAPI::UserFlags::Bot, jsonObjectData["bot"].get<bool>());
-			}
-
-			if (jsonObjectData.contains("system") && !jsonObjectData["system"].is_null()) {
-				pDataStructure->flags =
-					DiscordCoreAPI::setBool<int32_t, DiscordCoreAPI::UserFlags>(pDataStructure->flags, DiscordCoreAPI::UserFlags::System, jsonObjectData["system"].get<bool>());
-			}
-
-			if (jsonObjectData.contains("mfa_enabled") && !jsonObjectData["mfa_enabled"].is_null()) {
-				pDataStructure->flags = DiscordCoreAPI::setBool<int32_t, DiscordCoreAPI::UserFlags>(pDataStructure->flags, DiscordCoreAPI::UserFlags::MFAEnabled,
-					jsonObjectData["mfa_enabled"].get<bool>());
-			}
-
-			if (jsonObjectData.contains("verified") && !jsonObjectData["verified"].is_null()) {
-				pDataStructure->flags =
-					DiscordCoreAPI::setBool<int32_t, DiscordCoreAPI::UserFlags>(pDataStructure->flags, DiscordCoreAPI::UserFlags::Verified, jsonObjectData["verified"].get<bool>());
-			}
-
-			if (jsonObjectData.contains("locale") && !jsonObjectData["locale"].is_null()) {
-				pDataStructure->locale = jsonObjectData["locale"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("email") && !jsonObjectData["email"].is_null()) {
-				pDataStructure->email = jsonObjectData["email"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("premium_type") && !jsonObjectData["premium_type"].is_null()) {
-				pDataStructure->premiumType = jsonObjectData["premium_type"].get<DiscordCoreAPI::PremiumType>();
-			}
-
-			if (jsonObjectData.contains("public_flags") && !jsonObjectData["public_flags"].is_null()) {
-				pDataStructure->flags = jsonObjectData["public_flags"].get<int32_t>();
-			}
-		}
+	  protected:
+		void parseObject(const nlohmann::json& jsonObjectData, DiscordCoreAPI::User* pDataStructure);
 	};
 
 	class DiscordCoreAPI_Dll UserVector {
@@ -183,32 +114,18 @@ namespace DiscordCoreAPI {
 
 		UserVector() = default;
 
-		operator std::vector<User>() {
-			return this->theUsers;
-		}
+		operator std::vector<User>();
 
-		UserVector& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
-
-		UserVector(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
+		UserVector& operator=(const nlohmann::json& jsonObjectData);
+		
+		UserVector(const nlohmann::json& jsonObjectData);
 
 		virtual ~UserVector() = default;
 
 	  protected:
 		std::vector<User> theUsers{};
 
-		void parseObject(const nlohmann::json& jsonObjectData, UserVector* pDataStructure) {
-			pDataStructure->theUsers.reserve(jsonObjectData.size());
-			for (auto& value: jsonObjectData) {
-				DiscordCoreAPI::User newData{ value };
-				pDataStructure->theUsers.push_back(newData);
-			}
-			pDataStructure->theUsers.shrink_to_fit();
-		}
+		void parseObject(const nlohmann::json& jsonObjectData, UserVector* pDataStructure);
 	};
 
 	/// A type of User, to represent the Bot and some of its associated endpoints. \brief A type of User, to represent the Bot and some of its associated endpoints.
