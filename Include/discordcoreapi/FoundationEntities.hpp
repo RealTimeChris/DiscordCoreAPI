@@ -4518,6 +4518,7 @@ namespace DiscordCoreAPI {
 
 	/// Data structure representing an ApplicationCommand's option choice. \brief Data structure representing an ApplicationCommand's option choice.
 	class DiscordCoreAPI_Dll ApplicationCommandOptionChoiceData {
+	  public:
 		std::unordered_map<std::string, std::string> nameLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the name field.
 		nlohmann::json value{};///< The value of the option.
 		std::string name{};///< The name of the current choice.
@@ -5037,6 +5038,7 @@ namespace DiscordCoreAPI {
 
 	/// Allowable mentions for a Message. \brief Allowable mentions for a Message.
 	class DiscordCoreAPI_Dll AllowedMentionsData {
+	  public:
 		std::vector<std::string> parse{};///< A std::vector of allowed mention types to parse from the content.
 		std::vector<std::string> roles{};///< Array of role_ids to mention (Max size of 100)
 		std::vector<std::string> users{};///< Array of user_ids to mention (Max size of 100)
@@ -5109,6 +5111,7 @@ namespace DiscordCoreAPI {
 
 	/// Represents a single selection from a select-menu. \brief Represents a single selection from a select-menu.
 	class DiscordCoreAPI_Dll SelectOptionData {
+	  public:
 		std::string description{};///< Description of the select-menu-option.
 		bool _default{ false };///< Is it the default option?
 		std::string label{};///< A visible label for the select-menu-option.
@@ -5182,6 +5185,7 @@ namespace DiscordCoreAPI {
 
 	/// Action row data of Message components. \brief Action row data of Message components.
 	class DiscordCoreAPI_Dll ActionRowData {
+	  public:
 		std::vector<ComponentData> components{};///< Array of components to make up the action-row.
 
 		ActionRowData() = default;
