@@ -24,14 +24,36 @@
 
 namespace DiscordCoreAPI {
 
+	AutoModerationRule& AutoModerationRule::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData, this);
+		return *this;
+	}
+
+	AutoModerationRule::AutoModerationRule(const nlohmann::json& jsonObjectData) {
+		*this = jsonObjectData;
+	}
+
+	AutoModerationRuleVector::operator std::vector<AutoModerationRule>() {
+		return this->theAutoModerationRules;
+	}
+
+	AutoModerationRuleVector& AutoModerationRuleVector::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData, this);
+		return *this;
+	}
+
+	AutoModerationRuleVector::AutoModerationRuleVector(const nlohmann::json& jsonObjectData) {
+		*this = jsonObjectData;
+	}
+
 	void AutoModerationRules::initialize(DiscordCoreInternal::HttpsClient* HttpsClientNew) {
 		AutoModerationRules::httpsClient = HttpsClientNew;
 	}
 
-	CoRoutine<AutoModerationRuleVector> AutoModerationRules::listAutoModerationRulesForGuildAsync(ListAutoModerationRulesForGuildData dataPackage) {
+	CoRoutine<std::vector<AutoModerationRule>> AutoModerationRules::listAutoModerationRulesForGuildAsync(ListAutoModerationRulesForGuildData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{};
 		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Get_Auto_Moderation_Rules);
-		co_await NewThreadAwaitable<AutoModerationRuleVector>();
+		co_await NewThreadAwaitable<std::vector<AutoModerationRule>>();
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Get_Auto_Moderation_Rules;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/auto-moderation/rules";

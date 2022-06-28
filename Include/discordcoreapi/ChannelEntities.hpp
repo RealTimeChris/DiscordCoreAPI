@@ -150,14 +150,11 @@ namespace DiscordCoreAPI {
 		std::string topic{};///< The Channel's topic.
 		std::string icon{};///< Icon for the Channel, if applicable.
 
-		Channel& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
+		Channel() = default;
 
-		Channel(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
+		Channel& operator=(const nlohmann::json& jsonObjectData);
+
+		Channel(const nlohmann::json& jsonObjectData);
 
 		Channel& operator=(ChannelData&&);
 
@@ -167,165 +164,28 @@ namespace DiscordCoreAPI {
 
 		Channel(ChannelData&);
 
-		Channel() = default;
-
 		~Channel() = default;
 
-		inline void parseObject(const nlohmann::json& jsonObjectData, Channel* pDataStructure) {
-			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
-				if (jsonObjectData["id"].is_string()) {
-					pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
-				} else {
-					pDataStructure->id = jsonObjectData["id"].get<int64_t>();
-				}
-			}
-
-			if (jsonObjectData.contains("flags") && !jsonObjectData["flags"].is_null()) {
-				pDataStructure->flags = jsonObjectData["flags"].get<int8_t>();
-			}
-
-			if (jsonObjectData.contains("type") && !jsonObjectData["type"].is_null()) {
-				pDataStructure->type = jsonObjectData["type"].get<DiscordCoreAPI::ChannelType>();
-			}
-
-			if (jsonObjectData.contains("guild_id") && !jsonObjectData["guild_id"].is_null()) {
-				pDataStructure->guildId = stoull(jsonObjectData["guild_id"].get<std::string>());
-			}
-
-			if (jsonObjectData.contains("default_auto_archive_duration") && !jsonObjectData["default_auto_archive_duration"].is_null()) {
-				pDataStructure->defaultAutoArchiveDuration = jsonObjectData["default_auto_archive_duration"].get<int32_t>();
-			}
-
-			if (jsonObjectData.contains("position") && !jsonObjectData["position"].is_null()) {
-				pDataStructure->position = jsonObjectData["position"].get<int32_t>();
-			}
-
-			if (jsonObjectData.contains("permission_overwrites") && !jsonObjectData["permission_overwrites"].is_null()) {
-				pDataStructure->permissionOverwrites.clear();
-				for (auto& value: jsonObjectData["permission_overwrites"]) {
-					DiscordCoreAPI::OverWriteData newData{ value };
-					uint64_t overWriteId = newData.id;
-					pDataStructure->permissionOverwrites[overWriteId] = newData;
-				}
-			}
-
-			if (jsonObjectData.contains("name") && !jsonObjectData["name"].is_null()) {
-				pDataStructure->name = jsonObjectData["name"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("topic") && !jsonObjectData["topic"].is_null()) {
-				pDataStructure->topic = jsonObjectData["topic"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("permissions") && !jsonObjectData["permissions"].is_null()) {
-				pDataStructure->permissions = jsonObjectData["permissions"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("nsfw") && !jsonObjectData["nsfw"].is_null()) {
-				pDataStructure->flags =
-					DiscordCoreAPI::setBool<int8_t, DiscordCoreAPI::ChannelFlags>(pDataStructure->flags, DiscordCoreAPI::ChannelFlags::NSFW, jsonObjectData["nsfw"].get<bool>());
-			}
-
-			if (jsonObjectData.contains("last_message_id") && !jsonObjectData["last_message_id"].is_null()) {
-				pDataStructure->lastMessageId = jsonObjectData["last_message_id"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("bitrate") && !jsonObjectData["bitrate"].is_null()) {
-				pDataStructure->bitrate = jsonObjectData["bitrate"].get<int32_t>();
-			}
-
-			if (jsonObjectData.contains("user_limit") && !jsonObjectData["user_limit"].is_null()) {
-				pDataStructure->userLimit = jsonObjectData["user_limit"].get<int32_t>();
-			}
-
-			if (jsonObjectData.contains("rate_limit_per_user") && !jsonObjectData["rate_limit_per_user"].is_null()) {
-				pDataStructure->rateLimitPerUser = jsonObjectData["rate_limit_per_user"].get<int32_t>();
-			}
-
-			if (jsonObjectData.contains("recipients") && !jsonObjectData["recipients"].is_null()) {
-				pDataStructure->recipients.clear();
-				for (auto& value: jsonObjectData["recipients"]) {
-					DiscordCoreAPI::UserData newData{ value };
-					uint64_t userId = newData.id;
-					pDataStructure->recipients[userId] = newData;
-				}
-			}
-
-			if (jsonObjectData.contains("icon") && !jsonObjectData["icon"].is_null()) {
-				pDataStructure->icon = jsonObjectData["icon"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("owner_id") && !jsonObjectData["owner_id"].is_null()) {
-				pDataStructure->ownerId = stoull(jsonObjectData["owner_id"].get<std::string>());
-			}
-
-			if (jsonObjectData.contains("application_id") && !jsonObjectData["application_id"].is_null()) {
-				pDataStructure->applicationId = stoull(jsonObjectData["application_id"].get<std::string>());
-			}
-
-			if (jsonObjectData.contains("parent_id") && !jsonObjectData["parent_id"].is_null()) {
-				if (jsonObjectData["parent_id"].is_string()) {
-					pDataStructure->parentId = stoull(jsonObjectData["parent_id"].get<std::string>());
-				} else {
-					pDataStructure->parentId = jsonObjectData["parent_id"].get<int64_t>();
-				}
-			}
-
-			if (jsonObjectData.contains("last_pin_timestamp") && !jsonObjectData["last_pin_timestamp"].is_null()) {
-				pDataStructure->lastPinTimestamp = jsonObjectData["last_pin_timestamp"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("rtc_region") && !jsonObjectData["rtc_region"].is_null()) {
-				pDataStructure->rtcRegion = jsonObjectData["rtc_region"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("video_quality_mode") && !jsonObjectData["video_quality_mode"].is_null()) {
-				pDataStructure->videoQualityMode = jsonObjectData["video_quality_mode"].get<int32_t>();
-			}
-
-			if (jsonObjectData.contains("message_count") && !jsonObjectData["message_count"].is_null()) {
-				pDataStructure->messageCount = jsonObjectData["message_count"].get<int32_t>();
-			}
-
-			if (jsonObjectData.contains("member_count") && !jsonObjectData["member_count"].is_null()) {
-				pDataStructure->memberCount = jsonObjectData["member_count"].get<int32_t>();
-			}
-
-			if (jsonObjectData.contains("thread_metadata") && !jsonObjectData["thread_metadata"].is_null()) {
-				pDataStructure->threadMetadata = jsonObjectData["thread_metadata"];
-			}
-
-			if (jsonObjectData.contains("member") && !jsonObjectData["member"].is_null()) {
-				pDataStructure->member = jsonObjectData["member"];
-			}
-		}
+	  protected:
+		void parseObject(const nlohmann::json& jsonObjectData, Channel* pDataStructure);
 	};
 
 	class DiscordCoreAPI_Dll ChannelVector {
 	  public:
-		std::vector<Channel> theChannels{};
-
 		ChannelVector() = default;
 
-		ChannelVector& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
+		operator std::vector<Channel>();
 
-		ChannelVector(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
+		ChannelVector& operator=(const nlohmann::json& jsonObjectData);
+
+		ChannelVector(const nlohmann::json& jsonObjectData);
 
 		virtual ~ChannelVector() = default;
 
-		inline void parseObject(const nlohmann::json& jsonObjectData, ChannelVector* pDataStructure) {
-			pDataStructure->theChannels.reserve(jsonObjectData.size());
-			for (auto& value: jsonObjectData) {
-				DiscordCoreAPI::Channel newData{ value };
-				pDataStructure->theChannels.push_back(newData);
-			}
-			pDataStructure->theChannels.shrink_to_fit();
-		}
+	  protected:
+		std::vector<Channel> theChannels{};
+
+		void parseObject(const nlohmann::json& jsonObjectData, ChannelVector* pDataStructure);
 	};
 
 	/// For modifying a Channel's properties. \brief For modifying a Channel's properties.
@@ -390,7 +250,7 @@ namespace DiscordCoreAPI {
 		/// Collects a std::vector of the invites to a given Channel. \brief Collects a std::vector of the invites to a given Channel.
 		/// \param dataPackage A GetChannelInvitesData structure.
 		/// \returns A CoRoutine containing a InviteDataVector.
-		static CoRoutine<InviteDataVector> getChannelInvitesAsync(GetChannelInvitesData dataPackage);
+		static CoRoutine<std::vector<InviteData>> getChannelInvitesAsync(GetChannelInvitesData dataPackage);
 
 		/// Creates an invite to a selected Channel. \brief Creates an invite to a selected Channel.
 		/// \param dataPackage A CreateChannelInviteData structure.
@@ -415,7 +275,7 @@ namespace DiscordCoreAPI {
 		/// Collects a list of Channels from a chosen Guild. \brief Collects a list of Channels from a chosen Guild.
 		/// \param dataPackage A GetGuildChannelsData structure.
 		/// \returns A CoRoutine containing a ChannelVector.
-		static CoRoutine<ChannelVector> getGuildChannelsAsync(GetGuildChannelsData dataPackage);
+		static CoRoutine<std::vector<Channel>> getGuildChannelsAsync(GetGuildChannelsData dataPackage);
 
 		/// Creates a new Channel within a chosen Guild. \brief Creates a new Channel within a chosen Guild.
 		/// \param dataPackage A CreateGuildChannelData structure.
@@ -435,7 +295,7 @@ namespace DiscordCoreAPI {
 		/// Collect a list of voice regions that are usable for the RTC-Region option of a given Channel.
 		/// \brief Collect a list of voice regions that are usable for the RTC-Region option of a given Channel.
 		/// \returns A CoRoutine containing a VoiceRegionDataVector.
-		static CoRoutine<VoiceRegionDataVector> getVoiceRegionsAsync();
+		static CoRoutine<std::vector<VoiceRegionData>> getVoiceRegionsAsync();
 
 		static void insertChannel(ChannelData dataPackage);
 

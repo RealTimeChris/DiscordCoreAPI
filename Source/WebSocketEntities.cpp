@@ -126,6 +126,7 @@ namespace DiscordCoreInternal {
 	void BaseSocketAgent::onClosed(WebSocketSSLShard* theShard) noexcept {
 		if (theShard && this->theClients.contains(theShard->shard[0])) {
 			if (this->maxReconnectTries > theShard->currentRecursionDepth) {
+				std::cout << "WERE CLOSING CLOSING CLOSING!" << std::endl;
 				theShard->disconnect();
 			} else if (this->maxReconnectTries <= theShard->currentRecursionDepth) {
 				this->doWeQuit->store(true);
@@ -325,6 +326,7 @@ namespace DiscordCoreInternal {
 	void BaseSocketAgent::onMessageReceived(WebSocketSSLShard* theShard) noexcept {
 		if (theShard && theShard->areWeConnected01.load()) {
 			try {
+				std::cout << "WERE LOSING LOSING LOSING !" << std::endl;
 				std::string messageNew{};
 				if (theShard->processedMessages.size() > 0) {
 					messageNew = theShard->processedMessages.front();
@@ -927,7 +929,12 @@ namespace DiscordCoreInternal {
 
 	void BaseSocketAgent::run(std::stop_token theToken) noexcept {
 		try {
+			int32_t counter{ 0 };
 			while (!theToken.stop_requested() && !this->doWeQuit->load()) {
+				counter++;
+				if (counter % 100 == 0) {
+					std::cout << "WERE COUNTING HERE!" << std::endl;
+				}
 				if (this->connections.size() > 0) {
 					this->internalConnect();
 				}

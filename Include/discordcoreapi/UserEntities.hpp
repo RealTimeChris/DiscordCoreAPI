@@ -110,7 +110,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~User() = default;
 
-		void parseObject(const nlohmann::json& jsonObjectData, DiscordCoreAPI::User* pDataStructure) {
+		inline void parseObject(const nlohmann::json& jsonObjectData, DiscordCoreAPI::User* pDataStructure) {
 			if (jsonObjectData.contains("username") && !jsonObjectData["username"].is_null()) {
 				pDataStructure->userName = jsonObjectData["username"].get<std::string>();
 			}

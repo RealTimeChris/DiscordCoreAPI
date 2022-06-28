@@ -21,53 +21,7 @@
 
 #pragma once
 
-#pragma warning(push)
-#pragma warning(disable : 4244)
-#pragma warning(disable : 4251)
-#pragma warning(disable : 4996)
-
-#ifdef _WIN32
-	#ifdef DiscordCoreAPI_EXPORTS
-		#define DiscordCoreAPI_Dll __declspec(dllexport)
-	#else
-		#define DiscordCoreAPI_Dll __declspec(dllimport)
-	#endif
-	#ifndef WIN32_LEAN_AND_MEAN
-		#define WIN32_LEAN_AND_MEAN
-	#endif
-	#ifndef WINRT_LEAN_AND_MEAN
-		#define WINRT_LEAN_AND_MEAN
-	#endif
-#else
-	#ifndef DiscordCoreAPI_Dll
-		#define DiscordCoreAPI_Dll
-	#endif
-	#include <pthread.h>
-	#include <sys/time.h>
-	#include <time.h>
-	#include <ctime>
-#endif
-
-#include <condition_variable>
-#include <nlohmann/json.hpp>
-#include <source_location>
-#include <unordered_map>
-#include <shared_mutex>
-#include <functional>
-#include <coroutine>
-#include <semaphore>
-#include <concepts>
-#include <iostream>
-#include <fstream>
-#include <bitset>
-#include <memory>
-#include <random>
-#include <string>
-#include <vector>
-#include <thread>
-#include <mutex>
-#include <queue>
-#include <map>
+#include <discordcoreapi/Utilities.hpp>
 
 #ifdef max
 	#undef max
@@ -101,43 +55,6 @@
  * \defgroup foundation_entities Foundation Entities
  * \brief For all of the building blocks of the main endpoints.
  */
-namespace DiscordCoreInternal {
-
-	using namespace std::literals;
-
-	struct HttpsWorkloadData;
-	class SoundCloudRequestBuilder;
-	class YouTubeRequestBuilder;
-	class VoiceSocketAgent;
-	class BaseSocketAgent;
-	class SoundCloudAPI;
-	class HttpsClient;
-	class YouTubeAPI;
-
-	enum class WebSocketOpCode : int8_t { Op_Continuation = 0x00, Op_Text = 0x01, Op_Binary = 0x02, Op_Close = 0x08, Op_Ping = 0x09, Op_Pong = 0x0a };
-
-	enum class WebSocketState : int8_t { Connecting01 = 0, Connecting02 = 1, Connected = 2 };
-
-	/// Websocket close codes. \brief Websocket close codes.
-	enum class WebSocketCloseCode : uint16_t {
-		Normal_Close = 1000,///< Normal close.
-		Unknown_Error = 4000,///< We're not sure what went wrong. Try reconnecting?
-		Unknown_Opcode = 4001,///< You sent an invalid Gateway opcode or an invalid payload for an opcode. Don't do that!
-		Decode_Error = 4002,///< You sent an invalid payload to us. Don't do that!
-		Not_Authenticated = 4003,///< You sent us a payload prior to identifying.
-		Authentication_Failed = 4004,///< The account token sent with your identify payload is incorrect.
-		Already_Authenticated = 4005,///< You sent more than one identify payload. Don't do that!
-		Invalid_Seq = 4007,///<	The sequence sent when resuming the session was invalid. Reconnect and start a new session.
-		Rate_Limited = 4008,///< Woah nelly! You're sending payloads to us too quickly. Slow it down! You will be disconnected on receiving this.
-		Session_Timed = 4009,///< Your session timed out. Reconnect and start a new one.
-		Invalid_Shard = 4010,///< You sent us an invalid shard when identifying.
-		Sharding_Required = 4011,///< The session would have handled too many guilds - you are required to shard your connection in order to connect.
-		Invalid_API_Version = 4012,///< You sent an invalid version for the gateway.
-		Invalid_Intent = 4013,///< You sent an invalid intent for a Gateway Intent. You may have incorrectly calculated the bitwise value.
-		Disallowed_Intent = 4014,///< You sent a disallowed intent for a Gateway Intent. You may have tried to specify an intent that you have not enabled or are not approved for.
-	};
-
-}// namespace DiscordCoreInternal
 
 /**
  * \addtogroup foundation_entities
@@ -147,813 +64,15 @@ namespace DiscordCoreInternal {
 /// library.
 namespace DiscordCoreAPI {
 
-	using namespace std::literals;
-
-	struct DeleteInteractionResponseData;
-	struct DeleteFollowUpMessageData;
-	struct OnInteractionCreationData;
-	struct GetGuildMemberRolesData;
-	struct BaseFunctionArguments;
-	struct GetRolesData;
-	struct CommandData;
-	struct File;
-
-	class CreateEphemeralInteractionResponseData;
-	class CreateDeferredInteractionResponseData;
-	class CreateEphemeralFollowUpMessageData;
-	class CreateInteractionResponseData;
-	class EditInteractionResponseData;
-	class CreateFollowUpMessageData;
-	class RespondToInputEventData;
-	class EditFollowUpMessageData;
-	class SelectMenuCollector;
-	class DiscordCoreClient;
-	class CreateMessageData;
-	class VoiceConnection;
-	class EditMessageData;
-	class ButtonCollector;
-	class ModalCollector;
-	class Interactions;
-	class EventManager;
-	class EventHandler;
-	class GuildMembers;
-	class ChannelData;
-	class InputEvents;
-	class EventWaiter;
-	class Permissions;
-	class SendDMData;
-	class Reactions;
-	class Messages;
-	class WebHooks;
-	class SongAPI;
-	class BotUser;
-	class Guilds;
-	class Guild;
-	class Roles;
-	class Test;
-
-	template<typename ReturnType, typename... ArgTypes> class EventDelegate;
-	template<typename ReturnType, typename... ArgTypes> class Event;
-	template<typename ReturnType> class CoRoutine;
-
-	/**
-	 * \addtogroup utilities
-	 * @{
-	 */
-
-	/// Gateway intents. \brief Gateway intents.
-	enum class GatewayIntents : int32_t {
-		Guilds = 1 << 0,///< Intent for receipt of Guild information.
-		Guild_Members = 1 << 1,///< Intent for receipt of Guild members.
-		Guild_Bans = 1 << 2,///< Intent for receipt of Guild bans.
-		Guild_Emojis = 1 << 3,///< Intent for receipt of Guild emojis.
-		Guild_Integrations = 1 << 4,///< Intent for receipt of Guild integrations.
-		Guild_Webhooks = 1 << 5,///< Intent for receipt of Guild webhooks.
-		Guild_Invites = 1 << 6,///< Intent for receipt of Guild invites.
-		Guild_VoiceStates = 1 << 7,///< Intent for receipt of Guild voice states.
-		Guild_Presences = 1 << 8,///< Intent for receipt of Guild presences.
-		Guild_Messages = 1 << 9,///< Intent for receipt of Guild messages.
-		Guild_Message_Reactions = 1 << 10,///< Intent for receipt of Guild message reactions.
-		Guild_Message_Typing = 1 << 11,///< Intent for receipt of Guild message typing notifications.
-		Direct_Messages = 1 << 12,///< Intent for receipt of direct messages (DMs).
-		Direct_Message_Reactions = 1 << 13,///< Intent for receipt of direct message reactions.
-		Direct_Message_Typing = 1 << 14,///< Intent for receipt of direct message typing notifications.
-		Message_Content = 1 << 15,///< Intent for receipt of message content.
-		Guild_Scheduled_Events = 1 << 16,///< Scheduled events.
-		Default_Intents = Guilds | Guild_Bans | Guild_Emojis | Guild_Integrations | Guild_Webhooks | Guild_Invites | Guild_VoiceStates | Guild_Messages | Guild_Message_Reactions |
-			Guild_Message_Typing | Direct_Messages | Direct_Message_Reactions | Direct_Message_Typing | Guild_Scheduled_Events,///< Default intents (all non-privileged intents).
-		Privileged_Intents = Guild_Members | Guild_Presences | Message_Content,///< Privileged intents requiring ID.
-		All_Intents = Default_Intents | Privileged_Intents///< Every single intent.
-	};
-
-	/// Function data for repeated functions to be loaded. \brief Function data for repeated functions to be loaded.
-	struct DiscordCoreAPI_Dll RepeatedFunctionData {
-		std::function<void(DiscordCoreClient*)> function{ nullptr };///< The std::function pointer to be loaded.
-		uint32_t intervalInMs{ 0 };///< The time interval at which to call the std::function.
-		bool repeated{ false };///< Whether or not the std::function is repeating.
-		int64_t dummyArg{ 0 };
-	};
-
-	/// Represents which text format to use for websocket transfer. \brief Represents which text format to use for websocket transfer.
-	enum class TextFormat : int8_t {
-		Etf = 0x00,///< Etf format.
-		Json = 0x01///< Json format.
-	};
-
-	/// Sharding options for the library. \brief Sharding options for the library.
-	struct DiscordCoreAPI_Dll ShardingOptions {
-		int32_t numberOfShardsForThisProcess{ 1 };///< The number of shards to launch on the current process.
-		int32_t totalNumberOfShards{ 1 };///< The total number of shards that will be launched across all processes.
-		int32_t startingShard{ 0 };///< The first shard to start on this process.
-	};
-
-	/// Logging options for the library. \brief Loggin options for the library.
-	struct DiscordCoreAPI_Dll LoggingOptions {
-		bool logWebSocketSuccessMessages{ false };///< Do we log the websocket success messages to cout?
-		bool logWebSocketErrorMessages{ false };///< Do we log the websocket error messages to cout?
-		bool logGeneralSuccessMessages{ false };///< Do we log general success messages to cout?
-		bool logFFMPEGSuccessMessages{ false };///< Do we log FFMPEG success messages to cout?
-		bool logGeneralErrorMessages{ false };///< Do we log general error messages to cout?
-		bool logHttpsSuccessMessages{ false };///< Do we log Http response success messages to cout?
-		bool logFFMPEGErrorMessages{ false };///< Do we log FFMPEG error messages to cout?
-		bool logHttpsErrorMessages{ false };///< Do we log Http response error messages to cout?
-	};
-
-	/// For selecting the caching style of the library. \brief For selecting the caching style of the library.
-	struct DiscordCoreAPI_Dll CacheOptions {
-		bool cacheGuildMembers{ true };///< Do we cache GuildMembers?
-		bool cacheChannels{ true };///< Do we cache Channels?
-		bool cacheGuilds{ true };///< Do we cache Guilds?
-		bool cacheRoles{ true };///< Do we cache Roles?
-		bool cacheUsers{ true };///< Do we cache Users?
-	};
-
-	/// Configuration data for the library's main class, DiscordCoreClient. \brief Configuration data for the library's main class, DiscordCoreClient.
-	struct DiscordCoreAPI_Dll DiscordCoreClientConfig {
-		GatewayIntents theIntents{ GatewayIntents::All_Intents };///< The gateway intents to be used for this instance.
-		std::vector<RepeatedFunctionData> functionsToExecute{};///< Functions to execute after a timer, or on a repetition.
-		TextFormat textFormat{ TextFormat::Etf };///< Use ETF or JSON format for websocket transfer?
-		std::string connectionAddress{};///< A potentially alternative connection address for the websocket.
-		ShardingOptions shardOptions{};///< Options for the sharding of your bot.
-		std::string connectionPort{};///< A potentially alternative connection port for the websocket.
-		LoggingOptions logOptions{};///< Options for the output/logging of the library.
-		CacheOptions cacheOptions{};///< Options for the cache of the library.
-		std::string botToken{};///< Your bot's token.
-	};
-
-	class DiscordCoreAPI_Dll ConfigManager {
-	  public:
-		ConfigManager() = default;
-
-		ConfigManager(const DiscordCoreClientConfig&);
-
-		const bool doWePrintWebSocketSuccessMessages();
-
-		const bool doWePrintWebSocketErrorMessages();
-
-		const bool doWePrintHttpsSuccessMessages();
-
-		const bool doWePrintHttpsErrorMessages();
-
-		const bool doWePrintFFMPEGSuccessMessages();
-
-		const bool doWePrintFFMPEGErrorMessages();
-
-		const bool doWePrintGeneralSuccessMessages();
-
-		const bool doWePrintGeneralErrorMessages();
-
-		const bool doWeCacheChannels();
-
-		const bool doWeCacheUsers();
-
-		const bool doWeCacheGuilds();
-
-		const bool doWeCacheGuildMembers();
-
-		const bool doWeCacheRoles();
-
-		const std::string getBotToken();
-
-		const int32_t getTotalShardCount();
-
-		const int32_t getStartingShard();
-
-		const int32_t getShardCountForThisProcess();
-
-		const std::string getConnectionAddress();
-
-		void setConnectionAddress(const std::string& connectionAddressNew);
-
-		const std::string getConnectionPort();
-
-		void setConnectionPort(const std::string& connectionPortNew);
-
-		const std::vector<RepeatedFunctionData> getFunctionsToExecute();
-
-		const TextFormat getTextFormat();
-
-		const GatewayIntents getGatewayIntents();
-
-	  protected:
-		DiscordCoreClientConfig theConfig{};
-	};
-
-	/**@}*/
-
-	template<typename ObjectType> class ReferenceCountingPtr {
-	  public:
-		class DiscordCoreAPI_Dll ObjectWrapper {
-		  public:
-			ObjectWrapper& operator=(ObjectType* other) {
-				this->thePtr = other;
-				return *this;
-			}
-
-			ObjectWrapper(ObjectType* other) {
-				*this = other;
-			}
-
-			operator ObjectType*() {
-				return this->thePtr;
-			}
-
-			ObjectWrapper() = default;
-
-			ObjectType* get() {
-				return this->thePtr;
-			}
-
-			void incrementCount() const {
-				this->refCount++;
-			}
-
-			void release() const {
-				assert(this->refCount > 0);
-				this->refCount--;
-				if (this->refCount == 0) {
-					delete this;
-				};
-			}
-
-			virtual ~ObjectWrapper() = default;
-
-		  protected:
-			ObjectType* thePtr{ nullptr };
-			mutable int32_t refCount{ 0 };
-		};
-
-		ReferenceCountingPtr& operator=(ObjectType* ptr) {
-			if (this->thePtr) {
-				this->thePtr->release();
-			}
-			this->thePtr = new ObjectWrapper{ ptr };
-			if (this->thePtr) {
-				this->thePtr->incrementCount();
-			}
-			return *this;
-		}
-
-		ReferenceCountingPtr(ObjectType* ptr = nullptr) {
-			*this = ptr;
-		}
-
-		ReferenceCountingPtr& operator=(const ReferenceCountingPtr& ptr) {
-			this->thePtr = ptr.thePtr;
-			return *this;
-		}
-
-		ReferenceCountingPtr(const ReferenceCountingPtr& ptr) {
-			*this = ptr;
-		}
-
-		ReferenceCountingPtr(std::nullptr_t){};
-
-		ObjectType* operator->() const {
-			return this->thePtr->get();
-		}
-
-		ObjectType& operator*() const {
-			return *this->thePtr->get();
-		}
-
-		ObjectType* get() const {
-			return this->thePtr->get();
-		}
-
-		~ReferenceCountingPtr() {
-			if (this->thePtr) {
-				this->thePtr->release();
-			}
-		}
-
-	  protected:
-		ObjectWrapper* thePtr{ nullptr };
-	};
-
-	/**
-	 * \addtogroup utilities
-	 * @{
-	 */
-
-	class DiscordCoreAPI_Dll StringWrapper {
-	  public:
-		StringWrapper() = default;
-
-		StringWrapper& operator=(const std::string& theString);
-
-		StringWrapper(const std::string& theString);
-
-		StringWrapper& operator=(const StringWrapper& other);
-
-		StringWrapper(const StringWrapper& other);
-
-		StringWrapper& operator=(std::string& theString);
-
-		StringWrapper(std::string& theString);
-
-		StringWrapper& operator=(const char* theString);
-
-		StringWrapper(const char* theString);
-
-		StringWrapper& operator=(StringWrapper& other);
-
-		StringWrapper(StringWrapper& other);
-
-		operator std::basic_string<char, std::char_traits<char>, std::allocator<char>>();
-
-		void push_back(char theChar);
-
-		size_t size();
-
-		char* data();
-
-	  protected:
-		std::unique_ptr<char[]> thePtr{};
-	};
-
-	inline std::basic_ostream<char, std::char_traits<char>>& operator<<(std::basic_ostream<char, std::char_traits<char>>& lhs, const StringWrapper& rhs) {
-		for (auto& value: static_cast<std::string>(static_cast<StringWrapper>(rhs))) {
-			lhs.put(value);
-		}
-		return lhs;
-	}
-
-	inline std::basic_string<char, std::char_traits<char>, std::allocator<char>> operator+(std::basic_string<char, std::char_traits<char>, std::allocator<char>> lhs,
-		StringWrapper rhs) {
-		std::stringstream theStream{};
-		theStream << lhs << rhs;
-		std::string theReturnString{};
-		for (uint64_t x = 0; x < theStream.str().size(); x++) {
-			theReturnString.push_back(theStream.str()[x]);
-		}
-		return theReturnString;
-	}
-
-	inline std::basic_string<char, std::char_traits<char>, std::allocator<char>> operator+(const char* lhs, StringWrapper rhs) {
-		std::stringstream theStream{};
-		theStream << lhs << rhs;
-		std::string theReturnString{};
-		for (uint64_t x = 0; x < theStream.str().size(); x++) {
-			theReturnString.push_back(theStream.str()[x]);
-		}
-		return theReturnString;
-	}
-
-	inline bool operator!=(StringWrapper lhs, const char* rhs) {
-		for (uint64_t x = 0; x < static_cast<std::string>(rhs).size(); x++) {
-			if (static_cast<std::string>(lhs)[x] != static_cast<std::string>(rhs)[x]) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	inline bool operator==(std::string& lhs, StringWrapper& rhs) {
-		for (uint64_t x = 0; x < static_cast<std::string>(rhs).size(); x++) {
-			if (lhs[x] != static_cast<std::string>(rhs)[x]) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	inline bool operator==(StringWrapper lhs, const char* rhs) {
-		if (std::string(lhs) == std::string(rhs)) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	template<typename ObjectType>
-	concept Copyable = std::copyable<ObjectType>;
-
-	/// A thread-safe messaging block for data-structures. \brief A thread-safe messaging block for data-structures.
-	/// \tparam ObjectType The type of object that will be sent over the message block.
-	template<Copyable ObjectType> class UnboundedMessageBlock {
-	  public:
-		UnboundedMessageBlock<ObjectType>& operator=(UnboundedMessageBlock<ObjectType>&& other) noexcept {
-			if (this != &other) {
-				this->theArray = std::move(other.theArray);
-				other.theArray = std::queue<ObjectType>{};
-			}
-			return *this;
-		}
-
-		UnboundedMessageBlock(UnboundedMessageBlock<ObjectType>&& other) noexcept {
-			*this = std::move(other);
-		}
-
-		UnboundedMessageBlock<ObjectType>& operator=(const UnboundedMessageBlock<ObjectType>&) = delete;
-
-		UnboundedMessageBlock(const UnboundedMessageBlock<ObjectType>&) = delete;
-
-		UnboundedMessageBlock<ObjectType>& operator=(UnboundedMessageBlock<ObjectType>&) = delete;
-
-		UnboundedMessageBlock(UnboundedMessageBlock<ObjectType>&) = delete;
-
-		UnboundedMessageBlock() = default;
-
-		/// Sends an object of type ObjectType to the "recipient". \brief Sends an object of type ObjectType to the "recipient".
-		/// \param theObject An object of ObjectType.
-		void send(const ObjectType&& theObject) {
-			std::lock_guard<std::mutex> theLock{ this->accessMutex };
-			this->theArray.push(theObject);
-		}
-
-		/// Sends an object of type ObjectType to the "recipient". \brief Sends an object of type ObjectType to the "recipient".
-		/// \param theObject An object of ObjectType.
-		void send(ObjectType&& theObject) {
-			std::lock_guard<std::mutex> theLock{ this->accessMutex };
-			this->theArray.push(std::move(theObject));
-		}
-
-		/// Sends an object of type ObjectType to the "recipient". \brief Sends an object of type ObjectType to the "recipient".
-		/// \param theObject An object of ObjectType.
-		void send(const ObjectType& theObject) {
-			std::lock_guard<std::mutex> theLock{ this->accessMutex };
-			ObjectType newValue = theObject;
-			this->theArray.push(newValue);
-		}
-
-		/// Sends an object of type ObjectType to the "recipient". \brief Sends an object of type ObjectType to the "recipient".
-		/// \param theObject An object of ObjectType.
-		void send(ObjectType& theObject) {
-			std::lock_guard<std::mutex> theLock{ this->accessMutex };
-			ObjectType newValue = theObject;
-			this->theArray.push(newValue);
-		}
-
-		/// Clears the contents of the messaging block. \brief Clears the contents of the messaging block.
-		void clearContents() {
-			std::lock_guard<std::mutex> theLock{ this->accessMutex };
-			this->theArray = std::queue<ObjectType>{};
-		}
-
-		/// Tries to receive an object of type ObjectType to be placed into a reference. \brief Tries to receive an object of type ObjectType to be placed into a reference.
-		/// \param theObject A reference of type ObjectType for placing the potentially received object.
-		/// \returns bool A bool, denoting whether or not we received an object.
-		bool tryReceive(ObjectType& theObject) {
-			std::lock_guard<std::mutex> theLock{ this->accessMutex };
-			if (this->theArray.size() == 0) {
-				return false;
-			} else {
-				theObject = this->theArray.front();
-				this->theArray.pop();
-				return true;
-			}
-		}
-
-	  protected:
-		std::queue<ObjectType> theArray{};
-		std::mutex accessMutex{};
-	};
-
-	/**@}*/
-
-	template<typename TimeType> class StopWatch {
-	  public:
-		StopWatch<TimeType>& operator=(StopWatch<TimeType>&& other) noexcept {
-			if (this != &other) {
-				this->maxNumberOfMs.store(other.maxNumberOfMs.load());
-				this->startTime.store(other.startTime.load());
-			}
-			return *this;
-		}
-
-		StopWatch(StopWatch<TimeType>&& other) noexcept {
-			*this = std::move(other);
-		}
-
-		StopWatch<TimeType>& operator=(StopWatch<TimeType>& other) noexcept {
-			if (this != &other) {
-				this->maxNumberOfMs.store(other.maxNumberOfMs.load());
-				this->startTime.store(other.startTime.load());
-			}
-			return *this;
-		}
-
-		StopWatch(StopWatch<TimeType>& other) noexcept {
-			*this = other;
-		}
-
-		StopWatch() = delete;
-
-		StopWatch(TimeType maxNumberOfMsNew) {
-			this->maxNumberOfMs.store(maxNumberOfMsNew.count());
-			this->startTime.store(static_cast<int64_t>(std::chrono::duration_cast<TimeType>(std::chrono::system_clock::now().time_since_epoch()).count()));
-		}
-
-		int64_t totalTimePassed() {
-			int64_t currentTime = static_cast<int64_t>(std::chrono::duration_cast<TimeType>(std::chrono::system_clock::now().time_since_epoch()).count());
-			int64_t elapsedTime = currentTime - this->startTime.load();
-			return elapsedTime;
-		}
-
-		bool hasTimePassed() {
-			int64_t currentTime = static_cast<int64_t>(std::chrono::duration_cast<TimeType>(std::chrono::system_clock::now().time_since_epoch()).count());
-			int64_t elapsedTime = currentTime - this->startTime.load();
-			if (elapsedTime >= this->maxNumberOfMs.load()) {
-				return true;
-			} else {
-				return false;
-			}
-		}
-
-		void resetTimer() {
-			this->startTime.store(static_cast<int64_t>(std::chrono::duration_cast<TimeType>(std::chrono::system_clock::now().time_since_epoch()).count()));
-		}
-
-	  protected:
-		std::atomic_int64_t maxNumberOfMs{ 0 };
-		std::atomic_int64_t startTime{ 0 };
-	};
-
-	template<typename ObjectType> bool waitForTimeToPass(UnboundedMessageBlock<ObjectType>& outBuffer, ObjectType& argOne, int32_t timeInMsNew) {
-		StopWatch stopWatch{ std::chrono::milliseconds{ timeInMsNew } };
-		bool didTimePass{ false };
-		while (!outBuffer.tryReceive(argOne)) {
-			std::this_thread::sleep_for(1ms);
-			if (stopWatch.hasTimePassed()) {
-				didTimePass = true;
-				break;
-			}
-		};
-		return didTimePass;
-	}
-
-	/**
-	 * \addtogroup utilities
-	 * @{
-	 */
-
-	/// Time formatting methods. \brief Time formatting methods.
-	enum class TimeFormat : char {
-		LongDate = 'D',///< "20 April 2021" - Long Date
-		LongDateTime = 'F',///< "Tuesday, 20 April 2021 16:20" - Long Date/Time
-		LongTime = 'T',///< "16:20:30" - Long Time
-		ShortDate = 'd',///< "20/04/2021" - Short Date
-		ShortDateTime = 'f',///< "20 April 2021 16:20" - Short Date/Time
-		ShortTime = 't',///< "16:20" - Short Time
-	};
-
-	/// Class for representing a timestamp, as well as working with time-related values. \brief Class for representing a timestamp, as well as working with time-related values.
-	class DiscordCoreAPI_Dll TimeStamp {
-	  public:
-		operator std::string() {
-			return this->originalTimeStamp;
-		}
-
-		TimeStamp& operator=(std::string&& originalTimeStampNew) {
-			this->originalTimeStamp = std::move(originalTimeStampNew);
-			return *this;
-		}
-
-		TimeStamp(std::string&& originalTimeStampNew) {
-			*this = std::move(originalTimeStampNew);
-		}
-
-		TimeStamp& operator=(std::string& originalTimeStampNew) {
-			this->originalTimeStamp = originalTimeStampNew;
-			return *this;
-		}
-
-		TimeStamp(std::string& originalTimeStampNew) {
-			*this = originalTimeStampNew;
-		}
-
-		TimeStamp& operator=(const TimeStamp& other) {
-			this->originalTimeStamp = other.originalTimeStamp;
-			this->timeStampInMs = other.timeStampInMs;
-			this->minute = other.minute;
-			this->second = other.second;
-			this->month = other.month;
-			this->hour = other.hour;
-			this->year = other.year;
-			this->day = other.day;
-			return *this;
-		}
-
-		TimeStamp(const TimeStamp& other) {
-			*this = other;
-		}
-
-		TimeStamp& operator=(TimeStamp& other) {
-			this->originalTimeStamp = other.originalTimeStamp;
-			this->timeStampInMs = other.timeStampInMs;
-			this->minute = other.minute;
-			this->second = other.second;
-			this->month = other.month;
-			this->hour = other.hour;
-			this->year = other.year;
-			this->day = other.day;
-			return *this;
-		}
-
-		TimeStamp(TimeStamp& other) {
-			*this = other;
-		}
-
-		TimeStamp(int32_t year, int32_t month, int32_t day, int32_t hour, int32_t minute, int32_t second) {
-			this->second = second;
-			this->minute = minute;
-			this->month = month;
-			this->year = year;
-			this->hour = hour;
-			this->day = day;
-		};
-
-		TimeStamp(uint64_t timeInMs) {
-			this->timeStampInMs = timeInMs;
-		}
-
-		static std::string getISO8601TimeStamp(const std::string& year, const std::string& month, const std::string& day, const std::string& hour, const std::string& minute,
-			const std::string& second);
-
-		/// Collects a timestamp that is a chosen number of minutes ahead of the current time. \brief Collects a timestamp that is a chosen number of minutes ahead of the current time.
-		/// \param minutesToAdd An int32_t containing the number of minutes to increment the timestamp forward for.
-		/// \param hoursToAdd An int32_t containing the number of hours to increment the timestamp forward for.
-		/// \param daysToAdd An int32_t containing the number of days to increment the timestamp forward for.
-		/// \param monthsToAdd An int32_t containing the number of months to increment the timestamp forward for.
-		/// \param yearsToAdd An int32_t containing the number of years to increment the timestamp forward for.
-		/// \returns std::string A string containing the new ISO8601 timestamp.
-		static std::string getFutureISO8601TimeStamp(int32_t minutesToAdd, int32_t hoursToAdd = 0, int32_t daysToAdd = 0, int32_t monthsToAdd = 0, int32_t yearsToAdd = 0);
-
-		/// Deduces whether or not a chosen period of time has passed, for a chosen timestamp. \brief Deduces whether or not a chosen period of time has passed, for a chosen timestamp.
-		/// \param days An int64_t representing the number of days to check for.
-		/// \param hours An int64_t representing the number of hours to check for.
-		/// \param minutes An int64_t representing the number of minutes to check for.
-		/// \returns bool A bool denoting whether or not the input period of time has elapsed since the supplied timestamp.
-		bool hasTimeElapsed(uint64_t days = 0, uint64_t hours = 0, uint64_t minutes = 0);
-
-		static std::string convertMsToDurationString(uint64_t durationInMs);
-
-		std::string convertTimeInMsToDateTimeString(TimeFormat timeFormat);
-
-		/// Collects a timestamp using the format TimeFormat, as a string. \brief Collects a timestamp using the format TimeFormat, as a string.
-		/// \param timeFormat A TimeFormat value, for selecting the output type.
-		/// \returns std::string A string containing the returned timestamp.
-		std::string getDateTimeStamp(TimeFormat timeFormat);
-
-		std::string getCurrentISO8601TimeStamp();
-
-		uint64_t convertTimestampToMsInteger();
-
-		/// Returns the original timestamp, from a Discord entity. \brief Returns the original timestamp, from a Discord entity.
-		/// \returns std::string A string containing the returned timestamp.
-		std::string getOriginalTimeStamp();
-
-		uint64_t getTime();
-
-	  protected:
-		StringWrapper originalTimeStamp{};
-		uint64_t timeStampInMs{ 0 };
-		uint64_t year{ 0 };
-		uint64_t month{ 0 };
-		uint64_t day{ 0 };
-		uint64_t hour{ 0 };
-		uint64_t minute{ 0 };
-		uint64_t second{ 0 };
-		const uint32_t secondsInJan{ 31 * 24 * 60 * 60 };
-		const uint32_t secondsInFeb{ 28 * 24 * 60 * 60 };
-		const uint32_t secondsInMar{ 31 * 24 * 60 * 60 };
-		const uint32_t secondsInApr{ 30 * 24 * 60 * 60 };
-		const uint32_t secondsInMay{ 31 * 24 * 60 * 60 };
-		const uint32_t secondsInJun{ 30 * 24 * 60 * 60 };
-		const uint32_t secondsInJul{ 31 * 24 * 60 * 60 };
-		const uint32_t secondsInAug{ 31 * 24 * 60 * 60 };
-		const uint32_t secondsInSep{ 30 * 24 * 60 * 60 };
-		const uint32_t secondsInOct{ 31 * 24 * 60 * 60 };
-		const uint32_t secondsInNov{ 30 * 24 * 60 * 60 };
-		const uint32_t secondsInDec{ 31 * 24 * 60 * 60 };
-		const uint32_t secondsPerMinute{ 60 };
-		const uint32_t secondsPerHour{ 60 * 60 };
-		const uint32_t secondsPerDay{ 60 * 60 * 24 };
-	};
-
-	/// Prints the current file, line, and column from which the function is being called - typically from within an exception's "catch" block. \brief Prints the current file, line, and column from which the function is being called - typically from within an exception's "catch" block.
-	/// \param currentFunctionName A std::string to display the current function's name.
-	/// \param theLocation For deriving the current file, line, and column - do not set this value.
-	DiscordCoreAPI_Dll void reportException(const std::string& currentFunctionName, std::source_location theLocation = std::source_location::current());
-
-	DiscordCoreAPI_Dll std::string constructMultiPartData(nlohmann::json theData, const std::vector<File>& files);
-
-	DiscordCoreAPI_Dll std::string convertToLowerCase(const std::string& stringToConvert);
-
-	DiscordCoreAPI_Dll std::string base64Encode(const std::string&, bool = false);
-
-	DiscordCoreAPI_Dll std::string loadFileContents(const std::string& filePath);
-
-	DiscordCoreAPI_Dll std::string utf8MakeValid(const std::string& inputString);
-
-	DiscordCoreAPI_Dll std::string urlEncode(const std::string& inputString);
-
-	DiscordCoreAPI_Dll void spinLock(int64_t timeInNsToSpinLockFor);
-
-	DiscordCoreAPI_Dll std::string generateBase64EncodedKey();
-
-	DiscordCoreAPI_Dll std::string shiftToBrightGreen();
-
-	DiscordCoreAPI_Dll std::string shiftToBrightBlue();
-
-	DiscordCoreAPI_Dll std::string shiftToBrightRed();
-
-	DiscordCoreAPI_Dll bool nanoSleep(int64_t ns);
-
-	DiscordCoreAPI_Dll std::string reset();
-
-	/**@}*/
-
 	/**
 	 * \addtogroup foundation_entities
 	 * @{
-	 */
+	*/
 
 	struct DiscordCoreAPI_Dll ConnectionPackage {
-		;
 		int32_t currentBaseSocketAgent{ 0 };
 		int32_t currentShard{ 0 };
 	};
-
-	/// Permission values, for a given Channel, by Role or GuildMember. \brief Permission values, for a given Channel, by Role or GuildMember.
-	enum class Permission : uint64_t {
-		Create_Instant_Invite = 1ull << 0,///< Create Instant Invite.
-		Kick_Members = 1ull << 1,///< Kick Members.
-		Ban_Members = 1ull << 2,///< Ban Members.
-		Administrator = 1ull << 3,///< Administrator.
-		Manage_Channels = 1ull << 4,///< Manage Channels.
-		Manage_Guild = 1ull << 5,///< Manage Guild.
-		Add_Reactions = 1ull << 6,///< Add Reactions.
-		View_Audit_Log = 1ull << 7,///< View Audit Log.
-		Priority_Speaker = 1ull << 8,///< Priority Speaker.
-		Stream = 1ull << 9,///< Stream.
-		View_Channel = 1ull << 10,///< View Channel.
-		Send_Messages = 1ull << 11,///< Send Messages.
-		Send_Tts_Messages = 1ull << 12,///< Send TTS Messages.
-		Manage_Messages = 1ull << 13,///< Manage Messages.
-		Embed_Links = 1ull << 14,///< Embed Links.
-		Attach_Files = 1ull << 15,///< Attach Files.
-		Read_Message_History = 1ull << 16,///< Read Message History.
-		Mention_Everyone = 1ull << 17,///< Mention Everyone.
-		Use_External_Emojis = 1ull << 18,///< Use External Emoji.
-		View_Guild_Insights = 1ull << 19,///< View Guild Insights.
-		Connect = 1ull << 20,///< Connect.
-		Speak = 1ull << 21,///< Speak.
-		Mute_Members = 1ull << 22,///< Mute Members.
-		Deafen_Members = 1ull << 23,///< Deafen Members.
-		Move_Members = 1ull << 24,///< Move Members.
-		Use_Vad = 1ull << 25,///< Use VAD.
-		Change_Nickname = 1ull << 26,///< Change Nickname.
-		Manage_Nicknames = 1ull << 27,///< Manage Nicknames.
-		Manage_Roles = 1ull << 28,///< Manage Roles.
-		Manage_Webhooks = 1ull << 29,///< Manage Webhooks.
-		Manage_Emojis_And_Stickers = 1ull << 30,///< Manage Emojis And Stickers.
-		Use_Application_Commands = 1ull << 31,///< Use Application Commands.
-		Request_To_Speak = 1ull << 32,///< Request To Speak.
-		Manage_Events = 1ull << 33,///< Manage Events.
-		Manage_Threads = 1ull << 34,///< Manage Threads.
-		Create_Public_Threads = 1ull << 35,///< Create Public Threads.
-		Create_Private_Threads = 1ull << 36,///< Create Private Threads.
-		Use_External_Stickers = 1ull << 37,///< Use External Stickers.
-		Send_Messages_In_Threads = 1ull << 38,///< Send Messages In Threads.
-		Start_Embedded_Activities = 1ull << 39,///< Start Embedded Activities.
-		Moderate_Members = 1ull << 40///< Moderate Members.
-	};
-
-	/**@}*/
-
-	std::ostream& operator<<(std::ostream& outputSttream, const std::string& (*theFunction)( void ));
-
-	/**
-	 * \addtogroup utilities
-	 * @{
-	 */
-
-	template<typename StoredAsType, typename FlagType> StoredAsType setBool(StoredAsType inputFlag, FlagType theFlag, bool enabled) {
-		if (enabled) {
-			inputFlag |= static_cast<StoredAsType>(theFlag);
-			return inputFlag;
-		} else {
-			inputFlag &= ~static_cast<StoredAsType>(theFlag);
-			return inputFlag;
-		}
-	}
-
-	template<typename StoredAsType, typename FlagType> bool getBool(StoredAsType inputFlag, FlagType theFlag) {
-		return static_cast<StoredAsType>(inputFlag) & static_cast<StoredAsType>(theFlag);
-	}
-
-	/// Acquires a timestamp with the current time and date - suitable for use in message-embeds. \brief Acquires a timestamp with the current time and date - suitable for use in message-embeds.
-	/// \returns std::string A string containing the current date-time stamp.
-	DiscordCoreAPI_Dll std::string getTimeAndDate();
-
-	/**@}*/
-
-	/**
-	 * \addtogroup foundation_entities
-	 * @{
-	 */
 
 	/// Timeout durations for the timeout command. \brief Timeout durations for the timeout command.
 	enum class TimeoutDurations : int16_t {
@@ -998,8 +117,6 @@ namespace DiscordCoreAPI {
 			*this = jsonObjectData;
 		}
 
-		virtual ~RoleTagsData() = default;
-
 		inline void parseObject(const nlohmann::json& jsonObjectData, RoleTagsData* pDataStructure) {
 			if (jsonObjectData.contains("bot_id") && !jsonObjectData["bot_id"].is_null()) {
 				pDataStructure->botId = jsonObjectData["bot_id"].get<std::string>();
@@ -1009,6 +126,8 @@ namespace DiscordCoreAPI {
 				pDataStructure->integrationId = jsonObjectData["integration_id"].get<std::string>();
 			}
 		}
+
+		virtual ~RoleTagsData() = default;
 	};
 
 	/// User flags. \brief User flags.
@@ -1059,8 +178,6 @@ namespace DiscordCoreAPI {
 			*this = jsonObjectData;
 		}
 
-		virtual ~UserData() = default;
-
 		inline void parseObject(const nlohmann::json& jsonObjectData, UserData* pDataStructure) {
 			if (jsonObjectData.contains("username") && !jsonObjectData["username"].is_null()) {
 				pDataStructure->userName = jsonObjectData["username"].get<std::string>();
@@ -1103,6 +220,8 @@ namespace DiscordCoreAPI {
 				pDataStructure->flags = jsonObjectData["public_flags"].get<int32_t>();
 			}
 		}
+
+		virtual ~UserData() = default;
 	};
 
 	/// Attachment data. \brief Attachment data.
@@ -1142,8 +261,6 @@ namespace DiscordCoreAPI {
 		AttachmentData(const nlohmann::json& jsonObjectData) {
 			*this = jsonObjectData;
 		}
-
-		virtual ~AttachmentData() = default;
 
 		inline void parseObject(const nlohmann::json& jsonObjectData, AttachmentData* pDataStructure) {
 			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
@@ -1186,6 +303,8 @@ namespace DiscordCoreAPI {
 				pDataStructure->height = jsonObjectData["height"].get<int32_t>();
 			}
 		}
+
+		virtual ~AttachmentData() = default;
 	};
 
 	/// Sticker format types. \brief Sticker format types.
@@ -1212,8 +331,6 @@ namespace DiscordCoreAPI {
 			*this = jsonObjectData;
 		}
 
-		virtual ~EmbedFooterData() = default;
-
 		inline void parseObject(const nlohmann::json& jsonObjectData, EmbedFooterData* pDataStructure) {
 			if (jsonObjectData.contains("text") && !jsonObjectData["text"].is_null()) {
 				pDataStructure->text = jsonObjectData["text"].get<std::string>();
@@ -1227,6 +344,8 @@ namespace DiscordCoreAPI {
 				pDataStructure->proxyIconUrl = jsonObjectData["proxy_icon_url"].get<std::string>();
 			}
 		}
+
+		virtual ~EmbedFooterData() = default;
 	};
 
 	/// Embed image data. \brief Embed image data.
@@ -1247,8 +366,6 @@ namespace DiscordCoreAPI {
 			*this = jsonObjectData;
 		}
 
-		virtual ~EmbedImageData() = default;
-
 		inline void parseObject(const nlohmann::json& jsonObjectData, EmbedImageData* pDataStructure) {
 			if (jsonObjectData.contains("url") && !jsonObjectData["url"].is_null()) {
 				pDataStructure->url = jsonObjectData["url"].get<std::string>();
@@ -1266,6 +383,8 @@ namespace DiscordCoreAPI {
 				pDataStructure->height = jsonObjectData["height"].get<int32_t>();
 			}
 		}
+
+		virtual ~EmbedImageData() = default;
 	};
 
 	/// Embed thumbnail data. \brief Embed thumbnail data.
@@ -1286,8 +405,6 @@ namespace DiscordCoreAPI {
 			*this = jsonObjectData;
 		}
 
-		virtual ~EmbedThumbnailData() = default;
-
 		inline void parseObject(const nlohmann::json& jsonObjectData, EmbedThumbnailData* pDataStructure) {
 			if (jsonObjectData.contains("url") && !jsonObjectData["url"].is_null()) {
 				pDataStructure->url = jsonObjectData["url"].get<std::string>();
@@ -1305,6 +422,8 @@ namespace DiscordCoreAPI {
 				pDataStructure->height = jsonObjectData["height"].get<int32_t>();
 			}
 		}
+
+		virtual ~EmbedThumbnailData() = default;
 	};
 
 	/// Embed video data. \brief Embed video data.
@@ -1325,8 +444,6 @@ namespace DiscordCoreAPI {
 			*this = jsonObjectData;
 		}
 
-		virtual ~EmbedVideoData() = default;
-
 		inline void parseObject(const nlohmann::json& jsonObjectData, EmbedVideoData* pDataStructure) {
 			if (jsonObjectData.contains("url") && !jsonObjectData["url"].is_null()) {
 				pDataStructure->url = jsonObjectData["url"].get<std::string>();
@@ -1344,6 +461,8 @@ namespace DiscordCoreAPI {
 				pDataStructure->height = jsonObjectData["height"].get<int32_t>();
 			}
 		}
+
+		virtual ~EmbedVideoData() = default;
 	};
 
 	/// Embed provider data. \brief Embed provider data.
@@ -1362,8 +481,6 @@ namespace DiscordCoreAPI {
 			*this = jsonObjectData;
 		}
 
-		virtual ~EmbedProviderData() = default;
-
 		inline void parseObject(const nlohmann::json& jsonObjectData, EmbedProviderData* pDataStructure) {
 			if (jsonObjectData.contains("url") && !jsonObjectData["url"].is_null()) {
 				pDataStructure->url = jsonObjectData["url"].get<std::string>();
@@ -1373,6 +490,8 @@ namespace DiscordCoreAPI {
 				pDataStructure->name = jsonObjectData["name"].get<std::string>();
 			}
 		}
+
+		virtual ~EmbedProviderData() = default;
 	};
 
 	/// Embed author data. \brief Embed author data.
@@ -1393,8 +512,6 @@ namespace DiscordCoreAPI {
 			*this = jsonObjectData;
 		}
 
-		virtual ~EmbedAuthorData() = default;
-
 		inline void parseObject(const nlohmann::json& jsonObjectData, EmbedAuthorData* pDataStructure) {
 			if (jsonObjectData.contains("url") && !jsonObjectData["url"].is_null()) {
 				pDataStructure->url = jsonObjectData["url"].get<std::string>();
@@ -1412,6 +529,8 @@ namespace DiscordCoreAPI {
 				pDataStructure->iconUrl = jsonObjectData["icon_url"].get<std::string>();
 			}
 		}
+
+		virtual ~EmbedAuthorData() = default;
 	};
 
 	/// Embed field data. \brief Embed field data.
@@ -1439,8 +558,6 @@ namespace DiscordCoreAPI {
 			*this = jsonObjectData;
 		}
 
-		virtual ~EmbedFieldData() = default;
-
 		inline void parseObject(const nlohmann::json& jsonObjectData, EmbedFieldData* pDataStructure) {
 			if (jsonObjectData.contains("inline") && !jsonObjectData["inline"].is_null()) {
 				pDataStructure->Inline = jsonObjectData["inline"].get<bool>();
@@ -1454,6 +571,8 @@ namespace DiscordCoreAPI {
 				pDataStructure->value = jsonObjectData["value"].get<std::string>();
 			}
 		}
+
+		virtual ~EmbedFieldData() = default;
 	};
 
 	/// Embed types. \brief Embed types.
@@ -1617,8 +736,6 @@ namespace DiscordCoreAPI {
 			return *this;
 		}
 
-		virtual ~EmbedData() = default;
-
 		inline void parseObject(const nlohmann::json& jsonObjectData, EmbedData* pDataStructure) {
 			if (jsonObjectData.contains("title") && !jsonObjectData["title"].is_null()) {
 				pDataStructure->title = jsonObjectData["title"].get<std::string>();
@@ -1681,6 +798,8 @@ namespace DiscordCoreAPI {
 				pDataStructure->fields.shrink_to_fit();
 			}
 		};
+
+		virtual ~EmbedData() = default;
 	};
 
 	/// Message reference data.\brief Message reference data.
@@ -1710,8 +829,6 @@ namespace DiscordCoreAPI {
 			*this = jsonObjectData;
 		}
 
-		virtual ~MessageReferenceData() = default;
-
 		inline void parseObject(const nlohmann::json& jsonObjectData, MessageReferenceData* pDataStructure) {
 			if (jsonObjectData.contains("message_id") && !jsonObjectData["message_id"].is_null()) {
 				pDataStructure->messageId = stoull(jsonObjectData["message_id"].get<std::string>());
@@ -1729,6 +846,8 @@ namespace DiscordCoreAPI {
 				pDataStructure->failIfNotExists = jsonObjectData["fail_if_not_exists"].get<bool>();
 			}
 		}
+
+		virtual ~MessageReferenceData() = default;
 	};
 
 	enum class MediaType : int8_t { png = 0, gif = 1, jpeg = 2, mpeg = 3, mp3 = 4 };
@@ -1775,8 +894,6 @@ namespace DiscordCoreAPI {
 			*this = other;
 		}
 
-		virtual ~ThreadMetadataData() = default;
-
 		inline void parseObject(const nlohmann::json& jsonObjectData, ThreadMetadataData* pDataStructure) {
 			if (jsonObjectData.contains("archived") && !jsonObjectData["archived"].is_null()) {
 				pDataStructure->archived = jsonObjectData["archived"].get<bool>();
@@ -1798,6 +915,8 @@ namespace DiscordCoreAPI {
 				pDataStructure->locked = jsonObjectData["locked"].get<bool>();
 			}
 		}
+
+		virtual ~ThreadMetadataData() = default;
 	};
 
 	/// Data for a single member of a Thread. \brief Data for a single member of a Thread.
@@ -1818,8 +937,6 @@ namespace DiscordCoreAPI {
 			*this = other;
 		}
 
-		virtual ~ThreadMemberData() = default;
-
 		inline void parseObject(const nlohmann::json& jsonObjectData, ThreadMemberData* pDataStructure) {
 			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
 				pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
@@ -1837,6 +954,8 @@ namespace DiscordCoreAPI {
 				pDataStructure->flags = jsonObjectData["flags"].get<int32_t>();
 			}
 		}
+
+		virtual ~ThreadMemberData() = default;
 	};
 
 	class DiscordCoreAPI_Dll ThreadMemberDataVector {
@@ -1854,8 +973,6 @@ namespace DiscordCoreAPI {
 			*this = jsonObjectData;
 		}
 
-		virtual ~ThreadMemberDataVector() = default;
-
 		inline void parseObject(const nlohmann::json& jsonObjectData, ThreadMemberDataVector* pDataStructure) {
 			pDataStructure->theThreadMemberDatas.reserve(jsonObjectData.size());
 			for (auto& value: jsonObjectData) {
@@ -1864,6 +981,8 @@ namespace DiscordCoreAPI {
 			}
 			pDataStructure->theThreadMemberDatas.shrink_to_fit();
 		}
+
+		virtual ~ThreadMemberDataVector() = default;
 	};
 
 	/// Thread types. \brief Thread types.
@@ -1905,93 +1024,6 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	class DiscordCoreAPI_Dll GuildMember;
-	/// Permissions class, for representing and manipulating Permission values. \brief Permissions class, for representing and manipulating Permission values.
-	class DiscordCoreAPI_Dll Permissions : public StringWrapper {
-	  public:
-		Permissions() = default;
-
-		Permissions& operator=(std::string&& other) {
-			if (other.size() == 0) {
-				this->push_back('0');
-			} else {
-				for (auto& value: other) {
-					this->push_back(value);
-				}
-			}
-			other = "";
-			return *this;
-		}
-
-		Permissions(std::string&& permsNew) {
-			*this = std::move(permsNew);
-		}
-
-		Permissions& operator=(std::string& other) {
-			if (other.size() == 0) {
-				this->push_back('0');
-			} else {
-				for (auto& value: other) {
-					this->push_back(value);
-				}
-			}
-			return *this;
-		}
-
-		Permissions(std::string& permsNew) {
-			*this = permsNew;
-		}
-
-		operator const char*() {
-			return this->data();
-		}
-
-		/// Adds one or more Permissions to the current Permissions value. \brief Adds one or more Permissions to the current Permissions value.
-		/// \param permissionsToAdd A std::vector containing the Permissions you wish to add.
-		void addPermissions(const std::vector<Permission>& permissionsToAdd);
-
-		/// Removes one or more Permissions from the current Permissions value. \brief Removes one or more Permissions from the current Permissions value.
-		/// \param permissionsToRemove A std::vector containing the Permissions you wish to remove.
-		void removePermissions(const std::vector<Permission>& permissionsToRemove);
-
-		/// Displays the currently present Permissions in a std::string, and returns a std::vector with each of them stored in std::string format. \brief Displays the currently present Permissions in a std::string, and returns a std::vector with each of them stored in std::string format.
-		/// \returns std::vector A std::vector full of strings of the Permissions that are in the input std::string's value.
-		std::vector<std::string> displayPermissions();
-
-		/// Returns a std::string containing ALL of the possible Permissions. \brief Returns a std::string containing ALL of the possible Permissions.
-		/// \returns std::string A std::string containing all of the possible Permissions.
-		static std::string getAllPermissions();
-
-		/// Returns a std::string containing the currently held Permissions. \brief Returns a std::string containing the currently held Permissions.
-		/// \returns std::string A std::string containing the current Permissions.
-		std::string getCurrentPermissionString();
-
-		/// Returns a std::string containing the currently held Permissions in a given Guild. \brief Returns a std::string containing the currently held Permissions in a given Guild.
-		/// \param guildMember The GuildMember who's Permissions are to be evaluated.
-		/// \returns std::string A std::string containing the current Permissions.
-		static std::string getCurrentGuildPermissions(const GuildMember& guildMember);
-
-		/// Returns a std::string containing all of a given User's Permissions for a given Channel. \brief Returns a std::string containing all of a given User's Permissions for a given Channel.
-		/// \param guildMember The GuildMember who's Permissions to analyze.
-		/// \param channel The Channel withint which to check for Permissions.
-		/// \returns std::string A std::string containing the final Permission's value for a given Channel.
-		static std::string getCurrentChannelPermissions(const GuildMember& guildMember, ChannelData& channel);
-
-		/// Checks for a given Permission in a chosen Channel, for a specific User. \brief Checks for a given Permission in a chosen Channel, for a specific User.
-		/// \param guildMember The GuildMember who to check the Permissions of.
-		/// \param channel The Channel within which to check for the Permission's presence.
-		/// \param permission A Permission to check the current Channel for.
-		/// \returns bool A bool suggesting the presence of the chosen Permission.
-		bool checkForPermission(const GuildMember& guildMember, ChannelData& channel, Permission permission);
-
-	  protected:
-		static std::string computeBasePermissions(const GuildMember& guildMember);
-
-		static std::string computeOverwrites(const std::string& basePermissions, const GuildMember& guildMember, ChannelData& channel);
-
-		static std::string computePermissions(const GuildMember& guildMember, ChannelData& channel);
-	};
-
 	/// Data structure representing a single GuildMember. \brief Data structure representing a single GuildMember.
 	/// Data structure representing a single Guild. \brief Data structure representing a single Guild.
 	class DiscordCoreAPI_Dll GuildMemberData : public DiscordEntity {
@@ -2018,6 +1050,9 @@ namespace DiscordCoreAPI {
 
 		void insertUser(UserData theUser);
 
+		virtual ~GuildMemberData() = default;
+
+	  protected:
 		inline void parseObject(const nlohmann::json& jsonObjectData, GuildMemberData* pDataStructure) {
 			if (jsonObjectData.contains("roles") && !jsonObjectData["roles"].is_null()) {
 				for (auto& value: jsonObjectData["roles"].get<std::vector<std::string>>()) {
@@ -2065,8 +1100,6 @@ namespace DiscordCoreAPI {
 				pDataStructure->flags = setBool<int8_t, GuildMemberFlags>(pDataStructure->flags, GuildMemberFlags::Deaf, jsonObjectData["deaf"].get<bool>());
 			}
 		}
-
-		virtual ~GuildMemberData() = default;
 	};
 
 	/// Voice state data. \brief Voice state data.
@@ -2095,8 +1128,6 @@ namespace DiscordCoreAPI {
 		VoiceStateData(const nlohmann::json& jsonObjectData) {
 			*this = jsonObjectData;
 		}
-
-		virtual ~VoiceStateData() = default;
 
 		inline void parseObject(const nlohmann::json& jsonObjectData, VoiceStateData* pDataStructure) {
 			if (jsonObjectData.contains("guild_id") && !jsonObjectData["guild_id"].is_null()) {
@@ -2151,6 +1182,8 @@ namespace DiscordCoreAPI {
 				pDataStructure->requestToSpeakTimestamp = jsonObjectData["request_to_speak_timestamp"].get<std::string>();
 			}
 		}
+
+		virtual ~VoiceStateData() = default;
 	};
 
 	/// Permission overwrites types. \brief Permission overwrites types.
@@ -2594,7 +1627,8 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Represents an auto-moderation-rule. \brief Represents an auto-moderation-rule.
-	struct DiscordCoreAPI_Dll AutoModerationRuleData : public DiscordEntity {
+	class DiscordCoreAPI_Dll AutoModerationRuleData : public DiscordEntity {
+	  public:
 		std::vector<uint64_t> exemptChannels{};///< The channel ids that should not be affected by the rule(Maximum of 50).
 		std::vector<uint64_t> exemptRoles{};///< The role ids that should not be affected by the rule(Maximum of 20).
 		std::vector<ActionData> actions{};///< Actions which will execute when the rule is triggered.
@@ -2619,6 +1653,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~AutoModerationRuleData() = default;
 
+	  protected:
 		inline void parseObject(const nlohmann::json& jsonObjectData, AutoModerationRuleData* pDataStructure) {
 			if (jsonObjectData.contains("name") && !jsonObjectData["name"].is_null()) {
 				pDataStructure->name = jsonObjectData["name"].get<std::string>();
@@ -2991,9 +2026,11 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll VoiceRegionDataVector {
 	  public:
-		std::vector<VoiceRegionData> theVoiceRegionDatas{};
-
 		VoiceRegionDataVector() = default;
+
+		operator std::vector<VoiceRegionData>() {
+			return this->theVoiceRegionDatas;
+		}
 
 		VoiceRegionDataVector& operator=(const nlohmann::json& jsonObjectData) {
 			this->parseObject(jsonObjectData, this);
@@ -3005,6 +2042,9 @@ namespace DiscordCoreAPI {
 		}
 
 		virtual ~VoiceRegionDataVector() = default;
+
+	  protected:
+		std::vector<VoiceRegionData> theVoiceRegionDatas{};
 
 		inline void parseObject(const nlohmann::json& jsonObjectData, VoiceRegionDataVector* pDataStructure) {
 			pDataStructure->theVoiceRegionDatas.reserve(jsonObjectData.size());
@@ -3085,9 +2125,11 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll BanDataVector {
 	  public:
-		std::vector<BanData> theBanDatas{};
-
 		BanDataVector() = default;
+
+		operator std::vector<BanData>() {
+			return this->theBanDatas;
+		}
 
 		BanDataVector& operator=(const nlohmann::json& jsonObjectData) {
 			this->parseObject(jsonObjectData, this);
@@ -3099,6 +2141,9 @@ namespace DiscordCoreAPI {
 		}
 
 		virtual ~BanDataVector() = default;
+
+	  protected:
+		std::vector<BanData> theBanDatas{};
 
 		inline void parseObject(const nlohmann::json& jsonObjectData, BanDataVector* pDataStructure) {
 			pDataStructure->theBanDatas.reserve(jsonObjectData.size());
@@ -3608,9 +2653,11 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll IntegrationDataVector {
 	  public:
-		std::vector<IntegrationData> theIntegrationDatas{};
-
 		IntegrationDataVector() = default;
+
+		operator std::vector<IntegrationData>() {
+			return this->theIntegrationDatas;
+		}
 
 		IntegrationDataVector& operator=(const nlohmann::json& jsonObjectData) {
 			this->parseObject(jsonObjectData, this);
@@ -3622,6 +2669,9 @@ namespace DiscordCoreAPI {
 		}
 
 		virtual ~IntegrationDataVector() = default;
+
+	  protected:
+		std::vector<IntegrationData> theIntegrationDatas{};
 
 		inline void parseObject(const nlohmann::json& jsonObjectData, IntegrationDataVector* pDataStructure) {
 			pDataStructure->theIntegrationDatas.reserve(jsonObjectData.size());
@@ -4685,9 +3735,13 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll GuildDataVector {
 	  public:
-		std::vector<GuildData> theGuildDatas{};
+		friend class Guilds;
 
 		GuildDataVector() = default;
+
+		operator std::vector<GuildData>() {
+			return this->theGuildDatas;
+		}
 
 		GuildDataVector& operator=(const nlohmann::json& jsonObjectData) {
 			this->parseObject(jsonObjectData, this);
@@ -4699,6 +3753,9 @@ namespace DiscordCoreAPI {
 		}
 
 		virtual ~GuildDataVector() = default;
+
+	  protected:
+		std::vector<GuildData> theGuildDatas{};
 
 		inline void parseObject(const nlohmann::json& jsonObjectData, GuildDataVector* pDataStructure) {
 			pDataStructure->theGuildDatas.reserve(jsonObjectData.size());
@@ -5024,9 +4081,11 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll InviteDataVector {
 	  public:
-		std::vector<InviteData> theInviteDatas{};
-
 		InviteDataVector() = default;
+
+		operator std::vector<InviteData>() {
+			return this->theInviteDatas;
+		}
 
 		InviteDataVector& operator=(const nlohmann::json& jsonObjectData) {
 			this->parseObject(jsonObjectData, this);
@@ -5038,6 +4097,9 @@ namespace DiscordCoreAPI {
 		}
 
 		virtual ~InviteDataVector() = default;
+
+	  protected:
+		std::vector<InviteData> theInviteDatas{};
 
 		inline void parseObject(const nlohmann::json& jsonObjectData, InviteDataVector* pDataStructure) {
 			pDataStructure->theInviteDatas.reserve(jsonObjectData.size());
@@ -5125,9 +4187,11 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll GuildTemplateDataVector {
 	  public:
-		std::vector<GuildTemplateData> theGuildTemplateDatas{};
-
 		GuildTemplateDataVector() = default;
+
+		operator std::vector<GuildTemplateData>() {
+			return this->theGuildTemplateDatas;
+		}
 
 		GuildTemplateDataVector& operator=(const nlohmann::json& jsonObjectData) {
 			this->parseObject(jsonObjectData, this);
@@ -5139,6 +4203,9 @@ namespace DiscordCoreAPI {
 		}
 
 		virtual ~GuildTemplateDataVector() = default;
+
+	  protected:
+		std::vector<GuildTemplateData> theGuildTemplateDatas{};
 
 		inline void parseObject(const nlohmann::json& jsonObjectData, GuildTemplateDataVector* pDataStructure) {
 			pDataStructure->theGuildTemplateDatas.reserve(jsonObjectData.size());
@@ -7730,21 +6797,6 @@ namespace DiscordCoreAPI {
 		Paragraph = 2///< A multi-line input.
 	};
 
-	/// Input event response types. \brief Input event response types.
-	enum class InputEventResponseType : int8_t {
-		Unset = 0,///< Unset.
-		Deferred_Response = 1,
-		Ephemeral_Deferred_Response = 2,///< Deferred ephemeral response.
-		Interaction_Response = 3,///< Interaction response.
-		Ephemeral_Interaction_Response = 4,///< Ephemeral Interaction response.
-		Edit_Interaction_Response = 5,///< Interaction response edit.
-		Follow_Up_Message = 6,///< Follow-up Message.
-		Ephemeral_Follow_Up_Message = 7,///< Ephemeral follow-up Message.
-		Edit_Follow_Up_Message = 8,///< Follow-up Message edit.
-		Application_Command_AutoComplete_Result = 9,///< Respond to an autocomplete interaction with suggested choices.
-		Modal_Interaction_Response = 10,///< Respond to an interaction with a popup modal.
-	};
-
 	/// Data representing a Guild Emoji Update event. \brief Data representing a Guild Emoji Update event.
 	struct DiscordCoreAPI_Dll GuildEmojisUpdateEventData {
 		std::vector<EmojiData> emojis{};
@@ -7899,118 +6951,71 @@ namespace DiscordCoreAPI {
 
 		InputEventResponseType responseType{};///< The type of response that this input value represents.
 
-		InputEventData& operator=(const InputEventData& other) {
-			if (this != &other) {
-				*this->interactionData = *other.interactionData;
-				this->responseType = other.responseType;
-			}
-			return *this;
-		}
+		InputEventData& operator=(const InputEventData& other);
 
-		InputEventData(const InputEventData& other) {
-			*this = other;
-		}
+		InputEventData(const InputEventData& other);
 
-		InputEventData& operator=(InputEventData& other) {
-			if (this != &other) {
-				*this->interactionData = *other.interactionData;
-				this->responseType = other.responseType;
-			}
-			return *this;
-		}
+		InputEventData& operator=(InputEventData& other);
 
-		InputEventData(InputEventData& other) {
-			*this = other;
-		}
+		InputEventData(InputEventData& other);
 
-		InputEventData& operator=(InteractionData& other) {
-			*this->interactionData = other;
-			return *this;
-		}
+		InputEventData& operator=(InteractionData& other);
 
-		InputEventData(InteractionData& interactionData) {
-			*this = interactionData;
-		}
+		InputEventData(InteractionData& interactionData);
 
 		InputEventData() = default;
 
 		/// Returns the userName of the last User to trigger this input-event. \brief Returns the userName of the last User to trigger this input-event.
 		/// \returns std::string A std::string containing the User name.
-		std::string getUserName() {
-			return this->interactionData->user.userName;
-		}
+		std::string getUserName();
 
 		/// Gets the avatar Url of the last User to trigger this input-event. \brief Gets the avatar Url of the last User to trigger this input-event.
 		/// \returns std::string A std::string containing the avatar Url.
-		std::string getAvatarUrl() {
-			return this->interactionData->user.avatar;
-		}
+		std::string getAvatarUrl();
 
 		/// Returns the Message embeds that are on the Message, if applicable. \brief Returns the Message embeds that are on the Message, if applicable.
 		/// \returns std::vector A std::vector containing the EmbedData.
-		std::vector<EmbedData> getEmbeds() {
-			return this->interactionData->message.embeds;
-		}
+		std::vector<EmbedData> getEmbeds();
 
 		/// Returns the Message components that are on the Message, if applicable. \brief Returns the Message components that are on the Message, if applicable.
 		/// \returns std::vector A std::vector containing ActionRowData.
-		std::vector<ActionRowData> getComponents() {
-			return this->interactionData->message.components;
-		}
+		std::vector<ActionRowData> getComponents();
 
 		/// Returns the User id of the last requester of this input-event. \brief Returns the User id of the last requester of this input-event.
 		/// \returns uint64_t An uint64_t containing the author's id.
-		uint64_t getAuthorId() {
-			return this->interactionData->user.id;
-		}
+		uint64_t getAuthorId();
 
 		/// Returns the Interaction id, if appplicable, of this input-event. \brief Returns the Interaction id, if appplicable, of this input-event.
 		/// \returns uint64_t An uint64_t containing the Interaction id.
-		uint64_t getInteractionId() {
-			return this->interactionData->id;
-		}
+		uint64_t getInteractionId();
 
 		/// Returns the application id. \brief Returns the application id.
 		/// \returns uint64_t An uint64_t containing the application id.
-		uint64_t getApplicationId() {
-			return this->interactionData->applicationId;
-		}
+		uint64_t getApplicationId();
 
 		/// Returns the Channel id of this input-event. \brief Returns the Channel id of this input-event.
 		/// \returns uint64_t An uint64_t containing the Channel id.
-		uint64_t getChannelId() {
-			return this->interactionData->channelId;
-		}
+		uint64_t getChannelId();
 
 		/// Returns the Interaction token, if applicable, of this input-event. \brief Returns the Interaction token, if applicable, of this input-event.
 		/// \returns std::string A std::string containing the Interaction token.
-		std::string getInteractionToken() {
-			return this->interactionData->token;
-		}
+		std::string getInteractionToken();
 
 		/// Returns the Guild id, of this input-event. \brief Returns the Guild id, of this input-event.
 		/// \returns uint64_t An uint64_t containing the Guild id.
-		uint64_t getGuildId() {
-			return this->interactionData->guildId;
-		}
+		uint64_t getGuildId();
 
 		/// Returns the Message id, if applicable, of this input-event. \brief Returns the Message id, if applicable, of this input-event.
 		/// \returns uint64_t An uint64_t containing the Message id.
-		uint64_t getMessageId() {
-			return this->interactionData->message.id;
-		}
+		uint64_t getMessageId();
 
 		/// Returns the Interaction data, if applicable, of this input-event. \brief Returns the InteractionData, if applicable, of this input-event.
 		/// \returns InteractionData An InteractionData structure.
-		InteractionData getInteractionData() {
-			return *this->interactionData;
-		}
+		InteractionData getInteractionData();
 
 		/// Returns the Message data, if applicable, of this input-event. \brief Returns the Message data, if applicable, of this input-event.
 		/// \returns MessageData A MessageData structure.
-		MessageData getMessageData() {
-			return this->interactionData->message;
-		}
+		MessageData getMessageData();
 
 		virtual ~InputEventData() = default;
 
@@ -8024,7 +7029,7 @@ namespace DiscordCoreAPI {
 		friend CreateEphemeralInteractionResponseData;
 		friend CreateDeferredInteractionResponseData;
 		friend CreateEphemeralFollowUpMessageData;
-		friend struct DiscordCoreAPI_Dll InteractionResponseData;
+		friend struct InteractionResponseData;
 		friend DeleteInteractionResponseData;
 		friend CreateInteractionResponseData;
 		friend EditInteractionResponseData;
@@ -8036,32 +7041,13 @@ namespace DiscordCoreAPI {
 		friend InputEvents;
 		friend SendDMData;
 
-		RespondToInputEventData& operator=(InteractionData& dataPackage) {
-			this->applicationId = dataPackage.applicationId;
-			this->interactionToken = dataPackage.token;
-			this->messageId = dataPackage.message.id;
-			this->channelId = dataPackage.channelId;
-			this->interactionId = dataPackage.id;
-			this->eventType = dataPackage.type;
-			return *this;
-		};
+		RespondToInputEventData& operator=(InteractionData& dataPackage);
 
-		RespondToInputEventData(InteractionData& dataPackage) {
-			*this = dataPackage;
-		}
+		RespondToInputEventData(InteractionData& dataPackage);
 
-		RespondToInputEventData& operator=(InputEventData& dataPackage) {
-			this->interactionToken = dataPackage.getInteractionToken();
-			this->applicationId = dataPackage.getApplicationId();
-			this->interactionId = dataPackage.getInteractionId();
-			this->channelId = dataPackage.getChannelId();
-			this->messageId = dataPackage.getMessageId();
-			return *this;
-		}
+		RespondToInputEventData& operator=(InputEventData& dataPackage);
 
-		RespondToInputEventData(InputEventData& dataPackage) {
-			*this = dataPackage;
-		}
+		RespondToInputEventData(InputEventData& dataPackage);
 
 		/// Adds a button to the response Message. \brief Adds a button to the response Message.
 		/// \param disabled Whether the button is active or not.
@@ -8073,30 +7059,7 @@ namespace DiscordCoreAPI {
 		/// \param url A url, if applicable.
 		/// \returns RespondToInputEventData& A reference to this data structure.
 		RespondToInputEventData& addButton(bool disabled, const std::string& customIdNew, const std::string& buttonLabel, ButtonStyle buttonStyle,
-			const std::string& emojiName = "", uint64_t emojiId = 0, const std::string& url = "") {
-			if (this->components.size() == 0) {
-				ActionRowData actionRowData;
-				this->components.push_back(actionRowData);
-			}
-			if (this->components.size() < 5) {
-				if (this->components[this->components.size() - 1].components.size() < 5) {
-					ComponentData component;
-					component.type = ComponentType::Button;
-					component.emoji.name = emojiName;
-					component.label = buttonLabel;
-					component.style = static_cast<int32_t>(buttonStyle);
-					component.customId = customIdNew;
-					component.disabled = disabled;
-					component.emoji.id = emojiId;
-					component.url = url;
-					this->components[this->components.size() - 1].components.push_back(component);
-				} else if (this->components[this->components.size() - 1].components.size() == 5) {
-					ActionRowData actionRowData;
-					this->components.push_back(actionRowData);
-				}
-			}
-			return *this;
-		}
+			const std::string& emojiName = "", uint64_t emojiId = 0, const std::string& url = "");
 
 		/// Adds a select-menu to the response Message. \brief Adds a select-menu to the response Message.
 		/// \param disabled Whether the select-menu is active or not.
@@ -8107,29 +7070,7 @@ namespace DiscordCoreAPI {
 		/// \param minValues Minimum required number of selections that are required.
 		/// \returns RespondToInputEventData& A reference to this data structure.
 		RespondToInputEventData& addSelectMenu(bool disabled, const std::string& customIdNew, std::vector<SelectOptionData> options, const std::string& placeholder,
-			int32_t maxValues, int32_t minValues) {
-			if (this->components.size() == 0) {
-				ActionRowData actionRowData;
-				this->components.push_back(actionRowData);
-			}
-			if (this->components.size() < 5) {
-				if (this->components[this->components.size() - 1].components.size() < 5) {
-					ComponentData componentData;
-					componentData.type = ComponentType::SelectMenu;
-					componentData.placeholder = placeholder;
-					componentData.maxValues = maxValues;
-					componentData.minValues = minValues;
-					componentData.disabled = disabled;
-					componentData.customId = customIdNew;
-					componentData.options = options;
-					this->components[this->components.size() - 1].components.push_back(componentData);
-				} else if (this->components[this->components.size() - 1].components.size() == 5) {
-					ActionRowData actionRowData;
-					this->components.push_back(actionRowData);
-				}
-			}
-			return *this;
-		}
+			int32_t maxValues, int32_t minValues);
 
 		/// Adds a modal to the response Message. \brief Adds a modal to the response Message.
 		/// \param topTitleNew A title for the modal.
@@ -8144,89 +7085,42 @@ namespace DiscordCoreAPI {
 		/// \param placeholder A placeholder for the modal.
 		/// \returns RespondToInputEventData& A reference to this data structure.
 		RespondToInputEventData& addModal(const std::string& topTitleNew, const std::string& topCustomIdNew, const std::string& titleNew, const std::string& customIdNew,
-			bool required, int32_t minLength, int32_t maxLength, TextInputStyle inputStyle, const std::string& label = "", const std::string& placeholder = "") {
-			this->title = topTitleNew;
-			this->customId = topCustomIdNew;
-			if (this->components.size() == 0) {
-				ActionRowData actionRowData;
-				this->components.push_back(actionRowData);
-			}
-			if (this->components.size() < 5) {
-				if (this->components[this->components.size() - 1].components.size() < 5) {
-					ComponentData component{};
-					component.type = ComponentType::TextInput;
-					component.customId = customIdNew;
-					component.style = static_cast<int32_t>(inputStyle);
-					component.title = titleNew;
-					component.maxLength = maxLength;
-					component.minLength = minLength;
-					component.label = label;
-					component.required = required;
-					component.placeholder = placeholder;
-					this->components[this->components.size() - 1].components.push_back(component);
-				} else if (this->components[this->components.size() - 1].components.size() == 5) {
-					ActionRowData actionRowData;
-					this->components.push_back(actionRowData);
-				}
-			}
-			return *this;
-		}
+			bool required, int32_t minLength, int32_t maxLength, TextInputStyle inputStyle, const std::string& label = "", const std::string& placeholder = "");
 
 		/// Adds a file to the current collection of files for this message response. \brief Adds a file to the current collection of files for this message response.
 		/// \param theFile The file to be added.
 		/// \returns RespondToInputEventData& A reference to this data structure.
-		RespondToInputEventData& addFile(File theFile) {
-			this->files.push_back(theFile);
-			return *this;
-		}
+		RespondToInputEventData& addFile(File theFile);
 
 		/// For setting the allowable mentions in a response. \brief For setting the allowable mentions in a response.
 		/// \param dataPackage An AllowedMentionsData structure.
 		/// \returns RespondToInputEventData& A reference to this data structure.
-		RespondToInputEventData& addAllowedMentions(AllowedMentionsData dataPackage) {
-			this->allowedMentions = dataPackage;
-			return *this;
-		}
+		RespondToInputEventData& addAllowedMentions(AllowedMentionsData dataPackage);
 
 		/// For setting the type of response to make. \brief For setting the type of response to make.
 		/// \param typeNew An InputEventResponseType.
 		/// \returns RespondToInputEventData& A reference to this data structure.
-		RespondToInputEventData& setResponseType(InputEventResponseType typeNew) {
-			this->type = typeNew;
-			return *this;
-		}
+		RespondToInputEventData& setResponseType(InputEventResponseType typeNew);
 
 		/// For setting the components in a response. \brief For setting the components in a response.
 		/// \param dataPackage An ActionRowData structure.
 		/// \returns RespondToInputEventData& A reference to this data structure.
-		RespondToInputEventData& addComponentRow(ActionRowData dataPackage) {
-			this->components.push_back(dataPackage);
-			return *this;
-		}
+		RespondToInputEventData& addComponentRow(ActionRowData dataPackage);
 
 		/// For setting the embeds in a response. \brief For setting the embeds in a response.
 		/// \param dataPackage An EmbedData structure.
 		/// \returns RespondToInputEventData& A reference to this data structure.
-		RespondToInputEventData& addMessageEmbed(EmbedData dataPackage) {
-			this->embeds.push_back(dataPackage);
-			return *this;
-		}
+		RespondToInputEventData& addMessageEmbed(EmbedData dataPackage);
 
 		/// For setting the Message content in a response. \brief For setting the Message content in a response.
 		/// \param dataPackage A std::string, containing the content.
 		/// \returns RespondToInputEventData& A reference to this data structure.
-		RespondToInputEventData& addContent(const std::string& dataPackage) {
-			this->content = dataPackage;
-			return *this;
-		}
+		RespondToInputEventData& addContent(const std::string& dataPackage);
 
 		/// For setting the tts status of a response. \brief For setting the tts status of a response.
 		/// \param enabledTTs A bool.
 		/// \returns RespondToInputEventData& A reference to this data structure.
-		RespondToInputEventData& setTTSStatus(bool enabledTTs) {
-			this->tts = enabledTTs;
-			return *this;
-		}
+		RespondToInputEventData& setTTSStatus(bool enabledTTs);
 
 		/// For setting the choices of an autocomplete response. \brief For setting the choices of an autocomplete response.
 		/// \param theValue An nlohmann::json value that is either a float, int32_t or a std::string.
@@ -8234,22 +7128,12 @@ namespace DiscordCoreAPI {
 		/// \param theNameLocalizations A std::unordered_map<std::string, std::string> for the name localizations.
 		/// \returns RespondToInputEventData& A reference to this data structure.
 		RespondToInputEventData& setAutoCompleteChoice(nlohmann::json theValue, const std::string& theName,
-			std::unordered_map<std::string, std::string> theNameLocalizations = std::unordered_map<std::string, std::string>{}) {
-			ApplicationCommandOptionChoiceData choiceData{};
-			choiceData.nameLocalizations = theNameLocalizations;
-			choiceData.value = theValue;
-			choiceData.name = theName;
-			this->choices.push_back(choiceData);
-			return *this;
-		}
+			std::unordered_map<std::string, std::string> theNameLocalizations = std::unordered_map<std::string, std::string>{});
 
 		/// For setting the direct-Message User target of a response. \brief For setting the direct-Message User target of a response.
 		/// \param targetUserIdNew A std::string, containing the target User's id.
 		/// \returns RespondToInputEventData& A reference to this data structure.
-		RespondToInputEventData& setTargetUserID(const uint64_t& targetUserIdNew) {
-			this->targetUserId = targetUserIdNew;
-			return *this;
-		}
+		RespondToInputEventData& setTargetUserID(const uint64_t& targetUserIdNew);
 
 	  protected:
 		std::vector<ApplicationCommandOptionChoiceData> choices{};
@@ -8267,6 +7151,89 @@ namespace DiscordCoreAPI {
 		std::string content{};
 		uint64_t channelId{};
 		uint64_t messageId{};
+		std::string title{};
+		int32_t flags{ 0 };
+		bool tts{ false };
+	};
+
+	/// Message response base, for responding to messages. \brief Message response base, for responding to messages.
+	class DiscordCoreAPI_Dll MessageResponseBase {
+	  public:
+		/// Adds a button to the response Message. \brief Adds a button to the response Message.
+		/// \param disabled Whether the button is active or not.
+		/// \param customIdNew A custom id to give for identifying the button.
+		/// \param buttonLabel A visible label for the button.
+		/// \param buttonStyle The style of the button.
+		/// \param emojiName An emoji name, if desired.
+		/// \param emojiId An emoji id, if desired.
+		/// \param url A url, if applicable.
+		/// \returns MessageResponseBase& A reference to this data structure.
+		MessageResponseBase& addButton(bool disabled, const std::string& customIdNew, const std::string& buttonLabel, ButtonStyle buttonStyle, const std::string& emojiName = "",
+			uint64_t emojiId = 0, const std::string& url = "");
+
+		/// Adds a select-menu to the response Message. \brief Adds a select-menu to the response Message.
+		/// \param disabled Whether the select-menu is active or not.
+		/// \param customIdNew A custom id to give for identifying the select-menu.
+		/// \param options A std::vector of select-menu-options to offer.
+		/// \param placeholder Custom placeholder text if nothing is selected, max 100 characters.
+		/// \param maxValues Maximum number of selections that are possible.
+		/// \param minValues Minimum required number of selections that are required.
+		/// \returns MessageResponseBase& A reference to this data structure.
+		MessageResponseBase& addSelectMenu(bool disabled, const std::string& customIdNew, std::vector<SelectOptionData> options, const std::string& placeholder, int32_t maxValues,
+			int32_t minValues);
+
+		/// Adds a modal to the response Message. \brief Adds a modal to the response Message.
+		/// \param topTitleNew A title for the modal.
+		/// \param topCustomIdNew A custom id to give for the modal.
+		/// \param titleNew A title for the modal's individual input.
+		/// \param customIdNew A custom id to give for the modal's individual input.
+		/// \param required Is it a required response?
+		/// \param minLength Minimum length.
+		/// \param maxLength Maximum length.
+		/// \param inputStyle The input style.
+		/// \param label A label for the modal.
+		/// \param placeholder A placeholder for the modal.
+		/// \returns MessageResponseBase& A reference to this data structure.
+		MessageResponseBase& addModal(const std::string& topTitleNew, const std::string& topCustomIdNew, const std::string& titleNew, const std::string& customIdNew, bool required,
+			int32_t minLength, int32_t maxLength, TextInputStyle inputStyle, const std::string& label = "", const std::string& placeholder = "");
+
+		/// Adds a file to the current collection of files for this message response. \brief Adds a file to the current collection of files for this message response.
+		/// \param theFile The file to be added.
+		/// \returns MessageResponseBase& A reference to this data structure.
+		MessageResponseBase& addFile(File theFile);
+
+		/// For setting the allowable mentions in a response. \brief For setting the allowable mentions in a response.
+		/// \param dataPackage An AllowedMentionsData structure.
+		/// \returns MessageResponseBase& A reference to this data structure.
+		MessageResponseBase& addAllowedMentions(AllowedMentionsData dataPackage);
+
+		/// For setting the components in a response. \brief For setting the components in a response.
+		/// \param dataPackage An ActionRowData structure.
+		/// \returns MessageResponseBase& A reference to this data structure.
+		MessageResponseBase& addComponentRow(ActionRowData dataPackage);
+
+		/// For setting the embeds in a response. \brief For setting the embeds in a response.
+		/// \param dataPackage An EmbedData structure.
+		/// \returns MessageResponseBase& A reference to this data structure.
+		MessageResponseBase& addMessageEmbed(EmbedData dataPackage);
+
+		/// For setting the Message content in a response. \brief For setting the Message content in a response.
+		/// \param dataPackage A std::string, containing the content.
+		/// \returns MessageResponseBase& A reference to this data structure.
+		MessageResponseBase& addContent(const std::string& dataPackage);
+
+		/// For setting the tts status of a response. \brief For setting the tts status of a response.
+		/// \param enabledTTs A bool.
+		/// \returns MessageResponseBase& A reference to this data structure.
+		MessageResponseBase& setTTSStatus(bool enabledTTs);
+
+	  protected:
+		std::vector<ActionRowData> components{};
+		AllowedMentionsData allowedMentions{};
+		std::vector<EmbedData> embeds{};
+		std::vector<File> files{};
+		std::string customId{};
+		std::string content{};
 		std::string title{};
 		int32_t flags{ 0 };
 		bool tts{ false };
@@ -8293,178 +7260,6 @@ namespace DiscordCoreAPI {
 		InteractionResponseData() = default;
 		InteractionCallbackData data{};///< Interaction ApplicationCommand callback data.
 		InteractionCallbackType type{};///< Interaction callback type.
-	};
-
-	/// Message response base, for responding to messages. \brief Message response base, for responding to messages.
-	class DiscordCoreAPI_Dll MessageResponseBase {
-	  public:
-		/// Adds a button to the response Message. \brief Adds a button to the response Message.
-		/// \param disabled Whether the button is active or not.
-		/// \param customIdNew A custom id to give for identifying the button.
-		/// \param buttonLabel A visible label for the button.
-		/// \param buttonStyle The style of the button.
-		/// \param emojiName An emoji name, if desired.
-		/// \param emojiId An emoji id, if desired.
-		/// \param url A url, if applicable.
-		/// \returns MessageResponseBase& A reference to this data structure.
-		MessageResponseBase& addButton(bool disabled, const std::string& customIdNew, const std::string& buttonLabel, ButtonStyle buttonStyle, const std::string& emojiName = "",
-			uint64_t emojiId = 0, const std::string& url = "") {
-			if (this->components.size() == 0) {
-				ActionRowData actionRowData;
-				this->components.push_back(actionRowData);
-			}
-			if (this->components.size() < 5) {
-				if (this->components[this->components.size() - 1].components.size() < 5) {
-					ComponentData component;
-					component.type = ComponentType::Button;
-					component.emoji.name = emojiName;
-					component.label = buttonLabel;
-					component.style = static_cast<int32_t>(buttonStyle);
-					component.customId = customIdNew;
-					component.disabled = disabled;
-					component.emoji.id = emojiId;
-					component.url = url;
-					this->components[this->components.size() - 1].components.push_back(component);
-				} else if (this->components[this->components.size() - 1].components.size() == 5) {
-					ActionRowData actionRowData;
-					this->components.push_back(actionRowData);
-				}
-			}
-			return *this;
-		}
-
-		/// Adds a select-menu to the response Message. \brief Adds a select-menu to the response Message.
-		/// \param disabled Whether the select-menu is active or not.
-		/// \param customIdNew A custom id to give for identifying the select-menu.
-		/// \param options A std::vector of select-menu-options to offer.
-		/// \param placeholder Custom placeholder text if nothing is selected, max 100 characters.
-		/// \param maxValues Maximum number of selections that are possible.
-		/// \param minValues Minimum required number of selections that are required.
-		/// \returns MessageResponseBase& A reference to this data structure.
-		MessageResponseBase& addSelectMenu(bool disabled, const std::string& customIdNew, std::vector<SelectOptionData> options, const std::string& placeholder, int32_t maxValues,
-			int32_t minValues) {
-			if (this->components.size() == 0) {
-				ActionRowData actionRowData;
-				this->components.push_back(actionRowData);
-			}
-			if (this->components.size() < 5) {
-				if (this->components[this->components.size() - 1].components.size() < 5) {
-					ComponentData componentData;
-					componentData.type = ComponentType::SelectMenu;
-					componentData.placeholder = placeholder;
-					componentData.maxValues = maxValues;
-					componentData.minValues = minValues;
-					componentData.disabled = disabled;
-					componentData.customId = customIdNew;
-					componentData.options = options;
-					this->components[this->components.size() - 1].components.push_back(componentData);
-				} else if (this->components[this->components.size() - 1].components.size() == 5) {
-					ActionRowData actionRowData;
-					this->components.push_back(actionRowData);
-				}
-			}
-			return *this;
-		}
-
-		/// Adds a modal to the response Message. \brief Adds a modal to the response Message.
-		/// \param topTitleNew A title for the modal.
-		/// \param topCustomIdNew A custom id to give for the modal.
-		/// \param titleNew A title for the modal's individual input.
-		/// \param customIdNew A custom id to give for the modal's individual input.
-		/// \param required Is it a required response?
-		/// \param minLength Minimum length.
-		/// \param maxLength Maximum length.
-		/// \param inputStyle The input style.
-		/// \param label A label for the modal.
-		/// \param placeholder A placeholder for the modal.
-		/// \returns MessageResponseBase& A reference to this data structure.
-		MessageResponseBase& addModal(const std::string& topTitleNew, const std::string& topCustomIdNew, const std::string& titleNew, const std::string& customIdNew, bool required,
-			int32_t minLength, int32_t maxLength, TextInputStyle inputStyle, const std::string& label = "", const std::string& placeholder = "") {
-			this->title = topTitleNew;
-			this->customId = topCustomIdNew;
-			if (this->components.size() == 0) {
-				ActionRowData actionRowData;
-				this->components.push_back(actionRowData);
-			}
-			if (this->components.size() < 5) {
-				if (this->components[this->components.size() - 1].components.size() < 5) {
-					ComponentData component{};
-					component.type = ComponentType::TextInput;
-					component.customId = customIdNew;
-					component.style = static_cast<int32_t>(inputStyle);
-					component.title = titleNew;
-					component.maxLength = maxLength;
-					component.minLength = minLength;
-					component.label = label;
-					component.required = required;
-					component.placeholder = placeholder;
-					this->components[this->components.size() - 1].components.push_back(component);
-				} else if (this->components[this->components.size() - 1].components.size() == 5) {
-					ActionRowData actionRowData;
-					this->components.push_back(actionRowData);
-				}
-			}
-			return *this;
-		}
-
-		/// Adds a file to the current collection of files for this message response. \brief Adds a file to the current collection of files for this message response.
-		/// \param theFile The file to be added.
-		/// \returns MessageResponseBase& A reference to this data structure.
-		MessageResponseBase& addFile(File theFile) {
-			this->files.push_back(theFile);
-			return *this;
-		}
-
-		/// For setting the allowable mentions in a response. \brief For setting the allowable mentions in a response.
-		/// \param dataPackage An AllowedMentionsData structure.
-		/// \returns MessageResponseBase& A reference to this data structure.
-		MessageResponseBase& addAllowedMentions(AllowedMentionsData dataPackage) {
-			this->allowedMentions = dataPackage;
-			return *this;
-		}
-
-		/// For setting the components in a response. \brief For setting the components in a response.
-		/// \param dataPackage An ActionRowData structure.
-		/// \returns MessageResponseBase& A reference to this data structure.
-		MessageResponseBase& addComponentRow(ActionRowData dataPackage) {
-			this->components.push_back(dataPackage);
-			return *this;
-		}
-
-		/// For setting the embeds in a response. \brief For setting the embeds in a response.
-		/// \param dataPackage An EmbedData structure.
-		/// \returns MessageResponseBase& A reference to this data structure.
-		MessageResponseBase& addMessageEmbed(EmbedData dataPackage) {
-			this->embeds.push_back(dataPackage);
-			return *this;
-		}
-
-		/// For setting the Message content in a response. \brief For setting the Message content in a response.
-		/// \param dataPackage A std::string, containing the content.
-		/// \returns MessageResponseBase& A reference to this data structure.
-		MessageResponseBase& addContent(const std::string& dataPackage) {
-			this->content = dataPackage;
-			return *this;
-		}
-
-		/// For setting the tts status of a response. \brief For setting the tts status of a response.
-		/// \param enabledTTs A bool.
-		/// \returns MessageResponseBase& A reference to this data structure.
-		MessageResponseBase& setTTSStatus(bool enabledTTs) {
-			this->tts = enabledTTs;
-			return *this;
-		}
-
-	  protected:
-		std::vector<ActionRowData> components{};
-		AllowedMentionsData allowedMentions{};
-		std::vector<EmbedData> embeds{};
-		std::vector<File> files{};
-		std::string customId{};
-		std::string content{};
-		std::string title{};
-		int32_t flags{ 0 };
-		bool tts{ false };
 	};
 
 	/// Command data, for functions executed by the CommandController. \brief Command data, for functions executed by the CommandController.
@@ -8800,6 +7595,7 @@ namespace DiscordCoreAPI {
 
 	DiscordCoreAPI_Dll MoveThroughMessagePagesData moveThroughMessagePages(const std::string& userID, InputEventData originalEvent, uint32_t currentPageIndex,
 		const std::vector<EmbedData>& messageEmbeds, bool deleteAfter, uint32_t waitForMaxMs, bool returnResult = false);
+
 	/**@}*/
 
 };// namespace DiscordCoreAPI

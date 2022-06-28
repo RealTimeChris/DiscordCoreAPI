@@ -58,7 +58,6 @@ namespace DiscordCoreAPI {
 		*this = other;
 	}
 
-
 	void Roles::initialize(DiscordCoreInternal::HttpsClient* theClient, ConfigManager* configManagerNew) {
 		Roles::cache = std::make_unique<std::unordered_map<uint64_t, std::unique_ptr<RoleData>>>();
 		Roles::configManager = configManagerNew;
@@ -230,12 +229,15 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<RoleData> Roles::getCachedRoleAsync(GetRoleData dataPackage) {
-		std::shared_lock<std::shared_mutex> theLock{ Roles::theMutex };
 		co_await NewThreadAwaitable<RoleData>();
-		if (Roles::cache->contains(dataPackage.roleId)) {
-			co_return *(*Roles::cache)[dataPackage.roleId];
+		if (!Roles::cache->contains(dataPackage.roleId)) {
+			auto theRole = Roles::getRoleAsync(dataPackage).get();
+			Roles::insertRole(theRole);
+			co_return theRole;
+
 		} else {
-			co_return Roles::getRoleAsync(dataPackage).get();
+			std::shared_lock<std::shared_mutex> theLock{ Roles::theMutex };
+			co_return *(*Roles::cache)[dataPackage.roleId];
 		}
 	}
 

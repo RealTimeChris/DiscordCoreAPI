@@ -549,9 +549,13 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll GuildVector {
 	  public:
-		std::vector<Guild> theGuilds{};
+		friend class Guilds;
 
 		GuildVector() = default;
+
+		operator std::vector<Guild>() {
+			return this->theGuilds;
+		}
 
 		GuildVector& operator=(const nlohmann::json& jsonObjectData) {
 			this->parseObject(jsonObjectData, this);
@@ -563,6 +567,9 @@ namespace DiscordCoreAPI {
 		}
 
 		virtual ~GuildVector() = default;
+
+	  protected:
+		std::vector<Guild> theGuilds{};
 
 		inline void parseObject(const nlohmann::json& jsonObjectData, GuildVector* pDataStructure) {
 			pDataStructure->theGuilds.reserve(jsonObjectData.size());
@@ -647,7 +654,7 @@ namespace DiscordCoreAPI {
 
 		/// Returns all of the Guilds that the current bot is in. \brief Returns all of the Guilds that the current bot is in.
 		/// \returns A CoRoutine containing a GuildDataVector.
-		static CoRoutine<GuildDataVector> getAllGuildsAsync();
+		static CoRoutine<std::vector<GuildData>> getAllGuildsAsync();
 
 		/// Collects a Guild from the Discord servers. \brief Collects a Guild from the Discord servers.
 		/// \param dataPackage A GetGuildData structure.
@@ -677,7 +684,7 @@ namespace DiscordCoreAPI {
 		/// Collects a list of Bans from a chosen Guild. \brief Collects a list of Bans from a chosen Guild.
 		/// \param dataPackage A GetGuildBansData structure.
 		/// \returns A CoRoutine containing a BanDataVector.
-		static CoRoutine<BanDataVector> getGuildBansAsync(GetGuildBansData dataPackage);
+		static CoRoutine<std::vector<BanData>> getGuildBansAsync(GetGuildBansData dataPackage);
 
 		/// Collects a single Ban from a chosen Guild. \brief Collects a single Ban from a chosen Guild.
 		/// \param dataPackage A GetGuildBanData structure.
@@ -707,17 +714,17 @@ namespace DiscordCoreAPI {
 		/// Gets the list of voice regions for a particular server. \brief Gets the list of voice regions for a particular server.
 		/// \param dataPackage A GetGuildVoiceRegionsData structure.
 		/// \returns A CoRoutine containing a VoiceRegionDataVector.
-		static CoRoutine<VoiceRegionDataVector> getGuildVoiceRegionsAsync(GetGuildVoiceRegionsData dataPackage);
+		static CoRoutine<std::vector<VoiceRegionData>> getGuildVoiceRegionsAsync(GetGuildVoiceRegionsData dataPackage);
 
 		/// Gets multiple invites from the Discord servers. \brief Gets multiple invites from the Discord servers.
 		/// \param dataPackage A GetGuildInvitesData structure.
 		/// \returns A CoRoutine containing a InviteDataVector.
-		static CoRoutine<InviteDataVector> getGuildInvitesAsync(GetGuildInvitesData dataPackage);
+		static CoRoutine<std::vector<InviteData>> getGuildInvitesAsync(GetGuildInvitesData dataPackage);
 
 		/// Gets the list of Guild integrations for a particular server. \brief Gets the list of Guild integrations for a particular server.
 		/// \param dataPackage A GetGuildIntegrationsData structure.
 		/// \returns A CoRoutine containing a IntegrationDataVector.
-		static CoRoutine<IntegrationDataVector> getGuildIntegrationsAsync(GetGuildIntegrationsData dataPackage);
+		static CoRoutine<std::vector<IntegrationData>> getGuildIntegrationsAsync(GetGuildIntegrationsData dataPackage);
 
 		/// Deletes an integration from a Guild. \brief Deletes an integration from a Guild.
 		/// \param dataPackage A DeleteGuildIntegrationData structure.
@@ -772,7 +779,7 @@ namespace DiscordCoreAPI {
 		/// Collects a list of Guild Templates from a chosen Guild. \brief Collects a list of Guild Templates from a chosen Guild.
 		/// \param dataPackage A GetGuildTemplatesData structure.
 		/// \returns A CoRoutine containing a GuiildTemplateDataVector.
-		static CoRoutine<GuildTemplateDataVector> getGuildTemplatesAsync(GetGuildTemplatesData dataPackage);
+		static CoRoutine<std::vector<GuildTemplateData>> getGuildTemplatesAsync(GetGuildTemplatesData dataPackage);
 
 		/// Creates a Guild Template. \brief Creates a Guild Template.
 		/// \param dataPackage A CreateGuildTemplateData structure.
@@ -807,7 +814,7 @@ namespace DiscordCoreAPI {
 		/// Collects a list of Guilds that the Bot is in. \brief Collects a list of Guilds that the Bot is in.
 		/// \param dataPackage A GetCurrentUserGuildsData structure.
 		/// \returns A CoRoutine containing a GuildVector.
-		static CoRoutine<GuildVector> getCurrentUserGuildsAsync(GetCurrentUserGuildsData dataPackage);
+		static CoRoutine<std::vector<Guild>> getCurrentUserGuildsAsync(GetCurrentUserGuildsData dataPackage);
 
 		/// Removes the bot from a chosen Guild. \brief Removes the bot from a chosen Guild.
 		/// \param dataPackage A LeaveGuildData structure.

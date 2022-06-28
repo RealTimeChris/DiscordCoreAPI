@@ -169,79 +169,14 @@ namespace DiscordCoreAPI {
 	  public:
 		ApplicationCommand() = default;
 
-		ApplicationCommand& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
+		ApplicationCommand& operator=(const nlohmann::json& jsonObjectData);
 
-		ApplicationCommand(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
+		ApplicationCommand(const nlohmann::json& jsonObjectData);
 
 		virtual ~ApplicationCommand() = default;
 
-		inline void parseObject(const nlohmann::json& jsonObjectData, ApplicationCommand* pDataStructure) {
-			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
-				pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
-			}
-
-			if (jsonObjectData.contains("default_member_permissions") && !jsonObjectData["default_member_permissions"].is_null()) {
-				pDataStructure->defaultMemberPermissions = jsonObjectData["default_member_permissions"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("dm_permission") && !jsonObjectData["dm_permission"].is_null()) {
-				pDataStructure->dmPermission = jsonObjectData["dm_permission"].get<bool>();
-			}
-
-			if (jsonObjectData.contains("version") && !jsonObjectData["version"].is_null()) {
-				pDataStructure->version = jsonObjectData["version"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("type") && !jsonObjectData["type"].is_null()) {
-				pDataStructure->type = jsonObjectData["type"].get<ApplicationCommandType>();
-			}
-
-			if (jsonObjectData.contains("name_localizations") && !jsonObjectData["name_localizations"].is_null()) {
-				pDataStructure->nameLocalizations.clear();
-				auto newMap = jsonObjectData["name_localizations"].get<std::unordered_map<std::string, std::string>>();
-				for (auto& [key, newValue]: newMap) {
-					pDataStructure->nameLocalizations[key] = newValue;
-				}
-			}
-
-			if (jsonObjectData.contains("description_localizations") && !jsonObjectData["description_localizations"].is_null()) {
-				pDataStructure->nameLocalizations.clear();
-				auto newMap = jsonObjectData["description_localizations"].get<std::unordered_map<std::string, std::string>>();
-				for (auto& [key, newValue]: newMap) {
-					pDataStructure->descriptionLocalizations[key] = newValue;
-				}
-			}
-
-			if (jsonObjectData.contains("application_id") && !jsonObjectData["application_id"].is_null()) {
-				pDataStructure->applicationId = stoull(jsonObjectData["application_id"].get<std::string>());
-			}
-
-			if (jsonObjectData.contains("name") && !jsonObjectData["name"].is_null()) {
-				pDataStructure->name = jsonObjectData["name"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("description") && !jsonObjectData["description"].is_null()) {
-				pDataStructure->description = jsonObjectData["description"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("version") && !jsonObjectData["version"].is_null()) {
-				pDataStructure->version = jsonObjectData["version"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("options") && !jsonObjectData["options"].is_null()) {
-				pDataStructure->options.reserve(jsonObjectData["options"].size());
-				for (auto& value: jsonObjectData["options"]) {
-					ApplicationCommandOptionData newData{ value };
-					pDataStructure->options.push_back(newData);
-				}
-				pDataStructure->options.shrink_to_fit();
-			}
-		}
+	  protected:
+		void parseObject(const nlohmann::json& jsonObjectData, ApplicationCommand* pDataStructure);
 	};
 
 	/**@}*/

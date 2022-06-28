@@ -28,6 +28,15 @@
 
 namespace DiscordCoreAPI {
 
+	ApplicationCommand& ApplicationCommand::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData, this);
+		return *this;
+	}
+
+	ApplicationCommand::ApplicationCommand(const nlohmann::json& jsonObjectData) {
+		*this = jsonObjectData;
+	}
+
 	void ApplicationCommands::initialize(DiscordCoreInternal::HttpsClient* theClient) {
 		ApplicationCommands::httpsClient = theClient;
 	}

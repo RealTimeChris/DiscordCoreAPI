@@ -136,12 +136,15 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<UserData> Users::getCachedUserAsync(GetUserData dataPackage) {
-		std::shared_lock<std::shared_mutex> theLock{ Users::theMutex };
 		co_await NewThreadAwaitable<UserData>();
-		if (Users::cache->contains(dataPackage.userId)) {
-			co_return *(*Users::cache)[dataPackage.userId];
+		if (!Users::cache->contains(dataPackage.userId)) {
+			auto theUser = getUserAsync(dataPackage).get();
+			Users::insertUser(theUser);
+			co_return theUser;
+
 		} else {
-			co_return getUserAsync(dataPackage).get();
+			std::shared_lock<std::shared_mutex> theLock{ Users::theMutex };
+			co_return *(*Users::cache)[dataPackage.userId];
 		}
 	}
 

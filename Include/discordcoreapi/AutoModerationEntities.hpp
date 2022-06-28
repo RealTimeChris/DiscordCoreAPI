@@ -33,99 +33,36 @@ namespace DiscordCoreAPI {
 	 */
 
 	/// Represents an auto-moderation-rule. \brief Represents an auto-moderation-rule.
-	struct DiscordCoreAPI_Dll AutoModerationRule : public AutoModerationRuleData {
+	class DiscordCoreAPI_Dll AutoModerationRule : public AutoModerationRuleData {
+	  public:
 		AutoModerationRule() = default;
 
-		AutoModerationRule& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
+		AutoModerationRule& operator=(const nlohmann::json& jsonObjectData);
 
-		AutoModerationRule(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
+		AutoModerationRule(const nlohmann::json& jsonObjectData);
 
 		virtual ~AutoModerationRule() = default;
 
-		inline void parseObject(const nlohmann::json& jsonObjectData, AutoModerationRule* pDataStructure) {
-			if (jsonObjectData.contains("name") && !jsonObjectData["name"].is_null()) {
-				pDataStructure->name = jsonObjectData["name"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
-				pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
-			}
-
-			if (jsonObjectData.contains("enabled") && !jsonObjectData["enabled"].is_null()) {
-				pDataStructure->enabled = jsonObjectData["enabled"].get<bool>();
-			}
-
-			if (jsonObjectData.contains("trigger_type") && !jsonObjectData["trigger_type"].is_null()) {
-				pDataStructure->triggerType = static_cast<TriggerType>(jsonObjectData["trigger_type"].get<uint64_t>());
-			}
-
-			if (jsonObjectData.contains("event_type") && !jsonObjectData["event_type"].is_null()) {
-				pDataStructure->eventType = static_cast<EventType>(jsonObjectData["event_type"].get<uint64_t>());
-			}
-
-			if (jsonObjectData.contains("creator_id") && !jsonObjectData["creator_id"].is_null()) {
-				pDataStructure->creatorId = jsonObjectData["creator_id"].get<uint64_t>();
-			}
-
-			if (jsonObjectData.contains("actions") && !jsonObjectData["actions"].is_null()) {
-				for (auto& value: jsonObjectData["actions"]) {
-					ActionData newData{ value };
-					pDataStructure->actions.push_back(newData);
-				}
-			}
-
-			if (jsonObjectData.contains("exempt_roles") && !jsonObjectData["exempt_roles"].is_null()) {
-				for (auto& value: jsonObjectData["exempt_roles"]) {
-					pDataStructure->exemptRoles.push_back(value.get<uint64_t>());
-				}
-			}
-
-			if (jsonObjectData.contains("trigger_metadata") && !jsonObjectData["trigger_metadata"].is_null()) {
-				pDataStructure->triggerMetaData = jsonObjectData["trigger_metadata"];
-			}
-
-			if (jsonObjectData.contains("exempt_channels") && !jsonObjectData["exempt_channels"].is_null()) {
-				for (auto& value: jsonObjectData["exempt_channels"]) {
-					pDataStructure->exemptChannels.push_back(value.get<uint64_t>());
-				}
-			}
-
-			if (jsonObjectData.contains("guild_id") && !jsonObjectData["guild_id"].is_null()) {
-				pDataStructure->guildId = jsonObjectData["guild_id"].get<uint64_t>();
-			}
-		}
+	  protected:
+		void parseObject(const nlohmann::json& jsonObjectData, AutoModerationRule* pDataStructure);
 	};
 
 	class DiscordCoreAPI_Dll AutoModerationRuleVector {
 	  public:
-		std::vector<AutoModerationRule> theAutoModerationRules{};
-
 		AutoModerationRuleVector() = default;
 
-		AutoModerationRuleVector& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
+		operator std::vector<AutoModerationRule>();
 
-		AutoModerationRuleVector(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
+		AutoModerationRuleVector& operator=(const nlohmann::json& jsonObjectData);
+
+		AutoModerationRuleVector(const nlohmann::json& jsonObjectData);
 
 		virtual ~AutoModerationRuleVector() = default;
 
-		inline void parseObject(const nlohmann::json& jsonObjectData, AutoModerationRuleVector* pDataStructure) {
-			pDataStructure->theAutoModerationRules.reserve(jsonObjectData.size());
-			for (auto& value: jsonObjectData) {
-				DiscordCoreAPI::AutoModerationRule newData{ value };
-				pDataStructure->theAutoModerationRules.push_back(newData);
-			}
-			pDataStructure->theAutoModerationRules.shrink_to_fit();
-		}
+	  protected:
+		std::vector<AutoModerationRule> theAutoModerationRules{};
+
+		void parseObject(const nlohmann::json& jsonObjectData, AutoModerationRuleVector* pDataStructure);
 	};
 
 	/// For listing all of the auto-moderation-rules for a particular AutoModerationRule. \brief For listing all of the auto-moderation-rules for a particular AutoModerationRule.
@@ -256,7 +193,7 @@ namespace DiscordCoreAPI {
 	  public:
 		static void initialize(DiscordCoreInternal::HttpsClient*);
 
-		CoRoutine<AutoModerationRuleVector> listAutoModerationRulesForGuildAsync(ListAutoModerationRulesForGuildData dataPackage);
+		CoRoutine<std::vector<AutoModerationRule>> listAutoModerationRulesForGuildAsync(ListAutoModerationRulesForGuildData dataPackage);
 
 		CoRoutine<AutoModerationRule> getAutoModerationRuleAsync(GetAutoModerationRuleData dataPackage);
 

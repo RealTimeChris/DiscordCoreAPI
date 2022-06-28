@@ -88,16 +88,20 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<GuildMemberData> GuildMembers::getCachedGuildMemberAsync(GetGuildMemberData dataPackage) {
-		std::shared_lock<std::shared_mutex> theLock{ GuildMembers::theMutex };
 		co_await NewThreadAwaitable<GuildMemberData>();
 		GuildMemberId theKey{};
 		theKey.guildId = dataPackage.guildId;
 		theKey.guildMemberId = dataPackage.guildMemberId;
 		std::cout << "THE CACHE SIZE: " << GuildMembers::cache->size() << std::endl;
-		if (GuildMembers::cache->contains(theKey)) {
-			co_return *(*GuildMembers::cache)[theKey];
+		if (!GuildMembers::cache->contains(theKey)) {
+			auto theGuildMember = GuildMembers::getGuildMemberAsync(dataPackage).get();
+			GuildMembers::insertGuildMember(theGuildMember);
+			std::cout << "WE WERE MISSING THE THING!: THE GUILD ID: " << dataPackage.guildId << ", THE GUILDMEMBER ID: " << dataPackage.guildMemberId << GuildMembers::cache->size()
+					  << std::endl;
+			co_return theGuildMember;
 		} else {
-			co_return GuildMembers::getGuildMemberAsync(dataPackage).get();
+			std::shared_lock<std::shared_mutex> theLock{ GuildMembers::theMutex };
+			co_return *(*GuildMembers::cache)[theKey];
 		}
 	}
 
@@ -200,9 +204,7 @@ namespace DiscordCoreAPI {
 	CoRoutine<GuildMember> GuildMembers::timeoutGuildMemberAsync(TimeoutGuildMemberData dataPackage) {
 		co_await NewThreadAwaitable<GuildMember>();
 		GuildMember guildMember = GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = dataPackage.guildMemberId, .guildId = dataPackage.guildId }).get();
-		VoiceStateData voiceStateData = Guilds::getCachedGuildAsync({ dataPackage.guildId }).get().voiceStates.at(dataPackage.guildId);
 		ModifyGuildMemberData dataPackage01{};
-		dataPackage01.currentChannelId = voiceStateData.channelId;
 		dataPackage01.deaf = getBool<int8_t, GuildMemberFlags>(guildMember.flags, GuildMemberFlags::Deaf);
 		dataPackage01.guildId = guildMember.guildId;
 		dataPackage01.guildMemberId = guildMember.id;
@@ -249,18 +251,20 @@ namespace DiscordCoreAPI {
 		if (guildMember.id == 0) {
 			return;
 		}
+		std::cout << "JOINED AT: " << guildMember.joinedAt.getOriginalTimeStamp() << std::endl;
 		auto newCache = std::make_unique<std::map<GuildMemberId, std::unique_ptr<GuildMemberData>>>();
 		for (auto& [key, value]: *GuildMembers::cache) {
 			(*newCache)[key] = std::move(value);
 		}
+		GuildMemberId theKey{};
 		if (GuildMembers::configManager->doWeCacheGuildMembers()) {
-			GuildMemberId theKey{};
 			theKey.guildId = guildMember.guildId;
 			theKey.guildMemberId = guildMember.id;
 			(*newCache)[theKey] = std::make_unique<GuildMemberData>(guildMember);
 		}
 		GuildMembers::cache.reset(nullptr);
 		GuildMembers::cache = std::move(newCache);
+		std::cout << "JOINED AT: " << (*GuildMembers ::cache)[theKey]->joinedAt.getOriginalTimeStamp() << std::endl;
 	}
 
 	void GuildMembers::removeGuildMember(GuildMember& guildMember) {

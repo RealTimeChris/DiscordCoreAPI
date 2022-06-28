@@ -146,8 +146,6 @@ namespace DiscordCoreAPI {
 			*this = jsonObjectData;
 		}
 
-		virtual ~Role() = default;
-
 		inline void parseObject(const nlohmann::json& jsonObjectData, Role* pDataStructure) {
 			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
 				if (jsonObjectData["id"].is_string()) {
@@ -202,6 +200,8 @@ namespace DiscordCoreAPI {
 				pDataStructure->tags = jsonObjectData["tags"];
 			}
 		}
+
+		virtual ~Role() = default;
 	};
 
 	class DiscordCoreAPI_Dll RoleVector {
@@ -219,8 +219,6 @@ namespace DiscordCoreAPI {
 			*this = jsonObjectData;
 		}
 
-		virtual ~RoleVector() = default;
-
 		inline void parseObject(const nlohmann::json& jsonObjectData, RoleVector* pDataStructure) {
 			pDataStructure->theRoles.reserve(jsonObjectData.size());
 			for (auto& value: jsonObjectData) {
@@ -229,6 +227,8 @@ namespace DiscordCoreAPI {
 			}
 			pDataStructure->theRoles.shrink_to_fit();
 		}
+
+		virtual ~RoleVector() = default;
 	};
 
 	/**@}*/
