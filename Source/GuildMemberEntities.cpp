@@ -114,12 +114,9 @@ namespace DiscordCoreAPI {
 		GuildMemberId theKey{};
 		theKey.guildId = dataPackage.guildId;
 		theKey.guildMemberId = dataPackage.guildMemberId;
-		std::cout << "THE CACHE SIZE: " << GuildMembers::cache->size() << std::endl;
 		if (!GuildMembers::cache->contains(theKey)) {
 			auto theGuildMember = GuildMembers::getGuildMemberAsync(dataPackage).get();
 			GuildMembers::insertGuildMember(theGuildMember);
-			std::cout << "WE WERE MISSING THE THING!: THE GUILD ID: " << dataPackage.guildId << ", THE GUILDMEMBER ID: " << dataPackage.guildMemberId << GuildMembers::cache->size()
-					  << std::endl;
 			co_return theGuildMember;
 		} else {
 			std::shared_lock<std::shared_mutex> theLock{ GuildMembers::theMutex };
@@ -273,7 +270,6 @@ namespace DiscordCoreAPI {
 		if (guildMember.id == 0) {
 			return;
 		}
-		std::cout << "JOINED AT: " << guildMember.joinedAt.getOriginalTimeStamp() << std::endl;
 		auto newCache = std::make_unique<std::map<GuildMemberId, std::unique_ptr<GuildMemberData>>>();
 		for (auto& [key, value]: *GuildMembers::cache) {
 			(*newCache)[key] = std::move(value);
@@ -286,7 +282,6 @@ namespace DiscordCoreAPI {
 		}
 		GuildMembers::cache.reset(nullptr);
 		GuildMembers::cache = std::move(newCache);
-		std::cout << "JOINED AT: " << (*GuildMembers ::cache)[theKey]->joinedAt.getOriginalTimeStamp() << std::endl;
 	}
 
 	void GuildMembers::removeGuildMember(GuildMember& guildMember) {

@@ -301,17 +301,13 @@ namespace DiscordCoreInternal {
 			nfds = this->theSocket;
 			timeval checkTime{ .tv_usec = 1 };
 			if (auto returnValue = select(nfds + 1, nullptr, nullptr, &errorfds, &checkTime); returnValue == SOCKET_ERROR) {
-				std::cout << "WERE NOT CONNECTED SELECT FAILED" << std::endl;
 				return false;
 			}
 			if (FD_ISSET(this->theSocket, &errorfds)) {
-				std::cout << "WERE NOT CONNECTED ERRORFDS" << std::endl;
 				return false;
 			}
-			std::cout << "WERE ARE CONNECTED" << std::endl;
 			return true;
 		} else {
-			std::cout << "WERE NOT CONNECTED SOCKET ERROR" << std::endl;
 			return false;
 		}
 	}

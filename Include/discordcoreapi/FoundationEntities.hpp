@@ -3709,10 +3709,8 @@ namespace DiscordCoreAPI {
 			}
 
 			if (jsonObjectData.contains("members") && !jsonObjectData["members"].is_null()) {
-				std::cout << "WERE HER ECOLLECTIGNG MEMBERS!" << std::endl;
 				for (auto& value: jsonObjectData["members"]) {
 					GuildMemberData newData{ value };
-					std::cout << "THEIR NAME IS: " << newData.userName << std::endl;
 					newData.guildId = pDataStructure->id;
 					pDataStructure->members.push_back(newData.id);
 					this->insertGuildMember(newData);
