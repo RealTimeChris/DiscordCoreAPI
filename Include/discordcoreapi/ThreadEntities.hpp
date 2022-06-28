@@ -133,7 +133,7 @@ namespace DiscordCoreAPI {
 		Thread() = default;
 
 		Thread& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -142,7 +142,7 @@ namespace DiscordCoreAPI {
 		}
 		virtual ~Thread() = default;
 
-	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, Thread* pDataStructure) {
+	  	inline void parseObject(const nlohmann::json& jsonObjectData, Thread* pDataStructure) {
 			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
 				if (jsonObjectData["id"].is_string()) {
 					pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());

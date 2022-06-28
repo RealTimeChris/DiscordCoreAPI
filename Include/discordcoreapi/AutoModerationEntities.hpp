@@ -37,7 +37,7 @@ namespace DiscordCoreAPI {
 		AutoModerationRule() = default;
 
 		AutoModerationRule& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -47,7 +47,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~AutoModerationRule() = default;
 
-		inline void parseObjectReal(const nlohmann::json& jsonObjectData, AutoModerationRule* pDataStructure) {
+		inline void parseObject(const nlohmann::json& jsonObjectData, AutoModerationRule* pDataStructure) {
 			if (jsonObjectData.contains("name") && !jsonObjectData["name"].is_null()) {
 				pDataStructure->name = jsonObjectData["name"].get<std::string>();
 			}
@@ -108,7 +108,7 @@ namespace DiscordCoreAPI {
 		AutoModerationRuleVector() = default;
 
 		AutoModerationRuleVector& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -118,7 +118,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~AutoModerationRuleVector() = default;
 
-		inline void parseObjectReal(const nlohmann::json& jsonObjectData, AutoModerationRuleVector* pDataStructure) {
+		inline void parseObject(const nlohmann::json& jsonObjectData, AutoModerationRuleVector* pDataStructure) {
 			pDataStructure->theAutoModerationRules.reserve(jsonObjectData.size());
 			for (auto& value: jsonObjectData) {
 				DiscordCoreAPI::AutoModerationRule newData{ value };
@@ -169,7 +169,7 @@ namespace DiscordCoreAPI {
 		AutoModerationActionExecutionEventData() = default;
 
 		AutoModerationActionExecutionEventData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -179,7 +179,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~AutoModerationActionExecutionEventData() = default;
 
-	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, AutoModerationActionExecutionEventData* pDataStructure) {
+	  	inline void parseObject(const nlohmann::json& jsonObjectData, AutoModerationActionExecutionEventData* pDataStructure) {
 			if (jsonObjectData.contains("alert_system_message_id") && !jsonObjectData["alert_system_message_id"].is_null()) {
 				pDataStructure->alertSystemMessageId = stoull(jsonObjectData["alert_system_message_id"].get<std::string>());
 			}

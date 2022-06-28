@@ -133,7 +133,7 @@ namespace DiscordCoreAPI {
 		Reaction() = default;
 
 		Reaction& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -142,7 +142,7 @@ namespace DiscordCoreAPI {
 		}
 		virtual ~Reaction() = default;
 
-	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, Reaction* pDataStructure) {
+	  	inline void parseObject(const nlohmann::json& jsonObjectData, Reaction* pDataStructure) {
 			if (jsonObjectData.contains("count") && !jsonObjectData["count"].is_null()) {
 				pDataStructure->count = jsonObjectData["count"].get<int32_t>();
 			}
@@ -184,7 +184,7 @@ namespace DiscordCoreAPI {
 		ReactionVector() = default;
 
 		ReactionVector& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -194,7 +194,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~ReactionVector() = default;
 
-		inline void parseObjectReal(const nlohmann::json& jsonObjectData, ReactionVector* pDataStructure) {
+		inline void parseObject(const nlohmann::json& jsonObjectData, ReactionVector* pDataStructure) {
 			pDataStructure->theReactions.reserve(jsonObjectData.size());
 			for (auto& value: jsonObjectData) {
 				DiscordCoreAPI::Reaction newData{ value };

@@ -138,7 +138,7 @@ namespace DiscordCoreAPI {
 		Role() = default;
 
 		Role& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -148,7 +148,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~Role() = default;
 
-	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, Role* pDataStructure) {
+	  	inline void parseObject(const nlohmann::json& jsonObjectData, Role* pDataStructure) {
 			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
 				if (jsonObjectData["id"].is_string()) {
 					pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
@@ -211,7 +211,7 @@ namespace DiscordCoreAPI {
 		RoleVector() = default;
 
 		RoleVector& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -221,7 +221,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~RoleVector() = default;
 
-		inline void parseObjectReal(const nlohmann::json& jsonObjectData, RoleVector* pDataStructure) {
+		inline void parseObject(const nlohmann::json& jsonObjectData, RoleVector* pDataStructure) {
 			pDataStructure->theRoles.reserve(jsonObjectData.size());
 			for (auto& value: jsonObjectData) {
 				DiscordCoreAPI::Role newData{ value };

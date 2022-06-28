@@ -100,7 +100,7 @@ namespace DiscordCoreAPI {
 		User(UserData&);
 
 		User& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -185,7 +185,7 @@ namespace DiscordCoreAPI {
 		UserVector() = default;
 
 		UserVector& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -195,7 +195,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~UserVector() = default;
 
-		inline void parseObjectReal(const nlohmann::json& jsonObjectData, UserVector* pDataStructure) {
+		inline void parseObject(const nlohmann::json& jsonObjectData, UserVector* pDataStructure) {
 			pDataStructure->theUsers.reserve(jsonObjectData.size());
 			for (auto& value: jsonObjectData) {
 				DiscordCoreAPI::User newData{ value };

@@ -990,7 +990,7 @@ namespace DiscordCoreAPI {
 		RoleTagsData() = default;
 
 		RoleTagsData& operator=(const nlohmann ::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -1000,7 +1000,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~RoleTagsData() = default;
 
-		inline void parseObjectReal(const nlohmann::json& jsonObjectData, RoleTagsData* pDataStructure) {
+		inline void parseObject(const nlohmann::json& jsonObjectData, RoleTagsData* pDataStructure) {
 			if (jsonObjectData.contains("bot_id") && !jsonObjectData["bot_id"].is_null()) {
 				pDataStructure->botId = jsonObjectData["bot_id"].get<std::string>();
 			}
@@ -1052,7 +1052,7 @@ namespace DiscordCoreAPI {
 		UserData() = default;
 
 		UserData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -1062,7 +1062,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~UserData() = default;
 
-	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, UserData* pDataStructure) {
+	  	inline void parseObject(const nlohmann::json& jsonObjectData, UserData* pDataStructure) {
 			if (jsonObjectData.contains("username") && !jsonObjectData["username"].is_null()) {
 				pDataStructure->userName = jsonObjectData["username"].get<std::string>();
 			}
@@ -1136,7 +1136,7 @@ namespace DiscordCoreAPI {
 		}
 
 		AttachmentData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -1146,7 +1146,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~AttachmentData() = default;
 
-	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, AttachmentData* pDataStructure) {
+	  	inline void parseObject(const nlohmann::json& jsonObjectData, AttachmentData* pDataStructure) {
 			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
 				pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
 			}
@@ -1205,7 +1205,7 @@ namespace DiscordCoreAPI {
 		EmbedFooterData() = default;
 
 		EmbedFooterData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -1215,7 +1215,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~EmbedFooterData() = default;
 
-	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, EmbedFooterData* pDataStructure) {
+	  	inline void parseObject(const nlohmann::json& jsonObjectData, EmbedFooterData* pDataStructure) {
 			if (jsonObjectData.contains("text") && !jsonObjectData["text"].is_null()) {
 				pDataStructure->text = jsonObjectData["text"].get<std::string>();
 			}
@@ -1240,7 +1240,7 @@ namespace DiscordCoreAPI {
 		EmbedImageData() = default;
 
 		EmbedImageData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -1250,7 +1250,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~EmbedImageData() = default;
 
-  		inline void parseObjectReal(const nlohmann::json& jsonObjectData, EmbedImageData* pDataStructure) {
+  		inline void parseObject(const nlohmann::json& jsonObjectData, EmbedImageData* pDataStructure) {
 			if (jsonObjectData.contains("url") && !jsonObjectData["url"].is_null()) {
 				pDataStructure->url = jsonObjectData["url"].get<std::string>();
 			}
@@ -1279,7 +1279,7 @@ namespace DiscordCoreAPI {
 		EmbedThumbnailData() = default;
 
 		EmbedThumbnailData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -1289,7 +1289,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~EmbedThumbnailData() = default;
 
-	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, EmbedThumbnailData* pDataStructure) {
+	  	inline void parseObject(const nlohmann::json& jsonObjectData, EmbedThumbnailData* pDataStructure) {
 			if (jsonObjectData.contains("url") && !jsonObjectData["url"].is_null()) {
 				pDataStructure->url = jsonObjectData["url"].get<std::string>();
 			}
@@ -1318,7 +1318,7 @@ namespace DiscordCoreAPI {
 		EmbedVideoData() = default;
 
 		EmbedVideoData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -1328,7 +1328,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~EmbedVideoData() = default;
 
-	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, EmbedVideoData* pDataStructure) {
+	  	inline void parseObject(const nlohmann::json& jsonObjectData, EmbedVideoData* pDataStructure) {
 			if (jsonObjectData.contains("url") && !jsonObjectData["url"].is_null()) {
 				pDataStructure->url = jsonObjectData["url"].get<std::string>();
 			}
@@ -1355,7 +1355,7 @@ namespace DiscordCoreAPI {
 		EmbedProviderData() = default;
 
 		EmbedProviderData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -1365,7 +1365,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~EmbedProviderData() = default;
 
-	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, EmbedProviderData* pDataStructure) {
+	  	inline void parseObject(const nlohmann::json& jsonObjectData, EmbedProviderData* pDataStructure) {
 			if (jsonObjectData.contains("url") && !jsonObjectData["url"].is_null()) {
 				pDataStructure->url = jsonObjectData["url"].get<std::string>();
 			}
@@ -1386,7 +1386,7 @@ namespace DiscordCoreAPI {
 		EmbedAuthorData() = default;
 
 		EmbedAuthorData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -1396,7 +1396,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~EmbedAuthorData() = default;
 
-	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, EmbedAuthorData* pDataStructure) {
+	  	inline void parseObject(const nlohmann::json& jsonObjectData, EmbedAuthorData* pDataStructure) {
 			if (jsonObjectData.contains("url") && !jsonObjectData["url"].is_null()) {
 				pDataStructure->url = jsonObjectData["url"].get<std::string>();
 			}
@@ -1432,7 +1432,7 @@ namespace DiscordCoreAPI {
 		}
 
 		EmbedFieldData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -1442,7 +1442,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~EmbedFieldData() = default;
 
-	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, EmbedFieldData* pDataStructure) {
+	  	inline void parseObject(const nlohmann::json& jsonObjectData, EmbedFieldData* pDataStructure) {
 			if (jsonObjectData.contains("inline") && !jsonObjectData["inline"].is_null()) {
 				pDataStructure->Inline = jsonObjectData["inline"].get<bool>();
 			}
@@ -1528,7 +1528,7 @@ namespace DiscordCoreAPI {
 		}
 
 		EmbedData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -1620,7 +1620,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~EmbedData() = default;
 
-	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, EmbedData* pDataStructure) {
+	  	inline void parseObject(const nlohmann::json& jsonObjectData, EmbedData* pDataStructure) {
 			if (jsonObjectData.contains("title") && !jsonObjectData["title"].is_null()) {
 				pDataStructure->title = jsonObjectData["title"].get<std::string>();
 			}
@@ -1704,7 +1704,7 @@ namespace DiscordCoreAPI {
 		}
 
 		MessageReferenceData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -1714,7 +1714,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~MessageReferenceData() = default;
 
-	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, MessageReferenceData* pDataStructure) {
+	  	inline void parseObject(const nlohmann::json& jsonObjectData, MessageReferenceData* pDataStructure) {
 			if (jsonObjectData.contains("message_id") && !jsonObjectData["message_id"].is_null()) {
 				pDataStructure->messageId = stoull(jsonObjectData["message_id"].get<std::string>());
 			}
@@ -1769,7 +1769,7 @@ namespace DiscordCoreAPI {
 		ThreadMetadataData() = default;
 
 		ThreadMetadataData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -1779,7 +1779,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~ThreadMetadataData() = default;
 
-		inline void parseObjectReal(const nlohmann::json& jsonObjectData, ThreadMetadataData* pDataStructure) {
+		inline void parseObject(const nlohmann::json& jsonObjectData, ThreadMetadataData* pDataStructure) {
 
 			if (jsonObjectData.contains("archived") && !jsonObjectData["archived"].is_null()) {
 				pDataStructure->archived = jsonObjectData["archived"].get<bool>();
@@ -1813,7 +1813,7 @@ namespace DiscordCoreAPI {
 		ThreadMemberData() = default;
 
 		ThreadMemberData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -1823,7 +1823,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~ThreadMemberData() = default;
 
-	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, ThreadMemberData* pDataStructure) {
+	  	inline void parseObject(const nlohmann::json& jsonObjectData, ThreadMemberData* pDataStructure) {
 			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
 				pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
 			}
@@ -1849,7 +1849,7 @@ namespace DiscordCoreAPI {
 		ThreadMemberDataVector() = default;
 
 		ThreadMemberDataVector& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -1859,7 +1859,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~ThreadMemberDataVector() = default;
 
-		inline void parseObjectReal(const nlohmann::json& jsonObjectData, ThreadMemberDataVector* pDataStructure) {
+		inline void parseObject(const nlohmann::json& jsonObjectData, ThreadMemberDataVector* pDataStructure) {
 			pDataStructure->theThreadMemberDatas.reserve(jsonObjectData.size());
 			for (auto& value: jsonObjectData) {
 				DiscordCoreAPI::ThreadMemberData newData{ value };
@@ -1999,8 +1999,8 @@ namespace DiscordCoreAPI {
 	    public:
 		GuildMemberDataMock() = default;
 
-		void theFunction() {
-			guildMemberDerivedMock().testFunction();
+		void insertUser(UserData theData) {
+			guildMemberDerivedMock().insertUserReal(theData);
 		}
 
 		protected:
@@ -2016,7 +2016,7 @@ namespace DiscordCoreAPI {
 
 	class GuildMemberMock :public GuildMemberDataMock<GuildMemberMock>{
 	  public:
-		void testFunction() {
+		void insertUserReal(UserData theData) {
 			std::cout << "WERE HERE THIS SI TI!" << std::endl;
 		}
 	};
@@ -2037,7 +2037,7 @@ namespace DiscordCoreAPI {
 		GuildMemberDataBase() = default;
 
 		GuildMemberDataBase<GuildMemberDerived>& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -2051,7 +2051,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~GuildMemberDataBase() = default;
 
-	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, GuildMemberDataBase<GuildMemberDerived>* pDataStructure) {
+	  	inline void parseObject(const nlohmann::json& jsonObjectData, GuildMemberDataBase<GuildMemberDerived>* pDataStructure) {
 			if (jsonObjectData.contains("roles") && !jsonObjectData["roles"].is_null()) {
 				for (auto& value: jsonObjectData["roles"].get<std::vector<std::string>>()) {
 					pDataStructure->roles.push_back(stoull(value));
@@ -2128,7 +2128,7 @@ namespace DiscordCoreAPI {
 		VoiceStateData() = default;
 
 		VoiceStateData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -2138,7 +2138,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~VoiceStateData() = default;
 
-	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, VoiceStateData* pDataStructure) {
+	  	inline void parseObject(const nlohmann::json& jsonObjectData, VoiceStateData* pDataStructure) {
 			if (jsonObjectData.contains("guild_id") && !jsonObjectData["guild_id"].is_null()) {
 				pDataStructure->guildId = stoull(jsonObjectData["guild_id"].get<std::string>());
 			}
@@ -2210,7 +2210,7 @@ namespace DiscordCoreAPI {
 		OverWriteData() = default;
 
 		OverWriteData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -2220,7 +2220,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~OverWriteData() = default;
 
-		inline void parseObjectReal(const nlohmann::json& jsonObjectData, OverWriteData* pDataStructure) {
+		inline void parseObject(const nlohmann::json& jsonObjectData, OverWriteData* pDataStructure) {
 			if (jsonObjectData.contains("type") && !jsonObjectData["type"].is_null()) {
 				pDataStructure->type = jsonObjectData["type"].get<PermissionOverwritesType>();
 			}
@@ -2261,7 +2261,7 @@ namespace DiscordCoreAPI {
 		ChannelData() = default;
 
 		ChannelData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -2271,7 +2271,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~ChannelData() = default;
 
-		inline void parseObjectReal(const nlohmann::json& jsonObjectData, ChannelData* pDataStructure) {
+		inline void parseObject(const nlohmann::json& jsonObjectData, ChannelData* pDataStructure) {
 			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
 				if (jsonObjectData["id"].is_string()) {
 					pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
@@ -2337,7 +2337,7 @@ namespace DiscordCoreAPI {
 		ActiveThreadsData() = default;
 
 		ActiveThreadsData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -2347,7 +2347,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~ActiveThreadsData() = default;
 
-		inline void parseObjectReal(const nlohmann::json& jsonObjectData, ActiveThreadsData* pDataStructure) {
+		inline void parseObject(const nlohmann::json& jsonObjectData, ActiveThreadsData* pDataStructure) {
 			if (jsonObjectData.contains("threads") && !jsonObjectData["threads"].is_null()) {
 				pDataStructure->threads.clear();
 				pDataStructure->threads.reserve(jsonObjectData["threads"].size());
@@ -2383,7 +2383,7 @@ namespace DiscordCoreAPI {
 		ArchivedThreadsData() = default;
 
 		ArchivedThreadsData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -2393,7 +2393,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~ArchivedThreadsData() = default;
 
-		inline void parseObjectReal(const nlohmann::json& jsonObjectData, ArchivedThreadsData* pDataStructure) {
+		inline void parseObject(const nlohmann::json& jsonObjectData, ArchivedThreadsData* pDataStructure) {
 			if (jsonObjectData.contains("threads") && !jsonObjectData["threads"].is_null()) {
 				pDataStructure->threads.clear();
 				pDataStructure->threads.reserve(jsonObjectData["threads"].size());
@@ -2435,7 +2435,7 @@ namespace DiscordCoreAPI {
 		RoleData() = default;
 
 		RoleData& operator=(const nlohmann ::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -2445,7 +2445,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~RoleData() = default;
 
-		inline void parseObjectReal(const nlohmann::json& jsonObjectData, RoleData* pDataStructure) {
+		inline void parseObject(const nlohmann::json& jsonObjectData, RoleData* pDataStructure) {
 			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
 				if (jsonObjectData["id"].is_string()) {
 					pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
@@ -2550,7 +2550,7 @@ namespace DiscordCoreAPI {
 		ActionMetaData() = default;
 
 		ActionMetaData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -2560,7 +2560,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~ActionMetaData() = default;
 
-	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, ActionMetaData* pDataStructure) {
+	  	inline void parseObject(const nlohmann::json& jsonObjectData, ActionMetaData* pDataStructure) {
 			if (jsonObjectData.contains("channel_id") && !jsonObjectData["channel_id"].is_null()) {
 				pDataStructure->channelId = stoull(jsonObjectData["channel_id"].get<std::string>());
 			}
@@ -2579,7 +2579,7 @@ namespace DiscordCoreAPI {
 		TriggerMetaData() = default;
 
 		TriggerMetaData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -2589,7 +2589,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~TriggerMetaData() = default;
 
-	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, TriggerMetaData* pDataStructure) {
+	  	inline void parseObject(const nlohmann::json& jsonObjectData, TriggerMetaData* pDataStructure) {
 			if (jsonObjectData.contains("keyword_filter") && !jsonObjectData["keyword_filter"].is_null()) {
 				for (auto& value: jsonObjectData["keyword_filter"]) {
 					pDataStructure->keywordFilter.push_back(value.get<std::string>());
@@ -2612,7 +2612,7 @@ namespace DiscordCoreAPI {
 		ActionData() = default;
 
 		ActionData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -2622,7 +2622,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~ActionData() = default;
 	  	
-		inline void parseObjectReal(const nlohmann::json& jsonObjectData, ActionData* pDataStructure) {
+		inline void parseObject(const nlohmann::json& jsonObjectData, ActionData* pDataStructure) {
 			if (jsonObjectData.contains("metadata") && !jsonObjectData["metadata"].is_null()) {
 				pDataStructure->metadata = jsonObjectData["metadata"];
 			}
@@ -2649,7 +2649,7 @@ namespace DiscordCoreAPI {
 		AutoModerationRuleData() = default;
 
 		AutoModerationRuleData& operator=(const nlohmann::json& jsonObjectData){
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -2659,7 +2659,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~AutoModerationRuleData() = default;
 
-	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, AutoModerationRuleData* pDataStructure) {
+	  	inline void parseObject(const nlohmann::json& jsonObjectData, AutoModerationRuleData* pDataStructure) {
 			if (jsonObjectData.contains("name") && !jsonObjectData["name"].is_null()) {
 				pDataStructure->name = jsonObjectData["name"].get<std::string>();
 			}
@@ -2722,7 +2722,7 @@ namespace DiscordCoreAPI {
 		ApplicationCommandPermissionData() = default;
 
 		ApplicationCommandPermissionData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -2730,7 +2730,7 @@ namespace DiscordCoreAPI {
 			*this = jsonObjectData;
 		}
 
-	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, ApplicationCommandPermissionData* pDataStructure) {
+	  	inline void parseObject(const nlohmann::json& jsonObjectData, ApplicationCommandPermissionData* pDataStructure) {
 			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
 				pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
 			}
@@ -2755,7 +2755,7 @@ namespace DiscordCoreAPI {
 		GuildApplicationCommandPermissionsData() = default;
 
 		GuildApplicationCommandPermissionsData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -2763,7 +2763,7 @@ namespace DiscordCoreAPI {
 			*this = jsonObjectData;
 		}
 
-	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, GuildApplicationCommandPermissionsData* pDataStructure) {
+	  	inline void parseObject(const nlohmann::json& jsonObjectData, GuildApplicationCommandPermissionsData* pDataStructure) {
 			if (jsonObjectData.contains("guild_id") && !jsonObjectData["guild_id"].is_null()) {
 				pDataStructure->guildId = stoull(jsonObjectData["guild_id"].get<std::string>());
 			}
@@ -2795,7 +2795,7 @@ namespace DiscordCoreAPI {
 		GuildApplicationCommandPermissionsDataVector() = default;
 
 		GuildApplicationCommandPermissionsDataVector& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -2805,7 +2805,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~GuildApplicationCommandPermissionsDataVector() = default;
 
-		inline void parseObjectReal(const nlohmann::json& jsonObjectData, GuildApplicationCommandPermissionsDataVector* pDataStructure) {
+		inline void parseObject(const nlohmann::json& jsonObjectData, GuildApplicationCommandPermissionsDataVector* pDataStructure) {
 			pDataStructure->theGuildApplicationCommandPermissionsDatas.reserve(jsonObjectData.size());
 			for (auto& value: jsonObjectData) {
 				DiscordCoreAPI::GuildApplicationCommandPermissionsData newData{ value };
@@ -2830,7 +2830,7 @@ namespace DiscordCoreAPI {
 		EmojiData() = default;
 
 		EmojiData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -2840,7 +2840,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~EmojiData() = default;
 
-	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, EmojiData* pDataStructure) {
+	  	inline void parseObject(const nlohmann::json& jsonObjectData, EmojiData* pDataStructure) {
 			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
 				pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
 			}
@@ -2889,7 +2889,7 @@ namespace DiscordCoreAPI {
 		EmojiDataVector() = default;
 
 		EmojiDataVector& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -2899,7 +2899,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~EmojiDataVector() = default;
 
-		inline void parseObjectReal(const nlohmann::json& jsonObjectData, EmojiDataVector* pDataStructure) {
+		inline void parseObject(const nlohmann::json& jsonObjectData, EmojiDataVector* pDataStructure) {
 			pDataStructure->theEmojiDatas.reserve(jsonObjectData.size());
 			for (auto& value: jsonObjectData) {
 				DiscordCoreAPI::EmojiData newData{ value };
@@ -2941,7 +2941,7 @@ namespace DiscordCoreAPI {
 		ReactionData() = default;
 
 		ReactionData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -2951,7 +2951,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~ReactionData() = default;
 
-	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, ReactionData* pDataStructure) {
+	  	inline void parseObject(const nlohmann::json& jsonObjectData, ReactionData* pDataStructure) {
 			if (jsonObjectData.contains("count") && !jsonObjectData["count"].is_null()) {
 				pDataStructure->count = jsonObjectData["count"].get<int32_t>();
 			}
@@ -2997,7 +2997,7 @@ namespace DiscordCoreAPI {
 		VoiceRegionData() = default;
 
 		VoiceRegionData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -3007,7 +3007,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~VoiceRegionData() = default;
 
-	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, VoiceRegionData* pDataStructure) {
+	  	inline void parseObject(const nlohmann::json& jsonObjectData, VoiceRegionData* pDataStructure) {
 			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
 				pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
 			}
@@ -3037,7 +3037,7 @@ namespace DiscordCoreAPI {
 		VoiceRegionDataVector() = default;
 
 		VoiceRegionDataVector& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -3047,7 +3047,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~VoiceRegionDataVector() = default;
 
-		inline void parseObjectReal(const nlohmann::json& jsonObjectData, VoiceRegionDataVector* pDataStructure) {
+		inline void parseObject(const nlohmann::json& jsonObjectData, VoiceRegionDataVector* pDataStructure) {
 			pDataStructure->theVoiceRegionDatas.reserve(jsonObjectData.size());
 			for (auto& value: jsonObjectData) {
 				DiscordCoreAPI::VoiceRegionData newData{ value };
@@ -3073,7 +3073,7 @@ namespace DiscordCoreAPI {
 		MessageActivityData() = default;
 
 		MessageActivityData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -3083,7 +3083,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~MessageActivityData() = default;
 
-	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, MessageActivityData* pDataStructure) {
+	  	inline void parseObject(const nlohmann::json& jsonObjectData, MessageActivityData* pDataStructure) {
 			if (jsonObjectData.contains("type") && !jsonObjectData["type"].is_null()) {
 				pDataStructure->type = jsonObjectData["type"].get<MessageActivityType>();
 			}
@@ -3103,7 +3103,7 @@ namespace DiscordCoreAPI {
 		BanData() = default;
 
 		BanData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -3113,7 +3113,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~BanData() = default;
 
-		inline void parseObjectReal(const nlohmann::json& jsonObjectData, BanData* pDataStructure) {
+		inline void parseObject(const nlohmann::json& jsonObjectData, BanData* pDataStructure) {
 			if (jsonObjectData.contains("user") && !jsonObjectData["user"].is_null()) {
 				pDataStructure->user = jsonObjectData["user"];
 			}
@@ -3131,7 +3131,7 @@ namespace DiscordCoreAPI {
 		BanDataVector() = default;
 
 		BanDataVector& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -3141,7 +3141,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~BanDataVector() = default;
 
-		inline void parseObjectReal(const nlohmann::json& jsonObjectData, BanDataVector* pDataStructure) {
+		inline void parseObject(const nlohmann::json& jsonObjectData, BanDataVector* pDataStructure) {
 			pDataStructure->theBanDatas.reserve(jsonObjectData.size());
 			for (auto& value: jsonObjectData) {
 				DiscordCoreAPI::BanData newData{ value };
@@ -3161,7 +3161,7 @@ namespace DiscordCoreAPI {
 		TeamMembersObjectData() = default;
 
 		TeamMembersObjectData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -3172,7 +3172,7 @@ namespace DiscordCoreAPI {
 		virtual ~TeamMembersObjectData() = default;
 
 	  	
-		inline void parseObjectReal(const nlohmann::json& jsonObjectData, TeamMembersObjectData* pDataStructure) {
+		inline void parseObject(const nlohmann::json& jsonObjectData, TeamMembersObjectData* pDataStructure) {
 			if (jsonObjectData.contains("membership_state") && !jsonObjectData["membership_state"].is_null()) {
 				pDataStructure->membershipState = jsonObjectData["membership_state"].get<int32_t>();
 			}
@@ -3214,7 +3214,7 @@ namespace DiscordCoreAPI {
 		TeamObjectData() = default;
 
 		TeamObjectData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -3224,7 +3224,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~TeamObjectData() = default;
 
-	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, TeamObjectData* pDataStructure) {
+	  	inline void parseObject(const nlohmann::json& jsonObjectData, TeamObjectData* pDataStructure) {
 			if (jsonObjectData.contains("icon") && !jsonObjectData["icon"].is_null()) {
 				pDataStructure->icon = jsonObjectData["icon"].get<std::string>();
 			}
@@ -3269,7 +3269,7 @@ namespace DiscordCoreAPI {
 		InstallParamsData() = default;
 
 		InstallParamsData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -3279,7 +3279,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~InstallParamsData() = default;
 
-	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, InstallParamsData* pDataStructure) {
+	  	inline void parseObject(const nlohmann::json& jsonObjectData, InstallParamsData* pDataStructure) {
 			if (jsonObjectData.contains("scopes") && !jsonObjectData["scopes"].is_null()) {
 				pDataStructure->scopes = jsonObjectData["scopes"].get<std::vector<std::string>>();
 			}
@@ -3316,7 +3316,7 @@ namespace DiscordCoreAPI {
 		ApplicationData() = default;
 
 		ApplicationData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -3326,7 +3326,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~ApplicationData() = default;
 
-	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, ApplicationData* pDataStructure) {
+	  	inline void parseObject(const nlohmann::json& jsonObjectData, ApplicationData* pDataStructure) {
 			if (jsonObjectData.contains("params") && !jsonObjectData["params"].is_null()) {
 				pDataStructure->params = jsonObjectData["params"];
 			}
@@ -3424,7 +3424,7 @@ namespace DiscordCoreAPI {
 		AuthorizationInfoData() = default;
 
 		AuthorizationInfoData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -3434,7 +3434,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~AuthorizationInfoData() = default;
 
-		inline void parseObjectReal(const nlohmann::json& jsonObjectData, AuthorizationInfoData* pDataStructure) {
+		inline void parseObject(const nlohmann::json& jsonObjectData, AuthorizationInfoData* pDataStructure) {
 			if (jsonObjectData.contains("application") && !jsonObjectData["application"].is_null()) {
 				pDataStructure->application = jsonObjectData["application"];
 			}
@@ -3461,7 +3461,7 @@ namespace DiscordCoreAPI {
 		AccountData() = default;
 
 		AccountData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -3471,7 +3471,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~AccountData() = default;
 
-	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, AccountData* pDataStructure) {
+	  	inline void parseObject(const nlohmann::json& jsonObjectData, AccountData* pDataStructure) {
 			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
 				pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
 			}
@@ -3490,7 +3490,7 @@ namespace DiscordCoreAPI {
 		GuildWidgetData() = default;
 
 		GuildWidgetData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -3500,7 +3500,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~GuildWidgetData() = default;
 
-	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, GuildWidgetData* pDataStructure) {
+	  	inline void parseObject(const nlohmann::json& jsonObjectData, GuildWidgetData* pDataStructure) {
 			if (jsonObjectData.contains("enabled") && !jsonObjectData["enabled"].is_null()) {
 				pDataStructure->enabled = jsonObjectData["enabled"].get<bool>();
 			}
@@ -3536,7 +3536,7 @@ namespace DiscordCoreAPI {
 		GuildWidgetImageData() = default;
 
 		GuildWidgetImageData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -3546,7 +3546,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~GuildWidgetImageData() = default;
 
-	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, GuildWidgetImageData* pDataStructure) {
+	  	inline void parseObject(const nlohmann::json& jsonObjectData, GuildWidgetImageData* pDataStructure) {
 			if (jsonObjectData.contains("widget_image") && !jsonObjectData["widget_image"].is_null()) {
 				pDataStructure->url = jsonObjectData["widget_image"].get<bool>();
 			}
@@ -3574,7 +3574,7 @@ namespace DiscordCoreAPI {
 		IntegrationData() = default;
 
 		IntegrationData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -3584,7 +3584,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~IntegrationData() = default;
 
-	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, IntegrationData* pDataStructure) {
+	  	inline void parseObject(const nlohmann::json& jsonObjectData, IntegrationData* pDataStructure) {
 			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
 				pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
 			}
@@ -3654,7 +3654,7 @@ namespace DiscordCoreAPI {
 		IntegrationDataVector() = default;
 
 		IntegrationDataVector& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -3664,7 +3664,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~IntegrationDataVector() = default;
 
-		inline void parseObjectReal(const nlohmann::json& jsonObjectData, IntegrationDataVector* pDataStructure) {
+		inline void parseObject(const nlohmann::json& jsonObjectData, IntegrationDataVector* pDataStructure) {
 			pDataStructure->theIntegrationDatas.reserve(jsonObjectData.size());
 			for (auto& value: jsonObjectData) {
 				DiscordCoreAPI::IntegrationData newData{ value };
@@ -3745,7 +3745,7 @@ namespace DiscordCoreAPI {
 		OptionalAuditEntryInfoData() = default;
 
 		OptionalAuditEntryInfoData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -3755,7 +3755,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~OptionalAuditEntryInfoData() = default;
 
-		inline void parseObjectReal(const nlohmann::json& jsonObjectData, OptionalAuditEntryInfoData* pDataStructure) {
+		inline void parseObject(const nlohmann::json& jsonObjectData, OptionalAuditEntryInfoData* pDataStructure) {
 			if (jsonObjectData.contains("delete_member_days") && !jsonObjectData["delete_member_days"].is_null()) {
 				pDataStructure->deleteMemberDays = jsonObjectData["delete_member_days"].get<std::string>();
 			}
@@ -3799,7 +3799,7 @@ namespace DiscordCoreAPI {
 		AuditLogChangeData() = default;
 
 		AuditLogChangeData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -3809,7 +3809,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~AuditLogChangeData() = default;
 
-		inline void parseObjectReal(const nlohmann::json& jsonObjectData, AuditLogChangeData* pDataStructure) {
+		inline void parseObject(const nlohmann::json& jsonObjectData, AuditLogChangeData* pDataStructure) {
 			if (jsonObjectData.contains("new_value") && !jsonObjectData["new_value"].is_null()) {
 				pDataStructure->newValue = jsonObjectData["new_value"];
 			}
@@ -3831,7 +3831,7 @@ namespace DiscordCoreAPI {
 		GuildPruneCountData() = default;
 
 		GuildPruneCountData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -3841,7 +3841,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~GuildPruneCountData() = default;
 
-	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, GuildPruneCountData* pDataStructure) {
+	  	inline void parseObject(const nlohmann::json& jsonObjectData, GuildPruneCountData* pDataStructure) {
 			if (jsonObjectData.contains("pruned") && !jsonObjectData["pruned"].is_null()) {
 				pDataStructure->count = jsonObjectData["pruned"].get<int32_t>();
 			}
@@ -3862,7 +3862,7 @@ namespace DiscordCoreAPI {
 		AuditLogEntryData() = default;
 
 		AuditLogEntryData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -3872,7 +3872,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~AuditLogEntryData() = default;
 
-		inline void parseObjectReal(const nlohmann::json& jsonObjectData, AuditLogEntryData* pDataStructure) {
+		inline void parseObject(const nlohmann::json& jsonObjectData, AuditLogEntryData* pDataStructure) {
 			if (jsonObjectData.contains("target_id") && !jsonObjectData["target_id"].is_null()) {
 				pDataStructure->targetId = stoull(jsonObjectData["target_id"].get<std::string>());
 			}
@@ -3918,7 +3918,7 @@ namespace DiscordCoreAPI {
 		PartyData() = default;
 
 		PartyData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -3928,7 +3928,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~PartyData() = default;
 
-	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, PartyData* pDataStructure) {
+	  	inline void parseObject(const nlohmann::json& jsonObjectData, PartyData* pDataStructure) {
 			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
 				pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
 			}
@@ -3950,7 +3950,7 @@ namespace DiscordCoreAPI {
 		AssetsData() = default;
 
 		AssetsData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -3960,7 +3960,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~AssetsData() = default;
 
-	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, AssetsData* pDataStructure) {
+	  	inline void parseObject(const nlohmann::json& jsonObjectData, AssetsData* pDataStructure) {
 			if (jsonObjectData.contains("LargeImage") && !jsonObjectData["LargeImage"].is_null()) {
 				pDataStructure->largeImage = jsonObjectData["LargeImage"].get<std::string>();
 			}
@@ -3988,7 +3988,7 @@ namespace DiscordCoreAPI {
 		SecretsData() = default;
 
 		SecretsData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -3998,7 +3998,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~SecretsData() = default;
 
-	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, SecretsData* pDataStructure) {
+	  	inline void parseObject(const nlohmann::json& jsonObjectData, SecretsData* pDataStructure) {
 			if (jsonObjectData.contains("Join") && !jsonObjectData["Join"].is_null()) {
 				pDataStructure->join = jsonObjectData["Join"].get<std::string>();
 			}
@@ -4021,7 +4021,7 @@ namespace DiscordCoreAPI {
 		TimestampData() = default;
 
 		TimestampData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -4031,7 +4031,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~TimestampData() = default;
 
-	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, TimestampData* pDataStructure) {
+	  	inline void parseObject(const nlohmann::json& jsonObjectData, TimestampData* pDataStructure) {
 			if (jsonObjectData.contains("Start") && !jsonObjectData["Start"].is_null()) {
 				pDataStructure->start = jsonObjectData["Start"].get<int64_t>();
 			}
@@ -4079,7 +4079,7 @@ namespace DiscordCoreAPI {
 		ActivityData() = default;
 
 		ActivityData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -4089,7 +4089,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~ActivityData() = default;
 
-	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, ActivityData* pDataStructure) {
+	  	inline void parseObject(const nlohmann::json& jsonObjectData, ActivityData* pDataStructure) {
 			if (jsonObjectData.contains("Name") && !jsonObjectData["Name"].is_null()) {
 				pDataStructure->name = jsonObjectData["Name"].get<std::string>();
 			}
@@ -4137,7 +4137,7 @@ namespace DiscordCoreAPI {
 		ClientStatusData() = default;
 
 		ClientStatusData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -4147,7 +4147,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~ClientStatusData() = default;
 
-	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, ClientStatusData* pDataStructure) {
+	  	inline void parseObject(const nlohmann::json& jsonObjectData, ClientStatusData* pDataStructure) {
 			if (jsonObjectData.contains("desktop") && !jsonObjectData["desktop"].is_null()) {
 				pDataStructure->desktop = jsonObjectData["desktop"].get<std::string>();
 			}
@@ -4209,7 +4209,7 @@ namespace DiscordCoreAPI {
 		WelcomeScreenChannelData() = default;
 
 		WelcomeScreenChannelData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -4219,7 +4219,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~WelcomeScreenChannelData() = default;
 
-	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, WelcomeScreenChannelData* pDataStructure) {
+	  	inline void parseObject(const nlohmann::json& jsonObjectData, WelcomeScreenChannelData* pDataStructure) {
 			if (jsonObjectData.contains("channel_id") && !jsonObjectData["channel_id"].is_null()) {
 				pDataStructure->channelId = stoull(jsonObjectData["channel_id"].get<std::string>());
 			}
@@ -4246,7 +4246,7 @@ namespace DiscordCoreAPI {
 		WelcomeScreenData() = default;
 
 		WelcomeScreenData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -4256,7 +4256,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~WelcomeScreenData() = default;
 
-	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, WelcomeScreenData* pDataStructure) {
+	  	inline void parseObject(const nlohmann::json& jsonObjectData, WelcomeScreenData* pDataStructure) {
 			if (jsonObjectData.contains("description") && !jsonObjectData["description"].is_null()) {
 				pDataStructure->description = jsonObjectData["description"].get<std::string>();
 			}
@@ -4284,7 +4284,7 @@ namespace DiscordCoreAPI {
 		PresenceUpdateData() = default;
 
 		PresenceUpdateData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -4294,7 +4294,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~PresenceUpdateData() = default;
 
-	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, PresenceUpdateData* pDataStructure) {
+	  	inline void parseObject(const nlohmann::json& jsonObjectData, PresenceUpdateData* pDataStructure) {
 			if (jsonObjectData.contains("user") && !jsonObjectData["user"].is_null()) {
 				pDataStructure->user = jsonObjectData["user"];
 			}
@@ -4341,7 +4341,7 @@ namespace DiscordCoreAPI {
 		StageInstanceData() = default;
 
 		StageInstanceData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -4351,7 +4351,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~StageInstanceData() = default;
 
-	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, StageInstanceData* pDataStructure) {
+	  	inline void parseObject(const nlohmann::json& jsonObjectData, StageInstanceData* pDataStructure) {
 			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
 				pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
 			}
@@ -4405,7 +4405,7 @@ namespace DiscordCoreAPI {
 		StickerData() = default;
 
 		StickerData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -4415,7 +4415,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~StickerData() = default;
 
-	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, StickerData* pDataStructure) {
+	  	inline void parseObject(const nlohmann::json& jsonObjectData, StickerData* pDataStructure) {
 			if (jsonObjectData.contains("asset") && !jsonObjectData["asset"].is_null()) {
 				pDataStructure->asset = jsonObjectData["asset"].get<std::string>();
 			}
@@ -4479,7 +4479,7 @@ namespace DiscordCoreAPI {
 		GuildPreviewData() = default;
 
 		GuildPreviewData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -4489,7 +4489,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~GuildPreviewData() = default;
 
-	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, GuildPreviewData* pDataStructure) {
+	  	inline void parseObject(const nlohmann::json& jsonObjectData, GuildPreviewData* pDataStructure) {
 			if (jsonObjectData.contains("approximate_presence_count") && !jsonObjectData["approximate_presence_count"].is_null()) {
 				pDataStructure->approximatePresenceCount = jsonObjectData["approximate_presence_count"].get<int32_t>();
 			}
@@ -4603,7 +4603,7 @@ namespace DiscordCoreAPI {
 		GuildDataBase() = default;
 
 		GuildDataBase<GuildDerived>& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -4629,7 +4629,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~GuildDataBase() = default;
 
-	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, GuildDataBase<GuildDerived>* pDataStructure) {
+	  	inline void parseObject(const nlohmann::json& jsonObjectData, GuildDataBase<GuildDerived>* pDataStructure) {
 			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
 				pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
 			}
@@ -4731,7 +4731,7 @@ namespace DiscordCoreAPI {
 		GuildDataVector() = default;
 
 		GuildDataVector& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -4741,7 +4741,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~GuildDataVector() = default;
 
-		inline void parseObjectReal(const nlohmann::json& jsonObjectData, GuildDataVector* pDataStructure) {
+		inline void parseObject(const nlohmann::json& jsonObjectData, GuildDataVector* pDataStructure) {
 			pDataStructure->theGuildDatas.reserve(jsonObjectData.size());
 			for (auto& value: jsonObjectData) {
 				DiscordCoreAPI::GuildData newData{ value };
@@ -4780,7 +4780,7 @@ namespace DiscordCoreAPI {
 		GuildScheduledEventMetadata() = default;
 
 		GuildScheduledEventMetadata& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -4790,7 +4790,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~GuildScheduledEventMetadata() = default;
 
-	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, GuildScheduledEventMetadata* pDataStructure) {
+	  	inline void parseObject(const nlohmann::json& jsonObjectData, GuildScheduledEventMetadata* pDataStructure) {
 			if (jsonObjectData.contains("location") && !jsonObjectData["location"].is_null()) {
 				pDataStructure->location = jsonObjectData["location"].get<std::string>();
 			}
@@ -4818,7 +4818,7 @@ namespace DiscordCoreAPI {
 		GuildScheduledEventData() = default;
 
 		GuildScheduledEventData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -4828,7 +4828,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~GuildScheduledEventData() = default;
 
-	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, GuildScheduledEventData* pDataStructure) {
+	  	inline void parseObject(const nlohmann::json& jsonObjectData, GuildScheduledEventData* pDataStructure) {
 			if (jsonObjectData.contains("privacy_level") && !jsonObjectData["privacy_level"].is_null()) {
 				pDataStructure->privacyLevel = jsonObjectData["privacy_level"].get<GuildScheduledEventPrivacyLevel>();
 			}
@@ -4900,7 +4900,7 @@ namespace DiscordCoreAPI {
 		GuildScheduledEventUserData() = default;
 
 		GuildScheduledEventUserData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -4910,7 +4910,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~GuildScheduledEventUserData() = default;
 
-	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, GuildScheduledEventUserData* pDataStructure) {
+	  	inline void parseObject(const nlohmann::json& jsonObjectData, GuildScheduledEventUserData* pDataStructure) {
 			if (jsonObjectData.contains("guild_scheduled_event_id") && !jsonObjectData["guild_scheduled_event_id"].is_null()) {
 				pDataStructure->guildScheduledEventId = jsonObjectData["guild_scheduled_event_id"].get<std::string>();
 			}
@@ -4932,7 +4932,7 @@ namespace DiscordCoreAPI {
 		GuildScheduledEventUserDataVector() = default;
 
 		GuildScheduledEventUserDataVector& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -4942,7 +4942,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~GuildScheduledEventUserDataVector() = default;
 
-		inline void parseObjectReal(const nlohmann::json& jsonObjectData, GuildScheduledEventUserDataVector* pDataStructure) {
+		inline void parseObject(const nlohmann::json& jsonObjectData, GuildScheduledEventUserDataVector* pDataStructure) {
 			pDataStructure->theGuildScheduledEventUserDatas.reserve(jsonObjectData.size());
 			for (auto& value: jsonObjectData) {
 				DiscordCoreAPI::GuildScheduledEventUserData newData{ value };
@@ -4976,7 +4976,7 @@ namespace DiscordCoreAPI {
 		InviteData() = default;
 
 		InviteData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -4986,7 +4986,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~InviteData() = default;
 
-		inline void parseObjectReal(const nlohmann::json& jsonObjectData, InviteData* pDataStructure) {
+		inline void parseObject(const nlohmann::json& jsonObjectData, InviteData* pDataStructure) {
 			if (jsonObjectData.contains("code") && !jsonObjectData["code"].is_null() && jsonObjectData["code"].is_string()) {
 				pDataStructure->code = jsonObjectData["code"].get<std::string>();
 			} else if (jsonObjectData.contains("code") && !jsonObjectData["code"].is_null() && jsonObjectData["code"].is_number_integer()) {
@@ -5070,7 +5070,7 @@ namespace DiscordCoreAPI {
 		InviteDataVector() = default;
 
 		InviteDataVector& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -5080,7 +5080,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~InviteDataVector() = default;
 
-		inline void parseObjectReal(const nlohmann::json& jsonObjectData, InviteDataVector* pDataStructure) {
+		inline void parseObject(const nlohmann::json& jsonObjectData, InviteDataVector* pDataStructure) {
 			pDataStructure->theInviteDatas.reserve(jsonObjectData.size());
 			for (auto& value: jsonObjectData) {
 				DiscordCoreAPI::InviteData newData{ value };
@@ -5107,7 +5107,7 @@ namespace DiscordCoreAPI {
 		GuildTemplateData() = default;
 
 		GuildTemplateData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -5117,7 +5117,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~GuildTemplateData() = default;
 
-	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, GuildTemplateData* pDataStructure) {
+	  	inline void parseObject(const nlohmann::json& jsonObjectData, GuildTemplateData* pDataStructure) {
 			if (jsonObjectData.contains("serialized_source_guild") && !jsonObjectData["serialized_source_guild"].is_null()) {
 				pDataStructure->serializedSourceGuild = jsonObjectData["serialized_source_guild"];
 			}
@@ -5172,7 +5172,7 @@ namespace DiscordCoreAPI {
 		GuildTemplateDataVector() = default;
 
 		GuildTemplateDataVector& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -5182,7 +5182,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~GuildTemplateDataVector() = default;
 
-		inline void parseObjectReal(const nlohmann::json& jsonObjectData, GuildTemplateDataVector* pDataStructure) {
+		inline void parseObject(const nlohmann::json& jsonObjectData, GuildTemplateDataVector* pDataStructure) {
 			pDataStructure->theGuildTemplateDatas.reserve(jsonObjectData.size());
 			for (auto& value: jsonObjectData) {
 				DiscordCoreAPI::GuildTemplateData newData{ value };
@@ -5223,7 +5223,7 @@ namespace DiscordCoreAPI {
 		WebHookData() = default;
 
 		WebHookData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -5233,7 +5233,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~WebHookData() = default;
 
-	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, WebHookData* pDataStructure) {
+	  	inline void parseObject(const nlohmann::json& jsonObjectData, WebHookData* pDataStructure) {
 			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
 				pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
 			}
@@ -5291,7 +5291,7 @@ namespace DiscordCoreAPI {
 		WebHookDataVector() = default;
 
 		WebHookDataVector& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -5301,7 +5301,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~WebHookDataVector() = default;
 
-		inline void parseObjectReal(const nlohmann::json& jsonObjectData, WebHookDataVector* pDataStructure) {
+		inline void parseObject(const nlohmann::json& jsonObjectData, WebHookDataVector* pDataStructure) {
 			pDataStructure->theWebHookDatas.reserve(jsonObjectData.size());
 			for (auto& value: jsonObjectData) {
 				DiscordCoreAPI::WebHookData newData{ value };
@@ -5341,7 +5341,7 @@ namespace DiscordCoreAPI {
 		AuditLogData() = default;
 
 		AuditLogData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -5351,7 +5351,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~AuditLogData() = default;
 
-		inline void parseObjectReal(const nlohmann::json& jsonObjectData, AuditLogData* pDataStructure) {
+		inline void parseObject(const nlohmann::json& jsonObjectData, AuditLogData* pDataStructure) {
 			if (jsonObjectData.contains("webhooks") && !jsonObjectData["webhooks"].is_null()) {
 				pDataStructure->webhooks.clear();
 				pDataStructure->webhooks.reserve(jsonObjectData["webhooks"].size());
@@ -5435,7 +5435,7 @@ namespace DiscordCoreAPI {
 		ReactionRemoveData() = default;
 
 		ReactionRemoveData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -5445,7 +5445,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~ReactionRemoveData() = default;
 
-	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, ReactionRemoveData* pDataStructure) {
+	  	inline void parseObject(const nlohmann::json& jsonObjectData, ReactionRemoveData* pDataStructure) {
 			if (jsonObjectData.contains("user_id") && !jsonObjectData["user_id"].is_null()) {
 				pDataStructure->userId = stoull(jsonObjectData["user_id"].get<std::string>());
 			}
@@ -5490,7 +5490,7 @@ namespace DiscordCoreAPI {
 		ApplicationCommandOptionChoiceData() = default;
 
 		ApplicationCommandOptionChoiceData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -5500,7 +5500,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~ApplicationCommandOptionChoiceData() = default;
 
-	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, ApplicationCommandOptionChoiceData* pDataStructure) {
+	  	inline void parseObject(const nlohmann::json& jsonObjectData, ApplicationCommandOptionChoiceData* pDataStructure) {
 			if (jsonObjectData.contains("value") && !jsonObjectData["value"].is_null() && jsonObjectData["value"].is_string()) {
 				if (jsonObjectData["value"].is_string()) {
 					pDataStructure->value = jsonObjectData["value"].get<std::string>();
@@ -5543,7 +5543,7 @@ namespace DiscordCoreAPI {
 		ApplicationCommandOptionData() = default;
 
 		ApplicationCommandOptionData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -5553,7 +5553,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~ApplicationCommandOptionData() = default;
 
-	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, ApplicationCommandOptionData* pDataStructure) {
+	  	inline void parseObject(const nlohmann::json& jsonObjectData, ApplicationCommandOptionData* pDataStructure) {
 			if (jsonObjectData.contains("name") && !jsonObjectData["name"].is_null()) {
 				pDataStructure->name = jsonObjectData["name"].get<std::string>();
 			}
@@ -5641,7 +5641,7 @@ namespace DiscordCoreAPI {
 		TypingStartData() = default;
 
 		TypingStartData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -5651,7 +5651,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~TypingStartData() = default;
 
-		inline void parseObjectReal(const nlohmann::json& jsonObjectData, TypingStartData* pDataStructure) {
+		inline void parseObject(const nlohmann::json& jsonObjectData, TypingStartData* pDataStructure) {
 			if (jsonObjectData.contains("channel_id") && !jsonObjectData["channel_id"].is_null()) {
 				pDataStructure->channelId = stoull(jsonObjectData["channel_id"].get<std::string>());
 			}
@@ -5696,7 +5696,7 @@ namespace DiscordCoreAPI {
 		YouTubeFormat() = default;
 
 		YouTubeFormat& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -5706,7 +5706,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~YouTubeFormat() = default;
 
-	  	inline void parseObjectReal(const nlohmann::json&jsonObjectData, YouTubeFormat*pDataStructure) {
+	  	inline void parseObject(const nlohmann::json&jsonObjectData, YouTubeFormat*pDataStructure) {
 			if (!jsonObjectData.is_null()) {
 				if (jsonObjectData.contains("streamingData") && !jsonObjectData["streamingData"].is_null() && jsonObjectData["streamingData"].contains("formats") &&
 					!jsonObjectData["streamingData"]["formats"].is_null()) {
@@ -5867,7 +5867,7 @@ namespace DiscordCoreAPI {
 		YouTubeFormatVector() = default;
 
 		YouTubeFormatVector& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -5877,7 +5877,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~YouTubeFormatVector() = default;
 
-		inline void parseObjectReal(const nlohmann::json& jsonObjectData, YouTubeFormatVector* pDataStructure) {
+		inline void parseObject(const nlohmann::json& jsonObjectData, YouTubeFormatVector* pDataStructure) {
 			pDataStructure->theYouTubeFormats.reserve(jsonObjectData.size());
 			for (auto& value: jsonObjectData) {
 				DiscordCoreAPI::YouTubeFormat newData{ value };
@@ -5902,7 +5902,7 @@ namespace DiscordCoreAPI {
 		UserCommandInteractionData() = default;
 
 		UserCommandInteractionData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -5912,7 +5912,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~UserCommandInteractionData() = default;
 
-	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, UserCommandInteractionData* pDataStructure) {
+	  	inline void parseObject(const nlohmann::json& jsonObjectData, UserCommandInteractionData* pDataStructure) {
 			if (jsonObjectData.contains("target_id") && !jsonObjectData["target_id"].is_null()) {
 				pDataStructure->targetId = jsonObjectData["target_id"].get<std::string>();
 			}
@@ -5926,7 +5926,7 @@ namespace DiscordCoreAPI {
 		MessageCommandInteractionData() = default;
 
 		MessageCommandInteractionData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -5936,7 +5936,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~MessageCommandInteractionData() = default;
 
-	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, MessageCommandInteractionData* pDataStructure) {
+	  	inline void parseObject(const nlohmann::json& jsonObjectData, MessageCommandInteractionData* pDataStructure) {
 			if (jsonObjectData.contains("target_id") && !jsonObjectData["target_id"].is_null()) {
 				pDataStructure->targetId = jsonObjectData["target_id"].get<std::string>();
 			}
@@ -5960,7 +5960,7 @@ namespace DiscordCoreAPI {
 		ComponentInteractionData() = default;
 
 		ComponentInteractionData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -5970,7 +5970,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~ComponentInteractionData() = default;
 
-	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, ComponentInteractionData* pDataStructure) {
+	  	inline void parseObject(const nlohmann::json& jsonObjectData, ComponentInteractionData* pDataStructure) {
 			if (jsonObjectData.contains("values") && !jsonObjectData["values"].is_null()) {
 				pDataStructure->values.clear();
 				pDataStructure->values.reserve(jsonObjectData["values"].size());
@@ -5999,7 +5999,7 @@ namespace DiscordCoreAPI {
 		ModalInteractionData() = default;
 
 		ModalInteractionData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -6009,7 +6009,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~ModalInteractionData() = default;
 
-	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, ModalInteractionData* pDataStructure) {
+	  	inline void parseObject(const nlohmann::json& jsonObjectData, ModalInteractionData* pDataStructure) {
 			if (jsonObjectData.contains("components") && !jsonObjectData["components"].is_null()) {
 				pDataStructure->value = jsonObjectData["components"][0]["components"][0]["value"].get<std::string>();
 			}
@@ -6043,7 +6043,7 @@ namespace DiscordCoreAPI {
 		}
 
 		AllowedMentionsData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -6053,7 +6053,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~AllowedMentionsData() = default;
 
-	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, AllowedMentionsData* pDataStructure) {
+	  	inline void parseObject(const nlohmann::json& jsonObjectData, AllowedMentionsData* pDataStructure) {
 			if (jsonObjectData.contains("parse") && !jsonObjectData["parse"].is_null()) {
 				pDataStructure->parse.clear();
 				pDataStructure->parse.reserve(jsonObjectData["parse"].size());
@@ -6107,7 +6107,7 @@ namespace DiscordCoreAPI {
 		SelectOptionData() = default;
 
 		SelectOptionData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -6117,7 +6117,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~SelectOptionData() = default;
 
-	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, SelectOptionData* pDataStructure) {
+	  	inline void parseObject(const nlohmann::json& jsonObjectData, SelectOptionData* pDataStructure) {
 			if (jsonObjectData.contains("label") && !jsonObjectData["label"].is_null()) {
 				pDataStructure->label = jsonObjectData["label"].get<std::string>();
 			}
@@ -6176,7 +6176,7 @@ namespace DiscordCoreAPI {
 		ActionRowData() = default;
 
 		ActionRowData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -6252,7 +6252,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~ActionRowData() = default;
 
-	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, ActionRowData* pDataStructure) {
+	  	inline void parseObject(const nlohmann::json& jsonObjectData, ActionRowData* pDataStructure) {
 			if (jsonObjectData.contains("components") && !jsonObjectData["components"].is_null()) {
 				pDataStructure->components.clear();
 				pDataStructure->components.reserve(jsonObjectData["components"].size());
@@ -6374,7 +6374,7 @@ namespace DiscordCoreAPI {
 		ApplicationCommandData() = default;
 
 		ApplicationCommandData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -6384,7 +6384,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~ApplicationCommandData() = default;
 
-	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, ApplicationCommandData* pDataStructure) {
+	  	inline void parseObject(const nlohmann::json& jsonObjectData, ApplicationCommandData* pDataStructure) {
 			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
 				pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
 			}
@@ -6459,7 +6459,7 @@ namespace DiscordCoreAPI {
 		ChannelMentionData() = default;
 
 		ChannelMentionData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -6469,7 +6469,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~ChannelMentionData() = default;
 
-	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, ChannelMentionData* pDataStructure) {
+	  	inline void parseObject(const nlohmann::json& jsonObjectData, ChannelMentionData* pDataStructure) {
 			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
 				pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
 			}
@@ -6497,7 +6497,7 @@ namespace DiscordCoreAPI {
 		ChannelPinsUpdateEventData() = default;
 
 		ChannelPinsUpdateEventData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -6507,7 +6507,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~ChannelPinsUpdateEventData() = default;
 
-		inline void parseObjectReal(const nlohmann::json& jsonObjectData, ChannelPinsUpdateEventData* pDataStructre) {
+		inline void parseObject(const nlohmann::json& jsonObjectData, ChannelPinsUpdateEventData* pDataStructre) {
 			if (jsonObjectData.contains("guild_id") && !jsonObjectData["guild_id"].is_null()) {
 				pDataStructre->guildId = stoull(jsonObjectData["guild_id"].get<std::string>());
 			}
@@ -6532,7 +6532,7 @@ namespace DiscordCoreAPI {
 		ThreadListSyncData() = default;
 
 		ThreadListSyncData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -6542,7 +6542,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~ThreadListSyncData() = default;
 
-		inline void parseObjectReal(const nlohmann::json& jsonObjectData, ThreadListSyncData* pDataStructure) {
+		inline void parseObject(const nlohmann::json& jsonObjectData, ThreadListSyncData* pDataStructure) {
 			if (jsonObjectData.contains("guild_id") && !jsonObjectData["guild_id"].is_null()) {
 				pDataStructure->guildId = stoull(jsonObjectData["guild_id"].get<std::string>());
 			}
@@ -6589,7 +6589,7 @@ namespace DiscordCoreAPI {
 		ThreadMembersUpdateData() = default;
 
 		ThreadMembersUpdateData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -6599,7 +6599,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~ThreadMembersUpdateData() = default;
 
-		inline void parseObjectReal(const nlohmann::json& jsonObjectData, ThreadMembersUpdateData* pDataStructure) {
+		inline void parseObject(const nlohmann::json& jsonObjectData, ThreadMembersUpdateData* pDataStructure) {
 			if (jsonObjectData.contains("guild_id") && !jsonObjectData["guild_id"].is_null()) {
 				pDataStructure->guildId = stoull(jsonObjectData["guild_id"].get<std::string>());
 			}
@@ -6644,7 +6644,7 @@ namespace DiscordCoreAPI {
 		MessageInteractionData() = default;
 
 		MessageInteractionData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -6654,7 +6654,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~MessageInteractionData() = default;
 
-	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, MessageInteractionData* pDataStructure) {
+	  	inline void parseObject(const nlohmann::json& jsonObjectData, MessageInteractionData* pDataStructure) {
 			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
 				pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
 			}
@@ -6744,7 +6744,7 @@ namespace DiscordCoreAPI {
 		StickerItemData() = default;
 
 		StickerItemData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -6754,7 +6754,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~StickerItemData() = default;
 
-	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, StickerItemData* pDataStructure) {
+	  	inline void parseObject(const nlohmann::json& jsonObjectData, StickerItemData* pDataStructure) {
 			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
 				pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
 			}
@@ -6805,7 +6805,7 @@ namespace DiscordCoreAPI {
 		MessageDataOld() = default;
 
 		MessageDataOld& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -6815,7 +6815,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~MessageDataOld() = default;
 
-	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, MessageDataOld* pDataStructure) {
+	  	inline void parseObject(const nlohmann::json& jsonObjectData, MessageDataOld* pDataStructure) {
 			if (jsonObjectData.contains("content") && !jsonObjectData["content"].is_null()) {
 				pDataStructure->content = jsonObjectData["content"].get<std::string>();
 			}
@@ -7041,7 +7041,7 @@ namespace DiscordCoreAPI {
 		MessageData() = default;
 
 		MessageData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -7051,7 +7051,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~MessageData() = default;
 
-	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, MessageData* pDataStructure) {
+	  	inline void parseObject(const nlohmann::json& jsonObjectData, MessageData* pDataStructure) {
 			if (jsonObjectData.contains("content") && !jsonObjectData["content"].is_null()) {
 				pDataStructure->content = jsonObjectData["content"].get<std::string>();
 			}
@@ -7250,7 +7250,7 @@ namespace DiscordCoreAPI {
 		StickerPackData() = default;
 
 		StickerPackData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -7260,7 +7260,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~StickerPackData() = default;
 
-	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, StickerPackData* pDataStructure) {
+	  	inline void parseObject(const nlohmann::json& jsonObjectData, StickerPackData* pDataStructure) {
 			if (jsonObjectData.contains("stickers") && !jsonObjectData["stickers"].is_null()) {
 				pDataStructure->stickers.clear();
 				pDataStructure->stickers.reserve(jsonObjectData["stickers"].size());
@@ -7304,7 +7304,7 @@ namespace DiscordCoreAPI {
 		StickerPackDataVector() = default;
 
 		StickerPackDataVector& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -7314,7 +7314,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~StickerPackDataVector() = default;
 
-		inline void parseObjectReal(const nlohmann::json& jsonObjectData, StickerPackDataVector* pDataStructure) {
+		inline void parseObject(const nlohmann::json& jsonObjectData, StickerPackDataVector* pDataStructure) {
 			pDataStructure->theStickerPackDatas.reserve(jsonObjectData.size());
 			for (auto& value: jsonObjectData) {
 				DiscordCoreAPI::StickerPackData newData{ value };
@@ -7345,7 +7345,7 @@ namespace DiscordCoreAPI {
 		ConnectionData() = default;
 
 		ConnectionData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -7355,7 +7355,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~ConnectionData() = default;
 
-		inline void parseObjectReal(const nlohmann::json& jsonObjectData, ConnectionData* pDataStructure) {
+		inline void parseObject(const nlohmann::json& jsonObjectData, ConnectionData* pDataStructure) {
 			if (jsonObjectData.contains("name") && !jsonObjectData["name"].is_null()) {
 				pDataStructure->name = jsonObjectData["name"].get<std::string>();
 			}
@@ -7407,7 +7407,7 @@ namespace DiscordCoreAPI {
 		ConnectionDataVector() = default;
 
 		ConnectionDataVector& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -7417,7 +7417,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~ConnectionDataVector() = default;
 
-		inline void parseObjectReal(const nlohmann::json& jsonObjectData, ConnectionDataVector* pDataStructure) {
+		inline void parseObject(const nlohmann::json& jsonObjectData, ConnectionDataVector* pDataStructure) {
 			pDataStructure->theConnectionDatas.reserve(jsonObjectData.size());
 			for (auto& value: jsonObjectData) {
 				DiscordCoreAPI::ConnectionData newData{ value };
@@ -7440,7 +7440,7 @@ namespace DiscordCoreAPI {
 		ApplicationCommandInteractionDataOption() = default;
 
 		ApplicationCommandInteractionDataOption& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -7450,7 +7450,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~ApplicationCommandInteractionDataOption() = default;
 
-	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, ApplicationCommandInteractionDataOption* pDataStructure) {
+	  	inline void parseObject(const nlohmann::json& jsonObjectData, ApplicationCommandInteractionDataOption* pDataStructure) {
 			if (jsonObjectData.contains("name") && !jsonObjectData["name"].is_null()) {
 				pDataStructure->name = jsonObjectData["name"].get<std::string>();
 			}
@@ -7498,7 +7498,7 @@ namespace DiscordCoreAPI {
 		ApplicationCommandInteractionData() = default;
 
 		ApplicationCommandInteractionData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -7508,7 +7508,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~ApplicationCommandInteractionData() = default;
 
-	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, ApplicationCommandInteractionData* pDataStructure) {
+	  	inline void parseObject(const nlohmann::json& jsonObjectData, ApplicationCommandInteractionData* pDataStructure) {
 			if (jsonObjectData.contains("type") && !jsonObjectData["type"].is_null()) {
 				pDataStructure->type = jsonObjectData["type"].get<ApplicationCommandType>();
 			}
@@ -7601,7 +7601,7 @@ namespace DiscordCoreAPI {
 		InteractionDataData() = default;
 
 		InteractionDataData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -7611,7 +7611,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~InteractionDataData() = default;
 
-	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, InteractionDataData* pDataStructure) {
+	  	inline void parseObject(const nlohmann::json& jsonObjectData, InteractionDataData* pDataStructure) {
 			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
 				pDataStructure->applicationCommandData = jsonObjectData;
 			}
@@ -7651,7 +7651,7 @@ namespace DiscordCoreAPI {
 		InteractionData() = default;
 
 		InteractionData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -7661,7 +7661,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~InteractionData() = default;
 
-	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, InteractionData* pDataStructure) {
+	  	inline void parseObject(const nlohmann::json& jsonObjectData, InteractionData* pDataStructure) {
 			if (jsonObjectData.contains("data") && !jsonObjectData["data"].is_null()) {
 				pDataStructure->data = jsonObjectData["data"];
 				pDataStructure->rawData = jsonObjectData["data"];
@@ -7728,7 +7728,7 @@ namespace DiscordCoreAPI {
 		SessionStartData() = default;
 
 		SessionStartData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -7738,7 +7738,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~SessionStartData() = default;
 
-	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, SessionStartData* pDataStructure) {
+	  	inline void parseObject(const nlohmann::json& jsonObjectData, SessionStartData* pDataStructure) {
 			if (jsonObjectData.contains("max_concurrency") && !jsonObjectData["max_concurrency"].is_null()) {
 				pDataStructure->maxConcurrency = jsonObjectData["max_concurrency"].get<uint32_t>();
 			}
@@ -7766,7 +7766,7 @@ namespace DiscordCoreAPI {
 		GatewayBotData() = default;
 
 		GatewayBotData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -7776,7 +7776,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~GatewayBotData() = default;
 
-	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, GatewayBotData* pDataStructure) {
+	  	inline void parseObject(const nlohmann::json& jsonObjectData, GatewayBotData* pDataStructure) {
 			if (jsonObjectData.contains("session_start_limit") && !jsonObjectData["session_start_limit"].is_null()) {
 				pDataStructure->sessionStartLimit = jsonObjectData["session_start_limit"];
 			}
@@ -7820,7 +7820,7 @@ namespace DiscordCoreAPI {
 		GuildEmojisUpdateEventData() = default;
 
 		GuildEmojisUpdateEventData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -7828,7 +7828,7 @@ namespace DiscordCoreAPI {
 			*this = jsonObjectData;
 		}
 
-		inline void parseObjectReal(const nlohmann::json& jsonObjectData, GuildEmojisUpdateEventData* pDataStructure) {
+		inline void parseObject(const nlohmann::json& jsonObjectData, GuildEmojisUpdateEventData* pDataStructure) {
 			if (jsonObjectData.contains("guild_id") && !jsonObjectData["guild_id"].is_null()) {
 				pDataStructure->guildId = stoull(jsonObjectData["guild_id"].get<std::string>());
 			}
@@ -7855,7 +7855,7 @@ namespace DiscordCoreAPI {
 		GuildStickersUpdateEventData() = default;
 
 		GuildStickersUpdateEventData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -7863,7 +7863,7 @@ namespace DiscordCoreAPI {
 			*this = jsonObjectData;
 		}
 
-		inline void parseObjectReal(const nlohmann::json& jsonObjectData, GuildStickersUpdateEventData* pDataStructure) {
+		inline void parseObject(const nlohmann::json& jsonObjectData, GuildStickersUpdateEventData* pDataStructure) {
 			if (jsonObjectData.contains("guild_id") && !jsonObjectData["guild_id"].is_null()) {
 				pDataStructure->guildId = stoull(jsonObjectData["guild_id"].get<std::string>());
 			}
@@ -7894,7 +7894,7 @@ namespace DiscordCoreAPI {
 		GuildMembersChunkEventData() = default;
 
 		GuildMembersChunkEventData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -7902,7 +7902,7 @@ namespace DiscordCoreAPI {
 			*this = jsonObjectData;
 		}
 
-		inline void parseObjectReal(const nlohmann::json& jsonObjectData, GuildMembersChunkEventData* pDataStructure) {
+		inline void parseObject(const nlohmann::json& jsonObjectData, GuildMembersChunkEventData* pDataStructure) {
 			if (jsonObjectData.contains("guild_id") && !jsonObjectData["guild_id"].is_null()) {
 				pDataStructure->guildId = stoull(jsonObjectData["guild_id"].get<std::string>());
 			}
@@ -8548,7 +8548,7 @@ namespace DiscordCoreAPI {
 		CommandData(InputEventData inputEventData);
 
 		CommandData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -8556,7 +8556,7 @@ namespace DiscordCoreAPI {
 			*this = jsonObjectData;
 		}
 
-		inline void parseObjectReal(const nlohmann::json& jsonObjectData, CommandData* pDataStructure) {
+		inline void parseObject(const nlohmann::json& jsonObjectData, CommandData* pDataStructure) {
 			if (jsonObjectData.contains("options") && !jsonObjectData["options"].is_null()) {
 				pDataStructure->optionsArgs.reserve(jsonObjectData["options"].size());
 				for (auto& value: jsonObjectData["options"]) {
@@ -8570,7 +8570,7 @@ namespace DiscordCoreAPI {
 						}
 					}
 					if (value.contains("options")) {
-						parseObjectReal(value, pDataStructure);
+						parseObject(value, pDataStructure);
 					}
 					if (value.contains("value") && !value["value"].is_null()) {
 						auto& newValueNew = value["value"];
@@ -8682,7 +8682,7 @@ namespace DiscordCoreAPI {
 		Song() = default;
 
 		Song& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -8690,7 +8690,7 @@ namespace DiscordCoreAPI {
 			*this = jsonObjectData;
 		}
 
-		inline void parseObjectReal(const nlohmann::json& jsonObjectData, Song* pDataStructure) {
+		inline void parseObject(const nlohmann::json& jsonObjectData, Song* pDataStructure) {
 			if (jsonObjectData.contains("lengthText") && !jsonObjectData["lengthText"].is_null()) {
 				pDataStructure->duration = jsonObjectData["lengthText"]["accessibility"]["accessibilityData"]["label"].get<std::string>();
 			}

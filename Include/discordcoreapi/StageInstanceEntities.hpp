@@ -59,7 +59,7 @@ namespace DiscordCoreAPI {
 		StageInstance() = default;
 
 		StageInstance& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -68,7 +68,7 @@ namespace DiscordCoreAPI {
 		}
 		virtual ~StageInstance() = default;
 
-	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, StageInstance* pDataStructure) {
+	  	inline void parseObject(const nlohmann::json& jsonObjectData, StageInstance* pDataStructure) {
 			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
 				pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
 			}

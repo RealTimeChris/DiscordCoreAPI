@@ -117,7 +117,7 @@ namespace DiscordCoreAPI {
 		GuildMember() = default;
 
 		GuildMember& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -129,7 +129,7 @@ namespace DiscordCoreAPI {
 
 		~GuildMember() = default;
 
-	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, GuildMember* pDataStructure) {
+	  	inline void parseObject(const nlohmann::json& jsonObjectData, GuildMember* pDataStructure) {
 			if (jsonObjectData.contains("communication_disabled_until") && !jsonObjectData["communication_disabled_until"].is_null()) {
 				pDataStructure->communicationDisabledUntil = jsonObjectData["communication_disabled_until"];
 			}
@@ -197,7 +197,7 @@ namespace DiscordCoreAPI {
 		GuildMemberVector() = default;
 
 		GuildMemberVector& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -207,7 +207,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~GuildMemberVector() = default;
 
-		inline void parseObjectReal(const nlohmann::json& jsonObjectData, GuildMemberVector* pDataStructure) {
+		inline void parseObject(const nlohmann::json& jsonObjectData, GuildMemberVector* pDataStructure) {
 			pDataStructure->theGuildMembers.reserve(jsonObjectData.size());
 			for (auto& value: jsonObjectData) {
 				DiscordCoreAPI::GuildMember newData{ value };

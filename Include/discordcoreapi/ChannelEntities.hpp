@@ -151,7 +151,7 @@ namespace DiscordCoreAPI {
 		std::string icon{};///< Icon for the Channel, if applicable.
 
 		Channel& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -171,7 +171,7 @@ namespace DiscordCoreAPI {
 
 		~Channel() = default;
 
-	  	inline void parseObjectReal(const nlohmann::json& jsonObjectData, Channel* pDataStructure) {
+	  	inline void parseObject(const nlohmann::json& jsonObjectData, Channel* pDataStructure) {
 			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
 				if (jsonObjectData["id"].is_string()) {
 					pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
@@ -308,7 +308,7 @@ namespace DiscordCoreAPI {
 		ChannelVector() = default;
 
 		ChannelVector& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObjectReal(jsonObjectData, this);
+			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
@@ -318,7 +318,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~ChannelVector() = default;
 
-		inline void parseObjectReal(const nlohmann::json& jsonObjectData, ChannelVector* pDataStructure) {
+		inline void parseObject(const nlohmann::json& jsonObjectData, ChannelVector* pDataStructure) {
 			pDataStructure->theChannels.reserve(jsonObjectData.size());
 			for (auto& value: jsonObjectData) {
 				DiscordCoreAPI::Channel newData{ value };
