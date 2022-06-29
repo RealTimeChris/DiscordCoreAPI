@@ -125,8 +125,6 @@ namespace DiscordCoreInternal {
 
 		HttpsClient(DiscordCoreAPI::ConfigManager* configManager);
 
-		std::vector<HttpsResponseData> httpRequest(const std::vector<HttpsWorkloadData>&);
-
 		HttpsResponseData httpRequest(HttpsWorkloadData&);
 
 		template<typename ReturnType> ReturnType submitWorkloadAndGetResult(HttpsWorkloadData& workload) {
@@ -141,8 +139,6 @@ namespace DiscordCoreInternal {
 			ReturnType returnObject{ returnData.responseData };
 			return returnObject;
 		}
-
-		template<std::same_as<std::vector<HttpsResponseData>> Type> Type submitWorkloadAndGetResult(const std::vector<HttpsWorkloadData>& workload);
 
 		template<std::same_as<void> Type> Type submitWorkloadAndGetResult(HttpsWorkloadData& workload);
 

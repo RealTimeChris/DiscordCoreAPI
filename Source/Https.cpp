@@ -461,31 +461,6 @@ namespace DiscordCoreInternal {
 		return theConnection->finalizeReturnValues(rateLimitData, theData);
 	}
 
-	std::vector<HttpsResponseData> HttpsClient::httpRequest(const std::vector<HttpsWorkloadData>& workload) {
-		std::vector<HttpsResponseData> returnVector{};
-		auto rateLimitData = std::make_unique<RateLimitData>();
-		std::string currentConnectionAddress{};
-		std::unique_ptr<HttpsConnection> httpsConnection{ std::make_unique<HttpsConnection>() };
-		for (auto& value: workload) {
-			try {
-				if (currentConnectionAddress != value.baseUrl || !httpsConnection->areWeStillConnected()) {
-					httpsConnection->connect(value.baseUrl, "443");
-				}
-			} catch (ProcessingError&) {
-				if (this->configManager->doWePrintHttpsErrorMessages()) {
-					DiscordCoreAPI::reportException("HttpsClient::httpRequest()");
-				}
-				continue;
-			}
-			currentConnectionAddress = value.baseUrl;
-			auto theRequest = httpsConnection->buildRequest(value);
-			httpsConnection->writeData(theRequest, true);
-			HttpsResponseData returnData = this->getResponse(*rateLimitData, httpsConnection.get());
-			returnVector.push_back(returnData);
-		}
-		return returnVector;
-	}
-
 	HttpsResponseData HttpsClient::httpRequest(HttpsWorkloadData& workload) {
 		if (workload.baseUrl == "") {
 			workload.baseUrl = "https://discord.com/api/v10";
@@ -521,11 +496,6 @@ namespace DiscordCoreInternal {
 		}
 		this->httpRequest(workload);
 		return;
-	}
-
-	template<> std::vector<HttpsResponseData> HttpsClient::submitWorkloadAndGetResult(const std::vector<HttpsWorkloadData>& workloadNew) {
-		std::vector<HttpsWorkloadData> workload = workloadNew;
-		return this->httpRequest(workload);
 	}
 
 	template<> HttpsResponseData HttpsClient::submitWorkloadAndGetResult(HttpsWorkloadData& workloadNew) {
