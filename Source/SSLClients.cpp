@@ -157,6 +157,10 @@ namespace DiscordCoreInternal {
 					}
 					break;
 				}
+				case SSL_ERROR_ZERO_RETURN: {
+					this->disconnect();
+					break;
+				}
 				case SSL_ERROR_WANT_READ: {
 					this->wantRead = true;
 					break;
@@ -188,6 +192,10 @@ namespace DiscordCoreInternal {
 						} else {
 							this->outputBuffers[0] = std::move(writeString);
 						}
+						break;
+					}
+					case SSL_ERROR_ZERO_RETURN: {
+						this->disconnect();
 						break;
 					}
 					case SSL_ERROR_WANT_READ: {
@@ -319,7 +327,11 @@ namespace DiscordCoreInternal {
 	}
 
 	void HttpsSSLClient::disconnect() noexcept {
-		return;
+		this->areWeConnected01.store(false);
+		this->areWeConnected02.store(false);
+		this->theSocket = SOCKET_ERROR;
+		this->inputBuffer.clear();
+		this->outputBuffers.clear();
 	}
 
 	WebSocketSSLShard::WebSocketSSLShard(std::queue<DiscordCoreAPI::ConnectionPackage>* connectionsNew, int32_t currentBaseSocketAgentNew, int32_t currentShardNew,
@@ -386,6 +398,10 @@ namespace DiscordCoreInternal {
 						}
 						break;
 					}
+					case SSL_ERROR_ZERO_RETURN: {
+						value->disconnect();
+						break;
+					}
 					case SSL_ERROR_WANT_READ: {
 						value->wantRead = true;
 						break;
@@ -415,6 +431,10 @@ namespace DiscordCoreInternal {
 							if (value->outputBuffers.size() > 0 && writtenBytes > 0) {
 								value->outputBuffers.erase(value->outputBuffers.begin());
 							}
+							break;
+						}
+						case SSL_ERROR_ZERO_RETURN: {
+							value->disconnect();
 							break;
 						}
 						case SSL_ERROR_WANT_READ: {
