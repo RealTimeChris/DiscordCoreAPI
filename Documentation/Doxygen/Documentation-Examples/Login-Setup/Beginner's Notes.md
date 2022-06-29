@@ -5,6 +5,8 @@ Beginner's Notes {#beginnernotes}
 <BR>
 - All of the central class managers are classes that are filled with static methods that are a part of the `DiscordCoreAPI` namespace, they are as Follows:   
     `DiscordCoreAPI::ApplicationCommands`
+
+    `DiscordCoreAPI::AutoModerationRules`
   
     `DiscordCoreAPI::Channels`
     
