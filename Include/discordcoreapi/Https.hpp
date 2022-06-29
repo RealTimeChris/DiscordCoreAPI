@@ -142,7 +142,7 @@ namespace DiscordCoreInternal {
 
 		template<std::same_as<void> Type> Type submitWorkloadAndGetResult(HttpsWorkloadData& workload);
 
-		template<std::same_as<HttpsResponseData> Type> Type submitWorkloadAndGetResult(HttpsWorkloadData& workload);
+		HttpsResponseData submitWorkloadAndGetResult(HttpsWorkloadData* workloadNew);
 
 	  protected:
 		DiscordCoreAPI::ConfigManager* configManager{ nullptr };

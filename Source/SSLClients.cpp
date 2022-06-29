@@ -618,6 +618,7 @@ namespace DiscordCoreInternal {
 			}
 			if (this->connections) {
 				DiscordCoreAPI::ConnectionPackage theData{};
+				theData.voiceConnectionDataBufferMap = std::move(this->voiceConnectionDataBufferMap);
 				theData.currentBaseSocketAgent = this->currentBaseSocketAgent;
 				theData.currentShard = this->shard[0];
 				this->connections->push(theData);

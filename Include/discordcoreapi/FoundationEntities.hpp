@@ -60,6 +60,23 @@
  * \addtogroup foundation_entities
  * @{
  */
+
+namespace DiscordCoreInternal {
+
+	struct DiscordCoreAPI_Dll VoiceConnectionData {
+		std::string voiceEncryptionMode{};
+		std::string externalIp{};
+		uint32_t audioSSRC{ 0 };
+		std::string secretKey{};
+		std::string voicePort{};
+		std::string sessionId{};
+		std::string endPoint{};
+		std::string voiceIp{};
+		std::string token{};
+	};
+
+}
+
 /// The main namespace for this library. \brief The main namespace for this
 /// library.
 namespace DiscordCoreAPI {
@@ -69,7 +86,11 @@ namespace DiscordCoreAPI {
 	 * @{
 	*/
 
+	/// For ids of DiscordEntities. \brief For ids of DiscordEntities.
+	using Snowflake = uint64_t;
+
 	struct DiscordCoreAPI_Dll ConnectionPackage {
+		std::unordered_map<DiscordCoreAPI::Snowflake, DiscordCoreAPI::UnboundedMessageBlock<DiscordCoreInternal::VoiceConnectionData>*> voiceConnectionDataBufferMap{};
 		int32_t currentBaseSocketAgent{ 0 };
 		int32_t currentShard{ 0 };
 	};
@@ -84,9 +105,6 @@ namespace DiscordCoreAPI {
 		Day = 1440,///< 1 Day timeout.
 		Week = 10080///< 1 Week timeout.
 	};
-
-	/// For ids of DiscordEntities. \brief For ids of DiscordEntities.
-	using Snowflake = uint64_t;
 
 	/// Base class DiscordCoreAPI_Dll for all Discord entities. \brief Base class DiscordCoreAPI_Dll for all Discord entities.
 	class DiscordCoreAPI_Dll DiscordEntity {
@@ -7874,18 +7892,6 @@ namespace DiscordCoreInternal {
 		int32_t currentShard{};
 		bool selfDeaf{ false };
 		bool selfMute{ false };
-	};
-
-	struct DiscordCoreAPI_Dll VoiceConnectionData {
-		std::string voiceEncryptionMode{};
-		std::string externalIp{};
-		uint32_t audioSSRC{ 0 };
-		std::string secretKey{};
-		std::string voicePort{};
-		std::string sessionId{};
-		std::string endPoint{};
-		std::string voiceIp{};
-		std::string token{};
 	};
 
 };// namespace DiscordCoreInternal

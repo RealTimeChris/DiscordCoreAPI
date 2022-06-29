@@ -44,7 +44,7 @@ namespace DiscordCoreInternal {
 		dataPackage.relativePath = "/results?search_query=" + DiscordCoreAPI::urlEncode(searchQuery.c_str());
 		dataPackage.workloadClass = HttpsWorkloadClass::Get;
 		dataPackage.workloadType = HttpsWorkloadType::YouTubeGetSearchResults;
-		HttpsResponseData returnData = this->httpsClient->submitWorkloadAndGetResult<HttpsResponseData>(dataPackage);
+		HttpsResponseData returnData = this->httpsClient->submitWorkloadAndGetResult(&dataPackage);
 		if (returnData.responseCode != 200 && this->configManager->doWePrintHttpsErrorMessages()) {
 			std::cout << DiscordCoreAPI::shiftToBrightRed() << "YouTubeRequestBuilder::collectSearchResults() Error: " << returnData.responseCode
 					  << returnData.responseMessage.c_str() << DiscordCoreAPI::reset() << std::endl
@@ -99,7 +99,7 @@ namespace DiscordCoreInternal {
 			dataPackage02.content = theRequest.dump();
 			dataPackage02.workloadClass = HttpsWorkloadClass::Post;
 			dataPackage02.workloadType = HttpsWorkloadType::YouTubeGetSearchResults;
-			HttpsResponseData responseData = this->httpsClient->submitWorkloadAndGetResult<HttpsResponseData>(dataPackage02);
+			HttpsResponseData responseData = this->httpsClient->submitWorkloadAndGetResult(&dataPackage02);
 			if (responseData.responseCode != 204 && responseData.responseCode != 201 && responseData.responseCode != 200 && this->configManager->doWePrintHttpsErrorMessages()) {
 				std::cout << DiscordCoreAPI::shiftToBrightRed() << "YouTubeRequestBuilder::constructDownloadInfo() 01 Error: " << responseData.responseCode << ", "
 						  << responseData.responseMessage << DiscordCoreAPI::reset() << std::endl

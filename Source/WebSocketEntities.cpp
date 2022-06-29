@@ -980,6 +980,7 @@ namespace DiscordCoreInternal {
 						std::make_unique<WebSocketSSLShard>(&this->connections, this->currentBaseSocketAgent, connectData.currentShard, this->configManager);
 				}
 				this->theClients[connectData.currentShard]->currentRecursionDepth++;
+				this->theClients[connectData.currentShard]->voiceConnectionDataBufferMap = std::move(connectData.voiceConnectionDataBufferMap);
 
 				try {
 					this->theClients[connectData.currentShard]->connect(this->configManager->getConnectionAddress(), this->configManager->getConnectionPort());
@@ -1455,6 +1456,7 @@ namespace DiscordCoreInternal {
 
 	void VoiceSocketAgent::connect() noexcept {
 		try {
+			this->voiceConnectionData = VoiceConnectionData{};
 			DiscordCoreAPI::waitForTimeToPass(this->voiceConnectionDataBuffer, this->voiceConnectionData, 20000);
 			this->baseUrl = this->voiceConnectionData.endPoint.substr(0, this->voiceConnectionData.endPoint.find(":"));
 			auto theClient = std::make_unique<WebSocketSSLShard>(nullptr, 0, 0, this->configManager);

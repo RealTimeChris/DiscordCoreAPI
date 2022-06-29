@@ -375,7 +375,7 @@ namespace DiscordCoreInternal {
 			auto theRequest = httpsConnection->buildRequest(workload);
 			httpsConnection->writeData(theRequest);
 			auto result = this->getResponse(rateLimitData, httpsConnection);
-			if (result.responseCode == -1) {
+			if (result.contentSize == -1) {
 				httpsConnection->currentRecursionDepth++;
 				httpsConnection->doWeConnect = true;
 				httpsConnection->areWeCheckedOut.store(false);
@@ -409,7 +409,7 @@ namespace DiscordCoreInternal {
 					theConnection->inputBufferReal.insert(theConnection->inputBufferReal.end(), theString.begin(), theString.end());
 				}
 			} catch (ProcessingError&) {
-				theData.responseCode = -1;
+				theData.contentSize = -1;
 				return theData;
 			}
 			bool doWeBreak{ false };
@@ -498,15 +498,8 @@ namespace DiscordCoreInternal {
 		return;
 	}
 
-	template<> HttpsResponseData HttpsClient::submitWorkloadAndGetResult(HttpsWorkloadData& workloadNew) {
-		HttpsWorkloadData workload = workloadNew;
-		workload.headersToInsert["Authorization"] = "Bot " + this->configManager->getBotToken();
-		workload.headersToInsert["User-Agent"] = "DiscordBot (https://discordcoreapi.com/ 1.0)";
-		if (workload.payloadType == PayloadType::Application_Json) {
-			workload.headersToInsert["Content-Type"] = "application/json";
-		} else if (workload.payloadType == PayloadType::Multipart_Form) {
-			workload.headersToInsert["Content-Type"] = "multipart/form-data; boundary=boundary25";
-		}
-		return this->httpRequest(workload);
+	HttpsResponseData HttpsClient::submitWorkloadAndGetResult(HttpsWorkloadData* workloadNew) {
+		RateLimitData rateLimitData{};
+		return this->httpRequestInternal(*workloadNew, rateLimitData);
 	}
 }

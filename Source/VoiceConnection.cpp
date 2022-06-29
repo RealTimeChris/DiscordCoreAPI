@@ -168,7 +168,9 @@ namespace DiscordCoreAPI {
 					this->baseSocketAgent->theClients[this->voiceConnectInitData.currentShard].get(), this->baseSocketAgent->configManager, &Globals::doWeQuit);
 			}
 			this->baseSocketAgent->getVoiceConnectionData(this->voiceConnectInitData, this->baseSocketAgent->theClients[this->voiceConnectInitData.currentShard].get());
+			std::cout << "WERE VOICE CONNECTING CONNECTING CONNECTIN!" << std::endl;
 			this->voiceSocketAgent->connect();
+			std::cout << "WERE VOICE CONNECTING CONNECTING CONNECTIN! 0202" << std::endl;
 			this->doWeReconnect = &this->voiceSocketAgent->doWeReconnect;
 			this->doWeDisconnect = &this->voiceSocketAgent->doWeDisconnect;
 			while (!this->voiceSocketAgent->areWeConnected.load()) {
