@@ -172,7 +172,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<EmojiData>();
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Emoji;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
-		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/emojis/" + dataPackage.emojiId;
+		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/emojis/" + std::to_string(dataPackage.emojiId);
 		workload.callStack = "Reactions::getGuildEmojiAsync";
 		co_return Reactions::httpsClient->submitWorkloadAndGetResult<EmojiData>(workload);
 	}
