@@ -307,7 +307,7 @@ namespace DiscordCoreAPI {
 		}
 
 		if (jsonObjectData.contains("afk_channel_id") && !jsonObjectData["afk_channel_id"].is_null()) {
-			pDataStructure->afkChannelId = jsonObjectData["afk_channel_id"].get<std::string>();
+			pDataStructure->afkChannelId = stoull(jsonObjectData["afk_channel_id"].get<std::string>());
 		}
 
 		if (jsonObjectData.contains("icon") && !jsonObjectData["icon"].is_null()) {
@@ -368,7 +368,7 @@ namespace DiscordCoreAPI {
 		}
 
 		if (jsonObjectData.contains("rule_Channel_id") && !jsonObjectData["rule_Channel_id"].is_null()) {
-			pDataStructure->rulesChannelId = jsonObjectData["rule_Channel_id"].get<std::string>();
+			pDataStructure->rulesChannelId = stoull(jsonObjectData["rule_Channel_id"].get<std::string>());
 		}
 
 		if (jsonObjectData.contains("application_id") && !jsonObjectData["application_id"].is_null()) {
@@ -380,11 +380,11 @@ namespace DiscordCoreAPI {
 		}
 
 		if (jsonObjectData.contains("widget_channel_id") && !jsonObjectData["widget_channel_id"].is_null()) {
-			pDataStructure->widgetChannelId = jsonObjectData["widget_channel_id"].get<std::string>();
+			pDataStructure->widgetChannelId = stoull(jsonObjectData["widget_channel_id"].get<std::string>());
 		}
 
 		if (jsonObjectData.contains("system_channel_id") && !jsonObjectData["system_channel_id"].is_null()) {
-			pDataStructure->systemChannelId = jsonObjectData["system_channel_id"].get<std::string>();
+			pDataStructure->systemChannelId = stoull(jsonObjectData["system_channel_id"].get<std::string>());
 		}
 
 		if (jsonObjectData.contains("region") && !jsonObjectData["region"].is_null()) {
@@ -392,7 +392,7 @@ namespace DiscordCoreAPI {
 		}
 
 		if (jsonObjectData.contains("afk_channel_id") && !jsonObjectData["afk_channel_id"].is_null()) {
-			pDataStructure->afkChannelId = jsonObjectData["afk_channel_id"].get<std::string>();
+			pDataStructure->afkChannelId = stoull(jsonObjectData["afk_channel_id"].get<std::string>());
 		}
 
 		if (jsonObjectData.contains("region") && !jsonObjectData["region"].is_null()) {
