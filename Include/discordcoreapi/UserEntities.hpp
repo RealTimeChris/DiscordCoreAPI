@@ -102,7 +102,7 @@ namespace DiscordCoreAPI {
 		User& operator=(const nlohmann::json& jsonObjectData);
 
 		User(const nlohmann::json& jsonObjectData);
-		
+
 		virtual ~User() = default;
 
 	  protected:
@@ -111,13 +111,12 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll UserVector {
 	  public:
-
 		UserVector() = default;
 
 		operator std::vector<User>();
 
 		UserVector& operator=(const nlohmann::json& jsonObjectData);
-		
+
 		UserVector(const nlohmann::json& jsonObjectData);
 
 		virtual ~UserVector() = default;

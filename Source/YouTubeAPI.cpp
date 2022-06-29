@@ -43,21 +43,17 @@ namespace DiscordCoreInternal {
 		dataPackage.baseUrl = YouTubeRequestBuilder::baseUrl;
 		dataPackage.relativePath = "/results?search_query=" + DiscordCoreAPI::urlEncode(searchQuery.c_str());
 		dataPackage.workloadClass = HttpsWorkloadClass::Get;
-		std::vector<HttpsWorkloadData> workloadVector01{};
-		workloadVector01.push_back(dataPackage);
-		std::vector<HttpsResponseData> returnData = this->httpsClient->submitWorkloadAndGetResult<std::vector<HttpsResponseData>>(workloadVector01);
-		if (returnData.size() < 1) {
-			return std::vector<DiscordCoreAPI::Song>{};
-		}
-		if (returnData[0].responseCode != 200 && this->configManager->doWePrintHttpsErrorMessages()) {
-			std::cout << DiscordCoreAPI::shiftToBrightRed() << "YouTubeRequestBuilder::collectSearchResults() Error: " << returnData[0].responseCode
-					  << returnData[0].responseMessage.c_str() << DiscordCoreAPI::reset() << std::endl
+		dataPackage.workloadType = HttpsWorkloadType::YouTubeGetSearchResults;
+		HttpsResponseData returnData = this->httpsClient->submitWorkloadAndGetResult<HttpsResponseData>(dataPackage);
+		if (returnData.responseCode != 200 && this->configManager->doWePrintHttpsErrorMessages()) {
+			std::cout << DiscordCoreAPI::shiftToBrightRed() << "YouTubeRequestBuilder::collectSearchResults() Error: " << returnData.responseCode
+					  << returnData.responseMessage.c_str() << DiscordCoreAPI::reset() << std::endl
 					  << std::endl;
 		}
 		nlohmann::json partialSearchResultsJson{};
-		if (returnData[0].responseMessage.find("var ytInitialData = ") != std::string::npos) {
+		if (returnData.responseMessage.find("var ytInitialData = ") != std::string::npos) {
 			std::string newString00 = "var ytInitialData = ";
-			std::string newString = returnData[0].responseMessage.substr(returnData[0].responseMessage.find("var ytInitialData = ") + newString00.length());
+			std::string newString = returnData.responseMessage.substr(returnData.responseMessage.find("var ytInitialData = ") + newString00.length());
 			std::string stringSequence = ";</script><script nonce=";
 			newString = newString.substr(0, newString.find(stringSequence));
 			partialSearchResultsJson = nlohmann::json::parse(newString);
@@ -82,7 +78,6 @@ namespace DiscordCoreInternal {
 			if (newSong.firstDownloadUrl != "") {
 				std::this_thread::sleep_for(500ms);
 			}
-			std::vector<HttpsWorkloadData> dataPackageWorkload{};
 			std::string apiKey{ "AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8" };
 			nlohmann::json theRequest{};
 			theRequest["videoId"] = newSong.songId;
@@ -103,19 +98,15 @@ namespace DiscordCoreInternal {
 			dataPackage02.relativePath = "/youtubei/v1/player?key=" + apiKey;
 			dataPackage02.content = theRequest.dump();
 			dataPackage02.workloadClass = HttpsWorkloadClass::Post;
-			dataPackageWorkload.push_back(dataPackage02);
-			std::vector<HttpsResponseData> responseData = this->httpsClient->submitWorkloadAndGetResult<std::vector<HttpsResponseData>>(dataPackageWorkload);
-			if (responseData.size() < 1) {
-				return DiscordCoreAPI::Song{};
-			}
-			if (responseData[0].responseCode != 204 && responseData[0].responseCode != 201 && responseData[0].responseCode != 200 &&
-				this->configManager->doWePrintHttpsErrorMessages()) {
-				std::cout << DiscordCoreAPI::shiftToBrightRed() << "YouTubeRequestBuilder::constructDownloadInfo() 01 Error: " << responseData[0].responseCode << ", "
-						  << responseData[0].responseMessage << DiscordCoreAPI::reset() << std::endl
+			dataPackage02.workloadType = HttpsWorkloadType::YouTubeGetSearchResults;
+			HttpsResponseData responseData = this->httpsClient->submitWorkloadAndGetResult<HttpsResponseData>(dataPackage02);
+			if (responseData.responseCode != 204 && responseData.responseCode != 201 && responseData.responseCode != 200 && this->configManager->doWePrintHttpsErrorMessages()) {
+				std::cout << DiscordCoreAPI::shiftToBrightRed() << "YouTubeRequestBuilder::constructDownloadInfo() 01 Error: " << responseData.responseCode << ", "
+						  << responseData.responseMessage << DiscordCoreAPI::reset() << std::endl
 						  << std::endl;
 			}
 			newSong.type = DiscordCoreAPI::SongType::YouTube;
-			nlohmann::json jsonObject = nlohmann::json::parse(responseData[0].responseMessage);
+			nlohmann::json jsonObject = nlohmann::json::parse(responseData.responseMessage);
 			DiscordCoreAPI::YouTubeFormatVector theVector{ jsonObject };
 			DiscordCoreAPI::YouTubeFormat format{};
 			bool isOpusFound{ false };

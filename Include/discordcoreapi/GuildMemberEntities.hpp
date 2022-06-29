@@ -119,7 +119,7 @@ namespace DiscordCoreAPI {
 		GuildMember& operator=(const nlohmann::json& jsonObjectData);
 
 		GuildMember(const nlohmann::json& jsonObjectData);
-		
+
 		~GuildMember() = default;
 
 	  protected:
@@ -133,7 +133,7 @@ namespace DiscordCoreAPI {
 		operator std::vector<GuildMember>();
 
 		GuildMemberVector& operator=(const nlohmann::json& jsonObjectData);
-		
+
 		GuildMemberVector(const nlohmann::json& jsonObjectData);
 
 		virtual ~GuildMemberVector() = default;

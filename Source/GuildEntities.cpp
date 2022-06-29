@@ -278,7 +278,6 @@ namespace DiscordCoreAPI {
 			Guilds::insertGuild(guildNew);
 			co_return guildNew;
 		} else {
-			
 			co_return *(*Guilds::cache)[dataPackage.guildId];
 		}
 	}

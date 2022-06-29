@@ -127,6 +127,7 @@ namespace DiscordCoreInternal {
 		if (theShard && this->theClients.contains(theShard->shard[0])) {
 			if (this->maxReconnectTries > theShard->currentRecursionDepth) {
 				theShard->disconnect();
+				this->theClients.erase(theShard->shard[0]);
 			} else if (this->maxReconnectTries <= theShard->currentRecursionDepth) {
 				this->doWeQuit->store(true);
 				this->theTask->request_stop();
@@ -933,10 +934,11 @@ namespace DiscordCoreInternal {
 				}
 				try {
 					WebSocketSSLShard::processIO(this->theClients);
-				} catch (...) {
+				} catch (ProcessingError& theError) {
 					if (this->configManager->doWePrintWebSocketErrorMessages()) {
 						DiscordCoreAPI::reportException("BaseSocketAgent::run()");
 					}
+					this->onClosed(this->theClients[theError.theShard].get());
 				}
 				for (auto& [key, value]: this->theClients) {
 					if (this->theClients.contains(key) && this->theClients[key] && value->inputBuffer.size() > 0) {
@@ -1056,7 +1058,6 @@ namespace DiscordCoreInternal {
 		this->theTask = std::make_unique<std::jthread>([this](std::stop_token theToken) {
 			this->run(theToken);
 		});
-		//baseBaseSocketAgentNew->getVoiceConnectionData(initDataNew, theShard);
 	}
 
 	void VoiceSocketAgent::parseHeadersAndMessage(WebSocketSSLShard* theShard) noexcept {

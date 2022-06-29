@@ -68,7 +68,7 @@ namespace DiscordCoreAPI {
 		*this = other;
 	}
 
-	GuildMember& GuildMember::operator = (const nlohmann::json& jsonObjectData) {
+	GuildMember& GuildMember::operator=(const nlohmann::json& jsonObjectData) {
 		this->parseObject(jsonObjectData, this);
 		return *this;
 	}

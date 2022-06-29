@@ -61,7 +61,7 @@ namespace DiscordCoreAPI {
 		StageInstance& operator=(const nlohmann::json& jsonObjectData);
 
 		StageInstance(const nlohmann::json& jsonObjectData);
-		
+
 		virtual ~StageInstance() = default;
 
 	  protected:

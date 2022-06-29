@@ -66,7 +66,7 @@ namespace DiscordCoreAPI {
 		/// \param url A url, if applicable.
 		ExecuteWebHookData& addButton(bool disabled, const std::string& customIdNew, const std::string& buttonLabel, ButtonStyle buttonStyle, const std::string& emojiName = "",
 			uint64_t emojiId = 0, const std::string& url = "");
-		
+
 		/// Adds a select-menu to the response Message. \brief Adds a select-menu to the response Message.
 		/// \param disabled Whether the select-menu is active or not.
 		/// \param customIdNew A custom id to give for identifying the select-menu.
@@ -76,7 +76,7 @@ namespace DiscordCoreAPI {
 		/// \param minValues Minimum required number of selections that are required.
 		ExecuteWebHookData addSelectMenu(bool disabled, const std::string& customIdNew, std::vector<SelectOptionData> options, const std::string& placeholder, int32_t maxValues,
 			int32_t minValues);
-		
+
 		/// Adds a modal to the response Message. \brief Adds a modal to the response Message.
 		/// \param topTitleNew A title for the modal.
 		/// \param topCustomIdNew A custom id to give for the modal.
@@ -91,12 +91,12 @@ namespace DiscordCoreAPI {
 		/// \returns RespondToInputEventData& A reference to this data structure.
 		ExecuteWebHookData& addModal(const std::string& topTitleNew, const std::string& topCustomIdNew, const std::string& titleNew, const std::string& customIdNew, bool required,
 			int32_t minLength, int32_t maxLength, TextInputStyle inputStyle, const std::string& label = "", const std::string& placeholder = "");
-		
+
 		/// Adds a file to the current collection of files for this message response. \brief Adds a file to the current collection of files for this message response.
 		/// \param theFile The file to be added.
 		/// \returns MessageResponseBase& A reference to this data structure.
 		ExecuteWebHookData& addFile(File theFile);
-		
+
 		/// For setting the allowable mentions in a response. \brief For setting the allowable mentions in a response.
 		/// \param dataPackage An AllowedMentionsData structure.
 		ExecuteWebHookData& addAllowedMentions(AllowedMentionsData dataPackage);
@@ -116,7 +116,7 @@ namespace DiscordCoreAPI {
 		/// For setting the tts status of a response. \brief For setting the tts status of a response.
 		/// \param enabledTTs A bool.
 		ExecuteWebHookData& setTTSStatus(bool enabledTTs);
-		
+
 	  protected:
 		std::vector<AttachmentData> attachments{};///< Array of partial attachment objects attachment objects with filename and description.
 		std::vector<ActionRowData> components{};///< Array of message component the components to include with the message.
@@ -227,7 +227,7 @@ namespace DiscordCoreAPI {
 		WebHook& operator=(const nlohmann::json& jsonObjectData);
 
 		WebHook(const nlohmann::json& jsonObjectData);
-		
+
 		virtual ~WebHook() = default;
 
 	  protected:
@@ -236,15 +236,14 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll WebHookVector {
 	  public:
-
 		WebHookVector() = default;
 
 		operator std::vector<WebHook>();
-		
+
 		WebHookVector& operator=(const nlohmann::json& jsonObjectData);
-		
+
 		WebHookVector(const nlohmann::json& jsonObjectData);
-		
+
 		virtual ~WebHookVector() = default;
 
 	  protected:

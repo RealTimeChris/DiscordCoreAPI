@@ -135,7 +135,7 @@ namespace DiscordCoreAPI {
 		Reaction& operator=(const nlohmann::json& jsonObjectData);
 
 		Reaction(const nlohmann::json& jsonObjectData);
-		
+
 		virtual ~Reaction() = default;
 
 	  protected:
@@ -144,13 +144,12 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll ReactionVector {
 	  public:
-
 		ReactionVector() = default;
 
 		operator std::vector<Reaction>();
-		
+
 		ReactionVector& operator=(const nlohmann::json& jsonObjectData);
-		
+
 		ReactionVector(const nlohmann::json& jsonObjectData);
 
 		virtual ~ReactionVector() = default;

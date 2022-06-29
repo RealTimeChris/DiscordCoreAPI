@@ -960,7 +960,6 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll ThreadMemberDataVector {
 	  public:
-
 		ThreadMemberDataVector() = default;
 
 		operator std::vector<ThreadMemberData>() {
@@ -3947,7 +3946,6 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll GuildScheduledEventUserDataVector {
 	  public:
-		
 		GuildScheduledEventUserDataVector() = default;
 
 		operator std::vector<GuildScheduledEventUserData>() {
@@ -3965,7 +3963,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~GuildScheduledEventUserDataVector() = default;
 
-		protected:
+	  protected:
 		std::vector<GuildScheduledEventUserData> theGuildScheduledEventUserDatas{};
 
 		void parseObject(const nlohmann::json& jsonObjectData, GuildScheduledEventUserDataVector* pDataStructure) {
@@ -6313,7 +6311,6 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll StickerPackDataVector {
 	  public:
-
 		StickerPackDataVector() = default;
 
 		operator std::vector<StickerPackData>() {
@@ -6422,7 +6419,6 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll ConnectionDataVector {
 	  public:
-
 		ConnectionDataVector() = default;
 
 		operator std::vector<ConnectionData>() {
@@ -7803,7 +7799,9 @@ namespace DiscordCoreInternal {
 		Post_Auto_Moderation_Rule = 165,
 		Patch_Auto_Moderation_Rule = 166,
 		Delete_Auto_Moderation_Rule = 167,
-		LAST = 168
+		YouTubeGetSearchResults = 168,
+		SoundCloudGetSearchResults = 169,
+		LAST = 170
 	};
 
 	struct DiscordCoreAPI_Dll HttpsWorkloadData {

@@ -74,6 +74,7 @@ namespace DiscordCoreInternal {
 
 	struct ProcessingError : public std::runtime_error {
 		explicit ProcessingError(const std::string& theString) : std::runtime_error(theString){};
+		int32_t theShard{};
 	};
 
 	DiscordCoreAPI_Dll std::string reportError(const std::string& errorPosition) noexcept;

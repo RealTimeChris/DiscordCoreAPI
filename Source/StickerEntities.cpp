@@ -24,7 +24,7 @@
 
 namespace DiscordCoreAPI {
 
-	Sticker& Sticker::operator = (const nlohmann::json& jsonObjectData) {
+	Sticker& Sticker::operator=(const nlohmann::json& jsonObjectData) {
 		this->parseObject(jsonObjectData, this);
 		return *this;
 	}

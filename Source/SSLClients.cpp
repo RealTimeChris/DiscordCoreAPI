@@ -415,9 +415,11 @@ namespace DiscordCoreInternal {
 						break;
 					}
 					default: {
-						value->disconnect();
-						throw ProcessingError{ reportSSLError("Shard [" + std::to_string(key) + "], in WebSocketSSLShard::processIO()::SSL_read_ex(), ", errorValue, value->ssl) +
+						ProcessingError theError{ reportSSLError("Shard [" + std::to_string(key) + "], in WebSocketSSLShard::processIO()::SSL_read_ex(), ", errorValue,
+													  value->ssl) +
 							reportError("Shard [" + std::to_string(key) + "], in WebSocketSSLShard::processIO()::SSL_read_ex(), ") };
+						theError.theShard = value->shard[0];
+						throw theError;
 					}
 				}
 			}
@@ -450,10 +452,11 @@ namespace DiscordCoreInternal {
 							break;
 						}
 						default: {
-							value->disconnect();
-							throw ProcessingError{ reportSSLError("Shard [" + std::to_string(key) + "], in WebSocketSSLShard::processIO()::SSL_write_ex(), ", errorValue,
-													   value->ssl) +
+							ProcessingError theError{ reportSSLError("Shard [" + std::to_string(key) + "], in WebSocketSSLShard::processIO()::SSL_write_ex(), ", errorValue,
+														  value->ssl) +
 								reportError("Shard [" + std::to_string(key) + "], in WebSocketSSLShard::processIO()::SSL_write_ex(), ") };
+							theError.theShard = value->shard[0];
+							throw theError;
 						}
 					}
 				}
@@ -738,7 +741,7 @@ namespace DiscordCoreInternal {
 			}
 		}
 	}
-	
+
 	SSL_CTXWrapper SSLConnectionInterface::context{ nullptr };
 	std::mutex SSLConnectionInterface::theMutex{};
 }

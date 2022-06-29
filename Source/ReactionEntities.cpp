@@ -39,7 +39,7 @@ namespace DiscordCoreAPI {
 		return this->theReactions;
 	}
 
-	ReactionVector& ReactionVector::operator = (const nlohmann::json& jsonObjectData) {
+	ReactionVector& ReactionVector::operator=(const nlohmann::json& jsonObjectData) {
 		this->parseObject(jsonObjectData, this);
 		return *this;
 	}
