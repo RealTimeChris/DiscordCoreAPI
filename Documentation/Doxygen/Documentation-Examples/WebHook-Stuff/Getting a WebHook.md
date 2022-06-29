@@ -38,7 +38,7 @@ namespace DiscordCoreAPI {
 				auto newWebHooks = DiscordCoreAPI::WebHooks::getGuildWebHooksAsync(dataPackage).get();
 
 				DiscordCoreAPI::GetWebHookData dataPackage01;
-				dataPackage01.webhookId = newWebHooks[0].id;
+				dataPackage01.webHookId = newWebHooks[0].id;
 
 				auto newWebHook = DiscordCoreAPI::WebHooks::getWebHookAsync(dataPackage01).get();
 

@@ -5804,7 +5804,7 @@ namespace DiscordCoreAPI {
 		GuildMemberData member{};///< The author's Guild member data.
 		std::string content{};///< The Message's content.
 		Snowflake channelId{};///< The Channel it was sent in.
-		Snowflake webhookId{};///< WebHook id of the Message, if applicable.
+		Snowflake webHookId{};///< WebHook id of the Message, if applicable.
 		bool pinned{ false };///< Is it pinned?
 		ChannelData thread{};///< The Thread that the Message was sent in, if applicable.
 		std::string nonce{};///< Nonce.
@@ -5936,7 +5936,7 @@ namespace DiscordCoreAPI {
 				}
 
 				if (jsonObjectData.contains("webhook_id") && !jsonObjectData["webhook_id"].is_null()) {
-					pDataStructure->webhookId = stoull(jsonObjectData["webhook_id"].get<std::string>());
+					pDataStructure->webHookId = stoull(jsonObjectData["webhook_id"].get<std::string>());
 				}
 
 				if (jsonObjectData.contains("type") && !jsonObjectData["type"].is_null()) {
@@ -6025,7 +6025,7 @@ namespace DiscordCoreAPI {
 				this->components = other.components;
 				this->timestamp = other.timestamp;
 				this->channelId = other.channelId;
-				this->webhookId = other.webhookId;
+				this->webHookId = other.webHookId;
 				this->reactions = other.reactions;
 				this->activity = other.activity;
 				this->mentions = other.mentions;
@@ -6172,7 +6172,7 @@ namespace DiscordCoreAPI {
 			}
 
 			if (jsonObjectData.contains("webhook_id") && !jsonObjectData["webhook_id"].is_null()) {
-				pDataStructure->webhookId = stoull(jsonObjectData["webhook_id"].get<std::string>());
+				pDataStructure->webHookId = stoull(jsonObjectData["webhook_id"].get<std::string>());
 			}
 
 			if (jsonObjectData.contains("type") && !jsonObjectData["type"].is_null()) {

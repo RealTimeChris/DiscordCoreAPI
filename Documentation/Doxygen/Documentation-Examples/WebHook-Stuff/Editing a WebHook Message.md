@@ -44,7 +44,7 @@ namespace DiscordCoreAPI {
 				auto newMessage = DiscordCoreAPI::WebHooks::executeWebHookAsync(dataPackage01).get();
 
 				DiscordCoreAPI::GetWebHookMessageData dataPackage02;
-				dataPackage02.webhookId = newWebHooks[0].id;
+				dataPackage02.webHookId = newWebHooks[0].id;
 				dataPackage02.webhookToken = newWebHooks[0].token;
 				dataPackage02.messageId = newMessage.id;
 

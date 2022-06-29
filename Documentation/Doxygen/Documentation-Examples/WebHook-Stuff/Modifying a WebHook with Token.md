@@ -39,7 +39,7 @@ namespace DiscordCoreAPI {
 
 				DiscordCoreAPI::ModifyWebHookWithTokenData dataPackage01;
 				dataPackage01.webhookToken = newWebHooks[0].token;
-				dataPackage01.webhookId = newWebHooks[0].id;
+				dataPackage01.webHookId = newWebHooks[0].id;
 				dataPackage01.name = "NEW TEST NAME";
 				dataPackage01.channelId = args.eventData.getChannelId();
 

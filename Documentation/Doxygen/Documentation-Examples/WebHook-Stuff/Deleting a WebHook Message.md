@@ -44,7 +44,7 @@ namespace DiscordCoreAPI {
 				auto newMessage = DiscordCoreAPI::WebHooks::executeWebHookAsync(dataPackage01).get();
 
 				DiscordCoreAPI::DeleteWebHookMessageData dataPackage03;
-				dataPackage03.webhookId = newWebHooks[0].id;
+				dataPackage03.webHookId = newWebHooks[0].id;
 				dataPackage03.webhookToken = newWebHooks[0].token;
 				dataPackage03.messageId = newMessage.id;
 

@@ -38,7 +38,7 @@ namespace DiscordCoreAPI {
 				auto newWebHooks = DiscordCoreAPI::WebHooks::getGuildWebHooksAsync(dataPackage).get();
 
 				DiscordCoreAPI::DeleteWebHookWithTokenData dataPackage01;
-				dataPackage01.webhookId = newWebHooks[0].id;
+				dataPackage01.webHookId = newWebHooks[0].id;
 				dataPackage01.webhookToken = newWebHooks[0].token;
 
 				DiscordCoreAPI::WebHooks::deleteWebHookWithTokenAsync(dataPackage01).get();
