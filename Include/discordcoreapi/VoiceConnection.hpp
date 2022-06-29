@@ -47,8 +47,8 @@ namespace DiscordCoreAPI {
 		VoiceConnection() = default;
 
 		/// Collects the currently connected-to voice Channel's id. \brief Collects the currently connected-to voice Channel's id.
-		/// \returns uint64_t An uint64_t containing the Channel's id.
-		uint64_t getChannelId();
+		/// \returns uint64_t An Snowflake containing the Channel's id.
+		Snowflake getChannelId();
 
 		~VoiceConnection();
 
@@ -69,7 +69,7 @@ namespace DiscordCoreAPI {
 		std::atomic_bool areWePlaying{ false };
 		int64_t disconnectStartTime{ 0 };
 		bool areWeConnectedBool{ false };
-		uint64_t currentGuildMemberId{};
+		Snowflake currentGuildMemberId{};
 		bool didWeJustConnect{ true };
 		int16_t sequenceIndex{ 0 };
 		AudioFrameData audioData{};

@@ -84,7 +84,7 @@ namespace DiscordCoreAPI {
 		if (this && this->voiceConnectInitData.channelId != 0) {
 			return this->voiceConnectInitData.channelId;
 		} else {
-			return uint64_t();
+			return Snowflake();
 		}
 	}
 

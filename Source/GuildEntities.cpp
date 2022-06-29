@@ -30,12 +30,12 @@
 
 namespace DiscordCoreAPI {
 
-	VoiceConnection* GuildData::connectToVoice(const uint64_t guildMemberId, const uint64_t channelId, bool selfDeaf, bool selfMute) {
+	VoiceConnection* GuildData::connectToVoice(const Snowflake guildMemberId, const Snowflake channelId, bool selfDeaf, bool selfMute) {
 		if (getVoiceConnectionMap().contains(this->id) && getVoiceConnectionMap()[this->id] && getVoiceConnectionMap()[this->id]->areWeConnected()) {
 			this->voiceConnectionPtr = getVoiceConnectionMap()[this->id].get();
 			return this->voiceConnectionPtr;
 		} else if (guildMemberId != 0 || channelId != 0) {
-			uint64_t theChannelId{};
+			Snowflake theChannelId{};
 			if (guildMemberId != 0) {
 				if (this->voiceStates.contains(guildMemberId)) {
 					theChannelId = this->voiceStates[guildMemberId].channelId;
@@ -186,7 +186,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void Guilds::initialize(DiscordCoreInternal::HttpsClient* theClient, DiscordCoreClient* discordCoreClientNew, ConfigManager* configManagerNew) {
-		Guilds::cache = std::make_unique<std::unordered_map<uint64_t, std::unique_ptr<GuildData>>>();
+		Guilds::cache = std::make_unique<std::unordered_map<Snowflake, std::unique_ptr<GuildData>>>();
 		Guilds::discordCoreClient = discordCoreClientNew;
 		Guilds::configManager = configManagerNew;
 		Guilds::httpsClient = theClient;
@@ -763,7 +763,7 @@ namespace DiscordCoreAPI {
 		if (guild.id == 0) {
 			return;
 		}
-		auto newCache = std::make_unique<std::unordered_map<uint64_t, std::unique_ptr<GuildData>>>();
+		auto newCache = std::make_unique<std::unordered_map<Snowflake, std::unique_ptr<GuildData>>>();
 		for (auto& [key, value]: *Guilds::cache) {
 			(*newCache)[key] = std::move(value);
 		}
@@ -775,12 +775,12 @@ namespace DiscordCoreAPI {
 		Guilds::cache = std::move(newCache);
 	}
 
-	void Guilds::removeGuild(const uint64_t& guildId) {
+	void Guilds::removeGuild(const Snowflake& guildId) {
 		std::unique_lock<std::shared_mutex> theLock{ Guilds::theMutex };
 		Guilds::cache->erase(guildId);
 	};
 
-	std::unique_ptr<std::unordered_map<uint64_t, std::unique_ptr<GuildData>>> Guilds::cache{};
+	std::unique_ptr<std::unordered_map<Snowflake, std::unique_ptr<GuildData>>> Guilds::cache{};
 	DiscordCoreInternal::HttpsClient* Guilds::httpsClient{ nullptr };
 	DiscordCoreClient* Guilds::discordCoreClient{ nullptr };
 	ConfigManager* Guilds::configManager{ nullptr };

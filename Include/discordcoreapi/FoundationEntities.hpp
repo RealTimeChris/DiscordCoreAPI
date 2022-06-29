@@ -7868,12 +7868,13 @@ namespace DiscordCoreInternal {
 	};
 
 	struct DiscordCoreAPI_Dll VoiceConnectInitData {
+		DiscordCoreAPI::Snowflake channelId{};
+		DiscordCoreAPI::Snowflake channelId{};
+		DiscordCoreAPI::Snowflake guildId{};
+		DiscordCoreAPI::Snowflake userId{};
 		int32_t currentShard{};
 		bool selfDeaf{ false };
 		bool selfMute{ false };
-		Snowflake channelId{};
-		Snowflake guildId{};
-		Snowflake userId{};
 	};
 
 	struct DiscordCoreAPI_Dll VoiceConnectionData {
