@@ -747,7 +747,7 @@ namespace DiscordCoreAPI {
 		bool getSelectMenuDataForAll{ false };
 		std::vector<std::string> values{};
 		std::string bufferMapKey{};
-		Snowflake selectMenuId{};
+		std::string selectMenuId{};
 		uint32_t maxTimeInMs{ 0 };
 		bool doWeQuit{ false };
 		Snowflake channelId{};
