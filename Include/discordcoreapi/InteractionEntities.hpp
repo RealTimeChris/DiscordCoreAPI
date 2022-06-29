@@ -46,7 +46,7 @@ namespace DiscordCoreAPI {
 		/// \param emojiId An emoji id, if desired.
 		/// \param url A url, if applicable.
 		InteractionResponse& addButton(bool disabled, const std::string& customIdNew, const std::string& buttonLabel, ButtonStyle buttonStyle, const std::string& emojiName = "",
-			uint64_t emojiId = 0, const std::string& url = "") {
+			Snowflake emojiId = 0, const std::string& url = "") {
 			if (this->data.data.components.size() == 0) {
 				ActionRowData actionRowData;
 				this->data.data.components.push_back(actionRowData);
@@ -364,7 +364,7 @@ namespace DiscordCoreAPI {
 	/// For getting an Interaction response. \brief For getting an Interaction response.
 	struct DiscordCoreAPI_Dll GetInteractionResponseData {
 		std::string interactionToken{};///< Interaction token.
-		uint64_t applicationId{};///< application id.
+		Snowflake applicationId{};///< application id.
 	};
 
 	/// For editing an Interaction response. \brief For editing an Interaction response.
@@ -528,8 +528,8 @@ namespace DiscordCoreAPI {
 	/// For getting a follow-up Message. \brief For getting a follow-up Message.
 	struct DiscordCoreAPI_Dll GetFollowUpMessageData {
 		std::string interactionToken{};///< Interaction token.
-		uint64_t applicationId{};///< application id.
-		uint64_t messageId{};///< Message id.
+		Snowflake applicationId{};///< application id.
+		Snowflake messageId{};///< Message id.
 	};
 
 	/// For editing a follow up Message. \brief For editing a follow up Message.
@@ -605,7 +605,7 @@ namespace DiscordCoreAPI {
 	 * @{
 	 */
 
-	/// An interface class DiscordCoreAPI_Dll for the Interaction related Discord endpoints. \brief An interface class DiscordCoreAPI_Dll for the Interaction related Discord endpoints.
+	/// An interface class for the Interaction related Discord endpoints. \brief An interface class for the Interaction related Discord endpoints.
 	class DiscordCoreAPI_Dll Interactions {
 	  public:
 		friend class DiscordCoreInternal::BaseSocketAgent;
@@ -709,9 +709,9 @@ namespace DiscordCoreAPI {
 		std::unique_ptr<InteractionData> interactionData{ std::make_unique<InteractionData>() };///< Interaction data.
 		std::vector<std::string> values{};///< A std::vector of the chosen values.
 		std::string selectionId{};///< Selection id.
-		uint64_t channelId{};///< The Channel id where it took place.
-		uint64_t messageId{};///< The Message id where it took place.
-		uint64_t userId{};///< The User id who selected the menu options.
+		Snowflake channelId{};///< The Channel id where it took place.
+		Snowflake messageId{};///< The Message id where it took place.
+		Snowflake userId{};///< The User id who selected the menu options.
 	};
 
 	/// SelectMenuCollector, for collecting select-menu input from one or more
@@ -734,7 +734,7 @@ namespace DiscordCoreAPI {
 		/// \param targetUserId The id of the single User to collect inputs from, if getSelectMenuDataForAllNew is set to false.
 		/// \returns A std::vector of SelectMenuResponseData.
 		CoRoutine<std::vector<SelectMenuResponseData>> collectSelectMenuData(bool getSelectMenuDataForAllNew, int32_t maxWaitTimeInMsNew, int32_t maxCollectedSelectMenuCountNew,
-			uint64_t targetUserId = 0);
+			Snowflake targetUserId = 0);
 
 		~SelectMenuCollector();
 
@@ -747,12 +747,12 @@ namespace DiscordCoreAPI {
 		bool getSelectMenuDataForAll{ false };
 		std::vector<std::string> values{};
 		std::string bufferMapKey{};
-		std::string selectMenuId{};
+		Snowflake selectMenuId{};
 		uint32_t maxTimeInMs{ 0 };
 		bool doWeQuit{ false };
-		uint64_t channelId{};
-		uint64_t messageId{};
-		uint64_t userId{};
+		Snowflake channelId{};
+		Snowflake messageId{};
+		Snowflake userId{};
 
 		void run();
 	};
@@ -800,9 +800,9 @@ namespace DiscordCoreAPI {
 		std::unique_ptr<InteractionData> interactionData{ std::make_unique<InteractionData>() };///< Interaction data.
 		std::string emojiName{};///< The emoji name, if applicable.
 		std::string buttonId{};///< The id of the button, for identification.
-		uint64_t channelId{};///< The Channel id where it took place.
-		uint64_t messageId{};///< The Message id where it took place.
-		uint64_t userId{};///< The User id who selected the menu options.
+		Snowflake channelId{};///< The Channel id where it took place.
+		Snowflake messageId{};///< The Message id where it took place.
+		Snowflake userId{};///< The User id who selected the menu options.
 	};
 
 	/// ButtonCollector, for collecting button input from one or more Users. \brief ButtonCollector, for collecting button input from one or more Users.
@@ -823,7 +823,7 @@ namespace DiscordCoreAPI {
 		/// \param targetUserId The id of the single User to collect inputs from, if getButtonDataForAllNew is set to false.
 		/// \returns A std::vector of ButtonResponseData.
 		CoRoutine<std::vector<ButtonResponseData>> collectButtonData(bool getButtonDataForAllNew, int32_t maxWaitTimeInMsNew, int32_t maxNumberOfPressesNew,
-			uint64_t targetUserId = 0);
+			Snowflake targetUserId = 0);
 
 		~ButtonCollector();
 
@@ -839,9 +839,9 @@ namespace DiscordCoreAPI {
 		uint32_t maxTimeInMs{ 0 };
 		bool doWeQuit{ false };
 		std::string buttonId{};
-		uint64_t channelId{};
-		uint64_t messageId{};
-		uint64_t userId{};
+		Snowflake channelId{};
+		Snowflake messageId{};
+		Snowflake userId{};
 
 		void run();
 	};
@@ -889,9 +889,9 @@ namespace DiscordCoreAPI {
 		std::unique_ptr<InteractionData> interactionData{ std::make_unique<InteractionData>() };///< Interaction data.
 		std::string customIdSmall{};///< The customId of the particular input.
 		std::string customId{};///< The customId of the modal component.
-		uint64_t channelId{};///< The Channel id where it took place.
+		Snowflake channelId{};///< The Channel id where it took place.
 		std::string value{};/// The input value of the modal component.
-		uint64_t userId{};///< The User id who selected the menu options.
+		Snowflake userId{};///< The User id who selected the menu options.
 	};
 
 	/// ModalCollector, for collecting modal text input from one or more Users. \brief ModalCollector, for collecting modal text input from one or more Users.
@@ -918,7 +918,7 @@ namespace DiscordCoreAPI {
 		ModalResponseData responseData{};
 		uint32_t maxTimeInMs{ 0 };
 		bool doWeQuit{ false };
-		uint64_t channelId{};
+		Snowflake channelId{};
 
 		void run();
 	};

@@ -37,8 +37,8 @@ namespace DiscordCoreAPI {
 		ThreadAutoArchiveDuration autoArchiveDuration{ ThreadAutoArchiveDuration::Shortest };///< The duration before it is auto-archived, in minutes.
 		int32_t rateLimitPerUser{ 0 };///< Integer amount of seconds a user has to wait before sending another message(0 - 21600).
 		std::string threadName{};///< The name of the new Thread.
-		uint64_t messageId{};///< The Message Id to base the Thread off of.
-		uint64_t channelId{};///< The Channel to start the Thread in.
+		Snowflake messageId{};///< The Message Id to base the Thread off of.
+		Snowflake channelId{};///< The Channel to start the Thread in.
 		std::string reason{};///< Reason for starting the Thread.
 	};
 
@@ -48,7 +48,7 @@ namespace DiscordCoreAPI {
 		ThreadType type{ ThreadType::Guild_Public_Thread };///< Type of Thread to create.
 		int32_t rateLimitPerUser{ 0 };///< Integer amount of seconds a user has to wait before sending another message(0 - 21600).
 		std::string threadName{};///< The name of the new Thread.
-		uint64_t channelId{};///< The Channel to start the Thread in.
+		Snowflake channelId{};///< The Channel to start the Thread in.
 		bool invitable{ false };///< Whether non-moderators can add other non - moderators to a thread; only available when creating a private thread.
 		std::string reason{};///< Reason for starting the Thread.
 	};
@@ -58,73 +58,73 @@ namespace DiscordCoreAPI {
 		ThreadAutoArchiveDuration autoArchiveDuration{ ThreadAutoArchiveDuration::Longest };/// Duration in minutes to automatically archive the thread.
 		ForumThreadMessageData message{};///< A forum thread message params object contents of the first message in the forum thread.
 		int32_t rateLimitPerUser{};///< Integer amount of seconds a user has to wait before sending another message(0 - 21600).
-		uint64_t channelId{};///< The id of the channel.
+		Snowflake channelId{};///< The id of the channel.
 		std::string reason{};///< Reason for starting the Thread.
 		std::string name{};///< 1-100 character channel name auto_archive_duration.
 	};
 
 	/// For joining a Thread. \brief For joining a Thread.
 	struct DiscordCoreAPI_Dll JoinThreadData {
-		uint64_t channelId{};///< The id of the Thread to join.
+		Snowflake channelId{};///< The id of the Thread to join.
 	};
 
 	/// For adding a chosen User to a chosen Thread. \brief For adding a chosen User to a chosen Thread.
 	struct DiscordCoreAPI_Dll AddThreadMemberData {
-		uint64_t channelId{};///< The id of the Thread to join.
-		uint64_t userId{};///< The id of the User to add to the Thread.
+		Snowflake channelId{};///< The id of the Thread to join.
+		Snowflake userId{};///< The id of the User to add to the Thread.
 	};
 
 	/// For leaving a Thread. \brief For leaving a Thread.
 	struct DiscordCoreAPI_Dll LeaveThreadData {
-		uint64_t channelId{};///< The id of the Thread to leave.
+		Snowflake channelId{};///< The id of the Thread to leave.
 	};
 
 	/// For removing a chosen User from a Thread. \brief For removing a chosen User from a Thread.
 	struct DiscordCoreAPI_Dll RemoveThreadMemberData {
-		uint64_t channelId{};///< The id of the Thread to remove them from.
-		uint64_t userId{};///< The id of the User to remove from the Thread.
+		Snowflake channelId{};///< The id of the Thread to remove them from.
+		Snowflake userId{};///< The id of the User to remove from the Thread.
 	};
 
 	/// For collecting a ThreadMember responseData structure for a given ThreadMember. \brief For collecting a ThreadMember responseData structure for a given ThreadMember.
 	struct DiscordCoreAPI_Dll GetThreadMemberData {
-		uint64_t channelId{};///< The id of the Thread to collect them from.
-		uint64_t userId{};///< The id of the User to collect from the Thread.
+		Snowflake channelId{};///< The id of the Thread to collect them from.
+		Snowflake userId{};///< The id of the User to collect from the Thread.
 	};
 
 	/// For collecting the list of ThreadMembers from a Thread. \brief For collecting the list of ThreadMembers from a Thread.
 	struct DiscordCoreAPI_Dll GetThreadMembersData {
-		uint64_t channelId{};///< The id of the Thread to collect them from.
+		Snowflake channelId{};///< The id of the Thread to collect them from.
 	};
 
 	/// For collecting the list of active Threads. \brief For collecting the list of active Threads.
 	struct DiscordCoreAPI_Dll GetActiveThreadsData {
-		uint64_t channelId{};///< The id of the Channel to collect the Threads from.
+		Snowflake channelId{};///< The id of the Channel to collect the Threads from.
 	};
 
 	/// For collecting puiblic archived Threads from a given Channel. \brief For collecting puiblic archived Threads from a given Channel.
 	struct DiscordCoreAPI_Dll GetPublicArchivedThreadsData {
-		uint64_t channelId{};///< The Channel to acquire the Threads from.
+		Snowflake channelId{};///< The Channel to acquire the Threads from.
 		std::string before{};///< Returns threads before this timestamp.
 		int32_t limit{ 0 };///< Maximum number of threads to return.
 	};
 
 	/// For collecting private archived Threads from a given Channel. \brief For collecting private archived Threads from a given Channel.
 	struct DiscordCoreAPI_Dll GetPrivateArchivedThreadsData {
-		uint64_t channelId{};///< The Channel to acquire the Threads from.
+		Snowflake channelId{};///< The Channel to acquire the Threads from.
 		std::string before{};///< Returns threads before this timestamp.
 		int32_t limit{ 0 };///< Maximum number of threads to return.
 	};
 
 	/// For collecting joined private archived Threads from a given Channel. \brief For collecting joined private archived Threads from a given Channel.
 	struct DiscordCoreAPI_Dll GetJoinedPrivateArchivedThreadsData {
-		uint64_t channelId{};///< The Channel to acquire the Threads from.
+		Snowflake channelId{};///< The Channel to acquire the Threads from.
 		std::string before{};///< Returns threads before this timestamp.
 		int32_t limit{ 0 };///< Maximum number of threads to return.
 	};
 
 	/// For listing the active Threads in a chosen Guild. \brief For listing the active Threads in a chosen Guild.
 	struct DiscordCoreAPI_Dll GetActiveGuildThreadsData {
-		uint64_t guildId{};///< The Guild from which to list the Threads from.
+		Snowflake guildId{};///< The Guild from which to list the Threads from.
 	};
 
 	/// Represents a single Thread. \brief Represents a single Thread.
@@ -148,7 +148,7 @@ namespace DiscordCoreAPI {
 	 * \addtogroup main_endpoints
 	 * @{
 	 */
-	/// An interface class DiscordCoreAPI_Dll for the Thread related endpoints. \brief An interface class DiscordCoreAPI_Dll for the Thread related endpoints.
+	/// An interface class for the Thread related endpoints. \brief An interface class for the Thread related endpoints.
 	class DiscordCoreAPI_Dll Threads {
 	  public:
 		static void initialize(DiscordCoreInternal::HttpsClient*);

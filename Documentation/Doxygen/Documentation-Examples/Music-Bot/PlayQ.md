@@ -184,7 +184,7 @@ PlayQ {#Play-Q}
 				savePlaylist(discordGuild);
 				InputEventData newerEvent = *newEvent;
 				BaseFunctionArguments newArgs = *args;
-				uint64_t channelId = newArgs.eventData->getChannelId();
+				Snowflake channelId = newArgs.eventData->getChannelId();
 				if (!SongAPI::areWeCurrentlyPlaying(guild.id)) {
 					std::function<CoRoutine<void>(SongCompletionEventData)> theTask = [=](SongCompletionEventData eventData) noexcept -> CoRoutine<void> {
 						co_await NewThreadAwaitable<void>();

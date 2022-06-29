@@ -34,12 +34,12 @@ namespace DiscordCoreAPI {
 	/// For getting all of the Global Application Commands. \brief For getting all of the Global Application Commands.
 	struct DiscordCoreAPI_Dll GetGlobalApplicationCommandsData {
 		bool withLocalizations{ false };///< Do we collect the name-and-description localizations?
-		uint64_t applicationId{};///< The current application's Id (The Bot's User Id).
+		Snowflake applicationId{};///< The current application's Id (The Bot's User Id).
 	};
 
 	/// For collecting a single global ApplicationCommand. \brief For collecting a single global ApplicationCommand.
 	struct DiscordCoreAPI_Dll GetGlobalApplicationCommandData {
-		uint64_t applicationId{};///< The current application's Id (The Bot's User Id).
+		Snowflake applicationId{};///< The current application's Id (The Bot's User Id).
 		std::string commandId{};///< The id of the command which you would like to collect.
 	};
 
@@ -52,7 +52,7 @@ namespace DiscordCoreAPI {
 		ApplicationCommandType type{};///< The type of ApplicationCommand.
 		bool dmPermission{ false };///< Indicates whether the command is available in DMs with the app,
 		std::string description{};///< A description of the command.
-		uint64_t applicationId{};///< Application id.
+		Snowflake applicationId{};///< Application id.
 		std::string name{};///< A name for the new command.
 	};
 
@@ -64,27 +64,27 @@ namespace DiscordCoreAPI {
 		std::string defaultMemberPermissions{};///< Set of permissions represented as a bit set. only for globally - scoped commands.
 		bool dmPermission{ false };///< Indicates whether the command is available in DMs with the app.
 		std::string description{};///< A description of the command.
-		uint64_t applicationId{};///< The current application's Id (The Bot's User Id).
+		Snowflake applicationId{};///< The current application's Id (The Bot's User Id).
 		std::string name{};///< A name for the new command.
 	};
 
 	/// For deleting a single global ApplicationCommand. \brief For deleting a single global ApplicationCommand.
 	struct DiscordCoreAPI_Dll DeleteGlobalApplicationCommandData {
-		uint64_t applicationId{};///< The current application's Id (The Bot's User Id).
+		Snowflake applicationId{};///< The current application's Id (The Bot's User Id).
 		std::string name{};///< The name of the command to delete.
 	};
 
 	/// For bulk-overwriting a collection of global ApplicationCommands. \brief For bulk-overwriting a collection of global ApplicationCommands.
 	struct DiscordCoreAPI_Dll BulkOverwriteGlobalApplicationCommandsData {
 		std::vector<CreateGlobalApplicationCommandData> responseData{};///< A std::vector of the options for the ApplicationCommands.
-		uint64_t applicationId{};///< The current application's Id (The Bot's User Id).
+		Snowflake applicationId{};///< The current application's Id (The Bot's User Id).
 	};
 
 	/// For acquiring all of the Guild ApplicationCommands of a single Guild. \brief For acquiring all of the Guild ApplicationCommands of a single Guild.
 	struct DiscordCoreAPI_Dll GetGuildApplicationCommandsData {
 		bool withLocalizations{ false };///< Do we collect the name-and-description localizations?
-		uint64_t applicationId{};///< The current application's Id (The Bot's User Id).
-		uint64_t guildId{};///< The id of the Guild for which you would like to acquire the ApplicationCommands from.
+		Snowflake applicationId{};///< The current application's Id (The Bot's User Id).
+		Snowflake guildId{};///< The id of the Guild for which you would like to acquire the ApplicationCommands from.
 	};
 
 	/// For creating a single Guild ApplicationCommand. \brief For creating a single Guild ApplicationCommand.
@@ -96,16 +96,16 @@ namespace DiscordCoreAPI {
 		ApplicationCommandType type{};///< The type of ApplicationCommand.
 		bool dmPermission{ false };///< Indicates whether the command is available in DMs with the app,
 		std::string description{};///< A description of the command.
-		uint64_t applicationId{};///< Application id.
-		uint64_t guildId{};///< The guild's id.
+		Snowflake applicationId{};///< Application id.
+		Snowflake guildId{};///< The guild's id.
 		std::string name{};///< A name for the new command.
 	};
 
 	/// For acquiring a single Guild ApplicationCommand. \brief For acquiring a single Guild ApplicationCommand.
 	struct DiscordCoreAPI_Dll GetGuildApplicationCommandData {
-		uint64_t applicationId{};///< The current application's Id (The Bot's User Id).
+		Snowflake applicationId{};///< The current application's Id (The Bot's User Id).
 		uint64_t commandId{};///< The command id which you would like to acquire.
-		uint64_t guildId{};///< The id of the Guild from which you would like to acquire the ApplicationCommand from.
+		Snowflake guildId{};///< The id of the Guild from which you would like to acquire the ApplicationCommand from.
 	};
 
 	/// For editing a single Guild ApplicationCommand. \brief For editing a single Guild ApplicationCommand.
@@ -116,52 +116,52 @@ namespace DiscordCoreAPI {
 		std::string defaultMemberPermissions{};///< Set of permissions represented as a bit set. only for globally - scoped commands.
 		bool dmPermission{ false };///< Indicates whether the command is available in DMs with the app.
 		std::string description{};///< A description of the command.
-		uint64_t applicationId{};///< The current application's Id (The Bot's User Id).
-		uint64_t guildId{};///< The id of the Guild which you would like to add the new command to.
+		Snowflake applicationId{};///< The current application's Id (The Bot's User Id).
+		Snowflake guildId{};///< The id of the Guild which you would like to add the new command to.
 		std::string name{};///< A name for the new command.
 	};
 
 	/// For deleting a single Guild ApplicationCommand. \brief For deleting a single Guild ApplicationCommand.
 	struct DiscordCoreAPI_Dll DeleteGuildApplicationCommandData {
-		uint64_t applicationId{};///< The current application's Id (The Bot's User Id).
-		uint64_t guildId{};///< The id of the Guild which you would like to delete the command from.
+		Snowflake applicationId{};///< The current application's Id (The Bot's User Id).
+		Snowflake guildId{};///< The id of the Guild which you would like to delete the command from.
 		std::string name{};///< A name of the command which you would like to delete.
 	};
 
 	/// For bulk-overwriting a collection of Guild ApplicationCommands. \brief For bulk-overwriting a collection of Guild ApplicationCommands.
 	struct DiscordCoreAPI_Dll BulkOverwriteGuildApplicationCommandsData {
 		std::vector<CreateGuildApplicationCommandData> responseData{};///< A std::vector of the options for the ApplicationCommands.
-		uint64_t applicationId{};///< The current application's Id (The Bot's User Id).
-		uint64_t guildId{};///< The id of the Guild which you would like to overwrite the commands of.
+		Snowflake applicationId{};///< The current application's Id (The Bot's User Id).
+		Snowflake guildId{};///< The id of the Guild which you would like to overwrite the commands of.
 	};
 
 	/// For acquiring the permissions of a collection of Guild ApplicationCommands. \brief For acquiring the permissions of a collection of Guild ApplicationCommands.
 	struct DiscordCoreAPI_Dll GetGuildApplicationCommandPermissionsData {
-		uint64_t applicationId{};///< The current application's Id (The Bot's User Id).
-		uint64_t guildId{};///< The id of the Guild from which you would like to acquire the command permissions.
+		Snowflake applicationId{};///< The current application's Id (The Bot's User Id).
+		Snowflake guildId{};///< The id of the Guild from which you would like to acquire the command permissions.
 	};
 
 	/// For acquiring the permissions of a single Guild ApplicationCommand. \brief For acquiring the permissions of a single Guild ApplicationCommand.
 	struct DiscordCoreAPI_Dll GetApplicationCommandPermissionsData {
 		std::string commandName{};///< The name of the command which you would like to collect the permissions of.
-		uint64_t applicationId{};///< The current application's Id (The Bot's User Id).
-		uint64_t guildId{};///< The id of the Guild from which you would like to acquire the command permissions.
+		Snowflake applicationId{};///< The current application's Id (The Bot's User Id).
+		Snowflake guildId{};///< The id of the Guild from which you would like to acquire the command permissions.
 	};
 
 	/// For editing the permissions of a single Guild ApplicationCommand. \brief For editing the permissions of a single Guild ApplicationCommand.
 	struct DiscordCoreAPI_Dll EditGuildApplicationCommandPermissionsData {
 		std::vector<ApplicationCommandPermissionData> permissions{};///< A std::vector of ApplicationCommand permissions.
 		std::string commandName{};///< The command name which you would like to edit the permissions of.
-		uint64_t applicationId{};///< The current application's Id (The Bot's User Id).
+		Snowflake applicationId{};///< The current application's Id (The Bot's User Id).
 		uint64_t commandId{};///< The command id which you would like to edit the permissions of.
-		uint64_t guildId{};///< The Guild id of the Guild for which you would like to edit the command permissions.
+		Snowflake guildId{};///< The Guild id of the Guild for which you would like to edit the command permissions.
 	};
 
 	/// For batch editing the permissions of a collection of Guild ApplicationCommands. \brief For batch editing the permissions of a collection of Guild ApplicationCommands.
 	struct DiscordCoreAPI_Dll BatchEditGuildApplicationCommandPermissionsData {
 		std::vector<GuildApplicationCommandPermissionsData> permissions{};///< A std::vector of edit-Guild-application-permissions responseData to edit.
-		uint64_t applicationId{};///< The current application's Id (The Bot's User Id).
-		uint64_t guildId{};///< The Guild id of the Guild for which you would like to batch edit Guild application permissions.
+		Snowflake applicationId{};///< The current application's Id (The Bot's User Id).
+		Snowflake guildId{};///< The Guild id of the Guild for which you would like to batch edit Guild application permissions.
 	};
 
 	/// A single ApplicationCommand. \brief A single ApplicationCommand.
@@ -185,7 +185,7 @@ namespace DiscordCoreAPI {
 	 * \addtogroup main_endpoints
 	 * @{
 	 */
-	/// An interface class DiscordCoreAPI_Dll for the ApplicationCommand related Discord endpoints. \brief An interface class DiscordCoreAPI_Dll for the ApplicationCommand related Discord endpoints.
+	/// An interface class for the ApplicationCommand related Discord endpoints. \brief An interface class for the ApplicationCommand related Discord endpoints.
 	class DiscordCoreAPI_Dll ApplicationCommands {
 	  public:
 		static void initialize(DiscordCoreInternal::HttpsClient*);

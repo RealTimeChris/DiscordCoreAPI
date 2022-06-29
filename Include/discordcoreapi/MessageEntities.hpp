@@ -35,16 +35,16 @@ namespace DiscordCoreAPI {
 	/// For getting a collection of Messages. \brief For getting a collection of Messages.
 	struct DiscordCoreAPI_Dll GetMessagesData {
 		uint64_t aroundThisId{};///< Around this id.
-		uint64_t beforeThisId{};///< Before this id.
-		uint64_t afterThisId{};///< After this id.
-		uint64_t channelId{};///< Channel from which to collect the Messages.
+		Snowflake beforeThisId{};///< Before this id.
+		Snowflake afterThisId{};///< After this id.
+		Snowflake channelId{};///< Channel from which to collect the Messages.
 		int32_t limit{ 0 };///< Limit of Messages to collect.
 	};
 
 	/// For getting a Message. \brief For getting a Message.
 	struct DiscordCoreAPI_Dll GetMessageData {
-		uint64_t channelId{};///< The Channel from which to collect the Message.
-		uint64_t id{};///< The id of the Message to collect.
+		Snowflake channelId{};///< The Channel from which to collect the Message.
+		Snowflake id{};///< The id of the Message to collect.
 	};
 
 	/// For creating a Message. \brief For creating a Message.
@@ -75,7 +75,7 @@ namespace DiscordCoreAPI {
 			this->channelId = dataPackage.getChannelId();
 		}
 
-		uint64_t channelId{};
+		Snowflake channelId{};
 
 		CreateMessageData() = default;
 
@@ -105,13 +105,13 @@ namespace DiscordCoreAPI {
 		}
 
 	  protected:
-		uint64_t targetUserId{};
+		Snowflake targetUserId{};
 	};
 
 	/// For crossposting a Message. \brief For crossposting a Message.
 	struct DiscordCoreAPI_Dll CrosspostMessageData {
-		uint64_t messageId{};///< Id of the message to be crossposted.
-		uint64_t channelId{};///< Channel within which to crosspost the Message from.
+		Snowflake messageId{};///< Id of the message to be crossposted.
+		Snowflake channelId{};///< Channel within which to crosspost the Message from.
 	};
 
 	/// For editing a Message. \brief For editing a Message.
@@ -141,8 +141,8 @@ namespace DiscordCoreAPI {
 
 	  protected:
 		std::vector<AttachmentData> attachments{};
-		uint64_t channelId{};
-		uint64_t messageId{};
+		Snowflake channelId{};
+		Snowflake messageId{};
 		int32_t flags{ 0 };
 
 		EditMessageData() = default;
@@ -152,35 +152,35 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll DeleteMessageData {
 	  public:
 		TimeStamp timeStamp{ "" };///< The created-at timestamp of the original message.
-		uint64_t channelId{};///< The channel Id of the Message to delete.
-		uint64_t messageId{};///< The message Id of the Message to delete.
+		Snowflake channelId{};///< The channel Id of the Message to delete.
+		Snowflake messageId{};///< The message Id of the Message to delete.
 		int32_t timeDelay{ 0 };///< Number of std::chrono::milliseconds to wait before deleting the Message.
 		std::string reason{};///< The reason for deleting the Message.
 	};
 
 	/// For deleting a bulk of Messages. \brief For deleting a bulk of Messages.
 	struct DiscordCoreAPI_Dll DeleteMessagesBulkData {
-		std::vector<uint64_t> messageIds{};///< Array of Message ids to delete.
-		uint64_t channelId{};///< Channel within which to delete the Messages.
+		std::vector<Snowflake> messageIds{};///< Array of Message ids to delete.
+		Snowflake channelId{};///< Channel within which to delete the Messages.
 		std::string reason{};///< The reason for deleting the Messages.
 	};
 
 	/// For getting a collection of pinned Messages. \brief For getting a collection of pinned Messages.
 	struct DiscordCoreAPI_Dll GetPinnedMessagesData {
-		uint64_t channelId{};///< The Channel from which to collect pinned Messages.
+		Snowflake channelId{};///< The Channel from which to collect pinned Messages.
 	};
 
 	/// For pinning a single Message. \brief For pinning a single Message.
 	struct DiscordCoreAPI_Dll PinMessageData {
-		uint64_t channelId{};///< The Channel within which to pin the Message.
-		uint64_t messageId{};///< The Message which you would like to pin.
+		Snowflake channelId{};///< The Channel within which to pin the Message.
+		Snowflake messageId{};///< The Message which you would like to pin.
 		std::string reason{};///< Reason for pinning this Message.
 	};
 
 	/// For unpinning a single Message. \brief For unpinning a single Message.
 	struct DiscordCoreAPI_Dll UnpinMessageData {
-		uint64_t channelId{};///< The Channel within which to unpin the Message.
-		uint64_t messageId{};///< The Message which you would like to unpin.
+		Snowflake channelId{};///< The Channel within which to unpin the Message.
+		Snowflake messageId{};///< The Message which you would like to unpin.
 		std::string reason{};///< Reason for pinning this Message.
 	};
 
@@ -263,7 +263,7 @@ namespace DiscordCoreAPI {
 	 * \addtogroup main_endpoints
 	 * @{
 	 */
-	/// An interface class DiscordCoreAPI_Dll for the Message related Discord endpoints. \brief An interface class DiscordCoreAPI_Dll for the Message related Discord endpoints;
+	/// An interface class for the Message related Discord endpoints. \brief An interface class for the Message related Discord endpoints;
 	class DiscordCoreAPI_Dll Messages {
 	  public:
 		static void initialize(DiscordCoreInternal::HttpsClient*);

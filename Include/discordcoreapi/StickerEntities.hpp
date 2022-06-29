@@ -32,19 +32,19 @@ namespace DiscordCoreAPI {
 	 */
 	/// For getting a Sticker object for the given sticker ID. \brief For getting a Sticker object for the given sticker ID.
 	struct DiscordCoreAPI_Dll GetStickerData {
-		std::string stickerId{};///< The chosen Sticker's Id.
+		Snowflake stickerId{};///< The chosen Sticker's Id.
 	};
 
 	/// For collecting a list of Stickers from a chosen Guild. \brief For collecting a list of Stickers from a chosen Guild.
 	struct DiscordCoreAPI_Dll GetGuildStickersData {
-		uint64_t guildId{};///< The chosen Guild from which you would like to collect the Stickers from.
+		Snowflake guildId{};///< The chosen Guild from which you would like to collect the Stickers from.
 	};
 
 	/// For creating a single Sticker. \brief For creating a single Sticker.
 	struct DiscordCoreAPI_Dll CreateGuildStickerData {
 		std::vector<uint8_t> file{};///< The sticker file to upload, must be a Png, Apng, or Lottie JSON file, max 500 KB.
 		std::string description{};///< Description of the Sticker.
-		uint64_t guildId{};///< The Guild within which to create the Sticker.
+		Snowflake guildId{};///< The Guild within which to create the Sticker.
 		std::string reason{};///< The reason for creating the Sticker.
 		std::string name{};///< Name of the Sticker.
 		std::string tags{};///< Autocomplete / suggestion tags for the sticker(max 200 characters).
@@ -53,8 +53,8 @@ namespace DiscordCoreAPI {
 	/// For modifying a single Sticker. \brief For modifying a single Sticker.
 	struct DiscordCoreAPI_Dll ModifyGuildStickerData {
 		std::string description{};///< Description of the Sticker.
-		std::string stickerId{};///< The Sticker you wish to modify.
-		uint64_t guildId{};///< The Guild within which to modify the Sticker.
+		Snowflake stickerId{};///< The Sticker you wish to modify.
+		Snowflake guildId{};///< The Guild within which to modify the Sticker.
 		std::string reason{};///< The reason for modifying the Sticker.
 		std::string name{};///< Name of the Sticker.
 		std::string tags{};///< Autocomplete / suggestion tags for the sticker(max 200 characters).
@@ -62,8 +62,8 @@ namespace DiscordCoreAPI {
 
 	/// For deleting a single Sticker. \brief For deleting a single Sticker.
 	struct DiscordCoreAPI_Dll DeleteGuildStickerData {
-		std::string stickerId{};///< The Sticker you wish to delete.
-		uint64_t guildId{};///< The Guild within which to delete the Sticker.
+		Snowflake stickerId{};///< The Sticker you wish to delete.
+		Snowflake guildId{};///< The Guild within which to delete the Sticker.
 		std::string reason{};///< The reason for deleting the Sticker.
 	};
 
@@ -106,7 +106,7 @@ namespace DiscordCoreAPI {
 	 * \addtogroup main_endpoints
 	 * @{
 	 */
-	/// An interface class DiscordCoreAPI_Dll for the Sticker related Discord endpoints. \brief An interface class DiscordCoreAPI_Dll for the Sticker related Discord endpoints.
+	/// An interface class for the Sticker related Discord endpoints. \brief An interface class for the Sticker related Discord endpoints.
 	class DiscordCoreAPI_Dll Stickers {
 	  public:
 		static void initialize(DiscordCoreInternal::HttpsClient*);

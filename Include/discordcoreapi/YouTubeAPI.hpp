@@ -64,9 +64,9 @@ namespace DiscordCoreInternal {
 	  protected:
 		DiscordCoreAPI::ConfigManager* configManager{ nullptr };
 		YouTubeRequestBuilder requestBuilder{};
+		DiscordCoreAPI::Snowflake guildId{};
 		const int32_t maxBufferSize{ 8192 };
 		DiscordCoreAPI::Song theSong{};
-		uint64_t guildId{};
 	};
 
 };// namespace DiscordCoreAPI

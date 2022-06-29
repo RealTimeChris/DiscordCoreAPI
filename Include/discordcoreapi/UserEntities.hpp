@@ -41,37 +41,37 @@ namespace DiscordCoreAPI {
 
 	/// For adding a user to a group Dm. \brief For adding a user to a group Dm.
 	struct DiscordCoreAPI_Dll AddRecipientToGroupDMData {
-		uint64_t channelId{};///< The Channel Id of the Dm.
-		uint64_t userId{};///< The user's Id.
+		Snowflake channelId{};///< The Channel Id of the Dm.
+		Snowflake userId{};///< The user's Id.
 		std::string token{};///< The user's access token.
 		std::string nick{};///< The user's nickname.
 	};
 
 	/// For removing a User from a group Dm. \brief For removing a User from a group Dm.
 	struct DiscordCoreAPI_Dll RemoveRecipientFromGroupDMData {
-		uint64_t channelId{};///< The Channel Id of the Dm.
-		uint64_t userId{};///< The user's Id.
+		Snowflake channelId{};///< The Channel Id of the Dm.
+		Snowflake userId{};///< The user's Id.
 	};
 
 	/// For updating the bot's current voice state. \brief For updating the bot's current voice state.
 	struct DiscordCoreAPI_Dll ModifyCurrentUserVoiceStateData {
 		std::string requestToSpeakTimestamp{};///< ISO8601 timestamp.
-		uint64_t channelId{};///< The id of the Channel the user is currently in.
+		Snowflake channelId{};///< The id of the Channel the user is currently in.
 		bool suppress{ false };///< Toggles the user's suppress state.
-		uint64_t guildId{};///< The Guild within which to update the bot's voice state.
+		Snowflake guildId{};///< The Guild within which to update the bot's voice state.
 	};
 
 	/// For modifying a User's voice state. \brief For modifying a User's voice state.
 	struct DiscordCoreAPI_Dll ModifyUserVoiceStateData {
-		uint64_t channelId{};///< The id of the Channel the user is currently in.
+		Snowflake channelId{};///< The id of the Channel the user is currently in.
 		bool suppress{ false };///< Toggles the user's suppress state.
-		uint64_t guildId{};///< The Guild within which you would like to modify their voice state.
-		uint64_t userId{};///< The user for which you would like to modify the voice state of.
+		Snowflake guildId{};///< The Guild within which you would like to modify their voice state.
+		Snowflake userId{};///< The user for which you would like to modify the voice state of.
 	};
 
 	/// For getting User responseData from the library's cache or the Discord server. \brief For getting User responseData from the library's cache or the Discord server.
 	struct DiscordCoreAPI_Dll GetUserData {
-		uint64_t userId{};///< The id of the desired User.
+		Snowflake userId{};///< The id of the desired User.
 	};
 
 	/// For modifying the Bot's User responseData. \brief For modifying the Bot's User responseData.
@@ -151,7 +151,7 @@ namespace DiscordCoreAPI {
 	 * \addtogroup main_endpoints
 	 * @{
 	 */
-	/// An interface class DiscordCoreAPI_Dll for the User related Discord endpoints. \brief An interface class DiscordCoreAPI_Dll for the User related Discord endpoints.
+	/// An interface class for the User related Discord endpoints. \brief An interface class for the User related Discord endpoints.
 	class DiscordCoreAPI_Dll Users {
 	  public:
 		friend class DiscordCoreInternal::BaseSocketAgent;

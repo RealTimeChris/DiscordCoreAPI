@@ -327,8 +327,6 @@ namespace DiscordCoreAPI {
 		DiscordCoreClientConfig theConfig{};
 	};
 
-	/**@}*/
-
 	template<typename ObjectType> class ReferenceCountingPtr {
 	  public:
 		class DiscordCoreAPI_Dll ObjectWrapper {

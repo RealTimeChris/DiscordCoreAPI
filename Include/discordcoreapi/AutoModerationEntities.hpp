@@ -65,15 +65,15 @@ namespace DiscordCoreAPI {
 		void parseObject(const nlohmann::json& jsonObjectData, AutoModerationRuleVector* pDataStructure);
 	};
 
-	/// For listing all of the auto-moderation-rules for a particular AutoModerationRule. \brief For listing all of the auto-moderation-rules for a particular AutoModerationRule.
+	/// For listing all of the auto-moderation-rules for a particular Guild. \brief For listing all of the auto-moderation-rules for a particular Guild .
 	struct DiscordCoreAPI_Dll ListAutoModerationRulesForGuildData {
-		uint64_t guildId{};///< The id of the guild for which you would like to list the auto-moderation rules.
+		Snowflake guildId{};///< The id of the Guild for which you would like to list the auto-moderation rules.
 	};
 
 	/// For collecting an auto-moderation-rule for a particular AutoModerationRule. \brief For collecting an auto-moderation-rule for a particular AutoModerationRule.
 	struct DiscordCoreAPI_Dll GetAutoModerationRuleData {
 		uint64_t autoModerationRuleId{};///< The id of the auto-moderation-rule you would like to collect.
-		uint64_t guildId{};///< The id of the AutoModerationRule from which you would like to collect the auto-moderation-rule from.
+		Snowflake guildId{};///< The id of the Guild from which you would like to collect the auto-moderation-rule from.
 	};
 
 	/// For creating an auto-moderation-rule. \brief For creating an auto-moderation-rule.
@@ -84,7 +84,7 @@ namespace DiscordCoreAPI {
 		std::vector<ActionData> actions{};///< The actions which will execute when the rule is triggered
 		TriggerType triggerType{};///< The trigger type.
 		EventType eventType{};///< The event type.
-		uint64_t guildId{};///< The AutoModerationRule within which to create the auto-moderation-rule.
+		Snowflake guildId{};///< The Guild within which to create the AutoModerationRule.
 		std::string name{};///< The rule name.
 		bool enabled{};///< Whether the rule is enabled(False by default).
 	};
@@ -96,12 +96,12 @@ namespace DiscordCoreAPI {
 		std::string matchedKeyword{};///< The word or phrase configured in the rule that triggered the rule
 		std::string matchedContent{};///< The substring in content that triggered the rule.
 		std::string content{};///< The user generated text content.
-		uint64_t channelId{};///< The id of the channel in which user content was posted.
-		uint64_t messageId{};///< The id of any user message which content belongs to.
+		Snowflake channelId{};///< The id of the channel in which user content was posted.
+		Snowflake messageId{};///< The id of any user message which content belongs to.
 		ActionData action{};///< The action which was executed.
-		uint64_t guildId{};///< The id of the guild in which action was executed.
+		Snowflake guildId{};///< The id of the guild in which action was executed.
 		uint64_t ruleId{};///< The id of the rule which action belongs to.
-		uint64_t userId{};///< The id of the user which generated the content which triggered the rule.
+		Snowflake userId{};///< The id of the user which generated the content which triggered the rule.
 
 		AutoModerationActionExecutionEventData() = default;
 
@@ -171,7 +171,7 @@ namespace DiscordCoreAPI {
 		std::vector<ActionData> actions{};///< The actions which will execute when the rule is triggered
 		uint64_t autoModerationRuleId{};///< The id of the auto-moderation-rule you would like to modify.
 		EventType eventType{};///< The event type.
-		uint64_t guildId{};///< The AutoModerationRule within which to modify the auto-moderation-rule.
+		Snowflake guildId{};///< The AutoModerationRule within which to modify the auto-moderation-rule.
 		std::string name{};///< The rule name.
 		bool enabled{};///< Whether the rule is enabled(False by default).
 	};
@@ -179,7 +179,7 @@ namespace DiscordCoreAPI {
 	/// For deleting an auto-moderation-rule. \brief For deleting an auto-moderation-rule.
 	struct DiscordCoreAPI_Dll DeleteAutoModerationRuleData {
 		uint64_t autoModerationRuleId{};///< The id of the auto-moderation-rule you would like to delete.
-		uint64_t guildId{};///< The AutoModerationRule within which to delete the auto-moderation-rule.
+		Snowflake guildId{};///< Guild within which to delete the auto-moderation-rule.
 	};
 
 	/**@}*/
@@ -188,19 +188,29 @@ namespace DiscordCoreAPI {
 	 * \addtogroup main_endpoints
 	 * @{
 	 */
-
+	/// An interface class for the AutoModerationRule related Discord endpoints. \brief An interface class for the AutoModerationRule related Discord endpoints.
 	class DiscordCoreAPI_Dll AutoModerationRules {
 	  public:
 		static void initialize(DiscordCoreInternal::HttpsClient*);
 
+		/// Get all of the Guild's Auto-Moderation-Rules. \brief Get all of the Guild's Auto-Moderation-Rules.
+		/// \returns A CoRoutine containing a std::vector<AutoModerationRule>.
 		CoRoutine<std::vector<AutoModerationRule>> listAutoModerationRulesForGuildAsync(ListAutoModerationRulesForGuildData dataPackage);
 
+		/// Get a particular Auto-Moderation-Rule. \brief Get a particular Auto-Moderation-Rule
+		/// \returns A CoRoutine containing a AutoModerationRule.
 		CoRoutine<AutoModerationRule> getAutoModerationRuleAsync(GetAutoModerationRuleData dataPackage);
 
+		/// Create a particular Auto-Moderation-Rule. \brief Create a particular Auto-Moderation-Rule
+		/// \returns A CoRoutine containing a AutoModerationRule.
 		CoRoutine<AutoModerationRule> createAutoModerationRuleAsync(CreateAutoModerationRuleData dataPackage);
 
+		/// Modify a particular Auto-Moderation-Rule. \brief Modify a particular Auto-Moderation-Rule
+		/// \returns A CoRoutine containing a AutoModerationRule.
 		CoRoutine<AutoModerationRule> modifyAutoModerationRuleAsync(ModifyAutoModerationRuleData dataPackage);
 
+		/// Delete a particular Auto-Moderation-Rule. \brief Delete a particular Auto-Moderation-Rule
+		/// \returns A CoRoutine containing a void.
 		CoRoutine<void> deleteAutoModerationRuleAsync(DeleteAutoModerationRuleData dataPackage);
 
 	  protected:

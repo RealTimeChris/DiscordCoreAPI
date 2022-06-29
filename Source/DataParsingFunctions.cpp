@@ -238,7 +238,7 @@ namespace DiscordCoreAPI {
 			pDataStructure->recipients.clear();
 			for (auto& value: jsonObjectData["recipients"]) {
 				DiscordCoreAPI::UserData newData{ value };
-				uint64_t userId = newData.id;
+				Snowflake userId = newData.id;
 				pDataStructure->recipients[userId] = newData;
 			}
 		}
@@ -469,7 +469,7 @@ namespace DiscordCoreAPI {
 			pDataStructure->voiceStates.clear();
 			for (auto& value: jsonObjectData["voice_states"]) {
 				DiscordCoreAPI::VoiceStateData newData{ value };
-				uint64_t userId = newData.userId;
+				Snowflake userId = newData.userId;
 				pDataStructure->voiceStates[userId] = newData;
 			}
 		}
@@ -1112,7 +1112,7 @@ namespace DiscordCoreAPI {
 			pDataStructure->recipients.clear();
 			for (auto& value: jsonObjectData["recipients"]) {
 				UserData newData{ value };
-				uint64_t userId = newData.id;
+				Snowflake userId = newData.id;
 				pDataStructure->recipients[userId] = newData;
 			}
 		}

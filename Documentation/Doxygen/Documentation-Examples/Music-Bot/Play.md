@@ -170,7 +170,7 @@ Play {#Play}
 					}
 				}
 				InputEventData newestEvent = *newEvent;
-				uint64_t channelId = args.eventData->getChannelId();
+				Snowflake channelId = args.eventData->getChannelId();
 				if (!SongAPI::areWeCurrentlyPlaying(guild.id)) {
 					std::function<CoRoutine<void>(SongCompletionEventData)> theTask = [=](SongCompletionEventData eventDataNew) noexcept -> CoRoutine<void> {
 						co_await NewThreadAwaitable<void>();

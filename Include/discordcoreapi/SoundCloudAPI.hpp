@@ -69,10 +69,10 @@ namespace DiscordCoreInternal {
 	  protected:
 		DiscordCoreAPI::ConfigManager* configManager{ nullptr };
 		SoundCloudRequestBuilder requestBuilder{};
+		DiscordCoreAPI::Snowflake guildId{};
 		const int32_t maxBufferSize{ 8192 };
 		HttpsClient* httpsClient{ nullptr };
-		DiscordCoreAPI::Song theSong{};
-		uint64_t guildId{};
+		DiscordCoreAPI::Song theSong{}
 	};
 
 };// namespace DiscordCoreAPI

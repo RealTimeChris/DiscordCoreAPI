@@ -7004,19 +7004,19 @@ namespace DiscordCoreAPI {
 		std::vector<ActionRowData> getComponents();
 
 		/// Returns the User id of the last requester of this input-event. \brief Returns the User id of the last requester of this input-event.
-		/// \returns Snowflake An Snowflake containing the author's id.
+		/// \returns Snowflake A Snowflake containing the author's id.
 		Snowflake getAuthorId();
 
 		/// Returns the Interaction id, if appplicable, of this input-event. \brief Returns the Interaction id, if appplicable, of this input-event.
-		/// \returns Snowflake An Snowflake containing the Interaction id.
+		/// \returns Snowflake A Snowflake containing the Interaction id.
 		Snowflake getInteractionId();
 
 		/// Returns the application id. \brief Returns the application id.
-		/// \returns Snowflake An Snowflake containing the application id.
+		/// \returns Snowflake A Snowflake containing the application id.
 		Snowflake getApplicationId();
 
 		/// Returns the Channel id of this input-event. \brief Returns the Channel id of this input-event.
-		/// \returns Snowflake An Snowflake containing the Channel id.
+		/// \returns Snowflake A Snowflake containing the Channel id.
 		Snowflake getChannelId();
 
 		/// Returns the Interaction token, if applicable, of this input-event. \brief Returns the Interaction token, if applicable, of this input-event.
@@ -7024,11 +7024,11 @@ namespace DiscordCoreAPI {
 		std::string getInteractionToken();
 
 		/// Returns the Guild id, of this input-event. \brief Returns the Guild id, of this input-event.
-		/// \returns Snowflake An Snowflake containing the Guild id.
+		/// \returns Snowflake A Snowflake containing the Guild id.
 		Snowflake getGuildId();
 
 		/// Returns the Message id, if applicable, of this input-event. \brief Returns the Message id, if applicable, of this input-event.
-		/// \returns Snowflake An Snowflake containing the Message id.
+		/// \returns Snowflake A Snowflake containing the Message id.
 		Snowflake getMessageId();
 
 		/// Returns the Interaction data, if applicable, of this input-event. \brief Returns the InteractionData, if applicable, of this input-event.

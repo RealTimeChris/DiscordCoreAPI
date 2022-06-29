@@ -29,27 +29,27 @@ namespace DiscordCoreAPI {
 	/// For creating a StageInstance. \brief For creating a StageInstance.
 	struct DiscordCoreAPI_Dll CreateStageInstanceData {
 		StageInstancePrivacyLevel privacyLevel{};///< The privacy level of the Stage instance(default Guild_Only).
-		uint64_t channelId{};///< The id of the Stage Channel.
+		Snowflake channelId{};///< The id of the Stage Channel.
 		std::string reason{};///< The reason for starting it.
 		std::string topic{};///< The topic of the Stage instance(1 - 120 characters).
 	};
 
 	/// For collecting a single StageInstance. \brief For collecting a single StageInstance.
 	struct DiscordCoreAPI_Dll GetStageInstanceData {
-		uint64_t channelId{};///< The Channel id from which you would like to collect the StageInstance.
+		Snowflake channelId{};///< The Channel id from which you would like to collect the StageInstance.
 	};
 
 	/// For modifying a single StageInstance. \brief For modifying a single StageInstance.
 	struct DiscordCoreAPI_Dll ModifyStageInstanceData {
 		StageInstancePrivacyLevel privacyLevel{};///< The privacy level of the Stage instance.
-		uint64_t channelId{};///< The Channel Id of the StageInstance.
+		Snowflake channelId{};///< The Channel Id of the StageInstance.
 		std::string reason{};///< Reason for modifying the StageInstance.
 		std::string topic{};///< The topic of the Stage instance(1 - 120 characters).
 	};
 
 	/// For deleting a single StageInstance. \brief For deleting a single StageInstance.
 	struct DiscordCoreAPI_Dll DeleteStageInstanceData {
-		uint64_t channelId{};///< The Channel Id of the StageInstance.
+		Snowflake channelId{};///< The Channel Id of the StageInstance.
 		std::string reason{};///< Reason for deleting the StageInstance.
 	};
 

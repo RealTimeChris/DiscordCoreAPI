@@ -188,7 +188,7 @@ namespace DiscordCoreAPI {
 	/// \param url A url, if applicable.
 	/// \returns RespondToInputEventData& A reference to this data structure.
 	RespondToInputEventData& RespondToInputEventData::addButton(bool disabled, const std::string& customIdNew, const std::string& buttonLabel, ButtonStyle buttonStyle,
-		const std::string& emojiName, uint64_t emojiId, const std::string& url) {
+		const std::string& emojiName, Snowflake emojiId, const std::string& url) {
 		if (this->components.size() == 0) {
 			ActionRowData actionRowData;
 			this->components.push_back(actionRowData);
@@ -376,7 +376,7 @@ namespace DiscordCoreAPI {
 	/// \param url A url, if applicable.
 	/// \returns MessageResponseBase& A reference to this data structure.
 	MessageResponseBase& MessageResponseBase::addButton(bool disabled, const std::string& customIdNew, const std::string& buttonLabel, ButtonStyle buttonStyle,
-		const std::string& emojiName, uint64_t emojiId, const std::string& url) {
+		const std::string& emojiName, Snowflake emojiId, const std::string& url) {
 		if (this->components.size() == 0) {
 			ActionRowData actionRowData;
 			this->components.push_back(actionRowData);

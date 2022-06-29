@@ -147,7 +147,7 @@ namespace DiscordCoreAPI {
 
 		std::unique_ptr<std::jthread> theTask{ nullptr };
 		bool areWeInstantiated{ false };
-		uint64_t guildId{};
+		Snowflake guildId{};
 
 		void sendNextSongFinal(const GuildMember& guildMember);
 

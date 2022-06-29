@@ -47,7 +47,7 @@ namespace DiscordCoreAPI {
 		VoiceConnection() = default;
 
 		/// Collects the currently connected-to voice Channel's id. \brief Collects the currently connected-to voice Channel's id.
-		/// \returns uint64_t An Snowflake containing the Channel's id.
+		/// \returns uint64_t A Snowflake containing the Channel's id.
 		Snowflake getChannelId();
 
 		~VoiceConnection();
