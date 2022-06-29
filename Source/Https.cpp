@@ -386,7 +386,7 @@ namespace DiscordCoreInternal {
 			}
 		} catch (...) {
 			if (this->configManager->doWePrintHttpsErrorMessages()) {
-				DiscordCoreAPI::reportException(workload.callStack + "::HttpsClient::executeHttpRequest()");
+				DiscordCoreAPI::reportException(workload.callStack + "::HttpsClient::httpRequestInternal()");
 			}
 			httpsConnection->currentRecursionDepth++;
 			httpsConnection->doWeConnect = true;
@@ -401,15 +401,17 @@ namespace DiscordCoreInternal {
 		HttpsResponseData theData{};
 		while (true) {
 			try {
-				theConnection->processIO();
-				std::string theString = theConnection->getInputBuffer();
-				if (theString.size() > 0) {
-					theConnection->inputBufferReal.insert(theConnection->inputBufferReal.end(), theString.begin(), theString.end());
+				if (theConnection->areWeStillConnected()) {
+					theConnection->processIO();
+					std::string theString = theConnection->getInputBuffer();
+					if (theString.size() > 0) {
+						theConnection->inputBufferReal.insert(theConnection->inputBufferReal.end(), theString.begin(), theString.end());
+					}
+				} else {
+					theData.responseCode = -1;
+					return theData;
 				}
 			} catch (ProcessingError&) {
-				if (this->configManager->doWePrintHttpsErrorMessages()) {
-					DiscordCoreAPI::reportException("HttpsClient::getResponse()");
-				}
 				theData.responseCode = -1;
 				return theData;
 			}

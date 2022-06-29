@@ -271,8 +271,8 @@ namespace DiscordCoreInternal {
 					}
 					if (audioDecoder->haveWeFailed()) {
 						audioDecoder.reset(nullptr);
-						this->weFailedToDownloadOrDecode(newSong, theToken, currentRecursionDepth);
 						theMap[0]->disconnect();
+						this->weFailedToDownloadOrDecode(newSong, theToken, currentRecursionDepth);
 						return;
 					}
 					if (theToken.stop_requested()) {
@@ -324,9 +324,9 @@ namespace DiscordCoreInternal {
 								if (this->configManager->doWePrintWebSocketErrorMessages()) {
 									DiscordCoreAPI::reportException("YouTubeAPI::downloadAndStreamAudio()");
 								}
+								theMap[0]->disconnect();
 								audioDecoder.reset(nullptr);
 								this->weFailedToDownloadOrDecode(newSong, theToken, currentRecursionDepth);
-								theMap[0]->disconnect();
 								return;
 							}
 							std::string streamBuffer{};
@@ -363,9 +363,9 @@ namespace DiscordCoreInternal {
 									if (this->configManager->doWePrintWebSocketErrorMessages()) {
 										DiscordCoreAPI::reportException("YouTubeAPI::downloadAndStreamAudio()");
 									}
-									audioDecoder.reset(nullptr);
-									this->weFailedToDownloadOrDecode(newSong, theToken, currentRecursionDepth);;
 									theMap[0]->disconnect();
+									audioDecoder.reset(nullptr);
+									this->weFailedToDownloadOrDecode(newSong, theToken, currentRecursionDepth);
 									return;
 								}
 								std::string newVector{};
