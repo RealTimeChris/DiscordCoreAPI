@@ -72,7 +72,7 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::Snowflake guildId{};
 		const int32_t maxBufferSize{ 8192 };
 		HttpsClient* httpsClient{ nullptr };
-		DiscordCoreAPI::Song theSong{}
+		DiscordCoreAPI::Song theSong{};
 	};
 
 };// namespace DiscordCoreAPI
