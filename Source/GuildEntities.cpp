@@ -246,8 +246,8 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<std::vector<GuildData>> Guilds::getAllGuildsAsync() {
-		std::shared_lock<std::shared_mutex> theLock{ Guilds::theMutex };
 		co_await NewThreadAwaitable<std::vector<GuildData>>();
+		std::shared_lock<std::shared_mutex> theLock{ Guilds::theMutex };
 		GuildDataVector guildVector{};
 		for (auto& [key, value]: *Guilds::cache) {
 			value->discordCoreClient = Guilds::discordCoreClient;
@@ -271,12 +271,14 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<GuildData> Guilds::getCachedGuildAsync(GetGuildData dataPackage) {
 		co_await NewThreadAwaitable<GuildData>();
+		std::shared_lock<std::shared_mutex> theLock{ Guilds::theMutex };
 		if (!Guilds::cache->contains(dataPackage.guildId)) {
+			theLock.unlock();
 			auto guildNew = Guilds::getGuildAsync({ .guildId = dataPackage.guildId }).get();
 			Guilds::insertGuild(guildNew);
 			co_return guildNew;
 		} else {
-			std::shared_lock<std::shared_mutex> theLock{ Guilds::theMutex };
+			
 			co_return *(*Guilds::cache)[dataPackage.guildId];
 		}
 	}

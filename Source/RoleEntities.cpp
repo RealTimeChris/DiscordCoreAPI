@@ -252,13 +252,13 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<RoleData> Roles::getCachedRoleAsync(GetRoleData dataPackage) {
 		co_await NewThreadAwaitable<RoleData>();
+		std::shared_lock<std::shared_mutex> theLock{ Roles::theMutex };
 		if (!Roles::cache->contains(dataPackage.roleId)) {
+			theLock.unlock();
 			auto theRole = Roles::getRoleAsync(dataPackage).get();
 			Roles::insertRole(theRole);
 			co_return theRole;
-
 		} else {
-			std::shared_lock<std::shared_mutex> theLock{ Roles::theMutex };
 			co_return *(*Roles::cache)[dataPackage.roleId];
 		}
 	}

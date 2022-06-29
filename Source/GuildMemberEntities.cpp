@@ -114,12 +114,13 @@ namespace DiscordCoreAPI {
 		GuildMemberId theKey{};
 		theKey.guildId = dataPackage.guildId;
 		theKey.guildMemberId = dataPackage.guildMemberId;
+		std::shared_lock<std::shared_mutex> theLock{ GuildMembers::theMutex };
 		if (!GuildMembers::cache->contains(theKey)) {
+			theLock.unlock();
 			auto theGuildMember = GuildMembers::getGuildMemberAsync(dataPackage).get();
 			GuildMembers::insertGuildMember(theGuildMember);
 			co_return theGuildMember;
 		} else {
-			std::shared_lock<std::shared_mutex> theLock{ GuildMembers::theMutex };
 			co_return *(*GuildMembers::cache)[theKey];
 		}
 	}
