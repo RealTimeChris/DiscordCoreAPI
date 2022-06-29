@@ -373,7 +373,7 @@ namespace DiscordCoreInternal {
 		~WebSocketSSLShard() noexcept = default;
 
 	  protected:
-		std::unordered_map<uint64_t, DiscordCoreAPI::UnboundedMessageBlock<VoiceConnectionData>*> voiceConnectionDataBufferMap{};
+		std::unordered_map<Snowflake, DiscordCoreAPI::UnboundedMessageBlock<VoiceConnectionData>*> voiceConnectionDataBufferMap{};
 		DiscordCoreAPI::StopWatch<std::chrono::milliseconds> heartBeatStopWatch{ 0ms };
 		WebSocketState theState{ WebSocketState::Connecting01 };
 		std::queue<std::string> processedMessages{};
@@ -395,7 +395,7 @@ namespace DiscordCoreInternal {
 		int64_t messageOffset{};
 		std::string sessionId{};
 		nlohmann::json shard{};
-		uint64_t userId{ 0 };
+		Snowflake userId{ 0 };
 	};
 
 	class DiscordCoreAPI_Dll DatagramSocketSSLClient {

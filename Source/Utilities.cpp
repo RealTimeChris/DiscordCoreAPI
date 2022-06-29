@@ -1031,7 +1031,7 @@ namespace DiscordCoreAPI {
 
 	std::string Permissions::computeBasePermissions(const GuildMember& guildMember) {
 		const GuildData guild = Guilds::getCachedGuildAsync({ .guildId = guildMember.guildId }).get();
-		if (static_cast<uint64_t>(guild.ownerId) == guildMember.id) {
+		if (guild.ownerId == guildMember.id) {
 			return Permissions::getAllPermissions();
 		}
 		std::vector<RoleData> guildRoles{};

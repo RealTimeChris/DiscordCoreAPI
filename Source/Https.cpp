@@ -378,6 +378,7 @@ namespace DiscordCoreInternal {
 			if (result.responseCode == -1) {
 				httpsConnection->currentRecursionDepth++;
 				httpsConnection->doWeConnect = true;
+				httpsConnection->areWeCheckedOut.store(false);
 				return this->httpRequestInternal(workload, rateLimitData);
 			} else {
 				httpsConnection->currentRecursionDepth = 0;
@@ -390,6 +391,7 @@ namespace DiscordCoreInternal {
 			}
 			httpsConnection->currentRecursionDepth++;
 			httpsConnection->doWeConnect = true;
+			httpsConnection->areWeCheckedOut.store(false);
 			return this->httpRequestInternal(workload, rateLimitData);
 		}
 	}

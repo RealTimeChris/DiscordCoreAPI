@@ -161,7 +161,7 @@ namespace DiscordCoreInternal {
 		return DiscordCoreAPI::Song{};
 	}
 
-	YouTubeAPI::YouTubeAPI(const uint64_t& guildIdNew, HttpsClient* httpsClient, DiscordCoreAPI::ConfigManager* configManagerNew) : requestBuilder(httpsClient, configManagerNew) {
+	YouTubeAPI::YouTubeAPI(const DiscordCoreAPI::Snowflake& guildIdNew, HttpsClient* httpsClient, DiscordCoreAPI::ConfigManager* configManagerNew) : requestBuilder(httpsClient, configManagerNew) {
 		this->configManager = configManagerNew;
 		this->guildId = guildIdNew;
 	}
