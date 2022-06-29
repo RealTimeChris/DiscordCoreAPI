@@ -787,7 +787,7 @@ namespace DiscordCoreAPI {
 		}
 
 		if (jsonObjectData.contains("webhook_id") && !jsonObjectData["webhook_id"].is_null()) {
-			pDataStructure->webhookId = stoull(jsonObjectData["webhook_id"].get<std::string>());
+			pDataStructure->webHookId = stoull(jsonObjectData["webhook_id"].get<std::string>());
 		}
 
 		if (jsonObjectData.contains("type") && !jsonObjectData["type"].is_null()) {
