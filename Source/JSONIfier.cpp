@@ -998,10 +998,10 @@ namespace DiscordCoreInternal {
 			newData["name"] = value.name;
 			data["roles"].push_back(newData);
 		}
-		if (dataPackage.systemChannelId != "") {
+		if (dataPackage.systemChannelId != 0) {
 			data["system_channel_id"] = dataPackage.systemChannelId;
 		}
-		if (dataPackage.afkChannelId != "") {
+		if (dataPackage.afkChannelId != 0) {
 			data["afk_channel_id"] = dataPackage.afkChannelId;
 		}
 		return data.dump();
@@ -1016,7 +1016,7 @@ namespace DiscordCoreInternal {
 		data["verification_level"] = dataPackage.verificationLevel;
 		data["discovery_splash"] = dataPackage.discoverySplash;
 		data["preferred_locale"] = std::string{ dataPackage.preferredLocale };
-		data["rules_channel_id"] == std::string{ dataPackage.rulesChannelId };
+		data["rules_channel_id"] = std::to_string(dataPackage.rulesChannelId);
 		data["description"] = std::string{ dataPackage.description };
 		data["afk_timeout"] = dataPackage.afkTimeout;
 		data["features"] = dataPackage.features;
@@ -1027,14 +1027,14 @@ namespace DiscordCoreInternal {
 		if (dataPackage.publicUpdatesChannelId != "") {
 			data["public_updates_channel_id"] = std::string{ dataPackage.publicUpdatesChannelId };
 		}
-		if (dataPackage.afkChannelId != "") {
-			data["afk_channel_id"] = std::string{ dataPackage.afkChannelId };
+		if (dataPackage.afkChannelId != 0) {
+			data["afk_channel_id"] = std::to_string(dataPackage.afkChannelId);
 		}
-		if (dataPackage.systemChannelId != "") {
-			data["system_channel_id"] = std::string{ dataPackage.systemChannelId };
+		if (dataPackage.systemChannelId != 0) {
+			data["system_channel_id"] = std::to_string(dataPackage.systemChannelId);
 		}
-		if (dataPackage.ownerId != "") {
-			data["owner_id"] = std::string{ dataPackage.ownerId };
+		if (dataPackage.ownerId != 0) {
+			data["owner_id"] = std::to_string(dataPackage.ownerId);
 		}
 		return data.dump();
 	}
