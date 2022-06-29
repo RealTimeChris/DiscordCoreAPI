@@ -7869,7 +7869,6 @@ namespace DiscordCoreInternal {
 
 	struct DiscordCoreAPI_Dll VoiceConnectInitData {
 		DiscordCoreAPI::Snowflake channelId{};
-		DiscordCoreAPI::Snowflake channelId{};
 		DiscordCoreAPI::Snowflake guildId{};
 		DiscordCoreAPI::Snowflake userId{};
 		int32_t currentShard{};
