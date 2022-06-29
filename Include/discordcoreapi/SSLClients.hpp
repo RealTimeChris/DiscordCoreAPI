@@ -260,7 +260,7 @@ namespace DiscordCoreInternal {
 		}
 
 		SOCKETWrapper& operator=(SOCKET other) {
-			*this->socketPtr = other;
+			this->socketPtr.reset(new SOCKET{ other });
 			return *this;
 		}
 
@@ -350,6 +350,7 @@ namespace DiscordCoreInternal {
 		friend class DiscordCoreAPI::VoiceConnection;
 		friend class VoiceSocketAgent;
 		friend class BaseSocketAgent;
+		friend class YouTubeAPI;
 
 		WebSocketSSLShard(std::queue<DiscordCoreAPI::ConnectionPackage>* connectionsNew, int32_t currentBaseSocketAgentNew, int32_t currentShardNew,
 			DiscordCoreAPI::ConfigManager* configManagerNew) noexcept;

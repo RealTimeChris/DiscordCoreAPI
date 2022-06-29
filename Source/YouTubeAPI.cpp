@@ -211,6 +211,7 @@ namespace DiscordCoreInternal {
 			if (newSong.finalDownloadUrls.size() > 0) {
 				theMap[0] = std::move(streamSocket);
 				theMap[0]->connect(newSong.finalDownloadUrls[0].urlPath, "443");
+				theMap[0]->areWeConnected01.store(true);
 			} else {
 				return;
 			}
@@ -241,6 +242,7 @@ namespace DiscordCoreInternal {
 						DiscordCoreAPI::reportException("YouTubeAPI::downloadAndStreamAudio()");
 					}
 					audioDecoder.reset(nullptr);
+					theMap[0]->disconnect();
 					this->weFailedToDownloadOrDecode(newSong, theToken, currentRecursionDepth);
 					return;
 				}
@@ -257,26 +259,30 @@ namespace DiscordCoreInternal {
 						frameData.rawFrameData.sampleCount = 0;
 						frameData.encodedFrameData.sampleCount = 0;
 						DiscordCoreAPI::getVoiceConnectionMap()[this->guildId]->audioBuffer.send(frameData);
+						theMap[0]->disconnect();
 						audioDecoder.reset(nullptr);
 						return;
 					}
 					bytesSubmittedPrevious = bytesSubmittedTotal;
 					if (theToken.stop_requested()) {
+						theMap[0]->disconnect();
 						audioDecoder.reset(nullptr);
 						return;
 					}
 					if (audioDecoder->haveWeFailed()) {
 						audioDecoder.reset(nullptr);
 						this->weFailedToDownloadOrDecode(newSong, theToken, currentRecursionDepth);
-						audioDecoder.reset(nullptr);
+						theMap[0]->disconnect();
 						return;
 					}
 					if (theToken.stop_requested()) {
+						theMap[0]->disconnect();
 						audioDecoder.reset(nullptr);
 						return;
 					} else {
 						if (!areWeDoneHeaders) {
 							if (theToken.stop_requested()) {
+								theMap[0]->disconnect();
 								audioDecoder.reset(nullptr);
 								return;
 							}
@@ -289,7 +295,7 @@ namespace DiscordCoreInternal {
 								}
 								audioDecoder.reset(nullptr);
 								this->weFailedToDownloadOrDecode(newSong, theToken, currentRecursionDepth);
-								audioDecoder.reset(nullptr);
+								theMap[0]->disconnect();
 								return;
 							}
 							if (!theToken.stop_requested()) {
@@ -299,6 +305,7 @@ namespace DiscordCoreInternal {
 								}
 							}
 							if (theToken.stop_requested()) {
+								theMap[0]->disconnect();
 								audioDecoder.reset(nullptr);
 								return;
 							}
@@ -306,6 +313,7 @@ namespace DiscordCoreInternal {
 							areWeDoneHeaders = true;
 						}
 						if (theToken.stop_requested()) {
+							theMap[0]->disconnect();
 							audioDecoder.reset(nullptr);
 							return;
 						}
@@ -318,7 +326,7 @@ namespace DiscordCoreInternal {
 								}
 								audioDecoder.reset(nullptr);
 								this->weFailedToDownloadOrDecode(newSong, theToken, currentRecursionDepth);
-								audioDecoder.reset(nullptr);
+								theMap[0]->disconnect();
 								return;
 							}
 							std::string streamBuffer{};
@@ -345,6 +353,7 @@ namespace DiscordCoreInternal {
 							if (contentLengthCurrent > 0) {
 								if (theToken.stop_requested()) {
 									audioDecoder.reset(nullptr);
+									theMap[0]->disconnect();
 									return;
 								}
 								remainingDownloadContentLength = newSong.contentLength - bytesSubmittedTotal;
@@ -355,8 +364,8 @@ namespace DiscordCoreInternal {
 										DiscordCoreAPI::reportException("YouTubeAPI::downloadAndStreamAudio()");
 									}
 									audioDecoder.reset(nullptr);
-									this->weFailedToDownloadOrDecode(newSong, theToken, currentRecursionDepth);
-									audioDecoder.reset(nullptr);
+									this->weFailedToDownloadOrDecode(newSong, theToken, currentRecursionDepth);;
+									theMap[0]->disconnect();
 									return;
 								}
 								std::string newVector{};
@@ -382,6 +391,7 @@ namespace DiscordCoreInternal {
 								}
 							}
 							if (theToken.stop_requested()) {
+								theMap[0]->disconnect();
 								audioDecoder.reset(nullptr);
 								return;
 							}
@@ -397,6 +407,7 @@ namespace DiscordCoreInternal {
 								continue;
 							}
 							if (theToken.stop_requested()) {
+								theMap[0]->disconnect();
 								audioDecoder.reset(nullptr);
 								return;
 							}
