@@ -257,25 +257,27 @@ namespace DiscordCoreInternal {
 						frameData.rawFrameData.sampleCount = 0;
 						frameData.encodedFrameData.sampleCount = 0;
 						DiscordCoreAPI::getVoiceConnectionMap()[this->guildId]->audioBuffer.send(frameData);
+						audioDecoder.reset(nullptr);
 						return;
 					}
 					bytesSubmittedPrevious = bytesSubmittedTotal;
 					if (theToken.stop_requested()) {
-						this->breakOut(theToken, std::move(audioDecoder));
+						audioDecoder.reset(nullptr);
 						return;
 					}
 					if (audioDecoder->haveWeFailed()) {
 						audioDecoder.reset(nullptr);
 						this->weFailedToDownloadOrDecode(newSong, theToken, currentRecursionDepth);
+						audioDecoder.reset(nullptr);
 						return;
 					}
 					if (theToken.stop_requested()) {
-						this->breakOut(theToken, std::move(audioDecoder));
+						audioDecoder.reset(nullptr);
 						return;
 					} else {
 						if (!areWeDoneHeaders) {
 							if (theToken.stop_requested()) {
-								this->breakOut(theToken, std::move(audioDecoder));
+								audioDecoder.reset(nullptr);
 								return;
 							}
 							remainingDownloadContentLength = newSong.contentLength - bytesSubmittedTotal;
@@ -287,6 +289,7 @@ namespace DiscordCoreInternal {
 								}
 								audioDecoder.reset(nullptr);
 								this->weFailedToDownloadOrDecode(newSong, theToken, currentRecursionDepth);
+								audioDecoder.reset(nullptr);
 								return;
 							}
 							if (!theToken.stop_requested()) {
@@ -296,14 +299,14 @@ namespace DiscordCoreInternal {
 								}
 							}
 							if (theToken.stop_requested()) {
-								this->breakOut(theToken, std::move(audioDecoder));
+								audioDecoder.reset(nullptr);
 								return;
 							}
 							remainingDownloadContentLength = newSong.contentLength - bytesSubmittedTotal;
 							areWeDoneHeaders = true;
 						}
 						if (theToken.stop_requested()) {
-							this->breakOut(theToken, std::move(audioDecoder));
+							audioDecoder.reset(nullptr);
 							return;
 						}
 						if (counter == 0) {
@@ -315,6 +318,7 @@ namespace DiscordCoreInternal {
 								}
 								audioDecoder.reset(nullptr);
 								this->weFailedToDownloadOrDecode(newSong, theToken, currentRecursionDepth);
+								audioDecoder.reset(nullptr);
 								return;
 							}
 							std::string streamBuffer{};
@@ -340,7 +344,7 @@ namespace DiscordCoreInternal {
 						} else if (counter > 0) {
 							if (contentLengthCurrent > 0) {
 								if (theToken.stop_requested()) {
-									this->breakOut(theToken, std::move(audioDecoder));
+									audioDecoder.reset(nullptr);
 									return;
 								}
 								remainingDownloadContentLength = newSong.contentLength - bytesSubmittedTotal;
@@ -352,6 +356,7 @@ namespace DiscordCoreInternal {
 									}
 									audioDecoder.reset(nullptr);
 									this->weFailedToDownloadOrDecode(newSong, theToken, currentRecursionDepth);
+									audioDecoder.reset(nullptr);
 									return;
 								}
 								std::string newVector{};
@@ -377,7 +382,7 @@ namespace DiscordCoreInternal {
 								}
 							}
 							if (theToken.stop_requested()) {
-								this->breakOut(theToken, std::move(audioDecoder));
+								audioDecoder.reset(nullptr);
 								return;
 							}
 							std::vector<DiscordCoreAPI::RawFrameData> frames{};
@@ -392,7 +397,7 @@ namespace DiscordCoreInternal {
 								continue;
 							}
 							if (theToken.stop_requested()) {
-								this->breakOut(theToken, std::move(audioDecoder));
+								audioDecoder.reset(nullptr);
 								return;
 							}
 							auto encodedFrames = audioEncoder.encodeFrames(frames);
@@ -455,21 +460,6 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::AudioFrameData dataFrame{};
 		while (DiscordCoreAPI::getVoiceConnectionMap()[this->guildId]->audioBuffer.tryReceive(dataFrame)) {
 		};
-	}
-
-	void YouTubeAPI::breakOut(std::stop_token theToken, std::unique_ptr<AudioDecoder> audioDecoder) {
-		if (theToken.stop_requested()) {
-			audioDecoder.reset(nullptr);
-			DiscordCoreAPI::AudioFrameData frameData{};
-			while (DiscordCoreAPI::getVoiceConnectionMap()[this->guildId]->audioBuffer.tryReceive(frameData)) {
-			};
-			frameData.type = DiscordCoreAPI::AudioFrameType::Unset;
-			frameData.rawFrameData.sampleCount = 0;
-			frameData.rawFrameData.data.clear();
-			frameData.encodedFrameData.sampleCount = 0;
-			frameData.encodedFrameData.data.clear();
-			DiscordCoreAPI::getVoiceConnectionMap()[this->guildId]->audioBuffer.send(frameData);
-		}
 	}
 
 };

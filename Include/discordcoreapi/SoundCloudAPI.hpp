@@ -73,8 +73,6 @@ namespace DiscordCoreInternal {
 		HttpsClient* httpsClient{ nullptr };
 		DiscordCoreAPI::Song theSong{};
 		uint64_t guildId{};
-
-		void breakOut(std::stop_token theToken, std::unique_ptr<AudioDecoder> audioDecoder);
 	};
 
 };// namespace DiscordCoreAPI

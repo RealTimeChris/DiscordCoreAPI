@@ -110,6 +110,7 @@ namespace DiscordCoreInternal {
 		WebSocketSSLShard* theBaseShard{ nullptr };
 		VoiceConnectionData voiceConnectionData{};
 		std::atomic_bool areWeConnected{ false };
+		std::atomic_bool doWeDisconnect{ false };
 		std::atomic_bool doWeReconnect{ false };
 		std::atomic_bool* doWeQuit{ nullptr };
 		int32_t maxReconnectionTries{ 10 };

@@ -1332,7 +1332,7 @@ namespace DiscordCoreInternal {
 				}
 				std::this_thread::sleep_for(1ms);
 			}
-			while (!theToken.stop_requested() && !this->doWeQuit->load()) {
+			while (!theToken.stop_requested() && !this->doWeQuit->load() && !this->doWeDisconnect.load()) {
 				if (!theToken.stop_requested() && !this->doWeReconnect.load() && this->voiceSocket) {
 					this->voiceSocket->processIO();
 					this->voiceSocket->getInputBuffer();

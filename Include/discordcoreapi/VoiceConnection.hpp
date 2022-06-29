@@ -63,6 +63,7 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::EventWaiter playSetEvent{};
 		DiscordCoreInternal::EventWaiter stopSetEvent{};
 		DiscordCoreInternal::EventWaiter pauseEvent{};
+		std::atomic_bool* doWeDisconnect{ nullptr };
 		std::atomic_bool* doWeReconnect{ nullptr };
 		std::atomic_bool areWeStopping{ false };
 		std::atomic_bool areWePlaying{ false };

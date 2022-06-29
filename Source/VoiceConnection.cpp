@@ -170,6 +170,7 @@ namespace DiscordCoreAPI {
 			this->baseSocketAgent->getVoiceConnectionData(this->voiceConnectInitData, this->baseSocketAgent->theClients[this->voiceConnectInitData.currentShard].get());
 			this->voiceSocketAgent->connect();
 			this->doWeReconnect = &this->voiceSocketAgent->doWeReconnect;
+			this->doWeDisconnect = &this->voiceSocketAgent->doWeDisconnect;
 			while (!this->voiceSocketAgent->areWeConnected.load()) {
 				std::this_thread::sleep_for(1ms);
 				if (theStopWatch.hasTimePassed()) {
@@ -191,6 +192,7 @@ namespace DiscordCoreAPI {
 		this->stopSetEvent.set();
 		this->playSetEvent.set();
 		this->areWeConnectedBool = false;
+		this->doWeDisconnect->store(true);
 		this->areWePlaying.store(false);
 		this->areWeStopping.store(true);
 		this->sendSpeakingMessage(false);

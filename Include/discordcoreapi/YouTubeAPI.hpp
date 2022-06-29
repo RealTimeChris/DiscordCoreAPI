@@ -67,8 +67,6 @@ namespace DiscordCoreInternal {
 		const int32_t maxBufferSize{ 8192 };
 		DiscordCoreAPI::Song theSong{};
 		uint64_t guildId{};
-
-		void breakOut(std::stop_token theToken, std::unique_ptr<AudioDecoder> audioDecoder);
 	};
 
 };// namespace DiscordCoreAPI
