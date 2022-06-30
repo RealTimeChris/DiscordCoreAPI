@@ -1000,6 +1000,7 @@ namespace DiscordCoreInternal {
 					this->onClosed(this->theClients[connectData.currentShard].get());
 					return;
 				}
+				this->theClients[connectData.currentShard]->areWeConnected01.store(true);
 				std::string sendString{};
 				if (this->configManager->getTextFormat() == DiscordCoreAPI::TextFormat::Etf) {
 					sendString = "GET /?v=10&encoding=etf HTTP/1.1\r\nHost: " + this->configManager->getConnectionAddress() +
@@ -1022,7 +1023,6 @@ namespace DiscordCoreInternal {
 					throw ProcessingError{ "Failed to write to the websocket." };
 				}
 
-				this->theClients[connectData.currentShard]->areWeConnected01.store(true);
 				while (!this->doWeQuit->load()) {
 					if (this->theClients[connectData.currentShard]->theState == WebSocketState::Connected) {
 						break;
