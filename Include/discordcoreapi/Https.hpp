@@ -33,6 +33,12 @@ namespace DiscordCoreInternal {
 
 	enum class HttpsState { Collecting_Code = 0, Collecting_Headers = 1, Collecting_Size = 2, Collecting_Contents = 3 };
 
+	class HttpError : public std::runtime_error {
+	  public:
+		int32_t errorCode{};
+		explicit HttpError(std::string theMessage) : std::runtime_error(theMessage){};
+	};
+
 	struct DiscordCoreAPI_Dll HttpsResponseData {
 		friend class HttpsRnRBuilder;
 		friend class HttpsClient;
@@ -136,6 +142,13 @@ namespace DiscordCoreInternal {
 				workload.headersToInsert["Content-Type"] = "multipart/form-data; boundary=boundary25";
 			}
 			HttpsResponseData returnData = this->httpRequest(workload);
+			if (returnData.responseCode != 200 && returnData.responseCode != 204 && returnData.responseCode != 201) {
+				std::string theErrorMessage{ DiscordCoreAPI::shiftToBrightRed() + workload.callStack + "Https Error: Code = " + std::to_string(returnData.responseCode) +
+					", Message = " + returnData.responseMessage + DiscordCoreAPI::reset() + "\n\n" };
+				HttpError theError{ theErrorMessage };
+				theError.errorCode = returnData.responseCode;
+				throw theError;
+			}
 			ReturnType returnObject{ returnData.responseData };
 			return returnObject;
 		}

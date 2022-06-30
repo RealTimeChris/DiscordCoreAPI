@@ -348,11 +348,6 @@ namespace DiscordCoreInternal {
 							  << std::endl;
 				}
 				returnData = this->executeByRateLimitData(workload);
-			} else if (this->configManager->doWePrintHttpsErrorMessages()) {
-				std::cout << DiscordCoreAPI::shiftToBrightRed()
-						  << workload.callStack + " Error: Code = " << std::to_string(returnData.responseCode) + ", Message = " + returnData.responseMessage
-						  << DiscordCoreAPI::reset() << std::endl
-						  << std::endl;
 			}
 		}
 		return returnData;
@@ -394,7 +389,7 @@ namespace DiscordCoreInternal {
 				throw ProcessingError{ "Failed to write to the websocket." };
 			}
 			auto result = this->getResponse(rateLimitData, httpsConnection);
-			if (result.contentSize == -1) {
+			if (result.responseCode == -1) {
 				httpsConnection->currentReconnectionTries++;
 				httpsConnection->doWeConnect = true;
 				httpsConnection->areWeCheckedOut.store(false);
@@ -513,12 +508,27 @@ namespace DiscordCoreInternal {
 		} else if (workload.payloadType == PayloadType::Multipart_Form) {
 			workload.headersToInsert["Content-Type"] = "multipart/form-data; boundary=boundary25";
 		}
-		this->httpRequest(workload);
+		auto returnData = this->httpRequest(workload);
+		if (returnData.responseCode != 200 && returnData.responseCode != 204 && returnData.responseCode != 201) {
+			std::string theErrorMessage{ DiscordCoreAPI::shiftToBrightRed() + workloadNew.callStack + "Https Error: Code = " + std::to_string(returnData.responseCode) +
+				", Message = " + returnData.responseMessage + DiscordCoreAPI::reset() + "\n\n" };
+			HttpError theError{ theErrorMessage };
+			theError.errorCode=returnData.responseCode;
+			throw theError;
+		}
 		return;
 	}
 
 	HttpsResponseData HttpsClient::submitWorkloadAndGetResult(HttpsWorkloadData* workloadNew) {
 		RateLimitData rateLimitData{};
-		return this->httpRequestInternal(*workloadNew, rateLimitData);
+		auto returnData = this->httpRequestInternal(*workloadNew, rateLimitData);
+		if (returnData.responseCode != 200 && returnData.responseCode != 204 && returnData.responseCode != 201) {
+			std::string theErrorMessage{ DiscordCoreAPI::shiftToBrightRed() + workloadNew->callStack + "Https Error: Code = " + std::to_string(returnData.responseCode) +
+				", Message = " + returnData.responseMessage + DiscordCoreAPI::reset() + "\n\n" };
+			HttpError theError{ theErrorMessage };
+			theError.errorCode = returnData.responseCode;
+			throw theError;
+		}
+		return returnData;
 	}
 }

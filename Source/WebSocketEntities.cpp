@@ -150,13 +150,17 @@ namespace DiscordCoreInternal {
 				dataPackage.selfMute = doWeCollect.selfMute;
 				theShard->userId = doWeCollect.userId;
 				nlohmann::json newData = dataPackage;
+				std::string theString{};
+				this->stringifyJsonData(newData, theString, theShard->dataOpCode);
+				theShard->writeData(theString, true);
 				this->sendMessage(newData, theShard, true);
 				if (doWeCollect.channelId == 0) {
 					return;
 				}
 				dataPackage.channelId = doWeCollect.channelId;
 				newData = dataPackage;
-				this->sendMessage(newData, theShard, true);
+				this->stringifyJsonData(newData, theString, theShard->dataOpCode);
+				theShard->writeData(theString, true);
 				theShard->areWeCollectingData = true;
 				theStopWatch.resetTimer();
 				while (theShard->areWeCollectingData) {
@@ -997,11 +1001,7 @@ namespace DiscordCoreInternal {
 				this->theClients[connectData.currentShard]->areWeConnected01.store(true);
 				std::string sendString{};
 				sendString = "GET /?v=10&encoding=";
-				if (this->configManager->getTextFormat() == DiscordCoreAPI::TextFormat::Etf) {
-					sendString += "etf";
-				} else {
-					sendString += "json";
-				}
+				sendString += this->configManager->getTextFormat() == DiscordCoreAPI::TextFormat::Etf ? "etf" : "json";
 				sendString += " HTTP/1.1\r\nHost: " + this->configManager->getConnectionAddress() +
 					"\r\nPragma: no-cache\r\nUser-Agent: DiscordCoreAPI/1.0\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Key: " +
 					DiscordCoreAPI::generateBase64EncodedKey() + "\r\nSec-WebSocket-Version: 13\r\n\r\n";
@@ -1154,6 +1154,9 @@ namespace DiscordCoreInternal {
 			if (this->configManager->doWePrintWebSocketSuccessMessages()) {
 				std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Sending Voice WebSocket Message: " << dataToSend.dump() << DiscordCoreAPI::reset() << std::endl << std::endl;
 			}
+			while (!this->theClients[0]->areWeConnected01.load()) {
+				std::this_thread::sleep_for(1ms);
+			}
 			std::string theString{};
 			this->stringifyJsonData(dataToSend, theString, WebSocketOpCode::Op_Text);
 			DiscordCoreAPI::StopWatch theStopWatch{ 5000ms };
@@ -1200,6 +1203,9 @@ namespace DiscordCoreInternal {
 			if (this->configManager->doWePrintWebSocketSuccessMessages()) {
 				std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Sending Voice WebSocket Message: " << std::endl << dataToSend << DiscordCoreAPI::reset();
 			}
+			while (!this->theClients[0]->areWeConnected01.load()) {
+				std::this_thread::sleep_for(1ms);
+			}
 			if (this->theClients[0] && this->theClients[0]->areWeStillConnected()) {
 				bool didWeWrite{ false };
 				DiscordCoreAPI::StopWatch theStopWatch{ 5000ms };
@@ -1223,8 +1229,11 @@ namespace DiscordCoreInternal {
 
 	void VoiceSocketAgent::onClosed() noexcept {
 		if (this->theClients.contains(0) && this->theClients[0] && !this->doWeReconnect.load() ) {
+			this->theClients[0]->disconnect();
 			this->doWeReconnect.store(true);
 			this->areWeConnected.store(false);
+			this->theClients[0]->areWeHeartBeating = false;
+			this->theClients[0]->areWeConnected01.store(false);
 			this->voiceSocket->areWeConnected.store(false);
 		}
 	}
@@ -1417,6 +1426,7 @@ namespace DiscordCoreInternal {
 			}
 			this->voiceConnectionData.externalIp = message;
 			this->voiceSocket->areWeConnected.store(true);
+			this->voiceConnectionDataBuffer.clearContents();
 		} catch (...) {
 			if (this->configManager->doWePrintWebSocketErrorMessages()) {
 				DiscordCoreAPI::reportException("VoiceSocketAgent::collectExternalIP()");
@@ -1479,6 +1489,7 @@ namespace DiscordCoreInternal {
 				throw ProcessingError{ "Failed to write to the websocket." };
 			}
 
+			this->theClients[0]->areWeConnected01.store(true);
 			WebSocketSSLShard::processIO(this->theClients);
 			DiscordCoreAPI::StopWatch theStopWatch02{ 10000ms };
 			while (!this->doWeQuit->load()) {
@@ -1498,9 +1509,9 @@ namespace DiscordCoreInternal {
 				if (this->theClients.contains(0) && theStopWatch02.hasTimePassed()) {
 					this->theClients.erase(0);
 					this->doWeReconnect.store(true);
+					return;
 				}
 			}
-			this->theClients[0]->areWeConnected01.store(true);
 			this->doWeReconnect.store(false);
 		} catch (...) {
 			if (this->configManager->doWePrintWebSocketErrorMessages()) {
