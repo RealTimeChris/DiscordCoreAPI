@@ -80,7 +80,7 @@ namespace DiscordCoreInternal {
 					case SSL_ERROR_NONE: {
 						if (writtenBytes > 0) {
 							data.clear();
-							return true
+							return true;
 						}
 						return false;
 					}
