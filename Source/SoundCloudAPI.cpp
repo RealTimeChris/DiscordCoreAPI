@@ -33,12 +33,11 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	DiscordCoreAPI::Song SoundCloudRequestBuilder::collectFinalSong(DiscordCoreAPI::GuildMemberData& addedByGuildMember, const DiscordCoreAPI::Song& newSong) {
-		DiscordCoreAPI::Song newerSong = newSong;
-		auto newestSong = constructDownloadInfo(newerSong);
-		newestSong.addedByUserId = addedByGuildMember.id;
-		newestSong.addedByUserName = addedByGuildMember.userName;
-		return newestSong;
+	DiscordCoreAPI::Song SoundCloudRequestBuilder::collectFinalSong(const DiscordCoreAPI::GuildMemberData& addedByGuildMember, DiscordCoreAPI::Song& newSong) {
+		newSong = constructDownloadInfo(newSong);
+		newSong.addedByUserId = addedByGuildMember.id;
+		newSong.addedByUserName = DiscordCoreAPI::StringWrapper{ addedByGuildMember.userName };
+		return newSong;
 	}
 
 	std::vector<DiscordCoreAPI::Song> SoundCloudRequestBuilder::collectSearchResults(const std::string& songQuery) {
@@ -224,6 +223,10 @@ namespace DiscordCoreInternal {
 		}
 	}
 
+	DiscordCoreAPI::Song SoundCloudAPI::collectFinalSong(const DiscordCoreAPI::GuildMemberData& addedByGuildMember, DiscordCoreAPI::Song& newSong) {
+		return this->requestBuilder.collectFinalSong(addedByGuildMember, newSong);
+	}	
+
 	void SoundCloudAPI::downloadAndStreamAudio(const DiscordCoreAPI::Song& newSong, std::stop_token theToken, int32_t currentReconnectionTries) {
 		int32_t counter{ 0 };
 		BuildAudioDecoderData dataPackage{};
@@ -324,11 +327,6 @@ namespace DiscordCoreInternal {
 		frameData.encodedFrameData.sampleCount = 0;
 		DiscordCoreAPI::getVoiceConnectionMap()[this->guildId]->audioBuffer.send(frameData);
 	};
-
-	DiscordCoreAPI::Song SoundCloudAPI::collectFinalSong(const DiscordCoreAPI::GuildMemberData& addedByGuildMember, const DiscordCoreAPI::Song& newSong) {
-		DiscordCoreAPI::GuildMemberData theData = addedByGuildMember;
-		return this->requestBuilder.collectFinalSong(theData, newSong);
-	}
 
 	std::vector<DiscordCoreAPI::Song> SoundCloudAPI::searchForSong(const std::string& searchQuery) {
 		return this->requestBuilder.collectSearchResults(searchQuery);

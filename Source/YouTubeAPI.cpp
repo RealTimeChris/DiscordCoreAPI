@@ -34,8 +34,8 @@ namespace DiscordCoreInternal {
 
 	DiscordCoreAPI::Song YouTubeRequestBuilder::collectFinalSong(const DiscordCoreAPI::GuildMemberData& addedByGuildMember, DiscordCoreAPI::Song& newSong) {
 		newSong.firstDownloadUrl = YouTubeRequestBuilder::baseUrl + "/watch?v=" + newSong.songId + "&hl=en";
-		auto newerSong = YouTubeRequestBuilder::constructDownloadInfo(addedByGuildMember, newSong);
-		return newerSong;
+		newSong = YouTubeRequestBuilder::constructDownloadInfo(addedByGuildMember, newSong);
+		return newSong;
 	}
 
 	std::vector<DiscordCoreAPI::Song> YouTubeRequestBuilder::collectSearchResults(const std::string& searchQuery) {
@@ -189,6 +189,10 @@ namespace DiscordCoreInternal {
 			newerSong = this->requestBuilder.collectFinalSong(guildMember, newerSong);
 			YouTubeAPI::downloadAndStreamAudio(newerSong, theToken, currentReconnectionTries);
 		}
+	}
+
+	DiscordCoreAPI::Song YouTubeAPI::collectFinalSong(const DiscordCoreAPI::GuildMemberData& addedByGuildMember, DiscordCoreAPI::Song& newSong) {
+		return this->requestBuilder.collectFinalSong(addedByGuildMember, newSong);
 	}
 
 	void YouTubeAPI::downloadAndStreamAudio(const DiscordCoreAPI::Song& newSong, std::stop_token theToken, int32_t currentReconnectionTries) {
@@ -434,10 +438,6 @@ namespace DiscordCoreInternal {
 			}
 			this->weFailedToDownloadOrDecode(newSong, theToken, currentReconnectionTries);
 		}
-	};
-
-	DiscordCoreAPI::Song YouTubeAPI::collectFinalSong(const DiscordCoreAPI::GuildMemberData& addedByGuildMember, DiscordCoreAPI::Song& newSong) {
-		return this->requestBuilder.collectFinalSong(addedByGuildMember, newSong);
 	}
 
 	std::vector<DiscordCoreAPI::Song> YouTubeAPI::searchForSong(const std::string& searchQuery) {
