@@ -1154,6 +1154,9 @@ namespace DiscordCoreInternal {
 			if (this->configManager->doWePrintWebSocketSuccessMessages()) {
 				std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Sending Voice WebSocket Message: " << dataToSend.dump() << DiscordCoreAPI::reset() << std::endl << std::endl;
 			}
+			while (!this->theClients[0]->areWeConnected01.load()) {
+				std::this_thread::sleep_for(1ms);
+			}
 			std::string theString{};
 			this->stringifyJsonData(dataToSend, theString, WebSocketOpCode::Op_Text);
 			DiscordCoreAPI::StopWatch theStopWatch{ 5000ms };
@@ -1200,6 +1203,9 @@ namespace DiscordCoreInternal {
 			if (this->configManager->doWePrintWebSocketSuccessMessages()) {
 				std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Sending Voice WebSocket Message: " << std::endl << dataToSend << DiscordCoreAPI::reset();
 			}
+			while (!this->theClients[0]->areWeConnected01.load()) {
+				std::this_thread::sleep_for(1ms);
+			}
 			if (this->theClients[0] && this->theClients[0]->areWeStillConnected()) {
 				bool didWeWrite{ false };
 				DiscordCoreAPI::StopWatch theStopWatch{ 5000ms };
@@ -1228,6 +1234,7 @@ namespace DiscordCoreInternal {
 			this->doWeReconnect.store(true);
 			this->areWeConnected.store(false);
 			this->theClients[0]->areWeHeartBeating = false;
+			this->theClients[0]->areWeConnected01.store(false);
 			this->voiceSocket->areWeConnected.store(false);
 		}
 	}
@@ -1332,6 +1339,13 @@ namespace DiscordCoreInternal {
 		try {
 			DiscordCoreAPI::StopWatch theStopWatch{ 10000ms };
 			while (!this->theClients.contains(0)) {
+				if (theStopWatch.hasTimePassed()) {
+					return;
+				}
+				std::this_thread::sleep_for(1ms);
+			}
+			theStopWatch.resetTimer();
+			while (!this->theClients[0]->areWeConnected01.load()) {
 				if (theStopWatch.hasTimePassed()) {
 					return;
 				}
@@ -1476,6 +1490,7 @@ namespace DiscordCoreInternal {
 				throw ProcessingError{ "VoiceSocketAgent::connect() Error: Failed to write to the websocket.\n\n" };
 			}
 
+			this->theClients[0]->areWeConnected01.store(true);
 			WebSocketSSLShard::processIO(this->theClients);
 			DiscordCoreAPI::StopWatch theStopWatch02{ 10000ms };
 			while (!this->doWeQuit->load()) {
@@ -1498,7 +1513,6 @@ namespace DiscordCoreInternal {
 					return;
 				}
 			}
-			this->theClients[0]->areWeConnected01.store(true);
 			this->doWeReconnect.store(false);
 		} catch (...) {
 			if (this->configManager->doWePrintWebSocketErrorMessages()) {
