@@ -605,7 +605,6 @@ namespace DiscordCoreInternal {
 									}
 									this->discordCoreClient->eventManager.onIntegrationDeletionEvent(*dataPackage);
 								} else if (payload["t"] == "INTERACTION_CREATE") {
-									std::cout << "INTERACTION CREATION  0101" << std::endl;
 									std::unique_ptr<DiscordCoreAPI::InteractionData> interactionData{ std::make_unique<DiscordCoreAPI::InteractionData>() };
 									*interactionData = payload["d"];
 									std::unique_ptr<DiscordCoreAPI::InputEventData> eventData{ std::make_unique<DiscordCoreAPI::InputEventData>(*interactionData) };
@@ -615,9 +614,7 @@ namespace DiscordCoreInternal {
 										std::unique_ptr<DiscordCoreAPI::OnInteractionCreationData> dataPackage{ std::make_unique<DiscordCoreAPI::OnInteractionCreationData>() };
 										dataPackage->interactionData = *interactionData;
 										std::unique_ptr<DiscordCoreAPI::CommandData> commandData{ std::make_unique<DiscordCoreAPI::CommandData>(*eventData) };
-										std::cout << "INTERACTION CREATION  0202" << std::endl;
 										this->discordCoreClient->commandController.checkForAndRunCommand(*commandData);
-										std::cout << "INTERACTION CREATION  0303" << std::endl;
 										this->discordCoreClient->eventManager.onInteractionCreationEvent(*dataPackage);
 										std::unique_ptr<DiscordCoreAPI::OnInputEventCreationData> eventCreationData{ std::make_unique<DiscordCoreAPI::OnInputEventCreationData>() };
 										eventCreationData->inputEventData = *eventData;
@@ -940,14 +937,7 @@ namespace DiscordCoreInternal {
 				if (this->connections.size() > 0) {
 					this->internalConnect();
 				}
-				try {
-					WebSocketSSLShard::processIO(this->theClients);
-				} catch (ProcessingError& theError) {
-					if (this->configManager->doWePrintWebSocketErrorMessages()) {
-						DiscordCoreAPI::reportException("BaseSocketAgent::run()");
-					}
-					this->onClosed(this->theClients[theError.theShard].get());
-				}
+				WebSocketSSLShard::processIO(this->theClients);
 				for (auto& [key, value]: this->theClients) {
 					if (this->theClients.contains(key) && this->theClients[key] && value->inputBuffer.size() > 0) {
 						if (value) {
@@ -1032,14 +1022,7 @@ namespace DiscordCoreInternal {
 					if (this->theClients[connectData.currentShard]->theState == WebSocketState::Connected) {
 						break;
 					}
-					try {
-						WebSocketSSLShard::processIO(this->theClients, 10000);
-					} catch (...) {
-						if (this->configManager->doWePrintWebSocketErrorMessages()) {
-							DiscordCoreAPI::reportException("BaseSocketAgent::internalConnect()");
-						}
-						return;
-					}
+					WebSocketSSLShard::processIO(this->theClients, 10000);
 					if (this->theClients.contains(connectData.currentShard)) {
 						this->parseHeadersAndMessage(this->theClients[connectData.currentShard].get());
 					}
@@ -1243,6 +1226,7 @@ namespace DiscordCoreInternal {
 		if (this->theClients.contains(0) && this->theClients[0] && !this->doWeReconnect.load() && this->areWeConnected.load()) {
 			this->doWeReconnect.store(true);
 			this->areWeConnected.store(false);
+			this->voiceSocket->areWeConnected.store(false);
 		}
 	}
 
@@ -1372,16 +1356,9 @@ namespace DiscordCoreInternal {
 					this->sendHeartBeat();
 					this->theClients[0]->heartBeatStopWatch.resetTimer();
 				}
-				try {
-					if (!theToken.stop_requested() && !this->doWeReconnect.load() && this->theClients.contains(0) && this->theClients[0]->areWeStillConnected() &&
-						!this->doWeQuit->load()) {
-						WebSocketSSLShard::processIO(this->theClients, 1000);
-					}
-				} catch (...) {
-					if (this->configManager->doWePrintWebSocketErrorMessages()) {
-						DiscordCoreAPI::reportException("VoiceSocketAgent::run()");
-					}
-					this->onClosed();
+				if (!theToken.stop_requested() && !this->doWeReconnect.load() && this->theClients.contains(0) && this->theClients[0]->areWeStillConnected() &&
+					!this->doWeQuit->load()) {
+					WebSocketSSLShard::processIO(this->theClients, 1000);
 				}
 				if (!theToken.stop_requested() && !this->doWeReconnect.load() && this->voiceSocket) {
 					this->voiceSocket->processIO();
@@ -1440,6 +1417,7 @@ namespace DiscordCoreInternal {
 				message = message.substr(0, message.find('\u0000', 5));
 			}
 			this->voiceConnectionData.externalIp = message;
+			this->voiceSocket->areWeConnected.store(true);
 		} catch (...) {
 			if (this->configManager->doWePrintWebSocketErrorMessages()) {
 				DiscordCoreAPI::reportException("VoiceSocketAgent::collectExternalIP()");
@@ -1502,14 +1480,7 @@ namespace DiscordCoreInternal {
 				throw ProcessingError{ "Failed to write to the websocket." };
 			}
 
-			try {
-				WebSocketSSLShard::processIO(this->theClients);
-			} catch (...) {
-				if (this->configManager->doWePrintWebSocketErrorMessages()) {
-					DiscordCoreAPI::reportException("VoiceSocketAgent::connect()");
-				}
-				return;
-			}
+			WebSocketSSLShard::processIO(this->theClients);
 			DiscordCoreAPI::StopWatch theStopWatch02{ 10000ms };
 			while (!this->doWeQuit->load()) {
 				if (this->theClients[0]->theState == WebSocketState::Connected) {
@@ -1523,14 +1494,7 @@ namespace DiscordCoreInternal {
 					this->theClients[0]->processedMessages.pop();
 					this->onMessageReceived(theMessage);
 				}
-				try {
-					WebSocketSSLShard::processIO(this->theClients);
-				} catch (...) {
-					if (this->configManager->doWePrintWebSocketErrorMessages()) {
-						DiscordCoreAPI::reportException("VoiceSocketAgent::connect()");
-					}
-					return;
-				}
+				WebSocketSSLShard::processIO(this->theClients);
 				std::this_thread::sleep_for(1ms);
 				if (this->theClients.contains(0) && theStopWatch02.hasTimePassed()) {
 					this->theClients.erase(0);

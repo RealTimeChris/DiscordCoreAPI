@@ -396,6 +396,9 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll DatagramSocketSSLClient {
 	  public:
+		friend class DiscordCoreAPI::VoiceConnection;
+		friend class VoiceSocketAgent;
+
 		DatagramSocketSSLClient() noexcept = default;
 
 		void connect(const std::string& baseUrl, const std::string& portNew);
@@ -412,6 +415,7 @@ namespace DiscordCoreInternal {
 
 	  protected:
 		const int32_t maxBufferSize{ 1024 * 16 };
+		std::atomic_bool areWeConnected{ false };
 		std::vector<std::string> outputBuffers{};
 		SOCKETWrapper theSocket{ nullptr };
 		std::string inputBuffer{};

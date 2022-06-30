@@ -362,7 +362,7 @@ namespace DiscordCoreInternal {
 		auto httpsConnection = this->connectionManager.getConnection();
 		try {
 			httpsConnection->resetValues();
-			if (httpsConnection->currentReconnectionTries >= httpsConnection->maxRecursion) {
+			if (httpsConnection->currentReconnectionTries >= httpsConnection->maxReconnectionTries) {
 				httpsConnection->currentReconnectionTries = 0;
 				httpsConnection->areWeCheckedOut.store(false);
 				return HttpsResponseData{};
@@ -412,14 +412,14 @@ namespace DiscordCoreInternal {
 		theConnection->resetValues();
 		HttpsResponseData theData{};
 		while (true) {
-			try {
+			if (theConnection->areWeStillConnected()) {
 				theConnection->processIO();
 				std::string theString = theConnection->getInputBuffer();
 				if (theString.size() > 0) {
 					theConnection->inputBufferReal.insert(theConnection->inputBufferReal.end(), theString.begin(), theString.end());
 				}
-			} catch (ProcessingError&) {
-				theData.contentSize = -1;
+			} else {
+				theData.responseCode = -1;
 				return theData;
 			}
 			bool doWeBreak{ false };

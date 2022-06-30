@@ -229,9 +229,8 @@ namespace DiscordCoreInternal {
 			std::string theString = newSong.finalDownloadUrls[1].urlPath;
 			theMap[0]->writeData(theString, false);
 			try {
-				try {
-					WebSocketSSLShard::processIO(theMap, ms1000);
-				} catch (...) {
+				WebSocketSSLShard::processIO(theMap, ms1000);
+				if (!theMap[0]->areWeStillConnected()) {
 					audioDecoder.reset(nullptr);
 					theMap[0]->disconnect();
 					this->weFailedToDownloadOrDecode(newSong, theToken, currentReconnectionTries);
@@ -278,9 +277,8 @@ namespace DiscordCoreInternal {
 								return;
 							}
 							remainingDownloadContentLength = newSong.contentLength - bytesSubmittedTotal;
-							try {
-								WebSocketSSLShard::processIO(theMap, ms500);
-							} catch (...) {
+							WebSocketSSLShard::processIO(theMap, ms500);
+							if (!theMap[0]->areWeStillConnected()) {
 								audioDecoder.reset(nullptr);
 								theMap[0]->disconnect();
 								this->weFailedToDownloadOrDecode(newSong, theToken, currentReconnectionTries);
@@ -306,11 +304,10 @@ namespace DiscordCoreInternal {
 							return;
 						}
 						if (counter == 0) {
-							try {
-								WebSocketSSLShard::processIO(theMap, ms500);
-							} catch (...) {
-								theMap[0]->disconnect();
+							WebSocketSSLShard::processIO(theMap, ms500);
+							if (!theMap[0]->areWeStillConnected()) {
 								audioDecoder.reset(nullptr);
+								theMap[0]->disconnect();
 								this->weFailedToDownloadOrDecode(newSong, theToken, currentReconnectionTries);
 								return;
 							}
@@ -342,11 +339,10 @@ namespace DiscordCoreInternal {
 									return;
 								}
 								remainingDownloadContentLength = newSong.contentLength - bytesSubmittedTotal;
-								try {
-									WebSocketSSLShard::processIO(theMap, ms500);
-								} catch (...) {
-									theMap[0]->disconnect();
+								WebSocketSSLShard::processIO(theMap, ms500);
+								if (!theMap[0]->areWeStillConnected()) {
 									audioDecoder.reset(nullptr);
+									theMap[0]->disconnect();
 									this->weFailedToDownloadOrDecode(newSong, theToken, currentReconnectionTries);
 									return;
 								}

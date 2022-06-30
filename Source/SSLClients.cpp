@@ -141,7 +141,8 @@ namespace DiscordCoreInternal {
 
 		timeval checkTime{ .tv_usec = theWaitTimeInms };
 		if (auto returnValue = select(finalNfds + 1, &readSet, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
-			throw ProcessingError{ reportError("HttpsSSLClient::processIO()::select(), ") };
+			this->disconnect();
+			return;
 		} else if (returnValue == 0) {
 			return;
 		}
@@ -175,8 +176,7 @@ namespace DiscordCoreInternal {
 				}
 				default: {
 					this->disconnect();
-					throw ProcessingError{ reportSSLError("HttpsSSLClient::processIO()::SSL_read_ex(), ", errorValue, this->ssl) +
-						reportError("HttpsSSLClient::processIO()::SSL_read_ex(), ") };
+					return;
 				}
 			}
 		}
@@ -212,8 +212,7 @@ namespace DiscordCoreInternal {
 					}
 					default: {
 						this->disconnect();
-						throw ProcessingError{ reportSSLError("HttpsSSLClient::processIO()::SSL_write_ex(), ", errorValue, this->ssl) +
-							reportError("HttpsSSLClient::processIO()::SSL_write_ex(), ") };
+						return;
 					}
 				}
 			}
@@ -305,22 +304,10 @@ namespace DiscordCoreInternal {
 	}
 
 	bool HttpsSSLClient::areWeStillConnected() noexcept {
-		if (this->theSocket != SOCKET_ERROR) {
-			int32_t nfds{};
-			fd_set errorfds{};
-			FD_ZERO(&errorfds);
-			FD_SET(this->theSocket, &errorfds);
-			nfds = this->theSocket;
-			timeval checkTime{ .tv_usec = 1 };
-			if (auto returnValue = select(nfds + 1, nullptr, nullptr, &errorfds, &checkTime); returnValue == SOCKET_ERROR) {
-				return false;
-			}
-			if (FD_ISSET(this->theSocket, &errorfds)) {
-				return false;
-			}
-			return true;
-		} else {
+		if (this->theSocket == SOCKET_ERROR) {
 			return false;
+		} else {
+			return true;
 		}
 	}
 
@@ -380,7 +367,10 @@ namespace DiscordCoreInternal {
 
 		timeval checkTime{ .tv_usec = waitTimeInms };
 		if (auto returnValue = select(finalNfds + 1, &readSet, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
-			throw ConnectionError{ reportError("WebSocketSSLShard::processIO()::select(), ") };
+			for (auto& [key, value]: theMap) {
+				value->disconnect();
+			}
+			return;
 		}
 
 		for (auto& [key, value]: theMap) {
@@ -413,11 +403,8 @@ namespace DiscordCoreInternal {
 						break;
 					}
 					default: {
-						ProcessingError theError{ reportSSLError("Shard [" + std::to_string(key) + "], in WebSocketSSLShard::processIO()::SSL_read_ex(), ", errorValue,
-													  value->ssl) +
-							reportError("Shard [" + std::to_string(key) + "], in WebSocketSSLShard::processIO()::SSL_read_ex(), ") };
-						theError.theShard = value->shard[0];
-						throw theError;
+						value->disconnect();
+						return;
 					}
 				}
 			}
@@ -450,11 +437,8 @@ namespace DiscordCoreInternal {
 							break;
 						}
 						default: {
-							ProcessingError theError{ reportSSLError("Shard [" + std::to_string(key) + "], in WebSocketSSLShard::processIO()::SSL_write_ex(), ", errorValue,
-														  value->ssl) +
-								reportError("Shard [" + std::to_string(key) + "], in WebSocketSSLShard::processIO()::SSL_write_ex(), ") };
-							theError.theShard = value->shard[0];
-							throw theError;
+							value->disconnect();
+							return;
 						}
 					}
 				}
