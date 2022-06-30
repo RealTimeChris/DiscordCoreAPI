@@ -88,7 +88,9 @@ namespace DiscordCoreAPI {
 			if (this->message.components.size() == 0) {
 				data["message"]["components"] = nlohmann::json::array();
 			} else {
-				data["message"]["components"] = this->message.components;
+				for (auto& value: this->message.components) {
+					data["message"]["components"].push_back(value);
+				}
 			}
 			data["message"]["allowed_mentions"] = DiscordCoreAPI::AllowedMentionsData{ this->message.allowedMentions };
 			for (auto& value: this->message.stickerIds) {

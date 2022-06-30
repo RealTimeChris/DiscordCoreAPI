@@ -5453,6 +5453,71 @@ namespace DiscordCoreAPI {
 			return *this;
 		}
 
+		operator nlohmann::json() {
+			nlohmann::json components{};
+			for (auto& valueNew: this->components) {
+				if (valueNew.type == ComponentType::Button) {
+					nlohmann::json component{};
+					component["emoji"]["animated"] = valueNew.emoji.animated;
+					StringWrapper theString = valueNew.emoji.name;
+					component["emoji"]["name"] = static_cast<std::string>(theString);
+					if (valueNew.emoji.id != 0) {
+						component["emoji"]["id"] = valueNew.emoji.id;
+					}
+					component["custom_id"] = valueNew.customId;
+					component["disabled"] = valueNew.disabled;
+					component["label"] = valueNew.label;
+					component["style"] = valueNew.style;
+					component["type"] = valueNew.type;
+					component["url"] = valueNew.url;
+					components.push_back(component);
+				} else if (valueNew.type == ComponentType::SelectMenu) {
+					nlohmann::json optionsArray{};
+					for (auto& value01: valueNew.options) {
+						nlohmann::json option{};
+						if (value01.emoji.name != "") {
+							option["emoji"]["name"] = static_cast<std::string>(value01.emoji.name);
+							option["emoji"]["animated"] = value01.emoji.animated;
+						}
+						if (value01.emoji.id != 0) {
+							option["emoji"]["id"] = value01.emoji.id;
+						}
+						option["description"] = value01.description;
+						option["default"] = value01._default;
+						option["label"] = value01.label;
+						option["value"] = value01.value;
+						optionsArray.push_back(option);
+					};
+					nlohmann::json component{};
+					component["placeholder"] = valueNew.placeholder;
+					component["max_values"] = valueNew.maxValues;
+					component["min_values"] = valueNew.minValues;
+					component["custom_id"] = valueNew.customId;
+					component["disabled"] = valueNew.disabled;
+					component["options"] = optionsArray;
+					component["type"] = valueNew.type;
+					components.push_back(component);
+
+				} else if (valueNew.type == ComponentType::TextInput) {
+					nlohmann::json component{};
+					component["placeholder"] = valueNew.placeholder;
+					component["min_length"] = valueNew.minLength;
+					component["max_length"] = valueNew.maxLength;
+					component["custom_id"] = valueNew.customId;
+					component["required"] = valueNew.required;
+					component["style"] = valueNew.style;
+					component["label"] = valueNew.label;
+					component["value"] = valueNew.value;
+					component["type"] = valueNew.type;
+					components.push_back(component);
+				}
+			}
+			nlohmann::json theData{};
+			theData["type"] = 1;
+			theData["components"] = components;
+			return theData;
+		}
+
 		ActionRowData(const nlohmann::json& jsonObjectData) {
 			*this = jsonObjectData;
 		}
@@ -5537,75 +5602,6 @@ namespace DiscordCoreAPI {
 			pDataStructure->components.shrink_to_fit();
 		}
 	};
-
-	inline void to_json(nlohmann::json& jsonOut, const std::vector<ActionRowData>& dataPackage) {
-		nlohmann::json componentsActionRow{};
-		for (auto& value: dataPackage) {
-			nlohmann::json components{};
-			for (auto& valueNew: value.components) {
-				if (valueNew.type == ComponentType::Button) {
-					nlohmann::json component{};
-					component["emoji"]["animated"] = valueNew.emoji.animated;
-					StringWrapper theString = valueNew.emoji.name;
-					component["emoji"]["name"] = static_cast<std::string>(theString);
-					if (valueNew.emoji.id != 0) {
-						component["emoji"]["id"] = valueNew.emoji.id;
-					}
-					component["custom_id"] = valueNew.customId;
-					component["disabled"] = valueNew.disabled;
-					component["label"] = valueNew.label;
-					component["style"] = valueNew.style;
-					component["type"] = valueNew.type;
-					component["url"] = valueNew.url;
-					components.push_back(component);
-				} else if (valueNew.type == ComponentType::SelectMenu) {
-					nlohmann::json optionsArray{};
-					for (auto& value01: valueNew.options) {
-						nlohmann::json option{};
-						if (value01.emoji.name != "") {
-							StringWrapper theString = value01.emoji.name;
-							option["emoji"]["name"] = theString;
-							option["emoji"]["animated"] = value01.emoji.animated;
-						}
-						if (value01.emoji.id != 0) {
-							option["emoji"]["id"] = value01.emoji.id;
-						}
-						option["description"] = value01.description;
-						option["default"] = value01._default;
-						option["label"] = value01.label;
-						option["value"] = value01.value;
-						optionsArray.push_back(option);
-					};
-					nlohmann::json component{};
-					component["placeholder"] = valueNew.placeholder;
-					component["max_values"] = valueNew.maxValues;
-					component["min_values"] = valueNew.minValues;
-					component["custom_id"] = valueNew.customId;
-					component["disabled"] = valueNew.disabled;
-					component["options"] = optionsArray;
-					component["type"] = valueNew.type;
-					components.push_back(component);
-
-				} else if (valueNew.type == ComponentType::TextInput) {
-					nlohmann::json component{};
-					component["placeholder"] = valueNew.placeholder;
-					component["min_length"] = valueNew.minLength;
-					component["max_length"] = valueNew.maxLength;
-					component["custom_id"] = valueNew.customId;
-					component["required"] = valueNew.required;
-					component["style"] = valueNew.style;
-					component["label"] = valueNew.label;
-					component["value"] = valueNew.value;
-					component["type"] = valueNew.type;
-					components.push_back(component);
-				}
-			}
-			nlohmann::json componentActionRow{};
-			componentActionRow["components"] = components;
-			componentActionRow["type"] = 1;
-			jsonOut = componentActionRow;
-		}
-	}
 
 	/// Interaction callback types. \brief Interaction callback types.
 	enum class InteractionCallbackType : int8_t {
@@ -7571,9 +7567,11 @@ namespace DiscordCoreAPI {
 				data["data"]["attachments"].push_back(DiscordCoreAPI::AttachmentData{ value });
 			}
 			if (this->data.components.size() == 0) {
-				data["message"]["components"] = nlohmann::json::array();
+				data["data"]["components"] = nlohmann::json::array();
 			} else {
-				data["message"]["components"] = this->data.components;
+				for (auto& value: this->data.components) {
+					data["data"]["components"].push_back(value);
+				}
 			}
 			data["data"]["allowed_mentions"] = DiscordCoreAPI::AllowedMentionsData{ this->data.allowedMentions };
 			if (this->data.choices.size() > 0) {
