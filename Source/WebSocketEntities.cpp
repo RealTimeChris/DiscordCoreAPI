@@ -996,20 +996,20 @@ namespace DiscordCoreInternal {
 				}
 				this->theClients[connectData.currentShard]->areWeConnected01.store(true);
 				std::string sendString{};
+				sendString = "GET /?v=10&encoding=";
 				if (this->configManager->getTextFormat() == DiscordCoreAPI::TextFormat::Etf) {
-					sendString = "GET /?v=10&encoding=etf HTTP/1.1\r\nHost: " + this->configManager->getConnectionAddress() +
-						"\r\nPragma: no-cache\r\nUser-Agent: DiscordCoreAPI/1.0\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Key: " +
-						DiscordCoreAPI::generateBase64EncodedKey() + "\r\nSec-WebSocket-Version: 13\r\n\r\n";
+					sendString += "etf";
 				} else {
-					sendString = "GET /?v=10&encoding=json HTTP/1.1\r\nHost: " + this->configManager->getConnectionAddress() +
-						"\r\nPragma: no-cache\r\nUser-Agent: DiscordCoreAPI/1.0\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Key: " +
-						DiscordCoreAPI::generateBase64EncodedKey() + "\r\nSec-WebSocket-Version: 13\r\n\r\n";
+					sendString += "json";
 				}
+				sendString += " HTTP/1.1\r\nHost: " + this->configManager->getConnectionAddress() +
+					"\r\nPragma: no-cache\r\nUser-Agent: DiscordCoreAPI/1.0\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Key: " +
+					DiscordCoreAPI::generateBase64EncodedKey() + "\r\nSec-WebSocket-Version: 13\r\n\r\n";
 				bool didWeWrite{ false };
 				DiscordCoreAPI::StopWatch theStopWatch{ 5000ms };
 				do {
 					if (theStopWatch.hasTimePassed()) {
-						break;
+						return;
 					}
 					didWeWrite = this->theClients[connectData.currentShard]->writeData(sendString, true);
 				} while (!didWeWrite);
