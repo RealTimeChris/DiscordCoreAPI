@@ -33,16 +33,16 @@ namespace DiscordCoreInternal {
 	}
 
 	DiscordCoreAPI::Song YouTubeRequestBuilder::collectFinalSong(const DiscordCoreAPI::GuildMemberData& addedByGuildMember, DiscordCoreAPI::Song& newSong) {
-		newSong.firstDownloadUrl = YouTubeRequestBuilder::baseUrl + "/watch?v=" + newSong.songId + "&hl=en";
+		newSong.firstDownloadUrl = this->baseUrl + "/watch?v=" + newSong.songId + "&hl=en";
 		newSong.addedByUserId = addedByGuildMember.id;
 		newSong.addedByUserName = DiscordCoreAPI::StringWrapper{ addedByGuildMember.userName };
-		newSong = YouTubeRequestBuilder::constructDownloadInfo(addedByGuildMember, newSong);
+		newSong = this->constructDownloadInfo(addedByGuildMember, newSong);
 		return newSong;
 	}
 
 	std::vector<DiscordCoreAPI::Song> YouTubeRequestBuilder::collectSearchResults(const std::string& searchQuery) {
 		HttpsWorkloadData dataPackage{};
-		dataPackage.baseUrl = YouTubeRequestBuilder::baseUrl;
+		dataPackage.baseUrl = this->baseUrl;
 		dataPackage.relativePath = "/results?search_query=" + DiscordCoreAPI::urlEncode(searchQuery.c_str());
 		dataPackage.workloadClass = HttpsWorkloadClass::Get;
 		dataPackage.workloadType = HttpsWorkloadType::YouTubeGetSearchResults;
@@ -67,7 +67,7 @@ namespace DiscordCoreInternal {
 				if (value.contains("videoRenderer") && !value["videoRenderer"].is_null()) {
 					DiscordCoreAPI::Song searchResult{ value["videoRenderer"] };
 					searchResult.type = DiscordCoreAPI::SongType::YouTube;
-					searchResult.viewUrl = YouTubeRequestBuilder::baseUrl + "/watch?v=" + searchResult.songId + "&hl=en";
+					searchResult.viewUrl = this->baseUrl + "/watch?v=" + searchResult.songId + "&hl=en";
 					searchResults.push_back(searchResult);
 				}
 			}

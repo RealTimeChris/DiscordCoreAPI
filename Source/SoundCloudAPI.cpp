@@ -46,9 +46,9 @@ namespace DiscordCoreInternal {
 				std::pair("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36"),
 			};
 			HttpsWorkloadData dataPackage{};
-			dataPackage.baseUrl = SoundCloudRequestBuilder::baseUrl02;
+			dataPackage.baseUrl = this->baseUrl02;
 			dataPackage.relativePath = "/search?q=" + DiscordCoreAPI::urlEncode(songQuery.c_str()) + "&facet=model&client_id=" + SoundCloudRequestBuilder::clientId +
-				"&limit=20&offset=0&linked_partitioning=1&app_version=" + SoundCloudRequestBuilder::appVersion + "&app_locale=en";
+				"&limit=20&offset=0&linked_partitioning=1&app_version=" + this->appVersion + "&app_locale=en";
 			dataPackage.headersToInsert = theHeaders;
 			dataPackage.workloadClass = HttpsWorkloadClass::Get;
 			dataPackage.workloadType = HttpsWorkloadType::SoundCloudGetSearchResults;
