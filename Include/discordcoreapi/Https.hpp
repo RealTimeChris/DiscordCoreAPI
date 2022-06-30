@@ -143,8 +143,8 @@ namespace DiscordCoreInternal {
 			}
 			HttpsResponseData returnData = this->httpRequest(workload);
 			if (returnData.responseCode != 200 && returnData.responseCode != 204 && returnData.responseCode != 201) {
-				std::string theErrorMessage{ DiscordCoreAPI::shiftToBrightRed() + workload.callStack + "Https Error: Code = " + std::to_string(returnData.responseCode) +
-					", Message = " + returnData.responseMessage + DiscordCoreAPI::reset() + "\n\n" };
+				std::string theErrorMessage{ DiscordCoreAPI::shiftToBrightRed() + workload.callStack + " Https Error; Code: " + std::to_string(returnData.responseCode) +
+					", Message: " + returnData.responseMessage + DiscordCoreAPI::reset() + "\n\n" };
 				HttpError theError{ theErrorMessage };
 				theError.errorCode = returnData.responseCode;
 				throw theError;

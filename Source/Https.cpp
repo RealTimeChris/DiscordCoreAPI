@@ -386,7 +386,7 @@ namespace DiscordCoreInternal {
 				didWeWrite = httpsConnection->writeData(theRequest);
 			} while (!didWeWrite);
 			if (!didWeWrite) {
-				throw ProcessingError{ "Failed to write to the websocket." };
+				throw ProcessingError{ "HttpsClient::httpRequestInternal() Error: Failed to write to the websocket.\n\n" };
 			}
 			auto result = this->getResponse(rateLimitData, httpsConnection);
 			if (result.responseCode == -1) {
@@ -510,8 +510,8 @@ namespace DiscordCoreInternal {
 		}
 		auto returnData = this->httpRequest(workload);
 		if (returnData.responseCode != 200 && returnData.responseCode != 204 && returnData.responseCode != 201) {
-			std::string theErrorMessage{ DiscordCoreAPI::shiftToBrightRed() + workloadNew.callStack + "Https Error: Code = " + std::to_string(returnData.responseCode) +
-				", Message = " + returnData.responseMessage + DiscordCoreAPI::reset() + "\n\n" };
+			std::string theErrorMessage{ DiscordCoreAPI::shiftToBrightRed() + workloadNew.callStack + " Https Error; Code: " + std::to_string(returnData.responseCode) +
+				", Message: " + returnData.responseMessage + DiscordCoreAPI::reset() + "\n\n" };
 			HttpError theError{ theErrorMessage };
 			theError.errorCode=returnData.responseCode;
 			throw theError;
@@ -523,8 +523,8 @@ namespace DiscordCoreInternal {
 		RateLimitData rateLimitData{};
 		auto returnData = this->httpRequestInternal(*workloadNew, rateLimitData);
 		if (returnData.responseCode != 200 && returnData.responseCode != 204 && returnData.responseCode != 201) {
-			std::string theErrorMessage{ DiscordCoreAPI::shiftToBrightRed() + workloadNew->callStack + "Https Error: Code = " + std::to_string(returnData.responseCode) +
-				", Message = " + returnData.responseMessage + DiscordCoreAPI::reset() + "\n\n" };
+			std::string theErrorMessage{ DiscordCoreAPI::shiftToBrightRed() + workloadNew->callStack + " Https Error; Code: " + std::to_string(returnData.responseCode) +
+				", Message: " + returnData.responseMessage + DiscordCoreAPI::reset() + "\n\n" };
 			HttpError theError{ theErrorMessage };
 			theError.errorCode = returnData.responseCode;
 			throw theError;

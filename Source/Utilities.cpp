@@ -640,8 +640,7 @@ namespace DiscordCoreAPI {
 					  << "Caught At: " << currentFunctionName << ", in File: " << theLocation.file_name() << " (" << std::to_string(theLocation.line()) << ":"
 					  << std::to_string(theLocation.column()) << ")"
 					  << "\nThe Error: \n"
-					  << e.what() << reset() << std::endl
-					  << std::endl;
+					  << e.what() << reset();
 			auto theReturnString = theStream.str();
 			std::cout << theReturnString;
 		}

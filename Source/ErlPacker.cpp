@@ -69,7 +69,7 @@ namespace DiscordCoreInternal {
 				ErlPacker::appendNilExt(buffer);
 			} else {
 				if (length > std::numeric_limits<uint32_t>::max() - 1) {
-					throw ErlPackError{ "ErlPacker::singleValueJsonToETF(), List too large for ETF" };
+					throw ErlPackError{ "ErlPacker::singleValueJsonToETF() Error: List too large for ETF.\n\n" };
 				}
 			}
 			ErlPacker::appendListHeader(buffer, length);
@@ -80,7 +80,7 @@ namespace DiscordCoreInternal {
 		} else if (jsonData.is_object()) {
 			uint32_t length = static_cast<uint32_t>(jsonData.size());
 			if (length > std::numeric_limits<uint32_t>::max() - 1) {
-				throw ErlPackError{ "ErlPacker::singleValueJsonToETF(), Map too large for ETF" };
+				throw ErlPackError{ "ErlPacker::singleValueJsonToETF() Error: Map too large for ETF.\n\n" };
 			}
 			ErlPacker::appendMapHeader(buffer, length);
 			for (auto n = jsonData.begin(); n != jsonData.end(); ++n) {
@@ -223,7 +223,7 @@ namespace DiscordCoreInternal {
 	template<typename ReturnType> void ErlPacker::readBits(const ErlPackBuffer& buffer, ReturnType& theValue) {
 		const uint8_t byteSize{ 8 };
 		if (buffer.offSet + sizeof(ReturnType) > buffer.buffer.size()) {
-			throw ErlPackError{ "ErlPacker::readBits(), readBits() past end of buffer" };
+			throw ErlPackError{ "ErlPacker::readBits() Error: readBits() past end of buffer.\n\n" };
 		}
 		ReturnType newValue{ 0 };
 		for (uint64_t x = 0; x < sizeof(ReturnType); x++) {
@@ -235,7 +235,7 @@ namespace DiscordCoreInternal {
 
 	void ErlPacker::readString(const ErlPackBuffer& buffer, uint32_t& length, std::vector<char>& theString) {
 		if (buffer.offSet + static_cast<uint64_t>(length) > buffer.buffer.size()) {
-			throw ErlPackError{ "ErlPacker::readString(), readString() past end of buffer" };
+			throw ErlPackError{ "ErlPacker::readString() Error: readString() past end of buffer.\n\n" };
 		}
 		std::vector<char> str{};
 		str.insert(str.begin(), buffer.buffer.begin() + buffer.offSet, buffer.buffer.begin() + buffer.offSet + length);
@@ -245,7 +245,7 @@ namespace DiscordCoreInternal {
 
 	nlohmann::json ErlPacker::singleValueETFToJson(const ErlPackBuffer& buffer) {
 		if (buffer.offSet >= buffer.buffer.size()) {
-			throw ErlPackError{ "ErlPacker::singleValueETFToJson(), Read past end of ETF buffer" };
+			throw ErlPackError{ "ErlPacker::singleValueETFToJson() Error: Read past end of ETF buffer.\n\n" };
 		}
 		uint8_t type{};
 		ErlPacker::readBits(buffer, type);
@@ -296,7 +296,7 @@ namespace DiscordCoreInternal {
 				return ErlPacker::parseSmallAtomUtf8Ext(buffer);
 			}
 			default: {
-				throw ErlPackError{ "ErlPacker::singleValueETFToJson(), Unknown data type in ETF" };
+				throw ErlPackError{ "ErlPacker::singleValueETFToJson() Error: Unknown data type in ETF.\n\n" };
 			}
 		}
 	}
@@ -312,7 +312,7 @@ namespace DiscordCoreInternal {
 		uint8_t sign{};
 		readBits(buffer, sign);
 		if (digits > 8) {
-			throw ErlPackError{ "ErlPacker::parseBigint(), Integers larger than 8 bytes are not supported." };
+			throw ErlPackError{ "ErlPacker::parseBigint() Error: Integers larger than 8 bytes are not supported.\n\n" };
 		}
 		uint64_t value = 0;
 		uint64_t b = 1;
@@ -338,7 +338,7 @@ namespace DiscordCoreInternal {
 		const char* formatString = sign == 0 ? "%llu" : "-%ll";
 		const int32_t res = sprintf(outBuffer, formatString, value);
 		if (res < 0) {
-			throw ErlPackError{ "ErlPacker::parseBigint(), parse big integer failed." };
+			throw ErlPackError{ "ErlPacker::parseBigint() Error: Parse big integer failed.\n\n" };
 		}
 		const uint8_t length = static_cast<uint8_t>(res);
 		nlohmann::json jsonData = std::string(outBuffer, length);
@@ -419,7 +419,7 @@ namespace DiscordCoreInternal {
 		readBits(buffer, length);
 		nlohmann::json theArray = nlohmann::json::array();
 		if (static_cast<uint64_t>(buffer.offSet) + length > buffer.buffer.size()) {
-			throw ErlPackError{ "ErlPacker::parseStringAsList(), String list past end of buffer" };
+			throw ErlPackError{ "ErlPacker::parseStringAsList() Error: String list past end of buffer.\n\n" };
 		}
 		for (uint16_t x = 0; x < length; ++x) {
 			theArray.push_back(parseSmallIntegerExt(buffer));
