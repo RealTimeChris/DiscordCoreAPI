@@ -7604,7 +7604,6 @@ namespace DiscordCoreAPI {
 			data["data"]["flags"] = this->data.flags;
 			data["data"]["tts"] = this->data.tts;
 			data["type"] = this->type;
-			std::cout << "THE DATA: " << data.dump() << std::endl;
 			return data.dump();
 		}
 
