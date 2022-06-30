@@ -141,7 +141,7 @@ namespace DiscordCoreInternal {
 	void BaseSocketAgent::getVoiceConnectionData(const VoiceConnectInitData& doWeCollect, WebSocketSSLShard* theShard) noexcept {
 		if (theShard && theShard->areWeConnected02.load()) {
 			try {
-				DiscordCoreAPI::StopWatch<std::chrono::milliseconds> theStopWatch{ 2500ms };
+				DiscordCoreAPI::StopWatch<std::chrono::milliseconds> theStopWatch{ 5500ms };
 				int32_t theCurrentIndex = theShard->shard[0];
 				DiscordCoreAPI::UpdateVoiceStateData dataPackage{};
 				dataPackage.channelId = 0;
@@ -1383,7 +1383,7 @@ namespace DiscordCoreInternal {
 						this->theClients[0]->processedMessages.pop();
 					}
 				}
-				if (!theToken.stop_requested() && !this->doWeReconnect.load() && this->voiceSocket) {
+				if (!theToken.stop_requested() && !this->doWeReconnect.load() && this->voiceSocket && this->voiceSocket->areWeStillConnected()) {
 					this->voiceSocket->processIO();
 					this->voiceSocket->getInputBuffer();
 				}
