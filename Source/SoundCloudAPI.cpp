@@ -154,7 +154,7 @@ namespace DiscordCoreInternal {
 			std::pair("Path", "/search?q=testValue")
 		};
 		HttpsWorkloadData dataPackage02{};
-		dataPackage02.baseUrl = SoundCloudRequestBuilder::baseUrl;
+		dataPackage02.baseUrl = this->baseUrl;
 		dataPackage02.relativePath = "/search?q=testValue";
 		dataPackage02.headersToInsert = theHeaders;
 		dataPackage02.workloadClass = HttpsWorkloadClass::Get;
