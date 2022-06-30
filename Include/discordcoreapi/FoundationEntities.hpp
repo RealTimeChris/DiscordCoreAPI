@@ -5438,9 +5438,9 @@ namespace DiscordCoreAPI {
 		std::string label{};///< The label for this component.
 		std::string value{};///< A pre-filled value for this component.
 		std::string title{};///< Url, for url types.
+		ButtonStyle style{};///< One of button styles.
 		std::string url{};///< Url, for url types.
 		EmojiData emoji{};///< Emoji name, id, and animated.
-		int32_t style{};///< One of button styles.
 	};
 
 	/// Action row data of Message components. \brief Action row data of Message components.
