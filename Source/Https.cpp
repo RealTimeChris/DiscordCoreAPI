@@ -369,7 +369,16 @@ namespace DiscordCoreInternal {
 			}
 			if (workload.baseUrl != httpsConnection->currentBaseUrl || !httpsConnection->areWeStillConnected() || httpsConnection->doWeConnect) {
 				httpsConnection->currentBaseUrl = workload.baseUrl;
-				httpsConnection->connect(workload.baseUrl, "443");
+				try {
+					httpsConnection->connect(workload.baseUrl, "443");
+				} catch (...) {
+					DiscordCoreAPI::reportException("HttpsClient::httpRequestInternal()");
+					httpsConnection->currentReconnectionTries++;
+					httpsConnection->doWeConnect = true;
+					httpsConnection->areWeCheckedOut.store(false);
+					return this->httpRequestInternal(workload, rateLimitData);
+				}
+				httpsConnection->currentReconnectionTries = 0;
 				httpsConnection->doWeConnect = false;
 			}
 			auto theRequest = httpsConnection->buildRequest(workload);

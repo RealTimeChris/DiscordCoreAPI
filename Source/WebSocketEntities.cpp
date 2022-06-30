@@ -141,7 +141,7 @@ namespace DiscordCoreInternal {
 	void BaseSocketAgent::getVoiceConnectionData(const VoiceConnectInitData& doWeCollect, WebSocketSSLShard* theShard) noexcept {
 		if (theShard && theShard->areWeConnected02.load()) {
 			try {
-				DiscordCoreAPI::StopWatch<std::chrono::milliseconds> theStopWatch{ 5000ms };
+				DiscordCoreAPI::StopWatch<std::chrono::milliseconds> theStopWatch{ 2500ms };
 				int32_t theCurrentIndex = theShard->shard[0];
 				DiscordCoreAPI::UpdateVoiceStateData dataPackage{};
 				dataPackage.channelId = 0;
@@ -150,15 +150,14 @@ namespace DiscordCoreInternal {
 				dataPackage.selfMute = doWeCollect.selfMute;
 				theShard->userId = doWeCollect.userId;
 				nlohmann::json newData = dataPackage;
-				theStopWatch.resetTimer();
 				this->sendMessage(newData, theShard, true);
 				if (doWeCollect.channelId == 0) {
 					return;
 				}
 				dataPackage.channelId = doWeCollect.channelId;
 				newData = dataPackage;
-				theShard->areWeCollectingData = true;
 				this->sendMessage(newData, theShard, true);
+				theShard->areWeCollectingData = true;
 				theStopWatch.resetTimer();
 				while (theShard->areWeCollectingData) {
 					if (theStopWatch.hasTimePassed()) {
@@ -1223,7 +1222,7 @@ namespace DiscordCoreInternal {
 	}
 
 	void VoiceSocketAgent::onClosed() noexcept {
-		if (this->theClients.contains(0) && this->theClients[0] && !this->doWeReconnect.load() && this->areWeConnected.load()) {
+		if (this->theClients.contains(0) && this->theClients[0] && !this->doWeReconnect.load() ) {
 			this->doWeReconnect.store(true);
 			this->areWeConnected.store(false);
 			this->voiceSocket->areWeConnected.store(false);
