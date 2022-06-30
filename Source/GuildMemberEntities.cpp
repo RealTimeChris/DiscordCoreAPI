@@ -22,7 +22,6 @@
 #include <discordcoreapi/GuildMemberEntities.hpp>
 #include <discordcoreapi/GuildEntities.hpp>
 #include <discordcoreapi/CoRoutine.hpp>
-#include <discordcoreapi/JSONIfier.hpp>
 
 namespace DiscordCoreAPI {
 

@@ -20,7 +20,6 @@
 /// \file UserEntities.cpp
 
 #include <discordcoreapi/UserEntities.hpp>
-#include <discordcoreapi/JSONIfier.hpp>
 #include <discordcoreapi/CoRoutine.hpp>
 #include <discordcoreapi/Https.hpp>
 

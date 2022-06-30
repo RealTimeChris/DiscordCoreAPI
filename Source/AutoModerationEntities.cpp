@@ -20,7 +20,6 @@
 /// \file AutoModerationEntities.cpp
 
 #include <discordcoreapi/AutoModerationEntities.hpp>
-#include <discordcoreapi/JSONIfier.hpp>
 
 namespace DiscordCoreAPI {
 

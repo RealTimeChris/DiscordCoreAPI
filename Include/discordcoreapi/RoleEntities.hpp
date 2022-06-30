@@ -24,7 +24,6 @@
 #include <discordcoreapi/FoundationEntities.hpp>
 #include <discordcoreapi/GuildMemberEntities.hpp>
 #include <discordcoreapi/Https.hpp>
-#include <discordcoreapi/JSONIfier.hpp>
 
 namespace DiscordCoreAPI {
 

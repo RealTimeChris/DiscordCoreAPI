@@ -22,7 +22,6 @@
 #pragma once
 
 #include <discordcoreapi/FoundationEntities.hpp>
-#include <discordcoreapi/JSONIfier.hpp>
 #include <discordcoreapi/MessageEntities.hpp>
 
 namespace DiscordCoreAPI {

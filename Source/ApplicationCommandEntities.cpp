@@ -24,7 +24,6 @@
 #include <discordcoreapi/UserEntities.hpp>
 #include <discordcoreapi/CoRoutine.hpp>
 #include <discordcoreapi/Https.hpp>
-#include <discordcoreapi/JSONIfier.hpp>
 
 namespace DiscordCoreAPI {
 

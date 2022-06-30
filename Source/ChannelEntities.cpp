@@ -21,7 +21,6 @@
 
 #include <discordcoreapi/ChannelEntities.hpp>
 #include <discordcoreapi/CoRoutine.hpp>
-#include <discordcoreapi/JSONIfier.hpp>
 
 namespace DiscordCoreAPI {
 

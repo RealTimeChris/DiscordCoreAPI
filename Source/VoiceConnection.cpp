@@ -21,7 +21,6 @@
 
 #include <discordcoreapi/VoiceConnection.hpp>
 #include <discordcoreapi/DiscordCoreClient.hpp>
-#include <discordcoreapi/JSONIfier.hpp>
 
 namespace DiscordCoreAPI {
 

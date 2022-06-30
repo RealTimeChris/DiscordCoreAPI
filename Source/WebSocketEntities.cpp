@@ -20,7 +20,6 @@
 /// \file WebSocketEntities.cpp
 
 #include <discordcoreapi/WebSocketEntities.hpp>
-#include <discordcoreapi/JSONIfier.hpp>
 #include <discordcoreapi/EventManager.hpp>
 #include <discordcoreapi/DiscordCoreClient.hpp>
 #include <concepts>
