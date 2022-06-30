@@ -191,7 +191,7 @@ namespace DiscordCoreAPI {
 	 * @{
 	*/
 
-	template<typename ObjectType> class DataParser { 
+	template<typename ObjectType> class DataParser {
 	  public:
 		virtual void parseObject(const nlohmann::json&, ObjectType*) = 0;
 
@@ -231,7 +231,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Role tags data. \brief Role tags data.
-	struct DiscordCoreAPI_Dll RoleTagsData : public DataParser<RoleTagsData> {		
+	struct DiscordCoreAPI_Dll RoleTagsData : public DataParser<RoleTagsData> {
 		std::string premiumSubscriber{};///< Are they a premium subscriber?
 		std::string integrationId{};///< What is the integration id?
 		std::string botId{};///< What is the bot id?
@@ -449,7 +449,7 @@ namespace DiscordCoreAPI {
 
 
 	/// Embed footer data. \brief Embed footer data.
-	struct DiscordCoreAPI_Dll EmbedFooterData : public DataParser<EmbedFooterData> {		
+	struct DiscordCoreAPI_Dll EmbedFooterData : public DataParser<EmbedFooterData> {
 		std::string proxyIconUrl{};///< Proxy icon url.
 		std::string iconUrl{};///< Icon url.
 		std::string text{};///< Footer text.
@@ -1063,7 +1063,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Data for a single member of a Thread. \brief Data for a single member of a Thread.
-	class DiscordCoreAPI_Dll ThreadMemberData : public DiscordEntity, public DataParser<ThreadMemberData> {		
+	class DiscordCoreAPI_Dll ThreadMemberData : public DiscordEntity, public DataParser<ThreadMemberData> {
 	  public:
 		TimeStamp joinTimestamp{ "" };///< The time at which the member joined this Thread.
 		int32_t flags{ 0 };///< Flags.
@@ -1277,7 +1277,7 @@ namespace DiscordCoreAPI {
 		VoiceStateData(const nlohmann::json& jsonObjectData) {
 			*this = jsonObjectData;
 		}
-	
+
 		virtual ~VoiceStateData() = default;
 
 	  protected:
@@ -4401,7 +4401,7 @@ namespace DiscordCoreAPI {
 		}
 	};
 
-	class DiscordCoreAPI_Dll GuildTemplateDataVector : public DataParser<GuildTemplateDataVector> {		
+	class DiscordCoreAPI_Dll GuildTemplateDataVector : public DataParser<GuildTemplateDataVector> {
 	  public:
 		GuildTemplateDataVector() = default;
 
@@ -4727,7 +4727,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Data structure representing an ApplicationCommand's option choice. \brief Data structure representing an ApplicationCommand's option choice.
-	class DiscordCoreAPI_Dll ApplicationCommandOptionChoiceData : public DataParser<ApplicationCommandOptionChoiceData> {		
+	class DiscordCoreAPI_Dll ApplicationCommandOptionChoiceData : public DataParser<ApplicationCommandOptionChoiceData> {
 	  public:
 		std::unordered_map<std::string, std::string> nameLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the name field.
 		nlohmann::json value{};///< The value of the option.
@@ -6781,7 +6781,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// ApplicationCommand Interaction data. \brief ApplicationCommand Interaction data.
-	class DiscordCoreAPI_Dll ApplicationCommandInteractionData : public DiscordEntity,  public DataParser<ApplicationCommandInteractionData> {
+	class DiscordCoreAPI_Dll ApplicationCommandInteractionData : public DiscordEntity, public DataParser<ApplicationCommandInteractionData> {
 	  public:
 		std::vector<ApplicationCommandInteractionDataOption> options{};///< ApplicationCommand Interaction data options.
 		ApplicationCommandType type{};///< The type of ApplicationCommand.

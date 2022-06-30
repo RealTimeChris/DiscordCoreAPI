@@ -117,6 +117,7 @@ namespace DiscordCoreAPI {
 			data["roles"] = rolesArray;
 			return data.dump();
 		}
+
 	  protected:
 		std::string imageDataFinal{};
 	};
@@ -163,7 +164,7 @@ namespace DiscordCoreAPI {
 		void parseObject(const nlohmann::json& jsonObjectData, Reaction* pDataStructure);
 	};
 
-	class DiscordCoreAPI_Dll ReactionVector : public DataParser<ReactionVector> {		
+	class DiscordCoreAPI_Dll ReactionVector : public DataParser<ReactionVector> {
 	  public:
 		ReactionVector() = default;
 

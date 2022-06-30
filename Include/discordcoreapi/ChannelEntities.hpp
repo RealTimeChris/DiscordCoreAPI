@@ -90,7 +90,6 @@ namespace DiscordCoreAPI {
 			data["unique"] = this->unique;
 			return data.dump();
 		}
-
 	};
 
 	/// For deleting the Permission overwrites of a given Channel for a given Role or User. \brief For deleting the Permission overwrites of a given Channel for a given Role or User.
@@ -203,7 +202,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// A Channel object. \brief A Channel object.
-	class DiscordCoreAPI_Dll Channel : public ChannelData, public DataParser<Channel> {		
+	class DiscordCoreAPI_Dll Channel : public ChannelData, public DataParser<Channel> {
 	  public:
 		std::unordered_map<uint64_t, UserData> recipients{};///< Recipients, in the case of a group Dm or Dm.
 		int32_t defaultAutoArchiveDuration{ 0 };///< Default time it takes to archive a thread.

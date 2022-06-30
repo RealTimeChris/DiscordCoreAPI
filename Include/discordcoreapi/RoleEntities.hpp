@@ -196,7 +196,7 @@ namespace DiscordCoreAPI {
 		void parseObject(const nlohmann::json& jsonObjectData, Role* pDataStructure);
 	};
 
-	class DiscordCoreAPI_Dll RoleVector : public DataParser<RoleVector> {		
+	class DiscordCoreAPI_Dll RoleVector : public DataParser<RoleVector> {
 	  public:
 		RoleVector() = default;
 

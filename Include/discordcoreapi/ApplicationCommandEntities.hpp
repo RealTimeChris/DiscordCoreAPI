@@ -101,7 +101,6 @@ namespace DiscordCoreAPI {
 				}
 			}
 			return data.dump();
-			
 		}
 	};
 

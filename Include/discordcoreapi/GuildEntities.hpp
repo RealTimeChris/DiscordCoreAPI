@@ -95,7 +95,8 @@ namespace DiscordCoreAPI {
 			if (this->afkChannelId != 0) {
 				data["afk_channel_id"] = this->afkChannelId;
 			}
-			return data.dump();}
+			return data.dump();
+		}
 	};
 
 	/// For getting a Guild from the library's cache or a Discord server. \brief For getting a Guild from the library's cache or a Discord server.
@@ -184,7 +185,7 @@ namespace DiscordCoreAPI {
 		Snowflake guildId{};///< The id of the Guild you wish to acquire.
 	};
 
-	/// For collecting a list of Guild voice integrations. \brief	
+	/// For collecting a list of Guild voice integrations. \brief
 	struct DiscordCoreAPI_Dll GetGuildIntegrationsData {
 		Snowflake guildId{};///< The Guild for which to collect the integrations from.
 	};
@@ -383,7 +384,7 @@ namespace DiscordCoreAPI {
 		void parseObject(const nlohmann::json& jsonObjectData, Guild* pDataStructure);
 	};
 
-	class DiscordCoreAPI_Dll GuildVector : public DataParser<GuildVector> {		
+	class DiscordCoreAPI_Dll GuildVector : public DataParser<GuildVector> {
 	  public:
 		friend class Guilds;
 

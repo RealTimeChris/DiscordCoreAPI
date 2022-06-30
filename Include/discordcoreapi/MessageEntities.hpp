@@ -262,7 +262,7 @@ namespace DiscordCoreAPI {
 		void parseObject(const nlohmann::json& jsonObjectData, Message* pDataStructure);
 	};
 
-	class DiscordCoreAPI_Dll MessageVector : public DataParser<MessageVector> {		
+	class DiscordCoreAPI_Dll MessageVector : public DataParser<MessageVector> {
 	  public:
 		MessageVector() = default;
 
