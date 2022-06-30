@@ -185,7 +185,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// A single Message. \brief A single Message.
-	class DiscordCoreAPI_Dll Message : public MessageData {
+	class DiscordCoreAPI_Dll Message : public MessageData, public DataParser<Message> {
 	  public:
 		Message() = default;
 
@@ -198,7 +198,7 @@ namespace DiscordCoreAPI {
 		void parseObject(const nlohmann::json& jsonObjectData, Message* pDataStructure);
 	};
 
-	class DiscordCoreAPI_Dll MessageVector {
+	class DiscordCoreAPI_Dll MessageVector : public DataParser<MessageVector> {		
 	  public:
 		MessageVector() = default;
 

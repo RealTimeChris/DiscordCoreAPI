@@ -226,20 +226,6 @@ namespace DiscordCoreInternal {
 		return data;
 	};
 
-	nlohmann::json JSONIfier::JSONIFY(const DiscordCoreAPI::UpdateVoiceStateData& dataPackage) {
-		nlohmann::json data{};
-		if (dataPackage.channelId == 0) {
-			data["d"]["channel_id"] = nullptr;
-		} else {
-			data["d"]["channel_id"] = std::to_string(dataPackage.channelId);
-		}
-		data["d"]["self_deaf"] = dataPackage.selfDeaf;
-		data["d"]["self_mute"] = dataPackage.selfMute;
-		data["d"]["guild_id"] = std::to_string(dataPackage.guildId);
-		data["op"] = 4;
-		return data;
-	}
-
 	nlohmann::json JSONIfier::JSONIFY(const DiscordCoreAPI::UpdatePresenceData& dataPackage) {
 		nlohmann::json data{};
 		data["d"]["activities"] = nlohmann::json{};

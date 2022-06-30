@@ -220,7 +220,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// A single WebHook. \brief A single WebHook.
-	class DiscordCoreAPI_Dll WebHook : public WebHookData {
+	class DiscordCoreAPI_Dll WebHook : public WebHookData, public DataParser<WebHook> {
 	  public:
 		WebHook() = default;
 
@@ -234,7 +234,7 @@ namespace DiscordCoreAPI {
 		void parseObject(const nlohmann::json& jsonObjectData, WebHook* pDataStructure);
 	};
 
-	class DiscordCoreAPI_Dll WebHookVector {
+	class DiscordCoreAPI_Dll WebHookVector : public DataParser<WebHookVector> {
 	  public:
 		WebHookVector() = default;
 

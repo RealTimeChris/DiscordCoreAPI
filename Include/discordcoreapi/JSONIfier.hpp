@@ -98,8 +98,6 @@ namespace DiscordCoreInternal {
 
 		static nlohmann::json JSONIFY(const std::string& botToken, std::string sessionID, int32_t lastReceivedNumber);
 
-		static nlohmann::json JSONIFY(const DiscordCoreAPI::UpdateVoiceStateData& dataPackage);
-
 		static nlohmann::json JSONIFY(const DiscordCoreAPI::UpdatePresenceData& dataPackage);
 
 		static nlohmann::json JSONIFY(int32_t lastReceivedNumber);

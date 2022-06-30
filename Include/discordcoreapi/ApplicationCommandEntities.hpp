@@ -165,7 +165,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// A single ApplicationCommand. \brief A single ApplicationCommand.
-	class DiscordCoreAPI_Dll ApplicationCommand : public ApplicationCommandData {
+	class DiscordCoreAPI_Dll ApplicationCommand : public ApplicationCommandData, public DataParser<ApplicationCommand> {
 	  public:
 		ApplicationCommand() = default;
 

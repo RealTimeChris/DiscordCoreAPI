@@ -128,7 +128,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// A single Reaction. \brief A single Reaction.
-	class DiscordCoreAPI_Dll Reaction : public ReactionData {
+	class DiscordCoreAPI_Dll Reaction : public ReactionData, public DataParser<Reaction> {
 	  public:
 		Reaction() = default;
 
@@ -142,7 +142,7 @@ namespace DiscordCoreAPI {
 		void parseObject(const nlohmann::json& jsonObjectData, Reaction* pDataStructure);
 	};
 
-	class DiscordCoreAPI_Dll ReactionVector {
+	class DiscordCoreAPI_Dll ReactionVector : public DataParser<ReactionVector> {		
 	  public:
 		ReactionVector() = default;
 
