@@ -124,10 +124,10 @@ namespace DiscordCoreInternal {
 
 	void BaseSocketAgent::onClosed(WebSocketSSLShard* theShard) noexcept {
 		if (theShard && this->theClients.contains(theShard->shard[0])) {
-			if (this->maxReconnectTries > theShard->currentRecursionDepth) {
+			if (this->maxReconnectTries > theShard->currentReconnectionTries) {
 				theShard->disconnect();
 				this->theClients.erase(theShard->shard[0]);
-			} else if (this->maxReconnectTries <= theShard->currentRecursionDepth) {
+			} else if (this->maxReconnectTries <= theShard->currentReconnectionTries) {
 				this->doWeQuit->store(true);
 				this->theTask->request_stop();
 			}
@@ -353,7 +353,7 @@ namespace DiscordCoreInternal {
 				if (payload.contains("t") && !payload["t"].is_null()) {
 					if (payload["t"] == "RESUMED") {
 						theShard->areWeConnected02.store(true);
-						theShard->currentRecursionDepth = 0;
+						theShard->currentReconnectionTries = 0;
 					}
 
 					if (payload["t"] == "READY") {
@@ -362,7 +362,7 @@ namespace DiscordCoreInternal {
 						DiscordCoreAPI::UserData theUser{ payload["d"]["user"] };
 						this->discordCoreClient->currentUser = DiscordCoreAPI::BotUser{ theUser, this };
 						DiscordCoreAPI::Users::insertUser(theUser);
-						theShard->currentRecursionDepth = 0;
+						theShard->currentReconnectionTries = 0;
 					}
 				}
 
@@ -875,7 +875,6 @@ namespace DiscordCoreInternal {
 										  << std::endl
 										  << std::endl;
 							}
-							theShard->currentRecursionDepth++;
 							std::mt19937_64 randomEngine{ static_cast<uint64_t>(std::chrono::system_clock::now().time_since_epoch().count()) };
 							int32_t numOfMsToWait =
 								static_cast<int32_t>(1000.0f + ((static_cast<float>(randomEngine()) / static_cast<float>(randomEngine.max())) * static_cast<float>(4000.0f)));
@@ -988,8 +987,14 @@ namespace DiscordCoreInternal {
 					this->theClients[connectData.currentShard] =
 						std::make_unique<WebSocketSSLShard>(&this->connections, this->currentBaseSocketAgent, connectData.currentShard, this->configManager);
 				}
-				this->theClients[connectData.currentShard]->currentRecursionDepth++;
+				this->theClients[connectData.currentShard]->currentReconnectionTries = connectData.currentReconnectionTries;
+				this->theClients[connectData.currentShard]->currentReconnectionTries++;
 				this->theClients[connectData.currentShard]->voiceConnectionDataBufferMap = std::move(connectData.voiceConnectionDataBufferMap);
+
+				if (this->theClients[connectData.currentShard]->currentReconnectionTries >= this->maxReconnectTries) {
+					this->doWeQuit->store(true);
+					return;
+				}
 
 				try {
 					this->theClients[connectData.currentShard]->connect(this->configManager->getConnectionAddress(), this->configManager->getConnectionPort());

@@ -206,6 +206,7 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll ConnectionPackage {
 		std::unordered_map<Snowflake, DiscordCoreAPI::UnboundedMessageBlock<DiscordCoreInternal::VoiceConnectionData>*> voiceConnectionDataBufferMap{};
 		int32_t currentBaseSocketAgent{ 0 };
+		int32_t currentReconnectionTries{ 0 };
 		int32_t currentShard{ 0 };
 	};
 

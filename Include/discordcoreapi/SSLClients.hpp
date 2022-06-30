@@ -379,13 +379,11 @@ namespace DiscordCoreInternal {
 		std::queue<std::string> processedMessages{};
 		VoiceConnectionData voiceConnectionData{};
 		bool haveWeReceivedHeartbeatAck{ true };
-		Snowflake userId{ 0 };
+		int32_t currentReconnectionTries{ 0 };
 		bool serverUpdateCollected{ false };
 		int32_t currentBaseSocketAgent{ 0 };
 		bool stateUpdateCollected{ false };
-		int32_t currentRecursionDepth{ 0 };
 		bool areWeCollectingData{ false };
-		int32_t maxRecursionDepth{ 10 };
 		bool areWeHeartBeating{ false };
 		int32_t lastNumberReceived{ 0 };
 		WebSocketCloseCode closeCode{};
@@ -396,6 +394,7 @@ namespace DiscordCoreInternal {
 		int64_t messageOffset{};
 		std::string sessionId{};
 		nlohmann::json shard{};
+		Snowflake userId{ 0 };
 	};
 
 	class DiscordCoreAPI_Dll DatagramSocketSSLClient {

@@ -362,8 +362,8 @@ namespace DiscordCoreInternal {
 		auto httpsConnection = this->connectionManager.getConnection();
 		try {
 			httpsConnection->resetValues();
-			if (httpsConnection->currentRecursionDepth >= httpsConnection->maxRecursion) {
-				httpsConnection->currentRecursionDepth = 0;
+			if (httpsConnection->currentReconnectionTries >= httpsConnection->maxRecursion) {
+				httpsConnection->currentReconnectionTries = 0;
 				httpsConnection->areWeCheckedOut.store(false);
 				return HttpsResponseData{};
 			}
@@ -376,12 +376,12 @@ namespace DiscordCoreInternal {
 			httpsConnection->writeData(theRequest);
 			auto result = this->getResponse(rateLimitData, httpsConnection);
 			if (result.contentSize == -1) {
-				httpsConnection->currentRecursionDepth++;
+				httpsConnection->currentReconnectionTries++;
 				httpsConnection->doWeConnect = true;
 				httpsConnection->areWeCheckedOut.store(false);
 				return this->httpRequestInternal(workload, rateLimitData);
 			} else {
-				httpsConnection->currentRecursionDepth = 0;
+				httpsConnection->currentReconnectionTries = 0;
 				httpsConnection->areWeCheckedOut.store(false);
 				return result;
 			}
@@ -389,7 +389,7 @@ namespace DiscordCoreInternal {
 			if (this->configManager->doWePrintHttpsErrorMessages()) {
 				DiscordCoreAPI::reportException(workload.callStack + "::HttpsClient::httpRequestInternal()");
 			}
-			httpsConnection->currentRecursionDepth++;
+			httpsConnection->currentReconnectionTries++;
 			httpsConnection->doWeConnect = true;
 			httpsConnection->areWeCheckedOut.store(false);
 			return this->httpRequestInternal(workload, rateLimitData);
