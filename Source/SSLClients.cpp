@@ -125,7 +125,7 @@ namespace DiscordCoreInternal {
 	void HttpsSSLClient::processIO(int32_t theWaitTimeInms) {
 		if (this->theSocket == SOCKET_ERROR) {
 			this->disconnect();
-			throw ProcessingError{ reportSSLError("HttpsSSLClient::processIO()::SSL_read_ex(), ") + reportError("HttpsSSLClient::processIO()::SSL_read_ex(), ") };
+			return;
 		}
 		int32_t readNfds{ 0 }, writeNfds{ 0 }, finalNfds{ 0 };
 		fd_set writeSet{}, readSet{};
