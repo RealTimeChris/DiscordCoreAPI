@@ -63,6 +63,17 @@
 
 namespace DiscordCoreInternal {
 
+	using Snowflake = uint64_t;
+
+	struct DiscordCoreAPI_Dll VoiceConnectInitData {
+		Snowflake channelId{};
+		Snowflake guildId{};
+		Snowflake userId{};
+		int32_t currentShard{};
+		bool selfDeaf{ false };
+		bool selfMute{ false };
+	};
+
 	struct DiscordCoreAPI_Dll VoiceConnectionData {
 		std::string voiceEncryptionMode{};
 		std::string externalIp{};
@@ -75,6 +86,100 @@ namespace DiscordCoreInternal {
 		std::string token{};
 	};
 
+	struct DiscordCoreAPI_Dll WebSocketResumeData {
+		std::string botToken{};
+		std::string sessionId{};
+		int32_t lastNumberReceived{};
+
+		operator nlohmann::json() {
+			nlohmann::json theData{};
+			theData["d"]["seq"] = this->lastNumberReceived;
+			theData["d"]["session_id"] = this->sessionId;
+			theData["d"]["token"] = this->botToken;
+			theData["op"] = 6;
+			return theData;
+		}
+	};
+
+	struct DiscordCoreAPI_Dll WebSocketIdentifyData {
+		std::string botToken{};
+		int64_t intents{};
+		int32_t currentShard{};
+		int32_t numberOfShards{};
+		operator nlohmann::json() {
+			nlohmann::json data{};
+			data["d"]["properties"]["browser"] = "DiscordCoreAPI";
+			data["d"]["properties"]["device"] = "DiscordCoreAPI";
+			data["d"]["shard"] = { this->currentShard, this->numberOfShards };
+			data["d"]["large_threshold"] = 250;
+			data["d"]["intents"] = this->intents;
+			data["d"]["compress"] = false;
+			data["d"]["token"] = this->botToken;
+			data["op"] = 2;
+#ifdef _WIN32
+			data["d"]["properties"]["os"] = "Windows";
+#else
+			data["d"]["properties"]["os"] = "Linux";
+#endif
+			return data;
+		}
+	};
+
+	struct DiscordCoreAPI_Dll VoiceSocketProtocolPayloadData {
+		std::string voicePort{};
+		std::string externalIp{};
+		std::string voiceEncryptionMode{};
+
+		operator std::vector<uint8_t>() {
+			nlohmann::json data{};
+			data["d"]["data"]["port"] = stol(this->voicePort);
+			data["d"]["data"]["mode"] = this->voiceEncryptionMode;
+			data["d"]["data"]["address"] = this->externalIp;
+			data["d"]["protocol"] = "udp";
+			data["op"] = 1;
+			std::vector<uint8_t> newVector{};
+			std::string newString = data.dump();
+			newString.shrink_to_fit();
+			newVector.insert(newVector.begin(), newString.begin(), newString.end());
+			return newVector;
+		}
+	};
+
+	struct DiscordCoreAPI_Dll VoiceIdentifyData {
+		VoiceConnectInitData connectInitData{};
+		VoiceConnectionData connectionData{};
+		operator std::vector<uint8_t>() {
+			nlohmann::json data{};
+			data["d"]["session_id"] = this->connectionData.sessionId;
+			data["d"]["server_id"] = std::to_string(this->connectInitData.guildId);
+			data["d"]["user_id"] = std::to_string(this->connectInitData.userId);
+			data["d"]["token"] = this->connectionData.token;
+			data["op"] = 0;
+			std::vector<uint8_t> newVector{};
+			std::string newString = data.dump();
+			newString.shrink_to_fit();
+			newVector.insert(newVector.begin(), newString.begin(), newString.end());
+			return newVector;
+		}
+	};
+
+	struct DiscordCoreAPI_Dll SendSpeakingData {
+		std::string ssrc{};
+		int32_t delay{};
+
+		operator std::vector<uint8_t>() {
+			nlohmann::json data{};
+			data["d"]["speaking"] = 1 << 0;
+			data["d"]["delay"] = delay;
+			data["d"]["ssrc"] = ssrc;
+			data["op"] = 5;
+			std::vector<uint8_t> newVector{};
+			std::string newString = data.dump();
+			newString.shrink_to_fit();
+			newVector.insert(newVector.begin(), newString.begin(), newString.end());
+			return newVector;
+		}
+	};
 }
 
 /// The main namespace for this library. \brief The main namespace for this
@@ -97,7 +202,7 @@ namespace DiscordCoreAPI {
 	using Snowflake = uint64_t;
 
 	struct DiscordCoreAPI_Dll ConnectionPackage {
-		std::unordered_map<DiscordCoreAPI::Snowflake, DiscordCoreAPI::UnboundedMessageBlock<DiscordCoreInternal::VoiceConnectionData>*> voiceConnectionDataBufferMap{};
+		std::unordered_map<Snowflake, DiscordCoreAPI::UnboundedMessageBlock<DiscordCoreInternal::VoiceConnectionData>*> voiceConnectionDataBufferMap{};
 		int32_t currentBaseSocketAgent{ 0 };
 		int32_t currentShard{ 0 };
 	};
@@ -4684,6 +4789,44 @@ namespace DiscordCoreAPI {
 
 		ApplicationCommandOptionData() = default;
 
+		operator nlohmann::json() {
+			nlohmann::json newOption{};
+			if (this->type == DiscordCoreAPI::ApplicationCommandOptionType::Channel) {
+				newOption["channel_types"] = this->channelTypes;
+			}
+			if (this->type != DiscordCoreAPI::ApplicationCommandOptionType::Sub_Command && this->type != DiscordCoreAPI::ApplicationCommandOptionType::Sub_Command_Group) {
+				newOption["required"] = this->required;
+			}
+			newOption["description_localizations"] = this->descriptionLocalizations;
+			newOption["name_localizations"] = this->nameLocalizations;
+			newOption["description"] = this->description;
+			newOption["min_value"] = this->minValue;
+			newOption["max_value"] = this->maxValue;
+			newOption["required"] = this->required;
+			newOption["name"] = this->name;
+			newOption["type"] = this->type;
+			newOption["options"] = nlohmann::json{};
+			newOption["choices"] = nlohmann::json{};
+			if (this->choices.size() > 0) {
+				for (int32_t x = 0; x < this->choices.size(); x++) {
+					nlohmann::json jsonValue{};
+					jsonValue["name_localizations"] = this->choices[x].nameLocalizations;
+					jsonValue["value"] = this->choices[x].value;
+					jsonValue["name"] = this->choices[x].name;
+					newOption["choices"].push_back(jsonValue);
+				}
+			}
+			if (newOption["choices"].size() == 0) {
+				newOption["autocomplete"] = this->autocomplete;
+			}
+			if (this->options.size() > 0) {
+				for (auto& value: options) {
+					nlohmann::json theData = value;
+				}
+			}
+			return newOption;
+		}
+
 		ApplicationCommandOptionData& operator=(const nlohmann::json& jsonObjectData) {
 			this->parseObject(jsonObjectData, this);
 			return *this;
@@ -7418,6 +7561,54 @@ namespace DiscordCoreAPI {
 			*this = other;
 		}
 		InteractionResponseData() = default;
+
+		operator std::string() {
+			nlohmann::json data{};
+			for (auto& value: this->data.attachments) {
+				data["data"]["attachments"].push_back(DiscordCoreAPI::AttachmentData{ value });
+			}
+			if (this->data.components.size() == 0) {
+				data["message"]["components"] = nlohmann::json::array();
+			} else {
+				for (auto& value: this->data.components) {
+					DiscordCoreAPI::ActionRowData theData{ value };
+					data["message"]["components"].push_back(nlohmann::json{ theData });
+				}
+			}
+			data["data"]["allowed_mentions"] = DiscordCoreAPI::AllowedMentionsData{ this->data.allowedMentions };
+			if (this->data.choices.size() > 0) {
+				nlohmann::json::array_t theArray{};
+				for (auto& value: this->data.choices) {
+					nlohmann::json theValue{};
+					theValue["name"] = value.name;
+					theValue["name_localizations"] = value.nameLocalizations;
+					theValue["value"] = value.value;
+					theArray.push_back(theValue);
+				}
+				data["data"]["choices"] = theArray;
+			}
+			if (this->data.embeds.size() == 0) {
+				data["data"]["embeds"] = nlohmann::json::array();
+			} else {
+				for (auto& value: this->data.embeds) {
+					data["data"]["embeds"].push_back(DiscordCoreAPI::EmbedData{ value });
+				}
+			}
+			if (this->data.customId != "") {
+				data["data"]["custom_id"] = this->data.customId;
+			}
+			if (this->data.content != "") {
+				data["data"]["content"] = this->data.content;
+			}
+			if (this->data.title != "") {
+				data["data"]["title"] = this->data.title;
+			}
+			data["data"]["flags"] = this->data.flags;
+			data["data"]["tts"] = this->data.tts;
+			data["type"] = this->type;
+			return data.dump();
+		}
+
 		InteractionCallbackData data{};///< Interaction ApplicationCommand callback data.
 		InteractionCallbackType type{};///< Interaction callback type.
 	};
@@ -8003,15 +8194,6 @@ namespace DiscordCoreInternal {
 			HttpsWorkloadData::workloadIdsExternal[workloadType].store(theValue + 1);
 			return theValue;
 		}
-	};
-
-	struct DiscordCoreAPI_Dll VoiceConnectInitData {
-		DiscordCoreAPI::Snowflake channelId{};
-		DiscordCoreAPI::Snowflake guildId{};
-		DiscordCoreAPI::Snowflake userId{};
-		int32_t currentShard{};
-		bool selfDeaf{ false };
-		bool selfMute{ false };
 	};
 
 };// namespace DiscordCoreInternal

@@ -66,6 +66,26 @@ namespace DiscordCoreAPI {
 		std::string reason{};///< Reason for creating the Role.
 		bool hoist{ false };///< Is this Role hoisted above the rest of them?
 		std::string name{};///< The name of the Role.
+
+		operator std::string() {
+			int32_t roleColorInt = stol(this->hexColorValue, 0, 16);
+			std::stringstream stream;
+			stream << std::setbase(10) << roleColorInt;
+			std::string roleColorReal = stream.str();
+			nlohmann::json data{};
+			data["permissions"] = this->permissions.getCurrentPermissionString();
+			data["mentionable"] = this->mentionable;
+			data["hoist"] = this->hoist;
+			data["name"] = this->name;
+			data["color"] = roleColorReal;
+			if (this->icon.size() > 0) {
+				data["icon"] = this->icon;
+			}
+			if (this->unicodeEmoji.size() > 0) {
+				data["unicode_emoji"] = this->unicodeEmoji;
+			}
+			return data.dump();
+		}
 	};
 
 	/// For updating the positions of the roles. \brief For updating the positions of the roles.
@@ -76,13 +96,23 @@ namespace DiscordCoreAPI {
 
 	/// For updating the Role positions. \brief For updating the Role positions.
 	struct DiscordCoreAPI_Dll ModifyGuildRolePositionsData {
-		friend class DiscordCoreInternal::JSONIfier;
 		friend Roles;
 
 		Snowflake guildId{};///< The Guild within which to move the Role.
 		int32_t newPosition{ 0 };///< The new position of the Role.
 		Snowflake roleId{};///< The id of the Role to move.
 		std::string reason{};///< Reason for modifying the Role positions.
+
+		operator std::string() {
+			nlohmann::json dataArray{};
+			for (auto& value: this->rolePositions) {
+				nlohmann::json data{};
+				data["position"] = value.rolePosition;
+				data["id"] = std::to_string(value.roleId);
+				dataArray.push_back(data);
+			}
+			return dataArray.dump();
+		}
 
 	  protected:
 		std::vector<RolePositionData> rolePositions;
@@ -100,6 +130,26 @@ namespace DiscordCoreAPI {
 		std::string reason{};///<< Reason for modifying the Role.
 		std::string name{};///< What the name of the Role is going to be.
 		bool hoist{ false };///< Is this Role hoisted above the others?
+
+		operator std::string() {
+			int32_t roleColorInt = stol(this->hexColorValue, 0, 16);
+			std::stringstream stream;
+			stream << std::setbase(10) << roleColorInt;
+			std::string roleColorReal = stream.str();
+			nlohmann::json data{};
+			data["permissions"] = this->permissions.getCurrentPermissionString();
+			data["mentionable"] = this->mentionable;
+			data["hoist"] = this->hoist;
+			data["name"] = this->name;
+			data["color"] = roleColorReal;
+			if (this->icon.size() > 0) {
+				data["icon"] = this->icon;
+			}
+			if (this->unicodeEmoji.size() > 0) {
+				data["unicode_emoji"] = this->unicodeEmoji;
+			}
+			return data.dump();
+		}
 	};
 
 	/// For removing a Role from a chosen Guild. \brief For removing a Role from a chosen Guild.

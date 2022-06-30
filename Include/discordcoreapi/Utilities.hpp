@@ -448,6 +448,8 @@ namespace DiscordCoreAPI {
 
 		operator std::basic_string<char, std::char_traits<char>, std::allocator<char>>();
 
+		operator nlohmann::json();
+
 		void push_back(char theChar);
 
 		size_t size();

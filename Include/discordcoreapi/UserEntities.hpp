@@ -37,6 +37,25 @@ namespace DiscordCoreAPI {
 		std::string status{};///< Current status.
 		int64_t since{ 0 };///< When was the activity started?
 		bool afk{ false };///< Are we afk.
+
+		operator nlohmann::json() {
+			nlohmann::json data{};
+			data["d"]["activities"] = nlohmann::json{};
+			for (auto& value: this->activities) {
+				nlohmann::json dataNew{};
+				if (value.url != "") {
+					dataNew["url"] = value.url;
+				}
+				dataNew["name"] = value.name;
+				dataNew["type"] = value.type;
+				data["d"]["activities"].push_back(dataNew);
+			}
+			data["d"]["status"] = this->status;
+			data["d"]["since"] = this->since;
+			data["d"]["afk"] = this->afk;
+			data["op"] = 3;
+			return data;
+		}
 	};
 
 	/// For adding a user to a group Dm. \brief For adding a user to a group Dm.
@@ -45,6 +64,12 @@ namespace DiscordCoreAPI {
 		Snowflake userId{};///< The user's Id.
 		std::string token{};///< The user's access token.
 		std::string nick{};///< The user's nickname.
+
+		operator std::string() {nlohmann::json data{};
+			data["access_token"] = this->token;
+			data["nick"] = this->nick;
+			return data.dump();
+		}
 	};
 
 	/// For removing a User from a group Dm. \brief For removing a User from a group Dm.
@@ -135,7 +160,7 @@ namespace DiscordCoreAPI {
 		BotUser(UserData dataPackage, DiscordCoreInternal::BaseSocketAgent* pBaseBaseSocketAgentNew);
 
 		/// Updates the bot's current voice-status. Joins/leaves a Channel, and/or self deafens/mutes. \brief Updates the bot's current voice-status. Joins/leaves a Channel, and/or self deafens/mutes.
-		void updateVoiceStatus(const UpdateVoiceStateData& datdataPackageaPackage);
+		void updateVoiceStatus(UpdateVoiceStateData& datdataPackageaPackage);
 
 		/// Updates the bot's current activity status, to be viewed by others in the same server as the bot. \brief Updates the bot's current activity status, to be viewed by others in the same server as the bot.
 		void updatePresence(UpdatePresenceData& dataPackage);

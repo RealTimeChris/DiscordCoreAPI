@@ -373,13 +373,13 @@ namespace DiscordCoreInternal {
 		~WebSocketSSLShard() noexcept = default;
 
 	  protected:
-		std::unordered_map<DiscordCoreAPI::Snowflake, DiscordCoreAPI::UnboundedMessageBlock<VoiceConnectionData>*> voiceConnectionDataBufferMap{};
+		std::unordered_map<Snowflake, DiscordCoreAPI::UnboundedMessageBlock<VoiceConnectionData>*> voiceConnectionDataBufferMap{};
 		DiscordCoreAPI::StopWatch<std::chrono::milliseconds> heartBeatStopWatch{ 0ms };
 		WebSocketState theState{ WebSocketState::Connecting01 };
 		std::queue<std::string> processedMessages{};
 		VoiceConnectionData voiceConnectionData{};
 		bool haveWeReceivedHeartbeatAck{ true };
-		DiscordCoreAPI::Snowflake userId{ 0 };
+		Snowflake userId{ 0 };
 		bool serverUpdateCollected{ false };
 		int32_t currentBaseSocketAgent{ 0 };
 		bool stateUpdateCollected{ false };

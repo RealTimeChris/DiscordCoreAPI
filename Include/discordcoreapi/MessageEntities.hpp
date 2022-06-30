@@ -50,7 +50,6 @@ namespace DiscordCoreAPI {
 	/// For creating a Message. \brief For creating a Message.
 	class DiscordCoreAPI_Dll CreateMessageData : public MessageResponseBase {
 	  public:
-		friend class DiscordCoreInternal::JSONIfier;
 		friend InputEvents;
 		friend Messages;
 
@@ -78,6 +77,41 @@ namespace DiscordCoreAPI {
 		Snowflake channelId{};
 
 		CreateMessageData() = default;
+
+		operator std::string() {
+			nlohmann::json data{};
+			for (auto& value: this->attachments) {
+				data["attachments"].push_back(value);
+			}
+			if (this->messageReference.messageId != 0) {
+				data["message_reference"] = this->messageReference;
+			}
+			if (this->components.size() == 0) {
+				data["components"] = nlohmann::json::array();
+			} else {
+				for (auto& value: this->components) {
+					DiscordCoreAPI::ActionRowData theData{ value };
+					data["components"].push_back(nlohmann::json{ theData });
+				}
+			}
+			data["allowed_mentions"] = this->allowedMentions;
+			for (auto& value: this->stickerIds) {
+				data["sticker_ids"].push_back(value);
+			}
+			if (this->embeds.size() == 0) {
+				data["embeds"] = nlohmann::json::array();
+			} else {
+				for (auto& value: this->embeds) {
+					data["embeds"].push_back(value);
+				}
+			}
+			if (this->content != "") {
+				data["content"] = this->content;
+			}
+			data["flags"] = this->flags;
+			data["tts"] = this->tts;
+			return data.dump();
+		}
 
 	  protected:
 		std::vector<AttachmentData> attachments{};
@@ -117,7 +151,6 @@ namespace DiscordCoreAPI {
 	/// For editing a Message. \brief For editing a Message.
 	class DiscordCoreAPI_Dll EditMessageData : public MessageResponseBase {
 	  public:
-		friend class DiscordCoreInternal::JSONIfier;
 		friend InputEvents;
 		friend Messages;
 
@@ -137,6 +170,34 @@ namespace DiscordCoreAPI {
 			for (auto& value: dataPackage.embeds) {
 				this->embeds.push_back(value);
 			}
+		}
+
+		operator std::string() {
+			nlohmann::json data{};
+			for (auto& value: this->attachments) {
+				data["attachments"].push_back(value);
+			}
+			if (this->components.size() == 0) {
+				data["components"] = nlohmann::json::array();
+			} else {
+				for (auto& value: this->components) {
+					DiscordCoreAPI::ActionRowData theData{ value };
+					data["components"].push_back(nlohmann::json{ theData });
+				}
+			}
+			data["allowed_mentions"] = this->allowedMentions;
+			if (this->embeds.size() == 0) {
+				data["embeds"] = nlohmann::json::array();
+			} else {
+				for (auto& value: this->embeds) {
+					data["embeds"].push_back(value);
+				}
+			}
+			if (this->content != "") {
+				data["content"] = this->content;
+			}
+			data["flags"] = this->flags;
+			return data.dump();
 		}
 
 	  protected:
@@ -163,6 +224,12 @@ namespace DiscordCoreAPI {
 		std::vector<Snowflake> messageIds{};///< Array of Message ids to delete.
 		Snowflake channelId{};///< Channel within which to delete the Messages.
 		std::string reason{};///< The reason for deleting the Messages.
+
+		operator std::string() {
+			nlohmann::json data{};
+			data["messages"] = this->messageIds;
+			return data.dump();
+		}
 	};
 
 	/// For getting a collection of pinned Messages. \brief For getting a collection of pinned Messages.

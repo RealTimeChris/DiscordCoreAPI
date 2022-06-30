@@ -54,6 +54,24 @@ namespace DiscordCoreAPI {
 		std::string description{};///< A description of the command.
 		Snowflake applicationId{};///< Application id.
 		std::string name{};///< A name for the new command.
+		operator std::string() {
+			nlohmann::json data{};
+			if (this->defaultMemberPermissions != "") {
+				data["default_member_permissions"] = this->defaultMemberPermissions;
+			}
+			data["description_localizations"] = this->descriptionLocalizations;
+			data["name_localizations"] = this->nameLocalizations;
+			data["dm_permission"] = this->dmPermission;
+			data["description"] = this->description;
+			data["name"] = this->name;
+			data["type"] = this->type;
+			if (this->options.size() > 0) {
+				for (int32_t x = 0; x < this->options.size(); x++) {
+					data["options"].push_back(nlohmann::json(this->options[x]));
+				}
+			}
+			return data.dump();
+		}
 	};
 
 	/// For editing a single global ApplicationCommand. \brief For editing a single global ApplicationCommand.
@@ -66,6 +84,25 @@ namespace DiscordCoreAPI {
 		std::string description{};///< A description of the command.
 		Snowflake applicationId{};///< The current application's Id (The Bot's User Id).
 		std::string name{};///< A name for the new command.
+
+		operator std::string() {
+			nlohmann::json data{};
+			if (this->defaultMemberPermissions != "") {
+				data["default_member_permissions"] = this->defaultMemberPermissions;
+			}
+			data["description_localizations"] = this->descriptionLocalizations;
+			data["name_localizations"] = this->nameLocalizations;
+			data["dm_permission"] = this->dmPermission;
+			data["description"] = this->description;
+			data["name"] = this->name;
+			if (this->options.size() > 0) {
+				for (int32_t x = 0; x < this->options.size(); x++) {
+					data["options"].push_back(nlohmann::json{ this->options[x] });
+				}
+			}
+			return data.dump();
+			
+		}
 	};
 
 	/// For deleting a single global ApplicationCommand. \brief For deleting a single global ApplicationCommand.
@@ -99,6 +136,26 @@ namespace DiscordCoreAPI {
 		Snowflake applicationId{};///< Application id.
 		Snowflake guildId{};///< The guild's id.
 		std::string name{};///< A name for the new command.
+
+		operator std::string() {
+			nlohmann::json data{};
+			if (this->defaultMemberPermissions != "") {
+				data["default_member_permissions"] = this->defaultMemberPermissions;
+			}
+			data["description_localizations"] = this->descriptionLocalizations;
+			data["name_localizations"] = this->nameLocalizations;
+			data["dm_permission"] = this->dmPermission;
+			data["description"] = this->description;
+			data["name"] = this->name;
+			data["type"] = this->type;
+			if (this->options.size() > 0) {
+				for (int32_t x = 0; x < this->options.size(); x++) {
+					data["options"].push_back(nlohmann::json{ this->options[x] });
+				}
+				data["options"] = nlohmann::json{};
+			}
+			return data.dump();
+		}
 	};
 
 	/// For acquiring a single Guild ApplicationCommand. \brief For acquiring a single Guild ApplicationCommand.
@@ -119,6 +176,25 @@ namespace DiscordCoreAPI {
 		Snowflake applicationId{};///< The current application's Id (The Bot's User Id).
 		Snowflake guildId{};///< The id of the Guild which you would like to add the new command to.
 		std::string name{};///< A name for the new command.
+
+		operator std::string() {
+			nlohmann::json data{};
+			if (this->defaultMemberPermissions != "") {
+				data["default_member_permissions"] = this->defaultMemberPermissions;
+			}
+			data["description_localizations"] = this->descriptionLocalizations;
+			data["name_localizations"] = this->nameLocalizations;
+			data["dm_permission"] = this->dmPermission;
+			data["description"] = this->description;
+			data["name"] = this->name;
+			if (this->options.size() > 0) {
+				for (int32_t x = 0; x < this->options.size(); x++) {
+					data["options"].push_back(nlohmann::json{ this->options[x] });
+				}
+				data["options"] = nlohmann::json{};
+			}
+			return data.dump();
+		}
 	};
 
 	/// For deleting a single Guild ApplicationCommand. \brief For deleting a single Guild ApplicationCommand.
@@ -155,6 +231,18 @@ namespace DiscordCoreAPI {
 		Snowflake applicationId{};///< The current application's Id (The Bot's User Id).
 		uint64_t commandId{};///< The command id which you would like to edit the permissions of.
 		Snowflake guildId{};///< The Guild id of the Guild for which you would like to edit the command permissions.
+
+		operator std::string() {
+			nlohmann::json newDataArray{};
+			for (auto& value: this->permissions) {
+				nlohmann::json newData{};
+				newData["permission"] = value.permission;
+				newData["type"] = value.type;
+				newData["id"] = std::to_string(value.id);
+				newDataArray.push_back(newData);
+			}
+			return newDataArray.dump();
+		}
 	};
 
 	/// For batch editing the permissions of a collection of Guild ApplicationCommands. \brief For batch editing the permissions of a collection of Guild ApplicationCommands.

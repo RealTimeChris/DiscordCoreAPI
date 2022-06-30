@@ -98,7 +98,6 @@ namespace DiscordCoreAPI {
 
 	/// For creating a new Guild Emoji.
 	struct DiscordCoreAPI_Dll CreateGuildEmojiData {
-		friend class DiscordCoreInternal::JSONIfier;
 		friend Reactions;
 
 		std::vector<Snowflake> roles{};///< Roles that can use this Emoji.
@@ -107,6 +106,18 @@ namespace DiscordCoreAPI {
 		std::string reason{};///< Reason for creating the new Emoji.
 		std::string name{};///< Name of the emoji.
 		ImageType type{};///< The type of image being uploaded.
+
+		operator std::string() {
+			nlohmann::json data{};
+			nlohmann::json rolesArray{};
+			for (auto& value: this->roles) {
+				rolesArray.push_back(value);
+			}
+			data["image"] = this->imageDataFinal;
+			data["name"] = this->name;
+			data["roles"] = rolesArray;
+			return data.dump();
+		}
 	  protected:
 		std::string imageDataFinal{};
 	};
@@ -118,6 +129,17 @@ namespace DiscordCoreAPI {
 		Snowflake emojiId{};///< The id of the Emoji to modify.
 		std::string reason{};///< Reason for modifying the Emoji.
 		std::string name{};///< Name of the Emoji.
+
+		operator std::string() {
+			nlohmann::json data{};
+			nlohmann::json rolesArray{};
+			for (auto& value: this->roles) {
+				rolesArray.push_back(value);
+			}
+			data["name"] = this->name;
+			data["roles"] = rolesArray;
+			return data.dump();
+		}
 	};
 
 	/// For deleting a Guild Emoji.

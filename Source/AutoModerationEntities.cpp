@@ -79,7 +79,7 @@ namespace DiscordCoreAPI {
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Post_Auto_Moderation_Rule;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/auto-moderation/rules";
-		workload.content = DiscordCoreInternal::JSONIfier::JSONIFY(dataPackage);
+		workload.content = dataPackage;
 		workload.callStack = "AutoModerationRules::createAutoModerationRuleAsync";
 		co_return AutoModerationRules::httpsClient->submitWorkloadAndGetResult<AutoModerationRule>(workload);
 	}
@@ -91,7 +91,7 @@ namespace DiscordCoreAPI {
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Patch_Auto_Moderation_Rule;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/auto-moderation/rules/" + std::to_string(dataPackage.autoModerationRuleId);
-		workload.content = DiscordCoreInternal::JSONIfier::JSONIFY(dataPackage);
+		workload.content = dataPackage;
 		workload.callStack = "AutoModerationRules::modifyAutoModerationRuleAsync";
 		co_return AutoModerationRules::httpsClient->submitWorkloadAndGetResult<AutoModerationRule>(workload);
 	}

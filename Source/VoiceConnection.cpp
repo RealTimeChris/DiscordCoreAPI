@@ -247,7 +247,10 @@ namespace DiscordCoreAPI {
 			this->sendSilence();
 		} else {
 			if (this->voiceSocketAgent) {
-				std::vector<uint8_t> newString = DiscordCoreInternal::JSONIfier::JSONIFY(this->voiceSocketAgent->voiceConnectionData.audioSSRC, 0);
+				DiscordCoreInternal::SendSpeakingData theData{};
+				theData.delay = 0;
+				theData.ssrc = this->voiceSocketAgent->voiceConnectionData.audioSSRC;
+				std::vector<uint8_t> newString = theData;
 				if (this->voiceSocketAgent->theClients.begin().operator*().second) {
 					this->voiceSocketAgent->sendMessage(newString);
 				}

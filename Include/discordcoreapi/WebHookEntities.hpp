@@ -43,7 +43,6 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll ExecuteWebHookData {
 	  public:
 		friend class CreateEphemeralFollowUpMessageData;
-		friend class DiscordCoreInternal::JSONIfier;
 		friend class CreateFollowUpMessageData;
 		friend class EditFollowUpMessageData;
 		friend class Interactions;
@@ -55,6 +54,41 @@ namespace DiscordCoreAPI {
 		ExecuteWebHookData() = default;
 
 		ExecuteWebHookData(WebHookData dataNew);
+
+		operator std::string() {
+			nlohmann::json data{};
+			for (auto& value: this->attachments) {
+				data["attachments"].push_back(value);
+			}
+			if (this->components.size() == 0) {
+				data["components"] = nlohmann::json::array();
+			} else {
+				for (auto& value: this->components) {
+					DiscordCoreAPI::ActionRowData theData{ value };
+					data["components"].push_back(nlohmann::json{ theData });
+				}
+			}
+			data["allowed_mentions"] = this->allowedMentions;
+			if (this->embeds.size() == 0) {
+				data["embeds"] = nlohmann::json::array();
+			} else {
+				for (auto& value: this->embeds) {
+					data["embeds"].push_back(value);
+				}
+			}
+			if (this->avatarUrl != "") {
+				data["avatar_url"] = this->userName;
+			}
+			if (this->userName != "") {
+				data["userName"] = this->userName;
+			}
+			if (this->content != "") {
+				data["content"] = this->content;
+			}
+			data["flags"] = this->flags;
+			data["tts"] = this->tts;
+			return data.dump();
+		}
 
 		/// Adds a button to the response Message. \brief Adds a button to the response Message.
 		/// \param disabled Whether the button is active or not.
@@ -137,7 +171,6 @@ namespace DiscordCoreAPI {
 	/// For editing a WebHook Message. \brief For editing a WebHook Message.
 	class DiscordCoreAPI_Dll EditWebHookData : public ExecuteWebHookData {
 	  public:
-		friend class DiscordCoreInternal::JSONIfier;
 		friend class EditInteractionResponseData;
 		friend class EditFollowUpMessageData;
 		friend class Interactions;
@@ -152,6 +185,33 @@ namespace DiscordCoreAPI {
 		EditWebHookData() = default;
 
 		EditWebHookData(WebHookData dataNew);
+
+		operator std::string() {
+			nlohmann::json data{};
+			for (auto& value: this->attachments) {
+				data["attachments"].push_back(DiscordCoreAPI::AttachmentData{ value });
+			}
+			if (this->components.size() == 0) {
+				data["components"] = nlohmann::json::array();
+			} else {
+				for (auto& value: this->components) {
+					DiscordCoreAPI::ActionRowData theData{ value };
+					data["components"].push_back(nlohmann::json{ theData });
+				}
+			}
+			data["allowed_mentions"] = DiscordCoreAPI::AllowedMentionsData{ this->allowedMentions };
+			if (this->embeds.size() == 0) {
+				data["embeds"] = nlohmann::json::array();
+			} else {
+				for (auto& value: this->embeds) {
+					data["embeds"].push_back(DiscordCoreAPI::EmbedData{ value });
+				}
+			}
+			if (this->content != "") {
+				data["content"] = this->content;
+			}
+			return data.dump();
+		}
 	};
 
 	/// For collecting a list of WebHooks from a chosen Channel. \brief For collecting a list of WebHooks from a chosen Channel.
