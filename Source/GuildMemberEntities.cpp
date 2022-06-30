@@ -120,7 +120,7 @@ namespace DiscordCoreAPI {
 			GuildMembers::insertGuildMember(theGuildMember);
 			co_return theGuildMember;
 		} else {
-			co_return *(*GuildMembers::cache)[theKey];
+			co_return *(*GuildMembers::cache)[theKey] ;
 		}
 	}
 
@@ -228,8 +228,8 @@ namespace DiscordCoreAPI {
 		dataPackage01.guildId = guildMember.guildId;
 		dataPackage01.guildMemberId = guildMember.id;
 		dataPackage01.mute = getBool<int8_t, GuildMemberFlags>(guildMember.flags, GuildMemberFlags::Mute);
-		dataPackage01.nick = guildMember.nick;
 		dataPackage01.roleIds = guildMember.roles;
+		dataPackage01.nick = guildMember.nick;
 		dataPackage01.reason = dataPackage.reason;
 		switch (dataPackage.numOfMinutesToTimeoutFor) {
 			case TimeoutDurations::Day: {
@@ -284,7 +284,7 @@ namespace DiscordCoreAPI {
 		GuildMembers::cache = std::move(newCache);
 	}
 
-	void GuildMembers::removeGuildMember(GuildMember& guildMember) {
+	void GuildMembers::removeGuildMember(GuildMemberData& guildMember) {
 		std::unique_lock<std::shared_mutex> theLock{ GuildMembers::theMutex };
 		GuildMemberId theKey{};
 		theKey.guildId = guildMember.guildId;

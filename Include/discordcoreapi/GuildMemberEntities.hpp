@@ -237,7 +237,7 @@ namespace DiscordCoreAPI {
 
 		static void insertGuildMember(GuildMemberData dataPackage);
 
-		static void removeGuildMember(GuildMember& globalId);
+		static void removeGuildMember(GuildMemberData& globalId);
 
 	  protected:
 		static std::unique_ptr<std::map<GuildMemberId, std::unique_ptr<GuildMemberData>>> cache;
