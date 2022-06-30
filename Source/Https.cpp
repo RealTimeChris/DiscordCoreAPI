@@ -373,7 +373,6 @@ namespace DiscordCoreInternal {
 					httpsConnection->areWeCheckedOut.store(false);
 					return this->httpRequestInternal(workload, rateLimitData);
 				}
-				httpsConnection->currentReconnectionTries = 0;
 				httpsConnection->doWeConnect = false;
 			}
 			auto theRequest = httpsConnection->buildRequest(workload);

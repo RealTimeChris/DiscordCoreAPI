@@ -405,9 +405,13 @@ namespace DiscordCoreInternal {
 
 		std::string getInputBuffer() noexcept;
 
+		bool areWeStillConnected() noexcept;
+
 		void writeData(std::string& data);
 
 		int64_t getBytesRead() noexcept;
+
+		void disconnect() noexcept;
 
 		void processIO();
 

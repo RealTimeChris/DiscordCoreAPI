@@ -676,6 +676,14 @@ namespace DiscordCoreInternal {
 		return theReturnString;
 	}
 
+	bool DatagramSocketSSLClient::areWeStillConnected() noexcept {
+		if (this->theSocket != SOCKET_ERROR) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 	int64_t DatagramSocketSSLClient::getBytesRead() noexcept {
 		return this->bytesRead;
 	}
@@ -725,6 +733,12 @@ namespace DiscordCoreInternal {
 				}
 			}
 		}
+	}
+
+	void DatagramSocketSSLClient::disconnect() noexcept {
+		this->theSocket = SOCKET_ERROR;
+		this->inputBuffer.clear();
+		this->outputBuffers.clear();
 	}
 
 	SSL_CTXWrapper SSLConnectionInterface::context{ nullptr };
