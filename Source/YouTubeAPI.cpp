@@ -34,6 +34,8 @@ namespace DiscordCoreInternal {
 
 	DiscordCoreAPI::Song YouTubeRequestBuilder::collectFinalSong(const DiscordCoreAPI::GuildMemberData& addedByGuildMember, DiscordCoreAPI::Song& newSong) {
 		newSong.firstDownloadUrl = YouTubeRequestBuilder::baseUrl + "/watch?v=" + newSong.songId + "&hl=en";
+		newSong.addedByUserId = addedByGuildMember.id;
+		newSong.addedByUserName = DiscordCoreAPI::StringWrapper{ addedByGuildMember.userName };
 		newSong = YouTubeRequestBuilder::constructDownloadInfo(addedByGuildMember, newSong);
 		return newSong;
 	}
