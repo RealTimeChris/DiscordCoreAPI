@@ -71,7 +71,7 @@ namespace DiscordCoreInternal {
 
 	bool HttpsSSLClient::writeData(const std::string& dataToWrite, bool priority) noexcept {
 		std::string data = dataToWrite;
-		if (priority && dataToWrite.size() < (16 * 1024)) {
+		if (priority && data.size() < (16 * 1024)) {
 			size_t writtenBytes{ 0 };
 			if (data.size() > 0 && this->ssl) {
 				auto returnValue{ SSL_write_ex(this->ssl, data.data(), data.size(), &writtenBytes) };
@@ -90,7 +90,7 @@ namespace DiscordCoreInternal {
 					}
 					case SSL_ERROR_WANT_WRITE: {
 						this->wantWrite = true;
-						return false;
+						return true;
 					}
 					default: {
 						this->disconnect();
@@ -466,7 +466,7 @@ namespace DiscordCoreInternal {
 
 	bool WebSocketSSLShard::writeData(const std::string& dataToWrite, bool priority) noexcept {
 		std::string data = dataToWrite;
-		if (priority && dataToWrite.size() < (16 * 1024)) {
+		if (priority && data.size() < (16 * 1024)) {
 			size_t writtenBytes{ 0 };
 			if (data.size() > 0 && this->ssl) {
 				auto returnValue{ SSL_write_ex(this->ssl, data.data(), data.size(), &writtenBytes) };
@@ -485,7 +485,7 @@ namespace DiscordCoreInternal {
 					}
 					case SSL_ERROR_WANT_WRITE: {
 						this->wantWrite = true;
-						return false;
+						return true;
 					}
 					default: {
 						this->disconnect();
