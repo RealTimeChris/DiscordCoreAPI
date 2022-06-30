@@ -204,6 +204,7 @@ namespace DiscordCoreInternal {
 		currentRecursionDepth++;
 		DiscordCoreAPI::GuildMember guildMember =
 			DiscordCoreAPI::GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = newSong.addedByUserId, .guildId = this->guildId }).get();
+		auto newerSong = newSong;
 		if (currentRecursionDepth > 9) {
 			DiscordCoreAPI::AudioFrameData frameData{};
 			while (DiscordCoreAPI::getVoiceConnectionMap()[this->guildId]->audioBuffer.tryReceive(frameData)) {
@@ -218,9 +219,6 @@ namespace DiscordCoreInternal {
 			eventData.guild = DiscordCoreAPI::Guilds::getGuildAsync({ .guildId = this->guildId }).get();
 			DiscordCoreAPI::getSongAPIMap()[this->guildId]->onSongCompletionEvent(eventData);
 		} else {
-			DiscordCoreAPI::getSongAPIMap()[this->guildId].get()->sendNextSong();
-			auto thePtr = DiscordCoreAPI::getSongAPIMap()[this->guildId].get();
-			auto newerSong = thePtr->getCurrentSong(this->guildId);
 			newerSong = this->requestBuilder.collectFinalSong(guildMember, newerSong);
 			SoundCloudAPI::downloadAndStreamAudio(newerSong, theToken, currentRecursionDepth);
 		}

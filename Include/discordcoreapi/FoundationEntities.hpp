@@ -5438,7 +5438,7 @@ namespace DiscordCoreAPI {
 		std::string label{};///< The label for this component.
 		std::string value{};///< A pre-filled value for this component.
 		std::string title{};///< Url, for url types.
-		ButtonStyle style{};///< One of button styles.
+		int32_t style{};///< One of ButtonStyle, or TextInputStyle.
 		std::string url{};///< Url, for url types.
 		EmojiData emoji{};///< Emoji name, id, and animated.
 	};

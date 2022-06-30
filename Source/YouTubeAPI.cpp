@@ -168,10 +168,10 @@ namespace DiscordCoreInternal {
 	}
 
 	void YouTubeAPI::weFailedToDownloadOrDecode(const DiscordCoreAPI::Song& newSong, std::stop_token theToken, int32_t currentRecursionDepth) {
-		DiscordCoreAPI::Song newerSong = newSong;
 		currentRecursionDepth++;
 		DiscordCoreAPI::GuildMember guildMember =
 			DiscordCoreAPI::GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = newSong.addedByUserId, .guildId = this->guildId }).get();
+		auto newerSong = newSong;
 		if (currentRecursionDepth > 9) {
 			DiscordCoreAPI::AudioFrameData frameData{};
 			while (DiscordCoreAPI::getVoiceConnectionMap()[this->guildId]->audioBuffer.tryReceive(frameData)) {
@@ -185,11 +185,7 @@ namespace DiscordCoreInternal {
 			eventData.guildMember = guildMember;
 			eventData.guild = DiscordCoreAPI::Guilds::getGuildAsync({ .guildId = this->guildId }).get();
 			DiscordCoreAPI::getSongAPIMap()[this->guildId]->onSongCompletionEvent(eventData);
-			return;
 		} else {
-			DiscordCoreAPI::getSongAPIMap()[this->guildId].get()->sendNextSong();
-			auto thePtr = DiscordCoreAPI::getSongAPIMap()[this->guildId].get();
-			newerSong = thePtr->getCurrentSong(this->guildId);
 			newerSong = this->requestBuilder.collectFinalSong(guildMember, newerSong);
 			YouTubeAPI::downloadAndStreamAudio(newerSong, theToken, currentRecursionDepth);
 		}
