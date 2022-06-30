@@ -77,7 +77,7 @@ namespace DiscordCoreInternal {
 	struct DiscordCoreAPI_Dll VoiceConnectionData {
 		std::string voiceEncryptionMode{};
 		std::string externalIp{};
-		uint32_t audioSSRC{ 0 };
+		int32_t audioSSRC{ 0 };
 		std::string secretKey{};
 		std::string voicePort{};
 		std::string sessionId{};
@@ -164,7 +164,7 @@ namespace DiscordCoreInternal {
 	};
 
 	struct DiscordCoreAPI_Dll SendSpeakingData {
-		std::string ssrc{};
+		int32_t ssrc{};
 		int32_t delay{};
 
 		operator std::vector<uint8_t>() {
