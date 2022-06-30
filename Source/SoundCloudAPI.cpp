@@ -225,7 +225,7 @@ namespace DiscordCoreInternal {
 
 	DiscordCoreAPI::Song SoundCloudAPI::collectFinalSong(const DiscordCoreAPI::GuildMemberData& addedByGuildMember, DiscordCoreAPI::Song& newSong) {
 		return this->requestBuilder.collectFinalSong(addedByGuildMember, newSong);
-	}	
+	}
 
 	void SoundCloudAPI::downloadAndStreamAudio(const DiscordCoreAPI::Song& newSong, std::stop_token theToken, int32_t currentReconnectionTries) {
 		int32_t counter{ 0 };
