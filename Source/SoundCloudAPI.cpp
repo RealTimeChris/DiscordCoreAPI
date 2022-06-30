@@ -228,104 +228,110 @@ namespace DiscordCoreInternal {
 	}
 
 	void SoundCloudAPI::downloadAndStreamAudio(const DiscordCoreAPI::Song& newSong, std::stop_token theToken, int32_t currentReconnectionTries) {
-		int32_t counter{ 0 };
-		BuildAudioDecoderData dataPackage{};
-		dataPackage.totalFileSize = static_cast<uint64_t>(newSong.contentLength);
-		dataPackage.bufferMaxSize = this->maxBufferSize;
-		dataPackage.configManager = this->configManager;
-		std::unique_ptr<AudioDecoder> audioDecoder = std::make_unique<AudioDecoder>(dataPackage);
-		const int32_t bytesTotal{ 8192 };
-		AudioEncoder audioEncoder{};
-		bool didWeGetZero{ true };
-		while (counter < newSong.finalDownloadUrls.size()) {
-			if (counter == newSong.finalDownloadUrls.size() - 1 && didWeGetZero) {
-				audioDecoder.reset(nullptr);
-				SoundCloudAPI::weFailedToDownloadOrDecode(newSong, theToken, currentReconnectionTries);
-				return;
-			}
-			std::this_thread::sleep_for(1ms);
-			if (theToken.stop_requested()) {
-				audioDecoder.reset(nullptr);
-				return;
-			}
-			if (audioDecoder->haveWeFailed()) {
-				audioDecoder.reset(nullptr);
-				SoundCloudAPI::weFailedToDownloadOrDecode(newSong, theToken, currentReconnectionTries);
-				return;
-			}
-			if (theToken.stop_requested()) {
-				audioDecoder.reset(nullptr);
-				return;
-			}
-			HttpsWorkloadData dataPackage03{};
-			dataPackage03.baseUrl = newSong.finalDownloadUrls[counter].urlPath;
-			dataPackage03.workloadClass = HttpsWorkloadClass::Get;
-			dataPackage03.workloadType = HttpsWorkloadType::SoundCloudGetSearchResults;
-			auto result = this->httpsClient->submitWorkloadAndGetResult(&dataPackage03);
-			if (result.responseMessage.size() != 0) {
-				didWeGetZero = false;
-			}
-			std::vector<uint8_t> newVector{};
-			for (uint64_t x = 0; x < result.responseMessage.size(); x++) {
-				newVector.push_back(result.responseMessage[x]);
-			}
-			int64_t amountToSubmitRemaining{ static_cast<int64_t>(result.responseMessage.size()) };
-			int64_t amountToSubmitRemainingFinal{ 0 };
-			int64_t amountSubmitted{ 0 };
-			while (amountToSubmitRemaining > 0) {
+		try {
+			int32_t counter{ 0 };
+			BuildAudioDecoderData dataPackage{};
+			dataPackage.totalFileSize = static_cast<uint64_t>(newSong.contentLength);
+			dataPackage.bufferMaxSize = this->maxBufferSize;
+			dataPackage.configManager = this->configManager;
+			std::unique_ptr<AudioDecoder> audioDecoder = std::make_unique<AudioDecoder>(dataPackage);
+			const int32_t bytesTotal{ 8192 };
+			AudioEncoder audioEncoder{};
+			bool didWeGetZero{ true };
+			while (counter < newSong.finalDownloadUrls.size()) {
+				if (counter == newSong.finalDownloadUrls.size() - 1 && didWeGetZero) {
+					audioDecoder.reset(nullptr);
+					SoundCloudAPI::weFailedToDownloadOrDecode(newSong, theToken, currentReconnectionTries);
+					return;
+				}
 				std::this_thread::sleep_for(1ms);
-				std::string newerVector{};
-				if (amountToSubmitRemaining >= bytesTotal) {
-					for (int64_t x = 0; x < bytesTotal; x++) {
-						newerVector.push_back(newVector[amountSubmitted]);
-						amountSubmitted++;
-						amountToSubmitRemaining--;
+				if (theToken.stop_requested()) {
+					audioDecoder.reset(nullptr);
+					return;
+				}
+				if (audioDecoder->haveWeFailed()) {
+					audioDecoder.reset(nullptr);
+					SoundCloudAPI::weFailedToDownloadOrDecode(newSong, theToken, currentReconnectionTries);
+					return;
+				}
+				if (theToken.stop_requested()) {
+					audioDecoder.reset(nullptr);
+					return;
+				}
+				HttpsWorkloadData dataPackage03{};
+				dataPackage03.baseUrl = newSong.finalDownloadUrls[counter].urlPath;
+				dataPackage03.workloadClass = HttpsWorkloadClass::Get;
+				dataPackage03.workloadType = HttpsWorkloadType::SoundCloudGetSearchResults;
+				auto result = this->httpsClient->submitWorkloadAndGetResult(&dataPackage03);
+				if (result.responseMessage.size() != 0) {
+					didWeGetZero = false;
+				}
+				std::vector<uint8_t> newVector{};
+				for (uint64_t x = 0; x < result.responseMessage.size(); x++) {
+					newVector.push_back(result.responseMessage[x]);
+				}
+				int64_t amountToSubmitRemaining{ static_cast<int64_t>(result.responseMessage.size()) };
+				int64_t amountToSubmitRemainingFinal{ 0 };
+				int64_t amountSubmitted{ 0 };
+				while (amountToSubmitRemaining > 0) {
+					std::this_thread::sleep_for(1ms);
+					std::string newerVector{};
+					if (amountToSubmitRemaining >= bytesTotal) {
+						for (int64_t x = 0; x < bytesTotal; x++) {
+							newerVector.push_back(newVector[amountSubmitted]);
+							amountSubmitted++;
+							amountToSubmitRemaining--;
+						}
+					} else {
+						amountToSubmitRemainingFinal = amountToSubmitRemaining;
+						for (int64_t x = 0; x < amountToSubmitRemainingFinal; x++) {
+							newerVector.push_back(newVector[amountSubmitted]);
+							amountSubmitted++;
+							amountToSubmitRemaining--;
+						}
 					}
+					audioDecoder->submitDataForDecoding(newerVector);
+				}
+				if (counter == 0) {
+					audioDecoder->startMe();
+				}
+				std::vector<DiscordCoreAPI::RawFrameData> frames{};
+				DiscordCoreAPI::RawFrameData rawFrame{};
+				while (audioDecoder->getFrame(rawFrame)) {
+					if (rawFrame.data.size() != 0) {
+						frames.push_back(rawFrame);
+					}
+				}
+				if (theToken.stop_requested()) {
+					audioDecoder.reset(nullptr);
+					return;
 				} else {
-					amountToSubmitRemainingFinal = amountToSubmitRemaining;
-					for (int64_t x = 0; x < amountToSubmitRemainingFinal; x++) {
-						newerVector.push_back(newVector[amountSubmitted]);
-						amountSubmitted++;
-						amountToSubmitRemaining--;
+					auto encodedFrames = audioEncoder.encodeFrames(frames);
+					for (auto& value: encodedFrames) {
+						value.guildMemberId = newSong.addedByUserId;
+						DiscordCoreAPI::getVoiceConnectionMap()[this->guildId]->audioBuffer.send(value);
 					}
 				}
-				audioDecoder->submitDataForDecoding(newerVector);
-			}
-			if (counter == 0) {
-				audioDecoder->startMe();
-			}
-			std::vector<DiscordCoreAPI::RawFrameData> frames{};
-			DiscordCoreAPI::RawFrameData rawFrame{};
-			while (audioDecoder->getFrame(rawFrame)) {
-				if (rawFrame.data.size() != 0) {
-					frames.push_back(rawFrame);
+				if (theToken.stop_requested()) {
+					audioDecoder.reset(nullptr);
+					return;
 				}
+				counter++;
 			}
-			if (theToken.stop_requested()) {
-				audioDecoder.reset(nullptr);
-				return;
-			} else {
-				auto encodedFrames = audioEncoder.encodeFrames(frames);
-				for (auto& value: encodedFrames) {
-					value.guildMemberId = newSong.addedByUserId;
-					DiscordCoreAPI::getVoiceConnectionMap()[this->guildId]->audioBuffer.send(value);
-				}
-			}
-			if (theToken.stop_requested()) {
-				audioDecoder.reset(nullptr);
-				return;
-			}
-			counter++;
+			DiscordCoreAPI::RawFrameData frameData01{};
+			while (audioDecoder->getFrame(frameData01)) {
+			};
+			audioDecoder.reset(nullptr);
+			DiscordCoreAPI::AudioFrameData frameData{};
+			frameData.type = DiscordCoreAPI::AudioFrameType::Skip;
+			frameData.rawFrameData.sampleCount = 0;
+			frameData.encodedFrameData.sampleCount = 0;
+			DiscordCoreAPI::getVoiceConnectionMap()[this->guildId]->audioBuffer.send(frameData);
+		} catch (...) {
+			currentReconnectionTries++;
+			this->downloadAndStreamAudio(newSong, theToken, currentReconnectionTries);
+			DiscordCoreAPI::reportException("SoundCloudAPI::downloadAndStreamAudio()");
 		}
-		DiscordCoreAPI::RawFrameData frameData01{};
-		while (audioDecoder->getFrame(frameData01)) {
-		};
-		audioDecoder.reset(nullptr);
-		DiscordCoreAPI::AudioFrameData frameData{};
-		frameData.type = DiscordCoreAPI::AudioFrameType::Skip;
-		frameData.rawFrameData.sampleCount = 0;
-		frameData.encodedFrameData.sampleCount = 0;
-		DiscordCoreAPI::getVoiceConnectionMap()[this->guildId]->audioBuffer.send(frameData);
 	};
 
 	std::vector<DiscordCoreAPI::Song> SoundCloudAPI::searchForSong(const std::string& searchQuery) {

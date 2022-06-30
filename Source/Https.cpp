@@ -373,7 +373,17 @@ namespace DiscordCoreInternal {
 				httpsConnection->doWeConnect = false;
 			}
 			auto theRequest = httpsConnection->buildRequest(workload);
-			httpsConnection->writeData(theRequest);
+			DiscordCoreAPI::StopWatch theStopWatch{ 5000ms };
+			bool didWeWrite{ false };
+			do {
+				if (theStopWatch.hasTimePassed()) {
+					break;
+				}
+				didWeWrite = httpsConnection->writeData(theRequest);
+			} while (!didWeWrite);
+			if (!didWeWrite) {
+				throw ProcessingError{ "Failed to write to the websocket." };
+			}
 			auto result = this->getResponse(rateLimitData, httpsConnection);
 			if (result.contentSize == -1) {
 				httpsConnection->currentReconnectionTries++;

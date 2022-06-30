@@ -1075,6 +1075,17 @@ namespace DiscordCoreInternal {
 		});
 	}
 
+	void VoiceSocketAgent::stringifyJsonData(const nlohmann::json& dataToSend, std::string& theString, WebSocketOpCode theOpCode) noexcept {
+		std::string theVector{};
+		std::string header{};
+		theVector = dataToSend.dump();
+		this->createHeader(header, theVector.size(), theOpCode);
+		std::string theVectorNew{};
+		theVectorNew.insert(theVectorNew.begin(), header.begin(), header.end());
+		theVectorNew.insert(theVectorNew.begin() + header.size(), theVector.begin(), theVector.end());
+		theString = theVectorNew;
+	}
+
 	void VoiceSocketAgent::parseHeadersAndMessage(WebSocketSSLShard* theShard) noexcept {
 		if (theShard) {
 			if (theShard->theState == WebSocketState::Connecting01) {
@@ -1156,30 +1167,23 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void VoiceSocketAgent::sendMessage(const std::vector<uint8_t>& dataToSend) noexcept {
+	void VoiceSocketAgent::sendMessage(const nlohmann::json& dataToSend) noexcept {
 		try {
-			std::string newString{};
-			newString.insert(newString.begin(), dataToSend.begin(), dataToSend.end());
 			if (this->configManager->doWePrintWebSocketSuccessMessages()) {
-				std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Sending Voice WebSocket Message: " << newString << DiscordCoreAPI::reset() << std::endl << std::endl;
+				std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Sending Voice WebSocket Message: " << dataToSend.dump() << DiscordCoreAPI::reset() << std::endl << std::endl;
 			}
-			std::string header{};
-			if (this->theClients[0] && this->theClients[0]->areWeStillConnected()) {
-				this->createHeader(header, newString.size(), this->theClients[0]->dataOpCode);
-				std::string theVectorNew{};
-				theVectorNew.insert(theVectorNew.begin(), header.begin(), header.end());
-				theVectorNew.insert(theVectorNew.begin() + header.size(), newString.begin(), newString.end());
-				bool didWeWrite{ false };
-				DiscordCoreAPI::StopWatch theStopWatch{ 5000ms };
-				do {
-					if (theStopWatch.hasTimePassed()) {
-						break;
-					}
-					didWeWrite = this->theClients[0]->writeData(theVectorNew, false);
-				} while (!didWeWrite);
-				if (!didWeWrite) {
-					throw ProcessingError{ "Failed to write to the websocket." };
+			std::string theString{};
+			this->stringifyJsonData(dataToSend, theString, WebSocketOpCode::Op_Text);
+			DiscordCoreAPI::StopWatch theStopWatch{ 5000ms };
+			bool didWeWrite{ false };
+			do {
+				if (theStopWatch.hasTimePassed()) {
+					break;
 				}
+				didWeWrite = this->theClients[0]->writeData(theString, false);
+			} while (!didWeWrite);
+			if (!didWeWrite) {
+				throw ProcessingError{ "Failed to write to the websocket." };
 			}
 		} catch (...) {
 			if (this->configManager->doWePrintWebSocketErrorMessages()) {
@@ -1298,7 +1302,7 @@ namespace DiscordCoreInternal {
 							protocolPayloadData.externalIp = this->voiceConnectionData.externalIp;
 							protocolPayloadData.voiceEncryptionMode = this->voiceConnectionData.voiceEncryptionMode;
 							protocolPayloadData.voicePort = this->voiceConnectionData.voicePort;
-							std::vector<uint8_t> protocolPayloadSelectString = protocolPayloadData;
+							nlohmann::json protocolPayloadSelectString = protocolPayloadData;
 							this->sendMessage(protocolPayloadSelectString);
 							break;
 						}
@@ -1323,8 +1327,8 @@ namespace DiscordCoreInternal {
 							VoiceIdentifyData identifyData{};
 							identifyData.connectInitData = this->voiceConnectInitData;
 							identifyData.connectionData = this->voiceConnectionData;
-							std::vector<uint8_t> identifyPayload = identifyData;
-							this->sendMessage(identifyPayload);
+							nlohmann::json identityDataFinal = identifyData;
+							this->sendMessage(identityDataFinal);
 							break;
 						}
 					}
@@ -1450,11 +1454,7 @@ namespace DiscordCoreInternal {
 				nlohmann::json data{};
 				data["d"] = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 				data["op"] = int32_t(3);
-				std::vector<uint8_t> heartbeatPayload{};
-				std::string newString = data.dump();
-				newString.shrink_to_fit();
-				heartbeatPayload.insert(heartbeatPayload.begin(), newString.begin(), newString.end());
-				this->sendMessage(heartbeatPayload);
+				this->sendMessage(data);
 				this->theClients[0]->haveWeReceivedHeartbeatAck = false;
 			} else {
 				this->onClosed();

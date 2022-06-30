@@ -131,18 +131,14 @@ namespace DiscordCoreInternal {
 		std::string externalIp{};
 		std::string voiceEncryptionMode{};
 
-		operator std::vector<uint8_t>() {
+		operator nlohmann::json() {
 			nlohmann::json data{};
 			data["d"]["data"]["port"] = stol(this->voicePort);
 			data["d"]["data"]["mode"] = this->voiceEncryptionMode;
 			data["d"]["data"]["address"] = this->externalIp;
 			data["d"]["protocol"] = "udp";
 			data["op"] = 1;
-			std::vector<uint8_t> newVector{};
-			std::string newString = data.dump();
-			newString.shrink_to_fit();
-			newVector.insert(newVector.begin(), newString.begin(), newString.end());
-			return newVector;
+			return data;
 		}
 	};
 
@@ -150,18 +146,14 @@ namespace DiscordCoreInternal {
 		VoiceConnectInitData connectInitData{};
 		VoiceConnectionData connectionData{};
 
-		operator std::vector<uint8_t>() {
+		operator nlohmann::json() {
 			nlohmann::json data{};
 			data["d"]["session_id"] = this->connectionData.sessionId;
 			data["d"]["server_id"] = std::to_string(this->connectInitData.guildId);
 			data["d"]["user_id"] = std::to_string(this->connectInitData.userId);
 			data["d"]["token"] = this->connectionData.token;
 			data["op"] = 0;
-			std::vector<uint8_t> newVector{};
-			std::string newString = data.dump();
-			newString.shrink_to_fit();
-			newVector.insert(newVector.begin(), newString.begin(), newString.end());
-			return newVector;
+			return data;
 		}
 	};
 
@@ -169,17 +161,13 @@ namespace DiscordCoreInternal {
 		int32_t ssrc{};
 		int32_t delay{};
 
-		operator std::vector<uint8_t>() {
+		operator nlohmann::json() {
 			nlohmann::json data{};
 			data["d"]["speaking"] = 1 << 0;
 			data["d"]["delay"] = delay;
 			data["d"]["ssrc"] = ssrc;
 			data["op"] = 5;
-			std::vector<uint8_t> newVector{};
-			std::string newString = data.dump();
-			newString.shrink_to_fit();
-			newVector.insert(newVector.begin(), newString.begin(), newString.end());
-			return newVector;
+			return data;
 		}
 	};
 }
@@ -198,6 +186,13 @@ namespace DiscordCoreAPI {
 		virtual void parseObject(const nlohmann::json&, ObjectType*) = 0;
 
 		virtual ~DataParser() = default;
+	};
+
+	class Jsonifier {
+	  public:
+		virtual std::string Jsonify() = 0;
+
+		virtual ~Jsonifier() = default;
 	};
 
 	/// For ids of DiscordEntities. \brief For ids of DiscordEntities.

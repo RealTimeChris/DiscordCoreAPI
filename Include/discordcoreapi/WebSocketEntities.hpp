@@ -90,7 +90,7 @@ namespace DiscordCoreInternal {
 		VoiceSocketAgent(VoiceConnectInitData initDataNew, BaseSocketAgent* baseBaseSocketAgentNew, WebSocketSSLShard* theIndex, DiscordCoreAPI::ConfigManager* configManagerNew,
 			std::atomic_bool* doWeQuit) noexcept;
 
-		void sendMessage(const std::vector<uint8_t>& responseData) noexcept;
+		void sendMessage(const nlohmann::json& responseData) noexcept;
 
 		void sendVoiceData(std::string& responseData) noexcept;
 
@@ -118,11 +118,13 @@ namespace DiscordCoreInternal {
 		std::string baseUrl{};
 		std::string hostIp{};
 
+		void stringifyJsonData(const nlohmann::json& dataToSend, std::string& theString, WebSocketOpCode theOpCode) noexcept;
+
 		void createHeader(std::string& outbuf, uint64_t sendlength, WebSocketOpCode opCode) noexcept;
 
-		void onMessageReceived(const std::string& theMessage) noexcept;
-
 		void parseHeadersAndMessage(WebSocketSSLShard* theShard) noexcept;
+
+		void onMessageReceived(const std::string& theMessage) noexcept;
 
 		void run(std::stop_token) noexcept;
 

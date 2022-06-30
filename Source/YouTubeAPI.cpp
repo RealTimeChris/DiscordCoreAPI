@@ -232,9 +232,6 @@ namespace DiscordCoreInternal {
 				try {
 					WebSocketSSLShard::processIO(theMap, ms1000);
 				} catch (...) {
-					if (this->configManager->doWePrintWebSocketErrorMessages()) {
-						DiscordCoreAPI::reportException("YouTubeAPI::downloadAndStreamAudio()");
-					}
 					audioDecoder.reset(nullptr);
 					theMap[0]->disconnect();
 					this->weFailedToDownloadOrDecode(newSong, theToken, currentReconnectionTries);
@@ -284,9 +281,6 @@ namespace DiscordCoreInternal {
 							try {
 								WebSocketSSLShard::processIO(theMap, ms500);
 							} catch (...) {
-								if (this->configManager->doWePrintWebSocketErrorMessages()) {
-									DiscordCoreAPI::reportException("YouTubeAPI::downloadAndStreamAudio()");
-								}
 								audioDecoder.reset(nullptr);
 								theMap[0]->disconnect();
 								this->weFailedToDownloadOrDecode(newSong, theToken, currentReconnectionTries);
@@ -315,9 +309,6 @@ namespace DiscordCoreInternal {
 							try {
 								WebSocketSSLShard::processIO(theMap, ms500);
 							} catch (...) {
-								if (this->configManager->doWePrintWebSocketErrorMessages()) {
-									DiscordCoreAPI::reportException("YouTubeAPI::downloadAndStreamAudio()");
-								}
 								theMap[0]->disconnect();
 								audioDecoder.reset(nullptr);
 								this->weFailedToDownloadOrDecode(newSong, theToken, currentReconnectionTries);
@@ -354,9 +345,6 @@ namespace DiscordCoreInternal {
 								try {
 									WebSocketSSLShard::processIO(theMap, ms500);
 								} catch (...) {
-									if (this->configManager->doWePrintWebSocketErrorMessages()) {
-										DiscordCoreAPI::reportException("YouTubeAPI::downloadAndStreamAudio()");
-									}
 									theMap[0]->disconnect();
 									audioDecoder.reset(nullptr);
 									this->weFailedToDownloadOrDecode(newSong, theToken, currentReconnectionTries);

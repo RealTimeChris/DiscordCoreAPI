@@ -249,8 +249,8 @@ namespace DiscordCoreAPI {
 				DiscordCoreInternal::SendSpeakingData theData{};
 				theData.delay = 0;
 				theData.ssrc = this->voiceSocketAgent->voiceConnectionData.audioSSRC;
-				std::vector<uint8_t> newString = theData;
-				if (this->voiceSocketAgent->theClients.begin().operator*().second) {
+				nlohmann::json newString = theData;
+				if (this->voiceSocketAgent->theClients[0]) {
 					this->voiceSocketAgent->sendMessage(newString);
 				}
 			}

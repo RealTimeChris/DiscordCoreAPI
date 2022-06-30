@@ -174,7 +174,7 @@ namespace DiscordCoreInternal {
 					break;
 				}
 				default: {
-					this->connectionTime = 0;
+					this->disconnect();
 					throw ProcessingError{ reportSSLError("HttpsSSLClient::processIO()::SSL_read_ex(), ", errorValue, this->ssl) +
 						reportError("HttpsSSLClient::processIO()::SSL_read_ex(), ") };
 				}
@@ -211,7 +211,7 @@ namespace DiscordCoreInternal {
 						break;
 					}
 					default: {
-						this->connectionTime = 0;
+						this->disconnect();
 						throw ProcessingError{ reportSSLError("HttpsSSLClient::processIO()::SSL_write_ex(), ", errorValue, this->ssl) +
 							reportError("HttpsSSLClient::processIO()::SSL_write_ex(), ") };
 					}
@@ -296,8 +296,6 @@ namespace DiscordCoreInternal {
 			throw ConnectionError{ reportError("DatagramSocketSSLClient::connect()::fcntl(), ") };
 		}
 #endif
-
-		this->connectionTime = std::time(nullptr);
 	}
 
 	std::string HttpsSSLClient::getInputBuffer() noexcept {

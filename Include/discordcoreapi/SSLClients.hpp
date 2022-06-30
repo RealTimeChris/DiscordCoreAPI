@@ -341,9 +341,6 @@ namespace DiscordCoreInternal {
 		void disconnect() noexcept;
 
 		~HttpsSSLClient() noexcept = default;
-
-	  protected:
-		int64_t connectionTime{ 0 };
 	};
 
 	class DiscordCoreAPI_Dll WebSocketSSLShard : public SSLConnectionInterface, public SSLDataInterface {
