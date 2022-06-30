@@ -106,6 +106,7 @@ namespace DiscordCoreInternal {
 		int64_t intents{};
 		int32_t currentShard{};
 		int32_t numberOfShards{};
+
 		operator nlohmann::json() {
 			nlohmann::json data{};
 			data["d"]["properties"]["browser"] = "DiscordCoreAPI";
@@ -148,6 +149,7 @@ namespace DiscordCoreInternal {
 	struct DiscordCoreAPI_Dll VoiceIdentifyData {
 		VoiceConnectInitData connectInitData{};
 		VoiceConnectionData connectionData{};
+
 		operator std::vector<uint8_t>() {
 			nlohmann::json data{};
 			data["d"]["session_id"] = this->connectionData.sessionId;
