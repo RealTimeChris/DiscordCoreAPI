@@ -80,7 +80,7 @@ namespace DiscordCoreInternal {
 					case SSL_ERROR_NONE: {
 						if (writtenBytes > 0) {
 							data.clear();
-							return true;
+							return true
 						}
 						return false;
 					}
@@ -90,7 +90,7 @@ namespace DiscordCoreInternal {
 					}
 					case SSL_ERROR_WANT_WRITE: {
 						this->wantWrite = true;
-						return true;
+						return false;
 					}
 					default: {
 						this->disconnect();
@@ -485,7 +485,7 @@ namespace DiscordCoreInternal {
 					}
 					case SSL_ERROR_WANT_WRITE: {
 						this->wantWrite = true;
-						return true;
+						return false;
 					}
 					default: {
 						this->disconnect();
