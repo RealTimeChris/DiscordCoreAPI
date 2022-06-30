@@ -63,10 +63,7 @@ namespace DiscordCoreAPI {
 			if (this->components.size() == 0) {
 				data["components"] = nlohmann::json::array();
 			} else {
-				for (auto& value: this->components) {
-					DiscordCoreAPI::ActionRowData theData{ value };
-					data["components"].push_back(nlohmann::json{ theData });
-				}
+				data["components"] = this->components;
 			}
 			data["allowed_mentions"] = this->allowedMentions;
 			if (this->embeds.size() == 0) {
@@ -194,10 +191,7 @@ namespace DiscordCoreAPI {
 			if (this->components.size() == 0) {
 				data["components"] = nlohmann::json::array();
 			} else {
-				for (auto& value: this->components) {
-					DiscordCoreAPI::ActionRowData theData{ value };
-					data["components"].push_back(nlohmann::json{ theData });
-				}
+				data["components"] = this->components;
 			}
 			data["allowed_mentions"] = DiscordCoreAPI::AllowedMentionsData{ this->allowedMentions };
 			if (this->embeds.size() == 0) {
