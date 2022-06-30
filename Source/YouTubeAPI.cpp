@@ -285,8 +285,8 @@ namespace DiscordCoreInternal {
 									DiscordCoreAPI::reportException("YouTubeAPI::downloadAndStreamAudio()");
 								}
 								audioDecoder.reset(nullptr);
-								this->weFailedToDownloadOrDecode(newSong, theToken, currentRecursionDepth);
 								theMap[0]->disconnect();
+								this->weFailedToDownloadOrDecode(newSong, theToken, currentRecursionDepth);
 								return;
 							}
 							if (!theToken.stop_requested()) {
