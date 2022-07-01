@@ -1257,7 +1257,9 @@ namespace DiscordCoreInternal {
 	void VoiceSocketAgent::onClosed() noexcept {
 		if (this->theClients.contains(0) && this->theClients[0] && !this->doWeReconnect.load() ) {
 			this->theClients[0]->disconnect();
-			this->voiceSocket->disconnect();
+			if (this->voiceSocket) {
+				this->voiceSocket->disconnect();
+			}
 			this->doWeReconnect.store(true);
 			this->areWeConnected.store(false);
 			this->theClients[0]->areWeHeartBeating = false;
