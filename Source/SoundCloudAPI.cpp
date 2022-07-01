@@ -329,7 +329,7 @@ namespace DiscordCoreInternal {
 			DiscordCoreAPI::getVoiceConnectionMap()[this->guildId]->audioBuffer.send(frameData);
 		} catch (...) {
 			currentReconnectionTries++;
-			this->downloadAndStreamAudio(newSong, theToken, currentReconnectionTries);
+			this->weFailedToDownloadOrDecode(newSong, theToken, currentReconnectionTries);
 			DiscordCoreAPI::reportException("SoundCloudAPI::downloadAndStreamAudio()");
 		}
 	};
