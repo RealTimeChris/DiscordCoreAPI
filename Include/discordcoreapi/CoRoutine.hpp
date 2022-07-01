@@ -121,9 +121,15 @@ namespace DiscordCoreAPI {
 
 		CoRoutine(CoRoutine<ReturnType>& other) = delete;
 
-		CoRoutine(std::coroutine_handle<CoRoutine<ReturnType>::promise_type> coroutineHandleNew) : coroutineHandle(coroutineHandleNew) {
+		CoRoutine<ReturnType>& operator=(std::coroutine_handle<CoRoutine<ReturnType>::promise_type> coroutineHandleNew) {
+			this->coroutineHandle = coroutineHandleNew;
 			this->exceptionBuffer = &this->coroutineHandle.promise().exceptionBuffer;
 			this->areWeDone = &this->coroutineHandle.promise().areWeDone;
+			return *this;
+		}
+
+		CoRoutine(std::coroutine_handle<CoRoutine<ReturnType>::promise_type> coroutineHandleNew) {
+			*this = coroutineHandleNew;
 		};
 
 		~CoRoutine() {
@@ -261,9 +267,15 @@ namespace DiscordCoreAPI {
 
 		CoRoutine(CoRoutine<void>& other) = delete;
 
-		CoRoutine(std::coroutine_handle<CoRoutine<void>::promise_type> coroutineHandleNew) : coroutineHandle(coroutineHandleNew) {
+		CoRoutine<void>& operator=(std::coroutine_handle<CoRoutine<void>::promise_type> coroutineHandleNew) {
+			this->coroutineHandle = coroutineHandleNew;
 			this->exceptionBuffer = &this->coroutineHandle.promise().exceptionBuffer;
 			this->areWeDone = &this->coroutineHandle.promise().areWeDone;
+			return *this;
+		}
+
+		CoRoutine(std::coroutine_handle<CoRoutine<void>::promise_type> coroutineHandleNew) {
+			*this = coroutineHandleNew;
 		};
 
 		~CoRoutine() {
