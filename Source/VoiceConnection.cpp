@@ -164,7 +164,7 @@ namespace DiscordCoreAPI {
 					return false;
 				}
 			}
-			theStopWatch.resetTimer();
+			
 			if (!this->voiceSocketAgent) {
 				this->voiceSocketAgent = std::make_unique<DiscordCoreInternal::VoiceSocketAgent>(this->voiceConnectInitData, this->baseSocketAgent,
 					this->baseSocketAgent->theClients[this->voiceConnectInitData.currentShard].get(), this->baseSocketAgent->configManager, &Globals::doWeQuit);
@@ -173,6 +173,7 @@ namespace DiscordCoreAPI {
 			this->voiceSocketAgent->connect();
 			this->doWeReconnect = &this->voiceSocketAgent->doWeReconnect;
 			this->doWeDisconnect = &this->voiceSocketAgent->doWeDisconnect;
+			theStopWatch.resetTimer();
 			while (!this->voiceSocketAgent->areWeConnected.load()) {
 				std::this_thread::sleep_for(1ms);
 				if (theStopWatch.hasTimePassed()) {
