@@ -373,14 +373,11 @@ namespace DiscordCoreInternal {
 					readNfds = value->theSocket > readNfds ? value->theSocket : readNfds;
 					didWeSetASocket = true;
 					finalNfds = readNfds > writeNfds ? readNfds : writeNfds;
-				} else {
-					std::cout << "IT'S SET TO SOCKET_ERROR!" << std::endl;
 				}
 			}
 		}
 
 		if (!didWeSetASocket) {
-			std::cout << "WE DID NOT SET ANY SOCKETS!" << std::endl;
 			return;
 		}
 
@@ -491,7 +488,6 @@ namespace DiscordCoreInternal {
 				switch (errorValue) {
 					case SSL_ERROR_NONE: {
 						if (writtenBytes > 0) {
-							std::cout << "WRITTEN BYTES: " << writtenBytes << std::endl;
 							data.clear();
 							return true;
 						}
@@ -633,7 +629,6 @@ namespace DiscordCoreInternal {
 	}
 
 	void WebSocketSSLShard::disconnect() noexcept {
-		std::cout << "WERE BEING DISCONNECTED!" << std::endl;
 		if (this->areWeConnected01.load()) {
 			this->areWeConnected01.store(false);
 			this->areWeConnected02.store(false);
