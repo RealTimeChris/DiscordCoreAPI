@@ -134,7 +134,7 @@ namespace DiscordCoreAPI {
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Get_Gateway_Bot;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/gateway/bot";
-		workload.callStack = "DiscordCoreClient::getGateWayBot";
+		workload.callStack = "DiscordCoreClient::getGateWayBot()";
 		return this->httpsClient->submitWorkloadAndGetResult<GatewayBotData>(workload);
 	}
 

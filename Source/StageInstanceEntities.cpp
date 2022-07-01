@@ -44,7 +44,7 @@ namespace DiscordCoreAPI {
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Post_Stage_Instance;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath = "/stage-instances";
-		workload.callStack = "StageInstances::createStageInstanceAsync";
+		workload.callStack = "StageInstances::createStageInstanceAsync()";
 		nlohmann::json responseData = { { "topic", dataPackage.topic }, { "privacy_level", dataPackage.privacyLevel }, { "channel_id", dataPackage.channelId } };
 		workload.content = responseData.dump();
 		if (dataPackage.reason != "") {
@@ -60,7 +60,7 @@ namespace DiscordCoreAPI {
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Get_Stage_Instance;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/stage-instances/" + std::to_string(dataPackage.channelId);
-		workload.callStack = "StageInstances::getStageInstanceAsync";
+		workload.callStack = "StageInstances::getStageInstanceAsync()";
 		co_return StageInstances::httpsClient->submitWorkloadAndGetResult<StageInstance>(workload);
 	}
 
@@ -73,7 +73,7 @@ namespace DiscordCoreAPI {
 		workload.relativePath = "/stage-instances/" + std::to_string(dataPackage.channelId);
 		nlohmann::json responseData = { { "privacy_level", dataPackage.privacyLevel }, { "topic", dataPackage.topic } };
 		workload.content = responseData.dump();
-		workload.callStack = "StageInstances::modifyStageInstanceAsync";
+		workload.callStack = "StageInstances::modifyStageInstanceAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
@@ -87,7 +87,7 @@ namespace DiscordCoreAPI {
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Delete_Stage_Instance;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Delete;
 		workload.relativePath = "/stage-instances/" + std::to_string(dataPackage.channelId);
-		workload.callStack = "StageInstances::deleteStageInstanceAsync";
+		workload.callStack = "StageInstances::deleteStageInstanceAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}

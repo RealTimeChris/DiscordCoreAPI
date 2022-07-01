@@ -178,7 +178,7 @@ namespace DiscordCoreAPI {
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Post_Webhook;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/webhooks";
-		workload.callStack = "WebHooks::createWebHookAsync";
+		workload.callStack = "WebHooks::createWebHookAsync()";
 		nlohmann::json responseData = { { "name", dataPackage.name } };
 		if (dataPackage.avatar.size() > 0) {
 			responseData.update({ { "avatar", dataPackage.avatar } });
@@ -194,7 +194,7 @@ namespace DiscordCoreAPI {
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Get_Channel_Webhooks;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/webhooks";
-		workload.callStack = "WebHooks::getChannelWebHooksAsync";
+		workload.callStack = "WebHooks::getChannelWebHooksAsync()";
 		co_return WebHooks::httpsClient->submitWorkloadAndGetResult<WebHookVector>(workload);
 	}
 
@@ -205,7 +205,7 @@ namespace DiscordCoreAPI {
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Webhooks;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/webhooks";
-		workload.callStack = "WebHooks::getGuildWebHooksAsync";
+		workload.callStack = "WebHooks::getGuildWebHooksAsync()";
 		co_return WebHooks::httpsClient->submitWorkloadAndGetResult<WebHookVector>(workload);
 	}
 
@@ -216,7 +216,7 @@ namespace DiscordCoreAPI {
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Get_Webhook;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/webhooks/" + std::to_string(dataPackage.webHookId);
-		workload.callStack = "WebHooks::getWebHookAsync";
+		workload.callStack = "WebHooks::getWebHookAsync()";
 		co_return WebHooks::httpsClient->submitWorkloadAndGetResult<WebHook>(workload);
 	}
 
@@ -227,7 +227,7 @@ namespace DiscordCoreAPI {
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Get_Webhook_With_Token;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/webhooks/" + std::to_string(dataPackage.webHookId) + "/" + dataPackage.webhookToken;
-		workload.callStack = "WebHooks::getWebHookWithTokenAsync";
+		workload.callStack = "WebHooks::getWebHookWithTokenAsync()";
 		co_return WebHooks::httpsClient->submitWorkloadAndGetResult<WebHook>(workload);
 	}
 
@@ -249,7 +249,7 @@ namespace DiscordCoreAPI {
 			responseData.update({ { "channel_id", std::to_string(dataPackage.channelId) } });
 		}
 		workload.content = responseData.dump();
-		workload.callStack = "WebHooks::modifyWebHookAsync";
+		workload.callStack = "WebHooks::modifyWebHookAsync()";
 		co_return WebHooks::httpsClient->submitWorkloadAndGetResult<WebHook>(workload);
 	}
 
@@ -271,7 +271,7 @@ namespace DiscordCoreAPI {
 			responseData.update({ { "channel_id", std::to_string(dataPackage.channelId) } });
 		}
 		workload.content = responseData.dump();
-		workload.callStack = "WebHooks::modifyWebHookWithTokenAsync";
+		workload.callStack = "WebHooks::modifyWebHookWithTokenAsync()";
 		co_return WebHooks::httpsClient->submitWorkloadAndGetResult<WebHook>(workload);
 	}
 
@@ -282,7 +282,7 @@ namespace DiscordCoreAPI {
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Delete_Webhook;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Delete;
 		workload.relativePath = "/webhooks/" + std::to_string(dataPackage.webHookId);
-		workload.callStack = "WebHooks::deleteWebHookAsync";
+		workload.callStack = "WebHooks::deleteWebHookAsync()";
 		co_return WebHooks::httpsClient->submitWorkloadAndGetResult<void>(workload);
 	}
 
@@ -293,7 +293,7 @@ namespace DiscordCoreAPI {
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Delete_Webhook_With_Token;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Delete;
 		workload.relativePath = "/webhooks/" + std::to_string(dataPackage.webHookId) + "/" + dataPackage.webhookToken;
-		workload.callStack = "WebHooks::deleteWebHookWithTokenAsync";
+		workload.callStack = "WebHooks::deleteWebHookWithTokenAsync()";
 		co_return WebHooks::httpsClient->submitWorkloadAndGetResult<void>(workload);
 	}
 
@@ -304,7 +304,7 @@ namespace DiscordCoreAPI {
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Post_Execute_Webhook;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath = "/webhooks/" + std::to_string(dataPackage.webHookId) + "/" + dataPackage.webhookToken;
-		workload.callStack = "WebHooks::executeWebHookAsync";
+		workload.callStack = "WebHooks::executeWebHookAsync()";
 		if (dataPackage.wait) {
 			workload.relativePath += "?wait=true";
 			if (dataPackage.threadId != 0) {
@@ -333,7 +333,7 @@ namespace DiscordCoreAPI {
 		if (dataPackage.threadId != 0) {
 			workload.relativePath += "?thread_id=" + std::to_string(dataPackage.threadId);
 		}
-		workload.callStack = "WebHooks::getWebHookMessageAsync";
+		workload.callStack = "WebHooks::getWebHookMessageAsync()";
 		co_return WebHooks::httpsClient->submitWorkloadAndGetResult<Message>(workload);
 	}
 
@@ -353,7 +353,7 @@ namespace DiscordCoreAPI {
 		} else {
 			workload.content = dataPackage;
 		}
-		workload.callStack = "WebHooks::editWebHookMessageAsync";
+		workload.callStack = "WebHooks::editWebHookMessageAsync()";
 		co_return WebHooks::httpsClient->submitWorkloadAndGetResult<Message>(workload);
 	}
 
@@ -367,7 +367,7 @@ namespace DiscordCoreAPI {
 		if (dataPackage.threadId != 0) {
 			workload.relativePath += "?thread_id=" + std::to_string(dataPackage.threadId);
 		}
-		workload.callStack = "WebHooks::deleteWebHookMessageAsync";
+		workload.callStack = "WebHooks::deleteWebHookMessageAsync()";
 		co_return WebHooks::httpsClient->submitWorkloadAndGetResult<void>(workload);
 	}
 	DiscordCoreInternal::HttpsClient* WebHooks::httpsClient{ nullptr };

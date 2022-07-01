@@ -44,7 +44,7 @@ namespace DiscordCoreAPI {
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Scheduled_Events;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/scheduled-events";
-		workload.callStack = "GuildScheduledEvents::getGuildScheduledEventAsync";
+		workload.callStack = "GuildScheduledEvents::getGuildScheduledEventAsync()";
 		co_return GuildScheduledEvents::httpsClient->submitWorkloadAndGetResult<std::vector<GuildScheduledEvent>>(workload);
 	}
 
@@ -56,7 +56,7 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/scheduled-events";
 		workload.content = dataPackage;
-		workload.callStack = "GuildScheduledEvents::createGuildScheduledEventAsync";
+		workload.callStack = "GuildScheduledEvents::createGuildScheduledEventAsync()";
 		co_return GuildScheduledEvents::httpsClient->submitWorkloadAndGetResult<GuildScheduledEvent>(workload);
 	}
 
@@ -71,7 +71,7 @@ namespace DiscordCoreAPI {
 		std::stringstream stream{};
 		stream << std::boolalpha << dataPackage.withUserCount;
 		workload.relativePath += stream.str();
-		workload.callStack = "GuildScheduledEvents::getGuildScheduledEventAsync";
+		workload.callStack = "GuildScheduledEvents::getGuildScheduledEventAsync()";
 		co_return GuildScheduledEvents::httpsClient->submitWorkloadAndGetResult<GuildScheduledEvent>(workload);
 	}
 
@@ -83,7 +83,7 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/scheduled-events/" + std::to_string(dataPackage.guildScheduledEventId);
 		workload.content = dataPackage;
-		workload.callStack = "GuildScheduledEvents::modifyGuildScheduledEventAsync";
+		workload.callStack = "GuildScheduledEvents::modifyGuildScheduledEventAsync()";
 		co_return GuildScheduledEvents::httpsClient->submitWorkloadAndGetResult<GuildScheduledEvent>(workload);
 	}
 
@@ -94,7 +94,7 @@ namespace DiscordCoreAPI {
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Delete_Guild_Scheduled_Event;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Delete;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/scheduled-events/" + std::to_string(dataPackage.guildScheduledEventId);
-		workload.callStack = "GuildScheduledEvents::deleteGuildScheduledEventAsync";
+		workload.callStack = "GuildScheduledEvents::deleteGuildScheduledEventAsync()";
 		co_return GuildScheduledEvents::httpsClient->submitWorkloadAndGetResult<void>(workload);
 	}
 
@@ -135,7 +135,7 @@ namespace DiscordCoreAPI {
 		if (dataPackage.withMember) {
 			workload.relativePath += "?with_member=true";
 		}
-		workload.callStack = "GuildScheduledEvents::getGuildScheduledEventUsersAsync";
+		workload.callStack = "GuildScheduledEvents::getGuildScheduledEventUsersAsync()";
 		co_return GuildScheduledEvents::httpsClient->submitWorkloadAndGetResult<GuildScheduledEventUserDataVector>(workload);
 	}
 	DiscordCoreInternal::HttpsClient* GuildScheduledEvents::httpsClient{ nullptr };

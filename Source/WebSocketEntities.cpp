@@ -1510,10 +1510,12 @@ namespace DiscordCoreInternal {
 			this->theClients[0]->areWeConnected01.store(true);
 			bool didWeWrite{ false };
 			DiscordCoreAPI::StopWatch theStopWatch{ 10000ms };
+			std::cout << "WERE CONNECTED! 030303" << std::endl;
 			do {
 				if (theStopWatch.hasTimePassed()) {
 					break;
 				}
+				std::cout << "WERE WRITING!" << std::endl;
 				didWeWrite = this->theClients[0]->writeData(sendVector, true);
 			} while (!didWeWrite);
 			if (!didWeWrite) {
@@ -1521,11 +1523,13 @@ namespace DiscordCoreInternal {
 			}
 			theStopWatch.resetTimer();
 			WebSocketSSLShard::processIO(this->theClients);
+			std::cout << "WERE CONNECTED! 020202" << std::endl;
 			while (!this->doWeQuit->load()) {
 				if (this->theClients[0]->theState == WebSocketState::Connected) {
 					break;
 				}
 				if (this->theClients.contains(0) && this->theClients[0]->inputBuffer.size() > 0) {
+					std::cout << "WERE CONNECTED! 040404" << std::endl;
 					this->parseHeadersAndMessage(this->theClients[0].get());
 				}
 				if (this->theClients[0]->processedMessages.size() > 0) {
@@ -1542,6 +1546,7 @@ namespace DiscordCoreInternal {
 				}
 			}
 			this->doWeReconnect.store(false);
+			std::cout << "WERE CONNECTED! 0101" << std::endl;
 		} catch (...) {
 			if (this->configManager->doWePrintWebSocketErrorMessages()) {
 				DiscordCoreAPI::reportException("VoiceSocketAgent::connect()");

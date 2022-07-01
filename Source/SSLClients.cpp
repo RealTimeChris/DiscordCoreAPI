@@ -167,6 +167,14 @@ namespace DiscordCoreInternal {
 					this->disconnect();
 					break;
 				}
+				case SSL_ERROR_SSL: {
+					this->disconnect();
+					break;
+				}
+				case SSL_ERROR_SYSCALL: {
+					this->disconnect();
+					break;
+				}
 				case SSL_ERROR_WANT_READ: {
 					this->wantRead = true;
 					break;
@@ -176,8 +184,7 @@ namespace DiscordCoreInternal {
 					break;
 				}
 				default: {
-					this->disconnect();
-					return;
+					break;
 				}
 			}
 		}
@@ -203,6 +210,14 @@ namespace DiscordCoreInternal {
 						this->disconnect();
 						break;
 					}
+					case SSL_ERROR_SSL: {
+						this->disconnect();
+						break;
+					}
+					case SSL_ERROR_SYSCALL: {
+						this->disconnect();
+						break;
+					}
 					case SSL_ERROR_WANT_READ: {
 						this->wantRead = true;
 						break;
@@ -212,8 +227,7 @@ namespace DiscordCoreInternal {
 						break;
 					}
 					default: {
-						this->disconnect();
-						return;
+						break;
 					}
 				}
 			}
@@ -359,11 +373,14 @@ namespace DiscordCoreInternal {
 					readNfds = value->theSocket > readNfds ? value->theSocket : readNfds;
 					didWeSetASocket = true;
 					finalNfds = readNfds > writeNfds ? readNfds : writeNfds;
+				} else {
+					std::cout << "IT'S SET TO SOCKET_ERROR!" << std::endl;
 				}
 			}
 		}
 
 		if (!didWeSetASocket) {
+			std::cout << "WE DID NOT SET ANY SOCKETS!" << std::endl;
 			return;
 		}
 
@@ -376,6 +393,7 @@ namespace DiscordCoreInternal {
 		}
 
 		for (auto& [key, value]: theMap) {
+			std::lock_guard<std::mutex> theLock{ value->theMutex };
 			if (FD_ISSET(value->theSocket, &readSet)) {
 				value->wantRead = false;
 				value->wantWrite = false;
@@ -396,6 +414,14 @@ namespace DiscordCoreInternal {
 						value->disconnect();
 						break;
 					}
+					case SSL_ERROR_SSL: {
+						value->disconnect();
+						break;
+					}
+					case SSL_ERROR_SYSCALL: {
+						value->disconnect();
+						break;
+					}
 					case SSL_ERROR_WANT_READ: {
 						value->wantRead = true;
 						break;
@@ -405,8 +431,7 @@ namespace DiscordCoreInternal {
 						break;
 					}
 					default: {
-						value->disconnect();
-						return;
+						break;
 					}
 				}
 			}
@@ -430,6 +455,14 @@ namespace DiscordCoreInternal {
 							value->disconnect();
 							break;
 						}
+						case SSL_ERROR_SSL: {
+							value->disconnect();
+							break;
+						}
+						case SSL_ERROR_SYSCALL: {
+							value->disconnect();
+							break;
+						}
 						case SSL_ERROR_WANT_READ: {
 							value->wantRead = true;
 							break;
@@ -439,8 +472,7 @@ namespace DiscordCoreInternal {
 							break;
 						}
 						default: {
-							value->disconnect();
-							return;
+							break;
 						}
 					}
 				}
@@ -449,6 +481,7 @@ namespace DiscordCoreInternal {
 	}
 
 	bool WebSocketSSLShard::writeData(const std::string& dataToWrite, bool priority) noexcept {
+		std::lock_guard<std::mutex> theLock{ this->theMutex };
 		std::string data = dataToWrite;
 		if (priority && data.size() < (16 * 1024)) {
 			size_t writtenBytes{ 0 };
@@ -458,6 +491,7 @@ namespace DiscordCoreInternal {
 				switch (errorValue) {
 					case SSL_ERROR_NONE: {
 						if (writtenBytes > 0) {
+							std::cout << "WRITTEN BYTES: " << writtenBytes << std::endl;
 							data.clear();
 							return true;
 						}
@@ -599,6 +633,7 @@ namespace DiscordCoreInternal {
 	}
 
 	void WebSocketSSLShard::disconnect() noexcept {
+		std::cout << "WERE BEING DISCONNECTED!" << std::endl;
 		if (this->areWeConnected01.load()) {
 			this->areWeConnected01.store(false);
 			this->areWeConnected02.store(false);

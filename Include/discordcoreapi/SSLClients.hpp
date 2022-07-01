@@ -89,7 +89,7 @@ namespace DiscordCoreInternal {
 
 		WSADataWrapper() {
 			if (auto errorValue = WSAStartup(MAKEWORD(2, 2), this->thePtr.get()); errorValue != 0) {
-				std::cout << DiscordCoreAPI::shiftToBrightRed() << "WSAStartup() Error: " << errorValue << ", ";
+				std::cout << DiscordCoreAPI::shiftToBrightRed() << "WSAStartup() Error: " << errorValue << ", ()";
 				std::cout << DiscordCoreAPI::reset() << std::endl;
 			}
 		}
@@ -392,6 +392,7 @@ namespace DiscordCoreInternal {
 		std::string sessionId{};
 		nlohmann::json shard{};
 		bool blocking{ false };
+		std::mutex theMutex{};
 		Snowflake userId{ 0 };
 	};
 

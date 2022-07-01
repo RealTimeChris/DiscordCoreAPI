@@ -57,7 +57,7 @@ namespace DiscordCoreAPI {
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Get_Sticker;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/stickers/" + dataPackage.stickerId;
-		workload.callStack = "Stickers::getStickerAsync";
+		workload.callStack = "Stickers::getStickerAsync()";
 		co_return Stickers::httpsClient->submitWorkloadAndGetResult<Sticker>(workload);
 	}
 
@@ -68,7 +68,7 @@ namespace DiscordCoreAPI {
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Get_Nitro_Sticker_Packs;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/sticker-packs";
-		workload.callStack = "Stickers::getNitroStickerPacksAsync";
+		workload.callStack = "Stickers::getNitroStickerPacksAsync()";
 		co_return Stickers::httpsClient->submitWorkloadAndGetResult<StickerPackDataVector>(workload);
 	}
 
@@ -79,7 +79,7 @@ namespace DiscordCoreAPI {
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Stickers;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/stickers";
-		workload.callStack = "Stickers::getGuildStickersAsync";
+		workload.callStack = "Stickers::getGuildStickersAsync()";
 		co_return Stickers::httpsClient->submitWorkloadAndGetResult<StickerVector>(workload);
 	}
 
@@ -92,7 +92,7 @@ namespace DiscordCoreAPI {
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/stickers";
 		nlohmann::json responseData = { { "description", dataPackage.description }, { "name", dataPackage.name }, { "tags", dataPackage.tags }, { "file", dataPackage.file } };
 		workload.content = responseData.dump();
-		workload.callStack = "Stickers::createGuildStickerAsync";
+		workload.callStack = "Stickers::createGuildStickerAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
@@ -108,7 +108,7 @@ namespace DiscordCoreAPI {
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/stickers/" + std::to_string(dataPackage.stickerId);
 		nlohmann::json responseData = { { "description", dataPackage.description }, { "name", dataPackage.name }, { "tags", dataPackage.tags } };
 		workload.content = responseData.dump();
-		workload.callStack = "Stickers::modifyGuildStickerAsync";
+		workload.callStack = "Stickers::modifyGuildStickerAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
@@ -122,7 +122,7 @@ namespace DiscordCoreAPI {
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Delete_Guild_Sticker;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Delete;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/stickers/" + std::to_string(dataPackage.stickerId);
-		workload.callStack = "Stickers::deleteGuildStickerAsync";
+		workload.callStack = "Stickers::deleteGuildStickerAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
