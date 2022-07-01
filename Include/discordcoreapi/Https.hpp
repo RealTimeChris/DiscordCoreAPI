@@ -133,7 +133,7 @@ namespace DiscordCoreInternal {
 
 		HttpsResponseData httpRequest(HttpsWorkloadData&);
 
-		template<typename ReturnType> ReturnType submitWorkloadAndGetResult(const HttpsWorkloadData& workload) {
+		template<typename ReturnType> ReturnType submitWorkloadAndGetResult(HttpsWorkloadData& workload) {
 			workload.headersToInsert["Authorization"] = "Bot " + this->configManager->getBotToken();
 			workload.headersToInsert["User-Agent"] = "DiscordBot (https://discordcoreapi.com 1.0)";
 			if (workload.payloadType == PayloadType::Application_Json) {

@@ -490,7 +490,7 @@ namespace DiscordCoreInternal {
 		return resultData;
 	}
 
-	template<> void HttpsClient::submitWorkloadAndGetResult<void>(const HttpsWorkloadData& workloadNew) {
+	template<> void HttpsClient::submitWorkloadAndGetResult<void>(HttpsWorkloadData& workloadNew) {
 		HttpsWorkloadData workload = workloadNew;
 		workload.headersToInsert["Authorization"] = "Bot " + this->configManager->getBotToken();
 		workload.headersToInsert["User-Agent"] = "DiscordBot (https://discordcoreapi.com/ 1.0)";
