@@ -158,7 +158,9 @@ namespace DiscordCoreInternal {
 			newSong.type = DiscordCoreAPI::SongType::YouTube;
 			return newSong;
 		} catch (...) {
-			DiscordCoreAPI::reportException("YouTubeRequestBuilder::constructDownloadInfo()");
+			if (this->configManager->doWePrintHttpsErrorMessages()) {
+				DiscordCoreAPI::reportException("YouTubeRequestBuilder::constructDownloadInfo()");
+			}
 		}
 		return DiscordCoreAPI::Song{};
 	}

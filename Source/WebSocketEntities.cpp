@@ -365,7 +365,9 @@ namespace DiscordCoreInternal {
 					try {
 						payload = this->erlPacker.parseEtfToJson(&messageNew);
 					} catch (...) {
-						DiscordCoreAPI::reportException("ErlPacker::parseEtfToJson()");
+						if (this->configManager->doWePrintGeneralErrorMessages()) {
+							DiscordCoreAPI::reportException("ErlPacker::parseEtfToJson()");
+						}
 						return;
 					}
 				} else {
