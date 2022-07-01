@@ -52,7 +52,7 @@ namespace DiscordCoreInternal {
 			dataPackage.headersToInsert = theHeaders;
 			dataPackage.workloadClass = HttpsWorkloadClass::Get;
 			dataPackage.workloadType = HttpsWorkloadType::SoundCloudGetSearchResults;
-			HttpsResponseData returnData = this->httpsClient->submitWorkloadAndGetResult(&dataPackage);
+			HttpsResponseData returnData = this->httpsClient->submitWorkloadAndGetResult(dataPackage);
 			nlohmann::json data = nlohmann::json::parse(returnData.responseMessage);
 			std::vector<DiscordCoreAPI::Song> results{};
 			if (data.contains("collection") && !data["collection"].is_null()) {
@@ -87,7 +87,7 @@ namespace DiscordCoreInternal {
 			dataPackage01.baseUrl = newSong.firstDownloadUrl;
 			dataPackage01.workloadClass = HttpsWorkloadClass::Get;
 			dataPackage01.workloadType = HttpsWorkloadType::SoundCloudGetSearchResults;
-			HttpsResponseData results = this->httpsClient->submitWorkloadAndGetResult(&dataPackage01);
+			HttpsResponseData results = this->httpsClient->submitWorkloadAndGetResult(dataPackage01);
 			if (results.responseData.contains("url")) {
 				newSong.secondDownloadUrl = results.responseData["url"];
 			}
@@ -96,7 +96,7 @@ namespace DiscordCoreInternal {
 				dataPackage.baseUrl = newSong.secondDownloadUrl;
 				dataPackage.workloadClass = HttpsWorkloadClass::Get;
 				dataPackage.workloadType = HttpsWorkloadType::SoundCloudGetSearchResults;
-				HttpsResponseData results = this->httpsClient->submitWorkloadAndGetResult(&dataPackage);
+				HttpsResponseData results = this->httpsClient->submitWorkloadAndGetResult(dataPackage);
 				std::string newString{};
 				newString.insert(newString.begin(), results.responseMessage.begin(), results.responseMessage.end());
 				newSong.finalDownloadUrls.clear();
@@ -131,7 +131,7 @@ namespace DiscordCoreInternal {
 				dataPackage02.headersToInsert = theHeaders;
 				dataPackage02.workloadClass = HttpsWorkloadClass::Get;
 				dataPackage02.workloadType = HttpsWorkloadType::SoundCloudGetSearchResults;
-				auto headersNew = this->httpsClient->submitWorkloadAndGetResult(&dataPackage02);
+				auto headersNew = this->httpsClient->submitWorkloadAndGetResult(dataPackage02);
 				auto valueBitRate = stoll(headersNew.responseHeaders.find("x-amz-meta-bitrate")->second);
 				auto valueLength = stoll(headersNew.responseHeaders.find("x-amz-meta-duration")->second);
 				DiscordCoreAPI::DownloadUrl downloadUrl{};
@@ -159,7 +159,7 @@ namespace DiscordCoreInternal {
 		dataPackage02.headersToInsert = theHeaders;
 		dataPackage02.workloadClass = HttpsWorkloadClass::Get;
 		dataPackage02.workloadType = HttpsWorkloadType::SoundCloudGetSearchResults;
-		HttpsResponseData returnData = this->httpsClient->submitWorkloadAndGetResult(&dataPackage02);
+		HttpsResponseData returnData = this->httpsClient->submitWorkloadAndGetResult(dataPackage02);
 		std::vector<std::string> assetPaths{};
 		std::string newString01 = "crossorigin src=";
 		std::string newerString{};
@@ -176,7 +176,7 @@ namespace DiscordCoreInternal {
 		dataPackage03.baseUrl = assetPaths[5];
 		dataPackage03.workloadClass = HttpsWorkloadClass::Get;
 		dataPackage03.workloadType = HttpsWorkloadType::SoundCloudGetSearchResults;
-		HttpsResponseData returnData02 = this->httpsClient->submitWorkloadAndGetResult(&dataPackage03);
+		HttpsResponseData returnData02 = this->httpsClient->submitWorkloadAndGetResult(dataPackage03);
 		std::string newerString02{};
 		newerString02.insert(newerString02.begin(), returnData02.responseMessage.begin(), returnData02.responseMessage.end());
 		std::string newString03 = newerString02.substr(newerString02.find("JSON.stringify({client_id:\"") + std::string{ "JSON.stringify({client_id:\"" }.size());
@@ -261,7 +261,7 @@ namespace DiscordCoreInternal {
 				dataPackage03.baseUrl = newSong.finalDownloadUrls[counter].urlPath;
 				dataPackage03.workloadClass = HttpsWorkloadClass::Get;
 				dataPackage03.workloadType = HttpsWorkloadType::SoundCloudGetSearchResults;
-				auto result = this->httpsClient->submitWorkloadAndGetResult(&dataPackage03);
+				auto result = this->httpsClient->submitWorkloadAndGetResult(dataPackage03);
 				if (result.responseMessage.size() != 0) {
 					didWeGetZero = false;
 				}
