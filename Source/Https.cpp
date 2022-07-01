@@ -381,6 +381,7 @@ namespace DiscordCoreInternal {
 				didWeWrite = httpsConnection->writeData(theRequest);
 			} while (!didWeWrite);
 			if (!didWeWrite) {
+				httpsConnection->areWeCheckedOut.store(false);
 				throw ProcessingError{ "HttpsClient::httpRequestInternal() Error: Failed to write to the websocket.\n\n" };
 			}
 			auto result = this->getResponse(rateLimitData, httpsConnection);
