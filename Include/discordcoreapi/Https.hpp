@@ -24,8 +24,6 @@
 #include <discordcoreapi/SSLClients.hpp>
 #include <semaphore>
 
-namespace Globals {};
-
 namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll HttpsConnectionManager;
@@ -117,15 +115,23 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll HttpsConnectionManager {
 	  public:
-		int64_t currentIndex{};
-		std::mutex theMutex{};
+		std::unordered_map<std::string, std::unique_ptr<RateLimitData>>& getRateLimitValues();
+
+		std::unordered_map<HttpsWorkloadType, std::string>& getRateLimitValueBuckets();
 
 		HttpsConnection* getConnection();
 
 		void initialize();
+
+	  protected:
+		std::unordered_map<std::string, std::unique_ptr<RateLimitData>> rateLimitValues{};
+		std::unordered_map<int64_t, std::unique_ptr<HttpsConnection>> httpsConnections{};
+		std::unordered_map<HttpsWorkloadType, std::string> rateLimitValueBuckets{};
+		int64_t currentIndex{};
+		std::mutex theMutex{};
 	};
 
-	class HttpsClient {
+	class DiscordCoreAPI_Dll HttpsClient {
 	  public:
 		HttpsClient() = default;
 

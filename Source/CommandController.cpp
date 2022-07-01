@@ -23,20 +23,16 @@
 
 namespace DiscordCoreAPI {
 
-	namespace Globals {
-		std::map<std::vector<std::string>, std::unique_ptr<BaseFunction>> functions{};
-	}
-
 	CommandController::CommandController(DiscordCoreClient* discordCoreClientNew) {
 		this->discordCoreClient = discordCoreClientNew;
 	}
 
 	void CommandController::registerFunction(const std::vector<std::string>& functionNames, std::unique_ptr<BaseFunction> baseFunction) {
-		Globals::functions[functionNames] = std::move(baseFunction);
+		this->functions[functionNames] = std::move(baseFunction);
 	}
 
 	std::map<std::vector<std::string>, std::unique_ptr<BaseFunction>>& CommandController::getFunctions() {
-		return Globals::functions;
+		return this->functions;
 	};
 
 	CoRoutine<void> CommandController::checkForAndRunCommand(CommandData commandData) {
@@ -45,6 +41,7 @@ namespace DiscordCoreAPI {
 		if (functionPointer == nullptr) {
 			co_return;
 		}
+
 		functionPointer->args = BaseFunctionArguments{ commandData, this->discordCoreClient };
 		functionPointer->execute(functionPointer->args);
 		co_return;
@@ -54,7 +51,7 @@ namespace DiscordCoreAPI {
 		std::string functionName{};
 		bool isItFound{ false };
 		if (commandName.size() > 0) {
-			for (auto const& [keyFirst, value]: Globals::functions) {
+			for (auto const& [keyFirst, value]: this->functions) {
 				for (auto& key: keyFirst) {
 					if (key.find(convertToLowerCase(commandName)) != std::string::npos) {
 						isItFound = true;
@@ -72,10 +69,10 @@ namespace DiscordCoreAPI {
 	}
 
 	std::unique_ptr<BaseFunction> CommandController::createFunction(const std::string& functionName) {
-		for (auto& [key01, value01]: Globals::functions) {
+		for (auto& [key01, value01]: this->functions) {
 			for (auto& value02: key01) {
 				if (functionName == value02) {
-					return Globals::functions[key01]->create();
+					return this->functions[key01]->create();
 				}
 			}
 		}

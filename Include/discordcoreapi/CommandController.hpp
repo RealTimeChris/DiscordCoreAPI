@@ -28,6 +28,14 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll CommandController {
 	  public:
+		CommandController& operator=(const CommandController&) = delete;
+
+		CommandController(const CommandController&) = delete;
+
+		CommandController& operator=(CommandController&) = delete;
+
+		CommandController(CommandController&) = delete;
+
 		CommandController(DiscordCoreClient*);
 
 		void registerFunction(const std::vector<std::string>& functionNames, std::unique_ptr<BaseFunction> baseFunction);
@@ -37,6 +45,7 @@ namespace DiscordCoreAPI {
 		CoRoutine<void> checkForAndRunCommand(const CommandData commandData);
 
 	  protected:
+		std::map<std::vector<std::string>, std::unique_ptr<BaseFunction>> functions{};
 		DiscordCoreClient* discordCoreClient{ nullptr };
 
 		std::unique_ptr<BaseFunction> createFunction(const std::string& functionName);
