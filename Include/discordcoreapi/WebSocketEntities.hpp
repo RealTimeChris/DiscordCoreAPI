@@ -126,6 +126,8 @@ namespace DiscordCoreInternal {
 
 		void onMessageReceived(const std::string& theMessage) noexcept;
 
+		bool areWeRunnableVoice() noexcept;
+
 		void run(std::stop_token) noexcept;
 
 		void collectExternalIP() noexcept;

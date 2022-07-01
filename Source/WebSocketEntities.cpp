@@ -1378,7 +1378,7 @@ namespace DiscordCoreInternal {
 				std::this_thread::sleep_for(1ms);
 			}
 			while (!theToken.stop_requested() && !this->doWeQuit->load() && !this->doWeDisconnect.load()) {
-				if (!theToken.stop_requested() && this->areWeRunnable()) {
+				if (!theToken.stop_requested() && this->areWeRunnableVoice()) {
 					this->voiceSocket->processIO();
 					this->voiceSocket->getInputBuffer();
 				}
@@ -1393,7 +1393,7 @@ namespace DiscordCoreInternal {
 				if (!theToken.stop_requested() && this->areWeRunnable()) {
 					WebSocketSSLShard::processIO(this->theClients, 1000);
 				}
-				if (!theToken.stop_requested() && this->areWeRunnable()) {
+				if (!theToken.stop_requested() && this->areWeRunnableVoice()) {
 					this->voiceSocket->processIO();
 					this->voiceSocket->getInputBuffer();
 				}
@@ -1409,7 +1409,7 @@ namespace DiscordCoreInternal {
 						}
 					}
 				}
-				if (!theToken.stop_requested() && !this->doWeReconnect.load() && this->voiceSocket && this->voiceSocket->areWeStillConnected()) {
+				if (!theToken.stop_requested() && this->areWeRunnableVoice()) {
 					this->voiceSocket->processIO();
 					this->voiceSocket->getInputBuffer();
 				}
@@ -1461,9 +1461,13 @@ namespace DiscordCoreInternal {
 			this->onClosed();
 		}
 	}
-	
-	bool VoiceSocketAgent::areWeRunnable() noexcept {
+
+	bool VoiceSocketAgent::areWeRunnableVoice() noexcept { 
 		return (!this->doWeReconnect.load() && this->voiceSocket && this->voiceSocket->areWeStillConnected() && this->theClients.contains(0) && this->theClients[0]);
+	}
+
+	bool VoiceSocketAgent::areWeRunnable() noexcept {
+		return (!this->doWeReconnect.load() && this->theClients.contains(0) && this->theClients[0]);
 	}
 
 	void VoiceSocketAgent::sendHeartBeat() noexcept {

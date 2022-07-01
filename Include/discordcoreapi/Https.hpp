@@ -26,6 +26,7 @@
 
 namespace DiscordCoreInternal {
 
+	class DiscordCoreAPI_Dll HttpsConnectionManager;
 	struct DiscordCoreAPI_Dll RateLimitData;
 
 	enum class HttpsState { Collecting_Code = 0, Collecting_Headers = 1, Collecting_Size = 2, Collecting_Contents = 3 };
