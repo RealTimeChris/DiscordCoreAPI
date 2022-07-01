@@ -1259,12 +1259,13 @@ namespace DiscordCoreInternal {
 			this->theClients[0]->disconnect();
 			if (this->voiceSocket) {
 				this->voiceSocket->disconnect();
+				this->voiceSocket->areWeConnected.store(false);
 			}
 			this->doWeReconnect.store(true);
 			this->areWeConnected.store(false);
 			this->theClients[0]->areWeHeartBeating = false;
 			this->theClients[0]->areWeConnected01.store(false);
-			this->voiceSocket->areWeConnected.store(false);
+			
 		}
 	}
 
