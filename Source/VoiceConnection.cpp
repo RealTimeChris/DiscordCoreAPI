@@ -143,7 +143,6 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::reconnect() {
-		std::cout << "WERE WAITING WAITING WAITING 010101" << std::endl;
 		if (!this->connect(this->voiceConnectInitData)) {
 			return;
 		}
@@ -158,35 +157,28 @@ namespace DiscordCoreAPI {
 			this->areWeStopping.store(false);
 			this->stopSetEvent.set();
 			this->pauseEvent.set();
-			StopWatch theStopWatch{ 3000ms };
+			StopWatch theStopWatch{ 2000ms };
 			while (!this->baseSocketAgent->theClients[this->voiceConnectInitData.currentShard]->areWeConnected02.load()) {
 				std::this_thread::sleep_for(1ms);
 				if (theStopWatch.hasTimePassed()) {
-					std::cout << "WERE HERE 020202" << std::endl;
 					return false;
 				}
 			}
-			std::cout << "WERE HERE 020202" << std::endl;
 			theStopWatch.resetTimer();
 			if (!this->voiceSocketAgent) {
 				this->voiceSocketAgent = std::make_unique<DiscordCoreInternal::VoiceSocketAgent>(this->voiceConnectInitData, this->baseSocketAgent,
 					this->baseSocketAgent->theClients[this->voiceConnectInitData.currentShard].get(), this->baseSocketAgent->configManager, &Globals::doWeQuit);
 			}
-			std::cout << "WERE HERE -03030303" << std::endl;
 			this->baseSocketAgent->getVoiceConnectionData(this->voiceConnectInitData, this->baseSocketAgent->theClients[this->voiceConnectInitData.currentShard].get());
-			std::cout << "WERE HERE -040404" << std::endl;
 			this->voiceSocketAgent->connect();
-			std::cout << "WERE HERE -050505" << std::endl;
 			this->doWeReconnect = &this->voiceSocketAgent->doWeReconnect;
 			this->doWeDisconnect = &this->voiceSocketAgent->doWeDisconnect;
 			while (!this->voiceSocketAgent->areWeConnected.load()) {
 				std::this_thread::sleep_for(1ms);
 				if (theStopWatch.hasTimePassed()) {
-					std::cout << "WERE HERE 030303" << std::endl;
 					return false;
 				}
 			}
-			std::cout << "WERE HERE 030303" << std::endl;
 			this->voiceConnectionData = this->voiceSocketAgent->voiceConnectionData;
 			if (!this->theTask) {
 				this->theTask = std::make_unique<std::jthread>([=, this](std::stop_token theToken) {
@@ -197,11 +189,9 @@ namespace DiscordCoreAPI {
 			while (!this->voiceSocketAgent->voiceSocket->areWeConnected.load()) {
 				std::this_thread::sleep_for(1ms);
 				if (theStopWatch.hasTimePassed()) {
-					std::cout << "WERE HERE 040404" << std::endl;
 					return false;
 				}
 			}
-			std::cout << "WERE HERE 040404" << std::endl;
 			this->sendSilence();
 			this->areWeConnectedBool = true;
 			return true;
@@ -323,15 +313,12 @@ namespace DiscordCoreAPI {
 				(this->audioData.rawFrameData.sampleCount != 0 || this->audioData.encodedFrameData.sampleCount != 0) && !this->areWeStopping.load() && !theToken.stop_requested()) {
 				this->areWePlaying.store(true);
 				if (this->doWeReconnect->load()) {
-					std::cout << "WERE WAITING WAITING WAITING 020202" << std::endl;
 					this->areWeConnectedBool = false;
 					this->sendSpeakingMessage(false);
 					this->reconnect();
-					std::cout << "WERE WAITING WAITING WAITING 030303030444" << std::endl;
 					this->sendSpeakingMessage(true);
 					this->areWePlaying.store(true);
 				}
-				std::cout << "WERE WAITING WAITING WAITING 030303030444 oineoenoneoen" << std::endl;
 				if (this->areWeStopping.load()) {
 					this->areWePlaying.store(false);
 					break;
@@ -351,7 +338,6 @@ namespace DiscordCoreAPI {
 					this->areWePlaying.store(false);
 					return;
 				}
-				std::cout << "WERE WAITING WAITING WAITING 030303030444 TWOTWOWOTWOTWO" << std::endl;
 				if (this->audioData.type != AudioFrameType::Unset && this->audioData.type != AudioFrameType::Skip && !this->areWeStopping.load()) {
 					std::string newFrame{};
 					if (this->audioData.type == AudioFrameType::RawPCM) {
@@ -382,7 +368,6 @@ namespace DiscordCoreAPI {
 					this->audioData.type = AudioFrameType::Unset;
 					this->audioData.encodedFrameData.data.clear();
 					this->audioData.rawFrameData.data.clear();
-					std::cout << "WERE WAITING WAITING WAITING 030303030444 THREETHREETHREE" << std::endl;
 				} else if (this->audioData.type == AudioFrameType::Skip && !this->areWeStopping.load()) {
 					SongCompletionEventData completionEventData{};
 					completionEventData.guild = Guilds::getCachedGuildAsync({ .guildId = this->voiceConnectInitData.guildId }).get();

@@ -184,7 +184,6 @@ namespace DiscordCoreInternal {
 				theStopWatch.resetTimer();
 				while (theShard->areWeCollectingData) {
 					if (theStopWatch.hasTimePassed()) {
-						std::cout << "WERE HERE 010101" << std::endl;
 						break;
 					}
 					std::this_thread::sleep_for(1ms);
@@ -1225,23 +1224,25 @@ namespace DiscordCoreInternal {
 	void VoiceSocketAgent::sendMessage(std::string& dataToSend) noexcept {
 		try {
 			if (this->configManager->doWePrintWebSocketSuccessMessages()) {
-				std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Sending Voice WebSocket Message: " << std::endl << dataToSend << DiscordCoreAPI::reset();
+				std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Sending Voice WebSocket Message: " << dataToSend << DiscordCoreAPI::reset() << std::endl << std::endl;
 			}
+			DiscordCoreAPI::StopWatch theStopWatch{ 1000ms };
 			while (!this->theClients[0]->areWeConnected01.load()) {
 				std::this_thread::sleep_for(1ms);
-			}
-			if (this->theClients[0] && this->theClients[0]->areWeStillConnected()) {
-				bool didWeWrite{ false };
-				DiscordCoreAPI::StopWatch theStopWatch{ 5000ms };
-				do {
-					if (theStopWatch.hasTimePassed()) {
-						break;
-					}
-					didWeWrite = this->theClients[0]->writeData(dataToSend, false);
-				} while (!didWeWrite);
-				if (!didWeWrite) {
-					throw ProcessingError{ "VoiceSocketAgent::sendMessage() Error: Failed to write to the websocket.\n\n" };
+				if (theStopWatch.hasTimePassed()) {
+					return;
 				}
+			}
+			theStopWatch.resetTimer(5000);
+			bool didWeWrite{ false };
+			do {
+				if (theStopWatch.hasTimePassed()) {
+					break;
+				}
+				didWeWrite = this->theClients[0]->writeData(dataToSend, false);
+			} while (!didWeWrite);
+			if (!didWeWrite) {
+				throw ProcessingError{ "VoiceSocketAgent::sendMessage() Error: Failed to write to the websocket.\n\n" };
 			}
 		} catch (...) {
 			if (this->configManager->doWePrintWebSocketErrorMessages()) {
@@ -1252,13 +1253,9 @@ namespace DiscordCoreInternal {
 	}
 
 	void VoiceSocketAgent::onClosed() noexcept {
-		std::cout << "WERE DISCONNECINT 010101" << std::endl;
 		if (this->theClients.contains(0) && this->theClients[0] && !this->doWeReconnect.load() ) {
-			std::cout << "WERE DISCONNECINT 020202" << std::endl;
 			this->theClients[0]->disconnect();
-			std::cout << "WERE DISCONNECINT 030303" << std::endl;
 			this->voiceSocket->disconnect();
-			std::cout << "WERE DISCONNECINT 040404" << std::endl;
 			this->doWeReconnect.store(true);
 			this->areWeConnected.store(false);
 			this->theClients[0]->areWeHeartBeating = false;
@@ -1309,7 +1306,6 @@ namespace DiscordCoreInternal {
 				if (payload.contains("op") && !payload["op"].is_null()) {
 					switch (payload["op"].get<int32_t>()) {
 						case 2: {
-							std::cout << "WERE HERE CONNECTIN 020202" << std::endl;
 							this->voiceConnectionData.audioSSRC = payload["d"]["ssrc"].get<uint32_t>();
 							this->voiceConnectionData.voiceIp = payload["d"]["ip"].get<std::string>();
 							this->voiceConnectionData.voicePort = std::to_string(payload["d"]["port"].get<int64_t>());
@@ -1329,7 +1325,6 @@ namespace DiscordCoreInternal {
 							break;
 						}
 						case 4: {
-							std::cout << "WERE HERE CONNECTIN 040404" << std::endl;
 							this->areWeConnected.store(true);
 							for (uint32_t x = 0; x < payload["d"]["secret_key"].size(); x++) {
 								this->voiceConnectionData.secretKey.push_back(payload["d"]["secret_key"][x].get<uint8_t>());
@@ -1341,7 +1336,6 @@ namespace DiscordCoreInternal {
 							break;
 						}
 						case 8: {
-							std::cout << "WERE HERE CONNECTIN 050505" << std::endl;
 							this->theClients[0]->theState = WebSocketState::Connected;
 							if (payload["d"].contains("heartbeat_interval")) {
 								this->heartbeatInterval = static_cast<int32_t>(payload["d"]["heartbeat_interval"].get<float>());
@@ -1502,7 +1496,6 @@ namespace DiscordCoreInternal {
 
 	void VoiceSocketAgent::connect() noexcept {
 		try {
-			std::cout << "WERE HERE -232323023023023=23=23=23" << std::endl;
 			this->voiceConnectionData = VoiceConnectionData{};
 			DiscordCoreAPI::waitForTimeToPass(this->voiceConnectionDataBuffer, this->voiceConnectionData, 20000);
 			this->baseUrl = this->voiceConnectionData.endPoint.substr(0, this->voiceConnectionData.endPoint.find(":"));
@@ -1526,18 +1519,14 @@ namespace DiscordCoreInternal {
 			}
 			theStopWatch.resetTimer();
 			WebSocketSSLShard::processIO(this->theClients);
-			std::cout << "WERE HERE -3-4-4-4-4" << std::endl;
 			while (!this->doWeQuit->load()) {
 				if (this->theClients[0]->theState == WebSocketState::Connected) {
-					std::cout << "WERE HERE -5454564564" << std::endl;
 					break;
 				}
 				if (this->theClients.contains(0) && this->theClients[0]->inputBuffer.size() > 0) {
-					std::cout << "WERE HERE -09090909" << std::endl;
 					this->parseHeadersAndMessage(this->theClients[0].get());
 				}
 				if (this->theClients[0]->processedMessages.size() > 0) {
-					std::cout << "WERE HERE -1-1-1-1-1-" << std::endl;
 					std::string theMessage = this->theClients[0]->processedMessages.front();
 					this->theClients[0]->processedMessages.pop();
 					this->onMessageReceived(theMessage);
@@ -1550,7 +1539,6 @@ namespace DiscordCoreInternal {
 					return;
 				}
 			}
-			std::cout << "WERE HERE -55-5-5-5-5" << std::endl;
 			this->doWeReconnect.store(false);
 		} catch (...) {
 			if (this->configManager->doWePrintWebSocketErrorMessages()) {

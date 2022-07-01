@@ -351,7 +351,7 @@ namespace DiscordCoreInternal {
 		friend class YouTubeAPI;
 
 		WebSocketSSLShard(std::queue<DiscordCoreAPI::ConnectionPackage>* connectionsNew, int32_t currentBaseSocketAgentNew, int32_t currentShardNew,
-			DiscordCoreAPI::ConfigManager* configManagerNew) noexcept;
+			DiscordCoreAPI::ConfigManager* configManagerNew, bool blocking = false) noexcept;
 
 		static void processIO(std::unordered_map<int32_t, std::unique_ptr<WebSocketSSLShard>>& theMap, int32_t waitTimeInms = 10000);
 
@@ -391,6 +391,7 @@ namespace DiscordCoreInternal {
 		int64_t messageOffset{};
 		std::string sessionId{};
 		nlohmann::json shard{};
+		bool blocking{ false };
 		Snowflake userId{ 0 };
 	};
 

@@ -77,7 +77,6 @@ namespace DiscordCoreAPI {
 
 		std::string encryptSingleAudioFrame(EncodedFrameData& bufferToSend, int32_t audioSSRC, const std::string& keys);
 
-		[[nodiscard]]
 		bool connect(const DiscordCoreInternal::VoiceConnectInitData& voiceConnectInitDataNew);
 
 		void sendSingleAudioFrame(std::string& audioDataPacketNew);
