@@ -92,21 +92,6 @@ namespace DiscordCoreInternal {
 		return theReturnString;
 	}
 
-	void HttpsRnRBuilder::resetValues() {
-		this->doWeHaveContentSize = false;
-		this->inputBufferReal.clear();
-		this->doWeHaveHeaders = false;
-		this->isItChunked = false;
-	}
-
-	bool HttpsRnRBuilder::checkForHeadersToParse(const std::string& other) {
-		if (other.find("HTTP/1.") != std::string::npos) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-
 	void HttpsRnRBuilder::parseHeaders(std::string& other, HttpsResponseData& theData) {
 		try {
 			if (other.find("\r\n\r\n") != std::string::npos) {
@@ -177,6 +162,21 @@ namespace DiscordCoreInternal {
 		}
 	}
 
+	bool HttpsRnRBuilder::checkForHeadersToParse(const std::string& other) {
+		if (other.find("HTTP/1.") != std::string::npos) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	void HttpsRnRBuilder::resetValues() {
+		this->doWeHaveContentSize = false;
+		this->inputBufferReal.clear();
+		this->doWeHaveHeaders = false;
+		this->isItChunked = false;
+	}
+
 	void HttpsRnRBuilder::parseSize(std::string& other, HttpsResponseData& theData) {
 		try {
 			if (theData.responseHeaders.contains("Content-Length")) {
@@ -211,18 +211,6 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void HttpsRnRBuilder::clearCRLF(std::string& other) {
-		uint64_t theCount{ 0 };
-		for (uint64_t x = 0; x < other.size(); x += 1) {
-			if (isspace(static_cast<unsigned char>(other[x])) != 0) {
-				theCount++;
-			} else {
-				break;
-			}
-		}
-		other.erase(other.begin(), other.begin() + theCount);
-	}
-
 	void HttpsRnRBuilder::parseCode(std::string& otherNew, HttpsResponseData& theData) {
 		std::string other = otherNew;
 		if (other.find("HTTP/1.") != std::string::npos) {
@@ -245,6 +233,18 @@ namespace DiscordCoreInternal {
 			theData.responseCode = -5;
 		}
 	}
+
+	void HttpsRnRBuilder::clearCRLF(std::string& other) {
+		uint64_t theCount{ 0 };
+		for (uint64_t x = 0; x < other.size(); x += 1) {
+			if (isspace(static_cast<unsigned char>(other[x])) != 0) {
+				theCount++;
+			} else {
+				break;
+			}
+		}
+		other.erase(other.begin(), other.begin() + theCount);
+	}	
 
 	std::unordered_map<std::string, std::unique_ptr<RateLimitData>>& HttpsConnectionManager::getRateLimitValues() {
 		return this->rateLimitValues;

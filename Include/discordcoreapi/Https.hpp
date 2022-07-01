@@ -61,11 +61,11 @@ namespace DiscordCoreInternal {
 
 		std::string buildRequest(const HttpsWorkloadData& workload);
 
-		bool checkForHeadersToParse(const std::string&);
-
 		void parseHeaders(std::string&, HttpsResponseData& theData);
 
 		bool parseChunk(std::string&, HttpsResponseData& theData);
+
+		bool checkForHeadersToParse(const std::string&);
 
 		void resetValues();
 
