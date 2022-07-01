@@ -281,78 +281,221 @@ namespace DiscordCoreInternal {
 		this->connectionManager.initialize();
 	};
 
-	
-	
-
-	HttpsResponseData HttpsClient::executeByRateLimitData(const HttpsWorkloadData& workload) {
-		HttpsResponseData returnData{};
+	HttpsResponseData HttpsClient::httpRequest(HttpsWorkloadData& workload) {
+		if (workload.baseUrl == "") {
+			workload.baseUrl = "https://discord.com/api/v10";
+		}
 		RateLimitData& rateLimitData = *this->connectionManager.getRateLimitValues()[this->connectionManager.getRateLimitValueBuckets()[workload.workloadType]].get();
-		int64_t timeRemaining{};
-		int64_t currentTime = static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
-		if (workload.workloadType == HttpsWorkloadType::Delete_Message_Old) {
-			rateLimitData.msRemain = 4000;
-		} else if (workload.workloadType == HttpsWorkloadType::Delete_Message || workload.workloadType == HttpsWorkloadType::Patch_Message) {
-			rateLimitData.areWeASpecialBucket = true;
+		if (!rateLimitData.haveWeGoneYet) {
+			std::this_thread::sleep_for(500ms);
+			rateLimitData.haveWeGoneYet = true;
 		}
-		if (rateLimitData.areWeASpecialBucket) {
-			rateLimitData.msRemain = static_cast<int64_t>(ceil(static_cast<float>(5000) / static_cast<float>(4)));
-			int64_t targetTime = rateLimitData.msRemain + rateLimitData.sampledTimeInMs;
-			timeRemaining = targetTime - currentTime;
-		} else if (rateLimitData.didWeHitRateLimit) {
-			int64_t targetTime = rateLimitData.sampledTimeInMs + rateLimitData.msRemain;
-			timeRemaining = targetTime - currentTime;
-			rateLimitData.didWeHitRateLimit = false;
-		} else if (rateLimitData.doWeWait) {
-			int64_t targetTime = rateLimitData.sampledTimeInMs + rateLimitData.msRemain;
-			timeRemaining = targetTime - currentTime;
-			rateLimitData.doWeWait = false;
+		while (HttpsWorkloadData::workloadIdsInternal[workload.workloadType].load() < workload.thisWorkerId.load() && workload.thisWorkerId.load() != 0) {
+			std::this_thread::sleep_for(1ms);
 		}
-		if (timeRemaining > 0) {
-			if (this->configManager->doWePrintHttpsSuccessMessages()) {
-				std::cout << DiscordCoreAPI::shiftToBrightBlue() << "We're waiting on rate-limit: " << timeRemaining << DiscordCoreAPI::reset() << std::endl << std::endl;
-			}
-			int64_t targetTime = currentTime + timeRemaining;
-			while (targetTime > currentTime) {
-				currentTime = static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
-				timeRemaining = targetTime - currentTime;
-				if (timeRemaining <= 20) {
-				} else {
-					std::this_thread::sleep_for(std::chrono::milliseconds{ static_cast<int64_t>(ceil(timeRemaining * 80.0f / 100.0f)) });
-				}
-			}
-		}
-		rateLimitData.sampledTimeInMs = static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
-		returnData = HttpsClient::httpRequestInternal(workload, rateLimitData);
 
-		if (rateLimitData.tempBucket != "") {
-			rateLimitData.tempBucket = "";
+		while (!rateLimitData.theSemaphore.try_acquire()) {
+			std::this_thread::sleep_for(1ms);
 		}
-		std::string currentBucket = rateLimitData.bucket;
-		if (!this->connectionManager.getRateLimitValues().contains(rateLimitData.bucket)) {
-			std::unique_ptr<RateLimitData> rateLimitData{ std::make_unique<RateLimitData>() };
-			this->connectionManager.getRateLimitValues()[this->connectionManager.getRateLimitValueBuckets()[workload.workloadType]].swap(rateLimitData);
-			this->connectionManager.getRateLimitValueBuckets()[workload.workloadType] = currentBucket;
-			this->connectionManager.getRateLimitValues()[currentBucket] = std::move(rateLimitData);
+
+		HttpsResponseData resultData = this->executeByRateLimitData(workload);
+		auto theValue = HttpsWorkloadData::workloadIdsInternal[workload.workloadType].load();
+		HttpsWorkloadData::workloadIdsInternal[workload.workloadType].store(theValue + 1);
+		rateLimitData.theSemaphore.release();
+		return resultData;
+	}
+
+		template<> void HttpsClient::submitWorkloadAndGetResult<void>(HttpsWorkloadData& workloadNew) {
+		HttpsWorkloadData workload = workloadNew;
+		workload.headersToInsert["Authorization"] = "Bot " + this->configManager->getBotToken();
+		workload.headersToInsert["User-Agent"] = "DiscordBot (https://discordcoreapi.com/ 1.0)";
+		if (workload.payloadType == PayloadType::Application_Json) {
+			workload.headersToInsert["Content-Type"] = "application/json";
+		} else if (workload.payloadType == PayloadType::Multipart_Form) {
+			workload.headersToInsert["Content-Type"] = "multipart/form-data; boundary=boundary25";
 		}
-		if (returnData.responseCode == 204 || returnData.responseCode == 201 || returnData.responseCode == 200) {
-			if (this->configManager->doWePrintHttpsSuccessMessages()) {
-				std::cout << DiscordCoreAPI::shiftToBrightGreen() << workload.callStack + " Success: " << returnData.responseCode << ", " << returnData.responseMessage
-						  << DiscordCoreAPI::reset() << std::endl
-						  << std::endl;
-			}
-		} else {
-			if (returnData.responseCode == 429) {
-				rateLimitData.msRemain = static_cast<int64_t>(ceil(nlohmann::json::parse(returnData.responseMessage)["retry_after"].get<double>())) * 1000;
-				rateLimitData.didWeHitRateLimit = true;
-				rateLimitData.sampledTimeInMs =
-					static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
-				if (this->configManager->doWePrintHttpsErrorMessages()) {
-					std::cout << DiscordCoreAPI::shiftToBrightRed() << workload.callStack + "::httpRequest(), We've hit rate limit! Time Remaining: "
-							  << std::to_string(this->connectionManager.getRateLimitValues()[this->connectionManager.getRateLimitValueBuckets()[workload.workloadType]]->msRemain) << DiscordCoreAPI::reset() << std::endl
-							  << std::endl;
-				}
-				returnData = this->executeByRateLimitData(workload);
-			}
+		auto returnData = this->httpRequest(workload);
+		if (returnData.responseCode != 200 && returnData.responseCode != 204 && returnData.responseCode != 201) {
+			std::string theErrorMessage{ DiscordCoreAPI::shiftToBrightRed() + workloadNew.callStack + " Https Error; Code: " + std::to_string(returnData.responseCode) +
+				", Message: " + returnData.responseMessage + DiscordCoreAPI::reset() + "\n\n" };
+			HttpError theError{ theErrorMessage };
+			theError.errorCode = returnData.responseCode;
+			throw theError;
+		}
+		return;
+	}
+
+	HttpsResponseData HttpsClient::submitWorkloadAndGetResult(const HttpsWorkloadData& workloadNew) {
+		RateLimitData rateLimitData{};
+		auto returnData = this->httpRequestInternal(workloadNew, rateLimitData);
+		if (returnData.responseCode != 200 && returnData.responseCode != 204 && returnData.responseCode != 201) {
+			std::string theErrorMessage{ DiscordCoreAPI::shiftToBrightRed() + workloadNew.callStack + " Https Error; Code: " + std::to_string(returnData.responseCode) +
+				", Message: " + returnData.responseMessage + DiscordCoreAPI::reset() + "\n\n" };
+			HttpError theError{ theErrorMessage };
+			theError.errorCode = returnData.responseCode;
+			throw theError;
+		}
+		return returnData;
+	}
+
+	template<> void HttpsClient::submitWorkloadAndGetResult<void>(HttpsWorkloadData& workloadNew) {
+		HttpsWorkloadData workload = workloadNew;
+		workload.headersToInsert["Authorization"] = "Bot " + this->configManager->getBotToken();
+		workload.headersToInsert["User-Agent"] = "DiscordBot (https://discordcoreapi.com/ 1.0)";
+		if (workload.payloadType == PayloadType::Application_Json) {
+			workload.headersToInsert["Content-Type"] = "application/json";
+		} else if (workload.payloadType == PayloadType::Multipart_Form) {
+			workload.headersToInsert["Content-Type"] = "multipart/form-data; boundary=boundary25";
+		}
+		auto returnData = this->httpRequest(workload);
+		if (returnData.responseCode != 200 && returnData.responseCode != 204 && returnData.responseCode != 201) {
+			std::string theErrorMessage{ DiscordCoreAPI::shiftToBrightRed() + workloadNew.callStack + " Https Error; Code: " + std::to_string(returnData.responseCode) +
+				", Message: " + returnData.responseMessage + DiscordCoreAPI::reset() + "\n\n" };
+			HttpError theError{ theErrorMessage };
+			theError.errorCode = returnData.responseCode;
+			throw theError;
+		}
+		return;
+	}
+
+	HttpsResponseData HttpsClient::submitWorkloadAndGetResult(const HttpsWorkloadData& workloadNew) {
+		RateLimitData rateLimitData{};
+		auto returnData = this->httpRequestInternal(workloadNew, rateLimitData);
+		if (returnData.responseCode != 200 && returnData.responseCode != 204 && returnData.responseCode != 201) {
+			std::string theErrorMessage{ DiscordCoreAPI::shiftToBrightRed() + workloadNew.callStack + " Https Error; Code: " + std::to_string(returnData.responseCode) +
+				", Message: " + returnData.responseMessage + DiscordCoreAPI::reset() + "\n\n" };
+			HttpError theError{ theErrorMessage };
+			theError.errorCode = returnData.responseCode;
+			throw theError;
+		}
+		return returnData;
+	}
+
+	template<> void HttpsClient::submitWorkloadAndGetResult<void>(HttpsWorkloadData& workloadNew) {
+		HttpsWorkloadData workload = workloadNew;
+		workload.headersToInsert["Authorization"] = "Bot " + this->configManager->getBotToken();
+		workload.headersToInsert["User-Agent"] = "DiscordBot (https://discordcoreapi.com/ 1.0)";
+		if (workload.payloadType == PayloadType::Application_Json) {
+			workload.headersToInsert["Content-Type"] = "application/json";
+		} else if (workload.payloadType == PayloadType::Multipart_Form) {
+			workload.headersToInsert["Content-Type"] = "multipart/form-data; boundary=boundary25";
+		}
+		auto returnData = this->httpRequest(workload);
+		if (returnData.responseCode != 200 && returnData.responseCode != 204 && returnData.responseCode != 201) {
+			std::string theErrorMessage{ DiscordCoreAPI::shiftToBrightRed() + workloadNew.callStack + " Https Error; Code: " + std::to_string(returnData.responseCode) +
+				", Message: " + returnData.responseMessage + DiscordCoreAPI::reset() + "\n\n" };
+			HttpError theError{ theErrorMessage };
+			theError.errorCode = returnData.responseCode;
+			throw theError;
+		}
+		return;
+	}
+
+	HttpsResponseData HttpsClient::submitWorkloadAndGetResult(const HttpsWorkloadData& workloadNew) {
+		RateLimitData rateLimitData{};
+		auto returnData = this->httpRequestInternal(workloadNew, rateLimitData);
+		if (returnData.responseCode != 200 && returnData.responseCode != 204 && returnData.responseCode != 201) {
+			std::string theErrorMessage{ DiscordCoreAPI::shiftToBrightRed() + workloadNew.callStack + " Https Error; Code: " + std::to_string(returnData.responseCode) +
+				", Message: " + returnData.responseMessage + DiscordCoreAPI::reset() + "\n\n" };
+			HttpError theError{ theErrorMessage };
+			theError.errorCode = returnData.responseCode;
+			throw theError;
+		}
+		return returnData;
+	}	template<> void HttpsClient::submitWorkloadAndGetResult<void>(HttpsWorkloadData& workloadNew) {
+		HttpsWorkloadData workload = workloadNew;
+		workload.headersToInsert["Authorization"] = "Bot " + this->configManager->getBotToken();
+		workload.headersToInsert["User-Agent"] = "DiscordBot (https://discordcoreapi.com/ 1.0)";
+		if (workload.payloadType == PayloadType::Application_Json) {
+			workload.headersToInsert["Content-Type"] = "application/json";
+		} else if (workload.payloadType == PayloadType::Multipart_Form) {
+			workload.headersToInsert["Content-Type"] = "multipart/form-data; boundary=boundary25";
+		}
+		auto returnData = this->httpRequest(workload);
+		if (returnData.responseCode != 200 && returnData.responseCode != 204 && returnData.responseCode != 201) {
+			std::string theErrorMessage{ DiscordCoreAPI::shiftToBrightRed() + workloadNew.callStack + " Https Error; Code: " + std::to_string(returnData.responseCode) +
+				", Message: " + returnData.responseMessage + DiscordCoreAPI::reset() + "\n\n" };
+			HttpError theError{ theErrorMessage };
+			theError.errorCode = returnData.responseCode;
+			throw theError;
+		}
+		return;
+	}
+
+	HttpsResponseData HttpsClient::submitWorkloadAndGetResult(const HttpsWorkloadData& workloadNew) {
+		RateLimitData rateLimitData{};
+		auto returnData = this->httpRequestInternal(workloadNew, rateLimitData);
+		if (returnData.responseCode != 200 && returnData.responseCode != 204 && returnData.responseCode != 201) {
+			std::string theErrorMessage{ DiscordCoreAPI::shiftToBrightRed() + workloadNew.callStack + " Https Error; Code: " + std::to_string(returnData.responseCode) +
+				", Message: " + returnData.responseMessage + DiscordCoreAPI::reset() + "\n\n" };
+			HttpError theError{ theErrorMessage };
+			theError.errorCode = returnData.responseCode;
+			throw theError;
+		}
+		return returnData;
+	}
+	template<> void HttpsClient::submitWorkloadAndGetResult<void>(HttpsWorkloadData& workloadNew) {
+		HttpsWorkloadData workload = workloadNew;
+		workload.headersToInsert["Authorization"] = "Bot " + this->configManager->getBotToken();
+		workload.headersToInsert["User-Agent"] = "DiscordBot (https://discordcoreapi.com/ 1.0)";
+		if (workload.payloadType == PayloadType::Application_Json) {
+			workload.headersToInsert["Content-Type"] = "application/json";
+		} else if (workload.payloadType == PayloadType::Multipart_Form) {
+			workload.headersToInsert["Content-Type"] = "multipart/form-data; boundary=boundary25";
+		}
+		auto returnData = this->httpRequest(workload);
+		if (returnData.responseCode != 200 && returnData.responseCode != 204 && returnData.responseCode != 201) {
+			std::string theErrorMessage{ DiscordCoreAPI::shiftToBrightRed() + workloadNew.callStack + " Https Error; Code: " + std::to_string(returnData.responseCode) +
+				", Message: " + returnData.responseMessage + DiscordCoreAPI::reset() + "\n\n" };
+			HttpError theError{ theErrorMessage };
+			theError.errorCode = returnData.responseCode;
+			throw theError;
+		}
+		return;
+	}
+
+	HttpsResponseData HttpsClient::submitWorkloadAndGetResult(const HttpsWorkloadData& workloadNew) {
+		RateLimitData rateLimitData{};
+		auto returnData = this->httpRequestInternal(workloadNew, rateLimitData);
+		if (returnData.responseCode != 200 && returnData.responseCode != 204 && returnData.responseCode != 201) {
+			std::string theErrorMessage{ DiscordCoreAPI::shiftToBrightRed() + workloadNew.callStack + " Https Error; Code: " + std::to_string(returnData.responseCode) +
+				", Message: " + returnData.responseMessage + DiscordCoreAPI::reset() + "\n\n" };
+			HttpError theError{ theErrorMessage };
+			theError.errorCode = returnData.responseCode;
+			throw theError;
+		}
+		return returnData;
+	}
+
+	template<> void HttpsClient::submitWorkloadAndGetResult<void>(HttpsWorkloadData& workloadNew) {
+		HttpsWorkloadData workload = workloadNew;
+		workload.headersToInsert["Authorization"] = "Bot " + this->configManager->getBotToken();
+		workload.headersToInsert["User-Agent"] = "DiscordBot (https://discordcoreapi.com/ 1.0)";
+		if (workload.payloadType == PayloadType::Application_Json) {
+			workload.headersToInsert["Content-Type"] = "application/json";
+		} else if (workload.payloadType == PayloadType::Multipart_Form) {
+			workload.headersToInsert["Content-Type"] = "multipart/form-data; boundary=boundary25";
+		}
+		auto returnData = this->httpRequest(workload);
+		if (returnData.responseCode != 200 && returnData.responseCode != 204 && returnData.responseCode != 201) {
+			std::string theErrorMessage{ DiscordCoreAPI::shiftToBrightRed() + workloadNew.callStack + " Https Error; Code: " + std::to_string(returnData.responseCode) +
+				", Message: " + returnData.responseMessage + DiscordCoreAPI::reset() + "\n\n" };
+			HttpError theError{ theErrorMessage };
+			theError.errorCode = returnData.responseCode;
+			throw theError;
+		}
+		return;
+	}
+
+	HttpsResponseData HttpsClient::submitWorkloadAndGetResult(const HttpsWorkloadData& workloadNew) {
+		RateLimitData rateLimitData{};
+		auto returnData = this->httpRequestInternal(workloadNew, rateLimitData);
+		if (returnData.responseCode != 200 && returnData.responseCode != 204 && returnData.responseCode != 201) {
+			std::string theErrorMessage{ DiscordCoreAPI::shiftToBrightRed() + workloadNew.callStack + " Https Error; Code: " + std::to_string(returnData.responseCode) +
+				", Message: " + returnData.responseMessage + DiscordCoreAPI::reset() + "\n\n" };
+			HttpError theError{ theErrorMessage };
+			theError.errorCode = returnData.responseCode;
+			throw theError;
 		}
 		return returnData;
 	}
@@ -470,61 +613,78 @@ namespace DiscordCoreInternal {
 		};
 		return theConnection.finalizeReturnValues(rateLimitData, theData);
 	}
-
-	HttpsResponseData HttpsClient::httpRequest(HttpsWorkloadData& workload) {
-		if (workload.baseUrl == "") {
-			workload.baseUrl = "https://discord.com/api/v10";
-		}
+	
+	HttpsResponseData HttpsClient::executeByRateLimitData(const HttpsWorkloadData& workload) {
+		HttpsResponseData returnData{};
 		RateLimitData& rateLimitData = *this->connectionManager.getRateLimitValues()[this->connectionManager.getRateLimitValueBuckets()[workload.workloadType]].get();
-		if (!rateLimitData.haveWeGoneYet) {
-			std::this_thread::sleep_for(500ms);
-			rateLimitData.haveWeGoneYet = true;
+		int64_t timeRemaining{};
+		int64_t currentTime = static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
+		if (workload.workloadType == HttpsWorkloadType::Delete_Message_Old) {
+			rateLimitData.msRemain = 4000;
+		} else if (workload.workloadType == HttpsWorkloadType::Delete_Message || workload.workloadType == HttpsWorkloadType::Patch_Message) {
+			rateLimitData.areWeASpecialBucket = true;
 		}
-		while (HttpsWorkloadData::workloadIdsInternal[workload.workloadType].load() < workload.thisWorkerId.load() && workload.thisWorkerId.load() != 0) {
-			std::this_thread::sleep_for(1ms);
+		if (rateLimitData.areWeASpecialBucket) {
+			rateLimitData.msRemain = static_cast<int64_t>(ceil(static_cast<float>(5000) / static_cast<float>(4)));
+			int64_t targetTime = rateLimitData.msRemain + rateLimitData.sampledTimeInMs;
+			timeRemaining = targetTime - currentTime;
+		} else if (rateLimitData.didWeHitRateLimit) {
+			int64_t targetTime = rateLimitData.sampledTimeInMs + rateLimitData.msRemain;
+			timeRemaining = targetTime - currentTime;
+			rateLimitData.didWeHitRateLimit = false;
+		} else if (rateLimitData.doWeWait) {
+			int64_t targetTime = rateLimitData.sampledTimeInMs + rateLimitData.msRemain;
+			timeRemaining = targetTime - currentTime;
+			rateLimitData.doWeWait = false;
 		}
+		if (timeRemaining > 0) {
+			if (this->configManager->doWePrintHttpsSuccessMessages()) {
+				std::cout << DiscordCoreAPI::shiftToBrightBlue() << "We're waiting on rate-limit: " << timeRemaining << DiscordCoreAPI::reset() << std::endl << std::endl;
+			}
+			int64_t targetTime = currentTime + timeRemaining;
+			while (targetTime > currentTime) {
+				currentTime = static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
+				timeRemaining = targetTime - currentTime;
+				if (timeRemaining <= 20) {
+				} else {
+					std::this_thread::sleep_for(std::chrono::milliseconds{ static_cast<int64_t>(ceil(timeRemaining * 80.0f / 100.0f)) });
+				}
+			}
+		}
+		rateLimitData.sampledTimeInMs = static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
+		returnData = HttpsClient::httpRequestInternal(workload, rateLimitData);
 
-		while (!rateLimitData.theSemaphore.try_acquire()) {
-			std::this_thread::sleep_for(1ms);
+		if (rateLimitData.tempBucket != "") {
+			rateLimitData.tempBucket = "";
 		}
-
-		HttpsResponseData resultData = this->executeByRateLimitData(workload);
-		auto theValue = HttpsWorkloadData::workloadIdsInternal[workload.workloadType].load();
-		HttpsWorkloadData::workloadIdsInternal[workload.workloadType].store(theValue + 1);
-		rateLimitData.theSemaphore.release();
-		return resultData;
-	}
-
-	template<> void HttpsClient::submitWorkloadAndGetResult<void>(HttpsWorkloadData& workloadNew) {
-		HttpsWorkloadData workload = workloadNew;
-		workload.headersToInsert["Authorization"] = "Bot " + this->configManager->getBotToken();
-		workload.headersToInsert["User-Agent"] = "DiscordBot (https://discordcoreapi.com/ 1.0)";
-		if (workload.payloadType == PayloadType::Application_Json) {
-			workload.headersToInsert["Content-Type"] = "application/json";
-		} else if (workload.payloadType == PayloadType::Multipart_Form) {
-			workload.headersToInsert["Content-Type"] = "multipart/form-data; boundary=boundary25";
+		std::string currentBucket = rateLimitData.bucket;
+		if (!this->connectionManager.getRateLimitValues().contains(rateLimitData.bucket)) {
+			std::unique_ptr<RateLimitData> rateLimitData{ std::make_unique<RateLimitData>() };
+			this->connectionManager.getRateLimitValues()[this->connectionManager.getRateLimitValueBuckets()[workload.workloadType]].swap(rateLimitData);
+			this->connectionManager.getRateLimitValueBuckets()[workload.workloadType] = currentBucket;
+			this->connectionManager.getRateLimitValues()[currentBucket] = std::move(rateLimitData);
 		}
-		auto returnData = this->httpRequest(workload);
-		if (returnData.responseCode != 200 && returnData.responseCode != 204 && returnData.responseCode != 201) {
-			std::string theErrorMessage{ DiscordCoreAPI::shiftToBrightRed() + workloadNew.callStack + " Https Error; Code: " + std::to_string(returnData.responseCode) +
-				", Message: " + returnData.responseMessage + DiscordCoreAPI::reset() + "\n\n" };
-			HttpError theError{ theErrorMessage };
-			theError.errorCode = returnData.responseCode;
-			throw theError;
-		}
-		return;
-	}
-
-	HttpsResponseData HttpsClient::submitWorkloadAndGetResult(const HttpsWorkloadData& workloadNew) {
-		RateLimitData rateLimitData{};
-		auto returnData = this->httpRequestInternal(workloadNew, rateLimitData);
-		if (returnData.responseCode != 200 && returnData.responseCode != 204 && returnData.responseCode != 201) {
-			std::string theErrorMessage{ DiscordCoreAPI::shiftToBrightRed() + workloadNew.callStack + " Https Error; Code: " + std::to_string(returnData.responseCode) +
-				", Message: " + returnData.responseMessage + DiscordCoreAPI::reset() + "\n\n" };
-			HttpError theError{ theErrorMessage };
-			theError.errorCode = returnData.responseCode;
-			throw theError;
+		if (returnData.responseCode == 204 || returnData.responseCode == 201 || returnData.responseCode == 200) {
+			if (this->configManager->doWePrintHttpsSuccessMessages()) {
+				std::cout << DiscordCoreAPI::shiftToBrightGreen() << workload.callStack + " Success: " << returnData.responseCode << ", " << returnData.responseMessage
+						  << DiscordCoreAPI::reset() << std::endl
+						  << std::endl;
+			}
+		} else {
+			if (returnData.responseCode == 429) {
+				rateLimitData.msRemain = static_cast<int64_t>(ceil(nlohmann::json::parse(returnData.responseMessage)["retry_after"].get<double>())) * 1000;
+				rateLimitData.didWeHitRateLimit = true;
+				rateLimitData.sampledTimeInMs =
+					static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
+				if (this->configManager->doWePrintHttpsErrorMessages()) {
+					std::cout << DiscordCoreAPI::shiftToBrightRed() << workload.callStack + "::httpRequest(), We've hit rate limit! Time Remaining: "
+							  << std::to_string(this->connectionManager.getRateLimitValues()[this->connectionManager.getRateLimitValueBuckets()[workload.workloadType]]->msRemain) << DiscordCoreAPI::reset() << std::endl
+							  << std::endl;
+				}
+				returnData = this->executeByRateLimitData(workload);
+			}
 		}
 		return returnData;
 	}
+
 }
