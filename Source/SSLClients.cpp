@@ -75,6 +75,8 @@ namespace DiscordCoreInternal {
 		if (priority && data.size() < (16 * 1024)) {
 			size_t writtenBytes{ 0 };
 			if (data.size() > 0 && this->ssl) {
+				this->wantRead = false;
+				this->wantWrite = false;
 				auto returnValue{ SSL_write_ex(this->ssl, data.data(), data.size(), &writtenBytes) };
 				auto errorValue{ SSL_get_error(this->ssl, returnValue) };
 				switch (errorValue) {
@@ -83,6 +85,18 @@ namespace DiscordCoreInternal {
 							data.clear();
 							return true;
 						}
+						return false;
+					}
+					case SSL_ERROR_ZERO_RETURN: {
+						this->disconnect();
+						return false;
+					}
+					case SSL_ERROR_SSL: {
+						this->disconnect();
+						return false;
+					}
+					case SSL_ERROR_SYSCALL: {
+						this->disconnect();
 						return false;
 					}
 					case SSL_ERROR_WANT_READ: {
@@ -94,7 +108,6 @@ namespace DiscordCoreInternal {
 						return false;
 					}
 					default: {
-						this->disconnect();
 						return false;
 					}
 				}
@@ -483,6 +496,8 @@ namespace DiscordCoreInternal {
 		if (priority && data.size() < (16 * 1024)) {
 			size_t writtenBytes{ 0 };
 			if (data.size() > 0 && this->ssl) {
+				this->wantRead = false;
+				this->wantWrite = false;
 				auto returnValue{ SSL_write_ex(this->ssl, data.data(), data.size(), &writtenBytes) };
 				auto errorValue{ SSL_get_error(this->ssl, returnValue) };
 				switch (errorValue) {
@@ -491,6 +506,18 @@ namespace DiscordCoreInternal {
 							data.clear();
 							return true;
 						}
+						return false;
+					}
+					case SSL_ERROR_ZERO_RETURN: {
+						this->disconnect();
+						return false;
+					}
+					case SSL_ERROR_SSL: {
+						this->disconnect();
+						return false;
+					}
+					case SSL_ERROR_SYSCALL: {
+						this->disconnect();
 						return false;
 					}
 					case SSL_ERROR_WANT_READ: {
