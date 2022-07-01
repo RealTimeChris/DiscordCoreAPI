@@ -1011,8 +1011,8 @@ namespace DiscordCoreInternal {
 				}
 
 				if (!this->theClients[connectData.currentShard]->connect(this->configManager->getConnectionAddress(), this->configManager->getConnectionPort())) {
-					this->onClosed(this->theClients[connectData.currentShard].get());
-					return;
+					this->connections.push(connectData);
+					throw ConnectionError{ "BaseSocketAgent::internalConnect() Error: Failed to connect the websocket.\n\n" };
 				}
 
 				this->theClients[connectData.currentShard]->areWeConnected01.store(true);
@@ -1502,7 +1502,7 @@ namespace DiscordCoreInternal {
 			this->baseUrl = this->voiceConnectionData.endPoint.substr(0, this->voiceConnectionData.endPoint.find(":"));
 			auto theClient = std::make_unique<WebSocketSSLShard>(nullptr, 0, 0, this->configManager);
 			if (!theClient->connect(this->baseUrl, "443")) {
-				return;
+				throw ConnectionError{ "VoiceSocketAgent::connect() Error: Failed to connect the websocket.\n\n" };
 			}
 			std::string sendVector = "GET /?v=4 HTTP/1.1\r\nHost: " + this->baseUrl +
 				"\r\nPragma: no-cache\r\nUser-Agent: DiscordCoreAPI/1.0\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Key: " +

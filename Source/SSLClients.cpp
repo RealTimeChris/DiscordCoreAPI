@@ -720,7 +720,7 @@ namespace DiscordCoreInternal {
 
 	}
 	
-	void DatagramSocketSSLClient::writeData(std::string& dataToWrite) {
+	void DatagramSocketSSLClient::writeData(std::string& dataToWrite) noexcept {
 		if (dataToWrite.size() > static_cast<size_t>(16 * 1024)) {
 			size_t remainingBytes{ dataToWrite.size() };
 			while (remainingBytes > 0) {
@@ -765,7 +765,7 @@ namespace DiscordCoreInternal {
 		this->outputBuffers.clear();
 	}
 
-	void DatagramSocketSSLClient::processIO() {
+	void DatagramSocketSSLClient::processIO() noexcept {
 		if (this->theSocket == SOCKET_ERROR) {
 			return;
 		}
@@ -783,7 +783,8 @@ namespace DiscordCoreInternal {
 
 		timeval checkTime{ .tv_usec = 1000 };
 		if (auto returnValue = select(finalNfds + 1, &readSet, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
-			throw ProcessingError{ reportError("DatagramSocketSSLClient::processIO()::select()") };
+			this->disconnect();
+			return;
 		} else if (returnValue == 0) {
 			return;
 		}
@@ -796,7 +797,8 @@ namespace DiscordCoreInternal {
 				this->inputBuffer.insert(this->inputBuffer.end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
 				this->bytesRead += readBytes;
 			} else {
-				throw ProcessingError{ reportError("DatagramSocketSSLClient::processIO()::recv()") };
+				this->disconnect();
+				return;
 			}
 		}
 
@@ -809,7 +811,8 @@ namespace DiscordCoreInternal {
 					this->outputBuffers.erase(this->outputBuffers.begin());
 					return;
 				} else {
-					throw ProcessingError{ reportError("DatagramSocketSSLClient::writeData()::send()") };
+					this->disconnect();
+					return;
 				}
 			}
 		}
