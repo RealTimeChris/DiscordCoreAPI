@@ -363,12 +363,7 @@ namespace DiscordCoreInternal {
 			}
 			if (workload.baseUrl != httpsConnection->currentBaseUrl || !httpsConnection->areWeStillConnected() || httpsConnection->doWeConnect) {
 				httpsConnection->currentBaseUrl = workload.baseUrl;
-				try {
-					httpsConnection->connect(workload.baseUrl, "443");
-				} catch (...) {
-					if (this->configManager->doWePrintHttpsErrorMessages()) {
-						DiscordCoreAPI::reportException("HttpsClient::httpRequestInternal()");
-					}
+				if (!httpsConnection->connect(workload.baseUrl, "443")) {
 					httpsConnection->currentReconnectionTries++;
 					httpsConnection->doWeConnect = true;
 					httpsConnection->areWeCheckedOut.store(false);

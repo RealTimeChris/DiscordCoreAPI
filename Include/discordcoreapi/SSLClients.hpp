@@ -278,17 +278,17 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll SSLConnectionInterface {
 	  public:
-		SSLConnectionInterface() = default;
+		SSLConnectionInterface() noexcept = default;
 
 		static void initialize();
 
-		virtual void connect(const std::string& baseUrl, const std::string& portNew) = 0;
+		virtual bool connect(const std::string& baseUrl, const std::string& portNew) = 0;
 
 		virtual bool areWeStillConnected() noexcept = 0;
 
 		virtual void disconnect() noexcept = 0;
 
-		virtual ~SSLConnectionInterface() = default;
+		virtual ~SSLConnectionInterface() noexcept = default;
 
 	  protected:
 		static SSL_CTXWrapper context;
@@ -303,7 +303,7 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll SSLDataInterface {
 	  public:
-		SSLDataInterface() = default;
+		SSLDataInterface() noexcept = default;
 
 		virtual bool writeData(const std::string& data, bool priority = false) noexcept = 0;
 
@@ -311,7 +311,7 @@ namespace DiscordCoreInternal {
 
 		virtual int64_t getBytesRead() noexcept = 0;
 
-		virtual ~SSLDataInterface() = default;
+		virtual ~SSLDataInterface() noexcept = default;
 
 	  protected:
 		int32_t maxBufferSize{ (1024 * 16) - 1 };
@@ -326,11 +326,11 @@ namespace DiscordCoreInternal {
 	  public:
 		HttpsSSLClient() noexcept = default;
 
+		[[nodiscard]] bool connect(const std::string& baseUrl, const std::string& portNew) noexcept;
+
 		bool writeData(const std::string& data, bool priority = false) noexcept;
 
-		void connect(const std::string& baseUrl, const std::string& portNew);
-
-		void processIO(int32_t waitTimeInMs = 10000);
+		void processIO(int32_t waitTimeInMs = 10000) noexcept;
 
 		std::string getInputBuffer() noexcept;
 
@@ -353,11 +353,11 @@ namespace DiscordCoreInternal {
 		WebSocketSSLShard(std::queue<DiscordCoreAPI::ConnectionPackage>* connectionsNew, int32_t currentBaseSocketAgentNew, int32_t currentShardNew,
 			DiscordCoreAPI::ConfigManager* configManagerNew, bool blocking = false) noexcept;
 
-		static void processIO(std::unordered_map<int32_t, std::unique_ptr<WebSocketSSLShard>>& theMap, int32_t waitTimeInms = 10000);
+		static void processIO(std::unordered_map<int32_t, std::unique_ptr<WebSocketSSLShard>>& theMap, int32_t waitTimeInms = 10000) noexcept;
+
+		bool connect(const std::string& baseUrl, const std::string& portNew) noexcept;
 
 		bool writeData(const std::string& data, bool priority = false) noexcept;
-
-		void connect(const std::string& baseUrl, const std::string& portNew);
 
 		std::string getInputBuffer() noexcept;
 
@@ -405,17 +405,17 @@ namespace DiscordCoreInternal {
 
 		void connect(const std::string& baseUrl, const std::string& portNew);
 
+		void writeData(std::string& data) noexcept;
+
 		std::string getInputBuffer() noexcept;
 
 		bool areWeStillConnected() noexcept;
-
-		void writeData(std::string& data);
 
 		int64_t getBytesRead() noexcept;
 
 		void disconnect() noexcept;
 
-		void processIO();
+		void processIO() noexcept;
 
 		~DatagramSocketSSLClient() noexcept = default;
 
