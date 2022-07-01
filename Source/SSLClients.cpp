@@ -70,7 +70,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-		bool HttpsSSLClient::connect(const std::string& baseUrl, const std::string& portNew) noexcept {
+	bool HttpsSSLClient::connect(const std::string& baseUrl, const std::string& portNew) noexcept {
 		std::string stringNew{};
 		if (baseUrl.find(".com") != std::string::npos) {
 			stringNew =
