@@ -151,11 +151,11 @@ namespace DiscordCoreInternal {
 
 	bool HttpsSSLClient::writeData(const std::string& dataToWrite, bool priority) noexcept {
 		std::string data = dataToWrite;
-		if (priority && data.size() < (16 * 1024)) {
-			size_t writtenBytes{ 0 };
-			if (data.size() > 0 && this->ssl) {
+		if (data.size() > 0 && this->ssl) {
+			if (priority && data.size() < (16 * 1024)) {
 				this->wantRead = false;
 				this->wantWrite = false;
+				size_t writtenBytes{ 0 };
 				auto returnValue{ SSL_write_ex(this->ssl, data.data(), data.size(), &writtenBytes) };
 				auto errorValue{ SSL_get_error(this->ssl, returnValue) };
 				switch (errorValue) {
@@ -190,29 +190,30 @@ namespace DiscordCoreInternal {
 						return false;
 					}
 				}
-			}
-			return false;
-		} else {
-			if (data.size() > static_cast<size_t>(16 * 1024)) {
-				size_t remainingBytes{ data.size() };
-				while (remainingBytes > 0) {
-					std::string newString{};
-					size_t amountToCollect{};
-					if (data.size() >= static_cast<size_t>(1024 * 16)) {
-						amountToCollect = static_cast<size_t>(1024 * 16);
-					} else {
-						amountToCollect = data.size();
-					}
-					newString.insert(newString.begin(), data.begin(), data.begin() + amountToCollect);
-					this->outputBuffers.push_back(newString);
-					data.erase(data.begin(), data.begin() + amountToCollect);
-					remainingBytes = data.size();
-				}
+				return false;
 			} else {
-				this->outputBuffers.push_back(data);
+				if (data.size() > static_cast<size_t>(16 * 1024)) {
+					size_t remainingBytes{ data.size() };
+					while (remainingBytes > 0) {
+						std::string newString{};
+						size_t amountToCollect{};
+						if (data.size() >= static_cast<size_t>(1024 * 16)) {
+							amountToCollect = static_cast<size_t>(1024 * 16);
+						} else {
+							amountToCollect = data.size();
+						}
+						newString.insert(newString.begin(), data.begin(), data.begin() + amountToCollect);
+						this->outputBuffers.push_back(newString);
+						data.erase(data.begin(), data.begin() + amountToCollect);
+						remainingBytes = data.size();
+					}
+				} else {
+					this->outputBuffers.push_back(data);
+				}
+				return true;
 			}
-			return true;
 		}
+		return false;
 	}
 
 	void HttpsSSLClient::processIO(int32_t theWaitTimeInms) noexcept {
@@ -562,11 +563,11 @@ namespace DiscordCoreInternal {
 	bool WebSocketSSLShard::writeData(const std::string& dataToWrite, bool priority) noexcept {
 		std::lock_guard<std::mutex> theLock{ this->theMutex };
 		std::string data = dataToWrite;
-		if (priority && data.size() < (16 * 1024)) {
-			size_t writtenBytes{ 0 };
-			if (data.size() > 0 && this->ssl) {
+		if (data.size() > 0 && this->ssl) {
+			if (priority && data.size() < (16 * 1024)) {
 				this->wantRead = false;
 				this->wantWrite = false;
+				size_t writtenBytes{ 0 };
 				auto returnValue{ SSL_write_ex(this->ssl, data.data(), data.size(), &writtenBytes) };
 				auto errorValue{ SSL_get_error(this->ssl, returnValue) };
 				switch (errorValue) {
@@ -601,29 +602,30 @@ namespace DiscordCoreInternal {
 						return false;
 					}
 				}
-			}
-			return false;
-		} else {
-			if (data.size() > static_cast<size_t>(16 * 1024)) {
-				size_t remainingBytes{ data.size() };
-				while (remainingBytes > 0) {
-					std::string newString{};
-					size_t amountToCollect{};
-					if (data.size() >= static_cast<size_t>(1024 * 16)) {
-						amountToCollect = static_cast<size_t>(1024 * 16);
-					} else {
-						amountToCollect = data.size();
-					}
-					newString.insert(newString.begin(), data.begin(), data.begin() + amountToCollect);
-					this->outputBuffers.push_back(newString);
-					data.erase(data.begin(), data.begin() + amountToCollect);
-					remainingBytes = data.size();
-				}
+				return false;
 			} else {
-				this->outputBuffers.push_back(data);
+				if (data.size() > static_cast<size_t>(16 * 1024)) {
+					size_t remainingBytes{ data.size() };
+					while (remainingBytes > 0) {
+						std::string newString{};
+						size_t amountToCollect{};
+						if (data.size() >= static_cast<size_t>(1024 * 16)) {
+							amountToCollect = static_cast<size_t>(1024 * 16);
+						} else {
+							amountToCollect = data.size();
+						}
+						newString.insert(newString.begin(), data.begin(), data.begin() + amountToCollect);
+						this->outputBuffers.push_back(newString);
+						data.erase(data.begin(), data.begin() + amountToCollect);
+						remainingBytes = data.size();
+					}
+				} else {
+					this->outputBuffers.push_back(data);
+				}
+				return true;
 			}
-			return true;
 		}
+		return false;
 	}
 
 	std::string WebSocketSSLShard::getInputBuffer() noexcept {
