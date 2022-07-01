@@ -682,7 +682,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void DatagramSocketSSLClient::connect(const std::string& baseUrlNew, const std::string& portNew) {
+	bool DatagramSocketSSLClient::connect(const std::string& baseUrlNew, const std::string& portNew) noexcept {
 #ifdef _WIN32
 		this->theAddress.sin_addr.S_un.S_addr = inet_addr(baseUrlNew.c_str());
 #else
@@ -698,27 +698,28 @@ namespace DiscordCoreInternal {
 		hints->ai_protocol = IPPROTO_UDP;
 
 		if (auto returnValue = getaddrinfo(baseUrlNew.c_str(), portNew.c_str(), hints, address); returnValue == SOCKET_ERROR) {
-			throw ConnectionError{ reportError("DatagramSocketSSLClient::connect()::getaddrinfo()") };
+			return false;
 		}
 
 		if (this->theSocket = socket(address->ai_family, address->ai_socktype, address->ai_protocol); this->theSocket == SOCKET_ERROR) {
-			throw ConnectionError{ reportError("DatagramSocketSSLClient::connect()::socket()") };
+			return false;
 		}
 
 		if (auto returnValue = ::connect(this->theSocket, address->ai_addr, static_cast<int32_t>(address->ai_addrlen)); returnValue == SOCKET_ERROR) {
-			throw ConnectionError{ reportError("DatagramSocketSSLClient::connect()::connect()") };
+			return false;
 		}
 
 #ifdef _WIN32
 		u_long value02{ 1 };
 		if (auto returnValue = ioctlsocket(this->theSocket, FIONBIO, &value02); returnValue == SOCKET_ERROR) {
-			throw ConnectionError{ reportError("DatagramSocketSSLClient::connect()::ioctlsocket()") };
+			return false;
 		}
 #else
 		if (auto returnValue = fcntl(this->theSocket, F_SETFL, fcntl(this->theSocket, F_GETFL, 0) | O_NONBLOCK); returnValue == SOCKET_ERROR) {
-			throw ConnectionError{ reportError("DatagramSocketSSLClient::connect()::fcntl()") };
+			return false;
 		}
 #endif
+		return true;
 	}
 
 	void DatagramSocketSSLClient::writeData(std::string& dataToWrite) noexcept {

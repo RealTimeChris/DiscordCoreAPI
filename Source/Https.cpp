@@ -287,7 +287,7 @@ namespace DiscordCoreInternal {
 		}
 		RateLimitData& rateLimitData = *this->connectionManager.getRateLimitValues()[this->connectionManager.getRateLimitValueBuckets()[workload.workloadType]].get();
 		if (!rateLimitData.haveWeGoneYet) {
-			std::this_thread::sleep_for(500ms);
+			std::this_thread::sleep_for(100ms);
 			rateLimitData.haveWeGoneYet = true;
 		}
 		while (HttpsWorkloadData::workloadIdsInternal[workload.workloadType].load() < workload.thisWorkerId.load() && workload.thisWorkerId.load() != 0) {
@@ -367,8 +367,10 @@ namespace DiscordCoreInternal {
 				didWeWrite = httpsConnection->writeData(theRequest);
 			} while (!didWeWrite);
 			if (!didWeWrite) {
+				httpsConnection->currentReconnectionTries++;
+				httpsConnection->doWeConnect = true;
 				httpsConnection->areWeCheckedOut.store(false);
-				throw ProcessingError{ "HttpsClient::httpRequestInternal() Error: Failed to write to the websocket.\n\n" };
+				return this->httpRequestInternal(workload, rateLimitData);
 			}
 			auto result = this->getResponse(rateLimitData, *httpsConnection);
 			if (result.responseCode == -1) {

@@ -72,11 +72,6 @@ namespace DiscordCoreInternal {
 		explicit ConnectionError(const std::string& theString) : std::runtime_error(theString){};
 	};
 
-	struct ProcessingError : public std::runtime_error {
-		explicit ProcessingError(const std::string& theString) : std::runtime_error(theString){};
-		int32_t theShard{};
-	};
-
 	DiscordCoreAPI_Dll std::string reportError(const std::string& errorPosition) noexcept;
 #ifdef _WIN32
 	struct DiscordCoreAPI_Dll WSADataWrapper {
@@ -403,7 +398,7 @@ namespace DiscordCoreInternal {
 
 		DatagramSocketSSLClient() noexcept = default;
 
-		void connect(const std::string& baseUrl, const std::string& portNew);
+		bool connect(const std::string& baseUrl, const std::string& portNew) noexcept;
 
 		void writeData(std::string& data) noexcept;
 

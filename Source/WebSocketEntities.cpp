@@ -70,7 +70,7 @@ namespace DiscordCoreInternal {
 					didWeWrite = theShard->writeData(theVectorNew, priority);
 				} while (!didWeWrite);
 				if (!didWeWrite) {
-					throw ProcessingError{ "BaseSocketAgent::sendMessage() Error: Failed to write to the websocket.\n\n" };
+					theShard->disconnect();
 				}
 			} catch (...) {
 				if (this->configManager->doWePrintWebSocketErrorMessages()) {
@@ -97,7 +97,7 @@ namespace DiscordCoreInternal {
 					didWeWrite = theShard->writeData(dataToSend, priority);
 				} while (!didWeWrite);
 				if (!didWeWrite) {
-					throw ProcessingError{ "BaseSocketAgent::sendMessage() Error: Failed to write to the websocket.\n\n" };
+					theShard->disconnect();
 				}
 			} catch (...) {
 				if (this->configManager->doWePrintWebSocketErrorMessages()) {
@@ -161,7 +161,7 @@ namespace DiscordCoreInternal {
 					didWeWrite = theShard->writeData(theString, true);
 				} while (!didWeWrite);
 				if (!didWeWrite) {
-					throw ProcessingError{ "BaseSocketAgent::getVoiceConnectionData() Error: Failed to write to the websocket.\n\n" };
+					theShard->disconnect();
 				}
 
 				if (doWeCollect.channelId == 0) {
@@ -178,7 +178,7 @@ namespace DiscordCoreInternal {
 					didWeWrite = theShard->writeData(theString, true);
 				} while (!didWeWrite);
 				if (!didWeWrite) {
-					throw ProcessingError{ "BaseSocketAgent::getVoiceConnectionData() Error: Failed to write to the websocket.\n\n" };
+					theShard->disconnect();
 				}
 				theShard->areWeCollectingData = true;
 				theStopWatch.resetTimer();
@@ -1011,8 +1011,8 @@ namespace DiscordCoreInternal {
 				}
 
 				if (!this->theClients[connectData.currentShard]->connect(this->configManager->getConnectionAddress(), this->configManager->getConnectionPort())) {
-					this->connections.push(connectData);
-					throw ConnectionError{ "BaseSocketAgent::internalConnect() Error: Failed to connect the websocket.\n\n" };
+					this->theClients[connectData.currentShard]->disconnect();
+					return;
 				}
 
 				this->theClients[connectData.currentShard]->areWeConnected01.store(true);
@@ -1031,7 +1031,8 @@ namespace DiscordCoreInternal {
 					didWeWrite = this->theClients[connectData.currentShard]->writeData(sendString, true);
 				} while (!didWeWrite);
 				if (!didWeWrite) {
-					throw ProcessingError{ "BaseSocketAgent::internalConnect() Error: Failed to write to the websocket.\n\n" };
+					this->theClients[connectData.currentShard]->disconnect();
+					return;
 				}
 
 				while (!this->doWeQuit->load()) {
@@ -1189,7 +1190,7 @@ namespace DiscordCoreInternal {
 				didWeWrite = this->theClients[0]->writeData(theString, false);
 			} while (!didWeWrite);
 			if (!didWeWrite) {
-				throw ProcessingError{ "VoiceSocketAgent::sendMessage() Error: Failed to write to the websocket.\n\n" };
+				this->doWeReconnect.store(true);
 			}
 		} catch (...) {
 			if (this->configManager->doWePrintWebSocketErrorMessages()) {
@@ -1240,7 +1241,7 @@ namespace DiscordCoreInternal {
 				didWeWrite = this->theClients[0]->writeData(dataToSend, false);
 			} while (!didWeWrite);
 			if (!didWeWrite) {
-				throw ProcessingError{ "VoiceSocketAgent::sendMessage() Error: Failed to write to the websocket.\n\n" };
+				this->doWeReconnect.store(true);
 			}
 		} catch (...) {
 			if (this->configManager->doWePrintWebSocketErrorMessages()) {
@@ -1377,30 +1378,28 @@ namespace DiscordCoreInternal {
 				std::this_thread::sleep_for(1ms);
 			}
 			while (!theToken.stop_requested() && !this->doWeQuit->load() && !this->doWeDisconnect.load()) {
-				if (!theToken.stop_requested() && !this->doWeReconnect.load() && this->voiceSocket && this->voiceSocket->areWeStillConnected()) {
+				if (!theToken.stop_requested() && this->areWeRunnable()) {
 					this->voiceSocket->processIO();
 					this->voiceSocket->getInputBuffer();
 				}
-				if (this->heartbeatInterval != 0 && !this->doWeReconnect.load() && !this->theClients[0]->areWeHeartBeating) {
+				if (this->heartbeatInterval != 0 && !this->theClients[0]->areWeHeartBeating) {
 					this->theClients[0]->areWeHeartBeating = true;
 					this->theClients[0]->heartBeatStopWatch = DiscordCoreAPI::StopWatch{ std::chrono::milliseconds{ this->heartbeatInterval } };
 				}
-				if (!theToken.stop_requested() && !this->doWeReconnect.load() && this->theClients.contains(0) && this->theClients[0]->heartBeatStopWatch.hasTimePassed() &&
-					this->theClients[0]->areWeHeartBeating) {
+				if (!theToken.stop_requested() && this->areWeRunnable() && this->theClients[0]->heartBeatStopWatch.hasTimePassed() && this->theClients[0]->areWeHeartBeating) {
 					this->sendHeartBeat();
 					this->theClients[0]->heartBeatStopWatch.resetTimer();
 				}
-				if (!theToken.stop_requested() && !this->doWeReconnect.load() && this->theClients.contains(0) && this->theClients[0]->areWeStillConnected() &&
-					!this->doWeQuit->load()) {
+				if (!theToken.stop_requested() && this->areWeRunnable()) {
 					WebSocketSSLShard::processIO(this->theClients, 1000);
 				}
-				if (!theToken.stop_requested() && !this->doWeReconnect.load() && this->voiceSocket && this->voiceSocket->areWeStillConnected()) {
+				if (!theToken.stop_requested() && this->areWeRunnable()) {
 					this->voiceSocket->processIO();
 					this->voiceSocket->getInputBuffer();
 				}
-				if (!theToken.stop_requested() && !this->doWeReconnect.load() && this->theClients.contains(0) && this->theClients[0] && !this->doWeQuit->load()) {
+				if (!theToken.stop_requested() && this->areWeRunnable()) {
 					this->parseHeadersAndMessage(this->theClients[0].get());
-					if (this->theClients.contains(0) && this->theClients[0] && this->theClients[0]->processedMessages.size() > 0) {
+					if (this->theClients[0]->processedMessages.size() > 0) {
 						std::string theMessage = this->theClients[0]->processedMessages.front();
 						if (theMessage.size() > 0) {
 							this->onMessageReceived(theMessage);
@@ -1462,6 +1461,10 @@ namespace DiscordCoreInternal {
 			this->onClosed();
 		}
 	}
+	
+	bool VoiceSocketAgent::areWeRunnable() noexcept {
+		return (!this->doWeReconnect.load() && this->voiceSocket && this->voiceSocket->areWeStillConnected() && this->theClients.contains(0) && this->theClients[0]);
+	}
 
 	void VoiceSocketAgent::sendHeartBeat() noexcept {
 		try {
@@ -1485,7 +1488,9 @@ namespace DiscordCoreInternal {
 	void VoiceSocketAgent::voiceConnect() noexcept {
 		try {
 			this->voiceSocket = std::make_unique<DatagramSocketSSLClient>();
-			this->voiceSocket->connect(this->voiceConnectionData.voiceIp, this->voiceConnectionData.voicePort);
+			if (!this->voiceSocket->connect(this->voiceConnectionData.voiceIp, this->voiceConnectionData.voicePort)) {
+				this->onClosed();
+			}
 		} catch (...) {
 			if (this->configManager->doWePrintWebSocketErrorMessages()) {
 				DiscordCoreAPI::reportException("VoiceSocketAgent::voiceConnect()");
@@ -1501,7 +1506,7 @@ namespace DiscordCoreInternal {
 			this->baseUrl = this->voiceConnectionData.endPoint.substr(0, this->voiceConnectionData.endPoint.find(":"));
 			auto theClient = std::make_unique<WebSocketSSLShard>(nullptr, 0, 0, this->configManager);
 			if (!theClient->connect(this->baseUrl, "443")) {
-				throw ConnectionError{ "VoiceSocketAgent::connect() Error: Failed to connect the websocket.\n\n" };
+				this->doWeReconnect.store(true);
 			}
 			std::string sendVector = "GET /?v=4 HTTP/1.1\r\nHost: " + this->baseUrl +
 				"\r\nPragma: no-cache\r\nUser-Agent: DiscordCoreAPI/1.0\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Key: " +
@@ -1517,7 +1522,7 @@ namespace DiscordCoreInternal {
 				didWeWrite = this->theClients[0]->writeData(sendVector, true);
 			} while (!didWeWrite);
 			if (!didWeWrite) {
-				throw ProcessingError{ "VoiceSocketAgent::connect() Error: Failed to write to the websocket.\n\n" };
+				this->doWeReconnect.store(true);
 			}
 			theStopWatch.resetTimer();
 			WebSocketSSLShard::processIO(this->theClients);

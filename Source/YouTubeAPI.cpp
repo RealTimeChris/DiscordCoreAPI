@@ -230,82 +230,116 @@ namespace DiscordCoreInternal {
 			AudioEncoder audioEncoder{};
 			std::string theString = newSong.finalDownloadUrls[1].urlPath;
 			theMap[0]->writeData(theString, false);
-			try {
-				WebSocketSSLShard::processIO(theMap, ms1000);
-				if (!theMap[0]->areWeStillConnected()) {
+			WebSocketSSLShard::processIO(theMap, ms1000);
+			if (!theMap[0]->areWeStillConnected()) {
+				audioDecoder.reset(nullptr);
+				theMap[0]->disconnect();
+				this->weFailedToDownloadOrDecode(newSong, theToken, currentReconnectionTries);
+				return;
+			}
+			while (newSong.contentLength > bytesSubmittedTotal) {
+				std::this_thread::sleep_for(1ms);
+				if (bytesSubmittedPrevious == bytesSubmittedTotal) {
+					currentReruns++;
+				} else {
+					currentReruns = 0;
+				}
+				if (currentReruns >= maxReruns) {
+					DiscordCoreAPI::AudioFrameData frameData{};
+					frameData.type = DiscordCoreAPI::AudioFrameType::Skip;
+					frameData.rawFrameData.sampleCount = 0;
+					frameData.encodedFrameData.sampleCount = 0;
+					DiscordCoreAPI::getVoiceConnectionMap()[this->guildId]->audioBuffer.send(frameData);
+					theMap[0]->disconnect();
+					audioDecoder.reset(nullptr);
+					return;
+				}
+				bytesSubmittedPrevious = bytesSubmittedTotal;
+				if (theToken.stop_requested()) {
+					theMap[0]->disconnect();
+					audioDecoder.reset(nullptr);
+					return;
+				}
+				if (audioDecoder->haveWeFailed()) {
 					audioDecoder.reset(nullptr);
 					theMap[0]->disconnect();
 					this->weFailedToDownloadOrDecode(newSong, theToken, currentReconnectionTries);
 					return;
 				}
-				while (newSong.contentLength > bytesSubmittedTotal) {
-					std::this_thread::sleep_for(1ms);
-					if (bytesSubmittedPrevious == bytesSubmittedTotal) {
-						currentReruns++;
-					} else {
-						currentReruns = 0;
-					}
-					if (currentReruns >= maxReruns) {
-						DiscordCoreAPI::AudioFrameData frameData{};
-						frameData.type = DiscordCoreAPI::AudioFrameType::Skip;
-						frameData.rawFrameData.sampleCount = 0;
-						frameData.encodedFrameData.sampleCount = 0;
-						DiscordCoreAPI::getVoiceConnectionMap()[this->guildId]->audioBuffer.send(frameData);
-						theMap[0]->disconnect();
-						audioDecoder.reset(nullptr);
-						return;
-					}
-					bytesSubmittedPrevious = bytesSubmittedTotal;
-					if (theToken.stop_requested()) {
-						theMap[0]->disconnect();
-						audioDecoder.reset(nullptr);
-						return;
-					}
-					if (audioDecoder->haveWeFailed()) {
-						audioDecoder.reset(nullptr);
-						theMap[0]->disconnect();
-						this->weFailedToDownloadOrDecode(newSong, theToken, currentReconnectionTries);
-						return;
-					}
-					if (theToken.stop_requested()) {
-						theMap[0]->disconnect();
-						audioDecoder.reset(nullptr);
-						return;
-					} else {
-						if (!areWeDoneHeaders) {
-							if (theToken.stop_requested()) {
-								theMap[0]->disconnect();
-								audioDecoder.reset(nullptr);
-								return;
+				if (theToken.stop_requested()) {
+					theMap[0]->disconnect();
+					audioDecoder.reset(nullptr);
+					return;
+				} else {
+					if (!areWeDoneHeaders) {
+						if (theToken.stop_requested()) {
+							theMap[0]->disconnect();
+							audioDecoder.reset(nullptr);
+							return;
+						}
+						remainingDownloadContentLength = newSong.contentLength - bytesSubmittedTotal;
+						WebSocketSSLShard::processIO(theMap, ms500);
+						if (!theMap[0]->areWeStillConnected()) {
+							audioDecoder.reset(nullptr);
+							theMap[0]->disconnect();
+							this->weFailedToDownloadOrDecode(newSong, theToken, currentReconnectionTries);
+							return;
+						}
+						if (!theToken.stop_requested()) {
+							if (theMap.contains(0)) {
+								bytesSubmittedTotal = theMap[0]->getBytesRead();
+								std::string newData = theMap[0]->getInputBuffer();
 							}
-							remainingDownloadContentLength = newSong.contentLength - bytesSubmittedTotal;
-							WebSocketSSLShard::processIO(theMap, ms500);
-							if (!theMap[0]->areWeStillConnected()) {
-								audioDecoder.reset(nullptr);
-								theMap[0]->disconnect();
-								this->weFailedToDownloadOrDecode(newSong, theToken, currentReconnectionTries);
-								return;
-							}
-							if (!theToken.stop_requested()) {
-								if (theMap.contains(0)) {
-									bytesSubmittedTotal = theMap[0]->getBytesRead();
-									std::string newData = theMap[0]->getInputBuffer();
-								}
-							}
-							if (theToken.stop_requested()) {
-								theMap[0]->disconnect();
-								audioDecoder.reset(nullptr);
-								return;
-							}
-							remainingDownloadContentLength = newSong.contentLength - bytesSubmittedTotal;
-							areWeDoneHeaders = true;
 						}
 						if (theToken.stop_requested()) {
 							theMap[0]->disconnect();
 							audioDecoder.reset(nullptr);
 							return;
 						}
-						if (counter == 0) {
+						remainingDownloadContentLength = newSong.contentLength - bytesSubmittedTotal;
+						areWeDoneHeaders = true;
+					}
+					if (theToken.stop_requested()) {
+						theMap[0]->disconnect();
+						audioDecoder.reset(nullptr);
+						return;
+					}
+					if (counter == 0) {
+						WebSocketSSLShard::processIO(theMap, ms500);
+						if (!theMap[0]->areWeStillConnected()) {
+							audioDecoder.reset(nullptr);
+							theMap[0]->disconnect();
+							this->weFailedToDownloadOrDecode(newSong, theToken, currentReconnectionTries);
+							return;
+						}
+						std::string streamBuffer{};
+						if (theMap.contains(0)) {
+							streamBuffer = theMap[0]->getInputBuffer();
+						}
+						if (streamBuffer.size() > 0) {
+							theCurrentString.insert(theCurrentString.end(), streamBuffer.begin(), streamBuffer.end());
+							std::string submissionString{};
+							if (theCurrentString.size() >= this->maxBufferSize) {
+								submissionString.insert(submissionString.begin(), theCurrentString.begin(), theCurrentString.begin() + this->maxBufferSize);
+								theCurrentString.erase(theCurrentString.begin(), theCurrentString.begin() + this->maxBufferSize);
+							} else {
+								submissionString = theCurrentString;
+								theCurrentString.erase(theCurrentString.begin(), theCurrentString.end());
+							}
+							bytesSubmittedTotal += submissionString.size();
+							audioDecoder->submitDataForDecoding(submissionString);
+						} else {
+							continue;
+						}
+						audioDecoder->startMe();
+					} else if (counter > 0) {
+						if (contentLengthCurrent > 0) {
+							if (theToken.stop_requested()) {
+								audioDecoder.reset(nullptr);
+								theMap[0]->disconnect();
+								return;
+							}
+							remainingDownloadContentLength = newSong.contentLength - bytesSubmittedTotal;
 							WebSocketSSLShard::processIO(theMap, ms500);
 							if (!theMap[0]->areWeStillConnected()) {
 								audioDecoder.reset(nullptr);
@@ -313,12 +347,16 @@ namespace DiscordCoreInternal {
 								this->weFailedToDownloadOrDecode(newSong, theToken, currentReconnectionTries);
 								return;
 							}
-							std::string streamBuffer{};
+							std::string newVector{};
 							if (theMap.contains(0)) {
-								streamBuffer = theMap[0]->getInputBuffer();
+								newVector = theMap[0]->getInputBuffer();
 							}
-							if (streamBuffer.size() > 0) {
-								theCurrentString.insert(theCurrentString.end(), streamBuffer.begin(), streamBuffer.end());
+							if (newVector.size() == 0) {
+								counter++;
+								continue;
+							}
+							if (newVector.size() > 0) {
+								theCurrentString.insert(theCurrentString.end(), newVector.begin(), newVector.end());
 								std::string submissionString{};
 								if (theCurrentString.size() >= this->maxBufferSize) {
 									submissionString.insert(submissionString.begin(), theCurrentString.begin(), theCurrentString.begin() + this->maxBufferSize);
@@ -327,100 +365,55 @@ namespace DiscordCoreInternal {
 									submissionString = theCurrentString;
 									theCurrentString.erase(theCurrentString.begin(), theCurrentString.end());
 								}
-								bytesSubmittedTotal += submissionString.size();
 								audioDecoder->submitDataForDecoding(submissionString);
-							} else {
-								continue;
-							}
-							audioDecoder->startMe();
-						} else if (counter > 0) {
-							if (contentLengthCurrent > 0) {
-								if (theToken.stop_requested()) {
-									audioDecoder.reset(nullptr);
-									theMap[0]->disconnect();
-									return;
-								}
-								remainingDownloadContentLength = newSong.contentLength - bytesSubmittedTotal;
-								WebSocketSSLShard::processIO(theMap, ms500);
-								if (!theMap[0]->areWeStillConnected()) {
-									audioDecoder.reset(nullptr);
-									theMap[0]->disconnect();
-									this->weFailedToDownloadOrDecode(newSong, theToken, currentReconnectionTries);
-									return;
-								}
-								std::string newVector{};
-								if (theMap.contains(0)) {
-									newVector = theMap[0]->getInputBuffer();
-								}
-								if (newVector.size() == 0) {
-									counter++;
-									continue;
-								}
-								if (newVector.size() > 0) {
-									theCurrentString.insert(theCurrentString.end(), newVector.begin(), newVector.end());
-									std::string submissionString{};
-									if (theCurrentString.size() >= this->maxBufferSize) {
-										submissionString.insert(submissionString.begin(), theCurrentString.begin(), theCurrentString.begin() + this->maxBufferSize);
-										theCurrentString.erase(theCurrentString.begin(), theCurrentString.begin() + this->maxBufferSize);
-									} else {
-										submissionString = theCurrentString;
-										theCurrentString.erase(theCurrentString.begin(), theCurrentString.end());
-									}
-									audioDecoder->submitDataForDecoding(submissionString);
-									bytesSubmittedTotal += submissionString.size();
-								}
-							}
-							if (theToken.stop_requested()) {
-								theMap[0]->disconnect();
-								audioDecoder.reset(nullptr);
-								return;
-							}
-							std::vector<DiscordCoreAPI::RawFrameData> frames{};
-							DiscordCoreAPI::RawFrameData rawFrame{};
-							while (audioDecoder->getFrame(rawFrame)) {
-								if (rawFrame.data.size() != 0) {
-									frames.push_back(rawFrame);
-								}
-							}
-							if (frames.size() == 0) {
-								counter++;
-								continue;
-							}
-							if (theToken.stop_requested()) {
-								theMap[0]->disconnect();
-								audioDecoder.reset(nullptr);
-								return;
-							}
-							auto encodedFrames = audioEncoder.encodeFrames(frames);
-							for (auto& value: encodedFrames) {
-								value.guildMemberId = newSong.addedByUserId;
-								DiscordCoreAPI::getVoiceConnectionMap()[this->guildId]->audioBuffer.send(value);
+								bytesSubmittedTotal += submissionString.size();
 							}
 						}
-						if (remainingDownloadContentLength >= this->maxBufferSize) {
-							contentLengthCurrent = this->maxBufferSize;
-						} else {
-							contentLengthCurrent = remainingDownloadContentLength;
+						if (theToken.stop_requested()) {
+							theMap[0]->disconnect();
+							audioDecoder.reset(nullptr);
+							return;
+						}
+						std::vector<DiscordCoreAPI::RawFrameData> frames{};
+						DiscordCoreAPI::RawFrameData rawFrame{};
+						while (audioDecoder->getFrame(rawFrame)) {
+							if (rawFrame.data.size() != 0) {
+								frames.push_back(rawFrame);
+							}
+						}
+						if (frames.size() == 0) {
+							counter++;
+							continue;
+						}
+						if (theToken.stop_requested()) {
+							theMap[0]->disconnect();
+							audioDecoder.reset(nullptr);
+							return;
+						}
+						auto encodedFrames = audioEncoder.encodeFrames(frames);
+						for (auto& value: encodedFrames) {
+							value.guildMemberId = newSong.addedByUserId;
+							DiscordCoreAPI::getVoiceConnectionMap()[this->guildId]->audioBuffer.send(value);
 						}
 					}
-					counter++;
+					if (remainingDownloadContentLength >= this->maxBufferSize) {
+						contentLengthCurrent = this->maxBufferSize;
+					} else {
+						contentLengthCurrent = remainingDownloadContentLength;
+					}
 				}
-				DiscordCoreAPI::RawFrameData frameData01{};
-				while (audioDecoder->getFrame(frameData01)) {
-				};
-				audioDecoder.reset(nullptr);
-				DiscordCoreAPI::AudioFrameData frameData{};
-				frameData.type = DiscordCoreAPI::AudioFrameType::Skip;
-				frameData.rawFrameData.sampleCount = 0;
-				frameData.encodedFrameData.sampleCount = 0;
-				DiscordCoreAPI::getVoiceConnectionMap()[this->guildId]->audioBuffer.send(frameData);
-			} catch (ProcessingError&) {
-				if (this->configManager->doWePrintWebSocketErrorMessages()) {
-					DiscordCoreAPI::reportException("YouTubeAPI::downloadAndStreamAudio()");
-				}
-				this->weFailedToDownloadOrDecode(newSong, theToken, currentReconnectionTries);
+				counter++;
 			}
-		} catch (std::runtime_error&) {
+			DiscordCoreAPI::RawFrameData frameData01{};
+			while (audioDecoder->getFrame(frameData01)) {
+			};
+			audioDecoder.reset(nullptr);
+			DiscordCoreAPI::AudioFrameData frameData{};
+			frameData.type = DiscordCoreAPI::AudioFrameType::Skip;
+			frameData.rawFrameData.sampleCount = 0;
+			frameData.encodedFrameData.sampleCount = 0;
+			DiscordCoreAPI::getVoiceConnectionMap()[this->guildId]->audioBuffer.send(frameData);
+		} catch (...) {
 			if (this->configManager->doWePrintWebSocketErrorMessages()) {
 				DiscordCoreAPI::reportException("YouTubeAPI::downloadAndStreamAudio()");
 			}

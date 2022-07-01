@@ -130,6 +130,8 @@ namespace DiscordCoreInternal {
 
 		void collectExternalIP() noexcept;
 
+		bool areWeRunnable() noexcept;
+
 		void sendHeartBeat() noexcept;
 
 		void voiceConnect() noexcept;
