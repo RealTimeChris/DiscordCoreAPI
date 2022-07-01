@@ -384,7 +384,7 @@ namespace DiscordCoreInternal {
 				httpsConnection->areWeCheckedOut.store(false);
 				throw ProcessingError{ "HttpsClient::httpRequestInternal() Error: Failed to write to the websocket.\n\n" };
 			}
-			auto result = this->getResponse(rateLimitData, httpsConnection);
+			auto result = this->getResponse(rateLimitData, *httpsConnection);
 			if (result.responseCode == -1) {
 				httpsConnection->currentReconnectionTries++;
 				httpsConnection->doWeConnect = true;
@@ -406,16 +406,16 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	HttpsResponseData HttpsClient::getResponse(RateLimitData& rateLimitData, HttpsConnection* theConnection) {
+	HttpsResponseData HttpsClient::getResponse(RateLimitData& rateLimitData, HttpsConnection& theConnection) {
 		DiscordCoreAPI::StopWatch stopWatch{ 5500ms };
-		theConnection->getInputBuffer().clear();
-		theConnection->resetValues();
+		theConnection.getInputBuffer().clear();
+		theConnection.resetValues();
 		HttpsResponseData theData{};
 		while (true) {
-			theConnection->processIO();
-			std::string theString = theConnection->getInputBuffer();
+			theConnection.processIO();
+			std::string theString = theConnection.getInputBuffer();
 			if (theString.size() > 0) {
-				theConnection->inputBufferReal.insert(theConnection->inputBufferReal.end(), theString.begin(), theString.end());
+				theConnection.inputBufferReal.insert(theConnection.inputBufferReal.end(), theString.begin(), theString.end());
 			}
 			bool doWeBreak{ false };
 			switch (theData.theCurrentState) {
@@ -424,7 +424,7 @@ namespace DiscordCoreInternal {
 						doWeBreak = true;
 						break;
 					}
-					theConnection->parseCode(theConnection->inputBufferReal, theData);
+					theConnection.parseCode(theConnection.inputBufferReal, theData);
 					break;
 				}
 				case HttpsState::Collecting_Headers: {
@@ -432,8 +432,8 @@ namespace DiscordCoreInternal {
 						doWeBreak = true;
 						break;
 					}
-					if (theConnection->checkForHeadersToParse(theConnection->inputBufferReal) && !theConnection->doWeHaveHeaders) {
-						theConnection->parseHeaders(theConnection->inputBufferReal, theData);
+					if (theConnection.checkForHeadersToParse(theConnection.inputBufferReal) && !theConnection.doWeHaveHeaders) {
+						theConnection.parseHeaders(theConnection.inputBufferReal, theData);
 						stopWatch.resetTimer();
 					}
 					break;
@@ -443,16 +443,16 @@ namespace DiscordCoreInternal {
 						doWeBreak = true;
 						break;
 					}
-					if (!theConnection->doWeHaveContentSize) {
-						theConnection->clearCRLF(theConnection->inputBufferReal);
-						theConnection->parseSize(theConnection->inputBufferReal, theData);
-						theConnection->clearCRLF(theConnection->inputBufferReal);
+					if (!theConnection.doWeHaveContentSize) {
+						theConnection.clearCRLF(theConnection.inputBufferReal);
+						theConnection.parseSize(theConnection.inputBufferReal, theData);
+						theConnection.clearCRLF(theConnection.inputBufferReal);
 						stopWatch.resetTimer();
 					}
 					break;
 				}
 				case HttpsState::Collecting_Contents: {
-					if (static_cast<int64_t>(theConnection->inputBufferReal.size()) >= theData.contentSize && !theConnection->parseChunk(theConnection->inputBufferReal, theData) ||
+					if (static_cast<int64_t>(theConnection.inputBufferReal.size()) >= theData.contentSize && !theConnection.parseChunk(theConnection.inputBufferReal, theData) ||
 						stopWatch.hasTimePassed() || (theData.responseCode == -5 && theData.contentSize == -5)) {
 						doWeBreak = true;
 						break;
@@ -463,7 +463,7 @@ namespace DiscordCoreInternal {
 				break;
 			}
 		};
-		return theConnection->finalizeReturnValues(rateLimitData, theData);
+		return theConnection.finalizeReturnValues(rateLimitData, theData);
 	}
 
 	HttpsResponseData HttpsClient::httpRequest(HttpsWorkloadData& workload) {
@@ -490,7 +490,7 @@ namespace DiscordCoreInternal {
 		return resultData;
 	}
 
-	template<> void HttpsClient::submitWorkloadAndGetResult<void>(HttpsWorkloadData& workloadNew) {
+	template<> void HttpsClient::submitWorkloadAndGetResult<void>(const HttpsWorkloadData& workloadNew) {
 		HttpsWorkloadData workload = workloadNew;
 		workload.headersToInsert["Authorization"] = "Bot " + this->configManager->getBotToken();
 		workload.headersToInsert["User-Agent"] = "DiscordBot (https://discordcoreapi.com/ 1.0)";
@@ -510,11 +510,11 @@ namespace DiscordCoreInternal {
 		return;
 	}
 
-	HttpsResponseData HttpsClient::submitWorkloadAndGetResult(HttpsWorkloadData* workloadNew) {
+	HttpsResponseData HttpsClient::submitWorkloadAndGetResult(const HttpsWorkloadData& workloadNew) {
 		RateLimitData rateLimitData{};
-		auto returnData = this->httpRequestInternal(*workloadNew, rateLimitData);
+		auto returnData = this->httpRequestInternal(workloadNew, rateLimitData);
 		if (returnData.responseCode != 200 && returnData.responseCode != 204 && returnData.responseCode != 201) {
-			std::string theErrorMessage{ DiscordCoreAPI::shiftToBrightRed() + workloadNew->callStack + " Https Error; Code: " + std::to_string(returnData.responseCode) +
+			std::string theErrorMessage{ DiscordCoreAPI::shiftToBrightRed() + workloadNew.callStack + " Https Error; Code: " + std::to_string(returnData.responseCode) +
 				", Message: " + returnData.responseMessage + DiscordCoreAPI::reset() + "\n\n" };
 			HttpError theError{ theErrorMessage };
 			theError.errorCode = returnData.responseCode;
