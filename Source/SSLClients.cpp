@@ -285,7 +285,7 @@ namespace DiscordCoreInternal {
 		if (auto returnValue = SSL_connect(this->ssl); !returnValue) {
 			throw ConnectionError{ reportSSLError("HttpsSSLClient::connect()::SSL_connect()", returnValue, this->ssl) };
 		}
-
+		
 #ifdef _WIN32
 		u_long value02{ 1 };
 		if (auto returnValue = ioctlsocket(this->theSocket, FIONBIO, &value02); returnValue == SOCKET_ERROR) {
@@ -296,6 +296,7 @@ namespace DiscordCoreInternal {
 			throw ConnectionError{ reportError("DatagramSocketSSLClient::connect()::fcntl()") };
 		}
 #endif
+
 	}
 
 	std::string HttpsSSLClient::getInputBuffer() noexcept {

@@ -229,7 +229,8 @@ namespace DiscordCoreInternal {
 		other.erase(other.begin(), other.begin() + theCount);
 	}
 
-	void HttpsRnRBuilder::parseCode(std::string& other, HttpsResponseData& theData) {
+	void HttpsRnRBuilder::parseCode(std::string& otherNew, HttpsResponseData& theData) {
+		std::string other = otherNew;
 		if (other.find("HTTP/1.") != std::string::npos) {
 			uint64_t firstNumberIndex{ 0 };
 			uint64_t lastNumberIndex{ 0 };
@@ -244,8 +245,6 @@ namespace DiscordCoreInternal {
 				}
 			}
 			theData.responseCode = stoll(other.substr(firstNumberIndex, lastNumberIndex - firstNumberIndex));
-			std::string tempString = other.substr(0, other.find("\r\n", lastNumberIndex) + 2);
-			other.erase(other.begin(), other.begin() + tempString.size());
 			theData.theCurrentState = HttpsState::Collecting_Headers;
 		} else if (other.size() <= 5) {
 		} else {

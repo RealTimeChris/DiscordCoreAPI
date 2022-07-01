@@ -235,10 +235,9 @@ namespace DiscordCoreInternal {
 			dataPackage.bufferMaxSize = this->maxBufferSize;
 			dataPackage.configManager = this->configManager;
 			std::unique_ptr<AudioDecoder> audioDecoder = std::make_unique<AudioDecoder>(dataPackage);
-			const int32_t bytesTotal{ 8192 };
 			AudioEncoder audioEncoder{};
 			bool didWeGetZero{ true };
-			while (counter < newSong.finalDownloadUrls.size()) {
+			while (counter < newSong.finalDownloadUrls.size() - 1) {
 				if (counter == newSong.finalDownloadUrls.size() - 1 && didWeGetZero) {
 					audioDecoder.reset(nullptr);
 					SoundCloudAPI::weFailedToDownloadOrDecode(newSong, theToken, currentReconnectionTries);
@@ -276,8 +275,8 @@ namespace DiscordCoreInternal {
 				while (amountToSubmitRemaining > 0) {
 					std::this_thread::sleep_for(1ms);
 					std::string newerVector{};
-					if (amountToSubmitRemaining >= bytesTotal) {
-						for (int64_t x = 0; x < bytesTotal; x++) {
+					if (amountToSubmitRemaining >= this->maxBufferSize) {
+						for (int64_t x = 0; x < this->maxBufferSize; x++) {
 							newerVector.push_back(newVector[amountSubmitted]);
 							amountSubmitted++;
 							amountToSubmitRemaining--;
@@ -332,6 +331,7 @@ namespace DiscordCoreInternal {
 				DiscordCoreAPI::reportException("SoundCloudAPI::downloadAndStreamAudio()");
 			}
 			currentReconnectionTries++;
+			DiscordCoreAPI::getVoiceConnectionMap()[this->guildId]->clearAudioData();
 			this->weFailedToDownloadOrDecode(newSong, theToken, currentReconnectionTries);
 		}
 	};

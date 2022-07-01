@@ -44,7 +44,7 @@ namespace DiscordCoreInternal {
 		friend class HttpsClient;
 
 		std::unordered_map<std::string, std::string> responseHeaders{};
-		HttpsState theCurrentState{ HttpsState::Collecting_Headers };
+		HttpsState theCurrentState{ HttpsState::Collecting_Code };
 		std::string responseMessage{};
 		nlohmann::json responseData{};
 		int64_t responseCode{ -1 };
