@@ -153,7 +153,7 @@ namespace DiscordCoreInternal {
 			return returnObject;
 		}
 
-		template<std::same_as<void> Type> Type submitWorkloadAndGetResult(const HttpsWorkloadData& workload);
+		template<std::same_as<void> Type> Type submitWorkloadAndGetResult(HttpsWorkloadData& workload);
 
 		HttpsResponseData submitWorkloadAndGetResult(const HttpsWorkloadData& workloadNew);
 
