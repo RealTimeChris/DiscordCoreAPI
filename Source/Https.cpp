@@ -417,15 +417,10 @@ namespace DiscordCoreInternal {
 		theConnection->resetValues();
 		HttpsResponseData theData{};
 		while (true) {
-			if (theConnection->areWeStillConnected()) {
-				theConnection->processIO();
-				std::string theString = theConnection->getInputBuffer();
-				if (theString.size() > 0) {
-					theConnection->inputBufferReal.insert(theConnection->inputBufferReal.end(), theString.begin(), theString.end());
-				}
-			} else {
-				theData.responseCode = -1;
-				return theData;
+			theConnection->processIO();
+			std::string theString = theConnection->getInputBuffer();
+			if (theString.size() > 0) {
+				theConnection->inputBufferReal.insert(theConnection->inputBufferReal.end(), theString.begin(), theString.end());
 			}
 			bool doWeBreak{ false };
 			switch (theData.theCurrentState) {
