@@ -164,7 +164,7 @@ namespace DiscordCoreAPI {
 					return false;
 				}
 			}
-			
+
 			if (!this->voiceSocketAgent) {
 				this->voiceSocketAgent = std::make_unique<DiscordCoreInternal::VoiceSocketAgent>(this->voiceConnectInitData, this->baseSocketAgent,
 					this->baseSocketAgent->theClients[this->voiceConnectInitData.currentShard].get(), this->baseSocketAgent->configManager, &Globals::doWeQuit);

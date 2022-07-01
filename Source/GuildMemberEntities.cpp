@@ -120,7 +120,7 @@ namespace DiscordCoreAPI {
 			GuildMembers::insertGuildMember(theGuildMember);
 			co_return theGuildMember;
 		} else {
-			co_return *(*GuildMembers::cache)[theKey] ;
+			co_return *(*GuildMembers::cache)[theKey];
 		}
 	}
 

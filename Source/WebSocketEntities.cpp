@@ -163,7 +163,7 @@ namespace DiscordCoreInternal {
 				if (!didWeWrite) {
 					throw ProcessingError{ "BaseSocketAgent::getVoiceConnectionData() Error: Failed to write to the websocket.\n\n" };
 				}
-				
+
 				if (doWeCollect.channelId == 0) {
 					return;
 				}
@@ -1251,7 +1251,7 @@ namespace DiscordCoreInternal {
 	}
 
 	void VoiceSocketAgent::onClosed() noexcept {
-		if (this->theClients.contains(0) && this->theClients[0] && !this->doWeReconnect.load() ) {
+		if (this->theClients.contains(0) && this->theClients[0] && !this->doWeReconnect.load()) {
 			this->theClients[0]->disconnect();
 			if (this->voiceSocket) {
 				this->voiceSocket->disconnect();
@@ -1261,7 +1261,6 @@ namespace DiscordCoreInternal {
 			this->areWeConnected.store(false);
 			this->theClients[0]->areWeHeartBeating = false;
 			this->theClients[0]->areWeConnected01.store(false);
-			
 		}
 	}
 

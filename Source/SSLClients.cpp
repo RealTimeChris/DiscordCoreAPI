@@ -717,9 +717,8 @@ namespace DiscordCoreInternal {
 			throw ConnectionError{ reportError("DatagramSocketSSLClient::connect()::fcntl()") };
 		}
 #endif
-
 	}
-	
+
 	void DatagramSocketSSLClient::writeData(std::string& dataToWrite) noexcept {
 		if (dataToWrite.size() > static_cast<size_t>(16 * 1024)) {
 			size_t remainingBytes{ dataToWrite.size() };

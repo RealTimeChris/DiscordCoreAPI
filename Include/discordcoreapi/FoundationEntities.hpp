@@ -7514,7 +7514,7 @@ namespace DiscordCoreAPI {
 
 		void parseObject(const nlohmann::json& jsonObjectData, CommandData* pDataStructure) {
 			if (jsonObjectData.contains("options") && !jsonObjectData["options"].is_null()) {
-				pDataStructure->optionsArgs.clear();				
+				pDataStructure->optionsArgs.clear();
 				for (auto& value: jsonObjectData["options"]) {
 					if (value.contains("type") && value["type"] == 1) {
 						if (value.contains("name")) {

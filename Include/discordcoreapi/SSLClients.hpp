@@ -242,7 +242,7 @@ namespace DiscordCoreInternal {
 				shutdown(*other, SHUT_RDWR);
 				close(*other);
 #endif
-				
+
 				*other = SOCKET_ERROR;
 				delete other;
 			}

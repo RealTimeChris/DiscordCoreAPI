@@ -504,7 +504,7 @@ namespace DiscordCoreInternal {
 			std::string theErrorMessage{ DiscordCoreAPI::shiftToBrightRed() + workloadNew.callStack + " Https Error; Code: " + std::to_string(returnData.responseCode) +
 				", Message: " + returnData.responseMessage + DiscordCoreAPI::reset() + "\n\n" };
 			HttpError theError{ theErrorMessage };
-			theError.errorCode=returnData.responseCode;
+			theError.errorCode = returnData.responseCode;
 			throw theError;
 		}
 		return;
