@@ -225,26 +225,26 @@ namespace DiscordCoreInternal {
 		std::unique_ptr<SSL, SSLDeleter> sslPtr{ nullptr, SSLDeleter{} };
 	};
 
+	enum class SOCKETType { TCP = 0, UDP = 1 };
+
+	struct SOCKETWrapperInternal {
+		SOCKETType theType{ SOCKETType::TCP };
+		SOCKET theSocket{ SOCKET_ERROR };
+	};
+
 	struct DiscordCoreAPI_Dll SOCKETWrapper {
 		struct DiscordCoreAPI_Dll SOCKETDeleter {
 			void operator()(SOCKET* other) {
-				if (other) {
 #ifdef _WIN32
-					shutdown(*other, SD_SEND);
-					char theArray[1024];
-					while (recv(*other, theArray, 1024, 0) > 0) {
-					};
-					closesocket(*other);
+				shutdown(*other, SD_BOTH);
+				closesocket(*other);
 #else
-					shutdown(*other, SHUT_RDWR);
-					char theArray[1024];
-					while (recv(*other, theArray, 1024, 0) > 0) {
-					};
-					close(*other);
+				shutdown(*other, SHUT_RDWR);
+				close(*other);
 #endif
-
-					*other = SOCKET_ERROR;
-				}
+				
+				*other = SOCKET_ERROR;
+				delete other;
 			}
 		};
 
@@ -273,7 +273,7 @@ namespace DiscordCoreInternal {
 		}
 
 	  protected:
-		std::unique_ptr<int32_t, SOCKETDeleter> socketPtr{ new SOCKET{ static_cast<int32_t>(SOCKET_ERROR) }, SOCKETDeleter{} };
+		std::unique_ptr<SOCKET, SOCKETDeleter> socketPtr{ new SOCKET{ SOCKET_ERROR }, SOCKETDeleter{} };
 	};
 
 	class DiscordCoreAPI_Dll SSLConnectionInterface {

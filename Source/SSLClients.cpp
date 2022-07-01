@@ -242,7 +242,7 @@ namespace DiscordCoreInternal {
 		if (this->theSocket = socket(address->ai_family, address->ai_socktype, address->ai_protocol); this->theSocket == SOCKET_ERROR) {
 			throw ConnectionError{ reportError("HttpsSSLClient::connect()::socket()") };
 		}
-
+		
 		int32_t value{ this->maxBufferSize + 1 };
 		if (setsockopt(this->theSocket, SOL_SOCKET, SO_SNDBUF, static_cast<char*>(static_cast<void*>(&value)), sizeof(value))) {
 			throw ConnectionError{ reportError("HttpsSSLClient::connect()::setsockopt()") };
@@ -352,22 +352,25 @@ namespace DiscordCoreInternal {
 						FD_SET(value->theSocket, &writeSet);
 						writeNfds = value->theSocket > writeNfds ? value->theSocket : writeNfds;
 						didWeSetASocket = true;
-					} else if (!value->wantWrite) {
-						FD_SET(value->theSocket, &readSet);
-						readNfds = value->theSocket > readNfds ? value->theSocket : readNfds;
-						didWeSetASocket = true;
 					}
+					FD_SET(value->theSocket, &readSet);
+					readNfds = value->theSocket > readNfds ? value->theSocket : readNfds;
+					didWeSetASocket = true;
 					finalNfds = readNfds > writeNfds ? readNfds : writeNfds;
+				} else {
+					std::cout << "WERE BNOTE RERHIWERWEJOHRFWEOIHRWREIO" << std::endl;	
 				}
 			}
 		}
 
 		if (!didWeSetASocket) {
+			std::cout << "WERE HERE 343423424234" << std::endl;
 			return;
 		}
 
 		timeval checkTime{ .tv_usec = waitTimeInms };
 		if (auto returnValue = select(finalNfds + 1, &readSet, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
+			std::cout << "WERE HERE 123123123123" << std::endl;
 			for (auto& [key, value]: theMap) {
 				value->disconnect();
 			}
@@ -392,18 +395,23 @@ namespace DiscordCoreInternal {
 						break;
 					}
 					case SSL_ERROR_ZERO_RETURN: {
+						std::cout << "PROCESSIO: WERE DISCONNECTING FROM THE WEBSOCKET DUE TO: ZERO RETURN" << std::endl;
 						value->disconnect();
 						break;
 					}
 					case SSL_ERROR_WANT_READ: {
+						std::cout << "PROCESSIO: WERE DISCONNECTING FROM THE WEBSOCKET DUE TO: WANT READ" << std::endl;
 						value->wantRead = true;
 						break;
 					}
 					case SSL_ERROR_WANT_WRITE: {
+						std::cout << "PROCESSIO: WERE DISCONNECTING FROM THE WEBSOCKET DUE TO: WANT WRITE" << std::endl;
 						value->wantWrite = true;
 						break;
 					}
 					default: {
+						std::cout << "PROCESSIO: WERE DISCONNECTING FROM THE WEBSOCKET DUE TO: DEFAULT" << std::endl;
+						std::cout << reportSSLError("WebSocketSSLClient::processIO() Error: ") << std::endl;
 						value->disconnect();
 						return;
 					}
@@ -426,18 +434,23 @@ namespace DiscordCoreInternal {
 							break;
 						}
 						case SSL_ERROR_ZERO_RETURN: {
-							value->disconnect();
-							break;
+						std::cout << "PROCESSIO: WERE DISCONNECTING FROM THE WEBSOCKET DUE TO: ZERO RETURN" << std::endl;
+						value->disconnect();
+						break;
 						}
 						case SSL_ERROR_WANT_READ: {
+							std::cout << "PROCESSIO: WERE DISCONNECTING FROM THE WEBSOCKET DUE TO: WANT READ" << std::endl;
 							value->wantRead = true;
 							break;
 						}
 						case SSL_ERROR_WANT_WRITE: {
+							std::cout << "PROCESSIO: WERE DISCONNECTING FROM THE WEBSOCKET DUE TO: WANT WRITE" << std::endl;
 							value->wantWrite = true;
 							break;
 						}
 						default: {
+							std::cout << "PROCESSIO: WERE DISCONNECTING FROM THE WEBSOCKET DUE TO: DEFAULT" << std::endl;
+							std::cout << reportSSLError("WebSocketSSLClient::processIO() Error: ") << std::endl;
 							value->disconnect();
 							return;
 						}
@@ -464,14 +477,17 @@ namespace DiscordCoreInternal {
 					}
 					case SSL_ERROR_WANT_READ: {
 						this->wantRead = true;
+						std::cout << "WRITE DATA: WERE DISCONNECTING FROM THE WEBSOCKET DUE TO: WANT READ " << std::endl;
 						return false;
 					}
 					case SSL_ERROR_WANT_WRITE: {
 						this->wantWrite = true;
+						std::cout << "WRITE DATA: WERE DISCONNECTING FROM THE WEBSOCKET DUE TO: WANT WRITE " << std::endl;
 						return false;
 					}
 					default: {
-						this->disconnect();
+						std::cout << "WRITE DATA: WERE DISCONNECTING FROM THE WEBSOCKET DUE TO: DEFAULT" << std::endl;
+						std::cout << reportSSLError("WebSocketSSLClient::processIO() Error: ") << std::endl;
 						return false;
 					}
 				}
@@ -553,6 +569,17 @@ namespace DiscordCoreInternal {
 		if (auto returnValue = SSL_connect(this->ssl); !returnValue) {
 			throw ConnectionError{ reportSSLError("WebSocketSSLShard::connect()::SSL_connect()", returnValue, this->ssl) };
 		}
+
+#ifdef _WIN32
+		u_long value02{ 1 };
+		if (auto returnValue = ioctlsocket(this->theSocket, FIONBIO, &value02); returnValue == SOCKET_ERROR) {
+			throw ConnectionError{ reportError("DatagramSocketSSLClient::connect()::ioctlsocket()") };
+		}
+#else
+		if (auto returnValue = fcntl(this->theSocket, F_SETFL, fcntl(this->theSocket, F_GETFL, 0) | O_NONBLOCK); returnValue == SOCKET_ERROR) {
+			throw ConnectionError{ reportError("DatagramSocketSSLClient::connect()::fcntl()") };
+		}
+#endif
 	}
 
 	std::string WebSocketSSLShard::getInputBuffer() noexcept {
@@ -593,7 +620,6 @@ namespace DiscordCoreInternal {
 			this->inputBuffer.clear();
 			this->outputBuffers.clear();
 			this->closeCode = static_cast<WebSocketCloseCode>(0);
-			this->dataOpCode = WebSocketOpCode::Op_Binary;
 			this->theState = WebSocketState::Connecting01;
 			this->areWeHeartBeating = false;
 			while (this->processedMessages.size() > 0) {
@@ -638,8 +664,8 @@ namespace DiscordCoreInternal {
 		}
 
 #ifdef _WIN32
-		u_long value{ 1 };
-		if (auto returnValue = ioctlsocket(this->theSocket, FIONBIO, &value); returnValue == SOCKET_ERROR) {
+		u_long value02{ 1 };
+		if (auto returnValue = ioctlsocket(this->theSocket, FIONBIO, &value02); returnValue == SOCKET_ERROR) {
 			throw ConnectionError{ reportError("DatagramSocketSSLClient::connect()::ioctlsocket()") };
 		}
 #else
@@ -647,6 +673,7 @@ namespace DiscordCoreInternal {
 			throw ConnectionError{ reportError("DatagramSocketSSLClient::connect()::fcntl()") };
 		}
 #endif
+
 	}
 
 	void DatagramSocketSSLClient::writeData(std::string& dataToWrite) {
@@ -689,6 +716,9 @@ namespace DiscordCoreInternal {
 	}
 
 	void DatagramSocketSSLClient::processIO() {
+		if (this->theSocket == SOCKET_ERROR) {
+			return;
+		}
 		fd_set writeSet{}, readSet{};
 		int32_t writeNfds{ 0 }, readNfds{ 0 }, finalNfds{ 0 };
 		FD_ZERO(&writeSet);

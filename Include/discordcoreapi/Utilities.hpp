@@ -630,18 +630,18 @@ namespace DiscordCoreAPI {
 
 		StopWatch(TimeType maxNumberOfMsNew) {
 			this->maxNumberOfMs.store(maxNumberOfMsNew.count());
-			this->startTime.store(static_cast<int64_t>(std::chrono::duration_cast<TimeType>(std::chrono::system_clock::now().time_since_epoch()).count()));
+			this->startTime.store(static_cast<uint64_t>(std::chrono::duration_cast<TimeType>(std::chrono::system_clock::now().time_since_epoch()).count()));
 		}
 
-		int64_t totalTimePassed() {
-			int64_t currentTime = static_cast<int64_t>(std::chrono::duration_cast<TimeType>(std::chrono::system_clock::now().time_since_epoch()).count());
-			int64_t elapsedTime = currentTime - this->startTime.load();
+		uint64_t totalTimePassed() {
+			uint64_t currentTime = static_cast<uint64_t>(std::chrono::duration_cast<TimeType>(std::chrono::system_clock::now().time_since_epoch()).count());
+			uint64_t elapsedTime = currentTime - this->startTime.load();
 			return elapsedTime;
 		}
 
 		bool hasTimePassed() {
-			int64_t currentTime = static_cast<int64_t>(std::chrono::duration_cast<TimeType>(std::chrono::system_clock::now().time_since_epoch()).count());
-			int64_t elapsedTime = currentTime - this->startTime.load();
+			uint64_t currentTime = static_cast<uint64_t>(std::chrono::duration_cast<TimeType>(std::chrono::system_clock::now().time_since_epoch()).count());
+			uint64_t elapsedTime = currentTime - this->startTime.load();
 			if (elapsedTime >= this->maxNumberOfMs.load()) {
 				return true;
 			} else {
@@ -649,13 +649,16 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-		void resetTimer() {
-			this->startTime.store(static_cast<int64_t>(std::chrono::duration_cast<TimeType>(std::chrono::system_clock::now().time_since_epoch()).count()));
+		void resetTimer(uint64_t theNewTime = 0) {
+			if (theNewTime != 0) {
+				this->maxNumberOfMs.store(theNewTime);
+			}
+			this->startTime.store(static_cast<uint64_t>(std::chrono::duration_cast<TimeType>(std::chrono::system_clock::now().time_since_epoch()).count()));
 		}
 
 	  protected:
-		std::atomic_int64_t maxNumberOfMs{ 0 };
-		std::atomic_int64_t startTime{ 0 };
+		std::atomic_uint64_t maxNumberOfMs{ 0 };
+		std::atomic_uint64_t startTime{ 0 };
 	};
 
 	template<typename ObjectType> bool waitForTimeToPass(UnboundedMessageBlock<ObjectType>& outBuffer, ObjectType& argOne, int32_t timeInMsNew) {
