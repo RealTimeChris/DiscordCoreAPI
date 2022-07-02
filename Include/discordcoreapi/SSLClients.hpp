@@ -413,6 +413,7 @@ namespace DiscordCoreInternal {
 		~DatagramSocketSSLClient() noexcept = default;
 
 	  protected:
+		std::atomic_bool areWeConnected{ false };
 		const int32_t maxBufferSize{ 1024 * 16 };
 		std::vector<std::string> outputBuffers{};
 		SOCKETWrapper theSocket{ nullptr };

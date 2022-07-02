@@ -488,7 +488,7 @@ namespace DiscordCoreAPI {
 				}
 				while (!this->voiceSocket->areWeConnected.load() && !this->doWeDisconnect.load()) {
 					std::this_thread::sleep_for(1ms);
-				}s
+				}
 				this->areWePlaying.store(true);
 				if (this->areWeStopping.load()) {
 					this->areWePlaying.store(false);
