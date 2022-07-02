@@ -574,7 +574,7 @@ namespace DiscordCoreAPI {
 			}
 		}
 	};
-	
+
 	bool VoiceConnection::areWeCurrentlyPlaying() noexcept {
 		if (this == nullptr) {
 			return false;
@@ -677,7 +677,7 @@ namespace DiscordCoreAPI {
 			this->onClosed();
 		}
 	}
-	
+
 	void VoiceConnection::clearAudioData() noexcept {
 		if (this->audioData.encodedFrameData.data.size() != 0 && this->audioData.rawFrameData.data.size() != 0) {
 			this->audioData.encodedFrameData.data.clear();
@@ -821,7 +821,7 @@ namespace DiscordCoreAPI {
 		}
 		return;
 	}
-	
+
 	bool VoiceConnection::stop() noexcept {
 		if (this->areWePlaying.load()) {
 			this->areWePlaying.store(false);
@@ -855,7 +855,7 @@ namespace DiscordCoreAPI {
 				this->theTask02->join();
 				this->theTask02.reset(nullptr);
 			}
-		}		
+		}
 	};
 
 }

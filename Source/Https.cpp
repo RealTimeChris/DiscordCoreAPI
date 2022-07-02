@@ -244,7 +244,7 @@ namespace DiscordCoreInternal {
 			}
 		}
 		other.erase(other.begin(), other.begin() + theCount);
-	}	
+	}
 
 	std::unordered_map<std::string, std::unique_ptr<RateLimitData>>& HttpsConnectionManager::getRateLimitValues() {
 		return this->rateLimitValues;
@@ -453,7 +453,7 @@ namespace DiscordCoreInternal {
 		};
 		return theConnection.finalizeReturnValues(rateLimitData, theData);
 	}
-	
+
 	HttpsResponseData HttpsClient::executeByRateLimitData(const HttpsWorkloadData& workload) {
 		HttpsResponseData returnData{};
 		RateLimitData& rateLimitData = *this->connectionManager.getRateLimitValues()[this->connectionManager.getRateLimitValueBuckets()[workload.workloadType]].get();
@@ -518,7 +518,8 @@ namespace DiscordCoreInternal {
 					static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
 				if (this->configManager->doWePrintHttpsErrorMessages()) {
 					std::cout << DiscordCoreAPI::shiftToBrightRed() << workload.callStack + "::httpRequest(), We've hit rate limit! Time Remaining: "
-							  << std::to_string(this->connectionManager.getRateLimitValues()[this->connectionManager.getRateLimitValueBuckets()[workload.workloadType]]->msRemain) << DiscordCoreAPI::reset() << std::endl
+							  << std::to_string(this->connectionManager.getRateLimitValues()[this->connectionManager.getRateLimitValueBuckets()[workload.workloadType]]->msRemain)
+							  << DiscordCoreAPI::reset() << std::endl
 							  << std::endl;
 				}
 				returnData = this->executeByRateLimitData(workload);

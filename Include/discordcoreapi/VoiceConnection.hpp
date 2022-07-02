@@ -82,15 +82,15 @@ namespace DiscordCoreAPI {
 		AudioFrameData audioData{};
 		int32_t timeStamp{ 0 };
 		std::string baseUrl{};
-		
+
 		void stringifyJsonData(const nlohmann::json& dataToSend, std::string& theString, DiscordCoreInternal::WebSocketOpCode theOpCode) noexcept;
-		
+
 		std::string encryptSingleAudioFrame(EncodedFrameData& bufferToSend, int32_t audioSSRC, const std::string& keys) noexcept;
 
 		void createHeader(std::string& outbuf, uint64_t sendlength, DiscordCoreInternal::WebSocketOpCode opCode) noexcept;
 
 		void parseHeadersAndMessage(DiscordCoreInternal::WebSocketSSLShard* theShard) noexcept;
-				
+
 		void sendSingleAudioFrame(std::string& audioDataPacketNew) noexcept;
 
 		UnboundedMessageBlock<AudioFrameData>& getAudioBuffer() noexcept;
@@ -98,7 +98,7 @@ namespace DiscordCoreAPI {
 		void sendSingleFrame(const AudioFrameData& frameData) noexcept;
 
 		void onMessageReceived(const std::string& theMessage) noexcept;
-		
+
 		void sendMessage(const nlohmann::json& responseData) noexcept;
 
 		void sendVoiceData(std::string& responseData) noexcept;
@@ -114,7 +114,7 @@ namespace DiscordCoreAPI {
 		bool areWeCurrentlyPlaying() noexcept;
 
 		void collectExternalIP() noexcept;
-		
+
 		void webSocketConnect() noexcept;
 
 		void clearAudioData() noexcept;
