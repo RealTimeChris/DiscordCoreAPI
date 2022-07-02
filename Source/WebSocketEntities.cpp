@@ -133,7 +133,7 @@ namespace DiscordCoreInternal {
 	void BaseSocketAgent::getVoiceConnectionData(const VoiceConnectInitData& doWeCollect, WebSocketSSLShard* theShard) noexcept {
 		if (theShard && theShard->areWeConnected02.load()) {
 			try {
-				std::lock_guard<std::recursive_mutex> theLock{ theShard->theMutex };
+				std::lock_guard<std::mutex> theLock{ theShard->theMutex01 };
 				DiscordCoreAPI::StopWatch<std::chrono::milliseconds> theStopWatch{ 5500ms };
 				int32_t theCurrentIndex = theShard->shard[0];
 				DiscordCoreAPI::UpdateVoiceStateData dataPackage{};

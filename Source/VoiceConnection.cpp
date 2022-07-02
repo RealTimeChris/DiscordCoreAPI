@@ -802,7 +802,7 @@ namespace DiscordCoreAPI {
 
 	void VoiceConnection::connect() noexcept {
 		if (this->baseSocketAgent->theClients.contains(this->voiceConnectInitData.currentShard) && this->baseSocketAgent->theClients[voiceConnectInitData.currentShard]) {
-			std::lock_guard<std::recursive_mutex> theLock{ this->baseSocketAgent->theClients[this->voiceConnectInitData.currentShard]->theMutex };
+			std::lock_guard<std::mutex> theLock{ this->baseSocketAgent->theClients[this->voiceConnectInitData.currentShard]->theMutex01 };
 			this->areWeStopping.store(false);
 			this->stopSetEvent.set();
 			this->pauseEvent.set();

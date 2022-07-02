@@ -377,10 +377,11 @@ namespace DiscordCoreInternal {
 		bool areWeCollectingData{ false };
 		bool areWeHeartBeating{ false };
 		int32_t lastNumberReceived{ 0 };
-		std::recursive_mutex theMutex{};
 		WebSocketCloseCode closeCode{};
 		WebSocketOpCode dataOpCode{};
 		bool areWeResuming{ false };
+		std::mutex theMutex01{};
+		std::mutex theMutex02{};
 		int64_t messageLength{};
 		int64_t messageOffset{};
 		std::string sessionId{};
