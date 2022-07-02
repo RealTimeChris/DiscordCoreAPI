@@ -404,7 +404,7 @@ namespace DiscordCoreInternal {
 		}
 
 		for (auto& [key, value]: theMap) {
-			std::lock_guard<std::mutex> theLock{ value->theMutex };
+			std::lock_guard<std::recursive_mutex> theLock{ value->theMutex };
 			if (FD_ISSET(value->theSocket, &readSet)) {
 				value->wantRead = false;
 				value->wantWrite = false;
@@ -561,7 +561,7 @@ namespace DiscordCoreInternal {
 	}
 
 	bool WebSocketSSLShard::writeData(const std::string& dataToWrite, bool priority) noexcept {
-		std::lock_guard<std::mutex> theLock{ this->theMutex };
+		std::lock_guard<std::recursive_mutex> theLock{ this->theMutex };
 		std::string data = dataToWrite;
 		if (data.size() > 0 && this->ssl) {
 			if (priority && data.size() < (16 * 1024)) {

@@ -232,7 +232,7 @@ namespace DiscordCoreAPI {
 
 	void VoiceConnection::onMessageReceived(const std::string& theMessage) noexcept {
 		try {
-			if (this->theClients[0]) {
+			if (this->theClients.contains(0) && this->theClients[0]) {
 				nlohmann::json payload = payload.parse(theMessage);
 				if (this->configManager->doWePrintWebSocketSuccessMessages()) {
 					std::cout << DiscordCoreAPI::shiftToBrightGreen() << "Message received from Voice WebSocket: " << theMessage << DiscordCoreAPI::reset() << std::endl
@@ -296,28 +296,31 @@ namespace DiscordCoreAPI {
 
 	void VoiceConnection::sendMessage(const nlohmann::json& dataToSend) noexcept {
 		try {
-			if (this->configManager->doWePrintWebSocketSuccessMessages()) {
-				std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Sending Voice WebSocket Message: " << dataToSend.dump() << DiscordCoreAPI::reset() << std::endl << std::endl;
-			}
-			DiscordCoreAPI::StopWatch theStopWatch{ 1000ms };
-			while (!this->theClients[0]->areWeConnected01.load()) {
-				std::this_thread::sleep_for(1ms);
-				if (theStopWatch.hasTimePassed()) {
-					return;
+			if (this->theClients.contains(0) && this->theClients[0]) {
+				if (this->configManager->doWePrintWebSocketSuccessMessages()) {
+					std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Sending Voice WebSocket Message: " << dataToSend.dump() << DiscordCoreAPI::reset() << std::endl
+							  << std::endl;
 				}
-			}
-			std::string theString{};
-			this->stringifyJsonData(dataToSend, theString, DiscordCoreInternal::WebSocketOpCode::Op_Text);
-			theStopWatch.resetTimer(5000);
-			bool didWeWrite{ false };
-			do {
-				if (theStopWatch.hasTimePassed()) {
-					break;
+				DiscordCoreAPI::StopWatch theStopWatch{ 1000ms };
+				while (!this->theClients[0]->areWeConnected01.load()) {
+					std::this_thread::sleep_for(1ms);
+					if (theStopWatch.hasTimePassed()) {
+						return;
+					}
 				}
-				didWeWrite = this->theClients[0]->writeData(theString, false);
-			} while (!didWeWrite);
-			if (!didWeWrite) {
-				this->onClosed();
+				std::string theString{};
+				this->stringifyJsonData(dataToSend, theString, DiscordCoreInternal::WebSocketOpCode::Op_Text);
+				theStopWatch.resetTimer(5000);
+				bool didWeWrite{ false };
+				do {
+					if (theStopWatch.hasTimePassed()) {
+						break;
+					}
+					didWeWrite = this->theClients[0]->writeData(theString, false);
+				} while (!didWeWrite);
+				if (!didWeWrite) {
+					this->onClosed();
+				}
 			}
 		} catch (...) {
 			if (this->configManager->doWePrintWebSocketErrorMessages()) {
@@ -349,26 +352,28 @@ namespace DiscordCoreAPI {
 
 	void VoiceConnection::sendMessage(std::string& dataToSend) noexcept {
 		try {
-			if (this->configManager->doWePrintWebSocketSuccessMessages()) {
-				std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Sending Voice WebSocket Message: " << dataToSend << DiscordCoreAPI::reset() << std::endl << std::endl;
-			}
-			DiscordCoreAPI::StopWatch theStopWatch{ 1000ms };
-			while (!this->theClients[0]->areWeConnected01.load()) {
-				std::this_thread::sleep_for(1ms);
-				if (theStopWatch.hasTimePassed()) {
-					return;
+			if (this->theClients.contains(0) && this->theClients[0]) {
+				if (this->configManager->doWePrintWebSocketSuccessMessages()) {
+					std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Sending Voice WebSocket Message: " << dataToSend << DiscordCoreAPI::reset() << std::endl << std::endl;
 				}
-			}
-			theStopWatch.resetTimer(5000);
-			bool didWeWrite{ false };
-			do {
-				if (theStopWatch.hasTimePassed()) {
-					break;
+				DiscordCoreAPI::StopWatch theStopWatch{ 1000ms };
+				while (!this->theClients[0]->areWeConnected01.load()) {
+					std::this_thread::sleep_for(1ms);
+					if (theStopWatch.hasTimePassed()) {
+						return;
+					}
 				}
-				didWeWrite = this->theClients[0]->writeData(dataToSend, false);
-			} while (!didWeWrite);
-			if (!didWeWrite) {
-				this->onClosed();
+				theStopWatch.resetTimer(5000);
+				bool didWeWrite{ false };
+				do {
+					if (theStopWatch.hasTimePassed()) {
+						break;
+					}
+					didWeWrite = this->theClients[0]->writeData(dataToSend, false);
+				} while (!didWeWrite);
+				if (!didWeWrite) {
+					this->onClosed();
+				}
 			}
 		} catch (...) {
 			if (this->configManager->doWePrintWebSocketErrorMessages()) {
@@ -387,9 +392,7 @@ namespace DiscordCoreAPI {
 				theData.delay = 0;
 				theData.ssrc = this->voiceConnectionData.audioSSRC;
 				nlohmann::json newString = theData;
-				if (this->voiceSocket) {
-					this->sendMessage(newString);
-				}
+				this->sendMessage(newString);
 			}
 		}
 	}
@@ -398,6 +401,13 @@ namespace DiscordCoreAPI {
 		try {
 			while (!theToken.stop_requested() && !Globals::doWeQuit.load() && !this->doWeDisconnect.load()) {
 				if (this->connections.size() > 0) {
+					DiscordCoreAPI::StopWatch theStopWatch{ 10000ms };
+					while (!this->theBaseShard->areWeConnected01.load()) {
+						if (theStopWatch.hasTimePassed()) {
+							return;
+						}
+						std::this_thread::sleep_for(1ms);
+					}
 					this->theBaseShard->voiceConnectionDataBufferMap[this->voiceConnectInitData.guildId] = &this->voiceConnectionDataBuffer;
 					this->baseSocketAgent->getVoiceConnectionData(this->voiceConnectInitData, this->theBaseShard);
 					this->webSocketConnect();

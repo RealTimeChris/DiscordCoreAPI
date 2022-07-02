@@ -377,16 +377,15 @@ namespace DiscordCoreInternal {
 		bool areWeCollectingData{ false };
 		bool areWeHeartBeating{ false };
 		int32_t lastNumberReceived{ 0 };
+		std::recursive_mutex theMutex{};
 		WebSocketCloseCode closeCode{};
 		WebSocketOpCode dataOpCode{};
 		bool areWeResuming{ false };
-		std::mutex accessorMutex{};
 		int64_t messageLength{};
 		int64_t messageOffset{};
 		std::string sessionId{};
 		nlohmann::json shard{};
 		bool blocking{ false };
-		std::mutex theMutex{};
 		Snowflake userId{ 0 };
 	};
 
