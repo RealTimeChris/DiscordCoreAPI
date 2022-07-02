@@ -200,20 +200,14 @@ namespace DiscordCoreInternal {
 	}
 
 	void YouTubeAPI::downloadAndStreamAudio(const DiscordCoreAPI::Song& newSong, std::stop_token theToken, int32_t currentReconnectionTries) {
-		BuildAudioDecoderData dataPackage{};
-		std::string theCurrentString{};
-		dataPackage.totalFileSize = static_cast<uint64_t>(newSong.contentLength);
-		dataPackage.bufferMaxSize = this->maxBufferSize;
-		dataPackage.configManager = this->configManager;
-		std::unique_ptr<AudioDecoder> audioDecoder = std::make_unique<AudioDecoder>(dataPackage);
 		try {
-			std::unique_ptr<WebSocketSSLShard> streamSocket{ std::make_unique<WebSocketSSLShard>(nullptr, this->maxBufferSize, 0, this->configManager, false) };
-			std::unordered_map<int32_t, std::unique_ptr<SSLEntity>> theMap{};
+			std::unique_ptr<WebSocketSSLShard> streamSocket{ std::make_unique<WebSocketSSLShard>(nullptr, this->maxBufferSize, 0, this->configManager, true) };
+			std::unordered_map<int32_t, std::unique_ptr<WebSocketSSLShard>> theMap{};
 			auto bytesRead{ static_cast<int32_t>(streamSocket->getBytesRead()) };
 			if (newSong.finalDownloadUrls.size() > 0) {
 				theMap[0] = std::move(streamSocket);
 				theMap[0]->connect(newSong.finalDownloadUrls[0].urlPath, "443");
-				static_cast<WebSocketSSLShard*>(theMap[0].get())->areWeConnected01.store(true);
+				theMap[0]->areWeConnected01.store(true);
 			} else {
 				return;
 			}
@@ -227,9 +221,15 @@ namespace DiscordCoreInternal {
 			int32_t counter{ 0 };
 			const int32_t ms500{ 500000 };
 			const int32_t ms1000{ 1000000 };
+			BuildAudioDecoderData dataPackage{};
+			std::string theCurrentString{};
+			dataPackage.totalFileSize = static_cast<uint64_t>(newSong.contentLength);
+			dataPackage.bufferMaxSize = this->maxBufferSize;
+			dataPackage.configManager = this->configManager;
+			std::unique_ptr<AudioDecoder> audioDecoder = std::make_unique<AudioDecoder>(dataPackage);
 			AudioEncoder audioEncoder{};
 			std::string theString = newSong.finalDownloadUrls[1].urlPath;
-			theMap[0]->writeData(theString, true);
+			theMap[0]->writeData(theString, false);
 			WebSocketSSLShard::processIO(theMap, ms1000);
 			if (!theMap[0]->areWeStillConnected()) {
 				audioDecoder.reset(nullptr);
@@ -417,7 +417,6 @@ namespace DiscordCoreInternal {
 			if (this->configManager->doWePrintWebSocketErrorMessages()) {
 				DiscordCoreAPI::reportException("YouTubeAPI::downloadAndStreamAudio()");
 			}
-			audioDecoder.reset(nullptr);
 			this->weFailedToDownloadOrDecode(newSong, theToken, currentReconnectionTries);
 		}
 	}
