@@ -78,7 +78,6 @@ namespace DiscordCoreAPI {
 			this->discordCoreClient->getBotUser().updateVoiceStatus(updateVoiceData);
 			SongAPI::stop(this->id);
 			getVoiceConnectionMap()[this->id]->disconnect();
-			getVoiceConnectionMap()[this->id].reset(nullptr);
 			this->voiceConnectionPtr = nullptr;
 		}
 	}

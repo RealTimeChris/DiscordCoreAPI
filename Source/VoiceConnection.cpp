@@ -398,7 +398,7 @@ namespace DiscordCoreAPI {
 	void VoiceConnection::runWebSocket(std::stop_token theToken) noexcept {
 		try {
 			while (!theToken.stop_requested() && !Globals::doWeQuit.load() && !this->doWeDisconnect.load()) {
-				if (this->connections.size() > 0) {
+				if (this->connections.size() > 0 && !this->doWeDisconnect.load()) {
 					DiscordCoreAPI::StopWatch theStopWatch{ 10000ms };
 					while (!this->theBaseShard->areWeConnected01.load()) {
 						if (theStopWatch.hasTimePassed()) {
@@ -446,7 +446,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::runVoice(std::stop_token theToken) noexcept {
-		while (!theToken.stop_requested()) {
+		while (!theToken.stop_requested() && !Globals::doWeQuit.load() && !this->doWeDisconnect.load()) {
 			std::this_thread::sleep_for(1ms);
 			if (!this->didWeJustConnect) {
 				this->audioBuffer.clearContents();
@@ -754,16 +754,20 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::disconnect() noexcept {
+		this->doWeDisconnect.store(true);
 		this->stopSetEvent.set();
 		this->playSetEvent.set();
 		this->areWeConnectedBool.store(false);
-		this->theClients[0]->disconnect();
-		this->voiceSocket->disconnect();
-		this->doWeDisconnect.store(true);
+		if (this->theClients.contains(0)) {
+			if (this->theClients[0]) {
+				this->theClients[0]->disconnect();
+			}
+		}
 		this->areWePlaying.store(false);
 		this->areWeStopping.store(true);
 		this->sendSpeakingMessage(false);
 		if (this->voiceSocket) {
+			this->voiceSocket->disconnect();
 			this->voiceSocket.reset(nullptr);
 		}
 		if (this->theTask02) {
@@ -843,6 +847,7 @@ namespace DiscordCoreAPI {
 	}
 
 	VoiceConnection::~VoiceConnection() noexcept {
+		this->disconnect();
 		if (this->theTask01) {
 			this->theTask01->request_stop();
 			if (this->theTask01->joinable()) {

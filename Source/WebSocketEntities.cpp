@@ -156,6 +156,7 @@ namespace DiscordCoreInternal {
 				if (!didWeWrite) {
 					theShard->disconnect();
 				}
+				std::this_thread::sleep_for(100ms);
 				if (doWeCollect.channelId == 0) {
 					theShard->theSemaphore.release();
 					return;
