@@ -296,6 +296,7 @@ namespace DiscordCoreAPI {
 			int64_t intervalCount{ 20000000 };
 			int32_t frameCounter{ 0 };
 			int64_t targetTime{ startingValue + intervalCount };
+			int64_t totalTime{};
 			if (this->disconnectStartTime != 0) {
 				int64_t currentTime = static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
 				if (currentTime - this->disconnectStartTime >= 60000) {
@@ -322,20 +323,17 @@ namespace DiscordCoreAPI {
 					this->areWePlaying.store(false);
 					return;
 				}
-				if (frameCounter % 20 == 0) {
-					if (this->theClients.contains(0) && this->theClients[0] && this->theClients[0]->areWeStillConnected()) {
-						DiscordCoreInternal::SSLEntity::processIO(this->theClients, 0);
-						theClients[1]->getInputBuffer();
-						if (static_cast<DiscordCoreInternal::WebSocketSSLShard*>(this->theClients[0].get())->inputBuffer.size() > 0) {
-							this->parseHeadersAndMessage(static_cast<DiscordCoreInternal::WebSocketSSLShard*>(this->theClients[0].get()));
-						}
-						if (static_cast<DiscordCoreInternal::WebSocketSSLShard*>(this->theClients[0].get())->processedMessages.size() > 0) {
-							std::string theString = static_cast<DiscordCoreInternal::WebSocketSSLShard*>(this->theClients[0].get())->processedMessages.front();
-							static_cast<DiscordCoreInternal::WebSocketSSLShard*>(this->theClients[0].get())->processedMessages.pop();
-							this->onMessageReceived(theString);
-						}
+				
+				if (this->theClients.contains(0) && this->theClients[0] && this->theClients[0]->areWeStillConnected()) {
+					if (static_cast<DiscordCoreInternal::WebSocketSSLShard*>(this->theClients[0].get())->inputBuffer.size() > 0) {
+						this->parseHeadersAndMessage(static_cast<DiscordCoreInternal::WebSocketSSLShard*>(this->theClients[0].get()));
 					}
-				}
+					if (static_cast<DiscordCoreInternal::WebSocketSSLShard*>(this->theClients[0].get())->processedMessages.size() > 0) {
+						std::string theString = static_cast<DiscordCoreInternal::WebSocketSSLShard*>(this->theClients[0].get())->processedMessages.front();
+						static_cast<DiscordCoreInternal::WebSocketSSLShard*>(this->theClients[0].get())->processedMessages.pop();
+						this->onMessageReceived(theString);
+					}
+				}				
 				if (this->heartbeatInterval != 0 && !this->doWeReconnect.load() && !static_cast<DiscordCoreInternal::WebSocketSSLShard*>(this->theClients[0].get())->areWeHeartBeating) {
 					static_cast<DiscordCoreInternal::WebSocketSSLShard*>(this->theClients[0].get())->areWeHeartBeating = true;
 					static_cast<DiscordCoreInternal::WebSocketSSLShard*>(this->theClients[0].get())->heartBeatStopWatch =
@@ -351,15 +349,11 @@ namespace DiscordCoreAPI {
 					this->areWePlaying.store(false);
 					return;
 				}
-				static_cast<DiscordCoreInternal::WebSocketSSLShard*>(this->theClients[0].get())->areWeHeartBeating = true;
-				static_cast<DiscordCoreInternal::WebSocketSSLShard*>(this->theClients[0].get())->heartBeatStopWatch =
-					DiscordCoreAPI::StopWatch{ std::chrono::milliseconds{ this->heartbeatInterval } };
 				frameCounter++;
 				this->audioBuffer.tryReceive(this->audioData);
 				if (this->audioData.guildMemberId != 0) {
 					this->currentGuildMemberId = this->audioData.guildMemberId;
 				}
-				//nanoSleep(100000);
 				if (theToken.stop_requested()) {
 					this->areWePlaying.store(false);
 					return;
@@ -377,19 +371,23 @@ namespace DiscordCoreAPI {
 					if (newFrame.size() == 0) {
 						continue;
 					}
-					//nanoSleep(18000000);
+					nanoSleep(12000000);
 					if (theToken.stop_requested()) {
 						this->areWePlaying.store(false);
 						return;
 					}
-					auto waitTime = targetTime - std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-					std::cout << "WAIT TIME: " << static_cast<int32_t>(waitTime) << std::endl;
-					nanoSleep(static_cast<int64_t>(static_cast<float>(waitTime) * 0.80));
-					waitTime = targetTime - std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+					auto timeCounter =
+						static_cast<int64_t>(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - startingValue);
+					auto waitTime = intervalCount - timeCounter;
 					spinLock(waitTime);
-					this->sendSingleAudioFrame(newFrame);
+					std::cout << "THE WAIT TIME: " << waitTime << std::endl;
+					DiscordCoreInternal::SSLEntity::processIO(this->theClients, 0);
 					startingValue = static_cast<int64_t>(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
-					targetTime = startingValue + intervalCount;
+					this->sendSingleAudioFrame(newFrame);
+					totalTime +=
+						static_cast<int64_t>(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - startingValue);
+					intervalCount = 20000000 - (totalTime / frameCounter);
+					
 					this->audioData.type = AudioFrameType::Unset;
 					this->audioData.encodedFrameData.data.clear();
 					this->audioData.rawFrameData.data.clear();
@@ -510,7 +508,7 @@ namespace DiscordCoreAPI {
 					}
 					return;
 			} else {
-					static_cast<DiscordCoreInternal::DatagramSocketSSLClient*>(this->theClients[1].get())->writeData(responseData,false);
+					static_cast<DiscordCoreInternal::DatagramSocketSSLClient*>(this->theClients[1].get())->writeData(responseData, true);
 				}
 			}
 		} catch (...) {
@@ -677,11 +675,11 @@ namespace DiscordCoreAPI {
 			packet[5] = static_cast<uint8_t>(this->voiceConnectionData.audioSSRC >> 16);
 			packet[6] = static_cast<uint8_t>(this->voiceConnectionData.audioSSRC >> 8);
 			packet[7] = static_cast<uint8_t>(this->voiceConnectionData.audioSSRC);
-			static_cast<DiscordCoreInternal::DatagramSocketSSLClient*>(this->theClients[1].get())->writeData(packet, false);
+			this->sendVoiceData(packet);
 			std::this_thread::sleep_for(100ms);
 			std::string inputString{};
 			while (inputString.size() < 74) {
-				DiscordCoreInternal::SSLEntity::processIO(this->theClients);
+				DiscordCoreInternal::SSLEntity::processIO(this->theClients, 10000);
 				std::string theNewString = static_cast<DiscordCoreInternal::DatagramSocketSSLClient*>(this->theClients[1].get())->getInputBuffer();
 				inputString.insert(inputString.end(), theNewString.begin(), theNewString.end());
 				std::this_thread::sleep_for(1ms);
@@ -742,7 +740,7 @@ namespace DiscordCoreAPI {
 			this->voiceConnectionData = DiscordCoreInternal::VoiceConnectionData{};
 			DiscordCoreAPI::waitForTimeToPass(this->voiceConnectionDataBuffer, this->voiceConnectionData, 20000);
 			this->baseUrl = this->voiceConnectionData.endPoint.substr(0, this->voiceConnectionData.endPoint.find(":"));
-			auto theClient = std::make_unique<DiscordCoreInternal::WebSocketSSLShard>(nullptr, 0, 0, this->configManager, true);
+			auto theClient = std::make_unique<DiscordCoreInternal::WebSocketSSLShard>(nullptr, 0, 0, this->configManager, false);
 			if (!theClient->connect(this->baseUrl, "443")) {
 				this->doWeReconnect.store(true);
 			}

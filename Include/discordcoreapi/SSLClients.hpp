@@ -326,6 +326,9 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll SSLEntity : public SSLConnectionInterface, public SSLDataInterface {
 	  public:
 		static void processIO(std::unordered_map<int32_t, std::unique_ptr<SSLEntity>>& theMap, int32_t waitTimeInms = 1000) noexcept;
+
+	  protected:
+		std::recursive_mutex theMutex{};
 	};
 
 	class DiscordCoreAPI_Dll HttpsSSLClient : public SSLEntity {
@@ -399,7 +402,6 @@ namespace DiscordCoreInternal {
 		std::string sessionId{};
 		nlohmann::json shard{};
 		bool blocking{ false };
-		std::mutex theMutex{};
 		Snowflake userId{ 0 };
 	};
 
@@ -427,10 +429,6 @@ namespace DiscordCoreInternal {
 
 	  protected:
 		const int32_t maxBufferSize{ 1024 * 16 };
-		std::vector<std::string> outputBuffers{};
-		SOCKETWrapper theSocket{ nullptr };
-		std::string inputBuffer{};
 		sockaddr_in theAddress{};
-		int64_t bytesRead{ 0 };
 	};
 }// namespace DiscordCoreInterna
