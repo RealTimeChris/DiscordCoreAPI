@@ -7117,13 +7117,13 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll InputEventData {
 	  public:
 		friend class DiscordCoreInternal::BaseSocketAgent;
-		friend OnInteractionCreationData;
-		friend RespondToInputEventData;
-		friend BaseFunctionArguments;
-		friend DiscordCoreClient;
-		friend EventHandler;
-		friend CommandData;
-		friend InputEvents;
+		friend class OnInteractionCreationData;
+		friend class RespondToInputEventData;
+		friend class BaseFunctionArguments;
+		friend class DiscordCoreClient;
+		friend class EventHandler;
+		friend class CommandData;
+		friend class InputEvents;
 
 		InputEventResponseType responseType{};///< The type of response that this input value represents.
 
@@ -7202,20 +7202,20 @@ namespace DiscordCoreAPI {
 	/// \brief Data for responding to an input-event.
 	class DiscordCoreAPI_Dll RespondToInputEventData {
 	  public:
-		friend CreateEphemeralInteractionResponseData;
-		friend CreateDeferredInteractionResponseData;
-		friend CreateEphemeralFollowUpMessageData;
+		friend struct CreateEphemeralInteractionResponseData;
+		friend struct CreateDeferredInteractionResponseData;
+		friend struct CreateEphemeralFollowUpMessageData;
+		friend struct DeleteInteractionResponseData;
+		friend struct CreateInteractionResponseData;
+		friend struct EditInteractionResponseData;
+		friend struct DeleteFollowUpMessageData;
+		friend struct CreateFollowUpMessageData;
+		friend struct EditFollowUpMessageData;
 		friend struct InteractionResponseData;
-		friend DeleteInteractionResponseData;
-		friend CreateInteractionResponseData;
-		friend EditInteractionResponseData;
-		friend DeleteFollowUpMessageData;
-		friend CreateFollowUpMessageData;
-		friend EditFollowUpMessageData;
-		friend CreateMessageData;
-		friend EditMessageData;
-		friend InputEvents;
-		friend SendDMData;
+		friend struct CreateMessageData;
+		friend struct EditMessageData;
+		friend struct InputEvents;
+		friend struct SendDMData;
 
 		RespondToInputEventData& operator=(InteractionData& dataPackage);
 
@@ -7611,7 +7611,7 @@ namespace DiscordCoreAPI {
 		friend class DiscordCoreInternal::YouTubeRequestBuilder;
 		friend class DiscordCoreInternal::SoundCloudAPI;
 		friend class DiscordCoreInternal::YouTubeAPI;
-		friend SongAPI;
+		friend class SongAPI;
 
 		std::vector<DownloadUrl> finalDownloadUrls{};
 		SongType type{ SongType::SoundCloud };///< The type of song.

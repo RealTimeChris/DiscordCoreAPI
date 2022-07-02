@@ -76,7 +76,6 @@ namespace DiscordCoreInternal {
 	struct HttpsWorkloadData;
 	class SoundCloudRequestBuilder;
 	class YouTubeRequestBuilder;
-	class VoiceSocketAgent;
 	class BaseSocketAgent;
 	class SoundCloudAPI;
 	class HttpsClient;

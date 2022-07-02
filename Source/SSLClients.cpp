@@ -723,6 +723,9 @@ namespace DiscordCoreInternal {
 	}
 
 	void DatagramSocketSSLClient::writeData(std::string& dataToWrite) noexcept {
+		if (this->theSocket == SOCKET_ERROR) {
+			return;
+		}
 		if (dataToWrite.size() > static_cast<size_t>(16 * 1024)) {
 			size_t remainingBytes{ dataToWrite.size() };
 			while (remainingBytes > 0) {
@@ -740,6 +743,18 @@ namespace DiscordCoreInternal {
 			}
 		} else {
 			this->outputBuffers.push_back(dataToWrite);
+		}
+		if (this->outputBuffers.size() > 0) {
+			std::string theString = this->outputBuffers.front();
+			int32_t bytesToWrite{ static_cast<int32_t>(theString.size()) > this->maxBufferSize ? this->maxBufferSize : static_cast<int32_t>(theString.size()) };
+			auto writtenBytes{ sendto(this->theSocket, theString.data(), bytesToWrite, 0, reinterpret_cast<sockaddr*>(&this->theAddress), sizeof(sockaddr)) };
+			if (writtenBytes >= 0) {
+				this->outputBuffers.erase(this->outputBuffers.begin());
+				return;
+			} else {
+				this->disconnect();
+				return;
+			}
 		}
 	}
 

@@ -341,14 +341,13 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll WebSocketSSLShard : public SSLConnectionInterface, public SSLDataInterface {
 	  public:
 		friend class DiscordCoreAPI::VoiceConnection;
-		friend class VoiceSocketAgent;
 		friend class BaseSocketAgent;
 		friend class YouTubeAPI;
 
 		WebSocketSSLShard(std::queue<DiscordCoreAPI::ConnectionPackage>* connectionsNew, int32_t currentBaseSocketAgentNew, int32_t currentShardNew,
 			DiscordCoreAPI::ConfigManager* configManagerNew, bool blocking = false) noexcept;
 
-		static void processIO(std::unordered_map<int32_t, std::unique_ptr<WebSocketSSLShard>>& theMap, int32_t waitTimeInms = 10000) noexcept;
+		static void processIO(std::unordered_map<int32_t, std::unique_ptr<WebSocketSSLShard>>& theMap, int32_t waitTimeInms = 1000) noexcept;
 
 		bool connect(const std::string& baseUrl, const std::string& portNew) noexcept;
 
@@ -394,7 +393,6 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll DatagramSocketSSLClient {
 	  public:
 		friend class DiscordCoreAPI::VoiceConnection;
-		friend class VoiceSocketAgent;
 
 		DatagramSocketSSLClient() noexcept = default;
 
@@ -416,7 +414,6 @@ namespace DiscordCoreInternal {
 
 	  protected:
 		const int32_t maxBufferSize{ 1024 * 16 };
-		std::atomic_bool areWeConnected{ false };
 		std::vector<std::string> outputBuffers{};
 		SOCKETWrapper theSocket{ nullptr };
 		std::string inputBuffer{};
