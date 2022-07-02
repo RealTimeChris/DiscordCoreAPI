@@ -215,10 +215,8 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::sendSingleAudioFrame(std::string& audioDataPacketNew) noexcept {
-		if (this->voiceSocket) {
-			if (this->voiceSocket) {
-				this->voiceSocket->writeData(audioDataPacketNew);
-			}
+		if (this->voiceSocket && this->voiceSocket->areWeStillConnected()) {
+			this->voiceSocket->writeData(audioDataPacketNew);
 		}
 	}
 
