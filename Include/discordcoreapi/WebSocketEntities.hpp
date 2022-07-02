@@ -31,6 +31,14 @@
 
 namespace DiscordCoreInternal {
 
+	constexpr uint16_t webSocketMaxPayloadLengthLarge{ 65535u };
+	constexpr uint8_t webSocketPayloadLengthMagicLarge{ 126u };
+	constexpr uint8_t webSocketPayloadLengthMagicHuge{ 127u };
+	constexpr uint8_t maxHeaderSize{ sizeof(uint64_t) + 2u };
+	constexpr uint8_t webSocketMaxPayloadLengthSmall{ 125u };
+	constexpr uint8_t webSocketFinishBit{ (1u << 7u) };
+	constexpr uint8_t webSocketMaskBit{ (1u << 7u) };
+
 	class DiscordCoreAPI_Dll BaseSocketAgent {
 	  public:
 		friend class WebSocketSSLShard;
@@ -83,57 +91,4 @@ namespace DiscordCoreInternal {
 		void internalConnect() noexcept;
 	};
 
-	class DiscordCoreAPI_Dll VoiceSocketAgent {
-	  public:
-		friend class DiscordCoreAPI::VoiceConnection;
-
-		VoiceSocketAgent(VoiceConnectInitData initDataNew, BaseSocketAgent* baseBaseSocketAgentNew, WebSocketSSLShard* theIndex, DiscordCoreAPI::ConfigManager* configManagerNew,
-			std::atomic_bool* doWeQuit) noexcept;
-
-		void sendMessage(const nlohmann::json& responseData) noexcept;
-
-		void sendVoiceData(std::string& responseData) noexcept;
-
-		void sendMessage(std::string& dataToSend) noexcept;
-
-		void onClosed() noexcept;
-
-		~VoiceSocketAgent() noexcept;
-
-	  protected:
-		DiscordCoreAPI::UnboundedMessageBlock<VoiceConnectionData> voiceConnectionDataBuffer{};
-		std::unordered_map<int32_t, std::unique_ptr<WebSocketSSLShard>> theClients{};
-		std::unique_ptr<DatagramSocketSSLClient> voiceSocket{ nullptr };
-		DiscordCoreAPI::ConfigManager* configManager{ nullptr };
-		std::unique_ptr<std::jthread> theTask{ nullptr };
-		VoiceConnectInitData voiceConnectInitData{};
-		WebSocketSSLShard* theBaseShard{ nullptr };
-		VoiceConnectionData voiceConnectionData{};
-		std::atomic_bool areWeConnected{ false };
-		std::atomic_bool doWeDisconnect{ false };
-		std::atomic_bool doWeReconnect{ false };
-		std::atomic_bool* doWeQuit{ nullptr };
-		int32_t maxReconnectionTries{ 10 };
-		int32_t heartbeatInterval{ 0 };
-		std::string baseUrl{};
-		std::string hostIp{};
-
-		void stringifyJsonData(const nlohmann::json& dataToSend, std::string& theString, WebSocketOpCode theOpCode) noexcept;
-
-		void createHeader(std::string& outbuf, uint64_t sendlength, WebSocketOpCode opCode) noexcept;
-
-		void parseHeadersAndMessage(WebSocketSSLShard* theShard) noexcept;
-
-		void onMessageReceived(const std::string& theMessage) noexcept;
-
-		void run(std::stop_token) noexcept;
-
-		void collectExternalIP() noexcept;
-
-		void sendHeartBeat() noexcept;
-
-		void voiceConnect() noexcept;
-
-		void connect() noexcept;
-	};
 }// namespace DiscordCoreInternal

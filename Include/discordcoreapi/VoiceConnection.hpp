@@ -42,70 +42,104 @@ namespace DiscordCoreAPI {
 		friend GuildData;
 		friend SongAPI;
 
-		VoiceConnection(DiscordCoreInternal::BaseSocketAgent* BaseSocketAgentNew);
+		VoiceConnection(DiscordCoreInternal::BaseSocketAgent* BaseSocketAgentNew, const DiscordCoreInternal::VoiceConnectInitData& initDataNew,
+			DiscordCoreAPI::ConfigManager* configManagerNew) noexcept;
 
-		VoiceConnection() = default;
+		VoiceConnection() noexcept = default;
 
 		/// Collects the currently connected-to voice Channel's id. \brief Collects the currently connected-to voice Channel's id.
 		/// \returns uint64_t A Snowflake containing the Channel's id.
-		Snowflake getChannelId();
+		Snowflake getChannelId() noexcept;
 
-		~VoiceConnection();
+		~VoiceConnection() noexcept;
 
 	  protected:
-		std::unique_ptr<DiscordCoreInternal::VoiceSocketAgent> voiceSocketAgent{ nullptr };
+		std::unordered_map<int32_t, std::unique_ptr<DiscordCoreInternal::WebSocketSSLShard>> theClients{};
+		UnboundedMessageBlock<DiscordCoreInternal::VoiceConnectionData> voiceConnectionDataBuffer{};
+		std::unique_ptr<DiscordCoreInternal::DatagramSocketSSLClient> voiceSocket{ nullptr };
 		std::unique_ptr<DiscordCoreInternal::AudioEncoder> encoder{ nullptr };
 		DiscordCoreInternal::BaseSocketAgent* baseSocketAgent{ nullptr };
 		DiscordCoreInternal::VoiceConnectInitData voiceConnectInitData{};
+		DiscordCoreInternal::WebSocketSSLShard* theBaseShard{ nullptr };
 		DiscordCoreInternal::VoiceConnectionData voiceConnectionData{};
+		DiscordCoreAPI::ConfigManager* configManager{ nullptr };
 		UnboundedMessageBlock<AudioFrameData> audioBuffer{};
-		std::unique_ptr<std::jthread> theTask{ nullptr };
+		std::unique_ptr<std::jthread> theTask01{ nullptr };
+		std::unique_ptr<std::jthread> theTask02{ nullptr };
 		DiscordCoreInternal::EventWaiter playSetEvent{};
 		DiscordCoreInternal::EventWaiter stopSetEvent{};
 		DiscordCoreInternal::EventWaiter pauseEvent{};
-		std::atomic_bool* doWeDisconnect{ nullptr };
-		std::atomic_bool* doWeReconnect{ nullptr };
+		std::queue<ConnectionPackage> connections{};
+		std::atomic_bool doWeDisconnect{ false };
 		std::atomic_bool areWeStopping{ false };
 		std::atomic_bool areWePlaying{ false };
 		int64_t disconnectStartTime{ 0 };
 		bool areWeConnectedBool{ false };
 		Snowflake currentGuildMemberId{};
+		int64_t heartbeatInterval{ 0 };
 		bool didWeJustConnect{ true };
 		int16_t sequenceIndex{ 0 };
 		AudioFrameData audioData{};
 		int32_t timeStamp{ 0 };
+		std::string baseUrl{};
+		
+		void stringifyJsonData(const nlohmann::json& dataToSend, std::string& theString, DiscordCoreInternal::WebSocketOpCode theOpCode) noexcept;
+		
+		std::string encryptSingleAudioFrame(EncodedFrameData& bufferToSend, int32_t audioSSRC, const std::string& keys) noexcept;
 
-		std::string encryptSingleAudioFrame(EncodedFrameData& bufferToSend, int32_t audioSSRC, const std::string& keys);
+		void createHeader(std::string& outbuf, uint64_t sendlength, DiscordCoreInternal::WebSocketOpCode opCode) noexcept;
 
-		bool connect(const DiscordCoreInternal::VoiceConnectInitData& voiceConnectInitDataNew);
+		void parseHeadersAndMessage(DiscordCoreInternal::WebSocketSSLShard* theShard) noexcept;
+				
+		void sendSingleAudioFrame(std::string& audioDataPacketNew) noexcept;
 
-		void sendSingleAudioFrame(std::string& audioDataPacketNew);
+		UnboundedMessageBlock<AudioFrameData>& getAudioBuffer() noexcept;
 
-		UnboundedMessageBlock<AudioFrameData>& getAudioBuffer();
+		void sendSingleFrame(const AudioFrameData& frameData) noexcept;
 
-		void sendSingleFrame(const AudioFrameData& frameData);
+		void onMessageReceived(const std::string& theMessage) noexcept;
+		
+		void sendMessage(const nlohmann::json& responseData) noexcept;
 
-		void sendSpeakingMessage(bool isSpeaking);
+		void sendVoiceData(std::string& responseData) noexcept;
 
-		bool areWeCurrentlyPlaying();
+		void sendMessage(std::string& dataToSend) noexcept;
 
-		void run(std::stop_token);
+		void sendSpeakingMessage(bool isSpeaking) noexcept;
 
-		void clearAudioData();
+		void runWebSocket(std::stop_token) noexcept;
 
-		bool areWeConnected();
+		void runVoice(std::stop_token) noexcept;
 
-		void sendSilence();
+		bool areWeCurrentlyPlaying() noexcept;
 
-		void pauseToggle();
+		void collectExternalIP() noexcept;
+		
+		void webSocketConnect() noexcept;
 
-		void disconnect();
+		void clearAudioData() noexcept;
 
-		void reconnect();
+		bool areWeConnected() noexcept;
 
-		bool stop();
+		void sendHeartBeat() noexcept;
 
-		bool play();
+		void voiceConnect() noexcept;
+
+		void sendSilence() noexcept;
+
+		void pauseToggle() noexcept;
+
+		void disconnect() noexcept;
+
+		void reconnect() noexcept;
+
+		void onClosed() noexcept;
+
+		void connect() noexcept;
+
+		bool stop() noexcept;
+
+		bool play() noexcept;
 	};
 	/**@}*/
 

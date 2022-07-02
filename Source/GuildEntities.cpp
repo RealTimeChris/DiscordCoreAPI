@@ -47,8 +47,6 @@ namespace DiscordCoreAPI {
 			auto theBaseSocketAgentIndex{ static_cast<int32_t>(
 				floor(static_cast<float>(stod(theShardId)) / static_cast<float>(this->discordCoreClient->configManager.getTotalShardCount())) *
 				static_cast<float>(std::thread::hardware_concurrency())) };
-			getVoiceConnectionMap()[this->id] = std::make_unique<VoiceConnection>(this->discordCoreClient->baseSocketAgentMap[std::to_string(theBaseSocketAgentIndex)].get());
-			this->voiceConnectionPtr = getVoiceConnectionMap()[this->id].get();
 			DiscordCoreInternal::VoiceConnectInitData voiceConnectInitData{};
 			voiceConnectInitData.currentShard = stoll(theShardId);
 			voiceConnectInitData.channelId = theChannelId;
@@ -56,7 +54,10 @@ namespace DiscordCoreAPI {
 			voiceConnectInitData.userId = this->discordCoreClient->getBotUser().id;
 			voiceConnectInitData.selfDeaf = selfDeaf;
 			voiceConnectInitData.selfMute = selfMute;
-			this->voiceConnectionPtr->connect(voiceConnectInitData);
+			getVoiceConnectionMap()[this->id] = std::make_unique<VoiceConnection>(this->discordCoreClient->baseSocketAgentMap[std::to_string(theBaseSocketAgentIndex)].get(),
+				voiceConnectInitData, &this->discordCoreClient->configManager);
+			this->voiceConnectionPtr = getVoiceConnectionMap()[this->id].get();
+			this->voiceConnectionPtr->connect();
 			return this->voiceConnectionPtr;
 		} else {
 			return nullptr;
@@ -97,7 +98,7 @@ namespace DiscordCoreAPI {
 	void GuildData::initialize() {
 		if (!getVoiceConnectionMap().contains(this->id)) {
 			std::string theShardId{ std::to_string((this->id >> 22) % this->discordCoreClient->configManager.getTotalShardCount()) };
-			getVoiceConnectionMap()[this->id] = std::make_unique<VoiceConnection>(this->discordCoreClient->baseSocketAgentMap[theShardId].get());
+			getVoiceConnectionMap()[this->id] = std::make_unique<VoiceConnection>();
 		}
 		this->voiceConnectionPtr = getVoiceConnectionMap()[this->id].get();
 		if (!getYouTubeAPIMap().contains(this->id)) {
