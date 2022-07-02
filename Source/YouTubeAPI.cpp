@@ -202,12 +202,12 @@ namespace DiscordCoreInternal {
 	void YouTubeAPI::downloadAndStreamAudio(const DiscordCoreAPI::Song& newSong, std::stop_token theToken, int32_t currentReconnectionTries) {
 		try {
 			std::unique_ptr<WebSocketSSLShard> streamSocket{ std::make_unique<WebSocketSSLShard>(nullptr, this->maxBufferSize, 0, this->configManager, true) };
-			std::unordered_map<int32_t, std::unique_ptr<WebSocketSSLShard>> theMap{};
+			std::unordered_map<int32_t, std::unique_ptr<SSLEntity>> theMap{};
 			auto bytesRead{ static_cast<int32_t>(streamSocket->getBytesRead()) };
 			if (newSong.finalDownloadUrls.size() > 0) {
 				theMap[0] = std::move(streamSocket);
 				theMap[0]->connect(newSong.finalDownloadUrls[0].urlPath, "443");
-				theMap[0]->areWeConnected01.store(true);
+				static_cast<WebSocketSSLShard*>(theMap[0].get())->areWeConnected01.store(true);
 			} else {
 				return;
 			}

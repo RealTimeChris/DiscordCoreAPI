@@ -79,14 +79,14 @@ namespace DiscordCoreAPI {
 
 	void BotUser::updateVoiceStatus(UpdateVoiceStateData& dataPackage) {
 		nlohmann::json payload = dataPackage;
-		this->baseSocketAgent->sendMessage(payload, this->baseSocketAgent->theClients.begin().operator*().second.get(), false);
+		this->baseSocketAgent->sendMessage(payload, static_cast<DiscordCoreInternal::WebSocketSSLShard*>(this->baseSocketAgent->theClients[0].get()), false);
 	}
 
 	void BotUser::updatePresence(UpdatePresenceData& dataPackage) {
 		dataPackage.since = static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
 		nlohmann::json payload = dataPackage;
 		if (this->baseSocketAgent) {
-			this->baseSocketAgent->sendMessage(payload, this->baseSocketAgent->theClients.begin().operator*().second.get(), false);
+			this->baseSocketAgent->sendMessage(payload, static_cast<DiscordCoreInternal::WebSocketSSLShard*>(this->baseSocketAgent->theClients[0].get()), false);
 		}
 	}
 

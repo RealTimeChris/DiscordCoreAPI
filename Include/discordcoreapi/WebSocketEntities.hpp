@@ -61,7 +61,7 @@ namespace DiscordCoreInternal {
 		~BaseSocketAgent() noexcept;
 
 	  protected:
-		std::unordered_map<int32_t, std::unique_ptr<WebSocketSSLShard>> theClients{};
+		std::unordered_map<int32_t, std::unique_ptr<SSLEntity>> theClients{};
 		DiscordCoreAPI::DiscordCoreClient* discordCoreClient{ nullptr };
 		std::queue<DiscordCoreAPI::ConnectionPackage> connections{};
 		DiscordCoreAPI::ConfigManager* configManager{ nullptr };

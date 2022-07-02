@@ -54,8 +54,7 @@ namespace DiscordCoreAPI {
 
 	  protected:
 		DiscordCoreAPI::UnboundedMessageBlock<DiscordCoreInternal::VoiceConnectionData> voiceConnectionDataBuffer{};
-		std::unordered_map<int32_t, std::unique_ptr<DiscordCoreInternal::WebSocketSSLShard>> theClients{};
-		std::unique_ptr<DiscordCoreInternal::DatagramSocketSSLClient> voiceSocket{ nullptr };
+		std::unordered_map<int32_t, std::unique_ptr<DiscordCoreInternal::SSLEntity>> theClients{};
 		std::unique_ptr<DiscordCoreInternal::AudioEncoder> encoder{ nullptr };
 		DiscordCoreInternal::BaseSocketAgent* baseSocketAgent{ nullptr };
 		DiscordCoreInternal::VoiceConnectInitData voiceConnectInitData{};
