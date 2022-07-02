@@ -24,6 +24,77 @@
 
 namespace DiscordCoreAPI {
 
+	EditChannelPermissionOverwritesData::operator std::string() {
+		nlohmann::json data{};
+		data["allow"] = this->allow;
+		data["deny"] = this->deny;
+		data["type"] = this->type;
+		return data.dump();
+	}
+
+	CreateChannelInviteData::operator std::string() {
+		nlohmann::json data{};
+		if (this->targetUserId != 0) {
+			data["target_application_id"] = this->targetApplicationId;
+			data["target_user_id"] = std::to_string(this->targetUserId);
+			data["target_type"] = this->targetType;
+		}
+		data["temporary"] = this->temporary;
+		data["max_uses"] = this->maxUses;
+		data["max_age"] = this->maxAge;
+		data["unique"] = this->unique;
+		return data.dump();
+	}
+
+	FollowNewsChannelData::operator std::string() {
+		nlohmann::json data{};
+		data["webhook_channel_id"] = std::to_string(this->targetChannelId);
+		return data.dump();
+	}
+
+	CreateGuildChannelData::operator std::string() {
+		nlohmann::json data{};
+		if (this->type == DiscordCoreAPI::ChannelType::Guild_Voice || this->type == DiscordCoreAPI::ChannelType::Guild_Stage_Voice) {
+			data["user_limit"] = this->userLimit;
+			data["bitrate"] = this->bitrate;
+		}
+		nlohmann::json overwrites{};
+		for (auto& value: this->permissionOverwrites) {
+			nlohmann::json newData{};
+			newData["allow"] = value.allow.getCurrentPermissionString();
+			newData["deny"] = value.deny.getCurrentPermissionString();
+			newData["channel_id"] = std::to_string(value.channelId);
+			newData["type"] = value.type;
+			newData["id"] = std::to_string(value.id);
+			overwrites.push_back(newData);
+		}
+		data["default_auto_archive_duration"] = this->defaultAutoArchiveDuration;
+		data["rate_limit_per_user"] = this->rateLimitPerUser;
+		data["permission_overwrites"] = overwrites;
+		data["parent_id"] = std::to_string(this->parentId);
+		data["position"] = this->position;
+		data["topic"] = this->topic;
+		data["name"] = this->name;
+		data["nsfw"] = this->nsfw;
+		data["type"] = this->type;
+		return data.dump();
+	}
+
+	ModifyGuildChannelPositionsData::operator std::string() {
+		nlohmann::json data{};
+		for (auto& value: this->modifyChannelData) {
+			nlohmann::json dataNew{};
+			dataNew["lock_permissions"] = value.lockPermissions;
+			if (value.parentId != 0) {
+				dataNew["parent_id"] = value.parentId;
+			}
+			dataNew["position"] = value.position;
+			dataNew["id"] = std::to_string(value.id);
+			data.push_back(dataNew);
+		}
+		return data.dump();
+	}
+
 	Channel& Channel::operator=(const nlohmann::json& jsonObjectData) {
 		this->parseObject(jsonObjectData, this);
 		return *this;
@@ -84,6 +155,47 @@ namespace DiscordCoreAPI {
 
 	ChannelVector::ChannelVector(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
+	}
+
+	ModifyChannelData::ModifyChannelData(Channel newData) {
+		this->channelData.nsfw = getBool<int8_t, ChannelFlags>(newData.flags, ChannelFlags::NSFW);
+		this->channelData.permissionOverwrites = newData.permissionOverwrites;
+		this->channelData.rateLimitPerUser = newData.rateLimitPerUser;
+		this->channelData.userLimit = newData.userLimit;
+		this->channelData.rtcRgion = newData.rtcRegion;
+		this->channelData.parentId = newData.parentId;
+		this->channelData.position = newData.position;
+		this->channelData.topic = newData.topic;
+		this->channelData.name = newData.name;
+		this->channelData.type = newData.type;
+	};
+
+	ModifyChannelData::operator std::string() {
+		nlohmann::json permOws{};
+		for (auto& [key, value]: this->channelData.permissionOverwrites) {
+			nlohmann::json newData{};
+			newData["allow"] = value.allow.getCurrentPermissionString();
+			newData["deny"] = value.deny.getCurrentPermissionString();
+			newData["channel_id"] = value.channelId;
+			newData["type"] = value.type;
+			newData["id"] = value.id;
+			permOws.push_back(newData);
+		}
+		nlohmann::json data{};
+		data["default_auto_archive_duration"] = this->channelData.defaultAutoArchiveDuration;
+		data["video_quality_mode"] = this->channelData.videoQualityMode;
+		data["rate_limit_per_user"] = this->channelData.rateLimitPerUser;
+		data["user_limit"] = this->channelData.userLimit;
+		data["rtc_region"] = std::string{ this->channelData.rtcRgion };
+		data["parent_id"] = std::string{ this->channelData.parentId };
+		data["position"] = this->channelData.position;
+		data["bitrate"] = this->channelData.bitrate;
+		data["topic"] = std::string{ this->channelData.topic };
+		data["nsfw"] = this->channelData.nsfw;
+		data["name"] = std::string{ this->channelData.name };
+		data["type"] = this->channelData.type;
+		data["permission_overwrites"] = permOws;
+		return data.dump();
 	}
 
 	void Channels::initialize(DiscordCoreInternal::HttpsClient* theClient, ConfigManager* configManagerNew) {
