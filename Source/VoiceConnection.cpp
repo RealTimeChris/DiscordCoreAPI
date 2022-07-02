@@ -485,6 +485,7 @@ namespace DiscordCoreAPI {
 			if (this->disconnectStartTime != 0) {
 				int64_t currentTime = static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
 				if (currentTime - this->disconnectStartTime >= 60000) {
+					this->onClosed();
 					this->connect();
 					this->play();
 				}
