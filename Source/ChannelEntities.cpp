@@ -87,7 +87,6 @@ namespace DiscordCoreAPI {
 	}
 
 	void Channels::initialize(DiscordCoreInternal::HttpsClient* theClient, ConfigManager* configManagerNew) {
-		Channels::cache = std::make_unique<std::unordered_map<uint64_t, std::unique_ptr<ChannelData>>>();
 		Channels::configManager = configManagerNew;
 		Channels::httpsClient = theClient;
 	}
@@ -297,7 +296,7 @@ namespace DiscordCoreAPI {
 		if (channel.id == 0) {
 			return;
 		}
-		auto newCache = std::make_unique<std::unordered_map<uint64_t, std::unique_ptr<ChannelData>>>();
+		auto newCache = std::make_unique<std::unordered_map<Snowflake, std::unique_ptr<ChannelData>>>();
 		for (auto& [key, value]: *Channels::cache) {
 			(*newCache)[key] = std::move(value);
 		}
@@ -308,12 +307,12 @@ namespace DiscordCoreAPI {
 		Channels::cache = std::move(newCache);
 	}
 
-	void Channels::removeChannel(const uint64_t& channelId) {
+	void Channels::removeChannel(const Snowflake& channelId) {
 		std::unique_lock<std::shared_mutex> theLock{ Channels::theMutex };
 		Channels::cache->erase(channelId);
 	};
 
-	std::unique_ptr<std::unordered_map<uint64_t, std::unique_ptr<ChannelData>>> Channels::cache{};
+	std::unique_ptr<std::unordered_map<Snowflake, std::unique_ptr<ChannelData>>> Channels::cache{ std::make_unique<std::unordered_map<Snowflake, std::unique_ptr<ChannelData>>>() };
 	DiscordCoreInternal::HttpsClient* Channels::httpsClient{ nullptr };
 	ConfigManager* Channels::configManager{ nullptr };
 	std::shared_mutex Channels::theMutex{};

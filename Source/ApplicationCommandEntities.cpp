@@ -27,6 +27,94 @@
 
 namespace DiscordCoreAPI {
 
+	CreateGlobalApplicationCommandData::operator std::string() {
+		nlohmann::json data{};
+		if (this->defaultMemberPermissions != "") {
+			data["default_member_permissions"] = this->defaultMemberPermissions;
+		}
+		data["description_localizations"] = this->descriptionLocalizations;
+		data["name_localizations"] = this->nameLocalizations;
+		data["dm_permission"] = this->dmPermission;
+		data["description"] = this->description;
+		data["name"] = this->name;
+		data["type"] = this->type;
+		if (this->options.size() > 0) {
+			for (int32_t x = 0; x < this->options.size(); x++) {
+				data["options"].push_back(nlohmann::json(this->options[x]));
+			}
+		}
+		return data.dump();
+	}
+
+	EditGlobalApplicationCommandData::operator std::string(){
+		nlohmann::json data{};
+		if (this->defaultMemberPermissions != "") {
+			data["default_member_permissions"] = this->defaultMemberPermissions;
+		}
+		data["description_localizations"] = this->descriptionLocalizations;
+		data["name_localizations"] = this->nameLocalizations;
+		data["dm_permission"] = this->dmPermission;
+		data["description"] = this->description;
+		data["name"] = this->name;
+		if (this->options.size() > 0) {
+			for (int32_t x = 0; x < this->options.size(); x++) {
+				data["options"].push_back(nlohmann::json{ this->options[x] });
+			}
+		}
+		return data.dump();
+	}
+
+	CreateGuildApplicationCommandData::operator std::string() {
+		nlohmann::json data{};
+		if (this->defaultMemberPermissions != "") {
+			data["default_member_permissions"] = this->defaultMemberPermissions;
+		}
+		data["description_localizations"] = this->descriptionLocalizations;
+		data["name_localizations"] = this->nameLocalizations;
+		data["dm_permission"] = this->dmPermission;
+		data["description"] = this->description;
+		data["name"] = this->name;
+		data["type"] = this->type;
+		if (this->options.size() > 0) {
+			for (int32_t x = 0; x < this->options.size(); x++) {
+				data["options"].push_back(nlohmann::json{ this->options[x] });
+			}
+			data["options"] = nlohmann::json{};
+		}
+		return data.dump();
+	}
+
+	EditGuildApplicationCommandData::operator std::string() {
+		nlohmann::json data{};
+		if (this->defaultMemberPermissions != "") {
+			data["default_member_permissions"] = this->defaultMemberPermissions;
+		}
+		data["description_localizations"] = this->descriptionLocalizations;
+		data["name_localizations"] = this->nameLocalizations;
+		data["dm_permission"] = this->dmPermission;
+		data["description"] = this->description;
+		data["name"] = this->name;
+		if (this->options.size() > 0) {
+			for (int32_t x = 0; x < this->options.size(); x++) {
+				data["options"].push_back(nlohmann::json{ this->options[x] });
+			}
+			data["options"] = nlohmann::json{};
+		}
+		return data.dump();
+	}
+
+	EditGuildApplicationCommandPermissionsData::operator std::string() {
+		nlohmann::json newDataArray{};
+		for (auto& value: this->permissions) {
+			nlohmann::json newData{};
+			newData["permission"] = value.permission;
+			newData["type"] = value.type;
+			newData["id"] = std::to_string(value.id);
+			newDataArray.push_back(newData);
+		}
+		return newDataArray.dump();
+	}
+
 	ApplicationCommand& ApplicationCommand::operator=(const nlohmann::json& jsonObjectData) {
 		this->parseObject(jsonObjectData, this);
 		return *this;

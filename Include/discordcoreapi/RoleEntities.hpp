@@ -284,7 +284,7 @@ namespace DiscordCoreAPI {
 		static void removeRole(const uint64_t& roleId);
 
 	  protected:
-		static std::unique_ptr<std::unordered_map<uint64_t, std::unique_ptr<RoleData>>> cache;
+		static std::unique_ptr<std::unordered_map<Snowflake, std::unique_ptr<RoleData>>> cache;
 		static DiscordCoreInternal::HttpsClient* httpsClient;
 		static ConfigManager* configManager;
 		static std::shared_mutex theMutex;

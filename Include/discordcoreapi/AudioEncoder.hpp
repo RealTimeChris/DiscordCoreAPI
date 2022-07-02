@@ -28,21 +28,21 @@ namespace DiscordCoreInternal {
 
 	struct DiscordCoreAPI_Dll OpusEncoderWrapper {
 		struct DiscordCoreAPI_Dll OpusEncoderDeleter {
-			void operator()(OpusEncoder* other) {
+			inline void operator()(OpusEncoder* other) {
 				opus_encoder_destroy(other);
 			}
 		};
 
-		OpusEncoderWrapper& operator=(OpusEncoder* other) {
+		inline OpusEncoderWrapper& operator=(OpusEncoder* other) {
 			this->thePtr.reset(other);
 			return *this;
 		}
 
-		operator OpusEncoder*() {
+		inline operator OpusEncoder*() {
 			return this->thePtr.get();
 		}
 
-		OpusEncoderWrapper(std::nullptr_t other) {
+		inline OpusEncoderWrapper(std::nullptr_t other) {
 			*this = other;
 		}
 

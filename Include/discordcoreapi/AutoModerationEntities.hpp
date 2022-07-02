@@ -88,32 +88,7 @@ namespace DiscordCoreAPI {
 		std::string name{};///< The rule name.
 		bool enabled{};///< Whether the rule is enabled(False by default).
 
-		operator std::string() {
-			nlohmann::json data{};
-			data["actions"];
-			for (auto& value: this->actions) {
-				nlohmann::json dataNew{};
-				dataNew["metadata"]["channel_id"] = value.metadata.channelId;
-				dataNew["metadata"]["duration_seconds"] = value.metadata.durationSeconds;
-				dataNew["type"] = value.type;
-				data["actions"].push_back(dataNew);
-			}
-			data["enabled"] = this->enabled;
-			data["event_type"] = this->eventType;
-			data["exempt_channels"];
-			for (auto& value: this->exemptChannels) {
-				data["exempt_channels"].push_back(value);
-			}
-			data["exempt_roles"];
-			for (auto& value: this->exemptRoles) {
-				data["exempt_roles"].push_back(value);
-			}
-			data["name"] = this->name;
-			data["trigger_metadata"]["keyword_filter"] = this->triggerMetadata.keywordFilter;
-			data["trigger_metadata"]["presets"] = this->triggerMetadata.presets;
-			data["trigger_type"] = this->triggerType;
-			return data.dump();
-		}
+		operator std::string();
 	};
 
 	/// For when an auto-moderation-rule is executed. \brief For when an auto-moderation-rule is executed.
@@ -132,62 +107,13 @@ namespace DiscordCoreAPI {
 
 		AutoModerationActionExecutionEventData() = default;
 
-		AutoModerationActionExecutionEventData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
-
-		AutoModerationActionExecutionEventData(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
+		AutoModerationActionExecutionEventData& operator=(const nlohmann::json& jsonObjectData);
+		
+		AutoModerationActionExecutionEventData(const nlohmann::json& jsonObjectData);
 
 		virtual ~AutoModerationActionExecutionEventData() = default;
 
-		void parseObject(const nlohmann::json& jsonObjectData, AutoModerationActionExecutionEventData* pDataStructure) {
-			if (jsonObjectData.contains("alert_system_message_id") && !jsonObjectData["alert_system_message_id"].is_null()) {
-				pDataStructure->alertSystemMessageId = stoull(jsonObjectData["alert_system_message_id"].get<std::string>());
-			}
-
-			if (jsonObjectData.contains("rule_trigger_type") && !jsonObjectData["rule_trigger_type"].is_null()) {
-				pDataStructure->ruleTriggerType = jsonObjectData["rule_trigger_type"].get<TriggerType>();
-			}
-
-			if (jsonObjectData.contains("matched_keyword") && !jsonObjectData["matched_keyword"].is_null()) {
-				pDataStructure->matchedKeyword = jsonObjectData["matched_keyword"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("matched_content") && !jsonObjectData["matched_content"].is_null()) {
-				pDataStructure->matchedContent = jsonObjectData["matched_content"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("action") && !jsonObjectData["action"].is_null()) {
-				pDataStructure->action = jsonObjectData["action"];
-			}
-
-			if (jsonObjectData.contains("content") && !jsonObjectData["content"].is_null()) {
-				pDataStructure->content = jsonObjectData["content"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("message_id") && !jsonObjectData["message_id"].is_null()) {
-				pDataStructure->messageId = stoull(jsonObjectData["message_id"].get<std::string>());
-			}
-
-			if (jsonObjectData.contains("channel_id") && !jsonObjectData["channel_id"].is_null()) {
-				pDataStructure->channelId = stoull(jsonObjectData["channel_id"].get<std::string>());
-			}
-
-			if (jsonObjectData.contains("guild_id") && !jsonObjectData["guild_id"].is_null()) {
-				pDataStructure->guildId = stoull(jsonObjectData["guild_id"].get<std::string>());
-			}
-
-			if (jsonObjectData.contains("rule_id") && !jsonObjectData["rule_id"].is_null()) {
-				pDataStructure->ruleId = stoull(jsonObjectData["rule_id"].get<std::string>());
-			}
-
-			if (jsonObjectData.contains("user_id") && !jsonObjectData["user_id"].is_null()) {
-				pDataStructure->userId = stoull(jsonObjectData["user_id"].get<std::string>());
-			}
-		}
+		void parseObject(const nlohmann::json& jsonObjectData, AutoModerationActionExecutionEventData* pDataStructure);
 	};
 
 	/// For modifying an auto-moderation-rule. \brief For modifying an auto-moderation-rule.
@@ -202,31 +128,7 @@ namespace DiscordCoreAPI {
 		std::string name{};///< The rule name.
 		bool enabled{};///< Whether the rule is enabled(False by default).
 
-		operator std::string() {
-			nlohmann::json data{};
-			data["actions"];
-			for (auto& value: this->actions) {
-				nlohmann::json dataNew{};
-				dataNew["metadata"]["channel_id"] = value.metadata.channelId;
-				dataNew["metadata"]["duration_seconds"] = value.metadata.durationSeconds;
-				dataNew["type"] = value.type;
-				data["actions"].push_back(dataNew);
-			}
-			data["enabled"] = this->enabled;
-			data["event_type"] = this->eventType;
-			data["exempt_channels"];
-			for (auto& value: this->exemptChannels) {
-				data["exempt_channels"].push_back(value);
-			}
-			data["exempt_roles"];
-			for (auto& value: this->exemptRoles) {
-				data["exempt_roles"].push_back(value);
-			}
-			data["name"] = this->name;
-			data["trigger_metadata"]["keyword_filter"] = this->triggerMetadata.keywordFilter;
-			data["trigger_metadata"]["presets"] = this->triggerMetadata.presets;
-			return data.dump();
-		}
+		operator std::string();
 	};
 
 	/// For deleting an auto-moderation-rule. \brief For deleting an auto-moderation-rule.

@@ -31,7 +31,7 @@ namespace DiscordCoreAPI {
 	}
 
 	ExecuteWebHookData& ExecuteWebHookData::addButton(bool disabled, const std::string& customIdNew, const std::string& buttonLabel, ButtonStyle buttonStyle,
-		const std::string& emojiName, uint64_t emojiId, const std::string& url) {
+		const std::string& emojiName, Snowflake emojiId, const std::string& url) {
 		if (this->components.size() == 0) {
 			ActionRowData actionRowData;
 			this->components.push_back(actionRowData);

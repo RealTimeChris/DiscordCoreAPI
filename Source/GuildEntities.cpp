@@ -186,7 +186,6 @@ namespace DiscordCoreAPI {
 	}
 
 	void Guilds::initialize(DiscordCoreInternal::HttpsClient* theClient, DiscordCoreClient* discordCoreClientNew, ConfigManager* configManagerNew) {
-		Guilds::cache = std::make_unique<std::unordered_map<Snowflake, std::unique_ptr<GuildData>>>();
 		Guilds::discordCoreClient = discordCoreClientNew;
 		Guilds::configManager = configManagerNew;
 		Guilds::httpsClient = theClient;
@@ -780,7 +779,7 @@ namespace DiscordCoreAPI {
 		Guilds::cache->erase(guildId);
 	};
 
-	std::unique_ptr<std::unordered_map<Snowflake, std::unique_ptr<GuildData>>> Guilds::cache{};
+	std::unique_ptr<std::unordered_map<Snowflake, std::unique_ptr<GuildData>>> Guilds::cache{ std::make_unique<std::unordered_map<Snowflake, std::unique_ptr<GuildData>>>() };
 	DiscordCoreInternal::HttpsClient* Guilds::httpsClient{ nullptr };
 	DiscordCoreClient* Guilds::discordCoreClient{ nullptr };
 	ConfigManager* Guilds::configManager{ nullptr };

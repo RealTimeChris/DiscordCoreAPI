@@ -36,7 +36,7 @@ namespace DiscordCoreAPI {
 		this->configManager = configManagerNew;
 	}
 
-	uint64_t VoiceConnection::getChannelId() noexcept {
+	Snowflake VoiceConnection::getChannelId() noexcept {
 		if (this && this->voiceConnectInitData.channelId != 0) {
 			return this->voiceConnectInitData.channelId;
 		} else {

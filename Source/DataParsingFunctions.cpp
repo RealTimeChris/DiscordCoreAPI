@@ -100,6 +100,52 @@ namespace DiscordCoreAPI {
 		}
 	}
 
+	void AutoModerationActionExecutionEventData::parseObject(const nlohmann::json& jsonObjectData, AutoModerationActionExecutionEventData* pDataStructure) {
+		if (jsonObjectData.contains("alert_system_message_id") && !jsonObjectData["alert_system_message_id"].is_null()) {
+			pDataStructure->alertSystemMessageId = stoull(jsonObjectData["alert_system_message_id"].get<std::string>());
+		}
+
+		if (jsonObjectData.contains("rule_trigger_type") && !jsonObjectData["rule_trigger_type"].is_null()) {
+			pDataStructure->ruleTriggerType = jsonObjectData["rule_trigger_type"].get<TriggerType>();
+		}
+
+		if (jsonObjectData.contains("matched_keyword") && !jsonObjectData["matched_keyword"].is_null()) {
+			pDataStructure->matchedKeyword = jsonObjectData["matched_keyword"].get<std::string>();
+		}
+
+		if (jsonObjectData.contains("matched_content") && !jsonObjectData["matched_content"].is_null()) {
+			pDataStructure->matchedContent = jsonObjectData["matched_content"].get<std::string>();
+		}
+
+		if (jsonObjectData.contains("action") && !jsonObjectData["action"].is_null()) {
+			pDataStructure->action = jsonObjectData["action"];
+		}
+
+		if (jsonObjectData.contains("content") && !jsonObjectData["content"].is_null()) {
+			pDataStructure->content = jsonObjectData["content"].get<std::string>();
+		}
+
+		if (jsonObjectData.contains("message_id") && !jsonObjectData["message_id"].is_null()) {
+			pDataStructure->messageId = stoull(jsonObjectData["message_id"].get<std::string>());
+		}
+
+		if (jsonObjectData.contains("channel_id") && !jsonObjectData["channel_id"].is_null()) {
+			pDataStructure->channelId = stoull(jsonObjectData["channel_id"].get<std::string>());
+		}
+
+		if (jsonObjectData.contains("guild_id") && !jsonObjectData["guild_id"].is_null()) {
+			pDataStructure->guildId = stoull(jsonObjectData["guild_id"].get<std::string>());
+		}
+
+		if (jsonObjectData.contains("rule_id") && !jsonObjectData["rule_id"].is_null()) {
+			pDataStructure->ruleId = stoull(jsonObjectData["rule_id"].get<std::string>());
+		}
+
+		if (jsonObjectData.contains("user_id") && !jsonObjectData["user_id"].is_null()) {
+			pDataStructure->userId = stoull(jsonObjectData["user_id"].get<std::string>());
+		}
+	}
+
 	void AutoModerationRule::parseObject(const nlohmann::json& jsonObjectData, AutoModerationRule* pDataStructure) {
 		if (jsonObjectData.contains("name") && !jsonObjectData["name"].is_null()) {
 			pDataStructure->name = jsonObjectData["name"].get<std::string>();

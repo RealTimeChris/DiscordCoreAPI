@@ -23,6 +23,68 @@
 
 namespace DiscordCoreAPI {
 
+	CreateAutoModerationRuleData::operator std::string() {
+		nlohmann::json data{};
+		data["actions"];
+		for (auto& value: this->actions) {
+			nlohmann::json dataNew{};
+			dataNew["metadata"]["channel_id"] = value.metadata.channelId;
+			dataNew["metadata"]["duration_seconds"] = value.metadata.durationSeconds;
+			dataNew["type"] = value.type;
+			data["actions"].push_back(dataNew);
+		}
+		data["enabled"] = this->enabled;
+		data["event_type"] = this->eventType;
+		data["exempt_channels"];
+		for (auto& value: this->exemptChannels) {
+			data["exempt_channels"].push_back(value);
+		}
+		data["exempt_roles"];
+		for (auto& value: this->exemptRoles) {
+			data["exempt_roles"].push_back(value);
+		}
+		data["name"] = this->name;
+		data["trigger_metadata"]["keyword_filter"] = this->triggerMetadata.keywordFilter;
+		data["trigger_metadata"]["presets"] = this->triggerMetadata.presets;
+		data["trigger_type"] = this->triggerType;
+		return data.dump();
+	}
+
+	AutoModerationActionExecutionEventData& AutoModerationActionExecutionEventData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData, this);
+		return *this;
+	}
+
+	AutoModerationActionExecutionEventData::AutoModerationActionExecutionEventData(const nlohmann::json& jsonObjectData) {
+		*this = jsonObjectData;
+	}
+
+	ModifyAutoModerationRuleData::operator std::string() {
+		nlohmann::json data{};
+		data["actions"];
+		for (auto& value: this->actions) {
+			nlohmann::json dataNew{};
+			dataNew["metadata"]["channel_id"] = value.metadata.channelId;
+			dataNew["metadata"]["duration_seconds"] = value.metadata.durationSeconds;
+			dataNew["type"] = value.type;
+			data["actions"].push_back(dataNew);
+		}
+		data["enabled"] = this->enabled;
+		data["event_type"] = this->eventType;
+		data["exempt_channels"];
+		for (auto& value: this->exemptChannels) {
+			data["exempt_channels"].push_back(value);
+		}
+		data["exempt_roles"];
+		for (auto& value: this->exemptRoles) {
+			data["exempt_roles"].push_back(value);
+		}
+		data["name"] = this->name;
+		data["trigger_metadata"]["keyword_filter"] = this->triggerMetadata.keywordFilter;
+		data["trigger_metadata"]["presets"] = this->triggerMetadata.presets;
+		return data.dump();
+	}
+
 	AutoModerationRule& AutoModerationRule::operator=(const nlohmann::json& jsonObjectData) {
 		this->parseObject(jsonObjectData, this);
 		return *this;

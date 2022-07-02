@@ -90,7 +90,6 @@ namespace DiscordCoreAPI {
 	}
 
 	void GuildMembers::initialize(DiscordCoreInternal::HttpsClient* theClient, ConfigManager* configManagerNew) {
-		GuildMembers::cache = std::make_unique<std::map<GuildMemberId, std::unique_ptr<GuildMemberData>>>();
 		GuildMembers::configManager = configManagerNew;
 		GuildMembers::httpsClient = theClient;
 	}
@@ -292,7 +291,7 @@ namespace DiscordCoreAPI {
 		GuildMembers::cache->erase(theKey);
 	};
 
-	std::unique_ptr<std::map<GuildMemberId, std::unique_ptr<GuildMemberData>>> GuildMembers::cache{};
+	std::unique_ptr<std::map<GuildMemberId, std::unique_ptr<GuildMemberData>>> GuildMembers::cache{ std::make_unique<std::map<GuildMemberId, std::unique_ptr<GuildMemberData>>>() };
 	DiscordCoreInternal::HttpsClient* GuildMembers::httpsClient{ nullptr };
 	ConfigManager* GuildMembers::configManager{ nullptr };
 	std::shared_mutex GuildMembers::theMutex{};

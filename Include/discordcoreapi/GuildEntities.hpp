@@ -307,13 +307,13 @@ namespace DiscordCoreAPI {
 		Snowflake guildScheduledEventId{};///< The Guild scheduled event to include with the invite.
 		bool withExpiration{ false };///< Collect expiration time/date?
 		bool withCount{ false };///< Collect usage etc counts?
-		uint64_t inviteId{};///< The id of the invite you wish to acquire.
+		Snowflake inviteId{};///< The id of the invite you wish to acquire.
 	};
 
 	/// For deleting a single Guild Invite. \brief For deleting a single Guild Invite.
 	struct DiscordCoreAPI_Dll DeleteInviteData {
 		std::string reason{};///< Reason for deleting the Invite.
-		uint64_t inviteId{};///< The Invite which you would like to delete.
+		Snowflake inviteId{};///< The Invite which you would like to delete.
 	};
 
 	/// For collecting a list of Guild's that the Bot is in. \brief For collecting a list of Guild's that the Bot is in.
@@ -677,7 +677,7 @@ namespace DiscordCoreAPI {
 		static CoRoutine<void> leaveGuildAsync(LeaveGuildData dataPackage);
 
 	  protected:
-		static std::unique_ptr<std::unordered_map<uint64_t, std::unique_ptr<GuildData>>> cache;
+		static std::unique_ptr<std::unordered_map<Snowflake, std::unique_ptr<GuildData>>> cache;
 		static DiscordCoreInternal::HttpsClient* httpsClient;
 		static DiscordCoreClient* discordCoreClient;
 		static ConfigManager* configManager;
@@ -685,7 +685,7 @@ namespace DiscordCoreAPI {
 
 		static void insertGuild(GuildData guild);
 
-		static void removeGuild(const uint64_t& GuildId);
+		static void removeGuild(const Snowflake& GuildId);
 	};
 	/**@}*/
 }// namespace DiscordCoreAPI

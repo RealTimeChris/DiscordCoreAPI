@@ -95,7 +95,6 @@ namespace DiscordCoreAPI {
 	}
 
 	void Users::initialize(DiscordCoreInternal::HttpsClient* theClient, ConfigManager* configManagerNew) {
-		Users::cache = std::make_unique<std::unordered_map<uint64_t, std::unique_ptr<UserData>>>();
 		Users::configManager = configManagerNew;
 		Users::httpsClient = theClient;
 	}
@@ -237,7 +236,7 @@ namespace DiscordCoreAPI {
 		if (user.id == 0) {
 			return;
 		}
-		auto newCache = std::make_unique<std::unordered_map<uint64_t, std::unique_ptr<UserData>>>();
+		auto newCache = std::make_unique<std::unordered_map<Snowflake, std::unique_ptr<UserData>>>();
 		for (auto& [key, value]: *Users::cache) {
 			(*newCache)[key] = std::move(value);
 		}
@@ -248,9 +247,8 @@ namespace DiscordCoreAPI {
 		Users::cache = std::move(newCache);
 	}
 
-	std::unique_ptr<std::unordered_map<uint64_t, std::unique_ptr<UserData>>> Users::cache{};
+	std::unique_ptr<std::unordered_map<Snowflake, std::unique_ptr<UserData>>> Users::cache{ std::make_unique<std::unordered_map<Snowflake, std::unique_ptr<UserData>>>() };
 	DiscordCoreInternal::HttpsClient* Users::httpsClient{ nullptr };
 	ConfigManager* Users::configManager{ nullptr };
 	std::shared_mutex Users::theMutex{};
-
 }
