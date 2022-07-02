@@ -155,7 +155,6 @@ namespace DiscordCoreInternal {
 				if (!didWeWrite) {
 					theShard->disconnect();
 				}
-				std::this_thread::sleep_for(500ms);
 				if (doWeCollect.channelId == 0) {
 					return;
 				}

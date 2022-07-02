@@ -69,13 +69,13 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::EventWaiter playSetEvent{};
 		DiscordCoreInternal::EventWaiter stopSetEvent{};
 		DiscordCoreInternal::EventWaiter pauseEvent{};
+		std::atomic_bool areWeConnectedBool{ false };
 		std::queue<ConnectionPackage> connections{};
 		std::atomic_bool doWeDisconnect{ false };
 		std::atomic_bool areWeStopping{ false };
 		std::atomic_bool areWePlaying{ false };
-		int64_t disconnectStartTime{ 0 };
-		bool areWeConnectedBool{ false };
 		Snowflake currentGuildMemberId{};
+		int64_t disconnectStartTime{ 0 };
 		int64_t heartbeatInterval{ 0 };
 		bool didWeJustConnect{ true };
 		int16_t sequenceIndex{ 0 };
@@ -130,8 +130,6 @@ namespace DiscordCoreAPI {
 		void pauseToggle() noexcept;
 
 		void disconnect() noexcept;
-
-		void reconnect() noexcept;
 
 		void onClosed() noexcept;
 
