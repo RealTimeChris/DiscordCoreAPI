@@ -257,6 +257,7 @@ namespace DiscordCoreAPI {
 							protocolPayloadData.voicePort = this->voiceConnectionData.voicePort;
 							nlohmann::json protocolPayloadSelectString = protocolPayloadData;
 							this->sendMessage(protocolPayloadSelectString);
+							this->theClients[0]->theState = DiscordCoreInternal::WebSocketState::Connected;
 							break;
 						}
 						case 4: {
@@ -270,7 +271,6 @@ namespace DiscordCoreAPI {
 							break;
 						}
 						case 8: {
-							this->theClients[0]->theState = DiscordCoreInternal::WebSocketState::Connected;
 							if (payload["d"].contains("heartbeat_interval")) {
 								this->heartbeatInterval = static_cast<int32_t>(payload["d"]["heartbeat_interval"].get<float>());
 								this->theClients[0]->areWeHeartBeating = false;
@@ -397,32 +397,26 @@ namespace DiscordCoreAPI {
 	void VoiceConnection::runWebSocket(std::stop_token theToken) noexcept {
 		try {
 			while (!theToken.stop_requested() && !Globals::doWeQuit.load() && !this->doWeDisconnect.load()) {
-				std::cout << "WERE HERE THIS IS IT!" << std::endl;
 				if (this->connections.size() > 0) {
-					std::cout << "WERE HERE THIS IS IT!" << std::endl;
 					this->theBaseShard->voiceConnectionDataBufferMap[this->voiceConnectInitData.guildId] = &this->voiceConnectionDataBuffer;
 					this->baseSocketAgent->getVoiceConnectionData(this->voiceConnectInitData, this->theBaseShard);
-					this->sendSpeakingMessage(false);
 					this->webSocketConnect();
+					this->sendSpeakingMessage(false);
 					this->sendSpeakingMessage(true);
 					this->play();
 					this->connections.pop();
 				}
-				std::cout << "WERE HERE THIS IS IT! 0303" << std::endl;
 				if (this->heartbeatInterval != 0 && !this->theClients[0]->areWeHeartBeating) {
 					this->theClients[0]->areWeHeartBeating = true;
 					this->theClients[0]->heartBeatStopWatch = DiscordCoreAPI::StopWatch{ std::chrono::milliseconds{ this->heartbeatInterval } };
 				}
-				std::cout << "WERE HERE THIS IS IT! 0404" << std::endl;
 				if (!theToken.stop_requested() && this->theClients[0]->heartBeatStopWatch.hasTimePassed() && this->theClients[0]->areWeHeartBeating) {
 					this->sendHeartBeat();
 					this->theClients[0]->heartBeatStopWatch.resetTimer();
 				}
-				std::cout << "WERE HERE THIS IS IT! 0505" << std::endl;
 				if (!theToken.stop_requested() && this->theClients[0]->areWeStillConnected() && !Globals::doWeQuit.load()) {
 					DiscordCoreInternal::WebSocketSSLShard::processIO(this->theClients, 1000);
 				}
-				std::cout << "WERE HERE THIS IS IT! 0606" << std::endl;
 				if (!theToken.stop_requested() && this->theClients.contains(0) && this->theClients[0] && !Globals::doWeQuit.load()) {
 					this->parseHeadersAndMessage(this->theClients[0].get());
 					if (this->theClients.contains(0) && this->theClients[0] && this->theClients[0]->processedMessages.size() > 0) {
@@ -433,7 +427,6 @@ namespace DiscordCoreAPI {
 						this->theClients[0]->processedMessages.pop();
 					}
 				}
-				std::cout << "WERE HERE THIS IS IT! 0707" << std::endl;
 				std::this_thread::sleep_for(1ms);
 			}
 		} catch (...) {
@@ -495,7 +488,7 @@ namespace DiscordCoreAPI {
 				}
 				while (!this->voiceSocket->areWeConnected.load() && !this->doWeDisconnect.load()) {
 					std::this_thread::sleep_for(1ms);
-				}
+				}s
 				this->areWePlaying.store(true);
 				if (this->areWeStopping.load()) {
 					this->areWePlaying.store(false);

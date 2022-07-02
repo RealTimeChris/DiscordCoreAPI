@@ -162,6 +162,7 @@ namespace DiscordCoreInternal {
 				newData = dataPackage;
 				this->stringifyJsonData(newData, theString, theShard->dataOpCode);
 				theStopWatch.resetTimer();
+				theShard->areWeCollectingData = true;
 				do {
 					if (theStopWatch.hasTimePassed()) {
 						break;
@@ -171,7 +172,6 @@ namespace DiscordCoreInternal {
 				if (!didWeWrite) {
 					theShard->disconnect();
 				}
-				theShard->areWeCollectingData = true;
 				theStopWatch.resetTimer();
 				while (theShard->areWeCollectingData) {
 					if (theStopWatch.hasTimePassed()) {
@@ -179,7 +179,6 @@ namespace DiscordCoreInternal {
 					}
 					std::this_thread::sleep_for(1ms);
 				}
-				std::cout << "WERVE DONE DONE DONE!"<< std::endl;
 			} catch (...) {
 				if (this->configManager->doWePrintWebSocketErrorMessages()) {
 					DiscordCoreAPI::reportException("BaseSocketAgent::getVoiceConnectionData()");
