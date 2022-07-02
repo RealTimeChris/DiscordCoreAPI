@@ -369,6 +369,7 @@ namespace DiscordCoreInternal {
 		WebSocketState theState{ WebSocketState::Connecting01 };
 		std::queue<std::string> processedMessages{};
 		VoiceConnectionData voiceConnectionData{};
+		std::binary_semaphore theSemaphore{ 1 };
 		bool haveWeReceivedHeartbeatAck{ true };
 		int32_t currentReconnectionTries{ 0 };
 		bool serverUpdateCollected{ false };
