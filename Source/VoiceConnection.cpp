@@ -496,6 +496,9 @@ namespace DiscordCoreAPI {
 					this->voiceSocket->processIO();
 					this->voiceSocket->getInputBuffer();
 				}
+				while (!this->voiceSocket && !this->doWeDisconnect.load()) {
+					std::this_thread::sleep_for(1ms);
+				}
 				while (!this->voiceSocket->areWeConnected.load() && !this->doWeDisconnect.load()) {
 					std::this_thread::sleep_for(1ms);
 				}
