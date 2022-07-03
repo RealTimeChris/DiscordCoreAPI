@@ -79,14 +79,39 @@ namespace DiscordCoreAPI {
 
 	void BotUser::updateVoiceStatus(UpdateVoiceStateData& dataPackage) {
 		nlohmann::json payload = dataPackage;
-		this->baseSocketAgent->sendMessage(payload, this->baseSocketAgent->theClients.begin().operator*().second.get(), false);
+		std::string theString{};
+		if (this->baseSocketAgent) {
+			int32_t theIndex{};
+			for (auto& [key, value]: this->baseSocketAgent->theClients) {
+				theIndex = key;
+				break;
+			}
+			std::string theString{};
+			if (this->baseSocketAgent->theClients[theIndex]->dataOpCode == DiscordCoreInternal::WebSocketOpCode::Op_Binary) {
+				this->baseSocketAgent->stringifyJsonData(payload, theString, DiscordCoreInternal::WebSocketOpCode::Op_Binary);
+			} else {
+				this->baseSocketAgent->stringifyJsonData(payload, theString, DiscordCoreInternal::WebSocketOpCode::Op_Text);
+			}
+			this->baseSocketAgent->sendMessage(theString, this->baseSocketAgent->theClients[theIndex].get(), true);
+		}
 	}
 
 	void BotUser::updatePresence(UpdatePresenceData& dataPackage) {
 		dataPackage.since = static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
 		nlohmann::json payload = dataPackage;
 		if (this->baseSocketAgent) {
-			this->baseSocketAgent->sendMessage(payload, this->baseSocketAgent->theClients.begin().operator*().second.get(), false);
+			int32_t theIndex{};
+			for (auto& [key, value]: this->baseSocketAgent->theClients) {
+				theIndex = key;
+				break;
+			}
+			std::string theString{};
+			if (this->baseSocketAgent->theClients[theIndex]->dataOpCode == DiscordCoreInternal::WebSocketOpCode::Op_Binary) {
+				this->baseSocketAgent->stringifyJsonData(payload, theString, DiscordCoreInternal::WebSocketOpCode::Op_Binary);
+			} else {
+				this->baseSocketAgent->stringifyJsonData(payload, theString, DiscordCoreInternal::WebSocketOpCode::Op_Text);
+			}
+			this->baseSocketAgent->sendMessage(theString, this->baseSocketAgent->theClients[theIndex].get(), true);
 		}
 	}
 
