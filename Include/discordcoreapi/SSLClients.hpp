@@ -369,14 +369,13 @@ namespace DiscordCoreInternal {
 		WebSocketState theState{ WebSocketState::Connecting01 };
 		std::queue<std::string> processedMessages{};
 		VoiceConnectionData voiceConnectionData{};
-		std::binary_semaphore theSemaphore01{ 1 };
-		std::binary_semaphore theSemaphore02{ 1 };
 		bool haveWeReceivedHeartbeatAck{ true };
 		int32_t currentReconnectionTries{ 0 };
 		bool serverUpdateCollected{ false };
 		int32_t currentBaseSocketAgent{ 0 };
 		bool stateUpdateCollected{ false };
 		bool areWeCollectingData{ false };
+		std::recursive_mutex theMutex02{};
 		bool areWeHeartBeating{ false };
 		int32_t lastNumberReceived{ 0 };
 		WebSocketCloseCode closeCode{};

@@ -87,6 +87,8 @@ namespace DiscordCoreAPI {
 		std::atomic_bool doWeDisconnect{ false };
 		std::atomic_bool areWeStopping{ false };
 		std::atomic_bool areWePlaying{ false };
+		const int64_t maxReconnectTries{ 10 };
+		int64_t currentReconnectionTries{ 0 };
 		Snowflake currentGuildMemberId{};
 		int64_t disconnectStartTime{ 0 };
 		int64_t heartbeatInterval{ 0 };
@@ -111,8 +113,6 @@ namespace DiscordCoreAPI {
 		void sendSingleFrame(const AudioFrameData& frameData) noexcept;
 
 		void onMessageReceived(const std::string& theMessage) noexcept;
-
-		void sendMessage(const nlohmann::json& responseData) noexcept;
 
 		void sendVoiceData(std::string& responseData) noexcept;
 
