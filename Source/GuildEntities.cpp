@@ -75,10 +75,7 @@ namespace DiscordCoreAPI {
 			updateVoiceData.selfDeaf = false;
 			updateVoiceData.selfMute = false;
 			updateVoiceData.guildId = this->id;
-			getVoiceConnectionMap()[this->id]->activeState.store(VoiceActiveState::Exiting);
 			this->discordCoreClient->getBotUser().updateVoiceStatus(updateVoiceData);
-			getVoiceConnectionMap()[this->id]->activeState.store(VoiceActiveState::Exiting);
-			//SongAPI::stop(this->id);
 			getVoiceConnectionMap()[this->id]->activeState.store(VoiceActiveState::Exiting);
 			getVoiceConnectionMap()[this->id]->disconnect();
 			this->voiceConnectionPtr = nullptr;

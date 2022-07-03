@@ -404,14 +404,12 @@ namespace DiscordCoreAPI {
 					this->audioBuffer.clearContents();
 					this->clearAudioData();
 					while (this->activeState.load() == VoiceActiveState::Stopped) {
-						std::cout << "WERE STOPPED!" << std::endl;
 						std::this_thread::sleep_for(1ms);
 					}
 					break;
 				}
 				case VoiceActiveState::Paused: {
 					while (this->activeState.load() == VoiceActiveState::Paused) {
-						std::cout << "WERE PAUSED !" << std::endl;
 						std::this_thread::sleep_for(1ms);
 					}
 					break;
@@ -436,7 +434,6 @@ namespace DiscordCoreAPI {
 					this->sendSpeakingMessage(true);
 					while ((this->audioData.rawFrameData.sampleCount != 0 || this->audioData.encodedFrameData.sampleCount != 0) && !theToken.stop_requested() &&
 						this->activeState.load() == VoiceActiveState::Playing) {
-						std::cout << "WERE PLAYING!" << std::endl;
 						if (!theToken.stop_requested() && this->voiceSocket && this->voiceSocket->areWeStillConnected()) {
 							this->voiceSocket->processIO();
 							this->voiceSocket->getInputBuffer();
@@ -505,7 +502,7 @@ namespace DiscordCoreAPI {
 					return;
 				}
 				default: {
-					std::cout << "WERE HERE DEFAULTING !" << std::endl;
+					break;
 				}
 			}
 			if (theToken.stop_requested()) {
@@ -593,21 +590,16 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::connectInternal() noexcept {
+		std::lock_guard<std::recursive_mutex> theLock{ this->baseSocketAgent->theClients[voiceConnectInitData.currentShard]->theMutex02 };
 		if (this->connections.size() > 0) {
 			this->connections.pop();
 		}
-		std::cout << "WERE CONNECTING 010101!" << std::endl;
-		std::lock_guard<std::recursive_mutex> theLock{ this->baseSocketAgent->theClients[voiceConnectInitData.currentShard]->theMutex02 };
 		if (this->currentReconnectionTries >= this->maxReconnectTries) {
 			Globals::doWeQuit.store(true);
 			std::cout << "Failed to connect to voice channel!" << std::endl << std::endl;
 		}
-		std::cout << "WERE CONNECTING 020202!" << std::endl;
-		
 		switch (this->connectionState) {
-			std::cout << "WERE CONNECTING 030303!" << std::endl;
 			case VoiceConnectionState::Collecting_Init_Data: {
-				std::cout << "WERE CONNECTING 040404!" << std::endl;
 				this->theBaseShard->voiceConnectionDataBufferMap[this->voiceConnectInitData.guildId] = &this->voiceConnectionDataBuffer;
 				this->baseSocketAgent->getVoiceConnectionData(this->voiceConnectInitData, this->theBaseShard);
 				this->voiceConnectionData = DiscordCoreInternal::VoiceConnectionData{};
@@ -717,8 +709,6 @@ namespace DiscordCoreAPI {
 				return;
 			}
 		}
-			
-		
 	}
 
 	void VoiceConnection::clearAudioData() noexcept {
@@ -798,28 +788,27 @@ namespace DiscordCoreAPI {
 
 	void VoiceConnection::disconnect() noexcept {
 		this->activeState.store(VoiceActiveState::Exiting);
-		std::cout << "WERE DCING! ORIGINAL!" << std::endl;
+		this->sendSpeakingMessage(false);
 		if (this->theTask01) {
 			this->theTask01->request_stop();
 			if (this->theTask01->joinable()) {
 				this->theTask01->join();
-				std::cout << "WERE DCING!-440404" << std::endl;
 			}
 			this->theTask01.reset(nullptr);
 		}
-		std::cout << "WERE DCING!0000" << std::endl;
 		if (this->theTask02) {
 			this->theTask02->request_stop();
 			if (this->theTask02->joinable()) {
 				this->theTask02->join();
-				std::cout << "WERE DCING!-03-3-3" << std::endl;
 			}
 			this->theTask02.reset(nullptr);
 		}
-		std::cout << "WERE DCING!0101" << std::endl;
-		this->sendSpeakingMessage(false);
-		this->theClients[0].reset(nullptr);
-		this->voiceSocket.reset(nullptr);
+		if (this->theClients[0]) {
+			this->theClients[0].reset(nullptr);
+		}
+		if (this->voiceSocket) {
+			this->voiceSocket.reset(nullptr);
+		}
 		this->areWeConnectedBool.store(false);
 		auto thePtr = getSongAPIMap()[this->voiceConnectInitData.guildId].get();
 		if (thePtr) {
