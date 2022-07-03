@@ -640,6 +640,9 @@ namespace DiscordCoreAPI {
 				return true;
 			}
 			DiscordCoreInternal::WebSocketSSLShard::processIO(this->theClients, 100000);
+			if (!theClients[0]->areWeStillConnected()) {
+				return false;
+			}
 			std::this_thread::sleep_for(1ms);
 			if (this->theClients.contains(0) && theStopWatch.hasTimePassed()) {
 				this->theClients[0]->disconnect();

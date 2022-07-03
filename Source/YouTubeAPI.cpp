@@ -77,9 +77,6 @@ namespace DiscordCoreInternal {
 
 	DiscordCoreAPI::Song YouTubeRequestBuilder::constructDownloadInfo(const DiscordCoreAPI::GuildMemberData& guildMember, DiscordCoreAPI::Song& newSong) {
 		try {
-			if (newSong.firstDownloadUrl != "") {
-				std::this_thread::sleep_for(500ms);
-			}
 			std::string apiKey{ "AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8" };
 			nlohmann::json theRequest{};
 			theRequest["videoId"] = newSong.songId;
