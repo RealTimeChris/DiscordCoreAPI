@@ -255,10 +255,10 @@ namespace DiscordCoreAPI {
 							protocolPayloadData.voicePort = this->voiceConnectionData.voicePort;
 							nlohmann::json protocolPayloadSelectString = protocolPayloadData;
 							this->sendMessage(protocolPayloadSelectString);
-							this->theClients[0]->theState = DiscordCoreInternal::WebSocketState::Connected;
 							break;
 						}
 						case 4: {
+							this->theClients[0]->theState = DiscordCoreInternal::WebSocketState::Connected;
 							for (uint32_t x = 0; x < payload["d"]["secret_key"].size(); x++) {
 								this->voiceConnectionData.secretKey.push_back(payload["d"]["secret_key"][x].get<uint8_t>());
 							}
@@ -476,7 +476,7 @@ namespace DiscordCoreAPI {
 				goto start;
 			}
 			this->areWePlaying.store(true);
-			int64_t startingValue{ std::chrono::duration_cast<std::chrono::nanoseconds, int64_t>(std::chrono::system_clock::now().time_since_epoch()).count() };
+			int64_t startingValue{ std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count() };
 			int64_t intervalCount{ 20000000 };
 			int32_t frameCounter{ 0 };
 			int64_t totalTime{ 0 };
@@ -495,11 +495,25 @@ namespace DiscordCoreAPI {
 					this->voiceSocket->processIO();
 					this->voiceSocket->getInputBuffer();
 				}
+				StopWatch theStopWatch{ 20000ms };
 				while (!this->voiceSocket && !this->doWeDisconnect.load()) {
+					if (theStopWatch.hasTimePassed()) {
+						return;
+					}
 					std::this_thread::sleep_for(1ms);
 				}
+				if (this->doWeDisconnect.load()) {
+					return;
+				}
+				theStopWatch.resetTimer();
 				while (!this->voiceSocket->areWeConnected.load() && !this->doWeDisconnect.load()) {
+					if (theStopWatch.hasTimePassed()) {
+						return;
+					}
 					std::this_thread::sleep_for(1ms);
+				}
+				if (this->doWeDisconnect.load()) {
+					return;
 				}
 				this->areWePlaying.store(true);
 				if (this->areWeStopping.load()) {
@@ -515,6 +529,9 @@ namespace DiscordCoreAPI {
 				this->audioBuffer.tryReceive(this->audioData);
 				if (this->audioData.guildMemberId != 0) {
 					this->currentGuildMemberId = this->audioData.guildMemberId;
+				}
+				if (this->doWeDisconnect.load()) {
+					return;
 				}
 				nanoSleep(100000);
 				if (theToken.stop_requested()) {
@@ -627,6 +644,8 @@ namespace DiscordCoreAPI {
 
 	void VoiceConnection::webSocketConnect() noexcept {
 		try {
+			this->baseSocketAgent->theClients[voiceConnectInitData.currentShard]->theSemaphore02.acquire();
+			
 			this->voiceConnectionData = DiscordCoreInternal::VoiceConnectionData{};
 			DiscordCoreAPI::waitForTimeToPass(this->voiceConnectionDataBuffer, this->voiceConnectionData, 20000);
 			this->baseUrl = this->voiceConnectionData.endPoint.substr(0, this->voiceConnectionData.endPoint.find(":"));
@@ -669,9 +688,11 @@ namespace DiscordCoreAPI {
 				if (this->theClients.contains(0) && theStopWatch.hasTimePassed()) {
 					this->theClients[0]->disconnect();
 					this->onClosed();
+					this->baseSocketAgent->theClients[voiceConnectInitData.currentShard]->theSemaphore02.release();
 					return;
 				}
 			}
+			this->baseSocketAgent->theClients[voiceConnectInitData.currentShard]->theSemaphore02.release();
 		} catch (...) {
 			if (this->configManager->doWePrintWebSocketErrorMessages()) {
 				DiscordCoreAPI::reportException("VoiceConnection::connect()");
@@ -792,12 +813,12 @@ namespace DiscordCoreAPI {
 
 	void VoiceConnection::onClosed() noexcept {
 		if (this->theClients[0] && this->areWeConnectedBool.load()) {
-			this->theClients[0]->disconnect();
-			if (this->voiceSocket) {
-				this->voiceSocket->disconnect();
-				this->voiceSocket->areWeConnected.store(false);
-			}
 			this->areWeConnectedBool.store(false);
+			if (this->voiceSocket) {
+				this->voiceSocket->areWeConnected.store(false);
+				this->voiceSocket->disconnect();
+			}
+			this->theClients[0]->disconnect();
 			this->areWePlaying.store(true);
 			this->theClients[0]->areWeHeartBeating = false;
 			this->theClients[0]->areWeConnected01.store(false);
@@ -822,6 +843,13 @@ namespace DiscordCoreAPI {
 			ConnectionPackage dataPackage{};
 			dataPackage.currentShard = 0;
 			this->connections.push(dataPackage);
+			StopWatch theStopWatch{ 100000ms };
+			while (!this->areWeConnectedBool.load()) {
+				if (theStopWatch.hasTimePassed()) {
+					return;
+				}
+				std::this_thread::sleep_for(1ms);
+			}
 			return;
 		}
 		return;

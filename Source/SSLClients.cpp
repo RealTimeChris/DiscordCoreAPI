@@ -404,14 +404,14 @@ namespace DiscordCoreInternal {
 		}
 
 		for (auto& [key, value]: theMap) {
-			std::lock_guard<std::mutex> theLock{ value->theMutex02 };
+			std::lock_guard<std::mutex> theLock{ value->theMutex01 };
 			if (FD_ISSET(value->theSocket, &readSet)) {
 				value->wantRead = false;
 				value->wantWrite = false;
 				std::string serverToClientBuffer{};
 				serverToClientBuffer.resize(value->maxBufferSize);
 				size_t readBytes{ 0 };
-				auto returnValue{ SSL_read_ex(value->ssl, serverToClientBuffer.data(), value->maxBufferSize, &readBytes) };
+				auto returnValue{ SSL_read_ex(value->ssl, serverToClientBuffer.data(), serverToClientBuffer.size(), &readBytes) };
 				auto errorValue{ SSL_get_error(value->ssl, returnValue) };
 				switch (errorValue) {
 					case SSL_ERROR_NONE: {
@@ -561,7 +561,7 @@ namespace DiscordCoreInternal {
 	}
 
 	bool WebSocketSSLShard::writeData(const std::string& dataToWrite, bool priority) noexcept {
-		std::lock_guard<std::mutex> theLock{ this->theMutex02 };
+		std::lock_guard<std::mutex> theLock{ this->theMutex01 };
 		std::string data = dataToWrite;
 		if (data.size() > 0 && this->ssl) {
 			if (priority && data.size() < (16 * 1024)) {

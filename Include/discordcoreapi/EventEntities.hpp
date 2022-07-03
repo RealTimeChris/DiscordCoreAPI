@@ -173,11 +173,11 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll EventWaiter {
 	  public:
-		EventWaiter() {
+		inline EventWaiter() {
 			this->theEventState = new std::atomic_bool{ false };
 		}
 
-		bool wait(int64_t millisecondsMaxToWait = INT64_MAX) {
+		inline bool wait(int64_t millisecondsMaxToWait = INT64_MAX) {
 			int64_t millisecondsWaited{ 0 };
 			int64_t startTime = std::chrono::duration_cast<std::chrono::milliseconds, int64_t>(std::chrono::system_clock::now().time_since_epoch()).count();
 			while (true) {
@@ -195,15 +195,15 @@ namespace DiscordCoreInternal {
 			}
 		}
 
-		bool checkStatus() {
+		inline bool checkStatus() {
 			return this->theEventState->load();
 		}
 
-		void set() {
+		inline void set() {
 			this->theEventState->store(true);
 		}
 
-		void reset() {
+		inline void reset() {
 			this->theEventState->store(false);
 		}
 

@@ -523,8 +523,8 @@ namespace DiscordCoreAPI {
 	  public:
 		UnboundedMessageBlock<ObjectType>& operator=(UnboundedMessageBlock<ObjectType>&& other) noexcept {
 			if (this != &other) {
-				this->theArray = std::move(other.theArray);
-				other.theArray = std::queue<ObjectType>{};
+				this->theQueue = std::move(other.theQueue);
+				other.theQueue = std::queue<ObjectType>{};
 			}
 			return *this;
 		}
@@ -547,36 +547,34 @@ namespace DiscordCoreAPI {
 		/// \param theObject An object of ObjectType.
 		void send(const ObjectType&& theObject) {
 			std::lock_guard<std::mutex> theLock{ this->accessMutex };
-			this->theArray.push(theObject);
+			this->theQueue.push(theObject);
 		}
 
 		/// Sends an object of type ObjectType to the "recipient". \brief Sends an object of type ObjectType to the "recipient".
 		/// \param theObject An object of ObjectType.
 		void send(ObjectType&& theObject) {
 			std::lock_guard<std::mutex> theLock{ this->accessMutex };
-			this->theArray.push(std::move(theObject));
+			this->theQueue.push(std::move(theObject));
 		}
 
 		/// Sends an object of type ObjectType to the "recipient". \brief Sends an object of type ObjectType to the "recipient".
 		/// \param theObject An object of ObjectType.
 		void send(const ObjectType& theObject) {
 			std::lock_guard<std::mutex> theLock{ this->accessMutex };
-			ObjectType newValue = theObject;
-			this->theArray.push(newValue);
+			this->theQueue.push(theObject);
 		}
 
 		/// Sends an object of type ObjectType to the "recipient". \brief Sends an object of type ObjectType to the "recipient".
 		/// \param theObject An object of ObjectType.
 		void send(ObjectType& theObject) {
 			std::lock_guard<std::mutex> theLock{ this->accessMutex };
-			ObjectType newValue = theObject;
-			this->theArray.push(newValue);
+			this->theQueue.push(theObject);
 		}
 
 		/// Clears the contents of the messaging block. \brief Clears the contents of the messaging block.
 		void clearContents() {
 			std::lock_guard<std::mutex> theLock{ this->accessMutex };
-			this->theArray = std::queue<ObjectType>{};
+			this->theQueue = std::queue<ObjectType>{};
 		}
 
 		/// Tries to receive an object of type ObjectType to be placed into a reference. \brief Tries to receive an object of type ObjectType to be placed into a reference.
@@ -584,17 +582,17 @@ namespace DiscordCoreAPI {
 		/// \returns bool A bool, denoting whether or not we received an object.
 		bool tryReceive(ObjectType& theObject) {
 			std::lock_guard<std::mutex> theLock{ this->accessMutex };
-			if (this->theArray.size() == 0) {
-				return false;
-			} else {
-				theObject = this->theArray.front();
-				this->theArray.pop();
+			if (this->theQueue.size() > 0) {
+				theObject = std::move(this->theQueue.front());
+				this->theQueue.pop();
 				return true;
+			} else {
+				return false;
 			}
 		}
 
 	  protected:
-		std::queue<ObjectType> theArray{};
+		std::queue<ObjectType> theQueue{};
 		std::mutex accessMutex{};
 	};
 
