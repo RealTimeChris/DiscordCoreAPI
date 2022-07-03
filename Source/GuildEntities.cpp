@@ -69,7 +69,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void GuildData::disconnect() {
-		if (getVoiceConnectionMap().contains(this->id) && getVoiceConnectionMap()[this->id]) {
+		if (getVoiceConnectionMap().contains(this->id) && getVoiceConnectionMap()[this->id].get()) {
 			UpdateVoiceStateData updateVoiceData{};
 			updateVoiceData.channelId = 0;
 			updateVoiceData.selfDeaf = false;

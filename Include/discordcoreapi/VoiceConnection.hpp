@@ -41,6 +41,13 @@ namespace DiscordCoreAPI {
 		Collecting_Session_Description = 8
 	};
 
+	enum VoiceActiveState {
+		Playing = 0,///< Playing.
+		Stopped = 1,
+		Paused = 2,
+		Exiting = 3
+	};
+
 	/**
 	 * \addtogroup voice_connection
 	 * @{
@@ -75,18 +82,13 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::VoiceConnectInitData voiceConnectInitData{};
 		DiscordCoreInternal::WebSocketSSLShard* theBaseShard{ nullptr };
 		DiscordCoreInternal::VoiceConnectionData voiceConnectionData{};
+		VoiceActiveState activeState{ VoiceActiveState::Stopped };
 		DiscordCoreAPI::ConfigManager* configManager{ nullptr };
 		UnboundedMessageBlock<AudioFrameData> audioBuffer{};
 		std::unique_ptr<std::jthread> theTask01{ nullptr };
 		std::unique_ptr<std::jthread> theTask02{ nullptr };
-		DiscordCoreInternal::EventWaiter playSetEvent{};
-		DiscordCoreInternal::EventWaiter stopSetEvent{};
-		DiscordCoreInternal::EventWaiter pauseEvent{};
 		std::atomic_bool areWeConnectedBool{ false };
 		std::queue<ConnectionPackage> connections{};
-		std::atomic_bool doWeDisconnect{ false };
-		std::atomic_bool areWeStopping{ false };
-		std::atomic_bool areWePlaying{ false };
 		const int64_t maxReconnectTries{ 10 };
 		int64_t currentReconnectionTries{ 0 };
 		Snowflake currentGuildMemberId{};
