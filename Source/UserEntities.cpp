@@ -82,17 +82,17 @@ namespace DiscordCoreAPI {
 		std::string theString{};
 		if (this->baseSocketAgent) {
 			int32_t theIndex{};
-			for (auto& [key, value]: this->baseSocketAgent->theClients) {
+			for (auto& [key, value]: this->baseSocketAgent->sslShards) {
 				theIndex = key;
 				break;
 			}
 			std::string theString{};
-			if (this->baseSocketAgent->theClients[theIndex]->dataOpCode == DiscordCoreInternal::WebSocketOpCode::Op_Binary) {
+			if (this->baseSocketAgent->sslShards[theIndex]->dataOpCode == DiscordCoreInternal::WebSocketOpCode::Op_Binary) {
 				this->baseSocketAgent->stringifyJsonData(payload, theString, DiscordCoreInternal::WebSocketOpCode::Op_Binary);
 			} else {
 				this->baseSocketAgent->stringifyJsonData(payload, theString, DiscordCoreInternal::WebSocketOpCode::Op_Text);
 			}
-			this->baseSocketAgent->sendMessage(theString, this->baseSocketAgent->theClients[theIndex].get(), true);
+			this->baseSocketAgent->sendMessage(theString, this->baseSocketAgent->sslShards[theIndex].get(), true);
 		}
 	}
 
@@ -101,17 +101,17 @@ namespace DiscordCoreAPI {
 		nlohmann::json payload = dataPackage;
 		if (this->baseSocketAgent) {
 			int32_t theIndex{};
-			for (auto& [key, value]: this->baseSocketAgent->theClients) {
+			for (auto& [key, value]: this->baseSocketAgent->sslShards) {
 				theIndex = key;
 				break;
 			}
 			std::string theString{};
-			if (this->baseSocketAgent->theClients[theIndex]->dataOpCode == DiscordCoreInternal::WebSocketOpCode::Op_Binary) {
+			if (this->baseSocketAgent->sslShards[theIndex]->dataOpCode == DiscordCoreInternal::WebSocketOpCode::Op_Binary) {
 				this->baseSocketAgent->stringifyJsonData(payload, theString, DiscordCoreInternal::WebSocketOpCode::Op_Binary);
 			} else {
 				this->baseSocketAgent->stringifyJsonData(payload, theString, DiscordCoreInternal::WebSocketOpCode::Op_Text);
 			}
-			this->baseSocketAgent->sendMessage(theString, this->baseSocketAgent->theClients[theIndex].get(), true);
+			this->baseSocketAgent->sendMessage(theString, this->baseSocketAgent->sslShards[theIndex].get(), true);
 		}
 	}
 

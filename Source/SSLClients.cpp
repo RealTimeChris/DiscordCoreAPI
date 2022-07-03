@@ -676,7 +676,7 @@ namespace DiscordCoreInternal {
 				theData.voiceConnectionDataBufferMap = std::move(this->voiceConnectionDataBufferMap);
 				theData.currentBaseSocketAgent = this->currentBaseSocketAgent;
 				theData.currentShard = this->shard[0];
-				theData.currentReconnectionTries = this->currentReconnectionTries;
+				theData.currentReconnectTries = this->currentReconnectTries;
 				this->connections->push(theData);
 			}
 		}

@@ -371,7 +371,7 @@ namespace DiscordCoreInternal {
 		std::queue<std::string> processedMessages{};
 		VoiceConnectionData voiceConnectionData{};
 		bool haveWeReceivedHeartbeatAck{ true };
-		int32_t currentReconnectionTries{ 0 };
+		int32_t currentReconnectTries{ 0 };
 		bool serverUpdateCollected{ false };
 		int32_t currentBaseSocketAgent{ 0 };
 		bool stateUpdateCollected{ false };

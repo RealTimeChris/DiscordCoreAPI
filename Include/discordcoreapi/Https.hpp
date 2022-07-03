@@ -105,8 +105,8 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll HttpsConnection : public HttpsSSLClient, public HttpsRnRBuilder {
 	  public:
 		std::atomic_bool areWeCheckedOut{ false };
-		const int32_t maxReconnectionTries{ 10 };
-		int32_t currentReconnectionTries{ 0 };
+		const int32_t maxReconnectTries{ 10 };
+		int32_t currentReconnectTries{ 0 };
 		std::string currentBaseUrl{};
 		bool doWeConnect{ true };
 

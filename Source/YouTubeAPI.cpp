@@ -168,14 +168,14 @@ namespace DiscordCoreInternal {
 		this->guildId = guildIdNew;
 	}
 
-	void YouTubeAPI::weFailedToDownloadOrDecode(const DiscordCoreAPI::Song& newSong, std::stop_token theToken, int32_t currentReconnectionTries) {
-		currentReconnectionTries++;
+	void YouTubeAPI::weFailedToDownloadOrDecode(const DiscordCoreAPI::Song& newSong, std::stop_token theToken, int32_t currentReconnectTries) {
+		currentReconnectTries++;
 		DiscordCoreAPI::GuildMember guildMember =
 			DiscordCoreAPI::GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = newSong.addedByUserId, .guildId = this->guildId }).get();
 		auto newerSong = newSong;
-		if (currentReconnectionTries > 9) {
+		if (currentReconnectTries > 9) {
 			DiscordCoreAPI::AudioFrameData frameData{};
-			while (DiscordCoreAPI::getVoiceConnectionMap()[this->guildId]->audioBuffer.tryReceive(frameData)) {
+			while (DiscordCoreAPI::getVoiceConnectionMap()[this->guildId]->audioDataBuffer.tryReceive(frameData)) {
 			};
 			DiscordCoreAPI::SongCompletionEventData eventData{};
 			auto returnValue = DiscordCoreAPI::getSongAPIMap()[this->guildId].get();
@@ -188,7 +188,7 @@ namespace DiscordCoreInternal {
 			DiscordCoreAPI::getSongAPIMap()[this->guildId]->onSongCompletionEvent(eventData);
 		} else {
 			newerSong = this->requestBuilder.collectFinalSong(guildMember, newerSong);
-			YouTubeAPI::downloadAndStreamAudio(newerSong, theToken, currentReconnectionTries);
+			YouTubeAPI::downloadAndStreamAudio(newerSong, theToken, currentReconnectTries);
 		}
 	}
 
@@ -196,7 +196,7 @@ namespace DiscordCoreInternal {
 		return this->requestBuilder.collectFinalSong(addedByGuildMember, newSong);
 	}
 
-	void YouTubeAPI::downloadAndStreamAudio(const DiscordCoreAPI::Song& newSong, std::stop_token theToken, int32_t currentReconnectionTries) {
+	void YouTubeAPI::downloadAndStreamAudio(const DiscordCoreAPI::Song& newSong, std::stop_token theToken, int32_t currentReconnectTries) {
 		try {
 			std::unique_ptr<WebSocketSSLShard> streamSocket{ std::make_unique<WebSocketSSLShard>(nullptr, this->maxBufferSize, 0, this->configManager, true) };
 			std::unordered_map<int32_t, std::unique_ptr<WebSocketSSLShard>> theMap{};
@@ -231,7 +231,7 @@ namespace DiscordCoreInternal {
 			if (!theMap[0]->areWeStillConnected()) {
 				audioDecoder.reset(nullptr);
 				theMap[0]->disconnect();
-				this->weFailedToDownloadOrDecode(newSong, theToken, currentReconnectionTries);
+				this->weFailedToDownloadOrDecode(newSong, theToken, currentReconnectTries);
 				return;
 			}
 			while (newSong.contentLength > bytesSubmittedTotal) {
@@ -246,7 +246,7 @@ namespace DiscordCoreInternal {
 					frameData.type = DiscordCoreAPI::AudioFrameType::Skip;
 					frameData.rawFrameData.sampleCount = 0;
 					frameData.encodedFrameData.sampleCount = 0;
-					DiscordCoreAPI::getVoiceConnectionMap()[this->guildId]->audioBuffer.send(frameData);
+					DiscordCoreAPI::getVoiceConnectionMap()[this->guildId]->audioDataBuffer.send(frameData);
 					theMap[0]->disconnect();
 					audioDecoder.reset(nullptr);
 					return;
@@ -260,7 +260,7 @@ namespace DiscordCoreInternal {
 				if (audioDecoder->haveWeFailed()) {
 					audioDecoder.reset(nullptr);
 					theMap[0]->disconnect();
-					this->weFailedToDownloadOrDecode(newSong, theToken, currentReconnectionTries);
+					this->weFailedToDownloadOrDecode(newSong, theToken, currentReconnectTries);
 					return;
 				}
 				if (theToken.stop_requested()) {
@@ -279,7 +279,7 @@ namespace DiscordCoreInternal {
 						if (!theMap[0]->areWeStillConnected()) {
 							audioDecoder.reset(nullptr);
 							theMap[0]->disconnect();
-							this->weFailedToDownloadOrDecode(newSong, theToken, currentReconnectionTries);
+							this->weFailedToDownloadOrDecode(newSong, theToken, currentReconnectTries);
 							return;
 						}
 						if (!theToken.stop_requested()) {
@@ -306,7 +306,7 @@ namespace DiscordCoreInternal {
 						if (!theMap[0]->areWeStillConnected()) {
 							audioDecoder.reset(nullptr);
 							theMap[0]->disconnect();
-							this->weFailedToDownloadOrDecode(newSong, theToken, currentReconnectionTries);
+							this->weFailedToDownloadOrDecode(newSong, theToken, currentReconnectTries);
 							return;
 						}
 						std::string streamBuffer{};
@@ -341,7 +341,7 @@ namespace DiscordCoreInternal {
 							if (!theMap[0]->areWeStillConnected()) {
 								audioDecoder.reset(nullptr);
 								theMap[0]->disconnect();
-								this->weFailedToDownloadOrDecode(newSong, theToken, currentReconnectionTries);
+								this->weFailedToDownloadOrDecode(newSong, theToken, currentReconnectTries);
 								return;
 							}
 							std::string newVector{};
@@ -390,7 +390,7 @@ namespace DiscordCoreInternal {
 						auto encodedFrames = audioEncoder.encodeFrames(frames);
 						for (auto& value: encodedFrames) {
 							value.guildMemberId = newSong.addedByUserId;
-							DiscordCoreAPI::getVoiceConnectionMap()[this->guildId]->audioBuffer.send(value);
+							DiscordCoreAPI::getVoiceConnectionMap()[this->guildId]->audioDataBuffer.send(value);
 						}
 					}
 					if (remainingDownloadContentLength >= this->maxBufferSize) {
@@ -409,12 +409,12 @@ namespace DiscordCoreInternal {
 			frameData.type = DiscordCoreAPI::AudioFrameType::Skip;
 			frameData.rawFrameData.sampleCount = 0;
 			frameData.encodedFrameData.sampleCount = 0;
-			DiscordCoreAPI::getVoiceConnectionMap()[this->guildId]->audioBuffer.send(frameData);
+			DiscordCoreAPI::getVoiceConnectionMap()[this->guildId]->audioDataBuffer.send(frameData);
 		} catch (...) {
 			if (this->configManager->doWePrintWebSocketErrorMessages()) {
 				DiscordCoreAPI::reportException("YouTubeAPI::downloadAndStreamAudio()");
 			}
-			this->weFailedToDownloadOrDecode(newSong, theToken, currentReconnectionTries);
+			this->weFailedToDownloadOrDecode(newSong, theToken, currentReconnectTries);
 		}
 	}
 
@@ -435,7 +435,7 @@ namespace DiscordCoreInternal {
 			}
 		}
 		DiscordCoreAPI::AudioFrameData dataFrame{};
-		while (DiscordCoreAPI::getVoiceConnectionMap()[this->guildId]->audioBuffer.tryReceive(dataFrame)) {
+		while (DiscordCoreAPI::getVoiceConnectionMap()[this->guildId]->audioDataBuffer.tryReceive(dataFrame)) {
 		};
 	}
 

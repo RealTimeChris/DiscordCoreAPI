@@ -342,15 +342,15 @@ namespace DiscordCoreInternal {
 		auto httpsConnection = this->connectionManager.getConnection();
 		try {
 			httpsConnection->resetValues();
-			if (httpsConnection->currentReconnectionTries >= httpsConnection->maxReconnectionTries) {
-				httpsConnection->currentReconnectionTries = 0;
+			if (httpsConnection->currentReconnectTries >= httpsConnection->maxReconnectTries) {
+				httpsConnection->currentReconnectTries = 0;
 				httpsConnection->areWeCheckedOut.store(false);
 				return HttpsResponseData{};
 			}
 			if (workload.baseUrl != httpsConnection->currentBaseUrl || !httpsConnection->areWeStillConnected() || httpsConnection->doWeConnect) {
 				httpsConnection->currentBaseUrl = workload.baseUrl;
 				if (!httpsConnection->connect(workload.baseUrl, "443")) {
-					httpsConnection->currentReconnectionTries++;
+					httpsConnection->currentReconnectTries++;
 					httpsConnection->doWeConnect = true;
 					httpsConnection->areWeCheckedOut.store(false);
 					return this->httpRequestInternal(workload, rateLimitData);
@@ -367,19 +367,19 @@ namespace DiscordCoreInternal {
 				didWeWrite = httpsConnection->writeData(theRequest);
 			} while (!didWeWrite);
 			if (!didWeWrite) {
-				httpsConnection->currentReconnectionTries++;
+				httpsConnection->currentReconnectTries++;
 				httpsConnection->doWeConnect = true;
 				httpsConnection->areWeCheckedOut.store(false);
 				return this->httpRequestInternal(workload, rateLimitData);
 			}
 			auto result = this->getResponse(rateLimitData, *httpsConnection);
 			if (result.responseCode == -1) {
-				httpsConnection->currentReconnectionTries++;
+				httpsConnection->currentReconnectTries++;
 				httpsConnection->doWeConnect = true;
 				httpsConnection->areWeCheckedOut.store(false);
 				return this->httpRequestInternal(workload, rateLimitData);
 			} else {
-				httpsConnection->currentReconnectionTries = 0;
+				httpsConnection->currentReconnectTries = 0;
 				httpsConnection->areWeCheckedOut.store(false);
 				return result;
 			}
@@ -387,7 +387,7 @@ namespace DiscordCoreInternal {
 			if (this->configManager->doWePrintHttpsErrorMessages()) {
 				DiscordCoreAPI::reportException(workload.callStack + "::HttpsClient::httpRequestInternal()");
 			}
-			httpsConnection->currentReconnectionTries++;
+			httpsConnection->currentReconnectTries++;
 			httpsConnection->doWeConnect = true;
 			httpsConnection->areWeCheckedOut.store(false);
 			return this->httpRequestInternal(workload, rateLimitData);

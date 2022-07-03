@@ -136,11 +136,11 @@ namespace DiscordCoreAPI {
 			SongAPI::setCurrentSong(Song(), guildMember.guildId);
 		}
 		AudioFrameData frameData{};
-		while (getVoiceConnectionMap()[guildMember.guildId]->audioBuffer.tryReceive(frameData)) {
+		while (getVoiceConnectionMap()[guildMember.guildId]->audioDataBuffer.tryReceive(frameData)) {
 		};
 		frameData.type = AudioFrameType::Skip;
 		frameData.guildMemberId = guildMember.id;
-		getVoiceConnectionMap()[guildMember.guildId]->audioBuffer.send(frameData);
+		getVoiceConnectionMap()[guildMember.guildId]->audioDataBuffer.send(frameData);
 	}
 
 	void SongAPI::stop(const Snowflake& guildId) {

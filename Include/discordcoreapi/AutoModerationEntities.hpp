@@ -108,7 +108,7 @@ namespace DiscordCoreAPI {
 		AutoModerationActionExecutionEventData() = default;
 
 		AutoModerationActionExecutionEventData& operator=(const nlohmann::json& jsonObjectData);
-		
+
 		AutoModerationActionExecutionEventData(const nlohmann::json& jsonObjectData);
 
 		virtual ~AutoModerationActionExecutionEventData() = default;

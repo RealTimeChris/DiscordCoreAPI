@@ -46,7 +46,7 @@ namespace DiscordCoreAPI {
 		return data.dump();
 	}
 
-	EditGlobalApplicationCommandData::operator std::string(){
+	EditGlobalApplicationCommandData::operator std::string() {
 		nlohmann::json data{};
 		if (this->defaultMemberPermissions != "") {
 			data["default_member_permissions"] = this->defaultMemberPermissions;

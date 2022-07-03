@@ -74,28 +74,27 @@ namespace DiscordCoreAPI {
 		~VoiceConnection() noexcept;
 
 	  protected:
-		std::unordered_map<int32_t, std::unique_ptr<DiscordCoreInternal::WebSocketSSLShard>> theClients{};
+		std::unordered_map<int32_t, std::unique_ptr<DiscordCoreInternal::WebSocketSSLShard>> sslShards{};
 		UnboundedMessageBlock<DiscordCoreInternal::VoiceConnectionData> voiceConnectionDataBuffer{};
-		std::unique_ptr<DiscordCoreInternal::DatagramSocketSSLClient> voiceSocket{ nullptr };
+		std::unique_ptr<DiscordCoreInternal::DatagramSocketSSLClient> datagramSocket{ nullptr };
 		VoiceConnectionState connectionState{ VoiceConnectionState::Collecting_Init_Data };
 		std::atomic<VoiceActiveState> activeState{ VoiceActiveState::Stopped };
 		std::unique_ptr<DiscordCoreInternal::AudioEncoder> encoder{ nullptr };
 		DiscordCoreInternal::BaseSocketAgent* baseSocketAgent{ nullptr };
 		DiscordCoreInternal::VoiceConnectInitData voiceConnectInitData{};
-		DiscordCoreInternal::WebSocketSSLShard* theBaseShard{ nullptr };
 		DiscordCoreInternal::VoiceConnectionData voiceConnectionData{};
+		DiscordCoreInternal::WebSocketSSLShard* baseShard{ nullptr };
 		DiscordCoreAPI::ConfigManager* configManager{ nullptr };
-		UnboundedMessageBlock<AudioFrameData> audioBuffer{};
+		UnboundedMessageBlock<AudioFrameData> audioDataBuffer{};
 		std::unique_ptr<std::jthread> theTask01{ nullptr };
 		std::unique_ptr<std::jthread> theTask02{ nullptr };
 		std::atomic_bool areWeConnectedBool{ false };
 		std::queue<ConnectionPackage> connections{};
 		const int64_t maxReconnectTries{ 10 };
-		int64_t currentReconnectionTries{ 0 };
+		int64_t currentReconnectTries{ 0 };
 		Snowflake currentGuildMemberId{};
 		int64_t disconnectStartTime{ 0 };
 		int64_t heartbeatInterval{ 0 };
-		bool didWeJustConnect{ true };
 		int16_t sequenceIndex{ 0 };
 		AudioFrameData audioData{};
 		int32_t timeStamp{ 0 };
