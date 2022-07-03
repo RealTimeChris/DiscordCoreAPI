@@ -40,7 +40,7 @@ namespace DiscordCoreAPI {
 		friend class DiscordCoreInternal::YouTubeAPI;
 
 		DiscordCoreInternal::Event<CoRoutine<void>, SongCompletionEventData> onSongCompletionEvent{};
-		DiscordCoreInternal::EventDelegateToken theToken{};
+		DiscordCoreInternal::EventDelegateToken eventToken{};
 		Playlist playlist{};
 
 		SongAPI(const uint64_t& guildId);
@@ -145,7 +145,7 @@ namespace DiscordCoreAPI {
 	  protected:
 		static std::mutex accessMutex;
 
-		std::unique_ptr<std::jthread> theTask{ nullptr };
+		std::unique_ptr<std::jthread> taskThread{ nullptr };
 		bool areWeInstantiated{ false };
 		Snowflake guildId{};
 

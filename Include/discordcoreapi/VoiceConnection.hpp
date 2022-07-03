@@ -86,8 +86,8 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::WebSocketSSLShard* baseShard{ nullptr };
 		DiscordCoreAPI::ConfigManager* configManager{ nullptr };
 		UnboundedMessageBlock<AudioFrameData> audioDataBuffer{};
-		std::unique_ptr<std::jthread> theTask01{ nullptr };
-		std::unique_ptr<std::jthread> theTask02{ nullptr };
+		std::unique_ptr<std::jthread> taskThread01{ nullptr };
+		std::unique_ptr<std::jthread> taskThread02{ nullptr };
 		std::atomic_bool areWeConnectedBool{ false };
 		std::queue<ConnectionPackage> connections{};
 		const int64_t maxReconnectTries{ 10 };

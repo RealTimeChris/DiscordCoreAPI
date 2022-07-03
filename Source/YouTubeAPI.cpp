@@ -168,7 +168,7 @@ namespace DiscordCoreInternal {
 		this->guildId = guildIdNew;
 	}
 
-	void YouTubeAPI::weFailedToDownloadOrDecode(const DiscordCoreAPI::Song& newSong, std::stop_token theToken, int32_t currentReconnectTries) {
+	void YouTubeAPI::weFailedToDownloadOrDecode(const DiscordCoreAPI::Song& newSong, std::stop_token stopToken, int32_t currentReconnectTries) {
 		currentReconnectTries++;
 		DiscordCoreAPI::GuildMember guildMember =
 			DiscordCoreAPI::GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = newSong.addedByUserId, .guildId = this->guildId }).get();
@@ -188,7 +188,7 @@ namespace DiscordCoreInternal {
 			DiscordCoreAPI::getSongAPIMap()[this->guildId]->onSongCompletionEvent(eventData);
 		} else {
 			newerSong = this->requestBuilder.collectFinalSong(guildMember, newerSong);
-			YouTubeAPI::downloadAndStreamAudio(newerSong, theToken, currentReconnectTries);
+			YouTubeAPI::downloadAndStreamAudio(newerSong, stopToken, currentReconnectTries);
 		}
 	}
 
@@ -196,7 +196,7 @@ namespace DiscordCoreInternal {
 		return this->requestBuilder.collectFinalSong(addedByGuildMember, newSong);
 	}
 
-	void YouTubeAPI::downloadAndStreamAudio(const DiscordCoreAPI::Song& newSong, std::stop_token theToken, int32_t currentReconnectTries) {
+	void YouTubeAPI::downloadAndStreamAudio(const DiscordCoreAPI::Song& newSong, std::stop_token stopToken, int32_t currentReconnectTries) {
 		try {
 			std::unique_ptr<WebSocketSSLShard> streamSocket{ std::make_unique<WebSocketSSLShard>(nullptr, this->maxBufferSize, 0, this->configManager, true) };
 			std::unordered_map<int32_t, std::unique_ptr<WebSocketSSLShard>> theMap{};
@@ -231,7 +231,7 @@ namespace DiscordCoreInternal {
 			if (!theMap[0]->areWeStillConnected()) {
 				audioDecoder.reset(nullptr);
 				theMap[0]->disconnect();
-				this->weFailedToDownloadOrDecode(newSong, theToken, currentReconnectTries);
+				this->weFailedToDownloadOrDecode(newSong, stopToken, currentReconnectTries);
 				return;
 			}
 			while (newSong.contentLength > bytesSubmittedTotal) {
@@ -252,7 +252,7 @@ namespace DiscordCoreInternal {
 					return;
 				}
 				bytesSubmittedPrevious = bytesSubmittedTotal;
-				if (theToken.stop_requested()) {
+				if (stopToken.stop_requested()) {
 					theMap[0]->disconnect();
 					audioDecoder.reset(nullptr);
 					return;
@@ -260,16 +260,16 @@ namespace DiscordCoreInternal {
 				if (audioDecoder->haveWeFailed()) {
 					audioDecoder.reset(nullptr);
 					theMap[0]->disconnect();
-					this->weFailedToDownloadOrDecode(newSong, theToken, currentReconnectTries);
+					this->weFailedToDownloadOrDecode(newSong, stopToken, currentReconnectTries);
 					return;
 				}
-				if (theToken.stop_requested()) {
+				if (stopToken.stop_requested()) {
 					theMap[0]->disconnect();
 					audioDecoder.reset(nullptr);
 					return;
 				} else {
 					if (!areWeDoneHeaders) {
-						if (theToken.stop_requested()) {
+						if (stopToken.stop_requested()) {
 							theMap[0]->disconnect();
 							audioDecoder.reset(nullptr);
 							return;
@@ -279,16 +279,16 @@ namespace DiscordCoreInternal {
 						if (!theMap[0]->areWeStillConnected()) {
 							audioDecoder.reset(nullptr);
 							theMap[0]->disconnect();
-							this->weFailedToDownloadOrDecode(newSong, theToken, currentReconnectTries);
+							this->weFailedToDownloadOrDecode(newSong, stopToken, currentReconnectTries);
 							return;
 						}
-						if (!theToken.stop_requested()) {
+						if (!stopToken.stop_requested()) {
 							if (theMap.contains(0)) {
 								bytesSubmittedTotal = theMap[0]->getBytesRead();
 								std::string newData = theMap[0]->getInputBuffer();
 							}
 						}
-						if (theToken.stop_requested()) {
+						if (stopToken.stop_requested()) {
 							theMap[0]->disconnect();
 							audioDecoder.reset(nullptr);
 							return;
@@ -296,7 +296,7 @@ namespace DiscordCoreInternal {
 						remainingDownloadContentLength = newSong.contentLength - bytesSubmittedTotal;
 						areWeDoneHeaders = true;
 					}
-					if (theToken.stop_requested()) {
+					if (stopToken.stop_requested()) {
 						theMap[0]->disconnect();
 						audioDecoder.reset(nullptr);
 						return;
@@ -306,7 +306,7 @@ namespace DiscordCoreInternal {
 						if (!theMap[0]->areWeStillConnected()) {
 							audioDecoder.reset(nullptr);
 							theMap[0]->disconnect();
-							this->weFailedToDownloadOrDecode(newSong, theToken, currentReconnectTries);
+							this->weFailedToDownloadOrDecode(newSong, stopToken, currentReconnectTries);
 							return;
 						}
 						std::string streamBuffer{};
@@ -331,7 +331,7 @@ namespace DiscordCoreInternal {
 						audioDecoder->startMe();
 					} else if (counter > 0) {
 						if (contentLengthCurrent > 0) {
-							if (theToken.stop_requested()) {
+							if (stopToken.stop_requested()) {
 								audioDecoder.reset(nullptr);
 								theMap[0]->disconnect();
 								return;
@@ -341,7 +341,7 @@ namespace DiscordCoreInternal {
 							if (!theMap[0]->areWeStillConnected()) {
 								audioDecoder.reset(nullptr);
 								theMap[0]->disconnect();
-								this->weFailedToDownloadOrDecode(newSong, theToken, currentReconnectTries);
+								this->weFailedToDownloadOrDecode(newSong, stopToken, currentReconnectTries);
 								return;
 							}
 							std::string newVector{};
@@ -366,7 +366,7 @@ namespace DiscordCoreInternal {
 								bytesSubmittedTotal += submissionString.size();
 							}
 						}
-						if (theToken.stop_requested()) {
+						if (stopToken.stop_requested()) {
 							theMap[0]->disconnect();
 							audioDecoder.reset(nullptr);
 							return;
@@ -382,7 +382,7 @@ namespace DiscordCoreInternal {
 							counter++;
 							continue;
 						}
-						if (theToken.stop_requested()) {
+						if (stopToken.stop_requested()) {
 							theMap[0]->disconnect();
 							audioDecoder.reset(nullptr);
 							return;
@@ -414,7 +414,7 @@ namespace DiscordCoreInternal {
 			if (this->configManager->doWePrintWebSocketErrorMessages()) {
 				DiscordCoreAPI::reportException("YouTubeAPI::downloadAndStreamAudio()");
 			}
-			this->weFailedToDownloadOrDecode(newSong, theToken, currentReconnectTries);
+			this->weFailedToDownloadOrDecode(newSong, stopToken, currentReconnectTries);
 		}
 	}
 
@@ -425,12 +425,12 @@ namespace DiscordCoreInternal {
 	void YouTubeAPI::cancelCurrentSong() {
 		if (DiscordCoreAPI::getSongAPIMap().contains(this->guildId)) {
 			if (DiscordCoreAPI::getSongAPIMap()[this->guildId]) {
-				if (DiscordCoreAPI::getSongAPIMap()[this->guildId]->theTask) {
-					DiscordCoreAPI::getSongAPIMap()[this->guildId]->theTask->request_stop();
-					if (DiscordCoreAPI::getSongAPIMap()[this->guildId]->theTask->joinable()) {
-						DiscordCoreAPI::getSongAPIMap()[this->guildId]->theTask->join();
+				if (DiscordCoreAPI::getSongAPIMap()[this->guildId]->taskThread) {
+					DiscordCoreAPI::getSongAPIMap()[this->guildId]->taskThread->request_stop();
+					if (DiscordCoreAPI::getSongAPIMap()[this->guildId]->taskThread->joinable()) {
+						DiscordCoreAPI::getSongAPIMap()[this->guildId]->taskThread->join();
 					}
-					DiscordCoreAPI::getSongAPIMap()[this->guildId]->theTask.reset(nullptr);
+					DiscordCoreAPI::getSongAPIMap()[this->guildId]->taskThread.reset(nullptr);
 				}
 			}
 		}

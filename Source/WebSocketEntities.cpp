@@ -31,8 +31,8 @@ namespace DiscordCoreInternal {
 		this->currentBaseSocketAgent = currentBaseSocketAgentNew;
 		this->discordCoreClient = discordCoreClientNew;
 		this->doWeQuit = doWeQuitNew;
-		this->theTask = std::make_unique<std::jthread>([this](std::stop_token theToken) {
-			this->run(theToken);
+		this->taskThread = std::make_unique<std::jthread>([this](std::stop_token stopToken) {
+			this->run(stopToken);
 		});
 	}
 
@@ -84,13 +84,13 @@ namespace DiscordCoreInternal {
 				this->sslShards.erase(theShard->shard[0]);
 			} else if (this->maxReconnectTries <= theShard->currentReconnectTries) {
 				this->doWeQuit->store(true);
-				this->theTask->request_stop();
+				this->taskThread->request_stop();
 			}
 		}
 	}
 
 	std::jthread* BaseSocketAgent::getTheTask() noexcept {
-		return this->theTask.get();
+		return this->taskThread.get();
 	}
 
 	void BaseSocketAgent::getVoiceConnectionData(const VoiceConnectInitData& doWeCollect, WebSocketSSLShard* theShard) noexcept {
@@ -928,9 +928,9 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void BaseSocketAgent::run(std::stop_token theToken) noexcept {
+	void BaseSocketAgent::run(std::stop_token stopToken) noexcept {
 		try {
-			while (!theToken.stop_requested() && !this->doWeQuit->load()) {
+			while (!stopToken.stop_requested() && !this->doWeQuit->load()) {
 				if (this->connections.size() > 0) {
 					this->internalConnect();
 				}
@@ -1030,9 +1030,9 @@ namespace DiscordCoreInternal {
 	}
 
 	BaseSocketAgent::~BaseSocketAgent() noexcept {
-		this->theTask->request_stop();
-		if (this->theTask->joinable()) {
-			this->theTask->join();
+		this->taskThread->request_stop();
+		if (this->taskThread->joinable()) {
+			this->taskThread->join();
 		}
 	}
 }

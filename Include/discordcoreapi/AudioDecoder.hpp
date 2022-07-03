@@ -284,7 +284,7 @@ namespace DiscordCoreInternal {
 		AVFrameWrapper frame{ nullptr }, newFrame{ nullptr };
 		AVCodecContextWrapper audioDecodeContext{ nullptr };
 		std::atomic_int32_t refreshTimeForBuffer{ 10000 };
-		std::unique_ptr<std::jthread> theTask{ nullptr };
+		std::unique_ptr<std::jthread> taskThread{ nullptr };
 		AVFormatContextWrapper formatContext{ nullptr };
 		std::atomic_bool haveWeFailedBool{ false };
 		AVIOContextWrapper ioContext{ nullptr };
@@ -298,7 +298,7 @@ namespace DiscordCoreInternal {
 
 		static int32_t FileStreamRead(void* opaque, uint8_t* buf, int32_t);
 
-		void run(std::stop_token theToken);
+		void run(std::stop_token stopToken);
 
 		void cancelMe();
 	};

@@ -33,8 +33,8 @@ namespace DiscordCoreAPI {
 
 	void SongAPI::onSongCompletion(std::function<CoRoutine<void>(SongCompletionEventData)> handler, const Snowflake& guildId) {
 		auto returnValue = getSongAPIMap()[guildId].get();
-		returnValue->onSongCompletionEvent.remove(returnValue->theToken);
-		returnValue->theToken = returnValue->onSongCompletionEvent.add(handler);
+		returnValue->onSongCompletionEvent.remove(returnValue->eventToken);
+		returnValue->eventToken = returnValue->onSongCompletionEvent.add(handler);
 	}
 
 	bool SongAPI::sendNextSong() {
@@ -164,8 +164,8 @@ namespace DiscordCoreAPI {
 		getSongAPIMap()[guildId]->playlist.songQueue = newVector02;
 		auto returnValue = getSongAPIMap()[guildId].get();
 		if (returnValue) {
-			getSongAPIMap()[guildId]->onSongCompletionEvent.remove(getSongAPIMap()[guildId]->theToken);
-			getSongAPIMap()[guildId]->theToken = DiscordCoreInternal::EventDelegateToken{};
+			getSongAPIMap()[guildId]->onSongCompletionEvent.remove(getSongAPIMap()[guildId]->eventToken);
+			getSongAPIMap()[guildId]->eventToken = DiscordCoreInternal::EventDelegateToken{};
 		}
 	}
 
@@ -270,16 +270,16 @@ namespace DiscordCoreAPI {
 			getSoundCloudAPIMap()[guildMember.guildId]->cancelCurrentSong();
 			auto newerSong = getSoundCloudAPIMap()[guildMember.guildId]->collectFinalSong(guildMember, getSongAPIMap()[guildMember.guildId]->playlist.currentSong);
 			newerSong.addedByUserId = guildMember.id;
-			getSongAPIMap()[this->guildId]->theTask = std::make_unique<std::jthread>([=, this](std::stop_token theToken) {
-				getSoundCloudAPIMap()[this->guildId]->downloadAndStreamAudio(newerSong, theToken, 0);
+			getSongAPIMap()[this->guildId]->taskThread = std::make_unique<std::jthread>([=, this](std::stop_token eventToken) {
+				getSoundCloudAPIMap()[this->guildId]->downloadAndStreamAudio(newerSong, eventToken, 0);
 			});
 
 		} else if (getSongAPIMap()[guildMember.guildId]->playlist.currentSong.type == SongType::YouTube) {
 			getYouTubeAPIMap()[guildMember.guildId]->cancelCurrentSong();
 			Song newerSong = getYouTubeAPIMap()[guildMember.guildId]->collectFinalSong(guildMember, getSongAPIMap()[guildMember.guildId]->playlist.currentSong);
 			newerSong.addedByUserId = guildMember.id;
-			getSongAPIMap()[this->guildId]->theTask = std::make_unique<std::jthread>([=, this](std::stop_token theToken) {
-				getYouTubeAPIMap()[this->guildId]->downloadAndStreamAudio(newerSong, theToken, 0);
+			getSongAPIMap()[this->guildId]->taskThread = std::make_unique<std::jthread>([=, this](std::stop_token eventToken) {
+				getYouTubeAPIMap()[this->guildId]->downloadAndStreamAudio(newerSong, eventToken, 0);
 			});
 		};
 	}
@@ -298,12 +298,12 @@ namespace DiscordCoreAPI {
 	}
 
 	SongAPI::~SongAPI() {
-		if (this->theTask) {
-			this->theTask->request_stop();
-			if (this->theTask->joinable()) {
-				this->theTask->join();
+		if (this->taskThread) {
+			this->taskThread->request_stop();
+			if (this->taskThread->joinable()) {
+				this->taskThread->join();
 			}
-			this->theTask.reset(nullptr);
+			this->taskThread.reset(nullptr);
 		}
 	}
 

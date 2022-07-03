@@ -56,11 +56,11 @@ namespace DiscordCoreInternal {
 	  public:
 		SoundCloudAPI(const Snowflake& guildId, HttpsClient* httpsClient, DiscordCoreAPI::ConfigManager* configManagerNew);
 
-		void weFailedToDownloadOrDecode(const DiscordCoreAPI::Song& newSong, std::stop_token theToken, int32_t currentReconnectTries);
+		void weFailedToDownloadOrDecode(const DiscordCoreAPI::Song& newSong, std::stop_token stopToken, int32_t currentReconnectTries);
 
 		DiscordCoreAPI::Song collectFinalSong(const DiscordCoreAPI::GuildMemberData& addedByGuildMember, DiscordCoreAPI::Song& newSong);
 
-		void downloadAndStreamAudio(const DiscordCoreAPI::Song& newSong, std::stop_token theToken, int32_t currentReconnectTries);
+		void downloadAndStreamAudio(const DiscordCoreAPI::Song& newSong, std::stop_token stopToken, int32_t currentReconnectTries);
 
 		std::vector<DiscordCoreAPI::Song> searchForSong(const std::string& searchQuery);
 

@@ -67,8 +67,8 @@ namespace DiscordCoreInternal {
 			this->currentIndex++;
 			this->currentCount++;
 			int64_t theIndexNew = this->currentIndex;
-			workerThread.theThread = std::jthread([=, this](std::stop_token theToken) {
-				this->threadFunction(theToken, theIndexNew);
+			workerThread.theThread = std::jthread([=, this](std::stop_token stopToken) {
+				this->threadFunction(stopToken, theIndexNew);
 			});
 			this->workerThreads[this->currentIndex] = std::move(workerThread);
 		}
@@ -88,8 +88,8 @@ namespace DiscordCoreInternal {
 			this->currentIndex++;
 			this->currentCount++;
 			int64_t theIndexNew = this->currentIndex;
-			workerThread.theThread = std::jthread([=, this](std::stop_token theToken) {
-				this->threadFunction(theToken, theIndexNew);
+			workerThread.theThread = std::jthread([=, this](std::stop_token stopToken) {
+				this->threadFunction(stopToken, theIndexNew);
 			});
 			this->workerThreads[this->currentIndex] = std::move(workerThread);
 		}
@@ -98,9 +98,9 @@ namespace DiscordCoreInternal {
 		this->theCondVar.notify_one();
 	}
 
-	void CoRoutineThreadPool::threadFunction(std::stop_token theToken, int64_t theIndex) {
+	void CoRoutineThreadPool::threadFunction(std::stop_token stopToken, int64_t theIndex) {
 		auto theAtomicBoolPtr = &this->workerThreads[theIndex].theCurrentStatus;
-		while (!this->areWeQuitting.load() && !theToken.stop_requested()) {
+		while (!this->areWeQuitting.load() && !stopToken.stop_requested()) {
 			std::unique_lock<std::mutex> theLock01{ this->theMutex01 };
 			while (!this->areWeQuitting.load() && this->theCoroutineHandles.size() == 0) {
 				if (this->currentCount > std::thread::hardware_concurrency()) {
@@ -117,7 +117,7 @@ namespace DiscordCoreInternal {
 			}
 
 
-			if (this->areWeQuitting.load() || theToken.stop_requested()) {
+			if (this->areWeQuitting.load() || stopToken.stop_requested()) {
 				break;
 			}
 			auto coroHandle = this->theCoroutineHandles.front();

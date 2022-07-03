@@ -53,10 +53,10 @@ namespace DiscordCoreInternal {
 		this->inputDataBuffer.send(std::string());
 		this->inputDataBuffer.send(std::string());
 		this->areWeQuitting = true;
-		if (this->theTask) {
-			this->theTask->request_stop();
-			if (this->theTask->joinable()) {
-				this->theTask->join();
+		if (this->taskThread) {
+			this->taskThread->request_stop();
+			if (this->taskThread->joinable()) {
+				this->taskThread->join();
 			}
 		}
 	}
@@ -66,8 +66,8 @@ namespace DiscordCoreInternal {
 	}
 
 	void AudioDecoder::startMe() {
-		this->theTask = std::make_unique<std::jthread>([=, this](std::stop_token theToken) {
-			this->run(theToken);
+		this->taskThread = std::make_unique<std::jthread>([=, this](std::stop_token stopToken) {
+			this->run(stopToken);
 		});
 	};
 
@@ -108,7 +108,7 @@ namespace DiscordCoreInternal {
 		return static_cast<int32_t>(stream->bytesRead);
 	}
 
-	void AudioDecoder::run(std::stop_token theToken) {
+	void AudioDecoder::run(std::stop_token stopToken) {
 		if (!this->haveWeBooted) {
 			unsigned char* fileStreamBuffer = static_cast<unsigned char*>(av_malloc(this->bufferMaxSize));
 			if (fileStreamBuffer == nullptr) {
@@ -265,7 +265,7 @@ namespace DiscordCoreInternal {
 			}
 
 			while (true) {
-				if (theToken.stop_requested() || this->areWeQuitting || av_read_frame(this->formatContext, this->packet) != 0) {
+				if (stopToken.stop_requested() || this->areWeQuitting || av_read_frame(this->formatContext, this->packet) != 0) {
 					return;
 				}
 				if (this->packet->stream_index == this->audioStreamIndex) {
@@ -338,7 +338,7 @@ namespace DiscordCoreInternal {
 				this->frame = av_frame_alloc();
 				this->newFrame = av_frame_alloc();
 				this->packet = av_packet_alloc();
-				if (theToken.stop_requested() || this->areWeQuitting) {
+				if (stopToken.stop_requested() || this->areWeQuitting) {
 					break;
 				}
 			}

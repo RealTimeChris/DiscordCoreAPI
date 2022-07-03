@@ -65,7 +65,7 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::DiscordCoreClient* discordCoreClient{ nullptr };
 		std::queue<DiscordCoreAPI::ConnectionPackage> connections{};
 		DiscordCoreAPI::ConfigManager* configManager{ nullptr };
-		std::unique_ptr<std::jthread> theTask{ nullptr };
+		std::unique_ptr<std::jthread> taskThread{ nullptr };
 		std::atomic_bool* doWeQuit{ nullptr };
 		const int32_t maxReconnectTries{ 10 };
 		int32_t currentBaseSocketAgent{ 0 };

@@ -349,9 +349,9 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	void VoiceConnection::runWebSocket(std::stop_token theToken) noexcept {
+	void VoiceConnection::runWebSocket(std::stop_token stopToken) noexcept {
 		try {
-			while (!theToken.stop_requested() && !Globals::doWeQuit.load() && this->activeState.load() != VoiceActiveState::Exiting) {
+			while (!stopToken.stop_requested() && !Globals::doWeQuit.load() && this->activeState.load() != VoiceActiveState::Exiting) {
 				if (this->connections.size() > 0) {
 					DiscordCoreAPI::StopWatch theStopWatch{ 10000ms };
 					while (!this->baseShard->areWeConnected02.load()) {
@@ -369,14 +369,14 @@ namespace DiscordCoreAPI {
 					this->sslShards[0]->areWeHeartBeating = true;
 					this->sslShards[0]->heartBeatStopWatch = DiscordCoreAPI::StopWatch{ std::chrono::milliseconds{ this->heartbeatInterval } };
 				}
-				if (!theToken.stop_requested() && this->sslShards[0]->heartBeatStopWatch.hasTimePassed() && this->sslShards[0]->areWeHeartBeating) {
+				if (!stopToken.stop_requested() && this->sslShards[0]->heartBeatStopWatch.hasTimePassed() && this->sslShards[0]->areWeHeartBeating) {
 					this->sendHeartBeat();
 					this->sslShards[0]->heartBeatStopWatch.resetTimer();
 				}
-				if (!theToken.stop_requested() && this->sslShards[0]->areWeStillConnected() && !Globals::doWeQuit.load()) {
+				if (!stopToken.stop_requested() && this->sslShards[0]->areWeStillConnected() && !Globals::doWeQuit.load()) {
 					DiscordCoreInternal::WebSocketSSLShard::processIO(this->sslShards, 1000);
 				}
-				if (!theToken.stop_requested() && this->sslShards.contains(0) && this->sslShards[0] && !Globals::doWeQuit.load()) {
+				if (!stopToken.stop_requested() && this->sslShards.contains(0) && this->sslShards[0] && !Globals::doWeQuit.load()) {
 					this->parseHeadersAndMessage(this->sslShards[0].get());
 					if (this->sslShards.contains(0) && this->sslShards[0] && this->sslShards[0]->processedMessages.size() > 0) {
 						std::string theMessage = this->sslShards[0]->processedMessages.front();
@@ -396,9 +396,9 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	void VoiceConnection::runVoice(std::stop_token theToken) noexcept {
+	void VoiceConnection::runVoice(std::stop_token stopToken) noexcept {
 		this->activeState = VoiceActiveState::Idle;
-		while (!theToken.stop_requested() && !Globals::doWeQuit.load() && this->activeState.load() != VoiceActiveState::Exiting) {
+		while (!stopToken.stop_requested() && !Globals::doWeQuit.load() && this->activeState.load() != VoiceActiveState::Exiting) {
 			switch (this->activeState) {
 				case VoiceActiveState::Stopped: {
 					this->audioDataBuffer.clearContents();
@@ -432,9 +432,9 @@ namespace DiscordCoreAPI {
 						}
 					}
 					this->sendSpeakingMessage(true);
-					while ((this->audioData.rawFrameData.sampleCount != 0 || this->audioData.encodedFrameData.sampleCount != 0) && !theToken.stop_requested() &&
+					while ((this->audioData.rawFrameData.sampleCount != 0 || this->audioData.encodedFrameData.sampleCount != 0) && !stopToken.stop_requested() &&
 						this->activeState.load() == VoiceActiveState::Playing) {
-						if (!theToken.stop_requested() && this->datagramSocket && this->datagramSocket->areWeStillConnected()) {
+						if (!stopToken.stop_requested() && this->datagramSocket && this->datagramSocket->areWeStillConnected()) {
 							this->datagramSocket->processIO();
 							this->datagramSocket->getInputBuffer();
 						}
@@ -505,7 +505,7 @@ namespace DiscordCoreAPI {
 					break;
 				}
 			}
-			if (theToken.stop_requested()) {
+			if (stopToken.stop_requested()) {
 				return;
 			}
 		}
@@ -789,19 +789,19 @@ namespace DiscordCoreAPI {
 	void VoiceConnection::disconnect() noexcept {
 		this->activeState.store(VoiceActiveState::Exiting);
 		this->sendSpeakingMessage(false);
-		if (this->theTask01) {
-			this->theTask01->request_stop();
-			if (this->theTask01->joinable()) {
-				this->theTask01->join();
+		if (this->taskThread01) {
+			this->taskThread01->request_stop();
+			if (this->taskThread01->joinable()) {
+				this->taskThread01->join();
 			}
-			this->theTask01.reset(nullptr);
+			this->taskThread01.reset(nullptr);
 		}
-		if (this->theTask02) {
-			this->theTask02->request_stop();
-			if (this->theTask02->joinable()) {
-				this->theTask02->join();
+		if (this->taskThread02) {
+			this->taskThread02->request_stop();
+			if (this->taskThread02->joinable()) {
+				this->taskThread02->join();
 			}
-			this->theTask02.reset(nullptr);
+			this->taskThread02.reset(nullptr);
 		}
 		if (this->sslShards[0]) {
 			this->sslShards[0].reset(nullptr);
@@ -812,7 +812,7 @@ namespace DiscordCoreAPI {
 		this->areWeConnectedBool.store(false);
 		auto thePtr = getSongAPIMap()[this->voiceConnectInitData.guildId].get();
 		if (thePtr) {
-			thePtr->onSongCompletionEvent.remove(thePtr->theToken);
+			thePtr->onSongCompletionEvent.remove(thePtr->stopToken);
 		}
 	}
 
@@ -834,14 +834,14 @@ namespace DiscordCoreAPI {
 
 	void VoiceConnection::connect() noexcept {
 		if (this->baseSocketAgent->sslShards.contains(this->voiceConnectInitData.currentShard) && this->baseSocketAgent->sslShards[voiceConnectInitData.currentShard]) {
-			if (!this->theTask01) {
-				this->theTask01 = std::make_unique<std::jthread>([=, this](std::stop_token theToken) {
-					this->runWebSocket(theToken);
+			if (!this->taskThread01) {
+				this->taskThread01 = std::make_unique<std::jthread>([=, this](std::stop_token stopToken) {
+					this->runWebSocket(stopToken);
 				});
 			}
-			if (!this->theTask02) {
-				this->theTask02 = std::make_unique<std::jthread>([=, this](std::stop_token theToken) {
-					this->runVoice(theToken);
+			if (!this->taskThread02) {
+				this->taskThread02 = std::make_unique<std::jthread>([=, this](std::stop_token stopToken) {
+					this->runVoice(stopToken);
 				});
 			}
 			ConnectionPackage dataPackage{};
@@ -870,18 +870,18 @@ namespace DiscordCoreAPI {
 	}
 
 	VoiceConnection::~VoiceConnection() noexcept {
-		if (this->theTask01) {
-			this->theTask01->request_stop();
-			if (this->theTask01->joinable()) {
-				this->theTask01->join();
-				this->theTask01.reset(nullptr);
+		if (this->taskThread01) {
+			this->taskThread01->request_stop();
+			if (this->taskThread01->joinable()) {
+				this->taskThread01->join();
+				this->taskThread01.reset(nullptr);
 			}
 		}
-		if (this->theTask02) {
-			this->theTask02->request_stop();
-			if (this->theTask02->joinable()) {
-				this->theTask02->join();
-				this->theTask02.reset(nullptr);
+		if (this->taskThread02) {
+			this->taskThread02->request_stop();
+			if (this->taskThread02->joinable()) {
+				this->taskThread02->join();
+				this->taskThread02.reset(nullptr);
 			}
 		}
 	};

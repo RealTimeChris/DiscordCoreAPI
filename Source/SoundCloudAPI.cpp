@@ -199,7 +199,7 @@ namespace DiscordCoreInternal {
 		this->guildId = guildIdNew;
 	}
 
-	void SoundCloudAPI::weFailedToDownloadOrDecode(const DiscordCoreAPI::Song& newSong, std::stop_token theToken, int32_t currentReconnectTries) {
+	void SoundCloudAPI::weFailedToDownloadOrDecode(const DiscordCoreAPI::Song& newSong, std::stop_token stopToken, int32_t currentReconnectTries) {
 		currentReconnectTries++;
 		DiscordCoreAPI::GuildMember guildMember =
 			DiscordCoreAPI::GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = newSong.addedByUserId, .guildId = this->guildId }).get();
@@ -219,7 +219,7 @@ namespace DiscordCoreInternal {
 			DiscordCoreAPI::getSongAPIMap()[this->guildId]->onSongCompletionEvent(eventData);
 		} else {
 			newerSong = this->requestBuilder.collectFinalSong(guildMember, newerSong);
-			SoundCloudAPI::downloadAndStreamAudio(newerSong, theToken, currentReconnectTries);
+			SoundCloudAPI::downloadAndStreamAudio(newerSong, stopToken, currentReconnectTries);
 		}
 	}
 
@@ -227,7 +227,7 @@ namespace DiscordCoreInternal {
 		return this->requestBuilder.collectFinalSong(addedByGuildMember, newSong);
 	}
 
-	void SoundCloudAPI::downloadAndStreamAudio(const DiscordCoreAPI::Song& newSong, std::stop_token theToken, int32_t currentReconnectTries) {
+	void SoundCloudAPI::downloadAndStreamAudio(const DiscordCoreAPI::Song& newSong, std::stop_token stopToken, int32_t currentReconnectTries) {
 		try {
 			int32_t counter{ 0 };
 			BuildAudioDecoderData dataPackage{};
@@ -240,20 +240,20 @@ namespace DiscordCoreInternal {
 			while (counter < newSong.finalDownloadUrls.size() - 1) {
 				if (counter == newSong.finalDownloadUrls.size() - 1 && didWeGetZero) {
 					audioDecoder.reset(nullptr);
-					SoundCloudAPI::weFailedToDownloadOrDecode(newSong, theToken, currentReconnectTries);
+					SoundCloudAPI::weFailedToDownloadOrDecode(newSong, stopToken, currentReconnectTries);
 					return;
 				}
 				std::this_thread::sleep_for(1ms);
-				if (theToken.stop_requested()) {
+				if (stopToken.stop_requested()) {
 					audioDecoder.reset(nullptr);
 					return;
 				}
 				if (audioDecoder->haveWeFailed()) {
 					audioDecoder.reset(nullptr);
-					SoundCloudAPI::weFailedToDownloadOrDecode(newSong, theToken, currentReconnectTries);
+					SoundCloudAPI::weFailedToDownloadOrDecode(newSong, stopTokenToken, currentReconnectTries);
 					return;
 				}
-				if (theToken.stop_requested()) {
+				if (stopToken.stop_requested()) {
 					audioDecoder.reset(nullptr);
 					return;
 				}
@@ -301,7 +301,7 @@ namespace DiscordCoreInternal {
 						frames.push_back(rawFrame);
 					}
 				}
-				if (theToken.stop_requested()) {
+				if (stopToken.stop_requested()) {
 					audioDecoder.reset(nullptr);
 					return;
 				} else {
@@ -311,7 +311,7 @@ namespace DiscordCoreInternal {
 						DiscordCoreAPI::getVoiceConnectionMap()[this->guildId]->audioDataBuffer.send(value);
 					}
 				}
-				if (theToken.stop_requested()) {
+				if (stopToken.stop_requested()) {
 					audioDecoder.reset(nullptr);
 					return;
 				}
@@ -332,7 +332,7 @@ namespace DiscordCoreInternal {
 			}
 			currentReconnectTries++;
 			DiscordCoreAPI::getVoiceConnectionMap()[this->guildId]->clearAudioData();
-			this->weFailedToDownloadOrDecode(newSong, theToken, currentReconnectTries);
+			this->weFailedToDownloadOrDecode(newSong, stopToken, currentReconnectTries);
 		}
 	};
 
@@ -343,12 +343,12 @@ namespace DiscordCoreInternal {
 	void SoundCloudAPI::cancelCurrentSong() {
 		if (DiscordCoreAPI::getSongAPIMap().contains(this->guildId)) {
 			if (DiscordCoreAPI::getSongAPIMap()[this->guildId]) {
-				if (DiscordCoreAPI::getSongAPIMap()[this->guildId]->theTask) {
-					DiscordCoreAPI::getSongAPIMap()[this->guildId]->theTask->request_stop();
-					if (DiscordCoreAPI::getSongAPIMap()[this->guildId]->theTask->joinable()) {
-						DiscordCoreAPI::getSongAPIMap()[this->guildId]->theTask->join();
+				if (DiscordCoreAPI::getSongAPIMap()[this->guildId]->taskThread) {
+					DiscordCoreAPI::getSongAPIMap()[this->guildId]->taskThread->request_stop();
+					if (DiscordCoreAPI::getSongAPIMap()[this->guildId]->taskThread->joinable()) {
+						DiscordCoreAPI::getSongAPIMap()[this->guildId]->taskThread->join();
 					}
-					DiscordCoreAPI::getSongAPIMap()[this->guildId]->theTask.reset(nullptr);
+					DiscordCoreAPI::getSongAPIMap()[this->guildId]->taskThread.reset(nullptr);
 				}
 			}
 		}
