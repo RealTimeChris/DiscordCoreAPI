@@ -29,6 +29,18 @@
 
 namespace DiscordCoreAPI {
 
+	enum class VoiceConnectionState {
+		Collecting_Init_Data = 0,
+		Initializing_WebSocket = 1,///< Initializing the WebSocket.
+		Collecting_Hello = 2,
+		Sending_Identify = 3,
+		Collecting_Ready = 4,
+		Initializing_DatagramSocket = 5,
+		Collecting_External_Ip = 6,
+		Sending_Select_Protocol = 7,
+		Collecting_Session_Description = 8
+	};
+
 	/**
 	 * \addtogroup voice_connection
 	 * @{
@@ -57,6 +69,7 @@ namespace DiscordCoreAPI {
 		std::unordered_map<int32_t, std::unique_ptr<DiscordCoreInternal::WebSocketSSLShard>> theClients{};
 		UnboundedMessageBlock<DiscordCoreInternal::VoiceConnectionData> voiceConnectionDataBuffer{};
 		std::unique_ptr<DiscordCoreInternal::DatagramSocketSSLClient> voiceSocket{ nullptr };
+		VoiceConnectionState connectionState{ VoiceConnectionState::Collecting_Init_Data };
 		std::unique_ptr<DiscordCoreInternal::AudioEncoder> encoder{ nullptr };
 		DiscordCoreInternal::BaseSocketAgent* baseSocketAgent{ nullptr };
 		DiscordCoreInternal::VoiceConnectInitData voiceConnectInitData{};
@@ -109,13 +122,15 @@ namespace DiscordCoreAPI {
 
 		void runWebSocket(std::stop_token) noexcept;
 
+		bool collectAndProcessAMessage() noexcept;
+
 		void runVoice(std::stop_token) noexcept;
 
 		bool areWeCurrentlyPlaying() noexcept;
 
 		void collectExternalIP() noexcept;
 
-		void webSocketConnect() noexcept;
+		void connectInternal() noexcept;
 
 		void clearAudioData() noexcept;
 
