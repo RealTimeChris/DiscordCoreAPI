@@ -29,10 +29,6 @@ namespace DiscordCoreInternal {
 		this->totalFileSize = dataPackage.totalFileSize;
 	}
 
-	void AudioDecoder::submitDataForDecoding(std::string dataToDecode) {
-		this->inputDataBuffer.send(dataToDecode);
-	}
-
 	bool AudioDecoder::getFrame(DiscordCoreAPI::RawFrameData& dataPackage) {
 		if (!this->areWeQuitting) {
 			if (this->outDataBuffer.tryReceive(dataPackage)) {
@@ -42,6 +38,10 @@ namespace DiscordCoreInternal {
 			}
 		}
 		return false;
+	}
+
+	void AudioDecoder::submitDataForDecoding(std::string dataToDecode) {
+		this->inputDataBuffer.send(dataToDecode);
 	}
 
 	void AudioDecoder::cancelMe() {
