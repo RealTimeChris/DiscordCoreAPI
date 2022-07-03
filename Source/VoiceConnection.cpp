@@ -23,7 +23,7 @@
 #include <discordcoreapi/DiscordCoreClient.hpp>
 
 namespace DiscordCoreAPI {
-
+	
 	namespace Globals {
 		extern std::atomic_bool doWeQuit;
 	}
@@ -351,7 +351,7 @@ namespace DiscordCoreAPI {
 
 	void VoiceConnection::runWebSocket(std::stop_token theToken) noexcept {
 		try {
-			while (!theToken.stop_requested() && !Globals::doWeQuit.load() && this->activeState != VoiceActiveState::Exiting) {
+			while (!theToken.stop_requested() && !Globals::doWeQuit.load() && this->activeState.load() != VoiceActiveState::Exiting) {
 				if (this->connections.size() > 0) {
 					DiscordCoreAPI::StopWatch theStopWatch{ 10000ms };
 					while (!this->theBaseShard->areWeConnected02.load()) {
@@ -397,18 +397,21 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::runVoice(std::stop_token theToken) noexcept {
-		while (!theToken.stop_requested() && !Globals::doWeQuit.load() && this->activeState != VoiceActiveState::Exiting) {
-			switch (this->activeState) { 
+		this->activeState = VoiceActiveState::Idle;
+		while (!theToken.stop_requested() && !Globals::doWeQuit.load() && this->activeState.load() != VoiceActiveState::Exiting) {
+			switch (this->activeState) {
 				case VoiceActiveState::Stopped: {
 					this->audioBuffer.clearContents();
 					this->clearAudioData();
-					while (this->activeState == VoiceActiveState::Stopped) {
+					while (this->activeState.load() == VoiceActiveState::Stopped) {
+						std::cout << "WERE STOPPED!" << std::endl;
 						std::this_thread::sleep_for(1ms);
 					}
 					break;
 				}
 				case VoiceActiveState::Paused: {
-					while (this->activeState == VoiceActiveState::Paused) {
+					while (this->activeState.load() == VoiceActiveState::Paused) {
+						std::cout << "WERE PAUSED !" << std::endl;
 						std::this_thread::sleep_for(1ms);
 					}
 					break;
@@ -432,7 +435,8 @@ namespace DiscordCoreAPI {
 					}
 					this->sendSpeakingMessage(true);
 					while ((this->audioData.rawFrameData.sampleCount != 0 || this->audioData.encodedFrameData.sampleCount != 0) && !theToken.stop_requested() &&
-						this->activeState == VoiceActiveState::Playing) {
+						this->activeState.load() == VoiceActiveState::Playing) {
+						std::cout << "WERE PLAYING!" << std::endl;
 						if (!theToken.stop_requested() && this->voiceSocket && this->voiceSocket->areWeStillConnected()) {
 							this->voiceSocket->processIO();
 							this->voiceSocket->getInputBuffer();
@@ -500,6 +504,9 @@ namespace DiscordCoreAPI {
 				case VoiceActiveState::Exiting: {
 					return;
 				}
+				default: {
+					std::cout << "WERE HERE DEFAULTING !" << std::endl;
+				}
 			}
 			if (theToken.stop_requested()) {
 				return;
@@ -512,7 +519,7 @@ namespace DiscordCoreAPI {
 			return false;
 		} else {
 			bool areWePlaying{};
-			if (this->activeState == VoiceActiveState::Playing || this->activeState == VoiceActiveState::Paused) {
+			if (this->activeState.load() == VoiceActiveState::Playing || this->activeState.load() == VoiceActiveState::Paused) {
 				return true;
 			} else {
 				return false;
@@ -779,18 +786,18 @@ namespace DiscordCoreAPI {
 
 	void VoiceConnection::pauseToggle() noexcept {
 		if (this) {
-			if (this->activeState == VoiceActiveState::Paused) {
+			if (this->activeState.load() == VoiceActiveState::Paused) {
 				sendSpeakingMessage(true);
-				this->activeState = VoiceActiveState::Playing;
+				this->activeState.store( VoiceActiveState::Playing);
 			} else {
 				sendSpeakingMessage(false);
-				this->activeState = VoiceActiveState::Paused;
+				this->activeState.store(VoiceActiveState::Paused);
 			}
 		}
 	}
 
 	void VoiceConnection::disconnect() noexcept {
-		this->activeState = VoiceActiveState::Exiting;
+		this->activeState.store(VoiceActiveState::Exiting);
 		std::cout << "WERE DCING! ORIGINAL!" << std::endl;
 		if (this->theTask01) {
 			this->theTask01->request_stop();
@@ -821,7 +828,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::onClosed() noexcept {
-		if (this->theClients[0] &&  this->areWeConnectedBool.load()) {
+		if (this->theClients[0] && this->areWeConnectedBool.load() && this->activeState != VoiceActiveState::Exiting) {
 			this->areWeConnectedBool.store(false);
 			this->voiceSocket->areWeConnected.store(false);
 			this->voiceSocket->disconnect();
@@ -830,7 +837,7 @@ namespace DiscordCoreAPI {
 			this->theClients[0]->wantWrite = true;
 			this->theClients[0]->wantRead = false;
 			this->currentReconnectionTries++;
-		} else if (this->connections.size() == 0) {
+		} else if (this->connections.size() == 0 && this->activeState != VoiceActiveState::Exiting) {
 			ConnectionPackage theData{};
 			this->connections.push(theData);
 		}
@@ -864,12 +871,12 @@ namespace DiscordCoreAPI {
 	}
 
 	bool VoiceConnection::stop() noexcept {
-		this->activeState = VoiceActiveState::Stopped;
+		this->activeState.store(VoiceActiveState::Stopped);
 		return true;
 	}
 
 	bool VoiceConnection::play() noexcept {
-		this->activeState = VoiceActiveState::Playing;
+		this->activeState.store(VoiceActiveState::Playing);
 		return true;
 	}
 

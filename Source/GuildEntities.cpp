@@ -43,12 +43,12 @@ namespace DiscordCoreAPI {
 			} else {
 				theChannelId = channelId;
 			}
-			std::string theShardId{ std::to_string((this->id >> 22) % this->discordCoreClient->configManager.getTotalShardCount()) };
+			uint64_t theShardId{ (this->id >> 22) % this->discordCoreClient->configManager.getTotalShardCount() };
 			auto theBaseSocketAgentIndex{ static_cast<int32_t>(
-				floor(static_cast<float>(stod(theShardId)) / static_cast<float>(this->discordCoreClient->configManager.getTotalShardCount())) *
+				floor(static_cast<float>(theShardId) / static_cast<float>(this->discordCoreClient->configManager.getTotalShardCount())) *
 				static_cast<float>(std::thread::hardware_concurrency())) };
 			DiscordCoreInternal::VoiceConnectInitData voiceConnectInitData{};
-			voiceConnectInitData.currentShard = stoll(theShardId);
+			voiceConnectInitData.currentShard = theShardId;
 			voiceConnectInitData.channelId = theChannelId;
 			voiceConnectInitData.guildId = this->id;
 			voiceConnectInitData.userId = this->discordCoreClient->getBotUser().id;
@@ -75,8 +75,11 @@ namespace DiscordCoreAPI {
 			updateVoiceData.selfDeaf = false;
 			updateVoiceData.selfMute = false;
 			updateVoiceData.guildId = this->id;
+			getVoiceConnectionMap()[this->id]->activeState.store(VoiceActiveState::Exiting);
 			this->discordCoreClient->getBotUser().updateVoiceStatus(updateVoiceData);
-			SongAPI::stop(this->id);
+			getVoiceConnectionMap()[this->id]->activeState.store(VoiceActiveState::Exiting);
+			//SongAPI::stop(this->id);
+			getVoiceConnectionMap()[this->id]->activeState.store(VoiceActiveState::Exiting);
 			getVoiceConnectionMap()[this->id]->disconnect();
 			this->voiceConnectionPtr = nullptr;
 		}
