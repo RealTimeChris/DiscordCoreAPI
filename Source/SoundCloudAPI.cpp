@@ -250,7 +250,7 @@ namespace DiscordCoreInternal {
 				}
 				if (audioDecoder->haveWeFailed()) {
 					audioDecoder.reset(nullptr);
-					SoundCloudAPI::weFailedToDownloadOrDecode(newSong, stopTokenToken, currentReconnectTries);
+					SoundCloudAPI::weFailedToDownloadOrDecode(newSong, stopToken, currentReconnectTries);
 					return;
 				}
 				if (stopToken.stop_requested()) {
