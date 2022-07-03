@@ -199,6 +199,10 @@ namespace DiscordCoreInternal {
 		this->guildId = guildIdNew;
 	}
 
+	DiscordCoreAPI::Song SoundCloudAPI::collectFinalSong(const DiscordCoreAPI::GuildMemberData& addedByGuildMember, DiscordCoreAPI::Song& newSong) {
+		return this->requestBuilder.collectFinalSong(addedByGuildMember, newSong);
+	}
+
 	void SoundCloudAPI::weFailedToDownloadOrDecode(const DiscordCoreAPI::Song& newSong, std::stop_token stopToken, int32_t currentReconnectTries) {
 		currentReconnectTries++;
 		DiscordCoreAPI::GuildMember guildMember =
@@ -221,10 +225,6 @@ namespace DiscordCoreInternal {
 			newerSong = this->requestBuilder.collectFinalSong(guildMember, newerSong);
 			SoundCloudAPI::downloadAndStreamAudio(newerSong, stopToken, currentReconnectTries);
 		}
-	}
-
-	DiscordCoreAPI::Song SoundCloudAPI::collectFinalSong(const DiscordCoreAPI::GuildMemberData& addedByGuildMember, DiscordCoreAPI::Song& newSong) {
-		return this->requestBuilder.collectFinalSong(addedByGuildMember, newSong);
 	}
 
 	void SoundCloudAPI::downloadAndStreamAudio(const DiscordCoreAPI::Song& newSong, std::stop_token stopToken, int32_t currentReconnectTries) {

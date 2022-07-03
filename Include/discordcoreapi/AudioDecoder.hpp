@@ -282,9 +282,9 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::UnboundedMessageBlock<std::string> inputDataBuffer{};
 		DiscordCoreAPI::ConfigManager* configManager{ nullptr };
 		AVFrameWrapper frame{ nullptr }, newFrame{ nullptr };
+		std::unique_ptr<std::jthread> taskThread{ nullptr };
 		AVCodecContextWrapper audioDecodeContext{ nullptr };
 		std::atomic_int32_t refreshTimeForBuffer{ 10000 };
-		std::unique_ptr<std::jthread> taskThread{ nullptr };
 		AVFormatContextWrapper formatContext{ nullptr };
 		std::atomic_bool haveWeFailedBool{ false };
 		AVIOContextWrapper ioContext{ nullptr };

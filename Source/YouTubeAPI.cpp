@@ -168,6 +168,10 @@ namespace DiscordCoreInternal {
 		this->guildId = guildIdNew;
 	}
 
+	DiscordCoreAPI::Song YouTubeAPI::collectFinalSong(const DiscordCoreAPI::GuildMemberData& addedByGuildMember, DiscordCoreAPI::Song& newSong) {
+		return this->requestBuilder.collectFinalSong(addedByGuildMember, newSong);
+	}
+
 	void YouTubeAPI::weFailedToDownloadOrDecode(const DiscordCoreAPI::Song& newSong, std::stop_token stopToken, int32_t currentReconnectTries) {
 		currentReconnectTries++;
 		DiscordCoreAPI::GuildMember guildMember =
@@ -190,10 +194,6 @@ namespace DiscordCoreInternal {
 			newerSong = this->requestBuilder.collectFinalSong(guildMember, newerSong);
 			YouTubeAPI::downloadAndStreamAudio(newerSong, stopToken, currentReconnectTries);
 		}
-	}
-
-	DiscordCoreAPI::Song YouTubeAPI::collectFinalSong(const DiscordCoreAPI::GuildMemberData& addedByGuildMember, DiscordCoreAPI::Song& newSong) {
-		return this->requestBuilder.collectFinalSong(addedByGuildMember, newSong);
 	}
 
 	void YouTubeAPI::downloadAndStreamAudio(const DiscordCoreAPI::Song& newSong, std::stop_token stopToken, int32_t currentReconnectTries) {
