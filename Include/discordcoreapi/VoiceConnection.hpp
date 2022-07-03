@@ -29,7 +29,7 @@
 
 namespace DiscordCoreAPI {
 
-	enum class VoiceConnectionState {
+	enum class VoiceConnectionState : int8_t {
 		Collecting_Init_Data = 0,
 		Initializing_WebSocket = 1,///< Initializing the WebSocket.
 		Collecting_Hello = 2,
@@ -41,7 +41,7 @@ namespace DiscordCoreAPI {
 		Collecting_Session_Description = 8
 	};
 
-	enum VoiceActiveState {
+	enum class VoiceActiveState : int8_t {
 		Playing = 0,///< Playing.
 		Stopped = 1,
 		Paused = 2,
@@ -77,12 +77,12 @@ namespace DiscordCoreAPI {
 		UnboundedMessageBlock<DiscordCoreInternal::VoiceConnectionData> voiceConnectionDataBuffer{};
 		std::unique_ptr<DiscordCoreInternal::DatagramSocketSSLClient> voiceSocket{ nullptr };
 		VoiceConnectionState connectionState{ VoiceConnectionState::Collecting_Init_Data };
+		std::atomic<VoiceActiveState> activeState{ VoiceActiveState::Stopped };
 		std::unique_ptr<DiscordCoreInternal::AudioEncoder> encoder{ nullptr };
 		DiscordCoreInternal::BaseSocketAgent* baseSocketAgent{ nullptr };
 		DiscordCoreInternal::VoiceConnectInitData voiceConnectInitData{};
 		DiscordCoreInternal::WebSocketSSLShard* theBaseShard{ nullptr };
 		DiscordCoreInternal::VoiceConnectionData voiceConnectionData{};
-		VoiceActiveState activeState{ VoiceActiveState::Stopped };
 		DiscordCoreAPI::ConfigManager* configManager{ nullptr };
 		UnboundedMessageBlock<AudioFrameData> audioBuffer{};
 		std::unique_ptr<std::jthread> theTask01{ nullptr };
