@@ -812,7 +812,7 @@ namespace DiscordCoreAPI {
 		this->areWeConnectedBool.store(false);
 		auto thePtr = getSongAPIMap()[this->voiceConnectInitData.guildId].get();
 		if (thePtr) {
-			thePtr->onSongCompletionEvent.remove(thePtr->stopToken);
+			thePtr->onSongCompletionEvent.remove(thePtr->eventToken);
 		}
 	}
 
