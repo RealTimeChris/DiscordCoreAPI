@@ -38,6 +38,65 @@
 	#undef min
 #endif
 
+namespace DiscordCoreInternal {
+
+	WebSocketResumeData::operator nlohmann::json() {
+		nlohmann::json theData{};
+		theData["d"]["seq"] = this->lastNumberReceived;
+		theData["d"]["session_id"] = this->sessionId;
+		theData["d"]["token"] = this->botToken;
+		theData["op"] = 6;
+		return theData;
+	}
+
+	WebSocketIdentifyData::operator nlohmann::json() {
+		nlohmann::json data{};
+		data["d"]["properties"]["browser"] = "DiscordCoreAPI";
+		data["d"]["properties"]["device"] = "DiscordCoreAPI";
+		data["d"]["shard"] = { this->currentShard, this->numberOfShards };
+		data["d"]["large_threshold"] = 250;
+		data["d"]["intents"] = this->intents;
+		data["d"]["compress"] = false;
+		data["d"]["token"] = this->botToken;
+		data["op"] = 2;
+#ifdef _WIN32
+		data["d"]["properties"]["os"] = "Windows";
+#else
+		data["d"]["properties"]["os"] = "Linux";
+#endif
+		return data;
+	}
+
+	VoiceSocketProtocolPayloadData::operator nlohmann::json() {
+		nlohmann::json data{};
+		data["d"]["data"]["port"] = stol(this->voicePort);
+		data["d"]["data"]["mode"] = this->voiceEncryptionMode;
+		data["d"]["data"]["address"] = this->externalIp;
+		data["d"]["protocol"] = "udp";
+		data["op"] = 1;
+		return data;
+	}
+
+	VoiceIdentifyData::operator nlohmann::json() {
+		nlohmann::json data{};
+		data["d"]["session_id"] = this->connectionData.sessionId;
+		data["d"]["server_id"] = std::to_string(this->connectInitData.guildId);
+		data["d"]["user_id"] = std::to_string(this->connectInitData.userId);
+		data["d"]["token"] = this->connectionData.token;
+		data["op"] = 0;
+		return data;
+	}
+
+	SendSpeakingData::operator nlohmann::json() {
+		nlohmann::json data{};
+		data["d"]["speaking"] = 1 << 0;
+		data["d"]["delay"] = delay;
+		data["d"]["ssrc"] = ssrc;
+		data["op"] = 5;
+		return data;
+	}
+}
+
 namespace DiscordCoreAPI {
 
 	InputEventData& InputEventData::operator=(const InputEventData& other) {

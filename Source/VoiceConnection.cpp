@@ -600,14 +600,15 @@ namespace DiscordCoreAPI {
 		}
 		switch (this->connectionState) {
 			case VoiceConnectionState::Collecting_Init_Data: {
+				this->voiceConnectionData = DiscordCoreInternal::VoiceConnectionData{};
 				this->baseShard->voiceConnectionDataBufferMap[this->voiceConnectInitData.guildId] = &this->voiceConnectionDataBuffer;
 				this->baseSocketAgent->getVoiceConnectionData(this->voiceConnectInitData, this->baseShard);
-				this->voiceConnectionData = DiscordCoreInternal::VoiceConnectionData{};
 				if (DiscordCoreAPI::waitForTimeToPass(this->voiceConnectionDataBuffer, this->voiceConnectionData, 20000)) {
 					this->onClosed();
 					this->connectionState = VoiceConnectionState::Collecting_Init_Data;
 					return;
 				}
+				std::cout << "SESSION ID: " << this->voiceConnectionData.sessionId << std::endl;
 				this->baseUrl = this->voiceConnectionData.endPoint.substr(0, this->voiceConnectionData.endPoint.find(":"));
 				this->connectionState = VoiceConnectionState::Initializing_WebSocket;
 				this->connectInternal();
@@ -834,19 +835,22 @@ namespace DiscordCoreAPI {
 
 	void VoiceConnection::connect() noexcept {
 		if (this->baseSocketAgent->sslShards.contains(this->voiceConnectInitData.currentShard) && this->baseSocketAgent->sslShards[voiceConnectInitData.currentShard]) {
+
+			ConnectionPackage dataPackage{};
+			dataPackage.currentShard = 0;
+			this->connections.push(dataPackage);
+
 			if (!this->taskThread01) {
 				this->taskThread01 = std::make_unique<std::jthread>([=, this](std::stop_token stopToken) {
 					this->runWebSocket(stopToken);
 				});
 			}
+			std::this_thread::sleep_for(150ms);
 			if (!this->taskThread02) {
 				this->taskThread02 = std::make_unique<std::jthread>([=, this](std::stop_token stopToken) {
 					this->runVoice(stopToken);
 				});
 			}
-			ConnectionPackage dataPackage{};
-			dataPackage.currentShard = 0;
-			this->connections.push(dataPackage);
 			StopWatch theStopWatch{ 100000ms };
 			while (!this->areWeConnectedBool.load()) {
 				if (theStopWatch.hasTimePassed()) {

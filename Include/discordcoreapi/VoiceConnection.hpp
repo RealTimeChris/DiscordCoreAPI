@@ -42,7 +42,7 @@ namespace DiscordCoreAPI {
 	};
 
 	enum class VoiceActiveState : int8_t {
-		Idle = 0,
+		Idle = -1,
 		Playing = 1,///< Playing.
 		Stopped = 2,
 		Paused = 3,

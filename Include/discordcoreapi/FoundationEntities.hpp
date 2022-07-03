@@ -91,14 +91,7 @@ namespace DiscordCoreInternal {
 		std::string sessionId{};
 		int32_t lastNumberReceived{};
 
-		operator nlohmann::json() {
-			nlohmann::json theData{};
-			theData["d"]["seq"] = this->lastNumberReceived;
-			theData["d"]["session_id"] = this->sessionId;
-			theData["d"]["token"] = this->botToken;
-			theData["op"] = 6;
-			return theData;
-		}
+		operator nlohmann::json();
 	};
 
 	struct DiscordCoreAPI_Dll WebSocketIdentifyData {
@@ -107,23 +100,8 @@ namespace DiscordCoreInternal {
 		int32_t currentShard{};
 		int32_t numberOfShards{};
 
-		operator nlohmann::json() {
-			nlohmann::json data{};
-			data["d"]["properties"]["browser"] = "DiscordCoreAPI";
-			data["d"]["properties"]["device"] = "DiscordCoreAPI";
-			data["d"]["shard"] = { this->currentShard, this->numberOfShards };
-			data["d"]["large_threshold"] = 250;
-			data["d"]["intents"] = this->intents;
-			data["d"]["compress"] = false;
-			data["d"]["token"] = this->botToken;
-			data["op"] = 2;
-#ifdef _WIN32
-			data["d"]["properties"]["os"] = "Windows";
-#else
-			data["d"]["properties"]["os"] = "Linux";
-#endif
-			return data;
-		}
+		operator nlohmann::json();
+		
 	};
 
 	struct DiscordCoreAPI_Dll VoiceSocketProtocolPayloadData {
@@ -131,44 +109,23 @@ namespace DiscordCoreInternal {
 		std::string externalIp{};
 		std::string voiceEncryptionMode{};
 
-		operator nlohmann::json() {
-			nlohmann::json data{};
-			data["d"]["data"]["port"] = stol(this->voicePort);
-			data["d"]["data"]["mode"] = this->voiceEncryptionMode;
-			data["d"]["data"]["address"] = this->externalIp;
-			data["d"]["protocol"] = "udp";
-			data["op"] = 1;
-			return data;
-		}
+		operator nlohmann::json();
+		
 	};
 
 	struct DiscordCoreAPI_Dll VoiceIdentifyData {
 		VoiceConnectInitData connectInitData{};
 		VoiceConnectionData connectionData{};
 
-		operator nlohmann::json() {
-			nlohmann::json data{};
-			data["d"]["session_id"] = this->connectionData.sessionId;
-			data["d"]["server_id"] = std::to_string(this->connectInitData.guildId);
-			data["d"]["user_id"] = std::to_string(this->connectInitData.userId);
-			data["d"]["token"] = this->connectionData.token;
-			data["op"] = 0;
-			return data;
-		}
+		operator nlohmann::json();
 	};
 
 	struct DiscordCoreAPI_Dll SendSpeakingData {
 		int32_t ssrc{};
 		int32_t delay{};
 
-		operator nlohmann::json() {
-			nlohmann::json data{};
-			data["d"]["speaking"] = 1 << 0;
-			data["d"]["delay"] = delay;
-			data["d"]["ssrc"] = ssrc;
-			data["op"] = 5;
-			return data;
-		}
+		operator nlohmann::json();
+		
 	};
 }
 
@@ -186,13 +143,6 @@ namespace DiscordCoreAPI {
 		virtual void parseObject(const nlohmann::json&, ObjectType*) = 0;
 
 		virtual ~DataParser() = default;
-	};
-
-	class Jsonifier {
-	  public:
-		virtual std::string Jsonify() = 0;
-
-		virtual ~Jsonifier() = default;
 	};
 
 	/// For ids of DiscordEntities. \brief For ids of DiscordEntities.

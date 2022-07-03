@@ -44,23 +44,6 @@ namespace DiscordCoreInternal {
 		this->inputDataBuffer.send(dataToDecode);
 	}
 
-	void AudioDecoder::cancelMe() {
-		this->refreshTimeForBuffer.store(10);
-		this->inputDataBuffer.clearContents();
-		this->inputDataBuffer.send(std::string());
-		this->inputDataBuffer.send(std::string());
-		this->inputDataBuffer.send(std::string());
-		this->inputDataBuffer.send(std::string());
-		this->inputDataBuffer.send(std::string());
-		this->areWeQuitting = true;
-		if (this->taskThread) {
-			this->taskThread->request_stop();
-			if (this->taskThread->joinable()) {
-				this->taskThread->join();
-			}
-		}
-	}
-
 	bool AudioDecoder::haveWeFailed() {
 		return this->haveWeFailedBool.load();
 	}
@@ -347,6 +330,23 @@ namespace DiscordCoreInternal {
 			}
 		}
 		return;
+	}
+
+	void AudioDecoder::cancelMe() {
+		this->refreshTimeForBuffer.store(10);
+		this->inputDataBuffer.clearContents();
+		this->inputDataBuffer.send(std::string());
+		this->inputDataBuffer.send(std::string());
+		this->inputDataBuffer.send(std::string());
+		this->inputDataBuffer.send(std::string());
+		this->inputDataBuffer.send(std::string());
+		this->areWeQuitting = true;
+		if (this->taskThread) {
+			this->taskThread->request_stop();
+			if (this->taskThread->joinable()) {
+				this->taskThread->join();
+			}
+		}
 	}
 
 	AudioDecoder::~AudioDecoder() {
