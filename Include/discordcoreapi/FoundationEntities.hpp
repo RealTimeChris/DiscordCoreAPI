@@ -6764,6 +6764,7 @@ namespace DiscordCoreAPI {
 	/// Interaction data. \brief Interaction data.
 	class DiscordCoreAPI_Dll InteractionData : public DiscordEntity, public DataParser<InteractionData> {
 	  public:
+		std::string appPermissions{};///< Bitwise set of permissions the app or bot has within the channel the interaction was sent from.
 		InteractionDataData data{};///< The Interaction's data.
 		std::string guildLocale{};///< The guild's preferred locale, if invoked in a guild.
 		Snowflake applicationId{};///< The application's id.
@@ -6796,6 +6797,10 @@ namespace DiscordCoreAPI {
 			if (jsonObjectData.contains("data") && !jsonObjectData["data"].is_null()) {
 				pDataStructure->data = jsonObjectData["data"];
 				pDataStructure->rawData = jsonObjectData["data"];
+			}
+
+			if (jsonObjectData.contains("app_permissions") && !jsonObjectData["app_permissions"].is_null()) {
+				pDataStructure->appPermissions = jsonObjectData["app_permissions"].get<std::string>();
 			}
 
 			if (jsonObjectData.contains("type") && !jsonObjectData["type"].is_null()) {
