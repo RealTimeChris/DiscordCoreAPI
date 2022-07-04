@@ -592,7 +592,6 @@ namespace DiscordCoreAPI {
 				return true;
 			}
 			if (theStopWatch.hasTimePassed()) {
-				this->sslShards[0]->disconnect();
 				this->onClosed();
 				return false;
 			}
@@ -647,9 +646,8 @@ namespace DiscordCoreAPI {
 				this->sslShards[0]->writeData(sendVector, true);
 				this->connectionState = VoiceConnectionState::Collecting_Hello;
 				if (!this->collectAndProcessAMessage()) {
-					this->sslShards[0]->disconnect();
-					this->onClosed();
 					this->connectionState = VoiceConnectionState::Collecting_Init_Data;
+					this->onClosed();
 					return;
 				}
 				this->connectInternal();
@@ -715,9 +713,8 @@ namespace DiscordCoreAPI {
 			}
 			case VoiceConnectionState::Collecting_Session_Description: {
 				if (!this->collectAndProcessAMessage()) {
-					this->sslShards[0]->disconnect();
-					this->onClosed();
 					this->connectionState = VoiceConnectionState::Collecting_Init_Data;
+					this->onClosed();
 					return;
 				}
 				this->currentReconnectTries = 0;
