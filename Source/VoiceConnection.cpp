@@ -342,7 +342,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	void VoiceConnection::sendSpeakingMessage(bool isSpeaking) noexcept {
+	void VoiceConnection::sendSpeakingMessage(const bool isSpeaking) noexcept {
 		if (!isSpeaking) {
 			this->sendSilence();
 		} else {
@@ -404,6 +404,31 @@ namespace DiscordCoreAPI {
 			}
 			this->onClosed();
 		}
+	}
+
+	bool VoiceConnection::collectAndProcessAMessage() noexcept {
+		DiscordCoreAPI::StopWatch theStopWatch{ 2500ms };
+		while (!Globals::doWeQuit.load()) {
+			DiscordCoreInternal::WebSocketSSLShard::processIO(this->sslShards, 100000);
+			if (!sslShards[0]->areWeStillConnected()) {
+				return false;
+			}
+			if (this->sslShards[0]->inputBuffer.size() > 0) {
+				this->parseHeadersAndMessage(this->sslShards[0].get());
+			}
+			if (this->sslShards[0]->processedMessages.size() > 0) {
+				std::string theMessage = this->sslShards[0]->processedMessages.front();
+				this->sslShards[0]->processedMessages.pop();
+				this->onMessageReceived(theMessage);
+				return true;
+			}
+			if (theStopWatch.hasTimePassed()) {
+				this->onClosed();
+				return false;
+			}
+			std::this_thread::sleep_for(1ms);
+		}
+		return false;
 	}
 
 	void VoiceConnection::runVoice(std::stop_token stopToken) noexcept {
@@ -582,31 +607,6 @@ namespace DiscordCoreAPI {
 			}
 			this->onClosed();
 		}
-	}
-
-	bool VoiceConnection::collectAndProcessAMessage() noexcept {
-		DiscordCoreAPI::StopWatch theStopWatch{ 2500ms };
-		while (!Globals::doWeQuit.load()) {
-			DiscordCoreInternal::WebSocketSSLShard::processIO(this->sslShards, 100000);
-			if (!sslShards[0]->areWeStillConnected()) {
-				return false;
-			}
-			if (this->sslShards[0]->inputBuffer.size() > 0) {
-				this->parseHeadersAndMessage(this->sslShards[0].get());
-			}
-			if (this->sslShards[0]->processedMessages.size() > 0) {
-				std::string theMessage = this->sslShards[0]->processedMessages.front();
-				this->sslShards[0]->processedMessages.pop();
-				this->onMessageReceived(theMessage);
-				return true;
-			}
-			if (theStopWatch.hasTimePassed()) {
-				this->onClosed();
-				return false;
-			}
-			std::this_thread::sleep_for(1ms);
-		}
-		return false;
 	}
 
 	void VoiceConnection::connectInternal() noexcept {
