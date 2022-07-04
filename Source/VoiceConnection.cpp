@@ -397,9 +397,8 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::runVoice(std::stop_token stopToken) noexcept {
-		this->activeState = VoiceActiveState::Idle;
 		while (!stopToken.stop_requested() && !Globals::doWeQuit.load() && this->activeState.load() != VoiceActiveState::Exiting) {
-			switch (this->activeState) {
+			switch (this->activeState.load()) {
 				case VoiceActiveState::Stopped: {
 					this->audioDataBuffer.clearContents();
 					this->clearAudioData();
@@ -708,7 +707,6 @@ namespace DiscordCoreAPI {
 				this->currentReconnectTries = 0;
 				this->connectionState = VoiceConnectionState::Collecting_Init_Data;
 				this->baseShard->voiceConnectionDataBufferMap[this->voiceConnectInitData.guildId]->clearContents();
-				this->activeState = VoiceActiveState::Idle;
 				return;
 			}
 		}
@@ -820,7 +818,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::onClosed() noexcept {
-		if (this->sslShards[0] && this->areWeConnectedBool.load() && this->activeState != VoiceActiveState::Exiting) {
+		if (this->sslShards[0] && this->areWeConnectedBool.load() && this->activeState.load() != VoiceActiveState::Exiting) {
 			this->areWeConnectedBool.store(false);
 			this->datagramSocket->areWeConnected.store(false);
 			this->datagramSocket->disconnect();
@@ -829,7 +827,7 @@ namespace DiscordCoreAPI {
 			this->sslShards[0]->wantWrite = true;
 			this->sslShards[0]->wantRead = false;
 			this->currentReconnectTries++;
-		} else if (this->connections.size() == 0 && this->activeState != VoiceActiveState::Exiting) {
+		} else if (this->connections.size() == 0 && this->activeState.load() != VoiceActiveState::Exiting) {
 			ConnectionPackage theData{};
 			this->connections.push(theData);
 		}
@@ -860,8 +858,9 @@ namespace DiscordCoreAPI {
 				}
 				std::this_thread::sleep_for(1ms);
 			}
-			this->activeState = VoiceActiveState::Idle;
+			this->activeState.store(VoiceActiveState::Idle);
 			return;
+			
 		}
 		return;
 	}
