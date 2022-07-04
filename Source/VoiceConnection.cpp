@@ -632,6 +632,7 @@ namespace DiscordCoreAPI {
 				}
 				auto theClient = std::make_unique<DiscordCoreInternal::WebSocketSSLShard>(&this->connections, 0, 0, this->configManager, true);
 				if (!theClient->connect(this->baseUrl, "443")) {
+					this->sslShards[0] = std::move(theClient);
 					this->connectionState = VoiceConnectionState::Collecting_Init_Data;
 					this->onClosed();
 					return;
@@ -833,17 +834,19 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::onClosed() noexcept {
-		if (this->sslShards[0] && this->activeState.load() != VoiceActiveState::Exiting) {
+		if (this->activeState.load() != VoiceActiveState::Exiting) {
 			this->activeState.store(VoiceActiveState::Idle);
 			this->areWeConnectedBool.store(false);
 			if (this->datagramSocket) {
 				this->datagramSocket->areWeConnected.store(false);
 				this->datagramSocket->reconnect();
 			}
-			this->sslShards[0]->reconnect();
-			this->sslShards[0]->areWeHeartBeating = false;
-			this->sslShards[0]->wantWrite = true;
-			this->sslShards[0]->wantRead = false;
+			if (this->sslShards[0]) {
+				this->sslShards[0]->reconnect();
+				this->sslShards[0]->areWeHeartBeating = false;
+				this->sslShards[0]->wantWrite = true;
+				this->sslShards[0]->wantRead = false;
+			}
 			this->currentReconnectTries++;
 		}			
 		if (this->currentReconnectTries >= this->maxReconnectTries) {
