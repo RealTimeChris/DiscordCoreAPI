@@ -110,10 +110,6 @@ namespace DiscordCoreInternal {
 			return *this;
 		}
 
-		BIOWrapper(BIO* other) {
-			*this = other;
-		}
-
 		operator BIO*() {
 			return this->bioPtr.get();
 		}
@@ -181,10 +177,6 @@ namespace DiscordCoreInternal {
 			return *this;
 		}
 
-		SSL_CTXWrapper(SSL_CTX* other) {
-			*this = other;
-		}
-
 		operator SSL_CTX*() {
 			return this->sslCTXPtr.get();
 		}
@@ -213,10 +205,6 @@ namespace DiscordCoreInternal {
 				std::cout << DiscordCoreAPI::shiftToBrightRed() << "SSL_up_ref() Error: " << ERR_error_string(errorValue, nullptr) << DiscordCoreAPI::reset() << std::endl;
 			}
 			return *this;
-		}
-
-		SSLWrapper(SSL* other) {
-			*this = other;
 		}
 
 		operator SSL*() {
@@ -251,6 +239,18 @@ namespace DiscordCoreInternal {
 				delete other;
 			}
 		};
+
+		SOCKETWrapper& operator=(SOCKETWrapper&& other) noexcept {
+			if (this != &other) {
+				this->socketPtr.swap(other.socketPtr);
+				*other.socketPtr = SOCKET_ERROR;
+			}
+			return *this;
+		}
+
+		SOCKETWrapper(SOCKETWrapper&& other) noexcept {
+			*this = std::move(other);
+		}
 
 		SOCKETWrapper& operator=(SOCKET other) {
 			this->socketPtr.reset(new SOCKET{ other });

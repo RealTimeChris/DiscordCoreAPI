@@ -824,6 +824,6 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	SSL_CTXWrapper SSLConnectionInterface::context{ nullptr };
+	SSL_CTXWrapper SSLConnectionInterface::context{};
 	std::mutex SSLConnectionInterface::theMutex{};
 }
