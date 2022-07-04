@@ -399,6 +399,13 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::runVoice(std::stop_token stopToken) noexcept {
+		StopWatch theStopWatch{ 20000ms };
+		while (!this->datagramSocket) {
+			if (theStopWatch.hasTimePassed()) {
+				return;
+			}
+			std::this_thread::sleep_for(1ms);
+		}
 		while (!stopToken.stop_requested() && !Globals::doWeQuit.load() && this->activeState.load() != VoiceActiveState::Exiting) {
 			switch (this->activeState.load()) {
 				case VoiceActiveState::Idle: {
@@ -444,14 +451,7 @@ namespace DiscordCoreAPI {
 							this->datagramSocket->getInputBuffer();
 						}
 						StopWatch theStopWatch{ 20000ms };
-						while (!this->datagramSocket) {
-							if (theStopWatch.hasTimePassed()) {
-								return;
-							}
-							std::this_thread::sleep_for(1ms);
-						}
-						theStopWatch.resetTimer();
-						while (!this->datagramSocket->areWeConnected.load()) {
+						while (!this->datagramSocket->areWeStillConnected()) {
 							if (theStopWatch.hasTimePassed()) {
 								return;
 							}
@@ -833,7 +833,7 @@ namespace DiscordCoreAPI {
 
 	void VoiceConnection::onClosed() noexcept {
 		if (this->sslShards[0] && this->activeState.load() != VoiceActiveState::Exiting) {
-			this->activeState.store(VoiceActiveState::Stopped);
+			this->activeState.store(VoiceActiveState::Idle);
 			this->areWeConnectedBool.store(false);
 			if (this->datagramSocket) {
 				this->datagramSocket->areWeConnected.store(false);
