@@ -359,14 +359,13 @@ namespace DiscordCoreInternal {
 	}
 
 	WebSocketSSLShard::WebSocketSSLShard(std::queue<DiscordCoreAPI::ConnectionPackage>* connectionsNew, int32_t currentBaseSocketAgentNew, int32_t currentShardNew,
-		DiscordCoreAPI::ConfigManager* configManagerNew, bool blockingNew) noexcept {
+		DiscordCoreAPI::ConfigManager* configManagerNew) noexcept {
 		this->heartBeatStopWatch = DiscordCoreAPI::StopWatch<std::chrono::milliseconds>{ 10000ms };
 		this->currentBaseSocketAgent = currentBaseSocketAgentNew;
 		this->shard.push_back(currentShardNew);
 		this->heartBeatStopWatch.resetTimer();
 		this->shard.push_back(configManagerNew->getTotalShardCount());
 		this->connections = connectionsNew;
-		this->blocking = blockingNew;
 		if (configManagerNew->getTextFormat() == DiscordCoreAPI::TextFormat::Etf) {
 			this->dataOpCode = WebSocketOpCode::Op_Binary;
 		} else {
@@ -551,18 +550,16 @@ namespace DiscordCoreInternal {
 			return false;
 		}
 
-		if (!this->blocking) {
 #ifdef _WIN32
-			u_long value02{ 1 };
-			if (auto returnValue = ioctlsocket(this->theSocket, FIONBIO, &value02); returnValue == SOCKET_ERROR) {
-				return false;
-			}
-#else
-			if (auto returnValue = fcntl(this->theSocket, F_SETFL, fcntl(this->theSocket, F_GETFL, 0) | O_NONBLOCK); returnValue == SOCKET_ERROR) {
-				return false;
-			}
-#endif
+		u_long value02{ 1 };
+		if (auto returnValue = ioctlsocket(this->theSocket, FIONBIO, &value02); returnValue == SOCKET_ERROR) {
+			return false;
 		}
+#else
+		if (auto returnValue = fcntl(this->theSocket, F_SETFL, fcntl(this->theSocket, F_GETFL, 0) | O_NONBLOCK); returnValue == SOCKET_ERROR) {
+			return false;
+		}
+#endif		
 		return true;
 	}
 

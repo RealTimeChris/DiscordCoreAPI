@@ -629,7 +629,7 @@ namespace DiscordCoreAPI {
 				if (this->sslShards.contains(0)) {
 					this->sslShards[0].reset(nullptr);
 				}
-				auto theClient = std::make_unique<DiscordCoreInternal::WebSocketSSLShard>(&this->connections, 0, 0, this->configManager, true);
+				auto theClient = std::make_unique<DiscordCoreInternal::WebSocketSSLShard>(&this->connections, 0, 0, this->configManager);
 				if (!theClient->connect(this->baseUrl, "443")) {
 					this->sslShards[0] = std::move(theClient);
 					this->connectionState = VoiceConnectionState::Collecting_Init_Data;
