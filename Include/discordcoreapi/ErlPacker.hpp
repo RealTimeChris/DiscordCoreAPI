@@ -76,8 +76,6 @@ namespace DiscordCoreInternal {
 		nlohmann::json parseEtfToJson(const std::string*);
 
 	  protected:
-		template<typename ReturnType> void etfByteOrder(ReturnType, ReturnType&);
-
 		template<typename ReturnType> void storeBits(std::vector<uint8_t>&, ReturnType&, uint32_t&);
 
 		void singleValueJsonToETF(ErlPackBuffer&, const nlohmann::json&);

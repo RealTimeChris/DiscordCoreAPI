@@ -31,7 +31,6 @@
 	#pragma comment(lib, "Ws2_32.lib")
 	#include <WinSock2.h>
 	#include <WS2tcpip.h>
-
 #else
 	#include <fcntl.h>
 	#include <netdb.h>
@@ -111,11 +110,15 @@ namespace DiscordCoreInternal {
 			return *this;
 		}
 
+		BIOWrapper(BIO* other) {
+			*this = other;
+		}
+
 		operator BIO*() {
 			return this->bioPtr.get();
 		}
 
-		BIOWrapper(std::nullptr_t){};
+		BIOWrapper(){};
 
 	  protected:
 		std::unique_ptr<BIO, BIODeleter> bioPtr{ nullptr, BIODeleter{} };
@@ -144,7 +147,7 @@ namespace DiscordCoreInternal {
 			return this->addrinfoPtrTwo;
 		}
 
-		addrinfoWrapper(std::nullptr_t){};
+		addrinfoWrapper(){};
 
 		~addrinfoWrapper() {
 			if (this->doWeClearAddrInfo) {
@@ -178,11 +181,15 @@ namespace DiscordCoreInternal {
 			return *this;
 		}
 
+		SSL_CTXWrapper(SSL_CTX* other) {
+			*this = other;
+		}
+
 		operator SSL_CTX*() {
 			return this->sslCTXPtr.get();
 		}
 
-		SSL_CTXWrapper(std::nullptr_t){};
+		SSL_CTXWrapper(){};
 
 	  protected:
 		std::unique_ptr<SSL_CTX, SSL_CTXDeleter> sslCTXPtr{ nullptr, SSL_CTXDeleter{} };
@@ -208,11 +215,15 @@ namespace DiscordCoreInternal {
 			return *this;
 		}
 
+		SSLWrapper(SSL* other) {
+			*this = other;
+		}
+
 		operator SSL*() {
 			return this->sslPtr.get();
 		}
 
-		SSLWrapper(std::nullptr_t){};
+		SSLWrapper(){};
 
 	  protected:
 		std::unique_ptr<SSL, SSLDeleter> sslPtr{ nullptr, SSLDeleter{} };
@@ -241,18 +252,6 @@ namespace DiscordCoreInternal {
 			}
 		};
 
-		SOCKETWrapper& operator=(SOCKETWrapper&& other) noexcept {
-			if (this != &other) {
-				this->socketPtr.swap(other.socketPtr);
-				*other.socketPtr = SOCKET_ERROR;
-			}
-			return *this;
-		}
-
-		SOCKETWrapper(SOCKETWrapper&& other) noexcept {
-			*this = std::move(other);
-		}
-
 		SOCKETWrapper& operator=(SOCKET other) {
 			this->socketPtr.reset(new SOCKET{ other });
 			return *this;
@@ -262,7 +261,7 @@ namespace DiscordCoreInternal {
 			return *this->socketPtr;
 		}
 
-		SOCKETWrapper(std::nullptr_t) {
+		SOCKETWrapper() {
 		}
 
 	  protected:
@@ -290,8 +289,8 @@ namespace DiscordCoreInternal {
 		std::queue<DiscordCoreAPI::ConnectionPackage>* connections{ nullptr };
 		std::atomic_bool areWeConnected02{ false };
 		std::atomic_bool areWeConnected01{ false };
-		SOCKETWrapper theSocket{ nullptr };
-		SSLWrapper ssl{ nullptr };
+		SOCKETWrapper theSocket{};
+		SSLWrapper ssl{};
 	};
 
 	class DiscordCoreAPI_Dll SSLDataInterface {
@@ -418,8 +417,8 @@ namespace DiscordCoreInternal {
 		std::atomic_bool areWeConnected{ false };
 		const int32_t maxBufferSize{ 1024 * 16 };
 		std::vector<std::string> outputBuffers{};
-		SOCKETWrapper theSocket{ nullptr };
 		std::shared_mutex theMutex01{};
+		SOCKETWrapper theSocket{};
 		std::string inputBuffer{};
 		sockaddr_in theAddress{};
 		int64_t bytesRead{};

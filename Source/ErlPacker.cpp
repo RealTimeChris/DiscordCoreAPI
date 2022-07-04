@@ -44,19 +44,12 @@ namespace DiscordCoreInternal {
 		return ErlPacker::singleValueETFToJson(buffer);
 	}
 
-	template<typename ReturnType> void ErlPacker::etfByteOrder(ReturnType x, ReturnType& theValue) {
-		const uint8_t byteSize{ 8 };
-		for (uint32_t y = 0; y < sizeof(ReturnType); y++) {
-			theValue |= static_cast<ReturnType>(static_cast<uint8_t>(x >> (byteSize * y))) << byteSize * (sizeof(ReturnType) - y - 1);
-		}
-	}
-
 	template<typename ReturnType> void ErlPacker::storeBits(std::vector<uint8_t>& to, ReturnType& num, uint32_t& offSet) {
 		const uint8_t byteSize{ 8 };
-		ReturnType newVal{};
-		ErlPacker::etfByteOrder(num, newVal);
+		ReturnType newValue{};
+		newValue = DiscordCoreAPI::reverseByteOrder(num);
 		for (uint32_t x = 0; x < sizeof(ReturnType); x++) {
-			to[offSet + static_cast<size_t>(x)] = static_cast<uint8_t>(newVal >> (byteSize * x));
+			to[offSet + static_cast<size_t>(x)] = static_cast<uint8_t>(newValue >> (byteSize * x));
 		}
 	}
 
@@ -228,7 +221,7 @@ namespace DiscordCoreInternal {
 			newValue |= static_cast<ReturnType>(static_cast<uint64_t>(buffer.buffer.data()[buffer.offSet + x]) << (x * static_cast<uint64_t>(byteSize)));
 		}
 		buffer.offSet += sizeof(ReturnType);
-		ErlPacker::etfByteOrder(newValue, theValue);
+		theValue = DiscordCoreAPI::reverseByteOrder(newValue);
 	}
 
 	void ErlPacker::readString(const ErlPackBuffer& buffer, uint32_t& length, std::vector<char>& theString) {

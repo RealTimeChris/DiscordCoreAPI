@@ -78,12 +78,12 @@ namespace DiscordCoreInternal {
 				baseUrl.substr(baseUrl.find("https://") + std::string("https://").size(), baseUrl.find(".org") + std::string(".org").size() - std::string("https://").size());
 		}
 
-		addrinfoWrapper hints{ nullptr }, address{ nullptr };
+		addrinfoWrapper hints{}, address{};
 		hints->ai_family = AF_INET;
 		hints->ai_socktype = SOCK_STREAM;
 		hints->ai_protocol = IPPROTO_TCP;
 
-		if (auto returnValue = getaddrinfo(stringNew.c_str(), portNew.c_str(), hints, address); returnValue == SOCKET_ERROR) {
+		if (getaddrinfo(stringNew.c_str(), portNew.c_str(), hints, address)) {
 			return false;
 		}
 
@@ -498,7 +498,7 @@ namespace DiscordCoreInternal {
 	}
 
 	bool WebSocketSSLShard::connect(const std::string& baseUrlNew, const std::string& portNew) noexcept {
-		addrinfoWrapper hints{ nullptr }, address{ nullptr };
+		addrinfoWrapper hints{}, address{};
 
 		hints->ai_family = AF_INET;
 		hints->ai_socktype = SOCK_STREAM;
@@ -684,21 +684,17 @@ namespace DiscordCoreInternal {
 	}
 
 	bool DatagramSocketSSLClient::connect(const std::string& baseUrlNew, const std::string& portNew) noexcept {
-#ifdef _WIN32
-		this->theAddress.sin_addr.S_un.S_addr = inet_addr(baseUrlNew.c_str());
-#else
 		this->theAddress.sin_addr.s_addr = inet_addr(baseUrlNew.c_str());
-#endif
-		this->theAddress.sin_port = htons(stoi(portNew));
+		this->theAddress.sin_port = DiscordCoreAPI::reverseByteOrder(static_cast<unsigned short>(stoi(portNew)));
 		this->theAddress.sin_family = AF_INET;
 
-		addrinfoWrapper hints{ nullptr }, address{ nullptr };
+		addrinfoWrapper hints{}, address{};
 
 		hints->ai_family = AF_INET;
 		hints->ai_socktype = SOCK_DGRAM;
 		hints->ai_protocol = IPPROTO_UDP;
 
-		if (auto returnValue = getaddrinfo(baseUrlNew.c_str(), portNew.c_str(), hints, address); returnValue == SOCKET_ERROR) {
+		if (getaddrinfo(baseUrlNew.c_str(), portNew.c_str(), hints, address)) {
 			return false;
 		}
 
@@ -706,17 +702,17 @@ namespace DiscordCoreInternal {
 			return false;
 		}
 
-		if (auto returnValue = ::connect(this->theSocket, address->ai_addr, static_cast<int32_t>(address->ai_addrlen)); returnValue == SOCKET_ERROR) {
+		if (::connect(this->theSocket, address->ai_addr, static_cast<int32_t>(address->ai_addrlen))) {
 			return false;
 		}
 
 #ifdef _WIN32
 		u_long value02{ 1 };
-		if (auto returnValue = ioctlsocket(this->theSocket, FIONBIO, &value02); returnValue == SOCKET_ERROR) {
+		if (ioctlsocket(this->theSocket, FIONBIO, &value02)) {
 			return false;
 		}
 #else
-		if (auto returnValue = fcntl(this->theSocket, F_SETFL, fcntl(this->theSocket, F_GETFL, 0) | O_NONBLOCK); returnValue == SOCKET_ERROR) {
+		if (fcntl(this->theSocket, F_SETFL, fcntl(this->theSocket, F_GETFL, 0) | O_NONBLOCK)) {
 			return false;
 		}
 #endif
