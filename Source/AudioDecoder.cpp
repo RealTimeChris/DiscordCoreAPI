@@ -97,7 +97,7 @@ namespace DiscordCoreInternal {
 			if (fileStreamBuffer == nullptr) {
 				this->haveWeFailedBool.store(true);
 				if (this->configManager->doWePrintFFMPEGErrorMessages()) {
-					std::cout << DiscordCoreAPI::shiftToBrightRed() << "Failed to allocate filestreambuffer." << DiscordCoreAPI::reset() << std::endl << std::endl;
+					std::cout << DiscordCoreAPI::shiftToBrightRed() << "AudioDecoder::run() Error: Failed to allocate filestreambuffer." << DiscordCoreAPI::reset() << std::endl << std::endl;
 				}
 				return;
 			}
@@ -107,7 +107,7 @@ namespace DiscordCoreInternal {
 			if (this->ioContext == nullptr) {
 				this->haveWeFailedBool.store(true);
 				if (this->configManager->doWePrintFFMPEGErrorMessages()) {
-					std::cout << DiscordCoreAPI::shiftToBrightRed() << "Failed to allocate AVIOContext." << DiscordCoreAPI::reset() << std::endl << std::endl;
+					std::cout << DiscordCoreAPI::shiftToBrightRed() << "AudioDecoder::run() Error: Failed to allocate AVIOContext." << DiscordCoreAPI::reset() << std::endl << std::endl;
 				}
 				return;
 			}
@@ -117,7 +117,7 @@ namespace DiscordCoreInternal {
 			if (!this->formatContext) {
 				this->haveWeFailedBool.store(true);
 				if (this->configManager->doWePrintFFMPEGErrorMessages()) {
-					std::cout << DiscordCoreAPI::shiftToBrightRed() << "Could not allocate the format context." << DiscordCoreAPI::reset() << std::endl << std::endl;
+					std::cout << DiscordCoreAPI::shiftToBrightRed() << "AudioDecoder::run() Error: Could not allocate the format context." << DiscordCoreAPI::reset() << std::endl << std::endl;
 				}
 				return;
 			}
@@ -127,7 +127,7 @@ namespace DiscordCoreInternal {
 			if (avformat_open_input(*this->formatContext, "memory", nullptr, nullptr) < 0) {
 				this->haveWeFailedBool.store(true);
 				if (this->configManager->doWePrintFFMPEGErrorMessages()) {
-					std::cout << DiscordCoreAPI::shiftToBrightRed() << "Error opening AVFormatContext." << DiscordCoreAPI::reset() << std::endl << std::endl;
+					std::cout << DiscordCoreAPI::shiftToBrightRed() << "AudioDecoder::run() Error: Failed to open the AVFormatContext." << DiscordCoreAPI::reset() << std::endl << std::endl;
 				}
 				return;
 			}
@@ -135,7 +135,7 @@ namespace DiscordCoreInternal {
 			AVMediaType type = AVMediaType::AVMEDIA_TYPE_AUDIO;
 			int32_t ret = av_find_best_stream(this->formatContext, type, -1, -1, NULL, 0);
 			if (ret < 0) {
-				std::string newString = "Could not find ";
+				std::string newString = "AudioDecoder::run() Error: Could not find ";
 				newString += av_get_media_type_string(type);
 				newString += " stream in input memory stream.";
 				this->haveWeFailedBool.store(true);
@@ -149,7 +149,7 @@ namespace DiscordCoreInternal {
 				if (!this->audioStream) {
 					this->haveWeFailedBool.store(true);
 					if (this->configManager->doWePrintFFMPEGErrorMessages()) {
-						std::cout << DiscordCoreAPI::shiftToBrightRed() << "Could not find an audio stream." << DiscordCoreAPI::reset() << std::endl << std::endl;
+						std::cout << DiscordCoreAPI::shiftToBrightRed() << "AudioDecoder::run() Error: Could not find an audio stream." << DiscordCoreAPI::reset() << std::endl << std::endl;
 					}
 					return;
 				}
@@ -157,14 +157,14 @@ namespace DiscordCoreInternal {
 				if (avformat_find_stream_info(this->formatContext, NULL) < 0) {
 					this->haveWeFailedBool.store(true);
 					if (this->configManager->doWePrintFFMPEGErrorMessages()) {
-						std::cout << DiscordCoreAPI::shiftToBrightRed() << "Could not find stream information." << DiscordCoreAPI::reset() << std::endl << std::endl;
+						std::cout << DiscordCoreAPI::shiftToBrightRed() << "AudioDecoder::run() Error: Could not find stream information." << DiscordCoreAPI::reset() << std::endl << std::endl;
 					}
 					return;
 				}
 
 				this->codec = avcodec_find_decoder(this->audioStream->codecpar->codec_id);
 				if (!this->codec) {
-					std::string newString = "Failed to find ";
+					std::string newString = "AudioDecoder::run() Error: Failed to find ";
 					newString += av_get_media_type_string(type);
 					newString += " decoder.";
 					this->haveWeFailedBool.store(true);
@@ -176,7 +176,7 @@ namespace DiscordCoreInternal {
 
 				this->audioDecodeContext = avcodec_alloc_context3(this->codec);
 				if (!this->audioDecodeContext) {
-					std::string newString = "Failed to allocate the ";
+					std::string newString = "AudioDecoder::run() Error: Failed to allocate the ";
 					newString += av_get_media_type_string(type);
 					newString += " AVCodecContext.";
 					this->haveWeFailedBool.store(true);
@@ -187,7 +187,7 @@ namespace DiscordCoreInternal {
 				}
 
 				if (avcodec_parameters_to_context(this->audioDecodeContext, this->audioStream->codecpar) < 0) {
-					std::string newString = "Failed to copy ";
+					std::string newString = "AudioDecoder::run() Error: Failed to copy ";
 					newString += av_get_media_type_string(type);
 					newString += " codec parameters to decoder context.";
 					this->haveWeFailedBool.store(true);
@@ -198,7 +198,7 @@ namespace DiscordCoreInternal {
 				}
 
 				if (avcodec_open2(this->audioDecodeContext, this->codec, NULL) < 0) {
-					std::string newString = "Failed to open ";
+					std::string newString = "AudioDecoder::run() Error: Failed to open ";
 					newString += av_get_media_type_string(type);
 					newString += " AVCodecContext.";
 					this->haveWeFailedBool.store(true);
@@ -224,7 +224,7 @@ namespace DiscordCoreInternal {
 			if (!this->packet) {
 				this->haveWeFailedBool.store(true);
 				if (this->configManager->doWePrintFFMPEGErrorMessages()) {
-					std::cout << DiscordCoreAPI::shiftToBrightRed() << "Error: Could not allocate packet" << DiscordCoreAPI::reset() << std::endl << std::endl;
+					std::cout << DiscordCoreAPI::shiftToBrightRed() << "AudioDecoder::run() Error: Could not allocate packet" << DiscordCoreAPI::reset() << std::endl << std::endl;
 				}
 				return;
 			}
@@ -233,7 +233,7 @@ namespace DiscordCoreInternal {
 			if (!this->frame) {
 				this->haveWeFailedBool.store(true);
 				if (this->configManager->doWePrintFFMPEGErrorMessages()) {
-					std::cout << DiscordCoreAPI::shiftToBrightRed() << "Error: Could not allocate frame" << DiscordCoreAPI::reset() << std::endl << std::endl;
+					std::cout << DiscordCoreAPI::shiftToBrightRed() << "AudioDecoder::run() Error: Could not allocate frame" << DiscordCoreAPI::reset() << std::endl << std::endl;
 				}
 				return;
 			}
@@ -242,7 +242,7 @@ namespace DiscordCoreInternal {
 			if (!this->newFrame) {
 				this->haveWeFailedBool.store(true);
 				if (this->configManager->doWePrintFFMPEGErrorMessages()) {
-					std::cout << DiscordCoreAPI::shiftToBrightRed() << "Error: Could not allocate new-frame" << DiscordCoreAPI::reset() << std::endl << std::endl;
+					std::cout << DiscordCoreAPI::shiftToBrightRed() << "AudioDecoder::run() Error: Could not allocate new-frame" << DiscordCoreAPI::reset() << std::endl << std::endl;
 				}
 				return;
 			}
@@ -256,7 +256,7 @@ namespace DiscordCoreInternal {
 					if (returnValue < 0) {
 						char charString[32];
 						av_strerror(returnValue, charString, 32);
-						std::string newString = "Error submitting a packet for decoding (" + std::to_string(returnValue) + "), " + charString + ".";
+						std::string newString = "AudioDecoder::run() Error: Issue submitting a packet for decoding (" + std::to_string(returnValue) + "), " + charString + ".";
 						this->haveWeFailedBool.store(true);
 						if (this->configManager->doWePrintFFMPEGErrorMessages()) {
 							std::cout << DiscordCoreAPI::shiftToBrightRed() << newString << DiscordCoreAPI::reset() << std::endl << std::endl;
@@ -266,7 +266,7 @@ namespace DiscordCoreInternal {
 					if (returnValue >= 0) {
 						returnValue = avcodec_receive_frame(this->audioDecodeContext, this->frame);
 						if (returnValue < 0) {
-							std::string newString = "Error during decoding (" + std::to_string(returnValue) + ")";
+							std::string newString = "AudioDecoder::run() Error: Issue during decoding (" + std::to_string(returnValue) + ")";
 							this->haveWeFailedBool.store(true);
 							if (this->configManager->doWePrintFFMPEGErrorMessages()) {
 								std::cout << DiscordCoreAPI::shiftToBrightRed() << newString << DiscordCoreAPI::reset() << std::endl << std::endl;
@@ -308,7 +308,9 @@ namespace DiscordCoreInternal {
 						if (returnValue < 0 || newFrame->nb_samples == 0) {
 							this->haveWeFailedBool.store(true);
 							if (this->configManager->doWePrintFFMPEGErrorMessages()) {
-								std::cout << DiscordCoreAPI::shiftToBrightRed() << "Return value is less than zero!" << DiscordCoreAPI::reset() << std::endl << std::endl;
+								std::cout << DiscordCoreAPI::shiftToBrightRed() << "AudioDecoder::run() Error: Return value is less than zero!" << DiscordCoreAPI::reset()
+										  << std::endl
+										  << std::endl;
 							}
 							return;
 						}

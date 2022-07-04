@@ -334,7 +334,6 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::sendSpeakingMessage(bool isSpeaking) noexcept {
-		std::cout << "SENDING THE SPEAKING MESSAGE!" << std::endl;
 		if (!isSpeaking) {
 			this->sendSilence();
 		} else {
@@ -363,7 +362,6 @@ namespace DiscordCoreAPI {
 						std::this_thread::sleep_for(1ms);
 					}
 					this->connectInternal();
-					std::cout << "SENDING THE SPEAKING MESSAGE! 010101" << std::endl;
 					this->sendSpeakingMessage(false);
 					this->play();
 				}
@@ -432,7 +430,12 @@ namespace DiscordCoreAPI {
 					this->audioData.type = AudioFrameType::Unset;
 					this->audioData.encodedFrameData.data.clear();
 					this->audioData.rawFrameData.data.clear();
-					this->audioDataBuffer.tryReceive(this->audioData);
+					while (!this->audioDataBuffer.tryReceive(this->audioData)) {
+						if (theStopWatch.hasTimePassed()) {
+							break;
+						}
+						std::this_thread::sleep_for(1ms);
+					}
 					int64_t startingValue{ std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count() };
 					int64_t intervalCount{ 20000000 };
 					int32_t frameCounter{ 0 };
@@ -458,7 +461,6 @@ namespace DiscordCoreAPI {
 							this->datagramSocket->getInputBuffer();
 						}
 						frameCounter++;
-						this->audioDataBuffer.tryReceive(this->audioData);
 						if (this->audioData.guildMemberId != 0) {
 							this->currentGuildMemberId = this->audioData.guildMemberId;
 						}
@@ -499,6 +501,7 @@ namespace DiscordCoreAPI {
 							getSongAPIMap()[this->voiceConnectInitData.guildId]->onSongCompletionEvent(completionEventData);
 							break;
 						}
+						this->audioDataBuffer.tryReceive(this->audioData);
 					}
 					this->disconnectStartTime =
 						static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
@@ -788,11 +791,9 @@ namespace DiscordCoreAPI {
 	void VoiceConnection::pauseToggle() noexcept {
 		if (this) {
 			if (this->activeState.load() == VoiceActiveState::Paused) {
-				std::cout << "SENDING THE SPEAKING MESSAGE! 030303" << std::endl;
 				sendSpeakingMessage(true);
 				this->activeState.store(VoiceActiveState::Playing);
 			} else {
-				std::cout << "SENDING THE SPEAKING MESSAGE! 040404" << std::endl;
 				sendSpeakingMessage(false);
 				this->activeState.store(VoiceActiveState::Paused);
 			}
@@ -801,7 +802,6 @@ namespace DiscordCoreAPI {
 
 	void VoiceConnection::disconnect() noexcept {
 		this->activeState.store(VoiceActiveState::Exiting);
-		std::cout << "SENDING THE SPEAKING MESSAGE! 0050505" << std::endl;
 		this->sendSpeakingMessage(false);
 		if (this->taskThread01) {
 			this->taskThread01->request_stop();
