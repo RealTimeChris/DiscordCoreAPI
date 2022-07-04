@@ -126,5 +126,4 @@ DiscordCoreAPI::InputEvents::deleteInputEventResponseAsync(newEvent, 20000).get(
 	
 # Roadmap
 I am currently working on getting this thing to be used by people like you! So, if you have any suggestions for the library that would make it more usable - don't hesitate to let me know! I can be
-easily found on the Discord server that is linked to above! Cheers and thanks for your time
-https://github.com/RealTimeChris/Bot-Template-for-DiscordCoreAPI/blob/main/CMakeLists.txt#L76-L81
+easily found on the Discord server that is linked to above! Cheers and thanks for your time.
