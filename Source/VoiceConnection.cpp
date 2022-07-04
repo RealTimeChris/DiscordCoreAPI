@@ -101,15 +101,6 @@ namespace DiscordCoreAPI {
 		theString = theVectorNew;
 	}
 
-	std::string VoiceConnection::encryptSingleAudioFrame(const EncodedFrameData& bufferToSend, uint32_t audioSSRC, const std::string& keys) noexcept {
-		if (keys.size() > 0) {
-			this->sequenceIndex++;
-			this->timeStamp += 960;
-			return RTPPacket{ this->timeStamp, this->sequenceIndex, audioSSRC, bufferToSend.data, this->voiceConnectionData.secretKey };
-		}
-		return std::string{};
-	}
-
 	void VoiceConnection::createHeader(std::string& outBuffer, uint64_t sendLength, DiscordCoreInternal::WebSocketOpCode opCode) noexcept {
 		try {
 			outBuffer.push_back(static_cast<uint8_t>(opCode) | DiscordCoreInternal::webSocketFinishBit);
@@ -222,6 +213,15 @@ namespace DiscordCoreAPI {
 				}
 			}
 		}
+	}
+
+	std::string VoiceConnection::encryptSingleAudioFrame(const EncodedFrameData& bufferToSend) noexcept {
+		if (this->voiceConnectionData.secretKey.size() > 0) {
+			this->sequenceIndex++;
+			this->timeStamp += 960;
+			return RTPPacket{ this->timeStamp, this->sequenceIndex, this->voiceConnectionData.audioSSRC, bufferToSend.data, this->voiceConnectionData.secretKey };
+		}
+		return std::string{};
 	}
 
 	void VoiceConnection::sendSingleAudioFrame(std::string& audioDataPacketNew) noexcept {
@@ -481,10 +481,10 @@ namespace DiscordCoreAPI {
 								rawFrames.push_back(this->audioData.rawFrameData);
 								auto encodedFrameData = this->encoder->encodeFrames(rawFrames);
 								newFrame =
-									this->encryptSingleAudioFrame(encodedFrameData[0].encodedFrameData, this->voiceConnectionData.audioSSRC, this->voiceConnectionData.secretKey);
+									this->encryptSingleAudioFrame(encodedFrameData[0].encodedFrameData);
 							} else {
 								newFrame =
-									this->encryptSingleAudioFrame(this->audioData.encodedFrameData, this->voiceConnectionData.audioSSRC, this->voiceConnectionData.secretKey);
+									this->encryptSingleAudioFrame(this->audioData.encodedFrameData);
 							}
 							if (newFrame.size() == 0) {
 								continue;
@@ -791,7 +791,7 @@ namespace DiscordCoreAPI {
 		newFrame.data.push_back(0xf8);
 		newFrame.data.push_back(0xff);
 		newFrame.data.push_back(0xfe);
-		auto theFrame = this->encryptSingleAudioFrame(newFrame, this->voiceConnectionData.audioSSRC, this->voiceConnectionData.secretKey);
+		auto theFrame = this->encryptSingleAudioFrame(newFrame);
 		this->sendSingleAudioFrame(theFrame);
 	}
 

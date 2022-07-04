@@ -118,9 +118,9 @@ namespace DiscordCoreAPI {
 
 		void createHeader(std::string& outbuf, uint64_t sendlength, DiscordCoreInternal::WebSocketOpCode opCode) noexcept;
 
-		std::string encryptSingleAudioFrame(const EncodedFrameData& bufferToSend, uint32_t audioSSRC) noexcept;
-
 		void parseHeadersAndMessage(DiscordCoreInternal::WebSocketSSLShard* theShard) noexcept;
+
+		std::string encryptSingleAudioFrame(const EncodedFrameData& bufferToSend) noexcept;
 
 		void sendSingleAudioFrame(std::string& audioDataPacketNew) noexcept;
 
