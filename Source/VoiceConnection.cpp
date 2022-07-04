@@ -602,6 +602,7 @@ namespace DiscordCoreAPI {
 			case VoiceConnectionState::Collecting_Init_Data: {
 				this->voiceConnectionData = DiscordCoreInternal::VoiceConnectionData{};
 				this->baseShard->voiceConnectionDataBufferMap[this->voiceConnectInitData.guildId] = &this->voiceConnectionDataBuffer;
+				this->baseShard->voiceConnectionDataBufferMap[this->voiceConnectInitData.guildId]->clearContents();
 				this->baseSocketAgent->getVoiceConnectionData(this->voiceConnectInitData, this->baseShard);
 				if (DiscordCoreAPI::waitForTimeToPass(this->voiceConnectionDataBuffer, this->voiceConnectionData, 20000)) {
 					this->onClosed();
@@ -706,6 +707,8 @@ namespace DiscordCoreAPI {
 				}
 				this->currentReconnectTries = 0;
 				this->connectionState = VoiceConnectionState::Collecting_Init_Data;
+				this->baseShard->voiceConnectionDataBufferMap[this->voiceConnectInitData.guildId]->clearContents();
+				this->activeState = VoiceActiveState::Idle;
 				return;
 			}
 		}
