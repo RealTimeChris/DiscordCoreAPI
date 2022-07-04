@@ -375,7 +375,7 @@ namespace DiscordCoreAPI {
 					this->sslShards[0]->heartBeatStopWatch.resetTimer();
 				}
 				if (!stopToken.stop_requested() && this->sslShards[0]->areWeStillConnected()) {
-					DiscordCoreInternal::WebSocketSSLShard::processIO(this->sslShards, 1000);
+					DiscordCoreInternal::WebSocketSSLShard::processIO(this->sslShards, 10000);
 				}
 				if (!stopToken.stop_requested() && this->sslShards[0]->areWeStillConnected()) {
 					this->parseHeadersAndMessage(this->sslShards[0].get());
@@ -480,7 +480,7 @@ namespace DiscordCoreAPI {
 							if (newFrame.size() == 0) {
 								continue;
 							}
-							nanoSleep(18000000);
+							nanoSleep(static_cast<int64_t>(static_cast<float>(intervalCount) * 0.95f));
 							auto timeCounter = static_cast<int64_t>(
 								std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - startingValue);
 							auto waitTime = intervalCount - timeCounter;
