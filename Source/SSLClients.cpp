@@ -636,18 +636,6 @@ namespace DiscordCoreInternal {
 
 	bool WebSocketSSLShard::areWeStillConnected() noexcept {
 		if (this->theSocket != SOCKET_ERROR) {
-			int32_t nfds{};
-			fd_set errorfds{};
-			FD_ZERO(&errorfds);
-			FD_SET(this->theSocket, &errorfds);
-			nfds = this->theSocket;
-			timeval checkTime{ .tv_usec = 1 };
-			if (auto returnValue = select(nfds + 1, nullptr, nullptr, &errorfds, &checkTime); returnValue == SOCKET_ERROR) {
-				return false;
-			}
-			if (FD_ISSET(this->theSocket, &errorfds)) {
-				return false;
-			}
 			return true;
 		} else {
 			return false;
