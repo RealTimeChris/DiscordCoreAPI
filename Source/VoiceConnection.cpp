@@ -371,22 +371,22 @@ namespace DiscordCoreAPI {
 					this->sslShards[0]->areWeHeartBeating = true;
 					this->sslShards[0]->heartBeatStopWatch = DiscordCoreAPI::StopWatch{ std::chrono::milliseconds{ this->heartbeatInterval } };
 				}
-				if (!stopToken.stop_requested() && this->sslShards[0]->heartBeatStopWatch.hasTimePassed() && this->sslShards[0]->areWeHeartBeating) {
+				if (this->sslShards[0]->areWeStillConnected() && this->sslShards[0]->heartBeatStopWatch.hasTimePassed() && this->sslShards[0]->areWeHeartBeating) {
 					this->sendHeartBeat();
 					this->sslShards[0]->heartBeatStopWatch.resetTimer();
 				}
-				if (!stopToken.stop_requested() && this->sslShards[0]->areWeStillConnected() && !Globals::doWeQuit.load()) {
+				if (this->sslShards[0]->areWeStillConnected()) {
 					DiscordCoreInternal::WebSocketSSLShard::processIO(this->sslShards, 1000);
 				}
-				if (!stopToken.stop_requested() && this->sslShards.contains(0) && this->sslShards[0] && !Globals::doWeQuit.load()) {
+				if (this->sslShards[0]->areWeStillConnected()) {
 					this->parseHeadersAndMessage(this->sslShards[0].get());
-					if (this->sslShards.contains(0) && this->sslShards[0] && this->sslShards[0]->processedMessages.size() > 0) {
-						std::string theMessage = this->sslShards[0]->processedMessages.front();
-						if (theMessage.size() > 0) {
-							this->onMessageReceived(theMessage);
-						}
-						this->sslShards[0]->processedMessages.pop();
+				}
+				if (this->sslShards[0]->areWeStillConnected() && this->sslShards[0]->processedMessages.size() > 0) {
+					std::string theMessage = this->sslShards[0]->processedMessages.front();
+					if (theMessage.size() > 0) {
+						this->onMessageReceived(theMessage);
 					}
+					this->sslShards[0]->processedMessages.pop();
 				}
 				std::this_thread::sleep_for(1ms);
 			}
@@ -572,6 +572,10 @@ namespace DiscordCoreAPI {
 	bool VoiceConnection::collectAndProcessAMessage() noexcept {
 		DiscordCoreAPI::StopWatch theStopWatch{ 2500ms };
 		while (!Globals::doWeQuit.load()) {
+			DiscordCoreInternal::WebSocketSSLShard::processIO(this->sslShards, 100000);
+			if (!sslShards[0]->areWeStillConnected()) {
+				return false;
+			}
 			if (this->sslShards.contains(0) && this->sslShards[0]->inputBuffer.size() > 0) {
 				this->parseHeadersAndMessage(this->sslShards[0].get());
 			}
@@ -580,10 +584,6 @@ namespace DiscordCoreAPI {
 				this->sslShards[0]->processedMessages.pop();
 				this->onMessageReceived(theMessage);
 				return true;
-			}
-			DiscordCoreInternal::WebSocketSSLShard::processIO(this->sslShards, 100000);
-			if (!sslShards[0]->areWeStillConnected()) {
-				return false;
 			}
 			std::this_thread::sleep_for(1ms);
 			if (this->sslShards.contains(0) && theStopWatch.hasTimePassed()) {

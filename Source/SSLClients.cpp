@@ -561,6 +561,9 @@ namespace DiscordCoreInternal {
 	}
 
 	bool WebSocketSSLShard::writeData(const std::string& dataToWrite, bool priority) noexcept {
+		if (this->theSocket == SOCKET_ERROR) {
+			return false;
+		}
 		std::lock_guard<std::mutex> theLock{ this->theMutex01 };
 		std::string data = dataToWrite;
 		if (data.size() > 0 && this->ssl) {
