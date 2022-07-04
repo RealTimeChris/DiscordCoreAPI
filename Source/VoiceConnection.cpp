@@ -582,21 +582,21 @@ namespace DiscordCoreAPI {
 			if (!sslShards[0]->areWeStillConnected()) {
 				return false;
 			}
-			if (this->sslShards.contains(0) && this->sslShards[0]->inputBuffer.size() > 0) {
+			if (this->sslShards[0]->inputBuffer.size() > 0) {
 				this->parseHeadersAndMessage(this->sslShards[0].get());
 			}
-			if (this->sslShards.contains(0) && this->sslShards[0]->processedMessages.size() > 0) {
+			if (this->sslShards[0]->processedMessages.size() > 0) {
 				std::string theMessage = this->sslShards[0]->processedMessages.front();
 				this->sslShards[0]->processedMessages.pop();
 				this->onMessageReceived(theMessage);
 				return true;
 			}
-			std::this_thread::sleep_for(1ms);
-			if (this->sslShards.contains(0) && theStopWatch.hasTimePassed()) {
+			if (theStopWatch.hasTimePassed()) {
 				this->sslShards[0]->disconnect();
 				this->onClosed();
 				return false;
 			}
+			std::this_thread::sleep_for(1ms);
 		}
 		return false;
 	}
