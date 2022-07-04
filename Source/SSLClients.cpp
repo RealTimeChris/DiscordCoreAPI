@@ -150,7 +150,7 @@ namespace DiscordCoreInternal {
 	bool HttpsSSLClient::writeData(const std::string& dataToWrite, bool priority) noexcept {
 		std::string data = dataToWrite;
 		if (data.size() > 0 && this->ssl) {
-			if (priority && data.size() < (16 * 1024)) {
+			if (priority && data.size() < static_cast<size_t>(16 * 1024)) {
 				this->wantRead = false;
 				this->wantWrite = false;
 				size_t writtenBytes{ 0 };
@@ -569,7 +569,7 @@ namespace DiscordCoreInternal {
 		}
 		std::string data = dataToWrite;
 		if (data.size() > 0 && this->ssl) {
-			if (priority && data.size() < (16 * 1024)) {
+			if (priority && data.size() < static_cast<size_t>(16 * 1024)) {
 				this->wantRead = false;
 				this->wantWrite = false;
 				size_t writtenBytes{ 0 };
