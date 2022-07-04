@@ -332,8 +332,8 @@ namespace DiscordCoreInternal {
 	}
 
 	std::string HttpsSSLClient::getInputBuffer() noexcept {
-		std::string theReturnString = this->inputBuffer;
 		std::unique_lock theLock{ this->theMutex01 };
+		std::string theReturnString = std::move(this->inputBuffer);
 		this->inputBuffer.clear();
 		return theReturnString;
 	}
@@ -641,8 +641,8 @@ namespace DiscordCoreInternal {
 	}
 
 	std::string WebSocketSSLShard::getInputBuffer() noexcept {
-		std::string theReturnString = this->inputBuffer;
 		std::unique_lock theLock{ this->theMutex01 };
+		std::string theReturnString = std::move(this->inputBuffer);
 		this->inputBuffer.clear();
 		return theReturnString;
 	}
@@ -749,8 +749,8 @@ namespace DiscordCoreInternal {
 	}
 
 	std::string DatagramSocketSSLClient::getInputBuffer() noexcept {
-		std::string theReturnString = this->inputBuffer;
 		std::unique_lock theLock{ this->theMutex01 };
+		std::string theReturnString = std::move(this->inputBuffer);
 		this->inputBuffer.clear();
 		return theReturnString;
 	}
