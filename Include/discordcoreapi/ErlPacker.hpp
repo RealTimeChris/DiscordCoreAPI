@@ -76,11 +76,9 @@ namespace DiscordCoreInternal {
 		nlohmann::json parseEtfToJson(const std::string*);
 
 	  protected:
-		template<typename ReturnType> void storeBits(std::vector<uint8_t>&, ReturnType&, uint32_t&);
-
 		void singleValueJsonToETF(ErlPackBuffer&, const nlohmann::json&);
 
-		void writeToBuffer(ErlPackBuffer&, const std::vector<uint8_t>&);
+		void writeToBuffer(ErlPackBuffer&, const std::string&);
 
 		void appendVersion(ErlPackBuffer&);
 
@@ -100,7 +98,7 @@ namespace DiscordCoreInternal {
 
 		void appendUnsignedLongLong(ErlPackBuffer&, uint64_t&);
 
-		void appendBinaryExt(ErlPackBuffer&, const std::vector<uint8_t>&, uint32_t&);
+		void appendBinaryExt(ErlPackBuffer&, const std::string&, uint32_t&);
 
 		void appendListHeader(ErlPackBuffer&, uint32_t&);
 
@@ -108,7 +106,7 @@ namespace DiscordCoreInternal {
 
 		template<typename ReturnType> void readBits(const ErlPackBuffer&, ReturnType&);
 
-		void readString(const ErlPackBuffer&, uint32_t&, std::vector<char>&);
+		void readString(const ErlPackBuffer&, uint32_t&, std::string&);
 
 		nlohmann::json singleValueETFToJson(const ErlPackBuffer&);
 
@@ -120,7 +118,7 @@ namespace DiscordCoreInternal {
 
 		nlohmann::json parseFloatExt(const ErlPackBuffer&);
 
-		nlohmann::json processAtom(const std::vector<char>&, uint32_t&);
+		nlohmann::json processAtom(const std::string&, uint32_t&);
 
 		nlohmann::json parseTuple(const ErlPackBuffer&, uint32_t&);
 

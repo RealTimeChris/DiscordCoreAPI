@@ -27,6 +27,20 @@
 
 namespace DiscordCoreAPI {
 
+	struct RTPPacket {
+		std::vector<uint8_t> audioData{};
+		uint8_t version{ 0x80 };
+		std::string theKeys{};
+		uint8_t flags{ 0x78 };
+		uint32_t timestamp{};
+		uint16_t sequence{};
+		uint32_t ssrc{};
+
+		RTPPacket(uint32_t timestampNew, uint16_t sequenceNew, uint32_t ssrcNew, const std::vector<uint8_t>& audioDataNew, const std::string& theKeys);
+
+		operator std::string();
+	};
+
 	enum class VoiceConnectionState : int8_t {
 		Collecting_Init_Data = 0,
 		Initializing_WebSocket = 1,///< Initializing the WebSocket.
@@ -93,14 +107,14 @@ namespace DiscordCoreAPI {
 		Snowflake currentGuildMemberId{};
 		int64_t disconnectStartTime{ 0 };
 		int64_t heartbeatInterval{ 0 };
-		int16_t sequenceIndex{ 0 };
+		uint16_t sequenceIndex{ 0 };
 		AudioFrameData audioData{};
-		int32_t timeStamp{ 0 };
+		uint32_t timeStamp{ 0 };
 		std::string baseUrl{};
 
 		void stringifyJsonData(const nlohmann::json& dataToSend, std::string& theString, DiscordCoreInternal::WebSocketOpCode theOpCode) noexcept;
 
-		std::string encryptSingleAudioFrame(const EncodedFrameData& bufferToSend, int32_t audioSSRC, const std::string& keys) noexcept;
+		std::string encryptSingleAudioFrame(const EncodedFrameData& bufferToSend, uint32_t audioSSRC, const std::string& keys) noexcept;
 
 		void createHeader(std::string& outbuf, uint64_t sendlength, DiscordCoreInternal::WebSocketOpCode opCode) noexcept;
 

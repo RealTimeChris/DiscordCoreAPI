@@ -169,44 +169,4 @@ namespace DiscordCoreInternal {
 		std::mutex theMutex{};
 	};
 
-	class DiscordCoreAPI_Dll EventWaiter {
-	  public:
-		inline EventWaiter() {
-			this->theEventState = new std::atomic_bool{ false };
-		}
-
-		inline bool wait(int64_t millisecondsMaxToWait = INT64_MAX) {
-			int64_t millisecondsWaited{ 0 };
-			int64_t startTime = std::chrono::duration_cast<std::chrono::milliseconds, int64_t>(std::chrono::system_clock::now().time_since_epoch()).count();
-			while (true) {
-				if (this->theEventState->load()) {
-					return true;
-				} else if (millisecondsMaxToWait - millisecondsWaited <= 20) {
-				} else {
-					std::this_thread::sleep_for(1ms);
-				}
-				int64_t currentTime = std::chrono::duration_cast<std::chrono::milliseconds, int64_t>(std::chrono::system_clock::now().time_since_epoch()).count();
-				millisecondsWaited = currentTime - startTime;
-				if (millisecondsWaited >= millisecondsMaxToWait) {
-					return false;
-				}
-			}
-		}
-
-		inline bool checkStatus() {
-			return this->theEventState->load();
-		}
-
-		inline void set() {
-			this->theEventState->store(true);
-		}
-
-		inline void reset() {
-			this->theEventState->store(false);
-		}
-
-	  protected:
-		DiscordCoreAPI::ReferenceCountingPtr<std::atomic_bool> theEventState{ nullptr };
-	};
-
 }// namespace DiscordCoreAPI

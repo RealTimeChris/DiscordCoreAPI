@@ -144,7 +144,6 @@ namespace DiscordCoreAPI {
 	class GuildMembers;
 	class ChannelData;
 	class InputEvents;
-	class EventWaiter;
 	class MessageData;
 	class Permissions;
 	class SendDMData;
@@ -267,6 +266,23 @@ namespace DiscordCoreAPI {
 
 	/**@}*/
 
+	template<typename ReturnType> ReturnType reverseByteOrder(ReturnType x) {
+		const uint8_t byteSize{ 8 };
+		ReturnType returnValue{};
+		for (uint32_t y = 0; y < sizeof(ReturnType); y++) {
+			returnValue |= static_cast<ReturnType>(static_cast<uint8_t>(x >> (byteSize * y))) << byteSize * (sizeof(ReturnType) - y - 1);
+		}
+		return returnValue;
+	}
+
+	template<typename ReturnType> void storeBits(std::string& to, ReturnType num) {
+		const uint8_t byteSize{ 8 };
+		ReturnType newValue = reverseByteOrder(num);
+		for (uint32_t x = 0; x < sizeof(ReturnType); x++) {
+			to.push_back(static_cast<uint8_t>(newValue >> (byteSize * x)));
+		}
+	}
+
 	class DiscordCoreAPI_Dll ConfigManager {
 	  public:
 		ConfigManager() = default;
@@ -323,96 +339,6 @@ namespace DiscordCoreAPI {
 
 	  protected:
 		DiscordCoreClientConfig theConfig{};
-	};
-
-	template<typename ObjectType> class ReferenceCountingPtr {
-	  public:
-		class DiscordCoreAPI_Dll ObjectWrapper {
-		  public:
-			ObjectWrapper& operator=(ObjectType* other) {
-				this->thePtr = other;
-				return *this;
-			}
-
-			ObjectWrapper(ObjectType* other) {
-				*this = other;
-			}
-
-			operator ObjectType*() {
-				return this->thePtr;
-			}
-
-			ObjectWrapper() = default;
-
-			ObjectType* get() {
-				return this->thePtr;
-			}
-
-			void incrementCount() const {
-				this->refCount++;
-			}
-
-			void release() const {
-				assert(this->refCount > 0);
-				this->refCount--;
-				if (this->refCount == 0) {
-					delete this;
-				};
-			}
-
-			virtual ~ObjectWrapper() = default;
-
-		  protected:
-			ObjectType* thePtr{ nullptr };
-			mutable int32_t refCount{ 0 };
-		};
-
-		ReferenceCountingPtr& operator=(ObjectType* ptr) {
-			if (this->thePtr) {
-				this->thePtr->release();
-			}
-			this->thePtr = new ObjectWrapper{ ptr };
-			if (this->thePtr) {
-				this->thePtr->incrementCount();
-			}
-			return *this;
-		}
-
-		ReferenceCountingPtr(ObjectType* ptr = nullptr) {
-			*this = ptr;
-		}
-
-		ReferenceCountingPtr& operator=(const ReferenceCountingPtr& ptr) {
-			this->thePtr = ptr.thePtr;
-			return *this;
-		}
-
-		ReferenceCountingPtr(const ReferenceCountingPtr& ptr) {
-			*this = ptr;
-		}
-
-		ReferenceCountingPtr(std::nullptr_t){};
-
-		ObjectType* operator->() const {
-			return this->thePtr->get();
-		}
-
-		ObjectType& operator*() const {
-			return *this->thePtr->get();
-		}
-
-		ObjectType* get() const {
-			return this->thePtr->get();
-		}
-
-		~ReferenceCountingPtr() {
-			if (this->thePtr) {
-				this->thePtr->release();
-			}
-		}
-
-	  protected:
-		ObjectWrapper* thePtr{ nullptr };
 	};
 
 	/**

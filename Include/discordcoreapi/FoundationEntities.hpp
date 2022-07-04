@@ -133,15 +133,6 @@ namespace DiscordCoreAPI {
 	 * @{
 	*/
 
-	template<typename ReturnType> ReturnType reverseByteOrder(ReturnType x) {
-		const uint8_t byteSize{ 8 };
-		ReturnType returnValue{};
-		for (uint32_t y = 0; y < sizeof(ReturnType); y++) {
-			returnValue |= static_cast<ReturnType>(static_cast<uint8_t>(x >> (byteSize * y))) << byteSize * (sizeof(ReturnType) - y - 1);
-		}
-		return returnValue;
-	}
-
 	template<typename ObjectType> class DataParser {
 	  public:
 		virtual void parseObject(const nlohmann::json&, ObjectType*) = 0;

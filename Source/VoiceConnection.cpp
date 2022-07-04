@@ -26,6 +26,53 @@ namespace DiscordCoreAPI {
 		extern std::atomic_bool doWeQuit;
 	}
 
+	RTPPacket::RTPPacket(uint32_t timestampNew, uint16_t sequenceNew, uint32_t ssrcNew, const std::vector<uint8_t>& audioDataNew, const std::string& theKeys) {
+		this->audioData = std::move(audioDataNew);
+		this->timestamp = timestampNew;
+		this->sequence = sequenceNew;
+		this->theKeys = theKeys;
+		this->ssrc = ssrcNew;
+	}
+
+	RTPPacket::operator std::string() {
+		if (this->theKeys.size() > 0) {
+			const uint8_t nonceSize{ crypto_secretbox_NONCEBYTES };
+			const uint8_t headerSize{ 12 };
+			const uint8_t byteSize{ 8 };
+			std::string headerFinal{};
+			uint8_t value01{ 0x80 };
+			storeBits(headerFinal, value01);
+			uint8_t value02{ 0x78 };
+			storeBits(headerFinal, value02);
+			storeBits(headerFinal, this->sequence);
+			storeBits(headerFinal, this->timestamp);
+			storeBits(headerFinal, this->ssrc);
+			uint8_t nonceForLibSodium[nonceSize]{};
+			for (uint8_t x = 0; x < headerSize; x++) {
+				nonceForLibSodium[x] = headerFinal[x];
+			}
+			for (uint8_t x = headerSize; x < nonceSize; x++) {
+				nonceForLibSodium[x] = 0;
+			}
+			uint64_t numOfBytes{ headerSize + this->audioData.size() + crypto_secretbox_MACBYTES };
+			std::unique_ptr<uint8_t[]> audioDataPacket{ std::make_unique<uint8_t[]>(numOfBytes) };
+			for (uint8_t x = 0; x < headerSize; x++) {
+				audioDataPacket[x] = headerFinal[x];
+			}
+			std::unique_ptr<uint8_t[]> encryptionKeys{ std::make_unique<uint8_t[]>(this->theKeys.size()) };
+			for (uint64_t x = 0; x < this->theKeys.size(); x++) {
+				encryptionKeys[x] = this->theKeys[x];
+			}
+			if (crypto_secretbox_easy(audioDataPacket.get() + headerSize, this->audioData.data(), this->audioData.size(), nonceForLibSodium, encryptionKeys.get()) != 0) {
+				return "";
+			};
+			std::string audioDataPacketNew{};
+			audioDataPacketNew.insert(audioDataPacketNew.begin(), audioDataPacket.get(), audioDataPacket.get() + numOfBytes);
+			return audioDataPacketNew;
+		}
+		return std::string{};
+	}
+
 	VoiceConnection::VoiceConnection(DiscordCoreInternal::BaseSocketAgent* BaseSocketAgentNew, const DiscordCoreInternal::VoiceConnectInitData& initDataNew,
 		DiscordCoreAPI::ConfigManager* configManagerNew) noexcept {
 		this->baseShard = BaseSocketAgentNew->sslShards[initDataNew.currentShard].get();
@@ -54,48 +101,11 @@ namespace DiscordCoreAPI {
 		theString = theVectorNew;
 	}
 
-	std::string VoiceConnection::encryptSingleAudioFrame(const EncodedFrameData& bufferToSend, int32_t audioSSRC, const std::string& keys) noexcept {
+	std::string VoiceConnection::encryptSingleAudioFrame(const EncodedFrameData& bufferToSend, uint32_t audioSSRC, const std::string& keys) noexcept {
 		if (keys.size() > 0) {
 			this->sequenceIndex++;
 			this->timeStamp += 960;
-			const int64_t nonceSize{ crypto_secretbox_NONCEBYTES };
-			const int64_t headerSize{ 12 };
-			const uint8_t byteSize{ 8 };
-			uint8_t headerFinal[headerSize]{};
-			headerFinal[0] = 0x80;
-			headerFinal[1] = 0x78;
-			headerFinal[2] = static_cast<uint8_t>(this->sequenceIndex >> (byteSize * 1));
-			headerFinal[3] = static_cast<uint8_t>(this->sequenceIndex >> (byteSize * 0));
-			headerFinal[4] = static_cast<uint8_t>(this->timeStamp >> (byteSize * 3));
-			headerFinal[5] = static_cast<uint8_t>(this->timeStamp >> (byteSize * 2));
-			headerFinal[6] = static_cast<uint8_t>(this->timeStamp >> (byteSize * 1));
-			headerFinal[7] = static_cast<uint8_t>(this->timeStamp >> (byteSize * 0));
-			headerFinal[8] = static_cast<uint8_t>(audioSSRC >> (byteSize * 3));
-			headerFinal[9] = static_cast<uint8_t>(audioSSRC >> (byteSize * 2));
-			headerFinal[10] = static_cast<uint8_t>(audioSSRC >> (byteSize * 1));
-			headerFinal[11] = static_cast<uint8_t>(audioSSRC >> (byteSize * 0));
-			uint8_t nonceForLibSodium[nonceSize]{};
-			for (uint64_t x = 0; x < headerSize; x++) {
-				nonceForLibSodium[x] = headerFinal[x];
-			}
-			for (int64_t x = headerSize; x < nonceSize; x++) {
-				nonceForLibSodium[x] = 0;
-			}
-			uint64_t numOfBytes{ headerSize + bufferToSend.data.size() + crypto_secretbox_MACBYTES };
-			std::unique_ptr<uint8_t[]> audioDataPacket{ std::make_unique<uint8_t[]>(numOfBytes) };
-			for (uint64_t x = 0; x < headerSize; x++) {
-				audioDataPacket[x] = headerFinal[x];
-			}
-			std::unique_ptr<uint8_t[]> encryptionKeys{ std::make_unique<uint8_t[]>(keys.size()) };
-			for (uint64_t x = 0; x < keys.size(); x++) {
-				encryptionKeys[x] = keys[x];
-			}
-			if (crypto_secretbox_easy(audioDataPacket.get() + headerSize, bufferToSend.data.data(), bufferToSend.data.size(), nonceForLibSodium, encryptionKeys.get()) != 0) {
-				return "";
-			};
-			std::string audioDataPacketNew{};
-			audioDataPacketNew.insert(audioDataPacketNew.begin(), audioDataPacket.get(), audioDataPacket.get() + numOfBytes);
-			return audioDataPacketNew;
+			return RTPPacket{ this->timeStamp, this->sequenceIndex, audioSSRC, bufferToSend.data, keys };
 		}
 		return std::string{};
 	}
