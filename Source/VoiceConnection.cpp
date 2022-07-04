@@ -365,21 +365,22 @@ namespace DiscordCoreAPI {
 					this->sendSpeakingMessage(false);
 					this->play();
 				}
-				if (this->heartbeatInterval != 0 && !this->sslShards[0]->areWeHeartBeating) {
+				if (!stopToken.stop_requested() && this->heartbeatInterval != 0 && !this->sslShards[0]->areWeHeartBeating) {
 					this->sslShards[0]->areWeHeartBeating = true;
 					this->sslShards[0]->heartBeatStopWatch = DiscordCoreAPI::StopWatch{ std::chrono::milliseconds{ this->heartbeatInterval } };
 				}
-				if (this->sslShards[0]->areWeStillConnected() && this->sslShards[0]->heartBeatStopWatch.hasTimePassed() && this->sslShards[0]->areWeHeartBeating) {
+				if (!stopToken.stop_requested() && this->sslShards[0]->areWeStillConnected() && this->sslShards[0]->heartBeatStopWatch.hasTimePassed() &&
+					this->sslShards[0]->areWeHeartBeating) {
 					this->sendHeartBeat();
 					this->sslShards[0]->heartBeatStopWatch.resetTimer();
 				}
-				if (this->sslShards[0]->areWeStillConnected()) {
+				if (!stopToken.stop_requested() && this->sslShards[0]->areWeStillConnected()) {
 					DiscordCoreInternal::WebSocketSSLShard::processIO(this->sslShards, 1000);
 				}
-				if (this->sslShards[0]->areWeStillConnected()) {
+				if (!stopToken.stop_requested() && this->sslShards[0]->areWeStillConnected()) {
 					this->parseHeadersAndMessage(this->sslShards[0].get());
 				}
-				if (this->sslShards[0]->areWeStillConnected() && this->sslShards[0]->processedMessages.size() > 0) {
+				if (!stopToken.stop_requested() && this->sslShards[0]->areWeStillConnected() && this->sslShards[0]->processedMessages.size() > 0) {
 					std::string theMessage = this->sslShards[0]->processedMessages.front();
 					if (theMessage.size() > 0) {
 						this->onMessageReceived(theMessage);
@@ -407,7 +408,7 @@ namespace DiscordCoreAPI {
 		while (!stopToken.stop_requested() && !Globals::doWeQuit.load() && this->activeState.load() != VoiceActiveState::Exiting) {
 			switch (this->activeState.load()) {
 				case VoiceActiveState::Idle: {
-					while (this->activeState.load() == VoiceActiveState::Idle) {
+					while (!stopToken.stop_requested() && this->activeState.load() == VoiceActiveState::Idle) {
 						std::this_thread::sleep_for(1ms);
 					}
 					break;
@@ -415,13 +416,13 @@ namespace DiscordCoreAPI {
 				case VoiceActiveState::Stopped: {
 					this->audioDataBuffer.clearContents();
 					this->clearAudioData();
-					while (this->activeState.load() == VoiceActiveState::Stopped) {
+					while (!stopToken.stop_requested() && this->activeState.load() == VoiceActiveState::Stopped) {
 						std::this_thread::sleep_for(1ms);
 					}
 					break;
 				}
 				case VoiceActiveState::Paused: {
-					while (this->activeState.load() == VoiceActiveState::Paused) {
+					while (!stopToken.stop_requested() && this->activeState.load() == VoiceActiveState::Paused) {
 						std::this_thread::sleep_for(1ms);
 					}
 					break;
@@ -430,7 +431,7 @@ namespace DiscordCoreAPI {
 					this->audioData.type = AudioFrameType::Unset;
 					this->audioData.encodedFrameData.data.clear();
 					this->audioData.rawFrameData.data.clear();
-					while (!this->audioDataBuffer.tryReceive(this->audioData)) {
+					while (!stopToken.stop_requested() && this->audioDataBuffer.tryReceive(this->audioData)) {
 						if (theStopWatch.hasTimePassed()) {
 							break;
 						}
@@ -448,7 +449,7 @@ namespace DiscordCoreAPI {
 							this->play();
 						}
 					}
-					while (this->activeState.load() == VoiceActiveState::Playing) {
+					while (!stopToken.stop_requested() && this->activeState.load() == VoiceActiveState::Playing) {
 						StopWatch theStopWatch{ 20000ms };
 						while (!this->datagramSocket->areWeStillConnected()) {
 							if (theStopWatch.hasTimePassed()) {
