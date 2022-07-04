@@ -41,24 +41,26 @@ namespace DiscordCoreAPI {
 		operator std::string();
 	};
 
+	/// For the various connection states of the VoiceConnection class. \brief For the various connection states of the VoiceConnection class.
 	enum class VoiceConnectionState : int8_t {
-		Collecting_Init_Data = 0,
+		Collecting_Init_Data = 0,///< Collecting initialization data.
 		Initializing_WebSocket = 1,///< Initializing the WebSocket.
-		Collecting_Hello = 2,
-		Sending_Identify = 3,
-		Collecting_Ready = 4,
-		Initializing_DatagramSocket = 5,
-		Collecting_External_Ip = 6,
-		Sending_Select_Protocol = 7,
-		Collecting_Session_Description = 8
+		Collecting_Hello = 2,///< Collecting the client hello.
+		Sending_Identify = 3,///< Sending the identify payload.
+		Collecting_Ready = 4,///< Collecting the client ready.
+		Initializing_DatagramSocket = 5,///< Initializing the datagram udp socket.
+		Collecting_External_Ip = 6,///< Collecting our own external Ip.
+		Sending_Select_Protocol = 7,///< Sending the select-protocol payload.
+		Collecting_Session_Description = 8///< Collecting the session-description payload.
 	};
 
+	/// For the various active states of the VoiceConnection class. \brief For the various active states of the VoiceConnection class.
 	enum class VoiceActiveState : int8_t {
-		Idle = -1,
+		Idle = -1,///< Idle - it hasn't started or it's reconnecting.
 		Playing = 1,///< Playing.
-		Stopped = 2,
-		Paused = 3,
-		Exiting = 4
+		Stopped = 2,///< Stopped.
+		Paused = 3,///< Paused.
+		Exiting = 4///< Exiting.
 	};
 
 	/**
