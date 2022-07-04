@@ -446,10 +446,6 @@ namespace DiscordCoreAPI {
 						}
 					}
 					while (this->activeState.load() == VoiceActiveState::Playing) {
-						if (!stopToken.stop_requested() && this->datagramSocket && this->datagramSocket->areWeStillConnected()) {
-							this->datagramSocket->processIO();
-							this->datagramSocket->getInputBuffer();
-						}
 						StopWatch theStopWatch{ 20000ms };
 						while (!this->datagramSocket->areWeStillConnected()) {
 							if (theStopWatch.hasTimePassed()) {
@@ -457,12 +453,15 @@ namespace DiscordCoreAPI {
 							}
 							std::this_thread::sleep_for(1ms);
 						}
+						if (!stopToken.stop_requested() && this->datagramSocket && this->datagramSocket->areWeStillConnected()) {
+							this->datagramSocket->processIO();
+							this->datagramSocket->getInputBuffer();
+						}
 						frameCounter++;
 						this->audioDataBuffer.tryReceive(this->audioData);
 						if (this->audioData.guildMemberId != 0) {
 							this->currentGuildMemberId = this->audioData.guildMemberId;
 						}
-						nanoSleep(100000);
 						if (this->audioData.type != AudioFrameType::Unset && this->audioData.type != AudioFrameType::Skip) {
 							std::string newFrame{};
 							if (this->audioData.type == AudioFrameType::RawPCM) {
