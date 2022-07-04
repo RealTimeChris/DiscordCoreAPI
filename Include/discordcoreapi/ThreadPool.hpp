@@ -11,7 +11,6 @@
 	even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 	You should have received a copy of the GNU General Public License along with DiscordCoreAPI.
 	If not, see <https://www.gnu.org/licenses/>.
-
 */
 /// ThreadPool.hpp - Header for the "Thread-Pool" related stuff.
 /// Dec 18, 2021
