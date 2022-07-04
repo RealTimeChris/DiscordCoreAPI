@@ -230,7 +230,7 @@ namespace DiscordCoreInternal {
 			WebSocketSSLShard::processIO(theMap, ms1000);
 			if (!theMap[0]->areWeStillConnected()) {
 				audioDecoder.reset(nullptr);
-				theMap[0]->disconnect();
+				theMap[0]->reconnect();
 				this->weFailedToDownloadOrDecode(newSong, stopToken, currentReconnectTries);
 				return;
 			}
@@ -247,30 +247,30 @@ namespace DiscordCoreInternal {
 					frameData.rawFrameData.sampleCount = 0;
 					frameData.encodedFrameData.sampleCount = 0;
 					DiscordCoreAPI::getVoiceConnectionMap()[this->guildId]->audioDataBuffer.send(frameData);
-					theMap[0]->disconnect();
+					theMap[0]->reconnect();
 					audioDecoder.reset(nullptr);
 					return;
 				}
 				bytesSubmittedPrevious = bytesSubmittedTotal;
 				if (stopToken.stop_requested()) {
-					theMap[0]->disconnect();
+					theMap[0]->reconnect();
 					audioDecoder.reset(nullptr);
 					return;
 				}
 				if (audioDecoder->haveWeFailed()) {
 					audioDecoder.reset(nullptr);
-					theMap[0]->disconnect();
+					theMap[0]->reconnect();
 					this->weFailedToDownloadOrDecode(newSong, stopToken, currentReconnectTries);
 					return;
 				}
 				if (stopToken.stop_requested()) {
-					theMap[0]->disconnect();
+					theMap[0]->reconnect();
 					audioDecoder.reset(nullptr);
 					return;
 				} else {
 					if (!areWeDoneHeaders) {
 						if (stopToken.stop_requested()) {
-							theMap[0]->disconnect();
+							theMap[0]->reconnect();
 							audioDecoder.reset(nullptr);
 							return;
 						}
@@ -278,7 +278,7 @@ namespace DiscordCoreInternal {
 						WebSocketSSLShard::processIO(theMap, ms500);
 						if (!theMap[0]->areWeStillConnected()) {
 							audioDecoder.reset(nullptr);
-							theMap[0]->disconnect();
+							theMap[0]->reconnect();
 							this->weFailedToDownloadOrDecode(newSong, stopToken, currentReconnectTries);
 							return;
 						}
@@ -289,7 +289,7 @@ namespace DiscordCoreInternal {
 							}
 						}
 						if (stopToken.stop_requested()) {
-							theMap[0]->disconnect();
+							theMap[0]->reconnect();
 							audioDecoder.reset(nullptr);
 							return;
 						}
@@ -297,7 +297,7 @@ namespace DiscordCoreInternal {
 						areWeDoneHeaders = true;
 					}
 					if (stopToken.stop_requested()) {
-						theMap[0]->disconnect();
+						theMap[0]->reconnect();
 						audioDecoder.reset(nullptr);
 						return;
 					}
@@ -305,7 +305,7 @@ namespace DiscordCoreInternal {
 						WebSocketSSLShard::processIO(theMap, ms500);
 						if (!theMap[0]->areWeStillConnected()) {
 							audioDecoder.reset(nullptr);
-							theMap[0]->disconnect();
+							theMap[0]->reconnect();
 							this->weFailedToDownloadOrDecode(newSong, stopToken, currentReconnectTries);
 							return;
 						}
@@ -333,14 +333,14 @@ namespace DiscordCoreInternal {
 						if (contentLengthCurrent > 0) {
 							if (stopToken.stop_requested()) {
 								audioDecoder.reset(nullptr);
-								theMap[0]->disconnect();
+								theMap[0]->reconnect();
 								return;
 							}
 							remainingDownloadContentLength = newSong.contentLength - bytesSubmittedTotal;
 							WebSocketSSLShard::processIO(theMap, ms500);
 							if (!theMap[0]->areWeStillConnected()) {
 								audioDecoder.reset(nullptr);
-								theMap[0]->disconnect();
+								theMap[0]->reconnect();
 								this->weFailedToDownloadOrDecode(newSong, stopToken, currentReconnectTries);
 								return;
 							}
@@ -367,7 +367,7 @@ namespace DiscordCoreInternal {
 							}
 						}
 						if (stopToken.stop_requested()) {
-							theMap[0]->disconnect();
+							theMap[0]->reconnect();
 							audioDecoder.reset(nullptr);
 							return;
 						}
@@ -383,7 +383,7 @@ namespace DiscordCoreInternal {
 							continue;
 						}
 						if (stopToken.stop_requested()) {
-							theMap[0]->disconnect();
+							theMap[0]->reconnect();
 							audioDecoder.reset(nullptr);
 							return;
 						}

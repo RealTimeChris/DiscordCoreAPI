@@ -838,9 +838,9 @@ namespace DiscordCoreAPI {
 			this->areWeConnectedBool.store(false);
 			if (this->datagramSocket) {
 				this->datagramSocket->areWeConnected.store(false);
-				this->datagramSocket->disconnect();
+				this->datagramSocket->reconnect();
 			}
-			this->sslShards[0]->disconnect();
+			this->sslShards[0]->reconnect();
 			this->sslShards[0]->areWeHeartBeating = false;
 			this->sslShards[0]->wantWrite = true;
 			this->sslShards[0]->wantRead = false;

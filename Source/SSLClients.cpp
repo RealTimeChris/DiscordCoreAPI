@@ -167,15 +167,15 @@ namespace DiscordCoreInternal {
 						return false;
 					}
 					case SSL_ERROR_ZERO_RETURN: {
-						this->disconnect();
+						this->reconnect();
 						return false;
 					}
 					case SSL_ERROR_SSL: {
-						this->disconnect();
+						this->reconnect();
 						return false;
 					}
 					case SSL_ERROR_SYSCALL: {
-						this->disconnect();
+						this->reconnect();
 						return false;
 					}
 					case SSL_ERROR_WANT_READ: {
@@ -218,7 +218,7 @@ namespace DiscordCoreInternal {
 
 	void HttpsSSLClient::processIO(int32_t theWaitTimeInms) noexcept {
 		if (this->theSocket == SOCKET_ERROR) {
-			this->disconnect();
+			this->reconnect();
 			return;
 		}
 		int32_t readNfds{ 0 }, writeNfds{ 0 }, finalNfds{ 0 };
@@ -235,7 +235,7 @@ namespace DiscordCoreInternal {
 
 		timeval checkTime{ .tv_usec = theWaitTimeInms };
 		if (auto returnValue = select(finalNfds + 1, &readSet, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
-			this->disconnect();
+			this->reconnect();
 			return;
 		} else if (returnValue == 0) {
 			return;
@@ -257,15 +257,15 @@ namespace DiscordCoreInternal {
 					break;
 				}
 				case SSL_ERROR_ZERO_RETURN: {
-					this->disconnect();
+					this->reconnect();
 					break;
 				}
 				case SSL_ERROR_SSL: {
-					this->disconnect();
+					this->reconnect();
 					break;
 				}
 				case SSL_ERROR_SYSCALL: {
-					this->disconnect();
+					this->reconnect();
 					break;
 				}
 				case SSL_ERROR_WANT_READ: {
@@ -300,15 +300,15 @@ namespace DiscordCoreInternal {
 						break;
 					}
 					case SSL_ERROR_ZERO_RETURN: {
-						this->disconnect();
+						this->reconnect();
 						break;
 					}
 					case SSL_ERROR_SSL: {
-						this->disconnect();
+						this->reconnect();
 						break;
 					}
 					case SSL_ERROR_SYSCALL: {
-						this->disconnect();
+						this->reconnect();
 						break;
 					}
 					case SSL_ERROR_WANT_READ: {
@@ -345,7 +345,7 @@ namespace DiscordCoreInternal {
 		return this->bytesRead;
 	}
 
-	void HttpsSSLClient::disconnect() noexcept {
+	void HttpsSSLClient::reconnect() noexcept {
 		this->areWeConnected01.store(false);
 		this->areWeConnected02.store(false);
 		this->theSocket = SOCKET_ERROR;
@@ -398,7 +398,7 @@ namespace DiscordCoreInternal {
 		timeval checkTime{ .tv_usec = waitTimeInms };
 		if (auto returnValue = select(finalNfds + 1, &readSet, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
 			for (auto& [key, value]: theMap) {
-				value->disconnect();
+				value->reconnect();
 			}
 			return;
 		}
@@ -422,15 +422,15 @@ namespace DiscordCoreInternal {
 						break;
 					}
 					case SSL_ERROR_ZERO_RETURN: {
-						value->disconnect();
+						value->reconnect();
 						break;
 					}
 					case SSL_ERROR_SSL: {
-						value->disconnect();
+						value->reconnect();
 						break;
 					}
 					case SSL_ERROR_SYSCALL: {
-						value->disconnect();
+						value->reconnect();
 						break;
 					}
 					case SSL_ERROR_WANT_READ: {
@@ -463,15 +463,15 @@ namespace DiscordCoreInternal {
 							break;
 						}
 						case SSL_ERROR_ZERO_RETURN: {
-							value->disconnect();
+							value->reconnect();
 							break;
 						}
 						case SSL_ERROR_SSL: {
-							value->disconnect();
+							value->reconnect();
 							break;
 						}
 						case SSL_ERROR_SYSCALL: {
-							value->disconnect();
+							value->reconnect();
 							break;
 						}
 						case SSL_ERROR_WANT_READ: {
@@ -582,15 +582,15 @@ namespace DiscordCoreInternal {
 						return false;
 					}
 					case SSL_ERROR_ZERO_RETURN: {
-						this->disconnect();
+						this->reconnect();
 						return false;
 					}
 					case SSL_ERROR_SSL: {
-						this->disconnect();
+						this->reconnect();
 						return false;
 					}
 					case SSL_ERROR_SYSCALL: {
-						this->disconnect();
+						this->reconnect();
 						return false;
 					}
 					case SSL_ERROR_WANT_READ: {
@@ -649,7 +649,7 @@ namespace DiscordCoreInternal {
 		return this->bytesRead;
 	}
 
-	void WebSocketSSLShard::disconnect() noexcept {
+	void WebSocketSSLShard::reconnect() noexcept {
 		if (this->areWeConnected01.load()) {
 			this->areWeConnected01.store(false);
 			this->areWeConnected02.store(false);
@@ -752,7 +752,7 @@ namespace DiscordCoreInternal {
 		return this->bytesRead;
 	}
 
-	void DatagramSocketSSLClient::disconnect() noexcept {
+	void DatagramSocketSSLClient::reconnect() noexcept {
 		this->theSocket = SOCKET_ERROR;
 		this->inputBuffer.clear();
 		this->outputBuffers.clear();
@@ -776,7 +776,7 @@ namespace DiscordCoreInternal {
 
 		timeval checkTime{ .tv_usec = 1000 };
 		if (auto returnValue = select(finalNfds + 1, &readSet, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
-			this->disconnect();
+			this->reconnect();
 			return;
 		} else if (returnValue == 0) {
 			return;
@@ -790,7 +790,7 @@ namespace DiscordCoreInternal {
 				this->inputBuffer.insert(this->inputBuffer.end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
 				this->bytesRead += readBytes;
 			} else {
-				this->disconnect();
+				this->reconnect();
 				return;
 			}
 		}
@@ -804,7 +804,7 @@ namespace DiscordCoreInternal {
 					this->outputBuffers.erase(this->outputBuffers.begin());
 					return;
 				} else {
-					this->disconnect();
+					this->reconnect();
 					return;
 				}
 			}

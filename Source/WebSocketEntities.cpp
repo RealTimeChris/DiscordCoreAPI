@@ -52,7 +52,7 @@ namespace DiscordCoreInternal {
 					didWeWrite = theShard->writeData(dataToSend, priority);
 				} while (!didWeWrite);
 				if (!didWeWrite) {
-					theShard->disconnect();
+					theShard->reconnect();
 				}
 			} catch (...) {
 				if (this->configManager->doWePrintWebSocketErrorMessages()) {
@@ -79,7 +79,7 @@ namespace DiscordCoreInternal {
 
 	void BaseSocketAgent::onClosed(WebSocketSSLShard* theShard) noexcept {
 		if (this->maxReconnectTries > theShard->currentReconnectTries) {
-			theShard->disconnect();
+			theShard->reconnect();
 		} else {
 			this->doWeQuit->store(true);
 			this->taskThread->request_stop();
@@ -113,7 +113,7 @@ namespace DiscordCoreInternal {
 					didWeWrite = theShard->writeData(theString, true);
 				} while (!didWeWrite);
 				if (!didWeWrite) {
-					theShard->disconnect();
+					theShard->reconnect();
 				}
 				
 				if (doWeCollect.channelId == 0) {
@@ -132,7 +132,7 @@ namespace DiscordCoreInternal {
 					didWeWrite = theShard->writeData(theString02, true);
 				} while (!didWeWrite);
 				if (!didWeWrite) {
-					theShard->disconnect();
+					theShard->reconnect();
 				}
 				theStopWatch.resetTimer();
 				while (theShard->areWeCollectingData) {
@@ -980,7 +980,7 @@ namespace DiscordCoreInternal {
 				}
 
 				if (!this->sslShards[connectData.currentShard]->connect(this->configManager->getConnectionAddress(), this->configManager->getConnectionPort())) {
-					this->sslShards[connectData.currentShard]->disconnect();
+					this->sslShards[connectData.currentShard]->reconnect();
 					return;
 				}
 
@@ -1000,7 +1000,7 @@ namespace DiscordCoreInternal {
 					didWeWrite = this->sslShards[connectData.currentShard]->writeData(sendString, true);
 				} while (!didWeWrite);
 				if (!didWeWrite) {
-					this->sslShards[connectData.currentShard]->disconnect();
+					this->sslShards[connectData.currentShard]->reconnect();
 					return;
 				}
 

@@ -281,7 +281,7 @@ namespace DiscordCoreInternal {
 
 		virtual bool areWeStillConnected() noexcept = 0;
 
-		virtual void disconnect() noexcept = 0;
+		virtual void reconnect() noexcept = 0;
 
 		virtual ~SSLConnectionInterface() noexcept = default;
 
@@ -333,7 +333,7 @@ namespace DiscordCoreInternal {
 
 		int64_t getBytesRead() noexcept;
 
-		void disconnect() noexcept;
+		void reconnect() noexcept;
 
 		~HttpsSSLClient() noexcept = default;
 	};
@@ -360,7 +360,7 @@ namespace DiscordCoreInternal {
 
 		int64_t getBytesRead() noexcept;
 
-		void disconnect() noexcept;
+		void reconnect() noexcept;
 
 		~WebSocketSSLShard() noexcept = default;
 
@@ -407,7 +407,7 @@ namespace DiscordCoreInternal {
 
 		int64_t getBytesRead() noexcept;
 
-		void disconnect() noexcept;
+		void reconnect() noexcept;
 
 		void processIO() noexcept;
 
