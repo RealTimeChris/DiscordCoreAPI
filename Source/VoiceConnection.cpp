@@ -352,10 +352,10 @@ namespace DiscordCoreAPI {
 	void VoiceConnection::runWebSocket(std::stop_token stopToken) noexcept {
 		try {
 			while (!stopToken.stop_requested() && !Globals::doWeQuit.load() && this->activeState.load() != VoiceActiveState::Exiting) {
-				if (this->connections.size() > 0) {
+				if (!stopToken.stop_requested() && this->connections.size() > 0) {
 					this->activeState = VoiceActiveState::Idle;
 					DiscordCoreAPI::StopWatch theStopWatch{ 10000ms };
-					while (!this->baseShard->areWeConnected02.load()) {
+					while (!stopToken.stop_requested() && !this->baseShard->areWeConnected02.load()) {
 						if (theStopWatch.hasTimePassed()) {
 							return;
 						}
@@ -382,7 +382,7 @@ namespace DiscordCoreAPI {
 				}
 				if (!stopToken.stop_requested() && this->sslShards[0]->areWeStillConnected() && this->sslShards[0]->processedMessages.size() > 0) {
 					std::string theMessage = this->sslShards[0]->processedMessages.front();
-					if (theMessage.size() > 0) {
+					if (!stopToken.stop_requested() && theMessage.size() > 0) {
 						this->onMessageReceived(theMessage);
 					}
 					this->sslShards[0]->processedMessages.pop();
