@@ -265,7 +265,7 @@ namespace DiscordCoreInternal {
 		}
 
 		if (FD_ISSET(this->theSocket, &readSet)) {
-			
+			std::unique_lock theLock{ this->theMutex01 };
 			this->wantRead = false;
 			this->wantWrite = false;
 			std::string serverToClientBuffer{};
@@ -276,7 +276,6 @@ namespace DiscordCoreInternal {
 			switch (errorValue) {
 				case SSL_ERROR_NONE: {
 					if (readBytes > 0) {
-						std::unique_lock theLock{ this->theMutex01 };
 						this->inputBuffer.insert(this->inputBuffer.end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
 					}
 					break;
@@ -307,6 +306,7 @@ namespace DiscordCoreInternal {
 			}
 		}
 		if (FD_ISSET(this->theSocket, &writeSet)) {
+			std::unique_lock theLock{ this->theMutex01 };
 			this->wantRead = false;
 			this->wantWrite = false;
 			size_t writtenBytes{ 0 };
@@ -317,7 +317,6 @@ namespace DiscordCoreInternal {
 				auto errorValue{ SSL_get_error(this->ssl, returnValue) };
 				switch (errorValue) {
 					case SSL_ERROR_NONE: {
-						std::unique_lock theLock{ this->theMutex01 };
 						if (writtenBytes > 0) {
 							this->outputBuffers.erase(this->outputBuffers.begin());
 						} else {
@@ -433,6 +432,7 @@ namespace DiscordCoreInternal {
 
 		for (auto& [key, value]: theMap) {
 			if (FD_ISSET(value->theSocket, &readSet)) {
+				std::unique_lock theLock{ value->theMutex01 };
 				value->wantRead = false;
 				value->wantWrite = false;
 				std::string serverToClientBuffer{};
@@ -443,7 +443,6 @@ namespace DiscordCoreInternal {
 				switch (errorValue) {
 					case SSL_ERROR_NONE: {
 						if (readBytes > 0) {
-							std::unique_lock theLock{ value->theMutex01 };
 							value->inputBuffer.insert(value->inputBuffer.end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
 							value->bytesRead += readBytes;
 						}
@@ -475,12 +474,12 @@ namespace DiscordCoreInternal {
 				}
 			}
 			if (FD_ISSET(value->theSocket, &writeSet)) {
+				std::unique_lock theLock{ value->theMutex01 };
 				value->wantRead = false;
 				value->wantWrite = false;
 				size_t writtenBytes{ 0 };
 				std::string theString{};
 				if (value->outputBuffers.size() > 0) {
-					std::unique_lock theLock{ value->theMutex01 };
 					theString = std::move(value->outputBuffers.front());
 					auto returnValue{ SSL_write_ex(value->ssl, theString.data(), theString.size(), &writtenBytes) };
 					auto errorValue{ SSL_get_error(value->ssl, returnValue) };
