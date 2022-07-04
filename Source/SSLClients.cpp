@@ -498,7 +498,7 @@ namespace DiscordCoreInternal {
 		hints->ai_socktype = SOCK_STREAM;
 		hints->ai_protocol = IPPROTO_TCP;
 
-		if (auto returnValue = getaddrinfo(baseUrlNew.c_str(), portNew.c_str(), hints, address); returnValue == SOCKET_ERROR) {
+		if (getaddrinfo(baseUrlNew.c_str(), portNew.c_str(), hints, address)) {
 			return false;
 		}
 
@@ -522,7 +522,7 @@ namespace DiscordCoreInternal {
 			return false;
 		}
 
-		if (::connect(this->theSocket, address->ai_addr, static_cast<int32_t>(address->ai_addrlen)) == SOCKET_ERROR) {
+		if (::connect(this->theSocket, address->ai_addr, static_cast<int32_t>(address->ai_addrlen))) {
 			return false;
 		}
 

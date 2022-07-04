@@ -102,7 +102,7 @@ namespace DiscordCoreAPI {
 
 		void stringifyJsonData(const nlohmann::json& dataToSend, std::string& theString, DiscordCoreInternal::WebSocketOpCode theOpCode) noexcept;
 
-		std::string encryptSingleAudioFrame(EncodedFrameData& bufferToSend, int32_t audioSSRC, const std::string& keys) noexcept;
+		std::string encryptSingleAudioFrame(const EncodedFrameData& bufferToSend, int32_t audioSSRC, const std::string& keys) noexcept;
 
 		void createHeader(std::string& outbuf, uint64_t sendlength, DiscordCoreInternal::WebSocketOpCode opCode) noexcept;
 
@@ -116,11 +116,11 @@ namespace DiscordCoreAPI {
 
 		void onMessageReceived(const std::string& theMessage) noexcept;
 
-		void sendVoiceData(std::string& responseData) noexcept;
+		void sendVoiceData(const std::string& responseData) noexcept;
 
-		void sendMessage(std::string& dataToSend) noexcept;
+		void sendMessage(const std::string& dataToSend) noexcept;
 
-		void sendSpeakingMessage(bool isSpeaking) noexcept;
+		void sendSpeakingMessage(const bool isSpeaking) noexcept;
 
 		void runWebSocket(std::stop_token) noexcept;
 

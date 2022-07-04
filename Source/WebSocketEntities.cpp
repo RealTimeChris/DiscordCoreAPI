@@ -82,7 +82,7 @@ namespace DiscordCoreInternal {
 			if (this->maxReconnectTries > theShard->currentReconnectTries) {
 				theShard->disconnect();
 				this->sslShards.erase(theShard->shard[0]);
-			} else if (this->maxReconnectTries <= theShard->currentReconnectTries) {
+			} else {
 				this->doWeQuit->store(true);
 				this->taskThread->request_stop();
 			}
@@ -118,20 +118,21 @@ namespace DiscordCoreInternal {
 				if (!didWeWrite) {
 					theShard->disconnect();
 				}
-				std::this_thread::sleep_for(50ms);
+				
 				if (doWeCollect.channelId == 0) {
 					return;
 				}
 				dataPackage.channelId = doWeCollect.channelId;
-				newData = dataPackage;
-				this->stringifyJsonData(newData, theString, theShard->dataOpCode);
+				nlohmann::json newData02 = dataPackage;
+				std::string theString02{};
+				this->stringifyJsonData(newData02, theString02, theShard->dataOpCode);
 				theStopWatch.resetTimer();
 				theShard->areWeCollectingData = true;
 				do {
 					if (theStopWatch.hasTimePassed()) {
 						break;
 					}
-					didWeWrite = theShard->writeData(theString, true);
+					didWeWrite = theShard->writeData(theString02, true);
 				} while (!didWeWrite);
 				if (!didWeWrite) {
 					theShard->disconnect();
