@@ -559,7 +559,7 @@ namespace DiscordCoreInternal {
 		if (auto returnValue = fcntl(this->theSocket, F_SETFL, fcntl(this->theSocket, F_GETFL, 0) | O_NONBLOCK); returnValue == SOCKET_ERROR) {
 			return false;
 		}
-#endif		
+#endif
 		return true;
 	}
 

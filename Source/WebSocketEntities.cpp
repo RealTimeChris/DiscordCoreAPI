@@ -113,7 +113,7 @@ namespace DiscordCoreInternal {
 				if (!didWeWrite) {
 					theShard->disconnect();
 				}
-				
+
 				if (doWeCollect.channelId == 0) {
 					return;
 				}

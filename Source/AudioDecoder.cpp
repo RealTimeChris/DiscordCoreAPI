@@ -95,7 +95,8 @@ namespace DiscordCoreInternal {
 			if (fileStreamBuffer == nullptr) {
 				this->haveWeFailedBool.store(true);
 				if (this->configManager->doWePrintFFMPEGErrorMessages()) {
-					std::cout << DiscordCoreAPI::shiftToBrightRed() << "AudioDecoder::run() Error: Failed to allocate filestreambuffer." << DiscordCoreAPI::reset() << std::endl << std::endl;
+					std::cout << DiscordCoreAPI::shiftToBrightRed() << "AudioDecoder::run() Error: Failed to allocate filestreambuffer." << DiscordCoreAPI::reset() << std::endl
+							  << std::endl;
 				}
 				return;
 			}
@@ -105,7 +106,8 @@ namespace DiscordCoreInternal {
 			if (this->ioContext == nullptr) {
 				this->haveWeFailedBool.store(true);
 				if (this->configManager->doWePrintFFMPEGErrorMessages()) {
-					std::cout << DiscordCoreAPI::shiftToBrightRed() << "AudioDecoder::run() Error: Failed to allocate AVIOContext." << DiscordCoreAPI::reset() << std::endl << std::endl;
+					std::cout << DiscordCoreAPI::shiftToBrightRed() << "AudioDecoder::run() Error: Failed to allocate AVIOContext." << DiscordCoreAPI::reset() << std::endl
+							  << std::endl;
 				}
 				return;
 			}
@@ -115,7 +117,8 @@ namespace DiscordCoreInternal {
 			if (!this->formatContext) {
 				this->haveWeFailedBool.store(true);
 				if (this->configManager->doWePrintFFMPEGErrorMessages()) {
-					std::cout << DiscordCoreAPI::shiftToBrightRed() << "AudioDecoder::run() Error: Could not allocate the format context." << DiscordCoreAPI::reset() << std::endl << std::endl;
+					std::cout << DiscordCoreAPI::shiftToBrightRed() << "AudioDecoder::run() Error: Could not allocate the format context." << DiscordCoreAPI::reset() << std::endl
+							  << std::endl;
 				}
 				return;
 			}
@@ -125,7 +128,8 @@ namespace DiscordCoreInternal {
 			if (avformat_open_input(*this->formatContext, "memory", nullptr, nullptr) < 0) {
 				this->haveWeFailedBool.store(true);
 				if (this->configManager->doWePrintFFMPEGErrorMessages()) {
-					std::cout << DiscordCoreAPI::shiftToBrightRed() << "AudioDecoder::run() Error: Failed to open the AVFormatContext." << DiscordCoreAPI::reset() << std::endl << std::endl;
+					std::cout << DiscordCoreAPI::shiftToBrightRed() << "AudioDecoder::run() Error: Failed to open the AVFormatContext." << DiscordCoreAPI::reset() << std::endl
+							  << std::endl;
 				}
 				return;
 			}
@@ -147,7 +151,8 @@ namespace DiscordCoreInternal {
 				if (!this->audioStream) {
 					this->haveWeFailedBool.store(true);
 					if (this->configManager->doWePrintFFMPEGErrorMessages()) {
-						std::cout << DiscordCoreAPI::shiftToBrightRed() << "AudioDecoder::run() Error: Could not find an audio stream." << DiscordCoreAPI::reset() << std::endl << std::endl;
+						std::cout << DiscordCoreAPI::shiftToBrightRed() << "AudioDecoder::run() Error: Could not find an audio stream." << DiscordCoreAPI::reset() << std::endl
+								  << std::endl;
 					}
 					return;
 				}
@@ -155,7 +160,8 @@ namespace DiscordCoreInternal {
 				if (avformat_find_stream_info(this->formatContext, NULL) < 0) {
 					this->haveWeFailedBool.store(true);
 					if (this->configManager->doWePrintFFMPEGErrorMessages()) {
-						std::cout << DiscordCoreAPI::shiftToBrightRed() << "AudioDecoder::run() Error: Could not find stream information." << DiscordCoreAPI::reset() << std::endl << std::endl;
+						std::cout << DiscordCoreAPI::shiftToBrightRed() << "AudioDecoder::run() Error: Could not find stream information." << DiscordCoreAPI::reset() << std::endl
+								  << std::endl;
 					}
 					return;
 				}
@@ -240,7 +246,8 @@ namespace DiscordCoreInternal {
 			if (!this->newFrame) {
 				this->haveWeFailedBool.store(true);
 				if (this->configManager->doWePrintFFMPEGErrorMessages()) {
-					std::cout << DiscordCoreAPI::shiftToBrightRed() << "AudioDecoder::run() Error: Could not allocate new-frame" << DiscordCoreAPI::reset() << std::endl << std::endl;
+					std::cout << DiscordCoreAPI::shiftToBrightRed() << "AudioDecoder::run() Error: Could not allocate new-frame" << DiscordCoreAPI::reset() << std::endl
+							  << std::endl;
 				}
 				return;
 			}

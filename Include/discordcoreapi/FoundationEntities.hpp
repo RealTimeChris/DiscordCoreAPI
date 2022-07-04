@@ -99,7 +99,6 @@ namespace DiscordCoreInternal {
 		int32_t numberOfShards{};
 
 		operator nlohmann::json();
-		
 	};
 
 	struct DiscordCoreAPI_Dll VoiceSocketProtocolPayloadData {
@@ -108,7 +107,6 @@ namespace DiscordCoreInternal {
 		std::string voiceEncryptionMode{};
 
 		operator nlohmann::json();
-		
 	};
 
 	struct DiscordCoreAPI_Dll VoiceIdentifyData {
@@ -123,7 +121,6 @@ namespace DiscordCoreInternal {
 		int32_t delay{};
 
 		operator nlohmann::json();
-		
 	};
 }
 

@@ -614,7 +614,7 @@ namespace DiscordCoreAPI {
 				this->baseShard->voiceConnectionDataBufferMap[this->voiceConnectInitData.guildId] = &this->voiceConnectionDataBuffer;
 				this->baseShard->voiceConnectionDataBufferMap[this->voiceConnectInitData.guildId]->clearContents();
 				this->baseSocketAgent->getVoiceConnectionData(this->voiceConnectInitData, this->baseShard);
-				
+
 				if (DiscordCoreAPI::waitForTimeToPass(this->voiceConnectionDataBuffer, this->voiceConnectionData, 20000)) {
 					this->onClosed();
 					this->connectionState = VoiceConnectionState::Collecting_Init_Data;
@@ -848,7 +848,7 @@ namespace DiscordCoreAPI {
 				this->sslShards[0]->wantRead = false;
 			}
 			this->currentReconnectTries++;
-		}			
+		}
 		if (this->currentReconnectTries >= this->maxReconnectTries) {
 			this->activeState.store(VoiceActiveState::Exiting);
 		}
@@ -856,11 +856,10 @@ namespace DiscordCoreAPI {
 
 	void VoiceConnection::connect() noexcept {
 		if (this->baseSocketAgent->sslShards.contains(this->voiceConnectInitData.currentShard) && this->baseSocketAgent->sslShards[voiceConnectInitData.currentShard]) {
-
 			ConnectionPackage dataPackage{};
 			dataPackage.currentShard = 0;
 			this->connections.push(dataPackage);
-			
+
 			if (!this->taskThread01) {
 				this->taskThread01 = std::make_unique<std::jthread>([=, this](std::stop_token stopToken) {
 					this->runWebSocket(stopToken);
@@ -872,7 +871,7 @@ namespace DiscordCoreAPI {
 					this->runVoice(stopToken);
 				});
 			}
-			
+
 			StopWatch theStopWatch{ 100000ms };
 			while (!this->areWeConnectedBool.load()) {
 				if (theStopWatch.hasTimePassed()) {
@@ -913,7 +912,7 @@ namespace DiscordCoreAPI {
 				this->taskThread01->join();
 				this->taskThread01.reset(nullptr);
 			}
-		}		
+		}
 	};
 
 }
