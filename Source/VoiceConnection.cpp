@@ -503,6 +503,8 @@ namespace DiscordCoreAPI {
 							completionEventData.wasItAFail = false;
 							getSongAPIMap()[this->voiceConnectInitData.guildId]->onSongCompletionEvent(completionEventData);
 							break;
+						} else {
+							std::this_thread::sleep_for(1ms);
 						}
 						this->audioDataBuffer.tryReceive(this->audioData);
 					}
