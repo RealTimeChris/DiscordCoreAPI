@@ -1,5 +1,4 @@
 ﻿/*
-*
 	DiscordCoreAPI, A bot library for Discord, written in C++, and featuring explicit multithreading through the usage of custom, asynchronous C++ CoRoutines.
 
 	Copyright 2021, 2022 Chris M. (RealTimeChris)
