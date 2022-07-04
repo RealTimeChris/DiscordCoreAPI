@@ -1009,10 +1009,10 @@ namespace DiscordCoreInternal {
 						break;
 					}
 					WebSocketSSLShard::processIO(this->sslShards, 10000);
-					if (this->sslShards.contains(connectData.currentShard)) {
+					if (this->sslShards[connectData.currentShard]->areWeStillConnected()) {
 						this->parseHeadersAndMessage(this->sslShards[connectData.currentShard].get());
 					}
-					if (this->sslShards.contains(connectData.currentShard)) {
+					if (this->sslShards[connectData.currentShard]->areWeStillConnected()) {
 						this->onMessageReceived(this->sslShards[connectData.currentShard].get());
 					}
 					std::this_thread::sleep_for(1ms);
