@@ -451,7 +451,7 @@ namespace DiscordCoreAPI {
 					}
 					while (!stopToken.stop_requested() && this->activeState.load() == VoiceActiveState::Playing) {
 						StopWatch theStopWatch{ 20000ms };
-						while (!this->datagramSocket->areWeStillConnected()) {
+						while (!stopToken.stop_requested() && this->datagramSocket->areWeStillConnected()) {
 							if (theStopWatch.hasTimePassed()) {
 								return;
 							}
