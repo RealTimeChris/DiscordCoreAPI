@@ -137,18 +137,23 @@ namespace DiscordCoreAPI {
 	}
 
 	bool DiscordCoreClient::instantiateWebSockets() {
-		GatewayBotData gatewayData = this->getGateWayBot();
-		if (gatewayData.url == "") {
-			if (this->configManager.doWePrintGeneralErrorMessages()) {
-				std::cout << shiftToBrightRed()
-						  << "Failed to collect the connection URL! Closing! Did you remember to "
-							 "properly set your bot token?"
-						  << reset() << std::endl
-						  << std::endl;
-			}
-			std::this_thread::sleep_for(5s);
-			return false;
+		GatewayBotData gatewayData{}; 
+		try {
+			gatewayData = this->getGateWayBot();
 		}
+		catch (...) {
+			if (gatewayData.url == "") {
+				if (this->configManager.doWePrintGeneralErrorMessages()) {
+					std::cout << shiftToBrightRed()
+							  << "Failed to collect the connection URL! Closing! Did you remember to "
+								 "properly set your bot token?"
+							  << reset() << std::endl
+							  << std::endl;
+				}
+				std::this_thread::sleep_for(5s);
+				return false;
+			}
+		}		
 		if (this->configManager.getStartingShard() + this->configManager.getShardCountForThisProcess() > this->configManager.getTotalShardCount()) {
 			if (this->configManager.doWePrintGeneralErrorMessages()) {
 				std::cout << shiftToBrightRed() << "Your sharding options are incorrect! Please fix it!" << reset() << std::endl << std::endl;
