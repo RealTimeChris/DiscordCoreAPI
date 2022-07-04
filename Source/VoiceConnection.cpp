@@ -401,7 +401,8 @@ namespace DiscordCoreAPI {
 		StopWatch theStopWatch{ 20000ms };
 		while (!this->datagramSocket) {
 			if (theStopWatch.hasTimePassed()) {
-				return;
+				this->onClosed();
+				break;
 			}
 			std::this_thread::sleep_for(1ms);
 		}
@@ -450,10 +451,11 @@ namespace DiscordCoreAPI {
 						}
 					}
 					while (!stopToken.stop_requested() && this->activeState.load() == VoiceActiveState::Playing) {
-						StopWatch theStopWatch{ 20000ms };
+						theStopWatch.resetTimer();
 						while (!stopToken.stop_requested() && !this->datagramSocket->areWeStillConnected()) {
 							if (theStopWatch.hasTimePassed()) {
-								return;
+								this->onClosed();
+								break;
 							}
 							std::this_thread::sleep_for(1ms);
 						}
