@@ -89,9 +89,9 @@ namespace DiscordCoreAPI {
 
 	  protected:
 		std::unordered_map<int32_t, std::unique_ptr<DiscordCoreInternal::WebSocketSSLShard>> sslShards{};
+		std::atomic<VoiceConnectionState> connectionState{ VoiceConnectionState::Collecting_Init_Data };
 		UnboundedMessageBlock<DiscordCoreInternal::VoiceConnectionData> voiceConnectionDataBuffer{};
 		std::unique_ptr<DiscordCoreInternal::DatagramSocketSSLClient> datagramSocket{ nullptr };
-		VoiceConnectionState connectionState{ VoiceConnectionState::Collecting_Init_Data };
 		std::atomic<VoiceActiveState> activeState{ VoiceActiveState::Stopped };
 		std::unique_ptr<DiscordCoreInternal::AudioEncoder> encoder{ nullptr };
 		DiscordCoreInternal::BaseSocketAgent* baseSocketAgent{ nullptr };
@@ -116,9 +116,9 @@ namespace DiscordCoreAPI {
 
 		void stringifyJsonData(const nlohmann::json& dataToSend, std::string& theString, DiscordCoreInternal::WebSocketOpCode theOpCode) noexcept;
 
-		std::string encryptSingleAudioFrame(const EncodedFrameData& bufferToSend, uint32_t audioSSRC, const std::string& keys) noexcept;
-
 		void createHeader(std::string& outbuf, uint64_t sendlength, DiscordCoreInternal::WebSocketOpCode opCode) noexcept;
+
+		std::string encryptSingleAudioFrame(const EncodedFrameData& bufferToSend, uint32_t audioSSRC) noexcept;
 
 		void parseHeadersAndMessage(DiscordCoreInternal::WebSocketSSLShard* theShard) noexcept;
 
