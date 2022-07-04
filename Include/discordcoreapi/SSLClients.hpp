@@ -217,13 +217,6 @@ namespace DiscordCoreInternal {
 		std::unique_ptr<SSL, SSLDeleter> sslPtr{ nullptr, SSLDeleter{} };
 	};
 
-	enum class SOCKETType { TCP = 0, UDP = 1 };
-
-	struct SOCKETWrapperInternal {
-		SOCKETType theType{ SOCKETType::TCP };
-		SOCKET theSocket{ SOCKET_ERROR };
-	};
-
 	struct DiscordCoreAPI_Dll SOCKETWrapper {
 		struct DiscordCoreAPI_Dll SOCKETDeleter {
 			void operator()(SOCKET* other) {
