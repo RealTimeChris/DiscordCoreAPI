@@ -138,7 +138,7 @@ namespace DiscordCoreAPI {
 			theData = this->httpsClient->submitWorkloadAndGetResult<GatewayBotData>(workload);
 		} catch (...) {
 			return theData;
-		}	
+		}
 		return theData;
 	}
 
@@ -154,7 +154,7 @@ namespace DiscordCoreAPI {
 			}
 			std::this_thread::sleep_for(5s);
 			return false;
-		}	
+		}
 		if (this->configManager.getStartingShard() + this->configManager.getShardCountForThisProcess() > this->configManager.getTotalShardCount()) {
 			if (this->configManager.doWePrintGeneralErrorMessages()) {
 				std::cout << shiftToBrightRed() << "Your sharding options are incorrect! Please fix it!" << reset() << std::endl << std::endl;
