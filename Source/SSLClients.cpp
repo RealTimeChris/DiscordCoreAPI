@@ -148,44 +148,67 @@ namespace DiscordCoreInternal {
 	}
 
 	bool HttpsSSLClient::writeData(const std::string& dataToWrite, bool priority) noexcept {
+		if (this->theSocket == SOCKET_ERROR) {
+			return false;
+		}
 		std::string data = dataToWrite;
 		if (data.size() > 0 && this->ssl) {
 			if (priority && data.size() < static_cast<size_t>(16 * 1024)) {
-				this->wantRead = false;
-				this->wantWrite = false;
-				size_t writtenBytes{ 0 };
-				auto returnValue{ SSL_write_ex(this->ssl, data.data(), data.size(), &writtenBytes) };
-				auto errorValue{ SSL_get_error(this->ssl, returnValue) };
-				switch (errorValue) {
-					case SSL_ERROR_NONE: {
-						if (writtenBytes > 0) {
-							data.clear();
-							return true;
+				std::unique_lock theLock{ this->theMutex01 };
+				fd_set writeSet{};
+				int32_t writeNfds{ 0 };
+				FD_ZERO(&writeSet);
+				if (data.size() > 0) {
+					FD_SET(this->theSocket, &writeSet);
+					writeNfds = this->theSocket > writeNfds ? this->theSocket : writeNfds;
+				} else {
+					return false;
+				}
+
+				timeval checkTime{ .tv_usec = 1000 };
+				if (auto returnValue = select(writeNfds + 1, nullptr, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
+					this->disconnect();
+					return false;
+				} else if (returnValue == 0) {
+					return false;
+				}
+				if (FD_ISSET(this->theSocket, &writeSet)) {
+					this->wantRead = false;
+					this->wantWrite = false;
+					size_t writtenBytes{ 0 };
+					auto returnValue{ SSL_write_ex(this->ssl, data.data(), data.size(), &writtenBytes) };
+					auto errorValue{ SSL_get_error(this->ssl, returnValue) };
+					switch (errorValue) {
+						case SSL_ERROR_NONE: {
+							if (writtenBytes > 0) {
+								data.clear();
+								return true;
+							}
+							return false;
 						}
-						return false;
-					}
-					case SSL_ERROR_ZERO_RETURN: {
-						this->disconnect();
-						return false;
-					}
-					case SSL_ERROR_SSL: {
-						this->disconnect();
-						return false;
-					}
-					case SSL_ERROR_SYSCALL: {
-						this->disconnect();
-						return false;
-					}
-					case SSL_ERROR_WANT_READ: {
-						this->wantRead = true;
-						return false;
-					}
-					case SSL_ERROR_WANT_WRITE: {
-						this->wantWrite = true;
-						return false;
-					}
-					default: {
-						return false;
+						case SSL_ERROR_ZERO_RETURN: {
+							this->disconnect();
+							return false;
+						}
+						case SSL_ERROR_SSL: {
+							this->disconnect();
+							return false;
+						}
+						case SSL_ERROR_SYSCALL: {
+							this->disconnect();
+							return false;
+						}
+						case SSL_ERROR_WANT_READ: {
+							this->wantRead = true;
+							return false;
+						}
+						case SSL_ERROR_WANT_WRITE: {
+							this->wantWrite = true;
+							return false;
+						}
+						default: {
+							return false;
+						}
 					}
 				}
 				return false;
@@ -242,6 +265,7 @@ namespace DiscordCoreInternal {
 		}
 
 		if (FD_ISSET(this->theSocket, &readSet)) {
+			
 			this->wantRead = false;
 			this->wantWrite = false;
 			std::string serverToClientBuffer{};
@@ -288,12 +312,12 @@ namespace DiscordCoreInternal {
 			size_t writtenBytes{ 0 };
 			std::string writeString{};
 			if (this->outputBuffers.size() > 0) {
-				std::unique_lock theLock{ this->theMutex01 };
 				writeString = std::move(this->outputBuffers.front());
 				auto returnValue{ SSL_write_ex(this->ssl, writeString.data(), writeString.size(), &writtenBytes) };
 				auto errorValue{ SSL_get_error(this->ssl, returnValue) };
 				switch (errorValue) {
 					case SSL_ERROR_NONE: {
+						std::unique_lock theLock{ this->theMutex01 };
 						if (writtenBytes > 0) {
 							this->outputBuffers.erase(this->outputBuffers.begin());
 						} else {
@@ -570,41 +594,61 @@ namespace DiscordCoreInternal {
 		std::string data = dataToWrite;
 		if (data.size() > 0 && this->ssl) {
 			if (priority && data.size() < static_cast<size_t>(16 * 1024)) {
-				this->wantRead = false;
-				this->wantWrite = false;
-				size_t writtenBytes{ 0 };
-				auto returnValue{ SSL_write_ex(this->ssl, data.data(), data.size(), &writtenBytes) };
-				auto errorValue{ SSL_get_error(this->ssl, returnValue) };
-				switch (errorValue) {
-					case SSL_ERROR_NONE: {
-						if (writtenBytes > 0) {
-							data.clear();
-							return true;
+				std::unique_lock theLock{ this->theMutex01 };
+				fd_set writeSet{};
+				int32_t writeNfds{ 0 };
+				FD_ZERO(&writeSet);
+				if (data.size() > 0) {
+					FD_SET(this->theSocket, &writeSet);
+					writeNfds = this->theSocket > writeNfds ? this->theSocket : writeNfds;
+				} else {
+					return false;
+				}
+
+				timeval checkTime{ .tv_usec = 1000 };
+				if (auto returnValue = select(writeNfds + 1, nullptr, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
+					this->disconnect();
+					return false;
+				} else if (returnValue == 0) {
+					return false;
+				}
+				if (FD_ISSET(this->theSocket, &writeSet)) {
+					this->wantRead = false;
+					this->wantWrite = false;
+					size_t writtenBytes{ 0 };
+					auto returnValue{ SSL_write_ex(this->ssl, data.data(), data.size(), &writtenBytes) };
+					auto errorValue{ SSL_get_error(this->ssl, returnValue) };
+					switch (errorValue) {
+						case SSL_ERROR_NONE: {
+							if (writtenBytes > 0) {
+								data.clear();
+								return true;
+							}
+							return false;
 						}
-						return false;
-					}
-					case SSL_ERROR_ZERO_RETURN: {
-						this->disconnect();
-						return false;
-					}
-					case SSL_ERROR_SSL: {
-						this->disconnect();
-						return false;
-					}
-					case SSL_ERROR_SYSCALL: {
-						this->disconnect();
-						return false;
-					}
-					case SSL_ERROR_WANT_READ: {
-						this->wantRead = true;
-						return false;
-					}
-					case SSL_ERROR_WANT_WRITE: {
-						this->wantWrite = true;
-						return false;
-					}
-					default: {
-						return false;
+						case SSL_ERROR_ZERO_RETURN: {
+							this->disconnect();
+							return false;
+						}
+						case SSL_ERROR_SSL: {
+							this->disconnect();
+							return false;
+						}
+						case SSL_ERROR_SYSCALL: {
+							this->disconnect();
+							return false;
+						}
+						case SSL_ERROR_WANT_READ: {
+							this->wantRead = true;
+							return false;
+						}
+						case SSL_ERROR_WANT_WRITE: {
+							this->wantWrite = true;
+							return false;
+						}
+						default: {
+							return false;
+						}
 					}
 				}
 				return false;

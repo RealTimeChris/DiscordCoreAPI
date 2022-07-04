@@ -309,36 +309,30 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	void VoiceConnection::sendMessage(const std::string& dataToSend) noexcept {
+	bool VoiceConnection::sendMessage(const std::string& dataToSend, bool priority) noexcept {
 		try {
-			if (this->sslShards.contains(0) && this->sslShards[0]) {
+			if (this->sslShards[0]->areWeStillConnected()) {
 				if (this->configManager->doWePrintWebSocketSuccessMessages()) {
 					std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Sending Voice WebSocket Message: " << dataToSend << DiscordCoreAPI::reset() << std::endl << std::endl;
 				}
-				DiscordCoreAPI::StopWatch theStopWatch{ 1000ms };
-				while (!this->areWeConnectedBool.load()) {
-					std::this_thread::sleep_for(1ms);
-					if (theStopWatch.hasTimePassed()) {
-						return;
-					}
-				}
-				theStopWatch.resetTimer(5000);
+				DiscordCoreAPI::StopWatch theStopWatch{ 5000ms };
 				bool didWeWrite{ false };
 				do {
 					if (theStopWatch.hasTimePassed()) {
-						break;
+						return false;
 					}
-					didWeWrite = this->sslShards[0]->writeData(dataToSend, true);
+					didWeWrite = this->sslShards[0]->writeData(dataToSend, priority);
 				} while (!didWeWrite);
-				if (!didWeWrite) {
-					this->onClosed();
-				}
+				return true;
+			} else {
+				return false;
 			}
 		} catch (...) {
 			if (this->configManager->doWePrintWebSocketErrorMessages()) {
 				DiscordCoreAPI::reportException("VoiceConnection::sendMessage()");
 			}
 			this->onClosed();
+			return false;
 		}
 	}
 
@@ -346,14 +340,14 @@ namespace DiscordCoreAPI {
 		if (!isSpeaking) {
 			this->sendSilence();
 		} else {
-			if (this->sslShards[0]->areWeStillConnected()) {
-				DiscordCoreInternal::SendSpeakingData theData{};
-				theData.delay = 0;
-				theData.ssrc = this->voiceConnectionData.audioSSRC;
-				nlohmann::json newString = theData;
-				std::string theString{};
-				this->stringifyJsonData(newString, theString, DiscordCoreInternal::WebSocketOpCode::Op_Text);
-				this->sendMessage(theString);
+			DiscordCoreInternal::SendSpeakingData theData{};
+			theData.delay = 0;
+			theData.ssrc = this->voiceConnectionData.audioSSRC;
+			nlohmann::json newString = theData;
+			std::string theString{};
+			this->stringifyJsonData(newString, theString, DiscordCoreInternal::WebSocketOpCode::Op_Text);
+			if (!this->sendMessage(theString, true)) {
+				this->onClosed();
 			}
 		}
 	}
@@ -651,12 +645,15 @@ namespace DiscordCoreAPI {
 				this->sslShards[0]->areWeConnected01.store(true);
 				this->sslShards[0]->shard[0] = 0;
 				this->sslShards[0]->shard[1] = 1;
-				this->sslShards[0]->writeData(sendVector, true);
-				this->connectionState.store(VoiceConnectionState::Collecting_Hello);
+				if (!this->sendMessage(sendVector, true)) {
+					this->onClosed();
+					return;
+				}
 				if (!this->collectAndProcessAMessage()) {
 					this->onClosed();
 					return;
 				}
+				this->connectionState.store(VoiceConnectionState::Collecting_Hello);
 				this->connectInternal();
 				break;
 			}
@@ -677,7 +674,10 @@ namespace DiscordCoreAPI {
 				identifyData.connectionData = this->voiceConnectionData;
 				std::string sendVector{};
 				this->stringifyJsonData(identifyData, sendVector, DiscordCoreInternal::WebSocketOpCode::Op_Text);
-				this->sslShards[0]->writeData(sendVector, true);
+				if (!this->sendMessage(sendVector, true)) {
+					this->onClosed();
+					return;
+				}
 				DiscordCoreInternal::WebSocketSSLShard::processIO(this->sslShards, 100000);
 				this->connectionState.store(VoiceConnectionState::Collecting_Ready);
 				this->connectInternal();
@@ -712,7 +712,10 @@ namespace DiscordCoreAPI {
 				nlohmann::json protocolPayloadSelectString = protocolPayloadData;
 				std::string sendVector{};
 				this->stringifyJsonData(protocolPayloadSelectString, sendVector, DiscordCoreInternal::WebSocketOpCode::Op_Text);
-				this->sslShards[0]->writeData(sendVector, true);
+				if (!this->sendMessage(sendVector, true)) {
+					this->onClosed();
+					return;
+				}
 				this->connectionState.store(VoiceConnectionState::Collecting_Session_Description);
 				this->connectInternal();
 				break;
@@ -757,7 +760,9 @@ namespace DiscordCoreAPI {
 				data["op"] = int32_t(3);
 				std::string theString{};
 				this->stringifyJsonData(data, theString, DiscordCoreInternal::WebSocketOpCode::Op_Text);
-				this->sendMessage(theString);
+				if (!this->sendMessage(theString, true)) {
+					this->onClosed();
+				}
 				this->sslShards[0]->haveWeReceivedHeartbeatAck = false;
 			} else {
 				this->onClosed();

@@ -356,20 +356,12 @@ namespace DiscordCoreInternal {
 				httpsConnection->doWeConnect = false;
 			}
 			auto theRequest = httpsConnection->buildRequest(workload);
-			DiscordCoreAPI::StopWatch theStopWatch{ 5000ms };
-			bool didWeWrite{ false };
-			do {
-				if (theStopWatch.hasTimePassed()) {
-					break;
-				}
-				didWeWrite = httpsConnection->writeData(theRequest);
-			} while (!didWeWrite);
-			if (!didWeWrite) {
+			if (!this->sendData(theRequest, true, *httpsConnection)) {
 				httpsConnection->currentReconnectTries++;
 				httpsConnection->doWeConnect = true;
 				httpsConnection->areWeCheckedOut.store(false);
 				return this->httpRequestInternal(workload, rateLimitData);
-			}
+			};
 			auto result = this->getResponse(rateLimitData, *httpsConnection);
 			if (result.responseCode == -1) {
 				httpsConnection->currentReconnectTries++;
@@ -450,6 +442,29 @@ namespace DiscordCoreInternal {
 			}
 		};
 		return theConnection.finalizeReturnValues(rateLimitData, theData);
+	}
+
+	bool HttpsClient::sendData(const std::string& dataToSend, bool priority, HttpsConnection& theConnection) {
+		try {
+			if (theConnection.areWeStillConnected()) {
+				DiscordCoreAPI::StopWatch theStopWatch{ 5000ms };
+				bool didWeWrite{ false };
+				do {
+					if (theStopWatch.hasTimePassed()) {
+						return false;
+					}
+					didWeWrite = theConnection.writeData(dataToSend, priority);
+				} while (!didWeWrite);
+				return true;
+			} else {
+				return false;
+			}
+		} catch (...) {
+			if (this->configManager->doWePrintHttpsErrorMessages()) {
+				DiscordCoreAPI::reportException("VoiceConnection::sendMessage()");
+			}
+			return false;
+		}
 	}
 
 	HttpsResponseData HttpsClient::executeByRateLimitData(const HttpsWorkloadData& workload) {

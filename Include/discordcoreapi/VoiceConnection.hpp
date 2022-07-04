@@ -122,6 +122,8 @@ namespace DiscordCoreAPI {
 
 		std::string encryptSingleAudioFrame(const EncodedFrameData& bufferToSend) noexcept;
 
+		bool sendMessage(const std::string& dataToSend, bool priority) noexcept;
+
 		void sendSingleAudioFrame(std::string& audioDataPacketNew) noexcept;
 
 		UnboundedMessageBlock<AudioFrameData>& getAudioBuffer() noexcept;
@@ -131,8 +133,6 @@ namespace DiscordCoreAPI {
 		void onMessageReceived(const std::string& theMessage) noexcept;
 
 		void sendVoiceData(const std::string& responseData) noexcept;
-
-		void sendMessage(const std::string& dataToSend) noexcept;
 
 		void sendSpeakingMessage(const bool isSpeaking) noexcept;
 
