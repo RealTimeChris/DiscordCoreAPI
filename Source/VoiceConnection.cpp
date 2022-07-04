@@ -602,7 +602,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::connectInternal() noexcept {
-		std::lock_guard<std::recursive_mutex> theLock{ this->baseSocketAgent->sslShards[voiceConnectInitData.currentShard]->theMutex02 };
+		std::lock_guard theLock{ this->baseSocketAgent->sslShards[voiceConnectInitData.currentShard]->theMutex02 };
 		if (this->connections.size() > 0) {
 			this->connections.pop();
 		}
@@ -722,6 +722,7 @@ namespace DiscordCoreAPI {
 				}
 				this->connectionState = VoiceConnectionState::Collecting_Init_Data;
 				this->baseShard->voiceConnectionDataBufferMap[this->voiceConnectInitData.guildId]->clearContents();
+				this->activeState.store(VoiceActiveState::Idle);
 				return;
 			}
 		}
@@ -840,10 +841,10 @@ namespace DiscordCoreAPI {
 			this->areWeConnectedBool.store(false);
 			if (this->datagramSocket) {
 				this->datagramSocket->areWeConnected.store(false);
-				this->datagramSocket->reconnect();
+				this->datagramSocket->disconnect();
 			}
 			if (this->sslShards[0]) {
-				this->sslShards[0]->reconnect();
+				this->sslShards[0]->disconnect();
 				this->sslShards[0]->areWeHeartBeating = false;
 				this->sslShards[0]->wantWrite = true;
 				this->sslShards[0]->wantRead = false;

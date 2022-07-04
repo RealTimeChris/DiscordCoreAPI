@@ -246,7 +246,7 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<std::vector<GuildData>> Guilds::getAllGuildsAsync() {
 		co_await NewThreadAwaitable<std::vector<GuildData>>();
-		std::shared_lock<std::shared_mutex> theLock{ Guilds::theMutex };
+		std::shared_lock theLock{ Guilds::theMutex };
 		GuildDataVector guildVector{};
 		for (auto& [key, value]: *Guilds::cache) {
 			value->discordCoreClient = Guilds::discordCoreClient;
@@ -270,7 +270,7 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<GuildData> Guilds::getCachedGuildAsync(GetGuildData dataPackage) {
 		co_await NewThreadAwaitable<GuildData>();
-		std::shared_lock<std::shared_mutex> theLock{ Guilds::theMutex };
+		std::shared_lock theLock{ Guilds::theMutex };
 		if (!Guilds::cache->contains(dataPackage.guildId)) {
 			theLock.unlock();
 			auto guildNew = Guilds::getGuildAsync({ .guildId = dataPackage.guildId }).get();
@@ -758,7 +758,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void Guilds::insertGuild(GuildData guild) {
-		std::unique_lock<std::shared_mutex> theLock{ Guilds::theMutex };
+		std::unique_lock theLock{ Guilds::theMutex };
 		if (guild.id == 0) {
 			return;
 		}
@@ -775,7 +775,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void Guilds::removeGuild(const Snowflake& guildId) {
-		std::unique_lock<std::shared_mutex> theLock{ Guilds::theMutex };
+		std::unique_lock theLock{ Guilds::theMutex };
 		Guilds::cache->erase(guildId);
 	};
 

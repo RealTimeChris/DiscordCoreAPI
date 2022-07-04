@@ -251,7 +251,7 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<RoleData> Roles::getCachedRoleAsync(GetRoleData dataPackage) {
 		co_await NewThreadAwaitable<RoleData>();
-		std::shared_lock<std::shared_mutex> theLock{ Roles::theMutex };
+		std::shared_lock theLock{ Roles::theMutex };
 		if (!Roles::cache->contains(dataPackage.roleId)) {
 			theLock.unlock();
 			auto theRole = Roles::getRoleAsync(dataPackage).get();
@@ -263,7 +263,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void Roles::insertRole(RoleData role) {
-		std::unique_lock<std::shared_mutex> theLock{ Roles::theMutex };
+		std::unique_lock theLock{ Roles::theMutex };
 		if (role.id == 0) {
 			return;
 		}
@@ -279,7 +279,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void Roles::removeRole(const Snowflake& roleId) {
-		std::unique_lock<std::shared_mutex> theLock{ Roles::theMutex };
+		std::unique_lock theLock{ Roles::theMutex };
 		Roles::cache->erase(roleId);
 	};
 

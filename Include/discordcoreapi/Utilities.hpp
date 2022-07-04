@@ -546,34 +546,34 @@ namespace DiscordCoreAPI {
 		/// Sends an object of type ObjectType to the "recipient". \brief Sends an object of type ObjectType to the "recipient".
 		/// \param theObject An object of ObjectType.
 		void send(const ObjectType&& theObject) {
-			std::lock_guard<std::mutex> theLock{ this->accessMutex };
+			std::lock_guard theLock{ this->accessMutex };
 			this->theQueue.push(theObject);
 		}
 
 		/// Sends an object of type ObjectType to the "recipient". \brief Sends an object of type ObjectType to the "recipient".
 		/// \param theObject An object of ObjectType.
 		void send(ObjectType&& theObject) {
-			std::lock_guard<std::mutex> theLock{ this->accessMutex };
+			std::lock_guard theLock{ this->accessMutex };
 			this->theQueue.push(std::move(theObject));
 		}
 
 		/// Sends an object of type ObjectType to the "recipient". \brief Sends an object of type ObjectType to the "recipient".
 		/// \param theObject An object of ObjectType.
 		void send(const ObjectType& theObject) {
-			std::lock_guard<std::mutex> theLock{ this->accessMutex };
+			std::lock_guard theLock{ this->accessMutex };
 			this->theQueue.push(theObject);
 		}
 
 		/// Sends an object of type ObjectType to the "recipient". \brief Sends an object of type ObjectType to the "recipient".
 		/// \param theObject An object of ObjectType.
 		void send(ObjectType& theObject) {
-			std::lock_guard<std::mutex> theLock{ this->accessMutex };
+			std::lock_guard theLock{ this->accessMutex };
 			this->theQueue.push(theObject);
 		}
 
 		/// Clears the contents of the messaging block. \brief Clears the contents of the messaging block.
 		void clearContents() {
-			std::lock_guard<std::mutex> theLock{ this->accessMutex };
+			std::lock_guard theLock{ this->accessMutex };
 			this->theQueue = std::queue<ObjectType>{};
 		}
 
@@ -581,7 +581,7 @@ namespace DiscordCoreAPI {
 		/// \param theObject A reference of type ObjectType for placing the potentially received object.
 		/// \returns bool A bool, denoting whether or not we received an object.
 		bool tryReceive(ObjectType& theObject) {
-			std::lock_guard<std::mutex> theLock{ this->accessMutex };
+			std::lock_guard theLock{ this->accessMutex };
 			if (this->theQueue.size() > 0) {
 				theObject = std::move(this->theQueue.front());
 				this->theQueue.pop();

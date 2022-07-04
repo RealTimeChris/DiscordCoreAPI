@@ -216,7 +216,7 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<ChannelData> Channels::getCachedChannelAsync(GetChannelData dataPackage) {
 		co_await NewThreadAwaitable<ChannelData>();
-		std::shared_lock<std::shared_mutex> theLock{ Channels::theMutex };
+		std::shared_lock theLock{ Channels::theMutex };
 		if (!Channels::cache->contains(dataPackage.channelId)) {
 			theLock.unlock();
 			auto theChannel = Channels::getChannelAsync(dataPackage).get();
@@ -404,7 +404,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void Channels::insertChannel(ChannelData channel) {
-		std::unique_lock<std::shared_mutex> theLock{ Channels::theMutex };
+		std::unique_lock theLock{ Channels::theMutex };
 		if (channel.id == 0) {
 			return;
 		}
@@ -420,7 +420,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void Channels::removeChannel(const Snowflake& channelId) {
-		std::unique_lock<std::shared_mutex> theLock{ Channels::theMutex };
+		std::unique_lock theLock{ Channels::theMutex };
 		Channels::cache->erase(channelId);
 	};
 

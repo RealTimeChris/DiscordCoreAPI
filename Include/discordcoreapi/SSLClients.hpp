@@ -281,7 +281,7 @@ namespace DiscordCoreInternal {
 
 		virtual bool areWeStillConnected() noexcept = 0;
 
-		virtual void reconnect() noexcept = 0;
+		virtual void disconnect() noexcept = 0;
 
 		virtual ~SSLConnectionInterface() noexcept = default;
 
@@ -333,9 +333,12 @@ namespace DiscordCoreInternal {
 
 		int64_t getBytesRead() noexcept;
 
-		void reconnect() noexcept;
+		void disconnect() noexcept;
 
 		~HttpsSSLClient() noexcept = default;
+
+	  protected:
+		std::shared_mutex theMutex01{};
 	};
 
 	class DiscordCoreAPI_Dll WebSocketSSLShard : public SSLConnectionInterface, public SSLDataInterface {
@@ -360,7 +363,7 @@ namespace DiscordCoreInternal {
 
 		int64_t getBytesRead() noexcept;
 
-		void reconnect() noexcept;
+		void disconnect() noexcept;
 
 		~WebSocketSSLShard() noexcept = default;
 
@@ -380,9 +383,9 @@ namespace DiscordCoreInternal {
 		bool areWeHeartBeating{ false };
 		int32_t lastNumberReceived{ 0 };
 		WebSocketCloseCode closeCode{};
+		std::shared_mutex theMutex01{};
 		WebSocketOpCode dataOpCode{};
 		bool areWeResuming{ false };
-		std::mutex theMutex01{};
 		int64_t messageLength{};
 		int64_t messageOffset{};
 		std::string sessionId{};
@@ -407,7 +410,7 @@ namespace DiscordCoreInternal {
 
 		int64_t getBytesRead() noexcept;
 
-		void reconnect() noexcept;
+		void disconnect() noexcept;
 
 		void processIO() noexcept;
 
@@ -418,6 +421,7 @@ namespace DiscordCoreInternal {
 		const int32_t maxBufferSize{ 1024 * 16 };
 		std::vector<std::string> outputBuffers{};
 		SOCKETWrapper theSocket{ nullptr };
+		std::shared_mutex theMutex01{};
 		std::string inputBuffer{};
 		sockaddr_in theAddress{};
 		int64_t bytesRead{};

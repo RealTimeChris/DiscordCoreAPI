@@ -2,7 +2,7 @@ Connecting To/Disconnecting From a Voice Channel {#connectingtodisconnecting}
 ============
 - Collect/create an instance of `DiscordCoreAPI::Guild`, and also collect the Id of a voice channel to which you would like to connect. (This can be collected from the `DiscordCoreAPI::GuildMember::voiceData` object.)
 - Call, the `DiscordCoreAPI::Guild::connectToVoice()` function from the `DiscordCoreAPI::Guild` object, while passing in the channel id of the channel to which you would like to connect.
-- To reconnect from the channel, call the `DiscordCoreAPI::Guild::disconnect()` function on the `DiscordCoreAPI::Guild` object.
+- To disconnect from the channel, call the `DiscordCoreAPI::Guild::disconnect()` function on the `DiscordCoreAPI::Guild` object.
 ```cpp
 /// Test.hpp-Header for the "test" command.
 /// https://github.com/RealTimeChris/DiscordCoreAPI

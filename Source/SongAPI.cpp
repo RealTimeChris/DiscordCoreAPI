@@ -285,7 +285,7 @@ namespace DiscordCoreAPI {
 	}
 
 	bool SongAPI::sendNextSong(const GuildMember& guildMember) {
-		std::lock_guard<std::mutex> accessLock{ SongAPI::accessMutex };
+		std::lock_guard accessLock{ SongAPI::accessMutex };
 		if (!getSongAPIMap().contains(guildMember.guildId)) {
 			getSongAPIMap()[guildMember.guildId] = std::make_unique<SongAPI>(guildMember.guildId);
 		}

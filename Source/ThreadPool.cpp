@@ -75,7 +75,7 @@ namespace DiscordCoreInternal {
 	}
 
 	void CoRoutineThreadPool::submitTask(std::coroutine_handle<> coro) noexcept {
-		std::unique_lock<std::mutex> theLock{ this->theMutex01 };
+		std::unique_lock theLock{ this->theMutex01 };
 		bool areWeAllBusy{ true };
 		for (auto& [key, value]: this->workerThreads) {
 			if (!value.theCurrentStatus.load()) {
@@ -101,7 +101,7 @@ namespace DiscordCoreInternal {
 	void CoRoutineThreadPool::threadFunction(std::stop_token stopToken, int64_t theIndex) {
 		auto theAtomicBoolPtr = &this->workerThreads[theIndex].theCurrentStatus;
 		while (!this->areWeQuitting.load() && !stopToken.stop_requested()) {
-			std::unique_lock<std::mutex> theLock01{ this->theMutex01 };
+			std::unique_lock theLock01{ this->theMutex01 };
 			while (!this->areWeQuitting.load() && this->theCoroutineHandles.size() == 0) {
 				if (this->currentCount > std::thread::hardware_concurrency()) {
 					for (auto& [key, value]: this->workerThreads) {
@@ -151,7 +151,7 @@ namespace DiscordCoreInternal {
 	CoRoutineThreadPool::~CoRoutineThreadPool() {
 		this->clearContents();
 		this->areWeQuitting.store(true);
-		std::lock_guard<std::mutex> theLock00{ this->theMutex01 };
+		std::lock_guard theLock00{ this->theMutex01 };
 	}
 
 }

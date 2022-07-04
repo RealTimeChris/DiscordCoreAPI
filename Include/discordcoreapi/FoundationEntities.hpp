@@ -8015,7 +8015,7 @@ namespace DiscordCoreInternal {
 		HttpsWorkloadData() = default;
 
 		static int64_t getAndIncrementWorkloadId(HttpsWorkloadType workloadType) {
-			std::lock_guard<std::mutex> theLock{ HttpsWorkloadData::accessMutex };
+			std::lock_guard theLock{ HttpsWorkloadData::accessMutex };
 			int64_t theValue = HttpsWorkloadData::workloadIdsExternal[workloadType].load();
 			HttpsWorkloadData::workloadIdsExternal[workloadType].store(theValue + 1);
 			return theValue;

@@ -112,7 +112,7 @@ namespace DiscordCoreAPI {
 		GuildMemberId theKey{};
 		theKey.guildId = dataPackage.guildId;
 		theKey.guildMemberId = dataPackage.guildMemberId;
-		std::shared_lock<std::shared_mutex> theLock{ GuildMembers::theMutex };
+		std::shared_lock theLock{ GuildMembers::theMutex };
 		if (!GuildMembers::cache->contains(theKey)) {
 			theLock.unlock();
 			auto theGuildMember = GuildMembers::getGuildMemberAsync(dataPackage).get();
@@ -265,7 +265,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void GuildMembers::insertGuildMember(GuildMemberData guildMember) {
-		std::unique_lock<std::shared_mutex> theLock{ GuildMembers::theMutex };
+		std::unique_lock theLock{ GuildMembers::theMutex };
 		if (guildMember.id == 0) {
 			return;
 		}
@@ -284,7 +284,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void GuildMembers::removeGuildMember(GuildMemberData& guildMember) {
-		std::unique_lock<std::shared_mutex> theLock{ GuildMembers::theMutex };
+		std::unique_lock theLock{ GuildMembers::theMutex };
 		GuildMemberId theKey{};
 		theKey.guildId = guildMember.guildId;
 		theKey.guildMemberId = guildMember.id;
