@@ -92,7 +92,7 @@ namespace DiscordCoreInternal {
 		}
 
 		int32_t value{ this->maxBufferSize + 1 };
-		if (setsockopt(this->theSocket, SOL_SOCKET, SO_SNDBUF, static_cast<char*>(static_cast<void*>(&value)), sizeof(value))) {
+		if (setsockopt(this->theSocket, SOL_SOCKET, SO_SNDBUF, reinterpret_cast<char*>(&value), sizeof(value))) {
 			return false;
 		}
 
@@ -513,7 +513,7 @@ namespace DiscordCoreInternal {
 		}
 
 		int32_t value{ this->maxBufferSize + 1 };
-		if (setsockopt(this->theSocket, SOL_SOCKET, SO_SNDBUF, static_cast<char*>(static_cast<void*>(&value)), sizeof(value))) {
+		if (setsockopt(this->theSocket, SOL_SOCKET, SO_SNDBUF, reinterpret_cast<char*>(&value), sizeof(value))) {
 			return false;
 		}
 
