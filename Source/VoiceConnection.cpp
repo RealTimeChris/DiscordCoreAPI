@@ -608,7 +608,6 @@ namespace DiscordCoreAPI {
 					this->connectionState = VoiceConnectionState::Collecting_Init_Data;
 					return;
 				}
-				std::cout << "SESSION ID: " << this->voiceConnectionData.sessionId << std::endl;
 				this->baseUrl = this->voiceConnectionData.endPoint.substr(0, this->voiceConnectionData.endPoint.find(":"));
 				this->connectionState = VoiceConnectionState::Initializing_WebSocket;
 				this->connectInternal();
