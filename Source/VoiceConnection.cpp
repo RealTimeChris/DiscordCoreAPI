@@ -895,13 +895,6 @@ namespace DiscordCoreAPI {
 	}
 
 	VoiceConnection::~VoiceConnection() noexcept {
-		if (this->taskThread01) {
-			this->taskThread01->request_stop();
-			if (this->taskThread01->joinable()) {
-				this->taskThread01->join();
-				this->taskThread01.reset(nullptr);
-			}
-		}
 		if (this->taskThread02) {
 			this->taskThread02->request_stop();
 			if (this->taskThread02->joinable()) {
@@ -909,6 +902,14 @@ namespace DiscordCoreAPI {
 				this->taskThread02.reset(nullptr);
 			}
 		}
+
+		if (this->taskThread01) {
+			this->taskThread01->request_stop();
+			if (this->taskThread01->joinable()) {
+				this->taskThread01->join();
+				this->taskThread01.reset(nullptr);
+			}
+		}		
 	};
 
 }
