@@ -328,7 +328,7 @@ namespace DiscordCoreInternal {
 		~HttpsSSLClient() noexcept = default;
 
 	  protected:
-		std::shared_mutex theMutex01{};
+		std::recursive_mutex theMutex01{};
 	};
 
 	class DiscordCoreAPI_Dll WebSocketSSLShard : public SSLConnectionInterface, public SSLDataInterface {
@@ -370,10 +370,10 @@ namespace DiscordCoreInternal {
 		bool stateUpdateCollected{ false };
 		bool areWeCollectingData{ false };
 		std::recursive_mutex theMutex02{};
+		std::recursive_mutex theMutex01{};
 		bool areWeHeartBeating{ false };
 		int32_t lastNumberReceived{ 0 };
 		WebSocketCloseCode closeCode{};
-		std::shared_mutex theMutex01{};
 		WebSocketOpCode dataOpCode{};
 		bool areWeResuming{ false };
 		int64_t messageLength{};
