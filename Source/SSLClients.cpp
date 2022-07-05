@@ -432,7 +432,6 @@ namespace DiscordCoreInternal {
 
 		for (auto& [key, value]: theMap) {
 			if (FD_ISSET(value->theSocket, &readSet)) {
-				std::unique_lock theLock{ value->theMutex01 };
 				value->wantRead = false;
 				value->wantWrite = false;
 				std::string serverToClientBuffer{};
@@ -443,6 +442,7 @@ namespace DiscordCoreInternal {
 				switch (errorValue) {
 					case SSL_ERROR_NONE: {
 						if (readBytes > 0) {
+							std::unique_lock theLock{ value->theMutex01 };
 							value->inputBuffer.insert(value->inputBuffer.end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
 							value->bytesRead += readBytes;
 						}
@@ -474,17 +474,18 @@ namespace DiscordCoreInternal {
 				}
 			}
 			if (FD_ISSET(value->theSocket, &writeSet)) {
-				std::unique_lock theLock{ value->theMutex01 };
 				value->wantRead = false;
 				value->wantWrite = false;
 				size_t writtenBytes{ 0 };
 				std::string theString{};
 				if (value->outputBuffers.size() > 0) {
+					std::unique_lock theLock{ value->theMutex01 };
 					theString = std::move(value->outputBuffers.front());
 					auto returnValue{ SSL_write_ex(value->ssl, theString.data(), theString.size(), &writtenBytes) };
 					auto errorValue{ SSL_get_error(value->ssl, returnValue) };
 					switch (errorValue) {
 						case SSL_ERROR_NONE: {
+
 							if (value->outputBuffers.size() > 0 && writtenBytes > 0) {
 								value->outputBuffers.erase(value->outputBuffers.begin());
 							}
@@ -592,8 +593,7 @@ namespace DiscordCoreInternal {
 		}
 		std::string data = dataToWrite;
 		if (data.size() > 0 && this->ssl) {
-			if (priority && data.size() < static_cast<size_t>(16 * 1024)) {
-				std::unique_lock theLock{ this->theMutex01 };
+			if (priority && data.size() < static_cast<size_t>(16 * 1024)){
 				fd_set writeSet{};
 				int32_t writeNfds{ 0 };
 				FD_ZERO(&writeSet);
@@ -612,6 +612,7 @@ namespace DiscordCoreInternal {
 					return false;
 				}
 				if (FD_ISSET(this->theSocket, &writeSet)) {
+					std::unique_lock theLock{ this->theMutex01 };
 					this->wantRead = false;
 					this->wantWrite = false;
 					size_t writtenBytes{ 0 };
