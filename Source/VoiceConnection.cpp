@@ -357,6 +357,8 @@ namespace DiscordCoreAPI {
 			while (!stopToken.stop_requested() && !Globals::doWeQuit.load() && this->activeState.load() != VoiceActiveState::Exiting) {
 				if (!stopToken.stop_requested() && this->connections.size() > 0) {
 					DiscordCoreAPI::StopWatch theStopWatch{ 10000ms };
+					auto theState = this->activeState.load();
+					this->activeState.store(VoiceActiveState::Connecting);
 					while (!stopToken.stop_requested() && !this->baseShard->areWeConnected02.load()) {
 						if (theStopWatch.hasTimePassed()) {
 							return;
@@ -366,7 +368,7 @@ namespace DiscordCoreAPI {
 					this->connectInternal();
 					this->sendSpeakingMessage(false);
 					this->sendSpeakingMessage(true);
-					this->activeState.store(VoiceActiveState::Playing);
+					this->activeState.store(theState);
 				}
 				if (!stopToken.stop_requested() && this->heartbeatInterval != 0 && !this->sslShards[0]->areWeHeartBeating) {
 					this->sslShards[0]->areWeHeartBeating = true;
