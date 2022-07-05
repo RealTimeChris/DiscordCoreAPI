@@ -174,6 +174,7 @@ namespace DiscordCoreInternal {
 				} else if (returnValue == 0) {
 					return false;
 				}
+
 				if (FD_ISSET(this->theSocket, &writeSet)) {
 					this->wantRead = false;
 					this->wantWrite = false;
