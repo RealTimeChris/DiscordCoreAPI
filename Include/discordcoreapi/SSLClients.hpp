@@ -261,6 +261,8 @@ namespace DiscordCoreInternal {
 		std::unique_ptr<SOCKET, SOCKETDeleter> socketPtr{ new SOCKET{ SOCKET_ERROR }, SOCKETDeleter{} };
 	};
 
+	enum class SSLConnectionState { Connected = 1, Disconnected = 2 };
+
 	class DiscordCoreAPI_Dll SSLConnectionInterface {
 	  public:
 		SSLConnectionInterface() noexcept = default;
@@ -279,10 +281,8 @@ namespace DiscordCoreInternal {
 		static SSL_CTXWrapper context;
 		static std::mutex theMutex;
 
+		std::atomic<SSLConnectionState> theSSLState{ SSLConnectionState::Disconnected };
 		std::queue<DiscordCoreAPI::ConnectionPackage>* connections{ nullptr };
-		std::atomic_bool areWeConnected03{ false };
-		std::atomic_bool areWeConnected02{ false };
-		std::atomic_bool areWeConnected01{ false };
 		SOCKETWrapper theSocket{};
 		SSLWrapper ssl{};
 	};
@@ -332,6 +332,8 @@ namespace DiscordCoreInternal {
 		std::recursive_mutex theMutex01{};
 	};
 
+	enum class WebSocketSSLShardState { Connecting = 0, Upgrading = 1, Collecting_Hello = 2, Sending_Identify = 3, Authenticated = 4, Disconnected = 5 };
+
 	class DiscordCoreAPI_Dll WebSocketSSLShard : public SSLConnectionInterface, public SSLDataInterface {
 	  public:
 		friend class DiscordCoreAPI::VoiceConnection;
@@ -360,13 +362,14 @@ namespace DiscordCoreInternal {
 
 	  protected:
 		std::unordered_map<Snowflake, DiscordCoreAPI::UnboundedMessageBlock<VoiceConnectionData>*> voiceConnectionDataBufferMap{};
+		std::atomic<WebSocketSSLShardState> theWebSocketState{ WebSocketSSLShardState ::Connecting };
 		DiscordCoreAPI::StopWatch<std::chrono::milliseconds> heartBeatStopWatch{ 0ms };
 		std::queue<std::string> processedMessages{};
 		VoiceConnectionData voiceConnectionData{};
 		bool haveWeReceivedHeartbeatAck{ true };
-		int32_t currentReconnectTries{ 0 };
 		bool serverUpdateCollected{ false };
 		int32_t currentBaseSocketAgent{ 0 };
+		int32_t currentReconnectTries{ 0 };
 		bool stateUpdateCollected{ false };
 		bool areWeCollectingData{ false };
 		std::recursive_mutex theMutex02{};

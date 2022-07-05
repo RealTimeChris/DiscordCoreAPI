@@ -145,7 +145,7 @@ namespace DiscordCoreInternal {
 			return false;
 		}
 #endif
-		this->areWeConnected01.store(true);
+		this->theSSLState.store(SSLConnectionState::Connected);
 		return true;
 	}
 
@@ -375,11 +375,9 @@ namespace DiscordCoreInternal {
 	}
 
 	void HttpsSSLClient::disconnect() noexcept {
-		if (this->areWeConnected01.load()) {
+		if (this->theSSLState.load() == SSLConnectionState::Connected) {
 			std::unique_lock theLock{ this->theMutex01 };
-			this->areWeConnected01.store(false);
-			this->areWeConnected02.store(false);
-			this->areWeConnected03.store(false);
+			this->theSSLState.store(SSLConnectionState::Disconnected);
 			this->theSocket = SOCKET_ERROR;
 			this->inputBuffer.clear();
 			this->outputBuffers.clear();
@@ -590,7 +588,7 @@ namespace DiscordCoreInternal {
 			return false;
 		}
 #endif
-		this->areWeConnected01.store(true);
+		this->theSSLState.store(SSLConnectionState::Connected);
 		return true;
 	}
 
@@ -707,11 +705,10 @@ namespace DiscordCoreInternal {
 	}
 
 	void WebSocketSSLShard::disconnect() noexcept {
-		if (this->areWeConnected01.load()) {
+		if (this->theSSLState.load() == SSLConnectionState::Connected) {
 			std::unique_lock theLock{ this->theMutex01 };
-			this->areWeConnected01.store(false);
-			this->areWeConnected02.store(false);
-			this->areWeConnected03.store(false);
+			this->theSSLState.store(SSLConnectionState::Disconnected);
+			this->theWebSocketState.store(WebSocketSSLShardState::Disconnected);
 			this->theSocket = SOCKET_ERROR;
 			this->inputBuffer.clear();
 			this->outputBuffers.clear();
@@ -724,8 +721,8 @@ namespace DiscordCoreInternal {
 				DiscordCoreAPI::ConnectionPackage theData{};
 				theData.voiceConnectionDataBufferMap = std::move(this->voiceConnectionDataBufferMap);
 				theData.currentBaseSocketAgent = this->currentBaseSocketAgent;
-				theData.currentShard = this->shard[0];
 				theData.currentReconnectTries = this->currentReconnectTries;
+				theData.currentShard = this->shard[0];
 				this->connections->push(theData);
 			}
 		}
