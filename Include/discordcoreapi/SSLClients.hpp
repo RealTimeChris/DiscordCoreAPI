@@ -408,7 +408,7 @@ namespace DiscordCoreInternal {
 	  protected:
 		const int32_t maxBufferSize{ 1024 * 16 };
 		std::vector<std::string> outputBuffers{};
-		std::shared_mutex theMutex01{};
+		std::recursive_mutex theMutex01{};
 		SOCKETWrapper theSocket{};
 		std::string inputBuffer{};
 		sockaddr_in theAddress{};

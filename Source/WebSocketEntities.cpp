@@ -81,9 +81,9 @@ namespace DiscordCoreInternal {
 	}
 
 	void BaseSocketAgent::onClosed(WebSocketSSLShard* theShard) noexcept {
-		if (this->maxReconnectTries > theShard->currentReconnectTries) {
+		if (this->maxReconnectTries > theShard->currentReconnectTries && theShard->areWeConnected01.load()) {
 			theShard->disconnect();
-		} else {
+		} else if (this->maxReconnectTries<= theShard->currentReconnectTries) {
 			this->doWeQuit->store(true);
 			this->taskThread->request_stop();
 		}
@@ -1014,6 +1014,7 @@ namespace DiscordCoreInternal {
 				DiscordCoreAPI::StopWatch theStopWatch{ 5000ms };
 				do {
 					if (theStopWatch.hasTimePassed()) {
+						this->connections.push(connectData);
 						return;
 					}
 					didWeWrite = this->sslShards[connectData.currentShard]->writeData(sendString, true);
@@ -1024,7 +1025,7 @@ namespace DiscordCoreInternal {
 				}
 
 				while (!this->doWeQuit->load()) {
-					if (this->sslShards[connectData.currentShard]->areWeConnected03.load()) {
+					if (this->sslShards[connectData.currentShard]->areWeConnected02.load()) {
 						break;
 					}
 					WebSocketSSLShard::processIO(this->sslShards, 10000);
