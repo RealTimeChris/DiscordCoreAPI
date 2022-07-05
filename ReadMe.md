@@ -122,7 +122,7 @@ DiscordCoreAPI::InputEvents::deleteInputEventResponseAsync(newEvent, 20000).get(
 - Set up a main.cpp like [this one](https://github.com/RealTimeChris/Bot-Template-for-DiscordCoreAPI/blob/main/main.cpp), including the header `discordcoreapi/Index.hpp`.
 - Run in a terminal from within the same folder as the top-level CMakeLists.txt, `cmake -S . --preset Linux_OR_Windows-Debug_OR_Release`.
 - Then run `cmake --build --preset Linux_OR_Windows-Debug_OR_Release`.
-- Run within the same terminal and folder cmake `--install ./Build/Debug_OR_Release`.
+- Run within the same terminal and folder `cmake --install ./Build/Debug_OR_Release`.
 - The default installation paths are: Windows = "ROOT_DRIVE:/Users/USERNAME/CMake/Bot-Template-For-DiscordCoreAPI", Linux = "/home/USERNAME/CMake/Bot-Template-For-DiscordCoreAPI"
 	
 # Roadmap
