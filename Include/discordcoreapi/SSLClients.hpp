@@ -280,6 +280,7 @@ namespace DiscordCoreInternal {
 		static std::mutex theMutex;
 
 		std::queue<DiscordCoreAPI::ConnectionPackage>* connections{ nullptr };
+		std::atomic_bool areWeConnected03{ false };
 		std::atomic_bool areWeConnected02{ false };
 		std::atomic_bool areWeConnected01{ false };
 		SOCKETWrapper theSocket{};
@@ -360,7 +361,6 @@ namespace DiscordCoreInternal {
 	  protected:
 		std::unordered_map<Snowflake, DiscordCoreAPI::UnboundedMessageBlock<VoiceConnectionData>*> voiceConnectionDataBufferMap{};
 		DiscordCoreAPI::StopWatch<std::chrono::milliseconds> heartBeatStopWatch{ 0ms };
-		WebSocketState theState{ WebSocketState::Connecting01 };
 		std::queue<std::string> processedMessages{};
 		VoiceConnectionData voiceConnectionData{};
 		bool haveWeReceivedHeartbeatAck{ true };
@@ -401,12 +401,11 @@ namespace DiscordCoreInternal {
 
 		void disconnect() noexcept;
 
-		void processIO() noexcept;
+		void readData() noexcept;
 
 		~DatagramSocketSSLClient() noexcept = default;
 
 	  protected:
-		std::atomic_bool areWeConnected{ false };
 		const int32_t maxBufferSize{ 1024 * 16 };
 		std::vector<std::string> outputBuffers{};
 		std::shared_mutex theMutex01{};

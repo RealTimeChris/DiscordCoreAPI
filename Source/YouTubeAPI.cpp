@@ -202,7 +202,6 @@ namespace DiscordCoreInternal {
 			if (newSong.finalDownloadUrls.size() > 0) {
 				theMap[0] = std::move(streamSocket);
 				theMap[0]->connect(newSong.finalDownloadUrls[0].urlPath, "443");
-				theMap[0]->areWeConnected01.store(true);
 			} else {
 				return;
 			}
@@ -211,7 +210,7 @@ namespace DiscordCoreInternal {
 			int64_t contentLengthCurrent{ this->maxBufferSize };
 			int64_t bytesSubmittedPrevious{ 0 };
 			int64_t bytesSubmittedTotal{ 0 };
-			const int8_t maxReruns{ 100 };
+			const int8_t maxReruns{ 30 };
 			int8_t currentReruns{ 0 };
 			int32_t counter{ 0 };
 			const int32_t ms500{ 500000 };

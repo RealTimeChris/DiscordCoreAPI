@@ -74,7 +74,6 @@ namespace DiscordCoreAPI {
 			updateVoiceData.selfMute = false;
 			updateVoiceData.guildId = this->id;
 			this->discordCoreClient->getBotUser().updateVoiceStatus(updateVoiceData);
-			getVoiceConnectionMap()[this->id]->activeState.store(VoiceActiveState::Exiting);
 			getVoiceConnectionMap()[this->id]->disconnect();
 			this->voiceConnectionPtr = nullptr;
 		}

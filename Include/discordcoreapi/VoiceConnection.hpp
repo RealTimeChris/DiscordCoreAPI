@@ -56,7 +56,7 @@ namespace DiscordCoreAPI {
 
 	/// For the various active states of the VoiceConnection class. \brief For the various active states of the VoiceConnection class.
 	enum class VoiceActiveState : int8_t {
-		Idle = -1,///< Idle - it hasn't started or it's reconnecting.
+		Connecting = -1,///< Connecting - it hasn't started or it's reconnecting.
 		Playing = 1,///< Playing.
 		Stopped = 2,///< Stopped.
 		Paused = 3,///< Paused.
