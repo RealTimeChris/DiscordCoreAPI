@@ -70,6 +70,7 @@ namespace DiscordCoreAPI {
 	/// VoiceConnection class DiscordCoreAPI_Dll - represents the connection to a given voice Channel. \brief VoiceConnection class DiscordCoreAPI_Dll - represents the connection to a given voice Channel.
 	class DiscordCoreAPI_Dll VoiceConnection {
 	  public:
+		friend class DiscordCoreInternal::BaseSocketAgent;
 		friend class DiscordCoreInternal::SoundCloudAPI;
 		friend class DiscordCoreInternal::YouTubeAPI;
 		friend class DiscordCoreClient;
@@ -143,6 +144,8 @@ namespace DiscordCoreAPI {
 		void runVoice(std::stop_token) noexcept;
 
 		bool areWeCurrentlyPlaying() noexcept;
+
+		void disconnectInternal() noexcept;
 
 		void collectExternalIP() noexcept;
 

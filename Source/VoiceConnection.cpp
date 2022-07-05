@@ -27,7 +27,7 @@ namespace DiscordCoreAPI {
 	}
 
 	RTPPacket::RTPPacket(uint32_t timestampNew, uint16_t sequenceNew, uint32_t ssrcNew, const std::vector<uint8_t>& audioDataNew, const std::string& theKeys) {
-		this->audioData = std::move(audioDataNew);
+		this->audioData = audioDataNew;
 		this->timestamp = timestampNew;
 		this->sequence = sequenceNew;
 		this->theKeys = theKeys;
@@ -365,7 +365,7 @@ namespace DiscordCoreAPI {
 					}
 					this->activeState.store(VoiceActiveState::Connecting);
 					while (!stopToken.stop_requested() && !this->baseShard->areWeConnected02.load()) {
-						if (theStopWatch.hasTimePassed()) {
+						if (theStopWatch.hasTimePassed() || this->activeState.load() == VoiceActiveState::Exiting) {
 							return;
 						}
 						std::this_thread::sleep_for(1ms);
@@ -435,9 +435,8 @@ namespace DiscordCoreAPI {
 	void VoiceConnection::runVoice(std::stop_token stopToken) noexcept {
 		StopWatch theStopWatch{ 20000ms };
 		while (!this->datagramSocket) {
-			if (theStopWatch.hasTimePassed()) {
-				this->onClosed();
-				break;
+			if (theStopWatch.hasTimePassed() || this->activeState.load() == VoiceActiveState::Exiting) {
+				return;
 			}
 			std::this_thread::sleep_for(1ms);
 		}
@@ -487,9 +486,8 @@ namespace DiscordCoreAPI {
 					while (!stopToken.stop_requested() && this->activeState.load() == VoiceActiveState::Playing) {
 						theStopWatch.resetTimer();
 						while (!stopToken.stop_requested() && !this->datagramSocket->areWeStillConnected()) {
-							if (theStopWatch.hasTimePassed()) {
-								this->onClosed();
-								break;
+							if (theStopWatch.hasTimePassed() || this->activeState.load() == VoiceActiveState::Exiting) {
+								return;
 							}
 							std::this_thread::sleep_for(1ms);
 						}
@@ -573,6 +571,36 @@ namespace DiscordCoreAPI {
 			} else {
 				return false;
 			}
+		}
+	}
+
+	void VoiceConnection::disconnectInternal() noexcept {
+		this->activeState.store(VoiceActiveState::Exiting);
+		this->areWeConnectedBool.store(false);
+		this->sendSpeakingMessage(false);
+		if (this->taskThread01) {
+			this->taskThread01->request_stop();
+			if (this->taskThread01->joinable()) {
+				this->taskThread01->join();
+			}
+			this->taskThread01.reset(nullptr);
+		}
+		if (this->taskThread02) {
+			this->taskThread02->request_stop();
+			if (this->taskThread02->joinable()) {
+				this->taskThread02->join();
+			}
+			this->taskThread02.reset(nullptr);
+		}
+		if (this->sslShards[0]) {
+			this->sslShards[0].reset(nullptr);
+		}
+		if (this->datagramSocket) {
+			this->datagramSocket.reset(nullptr);
+		}
+		auto thePtr = getSongAPIMap()[this->voiceConnectInitData.guildId].get();
+		if (thePtr) {
+			thePtr->onSongCompletionEvent.remove(thePtr->eventToken);
 		}
 	}
 
@@ -820,35 +848,9 @@ namespace DiscordCoreAPI {
 			}
 		}
 	}
-
+	
 	void VoiceConnection::disconnect() noexcept {
-		this->activeState.store(VoiceActiveState::Exiting);
-		this->sendSpeakingMessage(false);
-		if (this->taskThread01) {
-			this->taskThread01->request_stop();
-			if (this->taskThread01->joinable()) {
-				this->taskThread01->join();
-			}
-			this->taskThread01.reset(nullptr);
-		}
-		if (this->taskThread02) {
-			this->taskThread02->request_stop();
-			if (this->taskThread02->joinable()) {
-				this->taskThread02->join();
-			}
-			this->taskThread02.reset(nullptr);
-		}
-		if (this->sslShards[0]) {
-			this->sslShards[0].reset(nullptr);
-		}
-		if (this->datagramSocket) {
-			this->datagramSocket.reset(nullptr);
-		}
-		this->areWeConnectedBool.store(false);
-		auto thePtr = getSongAPIMap()[this->voiceConnectInitData.guildId].get();
-		if (thePtr) {
-			thePtr->onSongCompletionEvent.remove(thePtr->eventToken);
-		}
+		this->baseSocketAgent->voiceConnectionsToDisconnect.push(this->voiceConnectInitData.guildId);
 	}
 
 	void VoiceConnection::onClosed() noexcept {
@@ -867,6 +869,7 @@ namespace DiscordCoreAPI {
 			this->currentReconnectTries++;
 		}
 		if (this->currentReconnectTries >= this->maxReconnectTries) {
+			this->baseSocketAgent->voiceConnectionsToDisconnect.push(this->voiceConnectInitData.guildId);
 			this->activeState.store(VoiceActiveState::Exiting);
 		}
 	}
@@ -888,17 +891,7 @@ namespace DiscordCoreAPI {
 					this->runVoice(stopToken);
 				});
 			}
-
-			StopWatch theStopWatch{ 10000ms };
-			while (!this->areWeConnectedBool.load()) {
-				if (theStopWatch.hasTimePassed()) {
-					return;
-				}
-				std::this_thread::sleep_for(1ms);
-			}
-			return;
 		}
-		return;
 	}
 
 	bool VoiceConnection::stop() noexcept {

@@ -50,6 +50,8 @@ namespace DiscordCoreInternal {
 
 		void sendMessage(std::string& dataToSend, WebSocketSSLShard* theIndex, bool priority) noexcept;
 
+		void connectVoiceChannel(VoiceConnectInitData theData) noexcept;
+
 		void connect(DiscordCoreAPI::ConnectionPackage) noexcept;
 
 		void onClosed(WebSocketSSLShard* theShard) noexcept;
@@ -64,10 +66,13 @@ namespace DiscordCoreInternal {
 		std::queue<DiscordCoreAPI::ConnectionPackage> connections{};
 		DiscordCoreAPI::ConfigManager* configManager{ nullptr };
 		std::unique_ptr<std::jthread> taskThread{ nullptr };
+		std::queue<VoiceConnectInitData> voiceConnections{};
+		std::queue<uint64_t> voiceConnectionsToDisconnect{};
 		std::atomic_bool* doWeQuit{ nullptr };
 		const int32_t maxReconnectTries{ 10 };
 		int32_t currentBaseSocketAgent{ 0 };
 		int32_t heartbeatInterval{ 0 };
+		std::mutex theMutex{};
 		ErlPacker erlPacker{};
 
 		void stringifyJsonData(const nlohmann::json& dataToSend, std::string& theString, WebSocketOpCode theOpCode) noexcept;
@@ -82,7 +87,11 @@ namespace DiscordCoreInternal {
 
 		void onMessageReceived(WebSocketSSLShard* theIndex) noexcept;
 
+		void connectVoiceInternal() noexcept;
+
 		void run(std::stop_token) noexcept;
+		
+		void disconnectVoice() noexcept;
 
 		void internalConnect() noexcept;
 	};

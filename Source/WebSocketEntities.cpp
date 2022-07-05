@@ -61,6 +61,11 @@ namespace DiscordCoreInternal {
 		}
 	}
 
+	void BaseSocketAgent::connectVoiceChannel(VoiceConnectInitData theData) noexcept {
+		std::lock_guard theLock{ this->theMutex };
+		this->voiceConnections.push(theData);
+	}
+
 	void BaseSocketAgent::connect(DiscordCoreAPI::ConnectionPackage thePackage) noexcept {
 		while (!this->discordCoreClient->theStopWatch.hasTimePassed()) {
 			std::this_thread::sleep_for(1ms);
@@ -922,11 +927,25 @@ namespace DiscordCoreInternal {
 		}
 	}
 
+	void BaseSocketAgent::connectVoiceInternal() noexcept {
+		VoiceConnectInitData theConnectionData = this->voiceConnections.front();
+		this->voiceConnections.pop();
+		DiscordCoreAPI::getVoiceConnectionMap()[theConnectionData.guildId] =
+			std::make_unique<DiscordCoreAPI::VoiceConnection>(this, theConnectionData, &this->discordCoreClient->configManager);
+		DiscordCoreAPI::getVoiceConnectionMap()[theConnectionData.guildId]->connect();
+	}
+
 	void BaseSocketAgent::run(std::stop_token stopToken) noexcept {
 		try {
 			while (!stopToken.stop_requested() && !this->doWeQuit->load()) {
 				if (this->connections.size() > 0) {
 					this->internalConnect();
+				}
+				if (this->voiceConnectionsToDisconnect.size() > 0) {
+					this->disconnectVoice();
+				}
+				if (this->voiceConnections.size() > 0) {
+					this->connectVoiceInternal();
 				}
 				WebSocketSSLShard::processIO(this->sslShards);
 				for (auto& [key, value]: this->sslShards) {
@@ -955,6 +974,12 @@ namespace DiscordCoreInternal {
 				DiscordCoreAPI::reportException("BaseSocketAgent::run()");
 			}
 		}
+	}
+
+	void BaseSocketAgent::disconnectVoice() noexcept {
+		uint64_t theDCData = this->voiceConnectionsToDisconnect.front();
+		this->voiceConnectionsToDisconnect.pop();
+		DiscordCoreAPI::getVoiceConnectionMap()[theDCData]->disconnectInternal();
 	}
 
 	void BaseSocketAgent::internalConnect() noexcept {

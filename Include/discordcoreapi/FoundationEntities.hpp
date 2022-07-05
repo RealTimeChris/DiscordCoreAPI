@@ -64,12 +64,12 @@ namespace DiscordCoreInternal {
 	using Snowflake = uint64_t;
 
 	struct DiscordCoreAPI_Dll VoiceConnectInitData {
-		Snowflake channelId{};
-		Snowflake guildId{};
-		Snowflake userId{};
 		int32_t currentShard{};
 		bool selfDeaf{ false };
 		bool selfMute{ false };
+		Snowflake channelId{};
+		Snowflake guildId{};
+		Snowflake userId{};
 	};
 
 	struct DiscordCoreAPI_Dll VoiceConnectionData {
@@ -85,26 +85,26 @@ namespace DiscordCoreInternal {
 	};
 
 	struct DiscordCoreAPI_Dll WebSocketResumeData {
-		std::string botToken{};
-		std::string sessionId{};
 		int32_t lastNumberReceived{};
-
+		std::string sessionId{};
+		std::string botToken{};
+		
 		operator nlohmann::json();
 	};
 
 	struct DiscordCoreAPI_Dll WebSocketIdentifyData {
+		int32_t numberOfShards{};
+		int32_t currentShard{};
 		std::string botToken{};
 		int64_t intents{};
-		int32_t currentShard{};
-		int32_t numberOfShards{};
 
 		operator nlohmann::json();
 	};
 
 	struct DiscordCoreAPI_Dll VoiceSocketProtocolPayloadData {
-		std::string voicePort{};
-		std::string externalIp{};
 		std::string voiceEncryptionMode{};
+		std::string externalIp{};
+		std::string voicePort{};
 
 		operator nlohmann::json();
 	};

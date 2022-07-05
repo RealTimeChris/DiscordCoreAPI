@@ -52,10 +52,15 @@ namespace DiscordCoreAPI {
 			voiceConnectInitData.userId = this->discordCoreClient->getBotUser().id;
 			voiceConnectInitData.selfDeaf = selfDeaf;
 			voiceConnectInitData.selfMute = selfMute;
-			getVoiceConnectionMap()[this->id] = std::make_unique<VoiceConnection>(this->discordCoreClient->baseSocketAgentMap[std::to_string(theBaseSocketAgentIndex)].get(),
-				voiceConnectInitData, &this->discordCoreClient->configManager);
+			StopWatch theStopWatch{ 10000ms };
+			this->discordCoreClient->baseSocketAgentMap[std::to_string(theBaseSocketAgentIndex)]->connectVoiceChannel(voiceConnectInitData);
+			while (!getVoiceConnectionMap()[this->id]->areWeConnected()) {
+				std::this_thread::sleep_for(1ms);
+				if (theStopWatch.hasTimePassed()) {
+					break;
+				}
+			}
 			this->voiceConnectionPtr = getVoiceConnectionMap()[this->id].get();
-			this->voiceConnectionPtr->connect();
 			return this->voiceConnectionPtr;
 		} else {
 			return nullptr;
@@ -75,6 +80,13 @@ namespace DiscordCoreAPI {
 			updateVoiceData.guildId = this->id;
 			this->discordCoreClient->getBotUser().updateVoiceStatus(updateVoiceData);
 			getVoiceConnectionMap()[this->id]->disconnect();
+			StopWatch theStopWatch{ 10000ms };
+			while (getVoiceConnectionMap()[this->id]->areWeConnectedBool.load()) {
+				std::this_thread::sleep_for(1ms);
+				if (theStopWatch.hasTimePassed()) {
+					break;
+				}
+			}
 			this->voiceConnectionPtr = nullptr;
 		}
 	}
