@@ -143,6 +143,7 @@ namespace DiscordCoreAPI {
 	}
 
 	bool DiscordCoreClient::instantiateWebSockets() {
+		std::cout << "WERE HERE THIS IS IT!" << std::endl;
 		GatewayBotData gatewayData = this->getGateWayBot();
 		if (gatewayData.url == "") {
 			if (this->configManager.doWePrintGeneralErrorMessages()) {

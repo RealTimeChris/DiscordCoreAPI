@@ -574,7 +574,6 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::disconnectInternal() noexcept {
-		this->activeState.store(VoiceActiveState::Exiting);
 		if (this->taskThread01) {
 			this->taskThread01->request_stop();
 			if (this->taskThread01->joinable()) {
@@ -588,6 +587,12 @@ namespace DiscordCoreAPI {
 				this->taskThread02->join();
 			}
 			this->taskThread02.reset(nullptr);
+		}
+		if (this->datagramSocket) {
+			this->datagramSocket->disconnect();
+		}
+		if (this->sslShards[0]) {
+			this->sslShards[0]->disconnect(false);
 		}
 		auto thePtr = getSongAPIMap()[this->voiceConnectInitData.guildId].get();
 		if (thePtr) {
@@ -666,7 +671,7 @@ namespace DiscordCoreAPI {
 			}
 			case VoiceConnectionState::Initializing_WebSocket: {
 				if (this->sslShards.contains(0)) {
-					this->sslShards[0]->disconnect();
+					this->sslShards[0]->disconnect(true);
 				}
 				auto theClient = std::make_unique<DiscordCoreInternal::WebSocketSSLShard>(&this->connections, 0, 0, this->configManager);
 				if (!theClient->connect(this->baseUrl, "443")) {
@@ -848,26 +853,30 @@ namespace DiscordCoreAPI {
 	void VoiceConnection::disconnect() noexcept {
 		std::lock_guard theLock{ this->baseSocketAgent->theMutex };
 		this->baseSocketAgent->voiceConnectionsToDisconnect.push(this->voiceConnectInitData.guildId);
+		this->activeState.store(VoiceActiveState::Exiting);
+	}
+
+	void VoiceConnection::reconnect() noexcept {
+		if (this->datagramSocket) {
+			this->datagramSocket->disconnect();
+		}
+		if (this->sslShards[0]) {
+			this->sslShards[0]->disconnect(true);
+			this->sslShards[0]->areWeHeartBeating = false;
+			this->sslShards[0]->wantWrite = true;
+			this->sslShards[0]->wantRead = false;
+		}
+		this->currentReconnectTries++;
+		this->areWeConnectedBool.store(false);
 	}
 
 	void VoiceConnection::onClosed() noexcept {
 		this->connectionState.store(VoiceConnectionState::Collecting_Init_Data);
-		if (this->activeState.load() != VoiceActiveState::Exiting) {
-			if (this->datagramSocket) {
-				this->datagramSocket->disconnect();
-			}
-			if (this->sslShards[0]) {
-				this->sslShards[0]->disconnect();
-				this->sslShards[0]->areWeHeartBeating = false;
-				this->sslShards[0]->wantWrite = true;
-				this->sslShards[0]->wantRead = false;
-			}
-			this->currentReconnectTries++;
-			this->areWeConnectedBool.store(false);
+		if (this->activeState.load() != VoiceActiveState::Exiting && this->currentReconnectTries < this->maxReconnectTries) {
+			this->reconnect();
 		}
-		if (this->currentReconnectTries >= this->maxReconnectTries) {
-			this->baseSocketAgent->voiceConnectionsToDisconnect.push(this->voiceConnectInitData.guildId);
-			this->activeState.store(VoiceActiveState::Exiting);
+		else if (this->currentReconnectTries >= this->maxReconnectTries) {
+			this->disconnect();
 		}
 	}
 

@@ -154,7 +154,7 @@ namespace DiscordCoreAPI {
 		void clearAudioData() noexcept;
 
 		bool areWeConnected() noexcept;
-
+		
 		void sendHeartBeat() noexcept;
 
 		void voiceConnect() noexcept;
@@ -164,6 +164,8 @@ namespace DiscordCoreAPI {
 		void pauseToggle() noexcept;
 
 		void disconnect() noexcept;
+
+		void reconnect() noexcept;
 
 		void onClosed() noexcept;
 

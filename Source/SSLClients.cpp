@@ -169,7 +169,7 @@ namespace DiscordCoreInternal {
 
 				timeval checkTime{ .tv_usec = 1000 };
 				if (auto returnValue = select(writeNfds + 1, nullptr, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
-					this->disconnect();
+					this->disconnect(true);
 					return false;
 				} else if (returnValue == 0) {
 					return false;
@@ -190,15 +190,15 @@ namespace DiscordCoreInternal {
 							return false;
 						}
 						case SSL_ERROR_ZERO_RETURN: {
-							this->disconnect();
+							this->disconnect(true);
 							return false;
 						}
 						case SSL_ERROR_SSL: {
-							this->disconnect();
+							this->disconnect(true);
 							return false;
 						}
 						case SSL_ERROR_SYSCALL: {
-							this->disconnect();
+							this->disconnect(true);
 							return false;
 						}
 						case SSL_ERROR_WANT_READ: {
@@ -244,7 +244,7 @@ namespace DiscordCoreInternal {
 
 	void HttpsSSLClient::processIO(int32_t theWaitTimeInms) noexcept {
 		if (this->theSocket == SOCKET_ERROR) {
-			this->disconnect();
+			this->disconnect(true);
 			return;
 		}
 		int32_t readNfds{ 0 }, writeNfds{ 0 }, finalNfds{ 0 };
@@ -262,7 +262,7 @@ namespace DiscordCoreInternal {
 
 		timeval checkTime{ .tv_usec = theWaitTimeInms };
 		if (auto returnValue = select(finalNfds + 1, &readSet, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
-			this->disconnect();
+			this->disconnect(true);
 			return;
 		} else if (returnValue == 0) {
 			return;
@@ -284,15 +284,15 @@ namespace DiscordCoreInternal {
 					break;
 				}
 				case SSL_ERROR_ZERO_RETURN: {
-					this->disconnect();
+					this->disconnect(true);
 					break;
 				}
 				case SSL_ERROR_SSL: {
-					this->disconnect();
+					this->disconnect(true);
 					break;
 				}
 				case SSL_ERROR_SYSCALL: {
-					this->disconnect();
+					this->disconnect(true);
 					break;
 				}
 				case SSL_ERROR_WANT_READ: {
@@ -327,15 +327,15 @@ namespace DiscordCoreInternal {
 						break;
 					}
 					case SSL_ERROR_ZERO_RETURN: {
-						this->disconnect();
+						this->disconnect(true);
 						break;
 					}
 					case SSL_ERROR_SSL: {
-						this->disconnect();
+						this->disconnect(true);
 						break;
 					}
 					case SSL_ERROR_SYSCALL: {
-						this->disconnect();
+						this->disconnect(true);
 						break;
 					}
 					case SSL_ERROR_WANT_READ: {
@@ -374,7 +374,7 @@ namespace DiscordCoreInternal {
 		return this->bytesRead;
 	}
 
-	void HttpsSSLClient::disconnect() noexcept {
+	void HttpsSSLClient::disconnect(bool) noexcept {
 		if (this->theSSLState.load() == SSLConnectionState::Connected) {
 			std::unique_lock theLock{ this->theMutex01 };
 			this->theSSLState.store(SSLConnectionState::Disconnected);
@@ -428,7 +428,7 @@ namespace DiscordCoreInternal {
 		timeval checkTime{ .tv_usec = waitTimeInms };
 		if (auto returnValue = select(finalNfds + 1, &readSet, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
 			for (auto& [key, value]: theMap) {
-				value->disconnect();
+				value->disconnect(true);
 			}
 			return;
 		}
@@ -452,15 +452,15 @@ namespace DiscordCoreInternal {
 						break;
 					}
 					case SSL_ERROR_ZERO_RETURN: {
-						value->disconnect();
+						value->disconnect(true);
 						break;
 					}
 					case SSL_ERROR_SSL: {
-						value->disconnect();
+						value->disconnect(true);
 						break;
 					}
 					case SSL_ERROR_SYSCALL: {
-						value->disconnect();
+						value->disconnect(true);
 						break;
 					}
 					case SSL_ERROR_WANT_READ: {
@@ -495,15 +495,15 @@ namespace DiscordCoreInternal {
 							break;
 						}
 						case SSL_ERROR_ZERO_RETURN: {
-							value->disconnect();
+							value->disconnect(true);
 							break;
 						}
 						case SSL_ERROR_SSL: {
-							value->disconnect();
+							value->disconnect(true);
 							break;
 						}
 						case SSL_ERROR_SYSCALL: {
-							value->disconnect();
+							value->disconnect(true);
 							break;
 						}
 						case SSL_ERROR_WANT_READ: {
@@ -612,7 +612,7 @@ namespace DiscordCoreInternal {
 
 				timeval checkTime{ .tv_usec = 1000 };
 				if (auto returnValue = select(writeNfds + 1, nullptr, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
-					this->disconnect();
+					this->disconnect(true);
 					return false;
 				} else if (returnValue == 0) {
 					return false;
@@ -632,15 +632,15 @@ namespace DiscordCoreInternal {
 							return false;
 						}
 						case SSL_ERROR_ZERO_RETURN: {
-							this->disconnect();
+							this->disconnect(true);
 							return false;
 						}
 						case SSL_ERROR_SSL: {
-							this->disconnect();
+							this->disconnect(true);
 							return false;
 						}
 						case SSL_ERROR_SYSCALL: {
-							this->disconnect();
+							this->disconnect(true);
 							return false;
 						}
 						case SSL_ERROR_WANT_READ: {
@@ -684,6 +684,30 @@ namespace DiscordCoreInternal {
 		return false;
 	}
 
+	void WebSocketSSLShard::disconnect(bool doWeReconnect) noexcept {
+		if (this->theSSLState.load() == SSLConnectionState::Connected) {
+			std::unique_lock theLock{ this->theMutex01 };
+			this->theSSLState.store(SSLConnectionState::Disconnected);
+			this->theWebSocketState.store(WebSocketSSLShardState::Disconnected);
+			this->theSocket = SOCKET_ERROR;
+			this->inputBuffer.clear();
+			this->outputBuffers.clear();
+			this->closeCode = static_cast<WebSocketCloseCode>(0);
+			this->areWeHeartBeating = false;
+			while (this->processedMessages.size() > 0) {
+				this->processedMessages.pop();
+			}
+			if (this->connections && doWeReconnect) {
+				DiscordCoreAPI::ConnectionPackage theData{};
+				theData.voiceConnectionDataBufferMap = std::move(this->voiceConnectionDataBufferMap);
+				theData.currentBaseSocketAgent = this->currentBaseSocketAgent;
+				theData.currentReconnectTries = this->currentReconnectTries;
+				theData.currentShard = this->shard[0];
+				this->connections->push(theData);
+			}
+		}
+	}
+
 	std::string WebSocketSSLShard::getInputBuffer() noexcept {
 		std::unique_lock theLock{ this->theMutex01 };
 		std::string theReturnString = std::move(this->inputBuffer);
@@ -702,30 +726,6 @@ namespace DiscordCoreInternal {
 	int64_t WebSocketSSLShard::getBytesRead() noexcept {
 		std::unique_lock theLock{ this->theMutex01 };
 		return this->bytesRead;
-	}
-
-	void WebSocketSSLShard::disconnect() noexcept {
-		if (this->theSSLState.load() == SSLConnectionState::Connected) {
-			std::unique_lock theLock{ this->theMutex01 };
-			this->theSSLState.store(SSLConnectionState::Disconnected);
-			this->theWebSocketState.store(WebSocketSSLShardState::Disconnected);
-			this->theSocket = SOCKET_ERROR;
-			this->inputBuffer.clear();
-			this->outputBuffers.clear();
-			this->closeCode = static_cast<WebSocketCloseCode>(0);
-			this->areWeHeartBeating = false;
-			while (this->processedMessages.size() > 0) {
-				this->processedMessages.pop();
-			}
-			if (this->connections) {
-				DiscordCoreAPI::ConnectionPackage theData{};
-				theData.voiceConnectionDataBufferMap = std::move(this->voiceConnectionDataBufferMap);
-				theData.currentBaseSocketAgent = this->currentBaseSocketAgent;
-				theData.currentReconnectTries = this->currentReconnectTries;
-				theData.currentShard = this->shard[0];
-				this->connections->push(theData);
-			}
-		}
 	}
 
 	bool DatagramSocketSSLClient::connect(const std::string& baseUrlNew, const std::string& portNew) noexcept {
