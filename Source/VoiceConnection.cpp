@@ -311,7 +311,7 @@ namespace DiscordCoreAPI {
 
 	bool VoiceConnection::sendMessage(const std::string& dataToSend, bool priority) noexcept {
 		try {
-			if (this->sslShards[0]->areWeStillConnected()) {
+			if (this->sslShards.contains(0) && this->sslShards[0]->areWeStillConnected()) {
 				if (this->configManager->doWePrintWebSocketSuccessMessages()) {
 					std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Sending Voice WebSocket Message: " << dataToSend << DiscordCoreAPI::reset() << std::endl << std::endl;
 				}
@@ -364,6 +364,7 @@ namespace DiscordCoreAPI {
 						theState = this->activeState.load();
 					}
 					this->activeState.store(VoiceActiveState::Connecting);
+					this->connectionState.store(VoiceConnectionState::Collecting_Init_Data);
 					while (!stopToken.stop_requested() && !this->baseShard->areWeConnected03.load()) {
 						if (theStopWatch.hasTimePassed() || this->activeState.load() == VoiceActiveState::Exiting) {
 							return;
@@ -576,7 +577,6 @@ namespace DiscordCoreAPI {
 
 	void VoiceConnection::disconnectInternal() noexcept {
 		this->activeState.store(VoiceActiveState::Exiting);
-		this->sendSpeakingMessage(false);
 		if (this->taskThread01) {
 			this->taskThread01->request_stop();
 			if (this->taskThread01->joinable()) {
@@ -591,17 +591,12 @@ namespace DiscordCoreAPI {
 			}
 			this->taskThread02.reset(nullptr);
 		}
-		if (this->sslShards[0]) {
-			this->sslShards[0].reset(nullptr);
-		}
-		if (this->datagramSocket) {
-			this->datagramSocket.reset(nullptr);
-		}
 		auto thePtr = getSongAPIMap()[this->voiceConnectInitData.guildId].get();
 		if (thePtr) {
 			thePtr->onSongCompletionEvent.remove(thePtr->eventToken);
 		}
 		this->areWeConnectedBool.store(false);
+		this->activeState.store(VoiceActiveState::Connecting);
 	}
 
 	void VoiceConnection::collectExternalIP() noexcept {
@@ -620,11 +615,15 @@ namespace DiscordCoreAPI {
 			packet[7] = static_cast<uint8_t>(this->voiceConnectionData.audioSSRC);
 			this->datagramSocket->writeData(packet);
 			std::string inputString{};
-			while (inputString.size() < 74) {
+			StopWatch theStopWatch{ 3500ms };
+			while (inputString.size() < 74 && !Globals::doWeQuit.load() && this->activeState.load() != VoiceActiveState::Exiting) {
 				this->datagramSocket->readData();
 				std::string theNewString = this->datagramSocket->getInputBuffer();
 				inputString.insert(inputString.end(), theNewString.begin(), theNewString.end());
 				std::this_thread::sleep_for(1ms);
+				if (theStopWatch.hasTimePassed()) {
+					break;
+				}
 			}
 			std::string message{};
 			message.insert(message.begin(), inputString.begin() + 8, inputString.begin() + 64);
@@ -641,8 +640,8 @@ namespace DiscordCoreAPI {
 			this->onClosed();
 		}
 	}
-
 	void VoiceConnection::connectInternal() noexcept {
+
 		std::lock_guard theLock{ this->baseSocketAgent->sslShards[voiceConnectInitData.currentShard]->theMutex02 };
 		if (this->connections.size() > 0) {
 			this->connections.pop();
@@ -669,7 +668,7 @@ namespace DiscordCoreAPI {
 			}
 			case VoiceConnectionState::Initializing_WebSocket: {
 				if (this->sslShards.contains(0)) {
-					this->sslShards[0].reset(nullptr);
+					this->sslShards[0]->disconnect();
 				}
 				auto theClient = std::make_unique<DiscordCoreInternal::WebSocketSSLShard>(&this->connections, 0, 0, this->configManager);
 				if (!theClient->connect(this->baseUrl, "443")) {
@@ -854,9 +853,8 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::onClosed() noexcept {
+		this->connectionState.store(VoiceConnectionState::Collecting_Init_Data);
 		if (this->activeState.load() != VoiceActiveState::Exiting) {
-			this->connectionState.store(VoiceConnectionState::Collecting_Init_Data);
-			this->areWeConnectedBool.store(false);
 			if (this->datagramSocket) {
 				this->datagramSocket->disconnect();
 			}
@@ -867,6 +865,7 @@ namespace DiscordCoreAPI {
 				this->sslShards[0]->wantRead = false;
 			}
 			this->currentReconnectTries++;
+			this->areWeConnectedBool.store(false);
 		}
 		if (this->currentReconnectTries >= this->maxReconnectTries) {
 			this->baseSocketAgent->voiceConnectionsToDisconnect.push(this->voiceConnectInitData.guildId);

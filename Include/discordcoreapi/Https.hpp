@@ -135,8 +135,6 @@ namespace DiscordCoreInternal {
 
 		HttpsClient(DiscordCoreAPI::ConfigManager* configManager);
 
-		HttpsResponseData httpRequest(HttpsWorkloadData&);
-
 		template<typename ReturnType> ReturnType submitWorkloadAndGetResult(HttpsWorkloadData& workload) {
 			workload.headersToInsert["Authorization"] = "Bot " + this->configManager->getBotToken();
 			workload.headersToInsert["User-Agent"] = "DiscordBot (https://discordcoreapi.com 1.0)";
@@ -160,6 +158,8 @@ namespace DiscordCoreInternal {
 		template<std::same_as<void> Type> Type submitWorkloadAndGetResult(HttpsWorkloadData& workload);
 
 		HttpsResponseData submitWorkloadAndGetResult(const HttpsWorkloadData& workloadNew);
+
+		HttpsResponseData httpRequest(HttpsWorkloadData&);
 
 	  protected:
 		DiscordCoreAPI::ConfigManager* configManager{ nullptr };

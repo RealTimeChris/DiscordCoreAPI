@@ -279,30 +279,6 @@ namespace DiscordCoreInternal {
 		this->connectionManager.initialize();
 	};
 
-	HttpsResponseData HttpsClient::httpRequest(HttpsWorkloadData& workload) {
-		if (workload.baseUrl == "") {
-			workload.baseUrl = "https://discord.com/api/v10";
-		}
-		RateLimitData& rateLimitData = *this->connectionManager.getRateLimitValues()[this->connectionManager.getRateLimitValueBuckets()[workload.workloadType]].get();
-		if (!rateLimitData.haveWeGoneYet) {
-			std::this_thread::sleep_for(100ms);
-			rateLimitData.haveWeGoneYet = true;
-		}
-		while (HttpsWorkloadData::workloadIdsInternal[workload.workloadType].load() < workload.thisWorkerId.load() && workload.thisWorkerId.load() != 0) {
-			std::this_thread::sleep_for(1ms);
-		}
-
-		while (!rateLimitData.theSemaphore.try_acquire()) {
-			std::this_thread::sleep_for(1ms);
-		}
-
-		HttpsResponseData resultData = this->executeByRateLimitData(workload);
-		auto theValue = HttpsWorkloadData::workloadIdsInternal[workload.workloadType].load();
-		HttpsWorkloadData::workloadIdsInternal[workload.workloadType].store(theValue + 1);
-		rateLimitData.theSemaphore.release();
-		return resultData;
-	}
-
 	template<> void HttpsClient::submitWorkloadAndGetResult<void>(HttpsWorkloadData& workloadNew) {
 		HttpsWorkloadData workload = workloadNew;
 		workload.headersToInsert["Authorization"] = "Bot " + this->configManager->getBotToken();
@@ -334,6 +310,30 @@ namespace DiscordCoreInternal {
 			throw theError;
 		}
 		return returnData;
+	}
+
+	HttpsResponseData HttpsClient::httpRequest(HttpsWorkloadData& workload) {
+		if (workload.baseUrl == "") {
+			workload.baseUrl = "https://discord.com/api/v10";
+		}
+		RateLimitData& rateLimitData = *this->connectionManager.getRateLimitValues()[this->connectionManager.getRateLimitValueBuckets()[workload.workloadType]].get();
+		if (!rateLimitData.haveWeGoneYet) {
+			std::this_thread::sleep_for(100ms);
+			rateLimitData.haveWeGoneYet = true;
+		}
+		while (HttpsWorkloadData::workloadIdsInternal[workload.workloadType].load() < workload.thisWorkerId.load() && workload.thisWorkerId.load() != 0) {
+			std::this_thread::sleep_for(1ms);
+		}
+
+		while (!rateLimitData.theSemaphore.try_acquire()) {
+			std::this_thread::sleep_for(1ms);
+		}
+
+		HttpsResponseData resultData = this->executeByRateLimitData(workload);
+		auto theValue = HttpsWorkloadData::workloadIdsInternal[workload.workloadType].load();
+		HttpsWorkloadData::workloadIdsInternal[workload.workloadType].store(theValue + 1);
+		rateLimitData.theSemaphore.release();
+		return resultData;
 	}
 
 	HttpsResponseData HttpsClient::httpRequestInternal(const HttpsWorkloadData& workload, RateLimitData& rateLimitData) {

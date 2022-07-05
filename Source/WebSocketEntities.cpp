@@ -81,7 +81,7 @@ namespace DiscordCoreInternal {
 	}
 
 	void BaseSocketAgent::onClosed(WebSocketSSLShard* theShard) noexcept {
-		if (this->maxReconnectTries > theShard->currentReconnectTries && theShard->areWeConnected01.load()) {
+		if (this->maxReconnectTries > theShard->currentReconnectTries) {
 			theShard->disconnect();
 		} else if (this->maxReconnectTries<= theShard->currentReconnectTries) {
 			this->doWeQuit->store(true);
@@ -928,6 +928,14 @@ namespace DiscordCoreInternal {
 	}
 
 	void BaseSocketAgent::connectVoiceInternal() noexcept {
+		while (!this->theVCStopWatch.hasTimePassed()) {
+			std::this_thread::sleep_for(1ms);
+		}
+		this->theVCStopWatch.resetTimer();
+		while (!this->theVCStopWatch.hasTimePassed()) {
+			std::this_thread::sleep_for(1ms);
+		}
+		this->theVCStopWatch.resetTimer();
 		VoiceConnectInitData theConnectionData = this->voiceConnections.front();
 		this->voiceConnections.pop();
 		DiscordCoreAPI::getVoiceConnectionMap()[theConnectionData.guildId] =
