@@ -364,7 +364,7 @@ namespace DiscordCoreAPI {
 						theState = this->activeState.load();
 					}
 					this->activeState.store(VoiceActiveState::Connecting);
-					while (!stopToken.stop_requested() && !this->baseShard->areWeConnected02.load()) {
+					while (!stopToken.stop_requested() && !this->baseShard->areWeConnected03.load()) {
 						if (theStopWatch.hasTimePassed() || this->activeState.load() == VoiceActiveState::Exiting) {
 							return;
 						}
