@@ -360,8 +360,9 @@ namespace DiscordCoreAPI {
 					VoiceActiveState theState{};
 					if (this->activeState.load() == VoiceActiveState::Connecting) {
 						theState = VoiceActiveState::Stopped;
+					} else {
+						theState = this->activeState.load();
 					}
-					auto theState = this->activeState.load();
 					this->activeState.store(VoiceActiveState::Connecting);
 					while (!stopToken.stop_requested() && !this->baseShard->areWeConnected02.load()) {
 						if (theStopWatch.hasTimePassed()) {
@@ -736,7 +737,6 @@ namespace DiscordCoreAPI {
 				}
 				this->connectionState.store(VoiceConnectionState::Collecting_Init_Data);
 				this->baseShard->voiceConnectionDataBufferMap[this->voiceConnectInitData.guildId]->clearContents();
-				this->activeState.store(VoiceActiveState::Stopped);
 				return;
 			}
 		}
@@ -854,7 +854,6 @@ namespace DiscordCoreAPI {
 	void VoiceConnection::onClosed() noexcept {
 		if (this->activeState.load() != VoiceActiveState::Exiting) {
 			this->connectionState.store(VoiceConnectionState::Collecting_Init_Data);
-			this->activeState.store(VoiceActiveState::Connecting);
 			this->areWeConnectedBool.store(false);
 			if (this->datagramSocket) {
 				this->datagramSocket->disconnect();
