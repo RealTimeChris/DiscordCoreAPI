@@ -729,7 +729,7 @@ namespace DiscordCoreAPI {
 				}
 				this->connectionState.store(VoiceConnectionState::Collecting_Init_Data);
 				this->baseShard->voiceConnectionDataBufferMap[this->voiceConnectInitData.guildId]->clearContents();
-				this->activeState.store(VoiceActiveState::Playing);
+				this->activeState.store(VoiceActiveState::Stopped);
 				return;
 			}
 		}
