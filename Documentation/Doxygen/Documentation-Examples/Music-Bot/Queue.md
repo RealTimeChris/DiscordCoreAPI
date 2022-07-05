@@ -12,9 +12,9 @@ namespace DiscordCoreAPI {
         std::vector<std::vector<EmbedFieldData>> msgEmbedFields;
         msgEmbedFields.push_back(std::vector<EmbedFieldData>());
         int32_t msgEmbedFieldsPage{ 0 };
-       for (int32_t y = 0; y < playlist.size(); y += 1) {
+       for (int32_t y = 0; y < playlist.size(); y++) {
            if (y % 25 == 0 && y > 0) {
-               msgEmbedFieldsPage += 1;
+               msgEmbedFieldsPage++;
                msgEmbedFields.push_back(std::vector<EmbedFieldData>());
            }
            EmbedFieldData msgEmbedField = { .value = "__**Title:**__ [" + playlist.at(y).songTitle + "](" + playlist.at(y).viewUrl + ")\n__**Added By:**__ <@!" + playlist.at(y).addedByUserId + "> (" + playlist.at(y).addedByUserName + ")", .name = "__**" + std::to_string(y + 1) + " of " + std::to_string(playlist.size()) + "**__",.Inline = false };
@@ -22,7 +22,7 @@ namespace DiscordCoreAPI {
        }
        msgEmbedFieldsPage = 0;
        std::vector<EmbedData> newMsgEmbeds;
-       for (int32_t y = 0; y < msgEmbedFields.size(); y += 1) {
+       for (int32_t y = 0; y < msgEmbedFields.size(); y++) {
            EmbedData msgEmbed;
            msgEmbed.setAuthor(originalEvent.getUserName(), originalEvent.getAvatarUrl());
            msgEmbed.setColor(discordGuild.data.borderColor);
@@ -117,10 +117,10 @@ namespace DiscordCoreAPI {
                 std::vector<std::vector<EmbedFieldData>> msgEmbedFields;
                 msgEmbedFields.push_back(std::vector<EmbedFieldData>());
                 int32_t msgEmbedFieldsPage{ 0 };
-                for (int32_t y = 0; y < SongAPI::getPlaylist(guild.id).songQueue.size(); y += 1) {
+                for (int32_t y = 0; y < SongAPI::getPlaylist(guild.id).songQueue.size(); y++) {
                     if (y % 25 == 0 && y > 0) {
                         if (y > 0) {
-                            msgEmbedFieldsPage += 1;
+                            msgEmbedFieldsPage++;
                         }
                         msgEmbedFields.push_back(std::vector<EmbedFieldData>());
                     }
@@ -130,7 +130,7 @@ namespace DiscordCoreAPI {
                 }
                 std::vector<EmbedData> msgEmbeds;
                 msgEmbedFieldsPage = 0;
-                for (int32_t y = 0; y < msgEmbedFields.size(); y += 1) {
+                for (int32_t y = 0; y < msgEmbedFields.size(); y++) {
                     EmbedData msgEmbed;
                     msgEmbed.setAuthor(args.eventData->getUserName(), args.eventData->getAvatarUrl()).setColor(discordGuild.data.borderColor).setTimeStamp(getTimeAndDate()).setTitle("__**Playlist, Page " + std::to_string(y + 1) + " of " + std::to_string(msgEmbedFields.size()) + "**__").
                         setFooter("React with ✅ to edit the contents of the current page. React with ❌ to exit!").setDescription("__**React with ✅ to edit the contents of the current page. React with ❌ to exit!**__").fields = msgEmbedFields[y];
@@ -171,7 +171,7 @@ namespace DiscordCoreAPI {
                         continue;
                     }
                     else if (buttonCollectedData.at(0).buttonId == "next" && (currentPageIndex < msgEmbeds.size())) {
-                        currentPageIndex += 1;
+                        currentPageIndex++;
                         RespondToInputEventData dataPackage(buttonCollectedData.at(0).interactionData);
                         dataPackage.setResponseType(InputEventResponseType::Edit_Interaction_Response);
                         dataPackage.addMessageEmbed(msgEmbeds[currentPageIndex]);
@@ -184,7 +184,7 @@ namespace DiscordCoreAPI {
                         continue;
                     }
                     else if (buttonCollectedData.at(0).buttonId == "back" && (currentPageIndex > 0)) {
-                        currentPageIndex -= 1;
+                        currentPageIndex--;
                         RespondToInputEventData dataPackage(buttonCollectedData.at(0).interactionData);
                         dataPackage.setResponseType(InputEventResponseType::Edit_Interaction_Response);
                         dataPackage.addMessageEmbed(msgEmbeds[currentPageIndex]);

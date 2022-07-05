@@ -134,7 +134,7 @@ Helper Functions {#HelperFunctions}
 		float finalModValue = 0;
 		float newInputModValue = inputModValue;
 		if (newInputModValue == 0) {
-			newInputModValue += 1;
+			newInputModValue++;
 		}
 		if (newInputModValue <= 0) {
 			float newInputValue = newInputModValue * -1;

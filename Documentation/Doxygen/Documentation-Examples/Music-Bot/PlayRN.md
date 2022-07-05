@@ -151,7 +151,7 @@ PlayRN {#Play-Right-Now}
 				std::vector<EmbedData> embedsFromSearch;
 				uint32_t x = 0;
 				for (Song& value: searchResults) {
-					x += 1;
+					x++;
 					EmbedData newEmbed;
 					newEmbed.setAuthor(args.eventData->getUserName(), args.eventData->getAvatarUrl());
 					newEmbed.setDescription("__**Title:**__ [" + value.songTitle + "](" + value.viewUrl + ")" + "\n__**Description:**__ " + value.description +

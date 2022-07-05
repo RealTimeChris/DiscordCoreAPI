@@ -49,7 +49,7 @@ Set Music Channel {#SetMusicChannel}
 
 				if (args.commandData.subCommandName == "add") {
 					std::string channelID = channel.id;
-					for (uint32_t x = 0; x < discordGuild.data.musicChannelIds.size(); x += 1) {
+					for (uint32_t x = 0; x < discordGuild.data.musicChannelIds.size(); x++) {
 						if (channelID == discordGuild.data.musicChannelIds[x]) {
 							std::string msgString = "------\n**That channel is already on the list of enabled channels!**\n------";
 							EmbedData messageEmbed;
@@ -87,7 +87,7 @@ Set Music Channel {#SetMusicChannel}
 
 					std::string msgString;
 					bool isItPresent = false;
-					for (uint32_t x = 0; x < discordGuild.data.musicChannelIds.size(); x += 1) {
+					for (uint32_t x = 0; x < discordGuild.data.musicChannelIds.size(); x++) {
 						if (channelID == discordGuild.data.musicChannelIds[x]) {
 							isItPresent = true;
 							discordGuild.data.musicChannelIds.erase(discordGuild.data.musicChannelIds.begin() + x);
@@ -131,7 +131,7 @@ Set Music Channel {#SetMusicChannel}
 					if (discordGuild.data.musicChannelIds.size() > 0) {
 						msgString = "__You've removed the following channels from your list of enabled music channels:__\n------\n";
 
-						for (uint32_t x = 0; x < discordGuild.data.musicChannelIds.size(); x += 1) {
+						for (uint32_t x = 0; x < discordGuild.data.musicChannelIds.size(); x++) {
 							std::string currentID = discordGuild.data.musicChannelIds[x];
 
 							msgString += "__**Channel #" + std::to_string(x) + "**__<#" + currentID + "> \n";
@@ -160,7 +160,7 @@ Set Music Channel {#SetMusicChannel}
 				if (args.commandData.subCommandName == "view") {
 					std::string msgString = "__You have the following channels enabled for music commands, on this server:__\n------\n";
 
-					for (uint32_t x = 0; x < discordGuild.data.musicChannelIds.size(); x += 1) {
+					for (uint32_t x = 0; x < discordGuild.data.musicChannelIds.size(); x++) {
 						std::string currentID = discordGuild.data.musicChannelIds[x];
 
 						msgString += "__**Channel #" + std::to_string(x) + ":**__ <#" + currentID + "> \n";

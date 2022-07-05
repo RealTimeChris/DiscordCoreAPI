@@ -49,7 +49,7 @@ Help {#Help}
 					for (auto& [key, value]: args.discordCoreClient->commandController.getFunctions()) {
 						if (counter % 24 == 0) {
 							selectOptions.push_back(std::vector<SelectOptionData>());
-							currentHelpPage += 1;
+							currentHelpPage++;
 						}
 						std::string newString;
 						newString.push_back((char)toupper(value->commandName[0]));
@@ -72,7 +72,7 @@ Help {#Help}
 							continue;
 						}
 						selectOptions.at((int64_t)currentHelpPage-(int64_t)1).push_back(newData);
-						counter += 1;
+						counter++;
 					}
 					SelectOptionData newData;
 					newData.label = "Go Back";
@@ -108,7 +108,7 @@ Help {#Help}
 					std::vector<std::string> numberEmojiId;
 
 					responseData.addMessageEmbed(msgEmbed);
-					for (uint32_t x = 0; x < selectOptionsNew.size(); x += 1) {
+					for (uint32_t x = 0; x < selectOptionsNew.size(); x++) {
 						std::string customId {"select_page_" + std::to_string(x)};
 						responseData.addButton(false, customId, std::to_string(x), ButtonStyle::Success, numberEmojiNames[x]);
 						numberEmojiId.push_back(customId);
@@ -139,7 +139,7 @@ Help {#Help}
 						responseData03.addMessageEmbed(msgEmbed00);
 						responseData03.addSelectMenu(false, "help_menu", value, "Commands", 1, 1);
 						editInteractionResponseData00.push_back(responseData03);
-						counter03 += 1;
+						counter03++;
 					}
 					if (buttonData.size() > 0) {
 						if (buttonData.at(0).buttonId == "exit" || buttonData.at(0).buttonId == "empty") {
@@ -158,7 +158,7 @@ Help {#Help}
 							break;
 						}
 						counter02 = 0;
-						for (int32_t y = 0; y < numberEmojiId.size(); y += 1) {
+						for (int32_t y = 0; y < numberEmojiId.size(); y++) {
 							if (buttonData.at(0).buttonId == numberEmojiId[y]) {
 								counter02 = y;
 								break;
@@ -184,7 +184,7 @@ Help {#Help}
 							RespondToInputEventData responseData02(selectMenuReturnData.at(0).interactionData);
 							responseData02.setResponseType(InputEventResponseType::Edit_Ephemeral_Interaction_Response);
 							responseData02.addMessageEmbed(msgEmbed);
-							for (uint32_t x = 0; x < selectOptionsNew.size(); x += 1) {
+							for (uint32_t x = 0; x < selectOptionsNew.size(); x++) {
 								std::string customId {"select_page_" + std::to_string(x)};
 								responseData02.addButton(false, customId, std::to_string(x), ButtonStyle::Success, numberEmojiNames[x]);
 								numberEmojiId.push_back(customId);
