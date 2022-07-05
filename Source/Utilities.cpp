@@ -232,13 +232,13 @@ namespace DiscordCoreAPI {
 	}
 
 	StringWrapper::operator nlohmann::json() {
-		nlohmann::json newValue{};
-		std::string theValue{};
-		for (auto& value: static_cast<std::string>(static_cast<StringWrapper>(*this))) {
-			theValue.push_back(value);
+		nlohmann::json theValue;
+		std::string theString{};
+		for (auto& value: static_cast<std::string>(*this)) {
+			theString.push_back(value);
 		}
-		newValue = theValue;
-		return newValue;
+		theValue = theString;
+		return theValue;
 	}
 
 	void StringWrapper::push_back(char theChar) {

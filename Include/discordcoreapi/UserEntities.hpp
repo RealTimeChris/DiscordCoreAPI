@@ -38,10 +38,9 @@ namespace DiscordCoreAPI {
 
 		operator nlohmann::json() {
 			nlohmann::json data{};
-			data["d"]["activities"] = nlohmann::json{};
 			for (auto& value: this->activities) {
 				nlohmann::json dataNew{};
-				if (value.url != "") {
+				if (static_cast<std::string>(value.url) != "") {
 					dataNew["url"] = value.url;
 				}
 				dataNew["name"] = value.name;
@@ -49,7 +48,7 @@ namespace DiscordCoreAPI {
 				data["d"]["activities"].push_back(dataNew);
 			}
 			data["d"]["status"] = this->status;
-			data["d"]["since"] = this->since;
+			data["d"]["since"] = nullptr;
 			data["d"]["afk"] = this->afk;
 			data["op"] = 3;
 			return data;
