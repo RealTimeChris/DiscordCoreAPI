@@ -576,7 +576,6 @@ namespace DiscordCoreAPI {
 
 	void VoiceConnection::disconnectInternal() noexcept {
 		this->activeState.store(VoiceActiveState::Exiting);
-		this->areWeConnectedBool.store(false);
 		this->sendSpeakingMessage(false);
 		if (this->taskThread01) {
 			this->taskThread01->request_stop();
@@ -602,6 +601,7 @@ namespace DiscordCoreAPI {
 		if (thePtr) {
 			thePtr->onSongCompletionEvent.remove(thePtr->eventToken);
 		}
+		this->areWeConnectedBool.store(false);
 	}
 
 	void VoiceConnection::collectExternalIP() noexcept {
