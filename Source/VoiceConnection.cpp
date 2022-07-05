@@ -357,6 +357,10 @@ namespace DiscordCoreAPI {
 			while (!stopToken.stop_requested() && !Globals::doWeQuit.load() && this->activeState.load() != VoiceActiveState::Exiting) {
 				if (!stopToken.stop_requested() && this->connections.size() > 0) {
 					DiscordCoreAPI::StopWatch theStopWatch{ 10000ms };
+					VoiceActiveState theState{};
+					if (this->activeState.load() == VoiceActiveState::Connecting) {
+						theState = VoiceActiveState::Stopped;
+					}
 					auto theState = this->activeState.load();
 					this->activeState.store(VoiceActiveState::Connecting);
 					while (!stopToken.stop_requested() && !this->baseShard->areWeConnected02.load()) {
