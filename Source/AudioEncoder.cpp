@@ -21,6 +21,23 @@
 
 namespace DiscordCoreInternal {
 
+	void OpusEncoderWrapper::OpusEncoderDeleter::operator()(OpusEncoder* other) {
+		opus_encoder_destroy(other);
+	}
+		
+	OpusEncoderWrapper& OpusEncoderWrapper::operator = (OpusEncoder * other) {
+		this->thePtr.reset(other);
+		return *this;
+	}
+
+	OpusEncoderWrapper::operator OpusEncoder*() {
+		return this->thePtr.get();
+	}
+
+	OpusEncoderWrapper::OpusEncoderWrapper(std::nullptr_t other) {
+		*this = other;
+	}
+
 	AudioEncoder::AudioEncoder() {
 		int32_t error;
 		this->encoder = opus_encoder_create(this->sampleRate, this->nChannels, OPUS_APPLICATION_AUDIO, &error);
