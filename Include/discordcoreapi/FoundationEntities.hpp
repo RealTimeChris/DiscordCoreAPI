@@ -101,6 +101,14 @@ namespace DiscordCoreInternal {
 		operator nlohmann::json();
 	};
 
+	struct DiscordCoreAPI_Dll VoiceResumeData {
+		std::string sessionId{};
+		std::string serverId{};
+		std::string token{};
+
+		operator nlohmann::json();
+	};
+
 	struct DiscordCoreAPI_Dll VoiceSocketProtocolPayloadData {
 		std::string voiceEncryptionMode{};
 		std::string externalIp{};

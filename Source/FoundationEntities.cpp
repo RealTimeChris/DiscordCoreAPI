@@ -65,6 +65,15 @@ namespace DiscordCoreInternal {
 		return data;
 	}
 
+	VoiceResumeData::operator nlohmann::json(){
+		nlohmann::json data{};
+		data["d"]["session_id"] = this->sessionId;
+		data["d"]["server_id"] = this->serverId;
+		data["d"]["token"] = this->token;
+		data["op"] = 7;
+		return data;
+	}
+
 	VoiceSocketProtocolPayloadData::operator nlohmann::json() {
 		nlohmann::json data{};
 		data["d"]["data"]["port"] = stol(this->voicePort);
@@ -87,10 +96,11 @@ namespace DiscordCoreInternal {
 
 	SendSpeakingData::operator nlohmann::json() {
 		nlohmann::json data{};
-		data["d"]["speaking"] = this->type;
+		data["d"]["speaking"] = static_cast<int8_t>(this->type);
 		data["d"]["delay"] = this->delay;
 		data["d"]["ssrc"] = this->ssrc;
 		data["op"] = 5;
+		std::cout << "THE DATA: " << data.dump() << std::endl; 
 		return data;
 	}
 }
