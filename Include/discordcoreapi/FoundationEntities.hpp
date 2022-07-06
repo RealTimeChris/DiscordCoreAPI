@@ -181,12 +181,12 @@ namespace DiscordCoreAPI {
 
 		RoleTagsData() = default;
 
-		RoleTagsData& operator=(const nlohmann ::json& jsonObjectData) {
+		RoleTagsData& operator=(const nlohmann::json& jsonObjectData) {
 			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
-		RoleTagsData(const nlohmann ::json& jsonObjectData) {
+		RoleTagsData(const nlohmann::json& jsonObjectData) {
 			*this = jsonObjectData;
 		}
 
@@ -1514,12 +1514,12 @@ namespace DiscordCoreAPI {
 
 		RoleData() = default;
 
-		RoleData& operator=(const nlohmann ::json& jsonObjectData) {
+		RoleData& operator=(const nlohmann::json& jsonObjectData) {
 			this->parseObject(jsonObjectData, this);
 			return *this;
 		}
 
-		RoleData(const nlohmann ::json& jsonObjectData) {
+		RoleData(const nlohmann::json& jsonObjectData) {
 			*this = jsonObjectData;
 		}
 

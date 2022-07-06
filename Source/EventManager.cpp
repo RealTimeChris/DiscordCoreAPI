@@ -33,7 +33,8 @@ namespace DiscordCoreAPI {
 		return this->onApplicationCommandPermissionsUpdateEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onAutoModerationRuleCreation(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnAutoModerationRuleCreationData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onAutoModerationRuleCreation(
+		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnAutoModerationRuleCreationData> handler) {
 		return this->onAutoModerationRuleCreationEvent.add(std::move(handler));
 	}
 
@@ -49,7 +50,8 @@ namespace DiscordCoreAPI {
 		return this->onAutoModerationRuleUpdateEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onAutoModerationRuleDeletion(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnAutoModerationRuleDeletionData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onAutoModerationRuleDeletion(
+		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnAutoModerationRuleDeletionData> handler) {
 		return this->onAutoModerationRuleDeletionEvent.add(std::move(handler));
 	}
 
@@ -57,7 +59,8 @@ namespace DiscordCoreAPI {
 		return this->onAutoModerationRuleDeletionEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onAutoModerationActionExecution(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnAutoModerationActionExecutionData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onAutoModerationActionExecution(
+		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnAutoModerationActionExecutionData> handler) {
 		return this->onAutoModerationActionExecutionEvent.add(std::move(handler));
 	}
 

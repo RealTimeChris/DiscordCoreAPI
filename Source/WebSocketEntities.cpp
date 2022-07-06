@@ -78,7 +78,7 @@ namespace DiscordCoreInternal {
 		std::lock_guard theLock{ this->theMutex };
 		this->connections.push(thePackage);
 		while (!this->sslShards.contains(thePackage.currentShard)) {
-			if (theStopWatch.hasTimePassed()){
+			if (theStopWatch.hasTimePassed()) {
 				return;
 			}
 			std::this_thread::sleep_for(1ms);
@@ -94,7 +94,7 @@ namespace DiscordCoreInternal {
 	void BaseSocketAgent::onClosed(WebSocketSSLShard* theShard) noexcept {
 		if (this->maxReconnectTries > theShard->currentReconnectTries) {
 			theShard->disconnect(true);
-		} else if (this->maxReconnectTries<= theShard->currentReconnectTries) {
+		} else if (this->maxReconnectTries <= theShard->currentReconnectTries) {
 			this->doWeQuit->store(true);
 			this->taskThread->request_stop();
 		}

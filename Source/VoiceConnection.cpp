@@ -496,11 +496,9 @@ namespace DiscordCoreAPI {
 								std::vector<RawFrameData> rawFrames{};
 								rawFrames.push_back(this->audioData.rawFrameData);
 								auto encodedFrameData = this->encoder->encodeFrames(rawFrames);
-								newFrame =
-									this->encryptSingleAudioFrame(encodedFrameData[0].encodedFrameData);
+								newFrame = this->encryptSingleAudioFrame(encodedFrameData[0].encodedFrameData);
 							} else {
-								newFrame =
-									this->encryptSingleAudioFrame(this->audioData.encodedFrameData);
+								newFrame = this->encryptSingleAudioFrame(this->audioData.encodedFrameData);
 							}
 							if (newFrame.size() == 0) {
 								continue;
@@ -844,7 +842,7 @@ namespace DiscordCoreAPI {
 			}
 		}
 	}
-	
+
 	void VoiceConnection::disconnect() noexcept {
 		std::lock_guard theLock{ this->baseSocketAgent->theMutex };
 		this->baseSocketAgent->voiceConnectionsToDisconnect.push(this->voiceConnectInitData.guildId);
@@ -869,8 +867,7 @@ namespace DiscordCoreAPI {
 		this->connectionState.store(VoiceConnectionState::Collecting_Init_Data);
 		if (this->activeState.load() != VoiceActiveState::Exiting && this->currentReconnectTries < this->maxReconnectTries) {
 			this->reconnect();
-		}
-		else if (this->currentReconnectTries >= this->maxReconnectTries) {
+		} else if (this->currentReconnectTries >= this->maxReconnectTries) {
 			this->disconnect();
 		}
 	}

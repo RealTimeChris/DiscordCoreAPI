@@ -483,7 +483,6 @@ namespace DiscordCoreInternal {
 				size_t writtenBytes{ 0 };
 				std::string theString{};
 				if (value->outputBuffers.size() > 0) {
-					
 					theString = std::move(value->outputBuffers.front());
 					auto returnValue{ SSL_write_ex(value->ssl, theString.data(), theString.size(), &writtenBytes) };
 					auto errorValue{ SSL_get_error(value->ssl, returnValue) };
@@ -598,7 +597,7 @@ namespace DiscordCoreInternal {
 		}
 		std::string data = dataToWrite;
 		if (data.size() > 0 && this->ssl) {
-			if (priority && data.size() < static_cast<size_t>(16 * 1024)){
+			if (priority && data.size() < static_cast<size_t>(16 * 1024)) {
 				std::unique_lock theLock{ this->theMutex01 };
 				fd_set writeSet{};
 				int32_t writeNfds{ 0 };
@@ -818,7 +817,7 @@ namespace DiscordCoreInternal {
 		readNfds = this->theSocket > readNfds ? this->theSocket : readNfds;
 
 		timeval checkTime{ .tv_usec = 0 };
-		if (auto returnValue = select(readNfds+ 1, &readSet, nullptr, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
+		if (auto returnValue = select(readNfds + 1, &readSet, nullptr, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
 			this->disconnect();
 			return;
 		} else if (returnValue == 0) {

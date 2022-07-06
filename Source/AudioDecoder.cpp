@@ -21,6 +21,207 @@
 
 namespace DiscordCoreInternal {
 
+	void AVFrameWrapper::AVFrameDeleter::operator()(AVFrame* other) {
+		if (other) {
+			av_frame_unref(other);
+			av_frame_free(&other);
+		}
+	}
+
+	AVFrameWrapper& AVFrameWrapper::operator=(AVFrame* other) {
+		this->thePtr.reset(other);
+		return *this;
+	}
+
+	AVFrameWrapper::AVFrameWrapper(AVFrame* other) {
+		*this = other;
+	}
+
+	AVFrame* AVFrameWrapper::operator->() {
+		return this->thePtr.get();
+	}
+
+	AVFrameWrapper::operator AVFrame*() {
+		return this->thePtr.get();
+	}
+
+	AVFrameWrapper::AVFrameWrapper(){};
+
+	void AVCodecContextWrapper::AVCodecContextDeleter::operator()(AVCodecContext* other) {
+		if (other) {
+			avcodec_free_context(&other);
+		}
+	}
+
+	AVCodecContextWrapper& AVCodecContextWrapper::operator=(AVCodecContext* other) {
+		this->thePtr.reset(other);
+		return *this;
+	}
+
+	AVCodecContextWrapper::AVCodecContextWrapper(AVCodecContext* other) {
+		*this = other;
+	}
+
+	AVCodecContext* AVCodecContextWrapper::operator->() {
+		return this->thePtr.get();
+	}
+
+	AVCodecContextWrapper::operator AVCodecContext*() {
+		return this->thePtr.get();
+	}
+
+	AVCodecContextWrapper::AVCodecContextWrapper(){};
+
+
+	void AVFormatContextWrapper::AVFormatContextDeleter::operator()(AVFormatContextWrapper01* other) {
+		if (other->didItInitialize) {
+			avformat_close_input(&other->theContext);
+		}
+	}
+
+	AVFormatContextWrapper& AVFormatContextWrapper::operator=(AVFormatContext* other) {
+		this->thePtr->theContext = other;
+		return *this;
+	}
+
+	AVFormatContextWrapper::AVFormatContextWrapper(AVFormatContext* other) {
+		*this = other;
+	}
+
+	bool* AVFormatContextWrapper::getBoolPtr() {
+		return &this->thePtr.get()->didItInitialize;
+	}
+
+	AVFormatContext* AVFormatContextWrapper::operator->() {
+		return this->thePtr.get()->theContext;
+	}
+
+	AVFormatContext** AVFormatContextWrapper::operator*() {
+		return &this->thePtr.get()->theContext;
+	}
+
+	AVFormatContextWrapper::operator AVFormatContext*() {
+		return this->thePtr.get()->theContext;
+	}
+
+	AVFormatContextWrapper::AVFormatContextWrapper(){};
+
+	void SwrContextWrapper::SwrContextDeleter::operator()(SwrContext* other) {
+		if (other) {
+			swr_free(&other);
+		}
+	}
+		
+	SwrContextWrapper& SwrContextWrapper::operator = (SwrContext * other) {
+		this->thePtr.reset(other);
+		return *this;
+	}
+
+	SwrContextWrapper::SwrContextWrapper(SwrContext* other) {
+		*this = other;
+	}
+
+	SwrContextWrapper::operator SwrContext*() {
+		return this->thePtr.get();
+	}
+
+	SwrContextWrapper::SwrContextWrapper(){};
+
+	struct DiscordCoreAPI_Dll AVIOContextWrapper {
+		struct DiscordCoreAPI_Dll AVIOContextDeleter {
+			void operator()(AVIOContext* other) {
+				if (other) {
+					av_freep(&other);
+				}
+			}
+		};
+
+		AVIOContextWrapper& operator=(AVIOContext* other) {
+			this->thePtr.reset(other);
+			return *this;
+		}
+
+		AVIOContextWrapper(AVIOContext* other) {
+			*this = other;
+		}
+
+		AVIOContext* operator->() {
+			return this->thePtr.get();
+		}
+
+		operator AVIOContext*() {
+			return this->thePtr.get();
+		}
+
+		AVIOContextWrapper(){};
+
+	  protected:
+		std::unique_ptr<AVIOContext, AVIOContextDeleter> thePtr{ nullptr, AVIOContextDeleter{} };
+	};
+
+	void AVPacketWrapper::AVPacketDeleter::operator()(AVPacket* other) {
+		if (other) {
+			av_packet_free(&other);
+		}
+	}
+		
+	AVPacketWrapper& AVPacketWrapper::operator = (AVPacket * other) {
+		this->thePtr.reset(other);
+		return *this;
+	}
+
+	AVPacketWrapper::AVPacketWrapper(AVPacket* other) {
+		*this = other;
+	}
+
+	AVPacket* AVPacketWrapper::operator->() {
+		return this->thePtr.get();
+	}
+
+	AVPacketWrapper::operator AVPacket*() {
+		return this->thePtr.get();
+	}
+
+	AVPacketWrapper::AVPacketWrapper(){};
+
+	void AVCodecWrapper::AVCodecDeleter ::operator()(AVCodec*){};
+
+	AVCodecWrapper& AVCodecWrapper::operator = (AVCodec * other) {
+		this->thePtr.reset(other);
+		return *this;
+	}
+
+	AVCodecWrapper::AVCodecWrapper(AVCodec* other) {
+		*this = other;
+	}
+
+	AVCodecWrapper::operator AVCodec*() {
+		return this->thePtr.get();
+	}
+
+	AVCodecWrapper::AVCodecWrapper(){};
+
+	void AVStreamWrapper::AVStreamDeleter::operator()(AVStream*){};
+
+	AVStreamWrapper& AVStreamWrapper::operator = (AVStream * other) {
+		this->thePtr.reset(other);
+		return *this;
+	}
+
+	AVStreamWrapper::AVStreamWrapper(AVStream* other) {
+		*this = other;
+	}
+
+	AVStream* AVStreamWrapper::operator->() {
+		return this->thePtr.get();
+	}
+
+	AVStreamWrapper::operator AVStream*() {
+		return this->thePtr.get();
+	}
+
+	AVStreamWrapper::AVStreamWrapper(){};
+
 	AudioDecoder::AudioDecoder(const BuildAudioDecoderData& dataPackage) {
 		this->configManager = dataPackage.configManager;
 		this->bufferMaxSize = dataPackage.bufferMaxSize;

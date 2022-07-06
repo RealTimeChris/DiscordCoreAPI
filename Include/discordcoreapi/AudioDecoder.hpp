@@ -31,32 +31,18 @@ namespace DiscordCoreInternal {
 
 	struct DiscordCoreAPI_Dll AVFrameWrapper {
 		struct DiscordCoreAPI_Dll AVFrameDeleter {
-			void operator()(AVFrame* other) {
-				if (other) {
-					av_frame_unref(other);
-					av_frame_free(&other);
-				}
-			}
+			void operator()(AVFrame* other);
 		};
 
-		AVFrameWrapper& operator=(AVFrame* other) {
-			this->thePtr.reset(other);
-			return *this;
-		}
+		AVFrameWrapper& operator=(AVFrame* other);
 
-		AVFrameWrapper(AVFrame* other) {
-			*this = other;
-		}
+		AVFrameWrapper(AVFrame* other);
 
-		AVFrame* operator->() {
-			return this->thePtr.get();
-		}
+		AVFrame* operator->();
 
-		operator AVFrame*() {
-			return this->thePtr.get();
-		}
+		operator AVFrame*();
 
-		AVFrameWrapper(){};
+		AVFrameWrapper();
 
 	  protected:
 		std::unique_ptr<AVFrame, AVFrameDeleter> thePtr{ nullptr, AVFrameDeleter{} };
@@ -64,31 +50,18 @@ namespace DiscordCoreInternal {
 
 	struct DiscordCoreAPI_Dll AVCodecContextWrapper {
 		struct DiscordCoreAPI_Dll AVCodecContextDeleter {
-			void operator()(AVCodecContext* other) {
-				if (other) {
-					avcodec_free_context(&other);
-				}
-			}
+			void operator()(AVCodecContext* other);
 		};
 
-		AVCodecContextWrapper& operator=(AVCodecContext* other) {
-			this->thePtr.reset(other);
-			return *this;
-		}
+		AVCodecContextWrapper& operator=(AVCodecContext* other);
 
-		AVCodecContextWrapper(AVCodecContext* other) {
-			*this = other;
-		}
+		AVCodecContextWrapper(AVCodecContext* other);
+		
+		AVCodecContext* operator->();
 
-		AVCodecContext* operator->() {
-			return this->thePtr.get();
-		}
-
-		operator AVCodecContext*() {
-			return this->thePtr.get();
-		}
-
-		AVCodecContextWrapper(){};
+		operator AVCodecContext*();
+		
+		AVCodecContextWrapper();		
 
 	  protected:
 		std::unique_ptr<AVCodecContext, AVCodecContextDeleter> thePtr{ nullptr, AVCodecContextDeleter{} };
@@ -103,39 +76,22 @@ namespace DiscordCoreInternal {
 
 	struct DiscordCoreAPI_Dll AVFormatContextWrapper {
 		struct DiscordCoreAPI_Dll AVFormatContextDeleter {
-			void operator()(AVFormatContextWrapper01* other) {
-				if (other->didItInitialize) {
-					avformat_close_input(&other->theContext);
-				}
-			}
+			void operator()(AVFormatContextWrapper01* other);
 		};
 
-		AVFormatContextWrapper& operator=(AVFormatContext* other) {
-			this->thePtr->theContext = other;
-			return *this;
-		}
+		AVFormatContextWrapper& operator=(AVFormatContext* other);
+		
+		AVFormatContextWrapper(AVFormatContext* other);
 
-		AVFormatContextWrapper(AVFormatContext* other) {
-			*this = other;
-		}
+		bool* getBoolPtr();
 
-		bool* getBoolPtr() {
-			return &this->thePtr.get()->didItInitialize;
-		}
+		AVFormatContext* operator->();
 
-		AVFormatContext* operator->() {
-			return this->thePtr.get()->theContext;
-		}
+		AVFormatContext** operator*();
 
-		AVFormatContext** operator*() {
-			return &this->thePtr.get()->theContext;
-		}
+		operator AVFormatContext*();
 
-		operator AVFormatContext*() {
-			return this->thePtr.get()->theContext;
-		}
-
-		AVFormatContextWrapper(){};
+		AVFormatContextWrapper();
 
 	  protected:
 		std::unique_ptr<AVFormatContextWrapper01, AVFormatContextDeleter> thePtr{ new AVFormatContextWrapper01{}, AVFormatContextDeleter{} };
@@ -143,144 +99,91 @@ namespace DiscordCoreInternal {
 
 	struct DiscordCoreAPI_Dll SwrContextWrapper {
 		struct DiscordCoreAPI_Dll SwrContextDeleter {
-			void operator()(SwrContext* other) {
-				if (other) {
-					swr_free(&other);
-				}
-			}
+			void operator()(SwrContext* other);
 		};
 
-		SwrContextWrapper& operator=(SwrContext* other) {
-			this->thePtr.reset(other);
-			return *this;
-		}
+		SwrContextWrapper& operator=(SwrContext* other);
 
-		SwrContextWrapper(SwrContext* other) {
-			*this = other;
-		}
+		SwrContextWrapper(SwrContext* other);
 
-		operator SwrContext*() {
-			return this->thePtr.get();
-		}
+		operator SwrContext*();
 
-		SwrContextWrapper(){};
-
+		SwrContextWrapper();
+		
 	  protected:
 		std::unique_ptr<SwrContext, SwrContextDeleter> thePtr{ nullptr, SwrContextDeleter{} };
 	};
 
 	struct DiscordCoreAPI_Dll AVIOContextWrapper {
 		struct DiscordCoreAPI_Dll AVIOContextDeleter {
-			void operator()(AVIOContext* other) {
-				if (other) {
-					av_freep(&other);
-				}
-			}
+			void operator()(AVIOContext* other);
 		};
 
-		AVIOContextWrapper& operator=(AVIOContext* other) {
-			this->thePtr.reset(other);
-			return *this;
-		}
+		AVIOContextWrapper& operator=(AVIOContext* other);
+		
+		AVIOContextWrapper(AVIOContext* other);
 
-		AVIOContextWrapper(AVIOContext* other) {
-			*this = other;
-		}
+		AVIOContext* operator->();
+		
+		operator AVIOContext*();
 
-		AVIOContext* operator->() {
-			return this->thePtr.get();
-		}
-
-		operator AVIOContext*() {
-			return this->thePtr.get();
-		}
-
-		AVIOContextWrapper(){};
-
+		AVIOContextWrapper();
+		
 	  protected:
 		std::unique_ptr<AVIOContext, AVIOContextDeleter> thePtr{ nullptr, AVIOContextDeleter{} };
 	};
 
 	struct DiscordCoreAPI_Dll AVPacketWrapper {
 		struct DiscordCoreAPI_Dll AVPacketDeleter {
-			void operator()(AVPacket* other) {
-				if (other) {
-					av_packet_free(&other);
-				}
-			}
+			void operator()(AVPacket* other);
 		};
 
-		AVPacketWrapper& operator=(AVPacket* other) {
-			this->thePtr.reset(other);
-			return *this;
-		}
+		AVPacketWrapper& operator=(AVPacket* other);
+		
+		AVPacketWrapper(AVPacket* other);
 
-		AVPacketWrapper(AVPacket* other) {
-			*this = other;
-		}
+		AVPacket* operator->();
 
-		AVPacket* operator->() {
-			return this->thePtr.get();
-		}
-
-		operator AVPacket*() {
-			return this->thePtr.get();
-		}
-
-		AVPacketWrapper(){};
-
+		operator AVPacket*();
+		
+		AVPacketWrapper();
+		
 	  protected:
 		std::unique_ptr<AVPacket, AVPacketDeleter> thePtr{ nullptr, AVPacketDeleter{} };
 	};
 
 	struct DiscordCoreAPI_Dll AVCodecWrapper {
 		struct DiscordCoreAPI_Dll AVCodecDeleter {
-			void operator()(AVCodec*){};
+			void operator()(AVCodec*);
 		};
 
-		AVCodecWrapper& operator=(AVCodec* other) {
-			this->thePtr.reset(other);
-			return *this;
-		}
+		AVCodecWrapper& operator=(AVCodec* other);
 
-		AVCodecWrapper(AVCodec* other) {
-			*this = other;
-		}
+		AVCodecWrapper(AVCodec* other);
 
-		operator AVCodec*() {
-			return this->thePtr.get();
-		}
+		operator AVCodec*();
 
-		AVCodecWrapper(){};
-
+		AVCodecWrapper();
+		
 	  protected:
 		std::unique_ptr<AVCodec, AVCodecDeleter> thePtr{ nullptr, AVCodecDeleter{} };
 	};
 
 	struct DiscordCoreAPI_Dll AVStreamWrapper {
 		struct DiscordCoreAPI_Dll AVStreamDeleter {
-			void operator()(AVStream*){};
+			void operator()(AVStream*);			
 		};
 
-		AVStreamWrapper& operator=(AVStream* other) {
-			this->thePtr.reset(other);
-			return *this;
-		}
+		AVStreamWrapper& operator=(AVStream* other);
 
-		AVStreamWrapper(AVStream* other) {
-			*this = other;
-		}
+		AVStreamWrapper(AVStream* other);
+		
+		AVStream* operator->();
 
-		AVStream* operator->() {
-			return this->thePtr.get();
-		}
-
-		operator AVStream*() {
-			return this->thePtr.get();
-		}
-
-		AVStreamWrapper(){};
-
+		operator AVStream*();
+		
+		AVStreamWrapper();
+		
 	  protected:
 		std::unique_ptr<AVStream, AVStreamDeleter> thePtr{ nullptr, AVStreamDeleter{} };
 	};
