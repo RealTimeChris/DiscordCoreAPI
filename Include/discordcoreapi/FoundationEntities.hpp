@@ -6941,52 +6941,17 @@ namespace DiscordCoreInternal {
 		std::string content{};
 		std::string baseUrl{};
 
-		HttpsWorkloadData& operator=(const HttpsWorkloadData& other) {
-			if (this != &other) {
-				this->thisWorkerId.store(this->thisWorkerId.load());
-				this->headersToInsert = other.headersToInsert;
-				this->workloadClass = other.workloadClass;
-				this->workloadType = other.workloadType;
-				this->relativePath = other.relativePath;
-				this->payloadType = other.payloadType;
-				this->callStack = other.callStack;
-				this->baseUrl = other.baseUrl;
-				this->content = other.content;
-			}
-			return *this;
-		}
+		HttpsWorkloadData& operator=(const HttpsWorkloadData& other);
+		
+		HttpsWorkloadData(const HttpsWorkloadData& other);
 
-		HttpsWorkloadData(const HttpsWorkloadData& other) {
-			*this = other;
-		}
+		HttpsWorkloadData& operator=(HttpsWorkloadData& other);
 
-		HttpsWorkloadData& operator=(HttpsWorkloadData& other) {
-			if (this != &other) {
-				this->thisWorkerId.store(this->thisWorkerId.load());
-				this->headersToInsert = other.headersToInsert;
-				this->workloadClass = other.workloadClass;
-				this->workloadType = other.workloadType;
-				this->relativePath = other.relativePath;
-				this->payloadType = other.payloadType;
-				this->callStack = other.callStack;
-				this->baseUrl = other.baseUrl;
-				this->content = other.content;
-			}
-			return *this;
-		}
-
-		HttpsWorkloadData(HttpsWorkloadData& other) {
-			*this = other;
-		}
-
+		HttpsWorkloadData(HttpsWorkloadData& other);
+		
 		HttpsWorkloadData() = default;
 
-		static int64_t getAndIncrementWorkloadId(HttpsWorkloadType workloadType) {
-			std::lock_guard theLock{ HttpsWorkloadData::accessMutex };
-			int64_t theValue = HttpsWorkloadData::workloadIdsExternal[workloadType].load();
-			HttpsWorkloadData::workloadIdsExternal[workloadType].store(theValue + 1);
-			return theValue;
-		}
+		static int64_t getAndIncrementWorkloadId(HttpsWorkloadType workloadType);
 	};
 
 };// namespace DiscordCoreInternal
