@@ -73,18 +73,10 @@ namespace DiscordCoreInternal {
 #ifdef _WIN32
 	struct DiscordCoreAPI_Dll WSADataWrapper {
 		struct DiscordCoreAPI_Dll WSADataDeleter {
-			void operator()(WSADATA* other) {
-				WSACleanup();
-				delete other;
-			}
+			void operator()(WSADATA* other);
 		};
 
-		WSADataWrapper() {
-			if (auto errorValue = WSAStartup(MAKEWORD(2, 2), this->thePtr.get()); errorValue != 0) {
-				std::cout << DiscordCoreAPI::shiftToBrightRed() << "WSAStartup() Error: " << errorValue << ", ()";
-				std::cout << DiscordCoreAPI::reset() << std::endl;
-			}
-		}
+		WSADataWrapper();
 
 	  protected:
 		std::unique_ptr<WSADATA, WSADataDeleter> thePtr{ new WSADATA{}, WSADataDeleter{} };
@@ -93,65 +85,29 @@ namespace DiscordCoreInternal {
 
 	struct DiscordCoreAPI_Dll BIOWrapper {
 		struct DiscordCoreAPI_Dll BIODeleter {
-			void operator()(BIO* other) {
-				if (other) {
-					BIO_free(other);
-					other = nullptr;
-				}
-			}
+			void operator()(BIO* other);
 		};
 
-		BIOWrapper& operator=(BIO* other) {
-			this->bioPtr.reset(other);
-			auto errorValue = BIO_up_ref(other);
-			if (!errorValue) {
-				std::cout << DiscordCoreAPI::shiftToBrightRed() << "BIO_up_ref() Error: " << ERR_error_string(errorValue, nullptr) << DiscordCoreAPI::reset() << std::endl;
-			};
-			return *this;
-		}
+		BIOWrapper& operator=(BIO* other);
 
-		operator BIO*() {
-			return this->bioPtr.get();
-		}
+		operator BIO*();
 
-		BIOWrapper(){};
+		BIOWrapper();
 
 	  protected:
 		std::unique_ptr<BIO, BIODeleter> bioPtr{ nullptr, BIODeleter{} };
 	};
 
 	struct DiscordCoreAPI_Dll addrinfoWrapper {
-		addrinfo* operator->() {
-			if (this->addrinfoPtrTwo == nullptr) {
-				throw ConnectionError{ "addrinfoWrapper::operator->(), addrinfoPtrTwo was nullptr." };
-			}
-			return this->addrinfoPtrTwo;
-		}
+		addrinfo* operator->();
 
-		operator addrinfo**() {
-			this->doWeClearAddrInfo = true;
-			if (this->addrinfoPtrTwo == nullptr) {
-				throw ConnectionError{ "addrinfoWrapper::addrinfo**(), addrinfoPtrTwo was nullptr." };
-			}
-			return &this->addrinfoPtrTwo;
-		}
+		operator addrinfo**();
 
-		operator addrinfo*() {
-			if (this->addrinfoPtrTwo == nullptr) {
-				throw ConnectionError{ "addrinfoWrapper::addrinfo*(), addrinfoPtrTwo was nullptr." };
-			}
-			return this->addrinfoPtrTwo;
-		}
+		operator addrinfo*();
 
-		addrinfoWrapper(){};
+		addrinfoWrapper();
 
-		~addrinfoWrapper() {
-			if (this->doWeClearAddrInfo) {
-				freeaddrinfo(this->addrinfoPtrTwo);
-			} else {
-				delete this->addrinfoPtrTwo;
-			}
-		}
+		~addrinfoWrapper();
 
 	  protected:
 		addrinfo* addrinfoPtrTwo{ new addrinfo{} };
@@ -160,58 +116,29 @@ namespace DiscordCoreInternal {
 
 	struct DiscordCoreAPI_Dll SSL_CTXWrapper {
 		struct DiscordCoreAPI_Dll SSL_CTXDeleter {
-			void operator()(SSL_CTX* other) {
-				if (other) {
-					SSL_CTX_free(other);
-					other = nullptr;
-				}
-			}
+			void operator()(SSL_CTX* other);
 		};
 
-		SSL_CTXWrapper& operator=(SSL_CTX* other) {
-			this->sslCTXPtr.reset(other);
-			auto errorValue = SSL_CTX_up_ref(other);
-			if (!errorValue) {
-				std::cout << DiscordCoreAPI::shiftToBrightRed() << "SSL_CTX_up_ref() Error: " << ERR_error_string(errorValue, nullptr) << DiscordCoreAPI::reset() << std::endl;
-			}
-			return *this;
-		}
+		SSL_CTXWrapper& operator=(SSL_CTX* other);
 
-		operator SSL_CTX*() {
-			return this->sslCTXPtr.get();
-		}
+		operator SSL_CTX*();
 
-		SSL_CTXWrapper(){};
-
+		SSL_CTXWrapper();
+		
 	  protected:
 		std::unique_ptr<SSL_CTX, SSL_CTXDeleter> sslCTXPtr{ nullptr, SSL_CTXDeleter{} };
 	};
 
 	struct DiscordCoreAPI_Dll SSLWrapper {
 		struct DiscordCoreAPI_Dll SSLDeleter {
-			void operator()(SSL* other) {
-				if (other) {
-					SSL_shutdown(other);
-					SSL_free(other);
-					other = nullptr;
-				}
-			}
+			void operator()(SSL* other);
 		};
 
-		SSLWrapper& operator=(SSL* other) {
-			this->sslPtr.reset(other);
-			auto errorValue = SSL_up_ref(other);
-			if (!errorValue) {
-				std::cout << DiscordCoreAPI::shiftToBrightRed() << "SSL_up_ref() Error: " << ERR_error_string(errorValue, nullptr) << DiscordCoreAPI::reset() << std::endl;
-			}
-			return *this;
-		}
+		SSLWrapper& operator=(SSL* other);
 
-		operator SSL*() {
-			return this->sslPtr.get();
-		}
+		operator SSL*();
 
-		SSLWrapper(){};
+		SSLWrapper();		
 
 	  protected:
 		std::unique_ptr<SSL, SSLDeleter> sslPtr{ nullptr, SSLDeleter{} };
@@ -219,43 +146,18 @@ namespace DiscordCoreInternal {
 
 	struct DiscordCoreAPI_Dll SOCKETWrapper {
 		struct DiscordCoreAPI_Dll SOCKETDeleter {
-			void operator()(std::atomic<SOCKET>* other) {
-#ifdef _WIN32
-				shutdown(other->load(), SD_BOTH);
-				closesocket(other->load());
-#else
-				shutdown(other->load(), SHUT_RDWR);
-				close(other->load());
-#endif
-
-				other->store(SOCKET_ERROR);
-				delete other;
-			}
+			void operator()(std::atomic<SOCKET>* other);
 		};
 
-		SOCKETWrapper& operator=(SOCKETWrapper&& other) noexcept {
-			if (this != &other) {
-				this->socketPtr->store(other.socketPtr->load());
-				other.socketPtr->store(SOCKET_ERROR);
-			}
-			return *this;
-		}
+		SOCKETWrapper& operator=(SOCKETWrapper&& other) noexcept;
 
-		SOCKETWrapper(SOCKETWrapper&& other) noexcept {
-			*this = std::move(other);
-		}
+		SOCKETWrapper(SOCKETWrapper&& other) noexcept;
+		
+		SOCKETWrapper& operator=(SOCKET other);
 
-		SOCKETWrapper& operator=(SOCKET other) {
-			this->socketPtr->store(other);
-			return *this;
-		}
-
-		operator SOCKET() {
-			return this->socketPtr->load();
-		}
-
-		SOCKETWrapper() {
-		}
+		operator SOCKET();
+		
+		SOCKETWrapper();
 
 	  protected:
 		std::unique_ptr<std::atomic<SOCKET>, SOCKETDeleter> socketPtr{ new std::atomic<SOCKET>{ SOCKET_ERROR }, SOCKETDeleter{} };
