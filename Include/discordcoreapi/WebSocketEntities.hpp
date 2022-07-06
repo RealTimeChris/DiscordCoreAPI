@@ -94,7 +94,7 @@ namespace DiscordCoreInternal {
 		
 		void disconnectVoice() noexcept;
 
-		void internalConnect() noexcept;
+		void connectInternal() noexcept;
 	};
 
 }// namespace DiscordCoreInternal

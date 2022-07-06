@@ -969,7 +969,7 @@ namespace DiscordCoreInternal {
 		try {
 			while (!stopToken.stop_requested() && !this->doWeQuit->load()) {
 				if (this->connections.size() > 0) {
-					this->internalConnect();
+					this->connectInternal();
 				}
 				if (this->voiceConnectionsToDisconnect.size() > 0) {
 					this->disconnectVoice();
@@ -1013,7 +1013,7 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::getVoiceConnectionMap()[theDCData]->disconnectInternal();
 	}
 
-	void BaseSocketAgent::internalConnect() noexcept {
+	void BaseSocketAgent::connectInternal() noexcept {
 		try {
 			if (this->connections.size() > 0) {
 				DiscordCoreAPI::ConnectionPackage connectData = this->connections.front();
@@ -1073,7 +1073,7 @@ namespace DiscordCoreInternal {
 			}
 		} catch (...) {
 			if (this->configManager->doWePrintWebSocketErrorMessages()) {
-				DiscordCoreAPI::reportException("BaseSocketAgent::internalConnect()");
+				DiscordCoreAPI::reportException("BaseSocketAgent::connectInternal()");
 			}
 		}
 	}
