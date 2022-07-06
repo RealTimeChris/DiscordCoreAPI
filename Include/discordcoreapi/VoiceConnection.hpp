@@ -157,7 +157,7 @@ namespace DiscordCoreAPI {
 
 		void collectExternalIP() noexcept;
 
-		bool connectInternal() noexcept;
+		void connectInternal() noexcept;
 
 		void clearAudioData() noexcept;
 

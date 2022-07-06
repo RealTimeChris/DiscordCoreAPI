@@ -87,9 +87,9 @@ namespace DiscordCoreInternal {
 
 	SendSpeakingData::operator nlohmann::json() {
 		nlohmann::json data{};
-		data["d"]["speaking"] = 1 << 0;
-		data["d"]["delay"] = delay;
-		data["d"]["ssrc"] = ssrc;
+		data["d"]["speaking"] = this->type;
+		data["d"]["delay"] = this->delay;
+		data["d"]["ssrc"] = this->ssrc;
 		data["op"] = 5;
 		return data;
 	}
