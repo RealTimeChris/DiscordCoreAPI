@@ -116,9 +116,17 @@ namespace DiscordCoreInternal {
 		operator nlohmann::json();
 	};
 
+	enum class SendSpeakingType : int8_t {
+		Microphone = 1 << 0,
+		Soundshare = 1 << 1,
+		Priority = 1 << 2,
+		Priority_And_Voice = Microphone | Priority,
+	};
+
 	struct DiscordCoreAPI_Dll SendSpeakingData {
-		int32_t ssrc{};
+		SendSpeakingType type{};
 		int32_t delay{};
+		int32_t ssrc{};
 
 		operator nlohmann::json();
 	};

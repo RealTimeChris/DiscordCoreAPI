@@ -332,10 +332,12 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::sendSpeakingMessage(const bool isSpeaking) noexcept {
+		DiscordCoreInternal::SendSpeakingData theData{};
 		if (!isSpeaking) {
+			theData.type = static_cast<DiscordCoreInternal::SendSpeakingType>(0);
 			this->sendSilence();
 		} else {
-			DiscordCoreInternal::SendSpeakingData theData{};
+			theData.type = DiscordCoreInternal::SendSpeakingType::Priority_And_Voice;
 			theData.delay = 0;
 			theData.ssrc = this->voiceConnectionData.audioSSRC;
 			nlohmann::json newString = theData;
