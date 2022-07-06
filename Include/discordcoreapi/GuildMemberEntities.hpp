@@ -60,15 +60,7 @@ namespace DiscordCoreAPI {
 		bool mute{};///< Whether the user is muted in voice channels.
 		bool deaf{};///< Whether the user is deafened in voice channels.
 
-		operator std::string() {
-			nlohmann::json data{};
-			data["access_token"] = this->accessToken;
-			data["roles"] = this->roles;
-			data["deaf"] = this->deaf;
-			data["mute"] = this->mute;
-			data["nick"] = this->nick;
-			return data.dump();
-		}
+		operator std::string();
 	};
 
 	/// For modifying the Current GuildMember's values. \brief For modifying the current GuildMember's values.
@@ -91,26 +83,7 @@ namespace DiscordCoreAPI {
 		bool mute{ false };///< Whether or not to mute them in voice.
 		bool deaf{ false };///< Whether or not to deafen them, in voice.
 
-		operator std::string() {
-			nlohmann::json data{};
-			data["nick"] = this->nick;
-			data["communication_disabled_until"] = std::string(this->communicationDisabledUntil);
-			if (this->roleIds.size() == 0) {
-				data["roles"] = nullptr;
-			} else {
-				nlohmann::json roleIdArray{};
-				for (auto& value: this->roleIds) {
-					roleIdArray.push_back(value);
-				}
-				data["roles"] = roleIdArray;
-			}
-			if (this->newVoiceChannelId != 0) {
-				data["channel_id"] = std::to_string(this->newVoiceChannelId);
-				data["mute"] = this->mute;
-				data["deaf"] = this->deaf;
-			}
-			return data.dump();
-		}
+		operator std::string();
 	};
 
 	/// For removing a GuildMember from a chosen Guild. \brief For removing a GuildMember from a chosen Guild.

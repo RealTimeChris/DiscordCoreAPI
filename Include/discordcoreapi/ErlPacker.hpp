@@ -25,7 +25,7 @@ namespace DiscordCoreInternal {
 
 	struct ErlPackError : public std::runtime_error {
 	  public:
-		ErlPackError(const std::string& message) : std::runtime_error(message.c_str()){};
+		ErlPackError(const std::string& message);
 	};
 
 	constexpr uint8_t formatVersion{ 131 };

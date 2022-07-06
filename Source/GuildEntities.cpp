@@ -28,6 +28,82 @@
 
 namespace DiscordCoreAPI {
 
+	CreateGuildData::operator std::string() {
+		nlohmann::json data{};
+		data["default_message_notifications"] = this->defaultMessageNotifications;
+		data["explicit_content_filter"] = this->explicitContentFilter;
+		data["system_channel_flags"] = this->systemChannelFlags;
+		data["verification_level"] = this->verificationLevel;
+		data["afk_timeout"] = this->afkTimeout;
+		data["region"] = this->region;
+		data["name"] = this->name;
+		data["icon"] = this->icon;
+		for (auto& value: this->channels) {
+			nlohmann::json newData{};
+			newData["parent_id"] = std::to_string(value.parentId);
+			newData["name"] = std::string{ value.name };
+			newData["id"] = value.id;
+			newData["type"] = value.type;
+			data["channels"].push_back(newData);
+		}
+		for (auto& value: this->roles) {
+			nlohmann::json newData{};
+			newData["permissions"] = value.permissions.getCurrentPermissionString();
+			newData["tags"]["premium_subscriber"] = value.tags.premiumSubscriber;
+			newData["tags"]["integration_id"] = value.tags.integrationId;
+			newData["mentionable"] = DiscordCoreAPI::getBool<int8_t, DiscordCoreAPI::RoleFlags>(value.flags, DiscordCoreAPI::RoleFlags::Mentionable);
+			newData["tags"]["bot_id"] = value.tags.botId;
+			newData["managed"] = DiscordCoreAPI::getBool<int8_t, DiscordCoreAPI::RoleFlags>(value.flags, DiscordCoreAPI::RoleFlags::Managed);
+			newData["position"] = value.position;
+			newData["hoist"] = DiscordCoreAPI::getBool<int8_t, DiscordCoreAPI::RoleFlags>(value.flags, DiscordCoreAPI::RoleFlags::Hoist);
+			newData["color"] = value.color;
+			newData["name"] = value.name;
+			data["roles"].push_back(newData);
+		}
+		if (this->systemChannelId != 0) {
+			data["system_channel_id"] = this->systemChannelId;
+		}
+		if (this->afkChannelId != 0) {
+			data["afk_channel_id"] = this->afkChannelId;
+		}
+		return data.dump();
+	}
+
+	CreateGuildBanData::operator std::string() {
+		nlohmann::json data{};
+		if (this->deleteMessageDays != 0) {
+			data["delete_message_days"] = this->deleteMessageDays;
+		}
+		return data.dump();
+	}
+
+	BeginGuildPruneData::operator std::string() {
+		nlohmann::json data{};
+		data["compute_prune_count"] = this->computePruneCount;
+		data["include_roles"] = this->includeRoles;
+		data["days"] = this->days;
+		return data.dump();
+	}
+
+	ModifyGuildWelcomeScreenData::operator std::string() {
+		nlohmann::json channelsArray{};
+		for (auto& value: this->welcomeChannels) {
+			nlohmann::json newData{};
+			newData["description"] = value.description;
+			newData["channel_id"] = value.channelId;
+			newData["emoji_name"] = value.emojiName;
+			if (value.emojiId != 0) {
+				newData["emoji_id"] = std::to_string(value.emojiId);
+			}
+			channelsArray.push_back(newData);
+		}
+		nlohmann::json data{};
+		data["description"] = this->description;
+		data["welcome_channels"] = channelsArray;
+		data["enabled"] = this->enabled;
+		return data.dump();
+	}
+
 	VoiceConnection* GuildData::connectToVoice(const Snowflake guildMemberId, const Snowflake channelId, bool selfDeaf, bool selfMute) {
 		if (getVoiceConnectionMap().contains(this->id) && getVoiceConnectionMap()[this->id] && getVoiceConnectionMap()[this->id]->areWeConnected()) {
 			this->voiceConnectionPtr = getVoiceConnectionMap()[this->id].get();
@@ -192,6 +268,59 @@ namespace DiscordCoreAPI {
 
 	GuildVector::GuildVector(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
+	}
+
+	ModifyGuildData::ModifyGuildData(Guild dataPackage) {
+		this->premiumProgressBarEnabled = getBool<int8_t, GuildFlags>(dataPackage.flags, GuildFlags::Premium_Progress_Bar_Enabled);
+		this->defaultMessageNotifications = dataPackage.defaultMessageNotifications;
+		this->publicUpdatesChannelId = dataPackage.publicUpdatesChannelId;
+		this->explicitContentFilter = dataPackage.explicitContentFilter;
+		this->systemChannelFlags = dataPackage.systemChannelFlags;
+		this->verificationLevel = dataPackage.verificationLevel;
+		this->preferredLocale = dataPackage.preferredLocale;
+		this->systemChannelId = dataPackage.systemChannelId;
+		this->rulesChannelId = dataPackage.rulesChannelId;
+		this->afkChannelId = dataPackage.afkChannelId;
+		this->description = dataPackage.description;
+		this->afkTimeout = dataPackage.afkTimeOut;
+		for (auto& value: dataPackage.features) {
+			this->features.push_back(value);
+		}
+		this->ownerId = dataPackage.ownerId;
+		this->guildId = dataPackage.id;
+		this->name = dataPackage.name;
+	}
+
+	ModifyGuildData::operator std::string() {
+		nlohmann::json data{};
+		data["premium_progress_bar_enabled"] = this->premiumProgressBarEnabled;
+		data["default_message_notifications"] = this->defaultMessageNotifications;
+		data["explicit_content_filter"] = this->explicitContentFilter;
+		data["system_channel_flags"] = this->systemChannelFlags;
+		data["verification_level"] = this->verificationLevel;
+		data["discovery_splash"] = this->discoverySplash;
+		data["preferred_locale"] = std::string{ this->preferredLocale };
+		data["rules_channel_id"] = std::to_string(this->rulesChannelId);
+		data["description"] = std::string{ this->description };
+		data["afk_timeout"] = this->afkTimeout;
+		data["features"] = this->features;
+		data["splash"] = this->splash;
+		data["banner"] = this->banner;
+		data["name"] = std::string{ this->name };
+		data["icon"] = this->icon;
+		if (this->publicUpdatesChannelId != "") {
+			data["public_updates_channel_id"] = std::string{ this->publicUpdatesChannelId };
+		}
+		if (this->afkChannelId != 0) {
+			data["afk_channel_id"] = std::to_string(this->afkChannelId);
+		}
+		if (this->systemChannelId != 0) {
+			data["system_channel_id"] = std::to_string(this->systemChannelId);
+		}
+		if (this->ownerId != 0) {
+			data["owner_id"] = std::to_string(this->ownerId);
+		}
+		return data.dump();
 	}
 
 	void Guilds::initialize(DiscordCoreInternal::HttpsClient* theClient, DiscordCoreClient* discordCoreClientNew, ConfigManager* configManagerNew) {

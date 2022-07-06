@@ -22,6 +22,40 @@
 
 namespace DiscordCoreAPI {
 
+	CreateGuildScheduledEventData::operator std::string() {
+		nlohmann::json data{};
+		if (this->entityType == DiscordCoreAPI::GuildScheduledEventEntityType::External) {
+			data["channel_id"] = nullptr;
+		} else {
+			data["channel_id"] = std::to_string(this->channelId);
+		}
+		data["entity_metadata"]["location"] = this->entityMetadata.location;
+		data["entity_metadata"]["entity_type"] = this->entityType;
+		data["scheduled_start_time"] = this->scheduledStartTime;
+		data["scheduled_end_time"] = this->scheduledEndTime;
+		data["privacy_level"] = this->privacyLevel;
+		data["description"] = this->description;
+		data["name"] = this->name;
+		return data.dump();
+	}
+
+	ModifyGuildScheduledEventData::operator std::string() {
+		nlohmann::json data{};
+		if (this->entityType == DiscordCoreAPI::GuildScheduledEventEntityType::External) {
+			data["channel_id"] = nullptr;
+		} else {
+			data["channel_id"] = std::to_string(this->channelId);
+		}
+		data["entity_metadata"]["location"] = this->entityMetadata.location;
+		data["entity_metadata"]["entity_type"] = this->entityType;
+		data["scheduled_start_time"] = this->scheduledStartTime;
+		data["scheduled_end_time"] = this->scheduledEndTime;
+		data["privacy_level"] = this->privacyLevel;
+		data["description"] = this->description;
+		data["name"] = this->name;
+		return data.dump();
+	}
+
 	GuildScheduledEvent& GuildScheduledEvent::operator=(const nlohmann::json& jsonObjectData) {
 		this->parseObject(jsonObjectData, this);
 		return *this;

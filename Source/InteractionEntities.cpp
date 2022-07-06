@@ -25,6 +25,127 @@
 
 namespace DiscordCoreAPI {
 
+	InteractionResponse& InteractionResponse::addButton(bool disabled, const std::string& customIdNew, const std::string& buttonLabel, ButtonStyle buttonStyle,
+		const std::string& emojiName = "", Snowflake emojiId = 0, const std::string& url = "") {
+		if (this->data.data.components.size() == 0) {
+			ActionRowData actionRowData;
+			this->data.data.components.push_back(actionRowData);
+		}
+		if (this->data.data.components.size() < 5) {
+			if (this->data.data.components[this->data.data.components.size() - 1].components.size() < 5) {
+				ComponentData component;
+				component.type = ComponentType::Button;
+				component.emoji.name = emojiName;
+				component.label = buttonLabel;
+				component.style = static_cast<int32_t>(buttonStyle);
+				component.customId = customIdNew;
+				component.disabled = disabled;
+				component.emoji.id = emojiId;
+				component.url = url;
+				this->data.data.components[this->data.data.components.size() - 1].components.push_back(component);
+			} else if (this->data.data.components[this->data.data.components.size() - 1].components.size() == 5) {
+				ActionRowData actionRowData;
+				this->data.data.components.push_back(actionRowData);
+			}
+		}
+		return *this;
+	}
+
+	InteractionResponse& InteractionResponse::addSelectMenu(bool disabled, const std::string& customIdNew, std::vector<SelectOptionData> options, const std::string& placeholder,
+		int32_t maxValues,
+			int32_t minValues) {
+			if (this->data.data.components.size() == 0) {
+				ActionRowData actionRowData;
+				this->data.data.components.push_back(actionRowData);
+			}
+			if (this->data.data.components.size() < 5) {
+				if (this->data.data.components[this->data.data.components.size() - 1].components.size() < 5) {
+					ComponentData componentData;
+					componentData.type = ComponentType::SelectMenu;
+					componentData.placeholder = placeholder;
+					componentData.maxValues = maxValues;
+					componentData.minValues = minValues;
+					componentData.disabled = disabled;
+					componentData.customId = customIdNew;
+					componentData.options = options;
+					this->data.data.components[this->data.data.components.size() - 1].components.push_back(componentData);
+				} else if (this->data.data.components[this->data.data.components.size() - 1].components.size() == 5) {
+					ActionRowData actionRowData;
+					this->data.data.components.push_back(actionRowData);
+				}
+			}
+			return *this;
+		}
+
+	InteractionResponse& InteractionResponse::addModal(const std::string& topTitleNew, const std::string& topCustomIdNew, const std::string& titleNew,
+		const std::string& customIdNew, bool required,
+		int32_t minLength, int32_t maxLength, TextInputStyle inputStyle, const std::string& label = "", const std::string& placeholder = "") {
+		this->data.data.title = topTitleNew;
+		this->data.data.customId = topCustomIdNew;
+		if (this->data.data.components.size() == 0) {
+			ActionRowData actionRowData;
+			this->data.data.components.push_back(actionRowData);
+		}
+		if (this->data.data.components.size() < 5) {
+			if (this->data.data.components[this->data.data.components.size() - 1].components.size() < 5) {
+				ComponentData component{};
+				component.type = ComponentType::TextInput;
+				component.customId = customIdNew;
+				component.style = static_cast<int32_t>(inputStyle);
+				component.title = titleNew;
+				component.maxLength = maxLength;
+				component.minLength = minLength;
+				component.label = label;
+				component.required = required;
+				component.placeholder = placeholder;
+				this->data.data.components[this->data.data.components.size() - 1].components.push_back(component);
+			} else if (this->data.data.components[this->data.data.components.size() - 1].components.size() == 5) {
+				ActionRowData actionRowData;
+				this->data.data.components.push_back(actionRowData);
+			}
+		}
+		return *this;
+	}
+
+	InteractionResponse& InteractionResponse::addFile(const File& theFile) {
+		this->data.data.files.push_back(theFile);
+		return *this;
+	}
+
+	InteractionResponse& InteractionResponse::addAllowedMentions(const AllowedMentionsData& dataPackage) {
+		this->data.data.allowedMentions = dataPackage;
+		return *this;
+	}
+
+	InteractionResponse& InteractionResponse::addComponentRow(const ActionRowData& dataPackage) {
+		this->data.data.components.push_back(dataPackage);
+		return *this;
+	}
+
+	InteractionResponse& InteractionResponse::setResponseType(InteractionCallbackType type) {
+		this->data.type = type;
+		return *this;
+	}
+
+	InteractionResponse& InteractionResponse::addMessageEmbed(const EmbedData& dataPackage) {
+		this->data.data.embeds.push_back(dataPackage);
+		return *this;
+	}
+
+	InteractionResponse& InteractionResponse::addContent(const std::string& dataPackage) {
+		this->data.data.content = dataPackage;
+		return *this;
+	}
+
+	InteractionResponse& InteractionResponse::setTTSStatus(bool enabledTTs) {
+		this->data.data.tts = enabledTTs;
+		return *this;
+	}
+
+	InteractionResponseData InteractionResponse::getInteractionResponseData() {
+		return this->data;
+	}
+
 	void Interactions::initialize(DiscordCoreInternal::HttpsClient* theClient) {
 		Interactions::httpsClient = theClient;
 	}

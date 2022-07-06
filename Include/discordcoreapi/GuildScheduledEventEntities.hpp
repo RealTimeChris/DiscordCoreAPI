@@ -46,22 +46,7 @@ namespace DiscordCoreAPI {
 		Snowflake guildId{};///< The Guild within which to create the event.
 		std::string name{};///< The name of the scheduled event.
 
-		operator std::string() {
-			nlohmann::json data{};
-			if (this->entityType == DiscordCoreAPI::GuildScheduledEventEntityType::External) {
-				data["channel_id"] = nullptr;
-			} else {
-				data["channel_id"] = std::to_string(this->channelId);
-			}
-			data["entity_metadata"]["location"] = this->entityMetadata.location;
-			data["entity_metadata"]["entity_type"] = this->entityType;
-			data["scheduled_start_time"] = this->scheduledStartTime;
-			data["scheduled_end_time"] = this->scheduledEndTime;
-			data["privacy_level"] = this->privacyLevel;
-			data["description"] = this->description;
-			data["name"] = this->name;
-			return data.dump();
-		}
+		operator std::string();
 	};
 
 	/// For collecting a single Guild scheduled event. \brief For collecting a single Guild scheduled event.
@@ -85,22 +70,7 @@ namespace DiscordCoreAPI {
 		Snowflake guildId{};///< The Guild within which to modify the event.
 		std::string name{};///< The name of the scheduled event.
 
-		operator std::string() {
-			nlohmann::json data{};
-			if (this->entityType == DiscordCoreAPI::GuildScheduledEventEntityType::External) {
-				data["channel_id"] = nullptr;
-			} else {
-				data["channel_id"] = std::to_string(this->channelId);
-			}
-			data["entity_metadata"]["location"] = this->entityMetadata.location;
-			data["entity_metadata"]["entity_type"] = this->entityType;
-			data["scheduled_start_time"] = this->scheduledStartTime;
-			data["scheduled_end_time"] = this->scheduledEndTime;
-			data["privacy_level"] = this->privacyLevel;
-			data["description"] = this->description;
-			data["name"] = this->name;
-			return data.dump();
-		}
+		operator std::string();
 	};
 
 	/// For deleting a single Guild Scheduled Event. \brief For deleting a single Guild Scheduled Event.

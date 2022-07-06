@@ -21,6 +21,8 @@
 
 namespace DiscordCoreInternal {
 
+	ErlPackError::ErlPackError(const std::string& message) : std::runtime_error(message.c_str()){};
+
 	ErlPackBuffer& ErlPackBuffer::operator=(const std::string* theBuffer) {
 		this->buffer.insert(this->buffer.begin(), theBuffer->begin(), theBuffer->end());
 		return *this;

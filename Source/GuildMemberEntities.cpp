@@ -22,6 +22,37 @@
 #include <discordcoreapi/CoRoutine.hpp>
 
 namespace DiscordCoreAPI {
+	
+	AddGuildMemberData::operator std::string() {
+		nlohmann::json data{};
+		data["access_token"] = this->accessToken;
+		data["roles"] = this->roles;
+		data["deaf"] = this->deaf;
+		data["mute"] = this->mute;
+		data["nick"] = this->nick;
+		return data.dump();
+	}
+
+	ModifyGuildMemberData::operator std::string() {
+		nlohmann::json data{};
+		data["nick"] = this->nick;
+		data["communication_disabled_until"] = std::string(this->communicationDisabledUntil);
+		if (this->roleIds.size() == 0) {
+			data["roles"] = nullptr;
+		} else {
+			nlohmann::json roleIdArray{};
+			for (auto& value: this->roleIds) {
+				roleIdArray.push_back(value);
+			}
+			data["roles"] = roleIdArray;
+		}
+		if (this->newVoiceChannelId != 0) {
+			data["channel_id"] = std::to_string(this->newVoiceChannelId);
+			data["mute"] = this->mute;
+			data["deaf"] = this->deaf;
+		}
+		return data.dump();
+	}
 
 	void GuildMemberData::insertUser(UserData theUser) {
 		Users::insertUser(theUser);
