@@ -137,6 +137,7 @@ namespace DiscordCoreInternal {
 
 	SSLWrapper::SSLWrapper(){};
 
+
 	void SOCKETWrapper::SOCKETDeleter::operator()(std::atomic<SOCKET>* other) {
 #ifdef _WIN32
 		shutdown(other->load(), SD_BOTH);
@@ -145,6 +146,7 @@ namespace DiscordCoreInternal {
 		shutdown(other->load(), SHUT_RDWR);
 		close(other->load());
 #endif
+
 		other->store(SOCKET_ERROR);
 		delete other;
 	}
