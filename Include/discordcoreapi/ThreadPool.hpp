@@ -150,6 +150,28 @@ namespace DiscordCoreInternal {
 		std::jthread theThread{};
 	};
 
+	class DiscordCoreAPI_Dll CommandThreadPool {
+	  public:
+		CommandThreadPool();
+
+		void submitTask(std::function<void(void)> theFunction) noexcept;
+
+		~CommandThreadPool();
+
+	  private:
+		std::unordered_map<int64_t, WorkerThread> workerThreads{};
+		std::queue<std::function<void(void)>> theFunctions{};
+		std::atomic_bool areWeQuitting{ false };
+		std::condition_variable theCondVar{};
+		int64_t currentCount{ 0 };
+		int64_t currentIndex{ 0 };
+		std::mutex theMutex01{};
+
+		void threadFunction(std::stop_token stopToken, int64_t theIndex);
+
+		void clearContents();
+	};
+
 	class DiscordCoreAPI_Dll CoRoutineThreadPool {
 	  public:
 		CoRoutineThreadPool();

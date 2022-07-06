@@ -33,8 +33,7 @@ namespace DiscordCoreAPI {
 		return this->functions;
 	};
 
-	CoRoutine<void> CommandController::checkForAndRunCommand(CommandData commandData) {
-		co_await NewThreadAwaitable<void>();
+	void CommandController::checkForAndRunCommand(CommandData commandData) {
 		std::unique_ptr<BaseFunction> functionPointer{ this->getCommand(convertToLowerCase(commandData.commandName)) };
 		if (functionPointer == nullptr) {
 			co_return;

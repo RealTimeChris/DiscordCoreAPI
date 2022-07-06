@@ -40,7 +40,7 @@ namespace DiscordCoreAPI {
 
 		std::map<std::vector<std::string>, std::unique_ptr<BaseFunction>>& getFunctions();
 
-		CoRoutine<void> checkForAndRunCommand(const CommandData commandData);
+		void checkForAndRunCommand(const CommandData commandData);
 
 	  protected:
 		std::map<std::vector<std::string>, std::unique_ptr<BaseFunction>> functions{};

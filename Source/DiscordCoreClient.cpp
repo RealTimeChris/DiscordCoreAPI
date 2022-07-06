@@ -124,6 +124,9 @@ namespace DiscordCoreAPI {
 		if (!this->instantiateWebSockets()) {
 			return;
 		}
+		while (!Globals::doWeQuit.load()) {
+			std::this_thread::sleep_for(1ms);
+		}
 		this->baseSocketAgentMap[std::to_string(this->configManager.getStartingShard())]->getTheTask()->join();
 	}
 

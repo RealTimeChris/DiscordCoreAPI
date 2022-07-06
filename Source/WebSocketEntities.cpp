@@ -37,6 +37,9 @@ namespace DiscordCoreInternal {
 	void BaseSocketAgent::sendMessage(std::string& dataToSend, WebSocketSSLShard* theShard, bool priority) noexcept {
 		if (theShard->theSSLState.load() == SSLConnectionState::Connected) {
 			try {
+				if (dataToSend.size() == 0) {
+					return;
+				}
 				if (this->configManager->doWePrintWebSocketSuccessMessages()) {
 					std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Sending WebSocket " + theShard->shard.dump() + std::string("'s Message: ") << std::endl
 							  << dataToSend << DiscordCoreAPI::reset();
@@ -610,7 +613,11 @@ namespace DiscordCoreInternal {
 										std::unique_ptr<DiscordCoreAPI::OnInteractionCreationData> dataPackage{ std::make_unique<DiscordCoreAPI::OnInteractionCreationData>() };
 										dataPackage->interactionData = *interactionData;
 										std::unique_ptr<DiscordCoreAPI::CommandData> commandData{ std::make_unique<DiscordCoreAPI::CommandData>(*eventData) };
-										this->discordCoreClient->commandController.checkForAndRunCommand(*commandData);
+										DiscordCoreAPI::CommandData commandDataNew = *commandData;
+										std::function<void()> theFunction = [=]() mutable {
+											this->discordCoreClient->commandController.checkForAndRunCommand(commandDataNew);
+										};
+										this->discordCoreClient->commandThreadPool.submitTask(theFunction);
 										this->discordCoreClient->eventManager.onInteractionCreationEvent(*dataPackage);
 										std::unique_ptr<DiscordCoreAPI::OnInputEventCreationData> eventCreationData{ std::make_unique<DiscordCoreAPI::OnInputEventCreationData>() };
 										eventCreationData->inputEventData = *eventData;
@@ -694,7 +701,10 @@ namespace DiscordCoreInternal {
 										std::unique_ptr<DiscordCoreAPI::CommandData> commandData{ std::make_unique<DiscordCoreAPI::CommandData>() };
 										commandData->commandName = "registerapplicationcommands";
 										DiscordCoreAPI::CommandData commandDataNew = *commandData;
-										this->discordCoreClient->commandController.checkForAndRunCommand(commandDataNew);
+										std::function<void()> theFunction = [=]() mutable {
+											this->discordCoreClient->commandController.checkForAndRunCommand(commandDataNew);
+										};
+										this->discordCoreClient->commandThreadPool.submitTask(theFunction);
 									}
 									std::unique_ptr<DiscordCoreAPI::OnInputEventCreationData> eventCreationData{ std::make_unique<DiscordCoreAPI::OnInputEventCreationData>() };
 								} else if (payload["t"] == "MESSAGE_UPDATE") {

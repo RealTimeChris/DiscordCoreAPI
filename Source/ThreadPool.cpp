@@ -55,6 +55,102 @@ namespace DiscordCoreInternal {
 		*this = std::move(other);
 	}
 
+	CommandThreadPool::CommandThreadPool() {
+		uint32_t threadCount = std::thread::hardware_concurrency() / 2;
+		if (threadCount < 1) {
+			threadCount = 1;
+		}
+		for (uint32_t x = 0; x < threadCount; x++) {
+			WorkerThread workerThread{};
+			this->currentIndex++;
+			this->currentCount++;
+			int64_t theIndexNew = this->currentIndex;
+			workerThread.theThread = std::jthread([=, this](std::stop_token stopToken) {
+				this->threadFunction(stopToken, theIndexNew);
+			});
+			this->workerThreads[this->currentIndex] = std::move(workerThread);
+		}
+	}
+
+	void CommandThreadPool::submitTask(std::function<void()> coro) noexcept {
+		std::unique_lock theLock{ this->theMutex01 };
+		bool areWeAllBusy{ true };
+		for (auto& [key, value]: this->workerThreads) {
+			if (!value.theCurrentStatus.load()) {
+				areWeAllBusy = false;
+				break;
+			}
+		}
+		if (areWeAllBusy) {
+			WorkerThread workerThread{};
+			this->currentIndex++;
+			this->currentCount++;
+			int64_t theIndexNew = this->currentIndex;
+			workerThread.theThread = std::jthread([=, this](std::stop_token stopToken) {
+				this->threadFunction(stopToken, theIndexNew);
+			});
+			this->workerThreads[this->currentIndex] = std::move(workerThread);
+		}
+		this->theFunctions.push(coro);
+		theLock.unlock();
+		this->theCondVar.notify_one();
+	}
+
+	void CommandThreadPool::threadFunction(std::stop_token stopToken, int64_t theIndex) {
+		auto theAtomicBoolPtr = &this->workerThreads[theIndex].theCurrentStatus;
+		while (!this->areWeQuitting.load() && !stopToken.stop_requested()) {
+			std::unique_lock theLock01{ this->theMutex01 };
+			while (!this->areWeQuitting.load() && this->theFunctions.size() == 0) {
+				if (this->currentCount > std::thread::hardware_concurrency()) {
+					for (auto& [key, value]: this->workerThreads) {
+						if (value.theCurrentStatus.load() && value.theThread.joinable()) {
+							value.theThread.get_stop_source().request_stop();
+							value.theThread.detach();
+							this->currentCount--;
+							break;
+						}
+					}
+				}
+				this->theCondVar.wait_for(theLock01, std::chrono::milliseconds(1));
+			}
+
+			if (this->areWeQuitting.load() || stopToken.stop_requested()) {
+				break;
+			}
+			auto coroHandle = this->theFunctions.front();
+			this->theFunctions.pop();
+			theLock01.unlock();
+			if (theAtomicBoolPtr) {
+				theAtomicBoolPtr->store(true);
+			}
+			coroHandle();
+			if (theAtomicBoolPtr) {
+				theAtomicBoolPtr->store(false);
+			}
+		}
+		this->workerThreads.erase(theIndex);
+	}
+
+	void CommandThreadPool::clearContents() {
+		if (this->workerThreads.size() == 0) {
+			return;
+		}
+		for (auto& [key, value]: this->workerThreads) {
+			value.theThread.request_stop();
+			if (this->workerThreads.contains(key)) {
+				this->workerThreads.erase(key);
+				break;
+			}
+		}
+		return this->clearContents();
+	}
+
+	CommandThreadPool::~CommandThreadPool() {
+		this->clearContents();
+		this->areWeQuitting.store(true);
+		std::lock_guard theLock00{ this->theMutex01 };
+	}
+
 	CoRoutineThreadPool::CoRoutineThreadPool() {
 		uint32_t threadCount = std::thread::hardware_concurrency();
 		if (threadCount < 1) {
