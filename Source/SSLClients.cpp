@@ -145,7 +145,6 @@ namespace DiscordCoreInternal {
 		shutdown(other->load(), SHUT_RDWR);
 		close(other->load());
 #endif
-
 		other->store(SOCKET_ERROR);
 		delete other;
 	}
