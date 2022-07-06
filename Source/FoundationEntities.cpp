@@ -422,6 +422,114 @@ namespace DiscordCoreAPI {
 		*this = jsonObjectData;
 	}
 
+	ActionMetaData& ActionMetaData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData, this);
+		return *this;
+	}
+
+	ActionMetaData::ActionMetaData(const nlohmann::json& jsonObjectData) {
+		*this = jsonObjectData;
+	}
+
+	TriggerMetaData& TriggerMetaData::operator = (const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData, this);
+		return *this;
+	}
+
+	TriggerMetaData::TriggerMetaData(const nlohmann::json& jsonObjectData) {
+		*this = jsonObjectData;
+	}
+
+	ActionData& ActionData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData, this);
+		return *this;
+	}
+
+	ActionData::ActionData(const nlohmann::json& jsonObjectData) {
+		*this = jsonObjectData;
+	}
+
+	AutoModerationRuleData& AutoModerationRuleData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData, this);
+		return *this;
+	}
+
+	AutoModerationRuleData::AutoModerationRuleData(const nlohmann::json& jsonObjectData) {
+		*this = jsonObjectData;
+	}
+
+	ApplicationCommandPermissionData& ApplicationCommandPermissionData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData, this);
+		return *this;
+	}
+
+	ApplicationCommandPermissionData::ApplicationCommandPermissionData(const nlohmann::json& jsonObjectData) {
+		*this = jsonObjectData;
+	}
+
+	GuildApplicationCommandPermissionsData& GuildApplicationCommandPermissionsData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData, this);
+		return *this;
+	}
+
+	GuildApplicationCommandPermissionsData::GuildApplicationCommandPermissionsData(const nlohmann::json& jsonObjectData) {
+		*this = jsonObjectData;
+	}
+
+	GuildApplicationCommandPermissionsDataVector& GuildApplicationCommandPermissionsDataVector::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData, this);
+		return *this;
+	}
+
+	GuildApplicationCommandPermissionsDataVector::GuildApplicationCommandPermissionsDataVector(const nlohmann::json& jsonObjectData) {
+		*this = jsonObjectData;
+	}
+
+	EmojiData& EmojiData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData, this);
+		return *this;
+	}
+
+	EmojiData::EmojiData(const nlohmann::json& jsonObjectData) {
+		*this = jsonObjectData;
+	}
+
+	EmojiDataVector& EmojiDataVector::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData, this);
+		return *this;
+	}
+
+	EmojiDataVector::EmojiDataVector(const nlohmann::json& jsonObjectData) {
+		*this = jsonObjectData;
+	}
+
+	ReactionData& ReactionData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData, this);
+		return *this;
+	}
+
+	ReactionData::ReactionData(const nlohmann::json& jsonObjectData) {
+		*this = jsonObjectData;
+	}
+
+	VoiceRegionData& VoiceRegionData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData, this);
+		return *this;
+	}
+
+	VoiceRegionData::VoiceRegionData(const nlohmann::json& jsonObjectData) {
+		*this = jsonObjectData;
+	}
+
+	VoiceRegionDataVector& VoiceRegionDataVector::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData, this);
+		return *this;
+	}
+
+	VoiceRegionDataVector::VoiceRegionDataVector(const nlohmann::json& jsonObjectData) {
+		*this = jsonObjectData;
+	}
+
 	InputEventData& InputEventData::operator=(const InputEventData& other) {
 		if (this != &other) {
 			*this->interactionData = *other.interactionData;

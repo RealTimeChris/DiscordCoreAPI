@@ -877,27 +877,15 @@ namespace DiscordCoreAPI {
 
 		ActionMetaData() = default;
 
-		ActionMetaData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
+		ActionMetaData& operator=(const nlohmann::json& jsonObjectData);
 
-		ActionMetaData(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
+		ActionMetaData(const nlohmann::json& jsonObjectData);
 
 		virtual ~ActionMetaData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json& jsonObjectData, ActionMetaData* pDataStructure) {
-			if (jsonObjectData.contains("channel_id") && !jsonObjectData["channel_id"].is_null()) {
-				pDataStructure->channelId = stoull(jsonObjectData["channel_id"].get<std::string>());
-			}
-
-			if (jsonObjectData.contains("duration_seconds") && !jsonObjectData["duration_seconds"].is_null()) {
-				pDataStructure->durationSeconds = jsonObjectData["duration_seconds"].get<int64_t>();
-			}
-		}
+		void parseObject(const nlohmann::json& jsonObjectData, ActionMetaData* pDataStructure);
+		
 	};
 
 	/// Trigger metadata for auto-moderation-rules. \brief Trigger metadata for auto-moderation-rules.
@@ -907,31 +895,15 @@ namespace DiscordCoreAPI {
 
 		TriggerMetaData() = default;
 
-		TriggerMetaData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
+		TriggerMetaData& operator=(const nlohmann::json& jsonObjectData);
 
-		TriggerMetaData(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
+		TriggerMetaData(const nlohmann::json& jsonObjectData);
 
 		virtual ~TriggerMetaData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json& jsonObjectData, TriggerMetaData* pDataStructure) {
-			if (jsonObjectData.contains("keyword_filter") && !jsonObjectData["keyword_filter"].is_null()) {
-				for (auto& value: jsonObjectData["keyword_filter"]) {
-					pDataStructure->keywordFilter.push_back(value.get<std::string>());
-				}
-			}
-
-			if (jsonObjectData.contains("presets") && !jsonObjectData["presets"].is_null()) {
-				for (auto& value: jsonObjectData["presets"]) {
-					pDataStructure->presets.push_back(static_cast<KeywordPresetType>(value.get<uint64_t>()));
-				}
-			}
-		}
+		void parseObject(const nlohmann::json& jsonObjectData, TriggerMetaData* pDataStructure);
+		
 	};
 
 	/// For representing a single auto-moderation-rule-action. \brief For representing a single auto-moderation-rule-action.
@@ -941,27 +913,15 @@ namespace DiscordCoreAPI {
 
 		ActionData() = default;
 
-		ActionData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
+		ActionData& operator=(const nlohmann::json& jsonObjectData);
 
-		ActionData(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
+		ActionData(const nlohmann::json& jsonObjectData);
 
 		virtual ~ActionData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json& jsonObjectData, ActionData* pDataStructure) {
-			if (jsonObjectData.contains("metadata") && !jsonObjectData["metadata"].is_null()) {
-				pDataStructure->metadata = jsonObjectData["metadata"];
-			}
-
-			if (jsonObjectData.contains("type") && !jsonObjectData["type"].is_null()) {
-				pDataStructure->type = static_cast<ActionType>(jsonObjectData["type"].get<int64_t>());
-			}
-		}
+		void parseObject(const nlohmann::json& jsonObjectData, ActionData* pDataStructure);
+		
 	};
 
 	/// Represents an auto-moderation-rule. \brief Represents an auto-moderation-rule.
@@ -980,70 +940,14 @@ namespace DiscordCoreAPI {
 
 		AutoModerationRuleData() = default;
 
-		AutoModerationRuleData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
+		AutoModerationRuleData& operator=(const nlohmann::json& jsonObjectData);
 
-		AutoModerationRuleData(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
+		AutoModerationRuleData(const nlohmann::json& jsonObjectData);
 
 		virtual ~AutoModerationRuleData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json& jsonObjectData, AutoModerationRuleData* pDataStructure) {
-			if (jsonObjectData.contains("name") && !jsonObjectData["name"].is_null()) {
-				pDataStructure->name = jsonObjectData["name"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
-				pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
-			}
-
-			if (jsonObjectData.contains("enabled") && !jsonObjectData["enabled"].is_null()) {
-				pDataStructure->enabled = jsonObjectData["enabled"].get<bool>();
-			}
-
-			if (jsonObjectData.contains("trigger_type") && !jsonObjectData["trigger_type"].is_null()) {
-				pDataStructure->triggerType = static_cast<TriggerType>(jsonObjectData["trigger_type"].get<uint64_t>());
-			}
-
-			if (jsonObjectData.contains("event_type") && !jsonObjectData["event_type"].is_null()) {
-				pDataStructure->eventType = static_cast<EventType>(jsonObjectData["event_type"].get<uint64_t>());
-			}
-
-			if (jsonObjectData.contains("creator_id") && !jsonObjectData["creator_id"].is_null()) {
-				pDataStructure->creatorId = jsonObjectData["creator_id"].get<Snowflake>();
-			}
-
-			if (jsonObjectData.contains("actions") && !jsonObjectData["actions"].is_null()) {
-				for (auto& value: jsonObjectData["actions"]) {
-					ActionData newData{ value };
-					pDataStructure->actions.push_back(newData);
-				}
-			}
-
-			if (jsonObjectData.contains("exempt_roles") && !jsonObjectData["exempt_roles"].is_null()) {
-				for (auto& value: jsonObjectData["exempt_roles"]) {
-					pDataStructure->exemptRoles.push_back(value.get<Snowflake>());
-				}
-			}
-
-			if (jsonObjectData.contains("trigger_metadata") && !jsonObjectData["trigger_metadata"].is_null()) {
-				pDataStructure->triggerMetaData = jsonObjectData["trigger_metadata"];
-			}
-
-			if (jsonObjectData.contains("exempt_channels") && !jsonObjectData["exempt_channels"].is_null()) {
-				for (auto& value: jsonObjectData["exempt_channels"]) {
-					pDataStructure->exemptChannels.push_back(value.get<Snowflake>());
-				}
-			}
-
-			if (jsonObjectData.contains("guild_id") && !jsonObjectData["guild_id"].is_null()) {
-				pDataStructure->guildId = jsonObjectData["guild_id"].get<Snowflake>();
-			}
-		}
+		void parseObject(const nlohmann::json& jsonObjectData, AutoModerationRuleData* pDataStructure);
 	};
 
 	/// Permissions data for an ApplicationCommand. \brief Permissions data for an ApplicationCommand.
@@ -1054,30 +958,14 @@ namespace DiscordCoreAPI {
 
 		ApplicationCommandPermissionData() = default;
 
-		ApplicationCommandPermissionData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
+		ApplicationCommandPermissionData& operator=(const nlohmann::json& jsonObjectData);
 
-		ApplicationCommandPermissionData(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
+		ApplicationCommandPermissionData(const nlohmann::json& jsonObjectData);
+		
 		virtual ~ApplicationCommandPermissionData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json& jsonObjectData, ApplicationCommandPermissionData* pDataStructure) {
-			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
-				pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
-			}
-
-			if (jsonObjectData.contains("permission") && !jsonObjectData["permission"].is_null()) {
-				pDataStructure->permission = jsonObjectData["permission"].get<bool>();
-			}
-
-			if (jsonObjectData.contains("type") && !jsonObjectData["type"].is_null()) {
-				pDataStructure->type = jsonObjectData["type"].get<ApplicationCommandPermissionType>();
-			}
-		}
+		void parseObject(const nlohmann::json& jsonObjectData, ApplicationCommandPermissionData* pDataStructure);
 	};
 
 	/// Represents the Permissions for accessing an ApplicationCommand from within a Guild. \brief Represents the Permissions for accessing an ApplicationCommand from within a Guild.
@@ -1089,39 +977,14 @@ namespace DiscordCoreAPI {
 
 		GuildApplicationCommandPermissionsData() = default;
 
-		GuildApplicationCommandPermissionsData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
+		GuildApplicationCommandPermissionsData& operator=(const nlohmann::json& jsonObjectData);
 
-		GuildApplicationCommandPermissionsData(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
+		GuildApplicationCommandPermissionsData(const nlohmann::json& jsonObjectData);
 
 		virtual ~GuildApplicationCommandPermissionsData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json& jsonObjectData, GuildApplicationCommandPermissionsData* pDataStructure) {
-			if (jsonObjectData.contains("guild_id") && !jsonObjectData["guild_id"].is_null()) {
-				pDataStructure->guildId = stoull(jsonObjectData["guild_id"].get<std::string>());
-			}
-
-			if (jsonObjectData.contains("application_id") && !jsonObjectData["application_id"].is_null()) {
-				pDataStructure->applicationId = stoull(jsonObjectData["application_id"].get<std::string>());
-			}
-
-			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
-				pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
-			}
-
-			if (jsonObjectData.contains("permissions") && !jsonObjectData["permissions"].is_null()) {
-				pDataStructure->permissions.clear();
-				for (auto& value: jsonObjectData["permissions"]) {
-					ApplicationCommandPermissionData newData{ value };
-					pDataStructure->permissions.push_back(newData);
-				}
-			}
-		}
+		void parseObject(const nlohmann::json& jsonObjectData, GuildApplicationCommandPermissionsData* pDataStructure);
 	};
 
 	class DiscordCoreAPI_Dll GuildApplicationCommandPermissionsDataVector : public DataParser<GuildApplicationCommandPermissionsDataVector> {
@@ -1130,25 +993,14 @@ namespace DiscordCoreAPI {
 
 		GuildApplicationCommandPermissionsDataVector() = default;
 
-		GuildApplicationCommandPermissionsDataVector& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
+		GuildApplicationCommandPermissionsDataVector& operator=(const nlohmann::json& jsonObjectData);
 
-		GuildApplicationCommandPermissionsDataVector(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
+		GuildApplicationCommandPermissionsDataVector(const nlohmann::json& jsonObjectData);
 
 		virtual ~GuildApplicationCommandPermissionsDataVector() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json& jsonObjectData, GuildApplicationCommandPermissionsDataVector* pDataStructure) {
-			pDataStructure->theGuildApplicationCommandPermissionsDatas.clear();
-			for (auto& value: jsonObjectData) {
-				DiscordCoreAPI::GuildApplicationCommandPermissionsData newData{ value };
-				pDataStructure->theGuildApplicationCommandPermissionsDatas.push_back(newData);
-			}
-		}
+		void parseObject(const nlohmann::json& jsonObjectData, GuildApplicationCommandPermissionsDataVector* pDataStructure);
 	};
 
 	/// Data structure representing a single emoji. \brief Data structure representing a single emoji.
@@ -1165,55 +1017,14 @@ namespace DiscordCoreAPI {
 
 		EmojiData() = default;
 
-		EmojiData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
+		EmojiData& operator=(const nlohmann::json& jsonObjectData);
 
-		EmojiData(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
-
+		EmojiData(const nlohmann::json& jsonObjectData);
+		
 		virtual ~EmojiData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json& jsonObjectData, EmojiData* pDataStructure) {
-			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
-				pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
-			}
-
-			if (jsonObjectData.contains("name") && !jsonObjectData["name"].is_null()) {
-				pDataStructure->name = jsonObjectData["name"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("roles") && !jsonObjectData["roles"].is_null()) {
-				pDataStructure->roles.clear();
-				for (auto& value: jsonObjectData["roles"]) {
-					RoleData newData{ value };
-					pDataStructure->roles.push_back(newData);
-				}
-			}
-
-			if (jsonObjectData.contains("user") && !jsonObjectData["user"].is_null()) {
-				pDataStructure->user = jsonObjectData["user"];
-			}
-
-			if (jsonObjectData.contains("require_colons") && !jsonObjectData["require_colons"].is_null()) {
-				pDataStructure->requireColons = jsonObjectData["require_colons"].get<bool>();
-			}
-
-			if (jsonObjectData.contains("managed") && !jsonObjectData["managed"].is_null()) {
-				pDataStructure->managed = jsonObjectData["managed"].get<bool>();
-			}
-
-			if (jsonObjectData.contains("animated") && !jsonObjectData["animated"].is_null()) {
-				pDataStructure->animated = jsonObjectData["animated"].get<bool>();
-			}
-
-			if (jsonObjectData.contains("available") && !jsonObjectData["available"].is_null()) {
-				pDataStructure->available = jsonObjectData["available"].get<bool>();
-			}
-		}
+		void parseObject(const nlohmann::json& jsonObjectData, EmojiData* pDataStructure);
 	};
 
 	class DiscordCoreAPI_Dll EmojiDataVector : public DataParser<EmojiDataVector> {
@@ -1222,26 +1033,14 @@ namespace DiscordCoreAPI {
 
 		EmojiDataVector() = default;
 
-		EmojiDataVector& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
+		EmojiDataVector& operator=(const nlohmann::json& jsonObjectData);
 
-		EmojiDataVector(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
+		EmojiDataVector(const nlohmann::json& jsonObjectData);
 
 		virtual ~EmojiDataVector() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json& jsonObjectData, EmojiDataVector* pDataStructure) {
-			pDataStructure->theEmojiDatas.reserve(jsonObjectData.size());
-			for (auto& value: jsonObjectData) {
-				DiscordCoreAPI::EmojiData newData{ value };
-				pDataStructure->theEmojiDatas.push_back(newData);
-			}
-			pDataStructure->theEmojiDatas.shrink_to_fit();
-		}
+		void parseObject(const nlohmann::json& jsonObjectData, EmojiDataVector* pDataStructure);
 	};
 
 	/// For updating/modifying a given Channel's properties. \brief For updating/modifying a given Channel's properties.
@@ -1275,51 +1074,14 @@ namespace DiscordCoreAPI {
 
 		ReactionData() = default;
 
-		ReactionData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
+		ReactionData& operator=(const nlohmann::json& jsonObjectData);
 
-		ReactionData(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
+		ReactionData(const nlohmann::json& jsonObjectData);
 
 		virtual ~ReactionData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json& jsonObjectData, ReactionData* pDataStructure) {
-			if (jsonObjectData.contains("count") && !jsonObjectData["count"].is_null()) {
-				pDataStructure->count = jsonObjectData["count"].get<int32_t>();
-			}
-
-			if (jsonObjectData.contains("me") && !jsonObjectData["me"].is_null()) {
-				pDataStructure->count = jsonObjectData["me"].get<bool>();
-			}
-
-			if (jsonObjectData.contains("emoji") && !jsonObjectData["emoji"].is_null()) {
-				pDataStructure->emoji = jsonObjectData["emoji"];
-			}
-
-			if (jsonObjectData.contains("guild_id") && !jsonObjectData["guild_id"].is_null()) {
-				pDataStructure->guildId = stoull(jsonObjectData["guild_id"].get<std::string>());
-			}
-
-			if (jsonObjectData.contains("channel_id") && !jsonObjectData["channel_id"].is_null()) {
-				pDataStructure->channelId = stoull(jsonObjectData["channel_id"].get<std::string>());
-			}
-
-			if (jsonObjectData.contains("user_id") && !jsonObjectData["user_id"].is_null()) {
-				pDataStructure->userId = stoull(jsonObjectData["user_id"].get<std::string>());
-			}
-
-			if (jsonObjectData.contains("message_id") && !jsonObjectData["message_id"].is_null()) {
-				pDataStructure->messageId = stoull(jsonObjectData["message_id"].get<std::string>());
-			}
-
-			if (jsonObjectData.contains("member") && !jsonObjectData["member"].is_null()) {
-				pDataStructure->member = jsonObjectData["member"];
-			}
-		}
+		void parseObject(const nlohmann::json& jsonObjectData, ReactionData* pDataStructure);
 	};
 
 	/// Structure representing Voice Region Data. \brief Structure representing Voice Region Data.
@@ -1332,39 +1094,14 @@ namespace DiscordCoreAPI {
 
 		VoiceRegionData() = default;
 
-		VoiceRegionData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
+		VoiceRegionData& operator=(const nlohmann::json& jsonObjectData);
 
-		VoiceRegionData(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
-
+		VoiceRegionData(const nlohmann::json& jsonObjectData);
+		
 		virtual ~VoiceRegionData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json& jsonObjectData, VoiceRegionData* pDataStructure) {
-			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
-				pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
-			}
-
-			if (jsonObjectData.contains("custom") && !jsonObjectData["custom"].is_null()) {
-				pDataStructure->custom = jsonObjectData["custom"].get<bool>();
-			}
-
-			if (jsonObjectData.contains("deprecated") && !jsonObjectData["deprecated"].is_null()) {
-				pDataStructure->deprecated = jsonObjectData["deprecated"].get<bool>();
-			}
-
-			if (jsonObjectData.contains("optimal") && !jsonObjectData["optimal"].is_null()) {
-				pDataStructure->optimal = jsonObjectData["optimal"].get<bool>();
-			}
-
-			if (jsonObjectData.contains("name") && !jsonObjectData["name"].is_null()) {
-				pDataStructure->name = jsonObjectData["name"].get<std::string>();
-			}
-		}
+		void parseObject(const nlohmann::json& jsonObjectData, VoiceRegionData* pDataStructure);
 	};
 
 	class DiscordCoreAPI_Dll VoiceRegionDataVector : public DataParser<VoiceRegionDataVector> {
@@ -1375,28 +1112,16 @@ namespace DiscordCoreAPI {
 			return this->theVoiceRegionDatas;
 		}
 
-		VoiceRegionDataVector& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
-
-		VoiceRegionDataVector(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
-
+		VoiceRegionDataVector& operator=(const nlohmann::json& jsonObjectData);
+		
+		VoiceRegionDataVector(const nlohmann::json& jsonObjectData);
+		
 		virtual ~VoiceRegionDataVector() = default;
 
 	  protected:
 		std::vector<VoiceRegionData> theVoiceRegionDatas{};
 
-		void parseObject(const nlohmann::json& jsonObjectData, VoiceRegionDataVector* pDataStructure) {
-			pDataStructure->theVoiceRegionDatas.reserve(jsonObjectData.size());
-			for (auto& value: jsonObjectData) {
-				DiscordCoreAPI::VoiceRegionData newData{ value };
-				pDataStructure->theVoiceRegionDatas.push_back(newData);
-			}
-			pDataStructure->theVoiceRegionDatas.shrink_to_fit();
-		}
+		void parseObject(const nlohmann::json& jsonObjectData, VoiceRegionDataVector* pDataStructure);
 	};
 
 	/// Message activity types. \brief Message activity types.
