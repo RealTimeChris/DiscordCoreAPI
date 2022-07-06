@@ -638,8 +638,8 @@ namespace DiscordCoreAPI {
 			this->onClosed();
 		}
 	}
-	void VoiceConnection::connectInternal() noexcept {
 
+	void VoiceConnection::connectInternal() noexcept {
 		std::lock_guard theLock{ this->baseSocketAgent->sslShards[voiceConnectInitData.currentShard]->theMutex02 };
 		if (this->connections.size() > 0) {
 			this->connections.pop();
