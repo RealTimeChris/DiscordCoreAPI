@@ -50,64 +50,17 @@ namespace DiscordCoreAPI {
 		friend InputEvents;
 		friend Messages;
 
-		CreateMessageData(const uint64_t& channelIdNew) {
-			this->channelId = channelIdNew;
-		}
+		CreateMessageData(const uint64_t& channelIdNew);
 
-		CreateMessageData(RespondToInputEventData dataPackage) {
-			this->channelId = dataPackage.channelId;
-			this->addAllowedMentions(dataPackage.allowedMentions);
-			for (auto& value: dataPackage.components) {
-				this->components.push_back(value);
-			}
-			this->addContent(dataPackage.content);
-			for (auto& value: dataPackage.embeds) {
-				this->embeds.push_back(value);
-			}
-			this->tts = dataPackage.tts;
-		}
+		CreateMessageData(RespondToInputEventData dataPackage);
 
-		CreateMessageData(InputEventData dataPackage) {
-			this->channelId = dataPackage.getChannelId();
-		}
-
+		CreateMessageData(InputEventData dataPackage);
+		
 		Snowflake channelId{};
 
 		CreateMessageData() = default;
 
-		operator std::string() {
-			nlohmann::json data{};
-			for (auto& value: this->attachments) {
-				data["attachments"].push_back(value);
-			}
-			if (this->messageReference.messageId != 0) {
-				data["message_reference"] = this->messageReference;
-			}
-			if (this->components.size() == 0) {
-				data["components"] = nlohmann::json::array();
-			} else {
-				for (auto& value: this->components) {
-					data["components"].push_back(value);
-				}
-			}
-			data["allowed_mentions"] = this->allowedMentions;
-			for (auto& value: this->stickerIds) {
-				data["sticker_ids"].push_back(value);
-			}
-			if (this->embeds.size() == 0) {
-				data["embeds"] = nlohmann::json::array();
-			} else {
-				for (auto& value: this->embeds) {
-					data["embeds"].push_back(value);
-				}
-			}
-			if (this->content != "") {
-				data["content"] = this->content;
-			}
-			data["flags"] = this->flags;
-			data["tts"] = this->tts;
-			return data.dump();
-		}
+		operator std::string();
 
 	  protected:
 		std::vector<AttachmentData> attachments{};
@@ -120,19 +73,7 @@ namespace DiscordCoreAPI {
 	  public:
 		friend InputEvents;
 
-		SendDMData(RespondToInputEventData dataPackage) {
-			this->targetUserId = dataPackage.targetUserId;
-			this->addAllowedMentions(dataPackage.allowedMentions);
-			for (auto& value: dataPackage.components) {
-				this->components.push_back(value);
-			}
-			this->addContent(dataPackage.content);
-			for (auto& value: dataPackage.embeds) {
-				this->embeds.push_back(value);
-			}
-			this->channelId = dataPackage.targetUserId;
-			this->tts = dataPackage.tts;
-		}
+		SendDMData(RespondToInputEventData dataPackage);
 
 	  protected:
 		Snowflake targetUserId{};
@@ -150,50 +91,11 @@ namespace DiscordCoreAPI {
 		friend InputEvents;
 		friend Messages;
 
-		EditMessageData(InputEventData dataPackage) {
-			this->channelId = dataPackage.getChannelId();
-			this->messageId = dataPackage.getMessageId();
-		}
+		EditMessageData(InputEventData dataPackage);
 
-		EditMessageData(RespondToInputEventData dataPackage) {
-			this->allowedMentions = dataPackage.allowedMentions;
-			this->channelId = dataPackage.channelId;
-			this->messageId = dataPackage.messageId;
-			for (auto& value: dataPackage.components) {
-				this->components.push_back(value);
-			}
-			this->content = dataPackage.content;
-			for (auto& value: dataPackage.embeds) {
-				this->embeds.push_back(value);
-			}
-		}
+		EditMessageData(RespondToInputEventData dataPackage);
 
-		operator std::string() {
-			nlohmann::json data{};
-			for (auto& value: this->attachments) {
-				data["attachments"].push_back(value);
-			}
-			if (this->components.size() == 0) {
-				data["components"] = nlohmann::json::array();
-			} else {
-				for (auto& value: this->components) {
-					data["components"].push_back(value);
-				}
-			}
-			data["allowed_mentions"] = this->allowedMentions;
-			if (this->embeds.size() == 0) {
-				data["embeds"] = nlohmann::json::array();
-			} else {
-				for (auto& value: this->embeds) {
-					data["embeds"].push_back(value);
-				}
-			}
-			if (this->content != "") {
-				data["content"] = this->content;
-			}
-			data["flags"] = this->flags;
-			return data.dump();
-		}
+		operator std::string();
 
 	  protected:
 		std::vector<AttachmentData> attachments{};
@@ -220,11 +122,7 @@ namespace DiscordCoreAPI {
 		Snowflake channelId{};///< Channel within which to delete the Messages.
 		std::string reason{};///< The reason for deleting the Messages.
 
-		operator std::string() {
-			nlohmann::json data{};
-			data["messages"] = this->messageIds;
-			return data.dump();
-		}
+		operator std::string();
 	};
 
 	/// For getting a collection of pinned Messages. \brief For getting a collection of pinned Messages.

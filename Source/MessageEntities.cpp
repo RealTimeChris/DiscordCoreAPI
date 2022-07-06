@@ -24,6 +24,128 @@
 
 namespace DiscordCoreAPI {
 
+	CreateMessageData::CreateMessageData(const uint64_t& channelIdNew) {
+		this->channelId = channelIdNew;
+	}
+
+	CreateMessageData::CreateMessageData(RespondToInputEventData dataPackage) {
+		this->channelId = dataPackage.channelId;
+		this->addAllowedMentions(dataPackage.allowedMentions);
+		for (auto& value: dataPackage.components) {
+			this->components.push_back(value);
+		}
+		this->addContent(dataPackage.content);
+		for (auto& value: dataPackage.embeds) {
+			this->embeds.push_back(value);
+		}
+		this->tts = dataPackage.tts;
+	}
+
+	CreateMessageData::CreateMessageData(InputEventData dataPackage) {
+		this->channelId = dataPackage.getChannelId();
+	}
+
+	CreateMessageData::CreateMessageData() = default;
+
+	CreateMessageData::operator std::string() {
+		nlohmann::json data{};
+		for (auto& value: this->attachments) {
+			data["attachments"].push_back(value);
+		}
+		if (this->messageReference.messageId != 0) {
+			data["message_reference"] = this->messageReference;
+		}
+		if (this->components.size() == 0) {
+			data["components"] = nlohmann::json::array();
+		} else {
+			for (auto& value: this->components) {
+				data["components"].push_back(value);
+			}
+		}
+		data["allowed_mentions"] = this->allowedMentions;
+		for (auto& value: this->stickerIds) {
+			data["sticker_ids"].push_back(value);
+		}
+		if (this->embeds.size() == 0) {
+			data["embeds"] = nlohmann::json::array();
+		} else {
+			for (auto& value: this->embeds) {
+				data["embeds"].push_back(value);
+			}
+		}
+		if (this->content != "") {
+			data["content"] = this->content;
+		}
+		data["flags"] = this->flags;
+		data["tts"] = this->tts;
+		return data.dump();
+	}
+
+	SendDMData::SendDMData(RespondToInputEventData dataPackage) {
+		this->targetUserId = dataPackage.targetUserId;
+		this->addAllowedMentions(dataPackage.allowedMentions);
+		for (auto& value: dataPackage.components) {
+			this->components.push_back(value);
+		}
+		this->addContent(dataPackage.content);
+		for (auto& value: dataPackage.embeds) {
+			this->embeds.push_back(value);
+		}
+		this->channelId = dataPackage.targetUserId;
+		this->tts = dataPackage.tts;
+	}
+
+	EditMessageData::EditMessageData(InputEventData dataPackage) {
+		this->channelId = dataPackage.getChannelId();
+		this->messageId = dataPackage.getMessageId();
+	}
+
+	EditMessageData::EditMessageData(RespondToInputEventData dataPackage) {
+		this->allowedMentions = dataPackage.allowedMentions;
+		this->channelId = dataPackage.channelId;
+		this->messageId = dataPackage.messageId;
+		for (auto& value: dataPackage.components) {
+			this->components.push_back(value);
+		}
+		this->content = dataPackage.content;
+		for (auto& value: dataPackage.embeds) {
+			this->embeds.push_back(value);
+		}
+	}
+
+	EditMessageData::operator std::string() {
+		nlohmann::json data{};
+		for (auto& value: this->attachments) {
+			data["attachments"].push_back(value);
+		}
+		if (this->components.size() == 0) {
+			data["components"] = nlohmann::json::array();
+		} else {
+			for (auto& value: this->components) {
+				data["components"].push_back(value);
+			}
+		}
+		data["allowed_mentions"] = this->allowedMentions;
+		if (this->embeds.size() == 0) {
+			data["embeds"] = nlohmann::json::array();
+		} else {
+			for (auto& value: this->embeds) {
+				data["embeds"].push_back(value);
+			}
+		}
+		if (this->content != "") {
+			data["content"] = this->content;
+		}
+		data["flags"] = this->flags;
+		return data.dump();
+	}
+
+	DeleteMessagesBulkData::operator std::string() {
+		nlohmann::json data{};
+		data["messages"] = this->messageIds;
+		return data.dump();
+	}
+
 	Message& Message::operator=(const nlohmann::json& jsonObjectData) {
 		this->parseObject(jsonObjectData, this);
 		return *this;

@@ -150,6 +150,267 @@ namespace DiscordCoreAPI {
 		Interactions::httpsClient = theClient;
 	}
 
+	CreateEphemeralInteractionResponseData::CreateEphemeralInteractionResponseData(const RespondToInputEventData& dataPackage) {
+		this->data = dataPackage;
+		if (dataPackage.eventType == InteractionType::Message_Component) {
+			this->data.type = InteractionCallbackType::Update_Message;
+		} else {
+			this->data.type = InteractionCallbackType::Channel_Message_With_Source;
+		}
+		this->interactionPackage.interactionToken = dataPackage.interactionToken;
+		this->interactionPackage.applicationId = dataPackage.applicationId;
+		this->interactionPackage.interactionId = dataPackage.interactionId;
+		this->data.data.flags = 64;
+	}
+
+	CreateEphemeralInteractionResponseData::CreateEphemeralInteractionResponseData(RespondToInputEventData& dataPackage) {
+		this->data = dataPackage;
+		if (dataPackage.eventType == InteractionType::Message_Component) {
+			this->data.type = InteractionCallbackType::Update_Message;
+		} else {
+			this->data.type = InteractionCallbackType::Channel_Message_With_Source;
+		}
+		this->interactionPackage.interactionToken = dataPackage.interactionToken;
+		this->interactionPackage.applicationId = dataPackage.applicationId;
+		this->interactionPackage.interactionId = dataPackage.interactionId;
+		this->data.data.flags = 64;
+	}
+
+	CreateDeferredInteractionResponseData::CreateDeferredInteractionResponseData(RespondToInputEventData& dataPackage) {
+		this->data = dataPackage;
+		if (dataPackage.eventType == InteractionType::Message_Component) {
+			this->data.type = InteractionCallbackType::Deferred_Update_Message;
+		} else {
+			this->data.type = InteractionCallbackType::Deferred_Channel_Message_With_Source;
+		}
+		this->interactionPackage.interactionToken = dataPackage.interactionToken;
+		this->interactionPackage.applicationId = dataPackage.applicationId;
+		this->interactionPackage.interactionId = dataPackage.interactionId;
+	}
+
+	CreateDeferredInteractionResponseData::CreateDeferredInteractionResponseData(const RespondToInputEventData& dataPackage) {
+		this->data = dataPackage;
+		if (dataPackage.eventType == InteractionType::Message_Component) {
+			this->data.type = InteractionCallbackType::Deferred_Update_Message;
+		} else {
+			this->data.type = InteractionCallbackType::Deferred_Channel_Message_With_Source;
+		}
+		this->interactionPackage.interactionToken = dataPackage.interactionToken;
+		this->interactionPackage.applicationId = dataPackage.applicationId;
+		this->interactionPackage.interactionId = dataPackage.interactionId;
+	}
+
+	CreateInteractionResponseData::CreateInteractionResponseData(const CreateDeferredInteractionResponseData& dataPackage) {
+		this->interactionPackage.interactionToken = dataPackage.interactionPackage.interactionToken;
+		this->interactionPackage.applicationId = dataPackage.interactionPackage.applicationId;
+		this->interactionPackage.interactionId = dataPackage.interactionPackage.interactionId;
+		this->data.data.components = dataPackage.data.data.components;
+		this->data.type = dataPackage.data.type;
+		this->data = dataPackage.data;
+	}
+
+	CreateInteractionResponseData::CreateInteractionResponseData(CreateDeferredInteractionResponseData& dataPackage) {
+		this->interactionPackage.interactionToken = dataPackage.interactionPackage.interactionToken;
+		this->interactionPackage.applicationId = dataPackage.interactionPackage.applicationId;
+		this->interactionPackage.interactionId = dataPackage.interactionPackage.interactionId;
+		this->data.data.components = dataPackage.data.data.components;
+		this->data.type = dataPackage.data.type;
+		this->data = dataPackage.data;
+	}
+
+	CreateInteractionResponseData::CreateInteractionResponseData(const CreateEphemeralInteractionResponseData& dataPackage) {
+		this->interactionPackage.interactionToken = dataPackage.interactionPackage.interactionToken;
+		this->interactionPackage.applicationId = dataPackage.interactionPackage.applicationId;
+		this->interactionPackage.interactionId = dataPackage.interactionPackage.interactionId;
+		this->data.data.components = dataPackage.data.data.components;
+		this->data.type = dataPackage.data.type;
+		this->data = dataPackage.data;
+		this->data.data.flags = 64;
+	}
+
+	CreateInteractionResponseData::CreateInteractionResponseData(CreateEphemeralInteractionResponseData& dataPackage) {
+		this->interactionPackage.interactionToken = dataPackage.interactionPackage.interactionToken;
+		this->interactionPackage.applicationId = dataPackage.interactionPackage.applicationId;
+		this->interactionPackage.interactionId = dataPackage.interactionPackage.interactionId;
+		this->data.data.components = dataPackage.data.data.components;
+		this->data.type = dataPackage.data.type;
+		this->data = dataPackage.data;
+		this->data.data.flags = 64;
+	}
+
+	CreateInteractionResponseData::CreateInteractionResponseData(RespondToInputEventData& dataPackage) {
+		this->data = dataPackage;
+		if (dataPackage.eventType == InteractionType::Message_Component && dataPackage.type == InputEventResponseType::Deferred_Response) {
+			this->data.type = InteractionCallbackType::Deferred_Update_Message;
+		} else if (dataPackage.eventType == InteractionType::Message_Component) {
+			this->data.type = InteractionCallbackType::Update_Message;
+		} else if (dataPackage.eventType == InteractionType::Application_Command_Autocomplete ||
+			dataPackage.type == InputEventResponseType::Application_Command_AutoComplete_Result) {
+			this->data.type = InteractionCallbackType::Application_Command_Autocomplete_Result;
+		} else {
+			this->data.type = InteractionCallbackType::Channel_Message_With_Source;
+		}
+		if (dataPackage.type == InputEventResponseType::Modal_Interaction_Response || dataPackage.title != "") {
+			this->data.type = InteractionCallbackType::Modal;
+		}
+		this->interactionPackage.interactionToken = dataPackage.interactionToken;
+		this->interactionPackage.applicationId = dataPackage.applicationId;
+		this->interactionPackage.interactionId = dataPackage.interactionId;
+	}
+
+	CreateInteractionResponseData::CreateInteractionResponseData(InteractionData& dataPackage) {
+		if (dataPackage.type == InteractionType::Message_Component) {
+			this->data.type = InteractionCallbackType::Update_Message;
+		} else {
+			this->data.type = InteractionCallbackType::Channel_Message_With_Source;
+		}
+		this->interactionPackage.applicationId = dataPackage.applicationId;
+		this->interactionPackage.interactionToken = dataPackage.token;
+		this->interactionPackage.interactionId = dataPackage.id;
+	}
+
+	EditInteractionResponseData::EditInteractionResponseData(const RespondToInputEventData& dataPackage) {
+		this->interactionPackage.interactionToken = dataPackage.interactionToken;
+		this->interactionPackage.applicationId = dataPackage.applicationId;
+		this->interactionPackage.interactionId = dataPackage.interactionId;
+		this->data.allowedMentions = dataPackage.allowedMentions;
+		this->data.components = dataPackage.components;
+		this->data.content = dataPackage.content;
+		this->data.embeds = dataPackage.embeds;
+		this->data.title = dataPackage.title;
+		this->data.flags = dataPackage.flags;
+		this->data.tts = dataPackage.tts;
+	}
+
+	EditInteractionResponseData::EditInteractionResponseData(RespondToInputEventData& dataPackage) {
+		this->interactionPackage.interactionToken = dataPackage.interactionToken;
+		this->interactionPackage.applicationId = dataPackage.applicationId;
+		this->interactionPackage.interactionId = dataPackage.interactionId;
+		this->data.allowedMentions = dataPackage.allowedMentions;
+		this->data.components = dataPackage.components;
+		this->data.content = dataPackage.content;
+		this->data.embeds = dataPackage.embeds;
+		this->data.title = dataPackage.title;
+		this->data.flags = dataPackage.flags;
+		this->data.tts = dataPackage.tts;
+	}
+
+	DeleteInteractionResponseData::DeleteInteractionResponseData(RespondToInputEventData& dataPackage) {
+		this->interactionPackage.interactionToken = dataPackage.interactionToken;
+		this->interactionPackage.applicationId = dataPackage.applicationId;
+		this->interactionPackage.interactionId = dataPackage.interactionId;
+	}
+
+
+	CreateEphemeralFollowUpMessageData::CreateEphemeralFollowUpMessageData(const RespondToInputEventData& dataPackage) {
+		this->interactionPackage.interactionToken = dataPackage.interactionToken;
+		this->interactionPackage.applicationId = dataPackage.applicationId;
+		this->interactionPackage.interactionId = dataPackage.interactionId;
+		this->allowedMentions = dataPackage.allowedMentions;
+		this->components = dataPackage.components;
+		this->content = dataPackage.content;
+		this->embeds = dataPackage.embeds;
+		this->files = dataPackage.files;
+		this->tts = dataPackage.tts;
+		this->flags = 64;
+	}
+
+	CreateEphemeralFollowUpMessageData::CreateEphemeralFollowUpMessageData(RespondToInputEventData& dataPackage) {
+		this->interactionPackage.interactionToken = dataPackage.interactionToken;
+		this->interactionPackage.applicationId = dataPackage.applicationId;
+		this->interactionPackage.interactionId = dataPackage.interactionId;
+		this->allowedMentions = dataPackage.allowedMentions;
+		this->components = dataPackage.components;
+		this->content = dataPackage.content;
+		this->embeds = dataPackage.embeds;
+		this->files = dataPackage.files;
+		this->tts = dataPackage.tts;
+		this->flags = 64;
+	}
+
+	CreateFollowUpMessageData::CreateFollowUpMessageData(const CreateEphemeralFollowUpMessageData& dataPackage) {
+		this->interactionPackage = dataPackage.interactionPackage;
+		this->allowedMentions = dataPackage.allowedMentions;
+		this->components = dataPackage.components;
+		this->content = dataPackage.content;
+		this->embeds = dataPackage.embeds;
+		this->flags = dataPackage.flags;
+		this->files = dataPackage.files;
+		this->tts = dataPackage.tts;
+		this->flags = 64;
+	}
+
+	CreateFollowUpMessageData::CreateFollowUpMessageData(CreateEphemeralFollowUpMessageData& dataPackage) {
+		this->interactionPackage = dataPackage.interactionPackage;
+		this->allowedMentions = dataPackage.allowedMentions;
+		this->components = dataPackage.components;
+		this->content = dataPackage.content;
+		this->embeds = dataPackage.embeds;
+		this->flags = dataPackage.flags;
+		this->files = dataPackage.files;
+		this->tts = dataPackage.tts;
+		this->flags = 64;
+	}
+
+	CreateFollowUpMessageData::CreateFollowUpMessageData(const RespondToInputEventData& dataPackage) {
+		this->interactionPackage.interactionToken = dataPackage.interactionToken;
+		this->interactionPackage.applicationId = dataPackage.applicationId;
+		this->interactionPackage.interactionId = dataPackage.interactionId;
+		this->allowedMentions = dataPackage.allowedMentions;
+		this->components = dataPackage.components;
+		this->content = dataPackage.content;
+		this->embeds = dataPackage.embeds;
+		this->flags = dataPackage.flags;
+		this->files = dataPackage.files;
+		this->tts = dataPackage.tts;
+	}
+
+	CreateFollowUpMessageData::CreateFollowUpMessageData(RespondToInputEventData& dataPackage) {
+		this->interactionPackage.interactionToken = dataPackage.interactionToken;
+		this->interactionPackage.applicationId = dataPackage.applicationId;
+		this->interactionPackage.interactionId = dataPackage.interactionId;
+		this->allowedMentions = dataPackage.allowedMentions;
+		this->components = dataPackage.components;
+		this->content = dataPackage.content;
+		this->embeds = dataPackage.embeds;
+		this->flags = dataPackage.flags;
+		this->files = dataPackage.files;
+		this->tts = dataPackage.tts;
+	}
+
+	EditFollowUpMessageData::EditFollowUpMessageData(const RespondToInputEventData& dataPackage) {
+		this->interactionPackage.interactionToken = dataPackage.interactionToken;
+		this->interactionPackage.applicationId = dataPackage.applicationId;
+		this->interactionPackage.interactionId = dataPackage.interactionId;
+		this->data.allowedMentions = dataPackage.allowedMentions;
+		this->messagePackage.channelId = dataPackage.channelId;
+		this->messagePackage.messageId = dataPackage.messageId;
+		this->data.components = dataPackage.components;
+		this->data.content = dataPackage.content;
+		this->data.embeds = dataPackage.embeds;
+		this->data.files = dataPackage.files;
+	}
+
+	EditFollowUpMessageData::EditFollowUpMessageData(RespondToInputEventData& dataPackage) {
+		this->interactionPackage.interactionToken = dataPackage.interactionToken;
+		this->interactionPackage.applicationId = dataPackage.applicationId;
+		this->interactionPackage.interactionId = dataPackage.interactionId;
+		this->data.allowedMentions = dataPackage.allowedMentions;
+		this->messagePackage.channelId = dataPackage.channelId;
+		this->messagePackage.messageId = dataPackage.messageId;
+		this->data.components = dataPackage.components;
+		this->data.content = dataPackage.content;
+		this->data.embeds = dataPackage.embeds;
+		this->data.files = dataPackage.files;
+	}
+
+	DeleteFollowUpMessageData::DeleteFollowUpMessageData(RespondToInputEventData& dataPackage) {
+		this->interactionPackage.interactionToken = dataPackage.interactionToken;
+		this->interactionPackage.applicationId = dataPackage.applicationId;
+		this->interactionPackage.interactionId = dataPackage.interactionId;
+		this->messagePackage.messageId = dataPackage.messageId;
+	}
+
 	CoRoutine<Message> Interactions::createInteractionResponseAsync(CreateInteractionResponseData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{};
 		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Post_Interaction_Response);

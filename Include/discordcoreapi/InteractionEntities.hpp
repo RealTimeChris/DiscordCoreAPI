@@ -43,30 +43,7 @@ namespace DiscordCoreAPI {
 		/// \param emojiId An emoji id, if desired.
 		/// \param url A url, if applicable.
 		InteractionResponse& addButton(bool disabled, const std::string& customIdNew, const std::string& buttonLabel, ButtonStyle buttonStyle, const std::string& emojiName = "",
-			Snowflake emojiId = 0, const std::string& url = "") {
-			if (this->data.data.components.size() == 0) {
-				ActionRowData actionRowData;
-				this->data.data.components.push_back(actionRowData);
-			}
-			if (this->data.data.components.size() < 5) {
-				if (this->data.data.components[this->data.data.components.size() - 1].components.size() < 5) {
-					ComponentData component;
-					component.type = ComponentType::Button;
-					component.emoji.name = emojiName;
-					component.label = buttonLabel;
-					component.style = static_cast<int32_t>(buttonStyle);
-					component.customId = customIdNew;
-					component.disabled = disabled;
-					component.emoji.id = emojiId;
-					component.url = url;
-					this->data.data.components[this->data.data.components.size() - 1].components.push_back(component);
-				} else if (this->data.data.components[this->data.data.components.size() - 1].components.size() == 5) {
-					ActionRowData actionRowData;
-					this->data.data.components.push_back(actionRowData);
-				}
-			}
-			return *this;
-		}
+			Snowflake emojiId = 0, const std::string& url = "");
 
 		/// Adds a select-menu to the response Message. \brief Adds a select-menu to the response Message.
 		/// \param disabled Whether the select-menu is active or not.
@@ -76,29 +53,7 @@ namespace DiscordCoreAPI {
 		/// \param maxValues Maximum number of selections that are possible.
 		/// \param minValues Minimum required number of selections that are required.
 		InteractionResponse& addSelectMenu(bool disabled, const std::string& customIdNew, std::vector<SelectOptionData> options, const std::string& placeholder, int32_t maxValues,
-			int32_t minValues) {
-			if (this->data.data.components.size() == 0) {
-				ActionRowData actionRowData;
-				this->data.data.components.push_back(actionRowData);
-			}
-			if (this->data.data.components.size() < 5) {
-				if (this->data.data.components[this->data.data.components.size() - 1].components.size() < 5) {
-					ComponentData componentData;
-					componentData.type = ComponentType::SelectMenu;
-					componentData.placeholder = placeholder;
-					componentData.maxValues = maxValues;
-					componentData.minValues = minValues;
-					componentData.disabled = disabled;
-					componentData.customId = customIdNew;
-					componentData.options = options;
-					this->data.data.components[this->data.data.components.size() - 1].components.push_back(componentData);
-				} else if (this->data.data.components[this->data.data.components.size() - 1].components.size() == 5) {
-					ActionRowData actionRowData;
-					this->data.data.components.push_back(actionRowData);
-				}
-			}
-			return *this;
-		}
+			int32_t minValues);
 
 		/// Adds a modal to the response Message. \brief Adds a modal to the response Message.
 		/// \param topTitleNew A title for the modal.
@@ -113,89 +68,40 @@ namespace DiscordCoreAPI {
 		/// \param placeholder A placeholder for the modal.
 		/// \returns RespondToInputEventData& A reference to this data structure.
 		InteractionResponse& addModal(const std::string& topTitleNew, const std::string& topCustomIdNew, const std::string& titleNew, const std::string& customIdNew, bool required,
-			int32_t minLength, int32_t maxLength, TextInputStyle inputStyle, const std::string& label = "", const std::string& placeholder = "") {
-			this->data.data.title = topTitleNew;
-			this->data.data.customId = topCustomIdNew;
-			if (this->data.data.components.size() == 0) {
-				ActionRowData actionRowData;
-				this->data.data.components.push_back(actionRowData);
-			}
-			if (this->data.data.components.size() < 5) {
-				if (this->data.data.components[this->data.data.components.size() - 1].components.size() < 5) {
-					ComponentData component{};
-					component.type = ComponentType::TextInput;
-					component.customId = customIdNew;
-					component.style = static_cast<int32_t>(inputStyle);
-					component.title = titleNew;
-					component.maxLength = maxLength;
-					component.minLength = minLength;
-					component.label = label;
-					component.required = required;
-					component.placeholder = placeholder;
-					this->data.data.components[this->data.data.components.size() - 1].components.push_back(component);
-				} else if (this->data.data.components[this->data.data.components.size() - 1].components.size() == 5) {
-					ActionRowData actionRowData;
-					this->data.data.components.push_back(actionRowData);
-				}
-			}
-			return *this;
-		}
-
+			int32_t minLength, int32_t maxLength, TextInputStyle inputStyle, const std::string& label = "", const std::string& placeholder = "");
+		
 		/// Adds a file to the current collection of files for this message response. \brief Adds a file to the current collection of files for this message response.
 		/// \param theFile The file to be added.
 		/// \returns MessageResponseBase& A reference to this data structure.
-		InteractionResponse& addFile(const File& theFile) {
-			this->data.data.files.push_back(theFile);
-			return *this;
-		}
+		InteractionResponse& addFile(const File& theFile);
 
 		/// For setting the allowable mentions in a response. \brief For setting the allowable mentions in a response.
 		/// \param dataPackage An AllowedMentionsData structure.
-		InteractionResponse& addAllowedMentions(const AllowedMentionsData& dataPackage) {
-			this->data.data.allowedMentions = dataPackage;
-			return *this;
-		}
+		InteractionResponse& addAllowedMentions(const AllowedMentionsData& dataPackage);
 
 		/// For setting the components in a response. \brief For setting the components in a response.
 		/// \param dataPackage An ActionRowData structure.
-		InteractionResponse& addComponentRow(const ActionRowData& dataPackage) {
-			this->data.data.components.push_back(dataPackage);
-			return *this;
-		}
-
+		InteractionResponse& addComponentRow(const ActionRowData& dataPackage);
+		
 		/// Sets the response type of the current Message. \brief Sets the response type of the current Message.
 		/// \param type Interaction callback type.
-		InteractionResponse& setResponseType(InteractionCallbackType type) {
-			this->data.type = type;
-			return *this;
-		}
+		InteractionResponse& setResponseType(InteractionCallbackType type);
 
 		/// For setting the embeds in a response. \brief For setting the embeds in a response.
 		/// \param dataPackage An EmbedData structure.
-		InteractionResponse& addMessageEmbed(const EmbedData& dataPackage) {
-			this->data.data.embeds.push_back(dataPackage);
-			return *this;
-		}
-
+		InteractionResponse& addMessageEmbed(const EmbedData& dataPackage);
+		
 		/// For setting the Message content in a response. \brief For setting the content in a response.
 		/// \param dataPackage A std::string, containing the content.
-		InteractionResponse& addContent(const std::string& dataPackage) {
-			this->data.data.content = dataPackage;
-			return *this;
-		}
-
+		InteractionResponse& addContent(const std::string& dataPackage);
+		
 		/// For setting the tts status of a response. \brief For setting the tts status of a response.
 		/// \param enabledTTs A bool.
-		InteractionResponse& setTTSStatus(bool enabledTTs) {
-			this->data.data.tts = enabledTTs;
-			return *this;
-		}
+		InteractionResponse& setTTSStatus(bool enabledTTs);
+		
+		InteractionResponseData getInteractionResponseData();
 
 		virtual ~InteractionResponse() = default;
-
-		InteractionResponseData getInteractionResponseData() {
-			return this->data;
-		}
 
 	  protected:
 		InteractionPackageData interactionPackage{};
@@ -210,32 +116,10 @@ namespace DiscordCoreAPI {
 		friend Interactions;
 		friend InputEvents;
 
-		CreateEphemeralInteractionResponseData(const RespondToInputEventData& dataPackage) {
-			this->data = dataPackage;
-			if (dataPackage.eventType == InteractionType::Message_Component) {
-				this->data.type = InteractionCallbackType::Update_Message;
-			} else {
-				this->data.type = InteractionCallbackType::Channel_Message_With_Source;
-			}
-			this->interactionPackage.interactionToken = dataPackage.interactionToken;
-			this->interactionPackage.applicationId = dataPackage.applicationId;
-			this->interactionPackage.interactionId = dataPackage.interactionId;
-			this->data.data.flags = 64;
-		}
+		CreateEphemeralInteractionResponseData(const RespondToInputEventData& dataPackage);
 
-		CreateEphemeralInteractionResponseData(RespondToInputEventData& dataPackage) {
-			this->data = dataPackage;
-			if (dataPackage.eventType == InteractionType::Message_Component) {
-				this->data.type = InteractionCallbackType::Update_Message;
-			} else {
-				this->data.type = InteractionCallbackType::Channel_Message_With_Source;
-			}
-			this->interactionPackage.interactionToken = dataPackage.interactionToken;
-			this->interactionPackage.applicationId = dataPackage.applicationId;
-			this->interactionPackage.interactionId = dataPackage.interactionId;
-			this->data.data.flags = 64;
-		}
-
+		CreateEphemeralInteractionResponseData(RespondToInputEventData& dataPackage);
+		
 		virtual ~CreateEphemeralInteractionResponseData() = default;
 	};
 
@@ -246,29 +130,9 @@ namespace DiscordCoreAPI {
 		friend Interactions;
 		friend InputEvents;
 
-		CreateDeferredInteractionResponseData(RespondToInputEventData& dataPackage) {
-			this->data = dataPackage;
-			if (dataPackage.eventType == InteractionType::Message_Component) {
-				this->data.type = InteractionCallbackType::Deferred_Update_Message;
-			} else {
-				this->data.type = InteractionCallbackType::Deferred_Channel_Message_With_Source;
-			}
-			this->interactionPackage.interactionToken = dataPackage.interactionToken;
-			this->interactionPackage.applicationId = dataPackage.applicationId;
-			this->interactionPackage.interactionId = dataPackage.interactionId;
-		}
+		CreateDeferredInteractionResponseData(RespondToInputEventData& dataPackage);
 
-		CreateDeferredInteractionResponseData(const RespondToInputEventData& dataPackage) {
-			this->data = dataPackage;
-			if (dataPackage.eventType == InteractionType::Message_Component) {
-				this->data.type = InteractionCallbackType::Deferred_Update_Message;
-			} else {
-				this->data.type = InteractionCallbackType::Deferred_Channel_Message_With_Source;
-			}
-			this->interactionPackage.interactionToken = dataPackage.interactionToken;
-			this->interactionPackage.applicationId = dataPackage.applicationId;
-			this->interactionPackage.interactionId = dataPackage.interactionId;
-		}
+		CreateDeferredInteractionResponseData(const RespondToInputEventData& dataPackage);
 
 		virtual ~CreateDeferredInteractionResponseData() = default;
 
@@ -286,74 +150,17 @@ namespace DiscordCoreAPI {
 		friend Interactions;
 		friend InputEvents;
 
-		CreateInteractionResponseData(const CreateDeferredInteractionResponseData& dataPackage) {
-			this->interactionPackage.interactionToken = dataPackage.interactionPackage.interactionToken;
-			this->interactionPackage.applicationId = dataPackage.interactionPackage.applicationId;
-			this->interactionPackage.interactionId = dataPackage.interactionPackage.interactionId;
-			this->data.data.components = dataPackage.data.data.components;
-			this->data.type = dataPackage.data.type;
-			this->data = dataPackage.data;
-		}
+		CreateInteractionResponseData(const CreateDeferredInteractionResponseData& dataPackage);
+		
+		CreateInteractionResponseData(CreateDeferredInteractionResponseData& dataPackage);
 
-		CreateInteractionResponseData(CreateDeferredInteractionResponseData& dataPackage) {
-			this->interactionPackage.interactionToken = dataPackage.interactionPackage.interactionToken;
-			this->interactionPackage.applicationId = dataPackage.interactionPackage.applicationId;
-			this->interactionPackage.interactionId = dataPackage.interactionPackage.interactionId;
-			this->data.data.components = dataPackage.data.data.components;
-			this->data.type = dataPackage.data.type;
-			this->data = dataPackage.data;
-		}
-
-		CreateInteractionResponseData(const CreateEphemeralInteractionResponseData& dataPackage) {
-			this->interactionPackage.interactionToken = dataPackage.interactionPackage.interactionToken;
-			this->interactionPackage.applicationId = dataPackage.interactionPackage.applicationId;
-			this->interactionPackage.interactionId = dataPackage.interactionPackage.interactionId;
-			this->data.data.components = dataPackage.data.data.components;
-			this->data.type = dataPackage.data.type;
-			this->data = dataPackage.data;
-			this->data.data.flags = 64;
-		}
-
-		CreateInteractionResponseData(CreateEphemeralInteractionResponseData& dataPackage) {
-			this->interactionPackage.interactionToken = dataPackage.interactionPackage.interactionToken;
-			this->interactionPackage.applicationId = dataPackage.interactionPackage.applicationId;
-			this->interactionPackage.interactionId = dataPackage.interactionPackage.interactionId;
-			this->data.data.components = dataPackage.data.data.components;
-			this->data.type = dataPackage.data.type;
-			this->data = dataPackage.data;
-			this->data.data.flags = 64;
-		}
-
-		CreateInteractionResponseData(RespondToInputEventData& dataPackage) {
-			this->data = dataPackage;
-			if (dataPackage.eventType == InteractionType::Message_Component && dataPackage.type == InputEventResponseType::Deferred_Response) {
-				this->data.type = InteractionCallbackType::Deferred_Update_Message;
-			} else if (dataPackage.eventType == InteractionType::Message_Component) {
-				this->data.type = InteractionCallbackType::Update_Message;
-			} else if (dataPackage.eventType == InteractionType::Application_Command_Autocomplete ||
-				dataPackage.type == InputEventResponseType::Application_Command_AutoComplete_Result) {
-				this->data.type = InteractionCallbackType::Application_Command_Autocomplete_Result;
-			} else {
-				this->data.type = InteractionCallbackType::Channel_Message_With_Source;
-			}
-			if (dataPackage.type == InputEventResponseType::Modal_Interaction_Response || dataPackage.title != "") {
-				this->data.type = InteractionCallbackType::Modal;
-			}
-			this->interactionPackage.interactionToken = dataPackage.interactionToken;
-			this->interactionPackage.applicationId = dataPackage.applicationId;
-			this->interactionPackage.interactionId = dataPackage.interactionId;
-		}
-
-		CreateInteractionResponseData(InteractionData& dataPackage) {
-			if (dataPackage.type == InteractionType::Message_Component) {
-				this->data.type = InteractionCallbackType::Update_Message;
-			} else {
-				this->data.type = InteractionCallbackType::Channel_Message_With_Source;
-			}
-			this->interactionPackage.applicationId = dataPackage.applicationId;
-			this->interactionPackage.interactionToken = dataPackage.token;
-			this->interactionPackage.interactionId = dataPackage.id;
-		}
+		CreateInteractionResponseData(const CreateEphemeralInteractionResponseData& dataPackage);
+		
+		CreateInteractionResponseData(CreateEphemeralInteractionResponseData& dataPackage);
+		
+		CreateInteractionResponseData(RespondToInputEventData& dataPackage);
+		
+		CreateInteractionResponseData(InteractionData& dataPackage);
 
 		virtual ~CreateInteractionResponseData() = default;
 	};
@@ -370,31 +177,9 @@ namespace DiscordCoreAPI {
 		friend Interactions;
 		friend InputEvents;
 
-		EditInteractionResponseData(const RespondToInputEventData& dataPackage) {
-			this->interactionPackage.interactionToken = dataPackage.interactionToken;
-			this->interactionPackage.applicationId = dataPackage.applicationId;
-			this->interactionPackage.interactionId = dataPackage.interactionId;
-			this->data.allowedMentions = dataPackage.allowedMentions;
-			this->data.components = dataPackage.components;
-			this->data.content = dataPackage.content;
-			this->data.embeds = dataPackage.embeds;
-			this->data.title = dataPackage.title;
-			this->data.flags = dataPackage.flags;
-			this->data.tts = dataPackage.tts;
-		}
+		EditInteractionResponseData(const RespondToInputEventData& dataPackage);
 
-		EditInteractionResponseData(RespondToInputEventData& dataPackage) {
-			this->interactionPackage.interactionToken = dataPackage.interactionToken;
-			this->interactionPackage.applicationId = dataPackage.applicationId;
-			this->interactionPackage.interactionId = dataPackage.interactionId;
-			this->data.allowedMentions = dataPackage.allowedMentions;
-			this->data.components = dataPackage.components;
-			this->data.content = dataPackage.content;
-			this->data.embeds = dataPackage.embeds;
-			this->data.title = dataPackage.title;
-			this->data.flags = dataPackage.flags;
-			this->data.tts = dataPackage.tts;
-		}
+		EditInteractionResponseData(RespondToInputEventData& dataPackage);
 
 		virtual ~EditInteractionResponseData() = default;
 
@@ -408,12 +193,8 @@ namespace DiscordCoreAPI {
 		friend Interactions;
 		friend InputEvents;
 
-		DeleteInteractionResponseData(RespondToInputEventData& dataPackage) {
-			this->interactionPackage.interactionToken = dataPackage.interactionToken;
-			this->interactionPackage.applicationId = dataPackage.applicationId;
-			this->interactionPackage.interactionId = dataPackage.interactionId;
-		}
-
+		DeleteInteractionResponseData(RespondToInputEventData& dataPackage);
+		
 	  protected:
 		InteractionPackageData interactionPackage{};
 		uint32_t timeDelay{ 0 };
@@ -426,31 +207,9 @@ namespace DiscordCoreAPI {
 		friend Interactions;
 		friend InputEvents;
 
-		CreateEphemeralFollowUpMessageData(const RespondToInputEventData& dataPackage) {
-			this->interactionPackage.interactionToken = dataPackage.interactionToken;
-			this->interactionPackage.applicationId = dataPackage.applicationId;
-			this->interactionPackage.interactionId = dataPackage.interactionId;
-			this->allowedMentions = dataPackage.allowedMentions;
-			this->components = dataPackage.components;
-			this->content = dataPackage.content;
-			this->embeds = dataPackage.embeds;
-			this->files = dataPackage.files;
-			this->tts = dataPackage.tts;
-			this->flags = 64;
-		}
+		CreateEphemeralFollowUpMessageData(const RespondToInputEventData& dataPackage);
 
-		CreateEphemeralFollowUpMessageData(RespondToInputEventData& dataPackage) {
-			this->interactionPackage.interactionToken = dataPackage.interactionToken;
-			this->interactionPackage.applicationId = dataPackage.applicationId;
-			this->interactionPackage.interactionId = dataPackage.interactionId;
-			this->allowedMentions = dataPackage.allowedMentions;
-			this->components = dataPackage.components;
-			this->content = dataPackage.content;
-			this->embeds = dataPackage.embeds;
-			this->files = dataPackage.files;
-			this->tts = dataPackage.tts;
-			this->flags = 64;
-		}
+		CreateEphemeralFollowUpMessageData(RespondToInputEventData& dataPackage);
 
 		virtual ~CreateEphemeralFollowUpMessageData() = default;
 
@@ -466,55 +225,13 @@ namespace DiscordCoreAPI {
 		friend Interactions;
 		friend InputEvents;
 
-		CreateFollowUpMessageData(const CreateEphemeralFollowUpMessageData& dataPackage) {
-			this->interactionPackage = dataPackage.interactionPackage;
-			this->allowedMentions = dataPackage.allowedMentions;
-			this->components = dataPackage.components;
-			this->content = dataPackage.content;
-			this->embeds = dataPackage.embeds;
-			this->flags = dataPackage.flags;
-			this->files = dataPackage.files;
-			this->tts = dataPackage.tts;
-			this->flags = 64;
-		}
+		CreateFollowUpMessageData(const CreateEphemeralFollowUpMessageData& dataPackage);
+		
+		CreateFollowUpMessageData(CreateEphemeralFollowUpMessageData& dataPackage);
 
-		CreateFollowUpMessageData(CreateEphemeralFollowUpMessageData& dataPackage) {
-			this->interactionPackage = dataPackage.interactionPackage;
-			this->allowedMentions = dataPackage.allowedMentions;
-			this->components = dataPackage.components;
-			this->content = dataPackage.content;
-			this->embeds = dataPackage.embeds;
-			this->flags = dataPackage.flags;
-			this->files = dataPackage.files;
-			this->tts = dataPackage.tts;
-			this->flags = 64;
-		}
+		CreateFollowUpMessageData(const RespondToInputEventData& dataPackage);
 
-		CreateFollowUpMessageData(const RespondToInputEventData& dataPackage) {
-			this->interactionPackage.interactionToken = dataPackage.interactionToken;
-			this->interactionPackage.applicationId = dataPackage.applicationId;
-			this->interactionPackage.interactionId = dataPackage.interactionId;
-			this->allowedMentions = dataPackage.allowedMentions;
-			this->components = dataPackage.components;
-			this->content = dataPackage.content;
-			this->embeds = dataPackage.embeds;
-			this->flags = dataPackage.flags;
-			this->files = dataPackage.files;
-			this->tts = dataPackage.tts;
-		}
-
-		CreateFollowUpMessageData(RespondToInputEventData& dataPackage) {
-			this->interactionPackage.interactionToken = dataPackage.interactionToken;
-			this->interactionPackage.applicationId = dataPackage.applicationId;
-			this->interactionPackage.interactionId = dataPackage.interactionId;
-			this->allowedMentions = dataPackage.allowedMentions;
-			this->components = dataPackage.components;
-			this->content = dataPackage.content;
-			this->embeds = dataPackage.embeds;
-			this->flags = dataPackage.flags;
-			this->files = dataPackage.files;
-			this->tts = dataPackage.tts;
-		}
+		CreateFollowUpMessageData(RespondToInputEventData& dataPackage);
 
 		virtual ~CreateFollowUpMessageData() = default;
 
@@ -535,31 +252,9 @@ namespace DiscordCoreAPI {
 		friend Interactions;
 		friend InputEvents;
 
-		EditFollowUpMessageData(const RespondToInputEventData& dataPackage) {
-			this->interactionPackage.interactionToken = dataPackage.interactionToken;
-			this->interactionPackage.applicationId = dataPackage.applicationId;
-			this->interactionPackage.interactionId = dataPackage.interactionId;
-			this->data.allowedMentions = dataPackage.allowedMentions;
-			this->messagePackage.channelId = dataPackage.channelId;
-			this->messagePackage.messageId = dataPackage.messageId;
-			this->data.components = dataPackage.components;
-			this->data.content = dataPackage.content;
-			this->data.embeds = dataPackage.embeds;
-			this->data.files = dataPackage.files;
-		}
-
-		EditFollowUpMessageData(RespondToInputEventData& dataPackage) {
-			this->interactionPackage.interactionToken = dataPackage.interactionToken;
-			this->interactionPackage.applicationId = dataPackage.applicationId;
-			this->interactionPackage.interactionId = dataPackage.interactionId;
-			this->data.allowedMentions = dataPackage.allowedMentions;
-			this->messagePackage.channelId = dataPackage.channelId;
-			this->messagePackage.messageId = dataPackage.messageId;
-			this->data.components = dataPackage.components;
-			this->data.content = dataPackage.content;
-			this->data.embeds = dataPackage.embeds;
-			this->data.files = dataPackage.files;
-		}
+		EditFollowUpMessageData(const RespondToInputEventData& dataPackage);
+		
+		EditFollowUpMessageData(RespondToInputEventData& dataPackage);
 
 		virtual ~EditFollowUpMessageData() = default;
 
@@ -574,12 +269,7 @@ namespace DiscordCoreAPI {
 		friend Interactions;
 		friend InputEvents;
 
-		DeleteFollowUpMessageData(RespondToInputEventData& dataPackage) {
-			this->interactionPackage.interactionToken = dataPackage.interactionToken;
-			this->interactionPackage.applicationId = dataPackage.applicationId;
-			this->interactionPackage.interactionId = dataPackage.interactionId;
-			this->messagePackage.messageId = dataPackage.messageId;
-		}
+		DeleteFollowUpMessageData(RespondToInputEventData& dataPackage);
 
 	  protected:
 		InteractionPackageData interactionPackage{};
