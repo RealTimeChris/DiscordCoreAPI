@@ -26,11 +26,10 @@ namespace DiscordCoreAPI {
 		extern std::atomic_bool doWeQuit;
 	}
 
-	RTPPacket::RTPPacket(uint32_t timestampNew, uint16_t sequenceNew, uint32_t ssrcNew, const std::vector<uint8_t>& audioDataNew, const std::string& theKeys) {
+	RTPPacket::RTPPacket(uint32_t timestampNew, uint16_t sequenceNew, uint32_t ssrcNew, const std::vector<uint8_t>& audioDataNew, const std::string& theKeys) : theKeys(theKeys) {
 		this->audioData = audioDataNew;
 		this->timestamp = timestampNew;
 		this->sequence = sequenceNew;
-		this->theKeys = theKeys;
 		this->ssrc = ssrcNew;
 	}
 
@@ -40,14 +39,12 @@ namespace DiscordCoreAPI {
 			const uint8_t headerSize{ 12 };
 			const uint8_t byteSize{ 8 };
 			std::string headerFinal{};
-			uint8_t value01{ 0x80 };
-			storeBits(headerFinal, value01);
-			uint8_t value02{ 0x78 };
-			storeBits(headerFinal, value02);
+			storeBits(headerFinal, this->version);
+			storeBits(headerFinal, this->flags);
 			storeBits(headerFinal, this->sequence);
 			storeBits(headerFinal, this->timestamp);
 			storeBits(headerFinal, this->ssrc);
-			uint8_t nonceForLibSodium[nonceSize]{};
+			std::unique_ptr<uint8_t[]> nonceForLibSodium{ std::make_unique<uint8_t[]>(nonceSize) };
 			for (uint8_t x = 0; x < headerSize; x++) {
 				nonceForLibSodium[x] = headerFinal[x];
 			}
@@ -63,7 +60,7 @@ namespace DiscordCoreAPI {
 			for (uint64_t x = 0; x < this->theKeys.size(); x++) {
 				encryptionKeys[x] = this->theKeys[x];
 			}
-			if (crypto_secretbox_easy(audioDataPacket.get() + headerSize, this->audioData.data(), this->audioData.size(), nonceForLibSodium, encryptionKeys.get()) != 0) {
+			if (crypto_secretbox_easy(audioDataPacket.get() + headerSize, this->audioData.data(), this->audioData.size(), nonceForLibSodium.get(), encryptionKeys.get()) != 0) {
 				return "";
 			};
 			std::string audioDataPacketNew{};
