@@ -566,6 +566,10 @@ namespace DiscordCoreAPI {
 		*this = jsonObjectData;
 	}
 
+	VoiceRegionDataVector::operator std::vector<VoiceRegionData>() {
+		return this->theVoiceRegionDatas;
+	}
+
 	VoiceRegionDataVector& VoiceRegionDataVector::operator=(const nlohmann::json& jsonObjectData) {
 		this->parseObject(jsonObjectData, this);
 		return *this;
@@ -574,556 +578,137 @@ namespace DiscordCoreAPI {
 	VoiceRegionDataVector::VoiceRegionDataVector(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
+
+	MessageActivityData& MessageActivityData::operator = (const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData, this);
+		return *this;
+	}
+
+	MessageActivityData::MessageActivityData(const nlohmann::json& jsonObjectData) {
+		*this = jsonObjectData;
+	}
+
+	BanData& BanData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData, this);
+		return *this;
+	}
+
+	BanData::BanData(const nlohmann::json& jsonObjectData) {
+		*this = jsonObjectData;
+	}
+
+	BanDataVector::operator std::vector<BanData>() {
+		return this->theBanDatas;
+	}
+
+	BanDataVector& BanDataVector::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData, this);
+		return *this;
+	}
+
+	BanDataVector::BanDataVector(const nlohmann::json& jsonObjectData) {
+		*this = jsonObjectData;
+	}
+
+	TeamMembersObjectData& TeamMembersObjectData::operator = (const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData, this);
+		return *this;
+	}
+
+	TeamMembersObjectData::TeamMembersObjectData(const nlohmann::json& jsonObjectData) {
+		*this = jsonObjectData;
+	}
+
+	UpdateVoiceStateData::operator nlohmann::json() {
+		nlohmann::json data{};
+		if (this->channelId == 0) {
+			data["d"]["channel_id"] = nullptr;
+		} else {
+			data["d"]["channel_id"] = std::to_string(this->channelId);
+		}
+		data["d"]["self_deaf"] = this->selfDeaf;
+		data["d"]["self_mute"] = this->selfMute;
+		data["d"]["guild_id"] = std::to_string(this->guildId);
+		data["op"] = 4;
+		return data;
+	}
 	
+	TeamObjectData& TeamObjectData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData, this);
+		return *this;
+	}
+
+	TeamObjectData::TeamObjectData(const nlohmann::json& jsonObjectData) {
+		*this = jsonObjectData;
+	}
+
+	InstallParamsData& InstallParamsData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData, this);
+		return *this;
+	}
+
+	InstallParamsData::InstallParamsData(const nlohmann::json& jsonObjectData) {
+		*this = jsonObjectData;
+	}
+
+	AuthorizationInfoData& AuthorizationInfoData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData, this);
+		return *this;
+	}
+
+	AuthorizationInfoData::AuthorizationInfoData(const nlohmann::json& jsonObjectData) {
+		*this = jsonObjectData;
+	}
+
+	AccountData& AccountData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData, this);
+		return *this;
+	}
+
+	AccountData::AccountData(const nlohmann::json& jsonObjectData) {
+		*this = jsonObjectData;
+	}
+
+	GuildWidgetData& GuildWidgetData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData, this);
+		return *this;
+	}
+
+	GuildWidgetData::GuildWidgetData(const nlohmann::json& jsonObjectData) {
+		*this = jsonObjectData;
+	}
+
+	GuildWidgetImageData& GuildWidgetImageData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData, this);
+		return *this;
+	}
+
+	GuildWidgetImageData::GuildWidgetImageData(const nlohmann::json& jsonObjectData) {
+		*this = jsonObjectData;
+	}
+
+	IntegrationData& IntegrationData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData, this);
+		return *this;
+	}
+
+	IntegrationData::IntegrationData(const nlohmann::json& jsonObjectData) {
+		*this = jsonObjectData;
+	}
+
+	IntegrationDataVector::operator std::vector<IntegrationData>() {
+		return this->theIntegrationDatas;
+	}
+
+	IntegrationDataVector& IntegrationDataVector::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData, this);
+		return *this;
+	}
+
+	IntegrationDataVector::IntegrationDataVector(const nlohmann::json& jsonObjectData) {
+		*this = jsonObjectData;
+	}
 	/*
-	/// Message activity data. \brief Message activity data.
-	struct DiscordCoreAPI_Dll MessageActivityData : public DataParser<MessageActivityData> {
-		MessageActivityType type{ MessageActivityType::Join };///< Message activity type.
-		std::string partyId{};///< Party id.
-
-		MessageActivityData() = default;
-
-		MessageActivityData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
-
-		MessageActivityData(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
-
-		virtual ~MessageActivityData() = default;
-
-		void parseObject(const nlohmann::json& jsonObjectData, MessageActivityData* pDataStructure) {
-			if (jsonObjectData.contains("type") && !jsonObjectData["type"].is_null()) {
-				pDataStructure->type = jsonObjectData["type"].get<MessageActivityType>();
-			}
-
-			if (jsonObjectData.contains("party_id") && !jsonObjectData["party_id"].is_null()) {
-				pDataStructure->partyId = jsonObjectData["party_id"].get<std::string>();
-			}
-		}
-	};
-
-	/// Ban data. \brief Ban data.
-	struct DiscordCoreAPI_Dll BanData : public DataParser<BanData> {
-		bool failedDueToPerms{ false };///< Failed due to perms?
-		std::string reason{};///< Reason for the ban.
-		UserData user{};///< User that was banned.
-
-		BanData() = default;
-
-		BanData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
-
-		BanData(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
-
-		virtual ~BanData() = default;
-
-	  protected:
-		void parseObject(const nlohmann::json& jsonObjectData, BanData* pDataStructure) {
-			if (jsonObjectData.contains("user") && !jsonObjectData["user"].is_null()) {
-				pDataStructure->user = jsonObjectData["user"];
-			}
-
-			if (jsonObjectData.contains("reason") && !jsonObjectData["reason"].is_null()) {
-				pDataStructure->reason = jsonObjectData["reason"].get<std::string>();
-			}
-		}
-	};
-
-	class DiscordCoreAPI_Dll BanDataVector : public DataParser<BanDataVector> {
-	  public:
-		BanDataVector() = default;
-
-		operator std::vector<BanData>() {
-			return this->theBanDatas;
-		}
-
-		BanDataVector& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
-
-		BanDataVector(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
-
-		virtual ~BanDataVector() = default;
-
-	  protected:
-		std::vector<BanData> theBanDatas{};
-
-		void parseObject(const nlohmann::json& jsonObjectData, BanDataVector* pDataStructure) {
-			pDataStructure->theBanDatas.reserve(jsonObjectData.size());
-			for (auto& value: jsonObjectData) {
-				DiscordCoreAPI::BanData newData{ value };
-				pDataStructure->theBanDatas.push_back(newData);
-			}
-			pDataStructure->theBanDatas.shrink_to_fit();
-		}
-	};
-
-	/// Team members object data. \brief Team members object data.
-	struct DiscordCoreAPI_Dll TeamMembersObjectData : public DataParser<TeamMembersObjectData> {
-		std::vector<Permissions> permissions{};///< Permissions for the team.
-		int32_t membershipState{ 0 };///< Current state.
-		std::string teamId{};///< Id of the current team.
-		UserData user{};///< User data of the current User.
-
-		TeamMembersObjectData() = default;
-
-		TeamMembersObjectData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
-
-		TeamMembersObjectData(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
-
-		virtual ~TeamMembersObjectData() = default;
-
-	  protected:
-		void parseObject(const nlohmann::json& jsonObjectData, TeamMembersObjectData* pDataStructure) {
-			if (jsonObjectData.contains("membership_state") && !jsonObjectData["membership_state"].is_null()) {
-				pDataStructure->membershipState = jsonObjectData["membership_state"].get<int32_t>();
-			}
-
-			if (jsonObjectData.contains("team_id") && !jsonObjectData["team_id"].is_null()) {
-				pDataStructure->teamId = jsonObjectData["team_id"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("permissions") && !jsonObjectData["permissions"].is_null()) {
-				pDataStructure->permissions.clear();
-				for (auto& value: jsonObjectData["permissions"]) {
-					pDataStructure->permissions.push_back(value.get<std::string>());
-				}
-			}
-
-			if (jsonObjectData.contains("user") && !jsonObjectData["user"].is_null()) {
-				pDataStructure->user = jsonObjectData["user"];
-			}
-		}
-	};
-
-	/// For updating the current voice state. \brief For updating the current voice state.
-	struct DiscordCoreAPI_Dll UpdateVoiceStateData {
-		bool selfMute{ false };///< Whether or not we self-mute ourselves.
-		bool selfDeaf{ false };///< Whether or not we self-deafen ourselves.
-		Snowflake channelId{};///< Id of the desired voice Channel. Leave blank to disconnect.
-		Snowflake guildId{};///< The id of the Guild fo which we would like to establish a voice connection.
-
-		operator nlohmann::json() {
-			nlohmann::json data{};
-			if (this->channelId == 0) {
-				data["d"]["channel_id"] = nullptr;
-			} else {
-				data["d"]["channel_id"] = std::to_string(this->channelId);
-			}
-			data["d"]["self_deaf"] = this->selfDeaf;
-			data["d"]["self_mute"] = this->selfMute;
-			data["d"]["guild_id"] = std::to_string(this->guildId);
-			data["op"] = 4;
-			return data;
-		}
-	};
-
-	/// Team object data. \brief Team object data.
-	class DiscordCoreAPI_Dll TeamObjectData : public DiscordEntity, public DataParser<TeamObjectData> {
-	  public:
-		std::vector<TeamMembersObjectData> members{};///< Array of team members object data.
-		std::string ownerUserId{};///< User id of the team owner.
-		std::string icon{};///< Icon for the team.
-
-		TeamObjectData() = default;
-
-		TeamObjectData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
-
-		TeamObjectData(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
-
-		virtual ~TeamObjectData() = default;
-
-	  protected:
-		void parseObject(const nlohmann::json& jsonObjectData, TeamObjectData* pDataStructure) {
-			if (jsonObjectData.contains("icon") && !jsonObjectData["icon"].is_null()) {
-				pDataStructure->icon = jsonObjectData["icon"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
-				pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
-			}
-
-			if (jsonObjectData.contains("members") && !jsonObjectData["members"].is_null()) {
-				pDataStructure->members.clear();
-				for (auto& value: jsonObjectData["members"]) {
-					TeamMembersObjectData newData{ value };
-					pDataStructure->members.push_back(newData);
-				}
-			}
-
-			if (jsonObjectData.contains("owner_user_id") && !jsonObjectData["owner_user_id"].is_null()) {
-				pDataStructure->ownerUserId = jsonObjectData["owner_user_id"].get<std::string>();
-			}
-		}
-	};
-
-	/// Application flags, for the ApplicationData structure.
-	enum class ApplicationFlags : int32_t {
-		Gateway_Presence = 1 << 12,///< Intent required for bots in 100 or more servers to receive presence_update events.
-		Gateway_Presence_Limited = 1 << 13,///< Intent required for bots in under 100 servers to receive presence_update events, found in Bot Settings.
-		Gateway_Guild_Members = 1 << 14,///< Intent required for bots in 100 or more servers to receive member-related events like guild_member_add.
-		Gateway_Guild_Members_Limited = 1 << 15,///< Intent required for bots in under 100 servers to receive member-related events like guild_member_add, found in Bot Settings.
-		Verificatino_Pending_Guild_Limit = 1 << 16,///< Indicates unusual growth of an app that prevents verification
-		Embedded = 1 << 17,///< Indicates if an app is embedded within the Discord client (currently unavailable publicly)
-		Gateway_Message_Content = 1 << 18,///< Intent required for bots in 100 or more servers to receive message content
-		Gateway_Message_Content_Limited = 1 << 19///< Intent required for bots in under 100 servers to receive message content, found in Bot Settings};
-	};
-
-	/// Install params data, for application data. \brief Install params data, for application data.
-	struct DiscordCoreAPI_Dll InstallParamsData : public DataParser<InstallParamsData> {
-		std::vector<std::string> scopes{};///< The scopes to add the application to the server with.
-		std::string permissions{};///< The permissions to request for the bot role.
-
-		InstallParamsData() = default;
-
-		InstallParamsData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
-
-		InstallParamsData(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
-
-		virtual ~InstallParamsData() = default;
-
-	  protected:
-		void parseObject(const nlohmann::json& jsonObjectData, InstallParamsData* pDataStructure) {
-			if (jsonObjectData.contains("scopes") && !jsonObjectData["scopes"].is_null()) {
-				pDataStructure->scopes = jsonObjectData["scopes"].get<std::vector<std::string>>();
-			}
-
-			if (jsonObjectData.contains("permissions") && !jsonObjectData["permissions"].is_null()) {
-				pDataStructure->permissions = jsonObjectData["name"].get<std::string>();
-			}
-		}
-	};
-
-	/// Application data. \brief Application data.
-	class DiscordCoreAPI_Dll ApplicationData : public DiscordEntity, public DataParser<ApplicationData> {
-	  public:
-		std::vector<std::string> rpcOrigins{};///< Array of RPC origin strings.
-		bool botRequireCodeGrant{ false };///< Does the bot require a code grant?
-		std::vector<std::string> tags{};///< Up to 5 tags describing the content and functionality of the application install_params.
-		std::string termsOfServiceUrl{};///< Terms of service Url.
-		std::string privacyPolicyUrl{};///< Privacy policy Url.
-		ApplicationFlags flags{ 0 };///< Application flags.
-		InstallParamsData params{};///< Settings for the application's default in-app authorization link, if enabled std::string customInstallUrl{};
-		std::string primarySkuId{};///< Primary SKU Id.
-		std::string description{};///< Description of the application.
-		std::string coverImage{};///< The cover image.
-		bool botPublic{ false };///< Is the bot public?
-		std::string verifyKey{};///< The verification key.
-		std::string summary{};///< Summary of the application.
-		TeamObjectData team{};///< Team object data.
-		Snowflake guildId{};///< Guild id.
-		std::string slug{};///< Sluhg.
-		std::string name{};///< Application's name.
-		std::string icon{};///< Application's icon.
-		UserData owner{};///< Application's owner.
-
-		ApplicationData() = default;
-
-		ApplicationData& operator=(const nlohmann::json& jsonObjectData);
-
-		ApplicationData(const nlohmann::json& jsonObjectData);
-
-		virtual ~ApplicationData() = default;
-
-	  protected:
-		void parseObject(const nlohmann::json& jsonObjectData, ApplicationData* pDataStructure);
-	};
-
-	/// Authorization info structure. \brief Authorization info structure.
-	struct DiscordCoreAPI_Dll AuthorizationInfoData : public DataParser<AuthorizationInfoData> {
-		std::vector<std::string> scopes{};///< Array of strings - the scopes the User has authorized the application for.
-		ApplicationData application{};///< Partial application object the current application.
-		std::string expires{};///< When the access token expires.
-		UserData user{};/// The User who has authorized, if the User has authorized with the identify scope.
-
-		AuthorizationInfoData() = default;
-
-		AuthorizationInfoData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
-
-		AuthorizationInfoData(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
-
-		virtual ~AuthorizationInfoData() = default;
-
-	  protected:
-		void parseObject(const nlohmann::json& jsonObjectData, AuthorizationInfoData* pDataStructure) {
-			if (jsonObjectData.contains("application") && !jsonObjectData["application"].is_null()) {
-				pDataStructure->application = jsonObjectData["application"];
-			}
-
-			if (jsonObjectData.contains("scopes") && !jsonObjectData["scopes"].is_null()) {
-				pDataStructure->scopes = jsonObjectData["scopes"].get<std::vector<std::string>>();
-			}
-
-			if (jsonObjectData.contains("expires") && !jsonObjectData["expires"].is_null()) {
-				pDataStructure->expires = jsonObjectData["expires"];
-			}
-
-			if (jsonObjectData.contains("user") && !jsonObjectData["user"].is_null()) {
-				pDataStructure->user = jsonObjectData["user"];
-			}
-		};
-	};
-
-	/// Account data. \brief Account data.
-	class DiscordCoreAPI_Dll AccountData : public DiscordEntity, public DataParser<AccountData> {
-	  public:
-		std::string name{};///< Name of the account.
-
-		AccountData() = default;
-
-		AccountData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
-
-		AccountData(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
-
-		virtual ~AccountData() = default;
-
-	  protected:
-		void parseObject(const nlohmann::json& jsonObjectData, AccountData* pDataStructure) {
-			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
-				pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
-			}
-
-			if (jsonObjectData.contains("name") && !jsonObjectData["name"].is_null()) {
-				pDataStructure->name = jsonObjectData["name"].get<std::string>();
-			}
-		}
-	};
-
-	/// Guild Widget Data. \brief Guild Widget Data.
-	struct DiscordCoreAPI_Dll GuildWidgetData : public DataParser<GuildWidgetData> {
-		bool enabled{ false };///< Whether the widget is enabled.
-		Snowflake channelId{};///< The widget Channel id.
-
-		GuildWidgetData() = default;
-
-		GuildWidgetData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
-
-		GuildWidgetData(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
-
-		virtual ~GuildWidgetData() = default;
-
-	  protected:
-		void parseObject(const nlohmann::json& jsonObjectData, GuildWidgetData* pDataStructure) {
-			if (jsonObjectData.contains("enabled") && !jsonObjectData["enabled"].is_null()) {
-				pDataStructure->enabled = jsonObjectData["enabled"].get<bool>();
-			}
-
-			if (jsonObjectData.contains("channel_id") && !jsonObjectData["channel_id"].is_null()) {
-				pDataStructure->channelId = stoull(jsonObjectData["channel_id"].get<std::string>());
-			}
-		};
-	};
-
-	/// Get Guild Widget Data. \brief Get Guild Widget Data.
-	struct DiscordCoreAPI_Dll GetGuildWidgetObjectData : public DiscordEntity {
-		std::vector<ChannelData> channels{};///< Voice and stage channels which are accessible by everyone.
-		std::vector<UserData> members{};///< Special widget user objects that includes users presence (Limit 100).
-		std::string instantInvite{};///< Instant invite for the guilds specified widget invite channel.
-		int32_t presence_count{ 0 };///< Number of online members in this guild.
-		std::string name{};///< Guild name (2-100 characters).
-	};
-
-	/// Widget style options. \brief Widget style options.
-	enum class WidgetStyleOptions : int8_t {
-		Shield = 0,///< Shield
-		Banner1 = 1,///< Banner1
-		Banner2 = 2,///< Banner2
-		Banner3 = 3,///< Banner3
-		Banner4 = 4///< Banner4
-	};
-
-	/// Guild widget image data. \brief Guild widget image data.
-	struct DiscordCoreAPI_Dll GuildWidgetImageData : public DataParser<GuildWidgetImageData> {
-		std::string url{};
-
-		GuildWidgetImageData() = default;
-
-		GuildWidgetImageData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
-
-		GuildWidgetImageData(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
-
-		virtual ~GuildWidgetImageData() = default;
-
-	  protected:
-		void parseObject(const nlohmann::json& jsonObjectData, GuildWidgetImageData* pDataStructure) {
-			if (jsonObjectData.contains("widget_image") && !jsonObjectData["widget_image"].is_null()) {
-				pDataStructure->url = jsonObjectData["widget_image"].get<bool>();
-			}
-		}
-	};
-
-	/// Integration data. \brief Integration data.
-	class DiscordCoreAPI_Dll IntegrationData : public DiscordEntity, public DataParser<IntegrationData> {
-	  public:
-		int32_t expireGracePeriod{ 0 };///< How int64_t before the integration expires.
-		ApplicationData application{};///< Application data.
-		int32_t subscriberCount{ 0 };///< Number of current subscribers.
-		bool enableEmoticons{ true };///< Emoticons enabled?
-		int32_t expireBehavior{ 0 };///< What to do upon expiry.
-		TimeStamp syncedAt{ "" };///< Time it was last synced at.
-		bool enabled{ false };///< Enabled?
-		bool syncing{ false };///< Is it syncing?
-		AccountData account{};///< Account data.
-		bool revoked{ false };///< Has it been revoked?
-		std::string name{};///< Name of the integration.
-		std::string type{};///< Type of integration.
-		Snowflake roleId{};///< Role Id.
-		UserData user{};///< User data for the integration.
-
-		IntegrationData() = default;
-
-		IntegrationData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
-
-		IntegrationData(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
-
-		virtual ~IntegrationData() = default;
-
-	  protected:
-		void parseObject(const nlohmann::json& jsonObjectData, IntegrationData* pDataStructure) {
-			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
-				pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
-			}
-
-			if (jsonObjectData.contains("name") && !jsonObjectData["name"].is_null()) {
-				pDataStructure->name = jsonObjectData["name"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("type") && !jsonObjectData["type"].is_null()) {
-				pDataStructure->type = jsonObjectData["type"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("enabled") && !jsonObjectData["enabled"].is_null()) {
-				pDataStructure->enabled = jsonObjectData["enabled"].get<bool>();
-			}
-
-			if (jsonObjectData.contains("syncing") && !jsonObjectData["syncing"].is_null()) {
-				pDataStructure->syncing = jsonObjectData["syncing"].get<bool>();
-			}
-
-			if (jsonObjectData.contains("role_id") && !jsonObjectData["role_id"].is_null()) {
-				pDataStructure->roleId = stoull(jsonObjectData["role_id"].get<std::string>());
-			}
-
-			if (jsonObjectData.contains("enable_emoticons") && !jsonObjectData["enable_emoticons"].is_null()) {
-				pDataStructure->enableEmoticons = jsonObjectData["enable_emoticons"].get<bool>();
-			}
-
-			if (jsonObjectData.contains("expire_behavior") && !jsonObjectData["expire_behavior"].is_null()) {
-				pDataStructure->expireBehavior = jsonObjectData["expire_behavior"].get<int32_t>();
-			}
-
-			if (jsonObjectData.contains("expire_grace_period") && !jsonObjectData["expire_grace_period"].is_null()) {
-				pDataStructure->expireGracePeriod = jsonObjectData["expire_grace_period"].get<int32_t>();
-			}
-
-			if (jsonObjectData.contains("user") && !jsonObjectData["user"].is_null()) {
-				pDataStructure->user = jsonObjectData["user"];
-			}
-
-			if (jsonObjectData.contains("account") && !jsonObjectData["account"].is_null()) {
-				pDataStructure->account = jsonObjectData["account"];
-			}
-
-			if (jsonObjectData.contains("synced_at") && !jsonObjectData["synced_at"].is_null()) {
-				pDataStructure->syncedAt = jsonObjectData["synced_at"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("subscriber_count") && !jsonObjectData["subscriber_count"].is_null()) {
-				pDataStructure->subscriberCount = jsonObjectData["subscriber_count"].get<int32_t>();
-			}
-
-			if (jsonObjectData.contains("revoked") && !jsonObjectData["revoked"].is_null()) {
-				pDataStructure->revoked = jsonObjectData["revoked"].get<bool>();
-			}
-
-			if (jsonObjectData.contains("application") && !jsonObjectData["application"].is_null()) {
-				pDataStructure->application = jsonObjectData["application"];
-			}
-		}
-	};
-
-	class DiscordCoreAPI_Dll IntegrationDataVector : public DataParser<IntegrationDataVector> {
-	  public:
-		IntegrationDataVector() = default;
-
-		operator std::vector<IntegrationData>() {
-			return this->theIntegrationDatas;
-		}
-
-		IntegrationDataVector& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
-
-		IntegrationDataVector(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
-
-		virtual ~IntegrationDataVector() = default;
-
-	  protected:
-		std::vector<IntegrationData> theIntegrationDatas{};
-
-		void parseObject(const nlohmann::json& jsonObjectData, IntegrationDataVector* pDataStructure) {
-			pDataStructure->theIntegrationDatas.reserve(jsonObjectData.size());
-			for (auto& value: jsonObjectData) {
-				DiscordCoreAPI::IntegrationData newData{ value };
-				pDataStructure->theIntegrationDatas.push_back(newData);
-			}
-			pDataStructure->theIntegrationDatas.shrink_to_fit();
-		}
-	};
-
 	/// Audit log events. \brief Audit log events.
 	enum class AuditLogEvent : uint8_t {
 		Guild_Update = 1,///< Guild update.

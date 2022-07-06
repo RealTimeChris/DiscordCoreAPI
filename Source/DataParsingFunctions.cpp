@@ -2378,177 +2378,153 @@ namespace DiscordCoreAPI {
 			pDataStructure->channelId = stoull(jsonObjectData["channel_id"].get<std::string>());
 		}
 	};
+
+	void GuildWidgetImageData::parseObject(const nlohmann::json& jsonObjectData, GuildWidgetImageData* pDataStructure) {
+		if (jsonObjectData.contains("widget_image") && !jsonObjectData["widget_image"].is_null()) {
+			pDataStructure->url = jsonObjectData["widget_image"].get<bool>();
+		}
+	}
+
+	void IntegrationData::parseObject(const nlohmann::json& jsonObjectData, IntegrationData* pDataStructure) {
+		if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
+			pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
+		}
+
+		if (jsonObjectData.contains("name") && !jsonObjectData["name"].is_null()) {
+			pDataStructure->name = jsonObjectData["name"].get<std::string>();
+		}
+
+		if (jsonObjectData.contains("type") && !jsonObjectData["type"].is_null()) {
+			pDataStructure->type = jsonObjectData["type"].get<std::string>();
+		}
+
+		if (jsonObjectData.contains("enabled") && !jsonObjectData["enabled"].is_null()) {
+			pDataStructure->enabled = jsonObjectData["enabled"].get<bool>();
+		}
+
+		if (jsonObjectData.contains("syncing") && !jsonObjectData["syncing"].is_null()) {
+			pDataStructure->syncing = jsonObjectData["syncing"].get<bool>();
+		}
+
+		if (jsonObjectData.contains("role_id") && !jsonObjectData["role_id"].is_null()) {
+			pDataStructure->roleId = stoull(jsonObjectData["role_id"].get<std::string>());
+		}
+
+		if (jsonObjectData.contains("enable_emoticons") && !jsonObjectData["enable_emoticons"].is_null()) {
+			pDataStructure->enableEmoticons = jsonObjectData["enable_emoticons"].get<bool>();
+		}
+
+		if (jsonObjectData.contains("expire_behavior") && !jsonObjectData["expire_behavior"].is_null()) {
+			pDataStructure->expireBehavior = jsonObjectData["expire_behavior"].get<int32_t>();
+		}
+
+		if (jsonObjectData.contains("expire_grace_period") && !jsonObjectData["expire_grace_period"].is_null()) {
+			pDataStructure->expireGracePeriod = jsonObjectData["expire_grace_period"].get<int32_t>();
+		}
+
+		if (jsonObjectData.contains("user") && !jsonObjectData["user"].is_null()) {
+			pDataStructure->user = jsonObjectData["user"];
+		}
+
+		if (jsonObjectData.contains("account") && !jsonObjectData["account"].is_null()) {
+			pDataStructure->account = jsonObjectData["account"];
+		}
+
+		if (jsonObjectData.contains("synced_at") && !jsonObjectData["synced_at"].is_null()) {
+			pDataStructure->syncedAt = jsonObjectData["synced_at"].get<std::string>();
+		}
+
+		if (jsonObjectData.contains("subscriber_count") && !jsonObjectData["subscriber_count"].is_null()) {
+			pDataStructure->subscriberCount = jsonObjectData["subscriber_count"].get<int32_t>();
+		}
+
+		if (jsonObjectData.contains("revoked") && !jsonObjectData["revoked"].is_null()) {
+			pDataStructure->revoked = jsonObjectData["revoked"].get<bool>();
+		}
+
+		if (jsonObjectData.contains("application") && !jsonObjectData["application"].is_null()) {
+			pDataStructure->application = jsonObjectData["application"];
+		}
+	}
+
+	void GuildWidgetImageData::parseObject(const nlohmann::json& jsonObjectData, GuildWidgetImageData* pDataStructure) {
+		if (jsonObjectData.contains("widget_image") && !jsonObjectData["widget_image"].is_null()) {
+			pDataStructure->url = jsonObjectData["widget_image"].get<bool>();
+		}
+	}
+
+	void IntegrationData::parseObject(const nlohmann::json& jsonObjectData, IntegrationData* pDataStructure) {
+		if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
+			pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
+		}
+
+		if (jsonObjectData.contains("name") && !jsonObjectData["name"].is_null()) {
+			pDataStructure->name = jsonObjectData["name"].get<std::string>();
+		}
+
+		if (jsonObjectData.contains("type") && !jsonObjectData["type"].is_null()) {
+			pDataStructure->type = jsonObjectData["type"].get<std::string>();
+		}
+
+		if (jsonObjectData.contains("enabled") && !jsonObjectData["enabled"].is_null()) {
+			pDataStructure->enabled = jsonObjectData["enabled"].get<bool>();
+		}
+
+		if (jsonObjectData.contains("syncing") && !jsonObjectData["syncing"].is_null()) {
+			pDataStructure->syncing = jsonObjectData["syncing"].get<bool>();
+		}
+
+		if (jsonObjectData.contains("role_id") && !jsonObjectData["role_id"].is_null()) {
+			pDataStructure->roleId = stoull(jsonObjectData["role_id"].get<std::string>());
+		}
+
+		if (jsonObjectData.contains("enable_emoticons") && !jsonObjectData["enable_emoticons"].is_null()) {
+			pDataStructure->enableEmoticons = jsonObjectData["enable_emoticons"].get<bool>();
+		}
+
+		if (jsonObjectData.contains("expire_behavior") && !jsonObjectData["expire_behavior"].is_null()) {
+			pDataStructure->expireBehavior = jsonObjectData["expire_behavior"].get<int32_t>();
+		}
+
+		if (jsonObjectData.contains("expire_grace_period") && !jsonObjectData["expire_grace_period"].is_null()) {
+			pDataStructure->expireGracePeriod = jsonObjectData["expire_grace_period"].get<int32_t>();
+		}
+
+		if (jsonObjectData.contains("user") && !jsonObjectData["user"].is_null()) {
+			pDataStructure->user = jsonObjectData["user"];
+		}
+
+		if (jsonObjectData.contains("account") && !jsonObjectData["account"].is_null()) {
+			pDataStructure->account = jsonObjectData["account"];
+		}
+
+		if (jsonObjectData.contains("synced_at") && !jsonObjectData["synced_at"].is_null()) {
+			pDataStructure->syncedAt = jsonObjectData["synced_at"].get<std::string>();
+		}
+
+		if (jsonObjectData.contains("subscriber_count") && !jsonObjectData["subscriber_count"].is_null()) {
+			pDataStructure->subscriberCount = jsonObjectData["subscriber_count"].get<int32_t>();
+		}
+
+		if (jsonObjectData.contains("revoked") && !jsonObjectData["revoked"].is_null()) {
+			pDataStructure->revoked = jsonObjectData["revoked"].get<bool>();
+		}
+
+		if (jsonObjectData.contains("application") && !jsonObjectData["application"].is_null()) {
+			pDataStructure->application = jsonObjectData["application"];
+		}
+	}
+
+	void IntegrationDataVector::parseObject(const nlohmann::json& jsonObjectData, IntegrationDataVector* pDataStructure) {
+		pDataStructure->theIntegrationDatas.reserve(jsonObjectData.size());
+		for (auto& value: jsonObjectData) {
+			DiscordCoreAPI::IntegrationData newData{ value };
+			pDataStructure->theIntegrationDatas.push_back(newData);
+		}
+		pDataStructure->theIntegrationDatas.shrink_to_fit();
+	}
+
 	/*
-	/// Get Guild Widget Data. \brief Get Guild Widget Data.
-	struct DiscordCoreAPI_Dll GetGuildWidgetObjectData : public DiscordEntity {
-		std::vector<ChannelData> channels{};///< Voice and stage channels which are accessible by everyone.
-		std::vector<UserData> members{};///< Special widget user objects that includes users presence (Limit 100).
-		std::string instantInvite{};///< Instant invite for the guilds specified widget invite channel.
-		int32_t presence_count{ 0 };///< Number of online members in this guild.
-		std::string name{};///< Guild name (2-100 characters).
-	};
-
-	/// Widget style options. \brief Widget style options.
-	enum class WidgetStyleOptions : int8_t {
-		Shield = 0,///< Shield
-		Banner1 = 1,///< Banner1
-		Banner2 = 2,///< Banner2
-		Banner3 = 3,///< Banner3
-		Banner4 = 4///< Banner4
-	};
-
-	/// Guild widget image data. \brief Guild widget image data.
-	struct DiscordCoreAPI_Dll GuildWidgetImageData : public DataParser<GuildWidgetImageData> {
-		std::string url{};
-
-		GuildWidgetImageData() = default;
-
-		GuildWidgetImageData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
-
-		GuildWidgetImageData(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
-
-		virtual ~GuildWidgetImageData() = default;
-
-	  protected:
-		void parseObject(const nlohmann::json& jsonObjectData, GuildWidgetImageData* pDataStructure) {
-			if (jsonObjectData.contains("widget_image") && !jsonObjectData["widget_image"].is_null()) {
-				pDataStructure->url = jsonObjectData["widget_image"].get<bool>();
-			}
-		}
-	};
-
-	/// Integration data. \brief Integration data.
-	class DiscordCoreAPI_Dll IntegrationData : public DiscordEntity, public DataParser<IntegrationData> {
-	  public:
-		int32_t expireGracePeriod{ 0 };///< How int64_t before the integration expires.
-		ApplicationData application{};///< Application data.
-		int32_t subscriberCount{ 0 };///< Number of current subscribers.
-		bool enableEmoticons{ true };///< Emoticons enabled?
-		int32_t expireBehavior{ 0 };///< What to do upon expiry.
-		TimeStamp syncedAt{ "" };///< Time it was last synced at.
-		bool enabled{ false };///< Enabled?
-		bool syncing{ false };///< Is it syncing?
-		AccountData account{};///< Account data.
-		bool revoked{ false };///< Has it been revoked?
-		std::string name{};///< Name of the integration.
-		std::string type{};///< Type of integration.
-		Snowflake roleId{};///< Role Id.
-		UserData user{};///< User data for the integration.
-
-		IntegrationData() = default;
-
-		IntegrationData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
-
-		IntegrationData(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
-
-		virtual ~IntegrationData() = default;
-
-	  protected:
-		void parseObject(const nlohmann::json& jsonObjectData, IntegrationData* pDataStructure) {
-			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
-				pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
-			}
-
-			if (jsonObjectData.contains("name") && !jsonObjectData["name"].is_null()) {
-				pDataStructure->name = jsonObjectData["name"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("type") && !jsonObjectData["type"].is_null()) {
-				pDataStructure->type = jsonObjectData["type"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("enabled") && !jsonObjectData["enabled"].is_null()) {
-				pDataStructure->enabled = jsonObjectData["enabled"].get<bool>();
-			}
-
-			if (jsonObjectData.contains("syncing") && !jsonObjectData["syncing"].is_null()) {
-				pDataStructure->syncing = jsonObjectData["syncing"].get<bool>();
-			}
-
-			if (jsonObjectData.contains("role_id") && !jsonObjectData["role_id"].is_null()) {
-				pDataStructure->roleId = stoull(jsonObjectData["role_id"].get<std::string>());
-			}
-
-			if (jsonObjectData.contains("enable_emoticons") && !jsonObjectData["enable_emoticons"].is_null()) {
-				pDataStructure->enableEmoticons = jsonObjectData["enable_emoticons"].get<bool>();
-			}
-
-			if (jsonObjectData.contains("expire_behavior") && !jsonObjectData["expire_behavior"].is_null()) {
-				pDataStructure->expireBehavior = jsonObjectData["expire_behavior"].get<int32_t>();
-			}
-
-			if (jsonObjectData.contains("expire_grace_period") && !jsonObjectData["expire_grace_period"].is_null()) {
-				pDataStructure->expireGracePeriod = jsonObjectData["expire_grace_period"].get<int32_t>();
-			}
-
-			if (jsonObjectData.contains("user") && !jsonObjectData["user"].is_null()) {
-				pDataStructure->user = jsonObjectData["user"];
-			}
-
-			if (jsonObjectData.contains("account") && !jsonObjectData["account"].is_null()) {
-				pDataStructure->account = jsonObjectData["account"];
-			}
-
-			if (jsonObjectData.contains("synced_at") && !jsonObjectData["synced_at"].is_null()) {
-				pDataStructure->syncedAt = jsonObjectData["synced_at"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("subscriber_count") && !jsonObjectData["subscriber_count"].is_null()) {
-				pDataStructure->subscriberCount = jsonObjectData["subscriber_count"].get<int32_t>();
-			}
-
-			if (jsonObjectData.contains("revoked") && !jsonObjectData["revoked"].is_null()) {
-				pDataStructure->revoked = jsonObjectData["revoked"].get<bool>();
-			}
-
-			if (jsonObjectData.contains("application") && !jsonObjectData["application"].is_null()) {
-				pDataStructure->application = jsonObjectData["application"];
-			}
-		}
-	};
-
-	class DiscordCoreAPI_Dll IntegrationDataVector : public DataParser<IntegrationDataVector> {
-	  public:
-		IntegrationDataVector() = default;
-
-		operator std::vector<IntegrationData>() {
-			return this->theIntegrationDatas;
-		}
-
-		IntegrationDataVector& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
-
-		IntegrationDataVector(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
-
-		virtual ~IntegrationDataVector() = default;
-
-	  protected:
-		std::vector<IntegrationData> theIntegrationDatas{};
-
-		void parseObject(const nlohmann::json& jsonObjectData, IntegrationDataVector* pDataStructure) {
-			pDataStructure->theIntegrationDatas.reserve(jsonObjectData.size());
-			for (auto& value: jsonObjectData) {
-				DiscordCoreAPI::IntegrationData newData{ value };
-				pDataStructure->theIntegrationDatas.push_back(newData);
-			}
-			pDataStructure->theIntegrationDatas.shrink_to_fit();
-		}
-	};
-
 	/// Audit log events. \brief Audit log events.
 	enum class AuditLogEvent : uint8_t {
 		Guild_Update = 1,///< Guild update.
