@@ -42,7 +42,7 @@ namespace DiscordCoreInternal {
 
 		operator AVFrame*();
 
-		AVFrameWrapper();
+		AVFrameWrapper() = default;
 
 	  protected:
 		std::unique_ptr<AVFrame, AVFrameDeleter> thePtr{ nullptr, AVFrameDeleter{} };
@@ -61,7 +61,7 @@ namespace DiscordCoreInternal {
 
 		operator AVCodecContext*();
 
-		AVCodecContextWrapper();
+		AVCodecContextWrapper() = default;
 
 	  protected:
 		std::unique_ptr<AVCodecContext, AVCodecContextDeleter> thePtr{ nullptr, AVCodecContextDeleter{} };
@@ -91,7 +91,7 @@ namespace DiscordCoreInternal {
 
 		operator AVFormatContext*();
 
-		AVFormatContextWrapper();
+		AVFormatContextWrapper() = default;
 
 	  protected:
 		std::unique_ptr<AVFormatContextWrapper01, AVFormatContextDeleter> thePtr{ new AVFormatContextWrapper01{}, AVFormatContextDeleter{} };
@@ -108,7 +108,7 @@ namespace DiscordCoreInternal {
 
 		operator SwrContext*();
 
-		SwrContextWrapper();
+		SwrContextWrapper() = default;
 
 	  protected:
 		std::unique_ptr<SwrContext, SwrContextDeleter> thePtr{ nullptr, SwrContextDeleter{} };
@@ -127,7 +127,7 @@ namespace DiscordCoreInternal {
 
 		operator AVIOContext*();
 
-		AVIOContextWrapper();
+		AVIOContextWrapper() = default;
 
 	  protected:
 		std::unique_ptr<AVIOContext, AVIOContextDeleter> thePtr{ nullptr, AVIOContextDeleter{} };
@@ -146,7 +146,7 @@ namespace DiscordCoreInternal {
 
 		operator AVPacket*();
 
-		AVPacketWrapper();
+		AVPacketWrapper() = default;
 
 	  protected:
 		std::unique_ptr<AVPacket, AVPacketDeleter> thePtr{ nullptr, AVPacketDeleter{} };
@@ -163,7 +163,7 @@ namespace DiscordCoreInternal {
 
 		operator AVCodec*();
 
-		AVCodecWrapper();
+		AVCodecWrapper() = default;
 
 	  protected:
 		std::unique_ptr<AVCodec, AVCodecDeleter> thePtr{ nullptr, AVCodecDeleter{} };
@@ -182,7 +182,7 @@ namespace DiscordCoreInternal {
 
 		operator AVStream*();
 
-		AVStreamWrapper();
+		AVStreamWrapper() = default;
 
 	  protected:
 		std::unique_ptr<AVStream, AVStreamDeleter> thePtr{ nullptr, AVStreamDeleter{} };

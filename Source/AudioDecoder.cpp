@@ -45,8 +45,6 @@ namespace DiscordCoreInternal {
 		return this->thePtr.get();
 	}
 
-	AVFrameWrapper::AVFrameWrapper(){};
-
 	void AVCodecContextWrapper::AVCodecContextDeleter::operator()(AVCodecContext* other) {
 		if (other) {
 			avcodec_free_context(&other);
@@ -69,8 +67,6 @@ namespace DiscordCoreInternal {
 	AVCodecContextWrapper::operator AVCodecContext*() {
 		return this->thePtr.get();
 	}
-
-	AVCodecContextWrapper::AVCodecContextWrapper(){};
 
 	void AVFormatContextWrapper::AVFormatContextDeleter::operator()(AVFormatContextWrapper01* other) {
 		if (other->didItInitialize) {
@@ -103,8 +99,6 @@ namespace DiscordCoreInternal {
 		return this->thePtr.get()->theContext;
 	}
 
-	AVFormatContextWrapper::AVFormatContextWrapper(){};
-
 	void SwrContextWrapper::SwrContextDeleter::operator()(SwrContext* other) {
 		if (other) {
 			swr_free(&other);
@@ -123,8 +117,6 @@ namespace DiscordCoreInternal {
 	SwrContextWrapper::operator SwrContext*() {
 		return this->thePtr.get();
 	}
-
-	SwrContextWrapper::SwrContextWrapper(){};
 
 	void AVIOContextWrapper::AVIOContextDeleter::operator()(AVIOContext* other) {
 		if (other) {
@@ -149,8 +141,6 @@ namespace DiscordCoreInternal {
 		return this->thePtr.get();
 	}
 
-	AVIOContextWrapper::AVIOContextWrapper(){};
-
 	void AVPacketWrapper::AVPacketDeleter::operator()(AVPacket* other) {
 		if (other) {
 			av_packet_free(&other);
@@ -174,9 +164,7 @@ namespace DiscordCoreInternal {
 		return this->thePtr.get();
 	}
 
-	AVPacketWrapper::AVPacketWrapper(){};
-
-	void AVCodecWrapper::AVCodecDeleter ::operator()(AVCodec*){};
+	void AVCodecWrapper::AVCodecDeleter::operator()(AVCodec*){};
 
 	AVCodecWrapper& AVCodecWrapper::operator=(AVCodec* other) {
 		this->thePtr.reset(other);
@@ -190,8 +178,6 @@ namespace DiscordCoreInternal {
 	AVCodecWrapper::operator AVCodec*() {
 		return this->thePtr.get();
 	}
-
-	AVCodecWrapper::AVCodecWrapper(){};
 
 	void AVStreamWrapper::AVStreamDeleter::operator()(AVStream*){};
 
@@ -211,8 +197,6 @@ namespace DiscordCoreInternal {
 	AVStreamWrapper::operator AVStream*() {
 		return this->thePtr.get();
 	}
-
-	AVStreamWrapper::AVStreamWrapper(){};
 
 	AudioDecoder::AudioDecoder(const BuildAudioDecoderData& dataPackage) {
 		this->configManager = dataPackage.configManager;
