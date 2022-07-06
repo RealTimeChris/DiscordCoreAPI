@@ -57,9 +57,7 @@ namespace DiscordCoreInternal {
 	BIOWrapper::operator BIO*() {
 		return this->bioPtr.get();
 	}
-
-	BIOWrapper::BIOWrapper(){};
-
+	
 	addrinfo* addrinfoWrapper::operator->() {
 		if (this->addrinfoPtrTwo == nullptr) {
 			throw ConnectionError{ "addrinfoWrapper::operator->(), addrinfoPtrTwo was nullptr." };
@@ -81,8 +79,6 @@ namespace DiscordCoreInternal {
 		}
 		return this->addrinfoPtrTwo;
 	}
-
-	addrinfoWrapper::addrinfoWrapper(){};
 
 	addrinfoWrapper::~addrinfoWrapper() {
 		if (this->doWeClearAddrInfo) {
@@ -112,8 +108,6 @@ namespace DiscordCoreInternal {
 		return this->sslCTXPtr.get();
 	}
 
-	SSL_CTXWrapper::SSL_CTXWrapper(){};
-
 	void SSLWrapper::SSLDeleter::operator()(SSL* other) {
 		if (other) {
 			SSL_shutdown(other);
@@ -134,8 +128,6 @@ namespace DiscordCoreInternal {
 	SSLWrapper::operator SSL*() {
 		return this->sslPtr.get();
 	}
-
-	SSLWrapper::SSLWrapper(){};
 
 	void SOCKETWrapper::SOCKETDeleter::operator()(std::atomic<SOCKET>* other) {
 #ifdef _WIN32
@@ -169,10 +161,6 @@ namespace DiscordCoreInternal {
 	SOCKETWrapper::operator SOCKET() {
 		return this->socketPtr->load();
 	}
-
-	SOCKETWrapper::SOCKETWrapper() {
-	}
-
 
 	std::string reportSSLError(const std::string& errorPosition, int32_t errorValue = 0, SSL* ssl = nullptr) noexcept {
 		std::stringstream theStream{};

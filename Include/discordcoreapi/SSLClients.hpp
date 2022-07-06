@@ -92,7 +92,7 @@ namespace DiscordCoreInternal {
 
 		operator BIO*();
 
-		BIOWrapper();
+		BIOWrapper() = default;
 
 	  protected:
 		std::unique_ptr<BIO, BIODeleter> bioPtr{ nullptr, BIODeleter{} };
@@ -105,7 +105,7 @@ namespace DiscordCoreInternal {
 
 		operator addrinfo*();
 
-		addrinfoWrapper();
+		addrinfoWrapper() = default;
 
 		~addrinfoWrapper();
 
@@ -123,7 +123,7 @@ namespace DiscordCoreInternal {
 
 		operator SSL_CTX*();
 
-		SSL_CTXWrapper();
+		SSL_CTXWrapper() = default;
 
 	  protected:
 		std::unique_ptr<SSL_CTX, SSL_CTXDeleter> sslCTXPtr{ nullptr, SSL_CTXDeleter{} };
@@ -138,7 +138,7 @@ namespace DiscordCoreInternal {
 
 		operator SSL*();
 
-		SSLWrapper();
+		SSLWrapper() = default;
 
 	  protected:
 		std::unique_ptr<SSL, SSLDeleter> sslPtr{ nullptr, SSLDeleter{} };
@@ -157,7 +157,7 @@ namespace DiscordCoreInternal {
 
 		operator SOCKET();
 
-		SOCKETWrapper();
+		SOCKETWrapper() = default;
 
 	  protected:
 		std::unique_ptr<std::atomic<SOCKET>, SOCKETDeleter> socketPtr{ new std::atomic<SOCKET>{ SOCKET_ERROR }, SOCKETDeleter{} };
