@@ -466,15 +466,14 @@ namespace DiscordCoreAPI {
 					this->audioData.encodedFrameData.data.clear();
 					this->audioData.rawFrameData.data.clear();
 					this->audioDataBuffer.tryReceive(this->audioData);
-					int64_t startingValue{ std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count() };
-					int64_t intervalCount{ 20000000 };
-					int64_t targetTime{ startingValue + intervalCount };
+					DoubleTimePointNs startingValue{ std::chrono::system_clock::now().time_since_epoch() };
+					DoubleTimePointNs intervalCount{ std::chrono::nanoseconds{ 20000000 } };
+					DoubleTimePointNs targetTime{ startingValue.time_since_epoch() + intervalCount.time_since_epoch() };
 					int32_t frameCounter{ 0 };
-					int64_t totalTime{ 0 };
-					if (this->disconnectStartTime != 0) {
-						int64_t currentTime =
-							static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
-						if (currentTime - this->disconnectStartTime >= 60000) {
+					DoubleTimePointNs totalTime{ std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::nanoseconds{ 0 }) };
+					if (this->disconnectStartTime.count() != 0) {
+						DoubleMilliSecond currentTime = std::chrono::system_clock::now().time_since_epoch();
+						if ((currentTime - this->disconnectStartTime).count() >= 60000) {
 							this->connect();
 							this->play();
 						}
@@ -506,24 +505,24 @@ namespace DiscordCoreAPI {
 							if (newFrame.size() == 0) {
 								continue;
 							}
-							auto waitTime = targetTime - std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-							if (waitTime > 500000 && !stopToken.stop_requested() && this->datagramSocket->areWeStillConnected()) {
+							auto waitTime = targetTime - std::chrono::system_clock::now();
+							if (waitTime.count() > 500000 && !stopToken.stop_requested() && this->datagramSocket->areWeStillConnected()) {
 								this->datagramSocket->readData();
 								this->datagramSocket->getInputBuffer();
 							}
-							waitTime = targetTime - std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-							nanoSleep(static_cast<int64_t>(static_cast<float>(waitTime) * 0.95f));
-							waitTime = targetTime - std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-							if (waitTime > 0) {
-								spinLock(waitTime);
+							waitTime = targetTime - std::chrono::system_clock::now();
+							nanoSleep(static_cast<int64_t>(static_cast<float>(waitTime.count()) * 0.95f));
+							waitTime = targetTime - std::chrono::system_clock::now();
+							if (waitTime.count() > 0) {
+								spinLock(waitTime.count());
 							}
-							startingValue = static_cast<int64_t>(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
+							startingValue = std::chrono::system_clock::now();
 							this->sendSingleAudioFrame(newFrame);
-							totalTime += static_cast<int64_t>(
-								std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - startingValue);
-							intervalCount = 20000000 - (totalTime / frameCounter);
-							targetTime = static_cast<int64_t>(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count()) +
-								intervalCount;
+							totalTime += std::chrono::system_clock::now() - startingValue;
+							auto intervalCountNew =
+								DoubleTimePointNs{ std::chrono::nanoseconds{ 20000000 } - totalTime.time_since_epoch() / frameCounter }.time_since_epoch().count();
+							intervalCount = DoubleTimePointNs{ std::chrono::nanoseconds{ static_cast<uint64_t>(intervalCountNew) } };
+							targetTime = std::chrono::system_clock::now().time_since_epoch() + intervalCount;
 							this->audioData.type = AudioFrameType::Unset;
 							this->audioData.encodedFrameData.data.clear();
 							this->audioData.rawFrameData.data.clear();
@@ -540,8 +539,7 @@ namespace DiscordCoreAPI {
 						}
 						this->audioDataBuffer.tryReceive(this->audioData);
 					}
-					this->disconnectStartTime =
-						static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
+					this->disconnectStartTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch());
 					break;
 				}
 				case VoiceActiveState::Exiting: {

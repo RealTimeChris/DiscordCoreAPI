@@ -26,6 +26,14 @@
 #include <sodium.h>
 
 namespace DiscordCoreAPI {
+	
+	using DoubleNanoSecond = std::chrono::duration<double, std::nano>;
+
+	using DoubleMilliSecond = std::chrono::duration<double, std::milli>;
+
+	using DoubleTimePointNs = std::chrono::time_point<std::chrono::system_clock, DoubleNanoSecond>;
+
+	using DoubleTimePointMs = std::chrono::time_point<std::chrono::system_clock, DoubleMilliSecond>;
 
 	struct RTPPacket {
 		std::vector<uint8_t> audioData{};
@@ -105,10 +113,10 @@ namespace DiscordCoreAPI {
 		std::unique_ptr<std::jthread> taskThread02{ nullptr };
 		std::atomic_bool areWeConnectedBool{ false };
 		std::queue<ConnectionPackage> connections{};
+		DoubleMilliSecond disconnectStartTime{ 0 };
 		const int64_t maxReconnectTries{ 10 };
 		int64_t currentReconnectTries{ 0 };
 		Snowflake currentGuildMemberId{};
-		int64_t disconnectStartTime{ 0 };
 		int64_t heartbeatInterval{ 0 };
 		uint16_t sequenceIndex{ 0 };
 		AudioFrameData audioData{};
