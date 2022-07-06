@@ -45,8 +45,6 @@ namespace DiscordCoreAPI {
 		this->channelId = dataPackage.getChannelId();
 	}
 
-	CreateMessageData::CreateMessageData() = default;
-
 	CreateMessageData::operator std::string() {
 		nlohmann::json data{};
 		for (auto& value: this->attachments) {

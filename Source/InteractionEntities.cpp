@@ -26,7 +26,7 @@
 namespace DiscordCoreAPI {
 
 	InteractionResponse& InteractionResponse::addButton(bool disabled, const std::string& customIdNew, const std::string& buttonLabel, ButtonStyle buttonStyle,
-		const std::string& emojiName = "", Snowflake emojiId = 0, const std::string& url = "") {
+		const std::string& emojiName, Snowflake emojiId, const std::string& url) {
 		if (this->data.data.components.size() == 0) {
 			ActionRowData actionRowData;
 			this->data.data.components.push_back(actionRowData);
@@ -52,8 +52,7 @@ namespace DiscordCoreAPI {
 	}
 
 	InteractionResponse& InteractionResponse::addSelectMenu(bool disabled, const std::string& customIdNew, std::vector<SelectOptionData> options, const std::string& placeholder,
-		int32_t maxValues,
-			int32_t minValues) {
+		int32_t maxValues, int32_t minValues) {
 			if (this->data.data.components.size() == 0) {
 				ActionRowData actionRowData;
 				this->data.data.components.push_back(actionRowData);
@@ -78,8 +77,8 @@ namespace DiscordCoreAPI {
 		}
 
 	InteractionResponse& InteractionResponse::addModal(const std::string& topTitleNew, const std::string& topCustomIdNew, const std::string& titleNew,
-		const std::string& customIdNew, bool required,
-		int32_t minLength, int32_t maxLength, TextInputStyle inputStyle, const std::string& label = "", const std::string& placeholder = "") {
+			const std::string& customIdNew, bool required, int32_t minLength, int32_t maxLength, TextInputStyle inputStyle, const std::string& label,
+			const std::string& placeholder) {
 		this->data.data.title = topTitleNew;
 		this->data.data.customId = topCustomIdNew;
 		if (this->data.data.components.size() == 0) {

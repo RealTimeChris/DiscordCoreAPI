@@ -127,37 +127,30 @@ namespace DiscordCoreInternal {
 
 	SwrContextWrapper::SwrContextWrapper(){};
 
-	struct DiscordCoreAPI_Dll AVIOContextWrapper {
-		struct DiscordCoreAPI_Dll AVIOContextDeleter {
-			void operator()(AVIOContext* other) {
-				if (other) {
-					av_freep(&other);
-				}
-			}
-		};
-
-		AVIOContextWrapper& operator=(AVIOContext* other) {
-			this->thePtr.reset(other);
-			return *this;
+	void AVIOContextWrapper::AVIOContextDeleter::operator()(AVIOContext* other) {
+		if (other) {
+			av_freep(&other);
 		}
+	}
 
-		AVIOContextWrapper(AVIOContext* other) {
-			*this = other;
-		}
+	AVIOContextWrapper& AVIOContextWrapper::operator = (AVIOContext * other) {
+		this->thePtr.reset(other);
+		return *this;
+	}
 
-		AVIOContext* operator->() {
-			return this->thePtr.get();
-		}
+	AVIOContextWrapper::AVIOContextWrapper(AVIOContext* other) {
+		*this = other;
+	}
 
-		operator AVIOContext*() {
-			return this->thePtr.get();
-		}
+	AVIOContext* AVIOContextWrapper::operator->() {
+		return this->thePtr.get();
+	}
 
-		AVIOContextWrapper(){};
+	AVIOContextWrapper::operator AVIOContext*() {
+		return this->thePtr.get();
+	}
 
-	  protected:
-		std::unique_ptr<AVIOContext, AVIOContextDeleter> thePtr{ nullptr, AVIOContextDeleter{} };
-	};
+	AVIOContextWrapper::AVIOContextWrapper(){};
 
 	void AVPacketWrapper::AVPacketDeleter::operator()(AVPacket* other) {
 		if (other) {
