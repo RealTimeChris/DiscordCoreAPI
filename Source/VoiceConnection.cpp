@@ -646,7 +646,9 @@ namespace DiscordCoreAPI {
 		}
 		if (this->currentReconnectTries >= this->maxReconnectTries) {
 			Globals::doWeQuit.store(true);
-			std::cout << "VoiceConnection::connectInternal() Error: Failed to connect to voice channel!" << std::endl << std::endl;
+			if (this->configManager->doWePrintWebSocketErrorMessages()) {
+				std::cout << "VoiceConnection::connectInternal() Error: Failed to connect to voice channel!" << std::endl << std::endl;
+			}
 		}
 		switch (this->connectionState.load()) {
 			case VoiceConnectionState::Collecting_Init_Data: {
