@@ -36,12 +36,12 @@ namespace DiscordCoreAPI {
 	void CommandController::checkForAndRunCommand(CommandData commandData) {
 		std::unique_ptr<BaseFunction> functionPointer{ this->getCommand(convertToLowerCase(commandData.commandName)) };
 		if (functionPointer == nullptr) {
-			co_return;
+			return;
 		}
 
 		functionPointer->args = BaseFunctionArguments{ commandData, this->discordCoreClient };
 		functionPointer->execute(functionPointer->args);
-		co_return;
+		return;
 	}
 
 	std::unique_ptr<BaseFunction> CommandController::getCommand(const std::string& commandName) {
