@@ -72,7 +72,6 @@ namespace DiscordCoreInternal {
 
 	AVCodecContextWrapper::AVCodecContextWrapper(){};
 
-
 	void AVFormatContextWrapper::AVFormatContextDeleter::operator()(AVFormatContextWrapper01* other) {
 		if (other->didItInitialize) {
 			avformat_close_input(&other->theContext);
