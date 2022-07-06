@@ -22,6 +22,57 @@
 
 namespace DiscordCoreAPI {
 
+	StartThreadWithMessageData::operator std::string() {
+		nlohmann::json data{};
+		data["auto_archive_duration"] = this->autoArchiveDuration;
+		data["rate_limit_per_user"] = this->rateLimitPerUser;
+		data["name"] = this->threadName;
+		return data.dump();
+	}
+
+	StartThreadWithoutMessageData::operator std::string() {
+		nlohmann::json data{};
+		data["auto_archive_duration"] = this->autoArchiveDuration;
+		data["rate_limit_per_user"] = this->rateLimitPerUser;
+		data["invitable"] = this->invitable;
+		data["name"] = this->threadName;
+		data["type"] = this->type;
+		return data.dump();
+	}
+
+	StartThreadInForumChannelData::operator std::string() {
+		nlohmann::json data{};
+		for (auto& value: this->message.attachments) {
+			data["message"]["attachments"].push_back(DiscordCoreAPI::AttachmentData{ value });
+		}
+		if (this->message.components.size() == 0) {
+			data["message"]["components"] = nlohmann::json::array();
+		} else {
+			for (auto& value: this->message.components) {
+				data["message"]["components"].push_back(value);
+			}
+		}
+		data["message"]["allowed_mentions"] = DiscordCoreAPI::AllowedMentionsData{ this->message.allowedMentions };
+		for (auto& value: this->message.stickerIds) {
+			data["message"]["sticker_ids"].push_back(value);
+		}
+		if (this->message.embeds.size() == 0) {
+			data["message"]["embeds"] = nlohmann::json::array();
+		} else {
+			for (auto& value: this->message.embeds) {
+				data["message"]["embeds"].push_back(DiscordCoreAPI::EmbedData{ value });
+			}
+		}
+		if (this->message.content != "") {
+			data["message"]["content"] = this->message.content;
+		}
+		data["message"]["flags"] = this->message.flags;
+		data["name"] = this->name;
+		data["auto_archive_duration"] = this->autoArchiveDuration;
+		data["rate_limit_per_user"] = this->rateLimitPerUser;
+		return data.dump();
+	}
+
 	Thread& Thread::operator=(const nlohmann::json& jsonObjectData) {
 		this->parseObject(jsonObjectData, this);
 		return *this;

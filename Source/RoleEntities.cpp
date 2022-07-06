@@ -22,6 +22,57 @@
 
 namespace DiscordCoreAPI {
 
+	CreateGuildRoleData::operator std::string() {
+		int32_t roleColorInt = stol(this->hexColorValue, 0, 16);
+		std::stringstream stream;
+		stream << std::setbase(10) << roleColorInt;
+		std::string roleColorReal = stream.str();
+		nlohmann::json data{};
+		data["permissions"] = this->permissions.getCurrentPermissionString();
+		data["mentionable"] = this->mentionable;
+		data["hoist"] = this->hoist;
+		data["name"] = this->name;
+		data["color"] = roleColorReal;
+		if (this->icon.size() > 0) {
+			data["icon"] = this->icon;
+		}
+		if (this->unicodeEmoji.size() > 0) {
+			data["unicode_emoji"] = this->unicodeEmoji;
+		}
+		return data.dump();
+	}
+
+	ModifyGuildRolePositionsData::operator std::string() {
+		nlohmann::json dataArray{};
+		for (auto& value: this->rolePositions) {
+			nlohmann::json data{};
+			data["position"] = value.rolePosition;
+			data["id"] = std::to_string(value.roleId);
+			dataArray.push_back(data);
+		}
+		return dataArray.dump();
+	}
+
+	ModifyGuildRoleData::operator std::string() {
+		int32_t roleColorInt = stol(this->hexColorValue, 0, 16);
+		std::stringstream stream;
+		stream << std::setbase(10) << roleColorInt;
+		std::string roleColorReal = stream.str();
+		nlohmann::json data{};
+		data["permissions"] = this->permissions.getCurrentPermissionString();
+		data["mentionable"] = this->mentionable;
+		data["hoist"] = this->hoist;
+		data["name"] = this->name;
+		data["color"] = roleColorReal;
+		if (this->icon.size() > 0) {
+			data["icon"] = this->icon;
+		}
+		if (this->unicodeEmoji.size() > 0) {
+			data["unicode_emoji"] = this->unicodeEmoji;
+		}
+		return data.dump();
+	}
+
 	Role& Role::operator=(RoleData&& other) {
 		if (this != &other) {
 			this->unicodeEmoji = std::move(other.unicodeEmoji);

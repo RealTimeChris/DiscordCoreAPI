@@ -23,6 +23,31 @@
 
 namespace DiscordCoreAPI {
 
+	UpdatePresenceData::operator nlohmann::json() {
+		nlohmann::json data{};
+		for (auto& value: this->activities) {
+			nlohmann::json dataNew{};
+			if (static_cast<std::string>(value.url) != "") {
+				dataNew["url"] = value.url;
+			}
+			dataNew["name"] = value.name;
+			dataNew["type"] = value.type;
+			data["d"]["activities"].push_back(dataNew);
+		}
+		data["d"]["status"] = this->status;
+		data["d"]["since"] = nullptr;
+		data["d"]["afk"] = this->afk;
+		data["op"] = 3;
+		return data;
+	}
+
+	AddRecipientToGroupDMData::operator std::string() {
+		nlohmann::json data{};
+		data["access_token"] = this->token;
+		data["nick"] = this->nick;
+		return data.dump();
+	}
+
 	User& User::operator=(UserData&& other) {
 		if (this != &other) {
 			this->discriminator = std::move(other.discriminator);

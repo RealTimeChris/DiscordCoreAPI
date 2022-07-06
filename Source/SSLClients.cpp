@@ -22,6 +22,159 @@
 
 namespace DiscordCoreInternal {
 
+	ConnectionError::ConnectionError(const std::string& theString) : std::runtime_error(theString){};
+
+#ifdef _WIN32
+	void WSADataWrapper::WSADataDeleter::operator()(WSADATA* other) {
+		WSACleanup();
+		delete other;
+	}
+
+	WSADataWrapper::WSADataWrapper() {
+		if (auto errorValue = WSAStartup(MAKEWORD(2, 2), this->thePtr.get()); errorValue != 0) {
+			std::cout << DiscordCoreAPI::shiftToBrightRed() << "WSAStartup() Error: " << errorValue << ", ()";
+			std::cout << DiscordCoreAPI::reset() << std::endl;
+		}
+	}
+#endif
+
+	void BIOWrapper::BIODeleter::operator()(BIO* other) {
+		if (other) {
+			BIO_free(other);
+			other = nullptr;
+		}
+	}
+
+	BIOWrapper& BIOWrapper::operator=(BIO * other) {
+		this->bioPtr.reset(other);
+		auto errorValue = BIO_up_ref(other);
+		if (!errorValue) {
+			std::cout << DiscordCoreAPI::shiftToBrightRed() << "BIO_up_ref() Error: " << ERR_error_string(errorValue, nullptr) << DiscordCoreAPI::reset() << std::endl;
+		};
+		return *this;
+	}
+
+	BIOWrapper::operator BIO*() {
+		return this->bioPtr.get();
+	}
+
+	BIOWrapper::BIOWrapper(){};
+
+	addrinfo * addrinfoWrapper::operator->() {
+		if (this->addrinfoPtrTwo == nullptr) {
+			throw ConnectionError{ "addrinfoWrapper::operator->(), addrinfoPtrTwo was nullptr." };
+		}
+		return this->addrinfoPtrTwo;
+	}
+
+	addrinfoWrapper::operator addrinfo**() {
+		this->doWeClearAddrInfo = true;
+		if (this->addrinfoPtrTwo == nullptr) {
+			throw ConnectionError{ "addrinfoWrapper::addrinfo**(), addrinfoPtrTwo was nullptr." };
+		}
+		return &this->addrinfoPtrTwo;
+	}
+
+	addrinfoWrapper:: operator addrinfo*() {
+		if (this->addrinfoPtrTwo == nullptr) {
+			throw ConnectionError{ "addrinfoWrapper::addrinfo*(), addrinfoPtrTwo was nullptr." };
+		}
+		return this->addrinfoPtrTwo;
+	}
+
+	addrinfoWrapper::addrinfoWrapper(){};
+
+	addrinfoWrapper::~addrinfoWrapper() {
+		if (this->doWeClearAddrInfo) {
+			freeaddrinfo(this->addrinfoPtrTwo);
+		} else {
+			delete this->addrinfoPtrTwo;
+		}
+	}
+
+	void SSL_CTXWrapper::SSL_CTXDeleter::operator()(SSL_CTX* other) {
+		if (other) {
+			SSL_CTX_free(other);
+			other = nullptr;
+		}
+	}
+
+	SSL_CTXWrapper& SSL_CTXWrapper::operator=(SSL_CTX* other) {
+		this->sslCTXPtr.reset(other);
+		auto errorValue = SSL_CTX_up_ref(other);
+		if (!errorValue) {
+			std::cout << DiscordCoreAPI::shiftToBrightRed() << "SSL_CTX_up_ref() Error: " << ERR_error_string(errorValue, nullptr) << DiscordCoreAPI::reset() << std::endl;
+		}
+		return *this;
+	}
+
+	SSL_CTXWrapper::operator SSL_CTX*() {
+		return this->sslCTXPtr.get();
+	}
+
+	SSL_CTXWrapper::SSL_CTXWrapper(){};
+
+	void SSLWrapper::SSLDeleter::operator()(SSL* other) {
+		if (other) {
+			SSL_shutdown(other);
+			SSL_free(other);
+			other = nullptr;
+		}
+	}
+
+	SSLWrapper& SSLWrapper::operator=(SSL * other) {
+		this->sslPtr.reset(other);
+		auto errorValue = SSL_up_ref(other);
+		if (!errorValue) {
+			std::cout << DiscordCoreAPI::shiftToBrightRed() << "SSL_up_ref() Error: " << ERR_error_string(errorValue, nullptr) << DiscordCoreAPI::reset() << std::endl;
+		}
+		return *this;
+	}
+
+	SSLWrapper::operator SSL*() {
+		return this->sslPtr.get();
+	}
+
+	SSLWrapper::SSLWrapper(){};
+
+
+	void SOCKETWrapper::SOCKETDeleter::operator()(std::atomic<SOCKET>* other) {
+#ifdef _WIN32
+		shutdown(other->load(), SD_BOTH);
+		closesocket(other->load());
+#else
+		shutdown(other->load(), SHUT_RDWR);
+		close(other->load());
+#endif
+
+		other->store(SOCKET_ERROR);
+		delete other;
+	}
+	
+	SOCKETWrapper& SOCKETWrapper::operator=(SOCKETWrapper && other) noexcept {
+		if (this != &other) {
+			this->socketPtr->store(other.socketPtr->load());
+			other.socketPtr->store(SOCKET_ERROR);
+		}
+		return *this;
+	}
+
+	SOCKETWrapper:: SOCKETWrapper(SOCKETWrapper&& other) noexcept {
+			*this = std::move(other);
+	}
+
+	SOCKETWrapper& SOCKETWrapper::operator=(SOCKET other) {
+		this->socketPtr->store(other);
+		return *this;
+	}
+
+	SOCKETWrapper::operator SOCKET() {
+		return this->socketPtr->load();
+	}
+
+	SOCKETWrapper::SOCKETWrapper() {}
+
+
 	std::string reportSSLError(const std::string& errorPosition, int32_t errorValue = 0, SSL* ssl = nullptr) noexcept {
 		std::stringstream theStream{};
 		if (ssl) {

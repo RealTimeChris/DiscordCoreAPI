@@ -24,6 +24,8 @@
 
 namespace DiscordCoreInternal {
 
+	HttpError::HttpError(std::string theMessage) : std::runtime_error(theMessage){};
+
 	void HttpsRnRBuilder::updateRateLimitData(std::unordered_map<std::string, std::string>& headersNew, RateLimitData& rateLimitData) {
 		if (headersNew.contains("x-ratelimit-bucket")) {
 			rateLimitData.bucket = headersNew["x-ratelimit-bucket"];

@@ -66,7 +66,7 @@ namespace DiscordCoreInternal {
 #endif
 
 	struct ConnectionError : public std::runtime_error {
-		explicit ConnectionError(const std::string& theString) : std::runtime_error(theString){};
+		ConnectionError(const std::string& theString);
 	};
 
 	DiscordCoreAPI_Dll std::string reportError(const std::string& errorPosition) noexcept;

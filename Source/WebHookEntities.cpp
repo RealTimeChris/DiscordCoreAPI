@@ -28,6 +28,40 @@ namespace DiscordCoreAPI {
 		this->webHookId = dataNew.id;
 	}
 
+	ExecuteWebHookData::operator std::string() {
+		nlohmann::json data{};
+		for (auto& value: this->attachments) {
+			data["attachments"].push_back(value);
+		}
+		if (this->components.size() == 0) {
+			data["components"] = nlohmann::json::array();
+		} else {
+			for (auto& value: this->components) {
+				data["components"].push_back(value);
+			}
+		}
+		data["allowed_mentions"] = this->allowedMentions;
+		if (this->embeds.size() == 0) {
+			data["embeds"] = nlohmann::json::array();
+		} else {
+			for (auto& value: this->embeds) {
+				data["embeds"].push_back(value);
+			}
+		}
+		if (this->avatarUrl != "") {
+			data["avatar_url"] = this->userName;
+		}
+		if (this->userName != "") {
+			data["userName"] = this->userName;
+		}
+		if (this->content != "") {
+			data["content"] = this->content;
+		}
+		data["flags"] = this->flags;
+		data["tts"] = this->tts;
+		return data.dump();
+	}
+
 	ExecuteWebHookData& ExecuteWebHookData::addButton(bool disabled, const std::string& customIdNew, const std::string& buttonLabel, ButtonStyle buttonStyle,
 		const std::string& emojiName, Snowflake emojiId, const std::string& url) {
 		if (this->components.size() == 0) {
@@ -141,6 +175,32 @@ namespace DiscordCoreAPI {
 	EditWebHookData::EditWebHookData(WebHookData dataNew) {
 		this->webhookToken = dataNew.token;
 		this->webHookId = dataNew.id;
+	}
+
+	EditWebHookData::operator std::string() {
+		nlohmann::json data{};
+		for (auto& value: this->attachments) {
+			data["attachments"].push_back(DiscordCoreAPI::AttachmentData{ value });
+		}
+		if (this->components.size() == 0) {
+			data["components"] = nlohmann::json::array();
+		} else {
+			for (auto& value: this->components) {
+				data["components"].push_back(value);
+			}
+		}
+		data["allowed_mentions"] = DiscordCoreAPI::AllowedMentionsData{ this->allowedMentions };
+		if (this->embeds.size() == 0) {
+			data["embeds"] = nlohmann::json::array();
+		} else {
+			for (auto& value: this->embeds) {
+				data["embeds"].push_back(DiscordCoreAPI::EmbedData{ value });
+			}
+		}
+		if (this->content != "") {
+			data["content"] = this->content;
+		}
+		return data.dump();
 	}
 
 	WebHook& WebHook::operator=(const nlohmann::json& jsonObjectData) {

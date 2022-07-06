@@ -104,17 +104,7 @@ namespace DiscordCoreAPI {
 		std::string name{};///< Name of the emoji.
 		ImageType type{};///< The type of image being uploaded.
 
-		operator std::string() {
-			nlohmann::json data{};
-			nlohmann::json rolesArray{};
-			for (auto& value: this->roles) {
-				rolesArray.push_back(value);
-			}
-			data["image"] = this->imageDataFinal;
-			data["name"] = this->name;
-			data["roles"] = rolesArray;
-			return data.dump();
-		}
+		operator std::string();
 
 	  protected:
 		std::string imageDataFinal{};
@@ -128,16 +118,8 @@ namespace DiscordCoreAPI {
 		std::string reason{};///< Reason for modifying the Emoji.
 		std::string name{};///< Name of the Emoji.
 
-		operator std::string() {
-			nlohmann::json data{};
-			nlohmann::json rolesArray{};
-			for (auto& value: this->roles) {
-				rolesArray.push_back(value);
-			}
-			data["name"] = this->name;
-			data["roles"] = rolesArray;
-			return data.dump();
-		}
+		operator std::string();
+		
 	};
 
 	/// For deleting a Guild Emoji.
