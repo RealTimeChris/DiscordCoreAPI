@@ -191,7 +191,7 @@ namespace DiscordCoreAPI {
 	EmbedFooterData::EmbedFooterData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
-	
+
 	EmbedImageData& EmbedImageData::operator=(const nlohmann::json& jsonObjectData) {
 		this->parseObject(jsonObjectData, this);
 		return *this;
@@ -373,7 +373,7 @@ namespace DiscordCoreAPI {
 		*this = jsonObjectData;
 	}
 
-	ThreadMetadataData& ThreadMetadataData::operator = (const nlohmann::json& jsonObjectData) {
+	ThreadMetadataData& ThreadMetadataData::operator=(const nlohmann::json& jsonObjectData) {
 		this->parseObject(jsonObjectData, this);
 		return *this;
 	}
@@ -476,7 +476,7 @@ namespace DiscordCoreAPI {
 		*this = jsonObjectData;
 	}
 
-	TriggerMetaData& TriggerMetaData::operator = (const nlohmann::json& jsonObjectData) {
+	TriggerMetaData& TriggerMetaData::operator=(const nlohmann::json& jsonObjectData) {
 		this->parseObject(jsonObjectData, this);
 		return *this;
 	}

@@ -57,7 +57,7 @@ namespace DiscordCoreInternal {
 	BIOWrapper::operator BIO*() {
 		return this->bioPtr.get();
 	}
-	
+
 	addrinfo* addrinfoWrapper::operator->() {
 		if (this->addrinfoPtrTwo == nullptr) {
 			throw ConnectionError{ "addrinfoWrapper::operator->(), addrinfoPtrTwo was nullptr." };

@@ -70,7 +70,7 @@ namespace DiscordCoreInternal {
 
 	void AVFormatContextWrapper::AVFormatContextDeleter::operator()(AVFormatContextWrapper01* other) {
 		if (other->didItInitialize) {
-			avformat_close_input(&other->theContext);
+			avformat_free_context(other->theContext);
 		}
 	}
 
@@ -120,7 +120,10 @@ namespace DiscordCoreInternal {
 
 	void AVIOContextWrapper::AVIOContextDeleter::operator()(AVIOContext* other) {
 		if (other) {
-			av_freep(&other);
+			if (other->buffer) {
+				av_freep(&other->buffer);
+			}
+			avio_context_free(&other);
 		}
 	}
 
@@ -235,13 +238,13 @@ namespace DiscordCoreInternal {
 		stream->currentBuffer = std::string();
 		DiscordCoreAPI::RawFrameData frameData{};
 		if (stream->areWeQuitting) {
-			frameData.sampleCount = 0;
+			frameData.sampleCount = -5;
 			stream->outDataBuffer.send(frameData);
 			stream->areWeQuitting = true;
 			return AVERROR_EOF;
 		}
 		if (DiscordCoreAPI::waitForTimeToPass(stream->inputDataBuffer, stream->currentBuffer, stream->refreshTimeForBuffer.load())) {
-			frameData.sampleCount = 0;
+			frameData.sampleCount = -5;
 			stream->outDataBuffer.send(frameData);
 			stream->areWeQuitting = true;
 			return AVERROR_EOF;
@@ -249,7 +252,7 @@ namespace DiscordCoreInternal {
 		if (stream->currentBuffer.size() > 0) {
 			stream->bytesRead = stream->currentBuffer.size();
 		} else {
-			frameData.sampleCount = 0;
+			frameData.sampleCount = -5;
 			stream->outDataBuffer.send(frameData);
 			stream->areWeQuitting = true;
 			return AVERROR_EOF;
@@ -258,7 +261,7 @@ namespace DiscordCoreInternal {
 			buf[x] = stream->currentBuffer[x];
 		}
 		if (stream->ioContext->buf_ptr - stream->ioContext->buffer >= stream->totalFileSize) {
-			frameData.sampleCount = 0;
+			frameData.sampleCount = -5;
 			stream->outDataBuffer.send(frameData);
 			stream->areWeQuitting = true;
 			return AVERROR_EOF;
@@ -268,8 +271,8 @@ namespace DiscordCoreInternal {
 
 	void AudioDecoder::run(std::stop_token stopToken) {
 		if (!this->haveWeBooted) {
-			unsigned char* fileStreamBuffer = static_cast<unsigned char*>(av_malloc(this->bufferMaxSize));
-			if (fileStreamBuffer == nullptr) {
+			this->theBuffer = static_cast<unsigned char*>(av_malloc(this->bufferMaxSize));
+			if (this->theBuffer == nullptr) {
 				this->haveWeFailedBool.store(true);
 				if (this->configManager->doWePrintFFMPEGErrorMessages()) {
 					std::cout << DiscordCoreAPI::shiftToBrightRed() << "AudioDecoder::run() Error: Failed to allocate filestreambuffer." << DiscordCoreAPI::reset() << std::endl
@@ -278,7 +281,8 @@ namespace DiscordCoreInternal {
 				return;
 			}
 
-			this->ioContext = avio_alloc_context(fileStreamBuffer, static_cast<int32_t>(this->bufferMaxSize), 0, this, &AudioDecoder::FileStreamRead, 0, 0);
+			this->ioContext =
+				avio_alloc_context(this->theBuffer.operator unsigned char*(), static_cast<int32_t>(this->bufferMaxSize - 1), 0, this, &AudioDecoder::FileStreamRead, 0, 0);
 
 			if (this->ioContext == nullptr) {
 				this->haveWeFailedBool.store(true);

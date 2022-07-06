@@ -370,7 +370,12 @@ namespace DiscordCoreInternal {
 						}
 						std::vector<DiscordCoreAPI::RawFrameData> frames{};
 						DiscordCoreAPI::RawFrameData rawFrame{};
+						bool doWeBreak{ false };
 						while (audioDecoder->getFrame(rawFrame)) {
+							if (rawFrame.sampleCount == -5) {
+								doWeBreak = true;
+								break;
+							}
 							if (rawFrame.data.size() != 0) {
 								frames.push_back(rawFrame);
 							}
@@ -388,6 +393,9 @@ namespace DiscordCoreInternal {
 						for (auto& value: encodedFrames) {
 							value.guildMemberId = newSong.addedByUserId;
 							DiscordCoreAPI::getVoiceConnectionMap()[this->guildId]->audioDataBuffer.send(value);
+						}
+						if (doWeBreak) {
+							break;
 						}
 					}
 					if (remainingDownloadContentLength >= this->maxBufferSize) {
