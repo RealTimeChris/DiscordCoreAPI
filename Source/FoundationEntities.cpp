@@ -1544,6 +1544,19 @@ namespace DiscordCoreAPI {
 		*this = jsonObjectData;
 	}
 
+	CommandData::CommandData(InputEventData inputEventData) {
+		if (inputEventData.interactionData->data.applicationCommandData.name != "") {
+			this->commandName = inputEventData.interactionData->data.applicationCommandData.name;
+		}
+		if (inputEventData.interactionData->data.messageInteractionData.targetId != "") {
+			this->optionsArgs.push_back(inputEventData.interactionData->data.messageInteractionData.targetId);
+		} else if (inputEventData.interactionData->data.userInteractionData.targetId != "") {
+			this->optionsArgs.push_back(inputEventData.interactionData->data.userInteractionData.targetId);
+		}
+		this->eventData = inputEventData;
+		this->parseObject(inputEventData.getInteractionData().rawData, this);
+	}
+
 	Song& Song::operator=(const nlohmann::json& jsonObjectData) {
 		this->parseObject(jsonObjectData, this);
 		return *this;
