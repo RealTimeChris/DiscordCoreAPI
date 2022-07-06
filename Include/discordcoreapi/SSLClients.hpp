@@ -219,24 +219,24 @@ namespace DiscordCoreInternal {
 
 	struct DiscordCoreAPI_Dll SOCKETWrapper {
 		struct DiscordCoreAPI_Dll SOCKETDeleter {
-			void operator()(SOCKET* other) {
+			void operator()(std::atomic<SOCKET>* other) {
 #ifdef _WIN32
-				shutdown(*other, SD_BOTH);
-				closesocket(*other);
+				shutdown(other->load(), SD_BOTH);
+				closesocket(other->load());
 #else
-				shutdown(*other, SHUT_RDWR);
-				close(*other);
+				shutdown(other->load(), SHUT_RDWR);
+				close(other->load());
 #endif
 
-				*other = SOCKET_ERROR;
+				other->store(SOCKET_ERROR);
 				delete other;
 			}
 		};
 
 		SOCKETWrapper& operator=(SOCKETWrapper&& other) noexcept {
 			if (this != &other) {
-				this->socketPtr.swap(other.socketPtr);
-				*other.socketPtr = SOCKET_ERROR;
+				this->socketPtr->store(other.socketPtr->load());
+				other.socketPtr->store(SOCKET_ERROR);
 			}
 			return *this;
 		}
@@ -246,19 +246,19 @@ namespace DiscordCoreInternal {
 		}
 
 		SOCKETWrapper& operator=(SOCKET other) {
-			this->socketPtr.reset(new SOCKET{ other });
+			this->socketPtr->store(other);
 			return *this;
 		}
 
 		operator SOCKET() {
-			return *this->socketPtr;
+			return this->socketPtr->load();
 		}
 
 		SOCKETWrapper() {
 		}
 
 	  protected:
-		std::unique_ptr<SOCKET, SOCKETDeleter> socketPtr{ new SOCKET{ SOCKET_ERROR }, SOCKETDeleter{} };
+		std::unique_ptr<std::atomic<SOCKET>, SOCKETDeleter> socketPtr{ new std::atomic<SOCKET>{ SOCKET_ERROR }, SOCKETDeleter{} };
 	};
 
 	enum class SSLConnectionState { Connected = 1, Disconnected = 2 };
@@ -273,8 +273,6 @@ namespace DiscordCoreInternal {
 
 		virtual bool areWeStillConnected() noexcept = 0;
 
-		virtual void disconnect(bool) noexcept = 0;
-
 		virtual ~SSLConnectionInterface() noexcept = default;
 
 	  protected:
@@ -283,6 +281,7 @@ namespace DiscordCoreInternal {
 
 		std::atomic<SSLConnectionState> theSSLState{ SSLConnectionState::Disconnected };
 		std::queue<DiscordCoreAPI::ConnectionPackage>* connections{ nullptr };
+		std::function<void(bool)> disconnection{};
 		SOCKETWrapper theSocket{};
 		SSLWrapper ssl{};
 	};
