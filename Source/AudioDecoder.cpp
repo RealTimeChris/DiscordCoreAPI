@@ -271,8 +271,8 @@ namespace DiscordCoreInternal {
 
 	void AudioDecoder::run(std::stop_token stopToken) {
 		if (!this->haveWeBooted) {
-			this->theBuffer = static_cast<unsigned char*>(av_malloc(this->bufferMaxSize));
-			if (this->theBuffer == nullptr) {
+			auto theBuffer = static_cast<unsigned char*>(av_malloc(this->bufferMaxSize));
+			if (theBuffer == nullptr) {
 				this->haveWeFailedBool.store(true);
 				if (this->configManager->doWePrintFFMPEGErrorMessages()) {
 					std::cout << DiscordCoreAPI::shiftToBrightRed() << "AudioDecoder::run() Error: Failed to allocate filestreambuffer." << DiscordCoreAPI::reset() << std::endl
@@ -281,8 +281,7 @@ namespace DiscordCoreInternal {
 				return;
 			}
 
-			this->ioContext =
-				avio_alloc_context(this->theBuffer.operator unsigned char*(), static_cast<int32_t>(this->bufferMaxSize - 1), 0, this, &AudioDecoder::FileStreamRead, 0, 0);
+			this->ioContext = avio_alloc_context(theBuffer, static_cast<int32_t>(this->bufferMaxSize - 1), 0, this, &AudioDecoder::FileStreamRead, 0, 0);
 
 			if (this->ioContext == nullptr) {
 				this->haveWeFailedBool.store(true);
