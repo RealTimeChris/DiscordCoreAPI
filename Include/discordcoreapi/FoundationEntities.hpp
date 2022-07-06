@@ -1429,14 +1429,8 @@ namespace DiscordCoreAPI {
 	  protected:
 		std::vector<IntegrationData> theIntegrationDatas{};
 
-		void parseObject(const nlohmann::json& jsonObjectData, IntegrationDataVector* pDataStructure) {
-			pDataStructure->theIntegrationDatas.reserve(jsonObjectData.size());
-			for (auto& value: jsonObjectData) {
-				DiscordCoreAPI::IntegrationData newData{ value };
-				pDataStructure->theIntegrationDatas.push_back(newData);
-			}
-			pDataStructure->theIntegrationDatas.shrink_to_fit();
-		}
+		void parseObject(const nlohmann::json& jsonObjectData, IntegrationDataVector* pDataStructure);
+		
 	};
 
 	/// Audit log events. \brief Audit log events.

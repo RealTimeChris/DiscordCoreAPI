@@ -2447,74 +2447,6 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	void GuildWidgetImageData::parseObject(const nlohmann::json& jsonObjectData, GuildWidgetImageData* pDataStructure) {
-		if (jsonObjectData.contains("widget_image") && !jsonObjectData["widget_image"].is_null()) {
-			pDataStructure->url = jsonObjectData["widget_image"].get<bool>();
-		}
-	}
-
-	void IntegrationData::parseObject(const nlohmann::json& jsonObjectData, IntegrationData* pDataStructure) {
-		if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
-			pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
-		}
-
-		if (jsonObjectData.contains("name") && !jsonObjectData["name"].is_null()) {
-			pDataStructure->name = jsonObjectData["name"].get<std::string>();
-		}
-
-		if (jsonObjectData.contains("type") && !jsonObjectData["type"].is_null()) {
-			pDataStructure->type = jsonObjectData["type"].get<std::string>();
-		}
-
-		if (jsonObjectData.contains("enabled") && !jsonObjectData["enabled"].is_null()) {
-			pDataStructure->enabled = jsonObjectData["enabled"].get<bool>();
-		}
-
-		if (jsonObjectData.contains("syncing") && !jsonObjectData["syncing"].is_null()) {
-			pDataStructure->syncing = jsonObjectData["syncing"].get<bool>();
-		}
-
-		if (jsonObjectData.contains("role_id") && !jsonObjectData["role_id"].is_null()) {
-			pDataStructure->roleId = stoull(jsonObjectData["role_id"].get<std::string>());
-		}
-
-		if (jsonObjectData.contains("enable_emoticons") && !jsonObjectData["enable_emoticons"].is_null()) {
-			pDataStructure->enableEmoticons = jsonObjectData["enable_emoticons"].get<bool>();
-		}
-
-		if (jsonObjectData.contains("expire_behavior") && !jsonObjectData["expire_behavior"].is_null()) {
-			pDataStructure->expireBehavior = jsonObjectData["expire_behavior"].get<int32_t>();
-		}
-
-		if (jsonObjectData.contains("expire_grace_period") && !jsonObjectData["expire_grace_period"].is_null()) {
-			pDataStructure->expireGracePeriod = jsonObjectData["expire_grace_period"].get<int32_t>();
-		}
-
-		if (jsonObjectData.contains("user") && !jsonObjectData["user"].is_null()) {
-			pDataStructure->user = jsonObjectData["user"];
-		}
-
-		if (jsonObjectData.contains("account") && !jsonObjectData["account"].is_null()) {
-			pDataStructure->account = jsonObjectData["account"];
-		}
-
-		if (jsonObjectData.contains("synced_at") && !jsonObjectData["synced_at"].is_null()) {
-			pDataStructure->syncedAt = jsonObjectData["synced_at"].get<std::string>();
-		}
-
-		if (jsonObjectData.contains("subscriber_count") && !jsonObjectData["subscriber_count"].is_null()) {
-			pDataStructure->subscriberCount = jsonObjectData["subscriber_count"].get<int32_t>();
-		}
-
-		if (jsonObjectData.contains("revoked") && !jsonObjectData["revoked"].is_null()) {
-			pDataStructure->revoked = jsonObjectData["revoked"].get<bool>();
-		}
-
-		if (jsonObjectData.contains("application") && !jsonObjectData["application"].is_null()) {
-			pDataStructure->application = jsonObjectData["application"];
-		}
-	}
-
 	void IntegrationDataVector::parseObject(const nlohmann::json& jsonObjectData, IntegrationDataVector* pDataStructure) {
 		pDataStructure->theIntegrationDatas.reserve(jsonObjectData.size());
 		for (auto& value: jsonObjectData) {
@@ -2523,7 +2455,6 @@ namespace DiscordCoreAPI {
 		}
 		pDataStructure->theIntegrationDatas.shrink_to_fit();
 	}
-
 	/*
 	/// Audit log events. \brief Audit log events.
 	enum class AuditLogEvent : uint8_t {
@@ -7482,4 +7413,5 @@ namespace DiscordCoreAPI {
 	};
 	* /
 
-};
+}*/
+}
