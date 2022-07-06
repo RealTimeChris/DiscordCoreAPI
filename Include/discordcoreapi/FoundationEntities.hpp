@@ -1400,102 +1400,14 @@ namespace DiscordCoreAPI {
 
 		ApplicationData() = default;
 
-		ApplicationData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
+		ApplicationData& operator=(const nlohmann::json& jsonObjectData);
 
-		ApplicationData(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
+		ApplicationData(const nlohmann::json& jsonObjectData);
 
 		virtual ~ApplicationData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json& jsonObjectData, ApplicationData* pDataStructure) {
-			if (jsonObjectData.contains("params") && !jsonObjectData["params"].is_null()) {
-				pDataStructure->params = jsonObjectData["params"];
-			}
-
-			if (jsonObjectData.contains("tags") && !jsonObjectData["tags"].is_null()) {
-				pDataStructure->tags = jsonObjectData["tags"].get<std::vector<std::string>>();
-			}
-
-			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
-				pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
-			}
-
-			if (jsonObjectData.contains("name") && !jsonObjectData["name"].is_null()) {
-				pDataStructure->name = jsonObjectData["name"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("icon") && !jsonObjectData["icon"].is_null()) {
-				pDataStructure->icon = jsonObjectData["icon"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("description") && !jsonObjectData["description"].is_null()) {
-				pDataStructure->description = jsonObjectData["description"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("rpc_origins") && !jsonObjectData["rpc_origins"].is_null()) {
-				pDataStructure->rpcOrigins.clear();
-				for (auto& value: jsonObjectData["rpc_origins"]) {
-					pDataStructure->rpcOrigins.push_back(value.get<std::string>());
-				}
-			}
-
-			if (jsonObjectData.contains("bot_public") && !jsonObjectData["bot_public"].is_null()) {
-				pDataStructure->botPublic = jsonObjectData["bot_public"].get<bool>();
-			}
-
-			if (jsonObjectData.contains("bot_require_code_grant") && !jsonObjectData["bot_require_code_grant"].is_null()) {
-				pDataStructure->botRequireCodeGrant = jsonObjectData["bot_require_code_grant"].get<bool>();
-			}
-
-			if (jsonObjectData.contains("terms_of_service_url") && !jsonObjectData["terms_of_service_url"].is_null()) {
-				pDataStructure->termsOfServiceUrl = jsonObjectData["terms_of_service_url"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("privacy_policy_url") && !jsonObjectData["privacy_policy_url"].is_null()) {
-				pDataStructure->privacyPolicyUrl = jsonObjectData["privacy_policy_url"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("owner") && !jsonObjectData["owner"].is_null()) {
-				pDataStructure->owner = jsonObjectData["owner"];
-			}
-
-			if (jsonObjectData.contains("summary") && !jsonObjectData["summary"].is_null()) {
-				pDataStructure->summary = jsonObjectData["summary"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("verify_key") && !jsonObjectData["verify_key"].is_null()) {
-				pDataStructure->verifyKey = jsonObjectData["verify_key"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("team") && !jsonObjectData["team"].is_null()) {
-				pDataStructure->team = jsonObjectData["team"];
-			}
-
-			if (jsonObjectData.contains("guild_id") && !jsonObjectData["guild_id"].is_null()) {
-				pDataStructure->guildId = stoull(jsonObjectData["guild_id"].get<std::string>());
-			}
-
-			if (jsonObjectData.contains("primary_sku_id") && !jsonObjectData["primary_sku_id"].is_null()) {
-				pDataStructure->primarySkuId = jsonObjectData["primary_sku_id"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("slug") && !jsonObjectData["slug"].is_null()) {
-				pDataStructure->slug = jsonObjectData["slug"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("cover_image") && !jsonObjectData["cover_image"].is_null()) {
-				pDataStructure->coverImage = jsonObjectData["cover_image"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("flags") && !jsonObjectData["flags"].is_null()) {
-				pDataStructure->flags = jsonObjectData["flags"].get<ApplicationFlags>();
-			}
-		}
+		void parseObject(const nlohmann::json& jsonObjectData, ApplicationData* pDataStructure);
 	};
 
 	/// Authorization info structure. \brief Authorization info structure.
@@ -6941,52 +6853,17 @@ namespace DiscordCoreInternal {
 		std::string content{};
 		std::string baseUrl{};
 
-		HttpsWorkloadData& operator=(const HttpsWorkloadData& other) {
-			if (this != &other) {
-				this->thisWorkerId.store(this->thisWorkerId.load());
-				this->headersToInsert = other.headersToInsert;
-				this->workloadClass = other.workloadClass;
-				this->workloadType = other.workloadType;
-				this->relativePath = other.relativePath;
-				this->payloadType = other.payloadType;
-				this->callStack = other.callStack;
-				this->baseUrl = other.baseUrl;
-				this->content = other.content;
-			}
-			return *this;
-		}
+		HttpsWorkloadData& operator=(const HttpsWorkloadData& other);
 
-		HttpsWorkloadData(const HttpsWorkloadData& other) {
-			*this = other;
-		}
+		HttpsWorkloadData(const HttpsWorkloadData& other);
 
-		HttpsWorkloadData& operator=(HttpsWorkloadData& other) {
-			if (this != &other) {
-				this->thisWorkerId.store(this->thisWorkerId.load());
-				this->headersToInsert = other.headersToInsert;
-				this->workloadClass = other.workloadClass;
-				this->workloadType = other.workloadType;
-				this->relativePath = other.relativePath;
-				this->payloadType = other.payloadType;
-				this->callStack = other.callStack;
-				this->baseUrl = other.baseUrl;
-				this->content = other.content;
-			}
-			return *this;
-		}
+		HttpsWorkloadData& operator=(HttpsWorkloadData& other);
 
-		HttpsWorkloadData(HttpsWorkloadData& other) {
-			*this = other;
-		}
+		HttpsWorkloadData(HttpsWorkloadData& other);
 
 		HttpsWorkloadData() = default;
 
-		static int64_t getAndIncrementWorkloadId(HttpsWorkloadType workloadType) {
-			std::lock_guard theLock{ HttpsWorkloadData::accessMutex };
-			int64_t theValue = HttpsWorkloadData::workloadIdsExternal[workloadType].load();
-			HttpsWorkloadData::workloadIdsExternal[workloadType].store(theValue + 1);
-			return theValue;
-		}
+		static int64_t getAndIncrementWorkloadId(HttpsWorkloadType workloadType);
 	};
 
 };// namespace DiscordCoreInternal
