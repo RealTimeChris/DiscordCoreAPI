@@ -259,13 +259,13 @@ namespace DiscordCoreAPI {
 		*this = jsonObjectData;
 	}
 
-	EmbedData& EmbedData::setAuthor(const std::string& authorName, const std::string& authorAvatarUrl = "") {
+	EmbedData& EmbedData::setAuthor(const std::string& authorName, const std::string& authorAvatarUrl) {
 		this->author.name = authorName;
 		this->author.iconUrl = authorAvatarUrl;
 		return *this;
 	}
 
-	EmbedData& EmbedData::setFooter(const std::string& footerText, const std::string& footerIconUrlText = "") {
+	EmbedData& EmbedData::setFooter(const std::string& footerText, const std::string& footerIconUrlText) {
 		this->footer.text = footerText;
 		this->footer.iconUrl = footerIconUrlText;
 		return *this;
@@ -276,7 +276,7 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	EmbedData& EmbedData::addField(const std::string& name, const std::string& value, bool Inline = true) {
+	EmbedData& EmbedData::addField(const std::string& name, const std::string& value, bool Inline) {
 		EmbedFieldData field{};
 		field.Inline = Inline;
 		field.value = value;
@@ -308,6 +308,118 @@ namespace DiscordCoreAPI {
 	EmbedData& EmbedData::setImage(const std::string& imageUrl) {
 		this->image.url = imageUrl;
 		return *this;
+	}
+
+	MessageReferenceData::operator nlohmann::json() {
+		nlohmann::json newValue{};
+		newValue["fail_if_not_exists"] = this->failIfNotExists;
+		newValue["message_id"] = this->messageId;
+		newValue["channel_id"] = this->channelId;
+		newValue["guild_id"] = this->guildId;
+		return newValue;
+	}
+
+	MessageReferenceData& MessageReferenceData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData, this);
+		return *this;
+	}
+
+	MessageReferenceData::MessageReferenceData(const nlohmann::json& jsonObjectData) {
+		*this = jsonObjectData;
+	}
+
+	ThreadMetadataData& ThreadMetadataData::operator = (const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData, this);
+		return *this;
+	}
+
+	ThreadMetadataData::ThreadMetadataData(const nlohmann::json& other) {
+		*this = other;
+	}
+
+	ThreadMemberData& ThreadMemberData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData, this);
+		return *this;
+	}
+
+	ThreadMemberData::ThreadMemberData(const nlohmann::json& other) {
+		*this = other;
+	}
+
+	ThreadMemberDataVector::operator std::vector<ThreadMemberData>() {
+		return this->theThreadMemberDatas;
+	}
+
+	ThreadMemberDataVector& ThreadMemberDataVector::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData, this);
+		return *this;
+	}
+
+	ThreadMemberDataVector::ThreadMemberDataVector(const nlohmann::json& jsonObjectData) {
+		*this = jsonObjectData;
+	}
+
+	GuildMemberData& GuildMemberData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData, this);
+		return *this;
+	}
+
+	GuildMemberData::GuildMemberData(const nlohmann::json& jsonObjectData) {
+		*this = jsonObjectData;
+	}
+
+	VoiceStateData& VoiceStateData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData, this);
+		return *this;
+	}
+
+	VoiceStateData::VoiceStateData(const nlohmann::json& jsonObjectData) {
+		*this = jsonObjectData;
+	}
+
+	OverWriteData& OverWriteData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData, this);
+		return *this;
+	}
+
+	OverWriteData::OverWriteData(const nlohmann::json& jsonObjectData) {
+		*this = jsonObjectData;
+	}
+
+	ChannelData& ChannelData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData, this);
+		return *this;
+	}
+
+	ChannelData::ChannelData(const nlohmann::json& other) {
+		*this = other;
+	}
+
+	ActiveThreadsData& ActiveThreadsData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData, this);
+		return *this;
+	}
+
+	ActiveThreadsData::ActiveThreadsData(const nlohmann::json& jsonObjectData) {
+		*this = jsonObjectData;
+	}
+
+	ArchivedThreadsData& ArchivedThreadsData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData, this);
+		return *this;
+	}
+
+	ArchivedThreadsData::ArchivedThreadsData(const nlohmann::json& jsonObjectData) {
+		*this = jsonObjectData;
+	}
+
+	RoleData& RoleData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData, this);
+		return *this;
+	}
+
+	RoleData::RoleData(const nlohmann::json& jsonObjectData) {
+		*this = jsonObjectData;
 	}
 
 	InputEventData& InputEventData::operator=(const InputEventData& other) {
