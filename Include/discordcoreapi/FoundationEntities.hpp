@@ -189,27 +189,14 @@ namespace DiscordCoreAPI {
 
 		RoleTagsData() = default;
 
-		RoleTagsData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
-
-		RoleTagsData(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
+		RoleTagsData& operator=(const nlohmann::json& jsonObjectData);
+		
+		RoleTagsData(const nlohmann::json& jsonObjectData);
 
 		virtual ~RoleTagsData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json& jsonObjectData, RoleTagsData* pDataStructure) {
-			if (jsonObjectData.contains("bot_id") && !jsonObjectData["bot_id"].is_null()) {
-				pDataStructure->botId = jsonObjectData["bot_id"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("integration_id") && !jsonObjectData["integration_id"].is_null()) {
-				pDataStructure->integrationId = jsonObjectData["integration_id"].get<std::string>();
-			}
-		}
+		void parseObject(const nlohmann::json& jsonObjectData, RoleTagsData* pDataStructure);
 	};
 
 	/// User flags. \brief User flags.
@@ -251,60 +238,14 @@ namespace DiscordCoreAPI {
 
 		UserData() = default;
 
-		UserData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
+		UserData& operator=(const nlohmann::json& jsonObjectData);
 
-		UserData(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
+		UserData(const nlohmann::json& jsonObjectData);
 
 		virtual ~UserData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json& jsonObjectData, UserData* pDataStructure) {
-			if (jsonObjectData.contains("username") && !jsonObjectData["username"].is_null()) {
-				pDataStructure->userName = jsonObjectData["username"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
-				if (jsonObjectData["id"].is_string()) {
-					pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
-				} else {
-					pDataStructure->id = jsonObjectData["id"].get<int64_t>();
-				}
-			}
-
-			if (jsonObjectData.contains("discriminator") && !jsonObjectData["discriminator"].is_null()) {
-				pDataStructure->discriminator = jsonObjectData["discriminator"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("avatar") && !jsonObjectData["avatar"].is_null()) {
-				std::string avatarString = "https://cdn.discordapp.com/avatars/" + std::to_string(pDataStructure->id) + "/" + jsonObjectData["avatar"].get<std::string>();
-				pDataStructure->avatar = avatarString;
-			}
-
-			if (jsonObjectData.contains("bot") && !jsonObjectData["bot"].is_null()) {
-				pDataStructure->flags = setBool<int32_t, UserFlags>(pDataStructure->flags, UserFlags::Bot, jsonObjectData["bot"].get<bool>());
-			}
-
-			if (jsonObjectData.contains("system") && !jsonObjectData["system"].is_null()) {
-				pDataStructure->flags = setBool<int32_t, UserFlags>(pDataStructure->flags, UserFlags::System, jsonObjectData["system"].get<bool>());
-			}
-
-			if (jsonObjectData.contains("mfa_enabled") && !jsonObjectData["mfa_enabled"].is_null()) {
-				pDataStructure->flags = setBool<int32_t, UserFlags>(pDataStructure->flags, UserFlags::MFAEnabled, jsonObjectData["mfa_enabled"].get<bool>());
-			}
-
-			if (jsonObjectData.contains("verified") && !jsonObjectData["verified"].is_null()) {
-				pDataStructure->flags = setBool<int32_t, UserFlags>(pDataStructure->flags, UserFlags::Verified, jsonObjectData["verified"].get<bool>());
-			}
-
-			if (jsonObjectData.contains("public_flags") && !jsonObjectData["public_flags"].is_null()) {
-				pDataStructure->flags = jsonObjectData["public_flags"].get<int32_t>();
-			}
-		}
+		void parseObject(const nlohmann::json& jsonObjectData, UserData* pDataStructure);
 	};
 
 	/// Attachment data. \brief Attachment data.
@@ -322,73 +263,16 @@ namespace DiscordCoreAPI {
 
 		AttachmentData() = default;
 
-		operator nlohmann::json() {
-			nlohmann::json newValue{};
-			newValue["content_type"] = this->contentType;
-			newValue["description"] = this->description;
-			newValue["ephemeral"] = this->ephemeral;
-			newValue["file_name"] = this->filename;
-			newValue["proxy_url"] = this->proxyUrl;
-			newValue["height"] = this->height;
-			newValue["width"] = this->width;
-			newValue["size"] = this->size;
-			newValue["url"] = this->url;
-			return newValue;
-		}
+		operator nlohmann::json();
 
-		AttachmentData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
-
-		AttachmentData(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
+		AttachmentData& operator=(const nlohmann::json& jsonObjectData);
+		
+		AttachmentData(const nlohmann::json& jsonObjectData);
 
 		virtual ~AttachmentData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json& jsonObjectData, AttachmentData* pDataStructure) {
-			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
-				pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
-			}
-
-			if (jsonObjectData.contains("filename") && !jsonObjectData["filename"].is_null()) {
-				pDataStructure->filename = jsonObjectData["filename"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("content_type") && !jsonObjectData["content_type"].is_null()) {
-				pDataStructure->contentType = jsonObjectData["content_type"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("ephemeral") && !jsonObjectData["ephemeral"].is_null()) {
-				pDataStructure->ephemeral = jsonObjectData["ephemeral"].get<bool>();
-			}
-
-			if (jsonObjectData.contains("description") && !jsonObjectData["description"].is_null()) {
-				pDataStructure->description = jsonObjectData["description"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("size") && !jsonObjectData["size"].is_null()) {
-				pDataStructure->size = jsonObjectData["size"].get<int32_t>();
-			}
-
-			if (jsonObjectData.contains("url") && !jsonObjectData["url"].is_null()) {
-				pDataStructure->url = jsonObjectData["url"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("proxy_url") && !jsonObjectData["proxy_url"].is_null()) {
-				pDataStructure->proxyUrl = jsonObjectData["proxy_url"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("width") && !jsonObjectData["width"].is_null()) {
-				pDataStructure->width = jsonObjectData["width"].get<int32_t>();
-			}
-
-			if (jsonObjectData.contains("height") && !jsonObjectData["height"].is_null()) {
-				pDataStructure->height = jsonObjectData["height"].get<int32_t>();
-			}
-		}
+		void parseObject(const nlohmann::json& jsonObjectData, AttachmentData* pDataStructure);
 	};
 
 	/// Sticker format types. \brief Sticker format types.
@@ -406,31 +290,14 @@ namespace DiscordCoreAPI {
 		std::string text{};///< Footer text.
 		EmbedFooterData() = default;
 
-		EmbedFooterData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
+		EmbedFooterData& operator=(const nlohmann::json& jsonObjectData);
 
-		EmbedFooterData(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
-
+		EmbedFooterData(const nlohmann::json& jsonObjectData);
+		
 		virtual ~EmbedFooterData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json& jsonObjectData, EmbedFooterData* pDataStructure) {
-			if (jsonObjectData.contains("text") && !jsonObjectData["text"].is_null()) {
-				pDataStructure->text = jsonObjectData["text"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("icon_url") && !jsonObjectData["icon_url"].is_null()) {
-				pDataStructure->iconUrl = jsonObjectData["icon_url"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("proxy_icon_url") && !jsonObjectData["proxy_icon_url"].is_null()) {
-				pDataStructure->proxyIconUrl = jsonObjectData["proxy_icon_url"].get<std::string>();
-			}
-		}
+		void parseObject(const nlohmann::json& jsonObjectData, EmbedFooterData* pDataStructure);
 	};
 
 	/// Embed image data. \brief Embed image data.
@@ -442,35 +309,14 @@ namespace DiscordCoreAPI {
 
 		EmbedImageData() = default;
 
-		EmbedImageData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
-
-		EmbedImageData(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
+		EmbedImageData& operator=(const nlohmann::json& jsonObjectData);
+		
+		EmbedImageData(const nlohmann::json& jsonObjectData);
 
 		virtual ~EmbedImageData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json& jsonObjectData, EmbedImageData* pDataStructure) {
-			if (jsonObjectData.contains("url") && !jsonObjectData["url"].is_null()) {
-				pDataStructure->url = jsonObjectData["url"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("proxy_url") && !jsonObjectData["proxy_url"].is_null()) {
-				pDataStructure->proxyUrl = jsonObjectData["proxy_url"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("width") && !jsonObjectData["width"].is_null()) {
-				pDataStructure->width = jsonObjectData["width"].get<int32_t>();
-			}
-
-			if (jsonObjectData.contains("height") && !jsonObjectData["height"].is_null()) {
-				pDataStructure->height = jsonObjectData["height"].get<int32_t>();
-			}
-		}
+		void parseObject(const nlohmann::json& jsonObjectData, EmbedImageData* pDataStructure);
 	};
 
 	/// Embed thumbnail data. \brief Embed thumbnail data.
@@ -482,35 +328,14 @@ namespace DiscordCoreAPI {
 
 		EmbedThumbnailData() = default;
 
-		EmbedThumbnailData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
+		EmbedThumbnailData& operator=(const nlohmann::json& jsonObjectData);
 
-		EmbedThumbnailData(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
-
+		EmbedThumbnailData(const nlohmann::json& jsonObjectData);
+		
 		virtual ~EmbedThumbnailData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json& jsonObjectData, EmbedThumbnailData* pDataStructure) {
-			if (jsonObjectData.contains("url") && !jsonObjectData["url"].is_null()) {
-				pDataStructure->url = jsonObjectData["url"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("proxy_url") && !jsonObjectData["proxy_url"].is_null()) {
-				pDataStructure->proxyUrl = jsonObjectData["proxy_url"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("width") && !jsonObjectData["width"].is_null()) {
-				pDataStructure->width = jsonObjectData["width"].get<int32_t>();
-			}
-
-			if (jsonObjectData.contains("height") && !jsonObjectData["height"].is_null()) {
-				pDataStructure->height = jsonObjectData["height"].get<int32_t>();
-			}
-		}
+		void parseObject(const nlohmann::json& jsonObjectData, EmbedThumbnailData* pDataStructure);
 	};
 
 	/// Embed video data. \brief Embed video data.
@@ -522,35 +347,14 @@ namespace DiscordCoreAPI {
 
 		EmbedVideoData() = default;
 
-		EmbedVideoData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
+		EmbedVideoData& operator=(const nlohmann::json& jsonObjectData);
 
-		EmbedVideoData(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
+		EmbedVideoData(const nlohmann::json& jsonObjectData);
 
 		virtual ~EmbedVideoData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json& jsonObjectData, EmbedVideoData* pDataStructure) {
-			if (jsonObjectData.contains("url") && !jsonObjectData["url"].is_null()) {
-				pDataStructure->url = jsonObjectData["url"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("proxy_url") && !jsonObjectData["proxy_url"].is_null()) {
-				pDataStructure->proxyUrl = jsonObjectData["proxy_url"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("width") && !jsonObjectData["width"].is_null()) {
-				pDataStructure->width = jsonObjectData["width"].get<int32_t>();
-			}
-
-			if (jsonObjectData.contains("height") && !jsonObjectData["height"].is_null()) {
-				pDataStructure->height = jsonObjectData["height"].get<int32_t>();
-			}
-		}
+		void parseObject(const nlohmann::json& jsonObjectData, EmbedVideoData* pDataStructure);
 	};
 
 	/// Embed provider data. \brief Embed provider data.
@@ -560,27 +364,15 @@ namespace DiscordCoreAPI {
 
 		EmbedProviderData() = default;
 
-		EmbedProviderData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
-
-		EmbedProviderData(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
+		EmbedProviderData& operator=(const nlohmann::json& jsonObjectData);
+		
+		EmbedProviderData(const nlohmann::json& jsonObjectData);
 
 		virtual ~EmbedProviderData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json& jsonObjectData, EmbedProviderData* pDataStructure) {
-			if (jsonObjectData.contains("url") && !jsonObjectData["url"].is_null()) {
-				pDataStructure->url = jsonObjectData["url"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("name") && !jsonObjectData["name"].is_null()) {
-				pDataStructure->name = jsonObjectData["name"].get<std::string>();
-			}
-		}
+		void parseObject(const nlohmann::json& jsonObjectData, EmbedProviderData* pDataStructure);
+		
 	};
 
 	/// Embed author data. \brief Embed author data.
@@ -592,35 +384,14 @@ namespace DiscordCoreAPI {
 
 		EmbedAuthorData() = default;
 
-		EmbedAuthorData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
+		EmbedAuthorData& operator=(const nlohmann::json& jsonObjectData);
 
-		EmbedAuthorData(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
+		EmbedAuthorData(const nlohmann::json& jsonObjectData);
 
 		virtual ~EmbedAuthorData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json& jsonObjectData, EmbedAuthorData* pDataStructure) {
-			if (jsonObjectData.contains("url") && !jsonObjectData["url"].is_null()) {
-				pDataStructure->url = jsonObjectData["url"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("proxy_icon_url") && !jsonObjectData["proxy_icon_url"].is_null()) {
-				pDataStructure->proxyIconUrl = jsonObjectData["proxy_icon_url"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("name") && !jsonObjectData["name"].is_null()) {
-				pDataStructure->name = jsonObjectData["name"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("icon_url") && !jsonObjectData["icon_url"].is_null()) {
-				pDataStructure->iconUrl = jsonObjectData["icon_url"].get<std::string>();
-			}
-		}
+		void parseObject(const nlohmann::json& jsonObjectData, EmbedAuthorData* pDataStructure);
 	};
 
 	/// Embed field data. \brief Embed field data.
@@ -639,31 +410,14 @@ namespace DiscordCoreAPI {
 			return newValue;
 		}
 
-		EmbedFieldData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
-
-		EmbedFieldData(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
+		EmbedFieldData& operator=(const nlohmann::json& jsonObjectData);
+		
+		EmbedFieldData(const nlohmann::json& jsonObjectData);
 
 		virtual ~EmbedFieldData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json& jsonObjectData, EmbedFieldData* pDataStructure) {
-			if (jsonObjectData.contains("inline") && !jsonObjectData["inline"].is_null()) {
-				pDataStructure->Inline = jsonObjectData["inline"].get<bool>();
-			}
-
-			if (jsonObjectData.contains("name") && !jsonObjectData["name"].is_null()) {
-				pDataStructure->name = jsonObjectData["name"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("value") && !jsonObjectData["value"].is_null()) {
-				pDataStructure->value = jsonObjectData["value"].get<std::string>();
-			}
-		}
+		void parseObject(const nlohmann::json& jsonObjectData, EmbedFieldData* pDataStructure);
 	};
 
 	/// Embed types. \brief Embed types.
@@ -695,201 +449,65 @@ namespace DiscordCoreAPI {
 
 		EmbedData() = default;
 
-		operator nlohmann::json() {
-			nlohmann::json fields{};
-			for (auto& value2: this->fields) {
-				fields.push_back(value2);
-			}
-			int32_t colorValInt = stol(this->hexColorValue, 0, 16);
-			std::stringstream stream;
-			stream << std::setbase(10) << colorValInt;
-			std::string realColorVal = stream.str();
-			nlohmann::json embed{};
-			embed["footer"]["proxy_icon_url"] = this->footer.proxyIconUrl;
-			embed["author"]["proxy_icon_url"] = this->author.proxyIconUrl;
-			embed["thumbnail"]["proxy_url"] = this->thumbnail.proxyUrl;
-			embed["thumbnail"]["height"] = this->thumbnail.height;
-			embed["thumbnail"]["width"] = this->thumbnail.width;
-			embed["image"]["proxy_url"] = this->image.proxyUrl;
-			embed["author"]["icon_url"] = this->author.iconUrl;
-			embed["footer"]["icon_url"] = this->footer.iconUrl;
-			embed["video"]["proxy_url"] = this->video.proxyUrl;
-			embed["provider"]["name"] = this->provider.name;
-			embed["thumbnail"]["url"] = this->thumbnail.url;
-			embed["provider"]["url"] = this->provider.url;
-			embed["video"]["height"] = this->video.height;
-			embed["image"]["height"] = this->image.height;
-			embed["author"]["name"] = this->author.name;
-			embed["image"]["width"] = this->image.width;
-			embed["footer"]["text"] = this->footer.text;
-			embed["video"]["width"] = this->video.width;
-			embed["author"]["url"] = this->author.url;
-			embed["description"] = this->description;
-			embed["image"]["url"] = this->image.url;
-			embed["video"]["url"] = this->video.url;
-			embed["timestamp"] = this->timestamp;
-			embed["title"] = this->title;
-			embed["color"] = realColorVal;
-			embed["type"] = this->type;
-			embed["url"] = this->url;
-			embed["fields"] = fields;
-			return embed;
-		}
+		operator nlohmann::json();
 
-		EmbedData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
+		EmbedData& operator=(const nlohmann::json& jsonObjectData);
 
-		EmbedData(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
+		EmbedData(const nlohmann::json& jsonObjectData);
 
 		/// Sets the author's name and avatar for the embed. \brief Sets the author's name and avatar for the embed.
 		/// \param authorName The author's name.
 		/// \param authorAvatarUrl The url to their avatar.
 		/// \returns EmbedData& A reference to this embed.
-		EmbedData& setAuthor(const std::string& authorName, const std::string& authorAvatarUrl = "") {
-			this->author.name = authorName;
-			this->author.iconUrl = authorAvatarUrl;
-			return *this;
-		}
+		EmbedData& setAuthor(const std::string& authorName, const std::string& authorAvatarUrl = "");
 
 		/// Sets the footer's values for the embed. \brief Sets the footer's values for the embed.
 		/// \param footerText The footer's text.
 		/// \param footerIconUrlText Url to the footer's icon.
 		/// \returns EmbedData& A reference to this embed.
-		EmbedData& setFooter(const std::string& footerText, const std::string& footerIconUrlText = "") {
-			this->footer.text = footerText;
-			this->footer.iconUrl = footerIconUrlText;
-			return *this;
-		}
-
+		EmbedData& setFooter(const std::string& footerText, const std::string& footerIconUrlText = "");
+		
 		/// Sets the timestamp on the embed. \brief Sets the timestamp on the embed.
 		/// \param timeStamp The timestamp to be set.
 		/// \returns EmbedData& A reference to this embed.
-		EmbedData& setTimeStamp(const std::string& timeStamp) {
-			this->timestamp = timeStamp;
-			return *this;
-		}
-
+		EmbedData& setTimeStamp(const std::string& timeStamp);
+		
 		/// Adds a field to the embed. \brief Adds a field to the embed.
 		/// \param name The title of the embed field.
 		/// \param value The contents of the embed field.
 		/// \param Inline Is it inline with the rest of the fields on the embed?
 		/// \returns EmbedData& A reference to this embed.
-		EmbedData& addField(const std::string& name, const std::string& value, bool Inline = true) {
-			EmbedFieldData field{};
-			field.Inline = Inline;
-			field.value = value;
-			field.name = name;
-			this->fields.push_back(field);
-			return *this;
-		}
+		EmbedData& addField(const std::string& name, const std::string& value, bool Inline = true);
 
 		/// Sets the description (the main contents) of the embed. \brief Sets the description (the main contents) of the embed.
 		/// \param descriptionNew The contents of the description to set.
 		/// \returns EmbedData& A reference to this embed.
-		EmbedData& setDescription(const std::string& descriptionNew) {
-			this->description = descriptionNew;
-			return *this;
-		}
+		EmbedData& setDescription(const std::string& descriptionNew);
 
 		/// Sets the color of the embed, by applying a hex-color value. \brief Sets the color of the embed, by applying a hex-color value.
 		/// \param hexColorValueNew A std::string containing a hex-number value (Between 0x00 0xFFFFFF).
 		/// \returns EmbedData& A reference to this embed.
-		EmbedData& setColor(const std::string& hexColorValueNew) {
-			this->hexColorValue = hexColorValueNew;
-			return *this;
-		}
-
+		EmbedData& setColor(const std::string& hexColorValueNew);
+		
 		/// Sets the thumbnail of the embed. \brief Sets the thumbnail of the embed.
 		/// \param thumbnailUrl The url to the thumbnail to be used.
 		/// \returns EmbedData& A reference to this embed.
-		EmbedData& setThumbnail(const std::string& thumbnailUrl) {
-			this->thumbnail.url = thumbnailUrl;
-			return *this;
-		}
+		EmbedData& setThumbnail(const std::string& thumbnailUrl);
 
 		/// Sets the title of the embed. \brief Sets the title of the embed.
 		/// \param titleNew A std::string containing the desired title.
 		/// \returns EmbedData& A reference to this embed.
-		EmbedData& setTitle(const std::string& titleNew) {
-			this->title = titleNew;
-			return *this;
-		}
+		EmbedData& setTitle(const std::string& titleNew);
 
 		/// Sets the image of the embed. \brief Sets the image of the embed.
 		/// \param imageUrl The url of the image to be set on the embed.
 		/// \returns EmbedData& A reference to this embed.
-		EmbedData& setImage(const std::string& imageUrl) {
-			this->image.url = imageUrl;
-			return *this;
-		}
+		EmbedData& setImage(const std::string& imageUrl);
 
 		virtual ~EmbedData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json& jsonObjectData, EmbedData* pDataStructure) {
-			if (jsonObjectData.contains("title") && !jsonObjectData["title"].is_null()) {
-				pDataStructure->title = jsonObjectData["title"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("type") && !jsonObjectData["type"].is_null()) {
-				pDataStructure->type = jsonObjectData["type"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("description") && !jsonObjectData["description"].is_null()) {
-				pDataStructure->description = jsonObjectData["description"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("url") && !jsonObjectData["url"].is_null()) {
-				pDataStructure->url = jsonObjectData["url"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("timestamp") && !jsonObjectData["timestamp"].is_null()) {
-				pDataStructure->timestamp = jsonObjectData["timestamp"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("color") && !jsonObjectData["color"].is_null()) {
-				int32_t colorValInt = jsonObjectData["color"].get<int32_t>();
-				std::stringstream stream{};
-				stream << std::setbase(16) << colorValInt;
-				pDataStructure->hexColorValue = stream.str();
-			}
-
-			if (jsonObjectData.contains("footer") && !jsonObjectData["footer"].is_null()) {
-				pDataStructure->footer = jsonObjectData["footer"];
-			}
-
-			if (jsonObjectData.contains("image") && !jsonObjectData["image"].is_null()) {
-				pDataStructure->image = jsonObjectData["image"];
-			}
-
-			if (jsonObjectData.contains("provider") && !jsonObjectData["provider"].is_null()) {
-				pDataStructure->provider = jsonObjectData["provider"];
-			}
-
-			if (jsonObjectData.contains("thumbnail") && !jsonObjectData["thumbnail"].is_null()) {
-				pDataStructure->thumbnail = jsonObjectData["thumbnail"];
-			}
-
-			if (jsonObjectData.contains("video") && !jsonObjectData["video"].is_null()) {
-				pDataStructure->video = jsonObjectData["video"];
-			}
-
-			if (jsonObjectData.contains("author") && !jsonObjectData["author"].is_null()) {
-				pDataStructure->author = jsonObjectData["author"];
-			}
-
-			if (jsonObjectData.contains("fields") && !jsonObjectData["fields"].is_null()) {
-				pDataStructure->fields.clear();
-				for (auto& value: jsonObjectData["fields"]) {
-					EmbedFieldData newData{ value };
-					pDataStructure->fields.push_back(newData);
-				}
-			}
-		}
+		void parseObject(const nlohmann::json& jsonObjectData, EmbedData* pDataStructure);
 	};
 
 	/// Message reference data.\brief Message reference data.

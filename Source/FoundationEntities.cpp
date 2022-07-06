@@ -97,6 +97,219 @@ namespace DiscordCoreInternal {
 
 namespace DiscordCoreAPI {
 
+	RoleTagsData& RoleTagsData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData, this);
+		return *this;
+	}
+
+	RoleTagsData::RoleTagsData(const nlohmann::json& jsonObjectData) {
+		*this = jsonObjectData;
+	}
+
+	UserData& UserData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData, this);
+		return *this;
+	}
+
+	UserData::UserData(const nlohmann::json& jsonObjectData) {
+		*this = jsonObjectData;
+	}
+
+	AttachmentData::operator nlohmann::json() {
+		nlohmann::json newValue{};
+		newValue["content_type"] = this->contentType;
+		newValue["description"] = this->description;
+		newValue["ephemeral"] = this->ephemeral;
+		newValue["file_name"] = this->filename;
+		newValue["proxy_url"] = this->proxyUrl;
+		newValue["height"] = this->height;
+		newValue["width"] = this->width;
+		newValue["size"] = this->size;
+		newValue["url"] = this->url;
+		return newValue;
+	}
+
+	AttachmentData& AttachmentData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData, this);
+		return *this;
+	}
+
+	AttachmentData::AttachmentData(const nlohmann::json& jsonObjectData) {
+		*this = jsonObjectData;
+	}
+
+	EmbedFooterData& EmbedFooterData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData, this);
+		return *this;
+	}
+
+	EmbedFooterData::EmbedFooterData(const nlohmann::json& jsonObjectData) {
+		*this = jsonObjectData;
+	}
+	
+	EmbedImageData& EmbedImageData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData, this);
+		return *this;
+	}
+
+	EmbedImageData::EmbedImageData(const nlohmann::json& jsonObjectData) {
+		*this = jsonObjectData;
+	}
+
+	EmbedThumbnailData& EmbedThumbnailData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData, this);
+		return *this;
+	}
+
+	EmbedThumbnailData::EmbedThumbnailData(const nlohmann::json& jsonObjectData) {
+		*this = jsonObjectData;
+	}
+
+	EmbedVideoData& EmbedVideoData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData, this);
+		return *this;
+	}
+
+	EmbedVideoData::EmbedVideoData(const nlohmann::json& jsonObjectData) {
+		*this = jsonObjectData;
+	}
+
+	EmbedProviderData& EmbedProviderData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData, this);
+		return *this;
+	}
+
+	EmbedProviderData::EmbedProviderData(const nlohmann::json& jsonObjectData) {
+		*this = jsonObjectData;
+	}
+
+	EmbedAuthorData& EmbedAuthorData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData, this);
+		return *this;
+	}
+
+	EmbedAuthorData::EmbedAuthorData(const nlohmann::json& jsonObjectData) {
+		*this = jsonObjectData;
+	}
+
+	EmbedFieldData::operator nlohmann::json() {
+		nlohmann::json newValue{};
+		newValue["inline"] = this->Inline;
+		newValue["value"] = this->value;
+		newValue["name"] = this->name;
+		return newValue;
+	}
+
+	EmbedFieldData& EmbedFieldData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData, this);
+		return *this;
+	}
+
+	EmbedFieldData::EmbedFieldData(const nlohmann::json& jsonObjectData) {
+		*this = jsonObjectData;
+	}
+
+	EmbedData::operator nlohmann::json() {
+		nlohmann::json fields{};
+		for (auto& value2: this->fields) {
+			fields.push_back(value2);
+		}
+		int32_t colorValInt = stol(this->hexColorValue, 0, 16);
+		std::stringstream stream;
+		stream << std::setbase(10) << colorValInt;
+		std::string realColorVal = stream.str();
+		nlohmann::json embed{};
+		embed["footer"]["proxy_icon_url"] = this->footer.proxyIconUrl;
+		embed["author"]["proxy_icon_url"] = this->author.proxyIconUrl;
+		embed["thumbnail"]["proxy_url"] = this->thumbnail.proxyUrl;
+		embed["thumbnail"]["height"] = this->thumbnail.height;
+		embed["thumbnail"]["width"] = this->thumbnail.width;
+		embed["image"]["proxy_url"] = this->image.proxyUrl;
+		embed["author"]["icon_url"] = this->author.iconUrl;
+		embed["footer"]["icon_url"] = this->footer.iconUrl;
+		embed["video"]["proxy_url"] = this->video.proxyUrl;
+		embed["provider"]["name"] = this->provider.name;
+		embed["thumbnail"]["url"] = this->thumbnail.url;
+		embed["provider"]["url"] = this->provider.url;
+		embed["video"]["height"] = this->video.height;
+		embed["image"]["height"] = this->image.height;
+		embed["author"]["name"] = this->author.name;
+		embed["image"]["width"] = this->image.width;
+		embed["footer"]["text"] = this->footer.text;
+		embed["video"]["width"] = this->video.width;
+		embed["author"]["url"] = this->author.url;
+		embed["description"] = this->description;
+		embed["image"]["url"] = this->image.url;
+		embed["video"]["url"] = this->video.url;
+		embed["timestamp"] = this->timestamp;
+		embed["title"] = this->title;
+		embed["color"] = realColorVal;
+		embed["type"] = this->type;
+		embed["url"] = this->url;
+		embed["fields"] = fields;
+		return embed;
+	}
+
+	EmbedData& EmbedData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData, this);
+		return *this;
+	}
+
+	EmbedData::EmbedData(const nlohmann::json& jsonObjectData) {
+		*this = jsonObjectData;
+	}
+
+	EmbedData& EmbedData::setAuthor(const std::string& authorName, const std::string& authorAvatarUrl = "") {
+		this->author.name = authorName;
+		this->author.iconUrl = authorAvatarUrl;
+		return *this;
+	}
+
+	EmbedData& EmbedData::setFooter(const std::string& footerText, const std::string& footerIconUrlText = "") {
+		this->footer.text = footerText;
+		this->footer.iconUrl = footerIconUrlText;
+		return *this;
+	}
+
+	EmbedData& EmbedData::setTimeStamp(const std::string& timeStamp) {
+		this->timestamp = timeStamp;
+		return *this;
+	}
+
+	EmbedData& EmbedData::addField(const std::string& name, const std::string& value, bool Inline = true) {
+		EmbedFieldData field{};
+		field.Inline = Inline;
+		field.value = value;
+		field.name = name;
+		this->fields.push_back(field);
+		return *this;
+	}
+
+	EmbedData& EmbedData::setDescription(const std::string& descriptionNew) {
+		this->description = descriptionNew;
+		return *this;
+	}
+
+	EmbedData& EmbedData::setColor(const std::string& hexColorValueNew) {
+		this->hexColorValue = hexColorValueNew;
+		return *this;
+	}
+
+	EmbedData& EmbedData::setThumbnail(const std::string& thumbnailUrl) {
+		this->thumbnail.url = thumbnailUrl;
+		return *this;
+	}
+
+	EmbedData& EmbedData::setTitle(const std::string& titleNew) {
+		this->title = titleNew;
+		return *this;
+	}
+
+	EmbedData& EmbedData::setImage(const std::string& imageUrl) {
+		this->image.url = imageUrl;
+		return *this;
+	}
+
 	InputEventData& InputEventData::operator=(const InputEventData& other) {
 		if (this != &other) {
 			*this->interactionData = *other.interactionData;

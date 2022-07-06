@@ -1328,4 +1328,270 @@ namespace DiscordCoreAPI {
 		}
 		pDataStructure->theWebHooks.shrink_to_fit();
 	}
+
+	void RoleTagsData::parseObject(const nlohmann::json& jsonObjectData, RoleTagsData* pDataStructure) {
+		if (jsonObjectData.contains("bot_id") && !jsonObjectData["bot_id"].is_null()) {
+			pDataStructure->botId = jsonObjectData["bot_id"].get<std::string>();
+		}
+
+		if (jsonObjectData.contains("integration_id") && !jsonObjectData["integration_id"].is_null()) {
+			pDataStructure->integrationId = jsonObjectData["integration_id"].get<std::string>();
+		}
+	}
+
+	void UserData::parseObject(const nlohmann::json& jsonObjectData, UserData* pDataStructure) {
+		if (jsonObjectData.contains("username") && !jsonObjectData["username"].is_null()) {
+			pDataStructure->userName = jsonObjectData["username"].get<std::string>();
+		}
+
+		if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
+			if (jsonObjectData["id"].is_string()) {
+				pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
+			} else {
+				pDataStructure->id = jsonObjectData["id"].get<int64_t>();
+			}
+		}
+
+		if (jsonObjectData.contains("discriminator") && !jsonObjectData["discriminator"].is_null()) {
+			pDataStructure->discriminator = jsonObjectData["discriminator"].get<std::string>();
+		}
+
+		if (jsonObjectData.contains("avatar") && !jsonObjectData["avatar"].is_null()) {
+			std::string avatarString = "https://cdn.discordapp.com/avatars/" + std::to_string(pDataStructure->id) + "/" + jsonObjectData["avatar"].get<std::string>();
+			pDataStructure->avatar = avatarString;
+		}
+
+		if (jsonObjectData.contains("bot") && !jsonObjectData["bot"].is_null()) {
+			pDataStructure->flags = setBool<int32_t, UserFlags>(pDataStructure->flags, UserFlags::Bot, jsonObjectData["bot"].get<bool>());
+		}
+
+		if (jsonObjectData.contains("system") && !jsonObjectData["system"].is_null()) {
+			pDataStructure->flags = setBool<int32_t, UserFlags>(pDataStructure->flags, UserFlags::System, jsonObjectData["system"].get<bool>());
+		}
+
+		if (jsonObjectData.contains("mfa_enabled") && !jsonObjectData["mfa_enabled"].is_null()) {
+			pDataStructure->flags = setBool<int32_t, UserFlags>(pDataStructure->flags, UserFlags::MFAEnabled, jsonObjectData["mfa_enabled"].get<bool>());
+		}
+
+		if (jsonObjectData.contains("verified") && !jsonObjectData["verified"].is_null()) {
+			pDataStructure->flags = setBool<int32_t, UserFlags>(pDataStructure->flags, UserFlags::Verified, jsonObjectData["verified"].get<bool>());
+		}
+
+		if (jsonObjectData.contains("public_flags") && !jsonObjectData["public_flags"].is_null()) {
+			pDataStructure->flags = jsonObjectData["public_flags"].get<int32_t>();
+		}
+	}
+
+	void AttachmentData::parseObject(const nlohmann::json& jsonObjectData, AttachmentData* pDataStructure) {
+		if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
+			pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
+		}
+
+		if (jsonObjectData.contains("filename") && !jsonObjectData["filename"].is_null()) {
+			pDataStructure->filename = jsonObjectData["filename"].get<std::string>();
+		}
+
+		if (jsonObjectData.contains("content_type") && !jsonObjectData["content_type"].is_null()) {
+			pDataStructure->contentType = jsonObjectData["content_type"].get<std::string>();
+		}
+
+		if (jsonObjectData.contains("ephemeral") && !jsonObjectData["ephemeral"].is_null()) {
+			pDataStructure->ephemeral = jsonObjectData["ephemeral"].get<bool>();
+		}
+
+		if (jsonObjectData.contains("description") && !jsonObjectData["description"].is_null()) {
+			pDataStructure->description = jsonObjectData["description"].get<std::string>();
+		}
+
+		if (jsonObjectData.contains("size") && !jsonObjectData["size"].is_null()) {
+			pDataStructure->size = jsonObjectData["size"].get<int32_t>();
+		}
+
+		if (jsonObjectData.contains("url") && !jsonObjectData["url"].is_null()) {
+			pDataStructure->url = jsonObjectData["url"].get<std::string>();
+		}
+
+		if (jsonObjectData.contains("proxy_url") && !jsonObjectData["proxy_url"].is_null()) {
+			pDataStructure->proxyUrl = jsonObjectData["proxy_url"].get<std::string>();
+		}
+
+		if (jsonObjectData.contains("width") && !jsonObjectData["width"].is_null()) {
+			pDataStructure->width = jsonObjectData["width"].get<int32_t>();
+		}
+
+		if (jsonObjectData.contains("height") && !jsonObjectData["height"].is_null()) {
+			pDataStructure->height = jsonObjectData["height"].get<int32_t>();
+		}
+	}
+
+	void EmbedFooterData::parseObject(const nlohmann::json& jsonObjectData, EmbedFooterData* pDataStructure) {
+		if (jsonObjectData.contains("text") && !jsonObjectData["text"].is_null()) {
+			pDataStructure->text = jsonObjectData["text"].get<std::string>();
+		}
+		if (jsonObjectData.contains("icon_url") && !jsonObjectData["icon_url"].is_null()) {
+			pDataStructure->iconUrl = jsonObjectData["icon_url"].get<std::string>();
+		}
+
+		if (jsonObjectData.contains("proxy_icon_url") && !jsonObjectData["proxy_icon_url"].is_null()) {
+			pDataStructure->proxyIconUrl = jsonObjectData["proxy_icon_url"].get<std::string>();
+		}
+	}
+
+	void EmbedImageData::parseObject(const nlohmann::json& jsonObjectData, EmbedImageData* pDataStructure) {
+		if (jsonObjectData.contains("url") && !jsonObjectData["url"].is_null()) {
+			pDataStructure->url = jsonObjectData["url"].get<std::string>();
+		}
+
+		if (jsonObjectData.contains("proxy_url") && !jsonObjectData["proxy_url"].is_null()) {
+			pDataStructure->proxyUrl = jsonObjectData["proxy_url"].get<std::string>();
+		}
+
+		if (jsonObjectData.contains("width") && !jsonObjectData["width"].is_null()) {
+			pDataStructure->width = jsonObjectData["width"].get<int32_t>();
+		}
+
+		if (jsonObjectData.contains("height") && !jsonObjectData["height"].is_null()) {
+			pDataStructure->height = jsonObjectData["height"].get<int32_t>();
+		}
+	}
+
+	void EmbedThumbnailData::parseObject(const nlohmann::json& jsonObjectData, EmbedThumbnailData* pDataStructure) {
+		if (jsonObjectData.contains("url") && !jsonObjectData["url"].is_null()) {
+			pDataStructure->url = jsonObjectData["url"].get<std::string>();
+		}
+
+		if (jsonObjectData.contains("proxy_url") && !jsonObjectData["proxy_url"].is_null()) {
+			pDataStructure->proxyUrl = jsonObjectData["proxy_url"].get<std::string>();
+		}
+
+		if (jsonObjectData.contains("width") && !jsonObjectData["width"].is_null()) {
+			pDataStructure->width = jsonObjectData["width"].get<int32_t>();
+		}
+
+		if (jsonObjectData.contains("height") && !jsonObjectData["height"].is_null()) {
+			pDataStructure->height = jsonObjectData["height"].get<int32_t>();
+		}
+	}
+
+	void EmbedVideoData::parseObject(const nlohmann::json& jsonObjectData, EmbedVideoData* pDataStructure) {
+		if (jsonObjectData.contains("url") && !jsonObjectData["url"].is_null()) {
+			pDataStructure->url = jsonObjectData["url"].get<std::string>();
+		}
+
+		if (jsonObjectData.contains("proxy_url") && !jsonObjectData["proxy_url"].is_null()) {
+			pDataStructure->proxyUrl = jsonObjectData["proxy_url"].get<std::string>();
+		}
+
+		if (jsonObjectData.contains("width") && !jsonObjectData["width"].is_null()) {
+			pDataStructure->width = jsonObjectData["width"].get<int32_t>();
+		}
+
+		if (jsonObjectData.contains("height") && !jsonObjectData["height"].is_null()) {
+			pDataStructure->height = jsonObjectData["height"].get<int32_t>();
+		}
+	}
+
+	void EmbedProviderData::parseObject(const nlohmann::json& jsonObjectData, EmbedProviderData* pDataStructure) {
+		if (jsonObjectData.contains("url") && !jsonObjectData["url"].is_null()) {
+			pDataStructure->url = jsonObjectData["url"].get<std::string>();
+		}
+
+		if (jsonObjectData.contains("name") && !jsonObjectData["name"].is_null()) {
+			pDataStructure->name = jsonObjectData["name"].get<std::string>();
+		}
+	}
+
+	void EmbedAuthorData::parseObject(const nlohmann::json& jsonObjectData, EmbedAuthorData* pDataStructure) {
+		if (jsonObjectData.contains("url") && !jsonObjectData["url"].is_null()) {
+			pDataStructure->url = jsonObjectData["url"].get<std::string>();
+		}
+
+		if (jsonObjectData.contains("proxy_icon_url") && !jsonObjectData["proxy_icon_url"].is_null()) {
+			pDataStructure->proxyIconUrl = jsonObjectData["proxy_icon_url"].get<std::string>();
+		}
+
+		if (jsonObjectData.contains("name") && !jsonObjectData["name"].is_null()) {
+			pDataStructure->name = jsonObjectData["name"].get<std::string>();
+		}
+
+		if (jsonObjectData.contains("icon_url") && !jsonObjectData["icon_url"].is_null()) {
+			pDataStructure->iconUrl = jsonObjectData["icon_url"].get<std::string>();
+		}
+	}
+
+	void EmbedFieldData::parseObject(const nlohmann::json& jsonObjectData, EmbedFieldData* pDataStructure) {
+		if (jsonObjectData.contains("inline") && !jsonObjectData["inline"].is_null()) {
+			pDataStructure->Inline = jsonObjectData["inline"].get<bool>();
+		}
+
+		if (jsonObjectData.contains("name") && !jsonObjectData["name"].is_null()) {
+			pDataStructure->name = jsonObjectData["name"].get<std::string>();
+		}
+
+		if (jsonObjectData.contains("value") && !jsonObjectData["value"].is_null()) {
+			pDataStructure->value = jsonObjectData["value"].get<std::string>();
+		}
+	}
+
+	void EmbedData::parseObject(const nlohmann::json& jsonObjectData, EmbedData* pDataStructure) {
+		if (jsonObjectData.contains("title") && !jsonObjectData["title"].is_null()) {
+			pDataStructure->title = jsonObjectData["title"].get<std::string>();
+		}
+
+		if (jsonObjectData.contains("type") && !jsonObjectData["type"].is_null()) {
+			pDataStructure->type = jsonObjectData["type"].get<std::string>();
+		}
+
+		if (jsonObjectData.contains("description") && !jsonObjectData["description"].is_null()) {
+			pDataStructure->description = jsonObjectData["description"].get<std::string>();
+		}
+
+		if (jsonObjectData.contains("url") && !jsonObjectData["url"].is_null()) {
+			pDataStructure->url = jsonObjectData["url"].get<std::string>();
+		}
+
+		if (jsonObjectData.contains("timestamp") && !jsonObjectData["timestamp"].is_null()) {
+			pDataStructure->timestamp = jsonObjectData["timestamp"].get<std::string>();
+		}
+
+		if (jsonObjectData.contains("color") && !jsonObjectData["color"].is_null()) {
+			int32_t colorValInt = jsonObjectData["color"].get<int32_t>();
+			std::stringstream stream{};
+			stream << std::setbase(16) << colorValInt;
+			pDataStructure->hexColorValue = stream.str();
+		}
+
+		if (jsonObjectData.contains("footer") && !jsonObjectData["footer"].is_null()) {
+			pDataStructure->footer = jsonObjectData["footer"];
+		}
+
+		if (jsonObjectData.contains("image") && !jsonObjectData["image"].is_null()) {
+			pDataStructure->image = jsonObjectData["image"];
+		}
+
+		if (jsonObjectData.contains("provider") && !jsonObjectData["provider"].is_null()) {
+			pDataStructure->provider = jsonObjectData["provider"];
+		}
+
+		if (jsonObjectData.contains("thumbnail") && !jsonObjectData["thumbnail"].is_null()) {
+			pDataStructure->thumbnail = jsonObjectData["thumbnail"];
+		}
+
+		if (jsonObjectData.contains("video") && !jsonObjectData["video"].is_null()) {
+			pDataStructure->video = jsonObjectData["video"];
+		}
+
+		if (jsonObjectData.contains("author") && !jsonObjectData["author"].is_null()) {
+			pDataStructure->author = jsonObjectData["author"];
+		}
+
+		if (jsonObjectData.contains("fields") && !jsonObjectData["fields"].is_null()) {
+			pDataStructure->fields.clear();
+			for (auto& value: jsonObjectData["fields"]) {
+				EmbedFieldData newData{ value };
+				pDataStructure->fields.push_back(newData);
+			}
+		}
+	}
+
 };
