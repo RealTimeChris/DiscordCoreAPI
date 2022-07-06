@@ -808,6 +808,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
+
 	void VoiceConnection::voiceConnect() noexcept {
 		try {
 			if (!this->datagramSocket) {
