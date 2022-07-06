@@ -91,7 +91,7 @@ namespace DiscordCoreInternal {
 		void connectVoiceInternal() noexcept;
 
 		void run(std::stop_token) noexcept;
-		
+
 		void disconnectVoice() noexcept;
 
 		void connectInternal() noexcept;

@@ -56,12 +56,12 @@ namespace DiscordCoreInternal {
 		AVCodecContextWrapper& operator=(AVCodecContext* other);
 
 		AVCodecContextWrapper(AVCodecContext* other);
-		
+
 		AVCodecContext* operator->();
 
 		operator AVCodecContext*();
-		
-		AVCodecContextWrapper();		
+
+		AVCodecContextWrapper();
 
 	  protected:
 		std::unique_ptr<AVCodecContext, AVCodecContextDeleter> thePtr{ nullptr, AVCodecContextDeleter{} };
@@ -80,7 +80,7 @@ namespace DiscordCoreInternal {
 		};
 
 		AVFormatContextWrapper& operator=(AVFormatContext* other);
-		
+
 		AVFormatContextWrapper(AVFormatContext* other);
 
 		bool* getBoolPtr();
@@ -109,7 +109,7 @@ namespace DiscordCoreInternal {
 		operator SwrContext*();
 
 		SwrContextWrapper();
-		
+
 	  protected:
 		std::unique_ptr<SwrContext, SwrContextDeleter> thePtr{ nullptr, SwrContextDeleter{} };
 	};
@@ -120,15 +120,15 @@ namespace DiscordCoreInternal {
 		};
 
 		AVIOContextWrapper& operator=(AVIOContext* other);
-		
+
 		AVIOContextWrapper(AVIOContext* other);
 
 		AVIOContext* operator->();
-		
+
 		operator AVIOContext*();
 
 		AVIOContextWrapper();
-		
+
 	  protected:
 		std::unique_ptr<AVIOContext, AVIOContextDeleter> thePtr{ nullptr, AVIOContextDeleter{} };
 	};
@@ -139,15 +139,15 @@ namespace DiscordCoreInternal {
 		};
 
 		AVPacketWrapper& operator=(AVPacket* other);
-		
+
 		AVPacketWrapper(AVPacket* other);
 
 		AVPacket* operator->();
 
 		operator AVPacket*();
-		
+
 		AVPacketWrapper();
-		
+
 	  protected:
 		std::unique_ptr<AVPacket, AVPacketDeleter> thePtr{ nullptr, AVPacketDeleter{} };
 	};
@@ -164,26 +164,26 @@ namespace DiscordCoreInternal {
 		operator AVCodec*();
 
 		AVCodecWrapper();
-		
+
 	  protected:
 		std::unique_ptr<AVCodec, AVCodecDeleter> thePtr{ nullptr, AVCodecDeleter{} };
 	};
 
 	struct DiscordCoreAPI_Dll AVStreamWrapper {
 		struct DiscordCoreAPI_Dll AVStreamDeleter {
-			void operator()(AVStream*);			
+			void operator()(AVStream*);
 		};
 
 		AVStreamWrapper& operator=(AVStream* other);
 
 		AVStreamWrapper(AVStream* other);
-		
+
 		AVStream* operator->();
 
 		operator AVStream*();
-		
+
 		AVStreamWrapper();
-		
+
 	  protected:
 		std::unique_ptr<AVStream, AVStreamDeleter> thePtr{ nullptr, AVStreamDeleter{} };
 	};

@@ -124,7 +124,7 @@ namespace DiscordCoreInternal {
 		operator SSL_CTX*();
 
 		SSL_CTXWrapper();
-		
+
 	  protected:
 		std::unique_ptr<SSL_CTX, SSL_CTXDeleter> sslCTXPtr{ nullptr, SSL_CTXDeleter{} };
 	};
@@ -138,7 +138,7 @@ namespace DiscordCoreInternal {
 
 		operator SSL*();
 
-		SSLWrapper();		
+		SSLWrapper();
 
 	  protected:
 		std::unique_ptr<SSL, SSLDeleter> sslPtr{ nullptr, SSLDeleter{} };
@@ -152,11 +152,11 @@ namespace DiscordCoreInternal {
 		SOCKETWrapper& operator=(SOCKETWrapper&& other) noexcept;
 
 		SOCKETWrapper(SOCKETWrapper&& other) noexcept;
-		
+
 		SOCKETWrapper& operator=(SOCKET other);
 
 		operator SOCKET();
-		
+
 		SOCKETWrapper();
 
 	  protected:

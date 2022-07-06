@@ -53,32 +53,31 @@ namespace DiscordCoreAPI {
 
 	InteractionResponse& InteractionResponse::addSelectMenu(bool disabled, const std::string& customIdNew, std::vector<SelectOptionData> options, const std::string& placeholder,
 		int32_t maxValues, int32_t minValues) {
-			if (this->data.data.components.size() == 0) {
+		if (this->data.data.components.size() == 0) {
+			ActionRowData actionRowData;
+			this->data.data.components.push_back(actionRowData);
+		}
+		if (this->data.data.components.size() < 5) {
+			if (this->data.data.components[this->data.data.components.size() - 1].components.size() < 5) {
+				ComponentData componentData;
+				componentData.type = ComponentType::SelectMenu;
+				componentData.placeholder = placeholder;
+				componentData.maxValues = maxValues;
+				componentData.minValues = minValues;
+				componentData.disabled = disabled;
+				componentData.customId = customIdNew;
+				componentData.options = options;
+				this->data.data.components[this->data.data.components.size() - 1].components.push_back(componentData);
+			} else if (this->data.data.components[this->data.data.components.size() - 1].components.size() == 5) {
 				ActionRowData actionRowData;
 				this->data.data.components.push_back(actionRowData);
 			}
-			if (this->data.data.components.size() < 5) {
-				if (this->data.data.components[this->data.data.components.size() - 1].components.size() < 5) {
-					ComponentData componentData;
-					componentData.type = ComponentType::SelectMenu;
-					componentData.placeholder = placeholder;
-					componentData.maxValues = maxValues;
-					componentData.minValues = minValues;
-					componentData.disabled = disabled;
-					componentData.customId = customIdNew;
-					componentData.options = options;
-					this->data.data.components[this->data.data.components.size() - 1].components.push_back(componentData);
-				} else if (this->data.data.components[this->data.data.components.size() - 1].components.size() == 5) {
-					ActionRowData actionRowData;
-					this->data.data.components.push_back(actionRowData);
-				}
-			}
-			return *this;
 		}
+		return *this;
+	}
 
 	InteractionResponse& InteractionResponse::addModal(const std::string& topTitleNew, const std::string& topCustomIdNew, const std::string& titleNew,
-			const std::string& customIdNew, bool required, int32_t minLength, int32_t maxLength, TextInputStyle inputStyle, const std::string& label,
-			const std::string& placeholder) {
+		const std::string& customIdNew, bool required, int32_t minLength, int32_t maxLength, TextInputStyle inputStyle, const std::string& label, const std::string& placeholder) {
 		this->data.data.title = topTitleNew;
 		this->data.data.customId = topCustomIdNew;
 		if (this->data.data.components.size() == 0) {

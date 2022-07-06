@@ -69,7 +69,7 @@ namespace DiscordCoreAPI {
 		/// \returns RespondToInputEventData& A reference to this data structure.
 		InteractionResponse& addModal(const std::string& topTitleNew, const std::string& topCustomIdNew, const std::string& titleNew, const std::string& customIdNew, bool required,
 			int32_t minLength, int32_t maxLength, TextInputStyle inputStyle, const std::string& label = "", const std::string& placeholder = "");
-		
+
 		/// Adds a file to the current collection of files for this message response. \brief Adds a file to the current collection of files for this message response.
 		/// \param theFile The file to be added.
 		/// \returns MessageResponseBase& A reference to this data structure.
@@ -82,7 +82,7 @@ namespace DiscordCoreAPI {
 		/// For setting the components in a response. \brief For setting the components in a response.
 		/// \param dataPackage An ActionRowData structure.
 		InteractionResponse& addComponentRow(const ActionRowData& dataPackage);
-		
+
 		/// Sets the response type of the current Message. \brief Sets the response type of the current Message.
 		/// \param type Interaction callback type.
 		InteractionResponse& setResponseType(InteractionCallbackType type);
@@ -90,15 +90,15 @@ namespace DiscordCoreAPI {
 		/// For setting the embeds in a response. \brief For setting the embeds in a response.
 		/// \param dataPackage An EmbedData structure.
 		InteractionResponse& addMessageEmbed(const EmbedData& dataPackage);
-		
+
 		/// For setting the Message content in a response. \brief For setting the content in a response.
 		/// \param dataPackage A std::string, containing the content.
 		InteractionResponse& addContent(const std::string& dataPackage);
-		
+
 		/// For setting the tts status of a response. \brief For setting the tts status of a response.
 		/// \param enabledTTs A bool.
 		InteractionResponse& setTTSStatus(bool enabledTTs);
-		
+
 		InteractionResponseData getInteractionResponseData();
 
 		virtual ~InteractionResponse() = default;
@@ -119,7 +119,7 @@ namespace DiscordCoreAPI {
 		CreateEphemeralInteractionResponseData(const RespondToInputEventData& dataPackage);
 
 		CreateEphemeralInteractionResponseData(RespondToInputEventData& dataPackage);
-		
+
 		virtual ~CreateEphemeralInteractionResponseData() = default;
 	};
 
@@ -151,15 +151,15 @@ namespace DiscordCoreAPI {
 		friend InputEvents;
 
 		CreateInteractionResponseData(const CreateDeferredInteractionResponseData& dataPackage);
-		
+
 		CreateInteractionResponseData(CreateDeferredInteractionResponseData& dataPackage);
 
 		CreateInteractionResponseData(const CreateEphemeralInteractionResponseData& dataPackage);
-		
+
 		CreateInteractionResponseData(CreateEphemeralInteractionResponseData& dataPackage);
-		
+
 		CreateInteractionResponseData(RespondToInputEventData& dataPackage);
-		
+
 		CreateInteractionResponseData(InteractionData& dataPackage);
 
 		virtual ~CreateInteractionResponseData() = default;
@@ -194,7 +194,7 @@ namespace DiscordCoreAPI {
 		friend InputEvents;
 
 		DeleteInteractionResponseData(RespondToInputEventData& dataPackage);
-		
+
 	  protected:
 		InteractionPackageData interactionPackage{};
 		uint32_t timeDelay{ 0 };
@@ -226,7 +226,7 @@ namespace DiscordCoreAPI {
 		friend InputEvents;
 
 		CreateFollowUpMessageData(const CreateEphemeralFollowUpMessageData& dataPackage);
-		
+
 		CreateFollowUpMessageData(CreateEphemeralFollowUpMessageData& dataPackage);
 
 		CreateFollowUpMessageData(const RespondToInputEventData& dataPackage);
@@ -253,7 +253,7 @@ namespace DiscordCoreAPI {
 		friend InputEvents;
 
 		EditFollowUpMessageData(const RespondToInputEventData& dataPackage);
-		
+
 		EditFollowUpMessageData(RespondToInputEventData& dataPackage);
 
 		virtual ~EditFollowUpMessageData() = default;

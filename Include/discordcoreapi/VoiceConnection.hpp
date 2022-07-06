@@ -26,7 +26,7 @@
 #include <sodium.h>
 
 namespace DiscordCoreAPI {
-	
+
 	using DoubleNanoSecond = std::chrono::duration<double, std::nano>;
 
 	using DoubleMilliSecond = std::chrono::duration<double, std::milli>;
@@ -162,7 +162,7 @@ namespace DiscordCoreAPI {
 		void clearAudioData() noexcept;
 
 		bool areWeConnected() noexcept;
-		
+
 		void sendHeartBeat() noexcept;
 
 		void voiceConnect() noexcept;

@@ -45,7 +45,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	BIOWrapper& BIOWrapper::operator=(BIO * other) {
+	BIOWrapper& BIOWrapper::operator=(BIO* other) {
 		this->bioPtr.reset(other);
 		auto errorValue = BIO_up_ref(other);
 		if (!errorValue) {
@@ -60,7 +60,7 @@ namespace DiscordCoreInternal {
 
 	BIOWrapper::BIOWrapper(){};
 
-	addrinfo * addrinfoWrapper::operator->() {
+	addrinfo* addrinfoWrapper::operator->() {
 		if (this->addrinfoPtrTwo == nullptr) {
 			throw ConnectionError{ "addrinfoWrapper::operator->(), addrinfoPtrTwo was nullptr." };
 		}
@@ -75,7 +75,7 @@ namespace DiscordCoreInternal {
 		return &this->addrinfoPtrTwo;
 	}
 
-	addrinfoWrapper:: operator addrinfo*() {
+	addrinfoWrapper::operator addrinfo*() {
 		if (this->addrinfoPtrTwo == nullptr) {
 			throw ConnectionError{ "addrinfoWrapper::addrinfo*(), addrinfoPtrTwo was nullptr." };
 		}
@@ -122,7 +122,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	SSLWrapper& SSLWrapper::operator=(SSL * other) {
+	SSLWrapper& SSLWrapper::operator=(SSL* other) {
 		this->sslPtr.reset(other);
 		auto errorValue = SSL_up_ref(other);
 		if (!errorValue) {
@@ -148,8 +148,8 @@ namespace DiscordCoreInternal {
 		other->store(SOCKET_ERROR);
 		delete other;
 	}
-	
-	SOCKETWrapper& SOCKETWrapper::operator=(SOCKETWrapper && other) noexcept {
+
+	SOCKETWrapper& SOCKETWrapper::operator=(SOCKETWrapper&& other) noexcept {
 		if (this != &other) {
 			this->socketPtr->store(other.socketPtr->load());
 			other.socketPtr->store(SOCKET_ERROR);
@@ -157,8 +157,8 @@ namespace DiscordCoreInternal {
 		return *this;
 	}
 
-	SOCKETWrapper:: SOCKETWrapper(SOCKETWrapper&& other) noexcept {
-			*this = std::move(other);
+	SOCKETWrapper::SOCKETWrapper(SOCKETWrapper&& other) noexcept {
+		*this = std::move(other);
 	}
 
 	SOCKETWrapper& SOCKETWrapper::operator=(SOCKET other) {
@@ -170,7 +170,8 @@ namespace DiscordCoreInternal {
 		return this->socketPtr->load();
 	}
 
-	SOCKETWrapper::SOCKETWrapper() {}
+	SOCKETWrapper::SOCKETWrapper() {
+	}
 
 
 	std::string reportSSLError(const std::string& errorPosition, int32_t errorValue = 0, SSL* ssl = nullptr) noexcept {

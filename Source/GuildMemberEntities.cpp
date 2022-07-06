@@ -22,7 +22,7 @@
 #include <discordcoreapi/CoRoutine.hpp>
 
 namespace DiscordCoreAPI {
-	
+
 	AddGuildMemberData::operator std::string() {
 		nlohmann::json data{};
 		data["access_token"] = this->accessToken;

@@ -102,7 +102,6 @@ namespace DiscordCoreAPI {
 		bool hoist{ false };///< Is this Role hoisted above the others?
 
 		operator std::string();
-		
 	};
 
 	/// For removing a Role from a chosen Guild. \brief For removing a Role from a chosen Guild.

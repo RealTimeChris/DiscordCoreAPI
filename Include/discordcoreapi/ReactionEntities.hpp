@@ -119,7 +119,6 @@ namespace DiscordCoreAPI {
 		std::string name{};///< Name of the Emoji.
 
 		operator std::string();
-		
 	};
 
 	/// For deleting a Guild Emoji.

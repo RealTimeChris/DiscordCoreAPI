@@ -55,7 +55,7 @@ namespace DiscordCoreAPI {
 		CreateMessageData(RespondToInputEventData dataPackage);
 
 		CreateMessageData(InputEventData dataPackage);
-		
+
 		Snowflake channelId{};
 
 		CreateMessageData() = default;

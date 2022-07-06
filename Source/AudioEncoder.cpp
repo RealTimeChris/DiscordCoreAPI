@@ -24,8 +24,8 @@ namespace DiscordCoreInternal {
 	void OpusEncoderWrapper::OpusEncoderDeleter::operator()(OpusEncoder* other) {
 		opus_encoder_destroy(other);
 	}
-		
-	OpusEncoderWrapper& OpusEncoderWrapper::operator = (OpusEncoder * other) {
+
+	OpusEncoderWrapper& OpusEncoderWrapper::operator=(OpusEncoder* other) {
 		this->thePtr.reset(other);
 		return *this;
 	}

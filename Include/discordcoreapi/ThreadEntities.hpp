@@ -65,7 +65,6 @@ namespace DiscordCoreAPI {
 		std::string name{};///< 1-100 character channel name auto_archive_duration.
 
 		operator std::string();
-		
 	};
 
 	/// For joining a Thread. \brief For joining a Thread.

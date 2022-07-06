@@ -30,11 +30,11 @@ namespace DiscordCoreInternal {
 		};
 
 		OpusEncoderWrapper& operator=(OpusEncoder* other);
-		
+
 		operator OpusEncoder*();
 
 		OpusEncoderWrapper(std::nullptr_t other);
-		
+
 	  protected:
 		std::unique_ptr<OpusEncoder, OpusEncoderDeleter> thePtr{ nullptr, OpusEncoderDeleter{} };
 	};

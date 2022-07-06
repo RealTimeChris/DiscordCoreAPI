@@ -172,7 +172,6 @@ namespace DiscordCoreInternal {
 		bool sendData(const std::string& dataToSend, bool priority, HttpsConnection& theConnection);
 
 		HttpsResponseData executeByRateLimitData(const HttpsWorkloadData& workload);
-		
 	};
 
 

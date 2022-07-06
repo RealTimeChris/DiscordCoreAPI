@@ -151,7 +151,6 @@ namespace DiscordCoreAPI {
 		EditWebHookData(WebHookData dataNew);
 
 		operator std::string();
-		
 	};
 
 	/// For collecting a list of WebHooks from a chosen Channel. \brief For collecting a list of WebHooks from a chosen Channel.

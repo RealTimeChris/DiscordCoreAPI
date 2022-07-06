@@ -111,8 +111,8 @@ namespace DiscordCoreInternal {
 			swr_free(&other);
 		}
 	}
-		
-	SwrContextWrapper& SwrContextWrapper::operator = (SwrContext * other) {
+
+	SwrContextWrapper& SwrContextWrapper::operator=(SwrContext* other) {
 		this->thePtr.reset(other);
 		return *this;
 	}
@@ -133,7 +133,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	AVIOContextWrapper& AVIOContextWrapper::operator = (AVIOContext * other) {
+	AVIOContextWrapper& AVIOContextWrapper::operator=(AVIOContext* other) {
 		this->thePtr.reset(other);
 		return *this;
 	}
@@ -157,8 +157,8 @@ namespace DiscordCoreInternal {
 			av_packet_free(&other);
 		}
 	}
-		
-	AVPacketWrapper& AVPacketWrapper::operator = (AVPacket * other) {
+
+	AVPacketWrapper& AVPacketWrapper::operator=(AVPacket* other) {
 		this->thePtr.reset(other);
 		return *this;
 	}
@@ -179,7 +179,7 @@ namespace DiscordCoreInternal {
 
 	void AVCodecWrapper::AVCodecDeleter ::operator()(AVCodec*){};
 
-	AVCodecWrapper& AVCodecWrapper::operator = (AVCodec * other) {
+	AVCodecWrapper& AVCodecWrapper::operator=(AVCodec* other) {
 		this->thePtr.reset(other);
 		return *this;
 	}
@@ -196,7 +196,7 @@ namespace DiscordCoreInternal {
 
 	void AVStreamWrapper::AVStreamDeleter::operator()(AVStream*){};
 
-	AVStreamWrapper& AVStreamWrapper::operator = (AVStream * other) {
+	AVStreamWrapper& AVStreamWrapper::operator=(AVStream* other) {
 		this->thePtr.reset(other);
 		return *this;
 	}

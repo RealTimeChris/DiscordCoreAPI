@@ -88,7 +88,7 @@ namespace DiscordCoreInternal {
 		int32_t lastNumberReceived{};
 		std::string sessionId{};
 		std::string botToken{};
-		
+
 		operator nlohmann::json();
 	};
 
