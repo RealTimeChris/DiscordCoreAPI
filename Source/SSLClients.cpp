@@ -279,6 +279,7 @@ namespace DiscordCoreInternal {
 				fd_set writeSet{};
 				int32_t writeNfds{ 0 };
 				FD_ZERO(&writeSet);
+				std::unique_lock theLock{ this->rwMutex };
 				if (data.size() > 0) {
 					FD_SET(this->theSocket, &writeSet);
 					writeNfds = this->theSocket > writeNfds ? this->theSocket : writeNfds;
@@ -286,8 +287,6 @@ namespace DiscordCoreInternal {
 					return false;
 				}
 
-				
-				std::unique_lock theLock{ this->rwMutex };
 				timeval checkTime{ .tv_usec = 1000 };
 				if (auto returnValue = select(writeNfds + 1, nullptr, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
 					this->disconnect(true);
@@ -372,7 +371,8 @@ namespace DiscordCoreInternal {
 		fd_set writeSet{}, readSet{};
 		FD_ZERO(&writeSet);
 		FD_ZERO(&readSet);
-		
+
+		std::unique_lock theLock{ this->rwMutex };
 		if ((this->outputBuffers.size() > 0 || this->wantWrite) && !this->wantRead) {
 			FD_SET(this->theSocket, &writeSet);
 			writeNfds = this->theSocket > writeNfds ? this->theSocket : writeNfds;
@@ -381,7 +381,6 @@ namespace DiscordCoreInternal {
 		readNfds = this->theSocket > readNfds ? this->theSocket : readNfds;
 		finalNfds = readNfds > writeNfds ? readNfds : writeNfds;
 
-		std::unique_lock theLock{ this->rwMutex };
 		timeval checkTime{ .tv_usec = theWaitTimeInms };
 		if (auto returnValue = select(finalNfds + 1, &readSet, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
 			this->disconnect(true);
@@ -401,6 +400,7 @@ namespace DiscordCoreInternal {
 			switch (errorValue) {
 				case SSL_ERROR_NONE: {
 					if (readBytes > 0) {
+						std::lock_guard theLock02{ this->readMutex };
 						this->inputBuffer.insert(this->inputBuffer.end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
 					}
 					break;
@@ -436,6 +436,7 @@ namespace DiscordCoreInternal {
 			size_t writtenBytes{ 0 };
 			std::string writeString{};
 			if (this->outputBuffers.size() > 0) {
+				std::unique_lock theLock{ this->writeMutex };
 				writeString = std::move(this->outputBuffers.front());
 				auto returnValue{ SSL_write_ex(this->ssl, writeString.data(), writeString.size(), &writtenBytes) };
 				auto errorValue{ SSL_get_error(this->ssl, returnValue) };
@@ -449,14 +450,17 @@ namespace DiscordCoreInternal {
 						break;
 					}
 					case SSL_ERROR_ZERO_RETURN: {
+						theLock.unlock();
 						this->disconnect(true);
 						break;
 					}
 					case SSL_ERROR_SSL: {
+						theLock.unlock();
 						this->disconnect(true);
 						break;
 					}
 					case SSL_ERROR_SYSCALL: {
+						theLock.unlock();
 						this->disconnect(true);
 						break;
 					}
@@ -531,6 +535,7 @@ namespace DiscordCoreInternal {
 		bool didWeSetASocket{ false };
 		for (auto& [key, value]: theMap) {
 			if (value) {
+				std::unique_lock theLock{ value->rwMutex };
 				if (value->theSocket != SOCKET_ERROR) {
 					if ((value->outputBuffers.size() > 0 || value->wantWrite) && !value->wantRead) {
 						FD_SET(value->theSocket, &writeSet);
@@ -558,8 +563,8 @@ namespace DiscordCoreInternal {
 		}
 
 		for (auto& [key, value]: theMap) {
+			std::unique_lock theLock{ value->rwMutex };
 			if (FD_ISSET(value->theSocket, &readSet)) {
-				std::unique_lock theLock{ value->rwMutex };
 				value->wantRead = false;
 				value->wantWrite = false;
 				std::string serverToClientBuffer{};
@@ -570,6 +575,7 @@ namespace DiscordCoreInternal {
 				switch (errorValue) {
 					case SSL_ERROR_NONE: {
 						if (readBytes > 0) {
+							std::lock_guard theLock02{ value->readMutex };
 							value->inputBuffer.insert(value->inputBuffer.end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
 							value->bytesRead += readBytes;
 						}
@@ -601,12 +607,12 @@ namespace DiscordCoreInternal {
 				}
 			}
 			if (FD_ISSET(value->theSocket, &writeSet)) {
-				std::unique_lock theLock{ value->rwMutex };
 				value->wantRead = false;
 				value->wantWrite = false;
 				size_t writtenBytes{ 0 };
 				std::string theString{};
 				if (value->outputBuffers.size() > 0) {
+					std::unique_lock theLock02{ value->writeMutex };
 					theString = std::move(value->outputBuffers.front());
 					auto returnValue{ SSL_write_ex(value->ssl, theString.data(), theString.size(), &writtenBytes) };
 					auto errorValue{ SSL_get_error(value->ssl, returnValue) };
@@ -618,14 +624,17 @@ namespace DiscordCoreInternal {
 							break;
 						}
 						case SSL_ERROR_ZERO_RETURN: {
+							theLock02.unlock();
 							value->disconnect(true);
 							break;
 						}
 						case SSL_ERROR_SSL: {
+							theLock02.unlock();
 							value->disconnect(true);
 							break;
 						}
 						case SSL_ERROR_SYSCALL: {
+							theLock02.unlock();
 							value->disconnect(true);
 							break;
 						}
@@ -724,6 +733,7 @@ namespace DiscordCoreInternal {
 				fd_set writeSet{};
 				int32_t writeNfds{ 0 };
 				FD_ZERO(&writeSet);
+				std::unique_lock theLock{ this->rwMutex };
 				if (data.size() > 0) {
 					FD_SET(this->theSocket, &writeSet);
 					writeNfds = this->theSocket > writeNfds ? this->theSocket : writeNfds;
@@ -731,7 +741,6 @@ namespace DiscordCoreInternal {
 					return false;
 				}
 
-				std::unique_lock theLock{ this->rwMutex };
 				timeval checkTime{ .tv_usec = 1000 };
 				if (auto returnValue = select(writeNfds + 1, nullptr, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
 					this->disconnect(true);

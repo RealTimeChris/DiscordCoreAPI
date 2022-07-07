@@ -167,9 +167,8 @@ namespace DiscordCoreInternal {
 
 		std::atomic<SSLConnectionState> theSSLState{ SSLConnectionState::Disconnected };
 		std::queue<DiscordCoreAPI::ConnectionPackage>* connections{ nullptr };
-		std::function<void(bool)> disconnection{};
+		std::recursive_mutex rwMutex{};
 		SOCKETWrapper theSocket{};
-		std::mutex rwMutex{};
 		SSLWrapper ssl{};
 	};
 
