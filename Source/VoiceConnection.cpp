@@ -139,6 +139,7 @@ namespace DiscordCoreAPI {
 					theShard->inputBuffer.insert(theShard->inputBuffer.end(), newVector.begin(), newVector.end());
 					std::string finalMessage{};
 					theShard->processedMessages.push(finalMessage);
+					this->connectionState.store(VoiceConnectionState::Collecting_Hello);
 				}
 			}
 			if (theShard->inputBuffer.size() < 4) {
@@ -253,13 +254,14 @@ namespace DiscordCoreAPI {
 									this->voiceConnectionData.voiceEncryptionMode = value;
 								}
 							}
+							this->connectionState.store(VoiceConnectionState::Initializing_DatagramSocket);
 							break;
 						}
 						case 4: {
 							for (uint32_t x = 0; x < payload["d"]["secret_key"].size(); x++) {
 								this->voiceConnectionData.secretKey.push_back(payload["d"]["secret_key"][x].get<uint8_t>());
 							}
-							this->connectionState.store(VoiceConnectionState::Collecting_Session_Description);
+							this->connectionState.store(VoiceConnectionState::Collecting_Init_Data);
 							break;
 						}
 						case 6: {
@@ -270,6 +272,7 @@ namespace DiscordCoreAPI {
 							if (payload["d"].contains("heartbeat_interval")) {
 								this->heartbeatInterval = static_cast<int32_t>(payload["d"]["heartbeat_interval"].get<float>());
 								this->sslShards[0]->areWeHeartBeating = false;
+								this->connectionState.store(VoiceConnectionState::Sending_Identify);
 							}
 							break;
 						}
@@ -405,9 +408,9 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	bool VoiceConnection::collectAndProcessAMessage() noexcept {
+	bool VoiceConnection::collectAndProcessAMessage(VoiceConnectionState stateToWaitFor) noexcept {
 		DiscordCoreAPI::StopWatch theStopWatch{ 2500ms };
-		while (!Globals::doWeQuit.load()) {
+		while (!Globals::doWeQuit.load() && this->connectionState.load() != stateToWaitFor) {
 			DiscordCoreInternal::WebSocketSSLShard::processIO(this->sslShards, 100000);
 			if (!sslShards[0]->areWeStillConnected()) {
 				return false;
@@ -597,7 +600,7 @@ namespace DiscordCoreAPI {
 		this->activeState.store(VoiceActiveState::Connecting);
 	}
 
-	void VoiceConnection::collectExternalIP() noexcept {
+	bool VoiceConnection::collectExternalIP() noexcept {
 		try {
 			std::string packet{};
 			packet.resize(74);
@@ -620,7 +623,7 @@ namespace DiscordCoreAPI {
 				inputString.insert(inputString.end(), theNewString.begin(), theNewString.end());
 				std::this_thread::sleep_for(1ms);
 				if (theStopWatch.hasTimePassed()) {
-					break;
+					return false;
 				}
 			}
 			std::string message{};
@@ -631,11 +634,13 @@ namespace DiscordCoreAPI {
 			this->voiceConnectionData.externalIp = message;
 			this->areWeConnectedBool.store(true);
 			this->voiceConnectionDataBuffer.clearContents();
+			return true;
 		} catch (...) {
 			if (this->configManager->doWePrintWebSocketErrorMessages()) {
 				DiscordCoreAPI::reportException("VoiceConnection::collectExternalIP()");
 			}
 			this->onClosed();
+			return false;
 		}
 	}
 
@@ -650,6 +655,7 @@ namespace DiscordCoreAPI {
 				std::cout << "VoiceConnection::connectInternal() Error: Failed to connect to voice channel!" << std::endl << std::endl;
 			}
 		}
+		StopWatch theStopWatch{ 5000ms };
 		switch (this->connectionState.load()) {
 			case VoiceConnectionState::Collecting_Init_Data: {
 				this->voiceConnectionData = DiscordCoreInternal::VoiceConnectionData{};
@@ -692,25 +698,24 @@ namespace DiscordCoreAPI {
 					this->connectInternal();
 					return;
 				}
-				if (!this->collectAndProcessAMessage()) {
+				if (!this->collectAndProcessAMessage(VoiceConnectionState::Collecting_Hello)) {
 					this->currentReconnectTries++;
 					this->onClosed();
 					this->connectInternal();
 					return;
 				}
-				this->connectionState.store(VoiceConnectionState::Collecting_Hello);
 				this->connectInternal();
 				break;
 			}
 			case VoiceConnectionState::Collecting_Hello: {
-				if (!this->collectAndProcessAMessage()) {
+				theStopWatch.resetTimer();
+				if (!this->collectAndProcessAMessage(VoiceConnectionState::Sending_Identify)) {
 					this->currentReconnectTries++;
 					this->onClosed();
 					this->connectInternal();
 					return;
 				}
 				this->currentReconnectTries = 0;
-				this->connectionState.store(VoiceConnectionState::Sending_Identify);
 				this->connectInternal();
 				break;
 			}
@@ -727,30 +732,39 @@ namespace DiscordCoreAPI {
 					this->connectInternal();
 					return;
 				}
-				DiscordCoreInternal::WebSocketSSLShard::processIO(this->sslShards, 100000);
 				this->connectionState.store(VoiceConnectionState::Collecting_Ready);
 				this->connectInternal();
 				break;
 			}
 			case VoiceConnectionState::Collecting_Ready: {
-				if (!this->collectAndProcessAMessage()) {
+				theStopWatch.resetTimer();
+				if (!this->collectAndProcessAMessage(VoiceConnectionState::Initializing_DatagramSocket)) {
 					this->currentReconnectTries++;
 					this->onClosed();
 					this->connectInternal();
 					return;
 				}
-				this->connectionState.store(VoiceConnectionState::Initializing_DatagramSocket);
 				this->connectInternal();
 				break;
 			}
 			case VoiceConnectionState::Initializing_DatagramSocket: {
-				this->voiceConnect();
+				if (!this->voiceConnect()) {
+					this->currentReconnectTries++;
+					this->onClosed();
+					this->connectInternal();
+					return;
+				}
 				this->connectionState.store(VoiceConnectionState::Collecting_External_Ip);
 				this->connectInternal();
 				break;
 			}
 			case VoiceConnectionState::Collecting_External_Ip: {
-				this->collectExternalIP();
+				if (!this->collectExternalIP()) {
+					this->currentReconnectTries++;
+					this->onClosed();
+					this->connectInternal();
+					return;
+				}
 				this->connectionState.store(VoiceConnectionState::Sending_Select_Protocol);
 				this->connectInternal();
 				break;
@@ -769,13 +783,13 @@ namespace DiscordCoreAPI {
 					this->connectInternal();
 					return;
 				}
-				DiscordCoreInternal::WebSocketSSLShard::processIO(this->sslShards, 100000);
 				this->connectionState.store(VoiceConnectionState::Collecting_Session_Description);
 				this->connectInternal();
 				break;
 			}
 			case VoiceConnectionState::Collecting_Session_Description: {
-				if (!this->collectAndProcessAMessage()) {
+				theStopWatch.resetTimer();
+				if (!this->collectAndProcessAMessage(VoiceConnectionState::Collecting_Init_Data)) {
 					this->currentReconnectTries++;
 					this->onClosed();
 					this->connectInternal();
@@ -829,19 +843,26 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	void VoiceConnection::voiceConnect() noexcept {
+	bool VoiceConnection::voiceConnect() noexcept {
 		try {
 			if (!this->datagramSocket) {
 				this->datagramSocket = std::make_unique<DiscordCoreInternal::DatagramSocketSSLClient>();
 			}
-			if (!this->datagramSocket->connect(this->voiceConnectionData.voiceIp, this->voiceConnectionData.voicePort)) {
-				this->onClosed();
+			if (!this->datagramSocket->areWeStillConnected()) {
+				if (!this->datagramSocket->connect(this->voiceConnectionData.voiceIp, this->voiceConnectionData.voicePort)) {
+					return false;
+				} else {
+					return true;
+				}
+			} else {
+				return true;
 			}
 		} catch (...) {
 			if (this->configManager->doWePrintWebSocketErrorMessages()) {
 				DiscordCoreAPI::reportException("VoiceConnection::voiceConnect()");
 			}
 			this->onClosed();
+			return false;
 		}
 	}
 
