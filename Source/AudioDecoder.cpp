@@ -167,40 +167,6 @@ namespace DiscordCoreInternal {
 		return this->thePtr.get();
 	}
 
-	void AVCodecWrapper::AVCodecDeleter::operator()(AVCodec*){};
-
-	AVCodecWrapper& AVCodecWrapper::operator=(AVCodec* other) {
-		this->thePtr.reset(other);
-		return *this;
-	}
-
-	AVCodecWrapper::AVCodecWrapper(AVCodec* other) {
-		*this = other;
-	}
-
-	AVCodecWrapper::operator AVCodec*() {
-		return this->thePtr.get();
-	}
-
-	void AVStreamWrapper::AVStreamDeleter::operator()(AVStream*){};
-
-	AVStreamWrapper& AVStreamWrapper::operator=(AVStream* other) {
-		this->thePtr.reset(other);
-		return *this;
-	}
-
-	AVStreamWrapper::AVStreamWrapper(AVStream* other) {
-		*this = other;
-	}
-
-	AVStream* AVStreamWrapper::operator->() {
-		return this->thePtr.get();
-	}
-
-	AVStreamWrapper::operator AVStream*() {
-		return this->thePtr.get();
-	}
-
 	AudioDecoder::AudioDecoder(const BuildAudioDecoderData& dataPackage) {
 		this->configManager = dataPackage.configManager;
 		this->bufferMaxSize = dataPackage.bufferMaxSize;

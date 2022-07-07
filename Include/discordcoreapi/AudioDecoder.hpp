@@ -151,43 +151,7 @@ namespace DiscordCoreInternal {
 	  protected:
 		std::unique_ptr<AVPacket, AVPacketDeleter> thePtr{ nullptr, AVPacketDeleter{} };
 	};
-
-	struct DiscordCoreAPI_Dll AVCodecWrapper {
-		struct DiscordCoreAPI_Dll AVCodecDeleter {
-			void operator()(AVCodec*);
-		};
-
-		AVCodecWrapper& operator=(AVCodec* other);
-
-		AVCodecWrapper(AVCodec* other);
-
-		operator AVCodec*();
-
-		AVCodecWrapper() = default;
-
-	  protected:
-		std::unique_ptr<AVCodec, AVCodecDeleter> thePtr{ nullptr, AVCodecDeleter{} };
-	};
-
-	struct DiscordCoreAPI_Dll AVStreamWrapper {
-		struct DiscordCoreAPI_Dll AVStreamDeleter {
-			void operator()(AVStream*);
-		};
-
-		AVStreamWrapper& operator=(AVStream* other);
-
-		AVStreamWrapper(AVStream* other);
-
-		AVStream* operator->();
-
-		operator AVStream*();
-
-		AVStreamWrapper() = default;
-
-	  protected:
-		std::unique_ptr<AVStream, AVStreamDeleter> thePtr{ nullptr, AVStreamDeleter{} };
-	};
-
+	
 	struct DiscordCoreAPI_Dll BuildAudioDecoderData {
 	  public:
 		DiscordCoreAPI::ConfigManager* configManager{ nullptr };
@@ -222,12 +186,12 @@ namespace DiscordCoreInternal {
 		AVFrameWrapper frame{}, newFrame{};
 		AVIOContextWrapper ioContext{};
 		SwrContextWrapper swrContext{};
-		AVStreamWrapper audioStream{};
 		std::string currentBuffer{};
 		bool areWeQuitting{ false };
 		bool haveWeBooted{ false };
 		AVPacketWrapper packet{};
-		AVCodecWrapper codec{};
+		AVStream* audioStream{};
+		AVCodec* codec{};
 
 		static int32_t FileStreamRead(void* opaque, uint8_t* buf, int32_t);
 
