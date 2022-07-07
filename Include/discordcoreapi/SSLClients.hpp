@@ -185,6 +185,7 @@ namespace DiscordCoreInternal {
 		std::queue<DiscordCoreAPI::ConnectionPackage>* connections{ nullptr };
 		std::function<void(bool)> disconnection{};
 		SOCKETWrapper theSocket{};
+		std::mutex rwMutex{};
 		SSLWrapper ssl{};
 	};
 
@@ -204,9 +205,11 @@ namespace DiscordCoreInternal {
 		int32_t maxBufferSize{ (1024 * 16) - 1 };
 		std::vector<std::string> outputBuffers{};
 		std::string inputBuffer{};
+		std::mutex writeMutex{};
 		bool wantWrite{ true };
 		bool wantRead{ false };
 		int64_t bytesRead{ 0 };
+		std::mutex readMutex{};
 	};
 
 	class DiscordCoreAPI_Dll HttpsSSLClient : public SSLConnectionInterface, public SSLDataInterface {
@@ -228,9 +231,6 @@ namespace DiscordCoreInternal {
 		int64_t getBytesRead() noexcept;
 
 		~HttpsSSLClient() noexcept = default;
-
-	  protected:
-		std::recursive_mutex theMutex01{};
 	};
 
 	enum class WebSocketSSLShardState { Connecting = 0, Upgrading = 1, Collecting_Hello = 2, Sending_Identify = 3, Authenticated = 4, Disconnected = 5 };
@@ -273,8 +273,7 @@ namespace DiscordCoreInternal {
 		int32_t currentReconnectTries{ 0 };
 		bool stateUpdateCollected{ false };
 		bool areWeCollectingData{ false };
-		std::recursive_mutex theMutex02{};
-		std::recursive_mutex theMutex01{};
+		std::recursive_mutex theMutex{};
 		bool areWeHeartBeating{ false };
 		int32_t lastNumberReceived{ 0 };
 		WebSocketCloseCode closeCode{};

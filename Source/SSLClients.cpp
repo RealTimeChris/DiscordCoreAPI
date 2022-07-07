@@ -227,7 +227,6 @@ namespace DiscordCoreInternal {
 			return false;
 		}
 
-		std::unique_lock theLock00{ this->theMutex01 };
 		if (this->theSocket = socket(address->ai_family, address->ai_socktype, address->ai_protocol); this->theSocket == SOCKET_ERROR) {
 			return false;
 		}
@@ -296,7 +295,7 @@ namespace DiscordCoreInternal {
 		std::string data = dataToWrite;
 		if (data.size() > 0 && this->ssl) {
 			if (priority && data.size() < static_cast<size_t>(16 * 1024)) {
-				std::unique_lock theLock{ this->theMutex01 };
+				std::unique_lock theLock{ this->rwMutex };
 				fd_set writeSet{};
 				int32_t writeNfds{ 0 };
 				FD_ZERO(&writeSet);
@@ -367,13 +366,13 @@ namespace DiscordCoreInternal {
 							amountToCollect = data.size();
 						}
 						newString.insert(newString.begin(), data.begin(), data.begin() + amountToCollect);
-						std::unique_lock theLock{ this->theMutex01 };
+						std::unique_lock theLock{ this->writeMutex };
 						this->outputBuffers.push_back(newString);
 						data.erase(data.begin(), data.begin() + amountToCollect);
 						remainingBytes = data.size();
 					}
 				} else {
-					std::unique_lock theLock{ this->theMutex01 };
+					std::unique_lock theLock{ this->writeMutex };
 					this->outputBuffers.push_back(data);
 				}
 				return true;
@@ -391,7 +390,7 @@ namespace DiscordCoreInternal {
 		fd_set writeSet{}, readSet{};
 		FD_ZERO(&writeSet);
 		FD_ZERO(&readSet);
-		std::unique_lock theLock{ this->theMutex01 };
+		std::unique_lock theLock{ this->rwMutex };
 		if ((this->outputBuffers.size() > 0 || this->wantWrite) && !this->wantRead) {
 			FD_SET(this->theSocket, &writeSet);
 			writeNfds = this->theSocket > writeNfds ? this->theSocket : writeNfds;
@@ -495,7 +494,7 @@ namespace DiscordCoreInternal {
 	}
 
 	std::string HttpsSSLClient::getInputBuffer() noexcept {
-		std::unique_lock theLock{ this->theMutex01 };
+		std::unique_lock theLock{ this->readMutex };
 		std::string theReturnString = std::move(this->inputBuffer);
 		this->inputBuffer.clear();
 		return theReturnString;
@@ -510,13 +509,13 @@ namespace DiscordCoreInternal {
 	}
 
 	int64_t HttpsSSLClient::getBytesRead() noexcept {
-		std::unique_lock theLock{ this->theMutex01 };
+		std::unique_lock theLock{ this->readMutex };
 		return this->bytesRead;
 	}
 
 	void HttpsSSLClient::disconnect(bool) noexcept {
 		if (this->theSSLState.load() == SSLConnectionState::Connected) {
-			std::unique_lock theLock{ this->theMutex01 };
+			std::unique_lock theLock{ this->rwMutex };
 			this->theSSLState.store(SSLConnectionState::Disconnected);
 			this->theSocket = SOCKET_ERROR;
 			this->inputBuffer.clear();
@@ -575,7 +574,7 @@ namespace DiscordCoreInternal {
 
 		for (auto& [key, value]: theMap) {
 			if (FD_ISSET(value->theSocket, &readSet)) {
-				std::unique_lock theLock{ value->theMutex01 };
+				std::unique_lock theLock{ value->rwMutex };
 				value->wantRead = false;
 				value->wantWrite = false;
 				std::string serverToClientBuffer{};
@@ -617,7 +616,7 @@ namespace DiscordCoreInternal {
 				}
 			}
 			if (FD_ISSET(value->theSocket, &writeSet)) {
-				std::unique_lock theLock{ value->theMutex01 };
+				std::unique_lock theLock{ value->rwMutex };
 				value->wantRead = false;
 				value->wantWrite = false;
 				size_t writtenBytes{ 0 };
@@ -673,7 +672,6 @@ namespace DiscordCoreInternal {
 			return false;
 		}
 
-		std::unique_lock theLock00{ this->theMutex01 };
 		if (this->theSocket = socket(address->ai_family, address->ai_socktype, address->ai_protocol); this->theSocket == SOCKET_ERROR) {
 			return false;
 		}
@@ -738,7 +736,7 @@ namespace DiscordCoreInternal {
 		std::string data = dataToWrite;
 		if (data.size() > 0 && this->ssl) {
 			if (priority && data.size() < static_cast<size_t>(16 * 1024)) {
-				std::unique_lock theLock{ this->theMutex01 };
+				std::unique_lock theLock{ this->rwMutex };
 				fd_set writeSet{};
 				int32_t writeNfds{ 0 };
 				FD_ZERO(&writeSet);
@@ -808,13 +806,13 @@ namespace DiscordCoreInternal {
 							amountToCollect = data.size();
 						}
 						newString.insert(newString.begin(), data.begin(), data.begin() + amountToCollect);
-						std::unique_lock theLock{ this->theMutex01 };
+						std::unique_lock theLock{ this->writeMutex };
 						this->outputBuffers.push_back(newString);
 						data.erase(data.begin(), data.begin() + amountToCollect);
 						remainingBytes = data.size();
 					}
 				} else {
-					std::unique_lock theLock{ this->theMutex01 };
+					std::unique_lock theLock{ this->writeMutex };
 					this->outputBuffers.push_back(data);
 				}
 				return true;
@@ -825,7 +823,7 @@ namespace DiscordCoreInternal {
 
 	void WebSocketSSLShard::disconnect(bool doWeReconnect) noexcept {
 		if (this->theSSLState.load() == SSLConnectionState::Connected) {
-			std::unique_lock theLock{ this->theMutex01 };
+			std::unique_lock theLock{ this->rwMutex };
 			this->theSSLState.store(SSLConnectionState::Disconnected);
 			this->theWebSocketState.store(WebSocketSSLShardState::Disconnected);
 			this->theSocket = SOCKET_ERROR;
@@ -848,7 +846,7 @@ namespace DiscordCoreInternal {
 	}
 
 	std::string WebSocketSSLShard::getInputBuffer() noexcept {
-		std::unique_lock theLock{ this->theMutex01 };
+		std::unique_lock theLock{ this->readMutex };
 		std::string theReturnString = std::move(this->inputBuffer);
 		this->inputBuffer.clear();
 		return theReturnString;
@@ -863,7 +861,7 @@ namespace DiscordCoreInternal {
 	}
 
 	int64_t WebSocketSSLShard::getBytesRead() noexcept {
-		std::unique_lock theLock{ this->theMutex01 };
+		std::unique_lock theLock{ this->readMutex };
 		return this->bytesRead;
 	}
 
