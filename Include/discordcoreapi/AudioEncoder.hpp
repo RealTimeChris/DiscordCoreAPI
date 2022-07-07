@@ -26,14 +26,14 @@ namespace DiscordCoreInternal {
 
 	struct DiscordCoreAPI_Dll OpusEncoderWrapper {
 		struct DiscordCoreAPI_Dll OpusEncoderDeleter {
-			inline void operator()(OpusEncoder* other);
+			void operator()(OpusEncoder* other);
 		};
 
 		OpusEncoderWrapper& operator=(OpusEncoder* other);
 
 		operator OpusEncoder*();
 
-		OpusEncoderWrapper(std::nullptr_t other);
+		OpusEncoderWrapper() = default;
 
 	  protected:
 		std::unique_ptr<OpusEncoder, OpusEncoderDeleter> thePtr{ nullptr, OpusEncoderDeleter{} };
@@ -46,9 +46,9 @@ namespace DiscordCoreInternal {
 		std::vector<DiscordCoreAPI::AudioFrameData> encodeFrames(std::vector<DiscordCoreAPI::RawFrameData>& rawFrames);
 
 	  protected:
-		OpusEncoderWrapper encoder{ nullptr };
 		const int32_t maxBufferSize{ 1276 };
 		const int32_t sampleRate{ 48000 };
+		OpusEncoderWrapper encoder{};
 		const int32_t nChannels{ 2 };
 
 		DiscordCoreAPI::EncodedFrameData encodeSingleAudioFrame(DiscordCoreAPI::RawFrameData& inputFrame);

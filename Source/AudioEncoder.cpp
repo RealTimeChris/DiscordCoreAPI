@@ -34,10 +34,6 @@ namespace DiscordCoreInternal {
 		return this->thePtr.get();
 	}
 
-	OpusEncoderWrapper::OpusEncoderWrapper(std::nullptr_t other) {
-		*this = other;
-	}
-
 	AudioEncoder::AudioEncoder() {
 		int32_t error;
 		this->encoder = opus_encoder_create(this->sampleRate, this->nChannels, OPUS_APPLICATION_AUDIO, &error);
