@@ -22,7 +22,39 @@
 
 namespace DiscordCoreInternal {
 
+	std::string reportSSLError(const std::string& errorPosition, int32_t errorValue = 0, SSL* ssl = nullptr) noexcept {
+		std::stringstream theStream{};
+		if (ssl) {
+			theStream << DiscordCoreAPI::shiftToBrightRed() << errorPosition << " Error: " << SSL_get_error(ssl, errorValue) << ", " << ERR_error_string(errorValue, nullptr)
+					  << DiscordCoreAPI::reset() << std::endl
+					  << std::endl;
+		} else {
+			theStream << DiscordCoreAPI::shiftToBrightRed() << errorPosition << " Error: " << DiscordCoreAPI::reset() << std::endl << std::endl;
+		}
+
+		return theStream.str();
+	}
+
+	std::string reportError(const std::string& errorPosition) noexcept {
+		std::stringstream theStream{};
+		theStream << DiscordCoreAPI::shiftToBrightRed() << errorPosition << " Error: ";
+#ifdef _WIN32
+		std::unique_ptr<char[]> string{ std::make_unique<char[]>(1024) };
+	#ifdef UWP
+		FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, WSAGetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), ( LPWSTR )string.get(), 1024,
+			NULL);
+	#else
+		FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, WSAGetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), string.get(), 1024, NULL);
+	#endif
+		theStream << WSAGetLastError() << ", " << string << DiscordCoreAPI::reset() << std::endl;
+#else
+		theStream << strerror(errno) << DiscordCoreAPI::reset();
+#endif
+		return theStream.str();
+	}
+
 	ConnectionError::ConnectionError(const std::string& theString) : std::runtime_error(theString){};
+
 
 #ifdef _WIN32
 	void WSADataWrapper::WSADataDeleter::operator()(WSADATA* other) {
@@ -37,36 +69,6 @@ namespace DiscordCoreInternal {
 		}
 	}
 #endif
-
-	addrinfo* addrinfoWrapper::operator->() {
-		if (this->thePtr == nullptr) {
-			throw ConnectionError{ "addrinfoWrapper::operator->(), addrinfoPtrTwo was nullptr." };
-		}
-		return this->thePtr;
-	}
-
-	addrinfoWrapper::operator addrinfo**() {
-		this->doWeClearAddrInfo = true;
-		if (this->thePtr == nullptr) {
-			throw ConnectionError{ "addrinfoWrapper::addrinfo**(), addrinfoPtrTwo was nullptr." };
-		}
-		return &this->thePtr;
-	}
-
-	addrinfoWrapper::operator addrinfo*() {
-		if (this->thePtr == nullptr) {
-			throw ConnectionError{ "addrinfoWrapper::addrinfo*(), addrinfoPtrTwo was nullptr." };
-		}
-		return this->thePtr;
-	}
-
-	addrinfoWrapper::~addrinfoWrapper() {
-		if (this->doWeClearAddrInfo) {
-			freeaddrinfo(this->thePtr);
-		} else {
-			delete this->thePtr;
-		}
-	}
 
 	void SSL_CTXWrapper::SSL_CTXDeleter::operator()(SSL_CTX* other) {
 		if (other) {
@@ -142,35 +144,34 @@ namespace DiscordCoreInternal {
 		return *this->thePtr;
 	}
 
-	std::string reportSSLError(const std::string& errorPosition, int32_t errorValue = 0, SSL* ssl = nullptr) noexcept {
-		std::stringstream theStream{};
-		if (ssl) {
-			theStream << DiscordCoreAPI::shiftToBrightRed() << errorPosition << " Error: " << SSL_get_error(ssl, errorValue) << ", " << ERR_error_string(errorValue, nullptr)
-					  << DiscordCoreAPI::reset() << std::endl
-					  << std::endl;
-		} else {
-			theStream << DiscordCoreAPI::shiftToBrightRed() << errorPosition << " Error: " << DiscordCoreAPI::reset() << std::endl << std::endl;
+	addrinfo* addrinfoWrapper::operator->() {
+		if (this->thePtr == nullptr) {
+			throw ConnectionError{ "addrinfoWrapper::operator->(), addrinfoPtrTwo was nullptr." };
 		}
-
-		return theStream.str();
+		return this->thePtr;
 	}
 
-	std::string reportError(const std::string& errorPosition) noexcept {
-		std::stringstream theStream{};
-		theStream << DiscordCoreAPI::shiftToBrightRed() << errorPosition << " Error: ";
-#ifdef _WIN32
-		std::unique_ptr<char[]> string{ std::make_unique<char[]>(1024) };
-	#ifdef UWP
-		FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, WSAGetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), ( LPWSTR )string.get(), 1024,
-			NULL);
-	#else
-		FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, WSAGetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), string.get(), 1024, NULL);
-	#endif
-		theStream << WSAGetLastError() << ", " << string << DiscordCoreAPI::reset() << std::endl;
-#else
-		theStream << strerror(errno) << DiscordCoreAPI::reset();
-#endif
-		return theStream.str();
+	addrinfoWrapper::operator addrinfo**() {
+		this->doWeClearAddrInfo = true;
+		if (this->thePtr == nullptr) {
+			throw ConnectionError{ "addrinfoWrapper::addrinfo**(), addrinfoPtrTwo was nullptr." };
+		}
+		return &this->thePtr;
+	}
+
+	addrinfoWrapper::operator addrinfo*() {
+		if (this->thePtr == nullptr) {
+			throw ConnectionError{ "addrinfoWrapper::addrinfo*(), addrinfoPtrTwo was nullptr." };
+		}
+		return this->thePtr;
+	}
+
+	addrinfoWrapper::~addrinfoWrapper() {
+		if (this->doWeClearAddrInfo) {
+			freeaddrinfo(this->thePtr);
+		} else {
+			delete this->thePtr;
+		}
 	}
 
 	void SSLConnectionInterface::initialize() {
@@ -275,7 +276,6 @@ namespace DiscordCoreInternal {
 		std::string data = dataToWrite;
 		if (data.size() > 0 && this->ssl) {
 			if (priority && data.size() < static_cast<size_t>(16 * 1024)) {
-				std::unique_lock theLock{ this->rwMutex };
 				fd_set writeSet{};
 				int32_t writeNfds{ 0 };
 				FD_ZERO(&writeSet);
@@ -286,6 +286,8 @@ namespace DiscordCoreInternal {
 					return false;
 				}
 
+				
+				std::unique_lock theLock{ this->rwMutex };
 				timeval checkTime{ .tv_usec = 1000 };
 				if (auto returnValue = select(writeNfds + 1, nullptr, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
 					this->disconnect(true);
@@ -370,7 +372,7 @@ namespace DiscordCoreInternal {
 		fd_set writeSet{}, readSet{};
 		FD_ZERO(&writeSet);
 		FD_ZERO(&readSet);
-		std::unique_lock theLock{ this->rwMutex };
+		
 		if ((this->outputBuffers.size() > 0 || this->wantWrite) && !this->wantRead) {
 			FD_SET(this->theSocket, &writeSet);
 			writeNfds = this->theSocket > writeNfds ? this->theSocket : writeNfds;
@@ -379,6 +381,7 @@ namespace DiscordCoreInternal {
 		readNfds = this->theSocket > readNfds ? this->theSocket : readNfds;
 		finalNfds = readNfds > writeNfds ? readNfds : writeNfds;
 
+		std::unique_lock theLock{ this->rwMutex };
 		timeval checkTime{ .tv_usec = theWaitTimeInms };
 		if (auto returnValue = select(finalNfds + 1, &readSet, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
 			this->disconnect(true);
@@ -496,6 +499,8 @@ namespace DiscordCoreInternal {
 	void HttpsSSLClient::disconnect(bool) noexcept {
 		if (this->theSSLState.load() == SSLConnectionState::Connected) {
 			std::unique_lock theLock{ this->rwMutex };
+			std::unique_lock theLock02{ this->readMutex };
+			std::unique_lock theLock03{ this->writeMutex };
 			this->theSSLState.store(SSLConnectionState::Disconnected);
 			this->theSocket = SOCKET_ERROR;
 			this->inputBuffer.clear();
@@ -716,7 +721,6 @@ namespace DiscordCoreInternal {
 		std::string data = dataToWrite;
 		if (data.size() > 0 && this->ssl) {
 			if (priority && data.size() < static_cast<size_t>(16 * 1024)) {
-				std::unique_lock theLock{ this->rwMutex };
 				fd_set writeSet{};
 				int32_t writeNfds{ 0 };
 				FD_ZERO(&writeSet);
@@ -727,6 +731,7 @@ namespace DiscordCoreInternal {
 					return false;
 				}
 
+				std::unique_lock theLock{ this->rwMutex };
 				timeval checkTime{ .tv_usec = 1000 };
 				if (auto returnValue = select(writeNfds + 1, nullptr, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
 					this->disconnect(true);
@@ -804,6 +809,8 @@ namespace DiscordCoreInternal {
 	void WebSocketSSLShard::disconnect(bool doWeReconnect) noexcept {
 		if (this->theSSLState.load() == SSLConnectionState::Connected) {
 			std::unique_lock theLock{ this->rwMutex };
+			std::unique_lock theLock02{ this->readMutex };
+			std::unique_lock theLock03{ this->writeMutex };
 			this->theSSLState.store(SSLConnectionState::Disconnected);
 			this->theWebSocketState.store(WebSocketSSLShardState::Disconnected);
 			this->theSocket = SOCKET_ERROR;
@@ -897,7 +904,7 @@ namespace DiscordCoreInternal {
 	}
 
 	std::string DatagramSocketSSLClient::getInputBuffer() noexcept {
-		std::unique_lock theLock{ this->theMutex01 };
+		std::unique_lock theLock{ this->theMutex };
 		std::string theReturnString = std::move(this->inputBuffer);
 		this->inputBuffer.clear();
 		return theReturnString;
@@ -912,12 +919,12 @@ namespace DiscordCoreInternal {
 	}
 
 	int64_t DatagramSocketSSLClient::getBytesRead() noexcept {
-		std::unique_lock theLock{ this->theMutex01 };
+		std::unique_lock theLock{ this->theMutex };
 		return this->bytesRead;
 	}
 
 	void DatagramSocketSSLClient::disconnect() noexcept {
-		std::unique_lock theLock{ this->theMutex01 };
+		std::unique_lock theLock{ this->theMutex };
 		this->theSocket = SOCKET_ERROR;
 		this->inputBuffer.clear();
 		this->outputBuffers.clear();
@@ -929,7 +936,7 @@ namespace DiscordCoreInternal {
 		}
 		fd_set readSet{};
 		int32_t readNfds{ 0 };
-		std::unique_lock theLock{ this->theMutex01 };
+		std::unique_lock theLock{ this->theMutex };
 		FD_ZERO(&readSet);
 		FD_SET(this->theSocket, &readSet);
 		readNfds = this->theSocket > readNfds ? this->theSocket : readNfds;

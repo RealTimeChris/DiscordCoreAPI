@@ -69,7 +69,6 @@ namespace DiscordCoreInternal {
 		ConnectionError(const std::string& theString);
 	};
 
-	DiscordCoreAPI_Dll std::string reportError(const std::string& errorPosition) noexcept;
 #ifdef _WIN32
 	struct DiscordCoreAPI_Dll WSADataWrapper {
 		struct DiscordCoreAPI_Dll WSADataDeleter {
@@ -82,22 +81,6 @@ namespace DiscordCoreInternal {
 		std::unique_ptr<WSADATA, WSADataDeleter> thePtr{ new WSADATA{}, WSADataDeleter{} };
 	};
 #endif
-
-	struct DiscordCoreAPI_Dll addrinfoWrapper {
-		addrinfo* operator->();
-
-		operator addrinfo**();
-
-		operator addrinfo*();
-
-		addrinfoWrapper() = default;
-
-		~addrinfoWrapper();
-
-	  protected:
-		addrinfo* thePtr{ new addrinfo{} };
-		bool doWeClearAddrInfo{ false };
-	};
 
 	struct DiscordCoreAPI_Dll SSL_CTXWrapper {
 		struct DiscordCoreAPI_Dll SSL_CTXDeleter {
@@ -146,6 +129,22 @@ namespace DiscordCoreInternal {
 
 	  protected:
 		std::unique_ptr<SOCKET, SOCKETDeleter> thePtr{ new SOCKET{ SOCKET_ERROR }, SOCKETDeleter{} };
+	};
+
+	struct DiscordCoreAPI_Dll addrinfoWrapper {
+		addrinfo* operator->();
+
+		operator addrinfo**();
+
+		operator addrinfo*();
+
+		addrinfoWrapper() = default;
+
+		~addrinfoWrapper();
+
+	  protected:
+		addrinfo* thePtr{ new addrinfo{} };
+		bool doWeClearAddrInfo{ false };
 	};
 
 	enum class SSLConnectionState { Connected = 1, Disconnected = 2 };
@@ -296,7 +295,7 @@ namespace DiscordCoreInternal {
 	  protected:
 		const int32_t maxBufferSize{ 1024 * 16 };
 		std::vector<std::string> outputBuffers{};
-		std::recursive_mutex theMutex01{};
+		std::recursive_mutex theMutex{};
 		SOCKETWrapper theSocket{};
 		std::string inputBuffer{};
 		sockaddr_in theAddress{};
