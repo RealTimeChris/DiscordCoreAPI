@@ -46,7 +46,7 @@ namespace DiscordCoreInternal {
 	}
 
 	BIOWrapper& BIOWrapper::operator=(BIO* other) {
-		this->bioPtr.reset(other);
+		this->thePtr.reset(other);
 		auto errorValue = BIO_up_ref(other);
 		if (!errorValue) {
 			std::cout << DiscordCoreAPI::shiftToBrightRed() << "BIO_up_ref() Error: " << ERR_error_string(errorValue, nullptr) << DiscordCoreAPI::reset() << std::endl;
@@ -55,36 +55,36 @@ namespace DiscordCoreInternal {
 	}
 
 	BIOWrapper::operator BIO*() {
-		return this->bioPtr.get();
+		return this->thePtr.get();
 	}
 
 	addrinfo* addrinfoWrapper::operator->() {
-		if (this->addrinfoPtrTwo == nullptr) {
+		if (this->thePtr == nullptr) {
 			throw ConnectionError{ "addrinfoWrapper::operator->(), addrinfoPtrTwo was nullptr." };
 		}
-		return this->addrinfoPtrTwo;
+		return this->thePtr;
 	}
 
 	addrinfoWrapper::operator addrinfo**() {
 		this->doWeClearAddrInfo = true;
-		if (this->addrinfoPtrTwo == nullptr) {
+		if (this->thePtr == nullptr) {
 			throw ConnectionError{ "addrinfoWrapper::addrinfo**(), addrinfoPtrTwo was nullptr." };
 		}
-		return &this->addrinfoPtrTwo;
+		return &this->thePtr;
 	}
 
 	addrinfoWrapper::operator addrinfo*() {
-		if (this->addrinfoPtrTwo == nullptr) {
+		if (this->thePtr == nullptr) {
 			throw ConnectionError{ "addrinfoWrapper::addrinfo*(), addrinfoPtrTwo was nullptr." };
 		}
-		return this->addrinfoPtrTwo;
+		return this->thePtr;
 	}
 
 	addrinfoWrapper::~addrinfoWrapper() {
 		if (this->doWeClearAddrInfo) {
-			freeaddrinfo(this->addrinfoPtrTwo);
+			freeaddrinfo(this->thePtr);
 		} else {
-			delete this->addrinfoPtrTwo;
+			delete this->thePtr;
 		}
 	}
 
@@ -96,7 +96,7 @@ namespace DiscordCoreInternal {
 	}
 
 	SSL_CTXWrapper& SSL_CTXWrapper::operator=(SSL_CTX* other) {
-		this->sslCTXPtr.reset(other);
+		this->thePtr.reset(other);
 		auto errorValue = SSL_CTX_up_ref(other);
 		if (!errorValue) {
 			std::cout << DiscordCoreAPI::shiftToBrightRed() << "SSL_CTX_up_ref() Error: " << ERR_error_string(errorValue, nullptr) << DiscordCoreAPI::reset() << std::endl;
@@ -105,7 +105,7 @@ namespace DiscordCoreInternal {
 	}
 
 	SSL_CTXWrapper::operator SSL_CTX*() {
-		return this->sslCTXPtr.get();
+		return this->thePtr.get();
 	}
 
 	void SSLWrapper::SSLDeleter::operator()(SSL* other) {
@@ -117,7 +117,7 @@ namespace DiscordCoreInternal {
 	}
 
 	SSLWrapper& SSLWrapper::operator=(SSL* other) {
-		this->sslPtr.reset(other);
+		this->thePtr.reset(other);
 		auto errorValue = SSL_up_ref(other);
 		if (!errorValue) {
 			std::cout << DiscordCoreAPI::shiftToBrightRed() << "SSL_up_ref() Error: " << ERR_error_string(errorValue, nullptr) << DiscordCoreAPI::reset() << std::endl;
@@ -126,7 +126,7 @@ namespace DiscordCoreInternal {
 	}
 
 	SSLWrapper::operator SSL*() {
-		return this->sslPtr.get();
+		return this->thePtr.get();
 	}
 
 	void SOCKETWrapper::SOCKETDeleter::operator()(std::atomic<SOCKET>* other) {
@@ -143,8 +143,8 @@ namespace DiscordCoreInternal {
 
 	SOCKETWrapper& SOCKETWrapper::operator=(SOCKETWrapper&& other) noexcept {
 		if (this != &other) {
-			this->socketPtr->store(other.socketPtr->load());
-			other.socketPtr->store(SOCKET_ERROR);
+			*this->thePtr = *other.thePtr;
+			*other.thePtr = SOCKET_ERROR;
 		}
 		return *this;
 	}
@@ -154,12 +154,12 @@ namespace DiscordCoreInternal {
 	}
 
 	SOCKETWrapper& SOCKETWrapper::operator=(SOCKET other) {
-		this->socketPtr->store(other);
+		*this->thePtr = other;
 		return *this;
 	}
 
 	SOCKETWrapper::operator SOCKET() {
-		return this->socketPtr->load();
+		return *this->thePtr;
 	}
 
 	std::string reportSSLError(const std::string& errorPosition, int32_t errorValue = 0, SSL* ssl = nullptr) noexcept {

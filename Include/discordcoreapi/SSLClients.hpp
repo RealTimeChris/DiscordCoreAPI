@@ -95,7 +95,7 @@ namespace DiscordCoreInternal {
 		BIOWrapper() = default;
 
 	  protected:
-		std::unique_ptr<BIO, BIODeleter> bioPtr{ nullptr, BIODeleter{} };
+		std::unique_ptr<BIO, BIODeleter> thePtr{ nullptr, BIODeleter{} };
 	};
 
 	struct DiscordCoreAPI_Dll addrinfoWrapper {
@@ -110,7 +110,7 @@ namespace DiscordCoreInternal {
 		~addrinfoWrapper();
 
 	  protected:
-		addrinfo* addrinfoPtrTwo{ new addrinfo{} };
+		addrinfo* thePtr{ new addrinfo{} };
 		bool doWeClearAddrInfo{ false };
 	};
 
@@ -126,7 +126,7 @@ namespace DiscordCoreInternal {
 		SSL_CTXWrapper() = default;
 
 	  protected:
-		std::unique_ptr<SSL_CTX, SSL_CTXDeleter> sslCTXPtr{ nullptr, SSL_CTXDeleter{} };
+		std::unique_ptr<SSL_CTX, SSL_CTXDeleter> thePtr{ nullptr, SSL_CTXDeleter{} };
 	};
 
 	struct DiscordCoreAPI_Dll SSLWrapper {
@@ -141,7 +141,7 @@ namespace DiscordCoreInternal {
 		SSLWrapper() = default;
 
 	  protected:
-		std::unique_ptr<SSL, SSLDeleter> sslPtr{ nullptr, SSLDeleter{} };
+		std::unique_ptr<SSL, SSLDeleter> thePtr{ nullptr, SSLDeleter{} };
 	};
 
 	struct DiscordCoreAPI_Dll SOCKETWrapper {
@@ -160,7 +160,7 @@ namespace DiscordCoreInternal {
 		SOCKETWrapper() = default;
 
 	  protected:
-		std::unique_ptr<std::atomic<SOCKET>, SOCKETDeleter> socketPtr{ new std::atomic<SOCKET>{ SOCKET_ERROR }, SOCKETDeleter{} };
+		std::unique_ptr<SOCKET, SOCKETDeleter> thePtr{ new SOCKET{ SOCKET_ERROR }, SOCKETDeleter{} };
 	};
 
 	enum class SSLConnectionState { Connected = 1, Disconnected = 2 };
