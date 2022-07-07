@@ -115,7 +115,7 @@ namespace DiscordCoreInternal {
 			}
 
 			if (this->areWeQuitting.load() || stopToken.stop_requested()) {
-				break;
+				return;
 			}
 			auto coroHandle = this->theFunctions.front();
 			this->theFunctions.pop();
@@ -128,7 +128,9 @@ namespace DiscordCoreInternal {
 				theAtomicBoolPtr->store(false);
 			}
 		}
-		this->workerThreads.erase(theIndex);
+		if (!this->areWeQuitting.load()) {
+			this->workerThreads.erase(theIndex);
+		}
 	}
 
 	void CommandThreadPool::clearContents() {
@@ -137,7 +139,8 @@ namespace DiscordCoreInternal {
 		}
 		for (auto& [key, value]: this->workerThreads) {
 			value.theThread.request_stop();
-			if (this->workerThreads.contains(key)) {
+			if (value.theThread.joinable()) {
+				value.theThread.join();
 				this->workerThreads.erase(key);
 				break;
 			}
@@ -146,9 +149,8 @@ namespace DiscordCoreInternal {
 	}
 
 	CommandThreadPool::~CommandThreadPool() {
-		this->clearContents();
 		this->areWeQuitting.store(true);
-		std::lock_guard theLock00{ this->theMutex01 };
+		this->clearContents();
 	}
 
 	CoRoutineThreadPool::CoRoutineThreadPool() {
@@ -212,7 +214,7 @@ namespace DiscordCoreInternal {
 
 
 			if (this->areWeQuitting.load() || stopToken.stop_requested()) {
-				break;
+				return;
 			}
 			auto coroHandle = this->theCoroutineHandles.front();
 			this->theCoroutineHandles.pop();
@@ -225,7 +227,9 @@ namespace DiscordCoreInternal {
 				theAtomicBoolPtr->store(false);
 			}
 		}
-		this->workerThreads.erase(theIndex);
+		if (!this->areWeQuitting.load()) {
+			this->workerThreads.erase(theIndex);
+		}
 	}
 
 	void CoRoutineThreadPool::clearContents() {
@@ -234,7 +238,8 @@ namespace DiscordCoreInternal {
 		}
 		for (auto& [key, value]: this->workerThreads) {
 			value.theThread.request_stop();
-			if (this->workerThreads.contains(key)) {
+			if (value.theThread.joinable()) {
+				value.theThread.join();
 				this->workerThreads.erase(key);
 				break;
 			}
@@ -243,9 +248,8 @@ namespace DiscordCoreInternal {
 	}
 
 	CoRoutineThreadPool::~CoRoutineThreadPool() {
-		this->clearContents();
 		this->areWeQuitting.store(true);
-		std::lock_guard theLock00{ this->theMutex01 };
+		this->clearContents();
 	}
 
 }

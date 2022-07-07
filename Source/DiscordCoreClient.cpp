@@ -122,12 +122,17 @@ namespace DiscordCoreAPI {
 
 	void DiscordCoreClient::runBot() {
 		if (!this->instantiateWebSockets()) {
+			Globals::doWeQuit.store(true);
 			return;
 		}
 		while (!Globals::doWeQuit.load()) {
 			std::this_thread::sleep_for(1ms);
 		}
-		this->baseSocketAgentMap[std::to_string(this->configManager.getStartingShard())]->getTheTask()->join();
+		if (this->baseSocketAgentMap.contains(std::to_string(this->configManager.getStartingShard())) && this->baseSocketAgentMap[std::to_string(this->configManager.getStartingShard())]->getTheTask()) {
+			if (this->baseSocketAgentMap[std::to_string(this->configManager.getStartingShard())]->getTheTask()->joinable()) {
+				this->baseSocketAgentMap[std::to_string(this->configManager.getStartingShard())]->getTheTask()->join();
+			}
+		}		
 	}
 
 	GatewayBotData DiscordCoreClient::getGateWayBot() {

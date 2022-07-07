@@ -70,19 +70,21 @@ namespace DiscordCoreInternal {
 	}
 
 	void BaseSocketAgent::connect(DiscordCoreAPI::ConnectionPackage thePackage) noexcept {
-		DiscordCoreAPI::StopWatch theStopWatch{ 5000ms };
 		while (!this->discordCoreClient->theStopWatch.hasTimePassed()) {
 			std::this_thread::sleep_for(1ms);
 		}
 		this->discordCoreClient->theStopWatch.resetTimer();
 		std::lock_guard theLock{ this->theMutex };
 		this->connections.push(thePackage);
+		DiscordCoreAPI::StopWatch theStopWatch{ 5000ms };
+		theStopWatch.resetTimer();
 		while (!this->sslShards.contains(thePackage.currentShard)) {
 			if (theStopWatch.hasTimePassed()) {
 				return;
 			}
 			std::this_thread::sleep_for(1ms);
 		}
+		theStopWatch.resetTimer();
 		while (this->sslShards[thePackage.currentShard]->theWebSocketState.load() != WebSocketSSLShardState::Authenticated) {
 			if (theStopWatch.hasTimePassed()) {
 				return;
