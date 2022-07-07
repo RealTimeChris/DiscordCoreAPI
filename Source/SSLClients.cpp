@@ -55,7 +55,6 @@ namespace DiscordCoreInternal {
 
 	ConnectionError::ConnectionError(const std::string& theString) : std::runtime_error(theString){};
 
-
 #ifdef _WIN32
 	void WSADataWrapper::WSADataDeleter::operator()(WSADATA* other) {
 		WSACleanup();
@@ -620,21 +619,20 @@ namespace DiscordCoreInternal {
 						case SSL_ERROR_NONE: {
 							if (value->outputBuffers.size() > 0 && writtenBytes > 0) {
 								value->outputBuffers.erase(value->outputBuffers.begin());
+							} else if (value->outputBuffers.size() > 0) {
+								value->outputBuffers[0] = std::move(theString);
 							}
 							break;
 						}
 						case SSL_ERROR_ZERO_RETURN: {
-							theLock02.unlock();
 							value->disconnect(true);
 							break;
 						}
 						case SSL_ERROR_SSL: {
-							theLock02.unlock();
 							value->disconnect(true);
 							break;
 						}
 						case SSL_ERROR_SYSCALL: {
-							theLock02.unlock();
 							value->disconnect(true);
 							break;
 						}
@@ -741,7 +739,7 @@ namespace DiscordCoreInternal {
 					return false;
 				}
 
-				timeval checkTime{ .tv_usec = 1000 };
+				timeval checkTime{ .tv_usec = 0 };
 				if (auto returnValue = select(writeNfds + 1, nullptr, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
 					this->disconnect(true);
 					return false;

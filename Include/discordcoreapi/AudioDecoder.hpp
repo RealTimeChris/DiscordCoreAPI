@@ -182,12 +182,12 @@ namespace DiscordCoreInternal {
 		std::atomic_int32_t refreshTimeForBuffer{ 10000 };
 		std::atomic_bool haveWeFailedBool{ false };
 		AVCodecContextWrapper audioDecodeContext{};
+		std::atomic_bool areWeQuitting{ false };
 		AVFormatContextWrapper formatContext{};
 		AVFrameWrapper frame{}, newFrame{};
 		AVIOContextWrapper ioContext{};
 		SwrContextWrapper swrContext{};
 		std::string currentBuffer{};
-		bool areWeQuitting{ false };
 		bool haveWeBooted{ false };
 		AVPacketWrapper packet{};
 		AVStream* audioStream{};
