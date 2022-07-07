@@ -614,7 +614,7 @@ namespace DiscordCoreInternal {
 										dataPackage->interactionData = *interactionData;
 										std::unique_ptr<DiscordCoreAPI::CommandData> commandData{ std::make_unique<DiscordCoreAPI::CommandData>(*eventData) };
 										DiscordCoreAPI::CommandData commandDataNew = *commandData;
-										std::function<void()> theFunction = [=]() mutable {
+										std::function<void()> theFunction = [=, this]() mutable {
 											this->discordCoreClient->commandController.checkForAndRunCommand(commandDataNew);
 										};
 										this->discordCoreClient->commandThreadPool.submitTask(theFunction);
@@ -701,7 +701,7 @@ namespace DiscordCoreInternal {
 										std::unique_ptr<DiscordCoreAPI::CommandData> commandData{ std::make_unique<DiscordCoreAPI::CommandData>() };
 										commandData->commandName = "registerapplicationcommands";
 										DiscordCoreAPI::CommandData commandDataNew = *commandData;
-										std::function<void()> theFunction = [=]() mutable {
+										std::function<void()> theFunction = [=, this]() mutable {
 											this->discordCoreClient->commandController.checkForAndRunCommand(commandDataNew);
 										};
 										this->discordCoreClient->commandThreadPool.submitTask(theFunction);
