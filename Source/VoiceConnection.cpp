@@ -359,7 +359,7 @@ namespace DiscordCoreAPI {
 				if (!stopToken.stop_requested() && this->connections.size() > 0) {
 					DiscordCoreAPI::StopWatch theStopWatch{ 10000ms };
 					if (this->activeState.load() == VoiceActiveState::Connecting) {
-						this->lastActiveState.store(VoiceActiveState::Playing);
+						this->lastActiveState.store(VoiceActiveState::Stopped);
 					} else {
 						this->lastActiveState.store(this->activeState.load());
 					}
@@ -388,15 +388,15 @@ namespace DiscordCoreAPI {
 				if (!stopToken.stop_requested() && this->sslShards[0]->areWeStillConnected()) {
 					DiscordCoreInternal::WebSocketSSLShard::processIO(this->sslShards, 10000);
 				}
-				if (!stopToken.stop_requested() && this->sslShards[0]->areWeStillConnected()) {
+				if (!stopToken.stop_requested() && this->sslShards[0]->areWeStillConnected() && this->sslShards[0]->inputBuffer.size() > 0) {
 					this->parseHeadersAndMessage(this->sslShards[0].get());
 				}
 				if (!stopToken.stop_requested() && this->sslShards[0]->areWeStillConnected() && this->sslShards[0]->processedMessages.size() > 0) {
 					std::string theMessage = this->sslShards[0]->processedMessages.front();
+					this->sslShards[0]->processedMessages.pop();
 					if (!stopToken.stop_requested() && theMessage.size() > 0) {
 						this->onMessageReceived(theMessage);
 					}
-					this->sslShards[0]->processedMessages.pop();
 				}
 				std::this_thread::sleep_for(1ms);
 			}
@@ -597,6 +597,8 @@ namespace DiscordCoreAPI {
 			thePtr->onSongCompletionEvent.remove(thePtr->eventToken);
 		}
 		this->areWeConnectedBool.store(false);
+		this->connectionState.store(VoiceConnectionState::Collecting_Init_Data);
+		this->activeState.store(VoiceActiveState::Connecting);
 		this->activeState.store(VoiceActiveState::Connecting);
 	}
 
@@ -655,7 +657,6 @@ namespace DiscordCoreAPI {
 				std::cout << "VoiceConnection::connectInternal() Error: Failed to connect to voice channel!" << std::endl << std::endl;
 			}
 		}
-		StopWatch theStopWatch{ 5000ms };
 		switch (this->connectionState.load()) {
 			case VoiceConnectionState::Collecting_Init_Data: {
 				this->voiceConnectionData = DiscordCoreInternal::VoiceConnectionData{};
@@ -708,7 +709,6 @@ namespace DiscordCoreAPI {
 				break;
 			}
 			case VoiceConnectionState::Collecting_Hello: {
-				theStopWatch.resetTimer();
 				if (!this->collectAndProcessAMessage(VoiceConnectionState::Sending_Identify)) {
 					this->currentReconnectTries++;
 					this->onClosed();
@@ -737,7 +737,6 @@ namespace DiscordCoreAPI {
 				break;
 			}
 			case VoiceConnectionState::Collecting_Ready: {
-				theStopWatch.resetTimer();
 				if (!this->collectAndProcessAMessage(VoiceConnectionState::Initializing_DatagramSocket)) {
 					this->currentReconnectTries++;
 					this->onClosed();
@@ -788,7 +787,6 @@ namespace DiscordCoreAPI {
 				break;
 			}
 			case VoiceConnectionState::Collecting_Session_Description: {
-				theStopWatch.resetTimer();
 				if (!this->collectAndProcessAMessage(VoiceConnectionState::Collecting_Init_Data)) {
 					this->currentReconnectTries++;
 					this->onClosed();
