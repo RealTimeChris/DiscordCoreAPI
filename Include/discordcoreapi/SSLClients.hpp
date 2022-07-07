@@ -83,21 +83,6 @@ namespace DiscordCoreInternal {
 	};
 #endif
 
-	struct DiscordCoreAPI_Dll BIOWrapper {
-		struct DiscordCoreAPI_Dll BIODeleter {
-			void operator()(BIO* other);
-		};
-
-		BIOWrapper& operator=(BIO* other);
-
-		operator BIO*();
-
-		BIOWrapper() = default;
-
-	  protected:
-		std::unique_ptr<BIO, BIODeleter> thePtr{ nullptr, BIODeleter{} };
-	};
-
 	struct DiscordCoreAPI_Dll addrinfoWrapper {
 		addrinfo* operator->();
 
@@ -146,7 +131,7 @@ namespace DiscordCoreInternal {
 
 	struct DiscordCoreAPI_Dll SOCKETWrapper {
 		struct DiscordCoreAPI_Dll SOCKETDeleter {
-			void operator()(std::atomic<SOCKET>* other);
+			void operator()(SOCKET* other);
 		};
 
 		SOCKETWrapper& operator=(SOCKETWrapper&& other) noexcept;

@@ -38,26 +38,6 @@ namespace DiscordCoreInternal {
 	}
 #endif
 
-	void BIOWrapper::BIODeleter::operator()(BIO* other) {
-		if (other) {
-			BIO_free(other);
-			other = nullptr;
-		}
-	}
-
-	BIOWrapper& BIOWrapper::operator=(BIO* other) {
-		this->thePtr.reset(other);
-		auto errorValue = BIO_up_ref(other);
-		if (!errorValue) {
-			std::cout << DiscordCoreAPI::shiftToBrightRed() << "BIO_up_ref() Error: " << ERR_error_string(errorValue, nullptr) << DiscordCoreAPI::reset() << std::endl;
-		};
-		return *this;
-	}
-
-	BIOWrapper::operator BIO*() {
-		return this->thePtr.get();
-	}
-
 	addrinfo* addrinfoWrapper::operator->() {
 		if (this->thePtr == nullptr) {
 			throw ConnectionError{ "addrinfoWrapper::operator->(), addrinfoPtrTwo was nullptr." };
@@ -129,15 +109,15 @@ namespace DiscordCoreInternal {
 		return this->thePtr.get();
 	}
 
-	void SOCKETWrapper::SOCKETDeleter::operator()(std::atomic<SOCKET>* other) {
+	void SOCKETWrapper::SOCKETDeleter::operator()(SOCKET* other) {
 #ifdef _WIN32
-		shutdown(other->load(), SD_BOTH);
-		closesocket(other->load());
+		shutdown(*other, SD_BOTH);
+		closesocket(*other);
 #else
-		shutdown(other->load(), SHUT_RDWR);
-		close(other->load());
+		shutdown(*other, SHUT_RDWR);
+		close(*other);
 #endif
-		other->store(SOCKET_ERROR);
+		*other = SOCKET_ERROR;
 		delete other;
 	}
 
