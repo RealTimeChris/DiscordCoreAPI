@@ -19,11 +19,12 @@
 
 #pragma once
 
-#include <discordcoreapi/CoRoutine.hpp>
 #include <discordcoreapi/FoundationEntities.hpp>
+#include <discordcoreapi/CoRoutine.hpp>
 
 namespace DiscordCoreAPI {
 
+	/// A class for handling commands from user input. \brief A class for handling commands from user input.
 	class DiscordCoreAPI_Dll CommandController {
 	  public:
 		CommandController& operator=(const CommandController&) = delete;
@@ -36,8 +37,13 @@ namespace DiscordCoreAPI {
 
 		CommandController(DiscordCoreClient*);
 
+		/// Registers a function to be called. \brief Registers a function to be called.
+		/// \param functionNames A vector of strings to be accepted as function names.
+		/// \param baseFunction A unique_ptr to the function to be called.
 		void registerFunction(const std::vector<std::string>& functionNames, std::unique_ptr<BaseFunction> baseFunction);
 
+		/// For returning the contained map of functions. \brief For returning the contained map of functions.
+		/// \returns A map containing the function names as well as unique_ptrs to the functions.
 		std::map<std::vector<std::string>, std::unique_ptr<BaseFunction>>& getFunctions();
 
 		void checkForAndRunCommand(const CommandData commandData);

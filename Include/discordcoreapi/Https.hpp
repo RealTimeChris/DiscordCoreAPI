@@ -20,7 +20,6 @@
 #pragma once
 
 #include <discordcoreapi/SSLClients.hpp>
-#include <semaphore>
 
 namespace DiscordCoreInternal {
 

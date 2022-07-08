@@ -19,6 +19,7 @@
 
 #pragma once
 
+#include <discordcoreapi/FoundationEntities.hpp>
 #include <discordcoreapi/ApplicationCommandEntities.hpp>
 #include <discordcoreapi/AutoModerationEntities.hpp>
 #include <discordcoreapi/ChannelEntities.hpp>
@@ -26,7 +27,6 @@
 #include <discordcoreapi/CommandController.hpp>
 #include <discordcoreapi/EventEntities.hpp>
 #include <discordcoreapi/EventManager.hpp>
-#include <discordcoreapi/FoundationEntities.hpp>
 #include <discordcoreapi/GuildEntities.hpp>
 #include <discordcoreapi/GuildMemberEntities.hpp>
 #include <discordcoreapi/GuildScheduledEventEntities.hpp>

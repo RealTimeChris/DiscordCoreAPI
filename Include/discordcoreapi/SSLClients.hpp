@@ -31,6 +31,14 @@
 	#pragma comment(lib, "Ws2_32.lib")
 	#include <WinSock2.h>
 	#include <WS2tcpip.h>
+
+	#ifdef max
+		#undef max
+	#endif
+
+	#ifdef min
+		#undef min
+	#endif
 #else
 	#include <fcntl.h>
 	#include <netdb.h>
@@ -48,14 +56,6 @@
 #include <openssl/ssl.h>
 #include <discordcoreapi/FoundationEntities.hpp>
 #include <discordcoreapi/EventEntities.hpp>
-
-#ifdef max
-	#undef max
-#endif
-
-#ifdef min
-	#undef min
-#endif
 
 namespace DiscordCoreInternal {
 

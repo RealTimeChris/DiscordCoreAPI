@@ -19,8 +19,8 @@
 
 #pragma once
 
-#include <discordcoreapi/CoRoutine.hpp>
 #include <discordcoreapi/FoundationEntities.hpp>
+#include <discordcoreapi/CoRoutine.hpp>
 
 namespace DiscordCoreAPI {
 
