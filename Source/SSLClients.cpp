@@ -63,8 +63,7 @@ namespace DiscordCoreInternal {
 
 	WSADataWrapper::WSADataWrapper() {
 		if (auto errorValue = WSAStartup(MAKEWORD(2, 2), this->thePtr.get()); errorValue != 0) {
-			std::cout << DiscordCoreAPI::shiftToBrightRed() << "WSAStartup() Error: " << errorValue << ", ()";
-			std::cout << DiscordCoreAPI::reset() << std::endl;
+			std::cout << DiscordCoreAPI::shiftToBrightRed() << "WSAStartup() Error: " << errorValue << ", ()" << DiscordCoreAPI::reset() << std::endl;
 		}
 	}
 #endif
