@@ -70,7 +70,7 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<std::vector<GuildScheduledEvent>> GuildScheduledEvents::getGuildScheduledEventsAsync(GetGuildScheduledEventsData dataPackage) {
-		DiscordCoreInternal::HttpsWorkloadData workload{};HttpsWorkloadType::Get_Guild_Scheduled_Events);
+		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Scheduled_Events };
 		co_await NewThreadAwaitable<std::vector<GuildScheduledEvent>>();
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Scheduled_Events;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
@@ -80,7 +80,7 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<GuildScheduledEvent> GuildScheduledEvents::createGuildScheduledEventAsync(CreateGuildScheduledEventData dataPackage) {
-		DiscordCoreInternal::HttpsWorkloadData workload{};HttpsWorkloadType::Post_Guild_Scheduled_Event);
+		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Post_Guild_Scheduled_Event };
 		co_await NewThreadAwaitable<GuildScheduledEvent>();
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Post_Guild_Scheduled_Event;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
@@ -91,7 +91,7 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<GuildScheduledEvent> GuildScheduledEvents::getGuildScheduledEventAsync(GetGuildScheduledEventData dataPackage) {
-		DiscordCoreInternal::HttpsWorkloadData workload{};HttpsWorkloadType::Get_Guild_Scheduled_Event);
+		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Scheduled_Event };
 		co_await NewThreadAwaitable<GuildScheduledEvent>();
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Scheduled_Event;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
@@ -105,7 +105,7 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<GuildScheduledEvent> GuildScheduledEvents::modifyGuildScheduledEventAsync(ModifyGuildScheduledEventData dataPackage) {
-		DiscordCoreInternal::HttpsWorkloadData workload{};HttpsWorkloadType::Patch_Guild_Scheduled_Event);
+		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Patch_Guild_Scheduled_Event };
 		co_await NewThreadAwaitable<GuildScheduledEvent>();
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Patch_Guild_Scheduled_Event;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
@@ -116,7 +116,7 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<void> GuildScheduledEvents::deleteGuildScheduledEventAsync(DeleteGuildScheduledEventData dataPackage) {
-		DiscordCoreInternal::HttpsWorkloadData workload{};HttpsWorkloadType::Delete_Guild_Scheduled_Event);
+		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Delete_Guild_Scheduled_Event };
 		co_await NewThreadAwaitable<void>();
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Delete_Guild_Scheduled_Event;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Delete;
@@ -126,7 +126,7 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<std::vector<GuildScheduledEventUserData>> GuildScheduledEvents::getGuildScheduledEventUsersAsync(GetGuildScheduledEventUsersData dataPackage) {
-		DiscordCoreInternal::HttpsWorkloadData workload{};HttpsWorkloadType::Get_Guild_Scheduled_Event_Users);
+		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Scheduled_Event_Users };
 		co_await NewThreadAwaitable<std::vector<GuildScheduledEventUserData>>();
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Scheduled_Event_Users;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;

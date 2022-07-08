@@ -124,7 +124,7 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<GuildMember> GuildMembers::getGuildMemberAsync(GetGuildMemberData dataPackage) {
-		DiscordCoreInternal::HttpsWorkloadData workload{};HttpsWorkloadType::Get_Guild_Member);
+		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Member };
 		co_await NewThreadAwaitable<GuildMember>();
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Member;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
@@ -152,7 +152,7 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<std::vector<GuildMember>> GuildMembers::listGuildMembersAsync(ListGuildMembersData dataPackage) {
-		DiscordCoreInternal::HttpsWorkloadData workload{};HttpsWorkloadType::Get_Guild_Members);
+		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Members };
 		co_await NewThreadAwaitable<std::vector<GuildMember>>();
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Members;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
@@ -170,7 +170,7 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<std::vector<GuildMember>> GuildMembers::searchGuildMembersAsync(SearchGuildMembersData dataPackage) {
-		DiscordCoreInternal::HttpsWorkloadData workload{};HttpsWorkloadType::Get_Search_Guild_Members);
+		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Search_Guild_Members };
 		co_await NewThreadAwaitable<std::vector<GuildMember>>();
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Get_Search_Guild_Members;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
@@ -188,7 +188,7 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<GuildMember> GuildMembers::addGuildMemberAsync(AddGuildMemberData dataPackage) {
-		DiscordCoreInternal::HttpsWorkloadData workload{};HttpsWorkloadType::Put_Guild_Member);
+		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Put_Guild_Member };
 		co_await NewThreadAwaitable<GuildMember>();
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Put_Guild_Member;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Put;
@@ -199,7 +199,7 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<GuildMember> GuildMembers::modifyCurrentGuildMemberAsync(ModifyCurrentGuildMemberData dataPackage) {
-		DiscordCoreInternal::HttpsWorkloadData workload{};HttpsWorkloadType::Patch_Current_Guild_Member);
+		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Patch_Current_Guild_Member };
 		co_await NewThreadAwaitable<GuildMember>();
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Patch_Current_Guild_Member;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
@@ -213,7 +213,7 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<GuildMember> GuildMembers::modifyGuildMemberAsync(ModifyGuildMemberData dataPackage) {
-		DiscordCoreInternal::HttpsWorkloadData workload{};HttpsWorkloadType::Patch_Guild_Member);
+		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Patch_Guild_Member };
 		co_await NewThreadAwaitable<GuildMember>();
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Patch_Guild_Member;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
@@ -229,7 +229,7 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<void> GuildMembers::removeGuildMemberAsync(RemoveGuildMemberData dataPackage) {
-		DiscordCoreInternal::HttpsWorkloadData workload{};HttpsWorkloadType::Delete_Guild_Member);
+		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Delete_Guild_Member };
 		co_await NewThreadAwaitable<void>();
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Delete_Guild_Member;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Delete;
