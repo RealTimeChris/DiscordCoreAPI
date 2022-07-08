@@ -133,17 +133,21 @@ namespace DiscordCoreInternal {
 	}
 
 	HttpsWorkloadData::HttpsWorkloadData(DiscordCoreInternal::HttpsWorkloadType theType) {
-		this->thisWorkerId.store(DiscordCoreInternal::HttpsWorkloadData::incrementAndGetWorkloadId(theType));
+		if (!HttpsWorkloadData::workloadIdsExternal.contains(theType)){
+			std::unique_ptr<std::atomic_int64_t> theInt{ std::make_unique<std::atomic_int64_t>() };
+			std::unique_ptr<std::atomic_int64_t> theInt02{ std::make_unique<std::atomic_int64_t>() };
+			HttpsWorkloadData::workloadIdsExternal.insert_or_assign(theType, std::move(theInt));
+			HttpsWorkloadData::workloadIdsInternal.insert_or_assign(theType, std::move(theInt02));
+		}
+		this->thisWorkerId.store(HttpsWorkloadData::incrementAndGetWorkloadId(theType));
 		this->workloadType = theType;
 	}
 
 	int64_t HttpsWorkloadData::incrementAndGetWorkloadId(HttpsWorkloadType workloadType) {
 		std::lock_guard theLock{ HttpsWorkloadData::accessMutex };
 		int64_t theValue{};
-		if (HttpsWorkloadData::workloadIdsExternal.contains(workloadType)) {
-			theValue = HttpsWorkloadData::workloadIdsExternal[workloadType].load();
-		}
-		HttpsWorkloadData::workloadIdsExternal[workloadType].store(theValue + 1);
+		theValue = HttpsWorkloadData::workloadIdsExternal[workloadType]->load();
+		HttpsWorkloadData::workloadIdsExternal[workloadType]->store(theValue + 1);
 		return theValue;
 	}
 }
@@ -5750,8 +5754,8 @@ namespace DiscordCoreAPI {
 
 namespace DiscordCoreInternal {
 
-	std::unordered_map<HttpsWorkloadType, std::atomic_int64_t> HttpsWorkloadData::workloadIdsExternal{};
-	std::unordered_map<HttpsWorkloadType, std::atomic_int64_t> HttpsWorkloadData::workloadIdsInternal{};
+	std::unordered_map<HttpsWorkloadType, std::unique_ptr<std::atomic_int64_t>> HttpsWorkloadData::workloadIdsExternal{};
+	std::unordered_map<HttpsWorkloadType, std::unique_ptr<std::atomic_int64_t>> HttpsWorkloadData::workloadIdsInternal{};
 	std::mutex HttpsWorkloadData::accessMutex{};
 
 }

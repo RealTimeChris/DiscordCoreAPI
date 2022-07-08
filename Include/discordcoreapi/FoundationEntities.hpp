@@ -312,8 +312,8 @@ namespace DiscordCoreInternal {
 	struct DiscordCoreAPI_Dll HttpsWorkloadData {
 		friend class HttpsClient;
 
-		static std::unordered_map<HttpsWorkloadType, std::atomic_int64_t> workloadIdsExternal;
-		static std::unordered_map<HttpsWorkloadType, std::atomic_int64_t> workloadIdsInternal;
+		static std::unordered_map<HttpsWorkloadType, std::unique_ptr<std::atomic_int64_t>> workloadIdsExternal;
+		static std::unordered_map<HttpsWorkloadType, std::unique_ptr<std::atomic_int64_t>> workloadIdsInternal;
 		static std::mutex accessMutex;
 
 		std::unordered_map<std::string, std::string> headersToInsert{};
