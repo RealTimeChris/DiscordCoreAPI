@@ -12,12 +12,10 @@
 #	You should have received a copy of the GNU General Public License along with DiscordCoreAPI.
 #	If not, see <https://www.gnu.org/licenses/>.
 #
-# CMakeLists.txt - The CMake script for building this library.
+# FindNLOHMANN.cmake - This file locates the Nlohmann-Json library, using a provided path for searching.
 # May 13, 2021
 # https://discordcoreapi.com
 
-# This file locates the Nlohmann-Json library, using a provided path for searching.
-#
 # Usage:
 #	Set the following directories: NLOHMANN_INCLUDE_DIR
 # Where:

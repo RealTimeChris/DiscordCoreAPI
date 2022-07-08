@@ -12,12 +12,10 @@
 #	You should have received a copy of the GNU General Public License along with DiscordCoreAPI.
 #	If not, see <https://www.gnu.org/licenses/>.
 #
-# CMakeLists.txt - The CMake script for building this library.
+# FindOPENSSL.cmake - This file locates the OpenSSL libraries, using a couple of provided paths for searching.
 # May 13, 2021
 # https://discordcoreapi.com
 
-# This file locates the OpenSSL libraries, using a couple of provided paths for searching.
-#
 # Usage:
 # Set the following directories: OPENSSL_RELEASE_ROOT, OPENSSL_DEBUG_ROOT, OPENSSL_INCLUDE_DIR
 # Where:
