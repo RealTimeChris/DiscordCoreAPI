@@ -394,7 +394,7 @@ namespace DiscordCoreAPI {
 		}
 
 		if (jsonObjectData.contains("public_updates_channel_id") && !jsonObjectData["public_updates_channel_id"].is_null()) {
-			pDataStructure->publicUpdatesChannelId = jsonObjectData["public_updates_channel_id"].get<std::string>();
+			pDataStructure->publicUpdatesChannelId = stoull(jsonObjectData["public_updates_channel_id"].get<std::string>());
 		}
 
 		if (jsonObjectData.contains("vanity_url_code") && !jsonObjectData["vanity_url_code"].is_null()) {

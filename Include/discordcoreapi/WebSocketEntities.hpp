@@ -37,14 +37,34 @@ namespace DiscordCoreInternal {
 	constexpr uint8_t webSocketFinishBit{ (1u << 7u) };
 	constexpr uint8_t webSocketMaskBit{ (1u << 7u) };
 
-	class DiscordCoreAPI_Dll BaseSocketAgent {
+	class DiscordCoreAPI_Dll WebSocketMessageHandler {
 	  public:
-		friend class WebSocketSSLShard;
+
+		WebSocketMessageHandler(DiscordCoreAPI::ConfigManager* configManager);
+
+		void stringifyJsonData(const nlohmann::json& dataToSend, std::string& theString, DiscordCoreInternal::WebSocketOpCode theOpCode) noexcept;
+
+		void createHeader(std::string& outBuffer, uint64_t sendLength, DiscordCoreInternal::WebSocketOpCode opCode) noexcept;
+
+		bool parseConnectionHeaders(DiscordCoreInternal::WebSocketSSLShard* theShard) noexcept;
+
+		bool parseMessage(DiscordCoreInternal::WebSocketSSLShard* theShard) noexcept;
+
+		virtual void onMessageReceived(WebSocketSSLShard* theShard) noexcept = 0;
+
+		virtual ~WebSocketMessageHandler() = default;
+
+	  protected:
+		DiscordCoreAPI::ConfigManager* configManager{};
+		ErlPacker erlPacker{};
+	};
+
+	class DiscordCoreAPI_Dll BaseSocketAgent : public WebSocketMessageHandler {
+	  public:
 		friend class DiscordCoreAPI::DiscordCoreClient;
 		friend class DiscordCoreAPI::VoiceConnection;
 		friend class DiscordCoreAPI::BotUser;
-		friend class WSMessageCollector;
-		friend VoiceSocketAgent;
+		friend class WebSocketSSLShard;
 
 		BaseSocketAgent(DiscordCoreAPI::DiscordCoreClient* discordCoreClientNew, std::atomic_bool* doWeQuitNew, int32_t currentBaseSocketAgentNew) noexcept;
 
@@ -65,7 +85,6 @@ namespace DiscordCoreInternal {
 		std::unordered_map<int32_t, std::unique_ptr<WebSocketSSLShard>> sslShards{};
 		DiscordCoreAPI::DiscordCoreClient* discordCoreClient{ nullptr };
 		std::queue<DiscordCoreAPI::ConnectionPackage> connections{};
-		DiscordCoreAPI::ConfigManager* configManager{ nullptr };
 		std::unique_ptr<std::jthread> taskThread{ nullptr };
 		std::queue<VoiceConnectInitData> voiceConnections{};
 		std::queue<uint64_t> voiceConnectionsToDisconnect{};
@@ -74,19 +93,12 @@ namespace DiscordCoreInternal {
 		int32_t currentBaseSocketAgent{ 0 };
 		int32_t heartbeatInterval{ 0 };
 		std::mutex theMutex{};
-		ErlPacker erlPacker{};
-
-		void stringifyJsonData(const nlohmann::json& dataToSend, std::string& theString, WebSocketOpCode theOpCode) noexcept;
 
 		void getVoiceConnectionData(const VoiceConnectInitData& doWeCollect, WebSocketSSLShard* theIndex) noexcept;
 
-		void createHeader(std::string& outBuffer, uint64_t sendLength, WebSocketOpCode opCode) noexcept;
-
 		void checkForAndSendHeartBeat(WebSocketSSLShard* theIndex, bool = false) noexcept;
 
-		void parseHeadersAndMessage(WebSocketSSLShard* theShard) noexcept;
-
-		void onMessageReceived(WebSocketSSLShard* theIndex) noexcept;
+		void onMessageReceived(WebSocketSSLShard* theShard) noexcept;
 
 		void connectVoiceInternal() noexcept;
 

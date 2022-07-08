@@ -221,6 +221,7 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll WebSocketSSLShard : public SSLConnectionInterface, public SSLDataInterface {
 	  public:
 		friend class DiscordCoreAPI::VoiceConnection;
+		friend class WebSocketMessageHandler;
 		friend class DiscordCoreAPI::BotUser;
 		friend class BaseSocketAgent;
 		friend class YouTubeAPI;

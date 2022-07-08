@@ -76,19 +76,19 @@ namespace DiscordCoreAPI {
 	 * @{
 	 */
 	/// VoiceConnection class DiscordCoreAPI_Dll - represents the connection to a given voice Channel. \brief VoiceConnection class DiscordCoreAPI_Dll - represents the connection to a given voice Channel.
-	class DiscordCoreAPI_Dll VoiceConnection {
+	class DiscordCoreAPI_Dll VoiceConnection : public DiscordCoreInternal::WebSocketMessageHandler {
 	  public:
 		friend class DiscordCoreInternal::BaseSocketAgent;
 		friend class DiscordCoreInternal::SoundCloudAPI;
 		friend class DiscordCoreInternal::YouTubeAPI;
 		friend class DiscordCoreClient;
-		friend GuildData;
-		friend SongAPI;
+		friend class GuildData;
+		friend class SongAPI;
 
 		VoiceConnection(DiscordCoreInternal::BaseSocketAgent* BaseSocketAgentNew, const DiscordCoreInternal::VoiceConnectInitData& initDataNew,
 			DiscordCoreAPI::ConfigManager* configManagerNew) noexcept;
 
-		VoiceConnection() noexcept = default;
+		VoiceConnection() noexcept;
 
 		/// Collects the currently connected-to voice Channel's id. \brief Collects the currently connected-to voice Channel's id.
 		/// \returns uint64_t A Snowflake containing the Channel's id.
@@ -108,7 +108,6 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::VoiceConnectInitData voiceConnectInitData{};
 		DiscordCoreInternal::VoiceConnectionData voiceConnectionData{};
 		DiscordCoreInternal::WebSocketSSLShard* baseShard{ nullptr };
-		DiscordCoreAPI::ConfigManager* configManager{ nullptr };
 		UnboundedMessageBlock<AudioFrameData> audioDataBuffer{};
 		std::unique_ptr<std::jthread> taskThread01{ nullptr };
 		std::unique_ptr<std::jthread> taskThread02{ nullptr };
@@ -124,11 +123,7 @@ namespace DiscordCoreAPI {
 		uint32_t timeStamp{ 0 };
 		std::string baseUrl{};
 
-		void stringifyJsonData(const nlohmann::json& dataToSend, std::string& theString, DiscordCoreInternal::WebSocketOpCode theOpCode) noexcept;
-
-		void createHeader(std::string& outbuf, uint64_t sendlength, DiscordCoreInternal::WebSocketOpCode opCode) noexcept;
-
-		void parseHeadersAndMessage(DiscordCoreInternal::WebSocketSSLShard* theShard) noexcept;
+		void onMessageReceived(DiscordCoreInternal::WebSocketSSLShard* theShard) noexcept;
 
 		std::string encryptSingleAudioFrame(const EncodedFrameData& bufferToSend) noexcept;
 
@@ -141,8 +136,6 @@ namespace DiscordCoreAPI {
 		UnboundedMessageBlock<AudioFrameData>& getAudioBuffer() noexcept;
 
 		void sendSingleFrame(const AudioFrameData& frameData) noexcept;
-
-		void onMessageReceived(const std::string& theMessage) noexcept;
 
 		void sendVoiceData(const std::string& responseData) noexcept;
 

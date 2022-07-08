@@ -308,14 +308,14 @@ namespace DiscordCoreAPI {
 		data["banner"] = this->banner;
 		data["name"] = std::string{ this->name };
 		data["icon"] = this->icon;
-		if (this->publicUpdatesChannelId != "") {
-			data["public_updates_channel_id"] = std::string{ this->publicUpdatesChannelId };
-		}
-		if (this->afkChannelId != 0) {
-			data["afk_channel_id"] = std::to_string(this->afkChannelId);
+		if (this->publicUpdatesChannelId != 0) {
+			data["public_updates_channel_id"] = std::to_string(this->publicUpdatesChannelId);
 		}
 		if (this->systemChannelId != 0) {
 			data["system_channel_id"] = std::to_string(this->systemChannelId);
+		}
+		if (this->afkChannelId != 0) {
+			data["afk_channel_id"] = std::to_string(this->afkChannelId);
 		}
 		if (this->ownerId != 0) {
 			data["owner_id"] = std::to_string(this->ownerId);

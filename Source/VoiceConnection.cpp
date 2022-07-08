@@ -70,8 +70,11 @@ namespace DiscordCoreAPI {
 		return std::string{};
 	}
 
+	VoiceConnection::VoiceConnection() noexcept : WebSocketMessageHandler(nullptr) {}
+
 	VoiceConnection::VoiceConnection(DiscordCoreInternal::BaseSocketAgent* BaseSocketAgentNew, const DiscordCoreInternal::VoiceConnectInitData& initDataNew,
-		DiscordCoreAPI::ConfigManager* configManagerNew) noexcept {
+		DiscordCoreAPI::ConfigManager* configManagerNew) noexcept
+		: WebSocketMessageHandler(configManagerNew) {
 		this->baseShard = BaseSocketAgentNew->sslShards[initDataNew.currentShard].get();
 		this->activeState.store(VoiceActiveState::Connecting);
 		this->baseSocketAgent = BaseSocketAgentNew;
@@ -80,136 +83,7 @@ namespace DiscordCoreAPI {
 	}
 
 	Snowflake VoiceConnection::getChannelId() noexcept {
-		if (this && this->voiceConnectInitData.channelId != 0) {
-			return this->voiceConnectInitData.channelId;
-		} else {
-			return Snowflake();
-		}
-	}
-
-	void VoiceConnection::stringifyJsonData(const nlohmann::json& dataToSend, std::string& theString, DiscordCoreInternal::WebSocketOpCode theOpCode) noexcept {
-		std::string theVector{};
-		std::string header{};
-		theVector = dataToSend.dump();
-		this->createHeader(header, theVector.size(), theOpCode);
-		std::string theVectorNew{};
-		theVectorNew.insert(theVectorNew.begin(), header.begin(), header.end());
-		theVectorNew.insert(theVectorNew.begin() + header.size(), theVector.begin(), theVector.end());
-		theString = theVectorNew;
-	}
-
-	void VoiceConnection::createHeader(std::string& outBuffer, uint64_t sendLength, DiscordCoreInternal::WebSocketOpCode opCode) noexcept {
-		try {
-			outBuffer.push_back(static_cast<uint8_t>(opCode) | DiscordCoreInternal::webSocketFinishBit);
-
-			int32_t indexCount{ 0 };
-			if (sendLength <= DiscordCoreInternal::webSocketMaxPayloadLengthSmall) {
-				outBuffer.push_back(static_cast<uint8_t>(sendLength));
-				indexCount = 0;
-			} else if (sendLength <= DiscordCoreInternal::webSocketMaxPayloadLengthLarge) {
-				outBuffer.push_back(DiscordCoreInternal::webSocketPayloadLengthMagicLarge);
-				indexCount = 2;
-			} else {
-				outBuffer.push_back(DiscordCoreInternal::webSocketPayloadLengthMagicHuge);
-				indexCount = 8;
-			}
-			for (int32_t x = indexCount - 1; x >= 0; x--) {
-				outBuffer.push_back(static_cast<uint8_t>(sendLength >> x * 8));
-			}
-
-			outBuffer[1] |= DiscordCoreInternal::webSocketMaskBit;
-			outBuffer.push_back(0);
-			outBuffer.push_back(0);
-			outBuffer.push_back(0);
-			outBuffer.push_back(0);
-		} catch (...) {
-			if (this->configManager->doWePrintWebSocketErrorMessages()) {
-				DiscordCoreAPI::reportException("VoiceConnection::createHeader()");
-			}
-		}
-	}
-
-	void VoiceConnection::parseHeadersAndMessage(DiscordCoreInternal::WebSocketSSLShard* theShard) noexcept {
-		if (theShard->theSSLState.load() == DiscordCoreInternal::SSLConnectionState::Connected) {
-			if (this->connectionState.load() == VoiceConnectionState::Initializing_WebSocket) {
-				std::string newVector = theShard->getInputBuffer();
-				if (newVector.find("\r\n\r\n") != std::string::npos) {
-					newVector.erase(0, newVector.find("\r\n\r\n") + 4);
-					theShard->inputBuffer.clear();
-					theShard->inputBuffer.insert(theShard->inputBuffer.end(), newVector.begin(), newVector.end());
-					std::string finalMessage{};
-					theShard->processedMessages.push(finalMessage);
-					this->connectionState.store(VoiceConnectionState::Collecting_Hello);
-				}
-			}
-			if (theShard->inputBuffer.size() < 4) {
-				return;
-			}
-			theShard->dataOpCode = static_cast<DiscordCoreInternal::WebSocketOpCode>(theShard->inputBuffer[0] & ~DiscordCoreInternal::webSocketFinishBit);
-			switch (theShard->dataOpCode) {
-				case DiscordCoreInternal::WebSocketOpCode::Op_Continuation:
-					[[fallthrough]];
-				case DiscordCoreInternal::WebSocketOpCode::Op_Text:
-					[[fallthrough]];
-				case DiscordCoreInternal::WebSocketOpCode::Op_Binary:
-					[[fallthrough]];
-				case DiscordCoreInternal::WebSocketOpCode::Op_Ping:
-					[[fallthrough]];
-				case DiscordCoreInternal::WebSocketOpCode::Op_Pong: {
-					uint8_t length01 = theShard->inputBuffer[1];
-					theShard->messageOffset = 2;
-					if (length01 & DiscordCoreInternal::webSocketMaskBit) {
-						return;
-					}
-					theShard->messageLength = length01;
-					if (length01 == DiscordCoreInternal::webSocketPayloadLengthMagicLarge) {
-						if (theShard->inputBuffer.size() < 8) {
-							return;
-						}
-						uint8_t length03 = theShard->inputBuffer[2];
-						uint8_t length04 = theShard->inputBuffer[3];
-						theShard->messageLength = static_cast<uint64_t>((length03 << 8) | length04);
-						theShard->messageOffset += 2;
-					} else if (length01 == DiscordCoreInternal::webSocketPayloadLengthMagicHuge) {
-						if (theShard->inputBuffer.size() < 10) {
-							return;
-						}
-						theShard->messageLength = 0;
-						for (int64_t x = 2, shift = 56; x < 10; ++x, shift -= 8) {
-							uint8_t lengthNew = static_cast<uint8_t>(theShard->inputBuffer[x]);
-							theShard->messageLength |= static_cast<uint64_t>((lengthNew & static_cast<uint64_t>(0xff)) << static_cast<uint64_t>(shift));
-						}
-						theShard->messageOffset += 8;
-					}
-					if (theShard->inputBuffer.size() < static_cast<uint64_t>(theShard->messageOffset) + static_cast<uint64_t>(theShard->messageLength)) {
-						return;
-					} else {
-						std::string finalMessage{};
-						finalMessage.insert(finalMessage.begin(), theShard->inputBuffer.begin() + theShard->messageOffset,
-							theShard->inputBuffer.begin() + theShard->messageOffset + theShard->messageLength);
-						theShard->processedMessages.push(finalMessage);
-						theShard->inputBuffer.erase(theShard->inputBuffer.begin(), theShard->inputBuffer.begin() + theShard->messageOffset + theShard->messageLength);
-						return;
-					}
-				}
-				case DiscordCoreInternal::WebSocketOpCode::Op_Close: {
-					uint16_t close = theShard->inputBuffer[2] & 0xff;
-					close <<= 8;
-					close |= theShard->inputBuffer[3] & 0xff;
-					theShard->closeCode = static_cast<DiscordCoreInternal::WebSocketCloseCode>(close);
-					theShard->inputBuffer.erase(theShard->inputBuffer.begin(), theShard->inputBuffer.begin() + 4);
-					if (this->configManager->doWePrintWebSocketErrorMessages()) {
-						std::cout << DiscordCoreAPI::shiftToBrightRed()
-								  << "Voice WebSocket " + this->sslShards[0]->shard.dump() + " Closed; Code: " << +static_cast<uint16_t>(this->sslShards[0]->closeCode)
-								  << DiscordCoreAPI::reset() << std::endl
-								  << std::endl;
-					}
-					this->onClosed();
-				}
-				default: {
-				}
-			}
-		}
+		return this->voiceConnectInitData.channelId;
 	}
 
 	std::string VoiceConnection::encryptSingleAudioFrame(const EncodedFrameData& bufferToSend) noexcept {
@@ -235,8 +109,15 @@ namespace DiscordCoreAPI {
 		this->audioDataBuffer.send(frameData);
 	}
 
-	void VoiceConnection::onMessageReceived(const std::string& theMessage) noexcept {
+	void VoiceConnection::onMessageReceived(DiscordCoreInternal::WebSocketSSLShard* theShard) noexcept {
 		try {
+			std::string theMessage{};
+			if (theShard->processedMessages.size() > 0) {
+				theMessage = theShard->processedMessages.front();
+				theShard->processedMessages.pop();
+			} else {
+				return;
+			}
 			if (this->sslShards.contains(0) && this->sslShards[0] && theMessage.size() > 0) {
 				nlohmann::json payload = payload.parse(theMessage);
 				if (this->configManager->doWePrintWebSocketSuccessMessages()) {
@@ -370,11 +251,11 @@ namespace DiscordCoreAPI {
 							return;
 						}
 						std::this_thread::sleep_for(1ms);
-					}					
+					}
+					this->activeState.store(this->lastActiveState.load());
 					this->connectInternal();
 					this->sendSpeakingMessage(false);
 					this->sendSpeakingMessage(true);
-					this->activeState.store(this->lastActiveState.load());
 				}
 				if (!stopToken.stop_requested() && this->heartbeatInterval != 0 && !this->sslShards[0]->areWeHeartBeating) {
 					this->sslShards[0]->areWeHeartBeating = true;
@@ -389,14 +270,10 @@ namespace DiscordCoreAPI {
 					DiscordCoreInternal::WebSocketSSLShard::processIO(this->sslShards, 10000);
 				}
 				if (!stopToken.stop_requested() && this->sslShards[0]->areWeStillConnected() && this->sslShards[0]->inputBuffer.size() > 0) {
-					this->parseHeadersAndMessage(this->sslShards[0].get());
+					this->parseMessage(this->sslShards[0].get());
 				}
 				if (!stopToken.stop_requested() && this->sslShards[0]->areWeStillConnected() && this->sslShards[0]->processedMessages.size() > 0) {
-					std::string theMessage = this->sslShards[0]->processedMessages.front();
-					this->sslShards[0]->processedMessages.pop();
-					if (!stopToken.stop_requested() && theMessage.size() > 0) {
-						this->onMessageReceived(theMessage);
-					}
+					this->onMessageReceived(this->sslShards[0].get());
 				}
 				std::this_thread::sleep_for(1ms);
 			}
@@ -416,12 +293,10 @@ namespace DiscordCoreAPI {
 				return false;
 			}
 			if (this->sslShards[0]->inputBuffer.size() > 0) {
-				this->parseHeadersAndMessage(this->sslShards[0].get());
+				this->parseMessage(this->sslShards[0].get());
 			}
 			if (this->sslShards[0]->processedMessages.size() > 0) {
-				std::string theMessage = this->sslShards[0]->processedMessages.front();
-				this->sslShards[0]->processedMessages.pop();
-				this->onMessageReceived(theMessage);
+				this->onMessageReceived(this->sslShards[0].get());
 				return true;
 			}
 			if (theStopWatch.hasTimePassed()) {
@@ -664,9 +539,10 @@ namespace DiscordCoreAPI {
 				this->baseShard->voiceConnectionDataBufferMap[this->voiceConnectInitData.guildId]->clearContents();
 				this->baseSocketAgent->getVoiceConnectionData(this->voiceConnectInitData, this->baseShard);
 
-				if (DiscordCoreAPI::waitForTimeToPass(this->voiceConnectionDataBuffer, this->voiceConnectionData, 20000)) {
+				if (DiscordCoreAPI::waitForTimeToPass(this->voiceConnectionDataBuffer, this->voiceConnectionData, 10000)) {
 					this->currentReconnectTries++;
 					this->onClosed();
+					std::cout << "BREAKING OUT OF COLLECTING INIT DATA" << std::endl;
 					this->connectInternal();
 					return;
 				}
@@ -684,9 +560,11 @@ namespace DiscordCoreAPI {
 					this->sslShards[0] = std::move(theClient);
 					this->currentReconnectTries++;
 					this->onClosed();
+					std::cout << "BREAKING OUT OF INIT WEBSOCKET" << std::endl;
 					this->connectInternal();
 					return;
 				}
+				theClient->theWebSocketState.store(DiscordCoreInternal::WebSocketSSLShardState::Upgrading);
 				std::string sendVector = "GET /?v=4 HTTP/1.1\r\nHost: " + this->baseUrl +
 					"\r\nPragma: no-cache\r\nUser-Agent: DiscordCoreAPI/1.0\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Key: " +
 					DiscordCoreAPI::generateBase64EncodedKey() + "\r\nSec-WebSocket-Version: 13\r\n\r\n";
@@ -696,15 +574,21 @@ namespace DiscordCoreAPI {
 				if (!this->sendMessage(sendVector, true)) {
 					this->currentReconnectTries++;
 					this->onClosed();
+					std::cout << "BREAKING OUT OF INIT WEBSOCKET 0202" << std::endl;
 					this->connectInternal();
 					return;
 				}
-				if (!this->collectAndProcessAMessage(VoiceConnectionState::Collecting_Hello)) {
+				for (uint32_t x = 0; x < 5; x++) {
+					DiscordCoreInternal::WebSocketSSLShard::processIO(this->sslShards, 10000);
+				}
+				if (!this->parseConnectionHeaders(this->sslShards[0].get())) {
 					this->currentReconnectTries++;
 					this->onClosed();
+					std::cout << "BREAKING OUT OF INIT WEBSOCKET 0303" << std::endl;
 					this->connectInternal();
 					return;
 				}
+				this->connectionState.store(VoiceConnectionState::Collecting_Hello);
 				this->connectInternal();
 				break;
 			}
@@ -712,6 +596,7 @@ namespace DiscordCoreAPI {
 				if (!this->collectAndProcessAMessage(VoiceConnectionState::Sending_Identify)) {
 					this->currentReconnectTries++;
 					this->onClosed();
+					std::cout << "BREAKING OUT OF COLELCITN HELLOE" << std::endl;
 					this->connectInternal();
 					return;
 				}
@@ -729,6 +614,7 @@ namespace DiscordCoreAPI {
 				if (!this->sendMessage(sendVector, true)) {
 					this->currentReconnectTries++;
 					this->onClosed();
+					std::cout << "BREAKING OUT OF SENDING IDENTIFY" << std::endl;
 					this->connectInternal();
 					return;
 				}
@@ -740,6 +626,7 @@ namespace DiscordCoreAPI {
 				if (!this->collectAndProcessAMessage(VoiceConnectionState::Initializing_DatagramSocket)) {
 					this->currentReconnectTries++;
 					this->onClosed();
+					std::cout << "BREAKING OUT OF COLLECTIN READYT" << std::endl;
 					this->connectInternal();
 					return;
 				}
@@ -750,6 +637,7 @@ namespace DiscordCoreAPI {
 				if (!this->voiceConnect()) {
 					this->currentReconnectTries++;
 					this->onClosed();
+					std::cout << "BREAKING OUT OF INIT DGRAMSOCKET" << std::endl;
 					this->connectInternal();
 					return;
 				}
@@ -761,6 +649,7 @@ namespace DiscordCoreAPI {
 				if (!this->collectExternalIP()) {
 					this->currentReconnectTries++;
 					this->onClosed();
+					std::cout << "BREAKING OUT OF COLELCTI G EXTERNA IP" << std::endl;
 					this->connectInternal();
 					return;
 				}
@@ -779,6 +668,7 @@ namespace DiscordCoreAPI {
 				if (!this->sendMessage(sendVector, true)) {
 					this->currentReconnectTries++;
 					this->onClosed();
+					std::cout << "BREAKING OUT OF SENDING SELECT PROTOCOL" << std::endl;
 					this->connectInternal();
 					return;
 				}
@@ -790,10 +680,13 @@ namespace DiscordCoreAPI {
 				if (!this->collectAndProcessAMessage(VoiceConnectionState::Collecting_Init_Data)) {
 					this->currentReconnectTries++;
 					this->onClosed();
+					std::cout << "BREAKING OUT OF COLECT SESSIOIN DESCRIPTION" << std::endl;
 					this->connectInternal();
 					return;
 				}
 				this->baseShard->voiceConnectionDataBufferMap[this->voiceConnectInitData.guildId]->clearContents();
+				this->activeState.store(VoiceActiveState::Playing);
+				this->connectionState.store(VoiceConnectionState::Collecting_Init_Data);
 				return;
 			}
 		}
@@ -831,6 +724,7 @@ namespace DiscordCoreAPI {
 				}
 				this->sslShards[0]->haveWeReceivedHeartbeatAck = false;
 			} else {
+				std::cout << "SENDING HEARTBEAT" << std::endl;
 				this->onClosed();
 			}
 		} catch (...) {

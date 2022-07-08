@@ -45,10 +45,10 @@ namespace DiscordCoreAPI {
 	};
 
 	/// For creating a Message. \brief For creating a Message.
-	class DiscordCoreAPI_Dll CreateMessageData : public MessageResponseBase {
+	struct DiscordCoreAPI_Dll CreateMessageData : public MessageResponseBase {
 	  public:
-		friend InputEvents;
-		friend Messages;
+		friend class InputEvents;
+		friend class Messages;
 
 		CreateMessageData(const uint64_t& channelIdNew);
 
@@ -69,9 +69,9 @@ namespace DiscordCoreAPI {
 	};
 
 	/// For sending a direct-message. \brief For sending a direct-message.
-	class DiscordCoreAPI_Dll SendDMData : public CreateMessageData {
+	struct DiscordCoreAPI_Dll SendDMData : public CreateMessageData {
 	  public:
-		friend InputEvents;
+		friend class InputEvents;
 
 		SendDMData(RespondToInputEventData dataPackage);
 
@@ -86,10 +86,10 @@ namespace DiscordCoreAPI {
 	};
 
 	/// For editing a Message. \brief For editing a Message.
-	class DiscordCoreAPI_Dll EditMessageData : public MessageResponseBase {
+	struct DiscordCoreAPI_Dll EditMessageData : public MessageResponseBase {
 	  public:
-		friend InputEvents;
-		friend Messages;
+		friend class InputEvents;
+		friend class Messages;
 
 		EditMessageData(InputEventData dataPackage);
 

@@ -261,7 +261,7 @@ namespace DiscordCoreAPI {
 	/// A discord Guild. Used to connect to/disconnect from voice. \brief A discord Guild. Used to connect to/disconnect from voice.
 	class DiscordCoreAPI_Dll Guild : public GuildData, public DataParser<Guild> {
 	  public:
-		friend Guilds;
+		friend class Guilds;
 
 		DefaultMessageNotificationLevel defaultMessageNotifications{};///< Default Message notification level.
 		GuildNSFWLevel nsfwLevel{ GuildNSFWLevel::Default };///< NSFW warning level.
@@ -270,23 +270,23 @@ namespace DiscordCoreAPI {
 		int32_t premiumSubscriptionCount{ 0 };///< Premium subscription count.
 		int32_t approximatePresenceCount{ 0 };///< Approximate quantity of presences.
 		VerificationLevel verificationLevel{};///< Verification level required.
-		std::string publicUpdatesChannelId{};///< Id of the public updates Channel.
 		int32_t approximateMemberCount{ 0 };///< Approximate member count.
+		Snowflake publicUpdatesChannelId{};///< Id of the public updates Channel.
 		WelcomeScreenData welcomeScreen{};///< Welcome screen for the Guild.
-		int32_t maxVideoChannelUsers{ 0 };///< Maximum quantity of users per video Channel.
+		int32_t maxVideoChannelUsers{ 0 };///< Maximum quantity of users per video Channe
 		AfkTimeOutDurations afkTimeOut{};///< Time for an individual to time out as afk.
 		std::string discoverySplash{};///< Link to the discovery image's splash.
 		std::string preferredLocale{};///< Preferred locale, for voice chat servers.
 		Snowflake widgetChannelId{};///< Channel id for the Guild's widget.
 		Snowflake systemChannelId{};///< Channel id for the Guild's system Channel.
-		Snowflake rulesChannelId{};///< Channel id for the Guild's rules Channel.
 		std::string vanityUrlCode{};///< Vanity Url code, if applicable.
+		Snowflake rulesChannelId{};///< Channel id for the Guild's rules Channel.
 		Snowflake applicationId{};///< The current application id.
-		Snowflake afkChannelId{};///< Channel if of the "afk" Channel.
 		std::string description{};///< Description of the Guild.
 		Permissions permissions{};///< Current Permissions for the bot in the Guild.
 		PremiumTier premiumTier{};///< What is the premium tier?
 		int32_t maxPresences{ 0 };///< Max number of presences allowed.
+		Snowflake afkChannelId{};///< Channel if of the "afk" Channel.
 		int32_t maxMembers{ 0 };///< Max quantity of members.
 		std::string iconHash{};///< Url to the Guild's icon.
 		std::string region{};///< Region of the world where the Guild's servers are.
@@ -342,20 +342,20 @@ namespace DiscordCoreAPI {
 		bool premiumProgressBarEnabled{ false };///< Whether or not the progress bar is enabled.
 		std::vector<uint8_t> discoverySplash{};/// Base64 16 : 9 png / jpeg image for the Guild discovery splash(when the server has the DISCOVERABLE feature).
 		VerificationLevel verificationLevel{};///< Verification level.
-		std::string publicUpdatesChannelId{};///< The id of the Channel where admins and moderators of Community guilds receive notices from Discord.
 		std::vector<std::string> features{};///< Array of Guild feature strings enabled Guild features.
+		Snowflake publicUpdatesChannelId{};///< The id of the Channel where admins and moderators of Community guilds receive notices from Discord.
 		AfkTimeOutDurations afkTimeout{};///< Afk timeout in seconds.
 		std::vector<uint8_t> banner{};///< Base64 16 : 9 png / jpeg image for the Guild banner (when the server has the BANNER feature).
 		std::vector<uint8_t> splash{};///< Base64 16 : 9 png / jpeg image for the Guild splash (when the server has the INVITE_SPLASH feature).
 		std::string preferredLocale{};///< The preferred locale of a Community Guild used in server discovery and notices from Discord; defaults to "en-US".
 		Snowflake systemChannelId{};///< The id of the Channel where Guild notices such as welcome messages and boost events are posted.
-		Snowflake rulesChannelId{};///< The id of the Channel where Community guilds display rules and /or guidelines.
 		std::vector<uint8_t> icon{};///< Base64 1024x1024 png / jpeg / gif image for the Guild icon (can be animated gif when the server has the ANIMATED_ICON).
-		Snowflake afkChannelId{};///< Id for afk channels.
+		Snowflake rulesChannelId{};///< The id of the Channel where Community guilds display rules and /or guidelines.
 		std::string description{};///< The description for the Guild, if the Guild is discoverable.
-		Snowflake ownerId{};///< User id to transfer Guild ownership to (must be owner).
-		Snowflake guildId{};///< Id of the chosen Guild to modify.
+		Snowflake afkChannelId{};///< Id for afk channels.
 		std::string reason{};///< Reason for modifying the Guild.
+		Snowflake ownerId{};///< User id to transfer Guild ownership to (must be owner).
+		Snowflake guildId{};///< Id of the chosen Guild to modify.		
 		std::string name{};///< Desired name of the Guild.
 
 		ModifyGuildData(Guild dataPackage);
@@ -374,8 +374,8 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll Guilds {
 	  public:
 		friend class DiscordCoreInternal::BaseSocketAgent;
-		friend DiscordCoreClient;
-		friend EventHandler;
+		friend class DiscordCoreClient;
+		friend class EventHandler;
 
 		static void initialize(DiscordCoreInternal::HttpsClient* theClient, DiscordCoreClient* discordCoreClientNew, ConfigManager* configManager);
 
