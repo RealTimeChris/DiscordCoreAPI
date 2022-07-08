@@ -34,7 +34,6 @@ namespace DiscordCoreInternal {
 		if (theOpCode == WebSocketOpCode::Op_Binary) {
 			theVector = this->erlPacker.parseJsonToEtf(dataToSend);
 		} else {
-			std::cout << "THE DUMP: " << dataToSend << std::endl;
 			theVector = dataToSend.dump();
 		}
 		this->createHeader(header, theVector.size(), theOpCode);
