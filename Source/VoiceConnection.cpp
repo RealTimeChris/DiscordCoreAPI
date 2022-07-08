@@ -501,7 +501,6 @@ namespace DiscordCoreAPI {
 				if (DiscordCoreAPI::waitForTimeToPass(this->voiceConnectionDataBuffer, this->voiceConnectionData, 10000)) {
 					this->currentReconnectTries++;
 					this->onClosed();
-					std::cout << "BREAKING OUT OF COLLECTING INIT DATA" << std::endl;
 					this->connectInternal();
 					return;
 				}
@@ -519,7 +518,6 @@ namespace DiscordCoreAPI {
 					this->sslShards[0] = std::move(theClient);
 					this->currentReconnectTries++;
 					this->onClosed();
-					std::cout << "BREAKING OUT OF INIT WEBSOCKET" << std::endl;
 					this->connectInternal();
 					return;
 				}
@@ -533,7 +531,6 @@ namespace DiscordCoreAPI {
 				if (!this->sendMessage(sendVector, true)) {
 					this->currentReconnectTries++;
 					this->onClosed();
-					std::cout << "BREAKING OUT OF INIT WEBSOCKET 0202" << std::endl;
 					this->connectInternal();
 					return;
 				}
@@ -543,7 +540,6 @@ namespace DiscordCoreAPI {
 				if (!this->parseConnectionHeaders(this->sslShards[0].get())) {
 					this->currentReconnectTries++;
 					this->onClosed();
-					std::cout << "BREAKING OUT OF INIT WEBSOCKET 0303" << std::endl;
 					this->connectInternal();
 					return;
 				}
@@ -555,7 +551,6 @@ namespace DiscordCoreAPI {
 				if (!this->collectAndProcessAMessage(VoiceConnectionState::Sending_Identify)) {
 					this->currentReconnectTries++;
 					this->onClosed();
-					std::cout << "BREAKING OUT OF COLELCITN HELLOE" << std::endl;
 					this->connectInternal();
 					return;
 				}
@@ -573,7 +568,6 @@ namespace DiscordCoreAPI {
 				if (!this->sendMessage(sendVector, true)) {
 					this->currentReconnectTries++;
 					this->onClosed();
-					std::cout << "BREAKING OUT OF SENDING IDENTIFY" << std::endl;
 					this->connectInternal();
 					return;
 				}
@@ -585,7 +579,6 @@ namespace DiscordCoreAPI {
 				if (!this->collectAndProcessAMessage(VoiceConnectionState::Initializing_DatagramSocket)) {
 					this->currentReconnectTries++;
 					this->onClosed();
-					std::cout << "BREAKING OUT OF COLLECTIN READYT" << std::endl;
 					this->connectInternal();
 					return;
 				}
@@ -596,7 +589,6 @@ namespace DiscordCoreAPI {
 				if (!this->voiceConnect()) {
 					this->currentReconnectTries++;
 					this->onClosed();
-					std::cout << "BREAKING OUT OF INIT DGRAMSOCKET" << std::endl;
 					this->connectInternal();
 					return;
 				}
@@ -615,7 +607,6 @@ namespace DiscordCoreAPI {
 				if (!this->sendMessage(sendVector, true)) {
 					this->currentReconnectTries++;
 					this->onClosed();
-					std::cout << "BREAKING OUT OF SENDING SELECT PROTOCOL" << std::endl;
 					this->connectInternal();
 					return;
 				}
@@ -627,7 +618,6 @@ namespace DiscordCoreAPI {
 				if (!this->collectAndProcessAMessage(VoiceConnectionState::Collecting_Init_Data)) {
 					this->currentReconnectTries++;
 					this->onClosed();
-					std::cout << "BREAKING OUT OF COLECT SESSIOIN DESCRIPTION" << std::endl;
 					this->connectInternal();
 					return;
 				}
@@ -670,7 +660,6 @@ namespace DiscordCoreAPI {
 				}
 				this->sslShards[0]->haveWeReceivedHeartbeatAck = false;
 			} else {
-				std::cout << "SENDING HEARTBEAT" << std::endl;
 				this->onClosed();
 			}
 		} catch (...) {
@@ -723,7 +712,6 @@ namespace DiscordCoreAPI {
 					this->voiceConnectionData.externalIp = message;
 					this->areWeConnectedBool.store(true);
 					this->voiceConnectionDataBuffer.clearContents();
-					std::cout << "THE ADDRESS: " << this->voiceConnectionData.externalIp << std::endl;
 					return true;
 				}
 			} else {
