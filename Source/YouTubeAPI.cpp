@@ -100,7 +100,7 @@ namespace DiscordCoreInternal {
 			DiscordCoreAPI::YouTubeFormatVector theVector{ jsonObject };
 			DiscordCoreAPI::YouTubeFormat format{};
 			bool isOpusFound{ false };
-			for (auto& value: theVector.theFormats) {
+			for (auto& value: static_cast<std::vector<DiscordCoreAPI::YouTubeFormat>>(theVector)) {
 				if (value.mimeType.find("opus") != std::string::npos) {
 					if (value.audioQuality == "AUDIO_QUALITY_LOW") {
 						isOpusFound = true;

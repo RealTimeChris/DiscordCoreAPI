@@ -395,7 +395,8 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "?with_counts=true";
 		workload.callStack = "Guilds::getGuildAsync()";
-		auto guildNew = Guilds::httpsClient->submitWorkloadAndGetResult<Guild>(workload);
+		Guild guildNew = Guilds::getCachedGuildAsync({ .guildId = dataPackage.guildId }).get();
+		guildNew = Guilds::httpsClient->submitWorkloadAndGetResult<Guild>(workload);
 		guildNew.discordCoreClient = Guilds::discordCoreClient;
 		co_return guildNew;
 	}
@@ -432,7 +433,8 @@ namespace DiscordCoreAPI {
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
-		auto guildNew = Guilds::httpsClient->submitWorkloadAndGetResult<Guild>(workload);
+		Guild guildNew = Guilds::getCachedGuildAsync({ .guildId = dataPackage.guildId }).get();
+		guildNew = Guilds::httpsClient->submitWorkloadAndGetResult<Guild>(workload);
 		guildNew.discordCoreClient = Guilds::discordCoreClient;
 		co_return guildNew;
 	}

@@ -3584,78 +3584,30 @@ namespace DiscordCoreAPI {
 		}
 	}
 
+	void MessageCommandInteractionData::parseObject(const nlohmann::json& jsonObjectData, MessageCommandInteractionData* pDataStructure) {
+		if (jsonObjectData.contains("target_id") && !jsonObjectData["target_id"].is_null()) {
+			pDataStructure->targetId = jsonObjectData["target_id"].get<std::string>();
+		}
+	}
+
+	void ComponentInteractionData::parseObject(const nlohmann::json& jsonObjectData, ComponentInteractionData* pDataStructure) {
+		if (jsonObjectData.contains("values") && !jsonObjectData["values"].is_null()) {
+			pDataStructure->values.clear();
+			for (auto& value: jsonObjectData["values"]) {
+				pDataStructure->values.push_back(value);
+			}
+		}
+
+		if (jsonObjectData.contains("custom_id") && !jsonObjectData["custom_id"].is_null()) {
+			pDataStructure->customId = jsonObjectData["custom_id"].get<std::string>();
+		}
+
+		if (jsonObjectData.contains("component_type") && !jsonObjectData["component_type"].is_null()) {
+			pDataStructure->componentType = jsonObjectData["component_type"].get<ComponentType>();
+		}
+	}
+
 	/*
-
-	/// Message command interacction data. \brief Message command interacction data.
-	struct DiscordCoreAPI_Dll MessageCommandInteractionData : public DataParser<MessageCommandInteractionData> {
-		std::string targetId{};///< The target Message's id.
-
-		MessageCommandInteractionData() = default;
-
-		MessageCommandInteractionData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
-
-		MessageCommandInteractionData(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
-
-		virtual ~MessageCommandInteractionData() = default;
-
-	  protected:
-		void parseObject(const nlohmann::json& jsonObjectData, MessageCommandInteractionData* pDataStructure) {
-			if (jsonObjectData.contains("target_id") && !jsonObjectData["target_id"].is_null()) {
-				pDataStructure->targetId = jsonObjectData["target_id"].get<std::string>();
-			}
-		}
-	};
-
-	/// Component types. \brief Component types.
-	enum class ComponentType : int8_t {
-		ActionRow = 1,///< A container for other components.
-		Button = 2,///< A button object.
-		SelectMenu = 3,///< A select menu for picking from choices.
-		TextInput = 4///< A text input object
-	};
-
-	/// Component Interaction data. \brief Component Interaction data.
-	struct DiscordCoreAPI_Dll ComponentInteractionData : public DataParser<ComponentInteractionData> {
-		std::vector<std::string> values{};///< The values of the components.
-		ComponentType componentType{};///< The type of component.
-		std::string customId{};///< The custom id of the Interaction entity.
-
-		ComponentInteractionData() = default;
-
-		ComponentInteractionData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
-
-		ComponentInteractionData(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
-
-		virtual ~ComponentInteractionData() = default;
-
-	  protected:
-		void parseObject(const nlohmann::json& jsonObjectData, ComponentInteractionData* pDataStructure) {
-			if (jsonObjectData.contains("values") && !jsonObjectData["values"].is_null()) {
-				pDataStructure->values.clear();
-				for (auto& value: jsonObjectData["values"]) {
-					pDataStructure->values.push_back(value);
-				}
-			}
-
-			if (jsonObjectData.contains("custom_id") && !jsonObjectData["custom_id"].is_null()) {
-				pDataStructure->customId = jsonObjectData["custom_id"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("component_type") && !jsonObjectData["component_type"].is_null()) {
-				pDataStructure->componentType = jsonObjectData["component_type"].get<ComponentType>();
-			}
-		}
-	};
 
 	/// Modal interaction data, for inputs from text modals. \brief Modal interaction data, for inputs from text modals.
 	struct DiscordCoreAPI_Dll ModalInteractionData : public DataParser<ModalInteractionData> {

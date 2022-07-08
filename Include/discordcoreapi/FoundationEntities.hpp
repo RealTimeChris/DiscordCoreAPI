@@ -2595,23 +2595,14 @@ namespace DiscordCoreAPI {
 
 		MessageCommandInteractionData() = default;
 
-		MessageCommandInteractionData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
+		MessageCommandInteractionData& operator=(const nlohmann::json& jsonObjectData);
 
-		MessageCommandInteractionData(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
+		MessageCommandInteractionData(const nlohmann::json& jsonObjectData);
 
 		virtual ~MessageCommandInteractionData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json& jsonObjectData, MessageCommandInteractionData* pDataStructure) {
-			if (jsonObjectData.contains("target_id") && !jsonObjectData["target_id"].is_null()) {
-				pDataStructure->targetId = jsonObjectData["target_id"].get<std::string>();
-			}
-		}
+		void parseObject(const nlohmann::json& jsonObjectData, MessageCommandInteractionData* pDataStructure);
 	};
 
 	/// Component types. \brief Component types.
@@ -2630,34 +2621,15 @@ namespace DiscordCoreAPI {
 
 		ComponentInteractionData() = default;
 
-		ComponentInteractionData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
+		ComponentInteractionData& operator=(const nlohmann::json& jsonObjectData);
 
-		ComponentInteractionData(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
+		ComponentInteractionData(const nlohmann::json& jsonObjectData);
 
 		virtual ~ComponentInteractionData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json& jsonObjectData, ComponentInteractionData* pDataStructure) {
-			if (jsonObjectData.contains("values") && !jsonObjectData["values"].is_null()) {
-				pDataStructure->values.clear();
-				for (auto& value: jsonObjectData["values"]) {
-					pDataStructure->values.push_back(value);
-				}
-			}
-
-			if (jsonObjectData.contains("custom_id") && !jsonObjectData["custom_id"].is_null()) {
-				pDataStructure->customId = jsonObjectData["custom_id"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("component_type") && !jsonObjectData["component_type"].is_null()) {
-				pDataStructure->componentType = jsonObjectData["component_type"].get<ComponentType>();
-			}
-		}
+		void parseObject(const nlohmann::json& jsonObjectData, ComponentInteractionData* pDataStructure);
+		
 	};
 
 	/// Modal interaction data, for inputs from text modals. \brief Modal interaction data, for inputs from text modals.
@@ -5243,11 +5215,7 @@ namespace DiscordCoreAPI {
 
 		BaseFunctionArguments() = default;
 
-		BaseFunctionArguments(CommandData commandData, DiscordCoreClient* discordCoreClientNew) {
-			this->discordCoreClient = discordCoreClientNew;
-			this->eventData = commandData.eventData;
-			this->commandData = commandData;
-		}
+		BaseFunctionArguments(CommandData commandData, DiscordCoreClient* discordCoreClientNew);
 
 		virtual ~BaseFunctionArguments() = default;
 	};
