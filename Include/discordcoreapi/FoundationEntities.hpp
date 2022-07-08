@@ -332,9 +332,11 @@ namespace DiscordCoreInternal {
 
 		HttpsWorkloadData(HttpsWorkloadData& other);
 
-		HttpsWorkloadData() = default;
+		HttpsWorkloadData(DiscordCoreInternal::HttpsWorkloadType theType);
 
+	protected:
 		static int64_t incrementAndGetWorkloadId(HttpsWorkloadType workloadType);
+
 	};
 }
 

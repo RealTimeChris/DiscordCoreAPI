@@ -410,8 +410,7 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<Message> Interactions::createInteractionResponseAsync(CreateInteractionResponseData dataPackage) {
-		DiscordCoreInternal::HttpsWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::incrementAndGetWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Post_Interaction_Response);
+		DiscordCoreInternal::HttpsWorkloadData workload{};HttpsWorkloadType::Post_Interaction_Response);
 		co_await NewThreadAwaitable<Message>();
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Post_Interaction_Response;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
@@ -436,8 +435,7 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<Message> Interactions::getInteractionResponseAsync(GetInteractionResponseData dataPackage) {
-		DiscordCoreInternal::HttpsWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::incrementAndGetWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Get_Interaction_Response);
+		DiscordCoreInternal::HttpsWorkloadData workload{};HttpsWorkloadType::Get_Interaction_Response);
 		co_await NewThreadAwaitable<Message>();
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Get_Interaction_Response;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
@@ -447,8 +445,7 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<Message> Interactions::editInteractionResponseAsync(EditInteractionResponseData dataPackage) {
-		DiscordCoreInternal::HttpsWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::incrementAndGetWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Patch_Interaction_Response);
+		DiscordCoreInternal::HttpsWorkloadData workload{};HttpsWorkloadType::Patch_Interaction_Response);
 		co_await NewThreadAwaitable<Message>();
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Patch_Interaction_Response;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
@@ -465,8 +462,7 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<void> Interactions::deleteInteractionResponseAsync(DeleteInteractionResponseData dataPackage) {
-		DiscordCoreInternal::HttpsWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::incrementAndGetWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Delete_Interaction_Response);
+		DiscordCoreInternal::HttpsWorkloadData workload{};HttpsWorkloadType::Delete_Interaction_Response);
 		co_await NewThreadAwaitable<void>();
 		std::this_thread::sleep_for(std::chrono::milliseconds{ dataPackage.timeDelay });
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Delete_Interaction_Response;
@@ -478,8 +474,7 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<Message> Interactions::createFollowUpMessageAsync(CreateFollowUpMessageData dataPackage) {
-		DiscordCoreInternal::HttpsWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::incrementAndGetWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Post_Followup_Message);
+		DiscordCoreInternal::HttpsWorkloadData workload{};HttpsWorkloadType::Post_Followup_Message);
 		co_await NewThreadAwaitable<Message>();
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Post_Followup_Message;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
@@ -495,8 +490,7 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<Message> Interactions::getFollowUpMessageAsync(GetFollowUpMessageData dataPackage) {
-		DiscordCoreInternal::HttpsWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::incrementAndGetWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Get_Followup_Message);
+		DiscordCoreInternal::HttpsWorkloadData workload{};HttpsWorkloadType::Get_Followup_Message);
 		co_await NewThreadAwaitable<Message>();
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Get_Followup_Message;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
@@ -507,8 +501,7 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<Message> Interactions::editFollowUpMessageAsync(EditFollowUpMessageData dataPackage) {
-		DiscordCoreInternal::HttpsWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::incrementAndGetWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Patch_Followup_Message);
+		DiscordCoreInternal::HttpsWorkloadData workload{};HttpsWorkloadType::Patch_Followup_Message);
 		co_await NewThreadAwaitable<Message>();
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Patch_Followup_Message;
 		;
@@ -526,8 +519,7 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<void> Interactions::deleteFollowUpMessageAsync(DeleteFollowUpMessageData dataPackage) {
-		DiscordCoreInternal::HttpsWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::incrementAndGetWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Delete_Followup_Message);
+		DiscordCoreInternal::HttpsWorkloadData workload{};HttpsWorkloadType::Delete_Followup_Message);
 		co_await NewThreadAwaitable<void>();
 		std::this_thread::sleep_for(std::chrono::milliseconds{ dataPackage.timeDelay });
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Delete_Followup_Message;

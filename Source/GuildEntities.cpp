@@ -330,8 +330,7 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<AuditLogData> Guilds::getGuildAuditLogsAsync(GetGuildAuditLogsData dataPackage) {
-		DiscordCoreInternal::HttpsWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::incrementAndGetWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Audit_Logs);
+		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Audit_Logs };
 		co_await NewThreadAwaitable<AuditLogData>();
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Audit_Logs;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
@@ -368,8 +367,7 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<Guild> Guilds::createGuildAsync(CreateGuildData dataPackage) {
-		DiscordCoreInternal::HttpsWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::incrementAndGetWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Post_Guild);
+		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Post_Guild };
 		co_await NewThreadAwaitable<Guild>();
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Post_Guild;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
@@ -394,8 +392,7 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<Guild> Guilds::getGuildAsync(GetGuildData dataPackage) {
-		DiscordCoreInternal::HttpsWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::incrementAndGetWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Get_Guild);
+		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Guild };
 		co_await NewThreadAwaitable<Guild>();
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Get_Guild;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
@@ -420,8 +417,7 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<GuildPreviewData> Guilds::getGuildPreviewAsync(GetGuildPreviewData dataPackage) {
-		DiscordCoreInternal::HttpsWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::incrementAndGetWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Preview);
+		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Preview };
 		co_await NewThreadAwaitable<GuildPreviewData>();
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Preview;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
@@ -431,8 +427,7 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<Guild> Guilds::modifyGuildAsync(ModifyGuildData dataPackage) {
-		DiscordCoreInternal::HttpsWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::incrementAndGetWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Patch_Guild);
+		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Patch_Guild };
 		co_await NewThreadAwaitable<Guild>();
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Patch_Guild;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
@@ -448,8 +443,7 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<void> Guilds::deleteGuildAsync(DeleteGuildData dataPackage) {
-		DiscordCoreInternal::HttpsWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::incrementAndGetWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Delete_Guild);
+		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Delete_Guild };
 		co_await NewThreadAwaitable<void>();
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Delete_Guild;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Delete;
@@ -459,8 +453,7 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<std::vector<BanData>> Guilds::getGuildBansAsync(GetGuildBansData dataPackage) {
-		DiscordCoreInternal::HttpsWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::incrementAndGetWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Bans);
+		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Bans };
 		co_await NewThreadAwaitable<std::vector<BanData>>();
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Bans;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
@@ -486,8 +479,7 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<BanData> Guilds::getGuildBanAsync(GetGuildBanData dataPackage) {
-		DiscordCoreInternal::HttpsWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::incrementAndGetWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Ban);
+		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Ban };
 		co_await NewThreadAwaitable<BanData>();
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Ban;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
@@ -497,8 +489,7 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<void> Guilds::createGuildBanAsync(CreateGuildBanData dataPackage) {
-		DiscordCoreInternal::HttpsWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::incrementAndGetWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Put_Guild_Ban);
+		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Put_Guild_Ban };
 		co_await NewThreadAwaitable<void>();
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Put_Guild_Ban;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Put;
@@ -512,8 +503,7 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<void> Guilds::removeGuildBanAsync(RemoveGuildBanData dataPackage) {
-		DiscordCoreInternal::HttpsWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::incrementAndGetWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Delete_Guild_Ban);
+		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Delete_Guild_Ban };
 		co_await NewThreadAwaitable<void>();
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Delete_Guild_Ban;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Delete;
@@ -526,8 +516,7 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<GuildPruneCountData> Guilds::getGuildPruneCountAsync(GetGuildPruneCountData dataPackage) {
-		DiscordCoreInternal::HttpsWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::incrementAndGetWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Prune_Count);
+		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Prune_Count };
 		co_await NewThreadAwaitable<GuildPruneCountData>();
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Prune_Count;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
@@ -557,8 +546,7 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<GuildPruneCountData> Guilds::beginGuildPruneAsync(BeginGuildPruneData dataPackage) {
-		DiscordCoreInternal::HttpsWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::incrementAndGetWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Post_Guild_Prune);
+		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Post_Guild_Prune };
 		co_await NewThreadAwaitable<GuildPruneCountData>();
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Post_Guild_Prune;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
@@ -572,8 +560,7 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<std::vector<VoiceRegionData>> Guilds::getGuildVoiceRegionsAsync(GetGuildVoiceRegionsData dataPackage) {
-		DiscordCoreInternal::HttpsWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::incrementAndGetWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Voice_Regions);
+		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Voice_Regions };
 		co_await NewThreadAwaitable<std::vector<VoiceRegionData>>();
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Voice_Regions;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
@@ -583,8 +570,7 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<std::vector<InviteData>> Guilds::getGuildInvitesAsync(GetGuildInvitesData dataPackage) {
-		DiscordCoreInternal::HttpsWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::incrementAndGetWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Invites);
+		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Invites };
 		co_await NewThreadAwaitable<std::vector<InviteData>>();
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Invites;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
@@ -594,8 +580,7 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<std::vector<IntegrationData>> Guilds::getGuildIntegrationsAsync(GetGuildIntegrationsData dataPackage) {
-		DiscordCoreInternal::HttpsWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::incrementAndGetWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Integrations);
+		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Integrations };
 		co_await NewThreadAwaitable<std::vector<IntegrationData>>();
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Integrations;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
@@ -605,8 +590,7 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<void> Guilds::deleteGuildIntegrationAsync(DeleteGuildIntegrationData dataPackage) {
-		DiscordCoreInternal::HttpsWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::incrementAndGetWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Delete_Guild_Integration);
+		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Delete_Guild_Integration };
 		co_await NewThreadAwaitable<void>();
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Delete_Guild_Integration;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Delete;
@@ -619,8 +603,7 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<GuildWidgetData> Guilds::getGuildWidgetSettingsAsync(GetGuildWidgetSettingsData dataPackage) {
-		DiscordCoreInternal::HttpsWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::incrementAndGetWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Widget_Settings);
+		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Widget_Settings };
 		co_await NewThreadAwaitable<GuildWidgetData>();
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Widget_Settings;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
@@ -630,8 +613,7 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<GuildWidgetData> Guilds::modifyGuildWidgetAsync(ModifyGuildWidgetData dataPackage) {
-		DiscordCoreInternal::HttpsWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::incrementAndGetWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Patch_Guild_Widget);
+		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Patch_Guild_Widget };
 		co_await NewThreadAwaitable<GuildWidgetData>();
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Patch_Guild_Widget;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
@@ -646,8 +628,7 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<GuildWidgetData> Guilds::getGuildWidgetAsync(GetGuildWidgetData dataPackage) {
-		DiscordCoreInternal::HttpsWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::incrementAndGetWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Widget);
+		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Widget };
 		co_await NewThreadAwaitable<GuildWidgetData>();
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Widget;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
@@ -657,8 +638,7 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<InviteData> Guilds::getGuildVanityInviteAsync(GetGuildVanityInviteData dataPackage) {
-		DiscordCoreInternal::HttpsWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::incrementAndGetWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Get_Vanity_Invite);
+		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Vanity_Invite };
 		co_await NewThreadAwaitable<InviteData>();
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Get_Vanity_Invite;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
@@ -668,8 +648,7 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<GuildWidgetImageData> Guilds::getGuildWidgetImageAsync(GetGuildWidgetImageData dataPackage) {
-		DiscordCoreInternal::HttpsWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::incrementAndGetWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Widget_Image);
+		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Widget_Image };
 		co_await NewThreadAwaitable<GuildWidgetImageData>();
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Widget_Image;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
@@ -701,8 +680,7 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<WelcomeScreenData> Guilds::getGuildWelcomeScreenAsync(GetGuildWelcomeScreenData dataPackage) {
-		DiscordCoreInternal::HttpsWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::incrementAndGetWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Welcome_Screen);
+		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Welcome_Screen };
 		co_await NewThreadAwaitable<WelcomeScreenData>();
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Welcome_Screen;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
@@ -712,8 +690,7 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<WelcomeScreenData> Guilds::modifyGuildWelcomeScreenAsync(ModifyGuildWelcomeScreenData dataPackage) {
-		DiscordCoreInternal::HttpsWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::incrementAndGetWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Patch_Guild_Welcome_Screen);
+		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Patch_Guild_Welcome_Screen };
 		co_await NewThreadAwaitable<WelcomeScreenData>();
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Patch_Guild_Welcome_Screen;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
@@ -727,8 +704,7 @@ namespace DiscordCoreAPI {
 	};
 
 	CoRoutine<GuildTemplateData> Guilds::getGuildTemplateAsync(GetGuildTemplateData dataPackage) {
-		DiscordCoreInternal::HttpsWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::incrementAndGetWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Template);
+		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Template };
 		co_await NewThreadAwaitable<GuildTemplateData>();
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Template;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
@@ -738,8 +714,7 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<Guild> Guilds::createGuildFromGuildTemplateAsync(CreateGuildFromGuildTemplateData dataPackage) {
-		DiscordCoreInternal::HttpsWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::incrementAndGetWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Post_Guild_From_Guild_Template);
+		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Post_Guild_From_Guild_Template };
 		co_await NewThreadAwaitable<Guild>();
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Post_Guild_From_Guild_Template;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
@@ -753,8 +728,7 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<std::vector<GuildTemplateData>> Guilds::getGuildTemplatesAsync(GetGuildTemplatesData dataPackage) {
-		DiscordCoreInternal::HttpsWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::incrementAndGetWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Templates);
+		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Templates };
 		co_await NewThreadAwaitable<std::vector<GuildTemplateData>>();
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Templates;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
@@ -764,8 +738,7 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<GuildTemplateData> Guilds::createGuildTemplateAsync(CreateGuildTemplateData dataPackage) {
-		DiscordCoreInternal::HttpsWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::incrementAndGetWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Post_Guild_Template);
+		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Post_Guild_Template };
 		co_await NewThreadAwaitable<GuildTemplateData>();
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Post_Guild_Template;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
@@ -777,8 +750,7 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<GuildTemplateData> Guilds::syncGuildTemplateAsync(SyncGuildTemplateData dataPackage) {
-		DiscordCoreInternal::HttpsWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::incrementAndGetWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Put_Guild_Template);
+		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Put_Guild_Template };
 		co_await NewThreadAwaitable<GuildTemplateData>();
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Put_Guild_Template;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Put;
@@ -788,8 +760,7 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<GuildTemplateData> Guilds::modifyGuildTemplateAsync(ModifyGuildTemplateData dataPackage) {
-		DiscordCoreInternal::HttpsWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::incrementAndGetWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Patch_Guild_Template);
+		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Patch_Guild_Template };
 		co_await NewThreadAwaitable<GuildTemplateData>();
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Patch_Guild_Template;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
@@ -801,8 +772,7 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<void> Guilds::deleteGuildTemplateAsync(DeleteGuildTemplateData dataPackage) {
-		DiscordCoreInternal::HttpsWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::incrementAndGetWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Delete_Guild_Template);
+		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Delete_Guild_Template };
 		co_await NewThreadAwaitable<void>();
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Delete_Guild_Template;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Delete;
@@ -812,8 +782,7 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<InviteData> Guilds::getInviteAsync(GetInviteData dataPackage) {
-		DiscordCoreInternal::HttpsWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::incrementAndGetWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Get_Invite);
+		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Invite };
 		co_await NewThreadAwaitable<InviteData>();
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Get_Invite;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
@@ -840,8 +809,7 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<void> Guilds::deleteInviteAsync(DeleteInviteData dataPackage) {
-		DiscordCoreInternal::HttpsWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::incrementAndGetWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Delete_Invite);
+		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Delete_Invite };
 		co_await NewThreadAwaitable<void>();
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Delete_Invite;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Delete;
@@ -854,8 +822,7 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<std::vector<Guild>> Guilds::getCurrentUserGuildsAsync(GetCurrentUserGuildsData dataPackage) {
-		DiscordCoreInternal::HttpsWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::incrementAndGetWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Get_Current_User_Guilds);
+		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Current_User_Guilds };
 		co_await NewThreadAwaitable<std::vector<Guild>>();
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Get_Current_User_Guilds;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
@@ -885,8 +852,7 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<void> Guilds::leaveGuildAsync(LeaveGuildData dataPackage) {
-		DiscordCoreInternal::HttpsWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::incrementAndGetWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Delete_Leave_Guild);
+		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Delete_Leave_Guild };
 		co_await NewThreadAwaitable<void>();
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Delete_Leave_Guild;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Delete;
