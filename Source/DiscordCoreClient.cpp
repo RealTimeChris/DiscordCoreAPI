@@ -116,6 +116,14 @@ namespace DiscordCoreAPI {
 		this->commandController.registerFunction(functionNames, std::move(baseFunction));
 	}
 
+	CommandController& DiscordCoreClient::getCommandController() {
+		return this->commandController;
+	}
+
+	EventManager& DiscordCoreClient::getEventManager() {
+		return this->eventManager;
+	}
+
 	BotUser DiscordCoreClient::getBotUser() {
 		return this->currentUser;
 	}

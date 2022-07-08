@@ -71,15 +71,12 @@ namespace DiscordCoreAPI {
 	 * \addtogroup main_endpoints
 	 * @{
 	 */
-	/// DiscordCoreClient - The main class DiscordCoreAPI_Dll for this library. \brief DiscordCoreClient - The main class DiscordCoreAPI_Dll for this library.
+	/// DiscordCoreClient - The main class for this library. \brief DiscordCoreClient - The main class for this library.
 	class DiscordCoreAPI_Dll DiscordCoreClient {
 	  public:
 		friend class DiscordCoreInternal::BaseSocketAgent;
 		friend class GuildData;
 		friend class Guilds;
-
-		CommandController commandController{ this };///< A command controller.
-		EventManager eventManager{};///< An EventManager.
 
 		/// DiscordCoreClient constructor. \brief DiscordCoreClient constructor.
 		/// \param configData A DiscordCoreClientConfig structure to select various library options.
@@ -89,6 +86,14 @@ namespace DiscordCoreAPI {
 		/// \param functionNames A vector containing the possible names for activating this command/function.
 		/// \param baseFunction A unique_ptr to the command to be registered.
 		void registerFunction(const std::vector<std::string>& functionNames, std::unique_ptr<BaseFunction> baseFunction);
+
+		/// For collecting a reference to the CommandController. \brief For collecting a reference to the CommandController.
+		/// \returns CommandController& A reference to the CommandController.
+		CommandController& getCommandController();
+
+		/// For collecting a reference to the EventManager. \brief For collecting a reference to the EventManager.
+		/// \returns EventManager& A reference to the EventManager.
+		EventManager& getEventManager();
 
 		/// For collecting a copy of the current bot's User. \brief For collecting a copy of the current bot's User.
 		/// \returns BotUser An instance of BotUser.
@@ -101,15 +106,19 @@ namespace DiscordCoreAPI {
 
 	  protected:
 		std::unordered_map<std::string, std::unique_ptr<DiscordCoreInternal::BaseSocketAgent>> baseSocketAgentMap{};
+
+
+		
 		std::unique_ptr<DiscordCoreInternal::HttpsClient> httpsClient{ nullptr };
 		StopWatch<std::chrono::milliseconds> theStopWatch{ 5100ms };
 		DiscordCoreInternal::CommandThreadPool commandThreadPool{};
 #ifdef _WIN32
 		DiscordCoreInternal::WSADataWrapper theWSAData{};
 #endif
-
+		CommandController commandController{ this };
 		std::vector<std::string> threadIds{};
 		ConfigManager configManager{};
+		EventManager eventManager{};
 		ThreadPool threadPool{};
 		BotUser currentUser{};
 
