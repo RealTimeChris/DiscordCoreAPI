@@ -130,6 +130,212 @@ namespace DiscordCoreInternal {
 
 		operator nlohmann::json();
 	};
+
+	enum class HttpsWorkloadClass : int8_t { Get = 0, Put = 1, Post = 2, Patch = 3, Delete = 4 };
+
+	enum class PayloadType : int8_t { Application_Json = 1, Multipart_Form = 2 };
+
+	enum class HttpsWorkloadType : uint8_t {
+		Unset = 0,
+		Get_Global_Application_Commands = 1,
+		Post_Global_Application_Command = 2,
+		Get_Global_Application_Command = 3,
+		Patch_Global_Application_Command = 4,
+		Delete_Global_Application_Command = 5,
+		Bulk_Put_Global_Application_Commands = 6,
+		Get_Guild_Application_Commands = 7,
+		Post_Guild_Application_Command = 8,
+		Get_Guild_Application_Command = 9,
+		Patch_Guild_Application_Command = 10,
+		Delete_Guild_Application_Command = 11,
+		Bulk_Put_Guild_Application_Commands = 12,
+		Get_Guild_Application_Commands_Permissions = 13,
+		Get_Guild_Application_Command_Permissions = 14,
+		Put_Guild_Application_Command_Permissions = 15,
+		Batch_Put_Guild_Application_Command_Permissions = 16,
+		Post_Interaction_Response = 17,
+		Get_Interaction_Response = 18,
+		Patch_Interaction_Response = 19,
+		Delete_Interaction_Response = 20,
+		Post_Followup_Message = 21,
+		Get_Followup_Message = 22,
+		Patch_Followup_Message = 23,
+		Delete_Followup_Message = 24,
+		Get_Guild_Audit_Logs = 25,
+		Get_Channel = 26,
+		Patch_Channel = 27,
+		Delete_Channel = 28,
+		Get_Messages = 29,
+		Get_Message = 30,
+		Post_Message = 31,
+		Crosspost_Message = 32,
+		Put_Reaction = 33,
+		Delete_Own_Reaction = 34,
+		Delete_User_Reaction = 35,
+		Get_Reactions = 36,
+		Delete_All_Reactions = 37,
+		Delete_Reactions_By_Emoji = 38,
+		Patch_Message = 39,
+		Delete_Message = 40,
+		Delete_Message_Old = 41,
+		Bulk_Delete_Messages = 42,
+		Put_Channel_Permission_Overwrites = 43,
+		Get_Channel_Invites = 44,
+		Post_Channel_Invite = 45,
+		Delete_Channel_Permission_Overwrites = 46,
+		Post_Follow_News_Channel = 47,
+		Post_Trigger_Typing_Indicator = 48,
+		Get_Pinned_Messages = 49,
+		Put_Pin_Message = 50,
+		Delete_Pin_Message = 51,
+		Put_Recipient_To_Group_Dm = 52,
+		Delete_Recipient_From_Group_Dm = 53,
+		Post_Thread_With_Message = 54,
+		Post_Thread_Without_Message = 55,
+		Put_Self_In_Thread = 56,
+		Put_Thread_Member = 57,
+		Delete_Self_From_Thread = 58,
+		Delete_Thread_Member = 59,
+		Get_Thread_Member = 60,
+		Get_Thread_Members = 61,
+		Get_Active_Threads = 62,
+		Get_Public_Archived_Threads = 63,
+		Get_Private_Archived_Threads = 64,
+		Get_Joined_Private_Archived_Threads = 65,
+		Get_Emoji_List = 66,
+		Get_Guild_Emoji = 67,
+		Post_Guild_Emoji = 68,
+		Patch_Guild_Emoji = 69,
+		Delete_Guild_Emoji = 70,
+		Post_Guild = 71,
+		Get_Guild = 72,
+		Get_Guild_Preview = 73,
+		Patch_Guild = 74,
+		Delete_Guild = 75,
+		Get_Guild_Channels = 76,
+		Post_Guild_Channel = 77,
+		Patch_Guild_Channel_Positions = 78,
+		Get_Guild_Active_Threads = 79,
+		Get_Guild_Member = 80,
+		Get_Guild_Members = 81,
+		Get_Search_Guild_Members = 82,
+		Put_Guild_Member = 83,
+		Patch_Guild_Member = 84,
+		Patch_Current_Guild_Member = 85,
+		Put_Guild_Member_Role = 86,
+		Delete_Guild_Member_Role = 87,
+		Delete_Guild_Member = 88,
+		Get_Guild_Bans = 89,
+		Get_Guild_Ban = 90,
+		Put_Guild_Ban = 91,
+		Delete_Guild_Ban = 92,
+		Get_Guild_Roles = 93,
+		Post_Guild_Role = 94,
+		Patch_Guild_Role_Positions = 95,
+		Patch_Guild_Role = 96,
+		Delete_Guild_Role = 97,
+		Get_Guild_Prune_Count = 98,
+		Post_Guild_Prune = 99,
+		Get_Guild_Voice_Regions = 100,
+		Get_Guild_Invites = 101,
+		Get_Guild_Integrations = 102,
+		Delete_Guild_Integration = 103,
+		Get_Guild_Widget_Settings = 104,
+		Patch_Guild_Widget = 105,
+		Get_Guild_Widget = 106,
+		Get_Vanity_Invite = 107,
+		Get_Guild_Widget_Image = 108,
+		Get_Guild_Welcome_Screen = 109,
+		Patch_Guild_Welcome_Screen = 110,
+		Patch_Current_User_Voice_State = 111,
+		Patch_User_Voice_State = 112,
+		Get_Guild_Scheduled_Events = 113,
+		Post_Guild_Scheduled_Event = 114,
+		Get_Guild_Scheduled_Event = 115,
+		Patch_Guild_Scheduled_Event = 116,
+		Delete_Guild_Scheduled_Event = 117,
+		Get_Guild_Scheduled_Event_Users = 118,
+		Get_Guild_Template = 119,
+		Post_Guild_From_Guild_Template = 120,
+		Get_Guild_Templates = 121,
+		Post_Guild_Template = 122,
+		Put_Guild_Template = 123,
+		Patch_Guild_Template = 124,
+		Delete_Guild_Template = 125,
+		Get_Invite = 126,
+		Delete_Invite = 127,
+		Post_Stage_Instance = 128,
+		Get_Stage_Instance = 129,
+		Patch_Stage_Instance = 130,
+		Delete_Stage_Instance = 131,
+		Get_Sticker = 132,
+		Get_Nitro_Sticker_Packs = 133,
+		Get_Guild_Stickers = 134,
+		Post_Guild_Sticker = 135,
+		Patch_Guild_Sticker = 136,
+		Delete_Guild_Sticker = 137,
+		Get_Current_User = 138,
+		Get_User = 139,
+		Patch_Current_User = 140,
+		Get_Current_User_Guilds = 141,
+		Delete_Leave_Guild = 142,
+		Post_Create_User_Dm = 143,
+		Get_User_Connections = 144,
+		Get_Voice_Regions = 145,
+		Post_Webhook = 146,
+		Get_Channel_Webhooks = 147,
+		Get_Guild_Webhooks = 148,
+		Get_Webhook = 149,
+		Get_Webhook_With_Token = 150,
+		Patch_Webhook = 151,
+		Patch_Webhook_With_Token = 152,
+		Delete_Webhook = 153,
+		Delete_Webhook_With_Token = 154,
+		Post_Execute_Webhook = 155,
+		Get_Webhook_Message = 156,
+		Patch_Webhook_Message = 157,
+		Delete_Webhook_Message = 158,
+		Get_Application_Info = 159,
+		Get_Authorization_Info = 160,
+		Get_Gateway_Bot = 161,
+		Post_Thread_In_Forum_Channel = 162,
+		Get_Auto_Moderation_Rules = 163,
+		Get_Auto_Moderation_Rule = 164,
+		Post_Auto_Moderation_Rule = 165,
+		Patch_Auto_Moderation_Rule = 166,
+		Delete_Auto_Moderation_Rule = 167,
+		YouTubeGetSearchResults = 168,
+		SoundCloudGetSearchResults = 169,
+		LAST = 170
+	};
+
+	struct DiscordCoreAPI_Dll HttpsWorkloadData {
+		static std::unordered_map<HttpsWorkloadType, std::atomic_int64_t> workloadIdsExternal;
+		static std::unordered_map<HttpsWorkloadType, std::atomic_int64_t> workloadIdsInternal;
+		static std::mutex accessMutex;
+
+		std::unordered_map<std::string, std::string> headersToInsert{};
+		PayloadType payloadType{ PayloadType::Application_Json };
+		std::atomic_int64_t thisWorkerId{ 0 };
+		HttpsWorkloadClass workloadClass{};
+		HttpsWorkloadType workloadType{};
+		std::string relativePath{};
+		std::string callStack{};
+		std::string content{};
+		std::string baseUrl{};
+
+		HttpsWorkloadData& operator=(const HttpsWorkloadData& other);
+
+		HttpsWorkloadData(const HttpsWorkloadData& other);
+
+		HttpsWorkloadData& operator=(HttpsWorkloadData& other);
+
+		HttpsWorkloadData(HttpsWorkloadData& other);
+
+		HttpsWorkloadData() = default;
+
+		static int64_t getAndIncrementWorkloadId(HttpsWorkloadType workloadType);
+	};
 }
 
 /// The main namespace for this library. \brief The main namespace for this
@@ -1410,28 +1616,16 @@ namespace DiscordCoreAPI {
 			return this->theIntegrationDatas;
 		}
 
-		IntegrationDataVector& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
+		IntegrationDataVector& operator=(const nlohmann::json& jsonObjectData);
 
-		IntegrationDataVector(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
-
+		IntegrationDataVector(const nlohmann::json& jsonObjectData);
+		
 		virtual ~IntegrationDataVector() = default;
 
 	  protected:
 		std::vector<IntegrationData> theIntegrationDatas{};
 
-		void parseObject(const nlohmann::json& jsonObjectData, IntegrationDataVector* pDataStructure) {
-			pDataStructure->theIntegrationDatas.reserve(jsonObjectData.size());
-			for (auto& value: jsonObjectData) {
-				DiscordCoreAPI::IntegrationData newData{ value };
-				pDataStructure->theIntegrationDatas.push_back(newData);
-			}
-			pDataStructure->theIntegrationDatas.shrink_to_fit();
-		}
+		void parseObject(const nlohmann::json& jsonObjectData, IntegrationDataVector* pDataStructure);
 	};
 
 	/// Audit log events. \brief Audit log events.
@@ -1504,51 +1698,14 @@ namespace DiscordCoreAPI {
 
 		OptionalAuditEntryInfoData() = default;
 
-		OptionalAuditEntryInfoData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
-
-		OptionalAuditEntryInfoData(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
-
+		OptionalAuditEntryInfoData& operator=(const nlohmann::json& jsonObjectData);
+		
+		OptionalAuditEntryInfoData(const nlohmann::json& jsonObjectData);
+		
 		virtual ~OptionalAuditEntryInfoData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json& jsonObjectData, OptionalAuditEntryInfoData* pDataStructure) {
-			if (jsonObjectData.contains("delete_member_days") && !jsonObjectData["delete_member_days"].is_null()) {
-				pDataStructure->deleteMemberDays = jsonObjectData["delete_member_days"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("members_removed") && !jsonObjectData["members_removed"].is_null()) {
-				pDataStructure->membersRemoved = jsonObjectData["members_removed"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("channel_id") && !jsonObjectData["channel_id"].is_null()) {
-				pDataStructure->channelId = stoull(jsonObjectData["channel_id"].get<std::string>());
-			}
-
-			if (jsonObjectData.contains("message_id") && !jsonObjectData["message_id"].is_null()) {
-				pDataStructure->messageId = stoull(jsonObjectData["message_id"].get<std::string>());
-			}
-
-			if (jsonObjectData.contains("count") && !jsonObjectData["count"].is_null()) {
-				pDataStructure->count = jsonObjectData["count"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
-				pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
-			}
-
-			if (jsonObjectData.contains("type") && !jsonObjectData["type"].is_null()) {
-				pDataStructure->type = jsonObjectData["type"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("role_name") && !jsonObjectData["role_name"].is_null()) {
-				pDataStructure->roleName = jsonObjectData["role_name"].get<std::string>();
-			}
-		}
+		void parseObject(const nlohmann::json& jsonObjectData, OptionalAuditEntryInfoData* pDataStructure);		
 	};
 
 	/// Audit log change data. \brief Audit log change data.
@@ -1559,31 +1716,15 @@ namespace DiscordCoreAPI {
 
 		AuditLogChangeData() = default;
 
-		AuditLogChangeData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
+		AuditLogChangeData& operator=(const nlohmann::json& jsonObjectData);
 
-		AuditLogChangeData(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
+		AuditLogChangeData(const nlohmann::json& jsonObjectData);
 
 		virtual ~AuditLogChangeData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json& jsonObjectData, AuditLogChangeData* pDataStructure) {
-			if (jsonObjectData.contains("new_value") && !jsonObjectData["new_value"].is_null()) {
-				pDataStructure->newValue = jsonObjectData["new_value"];
-			}
-
-			if (jsonObjectData.contains("old_value") && !jsonObjectData["old_value"].is_null()) {
-				pDataStructure->oldValue = jsonObjectData["old_value"];
-			}
-
-			if (jsonObjectData.contains("key") && !jsonObjectData["key"].is_null()) {
-				pDataStructure->key = jsonObjectData["key"].get<std::string>();
-			}
-		}
+		void parseObject(const nlohmann::json& jsonObjectData, AuditLogChangeData* pDataStructure);
+		
 	};
 
 	/// Guild prune count data. \brief Guild prune count data.
@@ -1592,23 +1733,14 @@ namespace DiscordCoreAPI {
 
 		GuildPruneCountData() = default;
 
-		GuildPruneCountData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
+		GuildPruneCountData& operator=(const nlohmann::json& jsonObjectData);
 
-		GuildPruneCountData(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
-
+		GuildPruneCountData(const nlohmann::json& jsonObjectData);
+		
 		virtual ~GuildPruneCountData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json& jsonObjectData, GuildPruneCountData* pDataStructure) {
-			if (jsonObjectData.contains("pruned") && !jsonObjectData["pruned"].is_null()) {
-				pDataStructure->count = jsonObjectData["pruned"].get<int32_t>();
-			}
-		}
+		void parseObject(const nlohmann::json& jsonObjectData, GuildPruneCountData* pDataStructure);
 	};
 
 	/// Audit log entry data. \brief Audit log entry data.
@@ -1624,52 +1756,14 @@ namespace DiscordCoreAPI {
 
 		AuditLogEntryData() = default;
 
-		AuditLogEntryData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
-
-		AuditLogEntryData(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
+		AuditLogEntryData& operator=(const nlohmann::json& jsonObjectData);
+		
+		AuditLogEntryData(const nlohmann::json& jsonObjectData);
 
 		virtual ~AuditLogEntryData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json& jsonObjectData, AuditLogEntryData* pDataStructure) {
-			if (jsonObjectData.contains("target_id") && !jsonObjectData["target_id"].is_null()) {
-				pDataStructure->targetId = stoull(jsonObjectData["target_id"].get<std::string>());
-			}
-
-			if (jsonObjectData.contains("changes") && !jsonObjectData["changes"].is_null()) {
-				pDataStructure->changes.clear();
-				for (auto& value: jsonObjectData["changes"]) {
-					AuditLogChangeData newData{ value };
-					pDataStructure->changes.push_back(newData);
-				}
-			}
-
-			if (jsonObjectData.contains("user_id") && !jsonObjectData["user_id"].is_null()) {
-				pDataStructure->userId = stoull(jsonObjectData["user_id"].get<std::string>());
-			}
-
-			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
-				pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
-				pDataStructure->createdTimeStamp = pDataStructure->getCreatedAtTimestamp(TimeFormat::LongDateTime);
-			}
-
-			if (jsonObjectData.contains("action_type") && !jsonObjectData["action_type"].is_null()) {
-				pDataStructure->actionType = jsonObjectData["action_type"].get<AuditLogEvent>();
-			}
-
-			if (jsonObjectData.contains("options") && !jsonObjectData["options"].is_null()) {
-				pDataStructure->options = jsonObjectData["options"];
-			}
-
-			if (jsonObjectData.contains("reason") && !jsonObjectData["reason"].is_null()) {
-				pDataStructure->reason = jsonObjectData["reason"].get<std::string>();
-			}
-		}
+		void parseObject(const nlohmann::json& jsonObjectData, AuditLogEntryData* pDataStructure);
 	};
 
 	/// Party data. \brief Party data.
@@ -1679,28 +1773,14 @@ namespace DiscordCoreAPI {
 
 		PartyData() = default;
 
-		PartyData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
+		PartyData& operator=(const nlohmann::json& jsonObjectData);
 
-		PartyData(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
-
+		PartyData(const nlohmann::json& jsonObjectData);
+		
 		virtual ~PartyData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json& jsonObjectData, PartyData* pDataStructure) {
-			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
-				pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
-			}
-
-			if (jsonObjectData.contains("Size") && !jsonObjectData["Size"].is_null()) {
-				pDataStructure->size[0] = jsonObjectData["Size"]["CurrentSize"].get<int32_t>();
-				pDataStructure->size[1] = jsonObjectData["Size"]["MaxSize"].get<int32_t>();
-			}
-		}
+		void parseObject(const nlohmann::json& jsonObjectData, PartyData* pDataStructure);
 	};
 
 	/// Assets data. \brief Party data.
@@ -1712,35 +1792,14 @@ namespace DiscordCoreAPI {
 
 		AssetsData() = default;
 
-		AssetsData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
+		AssetsData& operator=(const nlohmann::json& jsonObjectData);
 
-		AssetsData(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
-
+		AssetsData(const nlohmann::json& jsonObjectData);
+		
 		virtual ~AssetsData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json& jsonObjectData, AssetsData* pDataStructure) {
-			if (jsonObjectData.contains("LargeImage") && !jsonObjectData["LargeImage"].is_null()) {
-				pDataStructure->largeImage = jsonObjectData["LargeImage"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("LargeText") && !jsonObjectData["LargeText"].is_null()) {
-				pDataStructure->largeText = jsonObjectData["LargeText"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("SmallImage") && !jsonObjectData["SmallImage"].is_null()) {
-				pDataStructure->smallImage = jsonObjectData["SmallImage"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("SmallText") && !jsonObjectData["SmallText"].is_null()) {
-				pDataStructure->smallText = jsonObjectData["SmallText"].get<std::string>();
-			}
-		}
+		void parseObject(const nlohmann::json& jsonObjectData, AssetsData* pDataStructure);
 	};
 
 	/// Secrets data. \brief Secrets data.
@@ -1751,31 +1810,14 @@ namespace DiscordCoreAPI {
 
 		SecretsData() = default;
 
-		SecretsData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
+		SecretsData& operator=(const nlohmann::json& jsonObjectData);
 
-		SecretsData(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
+		SecretsData(const nlohmann::json& jsonObjectData);
 
 		virtual ~SecretsData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json& jsonObjectData, SecretsData* pDataStructure) {
-			if (jsonObjectData.contains("Join") && !jsonObjectData["Join"].is_null()) {
-				pDataStructure->join = jsonObjectData["Join"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("Spectate") && !jsonObjectData["Spectate"].is_null()) {
-				pDataStructure->spectate = jsonObjectData["Spectate"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("Match") && !jsonObjectData["Match"].is_null()) {
-				pDataStructure->match = jsonObjectData["Match"].get<std::string>();
-			}
-		}
+		void parseObject(const nlohmann::json& jsonObjectData, SecretsData* pDataStructure);
 	};
 
 	/// Timestamp data. \brief Timestamp data.
@@ -1785,27 +1827,14 @@ namespace DiscordCoreAPI {
 
 		TimestampData() = default;
 
-		TimestampData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
+		TimestampData& operator=(const nlohmann::json& jsonObjectData);
 
-		TimestampData(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
-
+		TimestampData(const nlohmann::json& jsonObjectData);
+		
 		virtual ~TimestampData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json& jsonObjectData, TimestampData* pDataStructure) {
-			if (jsonObjectData.contains("Start") && !jsonObjectData["Start"].is_null()) {
-				pDataStructure->start = jsonObjectData["Start"].get<int64_t>();
-			}
-
-			if (jsonObjectData.contains("End") && !jsonObjectData["End"].is_null()) {
-				pDataStructure->end = jsonObjectData["End"].get<int64_t>();
-			}
-		}
+		void parseObject(const nlohmann::json& jsonObjectData, TimestampData* pDataStructure);
 	};
 
 	/// Button data. \brief Button data.
@@ -1844,55 +1873,15 @@ namespace DiscordCoreAPI {
 
 		ActivityData() = default;
 
-		ActivityData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
+		ActivityData& operator=(const nlohmann::json& jsonObjectData);
 
-		ActivityData(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
+		ActivityData(const nlohmann::json& jsonObjectData);
 
 		virtual ~ActivityData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json& jsonObjectData, ActivityData* pDataStructure) {
-			if (jsonObjectData.contains("Name") && !jsonObjectData["Name"].is_null()) {
-				pDataStructure->name = jsonObjectData["Name"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("Timestamps") && !jsonObjectData["Timestamps"].is_null()) {
-				pDataStructure->timestamps = jsonObjectData["Timestamps"];
-			}
-
-			if (jsonObjectData.contains("ApplicationId") && !jsonObjectData["ApplicationId"].is_null()) {
-				pDataStructure->applicationId = stoull(jsonObjectData["ApplicationId"].get<std::string>());
-			}
-
-			if (jsonObjectData.contains("Details") && !jsonObjectData["Details"].is_null()) {
-				pDataStructure->details = jsonObjectData["Details"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("State") && !jsonObjectData["State"].is_null()) {
-				pDataStructure->state = jsonObjectData["State"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("ActivityParty") && !jsonObjectData["ActivityParty"].is_null()) {
-				pDataStructure->party = jsonObjectData["ActivityParty"];
-			}
-
-			if (jsonObjectData.contains("ActivityAssets") && !jsonObjectData["ActivityAssets"].is_null()) {
-				pDataStructure->assets = jsonObjectData["ActivityAssets"];
-			}
-
-			if (jsonObjectData.contains("ActivitySecrets") && !jsonObjectData["ActivitySecrets"].is_null()) {
-				pDataStructure->secrets = jsonObjectData["ActivitySecrets"];
-			}
-
-			if (jsonObjectData.contains("Instance") && !jsonObjectData["Instance"].is_null()) {
-				pDataStructure->instance = jsonObjectData["Instance"].get<bool>();
-			}
-		}
+		void parseObject(const nlohmann::json& jsonObjectData, ActivityData* pDataStructure);
+		
 	};
 
 	/// Client status data. \brief Client status data.
@@ -1903,31 +1892,15 @@ namespace DiscordCoreAPI {
 
 		ClientStatusData() = default;
 
-		ClientStatusData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
+		ClientStatusData& operator=(const nlohmann::json& jsonObjectData);
 
-		ClientStatusData(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
+		ClientStatusData(const nlohmann::json& jsonObjectData);
 
 		virtual ~ClientStatusData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json& jsonObjectData, ClientStatusData* pDataStructure) {
-			if (jsonObjectData.contains("desktop") && !jsonObjectData["desktop"].is_null()) {
-				pDataStructure->desktop = jsonObjectData["desktop"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("mobile") && !jsonObjectData["mobile"].is_null()) {
-				pDataStructure->mobile = jsonObjectData["mobile"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("web") && !jsonObjectData["web"].is_null()) {
-				pDataStructure->web = jsonObjectData["web"].get<std::string>();
-			}
-		}
+		void parseObject(const nlohmann::json& jsonObjectData, ClientStatusData* pDataStructure);
+		
 	};
 
 	/// Premium tier levels. \brief Premium tier levels.
@@ -1976,35 +1949,14 @@ namespace DiscordCoreAPI {
 
 		WelcomeScreenChannelData() = default;
 
-		WelcomeScreenChannelData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
+		WelcomeScreenChannelData& operator=(const nlohmann::json& jsonObjectData);
 
-		WelcomeScreenChannelData(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
-
+		WelcomeScreenChannelData(const nlohmann::json& jsonObjectData);
+		
 		virtual ~WelcomeScreenChannelData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json& jsonObjectData, WelcomeScreenChannelData* pDataStructure) {
-			if (jsonObjectData.contains("channel_id") && !jsonObjectData["channel_id"].is_null()) {
-				pDataStructure->channelId = stoull(jsonObjectData["channel_id"].get<std::string>());
-			}
-
-			if (jsonObjectData.contains("description") && !jsonObjectData["description"].is_null()) {
-				pDataStructure->description = jsonObjectData["description"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("emoji_id") && !jsonObjectData["emoji_id"].is_null()) {
-				pDataStructure->emojiId = stoull(jsonObjectData["emoji_id"].get<std::string>());
-			}
-
-			if (jsonObjectData.contains("emoji_name") && !jsonObjectData["emoji_name"].is_null()) {
-				pDataStructure->emojiName = jsonObjectData["emoji_name"].get<std::string>();
-			}
-		}
+		void parseObject(const nlohmann::json& jsonObjectData, WelcomeScreenChannelData* pDataStructure);
 	};
 
 	/// Welcome screen data. \brief Welcome screen data.
@@ -2014,31 +1966,15 @@ namespace DiscordCoreAPI {
 
 		WelcomeScreenData() = default;
 
-		WelcomeScreenData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
+		WelcomeScreenData& operator=(const nlohmann::json& jsonObjectData);
 
-		WelcomeScreenData(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
-
+		WelcomeScreenData(const nlohmann::json& jsonObjectData);
+		
 		virtual ~WelcomeScreenData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json& jsonObjectData, WelcomeScreenData* pDataStructure) {
-			if (jsonObjectData.contains("description") && !jsonObjectData["description"].is_null()) {
-				pDataStructure->description = jsonObjectData["description"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("welcome_channels") && !jsonObjectData["welcome_channels"].is_null()) {
-				pDataStructure->welcomeChannels.clear();
-				for (auto& value: jsonObjectData["welcome_channels"]) {
-					WelcomeScreenChannelData newData{ value };
-					pDataStructure->welcomeChannels.push_back(newData);
-				}
-			}
-		}
+		void parseObject(const nlohmann::json& jsonObjectData, WelcomeScreenData* pDataStructure);
+		
 	};
 
 	/// Presence update data. \brief Presence update data.
@@ -6412,212 +6348,3 @@ namespace DiscordCoreAPI {
 
 /**@}*/
 
-namespace DiscordCoreInternal {
-
-	enum class HttpsWorkloadClass : int8_t { Get = 0, Put = 1, Post = 2, Patch = 3, Delete = 4 };
-
-	enum class PayloadType : int8_t { Application_Json = 1, Multipart_Form = 2 };
-
-	enum class HttpsWorkloadType : uint8_t {
-		Unset = 0,
-		Get_Global_Application_Commands = 1,
-		Post_Global_Application_Command = 2,
-		Get_Global_Application_Command = 3,
-		Patch_Global_Application_Command = 4,
-		Delete_Global_Application_Command = 5,
-		Bulk_Put_Global_Application_Commands = 6,
-		Get_Guild_Application_Commands = 7,
-		Post_Guild_Application_Command = 8,
-		Get_Guild_Application_Command = 9,
-		Patch_Guild_Application_Command = 10,
-		Delete_Guild_Application_Command = 11,
-		Bulk_Put_Guild_Application_Commands = 12,
-		Get_Guild_Application_Commands_Permissions = 13,
-		Get_Guild_Application_Command_Permissions = 14,
-		Put_Guild_Application_Command_Permissions = 15,
-		Batch_Put_Guild_Application_Command_Permissions = 16,
-		Post_Interaction_Response = 17,
-		Get_Interaction_Response = 18,
-		Patch_Interaction_Response = 19,
-		Delete_Interaction_Response = 20,
-		Post_Followup_Message = 21,
-		Get_Followup_Message = 22,
-		Patch_Followup_Message = 23,
-		Delete_Followup_Message = 24,
-		Get_Guild_Audit_Logs = 25,
-		Get_Channel = 26,
-		Patch_Channel = 27,
-		Delete_Channel = 28,
-		Get_Messages = 29,
-		Get_Message = 30,
-		Post_Message = 31,
-		Crosspost_Message = 32,
-		Put_Reaction = 33,
-		Delete_Own_Reaction = 34,
-		Delete_User_Reaction = 35,
-		Get_Reactions = 36,
-		Delete_All_Reactions = 37,
-		Delete_Reactions_By_Emoji = 38,
-		Patch_Message = 39,
-		Delete_Message = 40,
-		Delete_Message_Old = 41,
-		Bulk_Delete_Messages = 42,
-		Put_Channel_Permission_Overwrites = 43,
-		Get_Channel_Invites = 44,
-		Post_Channel_Invite = 45,
-		Delete_Channel_Permission_Overwrites = 46,
-		Post_Follow_News_Channel = 47,
-		Post_Trigger_Typing_Indicator = 48,
-		Get_Pinned_Messages = 49,
-		Put_Pin_Message = 50,
-		Delete_Pin_Message = 51,
-		Put_Recipient_To_Group_Dm = 52,
-		Delete_Recipient_From_Group_Dm = 53,
-		Post_Thread_With_Message = 54,
-		Post_Thread_Without_Message = 55,
-		Put_Self_In_Thread = 56,
-		Put_Thread_Member = 57,
-		Delete_Self_From_Thread = 58,
-		Delete_Thread_Member = 59,
-		Get_Thread_Member = 60,
-		Get_Thread_Members = 61,
-		Get_Active_Threads = 62,
-		Get_Public_Archived_Threads = 63,
-		Get_Private_Archived_Threads = 64,
-		Get_Joined_Private_Archived_Threads = 65,
-		Get_Emoji_List = 66,
-		Get_Guild_Emoji = 67,
-		Post_Guild_Emoji = 68,
-		Patch_Guild_Emoji = 69,
-		Delete_Guild_Emoji = 70,
-		Post_Guild = 71,
-		Get_Guild = 72,
-		Get_Guild_Preview = 73,
-		Patch_Guild = 74,
-		Delete_Guild = 75,
-		Get_Guild_Channels = 76,
-		Post_Guild_Channel = 77,
-		Patch_Guild_Channel_Positions = 78,
-		Get_Guild_Active_Threads = 79,
-		Get_Guild_Member = 80,
-		Get_Guild_Members = 81,
-		Get_Search_Guild_Members = 82,
-		Put_Guild_Member = 83,
-		Patch_Guild_Member = 84,
-		Patch_Current_Guild_Member = 85,
-		Put_Guild_Member_Role = 86,
-		Delete_Guild_Member_Role = 87,
-		Delete_Guild_Member = 88,
-		Get_Guild_Bans = 89,
-		Get_Guild_Ban = 90,
-		Put_Guild_Ban = 91,
-		Delete_Guild_Ban = 92,
-		Get_Guild_Roles = 93,
-		Post_Guild_Role = 94,
-		Patch_Guild_Role_Positions = 95,
-		Patch_Guild_Role = 96,
-		Delete_Guild_Role = 97,
-		Get_Guild_Prune_Count = 98,
-		Post_Guild_Prune = 99,
-		Get_Guild_Voice_Regions = 100,
-		Get_Guild_Invites = 101,
-		Get_Guild_Integrations = 102,
-		Delete_Guild_Integration = 103,
-		Get_Guild_Widget_Settings = 104,
-		Patch_Guild_Widget = 105,
-		Get_Guild_Widget = 106,
-		Get_Vanity_Invite = 107,
-		Get_Guild_Widget_Image = 108,
-		Get_Guild_Welcome_Screen = 109,
-		Patch_Guild_Welcome_Screen = 110,
-		Patch_Current_User_Voice_State = 111,
-		Patch_User_Voice_State = 112,
-		Get_Guild_Scheduled_Events = 113,
-		Post_Guild_Scheduled_Event = 114,
-		Get_Guild_Scheduled_Event = 115,
-		Patch_Guild_Scheduled_Event = 116,
-		Delete_Guild_Scheduled_Event = 117,
-		Get_Guild_Scheduled_Event_Users = 118,
-		Get_Guild_Template = 119,
-		Post_Guild_From_Guild_Template = 120,
-		Get_Guild_Templates = 121,
-		Post_Guild_Template = 122,
-		Put_Guild_Template = 123,
-		Patch_Guild_Template = 124,
-		Delete_Guild_Template = 125,
-		Get_Invite = 126,
-		Delete_Invite = 127,
-		Post_Stage_Instance = 128,
-		Get_Stage_Instance = 129,
-		Patch_Stage_Instance = 130,
-		Delete_Stage_Instance = 131,
-		Get_Sticker = 132,
-		Get_Nitro_Sticker_Packs = 133,
-		Get_Guild_Stickers = 134,
-		Post_Guild_Sticker = 135,
-		Patch_Guild_Sticker = 136,
-		Delete_Guild_Sticker = 137,
-		Get_Current_User = 138,
-		Get_User = 139,
-		Patch_Current_User = 140,
-		Get_Current_User_Guilds = 141,
-		Delete_Leave_Guild = 142,
-		Post_Create_User_Dm = 143,
-		Get_User_Connections = 144,
-		Get_Voice_Regions = 145,
-		Post_Webhook = 146,
-		Get_Channel_Webhooks = 147,
-		Get_Guild_Webhooks = 148,
-		Get_Webhook = 149,
-		Get_Webhook_With_Token = 150,
-		Patch_Webhook = 151,
-		Patch_Webhook_With_Token = 152,
-		Delete_Webhook = 153,
-		Delete_Webhook_With_Token = 154,
-		Post_Execute_Webhook = 155,
-		Get_Webhook_Message = 156,
-		Patch_Webhook_Message = 157,
-		Delete_Webhook_Message = 158,
-		Get_Application_Info = 159,
-		Get_Authorization_Info = 160,
-		Get_Gateway_Bot = 161,
-		Post_Thread_In_Forum_Channel = 162,
-		Get_Auto_Moderation_Rules = 163,
-		Get_Auto_Moderation_Rule = 164,
-		Post_Auto_Moderation_Rule = 165,
-		Patch_Auto_Moderation_Rule = 166,
-		Delete_Auto_Moderation_Rule = 167,
-		YouTubeGetSearchResults = 168,
-		SoundCloudGetSearchResults = 169,
-		LAST = 170
-	};
-
-	struct DiscordCoreAPI_Dll HttpsWorkloadData {
-		static std::unordered_map<HttpsWorkloadType, std::atomic_int64_t> workloadIdsExternal;
-		static std::unordered_map<HttpsWorkloadType, std::atomic_int64_t> workloadIdsInternal;
-		static std::mutex accessMutex;
-
-		std::unordered_map<std::string, std::string> headersToInsert{};
-		PayloadType payloadType{ PayloadType::Application_Json };
-		std::atomic_int64_t thisWorkerId{ 0 };
-		HttpsWorkloadClass workloadClass{};
-		HttpsWorkloadType workloadType{};
-		std::string relativePath{};
-		std::string callStack{};
-		std::string content{};
-		std::string baseUrl{};
-
-		HttpsWorkloadData& operator=(const HttpsWorkloadData& other);
-
-		HttpsWorkloadData(const HttpsWorkloadData& other);
-
-		HttpsWorkloadData& operator=(HttpsWorkloadData& other);
-
-		HttpsWorkloadData(HttpsWorkloadData& other);
-
-		HttpsWorkloadData() = default;
-
-		static int64_t getAndIncrementWorkloadId(HttpsWorkloadType workloadType);
-	};
-
-};// namespace DiscordCoreInternal

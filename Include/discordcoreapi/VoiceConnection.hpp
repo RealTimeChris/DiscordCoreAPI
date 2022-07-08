@@ -57,7 +57,6 @@ namespace DiscordCoreAPI {
 		Sending_Identify = 3,///< Sending the identify payload.
 		Collecting_Ready = 4,///< Collecting the client ready.
 		Initializing_DatagramSocket = 5,///< Initializing the datagram udp socket.
-		Collecting_External_Ip = 6,///< Collecting our own external Ip.
 		Sending_Select_Protocol = 7,///< Sending the select-protocol payload.
 		Collecting_Session_Description = 8///< Collecting the session-description payload.
 	};
@@ -150,8 +149,6 @@ namespace DiscordCoreAPI {
 		bool areWeCurrentlyPlaying() noexcept;
 
 		void disconnectInternal() noexcept;
-
-		bool collectExternalIP() noexcept;
 
 		void connectInternal() noexcept;
 

@@ -2447,648 +2447,242 @@ namespace DiscordCoreAPI {
 		}
 	}
 
+	void IntegrationDataVector::parseObject(const nlohmann::json& jsonObjectData, IntegrationDataVector* pDataStructure) {
+		pDataStructure->theIntegrationDatas.reserve(jsonObjectData.size());
+		for (auto& value: jsonObjectData) {
+			DiscordCoreAPI::IntegrationData newData{ value };
+			pDataStructure->theIntegrationDatas.push_back(newData);
+		}
+		pDataStructure->theIntegrationDatas.shrink_to_fit();
+	}
+
+	void OptionalAuditEntryInfoData::parseObject(const nlohmann::json& jsonObjectData, OptionalAuditEntryInfoData* pDataStructure) {
+		if (jsonObjectData.contains("delete_member_days") && !jsonObjectData["delete_member_days"].is_null()) {
+			pDataStructure->deleteMemberDays = jsonObjectData["delete_member_days"].get<std::string>();
+		}
+
+		if (jsonObjectData.contains("members_removed") && !jsonObjectData["members_removed"].is_null()) {
+			pDataStructure->membersRemoved = jsonObjectData["members_removed"].get<std::string>();
+		}
+
+		if (jsonObjectData.contains("channel_id") && !jsonObjectData["channel_id"].is_null()) {
+			pDataStructure->channelId = stoull(jsonObjectData["channel_id"].get<std::string>());
+		}
+
+		if (jsonObjectData.contains("message_id") && !jsonObjectData["message_id"].is_null()) {
+			pDataStructure->messageId = stoull(jsonObjectData["message_id"].get<std::string>());
+		}
+
+		if (jsonObjectData.contains("count") && !jsonObjectData["count"].is_null()) {
+			pDataStructure->count = jsonObjectData["count"].get<std::string>();
+		}
+
+		if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
+			pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
+		}
+
+		if (jsonObjectData.contains("type") && !jsonObjectData["type"].is_null()) {
+			pDataStructure->type = jsonObjectData["type"].get<std::string>();
+		}
+
+		if (jsonObjectData.contains("role_name") && !jsonObjectData["role_name"].is_null()) {
+			pDataStructure->roleName = jsonObjectData["role_name"].get<std::string>();
+		}
+	}
+
+	void AuditLogChangeData::parseObject(const nlohmann::json& jsonObjectData, AuditLogChangeData* pDataStructure) {
+		if (jsonObjectData.contains("new_value") && !jsonObjectData["new_value"].is_null()) {
+			pDataStructure->newValue = jsonObjectData["new_value"];
+		}
+
+		if (jsonObjectData.contains("old_value") && !jsonObjectData["old_value"].is_null()) {
+			pDataStructure->oldValue = jsonObjectData["old_value"];
+		}
+
+		if (jsonObjectData.contains("key") && !jsonObjectData["key"].is_null()) {
+			pDataStructure->key = jsonObjectData["key"].get<std::string>();
+		}
+	}
+
+	void GuildPruneCountData::parseObject(const nlohmann::json& jsonObjectData, GuildPruneCountData* pDataStructure) {
+		if (jsonObjectData.contains("pruned") && !jsonObjectData["pruned"].is_null()) {
+			pDataStructure->count = jsonObjectData["pruned"].get<int32_t>();
+		}
+	}
+
+	void AuditLogEntryData::parseObject(const nlohmann::json& jsonObjectData, AuditLogEntryData* pDataStructure) {
+		if (jsonObjectData.contains("target_id") && !jsonObjectData["target_id"].is_null()) {
+			pDataStructure->targetId = stoull(jsonObjectData["target_id"].get<std::string>());
+		}
+
+		if (jsonObjectData.contains("changes") && !jsonObjectData["changes"].is_null()) {
+			pDataStructure->changes.clear();
+			for (auto& value: jsonObjectData["changes"]) {
+				AuditLogChangeData newData{ value };
+				pDataStructure->changes.push_back(newData);
+			}
+		}
+
+		if (jsonObjectData.contains("user_id") && !jsonObjectData["user_id"].is_null()) {
+			pDataStructure->userId = stoull(jsonObjectData["user_id"].get<std::string>());
+		}
+
+		if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
+			pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
+			pDataStructure->createdTimeStamp = pDataStructure->getCreatedAtTimestamp(TimeFormat::LongDateTime);
+		}
+
+		if (jsonObjectData.contains("action_type") && !jsonObjectData["action_type"].is_null()) {
+			pDataStructure->actionType = jsonObjectData["action_type"].get<AuditLogEvent>();
+		}
+
+		if (jsonObjectData.contains("options") && !jsonObjectData["options"].is_null()) {
+			pDataStructure->options = jsonObjectData["options"];
+		}
+
+		if (jsonObjectData.contains("reason") && !jsonObjectData["reason"].is_null()) {
+			pDataStructure->reason = jsonObjectData["reason"].get<std::string>();
+		}
+	}
+
+	void PartyData::parseObject(const nlohmann::json& jsonObjectData, PartyData* pDataStructure) {
+		if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
+			pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
+		}
+
+		if (jsonObjectData.contains("Size") && !jsonObjectData["Size"].is_null()) {
+			pDataStructure->size[0] = jsonObjectData["Size"]["CurrentSize"].get<int32_t>();
+			pDataStructure->size[1] = jsonObjectData["Size"]["MaxSize"].get<int32_t>();
+		}
+	}
+
+	void AssetsData::parseObject(const nlohmann::json& jsonObjectData, AssetsData* pDataStructure) {
+		if (jsonObjectData.contains("LargeImage") && !jsonObjectData["LargeImage"].is_null()) {
+			pDataStructure->largeImage = jsonObjectData["LargeImage"].get<std::string>();
+		}
+
+		if (jsonObjectData.contains("LargeText") && !jsonObjectData["LargeText"].is_null()) {
+			pDataStructure->largeText = jsonObjectData["LargeText"].get<std::string>();
+		}
+
+		if (jsonObjectData.contains("SmallImage") && !jsonObjectData["SmallImage"].is_null()) {
+			pDataStructure->smallImage = jsonObjectData["SmallImage"].get<std::string>();
+		}
+
+		if (jsonObjectData.contains("SmallText") && !jsonObjectData["SmallText"].is_null()) {
+			pDataStructure->smallText = jsonObjectData["SmallText"].get<std::string>();
+		}
+	}
+
+	void SecretsData::parseObject(const nlohmann::json& jsonObjectData, SecretsData* pDataStructure) {
+		if (jsonObjectData.contains("Join") && !jsonObjectData["Join"].is_null()) {
+			pDataStructure->join = jsonObjectData["Join"].get<std::string>();
+		}
+
+		if (jsonObjectData.contains("Spectate") && !jsonObjectData["Spectate"].is_null()) {
+			pDataStructure->spectate = jsonObjectData["Spectate"].get<std::string>();
+		}
+
+		if (jsonObjectData.contains("Match") && !jsonObjectData["Match"].is_null()) {
+			pDataStructure->match = jsonObjectData["Match"].get<std::string>();
+		}
+	}
+
+	void TimestampData::parseObject(const nlohmann::json& jsonObjectData, TimestampData* pDataStructure) {
+		if (jsonObjectData.contains("Start") && !jsonObjectData["Start"].is_null()) {
+			pDataStructure->start = jsonObjectData["Start"].get<int64_t>();
+		}
+
+		if (jsonObjectData.contains("End") && !jsonObjectData["End"].is_null()) {
+			pDataStructure->end = jsonObjectData["End"].get<int64_t>();
+		}
+	}
+
+	void ActivityData::parseObject(const nlohmann::json& jsonObjectData, ActivityData* pDataStructure) {
+		if (jsonObjectData.contains("Name") && !jsonObjectData["Name"].is_null()) {
+			pDataStructure->name = jsonObjectData["Name"].get<std::string>();
+		}
+
+		if (jsonObjectData.contains("Timestamps") && !jsonObjectData["Timestamps"].is_null()) {
+			pDataStructure->timestamps = jsonObjectData["Timestamps"];
+		}
+
+		if (jsonObjectData.contains("ApplicationId") && !jsonObjectData["ApplicationId"].is_null()) {
+			pDataStructure->applicationId = stoull(jsonObjectData["ApplicationId"].get<std::string>());
+		}
+
+		if (jsonObjectData.contains("Details") && !jsonObjectData["Details"].is_null()) {
+			pDataStructure->details = jsonObjectData["Details"].get<std::string>();
+		}
+
+		if (jsonObjectData.contains("State") && !jsonObjectData["State"].is_null()) {
+			pDataStructure->state = jsonObjectData["State"].get<std::string>();
+		}
+
+		if (jsonObjectData.contains("ActivityParty") && !jsonObjectData["ActivityParty"].is_null()) {
+			pDataStructure->party = jsonObjectData["ActivityParty"];
+		}
+
+		if (jsonObjectData.contains("ActivityAssets") && !jsonObjectData["ActivityAssets"].is_null()) {
+			pDataStructure->assets = jsonObjectData["ActivityAssets"];
+		}
+
+		if (jsonObjectData.contains("ActivitySecrets") && !jsonObjectData["ActivitySecrets"].is_null()) {
+			pDataStructure->secrets = jsonObjectData["ActivitySecrets"];
+		}
+
+		if (jsonObjectData.contains("Instance") && !jsonObjectData["Instance"].is_null()) {
+			pDataStructure->instance = jsonObjectData["Instance"].get<bool>();
+		}
+	}
+
+	void ClientStatusData::parseObject(const nlohmann::json& jsonObjectData, ClientStatusData* pDataStructure) {
+		if (jsonObjectData.contains("desktop") && !jsonObjectData["desktop"].is_null()) {
+			pDataStructure->desktop = jsonObjectData["desktop"].get<std::string>();
+		}
+
+		if (jsonObjectData.contains("mobile") && !jsonObjectData["mobile"].is_null()) {
+			pDataStructure->mobile = jsonObjectData["mobile"].get<std::string>();
+		}
+
+		if (jsonObjectData.contains("web") && !jsonObjectData["web"].is_null()) {
+			pDataStructure->web = jsonObjectData["web"].get<std::string>();
+		}
+	}
+
+	void WelcomeScreenChannelData::parseObject(const nlohmann::json& jsonObjectData, WelcomeScreenChannelData* pDataStructure) {
+		if (jsonObjectData.contains("channel_id") && !jsonObjectData["channel_id"].is_null()) {
+			pDataStructure->channelId = stoull(jsonObjectData["channel_id"].get<std::string>());
+		}
+
+		if (jsonObjectData.contains("description") && !jsonObjectData["description"].is_null()) {
+			pDataStructure->description = jsonObjectData["description"].get<std::string>();
+		}
+
+		if (jsonObjectData.contains("emoji_id") && !jsonObjectData["emoji_id"].is_null()) {
+			pDataStructure->emojiId = stoull(jsonObjectData["emoji_id"].get<std::string>());
+		}
+
+		if (jsonObjectData.contains("emoji_name") && !jsonObjectData["emoji_name"].is_null()) {
+			pDataStructure->emojiName = jsonObjectData["emoji_name"].get<std::string>();
+		}
+	}
+
+	void WelcomeScreenData::parseObject(const nlohmann::json& jsonObjectData, WelcomeScreenData* pDataStructure) {
+		if (jsonObjectData.contains("description") && !jsonObjectData["description"].is_null()) {
+			pDataStructure->description = jsonObjectData["description"].get<std::string>();
+		}
+
+		if (jsonObjectData.contains("welcome_channels") && !jsonObjectData["welcome_channels"].is_null()) {
+			pDataStructure->welcomeChannels.clear();
+			for (auto& value: jsonObjectData["welcome_channels"]) {
+				WelcomeScreenChannelData newData{ value };
+				pDataStructure->welcomeChannels.push_back(newData);
+			}
+		}
+	}
 
 	/*
-
-	class DiscordCoreAPI_Dll IntegrationDataVector : public DataParser<IntegrationDataVector> {
-	  public:
-		IntegrationDataVector() = default;
-
-		operator std::vector<IntegrationData>() {
-			return this->theIntegrationDatas;
-		}
-
-		IntegrationDataVector& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
-
-		IntegrationDataVector(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
-
-		virtual ~IntegrationDataVector() = default;
-
-	  protected:
-		std::vector<IntegrationData> theIntegrationDatas{};
-
-		void parseObject(const nlohmann::json& jsonObjectData, IntegrationDataVector* pDataStructure) {
-			pDataStructure->theIntegrationDatas.reserve(jsonObjectData.size());
-			for (auto& value: jsonObjectData) {
-				DiscordCoreAPI::IntegrationData newData{ value };
-				pDataStructure->theIntegrationDatas.push_back(newData);
-			}
-			pDataStructure->theIntegrationDatas.shrink_to_fit();
-		}
-	};
-
-	/// Audit log events. \brief Audit log events.
-	enum class AuditLogEvent : uint8_t {
-		Guild_Update = 1,///< Guild update.
-		Channel_Create = 10,///< Channel create.
-		Channel_Update = 11,///< Channel update.
-		Channel_Delete = 12,///< Channel delete.
-		Channel_Overwrite_Create = 13,///< Channel overwrite create.
-		Channel_Overwrite_Update = 14,///< Channel overwrite update.
-		Channel_Overwrite_Delete = 15,///< Channel overwrite delete.
-		Member_Kick = 20,///< Member kick.
-		Member_Prune = 21,///< Member prune.
-		Member_Ban_Add = 22,///< Member ban add.
-		Member_Ban_Remove = 23,///< Member ban remove.
-		Member_Update = 24,///< Member update.
-		Member_Role_Update = 25,///< Member role update.
-		Member_Move = 26,///< Member move.
-		Member_Disconnect = 27,///< Member disconnect.
-		Bot_Add = 28,///< Bot add.
-		Role_Create = 30,///< Role create.
-		Role_Update = 31,///< Role update.
-		Role_Delete = 32,///< Role delete.
-		Invite_Create = 40,///< Invite create.
-		Invite_Update = 41,///< Invite update.
-		Invite_Delete = 42,///< Invite delete.
-		Webhook_Create = 50,///< Webhook create.
-		Webhook_Update = 51,///< Webhook update.
-		Webhook_Delete = 52,///< Webhook delete.
-		Emoji_Create = 60,///< Emoji create.
-		Emoji_Update = 61,///< Emoji update.
-		Emoji_Delete = 62,///< Emoji delete.
-		Message_Delete = 72,///< Message delete.
-		Message_Bulk_Delete = 73,///< Message bulk delete.
-		Message_Pin = 74,///< Message pin.
-		Message_Unpin = 75,///< Message unpin.
-		Integration_Create = 80,///< Integration create.
-		Integration_Update = 81,///< Integration update.
-		Integration_Delete = 82,///< Integration delete.
-		Stage_Instance_Create = 83,///< Stage-Instance create.
-		Stage_Instance_Update = 84,///< Stage-Instance update.
-		Stage_Instance_Delete = 85,///< Stage-Instance delete.
-		Sticker_Create = 90,///< Sticker create.
-		Sticker_Update = 91,///< Sticker update.
-		Sticker_Delete = 92,///< Sticker delete.
-		Guild_Scheduled_Event_Create = 100,///< Guild-scheduled-event create.
-		Guild_Scheduled_Event_Update = 101,///< Guild-scheduled-event update.
-		Guild_Scheduled_Event_Delete = 102,///< Guild-scheduled-event delete.
-		Thread_Create = 110,///< Thread create.
-		Thread_Update = 111,///< Thread update.
-		Thread_Delete = 112,///< Thread delete.
-		Application_Command_Permission_Update = 121,///< Permissions were updated for a command.
-		Auto_Moderation_Rule_Create = 140,///< Auto Moderation rule was created.
-		Auto_Moderation_Rule_Update = 141,///< Auto Moderation rule was updated.
-		Auto_Moderation_Rule_Delete = 142,///< Auto Moderation rule was deleted.
-		Auto_Moderation_Block_Message = 143///< Message was blocked by AutoMod (according to a rule).
-	};
-
-	/// Audit log entry info data \brief Audit log entry info data.
-	class DiscordCoreAPI_Dll OptionalAuditEntryInfoData : public DiscordEntity, public DataParser<OptionalAuditEntryInfoData> {
-	  public:
-		std::string deleteMemberDays{};///< Number of days for which the member's Messages were deleted.
-		std::string membersRemoved{};///< Number of members that were removed upon a prune.
-		Snowflake applicationId{};///< ID of the app whose permissions were targeted APPLICATION_COMMAND_PERMISSION_UPDATE.
-		std::string roleName{};///< Role name.
-		Snowflake channelId{};///< Channel Id.
-		Snowflake messageId{};///< Message Id.
-		std::string count{};///< Count.
-		std::string type{};///< Type.
-
-		OptionalAuditEntryInfoData() = default;
-
-		OptionalAuditEntryInfoData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
-
-		OptionalAuditEntryInfoData(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
-
-		virtual ~OptionalAuditEntryInfoData() = default;
-
-	  protected:
-		void parseObject(const nlohmann::json& jsonObjectData, OptionalAuditEntryInfoData* pDataStructure) {
-			if (jsonObjectData.contains("delete_member_days") && !jsonObjectData["delete_member_days"].is_null()) {
-				pDataStructure->deleteMemberDays = jsonObjectData["delete_member_days"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("members_removed") && !jsonObjectData["members_removed"].is_null()) {
-				pDataStructure->membersRemoved = jsonObjectData["members_removed"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("channel_id") && !jsonObjectData["channel_id"].is_null()) {
-				pDataStructure->channelId = stoull(jsonObjectData["channel_id"].get<std::string>());
-			}
-
-			if (jsonObjectData.contains("message_id") && !jsonObjectData["message_id"].is_null()) {
-				pDataStructure->messageId = stoull(jsonObjectData["message_id"].get<std::string>());
-			}
-
-			if (jsonObjectData.contains("count") && !jsonObjectData["count"].is_null()) {
-				pDataStructure->count = jsonObjectData["count"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
-				pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
-			}
-
-			if (jsonObjectData.contains("type") && !jsonObjectData["type"].is_null()) {
-				pDataStructure->type = jsonObjectData["type"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("role_name") && !jsonObjectData["role_name"].is_null()) {
-				pDataStructure->roleName = jsonObjectData["role_name"].get<std::string>();
-			}
-		}
-	};
-
-	/// Audit log change data. \brief Audit log change data.
-	struct DiscordCoreAPI_Dll AuditLogChangeData : public DataParser<AuditLogChangeData> {
-		nlohmann::json newValue{};///< New value.
-		nlohmann::json oldValue{};///< Old value.
-		std::string key{};///< The key of the audit log change.
-
-		AuditLogChangeData() = default;
-
-		AuditLogChangeData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
-
-		AuditLogChangeData(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
-
-		virtual ~AuditLogChangeData() = default;
-
-	  protected:
-		void parseObject(const nlohmann::json& jsonObjectData, AuditLogChangeData* pDataStructure) {
-			if (jsonObjectData.contains("new_value") && !jsonObjectData["new_value"].is_null()) {
-				pDataStructure->newValue = jsonObjectData["new_value"];
-			}
-
-			if (jsonObjectData.contains("old_value") && !jsonObjectData["old_value"].is_null()) {
-				pDataStructure->oldValue = jsonObjectData["old_value"];
-			}
-
-			if (jsonObjectData.contains("key") && !jsonObjectData["key"].is_null()) {
-				pDataStructure->key = jsonObjectData["key"].get<std::string>();
-			}
-		}
-	};
-
-	/// Guild prune count data. \brief Guild prune count data.
-	struct DiscordCoreAPI_Dll GuildPruneCountData : public DataParser<GuildPruneCountData> {
-		int32_t count{ 0 };
-
-		GuildPruneCountData() = default;
-
-		GuildPruneCountData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
-
-		GuildPruneCountData(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
-
-		virtual ~GuildPruneCountData() = default;
-
-	  protected:
-		void parseObject(const nlohmann::json& jsonObjectData, GuildPruneCountData* pDataStructure) {
-			if (jsonObjectData.contains("pruned") && !jsonObjectData["pruned"].is_null()) {
-				pDataStructure->count = jsonObjectData["pruned"].get<int32_t>();
-			}
-		}
-	};
-
-	/// Audit log entry data. \brief Audit log entry data.
-	class DiscordCoreAPI_Dll AuditLogEntryData : public DiscordEntity, public DataParser<AuditLogEntryData> {
-	  public:
-		std::vector<AuditLogChangeData> changes{};///< Array of audit log change data.
-		OptionalAuditEntryInfoData options{};///< Audit log entry info data.
-		TimeStamp createdTimeStamp{ "" };///< Time at which this entry was created.
-		AuditLogEvent actionType{};///< Audit log action type.
-		std::string reason{};///< The reason that was entered for the given change.
-		Snowflake targetId{};///< Id of the target User.
-		Snowflake userId{};///< Id of the executing User.
-
-		AuditLogEntryData() = default;
-
-		AuditLogEntryData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
-
-		AuditLogEntryData(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
-
-		virtual ~AuditLogEntryData() = default;
-
-	  protected:
-		void parseObject(const nlohmann::json& jsonObjectData, AuditLogEntryData* pDataStructure) {
-			if (jsonObjectData.contains("target_id") && !jsonObjectData["target_id"].is_null()) {
-				pDataStructure->targetId = stoull(jsonObjectData["target_id"].get<std::string>());
-			}
-
-			if (jsonObjectData.contains("changes") && !jsonObjectData["changes"].is_null()) {
-				pDataStructure->changes.clear();
-				for (auto& value: jsonObjectData["changes"]) {
-					AuditLogChangeData newData{ value };
-					pDataStructure->changes.push_back(newData);
-				}
-			}
-
-			if (jsonObjectData.contains("user_id") && !jsonObjectData["user_id"].is_null()) {
-				pDataStructure->userId = stoull(jsonObjectData["user_id"].get<std::string>());
-			}
-
-			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
-				pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
-				pDataStructure->createdTimeStamp = pDataStructure->getCreatedAtTimestamp(TimeFormat::LongDateTime);
-			}
-
-			if (jsonObjectData.contains("action_type") && !jsonObjectData["action_type"].is_null()) {
-				pDataStructure->actionType = jsonObjectData["action_type"].get<AuditLogEvent>();
-			}
-
-			if (jsonObjectData.contains("options") && !jsonObjectData["options"].is_null()) {
-				pDataStructure->options = jsonObjectData["options"];
-			}
-
-			if (jsonObjectData.contains("reason") && !jsonObjectData["reason"].is_null()) {
-				pDataStructure->reason = jsonObjectData["reason"].get<std::string>();
-			}
-		}
-	};
-
-	/// Party data. \brief Party data.
-	class DiscordCoreAPI_Dll PartyData : public DiscordEntity, public DataParser<PartyData> {
-	  public:
-		std::vector<int32_t> size{ 0, 0 };///< The size of the party.
-
-		PartyData() = default;
-
-		PartyData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
-
-		PartyData(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
-
-		virtual ~PartyData() = default;
-
-	  protected:
-		void parseObject(const nlohmann::json& jsonObjectData, PartyData* pDataStructure) {
-			if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
-				pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
-			}
-
-			if (jsonObjectData.contains("Size") && !jsonObjectData["Size"].is_null()) {
-				pDataStructure->size[0] = jsonObjectData["Size"]["CurrentSize"].get<int32_t>();
-				pDataStructure->size[1] = jsonObjectData["Size"]["MaxSize"].get<int32_t>();
-			}
-		}
-	};
-
-	/// Assets data. \brief Party data.
-	struct DiscordCoreAPI_Dll AssetsData : public DataParser<AssetsData> {
-		StringWrapper largeImage{};///< Keyname of an asset to display.
-		StringWrapper smallImage{};///< Keyname of an asset to display.
-		StringWrapper largeText{};///< Hover text for the large image.
-		StringWrapper smallText{};///< Hover text for the small image.
-
-		AssetsData() = default;
-
-		AssetsData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
-
-		AssetsData(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
-
-		virtual ~AssetsData() = default;
-
-	  protected:
-		void parseObject(const nlohmann::json& jsonObjectData, AssetsData* pDataStructure) {
-			if (jsonObjectData.contains("LargeImage") && !jsonObjectData["LargeImage"].is_null()) {
-				pDataStructure->largeImage = jsonObjectData["LargeImage"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("LargeText") && !jsonObjectData["LargeText"].is_null()) {
-				pDataStructure->largeText = jsonObjectData["LargeText"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("SmallImage") && !jsonObjectData["SmallImage"].is_null()) {
-				pDataStructure->smallImage = jsonObjectData["SmallImage"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("SmallText") && !jsonObjectData["SmallText"].is_null()) {
-				pDataStructure->smallText = jsonObjectData["SmallText"].get<std::string>();
-			}
-		}
-	};
-
-	/// Secrets data. \brief Secrets data.
-	struct DiscordCoreAPI_Dll SecretsData : public DataParser<SecretsData> {
-		StringWrapper spectate{};///< Unique hash for the given match context.
-		StringWrapper match{};///< Unique hash for Spectate button.
-		StringWrapper join{};///< Unique hash for chat invitesand Ask to Join.
-
-		SecretsData() = default;
-
-		SecretsData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
-
-		SecretsData(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
-
-		virtual ~SecretsData() = default;
-
-	  protected:
-		void parseObject(const nlohmann::json& jsonObjectData, SecretsData* pDataStructure) {
-			if (jsonObjectData.contains("Join") && !jsonObjectData["Join"].is_null()) {
-				pDataStructure->join = jsonObjectData["Join"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("Spectate") && !jsonObjectData["Spectate"].is_null()) {
-				pDataStructure->spectate = jsonObjectData["Spectate"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("Match") && !jsonObjectData["Match"].is_null()) {
-				pDataStructure->match = jsonObjectData["Match"].get<std::string>();
-			}
-		}
-	};
-
-	/// Timestamp data. \brief Timestamp data.
-	struct DiscordCoreAPI_Dll TimestampData : public DataParser<TimestampData> {
-		int64_t start{ 0 };///< Unix timestamp - Send this to have an "elapsed" timer.
-		int64_t end{ 0 };///< Unix timestamp - send this to have a "remaining" timer.
-
-		TimestampData() = default;
-
-		TimestampData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
-
-		TimestampData(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
-
-		virtual ~TimestampData() = default;
-
-	  protected:
-		void parseObject(const nlohmann::json& jsonObjectData, TimestampData* pDataStructure) {
-			if (jsonObjectData.contains("Start") && !jsonObjectData["Start"].is_null()) {
-				pDataStructure->start = jsonObjectData["Start"].get<int64_t>();
-			}
-
-			if (jsonObjectData.contains("End") && !jsonObjectData["End"].is_null()) {
-				pDataStructure->end = jsonObjectData["End"].get<int64_t>();
-			}
-		}
-	};
-
-	/// Button data. \brief Button data.
-	struct DiscordCoreAPI_Dll ButtonData {
-		StringWrapper label{};///< Visible label of the button.
-		StringWrapper url{};///< Url to display on the button.
-	};
-
-	/// Activity types. \brief Activity types.
-	enum class ActivityType : int8_t {
-		Game = 0,///< Game.
-		Streaming = 1,///< Streaming.
-		Listening = 2,///< Listening.
-		Watching = 3,///< Watching.
-		Custom = 4,///< Custom.
-		Competing = 5///< Competing.
-	};
-
-	/// Activity data. \brief Activity data.
-	struct DiscordCoreAPI_Dll ActivityData : public DataParser<ActivityData> {
-		Snowflake applicationId{};///< Application id for the current application.
-		TimestampData timestamps{};///< Timestamp data.
-		int32_t createdAt{ 0 };///< Timestamp of when the activity began.
-		bool instance{ false };///< Whether this activity is an instanced context, like a match.
-		SecretsData secrets{};///< Secrets data.
-		StringWrapper details{};///< Details about the activity.
-		ButtonData buttons{};///< Button Data.
-		ActivityType type{};///< Activity data.
-		AssetsData assets{};///< Assets data.
-		StringWrapper state{};///< The player's current party status.
-		StringWrapper name{};///< Name of the activity.
-		int32_t flags{ 0 };///< Flags.
-		StringWrapper url{};///< Url associated with the activity.
-		EmojiData emoji{};///< Emoji associated with the activity.
-		PartyData party{};///< Party data.
-
-		ActivityData() = default;
-
-		ActivityData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
-
-		ActivityData(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
-
-		virtual ~ActivityData() = default;
-
-	  protected:
-		void parseObject(const nlohmann::json& jsonObjectData, ActivityData* pDataStructure) {
-			if (jsonObjectData.contains("Name") && !jsonObjectData["Name"].is_null()) {
-				pDataStructure->name = jsonObjectData["Name"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("Timestamps") && !jsonObjectData["Timestamps"].is_null()) {
-				pDataStructure->timestamps = jsonObjectData["Timestamps"];
-			}
-
-			if (jsonObjectData.contains("ApplicationId") && !jsonObjectData["ApplicationId"].is_null()) {
-				pDataStructure->applicationId = stoull(jsonObjectData["ApplicationId"].get<std::string>());
-			}
-
-			if (jsonObjectData.contains("Details") && !jsonObjectData["Details"].is_null()) {
-				pDataStructure->details = jsonObjectData["Details"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("State") && !jsonObjectData["State"].is_null()) {
-				pDataStructure->state = jsonObjectData["State"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("ActivityParty") && !jsonObjectData["ActivityParty"].is_null()) {
-				pDataStructure->party = jsonObjectData["ActivityParty"];
-			}
-
-			if (jsonObjectData.contains("ActivityAssets") && !jsonObjectData["ActivityAssets"].is_null()) {
-				pDataStructure->assets = jsonObjectData["ActivityAssets"];
-			}
-
-			if (jsonObjectData.contains("ActivitySecrets") && !jsonObjectData["ActivitySecrets"].is_null()) {
-				pDataStructure->secrets = jsonObjectData["ActivitySecrets"];
-			}
-
-			if (jsonObjectData.contains("Instance") && !jsonObjectData["Instance"].is_null()) {
-				pDataStructure->instance = jsonObjectData["Instance"].get<bool>();
-			}
-		}
-	};
-
-	/// Client status data. \brief Client status data.
-	struct DiscordCoreAPI_Dll ClientStatusData : public DataParser<ClientStatusData> {
-		StringWrapper desktop{};///< Desktop name.
-		StringWrapper mobile{};///< Mobile name.
-		StringWrapper web{};///< Web link.
-
-		ClientStatusData() = default;
-
-		ClientStatusData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
-
-		ClientStatusData(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
-
-		virtual ~ClientStatusData() = default;
-
-	  protected:
-		void parseObject(const nlohmann::json& jsonObjectData, ClientStatusData* pDataStructure) {
-			if (jsonObjectData.contains("desktop") && !jsonObjectData["desktop"].is_null()) {
-				pDataStructure->desktop = jsonObjectData["desktop"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("mobile") && !jsonObjectData["mobile"].is_null()) {
-				pDataStructure->mobile = jsonObjectData["mobile"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("web") && !jsonObjectData["web"].is_null()) {
-				pDataStructure->web = jsonObjectData["web"].get<std::string>();
-			}
-		}
-	};
-
-	/// Premium tier levels. \brief Premium tier levels.
-	enum class PremiumTier : int8_t {
-		None = 0,///< None.
-		Tier_1 = 1,///< Tier 1.
-		Tier_2 = 2,///< Tier 2.
-		Tier_3 = 3///< Tier 3.
-	};
-
-	/// Default Message notification levels. \brief Default Message notification
-	/// levels.
-	enum class DefaultMessageNotificationLevel : int8_t {
-		All_Messages = 0,///< All messages.
-		Only_Mentions = 1///< Only mentions.
-	};
-
-	/// Explicit content filter levels. \brief Explicit content filter levels.
-	enum class ExplicitContentFilterLevel : int8_t {
-		Disabled = 0,///< Disabled.
-		Members_Without_Roles = 1,///< Members without roles.
-		All_Members = 2///< All members.
-	};
-
-	/// MFA levels. \brief MFA levels.
-	enum class MFALevel : int8_t {
-		None = 0,///< None.
-		Elevated = 1///< Elevated.
-	};
-
-	/// Verification levels. \brief/// Verification levels.
-	enum class VerificationLevel : int8_t {
-		None = 0,///< None.
-		Low = 1,///< Low.
-		Medium = 2,///< Medium.
-		High = 3,///< High.
-		Very_High = 4///< Very high.
-	};
-
-	/// Welcome screen Channel data. \brief Welcome screen Channel data.
-	struct DiscordCoreAPI_Dll WelcomeScreenChannelData : public DataParser<WelcomeScreenChannelData> {
-		std::string description{};///< Description of the welcome Channel.
-		std::string emojiName{};///< Emoji name for the Channel.
-		Snowflake channelId{};///< Id of the welcome Channel.
-		Snowflake emojiId{};///< Emoji id for the Channel.
-
-		WelcomeScreenChannelData() = default;
-
-		WelcomeScreenChannelData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
-
-		WelcomeScreenChannelData(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
-
-		virtual ~WelcomeScreenChannelData() = default;
-
-	  protected:
-		void parseObject(const nlohmann::json& jsonObjectData, WelcomeScreenChannelData* pDataStructure) {
-			if (jsonObjectData.contains("channel_id") && !jsonObjectData["channel_id"].is_null()) {
-				pDataStructure->channelId = stoull(jsonObjectData["channel_id"].get<std::string>());
-			}
-
-			if (jsonObjectData.contains("description") && !jsonObjectData["description"].is_null()) {
-				pDataStructure->description = jsonObjectData["description"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("emoji_id") && !jsonObjectData["emoji_id"].is_null()) {
-				pDataStructure->emojiId = stoull(jsonObjectData["emoji_id"].get<std::string>());
-			}
-
-			if (jsonObjectData.contains("emoji_name") && !jsonObjectData["emoji_name"].is_null()) {
-				pDataStructure->emojiName = jsonObjectData["emoji_name"].get<std::string>();
-			}
-		}
-	};
-
-	/// Welcome screen data. \brief Welcome screen data.
-	struct DiscordCoreAPI_Dll WelcomeScreenData : public DataParser<WelcomeScreenData> {
-		std::vector<WelcomeScreenChannelData> welcomeChannels{};///< Welcome screen Channel data.
-		std::string description{};///< Description of the welcome screen.
-
-		WelcomeScreenData() = default;
-
-		WelcomeScreenData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
-
-		WelcomeScreenData(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
-
-		virtual ~WelcomeScreenData() = default;
-
-	  protected:
-		void parseObject(const nlohmann::json& jsonObjectData, WelcomeScreenData* pDataStructure) {
-			if (jsonObjectData.contains("description") && !jsonObjectData["description"].is_null()) {
-				pDataStructure->description = jsonObjectData["description"].get<std::string>();
-			}
-
-			if (jsonObjectData.contains("welcome_channels") && !jsonObjectData["welcome_channels"].is_null()) {
-				pDataStructure->welcomeChannels.clear();
-				for (auto& value: jsonObjectData["welcome_channels"]) {
-					WelcomeScreenChannelData newData{ value };
-					pDataStructure->welcomeChannels.push_back(newData);
-				}
-			}
-		}
-	};
-
 	/// Presence update data. \brief Presence update data.
 	struct DiscordCoreAPI_Dll PresenceUpdateData : public DataParser<PresenceUpdateData> {
 		std::vector<ActivityData> activities{};///< Array of activities.

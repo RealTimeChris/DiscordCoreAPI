@@ -180,6 +180,9 @@ namespace DiscordCoreAPI {
 					std::string theData = responseData;
 					this->datagramSocket->writeData(theData);
 				}
+				else {
+					this->onClosed();
+				}
 			}
 		} catch (...) {
 			if (this->configManager->doWePrintWebSocketErrorMessages()) {
@@ -252,10 +255,10 @@ namespace DiscordCoreAPI {
 						}
 						std::this_thread::sleep_for(1ms);
 					}
-					this->activeState.store(this->lastActiveState.load());
 					this->connectInternal();
 					this->sendSpeakingMessage(false);
 					this->sendSpeakingMessage(true);
+					this->activeState.store(this->lastActiveState.load());
 				}
 				if (!stopToken.stop_requested() && this->heartbeatInterval != 0 && !this->sslShards[0]->areWeHeartBeating) {
 					this->sslShards[0]->areWeHeartBeating = true;
@@ -300,7 +303,6 @@ namespace DiscordCoreAPI {
 				return true;
 			}
 			if (theStopWatch.hasTimePassed()) {
-				this->onClosed();
 				return false;
 			}
 			std::this_thread::sleep_for(1ms);
@@ -415,8 +417,10 @@ namespace DiscordCoreAPI {
 						} else {
 							break;
 						}
+						this->datagramSocket->getInputBuffer();
 						this->audioDataBuffer.tryReceive(this->audioData);
 					}
+					this->datagramSocket->getInputBuffer();
 					this->disconnectStartTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch());
 					break;
 				}
@@ -474,51 +478,6 @@ namespace DiscordCoreAPI {
 		this->areWeConnectedBool.store(false);
 		this->connectionState.store(VoiceConnectionState::Collecting_Init_Data);
 		this->activeState.store(VoiceActiveState::Connecting);
-		this->activeState.store(VoiceActiveState::Connecting);
-	}
-
-	bool VoiceConnection::collectExternalIP() noexcept {
-		try {
-			std::string packet{};
-			packet.resize(74);
-			uint16_t val1601{ 0x01 };
-			uint16_t val1602{ 70 };
-			packet[0] = static_cast<uint8_t>(val1601 >> 8);
-			packet[1] = static_cast<uint8_t>(val1601 >> 0);
-			packet[2] = static_cast<uint8_t>(val1602 >> 8);
-			packet[3] = static_cast<uint8_t>(val1602 >> 0);
-			packet[4] = static_cast<uint8_t>(this->voiceConnectionData.audioSSRC >> 24);
-			packet[5] = static_cast<uint8_t>(this->voiceConnectionData.audioSSRC >> 16);
-			packet[6] = static_cast<uint8_t>(this->voiceConnectionData.audioSSRC >> 8);
-			packet[7] = static_cast<uint8_t>(this->voiceConnectionData.audioSSRC);
-			this->datagramSocket->writeData(packet);
-			std::string inputString{};
-			StopWatch theStopWatch{ 2500ms };
-			while (inputString.size() < 74 && !Globals::doWeQuit.load() && this->activeState.load() != VoiceActiveState::Exiting) {
-				this->datagramSocket->readData();
-				std::string theNewString = this->datagramSocket->getInputBuffer();
-				inputString.insert(inputString.end(), theNewString.begin(), theNewString.end());
-				std::this_thread::sleep_for(1ms);
-				if (theStopWatch.hasTimePassed()) {
-					return false;
-				}
-			}
-			std::string message{};
-			message.insert(message.begin(), inputString.begin() + 8, inputString.begin() + 64);
-			if (message.find('\u0000') != std::string::npos) {
-				message = message.substr(0, message.find('\u0000', 5));
-			}
-			this->voiceConnectionData.externalIp = message;
-			this->areWeConnectedBool.store(true);
-			this->voiceConnectionDataBuffer.clearContents();
-			return true;
-		} catch (...) {
-			if (this->configManager->doWePrintWebSocketErrorMessages()) {
-				DiscordCoreAPI::reportException("VoiceConnection::collectExternalIP()");
-			}
-			this->onClosed();
-			return false;
-		}
 	}
 
 	void VoiceConnection::connectInternal() noexcept {
@@ -579,7 +538,7 @@ namespace DiscordCoreAPI {
 					return;
 				}
 				for (uint32_t x = 0; x < 5; x++) {
-					DiscordCoreInternal::WebSocketSSLShard::processIO(this->sslShards, 10000);
+					DiscordCoreInternal::WebSocketSSLShard::processIO(this->sslShards, 100000);
 				}
 				if (!this->parseConnectionHeaders(this->sslShards[0].get())) {
 					this->currentReconnectTries++;
@@ -641,18 +600,6 @@ namespace DiscordCoreAPI {
 					this->connectInternal();
 					return;
 				}
-				this->connectionState.store(VoiceConnectionState::Collecting_External_Ip);
-				this->connectInternal();
-				break;
-			}
-			case VoiceConnectionState::Collecting_External_Ip: {
-				if (!this->collectExternalIP()) {
-					this->currentReconnectTries++;
-					this->onClosed();
-					std::cout << "BREAKING OUT OF COLELCTI G EXTERNA IP" << std::endl;
-					this->connectInternal();
-					return;
-				}
 				this->connectionState.store(VoiceConnectionState::Sending_Select_Protocol);
 				this->connectInternal();
 				break;
@@ -685,7 +632,6 @@ namespace DiscordCoreAPI {
 					return;
 				}
 				this->baseShard->voiceConnectionDataBufferMap[this->voiceConnectInitData.guildId]->clearContents();
-				this->activeState.store(VoiceActiveState::Playing);
 				this->connectionState.store(VoiceConnectionState::Collecting_Init_Data);
 				return;
 			}
@@ -744,6 +690,40 @@ namespace DiscordCoreAPI {
 				if (!this->datagramSocket->connect(this->voiceConnectionData.voiceIp, this->voiceConnectionData.voicePort)) {
 					return false;
 				} else {
+					std::string packet{};
+					packet.resize(74);
+					uint16_t val1601{ 0x01 };
+					uint16_t val1602{ 70 };
+					packet[0] = static_cast<uint8_t>(val1601 >> 8);
+					packet[1] = static_cast<uint8_t>(val1601 >> 0);
+					packet[2] = static_cast<uint8_t>(val1602 >> 8);
+					packet[3] = static_cast<uint8_t>(val1602 >> 0);
+					packet[4] = static_cast<uint8_t>(this->voiceConnectionData.audioSSRC >> 24);
+					packet[5] = static_cast<uint8_t>(this->voiceConnectionData.audioSSRC >> 16);
+					packet[6] = static_cast<uint8_t>(this->voiceConnectionData.audioSSRC >> 8);
+					packet[7] = static_cast<uint8_t>(this->voiceConnectionData.audioSSRC);
+					this->datagramSocket->getInputBuffer();
+					this->datagramSocket->writeData(packet);
+					std::string inputString{};
+					StopWatch theStopWatch{ 2500ms };
+					while (inputString.size() < 74 && !Globals::doWeQuit.load() && this->activeState.load() != VoiceActiveState::Exiting) {
+						this->datagramSocket->readData();
+						std::string theNewString = this->datagramSocket->getInputBuffer();
+						inputString.insert(inputString.end(), theNewString.begin(), theNewString.end());
+						std::this_thread::sleep_for(1ms);
+						if (theStopWatch.hasTimePassed()) {
+							return false;
+						}
+					}
+					std::string message{};
+					message.insert(message.begin(), inputString.begin() + 8, inputString.begin() + 64);
+					if (message.find('\u0000') != std::string::npos) {
+						message = message.substr(0, message.find('\u0000', 5));
+					}
+					this->voiceConnectionData.externalIp = message;
+					this->areWeConnectedBool.store(true);
+					this->voiceConnectionDataBuffer.clearContents();
+					std::cout << "THE ADDRESS: " << this->voiceConnectionData.externalIp << std::endl;
 					return true;
 				}
 			} else {
