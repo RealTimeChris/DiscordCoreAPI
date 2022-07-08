@@ -126,7 +126,6 @@ namespace DiscordCoreAPI {
 	CoRoutine<GuildMember> GuildMembers::getGuildMemberAsync(GetGuildMemberData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Member };
 		co_await NewThreadAwaitable<GuildMember>();
-		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Member;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/members/" + std::to_string(dataPackage.guildMemberId);
 		workload.callStack = "GuildMembers::getGuildMemberAsync()";
@@ -154,7 +153,6 @@ namespace DiscordCoreAPI {
 	CoRoutine<std::vector<GuildMember>> GuildMembers::listGuildMembersAsync(ListGuildMembersData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Members };
 		co_await NewThreadAwaitable<std::vector<GuildMember>>();
-		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Members;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/members";
 		if (dataPackage.after != 0) {
@@ -172,7 +170,6 @@ namespace DiscordCoreAPI {
 	CoRoutine<std::vector<GuildMember>> GuildMembers::searchGuildMembersAsync(SearchGuildMembersData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Search_Guild_Members };
 		co_await NewThreadAwaitable<std::vector<GuildMember>>();
-		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Get_Search_Guild_Members;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/members/search";
 		if (dataPackage.query != "") {
@@ -190,7 +187,6 @@ namespace DiscordCoreAPI {
 	CoRoutine<GuildMember> GuildMembers::addGuildMemberAsync(AddGuildMemberData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Put_Guild_Member };
 		co_await NewThreadAwaitable<GuildMember>();
-		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Put_Guild_Member;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Put;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/members/" + std::to_string(dataPackage.userId);
 		workload.content = dataPackage;
@@ -201,7 +197,6 @@ namespace DiscordCoreAPI {
 	CoRoutine<GuildMember> GuildMembers::modifyCurrentGuildMemberAsync(ModifyCurrentGuildMemberData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Patch_Current_Guild_Member };
 		co_await NewThreadAwaitable<GuildMember>();
-		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Patch_Current_Guild_Member;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/members/@me";
 		workload.content = nlohmann::json{ { "nick", dataPackage.nick } }.dump();
@@ -215,7 +210,6 @@ namespace DiscordCoreAPI {
 	CoRoutine<GuildMember> GuildMembers::modifyGuildMemberAsync(ModifyGuildMemberData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Patch_Guild_Member };
 		co_await NewThreadAwaitable<GuildMember>();
-		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Patch_Guild_Member;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/members/" + std::to_string(dataPackage.guildMemberId);
 		workload.content = dataPackage;
@@ -231,7 +225,6 @@ namespace DiscordCoreAPI {
 	CoRoutine<void> GuildMembers::removeGuildMemberAsync(RemoveGuildMemberData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Delete_Guild_Member };
 		co_await NewThreadAwaitable<void>();
-		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Delete_Guild_Member;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Delete;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/members/" + std::to_string(dataPackage.guildMemberId);
 		workload.callStack = "GuildMembers::removeGuildMemberAsync()";

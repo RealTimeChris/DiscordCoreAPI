@@ -72,7 +72,6 @@ namespace DiscordCoreAPI {
 	CoRoutine<std::vector<GuildScheduledEvent>> GuildScheduledEvents::getGuildScheduledEventsAsync(GetGuildScheduledEventsData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Scheduled_Events };
 		co_await NewThreadAwaitable<std::vector<GuildScheduledEvent>>();
-		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Scheduled_Events;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/scheduled-events";
 		workload.callStack = "GuildScheduledEvents::getGuildScheduledEventAsync()";
@@ -82,7 +81,6 @@ namespace DiscordCoreAPI {
 	CoRoutine<GuildScheduledEvent> GuildScheduledEvents::createGuildScheduledEventAsync(CreateGuildScheduledEventData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Post_Guild_Scheduled_Event };
 		co_await NewThreadAwaitable<GuildScheduledEvent>();
-		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Post_Guild_Scheduled_Event;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/scheduled-events";
 		workload.content = dataPackage;
@@ -93,7 +91,6 @@ namespace DiscordCoreAPI {
 	CoRoutine<GuildScheduledEvent> GuildScheduledEvents::getGuildScheduledEventAsync(GetGuildScheduledEventData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Scheduled_Event };
 		co_await NewThreadAwaitable<GuildScheduledEvent>();
-		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Scheduled_Event;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/scheduled-events/" + std::to_string(dataPackage.guildScheduledEventId);
 		workload.relativePath += "?with_user_count=";
@@ -107,7 +104,6 @@ namespace DiscordCoreAPI {
 	CoRoutine<GuildScheduledEvent> GuildScheduledEvents::modifyGuildScheduledEventAsync(ModifyGuildScheduledEventData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Patch_Guild_Scheduled_Event };
 		co_await NewThreadAwaitable<GuildScheduledEvent>();
-		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Patch_Guild_Scheduled_Event;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/scheduled-events/" + std::to_string(dataPackage.guildScheduledEventId);
 		workload.content = dataPackage;
@@ -118,7 +114,6 @@ namespace DiscordCoreAPI {
 	CoRoutine<void> GuildScheduledEvents::deleteGuildScheduledEventAsync(DeleteGuildScheduledEventData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Delete_Guild_Scheduled_Event };
 		co_await NewThreadAwaitable<void>();
-		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Delete_Guild_Scheduled_Event;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Delete;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/scheduled-events/" + std::to_string(dataPackage.guildScheduledEventId);
 		workload.callStack = "GuildScheduledEvents::deleteGuildScheduledEventAsync()";
@@ -128,7 +123,6 @@ namespace DiscordCoreAPI {
 	CoRoutine<std::vector<GuildScheduledEventUserData>> GuildScheduledEvents::getGuildScheduledEventUsersAsync(GetGuildScheduledEventUsersData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Scheduled_Event_Users };
 		co_await NewThreadAwaitable<std::vector<GuildScheduledEventUserData>>();
-		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Scheduled_Event_Users;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/scheduled-events/" + std::to_string(dataPackage.guildScheduledEventId) + "/users";
 		if (dataPackage.limit != 0) {

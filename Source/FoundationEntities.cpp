@@ -134,11 +134,15 @@ namespace DiscordCoreInternal {
 
 	HttpsWorkloadData::HttpsWorkloadData(DiscordCoreInternal::HttpsWorkloadType theType) {
 		this->thisWorkerId.store(DiscordCoreInternal::HttpsWorkloadData::incrementAndGetWorkloadId(theType));
+		this->workloadType = theType;
 	}
 
 	int64_t HttpsWorkloadData::incrementAndGetWorkloadId(HttpsWorkloadType workloadType) {
 		std::lock_guard theLock{ HttpsWorkloadData::accessMutex };
-		int64_t theValue = HttpsWorkloadData::workloadIdsExternal[workloadType].load();
+		int64_t theValue{};
+		if (HttpsWorkloadData::workloadIdsExternal.contains(workloadType)) {
+			theValue = HttpsWorkloadData::workloadIdsExternal[workloadType].load();
+		}
 		HttpsWorkloadData::workloadIdsExternal[workloadType].store(theValue + 1);
 		return theValue;
 	}

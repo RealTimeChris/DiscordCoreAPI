@@ -310,6 +310,8 @@ namespace DiscordCoreInternal {
 	};
 
 	struct DiscordCoreAPI_Dll HttpsWorkloadData {
+		friend class HttpsClient;
+
 		static std::unordered_map<HttpsWorkloadType, std::atomic_int64_t> workloadIdsExternal;
 		static std::unordered_map<HttpsWorkloadType, std::atomic_int64_t> workloadIdsInternal;
 		static std::mutex accessMutex;
@@ -318,7 +320,6 @@ namespace DiscordCoreInternal {
 		PayloadType payloadType{ PayloadType::Application_Json };
 		std::atomic_int64_t thisWorkerId{ 0 };
 		HttpsWorkloadClass workloadClass{};
-		HttpsWorkloadType workloadType{};
 		std::string relativePath{};
 		std::string callStack{};
 		std::string content{};
@@ -336,6 +337,8 @@ namespace DiscordCoreInternal {
 
 	protected:
 		static int64_t incrementAndGetWorkloadId(HttpsWorkloadType workloadType);
+
+		HttpsWorkloadType workloadType{};
 
 	};
 }

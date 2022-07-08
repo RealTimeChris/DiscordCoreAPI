@@ -36,9 +36,8 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<StageInstance> StageInstances::createStageInstanceAsync(CreateStageInstanceData dataPackage) {
-		DiscordCoreInternal::HttpsWorkloadData workload{};HttpsWorkloadType::Post_Stage_Instance);
+		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Post_Stage_Instance };
 		co_await NewThreadAwaitable<StageInstance>();
-		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Post_Stage_Instance;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath = "/stage-instances";
 		workload.callStack = "StageInstances::createStageInstanceAsync()";
@@ -51,9 +50,8 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<StageInstance> StageInstances::getStageInstanceAsync(GetStageInstanceData dataPackage) {
-		DiscordCoreInternal::HttpsWorkloadData workload{};HttpsWorkloadType::Get_Stage_Instance);
+		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Stage_Instance };
 		co_await NewThreadAwaitable<StageInstance>();
-		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Get_Stage_Instance;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/stage-instances/" + std::to_string(dataPackage.channelId);
 		workload.callStack = "StageInstances::getStageInstanceAsync()";
@@ -61,9 +59,8 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<StageInstance> StageInstances::modifyStageInstanceAsync(ModifyStageInstanceData dataPackage) {
-		DiscordCoreInternal::HttpsWorkloadData workload{};HttpsWorkloadType::Patch_Stage_Instance);
+		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Patch_Stage_Instance };
 		co_await NewThreadAwaitable<StageInstance>();
-		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Patch_Stage_Instance;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/stage-instances/" + std::to_string(dataPackage.channelId);
 		nlohmann::json responseData = { { "privacy_level", dataPackage.privacyLevel }, { "topic", dataPackage.topic } };
@@ -76,9 +73,8 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<void> StageInstances::deleteStageInstanceAsync(DeleteStageInstanceData dataPackage) {
-		DiscordCoreInternal::HttpsWorkloadData workload{};HttpsWorkloadType::Delete_Stage_Instance);
+		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Delete_Stage_Instance };
 		co_await NewThreadAwaitable<void>();
-		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Delete_Stage_Instance;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Delete;
 		workload.relativePath = "/stage-instances/" + std::to_string(dataPackage.channelId);
 		workload.callStack = "StageInstances::deleteStageInstanceAsync()";

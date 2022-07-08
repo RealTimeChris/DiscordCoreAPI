@@ -43,13 +43,12 @@ namespace DiscordCoreInternal {
 			std::unordered_map<std::string, std::string> theHeaders{
 				std::pair("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36"),
 			};
-			HttpsWorkloadData dataPackage{};
+			HttpsWorkloadData dataPackage{ HttpsWorkloadType::SoundCloudGetSearchResults };
 			dataPackage.baseUrl = this->baseUrl02;
 			dataPackage.relativePath = "/search?q=" + DiscordCoreAPI::urlEncode(songQuery.c_str()) + "&facet=model&client_id=" + SoundCloudRequestBuilder::clientId +
 				"&limit=20&offset=0&linked_partitioning=1&app_version=" + this->appVersion + "&app_locale=en";
 			dataPackage.headersToInsert = theHeaders;
 			dataPackage.workloadClass = HttpsWorkloadClass::Get;
-			dataPackage.workloadType = HttpsWorkloadType::SoundCloudGetSearchResults;
 			HttpsResponseData returnData = this->httpsClient->submitWorkloadAndGetResult(dataPackage);
 			nlohmann::json data = nlohmann::json::parse(returnData.responseMessage);
 			std::vector<DiscordCoreAPI::Song> results{};
@@ -81,19 +80,17 @@ namespace DiscordCoreInternal {
 
 	DiscordCoreAPI::Song SoundCloudRequestBuilder::constructDownloadInfo(DiscordCoreAPI::Song& newSong) {
 		try {
-			HttpsWorkloadData dataPackage01{};
+			HttpsWorkloadData dataPackage01{ HttpsWorkloadType::SoundCloudGetSearchResults };
 			dataPackage01.baseUrl = newSong.firstDownloadUrl;
 			dataPackage01.workloadClass = HttpsWorkloadClass::Get;
-			dataPackage01.workloadType = HttpsWorkloadType::SoundCloudGetSearchResults;
 			HttpsResponseData results = this->httpsClient->submitWorkloadAndGetResult(dataPackage01);
 			if (results.responseData.contains("url")) {
 				newSong.secondDownloadUrl = results.responseData["url"];
 			}
 			if (newSong.secondDownloadUrl.find("/playlist") != std::string::npos) {
-				HttpsWorkloadData dataPackage{};
+				HttpsWorkloadData dataPackage{ HttpsWorkloadType::SoundCloudGetSearchResults };
 				dataPackage.baseUrl = newSong.secondDownloadUrl;
 				dataPackage.workloadClass = HttpsWorkloadClass::Get;
-				dataPackage.workloadType = HttpsWorkloadType::SoundCloudGetSearchResults;
 				HttpsResponseData results = this->httpsClient->submitWorkloadAndGetResult(dataPackage);
 				std::string newString{};
 				newString.insert(newString.begin(), results.responseMessage.begin(), results.responseMessage.end());
@@ -124,11 +121,10 @@ namespace DiscordCoreInternal {
 					std::pair("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36"),
 					std::pair("Path", newSong.secondDownloadUrl)
 				};
-				HttpsWorkloadData dataPackage02{};
+				HttpsWorkloadData dataPackage02{ HttpsWorkloadType::SoundCloudGetSearchResults };
 				dataPackage02.baseUrl = newSong.secondDownloadUrl;
 				dataPackage02.headersToInsert = theHeaders;
 				dataPackage02.workloadClass = HttpsWorkloadClass::Get;
-				dataPackage02.workloadType = HttpsWorkloadType::SoundCloudGetSearchResults;
 				auto headersNew = this->httpsClient->submitWorkloadAndGetResult(dataPackage02);
 				auto valueBitRate = stoll(headersNew.responseHeaders.find("x-amz-meta-bitrate")->second);
 				auto valueLength = stoll(headersNew.responseHeaders.find("x-amz-meta-duration")->second);
@@ -151,12 +147,11 @@ namespace DiscordCoreInternal {
 			std::pair("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36"),
 			std::pair("Path", "/search?q=testValue")
 		};
-		HttpsWorkloadData dataPackage02{};
+		HttpsWorkloadData dataPackage02{ HttpsWorkloadType::SoundCloudGetSearchResults };
 		dataPackage02.baseUrl = this->baseUrl;
 		dataPackage02.relativePath = "/search?q=testValue";
 		dataPackage02.headersToInsert = theHeaders;
 		dataPackage02.workloadClass = HttpsWorkloadClass::Get;
-		dataPackage02.workloadType = HttpsWorkloadType::SoundCloudGetSearchResults;
 		HttpsResponseData returnData = this->httpsClient->submitWorkloadAndGetResult(dataPackage02);
 		std::vector<std::string> assetPaths{};
 		std::string newString01 = "crossorigin src=";
@@ -170,10 +165,9 @@ namespace DiscordCoreInternal {
 			newString = newString.substr(newString.find("crossorigin src=") + newString01.size());
 			assetPaths.push_back(newString03);
 		}
-		HttpsWorkloadData dataPackage03{};
+		HttpsWorkloadData dataPackage03{ HttpsWorkloadType::SoundCloudGetSearchResults };
 		dataPackage03.baseUrl = assetPaths[5];
 		dataPackage03.workloadClass = HttpsWorkloadClass::Get;
-		dataPackage03.workloadType = HttpsWorkloadType::SoundCloudGetSearchResults;
 		HttpsResponseData returnData02 = this->httpsClient->submitWorkloadAndGetResult(dataPackage03);
 		std::string newerString02{};
 		newerString02.insert(newerString02.begin(), returnData02.responseMessage.begin(), returnData02.responseMessage.end());
@@ -255,10 +249,9 @@ namespace DiscordCoreInternal {
 					audioDecoder.reset(nullptr);
 					return;
 				}
-				HttpsWorkloadData dataPackage03{};
+				HttpsWorkloadData dataPackage03{ HttpsWorkloadType::SoundCloudGetSearchResults };
 				dataPackage03.baseUrl = newSong.finalDownloadUrls[counter].urlPath;
 				dataPackage03.workloadClass = HttpsWorkloadClass::Get;
-				dataPackage03.workloadType = HttpsWorkloadType::SoundCloudGetSearchResults;
 				auto result = this->httpsClient->submitWorkloadAndGetResult(dataPackage03);
 				if (result.responseMessage.size() != 0) {
 					didWeGetZero = false;

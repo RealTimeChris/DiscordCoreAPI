@@ -39,11 +39,10 @@ namespace DiscordCoreInternal {
 	}
 
 	std::vector<DiscordCoreAPI::Song> YouTubeRequestBuilder::collectSearchResults(const std::string& searchQuery) {
-		HttpsWorkloadData dataPackage{};
+		HttpsWorkloadData dataPackage{ HttpsWorkloadType::YouTubeGetSearchResults };
 		dataPackage.baseUrl = this->baseUrl;
 		dataPackage.relativePath = "/results?search_query=" + DiscordCoreAPI::urlEncode(searchQuery.c_str());
 		dataPackage.workloadClass = HttpsWorkloadClass::Get;
-		dataPackage.workloadType = HttpsWorkloadType::YouTubeGetSearchResults;
 		HttpsResponseData returnData = this->httpsClient->submitWorkloadAndGetResult(dataPackage);
 		if (returnData.responseCode != 200 && this->configManager->doWePrintHttpsErrorMessages()) {
 			std::cout << DiscordCoreAPI::shiftToBrightRed() << "YouTubeRequestBuilder::collectSearchResults() Error: " << returnData.responseCode
@@ -90,12 +89,11 @@ namespace DiscordCoreInternal {
 			theRequest["context"]["client"]["utcOffsetMinutes"] = 0;
 			theRequest["context"]["thirdParty"];
 			theRequest["context"]["thirdParty"]["embedUrl"] = "https://www.youtube.com";
-			HttpsWorkloadData dataPackage02{};
+			HttpsWorkloadData dataPackage02{ HttpsWorkloadType::YouTubeGetSearchResults };
 			dataPackage02.baseUrl = YouTubeRequestBuilder::baseUrl;
 			dataPackage02.relativePath = "/youtubei/v1/player?key=" + apiKey;
 			dataPackage02.content = theRequest.dump();
 			dataPackage02.workloadClass = HttpsWorkloadClass::Post;
-			dataPackage02.workloadType = HttpsWorkloadType::YouTubeGetSearchResults;
 			HttpsResponseData responseData = this->httpsClient->submitWorkloadAndGetResult(dataPackage02);
 			if (responseData.responseCode != 204 && responseData.responseCode != 201 && responseData.responseCode != 200 && this->configManager->doWePrintHttpsErrorMessages()) {
 				std::cout << DiscordCoreAPI::shiftToBrightRed() << "YouTubeRequestBuilder::constructDownloadInfo() 01 Error: " << responseData.responseCode << ", "
