@@ -877,7 +877,6 @@ namespace DiscordCoreAPI {
 	GuildPreviewData::GuildPreviewData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
-
 	
 	GuildData& GuildData::operator=(const nlohmann::json& jsonObjectData) {
 		this->parseObject(jsonObjectData, this);
