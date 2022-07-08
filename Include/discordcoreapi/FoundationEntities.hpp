@@ -5634,9 +5634,9 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll InputEventData {
 	  public:
 		friend class DiscordCoreInternal::BaseSocketAgent;
-		friend class OnInteractionCreationData;
+		friend struct OnInteractionCreationData;
 		friend class RespondToInputEventData;
-		friend class BaseFunctionArguments;
+		friend struct BaseFunctionArguments;
 		friend class DiscordCoreClient;
 		friend class EventHandler;
 		friend class CommandData;
@@ -5722,15 +5722,15 @@ namespace DiscordCoreAPI {
 		friend struct CreateEphemeralInteractionResponseData;
 		friend struct CreateDeferredInteractionResponseData;
 		friend struct CreateEphemeralFollowUpMessageData;
-		friend struct InteractionResponseData;
 		friend struct DeleteInteractionResponseData;
 		friend struct CreateInteractionResponseData;
 		friend struct EditInteractionResponseData;
 		friend struct DeleteFollowUpMessageData;
-		friend struct CreateFollowUpMessageData;
-		friend struct EditFollowUpMessageData;
-		friend struct CreateMessageData;
-		friend struct EditMessageData;
+		friend class CreateFollowUpMessageData;
+		friend struct InteractionResponseData;
+		friend class EditFollowUpMessageData;
+		friend class CreateMessageData;
+		friend class EditMessageData;
 		friend class InputEvents;
 		friend class SendDMData;
 
