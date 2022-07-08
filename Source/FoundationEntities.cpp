@@ -1115,231 +1115,29 @@ namespace DiscordCoreAPI {
 		*this = jsonObjectData;
 	}
 
+	YouTubeFormatVector::operator std::vector<YouTubeFormat>() {
+		return this->theFormats;
+	}
+
+	YouTubeFormatVector& YouTubeFormatVector::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData, this);
+		return *this;
+	}
+
+	YouTubeFormatVector::YouTubeFormatVector(const nlohmann::json& jsonObjectData) {
+		*this = jsonObjectData;
+	}
+
+	UserCommandInteractionData& UserCommandInteractionData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData, this);
+		return *this;
+	}
+
+	UserCommandInteractionData::UserCommandInteractionData(const nlohmann::json& jsonObjectData) {
+		*this = jsonObjectData;
+	}
+
 	/*
-
-	struct DiscordCoreAPI_Dll YouTubeFormat {
-		std::string signatureCipher{};
-		std::string audioSampleRate{};
-		int32_t averageBitrate{ 0 };
-		int64_t contentLength{ 0 };
-		std::string audioQuality{};
-		std::string downloadUrl{};
-		std::string signature{};
-		std::string mimeType{};
-		std::string quality{};
-		std::string codecs{};
-		std::string aitags{};
-		int32_t bitrate{ 0 };
-		int32_t height{ 0 };
-		int32_t width{ 0 };
-		int32_t itag{ 0 };
-		int32_t fps{ 0 };
-	};
-
-	/// YouTube format data. \brief YouTube format data.
-	struct DiscordCoreAPI_Dll YouTubeFormatVector : public DataParser<YouTubeFormatVector> {
-		std::vector<YouTubeFormat> theFormats{};
-
-		YouTubeFormatVector() = default;
-
-		YouTubeFormatVector& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
-
-		YouTubeFormatVector(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
-
-		virtual ~YouTubeFormatVector() = default;
-
-	  protected:
-		void parseObject(const nlohmann::json& jsonObjectData, YouTubeFormatVector* pDataStructure) {
-			if (!jsonObjectData.is_null()) {
-				if (jsonObjectData.contains("streamingData") && !jsonObjectData["streamingData"].is_null() && jsonObjectData["streamingData"].contains("formats") &&
-					!jsonObjectData["streamingData"]["formats"].is_null()) {
-					for (auto& value: jsonObjectData["streamingData"]["formats"]) {
-						YouTubeFormat newData{};
-
-						if (value.contains("audioQuality") && !value["audioQuality"].is_null()) {
-							newData.audioQuality = value["audioQuality"].get<std::string>();
-						}
-
-						if (value.contains("averageBitrate") && !value["averageBitrate"].is_null()) {
-							newData.averageBitrate = value["averageBitrate"].get<int32_t>();
-						}
-
-						if (value.contains("audioSampleRate") && !value["audioSampleRate"].is_null()) {
-							newData.audioSampleRate = value["audioSampleRate"].get<std::string>();
-						}
-
-						if (value.contains("bitrate") && !value["bitrate"].is_null()) {
-							newData.bitrate = value["bitrate"].get<int32_t>();
-						}
-
-						if (value.contains("contentLength") && !value["contentLength"].is_null()) {
-							newData.contentLength = stoll(value["contentLength"].get<std::string>());
-						}
-
-						if (value.contains("fps") && !value["fps"].is_null()) {
-							newData.fps = value["fps"].get<int32_t>();
-						}
-
-						if (value.contains("height") && !value["height"].is_null()) {
-							newData.height = value["height"].get<int32_t>();
-						}
-
-						if (value.contains("width") && !value["width"].is_null()) {
-							newData.height = value["width"].get<int32_t>();
-						}
-
-						if (value.contains("aitags") && !value["aitags"].is_null()) {
-							newData.aitags = value["aitags"].get<std::string>();
-						}
-
-						if (value.contains("itag") && !value["itag"].is_null()) {
-							newData.itag = value["itag"].get<int32_t>();
-						}
-
-						if (value.contains("url") && !value["url"].is_null()) {
-							newData.downloadUrl = value["url"].get<std::string>();
-						}
-
-						if (value.contains("mimeType") && !value["mimeType"].is_null()) {
-							newData.mimeType = value["mimeType"].get<std::string>();
-						}
-
-						if (value.contains("quality") && !value["quality"].is_null()) {
-							newData.quality = value["quality"].get<std::string>();
-						}
-
-						if (value.contains("signatureCipher") && !value["signatureCipher"].is_null()) {
-							newData.signatureCipher = value["signatureCipher"].get<std::string>();
-						} else if (value.contains("cipher") && !value["cipher"].is_null()) {
-							newData.signatureCipher = value["cipher"].get<std::string>();
-						}
-
-						if (newData.signatureCipher.find("&sp") != std::string::npos) {
-							newData.signature = newData.signatureCipher.substr(0, newData.signatureCipher.find("&sp"));
-						}
-
-						if (newData.signatureCipher.find("url") != std::string::npos) {
-							newData.downloadUrl = newData.signatureCipher.substr(newData.signatureCipher.find("url") + 4);
-						} else if (value.contains("url") && !value["url"].is_null()) {
-							newData.downloadUrl = value["url"];
-						}
-
-						pDataStructure->theFormats.push_back(newData);
-					}
-				}
-
-				if (jsonObjectData.contains("streamingData") && !jsonObjectData["streamingData"].is_null() && jsonObjectData["streamingData"].contains("adaptiveFormats") &&
-					!jsonObjectData["streamingData"]["adaptiveFormats"].is_null()) {
-					for (auto& value: jsonObjectData["streamingData"]["adaptiveFormats"]) {
-						YouTubeFormat newData{};
-
-						if (value.contains("audioQuality") && !value["audioQuality"].is_null()) {
-							newData.audioQuality = value["audioQuality"].get<std::string>();
-						}
-
-						if (value.contains("averageBitrate") && !value["averageBitrate"].is_null()) {
-							newData.averageBitrate = value["averageBitrate"].get<int32_t>();
-						}
-
-						if (value.contains("audioSampleRate") && !value["audioSampleRate"].is_null()) {
-							newData.audioSampleRate = value["audioSampleRate"].get<std::string>();
-						}
-
-						if (value.contains("bitrate") && !value["bitrate"].is_null()) {
-							newData.bitrate = value["bitrate"].get<int32_t>();
-						}
-
-						if (value.contains("contentLength") && !value["contentLength"].is_null()) {
-							newData.contentLength = stoll(value["contentLength"].get<std::string>());
-						}
-
-						if (value.contains("fps") && !value["fps"].is_null()) {
-							newData.fps = value["fps"].get<int32_t>();
-						}
-
-						if (value.contains("height") && !value["height"].is_null()) {
-							newData.height = value["height"].get<int32_t>();
-						}
-
-						if (value.contains("width") && !value["width"].is_null()) {
-							newData.height = value["width"].get<int32_t>();
-						}
-
-						if (value.contains("aitags") && !value["aitags"].is_null()) {
-							newData.aitags = value["aitags"].get<std::string>();
-						}
-
-						if (value.contains("itag") && !value["itag"].is_null()) {
-							newData.itag = value["itag"].get<int32_t>();
-						}
-
-						if (value.contains("mimeType") && !value["mimeType"].is_null()) {
-							newData.mimeType = value["mimeType"].get<std::string>();
-						}
-
-						if (value.contains("quality") && !value["quality"].is_null()) {
-							newData.quality = value["quality"].get<std::string>();
-						}
-
-						if (value.contains("signatureCipher") && !value["signatureCipher"].is_null()) {
-							newData.signatureCipher = value["signatureCipher"].get<std::string>();
-						} else if (value.contains("cipher") && !value["cipher"].is_null()) {
-							newData.signatureCipher = value["cipher"].get<std::string>();
-						}
-
-						if (newData.signatureCipher.find("&sp") != std::string::npos) {
-							newData.signature = newData.signatureCipher.substr(0, newData.signatureCipher.find("&sp"));
-						}
-
-						if (newData.signatureCipher.find("url") != std::string::npos) {
-							newData.downloadUrl = newData.signatureCipher.substr(newData.signatureCipher.find("url") + 4);
-						} else if (value.contains("url") && !value["url"].is_null()) {
-							newData.downloadUrl = value["url"];
-						}
-						pDataStructure->theFormats.push_back(newData);
-					}
-				}
-			}
-		}
-	};
-
-	/// Application command types. \brief Application command types.
-	enum class ApplicationCommandType : int8_t {
-		Chat_Input = 1,///< Chat input.
-		User = 2,///< User.
-		Message = 3///< Message.
-	};
-
-	/// User command Interaction data. \brief User command Interaction data.
-	struct DiscordCoreAPI_Dll UserCommandInteractionData : public DataParser<UserCommandInteractionData> {
-		std::string targetId{};///< The target User's id.
-
-		UserCommandInteractionData() = default;
-
-		UserCommandInteractionData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
-
-		UserCommandInteractionData(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
-
-		virtual ~UserCommandInteractionData() = default;
-
-	  protected:
-		void parseObject(const nlohmann::json& jsonObjectData, UserCommandInteractionData* pDataStructure) {
-			if (jsonObjectData.contains("target_id") && !jsonObjectData["target_id"].is_null()) {
-				pDataStructure->targetId = jsonObjectData["target_id"].get<std::string>();
-			}
-		}
-	};
-
 	/// Message command interacction data. \brief Message command interacction data.
 	struct DiscordCoreAPI_Dll MessageCommandInteractionData : public DataParser<MessageCommandInteractionData> {
 		std::string targetId{};///< The target Message's id.
