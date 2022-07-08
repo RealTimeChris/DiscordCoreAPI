@@ -334,7 +334,7 @@ namespace DiscordCoreInternal {
 
 		HttpsWorkloadData() = default;
 
-		static int64_t getAndIncrementWorkloadId(HttpsWorkloadType workloadType);
+		static int64_t incrementAndGetWorkloadId(HttpsWorkloadType workloadType);
 	};
 }
 
@@ -835,21 +835,9 @@ namespace DiscordCoreAPI {
 		Snowflake guildId{};
 	};
 
-	inline bool operator==(const GuildMemberId lhs, const GuildMemberId rhs) {
-		if (lhs.guildMemberId == rhs.guildMemberId && lhs.guildId == rhs.guildId) {
-			return true;
-		} else {
-			return false;
-		}
-	}
+	bool operator==(const GuildMemberId lhs, const GuildMemberId rhs);
 
-	inline bool operator<(const GuildMemberId& lhs, const GuildMemberId& rhs) {
-		if ((lhs.guildId + lhs.guildMemberId) < (rhs.guildId + rhs.guildMemberId)) {
-			return true;
-		} else {
-			return false;
-		}
-	}
+	bool operator<(const GuildMemberId& lhs, const GuildMemberId& rhs);
 
 	/// Data structure representing a single GuildMember. \brief Data structure representing a single GuildMember.
 	/// Data structure representing a single Guild. \brief Data structure representing a single Guild.

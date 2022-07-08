@@ -111,7 +111,7 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<std::vector<AutoModerationRule>> AutoModerationRules::listAutoModerationRulesForGuildAsync(ListAutoModerationRulesForGuildData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Get_Auto_Moderation_Rules);
+		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::incrementAndGetWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Get_Auto_Moderation_Rules);
 		co_await NewThreadAwaitable<std::vector<AutoModerationRule>>();
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Get_Auto_Moderation_Rules;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
@@ -122,7 +122,7 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<AutoModerationRule> AutoModerationRules::getAutoModerationRuleAsync(GetAutoModerationRuleData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Get_Auto_Moderation_Rule);
+		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::incrementAndGetWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Get_Auto_Moderation_Rule);
 		co_await NewThreadAwaitable<AutoModerationRule>();
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Get_Auto_Moderation_Rule;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
@@ -133,7 +133,7 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<AutoModerationRule> AutoModerationRules::createAutoModerationRuleAsync(CreateAutoModerationRuleData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Post_Auto_Moderation_Rule);
+		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::incrementAndGetWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Post_Auto_Moderation_Rule);
 		co_await NewThreadAwaitable<AutoModerationRule>();
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Post_Auto_Moderation_Rule;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
@@ -145,7 +145,7 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<AutoModerationRule> AutoModerationRules::modifyAutoModerationRuleAsync(ModifyAutoModerationRuleData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Patch_Auto_Moderation_Rule);
+		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::incrementAndGetWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Patch_Auto_Moderation_Rule);
 		co_await NewThreadAwaitable<AutoModerationRule>();
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Patch_Auto_Moderation_Rule;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
@@ -157,7 +157,7 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<void> AutoModerationRules::deleteAutoModerationRuleAsync(DeleteAutoModerationRuleData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{};
-		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::getAndIncrementWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Delete_Auto_Moderation_Rule);
+		workload.thisWorkerId = DiscordCoreInternal::HttpsWorkloadData::incrementAndGetWorkloadId(DiscordCoreInternal::HttpsWorkloadType::Delete_Auto_Moderation_Rule);
 		co_await NewThreadAwaitable<void>();
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Delete_Auto_Moderation_Rule;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Delete;

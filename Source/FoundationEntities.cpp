@@ -132,7 +132,7 @@ namespace DiscordCoreInternal {
 		*this = other;
 	}
 
-	int64_t HttpsWorkloadData::getAndIncrementWorkloadId(HttpsWorkloadType workloadType) {
+	int64_t HttpsWorkloadData::incrementAndGetWorkloadId(HttpsWorkloadType workloadType) {
 		std::lock_guard theLock{ HttpsWorkloadData::accessMutex };
 		int64_t theValue = HttpsWorkloadData::workloadIdsExternal[workloadType].load();
 		HttpsWorkloadData::workloadIdsExternal[workloadType].store(theValue + 1);
@@ -402,6 +402,22 @@ namespace DiscordCoreAPI {
 
 	ThreadMemberDataVector::ThreadMemberDataVector(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
+	}
+
+	bool operator==(const GuildMemberId lhs, const GuildMemberId rhs) {
+		if (lhs.guildMemberId == rhs.guildMemberId && lhs.guildId == rhs.guildId) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	bool operator<(const GuildMemberId& lhs, const GuildMemberId& rhs) {
+		if ((lhs.guildId + lhs.guildMemberId) < (rhs.guildId + rhs.guildMemberId)) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	GuildMemberData& GuildMemberData::operator=(const nlohmann::json& jsonObjectData) {
