@@ -135,7 +135,7 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<void> Roles::addGuildMemberRoleAsync(AddGuildMemberRoleData dataPackage) {
-		DiscordCoreInternal::HttpsWorkloadData workload{};HttpsWorkloadType::Put_Guild_Member_Role);
+		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Put_Guild_Member_Role };
 		co_await NewThreadAwaitable<void>();
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Put_Guild_Member_Role;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Put;
@@ -149,7 +149,7 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<void> Roles::removeGuildMemberRoleAsync(RemoveGuildMemberRoleData dataPackage) {
-		DiscordCoreInternal::HttpsWorkloadData workload{};HttpsWorkloadType::Delete_Guild_Member_Role);
+		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Delete_Guild_Member_Role };
 		co_await NewThreadAwaitable<void>();
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Delete_Guild_Member_Role;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Delete;
@@ -163,7 +163,7 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<std::vector<Role>> Roles::getGuildRolesAsync(GetGuildRolesData dataPackage) {
-		DiscordCoreInternal::HttpsWorkloadData workload{};HttpsWorkloadType::Get_Guild_Roles);
+		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Roles };
 		co_await NewThreadAwaitable<std::vector<Role>>();
 		if (dataPackage.guildId == 0) {
 			throw std::runtime_error{ "Roles::getRoleAsync() Error: Sorry, but you forgot to set the guildId!\n\n" };
@@ -176,7 +176,7 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<Role> Roles::createGuildRoleAsync(CreateGuildRoleData dataPackage) {
-		DiscordCoreInternal::HttpsWorkloadData workload{};HttpsWorkloadType::Post_Guild_Role);
+		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Post_Guild_Role };
 		co_await NewThreadAwaitable<Role>();
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Post_Guild_Role;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
@@ -197,7 +197,7 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<std::vector<Role>> Roles::modifyGuildRolePositionsAsync(ModifyGuildRolePositionsData dataPackage) {
-		DiscordCoreInternal::HttpsWorkloadData workload{};HttpsWorkloadType::Patch_Guild_Role_Positions);
+		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Patch_Guild_Role_Positions };
 		co_await NewThreadAwaitable<std::vector<Role>>();
 		std::vector<Role> currentRoles = Roles::getGuildRolesAsync({ .guildId = dataPackage.guildId }).get();
 		Role newRole = Roles::getCachedRoleAsync({ .roleId = dataPackage.roleId }).get();
@@ -236,7 +236,7 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<Role> Roles::modifyGuildRoleAsync(ModifyGuildRoleData dataPackage) {
-		DiscordCoreInternal::HttpsWorkloadData workload{};HttpsWorkloadType::Patch_Guild_Role);
+		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Patch_Guild_Role };
 		co_await NewThreadAwaitable<Role>();
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Patch_Guild_Role;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
@@ -250,7 +250,7 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<void> Roles::removeGuildRoleAsync(RemoveGuildRoleData dataPackage) {
-		DiscordCoreInternal::HttpsWorkloadData workload{};HttpsWorkloadType::Delete_Guild_Role);
+		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Delete_Guild_Role };
 		co_await NewThreadAwaitable<void>();
 		workload.workloadType = DiscordCoreInternal::HttpsWorkloadType::Delete_Guild_Role;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Delete;
