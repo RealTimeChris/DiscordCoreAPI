@@ -25,7 +25,7 @@
 
 namespace DiscordCoreAPI {
 
-	InteractionResponse& InteractionResponse::addButton(bool disabled, const std::string& customIdNew, const std::string& buttonLabel, ButtonStyle buttonStyle,
+	InteractionResponseBase& InteractionResponseBase::addButton(bool disabled, const std::string& customIdNew, const std::string& buttonLabel, ButtonStyle buttonStyle,
 		const std::string& emojiName, Snowflake emojiId, const std::string& url) {
 		if (this->data.data.components.size() == 0) {
 			ActionRowData actionRowData;
@@ -51,7 +51,7 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	InteractionResponse& InteractionResponse::addSelectMenu(bool disabled, const std::string& customIdNew, std::vector<SelectOptionData> options, const std::string& placeholder,
+	InteractionResponseBase& InteractionResponseBase::addSelectMenu(bool disabled, const std::string& customIdNew, std::vector<SelectOptionData> options, const std::string& placeholder,
 		int32_t maxValues, int32_t minValues) {
 		if (this->data.data.components.size() == 0) {
 			ActionRowData actionRowData;
@@ -76,7 +76,7 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	InteractionResponse& InteractionResponse::addModal(const std::string& topTitleNew, const std::string& topCustomIdNew, const std::string& titleNew,
+	InteractionResponseBase& InteractionResponseBase::addModal(const std::string& topTitleNew, const std::string& topCustomIdNew, const std::string& titleNew,
 		const std::string& customIdNew, bool required, int32_t minLength, int32_t maxLength, TextInputStyle inputStyle, const std::string& label, const std::string& placeholder) {
 		this->data.data.title = topTitleNew;
 		this->data.data.customId = topCustomIdNew;
@@ -105,42 +105,42 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	InteractionResponse& InteractionResponse::addFile(const File& theFile) {
+	InteractionResponseBase& InteractionResponseBase::addFile(const File& theFile) {
 		this->data.data.files.push_back(theFile);
 		return *this;
 	}
 
-	InteractionResponse& InteractionResponse::addAllowedMentions(const AllowedMentionsData& dataPackage) {
+	InteractionResponseBase& InteractionResponseBase::addAllowedMentions(const AllowedMentionsData& dataPackage) {
 		this->data.data.allowedMentions = dataPackage;
 		return *this;
 	}
 
-	InteractionResponse& InteractionResponse::addComponentRow(const ActionRowData& dataPackage) {
+	InteractionResponseBase& InteractionResponseBase::addComponentRow(const ActionRowData& dataPackage) {
 		this->data.data.components.push_back(dataPackage);
 		return *this;
 	}
 
-	InteractionResponse& InteractionResponse::setResponseType(InteractionCallbackType type) {
+	InteractionResponseBase& InteractionResponseBase::setResponseType(InteractionCallbackType type) {
 		this->data.type = type;
 		return *this;
 	}
 
-	InteractionResponse& InteractionResponse::addMessageEmbed(const EmbedData& dataPackage) {
+	InteractionResponseBase& InteractionResponseBase::addMessageEmbed(const EmbedData& dataPackage) {
 		this->data.data.embeds.push_back(dataPackage);
 		return *this;
 	}
 
-	InteractionResponse& InteractionResponse::addContent(const std::string& dataPackage) {
+	InteractionResponseBase& InteractionResponseBase::addContent(const std::string& dataPackage) {
 		this->data.data.content = dataPackage;
 		return *this;
 	}
 
-	InteractionResponse& InteractionResponse::setTTSStatus(bool enabledTTs) {
+	InteractionResponseBase& InteractionResponseBase::setTTSStatus(bool enabledTTs) {
 		this->data.data.tts = enabledTTs;
 		return *this;
 	}
 
-	InteractionResponseData InteractionResponse::getInteractionResponseData() {
+	InteractionResponseData InteractionResponseBase::getInteractionResponseData() {
 		return this->data;
 	}
 

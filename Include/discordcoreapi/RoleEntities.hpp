@@ -75,7 +75,7 @@ namespace DiscordCoreAPI {
 
 	/// For updating the Role positions. \brief For updating the Role positions.
 	struct DiscordCoreAPI_Dll ModifyGuildRolePositionsData {
-		friend Roles;
+		friend class Roles;
 
 		Snowflake guildId{};///< The Guild within which to move the Role.
 		int32_t newPosition{ 0 };///< The new position of the Role.
@@ -176,9 +176,9 @@ namespace DiscordCoreAPI {
 	/// An interface class for the Role related Discord endpoints. \brief An interface class for the Role related Discord endpoints.
 	class DiscordCoreAPI_Dll Roles {
 	  public:
-		friend DiscordCoreClient;
-		friend EventHandler;
-		friend Guild;
+		friend class DiscordCoreClient;
+		friend class EventHandler;
+		friend class Guild;
 
 		static void initialize(DiscordCoreInternal::HttpsClient*, ConfigManager* configManagerNew);
 

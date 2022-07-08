@@ -29,25 +29,25 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll YouTubeRequestBuilder {
 	  public:
+
 		YouTubeRequestBuilder() = default;
-
-		YouTubeRequestBuilder(HttpsClient*, DiscordCoreAPI::ConfigManager*);
-
-		DiscordCoreAPI::Song collectFinalSong(const DiscordCoreAPI::GuildMemberData& addedByGuildMember, DiscordCoreAPI::Song& newSong);
-
-		std::vector<DiscordCoreAPI::Song> collectSearchResults(const std::string& theString);
 
 	  protected:
 		DiscordCoreAPI::ConfigManager* configManager{ nullptr };
 		std::string baseUrl{ "https://www.youtube.com" };
 		HttpsClient* httpsClient{ nullptr };
 
+		DiscordCoreAPI::Song collectFinalSong(const DiscordCoreAPI::GuildMemberData& addedByGuildMember, DiscordCoreAPI::Song& newSong);
+
 		DiscordCoreAPI::Song constructDownloadInfo(const DiscordCoreAPI::GuildMemberData& guildMember, DiscordCoreAPI::Song& newSong);
+
+		std::vector<DiscordCoreAPI::Song> collectSearchResults(const std::string& theString);
 	};
 
-	class DiscordCoreAPI_Dll YouTubeAPI {
+	class DiscordCoreAPI_Dll YouTubeAPI : public YouTubeRequestBuilder {
 	  public:
-		YouTubeAPI(const Snowflake& guildId, HttpsClient* httpsClient, DiscordCoreAPI::ConfigManager*);
+
+		YouTubeAPI(DiscordCoreAPI::ConfigManager*, HttpsClient* httpsClient, const Snowflake& guildId);
 
 		DiscordCoreAPI::Song collectFinalSong(const DiscordCoreAPI::GuildMemberData& addedByGuildMember, DiscordCoreAPI::Song& newSong);
 
@@ -60,7 +60,6 @@ namespace DiscordCoreInternal {
 		void cancelCurrentSong();
 
 	  protected:
-		DiscordCoreAPI::ConfigManager* configManager{ nullptr };
 		YouTubeRequestBuilder requestBuilder{};
 		DiscordCoreAPI::Snowflake guildId{};
 		const int32_t maxBufferSize{ 8192 };

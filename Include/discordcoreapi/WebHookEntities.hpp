@@ -43,7 +43,7 @@ namespace DiscordCoreAPI {
 		friend class CreateFollowUpMessageData;
 		friend class EditFollowUpMessageData;
 		friend class Interactions;
-		friend WebHooks;
+		friend class WebHooks;
 
 		Snowflake threadId{};///< Send a message to the specified thread within a webhook's Channel. The thread will automatically be unarchived.
 		bool wait{ false };///< Waits for server confirmation of message send before response, and returns the created message body.
@@ -68,7 +68,7 @@ namespace DiscordCoreAPI {
 		/// Adds a select-menu to the response Message. \brief Adds a select-menu to the response Message.
 		/// \param disabled Whether the select-menu is active or not.
 		/// \param customIdNew A custom id to give for identifying the select-menu.
-		/// \param options A std::vector of select-menu-options to offer.
+		/// \param options A vector of select-menu-options to offer.
 		/// \param placeholder Custom placeholder text if nothing is selected, max 100 characters.
 		/// \param maxValues Maximum number of selections that are possible.
 		/// \param minValues Minimum required number of selections that are required.
@@ -108,7 +108,7 @@ namespace DiscordCoreAPI {
 		ExecuteWebHookData& addMessageEmbed(EmbedData dataPackage);
 
 		/// For setting the Message content in a response. \brief For setting the content in a response.
-		/// \param dataPackage A std::string, containing the content.
+		/// \param dataPackage A string, containing the content.
 		ExecuteWebHookData& addContent(const std::string& dataPackage);
 
 		/// For setting the tts status of a response. \brief For setting the tts status of a response.
@@ -138,7 +138,7 @@ namespace DiscordCoreAPI {
 		friend class EditInteractionResponseData;
 		friend class EditFollowUpMessageData;
 		friend class Interactions;
-		friend WebHooks;
+		friend class WebHooks;
 
 		Snowflake messageId{};///< The Message Id to collect.
 		Snowflake threadId{};///< Send a message to the specified thread within a webhook's Channel. The thread will automatically be unarchived.

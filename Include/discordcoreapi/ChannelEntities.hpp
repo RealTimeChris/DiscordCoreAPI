@@ -216,9 +216,9 @@ namespace DiscordCoreAPI {
 	/// An interface class for the Channel related endpoints. \brief An interface class for the Channel-related endpoints.
 	class DiscordCoreAPI_Dll Channels {
 	  public:
-		friend DiscordCoreClient;
-		friend EventHandler;
-		friend Guild;
+		friend class DiscordCoreClient;
+		friend class EventHandler;
+		friend class Guild;
 
 		static void initialize(DiscordCoreInternal::HttpsClient*, ConfigManager* configManager);
 
@@ -247,7 +247,7 @@ namespace DiscordCoreAPI {
 		/// \returns A CoRoutine containing void.
 		static CoRoutine<void> editChannelPermissionOverwritesAsync(EditChannelPermissionOverwritesData dataPackage);
 
-		/// Collects a std::vector of the invites to a given Channel. \brief Collects a std::vector of the invites to a given Channel.
+		/// Collects a vector of the invites to a given Channel. \brief Collects a vector of the invites to a given Channel.
 		/// \param dataPackage A GetChannelInvitesData structure.
 		/// \returns A CoRoutine containing a InviteDataVector.
 		static CoRoutine<std::vector<InviteData>> getChannelInvitesAsync(GetChannelInvitesData dataPackage);

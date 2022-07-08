@@ -28,16 +28,11 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll SoundCloudRequestBuilder {
 	  public:
+
 		SoundCloudRequestBuilder() = default;
 
-		SoundCloudRequestBuilder(HttpsClient*, DiscordCoreAPI::ConfigManager* configManagerNew);
-
-		DiscordCoreAPI::Song collectFinalSong(const DiscordCoreAPI::GuildMemberData& addedByGuildMember, DiscordCoreAPI::Song& newSong);
-
-		std::vector<DiscordCoreAPI::Song> collectSearchResults(const std::string& theString);
-
 	  protected:
-		inline static std::string clientId{};
+		static std::string clientId;
 
 		const std::string baseUrl02{ "https://api-v2.soundcloud.com" };
 		DiscordCoreAPI::ConfigManager* configManager{ nullptr };
@@ -45,14 +40,19 @@ namespace DiscordCoreInternal {
 		const std::string appVersion{ "1654762087" };
 		HttpsClient* httpsClient{ nullptr };
 
+		DiscordCoreAPI::Song collectFinalSong(const DiscordCoreAPI::GuildMemberData& addedByGuildMember, DiscordCoreAPI::Song& newSong);
+
+		std::vector<DiscordCoreAPI::Song> collectSearchResults(const std::string& theString);
+
 		DiscordCoreAPI::Song constructDownloadInfo(DiscordCoreAPI::Song& newSong);
 
 		std::string collectClientId();
 	};
 
-	class DiscordCoreAPI_Dll SoundCloudAPI {
+	class DiscordCoreAPI_Dll SoundCloudAPI : public SoundCloudRequestBuilder {
 	  public:
-		SoundCloudAPI(const Snowflake& guildId, HttpsClient* httpsClient, DiscordCoreAPI::ConfigManager* configManagerNew);
+
+		SoundCloudAPI(DiscordCoreAPI::ConfigManager* configManagerNew, HttpsClient* httpsClient, const Snowflake& guildId);
 
 		DiscordCoreAPI::Song collectFinalSong(const DiscordCoreAPI::GuildMemberData& addedByGuildMember, DiscordCoreAPI::Song& newSong);
 
@@ -65,11 +65,8 @@ namespace DiscordCoreInternal {
 		void cancelCurrentSong();
 
 	  protected:
-		DiscordCoreAPI::ConfigManager* configManager{ nullptr };
-		SoundCloudRequestBuilder requestBuilder{};
 		DiscordCoreAPI::Snowflake guildId{};
 		const int32_t maxBufferSize{ 8192 };
-		HttpsClient* httpsClient{ nullptr };
 		DiscordCoreAPI::Song theSong{};
 	};
 

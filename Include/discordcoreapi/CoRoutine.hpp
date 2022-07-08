@@ -53,22 +53,22 @@ namespace DiscordCoreAPI {
 	  public:
 		class promise_type {
 		  public:
-			template<typename ReturnType02> friend class CoRoutine;
+			template<typename ReturnType> friend class CoRoutine;
 
 			void requestStop() {
-				this->areWeStopped.store(true);
+				this->areWeStoppedBool.store(true);
 			}
 
-			bool isItStopped() {
-				return this->areWeStopped.load();
+			bool areWeStopped() {
+				return this->areWeStoppedBool.load();
 			}
 
 			void return_value(ReturnType&& at) {
-				this->result = std::move(at);
+				*this->result = std::move(at);
 			}
 
 			void return_value(ReturnType& at) {
-				this->result = at;
+				*this->result = at;
 			}
 
 			auto get_return_object() {
@@ -90,9 +90,9 @@ namespace DiscordCoreAPI {
 
 		  protected:
 			UnboundedMessageBlock<std::exception_ptr> exceptionBuffer{};
-			std::atomic_bool areWeStopped{ false };
+			std::atomic_bool areWeStoppedBool{ false };
 			std::atomic_bool areWeDone{ false };
-			ReturnType result{};
+			ReturnType* result{};
 		};
 
 		CoRoutine<ReturnType>& operator=(CoRoutine<ReturnType>&& other) noexcept {
@@ -101,6 +101,7 @@ namespace DiscordCoreAPI {
 				other.coroutineHandle = nullptr;
 				this->exceptionBuffer = &this->coroutineHandle.promise().exceptionBuffer;
 				this->areWeDone = &this->coroutineHandle.promise().areWeDone;
+				this->coroutineHandle.promise().result = &this->result;
 				this->currentStatus = other.currentStatus;
 				other.currentStatus = CoRoutineStatus::Cancelled;
 			}
@@ -123,6 +124,7 @@ namespace DiscordCoreAPI {
 			this->coroutineHandle = coroutineHandleNew;
 			this->exceptionBuffer = &this->coroutineHandle.promise().exceptionBuffer;
 			this->areWeDone = &this->coroutineHandle.promise().areWeDone;
+			this->coroutineHandle.promise().result = &this->result;
 			return *this;
 		}
 
@@ -139,7 +141,7 @@ namespace DiscordCoreAPI {
 		}
 
 		/// Collects the status of the CoRoutine. \brief Collects the status of the CoRoutine.
-		/// \returns CoRoutineStatus The status of the CoRoutine.
+		/// \returns DiscordCoreAPI::CoRoutineStatus The status of the CoRoutine.
 		CoRoutineStatus getStatus() {
 			if (!this->coroutineHandle) {
 				this->currentStatus = CoRoutineStatus::Cancelled;
@@ -162,7 +164,6 @@ namespace DiscordCoreAPI {
 				while (this->exceptionBuffer->tryReceive(exceptionPtr)) {
 					std::rethrow_exception(exceptionPtr);
 				}
-				this->result = std::move(this->coroutineHandle.promise().result);
 				return this->result;
 			} else {
 				throw CoRoutineError("CoRoutine::get(), You called get() on a CoRoutine that is "
@@ -182,6 +183,7 @@ namespace DiscordCoreAPI {
 					}
 				}
 				std::exception_ptr exceptionPtr{};
+				this->currentStatus = CoRoutineStatus::Cancelled;
 				while (this->exceptionBuffer->tryReceive(exceptionPtr)) {
 					std::rethrow_exception(exceptionPtr);
 				}
@@ -208,11 +210,11 @@ namespace DiscordCoreAPI {
 			template<typename void02> friend class CoRoutine;
 
 			void requestStop() {
-				this->areWeStopped.store(true);
+				this->areWeStoppedBool.store(true);
 			}
 
-			bool isItStopped() {
-				return this->areWeStopped.load();
+			bool areWeStopped() {
+				return this->areWeStoppedBool.load();
 			}
 
 			void return_void() {
@@ -237,7 +239,7 @@ namespace DiscordCoreAPI {
 
 		  protected:
 			UnboundedMessageBlock<std::exception_ptr> exceptionBuffer{};
-			std::atomic_bool areWeStopped{ false };
+			std::atomic_bool areWeStoppedBool{ false };
 			std::atomic_bool areWeDone{ false };
 		};
 
@@ -322,11 +324,11 @@ namespace DiscordCoreAPI {
 						std::this_thread::sleep_for(1ms);
 					}
 				}
+				this->currentStatus = CoRoutineStatus::Cancelled;
 				std::exception_ptr exceptionPtr{};
 				while (this->exceptionBuffer->tryReceive(exceptionPtr)) {
 					std::rethrow_exception(exceptionPtr);
 				}
-				this->currentStatus = CoRoutineStatus::Cancelled;
 			}
 		}
 

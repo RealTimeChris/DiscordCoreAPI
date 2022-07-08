@@ -268,6 +268,24 @@ namespace DiscordCoreAPI {
 		return this->thePtr.get();
 	}
 
+	bool operator!=(StringWrapper lhs, const char* rhs) {
+		for (uint64_t x = 0; x < static_cast<std::string>(rhs).size(); x++) {
+			if (static_cast<std::string>(lhs)[x] != static_cast<std::string>(rhs)[x]) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	bool operator==(std::string& lhs, StringWrapper& rhs) {
+		for (uint64_t x = 0; x < static_cast<std::string>(rhs).size(); x++) {
+			if (lhs[x] != static_cast<std::string>(rhs)[x]) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	std::string TimeStamp::getISO8601TimeStamp(const std::string& year, const std::string& month, const std::string& day, const std::string& hour, const std::string& minute,
 		const std::string& second) {
 		std::string theTimeStamp{};
@@ -1018,7 +1036,8 @@ namespace DiscordCoreAPI {
 	}
 
 	std::string Permissions::getCurrentChannelPermissions(const GuildMember& guildMember, ChannelData& channel) {
-		std::string permsString = Permissions::computePermissions(guildMember, channel);
+		Permissions permission{};
+		std::string permsString = permission.computePermissions(guildMember, channel);
 		return permsString;
 	}
 
@@ -1032,7 +1051,8 @@ namespace DiscordCoreAPI {
 	}
 
 	std::string Permissions::getCurrentGuildPermissions(const GuildMember& guildMember) {
-		std::string permissions = Permissions::computeBasePermissions(guildMember);
+		Permissions permission{};
+		std::string permissions = permission.computeBasePermissions(guildMember);
 		return permissions;
 	}
 

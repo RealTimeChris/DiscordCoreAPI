@@ -42,26 +42,18 @@ namespace DiscordCoreAPI {
 
 	StartThreadInForumChannelData::operator std::string() {
 		nlohmann::json data{};
-		for (auto& value: this->message.attachments) {
-			data["message"]["attachments"].push_back(DiscordCoreAPI::AttachmentData{ value });
-		}
-		if (this->message.components.size() == 0) {
-			data["message"]["components"] = nlohmann::json::array();
-		} else {
-			for (auto& value: this->message.components) {
-				data["message"]["components"].push_back(value);
-			}
-		}
 		data["message"]["allowed_mentions"] = DiscordCoreAPI::AllowedMentionsData{ this->message.allowedMentions };
+		for (auto& value: this->message.attachments) {
+			data["message"]["attachments"].push_back(value);
+		}
+		for (auto& value: this->message.components) {
+			data["message"]["components"].push_back(value);
+		}
 		for (auto& value: this->message.stickerIds) {
 			data["message"]["sticker_ids"].push_back(value);
 		}
-		if (this->message.embeds.size() == 0) {
-			data["message"]["embeds"] = nlohmann::json::array();
-		} else {
-			for (auto& value: this->message.embeds) {
-				data["message"]["embeds"].push_back(DiscordCoreAPI::EmbedData{ value });
-			}
+		for (auto& value: this->message.embeds) {
+			data["message"]["embeds"].push_back(value);
 		}
 		if (this->message.content != "") {
 			data["message"]["content"] = this->message.content;

@@ -30,6 +30,7 @@ namespace DiscordCoreAPI {
 
 	ExecuteWebHookData::operator std::string() {
 		nlohmann::json data{};
+		data["allowed_mentions"] = this->allowedMentions;
 		for (auto& value: this->attachments) {
 			data["attachments"].push_back(value);
 		}
@@ -40,7 +41,6 @@ namespace DiscordCoreAPI {
 				data["components"].push_back(value);
 			}
 		}
-		data["allowed_mentions"] = this->allowedMentions;
 		if (this->embeds.size() == 0) {
 			data["embeds"] = nlohmann::json::array();
 		} else {
@@ -179,8 +179,9 @@ namespace DiscordCoreAPI {
 
 	EditWebHookData::operator std::string() {
 		nlohmann::json data{};
+		data["allowed_mentions"] = DiscordCoreAPI::AllowedMentionsData{ this->allowedMentions };
 		for (auto& value: this->attachments) {
-			data["attachments"].push_back(DiscordCoreAPI::AttachmentData{ value });
+			data["attachments"].push_back(value);
 		}
 		if (this->components.size() == 0) {
 			data["components"] = nlohmann::json::array();
@@ -189,12 +190,11 @@ namespace DiscordCoreAPI {
 				data["components"].push_back(value);
 			}
 		}
-		data["allowed_mentions"] = DiscordCoreAPI::AllowedMentionsData{ this->allowedMentions };
 		if (this->embeds.size() == 0) {
 			data["embeds"] = nlohmann::json::array();
 		} else {
 			for (auto& value: this->embeds) {
-				data["embeds"].push_back(DiscordCoreAPI::EmbedData{ value });
+				data["embeds"].push_back(value);
 			}
 		}
 		if (this->content != "") {

@@ -74,7 +74,7 @@ namespace DiscordCoreAPI {
 	 * \addtogroup voice_connection
 	 * @{
 	 */
-	/// VoiceConnection class DiscordCoreAPI_Dll - represents the connection to a given voice Channel. \brief VoiceConnection class DiscordCoreAPI_Dll - represents the connection to a given voice Channel.
+	/// VoiceConnection class - represents the connection to a given voice Channel. \brief VoiceConnection class - represents the connection to a given voice Channel.
 	class DiscordCoreAPI_Dll VoiceConnection : public DiscordCoreInternal::WebSocketMessageHandler {
 	  public:
 		friend class DiscordCoreInternal::BaseSocketAgent;
@@ -90,7 +90,7 @@ namespace DiscordCoreAPI {
 		VoiceConnection() noexcept;
 
 		/// Collects the currently connected-to voice Channel's id. \brief Collects the currently connected-to voice Channel's id.
-		/// \returns uint64_t A Snowflake containing the Channel's id.
+		/// \returns DiscordCoreAPI::Snowflake A Snowflake containing the Channel's id.
 		Snowflake getChannelId() noexcept;
 
 		~VoiceConnection() noexcept;

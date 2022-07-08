@@ -33,9 +33,9 @@ namespace DiscordCoreAPI {
 	/// A class DiscordCoreAPI_Dll representing the Song APIs. \brief A class DiscordCoreAPI_Dll representing the Song APIs.
 	class DiscordCoreAPI_Dll SongAPI {
 	  public:
-		friend class VoiceConnection;
 		friend class DiscordCoreInternal::SoundCloudAPI;
 		friend class DiscordCoreInternal::YouTubeAPI;
+		friend class VoiceConnection;
 
 		DiscordCoreInternal::Event<CoRoutine<void>, SongCompletionEventData> onSongCompletionEvent{};
 		DiscordCoreInternal::EventDelegateToken eventToken{};
@@ -51,7 +51,7 @@ namespace DiscordCoreAPI {
 		/// Search for a Song to play. \brief Search for a Song to play.
 		/// \param searchQuery The Song to search for.
 		/// \param guildId The Guild id to search for the Song within.
-		/// \returns A std::vector of Song objects representing the search results.
+		/// \returns A vector of Song objects representing the search results.
 		static std::vector<Song> searchForSong(const std::string& searchQuery, const uint64_t& guildId);
 
 		/// Adds a Song to the current Playlist's queue. \brief Adds a Song to the current Playlist's queue.

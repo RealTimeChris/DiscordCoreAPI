@@ -25,11 +25,6 @@
 
 namespace DiscordCoreInternal {
 
-	YouTubeRequestBuilder::YouTubeRequestBuilder(HttpsClient* theClient, DiscordCoreAPI::ConfigManager* configManagerNew) {
-		this->configManager = configManagerNew;
-		this->httpsClient = theClient;
-	}
-
 	DiscordCoreAPI::Song YouTubeRequestBuilder::collectFinalSong(const DiscordCoreAPI::GuildMemberData& addedByGuildMember, DiscordCoreAPI::Song& newSong) {
 		newSong.firstDownloadUrl = this->baseUrl + "/watch?v=" + newSong.songId + "&hl=en";
 		newSong.addedByUserId = addedByGuildMember.id;
@@ -158,14 +153,14 @@ namespace DiscordCoreInternal {
 		return DiscordCoreAPI::Song{};
 	}
 
-	YouTubeAPI::YouTubeAPI(const DiscordCoreAPI::Snowflake& guildIdNew, HttpsClient* httpsClient, DiscordCoreAPI::ConfigManager* configManagerNew)
-		: requestBuilder(httpsClient, configManagerNew) {
+	YouTubeAPI::YouTubeAPI(DiscordCoreAPI::ConfigManager* configManagerNew, HttpsClient* httpsClientNew, const DiscordCoreAPI::Snowflake& guildIdNew) {
 		this->configManager = configManagerNew;
+		this->httpsClient = httpsClientNew;
 		this->guildId = guildIdNew;
 	}
 
 	DiscordCoreAPI::Song YouTubeAPI::collectFinalSong(const DiscordCoreAPI::GuildMemberData& addedByGuildMember, DiscordCoreAPI::Song& newSong) {
-		return this->requestBuilder.collectFinalSong(addedByGuildMember, newSong);
+		return YouTubeRequestBuilder::collectFinalSong(addedByGuildMember, newSong);
 	}
 
 	void YouTubeAPI::weFailedToDownloadOrDecode(const DiscordCoreAPI::Song& newSong, std::stop_token stopToken, int32_t currentReconnectTries) {
@@ -187,7 +182,7 @@ namespace DiscordCoreInternal {
 			eventData.guild = DiscordCoreAPI::Guilds::getGuildAsync({ .guildId = this->guildId }).get();
 			DiscordCoreAPI::getSongAPIMap()[this->guildId]->onSongCompletionEvent(eventData);
 		} else {
-			newerSong = this->requestBuilder.collectFinalSong(guildMember, newerSong);
+			newerSong = this->collectFinalSong(guildMember, newerSong);
 			YouTubeAPI::downloadAndStreamAudio(newerSong, stopToken, currentReconnectTries);
 		}
 	}
@@ -422,7 +417,7 @@ namespace DiscordCoreInternal {
 	}
 
 	std::vector<DiscordCoreAPI::Song> YouTubeAPI::searchForSong(const std::string& searchQuery) {
-		return this->requestBuilder.collectSearchResults(searchQuery);
+		return this->collectSearchResults(searchQuery);
 	}
 
 	void YouTubeAPI::cancelCurrentSong() {

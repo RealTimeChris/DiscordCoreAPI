@@ -32,7 +32,7 @@ namespace DiscordCoreAPI {
 
 	using AutoCompleteEntryFunction = std::function<std::string(std::string)>;
 
-	class DiscordCoreAPI_Dll InteractionResponse {
+	class DiscordCoreAPI_Dll InteractionResponseBase {
 	  public:
 		/// Adds a button to the response Message. \brief Adds a button to the response Message.
 		/// \param disabled Whether the button is active or not.
@@ -42,17 +42,17 @@ namespace DiscordCoreAPI {
 		/// \param emojiName An emoji name, if desired.
 		/// \param emojiId An emoji id, if desired.
 		/// \param url A url, if applicable.
-		InteractionResponse& addButton(bool disabled, const std::string& customIdNew, const std::string& buttonLabel, ButtonStyle buttonStyle, const std::string& emojiName = "",
+		InteractionResponseBase& addButton(bool disabled, const std::string& customIdNew, const std::string& buttonLabel, ButtonStyle buttonStyle, const std::string& emojiName = "",
 			Snowflake emojiId = 0, const std::string& url = "");
 
 		/// Adds a select-menu to the response Message. \brief Adds a select-menu to the response Message.
 		/// \param disabled Whether the select-menu is active or not.
 		/// \param customIdNew A custom id to give for identifying the select-menu.
-		/// \param options A std::vector of select-menu-options to offer.
+		/// \param options A vector of select-menu-options to offer.
 		/// \param placeholder Custom placeholder text if nothing is selected, max 100 characters.
 		/// \param maxValues Maximum number of selections that are possible.
 		/// \param minValues Minimum required number of selections that are required.
-		InteractionResponse& addSelectMenu(bool disabled, const std::string& customIdNew, std::vector<SelectOptionData> options, const std::string& placeholder, int32_t maxValues,
+		InteractionResponseBase& addSelectMenu(bool disabled, const std::string& customIdNew, std::vector<SelectOptionData> options, const std::string& placeholder, int32_t maxValues,
 			int32_t minValues);
 
 		/// Adds a modal to the response Message. \brief Adds a modal to the response Message.
@@ -67,41 +67,41 @@ namespace DiscordCoreAPI {
 		/// \param label A label for the modal.
 		/// \param placeholder A placeholder for the modal.
 		/// \returns RespondToInputEventData& A reference to this data structure.
-		InteractionResponse& addModal(const std::string& topTitleNew, const std::string& topCustomIdNew, const std::string& titleNew, const std::string& customIdNew, bool required,
+		InteractionResponseBase& addModal(const std::string& topTitleNew, const std::string& topCustomIdNew, const std::string& titleNew, const std::string& customIdNew, bool required,
 			int32_t minLength, int32_t maxLength, TextInputStyle inputStyle, const std::string& label = "", const std::string& placeholder = "");
 
 		/// Adds a file to the current collection of files for this message response. \brief Adds a file to the current collection of files for this message response.
 		/// \param theFile The file to be added.
 		/// \returns MessageResponseBase& A reference to this data structure.
-		InteractionResponse& addFile(const File& theFile);
+		InteractionResponseBase& addFile(const File& theFile);
 
 		/// For setting the allowable mentions in a response. \brief For setting the allowable mentions in a response.
 		/// \param dataPackage An AllowedMentionsData structure.
-		InteractionResponse& addAllowedMentions(const AllowedMentionsData& dataPackage);
+		InteractionResponseBase& addAllowedMentions(const AllowedMentionsData& dataPackage);
 
 		/// For setting the components in a response. \brief For setting the components in a response.
 		/// \param dataPackage An ActionRowData structure.
-		InteractionResponse& addComponentRow(const ActionRowData& dataPackage);
+		InteractionResponseBase& addComponentRow(const ActionRowData& dataPackage);
 
 		/// Sets the response type of the current Message. \brief Sets the response type of the current Message.
 		/// \param type Interaction callback type.
-		InteractionResponse& setResponseType(InteractionCallbackType type);
+		InteractionResponseBase& setResponseType(InteractionCallbackType type);
 
 		/// For setting the embeds in a response. \brief For setting the embeds in a response.
-		/// \param dataPackage An EmbedData structure.
-		InteractionResponse& addMessageEmbed(const EmbedData& dataPackage);
+		/// \param dataPackage An EmbedData structure.SendDMData
+		InteractionResponseBase& addMessageEmbed(const EmbedData& dataPackage);
 
 		/// For setting the Message content in a response. \brief For setting the content in a response.
-		/// \param dataPackage A std::string, containing the content.
-		InteractionResponse& addContent(const std::string& dataPackage);
+		/// \param dataPackage A string, containing the content.
+		InteractionResponseBase& addContent(const std::string& dataPackage);
 
 		/// For setting the tts status of a response. \brief For setting the tts status of a response.
 		/// \param enabledTTs A bool.
-		InteractionResponse& setTTSStatus(bool enabledTTs);
+		InteractionResponseBase& setTTSStatus(bool enabledTTs);
 
 		InteractionResponseData getInteractionResponseData();
 
-		virtual ~InteractionResponse() = default;
+		virtual ~InteractionResponseBase() = default;
 
 	  protected:
 		InteractionPackageData interactionPackage{};
@@ -110,11 +110,11 @@ namespace DiscordCoreAPI {
 	};
 
 	/// For creating an ephemeral Interaction response. \brief For creating an ephemeral Interaction response.
-	class DiscordCoreAPI_Dll CreateEphemeralInteractionResponseData : public InteractionResponse {
+	class DiscordCoreAPI_Dll CreateEphemeralInteractionResponseData : public InteractionResponseBase {
 	  public:
-		friend CreateInteractionResponseData;
-		friend Interactions;
-		friend InputEvents;
+		friend class CreateInteractionResponseData;
+		friend class Interactions;
+		friend class InputEvents;
 
 		CreateEphemeralInteractionResponseData(const RespondToInputEventData& dataPackage);
 
@@ -126,9 +126,9 @@ namespace DiscordCoreAPI {
 	/// For creating a deferred Interaction response. \brief For creating a deferred Interaction response.
 	class DiscordCoreAPI_Dll CreateDeferredInteractionResponseData {
 	  public:
-		friend CreateInteractionResponseData;
-		friend Interactions;
-		friend InputEvents;
+		friend class CreateInteractionResponseData;
+		friend class Interactions;
+		friend class InputEvents;
 
 		CreateDeferredInteractionResponseData(RespondToInputEventData& dataPackage);
 
@@ -142,13 +142,13 @@ namespace DiscordCoreAPI {
 	};
 
 	/// For creating an Interaction response. \brief For creating an Interaction response.
-	class DiscordCoreAPI_Dll CreateInteractionResponseData : public InteractionResponse {
+	class DiscordCoreAPI_Dll CreateInteractionResponseData : public InteractionResponseBase {
 	  public:
-		friend SelectMenuCollector;
-		friend ButtonCollector;
-		friend ModalCollector;
-		friend Interactions;
-		friend InputEvents;
+		friend class SelectMenuCollector;
+		friend class ButtonCollector;
+		friend class ModalCollector;
+		friend class Interactions;
+		friend class InputEvents;
 
 		CreateInteractionResponseData(const CreateDeferredInteractionResponseData& dataPackage);
 
@@ -174,8 +174,8 @@ namespace DiscordCoreAPI {
 	/// For editing an Interaction response. \brief For editing an Interaction response.
 	class DiscordCoreAPI_Dll EditInteractionResponseData {
 	  public:
-		friend Interactions;
-		friend InputEvents;
+		friend class Interactions;
+		friend class InputEvents;
 
 		EditInteractionResponseData(const RespondToInputEventData& dataPackage);
 
@@ -190,8 +190,8 @@ namespace DiscordCoreAPI {
 
 	/// For deleting an Interaction response. \brief For deleting an Interaction response.
 	struct DiscordCoreAPI_Dll DeleteInteractionResponseData {
-		friend Interactions;
-		friend InputEvents;
+		friend class Interactions;
+		friend class InputEvents;
 
 		DeleteInteractionResponseData(RespondToInputEventData& dataPackage);
 
@@ -203,9 +203,9 @@ namespace DiscordCoreAPI {
 	/// For creating an ephemeral follow up Message. \brief For creating an ephemeral follow up Message.
 	class DiscordCoreAPI_Dll CreateEphemeralFollowUpMessageData : public ExecuteWebHookData {
 	  public:
-		friend CreateFollowUpMessageData;
-		friend Interactions;
-		friend InputEvents;
+		friend class CreateFollowUpMessageData;
+		friend class Interactions;
+		friend class InputEvents;
 
 		CreateEphemeralFollowUpMessageData(const RespondToInputEventData& dataPackage);
 
@@ -220,10 +220,10 @@ namespace DiscordCoreAPI {
 	/// For creating a follow up Message. \brief For creating a follow up Message.
 	class DiscordCoreAPI_Dll CreateFollowUpMessageData : public ExecuteWebHookData {
 	  public:
-		friend SelectMenuCollector;
-		friend ButtonCollector;
-		friend Interactions;
-		friend InputEvents;
+		friend class SelectMenuCollector;
+		friend class ButtonCollector;
+		friend class Interactions;
+		friend class InputEvents;
 
 		CreateFollowUpMessageData(const CreateEphemeralFollowUpMessageData& dataPackage);
 
@@ -249,8 +249,8 @@ namespace DiscordCoreAPI {
 	/// For editing a follow up Message. \brief For editing a follow up Message.
 	class DiscordCoreAPI_Dll EditFollowUpMessageData {
 	  public:
-		friend Interactions;
-		friend InputEvents;
+		friend class Interactions;
+		friend class InputEvents;
 
 		EditFollowUpMessageData(const RespondToInputEventData& dataPackage);
 
@@ -266,8 +266,8 @@ namespace DiscordCoreAPI {
 
 	/// For deleting a follow up Message. \brief For deleting a follow up Message.
 	struct DiscordCoreAPI_Dll DeleteFollowUpMessageData {
-		friend Interactions;
-		friend InputEvents;
+		friend class Interactions;
+		friend class InputEvents;
 
 		DeleteFollowUpMessageData(RespondToInputEventData& dataPackage);
 
@@ -296,9 +296,9 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll Interactions {
 	  public:
 		friend class DiscordCoreInternal::BaseSocketAgent;
-		friend DiscordCoreClient;
-		friend EventHandler;
-		friend EventManager;
+		friend class DiscordCoreClient;
+		friend class EventHandler;
+		friend class EventManager;
 
 		static void initialize(DiscordCoreInternal::HttpsClient*);
 
@@ -394,7 +394,7 @@ namespace DiscordCoreAPI {
 		SelectMenuResponseData() = default;
 
 		std::unique_ptr<InteractionData> interactionData{ std::make_unique<InteractionData>() };///< Interaction data.
-		std::vector<std::string> values{};///< A std::vector of the chosen values.
+		std::vector<std::string> values{};///< A vector of the chosen values.
 		std::string selectionId{};///< Selection id.
 		Snowflake channelId{};///< The Channel id where it took place.
 		Snowflake messageId{};///< The Message id where it took place.
@@ -406,7 +406,7 @@ namespace DiscordCoreAPI {
 	/// or more Users.
 	class DiscordCoreAPI_Dll SelectMenuCollector {
 	  public:
-		friend DiscordCoreClient;
+		friend class DiscordCoreClient;
 
 		static std::unordered_map<std::string, UnboundedMessageBlock<InteractionData>*> selectMenuInteractionBufferMap;
 
@@ -419,7 +419,7 @@ namespace DiscordCoreAPI {
 		/// \param maxWaitTimeInMsNew The maximum amount of time to wait for new inputs, in milliseconds.
 		/// \param maxCollectedSelectMenuCountNew The maximum number of inputs to collect before stopping.
 		/// \param targetUserId The id of the single User to collect inputs from, if getSelectMenuDataForAllNew is set to false.
-		/// \returns A std::vector of SelectMenuResponseData.
+		/// \returns A vector of SelectMenuResponseData.
 		CoRoutine<std::vector<SelectMenuResponseData>> collectSelectMenuData(bool getSelectMenuDataForAllNew, int32_t maxWaitTimeInMsNew, int32_t maxCollectedSelectMenuCountNew,
 			Snowflake targetUserId = 0);
 
@@ -495,7 +495,7 @@ namespace DiscordCoreAPI {
 	/// ButtonCollector, for collecting button input from one or more Users. \brief ButtonCollector, for collecting button input from one or more Users.
 	class DiscordCoreAPI_Dll ButtonCollector {
 	  public:
-		friend DiscordCoreClient;
+		friend class DiscordCoreClient;
 
 		static std::unordered_map<std::string, UnboundedMessageBlock<InteractionData>*> buttonInteractionBufferMap;
 
@@ -508,7 +508,7 @@ namespace DiscordCoreAPI {
 		/// \param maxWaitTimeInMsNew The maximum amount of time to wait for new inputs, in milliseconds.
 		/// \param maxNumberOfPressesNew The maximum number of inputs to collect before stopping.
 		/// \param targetUserId The id of the single User to collect inputs from, if getButtonDataForAllNew is set to false.
-		/// \returns A std::vector of ButtonResponseData.
+		/// \returns A vector of ButtonResponseData.
 		CoRoutine<std::vector<ButtonResponseData>> collectButtonData(bool getButtonDataForAllNew, int32_t maxWaitTimeInMsNew, int32_t maxNumberOfPressesNew,
 			Snowflake targetUserId = 0);
 
@@ -584,7 +584,7 @@ namespace DiscordCoreAPI {
 	/// ModalCollector, for collecting modal text input from one or more Users. \brief ModalCollector, for collecting modal text input from one or more Users.
 	class DiscordCoreAPI_Dll ModalCollector {
 	  public:
-		friend DiscordCoreClient;
+		friend class DiscordCoreClient;
 
 		static std::unordered_map<std::string, UnboundedMessageBlock<InteractionData>*> modalInteractionBufferMap;
 
@@ -594,7 +594,7 @@ namespace DiscordCoreAPI {
 
 		/// Used to collect the button inputs from one or more users. \brief Used to collect the button inputs from one or more users.
 		/// \param maxWaitTimeInMsNew The maximum amount of time to wait for new inputs, in milliseconds.
-		/// \returns A std::vector of ButtonResponseData.
+		/// \returns A vector of ButtonResponseData.
 		CoRoutine<ModalResponseData> collectModalData(int32_t maxWaitTimeInMsNew);
 
 		~ModalCollector();

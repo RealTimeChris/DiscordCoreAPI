@@ -259,7 +259,7 @@ namespace DiscordCoreAPI {
 
 	/// Data that is received as part of a Message delete bulk event. \brief Data that is received as part of a Message delete bulk event.
 	struct DiscordCoreAPI_Dll OnMessageDeleteBulkData {
-		std::vector<Snowflake> ids{};///< A std::vector containing the list of deleted Message ids.
+		std::vector<Snowflake> ids{};///< A vector containing the list of deleted Message ids.
 		Snowflake channelId{};///< The id of the Channel from which the Message was deleted.
 		Snowflake guildId{};///< The id of the Guild from which the Message was deleted.
 	};

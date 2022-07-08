@@ -152,12 +152,12 @@ namespace DiscordCoreAPI {
 	 * \addtogroup main_endpoints
 	 * @{
 	 */
-	/// An interface class DiscordCoreAPI_Dll for the GuildMember related Discord endpoints. \brief An interface class DiscordCoreAPI_Dll for the GuildMember related Discord endpoints.
+	/// An interface class for the GuildMember related Discord endpoints. \brief An interface class for the GuildMember related Discord endpoints.
 	class DiscordCoreAPI_Dll GuildMembers {
 	  public:
-		friend DiscordCoreClient;
-		friend EventHandler;
-		friend Guild;
+		friend class DiscordCoreClient;
+		friend class EventHandler;
+		friend class Guild;
 
 		static void initialize(DiscordCoreInternal::HttpsClient*, ConfigManager* configManagerNew);
 
@@ -173,17 +173,17 @@ namespace DiscordCoreAPI {
 
 		/// Lists all of the GuildMembers of a chosen Guild. \brief Lists all of the GuildMembers of a chosen Guild.
 		/// \param dataPackage A ListGuildMembersData structure.
-		/// \returns A CoRoutine containing a std::vector<GuildMembers>.
+		/// \returns A CoRoutine containing a vector<GuildMembers>.
 		static CoRoutine<std::vector<GuildMember>> listGuildMembersAsync(ListGuildMembersData dataPackage);
 
 		/// Searches for a list of GuildMembers of a chosen Guild. \brief Searches for a list of GuildMembers of a chosen Guild.
 		/// \param dataPackage A SearchGuildMembersData structure.
-		/// \returns A CoRoutine containing a std::vector<GuildMembers>.
+		/// \returns A CoRoutine containing a vector<GuildMembers>.
 		static CoRoutine<std::vector<GuildMember>> searchGuildMembersAsync(SearchGuildMembersData dataPackage);
 
 		/// Adds a GuildMember to a chosen Guild. \brief Adds a GuildMember to a chosen Guild.
 		/// \param dataPackage An AddGuildMemberData structure.
-		/// \returns A CoRoutine containing a std::vector<GuildMembers>.
+		/// \returns A CoRoutine containing a vector<GuildMembers>.
 		static CoRoutine<GuildMember> addGuildMemberAsync(AddGuildMemberData dataPackage);
 
 		/// Modifies a GuildMember's properties. \brief Modifies a GuildMember's properties.

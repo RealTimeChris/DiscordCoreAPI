@@ -31,7 +31,6 @@ namespace DiscordCoreInternal {
 		} else {
 			theStream << DiscordCoreAPI::shiftToBrightRed() << errorPosition << " Error: " << DiscordCoreAPI::reset() << std::endl << std::endl;
 		}
-
 		return theStream.str();
 	}
 

@@ -67,6 +67,31 @@
 #include <queue>
 #include <map>
 
+/**
+ * \defgroup main_endpoints Main Endpoints
+ * \brief For all of the Discord API's endpoints.
+ */
+
+/**
+ * \defgroup voice_connection Voice Connection
+ * \brief For all of the voice connection related stuff.
+ */
+
+/**
+ * \defgroup discord_events Discord Events
+ * \brief For all of the events that could be sent by the Discord API.
+ */
+
+/**
+ * \defgroup utilities Utilities
+ * \brief For utility classes/functions.
+ */
+
+/**
+ * \defgroup foundation_entities Foundation Entities
+ * \brief For all of the building blocks of the main endpoints.
+ */
+
 namespace DiscordCoreInternal {
 
 	using namespace std::literals;
@@ -116,7 +141,6 @@ namespace DiscordCoreAPI {
 	struct GetGuildMemberRolesData;
 	struct BaseFunctionArguments;
 	struct GetRolesData;
-	struct CommandData;
 	struct File;
 
 	class CreateEphemeralInteractionResponseData;
@@ -143,10 +167,12 @@ namespace DiscordCoreAPI {
 	class EventManager;
 	class EventHandler;
 	class GuildMembers;
+	class GuildMember;
 	class ChannelData;
 	class InputEvents;
 	class MessageData;
 	class Permissions;
+	class CommandData;
 	class SendDMData;
 	class Reactions;
 	class EmbedData;
@@ -157,7 +183,6 @@ namespace DiscordCoreAPI {
 	class Guilds;
 	class Guild;
 	class Roles;
-	class Test;
 
 	template<typename ReturnType, typename... ArgTypes> class EventDelegate;
 	template<typename ReturnType, typename... ArgTypes> class Event;
@@ -166,7 +191,7 @@ namespace DiscordCoreAPI {
 	std::ostream& operator<<(std::ostream& outputSttream, const std::string& (*theFunction)( void ));
 
 	/**
-	 * \addtogroup utilities
+	 * \addtogroup foundation_entities
 	 * @{
 	 */
 
@@ -231,6 +256,8 @@ namespace DiscordCoreAPI {
 		int32_t startingShard{ 0 };///< The first shard to start on this process.
 	};
 
+	/**@}*/
+
 	/// Logging options for the library. \brief Loggin options for the library.
 	struct DiscordCoreAPI_Dll LoggingOptions {
 		bool logWebSocketSuccessMessages{ false };///< Do we log the websocket success messages to cout?
@@ -264,8 +291,6 @@ namespace DiscordCoreAPI {
 		CacheOptions cacheOptions{};///< Options for the cache of the library.
 		std::string botToken{};///< Your bot's token.
 	};
-
-	/**@}*/
 
 	template<typename ReturnType> ReturnType reverseByteOrder(ReturnType x) {
 		const uint8_t byteSize{ 8 };
@@ -385,14 +410,14 @@ namespace DiscordCoreAPI {
 		std::unique_ptr<char[]> thePtr{};
 	};
 
-	inline std::basic_ostream<char, std::char_traits<char>>& operator<<(std::basic_ostream<char, std::char_traits<char>>& lhs, const StringWrapper& rhs) {
+	inline std::basic_ostream<char>& operator<<(std::basic_ostream<char, std::char_traits<char>>& lhs, const StringWrapper& rhs) {
 		for (auto& value: static_cast<std::string>(static_cast<StringWrapper>(rhs))) {
 			lhs.put(value);
 		}
 		return lhs;
 	}
 
-	inline std::basic_string<char, std::char_traits<char>, std::allocator<char>> operator+(std::basic_string<char, std::char_traits<char>, std::allocator<char>> lhs,
+	inline std::basic_string<char> operator+(std::basic_string<char, std::char_traits<char>, std::allocator<char>> lhs,
 		StringWrapper rhs) {
 		std::stringstream theStream{};
 		theStream << lhs << rhs;
@@ -403,7 +428,7 @@ namespace DiscordCoreAPI {
 		return theReturnString;
 	}
 
-	inline std::basic_string<char, std::char_traits<char>, std::allocator<char>> operator+(const char* lhs, StringWrapper rhs) {
+	inline std::basic_string<char> operator+(const char* lhs, StringWrapper rhs) {
 		std::stringstream theStream{};
 		theStream << lhs << rhs;
 		std::string theReturnString{};
@@ -413,23 +438,9 @@ namespace DiscordCoreAPI {
 		return theReturnString;
 	}
 
-	inline bool operator!=(StringWrapper lhs, const char* rhs) {
-		for (uint64_t x = 0; x < static_cast<std::string>(rhs).size(); x++) {
-			if (static_cast<std::string>(lhs)[x] != static_cast<std::string>(rhs)[x]) {
-				return false;
-			}
-		}
-		return true;
-	}
+	bool operator!=(StringWrapper lhs, const char* rhs);
 
-	inline bool operator==(std::string& lhs, StringWrapper& rhs) {
-		for (uint64_t x = 0; x < static_cast<std::string>(rhs).size(); x++) {
-			if (lhs[x] != static_cast<std::string>(rhs)[x]) {
-				return false;
-			}
-		}
-		return true;
-	}
+	bool operator==(std::string& lhs, StringWrapper& rhs);
 
 	inline bool operator==(StringWrapper lhs, const char* rhs) {
 		if (std::string(lhs) == std::string(rhs)) {
@@ -521,8 +532,6 @@ namespace DiscordCoreAPI {
 		std::mutex accessMutex{};
 	};
 
-	/**@}*/
-
 	template<typename TimeType> class StopWatch {
 	  public:
 		StopWatch<TimeType>& operator=(StopWatch<TimeType>&& other) noexcept {
@@ -596,6 +605,8 @@ namespace DiscordCoreAPI {
 		};
 		return didTimePass;
 	}
+
+	/**@}*/
 
 	/**
 	 * \addtogroup utilities
@@ -701,8 +712,12 @@ namespace DiscordCoreAPI {
 		const uint32_t secondsPerDay{ 60 * 60 * 24 };
 	};
 
-	class GuildMember;
-	class ChannelData;
+	/**@}*/
+
+	/**
+	 * \addtogroup foundation_entities
+	 * @{
+	 */
 
 	/// Permission values, for a given Channel, by Role or GuildMember. \brief Permission values, for a given Channel, by Role or GuildMember.
 	enum class Permission : uint64_t {
@@ -765,34 +780,34 @@ namespace DiscordCoreAPI {
 		operator const char*();
 
 		/// Adds one or more Permissions to the current Permissions value. \brief Adds one or more Permissions to the current Permissions value.
-		/// \param permissionsToAdd A std::vector containing the Permissions you wish to add.
+		/// \param permissionsToAdd A vector containing the Permissions you wish to add.
 		void addPermissions(const std::vector<Permission>& permissionsToAdd);
 
 		/// Removes one or more Permissions from the current Permissions value. \brief Removes one or more Permissions from the current Permissions value.
-		/// \param permissionsToRemove A std::vector containing the Permissions you wish to remove.
+		/// \param permissionsToRemove A vector containing the Permissions you wish to remove.
 		void removePermissions(const std::vector<Permission>& permissionsToRemove);
 
-		/// Displays the currently present Permissions in a std::string, and returns a std::vector with each of them stored in std::string format. \brief Displays the currently present Permissions in a std::string, and returns a std::vector with each of them stored in std::string format.
-		/// \returns std::vector A std::vector full of strings of the Permissions that are in the input std::string's value.
+		/// Displays the currently present Permissions in a string, and returns a vector with each of them stored in string format. \brief Displays the currently present Permissions in a string, and returns a vector with each of them stored in string format.
+		/// \returns std::vector A vector full of strings of the Permissions that are in the input std::string's value.
 		std::vector<std::string> displayPermissions();
 
-		/// Returns a std::string containing ALL of the possible Permissions. \brief Returns a std::string containing ALL of the possible Permissions.
-		/// \returns std::string A std::string containing all of the possible Permissions.
+		/// Returns a string containing ALL of the possible Permissions. \brief Returns a string containing ALL of the possible Permissions.
+		/// \returns std::string A string containing all of the possible Permissions.
 		static std::string getAllPermissions();
 
-		/// Returns a std::string containing the currently held Permissions. \brief Returns a std::string containing the currently held Permissions.
-		/// \returns std::string A std::string containing the current Permissions.
+		/// Returns a string containing the currently held Permissions. \brief Returns a string containing the currently held Permissions.
+		/// \returns std::string A string containing the current Permissions.
 		std::string getCurrentPermissionString();
 
-		/// Returns a std::string containing the currently held Permissions in a given Guild. \brief Returns a std::string containing the currently held Permissions in a given Guild.
+		/// Returns a string containing the currently held Permissions in a given Guild. \brief Returns a string containing the currently held Permissions in a given Guild.
 		/// \param guildMember The GuildMember who's Permissions are to be evaluated.
-		/// \returns std::string A std::string containing the current Permissions.
+		/// \returns std::string A string containing the current Permissions.
 		static std::string getCurrentGuildPermissions(const GuildMember& guildMember);
 
-		/// Returns a std::string containing all of a given User's Permissions for a given Channel. \brief Returns a std::string containing all of a given User's Permissions for a given Channel.
+		/// Returns a string containing all of a given User's Permissions for a given Channel. \brief Returns a string containing all of a given User's Permissions for a given Channel.
 		/// \param guildMember The GuildMember who's Permissions to analyze.
 		/// \param channel The Channel withint which to check for Permissions.
-		/// \returns std::string A std::string containing the final Permission's value for a given Channel.
+		/// \returns std::string A string containing the final Permission's value for a given Channel.
 		static std::string getCurrentChannelPermissions(const GuildMember& guildMember, ChannelData& channel);
 
 		/// Checks for a given Permission in a chosen Channel, for a specific User. \brief Checks for a given Permission in a chosen Channel, for a specific User.
@@ -803,15 +818,15 @@ namespace DiscordCoreAPI {
 		bool checkForPermission(const GuildMember& guildMember, ChannelData& channel, Permission permission);
 
 	  protected:
-		static std::string computeBasePermissions(const GuildMember& guildMember);
+		std::string computeOverwrites(const std::string& basePermissions, const GuildMember& guildMember, ChannelData& channel);
 
-		static std::string computeOverwrites(const std::string& basePermissions, const GuildMember& guildMember, ChannelData& channel);
+		std::string computePermissions(const GuildMember& guildMember, ChannelData& channel);
 
-		static std::string computePermissions(const GuildMember& guildMember, ChannelData& channel);
+		std::string computeBasePermissions(const GuildMember& guildMember);
 	};
 
 	/// Prints the current file, line, and column from which the function is being called - typically from within an exception's "catch" block. \brief Prints the current file, line, and column from which the function is being called - typically from within an exception's "catch" block.
-	/// \param currentFunctionName A std::string to display the current function's name.
+	/// \param currentFunctionName A string to display the current function's name.
 	/// \param theLocation For deriving the current file, line, and column - do not set this value.
 	DiscordCoreAPI_Dll void reportException(const std::string& currentFunctionName, std::source_location theLocation = std::source_location::current());
 
@@ -859,4 +874,5 @@ namespace DiscordCoreAPI {
 		return static_cast<StoredAsType>(inputFlag) & static_cast<StoredAsType>(theFlag);
 	}
 
+	/**@}*/
 };

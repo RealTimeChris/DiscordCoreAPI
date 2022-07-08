@@ -44,10 +44,10 @@
 	#include <unistd.h>
 #endif
 
-#include <discordcoreapi/FoundationEntities.hpp>
-#include <discordcoreapi/EventEntities.hpp>
 #include <openssl/err.h>
 #include <openssl/ssl.h>
+#include <discordcoreapi/FoundationEntities.hpp>
+#include <discordcoreapi/EventEntities.hpp>
 
 #ifdef max
 	#undef max

@@ -147,7 +147,7 @@ namespace DiscordCoreAPI {
 		static void initialize(DiscordCoreInternal::HttpsClient*);
 
 		/// Get all of the Guild's Auto-Moderation-Rules. \brief Get all of the Guild's Auto-Moderation-Rules.
-		/// \returns A CoRoutine containing a std::vector<AutoModerationRule>.
+		/// \returns A CoRoutine containing a vector<AutoModerationRule>.
 		CoRoutine<std::vector<AutoModerationRule>> listAutoModerationRulesForGuildAsync(ListAutoModerationRulesForGuildData dataPackage);
 
 		/// Get a particular Auto-Moderation-Rule. \brief Get a particular Auto-Moderation-Rule

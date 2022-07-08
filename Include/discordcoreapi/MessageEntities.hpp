@@ -188,7 +188,7 @@ namespace DiscordCoreAPI {
 
 	/// MessageCollectorReturnData responseData. \brief MessageCollectorReturnData responseData.
 	struct DiscordCoreAPI_Dll MessageCollectorReturnData {
-		std::vector<Message> messages{};///< A std::vector of collected Messages.
+		std::vector<Message> messages{};///< A vector of collected Messages.
 	};
 
 	/// MessageCollector, for collecting Messages from a Channel. \brief Message collector, for collecting Messages from a Channel.

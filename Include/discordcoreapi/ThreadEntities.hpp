@@ -199,7 +199,7 @@ namespace DiscordCoreAPI {
 
 		/// Collects a list of ThreadMembers if they exist. \brief Collects a list of ThreadMembers if they exist.
 		/// \param dataPackage A GetThreadMembersData structure.
-		/// returns A CoRoutine containing a std::vector<ThreadMemberData>.
+		/// returns A CoRoutine containing a vector<ThreadMemberData>.
 		static CoRoutine<std::vector<ThreadMemberData>> getThreadMembersAsync(GetThreadMembersData dataPackage);
 
 		/// Collects a list of Threads from a given Channel. \brief Collects a list of Threads from a given Channel.
@@ -224,7 +224,7 @@ namespace DiscordCoreAPI {
 
 		/// Lists all of the active Threads of a chosen Guild. \brief Lists all of the active Threads of a chosen Guild.
 		/// \param dataPackage A ListActiveThreadsData structure.
-		/// \returns A CoRoutine containing a std::vector<Channel>.
+		/// \returns A CoRoutine containing a vector<Channel>.
 		static CoRoutine<ActiveThreadsData> getActiveGuildThreadsAsync(GetActiveGuildThreadsData dataPackage);
 
 	  protected:

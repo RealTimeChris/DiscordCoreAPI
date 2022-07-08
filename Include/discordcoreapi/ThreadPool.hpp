@@ -30,7 +30,7 @@ namespace DiscordCoreAPI {
 
 	template<typename... ArgTypes> using TimeElapsedHandler = std::function<void(ArgTypes...)>;
 
-	using TimeElapsedHandlerTwo = std::function<void(void)>;
+	using TimeElapsedHandlerNoArgs = std::function<void(void)>;
 
 	constexpr float thePercentage{ 10.0f / 100.0f };
 
@@ -46,33 +46,7 @@ namespace DiscordCoreAPI {
 
 		ThreadPool() = default;
 
-		template<typename... ArgTypes> static std::string storeThread(TimeElapsedHandler<ArgTypes...> timeElapsedHandler, int64_t timeInterval, bool repeated, ArgTypes... args) {
-			std::string threadId = std::to_string(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
-
-			ThreadPool::threads[threadId] = std::jthread([=](std::stop_token stopToken) {
-				StopWatch stopWatch{ std::chrono::milliseconds{ timeInterval } };
-				while (true) {
-					stopWatch.resetTimer();
-					std::this_thread::sleep_for(std::chrono::milliseconds{ static_cast<int64_t>(std::ceil(static_cast<float>(timeInterval) * thePercentage)) });
-					while (!stopWatch.hasTimePassed() && !stopToken.stop_requested()) {
-						std::this_thread::sleep_for(1ms);
-					}
-					if (stopToken.stop_requested()) {
-						return;
-					}
-					timeElapsedHandler(args...);
-					if (!repeated) {
-						return;
-					}
-					if (stopToken.stop_requested()) {
-						return;
-					}
-				}
-			});
-			return threadId;
-		}
-
-		static std::string storeThread(TimeElapsedHandlerTwo timeElapsedHandler, int64_t timeInterval, bool repeated) {
+		static std::string storeThread(TimeElapsedHandlerNoArgs timeElapsedHandler, int64_t timeInterval, bool repeated) {
 			std::string threadId = std::to_string(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
 
 			ThreadPool::threads[threadId] = std::jthread([=](std::stop_token stopToken) {
@@ -131,7 +105,7 @@ namespace DiscordCoreAPI {
 		~ThreadPool();
 
 	  protected:
-		inline static std::unordered_map<std::string, std::jthread> threads{};
+		static std::unordered_map<std::string, std::jthread> threads;
 	};
 }
 

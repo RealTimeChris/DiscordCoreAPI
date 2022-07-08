@@ -31,7 +31,7 @@ namespace DiscordCoreAPI {
 
 	/// For updating a User's presence. \brief For updating a User's presence.
 	struct DiscordCoreAPI_Dll UpdatePresenceData {
-		std::vector<ActivityData> activities{};///< A std::vector of activities.
+		std::vector<ActivityData> activities{};///< A vector of activities.
 		std::string status{};///< Current status.
 		int64_t since{ 0 };///< When was the activity started?
 		bool afk{ false };///< Are we afk.
@@ -132,7 +132,7 @@ namespace DiscordCoreAPI {
 	/// A type of User, to represent the Bot and some of its associated endpoints. \brief A type of User, to represent the Bot and some of its associated endpoints.
 	class DiscordCoreAPI_Dll BotUser : public User {
 	  public:
-		friend DiscordCoreClient;
+		friend class DiscordCoreClient;
 
 		BotUser(UserData dataPackage, DiscordCoreInternal::BaseSocketAgent* pBaseBaseSocketAgentNew);
 
@@ -157,9 +157,9 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll Users {
 	  public:
 		friend class DiscordCoreInternal::BaseSocketAgent;
-		friend DiscordCoreClient;
-		friend EventHandler;
-		friend Guild;
+		friend class DiscordCoreClient;
+		friend class EventHandler;
+		friend class Guild;
 
 		static void initialize(DiscordCoreInternal::HttpsClient*, ConfigManager* configManagerNew);
 
@@ -203,7 +203,7 @@ namespace DiscordCoreAPI {
 		static CoRoutine<User> modifyCurrentUserAsync(ModifyCurrentUserData dataPackage);
 
 		/// Collects the User's Connections. \brief Collects the User's Connections.
-		/// \returns A CoRoutine containing a std::vector<ConnectionData>.
+		/// \returns A CoRoutine containing a vector<ConnectionData>.
 		static CoRoutine<std::vector<ConnectionData>> getUserConnectionsAsync();
 
 		/// Collects the Application responseData associated with the current Bot.
