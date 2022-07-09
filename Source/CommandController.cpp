@@ -39,8 +39,8 @@ namespace DiscordCoreAPI {
 			return;
 		}
 
-		functionPointer->args = BaseFunctionArguments{ commandData, this->discordCoreClient };
-		functionPointer->execute(functionPointer->args);
+		BaseFunctionArguments theArgs{ commandData, this->discordCoreClient };
+		functionPointer->execute(theArgs);
 		return;
 	}
 

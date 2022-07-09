@@ -1965,10 +1965,8 @@ namespace DiscordCoreAPI {
 		this->parseObject(inputEventData.getInteractionData().rawData, this);
 	}
 
-	BaseFunctionArguments::BaseFunctionArguments(CommandData commandData, DiscordCoreClient* discordCoreClientNew) {
+	BaseFunctionArguments::BaseFunctionArguments(CommandData commandDataNew, DiscordCoreClient* discordCoreClientNew) : CommandData(commandDataNew) {
 		this->discordCoreClient = discordCoreClientNew;
-		this->eventData = commandData.eventData;
-		this->commandData = commandData;
 	}
 
 	MoveThroughMessagePagesData moveThroughMessagePages(const std::string& userID, InputEventData originalEvent, uint32_t currentPageIndex,

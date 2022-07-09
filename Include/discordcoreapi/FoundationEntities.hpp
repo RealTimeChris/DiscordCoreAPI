@@ -3775,11 +3775,10 @@ namespace DiscordCoreAPI {
 	/// Command data, for functions executed by the CommandController. \brief Command data, for functions executed by the CommandController.
 	class DiscordCoreAPI_Dll CommandData : public DataParser<CommandData> {
 	  public:
-		friend struct DiscordCoreAPI_Dll BaseFunctionArguments;
-
 		std::vector<std::string> optionsArgs{};
 		std::string subCommandGroupName{};
 		std::string subCommandName{};
+		InputEventData eventData{};
 		std::string commandName{};
 
 		CommandData() = default;
@@ -3793,16 +3792,13 @@ namespace DiscordCoreAPI {
 		virtual ~CommandData() = default;
 
 	  protected:
-		InputEventData eventData{};
 
 		void parseObject(const nlohmann::json& jsonObjectData, CommandData* pDataStructure);
 	};
 
 	/// Base arguments for the command classes. \brief Base arguments for the command classes.
-	struct DiscordCoreAPI_Dll BaseFunctionArguments {
+	struct DiscordCoreAPI_Dll BaseFunctionArguments : public CommandData {
 		DiscordCoreClient* discordCoreClient{ nullptr };///< A pointer to the instance of DiscordCoreClient.
-		InputEventData eventData{};///< InputEventData representing the input event that triggered the command.
-		CommandData commandData{};///< The input command's data.
 
 		BaseFunctionArguments() = default;
 
@@ -3814,7 +3810,6 @@ namespace DiscordCoreAPI {
 	/// Base class for the command classes. \brief Base class for the command classes.
 	struct DiscordCoreAPI_Dll BaseFunction {
 		std::string helpDescription{};///< Description of the command for the Help command.
-		BaseFunctionArguments args{};///< The function arguments.
 		std::string commandName{};///< Name of the command for calling purposes.
 		EmbedData helpEmbed{};///< A Message embed for displaying the command via the Help command.
 
