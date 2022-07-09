@@ -53,7 +53,7 @@ namespace DiscordCoreAPI {
 	  public:
 		class promise_type {
 		  public:
-			template<typename ReturnType> friend class CoRoutine;
+			template<typename ReturnType02> friend class CoRoutine;
 
 			void requestStop() {
 				this->areWeStoppedBool.store(true);
@@ -207,7 +207,7 @@ namespace DiscordCoreAPI {
 	  public:
 		class promise_type {
 		  public:
-			template<typename void02> friend class CoRoutine;
+			template<typename ReturnType> friend class CoRoutine;
 
 			void requestStop() {
 				this->areWeStoppedBool.store(true);

@@ -64,7 +64,7 @@ namespace DiscordCoreInternal {
 	/// Event-delegate, for representing an event-function to be executed. \brief Event-delegate, for representing an event-function to be executed.
 	template<typename ReturnType, typename... ArgTypes> class EventDelegate {
 	  public:
-		template<typename ReturnType, typename... ArgTypes> friend class Event;
+		template<typename ReturnType02, typename... ArgTypes> friend class Event;
 
 		EventDelegate<ReturnType, ArgTypes...>& operator=(EventDelegate<ReturnType, ArgTypes...>&& other) noexcept {
 			if (this != &other) {
