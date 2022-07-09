@@ -110,12 +110,12 @@ namespace DiscordCoreAPI {
 				break;
 			}
 			std::string theString{};
-			if (this->baseSocketAgent->sslShards[theIndex]->dataOpCode == DiscordCoreInternal::WebSocketOpCode::Op_Binary) {
+			if (static_cast<DiscordCoreInternal::WebSocketSSLShard*>(this->baseSocketAgent->sslShards[theIndex].get())->dataOpCode == DiscordCoreInternal::WebSocketOpCode::Op_Binary) {
 				this->baseSocketAgent->stringifyJsonData(payload, theString, DiscordCoreInternal::WebSocketOpCode::Op_Binary);
 			} else {
 				this->baseSocketAgent->stringifyJsonData(payload, theString, DiscordCoreInternal::WebSocketOpCode::Op_Text);
 			}
-			this->baseSocketAgent->sendMessage(theString, this->baseSocketAgent->sslShards[theIndex].get(), true);
+			this->baseSocketAgent->sendMessage(theString, static_cast<DiscordCoreInternal::WebSocketSSLShard*>(this->baseSocketAgent->sslShards[theIndex].get()), true);
 		}
 	}
 
@@ -128,12 +128,13 @@ namespace DiscordCoreAPI {
 				break;
 			}
 			std::string theString{};
-			if (this->baseSocketAgent->sslShards[theIndex]->dataOpCode == DiscordCoreInternal::WebSocketOpCode::Op_Binary) {
+			if (static_cast<DiscordCoreInternal::WebSocketSSLShard*>(this->baseSocketAgent->sslShards[theIndex].get())->dataOpCode ==
+				DiscordCoreInternal::WebSocketOpCode::Op_Binary) {
 				this->baseSocketAgent->stringifyJsonData(payload, theString, DiscordCoreInternal::WebSocketOpCode::Op_Binary);
 			} else {
 				this->baseSocketAgent->stringifyJsonData(payload, theString, DiscordCoreInternal::WebSocketOpCode::Op_Text);
 			}
-			this->baseSocketAgent->sendMessage(theString, this->baseSocketAgent->sslShards[theIndex].get(), true);
+			this->baseSocketAgent->sendMessage(theString, static_cast<DiscordCoreInternal::WebSocketSSLShard*>(this->baseSocketAgent->sslShards[theIndex].get()), true);
 		}
 	}
 

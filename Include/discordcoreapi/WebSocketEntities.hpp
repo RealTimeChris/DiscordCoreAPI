@@ -82,7 +82,7 @@ namespace DiscordCoreInternal {
 
 	  protected:
 		DiscordCoreAPI::StopWatch<std::chrono::milliseconds> theVCStopWatch{ 550ms };
-		std::unordered_map<int32_t, std::unique_ptr<WebSocketSSLShard>> sslShards{};
+		std::unordered_map<int32_t, std::unique_ptr<SSLEntity>> sslShards{};
 		DiscordCoreAPI::DiscordCoreClient* discordCoreClient{ nullptr };
 		std::queue<DiscordCoreAPI::ConnectionPackage> connections{};
 		std::unique_ptr<std::jthread> taskThread{ nullptr };

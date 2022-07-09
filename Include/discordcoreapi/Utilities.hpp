@@ -401,21 +401,13 @@ namespace DiscordCoreAPI {
 		StringWrapper rhs) {
 		std::stringstream theStream{};
 		theStream << lhs << rhs;
-		std::string theReturnString{};
-		for (uint64_t x = 0; x < theStream.str().size(); x++) {
-			theReturnString.push_back(theStream.str()[x]);
-		}
-		return theReturnString;
+		return theStream.str();
 	}
 
 	inline std::basic_string<char> operator+(const char* lhs, StringWrapper rhs) {
 		std::stringstream theStream{};
 		theStream << lhs << rhs;
-		std::string theReturnString{};
-		for (uint64_t x = 0; x < theStream.str().size(); x++) {
-			theReturnString.push_back(theStream.str()[x]);
-		}
-		return theReturnString;
+		return theStream.str();
 	}
 
 	inline bool operator==(StringWrapper lhs, const char* rhs) {
@@ -434,10 +426,8 @@ namespace DiscordCoreAPI {
 	}
 
 	inline bool operator==(std::string& lhs, StringWrapper& rhs) {
-		for (uint64_t x = 0; x < static_cast<std::string>(rhs).size(); x++) {
-			if (lhs[x] != static_cast<std::string>(rhs)[x]) {
-				return false;
-			}
+		if (lhs == rhs) {
+			return true;
 		}
 		return true;
 	}

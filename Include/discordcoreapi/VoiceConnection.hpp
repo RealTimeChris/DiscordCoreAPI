@@ -96,7 +96,7 @@ namespace DiscordCoreAPI {
 		~VoiceConnection() noexcept;
 
 	  protected:
-		std::unordered_map<int32_t, std::unique_ptr<DiscordCoreInternal::WebSocketSSLShard>> sslShards{};
+		std::unordered_map<int32_t, std::unique_ptr<DiscordCoreInternal::SSLEntity>> sslShards{};
 		std::atomic<VoiceConnectionState> connectionState{ VoiceConnectionState::Collecting_Init_Data };
 		UnboundedMessageBlock<DiscordCoreInternal::VoiceConnectionData> voiceConnectionDataBuffer{};
 		std::unique_ptr<DiscordCoreInternal::DatagramSocketSSLClient> datagramSocket{ nullptr };

@@ -359,7 +359,7 @@ namespace DiscordCoreInternal {
 		return false;
 	}
 
-	void HttpsSSLClient::processIO(int32_t theWaitTimeInms) noexcept {
+	void SSLEntity::processIO(int32_t theWaitTimeInms) noexcept {
 		if (this->theSocket == SOCKET_ERROR) {
 			this->disconnect(true);
 			return;
@@ -524,7 +524,7 @@ namespace DiscordCoreInternal {
 		}
 	};
 
-	void WebSocketSSLShard::processIO(std::unordered_map<SOCKET, std::unique_ptr<WebSocketSSLShard>>& theMap, int32_t waitTimeInms) noexcept {
+	void SSLEntity::processIO(std::unordered_map<SOCKET, std::unique_ptr<SSLEntity>>& theMap, int32_t waitTimeInms) noexcept {
 		int32_t writeNfds{ 0 }, readNfds{ 0 }, finalNfds{ 0 };
 		fd_set writeSet{}, readSet{};
 		FD_ZERO(&writeSet);
