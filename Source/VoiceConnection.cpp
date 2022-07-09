@@ -273,9 +273,7 @@ namespace DiscordCoreAPI {
 					this->webSocketShard->heartBeatStopWatch.resetTimer();
 				}
 				if (!stopToken.stop_requested() && this->webSocketShard->areWeStillConnected()) {
-					std::vector<DiscordCoreInternal::SSLEntity*> theVector{};
-					theVector.push_back(this->webSocketShard.get());
-					DiscordCoreInternal::SSLEntity::processIO(theVector, 10000);
+					this->webSocketShard->processIO(10000);
 				}
 				if (!stopToken.stop_requested() && this->webSocketShard->areWeStillConnected() && this->webSocketShard->inputBuffer.size() > 0) {
 					this->parseMessage(this->webSocketShard.get());
@@ -296,9 +294,7 @@ namespace DiscordCoreAPI {
 	bool VoiceConnection::collectAndProcessAMessage(VoiceConnectionState stateToWaitFor) noexcept {
 		DiscordCoreAPI::StopWatch theStopWatch{ 2500ms };
 		while (!Globals::doWeQuit.load() && this->connectionState.load() != stateToWaitFor) {
-			std::vector<DiscordCoreInternal::SSLEntity*> theVector{};
-			theVector.push_back(this->webSocketShard.get());
-			DiscordCoreInternal::SSLEntity::processIO(theVector, 100000);
+			this->webSocketShard->processIO(10000);
 			if (!this->webSocketShard->areWeStillConnected()) {
 				return false;
 			}
@@ -548,9 +544,7 @@ namespace DiscordCoreAPI {
 					return;
 				}
 				for (uint32_t x = 0; x < 5; x++) {
-					std::vector<DiscordCoreInternal::SSLEntity*> theVector{};
-					theVector.push_back(this->webSocketShard.get());
-					DiscordCoreInternal::SSLEntity::processIO(theVector, 100000);
+					this->webSocketShard->processIO(10000);
 				}
 				if (!this->parseConnectionHeaders(this->webSocketShard.get())) {
 					this->currentReconnectTries++;

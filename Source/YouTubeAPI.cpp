@@ -193,7 +193,6 @@ namespace DiscordCoreInternal {
 			std::vector<SSLEntity*> theVector{};
 			auto bytesRead{ static_cast<int32_t>(streamSocket->getBytesRead()) };
 			if (newSong.finalDownloadUrls.size() > 0) {
-				theVector.push_back(streamSocket.get());				
 				streamSocket->connect(newSong.finalDownloadUrls[0].urlPath, "443");
 			} else {
 				return;
@@ -217,7 +216,7 @@ namespace DiscordCoreInternal {
 			AudioEncoder audioEncoder{};
 			std::string theString = newSong.finalDownloadUrls[1].urlPath;
 			streamSocket->writeData(theString, false);
-			SSLEntity::processIO(theVector, ms1000);
+			streamSocket->processIO(ms1000);
 			if (!streamSocket->areWeStillConnected()) {
 				audioDecoder.reset(nullptr);
 				streamSocket->disconnect(false);
@@ -265,7 +264,7 @@ namespace DiscordCoreInternal {
 							return;
 						}
 						remainingDownloadContentLength = newSong.contentLength - bytesSubmittedTotal;
-						SSLEntity::processIO(theVector, ms500);
+						streamSocket->processIO(ms500);
 						if (!streamSocket->areWeStillConnected()) {
 							audioDecoder.reset(nullptr);
 							streamSocket->disconnect(false);
@@ -292,7 +291,7 @@ namespace DiscordCoreInternal {
 						return;
 					}
 					if (counter == 0) {
-						SSLEntity::processIO(theVector, ms500);
+						streamSocket->processIO(theVector, ms500);
 						if (!streamSocket->areWeStillConnected()) {
 							audioDecoder.reset(nullptr);
 							streamSocket->disconnect(false);
@@ -327,7 +326,7 @@ namespace DiscordCoreInternal {
 								return;
 							}
 							remainingDownloadContentLength = newSong.contentLength - bytesSubmittedTotal;
-							SSLEntity::processIO(theVector, ms500);
+							streamSocket->processIO(ms500);
 							if (!streamSocket->areWeStillConnected()) {
 								audioDecoder.reset(nullptr);
 								streamSocket->disconnect(false);

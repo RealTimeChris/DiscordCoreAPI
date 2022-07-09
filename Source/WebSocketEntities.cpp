@@ -1075,9 +1075,7 @@ namespace DiscordCoreInternal {
 					if (this->sslShards[connectData.currentShard]->theWebSocketState.load() == WebSocketSSLShardState::Collecting_Hello) {
 						break;
 					}
-					std::vector<SSLEntity*> theVector{};
-					theVector.push_back(this->sslShards[connectData.currentShard].get());
-					SSLEntity::processIO(theVector, 10000);
+					this->sslShards[connectData.currentShard]->processIO(10000);
 					if (this->sslShards[connectData.currentShard]->areWeStillConnected()) {
 						this->parseConnectionHeaders(this->sslShards[connectData.currentShard].get());
 					}
