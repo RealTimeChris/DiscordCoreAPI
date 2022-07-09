@@ -384,56 +384,30 @@ namespace DiscordCoreAPI {
 
 		size_t size();
 
-		char* data();
+		const char* data();
 
 	  protected:
 		std::unique_ptr<char[]> thePtr{};
 	};
 
-	inline std::basic_ostream<char, std::char_traits<char>>& operator<<(std::basic_ostream<char, std::char_traits<char>>& lhs, const StringWrapper& rhs) {
+	inline std::basic_ostream<char>& operator<<(std::basic_ostream<char, std::char_traits<char>>& lhs, const StringWrapper& rhs) {
 		for (auto& value: static_cast<std::string>(static_cast<StringWrapper>(rhs))) {
 			lhs.put(value);
 		}
 		return lhs;
 	}
 
-	inline std::basic_string<char, std::char_traits<char>, std::allocator<char>> operator+(std::basic_string<char, std::char_traits<char>, std::allocator<char>> lhs,
+	inline std::basic_string<char> operator+(std::basic_string<char, std::char_traits<char>, std::allocator<char>> lhs,
 		StringWrapper rhs) {
 		std::stringstream theStream{};
 		theStream << lhs << rhs;
-		std::string theReturnString{};
-		for (uint64_t x = 0; x < theStream.str().size(); x++) {
-			theReturnString.push_back(theStream.str()[x]);
-		}
-		return theReturnString;
+		return theStream.str();
 	}
 
-	inline std::basic_string<char, std::char_traits<char>, std::allocator<char>> operator+(const char* lhs, StringWrapper rhs) {
+	inline std::basic_string<char> operator+(const char* lhs, StringWrapper rhs) {
 		std::stringstream theStream{};
 		theStream << lhs << rhs;
-		std::string theReturnString{};
-		for (uint64_t x = 0; x < theStream.str().size(); x++) {
-			theReturnString.push_back(theStream.str()[x]);
-		}
-		return theReturnString;
-	}
-
-	inline bool operator!=(StringWrapper lhs, const char* rhs) {
-		for (uint64_t x = 0; x < static_cast<std::string>(rhs).size(); x++) {
-			if (static_cast<std::string>(lhs)[x] != static_cast<std::string>(rhs)[x]) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	inline bool operator==(std::string& lhs, StringWrapper& rhs) {
-		for (uint64_t x = 0; x < static_cast<std::string>(rhs).size(); x++) {
-			if (lhs[x] != static_cast<std::string>(rhs)[x]) {
-				return false;
-			}
-		}
-		return true;
+		return theStream.str();
 	}
 
 	inline bool operator==(StringWrapper lhs, const char* rhs) {
@@ -442,6 +416,20 @@ namespace DiscordCoreAPI {
 		} else {
 			return false;
 		}
+	}
+
+	inline bool operator!=(StringWrapper lhs, const char* rhs) {
+		if (lhs == rhs) {
+			return false;
+		}
+		return true;
+	}
+
+	inline bool operator==(std::string& lhs, StringWrapper& rhs) {
+		if (lhs == rhs) {
+			return true;
+		}
+		return true;
 	}
 
 	/**@}*/

@@ -19,6 +19,11 @@
 
 #pragma once
 
+#include <discordcoreapi/FoundationEntities.hpp>
+#include <discordcoreapi/EventEntities.hpp>
+#include <openssl/err.h>
+#include <openssl/ssl.h>
+
 #ifndef OPENSSL_NO_DEPRECATED
 	#define OPENSSL_NO_DEPRECATED
 #endif
@@ -31,6 +36,14 @@
 	#pragma comment(lib, "Ws2_32.lib")
 	#include <WinSock2.h>
 	#include <WS2tcpip.h>
+
+	#ifdef max
+		#undef max
+	#endif
+
+	#ifdef min
+		#undef min
+	#endif
 #else
 	#include <fcntl.h>
 	#include <netdb.h>
@@ -42,19 +55,6 @@
 	#include <sys/socket.h>
 	#include <sys/types.h>
 	#include <unistd.h>
-#endif
-
-#include <discordcoreapi/FoundationEntities.hpp>
-#include <discordcoreapi/EventEntities.hpp>
-#include <openssl/err.h>
-#include <openssl/ssl.h>
-
-#ifdef max
-	#undef max
-#endif
-
-#ifdef min
-	#undef min
 #endif
 
 namespace DiscordCoreInternal {
@@ -157,6 +157,8 @@ namespace DiscordCoreInternal {
 
 		virtual bool connect(const std::string& baseUrl, const std::string& portNew) = 0;
 
+		virtual void disconnect(bool doWeReconnect) noexcept = 0;
+
 		virtual bool areWeStillConnected() noexcept = 0;
 
 		virtual ~SSLConnectionInterface() noexcept = default;
@@ -195,15 +197,24 @@ namespace DiscordCoreInternal {
 		std::mutex readMutex{};
 	};
 
-	class DiscordCoreAPI_Dll HttpsSSLClient : public SSLConnectionInterface, public SSLDataInterface {
+	class DiscordCoreAPI_Dll SSLEntity : public SSLDataInterface, public SSLConnectionInterface {
+	  public:
+		SSLEntity() noexcept = default;
+
+		static void processIO(std::unordered_map<int32_t, std::unique_ptr<SSLEntity>>& theMap, int32_t waitTimeInms = 1000) noexcept;
+
+		void processIO(int32_t waitTimeInMs = 10000) noexcept;
+
+	  protected:
+	};
+
+	class DiscordCoreAPI_Dll HttpsSSLClient : public SSLEntity {
 	  public:
 		HttpsSSLClient() noexcept = default;
 
 		[[nodiscard]] bool connect(const std::string& baseUrl, const std::string& portNew) noexcept;
 
 		bool writeData(const std::string& data, bool priority = false) noexcept;
-
-		void processIO(int32_t waitTimeInMs = 10000) noexcept;
 
 		void disconnect(bool doWeReconnect) noexcept;
 
@@ -218,7 +229,7 @@ namespace DiscordCoreInternal {
 
 	enum class WebSocketSSLShardState { Connecting = 0, Upgrading = 1, Collecting_Hello = 2, Sending_Identify = 3, Authenticated = 4, Disconnected = 5 };
 
-	class DiscordCoreAPI_Dll WebSocketSSLShard : public SSLConnectionInterface, public SSLDataInterface {
+	class DiscordCoreAPI_Dll WebSocketSSLShard : public SSLEntity {
 	  public:
 		friend class DiscordCoreAPI::VoiceConnection;
 		friend class WebSocketMessageHandler;
@@ -228,8 +239,6 @@ namespace DiscordCoreInternal {
 
 		WebSocketSSLShard(std::queue<DiscordCoreAPI::ConnectionPackage>* connectionsNew, int32_t currentBaseSocketAgentNew, int32_t currentShardNew,
 			DiscordCoreAPI::ConfigManager* configManagerNew) noexcept;
-
-		static void processIO(std::unordered_map<int32_t, std::unique_ptr<WebSocketSSLShard>>& theMap, int32_t waitTimeInms = 1000) noexcept;
 
 		bool connect(const std::string& baseUrl, const std::string& portNew) noexcept;
 

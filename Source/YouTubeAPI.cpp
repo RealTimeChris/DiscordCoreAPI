@@ -190,7 +190,7 @@ namespace DiscordCoreInternal {
 	void YouTubeAPI::downloadAndStreamAudio(const DiscordCoreAPI::Song& newSong, std::stop_token stopToken, int32_t currentReconnectTries) {
 		try {
 			std::unique_ptr<WebSocketSSLShard> streamSocket{ std::make_unique<WebSocketSSLShard>(nullptr, this->maxBufferSize, 0, this->configManager) };
-			std::unordered_map<int32_t, std::unique_ptr<WebSocketSSLShard>> theMap{};
+			std::unordered_map<int32_t, std::unique_ptr<SSLEntity>> theMap{};
 			auto bytesRead{ static_cast<int32_t>(streamSocket->getBytesRead()) };
 			if (newSong.finalDownloadUrls.size() > 0) {
 				theMap[0] = std::move(streamSocket);
@@ -217,7 +217,7 @@ namespace DiscordCoreInternal {
 			AudioEncoder audioEncoder{};
 			std::string theString = newSong.finalDownloadUrls[1].urlPath;
 			theMap[0]->writeData(theString, false);
-			WebSocketSSLShard::processIO(theMap, ms1000);
+			SSLEntity::processIO(theMap, ms1000);
 			if (!theMap[0]->areWeStillConnected()) {
 				audioDecoder.reset(nullptr);
 				theMap[0]->disconnect(false);
@@ -265,7 +265,7 @@ namespace DiscordCoreInternal {
 							return;
 						}
 						remainingDownloadContentLength = newSong.contentLength - bytesSubmittedTotal;
-						WebSocketSSLShard::processIO(theMap, ms500);
+						SSLEntity::processIO(theMap, ms500);
 						if (!theMap[0]->areWeStillConnected()) {
 							audioDecoder.reset(nullptr);
 							theMap[0]->disconnect(false);
@@ -292,7 +292,7 @@ namespace DiscordCoreInternal {
 						return;
 					}
 					if (counter == 0) {
-						WebSocketSSLShard::processIO(theMap, ms500);
+						SSLEntity::processIO(theMap, ms500);
 						if (!theMap[0]->areWeStillConnected()) {
 							audioDecoder.reset(nullptr);
 							theMap[0]->disconnect(false);
@@ -327,7 +327,7 @@ namespace DiscordCoreInternal {
 								return;
 							}
 							remainingDownloadContentLength = newSong.contentLength - bytesSubmittedTotal;
-							WebSocketSSLShard::processIO(theMap, ms500);
+							SSLEntity::processIO(theMap, ms500);
 							if (!theMap[0]->areWeStillConnected()) {
 								audioDecoder.reset(nullptr);
 								theMap[0]->disconnect(false);
