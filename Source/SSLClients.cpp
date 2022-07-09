@@ -186,6 +186,251 @@ namespace DiscordCoreInternal {
 		}
 	}
 
+	void SSLEntity::processIO(std::unordered_map<SOCKET, std::unique_ptr<SSLEntity>>& theMap, int32_t waitTimeInms) noexcept {
+		int32_t writeNfds{ 0 }, readNfds{ 0 }, finalNfds{ 0 };
+		fd_set writeSet{}, readSet{};
+		FD_ZERO(&writeSet);
+		FD_ZERO(&readSet);
+		bool didWeSetASocket{ false };
+		for (auto& [key, value]: theMap) {
+			if (value) {
+				std::unique_lock theLock{ value->rwMutex };
+				if (value->theSocket != SOCKET_ERROR) {
+					if ((value->outputBuffers.size() > 0 || value->wantWrite) && !value->wantRead) {
+						FD_SET(value->theSocket, &writeSet);
+						writeNfds = value->theSocket > writeNfds ? value->theSocket : writeNfds;
+						didWeSetASocket = true;
+					}
+					FD_SET(value->theSocket, &readSet);
+					readNfds = value->theSocket > readNfds ? value->theSocket : readNfds;
+					didWeSetASocket = true;
+					finalNfds = readNfds > writeNfds ? readNfds : writeNfds;
+				}
+			}
+		}
+
+		if (!didWeSetASocket) {
+			return;
+		}
+
+		timeval checkTime{ .tv_usec = waitTimeInms };
+		if (auto returnValue = select(finalNfds + 1, &readSet, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
+			for (auto& [key, value]: theMap) {
+				value->disconnect(true);
+			}
+			return;
+		}
+
+		for (auto& [key, value]: theMap) {
+			std::unique_lock theLock{ value->rwMutex };
+			if (FD_ISSET(value->theSocket, &readSet)) {
+				value->wantRead = false;
+				value->wantWrite = false;
+				std::string serverToClientBuffer{};
+				serverToClientBuffer.resize(value->maxBufferSize);
+				size_t readBytes{ 0 };
+				auto returnValue{ SSL_read_ex(value->ssl, serverToClientBuffer.data(), serverToClientBuffer.size(), &readBytes) };
+				auto errorValue{ SSL_get_error(value->ssl, returnValue) };
+				switch (errorValue) {
+					case SSL_ERROR_NONE: {
+						if (readBytes > 0) {
+							std::lock_guard theLock02{ value->readMutex };
+							value->inputBuffer.insert(value->inputBuffer.end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
+							value->bytesRead += readBytes;
+						}
+						break;
+					}
+					case SSL_ERROR_ZERO_RETURN: {
+						value->disconnect(true);
+						break;
+					}
+					case SSL_ERROR_SSL: {
+						value->disconnect(true);
+						break;
+					}
+					case SSL_ERROR_SYSCALL: {
+						value->disconnect(true);
+						break;
+					}
+					case SSL_ERROR_WANT_READ: {
+						value->wantRead = true;
+						break;
+					}
+					case SSL_ERROR_WANT_WRITE: {
+						value->wantWrite = true;
+						break;
+					}
+					default: {
+						break;
+					}
+				}
+			}
+			if (FD_ISSET(value->theSocket, &writeSet)) {
+				value->wantRead = false;
+				value->wantWrite = false;
+				size_t writtenBytes{ 0 };
+				std::string theString{};
+				if (value->outputBuffers.size() > 0) {
+					std::unique_lock theLock02{ value->writeMutex };
+					theString = std::move(value->outputBuffers.front());
+					auto returnValue{ SSL_write_ex(value->ssl, theString.data(), theString.size(), &writtenBytes) };
+					auto errorValue{ SSL_get_error(value->ssl, returnValue) };
+					switch (errorValue) {
+						case SSL_ERROR_NONE: {
+							if (value->outputBuffers.size() > 0 && writtenBytes > 0) {
+								value->outputBuffers.erase(value->outputBuffers.begin());
+							} else if (value->outputBuffers.size() > 0) {
+								value->outputBuffers[0] = std::move(theString);
+							}
+							break;
+						}
+						case SSL_ERROR_ZERO_RETURN: {
+							value->disconnect(true);
+							break;
+						}
+						case SSL_ERROR_SSL: {
+							value->disconnect(true);
+							break;
+						}
+						case SSL_ERROR_SYSCALL: {
+							value->disconnect(true);
+							break;
+						}
+						case SSL_ERROR_WANT_READ: {
+							value->wantRead = true;
+							break;
+						}
+						case SSL_ERROR_WANT_WRITE: {
+							value->wantWrite = true;
+							break;
+						}
+						default: {
+							break;
+						}
+					}
+				}
+			}
+		}
+	}
+
+	void SSLEntity::processIO(int32_t theWaitTimeInms) noexcept {
+		if (this->theSocket == SOCKET_ERROR) {
+			this->disconnect(true);
+			return;
+		}
+		int32_t readNfds{ 0 }, writeNfds{ 0 }, finalNfds{ 0 };
+		fd_set writeSet{}, readSet{};
+		FD_ZERO(&writeSet);
+		FD_ZERO(&readSet);
+
+		std::unique_lock theLock{ this->rwMutex };
+		if ((this->outputBuffers.size() > 0 || this->wantWrite) && !this->wantRead) {
+			FD_SET(this->theSocket, &writeSet);
+			writeNfds = this->theSocket > writeNfds ? this->theSocket : writeNfds;
+		}
+		FD_SET(this->theSocket, &readSet);
+		readNfds = this->theSocket > readNfds ? this->theSocket : readNfds;
+		finalNfds = readNfds > writeNfds ? readNfds : writeNfds;
+
+		timeval checkTime{ .tv_usec = theWaitTimeInms };
+		if (auto returnValue = select(finalNfds + 1, &readSet, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
+			this->disconnect(true);
+			return;
+		} else if (returnValue == 0) {
+			return;
+		}
+
+		if (FD_ISSET(this->theSocket, &readSet)) {
+			this->wantRead = false;
+			this->wantWrite = false;
+			std::string serverToClientBuffer{};
+			serverToClientBuffer.resize(this->maxBufferSize);
+			size_t readBytes{ 0 };
+			auto returnValue{ SSL_read_ex(this->ssl, serverToClientBuffer.data(), this->maxBufferSize, &readBytes) };
+			auto errorValue{ SSL_get_error(this->ssl, returnValue) };
+			switch (errorValue) {
+				case SSL_ERROR_NONE: {
+					if (readBytes > 0) {
+						std::lock_guard theLock02{ this->readMutex };
+						this->inputBuffer.insert(this->inputBuffer.end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
+					}
+					break;
+				}
+				case SSL_ERROR_ZERO_RETURN: {
+					this->disconnect(true);
+					break;
+				}
+				case SSL_ERROR_SSL: {
+					this->disconnect(true);
+					break;
+				}
+				case SSL_ERROR_SYSCALL: {
+					this->disconnect(true);
+					break;
+				}
+				case SSL_ERROR_WANT_READ: {
+					this->wantRead = true;
+					break;
+				}
+				case SSL_ERROR_WANT_WRITE: {
+					this->wantWrite = true;
+					break;
+				}
+				default: {
+					break;
+				}
+			}
+		}
+		if (FD_ISSET(this->theSocket, &writeSet)) {
+			this->wantRead = false;
+			this->wantWrite = false;
+			size_t writtenBytes{ 0 };
+			std::string writeString{};
+			if (this->outputBuffers.size() > 0) {
+				std::unique_lock theLock{ this->writeMutex };
+				writeString = std::move(this->outputBuffers.front());
+				auto returnValue{ SSL_write_ex(this->ssl, writeString.data(), writeString.size(), &writtenBytes) };
+				auto errorValue{ SSL_get_error(this->ssl, returnValue) };
+				switch (errorValue) {
+					case SSL_ERROR_NONE: {
+						if (writtenBytes > 0) {
+							this->outputBuffers.erase(this->outputBuffers.begin());
+						} else {
+							this->outputBuffers[0] = std::move(writeString);
+						}
+						break;
+					}
+					case SSL_ERROR_ZERO_RETURN: {
+						theLock.unlock();
+						this->disconnect(true);
+						break;
+					}
+					case SSL_ERROR_SSL: {
+						theLock.unlock();
+						this->disconnect(true);
+						break;
+					}
+					case SSL_ERROR_SYSCALL: {
+						theLock.unlock();
+						this->disconnect(true);
+						break;
+					}
+					case SSL_ERROR_WANT_READ: {
+						this->wantRead = true;
+						break;
+					}
+					case SSL_ERROR_WANT_WRITE: {
+						this->wantWrite = true;
+						break;
+					}
+					default: {
+						break;
+					}
+				}
+			}
+		}
+	}
+
 	bool HttpsSSLClient::connect(const std::string& baseUrl, const std::string& portNew) noexcept {
 		std::string stringNew{};
 		if (baseUrl.find(".com") != std::string::npos) {
@@ -359,124 +604,6 @@ namespace DiscordCoreInternal {
 		return false;
 	}
 
-	void SSLEntity::processIO(int32_t theWaitTimeInms) noexcept {
-		if (this->theSocket == SOCKET_ERROR) {
-			this->disconnect(true);
-			return;
-		}
-		int32_t readNfds{ 0 }, writeNfds{ 0 }, finalNfds{ 0 };
-		fd_set writeSet{}, readSet{};
-		FD_ZERO(&writeSet);
-		FD_ZERO(&readSet);
-
-		std::unique_lock theLock{ this->rwMutex };
-		if ((this->outputBuffers.size() > 0 || this->wantWrite) && !this->wantRead) {
-			FD_SET(this->theSocket, &writeSet);
-			writeNfds = this->theSocket > writeNfds ? this->theSocket : writeNfds;
-		}
-		FD_SET(this->theSocket, &readSet);
-		readNfds = this->theSocket > readNfds ? this->theSocket : readNfds;
-		finalNfds = readNfds > writeNfds ? readNfds : writeNfds;
-
-		timeval checkTime{ .tv_usec = theWaitTimeInms };
-		if (auto returnValue = select(finalNfds + 1, &readSet, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
-			this->disconnect(true);
-			return;
-		} else if (returnValue == 0) {
-			return;
-		}
-
-		if (FD_ISSET(this->theSocket, &readSet)) {
-			this->wantRead = false;
-			this->wantWrite = false;
-			std::string serverToClientBuffer{};
-			serverToClientBuffer.resize(this->maxBufferSize);
-			size_t readBytes{ 0 };
-			auto returnValue{ SSL_read_ex(this->ssl, serverToClientBuffer.data(), this->maxBufferSize, &readBytes) };
-			auto errorValue{ SSL_get_error(this->ssl, returnValue) };
-			switch (errorValue) {
-				case SSL_ERROR_NONE: {
-					if (readBytes > 0) {
-						std::lock_guard theLock02{ this->readMutex };
-						this->inputBuffer.insert(this->inputBuffer.end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
-					}
-					break;
-				}
-				case SSL_ERROR_ZERO_RETURN: {
-					this->disconnect(true);
-					break;
-				}
-				case SSL_ERROR_SSL: {
-					this->disconnect(true);
-					break;
-				}
-				case SSL_ERROR_SYSCALL: {
-					this->disconnect(true);
-					break;
-				}
-				case SSL_ERROR_WANT_READ: {
-					this->wantRead = true;
-					break;
-				}
-				case SSL_ERROR_WANT_WRITE: {
-					this->wantWrite = true;
-					break;
-				}
-				default: {
-					break;
-				}
-			}
-		}
-		if (FD_ISSET(this->theSocket, &writeSet)) {
-			this->wantRead = false;
-			this->wantWrite = false;
-			size_t writtenBytes{ 0 };
-			std::string writeString{};
-			if (this->outputBuffers.size() > 0) {
-				std::unique_lock theLock{ this->writeMutex };
-				writeString = std::move(this->outputBuffers.front());
-				auto returnValue{ SSL_write_ex(this->ssl, writeString.data(), writeString.size(), &writtenBytes) };
-				auto errorValue{ SSL_get_error(this->ssl, returnValue) };
-				switch (errorValue) {
-					case SSL_ERROR_NONE: {
-						if (writtenBytes > 0) {
-							this->outputBuffers.erase(this->outputBuffers.begin());
-						} else {
-							this->outputBuffers[0] = std::move(writeString);
-						}
-						break;
-					}
-					case SSL_ERROR_ZERO_RETURN: {
-						theLock.unlock();
-						this->disconnect(true);
-						break;
-					}
-					case SSL_ERROR_SSL: {
-						theLock.unlock();
-						this->disconnect(true);
-						break;
-					}
-					case SSL_ERROR_SYSCALL: {
-						theLock.unlock();
-						this->disconnect(true);
-						break;
-					}
-					case SSL_ERROR_WANT_READ: {
-						this->wantRead = true;
-						break;
-					}
-					case SSL_ERROR_WANT_WRITE: {
-						this->wantWrite = true;
-						break;
-					}
-					default: {
-						break;
-					}
-				}
-			}
-		}
-	}
-
 	std::string HttpsSSLClient::getInputBuffer() noexcept {
 		std::unique_lock theLock{ this->readMutex };
 		std::string theReturnString = std::move(this->inputBuffer);
@@ -523,133 +650,6 @@ namespace DiscordCoreInternal {
 			this->dataOpCode = WebSocketOpCode::Op_Text;
 		}
 	};
-
-	void SSLEntity::processIO(std::unordered_map<SOCKET, std::unique_ptr<SSLEntity>>& theMap, int32_t waitTimeInms) noexcept {
-		int32_t writeNfds{ 0 }, readNfds{ 0 }, finalNfds{ 0 };
-		fd_set writeSet{}, readSet{};
-		FD_ZERO(&writeSet);
-		FD_ZERO(&readSet);
-		bool didWeSetASocket{ false };
-		for (auto& [key, value]: theMap) {
-			if (value) {
-				std::unique_lock theLock{ value->rwMutex };
-				if (value->theSocket != SOCKET_ERROR) {
-					if ((value->outputBuffers.size() > 0 || value->wantWrite) && !value->wantRead) {
-						FD_SET(value->theSocket, &writeSet);
-						writeNfds = value->theSocket > writeNfds ? value->theSocket : writeNfds;
-						didWeSetASocket = true;
-					}
-					FD_SET(value->theSocket, &readSet);
-					readNfds = value->theSocket > readNfds ? value->theSocket : readNfds;
-					didWeSetASocket = true;
-					finalNfds = readNfds > writeNfds ? readNfds : writeNfds;
-				}
-			}
-		}
-
-		if (!didWeSetASocket) {
-			return;
-		}
-
-		timeval checkTime{ .tv_usec = waitTimeInms };
-		if (auto returnValue = select(finalNfds + 1, &readSet, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
-			for (auto& [key, value]: theMap) {
-				value->disconnect(true);
-			}
-			return;
-		}
-
-		for (auto& [key, value]: theMap) {
-			std::unique_lock theLock{ value->rwMutex };
-			if (FD_ISSET(value->theSocket, &readSet)) {
-				value->wantRead = false;
-				value->wantWrite = false;
-				std::string serverToClientBuffer{};
-				serverToClientBuffer.resize(value->maxBufferSize);
-				size_t readBytes{ 0 };
-				auto returnValue{ SSL_read_ex(value->ssl, serverToClientBuffer.data(), serverToClientBuffer.size(), &readBytes) };
-				auto errorValue{ SSL_get_error(value->ssl, returnValue) };
-				switch (errorValue) {
-					case SSL_ERROR_NONE: {
-						if (readBytes > 0) {
-							std::lock_guard theLock02{ value->readMutex };
-							value->inputBuffer.insert(value->inputBuffer.end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
-							value->bytesRead += readBytes;
-						}
-						break;
-					}
-					case SSL_ERROR_ZERO_RETURN: {
-						value->disconnect(true);
-						break;
-					}
-					case SSL_ERROR_SSL: {
-						value->disconnect(true);
-						break;
-					}
-					case SSL_ERROR_SYSCALL: {
-						value->disconnect(true);
-						break;
-					}
-					case SSL_ERROR_WANT_READ: {
-						value->wantRead = true;
-						break;
-					}
-					case SSL_ERROR_WANT_WRITE: {
-						value->wantWrite = true;
-						break;
-					}
-					default: {
-						break;
-					}
-				}
-			}
-			if (FD_ISSET(value->theSocket, &writeSet)) {
-				value->wantRead = false;
-				value->wantWrite = false;
-				size_t writtenBytes{ 0 };
-				std::string theString{};
-				if (value->outputBuffers.size() > 0) {
-					std::unique_lock theLock02{ value->writeMutex };
-					theString = std::move(value->outputBuffers.front());
-					auto returnValue{ SSL_write_ex(value->ssl, theString.data(), theString.size(), &writtenBytes) };
-					auto errorValue{ SSL_get_error(value->ssl, returnValue) };
-					switch (errorValue) {
-						case SSL_ERROR_NONE: {
-							if (value->outputBuffers.size() > 0 && writtenBytes > 0) {
-								value->outputBuffers.erase(value->outputBuffers.begin());
-							} else if (value->outputBuffers.size() > 0) {
-								value->outputBuffers[0] = std::move(theString);
-							}
-							break;
-						}
-						case SSL_ERROR_ZERO_RETURN: {
-							value->disconnect(true);
-							break;
-						}
-						case SSL_ERROR_SSL: {
-							value->disconnect(true);
-							break;
-						}
-						case SSL_ERROR_SYSCALL: {
-							value->disconnect(true);
-							break;
-						}
-						case SSL_ERROR_WANT_READ: {
-							value->wantRead = true;
-							break;
-						}
-						case SSL_ERROR_WANT_WRITE: {
-							value->wantWrite = true;
-							break;
-						}
-						default: {
-							break;
-						}
-					}
-				}
-			}
-		}
-	}
 
 	bool WebSocketSSLShard::connect(const std::string& baseUrlNew, const std::string& portNew) noexcept {
 		addrinfoWrapper hints{}, address{};
