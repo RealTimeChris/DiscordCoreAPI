@@ -3580,13 +3580,13 @@ namespace DiscordCoreAPI {
 
 	void UserCommandInteractionData::parseObject(const nlohmann::json& jsonObjectData, UserCommandInteractionData* pDataStructure) {
 		if (jsonObjectData.contains("target_id") && !jsonObjectData["target_id"].is_null()) {
-			pDataStructure->targetId = jsonObjectData["target_id"].get<std::string>();
+			pDataStructure->targetId = stoull(jsonObjectData["target_id"].get<std::string>());
 		}
 	}
 
 	void MessageCommandInteractionData::parseObject(const nlohmann::json& jsonObjectData, MessageCommandInteractionData* pDataStructure) {
 		if (jsonObjectData.contains("target_id") && !jsonObjectData["target_id"].is_null()) {
-			pDataStructure->targetId = jsonObjectData["target_id"].get<std::string>();
+			pDataStructure->targetId = stoull(jsonObjectData["target_id"].get<std::string>());
 		}
 	}
 

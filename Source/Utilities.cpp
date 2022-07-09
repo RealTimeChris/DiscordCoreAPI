@@ -1124,17 +1124,4 @@ namespace DiscordCoreAPI {
 		return timeStamp;
 	}
 
-	CommandData::CommandData(InputEventData inputEventData) {
-		if (inputEventData.interactionData->data.applicationCommandData.name != "") {
-			this->commandName = inputEventData.interactionData->data.applicationCommandData.name;
-		}
-		if (inputEventData.interactionData->data.messageInteractionData.targetId != "") {
-			this->optionsArgs.push_back(inputEventData.interactionData->data.messageInteractionData.targetId);
-		} else if (inputEventData.interactionData->data.userInteractionData.targetId != "") {
-			this->optionsArgs.push_back(inputEventData.interactionData->data.userInteractionData.targetId);
-		}
-		this->eventData = inputEventData;
-		this->parseObject(inputEventData.getInteractionData().rawData, this);
-	}
-
 };

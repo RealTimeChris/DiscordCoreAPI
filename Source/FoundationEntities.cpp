@@ -4221,6 +4221,19 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
+	CommandData::CommandData(InputEventData inputEventData) {
+		if (inputEventData.interactionData->data.applicationCommandData.name != "") {
+			this->commandName = inputEventData.interactionData->data.applicationCommandData.name;
+		}
+		if (inputEventData.interactionData->data.messageInteractionData.targetId != 0) {
+			this->optionsArgs.push_back(std::to_string(inputEventData.interactionData->data.messageInteractionData.targetId));
+		} else if (inputEventData.interactionData->data.userInteractionData.targetId != 0) {
+			this->optionsArgs.push_back(std::to_string(inputEventData.interactionData->data.userInteractionData.targetId));
+		}
+		this->eventData = inputEventData;
+		this->parseObject(inputEventData.getInteractionData().rawData, this);
+	}
+
 	BaseFunctionArguments::BaseFunctionArguments(CommandData commandData, DiscordCoreClient* discordCoreClientNew) {
 		this->discordCoreClient = discordCoreClientNew;
 		this->eventData = commandData.eventData;

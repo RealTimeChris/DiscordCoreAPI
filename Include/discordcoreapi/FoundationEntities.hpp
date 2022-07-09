@@ -2575,7 +2575,7 @@ namespace DiscordCoreAPI {
 
 	/// User command Interaction data. \brief User command Interaction data.
 	struct DiscordCoreAPI_Dll UserCommandInteractionData : public DataParser<UserCommandInteractionData> {
-		std::string targetId{};///< The target User's id.
+		Snowflake targetId{};///< The target User's id.
 
 		UserCommandInteractionData() = default;
 
@@ -2591,7 +2591,7 @@ namespace DiscordCoreAPI {
 
 	/// Message command interacction data. \brief Message command interacction data.
 	struct DiscordCoreAPI_Dll MessageCommandInteractionData : public DataParser<MessageCommandInteractionData> {
-		std::string targetId{};///< The target Message's id.
+		Snowflake targetId{};///< The target Message's id.
 
 		MessageCommandInteractionData() = default;
 
@@ -4914,69 +4914,6 @@ namespace DiscordCoreAPI {
 		InteractionCallbackType type{};///< Interaction callback type.
 	};
 
-	/// Command data, for functions executed by the CommandController. \brief Command data, for functions executed by the CommandController.
-	class DiscordCoreAPI_Dll CommandData : public DataParser<CommandData> {
-	  public:
-		friend struct DiscordCoreAPI_Dll BaseFunctionArguments;
-
-		std::vector<std::string> optionsArgs{};
-		std::string subCommandGroupName{};
-		std::string subCommandName{};
-		std::string commandName{};
-
-		CommandData() = default;
-
-		CommandData(InputEventData inputEventData);
-
-		CommandData& operator=(const nlohmann::json& jsonObjectData) {
-			this->parseObject(jsonObjectData, this);
-			return *this;
-		}
-
-		CommandData(const nlohmann::json& jsonObjectData) {
-			*this = jsonObjectData;
-		}
-
-		virtual ~CommandData() = default;
-
-	  protected:
-		InputEventData eventData{};
-
-		void parseObject(const nlohmann::json& jsonObjectData, CommandData* pDataStructure) {
-			if (jsonObjectData.contains("options") && !jsonObjectData["options"].is_null()) {
-				pDataStructure->optionsArgs.clear();
-				for (auto& value: jsonObjectData["options"]) {
-					if (value.contains("type") && value["type"] == 1) {
-						if (value.contains("name")) {
-							pDataStructure->subCommandName = value["name"];
-						}
-					} else if (value.contains("type") && value["type"] == 2) {
-						if (value.contains("name")) {
-							pDataStructure->subCommandGroupName = value["name"];
-						}
-					}
-					if (value.contains("options")) {
-						parseObject(value, pDataStructure);
-					}
-					if (value.contains("value") && !value["value"].is_null()) {
-						auto& newValueNew = value["value"];
-						if (newValueNew.is_string()) {
-							pDataStructure->optionsArgs.push_back(newValueNew);
-						} else if (newValueNew.is_number()) {
-							pDataStructure->optionsArgs.push_back(std::to_string(newValueNew.get<int64_t>()));
-						} else if (newValueNew.is_boolean()) {
-							pDataStructure->optionsArgs.push_back(std::to_string(newValueNew.get<bool>()));
-						}
-					}
-				}
-			}
-
-			if (jsonObjectData.contains("name") && !jsonObjectData["name"].is_null()) {
-				pDataStructure->commandName = jsonObjectData["name"].get<std::string>();
-			}
-		}
-	};
-
 	/// Guild application command permissions data. \brief Guild application command permissions data.
 	class DiscordCoreAPI_Dll GuildApplicationCommandPermissionData : public DiscordEntity {
 	  public:
@@ -5207,6 +5144,69 @@ namespace DiscordCoreAPI {
 	 * \addtogroup utilities
 	 * @{
 	 */
+
+	/// Command data, for functions executed by the CommandController. \brief Command data, for functions executed by the CommandController.
+	class DiscordCoreAPI_Dll CommandData : public DataParser<CommandData> {
+	  public:
+		friend struct DiscordCoreAPI_Dll BaseFunctionArguments;
+
+		std::vector<std::string> optionsArgs{};
+		std::string subCommandGroupName{};
+		std::string subCommandName{};
+		std::string commandName{};
+
+		CommandData() = default;
+
+		CommandData(InputEventData inputEventData);
+
+		CommandData& operator=(const nlohmann::json& jsonObjectData) {
+			this->parseObject(jsonObjectData, this);
+			return *this;
+		}
+
+		CommandData(const nlohmann::json& jsonObjectData) {
+			*this = jsonObjectData;
+		}
+
+		virtual ~CommandData() = default;
+
+	  protected:
+		InputEventData eventData{};
+
+		void parseObject(const nlohmann::json& jsonObjectData, CommandData* pDataStructure) {
+			if (jsonObjectData.contains("options") && !jsonObjectData["options"].is_null()) {
+				pDataStructure->optionsArgs.clear();
+				for (auto& value: jsonObjectData["options"]) {
+					if (value.contains("type") && value["type"] == 1) {
+						if (value.contains("name")) {
+							pDataStructure->subCommandName = value["name"];
+						}
+					} else if (value.contains("type") && value["type"] == 2) {
+						if (value.contains("name")) {
+							pDataStructure->subCommandGroupName = value["name"];
+						}
+					}
+					if (value.contains("options")) {
+						parseObject(value, pDataStructure);
+					}
+					if (value.contains("value") && !value["value"].is_null()) {
+						auto& newValueNew = value["value"];
+						if (newValueNew.is_string()) {
+							pDataStructure->optionsArgs.push_back(newValueNew);
+						} else if (newValueNew.is_number()) {
+							pDataStructure->optionsArgs.push_back(std::to_string(newValueNew.get<int64_t>()));
+						} else if (newValueNew.is_boolean()) {
+							pDataStructure->optionsArgs.push_back(std::to_string(newValueNew.get<bool>()));
+						}
+					}
+				}
+			}
+
+			if (jsonObjectData.contains("name") && !jsonObjectData["name"].is_null()) {
+				pDataStructure->commandName = jsonObjectData["name"].get<std::string>();
+			}
+		}
+	};
 
 	/// Base arguments for the command classes. \brief Base arguments for the command classes.
 	struct DiscordCoreAPI_Dll BaseFunctionArguments {
