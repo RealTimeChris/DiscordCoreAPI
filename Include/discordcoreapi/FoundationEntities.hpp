@@ -5032,6 +5032,7 @@ namespace DiscordCoreAPI {
 		EncodedFrameData encodedFrameData{};///< To be filled if it's already encoded.
 		Snowflake guildMemberId{};///< The Id of the GuildMember from which it was sent.
 		RawFrameData rawFrameData{};///< To be filled if it's raw audio data.
+
 		void clearData();
 	};
 

@@ -149,6 +149,12 @@ namespace DiscordCoreInternal {
 }
 
 namespace DiscordCoreAPI {
+	
+	std::string DiscordEntity::getCreatedAtTimestamp(TimeFormat timeFormat) {
+		TimeStamp timeStamp = (static_cast<uint64_t>(this->id) >> 22) + 1420070400000;
+		std::string theReturnString = timeStamp.convertTimeInMsToDateTimeString(timeFormat);
+		return theReturnString;
+	}
 
 	RoleTagsData& RoleTagsData::operator=(const nlohmann::json& jsonObjectData) {
 		this->parseObject(jsonObjectData, this);
@@ -1153,6 +1159,15 @@ namespace DiscordCoreAPI {
 
 	ComponentInteractionData::ComponentInteractionData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
+	}
+
+	void AudioFrameData::clearData() {
+		this->encodedFrameData.sampleCount = -1;
+		this->encodedFrameData.data.clear();
+		this->rawFrameData.sampleCount = -1;
+		this->type = AudioFrameType::Unset;
+		this->rawFrameData.data.clear();
+		this->guildMemberId = 0;
 	}
 
 	/*

@@ -33,6 +33,11 @@ namespace DiscordCoreInternal {}
 
 namespace DiscordCoreAPI {
 
+	std::basic_ostream<char>& operator<<(std::basic_ostream<char>& outputSttream, const std::string& (*theFunction)( void )) {
+		outputSttream << theFunction();
+		return outputSttream;
+	}
+
 	ConfigManager::ConfigManager(const DiscordCoreClientConfig& theConfigNew) {
 		this->theConfig = theConfigNew;
 	}
@@ -264,7 +269,7 @@ namespace DiscordCoreAPI {
 		return theLength;
 	}
 
-	char* StringWrapper::data() {
+	const char* StringWrapper::data() {
 		return this->thePtr.get();
 	}
 
@@ -621,6 +626,301 @@ namespace DiscordCoreAPI {
 		return this->data();
 	}
 
+	std::string Permissions::getCurrentChannelPermissions(const GuildMember& guildMember, ChannelData& channel) {
+		Permissions permission{};
+		std::string permsString = permission.computePermissions(guildMember, channel);
+		return permsString;
+	}
+
+	bool Permissions::checkForPermission(const GuildMember& guildMember, ChannelData& channel, Permission permission) {
+		std::string permissionsString = Permissions::computePermissions(guildMember, channel);
+		if ((stoll(permissionsString) & static_cast<int64_t>(permission)) == static_cast<int64_t>(permission)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	std::string Permissions::getCurrentGuildPermissions(const GuildMember& guildMember) {
+		Permissions permission{};
+		std::string permissions = permission.computeBasePermissions(guildMember);
+		return permissions;
+	}
+
+	void Permissions::removePermissions(const std::vector<Permission>& permissionsToRemove) {
+		if (*this == "") {
+			this->push_back('0');
+		}
+		int64_t permissionsInteger = stoll(static_cast<std::string>(static_cast<StringWrapper>(*this)));
+		for (auto value: permissionsToRemove) {
+			permissionsInteger &= ~static_cast<int64_t>(value);
+		}
+		std::stringstream sstream{};
+		sstream << permissionsInteger;
+		*this = sstream.str();
+	}
+
+	void Permissions::addPermissions(const std::vector<Permission>& permissionsToAdd) {
+		if (*this == "") {
+			this->push_back('0');
+		}
+		int64_t permissionsInteger = stoll(static_cast<std::string>(static_cast<StringWrapper>(*this)));
+		for (auto value: permissionsToAdd) {
+			permissionsInteger |= static_cast<int64_t>(value);
+		}
+		std::stringstream sstream{};
+		sstream << permissionsInteger;
+		*this = sstream.str();
+	}
+
+	std::vector<std::string> Permissions::displayPermissions() {
+		std::vector<std::string> returnVector{};
+		if (*this == "") {
+			this->push_back('0');
+		}
+		int64_t permissionsInteger = stoll(static_cast<std::string>(static_cast<StringWrapper>(*this)));
+		if (permissionsInteger & (1ll << 3)) {
+			for (int64_t x = 0; x < 41; x++) {
+				permissionsInteger |= 1ll << x;
+			}
+		}
+		if (permissionsInteger & (1ll << 0)) {
+			returnVector.push_back("Create Instant Invite");
+		}
+		if (permissionsInteger & (1ll << 1)) {
+			returnVector.push_back("Kick Members");
+		}
+		if (permissionsInteger & (1ll << 2)) {
+			returnVector.push_back("Ban Members");
+		}
+		if (permissionsInteger & (1ll << 3)) {
+			returnVector.push_back("Administrator");
+		}
+		if (permissionsInteger & (1ll << 4)) {
+			returnVector.push_back("Manage Channels");
+		}
+		if (permissionsInteger & (1ll << 5)) {
+			returnVector.push_back("Manage Guild");
+		}
+		if (permissionsInteger & (1ll << 6)) {
+			returnVector.push_back("Add Reactions");
+		}
+		if (permissionsInteger & (1ll << 7)) {
+			returnVector.push_back("View Audit Log");
+		}
+		if (permissionsInteger & (1ll << 8)) {
+			returnVector.push_back("Priority Speaker");
+		}
+		if (permissionsInteger & (1ll << 9)) {
+			returnVector.push_back("Stream");
+		}
+		if (permissionsInteger & (1ll << 10)) {
+			returnVector.push_back("View Channel");
+		}
+		if (permissionsInteger & (1ll << 11)) {
+			returnVector.push_back("Send Messages");
+		}
+		if (permissionsInteger & (1ll << 12)) {
+			returnVector.push_back("Send TTS Messages");
+		}
+		if (permissionsInteger & (1ll << 13)) {
+			returnVector.push_back("Manage Messages");
+		}
+		if (permissionsInteger & (1ll << 14)) {
+			returnVector.push_back("Embed Links");
+		}
+		if (permissionsInteger & (1ll << 15)) {
+			returnVector.push_back("Attach Files");
+		}
+		if (permissionsInteger & (1ll << 16)) {
+			returnVector.push_back("Read Message History");
+		}
+		if (permissionsInteger & (1ll << 17)) {
+			returnVector.push_back("Mention Everyone");
+		}
+		if (permissionsInteger & (1ll << 18)) {
+			returnVector.push_back("Use External Emoji");
+		}
+		if (permissionsInteger & (1ll << 19)) {
+			returnVector.push_back("View Guild Insights");
+		}
+		if (permissionsInteger & (1ll << 20)) {
+			returnVector.push_back("Connect");
+		}
+		if (permissionsInteger & (1ll << 21)) {
+			returnVector.push_back("Speak");
+		}
+		if (permissionsInteger & (1ll << 22)) {
+			returnVector.push_back("Mute Members");
+		}
+		if (permissionsInteger & (1ll << 23)) {
+			returnVector.push_back("Deafen Members");
+		}
+		if (permissionsInteger & (1ll << 24)) {
+			returnVector.push_back("Move Members");
+		}
+		if (permissionsInteger & (1ll << 25)) {
+			returnVector.push_back("Use VAD");
+		}
+		if (permissionsInteger & (1ll << 26)) {
+			returnVector.push_back("Change Nickname");
+		}
+		if (permissionsInteger & (1ll << 27)) {
+			returnVector.push_back("Manage Nicknames");
+		}
+		if (permissionsInteger & (1ll << 28)) {
+			returnVector.push_back("Manage Roles");
+		}
+		if (permissionsInteger & (1ll << 29)) {
+			returnVector.push_back("Manage Webhooks");
+		}
+		if (permissionsInteger & (1ll << 30)) {
+			returnVector.push_back("Manage Emojis And Stickers");
+		}
+		if (permissionsInteger & (1ll << 31)) {
+			returnVector.push_back("Use Application Commands");
+		}
+		if (permissionsInteger & (1ll << 32)) {
+			returnVector.push_back("Request To Speak");
+		}
+		if (permissionsInteger & (1ll << 33)) {
+			returnVector.push_back("Manage Events");
+		}
+		if (permissionsInteger & (1ll << 34)) {
+			returnVector.push_back("Manage Threads");
+		}
+		if (permissionsInteger & (1ll << 35)) {
+			returnVector.push_back("Create Public Threads");
+		}
+		if (permissionsInteger & (1ll << 36)) {
+			returnVector.push_back("Create Private Threads");
+		}
+		if (permissionsInteger & (1ll << 37)) {
+			returnVector.push_back("Use External Stickers");
+		}
+		if (permissionsInteger & (1ll << 38)) {
+			returnVector.push_back("Send Messages In Threads");
+		}
+		if (permissionsInteger & (1ll << 39)) {
+			returnVector.push_back("Start Embedded Activities");
+		}
+		if (permissionsInteger & (1ll << 40)) {
+			returnVector.push_back("Moderate Members");
+		}
+		return returnVector;
+	}
+
+	std::string Permissions::getCurrentPermissionString() {
+		std::string theReturnString = *this;
+		return theReturnString;
+	}
+
+	std::string Permissions::getAllPermissions() {
+		int64_t allPerms{ 0 };
+		for (int64_t x = 0; x < 41; x++) {
+			allPerms |= 1ll << x;
+		}
+		std::stringstream stream{};
+		stream << allPerms;
+		return stream.str();
+	}
+
+	std::string Permissions::computeOverwrites(const std::string& basePermissions, const GuildMember& guildMember, ChannelData& channel) {
+		if ((stoll(basePermissions) & static_cast<int64_t>(Permission::Administrator)) == static_cast<int64_t>(Permission::Administrator)) {
+			return Permissions::getAllPermissions();
+		}
+
+		int64_t permissions = stoll(basePermissions);
+		if (channel.permissionOverwrites.contains(guildMember.guildId)) {
+			OverWriteData overWritesEveryone = channel.permissionOverwrites[guildMember.guildId];
+			permissions &= ~stoll(static_cast<std::string>(static_cast<StringWrapper>(overWritesEveryone.deny)));
+			permissions |= stoll(static_cast<std::string>(static_cast<StringWrapper>(overWritesEveryone.allow)));
+		}
+
+		std::vector<RoleData> guildMemberRoles{};
+		for (auto& value: guildMember.roles) {
+			guildMemberRoles.push_back(Roles::getCachedRoleAsync({ .guildId = guildMember.guildId, .roleId = value }).get());
+		}
+		int64_t allow{ 0 };
+		int64_t deny{ 0 };
+		for (auto& value: guildMemberRoles) {
+			if (channel.permissionOverwrites.contains(value.id)) {
+				OverWriteData currentChannelOverwrites = channel.permissionOverwrites[value.id];
+				allow |= stoll(static_cast<std::string>(static_cast<StringWrapper>(currentChannelOverwrites.allow)));
+				deny |= stoll(static_cast<std::string>(static_cast<StringWrapper>(currentChannelOverwrites.deny)));
+			}
+		}
+		permissions &= ~deny;
+		permissions |= allow;
+		if (channel.permissionOverwrites.contains(guildMember.id)) {
+			OverWriteData currentOverWrites = channel.permissionOverwrites[guildMember.id];
+			permissions &= ~stoll(static_cast<std::string>(static_cast<StringWrapper>(currentOverWrites.deny)));
+			permissions |= stoll(static_cast<std::string>(static_cast<StringWrapper>(currentOverWrites.allow)));
+		}
+		return std::to_string(permissions);
+	}
+
+	std::string Permissions::computePermissions(const GuildMember& guildMember, ChannelData& channel) {
+		std::string permissions = Permissions::computeBasePermissions(guildMember);
+		permissions = Permissions::computeOverwrites(permissions, guildMember, channel);
+		return permissions;
+	}
+
+	std::string Permissions::computeBasePermissions(const GuildMember& guildMember) {
+		const GuildData guild = Guilds::getCachedGuildAsync({ .guildId = guildMember.guildId }).get();
+		if (guild.ownerId == guildMember.id) {
+			return Permissions::getAllPermissions();
+		}
+		std::vector<RoleData> guildRoles{};
+		for (auto& value: guild.roles) {
+			guildRoles.push_back(Roles::getCachedRoleAsync({ .guildId = guild.id, .roleId = value }).get());
+		}
+		RoleData roleEveryone{};
+		for (auto& value: guildRoles) {
+			if (value.id == guild.id) {
+				roleEveryone = value;
+			}
+		}
+		int64_t permissions{};
+		if (roleEveryone.permissions != "") {
+			permissions = stoll(static_cast<std::string>(static_cast<StringWrapper>(roleEveryone.permissions)));
+		}
+		GetGuildMemberRolesData getRolesData{};
+		getRolesData.guildMember = guildMember;
+		getRolesData.guildId = guildMember.guildId;
+		std::vector<RoleData> guildMemberRoles{};
+		for (auto& value: guildMember.roles) {
+			guildMemberRoles.push_back(Roles::getCachedRoleAsync({ .guildId = guild.id, .roleId = value }).get());
+		}
+		for (auto& value: guildMemberRoles) {
+			permissions |= stoll(static_cast<std::string>(static_cast<StringWrapper>(value.permissions)));
+		}
+
+		if ((permissions & static_cast<int64_t>(Permission::Administrator)) == static_cast<int64_t>(Permission::Administrator)) {
+			return Permissions::getAllPermissions();
+		}
+
+		return std::to_string(permissions);
+	}
+
+	void reportException(const std::string& currentFunctionName, std::source_location theLocation) {
+		try {
+			auto currentException = std::current_exception();
+			if (currentException) {
+				std::rethrow_exception(currentException);
+			}
+		} catch (const std::exception& e) {
+			std::stringstream theStream{};
+			theStream << shiftToBrightRed() << "Error Report: \n"
+					  << "Caught At: " << currentFunctionName << ", in File: " << theLocation.file_name() << " (" << std::to_string(theLocation.line()) << ":"
+					  << std::to_string(theLocation.column()) << ")"
+					  << "\nThe Error: \n"
+					  << e.what() << reset();
+			auto theReturnString = theStream.str();
+			std::cout << theReturnString;
+		}
+	}
+
 	std::string constructMultiPartData(nlohmann::json theData, const std::vector<File>& files) {
 		const std::string boundary("boundary25");
 		const std::string partStart("--" + boundary + "\r\nContent-Type: application/octet-stream\r\nContent-Disposition: form-data; ");
@@ -642,24 +942,6 @@ namespace DiscordCoreAPI {
 		}
 		content += "\r\n--" + boundary + "--";
 		return content;
-	}
-
-	void reportException(const std::string& currentFunctionName, std::source_location theLocation) {
-		try {
-			auto currentException = std::current_exception();
-			if (currentException) {
-				std::rethrow_exception(currentException);
-			}
-		} catch (const std::exception& e) {
-			std::stringstream theStream{};
-			theStream << shiftToBrightRed() << "Error Report: \n"
-					  << "Caught At: " << currentFunctionName << ", in File: " << theLocation.file_name() << " (" << std::to_string(theLocation.line()) << ":"
-					  << std::to_string(theLocation.column()) << ")"
-					  << "\nThe Error: \n"
-					  << e.what() << reset();
-			auto theReturnString = theStream.str();
-			std::cout << theReturnString;
-		}
 	}
 
 	std::string convertToLowerCase(const std::string& stringToConvert) {
@@ -817,21 +1099,7 @@ namespace DiscordCoreAPI {
 	std::string reset() {
 		return std::string("\033[0m");
 	}
-
-	std::ostream& operator<<(std::ostream& outputSttream, const std::string& (*theFunction)( void )) {
-		outputSttream << theFunction();
-		return outputSttream;
-	}
-
-	void AudioFrameData::clearData() {
-		this->encodedFrameData.sampleCount = -1;
-		this->encodedFrameData.data.clear();
-		this->rawFrameData.sampleCount = -1;
-		this->type = AudioFrameType::Unset;
-		this->rawFrameData.data.clear();
-		this->guildMemberId = 0;
-	}
-
+	
 	std::string getTimeAndDate() {
 		const time_t now = std::time(nullptr);
 		tm time = *std::localtime(&now);
@@ -854,289 +1122,6 @@ namespace DiscordCoreAPI {
 		size_t size = strftime(timeStamp.data(), 48, "%F %R", &time);
 		timeStamp.resize(size);
 		return timeStamp;
-	}
-
-	std::string DiscordEntity::getCreatedAtTimestamp(TimeFormat timeFormat) {
-		TimeStamp timeStamp = (static_cast<uint64_t>(this->id) >> 22) + 1420070400000;
-		std::string theReturnString = timeStamp.convertTimeInMsToDateTimeString(timeFormat);
-		return theReturnString;
-	}
-
-	void Permissions::addPermissions(const std::vector<Permission>& permissionsToAdd) {
-		if (*this == "") {
-			this->push_back('0');
-		}
-		int64_t permissionsInteger = stoll(static_cast<std::string>(static_cast<StringWrapper>(*this)));
-		for (auto value: permissionsToAdd) {
-			permissionsInteger |= static_cast<int64_t>(value);
-		}
-		std::stringstream sstream{};
-		sstream << permissionsInteger;
-		*this = sstream.str();
-	}
-
-	void Permissions::removePermissions(const std::vector<Permission>& permissionsToRemove) {
-		if (*this == "") {
-			this->push_back('0');
-		}
-		int64_t permissionsInteger = stoll(static_cast<std::string>(static_cast<StringWrapper>(*this)));
-		for (auto value: permissionsToRemove) {
-			permissionsInteger &= ~static_cast<int64_t>(value);
-		}
-		std::stringstream sstream{};
-		sstream << permissionsInteger;
-		*this = sstream.str();
-	}
-
-	std::vector<std::string> Permissions::displayPermissions() {
-		std::vector<std::string> returnVector{};
-		if (*this == "") {
-			this->push_back('0');
-		}
-		int64_t permissionsInteger = stoll(static_cast<std::string>(static_cast<StringWrapper>(*this)));
-		if (permissionsInteger & (1ll << 3)) {
-			for (int64_t x = 0; x < 41; x++) {
-				permissionsInteger |= 1ll << x;
-			}
-		}
-		if (permissionsInteger & (1ll << 0)) {
-			returnVector.push_back("Create Instant Invite");
-		}
-		if (permissionsInteger & (1ll << 1)) {
-			returnVector.push_back("Kick Members");
-		}
-		if (permissionsInteger & (1ll << 2)) {
-			returnVector.push_back("Ban Members");
-		}
-		if (permissionsInteger & (1ll << 3)) {
-			returnVector.push_back("Administrator");
-		}
-		if (permissionsInteger & (1ll << 4)) {
-			returnVector.push_back("Manage Channels");
-		}
-		if (permissionsInteger & (1ll << 5)) {
-			returnVector.push_back("Manage Guild");
-		}
-		if (permissionsInteger & (1ll << 6)) {
-			returnVector.push_back("Add Reactions");
-		}
-		if (permissionsInteger & (1ll << 7)) {
-			returnVector.push_back("View Audit Log");
-		}
-		if (permissionsInteger & (1ll << 8)) {
-			returnVector.push_back("Priority Speaker");
-		}
-		if (permissionsInteger & (1ll << 9)) {
-			returnVector.push_back("Stream");
-		}
-		if (permissionsInteger & (1ll << 10)) {
-			returnVector.push_back("View Channel");
-		}
-		if (permissionsInteger & (1ll << 11)) {
-			returnVector.push_back("Send Messages");
-		}
-		if (permissionsInteger & (1ll << 12)) {
-			returnVector.push_back("Send TTS Messages");
-		}
-		if (permissionsInteger & (1ll << 13)) {
-			returnVector.push_back("Manage Messages");
-		}
-		if (permissionsInteger & (1ll << 14)) {
-			returnVector.push_back("Embed Links");
-		}
-		if (permissionsInteger & (1ll << 15)) {
-			returnVector.push_back("Attach Files");
-		}
-		if (permissionsInteger & (1ll << 16)) {
-			returnVector.push_back("Read Message History");
-		}
-		if (permissionsInteger & (1ll << 17)) {
-			returnVector.push_back("Mention Everyone");
-		}
-		if (permissionsInteger & (1ll << 18)) {
-			returnVector.push_back("Use External Emoji");
-		}
-		if (permissionsInteger & (1ll << 19)) {
-			returnVector.push_back("View Guild Insights");
-		}
-		if (permissionsInteger & (1ll << 20)) {
-			returnVector.push_back("Connect");
-		}
-		if (permissionsInteger & (1ll << 21)) {
-			returnVector.push_back("Speak");
-		}
-		if (permissionsInteger & (1ll << 22)) {
-			returnVector.push_back("Mute Members");
-		}
-		if (permissionsInteger & (1ll << 23)) {
-			returnVector.push_back("Deafen Members");
-		}
-		if (permissionsInteger & (1ll << 24)) {
-			returnVector.push_back("Move Members");
-		}
-		if (permissionsInteger & (1ll << 25)) {
-			returnVector.push_back("Use VAD");
-		}
-		if (permissionsInteger & (1ll << 26)) {
-			returnVector.push_back("Change Nickname");
-		}
-		if (permissionsInteger & (1ll << 27)) {
-			returnVector.push_back("Manage Nicknames");
-		}
-		if (permissionsInteger & (1ll << 28)) {
-			returnVector.push_back("Manage Roles");
-		}
-		if (permissionsInteger & (1ll << 29)) {
-			returnVector.push_back("Manage Webhooks");
-		}
-		if (permissionsInteger & (1ll << 30)) {
-			returnVector.push_back("Manage Emojis And Stickers");
-		}
-		if (permissionsInteger & (1ll << 31)) {
-			returnVector.push_back("Use Application Commands");
-		}
-		if (permissionsInteger & (1ll << 32)) {
-			returnVector.push_back("Request To Speak");
-		}
-		if (permissionsInteger & (1ll << 33)) {
-			returnVector.push_back("Manage Events");
-		}
-		if (permissionsInteger & (1ll << 34)) {
-			returnVector.push_back("Manage Threads");
-		}
-		if (permissionsInteger & (1ll << 35)) {
-			returnVector.push_back("Create Public Threads");
-		}
-		if (permissionsInteger & (1ll << 36)) {
-			returnVector.push_back("Create Private Threads");
-		}
-		if (permissionsInteger & (1ll << 37)) {
-			returnVector.push_back("Use External Stickers");
-		}
-		if (permissionsInteger & (1ll << 38)) {
-			returnVector.push_back("Send Messages In Threads");
-		}
-		if (permissionsInteger & (1ll << 39)) {
-			returnVector.push_back("Start Embedded Activities");
-		}
-		if (permissionsInteger & (1ll << 40)) {
-			returnVector.push_back("Moderate Members");
-		}
-		return returnVector;
-	}
-
-	std::string Permissions::getAllPermissions() {
-		int64_t allPerms{ 0 };
-		for (int64_t x = 0; x < 41; x++) {
-			allPerms |= 1ll << x;
-		}
-		std::stringstream stream{};
-		stream << allPerms;
-		return stream.str();
-	}
-
-	std::string Permissions::getCurrentChannelPermissions(const GuildMember& guildMember, ChannelData& channel) {
-		Permissions permission{};
-		std::string permsString = permission.computePermissions(guildMember, channel);
-		return permsString;
-	}
-
-	bool Permissions::checkForPermission(const GuildMember& guildMember, ChannelData& channel, Permission permission) {
-		std::string permissionsString = Permissions::computePermissions(guildMember, channel);
-		if ((stoll(permissionsString) & static_cast<int64_t>(permission)) == static_cast<int64_t>(permission)) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	std::string Permissions::getCurrentGuildPermissions(const GuildMember& guildMember) {
-		Permissions permission{};
-		std::string permissions = permission.computeBasePermissions(guildMember);
-		return permissions;
-	}
-
-	std::string Permissions::computeBasePermissions(const GuildMember& guildMember) {
-		const GuildData guild = Guilds::getCachedGuildAsync({ .guildId = guildMember.guildId }).get();
-		if (guild.ownerId == guildMember.id) {
-			return Permissions::getAllPermissions();
-		}
-		std::vector<RoleData> guildRoles{};
-		for (auto& value: guild.roles) {
-			guildRoles.push_back(Roles::getCachedRoleAsync({ .guildId = guild.id, .roleId = value }).get());
-		}
-		RoleData roleEveryone{};
-		for (auto& value: guildRoles) {
-			if (value.id == guild.id) {
-				roleEveryone = value;
-			}
-		}
-		int64_t permissions{};
-		if (roleEveryone.permissions != "") {
-			permissions = stoll(static_cast<std::string>(static_cast<StringWrapper>(roleEveryone.permissions)));
-		}
-		GetGuildMemberRolesData getRolesData{};
-		getRolesData.guildMember = guildMember;
-		getRolesData.guildId = guildMember.guildId;
-		std::vector<RoleData> guildMemberRoles{};
-		for (auto& value: guildMember.roles) {
-			guildMemberRoles.push_back(Roles::getCachedRoleAsync({ .guildId = guild.id, .roleId = value }).get());
-		}
-		for (auto& value: guildMemberRoles) {
-			permissions |= stoll(static_cast<std::string>(static_cast<StringWrapper>(value.permissions)));
-		}
-
-		if ((permissions & static_cast<int64_t>(Permission::Administrator)) == static_cast<int64_t>(Permission::Administrator)) {
-			return Permissions::getAllPermissions();
-		}
-
-		return std::to_string(permissions);
-	}
-
-	std::string Permissions::getCurrentPermissionString() {
-		std::string theReturnString = *this;
-		return theReturnString;
-	}
-
-	std::string Permissions::computeOverwrites(const std::string& basePermissions, const GuildMember& guildMember, ChannelData& channel) {
-		if ((stoll(basePermissions) & static_cast<int64_t>(Permission::Administrator)) == static_cast<int64_t>(Permission::Administrator)) {
-			return Permissions::getAllPermissions();
-		}
-
-		int64_t permissions = stoll(basePermissions);
-		if (channel.permissionOverwrites.contains(guildMember.guildId)) {
-			OverWriteData overWritesEveryone = channel.permissionOverwrites[guildMember.guildId];
-			permissions &= ~stoll(static_cast<std::string>(static_cast<StringWrapper>(overWritesEveryone.deny)));
-			permissions |= stoll(static_cast<std::string>(static_cast<StringWrapper>(overWritesEveryone.allow)));
-		}
-
-		std::vector<RoleData> guildMemberRoles{};
-		for (auto& value: guildMember.roles) {
-			guildMemberRoles.push_back(Roles::getCachedRoleAsync({ .guildId = guildMember.guildId, .roleId = value }).get());
-		}
-		int64_t allow{ 0 };
-		int64_t deny{ 0 };
-		for (auto& value: guildMemberRoles) {
-			if (channel.permissionOverwrites.contains(value.id)) {
-				OverWriteData currentChannelOverwrites = channel.permissionOverwrites[value.id];
-				allow |= stoll(static_cast<std::string>(static_cast<StringWrapper>(currentChannelOverwrites.allow)));
-				deny |= stoll(static_cast<std::string>(static_cast<StringWrapper>(currentChannelOverwrites.deny)));
-			}
-		}
-		permissions &= ~deny;
-		permissions |= allow;
-		if (channel.permissionOverwrites.contains(guildMember.id)) {
-			OverWriteData currentOverWrites = channel.permissionOverwrites[guildMember.id];
-			permissions &= ~stoll(static_cast<std::string>(static_cast<StringWrapper>(currentOverWrites.deny)));
-			permissions |= stoll(static_cast<std::string>(static_cast<StringWrapper>(currentOverWrites.allow)));
-		}
-		return std::to_string(permissions);
-	}
-
-	std::string Permissions::computePermissions(const GuildMember& guildMember, ChannelData& channel) {
-		std::string permissions = Permissions::computeBasePermissions(guildMember);
-		permissions = Permissions::computeOverwrites(permissions, guildMember, channel);
-		return permissions;
 	}
 
 	CommandData::CommandData(InputEventData inputEventData) {

@@ -100,15 +100,12 @@ namespace DiscordCoreInternal {
 	class SoundCloudRequestBuilder;
 	class YouTubeRequestBuilder;
 	class WebSocketSSLShard;
-	class VoiceSocketAgent;
 	class BaseSocketAgent;
 	class SoundCloudAPI;
 	class HttpsClient;
 	class YouTubeAPI;
 
 	enum class WebSocketOpCode : int8_t { Op_Continuation = 0x00, Op_Text = 0x01, Op_Binary = 0x02, Op_Close = 0x08, Op_Ping = 0x09, Op_Pong = 0x0a };
-
-	enum class WebSocketState : int8_t { Connecting01 = 0, Connecting02 = 1, Connected = 2 };
 
 	/// Websocket close codes. \brief Websocket close codes.
 	enum class WebSocketCloseCode : uint16_t {
@@ -188,7 +185,7 @@ namespace DiscordCoreAPI {
 	template<typename ReturnType, typename... ArgTypes> class Event;
 	template<typename ReturnType> class CoRoutine;
 
-	std::ostream& operator<<(std::ostream& outputSttream, const std::string& (*theFunction)( void ));
+	std::basic_ostream<char>& operator<<(std::basic_ostream<char>& outputSttream, const std::string& (*theFunction)( void ));
 
 	/**
 	 * \addtogroup foundation_entities
@@ -292,23 +289,6 @@ namespace DiscordCoreAPI {
 		std::string botToken{};///< Your bot's token.
 	};
 
-	template<typename ReturnType> ReturnType reverseByteOrder(ReturnType x) {
-		const uint8_t byteSize{ 8 };
-		ReturnType returnValue{};
-		for (uint32_t y = 0; y < sizeof(ReturnType); y++) {
-			returnValue |= static_cast<ReturnType>(static_cast<uint8_t>(x >> (byteSize * y))) << byteSize * (sizeof(ReturnType) - y - 1);
-		}
-		return returnValue;
-	}
-
-	template<typename ReturnType> void storeBits(std::string& to, ReturnType num) {
-		const uint8_t byteSize{ 8 };
-		ReturnType newValue = reverseByteOrder(num);
-		for (uint32_t x = 0; x < sizeof(ReturnType); x++) {
-			to.push_back(static_cast<uint8_t>(newValue >> (byteSize * x)));
-		}
-	}
-
 	class DiscordCoreAPI_Dll ConfigManager {
 	  public:
 		ConfigManager() = default;
@@ -404,7 +384,7 @@ namespace DiscordCoreAPI {
 
 		size_t size();
 
-		char* data();
+		const char* data();
 
 	  protected:
 		std::unique_ptr<char[]> thePtr{};
@@ -438,10 +418,6 @@ namespace DiscordCoreAPI {
 		return theReturnString;
 	}
 
-	bool operator!=(StringWrapper lhs, const char* rhs);
-
-	bool operator==(std::string& lhs, StringWrapper& rhs);
-
 	inline bool operator==(StringWrapper lhs, const char* rhs) {
 		if (std::string(lhs) == std::string(rhs)) {
 			return true;
@@ -450,161 +426,9 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	template<typename ObjectType>
-	concept Copyable = std::copyable<ObjectType>;
+	bool operator!=(StringWrapper lhs, const char* rhs);
 
-	/// A thread-safe messaging block for data-structures. \brief A thread-safe messaging block for data-structures.
-	/// \tparam ObjectType The type of object that will be sent over the message block.
-	template<Copyable ObjectType> class UnboundedMessageBlock {
-	  public:
-		UnboundedMessageBlock<ObjectType>& operator=(UnboundedMessageBlock<ObjectType>&& other) noexcept {
-			if (this != &other) {
-				this->theQueue = std::move(other.theQueue);
-				other.theQueue = std::queue<ObjectType>{};
-			}
-			return *this;
-		}
-
-		UnboundedMessageBlock(UnboundedMessageBlock<ObjectType>&& other) noexcept {
-			*this = std::move(other);
-		}
-
-		UnboundedMessageBlock<ObjectType>& operator=(const UnboundedMessageBlock<ObjectType>&) = delete;
-
-		UnboundedMessageBlock(const UnboundedMessageBlock<ObjectType>&) = delete;
-
-		UnboundedMessageBlock<ObjectType>& operator=(UnboundedMessageBlock<ObjectType>&) = delete;
-
-		UnboundedMessageBlock(UnboundedMessageBlock<ObjectType>&) = delete;
-
-		UnboundedMessageBlock() = default;
-
-		/// Sends an object of type ObjectType to the "recipient". \brief Sends an object of type ObjectType to the "recipient".
-		/// \param theObject An object of ObjectType.
-		void send(const ObjectType&& theObject) {
-			std::lock_guard theLock{ this->accessMutex };
-			this->theQueue.push(theObject);
-		}
-
-		/// Sends an object of type ObjectType to the "recipient". \brief Sends an object of type ObjectType to the "recipient".
-		/// \param theObject An object of ObjectType.
-		void send(ObjectType&& theObject) {
-			std::lock_guard theLock{ this->accessMutex };
-			this->theQueue.push(std::move(theObject));
-		}
-
-		/// Sends an object of type ObjectType to the "recipient". \brief Sends an object of type ObjectType to the "recipient".
-		/// \param theObject An object of ObjectType.
-		void send(const ObjectType& theObject) {
-			std::lock_guard theLock{ this->accessMutex };
-			this->theQueue.push(theObject);
-		}
-
-		/// Sends an object of type ObjectType to the "recipient". \brief Sends an object of type ObjectType to the "recipient".
-		/// \param theObject An object of ObjectType.
-		void send(ObjectType& theObject) {
-			std::lock_guard theLock{ this->accessMutex };
-			this->theQueue.push(theObject);
-		}
-
-		/// Clears the contents of the messaging block. \brief Clears the contents of the messaging block.
-		void clearContents() {
-			std::lock_guard theLock{ this->accessMutex };
-			this->theQueue = std::queue<ObjectType>{};
-		}
-
-		/// Tries to receive an object of type ObjectType to be placed into a reference. \brief Tries to receive an object of type ObjectType to be placed into a reference.
-		/// \param theObject A reference of type ObjectType for placing the potentially received object.
-		/// \returns bool A bool, denoting whether or not we received an object.
-		bool tryReceive(ObjectType& theObject) {
-			std::lock_guard theLock{ this->accessMutex };
-			if (this->theQueue.size() > 0) {
-				theObject = std::move(this->theQueue.front());
-				this->theQueue.pop();
-				return true;
-			} else {
-				return false;
-			}
-		}
-
-	  protected:
-		std::queue<ObjectType> theQueue{};
-		std::mutex accessMutex{};
-	};
-
-	template<typename TimeType> class StopWatch {
-	  public:
-		StopWatch<TimeType>& operator=(StopWatch<TimeType>&& other) noexcept {
-			if (this != &other) {
-				this->maxNumberOfMs.store(other.maxNumberOfMs.load());
-				this->startTime.store(other.startTime.load());
-			}
-			return *this;
-		}
-
-		StopWatch(StopWatch<TimeType>&& other) noexcept {
-			*this = std::move(other);
-		}
-
-		StopWatch<TimeType>& operator=(StopWatch<TimeType>& other) noexcept {
-			if (this != &other) {
-				this->maxNumberOfMs.store(other.maxNumberOfMs.load());
-				this->startTime.store(other.startTime.load());
-			}
-			return *this;
-		}
-
-		StopWatch(StopWatch<TimeType>& other) noexcept {
-			*this = other;
-		}
-
-		StopWatch() = delete;
-
-		StopWatch(TimeType maxNumberOfMsNew) {
-			this->maxNumberOfMs.store(maxNumberOfMsNew.count());
-			this->startTime.store(static_cast<uint64_t>(std::chrono::duration_cast<TimeType>(std::chrono::system_clock::now().time_since_epoch()).count()));
-		}
-
-		uint64_t totalTimePassed() {
-			uint64_t currentTime = static_cast<uint64_t>(std::chrono::duration_cast<TimeType>(std::chrono::system_clock::now().time_since_epoch()).count());
-			uint64_t elapsedTime = currentTime - this->startTime.load();
-			return elapsedTime;
-		}
-
-		bool hasTimePassed() {
-			uint64_t currentTime = static_cast<uint64_t>(std::chrono::duration_cast<TimeType>(std::chrono::system_clock::now().time_since_epoch()).count());
-			uint64_t elapsedTime = currentTime - this->startTime.load();
-			if (elapsedTime >= this->maxNumberOfMs.load()) {
-				return true;
-			} else {
-				return false;
-			}
-		}
-
-		void resetTimer(uint64_t theNewTime = 0) {
-			if (theNewTime != 0) {
-				this->maxNumberOfMs.store(theNewTime);
-			}
-			this->startTime.store(static_cast<uint64_t>(std::chrono::duration_cast<TimeType>(std::chrono::system_clock::now().time_since_epoch()).count()));
-		}
-
-	  protected:
-		std::atomic_uint64_t maxNumberOfMs{ 0 };
-		std::atomic_uint64_t startTime{ 0 };
-	};
-
-	template<typename ObjectType> bool waitForTimeToPass(UnboundedMessageBlock<ObjectType>& outBuffer, ObjectType& argOne, int32_t timeInMsNew) {
-		StopWatch stopWatch{ std::chrono::milliseconds{ timeInMsNew } };
-		bool didTimePass{ false };
-		while (!outBuffer.tryReceive(argOne)) {
-			std::this_thread::sleep_for(1ms);
-			if (stopWatch.hasTimePassed()) {
-				didTimePass = true;
-				break;
-			}
-		};
-		return didTimePass;
-	}
+	bool operator==(std::string& lhs, StringWrapper& rhs);
 
 	/**@}*/
 
@@ -779,31 +603,6 @@ namespace DiscordCoreAPI {
 
 		operator const char*();
 
-		/// Adds one or more Permissions to the current Permissions value. \brief Adds one or more Permissions to the current Permissions value.
-		/// \param permissionsToAdd A vector containing the Permissions you wish to add.
-		void addPermissions(const std::vector<Permission>& permissionsToAdd);
-
-		/// Removes one or more Permissions from the current Permissions value. \brief Removes one or more Permissions from the current Permissions value.
-		/// \param permissionsToRemove A vector containing the Permissions you wish to remove.
-		void removePermissions(const std::vector<Permission>& permissionsToRemove);
-
-		/// Displays the currently present Permissions in a string, and returns a vector with each of them stored in string format. \brief Displays the currently present Permissions in a string, and returns a vector with each of them stored in string format.
-		/// \returns std::vector A vector full of strings of the Permissions that are in the input std::string's value.
-		std::vector<std::string> displayPermissions();
-
-		/// Returns a string containing ALL of the possible Permissions. \brief Returns a string containing ALL of the possible Permissions.
-		/// \returns std::string A string containing all of the possible Permissions.
-		static std::string getAllPermissions();
-
-		/// Returns a string containing the currently held Permissions. \brief Returns a string containing the currently held Permissions.
-		/// \returns std::string A string containing the current Permissions.
-		std::string getCurrentPermissionString();
-
-		/// Returns a string containing the currently held Permissions in a given Guild. \brief Returns a string containing the currently held Permissions in a given Guild.
-		/// \param guildMember The GuildMember who's Permissions are to be evaluated.
-		/// \returns std::string A string containing the current Permissions.
-		static std::string getCurrentGuildPermissions(const GuildMember& guildMember);
-
 		/// Returns a string containing all of a given User's Permissions for a given Channel. \brief Returns a string containing all of a given User's Permissions for a given Channel.
 		/// \param guildMember The GuildMember who's Permissions to analyze.
 		/// \param channel The Channel withint which to check for Permissions.
@@ -816,6 +615,31 @@ namespace DiscordCoreAPI {
 		/// \param permission A Permission to check the current Channel for.
 		/// \returns bool A bool suggesting the presence of the chosen Permission.
 		bool checkForPermission(const GuildMember& guildMember, ChannelData& channel, Permission permission);
+
+		/// Returns a string containing the currently held Permissions in a given Guild. \brief Returns a string containing the currently held Permissions in a given Guild.
+		/// \param guildMember The GuildMember who's Permissions are to be evaluated.
+		/// \returns std::string A string containing the current Permissions.
+		static std::string getCurrentGuildPermissions(const GuildMember& guildMember);
+
+		/// Removes one or more Permissions from the current Permissions value. \brief Removes one or more Permissions from the current Permissions value.
+		/// \param permissionsToRemove A vector containing the Permissions you wish to remove.
+		void removePermissions(const std::vector<Permission>& permissionsToRemove);
+
+		/// Adds one or more Permissions to the current Permissions value. \brief Adds one or more Permissions to the current Permissions value.
+		/// \param permissionsToAdd A vector containing the Permissions you wish to add.
+		void addPermissions(const std::vector<Permission>& permissionsToAdd);
+
+		/// Displays the currently present Permissions in a string, and returns a vector with each of them stored in string format. \brief Displays the currently present Permissions in a string, and returns a vector with each of them stored in string format.
+		/// \returns std::vector A vector full of strings of the Permissions that are in the input std::string's value.
+		std::vector<std::string> displayPermissions();
+
+		/// Returns a string containing the currently held Permissions. \brief Returns a string containing the currently held Permissions.
+		/// \returns std::string A string containing the current Permissions.
+		std::string getCurrentPermissionString();
+
+		/// Returns a string containing ALL of the possible Permissions. \brief Returns a string containing ALL of the possible Permissions.
+		/// \returns std::string A string containing all of the possible Permissions.
+		static std::string getAllPermissions();
 
 	  protected:
 		std::string computeOverwrites(const std::string& basePermissions, const GuildMember& guildMember, ChannelData& channel);
@@ -872,6 +696,179 @@ namespace DiscordCoreAPI {
 
 	template<typename StoredAsType, typename FlagType> bool getBool(StoredAsType inputFlag, FlagType theFlag) {
 		return static_cast<StoredAsType>(inputFlag) & static_cast<StoredAsType>(theFlag);
+	}
+
+	template<typename ReturnType> ReturnType reverseByteOrder(ReturnType x) {
+		const uint8_t byteSize{ 8 };
+		ReturnType returnValue{};
+		for (uint32_t y = 0; y < sizeof(ReturnType); y++) {
+			returnValue |= static_cast<ReturnType>(static_cast<uint8_t>(x >> (byteSize * y))) << byteSize * (sizeof(ReturnType) - y - 1);
+		}
+		return returnValue;
+	}
+
+	template<typename ReturnType> void storeBits(std::string& to, ReturnType num) {
+		const uint8_t byteSize{ 8 };
+		ReturnType newValue = reverseByteOrder(num);
+		for (uint32_t x = 0; x < sizeof(ReturnType); x++) {
+			to.push_back(static_cast<uint8_t>(newValue >> (byteSize * x)));
+		}
+	}
+
+	template<typename ObjectType>
+	concept Copyable = std::copyable<ObjectType>;
+
+	/// A thread-safe messaging block for data-structures. \brief A thread-safe messaging block for data-structures.
+	/// \tparam ObjectType The type of object that will be sent over the message block.
+	template<Copyable ObjectType> class UnboundedMessageBlock {
+	  public:
+		UnboundedMessageBlock<ObjectType>& operator=(UnboundedMessageBlock<ObjectType>&& other) noexcept {
+			if (this != &other) {
+				this->theQueue = std::move(other.theQueue);
+				other.theQueue = std::queue<ObjectType>{};
+			}
+			return *this;
+		}
+
+		UnboundedMessageBlock(UnboundedMessageBlock<ObjectType>&& other) noexcept {
+			*this = std::move(other);
+		}
+
+		UnboundedMessageBlock<ObjectType>& operator=(const UnboundedMessageBlock<ObjectType>&) = delete;
+
+		UnboundedMessageBlock(const UnboundedMessageBlock<ObjectType>&) = delete;
+
+		UnboundedMessageBlock<ObjectType>& operator=(UnboundedMessageBlock<ObjectType>&) = delete;
+
+		UnboundedMessageBlock(UnboundedMessageBlock<ObjectType>&) = delete;
+
+		UnboundedMessageBlock() = default;
+
+		/// Sends an object of type ObjectType to the "recipient". \brief Sends an object of type ObjectType to the "recipient".
+		/// \param theObject An object of ObjectType.
+		void send(const ObjectType&& theObject) {
+			std::lock_guard theLock{ this->accessMutex };
+			this->theQueue.push(theObject);
+		}
+
+		/// Sends an object of type ObjectType to the "recipient". \brief Sends an object of type ObjectType to the "recipient".
+		/// \param theObject An object of ObjectType.
+		void send(ObjectType&& theObject) {
+			std::lock_guard theLock{ this->accessMutex };
+			this->theQueue.push(std::move(theObject));
+		}
+
+		/// Sends an object of type ObjectType to the "recipient". \brief Sends an object of type ObjectType to the "recipient".
+		/// \param theObject An object of ObjectType.
+		void send(const ObjectType& theObject) {
+			std::lock_guard theLock{ this->accessMutex };
+			this->theQueue.push(theObject);
+		}
+
+		/// Sends an object of type ObjectType to the "recipient". \brief Sends an object of type ObjectType to the "recipient".
+		/// \param theObject An object of ObjectType.
+		void send(ObjectType& theObject) {
+			std::lock_guard theLock{ this->accessMutex };
+			this->theQueue.push(theObject);
+		}
+
+		/// Clears the contents of the messaging block. \brief Clears the contents of the messaging block.
+		void clearContents() {
+			std::lock_guard theLock{ this->accessMutex };
+			this->theQueue = std::queue<ObjectType>{};
+		}
+
+		/// Tries to receive an object of type ObjectType to be placed into a reference. \brief Tries to receive an object of type ObjectType to be placed into a reference.
+		/// \param theObject A reference of type ObjectType for placing the potentially received object.
+		/// \returns bool A bool, denoting whether or not we received an object.
+		bool tryReceive(ObjectType& theObject) {
+			std::lock_guard theLock{ this->accessMutex };
+			if (this->theQueue.size() > 0) {
+				theObject = std::move(this->theQueue.front());
+				this->theQueue.pop();
+				return true;
+			} else {
+				return false;
+			}
+		}
+
+	  protected:
+		std::queue<ObjectType> theQueue{};
+		std::mutex accessMutex{};
+	};
+
+	template<typename TimeType> class StopWatch {
+	  public:
+		StopWatch<TimeType>& operator=(StopWatch<TimeType>&& other) noexcept {
+			if (this != &other) {
+				this->maxNumberOfMs.store(other.maxNumberOfMs.load());
+				this->startTime.store(other.startTime.load());
+			}
+			return *this;
+		}
+
+		StopWatch(StopWatch<TimeType>&& other) noexcept {
+			*this = std::move(other);
+		}
+
+		StopWatch<TimeType>& operator=(StopWatch<TimeType>& other) noexcept {
+			if (this != &other) {
+				this->maxNumberOfMs.store(other.maxNumberOfMs.load());
+				this->startTime.store(other.startTime.load());
+			}
+			return *this;
+		}
+
+		StopWatch(StopWatch<TimeType>& other) noexcept {
+			*this = other;
+		}
+
+		StopWatch() = delete;
+
+		StopWatch(TimeType maxNumberOfMsNew) {
+			this->maxNumberOfMs.store(maxNumberOfMsNew.count());
+			this->startTime.store(static_cast<uint64_t>(std::chrono::duration_cast<TimeType>(std::chrono::system_clock::now().time_since_epoch()).count()));
+		}
+
+		uint64_t totalTimePassed() {
+			uint64_t currentTime = static_cast<uint64_t>(std::chrono::duration_cast<TimeType>(std::chrono::system_clock::now().time_since_epoch()).count());
+			uint64_t elapsedTime = currentTime - this->startTime.load();
+			return elapsedTime;
+		}
+
+		bool hasTimePassed() {
+			uint64_t currentTime = static_cast<uint64_t>(std::chrono::duration_cast<TimeType>(std::chrono::system_clock::now().time_since_epoch()).count());
+			uint64_t elapsedTime = currentTime - this->startTime.load();
+			if (elapsedTime >= this->maxNumberOfMs.load()) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+
+		void resetTimer(uint64_t theNewTime = 0) {
+			if (theNewTime != 0) {
+				this->maxNumberOfMs.store(theNewTime);
+			}
+			this->startTime.store(static_cast<uint64_t>(std::chrono::duration_cast<TimeType>(std::chrono::system_clock::now().time_since_epoch()).count()));
+		}
+
+	  protected:
+		std::atomic_uint64_t maxNumberOfMs{ 0 };
+		std::atomic_uint64_t startTime{ 0 };
+	};
+
+	template<typename ObjectType> bool waitForTimeToPass(UnboundedMessageBlock<ObjectType>& outBuffer, ObjectType& argOne, int32_t timeInMsNew) {
+		StopWatch stopWatch{ std::chrono::milliseconds{ timeInMsNew } };
+		bool didTimePass{ false };
+		while (!outBuffer.tryReceive(argOne)) {
+			std::this_thread::sleep_for(1ms);
+			if (stopWatch.hasTimePassed()) {
+				didTimePass = true;
+				break;
+			}
+		};
+		return didTimePass;
 	}
 
 	/**@}*/
