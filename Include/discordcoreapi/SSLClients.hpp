@@ -202,7 +202,7 @@ namespace DiscordCoreInternal {
 	  public:
 		SSLEntity() noexcept = default;
 
-		static void processIO(std::unordered_map<int32_t, std::unique_ptr<SSLEntity>>& theMap, int32_t waitTimeInms) noexcept;
+		static void processIO(std::vector<SSLEntity*>& theVector, int32_t waitTimeInms) noexcept;
 
 		void processIO(int32_t waitTimeInMs) noexcept;
 	};

@@ -190,11 +190,11 @@ namespace DiscordCoreInternal {
 	void YouTubeAPI::downloadAndStreamAudio(const DiscordCoreAPI::Song& newSong, std::stop_token stopToken, int32_t currentReconnectTries) {
 		try {
 			std::unique_ptr<WebSocketSSLShard> streamSocket{ std::make_unique<WebSocketSSLShard>(nullptr, this->maxBufferSize, 0, this->configManager) };
-			std::unordered_map<int32_t, std::unique_ptr<SSLEntity>> theMap{};
+			std::vector<SSLEntity*> theVector{};
 			auto bytesRead{ static_cast<int32_t>(streamSocket->getBytesRead()) };
 			if (newSong.finalDownloadUrls.size() > 0) {
-				theMap[0] = std::move(streamSocket);
-				theMap[0]->connect(newSong.finalDownloadUrls[0].urlPath, "443");
+				theVector.push_back(streamSocket.get());				
+				streamSocket->connect(newSong.finalDownloadUrls[0].urlPath, "443");
 			} else {
 				return;
 			}
@@ -216,11 +216,11 @@ namespace DiscordCoreInternal {
 			std::unique_ptr<AudioDecoder> audioDecoder = std::make_unique<AudioDecoder>(dataPackage);
 			AudioEncoder audioEncoder{};
 			std::string theString = newSong.finalDownloadUrls[1].urlPath;
-			theMap[0]->writeData(theString, false);
-			SSLEntity::processIO(theMap, ms1000);
-			if (!theMap[0]->areWeStillConnected()) {
+			streamSocket->writeData(theString, false);
+			SSLEntity::processIO(theVector, ms1000);
+			if (!streamSocket->areWeStillConnected()) {
 				audioDecoder.reset(nullptr);
-				theMap[0]->disconnect(false);
+				streamSocket->disconnect(false);
 				this->weFailedToDownloadOrDecode(newSong, stopToken, currentReconnectTries);
 				return;
 			}
@@ -237,49 +237,49 @@ namespace DiscordCoreInternal {
 					frameData.rawFrameData.sampleCount = 0;
 					frameData.encodedFrameData.sampleCount = 0;
 					DiscordCoreAPI::getVoiceConnectionMap()[this->guildId]->audioDataBuffer.send(frameData);
-					theMap[0]->disconnect(false);
+					streamSocket->disconnect(false);
 					audioDecoder.reset(nullptr);
 					return;
 				}
 				bytesSubmittedPrevious = bytesSubmittedTotal;
 				if (stopToken.stop_requested()) {
-					theMap[0]->disconnect(false);
+					streamSocket->disconnect(false);
 					audioDecoder.reset(nullptr);
 					return;
 				}
 				if (audioDecoder->haveWeFailed()) {
 					audioDecoder.reset(nullptr);
-					theMap[0]->disconnect(false);
+					streamSocket->disconnect(false);
 					this->weFailedToDownloadOrDecode(newSong, stopToken, currentReconnectTries);
 					return;
 				}
 				if (stopToken.stop_requested()) {
-					theMap[0]->disconnect(false);
+					streamSocket->disconnect(false);
 					audioDecoder.reset(nullptr);
 					return;
 				} else {
 					if (!areWeDoneHeaders) {
 						if (stopToken.stop_requested()) {
-							theMap[0]->disconnect(false);
+							streamSocket->disconnect(false);
 							audioDecoder.reset(nullptr);
 							return;
 						}
 						remainingDownloadContentLength = newSong.contentLength - bytesSubmittedTotal;
-						SSLEntity::processIO(theMap, ms500);
-						if (!theMap[0]->areWeStillConnected()) {
+						SSLEntity::processIO(theVector, ms500);
+						if (!streamSocket->areWeStillConnected()) {
 							audioDecoder.reset(nullptr);
-							theMap[0]->disconnect(false);
+							streamSocket->disconnect(false);
 							this->weFailedToDownloadOrDecode(newSong, stopToken, currentReconnectTries);
 							return;
 						}
 						if (!stopToken.stop_requested()) {
-							if (theMap.contains(0)) {
-								bytesSubmittedTotal = theMap[0]->getBytesRead();
-								std::string newData = theMap[0]->getInputBuffer();
+							if (streamSocket->areWeStillConnected()) {
+								bytesSubmittedTotal = streamSocket->getBytesRead();
+								std::string newData = streamSocket->getInputBuffer();
 							}
 						}
 						if (stopToken.stop_requested()) {
-							theMap[0]->disconnect(false);
+							streamSocket->disconnect(false);
 							audioDecoder.reset(nullptr);
 							return;
 						}
@@ -287,21 +287,21 @@ namespace DiscordCoreInternal {
 						areWeDoneHeaders = true;
 					}
 					if (stopToken.stop_requested()) {
-						theMap[0]->disconnect(false);
+						streamSocket->disconnect(false);
 						audioDecoder.reset(nullptr);
 						return;
 					}
 					if (counter == 0) {
-						SSLEntity::processIO(theMap, ms500);
-						if (!theMap[0]->areWeStillConnected()) {
+						SSLEntity::processIO(theVector, ms500);
+						if (!streamSocket->areWeStillConnected()) {
 							audioDecoder.reset(nullptr);
-							theMap[0]->disconnect(false);
+							streamSocket->disconnect(false);
 							this->weFailedToDownloadOrDecode(newSong, stopToken, currentReconnectTries);
 							return;
 						}
 						std::string streamBuffer{};
-						if (theMap.contains(0)) {
-							streamBuffer = theMap[0]->getInputBuffer();
+						if (streamSocket->areWeStillConnected()) {
+							streamBuffer = streamSocket->getInputBuffer();
 						}
 						if (streamBuffer.size() > 0) {
 							theCurrentString.insert(theCurrentString.end(), streamBuffer.begin(), streamBuffer.end());
@@ -323,20 +323,20 @@ namespace DiscordCoreInternal {
 						if (contentLengthCurrent > 0) {
 							if (stopToken.stop_requested()) {
 								audioDecoder.reset(nullptr);
-								theMap[0]->disconnect(false);
+								streamSocket->disconnect(false);
 								return;
 							}
 							remainingDownloadContentLength = newSong.contentLength - bytesSubmittedTotal;
-							SSLEntity::processIO(theMap, ms500);
-							if (!theMap[0]->areWeStillConnected()) {
+							SSLEntity::processIO(theVector, ms500);
+							if (!streamSocket->areWeStillConnected()) {
 								audioDecoder.reset(nullptr);
-								theMap[0]->disconnect(false);
+								streamSocket->disconnect(false);
 								this->weFailedToDownloadOrDecode(newSong, stopToken, currentReconnectTries);
 								return;
 							}
 							std::string newVector{};
-							if (theMap.contains(0)) {
-								newVector = theMap[0]->getInputBuffer();
+							if (streamSocket->areWeStillConnected()) {
+								newVector = streamSocket->getInputBuffer();
 							}
 							if (newVector.size() == 0) {
 								counter++;
@@ -357,7 +357,7 @@ namespace DiscordCoreInternal {
 							}
 						}
 						if (stopToken.stop_requested()) {
-							theMap[0]->disconnect(false);
+							streamSocket->disconnect(false);
 							audioDecoder.reset(nullptr);
 							return;
 						}
@@ -378,7 +378,7 @@ namespace DiscordCoreInternal {
 							continue;
 						}
 						if (stopToken.stop_requested()) {
-							theMap[0]->disconnect(false);
+							streamSocket->disconnect(false);
 							audioDecoder.reset(nullptr);
 							return;
 						}
