@@ -1032,23 +1032,25 @@ namespace DiscordCoreInternal {
 			if (this->connections.size() > 0) {
 				DiscordCoreAPI::ConnectionPackage connectData = this->connections.front();
 				this->connections.pop();
-				std::unique_ptr<WebSocketSSLShard> thePtr =
-					std::make_unique<WebSocketSSLShard>(&this->connections, this->currentBaseSocketAgent, connectData.currentShard, this->configManager);
-				thePtr->currentReconnectTries = connectData.currentReconnectTries;
-				thePtr->currentReconnectTries++;
-				thePtr->voiceConnectionDataBufferMap = std::move(connectData.voiceConnectionDataBufferMap);
+				if (!this->sslShards.contains(connectData.currentShard)) {
+					this->sslShards[connectData.currentShard] =
+						std::make_unique<WebSocketSSLShard>(&this->connections, this->currentBaseSocketAgent, connectData.currentShard, this->configManager);
+				}
+				this->sslShards[connectData.currentShard]->currentReconnectTries = connectData.currentReconnectTries;
+				this->sslShards[connectData.currentShard]->currentReconnectTries++;
+				this->sslShards[connectData.currentShard]->voiceConnectionDataBufferMap = std::move(connectData.voiceConnectionDataBufferMap);
 
-				if (thePtr->currentReconnectTries >= this->maxReconnectTries) {
+				if (this->sslShards[connectData.currentShard]->currentReconnectTries >= this->maxReconnectTries) {
 					this->doWeQuit->store(true);
 					return;
 				}
 
-				if (!thePtr->connect(this->configManager->getConnectionAddress(), this->configManager->getConnectionPort())) {
-					this->onClosed(thePtr.get());
+				if (!this->sslShards[connectData.currentShard]->connect(this->configManager->getConnectionAddress(), this->configManager->getConnectionPort())) {
+					this->onClosed(this->sslShards[connectData.currentShard].get());
 					return;
 				}
 
-				thePtr->theWebSocketState.store(WebSocketSSLShardState::Upgrading);
+				this->sslShards[connectData.currentShard]->theWebSocketState.store(WebSocketSSLShardState::Upgrading);
 				std::string sendString{};
 				sendString = "GET /?v=10&encoding=";
 				sendString += this->configManager->getTextFormat() == DiscordCoreAPI::TextFormat::Etf ? "etf" : "json";
@@ -1062,30 +1064,29 @@ namespace DiscordCoreInternal {
 						this->connections.push(connectData);
 						return;
 					}
-					didWeWrite = thePtr->writeData(sendString, true);
+					didWeWrite = this->sslShards[connectData.currentShard]->writeData(sendString, true);
 				} while (!didWeWrite);
 				if (!didWeWrite) {
-					this->onClosed(thePtr.get());
+					this->onClosed(this->sslShards[connectData.currentShard].get());
 					return;
 				}
 
 				while (!this->doWeQuit->load()) {
-					if (thePtr->theWebSocketState.load() == WebSocketSSLShardState::Collecting_Hello) {
+					if (this->sslShards[connectData.currentShard]->theWebSocketState.load() == WebSocketSSLShardState::Collecting_Hello) {
 						break;
 					}
-					thePtr->processIO(10000);
-					if (thePtr->areWeStillConnected()) {
-						this->parseConnectionHeaders(thePtr.get());
+					this->sslShards[connectData.currentShard]->processIO(10000);
+					if (this->sslShards[connectData.currentShard]->areWeStillConnected()) {
+						this->parseConnectionHeaders(this->sslShards[connectData.currentShard].get());
 					}
-					if (thePtr->areWeStillConnected()) {
-						this->parseMessage(thePtr.get());
+					if (this->sslShards[connectData.currentShard]->areWeStillConnected()) {
+						this->parseMessage(this->sslShards[connectData.currentShard].get());
 					}
-					if (thePtr->areWeStillConnected()) {
-						this->onMessageReceived(thePtr.get());
+					if (this->sslShards[connectData.currentShard]->areWeStillConnected()) {
+						this->onMessageReceived(this->sslShards[connectData.currentShard].get());
 					}
 					std::this_thread::sleep_for(1ms);
 				}
-				this->sslShards[connectData.currentShard] = std::move(thePtr);
 			}
 		} catch (...) {
 			if (this->configManager->doWePrintWebSocketErrorMessages()) {
