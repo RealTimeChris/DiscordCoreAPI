@@ -186,13 +186,13 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void SSLEntity::processIO(std::vector<SSLEntity*>& theMap, int32_t waitTimeInms) noexcept {
+	void SSLEntity::processIO(std::vector<SSLEntity*>& theVector, int32_t waitTimeInms) noexcept {
 		int32_t writeNfds{ 0 }, readNfds{ 0 }, finalNfds{ 0 };
 		fd_set writeSet{}, readSet{};
 		FD_ZERO(&writeSet);
 		FD_ZERO(&readSet);
 		bool didWeSetASocket{ false };
-		for (auto& value: theMap) {
+		for (auto& value: theVector) {
 			if (value) {
 				std::unique_lock theLock{ value->connectionMutex };
 				if (value->theSocket != SOCKET_ERROR) {
@@ -215,13 +215,13 @@ namespace DiscordCoreInternal {
 
 		timeval checkTime{ .tv_usec = waitTimeInms };
 		if (auto returnValue = select(finalNfds + 1, &readSet, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
-			for (auto& value: theMap) {
+			for (auto& value: theVector) {
 				value->disconnect(true);
 			}
 			return;
 		}
 
-		for (auto& value: theMap) {
+		for (auto& value: theVector) {
 			std::unique_lock theLock{ value->connectionMutex };
 			if (FD_ISSET(value->theSocket, &readSet)) {
 				value->wantRead = false;
