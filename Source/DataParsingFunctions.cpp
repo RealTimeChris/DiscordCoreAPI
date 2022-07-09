@@ -3168,7 +3168,7 @@ namespace DiscordCoreAPI {
 		}
 		pDataStructure->theGuildTemplateDatas.shrink_to_fit();
 	}
-	
+
 	void WebHookData::parseObject(const nlohmann::json& jsonObjectData, WebHookData* pDataStructure) {
 		if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
 			pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());

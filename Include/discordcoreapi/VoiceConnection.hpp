@@ -132,7 +132,7 @@ namespace DiscordCoreAPI {
 		bool sendMessage(const std::string& dataToSend, bool priority) noexcept;
 
 		void sendSingleAudioFrame(std::string& audioDataPacketNew) noexcept;
-	
+
 		UnboundedMessageBlock<AudioFrameData>& getAudioBuffer() noexcept;
 
 		void sendSingleFrame(const AudioFrameData& frameData) noexcept;

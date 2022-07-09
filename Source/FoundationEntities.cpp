@@ -125,7 +125,7 @@ namespace DiscordCoreInternal {
 	}
 
 	HttpsWorkloadData::HttpsWorkloadData(DiscordCoreInternal::HttpsWorkloadType theType) {
-		if (!HttpsWorkloadData::workloadIdsExternal.contains(theType)){
+		if (!HttpsWorkloadData::workloadIdsExternal.contains(theType)) {
 			std::unique_ptr<std::atomic_int64_t> theInt{ std::make_unique<std::atomic_int64_t>() };
 			std::unique_ptr<std::atomic_int64_t> theInt02{ std::make_unique<std::atomic_int64_t>() };
 			HttpsWorkloadData::workloadIdsExternal.insert_or_assign(theType, std::move(theInt));
@@ -149,7 +149,7 @@ namespace DiscordCoreInternal {
 }
 
 namespace DiscordCoreAPI {
-	
+
 	std::string DiscordEntity::getCreatedAtTimestamp(TimeFormat timeFormat) {
 		TimeStamp timeStamp = (static_cast<uint64_t>(this->id) >> 22) + 1420070400000;
 		std::string theReturnString = timeStamp.convertTimeInMsToDateTimeString(timeFormat);
@@ -731,7 +731,7 @@ namespace DiscordCoreAPI {
 		*this = jsonObjectData;
 	}
 
-	IntegrationDataVector& IntegrationDataVector::operator = (const nlohmann::json& jsonObjectData) {
+	IntegrationDataVector& IntegrationDataVector::operator=(const nlohmann::json& jsonObjectData) {
 		this->parseObject(jsonObjectData, this);
 		return *this;
 	}
@@ -776,7 +776,7 @@ namespace DiscordCoreAPI {
 		*this = jsonObjectData;
 	}
 
-	PartyData& PartyData::operator = (const nlohmann::json& jsonObjectData) {
+	PartyData& PartyData::operator=(const nlohmann::json& jsonObjectData) {
 		this->parseObject(jsonObjectData, this);
 		return *this;
 	}
@@ -883,7 +883,7 @@ namespace DiscordCoreAPI {
 	GuildPreviewData::GuildPreviewData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
-	
+
 	GuildData& GuildData::operator=(const nlohmann::json& jsonObjectData) {
 		this->parseObject(jsonObjectData, this);
 		return *this;
@@ -1768,7 +1768,7 @@ namespace DiscordCoreAPI {
 		this->targetUserId = targetUserIdNew;
 		return *this;
 	}
-	
+
 	MessageResponseBase& MessageResponseBase::addButton(bool disabled, const std::string& customIdNew, const std::string& buttonLabel, ButtonStyle buttonStyle,
 		const std::string& emojiName, Snowflake emojiId, const std::string& url) {
 		if (this->components.size() == 0) {

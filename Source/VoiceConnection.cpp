@@ -26,7 +26,7 @@ namespace DiscordCoreAPI {
 		extern std::atomic_bool doWeQuit;
 	}
 
-	RTPPacket::RTPPacket(uint32_t timestampNew, uint16_t sequenceNew, uint32_t ssrcNew, const std::vector<uint8_t>& audioDataNew, const std::string& theKeysNew){
+	RTPPacket::RTPPacket(uint32_t timestampNew, uint16_t sequenceNew, uint32_t ssrcNew, const std::vector<uint8_t>& audioDataNew, const std::string& theKeysNew) {
 		this->audioData = audioDataNew;
 		this->timestamp = timestampNew;
 		this->sequence = sequenceNew;
@@ -71,7 +71,8 @@ namespace DiscordCoreAPI {
 		return std::string{};
 	}
 
-	VoiceConnection::VoiceConnection() noexcept : WebSocketMessageHandler(nullptr) {}
+	VoiceConnection::VoiceConnection() noexcept : WebSocketMessageHandler(nullptr) {
+	}
 
 	VoiceConnection::VoiceConnection(DiscordCoreInternal::BaseSocketAgent* BaseSocketAgentNew, const DiscordCoreInternal::VoiceConnectInitData& initDataNew,
 		DiscordCoreAPI::ConfigManager* configManagerNew) noexcept
@@ -182,8 +183,7 @@ namespace DiscordCoreAPI {
 				if (this->datagramSocket && this->datagramSocket->areWeStillConnected()) {
 					std::string theData = responseData;
 					this->datagramSocket->writeData(theData);
-				}
-				else {
+				} else {
 					this->onClosed();
 				}
 			}

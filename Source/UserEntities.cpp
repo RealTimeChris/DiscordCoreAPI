@@ -110,7 +110,8 @@ namespace DiscordCoreAPI {
 				break;
 			}
 			std::string theString{};
-			if (static_cast<DiscordCoreInternal::WebSocketSSLShard*>(this->baseSocketAgent->sslShards[theIndex].get())->dataOpCode == DiscordCoreInternal::WebSocketOpCode::Op_Binary) {
+			if (static_cast<DiscordCoreInternal::WebSocketSSLShard*>(this->baseSocketAgent->sslShards[theIndex].get())->dataOpCode ==
+				DiscordCoreInternal::WebSocketOpCode::Op_Binary) {
 				this->baseSocketAgent->stringifyJsonData(payload, theString, DiscordCoreInternal::WebSocketOpCode::Op_Binary);
 			} else {
 				this->baseSocketAgent->stringifyJsonData(payload, theString, DiscordCoreInternal::WebSocketOpCode::Op_Text);

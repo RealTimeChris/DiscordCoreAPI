@@ -28,7 +28,6 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll YouTubeRequestBuilder {
 	  public:
-
 		YouTubeRequestBuilder() = default;
 
 	  protected:
@@ -45,7 +44,6 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll YouTubeAPI : public YouTubeRequestBuilder {
 	  public:
-
 		YouTubeAPI(DiscordCoreAPI::ConfigManager*, HttpsClient* httpsClient, const Snowflake& guildId);
 
 		DiscordCoreAPI::Song collectFinalSong(const DiscordCoreAPI::GuildMemberData& addedByGuildMember, DiscordCoreAPI::Song& newSong);

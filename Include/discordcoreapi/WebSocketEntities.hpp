@@ -39,7 +39,6 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll WebSocketMessageHandler : public ErlPacker {
 	  public:
-
 		WebSocketMessageHandler(DiscordCoreAPI::ConfigManager* configManager);
 
 		void stringifyJsonData(const nlohmann::json& dataToSend, std::string& theString, DiscordCoreInternal::WebSocketOpCode theOpCode) noexcept;

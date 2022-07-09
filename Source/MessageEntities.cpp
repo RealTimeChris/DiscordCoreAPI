@@ -295,7 +295,7 @@ namespace DiscordCoreAPI {
 	CoRoutine<void> Messages::deleteMessageAsync(DeleteMessageData dataPackage) {
 		std::unique_ptr<DiscordCoreInternal::HttpsWorkloadData> workload{ nullptr };
 		bool hasTimeElapsedNew = dataPackage.timeStamp.hasTimeElapsed(14);
-		if (hasTimeElapsedNew) { 
+		if (hasTimeElapsedNew) {
 			workload = std::make_unique<DiscordCoreInternal::HttpsWorkloadData>(DiscordCoreInternal::HttpsWorkloadType::Delete_Message_Old);
 		} else {
 			workload = std::make_unique<DiscordCoreInternal::HttpsWorkloadData>(DiscordCoreInternal::HttpsWorkloadType::Delete_Message);

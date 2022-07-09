@@ -28,7 +28,6 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll SoundCloudRequestBuilder {
 	  public:
-
 		SoundCloudRequestBuilder() = default;
 
 	  protected:
@@ -51,7 +50,6 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll SoundCloudAPI : public SoundCloudRequestBuilder {
 	  public:
-
 		SoundCloudAPI(DiscordCoreAPI::ConfigManager* configManagerNew, HttpsClient* httpsClient, const Snowflake& guildId);
 
 		DiscordCoreAPI::Song collectFinalSong(const DiscordCoreAPI::GuildMemberData& addedByGuildMember, DiscordCoreAPI::Song& newSong);

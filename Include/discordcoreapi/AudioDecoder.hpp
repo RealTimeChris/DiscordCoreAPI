@@ -151,7 +151,7 @@ namespace DiscordCoreInternal {
 	  protected:
 		std::unique_ptr<AVPacket, AVPacketDeleter> thePtr{ nullptr, AVPacketDeleter{} };
 	};
-	
+
 	struct DiscordCoreAPI_Dll BuildAudioDecoderData {
 	  public:
 		DiscordCoreAPI::ConfigManager* configManager{ nullptr };

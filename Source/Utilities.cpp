@@ -1081,7 +1081,7 @@ namespace DiscordCoreAPI {
 	std::string reset() {
 		return std::string("\033[0m");
 	}
-	
+
 	std::string getTimeAndDate() {
 		const time_t now = std::time(nullptr);
 		tm time = *std::localtime(&now);

@@ -355,7 +355,7 @@ namespace DiscordCoreAPI {
 		Snowflake afkChannelId{};///< Id for afk channels.
 		std::string reason{};///< Reason for modifying the Guild.
 		Snowflake ownerId{};///< User id to transfer Guild ownership to (must be owner).
-		Snowflake guildId{};///< Id of the chosen Guild to modify.		
+		Snowflake guildId{};///< Id of the chosen Guild to modify.
 		std::string name{};///< Desired name of the Guild.
 
 		ModifyGuildData(Guild dataPackage);

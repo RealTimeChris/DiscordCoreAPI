@@ -195,7 +195,6 @@ namespace DiscordCoreInternal {
 		bool wantWrite{ true };
 		bool wantRead{ false };
 		int64_t bytesRead{ 0 };
-		
 	};
 
 	class DiscordCoreAPI_Dll SSLEntity : public SSLDataInterface, public SSLConnectionInterface {
