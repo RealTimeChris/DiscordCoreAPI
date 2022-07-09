@@ -96,9 +96,9 @@ namespace DiscordCoreAPI {
 		~VoiceConnection() noexcept;
 
 	  protected:
-		std::unordered_map<int32_t, std::unique_ptr<DiscordCoreInternal::SSLEntity>> sslShards{};
 		std::atomic<VoiceConnectionState> connectionState{ VoiceConnectionState::Collecting_Init_Data };
 		UnboundedMessageBlock<DiscordCoreInternal::VoiceConnectionData> voiceConnectionDataBuffer{};
+		std::unordered_map<int32_t, std::unique_ptr<DiscordCoreInternal::SSLEntity>> sslShards{};
 		std::unique_ptr<DiscordCoreInternal::DatagramSocketSSLClient> datagramSocket{ nullptr };
 		std::atomic<VoiceActiveState> lastActiveState{ VoiceActiveState::Connecting };
 		std::atomic<VoiceActiveState> activeState{ VoiceActiveState::Connecting };
