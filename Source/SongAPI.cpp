@@ -150,12 +150,7 @@ namespace DiscordCoreAPI {
 		}
 		std::vector<Song> newVector02;
 		auto thePtr = getSongAPIMap()[guildId].get();
-		if (getSongAPIMap()[guildId]->playlist.currentSong.description != "" && (thePtr->isLoopAllEnabled(guildId) || thePtr->isLoopSongEnabled(guildId))) {
-			newVector02.push_back(getSongAPIMap()[guildId]->playlist.currentSong);
-			getSongAPIMap()[guildId]->playlist.currentSong = Song();
-		} else {
-			getSongAPIMap()[guildId]->playlist.currentSong = Song();
-		}
+		newVector02.push_back(getSongAPIMap()[guildId]->playlist.currentSong);
 		for (auto& value: getSongAPIMap()[guildId]->playlist.songQueue) {
 			newVector02.push_back(value);
 		}
