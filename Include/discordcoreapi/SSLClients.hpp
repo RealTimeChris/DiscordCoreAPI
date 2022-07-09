@@ -280,11 +280,11 @@ namespace DiscordCoreInternal {
 		Snowflake userId{ 0 };
 	};
 
-	class DiscordCoreAPI_Dll DatagramSocketSSLClient {
+	class DiscordCoreAPI_Dll DatagramSocketClient {
 	  public:
 		friend class DiscordCoreAPI::VoiceConnection;
 
-		DatagramSocketSSLClient() noexcept = default;
+		DatagramSocketClient() noexcept = default;
 
 		bool connect(const std::string& baseUrl, const std::string& portNew) noexcept;
 
@@ -300,7 +300,7 @@ namespace DiscordCoreInternal {
 
 		void readData() noexcept;
 
-		~DatagramSocketSSLClient() noexcept = default;
+		~DatagramSocketClient() noexcept = default;
 
 	  protected:
 		const int32_t maxBufferSize{ 1024 * 16 };
