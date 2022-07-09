@@ -59,7 +59,6 @@ namespace DiscordCoreInternal {
 		void cancelCurrentSong();
 
 	  protected:
-		YouTubeRequestBuilder requestBuilder{};
 		DiscordCoreAPI::Snowflake guildId{};
 		const int32_t maxBufferSize{ 8192 };
 		DiscordCoreAPI::Song theSong{};
