@@ -164,12 +164,12 @@ namespace DiscordCoreInternal {
 		virtual ~SSLConnectionInterface() noexcept = default;
 
 	  protected:
+		static std::mutex contextMutex;
 		static SSL_CTXWrapper context;
-		static std::mutex theMutex01;
 
 		std::atomic<SSLConnectionState> theSSLState{ SSLConnectionState::Disconnected };
 		std::queue<DiscordCoreAPI::ConnectionPackage>* connections{ nullptr };
-		std::recursive_mutex rwMutex{};
+		std::recursive_mutex connectionMutex{};
 		SOCKETWrapper theSocket{};
 		SSLWrapper ssl{};
 	};
@@ -189,12 +189,13 @@ namespace DiscordCoreInternal {
 	  protected:
 		int32_t maxBufferSize{ (1024 * 16) - 1 };
 		std::vector<std::string> outputBuffers{};
+		std::recursive_mutex writeMutex{};
+		std::recursive_mutex readMutex{};
 		std::string inputBuffer{};
-		std::mutex writeMutex{};
 		bool wantWrite{ true };
 		bool wantRead{ false };
 		int64_t bytesRead{ 0 };
-		std::mutex readMutex{};
+		
 	};
 
 	class DiscordCoreAPI_Dll SSLEntity : public SSLDataInterface, public SSLConnectionInterface {

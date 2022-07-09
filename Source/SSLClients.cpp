@@ -194,7 +194,7 @@ namespace DiscordCoreInternal {
 		bool didWeSetASocket{ false };
 		for (auto& [key, value]: theMap) {
 			if (value) {
-				std::unique_lock theLock{ value->rwMutex };
+				std::unique_lock theLock{ value->connectionMutex };
 				if (value->theSocket != SOCKET_ERROR) {
 					if ((value->outputBuffers.size() > 0 || value->wantWrite) && !value->wantRead) {
 						FD_SET(value->theSocket, &writeSet);
@@ -222,7 +222,7 @@ namespace DiscordCoreInternal {
 		}
 
 		for (auto& [key, value]: theMap) {
-			std::unique_lock theLock{ value->rwMutex };
+			std::unique_lock theLock{ value->connectionMutex };
 			if (FD_ISSET(value->theSocket, &readSet)) {
 				value->wantRead = false;
 				value->wantWrite = false;
@@ -285,17 +285,14 @@ namespace DiscordCoreInternal {
 							break;
 						}
 						case SSL_ERROR_ZERO_RETURN: {
-							theLock02.unlock();
 							value->disconnect(true);
 							break;
 						}
 						case SSL_ERROR_SSL: {
-							theLock02.unlock();
 							value->disconnect(true);
 							break;
 						}
 						case SSL_ERROR_SYSCALL: {
-							theLock02.unlock();
 							value->disconnect(true);
 							break;
 						}
@@ -326,7 +323,7 @@ namespace DiscordCoreInternal {
 		FD_ZERO(&writeSet);
 		FD_ZERO(&readSet);
 
-		std::unique_lock theLock{ this->rwMutex };
+		std::unique_lock theLock{ this->connectionMutex };
 		if ((this->outputBuffers.size() > 0 || this->wantWrite) && !this->wantRead) {
 			FD_SET(this->theSocket, &writeSet);
 			writeNfds = this->theSocket > writeNfds ? this->theSocket : writeNfds;
@@ -404,17 +401,14 @@ namespace DiscordCoreInternal {
 						break;
 					}
 					case SSL_ERROR_ZERO_RETURN: {
-						theLock.unlock();
 						this->disconnect(true);
 						break;
 					}
 					case SSL_ERROR_SSL: {
-						theLock.unlock();
 						this->disconnect(true);
 						break;
 					}
 					case SSL_ERROR_SYSCALL: {
-						theLock.unlock();
 						this->disconnect(true);
 						break;
 					}
@@ -481,7 +475,7 @@ namespace DiscordCoreInternal {
 			return false;
 		}
 
-		std::unique_lock theLock01{ SSLConnectionInterface::theMutex01 };
+		std::unique_lock theLock01{ SSLConnectionInterface::contextMutex };
 		if (this->ssl = SSL_new(SSLConnectionInterface::context); this->ssl == nullptr) {
 			return false;
 		}
@@ -524,7 +518,7 @@ namespace DiscordCoreInternal {
 				fd_set writeSet{};
 				int32_t writeNfds{ 0 };
 				FD_ZERO(&writeSet);
-				std::unique_lock theLock{ this->rwMutex };
+				std::unique_lock theLock{ this->connectionMutex };
 				if (data.size() > 0) {
 					FD_SET(this->theSocket, &writeSet);
 					writeNfds = this->theSocket > writeNfds ? this->theSocket : writeNfds;
@@ -609,7 +603,7 @@ namespace DiscordCoreInternal {
 
 	void HttpsSSLClient::disconnect(bool) noexcept {
 		if (this->theSSLState.load() == SSLConnectionState::Connected) {
-			std::unique_lock theLock{ this->rwMutex };
+			std::unique_lock theLock{ this->connectionMutex };
 			std::unique_lock theLock02{ this->readMutex };
 			std::unique_lock theLock03{ this->writeMutex };
 			this->theSSLState.store(SSLConnectionState::Disconnected);
@@ -689,7 +683,7 @@ namespace DiscordCoreInternal {
 			return false;
 		}
 
-		std::unique_lock theLock01{ SSLConnectionInterface::theMutex01 };
+		std::unique_lock theLock01{ SSLConnectionInterface::contextMutex };
 		if (this->ssl = SSL_new(SSLConnectionInterface::context); this->ssl == nullptr) {
 			return false;
 		}
@@ -732,7 +726,7 @@ namespace DiscordCoreInternal {
 				fd_set writeSet{};
 				int32_t writeNfds{ 0 };
 				FD_ZERO(&writeSet);
-				std::unique_lock theLock{ this->rwMutex };
+				std::unique_lock theLock{ this->connectionMutex };
 				if (data.size() > 0) {
 					FD_SET(this->theSocket, &writeSet);
 					writeNfds = this->theSocket > writeNfds ? this->theSocket : writeNfds;
@@ -816,7 +810,7 @@ namespace DiscordCoreInternal {
 
 	void WebSocketSSLShard::disconnect(bool doWeReconnect) noexcept {
 		if (this->theSSLState.load() == SSLConnectionState::Connected) {
-			std::unique_lock theLock{ this->rwMutex };
+			std::unique_lock theLock{ this->connectionMutex };
 			std::unique_lock theLock02{ this->readMutex };
 			std::unique_lock theLock03{ this->writeMutex };
 			this->theSSLState.store(SSLConnectionState::Disconnected);
@@ -971,6 +965,6 @@ namespace DiscordCoreInternal {
 		}
 	}
 
+	std::mutex SSLConnectionInterface::contextMutex{};
 	SSL_CTXWrapper SSLConnectionInterface::context{};
-	std::mutex SSLConnectionInterface::theMutex01{};
 }
