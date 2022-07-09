@@ -1051,7 +1051,8 @@ namespace DiscordCoreInternal {
 				}
 
 				this->sslShards[connectData.currentShard]->theWebSocketState.store(WebSocketSSLShardState::Upgrading);
-				std::string sendString = "GET /?v=10&encoding=";
+				std::string sendString{};
+				sendString = "GET /?v=10&encoding=";
 				sendString += this->configManager->getTextFormat() == DiscordCoreAPI::TextFormat::Etf ? "etf" : "json";
 				sendString += " HTTP/1.1\r\nHost: " + this->configManager->getConnectionAddress();
 				"\r\nPragma: no-cache\r\nUser-Agent: DiscordCoreAPI/1.0\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Key: " +
