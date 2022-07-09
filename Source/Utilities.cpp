@@ -269,7 +269,7 @@ namespace DiscordCoreAPI {
 		return theLength;
 	}
 
-	const char* StringWrapper::data() {
+	char* StringWrapper::data() {
 		return this->thePtr.get();
 	}
 

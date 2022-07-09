@@ -20,6 +20,7 @@
 #pragma once
 
 #include <discordcoreapi/SSLClients.hpp>
+#include <semaphore>
 
 namespace DiscordCoreInternal {
 
@@ -50,7 +51,7 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll HttpsRnRBuilder {
 	  public:
-		friend class HttpsClient;
+		friend HttpsClient;
 
 		void updateRateLimitData(std::unordered_map<std::string, std::string>& headers, RateLimitData& theConnection);
 
@@ -82,9 +83,9 @@ namespace DiscordCoreInternal {
 	};
 
 	struct DiscordCoreAPI_Dll RateLimitData {
-		friend class HttpsConnectionManager;
-		friend class HttpsRnRBuilder;
-		friend class HttpsClient;
+		friend HttpsConnectionManager;
+		friend HttpsRnRBuilder;
+		friend HttpsClient;
 
 	  protected:
 		std::counting_semaphore<1> theSemaphore{ 1 };

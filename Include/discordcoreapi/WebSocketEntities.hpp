@@ -37,7 +37,7 @@ namespace DiscordCoreInternal {
 	constexpr uint8_t webSocketFinishBit{ (1u << 7u) };
 	constexpr uint8_t webSocketMaskBit{ (1u << 7u) };
 
-	class DiscordCoreAPI_Dll WebSocketMessageHandler {
+	class DiscordCoreAPI_Dll WebSocketMessageHandler : public ErlPacker {
 	  public:
 
 		WebSocketMessageHandler(DiscordCoreAPI::ConfigManager* configManager);
@@ -56,7 +56,6 @@ namespace DiscordCoreInternal {
 
 	  protected:
 		DiscordCoreAPI::ConfigManager* configManager{};
-		ErlPacker erlPacker{};
 	};
 
 	class DiscordCoreAPI_Dll BaseSocketAgent : public WebSocketMessageHandler {
@@ -82,7 +81,7 @@ namespace DiscordCoreInternal {
 
 	  protected:
 		DiscordCoreAPI::StopWatch<std::chrono::milliseconds> theVCStopWatch{ 550ms };
-		std::unordered_map<int32_t, std::unique_ptr<SSLEntity>> sslShards{};
+		std::unordered_map<int32_t, std::unique_ptr<WebSocketSSLShard>> sslShards{};
 		DiscordCoreAPI::DiscordCoreClient* discordCoreClient{ nullptr };
 		std::queue<DiscordCoreAPI::ConnectionPackage> connections{};
 		std::unique_ptr<std::jthread> taskThread{ nullptr };

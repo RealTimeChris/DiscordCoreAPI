@@ -23,6 +23,14 @@
 
 namespace DiscordCoreInternal {
 
+	SoundCloudRequestBuilder::SoundCloudRequestBuilder(HttpsClient* httpsClient, DiscordCoreAPI::ConfigManager* configManagerNew) {
+		this->configManager = configManagerNew;
+		this->httpsClient = httpsClient;
+		if (SoundCloudRequestBuilder::clientId == "") {
+			SoundCloudRequestBuilder::clientId = this->collectClientId();
+		}
+	}
+
 	DiscordCoreAPI::Song SoundCloudRequestBuilder::collectFinalSong(const DiscordCoreAPI::GuildMemberData& addedByGuildMember, DiscordCoreAPI::Song& newSong) {
 		newSong = constructDownloadInfo(newSong);
 		newSong.addedByUserId = addedByGuildMember.id;
@@ -176,17 +184,15 @@ namespace DiscordCoreInternal {
 		return clientIdNew;
 	}
 
-	SoundCloudAPI::SoundCloudAPI(DiscordCoreAPI::ConfigManager* configManagerNew,  HttpsClient* httpsClient, const DiscordCoreAPI::Snowflake& guildIdNew) {
+	SoundCloudAPI::SoundCloudAPI(const DiscordCoreAPI::Snowflake& guildIdNew, HttpsClient* httpsClient, DiscordCoreAPI::ConfigManager* configManagerNew)
+		: requestBuilder(httpsClient, configManagerNew) {
 		this->configManager = configManagerNew;
 		this->httpsClient = httpsClient;
 		this->guildId = guildIdNew;
-		if (SoundCloudRequestBuilder::clientId == "") {
-			SoundCloudRequestBuilder::clientId = this->collectClientId();
-		}
 	}
 
 	DiscordCoreAPI::Song SoundCloudAPI::collectFinalSong(const DiscordCoreAPI::GuildMemberData& addedByGuildMember, DiscordCoreAPI::Song& newSong) {
-		return SoundCloudRequestBuilder::collectFinalSong(addedByGuildMember, newSong);
+		return this->requestBuilder.collectFinalSong(addedByGuildMember, newSong);
 	}
 
 	void SoundCloudAPI::weFailedToDownloadOrDecode(const DiscordCoreAPI::Song& newSong, std::stop_token stopToken, int32_t currentReconnectTries) {
@@ -208,7 +214,7 @@ namespace DiscordCoreInternal {
 			eventData.guild = DiscordCoreAPI::Guilds::getGuildAsync({ .guildId = this->guildId }).get();
 			DiscordCoreAPI::getSongAPIMap()[this->guildId]->onSongCompletionEvent(eventData);
 		} else {
-			newerSong = this->collectFinalSong(guildMember, newerSong);
+			newerSong = this->requestBuilder.collectFinalSong(guildMember, newerSong);
 			SoundCloudAPI::downloadAndStreamAudio(newerSong, stopToken, currentReconnectTries);
 		}
 	}
@@ -322,7 +328,7 @@ namespace DiscordCoreInternal {
 	};
 
 	std::vector<DiscordCoreAPI::Song> SoundCloudAPI::searchForSong(const std::string& searchQuery) {
-		return this->collectSearchResults(searchQuery);
+		return this->requestBuilder.collectSearchResults(searchQuery);
 	}
 
 	void SoundCloudAPI::cancelCurrentSong() {
@@ -341,6 +347,4 @@ namespace DiscordCoreInternal {
 		while (DiscordCoreAPI::getVoiceConnectionMap()[this->guildId]->audioDataBuffer.tryReceive(dataFrame)) {
 		};
 	}
-
-	std::string SoundCloudRequestBuilder::clientId{};
 };

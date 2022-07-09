@@ -191,7 +191,7 @@ namespace DiscordCoreAPI {
 		}
 		if (!getSoundCloudAPIMap().contains(this->id)) {
 			getSoundCloudAPIMap()[this->id] =
-				std::make_unique<DiscordCoreInternal::SoundCloudAPI>(&this->discordCoreClient->configManager, this->discordCoreClient->httpsClient.get(), this->id);
+				std::make_unique<DiscordCoreInternal::SoundCloudAPI>(this->id, this->discordCoreClient->httpsClient.get(), &this->discordCoreClient->configManager);
 		}
 		if (!getSongAPIMap().contains(this->id)) {
 			getSongAPIMap()[this->id] = std::make_unique<SongAPI>(this->id);
