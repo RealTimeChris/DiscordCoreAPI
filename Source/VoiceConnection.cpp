@@ -75,7 +75,7 @@ namespace DiscordCoreAPI {
 	VoiceConnection::VoiceConnection(DiscordCoreInternal::BaseSocketAgent* BaseSocketAgentNew, const DiscordCoreInternal::VoiceConnectInitData& initDataNew,
 		DiscordCoreAPI::ConfigManager* configManagerNew) noexcept
 		: WebSocketMessageHandler(configManagerNew) {
-		this->baseShard = BaseSocketAgentNew->sslShards[initDataNew.currentShard].get();
+		this->baseShard = static_cast<DiscordCoreInternal::WebSocketSSLShard*>(BaseSocketAgentNew->sslShards[initDataNew.currentShard].get());
 		this->activeState.store(VoiceActiveState::Connecting);
 		this->baseSocketAgent = BaseSocketAgentNew;
 		this->voiceConnectInitData = initDataNew;
