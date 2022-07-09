@@ -392,7 +392,7 @@ namespace DiscordCoreInternal {
 		theConnection.resetValues();
 		HttpsResponseData theData{};
 		while (true) {
-			theConnection.processIO();
+			theConnection.processIO(10000);
 			std::string theString = theConnection.getInputBuffer();
 			if (theString.size() > 0) {
 				theConnection.inputBufferReal.insert(theConnection.inputBufferReal.end(), theString.begin(), theString.end());

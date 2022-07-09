@@ -987,7 +987,7 @@ namespace DiscordCoreInternal {
 				if (this->voiceConnections.size() > 0) {
 					this->connectVoiceInternal();
 				}
-				SSLEntity::processIO(this->sslShards);
+				SSLEntity::processIO(this->sslShards, 10000);
 				for (auto& [key, value]: this->sslShards) {
 					if (static_cast<DiscordCoreInternal::WebSocketSSLShard*>(value.get())->areWeStillConnected() && static_cast<DiscordCoreInternal::WebSocketSSLShard*>(value.get())->inputBuffer.size() > 0) {
 						this->parseMessage(static_cast<DiscordCoreInternal::WebSocketSSLShard*>(value.get()));

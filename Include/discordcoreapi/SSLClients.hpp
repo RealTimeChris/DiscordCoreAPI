@@ -202,18 +202,16 @@ namespace DiscordCoreInternal {
 	  public:
 		SSLEntity() noexcept = default;
 
-		static void processIO(std::unordered_map<int32_t, std::unique_ptr<SSLEntity>>& theMap, int32_t waitTimeInms = 1000) noexcept;
+		static void processIO(std::unordered_map<int32_t, std::unique_ptr<SSLEntity>>& theMap, int32_t waitTimeInms) noexcept;
 
-		void processIO(int32_t waitTimeInMs = 10000) noexcept;
-
-	  protected:
+		void processIO(int32_t waitTimeInMs) noexcept;
 	};
 
 	class DiscordCoreAPI_Dll HttpsSSLClient : public SSLEntity {
 	  public:
 		HttpsSSLClient() noexcept = default;
 
-		[[nodiscard]] bool connect(const std::string& baseUrl, const std::string& portNew) noexcept;
+		bool connect(const std::string& baseUrl, const std::string& portNew) noexcept;
 
 		bool writeData(const std::string& data, bool priority = false) noexcept;
 
