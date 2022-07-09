@@ -604,6 +604,18 @@ namespace DiscordCoreInternal {
 		return false;
 	}
 
+	void HttpsSSLClient::disconnect(bool) noexcept {
+		if (this->theSSLState.load() == SSLConnectionState::Connected) {
+			std::unique_lock theLock{ this->rwMutex };
+			std::unique_lock theLock02{ this->readMutex };
+			std::unique_lock theLock03{ this->writeMutex };
+			this->theSSLState.store(SSLConnectionState::Disconnected);
+			this->theSocket = SOCKET_ERROR;
+			this->inputBuffer.clear();
+			this->outputBuffers.clear();
+		}
+	}
+
 	std::string HttpsSSLClient::getInputBuffer() noexcept {
 		std::unique_lock theLock{ this->readMutex };
 		std::string theReturnString = std::move(this->inputBuffer);
@@ -622,18 +634,6 @@ namespace DiscordCoreInternal {
 	int64_t HttpsSSLClient::getBytesRead() noexcept {
 		std::unique_lock theLock{ this->readMutex };
 		return this->bytesRead;
-	}
-
-	void HttpsSSLClient::disconnect(bool) noexcept {
-		if (this->theSSLState.load() == SSLConnectionState::Connected) {
-			std::unique_lock theLock{ this->rwMutex };
-			std::unique_lock theLock02{ this->readMutex };
-			std::unique_lock theLock03{ this->writeMutex };
-			this->theSSLState.store(SSLConnectionState::Disconnected);
-			this->theSocket = SOCKET_ERROR;
-			this->inputBuffer.clear();
-			this->outputBuffers.clear();
-		}
 	}
 
 	WebSocketSSLShard::WebSocketSSLShard(std::queue<DiscordCoreAPI::ConnectionPackage>* connectionsNew, int32_t currentBaseSocketAgentNew, int32_t currentShardNew,
