@@ -1032,10 +1032,8 @@ namespace DiscordCoreInternal {
 			if (this->connections.size() > 0) {
 				DiscordCoreAPI::ConnectionPackage connectData = this->connections.front();
 				this->connections.pop();
-				std::unique_ptr<WebSocketSSLShard> thePtr{};
-				if (!this->sslShards.contains(connectData.currentShard)) {
-					thePtr = std::make_unique<WebSocketSSLShard>(&this->connections, this->currentBaseSocketAgent, connectData.currentShard, this->configManager);
-				}
+				std::unique_ptr<WebSocketSSLShard> thePtr =
+					std::make_unique<WebSocketSSLShard>(&this->connections, this->currentBaseSocketAgent, connectData.currentShard, this->configManager);
 				thePtr->currentReconnectTries = connectData.currentReconnectTries;
 				thePtr->currentReconnectTries++;
 				thePtr->voiceConnectionDataBufferMap = std::move(connectData.voiceConnectionDataBufferMap);
