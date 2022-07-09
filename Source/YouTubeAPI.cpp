@@ -190,7 +190,6 @@ namespace DiscordCoreInternal {
 	void YouTubeAPI::downloadAndStreamAudio(const DiscordCoreAPI::Song& newSong, std::stop_token stopToken, int32_t currentReconnectTries) {
 		try {
 			std::unique_ptr<WebSocketSSLShard> streamSocket{ std::make_unique<WebSocketSSLShard>(nullptr, this->maxBufferSize, 0, this->configManager) };
-			std::vector<SSLEntity*> theVector{};
 			auto bytesRead{ static_cast<int32_t>(streamSocket->getBytesRead()) };
 			if (newSong.finalDownloadUrls.size() > 0) {
 				streamSocket->connect(newSong.finalDownloadUrls[0].urlPath, "443");
@@ -291,7 +290,7 @@ namespace DiscordCoreInternal {
 						return;
 					}
 					if (counter == 0) {
-						streamSocket->processIO(theVector, ms500);
+						streamSocket->processIO(ms500);
 						if (!streamSocket->areWeStillConnected()) {
 							audioDecoder.reset(nullptr);
 							streamSocket->disconnect(false);

@@ -416,8 +416,10 @@ namespace DiscordCoreAPI {
 						} else if (this->audioData.type == AudioFrameType::Skip) {
 							SongCompletionEventData completionEventData{};
 							completionEventData.guild = Guilds::getCachedGuildAsync({ .guildId = this->voiceConnectInitData.guildId }).get();
-							completionEventData.guildMember =
-								GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = this->currentGuildMemberId, .guildId = this->voiceConnectInitData.guildId }).get();
+							if (this->currentGuildMemberId != 0) {
+								completionEventData.guildMember =
+									GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = this->currentGuildMemberId, .guildId = this->voiceConnectInitData.guildId }).get();
+							}
 							completionEventData.wasItAFail = false;
 							getSongAPIMap()[this->voiceConnectInitData.guildId]->onSongCompletionEvent(completionEventData);
 							break;
