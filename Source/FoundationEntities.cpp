@@ -1527,15 +1527,6 @@ namespace DiscordCoreAPI {
 		*this = jsonObjectData;
 	}
 
-	Song& Song::operator=(const nlohmann::json& jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
-		return *this;
-	}
-
-	Song::Song(const nlohmann::json& jsonObjectData) {
-		*this = jsonObjectData;
-	}
-
 	InputEventData& InputEventData::operator=(const InputEventData& other) {
 		if (this != &other) {
 			*this->interactionData = *other.interactionData;
@@ -1950,6 +1941,15 @@ namespace DiscordCoreAPI {
 		data["data"]["tts"] = this->data.tts;
 		data["type"] = this->type;
 		return data.dump();
+	}
+
+	Song& Song::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData, this);
+		return *this;
+	}
+
+	Song::Song(const nlohmann::json& jsonObjectData) {
+		*this = jsonObjectData;
 	}
 
 	CommandData::CommandData(InputEventData inputEventData) {
