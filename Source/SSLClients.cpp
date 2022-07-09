@@ -233,7 +233,7 @@ namespace DiscordCoreInternal {
 			return false;
 		}
 
-		std::unique_lock theLock01{ SSLConnectionInterface::theMutex };
+		std::unique_lock theLock01{ SSLConnectionInterface::theMutex01 };
 		if (this->ssl = SSL_new(SSLConnectionInterface::context); this->ssl == nullptr) {
 			return false;
 		}
@@ -686,7 +686,7 @@ namespace DiscordCoreInternal {
 			return false;
 		}
 
-		std::unique_lock theLock01{ SSLConnectionInterface::theMutex };
+		std::unique_lock theLock01{ SSLConnectionInterface::theMutex01 };
 		if (this->ssl = SSL_new(SSLConnectionInterface::context); this->ssl == nullptr) {
 			return false;
 		}
@@ -969,5 +969,5 @@ namespace DiscordCoreInternal {
 	}
 
 	SSL_CTXWrapper SSLConnectionInterface::context{};
-	std::mutex SSLConnectionInterface::theMutex{};
+	std::mutex SSLConnectionInterface::theMutex01{};
 }

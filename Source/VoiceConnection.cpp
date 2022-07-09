@@ -481,7 +481,8 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::connectInternal() noexcept {
-		std::unique_lock theLock{ this->baseSocketAgent->sslShards[voiceConnectInitData.currentShard]->theMutex };
+		auto thePtr = static_cast<DiscordCoreInternal::WebSocketSSLShard*>(this->baseSocketAgent->sslShards[voiceConnectInitData.currentShard].get());
+		std::unique_lock theLock{ thePtr->theMutex };
 		if (this->connections.size() > 0) {
 			this->connections.pop();
 		}
