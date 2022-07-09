@@ -367,6 +367,10 @@ namespace DiscordCoreAPI {
 							this->play();
 						}
 					}
+					if (!this->areWePlaying.load()) {
+						this->sendSpeakingMessage(true);
+						this->areWePlaying.store(true);
+					}
 					while (!stopToken.stop_requested() && this->activeState.load() == VoiceActiveState::Playing) {
 						theStopWatch.resetTimer();
 						while (!stopToken.stop_requested() && !this->datagramSocket->areWeStillConnected()) {
@@ -429,6 +433,7 @@ namespace DiscordCoreAPI {
 					}
 					this->datagramSocket->getInputBuffer();
 					this->disconnectStartTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch());
+					this->areWePlaying.store(true);
 					break;
 				}
 				case VoiceActiveState::Exiting: {
@@ -813,7 +818,6 @@ namespace DiscordCoreAPI {
 	}
 
 	bool VoiceConnection::play() noexcept {
-		this->sendSpeakingMessage(true);
 		this->activeState.store(VoiceActiveState::Playing);
 		return true;
 	}

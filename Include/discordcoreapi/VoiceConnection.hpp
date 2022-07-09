@@ -113,6 +113,7 @@ namespace DiscordCoreAPI {
 		std::atomic_bool areWeConnectedBool{ false };
 		std::queue<ConnectionPackage> connections{};
 		DoubleMilliSecond disconnectStartTime{ 0 };
+		std::atomic_bool areWePlaying{ false };
 		const int64_t maxReconnectTries{ 10 };
 		int64_t currentReconnectTries{ 0 };
 		Snowflake currentGuildMemberId{};
