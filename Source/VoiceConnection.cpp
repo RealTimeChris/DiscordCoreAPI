@@ -26,10 +26,11 @@ namespace DiscordCoreAPI {
 		extern std::atomic_bool doWeQuit;
 	}
 
-	RTPPacket::RTPPacket(uint32_t timestampNew, uint16_t sequenceNew, uint32_t ssrcNew, const std::vector<uint8_t>& audioDataNew, const std::string& theKeys) : theKeys(theKeys) {
+	RTPPacket::RTPPacket(uint32_t timestampNew, uint16_t sequenceNew, uint32_t ssrcNew, const std::vector<uint8_t>& audioDataNew, const std::string& theKeysNew){
 		this->audioData = audioDataNew;
 		this->timestamp = timestampNew;
 		this->sequence = sequenceNew;
+		this->theKeys = theKeysNew;
 		this->ssrc = ssrcNew;
 	}
 

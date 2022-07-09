@@ -37,9 +37,9 @@ namespace DiscordCoreAPI {
 
 	struct RTPPacket {
 		std::vector<uint8_t> audioData{};
-		const std::string& theKeys;
 		uint8_t version{ 0x80 };
 		uint8_t flags{ 0x78 };
+		std::string theKeys{};
 		uint32_t timestamp{};
 		uint16_t sequence{};
 		uint32_t ssrc{};
