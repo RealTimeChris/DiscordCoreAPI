@@ -854,7 +854,7 @@ namespace DiscordCoreInternal {
 		return this->bytesRead;
 	}
 
-	bool DatagramSocketClient::connect(const std::string& baseUrlNew, const std::string& portNew) noexcept {
+	bool DatagramSocketSSLClient::connect(const std::string& baseUrlNew, const std::string& portNew) noexcept {
 		this->theAddress.sin_addr.s_addr = inet_addr(baseUrlNew.c_str());
 		this->theAddress.sin_port = DiscordCoreAPI::reverseByteOrder(static_cast<unsigned short>(stoi(portNew)));
 		this->theAddress.sin_family = AF_INET;
@@ -890,7 +890,7 @@ namespace DiscordCoreInternal {
 		return true;
 	}
 
-	void DatagramSocketClient::writeData(std::string& dataToWrite) noexcept {
+	void DatagramSocketSSLClient::writeData(std::string& dataToWrite) noexcept {
 		if (this->theSocket == SOCKET_ERROR) {
 			this->disconnect();
 			return;
@@ -905,14 +905,14 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	std::string DatagramSocketClient::getInputBuffer() noexcept {
+	std::string DatagramSocketSSLClient::getInputBuffer() noexcept {
 		std::unique_lock theLock{ this->theMutex };
 		std::string theReturnString = std::move(this->inputBuffer);
 		this->inputBuffer.clear();
 		return theReturnString;
 	}
 
-	bool DatagramSocketClient::areWeStillConnected() noexcept {
+	bool DatagramSocketSSLClient::areWeStillConnected() noexcept {
 		if (this->theSocket != SOCKET_ERROR) {
 			return true;
 		} else {
@@ -920,19 +920,19 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	int64_t DatagramSocketClient::getBytesRead() noexcept {
+	int64_t DatagramSocketSSLClient::getBytesRead() noexcept {
 		std::unique_lock theLock{ this->theMutex };
 		return this->bytesRead;
 	}
 
-	void DatagramSocketClient::disconnect() noexcept {
+	void DatagramSocketSSLClient::disconnect() noexcept {
 		std::unique_lock theLock{ this->theMutex };
 		this->theSocket = SOCKET_ERROR;
 		this->inputBuffer.clear();
 		this->outputBuffers.clear();
 	}
 
-	void DatagramSocketClient::readData() noexcept {
+	void DatagramSocketSSLClient::readData() noexcept {
 		if (this->theSocket == SOCKET_ERROR) {
 			return;
 		}

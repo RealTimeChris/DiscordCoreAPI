@@ -684,7 +684,7 @@ namespace DiscordCoreAPI {
 	bool VoiceConnection::voiceConnect() noexcept {
 		try {
 			if (!this->datagramSocket) {
-				this->datagramSocket = std::make_unique<DiscordCoreInternal::DatagramSocketClient>();
+				this->datagramSocket = std::make_unique<DiscordCoreInternal::DatagramSocketSSLClient>();
 			}
 			if (!this->datagramSocket->areWeStillConnected()) {
 				if (!this->datagramSocket->connect(this->voiceConnectionData.voiceIp, this->voiceConnectionData.voicePort)) {
