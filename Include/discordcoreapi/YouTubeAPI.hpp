@@ -19,11 +19,10 @@
 
 #pragma once
 
+#include <discordcoreapi/FoundationEntities.hpp>
 #include <discordcoreapi/AudioDecoder.hpp>
 #include <discordcoreapi/AudioEncoder.hpp>
 #include <discordcoreapi/CoRoutine.hpp>
-#include <discordcoreapi/FoundationEntities.hpp>
-#include <regex>
 
 namespace DiscordCoreInternal {
 

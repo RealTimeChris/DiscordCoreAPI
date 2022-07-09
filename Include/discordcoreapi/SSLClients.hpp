@@ -19,6 +19,11 @@
 
 #pragma once
 
+#include <discordcoreapi/FoundationEntities.hpp>
+#include <discordcoreapi/EventEntities.hpp>
+#include <openssl/err.h>
+#include <openssl/ssl.h>
+
 #ifndef OPENSSL_NO_DEPRECATED
 	#define OPENSSL_NO_DEPRECATED
 #endif
@@ -51,11 +56,6 @@
 	#include <sys/types.h>
 	#include <unistd.h>
 #endif
-
-#include <openssl/err.h>
-#include <openssl/ssl.h>
-#include <discordcoreapi/FoundationEntities.hpp>
-#include <discordcoreapi/EventEntities.hpp>
 
 namespace DiscordCoreInternal {
 

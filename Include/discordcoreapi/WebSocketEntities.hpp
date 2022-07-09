@@ -19,11 +19,11 @@
 
 #pragma once
 
+#include <discordcoreapi/FoundationEntities.hpp>
 #include <discordcoreapi/AudioDecoder.hpp>
 #include <discordcoreapi/CommandController.hpp>
 #include <discordcoreapi/ErlPacker.hpp>
 #include <discordcoreapi/EventEntities.hpp>
-#include <discordcoreapi/FoundationEntities.hpp>
 #include <discordcoreapi/SSLClients.hpp>
 #include <discordcoreapi/ThreadPool.hpp>
 

@@ -19,9 +19,9 @@
 
 #pragma once
 
+#include <discordcoreapi/FoundationEntities.hpp>
 #include <discordcoreapi/AudioEncoder.hpp>
 #include <discordcoreapi/CoRoutine.hpp>
-#include <discordcoreapi/FoundationEntities.hpp>
 #include <discordcoreapi/WebSocketEntities.hpp>
 #include <sodium.h>
 
