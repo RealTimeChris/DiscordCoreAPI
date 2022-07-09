@@ -37,7 +37,7 @@ namespace DiscordCoreInternal {
 	constexpr uint8_t webSocketFinishBit{ (1u << 7u) };
 	constexpr uint8_t webSocketMaskBit{ (1u << 7u) };
 
-	class DiscordCoreAPI_Dll WebSocketMessageHandler {
+	class DiscordCoreAPI_Dll WebSocketMessageHandler : public ErlPacker {
 	  public:
 
 		WebSocketMessageHandler(DiscordCoreAPI::ConfigManager* configManager);
@@ -56,7 +56,6 @@ namespace DiscordCoreInternal {
 
 	  protected:
 		DiscordCoreAPI::ConfigManager* configManager{};
-		ErlPacker erlPacker{};
 	};
 
 	class DiscordCoreAPI_Dll BaseSocketAgent : public WebSocketMessageHandler {

@@ -31,7 +31,7 @@ namespace DiscordCoreInternal {
 		std::string theVector{};
 		std::string header{};
 		if (theOpCode == WebSocketOpCode::Op_Binary) {
-			theVector = this->erlPacker.parseJsonToEtf(dataToSend);
+			theVector = this->parseJsonToEtf(dataToSend);
 		} else {
 			theVector = dataToSend.dump();
 		}
@@ -348,7 +348,7 @@ namespace DiscordCoreInternal {
 
 				if (this->configManager->getTextFormat() == DiscordCoreAPI::TextFormat::Etf) {
 					try {
-						payload = this->erlPacker.parseEtfToJson(&messageNew);
+						payload = this->parseEtfToJson(&messageNew);
 					} catch (...) {
 						if (this->configManager->doWePrintGeneralErrorMessages()) {
 							DiscordCoreAPI::reportException("ErlPacker::parseEtfToJson()");
