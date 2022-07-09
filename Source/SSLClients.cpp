@@ -285,14 +285,17 @@ namespace DiscordCoreInternal {
 							break;
 						}
 						case SSL_ERROR_ZERO_RETURN: {
+							theLock02.unlock();
 							value->disconnect(true);
 							break;
 						}
 						case SSL_ERROR_SSL: {
+							theLock02.unlock();
 							value->disconnect(true);
 							break;
 						}
 						case SSL_ERROR_SYSCALL: {
+							theLock02.unlock();
 							value->disconnect(true);
 							break;
 						}
