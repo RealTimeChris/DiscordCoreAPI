@@ -206,7 +206,7 @@ namespace DiscordCoreInternal {
 
 		void processIO(int32_t waitTimeInMs) noexcept;
 
-		virtual ~SSLEntity() noexcept;
+		virtual ~SSLEntity() noexcept = default;
 	};
 
 	class DiscordCoreAPI_Dll HttpsSSLClient : public SSLEntity {
