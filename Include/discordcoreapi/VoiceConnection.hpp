@@ -75,7 +75,9 @@ namespace DiscordCoreAPI {
 	 * @{
 	 */
 	/// VoiceConnection class - represents the connection to a given voice Channel. \brief VoiceConnection class - represents the connection to a given voice Channel.
-	class DiscordCoreAPI_Dll VoiceConnection : public DiscordCoreInternal::WebSocketMessageHandler {
+	class DiscordCoreAPI_Dll VoiceConnection : public DiscordCoreInternal::WebSocketMessageHandler,
+											   public DiscordCoreInternal::DatagramSocketClient,
+											   public DiscordCoreInternal::WebSocketSSLShard {
 	  public:
 		friend class DiscordCoreInternal::BaseSocketAgent;
 		friend class DiscordCoreInternal::SoundCloudAPI;
@@ -98,8 +100,6 @@ namespace DiscordCoreAPI {
 	  protected:
 		std::atomic<VoiceConnectionState> connectionState{ VoiceConnectionState::Collecting_Init_Data };
 		UnboundedMessageBlock<DiscordCoreInternal::VoiceConnectionData> voiceConnectionDataBuffer{};
-		std::unique_ptr<DiscordCoreInternal::DatagramSocketClient> datagramSocket{ nullptr };
-		std::unique_ptr<DiscordCoreInternal::WebSocketSSLShard> webSocketShard{ nullptr };
 		std::atomic<VoiceActiveState> lastActiveState{ VoiceActiveState::Connecting };
 		std::atomic<VoiceActiveState> activeState{ VoiceActiveState::Connecting };
 		std::unique_ptr<DiscordCoreInternal::AudioEncoder> encoder{ nullptr };

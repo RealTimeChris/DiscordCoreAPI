@@ -167,12 +167,14 @@ namespace DiscordCoreInternal {
 		this->currentBaseSocketAgent = currentBaseSocketAgentNew;
 		this->shard.push_back(currentShardNew);
 		this->heartBeatStopWatch.resetTimer();
-		this->shard.push_back(configManagerNew->getTotalShardCount());
-		this->connections = connectionsNew;
-		if (configManagerNew->getTextFormat() == DiscordCoreAPI::TextFormat::Etf) {
-			this->dataOpCode = WebSocketOpCode::Op_Binary;
-		} else {
-			this->dataOpCode = WebSocketOpCode::Op_Text;
+		if (configManagerNew) {
+			this->shard.push_back(configManagerNew->getTotalShardCount());
+			this->connections = connectionsNew;
+			if (configManagerNew->getTextFormat() == DiscordCoreAPI::TextFormat::Etf) {
+				this->dataOpCode = WebSocketOpCode::Op_Binary;
+			} else {
+				this->dataOpCode = WebSocketOpCode::Op_Text;
+			}
 		}
 	}
 
