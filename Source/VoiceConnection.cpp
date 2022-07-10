@@ -414,11 +414,7 @@ namespace DiscordCoreAPI {
 						} else {
 							break;
 						}
-						auto theString = DatagramSocketClient::getInputBuffer();
-						if (72 <= (theString[1] & 0b0111'1111) && (theString[1] & 0b0111'1111) <= 76) {
-							std::cout << "WERE HERE THIS IS IT!" << std::endl;
-						}
-
+						DatagramSocketClient::getInputBuffer();
 						this->audioDataBuffer.tryReceive(this->audioData);
 					}
 					DatagramSocketClient::getInputBuffer();
@@ -666,9 +662,7 @@ namespace DiscordCoreAPI {
 	bool VoiceConnection::voiceConnect() noexcept {
 		try {
 			if (!DatagramSocketClient::areWeStillConnected()) {
-				std::cout << "THE VOICE IP: " << this->voiceConnectionData.voiceIp << std::endl;
 				if (!DatagramSocketClient::connect(this->voiceConnectionData.voiceIp, this->voiceConnectionData.voicePort)) {
-					std::cout << "WERE FAILIN TO CONNECT! 0101" << std::endl;
 					return false;
 				} else {
 					std::string packet{};
@@ -693,7 +687,6 @@ namespace DiscordCoreAPI {
 						inputString.insert(inputString.end(), theNewString.begin(), theNewString.end());
 						std::this_thread::sleep_for(1ms);
 						if (theStopWatch.hasTimePassed()) {
-							std::cout << "WERE FAILIN TO CONNECT! 0202" << std::endl;
 							return false;
 						}
 					}

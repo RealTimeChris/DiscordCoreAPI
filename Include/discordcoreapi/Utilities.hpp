@@ -682,7 +682,7 @@ namespace DiscordCoreAPI {
 
 	DiscordCoreAPI_Dll std::string shiftToBrightRed();
 
-	DiscordCoreAPI_Dll bool nanoSleep(uint64_t ns);
+	DiscordCoreAPI_Dll bool nanoSleep(int64_t ns);
 
 	DiscordCoreAPI_Dll std::string reset();
 
