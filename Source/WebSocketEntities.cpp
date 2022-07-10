@@ -173,7 +173,7 @@ namespace DiscordCoreInternal {
 		} else {
 			this->dataOpCode = WebSocketOpCode::Op_Text;
 		}
-	};
+	}
 
 	void WebSocketSSLShard::disconnect(bool doWeReconnect) noexcept {
 		if (this->theSSLState.load() == SSLConnectionState::Connected) {

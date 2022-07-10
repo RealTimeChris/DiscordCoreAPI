@@ -205,13 +205,17 @@ namespace DiscordCoreInternal {
 
 		bool connect(const std::string& baseUrl, const std::string& portNew) noexcept;
 
-		bool writeData(const std::string& dataToWrite, bool priority) noexcept;
+		bool writeData(const std::string& data, bool priority = false) noexcept;
 
 		void processIO(int32_t waitTimeInMs) noexcept;
 
 		std::string getInputBuffer() noexcept;
 
 		bool areWeStillConnected() noexcept;
+
+		bool writeDataProcess() noexcept;
+
+		bool readDataProcess() noexcept;
 
 		int64_t getBytesRead() noexcept;
 

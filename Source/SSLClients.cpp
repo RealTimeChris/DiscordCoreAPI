@@ -170,7 +170,7 @@ namespace DiscordCoreInternal {
 		if (!SSL_CTX_set_min_proto_version(SSLConnectionInterface::context, TLS1_2_VERSION)) {
 			throw ConnectionError{ reportSSLError("SSLConnectionInterface::initialize()::SSL_CTX_set_min_proto_version()") };
 		}
-		
+
 		auto originalOptions{ SSL_CTX_get_options(SSLConnectionInterface::context) | SSL_OP_IGNORE_UNEXPECTED_EOF };
 		if (SSL_CTX_set_options(SSLConnectionInterface::context, SSL_OP_IGNORE_UNEXPECTED_EOF) != originalOptions) {
 			throw ConnectionError{ reportSSLError("SSLConnectionInterface::initialize()::SSL_CTX_set_options()") };
@@ -215,91 +215,10 @@ namespace DiscordCoreInternal {
 		for (auto& value: theVector) {
 			std::unique_lock theLock{ value->connectionMutex };
 			if (FD_ISSET(value->theSocket, &readSet)) {
-				value->wantRead = false;
-				value->wantWrite = false;
-				std::string serverToClientBuffer{};
-				serverToClientBuffer.resize(value->maxBufferSize);
-				size_t readBytes{ 0 };
-				auto returnValue{ SSL_read_ex(value->ssl, serverToClientBuffer.data(), serverToClientBuffer.size(), &readBytes) };
-				auto errorValue{ SSL_get_error(value->ssl, returnValue) };
-				switch (errorValue) {
-					case SSL_ERROR_NONE: {
-						if (readBytes > 0) {
-							std::lock_guard theLock02{ value->readMutex };
-							value->inputBuffer.insert(value->inputBuffer.end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
-							value->bytesRead += readBytes;
-						}
-						break;
-					}
-					case SSL_ERROR_ZERO_RETURN: {
-						value->disconnect(true);
-						break;
-					}
-					case SSL_ERROR_SSL: {
-						value->disconnect(true);
-						break;
-					}
-					case SSL_ERROR_SYSCALL: {
-						value->disconnect(true);
-						break;
-					}
-					case SSL_ERROR_WANT_READ: {
-						value->wantRead = true;
-						break;
-					}
-					case SSL_ERROR_WANT_WRITE: {
-						value->wantWrite = true;
-						break;
-					}
-					default: {
-						break;
-					}
-				}
+				value->readDataProcess();
 			}
 			if (FD_ISSET(value->theSocket, &writeSet)) {
-				value->wantRead = false;
-				value->wantWrite = false;
-				size_t writtenBytes{ 0 };
-				std::string theString{};
-				if (value->outputBuffers.size() > 0) {
-					std::unique_lock theLock02{ value->writeMutex };
-					theString = std::move(value->outputBuffers.front());
-					auto returnValue{ SSL_write_ex(value->ssl, theString.data(), theString.size(), &writtenBytes) };
-					auto errorValue{ SSL_get_error(value->ssl, returnValue) };
-					switch (errorValue) {
-						case SSL_ERROR_NONE: {
-							if (value->outputBuffers.size() > 0 && writtenBytes > 0) {
-								value->outputBuffers.erase(value->outputBuffers.begin());
-							} else if (value->outputBuffers.size() > 0) {
-								value->outputBuffers[0] = std::move(theString);
-							}
-							break;
-						}
-						case SSL_ERROR_ZERO_RETURN: {
-							value->disconnect(true);
-							break;
-						}
-						case SSL_ERROR_SSL: {
-							value->disconnect(true);
-							break;
-						}
-						case SSL_ERROR_SYSCALL: {
-							value->disconnect(true);
-							break;
-						}
-						case SSL_ERROR_WANT_READ: {
-							value->wantRead = true;
-							break;
-						}
-						case SSL_ERROR_WANT_WRITE: {
-							value->wantWrite = true;
-							break;
-						}
-						default: {
-							break;
-						}
-					}
-				}
+				value->writeDataProcess();
 			}
 		}
 	}
@@ -332,91 +251,10 @@ namespace DiscordCoreInternal {
 		}
 
 		if (FD_ISSET(this->theSocket, &readSet)) {
-			this->wantRead = false;
-			this->wantWrite = false;
-			std::string serverToClientBuffer{};
-			serverToClientBuffer.resize(this->maxBufferSize);
-			size_t readBytes{ 0 };
-			auto returnValue{ SSL_read_ex(this->ssl, serverToClientBuffer.data(), this->maxBufferSize, &readBytes) };
-			auto errorValue{ SSL_get_error(this->ssl, returnValue) };
-			switch (errorValue) {
-				case SSL_ERROR_NONE: {
-					if (readBytes > 0) {
-						std::lock_guard theLock02{ this->readMutex };
-						this->inputBuffer.insert(this->inputBuffer.end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
-						this->bytesRead += readBytes;
-					}
-					break;
-				}
-				case SSL_ERROR_ZERO_RETURN: {
-					this->disconnect(true);
-					break;
-				}
-				case SSL_ERROR_SSL: {
-					this->disconnect(true);
-					break;
-				}
-				case SSL_ERROR_SYSCALL: {
-					this->disconnect(true);
-					break;
-				}
-				case SSL_ERROR_WANT_READ: {
-					this->wantRead = true;
-					break;
-				}
-				case SSL_ERROR_WANT_WRITE: {
-					this->wantWrite = true;
-					break;
-				}
-				default: {
-					break;
-				}
-			}
+			this->readDataProcess();
 		}
 		if (FD_ISSET(this->theSocket, &writeSet)) {
-			this->wantRead = false;
-			this->wantWrite = false;
-			if (this->outputBuffers.size() > 0) {
-				std::unique_lock theLock{ this->writeMutex };
-				size_t writtenBytes{ 0 };
-				std::string writeString{};
-				writeString = std::move(this->outputBuffers.front());
-				auto returnValue{ SSL_write_ex(this->ssl, writeString.data(), writeString.size(), &writtenBytes) };
-				auto errorValue{ SSL_get_error(this->ssl, returnValue) };
-				switch (errorValue) {
-					case SSL_ERROR_NONE: {
-						if (writtenBytes > 0) {
-							this->outputBuffers.erase(this->outputBuffers.begin());
-						} else {
-							this->outputBuffers[0] = std::move(writeString);
-						}
-						break;
-					}
-					case SSL_ERROR_ZERO_RETURN: {
-						this->disconnect(true);
-						break;
-					}
-					case SSL_ERROR_SSL: {
-						this->disconnect(true);
-						break;
-					}
-					case SSL_ERROR_SYSCALL: {
-						this->disconnect(true);
-						break;
-					}
-					case SSL_ERROR_WANT_READ: {
-						this->wantRead = true;
-						break;
-					}
-					case SSL_ERROR_WANT_WRITE: {
-						this->wantWrite = true;
-						break;
-					}
-					default: {
-						break;
-					}
-				}
-			}
+			this->writeDataProcess();
 		}
 	}
 
@@ -527,47 +365,8 @@ namespace DiscordCoreInternal {
 				} else if (returnValue == 0) {
 					return false;
 				}
-
-				if (FD_ISSET(this->theSocket, &writeSet)) {
-					this->wantRead = false;
-					this->wantWrite = false;
-					size_t writtenBytes{ 0 };
-					auto returnValue{ SSL_write_ex(this->ssl, data.data(), data.size(), &writtenBytes) };
-					auto errorValue{ SSL_get_error(this->ssl, returnValue) };
-					switch (errorValue) {
-						case SSL_ERROR_NONE: {
-							if (writtenBytes > 0) {
-								data.clear();
-								return true;
-							}
-							return false;
-						}
-						case SSL_ERROR_ZERO_RETURN: {
-							this->disconnect(true);
-							return false;
-						}
-						case SSL_ERROR_SSL: {
-							this->disconnect(true);
-							return false;
-						}
-						case SSL_ERROR_SYSCALL: {
-							this->disconnect(true);
-							return false;
-						}
-						case SSL_ERROR_WANT_READ: {
-							this->wantRead = true;
-							return false;
-						}
-						case SSL_ERROR_WANT_WRITE: {
-							this->wantWrite = true;
-							return false;
-						}
-						default: {
-							return false;
-						}
-					}
-				}
-				return false;
+				this->outputBuffers.push_back(data);
+				return this->writeDataProcess();
 			} else {
 				if (data.size() > static_cast<size_t>(16 * 1024)) {
 					size_t remainingBytes{ data.size() };
@@ -607,6 +406,96 @@ namespace DiscordCoreInternal {
 			return false;
 		} else {
 			return true;
+		}
+	}
+
+	bool SSLClient::writeDataProcess() noexcept {
+		std::lock_guard theLock02{ this->connectionMutex };
+		if (this->outputBuffers.size() > 0) {
+			this->wantRead = false;
+			this->wantWrite = false;
+			size_t writtenBytes{ 0 };
+			std::string writeString{};
+			writeString = std::move(this->outputBuffers.front());
+			auto returnValue{ SSL_write_ex(this->ssl, writeString.data(), writeString.size(), &writtenBytes) };
+			auto errorValue{ SSL_get_error(this->ssl, returnValue) };
+			switch (errorValue) {
+				case SSL_ERROR_NONE: {
+					if (writtenBytes > 0) {
+						this->outputBuffers.erase(this->outputBuffers.begin());
+					} else {
+						this->outputBuffers[0] = std::move(writeString);
+					}
+					return true;
+				}
+				case SSL_ERROR_ZERO_RETURN: {
+					this->disconnect(true);
+					return false;
+				}
+				case SSL_ERROR_SSL: {
+					this->disconnect(true);
+					return false;
+				}
+				case SSL_ERROR_SYSCALL: {
+					this->disconnect(true);
+					return false;
+				}
+				case SSL_ERROR_WANT_READ: {
+					this->wantRead = true;
+					return true;
+				}
+				case SSL_ERROR_WANT_WRITE: {
+					this->wantWrite = true;
+					return true;
+				}
+				default: {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
+	bool SSLClient::readDataProcess() noexcept {
+		std::lock_guard theLock02{ this->connectionMutex };
+		this->wantRead = false;
+		this->wantWrite = false;
+		std::string serverToClientBuffer{};
+		serverToClientBuffer.resize(this->maxBufferSize);
+		size_t readBytes{ 0 };
+		auto returnValue{ SSL_read_ex(this->ssl, serverToClientBuffer.data(), this->maxBufferSize, &readBytes) };
+		auto errorValue{ SSL_get_error(this->ssl, returnValue) };
+		switch (errorValue) {
+			case SSL_ERROR_NONE: {
+				if (readBytes > 0) {
+					this->inputBuffer.insert(this->inputBuffer.end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
+					this->bytesRead += readBytes;
+				}
+				return true;
+			}
+			case SSL_ERROR_ZERO_RETURN: {
+				this->disconnect(true);
+				return false;
+			}
+			case SSL_ERROR_SSL: {
+				this->disconnect(true);
+				return false;
+			}
+			case SSL_ERROR_SYSCALL: {
+				this->disconnect(true);
+				return false;
+			}
+			case SSL_ERROR_WANT_READ: {
+				this->wantRead = true;
+				return true;
+			}
+			case SSL_ERROR_WANT_WRITE: {
+				this->wantWrite = true;
+				return true;
+			}
+			default: {
+				return false;
+			}
 		}
 	}
 
