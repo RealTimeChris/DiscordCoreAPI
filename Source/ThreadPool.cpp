@@ -21,6 +21,60 @@
 
 namespace DiscordCoreAPI {
 
+	std::string ThreadPool::storeThread(TimeElapsedHandlerNoArgs timeElapsedHandler, int64_t timeInterval, bool repeated) {
+		std::string threadId = std::to_string(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
+
+		ThreadPool::threads[threadId] = std::jthread([=](std::stop_token stopToken) {
+			StopWatch stopWatch{ std::chrono::milliseconds{ timeInterval } };
+			while (true) {
+				stopWatch.resetTimer();
+				std::this_thread::sleep_for(std::chrono::milliseconds{ static_cast<int64_t>(std::ceil(static_cast<float>(timeInterval) * thePercentage)) });
+				while (!stopWatch.hasTimePassed() && !stopToken.stop_requested()) {
+					std::this_thread::sleep_for(1ms);
+				}
+				if (stopToken.stop_requested()) {
+					return;
+				}
+				timeElapsedHandler();
+				if (!repeated) {
+					return;
+				}
+				if (stopToken.stop_requested()) {
+					return;
+				}
+			}
+		});
+		return threadId;
+	}
+
+	template<typename... ArgTypes>
+	static void ThreadPool::executeFunctionAfterTimePeriod(TimeElapsedHandler<ArgTypes...> timeElapsedHandler, int64_t timeInterval, bool blockForCompletion, ArgTypes... args) {
+		std::jthread theThread = std::jthread([=](std::stop_token stopToken) {
+			StopWatch stopWatch{ std::chrono::milliseconds{ timeInterval } };
+			stopWatch.resetTimer();
+			std::this_thread::sleep_for(std::chrono::milliseconds{ static_cast<int64_t>(std::ceil(static_cast<float>(timeInterval) * thePercentage)) });
+			while (!stopWatch.hasTimePassed() && !stopToken.stop_requested()) {
+				std::this_thread::sleep_for(1ms);
+			}
+			if (stopToken.stop_requested()) {
+				return;
+			}
+			timeElapsedHandler(args...);
+			if (stopToken.stop_requested()) {
+				return;
+			}
+		});
+		if (blockForCompletion) {
+			if (theThread.joinable()) {
+				theThread.join();
+			}
+		} else {
+			if (theThread.joinable()) {
+				theThread.detach();
+			}
+		}
+	}
+
 	void ThreadPool::stopThread(const std::string& theKey) {
 		if (ThreadPool::threads.contains(theKey)) {
 			ThreadPool::threads[theKey].request_stop();
