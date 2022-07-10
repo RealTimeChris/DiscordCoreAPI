@@ -156,7 +156,7 @@ namespace DiscordCoreInternal {
 	}
 
 	CoRoutineThreadPool::CoRoutineThreadPool() {
-		uint32_t threadCount = std::thread::hardware_concurrency();
+		uint32_t threadCount = std::thread::hardware_concurrency() / 2;
 		if (threadCount < 1) {
 			threadCount = 1;
 		}
