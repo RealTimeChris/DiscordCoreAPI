@@ -338,6 +338,18 @@ namespace DiscordCoreInternal {
 		return resultData;
 	}
 
+	void HttpsConnection::disconnect(bool) noexcept {
+		if (this->theSSLState.load() == SSLConnectionState::Connected) {
+			std::unique_lock theLock{ this->connectionMutex };
+			std::unique_lock theLock02{ this->readMutex };
+			std::unique_lock theLock03{ this->writeMutex };
+			this->theSSLState.store(SSLConnectionState::Disconnected);
+			this->theSocket = SOCKET_ERROR;
+			this->inputBuffer.clear();
+			this->outputBuffers.clear();
+		}
+	}
+
 	HttpsResponseData HttpsClient::httpRequestInternal(const HttpsWorkloadData& workload, RateLimitData& rateLimitData) {
 		auto httpsConnection = this->connectionManager.getConnection();
 		try {

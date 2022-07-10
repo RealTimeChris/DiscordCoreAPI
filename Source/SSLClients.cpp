@@ -179,14 +179,14 @@ namespace DiscordCoreInternal {
 		if (!SSL_CTX_set_min_proto_version(SSLConnectionInterface::context, TLS1_2_VERSION)) {
 			throw ConnectionError{ reportSSLError("SSLConnectionInterface::initialize()::SSL_CTX_set_min_proto_version()") };
 		}
-
+		
 		auto originalOptions{ SSL_CTX_get_options(SSLConnectionInterface::context) | SSL_OP_IGNORE_UNEXPECTED_EOF };
 		if (SSL_CTX_set_options(SSLConnectionInterface::context, SSL_OP_IGNORE_UNEXPECTED_EOF) != originalOptions) {
 			throw ConnectionError{ reportSSLError("SSLConnectionInterface::initialize()::SSL_CTX_set_options()") };
 		}
 	}
 
-	void SSLEntity::processIO(std::vector<SSLEntity*>& theVector, int32_t waitTimeInms) noexcept {
+	void SSLClient::processIO(std::vector<SSLClient*>& theVector, int32_t waitTimeInms) noexcept {
 		int32_t writeNfds{ 0 }, readNfds{ 0 }, finalNfds{ 0 };
 		fd_set writeSet{}, readSet{};
 		FD_ZERO(&writeSet);
@@ -313,7 +313,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void SSLEntity::processIO(int32_t theWaitTimeInms) noexcept {
+	void SSLClient::processIO(int32_t theWaitTimeInms) noexcept {
 		if (this->theSocket == SOCKET_ERROR) {
 			this->disconnect(true);
 			return;
@@ -353,19 +353,23 @@ namespace DiscordCoreInternal {
 					if (readBytes > 0) {
 						std::lock_guard theLock02{ this->readMutex };
 						this->inputBuffer.insert(this->inputBuffer.end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
+						this->bytesRead += readBytes;
 					}
 					break;
 				}
 				case SSL_ERROR_ZERO_RETURN: {
+					std::cout << "ZERO RETURN:" << std::endl;
 					this->disconnect(true);
 					break;
 				}
 				case SSL_ERROR_SSL: {
+					std::cout << "SSL ERROR:" << std::endl;
 					this->disconnect(true);
 					break;
 				}
 				case SSL_ERROR_SYSCALL: {
 					this->disconnect(true);
+					std::cout << "SYSCALL:" << std::endl;
 					break;
 				}
 				case SSL_ERROR_WANT_READ: {
@@ -377,6 +381,7 @@ namespace DiscordCoreInternal {
 					break;
 				}
 				default: {
+					std::cout << "DEFAULT:" << std::endl;
 					break;
 				}
 			}
@@ -384,10 +389,10 @@ namespace DiscordCoreInternal {
 		if (FD_ISSET(this->theSocket, &writeSet)) {
 			this->wantRead = false;
 			this->wantWrite = false;
-			size_t writtenBytes{ 0 };
-			std::string writeString{};
 			if (this->outputBuffers.size() > 0) {
 				std::unique_lock theLock{ this->writeMutex };
+				size_t writtenBytes{ 0 };
+				std::string writeString{};
 				writeString = std::move(this->outputBuffers.front());
 				auto returnValue{ SSL_write_ex(this->ssl, writeString.data(), writeString.size(), &writtenBytes) };
 				auto errorValue{ SSL_get_error(this->ssl, returnValue) };
@@ -428,14 +433,16 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	bool HttpsSSLClient::connect(const std::string& baseUrl, const std::string& portNew) noexcept {
+	bool SSLClient::connect(const std::string& baseUrl, const std::string& portNew) noexcept {
 		std::string stringNew{};
-		if (baseUrl.find(".com") != std::string::npos) {
+		if (baseUrl.find("https://") != std::string::npos && baseUrl.find(".com") != std::string::npos) {
 			stringNew =
 				baseUrl.substr(baseUrl.find("https://") + std::string("https://").size(), baseUrl.find(".com") + std::string(".com").size() - std::string("https://").size());
-		} else if (baseUrl.find(".org") != std::string::npos) {
+		} else if (baseUrl.find("https://") != std::string::npos && baseUrl.find(".org") != std::string::npos) {
 			stringNew =
 				baseUrl.substr(baseUrl.find("https://") + std::string("https://").size(), baseUrl.find(".org") + std::string(".org").size() - std::string("https://").size());
+		} else {
+			stringNew = baseUrl;
 		}
 
 		addrinfoWrapper hints{}, address{};
@@ -508,7 +515,7 @@ namespace DiscordCoreInternal {
 		return true;
 	}
 
-	bool HttpsSSLClient::writeData(const std::string& dataToWrite, bool priority) noexcept {
+	bool SSLClient::writeData(const std::string& dataToWrite, bool priority) noexcept {
 		if (this->theSocket == SOCKET_ERROR) {
 			return false;
 		}
@@ -601,26 +608,14 @@ namespace DiscordCoreInternal {
 		return false;
 	}
 
-	void HttpsSSLClient::disconnect(bool) noexcept {
-		if (this->theSSLState.load() == SSLConnectionState::Connected) {
-			std::unique_lock theLock{ this->connectionMutex };
-			std::unique_lock theLock02{ this->readMutex };
-			std::unique_lock theLock03{ this->writeMutex };
-			this->theSSLState.store(SSLConnectionState::Disconnected);
-			this->theSocket = SOCKET_ERROR;
-			this->inputBuffer.clear();
-			this->outputBuffers.clear();
-		}
-	}
-
-	std::string HttpsSSLClient::getInputBuffer() noexcept {
+	std::string SSLClient::getInputBuffer() noexcept {
 		std::unique_lock theLock{ this->readMutex };
 		std::string theReturnString = std::move(this->inputBuffer);
 		this->inputBuffer.clear();
 		return theReturnString;
 	}
 
-	bool HttpsSSLClient::areWeStillConnected() noexcept {
+	bool SSLClient::areWeStillConnected() noexcept {
 		if (this->theSocket == SOCKET_ERROR) {
 			return false;
 		} else {
@@ -628,228 +623,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	int64_t HttpsSSLClient::getBytesRead() noexcept {
-		std::unique_lock theLock{ this->readMutex };
-		return this->bytesRead;
-	}
-
-	WebSocketSSLShard::WebSocketSSLShard(std::queue<DiscordCoreAPI::ConnectionPackage>* connectionsNew, int32_t currentBaseSocketAgentNew, int32_t currentShardNew,
-		DiscordCoreAPI::ConfigManager* configManagerNew) noexcept {
-		this->heartBeatStopWatch = DiscordCoreAPI::StopWatch<std::chrono::milliseconds>{ 10000ms };
-		this->currentBaseSocketAgent = currentBaseSocketAgentNew;
-		this->shard.push_back(currentShardNew);
-		this->heartBeatStopWatch.resetTimer();
-		this->shard.push_back(configManagerNew->getTotalShardCount());
-		this->connections = connectionsNew;
-		if (configManagerNew->getTextFormat() == DiscordCoreAPI::TextFormat::Etf) {
-			this->dataOpCode = WebSocketOpCode::Op_Binary;
-		} else {
-			this->dataOpCode = WebSocketOpCode::Op_Text;
-		}
-	};
-
-	bool WebSocketSSLShard::connect(const std::string& baseUrlNew, const std::string& portNew) noexcept {
-		addrinfoWrapper hints{}, address{};
-
-		hints->ai_family = AF_INET;
-		hints->ai_socktype = SOCK_STREAM;
-		hints->ai_protocol = IPPROTO_TCP;
-
-		if (getaddrinfo(baseUrlNew.c_str(), portNew.c_str(), hints, address)) {
-			return false;
-		}
-
-		if (this->theSocket = socket(address->ai_family, address->ai_socktype, address->ai_protocol); this->theSocket == SOCKET_ERROR) {
-			return false;
-		}
-
-		int32_t value{ this->maxBufferSize + 1 };
-		if (setsockopt(this->theSocket, SOL_SOCKET, SO_SNDBUF, reinterpret_cast<char*>(&value), sizeof(value))) {
-			return false;
-		}
-
-		const char optionValue{ true };
-		if (setsockopt(this->theSocket, IPPROTO_TCP, TCP_NODELAY, &optionValue, sizeof(int32_t))) {
-			return false;
-		}
-
-		linger optionValue02{};
-		optionValue02.l_onoff = 0;
-		if (setsockopt(this->theSocket, SOL_SOCKET, SO_LINGER, reinterpret_cast<char*>(&optionValue02), sizeof(linger))) {
-			return false;
-		}
-
-		if (::connect(this->theSocket, address->ai_addr, static_cast<int32_t>(address->ai_addrlen))) {
-			return false;
-		}
-
-		std::unique_lock theLock01{ SSLConnectionInterface::contextMutex };
-		if (this->ssl = SSL_new(SSLConnectionInterface::context); this->ssl == nullptr) {
-			return false;
-		}
-		theLock01.unlock();
-
-		if (auto returnValue = SSL_set_fd(this->ssl, this->theSocket); !returnValue) {
-			return false;
-		}
-
-		/* SNI */
-		if (auto returnValue = SSL_set_tlsext_host_name(this->ssl, baseUrlNew.c_str()); !returnValue) {
-			return false;
-		}
-
-		if (auto returnValue = SSL_connect(this->ssl); !returnValue) {
-			return false;
-		}
-
-#ifdef _WIN32
-		u_long value02{ 1 };
-		if (auto returnValue = ioctlsocket(this->theSocket, FIONBIO, &value02); returnValue == SOCKET_ERROR) {
-			return false;
-		}
-#else
-		if (auto returnValue = fcntl(this->theSocket, F_SETFL, fcntl(this->theSocket, F_GETFL, 0) | O_NONBLOCK); returnValue == SOCKET_ERROR) {
-			return false;
-		}
-#endif
-		this->theSSLState.store(SSLConnectionState::Connected);
-		return true;
-	}
-
-	bool WebSocketSSLShard::writeData(const std::string& dataToWrite, bool priority) noexcept {
-		if (this->theSocket == SOCKET_ERROR) {
-			return false;
-		}
-		std::string data = dataToWrite;
-		if (data.size() > 0 && this->ssl) {
-			if (priority && data.size() < static_cast<size_t>(16 * 1024)) {
-				fd_set writeSet{};
-				int32_t writeNfds{ 0 };
-				FD_ZERO(&writeSet);
-				std::unique_lock theLock{ this->connectionMutex };
-				if (data.size() > 0) {
-					FD_SET(this->theSocket, &writeSet);
-					writeNfds = this->theSocket > writeNfds ? this->theSocket : writeNfds;
-				} else {
-					return false;
-				}
-
-				timeval checkTime{ .tv_usec = 0 };
-				if (auto returnValue = select(writeNfds + 1, nullptr, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
-					this->disconnect(true);
-					return false;
-				} else if (returnValue == 0) {
-					return false;
-				}
-				if (FD_ISSET(this->theSocket, &writeSet)) {
-					this->wantRead = false;
-					this->wantWrite = false;
-					size_t writtenBytes{ 0 };
-					auto returnValue{ SSL_write_ex(this->ssl, data.data(), data.size(), &writtenBytes) };
-					auto errorValue{ SSL_get_error(this->ssl, returnValue) };
-					switch (errorValue) {
-						case SSL_ERROR_NONE: {
-							if (writtenBytes > 0) {
-								data.clear();
-								return true;
-							}
-							return false;
-						}
-						case SSL_ERROR_ZERO_RETURN: {
-							this->disconnect(true);
-							return false;
-						}
-						case SSL_ERROR_SSL: {
-							this->disconnect(true);
-							return false;
-						}
-						case SSL_ERROR_SYSCALL: {
-							this->disconnect(true);
-							return false;
-						}
-						case SSL_ERROR_WANT_READ: {
-							this->wantRead = true;
-							return false;
-						}
-						case SSL_ERROR_WANT_WRITE: {
-							this->wantWrite = true;
-							return false;
-						}
-						default: {
-							return false;
-						}
-					}
-				}
-				return false;
-			} else {
-				if (data.size() > static_cast<size_t>(16 * 1024)) {
-					size_t remainingBytes{ data.size() };
-					while (remainingBytes > 0) {
-						std::string newString{};
-						size_t amountToCollect{};
-						if (data.size() >= static_cast<size_t>(1024 * 16)) {
-							amountToCollect = static_cast<size_t>(1024 * 16);
-						} else {
-							amountToCollect = data.size();
-						}
-						newString.insert(newString.begin(), data.begin(), data.begin() + amountToCollect);
-						std::unique_lock theLock{ this->writeMutex };
-						this->outputBuffers.push_back(newString);
-						data.erase(data.begin(), data.begin() + amountToCollect);
-						remainingBytes = data.size();
-					}
-				} else {
-					std::unique_lock theLock{ this->writeMutex };
-					this->outputBuffers.push_back(data);
-				}
-				return true;
-			}
-		}
-		return false;
-	}
-
-	void WebSocketSSLShard::disconnect(bool doWeReconnect) noexcept {
-		if (this->theSSLState.load() == SSLConnectionState::Connected) {
-			std::unique_lock theLock{ this->connectionMutex };
-			std::unique_lock theLock02{ this->readMutex };
-			std::unique_lock theLock03{ this->writeMutex };
-			this->theSSLState.store(SSLConnectionState::Disconnected);
-			this->theWebSocketState.store(WebSocketSSLShardState::Disconnected);
-			this->theSocket = SOCKET_ERROR;
-			this->inputBuffer.clear();
-			this->outputBuffers.clear();
-			this->closeCode = static_cast<WebSocketCloseCode>(0);
-			this->areWeHeartBeating = false;
-			while (this->processedMessages.size() > 0) {
-				this->processedMessages.pop();
-			}
-			if (this->connections && doWeReconnect) {
-				DiscordCoreAPI::ConnectionPackage theData{};
-				theData.voiceConnectionDataBufferMap = std::move(this->voiceConnectionDataBufferMap);
-				theData.currentBaseSocketAgent = this->currentBaseSocketAgent;
-				theData.currentReconnectTries = this->currentReconnectTries;
-				theData.currentShard = this->shard[0];
-				this->connections->push(theData);
-			}
-		}
-	}
-
-	std::string WebSocketSSLShard::getInputBuffer() noexcept {
-		std::unique_lock theLock{ this->readMutex };
-		std::string theReturnString = std::move(this->inputBuffer);
-		this->inputBuffer.clear();
-		return theReturnString;
-	}
-
-	bool WebSocketSSLShard::areWeStillConnected() noexcept {
-		if (this->theSocket != SOCKET_ERROR) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	int64_t WebSocketSSLShard::getBytesRead() noexcept {
+	int64_t SSLClient::getBytesRead() noexcept {
 		std::unique_lock theLock{ this->readMutex };
 		return this->bytesRead;
 	}

@@ -57,6 +57,48 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::ConfigManager* configManager{};
 	};
 
+	enum class WebSocketSSLShardState { Connecting = 0, Upgrading = 1, Collecting_Hello = 2, Sending_Identify = 3, Authenticated = 4, Disconnected = 5 };
+
+	class DiscordCoreAPI_Dll WebSocketSSLShard : public SSLClient {
+	  public:
+		friend class DiscordCoreAPI::VoiceConnection;
+		friend class WebSocketMessageHandler;
+		friend class DiscordCoreAPI::BotUser;
+		friend class BaseSocketAgent;
+		friend class YouTubeAPI;
+
+		WebSocketSSLShard(std::queue<DiscordCoreAPI::ConnectionPackage>* connectionsNew, int32_t currentBaseSocketAgentNew, int32_t currentShardNew,
+			DiscordCoreAPI::ConfigManager* configManagerNew) noexcept;
+
+		void disconnect(bool doWeReconnect) noexcept;
+
+		~WebSocketSSLShard() noexcept = default;
+
+	  protected:
+		std::unordered_map<Snowflake, DiscordCoreAPI::UnboundedMessageBlock<VoiceConnectionData>*> voiceConnectionDataBufferMap{};
+		std::atomic<WebSocketSSLShardState> theWebSocketState{ WebSocketSSLShardState ::Connecting };
+		DiscordCoreAPI::StopWatch<std::chrono::milliseconds> heartBeatStopWatch{ 0ms };
+		std::queue<std::string> processedMessages{};
+		VoiceConnectionData voiceConnectionData{};
+		bool haveWeReceivedHeartbeatAck{ true };
+		bool serverUpdateCollected{ false };
+		int32_t currentBaseSocketAgent{ 0 };
+		int32_t currentReconnectTries{ 0 };
+		bool stateUpdateCollected{ false };
+		bool areWeCollectingData{ false };
+		std::recursive_mutex theMutex{};
+		bool areWeHeartBeating{ false };
+		int32_t lastNumberReceived{ 0 };
+		WebSocketCloseCode closeCode{};
+		WebSocketOpCode dataOpCode{};
+		bool areWeResuming{ false };
+		int64_t messageLength{};
+		int64_t messageOffset{};
+		std::string sessionId{};
+		nlohmann::json shard{};
+		Snowflake userId{ 0 };
+	};
+
 	class DiscordCoreAPI_Dll BaseSocketAgent : public WebSocketMessageHandler {
 	  public:
 		friend class DiscordCoreAPI::DiscordCoreClient;

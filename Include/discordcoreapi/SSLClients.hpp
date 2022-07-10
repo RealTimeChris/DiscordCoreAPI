@@ -197,86 +197,25 @@ namespace DiscordCoreInternal {
 		int64_t bytesRead{ 0 };
 	};
 
-	class DiscordCoreAPI_Dll SSLEntity : public SSLDataInterface, public SSLConnectionInterface {
+	class DiscordCoreAPI_Dll SSLClient : public SSLDataInterface, public SSLConnectionInterface {
 	  public:
-		SSLEntity() noexcept = default;
+		SSLClient() noexcept = default;
 
-		static void processIO(std::vector<SSLEntity*>& theVector, int32_t waitTimeInms) noexcept;
+		static void processIO(std::vector<SSLClient*>& theVector, int32_t waitTimeInms) noexcept;
+
+		bool connect(const std::string& baseUrl, const std::string& portNew) noexcept;
+
+		bool writeData(const std::string& dataToWrite, bool priority) noexcept;
 
 		void processIO(int32_t waitTimeInMs) noexcept;
 
-		virtual ~SSLEntity() noexcept = default;
-	};
-
-	class DiscordCoreAPI_Dll HttpsSSLClient : public SSLEntity {
-	  public:
-		HttpsSSLClient() noexcept = default;
-
-		bool connect(const std::string& baseUrl, const std::string& portNew) noexcept;
-
-		bool writeData(const std::string& data, bool priority = false) noexcept;
-
-		void disconnect(bool doWeReconnect) noexcept;
-
 		std::string getInputBuffer() noexcept;
 
 		bool areWeStillConnected() noexcept;
 
 		int64_t getBytesRead() noexcept;
 
-		~HttpsSSLClient() noexcept = default;
-	};
-
-	enum class WebSocketSSLShardState { Connecting = 0, Upgrading = 1, Collecting_Hello = 2, Sending_Identify = 3, Authenticated = 4, Disconnected = 5 };
-
-	class DiscordCoreAPI_Dll WebSocketSSLShard : public SSLEntity {
-	  public:
-		friend class DiscordCoreAPI::VoiceConnection;
-		friend class WebSocketMessageHandler;
-		friend class DiscordCoreAPI::BotUser;
-		friend class BaseSocketAgent;
-		friend class YouTubeAPI;
-
-		WebSocketSSLShard(std::queue<DiscordCoreAPI::ConnectionPackage>* connectionsNew, int32_t currentBaseSocketAgentNew, int32_t currentShardNew,
-			DiscordCoreAPI::ConfigManager* configManagerNew) noexcept;
-
-		bool connect(const std::string& baseUrl, const std::string& portNew) noexcept;
-
-		bool writeData(const std::string& data, bool priority = false) noexcept;
-
-		void disconnect(bool doWeReconnect) noexcept;
-
-		std::string getInputBuffer() noexcept;
-
-		bool areWeStillConnected() noexcept;
-
-		int64_t getBytesRead() noexcept;
-
-		~WebSocketSSLShard() noexcept = default;
-
-	  protected:
-		std::unordered_map<Snowflake, DiscordCoreAPI::UnboundedMessageBlock<VoiceConnectionData>*> voiceConnectionDataBufferMap{};
-		std::atomic<WebSocketSSLShardState> theWebSocketState{ WebSocketSSLShardState ::Connecting };
-		DiscordCoreAPI::StopWatch<std::chrono::milliseconds> heartBeatStopWatch{ 0ms };
-		std::queue<std::string> processedMessages{};
-		VoiceConnectionData voiceConnectionData{};
-		bool haveWeReceivedHeartbeatAck{ true };
-		bool serverUpdateCollected{ false };
-		int32_t currentBaseSocketAgent{ 0 };
-		int32_t currentReconnectTries{ 0 };
-		bool stateUpdateCollected{ false };
-		bool areWeCollectingData{ false };
-		std::recursive_mutex theMutex{};
-		bool areWeHeartBeating{ false };
-		int32_t lastNumberReceived{ 0 };
-		WebSocketCloseCode closeCode{};
-		WebSocketOpCode dataOpCode{};
-		bool areWeResuming{ false };
-		int64_t messageLength{};
-		int64_t messageOffset{};
-		std::string sessionId{};
-		nlohmann::json shard{};
-		Snowflake userId{ 0 };
+		virtual ~SSLClient() noexcept = default;
 	};
 
 	class DiscordCoreAPI_Dll DatagramSocketClient {

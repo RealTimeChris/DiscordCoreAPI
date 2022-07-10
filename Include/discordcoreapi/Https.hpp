@@ -99,13 +99,15 @@ namespace DiscordCoreInternal {
 		std::string bucket{};
 	};
 
-	class DiscordCoreAPI_Dll HttpsConnection : public HttpsSSLClient, public HttpsRnRBuilder {
+	class DiscordCoreAPI_Dll HttpsConnection : public SSLClient, public HttpsRnRBuilder {
 	  public:
 		std::atomic_bool areWeCheckedOut{ false };
 		const int32_t maxReconnectTries{ 10 };
 		int32_t currentReconnectTries{ 0 };
 		std::string currentBaseUrl{};
 		bool doWeConnect{ true };
+
+		void disconnect(bool) noexcept;
 
 		virtual ~HttpsConnection() = default;
 	};

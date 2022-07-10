@@ -230,7 +230,7 @@ namespace DiscordCoreInternal {
 			frameData.sampleCount = -5;
 			stream->outDataBuffer.send(frameData);
 			stream->areWeQuitting = true;
-			return AVERROR_EOF;
+			return static_cast<int32_t>(stream->bytesRead);
 		}
 		return static_cast<int32_t>(stream->bytesRead);
 	}
