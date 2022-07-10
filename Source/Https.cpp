@@ -98,10 +98,14 @@ namespace DiscordCoreInternal {
 				if (theData.responseCode == -1) {
 					this->parseCode(other, theData);
 				}
+				DiscordCoreAPI::StopWatch theStopWatch{ 1500ms };
 				std::string newString{};
 				newString.insert(newString.begin(), other.begin(), other.begin() + other.find("\r\n\r\n") + std::string("\r\n\r\n").size());
 				other.erase(other.begin(), other.begin() + newString.size());
 				while (newString.size() > 0 && newString.find(":") != std::string::npos && newString.find("\r\n") != std::string::npos) {
+					if (theStopWatch.hasTimePassed()) {
+						break;
+					}
 					int64_t currentOffset{ 0 };
 					std::string lineString = newString.substr(0, newString.find("\r\n") + 2);
 					currentOffset = lineString.size();
@@ -129,7 +133,11 @@ namespace DiscordCoreInternal {
 		if (this->doWeHaveHeaders) {
 			if (this->isItChunked) {
 				if (other.find("\r\n0\r\n\r\n") != std::string::npos) {
+					DiscordCoreAPI::StopWatch theStopWatch{ 1500ms };
 					while (other.find("\r\n") != other.find("\r\n0\r\n\r\n")) {
+						if (theStopWatch.hasTimePassed()) {
+							break;
+						}
 						this->clearCRLF(other);
 						this->parseSize(other, theData);
 						this->clearCRLF(other);
@@ -318,6 +326,7 @@ namespace DiscordCoreInternal {
 		if (workload.baseUrl == "") {
 			workload.baseUrl = "https://discord.com/api/v10";
 		}
+		
 		RateLimitData& rateLimitData = *this->connectionManager.getRateLimitValues()[this->connectionManager.getRateLimitValueBuckets()[workload.workloadType]].get();
 		if (!rateLimitData.haveWeGoneYet) {
 			std::this_thread::sleep_for(100ms);
