@@ -21,10 +21,10 @@
 
 namespace DiscordCoreAPI {
 
-	std::string ThreadPool::storeThread(TimeElapsedHandlerNoArgs timeElapsedHandler, int64_t timeInterval, bool repeated) {
+	void ThreadPool::storeThread(TimeElapsedHandlerNoArgs timeElapsedHandler, int64_t timeInterval, bool repeated) {
 		std::string threadId = std::to_string(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
 
-		ThreadPool::threads[threadId] = std::jthread([=](std::stop_token stopToken) {
+		auto theThread = std::jthread([=](std::stop_token stopToken) {
 			StopWatch stopWatch{ std::chrono::milliseconds{ timeInterval } };
 			while (true) {
 				stopWatch.resetTimer();
@@ -44,15 +44,14 @@ namespace DiscordCoreAPI {
 				}
 			}
 		});
-		return threadId;
+		theThread.detach();
+		ThreadPool::threads[threadId] = std::move(theThread);
+		return;
 	}
 
 	void ThreadPool::stopThread(const std::string& theKey) {
 		if (ThreadPool::threads.contains(theKey)) {
 			ThreadPool::threads[theKey].request_stop();
-			if (ThreadPool::threads[theKey].joinable()) {
-				ThreadPool::threads[theKey].join();
-			}
 			ThreadPool::threads.erase(theKey);
 		}
 	}
@@ -60,9 +59,6 @@ namespace DiscordCoreAPI {
 	ThreadPool::~ThreadPool() {
 		for (auto& [key, value]: this->threads) {
 			value.request_stop();
-			if (value.joinable()) {
-				value.join();
-			}
 		}
 	}
 

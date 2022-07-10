@@ -21,6 +21,7 @@
 
 #include <discordcoreapi/FoundationEntities.hpp>
 #include <discordcoreapi/Https.hpp>
+#include <coroutine>
 
 namespace DiscordCoreAPI {
 	/**
@@ -46,7 +47,7 @@ namespace DiscordCoreAPI {
 
 		ThreadPool() = default;
 
-		static std::string storeThread(TimeElapsedHandlerNoArgs timeElapsedHandler, int64_t timeInterval, bool repeated);
+		static void storeThread(TimeElapsedHandlerNoArgs timeElapsedHandler, int64_t timeInterval, bool repeated);
 		
 		template<typename... ArgTypes>
 		static void executeFunctionAfterTimePeriod(TimeElapsedHandler<ArgTypes...> timeElapsedHandler, int64_t timeInterval, bool blockForCompletion,

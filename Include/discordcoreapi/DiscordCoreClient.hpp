@@ -106,9 +106,6 @@ namespace DiscordCoreAPI {
 
 	  protected:
 		std::unordered_map<std::string, std::unique_ptr<DiscordCoreInternal::BaseSocketAgent>> baseSocketAgentMap{};
-
-
-
 		std::unique_ptr<DiscordCoreInternal::HttpsClient> httpsClient{ nullptr };
 		StopWatch<std::chrono::milliseconds> theStopWatch{ 5100ms };
 		DiscordCoreInternal::CommandThreadPool commandThreadPool{};
@@ -116,10 +113,8 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::WSADataWrapper theWSAData{};
 #endif
 		CommandController commandController{ this };
-		std::vector<std::string> threadIds{};
 		ConfigManager configManager{};
 		EventManager eventManager{};
-		ThreadPool threadPool{};
 		BotUser currentUser{};
 
 		GatewayBotData getGateWayBot();
