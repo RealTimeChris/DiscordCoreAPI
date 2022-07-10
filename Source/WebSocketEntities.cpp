@@ -76,8 +76,9 @@ namespace DiscordCoreInternal {
 	bool WebSocketMessageHandler::parseConnectionHeaders(WebSocketSSLShard* theShard) noexcept {
 		if (theShard->theSSLState.load() == SSLConnectionState::Connected && theShard->theWebSocketState.load() == WebSocketSSLShardState::Upgrading) {
 			std::string newVector = theShard->getInputBuffer();
-			if (newVector.find("\r\n\r\n") != std::string::npos) {
-				newVector.erase(0, newVector.find("\r\n\r\n") + 4);
+			auto theFindValue = newVector.find("\r\n\r\n");
+			if (theFindValue != std::string::npos) {
+				newVector.erase(0, theFindValue + 4);
 				theShard->inputBuffer.clear();
 				theShard->inputBuffer.insert(theShard->inputBuffer.end(), newVector.begin(), newVector.end());
 				std::string finalMessage{};

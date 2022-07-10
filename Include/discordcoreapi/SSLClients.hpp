@@ -59,11 +59,13 @@
 
 namespace DiscordCoreInternal {
 
+#ifdef SOCKET_ERROR
+	#undef SOCKET_ERROR
+#endif
+
 	using SOCKET = int32_t;
 
-#ifndef SOCKET_ERROR
-	#define SOCKET_ERROR (-1)
-#endif
+	constexpr int32_t SOCKET_ERROR{ -1 };
 
 	struct ConnectionError : public std::runtime_error {
 		ConnectionError(const std::string& theString);

@@ -45,9 +45,10 @@ namespace DiscordCoreInternal {
 					  << std::endl;
 		}
 		nlohmann::json partialSearchResultsJson{};
-		if (returnData.responseMessage.find("var ytInitialData = ") != std::string::npos) {
+		auto varInitFind = returnData.responseMessage.find("var ytInitialData = ");
+		if (varInitFind != std::string::npos) {
 			std::string newString00 = "var ytInitialData = ";
-			std::string newString = returnData.responseMessage.substr(returnData.responseMessage.find("var ytInitialData = ") + newString00.length());
+			std::string newString = returnData.responseMessage.substr(varInitFind + newString00.length());
 			std::string stringSequence = ";</script><script nonce=";
 			newString = newString.substr(0, newString.find(stringSequence));
 			partialSearchResultsJson = nlohmann::json::parse(newString);
@@ -120,10 +121,11 @@ namespace DiscordCoreInternal {
 				newSong.format = format;
 			}
 			std::string downloadBaseUrl{};
-			if (newSong.format.downloadUrl.find("https://") != std::string::npos && newSong.format.downloadUrl.find("/videoplayback?") != std::string::npos) {
+			auto httpsFind = newSong.format.downloadUrl.find("https://"); 
+			auto videoPlaybackFind = newSong.format.downloadUrl.find("/videoplayback?");
+			if (httpsFind != std::string::npos && videoPlaybackFind != std::string::npos) {
 				std::string newString00 = "https://";
-				downloadBaseUrl = newSong.format.downloadUrl.substr(newSong.format.downloadUrl.find("https://") + newString00.length(),
-					newSong.format.downloadUrl.find("/videoplayback?") - newString00.length());
+				downloadBaseUrl = newSong.format.downloadUrl.substr(httpsFind + newString00.length(), videoPlaybackFind - newString00.length());
 			}
 			std::string request = "GET " + newSong.format.downloadUrl +
 				" HTTP/1.1\n\rUser-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "

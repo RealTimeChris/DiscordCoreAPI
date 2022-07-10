@@ -717,8 +717,9 @@ namespace DiscordCoreAPI {
 					}
 					std::string message{};
 					message.insert(message.begin(), inputString.begin() + 8, inputString.begin() + 64);
-					if (message.find('\u0000') != std::string::npos) {
-						message = message.substr(0, message.find('\u0000', 5));
+					auto endLineFind = message.find('\u0000', 5);
+					if (endLineFind != std::string::npos) {
+						message = message.substr(0, endLineFind);
 					}
 					this->voiceConnectionData.externalIp = message;
 					this->areWeConnectedBool.store(true);

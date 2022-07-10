@@ -3490,12 +3490,14 @@ namespace DiscordCoreAPI {
 						newData.signatureCipher = value["cipher"].get<std::string>();
 					}
 
-					if (newData.signatureCipher.find("&sp") != std::string::npos) {
-						newData.signature = newData.signatureCipher.substr(0, newData.signatureCipher.find("&sp"));
+					auto ampersandSpFind = newData.signatureCipher.find("&sp");
+					if (ampersandSpFind != std::string::npos) {
+						newData.signature = newData.signatureCipher.substr(0, ampersandSpFind);
 					}
 
-					if (newData.signatureCipher.find("url") != std::string::npos) {
-						newData.downloadUrl = newData.signatureCipher.substr(newData.signatureCipher.find("url") + 4);
+					auto urlFind = newData.signatureCipher.find("url");
+					if (urlFind != std::string::npos) {
+						newData.downloadUrl = newData.signatureCipher.substr(urlFind + 4);
 					} else if (value.contains("url") && !value["url"].is_null()) {
 						newData.downloadUrl = value["url"];
 					}

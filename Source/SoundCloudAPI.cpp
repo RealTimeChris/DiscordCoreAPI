@@ -90,9 +90,10 @@ namespace DiscordCoreInternal {
 				while (newString.find("#EXTINF:") != std::string::npos) {
 					std::string newString01 = "#EXTINF:";
 					std::string newString02 = newString.substr(newString.find("#EXTINF:") + newString01.size());
-					std::string newString00 = newString02.substr(0, newString02.find(","));
-					std::string newString03 = newString02.substr(newString02.find(",") + 2, newString02.find("#EXTINF:") - (newString00.size() + 3));
-					newString = newString02.substr(newString02.find(","));
+					auto commandFind = newString02.find(",");
+					std::string newString00 = newString02.substr(0, commandFind);
+					std::string newString03 = newString02.substr(commandFind + 2, newString02.find("#EXTINF:") - (newString00.size() + 3));
+					newString = newString02.substr(commandFind);
 					if (newString03.find("#EXT-X-ENDLIST") != std::string::npos) {
 						newString03 = newString03.substr(0, newString03.find("#EXT-X-ENDLIST"));
 					}

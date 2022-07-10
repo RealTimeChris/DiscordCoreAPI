@@ -260,12 +260,13 @@ namespace DiscordCoreInternal {
 
 	bool SSLClient::connect(const std::string& baseUrl, const std::string& portNew) noexcept {
 		std::string stringNew{};
-		if (baseUrl.find("https://") != std::string::npos && baseUrl.find(".com") != std::string::npos) {
-			stringNew =
-				baseUrl.substr(baseUrl.find("https://") + std::string("https://").size(), baseUrl.find(".com") + std::string(".com").size() - std::string("https://").size());
-		} else if (baseUrl.find("https://") != std::string::npos && baseUrl.find(".org") != std::string::npos) {
-			stringNew =
-				baseUrl.substr(baseUrl.find("https://") + std::string("https://").size(), baseUrl.find(".org") + std::string(".org").size() - std::string("https://").size());
+		auto httpsFind = baseUrl.find("https://"); 
+		auto comFind = baseUrl.find(".com");
+		auto orgFind = baseUrl.find(".org");
+		if (httpsFind != std::string::npos && comFind!= std::string::npos) {
+			stringNew = baseUrl.substr(httpsFind + std::string("https://").size(), comFind + std::string(".com").size() - std::string("https://").size());
+		} else if (httpsFind != std::string::npos && orgFind != std::string::npos) {
+			stringNew = baseUrl.substr(httpsFind + std::string("https://").size(), orgFind + std::string(".org").size() - std::string("https://").size());
 		} else {
 			stringNew = baseUrl;
 		}
