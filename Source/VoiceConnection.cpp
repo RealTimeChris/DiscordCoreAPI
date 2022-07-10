@@ -662,7 +662,6 @@ namespace DiscordCoreAPI {
 	bool VoiceConnection::voiceConnect() noexcept {
 		try {
 			if (!DatagramSocketClient::areWeStillConnected()) {
-				std::cout << "THE IP: " << this->voiceConnectionData.voiceIp << std::endl;
 				if (!DatagramSocketClient::connect(this->voiceConnectionData.voiceIp, this->voiceConnectionData.voicePort)) {
 					return false;
 				} else {
