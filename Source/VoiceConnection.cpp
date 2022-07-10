@@ -765,7 +765,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::reconnect() noexcept {
-		if (this->datagramSocket && !this->datagramSocket->areWeStillConnected()) {
+		if (this->datagramSocket) {
 			this->datagramSocket->disconnect();
 		}
 		if (this->webSocketShard) {
