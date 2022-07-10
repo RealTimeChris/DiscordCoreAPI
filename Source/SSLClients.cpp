@@ -142,24 +142,15 @@ namespace DiscordCoreInternal {
 	}
 
 	addrinfo* addrinfoWrapper::operator->() {
-		if (this->thePtr == nullptr) {
-			throw ConnectionError{ "addrinfoWrapper::operator->(), addrinfoPtrTwo was nullptr." };
-		}
 		return this->thePtr;
 	}
 
 	addrinfoWrapper::operator addrinfo**() {
 		this->doWeClearAddrInfo = true;
-		if (this->thePtr == nullptr) {
-			throw ConnectionError{ "addrinfoWrapper::addrinfo**(), addrinfoPtrTwo was nullptr." };
-		}
 		return &this->thePtr;
 	}
 
 	addrinfoWrapper::operator addrinfo*() {
-		if (this->thePtr == nullptr) {
-			throw ConnectionError{ "addrinfoWrapper::addrinfo*(), addrinfoPtrTwo was nullptr." };
-		}
 		return this->thePtr;
 	}
 
