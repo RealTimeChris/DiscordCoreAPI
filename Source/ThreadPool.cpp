@@ -74,7 +74,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void CommandThreadPool::submitTask(std::function<void()> coro) noexcept {
+	void CommandThreadPool::submitTask(std::function<void()> function) noexcept {
 		std::unique_lock theLock{ this->theMutex01 };
 		bool areWeAllBusy{ true };
 		for (auto& [key, value]: this->workerThreads) {
@@ -93,7 +93,7 @@ namespace DiscordCoreInternal {
 			});
 			this->workerThreads[this->currentIndex] = std::move(workerThread);
 		}
-		this->theFunctions.push(coro);
+		this->theFunctions.push(function);
 		theLock.unlock();
 		this->theCondVar.notify_one();
 	}
@@ -119,13 +119,13 @@ namespace DiscordCoreInternal {
 			if (this->areWeQuitting.load() || stopToken.stop_requested()) {
 				return;
 			}
-			auto coroHandle = this->theFunctions.front();
+			auto functionHandle = this->theFunctions.front();
 			this->theFunctions.pop();
 			theLock01.unlock();
 			if (theAtomicBoolPtr) {
 				theAtomicBoolPtr->store(true);
 			}
-			coroHandle();
+			functionHandle();
 			if (theAtomicBoolPtr) {
 				theAtomicBoolPtr->store(false);
 			}
