@@ -141,7 +141,7 @@ namespace DiscordCoreInternal {
 			if (this->areWeQuitting.load() || stopToken.stop_requested()) {
 				return;
 			}
-			auto functionHandle = this->theFunctions.front();
+			std::function<void()> functionHandle = this->theFunctions.front();
 			this->theFunctions.pop();
 			theLock01.unlock();
 			if (theAtomicBoolPtr) {
@@ -240,7 +240,7 @@ namespace DiscordCoreInternal {
 			if (this->areWeQuitting.load() || stopToken.stop_requested()) {
 				return;
 			}
-			auto coroHandle = this->theCoroutineHandles.front();
+			std::coroutine_handle<> coroHandle = this->theCoroutineHandles.front();
 			this->theCoroutineHandles.pop();
 			theLock01.unlock();
 			if (theAtomicBoolPtr) {
