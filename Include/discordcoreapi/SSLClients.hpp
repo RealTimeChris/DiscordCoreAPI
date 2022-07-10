@@ -252,7 +252,9 @@ namespace DiscordCoreInternal {
 		std::recursive_mutex theMutex{};
 		SOCKETWrapper theSocket{};
 		std::string inputBuffer{};
+		SSL_CTXWrapper context{};
 		sockaddr_in theAddress{};
 		int64_t bytesRead{};
+		SSLWrapper ssl{};
 	};
 }// namespace DiscordCoreInterna
