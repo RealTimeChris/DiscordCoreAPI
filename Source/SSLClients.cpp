@@ -223,47 +223,12 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void SSLClient::processIO(int32_t theWaitTimeInms) noexcept {
-		if (this->theSocket == SOCKET_ERROR) {
-			this->disconnect(true);
-			return;
-		}
-		int32_t readNfds{ 0 }, writeNfds{ 0 }, finalNfds{ 0 };
-		fd_set writeSet{}, readSet{};
-		FD_ZERO(&writeSet);
-		FD_ZERO(&readSet);
-
-		std::unique_lock theLock{ this->connectionMutex };
-		if ((this->outputBuffers.size() > 0 || this->wantWrite) && !this->wantRead) {
-			FD_SET(this->theSocket, &writeSet);
-			writeNfds = this->theSocket > writeNfds ? this->theSocket : writeNfds;
-		}
-		FD_SET(this->theSocket, &readSet);
-		readNfds = this->theSocket > readNfds ? this->theSocket : readNfds;
-		finalNfds = readNfds > writeNfds ? readNfds : writeNfds;
-
-		timeval checkTime{ .tv_usec = theWaitTimeInms };
-		if (auto returnValue = select(finalNfds + 1, &readSet, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
-			this->disconnect(true);
-			return;
-		} else if (returnValue == 0) {
-			return;
-		}
-
-		if (FD_ISSET(this->theSocket, &readSet)) {
-			this->readDataProcess();
-		}
-		if (FD_ISSET(this->theSocket, &writeSet)) {
-			this->writeDataProcess();
-		}
-	}
-
 	bool SSLClient::connect(const std::string& baseUrl, const std::string& portNew) noexcept {
 		std::string stringNew{};
-		auto httpsFind = baseUrl.find("https://"); 
+		auto httpsFind = baseUrl.find("https://");
 		auto comFind = baseUrl.find(".com");
 		auto orgFind = baseUrl.find(".org");
-		if (httpsFind != std::string::npos && comFind!= std::string::npos) {
+		if (httpsFind != std::string::npos && comFind != std::string::npos) {
 			stringNew = baseUrl.substr(httpsFind + std::string("https://").size(), comFind + std::string(".com").size() - std::string("https://").size());
 		} else if (httpsFind != std::string::npos && orgFind != std::string::npos) {
 			stringNew = baseUrl.substr(httpsFind + std::string("https://").size(), orgFind + std::string(".org").size() - std::string("https://").size());
@@ -393,6 +358,41 @@ namespace DiscordCoreInternal {
 			}
 		}
 		return false;
+	}
+
+	void SSLClient::processIO(int32_t theWaitTimeInms) noexcept {
+		if (this->theSocket == SOCKET_ERROR) {
+			this->disconnect(true);
+			return;
+		}
+		int32_t readNfds{ 0 }, writeNfds{ 0 }, finalNfds{ 0 };
+		fd_set writeSet{}, readSet{};
+		FD_ZERO(&writeSet);
+		FD_ZERO(&readSet);
+
+		std::unique_lock theLock{ this->connectionMutex };
+		if ((this->outputBuffers.size() > 0 || this->wantWrite) && !this->wantRead) {
+			FD_SET(this->theSocket, &writeSet);
+			writeNfds = this->theSocket > writeNfds ? this->theSocket : writeNfds;
+		}
+		FD_SET(this->theSocket, &readSet);
+		readNfds = this->theSocket > readNfds ? this->theSocket : readNfds;
+		finalNfds = readNfds > writeNfds ? readNfds : writeNfds;
+
+		timeval checkTime{ .tv_usec = theWaitTimeInms };
+		if (auto returnValue = select(finalNfds + 1, &readSet, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
+			this->disconnect(true);
+			return;
+		} else if (returnValue == 0) {
+			return;
+		}
+
+		if (FD_ISSET(this->theSocket, &readSet)) {
+			this->readDataProcess();
+		}
+		if (FD_ISSET(this->theSocket, &writeSet)) {
+			this->writeDataProcess();
+		}
 	}
 
 	std::string SSLClient::getInputBuffer() noexcept {
