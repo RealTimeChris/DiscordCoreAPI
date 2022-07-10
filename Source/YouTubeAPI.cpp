@@ -276,7 +276,7 @@ namespace DiscordCoreInternal {
 							if (streamSocket->areWeStillConnected()) {
 								bytesReadTotal = streamSocket->getBytesRead() - headerSize;
 								std::string newData = streamSocket->getInputBuffer();
-								headerSize = newData.size();
+								headerSize = static_cast<int32_t>(newData.size());
 							}
 						}
 						if (stopToken.stop_requested()) {
