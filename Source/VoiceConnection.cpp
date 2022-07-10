@@ -294,7 +294,7 @@ namespace DiscordCoreAPI {
 	bool VoiceConnection::collectAndProcessAMessage(VoiceConnectionState stateToWaitFor) noexcept {
 		DiscordCoreAPI::StopWatch theStopWatch{ 2500ms };
 		while (!Globals::doWeQuit.load() && this->connectionState.load() != stateToWaitFor) {
-			this->webSocketShard->processIO(10000);
+			this->webSocketShard->processIO(100000);
 			if (!this->webSocketShard->areWeStillConnected()) {
 				return false;
 			}
@@ -546,7 +546,7 @@ namespace DiscordCoreAPI {
 					return;
 				}
 				for (uint32_t x = 0; x < 5; x++) {
-					this->webSocketShard->processIO(10000);
+					this->webSocketShard->processIO(100000);
 				}
 				if (!this->parseConnectionHeaders(this->webSocketShard.get())) {
 					this->currentReconnectTries++;

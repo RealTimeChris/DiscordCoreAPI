@@ -358,18 +358,15 @@ namespace DiscordCoreInternal {
 					break;
 				}
 				case SSL_ERROR_ZERO_RETURN: {
-					std::cout << "ZERO RETURN:" << std::endl;
 					this->disconnect(true);
 					break;
 				}
 				case SSL_ERROR_SSL: {
-					std::cout << "SSL ERROR:" << std::endl;
 					this->disconnect(true);
 					break;
 				}
 				case SSL_ERROR_SYSCALL: {
 					this->disconnect(true);
-					std::cout << "SYSCALL:" << std::endl;
 					break;
 				}
 				case SSL_ERROR_WANT_READ: {
@@ -381,7 +378,6 @@ namespace DiscordCoreInternal {
 					break;
 				}
 				default: {
-					std::cout << "DEFAULT:" << std::endl;
 					break;
 				}
 			}
