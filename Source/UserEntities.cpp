@@ -214,7 +214,9 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/users/" + std::to_string(dataPackage.userId);
 		workload.callStack = "Users::getUserAsync()";
-		co_return Users::httpsClient->submitWorkloadAndGetResult<User>(workload);
+		User user = Users::httpsClient->submitWorkloadAndGetResult<User>(workload);
+		user = Users::getCachedUserAsync(dataPackage).get();
+		co_return user;
 	}
 
 	CoRoutine<User> Users::modifyCurrentUserAsync(ModifyCurrentUserData dataPackage) {

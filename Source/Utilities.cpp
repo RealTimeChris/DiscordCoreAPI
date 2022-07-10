@@ -512,9 +512,13 @@ namespace DiscordCoreAPI {
 
 	uint64_t TimeStamp::convertTimestampToMsInteger() {
 		std::string timeStamp = this->originalTimeStamp;
-		TimeStamp timeValue = TimeStamp(stoi(timeStamp.substr(0, 4)), stoi(timeStamp.substr(5, 6)), stoi(timeStamp.substr(8, 9)), stoi(timeStamp.substr(11, 12)),
-			stoi(timeStamp.substr(14, 15)), stoi(timeStamp.substr(17, 18)));
-		return timeValue.getTime() * 1000;
+		if (timeStamp.size() > 17) {
+			TimeStamp timeValue = TimeStamp(stoi(timeStamp.substr(0, 4)), stoi(timeStamp.substr(5, 6)), stoi(timeStamp.substr(8, 9)), stoi(timeStamp.substr(11, 12)),
+				stoi(timeStamp.substr(14, 15)), stoi(timeStamp.substr(17, 18)));
+			return timeValue.getTime() * 1000;
+		} else {
+			return 0;
+		}
 	}
 
 	std::string TimeStamp::getOriginalTimeStamp() {
@@ -909,6 +913,26 @@ namespace DiscordCoreAPI {
 					  << e.what() << reset();
 			auto theReturnString = theStream.str();
 			std::cout << theReturnString;
+		}
+	}
+
+	void rethrowException(const std::string& currentFunctionName, std::source_location theLocation) {
+		try {
+			auto currentException = std::current_exception();
+			if (currentException) {
+				std::rethrow_exception(currentException);
+			}
+		} catch (const std::exception& e) {
+			std::stringstream theStream{};
+			theStream << shiftToBrightRed() << "Caught At: " << currentFunctionName << ", in File: " << theLocation.file_name() << " (" << std::to_string(theLocation.line()) << ":"
+					  << std::to_string(theLocation.column()) << ")"
+					  << "\nThe Error: \n"
+					  << e.what() << reset();
+			auto theReturnString = theStream.str();
+			std::cout << theReturnString;
+			if (std::current_exception()) {
+				std::rethrow_exception(std::current_exception());
+			}
 		}
 	}
 

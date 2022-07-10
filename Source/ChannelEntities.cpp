@@ -207,7 +207,9 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId);
 		workload.callStack = "Channels::getChannelAsync()";
-		co_return Channels::httpsClient->submitWorkloadAndGetResult<Channel>(workload);
+		Channel channel = Channels::httpsClient->submitWorkloadAndGetResult<Channel>(workload);
+		channel = Channels::getCachedChannelAsync(dataPackage).get();
+		co_return channel;
 	}
 
 	CoRoutine<ChannelData> Channels::getCachedChannelAsync(GetChannelData dataPackage) {

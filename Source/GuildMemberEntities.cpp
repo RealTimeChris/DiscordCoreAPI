@@ -129,7 +129,8 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/members/" + std::to_string(dataPackage.guildMemberId);
 		workload.callStack = "GuildMembers::getGuildMemberAsync()";
-		auto guildMember = GuildMembers::httpsClient->submitWorkloadAndGetResult<GuildMember>(workload);
+		GuildMember guildMember = GuildMembers::httpsClient->submitWorkloadAndGetResult<GuildMember>(workload);
+		guildMember = GuildMembers::getCachedGuildMemberAsync(dataPackage).get();
 		guildMember.guildId = dataPackage.guildId;
 		co_return guildMember;
 	}

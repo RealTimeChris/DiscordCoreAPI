@@ -281,6 +281,7 @@ namespace DiscordCoreAPI {
 				newRole = value;
 			}
 		}
+		newRole = Roles::getCachedRoleAsync(dataPackage).get();
 		co_return newRole;
 	}
 
