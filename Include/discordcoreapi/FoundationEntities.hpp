@@ -3336,17 +3336,21 @@ namespace DiscordCoreAPI {
 
 		InputEventResponseType responseType{};///< The type of response that this input value represents.
 
-		InputEventData& operator=(const InputEventData& other);
+		InputEventData& operator=(InputEventData&& other) noexcept;
 
-		InputEventData(const InputEventData& other);
+		InputEventData(InputEventData&& other) noexcept;
 
-		InputEventData& operator=(InputEventData& other);
+		InputEventData& operator=(const InputEventData& other) noexcept;
 
-		InputEventData(InputEventData& other);
+		InputEventData(const InputEventData& other) noexcept;
 
-		InputEventData& operator=(InteractionData& other);
+		InputEventData& operator=(InputEventData& other) noexcept;
 
-		InputEventData(InteractionData& interactionData);
+		InputEventData(InputEventData& other) noexcept;
+
+		InputEventData& operator=(InteractionData& other) noexcept;
+
+		InputEventData(InteractionData& interactionData) noexcept;
 
 		InputEventData() = default;
 

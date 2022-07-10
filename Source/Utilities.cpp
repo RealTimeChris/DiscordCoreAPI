@@ -204,7 +204,16 @@ namespace DiscordCoreAPI {
 		*this = theString;
 	};
 
-	StringWrapper& StringWrapper::operator=(StringWrapper& other) {
+	StringWrapper& StringWrapper::operator=(StringWrapper&& other) noexcept {
+		this->thePtr = std::move(other.thePtr);
+		return *this;
+	}
+
+	StringWrapper::StringWrapper(StringWrapper&& other) noexcept {
+		*this = std::move(other);
+	}
+
+	StringWrapper& StringWrapper::operator=(StringWrapper& other) noexcept {
 		if (this != &other) {
 			std::stringstream theStream{};
 			if (other.thePtr) {
@@ -220,7 +229,7 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	StringWrapper::StringWrapper(StringWrapper& other) {
+	StringWrapper::StringWrapper(StringWrapper& other) noexcept {
 		*this = other;
 	}
 

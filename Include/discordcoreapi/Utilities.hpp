@@ -372,9 +372,13 @@ namespace DiscordCoreAPI {
 
 		StringWrapper(const char* theString);
 
-		StringWrapper& operator=(StringWrapper& other);
+		StringWrapper& operator=(StringWrapper&& other) noexcept;
 
-		StringWrapper(StringWrapper& other);
+		StringWrapper(StringWrapper&& other) noexcept;
+
+		StringWrapper& operator=(StringWrapper& other) noexcept;
+
+		StringWrapper(StringWrapper& other) noexcept;
 
 		operator std::basic_string<char, std::char_traits<char>, std::allocator<char>>();
 

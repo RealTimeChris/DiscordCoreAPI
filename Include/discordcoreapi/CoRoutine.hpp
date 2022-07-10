@@ -64,11 +64,11 @@ namespace DiscordCoreAPI {
 			}
 
 			void return_value(ReturnType&& at) {
-				*this->result = std::move(at);
+				this->result = std::move(at);
 			}
 
 			void return_value(ReturnType& at) {
-				*this->result = at;
+				this->result = at;
 			}
 
 			auto get_return_object() {
@@ -92,7 +92,7 @@ namespace DiscordCoreAPI {
 			UnboundedMessageBlock<std::exception_ptr> exceptionBuffer{};
 			std::atomic_bool areWeStoppedBool{ false };
 			std::atomic_bool areWeDone{ false };
-			ReturnType* result{};
+			ReturnType result{};
 		};
 
 		CoRoutine<ReturnType>& operator=(CoRoutine<ReturnType>&& other) noexcept {
@@ -101,7 +101,6 @@ namespace DiscordCoreAPI {
 				other.coroutineHandle = nullptr;
 				this->exceptionBuffer = &this->coroutineHandle.promise().exceptionBuffer;
 				this->areWeDone = &this->coroutineHandle.promise().areWeDone;
-				this->coroutineHandle.promise().result = &this->result;
 				this->currentStatus = other.currentStatus;
 				other.currentStatus = CoRoutineStatus::Cancelled;
 			}
@@ -124,7 +123,6 @@ namespace DiscordCoreAPI {
 			this->coroutineHandle = coroutineHandleNew;
 			this->exceptionBuffer = &this->coroutineHandle.promise().exceptionBuffer;
 			this->areWeDone = &this->coroutineHandle.promise().areWeDone;
-			this->coroutineHandle.promise().result = &this->result;
 			return *this;
 		}
 
@@ -164,6 +162,7 @@ namespace DiscordCoreAPI {
 				while (this->exceptionBuffer->tryReceive(exceptionPtr)) {
 					std::rethrow_exception(exceptionPtr);
 				}
+				this->result = std::move(this->coroutineHandle.promise().result);
 				return this->result;
 			} else {
 				throw CoRoutineError("CoRoutine::get(), You called get() on a CoRoutine that is "

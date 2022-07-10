@@ -1527,7 +1527,17 @@ namespace DiscordCoreAPI {
 		*this = jsonObjectData;
 	}
 
-	InputEventData& InputEventData::operator=(const InputEventData& other) {
+	InputEventData& InputEventData::operator=(InputEventData&& other) noexcept {
+		*this->interactionData = std::move(*other.interactionData);
+		this->responseType = other.responseType;
+		return *this;
+	}
+
+	InputEventData::InputEventData(InputEventData&& other) noexcept {
+		*this = std::move(other);
+	}
+
+	InputEventData& InputEventData::operator=(const InputEventData& other) noexcept {
 		if (this != &other) {
 			*this->interactionData = *other.interactionData;
 			this->responseType = other.responseType;
@@ -1535,11 +1545,11 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	InputEventData::InputEventData(const InputEventData& other) {
+	InputEventData::InputEventData(const InputEventData& other) noexcept {
 		*this = other;
 	}
 
-	InputEventData& InputEventData::operator=(InputEventData& other) {
+	InputEventData& InputEventData::operator=(InputEventData& other) noexcept {
 		if (this != &other) {
 			*this->interactionData = *other.interactionData;
 			this->responseType = other.responseType;
@@ -1547,16 +1557,16 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	InputEventData::InputEventData(InputEventData& other) {
+	InputEventData::InputEventData(InputEventData& other) noexcept {
 		*this = other;
 	}
 
-	InputEventData& InputEventData::operator=(InteractionData& other) {
+	InputEventData& InputEventData::operator=(InteractionData& other) noexcept {
 		*this->interactionData = other;
 		return *this;
 	}
 
-	InputEventData::InputEventData(InteractionData& interactionData) {
+	InputEventData::InputEventData(InteractionData& interactionData) noexcept {
 		*this = interactionData;
 	}
 
