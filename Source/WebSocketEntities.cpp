@@ -166,10 +166,9 @@ namespace DiscordCoreInternal {
 		this->heartBeatStopWatch = DiscordCoreAPI::StopWatch<std::chrono::milliseconds>{ 10000ms };
 		this->currentBaseSocketAgent = currentBaseSocketAgentNew;
 		this->shard.push_back(currentShardNew);
-		this->heartBeatStopWatch.resetTimer();
+		this->connections = connectionsNew;
 		if (configManagerNew) {
 			this->shard.push_back(configManagerNew->getTotalShardCount());
-			this->connections = connectionsNew;
 			if (configManagerNew->getTextFormat() == DiscordCoreAPI::TextFormat::Etf) {
 				this->dataOpCode = WebSocketOpCode::Op_Binary;
 			} else {

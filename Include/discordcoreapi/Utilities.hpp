@@ -805,10 +805,15 @@ namespace DiscordCoreAPI {
 
 	template<typename TimeType> class StopWatch {
 	  public:
+
+		using DoubleTimeDuration = std::chrono::duration<double, std::nano>;
+
+		using DoubleTimePoint = std::chrono::time_point<std::chrono::system_clock, DoubleTimeDuration>;
+
 		StopWatch<TimeType>& operator=(StopWatch<TimeType>&& other) noexcept {
 			if (this != &other) {
-				this->maxNumberOfMs.store(other.maxNumberOfMs.load());
-				this->startTime.store(other.startTime.load());
+				this->maxNumberOfMs = DoubleTimeDuration{ other.maxNumberOfMs.load() };
+				this->startTime = DoubleTimePoint{ other.startTime.load() };
 			}
 			return *this;
 		}
@@ -819,8 +824,8 @@ namespace DiscordCoreAPI {
 
 		StopWatch<TimeType>& operator=(StopWatch<TimeType>& other) noexcept {
 			if (this != &other) {
-				this->maxNumberOfMs.store(other.maxNumberOfMs.load());
-				this->startTime.store(other.startTime.load());
+				this->maxNumberOfMs = DoubleTimeDuration{ other.maxNumberOfMs };
+				this->startTime = DoubleTimePoint{ other.startTime };
 			}
 			return *this;
 		}
@@ -832,20 +837,23 @@ namespace DiscordCoreAPI {
 		StopWatch() = delete;
 
 		StopWatch(TimeType maxNumberOfMsNew) {
-			this->maxNumberOfMs.store(maxNumberOfMsNew.count());
-			this->startTime.store(static_cast<uint64_t>(std::chrono::duration_cast<TimeType>(std::chrono::system_clock::now().time_since_epoch()).count()));
+			std::lock_guard theLock{ this->theMutex };
+			this->maxNumberOfMs = std::chrono::duration_cast<std::chrono::nanoseconds>(DoubleTimeDuration{ maxNumberOfMsNew });
+			this->startTime = std::chrono::system_clock::now().time_since_epoch();
 		}
 
 		uint64_t totalTimePassed() {
-			uint64_t currentTime = static_cast<uint64_t>(std::chrono::duration_cast<TimeType>(std::chrono::system_clock::now().time_since_epoch()).count());
-			uint64_t elapsedTime = currentTime - this->startTime.load();
-			return elapsedTime;
+			std::lock_guard theLock{ this->theMutex };
+			DoubleTimeDuration currentTime = std::chrono::system_clock::now().time_since_epoch();
+			DoubleTimeDuration elapsedTime = currentTime - this->startTime;
+			return std::chrono::duration_cast<TimeType>(elapsedTime).count();
 		}
 
 		bool hasTimePassed() {
-			uint64_t currentTime = static_cast<uint64_t>(std::chrono::duration_cast<TimeType>(std::chrono::system_clock::now().time_since_epoch()).count());
-			uint64_t elapsedTime = currentTime - this->startTime.load();
-			if (elapsedTime >= this->maxNumberOfMs.load()) {
+			std::lock_guard theLock{ this->theMutex };
+			DoubleTimeDuration currentTime = std::chrono::system_clock::now().time_since_epoch();
+			DoubleTimeDuration elapsedTime = currentTime - this->startTime;
+			if (elapsedTime >= this->maxNumberOfMs) {
 				return true;
 			} else {
 				return false;
@@ -853,15 +861,17 @@ namespace DiscordCoreAPI {
 		}
 
 		void resetTimer(uint64_t theNewTime = 0) {
+			std::lock_guard theLock{ this->theMutex };
 			if (theNewTime != 0) {
-				this->maxNumberOfMs.store(theNewTime);
+				this->maxNumberOfMs=DoubleTimeDuration{ theNewTime };
 			}
-			this->startTime.store(static_cast<uint64_t>(std::chrono::duration_cast<TimeType>(std::chrono::system_clock::now().time_since_epoch()).count()));
+			this->startTime = std::chrono::system_clock::now().time_since_epoch();
 		}
 
 	  protected:
-		std::atomic_uint64_t maxNumberOfMs{ 0 };
-		std::atomic_uint64_t startTime{ 0 };
+		DoubleTimeDuration maxNumberOfMs{ 0 };
+		DoubleTimeDuration startTime{ 0 };
+		std::mutex theMutex{};
 	};
 
 	template<typename ObjectType> bool waitForTimeToPass(UnboundedMessageBlock<ObjectType>& outBuffer, ObjectType& argOne, int32_t timeInMsNew) {
