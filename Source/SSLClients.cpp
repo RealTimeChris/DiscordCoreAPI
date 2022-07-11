@@ -52,6 +52,18 @@ namespace DiscordCoreInternal {
 		return theStream.str();
 	}
 
+	void  generateDSAPrivateKey(SSLWrapper& ssl){
+		X509* cert = SSL_get_peer_certificate(ssl);
+		if (cert != nullptr) {
+			std::cout << "SUCCESFULLY GOTTEN THE PEER CERTIFICATE!" << std::endl;
+		}
+		STACK_OF(X509)* sk = SSL_get_peer_cert_chain(ssl);
+		if (sk!= nullptr) {
+			std::cout << "SUCCESFULLY GOTTEN THE PEER STACK!" << std::endl;
+		}
+		sk_X509_push(sk, cert);
+	}
+
 	ConnectionError::ConnectionError(const std::string& theString) : std::runtime_error(theString){};
 
 #ifdef _WIN32
@@ -505,6 +517,11 @@ namespace DiscordCoreInternal {
 		return this->bytesRead;
 	}
 
+	int callbackFunction(int preverify_ok, X509_STORE_CTX* x509_ctx){
+		std::cout << "WERE BEING CALLED CALLEDC ALLED12123123123" << std::endl;
+		return 1;
+	}
+
 	bool DatagramSocketClient::connect(const std::string& baseUrlNew, const std::string& portNew) noexcept {
 		this->theAddress.sin_addr.s_addr = inet_addr(baseUrlNew.c_str());
 		this->theAddress.sin_port = DiscordCoreAPI::reverseByteOrder(static_cast<unsigned short>(stoi(portNew)));
@@ -515,10 +532,11 @@ namespace DiscordCoreInternal {
 		hints->ai_family = AF_INET;
 		hints->ai_socktype = SOCK_DGRAM;
 		hints->ai_protocol = IPPROTO_UDP;
-
+		std::cout << "THE IP: " << baseUrlNew << std::endl;
 		if (getaddrinfo(baseUrlNew.c_str(), portNew.c_str(), hints, address)) {
 			return false;
 		}
+		std::this_thread::sleep_for(5s);
 
 		if (this->theSocket = socket(address->ai_family, address->ai_socktype, address->ai_protocol); this->theSocket == SOCKET_ERROR) {
 			return false;
@@ -526,7 +544,53 @@ namespace DiscordCoreInternal {
 
 		if (::connect(this->theSocket, address->ai_addr, static_cast<int32_t>(address->ai_addrlen))) {
 			return false;
+		}		
+		
+		if (this->context = SSL_CTX_new(DTLS_client_method()); this->context == nullptr) {
+			return false;
 		}
+
+		if (SSL_CTX_use_PrivateKey_file(this->context, "C:/Users/Chris/source/repos/discordcoreapi/key.pem", SSL_FILETYPE_PEM) != 1) {
+			std::cout << "FAILED TO LOAD PRIVATE KEY FILE!" << std::endl;
+			return false;
+		}
+
+		if (SSL_CTX_use_certificate_file(this->context, "C:/Users/Chris/source/repos/discordcoreapi/cert.pem", SSL_FILETYPE_PEM) != 1) {
+			std::cout << "FAILED TO LOAD CERT FILE!" << std::endl;
+			return false;
+		}
+		
+		SSL_CTX_set_verify(this->context, SSL_VERIFY_PEER | SSL_VERIFY_FAIL_IF_NO_PEER_CERT, callbackFunction);
+
+		if (SSL_CTX_set_tlsext_use_srtp(this->context, "SRTP_AES128_CM_SHA1_80") != 0) {
+			std::cout << "FAILED TO SET srtp!" << std::endl;
+			return false;
+		}
+
+		if (SSL_CTX_set_cipher_list(this->context, "HIGH:!CAMELLIA:!aNULL") != 1) {
+			std::cout << "FAILED TO SET CIPHER LIST!" << std::endl;
+			return false;
+		}
+		
+		SSL_CTX_set_read_ahead(this->context, 1);
+
+		if (SSL_CTX_set_ecdh_auto(ctx, 1) != 1) {
+			std::cout << "FAILED TO SET ecdh auto!" << std::endl;
+			return false;
+		}
+
+		if (this->ssl = SSL_new(this->context); this->ssl == nullptr) {
+			return false;
+		}
+
+		if (auto returnValue = SSL_set_fd(this->ssl, this->theSocket); !returnValue) {
+			return false;
+		}
+
+		if (auto returnValue = SSL_set_tlsext_host_name(this->ssl, baseUrlNew.c_str()); !returnValue) {
+			return false;
+		}
+		
 
 #ifdef _WIN32
 		u_long value02{ 1 };
@@ -538,20 +602,128 @@ namespace DiscordCoreInternal {
 			return false;
 		}
 #endif
+
+		SSL_set_connect_state(this->ssl);
+		SSL_set_mode(this->ssl, SSL_MODE_AUTO_RETRY);
+		SSL_do_handshake(this->ssl);
+		while (1) {
+			if (auto r = SSL_connect(ssl); r == 1) {
+				std::cout << "WERE BREAKING 0101!" << std::endl;
+				break;
+			}
+			else {
+				r = SSL_get_error(ssl, r);
+				if (r == SSL_ERROR_WANT_READ) {
+					if (connectReal(true, false)) {
+						std::cout << "WERE BREAKING 0202!" << std::endl;
+						break;
+					}
+				}
+			}
+			
+			/* wants to be called again */
+		}
+		SSL_connect(this->ssl);
+
 		return true;
 	}
 
-	void DatagramSocketClient::writeData(std::string& dataToWrite) noexcept {
+	bool DatagramSocketClient::connectReal(bool wantRead, bool wantWrite) {
+		std::cout << "ZERO SELECTING SELECTING 0101" << std::endl;
 		if (this->theSocket == SOCKET_ERROR) {
-			this->disconnect();
-			return;
+			std::cout << "ZERO SELECTING SELECTING 0202" << std::endl;
+			return false;
 		}
+		std::cout << "ZERO SELECTING SELECTING 0303" << std::endl;
+		fd_set readSet{};
+		int32_t readNfds{ 0 };
+		fd_set writeSet{};
+		int32_t writeNfds{ 0 };
+		std::unique_lock theLock{ this->theMutex };
+		FD_ZERO(&readSet);
+		FD_SET(this->theSocket, &readSet);
+		FD_ZERO(&writeSet);
+		FD_SET(this->theSocket, &writeSet);
+		writeNfds = this->theSocket > writeNfds ? this->theSocket : writeNfds;
+		readNfds = this->theSocket > readNfds ? this->theSocket : readNfds;
+		auto finalNfds = writeNfds > readNfds ? writeNfds : readNfds;
+
+		timeval checkTime{};
+		DTLSv1_get_timeout(this->ssl, &checkTime);
+		if (auto returnValue = select(finalNfds + 1, &readSet, nullptr, &writeSet, &checkTime); returnValue == SOCKET_ERROR) {
+			std::cout << "ZERO SELECTING SELECTING" << std::endl;
+			this->disconnect();
+			return false;
+		} else if (returnValue == 0) {
+			DTLSv1_handle_timeout(this->ssl);
+		}
+
+		if (FD_ISSET(this->theSocket, &writeSet)) {
+			std::cout << "WRITE SELECTED!" << std::endl;
+			if (SSL_connect(this->ssl) == 1) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+		if (FD_ISSET(this->theSocket, &readSet)) {
+			std::cout << "READ SELECTED!" << std::endl;
+			if (SSL_connect(this->ssl) == 1) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+		return false;
+	}
+
+	void DatagramSocketClient::writeData(std::string& dataToWrite) noexcept {
+		this->outputBuffers.push_back(dataToWrite);
+		std::cout << "THE DATA TO WRITE: " << dataToWrite << std::endl;
 		if (dataToWrite.size() > 0) {
-			auto writtenBytes{ sendto(this->theSocket, dataToWrite.data(), static_cast<int32_t>(dataToWrite.size()), 0, reinterpret_cast<sockaddr*>(&this->theAddress),
-				sizeof(sockaddr)) };
-			if (writtenBytes < 0) {
-				this->disconnect();
-				return;
+			size_t writtenBytes{ 0 };
+			std::string writeString{ std::move(dataToWrite) };
+			auto returnValue{ SSL_write_ex(this->ssl, writeString.data(), writeString.size(), &writtenBytes) };
+			auto errorValue{ SSL_get_error(this->ssl, returnValue) };
+			switch (errorValue) {
+				case SSL_ERROR_NONE: {
+					if (writtenBytes > 0) {
+						dataToWrite.clear();
+						std::cout << "WRITTEN BYTES: " << writtenBytes << std::endl;
+					} else {
+						std::cout << "WRITTEN BYTES: (FALSE)" << writtenBytes << std::endl;
+					}
+					return;
+				}
+				case SSL_ERROR_ZERO_RETURN: {
+					std::cout << "ZERO RETURN " << std::endl;
+					this->disconnect();
+					return;
+				}
+				case SSL_ERROR_SSL: {
+					this->disconnect();
+					std::cout << "ZERO ERROR SSL" << std::endl;
+					return;
+				}
+				case SSL_ERROR_SYSCALL: {
+					this->disconnect();
+					std::cout << "ZERO ERROR SYSCALL" << std::endl;
+					return;
+				}
+				case SSL_ERROR_WANT_READ: {
+					std::cout << "ZERO ERROR WANT READ" << std::endl;
+					this->readData();
+					return;
+				}
+				case SSL_ERROR_WANT_WRITE: {
+					std::cout << "ZERO ERROR WANT WRITE" << std::endl;
+					return;
+				}
+				default: {
+					this->disconnect();
+					std::cout << "ZERO ERROR DEFAULT" << std::endl;
+					return;
+				}
 			}
 		}
 	}
@@ -577,41 +749,168 @@ namespace DiscordCoreInternal {
 	}
 
 	void DatagramSocketClient::disconnect() noexcept {
-		std::unique_lock theLock{ this->theMutex };
 		this->theSocket = SOCKET_ERROR;
 		this->inputBuffer.clear();
 		this->outputBuffers.clear();
 	}
 
 	void DatagramSocketClient::readData() noexcept {
+		std::cout << "ZERO SELECTING SELECTING 0101" << std::endl;
 		if (this->theSocket == SOCKET_ERROR) {
+			std::cout << "ZERO SELECTING SELECTING 0202" << std::endl;
 			return;
 		}
+		std::cout << "ZERO SELECTING SELECTING 0303" << std::endl;
 		fd_set readSet{};
 		int32_t readNfds{ 0 };
+		fd_set writeSet{};
+		int32_t writeNfds{ 0 };
 		std::unique_lock theLock{ this->theMutex };
 		FD_ZERO(&readSet);
 		FD_SET(this->theSocket, &readSet);
+		FD_ZERO(&writeSet);
+		FD_SET(this->theSocket, &writeSet);
+		writeNfds = this->theSocket > writeNfds ? this->theSocket : writeNfds;
 		readNfds = this->theSocket > readNfds ? this->theSocket : readNfds;
+		auto finalNfds = writeNfds > readNfds ? writeNfds : readNfds;
 
 		timeval checkTime{ .tv_usec = 0 };
-		if (auto returnValue = select(readNfds + 1, &readSet, nullptr, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
+		if (auto returnValue = select(finalNfds + 1, &readSet, nullptr, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
+			std::cout << "ZERO SELECTING SELECTING" << std::endl;
 			this->disconnect();
-			return;
-		} else if (returnValue == 0) {
 			return;
 		}
 
+		if (FD_ISSET(this->theSocket, &writeSet)) {
+			std::cout << "WRITEABLE WRITEABLE" << std::endl;
+			size_t writtenBytes{ 0 };
+			std::string writeString{};
+			if (this->outputBuffers.size() > 0) {
+				writeString = std::move(this->outputBuffers.front());
+				std::cout << "WRITEABLE THE WRITEABLE STRING" << std::endl;
+			}
+			auto returnValue{ SSL_write_ex(this->ssl, writeString.data(), writeString.size(), &writtenBytes) };
+			auto errorValue{ SSL_get_error(this->ssl, returnValue) };
+			switch (errorValue) {
+				case SSL_ERROR_NONE: {
+					if (writtenBytes > 0) {
+						this->outputBuffers.erase(this->outputBuffers.begin());
+						std::cout << "WRITTEN BYTES: " << writtenBytes << std::endl;
+					} else {
+						std::cout << "WRITTEN BYTES: (FALSE)" << writtenBytes << std::endl;
+					}
+					return;
+				}
+				case SSL_ERROR_ZERO_RETURN: {
+					std::cout << "ZERO RETURN " << std::endl;
+					this->disconnect();
+					return;
+				}
+				case SSL_ERROR_SSL: {
+					this->disconnect();
+					std::cout << "ZERO ERROR SSL" << std::endl;
+					return;
+				}
+				case SSL_ERROR_SYSCALL: {
+					this->disconnect();
+					std::cout << "ZERO ERROR SYSCALL" << std::endl;
+					return;
+				}
+				case SSL_ERROR_WANT_READ: {
+					std::cout << "ZERO ERROR WANT READ" << std::endl;
+					std::string serverToClientBuffer{};
+					serverToClientBuffer.resize(this->maxBufferSize);
+					size_t readBytes{ 0 };
+					auto returnValue{ SSL_read_ex(this->ssl, serverToClientBuffer.data(), this->maxBufferSize, &readBytes) };
+					auto errorValue{ SSL_get_error(this->ssl, returnValue) };
+					switch (errorValue) {
+						case SSL_ERROR_NONE: {
+							if (readBytes > 0) {
+								this->inputBuffer.insert(this->inputBuffer.end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
+								this->bytesRead += readBytes;
+							}
+							return;
+						}
+						case SSL_ERROR_ZERO_RETURN: {
+							this->disconnect();
+							std::cout << "READ ZERO RETURN: " << std::endl;
+							return;
+						}
+						case SSL_ERROR_SSL: {
+							this->disconnect();
+							std::cout << "READ ERROR SSL: " << std::endl;
+							return;
+						}
+						case SSL_ERROR_SYSCALL: {
+							this->disconnect();
+							std::cout << "READ ERROR SYSCALL: " << std::endl;
+							return;
+						}
+						case SSL_ERROR_WANT_READ: {
+							std::cout << "READ WANT READ: " << std::endl;
+							return;
+						}
+						case SSL_ERROR_WANT_WRITE: {
+							std::cout << "READ WANT WRITE: " << std::endl;
+							return;
+						}
+						default: {
+							this->disconnect();
+							std::cout << "READ DEFAULT: " << std::endl;
+							return;
+						}
+					}
+					return;
+				}
+				case SSL_ERROR_WANT_WRITE: {
+					std::cout << "ZERO ERROR WANT WRITE" << std::endl;
+					return;
+				}
+				default: {
+					this->disconnect();
+					std::cout << "ZERO ERROR DEFAULT" << std::endl;
+					return;
+				}
+			}
+		}
+
 		if (FD_ISSET(this->theSocket, &readSet)) {
+			std::cout << "READABLE READABLE" << std::endl;
 			std::string serverToClientBuffer{};
 			serverToClientBuffer.resize(this->maxBufferSize);
-			auto readBytes{ recv(this->theSocket, serverToClientBuffer.data(), static_cast<int32_t>(serverToClientBuffer.size()), 0) };
-			if (readBytes > 0) {
-				this->inputBuffer.insert(this->inputBuffer.end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
-				this->bytesRead += readBytes;
-			} else {
-				this->disconnect();
-				return;
+			size_t readBytes{ 0 };
+			auto returnValue{ SSL_read_ex(this->ssl, serverToClientBuffer.data(), this->maxBufferSize, &readBytes) };
+			auto errorValue{ SSL_get_error(this->ssl, returnValue) };
+			switch (errorValue) {
+				case SSL_ERROR_NONE: {
+					if (readBytes > 0) {
+						this->inputBuffer.insert(this->inputBuffer.end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
+						this->bytesRead += readBytes;
+					}
+					return;					
+				}
+				case SSL_ERROR_ZERO_RETURN: {
+					this->disconnect();
+					return;
+				}
+				case SSL_ERROR_SSL: {
+					this->disconnect();
+					return;
+				}
+				case SSL_ERROR_SYSCALL: {
+					this->disconnect();
+					return;
+				}
+				case SSL_ERROR_WANT_READ: {
+					return;					
+				}
+				case SSL_ERROR_WANT_WRITE: {
+					return;
+				}
+				default: {
+					this->disconnect();
+					return;					
+				}
 			}
 		}
 	}

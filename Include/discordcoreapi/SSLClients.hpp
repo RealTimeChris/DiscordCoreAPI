@@ -232,6 +232,8 @@ namespace DiscordCoreInternal {
 
 		bool connect(const std::string& baseUrl, const std::string& portNew) noexcept;
 
+		bool connectReal(bool wantRead, bool wantWrite);
+
 		void writeData(std::string& data) noexcept;
 
 		std::string getInputBuffer() noexcept;
@@ -252,7 +254,9 @@ namespace DiscordCoreInternal {
 		std::recursive_mutex theMutex{};
 		SOCKETWrapper theSocket{};
 		std::string inputBuffer{};
+		SSL_CTXWrapper context{};
 		sockaddr_in theAddress{};
 		int64_t bytesRead{};
+		SSLWrapper ssl{};
 	};
 }// namespace DiscordCoreInterna
