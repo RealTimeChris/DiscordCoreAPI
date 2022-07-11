@@ -30,7 +30,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void SongAPI::onSongCompletion(std::function<CoRoutine<void>(SongCompletionEventData)> handler, const Snowflake& guildId) {
-		auto returnValue = getSongAPIMap()[guildId].get();
+		SongAPI* returnValue = getSongAPIMap()[guildId].get();
 		returnValue->onSongCompletionEvent.remove(returnValue->eventToken);
 		returnValue->eventToken = returnValue->onSongCompletionEvent.add(handler);
 	}
@@ -149,7 +149,7 @@ namespace DiscordCoreAPI {
 			getYouTubeAPIMap()[guildId]->cancelCurrentSong();
 		}
 		std::vector<Song> newVector02;
-		auto thePtr = getSongAPIMap()[guildId].get();
+		SongAPI* thePtr = getSongAPIMap()[guildId].get();
 		newVector02.push_back(getSongAPIMap()[guildId]->playlist.currentSong);
 		for (auto& value: getSongAPIMap()[guildId]->playlist.songQueue) {
 			newVector02.push_back(value);
