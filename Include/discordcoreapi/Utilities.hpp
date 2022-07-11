@@ -812,8 +812,8 @@ namespace DiscordCoreAPI {
 
 		StopWatch<TimeType>& operator=(StopWatch<TimeType>&& other) noexcept {
 			if (this != &other) {
-				this->maxNumberOfMs = DoubleTimeDuration{ other.maxNumberOfMs };
-				this->startTime = DoubleTimePoint{ other.startTime };
+				this->maxNumberOfMs = std::move(other.maxNumberOfMs);
+				this->startTime = std::move(other.startTime);
 			}
 			return *this;
 		}
@@ -824,8 +824,8 @@ namespace DiscordCoreAPI {
 
 		StopWatch<TimeType>& operator=(StopWatch<TimeType>& other) noexcept {
 			if (this != &other) {
-				this->maxNumberOfMs = DoubleTimeDuration{ other.maxNumberOfMs };
-				this->startTime = DoubleTimePoint{ other.startTime };
+				this->maxNumberOfMs = other.maxNumberOfMs;
+				this->startTime = other.startTime;
 			}
 			return *this;
 		}
