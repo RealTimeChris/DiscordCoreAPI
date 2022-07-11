@@ -120,18 +120,6 @@ namespace DiscordCoreInternal {
 		delete other;
 	}
 
-	SOCKETWrapper& SOCKETWrapper::operator=(SOCKETWrapper&& other) noexcept {
-		if (this != &other) {
-			*this->thePtr = *other.thePtr;
-			*other.thePtr = SOCKET_ERROR;
-		}
-		return *this;
-	}
-
-	SOCKETWrapper::SOCKETWrapper(SOCKETWrapper&& other) noexcept {
-		*this = std::move(other);
-	}
-
 	SOCKETWrapper& SOCKETWrapper::operator=(SOCKET other) {
 		*this->thePtr = other;
 		return *this;

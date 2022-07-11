@@ -119,10 +119,6 @@ namespace DiscordCoreInternal {
 			void operator()(SOCKET* other);
 		};
 
-		SOCKETWrapper& operator=(SOCKETWrapper&& other) noexcept;
-
-		SOCKETWrapper(SOCKETWrapper&& other) noexcept;
-
 		SOCKETWrapper& operator=(SOCKET other);
 
 		operator SOCKET();
