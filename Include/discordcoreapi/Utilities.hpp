@@ -812,8 +812,8 @@ namespace DiscordCoreAPI {
 
 		StopWatch<TimeType>& operator=(StopWatch<TimeType>&& other) noexcept {
 			if (this != &other) {
-				this->maxNumberOfMs = DoubleTimeDuration{ other.maxNumberOfMs.load() };
-				this->startTime = DoubleTimePoint{ other.startTime.load() };
+				this->maxNumberOfMs = DoubleTimeDuration{ other.maxNumberOfMs };
+				this->startTime = DoubleTimePoint{ other.startTime };
 			}
 			return *this;
 		}
