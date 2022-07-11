@@ -699,6 +699,9 @@ namespace DiscordCoreAPI {
 					this->voiceConnectionData.externalIp = message;
 					this->areWeConnectedBool.store(true);
 					this->voiceConnectionDataBuffer.clearContents();
+					std::cout << "FIRST BYTE: " << std::dec << message[0] << std::endl;
+					std::cout << "MY IP REAL: " << this->voiceConnectionData.externalIp << std::endl;
+					this->connectReal(false, false);
 					return true;
 				}
 			} else {
