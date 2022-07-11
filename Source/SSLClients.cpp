@@ -52,18 +52,6 @@ namespace DiscordCoreInternal {
 		return theStream.str();
 	}
 
-	void  generateDSAPrivateKey(SSLWrapper& ssl){
-		X509* cert = SSL_get_peer_certificate(ssl);
-		if (cert != nullptr) {
-			std::cout << "SUCCESFULLY GOTTEN THE PEER CERTIFICATE!" << std::endl;
-		}
-		STACK_OF(X509)* sk = SSL_get_peer_cert_chain(ssl);
-		if (sk!= nullptr) {
-			std::cout << "SUCCESFULLY GOTTEN THE PEER STACK!" << std::endl;
-		}
-		sk_X509_push(sk, cert);
-	}
-
 	ConnectionError::ConnectionError(const std::string& theString) : std::runtime_error(theString){};
 
 #ifdef _WIN32
@@ -517,38 +505,6 @@ namespace DiscordCoreInternal {
 		return this->bytesRead;
 	}
 
-	int callbackFunction(int preverify_ok, X509_STORE_CTX* x509_ctx){
-		std::cout << "WERE BEING CALLED CALLEDC ALLED12123123123" << std::endl;
-		return 1;
-	}
-
-	int certverifyCallback(SSL* s, int* al, void* arg) {
-		std::cout << "WERE BEING CALLED CALLEDC ALLED12123123123" << std::endl;
-		return 1;
-	}
-
-	void observeMessageCB(int write_p, int version, int content_type, const void* buf, size_t len, SSL* ssl, void* arg) {
-		std::cout << "THE MESSAGE: " << buf << " CONTENT TYPE: "<< content_type<< std::endl;
-	}
-
-	/* Certificate verification. Returns 1 if trusted, else 0 */
-	int verify_cert(int ok, X509_STORE_CTX* ctx) {
-		std::cout << "WERE BEING CALLED CALLEDC ALLED12123123123" << std::endl;
-		return 1;
-	}
-
-	/* Generate cookie. Returns 1 on success, 0 otherwise */
-	int generate_cookie(SSL* ssl, unsigned char* cookie, unsigned int* cookie_len) {
-		std::cout << "WERE BEING CALLED CALLEDC ALLED12123123123" << std::endl;
-		return 1;
-	}
-
-	/* Verify cookie. Returns 1 on success, 0 otherwise */
-	int verify_cookie(SSL* ssl, const unsigned char* cookie, unsigned int cookie_len) {
-		std::cout << "WERE BEING CALLED CALLEDC ALLED12123123123" << std::endl;
-		return 1;
-	}
-
 	bool DatagramSocketClient::connect(const std::string& baseUrlNew, const std::string& portNew) noexcept {
 		this->theAddress.sin_addr.s_addr = inet_addr(baseUrlNew.c_str());
 		this->theAddress.sin_port = DiscordCoreAPI::reverseByteOrder(static_cast<unsigned short>(stoi(portNew)));
@@ -559,63 +515,19 @@ namespace DiscordCoreInternal {
 		hints->ai_family = AF_INET;
 		hints->ai_socktype = SOCK_DGRAM;
 		hints->ai_protocol = IPPROTO_UDP;
-		std::cout << "THE IP: " << baseUrlNew << std::endl;
+
 		if (getaddrinfo(baseUrlNew.c_str(), portNew.c_str(), hints, address)) {
 			return false;
 		}
-		std::this_thread::sleep_for(5s);
 
-		if (this->theSocket = socket(hints->ai_family, hints->ai_socktype, hints->ai_protocol); this->theSocket == SOCKET_ERROR) {
+		if (this->theSocket = socket(address->ai_family, address->ai_socktype, address->ai_protocol); this->theSocket == SOCKET_ERROR) {
 			return false;
 		}
 
 		if (::connect(this->theSocket, address->ai_addr, static_cast<int32_t>(address->ai_addrlen))) {
 			return false;
-		}		
-		
-		if (this->context = SSL_CTX_new(DTLS_client_method()); this->context == nullptr) {
-			return false;
 		}
 
-		SSL_CTX_set_verify(this->context, SSL_VERIFY_PEER | SSL_VERIFY_FAIL_IF_NO_PEER_CERT, &verify_cert);
-		SSL_CTX_set_cookie_generate_cb(this->context, &generate_cookie);
-		SSL_CTX_set_cookie_verify_cb(this->context, &verify_cookie);
-
-		SSL_CTX_set_msg_callback(this->context, &observeMessageCB);
-
-		if (auto returnValue = SSL_CTX_use_certificate_file(this->context, "C:/Users/Chris/source/repos/discordcoreapi/cert.pem", SSL_FILETYPE_PEM); returnValue != 1) {
-			std::cout << "FAILED TO LOAD CERT FILE!" << std::endl;
-			return false;
-		}
-		SSL_CTX_set_client_hello_cb(this->context, nullptr, certverifyCallback);
-
-		if (auto returnValue = SSL_CTX_use_PrivateKey_file(this->context, "C:/Users/Chris/source/repos/discordcoreapi/key.pem", SSL_FILETYPE_PEM); returnValue != 1) {
-			std::cout << "FAILED TO LOAD PRIVATE KEY FILE!" << std::endl;
-			return false;
-		}		
-
-		if (SSL_CTX_set_cipher_list(this->context, "HIGH:!CAMELLIA:!aNULL") != 1) {
-			std::cout << "FAILED TO SET CIPHER LIST!" << std::endl;
-			return false;
-		}
-		if (SSL_CTX_set_tlsext_use_srtp(this->context, "SRTP_AES128_CM_SHA1_80") != 0) {
-			std::cout << "FAILED TO SET srtp!" << std::endl;
-			return false;
-		}
-		if (SSL_CTX_set_read_ahead(this->context, 1) != 0) {
-			std::cout << "FAILED TO SET READ AHEAD!" << std::endl;
-			return false;
-		}
-
-		if (this->ssl = SSL_new(this->context); !this->ssl) {
-			std::cout << "FAILED TO SSL_new()!" << std::endl;
-			return false;
-		}
-
-		if (auto returnValue = SSL_set_tlsext_host_name(this->ssl, baseUrlNew.c_str()); returnValue != 1) {
-			return false;
-		}
-		
 #ifdef _WIN32
 		u_long value02{ 1 };
 		if (ioctlsocket(this->theSocket, FIONBIO, &value02)) {
@@ -629,86 +541,18 @@ namespace DiscordCoreInternal {
 		return true;
 	}
 
-	bool DatagramSocketClient::connectReal(bool wantRead, bool wantWrite) {
-		if (auto returnValue = SSL_set_fd(this->ssl, this->theSocket); returnValue != 1) {
-			return false;
-		}
-
-		SSL_set_connect_state(ssl);
-		SSL_set_mode(this->ssl, SSL_MODE_AUTO_RETRY | SSL_MODE_SEND_CLIENTHELLO_TIME | SSL_MODE_SEND_SERVERHELLO_TIME | SSL_MODE_ASYNC);
-		bool selfEncrypted{ false };
-		auto result = SSL_do_handshake(this->ssl);
-		while (!selfEncrypted) {
-			std::cout << "THE CURRENT STATE: " << SSL_get_state(this->ssl) << std::endl;
-			if (result > 0) {
-				selfEncrypted = true;
-				break;
-			}
-			auto error = SSL_get_error(this->ssl, result);
-			while (!selfEncrypted) {
-				std::cout << "THE DATA SIZE: " << DTLS_get_data_mtu(this->ssl) << std::endl;
-				auto writtenBytes{ sendto(this->theSocket, nullptr, 0, 0, reinterpret_cast<sockaddr*>(&this->theAddress), sizeof(sockaddr)) };
-
-				if (writtenBytes < 0) {
-					this->disconnect();
-					return false;
-				}
-				std::string serverToClientBuffer{};
-				serverToClientBuffer.resize(256);
-				auto readBytes{ recv(this->theSocket, serverToClientBuffer.data(), static_cast<int32_t>(serverToClientBuffer.size()), 0) };
-				std::cout << "THE CURRENT STATE: " << SSL_get_state(this->ssl) << std::endl;
-				if (error == SSL_ERROR_WANT_READ) {
-					fd_set readSet{};
-					int32_t readNfds{ 0 };
-					std::unique_lock theLock{ this->theMutex };
-					OSSL_HANDSHAKE_STATE
-					FD_ZERO(&readSet);
-					FD_SET(this->theSocket, &readSet);
-					readNfds = this->theSocket > readNfds ? this->theSocket : readNfds;
-					SSL_connect(this->ssl);
-					timeval checkTime{};
-					DTLSv1_get_timeout(this->ssl, &checkTime);
-					if (auto returnValue = select(readNfds + 1, &readSet, nullptr, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
-						std::cout << "ZERO SELECTING SELECTING" << std::endl;
-						this->disconnect();
-						return false;
-					}
-					DTLSv1_handle_timeout(this->ssl);
-
-					if (SSL_connect(this->ssl) == 1) {
-						selfEncrypted = true;
-						return true;
-					}
-				} else {
-					std::cout << "DTLS handshake failed." << std::endl;
-				}
-			}
-		}
-		
-		//SSL_connect(this->ssl); 
-		return true;
-	}
-
 	void DatagramSocketClient::writeData(std::string& dataToWrite) noexcept {
-		fd_set readSet{};
-		int32_t readNfds{ 0 };
-		FD_ZERO(&readSet);
-		FD_SET(this->theSocket, &readSet);
-		readNfds = this->theSocket > readNfds ? this->theSocket : readNfds;
-		timeval checkTime{};
-		DTLSv1_get_timeout(this->ssl, &checkTime);
-		if (auto returnValue = select(readNfds + 1, &readSet, nullptr, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
-			std::cout << "ZERO SELECTING SELECTING" << std::endl;
+		if (this->theSocket == SOCKET_ERROR) {
 			this->disconnect();
 			return;
 		}
-		DTLSv1_handle_timeout(this->ssl);
-
-		auto writtenBytes{ sendto(this->theSocket, dataToWrite.data(), dataToWrite.size(), 0, reinterpret_cast<sockaddr*>(&this->theAddress), sizeof(sockaddr)) };
-
-		if (writtenBytes < 0) {
-			this->disconnect();
-			return;
+		if (dataToWrite.size() > 0) {
+			auto writtenBytes{ sendto(this->theSocket, dataToWrite.data(), static_cast<int32_t>(dataToWrite.size()), 0, reinterpret_cast<sockaddr*>(&this->theAddress),
+				sizeof(sockaddr)) };
+			if (writtenBytes < 0) {
+				this->disconnect();
+				return;
+			}
 		}
 	}
 
@@ -733,32 +577,43 @@ namespace DiscordCoreInternal {
 	}
 
 	void DatagramSocketClient::disconnect() noexcept {
+		std::unique_lock theLock{ this->theMutex };
 		this->theSocket = SOCKET_ERROR;
 		this->inputBuffer.clear();
 		this->outputBuffers.clear();
 	}
 
 	void DatagramSocketClient::readData() noexcept {
+		if (this->theSocket == SOCKET_ERROR) {
+			return;
+		}
 		fd_set readSet{};
 		int32_t readNfds{ 0 };
+		std::unique_lock theLock{ this->theMutex };
 		FD_ZERO(&readSet);
 		FD_SET(this->theSocket, &readSet);
 		readNfds = this->theSocket > readNfds ? this->theSocket : readNfds;
-		timeval checkTime{};
-		DTLSv1_get_timeout(this->ssl, &checkTime);
+
+		timeval checkTime{ .tv_usec = 0 };
 		if (auto returnValue = select(readNfds + 1, &readSet, nullptr, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
-			std::cout << "ZERO SELECTING SELECTING" << std::endl;
 			this->disconnect();
 			return;
+		} else if (returnValue == 0) {
+			return;
 		}
-		DTLSv1_handle_timeout(this->ssl);
-		std::string serverToClientBuffer{};
-		serverToClientBuffer.resize(256);
-		auto readBytes{ recv(this->theSocket, serverToClientBuffer.data(), static_cast<int32_t>(serverToClientBuffer.size()), 0) };
-		if (readBytes > 0) {
-			this->inputBuffer.insert(this->inputBuffer.end(), serverToClientBuffer.begin(), serverToClientBuffer.end());
+
+		if (FD_ISSET(this->theSocket, &readSet)) {
+			std::string serverToClientBuffer{};
+			serverToClientBuffer.resize(this->maxBufferSize);
+			auto readBytes{ recv(this->theSocket, serverToClientBuffer.data(), static_cast<int32_t>(serverToClientBuffer.size()), 0) };
+			if (readBytes > 0) {
+				this->inputBuffer.insert(this->inputBuffer.end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
+				this->bytesRead += readBytes;
+			} else {
+				this->disconnect();
+				return;
+			}
 		}
-		
 	}
 
 	std::mutex SSLConnectionInterface::contextMutex{};
