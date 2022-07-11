@@ -35,24 +35,24 @@ namespace DiscordCoreInternal {
 		std::string baseUrl{ "https://www.youtube.com" };
 		HttpsClient* httpsClient{ nullptr };
 
-		DiscordCoreAPI::Song collectFinalSong(const DiscordCoreAPI::GuildMemberData& addedByGuildMember, DiscordCoreAPI::Song& newSong);
-
-		DiscordCoreAPI::Song constructDownloadInfo(const DiscordCoreAPI::GuildMemberData& guildMember, DiscordCoreAPI::Song& newSong);
-
 		std::vector<DiscordCoreAPI::Song> collectSearchResults(const std::string& theString);
+
+		DiscordCoreAPI::Song constructDownloadInfo(DiscordCoreAPI::Song& newSong);
+
+		DiscordCoreAPI::Song collectFinalSong(DiscordCoreAPI::Song& newSong);
 	};
 
 	class DiscordCoreAPI_Dll YouTubeAPI : public YouTubeRequestBuilder {
 	  public:
 		YouTubeAPI(DiscordCoreAPI::ConfigManager*, HttpsClient* httpsClient, const Snowflake& guildId);
 
-		DiscordCoreAPI::Song collectFinalSong(const DiscordCoreAPI::GuildMemberData& addedByGuildMember, DiscordCoreAPI::Song& newSong);
-
 		void weFailedToDownloadOrDecode(const DiscordCoreAPI::Song& newSong, std::stop_token stopToken, int32_t currentReconnectTries);
 
 		void downloadAndStreamAudio(const DiscordCoreAPI::Song& newSong, std::stop_token stopToken, int32_t currentReconnectTries);
 
 		std::vector<DiscordCoreAPI::Song> searchForSong(const std::string& searchQuery);
+
+		DiscordCoreAPI::Song collectFinalSong(DiscordCoreAPI::Song& newSong);
 
 		void cancelCurrentSong();
 
