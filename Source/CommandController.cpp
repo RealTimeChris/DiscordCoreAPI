@@ -34,14 +34,17 @@ namespace DiscordCoreAPI {
 	};
 
 	void CommandController::checkForAndRunCommand(CommandData commandData) {
-		std::unique_ptr<BaseFunction> functionPointer{ this->getCommand(convertToLowerCase(commandData.commandName)) };
-		if (functionPointer == nullptr) {
-			return;
-		}
+		try {
+			std::unique_ptr<BaseFunction> functionPointer{ this->getCommand(convertToLowerCase(commandData.commandName)) };
+			if (functionPointer == nullptr) {
+				return;
+			}
 
-		BaseFunctionArguments theArgs{ commandData, this->discordCoreClient };
-		functionPointer->execute(theArgs);
-		return;
+			BaseFunctionArguments theArgs{ commandData, this->discordCoreClient };
+			functionPointer->execute(theArgs);
+		} catch (...) {
+			reportException("CommandController::checkForAndRunCommand()");
+		}
 	}
 
 	std::unique_ptr<BaseFunction> CommandController::getCommand(const std::string& commandName) {
