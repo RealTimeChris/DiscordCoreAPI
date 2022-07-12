@@ -324,22 +324,5 @@ namespace DiscordCoreInternal {
 		return SoundCloudRequestBuilder::collectFinalSong(newSong);
 	}
 
-	void SoundCloudAPI::cancelCurrentSong() {
-		if (DiscordCoreAPI::getSongAPIMap().contains(this->guildId)) {
-			if (DiscordCoreAPI::getSongAPIMap()[this->guildId]) {
-				if (DiscordCoreAPI::getSongAPIMap()[this->guildId]->taskThread) {
-					DiscordCoreAPI::getSongAPIMap()[this->guildId]->taskThread->request_stop();
-					if (DiscordCoreAPI::getSongAPIMap()[this->guildId]->taskThread->joinable()) {
-						DiscordCoreAPI::getSongAPIMap()[this->guildId]->taskThread->join();
-					}
-					DiscordCoreAPI::getSongAPIMap()[this->guildId]->taskThread.reset(nullptr);
-				}
-			}
-		}
-		DiscordCoreAPI::AudioFrameData dataFrame{};
-		while (DiscordCoreAPI::getVoiceConnectionMap()[this->guildId]->audioDataBuffer.tryReceive(dataFrame)) {
-		};
-	}
-
 	std::string SoundCloudRequestBuilder::clientId{};
 };

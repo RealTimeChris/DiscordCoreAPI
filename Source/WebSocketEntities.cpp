@@ -21,6 +21,14 @@
 #include <discordcoreapi/EventManager.hpp>
 #include <discordcoreapi/DiscordCoreClient.hpp>
 
+namespace DiscordCoreAPI {
+
+	namespace Globals {
+		extern std::atomic_bool doWeQuit;
+	}
+}
+
+
 namespace DiscordCoreInternal {
 
 	WebSocketMessageHandler::WebSocketMessageHandler(DiscordCoreAPI::ConfigManager* configManagerNew) {
@@ -161,9 +169,12 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	WebSocketSSLShard::WebSocketSSLShard(std::queue<DiscordCoreAPI::ConnectionPackage>* connectionsNew, int32_t currentBaseSocketAgentNew, int32_t currentShardNew,
-		DiscordCoreAPI::ConfigManager* configManagerNew) noexcept {
+	WebSocketSSLShard::WebSocketSSLShard(DiscordCoreAPI::DiscordCoreClient* theClient, std::queue<DiscordCoreAPI::ConnectionPackage>* connectionsNew,
+		int32_t currentBaseSocketAgentNew,
+		int32_t currentShardNew, DiscordCoreAPI::ConfigManager* configManagerNew) noexcept
+		: WebSocketMessageHandler(configManagerNew) {
 		this->heartBeatStopWatch = DiscordCoreAPI::StopWatch<std::chrono::milliseconds>{ 10000ms };
+		this->discordCoreClient = theClient;
 		this->currentBaseSocketAgent = currentBaseSocketAgentNew;
 		this->shard.push_back(currentShardNew);
 		this->connections = connectionsNew;
@@ -203,8 +214,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	BaseSocketAgent::BaseSocketAgent(DiscordCoreAPI::DiscordCoreClient* discordCoreClientNew, std::atomic_bool* doWeQuitNew, int32_t currentBaseSocketAgentNew) noexcept
-		: WebSocketMessageHandler(&discordCoreClientNew->configManager) {
+	BaseSocketAgent::BaseSocketAgent(DiscordCoreAPI::DiscordCoreClient* discordCoreClientNew, std::atomic_bool* doWeQuitNew, int32_t currentBaseSocketAgentNew) noexcept {
 		this->configManager = &discordCoreClientNew->configManager;
 		this->currentBaseSocketAgent = currentBaseSocketAgentNew;
 		this->discordCoreClient = discordCoreClientNew;
@@ -233,13 +243,13 @@ namespace DiscordCoreInternal {
 					didWeWrite = theShard->writeData(dataToSend, priority);
 				} while (!didWeWrite);
 				if (!didWeWrite) {
-					this->onClosed(theShard);
+					theShard->onClosed();
 				}
 			} catch (...) {
 				if (this->configManager->doWePrintWebSocketErrorMessages()) {
 					DiscordCoreAPI::reportException("BaseSocketAgent::sendMessage()");
 				}
-				this->onClosed(theShard);
+				theShard->onClosed();
 			}
 		}
 	}
@@ -273,12 +283,11 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void BaseSocketAgent::onClosed(WebSocketSSLShard* theShard) noexcept {
-		if (this->maxReconnectTries > theShard->currentReconnectTries) {
-			theShard->disconnect(true);
-		} else if (this->maxReconnectTries <= theShard->currentReconnectTries) {
-			this->doWeQuit->store(true);
-			this->taskThread->request_stop();
+	void WebSocketSSLShard::onClosed() noexcept {
+		if (this->maxReconnectTries > this->currentReconnectTries) {
+			this->disconnect(true);
+		} else if (this->maxReconnectTries <= this->currentReconnectTries) {
+			DiscordCoreAPI::Globals::doWeQuit.store(true);
 		}
 	}
 
@@ -286,54 +295,53 @@ namespace DiscordCoreInternal {
 		return this->taskThread.get();
 	}
 
-	void BaseSocketAgent::getVoiceConnectionData(const VoiceConnectInitData& doWeCollect, WebSocketSSLShard* theShard) noexcept {
-		if (theShard->theWebSocketState.load() == WebSocketSSLShardState::Authenticated) {
+	void WebSocketSSLShard::getVoiceConnectionData(const VoiceConnectInitData& doWeCollect) noexcept {
+		if (this->theWebSocketState.load() == WebSocketSSLShardState::Authenticated) {
 			try {
 				DiscordCoreAPI::StopWatch<std::chrono::milliseconds> theStopWatch{ 5500ms };
-				int32_t theCurrentIndex = theShard->shard[0];
+				int32_t theCurrentIndex = this->shard[0];
 				DiscordCoreAPI::UpdateVoiceStateData dataPackage{};
 				dataPackage.channelId = 0;
 				dataPackage.guildId = doWeCollect.guildId;
 				dataPackage.selfDeaf = doWeCollect.selfDeaf;
 				dataPackage.selfMute = doWeCollect.selfMute;
-				theShard->userId = doWeCollect.userId;
+				this->userId = doWeCollect.userId;
 				nlohmann::json newData = dataPackage;
 				std::string theString{};
-				this->stringifyJsonData(newData, theString, theShard->dataOpCode);
+				this->stringifyJsonData(newData, theString, this->dataOpCode);
 				bool didWeWrite{ false };
 				theStopWatch.resetTimer();
 				do {
 					if (theStopWatch.hasTimePassed()) {
 						break;
 					}
-					didWeWrite = theShard->writeData(theString, true);
+					didWeWrite = this->writeData(theString, true);
 				} while (!didWeWrite);
 				if (!didWeWrite) {
-					this->onClosed(theShard);
+					this->onClosed();
 					return;
 				}
-
 				if (doWeCollect.channelId == 0) {
 					return;
 				}
 				dataPackage.channelId = doWeCollect.channelId;
 				nlohmann::json newData02 = dataPackage;
 				std::string theString02{};
-				this->stringifyJsonData(newData02, theString02, theShard->dataOpCode);
+				this->stringifyJsonData(newData02, theString02, this->dataOpCode);
 				theStopWatch.resetTimer();
-				theShard->areWeCollectingData = true;
+				this->areWeCollectingData = true;
 				do {
 					if (theStopWatch.hasTimePassed()) {
 						break;
 					}
-					didWeWrite = theShard->writeData(theString02, true);
+					didWeWrite = this->writeData(theString02, true);
 				} while (!didWeWrite);
 				if (!didWeWrite) {
-					this->onClosed(theShard);
+					this->onClosed();
 					return;
 				}
 				theStopWatch.resetTimer();
-				while (theShard->areWeCollectingData) {
+				while (this->areWeCollectingData) {
 					if (theStopWatch.hasTimePassed()) {
 						break;
 					}
@@ -343,44 +351,44 @@ namespace DiscordCoreInternal {
 				if (this->configManager->doWePrintWebSocketErrorMessages()) {
 					DiscordCoreAPI::reportException("BaseSocketAgent::getVoiceConnectionData()");
 				}
-				this->onClosed(theShard);
+				this->onClosed();
 			}
 		}
 	}
 
-	void BaseSocketAgent::checkForAndSendHeartBeat(WebSocketSSLShard* theShard, bool isImmediate) noexcept {
-		if (theShard->theWebSocketState.load() == WebSocketSSLShardState::Authenticated) {
+	void WebSocketSSLShard::checkForAndSendHeartBeat(bool isImmediate) noexcept {
+		if (this->theWebSocketState.load() == WebSocketSSLShardState::Authenticated) {
 			try {
-				if ((theShard->heartBeatStopWatch.hasTimePassed() && theShard->haveWeReceivedHeartbeatAck) || isImmediate) {
+				if ((this->heartBeatStopWatch.hasTimePassed() && this->haveWeReceivedHeartbeatAck) || isImmediate) {
 					nlohmann::json heartbeat{};
-					heartbeat["d"] = theShard->lastNumberReceived;
+					heartbeat["d"] = this->lastNumberReceived;
 					heartbeat["op"] = 1;
 					std::string theString{};
-					if (theShard->dataOpCode == WebSocketOpCode::Op_Binary) {
+					if (this->dataOpCode == WebSocketOpCode::Op_Binary) {
 						this->stringifyJsonData(heartbeat, theString, WebSocketOpCode::Op_Binary);
 					} else {
 						this->stringifyJsonData(heartbeat, theString, WebSocketOpCode::Op_Text);
 					}
-					this->sendMessage(theString, theShard, true);
-					theShard->haveWeReceivedHeartbeatAck = false;
-					theShard->heartBeatStopWatch.resetTimer();
+					this->writeData(theString, true);
+					this->haveWeReceivedHeartbeatAck = false;
+					this->heartBeatStopWatch.resetTimer();
 				}
 			} catch (...) {
 				if (this->configManager->doWePrintWebSocketErrorMessages()) {
 					DiscordCoreAPI::reportException("BaseSocketAgent::checkForAndSendHeartBeat()");
 				}
-				this->onClosed(theShard);
+				this->onClosed();
 			}
 		}
 	}
 
-	void BaseSocketAgent::onMessageReceived(WebSocketSSLShard* theShard) noexcept {
-		if (theShard->theSSLState.load() == SSLConnectionState::Connected) {
+	void WebSocketSSLShard::onMessageReceived()noexcept {
+		if (this->theSSLState.load() == SSLConnectionState::Connected) {
 			try {
 				std::string messageNew{};
-				if (theShard->processedMessages.size() > 0) {
-					messageNew = theShard->processedMessages.front();
-					theShard->processedMessages.pop();
+				if (this->processedMessages.size() > 0) {
+					messageNew = this->processedMessages.front();
+					this->processedMessages.pop();
 				} else {
 					return;
 				}
@@ -404,22 +412,23 @@ namespace DiscordCoreInternal {
 
 				if (payload.contains("t") && !payload["t"].is_null()) {
 					if (payload["t"] == "RESUMED") {
-						theShard->theWebSocketState.store(WebSocketSSLShardState::Authenticated);
-						theShard->currentReconnectTries = 0;
+						this->theWebSocketState.store(WebSocketSSLShardState::Authenticated);
+						this->currentReconnectTries = 0;
 					}
 
 					if (payload["t"] == "READY") {
-						theShard->theWebSocketState.store(WebSocketSSLShardState::Authenticated);
-						theShard->sessionId = payload["d"]["session_id"].get<std::string>();
+						this->theWebSocketState.store(WebSocketSSLShardState::Authenticated);
+						this->sessionId = payload["d"]["session_id"].get<std::string>();
 						DiscordCoreAPI::UserData theUser{ payload["d"]["user"] };
-						this->discordCoreClient->currentUser = DiscordCoreAPI::BotUser{ theUser, this };
+						this->discordCoreClient->currentUser =
+							DiscordCoreAPI::BotUser{ theUser, this->discordCoreClient->baseSocketAgentMap[std::to_string(this->currentBaseSocketAgent)].get() };
 						DiscordCoreAPI::Users::insertUser(theUser);
-						theShard->currentReconnectTries = 0;
+						this->currentReconnectTries = 0;
 					}
 				}
 
 				if (payload.contains("s") && !payload["s"].is_null()) {
-					theShard->lastNumberReceived = payload["s"].get<int32_t>();
+					this->lastNumberReceived = payload["s"].get<int32_t>();
 				}
 
 				if (payload.contains("op") && !payload["op"].is_null()) {
@@ -854,38 +863,38 @@ namespace DiscordCoreInternal {
 									dataPackage->userOld = DiscordCoreAPI::Users::getCachedUserAsync({ .userId = dataPackage->userNew.id }).get();
 									this->discordCoreClient->eventManager.onUserUpdateEvent(*dataPackage);
 								} else if (payload["t"] == "VOICE_STATE_UPDATE") {
-									if (theShard->areWeCollectingData && !theShard->stateUpdateCollected && !theShard->serverUpdateCollected &&
-										payload["d"]["member"]["user"]["id"] == std::to_string(theShard->userId)) {
-										theShard->voiceConnectionData = VoiceConnectionData{};
-										theShard->voiceConnectionData.sessionId = payload["d"]["session_id"].get<std::string>();
-										theShard->stateUpdateCollected = true;
-									} else if (theShard->areWeCollectingData && !theShard->stateUpdateCollected) {
-										theShard->voiceConnectionData.sessionId = payload["d"]["session_id"].get<std::string>();
-										if (theShard->voiceConnectionDataBufferMap.contains(stoull(payload["d"]["guild_id"].get<std::string>()))) {
-											theShard->voiceConnectionDataBufferMap[stoull(payload["d"]["guild_id"].get<std::string>())]->send(theShard->voiceConnectionData);
+									if (this->areWeCollectingData && !this->stateUpdateCollected && !this->serverUpdateCollected &&
+										payload["d"]["member"]["user"]["id"] == std::to_string(this->userId)) {
+										this->voiceConnectionData = VoiceConnectionData{};
+										this->voiceConnectionData.sessionId = payload["d"]["session_id"].get<std::string>();
+										this->stateUpdateCollected = true;
+									} else if (this->areWeCollectingData && !this->stateUpdateCollected) {
+										this->voiceConnectionData.sessionId = payload["d"]["session_id"].get<std::string>();
+										if (this->voiceConnectionDataBufferMap.contains(stoull(payload["d"]["guild_id"].get<std::string>()))) {
+											this->voiceConnectionDataBufferMap[stoull(payload["d"]["guild_id"].get<std::string>())]->send(this->voiceConnectionData);
 										}
-										theShard->serverUpdateCollected = false;
-										theShard->stateUpdateCollected = false;
-										theShard->areWeCollectingData = false;
+										this->serverUpdateCollected = false;
+										this->stateUpdateCollected = false;
+										this->areWeCollectingData = false;
 									}
 									std::unique_ptr<DiscordCoreAPI::OnVoiceStateUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnVoiceStateUpdateData>() };
 									dataPackage->voiceStateData = payload["d"];
 									this->discordCoreClient->eventManager.onVoiceStateUpdateEvent(*dataPackage);
 								} else if (payload["t"] == "VOICE_SERVER_UPDATE") {
-									if (theShard->areWeCollectingData && !theShard->serverUpdateCollected && !theShard->stateUpdateCollected) {
-										theShard->voiceConnectionData = VoiceConnectionData{};
-										theShard->voiceConnectionData.endPoint = payload["d"]["endpoint"].get<std::string>();
-										theShard->voiceConnectionData.token = payload["d"]["token"].get<std::string>();
-										theShard->serverUpdateCollected = true;
-									} else if (theShard->areWeCollectingData && !theShard->serverUpdateCollected) {
-										theShard->voiceConnectionData.endPoint = payload["d"]["endpoint"].get<std::string>();
-										theShard->voiceConnectionData.token = payload["d"]["token"].get<std::string>();
-										if (theShard->voiceConnectionDataBufferMap.contains(stoull(payload["d"]["guild_id"].get<std::string>()))) {
-											theShard->voiceConnectionDataBufferMap[stoull(payload["d"]["guild_id"].get<std::string>())]->send(theShard->voiceConnectionData);
+									if (this->areWeCollectingData && !this->serverUpdateCollected && !this->stateUpdateCollected) {
+										this->voiceConnectionData = VoiceConnectionData{};
+										this->voiceConnectionData.endPoint = payload["d"]["endpoint"].get<std::string>();
+										this->voiceConnectionData.token = payload["d"]["token"].get<std::string>();
+										this->serverUpdateCollected = true;
+									} else if (this->areWeCollectingData && !this->serverUpdateCollected) {
+										this->voiceConnectionData.endPoint = payload["d"]["endpoint"].get<std::string>();
+										this->voiceConnectionData.token = payload["d"]["token"].get<std::string>();
+										if (this->voiceConnectionDataBufferMap.contains(stoull(payload["d"]["guild_id"].get<std::string>()))) {
+											this->voiceConnectionDataBufferMap[stoull(payload["d"]["guild_id"].get<std::string>())]->send(this->voiceConnectionData);
 										}
-										theShard->serverUpdateCollected = false;
-										theShard->stateUpdateCollected = false;
-										theShard->areWeCollectingData = false;
+										this->serverUpdateCollected = false;
+										this->stateUpdateCollected = false;
+										this->areWeCollectingData = false;
 									}
 									std::unique_ptr<DiscordCoreAPI::OnVoiceServerUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnVoiceServerUpdateData>() };
 									if (payload["d"].contains("endpoint") && !payload["d"]["endpoint"].is_null()) {
@@ -912,22 +921,22 @@ namespace DiscordCoreInternal {
 							break;
 						}
 						case 1: {
-							this->checkForAndSendHeartBeat(theShard, true);
+							this->checkForAndSendHeartBeat(true);
 							break;
 						}
 						case 7: {
 							if (this->configManager->doWePrintWebSocketErrorMessages()) {
-								std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Shard " + theShard->shard.dump() + " Reconnecting (Type 7)!" << DiscordCoreAPI::reset()
+								std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Shard " + this->shard.dump() + " Reconnecting (Type 7)!" << DiscordCoreAPI::reset()
 										  << std::endl
 										  << std::endl;
 							}
-							theShard->areWeResuming = true;
-							this->onClosed(theShard);
+							this->areWeResuming = true;
+							this->onClosed();
 							return;
 						}
 						case 9: {
 							if (this->configManager->doWePrintWebSocketErrorMessages()) {
-								std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Shard " + theShard->shard.dump() + " Reconnecting (Type 9)!" << DiscordCoreAPI::reset()
+								std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Shard " + this->shard.dump() + " Reconnecting (Type 9)!" << DiscordCoreAPI::reset()
 										  << std::endl
 										  << std::endl;
 							}
@@ -936,60 +945,60 @@ namespace DiscordCoreInternal {
 								static_cast<int32_t>(1000.0f + ((static_cast<float>(randomEngine()) / static_cast<float>(randomEngine.max())) * static_cast<float>(4000.0f)));
 							std::this_thread::sleep_for(std::chrono::milliseconds{ numOfMsToWait });
 							if (payload["d"] == true) {
-								theShard->areWeResuming = true;
+								this->areWeResuming = true;
 							} else {
-								theShard->areWeResuming = false;
+								this->areWeResuming = false;
 							}
-							this->onClosed(theShard);
+							this->onClosed();
 							return;
 						}
 						case 10: {
 							if (payload["d"].contains("heartbeat_interval") && !payload["d"]["heartbeat_interval"].is_null()) {
-								theShard->heartBeatStopWatch =
+								this->heartBeatStopWatch =
 									DiscordCoreAPI::StopWatch<std::chrono::milliseconds>{ std::chrono::milliseconds{ payload["d"]["heartbeat_interval"] } };
 							}
-							if (theShard->areWeResuming) {
+							if (this->areWeResuming) {
 								WebSocketResumeData resumeData{};
 								resumeData.botToken = this->configManager->getBotToken();
-								resumeData.sessionId = theShard->sessionId;
-								resumeData.lastNumberReceived = theShard->lastNumberReceived;
+								resumeData.sessionId = this->sessionId;
+								resumeData.lastNumberReceived = this->lastNumberReceived;
 								nlohmann::json resumePayload = resumeData;
 								std::string theString{};
-								if (theShard->dataOpCode == WebSocketOpCode::Op_Binary) {
+								if (this->dataOpCode == WebSocketOpCode::Op_Binary) {
 									this->stringifyJsonData(resumePayload, theString, WebSocketOpCode::Op_Binary);
 								} else {
 									this->stringifyJsonData(resumePayload, theString, WebSocketOpCode::Op_Text);
 								}
-								this->sendMessage(theString, theShard, true);
-								theShard->theWebSocketState.store(WebSocketSSLShardState::Sending_Identify);
+								this->writeData(theString, true);
+								this->theWebSocketState.store(WebSocketSSLShardState::Sending_Identify);
 							} else {
 								WebSocketIdentifyData identityData{};
 								identityData.botToken = this->configManager->getBotToken();
-								identityData.currentShard = theShard->shard[0];
-								identityData.numberOfShards = theShard->shard[1];
+								identityData.currentShard = this->shard[0];
+								identityData.numberOfShards = this->shard[1];
 								identityData.intents = static_cast<int64_t>(this->configManager->getGatewayIntents());
 								nlohmann::json identityJson = identityData;
 								std::string theString{};
-								if (theShard->dataOpCode == WebSocketOpCode::Op_Binary) {
+								if (this->dataOpCode == WebSocketOpCode::Op_Binary) {
 									this->stringifyJsonData(identityJson, theString, WebSocketOpCode::Op_Binary);
 								} else {
 									this->stringifyJsonData(identityJson, theString, WebSocketOpCode::Op_Text);
 								}
-								this->sendMessage(theString, theShard, true);
-								theShard->theWebSocketState.store(WebSocketSSLShardState::Sending_Identify);
+								this->writeData(theString, true);
+								this->theWebSocketState.store(WebSocketSSLShardState::Sending_Identify);
 							}
-							theShard->areWeHeartBeating = false;
+							this->areWeHeartBeating = false;
 							break;
 						}
 						case 11: {
-							theShard->haveWeReceivedHeartbeatAck = true;
+							this->haveWeReceivedHeartbeatAck = true;
 							break;
 						}
 					}
 				}
 
 				if (this->configManager->doWePrintWebSocketSuccessMessages() && !payload.is_null()) {
-					std::cout << DiscordCoreAPI::shiftToBrightGreen() << "Message received from WebSocket " + theShard->shard.dump() + std::string(": ") << payload.dump()
+					std::cout << DiscordCoreAPI::shiftToBrightGreen() << "Message received from WebSocket " + this->shard.dump() + std::string(": ") << payload.dump()
 							  << DiscordCoreAPI::reset() << std::endl
 							  << std::endl;
 				}
@@ -997,7 +1006,7 @@ namespace DiscordCoreInternal {
 				if (this->configManager->doWePrintWebSocketErrorMessages()) {
 					DiscordCoreAPI::reportException("BaseSocketAgent::onMessageReceived()");
 				}
-				this->onClosed(theShard);
+				this->onClosed();
 			}
 		}
 	}
@@ -1037,17 +1046,17 @@ namespace DiscordCoreInternal {
 				SSLClient::processIO(theVector, 10000);
 				for (auto& [key, value]: this->sslShards) {
 					if (value->areWeStillConnected() && value->inputBuffer.size() > 0) {
-						this->parseMessage(value.get());
+						value->parseMessage(value.get());
 					}
 					if (value->areWeStillConnected() && value->processedMessages.size() > 0) {
 						while (value->processedMessages.size() > 0) {
 							if (value) {
-								this->onMessageReceived(value.get());
+								value->onMessageReceived();
 							}
 						}
 					}
 					if (value->areWeStillConnected()) {
-						this->checkForAndSendHeartBeat(value.get());
+						value->checkForAndSendHeartBeat();
 						if (value && this->heartbeatInterval != 0 && !value->areWeHeartBeating) {
 							value->areWeHeartBeating = true;
 							value->heartBeatStopWatch = DiscordCoreAPI::StopWatch{ std::chrono::milliseconds{ this->heartbeatInterval } };
@@ -1076,8 +1085,8 @@ namespace DiscordCoreInternal {
 				DiscordCoreAPI::ConnectionPackage connectData = this->connections.front();
 				this->connections.pop();
 				if (!this->sslShards.contains(connectData.currentShard)) {
-					this->sslShards[connectData.currentShard] =
-						std::make_unique<WebSocketSSLShard>(&this->connections, this->currentBaseSocketAgent, connectData.currentShard, this->configManager);
+					this->sslShards[connectData.currentShard] = std::make_unique<WebSocketSSLShard>(this->discordCoreClient, &this->connections, this->currentBaseSocketAgent,
+						connectData.currentShard, this->configManager);
 				}
 				this->sslShards[connectData.currentShard]->currentReconnectTries = connectData.currentReconnectTries;
 				this->sslShards[connectData.currentShard]->currentReconnectTries++;
@@ -1089,7 +1098,7 @@ namespace DiscordCoreInternal {
 				}
 
 				if (!this->sslShards[connectData.currentShard]->connect(this->configManager->getConnectionAddress(), this->configManager->getConnectionPort())) {
-					this->onClosed(this->sslShards[connectData.currentShard].get());
+					this->sslShards[connectData.currentShard]->onClosed();
 					return;
 				}
 
@@ -1110,7 +1119,7 @@ namespace DiscordCoreInternal {
 					didWeWrite = this->sslShards[connectData.currentShard]->writeData(sendString, true);
 				} while (!didWeWrite);
 				if (!didWeWrite) {
-					this->onClosed(this->sslShards[connectData.currentShard].get());
+					this->sslShards[connectData.currentShard]->onClosed();
 					return;
 				}
 
@@ -1120,13 +1129,13 @@ namespace DiscordCoreInternal {
 					}
 					this->sslShards[connectData.currentShard]->processIO(10000);
 					if (this->sslShards[connectData.currentShard]->areWeStillConnected()) {
-						this->parseConnectionHeaders(this->sslShards[connectData.currentShard].get());
+						this->sslShards[connectData.currentShard]->parseConnectionHeaders(this->sslShards[connectData.currentShard].get());
 					}
 					if (this->sslShards[connectData.currentShard]->areWeStillConnected()) {
-						this->parseMessage(this->sslShards[connectData.currentShard].get());
+						this->sslShards[connectData.currentShard]->parseMessage(this->sslShards[connectData.currentShard].get());
 					}
 					if (this->sslShards[connectData.currentShard]->areWeStillConnected()) {
-						this->onMessageReceived(this->sslShards[connectData.currentShard].get());
+						this->sslShards[connectData.currentShard]->onMessageReceived();
 					}
 					std::this_thread::sleep_for(1ms);
 				}

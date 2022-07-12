@@ -75,9 +75,7 @@ namespace DiscordCoreAPI {
 	 * @{
 	 */
 	/// VoiceConnection class - represents the connection to a given voice Channel. \brief VoiceConnection class - represents the connection to a given voice Channel.
-	class DiscordCoreAPI_Dll VoiceConnection : public DiscordCoreInternal::WebSocketMessageHandler,
-											   public DiscordCoreInternal::DatagramSocketClient,
-											   public DiscordCoreInternal::WebSocketSSLShard {
+	class DiscordCoreAPI_Dll VoiceConnection : public DiscordCoreInternal::WebSocketSSLShard, public DiscordCoreInternal::DatagramSocketClient {
 	  public:
 		friend class DiscordCoreInternal::BaseSocketAgent;
 		friend class DiscordCoreInternal::SoundCloudAPI;
@@ -103,15 +101,15 @@ namespace DiscordCoreAPI {
 		std::atomic<VoiceActiveState> lastActiveState{ VoiceActiveState::Connecting };
 		std::atomic<VoiceActiveState> activeState{ VoiceActiveState::Connecting };
 		std::unique_ptr<DiscordCoreInternal::AudioEncoder> encoder{ nullptr };
+		DiscordCoreInternal::VoiceConnectionData voiceConnectionDataFinal{};
 		DiscordCoreInternal::BaseSocketAgent* baseSocketAgent{ nullptr };
 		DiscordCoreInternal::VoiceConnectInitData voiceConnectInitData{};
-		DiscordCoreInternal::VoiceConnectionData voiceConnectionData{};
 		DiscordCoreInternal::WebSocketSSLShard* baseShard{ nullptr };
 		UnboundedMessageBlock<AudioFrameData> audioDataBuffer{};
 		std::unique_ptr<std::jthread> taskThread01{ nullptr };
 		std::unique_ptr<std::jthread> taskThread02{ nullptr };
+		std::queue<ConnectionPackage> voiceConnections{};
 		std::atomic_bool areWeConnectedBool{ false };
-		std::queue<ConnectionPackage> connections{};
 		DoubleMilliSecond disconnectStartTime{ 0 };
 		std::atomic_bool areWePlaying{ false };
 		const int64_t maxReconnectTries{ 10 };
@@ -122,8 +120,6 @@ namespace DiscordCoreAPI {
 		AudioFrameData audioData{};
 		uint32_t timeStamp{ 0 };
 		std::string baseUrl{};
-
-		void onMessageReceived(DiscordCoreInternal::WebSocketSSLShard* theShard) noexcept;
 
 		std::string encryptSingleAudioFrame(const EncodedFrameData& bufferToSend) noexcept;
 
@@ -150,6 +146,8 @@ namespace DiscordCoreAPI {
 		bool areWeCurrentlyPlaying() noexcept;
 
 		void disconnectInternal() noexcept;
+
+		void onMessageReceived() noexcept;
 
 		void connectInternal() noexcept;
 

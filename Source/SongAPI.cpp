@@ -122,11 +122,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void SongAPI::skip(const GuildMember& guildMember) {
-		if (SongAPI::getCurrentSong(guildMember.guildId).type == SongType::SoundCloud) {
-			getSoundCloudAPIMap()[guildMember.guildId]->cancelCurrentSong();
-		} else {
-			getYouTubeAPIMap()[guildMember.guildId]->cancelCurrentSong();
-		}
+		getSongAPIMap()[guildMember.guildId]->cancelCurrentSong();
 		if (SongAPI::isLoopAllEnabled(guildMember.guildId) || SongAPI::isLoopSongEnabled(guildMember.guildId)) {
 			getSongAPIMap()[guildMember.guildId]->playlist.songQueue.push_back(getSongAPIMap()[guildMember.guildId]->playlist.currentSong);
 			SongAPI::setCurrentSong(Song(), guildMember.guildId);
@@ -143,11 +139,7 @@ namespace DiscordCoreAPI {
 
 	void SongAPI::stop(const Snowflake& guildId) {
 		getVoiceConnectionMap()[guildId]->stop();
-		if (SongAPI::getCurrentSong(guildId).type == SongType::SoundCloud) {
-			getSoundCloudAPIMap()[guildId]->cancelCurrentSong();
-		} else {
-			getYouTubeAPIMap()[guildId]->cancelCurrentSong();
-		}
+		getSongAPIMap()[guildId]->cancelCurrentSong();
 		std::vector<Song> newVector02;
 		SongAPI* thePtr = getSongAPIMap()[guildId].get();
 		newVector02.push_back(getSongAPIMap()[guildId]->playlist.currentSong);
@@ -259,15 +251,14 @@ namespace DiscordCoreAPI {
 	}
 
 	void SongAPI::sendNextSongFinal(const GuildMember& guildMember) {
+		getSongAPIMap()[guildMember.guildId]->cancelCurrentSong();
 		if (getSongAPIMap()[guildMember.guildId]->playlist.currentSong.type == SongType::SoundCloud) {
-			getSoundCloudAPIMap()[guildMember.guildId]->cancelCurrentSong();
 			Song newerSong = getSoundCloudAPIMap()[guildMember.guildId]->collectFinalSong(getSongAPIMap()[guildMember.guildId]->playlist.currentSong);
 			getSongAPIMap()[this->guildId]->taskThread = std::make_unique<std::jthread>([=, this](std::stop_token eventToken) {
 				getSoundCloudAPIMap()[this->guildId]->downloadAndStreamAudio(newerSong, eventToken, 0);
 			});
 
 		} else if (getSongAPIMap()[guildMember.guildId]->playlist.currentSong.type == SongType::YouTube) {
-			getYouTubeAPIMap()[guildMember.guildId]->cancelCurrentSong();
 			Song newerSong = getYouTubeAPIMap()[guildMember.guildId]->collectFinalSong(getSongAPIMap()[guildMember.guildId]->playlist.currentSong);
 			getSongAPIMap()[this->guildId]->taskThread = std::make_unique<std::jthread>([=, this](std::stop_token eventToken) {
 				getYouTubeAPIMap()[this->guildId]->downloadAndStreamAudio(newerSong, eventToken, 0);
@@ -286,6 +277,19 @@ namespace DiscordCoreAPI {
 		}
 		getSongAPIMap()[guildMember.guildId]->sendNextSongFinal(guildMember);
 		return true;
+	}
+
+	void SongAPI::cancelCurrentSong() {
+		if (this->taskThread) {
+			this->taskThread->request_stop();
+			if (this->taskThread->joinable()) {
+				this->taskThread->join();
+			}
+			this->taskThread.reset(nullptr);
+		}
+		DiscordCoreAPI::AudioFrameData dataFrame{};
+		while (DiscordCoreAPI::getVoiceConnectionMap()[this->guildId]->audioDataBuffer.tryReceive(dataFrame)) {
+		};
 	}
 
 	SongAPI::~SongAPI() {

@@ -60,8 +60,6 @@ namespace DiscordCoreInternal {
 
 		DiscordCoreAPI::Song collectFinalSong(DiscordCoreAPI::Song& newSong);
 
-		void cancelCurrentSong();
-
 	  protected:
 		DiscordCoreAPI::Snowflake guildId{};
 		const int32_t maxBufferSize{ 8192 };

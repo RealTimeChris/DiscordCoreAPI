@@ -31,10 +31,10 @@ namespace DiscordCoreInternal {
 			rateLimitData.bucket = headersNew["x-ratelimit-bucket"];
 		}
 		if (headersNew.contains("x-ratelimit-reset-after")) {
-			rateLimitData.msRemain = static_cast<int64_t>(ceil(stod(headersNew["x-ratelimit-reset-after"]))) * 1000;
+			rateLimitData.msRemain = static_cast<int64_t>(ceil(stod(headersNew["x-ratelimit-reset-after"]) * 1000.0f));
 		}
 		if (headersNew.contains("x-ratelimit-remaining")) {
-			rateLimitData.getsRemaining = static_cast<int64_t>(stoi(headersNew["x-ratelimit-remaining"])) * 1000;
+			rateLimitData.getsRemaining = static_cast<int64_t>(stoi(headersNew["x-ratelimit-remaining"]));
 			if (rateLimitData.getsRemaining <= 1) {
 				rateLimitData.doWeWait = true;
 			}
@@ -501,7 +501,7 @@ namespace DiscordCoreInternal {
 			rateLimitData.areWeASpecialBucket = true;
 		}
 		if (rateLimitData.areWeASpecialBucket) {
-			rateLimitData.msRemain = static_cast<int64_t>(ceil(static_cast<float>(5000) / static_cast<float>(4)));
+			rateLimitData.msRemain = static_cast<int64_t>(ceil(5000.0f / 4.0f));
 			int64_t targetTime = rateLimitData.msRemain + rateLimitData.sampledTimeInMs;
 			timeRemaining = targetTime - currentTime;
 		} else if (rateLimitData.didWeHitRateLimit) {
@@ -523,7 +523,7 @@ namespace DiscordCoreInternal {
 				timeRemaining = targetTime - currentTime;
 				if (timeRemaining <= 20) {
 				} else {
-					std::this_thread::sleep_for(std::chrono::milliseconds{ static_cast<int64_t>(ceil(timeRemaining * 80.0f / 100.0f)) });
+					std::this_thread::sleep_for(std::chrono::milliseconds{ static_cast<int64_t>(ceil(static_cast<float>(timeRemaining) * 80.0f / 100.0f)) });
 				}
 			}
 		}

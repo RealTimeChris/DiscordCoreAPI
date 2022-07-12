@@ -49,7 +49,7 @@ namespace DiscordCoreInternal {
 
 		bool parseMessage(DiscordCoreInternal::WebSocketSSLShard* theShard) noexcept;
 
-		virtual void onMessageReceived(WebSocketSSLShard* theShard) noexcept = 0;
+		virtual void onMessageReceived() noexcept = 0;
 
 		virtual ~WebSocketMessageHandler() = default;
 
@@ -59,7 +59,7 @@ namespace DiscordCoreInternal {
 
 	enum class WebSocketSSLShardState { Connecting = 0, Upgrading = 1, Collecting_Hello = 2, Sending_Identify = 3, Authenticated = 4, Disconnected = 5 };
 
-	class DiscordCoreAPI_Dll WebSocketSSLShard : public SSLClient {
+	class DiscordCoreAPI_Dll WebSocketSSLShard : public SSLClient, public WebSocketMessageHandler {
 	  public:
 		friend class DiscordCoreAPI::VoiceConnection;
 		friend class WebSocketMessageHandler;
@@ -67,10 +67,18 @@ namespace DiscordCoreInternal {
 		friend class BaseSocketAgent;
 		friend class YouTubeAPI;
 
-		WebSocketSSLShard(std::queue<DiscordCoreAPI::ConnectionPackage>* connectionsNew, int32_t currentBaseSocketAgentNew, int32_t currentShardNew,
-			DiscordCoreAPI::ConfigManager* configManagerNew) noexcept;
+		WebSocketSSLShard(DiscordCoreAPI::DiscordCoreClient* theClient, std::queue<DiscordCoreAPI::ConnectionPackage>* connectionsNew, int32_t currentBaseSocketAgentNew,
+			int32_t currentShardNew, DiscordCoreAPI::ConfigManager* configManagerNew) noexcept;
+
+		void getVoiceConnectionData(const VoiceConnectInitData& doWeCollect) noexcept;
+
+		void checkForAndSendHeartBeat(bool = false) noexcept;
 
 		void disconnect(bool doWeReconnect) noexcept;
+
+		void onMessageReceived() noexcept;
+
+		void onClosed() noexcept;
 
 		~WebSocketSSLShard() noexcept = default;
 
@@ -78,9 +86,11 @@ namespace DiscordCoreInternal {
 		std::unordered_map<Snowflake, DiscordCoreAPI::UnboundedMessageBlock<VoiceConnectionData>*> voiceConnectionDataBufferMap{};
 		std::atomic<WebSocketSSLShardState> theWebSocketState{ WebSocketSSLShardState ::Connecting };
 		DiscordCoreAPI::StopWatch<std::chrono::milliseconds> heartBeatStopWatch{ 0ms };
+		DiscordCoreAPI::DiscordCoreClient* discordCoreClient{ nullptr };
 		std::queue<std::string> processedMessages{};
 		VoiceConnectionData voiceConnectionData{};
 		bool haveWeReceivedHeartbeatAck{ true };
+		const int32_t maxReconnectTries{ 10 };
 		bool serverUpdateCollected{ false };
 		int32_t currentBaseSocketAgent{ 0 };
 		int32_t currentReconnectTries{ 0 };
@@ -99,7 +109,7 @@ namespace DiscordCoreInternal {
 		Snowflake userId{ 0 };
 	};
 
-	class DiscordCoreAPI_Dll BaseSocketAgent : public WebSocketMessageHandler {
+	class DiscordCoreAPI_Dll BaseSocketAgent {
 	  public:
 		friend class DiscordCoreAPI::DiscordCoreClient;
 		friend class DiscordCoreAPI::VoiceConnection;
@@ -114,8 +124,6 @@ namespace DiscordCoreInternal {
 
 		void connect(DiscordCoreAPI::ConnectionPackage) noexcept;
 
-		void onClosed(WebSocketSSLShard* theShard) noexcept;
-
 		std::jthread* getTheTask() noexcept;
 
 		~BaseSocketAgent() noexcept;
@@ -128,17 +136,12 @@ namespace DiscordCoreInternal {
 		std::unique_ptr<std::jthread> taskThread{ nullptr };
 		std::queue<VoiceConnectInitData> voiceConnections{};
 		std::queue<uint64_t> voiceConnectionsToDisconnect{};
+		DiscordCoreAPI::ConfigManager* configManager{};
 		std::atomic_bool* doWeQuit{ nullptr };
 		const int32_t maxReconnectTries{ 10 };
 		int32_t currentBaseSocketAgent{ 0 };
 		int32_t heartbeatInterval{ 0 };
 		std::mutex theMutex{};
-
-		void getVoiceConnectionData(const VoiceConnectInitData& doWeCollect, WebSocketSSLShard* theIndex) noexcept;
-
-		void checkForAndSendHeartBeat(WebSocketSSLShard* theIndex, bool = false) noexcept;
-
-		void onMessageReceived(WebSocketSSLShard* theShard) noexcept;
 
 		void connectVoiceInternal() noexcept;
 

@@ -149,6 +149,8 @@ namespace DiscordCoreAPI {
 
 		void sendNextSongFinal(const GuildMember& guildMember);
 
+		void cancelCurrentSong();
+
 		bool sendNextSong();
 	};
 	/**@}*/
