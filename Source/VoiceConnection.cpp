@@ -225,7 +225,7 @@ namespace DiscordCoreAPI {
 			theData.type = static_cast<DiscordCoreInternal::SendSpeakingType>(0);
 			this->sendSilence();
 		} else {
-			theData.type = DiscordCoreInternal::SendSpeakingType::Priority_And_Voice;
+			theData.type = DiscordCoreInternal::SendSpeakingType::Microphone;
 			theData.delay = 0;
 			theData.ssrc = this->voiceConnectionDataFinal.audioSSRC;
 			nlohmann::json newString = theData;
@@ -311,6 +311,7 @@ namespace DiscordCoreAPI {
 
 	void VoiceConnection::runVoice(std::stop_token stopToken) noexcept {
 		StopWatch theStopWatch{ 20000ms };
+		StopWatch theSendSilenceStopWatch{ 5000ms };
 		while (!stopToken.stop_requested() && !Globals::doWeQuit.load() && this->activeState.load() != VoiceActiveState::Exiting) {
 			if (!DatagramSocketClient::areWeStillConnected()) {
 				this->onClosed();
@@ -326,12 +327,24 @@ namespace DiscordCoreAPI {
 					this->audioDataBuffer.clearContents();
 					this->clearAudioData();
 					while (!stopToken.stop_requested() && this->activeState.load() == VoiceActiveState::Stopped) {
+						if (theSendSilenceStopWatch.hasTimePassed()) {
+							theSendSilenceStopWatch.resetTimer();
+							this->sendSpeakingMessage(true);
+							this->sendSilence();
+							this->sendSpeakingMessage(false);
+						}
 						std::this_thread::sleep_for(1ms);
 					}
 					break;
 				}
 				case VoiceActiveState::Paused: {
 					while (!stopToken.stop_requested() && this->activeState.load() == VoiceActiveState::Paused) {
+						if (theSendSilenceStopWatch.hasTimePassed()) {
+							theSendSilenceStopWatch.resetTimer();
+							this->sendSpeakingMessage(true);
+							this->sendSilence();
+							this->sendSpeakingMessage(false);
+						}
 						std::this_thread::sleep_for(1ms);
 					}
 					break;
@@ -346,6 +359,7 @@ namespace DiscordCoreAPI {
 					DoubleTimePointNs targetTime{ startingValue.time_since_epoch() + intervalCount.time_since_epoch() };
 					int32_t frameCounter{ 0 };
 					DoubleTimePointNs totalTime{ std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::nanoseconds{ 0 }) };
+					/*
 					if (this->disconnectStartTime.count() != 0) {
 						DoubleMilliSecond currentTime = std::chrono::system_clock::now().time_since_epoch();
 						if ((currentTime - this->disconnectStartTime).count() >= 60000) {
@@ -353,6 +367,7 @@ namespace DiscordCoreAPI {
 							this->play();
 						}
 					}
+					*/
 					if (!this->areWePlaying.load()) {
 						this->sendSpeakingMessage(true);
 						this->areWePlaying.store(true);
@@ -420,7 +435,7 @@ namespace DiscordCoreAPI {
 						this->audioDataBuffer.tryReceive(this->audioData);
 					}
 					DatagramSocketClient::getInputBuffer();
-					this->disconnectStartTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch());
+					//this->disconnectStartTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch());
 					this->areWePlaying.store(true);
 					break;
 				}
