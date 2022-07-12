@@ -1354,7 +1354,9 @@ namespace DiscordCoreAPI {
 
 	MessageData& MessageData::operator=(const MessageData& other) {
 		if (this != &other) {
-			*this->referencedMessage = *other.referencedMessage;
+			if (other.referencedMessage) {
+				*this->referencedMessage = *other.referencedMessage;
+			}
 			this->messageReference = other.messageReference;
 			this->mentionEveryone = other.mentionEveryone;
 			this->mentionChannels = other.mentionChannels;
