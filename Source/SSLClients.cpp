@@ -529,18 +529,75 @@ namespace DiscordCoreInternal {
 		return true;
 	}
 
-	void DatagramSocketClient::writeData(std::string& dataToWrite) noexcept {
+	void DatagramSocketClient::processIO(int32_t waitTimeInms) noexcept {
 		if (this->theSocket == SOCKET_ERROR) {
-			this->disconnect();
 			return;
 		}
-		if (dataToWrite.size() > 0) {
-			auto writtenBytes{ sendto(this->theSocket, dataToWrite.data(), static_cast<int32_t>(dataToWrite.size()), 0, reinterpret_cast<sockaddr*>(&this->theAddress),
-				sizeof(sockaddr)) };
-			if (writtenBytes < 0) {
+		fd_set readSet{}, writeSet{};
+		std::unique_lock theLock{ this->theMutex };
+		FD_ZERO(&readSet);
+		FD_SET(this->theSocket, &readSet);
+		if (this->outputBuffers.size() > 0) {
+			FD_ZERO(&writeSet);
+			FD_SET(this->theSocket, &writeSet);
+		}
+
+		timeval checkTime{ .tv_usec = waitTimeInms };
+		if (auto returnValue = select(this->theSocket + 1, &readSet, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
+			this->disconnect();
+			return;
+		} else if (returnValue == 0) {
+			return;
+		}
+
+		if (FD_ISSET(this->theSocket, &writeSet)) {
+			if (this->outputBuffers.size() > 0) {
+				std::string clientToServerString = this->outputBuffers.front();
+				auto writtenBytes{ sendto(this->theSocket, clientToServerString.data(), static_cast<int32_t>(clientToServerString.size()), 0,
+					reinterpret_cast<SOCKADDR*>(&this->theAddress), sizeof(this->theAddress)) };
+				if (writtenBytes < 0) {
+					this->disconnect();
+					return;
+				} else {
+					this->outputBuffers.erase(this->outputBuffers.begin());
+				}
+			}
+		}
+
+		if (FD_ISSET(this->theSocket, &readSet)) {
+			std::string serverToClientBuffer{};
+			serverToClientBuffer.resize(this->maxBufferSize);
+			auto readBytes{ recv(this->theSocket, serverToClientBuffer.data(), static_cast<int32_t>(serverToClientBuffer.size()), 0) };
+			if (readBytes < 0) {
 				this->disconnect();
 				return;
+			} else {
+				this->inputBuffer.insert(this->inputBuffer.end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
+				this->bytesRead += readBytes;
 			}
+		}
+	}
+
+	void DatagramSocketClient::writeData(std::string& dataToWrite) noexcept {
+		if (dataToWrite.size() > static_cast<size_t>(16 * 1024)) {
+			size_t remainingBytes{ dataToWrite.size() };
+			while (remainingBytes > 0) {
+				std::string newString{};
+				size_t amountToCollect{};
+				if (dataToWrite.size() >= static_cast<size_t>(1024 * 16)) {
+					amountToCollect = static_cast<size_t>(1024 * 16);
+				} else {
+					amountToCollect = dataToWrite.size();
+				}
+				newString.insert(newString.begin(), dataToWrite.begin(), dataToWrite.begin() + amountToCollect);
+				std::unique_lock theLock{ this->theMutex };
+				this->outputBuffers.push_back(newString);
+				dataToWrite.erase(dataToWrite.begin(), dataToWrite.begin() + amountToCollect);
+				remainingBytes = dataToWrite.size();
+			}
+		} else {
+			std::unique_lock theLock{ this->theMutex };
+			this->outputBuffers.push_back(dataToWrite);
 		}
 	}
 
@@ -569,39 +626,6 @@ namespace DiscordCoreInternal {
 		this->theSocket = SOCKET_ERROR;
 		this->inputBuffer.clear();
 		this->outputBuffers.clear();
-	}
-
-	void DatagramSocketClient::readData() noexcept {
-		if (this->theSocket == SOCKET_ERROR) {
-			return;
-		}
-		fd_set readSet{};
-		int32_t readNfds{ 0 };
-		std::unique_lock theLock{ this->theMutex };
-		FD_ZERO(&readSet);
-		FD_SET(this->theSocket, &readSet);
-		readNfds = this->theSocket > readNfds ? this->theSocket : readNfds;
-
-		timeval checkTime{ .tv_usec = 0 };
-		if (auto returnValue = select(readNfds + 1, &readSet, nullptr, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
-			this->disconnect();
-			return;
-		} else if (returnValue == 0) {
-			return;
-		}
-
-		if (FD_ISSET(this->theSocket, &readSet)) {
-			std::string serverToClientBuffer{};
-			serverToClientBuffer.resize(this->maxBufferSize);
-			auto readBytes{ recv(this->theSocket, serverToClientBuffer.data(), static_cast<int32_t>(serverToClientBuffer.size()), 0) };
-			if (readBytes > 0) {
-				this->inputBuffer.insert(this->inputBuffer.end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
-				this->bytesRead += readBytes;
-			} else {
-				this->disconnect();
-				return;
-			}
-		}
 	}
 
 	std::mutex SSLConnectionInterface::contextMutex{};

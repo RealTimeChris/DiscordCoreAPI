@@ -228,6 +228,8 @@ namespace DiscordCoreInternal {
 
 		bool connect(const std::string& baseUrl, const std::string& portNew) noexcept;
 
+		void processIO(int32_t waitTimeInms) noexcept;
+
 		void writeData(std::string& data) noexcept;
 
 		std::string getInputBuffer() noexcept;
@@ -237,8 +239,6 @@ namespace DiscordCoreInternal {
 		int64_t getBytesRead() noexcept;
 
 		void disconnect() noexcept;
-
-		void readData() noexcept;
 
 		~DatagramSocketClient() noexcept = default;
 

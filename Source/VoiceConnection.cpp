@@ -384,7 +384,7 @@ namespace DiscordCoreAPI {
 							}
 							auto waitTime = targetTime - std::chrono::system_clock::now();
 							if (waitTime.count() > 500000 && !stopToken.stop_requested() && DatagramSocketClient::areWeStillConnected()) {
-								DatagramSocketClient::readData();
+								DatagramSocketClient::processIO(10000);
 								DatagramSocketClient::getInputBuffer();
 							}
 							waitTime = targetTime - std::chrono::system_clock::now();
@@ -680,7 +680,7 @@ namespace DiscordCoreAPI {
 					std::string inputString{};
 					StopWatch theStopWatch{ 2500ms };
 					while (inputString.size() < 74 && !Globals::doWeQuit.load() && this->activeState.load() != VoiceActiveState::Exiting) {
-						DatagramSocketClient::readData();
+						DatagramSocketClient::processIO(10000);
 						std::string theNewString = DatagramSocketClient::getInputBuffer();
 						inputString.insert(inputString.end(), theNewString.begin(), theNewString.end());
 						std::this_thread::sleep_for(1ms);
