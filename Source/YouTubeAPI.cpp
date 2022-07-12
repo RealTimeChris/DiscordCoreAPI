@@ -25,12 +25,6 @@
 
 namespace DiscordCoreInternal {
 
-	DiscordCoreAPI::Song YouTubeRequestBuilder::collectFinalSong(DiscordCoreAPI::Song& newSong) {
-		newSong.firstDownloadUrl = this->baseUrl + "/watch?v=" + newSong.songId + "&hl=en";
-		newSong = this->constructDownloadInfo(newSong);
-		return newSong;
-	}
-
 	std::vector<DiscordCoreAPI::Song> YouTubeRequestBuilder::collectSearchResults(const std::string& searchQuery) {
 		HttpsWorkloadData dataPackage{ HttpsWorkloadType::YouTubeGetSearchResults };
 		dataPackage.baseUrl = this->baseUrl;
@@ -148,6 +142,12 @@ namespace DiscordCoreInternal {
 			}
 		}
 		return DiscordCoreAPI::Song{};
+	}
+
+	DiscordCoreAPI::Song YouTubeRequestBuilder::collectFinalSong(DiscordCoreAPI::Song& newSong) {
+		newSong.firstDownloadUrl = this->baseUrl + "/watch?v=" + newSong.songId + "&hl=en";
+		newSong = this->constructDownloadInfo(newSong);
+		return newSong;
 	}
 
 	YouTubeAPI::YouTubeAPI(DiscordCoreAPI::ConfigManager* configManagerNew, HttpsClient* httpsClientNew, const DiscordCoreAPI::Snowflake& guildIdNew) {
