@@ -60,7 +60,7 @@ namespace DiscordCoreInternal {
 				DiscordCoreAPI::reportException("SoundCloudRequestBuilder::collectSearchResults()");
 			}
 		}
-		return std::vector<DiscordCoreAPI::Song>{};
+		return {};
 	}
 
 	DiscordCoreAPI::Song SoundCloudRequestBuilder::constructDownloadInfo(DiscordCoreAPI::Song& newSong) {
@@ -125,7 +125,7 @@ namespace DiscordCoreInternal {
 				DiscordCoreAPI::reportException("SoundCloudRequestBuilder::constructDownloadInfo()");
 			}
 		}
-		return DiscordCoreAPI::Song{};
+		return {};
 	}
 
 	DiscordCoreAPI::Song SoundCloudRequestBuilder::collectFinalSong(DiscordCoreAPI::Song& newSong) {

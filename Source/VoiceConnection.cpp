@@ -68,7 +68,7 @@ namespace DiscordCoreAPI {
 			audioDataPacketNew.insert(audioDataPacketNew.begin(), audioDataPacket.get(), audioDataPacket.get() + numOfBytes);
 			return audioDataPacketNew;
 		}
-		return std::string{};
+		return {};
 	}
 
 	VoiceConnection::VoiceConnection() noexcept : WebSocketSSLShard(nullptr, nullptr, 0, 0, nullptr), DatagramSocketClient(){};
@@ -95,7 +95,7 @@ namespace DiscordCoreAPI {
 			this->timeStamp += 960;
 			return RTPPacket{ this->timeStamp, this->sequenceIndex, this->voiceConnectionDataFinal.audioSSRC, bufferToSend.data, this->voiceConnectionDataFinal.secretKey };
 		}
-		return std::string{};
+		return {};
 	}
 
 	void VoiceConnection::sendSingleAudioFrame(std::string& audioDataPacketNew) noexcept {

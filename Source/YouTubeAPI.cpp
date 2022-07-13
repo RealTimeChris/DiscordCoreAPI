@@ -141,7 +141,7 @@ namespace DiscordCoreInternal {
 				DiscordCoreAPI::reportException("YouTubeRequestBuilder::constructDownloadInfo()");
 			}
 		}
-		return DiscordCoreAPI::Song{};
+		return {};
 	}
 
 	DiscordCoreAPI::Song YouTubeRequestBuilder::collectFinalSong(DiscordCoreAPI::Song& newSong) {
