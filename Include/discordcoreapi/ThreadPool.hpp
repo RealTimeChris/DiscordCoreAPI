@@ -119,8 +119,6 @@ namespace DiscordCoreInternal {
 		std::mutex theMutex01{};
 
 		void threadFunction(std::stop_token stopToken, int64_t theIndex);
-
-		void clearContents();
 	};
 
 	class DiscordCoreAPI_Dll CoRoutineThreadPool {
@@ -141,8 +139,6 @@ namespace DiscordCoreInternal {
 		std::mutex theMutex01{};
 
 		void threadFunction(std::stop_token stopToken, int64_t theIndex);
-
-		void clearContents();
 	};
 	/**@}*/
 }// namespace DiscordCoreAPI
