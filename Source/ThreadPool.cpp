@@ -157,24 +157,11 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void CommandThreadPool::clearContents() {
-		if (this->workerThreads.size() == 0) {
-			return;
-		}
-		for (auto& [key, value]: this->workerThreads) {
-			value.theThread.request_stop();
-			if (value.theThread.joinable()) {
-				value.theThread.join();
-				this->workerThreads.erase(key);
-				break;
-			}
-		}
-		return this->clearContents();
-	}
-
 	CommandThreadPool::~CommandThreadPool() {
 		this->areWeQuitting.store(true);
-		this->clearContents();
+		for (auto& [key, value]: this->workerThreads) {
+			value.theThread.request_stop();
+		}
 	}
 
 	CoRoutineThreadPool::CoRoutineThreadPool() {
@@ -256,24 +243,11 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void CoRoutineThreadPool::clearContents() {
-		if (this->workerThreads.size() == 0) {
-			return;
-		}
-		for (auto& [key, value]: this->workerThreads) {
-			value.theThread.request_stop();
-			if (value.theThread.joinable()) {
-				value.theThread.join();
-				this->workerThreads.erase(key);
-				break;
-			}
-		}
-		return this->clearContents();
-	}
-
 	CoRoutineThreadPool::~CoRoutineThreadPool() {
 		this->areWeQuitting.store(true);
-		this->clearContents();
+		for (auto& [key, value]: this->workerThreads) {
+			value.theThread.request_stop();
+		}
 	}
 
 }
