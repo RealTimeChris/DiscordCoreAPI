@@ -156,10 +156,6 @@ namespace DiscordCoreInternal {
 		this->guildId = guildIdNew;
 	}
 
-	DiscordCoreAPI::Song YouTubeAPI::collectFinalSong(DiscordCoreAPI::Song& newSong) {
-		return YouTubeRequestBuilder::collectFinalSong(newSong);
-	}
-
 	void YouTubeAPI::weFailedToDownloadOrDecode(const DiscordCoreAPI::Song& newSong, std::stop_token stopToken, int32_t currentReconnectTries) {
 		currentReconnectTries++;
 		DiscordCoreAPI::GuildMember guildMember =
@@ -402,6 +398,10 @@ namespace DiscordCoreInternal {
 
 	std::vector<DiscordCoreAPI::Song> YouTubeAPI::searchForSong(const std::string& searchQuery) {
 		return this->collectSearchResults(searchQuery);
+	}
+
+	DiscordCoreAPI::Song YouTubeAPI::collectFinalSong(DiscordCoreAPI::Song& newSong) {
+		return YouTubeRequestBuilder::collectFinalSong(newSong);
 	}
 
 };
