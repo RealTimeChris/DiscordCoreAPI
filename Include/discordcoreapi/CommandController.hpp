@@ -42,8 +42,8 @@ namespace DiscordCoreAPI {
 		void checkForAndRunCommand(const CommandData commandData);
 
 	  protected:
-		std::unique_ptr<DiscordCoreInternal::CommandThreadPool> commandThreadPool{ std::make_unique<DiscordCoreInternal::CommandThreadPool>() };
 		std::map<std::vector<std::string>, std::unique_ptr<BaseFunction>> functions{};
+		DiscordCoreInternal::CommandThreadPool commandThreadPool{};
 		DiscordCoreClient* discordCoreClient{ nullptr };
 
 		std::unique_ptr<BaseFunction> createFunction(const std::string& functionName);

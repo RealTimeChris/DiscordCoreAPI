@@ -43,7 +43,7 @@ namespace DiscordCoreAPI {
 				BaseFunctionArguments theArgs{ commandData, this->discordCoreClient };
 				functionPointer->execute(theArgs);
 			};
-			this->commandThreadPool->submitTask(theFunction);
+			this->commandThreadPool.submitTask(theFunction);
 			
 		} catch (...) {
 			reportException("CommandController::checkForAndRunCommand()");
