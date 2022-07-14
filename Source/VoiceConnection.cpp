@@ -311,6 +311,7 @@ namespace DiscordCoreAPI {
 
 	void VoiceConnection::runVoice(std::stop_token stopToken) noexcept {
 		StopWatch theStopWatch{ 20000ms };
+		StopWatch theSendSilenceStopWatch{ 5000ms };
 		while (!stopToken.stop_requested() && !this->doWeQuit->load() && this->activeState.load() != VoiceActiveState::Exiting) {
 			if (!DatagramSocketClient::areWeStillConnected()) {
 				this->onClosed();
@@ -325,19 +326,25 @@ namespace DiscordCoreAPI {
 				case VoiceActiveState::Stopped: {
 					this->audioDataBuffer.clearContents();
 					this->clearAudioData();
-					this->areWePlaying.store(false);
 					while (!stopToken.stop_requested() && this->activeState.load() == VoiceActiveState::Stopped) {
 						DatagramSocketClient::processIO(10000);
-						DatagramSocketClient::getInputBuffer();
+						if (theSendSilenceStopWatch.hasTimePassed()) {
+							theSendSilenceStopWatch.resetTimer();
+							this->sendSpeakingMessage(true);
+							this->sendSpeakingMessage(false);
+						}
 						std::this_thread::sleep_for(1ms);
 					}
 					break;
 				}
 				case VoiceActiveState::Paused: {
-					this->areWePlaying.store(false);
 					while (!stopToken.stop_requested() && this->activeState.load() == VoiceActiveState::Paused) {
 						DatagramSocketClient::processIO(10000);
-						DatagramSocketClient::getInputBuffer();
+						if (theSendSilenceStopWatch.hasTimePassed()) {
+							theSendSilenceStopWatch.resetTimer();
+							this->sendSpeakingMessage(true);
+							this->sendSpeakingMessage(false);
+						}
 						std::this_thread::sleep_for(1ms);
 					}
 					break;
@@ -417,6 +424,7 @@ namespace DiscordCoreAPI {
 						}
 						DatagramSocketClient::getInputBuffer();
 						this->audioDataBuffer.tryReceive(this->audioData);
+						std::cout << "THE AUDIO BUFFER TYPE: " << static_cast<int32_t>(this->audioData.type) << std::endl;
 					}
 					DatagramSocketClient::getInputBuffer();
 					break;
@@ -438,7 +446,6 @@ namespace DiscordCoreAPI {
 		if (this == nullptr) {
 			return false;
 		} else {
-			bool areWePlaying{};
 			if (this->activeState.load() == VoiceActiveState::Playing || this->activeState.load() == VoiceActiveState::Paused) {
 				return true;
 			} else {
@@ -720,10 +727,8 @@ namespace DiscordCoreAPI {
 	void VoiceConnection::pauseToggle() noexcept {
 		if (this) {
 			if (this->activeState.load() == VoiceActiveState::Paused) {
-				sendSpeakingMessage(true);
 				this->activeState.store(VoiceActiveState::Playing);
 			} else {
-				sendSpeakingMessage(false);
 				this->activeState.store(VoiceActiveState::Paused);
 			}
 		}

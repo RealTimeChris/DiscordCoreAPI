@@ -141,7 +141,6 @@ namespace DiscordCoreAPI {
 		getVoiceConnectionMap()[guildId]->stop();
 		getSongAPIMap()[guildId]->cancelCurrentSong();
 		std::vector<Song> newVector02;
-		SongAPI* thePtr = getSongAPIMap()[guildId].get();
 		newVector02.push_back(getSongAPIMap()[guildId]->playlist.currentSong);
 		for (auto& value: getSongAPIMap()[guildId]->playlist.songQueue) {
 			newVector02.push_back(value);
@@ -219,11 +218,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void SongAPI::setPlaylist(const Playlist& playlistNew, const Snowflake& guildId) {
-		getSongAPIMap()[guildId]->playlist.currentSong = playlistNew.currentSong;
-		getSongAPIMap()[guildId]->playlist.isLoopAllEnabled = playlistNew.isLoopAllEnabled;
-		getSongAPIMap()[guildId]->playlist.isLoopSongEnabled = playlistNew.isLoopSongEnabled;
-		getSongAPIMap()[guildId]->playlist.songQueue = playlistNew.songQueue;
-		getSongAPIMap()[guildId]->playlist.currentSong = playlistNew.currentSong;
+		getSongAPIMap()[guildId]->playlist = playlistNew;
 	}
 
 	Playlist SongAPI::getPlaylist(const Snowflake& guildId) {
