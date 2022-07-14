@@ -311,7 +311,6 @@ namespace DiscordCoreAPI {
 
 	void VoiceConnection::runVoice(std::stop_token stopToken) noexcept {
 		StopWatch theStopWatch{ 20000ms };
-		StopWatch theSendSilenceStopWatch{ 5000ms };
 		while (!stopToken.stop_requested() && !this->doWeQuit->load() && this->activeState.load() != VoiceActiveState::Exiting) {
 			if (!DatagramSocketClient::areWeStillConnected()) {
 				this->onClosed();
