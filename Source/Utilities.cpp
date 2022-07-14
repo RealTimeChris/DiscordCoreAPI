@@ -156,10 +156,11 @@ namespace DiscordCoreAPI {
 				theStream << other.thePtr;
 			}
 			auto theLength = theStream.str().size();
-			this->thePtr = std::make_unique<char[]>(theLength);
+			this->thePtr = std::make_unique<char[]>(theLength + 1);
 			for (uint64_t x = 0; x < theLength; x++) {
 				this->thePtr[x] = other.thePtr[x];
 			}
+			this->thePtr[theLength] = '\0';
 		}
 		return *this;
 	}
@@ -175,10 +176,11 @@ namespace DiscordCoreAPI {
 				theStream << other.thePtr;
 			}
 			auto theLength = theStream.str().size();
-			this->thePtr = std::make_unique<char[]>(theLength);
+			this->thePtr = std::make_unique<char[]>(theLength + 1);
 			for (uint64_t x = 0; x < theLength; x++) {
 				this->thePtr[x] = other.thePtr[x];
 			}
+			this->thePtr[theLength] = '\0';
 		}
 		return *this;
 	}
