@@ -327,22 +327,16 @@ namespace DiscordCoreAPI {
 					this->audioDataBuffer.clearContents();
 					this->clearAudioData();
 					while (!stopToken.stop_requested() && this->activeState.load() == VoiceActiveState::Stopped) {
-						if (theSendSilenceStopWatch.hasTimePassed()) {
-							theSendSilenceStopWatch.resetTimer();
-							this->sendSpeakingMessage(true);
-							this->sendSpeakingMessage(false);
-						}
+						DatagramSocketClient::processIO(10000);
+						DatagramSocketClient::getInputBuffer();
 						std::this_thread::sleep_for(1ms);
 					}
 					break;
 				}
 				case VoiceActiveState::Paused: {
 					while (!stopToken.stop_requested() && this->activeState.load() == VoiceActiveState::Paused) {
-						if (theSendSilenceStopWatch.hasTimePassed()) {
-							theSendSilenceStopWatch.resetTimer();
-							this->sendSpeakingMessage(true);
-							this->sendSpeakingMessage(false);
-						}
+						DatagramSocketClient::processIO(10000);
+						DatagramSocketClient::getInputBuffer();
 						std::this_thread::sleep_for(1ms);
 					}
 					break;
