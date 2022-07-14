@@ -355,13 +355,21 @@ namespace DiscordCoreAPI {
 	  public:
 		StringWrapper() = default;
 
-		StringWrapper& operator=(const std::string& theString);
+		StringWrapper& operator=(StringWrapper&& other) noexcept;
 
-		StringWrapper(const std::string& theString);
+		StringWrapper(StringWrapper&& other) noexcept;
 
 		StringWrapper& operator=(const StringWrapper& other);
 
 		StringWrapper(const StringWrapper& other);
+
+		StringWrapper& operator=(StringWrapper& other) noexcept;
+
+		StringWrapper(StringWrapper& other) noexcept;
+
+		StringWrapper& operator=(const std::string& theString);
+
+		StringWrapper(const std::string& theString);
 
 		StringWrapper& operator=(std::string& theString);
 
@@ -370,14 +378,6 @@ namespace DiscordCoreAPI {
 		StringWrapper& operator=(const char* theString);
 
 		StringWrapper(const char* theString);
-
-		StringWrapper& operator=(StringWrapper&& other) noexcept;
-
-		StringWrapper(StringWrapper&& other) noexcept;
-
-		StringWrapper& operator=(StringWrapper& other) noexcept;
-
-		StringWrapper(StringWrapper& other) noexcept;
 
 		operator std::basic_string<char, std::char_traits<char>, std::allocator<char>>();
 

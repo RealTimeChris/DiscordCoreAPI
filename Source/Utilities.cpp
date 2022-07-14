@@ -138,18 +138,13 @@ namespace DiscordCoreAPI {
 		return this->theConfig.theIntents;
 	}
 
-	StringWrapper& StringWrapper::operator=(const std::string& theString) {
-		auto theLength = theString.size();
-		this->thePtr = std::make_unique<char[]>(theLength + 1);
-		for (int32_t x = 0; x < theLength; x++) {
-			this->thePtr[x] = theString[x];
-		}
-		this->thePtr[theLength] = '\0';
+	StringWrapper& StringWrapper::operator=(StringWrapper&& other) noexcept {
+		this->thePtr = std::move(other.thePtr);
 		return *this;
 	}
 
-	StringWrapper::StringWrapper(const std::string& theString) {
-		*this = theString;
+	StringWrapper::StringWrapper(StringWrapper&& other) noexcept {
+		*this = std::move(other);
 	}
 
 	StringWrapper& StringWrapper::operator=(const StringWrapper& other) {
@@ -170,6 +165,40 @@ namespace DiscordCoreAPI {
 
 	StringWrapper::StringWrapper(const StringWrapper& other) {
 		*this = other;
+	}
+
+	StringWrapper& StringWrapper::operator=(StringWrapper& other) noexcept {
+		if (this != &other) {
+			std::stringstream theStream{};
+			if (other.thePtr) {
+				theStream << other.thePtr;
+			}
+			auto theLength = theStream.str().size();
+			this->thePtr = std::make_unique<char[]>(theLength + 1);
+			for (uint64_t x = 0; x < theLength; x++) {
+				this->thePtr[x] = other.thePtr[x];
+			}
+			this->thePtr[theLength] = '\0';
+		}
+		return *this;
+	}
+
+	StringWrapper::StringWrapper(StringWrapper& other) noexcept {
+		*this = other;
+	}
+
+	StringWrapper& StringWrapper::operator=(const std::string& theString) {
+		auto theLength = theString.size();
+		this->thePtr = std::make_unique<char[]>(theLength + 1);
+		for (int32_t x = 0; x < theLength; x++) {
+			this->thePtr[x] = theString[x];
+		}
+		this->thePtr[theLength] = '\0';
+		return *this;
+	}
+
+	StringWrapper::StringWrapper(const std::string& theString) {
+		*this = theString;
 	}
 
 	StringWrapper& StringWrapper::operator=(std::string& theString) {
@@ -202,35 +231,6 @@ namespace DiscordCoreAPI {
 
 	StringWrapper::StringWrapper(const char* theString) {
 		*this = theString;
-	};
-
-	StringWrapper& StringWrapper::operator=(StringWrapper&& other) noexcept {
-		this->thePtr = std::move(other.thePtr);
-		return *this;
-	}
-
-	StringWrapper::StringWrapper(StringWrapper&& other) noexcept {
-		*this = std::move(other);
-	}
-
-	StringWrapper& StringWrapper::operator=(StringWrapper& other) noexcept {
-		if (this != &other) {
-			std::stringstream theStream{};
-			if (other.thePtr) {
-				theStream << other.thePtr;
-			}
-			auto theLength = theStream.str().size();
-			this->thePtr = std::make_unique<char[]>(theLength + 1);
-			for (uint64_t x = 0; x < theLength; x++) {
-				this->thePtr[x] = other.thePtr[x];
-			}
-			this->thePtr[theLength] = '\0';
-		}
-		return *this;
-	}
-
-	StringWrapper::StringWrapper(StringWrapper& other) noexcept {
-		*this = other;
 	}
 
 	StringWrapper::operator std::basic_string<char, std::char_traits<char>, std::allocator<char>>() {
