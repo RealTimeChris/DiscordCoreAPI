@@ -22,10 +22,6 @@
 
 namespace DiscordCoreAPI {
 
-	namespace Globals {
-		extern std::atomic_bool doWeQuit;
-	}
-
 	RTPPacket::RTPPacket(uint32_t timestampNew, uint16_t sequenceNew, uint32_t ssrcNew, const std::vector<uint8_t>& audioDataNew, const std::string& theKeysNew) {
 		this->audioData = audioDataNew;
 		this->timestamp = timestampNew;
@@ -74,7 +70,7 @@ namespace DiscordCoreAPI {
 	VoiceConnection::VoiceConnection() noexcept : WebSocketSSLShard(nullptr, nullptr, 0, 0, nullptr, nullptr), DatagramSocketClient(){};
 
 	VoiceConnection::VoiceConnection(DiscordCoreInternal::BaseSocketAgent* BaseSocketAgentNew, const DiscordCoreInternal::VoiceConnectInitData& initDataNew,
-		DiscordCoreAPI::ConfigManager* configManagerNew) noexcept
+		DiscordCoreAPI::ConfigManager* configManagerNew, std::atomic_bool* doWeQuitNew) noexcept
 		: WebSocketSSLShard(BaseSocketAgentNew->discordCoreClient, &this->voiceConnections, BaseSocketAgentNew->currentBaseSocketAgent, initDataNew.currentShard, configManagerNew, this->doWeQuit),
 		  DatagramSocketClient() {
 		this->baseShard = BaseSocketAgentNew->sslShards[initDataNew.currentShard].get();
@@ -83,6 +79,7 @@ namespace DiscordCoreAPI {
 		this->baseSocketAgent = BaseSocketAgentNew;
 		this->voiceConnectInitData = initDataNew;
 		this->configManager = configManagerNew;
+		this->doWeQuit = doWeQuitNew;
 	}
 
 	Snowflake VoiceConnection::getChannelId() noexcept {
@@ -239,7 +236,7 @@ namespace DiscordCoreAPI {
 
 	void VoiceConnection::runWebSocket(std::stop_token stopToken) noexcept {
 		try {
-			while (!stopToken.stop_requested() && !Globals::doWeQuit.load() && this->activeState.load() != VoiceActiveState::Exiting) {
+			while (!stopToken.stop_requested() && !this->doWeQuit->load() && this->activeState.load() != VoiceActiveState::Exiting) {
 				if (!stopToken.stop_requested() && WebSocketSSLShard::connections->size() > 0) {
 					DiscordCoreAPI::StopWatch theStopWatch{ 10000ms };
 					if (this->activeState.load() == VoiceActiveState::Connecting) {
@@ -289,13 +286,15 @@ namespace DiscordCoreAPI {
 
 	bool VoiceConnection::collectAndProcessAMessage(VoiceConnectionState stateToWaitFor) noexcept {
 		DiscordCoreAPI::StopWatch theStopWatch{ 2500ms };
-		while (!Globals::doWeQuit.load() && this->connectionState.load() != stateToWaitFor) {
+		while (!this->doWeQuit->load() && this->connectionState.load() != stateToWaitFor) {
 			WebSocketSSLShard::processIO(10000);
 			if (!WebSocketSSLShard::areWeStillConnected()) {
 				return false;
 			}
 			if (WebSocketSSLShard::inputBuffer.size() > 0) {
-				this->parseMessage(this);
+				if (!this->parseMessage(this)) {
+					return false;
+				}
 			}
 			if (this->processedMessages.size() > 0) {
 				this->onMessageReceived();
@@ -312,7 +311,7 @@ namespace DiscordCoreAPI {
 	void VoiceConnection::runVoice(std::stop_token stopToken) noexcept {
 		StopWatch theStopWatch{ 20000ms };
 		StopWatch theSendSilenceStopWatch{ 5000ms };
-		while (!stopToken.stop_requested() && !Globals::doWeQuit.load() && this->activeState.load() != VoiceActiveState::Exiting) {
+		while (!stopToken.stop_requested() && !this->doWeQuit->load() && this->activeState.load() != VoiceActiveState::Exiting) {
 			if (!DatagramSocketClient::areWeStillConnected()) {
 				this->onClosed();
 			}
@@ -498,7 +497,7 @@ namespace DiscordCoreAPI {
 			this->connections->pop();
 		}
 		if (this->currentReconnectTries >= this->maxReconnectTries) {
-			Globals::doWeQuit.store(true);
+			this->doWeQuit->store(true);
 			if (this->configManager->doWePrintWebSocketErrorMessages()) {
 				std::cout << "VoiceConnection::connectInternal() Error: Failed to connect to voice channel!" << std::endl << std::endl;
 			}
@@ -694,7 +693,7 @@ namespace DiscordCoreAPI {
 					DatagramSocketClient::writeData(packet);
 					std::string inputString{};
 					StopWatch theStopWatch{ 2500ms };
-					while (inputString.size() < 74 && !Globals::doWeQuit.load() && this->activeState.load() != VoiceActiveState::Exiting) {
+					while (inputString.size() < 74 && !this->doWeQuit->load() && this->activeState.load() != VoiceActiveState::Exiting) {
 						DatagramSocketClient::processIO(10000);
 						std::string theNewString = DatagramSocketClient::getInputBuffer();
 						inputString.insert(inputString.end(), theNewString.begin(), theNewString.end());

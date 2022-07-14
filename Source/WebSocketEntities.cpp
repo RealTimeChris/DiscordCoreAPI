@@ -1025,7 +1025,7 @@ namespace DiscordCoreInternal {
 		VoiceConnectInitData theConnectionData = this->voiceConnections.front();
 		this->voiceConnections.pop();
 		DiscordCoreAPI::getVoiceConnectionMap()[theConnectionData.guildId] =
-			std::make_unique<DiscordCoreAPI::VoiceConnection>(this, theConnectionData, &this->discordCoreClient->configManager);
+			std::make_unique<DiscordCoreAPI::VoiceConnection>(this, theConnectionData, &this->discordCoreClient->configManager, this->doWeQuit);
 		DiscordCoreAPI::getVoiceConnectionMap()[theConnectionData.guildId]->connect();
 	}
 

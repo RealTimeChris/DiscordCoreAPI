@@ -85,7 +85,7 @@ namespace DiscordCoreAPI {
 		friend class SongAPI;
 
 		VoiceConnection(DiscordCoreInternal::BaseSocketAgent* BaseSocketAgentNew, const DiscordCoreInternal::VoiceConnectInitData& initDataNew,
-			DiscordCoreAPI::ConfigManager* configManagerNew) noexcept;
+			DiscordCoreAPI::ConfigManager* configManagerNew, std::atomic_bool* doWeQuitNew) noexcept;
 
 		VoiceConnection() noexcept;
 
