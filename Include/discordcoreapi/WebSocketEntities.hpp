@@ -29,14 +29,6 @@
 
 namespace DiscordCoreInternal {
 
-	constexpr uint16_t webSocketMaxPayloadLengthLarge{ 65535u };
-	constexpr uint8_t webSocketPayloadLengthMagicLarge{ 126u };
-	constexpr uint8_t webSocketPayloadLengthMagicHuge{ 127u };
-	constexpr uint8_t maxHeaderSize{ sizeof(uint64_t) + 2u };
-	constexpr uint8_t webSocketMaxPayloadLengthSmall{ 125u };
-	constexpr uint8_t webSocketFinishBit{ (1u << 7u) };
-	constexpr uint8_t webSocketMaskBit{ (1u << 7u) };
-
 	class DiscordCoreAPI_Dll WebSocketMessageHandler : public ErlPacker {
 	  public:
 		WebSocketMessageHandler(DiscordCoreAPI::ConfigManager* configManager);
