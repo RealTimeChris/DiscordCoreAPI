@@ -31,6 +31,7 @@ namespace DiscordCoreInternal {
 		YouTubeRequestBuilder() = default;
 
 	  protected:
+		static std::string apiKey;
 		DiscordCoreAPI::ConfigManager* configManager{ nullptr };
 		std::string baseUrl{ "https://www.youtube.com" };
 		HttpsClient* httpsClient{ nullptr };
@@ -40,6 +41,8 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::Song constructDownloadInfo(DiscordCoreAPI::Song& newSong);
 
 		DiscordCoreAPI::Song collectFinalSong(DiscordCoreAPI::Song& newSong);
+
+		std::string collectApiKey();
 	};
 
 	class DiscordCoreAPI_Dll YouTubeAPI : public YouTubeRequestBuilder {

@@ -62,7 +62,6 @@ namespace DiscordCoreInternal {
 
 	DiscordCoreAPI::Song YouTubeRequestBuilder::constructDownloadInfo(DiscordCoreAPI::Song& newSong) {
 		try {
-			std::string apiKey{ "AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8" };
 			nlohmann::json theRequest{};
 			theRequest["videoId"] = newSong.songId;
 			theRequest["contentCheckOk"] = true;
@@ -79,7 +78,7 @@ namespace DiscordCoreInternal {
 			theRequest["context"]["thirdParty"]["embedUrl"] = "https://www.youtube.com";
 			HttpsWorkloadData dataPackage02{ HttpsWorkloadType::YouTubeGetSearchResults };
 			dataPackage02.baseUrl = YouTubeRequestBuilder::baseUrl;
-			dataPackage02.relativePath = "/youtubei/v1/player?key=" + apiKey;
+			dataPackage02.relativePath = "/youtubei/v1/player?key=" + YouTubeRequestBuilder::apiKey;
 			dataPackage02.content = theRequest.dump();
 			dataPackage02.workloadClass = HttpsWorkloadClass::Post;
 			HttpsResponseData responseData = this->httpsClient->submitWorkloadAndGetResult(dataPackage02);
@@ -149,11 +148,29 @@ namespace DiscordCoreInternal {
 		newSong = this->constructDownloadInfo(newSong);
 		return newSong;
 	}
+	
+	std::string YouTubeRequestBuilder::collectApiKey() {
+		HttpsWorkloadData dataPackage01{ HttpsWorkloadType::YouTubeGetSearchResults };
+		dataPackage01.baseUrl = YouTubeRequestBuilder::baseUrl;
+		dataPackage01.workloadClass = HttpsWorkloadClass::Get;
+		HttpsResponseData responseData01 = this->httpsClient->submitWorkloadAndGetResult(dataPackage01);
+		std::string apiKey{};
+		if (responseData01.responseMessage.find("\"innertubeApiKey\":\"") != std::string::npos) {
+			std::string newString =
+				responseData01.responseMessage.substr(responseData01.responseMessage.find("\"innertubeApiKey\":\"") + std::string{ "\"innertubeApiKey\":\"" }.size());
+			std::string apiKeyNew = newString.substr(0, newString.find_first_of('"'));
+			apiKey = apiKeyNew;
+		}
+		return apiKey;
+	}
 
 	YouTubeAPI::YouTubeAPI(DiscordCoreAPI::ConfigManager* configManagerNew, HttpsClient* httpsClientNew, const DiscordCoreAPI::Snowflake& guildIdNew) {
 		this->configManager = configManagerNew;
 		this->httpsClient = httpsClientNew;
 		this->guildId = guildIdNew;
+		if (YouTubeRequestBuilder::apiKey == "") {
+			YouTubeRequestBuilder::apiKey = this->collectApiKey();
+		}
 	}
 
 	void YouTubeAPI::weFailedToDownloadOrDecode(const DiscordCoreAPI::Song& newSong, std::stop_token stopToken, int32_t currentReconnectTries) {
@@ -404,4 +421,5 @@ namespace DiscordCoreInternal {
 		return YouTubeRequestBuilder::collectFinalSong(newSong);
 	}
 
+	std::string YouTubeRequestBuilder::apiKey{};
 };
