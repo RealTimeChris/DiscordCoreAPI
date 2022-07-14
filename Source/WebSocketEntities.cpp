@@ -170,8 +170,7 @@ namespace DiscordCoreInternal {
 	}
 
 	WebSocketSSLShard::WebSocketSSLShard(DiscordCoreAPI::DiscordCoreClient* theClient, std::queue<DiscordCoreAPI::ConnectionPackage>* connectionsNew,
-		int32_t currentBaseSocketAgentNew,
-		int32_t currentShardNew, DiscordCoreAPI::ConfigManager* configManagerNew, std::atomic_bool* doWeQuitNew) noexcept
+		int32_t currentBaseSocketAgentNew, int32_t currentShardNew, DiscordCoreAPI::ConfigManager* configManagerNew, std::atomic_bool* doWeQuitNew) noexcept
 		: WebSocketMessageHandler(configManagerNew) {
 		this->heartBeatStopWatch = DiscordCoreAPI::StopWatch<std::chrono::milliseconds>{ 10000ms };
 		this->discordCoreClient = theClient;

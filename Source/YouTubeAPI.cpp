@@ -112,7 +112,7 @@ namespace DiscordCoreInternal {
 				newSong.format = format;
 			}
 			std::string downloadBaseUrl{};
-			auto httpsFind = newSong.format.downloadUrl.find("https://"); 
+			auto httpsFind = newSong.format.downloadUrl.find("https://");
 			auto videoPlaybackFind = newSong.format.downloadUrl.find("/videoplayback?");
 			if (httpsFind != std::string::npos && videoPlaybackFind != std::string::npos) {
 				std::string newString00 = "https://";
@@ -148,7 +148,7 @@ namespace DiscordCoreInternal {
 		newSong = this->constructDownloadInfo(newSong);
 		return newSong;
 	}
-	
+
 	std::string YouTubeRequestBuilder::collectApiKey() {
 		HttpsWorkloadData dataPackage01{ HttpsWorkloadType::YouTubeGetSearchResults };
 		dataPackage01.baseUrl = YouTubeRequestBuilder::baseUrl;

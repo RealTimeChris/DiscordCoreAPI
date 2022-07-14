@@ -27,7 +27,6 @@ namespace DiscordCoreAPI {
 	/// A class for handling commands from user input. \brief A class for handling commands from user input.
 	class DiscordCoreAPI_Dll CommandController {
 	  public:
-
 		CommandController(DiscordCoreClient*);
 
 		/// Registers a function to be called. \brief Registers a function to be called.

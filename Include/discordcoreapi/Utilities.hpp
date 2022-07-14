@@ -805,7 +805,6 @@ namespace DiscordCoreAPI {
 
 	template<typename TimeType> class StopWatch {
 	  public:
-
 		using DoubleTimeDuration = std::chrono::duration<double, std::nano>;
 
 		using DoubleTimePoint = std::chrono::time_point<std::chrono::system_clock, DoubleTimeDuration>;
@@ -863,7 +862,7 @@ namespace DiscordCoreAPI {
 		void resetTimer(uint64_t theNewTime = 0) {
 			std::lock_guard theLock{ this->theMutex };
 			if (theNewTime != 0) {
-				this->maxNumberOfMs=DoubleTimeDuration{ theNewTime };
+				this->maxNumberOfMs = DoubleTimeDuration{ theNewTime };
 			}
 			this->startTime = std::chrono::system_clock::now().time_since_epoch();
 		}
