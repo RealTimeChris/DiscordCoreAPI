@@ -21,14 +21,6 @@
 #include <discordcoreapi/EventManager.hpp>
 #include <discordcoreapi/DiscordCoreClient.hpp>
 
-namespace DiscordCoreAPI {
-
-	namespace Globals {
-		extern std::atomic_bool doWeQuit;
-	}
-}
-
-
 namespace DiscordCoreInternal {
 
 	constexpr uint16_t webSocketMaxPayloadLengthLarge{ 65535u };
