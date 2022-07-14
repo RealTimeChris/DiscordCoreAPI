@@ -71,11 +71,11 @@ namespace DiscordCoreAPI {
 
 	VoiceConnection::VoiceConnection(DiscordCoreInternal::BaseSocketAgent* BaseSocketAgentNew, const DiscordCoreInternal::VoiceConnectInitData& initDataNew,
 		DiscordCoreAPI::ConfigManager* configManagerNew, std::atomic_bool* doWeQuitNew) noexcept
-		: WebSocketSSLShard(BaseSocketAgentNew->discordCoreClient, &this->voiceConnections, BaseSocketAgentNew->currentBaseSocketAgent, initDataNew.currentShard, configManagerNew, this->doWeQuit),
+		: WebSocketSSLShard(BaseSocketAgentNew->discordCoreClient, &this->connections, BaseSocketAgentNew->currentBaseSocketAgent, initDataNew.currentShard, configManagerNew, this->doWeQuit),
 		  DatagramSocketClient() {
 		this->baseShard = BaseSocketAgentNew->sslShards[initDataNew.currentShard].get();
 		this->activeState.store(VoiceActiveState::Connecting);
-		WebSocketSSLShard::connections = &this->voiceConnections;
+		WebSocketSSLShard::connections = &this->connections;
 		this->baseSocketAgent = BaseSocketAgentNew;
 		this->voiceConnectInitData = initDataNew;
 		this->configManager = configManagerNew;
@@ -481,8 +481,8 @@ namespace DiscordCoreAPI {
 	void VoiceConnection::connectInternal() noexcept {
 		auto thePtr = this->baseSocketAgent->sslShards[voiceConnectInitData.currentShard].get();
 		std::unique_lock theLock{ thePtr->theMutex };
-		if (this->connections->size() > 0) {
-			this->connections->pop();
+		if (this->connections.size() > 0) {
+			this->connections.pop();
 		}
 		if (this->currentReconnectTries >= this->maxReconnectTries) {
 			this->doWeQuit->store(true);
@@ -763,7 +763,7 @@ namespace DiscordCoreAPI {
 		if (this->baseSocketAgent->sslShards.contains(this->voiceConnectInitData.currentShard) && this->baseSocketAgent->sslShards[voiceConnectInitData.currentShard]) {
 			ConnectionPackage dataPackage{};
 			dataPackage.currentShard = 0;
-			this->connections->push(dataPackage);
+			this->connections.push(dataPackage);
 			this->activeState.store(VoiceActiveState::Connecting);
 			if (!this->taskThread01) {
 				this->taskThread01 = std::make_unique<std::jthread>([=, this](std::stop_token stopToken) {

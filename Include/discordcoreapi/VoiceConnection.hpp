@@ -108,8 +108,8 @@ namespace DiscordCoreAPI {
 		UnboundedMessageBlock<AudioFrameData> audioDataBuffer{};
 		std::unique_ptr<std::jthread> taskThread01{ nullptr };
 		std::unique_ptr<std::jthread> taskThread02{ nullptr };
-		std::queue<ConnectionPackage> voiceConnections{};
 		std::atomic_bool areWeConnectedBool{ false };
+		std::queue<ConnectionPackage> connections{};
 		std::atomic_bool areWePlaying{ false };
 		const int64_t maxReconnectTries{ 10 };
 		int64_t currentReconnectTries{ 0 };
@@ -137,8 +137,6 @@ namespace DiscordCoreAPI {
 		void sendSpeakingMessage(const bool isSpeaking) noexcept;
 
 		void runWebSocket(std::stop_token) noexcept;
-
-		bool collectAndProcessAMessage() noexcept;
 
 		void runVoice(std::stop_token) noexcept;
 
