@@ -254,6 +254,18 @@ namespace DiscordCoreInternal {
 		other.erase(other.begin(), other.begin() + theCount);
 	}
 
+	void HttpsConnection::disconnect(bool) noexcept {
+		if (this->theSSLState.load() == SSLConnectionState::Connected) {
+			std::unique_lock theLock{ this->connectionMutex };
+			std::unique_lock theLock02{ this->readMutex };
+			std::unique_lock theLock03{ this->writeMutex };
+			this->theSSLState.store(SSLConnectionState::Disconnected);
+			this->theSocket = SOCKET_ERROR;
+			this->inputBuffer.clear();
+			this->outputBuffers.clear();
+		}
+	}
+
 	std::unordered_map<std::string, std::unique_ptr<RateLimitData>>& HttpsConnectionManager::getRateLimitValues() {
 		return this->rateLimitValues;
 	}
@@ -345,18 +357,6 @@ namespace DiscordCoreInternal {
 		HttpsWorkloadData::workloadIdsInternal[workload.workloadType]->store(theValue + 1);
 		rateLimitData.theSemaphore.release();
 		return resultData;
-	}
-
-	void HttpsConnection::disconnect(bool) noexcept {
-		if (this->theSSLState.load() == SSLConnectionState::Connected) {
-			std::unique_lock theLock{ this->connectionMutex };
-			std::unique_lock theLock02{ this->readMutex };
-			std::unique_lock theLock03{ this->writeMutex };
-			this->theSSLState.store(SSLConnectionState::Disconnected);
-			this->theSocket = SOCKET_ERROR;
-			this->inputBuffer.clear();
-			this->outputBuffers.clear();
-		}
 	}
 
 	HttpsResponseData HttpsClient::httpRequestInternal(const HttpsWorkloadData& workload, RateLimitData& rateLimitData) {
