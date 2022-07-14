@@ -179,13 +179,14 @@ namespace DiscordCoreInternal {
 
 	WebSocketSSLShard::WebSocketSSLShard(DiscordCoreAPI::DiscordCoreClient* theClient, std::queue<DiscordCoreAPI::ConnectionPackage>* connectionsNew,
 		int32_t currentBaseSocketAgentNew,
-		int32_t currentShardNew, DiscordCoreAPI::ConfigManager* configManagerNew) noexcept
+		int32_t currentShardNew, DiscordCoreAPI::ConfigManager* configManagerNew, std::atomic_bool* doWeQuitNew) noexcept
 		: WebSocketMessageHandler(configManagerNew) {
 		this->heartBeatStopWatch = DiscordCoreAPI::StopWatch<std::chrono::milliseconds>{ 10000ms };
 		this->discordCoreClient = theClient;
 		this->currentBaseSocketAgent = currentBaseSocketAgentNew;
 		this->shard.push_back(currentShardNew);
 		this->connections = connectionsNew;
+		this->doWeQuit = doWeQuitNew;
 		if (configManagerNew) {
 			this->shard.push_back(configManagerNew->getTotalShardCount());
 			if (configManagerNew->getTextFormat() == DiscordCoreAPI::TextFormat::Etf) {
@@ -194,113 +195,6 @@ namespace DiscordCoreInternal {
 				this->dataOpCode = WebSocketOpCode::Op_Text;
 			}
 		}
-	}
-
-	void WebSocketSSLShard::disconnect(bool doWeReconnect) noexcept {
-		if (this->theSSLState.load() == SSLConnectionState::Connected) {
-			std::unique_lock theLock{ this->connectionMutex };
-			std::unique_lock theLock02{ this->readMutex };
-			std::unique_lock theLock03{ this->writeMutex };
-			this->theSSLState.store(SSLConnectionState::Disconnected);
-			this->theWebSocketState.store(WebSocketSSLShardState::Disconnected);
-			this->theSocket = SOCKET_ERROR;
-			this->inputBuffer.clear();
-			this->outputBuffers.clear();
-			this->closeCode = static_cast<WebSocketCloseCode>(0);
-			this->areWeHeartBeating = false;
-			while (this->processedMessages.size() > 0) {
-				this->processedMessages.pop();
-			}
-			if (this->connections && doWeReconnect) {
-				DiscordCoreAPI::ConnectionPackage theData{};
-				theData.voiceConnectionDataBufferMap = std::move(this->voiceConnectionDataBufferMap);
-				theData.currentBaseSocketAgent = this->currentBaseSocketAgent;
-				theData.currentReconnectTries = this->currentReconnectTries;
-				theData.currentShard = this->shard[0];
-				this->connections->push(theData);
-			}
-		}
-	}
-
-	BaseSocketAgent::BaseSocketAgent(DiscordCoreAPI::DiscordCoreClient* discordCoreClientNew, std::atomic_bool* doWeQuitNew, int32_t currentBaseSocketAgentNew) noexcept {
-		this->configManager = &discordCoreClientNew->configManager;
-		this->currentBaseSocketAgent = currentBaseSocketAgentNew;
-		this->discordCoreClient = discordCoreClientNew;
-		this->doWeQuit = doWeQuitNew;
-		this->taskThread = std::make_unique<std::jthread>([this](std::stop_token stopToken) {
-			this->run(stopToken);
-		});
-	}
-
-	void BaseSocketAgent::sendMessage(std::string& dataToSend, WebSocketSSLShard* theShard, bool priority) noexcept {
-		if (theShard->theSSLState.load() == SSLConnectionState::Connected) {
-			try {
-				if (dataToSend.size() == 0) {
-					return;
-				}
-				if (this->configManager->doWePrintWebSocketSuccessMessages()) {
-					std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Sending WebSocket " + theShard->shard.dump() + std::string("'s Message: ") << std::endl
-							  << dataToSend << DiscordCoreAPI::reset();
-				}
-				bool didWeWrite{ false };
-				DiscordCoreAPI::StopWatch theStopWatch{ 5000ms };
-				do {
-					if (theStopWatch.hasTimePassed()) {
-						break;
-					}
-					didWeWrite = theShard->writeData(dataToSend, priority);
-				} while (!didWeWrite);
-				if (!didWeWrite) {
-					theShard->onClosed();
-				}
-			} catch (...) {
-				if (this->configManager->doWePrintWebSocketErrorMessages()) {
-					DiscordCoreAPI::reportException("BaseSocketAgent::sendMessage()");
-				}
-				theShard->onClosed();
-			}
-		}
-	}
-
-	void BaseSocketAgent::connectVoiceChannel(VoiceConnectInitData theData) noexcept {
-		std::lock_guard theLock{ this->theMutex };
-		this->voiceConnections.push(theData);
-	}
-
-	void BaseSocketAgent::connect(DiscordCoreAPI::ConnectionPackage thePackage) noexcept {
-		while (!this->discordCoreClient->theStopWatch.hasTimePassed()) {
-			std::this_thread::sleep_for(1ms);
-		}
-		this->discordCoreClient->theStopWatch.resetTimer();
-		std::lock_guard theLock{ this->theMutex };
-		this->connections.push(thePackage);
-		DiscordCoreAPI::StopWatch theStopWatch{ 5000ms };
-		theStopWatch.resetTimer();
-		while (!this->sslShards.contains(thePackage.currentShard)) {
-			if (theStopWatch.hasTimePassed()) {
-				return;
-			}
-			std::this_thread::sleep_for(1ms);
-		}
-		theStopWatch.resetTimer();
-		while (this->sslShards[thePackage.currentShard]->theWebSocketState.load() != WebSocketSSLShardState::Authenticated) {
-			if (theStopWatch.hasTimePassed()) {
-				return;
-			}
-			std::this_thread::sleep_for(1ms);
-		}
-	}
-
-	void WebSocketSSLShard::onClosed() noexcept {
-		if (this->maxReconnectTries > this->currentReconnectTries) {
-			this->disconnect(true);
-		} else if (this->maxReconnectTries <= this->currentReconnectTries) {
-			DiscordCoreAPI::Globals::doWeQuit.store(true);
-		}
-	}
-
-	std::jthread* BaseSocketAgent::getTheTask() noexcept {
-		return this->taskThread.get();
 	}
 
 	void WebSocketSSLShard::getVoiceConnectionData(const VoiceConnectInitData& doWeCollect) noexcept {
@@ -390,7 +284,33 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void WebSocketSSLShard::onMessageReceived()noexcept {
+	void WebSocketSSLShard::disconnect(bool doWeReconnect) noexcept {
+		if (this->theSSLState.load() == SSLConnectionState::Connected) {
+			std::unique_lock theLock{ this->connectionMutex };
+			std::unique_lock theLock02{ this->readMutex };
+			std::unique_lock theLock03{ this->writeMutex };
+			this->theSSLState.store(SSLConnectionState::Disconnected);
+			this->theWebSocketState.store(WebSocketSSLShardState::Disconnected);
+			this->theSocket = SOCKET_ERROR;
+			this->inputBuffer.clear();
+			this->outputBuffers.clear();
+			this->closeCode = static_cast<WebSocketCloseCode>(0);
+			this->areWeHeartBeating = false;
+			while (this->processedMessages.size() > 0) {
+				this->processedMessages.pop();
+			}
+			if (this->connections && doWeReconnect) {
+				DiscordCoreAPI::ConnectionPackage theData{};
+				theData.voiceConnectionDataBufferMap = std::move(this->voiceConnectionDataBufferMap);
+				theData.currentBaseSocketAgent = this->currentBaseSocketAgent;
+				theData.currentReconnectTries = this->currentReconnectTries;
+				theData.currentShard = this->shard[0];
+				this->connections->push(theData);
+			}
+		}
+	}
+
+	void WebSocketSSLShard::onMessageReceived() noexcept {
 		if (this->theSSLState.load() == SSLConnectionState::Connected) {
 			try {
 				std::string messageNew{};
@@ -962,8 +882,7 @@ namespace DiscordCoreInternal {
 						}
 						case 10: {
 							if (payload["d"].contains("heartbeat_interval") && !payload["d"]["heartbeat_interval"].is_null()) {
-								this->heartBeatStopWatch =
-									DiscordCoreAPI::StopWatch<std::chrono::milliseconds>{ std::chrono::milliseconds{ payload["d"]["heartbeat_interval"] } };
+								this->heartBeatStopWatch = DiscordCoreAPI::StopWatch<std::chrono::milliseconds>{ std::chrono::milliseconds{ payload["d"]["heartbeat_interval"] } };
 							}
 							if (this->areWeResuming) {
 								WebSocketResumeData resumeData{};
@@ -1017,6 +936,89 @@ namespace DiscordCoreInternal {
 				this->onClosed();
 			}
 		}
+	}
+
+	void WebSocketSSLShard::onClosed() noexcept {
+		if (this->maxReconnectTries > this->currentReconnectTries) {
+			this->disconnect(true);
+		} else if (this->maxReconnectTries <= this->currentReconnectTries) {
+			if (this->doWeQuit) {
+				this->doWeQuit->store(true);
+			}
+		}
+	}
+
+	BaseSocketAgent::BaseSocketAgent(DiscordCoreAPI::DiscordCoreClient* discordCoreClientNew, std::atomic_bool* doWeQuitNew, int32_t currentBaseSocketAgentNew) noexcept {
+		this->configManager = &discordCoreClientNew->configManager;
+		this->currentBaseSocketAgent = currentBaseSocketAgentNew;
+		this->discordCoreClient = discordCoreClientNew;
+		this->doWeQuit = doWeQuitNew;
+		this->taskThread = std::make_unique<std::jthread>([this](std::stop_token stopToken) {
+			this->run(stopToken);
+		});
+	}
+
+	void BaseSocketAgent::sendMessage(std::string& dataToSend, WebSocketSSLShard* theShard, bool priority) noexcept {
+		if (theShard->theSSLState.load() == SSLConnectionState::Connected) {
+			try {
+				if (dataToSend.size() == 0) {
+					return;
+				}
+				if (this->configManager->doWePrintWebSocketSuccessMessages()) {
+					std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Sending WebSocket " + theShard->shard.dump() + std::string("'s Message: ") << std::endl
+							  << dataToSend << DiscordCoreAPI::reset();
+				}
+				bool didWeWrite{ false };
+				DiscordCoreAPI::StopWatch theStopWatch{ 5000ms };
+				do {
+					if (theStopWatch.hasTimePassed()) {
+						break;
+					}
+					didWeWrite = theShard->writeData(dataToSend, priority);
+				} while (!didWeWrite);
+				if (!didWeWrite) {
+					theShard->onClosed();
+				}
+			} catch (...) {
+				if (this->configManager->doWePrintWebSocketErrorMessages()) {
+					DiscordCoreAPI::reportException("BaseSocketAgent::sendMessage()");
+				}
+				theShard->onClosed();
+			}
+		}
+	}
+
+	void BaseSocketAgent::connectVoiceChannel(VoiceConnectInitData theData) noexcept {
+		std::lock_guard theLock{ this->theMutex };
+		this->voiceConnections.push(theData);
+	}
+
+	void BaseSocketAgent::connect(DiscordCoreAPI::ConnectionPackage thePackage) noexcept {
+		while (!this->discordCoreClient->theStopWatch.hasTimePassed()) {
+			std::this_thread::sleep_for(1ms);
+		}
+		this->discordCoreClient->theStopWatch.resetTimer();
+		std::lock_guard theLock{ this->theMutex };
+		this->connections.push(thePackage);
+		DiscordCoreAPI::StopWatch theStopWatch{ 5000ms };
+		theStopWatch.resetTimer();
+		while (!this->sslShards.contains(thePackage.currentShard)) {
+			if (theStopWatch.hasTimePassed()) {
+				return;
+			}
+			std::this_thread::sleep_for(1ms);
+		}
+		theStopWatch.resetTimer();
+		while (this->sslShards[thePackage.currentShard]->theWebSocketState.load() != WebSocketSSLShardState::Authenticated) {
+			if (theStopWatch.hasTimePassed()) {
+				return;
+			}
+			std::this_thread::sleep_for(1ms);
+		}
+	}
+
+	std::jthread* BaseSocketAgent::getTheTask() noexcept {
+		return this->taskThread.get();
 	}
 
 	void BaseSocketAgent::connectVoiceInternal() noexcept {
@@ -1094,7 +1096,7 @@ namespace DiscordCoreInternal {
 				this->connections.pop();
 				if (!this->sslShards.contains(connectData.currentShard)) {
 					this->sslShards[connectData.currentShard] = std::make_unique<WebSocketSSLShard>(this->discordCoreClient, &this->connections, this->currentBaseSocketAgent,
-						connectData.currentShard, this->configManager);
+						connectData.currentShard, this->configManager, this->doWeQuit);
 				}
 				this->sslShards[connectData.currentShard]->currentReconnectTries = connectData.currentReconnectTries;
 				this->sslShards[connectData.currentShard]->currentReconnectTries++;
