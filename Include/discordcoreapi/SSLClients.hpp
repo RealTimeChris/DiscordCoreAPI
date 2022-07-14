@@ -65,8 +65,6 @@ namespace DiscordCoreInternal {
 
 	using SOCKET = int32_t;
 
-	constexpr int32_t SOCKET_ERROR{ -1 };
-
 	struct ConnectionError : public std::runtime_error {
 		ConnectionError(const std::string& theString);
 	};
@@ -251,4 +249,4 @@ namespace DiscordCoreInternal {
 		sockaddr_in theAddress{};
 		int64_t bytesRead{};
 	};
-}// namespace DiscordCoreInterna
+}// namespace DiscordCoreInternal
