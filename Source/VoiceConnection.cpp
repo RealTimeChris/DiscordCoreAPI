@@ -325,6 +325,7 @@ namespace DiscordCoreAPI {
 				case VoiceActiveState::Stopped: {
 					this->audioDataBuffer.clearContents();
 					this->clearAudioData();
+					this->areWePlaying.store(false);
 					while (!stopToken.stop_requested() && this->activeState.load() == VoiceActiveState::Stopped) {
 						DatagramSocketClient::processIO(10000);
 						DatagramSocketClient::getInputBuffer();
@@ -333,6 +334,7 @@ namespace DiscordCoreAPI {
 					break;
 				}
 				case VoiceActiveState::Paused: {
+					this->areWePlaying.store(false);
 					while (!stopToken.stop_requested() && this->activeState.load() == VoiceActiveState::Paused) {
 						DatagramSocketClient::processIO(10000);
 						DatagramSocketClient::getInputBuffer();
