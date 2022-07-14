@@ -267,16 +267,16 @@ namespace DiscordCoreInternal {
 		}
 		theLock01.unlock();
 
-		if (auto returnValue = SSL_set_fd(this->ssl, this->theSocket); !returnValue) {
+		if (SSL_set_fd(this->ssl, this->theSocket) != 1) {
 			return false;
 		}
 
 		/* SNI */
-		if (auto returnValue = SSL_set_tlsext_host_name(this->ssl, stringNew.c_str()); !returnValue) {
+		if (SSL_set_tlsext_host_name(this->ssl, stringNew.c_str()) != 1) {
 			return false;
 		}
 
-		if (auto returnValue = SSL_connect(this->ssl); !returnValue) {
+		if (SSL_connect(this->ssl) != 1) {
 			return false;
 		}
 
