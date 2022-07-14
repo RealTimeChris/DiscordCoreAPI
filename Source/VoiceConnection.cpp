@@ -424,7 +424,6 @@ namespace DiscordCoreAPI {
 						}
 						DatagramSocketClient::getInputBuffer();
 						this->audioDataBuffer.tryReceive(this->audioData);
-						std::cout << "THE AUDIO BUFFER TYPE: " << static_cast<int32_t>(this->audioData.type) << std::endl;
 					}
 					DatagramSocketClient::getInputBuffer();
 					break;
