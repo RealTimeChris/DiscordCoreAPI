@@ -110,7 +110,6 @@ namespace DiscordCoreAPI {
 		std::unique_ptr<std::jthread> taskThread02{ nullptr };
 		std::queue<ConnectionPackage> voiceConnections{};
 		std::atomic_bool areWeConnectedBool{ false };
-		DoubleMilliSecond disconnectStartTime{ 0 };
 		std::atomic_bool areWePlaying{ false };
 		const int64_t maxReconnectTries{ 10 };
 		int64_t currentReconnectTries{ 0 };

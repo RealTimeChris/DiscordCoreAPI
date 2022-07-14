@@ -71,8 +71,7 @@ namespace DiscordCoreAPI {
 
 	VoiceConnection::VoiceConnection(DiscordCoreInternal::BaseSocketAgent* BaseSocketAgentNew, const DiscordCoreInternal::VoiceConnectInitData& initDataNew,
 		DiscordCoreAPI::ConfigManager* configManagerNew, std::atomic_bool* doWeQuitNew) noexcept
-		: WebSocketSSLShard(BaseSocketAgentNew->discordCoreClient, &this->voiceConnections, BaseSocketAgentNew->currentBaseSocketAgent, initDataNew.currentShard, configManagerNew,
-			  this->doWeQuit),
+		: WebSocketSSLShard(BaseSocketAgentNew->discordCoreClient, &this->voiceConnections, BaseSocketAgentNew->currentBaseSocketAgent, initDataNew.currentShard, configManagerNew, this->doWeQuit),
 		  DatagramSocketClient() {
 		this->baseShard = BaseSocketAgentNew->sslShards[initDataNew.currentShard].get();
 		this->activeState.store(VoiceActiveState::Connecting);
@@ -222,6 +221,7 @@ namespace DiscordCoreAPI {
 		if (!isSpeaking) {
 			theData.type = static_cast<DiscordCoreInternal::SendSpeakingType>(0);
 			this->sendSilence();
+			DatagramSocketClient::processIO(10000);
 		} else {
 			theData.type = DiscordCoreInternal::SendSpeakingType::Microphone;
 			theData.delay = 0;
@@ -330,7 +330,6 @@ namespace DiscordCoreAPI {
 						if (theSendSilenceStopWatch.hasTimePassed()) {
 							theSendSilenceStopWatch.resetTimer();
 							this->sendSpeakingMessage(true);
-							this->sendSilence();
 							this->sendSpeakingMessage(false);
 						}
 						std::this_thread::sleep_for(1ms);
@@ -342,7 +341,6 @@ namespace DiscordCoreAPI {
 						if (theSendSilenceStopWatch.hasTimePassed()) {
 							theSendSilenceStopWatch.resetTimer();
 							this->sendSpeakingMessage(true);
-							this->sendSilence();
 							this->sendSpeakingMessage(false);
 						}
 						std::this_thread::sleep_for(1ms);
@@ -359,15 +357,6 @@ namespace DiscordCoreAPI {
 					DoubleTimePointNs targetTime{ startingValue.time_since_epoch() + intervalCount.time_since_epoch() };
 					int32_t frameCounter{ 0 };
 					DoubleTimePointNs totalTime{ std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::nanoseconds{ 0 }) };
-					/*
-					if (this->disconnectStartTime.count() != 0) {
-						DoubleMilliSecond currentTime = std::chrono::system_clock::now().time_since_epoch();
-						if ((currentTime - this->disconnectStartTime).count() >= 60000) {
-							this->connect();
-							this->play();
-						}
-					}
-					*/
 					if (!this->areWePlaying.load()) {
 						this->sendSpeakingMessage(true);
 						this->areWePlaying.store(true);
@@ -435,8 +424,6 @@ namespace DiscordCoreAPI {
 						this->audioDataBuffer.tryReceive(this->audioData);
 					}
 					DatagramSocketClient::getInputBuffer();
-					//this->disconnectStartTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch());
-					this->areWePlaying.store(true);
 					break;
 				}
 				case VoiceActiveState::Exiting: {
