@@ -27,13 +27,6 @@ namespace DiscordCoreAPI {
 	/// A class for handling commands from user input. \brief A class for handling commands from user input.
 	class DiscordCoreAPI_Dll CommandController {
 	  public:
-		CommandController& operator=(const CommandController&) = delete;
-
-		CommandController(const CommandController&) = delete;
-
-		CommandController& operator=(CommandController&) = delete;
-
-		CommandController(CommandController&) = delete;
 
 		CommandController(DiscordCoreClient*);
 
@@ -49,6 +42,7 @@ namespace DiscordCoreAPI {
 		void checkForAndRunCommand(const CommandData commandData);
 
 	  protected:
+		std::unique_ptr<DiscordCoreInternal::CommandThreadPool> commandThreadPool{ std::make_unique<DiscordCoreInternal::CommandThreadPool>() };
 		std::map<std::vector<std::string>, std::unique_ptr<BaseFunction>> functions{};
 		DiscordCoreClient* discordCoreClient{ nullptr };
 

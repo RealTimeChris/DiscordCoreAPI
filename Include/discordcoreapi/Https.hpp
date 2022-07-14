@@ -132,8 +132,6 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll HttpsClient {
 	  public:
-		HttpsClient() = default;
-
 		HttpsClient(DiscordCoreAPI::ConfigManager* configManager);
 
 		template<typename ReturnType> ReturnType submitWorkloadAndGetResult(HttpsWorkloadData& workload) {

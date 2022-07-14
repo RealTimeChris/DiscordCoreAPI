@@ -596,10 +596,7 @@ namespace DiscordCoreInternal {
 										dataPackage->interactionData = *interactionData;
 										std::unique_ptr<DiscordCoreAPI::CommandData> commandData{ std::make_unique<DiscordCoreAPI::CommandData>(*eventData) };
 										DiscordCoreAPI::CommandData commandDataNew = *commandData;
-										std::function<void()> theFunction = [=, this]() mutable {
-											this->discordCoreClient->commandController.checkForAndRunCommand(commandDataNew);
-										};
-										this->discordCoreClient->commandThreadPool.submitTask(theFunction);
+										this->discordCoreClient->commandController.checkForAndRunCommand(commandDataNew);
 										this->discordCoreClient->eventManager.onInteractionCreationEvent(*dataPackage);
 										std::unique_ptr<DiscordCoreAPI::OnInputEventCreationData> eventCreationData{ std::make_unique<DiscordCoreAPI::OnInputEventCreationData>() };
 										eventCreationData->inputEventData = *eventData;
@@ -683,10 +680,7 @@ namespace DiscordCoreInternal {
 										std::unique_ptr<DiscordCoreAPI::CommandData> commandData{ std::make_unique<DiscordCoreAPI::CommandData>() };
 										commandData->commandName = "registerapplicationcommands";
 										DiscordCoreAPI::CommandData commandDataNew = *commandData;
-										std::function<void()> theFunction = [=, this]() mutable {
-											this->discordCoreClient->commandController.checkForAndRunCommand(commandDataNew);
-										};
-										this->discordCoreClient->commandThreadPool.submitTask(theFunction);
+										this->discordCoreClient->commandController.checkForAndRunCommand(commandDataNew);
 									}
 									std::unique_ptr<DiscordCoreAPI::OnInputEventCreationData> eventCreationData{ std::make_unique<DiscordCoreAPI::OnInputEventCreationData>() };
 								} else if (payload["t"] == "MESSAGE_UPDATE") {
