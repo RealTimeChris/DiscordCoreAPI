@@ -22,8 +22,6 @@
 
 namespace DiscordCoreInternal {
 
-	constexpr int32_t SOCKET_ERROR{ -1 };
-
 	std::string reportSSLError(const std::string& errorPosition, int32_t errorValue = 0, SSL* ssl = nullptr) noexcept {
 		std::stringstream theStream{};
 		if (ssl) {
