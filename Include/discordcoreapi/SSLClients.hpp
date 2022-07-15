@@ -145,6 +145,8 @@ namespace DiscordCoreInternal {
 		bool doWeClearAddrInfo{ false };
 	};
 
+	enum class SSLConnectionState { Connected = 1, Disconnected = 2 };
+
 	class DiscordCoreAPI_Dll SSLConnectionInterface {
 	  public:
 		SSLConnectionInterface() noexcept = default;
@@ -163,6 +165,7 @@ namespace DiscordCoreInternal {
 		static std::mutex contextMutex;
 		static SSL_CTXWrapper context;
 
+		std::atomic<SSLConnectionState> theSSLState{ SSLConnectionState::Disconnected };
 		std::queue<DiscordCoreAPI::ConnectionPackage>* connections{ nullptr };
 		std::recursive_mutex connectionMutex{};
 		SOCKETWrapper theSocket{};
