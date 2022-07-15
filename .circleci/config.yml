@@ -1,24 +1,18 @@
 version: 2.1
 
-jobs: # basic units of work in a run
+jobs:
   Build-Documentation:
-    docker: # use the Docker executor
-      # CircleCI node images available at: https://hub.docker.com/r/circleci/node/
+    docker:
       - image: cimg/base:edge-22.04
     steps:
       - add_ssh_keys
-# steps that comprise the `build` job
-      - checkout # check out source code to working directory
-      # Run a step to setup an environment variable
-      # Redirect MY_ENV_VAR into $BASH_ENV
+      - checkout 
       - run:
           name: Checkout github pages repository
           command: git config --global user.email "40668522+RealTimeChris@users.noreply.github.com" && git config --global user.name "realtimechris"
-      - run: # print the name of the branch we're on
+      - run:
           name: Download and install Doxygen.
           command: sudo apt-get install doxygen && sudo apt install graphviz
-      # Run another step, the same as above; note that you can
-      # invoke environment variable without curly braces.
       - run:
           name: Collect the original Repo for the docs.
           command: git clone https://github.com/RealTimeChris/DiscordCoreAPI-Docs
@@ -49,8 +43,8 @@ jobs: # basic units of work in a run
             sudo rm -rf discordcoreapi
             sudo git clone https://github.com/RealTimeChris/DiscordCoreAPI-Docs --depth=1 ./discordcoreapi
 
-workflows: # a single workflow with a single job called build
-  build:
+workflows:
+  Build-DiscordCoreAPI:
     jobs:
       - Build-Documentation
 
