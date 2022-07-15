@@ -7,7 +7,7 @@ orbs:
 jobs:
   build:
     docker:
-      - image: cimg/edge-22.04
+      - image: cimg/base:edge-22.04
 
     steps:
       - checkout
