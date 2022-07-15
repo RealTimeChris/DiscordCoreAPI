@@ -24,7 +24,7 @@ jobs: # basic units of work in a run
           name: Collect the documentation and generate it.
           command: |
             sudo git clone https://github.com/RealTimeChris/DiscordCoreAPI --depth=1
-            sudo cd DiscordCoreAPI/Documentation/Doxygen
+            cd DiscordCoreAPI/Documentation/Doxygen
             sudo doxygen
       - run:
           name: commit and push
