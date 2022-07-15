@@ -12,7 +12,7 @@ jobs:
           command: 'sudo git clone https://github.com/Microsoft/vcpkg ./vcpkg && cd ./vcpkg && sudo ./bootstrap-vcpkg.sh'
       - run:
           name: Copying over Vcpkg files.
-          command: 'sudo cp -a Vcpkg vcpkg'
+          command: 'sudo cp -a -v Vcpkg vcpkg'
       - run:
           name: Installing dependencies.
           command: 'sudo apt-get install nasm && sudo apt-get install bison  && cd ./vcpkg && sudo ./vcpkg install discordcoreapi:x64-linux'
