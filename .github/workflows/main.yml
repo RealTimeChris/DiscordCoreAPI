@@ -10,11 +10,11 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
         include:
-          - os: windows-latest
+          - os: windows
             triplet: x64-windows
-          - os: ubuntu-latest
+          - os: linux
             triplet: x64-linux
-          - os: macos-latest
+          - os: macos
             triplet: x64-osx
     env:
       # Indicates the location of the vcpkg as a Git submodule of the project repository.
