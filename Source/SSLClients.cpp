@@ -397,7 +397,6 @@ namespace DiscordCoreInternal {
 	}
 
 	bool SSLClient::writeDataProcess() noexcept {
-		std::lock_guard theLock{ this->connectionMutex };
 		if (this->outputBuffers.size() > 0) {
 			this->wantRead = false;
 			this->wantWrite = false;
@@ -444,7 +443,6 @@ namespace DiscordCoreInternal {
 	}
 
 	bool SSLClient::readDataProcess() noexcept {
-		std::lock_guard theLock{ this->connectionMutex };
 		this->wantRead = false;
 		this->wantWrite = false;
 		std::string serverToClientBuffer{};
