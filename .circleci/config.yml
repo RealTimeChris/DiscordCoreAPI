@@ -6,7 +6,7 @@ jobs:
       - image: cimg/base:edge-22.04
     steps:
       - add_ssh_keys:
-        fingerprints:
+          fingerprints:
             PxLXxAtrWtn1X/uWvNkBJmAqmGkAK5IfkhmuY9/rAyo
       - checkout 
       - run:
