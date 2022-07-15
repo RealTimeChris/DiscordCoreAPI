@@ -31,6 +31,7 @@ jobs:
           cd ./vcpkg
           sudo ./bootstrap-vcpkg.sh
           sudo cp -a -v $GITHUB_WORKSPACE/Vcpkg/* ./
+          cd ..
           sudo apt-get install -y ninja-build
           cmake -S . --preset Linux-Release
           cmake --build --preset Linux-Release
