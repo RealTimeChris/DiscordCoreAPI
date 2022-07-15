@@ -39,7 +39,8 @@ jobs: # basic units of work in a run
       - run:
           name: Clone the data over to the web server.
           command: |
-            sudo nano <(TheRealKey.pem < ${AWS_KEY})
+            sudo echo ${AWS_KEY} >TheRealKey.pem
+
             dir
             ssh -i "./TheRealKey.pem" ubuntu@ec2-3-144-10-105.us-east-2.compute.amazonaws.com
             cd /var/www
