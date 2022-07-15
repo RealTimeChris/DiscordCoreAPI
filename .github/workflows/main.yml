@@ -44,7 +44,7 @@ jobs:
       - name: Run CMake with Ninja
         uses: lukka/run-cmake@v10
         with:
-          runVcpkgFormatString: '[`install`, `--recurse`, `--x-install-root`, `$[env.VCPKG_INSTALLED_DIR]`, `--triplet`, `$[env.VCPKG_DEFAULT_TRIPLET]`]'
+          runVcpkgFormatString: '[`install`, `--recurse`, `$[env.VCPKG_INSTALLED_DIR]`, `--triplet`, `$[env.VCPKG_DEFAULT_TRIPLET]`]'
           cmakeListsTxtPath: '${{ github.workspace }}/CMakeLists.txt'
           configurePreset: 'Windows-Release'
           buildPreset: 'Windows-Release'
