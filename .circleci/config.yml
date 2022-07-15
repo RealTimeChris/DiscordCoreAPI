@@ -25,7 +25,7 @@ jobs:
           command: 'sudo git clone https://github.com/Microsoft/vcpkg ./vcpkg && cd ./vcpkg && sudo ./bootstrap-vcpkg.sh'
       - run:
           name: Creating Build Files
-          command: 'cmake -S . -B ./Build -D_VCPKG_INSTALLED_DIR=./vcpkg/installed/x64-linux'
+          command: 'cmake -S . -B ./Build -D_VCPKG_INSTALLED_DIR=./installed/x64-linux'
       - run:
           name: Creating Binary Files
           command: 'cmake --build --preset Linux-Release'
