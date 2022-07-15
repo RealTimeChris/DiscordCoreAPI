@@ -14,6 +14,6 @@ jobs:
           name: Copying over Vcpkg files.
           command: 'sudo cp -a -v Vcpkg/* vcpkg'
       - run:
-          name: Installing dependencies.
+          name: Installing the library and its dependencies.
           command: 'sudo apt-get install nasm && sudo apt-get install bison  && cd ./vcpkg && sudo ./vcpkg install discordcoreapi:x64-linux'
 
