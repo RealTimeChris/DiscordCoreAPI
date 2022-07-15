@@ -28,6 +28,7 @@ jobs:
       # Runs a single command using the runners shell
       - name: Run a one-line script
         run: | 
+          sudo apt-get install -y ninja-build
           cmake -S . --preset Linux-Release
           cmake --build --preset Linux-Release
           cmake --install ./Build/Release
