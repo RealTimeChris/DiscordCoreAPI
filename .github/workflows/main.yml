@@ -57,7 +57,7 @@ jobs:
       # Run CMake to generate Ninja project files, using the vcpkg's toolchain file to resolve and install the dependencies as specified in vcpkg.json.
       - name: Install dependencies and generate project files
         run: |
-          cmake --preset ninja-multi-vcpkg
+          cmake --preset ninja-multi-vcpkg -D_VCPKG_INSTALLED_DIR=${{ github.workspace }}/vcpkg
       # Build the whole project with Ninja (which is spawn by CMake). Debug configuration.
       - name: Build (Debug)
         run: |
