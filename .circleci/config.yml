@@ -31,7 +31,6 @@ jobs: # basic units of work in a run
           command: | 
             cd ..
             cd ..
-            cd ..
             cd DiscordCoreAPI-Docs
             sudo git add .:realtimechris$PERSONAL_ACCESS_TOKEN
             sudo git commit -m "Updates!"
