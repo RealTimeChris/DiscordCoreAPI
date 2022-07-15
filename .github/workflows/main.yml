@@ -50,8 +50,7 @@ jobs:
       - name: Install vcpkg and some other dependencies.
         run: |
           git clone https://github.com/Microsoft/vcpkg ./vcpkg2
-          cd ./vcpkg
-          dir
+          cd ./vcpkg2
           ./bootstrap-vcpkg.bat
           cd ..
           cp -a -v $GITHUB_WORKSPACE/Vcpkg/* ./vcpkg2/
