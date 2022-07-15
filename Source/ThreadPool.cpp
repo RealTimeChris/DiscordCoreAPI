@@ -212,8 +212,7 @@ namespace DiscordCoreInternal {
 			if (this->coroHandleCount.load() > 0) {
 				std::unique_lock theLock01{ this->theMutex, std::defer_lock_t{} };
 				if (theLock01.try_lock()) {
-					if (this->theCoroutineHandles.size() > 0) {
-						std::cout << "WE SUCCEDED TO LOCK WE'RE NOT MOVING ON!" << std::endl;
+					if (this->theCoroutineHandles.size() > 0) {;
 						std::coroutine_handle<> coroHandle = this->theCoroutineHandles.front();
 						this->coroHandleCount.store(this->coroHandleCount.load() - 1);
 						this->theCoroutineHandles.pop();
@@ -226,13 +225,10 @@ namespace DiscordCoreInternal {
 							theAtomicBoolPtr->store(false);
 						}
 					}
-				} else {
-					std::cout << "WE FAILED TO LOCK WE'RE MOVING ON!" << std::endl;
 				}
 			} else if (this->currentCount.load() > this->threadCount.load()) {
 				std::unique_lock theLock01{ this->theMutex, std::defer_lock_t{} };
 				if (theLock01.try_lock()) {
-					std::cout << "WE SUCCEDED TO LOCK WE'RE NOT MOVING ON!" << std::endl;
 					for (auto& [key, value]: this->workerThreads) {
 						if (value.areWeCurrentlyWorking.load() && value.theThread.joinable()) {
 							value.theThread.get_stop_source().request_stop();
@@ -241,8 +237,6 @@ namespace DiscordCoreInternal {
 							break;
 						}
 					}
-				} else {
-					std::cout << "WE FAILED TO LOCK WE'RE MOVING ON!" << std::endl;
 				}
 			}
 			waitForThread(1000us);
