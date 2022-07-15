@@ -14,7 +14,9 @@ jobs:
       - run:
           name: Install CMAKE
           command: sudo apt list --all-versions cmake
-
+      - run:
+          name: Install proper Curl.
+          command: 'sudo snap remove curl && sudo apt install curl'
       - run:
           name: Installing build dependencies
           command: 'sudo apt-get update && sudo apt-get install -y sudo gcc g++ build-essential sudo git cmake libssl-dev zlib1g-dev'
