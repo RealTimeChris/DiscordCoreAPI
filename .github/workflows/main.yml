@@ -1,58 +1,53 @@
-# This is a basic workflow to help you get started with Actions
+name: hosted-ninja-vcpkg-install-autocache
+on: [push, workflow_dispatch]
 
-name: DiscordCoreAPI CI
-
-# Controls when the workflow will run
-on:
-  # Triggers the workflow on push or pull request events but only for the "main" branch
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
-
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
-
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
-  Build-Linux-x64:
-    # The type of runner that the job will run on
-    runs-on: ubuntu-latest
+  job:
+    name: ${{ matrix.os }}-${{ github.workflow }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        include:
+          - os: windows-latest
+            vcpkgCommitId: 'b7e3819bb81c498c30d5686ebf23280d4e50e085'
+          - os: ubuntu-latest
+            vcpkgCommitId: 'b7e3819bb81c498c30d5686ebf23280d4e50e085'
+          - os: macos-latest
+            vcpkgCommitId: 'b7e3819bb81c498c30d5686ebf23280d4e50e085'
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
 
-      - name: Install vcpkg and some other dependencies.
-        run: | 
-          sudo apt-get install nasm
-          sudo apt-get install bison
-          sudo git clone https://github.com/Microsoft/vcpkg
-          cd ./vcpkg
-          sudo ./bootstrap-vcpkg.sh
-          sudo cp -a -v $GITHUB_WORKSPACE/Vcpkg/* /usr/local/share/vcpkg/
-          cd ..
-          sudo apt-get install -y ninja-build
-          vcpkg install discordcoreapi:x64-linux
-          
-          # This workflow contains a single job called "build"
-  Build-Windows-x64:
-    # The type of runner that the job will run on
-    runs-on: windows-latest
+      - uses: lukka/get-cmake@latest
+      - name: List $RUNNER_WORKSPACE before build
+        run: find $RUNNER_WORKSPACE
+        shell: bash
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
-    steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v3
+      - name: Restore artifacts, or run vcpkg, build (and cache artifacts as post step)
+        uses: lukka/run-vcpkg@main
+        id: runvcpkg
+        with:
+          vcpkgDirectory: '${{ runner.workspace }}/b/vcpkg'
+          vcpkgGitCommitId: '${{ matrix.vcpkgCommitId }}'
+          # Run vcpkg with the command specified by the `runVcpkgFormatString` input.
+          runVcpkgInstall: true
+          vcpkgJsonGlob: '**/cmakepresets/vcpkg.json'
+          appendedCacheKey: vcpkginstall
 
-      - name: Install vcpkg and some other dependencies.
-        run: |
-          git clone https://github.com/Microsoft/vcpkg ./vcpkg2
-          cd ./vcpkg2
-          ./bootstrap-vcpkg.bat
-          cd ..
-          cp -a -v $GITHUB_WORKSPACE/Vcpkg/* ./vcpkg2/
-          cd ..
-          vcpkg install discordcoreapi:x64-linux
+      - name: Prints output of run-vcpkg's action.
+        run: echo "root='${{ steps.runvcpkg.outputs.RUNVCPKG_VCPKG_ROOT_OUT }}', triplet='${{ steps.runvcpkg.outputs.RUNVCPKG_VCPKG_DEFAULT_TRIPLET_OUT }}' "
+
+      - name: Run CMake with Ninja
+        uses: lukka/run-cmake@v10
+        with:
+          cmakeListsTxtPath: '${{ github.workspace }}/cmakepresets/CMakeLists.txt'
+          configurePreset: 'ninja-multi-vcpkg'
+          buildPreset: 'ninja-multi-vcpkg'
+
+      - name: List $RUNNER_WORKSPACE after build
+        run: find $RUNNER_WORKSPACE
+        shell: bash
