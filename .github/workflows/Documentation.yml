@@ -1,1 +1,31 @@
+name: Documentation-Build
+on: [push]
 
+jobs:
+  job:
+    name: Documentation-Build
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [Linux-x64]
+        include:
+          - os: Linux-x64
+            triplet: x64-linux
+
+    steps:
+      - name: Download and install Doxygen.
+        run: sudo apt-get install doxygen
+
+      - name: Collect the documentation and generate it.
+        run: |
+         git clone https://github.com/RealTimeChris/DiscordCoreAPI --depth=1
+         cd DiscordCoreAPI/Documentation/Doxygen
+         doxygen
+
+      
+
+        
+    
+            
+            
