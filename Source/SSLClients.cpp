@@ -223,7 +223,7 @@ namespace DiscordCoreInternal {
 		} else {
 			stringNew = baseUrl;
 		}
-
+		std::lock_guard theLock{ this->connectionMutex };
 		addrinfoWrapper hints{}, address{};
 		hints->ai_family = AF_INET;
 		hints->ai_socktype = SOCK_STREAM;
@@ -247,13 +247,13 @@ namespace DiscordCoreInternal {
 			return false;
 		}
 
-		linger optionValue02{};
-		optionValue02.l_onoff = 0;
-		if (setsockopt(this->theSocket, SOL_SOCKET, SO_LINGER, reinterpret_cast<char*>(&optionValue02), sizeof(linger))) {
+		if (setsockopt(this->theSocket, SOL_SOCKET, SO_KEEPALIVE, &optionValue, sizeof(int32_t))) {
 			return false;
 		}
 
-		if (setsockopt(this->theSocket, SOL_SOCKET, SO_KEEPALIVE, &optionValue, sizeof(int32_t))) {
+		linger optionValue02{};
+		optionValue02.l_onoff = 0;
+		if (setsockopt(this->theSocket, SOL_SOCKET, SO_LINGER, reinterpret_cast<char*>(&optionValue02), sizeof(linger))) {
 			return false;
 		}
 
@@ -295,6 +295,7 @@ namespace DiscordCoreInternal {
 	}
 
 	bool SSLClient::writeData(const std::string& dataToWrite, bool priority) noexcept {
+		std::unique_lock theLock{ this->connectionMutex };
 		if (this->theSocket == SOCKET_ERROR) {
 			return false;
 		}
@@ -304,7 +305,6 @@ namespace DiscordCoreInternal {
 				fd_set writeSet{};
 				int32_t writeNfds{ 0 };
 				FD_ZERO(&writeSet);
-				std::unique_lock theLock{ this->connectionMutex };
 				if (data.size() > 0) {
 					FD_SET(this->theSocket, &writeSet);
 					writeNfds = this->theSocket > writeNfds ? this->theSocket : writeNfds;
@@ -333,13 +333,11 @@ namespace DiscordCoreInternal {
 							amountToCollect = data.size();
 						}
 						newString.insert(newString.begin(), data.begin(), data.begin() + amountToCollect);
-						std::unique_lock theLock{ this->writeMutex };
 						this->outputBuffers.push_back(newString);
 						data.erase(data.begin(), data.begin() + amountToCollect);
 						remainingBytes = data.size();
 					}
 				} else {
-					std::unique_lock theLock{ this->writeMutex };
 					this->outputBuffers.push_back(data);
 				}
 				return true;
@@ -384,7 +382,7 @@ namespace DiscordCoreInternal {
 	}
 
 	std::string SSLClient::getInputBuffer() noexcept {
-		std::unique_lock theLock{ this->readMutex };
+		std::unique_lock theLock{ this->connectionMutex };
 		std::string theReturnString = std::move(this->inputBuffer);
 		this->inputBuffer.clear();
 		return theReturnString;
@@ -399,7 +397,7 @@ namespace DiscordCoreInternal {
 	}
 
 	bool SSLClient::writeDataProcess() noexcept {
-		std::lock_guard theLock02{ this->connectionMutex };
+		std::lock_guard theLock{ this->connectionMutex };
 		if (this->outputBuffers.size() > 0) {
 			this->wantRead = false;
 			this->wantWrite = false;
@@ -446,7 +444,7 @@ namespace DiscordCoreInternal {
 	}
 
 	bool SSLClient::readDataProcess() noexcept {
-		std::lock_guard theLock02{ this->connectionMutex };
+		std::lock_guard theLock{ this->connectionMutex };
 		this->wantRead = false;
 		this->wantWrite = false;
 		std::string serverToClientBuffer{};
@@ -489,7 +487,7 @@ namespace DiscordCoreInternal {
 	}
 
 	int64_t SSLClient::getBytesRead() noexcept {
-		std::unique_lock theLock{ this->readMutex };
+		std::unique_lock theLock{ this->connectionMutex };
 		return this->bytesRead;
 	}
 

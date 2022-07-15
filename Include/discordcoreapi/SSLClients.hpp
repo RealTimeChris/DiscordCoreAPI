@@ -187,8 +187,6 @@ namespace DiscordCoreInternal {
 	  protected:
 		int32_t maxBufferSize{ (1024 * 16) - 1 };
 		std::vector<std::string> outputBuffers{};
-		std::recursive_mutex writeMutex{};
-		std::recursive_mutex readMutex{};
 		std::string inputBuffer{};
 		bool wantWrite{ true };
 		bool wantRead{ false };
