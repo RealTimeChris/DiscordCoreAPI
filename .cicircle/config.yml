@@ -1,69 +1,52 @@
-name: DiscordCoreAPI-CI
-on:
-  push:
-    branches:
-      - 'main'
+version: 2.1
 
-jobs:
-  job:
-    name: ${{ matrix.os }}-${{ github.workflow }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [Linux-x64, Windows-x64]
-        include:
-          - os: Windows-x64
-            triplet: x64-windows
-          - os: Linux-x64
-            triplet: x64-linux
-    env:
-      # Indicates the location of the vcpkg as a Git submodule of the project repository.
-      VCPKG_ROOT: ${{ github.workspace }}/vcpkg
-      # Tells vcpkg where binary packages are stored.
-      VCPKG_DEFAULT_BINARY_CACHE: ${{ github.workspace }}/vcpkg/bincache
+jobs: # basic units of work in a run
+  build:
+    docker: # use the Docker executor
+      # CircleCI node images available at: https://hub.docker.com/r/circleci/node/
+      - image: cimg/node:edge
+    steps: # steps that comprise the `build` job
+      - checkout # check out source code to working directory
+      # Run a step to setup an environment variable
+      # Redirect MY_ENV_VAR into $BASH_ENV
+      - run:
+          name: Checkout github pages repository
+          command: git config --global user.email "40668522+RealTimeChris@users.noreply.github.com" && git config --global user.name "realtimechris"
+      - run: # print the name of the branch we're on
+          name: Download and install Doxygen.
+          command: sudo apt-get install doxygen
+      # Run another step, the same as above; note that you can
+      # invoke environment variable without curly braces.
+      - run:
+         name: Collect the original Repo for the docs.
+        command: git clone https://github.com/RealTimeChris/DiscordCoreAPI-Docs
+      - run:
+        name: Collect the documentation and generate it.
+        command: |
+          git clone https://github.com/RealTimeChris/DiscordCoreAPI --depth=1
+          cd DiscordCoreAPI/Documentation/Doxygen
+          doxygen
+      - run:
+          name: commit and push
+          command: | 
+            cd ..
+            cd ..
+            cd ..
+            cd DiscordCoreAPI-Docs
+            git add .:realtimechris$PERSONAL_ACCESS_TOKEN
+            git commit -m "Updates!"
+            git push origin main
+      - run:
+          name: Clone the data over to the web server.
+          command: |
+            sudo nano TheRealKey.pem ${{ secrets.AWS_KEY }}
+            ssh -i "./TheRealKey.pem" ubuntu@ec2-3-144-10-105.us-east-2.compute.amazonaws.com
+            cd /var/www
+            sudo rm -rf discordcoreapi
+            sudo git clone https://github.com/RealTimeChris/DiscordCoreAPI-Docs --depth=1 ./discordcoreapi
 
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          submodules: true
-      - name: "Create directory '${{ env.VCPKG_DEFAULT_BINARY_CACHE }}'"
-        run: mkdir -p $VCPKG_DEFAULT_BINARY_CACHE
-        shell: bash
-
-      # Setup the build machine with the most recent versions of CMake and Ninja. Both are cached if not already: on subsequent runs both will be quickly restored from GitHub cache service.
-      - uses: lukka/get-cmake@latest
-
-      # Restore both vcpkg and its artifacts from the GitHub cache service.
-      - name: Restore vcpkg and its artifacts.
-        uses: actions/cache@v2
-        with:
-          # The first path is the location of vcpkg: it contains the vcpkg executable and data files, as long as the
-          # built package archives (aka binary cache) which are located by VCPKG_DEFAULT_BINARY_CACHE env var.
-          # The other paths starting with '!' are exclusions: they contain termporary files generated during the build of the installed packages.
-          path: |
-            ${{ env.VCPKG_ROOT }}
-            !${{ env.VCPKG_ROOT }}/buildtrees
-            !${{ env.VCPKG_ROOT }}/packages
-            !${{ env.VCPKG_ROOT }}/downloads
-            !${{ env.VCPKG_ROOT }}/installed
-          # The key is composed in a way that it gets properly invalidated: this must happen whenever vcpkg's Git commit id changes, or the list of packages changes. In this case a cache miss must happen and a new entry with a new key with be pushed to GitHub the cache service.
-          # The key includes: hash of the vcpkg.json file, the hash of the vcpkg Git commit id, and the used vcpkg's triplet. The vcpkg's commit id would suffice, but computing an hash out it does not harm.
-          # Note: given a key, the cache content is immutable. If a cache entry has been created improperly, in order the recreate the right content the key must be changed as well, and it must be brand new (i.e. not existing already).
-          key: |
-            ${{ hashFiles( 'vcpkg.json' ) }}-${{ hashFiles( '.git/modules/vcpkg/HEAD' )}}-${{ matrix.triplet }}
-      # On Windows runners, let's ensure to have the Developer Command Prompt environment setup correctly. As used here the Developer Command Prompt created is targeting x64 and using the default the Windows SDK.
-      - uses: ilammy/msvc-dev-cmd@v1
-
-        
-      # Run CMake to generate Ninja project files, using the vcpkg's toolchain file to resolve and install the dependencies as specified in vcpkg.json.
-      - name: Install dependencies on Linux.
-        if: ${{ matrix.triplet == 'x64-linux' }}
-        run: sudo apt-get install nasm
-
-      - name: Install using vcpkg.
-        run: | 
-            vcpkg install discordcoreapi:${{ matrix.triplet }}
-
-            
-            
+workflows: # a single workflow with a single job called build
+  build:
+    jobs:
+      - build:
+          context: Testing-Env-Vars

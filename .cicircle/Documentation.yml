@@ -1,41 +1,34 @@
-name: Documentation-Build
-on:
-  push:
-    branches:
-      - 'main'
+version: 2.1
 
-jobs:
-  job:
-    name: Documentation-Build
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [Linux-x64]
-        include:
-          - os: Linux-x64
-            triplet: x64-linux
-
-    steps:
-      - name: Checkout github pages repository
-        run: git config --global user.email "40668522+RealTimeChris@users.noreply.github.com" && git config --global user.name "realtimechris"
-        env:
-          PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-
-      - name: Download and install Doxygen.
-        run: sudo apt-get install doxygen
-
-      - name: Collect the original Repo for the docs.
-        run: git clone https://github.com/RealTimeChris/DiscordCoreAPI-Docs
-
-      - name: Collect the documentation and generate it.
-        run: |
-         git clone https://github.com/RealTimeChris/DiscordCoreAPI --depth=1
-         cd DiscordCoreAPI/Documentation/Doxygen
-         doxygen
-
-      - name: commit and push
-        run: | 
+jobs: # basic units of work in a run
+  build:
+    docker: # use the Docker executor
+      # CircleCI node images available at: https://hub.docker.com/r/circleci/node/
+      - image: cimg/node:edge
+    steps: # steps that comprise the `build` job
+      - checkout # check out source code to working directory
+      # Run a step to setup an environment variable
+      # Redirect MY_ENV_VAR into $BASH_ENV
+      - run:
+          name: Checkout github pages repository
+          command: git config --global user.email "40668522+RealTimeChris@users.noreply.github.com" && git config --global user.name "realtimechris"
+      - run: # print the name of the branch we're on
+          name: Download and install Doxygen.
+          command: sudo apt-get install doxygen
+      # Run another step, the same as above; note that you can
+      # invoke environment variable without curly braces.
+      - run:
+         name: Collect the original Repo for the docs.
+        command: git clone https://github.com/RealTimeChris/DiscordCoreAPI-Docs
+      - run:
+        name: Collect the documentation and generate it.
+        command: |
+          git clone https://github.com/RealTimeChris/DiscordCoreAPI --depth=1
+          cd DiscordCoreAPI/Documentation/Doxygen
+          doxygen
+      - run:
+          name: commit and push
+          command: | 
             cd ..
             cd ..
             cd ..
@@ -43,15 +36,17 @@ jobs:
             git add .:realtimechris$PERSONAL_ACCESS_TOKEN
             git commit -m "Updates!"
             git push origin main
-
-      - name: Clone the data over to the web server.
-        run: |
+      - run:
+          name: Clone the data over to the web server.
+          command: |
             sudo nano TheRealKey.pem ${{ secrets.AWS_KEY }}
             ssh -i "./TheRealKey.pem" ubuntu@ec2-3-144-10-105.us-east-2.compute.amazonaws.com
             cd /var/www
             sudo rm -rf discordcoreapi
             sudo git clone https://github.com/RealTimeChris/DiscordCoreAPI-Docs --depth=1 ./discordcoreapi
-        
-    
-            
-            
+
+workflows: # a single workflow with a single job called build
+  build:
+    jobs:
+      - build:
+          context: Testing-Env-Vars
