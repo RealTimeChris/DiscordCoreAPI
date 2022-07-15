@@ -35,6 +35,7 @@ namespace DiscordCoreAPI {
 
 	void CommandController::checkForAndRunCommand(CommandData commandData) {
 		try {
+			std::cout << "INTERACTION CHHECKING FOR AND RUNNING COMMAND 0101!" << std::endl;
 			std::function<void()> theFunction = [=, this]() mutable {
 				std::unique_ptr<BaseFunction> functionPointer{ this->getCommand(convertToLowerCase(commandData.commandName)) };
 				if (functionPointer == nullptr) {
@@ -43,7 +44,9 @@ namespace DiscordCoreAPI {
 				BaseFunctionArguments theArgs{ commandData, this->discordCoreClient };
 				functionPointer->execute(theArgs);
 			};
+			std::cout << "INTERACTION CHHECKING FOR AND RUNNING COMMAND 0202!" << std::endl;
 			this->commandThreadPool.submitTask(theFunction);
+			std::cout << "INTERACTION CHHECKING FOR AND RUNNING COMMAND 0303!" << std::endl;
 
 		} catch (...) {
 			reportException("CommandController::checkForAndRunCommand()");

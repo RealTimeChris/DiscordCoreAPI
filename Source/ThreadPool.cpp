@@ -97,6 +97,7 @@ namespace DiscordCoreInternal {
 	}
 
 	void CommandThreadPool::submitTask(std::function<void()> theFunction) noexcept {
+		std::cout << "INTERACTION SUBMITTINT TASK 0101!" << std::endl;
 		std::unique_lock theLock{ this->theMutex };
 		bool areWeAllBusy{ true };
 		for (auto& [key, value]: this->workerThreads) {
@@ -117,26 +118,23 @@ namespace DiscordCoreInternal {
 		}
 		this->theFunctions.push(theFunction);
 		this->functionCount.store(this->functionCount.load() + 1);
+		std::cout << "INTERACTION SUBMITTINT TASK 0202!" << std::endl;
 	}
 
 	void CommandThreadPool::threadFunction(std::stop_token stopToken, int64_t theIndex) {
-		auto theAtomicBoolPtr = &this->workerThreads[theIndex].areWeCurrentlyWorking;
 		while (!this->areWeQuitting.load() && !stopToken.stop_requested()) {
 			if (this->functionCount.load() > 0) {
 				std::unique_lock theLock01{ this->theMutex, std::defer_lock_t{} };
 				if (theLock01.try_lock()) {
 					if (this->theFunctions.size() > 0) {
+						std::cout << "INTERACTION ACCEPTING TASK 0101!" << std::endl;
 						std::function<void()> functionHandle = this->theFunctions.front();
 						this->functionCount.store(this->functionCount.load() - 1);
 						this->theFunctions.pop();
 						theLock01.unlock();
-						if (theAtomicBoolPtr) {
-							theAtomicBoolPtr->store(true);
-						}
+						this->workerThreads[theIndex].areWeCurrentlyWorking.store(true);
 						functionHandle();
-						if (theAtomicBoolPtr) {
-							theAtomicBoolPtr->store(false);
-						}
+						this->workerThreads[theIndex].areWeCurrentlyWorking.store(false);
 					}
 				}
 			} else if (this->currentCount.load() > this->threadCount.load()) {
@@ -207,7 +205,6 @@ namespace DiscordCoreInternal {
 	}
 
 	void CoRoutineThreadPool::threadFunction(std::stop_token stopToken, int64_t theIndex) {
-		auto theAtomicBoolPtr = &this->workerThreads[theIndex].areWeCurrentlyWorking;
 		while (!this->areWeQuitting.load() && !stopToken.stop_requested()) {			
 			if (this->coroHandleCount.load() > 0) {
 				std::unique_lock theLock01{ this->theMutex, std::defer_lock_t{} };
@@ -217,13 +214,9 @@ namespace DiscordCoreInternal {
 						this->coroHandleCount.store(this->coroHandleCount.load() - 1);
 						this->theCoroutineHandles.pop();
 						theLock01.unlock();
-						if (theAtomicBoolPtr) {
-							theAtomicBoolPtr->store(true);
-						}
+						this->workerThreads[theIndex].areWeCurrentlyWorking.store(true);
 						coroHandle();
-						if (theAtomicBoolPtr) {
-							theAtomicBoolPtr->store(false);
-						}
+						this->workerThreads[theIndex].areWeCurrentlyWorking.store(false);
 					}
 				}
 			} else if (this->currentCount.load() > this->threadCount.load()) {
