@@ -12,7 +12,7 @@ jobs:
           command: 'sudo git clone https://github.com/Microsoft/vcpkg ./vcpkg && cd ./vcpkg && sudo ./bootstrap-vcpkg.sh'
       - run:
           name: Copying over Vcpkg files.
-          command: 'sudo cp -a -v Vcpkg/* vcpkg'
+          command: 'sudo cp -a -v Vcpkg/* vcpkg && sudo apt-get install -y ninja-build'
       - run:
          name: Download and test the Bot-Template.
          command: 'git clone https://github.com/RealTimeChris/Bot-Template-For-DiscordCoreAPI ./TestBot && cd TestBot && cmake -S . --preset Linux-Release && cmake --build --preset Linux-Release && cd "Output Files\Release" && ./DiscordCoreAPI-Bot-Cpp'
