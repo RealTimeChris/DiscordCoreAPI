@@ -48,5 +48,5 @@ jobs: # basic units of work in a run
 workflows: # a single workflow with a single job called build
   build:
     jobs:
-      - Build-Documentation:
+      - Build-Documentation
 
