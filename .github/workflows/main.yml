@@ -1,4 +1,4 @@
-name: hosted-pure-workflow
+name: DiscordCoreAPI-CI
 on: [push, workflow_dispatch]
 
 jobs:
@@ -8,11 +8,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [Linux-x64, Windows-x64]
         include:
-          - os: windows-latest
+          - os: Windows-x64
             triplet: x64-windows
-          - os: ubuntu-latest
+          - os: Linux-x64
             triplet: x64-linux
     env:
       # Indicates the location of the vcpkg as a Git submodule of the project repository.
