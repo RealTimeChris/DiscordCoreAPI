@@ -31,7 +31,7 @@ jobs: # basic units of work in a run
           command: | 
             cd DiscordCoreAPI-Docs
             sudo git config --global --add safe.directory /home/circleci/project/DiscordCoreAPI-Docs
-            sudo git add .:realtimechris$PERSONAL_ACCESS_TOKEN
+            sudo git add .:realtimechris${PERSONAL_ACCESS_TOKEN}
             sudo git commit -m "Updates!"
             sudo git push origin main
       - run:
