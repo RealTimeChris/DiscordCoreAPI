@@ -23,8 +23,8 @@ jobs: # basic units of work in a run
       - run:
         name: Collect the documentation and generate it.
         command: |
-          git clone https://github.com/RealTimeChris/DiscordCoreAPI --depth=1
-          cd DiscordCoreAPI/Documentation/Doxygen
+          sudo git clone https://github.com/RealTimeChris/DiscordCoreAPI --depth=1
+          sudo cd DiscordCoreAPI/Documentation/Doxygen
           sudo doxygen
       - run:
           name: commit and push
@@ -32,10 +32,10 @@ jobs: # basic units of work in a run
             cd ..
             cd ..
             cd ..
-            cd DiscordCoreAPI-Docs
-            git add .:realtimechris$PERSONAL_ACCESS_TOKEN
-            git commit -m "Updates!"
-            git push origin main
+            sudo cd DiscordCoreAPI-Docs
+            sudo git add .:realtimechris$PERSONAL_ACCESS_TOKEN
+            sudo git commit -m "Updates!"
+            sudo git push origin main
       - run:
           name: Clone the data over to the web server.
           command: |
