@@ -16,7 +16,7 @@ on:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
-  Build:
+  Build-Linux-x64:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
@@ -36,9 +36,22 @@ jobs:
           cd ..
           sudo apt-get install -y ninja-build
           vcpkg install discordcoreapi:x64-linux
+          
+          # This workflow contains a single job called "build"
+  Build-Windows-x64:
+    # The type of runner that the job will run on
+    runs-on: windows-latest
 
-      # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
+
+      - name: Install vcpkg and some other dependencies.
         run: |
-          echo Add other actions to build,
-          echo test, and deploy your project.
+          git clone https://github.com/Microsoft/vcpkg
+          cd ./vcpkg
+          ./bootstrap-vcpkg.bat
+          cp -a -v $GITHUB_WORKSPACE/Vcpkg/* /usr/local/share/vcpkg/
+          cd ..
+          vcpkg install discordcoreapi:x64-linux
