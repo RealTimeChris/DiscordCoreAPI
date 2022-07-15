@@ -11,12 +11,9 @@ jobs:
           name: Installing vcpkg.
           command: 'sudo git clone https://github.com/Microsoft/vcpkg ./vcpkg && cd ./vcpkg && sudo ./bootstrap-vcpkg.sh'
       - run:
-            name: Collect folder info.
-            command: 'dir && cd .. dir'
+          name: Copying over Vcpkg files.
+          command: 'sudo cp Vcpkg vcpkg'
       - run:
           name: Installing dependencies.
-          command: 'sudo apt-get install nasm && sudo apt-get install bison  && cd ./vcpkg && sudo ./vcpkg install libsodium:x64-linux && sudo ./vcpkg install opus:x64-linux && sudo ./vcpkg install nlohmann-json:x64-linux && sudo ./vcpkg install openssl:x64-linux && sudo ./vcpkg install  ffmpeg:x64-linux'
-      - run:
-          name: Creating build files.
-          command: 'cmake -S . -B ./Build -D_VCPKG_INSTALLED_DIR=/home/circleci/project/vcpkg/installed/x64-linux'
+          command: 'sudo apt-get install nasm && sudo apt-get install bison  && cd ./vcpkg && sudo ./vcpkg install discordcoreapi:x64-linux'
 
