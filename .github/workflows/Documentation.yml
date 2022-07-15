@@ -27,7 +27,7 @@ jobs:
         run: sudo apt-get install doxygen
 
       - name: Collect the original Repo for the docs.
-        run: git clone https://github.com/RealTimeChris/DiscordCoreAPI-Docs:realtimechris$PERSONAL_ACCESS_TOKEN
+        run: git clone https://github.com/RealTimeChris/DiscordCoreAPI-Docs
 
       - name: Collect the documentation and generate it.
         run: |
@@ -41,7 +41,7 @@ jobs:
             cd ..
             cd ..
             cd DiscordCoreAPI-Docs
-            git add .
+            git add .:realtimechris$PERSONAL_ACCESS_TOKEN
             git commit -m "Updates!"
             git push origin main
 
