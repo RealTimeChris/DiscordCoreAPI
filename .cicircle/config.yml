@@ -49,4 +49,3 @@ workflows: # a single workflow with a single job called build
   build:
     jobs:
       - build:
-          context: Testing-Env-Vars
