@@ -15,7 +15,7 @@ jobs:
       - checkout
       - run:
           name: Install CMAKE
-          command: 'sudo apt-get update && sudo apt-get install -y cmake:3.20'
+          command: 'sudo apt-get update && sudo apt-get install -y cmake=3.20'
 
       - run:
           name: Installing build dependencies
