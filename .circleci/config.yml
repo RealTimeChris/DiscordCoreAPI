@@ -16,13 +16,13 @@ jobs:
           command: sudo apt list --all-versions cmake
       - run:
           name: Install proper Curl.
-          command: 'sudo apt install curl'
+          command: 'sudo snap remove curl && sudo apt install curl'
       - run:
           name: Installing build dependencies
           command: 'sudo apt-get update && sudo apt-get install -y sudo gcc g++ build-essential sudo git cmake libssl-dev zlib1g-dev'
       - run:
           name: Installing vcpkg
-          command: 'sudo git clone https://github.com/Microsoft/vcpkg ./vcpkg && cd ./vcpkg && ./bootstrap-vcpkg.sh'
+          command: 'sudo git clone https://github.com/Microsoft/vcpkg ./vcpkg && cd ./vcpkg && sudo ./bootstrap-vcpkg.sh'
       - run:
           name: Creating Build Files
           command: 'cmake -S . -B ./Build'      
