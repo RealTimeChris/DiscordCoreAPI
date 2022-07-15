@@ -18,8 +18,8 @@ jobs: # basic units of work in a run
       # Run another step, the same as above; note that you can
       # invoke environment variable without curly braces.
       - run:
-         name: Collect the original Repo for the docs.
-        command: git clone https://github.com/RealTimeChris/DiscordCoreAPI-Docs
+          name: Collect the original Repo for the docs.
+          command: git clone https://github.com/RealTimeChris/DiscordCoreAPI-Docs
       - run:
         name: Collect the documentation and generate it.
         command: |
@@ -49,3 +49,4 @@ workflows: # a single workflow with a single job called build
   build:
     jobs:
       - Build-Documentation:
+
