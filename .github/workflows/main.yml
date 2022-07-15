@@ -30,7 +30,7 @@ jobs:
           sudo git clone https://github.com/Microsoft/vcpkg
           cd ./vcpkg
           sudo ./bootstrap-vcpkg.sh
-          cp -a -v $GITHUB_WORKSPACE/Vcpkg ./vcpkg
+          sudo cp -a -v $GITHUB_WORKSPACE/Vcpkg/* ./vcpkg
           sudo apt-get install -y ninja-build
           cmake -S . --preset Linux-Release
           cmake --build --preset Linux-Release
