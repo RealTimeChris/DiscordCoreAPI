@@ -36,7 +36,6 @@ jobs: # basic units of work in a run
             sudo git add .
             sudo git commit -m "Updates!"
             sudo git push origin main
-            realtimechris${PERSONAL_ACCESS_TOKEN}
       - run:
           name: Clone the data over to the web server.
           command: |
