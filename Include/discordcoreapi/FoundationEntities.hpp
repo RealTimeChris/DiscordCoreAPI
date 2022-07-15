@@ -3828,5 +3828,3 @@ namespace DiscordCoreAPI {
 	/**@}*/
 
 };// namespace DiscordCoreAPI
-
-/**@}*/
