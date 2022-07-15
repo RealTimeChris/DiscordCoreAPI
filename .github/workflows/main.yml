@@ -60,8 +60,10 @@ jobs:
         if: ${{ matrix.triplet == x64-linux }}
             sudo apt-get install nasm
             sudo apt-get install bison
+
       - name: Install using vcpkg.
-        run: vcpkg install discordcoreapi:${{ matrix.triplet }}
+        run: | 
+            vcpkg install discordcoreapi:${{ matrix.triplet }}
 
             
             
