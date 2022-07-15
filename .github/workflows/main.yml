@@ -1,5 +1,8 @@
 name: DiscordCoreAPI-CI
-on: [push, workflow_dispatch]
+on:
+  push:
+    branches:
+      - 'main'
 
 jobs:
   job:
