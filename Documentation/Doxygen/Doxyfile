@@ -930,7 +930,7 @@ INPUT                  = ./Documentation-Examples \
                          ./Documentation-Examples/Sticker-Stuff \
                          ./Documentation-Examples/Thread-Stuff \
                          ./Documentation-Examples/User-Stuff \
-                         ./Documentation-Examples/Webhook-Stuff \
+                         ./Documentation-Examples/WebHook-Stuff \
                          ../../Include/discordcoreapi \
                          ../../Source
 
