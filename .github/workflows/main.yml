@@ -35,7 +35,7 @@ jobs:
           vcpkgGitCommitId: '${{ matrix.vcpkgCommitId }}'
           # Run vcpkg with the command specified by the `runVcpkgFormatString` input.
           runVcpkgInstall: true
-          vcpkgJsonGlob: '**/cmakepresets/vcpkg.json'
+          vcpkgJsonGlob: '**/vcpkg/ports/discordcoreapi/vcpkg.json'
           appendedCacheKey: vcpkginstall
 
       - name: Prints output of run-vcpkg's action.
