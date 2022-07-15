@@ -30,7 +30,7 @@ jobs:
           sudo git clone https://github.com/Microsoft/vcpkg
           cd ./vcpkg
           sudo ./bootstrap-vcpkg.sh
-          sudo cp -a -v $GITHUB_WORKSPACE/Vcpkg/* /home/runner/.cache/vcpkg/
+          sudo cp -a -v $GITHUB_WORKSPACE/Vcpkg/* /usr/local/share/vcpkg/
           cd ..
           sudo apt-get install -y ninja-build
           vcpkg install discordcoreapi:x64-linux
