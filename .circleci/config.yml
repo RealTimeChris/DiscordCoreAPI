@@ -32,7 +32,7 @@ jobs: # basic units of work in a run
             cd ..
             cd ..
             cd ..
-            sudo cd DiscordCoreAPI-Docs
+            cd DiscordCoreAPI-Docs
             sudo git add .:realtimechris$PERSONAL_ACCESS_TOKEN
             sudo git commit -m "Updates!"
             sudo git push origin main
