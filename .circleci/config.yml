@@ -22,5 +22,8 @@ jobs:
           name: Creating Build Files
           command: 'cmake -S . -B ./Build'
       - run:
+          name: Installing vcpkg
+          command: 'sudo git clone https://github.com/Microsoft/vcpkg && cd vcpkg && bootstrap-vcpkg.sh'
+      - run:
           name: Creating Binary Files
           command: 'cmake --build --preset Linux-Release'
