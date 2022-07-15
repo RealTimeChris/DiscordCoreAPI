@@ -54,12 +54,11 @@ jobs:
       # On Windows runners, let's ensure to have the Developer Command Prompt environment setup correctly. As used here the Developer Command Prompt created is targeting x64 and using the default the Windows SDK.
       - uses: ilammy/msvc-dev-cmd@v1
 
-      # Run CMake to generate Ninja project files, using the vcpkg's toolchain file to resolve and install the dependencies as specified in vcpkg.json.
-      - name: Install dependencies on Linux.
-        run: |
         if: ${{ matrix.triplet == 'x64-linux' }}
-            sudo apt-get install nasm
-            sudo apt-get install bison
+      # Run CMake to generate Ninja project files, using the vcpkg's toolchain file to resolve and install the dependencies as specified in vcpkg.json.
+        name: Install dependencies on Linux.
+        run: sudo apt-get install nasm
+             sudo apt-get install bison
 
       - name: Install using vcpkg.
         run: | 
