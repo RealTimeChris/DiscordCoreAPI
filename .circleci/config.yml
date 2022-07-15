@@ -1,7 +1,7 @@
 version: 2.1
 
 jobs: # basic units of work in a run
-  build:
+  Build-Documentation:
     docker: # use the Docker executor
       # CircleCI node images available at: https://hub.docker.com/r/circleci/node/
       - image: cimg/base:edge-22.04
@@ -25,7 +25,7 @@ jobs: # basic units of work in a run
         command: |
           git clone https://github.com/RealTimeChris/DiscordCoreAPI --depth=1
           cd DiscordCoreAPI/Documentation/Doxygen
-          doxygen
+          sudo doxygen
       - run:
           name: commit and push
           command: | 
@@ -48,4 +48,4 @@ jobs: # basic units of work in a run
 workflows: # a single workflow with a single job called build
   build:
     jobs:
-      - build:
+      - Build-Documentation:
