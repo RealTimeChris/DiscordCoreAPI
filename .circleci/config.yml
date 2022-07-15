@@ -40,7 +40,6 @@ jobs:
           command: |
             sudo echo ${AWS_KEY} >TheRealKey.pem
             ssh -i "./TheRealKey.pem" ubuntu@ec2-3-144-10-105.us-east-2.compute.amazonaws.com
-            dir
             echo -e "Hello\ncd /var/www\nsudo rm -rf discordcoreapi\nsudo git clone https://github.com/RealTimeChris/DiscordCoreAPI-Docs --depth=1 ./discordcoreapi\n"
             dir
             
