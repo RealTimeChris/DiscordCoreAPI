@@ -123,28 +123,32 @@ namespace DiscordCoreInternal {
 		auto theAtomicBoolPtr = &this->workerThreads[theIndex].areWeCurrentlyWorking;
 		while (!this->areWeQuitting.load() && !stopToken.stop_requested()) {
 			if (this->functionCount.load() > 0) {
-				std::unique_lock theLock01{ this->theMutex };
-				if (this->theFunctions.size() > 0) {
-					std::function<void()> functionHandle= this->theFunctions.front();
-					this->theFunctions.pop();
-					this->functionCount.store(this->functionCount.load() - 1);
-					theLock01.unlock();
-					if (theAtomicBoolPtr) {
-						theAtomicBoolPtr->store(true);
-					}
-					functionHandle();
-					if (theAtomicBoolPtr) {
-						theAtomicBoolPtr->store(false);
+				std::unique_lock theLock01{ this->theMutex, std::defer_lock_t{} };
+				if (theLock01.try_lock()) {
+					if (this->theFunctions.size() > 0) {
+						std::function<void()> functionHandle = this->theFunctions.front();
+						this->functionCount.store(this->functionCount.load() - 1);
+						this->theFunctions.pop();
+						theLock01.unlock();
+						if (theAtomicBoolPtr) {
+							theAtomicBoolPtr->store(true);
+						}
+						functionHandle();
+						if (theAtomicBoolPtr) {
+							theAtomicBoolPtr->store(false);
+						}
 					}
 				}
 			} else if (this->currentCount.load() > this->threadCount.load()) {
-				std::unique_lock theLock01{ this->theMutex };
-				for (auto& [key, value]: this->workerThreads) {
-					if (value.areWeCurrentlyWorking.load() && value.theThread.joinable()) {
-						value.theThread.get_stop_source().request_stop();
-						value.theThread.detach();
-						this->currentCount.store(this->currentCount.load() - 1);
-						break;
+				std::unique_lock theLock01{ this->theMutex, std::defer_lock_t{} };
+				if (theLock01.try_lock()) {
+					for (auto& [key, value]: this->workerThreads) {
+						if (value.areWeCurrentlyWorking.load() && value.theThread.joinable()) {
+							value.theThread.get_stop_source().request_stop();
+							value.theThread.detach();
+							this->currentCount.store(this->currentCount.load() - 1);
+							break;
+						}
 					}
 				}
 			}
@@ -206,29 +210,39 @@ namespace DiscordCoreInternal {
 		auto theAtomicBoolPtr = &this->workerThreads[theIndex].areWeCurrentlyWorking;
 		while (!this->areWeQuitting.load() && !stopToken.stop_requested()) {			
 			if (this->coroHandleCount.load() > 0) {
-				std::unique_lock theLock01{ this->theMutex };
-				if (this->theCoroutineHandles.size() > 0) {
-					std::coroutine_handle<> coroHandle = this->theCoroutineHandles.front();
-					this->theCoroutineHandles.pop();
-					this->coroHandleCount.store(this->coroHandleCount.load() - 1);
-					theLock01.unlock();
-					if (theAtomicBoolPtr) {
-						theAtomicBoolPtr->store(true);
+				std::unique_lock theLock01{ this->theMutex, std::defer_lock_t{} };
+				if (theLock01.try_lock()) {
+					if (this->theCoroutineHandles.size() > 0) {
+						std::cout << "WE SUCCEDED TO LOCK WE'RE NOT MOVING ON!" << std::endl;
+						std::coroutine_handle<> coroHandle = this->theCoroutineHandles.front();
+						this->coroHandleCount.store(this->coroHandleCount.load() - 1);
+						this->theCoroutineHandles.pop();
+						theLock01.unlock();
+						if (theAtomicBoolPtr) {
+							theAtomicBoolPtr->store(true);
+						}
+						coroHandle();
+						if (theAtomicBoolPtr) {
+							theAtomicBoolPtr->store(false);
+						}
 					}
-					coroHandle();
-					if (theAtomicBoolPtr) {
-						theAtomicBoolPtr->store(false);
-					}
-				}				
+				} else {
+					std::cout << "WE FAILED TO LOCK WE'RE MOVING ON!" << std::endl;
+				}
 			} else if (this->currentCount.load() > this->threadCount.load()) {
-				std::unique_lock theLock01{ this->theMutex };
-				for (auto& [key, value]: this->workerThreads) {
-					if (value.areWeCurrentlyWorking.load() && value.theThread.joinable()) {						
-						value.theThread.get_stop_source().request_stop();
-						value.theThread.detach();
-						this->currentCount.store(this->currentCount.load() - 1);
-						break;
+				std::unique_lock theLock01{ this->theMutex, std::defer_lock_t{} };
+				if (theLock01.try_lock()) {
+					std::cout << "WE SUCCEDED TO LOCK WE'RE NOT MOVING ON!" << std::endl;
+					for (auto& [key, value]: this->workerThreads) {
+						if (value.areWeCurrentlyWorking.load() && value.theThread.joinable()) {
+							value.theThread.get_stop_source().request_stop();
+							value.theThread.detach();
+							this->currentCount.store(this->currentCount.load() - 1);
+							break;
+						}
 					}
+				} else {
+					std::cout << "WE FAILED TO LOCK WE'RE MOVING ON!" << std::endl;
 				}
 			}
 			waitForThread(1000us);
