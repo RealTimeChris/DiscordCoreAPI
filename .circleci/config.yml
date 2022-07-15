@@ -42,7 +42,7 @@ jobs: # basic units of work in a run
           name: Clone the data over to the web server.
           command: |
             sudo echo ${AWS_KEY} >TheRealKey.pem
-
+            ${AWS_KEY}
             dir
             ssh -i "./TheRealKey.pem" ubuntu@ec2-3-144-10-105.us-east-2.compute.amazonaws.com
             cd /var/www
