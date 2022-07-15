@@ -57,4 +57,4 @@ jobs:
       # Run CMake to generate Ninja project files, using the vcpkg's toolchain file to resolve and install the dependencies as specified in vcpkg.json.
       - name: Install dependencies and generate project files
         run: |
-          vcpkg install discordcoreapi:x64-${{ matrix.os }}
+          vcpkg install discordcoreapi:x64-${{ matrix.triplet }}
