@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs: 
-  cmake: sensu/cmake@3.20
+  cmake: sensu/cmake@1.0.0
 
 
 jobs:
@@ -10,6 +10,8 @@ jobs:
       - image: "debian:bullseye"
     steps:
       - checkout
+      - cmake/install:
+        version: "3.20"
       - run:
           name: Installing build dependencies
           command: 'apt-get update && apt-get install -y sudo gcc g++ build-essential git cmake libssl-dev zlib1g-dev'
