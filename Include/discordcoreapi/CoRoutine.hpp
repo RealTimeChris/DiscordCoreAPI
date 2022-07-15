@@ -71,17 +71,17 @@ namespace DiscordCoreAPI {
 				this->result = at;
 			}
 
-			auto get_return_object() {
-				return CoRoutine<ReturnType>{ std::coroutine_handle<CoRoutine<ReturnType>::promise_type>::from_promise(*this) };
+			CoRoutine<ReturnType> get_return_object() {
+				return std::coroutine_handle<CoRoutine<ReturnType>::promise_type>::from_promise(*this);
 			}
 
-			auto initial_suspend() {
-				return std::suspend_never{};
+			std::suspend_never initial_suspend() {
+				return {};
 			}
 
-			auto final_suspend() noexcept {
+			std::suspend_always final_suspend() noexcept {
 				this->areWeDone.store(true);
-				return std::suspend_always{};
+				return {};
 			}
 
 			void unhandled_exception() {
@@ -219,17 +219,17 @@ namespace DiscordCoreAPI {
 			void return_void() {
 			}
 
-			auto get_return_object() {
-				return CoRoutine<void>{ std::coroutine_handle<CoRoutine<void>::promise_type>::from_promise(*this) };
+			CoRoutine<void> get_return_object() {
+				return std::coroutine_handle<CoRoutine<void>::promise_type>::from_promise(*this);
 			}
 
-			auto initial_suspend() {
-				return std::suspend_never{};
+			std::suspend_never initial_suspend() {
+				return {};
 			}
 
-			auto final_suspend() noexcept {
+			std::suspend_always final_suspend() noexcept {
 				this->areWeDone.store(true);
-				return std::suspend_always{};
+				return {};
 			}
 
 			void unhandled_exception() {
