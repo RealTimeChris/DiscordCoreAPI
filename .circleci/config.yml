@@ -3,13 +3,11 @@ version: 2.1
 orbs: 
   cmake: sensu/cmake@1.0.0
 
-
 jobs:
   build:
     docker:
       - image: "debian:bullseye"
     steps:
-      - checkout
       - cmake/install:
         version: "3.20"
       - run:
