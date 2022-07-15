@@ -27,6 +27,7 @@ jobs:
             sudo doxygen
       - run:
           name: commit and push
+
           command: | 
             cd DiscordCoreAPI-Docs
             sudo git config --global user.email "40668522+RealTimeChris@users.noreply.github.com"
