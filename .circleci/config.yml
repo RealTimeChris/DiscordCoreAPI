@@ -30,6 +30,8 @@ jobs: # basic units of work in a run
           name: commit and push
           command: | 
             cd DiscordCoreAPI-Docs
+            sudo git config --global user.email "40668522+RealTimeChris@users.noreply.github.com"
+            sudo git config --global user.name "realtimechris"
             sudo git config --global --add safe.directory /home/circleci/project/DiscordCoreAPI-Docs
             sudo git add .
             sudo git commit -m "Updates!"
