@@ -7,7 +7,7 @@ orbs:
 jobs:
   build:
     machine:
-      image: ubuntu-2004:2022.04.2
+      image: ubuntu-2004:2022.06.02
 
     steps:
       - checkout
