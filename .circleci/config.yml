@@ -18,5 +18,5 @@ jobs:
           command: 'sudo apt-get install -y ninja-build && sudo apt-get install nasm && sudo apt-get install bison  && cd ./vcpkg && sudo ./vcpkg install discordcoreapi:x64-linux'
       - run:
          name: Download and test the Bot-Template.
-         command: 'git clone https://github.com/RealTimeChris/Bot-Template-For-DiscordCoreAPI ./TestBot && cd TestBot && cmake -S . --preset Linux-Release && cmake --build --preset Linux-Release && cd "Output Files\Release" && ./DiscordCoreAPI-Bot-Cpp'
+         command: 'git clone https://github.com/RealTimeChris/Bot-Template-For-DiscordCoreAPI ./TestBot && cd TestBot && cmake -S . --preset Linux-Release && cmake --build --preset Linux-Release && cmake --install ./Build/Release && cd "Output Files\Release" && ./DiscordCoreAPI-Bot-Cpp'
       
