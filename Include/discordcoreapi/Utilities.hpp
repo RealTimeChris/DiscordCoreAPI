@@ -837,22 +837,20 @@ namespace DiscordCoreAPI {
 
 		StopWatch(TimeType maxNumberOfMsNew) {
 			std::lock_guard theLock{ this->theMutex };
-			this->maxNumberOfMs = std::chrono::duration_cast<std::chrono::nanoseconds>(DoubleTimeDuration{ maxNumberOfMsNew });
-			this->startTime = std::chrono::system_clock::now().time_since_epoch();
+			this->maxNumberOfMs = DoubleTimePoint{ maxNumberOfMsNew };
+			this->startTime = std::chrono::system_clock::now();
 		}
 
 		uint64_t totalTimePassed() {
 			std::lock_guard theLock{ this->theMutex };
-			DoubleTimeDuration currentTime = std::chrono::system_clock::now().time_since_epoch();
-			DoubleTimeDuration elapsedTime = currentTime - this->startTime;
+			DoubleTimeDuration elapsedTime = std::chrono::system_clock::now() - this->startTime;
 			return std::chrono::duration_cast<TimeType>(elapsedTime).count();
 		}
 
 		bool hasTimePassed() {
 			std::lock_guard theLock{ this->theMutex };
-			DoubleTimeDuration currentTime = std::chrono::system_clock::now().time_since_epoch();
-			DoubleTimeDuration elapsedTime = currentTime - this->startTime;
-			if (elapsedTime >= this->maxNumberOfMs) {
+			DoubleTimeDuration elapsedTime = std::chrono::system_clock::now() - this->startTime;
+			if (elapsedTime >= this->maxNumberOfMs.time_since_epoch()) {
 				return true;
 			} else {
 				return false;
@@ -862,28 +860,26 @@ namespace DiscordCoreAPI {
 		void resetTimer(uint64_t theNewTime = 0) {
 			std::lock_guard theLock{ this->theMutex };
 			if (theNewTime != 0) {
-				this->maxNumberOfMs = DoubleTimeDuration{ theNewTime };
+				this->maxNumberOfMs = DoubleTimePoint{ TimeType{ theNewTime } };
 			}
-			this->startTime = std::chrono::system_clock::now().time_since_epoch();
+			this->startTime = std::chrono::system_clock::now();
 		}
 
 	  protected:
-		DoubleTimeDuration maxNumberOfMs{ 0 };
-		DoubleTimeDuration startTime{ 0 };
+		DoubleTimePoint maxNumberOfMs{};
+		DoubleTimePoint startTime{};
 		std::mutex theMutex{};
 	};
 
 	template<typename ObjectType> bool waitForTimeToPass(UnboundedMessageBlock<ObjectType>& outBuffer, ObjectType& argOne, int32_t timeInMsNew) {
 		StopWatch stopWatch{ std::chrono::milliseconds{ timeInMsNew } };
-		bool didTimePass{ false };
 		while (!outBuffer.tryReceive(argOne)) {
 			std::this_thread::sleep_for(1ms);
 			if (stopWatch.hasTimePassed()) {
-				didTimePass = true;
-				break;
+				return true;
 			}
 		};
-		return didTimePass;
+		return false;
 	}
 
 	/**@}*/
