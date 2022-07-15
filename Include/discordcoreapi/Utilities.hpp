@@ -104,6 +104,11 @@ namespace DiscordCoreInternal {
 	class HttpsClient;
 	class YouTubeAPI;
 
+	template<typename TimeType> void waitForThread(TimeType theTime) {
+		auto end = std::chrono::high_resolution_clock::now() + theTime;
+		std::this_thread::sleep_until(end);
+	}
+
 	enum class WebSocketOpCode : int8_t { Op_Continuation = 0x00, Op_Text = 0x01, Op_Binary = 0x02, Op_Close = 0x08, Op_Ping = 0x09, Op_Pong = 0x0a };
 
 	/// Websocket close codes. \brief Websocket close codes.

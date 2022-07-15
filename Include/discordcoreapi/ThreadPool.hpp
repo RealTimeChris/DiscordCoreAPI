@@ -97,7 +97,7 @@ namespace DiscordCoreInternal {
 
 		~WorkerThread() = default;
 
-		std::atomic_bool theCurrentStatus{ false };
+		std::atomic_bool areWeCurrentlyWorking{ false };
 		std::jthread theThread{};
 	};
 
@@ -113,11 +113,12 @@ namespace DiscordCoreInternal {
 		std::unordered_map<int64_t, WorkerThread> workerThreads{};
 		std::queue<std::function<void(void)>> theFunctions{};
 		std::atomic_bool areWeQuitting{ false };
-		std::condition_variable theCondVar{};
-		int64_t currentCount{ 0 };
-		int64_t currentIndex{ 0 };
-		std::mutex theMutex01{};
-
+		std::atomic_int64_t functionCount{ 0 };
+		std::atomic_int64_t currentCount{ 0 };
+		std::atomic_int64_t currentIndex{ 0 };
+		std::atomic_uint32_t threadCount{};
+		std::mutex theMutex{};
+		
 		void threadFunction(std::stop_token stopToken, int64_t theIndex);
 	};
 
@@ -132,11 +133,12 @@ namespace DiscordCoreInternal {
 	  private:
 		std::unordered_map<int64_t, WorkerThread> workerThreads{};
 		std::queue<std::coroutine_handle<>> theCoroutineHandles{};
+		std::atomic_int64_t coroHandleCount{ 0 };
 		std::atomic_bool areWeQuitting{ false };
-		std::condition_variable theCondVar{};
-		int64_t currentCount{ 0 };
-		int64_t currentIndex{ 0 };
-		std::mutex theMutex01{};
+		std::atomic_int64_t currentCount{ 0 };
+		std::atomic_int64_t currentIndex{ 0 };
+		std::atomic_uint32_t threadCount{};
+		std::mutex theMutex{};
 
 		void threadFunction(std::stop_token stopToken, int64_t theIndex);
 	};
