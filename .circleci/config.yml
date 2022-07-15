@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs: 
-  cmake: sensu/cmake@1.0.0
+  cmake: sensu/cmake@3.20.0
 
 jobs:
   build:
