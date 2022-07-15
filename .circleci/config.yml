@@ -1,9 +1,5 @@
 version: 2.1
 
-orbs: 
-  cmake: sensu/cmake@1.0.0
-
-
 jobs:
   build:
     docker:
@@ -12,20 +8,11 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Install CMAKE
-          command: sudo apt list --all-versions cmake
-      - run:
-          name: Install proper Curl.
-          command: 'sudo apt install curl'
-      - run:
-          name: Installing build dependencies
-          command: 'sudo apt-get update && sudo apt-get install -y sudo gcc g++ build-essential sudo git cmake libssl-dev zlib1g-dev'
-      - run:
-          name: Installing vcpkg
+          name: Installing vcpkg.
           command: 'sudo git clone https://github.com/Microsoft/vcpkg ./vcpkg && cd ./vcpkg && sudo ./bootstrap-vcpkg.sh'
       - run:
-          name: Creating Build Files
-          command: 'cmake -S . -B ./Build -D_VCPKG_INSTALLED_DIR=./installed/x64-linux'
+          name: Installing dependencies.
+          command: 'sudo vcpkg install ffmpeg:x64-linux && sudo vcpkg install openssl:x64-linux && sudo vcpkg install nlohmann-json:x64-linux && sudo vcpkg install libsodium:x64-linux && sudo vcpkg install opus:x64-linux'
       - run:
-          name: Creating Binary Files
-          command: 'cmake --build --preset Linux-Release'
+          name: Creating build files.
+          command: 'cmake -S . -B ./Build -D_VCPKG_INSTALLED_DIR=./installed/x64-linux'
