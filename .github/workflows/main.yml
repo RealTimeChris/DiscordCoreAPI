@@ -39,7 +39,7 @@ jobs:
           # The Git commit id of vcpkg to be checked out. This is only needed because we are not using a submodule.
           vcpkgGitCommitId: '${{ matrix.vcpkgCommitId}}'
           # The vcpkg.json file, which will be part of cache key computation.
-          vcpkgJsonGlob: '**/Vcpkg/ports/vcpkg.json'
+          vcpkgJsonGlob: '**/cmakepresets/vcpkg.json'
 
       - name: Prints output of run-vcpkg's action
         run: echo "root='${{ steps.runvcpkg.outputs.RUNVCPKG_VCPKG_ROOT_OUT }}', triplet='${{ steps.runvcpkg.outputs.RUNVCPKG_VCPKG_DEFAULT_TRIPLET_OUT }}'"
@@ -47,6 +47,6 @@ jobs:
       - name: Run CMake with vcpkg.json manifest
         uses: lukka/run-cmake@v10
         with:
-          cmakeListsTxtPath: '${{ github.workspace }}/CMakeLists.txt'
+          cmakeListsTxtPath: '${{ github.workspace }}/cmakepresets/CMakeLists.txt'
           configurePreset: ninja-multi-vcpkg
           buildPreset: ninja-multi-vcpkg
