@@ -31,7 +31,7 @@ jobs:
         uses: lukka/run-vcpkg@main
         id: runvcpkg
         with:
-          vcpkgDirectory: '${{ runner.workspace }}/../Vcpkg'
+          vcpkgDirectory: '${{ runner.workspace }}/.'
           vcpkgGitCommitId: '${{ matrix.vcpkgCommitId }}'
           # Run vcpkg with the command specified by the `runVcpkgFormatString` input.
           runVcpkgInstall: true
