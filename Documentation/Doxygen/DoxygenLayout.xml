@@ -9,7 +9,6 @@
       <tab type="namespacelist" visible="no" title="" intro=""/>
       <tab type="namespacemembers" visible="no" title="" intro=""/>
     </tab>
-    <tab type="concepts" visible="yes" title="">
     </tab>
     <tab type="interfaces" visible="yes" title="">
       <tab type="interfacelist" visible="yes" title="" intro=""/>
@@ -90,7 +89,6 @@
       <constantgroups visible="yes" title=""/>
       <interfaces visible="yes" title=""/>
       <classes visible="yes" title="Classes and Structures"/>
-      <concepts visible="yes" title=""/>
       <structs visible="yes" title=""/>
       <exceptions visible="yes" title=""/>
       <typedefs title=""/>
@@ -113,13 +111,6 @@
     <authorsection visible="yes"/>
   </namespace>
 
-  <!-- Layout definition for a concept page -->
-  <concept>
-    <briefdescription visible="yes"/>
-    <definition visible="yes" title=""/>
-    <authorsection visible="yes"/>
-  </concept>
-
   <!-- Layout definition for a file page -->
   <file>
     <briefdescription visible="yes"/>
@@ -133,7 +124,6 @@
       <structs visible="yes" title=""/>
       <exceptions visible="yes" title=""/>
       <namespaces visible="yes" title=""/>
-      <concepts visible="yes" title=""/>
       <constantgroups visible="yes" title=""/>
       <defines title=""/>
       <typedefs title=""/>
@@ -166,7 +156,6 @@
       <dirs visible="yes" title=""/>
       <files visible="no" title=""/>
       <namespaces visible="yes" title=""/>
-      <concepts visible="yes" title=""/>
       <classes visible="yes" title="Classes and Structures"/>
       <defines title=""/>
       <typedefs title=""/>
