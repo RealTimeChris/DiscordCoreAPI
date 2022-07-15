@@ -11,6 +11,9 @@ jobs:
           name: Installing vcpkg.
           command: 'sudo git clone https://github.com/Microsoft/vcpkg ./vcpkg && cd ./vcpkg && sudo ./bootstrap-vcpkg.sh'
       - run:
+            name: Collect folder info.
+            command: 'dir && cd .. dir'
+      - run:
           name: Installing dependencies.
           command: 'sudo apt-get install nasm && sudo apt-get install bison  && cd ./vcpkg && sudo ./vcpkg install libsodium:x64-linux && sudo ./vcpkg install opus:x64-linux && sudo ./vcpkg install nlohmann-json:x64-linux && sudo ./vcpkg install openssl:x64-linux && sudo ./vcpkg install  ffmpeg:x64-linux'
       - run:
