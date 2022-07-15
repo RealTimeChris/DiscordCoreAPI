@@ -7,7 +7,7 @@ jobs:
     steps:
       - add_ssh_keys:
           fingerprints:
-            AAAAC3NzaC1lZDI1NTE5AAAAIBDTjxCayuo6kb61Lgqn1Newq7sJMsavph94FFMlnvdQ
+            TNhd8QiQG2hhF5l45TfEwgPyeVIC1v7CzJ2f3UgHfNQ
       - checkout 
       - run:
           name: Checkout github pages repository
