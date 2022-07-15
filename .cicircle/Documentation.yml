@@ -1,0 +1,57 @@
+name: Documentation-Build
+on:
+  push:
+    branches:
+      - 'main'
+
+jobs:
+  job:
+    name: Documentation-Build
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [Linux-x64]
+        include:
+          - os: Linux-x64
+            triplet: x64-linux
+
+    steps:
+      - name: Checkout github pages repository
+        run: git config --global user.email "40668522+RealTimeChris@users.noreply.github.com" && git config --global user.name "realtimechris"
+        env:
+          PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+
+      - name: Download and install Doxygen.
+        run: sudo apt-get install doxygen
+
+      - name: Collect the original Repo for the docs.
+        run: git clone https://github.com/RealTimeChris/DiscordCoreAPI-Docs
+
+      - name: Collect the documentation and generate it.
+        run: |
+         git clone https://github.com/RealTimeChris/DiscordCoreAPI --depth=1
+         cd DiscordCoreAPI/Documentation/Doxygen
+         doxygen
+
+      - name: commit and push
+        run: | 
+            cd ..
+            cd ..
+            cd ..
+            cd DiscordCoreAPI-Docs
+            git add .:realtimechris$PERSONAL_ACCESS_TOKEN
+            git commit -m "Updates!"
+            git push origin main
+
+      - name: Clone the data over to the web server.
+        run: |
+            sudo nano TheRealKey.pem ${{ secrets.AWS_KEY }}
+            ssh -i "./TheRealKey.pem" ubuntu@ec2-3-144-10-105.us-east-2.compute.amazonaws.com
+            cd /var/www
+            sudo rm -rf discordcoreapi
+            sudo git clone https://github.com/RealTimeChris/DiscordCoreAPI-Docs --depth=1 ./discordcoreapi
+        
+    
+            
+            
