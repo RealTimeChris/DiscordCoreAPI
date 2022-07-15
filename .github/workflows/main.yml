@@ -25,9 +25,12 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
 
-      # Runs a single command using the runners shell
-      - name: Run a one-line script
+      - name: Install vcpkg and some other dependencies.
         run: | 
+          sudo git clone https://github.com/Microsoft/vcpkg
+          cd ./vcpkg
+          sudo ./bootstrap-vcpkg.sh
+          cp -a -v $GITHUB_WORKSPACE/Vcpkg ./vcpkg
           sudo apt-get install -y ninja-build
           cmake -S . --preset Linux-Release
           cmake --build --preset Linux-Release
