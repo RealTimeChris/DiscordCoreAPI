@@ -15,5 +15,5 @@ jobs:
           command: 'sudo apt-get install nasm && sudo apt-get install bison  && cd ./vcpkg && sudo ./vcpkg install libsodium:x64-linux && sudo ./vcpkg install opus:x64-linux && sudo ./vcpkg install nlohmann-json:x64-linux && sudo ./vcpkg install openssl:x64-linux && sudo ./vcpkg install  ffmpeg:x64-linux'
       - run:
           name: Creating build files.
-          command: 'cmake -S . -B ./Build -D_VCPKG_INSTALLED_DIR=./vcpkg/installed/'
+          command: 'cmake -S . -B ./Build -D_VCPKG_INSTALLED_DIR=./vcpkg/installed/x64-linux'
 
