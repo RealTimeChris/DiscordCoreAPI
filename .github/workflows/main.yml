@@ -53,6 +53,6 @@ jobs:
           cd ./vcpkg2
           ./bootstrap-vcpkg.bat
           cd ..
-          cp -a -v $GITHUB_WORKSPACE/Vcpkg/* ./vcpkg2/
+          xcopy $GITHUB_WORKSPACE/Vcpkg/* ./vcpkg2/ /s /q
           cd ..
           vcpkg install discordcoreapi:x64-linux
