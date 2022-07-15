@@ -56,7 +56,7 @@ jobs:
 
         
       # Run CMake to generate Ninja project files, using the vcpkg's toolchain file to resolve and install the dependencies as specified in vcpkg.json.
-        name: Install dependencies on Linux.
+      - name: Install dependencies on Linux.
         if: ${{ matrix.triplet == 'x64-linux' }}
         run: sudo apt-get install nasm
              sudo apt-get install bison
