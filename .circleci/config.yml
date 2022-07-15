@@ -18,10 +18,7 @@ jobs:
           command: 'sudo apt-get update && sudo apt-get install -y sudo gcc g++ build-essential sudo git cmake libssl-dev zlib1g-dev'
       - run:
           name: Creating Build Files
-          command: 'cmake -H. -Bbuild'
+          command: 'cmake -S . -B ./Build'
       - run:
           name: Creating Binary Files
-          command: 'cmake --build build'
-      - run:
-          name: Testing installation
-          command: 'cmake --build build --target install'
+          command: 'cmake --build --preset Linux-Release'
