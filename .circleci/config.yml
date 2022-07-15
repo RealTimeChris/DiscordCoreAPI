@@ -39,7 +39,6 @@ jobs:
           command: |
             sudo echo ${AWS_KEY} >TheRealKey.pem
             sudo nano TheRealKey.pem
-            dir
             sudo ufw allow 22
             ssh -i "./TheRealKey.pem" ubuntu@ec2-3-144-10-105.us-east-2.compute.amazonaws.com
             cd /var/www
