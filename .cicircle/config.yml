@@ -4,7 +4,7 @@ jobs: # basic units of work in a run
   build:
     docker: # use the Docker executor
       # CircleCI node images available at: https://hub.docker.com/r/circleci/node/
-      - image: cimg/node:edge
+      - image: cimg/base:edge-22.04
     steps: # steps that comprise the `build` job
       - checkout # check out source code to working directory
       # Run a step to setup an environment variable
