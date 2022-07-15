@@ -1,4 +1,4 @@
-name: hosted-ninja-vcpkg-install-autocache
+name: hosted-pure-workflow
 on: [push, workflow_dispatch]
 
 jobs:
@@ -11,44 +11,58 @@ jobs:
         os: [ubuntu-latest, macos-latest, windows-latest]
         include:
           - os: windows-latest
-            vcpkgCommitId: 'b7e3819bb81c498c30d5686ebf23280d4e50e085'
+            triplet: x64-windows
           - os: ubuntu-latest
-            vcpkgCommitId: 'b7e3819bb81c498c30d5686ebf23280d4e50e085'
+            triplet: x64-linux
           - os: macos-latest
-            vcpkgCommitId: 'b7e3819bb81c498c30d5686ebf23280d4e50e085'
+            triplet: x64-osx
+    env:
+      # Indicates the location of the vcpkg as a Git submodule of the project repository.
+      VCPKG_ROOT: ${{ github.workspace }}/vcpkg
+      # Tells vcpkg where binary packages are stored.
+      VCPKG_DEFAULT_BINARY_CACHE: ${{ github.workspace }}/vcpkg/bincache
 
     steps:
       - uses: actions/checkout@v2
         with:
           submodules: true
+      - name: "Create directory '${{ env.VCPKG_DEFAULT_BINARY_CACHE }}'"
+        run: mkdir -p $VCPKG_DEFAULT_BINARY_CACHE
+        shell: bash
 
+      # Setup the build machine with the most recent versions of CMake and Ninja. Both are cached if not already: on subsequent runs both will be quickly restored from GitHub cache service.
       - uses: lukka/get-cmake@latest
-      - name: List $RUNNER_WORKSPACE before build
-        run: find $RUNNER_WORKSPACE
-        shell: bash
 
-      - name: Restore artifacts, or run vcpkg, build (and cache artifacts as post step)
-        uses: lukka/run-vcpkg@main
-        id: runvcpkg
+      # Restore both vcpkg and its artifacts from the GitHub cache service.
+      - name: Restore vcpkg and its artifacts.
+        uses: actions/cache@v2
         with:
-          vcpkgDirectory: '${{ runner.workspace }}/.'
-          vcpkgGitCommitId: '${{ matrix.vcpkgCommitId }}'
-          # Run vcpkg with the command specified by the `runVcpkgFormatString` input.
-          runVcpkgInstall: true
-          vcpkgJsonGlob: '**/Vcpkg/ports/discordcoreapi/vcpkg.json'
-          appendedCacheKey: vcpkginstall
+          # The first path is the location of vcpkg: it contains the vcpkg executable and data files, as long as the
+          # built package archives (aka binary cache) which are located by VCPKG_DEFAULT_BINARY_CACHE env var.
+          # The other paths starting with '!' are exclusions: they contain termporary files generated during the build of the installed packages.
+          path: |
+            ${{ env.VCPKG_ROOT }}
+            !${{ env.VCPKG_ROOT }}/buildtrees
+            !${{ env.VCPKG_ROOT }}/packages
+            !${{ env.VCPKG_ROOT }}/downloads
+            !${{ env.VCPKG_ROOT }}/installed
+          # The key is composed in a way that it gets properly invalidated: this must happen whenever vcpkg's Git commit id changes, or the list of packages changes. In this case a cache miss must happen and a new entry with a new key with be pushed to GitHub the cache service.
+          # The key includes: hash of the vcpkg.json file, the hash of the vcpkg Git commit id, and the used vcpkg's triplet. The vcpkg's commit id would suffice, but computing an hash out it does not harm.
+          # Note: given a key, the cache content is immutable. If a cache entry has been created improperly, in order the recreate the right content the key must be changed as well, and it must be brand new (i.e. not existing already).
+          key: |
+            ${{ hashFiles( 'vcpkg.json' ) }}-${{ hashFiles( '.git/modules/vcpkg/HEAD' )}}-${{ matrix.triplet }}
+      # On Windows runners, let's ensure to have the Developer Command Prompt environment setup correctly. As used here the Developer Command Prompt created is targeting x64 and using the default the Windows SDK.
+      - uses: ilammy/msvc-dev-cmd@v1
 
-      - name: Prints output of run-vcpkg's action.
-        run: echo "root='${{ steps.runvcpkg.outputs.RUNVCPKG_VCPKG_ROOT_OUT }}', triplet='${{ steps.runvcpkg.outputs.RUNVCPKG_VCPKG_DEFAULT_TRIPLET_OUT }}' "
-
-      - name: Run CMake with Ninja
-        uses: lukka/run-cmake@v10
-        with:
-          runVcpkgFormatString: '[`install`, `--recurse`, `$[env.VCPKG_INSTALLED_DIR]`, `--triplet`, `$[env.VCPKG_DEFAULT_TRIPLET]`]'
-          cmakeListsTxtPath: '${{ github.workspace }}/CMakeLists.txt'
-          configurePreset: 'Windows-Release'
-          buildPreset: 'Windows-Release'
-
-      - name: List $RUNNER_WORKSPACE after build
-        run: find $RUNNER_WORKSPACE
-        shell: bash
+      # Run CMake to generate Ninja project files, using the vcpkg's toolchain file to resolve and install the dependencies as specified in vcpkg.json.
+      - name: Install dependencies and generate project files
+        run: |
+          cmake --preset ninja-multi-vcpkg
+      # Build the whole project with Ninja (which is spawn by CMake). Debug configuration.
+      - name: Build (Debug)
+        run: |
+          cmake --build --preset ninja-multi-vcpkg-debug
+      # Test the whole project with CTest.
+      - name: Test (Debug)
+        run: |
+          ctest --preset ninja-multi-vcpkg-debug
