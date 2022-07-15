@@ -31,11 +31,11 @@ jobs:
         uses: lukka/run-vcpkg@main
         id: runvcpkg
         with:
-          vcpkgDirectory: '${{ runner.workspace }}/b/vcpkg'
+          vcpkgDirectory: '${{ runner.workspace }}/../Vcpkg'
           vcpkgGitCommitId: '${{ matrix.vcpkgCommitId }}'
           # Run vcpkg with the command specified by the `runVcpkgFormatString` input.
           runVcpkgInstall: true
-          vcpkgJsonGlob: '**/vcpkg/ports/discordcoreapi/vcpkg.json'
+          vcpkgJsonGlob: '**/Vcpkg/ports/discordcoreapi/vcpkg.json'
           appendedCacheKey: vcpkginstall
 
       - name: Prints output of run-vcpkg's action.
