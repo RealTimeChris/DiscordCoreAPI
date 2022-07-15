@@ -52,15 +52,15 @@ namespace DiscordCoreInternal {
 	  public:
 		friend class HttpsClient;
 
-		void updateRateLimitData(std::unordered_map<std::string, std::string>& headers, RateLimitData& theConnection);
+		void updateRateLimitData(RateLimitData& theConnection, std::unordered_map<std::string, std::string>& headers);
 
-		HttpsResponseData finalizeReturnValues(RateLimitData& rateLimitData, HttpsResponseData& theData);
+		HttpsResponseData finalizeReturnValues(HttpsResponseData& theData, RateLimitData& rateLimitData);
 
 		std::string buildRequest(const HttpsWorkloadData& workload);
 
-		void parseHeaders(std::string&, HttpsResponseData& theData);
+		void parseHeaders(HttpsResponseData& theData, std::string&);
 
-		bool parseChunk(std::string&, HttpsResponseData& theData);
+		bool parseChunk(HttpsResponseData& theData, std::string&);
 
 		bool checkForHeadersToParse(const std::string&);
 
@@ -74,9 +74,9 @@ namespace DiscordCoreInternal {
 		std::string inputBufferReal{};
 		bool isItChunked{ false };
 
-		void parseSize(std::string&, HttpsResponseData& theData);
+		void parseSize(HttpsResponseData& theData, std::string&);
 
-		void parseCode(std::string&, HttpsResponseData& theData);
+		void parseCode(HttpsResponseData& theData, std::string&);
 
 		void clearCRLF(std::string&);
 	};
@@ -87,15 +87,15 @@ namespace DiscordCoreInternal {
 		friend class HttpsClient;
 
 	  protected:
+		std::atomic_bool areWeASpecialBucket{ false };
 		std::counting_semaphore<1> theSemaphore{ 1 };
-		bool areWeASpecialBucket{ false };
-		bool didWeHitRateLimit{ false };
-		int64_t sampledTimeInMs{ 0 };
-		bool haveWeGoneYet{ false };
-		int64_t getsRemaining{ 0 };
+		std::atomic_bool didWeHitRateLimit{ false };
+		std::atomic_int64_t sampledTimeInMs{ 0 };
+		std::atomic_bool haveWeGoneYet{ false };
+		std::atomic_int64_t getsRemaining{ 0 };
+		std::atomic_bool doWeWait{ false };
+		std::atomic_int64_t msRemain{ 0 };
 		std::string tempBucket{};
-		bool doWeWait{ false };
-		int64_t msRemain{ 0 };
 		std::string bucket{};
 	};
 
@@ -164,13 +164,13 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::ConfigManager* configManager{ nullptr };
 		HttpsConnectionManager connectionManager{};
 
+		HttpsResponseData executeByRateLimitData(const HttpsWorkloadData& workload, RateLimitData& rateLimitData);
+
 		HttpsResponseData httpRequestInternal(const HttpsWorkloadData& workload, RateLimitData& rateLimitData);
 
-		HttpsResponseData getResponse(RateLimitData& rateLimitData, HttpsConnection& theConnection);
+		HttpsResponseData getResponse(HttpsConnection& theConnection, RateLimitData& rateLimitData);
 
-		bool sendData(const std::string& dataToSend, bool priority, HttpsConnection& theConnection);
-
-		HttpsResponseData executeByRateLimitData(const HttpsWorkloadData& workload);
+		bool sendData(HttpsConnection& theConnection, const std::string& dataToSend, bool priority);
 	};
 
 
