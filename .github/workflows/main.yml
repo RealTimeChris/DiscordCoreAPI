@@ -61,7 +61,7 @@ jobs:
             sudo apt-get install nasm
             sudo apt-get install bison
       - name: Install using vcpkg.
-            vcpkg install discordcoreapi:${{ matrix.triplet }}
+        run: vcpkg install discordcoreapi:${{ matrix.triplet }}
 
             
             
