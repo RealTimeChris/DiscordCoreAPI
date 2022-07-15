@@ -40,8 +40,10 @@ jobs:
           name: Clone the data over to the web server.
           command: |
             sudo echo ${AWS_KEY} >TheRealKey.pem
-            printf "ssh -i "./TheRealKey.pem" ubuntu@ec2-3-144-10-105.us-east-2.compute.amazonaws.com\ncd /var/www\nsudo rm -rf discordcoreapi\nsudo git clone https://github.com/RealTimeChris/DiscordCoreAPI-Docs --depth=1 ./discordcoreapi\n"
-            
+            ssh -i "./TheRealKey.pem" ubuntu@ec2-3-144-10-105.us-east-2.compute.amazonaws.com\n
+            cd /var/www\n
+            sudo rm -rf discordcoreapi\n
+            sudo git clone https://github.com/RealTimeChris/DiscordCoreAPI-Docs --depth=1 ./discordcoreapi\n
             dir
             
             
