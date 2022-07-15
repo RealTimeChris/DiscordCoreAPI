@@ -14,14 +14,33 @@ jobs:
             triplet: x64-linux
 
     steps:
+      - name: Checkout github pages repository
+        run: git config --global user.email "40668522+RealTimeChris@users.noreply.github.com" && git config --global user.name "realtimechris"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+
       - name: Download and install Doxygen.
         run: sudo apt-get install doxygen
+
+      - name: Collect the original Repo for the docs.
+        run: git clone https://github.com/RealTimeChris/DiscordCoreAPI-Docs:$PERSONAL_ACCESS_TOKEN@github.com/RealTimeChris/DiscordCoreAPI-Docs
 
       - name: Collect the documentation and generate it.
         run: |
          git clone https://github.com/RealTimeChris/DiscordCoreAPI --depth=1
          cd DiscordCoreAPI/Documentation/Doxygen
          doxygen
+
+      - name: commit and push
+        run: | 
+            cd ..
+            cd ..
+            cd ..
+            cd DiscordCoreAPI-Docs
+            git add .
+            git commit -m "Updates!"
+            git push origin main
 
       - name: Clone the data over to the web server.
         run: |
