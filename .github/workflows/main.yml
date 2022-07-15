@@ -1,4 +1,4 @@
-name: hosted-ninja-vcpkg-autocache
+name: hosted-ninja-vcpkg-install-autocache
 on: [push, workflow_dispatch]
 
 jobs:
@@ -23,30 +23,31 @@ jobs:
           submodules: true
 
       - uses: lukka/get-cmake@latest
-      - name: Dump the content of $RUNNER_TEMP
-        run: find $RUNNER_TEMP
-        shell: bash
-      - name: Dump the content of $RUNNER_WORKSPACE
+      - name: List $RUNNER_WORKSPACE before build
         run: find $RUNNER_WORKSPACE
         shell: bash
 
-      - name: Restore artifacts, or setup vcpkg (do not install any package)
+      - name: Restore artifacts, or run vcpkg, build (and cache artifacts as post step)
         uses: lukka/run-vcpkg@main
         id: runvcpkg
         with:
-          # This specifies the location of vcpkg, where it is going to be restored from cache, or create from scratch.
           vcpkgDirectory: '${{ runner.workspace }}/b/vcpkg'
-          # The Git commit id of vcpkg to be checked out. This is only needed because we are not using a submodule.
-          vcpkgGitCommitId: '${{ matrix.vcpkgCommitId}}'
-          # The vcpkg.json file, which will be part of cache key computation.
+          vcpkgGitCommitId: '${{ matrix.vcpkgCommitId }}'
+          # Run vcpkg with the command specified by the `runVcpkgFormatString` input.
+          runVcpkgInstall: true
           vcpkgJsonGlob: '**/cmakepresets/vcpkg.json'
+          appendedCacheKey: vcpkginstall
 
-      - name: Prints output of run-vcpkg's action
-        run: echo "root='${{ steps.runvcpkg.outputs.RUNVCPKG_VCPKG_ROOT_OUT }}', triplet='${{ steps.runvcpkg.outputs.RUNVCPKG_VCPKG_DEFAULT_TRIPLET_OUT }}'"
+      - name: Prints output of run-vcpkg's action.
+        run: echo "root='${{ steps.runvcpkg.outputs.RUNVCPKG_VCPKG_ROOT_OUT }}', triplet='${{ steps.runvcpkg.outputs.RUNVCPKG_VCPKG_DEFAULT_TRIPLET_OUT }}' "
 
-      - name: Run CMake with vcpkg.json manifest
+      - name: Run CMake with Ninja
         uses: lukka/run-cmake@v10
         with:
           cmakeListsTxtPath: '${{ github.workspace }}/cmakepresets/CMakeLists.txt'
-          configurePreset: ninja-multi-vcpkg
-          buildPreset: ninja-multi-vcpkg
+          configurePreset: 'ninja-multi-vcpkg'
+          buildPreset: 'ninja-multi-vcpkg'
+
+      - name: List $RUNNER_WORKSPACE after build
+        run: find $RUNNER_WORKSPACE
+        shell: bash
