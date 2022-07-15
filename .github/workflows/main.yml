@@ -49,10 +49,11 @@ jobs:
 
       - name: Install vcpkg and some other dependencies.
         run: |
-          git clone https://github.com/Microsoft/vcpkg
+          git clone https://github.com/Microsoft/vcpkg ./vcpkg2
           cd ./vcpkg
           dir
           ./bootstrap-vcpkg.bat
-          cp -a -v $GITHUB_WORKSPACE/Vcpkg/* /usr/local/share/vcpkg/
+          cd ..
+          cp -a -v $GITHUB_WORKSPACE/Vcpkg/* ./vcpkg2/
           cd ..
           vcpkg install discordcoreapi:x64-linux
