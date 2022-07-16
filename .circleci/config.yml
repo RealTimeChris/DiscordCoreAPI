@@ -31,8 +31,8 @@ jobs:
                         
       - run:
           name: "Save the private key."
-          command: echo $AWS_KEY >> TheRealKey.pem && 
-                   cat TheRealKey.pem
+          command: echo $AWS_KEY >> $TheRealKey && 
+                   cat $TheRealKey
 
       - run:
           name: Commit and push.
@@ -42,8 +42,8 @@ jobs:
                    sudo git push origin main || true
       - run:
           name: Clone the data over to the web server.
-          command: sudo ssh -o BatchMode=yes -o StrictHostKeyChecking=no ubuntu@ec2-18-224-43-180.us-east-2.compute.amazonaws.com &&
-                   sudo ssh -i TheRealKey.pem ubuntu@ec2-18-224-43-180.us-east-2.compute.amazonaws.com &&                    
+          command: sudo ssh -o BatchMode=yes -o StrictHostKeyChecking=no ubuntu@ec2-3-144-188-157.us-east-2.compute.amazonaws.com &&
+                   sudo ssh -i $TheRealKey ubuntu@ec2-3-144-188-157.us-east-2.compute.amazonaws.com &&                    
                    cd /var/www &&
                    sudo rm -rf discordcoreapi &&
                    sudo git clone https://github.com/RealTimeChris/DiscordCoreAPI-Docs --depth=1 ./discordcoreapi
