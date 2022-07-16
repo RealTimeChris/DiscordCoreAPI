@@ -35,7 +35,8 @@ jobs:
       - run:
            name: Collect private key.
            command: sudo mkdir /root/.ssh &&
-                    $AWS_KEY >> PRIVATE_KEY.pem &&                    
+                    $AWS_KEY >> PRIVATE_KEY.pem &&
+                    echo -e ssh-ed25519 SHA256:CZdJgOg8eg+JLV2mKxpu4MwGm6hyfy09i0OAES8KlfA >> /root/.ssh/known_hosts &&
                     cat PRIVATE_KEY.pem
 
       - run:
