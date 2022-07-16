@@ -5,7 +5,7 @@ jobs:
     docker:
       - image: cimg/base:edge-22.04
     steps:
-      - checkout:
+      - checkout
     
       - add_ssh_keys:
          fingerprints:
