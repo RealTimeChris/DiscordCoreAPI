@@ -21,7 +21,7 @@ jobs:
           name: Collect the documentation and generate it.
           command: sudo git clone https://github.com/RealTimeChris/DiscordCoreAPI --depth=1 && 
                     cd DiscordCoreAPI/Documentation/Doxygen && 
-                    sudo doxygen && || true
+                    sudo doxygen || true
 
       - run:
             name: Add AWS to known hosts.
