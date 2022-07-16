@@ -17,7 +17,7 @@ jobs:
           command: sudo apt-get install doxygen && sudo apt install graphviz && sudo apt-get install openssh-client
       - run:
            name: Add AWS to known_hosts
-           command: sudo ssh-keyscan -H ec2-3-144-10-105.us-east-2.compute.amazonaws.com >> ~/.ssh/known_hosts
+           command: sudo ssh-keyscan -H ec2-user@ec2-3-144-10-105.us-east-2.compute.amazonaws.com >> ~/.ssh/known_hosts
 
       - run:
           name: Collect the documentation and generate it.
