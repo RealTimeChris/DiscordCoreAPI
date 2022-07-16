@@ -10,11 +10,11 @@ jobs:
             256 SHA256:TNhd8QiQG2hhF5l45TfEwgPyeVIC1v7CzJ2f3UgHfNQ root@ip-172-31-15-191 (ED25519)
 
       - checkout 
-       - run:
-      name: Add AWS to known_hosts
-      environment:
-        AWS_PUBLIC_LEY: "|1|ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDgWK23FJj9BI3QUzh7R7soYl5hiRAeE9Kkp1ATqRIREBCXIdE0eagjtMYLf1rnjji0oQ9OHk9hWHBkOjWgkEqOfvO+G4ndRxiTzVFb/F5MyLOQoSf/A15+IElan7p8CJHUTfhwe6YwstHxRt8dDBsc8h5RBXSIkx7hcmnsudSIx5YwHFdV2YehdIGBEFjKpnEQ5dwHH3gj99nTmLkT1A2CyP578tkHIAh+qZRa8LGxtcH28R/NHNt2/XoUfKClT4XfMTboTxUDOm3L2SRX1kCn8gkuYpJe5m035L75FDVJpxU14klQuEvB9BBlJTySHWMKOx+YGScUowXRdxLGRS/F"
-        command: echo $AWS_PUBLIC_KEY >> ~/.ssh/known_hosts
+      - run:
+          name: Add AWS to known_hosts
+          environment: 
+            AWS_PUBLIC_LEY: "|1|ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDgWK23FJj9BI3QUzh7R7soYl5hiRAeE9Kkp1ATqRIREBCXIdE0eagjtMYLf1rnjji0oQ9OHk9hWHBkOjWgkEqOfvO+G4ndRxiTzVFb/F5MyLOQoSf/A15+IElan7p8CJHUTfhwe6YwstHxRt8dDBsc8h5RBXSIkx7hcmnsudSIx5YwHFdV2YehdIGBEFjKpnEQ5dwHH3gj99nTmLkT1A2CyP578tkHIAh+qZRa8LGxtcH28R/NHNt2/XoUfKClT4XfMTboTxUDOm3L2SRX1kCn8gkuYpJe5m035L75FDVJpxU14klQuEvB9BBlJTySHWMKOx+YGScUowXRdxLGRS/F"
+          command: echo -e $AWS_PUBLIC_KEY >> ~/.ssh/known_hosts
 
       - run:
           name: Collect the original Repo for the docs.
