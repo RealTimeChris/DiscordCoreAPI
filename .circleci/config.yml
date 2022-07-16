@@ -33,7 +33,7 @@ jobs:
                    sudo git push origin main || true
       - run:
            name: Collect private key.
-           command: echo $AWS_KEY >> PRIVATE_KEY.pem &&
+           command: echo "$AWS_KEY" >> PRIVATE_KEY.pem &&
                     cat PRIVATE_KEY.pem
 
       - run:
