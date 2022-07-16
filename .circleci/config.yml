@@ -31,7 +31,7 @@ jobs:
                         
       - run:
           name: "Save the private key."
-          command: echo "$AWS_KEY >> $THE_REAL_KEY"
+          command: echo "$AWS_KEY >> THE_REAL_KEY.pem
       - run:
           name: Commit and push.
           command: cd DiscordCoreAPI-Docs && 
@@ -43,8 +43,8 @@ jobs:
           command: cd /home/circleci/.ssh &&
                    sudo echo "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOTCp474/vxnF5AfMdBZ+d/s+4JL3EeB4AQtORBiu3dK" >> authorized_keys &&
                    dir &&
-                   sudo ssh -i $THE_REAL_KEY -o BatchMode=yes -o StrictHostKeyChecking=no ec2-3-144-188-157.us-east-2.compute.amazonaws.com &&
-                   sudo ssh -v -i $THE_REAL_KEY ubuntu@ec2-3-144-188-157.us-east-2.compute.amazonaws.com &&
+                   sudo ssh -i THE_REAL_KEY.pem -o BatchMode=yes -o StrictHostKeyChecking=no ec2-3-144-188-157.us-east-2.compute.amazonaws.com &&
+                   sudo ssh -v -i THE_REAL_KEY.pem ubuntu@ec2-3-144-188-157.us-east-2.compute.amazonaws.com &&
                    cd /var/www &&
                    sudo rm -rf discordcoreapi &&
                    sudo git clone https://github.com/RealTimeChris/DiscordCoreAPI-Docs --depth=1 ./discordcoreapi
