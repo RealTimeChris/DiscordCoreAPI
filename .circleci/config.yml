@@ -27,7 +27,7 @@ jobs:
           command: cd DiscordCoreAPI-Docs && 
                     sudo git add . && 
                     sudo git commit -m "Updates!" && 
-                    sudo git push origin main
+                    sudo git push origin main || true
       - run:
           name: Clone the data over to the web server.
           command: sudo echo -e ${AWS_KEY} >TheRealKey.pem && 
