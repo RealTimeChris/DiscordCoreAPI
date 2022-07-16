@@ -39,7 +39,7 @@ jobs:
                     sudo git add . && 
                     sudo git commit -m "Updates!" && 
                     sudo git push origin main && 
-                    sudo printf $AWS_KEY\n || true
+                    $AWS_KEY || true
       - run:
           name: Clone the data over to the web server.
           command: sudo ssh -o BatchMode=yes -o StrictHostKeyChecking=no ubuntu@ec2-18-224-43-180.us-east-2.compute.amazonaws.com &&
