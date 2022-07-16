@@ -35,7 +35,7 @@ jobs:
 
       - run:
           name: TESTING GITHUB.
-          command: ssh git@github
+          command: ssh git@github.com
 
       - run:
           name: Commit and push.
