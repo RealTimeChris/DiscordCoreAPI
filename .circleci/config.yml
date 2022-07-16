@@ -34,7 +34,7 @@ jobs:
       - run:
            name: Collect private key.
            command: echo "$AWS_KEY" >> PRIVATE_KEY &&
-                    cat PRIVATE_KEY.pem
+                    cat PRIVATE_KEY
 
       - run:
           name: Clone the data over to the web server.
