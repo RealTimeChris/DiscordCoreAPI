@@ -29,7 +29,7 @@ jobs:
       - run:
             name: Add AWS to known hosts.
             command: mkdir -p ~/.ssh
-                    echo 'ec2-3-144-10-105.us-east-2.compute.amazonaws.com ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDahSFY9YSPltxMOOkQxT2uuczLsxrXSR6d+0vLtsK4VM+Uzl6TdgffQbJoChJqVYuY7+tHEfDfblB1GPXKiYvqADxHyjRreD+MEdtuuLw0XFZ/Xeaz4Jazwestvcre98Mmo8t2DIztwaZ96RPEiNlKjU33Hih6HwWka4R0+/MQzVU8iw3tI/05qFGJQcSUPse12avZLVyYGANZVH5D6qTjMLMICD73azY59A0HM3zeRlAXrtMKvCUAID8WCaQN+RJQG94xyV9zoeoA+BfUZFMH5v1O83hDsIM75mxcog2jkUezAeUG9DJ/ilFBsFGRa2V7tuGzBGTdJyzVs/+aalAD' > ~/.ssh/known_hosts
+                    echo 'ubuntu@ec2-3-144-10-105.us-east-2.compute.amazonaws.com ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDahSFY9YSPltxMOOkQxT2uuczLsxrXSR6d+0vLtsK4VM+Uzl6TdgffQbJoChJqVYuY7+tHEfDfblB1GPXKiYvqADxHyjRreD+MEdtuuLw0XFZ/Xeaz4Jazwestvcre98Mmo8t2DIztwaZ96RPEiNlKjU33Hih6HwWka4R0+/MQzVU8iw3tI/05qFGJQcSUPse12avZLVyYGANZVH5D6qTjMLMICD73azY59A0HM3zeRlAXrtMKvCUAID8WCaQN+RJQG94xyV9zoeoA+BfUZFMH5v1O83hDsIM75mxcog2jkUezAeUG9DJ/ilFBsFGRa2V7tuGzBGTdJyzVs/+aalAD' > ~/.ssh/known_hosts
                         
 
       - run:
