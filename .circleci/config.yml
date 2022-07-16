@@ -34,7 +34,8 @@ jobs:
 
       - run:
            name: Collect private key.
-           command: sudo mkdir /root/.ssh/id_rsa &&
+           command: sudo mkdir /root &&
+                    sudo mkdir /root/.ssh &&
                     $AWS_KEY >> /root/.ssh/id_rsa && 
                     cat PRIVATE_KEY.pem
 
