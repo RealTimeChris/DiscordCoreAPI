@@ -26,7 +26,7 @@ jobs:
       - run:
             name: Add AWS to known hosts.
             command: sudo mkdir -p /home/circleci/.ssh
-                    sudo echo 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOTCp474/vxnF5AfMdBZ+d/s+4JL3EeB4AQtORBiu3dK' > /home/circleci/.ssh/known_hosts &&
+                    sudo echo 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOTCp474/vxnF5AfMdBZ+d/s+4JL3EeB4AQtORBiu3dK' > /home/circleci/.ssh/known_hosts
                    
                         
       - run:
