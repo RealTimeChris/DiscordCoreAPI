@@ -35,7 +35,7 @@ jobs:
       - run:
           name: "Save the private key."
           command: echo $AWS_KEY >> TheRealKey.pem && 
-                   sudo nano TheRealKey.pem
+                   cat TheRealKey.pem
 
       - run:
           name: Commit and push.
