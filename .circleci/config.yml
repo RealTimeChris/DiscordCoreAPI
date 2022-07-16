@@ -17,7 +17,7 @@ jobs:
 
       - run:
           name: Download and install Doxygen.
-          command: sudo apt-get install doxygen && sudo apt install graphviz && sudo apt-get install ssh
+          command: sudo apt-get install doxygen && sudo apt install graphviz && sudo apt-get install openssh-client
 
       - run:
           name: Collect the documentation and generate it.
