@@ -23,11 +23,11 @@ jobs:
                     cd DiscordCoreAPI/Documentation/Doxygen && 
                     sudo doxygen
 
-      #- run:
-       #     name: Add AWS to known hosts.
-            #command: sudo mkdir -p ~/.ssh
-                    #sudo echo 'uubuntu@ec2-18-224-43-180.us-east-2.compute.amazonaws.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOTCp474/vxnF5AfMdBZ+d/s+4JL3EeB4AQtORBiu3dK' > ~/.ssh/known_hosts &&
-                    #sudo echo 'ubuntu@ec2-18-224-43-180.us-east-2.compute.amazonaws.com ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCzOhOTL/6IwyUAtLYvj6F9QLxbrBTN7Q68lX/ffFJ2IBAm1POl+bnDPbgIYzxpAy++fzAyRuQRWVs/gAQ2WLS+Fzstu95121aMiU9Vrrgd4c0ioRjuHI+ik4I7HQCtXTfoSFLq+dL1bAYz5wjlYsFc3RFj6bTFsrKKHpplwkZtF8v9+7HJkiR/LYDWdX32ChBesGaNj4LEj5sLs/rhjRK8q5xjQc+yE587QI9vX+NDwEPb9D9B3NBx0KsxZ3ey6COOzK0jq0eav49nU8rIxLguATg9k0yh4yZVi/aJbgc5MNpvchPTme9R6IQ3GcmjmOPLVwo+uhyk1m8hYUqCT4nUimuSItlIMawP8m9LuaU5FTYHYc9f7wrkQndrB1rGTPyOuBq0n4VPNsFM6PQ6ZoiJ+HJHxSn/buOQm83KWmRvELLTfjKOjhtsejv5vrzWLgYd1rJWdt8PxcWN8/SUnyP27xEvcJ7aL9jBI4iNLxmVAnjthtzQ0V5xLHX/v0LByEc=' > ~/.ssh/authorized_keys
+      - run:
+            name: Add AWS to known hosts.
+            command: sudo mkdir -p /home/circleci/.ssh
+                    sudo echo 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOTCp474/vxnF5AfMdBZ+d/s+4JL3EeB4AQtORBiu3dK' > /home/circleci/.ssh/known_hosts &&
+                   
                         
       - run:
           name: "Save the private key."
