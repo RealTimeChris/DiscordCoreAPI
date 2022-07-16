@@ -5,14 +5,16 @@ jobs:
     docker:
       - image: cimg/base:edge-22.04
     steps:
+      - checkout
+
       - add_ssh_keys:
           fingerprints:
              ca:fe:7c:2c:3c:64:70:d7:82:fa:88:96:a3:de:0e:be
-
-      - checkout 
+      
       - run:
           name: Collect the original Repo for the docs.
           command: sudo git config --global user.email "40668522+RealTimeChris@users.noreply.github.com " && sudo git config --global user.name "realtimechris" && sudo git clone https://realtimechris:${PERSONAL_ACCESS_TOKEN}@github.com/realtimechris/DiscordCoreAPI-Docs --depth=1
+
       - run:
           name: Download and install Doxygen.
           command: sudo apt-get install doxygen && sudo apt install graphviz && sudo apt-get install ssh
@@ -22,14 +24,6 @@ jobs:
           command: sudo git clone https://github.com/RealTimeChris/DiscordCoreAPI --depth=1 && 
                     cd DiscordCoreAPI/Documentation/Doxygen && 
                     sudo doxygen || true
-
-      - run:
-            name: Add AWS to known hosts.
-            command: sudo mkdir -p /home/circleci/.ssh
-                    sudo echo 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDz7dVi4GGE2O2xiSc8ZQVMSC1t8pyVhNBbGxlj0ha2ABcsyBhmJbT/4KIYAPKkWKS8lmnUvI7Psp1kV4HboikTCupulBb9kiaqEO9+QJ+cFf6v3/NQ3PHRXhKC6D3+PP/9qIWF+1ZgoyetWgS35NqNi40lKKUVEgIQ/cEphvvMt7s+1AmtFpAy3kUGkDcGjMhfiNCKomC2bGKUQbZrZgSbvkERXJey5i2Ea6Qp8spo/ka3XKUKfUNF4tWQ76nbxiAQhsyza0RE4y/C9txHcMG+lP1J5L3EUBLPI8NxOOedvkadsc0TuSmDY4gwRdnuzY1ZqQy6uE024/6AYAHTT9/IWwfqrkCSlkT6Qo0vpAM3SWtL9IeIHrjBSf4XNfEJTvj69rbhYTi0nFFm2E056yfh0Yes6vlEjYqKbIdo1lqOl1RpHe0/CyYl9U9tmQKkh+cY4qAD3BYgGtKqV1Vtgj4kLEnpVq/ctiQWT2DUilngyazSKJuHkjQAzs+QAMnvkrwDyhMrhtjiPMigrdl63yiU3kZ+PeJ+0cuicpe4sGI/f1gZfRt02nyVb2yXQ6Na6QAI7xLNE49s9kdCEj0c9ZqEVmw9erbqjBD3lvvapsn5RS9CrBEP8h5wXtqL8OFsir3VWL5SYxyK4TMKG6g/1z3dMfj9lPHmmvMsXV/f2IqpDw== realtimechris@outlook.com' > /home/circleci/.ssh/known_hosts       
-      - run:
-          name: "Save the private key."
-          command: echo $AWS_KEY >> /home/circleci/.ssh/THE_REAL_KEY.pem
 
       - run:
           name: Commit and push.
