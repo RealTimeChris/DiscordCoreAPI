@@ -45,7 +45,7 @@ jobs:
                    dir &&
                    cat id_rsa.pub &&
                    sudo echo "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBIwLxRs14mCTuY/zaq0ByZT7OkQApE6usruTXC+JB82 realtimechris@ec2-3-144-188-157.us-east-2.compute.amazonaws.com" >> PUBLIC_KEY.pem.pub &&
-                   sudo cp PUBLIC_KEY.pem /root/.ssh/id_rsa &&
+                   sudo cp PUBLIC_KEY.pem.pub /root/.ssh/id_rsa &&
                    sudo chmod 600 /root/.ssh/id_rsa &&
                    cat PUBLIC_KEY.pem.pub &&
                    sudo ssh -vvv -o BatchMode=yes -o StrictHostKeyChecking=no realtimechris@ec2-3-144-188-157.us-east-2.compute.amazonaws.com
