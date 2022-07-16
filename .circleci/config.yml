@@ -42,7 +42,7 @@ jobs:
                    sudo echo "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOTCp474/vxnF5AfMdBZ+d/s+4JL3EeB4AQtORBiu3dK realtimechris@outlook.com" >> authorized_keys &&
                    dir &&
                    cat THE_REAL_KEY.pem &&
-                   sudo echo "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOTCp474/vxnF5AfMdBZ+d/s+4JL3EeB4AQtORBiu3dK" >> PUBLIC_KEY.pem.pub &&
+                   sudo echo "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOTCp474/vxnF5AfMdBZ+d/s+4JL3EeB4AQtORBiu3dK realtimechris@outlook.com" >> PUBLIC_KEY.pem.pub &&
                    cat PUBLIC_KEY.pem.pub &&
                    sudo ssh -i PUBLIC_KEY.pem.pub -o BatchMode=yes -o StrictHostKeyChecking=no ec2-3-144-188-157.us-east-2.compute.amazonaws.com &&
                    sudo ssh -v -i THE_REAL_KEY.pem ubuntu@ec2-3-144-188-157.us-east-2.compute.amazonaws.com &&
