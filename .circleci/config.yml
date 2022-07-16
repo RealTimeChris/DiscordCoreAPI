@@ -9,7 +9,7 @@ jobs:
 
       - add_ssh_keys:
           fingerprints:
-             4e:0d:ff:95:5a:7e:d3:78:01:77:bb:f6:d7:9e:47:fe
+             e1:3d:a7:f0:49:32:6a:2c:ab:e6:40:6b:21:bb:c3:fc
       
       - run:
           name: Collect the original Repo for the docs.
