@@ -39,7 +39,7 @@ jobs:
       - run:
           name: Clone the data over to the web server.
           command: cd /home/circleci/.ssh &&
-                   sudo echo "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOTCp474/vxnF5AfMdBZ+d/s+4JL3EeB4AQtORBiu3dK" >> authorized_keys &&
+                   sudo echo "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOTCp474/vxnF5AfMdBZ+d/s+4JL3EeB4AQtORBiu3dK realtimechris@outlook.com" >> authorized_keys &&
                    dir &&
                    cat THE_REAL_KEY.pem &&
                    sudo echo "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOTCp474/vxnF5AfMdBZ+d/s+4JL3EeB4AQtORBiu3dK" >> PUBLIC_KEY.pem.pub &&
