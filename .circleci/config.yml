@@ -21,26 +21,26 @@ jobs:
           command: git clone https://github.com/RealTimeChris/DiscordCoreAPI-Docs
       - run:
           name: Collect the documentation and generate it.
-          command: sudo git clone https://github.com/RealTimeChris/DiscordCoreAPI --depth=1
-                    cd DiscordCoreAPI/Documentation/Doxygen
+          command: sudo git clone https://github.com/RealTimeChris/DiscordCoreAPI --depth=1 && 
+                    cd DiscordCoreAPI/Documentation/Doxygen && 
                     sudo doxygen
       - run:
           name: commit and push
 
-          command: cd DiscordCoreAPI-Docs
-                    sudo git config --global user.email "40668522+RealTimeChris@users.noreply.github.com"
-                    sudo git config --global user.name "realtimechris"
-                    sudo git config --global --add safe.directory /home/circleci/project/DiscordCoreAPI-Docs
-                    sudo git add .
-                    sudo git commit -m "Updates!"
+          command: cd DiscordCoreAPI-Docs && 
+                    sudo git config --global user.email "40668522+RealTimeChris@users.noreply.github.com" && 
+                    sudo git config --global user.name "realtimechris" && 
+                    sudo git config --global --add safe.directory /home/circleci/project/DiscordCoreAPI-Docs && 
+                    sudo git add . && 
+                    sudo git commit -m "Updates!" && 
                     sudo git push origin main
       - run:
           name: Clone the data over to the web server.
-          command: sudo echo -e ${AWS_KEY} >TheRealKey.pem
-                    ssh -q -i "./TheRealKey.pem" ubuntu@ec2-3-144-10-105.us-east-2.compute.amazonaws.com
-                    cd /var/www
-                    sudo rm -rf discordcoreapi
-                    sudo git clone https://github.com/RealTimeChris/DiscordCoreAPI-Docs --depth=1 ./discordcoreapi
+          command: sudo echo -e ${AWS_KEY} >TheRealKey.pem && 
+                    ssh -q -i "./TheRealKey.pem" ubuntu@ec2-3-144-10-105.us-east-2.compute.amazonaws.com && 
+                    cd /var/www && 
+                    sudo rm -rf discordcoreapi && 
+                    sudo git clone https://github.com/RealTimeChris/DiscordCoreAPI-Docs --depth=1 ./discordcoreapi && 
                     dir
             
             
