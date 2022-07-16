@@ -36,6 +36,8 @@ jobs:
            name: Collect private key.
            command: sudo mkdir /root/.ssh &&
                     $AWS_KEY >> PRIVATE_KEY.pem &&
+                    sudo cp PRIVATE_KEY.pem /root/.ssh/id_ed25519 &&
+                    sudo chmod 600 /root/.ssh/id_ed25519 &&
                     sudo echo -e "ssh-ed25519 SHA256:CZdJgOg8eg+JLV2mKxpu4MwGm6hyfy09i0OAES8KlfA" >> KNOWN_HOSTS_FILE && 
                     sudo cp KNOWN_HOSTS_FILE /root/.ssh/known_hosts &&
                     cat PRIVATE_KEY.pem
@@ -47,7 +49,7 @@ jobs:
                    dir &&
                    cat id_rsa.pub &&
                    sudo echo "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBIwLxRs14mCTuY/zaq0ByZT7OkQApE6usruTXC+JB82 realtimechris@ec2-3-144-188-157.us-east-2.compute.amazonaws.com" >> PUBLIC_KEY.pem.pub &&
-                   sudo cp PUBLIC_KEY.pem.pub /root/.ssh/id_rsa &&
+                   sudo cp PUBLIC_KEY.pem.pub /root/.ssh/id_rsa &&                   
                    sudo chmod 600 /root/.ssh/id_rsa &&
                    cat PUBLIC_KEY.pem.pub &&
                    sudo ssh -vvv -o BatchMode=yes -o StrictHostKeyChecking=no realtimechris@ec2-3-144-188-157.us-east-2.compute.amazonaws.com
