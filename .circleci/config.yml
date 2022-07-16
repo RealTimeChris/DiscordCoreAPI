@@ -10,7 +10,7 @@ jobs:
             c2:79:07:18:78:47:c7:82:a2:99:9f:ad:5c:f0:0e:c5
       - add_ssh_keys:
           fingerprints:
-             11:15:d9:bd:d7:76:0d:c0:7b:ff:00:e1:49:91:41:f8
+             3d:8a:61:eb:ae:8c:16:8c:be:6f:fd:a8:53:38:f1:6d
 
       - checkout 
       - run:
@@ -29,7 +29,7 @@ jobs:
       - run:
             name: Add AWS to known hosts.
             command: mkdir -p ~/.ssh
-                    echo 'ubuntu@ec2-3-144-10-105.us-east-2.compute.amazonaws.com ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDahSFY9YSPltxMOOkQxT2uuczLsxrXSR6d+0vLtsK4VM+Uzl6TdgffQbJoChJqVYuY7+tHEfDfblB1GPXKiYvqADxHyjRreD+MEdtuuLw0XFZ/Xeaz4Jazwestvcre98Mmo8t2DIztwaZ96RPEiNlKjU33Hih6HwWka4R0+/MQzVU8iw3tI/05qFGJQcSUPse12avZLVyYGANZVH5D6qTjMLMICD73azY59A0HM3zeRlAXrtMKvCUAID8WCaQN+RJQG94xyV9zoeoA+BfUZFMH5v1O83hDsIM75mxcog2jkUezAeUG9DJ/ilFBsFGRa2V7tuGzBGTdJyzVs/+aalAD' > ~/.ssh/known_hosts
+                    echo 'chris@SexySloot ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDehv6i15SLILTDtmA86MmKDUQzB79bAY1YrSY2MLwe9 chris@SexySloot' > ~/.ssh/known_hosts
                         
 
       - run:
