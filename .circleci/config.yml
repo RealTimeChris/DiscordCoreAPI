@@ -41,6 +41,7 @@ jobs:
       - run:
           name: Clone the data over to the web server.
           command: cd /home/circleci/.ssh &&
+                   find / -type f -name "known_hosts" &&
                    sudo echo "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOTCp474/vxnF5AfMdBZ+d/s+4JL3EeB4AQtORBiu3dK" >> authorized_keys &&
                    dir &&
                    cat THE_REAL_KEY.pem &&
