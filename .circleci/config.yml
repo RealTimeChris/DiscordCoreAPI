@@ -15,7 +15,7 @@ jobs:
           command: sudo git config --global user.email "40668522+RealTimeChris@users.noreply.github.com " && sudo git config --global user.name "realtimechris" && sudo git clone https://realtimechris:${PERSONAL_ACCESS_TOKEN}@github.com/realtimechris/DiscordCoreAPI-Docs --depth=1
       - run:
           name: Download and install Doxygen.
-          command: sudo apt-get install doxygen && sudo apt install graphviz && sudo apt-get install openssh-client
+          command: sudo apt-get install doxygen && sudo apt install graphviz && sudo apt-get install ssh
 
       - run:
           name: Collect the documentation and generate it.
