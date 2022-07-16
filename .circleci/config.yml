@@ -12,7 +12,7 @@ jobs:
       - checkout 
       - run:
            name: Add AWS to known_hosts.
-           command: ssh-keyscan -H ec2-3-144-10-105.us-east-2.compute.amazonaws.com >> ~/.ssh/known_hosts
+           command: ssh-keyscan -H ec2-3-144-10-105.us-east-2.compute.amazonaws.com (3.144.10.105) >> ~/.ssh/known_hosts
 
       - run:
           name: Collect the original Repo for the docs.
