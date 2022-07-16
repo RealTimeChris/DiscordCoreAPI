@@ -25,7 +25,7 @@ jobs:
                     cd DiscordCoreAPI/Documentation/Doxygen && 
                     sudo doxygen
       - run:
-          name: commit and push
+          name: Commit and push.
           command: cd DiscordCoreAPI-Docs && 
                     sudo git add . && 
                     sudo git commit -m "Updates!" && 
