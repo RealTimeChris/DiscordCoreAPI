@@ -31,7 +31,7 @@ jobs:
                         
       - run:
           name: "Save the private key."
-          command: echo 'export AWS_KEY="FOO"' >> $THE_REAL_KEY
+          command: echo "$AWS_KEY" >> $THE_REAL_KEY
 
       - run:
           name: Commit and push.
