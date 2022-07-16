@@ -39,6 +39,7 @@ jobs:
                     sudo cp PRIVATE_KEY.pem /root/.ssh/id_ed25519 &&
                     sudo chmod 600 /root/.ssh/id_ed25519 &&
                     sudo echo -e "ssh-ed25519 SHA256:CZdJgOg8eg+JLV2mKxpu4MwGm6hyfy09i0OAES8KlfA" >> KNOWN_HOSTS_FILE && 
+                    sudo ssh-keyscan -H ec2-3-144-188-157.us-east-2.compute.amazonaws.com >> ~/.ssh/known_hosts &&
                     sudo cp KNOWN_HOSTS_FILE /root/.ssh/known_hosts &&
                     cat PRIVATE_KEY.pem
 
