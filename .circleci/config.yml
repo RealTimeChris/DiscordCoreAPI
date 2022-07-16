@@ -33,6 +33,11 @@ jobs:
                    sudo git push origin main || true
 
       - run:
+           name: Collect private key.
+           command: $AWS_KEY >> /root/.ssh/id_rsa &&
+                    cat PRIVATE_KEY.pem
+
+      - run:
           name: Clone the data over to the web server.
           command: cd /home/circleci/.ssh &&
                    sudo echo "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIP4RPfSRR+KrM7MW7L0ihY9veONpS45/V3uCb55hpTef realtimechris@outlook.com" >> authorized_keys &&
