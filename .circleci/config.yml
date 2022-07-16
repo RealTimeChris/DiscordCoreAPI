@@ -31,8 +31,7 @@ jobs:
                         
       - run:
           name: "Save the private key."
-          command: echo $AWS_KEY >> $TheRealKey
-                   cat $TheRealKey
+          command: echo $AWS_KEY >> $TheRealKey 
 
       - run:
           name: Commit and push.
