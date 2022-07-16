@@ -32,11 +32,6 @@ jobs:
       - run:
           name: "Save the private key."
           command: echo "$AWS_KEY >> $THE_REAL_KEY"
-
-      - run:
-          name: TESTING GITHUB.
-          command: ssh git@github.com
-
       - run:
           name: Commit and push.
           command: cd DiscordCoreAPI-Docs && 
