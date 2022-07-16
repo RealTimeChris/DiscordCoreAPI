@@ -11,10 +11,13 @@ jobs:
       - checkout 
 
       - run:
+           name: Add AWS to known_hosts.
+           command: ssh-keyscan -H ec2-3-144-10-105.us-east-2.compute.amazonaws.com >> ~/.ssh/known_hosts
+      - run:     
             name: Add AWS to known_hosts
             environment:
-                  AWS_PUBLIC_LEY: "|1|ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDgWK23FJj9BI3QUzh7R7soYl5hiRAeE9Kkp1ATqRIREBCXIdE0eagjtMYLf1rnjji0oQ9OHk9hWHBkOjWgkEqOfvO+G4ndRxiTzVFb/F5MyLOQoSf/A15+IElan7p8CJHUTfhwe6YwstHxRt8dDBsc8h5RBXSIkx7hcmnsudSIx5YwHFdV2YehdIGBEFjKpnEQ5dwHH3gj99nTmLkT1A2CyP578tkHIAh+qZRa8LGxtcH28R/NHNt2/XoUfKClT4XfMTboTxUDOm3L2SRX1kCn8gkuYpJe5m035L75FDVJpxU14klQuEvB9BBlJTySHWMKOx+YGScUowXRdxLGRS/F"
-            command: echo $AWS_PUBLIC_KEY >> ~/.ssh/known_hosts
+                  AWS_PUBLIC_LEY: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDgWK23FJj9BI3QUzh7R7soYl5hiRAeE9Kkp1ATqRIREBCXIdE0eagjtMYLf1rnjji0oQ9OHk9hWHBkOjWgkEqOfvO+G4ndRxiTzVFb/F5MyLOQoSf/A15+IElan7p8CJHUTfhwe6YwstHxRt8dDBsc8h5RBXSIkx7hcmnsudSIx5YwHFdV2YehdIGBEFjKpnEQ5dwHH3gj99nTmLkT1A2CyP578tkHIAh+qZRa8LGxtcH28R/NHNt2/XoUfKClT4XfMTboTxUDOm3L2SRX1kCn8gkuYpJe5m035L75FDVJpxU14klQuEvB9BBlJTySHWMKOx+YGScUowXRdxLGRS/F"
+            command: echo ${AWS_PUBLIC_KEY} >> ~/.ssh/known_hosts
       - run:
           name: Collect the original Repo for the docs.
           command: sudo git config --global user.email "40668522+RealTimeChris@users.noreply.github.com " && sudo git config --global user.name "realtimechris" && sudo git clone https://realtimechris:${PERSONAL_ACCESS_TOKEN}@github.com/realtimechris/DiscordCoreAPI-Docs --depth=1
