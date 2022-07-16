@@ -31,7 +31,7 @@ jobs:
                         
       - run:
           name: "Save the private key."
-          command: echo $AWS_KEY >> THE_REAL_KEY.pem
+          command: echo $AWS_KEY >> /home/circleci/.ssh/THE_REAL_KEY.pem
       - run:
           name: Commit and push.
           command: cd DiscordCoreAPI-Docs && 
