@@ -39,7 +39,7 @@ jobs:
       - run:
           name: Clone the data over to the web server.
           command: sudo echo -e ${AWS_KEY} >TheRealKey.pem && 
-                    sudo ssh -v -i "./TheRealKey.pem" ubuntu@ec2-3-144-10-105.us-east-2.compute.amazonaws.com -q && \n~B''
+                    sudo ssh -v -i "./TheRealKey.pem" ec2-user@ec2-3-144-10-105.us-east-2.compute.amazonaws.com -q && \n~B''
             
             
             
