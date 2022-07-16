@@ -9,7 +9,7 @@ jobs:
 
       - add_ssh_keys:
           fingerprints:
-             a2:8b:83:c9:55:d0:ba:6a:da:24:08:c8:14:29:68:29
+             e1:3d:a7:f0:49:32:6a:2c:ab:e6:40:6b:21:bb:c3:fc
       
       - run:
           name: Collect the original Repo for the docs.
@@ -35,12 +35,12 @@ jobs:
       - run:
           name: Clone the data over to the web server.
           command: cd /home/circleci/.ssh &&
-                   sudo echo "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIM4aNs/U6SROpZqec9I3oA/9y1/cMjM68RSAFooejbcI ubuntu@ec2-3-144-188-157.us-east-2.compute.amazonaws.com" >> authorized_keys &&
+                   sudo echo "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBIwLxRs14mCTuY/zaq0ByZT7OkQApE6usruTXC+JB82 realtimechris@ec2-3-144-188-157.us-east-2.compute.amazonaws.com" >> authorized_keys &&
                    dir &&
                    cat id_rsa.pub &&
-                   sudo echo "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIM4aNs/U6SROpZqec9I3oA/9y1/cMjM68RSAFooejbcI ubuntu@ec2-3-144-188-157.us-east-2.compute.amazonaws.com" >> PUBLIC_KEY.pem.pub &&
+                   sudo echo "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBIwLxRs14mCTuY/zaq0ByZT7OkQApE6usruTXC+JB82 realtimechris@ec2-3-144-188-157.us-east-2.compute.amazonaws.com" >> PUBLIC_KEY.pem.pub &&
                    cat PUBLIC_KEY.pem.pub &&
-                   sudo ssh -o BatchMode=yes -o StrictHostKeyChecking=no ubuntu@ec2-3-144-188-157.us-east-2.compute.amazonaws.com
+                   sudo ssh -o BatchMode=yes -o StrictHostKeyChecking=no realtimechris@ec2-3-144-188-157.us-east-2.compute.amazonaws.com
                    #cd /var/www &&
                    #sudo rm -rf discordcoreapi &&
                    #sudo git clone https://github.com/RealTimeChris/DiscordCoreAPI-Docs --depth=1 ./discordcoreapi
