@@ -28,8 +28,8 @@ jobs:
 
       - run:
             name: Add AWS to known hosts.
-            command: mkdir -p ~/.ssh
-                    echo 'chris@SexySloot ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDehv6i15SLILTDtmA86MmKDUQzB79bAY1YrSY2MLwe9 chris@SexySloot' > ~/.ssh/known_hosts
+            command: sudo mkdir -p ~/.ssh
+                    sudo echo 'chris@SexySloot ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDehv6i15SLILTDtmA86MmKDUQzB79bAY1YrSY2MLwe9 chris@SexySloot' > ~/.ssh/known_hosts
                         
 
       - run:
@@ -40,9 +40,9 @@ jobs:
                     sudo git push origin main || true
       - run:
           name: Clone the data over to the web server.
-          command: sudo echo -e ${AWS_KEY} >TheRealKey.pem &&
+          command: sudo echo ${AWS_KEY} >TheRealKey.pem &&
                     sudo ssh -o BatchMode=yes -o StrictHostKeyChecking=no chris@ec2-3-144-10-105.us-east-2.compute.amazonaws.com "uptime" &&
-                    sudo ssh -i ${AWS_KEY} chris@SexySloot &&
+                    sudo ssh -i TheRealKey.pem chris@SexySloot &&
                     cd /var/www &&
                     sudo rm -rf discordcoreapi &&
                     sudo git clone https://github.com/RealTimeChris/DiscordCoreAPI-Docs --depth=1 ./discordcoreapi
