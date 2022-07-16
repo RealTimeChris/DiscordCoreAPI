@@ -48,7 +48,6 @@ jobs:
                    sudo rm -rf discordcoreapi &&
                    sudo git clone https://github.com/RealTimeChris/DiscordCoreAPI-Docs --depth=1 ./discordcoreapi
             
-            
 
 workflows:
   Build-DiscordCoreAPI:
