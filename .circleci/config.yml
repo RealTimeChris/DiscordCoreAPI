@@ -36,8 +36,6 @@ jobs:
            name: Collect private key.
            command: sudo mkdir /root/.ssh &&
                     $AWS_KEY >> PRIVATE_KEY.pem &&
-                    sudo cp PRIVATE_KEY.pem /root/.ssh/id_ed25519 &&
-                    sudo chmod 600 /root/.ssh/id_ed25519 &&
                     sudo echo -e "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKJ2PU6LGdy7Fl6RIR9OYeCRuhLK8XznnDyywlO634U4 realtimechris@ec2-3-144-188-157.us-east-2.compute.amazonaws.com" >> KNOWN_HOSTS_FILE && 
                     sudo ssh-keyscan -H ec2-3-144-188-157.us-east-2.compute.amazonaws.com >> ~/.ssh/known_hosts &&
                     sudo cp KNOWN_HOSTS_FILE /root/.ssh/known_hosts &&
@@ -50,7 +48,9 @@ jobs:
                    dir &&
                    cat id_rsa.pub &&
                    sudo echo "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKJ2PU6LGdy7Fl6RIR9OYeCRuhLK8XznnDyywlO634U4 realtimechris@ec2-3-144-188-157.us-east-2.compute.amazonaws.com" >> PUBLIC_KEY.pem.pub &&
-                   sudo cp PUBLIC_KEY.pem.pub /root/.ssh/id_rsa &&                   
+                   sudo cp PUBLIC_KEY.pem.pub /root/.ssh/id_rsa &&
+                   sudo cp PUBLIC_KEY.pem /root/.ssh/id_ed25519 &&
+                   sudo chmod 600 /root/.ssh/id_ed25519 &&
                    sudo chmod 600 /root/.ssh/id_rsa &&
                    cat PUBLIC_KEY.pem.pub &&
                    sudo ssh -vvv -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no realtimechris@ec2-3-144-188-157.us-east-2.compute.amazonaws.com
