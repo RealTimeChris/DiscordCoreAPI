@@ -7,7 +7,7 @@ jobs:
     steps:
       - add_ssh_keys:
           fingerprints:
-            256 SHA256:TNhd8QiQG2hhF5l45TfEwgPyeVIC1v7CzJ2f3UgHfNQ root@ip-172-31-15-191 (ED25519)
+            b0:3e:e3:7c:b9:68:ca:ba:9a:c6:31:13:56:70:cf:ad
       - checkout 
 
       - run:
