@@ -37,6 +37,7 @@ jobs:
                    sudo git add . && 
                    sudo git commit -m "Updates!" && 
                    sudo git push origin main || true
+
       - run:
           name: Clone the data over to the web server.
           command: cd /home/circleci/.ssh &&
