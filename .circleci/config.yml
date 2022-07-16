@@ -29,8 +29,8 @@ jobs:
       - run:
             name: Add AWS to known hosts.
             command: sudo mkdir -p ~/.ssh
-                    sudo echo 'ubuntu@ec2-18-188-35-140.us-east-2.compute.amazonaws.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEZdkfp1BtUDcb8mIoIFBOw7uKNEKdirvqnRZ8mxF0fB' > ~/.ssh/known_hosts &&
-                    sudo echo 'ubuntu@ec2-18-188-35-140.us-east-2.compute.amazonaws.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEZdkfp1BtUDcb8mIoIFBOw7uKNEKdirvqnRZ8mxF0fB' > ~/.ssh/authorized_keys
+                    sudo echo 'ubuntu@ec2-18-224-43-180.us-east-2.compute.amazonaws.com ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDDCeeBzpAoDZyvr2YLyJbupnLJIOBbJbdUAo4pjWNYTmOJq4CnDYKIsoYFwuX31f2XoOXGzXT9cb9kaE1isZuXqesAsn7AZ+MbZ1CKEvNKKAMcQ1iuK7kz/H2z2e95JXwkolRv6oKciWwAGWNBMnD3d60DiXLqsmx4XJGyyvDoIuhymO5T4rUAstyIFklJ39bcse79Nn0AI2DZcB16Mr3iwSUUWo0YuOuwrNraxyhQxINgB2pc+WqG8mrEjJy+dtPNBvWD24AnDnw/6HOf8C9WFKt4ePhCXWslYRN6B6mX3lZ829wxpmCtFVeMI26Df6wOGx0Z8AKgQTywSm0jHkrwW6KqGfm+GE4oAHuEMHAKygv9ZZdgAAT5BMmbt+A29kTdGlzjvK/kk3vPdwq9l3sOnoBCaHc8LY1BbrofhHOPIMfH92F+NJ+lhSB5KLCDyS70obqR15Z6KmYnGGwAqo70T0nUF1pMCj50OgdxZEzx1UdbbyX2xSBX2lfYJlTYnjc= realtimechris@outlook.com' > ~/.ssh/known_hosts &&
+                    sudo echo 'ubuntu@ec2-18-224-43-180.us-east-2.compute.amazonaws.com ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDDCeeBzpAoDZyvr2YLyJbupnLJIOBbJbdUAo4pjWNYTmOJq4CnDYKIsoYFwuX31f2XoOXGzXT9cb9kaE1isZuXqesAsn7AZ+MbZ1CKEvNKKAMcQ1iuK7kz/H2z2e95JXwkolRv6oKciWwAGWNBMnD3d60DiXLqsmx4XJGyyvDoIuhymO5T4rUAstyIFklJ39bcse79Nn0AI2DZcB16Mr3iwSUUWo0YuOuwrNraxyhQxINgB2pc+WqG8mrEjJy+dtPNBvWD24AnDnw/6HOf8C9WFKt4ePhCXWslYRN6B6mX3lZ829wxpmCtFVeMI26Df6wOGx0Z8AKgQTywSm0jHkrwW6KqGfm+GE4oAHuEMHAKygv9ZZdgAAT5BMmbt+A29kTdGlzjvK/kk3vPdwq9l3sOnoBCaHc8LY1BbrofhHOPIMfH92F+NJ+lhSB5KLCDyS70obqR15Z6KmYnGGwAqo70T0nUF1pMCj50OgdxZEzx1UdbbyX2xSBX2lfYJlTYnjc= realtimechris@outlook.com' > ~/.ssh/authorized_keys
                         
 
       - run:
