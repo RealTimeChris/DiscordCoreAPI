@@ -10,7 +10,7 @@ jobs:
             c2:79:07:18:78:47:c7:82:a2:99:9f:ad:5c:f0:0e:c5
       - add_ssh_keys:
           fingerprints:
-             3d:8a:61:eb:ae:8c:16:8c:be:6f:fd:a8:53:38:f1:6d
+             c5:77:ff:d0:d2:6b:91:6e:81:9f:2a:57:bf:a2:29:7a
 
       - checkout 
       - run:
@@ -29,7 +29,7 @@ jobs:
       - run:
             name: Add AWS to known hosts.
             command: sudo mkdir -p ~/.ssh
-                    sudo echo 'chris@SexySloot ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDehv6i15SLILTDtmA86MmKDUQzB79bAY1YrSY2MLwe9 chris@SexySloot' > ~/.ssh/known_hosts
+                    sudo echo 'ubuntu@ec2-18-224-43-180.us-east-2.compute.amazonaws.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEZdkfp1BtUDcb8mIoIFBOw7uKNEKdirvqnRZ8mxF0fB' > ~/.ssh/known_hosts
                         
 
       - run:
@@ -41,8 +41,8 @@ jobs:
       - run:
           name: Clone the data over to the web server.
           command: sudo echo ${AWS_KEY} >TheRealKey.pem &&
-                    sudo ssh -o BatchMode=yes -o StrictHostKeyChecking=no chris@ec2-18-224-43-180.us-east-2.compute.amazonaws.com "uptime" &&
-                    sudo ssh -i TheRealKey.pem chris@SexySloot &&
+                    sudo ssh -o BatchMode=yes -o StrictHostKeyChecking=no ubuntu@ec2-18-188-35-140.us-east-2.compute.amazonaws.com "uptime" &&
+                    sudo ssh -i TheRealKey.pem ec2-18-188-35-140.us-east-2.compute.amazonaws.com &&
                     cd /var/www &&
                     sudo rm -rf discordcoreapi &&
                     sudo git clone https://github.com/RealTimeChris/DiscordCoreAPI-Docs --depth=1 ./discordcoreapi
