@@ -31,9 +31,9 @@ jobs:
                     sudo git config --global user.email "40668522+RealTimeChris@users.noreply.github.com" && 
                     sudo git config --global user.name "realtimechris" && 
                     sudo git config --global --add safe.directory /home/circleci/project/DiscordCoreAPI-Docs && 
-                    sudo git add . && 
-                    sudo git commit -m "Updates!" && 
-                    sudo git push origin main
+                    git add . && 
+                    git commit -m "Updates!" && 
+                    git push origin main
       - run:
           name: Clone the data over to the web server.
           command: sudo echo -e ${AWS_KEY} >TheRealKey.pem && 
