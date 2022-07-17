@@ -56,12 +56,6 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	ThreadPool::~ThreadPool() {
-		for (auto& [key, value]: this->threads) {
-			value.request_stop();
-		}
-	}
-
 	std::unordered_map<std::string, std::jthread> ThreadPool::threads{};
 }
 
@@ -120,7 +114,7 @@ namespace DiscordCoreInternal {
 	}
 
 	void CommandThreadPool::threadFunction(std::stop_token& stopToken, int64_t theIndex) {
-		while (!this->areWeQuitting.load() && !stopToken.stop_requested()) {
+		while (!stopToken.stop_requested()) {
 			if (this->functionCount.load() > 0) {
 				std::unique_lock theLock01{ this->theMutex, std::defer_lock_t{} };
 				if (theLock01.try_lock()) {
@@ -149,17 +143,9 @@ namespace DiscordCoreInternal {
 			}
 			waitForThread(1000us);
 		}
-		if (!this->areWeQuitting.load()) {
-			this->workerThreads.erase(theIndex);
-		}
+		this->workerThreads.erase(theIndex);
 	}
 
-	CommandThreadPool::~CommandThreadPool() {
-		this->areWeQuitting.store(true);
-		for (auto& [key, value]: this->workerThreads) {
-			value.theThread.request_stop();
-		}
-	}
 
 	CoRoutineThreadPool::CoRoutineThreadPool() {
 		this->threadCount.store(std::thread::hardware_concurrency() / 2);
@@ -202,7 +188,7 @@ namespace DiscordCoreInternal {
 	}
 
 	void CoRoutineThreadPool::threadFunction(std::stop_token& stopToken, int64_t theIndex) {
-		while (!this->areWeQuitting.load() && !stopToken.stop_requested()) {			
+		while (!stopToken.stop_requested()) {			
 			if (this->coroHandleCount.load() > 0) {
 				std::unique_lock theLock01{ this->theMutex, std::defer_lock_t{} };
 				if (theLock01.try_lock()) {
@@ -231,16 +217,7 @@ namespace DiscordCoreInternal {
 			}
 			waitForThread(1000us);
 		}
-		if (!this->areWeQuitting.load()) {
-			this->workerThreads.erase(theIndex);
-		}
-	}
-
-	CoRoutineThreadPool::~CoRoutineThreadPool() {
-		this->areWeQuitting.store(true);
-		for (auto& [key, value]: this->workerThreads) {
-			value.theThread.request_stop();
-		}
+		this->workerThreads.erase(theIndex);
 	}
 
 }

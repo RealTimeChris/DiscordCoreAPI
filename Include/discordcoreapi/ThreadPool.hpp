@@ -79,7 +79,7 @@ namespace DiscordCoreAPI {
 
 		void stopThread(const std::string& theKey);
 
-		~ThreadPool();
+		~ThreadPool() = default;
 
 	  protected:
 		static std::unordered_map<std::string, std::jthread> threads;
@@ -107,12 +107,11 @@ namespace DiscordCoreInternal {
 
 		void submitTask(std::function<void(void)> theFunction) noexcept;
 
-		~CommandThreadPool();
+		~CommandThreadPool() = default;
 
 	  private:
 		std::unordered_map<int64_t, WorkerThread> workerThreads{};
 		std::queue<std::function<void(void)>> theFunctions{};
-		std::atomic_bool areWeQuitting{ false };
 		std::atomic_int64_t functionCount{ 0 };
 		std::atomic_int64_t currentCount{ 0 };
 		std::atomic_int64_t currentIndex{ 0 };
@@ -128,13 +127,12 @@ namespace DiscordCoreInternal {
 
 		void submitTask(std::coroutine_handle<> coro) noexcept;
 
-		~CoRoutineThreadPool();
+		~CoRoutineThreadPool() = default;
 
 	  private:
 		std::unordered_map<int64_t, WorkerThread> workerThreads{};
 		std::queue<std::coroutine_handle<>> theCoroutineHandles{};
 		std::atomic_int64_t coroHandleCount{ 0 };
-		std::atomic_bool areWeQuitting{ false };
 		std::atomic_int64_t currentCount{ 0 };
 		std::atomic_int64_t currentIndex{ 0 };
 		std::atomic_uint32_t threadCount{};

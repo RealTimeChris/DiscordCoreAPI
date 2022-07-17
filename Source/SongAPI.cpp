@@ -287,15 +287,5 @@ namespace DiscordCoreAPI {
 		};
 	}
 
-	SongAPI::~SongAPI() {
-		if (this->taskThread) {
-			this->taskThread->request_stop();
-			if (this->taskThread->joinable()) {
-				this->taskThread->join();
-			}
-			this->taskThread.reset(nullptr);
-		}
-	}
-
 	std::mutex SongAPI::accessMutex{};
 };

@@ -1140,10 +1140,5 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	BaseSocketAgent::~BaseSocketAgent() noexcept {
-		this->taskThread->request_stop();
-		if (this->taskThread->joinable()) {
-			this->taskThread->join();
-		}
-	}
+	BaseSocketAgent::~BaseSocketAgent() noexcept {}
 }

@@ -494,12 +494,6 @@ namespace DiscordCoreInternal {
 		this->inputDataBuffer.send(std::string());
 		this->inputDataBuffer.send(std::string());
 		this->areWeQuitting = true;
-		if (this->taskThread) {
-			this->taskThread->request_stop();
-			if (this->taskThread->joinable()) {
-				this->taskThread->join();
-			}
-		}
 	}
 
 	AudioDecoder::~AudioDecoder() {
