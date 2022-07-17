@@ -20,8 +20,8 @@ jobs:
                     cd doxygen &&
                     sudo mkdir build &&
                     sudo cmake -G "Unix Makefiles" &&
-                    sudo make
-                    sudo install
+                    sudo make &&
+                    sudo install &&
                     sudo apt-get install graphviz &&
                     sudo apt-get install openssh-client &&
                     sudo apt remove openssl
