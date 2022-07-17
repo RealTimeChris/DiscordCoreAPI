@@ -38,7 +38,7 @@ jobs:
              e1:e3:0b:e4:82:48:0e:95:26:dd:aa:25:49:93:92:e7
       
       - run:
-           name: Download and install Doxygen, graphviz and openssh-client.
+           name: Download and install Doxygen, along with its dependencies.
            command: sudo apt-get update &&
                     sudo git clone https://github.com/doxygen/doxygen &&
                     sudo apt-get install bison &&
