@@ -27,7 +27,7 @@ jobs:
 
       - run:
           name: Collect the documentation and generate it.
-          command: sudo git clone https://github.com/RealTimeChris/DiscordCoreAPI --depth=1 && 
+          command: sudo git clone https://github.com/RealTimeChris/DiscordCoreAPI --depth=1 &&
                    cd DiscordCoreAPI/Documentation/Doxygen && 
                    sudo doxygen || true
 
