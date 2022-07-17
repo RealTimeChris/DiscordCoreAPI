@@ -227,10 +227,19 @@ namespace DiscordCoreAPI {
 		}
 		this->currentUser = BotUser{ Users::getCurrentUserAsync().get(), this->baseSocketAgentMap[std::to_string(this->configManager.getStartingShard())].get() };
 		for (auto& value: this->configManager.getFunctionsToExecute()) {
-			TimeElapsedHandlerNoArgs onSend = [=, this]() -> void {
-				value.function(this);
-			};
-			ThreadPool::storeThread(onSend, value.intervalInMs, value.repeated);
+			
+			if (value.repeated) {
+				TimeElapsedHandlerNoArgs onSend = [=, this]() -> void {
+					value.function(this);
+				};
+				ThreadPool::storeThread(onSend, value.intervalInMs);
+			} else {
+				TimeElapsedHandler<void*> onSend = [=, this](void*) -> void {
+					value.function(this);
+				};
+				ThreadPool::executeFunctionAfterTimePeriod(onSend, value.intervalInMs, false, static_cast<void*>(&onSend));
+			}
+			
 		}
 		if (this->configManager.doWePrintGeneralSuccessMessages()) {
 			std::cout << shiftToBrightGreen() << "All of the shards are connected for the current process!" << reset() << std::endl << std::endl;

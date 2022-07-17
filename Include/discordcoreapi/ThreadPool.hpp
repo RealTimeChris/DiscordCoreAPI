@@ -47,7 +47,7 @@ namespace DiscordCoreAPI {
 
 		ThreadPool() = default;
 
-		static void storeThread(TimeElapsedHandlerNoArgs timeElapsedHandler, int64_t timeInterval, bool repeated);
+		static std::string storeThread(TimeElapsedHandlerNoArgs timeElapsedHandler, int64_t timeInterval);
 
 		template<typename... ArgTypes>
 		static void executeFunctionAfterTimePeriod(TimeElapsedHandler<ArgTypes...> timeElapsedHandler, int64_t timeInterval, bool blockForCompletion, ArgTypes... args) {
