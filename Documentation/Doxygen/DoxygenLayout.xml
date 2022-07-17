@@ -41,6 +41,7 @@
   <!-- Layout definition for a class page -->
   <class>
     <briefdescription visible="yes"/>
+    <includes visible="$SHOW_HEADERFILE"/>
     <inheritancegraph visible="$CLASS_GRAPH"/>
     <collaborationgraph visible="$COLLABORATION_GRAPH"/>
     <memberdecl>
@@ -134,6 +135,7 @@
       <structs visible="yes" title=""/>
       <exceptions visible="yes" title=""/>
       <namespaces visible="yes" title=""/>
+      <concepts visible="yes" title=""/>
       <constantgroups visible="yes" title=""/>
       <defines title=""/>
       <typedefs title=""/>
@@ -166,6 +168,7 @@
       <dirs visible="yes" title=""/>
       <files visible="no" title=""/>
       <namespaces visible="yes" title=""/>
+      <concepts visible="yes" title=""/>
       <classes visible="yes" title="Classes and Structures"/>
       <defines title=""/>
       <typedefs title=""/>
