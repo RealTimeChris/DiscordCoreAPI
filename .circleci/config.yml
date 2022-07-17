@@ -26,14 +26,14 @@ jobs:
                     sudo doxygen || true
 
       - run:
-          name: Commit and push.
+          name: Commit and push the docs to the repo.
           command: cd DiscordCoreAPI-Docs && 
                    sudo git add . && 
                    sudo git commit -m "Updates!" && 
                    sudo git push origin main || true
                    
       - run:
-           name: Collect private key.
+           name: Store the public SSH key.
            command: echo "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC9n6Gq/yIkBWWiwIQArZjPLxz3Hd9Mwm26Z8VDfQwQOjJtPsnfdF9ziE3zNRS89PmBVFoVPT4fgOVDJ3MQeRB9awHMb0kkMK/glKn2nR1/aqAirxrtVoizRDiarajrUbuiametj3QGDl3A1UPLBaDyPIbfaO8PQfSjNYYMWkBkgpTYFomQrj9VoArwiBbaDbwULXFIPeW73l5uRznYIchjnfVbw+SnI4JyweMr/tTKRc39AjtjLQMuKbJjWp+NaB8iRQqeqFIS3dOHRoYGHwQf1OMYSerjHDFtZQyniu7jBSCB2PeRXsuTca9MQXHoeW3SKq4WL3j0m0staafn2glX" >> PUBLIC_KEY &&
                     sudo mkdir /root/.ssh/ &&
                     sudo cp "./PUBLIC_KEY" "/root/.ssh/id_rsa" &&
