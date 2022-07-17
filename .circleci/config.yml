@@ -36,7 +36,7 @@ jobs:
           command: cd DiscordCoreAPI-Docs && 
                    sudo git add . && 
                    sudo git commit -m "Updates!" && 
-                   sudo git push origin main || true 
+                   sudo git push origin main || true
                    
       - run:
            name: Store the public SSH key.
