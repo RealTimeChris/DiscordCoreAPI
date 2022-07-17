@@ -28,7 +28,7 @@ jobs:
 
       - run:
           name: Collect the original Repo for the docs.
-          command: sudo git config --global user.email "40668522+RealTimeChris@users.noreply.github.com " &&
+          command: sudo git config --global user.email "40668522+RealTimeChris@users.noreply.github.com" &&
                    sudo git config --global user.name "realtimechris" &&
                    sudo git clone https://realtimechris:${PERSONAL_ACCESS_TOKEN}@github.com/realtimechris/DiscordCoreAPI-Docs --depth=1
 
