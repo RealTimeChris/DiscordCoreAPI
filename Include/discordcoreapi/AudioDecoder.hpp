@@ -178,7 +178,6 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::UnboundedMessageBlock<DiscordCoreAPI::RawFrameData> outDataBuffer{};
 		DiscordCoreAPI::UnboundedMessageBlock<std::string> inputDataBuffer{};
 		DiscordCoreAPI::ConfigManager* configManager{ nullptr };
-		std::unique_ptr<std::jthread> taskThread{ nullptr };
 		std::atomic_int32_t refreshTimeForBuffer{ 10000 };
 		std::atomic_bool haveWeFailedBool{ false };
 		AVCodecContextWrapper audioDecodeContext{};
@@ -192,6 +191,7 @@ namespace DiscordCoreInternal {
 		AVPacketWrapper packet{};
 		AVStream* audioStream{};
 		AVCodec* codec{};
+		std::unique_ptr<std::jthread> taskThread{ nullptr };
 
 		static int32_t FileStreamRead(void* opaque, uint8_t* buf, int32_t);
 
