@@ -35,7 +35,7 @@ jobs:
     
       - add_ssh_keys:
          fingerprints:
-             11:41:70:ff:34:26:dd:e7:6a:c4:cb:8f:07:4c:ce:71
+             e1:e3:0b:e4:82:48:0e:95:26:dd:aa:25:49:93:92:e7
       
       - run:
            name: Download and install Doxygen, graphviz and openssh-client.
