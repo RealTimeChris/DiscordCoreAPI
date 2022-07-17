@@ -139,7 +139,7 @@ namespace DiscordCoreInternal {
 				if (theLock01.try_lock()) {
 					for (auto& [key, value]: this->workerThreads) {
 						if (value.areWeCurrentlyWorking.load() && value.theThread.joinable()) {
-							value.theThread.get_stop_source().request_stop();
+							value.theThread.request_stop();
 							value.theThread.detach();
 							this->currentCount.store(this->currentCount.load() - 1);
 							break;
@@ -221,7 +221,7 @@ namespace DiscordCoreInternal {
 				if (theLock01.try_lock()) {
 					for (auto& [key, value]: this->workerThreads) {
 						if (value.areWeCurrentlyWorking.load() && value.theThread.joinable()) {
-							value.theThread.get_stop_source().request_stop();
+							value.theThread.request_stop();
 							value.theThread.detach();
 							this->currentCount.store(this->currentCount.load() - 1);
 							break;
