@@ -1020,7 +1020,7 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::getVoiceConnectionMap()[theConnectionData.guildId]->connect();
 	}
 
-	void BaseSocketAgent::run(std::stop_token stopToken) noexcept {
+	void BaseSocketAgent::run(std::stop_token& stopToken) noexcept {
 		try {
 			while (!stopToken.stop_requested() && !this->doWeQuit->load()) {
 				if (this->connections.size() > 0) {

@@ -119,7 +119,7 @@ namespace DiscordCoreInternal {
 		this->functionCount.store(this->functionCount.load() + 1);
 	}
 
-	void CommandThreadPool::threadFunction(std::stop_token stopToken, int64_t theIndex) {
+	void CommandThreadPool::threadFunction(std::stop_token& stopToken, int64_t theIndex) {
 		while (!this->areWeQuitting.load() && !stopToken.stop_requested()) {
 			if (this->functionCount.load() > 0) {
 				std::unique_lock theLock01{ this->theMutex, std::defer_lock_t{} };
@@ -201,7 +201,7 @@ namespace DiscordCoreInternal {
 		this->coroHandleCount.store(this->coroHandleCount.load() + 1);
 	}
 
-	void CoRoutineThreadPool::threadFunction(std::stop_token stopToken, int64_t theIndex) {
+	void CoRoutineThreadPool::threadFunction(std::stop_token& stopToken, int64_t theIndex) {
 		while (!this->areWeQuitting.load() && !stopToken.stop_requested()) {			
 			if (this->coroHandleCount.load() > 0) {
 				std::unique_lock theLock01{ this->theMutex, std::defer_lock_t{} };

@@ -235,7 +235,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	void VoiceConnection::runWebSocket(std::stop_token stopToken) noexcept {
+	void VoiceConnection::runWebSocket(std::stop_token& stopToken) noexcept {
 		try {
 			while (!stopToken.stop_requested() && !this->doWeQuit->load() && this->activeState.load() != VoiceActiveState::Exiting) {
 				if (!stopToken.stop_requested() && WebSocketSSLShard::connections->size() > 0) {
@@ -309,7 +309,7 @@ namespace DiscordCoreAPI {
 		return false;
 	}
 
-	void VoiceConnection::runVoice(std::stop_token stopToken) noexcept {
+	void VoiceConnection::runVoice(std::stop_token& stopToken) noexcept {
 		StopWatch theStopWatch{ 20000ms };
 		StopWatch theSendSilenceStopWatch{ 5000ms };
 		while (!stopToken.stop_requested() && !this->doWeQuit->load() && this->activeState.load() != VoiceActiveState::Exiting) {

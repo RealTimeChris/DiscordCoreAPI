@@ -195,7 +195,7 @@ namespace DiscordCoreInternal {
 
 		static int32_t FileStreamRead(void* opaque, uint8_t* buf, int32_t);
 
-		void run(std::stop_token stopToken);
+		void run(std::stop_token& stopToken);
 
 		void cancelMe();
 	};
