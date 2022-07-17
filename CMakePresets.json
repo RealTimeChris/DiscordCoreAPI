@@ -1,13 +1,6 @@
 {
   "buildPresets": [
     {
-      "configuration": "Debug",
-      "configurePreset": "ninja-multi-vcpkg",
-      "description": "Build ninja-multi-vcpkg Debug configuration",
-      "displayName": "Build ninja-multi-vcpkg-debug",
-      "name": "ninja-multi-vcpkg-debug"
-    },
-    {
       "configuration": "RelWithDebInfo",
       "configurePreset": "ninja-multi-vcpkg",
       "description": "Build ninja-multi-vcpkg Release configuration",
@@ -75,19 +68,6 @@
     "patch": 0
   },
   "configurePresets": [
-    {
-      "binaryDir": "${sourceDir}/builds/${presetName}",
-      "cacheVariables": {
-        "CMAKE_TOOLCHAIN_FILE": {
-          "type": "FILEPATH",
-          "value": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
-        }
-      },
-      "description": "Configure with vcpkg toolchain and generate Ninja project files for all configurations",
-      "displayName": "Ninja Multi-Config",
-      "generator": "Ninja Multi-Config",
-      "name": "ninja-multi-vcpkg"
-    },
     {
       "architecture": {
         "strategy": "set",
