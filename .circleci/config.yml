@@ -16,7 +16,7 @@ jobs:
 
       - run:
             name: Download and install DiscordCoreAPI
-            command: sudo vcpkg install discordcoreapi:x64-linux
+            command: sudo ./vcpkg install discordcoreapi:x64-linux
 
                     
 
