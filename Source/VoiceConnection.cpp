@@ -324,6 +324,7 @@ namespace DiscordCoreAPI {
 					break;
 				}
 				case VoiceActiveState::Stopped: {
+					this->areWePlaying.store(false);
 					this->audioDataBuffer.clearContents();
 					this->clearAudioData();
 					while (!stopToken.stop_requested() && this->activeState.load() == VoiceActiveState::Stopped) {
@@ -338,6 +339,7 @@ namespace DiscordCoreAPI {
 					break;
 				}
 				case VoiceActiveState::Paused: {
+					this->areWePlaying.store(false);
 					while (!stopToken.stop_requested() && this->activeState.load() == VoiceActiveState::Paused) {
 						DatagramSocketClient::processIO(10000);
 						if (theSendSilenceStopWatch.hasTimePassed()) {
