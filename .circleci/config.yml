@@ -12,7 +12,7 @@ jobs:
              11:41:70:ff:34:26:dd:e7:6a:c4:cb:8f:07:4c:ce:71
       
       - run:
-           name: Download and install Doxygen.
+           name: Download and install Doxygen, graphviz and openssh-client.
            command: sudo apt-get update &&
                    sudo apt-get install doxygen &&
                    sudo apt install graphviz &&
