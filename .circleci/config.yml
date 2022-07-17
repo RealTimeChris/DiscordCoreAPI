@@ -16,7 +16,7 @@ jobs:
            command: sudo apt-get update &&
                     sudo git clone https://github.com/doxygen/doxygen &&
                     cd doxygen &&
-                    mkdir build &&
+                    sudo mkdir build &&
                     cd build &&
                     sudo cmake -G "Unix Makefiles" &&
                     sudo make
