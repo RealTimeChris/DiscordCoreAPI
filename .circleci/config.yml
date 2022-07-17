@@ -14,10 +14,16 @@ jobs:
       - run:
            name: Download and install Doxygen, graphviz and openssh-client.
            command: sudo apt-get update &&
-                   sudo apt-get install doxygen &&
-                   sudo apt install graphviz &&
-                   sudo apt-get install openssh-client &&
-                   sudo apt remove openssl
+                    sudo git clone https://github.com/doxygen/doxygen &&
+                    cd doxygen &&
+                    mkdir build &&
+                    cd build &&
+                    sudo cmake -G "Unix Makefiles" &&
+                    sudo make
+                    sudo install
+                    sudo apt install graphviz &&
+                    sudo apt-get install openssh-client &&
+                    sudo apt remove openssl
 
       - run:
           name: Collect the original Repo for the docs.
