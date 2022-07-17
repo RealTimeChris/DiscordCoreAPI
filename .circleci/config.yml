@@ -9,7 +9,7 @@ jobs:
     
       - add_ssh_keys:
          fingerprints:
-                11:41:70:ff:34:26:dd:e7:6a:c4:cb:8f:07:4c:ce:71
+             11:41:70:ff:34:26:dd:e7:6a:c4:cb:8f:07:4c:ce:71
       
       - run:
           name: Collect the original Repo for the docs.
@@ -38,7 +38,7 @@ jobs:
            command: echo "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC9n6Gq/yIkBWWiwIQArZjPLxz3Hd9Mwm26Z8VDfQwQOjJtPsnfdF9ziE3zNRS89PmBVFoVPT4fgOVDJ3MQeRB9awHMb0kkMK/glKn2nR1/aqAirxrtVoizRDiarajrUbuiametj3QGDl3A1UPLBaDyPIbfaO8PQfSjNYYMWkBkgpTYFomQrj9VoArwiBbaDbwULXFIPeW73l5uRznYIchjnfVbw+SnI4JyweMr/tTKRc39AjtjLQMuKbJjWp+NaB8iRQqeqFIS3dOHRoYGHwQf1OMYSerjHDFtZQyniu7jBSCB2PeRXsuTca9MQXHoeW3SKq4WL3j0m0staafn2glX" >> PUBLIC_KEY &&
                     sudo mkdir /root/.ssh/ &&
                     sudo cp "./PUBLIC_KEY" "/root/.ssh/id_rsa" &&
-                    sudo chmod 600 /root/.ssh/id_rsa &&
+                    sudo chmod 600 /root/.ssh/id_rsa
 
       - run:
           name: Clone the data over to the web server.
