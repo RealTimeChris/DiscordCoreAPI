@@ -140,9 +140,9 @@ namespace DiscordCoreInternal {
 			}
 			waitForThread(1000us);
 		}
+		std::unique_lock theLock{ this->theMutex };
 		this->workerThreads.erase(theIndex);
 	}
-
 
 	CoRoutineThreadPool::CoRoutineThreadPool() {
 		this->threadCount.store(std::thread::hardware_concurrency() / 2);
@@ -214,6 +214,7 @@ namespace DiscordCoreInternal {
 			}
 			waitForThread(1000us);
 		}
+		std::unique_lock theLock{ this->theMutex };
 		this->workerThreads.erase(theIndex);
 	}
 
