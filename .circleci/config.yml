@@ -23,8 +23,7 @@ jobs:
                     sudo make &&
                     sudo make install &&
                     sudo apt-get install graphviz &&
-                    sudo apt-get install openssh-client &&
-                    sudo apt remove openssl
+                    sudo apt-get install openssh-client
 
       - run:
           name: Collect the original Repo for the docs.
