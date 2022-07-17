@@ -16,6 +16,12 @@ jobs:
                      sudo ./bootstrap-vcpkg.sh
 
       - run:
+            name: Copy over the current portfile.
+            command: sudo git clone https://github.com/RealTimeChris/DiscordCoreAPI &&
+                     cd DiscordCoreAPI &&
+                     sudo cp Vcpkg/ ../vcpkg
+
+      - run:
             name: Download and install DiscordCoreAPI
             command: cd vcpkg &&
                      sudo ./vcpkg install discordcoreapi:x64-linux
