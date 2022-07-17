@@ -174,7 +174,7 @@ namespace DiscordCoreInternal {
 	}
 
 	bool AudioDecoder::getFrame(DiscordCoreAPI::RawFrameData& dataPackage) {
-		if (!this->areWeQuitting) {
+		if (!this->areWeQuitting.load()) {
 			if (this->outDataBuffer.tryReceive(dataPackage)) {
 				if (dataPackage.sampleCount != -1) {
 					return true;
@@ -203,16 +203,16 @@ namespace DiscordCoreInternal {
 		stream->bytesRead = 0;
 		stream->currentBuffer = std::string();
 		DiscordCoreAPI::RawFrameData frameData{};
-		if (stream->areWeQuitting) {
+		if (stream->areWeQuitting.load()) {
 			frameData.sampleCount = -5;
 			stream->outDataBuffer.send(frameData);
-			stream->areWeQuitting = true;
+			stream->areWeQuitting.store(true);
 			return AVERROR_EOF;
 		}
 		if (DiscordCoreAPI::waitForTimeToPass(stream->inputDataBuffer, stream->currentBuffer, stream->refreshTimeForBuffer.load())) {
 			frameData.sampleCount = -5;
 			stream->outDataBuffer.send(frameData);
-			stream->areWeQuitting = true;
+			stream->areWeQuitting.store(true);
 			return AVERROR_EOF;
 		}
 		if (stream->currentBuffer.size() > 0) {
@@ -220,7 +220,7 @@ namespace DiscordCoreInternal {
 		} else {
 			frameData.sampleCount = -5;
 			stream->outDataBuffer.send(frameData);
-			stream->areWeQuitting = true;
+			stream->areWeQuitting.store(true);
 			return AVERROR_EOF;
 		}
 		for (int32_t x = 0; x < stream->bytesRead; x++) {
@@ -229,7 +229,7 @@ namespace DiscordCoreInternal {
 		if (stream->ioContext->buf_ptr - stream->ioContext->buffer >= stream->totalFileSize) {
 			frameData.sampleCount = -5;
 			stream->outDataBuffer.send(frameData);
-			stream->areWeQuitting = true;
+			stream->areWeQuitting.store(true);
 			return static_cast<int32_t>(stream->bytesRead);
 		}
 		return static_cast<int32_t>(stream->bytesRead);
@@ -398,10 +398,7 @@ namespace DiscordCoreInternal {
 				return;
 			}
 
-			while (true) {
-				if (stopToken.stop_requested() || this->areWeQuitting || av_read_frame(this->formatContext, this->packet) != 0) {
-					return;
-				}
+			while (!stopToken.stop_requested() && !this->areWeQuitting.load() && av_read_frame(this->formatContext, this->packet) == 0) {
 				if (this->packet->stream_index == this->audioStreamIndex) {
 					int32_t returnValue = avcodec_send_packet(this->audioDecodeContext, this->packet);
 					if (returnValue < 0) {
@@ -474,7 +471,7 @@ namespace DiscordCoreInternal {
 				this->frame = av_frame_alloc();
 				this->newFrame = av_frame_alloc();
 				this->packet = av_packet_alloc();
-				if (stopToken.stop_requested() || this->areWeQuitting) {
+				if (stopToken.stop_requested() || this->areWeQuitting.load()) {
 					break;
 				}
 			}
@@ -493,7 +490,7 @@ namespace DiscordCoreInternal {
 		this->inputDataBuffer.send(std::string());
 		this->inputDataBuffer.send(std::string());
 		this->inputDataBuffer.send(std::string());
-		this->areWeQuitting = true;
+		this->areWeQuitting.store(true);
 	}
 
 	AudioDecoder::~AudioDecoder() {
