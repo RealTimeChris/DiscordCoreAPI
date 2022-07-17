@@ -1,13 +1,6 @@
 {
   "buildPresets": [
     {
-      "configuration": "RelWithDebInfo",
-      "configurePreset": "ninja-multi-vcpkg",
-      "description": "Build ninja-multi-vcpkg Release configuration",
-      "displayName": "Build ninja-multi-vcpkg-release",
-      "name": "ninja-multi-vcpkg-release"
-    },
-    {
       "configuration": "Release",
       "configurePreset": "Windows-Release-With-ASAN",
       "description": "Target Windows with the Visual Studio development environment, with address sanitizer.",
