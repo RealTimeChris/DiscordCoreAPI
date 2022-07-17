@@ -583,7 +583,6 @@ namespace DiscordCoreInternal {
 									}
 									this->discordCoreClient->eventManager.onIntegrationDeletionEvent(*dataPackage);
 								} else if (payload["t"] == "INTERACTION_CREATE") {
-									std::cout << "INTERACTION BEING CREATED!" << std::endl;
 									std::unique_ptr<DiscordCoreAPI::InteractionData> interactionData{ std::make_unique<DiscordCoreAPI::InteractionData>() };
 									*interactionData = payload["d"];
 									std::unique_ptr<DiscordCoreAPI::InputEventData> eventData{ std::make_unique<DiscordCoreAPI::InputEventData>(*interactionData) };
