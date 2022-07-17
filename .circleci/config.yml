@@ -1,6 +1,25 @@
 version: 2.1
 
 jobs:
+
+  Build-DiscordCoreAPI:
+    docker:
+      - image: cimg/base:edge-22.04
+    steps:
+      - checkout
+
+      - run:
+            name: Download and install vcpkg.
+            command: sudo git clone https://github.com/Microsoft/vcpkg &&
+                     cd vcpkg &&
+                     sudo ./bootstrap-vcpkg.sh
+
+      - run:
+            name: Download and install DiscordCoreAPI
+            command: sudo vcpkg install discordcoreapi:x64-linux
+
+                    
+
   Build-Documentation:
     docker:
       - image: cimg/base:edge-22.04
@@ -60,4 +79,4 @@ workflows:
   Build-DiscordCoreAPI:
     jobs:
       - Build-Documentation
-
+      - Build-DiscordCoreAPI
