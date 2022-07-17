@@ -15,6 +15,7 @@ jobs:
            name: Download and install Doxygen, graphviz and openssh-client.
            command: sudo apt-get update &&
                     sudo git clone https://github.com/doxygen/doxygen &&
+                    sudo apt-get install bison &&
                     sudo apt-get install flex &&
                     cd doxygen &&
                     sudo mkdir build &&
