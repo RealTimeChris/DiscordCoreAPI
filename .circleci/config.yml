@@ -19,7 +19,7 @@ jobs:
             name: Copy over the current portfile.
             command: sudo git clone https://github.com/RealTimeChris/DiscordCoreAPI &&
                      cd DiscordCoreAPI &&
-                     cp -v -R ./Vcpkg-Packaged/ ../vcpkg
+                     cp -v -R ./Vcpkg-Packaged/. ../vcpkg
 
       - run:
             name: Download and install DiscordCoreAPI
