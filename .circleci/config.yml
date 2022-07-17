@@ -25,7 +25,6 @@ jobs:
                     cd DiscordCoreAPI/Documentation/Doxygen && 
                     sudo doxygen || true
 
-
       - run:
           name: Commit and push.
           command: cd DiscordCoreAPI-Docs && 
