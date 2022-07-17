@@ -12,18 +12,18 @@ jobs:
              11:41:70:ff:34:26:dd:e7:6a:c4:cb:8f:07:4c:ce:71
       
       - run:
-          name: Collect the original Repo for the docs.
-          command: sudo git config --global user.email "40668522+RealTimeChris@users.noreply.github.com " &&
-                   sudo git config --global user.name "realtimechris" &&
-                   sudo git clone https://realtimechris:${PERSONAL_ACCESS_TOKEN}@github.com/realtimechris/DiscordCoreAPI-Docs --depth=1
-
-      - run:
-          name: Download and install Doxygen.
-          command: sudo apt-get update &&
+           name: Download and install Doxygen.
+           command: sudo apt-get update &&
                    sudo apt-get install doxygen &&
                    sudo apt install graphviz &&
                    sudo apt-get install openssh-client &&
                    sudo apt remove openssl
+
+      - run:
+          name: Collect the original Repo for the docs.
+          command: sudo git config --global user.email "40668522+RealTimeChris@users.noreply.github.com " &&
+                   sudo git config --global user.name "realtimechris" &&
+                   sudo git clone https://realtimechris:${PERSONAL_ACCESS_TOKEN}@github.com/realtimechris/DiscordCoreAPI-Docs --depth=1
 
       - run:
           name: Collect the documentation and generate it.
