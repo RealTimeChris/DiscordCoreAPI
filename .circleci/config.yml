@@ -4,7 +4,7 @@ jobs:
 
   Build-DiscordCoreAPI:
     docker:
-      - image: cimg/base:edge-22.04
+      - image: ubuntu-2204:2022.04.1
     resource_class: xlarge
     steps:
       - checkout
