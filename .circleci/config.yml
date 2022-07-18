@@ -14,8 +14,6 @@ jobs:
                      sudo git clone https://github.com/Microsoft/vcpkg --depth=1 &&
                      cd vcpkg &&
                      sudo ./bootstrap-vcpkg.sh &&
-                     dir ./ &&
-                     pwd
 
       - run:
             name: Copy over the current portfile.
