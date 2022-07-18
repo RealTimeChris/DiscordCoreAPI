@@ -228,7 +228,7 @@ namespace DiscordCoreInternal {
 		hints->ai_family = AF_INET;
 		hints->ai_socktype = SOCK_STREAM;
 		hints->ai_protocol = IPPROTO_TCP;
-
+		
 		if (getaddrinfo(stringNew.c_str(), portNew.c_str(), hints, address)) {
 			return false;
 		}
@@ -432,30 +432,34 @@ namespace DiscordCoreInternal {
 		this->wantRead = false;
 		this->wantWrite = false;
 		std::string serverToClientBuffer{};
-		serverToClientBuffer.resize(this->maxBufferSize);
-		size_t readBytes{ 0 };
-		auto returnValue{ SSL_read_ex(this->ssl, serverToClientBuffer.data(), this->maxBufferSize, &readBytes) };
-		auto errorValue{ SSL_get_error(this->ssl, returnValue) };
-		switch (errorValue) {
-			case SSL_ERROR_NONE: {
-				if (readBytes > 0) {
-					this->inputBuffer.insert(this->inputBuffer.end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
-					this->bytesRead += readBytes;
+		if (this->maxBufferSize > 0) {
+			serverToClientBuffer.resize(this->maxBufferSize);
+			size_t readBytes{ 0 };
+			auto returnValue{ SSL_read_ex(this->ssl, serverToClientBuffer.data(), this->maxBufferSize, &readBytes) };
+			auto errorValue{ SSL_get_error(this->ssl, returnValue) };
+			switch (errorValue) {
+				case SSL_ERROR_NONE: {
+					if (readBytes > 0) {
+						this->inputBuffer.insert(this->inputBuffer.end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
+						this->bytesRead += readBytes;
+					}
+					return true;
 				}
-				return true;
+				case SSL_ERROR_WANT_READ: {
+					this->wantRead = true;
+					return true;
+				}
+				case SSL_ERROR_WANT_WRITE: {
+					this->wantWrite = true;
+					return true;
+				}
+				default: {
+					this->disconnect(true);
+					return false;
+				}
 			}
-			case SSL_ERROR_WANT_READ: {
-				this->wantRead = true;
-				return true;
-			}
-			case SSL_ERROR_WANT_WRITE: {
-				this->wantWrite = true;
-				return true;
-			}
-			default: {
-				this->disconnect(true);
-				return false;
-			}
+		} else {
+			return true;
 		}
 	}
 

@@ -97,7 +97,9 @@ namespace DiscordCoreInternal {
 			if (other.find("\r\n\r\n") != std::string::npos) {
 				if (theData.responseCode == -1) {
 					this->parseCode(theData, other);
+					std::cout << "PARSING HEADERS !PREPREPRE" << std::endl;
 				}
+				std::cout << "PARSING HEADERS!" << std::endl;
 				DiscordCoreAPI::StopWatch theStopWatch{ 1500ms };
 				std::string newString{};
 				newString.insert(newString.begin(), other.begin(), other.begin() + other.find("\r\n\r\n") + std::string("\r\n\r\n").size());
@@ -121,8 +123,7 @@ namespace DiscordCoreInternal {
 					this->isItChunked = true;
 				}
 				this->doWeHaveHeaders = true;
-				theData.theCurrentState = HttpsState::Collecting_Contents;
-			} else {
+				theData.theCurrentState = HttpsState::Collecting_Size;
 			}
 		} catch (...) {
 			theData.contentSize = -5;
@@ -207,9 +208,10 @@ namespace DiscordCoreInternal {
 			}
 			if (!isThereHexValues) {
 				theData.contentSize = 0;
-				return;
-			} else {
+			} else {				
+				//std::cout << "THE STRING: " << theValueString << std::endl;
 				theData.contentSize += stoll(theValueString, nullptr, 16);
+				std::cout << "REMAINING SIZE: " << theData.contentSize << std::endl;
 				other.erase(other.begin(), other.begin() + hexIndex);
 				this->doWeHaveContentSize = true;
 				theData.theCurrentState = HttpsState::Collecting_Contents;
@@ -221,7 +223,9 @@ namespace DiscordCoreInternal {
 
 	void HttpsRnRBuilder::parseCode(HttpsResponseData& theData, std::string& otherNew) {
 		std::string other = otherNew;
+		std::cout << "THE STRING: " << other.substr(0, 1000) << std::endl;
 		if (other.find("HTTP/1.") != std::string::npos) {
+			std::cout << "PARSING CODE:!" << std::endl;
 			uint64_t firstNumberIndex{ 0 };
 			uint64_t lastNumberIndex{ 0 };
 			bool haveWeStarted{ false };
@@ -234,12 +238,10 @@ namespace DiscordCoreInternal {
 					break;
 				}
 			}
+			std::cout << "THE STRING: " << other.substr(firstNumberIndex, lastNumberIndex - firstNumberIndex) << std::endl;
 			theData.responseCode = stoll(other.substr(firstNumberIndex, lastNumberIndex - firstNumberIndex));
 			theData.theCurrentState = HttpsState::Collecting_Headers;
-		} else if (other.size() <= 5) {
-		} else {
-			theData.responseCode = -5;
-		}
+		} 
 	}
 
 	void HttpsRnRBuilder::clearCRLF(std::string& other) {
@@ -480,22 +482,36 @@ namespace DiscordCoreInternal {
 	}
 
 	HttpsResponseData HttpsClient::getResponse(HttpsConnection& theConnection, RateLimitData& rateLimitData) {
-		DiscordCoreAPI::StopWatch stopWatch{ 2000ms };
+		DiscordCoreAPI::StopWatch stopWatch{ 3000ms };
 		theConnection.getInputBuffer().clear();
 		theConnection.resetValues();
 		HttpsResponseData theData{};
+		int64_t remainingSize{};
 		while (true) {
+			if (theConnection.doWeHaveContentSize) {
+				if (remainingSize >= (16 * 1024)) {
+					theConnection.maxBufferSize = 16 * 1024 - 1;
+				} else if (remainingSize > 0) {
+					theConnection.maxBufferSize = remainingSize;
+				} else {
+					theConnection.maxBufferSize = 16 * 1024 - 1;
+				}
+			}			
 			if (!theConnection.areWeStillConnected()) {
 				HttpsResponseData theData{};
 				theData.responseCode = -1;
 				return theData;
 			}
-			theConnection.processIO(10000);
+			theConnection.processIO(100000);
 			std::string theString = theConnection.getInputBuffer();
 			if (theString.size() > 0) {
 				theConnection.inputBufferReal.insert(theConnection.inputBufferReal.end(), theString.begin(), theString.end());
+				if (theConnection.doWeHaveHeaders && theConnection.doWeHaveContentSize) {
+					remainingSize = theData.contentSize - theConnection.inputBufferReal.size();
+				}
 			}
 			bool doWeBreak{ false };
+			std::cout << "TOTAL TIME PASSED: " << stopWatch.totalTimePassed() << std::endl;
 			switch (theData.theCurrentState) {
 				case HttpsState::Collecting_Code: {
 					if (stopWatch.hasTimePassed()) {
@@ -503,6 +519,10 @@ namespace DiscordCoreInternal {
 						break;
 					}
 					theConnection.parseCode(theData, theConnection.inputBufferReal);
+					if (theData.responseCode == 204) {
+						doWeBreak = true;
+						break;
+					}
 					break;
 				}
 				case HttpsState::Collecting_Headers: {
@@ -527,11 +547,12 @@ namespace DiscordCoreInternal {
 						theConnection.clearCRLF(theConnection.inputBufferReal);
 						stopWatch.resetTimer();
 					}
+					remainingSize = theData.contentSize;
 					break;
 				}
 				case HttpsState::Collecting_Contents: {
-					if (static_cast<int64_t>(theConnection.inputBufferReal.size()) >= theData.contentSize && !theConnection.parseChunk(theData, theConnection.inputBufferReal) ||
-						stopWatch.hasTimePassed() || (theData.responseCode == -5 && theData.contentSize == -5)) {
+					if ((static_cast<int64_t>(theConnection.inputBufferReal.size()) >= theData.contentSize && !theConnection.parseChunk(theData, theConnection.inputBufferReal)) ||
+						stopWatch.hasTimePassed() || (theData.responseCode == -5 && theData.contentSize == -5) || (remainingSize == 0 && theConnection.doWeHaveContentSize)) {
 						doWeBreak = true;
 						break;
 					}

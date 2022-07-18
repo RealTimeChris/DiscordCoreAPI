@@ -212,14 +212,15 @@ namespace DiscordCoreInternal {
 		try {
 			int32_t counter{ 0 };
 			BuildAudioDecoderData dataPackage{};
+			HttpsConnection theConnection{};
 			dataPackage.totalFileSize = static_cast<uint64_t>(newSong.contentLength);
 			dataPackage.bufferMaxSize = this->maxBufferSize;
 			dataPackage.configManager = this->configManager;
 			std::unique_ptr<AudioDecoder> audioDecoder = std::make_unique<AudioDecoder>(dataPackage);
 			AudioEncoder audioEncoder{};
 			bool didWeGetZero{ true };
-			while (counter < newSong.finalDownloadUrls.size() - 1) {
-				if (counter == newSong.finalDownloadUrls.size() - 1 && didWeGetZero) {
+			while (counter < newSong.finalDownloadUrls.size()) {
+				if (counter == newSong.finalDownloadUrls.size() && didWeGetZero) {
 					audioDecoder.reset(nullptr);
 					SoundCloudAPI::weFailedToDownloadOrDecode(newSong, stopToken, currentReconnectTries);
 					return;

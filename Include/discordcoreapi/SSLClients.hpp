@@ -174,6 +174,8 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll SSLDataInterface {
 	  public:
+		friend class HttpsClient;
+
 		SSLDataInterface() noexcept = default;
 
 		virtual bool writeData(const std::string& data, bool priority = false) noexcept = 0;
