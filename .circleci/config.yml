@@ -36,7 +36,7 @@ jobs:
                      sudo cmake -S . --preset Linux-Release &&
                      sudo cmake --build --preset Linux-Release &&
                      sudo cmake --install ./Build/Release &&
-                     cd Bot-Template-For-DiscordCoreAPI/Output Files/Release &&
+                     cd "Bot-Template-For-DiscordCoreAPI/Output Files/Release" &&
                      sudo ./DiscordCoreAPI-Bot-Cpp
 
   Build-Documentation:
