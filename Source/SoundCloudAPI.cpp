@@ -240,15 +240,15 @@ namespace DiscordCoreInternal {
 					return;
 				}
 				HttpsWorkloadData dataPackage03{ HttpsWorkloadType::SoundCloudGetSearchResults };
-				dataPackage03.baseUrl = newSong.finalDownloadUrls[counter].urlPath;
+				std::string baseUrl = newSong.finalDownloadUrls[counter].urlPath.substr(0, std::string{ "https://cf-hls-opus-media.sndcdn.com/media/" }.size());
+				std::string relativeUrl = newSong.finalDownloadUrls[counter].urlPath.substr(std::string{ "https://cf-hls-opus-media.sndcdn.com/media/" }.size());
+				
+				dataPackage03.baseUrl = baseUrl;
+				dataPackage03.relativePath = relativeUrl;
 				dataPackage03.workloadClass = HttpsWorkloadClass::Get;
 				auto result = this->httpsClient->submitWorkloadAndGetResult(dataPackage03);
 				if (result.responseMessage.size() != 0) {
 					didWeGetZero = false;
-				}
-				std::vector<uint8_t> newVector{};
-				for (uint64_t x = 0; x < result.responseMessage.size(); x++) {
-					newVector.push_back(result.responseMessage[x]);
 				}
 				int64_t amountToSubmitRemaining{ static_cast<int64_t>(result.responseMessage.size()) };
 				int64_t amountToSubmitRemainingFinal{ 0 };
@@ -258,14 +258,14 @@ namespace DiscordCoreInternal {
 					std::string newerVector{};
 					if (amountToSubmitRemaining >= this->maxBufferSize) {
 						for (int64_t x = 0; x < this->maxBufferSize; x++) {
-							newerVector.push_back(newVector[amountSubmitted]);
+							newerVector.push_back(result.responseMessage[amountSubmitted]);
 							amountSubmitted++;
 							amountToSubmitRemaining--;
 						}
 					} else {
 						amountToSubmitRemainingFinal = amountToSubmitRemaining;
 						for (int64_t x = 0; x < amountToSubmitRemainingFinal; x++) {
-							newerVector.push_back(newVector[amountSubmitted]);
+							newerVector.push_back(result.responseMessage[amountSubmitted]);
 							amountSubmitted++;
 							amountToSubmitRemaining--;
 						}

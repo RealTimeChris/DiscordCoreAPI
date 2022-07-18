@@ -316,7 +316,12 @@ namespace DiscordCoreInternal {
 					return false;
 				}
 				this->outputBuffers.push_back(data);
-				return this->writeDataProcess();
+				auto theResult = this->writeDataProcess();
+				if (theResult == ProcessIOResult::Clean) {
+					return true;
+				} else {
+					return false;
+				}
 			} else {
 				if (data.size() > static_cast<size_t>(16 * 1024)) {
 					size_t remainingBytes{ data.size() };
@@ -342,10 +347,10 @@ namespace DiscordCoreInternal {
 		return false;
 	}
 
-	void SSLClient::processIO(int32_t theWaitTimeInms) noexcept {
+	ProcessIOResult SSLClient::processIO(int32_t theWaitTimeInms) noexcept {
 		if (this->theSocket == SOCKET_ERROR) {
 			this->disconnect(true);
-			return;
+			return ProcessIOResult::Reconnect;
 		}
 		int32_t readNfds{ 0 }, writeNfds{ 0 }, finalNfds{ 0 };
 		fd_set writeSet{}, readSet{};
@@ -364,17 +369,18 @@ namespace DiscordCoreInternal {
 		timeval checkTime{ .tv_usec = theWaitTimeInms };
 		if (auto returnValue = select(finalNfds + 1, &readSet, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
 			this->disconnect(true);
-			return;
+			return ProcessIOResult::Reconnect;
 		} else if (returnValue == 0) {
-			return;
+			return ProcessIOResult::Clean;
 		}
 
-		if (FD_ISSET(this->theSocket, &readSet)) {
-			this->readDataProcess();
-		}
 		if (FD_ISSET(this->theSocket, &writeSet)) {
-			this->writeDataProcess();
+			return this->writeDataProcess();
 		}
+		if (FD_ISSET(this->theSocket, &readSet)) {
+			return this->readDataProcess();
+		}
+		return ProcessIOResult::Clean;
 	}
 
 	std::string SSLClient::getInputBuffer() noexcept {
@@ -392,7 +398,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	bool SSLClient::writeDataProcess() noexcept {
+	ProcessIOResult SSLClient::writeDataProcess() noexcept {
 		if (this->outputBuffers.size() > 0) {
 			this->wantRead = false;
 			this->wantWrite = false;
@@ -408,27 +414,30 @@ namespace DiscordCoreInternal {
 					} else {
 						this->outputBuffers[0] = std::move(writeString);
 					}
-					return true;
+					return ProcessIOResult::Clean;
 				}
 				case SSL_ERROR_WANT_READ: {
 					this->wantRead = true;
-					return true;
+					return ProcessIOResult::Clean;
 				}
 				case SSL_ERROR_WANT_WRITE: {
 					this->wantWrite = true;
-					return true;
+					return ProcessIOResult::Clean;
+				}
+				case SSL_ERROR_ZERO_RETURN: {
+					return ProcessIOResult::Disconnect;
 				}
 				default: {
 					this->disconnect(true);
-					return false;
+					return ProcessIOResult::Reconnect;
 				}
 			}
 		} else {
-			return false;
+			return ProcessIOResult::Reconnect;
 		}
 	}
 
-	bool SSLClient::readDataProcess() noexcept {
+	ProcessIOResult SSLClient::readDataProcess() noexcept {
 		this->wantRead = false;
 		this->wantWrite = false;
 		std::string serverToClientBuffer{};
@@ -443,23 +452,26 @@ namespace DiscordCoreInternal {
 						this->inputBuffer.insert(this->inputBuffer.end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
 						this->bytesRead += readBytes;
 					}
-					return true;
+					return ProcessIOResult::Clean;
 				}
 				case SSL_ERROR_WANT_READ: {
 					this->wantRead = true;
-					return true;
+					return ProcessIOResult::Clean;
 				}
 				case SSL_ERROR_WANT_WRITE: {
 					this->wantWrite = true;
-					return true;
+					return ProcessIOResult::Clean;
+				}
+				case SSL_ERROR_ZERO_RETURN: {
+					return ProcessIOResult::Disconnect;
 				}
 				default: {
 					this->disconnect(true);
-					return false;
+					return ProcessIOResult::Reconnect;
 				}
 			}
 		} else {
-			return true;
+			return ProcessIOResult::Reconnect;
 		}
 	}
 

@@ -62,9 +62,7 @@ namespace DiscordCoreInternal {
 
 		bool parseChunk(HttpsResponseData& theData, std::string&);
 
-		bool checkForHeadersToParse(const std::string&);
-
-		void resetValues();
+		virtual void resetValues() = 0;
 
 		virtual ~HttpsRnRBuilder() = default;
 
@@ -108,6 +106,8 @@ namespace DiscordCoreInternal {
 		bool doWeConnect{ true };
 
 		void disconnect(bool) noexcept;
+
+		void resetValues();
 
 		virtual ~HttpsConnection() = default;
 	};

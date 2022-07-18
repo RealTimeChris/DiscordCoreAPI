@@ -195,6 +195,8 @@ namespace DiscordCoreInternal {
 		int64_t bytesRead{ 0 };
 	};
 
+	enum class ProcessIOResult : int32_t { Clean = 0, Reconnect = 1, Disconnect = 2 };
+
 	class DiscordCoreAPI_Dll SSLClient : public SSLDataInterface, public SSLConnectionInterface {
 	  public:
 		SSLClient() noexcept = default;
@@ -205,15 +207,15 @@ namespace DiscordCoreInternal {
 
 		bool writeData(const std::string& data, bool priority = false) noexcept;
 
-		void processIO(int32_t waitTimeInMs) noexcept;
+		ProcessIOResult processIO(int32_t waitTimeInMs) noexcept;
+
+		ProcessIOResult writeDataProcess() noexcept;
+
+		ProcessIOResult readDataProcess() noexcept;
 
 		std::string getInputBuffer() noexcept;
 
 		bool areWeStillConnected() noexcept;
-
-		bool writeDataProcess() noexcept;
-
-		bool readDataProcess() noexcept;
 
 		int64_t getBytesRead() noexcept;
 
