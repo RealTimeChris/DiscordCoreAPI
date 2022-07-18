@@ -83,7 +83,6 @@ jobs:
       - run:
            name: Store the public SSH key.
            command: echo $AWS_KEY >> PUBLIC_KEY &&
-                    sudo mkdir /root/.ssh/ &&
                     sudo cp ./PUBLIC_KEY /root/.ssh/id_rsa
 
       - run:
