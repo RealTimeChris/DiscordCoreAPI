@@ -60,7 +60,7 @@ namespace DiscordCoreInternal {
 		friend class YouTubeAPI;
 
 		WebSocketSSLShard(DiscordCoreAPI::DiscordCoreClient* theClient, std::queue<DiscordCoreAPI::ConnectionPackage>* connectionsNew, int32_t currentBaseSocketAgentNew,
-			int32_t currentShardNew, DiscordCoreAPI::ConfigManager* configManagerNew, std::atomic_bool* doWeQuitNew) noexcept;
+			int32_t currentShardNew, std::atomic_bool* doWeQuitNew) noexcept;
 
 		void getVoiceConnectionData(const VoiceConnectInitData& doWeCollect) noexcept;
 

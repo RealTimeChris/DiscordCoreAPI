@@ -451,7 +451,7 @@ namespace DiscordCoreInternal {
 				httpsConnection->doWeConnect = false;
 			}
 			auto theRequest = httpsConnection->buildRequest(workload);
-			if (!this->sendData(*httpsConnection, theRequest, true)) {
+			if (!httpsConnection->writeData(theRequest, true)) {
 				httpsConnection->currentReconnectTries++;
 				httpsConnection->doWeConnect = true;
 				httpsConnection->areWeCheckedOut.store(false);
@@ -480,11 +480,16 @@ namespace DiscordCoreInternal {
 	}
 
 	HttpsResponseData HttpsClient::getResponse(HttpsConnection& theConnection, RateLimitData& rateLimitData) {
-		DiscordCoreAPI::StopWatch stopWatch{ 5500ms };
+		DiscordCoreAPI::StopWatch stopWatch{ 2000ms };
 		theConnection.getInputBuffer().clear();
 		theConnection.resetValues();
 		HttpsResponseData theData{};
 		while (true) {
+			if (!theConnection.areWeStillConnected()) {
+				HttpsResponseData theData{};
+				theData.responseCode = -1;
+				return theData;
+			}
 			theConnection.processIO(10000);
 			std::string theString = theConnection.getInputBuffer();
 			if (theString.size() > 0) {
@@ -537,28 +542,5 @@ namespace DiscordCoreInternal {
 			}
 		};
 		return theConnection.finalizeReturnValues(theData, rateLimitData);
-	}
-
-	bool HttpsClient::sendData(HttpsConnection& theConnection, const std::string& dataToSend, bool priority) {
-		try {
-			if (theConnection.areWeStillConnected()) {
-				DiscordCoreAPI::StopWatch theStopWatch{ 5000ms };
-				bool didWeWrite{ false };
-				do {
-					if (theStopWatch.hasTimePassed()) {
-						return false;
-					}
-					didWeWrite = theConnection.writeData(dataToSend, priority);
-				} while (!didWeWrite);
-				return true;
-			} else {
-				return false;
-			}
-		} catch (...) {
-			if (this->configManager->doWePrintHttpsErrorMessages()) {
-				DiscordCoreAPI::reportException("VoiceConnection::sendMessage()");
-			}
-			return false;
-		}
 	}
 }

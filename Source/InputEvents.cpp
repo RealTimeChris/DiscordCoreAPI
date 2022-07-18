@@ -120,11 +120,13 @@ namespace DiscordCoreAPI {
 
 	InputEventData InputEvents::respondToInputEvent(CreateDeferredInteractionResponseData& dataPackage) {
 		CreateInteractionResponseData dataPackageNew{ dataPackage };
-		Interactions::createInteractionResponseAsync(dataPackageNew).get();
+		auto theResult = Interactions::createInteractionResponseAsync(dataPackageNew).get();
 		InputEventData dataPackageNewer{};
 		dataPackageNewer.responseType = InputEventResponseType::Deferred_Response;
 		dataPackageNewer.interactionData->applicationId = dataPackage.interactionPackage.applicationId;
 		dataPackageNewer.interactionData->token = dataPackage.interactionPackage.interactionToken;
+		dataPackageNewer.interactionData->channelId = theResult.channelId;
+		dataPackageNewer.interactionData->message.id = theResult.referencedMessage->id;
 		dataPackageNewer.interactionData->id = dataPackage.interactionPackage.interactionId;
 		return dataPackageNewer;
 	}

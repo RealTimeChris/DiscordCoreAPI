@@ -826,6 +826,18 @@ namespace DiscordCoreAPI {
 			*this = std::move(other);
 		}
 
+		StopWatch<TimeType>& operator=(const StopWatch<TimeType>& other) noexcept {
+			if (this != &other) {
+				this->maxNumberOfMs = other.maxNumberOfMs;
+				this->startTime = other.startTime;
+			}
+			return *this;
+		}
+
+		StopWatch(const StopWatch<TimeType>& other) noexcept {
+			*this = other;
+		}
+
 		StopWatch<TimeType>& operator=(StopWatch<TimeType>& other) noexcept {
 			if (this != &other) {
 				this->maxNumberOfMs = other.maxNumberOfMs;
@@ -838,18 +850,24 @@ namespace DiscordCoreAPI {
 			*this = other;
 		}
 
-		StopWatch() = delete;
+		StopWatch() = default;
 
-		StopWatch(TimeType maxNumberOfMsNew) {
+		StopWatch<TimeType>& operator=(TimeType maxNumberOfMsNew) {
 			std::lock_guard theLock{ this->theMutex };
 			this->maxNumberOfMs = DoubleTimePoint{ maxNumberOfMsNew };
 			this->startTime = std::chrono::system_clock::now();
+			return *this;
+		}
+
+		StopWatch(TimeType maxNumberOfMsNew) {
+			*this = maxNumberOfMsNew;
 		}
 
 		uint64_t totalTimePassed() {
 			std::lock_guard theLock{ this->theMutex };
-			DoubleTimeDuration elapsedTime = std::chrono::system_clock::now() - this->startTime;
-			return std::chrono::duration_cast<TimeType>(elapsedTime).count();
+			auto elapsedTime = std::chrono::duration_cast<TimeType>(std::chrono::system_clock::now().time_since_epoch()) -
+				std::chrono::duration_cast<TimeType>(this->startTime.time_since_epoch());
+			return elapsedTime.count();
 		}
 
 		bool hasTimePassed() {

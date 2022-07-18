@@ -67,11 +67,11 @@ namespace DiscordCoreAPI {
 		return {};
 	}
 
-	VoiceConnection::VoiceConnection() noexcept : WebSocketSSLShard(nullptr, nullptr, 0, 0, nullptr, nullptr), DatagramSocketClient(){};
+	VoiceConnection::VoiceConnection() noexcept : WebSocketSSLShard(nullptr, nullptr, 0, 0, nullptr), DatagramSocketClient(){};
 
 	VoiceConnection::VoiceConnection(DiscordCoreInternal::BaseSocketAgent* BaseSocketAgentNew, const DiscordCoreInternal::VoiceConnectInitData& initDataNew,
 		DiscordCoreAPI::ConfigManager* configManagerNew, std::atomic_bool* doWeQuitNew) noexcept
-		: WebSocketSSLShard(BaseSocketAgentNew->discordCoreClient, &this->connections, BaseSocketAgentNew->currentBaseSocketAgent, initDataNew.currentShard, configManagerNew, this->doWeQuit),
+		: WebSocketSSLShard(BaseSocketAgentNew->discordCoreClient, &this->connections, BaseSocketAgentNew->currentBaseSocketAgent, initDataNew.currentShard, this->doWeQuit),
 		  DatagramSocketClient() {
 		this->baseShard = BaseSocketAgentNew->sslShards[initDataNew.currentShard].get();
 		this->activeState.store(VoiceActiveState::Connecting);
@@ -198,15 +198,7 @@ namespace DiscordCoreAPI {
 			if (this->configManager->doWePrintWebSocketSuccessMessages()) {
 				std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Sending Voice WebSocket Message: " << dataToSend << DiscordCoreAPI::reset() << std::endl << std::endl;
 			}
-			DiscordCoreAPI::StopWatch theStopWatch{ 2000ms };
-			bool didWeWrite{ false };
-			do {
-				if (theStopWatch.hasTimePassed()) {
-					return false;
-				}
-				didWeWrite = WebSocketSSLShard::writeData(dataToSend, priority);
-			} while (!didWeWrite);
-			return true;
+			return WebSocketSSLShard::writeData(dataToSend, priority);
 		} catch (...) {
 			if (this->configManager->doWePrintWebSocketErrorMessages()) {
 				DiscordCoreAPI::reportException("VoiceConnection::sendMessage()");
@@ -396,7 +388,7 @@ namespace DiscordCoreAPI {
 								DatagramSocketClient::getInputBuffer();
 							}
 							waitTime = targetTime - std::chrono::system_clock::now();
-							nanoSleep(static_cast<int64_t>(static_cast<float>(waitTime.count()) * 0.95f));
+							nanoSleep(static_cast<int64_t>(static_cast<double>(waitTime.count()) * 0.95f));
 							waitTime = targetTime - std::chrono::system_clock::now();
 							if (waitTime.count() > 0) {
 								spinLock(waitTime.count());

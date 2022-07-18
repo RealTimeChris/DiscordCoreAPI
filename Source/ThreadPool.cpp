@@ -185,11 +185,12 @@ namespace DiscordCoreInternal {
 	}
 
 	void CoRoutineThreadPool::threadFunction(std::stop_token& stopToken, int64_t theIndex) {
-		while (!stopToken.stop_requested()) {			
+		while (!stopToken.stop_requested()) {
 			if (this->coroHandleCount.load() > 0) {
 				std::unique_lock theLock01{ this->theMutex, std::defer_lock_t{} };
 				if (theLock01.try_lock()) {
-					if (this->theCoroutineHandles.size() > 0) {;
+					if (this->theCoroutineHandles.size() > 0) {
+						;
 						std::coroutine_handle<> coroHandle = this->theCoroutineHandles.front();
 						this->coroHandleCount.store(this->coroHandleCount.load() - 1);
 						this->theCoroutineHandles.pop();
