@@ -8,7 +8,6 @@ jobs:
     resource_class: xlarge
     steps:
       - checkout
-
       - run:
             name: Download and install vcpkg as well as other dependencies.
             command: sudo apt-get install nasm && 
