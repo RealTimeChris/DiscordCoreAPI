@@ -3,8 +3,8 @@ version: 2.1
 jobs:
 
   Build-DiscordCoreAPI:
-    docker:
-      - image: ubuntu-2204:2022.04.1
+    machine:
+        image: ubuntu-2204:2022.04.1 # recommended linux image
     resource_class: xlarge
     steps:
       - checkout
