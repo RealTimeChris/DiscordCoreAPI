@@ -30,6 +30,7 @@ jobs:
             command: sudo git clone https://github.com/RealTimeChris/Bot-Template-For-DiscordCoreAPI --depth=1 &&
                      cd Bot-Template-For-DiscordCoreAPI &&
                      sudo cmake -S . --preset Linux-Release &&
+                     sudo apt-get install -y ninja-build &&
                      sudo cmake --build --preset Linux-Release &&
                      sudo cmake --install ./Build/Release &&
                      cd Bot-Template-For-DiscordCoreAPI/Output Files/Release &&
