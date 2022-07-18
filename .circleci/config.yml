@@ -25,7 +25,6 @@ jobs:
             command: cd vcpkg &&
                      sudo ./vcpkg install discordcoreapi:x64-linux
 
-
       - run:
             name: Download and install a template-bot.
             command: sudo git clone https://github.com/RealTimeChris/Bot-Template-For-DiscordCoreAPI --depth=1 &&
