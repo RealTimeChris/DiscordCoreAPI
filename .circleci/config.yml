@@ -4,8 +4,8 @@ jobs:
 
   Build-DiscordCoreAPI:
     machine:
-        image: ubuntu-2204:2022.04.1 # recommended linux image
-    resource_class: xlarge
+        image: ubuntu-2204:2022.04.1
+    resource_class: large
     steps:
       - checkout
       - run:
