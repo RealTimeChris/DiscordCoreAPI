@@ -550,7 +550,7 @@ namespace DiscordCoreInternal {
 			if (this->outputBuffers.size() > 0) {
 				std::string clientToServerString = this->outputBuffers.front();
 				auto writtenBytes{ sendto(this->theSocket, clientToServerString.data(), static_cast<int32_t>(clientToServerString.size()), 0,
-					reinterpret_cast<SOCKADDR*>(&this->theAddress), sizeof(this->theAddress)) };
+					reinterpret_cast<sockaddr*>(&this->theAddress), sizeof(this->theAddress)) };
 				if (writtenBytes < 0) {
 					this->disconnect();
 					return;
