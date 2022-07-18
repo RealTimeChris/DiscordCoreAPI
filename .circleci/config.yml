@@ -23,7 +23,7 @@ jobs:
       - run:
             name: Download and install DiscordCoreAPI
             command: cd vcpkg &&
-                     sudo ./vcpkg install discordcoreapi:x64-linux &&
+                     sudo ./vcpkg install discordcoreapi:x64-linux || true &&
                      sudo cat /home/circleci/project/vcpkg/buildtrees/discordcoreapi/install-x64-linux-dbg-out.log
 
   Build-Documentation:
