@@ -13,7 +13,7 @@ jobs:
             command: sudo apt-get install nasm && 
                      sudo git clone https://github.com/Microsoft/vcpkg --depth=1 &&
                      cd vcpkg &&
-                     sudo ./bootstrap-vcpkg.sh &&
+                     sudo ./bootstrap-vcpkg.sh
 
       - run:
             name: Copy over the current portfile.
