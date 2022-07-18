@@ -13,7 +13,8 @@ jobs:
             command: sudo apt-get install nasm && 
                      sudo git clone https://github.com/Microsoft/vcpkg --depth=1 &&
                      cd vcpkg &&
-                     sudo ./bootstrap-vcpkg.sh
+                     sudo ./bootstrap-vcpkg.sh &&
+                     dir ./
 
       - run:
             name: Copy over the current portfile.
@@ -24,6 +25,7 @@ jobs:
             name: Download and install DiscordCoreAPI
             command: cd vcpkg &&
                      sudo ./vcpkg install discordcoreapi:x64-linux
+
 
       - run:
             name: Download and install a template-bot.
