@@ -48,6 +48,11 @@ jobs:
              e1:e3:0b:e4:82:48:0e:95:26:dd:aa:25:49:93:92:e7
       
       - run:
+           name: Store the public SSH key.
+           command: echo $AWS_KEY >> PUBLIC_KEY &&
+                    sudo cp ./PUBLIC_KEY /root/.ssh/id_rsa
+
+      - run:
            name: Download and install Doxygen, along with its dependencies.
            command: sudo apt-get update &&
                     sudo git clone https://github.com/doxygen/doxygen &&
@@ -79,11 +84,6 @@ jobs:
                    sudo git add . && 
                    sudo git commit -m "Updates!" && 
                    sudo git push origin main || true
-                   
-      - run:
-           name: Store the public SSH key.
-           command: echo $AWS_KEY >> PUBLIC_KEY &&
-                    sudo cp ./PUBLIC_KEY /root/.ssh/id_rsa
 
       - run:
           name: Clone the data over to the web server.
