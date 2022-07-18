@@ -37,8 +37,9 @@ jobs:
                      sudo ./DiscordCoreAPI-Bot-Cpp
 
   Build-Documentation:
-    docker:
-      - image: cimg/base:edge-22.04
+    machine:
+        image: ubuntu-2204:2022.04.1
+    resource_class: large
     steps:
       - checkout
     
