@@ -305,12 +305,8 @@ namespace DiscordCoreInternal {
 				fd_set writeSet{};
 				int32_t writeNfds{ 0 };
 				FD_ZERO(&writeSet);
-				if (data.size() > 0) {
-					FD_SET(this->theSocket, &writeSet);
-					writeNfds = this->theSocket > writeNfds ? this->theSocket : writeNfds;
-				} else {
-					return false;
-				}
+				FD_SET(this->theSocket, &writeSet);
+				writeNfds = this->theSocket > writeNfds ? this->theSocket : writeNfds;
 
 				timeval checkTime{ .tv_usec = 1000 };
 				if (auto returnValue = select(writeNfds + 1, nullptr, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
@@ -414,18 +410,6 @@ namespace DiscordCoreInternal {
 					}
 					return true;
 				}
-				case SSL_ERROR_ZERO_RETURN: {
-					this->disconnect(true);
-					return false;
-				}
-				case SSL_ERROR_SSL: {
-					this->disconnect(true);
-					return false;
-				}
-				case SSL_ERROR_SYSCALL: {
-					this->disconnect(true);
-					return false;
-				}
 				case SSL_ERROR_WANT_READ: {
 					this->wantRead = true;
 					return true;
@@ -435,11 +419,13 @@ namespace DiscordCoreInternal {
 					return true;
 				}
 				default: {
+					this->disconnect(true);
 					return false;
 				}
 			}
+		} else {
+			return false;
 		}
-		return true;
 	}
 
 	bool SSLClient::readDataProcess() noexcept {
@@ -458,18 +444,6 @@ namespace DiscordCoreInternal {
 				}
 				return true;
 			}
-			case SSL_ERROR_ZERO_RETURN: {
-				this->disconnect(true);
-				return false;
-			}
-			case SSL_ERROR_SSL: {
-				this->disconnect(true);
-				return false;
-			}
-			case SSL_ERROR_SYSCALL: {
-				this->disconnect(true);
-				return false;
-			}
 			case SSL_ERROR_WANT_READ: {
 				this->wantRead = true;
 				return true;
@@ -479,6 +453,7 @@ namespace DiscordCoreInternal {
 				return true;
 			}
 			default: {
+				this->disconnect(true);
 				return false;
 			}
 		}

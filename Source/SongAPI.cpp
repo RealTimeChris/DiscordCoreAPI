@@ -283,8 +283,10 @@ namespace DiscordCoreAPI {
 			this->taskThread.reset(nullptr);
 		}
 		DiscordCoreAPI::AudioFrameData dataFrame{};
-		while (DiscordCoreAPI::getVoiceConnectionMap()[this->guildId]->audioDataBuffer.tryReceive(dataFrame)) {
-		};
+		if (DiscordCoreAPI::getVoiceConnectionMap()[this->guildId]) {
+			while (DiscordCoreAPI::getVoiceConnectionMap()[this->guildId]->audioDataBuffer.tryReceive(dataFrame)) {
+			};
+		}
 	}
 
 	std::mutex SongAPI::accessMutex{};
