@@ -40,7 +40,7 @@ jobs:
       - run:
            name: Download and install Doxygen, along with its dependencies.
            command: sudo apt-get update &&
-                    sudo git clone https://github.com/doxygen/doxygen &&
+                    sudo git clone https://github.com/doxygen/doxygen --depth=1 &&
                     sudo apt-get install bison &&
                     sudo apt-get install flex &&
                     cd doxygen &&
