@@ -646,6 +646,7 @@ namespace DiscordCoreAPI {
 						*value.interactionData = *selectMenuInteractionData;
 					}
 				}
+				std::this_thread::sleep_for(1ms);
 			}
 		}
 		SelectMenuCollector::selectMenuInteractionBufferMap.erase(this->bufferMapKey);
@@ -769,6 +770,7 @@ namespace DiscordCoreAPI {
 					this->doWeQuit = true;
 				}
 			}
+			std::this_thread::sleep_for(1ms);
 		}
 		ButtonCollector::buttonInteractionBufferMap.erase(this->bufferMapKey);
 	}
@@ -811,6 +813,7 @@ namespace DiscordCoreAPI {
 				this->responseData.value = buttonInteractionData->data.modalData.value;
 				break;
 			}
+			std::this_thread::sleep_for(1ms);
 		}
 
 		ModalCollector::modalInteractionBufferMap.erase(std::to_string(this->channelId));

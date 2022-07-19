@@ -522,7 +522,7 @@ namespace DiscordCoreInternal {
 					break;
 				}
 				case HttpsState::Collecting_Contents: {
-					if (static_cast<int64_t>(theConnection.inputBufferReal.size()) >= theData.contentSize && !theConnection.parseChunk(theData, theConnection.inputBufferReal) ||
+					if ((static_cast<int64_t>(theConnection.inputBufferReal.size()) >= theData.contentSize && !theConnection.parseChunk(theData, theConnection.inputBufferReal)) ||
 						stopWatch.hasTimePassed() || (theData.responseCode == -5 && theData.contentSize == -5)) {
 						doWeBreak = true;
 						break;
@@ -532,6 +532,7 @@ namespace DiscordCoreInternal {
 			if (doWeBreak) {
 				break;
 			}
+			std::this_thread::sleep_for(1ms);
 		}
 		return theConnection.finalizeReturnValues(theData, rateLimitData);
 	}

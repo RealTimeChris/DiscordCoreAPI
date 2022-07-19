@@ -161,6 +161,7 @@ namespace DiscordCoreAPI {
 				std::exception_ptr exceptionPtr{};
 				while (this->exceptionBuffer->tryReceive(exceptionPtr)) {
 					std::rethrow_exception(exceptionPtr);
+					std::this_thread::sleep_for(1ms);
 				}
 				this->result = std::move(this->coroutineHandle.promise().result);
 				return this->result;
@@ -185,6 +186,7 @@ namespace DiscordCoreAPI {
 				this->currentStatus = CoRoutineStatus::Cancelled;
 				while (this->exceptionBuffer->tryReceive(exceptionPtr)) {
 					std::rethrow_exception(exceptionPtr);
+					std::this_thread::sleep_for(1ms);
 				}
 				this->result = std::move(this->coroutineHandle.promise().result);
 				return this->result;
@@ -307,6 +309,7 @@ namespace DiscordCoreAPI {
 				std::exception_ptr exceptionPtr{};
 				while (this->exceptionBuffer->tryReceive(exceptionPtr)) {
 					std::rethrow_exception(exceptionPtr);
+					std::this_thread::sleep_for(1ms);
 				}
 			} else {
 				throw CoRoutineError("CoRoutine::get(), You called get() on a CoRoutine that is "
@@ -327,6 +330,7 @@ namespace DiscordCoreAPI {
 				std::exception_ptr exceptionPtr{};
 				while (this->exceptionBuffer->tryReceive(exceptionPtr)) {
 					std::rethrow_exception(exceptionPtr);
+					std::this_thread::sleep_for(1ms);
 				}
 			}
 		}

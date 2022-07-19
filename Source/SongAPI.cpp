@@ -131,6 +131,7 @@ namespace DiscordCoreAPI {
 		}
 		AudioFrameData frameData{};
 		while (getVoiceConnectionMap()[guildMember.guildId]->audioDataBuffer.tryReceive(frameData)) {
+			std::this_thread::sleep_for(1ms);
 		};
 		frameData.type = AudioFrameType::Skip;
 		frameData.guildMemberId = guildMember.id;
@@ -285,6 +286,7 @@ namespace DiscordCoreAPI {
 		DiscordCoreAPI::AudioFrameData dataFrame{};
 		if (DiscordCoreAPI::getVoiceConnectionMap()[this->guildId]) {
 			while (DiscordCoreAPI::getVoiceConnectionMap()[this->guildId]->audioDataBuffer.tryReceive(dataFrame)) {
+				std::this_thread::sleep_for(1ms);
 			};
 		}
 	}

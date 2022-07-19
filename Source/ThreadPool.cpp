@@ -39,6 +39,7 @@ namespace DiscordCoreAPI {
 				if (stopToken.stop_requested()) {
 					return;
 				}
+				std::this_thread::sleep_for(1ms);
 			}
 		});
 		theThread.detach();
