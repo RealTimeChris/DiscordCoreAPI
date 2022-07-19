@@ -23,24 +23,6 @@
 
 namespace DiscordCoreAPI {
 
-	UpdatePresenceData::operator nlohmann::json() {
-		nlohmann::json data{};
-		for (auto& value: this->activities) {
-			nlohmann::json dataNew{};
-			if (static_cast<std::string>(value.url) != "") {
-				dataNew["url"] = value.url;
-			}
-			dataNew["name"] = value.name;
-			dataNew["type"] = value.type;
-			data["d"]["activities"].push_back(dataNew);
-		}
-		data["d"]["status"] = this->status;
-		data["d"]["since"] = nullptr;
-		data["d"]["afk"] = this->afk;
-		data["op"] = 3;
-		return data;
-	}
-
 	AddRecipientToGroupDMData::operator std::string() {
 		nlohmann::json data{};
 		data["access_token"] = this->token;
@@ -120,7 +102,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	void BotUser::updatePresence(UpdatePresenceData& dataPackage) {
+	void BotUser::updatePresence(DiscordCoreInternal::UpdatePresenceData& dataPackage) {
 		nlohmann::json payload = dataPackage;
 		if (this->baseSocketAgent) {
 			int32_t theIndex{};

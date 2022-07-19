@@ -91,6 +91,12 @@
  * \brief For all of the building blocks of the main endpoints.
  */
 
+namespace DiscordCoreAPI {
+
+	struct ActivityData;
+
+};
+
 namespace DiscordCoreInternal {
 
 	using namespace std::literals;
@@ -128,6 +134,16 @@ namespace DiscordCoreInternal {
 		Invalid_API_Version = 4012,///< You sent an invalid version for the gateway.
 		Invalid_Intent = 4013,///< You sent an invalid intent for a Gateway Intent. You may have incorrectly calculated the bitwise value.
 		Disallowed_Intent = 4014,///< You sent a disallowed intent for a Gateway Intent. You may have tried to specify an intent that you have not enabled or are not approved for.
+	};
+
+	/// For updating a User's presence. \brief For updating a User's presence.
+	struct DiscordCoreAPI_Dll UpdatePresenceData {
+		std::vector<DiscordCoreAPI::ActivityData> activities{};///< A vector of activities.
+		std::string status{};///< Current status.
+		int64_t since{ 0 };///< When was the activity started?
+		bool afk{ false };///< Are we afk.
+
+		operator nlohmann::json();
 	};
 
 }// namespace DiscordCoreInternal
@@ -284,6 +300,7 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll DiscordCoreClientConfig {
 		GatewayIntents theIntents{ GatewayIntents::All_Intents };///< The gateway intents to be used for this instance.
 		std::vector<RepeatedFunctionData> functionsToExecute{};///< Functions to execute after a timer, or on a repetition.
+		DiscordCoreInternal::UpdatePresenceData presenceData{};///< Presence data to initialize your bot with. 
 		TextFormat textFormat{ TextFormat::Etf };///< Use ETF or JSON format for websocket transfer?
 		std::string connectionAddress{};///< A potentially alternative connection address for the websocket.
 		ShardingOptions shardOptions{};///< Options for the sharding of your bot.
@@ -324,6 +341,8 @@ namespace DiscordCoreAPI {
 		const bool doWeCacheGuildMembers();
 
 		const bool doWeCacheRoles();
+
+		const DiscordCoreInternal::UpdatePresenceData getPresenceData();
 
 		const std::string getBotToken();
 

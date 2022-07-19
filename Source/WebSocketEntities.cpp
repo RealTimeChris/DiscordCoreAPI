@@ -875,6 +875,7 @@ namespace DiscordCoreInternal {
 								identityData.currentShard = this->shard[0];
 								identityData.numberOfShards = this->shard[1];
 								identityData.intents = static_cast<int64_t>(this->configManager->getGatewayIntents());
+								identityData.presence = this->configManager->getPresenceData();
 								nlohmann::json identityJson = identityData;
 								std::string theString{};
 								if (this->dataOpCode == WebSocketOpCode::Op_Binary) {

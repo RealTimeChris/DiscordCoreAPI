@@ -94,6 +94,10 @@ namespace DiscordCoreAPI {
 		return this->theConfig.cacheOptions.cacheRoles;
 	}
 
+	const DiscordCoreInternal::UpdatePresenceData ConfigManager::getPresenceData() {
+		return this->theConfig.presenceData;
+	}
+
 	const std::string ConfigManager::getBotToken() {
 		return this->theConfig.botToken;
 	}

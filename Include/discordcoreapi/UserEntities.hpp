@@ -29,16 +29,6 @@ namespace DiscordCoreAPI {
 	 * @{
 	 */
 
-	/// For updating a User's presence. \brief For updating a User's presence.
-	struct DiscordCoreAPI_Dll UpdatePresenceData {
-		std::vector<ActivityData> activities{};///< A vector of activities.
-		std::string status{};///< Current status.
-		int64_t since{ 0 };///< When was the activity started?
-		bool afk{ false };///< Are we afk.
-
-		operator nlohmann::json();
-	};
-
 	/// For adding a user to a group Dm. \brief For adding a user to a group Dm.
 	struct DiscordCoreAPI_Dll AddRecipientToGroupDMData {
 		Snowflake channelId{};///< The Channel Id of the Dm.
@@ -140,7 +130,7 @@ namespace DiscordCoreAPI {
 		void updateVoiceStatus(UpdateVoiceStateData& datdataPackageaPackage);
 
 		/// Updates the bot's current activity status, to be viewed by others in the same server as the bot. \brief Updates the bot's current activity status, to be viewed by others in the same server as the bot.
-		void updatePresence(UpdatePresenceData& dataPackage);
+		void updatePresence(DiscordCoreInternal::UpdatePresenceData& dataPackage);
 
 	  protected:
 		BotUser() = default;

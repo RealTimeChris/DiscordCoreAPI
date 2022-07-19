@@ -30,6 +30,24 @@
 
 namespace DiscordCoreInternal {
 
+	UpdatePresenceData::operator nlohmann::json() {
+		nlohmann::json data{};
+		for (auto& value: this->activities) {
+			nlohmann::json dataNew{};
+			if (static_cast<std::string>(value.url) != "") {
+				dataNew["url"] = value.url;
+			}
+			dataNew["name"] = value.name;
+			dataNew["type"] = value.type;
+			data["d"]["activities"].push_back(dataNew);
+		}
+		data["d"]["status"] = this->status;
+		data["d"]["since"] = nullptr;
+		data["d"]["afk"] = this->afk;
+		data["op"] = 3;
+		return data;
+	}
+
 	WebSocketResumeData::operator nlohmann::json() {
 		nlohmann::json theData{};
 		theData["d"]["seq"] = this->lastNumberReceived;
@@ -48,6 +66,7 @@ namespace DiscordCoreInternal {
 		data["d"]["intents"] = this->intents;
 		data["d"]["compress"] = false;
 		data["d"]["token"] = this->botToken;
+		data["d"]["presence"] = this->presence;
 		data["op"] = 2;
 #ifdef _WIN32
 		data["d"]["properties"]["os"] = "Windows";
