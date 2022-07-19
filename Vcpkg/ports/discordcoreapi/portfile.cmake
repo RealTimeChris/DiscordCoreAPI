@@ -8,7 +8,93 @@ vcpkg_from_github(
 	REF a5291396d7f2773272f640178fd0d02db34d3c29
 	SHA512 
         SHA512
-51e901fd774bf250c99dc0d627f7c066d81b3c64499648a11ae40c5ee000c4cfe80dad3fcbcc3e6aaedc2f582bceefbbc1d60b10bb5278a0f1a28c35fbb952d7	HEAD_REF main
+e598b911f617e2b2a0e4c4c24be92d2267e7988bfb74d25936bbf901566f07f53c68ccebbb5f0d79cf4b80978617e8393e333876e3fd6315fb717aa9cce32aef
+file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/debug/include" "${CURRENT_PACKAGES_DIR}/debug/share")
+
+if(VCPKG_LIBRARY_LINKAGE STREQUAL "static")
+    file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/bin" "${CURRENT_PACKAGES_DIR}/debug/bin")
+endif()
+
+file(
+	INSTALL "${SOURCE_PATH}/License.md"
+	DESTINATION "${CURRENT_PACKAGES_DIR}/share/${PORT}"
+	RENAME copyright
+)
+	
+	SHA512 0
+	HEAD_REF main
+)
+
+vcpkg_cmake_configure(
+    SOURCE_PATH "${SOURCE_PATH}"
+)
+
+vcpkg_cmake_install()
+
+vcpkg_cmake_config_fixup(NO_PREFIX_CORRECTION)
+
+file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/debug/include" "${CURRENT_PACKAGES_DIR}/debug/share")
+
+if(VCPKG_LIBRARY_LINKAGE STREQUAL "static")
+    file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/bin" "${CURRENT_PACKAGES_DIR}/debug/bin")
+endif()
+
+file(
+	INSTALL "${SOURCE_PATH}/License.md"
+	DESTINATION "${CURRENT_PACKAGES_DIR}/share/${PORT}"
+	RENAME copyright
+)
+	
+	SHA512 0
+	HEAD_REF main
+)
+
+vcpkg_cmake_configure(
+    SOURCE_PATH "${SOURCE_PATH}"
+)
+
+vcpkg_cmake_install()
+
+vcpkg_cmake_config_fixup(NO_PREFIX_CORRECTION)
+
+file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/debug/include" "${CURRENT_PACKAGES_DIR}/debug/share")
+
+if(VCPKG_LIBRARY_LINKAGE STREQUAL "static")
+    file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/bin" "${CURRENT_PACKAGES_DIR}/debug/bin")
+endif()
+
+file(
+	INSTALL "${SOURCE_PATH}/License.md"
+	DESTINATION "${CURRENT_PACKAGES_DIR}/share/${PORT}"
+	RENAME copyright
+)
+	
+	SHA512 0
+	HEAD_REF main
+)
+
+vcpkg_cmake_configure(
+    SOURCE_PATH "${SOURCE_PATH}"
+)
+
+vcpkg_cmake_install()
+
+vcpkg_cmake_config_fixup(NO_PREFIX_CORRECTION)
+
+file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/debug/include" "${CURRENT_PACKAGES_DIR}/debug/share")
+
+if(VCPKG_LIBRARY_LINKAGE STREQUAL "static")
+    file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/bin" "${CURRENT_PACKAGES_DIR}/debug/bin")
+endif()
+
+file(
+	INSTALL "${SOURCE_PATH}/License.md"
+	DESTINATION "${CURRENT_PACKAGES_DIR}/share/${PORT}"
+	RENAME copyright
+)
+	
+	SHA512 0
+	HEAD_REF main
 )
 
 vcpkg_cmake_configure(
