@@ -18,7 +18,9 @@ jobs:
            run: sudo git clone https://github.com/RealTimeChris/DiscordCoreAPI --depth=1
 
          - name: Update the portfile.
-           run: cd DiscordCoreAPI/Vcpkg/ports/discordcoreapi &&
+           run: | 
+                cd DiscordCoreAPI/Vcpkg/ports/discordcoreapi
+                |
                 sudo echo -e if(VCPKG_TARGET_IS_LINUX)\nmessage(WARNING "DiscordCoreAPI only supports g++ 11 on linux.")\nendif()\n\nvcpkg_from_github(\nOUT_SOURCE_PATH SOURCE_PATH\nREPO RealTimeChris/DiscordCoreAPI\n REF >> portfile.cmake
          - name: Update the portfile.
            run: cd DiscordCoreAPI/Vcpkg/ports/discordcoreapi &&
