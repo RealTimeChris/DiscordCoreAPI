@@ -33,8 +33,10 @@ jobs:
            run: sudo bash -c "cat ./DiscordCoreAPI/.github/Raw-Files/portfile-second-half.cmake >> ./DiscordCoreAPI/Vcpkg/ports/discordcoreapi/portfile.cmake" &&
                 sudo cp -v -R ./DiscordCoreAPI/Vcpkg/* /usr/local/share/vcpkg &&
                 sudo git config --global --add safe.directory /home/ubuntu/DiscordCoreAPI &&
-                sudo /usr/local/share/vcpkg/vcpkg install discordcoreapi:x64-linux --overlay-ports=./DiscordCoreAPI/Vcpkg/ports | sudo tee InstallOutput.txt || true &&
-                sed -i '/Actual hash/,$!d' InstallOutput.txt &&
+                sudo /usr/local/share/vcpkg/vcpkg install discordcoreapi:x64-linux --overlay-ports=./DiscordCoreAPI/Vcpkg/ports | sudo tee InstallOutput.txt || true 
+
+         - name: Update the portfile and download/install the library.
+           run: sed -i '/Actual hash/,$!d' InstallOutput.txt &&
                 sed -i 's/^.....................//' InstallOutput.txt &&
                 sed -i '2,250d' InstallOutput.txt &&
                 truncate -s -3 InstallOutput.txt &&
