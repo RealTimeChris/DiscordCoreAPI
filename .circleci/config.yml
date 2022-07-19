@@ -26,6 +26,7 @@ jobs:
       - run:
          name: Update the portfile.
          command: cd DiscordCoreAPI &&
+                  pwd
                   sudo touch EmptyFile.cmake &&
                   sudo cp -v -R EmptyFile.cmake /home/ubuntu/Vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake &&
                   sudo cp -v -R EmptyFile.cmake  /home/ubuntu/Vcpkg/ports/discordcoreapi/portfile.cmake &&
@@ -35,7 +36,8 @@ jobs:
 
       - run:
          name: Update the portfile.
-         command: sudo bash -c "cat ./DiscordCoreAPI/.github/Raw-Files/portfile-second-half.cmake >> /home/ubuntu/Vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake" &&
+         command: pwd
+                  sudo bash -c "cat ./DiscordCoreAPI/.github/Raw-Files/portfile-second-half.cmake >> /home/ubuntu/Vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake" &&
                   sudo cp -v -R ./DiscordCoreAPI/Vcpkg/* /home/ubuntu/Vcpkg &&
                   sudo cp -v -R /home/ubuntu/Vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake /home/ubuntu/Vcpkg/ports/discordcoreapi/portfile.cmake &&
                   sudo git config --global --add safe.directory /home/circleci/project/DiscordCoreAPI &&
@@ -43,7 +45,8 @@ jobs:
 
       - run:
          name:  Update the portfile and download/install the library.
-         command: sudo sed -i '/Actual hash/,$!d' InstallOutput.txt &&
+         command: pwd
+                  sudo sed -i '/Actual hash/,$!d' InstallOutput.txt &&
                   sudo sed -i 's/^.....................//' InstallOutput.txt &&
                   sudo sed -i '2,250d' InstallOutput.txt &&
                   sudo truncate -s -3 InstallOutput.txt &&
