@@ -425,6 +425,7 @@ namespace DiscordCoreInternal {
 					return ProcessIOResult::Clean;
 				}
 				case SSL_ERROR_ZERO_RETURN: {
+					this->disconnect(true);
 					return ProcessIOResult::Disconnect;
 				}
 				default: {
@@ -463,6 +464,7 @@ namespace DiscordCoreInternal {
 					return ProcessIOResult::Clean;
 				}
 				case SSL_ERROR_ZERO_RETURN: {
+					this->disconnect(true);
 					return ProcessIOResult::Disconnect;
 				}
 				default: {
