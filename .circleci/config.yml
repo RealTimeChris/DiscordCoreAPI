@@ -21,7 +21,7 @@ jobs:
           name: Copy over the current portfile.
           command: sudo git config --global user.email "40668522+RealTimeChris@users.noreply.github.com" &&
                    sudo git config --global user.name "realtimechris" &&
-                   sudo git clone https://realtimechris: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@github.com/realtimechris/DiscordCoreAPI --depth=1
+                   sudo git clone https://realtimechris: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@github.com/realtimechris/DiscordCoreAPI ./DiscordCoreAPI --depth=1
 
       - run:
          name: Update the portfile.
