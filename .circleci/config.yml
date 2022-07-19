@@ -40,7 +40,7 @@ jobs:
                   sudo cat ./DiscordCoreAPI/Vcpkg/ports/discordcoreapi/portfile.cmake &&
                   sudo cp -v -R ./DiscordCoreAPI/Vcpkg/* /home/circleci/project/vcpkg &&
                   cd /home/circleci/project/vcpkg &&
-                  sudo vcpkg install discordcoreapi:x64-linux --overlay-ports=../ | sudo tee InstallOutput.txt &&
+                  sudo ./vcpkg install discordcoreapi:x64-linux --overlay-ports=../ | sudo tee InstallOutput.txt &&
                   cat InstallOutput.txt
              
       - run:
