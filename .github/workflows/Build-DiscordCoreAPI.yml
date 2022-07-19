@@ -31,13 +31,16 @@ jobs:
            run: sudo bash -c "cat ./DiscordCoreAPI/.github/Raw-Files/portfile-second-half.cmake >> ./DiscordCoreAPI/Vcpkg/ports/discordcoreapi/portfile.cmake" &&
                 sudo cat ./DiscordCoreAPI/Vcpkg/ports/discordcoreapi/portfile.cmake &&
                 sudo cp -v -R ./DiscordCoreAPI/Vcpkg/* /usr/local/share/vcpkg &&
-                sudo vcpkg install discordcoreapi:x64-linux --overlay-ports=../ | sudo tee InstallOutput.txt
                 cat InstallOutput.txt
-                sudo ./vcpkg install discordcoreapi:x64-linux --overlay-ports=../ | sudo tee InstallOutput.txt &&
+                sudo ./vcpkg install discordcoreapi:x64-linux --overlay-ports=../ | sudo tee InstallOutput.txt &&sudo vcpkg install discordcoreapi | sudo tee InstallOutput.txt
                 sed -i '/Actual hash/,$!d' InstallOutput.txt
                 sed -i 's/^.....................//' InstallOutput.txt
                 sed -i '2,250d' InstallOutput.txt
                 truncate -s -3 InstallOutput.txt
+
+                sudo bash -c "head -c 241 ./DiscordCoreAPI/Vcpkg/ports/discordcoreapi/portfile.cmake > ./DiscordCoreAPI/.github/Raw-Files/portfile-first-half.cmake" 
+                sudo bash -c "cat InstallOutput.txt >> ./DiscordCoreAPI/.github/Raw-Files/portfile-first-half.cmake" 
+                sudo bash -c "cat ./DiscordCoreAPI/.github/Raw-Files/portfile-second-half.cmake  >> ./DiscordCoreAPI/.github/Raw-Files/portfile-first-half.cmake" 
                 cat InstallOutput.txt
              
          - name: Update the portfile.
