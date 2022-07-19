@@ -40,7 +40,7 @@ jobs:
                 truncate -s -3 InstallOutput.txt &&
                 sudo cp -v -R ./DiscordCoreAPI/.github/Raw-Files/portfile-first-half-new.cmake /usr/local/share/vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake &&
                 sudo bash -c "head -c 241 ./DiscordCoreAPI/Vcpkg/ports/discordcoreapi/portfile.cmake > /usr/local/share/vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake"  &&
-                sudo bash -c "cat InstallOutput.txt >> ./DiscordCoreAPI/.github/Raw-Files/portfile-first-half-new.cmake"  &&
+                sudo bash -c "cat InstallOutput.txt >> /usr/local/share/vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake"  &&
                 sudo bash -c "cat ./DiscordCoreAPI/.github/Raw-Files/portfile-second-half.cmake  >> /usr/local/share/vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake"  &&
                 sudo cp -v -R /usr/local/share/vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake /usr/local/share/vcpkg/ports/discordcoreapi/portfile.cmake &&
                 sudo cp -v -R /usr/local/share/vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake ./DiscordCoreAPI/Vcpkg/ports/discordcoreapi/portfile.cmake &&
