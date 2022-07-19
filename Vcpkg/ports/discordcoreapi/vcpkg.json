@@ -6,7 +6,7 @@
   "license": "AGPL-3.0-or-later",
   "supports": "(windows & x64 & !static) | (linux & x64)",
   "dependencies": [
-    "opus"
+    "opus",
     {
       "name": "vcpkg-cmake",
       "host": true
