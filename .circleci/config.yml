@@ -9,32 +9,55 @@ jobs:
     steps:
       - checkout
       - run:
-            name: Download and install vcpkg as well as other dependencies.
-            command: sudo apt-get install nasm && 
-                     sudo git clone https://github.com/Microsoft/vcpkg --depth=1 &&
-                     cd vcpkg &&
-                     sudo ./bootstrap-vcpkg.sh
+           name: Download and install vcpkg as well as other dependencies.
+           command: sudo apt-get install nasm && 
+                sudo git clone https://github.com/Microsoft/vcpkg --depth=1 &&
+                sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test && 
+                sudo apt install -y g++-11 &&
+                cd vcpkg &&
+                sudo ./bootstrap-vcpkg.sh
 
       - run:
-            name: Copy over the current portfile.
-            command: sudo git clone https://github.com/RealTimeChris/DiscordCoreAPI --depth=1 &&
-                     sudo cp -v -R ./DiscordCoreAPI/Vcpkg/* ./vcpkg
+          name: Copy over the current portfile.
+          command: sudo git clone https://github.com/RealTimeChris/DiscordCoreAPI --depth=1
 
       - run:
-            name: Download and install DiscordCoreAPI
-            command: cd vcpkg &&
-                     sudo ./vcpkg install discordcoreapi:x64-linux
+         name: Update the portfile.
+         command: sudo chmod 600 ./DiscordCoreAPI/Vcpkg/ports/discordcoreapi/portfile.cmake
 
       - run:
-            name: Download and install a template-bot.
-            command: sudo git clone https://github.com/RealTimeChris/Bot-Template-For-DiscordCoreAPI --depth=1 &&
-                     cd Bot-Template-For-DiscordCoreAPI &&
-                     sudo apt-get install -y ninja-build &&
-                     sudo cmake -S . --preset Linux-Release &&
-                     sudo cmake --build --preset Linux-Release &&
-                     sudo cmake --install ./Build/Release &&
-                     cd "Output Files/Release" &&
-                     sudo ./DiscordCoreAPI-Bot-Cpp
+         name: Update the portfile.
+         command: sudo bash -c "cat ./DiscordCoreAPI/.github/Raw-Files/portfile-first-half.cmake > ./DiscordCoreAPI/Vcpkg/ports/discordcoreapi/portfile.cmake"
+
+      - run:
+         name: Update the portfile.
+         command: cd DiscordCoreAPI &&
+                sudo git rev-parse HEAD | sudo tee ./Vcpkg/ports/discordcoreapi/portfile.cmake -a
+
+      - run:
+         name: Update the portfile.
+         command: sudo bash -c "cat ./DiscordCoreAPI/.github/Raw-Files/portfile-second-half.cmake >> ./DiscordCoreAPI/Vcpkg/ports/discordcoreapi/portfile.cmake" &&
+                sudo cat ./DiscordCoreAPI/Vcpkg/ports/discordcoreapi/portfile.cmake &&
+                sudo cp -v -R ./DiscordCoreAPI/Vcpkg/* /usr/local/share/vcpkg &&
+                sudo vcpkg install discordcoreapi:x64-linux --overlay-ports=../ | sudo tee InstallOutput.txt
+                cat InstallOutput.txt
+             
+      - run:
+         name: Update the portfile.
+         command: cd vcpkg &&
+                sudo ./vcpkg install discordcoreapi:x64-linux || true &&
+                cat /home/runner/work/DiscordCoreAPI/DiscordCoreAPI/vcpkg/buildtrees/discordcoreapi/install-x64-linux-dbg-out.log
+                
+      - run:
+         name: Download and install a template-bot.
+         command: sudo git clone https://github.com/RealTimeChris/Bot-Template-For-DiscordCoreAPI --depth=1 &&
+                cd Bot-Template-For-DiscordCoreAPI &&
+                sudo apt-get install -y ninja-build &&
+                sudo cmake -S . --preset Linux-Release &&
+                sudo cmake --build --preset Linux-Release &&
+                sudo cmake --install ./Build/Release &&
+                cd "Output Files/Release" &&
+                sudo ./DiscordCoreAPI-Bot-Cpp
 
   Build-Documentation:
     machine:
