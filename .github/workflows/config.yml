@@ -1,10 +1,10 @@
 
-name: Build Documentation.
+name: Build/Upload Documentation.
 on:
   push:
 
 jobs:
-  build:
+  Build-It:
     runs-on: ubuntu-20.04
 
     steps:
@@ -17,17 +17,17 @@ jobs:
         - name: Download and install Doxygen, along with its dependencies.
           run: sudo apt-get update &&
              sudo git clone https://github.com/doxygen/doxygen &&
+             cd doxygen
+             sudo mkdir build &&
+             sudo cmake -G "Unix Makefiles" &&
+             sudo make &&
+             sudo make install &&
              sudo apt-get install bison &&
              sudo apt-get install flex &&
-             sudo apt-get install doxygen &&
-             cd doxygen &&
              sudo apt-get install graphviz &&
              sudo apt-get install openssh-client &&
              sudo apt-get install ssh
-             #sudo mkdir build &&
-             #sudo cmake -G "Unix Makefiles" &&
-             #sudo make &&
-             #sudo make install &&
+             
              
         - name: Collect the original Repo for the docs.
           run: sudo git config --global user.email "40668522+RealTimeChris@users.noreply.github.com" &&
