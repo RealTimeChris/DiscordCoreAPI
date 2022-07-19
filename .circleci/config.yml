@@ -27,7 +27,10 @@ jobs:
          name: Update the portfile.
          command: cd DiscordCoreAPI &&
                   sudo cp -v -R ./.github/Raw-Files/portfile-first-half.cmake /home/circleci/project/vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake &&
-                  sudo git rev-parse HEAD | sudo tee /home/circleci/project/vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake -a
+                  sudo cp -v -R ./.github/Raw-Files/portfile-first-half.cmake  /home/circleci/project/vcpkg/ports/discordcoreapi/portfile.cmake &&
+                  sudo git rev-parse HEAD | sudo tee /home/circleci/project/vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake -a &&
+                  sudo touch newFile.txt &&
+                  sudo touch EmptyFile.cmake
 
       - run:
          name: Update the portfile.
