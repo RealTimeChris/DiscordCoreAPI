@@ -55,6 +55,7 @@ jobs:
                   cd ./DiscordCoreAPI &&
                   sudo git add . &&
                   sudo git commit -m "Updates!" &&
+                  sudo git config pull.rebase false &&
                   sudo git pull &&
                   sudo git push origin main &&
                   sudo /home/circleci/project/vcpkg/vcpkg install discordcoreapi:x64-linux
