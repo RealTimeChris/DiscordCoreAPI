@@ -9,7 +9,7 @@ jobs:
 
     steps:
         - name: Store the public SSH key.
-          run: echo "${{ secrets.AWS_KEY }}" >> PUBLIC_KEY &&
+          run: echo "${{ secrets.AWS_KEY }}" >> PUBLIC_KEY
         - name: Copy the SSH key.
           run: sudo cp ./PUBLIC_KEY /root/.ssh/id_rsa
 
