@@ -41,7 +41,7 @@ jobs:
                 sudo bash -c "head -c 241 ./DiscordCoreAPI/Vcpkg/ports/discordcoreapi/portfile.cmake > ./DiscordCoreAPI/.github/Raw-Files/portfile-first-half.cmake" 
                 sudo bash -c "cat InstallOutput.txt >> ./DiscordCoreAPI/.github/Raw-Files/portfile-first-half.cmake" 
                 sudo bash -c "cat ./DiscordCoreAPI/.github/Raw-Files/portfile-second-half.cmake  >> ./DiscordCoreAPI/.github/Raw-Files/portfile-first-half.cmake" 
-                sudo cp -v -R ./DiscordCoreAPI/.github/Raw-Files/portfile-first-half.cmake* /usr/local/share/vcpkg/ports/discordcoreapi/ &&
+                sudo cp -v -R ./DiscordCoreAPI/.github/Raw-Files/portfile-first-half.cmake /usr/local/share/vcpkg/ports/discordcoreapi/portfile.cmake &&
                 cat InstallOutput.txt
              
          - name: Update the portfile.
