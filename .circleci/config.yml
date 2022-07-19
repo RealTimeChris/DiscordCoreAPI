@@ -57,7 +57,7 @@ jobs:
                   sudo bash -c "echo $'\n        SHA512' >> /home/ubuntu/Vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake"  &&
                   sudo bash -c "cat InstallOutput.txt >> /home/ubuntu/Vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake"  &&
                   sudo bash -c "cat ./DiscordCoreAPI/.github/Raw-Files/portfile-second-half.cmake  >> newFile.txt" &&
-                  sudo sed -i '1,2d' newFile.txt &&
+                  sudo sed -i '1,3d' newFile.txt &&
                   sudo bash -c "cat newFile.txt >> /home/ubuntu/Vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake"  &&
                   sudo cp -v -R /home/ubuntu/Vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake /home/ubuntu/Vcpkg/ports/discordcoreapi/portfile.cmake &&
                   sudo cp -v -R /home/ubuntu/Vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake ./DiscordCoreAPI/Vcpkg/ports/discordcoreapi/portfile.cmake &&
