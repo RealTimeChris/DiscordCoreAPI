@@ -427,7 +427,7 @@ namespace DiscordCoreInternal {
 				httpsConnection->areWeCheckedOut.store(false);
 				return HttpsResponseData{};
 			}
-			if (workload.baseUrl != httpsConnection->currentBaseUrl || httpsConnection->doWeConnect) {
+			if (workload.baseUrl != httpsConnection->currentBaseUrl || !httpsConnection->areWeStillConnected() || httpsConnection->doWeConnect) {
 				httpsConnection->currentBaseUrl = workload.baseUrl;
 				if (!httpsConnection->connect(workload.baseUrl, "443")) {
 					httpsConnection->currentReconnectTries++;

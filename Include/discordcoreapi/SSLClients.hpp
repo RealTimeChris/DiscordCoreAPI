@@ -157,6 +157,8 @@ namespace DiscordCoreInternal {
 
 		virtual void disconnect(bool doWeReconnect) noexcept = 0;
 
+		virtual bool areWeStillConnected() noexcept = 0;
+
 		virtual ~SSLConnectionInterface() noexcept = default;
 
 	  protected:
@@ -213,6 +215,8 @@ namespace DiscordCoreInternal {
 
 		std::string getInputBuffer() noexcept;
 
+		bool areWeStillConnected() noexcept;
+
 		int64_t getBytesRead() noexcept;
 
 		virtual ~SSLClient() noexcept = default;
@@ -226,11 +230,13 @@ namespace DiscordCoreInternal {
 
 		bool connect(const std::string& baseUrl, const std::string& portNew) noexcept;
 
-		ProcessIOResult processIO(int32_t waitTimeInms) noexcept;
+		void processIO(int32_t waitTimeInms) noexcept;
 
 		void writeData(std::string& data) noexcept;
 
 		std::string getInputBuffer() noexcept;
+
+		bool areWeStillConnected() noexcept;
 
 		int64_t getBytesRead() noexcept;
 
