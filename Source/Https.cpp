@@ -473,7 +473,7 @@ namespace DiscordCoreInternal {
 		HttpsResponseData theData{};
 		bool haveWeCollectedSize{ false };
 		while (true) {
-			auto theResult = theConnection.processIO(1000000);
+			auto theResult = theConnection.processIO(10000);
 			if (theResult == ProcessIOResult::Disconnect) {
 				return theData;
 			} else if (theResult == ProcessIOResult::Reconnect) {
