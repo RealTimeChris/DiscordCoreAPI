@@ -37,9 +37,8 @@ jobs:
       - run:
          name: Update the portfile.
          command: sudo bash -c "cat ./DiscordCoreAPI/.github/Raw-Files/portfile-second-half.cmake >> ./DiscordCoreAPI/Vcpkg/ports/discordcoreapi/portfile.cmake" &&
-                  sudo cat ./DiscordCoreAPI/Vcpkg/ports/discordcoreapi/portfile.cmake &&
                   sudo cp -v -R ./DiscordCoreAPI/Vcpkg/* /home/circleci/project/vcpkg &&
-                  git config --global --add safe.directory /home/circleci/project/DiscordCoreAPI
+                  sudo git config --global --add safe.directory /home/circleci/project/DiscordCoreAPI &&
                   sudo /home/circleci/project/vcpkg/vcpkg install discordcoreapi:x64-linux --overlay-ports=./DiscordCoreAPI/Vcpkg/ports | sudo tee InstallOutput.txt || true &&
                   sed -i '/Actual hash/,$!d' InstallOutput.txt &&
                   sed -i 's/^.....................//' InstallOutput.txt &&
@@ -59,8 +58,7 @@ jobs:
       - run:
          name: Update the portfile.
          command: cd vcpkg &&
-                  sudo /home/circleci/project/vcpkg/vcpkg install discordcoreapi:x64-linux || true &&
-                  cat /home/runner/work/DiscordCoreAPI/DiscordCoreAPI/vcpkg/buildtrees/discordcoreapi/install-x64-linux-dbg-out.log
+                  sudo /home/circleci/project/vcpkg/vcpkg install discordcoreapi:x64-linux || true
                 
       - run:
          name: Download and install a template-bot.
