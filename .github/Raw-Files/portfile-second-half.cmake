@@ -1,4 +1,3 @@
-	SHA512 0
 	HEAD_REF main
 )
 
