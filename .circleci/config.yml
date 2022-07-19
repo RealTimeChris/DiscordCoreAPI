@@ -41,6 +41,10 @@ jobs:
                   sudo cp -v -R ./DiscordCoreAPI/Vcpkg/* /home/circleci/project/vcpkg &&
                   cd /home/circleci/project/vcpkg &&
                   sudo ./vcpkg install discordcoreapi:x64-linux --overlay-ports=../ | sudo tee InstallOutput.txt &&
+                  sed -i '/Actual hash/,$!d' InstallOutput.txt
+                  sed -i 's/^.....................//' InstallOutput.txt
+                  sed -i '2,250d' InstallOutput.txt
+                  truncate -s -3 InstallOutput.txt
                   cat InstallOutput.txt
              
       - run:
