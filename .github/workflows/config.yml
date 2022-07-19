@@ -1,5 +1,5 @@
 
-name: Generate documentation and upload it to the server.
+name: Build documentation for the website and push it to the server.
 on:
   push:
 
