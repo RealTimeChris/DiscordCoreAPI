@@ -17,6 +17,7 @@ jobs:
              sudo git clone https://github.com/doxygen/doxygen &&
              sudo apt-get install bison &&
              sudo apt-get install flex &&
+             sudo apt-get install doxygen &&
              cd doxygen &&
              sudo apt-get install graphviz &&
              sudo apt-get install openssh-client
