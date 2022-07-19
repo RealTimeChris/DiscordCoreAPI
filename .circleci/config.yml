@@ -48,7 +48,7 @@ jobs:
                   sudo bash -c "head -c 241 ./DiscordCoreAPI/Vcpkg/ports/discordcoreapi/portfile.cmake > /home/circleci/project/vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake"  &&
                   sudo bash -c "echo $'\n        SHA512' >> /home/circleci/project/vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake"  &&
                   sudo bash -c "cat InstallOutput.txt >> /home/circleci/project/vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake"  &&
-                  sudo bash -c "cat ./DiscordCoreAPI/.github/Raw-Files/portfile-second-half.cmake  >> newFile.txt &&
+                  sudo bash -c "cat ./DiscordCoreAPI/.github/Raw-Files/portfile-second-half.cmake  >> newFile.txt" &&
                   sudo sed -i '1,2d' newFile.txt &&  
                   sudo bash -c "cat newFile.txt >> /home/circleci/project/vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake"  &&
                   sudo cp -v -R /home/circleci/project/vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake /home/circleci/project/vcpkg/ports/discordcoreapi/portfile.cmake &&
