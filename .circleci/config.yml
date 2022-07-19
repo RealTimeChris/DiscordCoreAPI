@@ -47,8 +47,7 @@ jobs:
 
       - run:
          name:  Update the portfile and download/install the library.
-         command: sudo git config --global --add safe.directory /home/circleci/project/DiscordCoreAPI &&
-                  sed -i '/Actual hash/,$!d' InstallOutput.txt &&
+         command: sed -i '/Actual hash/,$!d' InstallOutput.txt &&
                   sed -i 's/^.....................//' InstallOutput.txt &&
                   sed -i '2,250d' InstallOutput.txt &&
                   truncate -s -3 InstallOutput.txt &&
