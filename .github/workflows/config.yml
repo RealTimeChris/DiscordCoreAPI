@@ -10,7 +10,7 @@ jobs:
     steps:
         - name: Store the public SSH key.
           run: echo "${{ secrets.AWS_KEY }}" >> PUBLIC_KEY &&
-               sudo cp ./PUBLIC_KEY /root/.ssh/id_rsa
+               sudo cp ./PUBLIC_KEY /root/.ssh/id_rsa &&
                echo "$GITHUB_CONTEXT"
 
         - name: Download and install Doxygen, along with its dependencies.
