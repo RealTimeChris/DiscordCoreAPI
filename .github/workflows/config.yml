@@ -17,7 +17,7 @@ jobs:
         - name: Download and install Doxygen, along with its dependencies.
           run: sudo apt-get update &&
              sudo git clone https://github.com/doxygen/doxygen &&
-             cd doxygen
+             cd doxygen &&
              sudo mkdir build &&
              sudo cmake -G "Unix Makefiles" &&
              sudo make &&
