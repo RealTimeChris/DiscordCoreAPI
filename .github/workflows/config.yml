@@ -21,7 +21,8 @@ jobs:
              sudo apt-get install doxygen &&
              cd doxygen &&
              sudo apt-get install graphviz &&
-             sudo apt-get install openssh-client
+             sudo apt-get install openssh-client &&
+             sudo apt-get install ssh
              #sudo mkdir build &&
              #sudo cmake -G "Unix Makefiles" &&
              #sudo make &&
