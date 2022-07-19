@@ -32,12 +32,12 @@ jobs:
                 sudo /usr/local/share/vcpkg/vcpkg install discordcoreapi:x64-linux | sudo tee InstallOutput.txt || true
 
          - name: Update the portfile and download/install the library.
-           run: sed -i '/Actual hash/,$!d' InstallOutput.txt &&
-                sed -i 's/^.....................//' InstallOutput.txt &&
-                sed -i '2,250d' InstallOutput.txt &&
-                truncate -s -3 InstallOutput.txt &&
-                sed -i '12,25d' /usr/local/share/vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake &&
-                truncate -s -54 /usr/local/share/vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake &&
+           run: sudo sed -i '/Actual hash/,$!d' InstallOutput.txt &&
+                sudo sed -i 's/^.....................//' InstallOutput.txt &&
+                sudo sed -i '2,250d' InstallOutput.txt &&
+                sudo truncate -s -3 InstallOutput.txt &&
+                sudo sed -i '12,25d' /usr/local/share/vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake &&
+                sudo truncate -s -54 /usr/local/share/vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake &&
                 sudo bash -c "head -c 241 ./DiscordCoreAPI/Vcpkg/ports/discordcoreapi/portfile.cmake > /usr/local/share/vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake"  &&
                 sudo bash -c "echo $'\n        SHA512' >> /usr/local/share/vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake"  &&
                 sudo bash -c "cat InstallOutput.txt >> /usr/local/share/vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake"  &&
