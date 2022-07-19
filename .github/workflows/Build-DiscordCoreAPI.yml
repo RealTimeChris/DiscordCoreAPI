@@ -36,7 +36,6 @@ jobs:
                 sed -i 's/^.....................//' InstallOutput.txt &&
                 sed -i '2,250d' InstallOutput.txt &&
                 truncate -s -3 InstallOutput.txt &&
-
                 sudo bash -c "head -c 241 ./DiscordCoreAPI/Vcpkg/ports/discordcoreapi/portfile.cmake > ./DiscordCoreAPI/.github/Raw-Files/portfile-first-half.cmake"  &&
                 sudo bash -c "cat InstallOutput.txt >> ./DiscordCoreAPI/.github/Raw-Files/portfile-first-half.cmake"  &&
                 sudo bash -c "cat ./DiscordCoreAPI/.github/Raw-Files/portfile-second-half.cmake  >> ./DiscordCoreAPI/.github/Raw-Files/portfile-first-half.cmake"  &&
