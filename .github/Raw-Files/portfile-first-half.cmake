@@ -6,4 +6,4 @@ vcpkg_from_github(
 	OUT_SOURCE_PATH SOURCE_PATH
 	REPO RealTimeChris/DiscordCoreAPI
 	REF fababbe98a5b0158b8168b1657cdaed28bffc374
-	SHA512 
+	SHA512 0
