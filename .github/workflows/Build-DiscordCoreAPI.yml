@@ -39,7 +39,7 @@ jobs:
                 sudo sed -i '12,25d' /usr/local/share/vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake &&
                 sudo truncate -s -54 /usr/local/share/vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake &&
                 sudo bash -c "head -c 241 ./DiscordCoreAPI/Vcpkg/ports/discordcoreapi/portfile.cmake > /usr/local/share/vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake"  &&
-                sudo bash -c "echo $'\n        SHA512' >> /usr/local/share/vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake"  &&
+                sudo bash -c "echo $'\n         SHA512 ' >> /usr/local/share/vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake"  &&
                 sudo bash -c "cat InstallOutput.txt >> /usr/local/share/vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake"  &&
                 sudo bash -c "cat ./DiscordCoreAPI/.github/Raw-Files/portfile-second-half.cmake  >> newFile.txt" &&
                 sudo sed -i '1,2d' newFile.txt &&  
