@@ -2017,6 +2017,7 @@ namespace DiscordCoreAPI {
 		dataPackage->setResponseType(InputEventResponseType::Edit_Interaction_Response);
 		originalEvent = InputEvents::respondToInputEventAsync(*dataPackage).get();
 		while (true) {
+			std::this_thread::sleep_for(1ms);
 			std::unique_ptr<ButtonCollector> button{ std::make_unique<ButtonCollector>(originalEvent) };
 
 			std::vector<ButtonResponseData> buttonIntData{ button->collectButtonData(false, waitForMaxMs, 1, stoull(userID)).get() };

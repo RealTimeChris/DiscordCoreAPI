@@ -1025,10 +1025,11 @@ namespace DiscordCoreInternal {
 						value->parseMessage(value.get());
 					}
 					if (value->areWeStillConnected() && value->processedMessages.size() > 0) {
-						while (value->processedMessages.size() > 0) {
+						while (value->processedMessages.size() > 0 && value->areWeStillConnected()) {
 							if (value) {
 								value->onMessageReceived();
 							}
+							std::this_thread::sleep_for(1ms);
 						}
 					}
 					if (value->areWeStillConnected()) {
@@ -1092,6 +1093,7 @@ namespace DiscordCoreInternal {
 						this->connections.push(connectData);
 						return;
 					}
+					std::this_thread::sleep_for(1ms);
 					didWeWrite = this->sslShards[connectData.currentShard]->writeData(sendString, true);
 				} while (!didWeWrite);
 				if (!didWeWrite) {
