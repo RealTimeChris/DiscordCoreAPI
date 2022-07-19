@@ -17,7 +17,7 @@ jobs:
          - name: Copy over the current portfile.
            run: sudo git config --global user.email "40668522+RealTimeChris@users.noreply.github.com" &&
                sudo git config --global user.name "realtimechris" &&
-               sudo git clone https://realtimechris:${{ secret.PERSONAL_ACCESS_TOKEN} }@github.com/realtimechris/DiscordCoreAPI --depth=1
+               sudo git clone https://realtimechris:${{ secret.PERSONAL_ACCESS_TOKEN }}@github.com/realtimechris/DiscordCoreAPI --depth=1
 
          - name: Update the portfile.
            run: cd DiscordCoreAPI &&
