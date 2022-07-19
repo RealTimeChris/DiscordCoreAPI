@@ -26,6 +26,9 @@ jobs:
       - run:
          name: Construct the original portfile.
          command: cd ./DiscordCoreAPI
+                  sudo touch EmptyFile.cmake &&
+                  sudo bash -c "cat EmptyFile.cmake > ./CMake/Raw-Files/Portfile-The-First.cmake" &&
+                  sudo bash -c "cat EmptyFile.cmake > ./CMake/Raw-Files/Portfile-The-Second.cmake" &&
                   sudo bash -c "cat ./CMake/Raw-Files/Top-Of-Portfile.cmake >> ./CMake/Raw-Files/Portfile-The-First.cmake" &&
                   sudo git rev-parse HEAD | sudo tee ./CMake/Raw-Files/Portfile-The-First.cmake -a &&
                   sudo bash -c "cat ./CMake/Raw-Files/Middle-Of-Portfile.cmake >> ./CMake/Raw-Files/Portfile-The-First.cmake" &&
@@ -53,8 +56,8 @@ jobs:
                   sudo bash -c "echo $'\n' >> ./DiscordCoreAPI/CMake/Raw-Files/Portfile-The-Second.cmake" &&
                   sudo bash -c "cat ./DiscordCoreAPI/CMake/Raw-Files/Bottom-Of-Portfile.cmake >> ./DiscordCoreAPI/CMake/Raw-Files/Portfile-The-Second.cmake" &&
                   sudo touch ./DiscordCoreAPI/Vcpkg/ports/discordcoreapi/portfile.cmake &&
-                  sudo cp -v -R /home/ubuntu/Vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake /home/ubuntu/Vcpkg/ports/discordcoreapi/portfile.cmake &&
-                  sudo cp -v -R /home/ubuntu/Vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake ./DiscordCoreAPI/Vcpkg/ports/discordcoreapi/portfile.cmake &&
+                  sudo cp -v -R ./DiscordCoreAPI/CMake/Raw-Files/Portfile-The-Second.cmake /home/ubuntu/Vcpkg/ports/discordcoreapi/portfile.cmake &&
+                  sudo cp -v -R ./DiscordCoreAPI/CMake/Raw-Files/Portfile-The-Second.cmake ./DiscordCoreAPI/Vcpkg/ports/discordcoreapi/portfile.cmake &&
                   cd ./DiscordCoreAPI &&
                   sudo cat ./DiscordCoreAPI/CMake/Raw-Files/Portfile-The-Second.cmake &&
                   sudo git add . &&
