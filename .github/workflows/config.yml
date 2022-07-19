@@ -28,7 +28,7 @@ jobs:
         - name: Collect the original Repo for the docs.
           run: sudo git config --global user.email "40668522+RealTimeChris@users.noreply.github.com" &&
                    sudo git config --global user.name "realtimechris" &&
-                   sudo git clone https://realtimechris:${PERSONAL_ACCESS_TOKEN}@github.com/realtimechris/DiscordCoreAPI-Docs --depth=1
+                   sudo git clone https://realtimechris:${{ secrets.PERSONAL_ACCESS_TOKEN} }@github.com/realtimechris/DiscordCoreAPI-Docs --depth=1
 
         - name: Collect the documentation and generate it.
           run: sudo git clone https://github.com/RealTimeChris/DiscordCoreAPI --depth=1 &&
