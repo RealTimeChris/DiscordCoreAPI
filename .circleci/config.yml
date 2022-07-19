@@ -31,7 +31,7 @@ jobs:
                   sudo cp -v -R EmptyFile.cmake /home/ubuntu/Vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake &&
                   sudo cp -v -R EmptyFile.cmake  /home/ubuntu/Vcpkg/ports/discordcoreapi/portfile.cmake &&
                   sudo cp -v -R EmptyFile.cmake ./.github/Raw-Files/portfile-first-half-new.cmake &&
-                  sudo cp -v -R EmptyFile.cmake  ./DiscordCoreAPI/Vcpkg/ports/discordcoreapi/portfile.cmake
+                  sudo cp -v -R EmptyFile.cmake  ./Vcpkg/ports/discordcoreapi/portfile.cmake &&
                   sudo cp -v -R ./.github/Raw-Files/portfile-first-half-new.cmake /home/ubuntu/Vcpkg/ports/discordcoreapi/portfile.cmake &&
                   sudo cp -v -R ./.github/Raw-Files/portfile-first-half.cmake /home/ubuntu/Vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake &&
                   sudo git rev-parse HEAD | sudo tee /home/ubuntu/Vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake -a
