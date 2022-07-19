@@ -24,9 +24,6 @@ jobs:
                 sudo ./vcpkg install discordcoreapi:x64-linux || true &&
                 cat /home/runner/work/DiscordCoreAPI/DiscordCoreAPI/vcpkg/buildtrees/discordcoreapi/install-x64-linux-dbg-out.log
                 
-  Test-It:
-    runs-on: ubuntu-20.04
-    steps:
          - name: Download and install a template-bot.
            run: sudo git clone https://github.com/RealTimeChris/Bot-Template-For-DiscordCoreAPI --depth=1 &&
                 cd Bot-Template-For-DiscordCoreAPI &&
