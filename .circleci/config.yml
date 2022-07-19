@@ -26,7 +26,6 @@ jobs:
       - run:
          name: Construct the original portfile.
          command: cd ./DiscordCoreAPI
-                  dir    
                   sudo bash -c "cat ./CMake/Raw-Files/Top-Of-Portfile.cmake >> ./CMake/Raw-Files/Portfile-The-First.cmake" &&
                   sudo git rev-parse HEAD | sudo tee ./CMake/Raw-Files/Portfile-The-First.cmake -a &&
                   sudo bash -c "cat ./CMake/Raw-Files/Middle-Of-Portfile.cmake >> ./CMake/Raw-Files/Portfile-The-First.cmake" &&
@@ -35,13 +34,8 @@ jobs:
                   sudo cat ./CMake/Raw-Files/Portfile-The-First.cmake 
 
       - run:
-         name: Update the portfile.
-         command: sudo bash -c "cat ./DiscordCoreAPI/.CMake/Raw-Files/portfile-second-half.cmake >> /home/ubuntu/Vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake" &&
-                  sudo cp -v -R ./DiscordCoreAPI/Vcpkg/* /home/ubuntu/Vcpkg &&
-                  sudo cp -v -R /home/ubuntu/Vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake /home/ubuntu/Vcpkg/ports/discordcoreapi/portfile.cmake &&
-                  sudo git config --global --add safe.directory /home/circleci/project/DiscordCoreAPI &&
-                  sudo cat /home/ubuntu/Vcpkg/ports/discordcoreapi/portfile.cmake &&
-                  sudo /home/ubuntu/Vcpkg/vcpkg install discordcoreapi:x64-linux | sudo tee InstallOutput.txt || true
+         name: Attempt to install the library, to collect the SHA512 value.
+         command: sudo /home/ubuntu/Vcpkg/vcpkg install discordcoreapi:x64-linux | sudo tee InstallOutput.txt || true
 
       - run:
          name:  Update the portfile and download/install the library.
@@ -49,14 +43,13 @@ jobs:
                   sudo sed -i 's/^.....................//' InstallOutput.txt &&
                   sudo sed -i '2,250d' InstallOutput.txt &&
                   sudo truncate -s -3 InstallOutput.txt &&
-                  sudo sed -i '12,25d' /home/ubuntu/Vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake &&
-                  cat  /home/ubuntu/Vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake &&
-                  sudo truncate -s -54 /home/ubuntu/Vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake &&
-                  cat  /home/ubuntu/Vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake &&
-                  sudo bash -c "echo $'\n         SHA512 ' >> /home/ubuntu/Vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake"  &&
-                  sudo bash -c "cat InstallOutput.txt >> /home/ubuntu/Vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake"  &&
-                  sudo sed -i '1,2d' newFile.txt &&                  
-                  sudo bash -c "cat newFile.txt >> /home/ubuntu/Vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake"  &&
+                  sudo bash -c "cat ./DiscordCoreAPI/CMake/Raw-Files/Top-Of-Portfile.cmake >> ./DiscordCoreAPI/CMake/Raw-Files/Portfile-The-Second.cmake" &&
+                  sudo git rev-parse HEAD | sudo tee ./DiscordCoreAPI/CMake/Raw-Files/Portfile-The-Second.cmake -a &&
+                  sudo bash -c "cat ./DiscordCoreAPI/CMake/Raw-Files/Middle-Of-Portfile.cmake >> ./DiscordCoreAPI/CMake/Raw-Files/Portfile-The-Second.cmake" &&
+                  sudo bash -c "cat InstallOutput.txt >> ./DiscordCoreAPI/CMake/Raw-Files/Portfile-The-Second.cmake" &&
+                  sudo bash -c "echo $'\n' >> ./DiscordCoreAPI/CMake/Raw-Files/Portfile-The-Second.cmake" &&
+                  sudo bash -c "cat ./DiscordCoreAPI/CMake/Raw-Files/Bottom-Of-Portfile.cmake >> ./DiscordCoreAPI/CMake/Raw-Files/Portfile-The-Second.cmake" &&
+                  sudo cat ./DiscordCoreAPI/CMake/Raw-Files/Portfile-The-Second.cmake 
                   sudo touch ./DiscordCoreAPI/Vcpkg/ports/discordcoreapi/portfile.cmake &&
                   sudo cp -v -R /home/ubuntu/Vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake /home/ubuntu/Vcpkg/ports/discordcoreapi/portfile.cmake &&
                   sudo cp -v -R /home/ubuntu/Vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake ./DiscordCoreAPI/Vcpkg/ports/discordcoreapi/portfile.cmake &&
