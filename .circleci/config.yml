@@ -25,13 +25,14 @@ jobs:
 
       - run:
          name: Construct the original portfile.
-         command: cd ./DiscordCoreAPI &&
+         command: cd ./DiscordCoreAPI
+                  dir    
                   sudo bash -c "cat ./github/Raw-Files/Top-Of-Portfile.cmake >> ./github/Raw-Files/Portfile-The-First.cmake" &&
                   sudo git rev-parse HEAD | sudo tee ./github/Raw-Files/Portfile-The-First.cmake -a &&
                   sudo bash -c "cat ./github/Raw-Files/Middle-Of-Portfile.cmake >> ./github/Raw-Files/Portfile-The-First.cmake" &&
                   sudo bash -c "echo $'0\n' >> ./github/Raw-Files/Portfile-The-First.cmake" &&
                   sudo bash -c "cat ./github/Raw-Files/Bottom-Of-Portfile.cmake >> ./github/Raw-Files/Portfile-The-First.cmake" &&
-                  sudo cat ./github/Raw-Files/Portfile-The-First.cmake &&
+                  sudo cat ./github/Raw-Files/Portfile-The-First.cmake 
 
       - run:
          name: Update the portfile.
