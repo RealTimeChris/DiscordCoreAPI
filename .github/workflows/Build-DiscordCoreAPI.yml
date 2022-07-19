@@ -31,9 +31,10 @@ jobs:
            run: sudo bash -c "cat ./DiscordCoreAPI/.github/Raw-Files/portfile-second-half.cmake >> ./DiscordCoreAPI/Vcpkg/ports/discordcoreapi/portfile.cmake" &&
                 sudo cat ./DiscordCoreAPI/Vcpkg/ports/discordcoreapi/portfile.cmake &&
                 sudo cp -v -R ./DiscordCoreAPI/Vcpkg/* /usr/local/share/vcpkg &&
-                sudo vcpkg install discordcoreapi:x64-linux --overlay-ports=../
+                sudo vcpkg install discordcoreapi:x64-linux --overlay-ports=../ | sudo tee InstallOutput.txt
+                cat InstallOutput.txt
              
-         - name: Download and install DiscordCoreAPI
+         - name: Update the portfile.
            run: cd vcpkg &&
                 sudo ./vcpkg install discordcoreapi:x64-linux || true &&
                 cat /home/runner/work/DiscordCoreAPI/DiscordCoreAPI/vcpkg/buildtrees/discordcoreapi/install-x64-linux-dbg-out.log
