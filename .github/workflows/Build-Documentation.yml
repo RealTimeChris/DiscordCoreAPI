@@ -16,17 +16,17 @@ jobs:
 
         - name: Download and install Doxygen, along with its dependencies.
           run: sudo apt-get update &&
-             sudo git clone https://github.com/doxygen/doxygen &&
-             cd doxygen &&
-             sudo mkdir build &&
-             sudo cmake -G "Unix Makefiles" &&
-             sudo make &&
-             sudo make install &&
-             sudo apt-get install bison &&
-             sudo apt-get install flex &&
-             sudo apt-get install graphviz &&
-             sudo apt-get install openssh-client &&
-             sudo apt-get install ssh
+               sudo git clone https://github.com/doxygen/doxygen &&
+               cd doxygen &&
+               sudo mkdir build &&
+               sudo cmake -G "Unix Makefiles" &&
+               sudo make &&
+               sudo make install &&
+               sudo apt-get install bison &&
+               sudo apt-get install flex &&
+               sudo apt-get install graphviz &&
+               sudo apt-get install openssh-client &&
+               sudo apt-get install ssh
              
              
         - name: Collect the original Repo for the docs.
@@ -36,15 +36,15 @@ jobs:
 
         - name: Collect the documentation and generate it.
           run: sudo git clone https://github.com/RealTimeChris/DiscordCoreAPI --depth=1 &&
-                cd DiscordCoreAPI/Documentation/Doxygen && 
-                sudo doxygen || true
+               cd DiscordCoreAPI/Documentation/Doxygen && 
+               sudo doxygen || true
                 
         - name: Commit and push the docs to the repo.
           run: cd DiscordCoreAPI-Docs && 
-                   sudo git add . && 
-                   sudo git commit -m "Updates!" && 
-                   sudo git push origin main || true
+               sudo git add . && 
+               sudo git commit -m "Updates!" && 
+               sudo git push origin main || true
 
         - name: Clone the data over to the web server.
           run: sudo ssh -i /root/.ssh/id_rsa.pem -o StrictHostKeyChecking=no ubuntu@ec2-3-144-188-157.us-east-2.compute.amazonaws.com 
-                   "cd /var/www && sudo rm -rf discordcoreapi && sudo git clone https://github.com/RealTimeChris/DiscordCoreAPI-Docs --depth=1 ./discordcoreapi"
+               "cd /var/www && sudo rm -rf discordcoreapi && sudo git clone https://github.com/RealTimeChris/DiscordCoreAPI-Docs --depth=1 ./discordcoreapi"
