@@ -6,11 +6,7 @@
   "license": "AGPL-3.0-or-later",
   "supports": "(windows & x64 & !static) | (linux & x64)",
   "dependencies": [
-    "ffmpeg",
-    "libsodium",
-    "nlohmann-json",
-    "openssl",
-    "opus",
+    "opus"
     {
       "name": "vcpkg-cmake",
       "host": true
