@@ -26,18 +26,19 @@ jobs:
       - run:
          name: Update the portfile.
          command: cd DiscordCoreAPI &&
-                  sudo cp -v -R ./.github/Raw-Files/portfile-first-half-new.cmake /home/circleci/project/vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake &&
-                  sudo cp -v -R ./.github/Raw-Files/portfile-first-half-new.cmake /home/circleci/project/vcpkg/ports/discordcoreapi/portfile.cmake &&
-                  sudo cp -v -R ./.github/Raw-Files/portfile-first-half.cmake /home/circleci/project/vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake &&
-                  sudo git rev-parse HEAD | sudo tee /home/circleci/project/vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake -a
+                  sudo touch EmptyFile.cmake &&
+                  sudo cp -v -R EmptyFile.cmake /home/ubuntu/Vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake
+                  sudo cp -v -R ./.github/Raw-Files/portfile-first-half-new.cmake /home/ubuntu/Vcpkg/ports/discordcoreapi/portfile.cmake &&
+                  sudo cp -v -R ./.github/Raw-Files/portfile-first-half.cmake /home/ubuntu/Vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake &&
+                  sudo git rev-parse HEAD | sudo tee /home/ubuntu/Vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake -a
 
       - run:
          name: Update the portfile.
-         command: sudo bash -c "cat ./DiscordCoreAPI/.github/Raw-Files/portfile-second-half.cmake >> /home/circleci/project/vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake" &&
-                  sudo cp -v -R ./DiscordCoreAPI/Vcpkg/* /home/circleci/project/vcpkg &&
-                  sudo cp -v -R /home/circleci/project/vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake /home/circleci/project/vcpkg/ports/discordcoreapi/portfile.cmake &&
+         command: sudo bash -c "cat ./DiscordCoreAPI/.github/Raw-Files/portfile-second-half.cmake >> /home/ubuntu/Vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake" &&
+                  sudo cp -v -R ./DiscordCoreAPI/Vcpkg/* /home/ubuntu/Vcpkg &&
+                  sudo cp -v -R /home/ubuntu/Vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake /home/ubuntu/Vcpkg/ports/discordcoreapi/portfile.cmake &&
                   sudo git config --global --add safe.directory /home/circleci/project/DiscordCoreAPI &&
-                  sudo /home/circleci/project/vcpkg/vcpkg install discordcoreapi:x64-linux | sudo tee InstallOutput.txt || true
+                  sudo /home/ubuntu/Vcpkg/vcpkg install discordcoreapi:x64-linux | sudo tee InstallOutput.txt || true
 
       - run:
          name:  Update the portfile and download/install the library.
@@ -45,29 +46,29 @@ jobs:
                   sudo sed -i 's/^.....................//' InstallOutput.txt &&
                   sudo sed -i '2,250d' InstallOutput.txt &&
                   sudo truncate -s -3 InstallOutput.txt &&
-                  sudo sed -i '12,25d' /home/circleci/project/vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake &&
-                  sudo truncate -s -54 /home/circleci/project/vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake &&
-                  sudo bash -c "head -c 241 ./DiscordCoreAPI/Vcpkg/ports/discordcoreapi/portfile.cmake > /home/circleci/project/vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake"  &&
-                  sudo bash -c "echo $'\n        SHA512' >> /home/circleci/project/vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake"  &&
-                  sudo bash -c "cat InstallOutput.txt >> /home/circleci/project/vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake"  &&
+                  sudo sed -i '12,25d' /home/ubuntu/Vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake &&
+                  sudo truncate -s -54 /home/ubuntu/Vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake &&
+                  sudo bash -c "head -c 241 ./DiscordCoreAPI/Vcpkg/ports/discordcoreapi/portfile.cmake > /home/ubuntu/Vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake"  &&
+                  sudo bash -c "echo $'\n        SHA512' >> /home/ubuntu/Vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake"  &&
+                  sudo bash -c "cat InstallOutput.txt >> /home/ubuntu/Vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake"  &&
                   sudo bash -c "cat ./DiscordCoreAPI/.github/Raw-Files/portfile-second-half.cmake  >> newFile.txt" &&
                   sudo sed -i '1,2d' newFile.txt &&
-                  sudo bash -c "cat newFile.txt >> /home/circleci/project/vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake"  &&
-                  sudo cp -v -R /home/circleci/project/vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake /home/circleci/project/vcpkg/ports/discordcoreapi/portfile.cmake &&
-                  sudo cp -v -R /home/circleci/project/vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake ./DiscordCoreAPI/Vcpkg/ports/discordcoreapi/portfile.cmake &&
-                  cat /home/circleci/project/vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake &&
+                  sudo bash -c "cat newFile.txt >> /home/ubuntu/Vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake"  &&
+                  sudo cp -v -R /home/ubuntu/Vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake /home/ubuntu/Vcpkg/ports/discordcoreapi/portfile.cmake &&
+                  sudo cp -v -R /home/ubuntu/Vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake ./DiscordCoreAPI/Vcpkg/ports/discordcoreapi/portfile.cmake &&
+                  cat /home/ubuntu/Vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake &&
                   cd ./DiscordCoreAPI &&
                   sudo git add . &&
                   sudo git commit -m "Updates!" &&
                   sudo git config pull.rebase false &&
                   sudo git pull &&
                   sudo git push origin main &&
-                  sudo /home/circleci/project/vcpkg/vcpkg install discordcoreapi:x64-linux
+                  sudo /home/ubuntu/Vcpkg/vcpkg install discordcoreapi:x64-linux
              
       - run:
          name: Update the portfile.
          command: cd vcpkg &&
-                  sudo /home/circleci/project/vcpkg/vcpkg install discordcoreapi:x64-linux || true
+                  sudo /home/ubuntu/Vcpkg/vcpkg install discordcoreapi:x64-linux || true
                 
       - run:
          name: Download and install a template-bot.
