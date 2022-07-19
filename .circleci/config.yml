@@ -35,11 +35,14 @@ jobs:
 
       - run:
          name: Attempt to install the library, to collect the SHA512 value.
-         command: sudo /home/ubuntu/Vcpkg/vcpkg install discordcoreapi:x64-linux | sudo tee InstallOutput.txt || true
+         command: sudo touch /home/ubuntu/Vcpkg/ports/discordcoreapi/portfile.cmake &&
+                  sudo cp -v -R ./DiscordCoreAPI/CMake/Raw-Files/Portfile-The-First.cmake /home/ubuntu/Vcpkg/ports/discordcoreapi/portfile.cmake &&
+                  sudo /home/ubuntu/Vcpkg/vcpkg install discordcoreapi:x64-linux | sudo tee InstallOutput.txt || true
 
       - run:
          name:  Update the portfile and download/install the library.
-         command: sudo sed -i '/Actual hash/,$!d' InstallOutput.txt &&
+         command: sudo touch InstallOutput.txt &&
+                  sudo sed -i '/Actual hash/,$!d' InstallOutput.txt &&
                   sudo sed -i 's/^.....................//' InstallOutput.txt &&
                   sudo sed -i '2,250d' InstallOutput.txt &&
                   sudo truncate -s -3 InstallOutput.txt &&
@@ -49,12 +52,11 @@ jobs:
                   sudo bash -c "cat InstallOutput.txt >> ./DiscordCoreAPI/CMake/Raw-Files/Portfile-The-Second.cmake" &&
                   sudo bash -c "echo $'\n' >> ./DiscordCoreAPI/CMake/Raw-Files/Portfile-The-Second.cmake" &&
                   sudo bash -c "cat ./DiscordCoreAPI/CMake/Raw-Files/Bottom-Of-Portfile.cmake >> ./DiscordCoreAPI/CMake/Raw-Files/Portfile-The-Second.cmake" &&
-                  sudo cat ./DiscordCoreAPI/CMake/Raw-Files/Portfile-The-Second.cmake 
                   sudo touch ./DiscordCoreAPI/Vcpkg/ports/discordcoreapi/portfile.cmake &&
                   sudo cp -v -R /home/ubuntu/Vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake /home/ubuntu/Vcpkg/ports/discordcoreapi/portfile.cmake &&
                   sudo cp -v -R /home/ubuntu/Vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake ./DiscordCoreAPI/Vcpkg/ports/discordcoreapi/portfile.cmake &&
                   cd ./DiscordCoreAPI &&
-                  sudo cat newFile.txt &&
+                  sudo cat ./DiscordCoreAPI/CMake/Raw-Files/Portfile-The-Second.cmake &&
                   sudo git add . &&
                   sudo git commit -m "Updates!" &&
                   sudo git config pull.rebase false &&
