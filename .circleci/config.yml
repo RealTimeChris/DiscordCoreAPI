@@ -25,7 +25,7 @@ jobs:
 
       - run:
          name: Construct the original portfile.
-         command: cd ./DiscordCoreAPI
+         command: cd ./DiscordCoreAPI &&
                   sudo touch EmptyFile.cmake &&
                   sudo bash -c "cat EmptyFile.cmake > ./CMake/Raw-Files/Portfile-The-First.cmake" &&
                   sudo bash -c "cat EmptyFile.cmake > ./CMake/Raw-Files/Portfile-The-Second.cmake" &&

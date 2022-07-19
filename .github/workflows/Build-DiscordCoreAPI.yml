@@ -20,7 +20,7 @@ jobs:
                 sudo git clone https://realtimechris:${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/realtimechris/DiscordCoreAPI ./DiscordCoreAPI --depth=1
 
          - name: Copy over the current portfile.
-           run: cd ./DiscordCoreAPI
+           run: cd ./DiscordCoreAPI &&
                 sudo touch EmptyFile.cmake &&
                 sudo bash -c "cat EmptyFile.cmake > ./CMake/Raw-Files/Portfile-The-First.cmake" &&
                 sudo bash -c "cat EmptyFile.cmake > ./CMake/Raw-Files/Portfile-The-Second.cmake" &&
