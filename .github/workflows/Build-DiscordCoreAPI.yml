@@ -23,7 +23,7 @@ jobs:
            run: dir ./DiscordCoreAPI &&
                 sudo bash -c "cat ./DiscordCoreAPI/.github/Raw-Files/portfile-first-half.cmake > ./DiscordCoreAPI/Vcpkg/ports/discordcoreapi/portfile.cmake"
          - name: Update the portfile.
-           run: sudo echo git rev-parse HEAD | sudo tee ./DiscordCoreAPI/Vcpkg/ports/discordcoreapi/portfile.cmake -a &&
+           run: sudo git rev-parse HEAD | sudo tee ./DiscordCoreAPI/Vcpkg/ports/discordcoreapi/portfile.cmake -a &&
                 sudo cat ./DiscordCoreAPI/Vcpkg/ports/discordcoreapi/portfile.cmake &&
                 sudo bash -c "cat ./DiscordCoreAPI/.github/Raw-Files/portfile-second-half.cmake >> ./DiscordCoreAPI/Vcpkg/ports/discordcoreapi/portfile.cmake" &&
                 sudo vcpkg install discordcoreapi:x64-windows --overlay-ports=../ &&
