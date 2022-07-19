@@ -39,7 +39,7 @@ jobs:
          command: sudo bash -c "cat ./DiscordCoreAPI/.github/Raw-Files/portfile-second-half.cmake >> ./DiscordCoreAPI/Vcpkg/ports/discordcoreapi/portfile.cmake" &&
                   sudo cat ./DiscordCoreAPI/Vcpkg/ports/discordcoreapi/portfile.cmake &&
                   sudo cp -v -R ./DiscordCoreAPI/Vcpkg/* /home/circleci/project/vcpkg &&
-                  sudo ./vcpkg install discordcoreapi:x64-linux --overlay-ports=./DiscordCoreAPI/Vcpkg/ports | sudo tee InstallOutput.txt &&
+                  sudo /home/circleci/project/vcpkg/vcpkg install discordcoreapi:x64-linux --overlay-ports=./DiscordCoreAPI/Vcpkg/ports | sudo tee InstallOutput.txt &&
                   sed -i '/Actual hash/,$!d' InstallOutput.txt &&
                   sed -i 's/^.....................//' InstallOutput.txt &&
                   sed -i '2,250d' InstallOutput.txt &&
@@ -53,7 +53,7 @@ jobs:
       - run:
          name: Update the portfile.
          command: cd vcpkg &&
-                  sudo ./vcpkg install discordcoreapi:x64-linux || true &&
+                  sudo /home/circleci/project/vcpkg/vcpkg install discordcoreapi:x64-linux || true &&
                   cat /home/runner/work/DiscordCoreAPI/DiscordCoreAPI/vcpkg/buildtrees/discordcoreapi/install-x64-linux-dbg-out.log
                 
       - run:
