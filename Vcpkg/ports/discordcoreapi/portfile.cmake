@@ -8,7 +8,29 @@ vcpkg_from_github(
 	REF a5291396d7f2773272f640178fd0d02db34d3c29
 	SHA512 
          SHA512 
-e19609d1e9fd802b54a66785ecbe266a376b098328dd44c5fe03e07b7b7354c4608f2e5ada98532d9a27b2ada1a2aaf5f0200ad1bcc773ac51672029db6b61cd    file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/bin" "${CURRENT_PACKAGES_DIR}/debug/bin")
+
+file(
+	INSTALL "${SOURCE_PATH}/License.md"
+	DESTINATION "${CURRENT_PACKAGES_DIR}/share/${PORT}"
+	RENAME copyright
+)
+	
+	SHA512 0
+	HEAD_REF main
+)
+
+vcpkg_cmake_configure(
+    SOURCE_PATH "${SOURCE_PATH}"
+)
+
+vcpkg_cmake_install()
+
+vcpkg_cmake_config_fixup(NO_PREFIX_CORRECTION)
+
+file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/debug/include" "${CURRENT_PACKAGES_DIR}/debug/share")
+
+if(VCPKG_LIBRARY_LINKAGE STREQUAL "static")
+    file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/bin" "${CURRENT_PACKAGES_DIR}/debug/bin")
 endif()
 
 file(
