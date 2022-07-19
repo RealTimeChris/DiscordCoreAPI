@@ -23,13 +23,13 @@ jobs:
                    sudo git config --global user.name "realtimechris" &&
                    sudo git clone https://realtimechris:${PERSONAL_ACCESS_TOKEN}@github.com/realtimechris/DiscordCoreAPI --depth=1
 
-      - run:
-         name: Update the portfile.
-         command: sudo chmod 600 ./DiscordCoreAPI/Vcpkg/ports/discordcoreapi/portfile.cmake
+      #- run:
+         #name: Update the portfile.
+         #command: sudo chmod 600 ./DiscordCoreAPI/Vcpkg/ports/discordcoreapi/portfile.cmake
 
-      - run:
-         name: Update the portfile.
-         command: sudo bash -c "cat ./DiscordCoreAPI/.github/Raw-Files/portfile-first-half.cmake > ./DiscordCoreAPI/Vcpkg/ports/discordcoreapi/portfile.cmake"
+      #- run:
+         #name: Update the portfile.
+         #command: sudo bash -c "cat ./DiscordCoreAPI/.github/Raw-Files/portfile-first-half.cmake > ./DiscordCoreAPI/Vcpkg/ports/discordcoreapi/portfile.cmake"
 
       - run:
          name: Update the portfile.
@@ -51,10 +51,14 @@ jobs:
                   sed -i 's/^.....................//' InstallOutput.txt &&
                   sed -i '2,250d' InstallOutput.txt &&
                   truncate -s -3 InstallOutput.txt &&
-                  sudo cp -v -R ./DiscordCoreAPI/.github/Raw-Files/portfile-first-half-new.cmake /home/circleci/project/vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake &&
+                  sed -i '12,25d' /home/circleci/project/vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake &&
+                  truncate -s -54 /home/circleci/project/vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake &&
                   sudo bash -c "head -c 241 ./DiscordCoreAPI/Vcpkg/ports/discordcoreapi/portfile.cmake > /home/circleci/project/vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake"  &&
+                  sudo bash -c "echo $'\n        SHA512' >> /home/circleci/project/vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake"  &&
                   sudo bash -c "cat InstallOutput.txt >> /home/circleci/project/vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake"  &&
-                  sudo bash -c "cat ./DiscordCoreAPI/.github/Raw-Files/portfile-second-half.cmake  >> /home/circleci/project/vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake"  &&
+                  sudo bash -c "cat ./DiscordCoreAPI/.github/Raw-Files/portfile-second-half.cmake  >> newFile.txt &&
+                  sed -i '1,2d' newFile.txt &&
+                  sudo bash -c "cat newFile.txt >> /home/circleci/project/vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake"  &&
                   sudo cp -v -R /home/circleci/project/vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake /home/circleci/project/vcpkg/ports/discordcoreapi/portfile.cmake &&
                   sudo cp -v -R /home/circleci/project/vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake ./DiscordCoreAPI/Vcpkg/ports/discordcoreapi/portfile.cmake &&
                   cd ./DiscordCoreAPI &&
