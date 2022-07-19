@@ -50,14 +50,14 @@ jobs:
                   sudo bash -c "head -c 241 ./DiscordCoreAPI/Vcpkg/ports/discordcoreapi/portfile.cmake > ./DiscordCoreAPI/.github/Raw-Files/portfile-first-half-new.cmake"  &&
                   sudo bash -c "cat InstallOutput.txt >> ./DiscordCoreAPI/.github/Raw-Files/portfile-first-half-new.cmake"  &&
                   sudo bash -c "cat ./DiscordCoreAPI/.github/Raw-Files/portfile-second-half.cmake  >> ./DiscordCoreAPI/.github/Raw-Files/portfile-first-half-new.cmake"  &&
-                  sudo cp -v -R ./DiscordCoreAPI/.github/Raw-Files/portfile-first-half-new.cmake /usr/local/share/vcpkg/ports/discordcoreapi/portfile.cmake &&
+                  sudo cp -v -R ./DiscordCoreAPI/.github/Raw-Files/portfile-first-half-new.cmake /home/circleci/vcpkg/ports/discordcoreapi/portfile.cmake &&
                   sudo cp -v -R ./DiscordCoreAPI/.github/Raw-Files/portfile-first-half-new.cmake ./DiscordCoreAPI/Vcpkg/ports/discordcoreapi/portfile.cmake &&
                   cd ./DiscordCoreAPI &&
                   sudo git add . &&
                   sudo git commit -m "Updates!" &&
                   sudo git pull &&
                   sudo git push origin main &&
-                  sudo /usr/local/share/vcpkg/vcpkg install discordcoreapi:x64-linux
+                  sudo /home/circleci/vcpkg/vcpkg install discordcoreapi:x64-linux
              
       - run:
          name: Update the portfile.
