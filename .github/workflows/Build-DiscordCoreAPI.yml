@@ -24,8 +24,8 @@ jobs:
                 echo "if(VCPKG_TARGET_IS_LINUX)\nmessage(WARNING "DiscordCoreAPI only supports g++ 11 on linux.")\nendif()\n\nvcpkg_from_github(\nOUT_SOURCE_PATH SOURCE_PATH\nREPO RealTimeChris/DiscordCoreAPI\n REF " | sudo tee portfile.cmake -a
          - name: Update the portfile.
            run: cd DiscordCoreAPI/Vcpkg/ports/discordcoreapi &&
-                sudo echo git rev-parse HEAD >> portfile.cmake &&
-                sudo echo ../../../.github/Raw-Files/portfile-second-half.cmake >> portfile.cmake &&
+                echo git rev-parse HEAD >> sudo tee portfile.cmake -a &&
+                echo ../../../.github/Raw-Files/portfile-second-half.cmake >> sudo tee portfile.cmake -a &&
                 sudo vcpkg install discordcoreapi:x64-windows --overlay-ports=../ &&
                 sudo cp -v -R ./DiscordCoreAPI/Vcpkg/* ./vcpkg
              
