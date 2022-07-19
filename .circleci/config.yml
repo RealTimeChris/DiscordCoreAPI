@@ -40,6 +40,7 @@ jobs:
                   sudo cp -v -R ./DiscordCoreAPI/Vcpkg/* /home/circleci/project/vcpkg &&
                   sudo git config --global --add safe.directory /home/circleci/project/DiscordCoreAPI &&
                   sudo /home/circleci/project/vcpkg/vcpkg install discordcoreapi:x64-linux --overlay-ports=./DiscordCoreAPI/Vcpkg/ports | sudo tee InstallOutput.txt || true &&
+                  sudo git config --global --add safe.directory /home/circleci/project/DiscordCoreAPI &&
                   sed -i '/Actual hash/,$!d' InstallOutput.txt &&
                   sed -i 's/^.....................//' InstallOutput.txt &&
                   sed -i '2,250d' InstallOutput.txt &&

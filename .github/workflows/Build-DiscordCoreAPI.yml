@@ -30,7 +30,7 @@ jobs:
          - name: Update the portfile.
            run: sudo bash -c "cat ./DiscordCoreAPI/.github/Raw-Files/portfile-second-half.cmake >> ./DiscordCoreAPI/Vcpkg/ports/discordcoreapi/portfile.cmake" &&
                 sudo cp -v -R ./DiscordCoreAPI/Vcpkg/* /usr/local/share/vcpkg &&
-                sudo git config --global --add safe.directory /home/circleci/project/DiscordCoreAPI &&
+                sudo git config --global --add safe.directory /home/ubuntu/DiscordCoreAPI &&
                 sudo /usr/local/share/vcpkg/vcpkg install discordcoreapi:x64-linux --overlay-ports=./DiscordCoreAPI/Vcpkg/ports | sudo tee InstallOutput.txt || true &&
                 sed -i '/Actual hash/,$!d' InstallOutput.txt &&
                 sed -i 's/^.....................//' InstallOutput.txt &&
