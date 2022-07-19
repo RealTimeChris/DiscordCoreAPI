@@ -308,7 +308,7 @@ namespace DiscordCoreInternal {
 				FD_SET(this->theSocket, &writeSet);
 				writeNfds = this->theSocket > writeNfds ? this->theSocket : writeNfds;
 
-				timeval checkTime{ .tv_usec = 1000 };
+				timeval checkTime{ .tv_usec = 10000 };
 				if (auto returnValue = select(writeNfds + 1, nullptr, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
 					this->disconnect(true);
 					return false;
@@ -388,14 +388,6 @@ namespace DiscordCoreInternal {
 		std::string theReturnString = std::move(this->inputBuffer);
 		this->inputBuffer.clear();
 		return theReturnString;
-	}
-
-	bool SSLClient::areWeStillConnected() noexcept {
-		if (this->theSocket == SOCKET_ERROR) {
-			return false;
-		} else {
-			return true;
-		}
 	}
 
 	ProcessIOResult SSLClient::writeDataProcess() noexcept {
@@ -518,9 +510,9 @@ namespace DiscordCoreInternal {
 		return true;
 	}
 
-	void DatagramSocketClient::processIO(int32_t waitTimeInms) noexcept {
+	ProcessIOResult DatagramSocketClient::processIO(int32_t waitTimeInms) noexcept {
 		if (this->theSocket == SOCKET_ERROR) {
-			return;
+			return ProcessIOResult::Reconnect;
 		}
 		fd_set readSet{}, writeSet{};
 		std::unique_lock theLock{ this->theMutex };
@@ -534,9 +526,9 @@ namespace DiscordCoreInternal {
 		timeval checkTime{ .tv_usec = waitTimeInms };
 		if (auto returnValue = select(this->theSocket + 1, &readSet, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
 			this->disconnect();
-			return;
+			return ProcessIOResult::Reconnect;
 		} else if (returnValue == 0) {
-			return;
+			return ProcessIOResult::Clean;
 		}
 
 		if (FD_ISSET(this->theSocket, &writeSet)) {
@@ -546,9 +538,10 @@ namespace DiscordCoreInternal {
 					reinterpret_cast<sockaddr*>(&this->theAddress), sizeof(this->theAddress)) };
 				if (writtenBytes < 0) {
 					this->disconnect();
-					return;
+					ProcessIOResult::Reconnect;
 				} else {
 					this->outputBuffers.erase(this->outputBuffers.begin());
+					return ProcessIOResult::Clean;
 				}
 			}
 		}
@@ -559,12 +552,14 @@ namespace DiscordCoreInternal {
 			auto readBytes{ recv(this->theSocket, serverToClientBuffer.data(), static_cast<int32_t>(serverToClientBuffer.size()), 0) };
 			if (readBytes < 0) {
 				this->disconnect();
-				return;
+				ProcessIOResult::Reconnect;
 			} else {
 				this->inputBuffer.insert(this->inputBuffer.end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
 				this->bytesRead += readBytes;
+				return ProcessIOResult::Clean;
 			}
 		}
+		return ProcessIOResult::Clean;
 	}
 
 	void DatagramSocketClient::writeData(std::string& dataToWrite) noexcept {
@@ -594,14 +589,6 @@ namespace DiscordCoreInternal {
 		std::string theReturnString = std::move(this->inputBuffer);
 		this->inputBuffer.clear();
 		return theReturnString;
-	}
-
-	bool DatagramSocketClient::areWeStillConnected() noexcept {
-		if (this->theSocket != SOCKET_ERROR) {
-			return true;
-		} else {
-			return false;
-		}
 	}
 
 	int64_t DatagramSocketClient::getBytesRead() noexcept {

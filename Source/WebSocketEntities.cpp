@@ -1020,22 +1020,20 @@ namespace DiscordCoreInternal {
 				}
 				SSLClient::processIO(theVector, 10000);
 				for (auto& [key, value]: this->sslShards) {
-					if (value->areWeStillConnected() && value->inputBuffer.size() > 0) {
+					if (value->inputBuffer.size() > 0) {
 						value->parseMessage(value.get());
 					}
-					if (value->areWeStillConnected() && value->processedMessages.size() > 0) {
+					if (value->processedMessages.size() > 0) {
 						while (value->processedMessages.size() > 0) {
 							if (value) {
 								value->onMessageReceived();
 							}
 						}
 					}
-					if (value->areWeStillConnected()) {
-						value->checkForAndSendHeartBeat();
-						if (value && this->heartbeatInterval != 0 && !value->areWeHeartBeating) {
-							value->areWeHeartBeating = true;
-							value->heartBeatStopWatch = DiscordCoreAPI::StopWatch{ std::chrono::milliseconds{ this->heartbeatInterval } };
-						}
+					value->checkForAndSendHeartBeat();
+					if (value && this->heartbeatInterval != 0 && !value->areWeHeartBeating) {
+						value->areWeHeartBeating = true;
+						value->heartBeatStopWatch = DiscordCoreAPI::StopWatch{ std::chrono::milliseconds{ this->heartbeatInterval } };
 					}
 				}
 				std::this_thread::sleep_for(1ms);
@@ -1103,15 +1101,9 @@ namespace DiscordCoreInternal {
 						break;
 					}
 					this->sslShards[connectData.currentShard]->processIO(10000);
-					if (this->sslShards[connectData.currentShard]->areWeStillConnected()) {
-						this->sslShards[connectData.currentShard]->parseConnectionHeaders(this->sslShards[connectData.currentShard].get());
-					}
-					if (this->sslShards[connectData.currentShard]->areWeStillConnected()) {
-						this->sslShards[connectData.currentShard]->parseMessage(this->sslShards[connectData.currentShard].get());
-					}
-					if (this->sslShards[connectData.currentShard]->areWeStillConnected()) {
-						this->sslShards[connectData.currentShard]->onMessageReceived();
-					}
+					this->sslShards[connectData.currentShard]->parseConnectionHeaders(this->sslShards[connectData.currentShard].get());
+					this->sslShards[connectData.currentShard]->parseMessage(this->sslShards[connectData.currentShard].get());
+					this->sslShards[connectData.currentShard]->onMessageReceived();
 					std::this_thread::sleep_for(1ms);
 				}
 			}

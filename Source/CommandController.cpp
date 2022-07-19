@@ -65,8 +65,7 @@ namespace DiscordCoreAPI {
 			}
 		}
 		if (isItFound) {
-			std::unique_ptr<BaseFunction> newValue = this->createFunction(functionName);
-			return newValue;
+			return this->createFunction(functionName);
 		}
 		return nullptr;
 	}
