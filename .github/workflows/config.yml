@@ -11,8 +11,8 @@ jobs:
         - name: Store the public SSH key.
           run: echo "${{ secrets.AWS_KEY }}" >> PUBLIC_KEY
         - name: Copy the SSH key.
-          run: sudo cp ./PUBLIC_KEY /root/.ssh/id_rsa &&
-               sudo chmod 600 /root/.ssh/id_rsa
+          run: sudo cp ./PUBLIC_KEY /root/.ssh/id_rsa.pem &&
+               sudo chmod 600 /root/.ssh/id_rsa.pem
 
         - name: Download and install Doxygen, along with its dependencies.
           run: sudo apt-get update &&
@@ -46,5 +46,5 @@ jobs:
                    sudo git push origin main || true
 
         - name: Clone the data over to the web server.
-          run: sudo ssh -i /root/.ssh/id_rsa -o StrictHostKeyChecking=no ubuntu@ec2-3-144-188-157.us-east-2.compute.amazonaws.com 
+          run: sudo ssh -i /root/.ssh/id_rsa.pem -o StrictHostKeyChecking=no ubuntu@ec2-3-144-188-157.us-east-2.compute.amazonaws.com 
                    "cd /var/www && sudo rm -rf discordcoreapi && sudo git clone https://github.com/RealTimeChris/DiscordCoreAPI-Docs --depth=1 ./discordcoreapi"
