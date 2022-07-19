@@ -16,6 +16,13 @@ jobs:
 
          - name: Copy over the current portfile.
            run: sudo git clone https://github.com/RealTimeChris/DiscordCoreAPI --depth=1 &&
+
+         - name: Update the portfile.
+           run: cd DiscordCoreAPI/Vcpkg/ports/discordcoreapi &&
+                sudo echo "if(VCPKG_TARGET_IS_LINUX)\nmessage(WARNING "DiscordCoreAPI only supports g++ 11 on linux.")\nendif()\n\nvcpkg_from_github(\nOUT_SOURCE_PATH SOURCE_PATH\nREPO RealTimeChris/DiscordCoreAPI\n REF " >> portfile.cmake
+                sudo echo git rev-parse HEAD >> portfile.cmake
+                sudo echo ../../../.github/Raw-Files/portfile-second-half.cmake >> portfile.cmake
+                sudo vcpkg install discordcoreapi:x64-windows --overlay-ports=../
                 sudo cp -v -R ./DiscordCoreAPI/Vcpkg/* ./vcpkg
 
              
