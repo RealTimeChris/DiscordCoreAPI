@@ -24,7 +24,6 @@ jobs:
                 sudo echo ../../../.github/Raw-Files/portfile-second-half.cmake >> portfile.cmake &&
                 sudo vcpkg install discordcoreapi:x64-windows --overlay-ports=../ &&
                 sudo cp -v -R ./DiscordCoreAPI/Vcpkg/* ./vcpkg
-
              
          - name: Download and install DiscordCoreAPI
            run: cd vcpkg &&
