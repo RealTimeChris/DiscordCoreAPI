@@ -18,12 +18,12 @@ jobs:
              sudo apt-get install bison &&
              sudo apt-get install flex &&
              cd doxygen &&
-             sudo mkdir build &&
-             sudo cmake -G "Unix Makefiles" &&
-             sudo make &&
-             sudo make install &&
              sudo apt-get install graphviz &&
              sudo apt-get install openssh-client
+             #sudo mkdir build &&
+             #sudo cmake -G "Unix Makefiles" &&
+             #sudo make &&
+             #sudo make install &&
              
         - name: Collect the original Repo for the docs.
           run: sudo git config --global user.email "40668522+RealTimeChris@users.noreply.github.com" &&
