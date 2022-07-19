@@ -57,11 +57,11 @@ target_include_directories(
 	"$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Include/>"
 )
 
-#find_package(FFMPEG MODULE REQUIRED)
-#find_package(NLOHMANN MODULE REQUIRED)
-#find_package(OPENSSL MODULE REQUIRED)
-#find_package(OPUS MODULE REQUIRED)
-#find_package(SODIUM MODULE REQUIRED)
+find_package(FFMPEG MODULE REQUIRED)
+find_package(NLOHMANN MODULE REQUIRED)
+find_package(OPENSSL MODULE REQUIRED)
+find_package(OPUS MODULE REQUIRED)
+find_package(SODIUM MODULE REQUIRED)
 
 target_link_libraries(
 	"${LIB_NAME}" PUBLIC
