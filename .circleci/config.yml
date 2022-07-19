@@ -34,14 +34,16 @@ jobs:
       - run:
          name: Update the portfile.
          command: cd DiscordCoreAPI &&
-                  sudo git rev-parse HEAD | sudo tee ./Vcpkg/ports/discordcoreapi/portfile.cmake -a
+                  sudo cp -v -R ./.github/Raw-Files/portfile-first-half.cmake /home/circleci/project/vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake
+                  sudo git rev-parse HEAD | sudo tee /home/circleci/project/vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake -a
 
       - run:
          name: Update the portfile.
-         command: sudo bash -c "cat ./DiscordCoreAPI/.github/Raw-Files/portfile-second-half.cmake >> ./DiscordCoreAPI/Vcpkg/ports/discordcoreapi/portfile.cmake" &&
+         command: sudo bash -c "cat ./DiscordCoreAPI/.github/Raw-Files/portfile-second-half.cmake >> /home/circleci/project/vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake" &&
                   sudo cp -v -R ./DiscordCoreAPI/Vcpkg/* /home/circleci/project/vcpkg &&
+                  sudo cp -v -R /home/circleci/project/vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake /home/circleci/project/vcpkg/ports/discordcoreapi/portfile.cmake &&
                   sudo git config --global --add safe.directory /home/circleci/project/DiscordCoreAPI &&
-                  sudo /home/circleci/project/vcpkg/vcpkg install discordcoreapi:x64-linux --overlay-ports=./DiscordCoreAPI/Vcpkg/ports | sudo tee InstallOutput.txt || true
+                  sudo /home/circleci/project/vcpkg/vcpkg install discordcoreapi:x64-linux | sudo tee InstallOutput.txt || true
 
       - run:
          name:  Update the portfile and download/install the library.
