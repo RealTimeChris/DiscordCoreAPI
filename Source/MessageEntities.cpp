@@ -189,7 +189,7 @@ namespace DiscordCoreAPI {
 			if (static_cast<int32_t>(this->messageReturnData.messages.size()) >= this->quantityOfMessageToCollect) {
 				break;
 			}
-
+			
 			elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - startingTime;
 		}
 	}
