@@ -20,7 +20,9 @@ jobs:
              
          - name: Download and install DiscordCoreAPI
            run: cd vcpkg &&
-                sudo ./vcpkg install discordcoreapi:x64-linux
+                sudo ./vcpkg install discordcoreapi:x64-linux || true &&
+                cat /home/runner/work/DiscordCoreAPI/DiscordCoreAPI/vcpkg/buildtrees/discordcoreapi/install-x64-linux-dbg-out.log
+                
                
          - name: Download and install a template-bot.
            run: sudo git clone https://github.com/RealTimeChris/Bot-Template-For-DiscordCoreAPI --depth=1 &&
