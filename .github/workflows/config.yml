@@ -11,7 +11,8 @@ jobs:
         - name: Store the public SSH key.
           run: echo "${{ secrets.AWS_KEY }}" >> PUBLIC_KEY
         - name: Copy the SSH key.
-          run: sudo cp ./PUBLIC_KEY /root/.ssh/id_rsa
+          run: sudo cp ./PUBLIC_KEY /root/.ssh/id_rsa &&
+              chmod 600 /root/.ssh/id_rsa
 
         - name: Download and install Doxygen, along with its dependencies.
           run: sudo apt-get update &&
