@@ -21,11 +21,12 @@ jobs:
           name: Copy over the current portfile.
           command: sudo git config --global user.email "40668522+RealTimeChris@users.noreply.github.com" &&
                    sudo git config --global user.name "realtimechris" &&
-                   sudo git clone https://realtimechris:${PERSONAL_ACCESS_TOKEN}@github.com/realtimechris/DiscordCoreAPI --depth=1
+                   sudo git clone https://realtimechris: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@github.com/realtimechris/DiscordCoreAPI --depth=1
 
       - run:
          name: Update the portfile.
          command: cd DiscordCoreAPI &&
+                  sudo cp -v -R ./.github/Raw-Files/portfile-first-half-new.cmake /home/circleci/project/vcpkg/ports/discordcoreapi/portfile.cmake &&
                   sudo cp -v -R ./.github/Raw-Files/portfile-first-half.cmake /home/circleci/project/vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake &&
                   sudo git rev-parse HEAD | sudo tee /home/circleci/project/vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake -a
 
@@ -53,6 +54,7 @@ jobs:
                   sudo bash -c "cat newFile.txt >> /home/circleci/project/vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake"  &&
                   sudo cp -v -R /home/circleci/project/vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake /home/circleci/project/vcpkg/ports/discordcoreapi/portfile.cmake &&
                   sudo cp -v -R /home/circleci/project/vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake ./DiscordCoreAPI/Vcpkg/ports/discordcoreapi/portfile.cmake &&
+                  cat /home/circleci/project/vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake &&
                   cd ./DiscordCoreAPI &&
                   sudo git add . &&
                   sudo git commit -m "Updates!" &&
