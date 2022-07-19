@@ -50,9 +50,9 @@ jobs:
                   sudo cp -v -R ./DiscordCoreAPI/.github/Raw-Files/portfile-first-half.cmake /home/circleci/project/vcpkg/ports/discordcoreapi/portfile.cmake &&
                   sudo cp -v -R ./DiscordCoreAPI/.github/Raw-Files/portfile-first-half.cmake ./DiscordCoreAPI/Vcpkg/ports/discordcoreapi/portfile.cmake &&
                   cd ./DiscordCoreAPI &&
-                  git add . &&
-                  git commit -m "Updates!" &&
-                  git push origin main &&
+                  sudo git add . &&
+                  sudo git commit -m "Updates!" &&
+                  sudo git push origin main &&
                   sudo /usr/local/share/vcpkg/vcpkg install discordcoreapi:x64-linux
              
       - run:
