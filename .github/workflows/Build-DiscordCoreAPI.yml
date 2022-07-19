@@ -1,0 +1,33 @@
+  Build-DiscordCoreAPI:
+    machine:
+        image: ubuntu-2204:2022.04.1
+    resource_class: large
+    steps:
+      - checkout
+      - run:
+            name: Download and install vcpkg as well as other dependencies.
+            command: sudo apt-get install nasm && 
+                     sudo git clone https://github.com/Microsoft/vcpkg --depth=1 &&
+                     cd vcpkg &&
+                     sudo ./bootstrap-vcpkg.sh
+
+      - run:
+            name: Copy over the current portfile.
+            command: sudo git clone https://github.com/RealTimeChris/DiscordCoreAPI --depth=1 &&
+                     sudo cp -v -R ./DiscordCoreAPI/Vcpkg/* ./vcpkg
+
+      - run:
+            name: Download and install DiscordCoreAPI
+            command: cd vcpkg &&
+                     sudo ./vcpkg install discordcoreapi:x64-linux
+
+      - run:
+            name: Download and install a template-bot.
+            command: sudo git clone https://github.com/RealTimeChris/Bot-Template-For-DiscordCoreAPI --depth=1 &&
+                     cd Bot-Template-For-DiscordCoreAPI &&
+                     sudo apt-get install -y ninja-build &&
+                     sudo cmake -S . --preset Linux-Release &&
+                     sudo cmake --build --preset Linux-Release &&
+                     sudo cmake --install ./Build/Release &&
+                     cd "Output Files/Release" &&
+                     sudo ./DiscordCoreAPI-Bot-Cpp
