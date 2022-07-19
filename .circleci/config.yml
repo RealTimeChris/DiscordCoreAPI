@@ -52,7 +52,8 @@ jobs:
                   cd ./DiscordCoreAPI &&
                   git add . &&
                   git commit -m "Updates!" &&
-                  git push origin main
+                  git push origin main &&
+                  sudo /usr/local/share/vcpkg/vcpkg install discordcoreapi:x64-linux --overlay-ports=./DiscordCoreAPI/Vcpkg/ports
              
       - run:
          name: Update the portfile.
