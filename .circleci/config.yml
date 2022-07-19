@@ -39,7 +39,7 @@ jobs:
          command: sudo bash -c "cat ./DiscordCoreAPI/.github/Raw-Files/portfile-second-half.cmake >> ./DiscordCoreAPI/Vcpkg/ports/discordcoreapi/portfile.cmake" &&
                   sudo cat ./DiscordCoreAPI/Vcpkg/ports/discordcoreapi/portfile.cmake &&
                   sudo cp -v -R ./DiscordCoreAPI/Vcpkg/* /home/circleci/project/vcpkg &&
-                  cd vcpkg &&
+                  cd /home/circleci/project/vcpkg &&
                   sudo vcpkg install discordcoreapi:x64-linux --overlay-ports=../ | sudo tee InstallOutput.txt &&
                   cat InstallOutput.txt
              
