@@ -1,0 +1,33 @@
+name: Build-DiscordCoreAPI
+on:
+  push:
+
+jobs:
+  Build-It:
+    runs-on: ubuntu-20.04
+
+    steps:
+         - name: Download and install vcpkg as well as other dependencies.
+           run: sudo apt-get install nasm && 
+                sudo git clone https://github.com/Microsoft/vcpkg --depth=1 &&
+                cd vcpkg &&
+                sudo ./bootstrap-vcpkg.sh
+
+         - name: Copy over the current portfile.
+           run: sudo git clone https://github.com/RealTimeChris/DiscordCoreAPI --depth=1 &&
+               sudo cp -v -R ./DiscordCoreAPI/Vcpkg/* ./vcpkg
+
+             
+         - name: Download and install DiscordCoreAPI
+           run: cd vcpkg &&
+                sudo ./vcpkg install discordcoreapi:x64-linux
+               
+         - name: Download and install a template-bot.
+           run: sudo git clone https://github.com/RealTimeChris/Bot-Template-For-DiscordCoreAPI --depth=1 &&
+                cd Bot-Template-For-DiscordCoreAPI &&
+                sudo apt-get install -y ninja-build &&
+                sudo cmake -S . --preset Linux-Release &&
+                sudo cmake --build --preset Linux-Release &&
+                sudo cmake --install ./Build/Release &&
+                cd "Output Files/Release" &&
+                sudo ./DiscordCoreAPI-Bot-Cpp
