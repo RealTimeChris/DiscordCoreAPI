@@ -27,7 +27,7 @@ jobs:
 
          - name: Update the portfile.
            run: cd DiscordCoreAPI &&
-                sudo git rev-parse HEAD | sudo tee ./Vcpkg/ports/discordcoreapi/portfile.cmake -a
+                sudo git rev-parse HEAD | sudo tee ./.github/Raw-Files/portfile-first-half.cmake -a
 
          - name: Update the portfile.
            run: sudo bash -c "cat ./DiscordCoreAPI/.github/Raw-Files/portfile-second-half.cmake >> ./DiscordCoreAPI/Vcpkg/ports/discordcoreapi/portfile.cmake" &&
