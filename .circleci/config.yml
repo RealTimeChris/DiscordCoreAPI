@@ -53,7 +53,7 @@ jobs:
                   sudo cp -v -R ./DiscordCoreAPI/.github/Raw-Files/portfile-first-half-new.cmake /home/circleci/project/vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake &&
                   sudo bash -c "head -c 241 ./DiscordCoreAPI/Vcpkg/ports/discordcoreapi/portfile.cmake > /home/circleci/project/vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake"  &&
                   sudo bash -c "cat InstallOutput.txt >> /home/circleci/project/vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake"  &&
-                  sudo bash -c "cat ./DiscordCoreAPI/.github/Raw-Files/portfile-second-half.cmake  >> ./DiscordCoreAPI/.github/Raw-Files/portfile-first-half-new.cmake"  &&
+                  sudo bash -c "cat ./DiscordCoreAPI/.github/Raw-Files/portfile-second-half.cmake  >> /home/circleci/project/vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake"  &&
                   sudo cp -v -R /home/circleci/project/vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake /home/circleci/project/vcpkg/ports/discordcoreapi/portfile.cmake &&
                   sudo cp -v -R /home/circleci/project/vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake ./DiscordCoreAPI/Vcpkg/ports/discordcoreapi/portfile.cmake &&
                   cd ./DiscordCoreAPI &&
