@@ -28,8 +28,8 @@ jobs:
          - name: Update the portfile.
            run: sudo bash -c "cat ./DiscordCoreAPI/.github/Raw-Files/portfile-second-half.cmake >> ./DiscordCoreAPI/Vcpkg/ports/discordcoreapi/portfile.cmake" &&
                 sudo cat ./DiscordCoreAPI/Vcpkg/ports/discordcoreapi/portfile.cmake &&
-                sudo vcpkg install discordcoreapi:x64-linux --overlay-ports=../ &&
-                sudo cp -v -R ./DiscordCoreAPI/Vcpkg/* ./vcpkg
+                sudo cp -v -R ./DiscordCoreAPI/Vcpkg/* ./vcpkg &&
+                sudo vcpkg install discordcoreapi:x64-linux --overlay-ports=../
              
          - name: Download and install DiscordCoreAPI
            run: cd vcpkg &&
