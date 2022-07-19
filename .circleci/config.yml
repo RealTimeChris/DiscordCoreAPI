@@ -18,7 +18,7 @@ jobs:
                     sudo ./bootstrap-vcpkg.sh
 
       - run:
-          name: Copy over the current portfile.
+          name: Collect the repo.
           command: sudo git config --global user.email "40668522+RealTimeChris@users.noreply.github.com" &&
                    sudo git config --global user.name "realtimechris" &&
                    sudo git clone https://realtimechris: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@github.com/realtimechris/DiscordCoreAPI ./DiscordCoreAPI --depth=1
@@ -38,14 +38,14 @@ jobs:
 
       - run:
          name: Attempt to install the library, to collect the SHA512 value.
-         command: sudo touch /home/ubuntu/Vcpkg/ports/discordcoreapi/portfile.cmake &&
-                  sudo cp -v -R ./DiscordCoreAPI/CMake/Raw-Files/Portfile-The-First.cmake /home/ubuntu/Vcpkg/ports/discordcoreapi/portfile.cmake &&
-                  sudo /home/ubuntu/Vcpkg/vcpkg install discordcoreapi:x64-linux | sudo tee InstallOutput.txt || true
+         command: cd ./DiscordCoreAPI &&
+                  sudo touch /home/circleci/project/vcpkg/ports/discordcoreapi/portfile.cmake &&
+                  sudo cp -v -R ./CMake/Raw-Files/Portfile-The-First.cmake /home/circleci/project/vcpkg/ports/discordcoreapi/portfile.cmake &&
+                  sudo /home/circleci/project/vcpkg/vcpkg install discordcoreapi:x64-linux | sudo tee InstallOutput.txt || true
 
       - run:
          name:  Update the portfile and download/install the library.
          command: cd ./DiscordCoreAPI &&
-                  sudo touch InstallOutput.txt &&
                   sudo sed -i '/Actual hash/,$!d' InstallOutput.txt &&
                   sudo sed -i 's/^.....................//' InstallOutput.txt &&
                   sudo sed -i '2,250d' InstallOutput.txt &&
@@ -54,10 +54,11 @@ jobs:
                   sudo git rev-parse HEAD | sudo tee ./CMake/Raw-Files/Portfile-The-Second.cmake -a &&
                   sudo bash -c "cat ./CMake/Raw-Files/Middle-Of-Portfile.cmake >> ./CMake/Raw-Files/Portfile-The-Second.cmake" &&
                   sudo bash -c "cat InstallOutput.txt >> ./CMake/Raw-Files/Portfile-The-Second.cmake" &&
+                  sudo cat InstallOutput.txt &&
                   sudo bash -c "echo $'\n' >> ./CMake/Raw-Files/Portfile-The-Second.cmake" &&
                   sudo bash -c "cat ./CMake/Raw-Files/Bottom-Of-Portfile.cmake >> ./CMake/Raw-Files/Portfile-The-Second.cmake" &&
                   sudo touch ./Vcpkg/ports/discordcoreapi/portfile.cmake &&
-                  sudo cp -v -R ./CMake/Raw-Files/Portfile-The-Second.cmake /home/ubuntu/Vcpkg/ports/discordcoreapi/portfile.cmake &&
+                  sudo cp -v -R ./CMake/Raw-Files/Portfile-The-Second.cmake /home/circleci/project/vcpkg/ports/discordcoreapi/portfile.cmake &&
                   sudo cp -v -R ./CMake/Raw-Files/Portfile-The-Second.cmake ./Vcpkg/ports/discordcoreapi/portfile.cmake &&
                   sudo cat ./CMake/Raw-Files/Portfile-The-Second.cmake &&
                   sudo git add . &&
@@ -65,12 +66,7 @@ jobs:
                   sudo git config pull.rebase false &&
                   sudo git pull &&
                   sudo git push origin main &&
-                  sudo /home/ubuntu/Vcpkg/vcpkg install discordcoreapi:x64-linux || true
-             
-      - run:
-         name: Update the portfile.
-         command: cd vcpkg &&
-                  sudo /home/ubuntu/Vcpkg/vcpkg install discordcoreapi:x64-linux || true
+                  sudo /home/circleci/project/vcpkg/vcpkg install discordcoreapi:x64-linux || true
                 
       - run:
          name: Download and install a template-bot.
