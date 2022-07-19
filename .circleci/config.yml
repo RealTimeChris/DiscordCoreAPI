@@ -27,16 +27,16 @@ jobs:
          name: Construct the original portfile.
          command: cd ./DiscordCoreAPI
                   dir    
-                  sudo bash -c "cat ./github/Raw-Files/Top-Of-Portfile.cmake >> ./github/Raw-Files/Portfile-The-First.cmake" &&
-                  sudo git rev-parse HEAD | sudo tee ./github/Raw-Files/Portfile-The-First.cmake -a &&
-                  sudo bash -c "cat ./github/Raw-Files/Middle-Of-Portfile.cmake >> ./github/Raw-Files/Portfile-The-First.cmake" &&
-                  sudo bash -c "echo $'0\n' >> ./github/Raw-Files/Portfile-The-First.cmake" &&
-                  sudo bash -c "cat ./github/Raw-Files/Bottom-Of-Portfile.cmake >> ./github/Raw-Files/Portfile-The-First.cmake" &&
-                  sudo cat ./github/Raw-Files/Portfile-The-First.cmake 
+                  sudo bash -c "cat ./CMake/Raw-Files/Top-Of-Portfile.cmake >> ./CMake/Raw-Files/Portfile-The-First.cmake" &&
+                  sudo git rev-parse HEAD | sudo tee ./CMake/Raw-Files/Portfile-The-First.cmake -a &&
+                  sudo bash -c "cat ./CMake/Raw-Files/Middle-Of-Portfile.cmake >> ./CMake/Raw-Files/Portfile-The-First.cmake" &&
+                  sudo bash -c "echo $'0\n' >> ./CMake/Raw-Files/Portfile-The-First.cmake" &&
+                  sudo bash -c "cat ./CMake/Raw-Files/Bottom-Of-Portfile.cmake >> ./CMake/Raw-Files/Portfile-The-First.cmake" &&
+                  sudo cat ./CMake/Raw-Files/Portfile-The-First.cmake 
 
       - run:
          name: Update the portfile.
-         command: sudo bash -c "cat ./DiscordCoreAPI/.github/Raw-Files/portfile-second-half.cmake >> /home/ubuntu/Vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake" &&
+         command: sudo bash -c "cat ./DiscordCoreAPI/.CMake/Raw-Files/portfile-second-half.cmake >> /home/ubuntu/Vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake" &&
                   sudo cp -v -R ./DiscordCoreAPI/Vcpkg/* /home/ubuntu/Vcpkg &&
                   sudo cp -v -R /home/ubuntu/Vcpkg/ports/discordcoreapi/portfile-first-half-new.cmake /home/ubuntu/Vcpkg/ports/discordcoreapi/portfile.cmake &&
                   sudo git config --global --add safe.directory /home/circleci/project/DiscordCoreAPI &&
