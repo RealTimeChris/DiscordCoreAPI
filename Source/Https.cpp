@@ -467,7 +467,7 @@ namespace DiscordCoreInternal {
 	}
 
 	HttpsResponseData HttpsClient::getResponse(HttpsConnection& theConnection, RateLimitData& rateLimitData) {
-		DiscordCoreAPI::StopWatch stopWatch{ 4500ms };
+		DiscordCoreAPI::StopWatch stopWatch{ 2500ms };
 		theConnection.getInputBuffer().clear();
 		theConnection.resetValues();
 		HttpsResponseData theData{};
@@ -479,6 +479,8 @@ namespace DiscordCoreInternal {
 			} else if (theResult == ProcessIOResult::Reconnect) {
 				theData.responseCode = -1;
 				doWeReturn = true;
+			} else {
+				stopWatch.resetTimer();
 			}
 			std::string theString = theConnection.getInputBuffer();
 			if (theString.size() > 0) {
@@ -491,6 +493,7 @@ namespace DiscordCoreInternal {
 						break;
 					}
 					theConnection.parseCode(theData, theConnection.inputBufferReal);
+					stopWatch.resetTimer();
 					if (theData.responseCode == 204) {
 						doWeReturn = true;
 					}
