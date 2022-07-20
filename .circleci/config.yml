@@ -56,7 +56,7 @@ jobs:
                   sudo touch ./Vcpkg/ports/discordcoreapi/portfile.cmake &&
                   sudo cp -v -R ./CMake/Raw-Files/Portfile-The-Second.cmake /home/circleci/project/vcpkg/ports/discordcoreapi/portfile.cmake &&
                   sudo cp -v -R ./CMake/Raw-Files/Portfile-The-Second.cmake ./Vcpkg/ports/discordcoreapi/portfile.cmake &&
-                  sudo cp -v -R ./Vcpkg/* /home/circleci/project/vcpkg
+                  sudo cp -v -R ./Vcpkg/* /home/circleci/project/vcpkg &&
                   sudo /home/circleci/project/vcpkg/vcpkg install discordcoreapi:x64-linux &&
                   sudo rm -rf InstallOutput.txt &&
                   sudo rm -rf ./CMake/Raw-Files/Portfile-The-First.cmake &&
