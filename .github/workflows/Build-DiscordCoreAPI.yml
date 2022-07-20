@@ -56,6 +56,7 @@ jobs:
                 cd /usr/local/share/vcpkg &&                  
                 sudo git add . &&
                 sudo git commit -m "Updates!"  &&
+                sudo vcpkg format-manifest ports/discordcoreapi/vcpkg.json &&
                 cd /usr/local/share/DiscordCoreAPI &&
                 sudo /usr/local/share/vcpkg/vcpkg x-add-version --overwrite-version --all &&
                 sudo cp -v -R /usr/local/share/vcpkg/ports/discordcoreapi/vcpkg.json ./Vcpkg/ports/discordcoreapi/vcpkg.json &&
