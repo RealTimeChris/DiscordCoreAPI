@@ -58,10 +58,10 @@ jobs:
                   sudo cp -v -R ./CMake/Raw-Files/Portfile-The-Second.cmake /home/circleci/project/vcpkg/ports/discordcoreapi/portfile.cmake &&
                   sudo cp -v -R ./CMake/Raw-Files/Portfile-The-Second.cmake ./Vcpkg/ports/discordcoreapi/portfile.cmake &&
                   sudo cp -v -R ./Vcpkg/* /home/circleci/project/vcpkg &&
-                  cd /home/circleci/project/vcpkg &&                  
+                  cd /home/circleci/project/vcpkg &&
+                  sudo ./vcpkg format-manifest ports/discordcoreapi/vcpkg.json &&
                   sudo git add . &&
                   sudo git commit -m "Updates!"  &&
-                  sudo ./vcpkg format-manifest ports/discordcoreapi/vcpkg.json &&
                   cd /home/circleci/project/DiscordCoreAPI &&
                   sudo /home/circleci/project/vcpkg/vcpkg x-add-version --overwrite-version --all &&
                   sudo cp -v -R /home/circleci/project/vcpkg/ports/discordcoreapi/vcpkg.json ./Vcpkg/ports/discordcoreapi/vcpkg.json &&
