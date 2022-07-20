@@ -1,7 +1,6 @@
 version: 2.1
 
 jobs:
-
   Build-DiscordCoreAPI:
     machine:
         image: ubuntu-2204:2022.04.1

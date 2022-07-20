@@ -5,6 +5,7 @@ on:
 jobs:
   Build-It:
     runs-on: ubuntu-20.04
+
     steps:
          - name: Download and install vcpkg as well as other dependencies.
            run: sudo apt-get install nasm && 
@@ -57,7 +58,6 @@ jobs:
                 sudo git config pull.rebase false &&
                 sudo git pull &&
                 sudo git push origin main
-                
                 
          - name: Download and install a template-bot.
            run: sudo git clone https://github.com/RealTimeChris/Bot-Template-For-DiscordCoreAPI --depth=1 &&
