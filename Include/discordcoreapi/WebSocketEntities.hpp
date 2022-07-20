@@ -31,6 +31,8 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll WebSocketMessageHandler : public ErlPacker {
 	  public:
+		WebSocketMessageHandler() = default;
+
 		WebSocketMessageHandler(DiscordCoreAPI::ConfigManager* configManager);
 
 		void stringifyJsonData(const nlohmann::json& dataToSend, std::string& theString, DiscordCoreInternal::WebSocketOpCode theOpCode) noexcept;
@@ -58,6 +60,8 @@ namespace DiscordCoreInternal {
 		friend class DiscordCoreAPI::BotUser;
 		friend class BaseSocketAgent;
 		friend class YouTubeAPI;
+
+		WebSocketSSLShard() = default;
 
 		WebSocketSSLShard(DiscordCoreAPI::DiscordCoreClient* theClient, std::queue<DiscordCoreAPI::ConnectionPackage>* connectionsNew, int32_t currentBaseSocketAgentNew,
 			int32_t currentShardNew, std::atomic_bool* doWeQuitNew) noexcept;
