@@ -467,39 +467,38 @@ namespace DiscordCoreInternal {
 	}
 
 	HttpsResponseData HttpsClient::getResponse(HttpsConnection& theConnection, RateLimitData& rateLimitData) {
-		DiscordCoreAPI::StopWatch stopWatch{ 2000ms };
+		DiscordCoreAPI::StopWatch stopWatch{ 4500ms };
 		theConnection.getInputBuffer().clear();
 		theConnection.resetValues();
 		HttpsResponseData theData{};
-		bool haveWeCollectedSize{ false };
+		bool doWeReturn{ false };
 		while (true) {
 			auto theResult = theConnection.processIO(10000);
 			if (theResult == ProcessIOResult::Disconnect) {
-				return theData;
+				doWeReturn = true;
 			} else if (theResult == ProcessIOResult::Reconnect) {
 				theData.responseCode = -1;
-				return theData;
+				doWeReturn = true;
 			}
 			std::string theString = theConnection.getInputBuffer();
 			if (theString.size() > 0) {
 				theConnection.inputBufferReal.insert(theConnection.inputBufferReal.end(), theString.begin(), theString.end());
 			}
-			bool doWeBreak{ false };
 			switch (theData.theCurrentState) {
 				case HttpsState::Collecting_Code: {
 					if (stopWatch.hasTimePassed()) {
-						doWeBreak = true;
+						doWeReturn = true;
 						break;
 					}
 					theConnection.parseCode(theData, theConnection.inputBufferReal);
 					if (theData.responseCode == 204) {
-						doWeBreak = true;
+						doWeReturn = true;
 					}
 					break;
 				}
 				case HttpsState::Collecting_Headers: {
 					if (stopWatch.hasTimePassed()) {
-						doWeBreak = true;
+						doWeReturn = true;
 						break;
 					}
 					if (!theConnection.doWeHaveHeaders) {
@@ -510,7 +509,7 @@ namespace DiscordCoreInternal {
 				}
 				case HttpsState::Collecting_Size: {
 					if (stopWatch.hasTimePassed()) {
-						doWeBreak = true;
+						doWeReturn = true;
 						break;
 					}
 					if (!theConnection.doWeHaveContentSize) {
@@ -524,12 +523,14 @@ namespace DiscordCoreInternal {
 				case HttpsState::Collecting_Contents: {
 					if ((static_cast<int64_t>(theConnection.inputBufferReal.size()) >= theData.contentSize && !theConnection.parseChunk(theData, theConnection.inputBufferReal)) ||
 						stopWatch.hasTimePassed() || (theData.responseCode == -5 && theData.contentSize == -5)) {
-						doWeBreak = true;
+						doWeReturn = true;
 						break;
+					} else {
+						stopWatch.resetTimer();
 					}
 				}
 			}
-			if (doWeBreak) {
+			if (doWeReturn) {
 				break;
 			}
 			std::this_thread::sleep_for(1ms);
