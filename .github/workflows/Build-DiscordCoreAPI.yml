@@ -4,7 +4,7 @@ on:
 
 jobs:
   Build-It:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     steps:
          - name: Download and install vcpkg as well as other dependencies.
