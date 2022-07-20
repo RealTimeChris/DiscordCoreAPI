@@ -107,7 +107,7 @@ namespace DiscordCoreInternal {
 
 		void submitTask(std::function<void(void)> theFunction) noexcept;
 
-		~CommandThreadPool() = default;
+		~CommandThreadPool();
 
 	  private:
 		std::unordered_map<int64_t, WorkerThread> workerThreads{};
@@ -127,8 +127,8 @@ namespace DiscordCoreInternal {
 
 		void submitTask(std::coroutine_handle<> coro) noexcept;
 
-		~CoRoutineThreadPool() = default;
-
+		~CoRoutineThreadPool();
+		
 	  private:
 		std::unordered_map<int64_t, WorkerThread> workerThreads{};
 		std::queue<std::coroutine_handle<>> theCoroutineHandles{};

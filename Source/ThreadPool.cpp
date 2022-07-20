@@ -59,6 +59,18 @@ namespace DiscordCoreAPI {
 
 namespace DiscordCoreInternal {
 
+	void closeFunction(std::unordered_map<int64_t, WorkerThread>& other) {
+		if (other.size() == 0) {
+			return;
+		} else {
+			for (auto& [key, value]: other) {
+				other.erase(key);
+				break;
+			}
+		}
+		return closeFunction(other);
+	}
+
 	WorkerThread& WorkerThread::operator=(WorkerThread&& other) noexcept {
 		if (this != &other) {
 			this->areWeCurrentlyWorking.store(other.areWeCurrentlyWorking.load());
@@ -145,6 +157,10 @@ namespace DiscordCoreInternal {
 		this->workerThreads.erase(theIndex);
 	}
 
+	CommandThreadPool::~CommandThreadPool() {
+		closeFunction(this->workerThreads);
+	}
+
 	CoRoutineThreadPool::CoRoutineThreadPool() {
 		this->threadCount.store(std::thread::hardware_concurrency() / 2);
 		if (this->threadCount.load() < 1) {
@@ -217,6 +233,10 @@ namespace DiscordCoreInternal {
 		}
 		std::unique_lock theLock{ this->theMutex };
 		this->workerThreads.erase(theIndex);
+	}
+
+	CoRoutineThreadPool::~CoRoutineThreadPool() {
+		closeFunction(this->workerThreads);
 	}
 
 }

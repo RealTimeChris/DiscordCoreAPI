@@ -467,7 +467,7 @@ namespace DiscordCoreInternal {
 	}
 
 	HttpsResponseData HttpsClient::getResponse(HttpsConnection& theConnection, RateLimitData& rateLimitData) {
-		DiscordCoreAPI::StopWatch stopWatch{ 2500ms };
+		DiscordCoreAPI::StopWatch stopWatch{ 4500ms };
 		theConnection.getInputBuffer().clear();
 		theConnection.resetValues();
 		HttpsResponseData theData{};
