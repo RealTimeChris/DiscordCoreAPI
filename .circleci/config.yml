@@ -61,7 +61,7 @@ jobs:
                   cd /home/circleci/project/vcpkg &&                  
                   sudo git add . &&
                   sudo git commit -m "Updates!"  &&
-                  sudo vcpkg format-manifest ports/discordcoreapi/vcpkg.json &&
+                  sudo ./vcpkg format-manifest ports/discordcoreapi/vcpkg.json &&
                   cd /home/circleci/project/DiscordCoreAPI &&
                   sudo /home/circleci/project/vcpkg/vcpkg x-add-version --overwrite-version --all &&
                   sudo cp -v -R /home/circleci/project/vcpkg/ports/discordcoreapi/vcpkg.json ./Vcpkg/ports/discordcoreapi/vcpkg.json &&
