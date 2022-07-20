@@ -98,7 +98,7 @@ namespace DiscordCoreAPI {
 			} else {
 				this->baseSocketAgent->sslShards[theIndex]->stringifyJsonData(payload, theString, DiscordCoreInternal::WebSocketOpCode::Op_Text);
 			}
-			this->baseSocketAgent->sendMessage(theString, static_cast<DiscordCoreInternal::WebSocketSSLShard*>(this->baseSocketAgent->sslShards[theIndex].get()), true);
+			this->baseSocketAgent->sslShards[theIndex]->sendMessage(theString, true);
 		}
 	}
 
@@ -117,7 +117,7 @@ namespace DiscordCoreAPI {
 			} else {
 				this->baseSocketAgent->sslShards[theIndex]->stringifyJsonData(payload, theString, DiscordCoreInternal::WebSocketOpCode::Op_Text);
 			}
-			this->baseSocketAgent->sendMessage(theString, static_cast<DiscordCoreInternal::WebSocketSSLShard*>(this->baseSocketAgent->sslShards[theIndex].get()), true);
+			this->baseSocketAgent->sslShards[theIndex]->sendMessage(theString, true);
 		}
 	}
 

@@ -68,6 +68,8 @@ namespace DiscordCoreInternal {
 
 		void getVoiceConnectionData(const VoiceConnectInitData& doWeCollect) noexcept;
 
+		bool sendMessage(std::string& dataToSend, bool priority) noexcept;
+
 		void checkForAndSendHeartBeat(bool = false) noexcept;
 
 		void disconnect(bool doWeReconnect) noexcept;
@@ -114,8 +116,6 @@ namespace DiscordCoreInternal {
 		friend class WebSocketSSLShard;
 
 		BaseSocketAgent(DiscordCoreAPI::DiscordCoreClient* discordCoreClientNew, std::atomic_bool* doWeQuitNew, int32_t currentBaseSocketAgentNew) noexcept;
-
-		void sendMessage(std::string& dataToSend, WebSocketSSLShard* theIndex, bool priority) noexcept;
 
 		void connectVoiceChannel(VoiceConnectInitData theData) noexcept;
 

@@ -124,8 +124,6 @@ namespace DiscordCoreAPI {
 
 		bool collectAndProcessAMessage(VoiceConnectionState stateToWaitFor) noexcept;
 
-		bool sendMessage(const std::string& dataToSend, bool priority) noexcept;
-
 		void sendSingleAudioFrame(std::string& audioDataPacketNew) noexcept;
 
 		UnboundedMessageBlock<AudioFrameData>& getAudioBuffer() noexcept;
@@ -154,6 +152,8 @@ namespace DiscordCoreAPI {
 
 		void sendHeartBeat() noexcept;
 
+		void onClosedVoice() noexcept;
+
 		bool voiceConnect() noexcept;
 
 		void sendSilence() noexcept;
@@ -163,8 +163,6 @@ namespace DiscordCoreAPI {
 		void disconnect() noexcept;
 
 		void reconnect() noexcept;
-
-		void onClosed() noexcept;
 
 		void connect() noexcept;
 
