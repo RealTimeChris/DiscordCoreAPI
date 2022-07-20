@@ -4,14 +4,14 @@ on:
 
 jobs:
   Build-It:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
 
     steps:
          - name: Download and install vcpkg as well as other dependencies.
            run: sudo apt-get install nasm && 
                 sudo git clone https://github.com/Microsoft/vcpkg --depth=1 &&
                 sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test && 
-                sudo apt install -y g++-11 &&
+                sudo apt install -y g++-11
                 cd vcpkg &&
                 sudo ./bootstrap-vcpkg.sh
 
