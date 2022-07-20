@@ -53,6 +53,7 @@ jobs:
                 sudo cp -v -R ./CMake/Raw-Files/Portfile-The-Second.cmake /usr/local/share/vcpkg/ports/discordcoreapi/portfile.cmake &&
                 sudo cp -v -R ./CMake/Raw-Files/Portfile-The-Second.cmake ./Vcpkg/ports/discordcoreapi/portfile.cmake &&
                 sudo /usr/local/share/vcpkg/vcpkg install discordcoreapi:x64-linux || true &&
+                sudo cat /usr/local/share/vcpkg/buildtrees/discordcoreapi/install-x64-linux-dbg-out.log &&
                 sudo git add . &&
                 sudo git commit -m "Updates! [skip ci]" &&
                 sudo git config pull.rebase false &&
