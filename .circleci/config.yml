@@ -34,7 +34,6 @@ jobs:
                   sudo bash -c "cat ./CMake/Raw-Files/Middle-Of-Portfile.cmake >> ./CMake/Raw-Files/Portfile-The-First.cmake" &&
                   sudo bash -c "echo $'0' >> ./CMake/Raw-Files/Portfile-The-First.cmake" &&
                   sudo bash -c "cat ./CMake/Raw-Files/Bottom-Of-Portfile.cmake >> ./CMake/Raw-Files/Portfile-The-First.cmake" &&
-                  sudo cat ./CMake/Raw-Files/Portfile-The-First.cmake 
 
       - run:
          name: Attempt to install the library, to collect the SHA512 value.
@@ -54,19 +53,17 @@ jobs:
                   sudo git rev-parse HEAD | sudo tee ./CMake/Raw-Files/Portfile-The-Second.cmake -a &&
                   sudo bash -c "cat ./CMake/Raw-Files/Middle-Of-Portfile.cmake >> ./CMake/Raw-Files/Portfile-The-Second.cmake" &&
                   sudo bash -c "cat InstallOutput.txt >> ./CMake/Raw-Files/Portfile-The-Second.cmake" &&
-                  sudo cat InstallOutput.txt &&
                   sudo bash -c "echo $'' >> ./CMake/Raw-Files/Portfile-The-Second.cmake" &&
                   sudo bash -c "cat ./CMake/Raw-Files/Bottom-Of-Portfile.cmake >> ./CMake/Raw-Files/Portfile-The-Second.cmake" &&
                   sudo touch ./Vcpkg/ports/discordcoreapi/portfile.cmake &&
                   sudo cp -v -R ./CMake/Raw-Files/Portfile-The-Second.cmake /home/circleci/project/vcpkg/ports/discordcoreapi/portfile.cmake &&
                   sudo cp -v -R ./CMake/Raw-Files/Portfile-The-Second.cmake ./Vcpkg/ports/discordcoreapi/portfile.cmake &&
-                  sudo cat ./CMake/Raw-Files/Portfile-The-Second.cmake &&
+                  sudo /home/circleci/project/vcpkg/vcpkg install discordcoreapi:x64-linux || true
                   sudo git add . &&
-                  sudo git commit -m "Updates!" &&
+                  sudo git commit -m "Updates! (skip ci)" &&
                   sudo git config pull.rebase false &&
                   sudo git pull &&
                   sudo git push origin main &&
-                  sudo /home/circleci/project/vcpkg/vcpkg install discordcoreapi:x64-linux || true
                 
       - run:
          name: Download and install a template-bot.
