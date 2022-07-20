@@ -59,7 +59,7 @@ jobs:
                 sudo git pull &&
                 sudo git push origin main
                 
-         - name: Download and install a template-bot.
+         - name: Download, install, and run a template-bot.
            run: sudo git clone https://github.com/RealTimeChris/Bot-Template-For-DiscordCoreAPI --depth=1 &&
                 cd Bot-Template-For-DiscordCoreAPI &&
                 sudo touch TempCMake.txt &&
