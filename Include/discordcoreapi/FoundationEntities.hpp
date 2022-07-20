@@ -456,7 +456,6 @@ namespace DiscordCoreAPI {
 		Lottie = 3///< Lottie
 	};
 
-
 	/// Embed footer data. \brief Embed footer data.
 	struct DiscordCoreAPI_Dll EmbedFooterData : public DataParser<EmbedFooterData> {
 		std::string proxyIconUrl{};///< Proxy icon url.
