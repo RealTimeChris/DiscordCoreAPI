@@ -141,5 +141,5 @@ jobs:
 workflows:
   DiscordCoreAPI:
     jobs:
-      - Build-Documentation
-      - Build-DiscordCoreAPI
+        - Build-DiscordCoreAPI
+        - Build-Documentation      
