@@ -206,7 +206,7 @@ namespace DiscordCoreInternal {
 						return false;
 					}
 					std::this_thread::sleep_for(1ms);
-					didWeWrite = this->writeData(dataToSend, true);
+					didWeWrite = this->writeData(dataToSend, priority);
 				} while (!didWeWrite);
 				if (!didWeWrite) {
 					this->onClosed();
@@ -249,7 +249,7 @@ namespace DiscordCoreInternal {
 				std::string theString02{};
 				this->stringifyJsonData(newData02, theString02, this->dataOpCode);
 				this->areWeCollectingData = true;
-				if (!this->sendMessage(theString, true)) {
+				if (!this->sendMessage(theString02, true)) {
 					return;
 				}
 				DiscordCoreAPI::StopWatch<std::chrono::milliseconds> theStopWatch{ 5500ms };
