@@ -5,7 +5,7 @@ endif()
 vcpkg_from_github(
 	OUT_SOURCE_PATH SOURCE_PATH
 	REPO RealTimeChris/DiscordCoreAPI
-	REF a09fda7ee095a84925c9969ac8c1a99996434c13
+	REF 1ac733a1321f23983672c295f14f8eae9a94a743
 	SHA512 0
 	HEAD_REF main
 )
