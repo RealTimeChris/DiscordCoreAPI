@@ -22,9 +22,8 @@ jobs:
 
          - name: Construct the original portfile.
            run: cd ./DiscordCoreAPI &&
-                sudo touch EmptyFile.cmake &&
-                sudo bash -c "cat EmptyFile.cmake > ./CMake/Raw-Files/Portfile-The-First.cmake" &&
-                sudo bash -c "cat EmptyFile.cmake > ./CMake/Raw-Files/Portfile-The-Second.cmake" &&
+                sudo touch ./CMake/Raw-Files/Portfile-The-First.cmake &&
+                sudo touch ./CMake/Raw-Files/Portfile-The-Second.cmake &&
                 sudo bash -c "cat ./CMake/Raw-Files/Top-Of-Portfile.cmake >> ./CMake/Raw-Files/Portfile-The-First.cmake" &&
                 sudo git rev-parse HEAD | sudo tee ./CMake/Raw-Files/Portfile-The-First.cmake -a &&
                 sudo bash -c "cat ./CMake/Raw-Files/Middle-Of-Portfile.cmake >> ./CMake/Raw-Files/Portfile-The-First.cmake" &&
@@ -53,7 +52,9 @@ jobs:
                 sudo cp -v -R ./CMake/Raw-Files/Portfile-The-Second.cmake /usr/local/share/vcpkg/ports/discordcoreapi/portfile.cmake &&
                 sudo cp -v -R ./CMake/Raw-Files/Portfile-The-Second.cmake ./Vcpkg/ports/discordcoreapi/portfile.cmake &&
                 sudo /usr/local/share/vcpkg/vcpkg install discordcoreapi:x64-linux &&
-                sudo cat /usr/local/share/vcpkg/buildtrees/discordcoreapi/install-x64-linux-dbg-out.log &&
+                sudo rm -rf InstallOutput.txt &&
+                sudo rm -rf ./CMake/Raw-Files/Portfile-The-First.cmake &&
+                sudo rm -rf ./CMake/Raw-Files/Portfile-The-Second.cmake &&
                 sudo git add . &&
                 sudo git commit -m "Updates! [skip ci]" &&
                 sudo git config pull.rebase false &&
