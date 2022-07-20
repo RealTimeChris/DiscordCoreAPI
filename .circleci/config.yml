@@ -68,6 +68,11 @@ jobs:
          name: Download and install a template-bot.
          command: sudo git clone https://github.com/RealTimeChris/Bot-Template-For-DiscordCoreAPI --depth=1 &&
                   cd Bot-Template-For-DiscordCoreAPI &&
+                  sudo touch TempCMake.txt &&
+                  sudo bash -c "echo $'set(VCPKG_ROOT_DIR \"/home/circleci/project/vcpkg\")' >> TempCMake.txt" &&
+                  sudo sed -i '1,2d' CMakeLists.txt &&
+                  sudo bash -c "cat CMakeLists.txt >> TempCMake.txt" &&
+                  sudo bash -c "cat TempCMake.txt > CMakeLists.txt" &&
                   sudo apt-get install -y ninja-build &&
                   sudo cmake -S . --preset Linux-Release &&
                   sudo cmake --build --preset Linux-Release &&

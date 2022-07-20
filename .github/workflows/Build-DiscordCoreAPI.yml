@@ -33,9 +33,9 @@ jobs:
 
          - name: Attempt to install the library, to collect the SHA512 value.
            run: cd ./DiscordCoreAPI &&
-                sudo touch /usr/local/share/vcpkg//ports/discordcoreapi/portfile.cmake &&
-                sudo cp -v -R ./CMake/Raw-Files/Portfile-The-First.cmake /usr/local/share/vcpkg//ports/discordcoreapi/portfile.cmake &&
-                sudo /usr/local/share/vcpkg//vcpkg install discordcoreapi:x64-linux | sudo tee InstallOutput.txt || true
+                sudo touch /usr/local/share/vcpkg/ports/discordcoreapi/portfile.cmake &&
+                sudo cp -v -R ./CMake/Raw-Files/Portfile-The-First.cmake /usr/local/share/vcpkg/ports/discordcoreapi/portfile.cmake &&
+                sudo /usr/local/share/vcpkg/vcpkg install discordcoreapi:x64-linux | sudo tee InstallOutput.txt || true
 
          - name:  Update the portfile and download/install the library.
            run: cd ./DiscordCoreAPI &&
@@ -50,7 +50,7 @@ jobs:
                 sudo bash -c "echo $'' >> ./CMake/Raw-Files/Portfile-The-Second.cmake" &&
                 sudo bash -c "cat ./CMake/Raw-Files/Bottom-Of-Portfile.cmake >> ./CMake/Raw-Files/Portfile-The-Second.cmake" &&
                 sudo touch ./Vcpkg/ports/discordcoreapi/portfile.cmake &&
-                sudo cp -v -R ./CMake/Raw-Files/Portfile-The-Second.cmake /usr/local/share/vcpkg//ports/discordcoreapi/portfile.cmake &&
+                sudo cp -v -R ./CMake/Raw-Files/Portfile-The-Second.cmake /usr/local/share/vcpkg/ports/discordcoreapi/portfile.cmake &&
                 sudo cp -v -R ./CMake/Raw-Files/Portfile-The-Second.cmake ./Vcpkg/ports/discordcoreapi/portfile.cmake &&
                 sudo /usr/local/share/vcpkg/vcpkg install discordcoreapi:x64-linux || true &&
                 sudo git add . &&
@@ -62,6 +62,11 @@ jobs:
          - name: Download and install a template-bot.
            run: sudo git clone https://github.com/RealTimeChris/Bot-Template-For-DiscordCoreAPI --depth=1 &&
                 cd Bot-Template-For-DiscordCoreAPI &&
+                sudo touch TempCMake.txt &&
+                sudo bash -c "echo $'set(VCPKG_ROOT_DIR \"/usr/local/share/vcpkg\")' >> TempCMake.txt" &&
+                sudo sed -i '1,2d' CMakeLists.txt &&
+                sudo bash -c "cat CMakeLists.txt >> TempCMake.txt" &&
+                sudo bash -c "cat TempCMake.txt > CMakeLists.txt" &&
                 sudo apt-get install -y ninja-build &&
                 sudo cmake -S . --preset Linux-Release &&
                 sudo cmake --build --preset Linux-Release &&
