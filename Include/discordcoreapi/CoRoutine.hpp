@@ -80,7 +80,7 @@ namespace DiscordCoreAPI {
 			}
 
 			std::suspend_always final_suspend() noexcept {
-				*this->currentStatus = CoRoutineStatus::Complete;
+				this->currentStatus->store(CoRoutineStatus::Complete);
 				this->areWeDone.store(true);
 				return {};
 			}
@@ -234,7 +234,7 @@ namespace DiscordCoreAPI {
 			}
 
 			std::suspend_always final_suspend() noexcept {
-				*this->currentStatus = CoRoutineStatus::Complete;
+				this->currentStatus->store(CoRoutineStatus::Complete);
 				this->areWeDone.store(true);
 				return {};
 			}
