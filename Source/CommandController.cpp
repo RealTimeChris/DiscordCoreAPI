@@ -21,40 +21,43 @@
 
 namespace DiscordCoreAPI {
 
+	namespace Globals {
+		std::map<std::vector<std::string>, std::unique_ptr<BaseFunction>> functions{};
+	}
+
 	CommandController::CommandController(DiscordCoreClient* discordCoreClientNew) {
 		this->discordCoreClient = discordCoreClientNew;
 	}
 
 	void CommandController::registerFunction(const std::vector<std::string>& functionNames, std::unique_ptr<BaseFunction> baseFunction) {
-		this->functions[functionNames] = std::move(baseFunction);
+		Globals::functions[functionNames] = std::move(baseFunction);
 	}
 
 	std::map<std::vector<std::string>, std::unique_ptr<BaseFunction>>& CommandController::getFunctions() {
-		return this->functions;
+		return Globals::functions;
 	};
 
-	void CommandController::checkForAndRunCommand(CommandData commandData) {
+	CoRoutine<void> CommandController::checkForAndRunCommand(CommandData commandData) {
+		co_await NewThreadAwaitable<void>();
 		try {
-			std::function<void()> theFunction = [=, this]() mutable {
-				std::unique_ptr<BaseFunction> functionPointer{ this->getCommand(convertToLowerCase(commandData.commandName)) };
-				if (functionPointer == nullptr) {
-					return;
-				}
-				BaseFunctionArguments theArgs{ commandData, this->discordCoreClient };
-				functionPointer->execute(theArgs);
-			};
-			this->commandThreadPool.submitTask(theFunction);
-
+			std::unique_ptr<BaseFunction> functionPointer{ this->getCommand(convertToLowerCase(commandData.commandName)) };
+			if (functionPointer == nullptr) {
+				co_return;
+			}
+			BaseFunctionArguments theArgs{ commandData, this->discordCoreClient };
+			functionPointer->execute(theArgs);
+			co_return;
 		} catch (...) {
 			reportException("CommandController::checkForAndRunCommand()");
 		}
+		co_return;
 	}
 
 	std::unique_ptr<BaseFunction> CommandController::getCommand(const std::string& commandName) {
 		std::string functionName{};
 		bool isItFound{ false };
 		if (commandName.size() > 0) {
-			for (auto const& [keyFirst, value]: this->functions) {
+			for (auto const& [keyFirst, value]: Globals::functions) {
 				for (auto& key: keyFirst) {
 					if (key.find(convertToLowerCase(commandName)) != std::string::npos) {
 						isItFound = true;
@@ -72,10 +75,10 @@ namespace DiscordCoreAPI {
 	}
 
 	std::unique_ptr<BaseFunction> CommandController::createFunction(const std::string& functionName) {
-		for (auto& [key01, value01]: this->functions) {
+		for (auto& [key01, value01]: Globals::functions) {
 			for (auto& value02: key01) {
 				if (functionName == value02) {
-					return this->functions[key01]->create();
+					return Globals::functions[key01]->create();
 				}
 			}
 		}

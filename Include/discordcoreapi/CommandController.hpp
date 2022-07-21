@@ -38,11 +38,9 @@ namespace DiscordCoreAPI {
 		/// \returns A map containing the function names as well as unique_ptrs to the functions.
 		std::map<std::vector<std::string>, std::unique_ptr<BaseFunction>>& getFunctions();
 
-		void checkForAndRunCommand(const CommandData commandData);
+		CoRoutine<void> checkForAndRunCommand(const CommandData commandData);
 
 	  protected:
-		std::map<std::vector<std::string>, std::unique_ptr<BaseFunction>> functions{};
-		DiscordCoreInternal::CommandThreadPool commandThreadPool{};
 		DiscordCoreClient* discordCoreClient{ nullptr };
 
 		std::unique_ptr<BaseFunction> createFunction(const std::string& functionName);

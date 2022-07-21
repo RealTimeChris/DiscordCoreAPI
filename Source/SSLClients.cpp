@@ -24,12 +24,11 @@ namespace DiscordCoreInternal {
 
 	std::string reportSSLError(const std::string& errorPosition, int32_t errorValue = 0, SSL* ssl = nullptr) noexcept {
 		std::stringstream theStream{};
+		theStream << DiscordCoreAPI::shiftToBrightRed() << errorPosition << " Error: ";
 		if (ssl) {
-			theStream << DiscordCoreAPI::shiftToBrightRed() << errorPosition << " Error: " << SSL_get_error(ssl, errorValue) << ", " << ERR_error_string(errorValue, nullptr)
-					  << DiscordCoreAPI::reset() << std::endl
-					  << std::endl;
+			theStream << SSL_get_error(ssl, errorValue) << ", " << ERR_error_string(errorValue, nullptr) << DiscordCoreAPI::reset() << std::endl << std::endl;
 		} else {
-			theStream << DiscordCoreAPI::shiftToBrightRed() << errorPosition << " Error: " << DiscordCoreAPI::reset() << std::endl << std::endl;
+			theStream << ERR_error_string(errorValue, nullptr) << DiscordCoreAPI::reset() << std::endl << std::endl;
 		}
 		return theStream.str();
 	}

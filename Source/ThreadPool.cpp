@@ -83,86 +83,8 @@ namespace DiscordCoreInternal {
 		*this = std::move(other);
 	}
 
-	CommandThreadPool::CommandThreadPool() {
-		this->threadCount.store(std::thread::hardware_concurrency() / 2);
-		if (this->threadCount.load() < 1) {
-			this->threadCount.store(1);
-		}
-		for (uint32_t x = 0; x < this->threadCount.load(); x++) {
-			WorkerThread workerThread{};
-			this->currentIndex.store(this->currentIndex.load() + 1);
-			this->currentCount.store(this->currentCount.load() + 1);
-			int64_t theIndexNew = this->currentIndex.load();
-			workerThread.theThread = std::jthread([=, this](std::stop_token stopToken) {
-				this->threadFunction(stopToken, theIndexNew);
-			});
-			this->workerThreads[this->currentIndex.load()] = std::move(workerThread);
-		}
-	}
-
-	void CommandThreadPool::submitTask(std::function<void()> theFunction) noexcept {
-		std::unique_lock theLock{ this->theMutex };
-		bool areWeAllBusy{ true };
-		for (auto& [key, value]: this->workerThreads) {
-			if (!value.areWeCurrentlyWorking.load()) {
-				areWeAllBusy = false;
-				break;
-			}
-		}
-		if (areWeAllBusy) {
-			WorkerThread workerThread{};
-			this->currentIndex.store(this->currentIndex.load() + 1);
-			this->currentCount.store(this->currentCount.load() + 1);
-			int64_t theIndexNew = this->currentIndex.load();
-			workerThread.theThread = std::jthread([=, this](std::stop_token stopToken) {
-				this->threadFunction(stopToken, theIndexNew);
-			});
-			this->workerThreads[this->currentIndex.load()] = std::move(workerThread);
-		}
-		this->theFunctions.push(theFunction);
-		this->functionCount.store(this->functionCount.load() + 1);
-	}
-
-	void CommandThreadPool::threadFunction(std::stop_token& stopToken, int64_t theIndex) {
-		while (!stopToken.stop_requested()) {
-			if (this->functionCount.load() > 0) {
-				std::unique_lock theLock01{ this->theMutex, std::defer_lock_t{} };
-				if (theLock01.try_lock()) {
-					if (this->theFunctions.size() > 0) {
-						std::function<void()> functionHandle = this->theFunctions.front();
-						this->functionCount.store(this->functionCount.load() - 1);
-						this->theFunctions.pop();
-						theLock01.unlock();
-						this->workerThreads[theIndex].areWeCurrentlyWorking.store(true);
-						functionHandle();
-						this->workerThreads[theIndex].areWeCurrentlyWorking.store(false);
-					}
-				}
-			} else if (this->currentCount.load() > this->threadCount.load()) {
-				std::unique_lock theLock01{ this->theMutex, std::defer_lock_t{} };
-				if (theLock01.try_lock()) {
-					for (auto& [key, value]: this->workerThreads) {
-						if (value.areWeCurrentlyWorking.load() && value.theThread.joinable()) {
-							value.theThread.request_stop();
-							value.theThread.detach();
-							this->currentCount.store(this->currentCount.load() - 1);
-							break;
-						}
-					}
-				}
-			}
-			std::this_thread::sleep_for(1ms);
-		}
-		std::unique_lock theLock{ this->theMutex };
-		this->workerThreads.erase(theIndex);
-	}
-
-	CommandThreadPool::~CommandThreadPool() {
-		closeFunction(this->workerThreads);
-	}
-
 	CoRoutineThreadPool::CoRoutineThreadPool() {
-		this->threadCount.store(std::thread::hardware_concurrency() / 2);
+		this->threadCount.store(std::thread::hardware_concurrency());
 		if (this->threadCount.load() < 1) {
 			this->threadCount.store(1);
 		}
