@@ -54,11 +54,11 @@ jobs:
                 sudo cp -v -R ./CMake/Raw-Files/Portfile-The-Second.cmake ./Vcpkg/ports/discordcoreapi/portfile.cmake &&
                 sudo cp -v -R ./Vcpkg/* /usr/local/share/vcpkg &&
                 cd /usr/local/share/vcpkg &&
-                sudo ./vcpkg format-manifest ports/discordcoreapi/vcpkg.json &&
+                sudo ./vcpkg format-manifest ./ports/discordcoreapi/vcpkg.json &&
                 sudo git add . &&
                 sudo git commit -m "Updates!"  &&
-                cd /usr/local/share/DiscordCoreAPI &&
                 sudo /usr/local/share/vcpkg/vcpkg x-add-version --overwrite-version --all &&
+                cd /usr/local/share/DiscordCoreAPI &&
                 sudo cp -v -R /usr/local/share/vcpkg/ports/discordcoreapi/vcpkg.json ./Vcpkg/ports/discordcoreapi/vcpkg.json &&
                 sudo cp -v -R /usr/local/share/vcpkg/versions/baseline.json ./Vcpkg/versions/baseline.json &&
                 sudo cp -v -R /usr/local/share/vcpkg/versions/d-/discordcoreapi.json ./Vcpkg/versions/d-/discordcoreapi.json &&
