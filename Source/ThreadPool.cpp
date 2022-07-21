@@ -151,7 +151,7 @@ namespace DiscordCoreInternal {
 					}
 				}
 			}
-			std::this_thread::sleep_for(1000us);
+			std::this_thread::sleep_for(1ms);
 		}
 		std::unique_lock theLock{ this->theMutex };
 		this->workerThreads.erase(theIndex);
@@ -229,7 +229,7 @@ namespace DiscordCoreInternal {
 					}
 				}
 			}
-			std::this_thread::sleep_for(1000us);
+			std::this_thread::sleep_for(1ms);
 		}
 		std::unique_lock theLock{ this->theMutex };
 		this->workerThreads.erase(theIndex);
