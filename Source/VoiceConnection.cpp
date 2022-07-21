@@ -122,8 +122,8 @@ namespace DiscordCoreAPI {
 			if (theMessage.size() > 0) {
 				nlohmann::json payload = payload.parse(theMessage);
 				if (this->configManager->doWePrintWebSocketSuccessMessages()) {
-					std::cout << DiscordCoreAPI::shiftToBrightGreen() << "Message received from Voice WebSocket: " << theMessage << DiscordCoreAPI::reset() << std::endl
-							  << std::endl;
+					cout << DiscordCoreAPI::shiftToBrightGreen() << "Message received from Voice WebSocket: " << theMessage << DiscordCoreAPI::reset() << endl
+							  << endl;
 				}
 				if (payload.contains("op") && !payload["op"].is_null()) {
 					switch (payload["op"].get<int32_t>()) {
@@ -173,7 +173,7 @@ namespace DiscordCoreAPI {
 		try {
 			if (responseData.size() == 0) {
 				if (this->configManager->doWePrintWebSocketErrorMessages()) {
-					std::cout << DiscordCoreAPI::shiftToBrightRed() << "Please specify voice data to send" << DiscordCoreAPI::reset() << std::endl << std::endl;
+					cout << DiscordCoreAPI::shiftToBrightRed() << "Please specify voice data to send" << DiscordCoreAPI::reset() << endl << endl;
 				}
 				return;
 			} else {
@@ -467,7 +467,7 @@ namespace DiscordCoreAPI {
 		if (this->currentReconnectTries >= this->maxReconnectTries) {
 			this->doWeQuit->store(true);
 			if (this->configManager->doWePrintWebSocketErrorMessages()) {
-				std::cout << "VoiceConnection::connectInternal() Error: Failed to connect to voice channel!" << std::endl << std::endl;
+				cout << "VoiceConnection::connectInternal() Error: Failed to connect to voice channel!" << endl << endl;
 			}
 		}
 		switch (this->connectionState.load()) {

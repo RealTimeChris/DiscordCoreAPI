@@ -100,6 +100,8 @@ namespace DiscordCoreAPI {
 namespace DiscordCoreInternal {
 
 	using namespace std::literals;
+	using std::cout;
+	using std::endl;
 
 	struct HttpsWorkloadData;
 	class SoundCloudRequestBuilder;
@@ -146,6 +148,8 @@ namespace DiscordCoreInternal {
 namespace DiscordCoreAPI {
 
 	using namespace std::literals;
+	using std::cout;
+	using std::endl;
 
 	struct DeleteInteractionResponseData;
 	struct DeleteFollowUpMessageData;

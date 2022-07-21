@@ -953,7 +953,7 @@ namespace DiscordCoreAPI {
 
 		if (jsonObjectData.contains("unicode_emoji") && !jsonObjectData["unicode_emoji"].is_null()) {
 			std::stringstream theStream{};
-			theStream << jsonObjectData["unicode_emoji"] << std::endl;
+			theStream << jsonObjectData["unicode_emoji"] << endl;
 			for (auto& value: theStream.str()) {
 				pDataStructure->unicodeEmoji.push_back(value);
 			}
@@ -1899,7 +1899,7 @@ namespace DiscordCoreAPI {
 
 		if (jsonObjectData.contains("unicode_emoji") && !jsonObjectData["unicode_emoji"].is_null()) {
 			std::stringstream theStream{};
-			theStream << jsonObjectData["unicode_emoji"] << std::endl;
+			theStream << jsonObjectData["unicode_emoji"] << endl;
 			for (auto& value: theStream.str()) {
 				pDataStructure->unicodeEmoji.push_back(value);
 			}

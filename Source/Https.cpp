@@ -368,7 +368,7 @@ namespace DiscordCoreInternal {
 		}
 		if (timeRemaining > 0) {
 			if (this->configManager->doWePrintHttpsSuccessMessages()) {
-				std::cout << DiscordCoreAPI::shiftToBrightBlue() << "We're waiting on rate-limit: " << timeRemaining << DiscordCoreAPI::reset() << std::endl << std::endl;
+				cout << DiscordCoreAPI::shiftToBrightBlue() << "We're waiting on rate-limit: " << timeRemaining << DiscordCoreAPI::reset() << endl << endl;
 			}
 			int64_t targetTime = currentTime + timeRemaining;
 			while (targetTime > currentTime) {
@@ -396,9 +396,9 @@ namespace DiscordCoreInternal {
 		}
 		if (returnData.responseCode == 204 || returnData.responseCode == 201 || returnData.responseCode == 200) {
 			if (this->configManager->doWePrintHttpsSuccessMessages()) {
-				std::cout << DiscordCoreAPI::shiftToBrightGreen() << workload.callStack + " Success: " << returnData.responseCode << ", " << returnData.responseMessage
-						  << DiscordCoreAPI::reset() << std::endl
-						  << std::endl;
+				cout << DiscordCoreAPI::shiftToBrightGreen() << workload.callStack + " Success: " << returnData.responseCode << ", " << returnData.responseMessage
+						  << DiscordCoreAPI::reset() << endl
+						  << endl;
 			}
 		} else {
 			if (returnData.responseCode == 429) {
@@ -407,10 +407,10 @@ namespace DiscordCoreInternal {
 				rateLimitData.sampledTimeInMs.store(
 					static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count()));
 				if (this->configManager->doWePrintHttpsErrorMessages()) {
-					std::cout << DiscordCoreAPI::shiftToBrightRed() << workload.callStack + "::httpRequest(), We've hit rate limit! Time Remaining: "
+					cout << DiscordCoreAPI::shiftToBrightRed() << workload.callStack + "::httpRequest(), We've hit rate limit! Time Remaining: "
 							  << std::to_string(this->connectionManager.getRateLimitValues()[this->connectionManager.getRateLimitValueBuckets()[workload.workloadType]]->msRemain)
-							  << DiscordCoreAPI::reset() << std::endl
-							  << std::endl;
+							  << DiscordCoreAPI::reset() << endl
+							  << endl;
 				}
 				returnData = this->executeByRateLimitData(workload, rateLimitData);
 			}

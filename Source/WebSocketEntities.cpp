@@ -156,9 +156,9 @@ namespace DiscordCoreInternal {
 				theShard->closeCode = static_cast<WebSocketCloseCode>(close);
 				theShard->inputBuffer.erase(theShard->inputBuffer.begin(), theShard->inputBuffer.begin() + 4);
 				if (this->configManager->doWePrintWebSocketErrorMessages()) {
-					std::cout << DiscordCoreAPI::shiftToBrightRed() << "WebSocket " + theShard->shard.dump() + " Closed; Code: " << +static_cast<uint16_t>(theShard->closeCode)
-							  << DiscordCoreAPI::reset() << std::endl
-							  << std::endl;
+					cout << DiscordCoreAPI::shiftToBrightRed() << "WebSocket " + theShard->shard.dump() + " Closed; Code: " << +static_cast<uint16_t>(theShard->closeCode)
+							  << DiscordCoreAPI::reset() << endl
+							  << endl;
 				}
 				return false;
 			}
@@ -239,7 +239,7 @@ namespace DiscordCoreInternal {
 					return false;
 				}
 				if (this->configManager->doWePrintWebSocketSuccessMessages()) {
-					std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Sending WebSocket " + this->shard.dump() + std::string("'s Message: ") << std::endl
+					cout << DiscordCoreAPI::shiftToBrightBlue() << "Sending WebSocket " + this->shard.dump() + std::string("'s Message: ") << endl
 							  << dataToSend << DiscordCoreAPI::reset();
 				}
 				bool didWeWrite{ false };
@@ -858,9 +858,9 @@ namespace DiscordCoreInternal {
 						}
 						case 7: {
 							if (this->configManager->doWePrintWebSocketErrorMessages()) {
-								std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Shard " + this->shard.dump() + " Reconnecting (Type 7)!" << DiscordCoreAPI::reset()
-										  << std::endl
-										  << std::endl;
+								cout << DiscordCoreAPI::shiftToBrightBlue() << "Shard " + this->shard.dump() + " Reconnecting (Type 7)!" << DiscordCoreAPI::reset()
+										  << endl
+										  << endl;
 							}
 							this->areWeResuming = true;
 							this->onClosed();
@@ -868,9 +868,9 @@ namespace DiscordCoreInternal {
 						}
 						case 9: {
 							if (this->configManager->doWePrintWebSocketErrorMessages()) {
-								std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Shard " + this->shard.dump() + " Reconnecting (Type 9)!" << DiscordCoreAPI::reset()
-										  << std::endl
-										  << std::endl;
+								cout << DiscordCoreAPI::shiftToBrightBlue() << "Shard " + this->shard.dump() + " Reconnecting (Type 9)!" << DiscordCoreAPI::reset()
+										  << endl
+										  << endl;
 							}
 							std::mt19937_64 randomEngine{ static_cast<uint64_t>(std::chrono::system_clock::now().time_since_epoch().count()) };
 							int32_t numOfMsToWait =
@@ -934,9 +934,9 @@ namespace DiscordCoreInternal {
 				}
 
 				if (this->configManager->doWePrintWebSocketSuccessMessages() && !payload.is_null()) {
-					std::cout << DiscordCoreAPI::shiftToBrightGreen() << "Message received from WebSocket " + this->shard.dump() + std::string(": ") << payload.dump()
-							  << DiscordCoreAPI::reset() << std::endl
-							  << std::endl;
+					cout << DiscordCoreAPI::shiftToBrightGreen() << "Message received from WebSocket " + this->shard.dump() + std::string(": ") << payload.dump()
+							  << DiscordCoreAPI::reset() << endl
+							  << endl;
 				}
 			} catch (...) {
 				if (this->configManager->doWePrintWebSocketErrorMessages()) {

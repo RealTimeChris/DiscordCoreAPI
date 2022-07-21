@@ -26,9 +26,9 @@ namespace DiscordCoreInternal {
 		std::stringstream theStream{};
 		theStream << DiscordCoreAPI::shiftToBrightRed() << errorPosition << " Error: ";
 		if (ssl) {
-			theStream << SSL_get_error(ssl, errorValue) << ", " << ERR_error_string(errorValue, nullptr) << DiscordCoreAPI::reset() << std::endl << std::endl;
+			theStream << SSL_get_error(ssl, errorValue) << ", " << ERR_error_string(errorValue, nullptr) << DiscordCoreAPI::reset() << endl << endl;
 		} else {
-			theStream << ERR_error_string(errorValue, nullptr) << DiscordCoreAPI::reset() << std::endl << std::endl;
+			theStream << ERR_error_string(errorValue, nullptr) << DiscordCoreAPI::reset() << endl << endl;
 		}
 		return theStream.str();
 	}
@@ -44,7 +44,7 @@ namespace DiscordCoreInternal {
 	#else
 		FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, WSAGetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), string.get(), 1024, NULL);
 	#endif
-		theStream << WSAGetLastError() << ", " << string << DiscordCoreAPI::reset() << std::endl;
+		theStream << WSAGetLastError() << ", " << string << DiscordCoreAPI::reset() << endl;
 #else
 		theStream << strerror(errno) << DiscordCoreAPI::reset();
 #endif
@@ -61,7 +61,7 @@ namespace DiscordCoreInternal {
 
 	WSADataWrapper::WSADataWrapper() {
 		if (auto errorValue = WSAStartup(MAKEWORD(2, 2), this->thePtr.get()); errorValue != 0) {
-			std::cout << DiscordCoreAPI::shiftToBrightRed() << "WSAStartup() Error: " << errorValue << ", ()" << DiscordCoreAPI::reset() << std::endl;
+			cout << DiscordCoreAPI::shiftToBrightRed() << "WSAStartup() Error: " << errorValue << ", ()" << DiscordCoreAPI::reset() << endl;
 		}
 	}
 #endif
@@ -77,7 +77,7 @@ namespace DiscordCoreInternal {
 		this->thePtr.reset(other);
 		auto errorValue = SSL_CTX_up_ref(other);
 		if (!errorValue) {
-			std::cout << DiscordCoreAPI::shiftToBrightRed() << "SSL_CTX_up_ref() Error: " << ERR_error_string(errorValue, nullptr) << DiscordCoreAPI::reset() << std::endl;
+			cout << DiscordCoreAPI::shiftToBrightRed() << "SSL_CTX_up_ref() Error: " << ERR_error_string(errorValue, nullptr) << DiscordCoreAPI::reset() << endl;
 		}
 		return *this;
 	}
@@ -98,7 +98,7 @@ namespace DiscordCoreInternal {
 		this->thePtr.reset(other);
 		auto errorValue = SSL_up_ref(other);
 		if (!errorValue) {
-			std::cout << DiscordCoreAPI::shiftToBrightRed() << "SSL_up_ref() Error: " << ERR_error_string(errorValue, nullptr) << DiscordCoreAPI::reset() << std::endl;
+			cout << DiscordCoreAPI::shiftToBrightRed() << "SSL_up_ref() Error: " << ERR_error_string(errorValue, nullptr) << DiscordCoreAPI::reset() << endl;
 		}
 		return *this;
 	}

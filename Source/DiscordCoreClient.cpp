@@ -76,7 +76,7 @@ namespace DiscordCoreAPI {
 		}
 		if (sodium_init() == -1) {
 			if (this->configManager.doWePrintGeneralErrorMessages()) {
-				std::cout << shiftToBrightRed() << "LibSodium failed to initialize!" << reset() << std::endl << std::endl;
+				cout << shiftToBrightRed() << "LibSodium failed to initialize!" << reset() << endl << endl;
 			}
 		}
 		this->eventManager.onChannelCreation(&EventHandler::onChannelCreation);
@@ -162,18 +162,18 @@ namespace DiscordCoreAPI {
 		GatewayBotData gatewayData = this->getGateWayBot();
 		if (gatewayData.url == "") {
 			if (this->configManager.doWePrintGeneralErrorMessages()) {
-				std::cout << shiftToBrightRed()
+				cout << shiftToBrightRed()
 						  << "Failed to collect the connection URL! Closing! Did you remember to "
 							 "properly set your bot token?"
-						  << reset() << std::endl
-						  << std::endl;
+						  << reset() << endl
+						  << endl;
 			}
 			std::this_thread::sleep_for(5s);
 			return false;
 		}
 		if (this->configManager.getStartingShard() + this->configManager.getShardCountForThisProcess() > this->configManager.getTotalShardCount()) {
 			if (this->configManager.doWePrintGeneralErrorMessages()) {
-				std::cout << shiftToBrightRed() << "Your sharding options are incorrect! Please fix it!" << reset() << std::endl << std::endl;
+				cout << shiftToBrightRed() << "Your sharding options are incorrect! Please fix it!" << reset() << endl << endl;
 			}
 			std::this_thread::sleep_for(5s);
 			return false;
@@ -212,11 +212,11 @@ namespace DiscordCoreAPI {
 			this->baseSocketAgentMap[std::to_string(x)] = std::move(thePtr);
 			for (int32_t y = 0; y < shardsPerBaseSocketAgentVect[x]; y++) {
 				if (this->configManager.doWePrintGeneralSuccessMessages()) {
-					std::cout << shiftToBrightBlue() << "Connecting Shard " + std::to_string(currentShard + 1) << " of " << this->configManager.getShardCountForThisProcess()
+					cout << shiftToBrightBlue() << "Connecting Shard " + std::to_string(currentShard + 1) << " of " << this->configManager.getShardCountForThisProcess()
 							  << std::string(" Shards for this process. (") + std::to_string(currentShard + 1) + " of " + std::to_string(this->configManager.getTotalShardCount()) +
 							std::string(" Shards total across all processes)")
-							  << reset() << std::endl
-							  << std::endl;
+							  << reset() << endl
+							  << endl;
 				}
 				ConnectionPackage theData{};
 				theData.currentShard = currentShard;
@@ -240,7 +240,7 @@ namespace DiscordCoreAPI {
 			}
 		}
 		if (this->configManager.doWePrintGeneralSuccessMessages()) {
-			std::cout << shiftToBrightGreen() << "All of the shards are connected for the current process!" << reset() << std::endl << std::endl;
+			cout << shiftToBrightGreen() << "All of the shards are connected for the current process!" << reset() << endl << endl;
 		}
 		return true;
 	}

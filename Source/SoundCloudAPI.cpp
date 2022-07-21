@@ -168,9 +168,9 @@ namespace DiscordCoreInternal {
 			clientIdNew = newString03.substr(0, newString03.find("\",nonce:_})))),s.push("));
 		}
 		if (returnData02.responseCode not_eq 200 && this->configManager->doWePrintHttpsErrorMessages()) {
-			std::cout << DiscordCoreAPI::shiftToBrightRed() << "SoundCloudAPI::searchForSong Error: " << returnData.responseCode << newerString02.c_str() << DiscordCoreAPI::reset()
-					  << std::endl
-					  << std::endl;
+			cout << DiscordCoreAPI::shiftToBrightRed() << "SoundCloudAPI::searchForSong Error: " << returnData.responseCode << newerString02.c_str() << DiscordCoreAPI::reset()
+					  << endl
+					  << endl;
 		}
 		return clientIdNew;
 	}

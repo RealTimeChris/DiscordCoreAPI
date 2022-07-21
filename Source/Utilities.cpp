@@ -918,7 +918,7 @@ namespace DiscordCoreAPI {
 					  << "\nThe Error: \n"
 					  << e.what() << reset();
 			auto theReturnString = theStream.str();
-			std::cout << theReturnString;
+			cout << theReturnString;
 		}
 	}
 
@@ -935,7 +935,7 @@ namespace DiscordCoreAPI {
 					  << "\nThe Error: \n"
 					  << e.what() << reset();
 			auto theReturnString = theStream.str();
-			std::cout << theReturnString;
+			cout << theReturnString;
 			if (std::current_exception()) {
 				std::rethrow_exception(std::current_exception());
 			}
