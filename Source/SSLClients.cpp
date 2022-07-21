@@ -210,6 +210,54 @@ namespace DiscordCoreInternal {
 		}
 	}
 
+	ProcessIOResult SSLClient::writeData(const std::string& dataToWrite, bool priority) noexcept {
+		std::unique_lock theLock{ this->connectionMutex };
+		if (this->theSocket == SOCKET_ERROR) {
+			return ProcessIOResult::Disconnected;
+		}
+		std::string data = dataToWrite;
+		if (data.size() > 0 && this->ssl) {
+			if (priority && data.size() < static_cast<size_t>(16 * 1024)) {
+				fd_set writeSet{};
+				int32_t writeNfds{ 0 };
+				FD_ZERO(&writeSet);
+				FD_SET(this->theSocket, &writeSet);
+				writeNfds = this->theSocket > writeNfds ? this->theSocket : writeNfds;
+
+				timeval checkTime{ .tv_usec = 1000 };
+				if (auto returnValue = select(writeNfds + 1, nullptr, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
+					this->disconnect(true);
+					return ProcessIOResult::Select_Failure;
+				} else if (returnValue == 0) {
+					return ProcessIOResult::Select_No_Return;
+				}
+				this->outputBuffers.push_back(data);
+				return this->writeDataProcess();
+			} else {
+				if (data.size() > static_cast<size_t>(16 * 1024)) {
+					size_t remainingBytes{ data.size() };
+					while (remainingBytes > 0) {
+						std::string newString{};
+						size_t amountToCollect{};
+						if (data.size() >= static_cast<size_t>(1024 * 16)) {
+							amountToCollect = static_cast<size_t>(1024 * 16);
+						} else {
+							amountToCollect = data.size();
+						}
+						newString.insert(newString.begin(), data.begin(), data.begin() + amountToCollect);
+						this->outputBuffers.push_back(newString);
+						data.erase(data.begin(), data.begin() + amountToCollect);
+						remainingBytes = data.size();
+					}
+				} else {
+					this->outputBuffers.push_back(data);
+				}
+				return ProcessIOResult::Nothing_To_Write;
+			}
+		}
+		return ProcessIOResult::Nothing_To_Write;
+	}
+
 	bool SSLClient::connect(const std::string& baseUrl, const std::string& portNew) noexcept {
 		std::string stringNew{};
 		auto httpsFind = baseUrl.find("https://");
@@ -293,63 +341,10 @@ namespace DiscordCoreInternal {
 		return true;
 	}
 
-	bool SSLClient::writeData(const std::string& dataToWrite, bool priority) noexcept {
-		std::unique_lock theLock{ this->connectionMutex };
-		if (this->theSocket == SOCKET_ERROR) {
-			return false;
-		}
-		std::string data = dataToWrite;
-		if (data.size() > 0 && this->ssl) {
-			if (priority && data.size() < static_cast<size_t>(16 * 1024)) {
-				fd_set writeSet{};
-				int32_t writeNfds{ 0 };
-				FD_ZERO(&writeSet);
-				FD_SET(this->theSocket, &writeSet);
-				writeNfds = this->theSocket > writeNfds ? this->theSocket : writeNfds;
-
-				timeval checkTime{ .tv_usec = 1000 };
-				if (auto returnValue = select(writeNfds + 1, nullptr, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
-					this->disconnect(true);
-					return false;
-				} else if (returnValue == 0) {
-					return false;
-				}
-				this->outputBuffers.push_back(data);
-				auto theResult = this->writeDataProcess();
-				if (theResult == ProcessIOResult::Clean) {
-					return true;
-				} else {
-					return false;
-				}
-			} else {
-				if (data.size() > static_cast<size_t>(16 * 1024)) {
-					size_t remainingBytes{ data.size() };
-					while (remainingBytes > 0) {
-						std::string newString{};
-						size_t amountToCollect{};
-						if (data.size() >= static_cast<size_t>(1024 * 16)) {
-							amountToCollect = static_cast<size_t>(1024 * 16);
-						} else {
-							amountToCollect = data.size();
-						}
-						newString.insert(newString.begin(), data.begin(), data.begin() + amountToCollect);
-						this->outputBuffers.push_back(newString);
-						data.erase(data.begin(), data.begin() + amountToCollect);
-						remainingBytes = data.size();
-					}
-				} else {
-					this->outputBuffers.push_back(data);
-				}
-				return true;
-			}
-		}
-		return false;
-	}
-
 	ProcessIOResult SSLClient::processIO(int32_t theWaitTimeInms) noexcept {
 		if (this->theSocket == SOCKET_ERROR) {
 			this->disconnect(true);
-			return ProcessIOResult::Reconnect;
+			return ProcessIOResult::Disconnected;
 		}
 		int32_t readNfds{ 0 }, writeNfds{ 0 }, finalNfds{ 0 };
 		fd_set writeSet{}, readSet{};
@@ -368,9 +363,9 @@ namespace DiscordCoreInternal {
 		timeval checkTime{ .tv_usec = theWaitTimeInms };
 		if (auto returnValue = select(finalNfds + 1, &readSet, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
 			this->disconnect(true);
-			return ProcessIOResult::Reconnect;
+			return ProcessIOResult::Select_Failure;
 		} else if (returnValue == 0) {
-			return ProcessIOResult::Clean;
+			return ProcessIOResult::Select_No_Return;
 		}
 
 		if (FD_ISSET(this->theSocket, &writeSet)) {
@@ -379,7 +374,7 @@ namespace DiscordCoreInternal {
 		if (FD_ISSET(this->theSocket, &readSet)) {
 			return this->readDataProcess();
 		}
-		return ProcessIOResult::Clean;
+		return ProcessIOResult::No_Error;
 	}
 
 	std::string SSLClient::getInputBuffer() noexcept {
@@ -413,27 +408,27 @@ namespace DiscordCoreInternal {
 					} else {
 						this->outputBuffers[0] = std::move(writeString);
 					}
-					return ProcessIOResult::Clean;
+					return ProcessIOResult::No_Error;
 				}
 				case SSL_ERROR_WANT_READ: {
 					this->wantRead = true;
-					return ProcessIOResult::Clean;
+					return ProcessIOResult::No_Error;
 				}
 				case SSL_ERROR_WANT_WRITE: {
 					this->wantWrite = true;
-					return ProcessIOResult::Clean;
+					return ProcessIOResult::No_Error;
 				}
 				case SSL_ERROR_ZERO_RETURN: {
 					this->disconnect(true);
-					return ProcessIOResult::Disconnect;
+					return ProcessIOResult::SSL_Zero_Return;
 				}
 				default: {
 					this->disconnect(true);
-					return ProcessIOResult::Reconnect;
+					return ProcessIOResult::SSL_Error;
 				}
 			}
 		} else {
-			return ProcessIOResult::Reconnect;
+			return ProcessIOResult::Nothing_To_Write;
 		}
 	}
 
@@ -452,27 +447,27 @@ namespace DiscordCoreInternal {
 						this->inputBuffer.insert(this->inputBuffer.end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
 						this->bytesRead += readBytes;
 					}
-					return ProcessIOResult::Clean;
+					return ProcessIOResult::No_Error;
 				}
 				case SSL_ERROR_WANT_READ: {
 					this->wantRead = true;
-					return ProcessIOResult::Clean;
+					return ProcessIOResult::No_Error;
 				}
 				case SSL_ERROR_WANT_WRITE: {
 					this->wantWrite = true;
-					return ProcessIOResult::Clean;
+					return ProcessIOResult::No_Error;
 				}
 				case SSL_ERROR_ZERO_RETURN: {
 					this->disconnect(true);
-					return ProcessIOResult::Disconnect;
+					return ProcessIOResult::SSL_Zero_Return;
 				}
 				default: {
 					this->disconnect(true);
-					return ProcessIOResult::Reconnect;
+					return ProcessIOResult::SSL_Error;
 				}
 			}
 		} else {
-			return ProcessIOResult::Reconnect;
+			return ProcessIOResult::No_Error;
 		}
 	}
 

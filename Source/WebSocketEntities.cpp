@@ -242,17 +242,17 @@ namespace DiscordCoreInternal {
 					cout << DiscordCoreAPI::shiftToBrightBlue() << "Sending WebSocket " + this->shard.dump() + std::string("'s Message: ") << endl
 							  << dataToSend << DiscordCoreAPI::reset();
 				}
-				bool didWeWrite{ false };
+				ProcessIOResult didWeWrite{ false };
 				DiscordCoreAPI::StopWatch theStopWatch{ 5000ms };
 				do {
 					if (theStopWatch.hasTimePassed()) {
-						this->onClosed();
+						this->onClosed();						
 						return false;
 					}
 					std::this_thread::sleep_for(1ms);
-					didWeWrite = this->writeData(dataToSend, priority);
-				} while (!didWeWrite);
-				if (!didWeWrite) {
+					didWeWrite = this->writeData(dataToSend, true);
+				} while (didWeWrite != ProcessIOResult::No_Error);
+				if (didWeWrite != ProcessIOResult::No_Error) {
 					this->onClosed();
 					return false;
 				}
@@ -1099,7 +1099,7 @@ namespace DiscordCoreInternal {
 				sendString += " HTTP/1.1\r\nHost: " + this->configManager->getConnectionAddress() +
 					"\r\nPragma: no-cache\r\nUser-Agent: DiscordCoreAPI/1.0\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Key: " +
 					DiscordCoreAPI::generateBase64EncodedKey() + "\r\nSec-WebSocket-Version: 13\r\n\r\n";
-				bool didWeWrite{ false };
+				ProcessIOResult didWeWrite{ false };
 				DiscordCoreAPI::StopWatch theStopWatch{ 5000ms };
 				do {
 					if (theStopWatch.hasTimePassed()) {
@@ -1108,8 +1108,8 @@ namespace DiscordCoreInternal {
 					}
 					std::this_thread::sleep_for(1ms);
 					didWeWrite = this->sslShards[connectData.currentShard]->writeData(sendString, true);
-				} while (!didWeWrite);
-				if (!didWeWrite) {
+				} while (didWeWrite != ProcessIOResult::No_Error);
+				if (didWeWrite != ProcessIOResult::No_Error) {
 					this->sslShards[connectData.currentShard]->onClosed();
 					return;
 				}

@@ -172,13 +172,25 @@ namespace DiscordCoreInternal {
 		SSLWrapper ssl{};
 	};
 
+	enum class ProcessIOResult : int32_t {
+		No_Error = 0,
+		Disconnected = 1,
+		SSL_Error = 2,
+		SSL_Want_Read = 3,
+		SSL_Want_Write = 4,
+		SSL_Zero_Return = 5,
+		Select_Failure = 6,
+		Select_No_Return = 7,
+		Nothing_To_Write = 8
+	};
+
 	class DiscordCoreAPI_Dll SSLDataInterface {
 	  public:
 		friend class HttpsClient;
 
 		SSLDataInterface() noexcept = default;
 
-		virtual bool writeData(const std::string& data, bool priority = false) noexcept = 0;
+		virtual ProcessIOResult writeData(const std::string& data, bool priority = false) noexcept = 0;
 
 		virtual std::string getInputBuffer() noexcept = 0;
 
@@ -195,17 +207,15 @@ namespace DiscordCoreInternal {
 		int64_t bytesRead{ 0 };
 	};
 
-	enum class ProcessIOResult : int32_t { Clean = 0, Reconnect = 1, Disconnect = 2 };
-
 	class DiscordCoreAPI_Dll SSLClient : public SSLDataInterface, public SSLConnectionInterface {
 	  public:
 		SSLClient() noexcept = default;
 
 		static void processIO(std::vector<SSLClient*>& theVector, int32_t waitTimeInms) noexcept;
 
-		bool connect(const std::string& baseUrl, const std::string& portNew) noexcept;
+		ProcessIOResult writeData(const std::string& dataToWrite, bool priority) noexcept;
 
-		bool writeData(const std::string& data, bool priority = false) noexcept;
+		bool connect(const std::string& baseUrl, const std::string& portNew) noexcept;
 
 		ProcessIOResult processIO(int32_t waitTimeInMs) noexcept;
 

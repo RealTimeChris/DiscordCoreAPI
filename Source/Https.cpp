@@ -438,7 +438,8 @@ namespace DiscordCoreInternal {
 				httpsConnection->doWeConnect = false;
 			}
 			auto theRequest = httpsConnection->buildRequest(workload);
-			if (!httpsConnection->writeData(theRequest, true)) {
+			auto theResult = httpsConnection->writeData(theRequest, true);
+			if (theResult != ProcessIOResult::No_Error) {
 				httpsConnection->currentReconnectTries++;
 				httpsConnection->doWeConnect = true;
 				httpsConnection->areWeCheckedOut.store(false);
@@ -474,9 +475,10 @@ namespace DiscordCoreInternal {
 		bool doWeReturn{ false };
 		while (true) {
 			auto theResult = theConnection.processIO(10000);
-			if (theResult == ProcessIOResult::Disconnect) {
+			if (theResult == ProcessIOResult::SSL_Zero_Return) {
 				doWeReturn = true;
-			} else if (theResult == ProcessIOResult::Reconnect) {
+			} else if (theResult != ProcessIOResult::No_Error && theResult != ProcessIOResult::Select_No_Return) {
+				std::cout << "THE RESULT: " << ( int )theResult << std::endl;
 				theData.responseCode = -1;
 				doWeReturn = true;
 			} else {
