@@ -188,42 +188,6 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	bool WebSocketSSLShard::sendMessage(std::string& dataToSend, bool priority) noexcept {
-		if (this->theSSLState.load() == SSLConnectionState::Connected) {
-			try {
-				if (dataToSend.size() == 0) {
-					return false;
-				}
-				if (this->configManager->doWePrintWebSocketSuccessMessages()) {
-					std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Sending WebSocket " + this->shard.dump() + std::string("'s Message: ") << std::endl
-							  << dataToSend << DiscordCoreAPI::reset();
-				}
-				bool didWeWrite{ false };
-				DiscordCoreAPI::StopWatch theStopWatch{ 5000ms };
-				do {
-					if (theStopWatch.hasTimePassed()) {
-						this->onClosed();
-						return false;
-					}
-					std::this_thread::sleep_for(1ms);
-					didWeWrite = this->writeData(dataToSend, priority);
-				} while (!didWeWrite);
-				if (!didWeWrite) {
-					this->onClosed();
-					return false;
-				}
-				return true;
-			} catch (...) {
-				if (this->configManager->doWePrintWebSocketErrorMessages()) {
-					DiscordCoreAPI::reportException("WebSocketSSLShard::sendMessage()");
-				}
-				this->onClosed();
-				return false;
-			}
-		}
-		return false;
-	}
-
 	void WebSocketSSLShard::getVoiceConnectionData(const VoiceConnectInitData& doWeCollect) noexcept {
 		if (this->theWebSocketState.load() == WebSocketSSLShardState::Authenticated) {
 			try {
@@ -266,6 +230,42 @@ namespace DiscordCoreInternal {
 				this->onClosed();
 			}
 		}
+	}
+
+	bool WebSocketSSLShard::sendMessage(std::string& dataToSend, bool priority) noexcept {
+		if (this->theSSLState.load() == SSLConnectionState::Connected) {
+			try {
+				if (dataToSend.size() == 0) {
+					return false;
+				}
+				if (this->configManager->doWePrintWebSocketSuccessMessages()) {
+					std::cout << DiscordCoreAPI::shiftToBrightBlue() << "Sending WebSocket " + this->shard.dump() + std::string("'s Message: ") << std::endl
+							  << dataToSend << DiscordCoreAPI::reset();
+				}
+				bool didWeWrite{ false };
+				DiscordCoreAPI::StopWatch theStopWatch{ 5000ms };
+				do {
+					if (theStopWatch.hasTimePassed()) {
+						this->onClosed();
+						return false;
+					}
+					std::this_thread::sleep_for(1ms);
+					didWeWrite = this->writeData(dataToSend, priority);
+				} while (!didWeWrite);
+				if (!didWeWrite) {
+					this->onClosed();
+					return false;
+				}
+				return true;
+			} catch (...) {
+				if (this->configManager->doWePrintWebSocketErrorMessages()) {
+					DiscordCoreAPI::reportException("WebSocketSSLShard::sendMessage()");
+				}
+				this->onClosed();
+				return false;
+			}
+		}
+		return false;
 	}
 
 	void WebSocketSSLShard::checkForAndSendHeartBeat(bool isImmediate) noexcept {
