@@ -80,6 +80,7 @@ namespace DiscordCoreAPI {
 			}
 
 			std::suspend_always final_suspend() noexcept {
+				*this->currentStatus = CoRoutineStatus::Complete;
 				this->areWeDone.store(true);
 				return {};
 			}
@@ -90,6 +91,7 @@ namespace DiscordCoreAPI {
 
 		  protected:
 			UnboundedMessageBlock<std::exception_ptr> exceptionBuffer{};
+			std::atomic<CoRoutineStatus>* currentStatus{};
 			std::atomic_bool areWeStoppedBool{ false };
 			std::atomic_bool areWeDone{ false };
 			ReturnType result{};
@@ -100,9 +102,10 @@ namespace DiscordCoreAPI {
 				this->coroutineHandle = other.coroutineHandle;
 				other.coroutineHandle = nullptr;
 				this->exceptionBuffer = &this->coroutineHandle.promise().exceptionBuffer;
+				this->coroutineHandle.promise().currentStatus = &this->currentStatus;
 				this->areWeDone = &this->coroutineHandle.promise().areWeDone;
-				this->currentStatus = other.currentStatus;
-				other.currentStatus = CoRoutineStatus::Cancelled;
+				this->currentStatus.store(other.currentStatus.load());
+				other.currentStatus.store(CoRoutineStatus::Cancelled);
 			}
 			return *this;
 		};
@@ -122,6 +125,7 @@ namespace DiscordCoreAPI {
 		CoRoutine<ReturnType>& operator=(std::coroutine_handle<CoRoutine<ReturnType>::promise_type> coroutineHandleNew) {
 			this->coroutineHandle = coroutineHandleNew;
 			this->exceptionBuffer = &this->coroutineHandle.promise().exceptionBuffer;
+			this->coroutineHandle.promise().currentStatus = &this->currentStatus;
 			this->areWeDone = &this->coroutineHandle.promise().areWeDone;
 			return *this;
 		}
@@ -142,13 +146,13 @@ namespace DiscordCoreAPI {
 		/// \returns DiscordCoreAPI::CoRoutineStatus The status of the CoRoutine.
 		CoRoutineStatus getStatus() {
 			if (!this->coroutineHandle) {
-				this->currentStatus = CoRoutineStatus::Cancelled;
+				this->currentStatus.store(CoRoutineStatus::Cancelled);
 			} else if (this->coroutineHandle && !this->coroutineHandle.done()) {
-				this->currentStatus = CoRoutineStatus::Running;
+				this->currentStatus.store(CoRoutineStatus::Running);
 			} else if (this->coroutineHandle && this->coroutineHandle.done()) {
-				this->currentStatus = CoRoutineStatus::Complete;
+				this->currentStatus.store(CoRoutineStatus::Complete);
 			}
-			return this->currentStatus;
+			return this->currentStatus.load();
 		}
 
 		/// Gets the resulting value of the CoRoutine. \brief Gets the resulting value of the CoRoutine.
@@ -183,7 +187,7 @@ namespace DiscordCoreAPI {
 					}
 				}
 				std::exception_ptr exceptionPtr{};
-				this->currentStatus = CoRoutineStatus::Cancelled;
+				this->currentStatus.store(CoRoutineStatus::Cancelled);
 				while (this->exceptionBuffer->tryReceive(exceptionPtr)) {
 					std::rethrow_exception(exceptionPtr);
 					std::this_thread::sleep_for(1ms);
@@ -197,8 +201,8 @@ namespace DiscordCoreAPI {
 	  protected:
 		std::coroutine_handle<CoRoutine<ReturnType>::promise_type> coroutineHandle{ nullptr };
 		UnboundedMessageBlock<std::exception_ptr>* exceptionBuffer{ nullptr };
+		std::atomic<CoRoutineStatus> currentStatus{};
 		std::atomic_bool* areWeDone{ nullptr };
-		CoRoutineStatus currentStatus{};
 		ReturnType result{};
 	};
 
@@ -230,6 +234,7 @@ namespace DiscordCoreAPI {
 			}
 
 			std::suspend_always final_suspend() noexcept {
+				*this->currentStatus = CoRoutineStatus::Complete;
 				this->areWeDone.store(true);
 				return {};
 			}
@@ -240,6 +245,7 @@ namespace DiscordCoreAPI {
 
 		  protected:
 			UnboundedMessageBlock<std::exception_ptr> exceptionBuffer{};
+			std::atomic<CoRoutineStatus>* currentStatus{};
 			std::atomic_bool areWeStoppedBool{ false };
 			std::atomic_bool areWeDone{ false };
 		};
@@ -249,9 +255,10 @@ namespace DiscordCoreAPI {
 				this->coroutineHandle = other.coroutineHandle;
 				other.coroutineHandle = nullptr;
 				this->exceptionBuffer = &this->coroutineHandle.promise().exceptionBuffer;
+				this->coroutineHandle.promise().currentStatus = &this->currentStatus;
 				this->areWeDone = &this->coroutineHandle.promise().areWeDone;
-				this->currentStatus = other.currentStatus;
-				other.currentStatus = CoRoutineStatus::Cancelled;
+				this->currentStatus.store(other.currentStatus.load());
+				other.currentStatus.store(CoRoutineStatus::Cancelled);
 			}
 			return *this;
 		};
@@ -271,6 +278,7 @@ namespace DiscordCoreAPI {
 		CoRoutine<void>& operator=(std::coroutine_handle<CoRoutine<void>::promise_type> coroutineHandleNew) {
 			this->coroutineHandle = coroutineHandleNew;
 			this->exceptionBuffer = &this->coroutineHandle.promise().exceptionBuffer;
+			this->coroutineHandle.promise().currentStatus = &this->currentStatus;
 			this->areWeDone = &this->coroutineHandle.promise().areWeDone;
 			return *this;
 		}
@@ -291,13 +299,13 @@ namespace DiscordCoreAPI {
 		/// \returns CoRoutineStatus The status of the CoRoutine.
 		CoRoutineStatus getStatus() {
 			if (!this->coroutineHandle) {
-				this->currentStatus = CoRoutineStatus::Cancelled;
+				this->currentStatus.store(CoRoutineStatus::Cancelled);
 			} else if (this->coroutineHandle && !this->coroutineHandle.done()) {
-				this->currentStatus = CoRoutineStatus::Running;
+				this->currentStatus.store(CoRoutineStatus::Running);
 			} else if (this->coroutineHandle && this->coroutineHandle.done()) {
-				this->currentStatus = CoRoutineStatus::Complete;
+				this->currentStatus.store(CoRoutineStatus::Complete);
 			}
-			return this->currentStatus;
+			return this->currentStatus.load();
 		}
 
 		/// Gets the resulting value of the CoRoutine. \brief Gets the resulting value of the CoRoutine.
@@ -326,7 +334,7 @@ namespace DiscordCoreAPI {
 						std::this_thread::sleep_for(1ms);
 					}
 				}
-				this->currentStatus = CoRoutineStatus::Cancelled;
+				this->currentStatus.store(CoRoutineStatus::Cancelled);
 				std::exception_ptr exceptionPtr{};
 				while (this->exceptionBuffer->tryReceive(exceptionPtr)) {
 					std::rethrow_exception(exceptionPtr);
@@ -338,8 +346,8 @@ namespace DiscordCoreAPI {
 	  protected:
 		std::coroutine_handle<CoRoutine<void>::promise_type> coroutineHandle{ nullptr };
 		UnboundedMessageBlock<std::exception_ptr>* exceptionBuffer{ nullptr };
+		std::atomic<CoRoutineStatus> currentStatus{};
 		std::atomic_bool* areWeDone{ nullptr };
-		CoRoutineStatus currentStatus{};
 	};
 
 	/// An awaitable that can be used to launch the CoRoutine onto a new thread - as well as return the handle for stoppping its execution. \brief An awaitable that can be used to launch the CoRoutine onto a new thread - as well as return the handle for stoppping its execution.
