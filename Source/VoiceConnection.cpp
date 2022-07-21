@@ -639,6 +639,15 @@ namespace DiscordCoreAPI {
 		}
 	}
 
+	void VoiceConnection::onClosedVoice() noexcept {
+		this->connectionState.store(VoiceConnectionState::Collecting_Init_Data);
+		if (this->activeState.load() != VoiceActiveState::Exiting && this->currentReconnectTries < this->maxReconnectTries) {
+			this->reconnect();
+		} else if (this->currentReconnectTries >= this->maxReconnectTries) {
+			this->disconnect();
+		}
+	}
+
 	bool VoiceConnection::voiceConnect() noexcept {
 		try {
 			if (!DatagramSocketClient::areWeStillConnected()) {
@@ -726,15 +735,6 @@ namespace DiscordCoreAPI {
 		this->wantRead = false;
 		this->currentReconnectTries++;
 		this->areWeConnectedBool.store(false);
-	}
-
-	void VoiceConnection::onClosedVoice() noexcept {
-		this->connectionState.store(VoiceConnectionState::Collecting_Init_Data);
-		if (this->activeState.load() != VoiceActiveState::Exiting && this->currentReconnectTries < this->maxReconnectTries) {
-			this->reconnect();
-		} else if (this->currentReconnectTries >= this->maxReconnectTries) {
-			this->disconnect();
-		}
 	}
 
 	void VoiceConnection::connect() noexcept {
