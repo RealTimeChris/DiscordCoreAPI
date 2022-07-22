@@ -38,7 +38,7 @@ jobs:
                 if test -f "$FILE"; then 
                 echo "$FILE exists."; 
                 else 
-                echo "NOT EXISTS!" &&
+                echo "NOT EXISTS!"
                 fi
 
          - name: Attempt to install the library, to collect the SHA512 value.
