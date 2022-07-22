@@ -25,11 +25,12 @@ jobs:
            run: cd ./DiscordCoreAPI &&
                 sudo touch ./CMake/Raw-Files/Portfile-The-First.cmake &&
                 sudo touch ./CMake/Raw-Files/Portfile-The-Second.cmake &&
+                sudo touch ./Vcpkg/ports/discordcoreapi/vcpkg.json &&
                 sudo bash -c "cat ./CMake/Raw-Files/Top-Of-Portfile.cmake >> ./CMake/Raw-Files/Portfile-The-First.cmake" &&
                 sudo git rev-parse HEAD | sudo tee ./CMake/Raw-Files/Portfile-The-First.cmake -a &&
                 sudo bash -c "cat ./CMake/Raw-Files/Middle-Of-Portfile.cmake >> ./CMake/Raw-Files/Portfile-The-First.cmake" &&
                 sudo bash -c "echo $'0' >> ./CMake/Raw-Files/Portfile-The-First.cmake" &&
-                sudo bash -c "cat ./CMake/Raw-Files/Bottom-Of-Portfile.cmake >> ./CMake/Raw-Files/Portfile-The-First.cmake"
+                sudo bash -c "cat ./CMake/Raw-Files/Bottom-Of-Portfile.cmake >> ./CMake/Raw-Files/Portfile-The-First.cmake" &&
                 sudo bash -c "cat ./CMake/Raw-Files/Top-Of-Version-File.json > ./Vcpkg/ports/discordcoreapi/vcpkg.json" &&
                 sudo sudo date +"\"%Y-%m-%d\"" | sudo tee ./Vcpkg/ports/discordcoreapi/vcpkg.json -a &&
                 sudo bash -c "cat ./CMake/Raw-Files/Bottom-Of-Version-File.json >> ./Vcpkg/ports/discordcoreapi/vcpkg.json" &&
