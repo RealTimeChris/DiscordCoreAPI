@@ -238,6 +238,10 @@ namespace DiscordCoreInternal {
 
 		bool areWeStillConnected() noexcept;
 
+		void writeDataProcess() noexcept;
+
+		void readDataProcess() noexcept;
+
 		int64_t getBytesRead() noexcept;
 
 		void disconnect() noexcept;

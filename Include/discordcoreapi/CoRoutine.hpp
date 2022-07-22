@@ -82,18 +82,22 @@ namespace DiscordCoreAPI {
 			}
 
 			std::suspend_always final_suspend() noexcept {
-				this->areWeDone.store(true);
+				if (this->areWeDone) {
+					this->areWeDone->store(true);
+				}
 				return {};
 			}
 
 			void unhandled_exception() {
-				this->exceptionBuffer.send(std::current_exception());
+				if (this->exceptionBuffer) {
+					this->exceptionBuffer->send(std::current_exception());
+				}
 			}
 
 		  protected:
-			UnboundedMessageBlock<std::exception_ptr> exceptionBuffer{};
+			UnboundedMessageBlock<std::exception_ptr>* exceptionBuffer{};
 			std::atomic_bool areWeStoppedBool{ false };
-			std::atomic_bool areWeDone{ false };
+			std::atomic_bool* areWeDone{ nullptr };
 			ReturnType result{};
 		};
 
@@ -101,8 +105,8 @@ namespace DiscordCoreAPI {
 			if (this != &other) {
 				this->coroutineHandle = other.coroutineHandle;
 				other.coroutineHandle = nullptr;
-				this->exceptionBuffer = &this->coroutineHandle.promise().exceptionBuffer;
-				this->areWeDone = &this->coroutineHandle.promise().areWeDone;
+				this->coroutineHandle.promise().exceptionBuffer = this->exceptionBuffer.get();
+				this->coroutineHandle.promise().areWeDone = this->areWeDone.get();
 				this->currentStatus.store(other.currentStatus.load());
 				other.currentStatus.store(CoRoutineStatus::Cancelled);
 			}
@@ -123,8 +127,8 @@ namespace DiscordCoreAPI {
 
 		CoRoutine<ReturnType>& operator=(std::coroutine_handle<CoRoutine<ReturnType>::promise_type> coroutineHandleNew) {
 			this->coroutineHandle = coroutineHandleNew;
-			this->exceptionBuffer = &this->coroutineHandle.promise().exceptionBuffer;
-			this->areWeDone = &this->coroutineHandle.promise().areWeDone;
+			this->coroutineHandle.promise().exceptionBuffer = this->exceptionBuffer.get();
+			this->coroutineHandle.promise().areWeDone = this->areWeDone.get();
 			return *this;
 		}
 
@@ -137,6 +141,8 @@ namespace DiscordCoreAPI {
 				if (this->coroutineHandle.done()) {
 					this->coroutineHandle.destroy();
 				}
+				this->exceptionBuffer.reset(nullptr);
+				this->areWeDone.reset(nullptr);
 			}
 		}
 
@@ -198,10 +204,10 @@ namespace DiscordCoreAPI {
 		}
 
 	  protected:
+		std::unique_ptr<UnboundedMessageBlock<std::exception_ptr>> exceptionBuffer{ std::make_unique<UnboundedMessageBlock<std::exception_ptr>>() };
 		std::coroutine_handle<CoRoutine<ReturnType>::promise_type> coroutineHandle{ nullptr };
-		UnboundedMessageBlock<std::exception_ptr>* exceptionBuffer{ nullptr };
+		std::unique_ptr<std::atomic_bool> areWeDone{ std::make_unique<std::atomic_bool>() };
 		std::atomic<CoRoutineStatus> currentStatus{ CoRoutineStatus::Idle };
-		std::atomic_bool* areWeDone{ nullptr };
 		ReturnType result{};
 	};
 
@@ -225,7 +231,7 @@ namespace DiscordCoreAPI {
 			}
 
 			CoRoutine<void> get_return_object() {
-				return std::coroutine_handle<CoRoutine<void>::promise_type>::from_address(this);
+				return std::coroutine_handle<CoRoutine<void>::promise_type>::from_promise(*this);
 			}
 
 			std::suspend_never initial_suspend() {
@@ -233,26 +239,30 @@ namespace DiscordCoreAPI {
 			}
 
 			std::suspend_always final_suspend() noexcept {
-				this->areWeDone.store(true);
+				if (this->areWeDone) {
+					this->areWeDone->store(true);
+				}
 				return {};
 			}
 
 			void unhandled_exception() {
-				this->exceptionBuffer.send(std::current_exception());
+				if (this->exceptionBuffer) {
+					this->exceptionBuffer->send(std::current_exception());
+				}
 			}
 
 		  protected:
-			UnboundedMessageBlock<std::exception_ptr> exceptionBuffer{};
+			UnboundedMessageBlock<std::exception_ptr>* exceptionBuffer{ nullptr };
 			std::atomic_bool areWeStoppedBool{ false };
-			std::atomic_bool areWeDone{ false };
+			std::atomic_bool* areWeDone{ nullptr };
 		};
 
 		CoRoutine<void>& operator=(CoRoutine<void>&& other) noexcept {
 			if (this != &other) {
 				this->coroutineHandle = other.coroutineHandle;
 				other.coroutineHandle = nullptr;
-				this->exceptionBuffer = &this->coroutineHandle.promise().exceptionBuffer;
-				this->areWeDone = &this->coroutineHandle.promise().areWeDone;
+				this->coroutineHandle.promise().exceptionBuffer = this->exceptionBuffer.get();
+				this->coroutineHandle.promise().areWeDone = this->areWeDone.get();
 				this->currentStatus.store(other.currentStatus.load());
 				other.currentStatus.store(CoRoutineStatus::Cancelled);
 			}
@@ -273,8 +283,8 @@ namespace DiscordCoreAPI {
 
 		CoRoutine<void>& operator=(std::coroutine_handle<CoRoutine<void>::promise_type> coroutineHandleNew) {
 			this->coroutineHandle = coroutineHandleNew;
-			this->exceptionBuffer = &this->coroutineHandle.promise().exceptionBuffer;
-			this->areWeDone = &this->coroutineHandle.promise().areWeDone;
+			this->coroutineHandle.promise().exceptionBuffer = this->exceptionBuffer.get();
+			this->coroutineHandle.promise().areWeDone = this->areWeDone.get();
 			return *this;
 		}
 
@@ -287,6 +297,8 @@ namespace DiscordCoreAPI {
 				if (this->coroutineHandle.done()) {
 					this->coroutineHandle.destroy();
 				}
+				this->exceptionBuffer.reset(nullptr);
+				this->areWeDone.reset(nullptr);
 			}
 		}
 
@@ -340,10 +352,10 @@ namespace DiscordCoreAPI {
 		}
 
 	  protected:
+		std::unique_ptr<UnboundedMessageBlock<std::exception_ptr>> exceptionBuffer{ std::make_unique<UnboundedMessageBlock<std::exception_ptr>>() };
+		std::unique_ptr<std::atomic_bool> areWeDone{ std::make_unique<std::atomic_bool>() };
 		std::coroutine_handle<CoRoutine<void>::promise_type> coroutineHandle{ nullptr };
-		UnboundedMessageBlock<std::exception_ptr>* exceptionBuffer{ nullptr };
 		std::atomic<CoRoutineStatus> currentStatus{ CoRoutineStatus::Idle };
-		std::atomic_bool* areWeDone{ nullptr };
 	};
 
 	/// An awaitable that can be used to launch the CoRoutine onto a new thread - as well as return the handle for stoppping its execution. \brief An awaitable that can be used to launch the CoRoutine onto a new thread - as well as return the handle for stoppping its execution.

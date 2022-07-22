@@ -528,30 +528,11 @@ namespace DiscordCoreInternal {
 		}
 
 		if (FD_ISSET(this->theSocket, &writeSet)) {
-			if (this->outputBuffers.size() > 0) {
-				std::string clientToServerString = this->outputBuffers.front();
-				auto writtenBytes{ sendto(this->theSocket, clientToServerString.data(), static_cast<int32_t>(clientToServerString.size()), 0,
-					reinterpret_cast<sockaddr*>(&this->theAddress), sizeof(this->theAddress)) };
-				if (writtenBytes < 0) {
-					this->disconnect();
-					return;
-				} else {
-					this->outputBuffers.erase(this->outputBuffers.begin());
-				}
-			}
+			this->writeDataProcess();
 		}
 
 		if (FD_ISSET(this->theSocket, &readSet)) {
-			std::string serverToClientBuffer{};
-			serverToClientBuffer.resize(this->maxBufferSize);
-			auto readBytes{ recv(this->theSocket, serverToClientBuffer.data(), static_cast<int32_t>(serverToClientBuffer.size()), 0) };
-			if (readBytes < 0) {
-				this->disconnect();
-				return;
-			} else {
-				this->inputBuffer.insert(this->inputBuffer.end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
-				this->bytesRead += readBytes;
-			}
+			this->readDataProcess();
 		}
 	}
 
@@ -589,6 +570,33 @@ namespace DiscordCoreInternal {
 			return true;
 		} else {
 			return false;
+		}
+	}
+
+	void DatagramSocketClient::writeDataProcess() noexcept {
+		if (this->outputBuffers.size() > 0) {
+			std::string clientToServerString = this->outputBuffers.front();
+			auto writtenBytes{ sendto(this->theSocket, clientToServerString.data(), static_cast<int32_t>(clientToServerString.size()), 0,
+				reinterpret_cast<sockaddr*>(&this->theAddress), sizeof(this->theAddress)) };
+			if (writtenBytes < 0) {
+				this->disconnect();
+				return;
+			} else {
+				this->outputBuffers.erase(this->outputBuffers.begin());
+			}
+		}
+	}
+
+	void DatagramSocketClient::readDataProcess() noexcept {
+		std::string serverToClientBuffer{};
+		serverToClientBuffer.resize(this->maxBufferSize);
+		auto readBytes{ recv(this->theSocket, serverToClientBuffer.data(), static_cast<int32_t>(serverToClientBuffer.size()), 0) };
+		if (readBytes < 0) {
+			this->disconnect();
+			return;
+		} else {
+			this->inputBuffer.insert(this->inputBuffer.end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
+			this->bytesRead += readBytes;
 		}
 	}
 
