@@ -163,10 +163,10 @@ namespace DiscordCoreAPI {
 		if (gatewayData.url == "") {
 			if (this->configManager.doWePrintGeneralErrorMessages()) {
 				cout << shiftToBrightRed()
-						  << "Failed to collect the connection URL! Closing! Did you remember to "
-							 "properly set your bot token?"
-						  << reset() << endl
-						  << endl;
+					 << "Failed to collect the connection URL! Closing! Did you remember to "
+						"properly set your bot token?"
+					 << reset() << endl
+					 << endl;
 			}
 			std::this_thread::sleep_for(5s);
 			return false;
@@ -213,10 +213,10 @@ namespace DiscordCoreAPI {
 			for (int32_t y = 0; y < shardsPerBaseSocketAgentVect[x]; y++) {
 				if (this->configManager.doWePrintGeneralSuccessMessages()) {
 					cout << shiftToBrightBlue() << "Connecting Shard " + std::to_string(currentShard + 1) << " of " << this->configManager.getShardCountForThisProcess()
-							  << std::string(" Shards for this process. (") + std::to_string(currentShard + 1) + " of " + std::to_string(this->configManager.getTotalShardCount()) +
+						 << std::string(" Shards for this process. (") + std::to_string(currentShard + 1) + " of " + std::to_string(this->configManager.getTotalShardCount()) +
 							std::string(" Shards total across all processes)")
-							  << reset() << endl
-							  << endl;
+						 << reset() << endl
+						 << endl;
 				}
 				ConnectionPackage theData{};
 				theData.currentShard = currentShard;

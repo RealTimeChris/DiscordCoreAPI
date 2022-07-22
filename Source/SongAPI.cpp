@@ -135,7 +135,6 @@ namespace DiscordCoreAPI {
 		frameData.type = AudioFrameType::Skip;
 		frameData.guildMemberId = guildMember.id;
 		getVoiceConnectionMap()[guildMember.guildId]->audioDataBuffer.send(frameData);
-		
 	}
 
 	void SongAPI::stop(const Snowflake& guildId) {

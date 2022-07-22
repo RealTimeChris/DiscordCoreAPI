@@ -397,8 +397,8 @@ namespace DiscordCoreInternal {
 		if (returnData.responseCode == 204 || returnData.responseCode == 201 || returnData.responseCode == 200) {
 			if (this->configManager->doWePrintHttpsSuccessMessages()) {
 				cout << DiscordCoreAPI::shiftToBrightGreen() << workload.callStack + " Success: " << returnData.responseCode << ", " << returnData.responseMessage
-						  << DiscordCoreAPI::reset() << endl
-						  << endl;
+					 << DiscordCoreAPI::reset() << endl
+					 << endl;
 			}
 		} else {
 			if (returnData.responseCode == 429) {
@@ -408,9 +408,9 @@ namespace DiscordCoreInternal {
 					static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count()));
 				if (this->configManager->doWePrintHttpsErrorMessages()) {
 					cout << DiscordCoreAPI::shiftToBrightRed() << workload.callStack + "::httpRequest(), We've hit rate limit! Time Remaining: "
-							  << std::to_string(this->connectionManager.getRateLimitValues()[this->connectionManager.getRateLimitValueBuckets()[workload.workloadType]]->msRemain)
-							  << DiscordCoreAPI::reset() << endl
-							  << endl;
+						 << std::to_string(this->connectionManager.getRateLimitValues()[this->connectionManager.getRateLimitValueBuckets()[workload.workloadType]]->msRemain)
+						 << DiscordCoreAPI::reset() << endl
+						 << endl;
 				}
 				returnData = this->executeByRateLimitData(workload, rateLimitData);
 			}

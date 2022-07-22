@@ -169,8 +169,8 @@ namespace DiscordCoreInternal {
 		}
 		if (returnData02.responseCode not_eq 200 && this->configManager->doWePrintHttpsErrorMessages()) {
 			cout << DiscordCoreAPI::shiftToBrightRed() << "SoundCloudAPI::searchForSong Error: " << returnData.responseCode << newerString02.c_str() << DiscordCoreAPI::reset()
-					  << endl
-					  << endl;
+				 << endl
+				 << endl;
 		}
 		return clientIdNew;
 	}
@@ -242,7 +242,7 @@ namespace DiscordCoreInternal {
 				HttpsWorkloadData dataPackage03{ HttpsWorkloadType::SoundCloudGetSearchResults };
 				std::string baseUrl = newSong.finalDownloadUrls[counter].urlPath.substr(0, std::string{ "https://cf-hls-opus-media.sndcdn.com/media/" }.size());
 				std::string relativeUrl = newSong.finalDownloadUrls[counter].urlPath.substr(std::string{ "https://cf-hls-opus-media.sndcdn.com/media/" }.size());
-				
+
 				dataPackage03.baseUrl = baseUrl;
 				dataPackage03.relativePath = relativeUrl;
 				dataPackage03.workloadClass = HttpsWorkloadClass::Get;

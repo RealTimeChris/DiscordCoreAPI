@@ -108,7 +108,7 @@ namespace DiscordCoreInternal {
 		void submitTask(std::coroutine_handle<> coro) noexcept;
 
 		~CoRoutineThreadPool();
-		
+
 	  private:
 		std::unordered_map<int64_t, WorkerThread> workerThreads{};
 		std::queue<std::coroutine_handle<>> theCoroutineHandles{};

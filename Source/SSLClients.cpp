@@ -269,7 +269,7 @@ namespace DiscordCoreInternal {
 		hints->ai_family = AF_INET;
 		hints->ai_socktype = SOCK_STREAM;
 		hints->ai_protocol = IPPROTO_TCP;
-		
+
 		if (getaddrinfo(stringNew.c_str(), portNew.c_str(), hints, address)) {
 			return false;
 		}

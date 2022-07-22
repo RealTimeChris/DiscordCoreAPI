@@ -299,7 +299,7 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll DiscordCoreClientConfig {
 		GatewayIntents theIntents{ GatewayIntents::All_Intents };///< The gateway intents to be used for this instance.
 		std::vector<RepeatedFunctionData> functionsToExecute{};///< Functions to execute after a timer, or on a repetition.
-		DiscordCoreInternal::UpdatePresenceData presenceData{};///< Presence data to initialize your bot with. 
+		DiscordCoreInternal::UpdatePresenceData presenceData{};///< Presence data to initialize your bot with.
 		TextFormat textFormat{ TextFormat::Etf };///< Use ETF or JSON format for websocket transfer?
 		std::string connectionAddress{};///< A potentially alternative connection address for the websocket.
 		ShardingOptions shardOptions{};///< Options for the sharding of your bot.

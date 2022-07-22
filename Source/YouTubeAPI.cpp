@@ -32,9 +32,9 @@ namespace DiscordCoreInternal {
 		dataPackage.workloadClass = HttpsWorkloadClass::Get;
 		HttpsResponseData returnData = this->httpsClient->submitWorkloadAndGetResult(dataPackage);
 		if (returnData.responseCode != 200 && this->configManager->doWePrintHttpsErrorMessages()) {
-			cout << DiscordCoreAPI::shiftToBrightRed() << "YouTubeRequestBuilder::collectSearchResults() Error: " << returnData.responseCode
-					  << returnData.responseMessage.c_str() << DiscordCoreAPI::reset() << endl
-					  << endl;
+			cout << DiscordCoreAPI::shiftToBrightRed() << "YouTubeRequestBuilder::collectSearchResults() Error: " << returnData.responseCode << returnData.responseMessage.c_str()
+				 << DiscordCoreAPI::reset() << endl
+				 << endl;
 		}
 		nlohmann::json partialSearchResultsJson{};
 		auto varInitFind = returnData.responseMessage.find("var ytInitialData = ");
@@ -84,8 +84,8 @@ namespace DiscordCoreInternal {
 			HttpsResponseData responseData = this->httpsClient->submitWorkloadAndGetResult(dataPackage02);
 			if (responseData.responseCode != 204 && responseData.responseCode != 201 && responseData.responseCode != 200 && this->configManager->doWePrintHttpsErrorMessages()) {
 				cout << DiscordCoreAPI::shiftToBrightRed() << "YouTubeRequestBuilder::constructDownloadInfo() 01 Error: " << responseData.responseCode << ", "
-						  << responseData.responseMessage << DiscordCoreAPI::reset() << endl
-						  << endl;
+					 << responseData.responseMessage << DiscordCoreAPI::reset() << endl
+					 << endl;
 			}
 			newSong.type = DiscordCoreAPI::SongType::YouTube;
 			nlohmann::json jsonObject = nlohmann::json::parse(responseData.responseMessage);
