@@ -172,7 +172,7 @@ namespace DiscordCoreInternal {
 		SSLWrapper ssl{};
 	};
 
-	enum class ProcessIOResult : int32_t {
+	enum class ProcessIOResult : int8_t {
 		No_Error = 0,
 		Disconnected = 1,
 		SSL_Error = 2,
