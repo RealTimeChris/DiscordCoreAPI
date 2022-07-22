@@ -100,15 +100,17 @@ namespace DiscordCoreInternal {
 	}
 
 	void SOCKETWrapper::SOCKETDeleter::operator()(SOCKET* other) {
+		if (other) {
 #ifdef _WIN32
-		shutdown(*other, SD_BOTH);
-		closesocket(*other);
+			shutdown(*other, SD_BOTH);
+			closesocket(*other);
 #else
-		shutdown(*other, SHUT_RDWR);
-		close(*other);
+			shutdown(*other, SHUT_RDWR);
+			close(*other);
 #endif
-		*other = SOCKET_ERROR;
-		delete other;
+			*other = SOCKET_ERROR;
+			delete other;
+		}
 	}
 
 	SOCKETWrapper& SOCKETWrapper::operator=(SOCKET other) {
