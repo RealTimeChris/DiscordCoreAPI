@@ -37,7 +37,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// An error type for CoRoutines. \brief An error type for CoRoutines.
-	struct CoRoutineError : public std::runtime_error {
+	struct DiscordCoreAPI_Dll CoRoutineError : public std::runtime_error {
 		CoRoutineError(const std::string& theMessage);
 	};
 
@@ -225,7 +225,7 @@ namespace DiscordCoreAPI {
 			}
 
 			CoRoutine<void> get_return_object() {
-				return std::coroutine_handle<CoRoutine<void>::promise_type>::from_promise(*this);
+				return std::coroutine_handle<CoRoutine<void>::promise_type>::from_address(this);
 			}
 
 			std::suspend_never initial_suspend() {

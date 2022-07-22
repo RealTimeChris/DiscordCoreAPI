@@ -66,7 +66,20 @@ namespace DiscordCoreInternal {
 		data["d"]["intents"] = this->intents;
 		data["d"]["compress"] = false;
 		data["d"]["token"] = this->botToken;
-		data["d"]["presence"] = this->presence;
+		nlohmann::json dataNewReal{};
+		for (auto& value: this->presence.activities) {
+			nlohmann::json dataNew{};
+			if (static_cast<std::string>(value.url) != "") {
+				dataNew["url"] = value.url;
+			}
+			dataNew["name"] = value.name;
+			dataNew["type"] = value.type;
+			dataNewReal["activities"].push_back(dataNew);
+		}
+		dataNewReal["status"] = this->presence.status;
+		dataNewReal["since"] = nullptr;
+		dataNewReal["afk"] = this->presence.afk;
+		data["d"]["presence"] = dataNewReal;
 		data["op"] = 2;
 #ifdef _WIN32
 		data["d"]["properties"]["os"] = "Windows";

@@ -946,7 +946,7 @@ namespace DiscordCoreInternal {
 	void WebSocketSSLShard::onClosed() noexcept {
 		if (this->maxReconnectTries > this->currentReconnectTries) {
 			this->disconnect(true);
-		} else if (this->maxReconnectTries <= this->currentReconnectTries) {
+		} else {
 			if (this->doWeQuit) {
 				this->doWeQuit->store(true);
 			}
