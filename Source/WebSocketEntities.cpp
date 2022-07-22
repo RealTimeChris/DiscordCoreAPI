@@ -1103,7 +1103,7 @@ namespace DiscordCoreInternal {
 				DiscordCoreAPI::StopWatch theStopWatch{ 5000ms };
 				do {
 					if (theStopWatch.hasTimePassed()) {
-						this->connections.push(connectData);
+						this->sslShards[connectData.currentShard]->onClosed();
 						return;
 					}
 					std::this_thread::sleep_for(1ms);
