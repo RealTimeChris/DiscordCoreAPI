@@ -118,8 +118,7 @@ namespace DiscordCoreAPI {
 				theChannelId = channelId;
 			}
 			uint64_t theShardId{ (this->id >> 22) % this->discordCoreClient->configManager.getTotalShardCount() };
-			int32_t currentBaseCount = std::thread::hardware_concurrency() > this->discordCoreClient->baseSocketAgentMap.size() ? this->discordCoreClient->baseSocketAgentMap.size()
-																																: std::thread::hardware_concurrency();
+			int32_t currentBaseCount = this->discordCoreClient->baseSocketAgentMap.size();
 			auto theBaseSocketAgentIndex{ static_cast<int32_t>(floor(static_cast<float>(theShardId) / static_cast<float>(currentBaseCount))) };
 			DiscordCoreInternal::VoiceConnectInitData voiceConnectInitData{};
 			voiceConnectInitData.currentShard = theShardId;
