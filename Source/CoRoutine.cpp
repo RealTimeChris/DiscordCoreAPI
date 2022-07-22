@@ -15,7 +15,7 @@
 /// CoRoutine.cpp - Source file for the coroutine class.
 /// Oct 23, 2021
 /// https://discordcoreapi.com
-/// \file CoRoutine.hpp
+/// \file CoRoutine.cpp
 
 #pragma once
 
