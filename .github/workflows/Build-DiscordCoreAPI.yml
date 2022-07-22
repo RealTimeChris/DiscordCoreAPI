@@ -9,7 +9,6 @@ jobs:
     steps:
          - name: Download and install vcpkg as well as other dependencies.
            run: sudo apt-get install nasm &&
-                sudo apt-get install git &&
                 sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test &&
                 sudo apt-get install -y g++-11 &&
                 cd /usr/local/share/vcpkg &&
