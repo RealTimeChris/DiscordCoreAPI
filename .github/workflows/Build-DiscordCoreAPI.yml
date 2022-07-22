@@ -34,7 +34,7 @@ jobs:
                 sudo sudo date +"\"%Y-%m-%d\"" | sudo tee ./Vcpkg/ports/discordcoreapi/vcpkg.json -a &&
                 sudo truncate -s -1 ./Vcpkg/ports/discordcoreapi/vcpkg.json &&
                 sudo bash -c "cat ./CMake/Raw-Files/Bottom-Of-Version-File.json >> ./Vcpkg/ports/discordcoreapi/vcpkg.json" &&
-                [ -f /usr/local/share/vcpkg/versions/d-/dpp.json ] && echo "$FILE exists."
+                [ -f /usr/local/share/vcpkg/versions/d-/dpp.json ] && echo "$FILE exist." || echo "$FILE does not exist."
 
          - name: Attempt to install the library, to collect the SHA512 value.
            run: cd ./DiscordCoreAPI &&
