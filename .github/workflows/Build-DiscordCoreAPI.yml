@@ -34,10 +34,10 @@ jobs:
                 sudo sudo date +"\"%Y-%m-%d\"" | sudo tee ./Vcpkg/ports/discordcoreapi/vcpkg.json -a &&
                 sudo truncate -s -1 ./Vcpkg/ports/discordcoreapi/vcpkg.json &&
                 sudo bash -c "cat ./CMake/Raw-Files/Bottom-Of-Version-File.json >> ./Vcpkg/ports/discordcoreapi/vcpkg.json" &&
-                sudo FILE = /usr/local/share/vcpkg/versions/d-/dpp.json &&
-                if test -f "$FILE"; then &&
-                echo "$FILE exists."; &&
-                else  &&
+                sudo FILE = /usr/local/share/vcpkg/versions/d-/dpp.json 
+                if test -f "$FILE"; then 
+                echo "$FILE exists."; 
+                else 
                 echo "NOT EXISTS!" &&
                 fi
 
