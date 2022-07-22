@@ -1026,7 +1026,9 @@ namespace DiscordCoreInternal {
 				}
 				std::vector<SSLClient*> theVector{};
 				for (auto& [key, value]: this->sslShards) {
-					theVector.push_back(value.get());
+					if (value) {
+						theVector.push_back(value.get());
+					}
 				}
 				SSLClient::processIO(theVector, 10000);
 				for (auto& [key, value]: this->sslShards) {

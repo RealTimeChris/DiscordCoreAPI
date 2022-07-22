@@ -138,6 +138,8 @@ namespace DiscordCoreAPI {
 
 		~CoRoutine() {
 			if (this && this->coroutineHandle) {
+				this->coroutineHandle.promise().exceptionBuffer = nullptr;
+				this->coroutineHandle.promise().areWeDone = nullptr;
 				if (this->coroutineHandle.done()) {
 					this->coroutineHandle.destroy();
 				}
@@ -294,6 +296,8 @@ namespace DiscordCoreAPI {
 
 		~CoRoutine() {
 			if (this && this->coroutineHandle) {
+				this->coroutineHandle.promise().exceptionBuffer = nullptr;
+				this->coroutineHandle.promise().areWeDone = nullptr;
 				if (this->coroutineHandle.done()) {
 					this->coroutineHandle.destroy();
 				}
