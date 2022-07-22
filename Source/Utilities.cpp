@@ -1034,9 +1034,7 @@ namespace DiscordCoreAPI {
 	std::string utf8MakeValid(const std::string& inputString) {
 		std::string theReturnString{};
 		for (auto& value: inputString) {
-			if (value >= 128) {
-				theReturnString.push_back(value - 128);
-			} else if (value < 0) {
+			if (value >= 128 || value < 0) {
 				int32_t theDifference = 0 - value;
 				theReturnString.push_back(value + theDifference);
 			} else {
