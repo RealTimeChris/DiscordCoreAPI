@@ -37,7 +37,7 @@ jobs:
                 sudo FILE = /usr/local/share/vcpkg/versions/d-/dpp.json &&
                 if test -f "$FILE"; then 
                 echo "$FILE exists."; 
-                else 
+                else;
                 echo "NOT EXISTS!"
                 fi
 
