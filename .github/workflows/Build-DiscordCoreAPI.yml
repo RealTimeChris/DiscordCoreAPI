@@ -33,6 +33,7 @@ jobs:
                 sudo bash -c "cat ./CMake/Raw-Files/Bottom-Of-Portfile.cmake >> ./CMake/Raw-Files/Portfile-The-First.cmake" &&
                 sudo bash -c "cat ./CMake/Raw-Files/Top-Of-Version-File.json > ./Vcpkg/ports/discordcoreapi/vcpkg.json" &&
                 sudo sudo date +"\"%Y-%m-%d\"" | sudo tee ./Vcpkg/ports/discordcoreapi/vcpkg.json -a &&
+                sudo truncate -s -1 ./Vcpkg/ports/discordcoreapi/vcpkg.json &&
                 sudo bash -c "cat ./CMake/Raw-Files/Bottom-Of-Version-File.json >> ./Vcpkg/ports/discordcoreapi/vcpkg.json" &&
                 sudo cat ./Vcpkg/ports/discordcoreapi/vcpkg.json
 
