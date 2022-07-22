@@ -7,11 +7,10 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
-         - name: Store the public SSH key.
-           run: echo "${{ secrets.AWS_KEY }}" >> PUBLIC_KEY
-         - name: Copy the SSH key.
-           run: sudo cp ./PUBLIC_KEY /root/.ssh/id_rsa.pem &&
-               sudo chmod 600 /root/.ssh/id_rsa.pem
+         - name: Store the public SSH key, and copy it.
+           run: echo "${{ secrets.AWS_KEY }}" >> PUBLIC_KEY &&
+                sudo cp ./PUBLIC_KEY /root/.ssh/id_rsa.pem &&
+                sudo chmod 600 /root/.ssh/id_rsa.pem
 
          - name: Download and install Doxygen, along with its dependencies.
            run: sudo apt-get update &&
