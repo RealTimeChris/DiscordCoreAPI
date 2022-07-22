@@ -155,7 +155,7 @@ namespace DiscordCoreInternal {
 				theData.responseMessage.insert(theData.responseMessage.end(), other.begin(), other.begin() + theData.contentSize);
 				return false;
 			}
-			return true;
+			return false;
 		}
 	}
 
