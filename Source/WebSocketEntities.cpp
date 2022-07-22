@@ -1035,10 +1035,10 @@ namespace DiscordCoreInternal {
 					}
 					if (value->areWeStillConnected() && value->processedMessages.size() > 0) {
 						while (value->processedMessages.size() > 0 && value->areWeStillConnected()) {
+							std::this_thread::sleep_for(1ms);
 							if (value) {
 								value->onMessageReceived();
 							}
-							std::this_thread::sleep_for(1ms);
 						}
 					}
 					if (value->areWeStillConnected()) {
