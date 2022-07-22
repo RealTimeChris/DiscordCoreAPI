@@ -60,9 +60,7 @@ namespace DiscordCoreInternal {
 	}
 
 	WSADataWrapper::WSADataWrapper() {
-		if (auto errorValue = WSAStartup(MAKEWORD(2, 2), this->thePtr.get()); errorValue != 0) {
-			cout << DiscordCoreAPI::shiftToBrightRed() << "WSAStartup() Error: " << errorValue << ", ()" << DiscordCoreAPI::reset() << endl;
-		}
+		WSAStartup(MAKEWORD(2, 2), this->thePtr.get());
 	}
 #endif
 
@@ -75,10 +73,7 @@ namespace DiscordCoreInternal {
 
 	SSL_CTXWrapper& SSL_CTXWrapper::operator=(SSL_CTX* other) {
 		this->thePtr.reset(other);
-		auto errorValue = SSL_CTX_up_ref(other);
-		if (!errorValue) {
-			cout << DiscordCoreAPI::shiftToBrightRed() << "SSL_CTX_up_ref() Error: " << ERR_error_string(errorValue, nullptr) << DiscordCoreAPI::reset() << endl;
-		}
+		SSL_CTX_up_ref(other);
 		return *this;
 	}
 
@@ -96,10 +91,7 @@ namespace DiscordCoreInternal {
 
 	SSLWrapper& SSLWrapper::operator=(SSL* other) {
 		this->thePtr.reset(other);
-		auto errorValue = SSL_up_ref(other);
-		if (!errorValue) {
-			cout << DiscordCoreAPI::shiftToBrightRed() << "SSL_up_ref() Error: " << ERR_error_string(errorValue, nullptr) << DiscordCoreAPI::reset() << endl;
-		}
+		SSL_up_ref(other);
 		return *this;
 	}
 
@@ -108,15 +100,17 @@ namespace DiscordCoreInternal {
 	}
 
 	void SOCKETWrapper::SOCKETDeleter::operator()(SOCKET* other) {
+		if (other) {
 #ifdef _WIN32
-		shutdown(*other, SD_BOTH);
-		closesocket(*other);
+			shutdown(*other, SD_BOTH);
+			closesocket(*other);
 #else
-		shutdown(*other, SHUT_RDWR);
-		close(*other);
+			shutdown(*other, SHUT_RDWR);
+			close(*other);
 #endif
-		*other = SOCKET_ERROR;
-		delete other;
+			*other = SOCKET_ERROR;
+			delete other;
+		}
 	}
 
 	SOCKETWrapper& SOCKETWrapper::operator=(SOCKET other) {
