@@ -478,7 +478,6 @@ namespace DiscordCoreInternal {
 			if (theResult == ProcessIOResult::SSL_Zero_Return) {
 				doWeReturn = true;
 			} else if (theResult != ProcessIOResult::No_Error && theResult != ProcessIOResult::Select_No_Return) {
-				std::cout << "THE RESULT: " << ( int )theResult << std::endl;
 				theData.responseCode = -1;
 				doWeReturn = true;
 			} else {
