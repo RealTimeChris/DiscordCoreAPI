@@ -429,7 +429,6 @@ namespace DiscordCoreAPI {
 		GetInteractionResponseData dataPackage01{};
 		dataPackage01.applicationId = dataPackage.interactionPackage.applicationId;
 		dataPackage01.interactionToken = dataPackage.interactionPackage.interactionToken;
-		std::cout << "THE TOKEN: " << dataPackage.interactionPackage.interactionToken << std::endl;
 		if (dataPackage.data.type != InteractionCallbackType::Application_Command_Autocomplete_Result) {
 			co_return Interactions::getInteractionResponseAsync(dataPackage01).get();
 		} else {

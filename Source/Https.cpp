@@ -481,7 +481,6 @@ namespace DiscordCoreInternal {
 				theData.responseCode = -1;
 				doWeReturn = true;
 			} else if (theResult == ProcessIOResult::No_Error) {
-				std::cout << "WERE RESETTING THE TIMER!" << std::endl;
 				stopWatch.resetTimer();
 			}
 			std::string theString = theConnection.getInputBuffer();
