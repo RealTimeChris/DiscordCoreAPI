@@ -15,7 +15,7 @@ jobs:
                 cd /usr/local/share/vcpkg &&
                 sudo git stash &&
                 sudo git pull &&
-                sudo vcpkg update --no-dry-run
+                sudo vcpkg update &&
                 sudo ./bootstrap-vcpkg.sh
 
          - name: Collect the repo.
