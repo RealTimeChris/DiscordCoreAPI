@@ -33,8 +33,7 @@ jobs:
                 sudo bash -c "cat ./CMake/Raw-Files/Top-Of-Version-File.json > ./Vcpkg/ports/discordcoreapi/vcpkg.json" &&
                 sudo sudo date +"\"%Y-%m-%d\"" | sudo tee ./Vcpkg/ports/discordcoreapi/vcpkg.json -a &&
                 sudo truncate -s -1 ./Vcpkg/ports/discordcoreapi/vcpkg.json &&
-                sudo bash -c "cat ./CMake/Raw-Files/Bottom-Of-Version-File.json >> ./Vcpkg/ports/discordcoreapi/vcpkg.json" &&
-                [ -f /usr/local/share/vcpkg/versions/d-/dpp.json ] && echo "$FILE exist." || echo "$FILE does not exist."
+                sudo bash -c "cat ./CMake/Raw-Files/Bottom-Of-Version-File.json >> ./Vcpkg/ports/discordcoreapi/vcpkg.json"
 
          - name: Attempt to install the library, to collect the SHA512 value.
            run: cd ./DiscordCoreAPI &&
@@ -57,7 +56,7 @@ jobs:
                 sudo touch ./Vcpkg/ports/discordcoreapi/portfile.cmake &&
                 sudo cp -v -R ./CMake/Raw-Files/Portfile-The-Second.cmake /usr/local/share/vcpkg/ports/discordcoreapi/portfile.cmake &&
                 sudo cp -v -R ./CMake/Raw-Files/Portfile-The-Second.cmake ./Vcpkg/ports/discordcoreapi/portfile.cmake &&
-                sudo cp -v -R /usr/local/share/vcpkg/versions/d-/discordcoreapi.json ./Vcpkg/versions/d-/discordcoreapi.json &&
+                [ -f /usr/local/share/vcpkg/versions/d-/dpp.json ] && sudo cp -v -R /usr/local/share/vcpkg/versions/d-/discordcoreapi.json ./Vcpkg/versions/d-/discordcoreapi.json && || echo "File does not exist."                
                 sudo cp -v -R ./Vcpkg/* /usr/local/share/vcpkg &&
                 cd /usr/local/share/vcpkg &&
                 sudo ./vcpkg format-manifest ./ports/discordcoreapi/vcpkg.json &&
