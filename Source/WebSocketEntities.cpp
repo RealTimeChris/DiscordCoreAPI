@@ -279,7 +279,7 @@ namespace DiscordCoreInternal {
 					if (this->dataOpCode == WebSocketOpCode::Op_Binary) {
 						this->stringifyJsonData(heartbeat, theString, WebSocketOpCode::Op_Binary);
 					} else {
-						this->stringifyJsonData(heartbeat, theString, WebSocketOpCode::Op_Text);
+						this->stringifyJsonData(heartbeat, theString, WebSocketOpCode::Op_Text); 
 					}
 					if (!this->sendMessage(theString, true)) {
 						return;
