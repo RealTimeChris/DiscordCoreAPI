@@ -38,12 +38,14 @@ namespace DiscordCoreAPI {
 
 	/// An error type for CoRoutines. \brief An error type for CoRoutines.
 	struct CoRoutineError : public std::runtime_error {
-		CoRoutineError(const std::string& theMessage) : std::runtime_error(theMessage){};
+		CoRoutineError(const std::string& theMessage);
 	};
 
 	class DiscordCoreAPI_Dll CoRoutineBase {
 	  public:
-		inline static DiscordCoreInternal::CoRoutineThreadPool threadPool{};
+
+		static DiscordCoreInternal::CoRoutineThreadPool threadPool;
+
 		virtual ~CoRoutineBase() = default;
 	};
 
