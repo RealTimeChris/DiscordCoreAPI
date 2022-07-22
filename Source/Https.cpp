@@ -480,7 +480,8 @@ namespace DiscordCoreInternal {
 			} else if (theResult != ProcessIOResult::No_Error && theResult != ProcessIOResult::Select_No_Return) {
 				theData.responseCode = -1;
 				doWeReturn = true;
-			} else {
+			} else if (theResult == ProcessIOResult::No_Error) {
+				std::cout << "WERE RESETTING THE TIMER!" << std::endl;
 				stopWatch.resetTimer();
 			}
 			std::string theString = theConnection.getInputBuffer();

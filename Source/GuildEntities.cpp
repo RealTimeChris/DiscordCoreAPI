@@ -107,6 +107,7 @@ namespace DiscordCoreAPI {
 	VoiceConnection* GuildData::connectToVoice(const Snowflake guildMemberId, const Snowflake channelId, bool selfDeaf, bool selfMute) {
 		if (getVoiceConnectionMap().contains(this->id) && getVoiceConnectionMap()[this->id] && getVoiceConnectionMap()[this->id]->areWeConnected()) {
 			this->voiceConnectionPtr = getVoiceConnectionMap()[this->id].get();
+			std::cout << "WERE LEAVING LEAVING LEAVING 0202" << std::endl;
 			return this->voiceConnectionPtr;
 		} else if (guildMemberId != 0 || channelId != 0) {
 			Snowflake theChannelId{};
@@ -129,9 +130,11 @@ namespace DiscordCoreAPI {
 			voiceConnectInitData.selfMute = selfMute;
 			StopWatch theStopWatch{ 10000ms };
 			this->discordCoreClient->baseSocketAgentMap[std::to_string(theBaseSocketAgentIndex)]->connectVoiceChannel(voiceConnectInitData);
+			std::cout << "WERE LEAVING LEAVING LEAVING" << std::endl;
 			while (!getVoiceConnectionMap()[this->id]->areWeConnected()) {
 				std::this_thread::sleep_for(1ms);
 				if (theStopWatch.hasTimePassed()) {
+					std::cout << "WERE LEAVING LEAVING LEAVING" << std::endl;
 					break;
 				}
 			}
