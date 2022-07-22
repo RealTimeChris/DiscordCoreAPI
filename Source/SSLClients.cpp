@@ -249,8 +249,10 @@ namespace DiscordCoreInternal {
 						data.erase(data.begin(), data.begin() + amountToCollect);
 						remainingBytes = data.size();
 					}
+					return ProcessIOResult::No_Error;
 				} else {
 					this->outputBuffers.push_back(data);
+					return ProcessIOResult::No_Error;
 				}
 				return ProcessIOResult::Nothing_To_Write;
 			}
