@@ -45,7 +45,7 @@ namespace DiscordCoreInternal {
 		int64_t responseCode{ -1 };
 
 	  protected:
-		int64_t contentSize{ 0 };
+		uint64_t contentSize{ 0 };
 	};
 
 	class DiscordCoreAPI_Dll HttpsRnRBuilder {
