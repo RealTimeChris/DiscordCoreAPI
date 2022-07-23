@@ -433,7 +433,14 @@ namespace DiscordCoreInternal {
 				httpsConnection->doWeConnect = false;
 			}
 			auto theRequest = httpsConnection->buildRequest(workload);
-			auto theResult = httpsConnection->writeData(theRequest, true);
+			DiscordCoreAPI::StopWatch theStopWatch{ 5000ms };
+			ProcessIOResult theResult{};
+			do {
+				if (theStopWatch.hasTimePassed()) {
+					break;
+				}
+				theResult = httpsConnection->writeData(theRequest, true);
+			} while (theResult != ProcessIOResult::No_Error);
 			if (theResult != ProcessIOResult::No_Error) {
 				httpsConnection->currentReconnectTries++;
 				httpsConnection->doWeConnect = true;
@@ -484,11 +491,10 @@ namespace DiscordCoreInternal {
 				case HttpsState::Collecting_Code: {
 					if (stopWatch.hasTimePassed()) {
 						doWeReturn = true;
-						break;
 					}
 					theConnection.parseCode(theData, theConnection.inputBufferReal);
 					stopWatch.resetTimer();
-					if (theData.responseCode == 204) {
+					if (theData.responseCode > 201) {
 						doWeReturn = true;
 					}
 					break;
@@ -496,7 +502,6 @@ namespace DiscordCoreInternal {
 				case HttpsState::Collecting_Headers: {
 					if (stopWatch.hasTimePassed()) {
 						doWeReturn = true;
-						break;
 					}
 					if (!theConnection.doWeHaveHeaders) {
 						theConnection.parseHeaders(theData, theConnection.inputBufferReal);
@@ -507,7 +512,6 @@ namespace DiscordCoreInternal {
 				case HttpsState::Collecting_Size: {
 					if (stopWatch.hasTimePassed()) {
 						doWeReturn = true;
-						break;
 					}
 					if (!theConnection.doWeHaveContentSize) {
 						theConnection.clearCRLF(theConnection.inputBufferReal);
@@ -522,7 +526,6 @@ namespace DiscordCoreInternal {
 					if ((static_cast<int64_t>(theConnection.inputBufferReal.size()) >= theData.contentSize && !theResult) ||
 						stopWatch.hasTimePassed() || (theData.responseCode == -5 && theData.contentSize == -5)) {
 						doWeReturn = true;
-						break;
 					} else if (theResult) {
 						stopWatch.resetTimer();
 					}
