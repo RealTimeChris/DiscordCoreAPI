@@ -153,13 +153,17 @@ namespace DiscordCoreInternal {
 				uint16_t close = theShard->inputBuffer[2] & 0xff;
 				close <<= 8;
 				close |= theShard->inputBuffer[3] & 0xff;
-				theShard->closeCode = static_cast<WebSocketCloseCode>(close);
+				theShard->closeCode = close;
+				if (theShard->closeCode) {
+					theShard->areWeResuming = true;
+				}
 				theShard->inputBuffer.erase(theShard->inputBuffer.begin(), theShard->inputBuffer.begin() + 4);
 				if (this->configManager->doWePrintWebSocketErrorMessages()) {
 					cout << DiscordCoreAPI::shiftToBrightRed() << "WebSocket " + theShard->shard.dump() + " Closed; Code: " << +static_cast<uint16_t>(theShard->closeCode)
 						 << DiscordCoreAPI::reset() << endl
 						 << endl;
 				}
+				
 				return false;
 			}
 			default: {
@@ -304,7 +308,7 @@ namespace DiscordCoreInternal {
 			this->theSocket = SOCKET_ERROR;
 			this->inputBuffer.clear();
 			this->outputBuffers.clear();
-			this->closeCode = static_cast<WebSocketCloseCode>(0);
+			this->closeCode = 0;
 			this->areWeHeartBeating = false;
 			while (this->processedMessages.size() > 0) {
 				this->processedMessages.pop();

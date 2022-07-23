@@ -113,25 +113,53 @@ namespace DiscordCoreInternal {
 	class HttpsClient;
 	class YouTubeAPI;
 
+	template<typename T> inline auto utCast(T x) -> std::enable_if_t<std::is_enum_v<T>, std::underlying_type_t<T>> {
+		return static_cast<std::underlying_type_t<T>>(x);
+	}
+
 	enum class WebSocketOpCode : int8_t { Op_Continuation = 0x00, Op_Text = 0x01, Op_Binary = 0x02, Op_Close = 0x08, Op_Ping = 0x09, Op_Pong = 0x0a };
 
-	/// Websocket close codes. \brief Websocket close codes.
-	enum class WebSocketCloseCode : uint16_t {
-		Normal_Close = 1000,///< Normal close.
-		Unknown_Error = 4000,///< We're not sure what went wrong. Try reconnecting?
-		Unknown_Opcode = 4001,///< You sent an invalid Gateway opcode or an invalid payload for an opcode. Don't do that!
-		Decode_Error = 4002,///< You sent an invalid payload to us. Don't do that!
-		Not_Authenticated = 4003,///< You sent us a payload prior to identifying.
-		Authentication_Failed = 4004,///< The account token sent with your identify payload is incorrect.
-		Already_Authenticated = 4005,///< You sent more than one identify payload. Don't do that!
-		Invalid_Seq = 4007,///<	The sequence sent when resuming the session was invalid. Reconnect and start a new session.
-		Rate_Limited = 4008,///< Woah nelly! You're sending payloads to us too quickly. Slow it down! You will be disconnected on receiving this.
-		Session_Timed = 4009,///< Your session timed out. Reconnect and start a new one.
-		Invalid_Shard = 4010,///< You sent us an invalid shard when identifying.
-		Sharding_Required = 4011,///< The session would have handled too many guilds - you are required to shard your connection in order to connect.
-		Invalid_API_Version = 4012,///< You sent an invalid version for the gateway.
-		Invalid_Intent = 4013,///< You sent an invalid intent for a Gateway Intent. You may have incorrectly calculated the bitwise value.
-		Disallowed_Intent = 4014,///< You sent a disallowed intent for a Gateway Intent. You may have tried to specify an intent that you have not enabled or are not approved for.
+	class DiscordCoreAPI_Dll WebSocketClose {
+	  public:
+
+		enum class WebSocketCloseCode : uint16_t {
+			Unset = 1 << 0,///< Unset.
+			Normal_Close = 1 << 1,///< Normal close.
+			Unknown_Error = 1 << 2,///< We're not sure what went wrong. Try reconnecting?
+			Unknown_Opcode = 1 << 3,///< You sent an invalid Gateway opcode or an invalid payload for an opcode. Don't do that!
+			Decode_Error = 1 << 4,///< You sent an invalid payload to us. Don't do that!
+			Not_Authenticated = 1 << 5,///< You sent us a payload prior to identifying.
+			Authentication_Failed = 1 << 6,///< The account token sent with your identify payload is incorrect.
+			Already_Authenticated = 1 << 7,///< You sent more than one identify payload. Don't do that!
+			Invalid_Seq = 1 << 8,///<	The sequence sent when resuming the session was invalid. Reconnect and start a new session.
+			Rate_Limited = 1 << 9,///< Woah nelly! You're sending payloads to us too quickly. Slow it down! You will be disconnected on receiving this.
+			Session_Timed = 1 << 10,///< Your session timed out. Reconnect and start a new one.
+			Invalid_Shard = 1 << 11,///< You sent us an invalid shard when identifying.
+			Sharding_Required = 1 << 12,///< The session would have handled too many guilds - you are required to shard your connection in order to connect.
+			Invalid_API_Version = 1 << 13,///< You sent an invalid version for the gateway.
+			Invalid_Intent = 1 << 14,///< You sent an invalid intent for a Gateway Intent. You may have incorrectly calculated the bitwise value.
+			Disallowed_Intent =
+				1 << 15,///< You sent a disallowed intent for a Gateway Intent. You may have tried to specify an intent that you have not enabled or are not approved for.
+			We_Do_Reconnect = Normal_Close | Unknown_Error | Unknown_Opcode | Decode_Error | Not_Authenticated | Already_Authenticated | Invalid_Seq | Rate_Limited | Session_Timed,
+			We_Do_Not_Reconnect = Authentication_Failed | Invalid_Shard | Sharding_Required | Invalid_API_Version | Invalid_Intent | Disallowed_Intent
+		};
+
+		std::unordered_map<uint16_t, WebSocketCloseCode> mappingValues{ { 0, WebSocketCloseCode::Unset }, { 1000, WebSocketCloseCode::Normal_Close },
+			{ 4000, WebSocketCloseCode::Unknown_Error }, { 4001, WebSocketCloseCode::Unknown_Opcode }, { 4002, WebSocketCloseCode::Decode_Error },
+			{ 4003, WebSocketCloseCode::Not_Authenticated }, { 4004, WebSocketCloseCode::Authentication_Failed }, { 4005, WebSocketCloseCode::Already_Authenticated },
+			{ 4007, WebSocketCloseCode::Invalid_Seq }, { 4008, WebSocketCloseCode::Rate_Limited }, { 4009, WebSocketCloseCode::Session_Timed },
+			{ 4010, WebSocketCloseCode::Invalid_Shard }, { 4011, WebSocketCloseCode::Sharding_Required }, { 4012, WebSocketCloseCode::Invalid_API_Version },
+			{ 4013, WebSocketCloseCode::Invalid_Intent }, { 4014, WebSocketCloseCode::Disallowed_Intent } };
+
+		WebSocketCloseCode theValue{};
+
+		WebSocketClose& operator=(uint16_t theValueNew);
+
+		WebSocketClose(uint16_t theValueNew);
+
+		operator uint16_t();
+
+		operator bool();
 	};
 
 	/// For updating a User's presence. \brief For updating a User's presence.

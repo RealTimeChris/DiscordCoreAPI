@@ -98,7 +98,7 @@ namespace DiscordCoreInternal {
 		std::recursive_mutex theMutex{};
 		bool areWeHeartBeating{ false };
 		int32_t lastNumberReceived{ 0 };
-		WebSocketCloseCode closeCode{};
+		WebSocketClose closeCode{ 0 };
 		WebSocketOpCode dataOpCode{};
 		bool areWeResuming{ false };
 		int64_t messageLength{};

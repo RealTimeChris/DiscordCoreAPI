@@ -29,7 +29,30 @@
 #include <discordcoreapi/InputEvents.hpp>
 #include <discordcoreapi/Utilities.hpp>
 
-namespace DiscordCoreInternal {}
+namespace DiscordCoreInternal {
+
+	WebSocketClose& WebSocketClose::operator=(uint16_t theValueNew) {
+		this->theValue = this->mappingValues[theValueNew];
+		return *this;
+	};
+
+	WebSocketClose::WebSocketClose(uint16_t theValueNew) {
+		*this = theValueNew;
+	};
+
+	WebSocketClose::operator uint16_t() {
+		for (auto& [key, value]: this->mappingValues) {
+			if (theValue == value) {
+				return key;
+			}
+		}
+		return uint16_t{};
+	}
+
+	WebSocketClose::operator bool() {
+		return utCast(this->theValue) & utCast(WebSocketCloseCode::We_Do_Reconnect);
+	}
+}
 
 namespace DiscordCoreAPI {
 
