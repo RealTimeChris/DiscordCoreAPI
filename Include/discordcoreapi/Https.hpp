@@ -62,8 +62,6 @@ namespace DiscordCoreInternal {
 
 		bool parseChunk(HttpsResponseData& theData, std::string&);
 
-		virtual void resetValues() = 0;
-
 		virtual ~HttpsRnRBuilder() = default;
 
 	  protected:

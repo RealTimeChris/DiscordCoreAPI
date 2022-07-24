@@ -236,14 +236,16 @@ namespace DiscordCoreInternal {
 			std::unique_lock theLock{ this->connectionMutex };
 			this->theSSLState.store(SSLConnectionState::Disconnected);
 			this->theSocket = SOCKET_ERROR;
-			this->inputBuffer.clear();
-			this->outputBuffers.clear();
 		}
+		this->resetValues();
 	}
 
 	void HttpsConnection::resetValues() {
-		this->maxBufferSize = 1024 * 16 - 1;
+		SSLDataInterface::maxBufferSize = 1024 * 16 - 1;
+		SSLDataInterface::outputBuffers.clear();
+		SSLDataInterface::inputBuffer.clear();
 		this->doWeHaveContentSize = false;
+		SSLDataInterface::bytesRead = 0;
 		this->inputBufferReal.clear();
 		this->doWeHaveHeaders = false;
 		this->isItChunked = false;
@@ -262,6 +264,8 @@ namespace DiscordCoreInternal {
 		for (auto& [key, value]: this->httpsConnections) {
 			if (!value->areWeCheckedOut.load()) {
 				value->areWeCheckedOut.store(true);
+				value->resetValues();
+				std::cout << "THE INPUT BUFFER: " << value->getInputBuffer() << std::endl;
 				return value.get();
 			}
 		}
@@ -444,7 +448,7 @@ namespace DiscordCoreInternal {
 					break;
 				}
 				theResult = httpsConnection.writeData(theRequest, true);
-			} while (theResult != ProcessIOResult::No_Error);
+			} while (theResult == ProcessIOResult::Select_No_Return);
 			if (theResult != ProcessIOResult::No_Error) {
 				httpsConnection.currentReconnectTries++;
 				httpsConnection.doWeConnect = true;
@@ -470,7 +474,7 @@ namespace DiscordCoreInternal {
 	}
 
 	HttpsResponseData HttpsClient::getResponse(HttpsConnection& theConnection, RateLimitData& rateLimitData) {
-		DiscordCoreAPI::StopWatch stopWatch{ 4500ms };
+		DiscordCoreAPI::StopWatch stopWatch{ 7500ms };
 		theConnection.getInputBuffer().clear();
 		theConnection.resetValues();
 		HttpsResponseData theData{};
