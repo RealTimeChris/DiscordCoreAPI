@@ -43,9 +43,9 @@ namespace DiscordCoreInternal {
 
 	HttpsResponseData HttpsRnRBuilder::finalizeReturnValues(HttpsResponseData& theData, RateLimitData& rateLimitData) {
 		if (theData.responseMessage.size() > 0) {
-			if ((theData.responseMessage[0] == '{' && theData.responseMessage[theData.responseMessage.size() - 1] == '}') ||
-				(theData.responseMessage[0] == '[' && theData.responseMessage[theData.responseMessage.size() - 1] == ']')) {
-				theData.responseData = nlohmann::json::parse(theData.responseMessage);
+			if ((theData.responseMessage[0] == '{' && theData.responseMessage[theData.contentSize - 1] == '}') ||
+				(theData.responseMessage[0] == '[' && theData.responseMessage[theData.contentSize - 1] == ']')) {
+				theData.responseData = nlohmann::json::parse(theData.responseMessage.substr(0, theData.contentSize));
 			}
 		}
 		this->updateRateLimitData(rateLimitData, theData.responseHeaders);
