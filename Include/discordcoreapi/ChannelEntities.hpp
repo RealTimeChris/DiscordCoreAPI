@@ -141,10 +141,10 @@ namespace DiscordCoreAPI {
 	/// A Channel object. \brief A Channel object.
 	class DiscordCoreAPI_Dll Channel : public ChannelData, public DataParser<Channel> {
 	  public:
-		std::unordered_map<uint64_t, UserData> recipients{};///< Recipients, in the case of a group Dm or Dm.
+		TimeStamp<std::chrono::milliseconds> lastPinTimestamp{};///< Timestamp of the last pinned Message.
+		std::unordered_map<uint64_t, UserData> recipients{};///< Recipients, in the case of a group Dm or m.
 		int32_t defaultAutoArchiveDuration{ 0 };///< Default time it takes to archive a thread.
 		ThreadMetadataData threadMetadata{};///< Metadata in the case that this Channel is a Thread.
-		TimeStamp lastPinTimestamp{ "" };///< Timestamp of the last pinned Message.
 		int32_t videoQualityMode{ 0 };///< Video quality mode.
 		int32_t rateLimitPerUser{ 0 };///< Amount of seconds a User has to wait before sending another Message.
 		std::string lastMessageId{};///< Id of the last Message.

@@ -4769,7 +4769,8 @@ namespace DiscordCoreAPI {
 		}
 
 		if (jsonObjectData.contains("duration") && !jsonObjectData["duration"].is_null()) {
-			pDataStructure->duration = TimeStamp::convertMsToDurationString(jsonObjectData["duration"].get<int32_t>());
+			TimeStamp<std::chrono::milliseconds> theTimeStamp{};
+			pDataStructure->duration = theTimeStamp.convertMsToDurationString(jsonObjectData["duration"].get<int32_t>());
 		}
 
 		if (jsonObjectData.contains("permalink_url") && !jsonObjectData["permalink_url"].is_null()) {

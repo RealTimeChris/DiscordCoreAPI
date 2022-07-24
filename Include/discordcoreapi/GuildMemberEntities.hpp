@@ -72,7 +72,7 @@ namespace DiscordCoreAPI {
 
 	/// For modifying a GuildMember's values. \brief For modifying a GuildMember's values.
 	struct DiscordCoreAPI_Dll ModifyGuildMemberData {
-		TimeStamp communicationDisabledUntil{ "" };///< When the user's timeout will expire and the user will be able to communicate in the guild again.
+		TimeStamp<std::chrono::milliseconds> communicationDisabledUntil{};///< When the user's timeout will expire and the user will be able to communicate in the guild again.
 		std::vector<Snowflake> roleIds{};///< A collection of Role id's to be applied to them.
 		Snowflake newVoiceChannelId{};///< The new voice Channel to move them into.
 		Snowflake currentChannelId{};///< The current voice Channel, if applicaple.
@@ -104,7 +104,7 @@ namespace DiscordCoreAPI {
 	/// A single GuildMember. \brief A single GuildMember.
 	class DiscordCoreAPI_Dll GuildMember : public GuildMemberData, public DataParser<GuildMember> {
 	  public:
-		TimeStamp communicationDisabledUntil{ "" };///< When the user's timeout will expire and the user will be able to communicate in the guild again.
+		TimeStamp<std::chrono::milliseconds> communicationDisabledUntil{};///< When the user's timeout will expire and the user will be able to communicate in the guild again.
 		std::string premiumSince{};///< If applicable, when they first boosted the server.
 		std::string avatar{};///< The member's guild avatar hash.
 

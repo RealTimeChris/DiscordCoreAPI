@@ -246,33 +246,41 @@ namespace DiscordCoreAPI {
 		dataPackage01.roleIds = guildMember.roles;
 		dataPackage01.nick = guildMember.nick;
 		dataPackage01.reason = dataPackage.reason;
+		TimeStamp<std::chrono::milliseconds> theTimeStamp{};
 		switch (dataPackage.numOfMinutesToTimeoutFor) {
 			case TimeoutDurations::Day: {
-				dataPackage01.communicationDisabledUntil = TimeStamp::getFutureISO8601TimeStamp(0, 0, 1, 0, 0);
+				theTimeStamp.convertToFutureISO8601TimeStamp(0, 0, 1, 0, 0, TimeFormat::LongDateTime);
+				dataPackage01.communicationDisabledUntil = theTimeStamp;
 				break;
 			}
 			case TimeoutDurations::Five_Minutes: {
-				dataPackage01.communicationDisabledUntil = TimeStamp::getFutureISO8601TimeStamp(5, 0, 0, 0, 0);
+				theTimeStamp.convertToFutureISO8601TimeStamp(5, 0, 0, 0, 0, TimeFormat::LongDateTime);
+				dataPackage01.communicationDisabledUntil = theTimeStamp;
 				break;
 			}
 			case TimeoutDurations::Hour: {
-				dataPackage01.communicationDisabledUntil = TimeStamp::getFutureISO8601TimeStamp(0, 1, 0, 0, 0);
+				theTimeStamp.convertToFutureISO8601TimeStamp(0, 1, 0, 0, 0, TimeFormat::LongDateTime);
+				dataPackage01.communicationDisabledUntil = theTimeStamp;
 				break;
 			}
 			case TimeoutDurations::Ten_Minutes: {
-				dataPackage01.communicationDisabledUntil = TimeStamp::getFutureISO8601TimeStamp(10, 0, 0, 0, 0);
+				theTimeStamp.convertToFutureISO8601TimeStamp(10, 0, 0, 0, 0, TimeFormat::LongDateTime);
+				dataPackage01.communicationDisabledUntil = theTimeStamp;
 				break;
 			}
 			case TimeoutDurations::Week: {
-				dataPackage01.communicationDisabledUntil = TimeStamp::getFutureISO8601TimeStamp(0, 0, 7, 0, 0);
+				theTimeStamp.convertToFutureISO8601TimeStamp(0, 0, 7, 0, 0, TimeFormat::LongDateTime);
+				dataPackage01.communicationDisabledUntil = theTimeStamp;
 				break;
 			}
 			case TimeoutDurations::Minute: {
-				dataPackage01.communicationDisabledUntil = TimeStamp::getFutureISO8601TimeStamp(1, 0, 0, 0, 0);
+				theTimeStamp.convertToFutureISO8601TimeStamp(1, 0, 0, 0, 0, TimeFormat::LongDateTime);
+				dataPackage01.communicationDisabledUntil = theTimeStamp;
 				break;
 			}
 			case TimeoutDurations::None: {
-				dataPackage01.communicationDisabledUntil = TimeStamp::getFutureISO8601TimeStamp(0, 0, 0, 0, 0);
+				theTimeStamp.convertToFutureISO8601TimeStamp(0, 0, 0, 0, 0, TimeFormat::LongDateTime);
+				dataPackage01.communicationDisabledUntil = theTimeStamp;
 				break;
 			}
 		}

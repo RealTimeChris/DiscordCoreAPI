@@ -724,8 +724,8 @@ namespace DiscordCoreAPI {
 
 	/// Meta data for a Thread type of Channel. \brief Meta data for a Thread type of Channel.
 	struct DiscordCoreAPI_Dll ThreadMetadataData : public DataParser<ThreadMetadataData> {
+		TimeStamp<std::chrono::milliseconds> archiveTimestamp{};///< (Where applicable) the time at which this Thread was archived.
 		int32_t autoArchiveDuration{ 0 };///< How int64_t before archiving this Thread.
-		TimeStamp archiveTimestamp{ "" };///< (Where applicable) the time at which this Thread was archived.
 		bool invitable{ false };///< The id of the individual who archived this Thread.
 		bool archived{ false };///< Whether or not this Thread is currently archived.
 		bool locked{ false };///< Whether or not this Thread is currently locked.
@@ -745,7 +745,7 @@ namespace DiscordCoreAPI {
 	/// Data for a single member of a Thread. \brief Data for a single member of a Thread.
 	class DiscordCoreAPI_Dll ThreadMemberData : public DiscordEntity, public DataParser<ThreadMemberData> {
 	  public:
-		TimeStamp joinTimestamp{ "" };///< The time at which the member joined this Thread.
+		TimeStamp<std::chrono::milliseconds> joinTimestamp{};///< The time at which the member joined this Thread.
 		int32_t flags{ 0 };///< Flags.
 		Snowflake userId{};///< The User's id.
 
@@ -810,9 +810,9 @@ namespace DiscordCoreAPI {
 	/// Data structure representing a single Guild. \brief Data structure representing a single Guild.
 	class DiscordCoreAPI_Dll GuildMemberData : public DiscordEntity, public DataParser<GuildMemberData> {
 	  public:
+		TimeStamp<std::chrono::milliseconds> joinedAt{};///< When they joined the Guild.
 		std::vector<Snowflake> roles{};///< The Guild roles that they have.
 		Permissions permissions{};///< Their base-level Permissions in the Guild.
-		TimeStamp joinedAt{ "" };///< When they joined the Guild.
 		StringWrapper userAvatar{};///< This GuildMember's User Avatar.
 		StringWrapper userName{};///< This GuildMember's UserName.
 		Snowflake guildId{};///< The current Guild's id.
@@ -835,7 +835,7 @@ namespace DiscordCoreAPI {
 
 	/// Voice state data. \brief Voice state data.
 	struct DiscordCoreAPI_Dll VoiceStateData : public DataParser<VoiceStateData> {
-		TimeStamp requestToSpeakTimestamp{ "" };///< The time at which the User requested to speak.
+		TimeStamp<std::chrono::milliseconds> requestToSpeakTimestamp{ "" };///< The time at which the User requested to speak.
 		GuildMemberData member{};///< The Guild member id this voice state is for.
 		StringWrapper sessionId{};///< The session id for this voice state.
 		bool selfStream{ false };///< Whether this User is streaming using "Go Live".
@@ -1536,12 +1536,12 @@ namespace DiscordCoreAPI {
 	/// Integration data. \brief Integration data.
 	class DiscordCoreAPI_Dll IntegrationData : public DiscordEntity, public DataParser<IntegrationData> {
 	  public:
+		TimeStamp<std::chrono::milliseconds> syncedAt{};///< Time it was last synced at.
 		int32_t expireGracePeriod{ 0 };///< How int64_t before the integration expires.
 		ApplicationData application{};///< Application data.
 		int32_t subscriberCount{ 0 };///< Number of current subscribers.
 		bool enableEmoticons{ true };///< Emoticons enabled?
 		int32_t expireBehavior{ 0 };///< What to do upon expiry.
-		TimeStamp syncedAt{ "" };///< Time it was last synced at.
 		bool enabled{ false };///< Enabled?
 		bool syncing{ false };///< Is it syncing?
 		AccountData account{};///< Account data.
@@ -1700,9 +1700,9 @@ namespace DiscordCoreAPI {
 	/// Audit log entry data. \brief Audit log entry data.
 	class DiscordCoreAPI_Dll AuditLogEntryData : public DiscordEntity, public DataParser<AuditLogEntryData> {
 	  public:
+		TimeStamp<std::chrono::milliseconds> createdTimeStamp{ "" };///< Time at which this entry was created.
 		std::vector<AuditLogChangeData> changes{};///< Array of audit log change data.
 		OptionalAuditEntryInfoData options{};///< Audit log entry info data.
-		TimeStamp createdTimeStamp{ "" };///< Time at which this entry was created.
 		AuditLogEvent actionType{};///< Audit log action type.
 		std::string reason{};///< The reason that was entered for the given change.
 		Snowflake targetId{};///< Id of the target User.
@@ -1809,19 +1809,19 @@ namespace DiscordCoreAPI {
 
 	/// Activity data. \brief Activity data.
 	struct DiscordCoreAPI_Dll ActivityData : public DataParser<ActivityData> {
-		Snowflake applicationId{};///< Application id for the current application.
 		TimestampData timestamps{};///< Timestamp data.
+		Snowflake applicationId{};///< Application id for the current application.
+		StringWrapper details{};///< Details about the activity.
 		int32_t createdAt{ 0 };///< Timestamp of when the activity began.
 		bool instance{ false };///< Whether this activity is an instanced context, like a match.
+		StringWrapper state{};///< The player's current party status.
 		SecretsData secrets{};///< Secrets data.
-		StringWrapper details{};///< Details about the activity.
 		ButtonData buttons{};///< Button Data.
+		StringWrapper name{};///< Name of the activity.
 		ActivityType type{};///< Activity data.
 		AssetsData assets{};///< Assets data.
-		StringWrapper state{};///< The player's current party status.
-		StringWrapper name{};///< Name of the activity.
-		int32_t flags{ 0 };///< Flags.
 		StringWrapper url{};///< Url associated with the activity.
+		int32_t flags{ 0 };///< Flags.
 		EmojiData emoji{};///< Emoji associated with the activity.
 		PartyData party{};///< Party data.
 
@@ -2076,13 +2076,13 @@ namespace DiscordCoreAPI {
 	  public:
 		std::unordered_map<Snowflake, PresenceUpdateData> presences{};///< Map of presences for each GuildMember.
 		std::unordered_map<Snowflake, VoiceStateData> voiceStates{};///< Map of Guild-member voice-states.
+		TimeStamp<std::chrono::milliseconds> joinedAt{};///< When the bot joined this Guild.
 		DiscordCoreClient* discordCoreClient{ nullptr };///< A pointer to the DiscordCoreClient.
 		VoiceConnection* voiceConnectionPtr{ nullptr };///< A pointer to the VoiceConnection, if present.
 		std::vector<StringWrapper> features{};///< List of Guild features.
 		std::vector<Snowflake> channels{};///< Array of Guild channels.
 		std::vector<Snowflake> members{};///< Array of GuildMembers.
 		std::vector<Snowflake> roles{};///< Array of Guild roles.
-		TimeStamp joinedAt{ "" };///< When the bot joined this Guild.
 		int32_t memberCount{ 0 };///< Member count.
 		StringWrapper icon{};///< Url to the Guild's icon.
 		StringWrapper name{};///< The Guild's name.
@@ -2241,13 +2241,13 @@ namespace DiscordCoreAPI {
 
 	/// Invite data. \brief Invite data.
 	struct DiscordCoreAPI_Dll InviteData : public DataParser<InviteData> {
+		TimeStamp<std::chrono::milliseconds> createdAt{};///< Time it was created at.
+		TimeStamp<std::chrono::milliseconds> expiresAt{};///< When the invite expires.
 		GuildScheduledEventData guildScheduledEvent{};///< Scheduled Guild event.
 		int32_t approximatePresenceCount{ 0 };///< Approximate presence count.
 		ApplicationData targetApplication{};///< Application data.
 		int32_t approximateMemberCount{ 0 };///< Approximate member count.
 		StageInstanceData stageInstance{};///< Stage instance data.
-		TimeStamp createdAt{ "" };///< Time it was created at.
-		TimeStamp expiresAt{ "" };///< When the invite expires.
 		int32_t targetType{ 0 };///< Target type.
 		bool temporary{ false };///< Is it temporary?
 		UserData targetUser{};///< Target User of the invite.
@@ -2816,7 +2816,7 @@ namespace DiscordCoreAPI {
 
 	/// Data for when some Channel pins are updated. \brief Data for when some Channel pins are updated.
 	struct DiscordCoreAPI_Dll ChannelPinsUpdateEventData : public DataParser<ChannelPinsUpdateEventData> {
-		TimeStamp lastPinTimestamp{ "" };///< The time of the last pinned Message.
+		TimeStamp<std::chrono::milliseconds> lastPinTimestamp{ "" };///< The time of the last pinned Message.
 		Snowflake channelId{};///< The id of the Channel within which the Message was pinned.
 		Snowflake guildId{};///< The id of the Guild within which the Message was pinned.
 
@@ -2970,7 +2970,9 @@ namespace DiscordCoreAPI {
 	/// The core of a Message's data structure. \brief The core of a Message's data structure.
 	class DiscordCoreAPI_Dll MessageDataOld : public DiscordEntity, public DataParser<MessageDataOld> {
 	  public:
+		TimeStamp<std::chrono::milliseconds> editedTimestamp{};///< The time at which it was edited.
 		std::vector<ChannelMentionData> mentionChannels{};///< array of Channel mention data.
+		TimeStamp<std::chrono::milliseconds> timestamp{};///< The timestamp of when the Message was created.
 		std::vector<StickerItemData> stickerItems{};///< Array of Message Sticker item data.
 		std::vector<AttachmentData> attachments{};///< Array of attachment data.
 		MessageReferenceData messageReference{};///< Message reference data.
@@ -2981,11 +2983,9 @@ namespace DiscordCoreAPI {
 		std::vector<StickerData> stickers{};///< Array of Message Sticker data.
 		std::vector<UserData> mentions{};///< Array of User data, for individual's that were mentioned.
 		std::vector<EmbedData> embeds{};///< Array of Message embeds.
-		TimeStamp editedTimestamp{ "" };///< The time at which it was edited.
 		MessageActivityData activity{};///< Message activity data.
 		bool mentionEveryone{ false };///< Does the Message mention everyone?
 		ApplicationData application{};///< Application data.
-		TimeStamp timestamp{ "" };///< The timestamp of when the Message was created.
 		Snowflake applicationId{};///< Application id.
 		GuildMemberData member{};///< The author's Guild member data.
 		std::string content{};///< The Message's content.

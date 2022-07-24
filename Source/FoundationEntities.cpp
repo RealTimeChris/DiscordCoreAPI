@@ -183,9 +183,9 @@ namespace DiscordCoreInternal {
 namespace DiscordCoreAPI {
 
 	std::string DiscordEntity::getCreatedAtTimestamp(TimeFormat timeFormat) {
-		TimeStamp timeStamp = (static_cast<uint64_t>(this->id) >> 22) + 1420070400000;
-		std::string theReturnString = timeStamp.convertTimeInMsToDateTimeString(timeFormat);
-		return theReturnString;
+		TimeStamp<std::chrono::milliseconds> timeStamp {
+			(static_cast<uint64_t>(this->id) >> 22) + 1420070400000, timeFormat};
+		return timeStamp;
 	}
 
 	RoleTagsData& RoleTagsData::operator=(const nlohmann::json& jsonObjectData) {
