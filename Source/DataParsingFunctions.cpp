@@ -595,7 +595,7 @@ namespace DiscordCoreAPI {
 
 	void GuildMember::parseObject(const nlohmann::json& jsonObjectData, GuildMember* pDataStructure) {
 		if (jsonObjectData.contains("communication_disabled_until") && !jsonObjectData["communication_disabled_until"].is_null()) {
-			pDataStructure->communicationDisabledUntil = jsonObjectData["communication_disabled_until"];
+			pDataStructure->communicationDisabledUntil = jsonObjectData["communication_disabled_until"].get<std::string>();
 		}
 
 		if (jsonObjectData.contains("roles") && !jsonObjectData["roles"].is_null()) {
