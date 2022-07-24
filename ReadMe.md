@@ -1,5 +1,5 @@
 # DiscordCoreAPI
-[![Discord](https://img.shields.io/discord/933675306814930964?style=flat)](https://discord.gg/adgMqeBuhP) 
+[![Discord](https://img.shields.io/discord/931640556814237706?style=flat)](https://discord.gg/adgMqeBuhP) 
 ![Lines of code](https://img.shields.io/tokei/lines/github/realtimechris/DiscordCoreAPI)
 
 <p align="center">
