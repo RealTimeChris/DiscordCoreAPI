@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
-         - name: Update Vcpkg and install other depdendencies.
+         - name: Update Vcpkg and install other dependencies.
            run: sudo apt-get install nasm &&
                 cd /usr/local/share/vcpkg &&
                 sudo ./bootstrap-vcpkg.sh &&
