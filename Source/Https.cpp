@@ -265,7 +265,6 @@ namespace DiscordCoreInternal {
 			if (!value->areWeCheckedOut.load()) {
 				value->areWeCheckedOut.store(true);
 				value->resetValues();
-				std::cout << "THE INPUT BUFFER: " << value->getInputBuffer() << std::endl;
 				return value.get();
 			}
 		}
