@@ -1,6 +1,6 @@
 # DiscordCoreAPI
 [![Discord](https://img.shields.io/discord/931640556814237706?style=flat)](https://discord.gg/adgMqeBuhP) 
-![Lines of code](https://img.shields.io/tokei/lines/github/realtimechris/DiscordCoreAPI)
+![Lines of code](https://img.shields.io/tokei/lines/github/realtimechris/Mbot-musichouse-cpp)
 
 <p align="center">
  <img src="https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Images/TheLogo.png?raw=true"  width="500">
