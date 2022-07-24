@@ -519,7 +519,7 @@ namespace DiscordCoreAPI {
 			this->hour = std::stoll(hour);
 			this->minute = std::stoll(minute);
 			this->second = std::stoll(second);
-			this->getTimeSinceEpoch<TimeType>();
+			this->getTimeSinceEpoch();
 		}
 
 		void convertTimeStampToTimeUnits(DiscordCoreAPI::TimeFormat theFormatNew) {
@@ -603,7 +603,7 @@ namespace DiscordCoreAPI {
 			this->year = year;
 			this->hour = hour;
 			this->day = day;
-			this->getTimeSinceEpoch<TimeType>();
+			this->getTimeSinceEpoch();
 		};
 
 		TimeStamp(uint64_t timeInTimeUnits, DiscordCoreAPI::TimeFormat theFormatNew) {
@@ -747,8 +747,8 @@ namespace DiscordCoreAPI {
 				this->convertTimeStampToTimeUnits(timeFormat);
 			}
 			uint64_t timeValue = (std::chrono::duration_cast<std::chrono::milliseconds>(this->timeStampInTimeUnits).count()) / 1000;
-			__time64_t rawTime(timeValue);
-			tm timeInfo = *_localtime64(&rawTime);
+			time_t rawTime(timeValue);
+			tm timeInfo = *localtime(&rawTime);
 			std::string timeStamp{};
 			timeStamp.resize(48);
 			switch (timeFormat) {
@@ -789,7 +789,7 @@ namespace DiscordCoreAPI {
 			this->originalTimeStamp = timeStamp;
 		}
 
-		template<typename TimeType> void getTimeSinceEpoch() {
+		void getTimeSinceEpoch() {
 			TimeType theValue{};
 			for (int32_t x = 1970; x < this->year; x++) {
 				theValue += TimeType{ this->secondsInJan };
