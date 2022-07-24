@@ -68,8 +68,7 @@ jobs:
                 sudo cp -v -R /usr/local/share/vcpkg/ports/discordcoreapi/vcpkg.json ./Vcpkg/ports/discordcoreapi/vcpkg.json &&
                 sudo cp -v -R /usr/local/share/vcpkg/versions/baseline.json ./Vcpkg/versions/baseline.json &&
                 sudo cp -v -R /usr/local/share/vcpkg/versions/d-/discordcoreapi.json ./Vcpkg/versions/d-/discordcoreapi.json &&
-                sudo /usr/local/share/vcpkg/vcpkg install discordcoreapi:x64-linux || true &&
-                sudo cat  /usr/local/share/vcpkg/buildtrees/discordcoreapi/install-x64-linux-dbg-out.log &&
+                sudo /usr/local/share/vcpkg/vcpkg install discordcoreapi:x64-linux &&
                 sudo rm -rf InstallOutput.txt &&
                 sudo rm -rf ./CMake/Raw-Files/Portfile-The-First.cmake &&
                 sudo rm -rf ./CMake/Raw-Files/Portfile-The-Second.cmake &&
