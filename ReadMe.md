@@ -1,4 +1,7 @@
 # DiscordCoreAPI
+[![Discord](https://img.shields.io/discord/825407338755653642?style=flat)](https://discord.gg/adgMqeBuhP) 
+![Lines of code](https://img.shields.io/tokei/lines/github/realtimechris/DiscordCoreAPI)
+
 <p align="center">
  <img src="https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Images/TheLogo.png?raw=true"  width="500">
 </p>
