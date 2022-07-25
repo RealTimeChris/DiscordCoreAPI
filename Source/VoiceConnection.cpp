@@ -395,6 +395,7 @@ namespace DiscordCoreAPI {
 							}
 							completionEventData.wasItAFail = false;
 							getSongAPIMap()[this->voiceConnectInitData.guildId]->onSongCompletionEvent(completionEventData);
+							this->areWePlaying.store(false);
 							break;
 						} else {
 							break;

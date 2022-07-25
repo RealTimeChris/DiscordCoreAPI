@@ -143,6 +143,7 @@ namespace DiscordCoreInternal {
 					}
 				}
 				theData.responseMessage.insert(theData.responseMessage.end(), other.begin(), other.begin() + other.find("\r\n0\r\n\r\n"));
+				theData.theCurrentState = HttpsState::Complete;
 				return false;
 			} else {
 				return true;
@@ -152,10 +153,12 @@ namespace DiscordCoreInternal {
 				this->parseSize(theData, other);
 			}
 			if (theData.contentSize == 0) {
+				theData.theCurrentState = HttpsState::Complete;
 				return false;
 			}
 			if (other.size() >= static_cast<size_t>(theData.contentSize)) {
 				theData.responseMessage.insert(theData.responseMessage.end(), other.begin(), other.begin() + theData.contentSize);
+				theData.theCurrentState = HttpsState::Complete;
 				return false;
 			}
 			return false;
@@ -527,12 +530,19 @@ namespace DiscordCoreInternal {
 				}
 				case HttpsState::Collecting_Contents: {
 					auto theResult = theConnection.parseChunk(theData, theConnection.inputBufferReal);
-					if ((theData.responseMessage.size() >= theData.contentSize && !theResult) || stopWatch.hasTimePassed() ||
+					if ((theData.responseMessage.size() >= theData.contentSize && !theResult) || 
 						(theData.responseCode == -5 && theData.contentSize == -5)) {
 						doWeReturn = true;
+					} else if (stopWatch.hasTimePassed()) {
+						doWeReturn = true;
+
 					} else if (theResult) {
 						stopWatch.resetTimer();
 					}
+					break;
+				}
+				case HttpsState::Complete: {
+					doWeReturn = true;
 				}
 			}
 			if (doWeReturn) {
