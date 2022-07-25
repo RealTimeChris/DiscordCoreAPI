@@ -273,7 +273,8 @@ namespace DiscordCoreInternal {
 		LAST = 170
 	};
 
-	struct DiscordCoreAPI_Dll HttpsWorkloadData {
+	class DiscordCoreAPI_Dll HttpsWorkloadData {
+	  public:
 		friend class HttpsClient;
 
 		static std::unordered_map<HttpsWorkloadType, std::unique_ptr<std::atomic_int64_t>> workloadIdsExternal;
