@@ -74,7 +74,7 @@ namespace DiscordCoreInternal {
 			}
 		} else if (jsonData.is_number_integer()) {
 			uint64_t numberOld = jsonData.get<uint64_t>();
-			if (numberOld >= 0 && numberOld <= 127) {
+			if (numberOld <= 127) {
 				uint8_t number = jsonData.get<uint8_t>();
 				ErlPacker::appendSmallIntegerExt(buffer, number);
 			} else if (jsonData.is_number_unsigned() && (numberOld >= std::numeric_limits<uint32_t>::max() - static_cast<size_t>(1))) {
@@ -304,7 +304,7 @@ namespace DiscordCoreInternal {
 			}
 		}
 		char outBuffer[32] = { 0 };
-		const char* formatString = sign == 0 ? "%llu" : "-%ll";
+		const char* formatString = sign == 0 ? "%lu" : "-%ll";
 		const int32_t res = sprintf(outBuffer, formatString, value);
 		if (res < 0) {
 			throw ErlPackError{ "ErlPacker::parseBigint() Error: Parse big integer failed.\n\n" };

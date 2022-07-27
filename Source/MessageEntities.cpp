@@ -247,8 +247,7 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/messages/" + std::to_string(dataPackage.id);
 		workload.callStack = "Messages::getMessageAsync()";
-		auto result = Messages::httpsClient->submitWorkloadAndGetResult<Message>(workload);
-		co_return result;
+		co_return Messages::httpsClient->submitWorkloadAndGetResult<Message>(workload);
 	}
 
 	CoRoutine<Message> Messages::createMessageAsync(CreateMessageData dataPackage) {

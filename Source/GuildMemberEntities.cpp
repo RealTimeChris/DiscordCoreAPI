@@ -284,8 +284,7 @@ namespace DiscordCoreAPI {
 				break;
 			}
 		}
-		GuildMember newGuildMember = GuildMembers::modifyGuildMemberAsync(dataPackage01).get();
-		co_return newGuildMember;
+		co_return GuildMembers::modifyGuildMemberAsync(dataPackage01).get();
 	}
 
 	void GuildMembers::insertGuildMember(GuildMemberData guildMember) {
