@@ -1192,7 +1192,7 @@ namespace DiscordCoreAPI {
 			if (theNewTime != 0) {
 				this->maxNumberOfMs = DoubleTimePoint{ TimeType{ theNewTime } };
 			}
-			this->startTime = std::chrono::system_clock::now();
+			this->startTime = std::chrono::system_clock::now(); 
 		}
 
 	  protected:
