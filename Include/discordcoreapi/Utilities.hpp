@@ -155,7 +155,7 @@ namespace DiscordCoreInternal {
 
 		WebSocketClose& operator=(uint16_t theValueNew);
 
-		WebSocketClose(uint16_t theValueNew);
+		explicit WebSocketClose(uint16_t theValueNew);
 
 		operator uint16_t();
 
@@ -342,7 +342,7 @@ namespace DiscordCoreAPI {
 	  public:
 		ConfigManager() = default;
 
-		ConfigManager(const DiscordCoreClientConfig&);
+		explicit ConfigManager(const DiscordCoreClientConfig&);
 
 		const bool doWePrintWebSocketSuccessMessages();
 
@@ -409,27 +409,27 @@ namespace DiscordCoreAPI {
 
 		StringWrapper& operator=(StringWrapper&& other) noexcept;
 
-		StringWrapper(StringWrapper&& other) noexcept;
+		explicit StringWrapper(StringWrapper&& other) noexcept;
 
 		StringWrapper& operator=(const StringWrapper& other);
 
-		StringWrapper(const StringWrapper& other);
+		explicit StringWrapper(const StringWrapper& other);
 
 		StringWrapper& operator=(StringWrapper& other) noexcept;
 
-		StringWrapper(StringWrapper& other) noexcept;
+		explicit StringWrapper(StringWrapper& other) noexcept;
 
 		StringWrapper& operator=(const std::string& theString);
 
-		StringWrapper(const std::string& theString);
+		explicit StringWrapper(const std::string& theString);
 
 		StringWrapper& operator=(std::string& theString);
 
-		StringWrapper(std::string& theString);
+		explicit StringWrapper(std::string& theString);
 
 		StringWrapper& operator=(const char* theString);
 
-		StringWrapper(const char* theString);
+		explicit StringWrapper(const char* theString);
 
 		operator std::basic_string<char, std::char_traits<char>, std::allocator<char>>();
 
@@ -452,7 +452,7 @@ namespace DiscordCoreAPI {
 		return lhs;
 	}
 
-	inline std::basic_string<char> operator+(std::basic_string<char, std::char_traits<char>, std::allocator<char>> lhs, StringWrapper rhs) {
+	inline std::basic_string<char> operator+(std::basic_string<char, std::char_traits<char>, std::allocator<char>>& lhs, StringWrapper rhs) {
 		std::stringstream theStream{};
 		theStream << lhs << rhs;
 		return theStream.str();
@@ -507,7 +507,7 @@ namespace DiscordCoreAPI {
 	/// Class for representing a timestamp, as well as working with time-related values. \brief Class for representing a timestamp, as well as working with time-related values.
 	class TimeStamp {
 	  public:
-		TimeStamp(DiscordCoreAPI::TimeFormat theFormatNew = DiscordCoreAPI::TimeFormat::LongDateTime) {
+		explicit TimeStamp(DiscordCoreAPI::TimeFormat theFormatNew = DiscordCoreAPI::TimeFormat::LongDateTime) {
 			this->timeStampInTimeUnits = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch());
 			this->getISO8601TimeStamp(theFormatNew);
 		}
@@ -549,7 +549,7 @@ namespace DiscordCoreAPI {
 			return *this;
 		}
 
-		TimeStamp(std::string&& originalTimeStampNew) {
+		explicit TimeStamp(std::string&& originalTimeStampNew) {
 			*this = std::move(originalTimeStampNew);
 		}
 
@@ -560,7 +560,7 @@ namespace DiscordCoreAPI {
 			return *this;
 		}
 
-		TimeStamp(std::string& originalTimeStampNew) {
+		explicit TimeStamp(std::string& originalTimeStampNew) {
 			*this = originalTimeStampNew;
 		}
 
@@ -576,7 +576,7 @@ namespace DiscordCoreAPI {
 			return *this;
 		}
 
-		TimeStamp(const TimeStamp& other) {
+		explicit TimeStamp(const TimeStamp& other) {
 			*this = other;
 		}
 
@@ -592,7 +592,7 @@ namespace DiscordCoreAPI {
 			return *this;
 		}
 
-		TimeStamp(TimeStamp& other) {
+		explicit TimeStamp(TimeStamp& other) {
 			*this = other;
 		}
 
@@ -623,8 +623,8 @@ namespace DiscordCoreAPI {
 			int32_t secondsPerMonth{ secondsPerDay * daysPerMonth };
 			int32_t daysPerYear{ 365 };
 			int32_t secondsPerYear{ secondsPerDay * daysPerYear };
-			int32_t secondsToAdd =
-				(yearsToAdd * secondsPerYear) + (monthsToAdd * secondsPerMonth) + (daysToAdd * secondsPerDay) + (hoursToAdd * secondsPerHour) + (minutesToAdd * secondsPerMinute);
+			int32_t secondsToAdd = (yearsToAdd * secondsPerYear) + (monthsToAdd * secondsPerMonth) + (daysToAdd * secondsPerDay) + (hoursToAdd * secondsPerHour) Permissions +
+				(minutesToAdd * secondsPerMinute);
 			result += secondsToAdd;
 			auto resultTwo = std::localtime(&result);
 			std::string theReturnString{};
@@ -911,11 +911,11 @@ namespace DiscordCoreAPI {
 
 		Permissions& operator=(std::string&& other);
 
-		Permissions(std::string&& permsNew);
+		explicit Permissions(std::string&& permsNew);
 
 		Permissions& operator=(std::string& other);
 
-		Permissions(std::string& permsNew);
+		explicit Permissions(std::string& permsNew);
 
 		operator const char*();
 
@@ -1129,7 +1129,7 @@ namespace DiscordCoreAPI {
 			return *this;
 		}
 
-		StopWatch(StopWatch<TimeType>&& other) noexcept {
+		explicit StopWatch(StopWatch<TimeType>&& other) noexcept {
 			*this = std::move(other);
 		}
 
@@ -1141,7 +1141,7 @@ namespace DiscordCoreAPI {
 			return *this;
 		}
 
-		StopWatch(const StopWatch<TimeType>& other) noexcept {
+		explicit StopWatch(const StopWatch<TimeType>& other) noexcept {
 			*this = other;
 		}
 
@@ -1153,7 +1153,7 @@ namespace DiscordCoreAPI {
 			return *this;
 		}
 
-		StopWatch(StopWatch<TimeType>& other) noexcept {
+		explicit StopWatch(StopWatch<TimeType>& other) noexcept {
 			*this = other;
 		}
 
@@ -1166,7 +1166,7 @@ namespace DiscordCoreAPI {
 			return *this;
 		}
 
-		StopWatch(TimeType maxNumberOfMsNew) {
+		explicit StopWatch(TimeType maxNumberOfMsNew) {
 			*this = maxNumberOfMsNew;
 		}
 
