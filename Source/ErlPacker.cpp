@@ -304,7 +304,7 @@ namespace DiscordCoreInternal {
 			}
 		}
 		char outBuffer[32] = { 0 };
-		const char* formatString = sign == 0 ? "%llu" : "-%ll";
+		const char* formatString = sign == 0 ? "%lu" : "-%ll";
 		const int32_t res = sprintf(outBuffer, formatString, value);
 		if (res < 0) {
 			throw ErlPackError{ "ErlPacker::parseBigint() Error: Parse big integer failed.\n\n" };
