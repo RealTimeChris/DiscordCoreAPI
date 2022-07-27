@@ -88,7 +88,16 @@ namespace DiscordCoreAPI {
 	std::string VoiceConnection::encryptSingleAudioFrame(const EncodedFrameData& bufferToSend) noexcept {
 		if (this->voiceConnectionDataFinal.secretKey.size() > 0) {
 			this->sequenceIndex++;
-			this->timeStamp += 960;
+			std::cout << "SEQUENCE INDEX: " << this->sequenceIndex << std::endl;
+			std::cout << "TIMESTAMP: " << this->timeStamp << std::endl;
+			std::cout << "SAMPLE COUNT: " << bufferToSend.sampleCount << std::endl;
+			this->timeStamp += bufferToSend.sampleCount;
+			std::string frameData{};
+			for (auto& value: frameData) {
+				int32_t valueNew = value & ~(0xffffff00);
+				std::cout << std::hex << ( int )valueNew << ", ";
+			}
+			std::cout << std::endl;
 			return RTPPacket{ this->timeStamp, this->sequenceIndex, this->voiceConnectionDataFinal.audioSSRC, bufferToSend.data, this->voiceConnectionDataFinal.secretKey };
 		}
 		return {};

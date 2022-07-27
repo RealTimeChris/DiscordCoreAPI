@@ -306,7 +306,7 @@ namespace DiscordCoreInternal {
 					return;
 				}
 
-				this->codec = avcodec_find_decoder(this->audioStream->codecpar->codec_id);
+				this->codec = avcodec_find_decoder_by_name("libopus");
 				if (!this->codec) {
 					std::string newString = "AudioDecoder::run() Error: Failed to find ";
 					newString += av_get_media_type_string(type);
