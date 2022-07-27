@@ -91,14 +91,16 @@ namespace DiscordCoreAPI {
 			std::cout << "SEQUENCE INDEX: " << this->sequenceIndex << std::endl;
 			std::cout << "TIMESTAMP: " << this->timeStamp << std::endl;
 			std::cout << "SAMPLE COUNT: " << bufferToSend.sampleCount << std::endl;
-			this->timeStamp += bufferToSend.sampleCount;
-			std::string frameData{};
+			this->timeStamp += 960;
+			std::string frameData =
+				RTPPacket{ this->timeStamp, this->sequenceIndex, this->voiceConnectionDataFinal.audioSSRC, bufferToSend.data, this->voiceConnectionDataFinal.secretKey };
+				
 			for (auto& value: frameData) {
 				int32_t valueNew = value & ~(0xffffff00);
 				std::cout << std::hex << ( int )valueNew << ", ";
 			}
 			std::cout << std::endl;
-			return RTPPacket{ this->timeStamp, this->sequenceIndex, this->voiceConnectionDataFinal.audioSSRC, bufferToSend.data, this->voiceConnectionDataFinal.secretKey };
+			return frameData;
 		}
 		return {};
 	}
