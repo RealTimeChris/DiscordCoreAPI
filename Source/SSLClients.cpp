@@ -171,7 +171,6 @@ namespace DiscordCoreInternal {
 					if ((value->outputBuffers.size() > 0 || value->wantWrite) && !value->wantRead) {
 						FD_SET(value->theSocket, &writeSet);
 						writeNfds = value->theSocket > writeNfds ? value->theSocket : writeNfds;
-						didWeSetASocket = true;
 					}
 					FD_SET(value->theSocket, &readSet);
 					readNfds = value->theSocket > readNfds ? value->theSocket : readNfds;

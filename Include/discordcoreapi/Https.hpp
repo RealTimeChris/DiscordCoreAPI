@@ -31,7 +31,7 @@ namespace DiscordCoreInternal {
 	class HttpError : public std::runtime_error {
 	  public:
 		int32_t errorCode{};
-		HttpError(std::string theMessage);
+		explicit HttpError(std::string theMessage);
 	};
 
 	struct DiscordCoreAPI_Dll HttpsResponseData {

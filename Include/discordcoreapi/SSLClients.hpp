@@ -68,7 +68,7 @@ namespace DiscordCoreInternal {
 	using SOCKET = int32_t;
 
 	struct ConnectionError : public std::runtime_error {
-		ConnectionError(const std::string& theString);
+		explicit ConnectionError(const std::string& theString);
 	};
 
 #ifdef _WIN32

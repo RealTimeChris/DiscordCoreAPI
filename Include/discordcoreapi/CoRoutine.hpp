@@ -113,17 +113,17 @@ namespace DiscordCoreAPI {
 			return *this;
 		};
 
-		CoRoutine(CoRoutine<ReturnType>&& other) noexcept {
+		explicit CoRoutine(CoRoutine<ReturnType>&& other) noexcept {
 			*this = std::move(other);
 		};
 
 		CoRoutine<ReturnType>& operator=(const CoRoutine<ReturnType>& other) = delete;
 
-		CoRoutine(const CoRoutine<ReturnType>& other) = delete;
+		explicit CoRoutine(const CoRoutine<ReturnType>& other) = delete;
 
 		CoRoutine<ReturnType>& operator=(CoRoutine<ReturnType>& other) = delete;
 
-		CoRoutine(CoRoutine<ReturnType>& other) = delete;
+		explicit CoRoutine(CoRoutine<ReturnType>& other) = delete;
 
 		CoRoutine<ReturnType>& operator=(std::coroutine_handle<CoRoutine<ReturnType>::promise_type> coroutineHandleNew) {
 			this->coroutineHandle = coroutineHandleNew;
@@ -132,7 +132,7 @@ namespace DiscordCoreAPI {
 			return *this;
 		}
 
-		CoRoutine(std::coroutine_handle<CoRoutine<ReturnType>::promise_type> coroutineHandleNew) {
+		explicit CoRoutine(std::coroutine_handle<CoRoutine<ReturnType>::promise_type> coroutineHandleNew) {
 			*this = coroutineHandleNew;
 		};
 
@@ -271,17 +271,17 @@ namespace DiscordCoreAPI {
 			return *this;
 		};
 
-		CoRoutine(CoRoutine<void>&& other) noexcept {
+		explicit CoRoutine(CoRoutine<void>&& other) noexcept {
 			*this = std::move(other);
 		};
 
 		CoRoutine<void>& operator=(const CoRoutine<void>& other) = delete;
 
-		CoRoutine(const CoRoutine<void>& other) = delete;
+		explicit CoRoutine(const CoRoutine<void>& other) = delete;
 
 		CoRoutine<void>& operator=(CoRoutine<void>& other) = delete;
 
-		CoRoutine(CoRoutine<void>& other) = delete;
+		explicit CoRoutine(CoRoutine<void>& other) = delete;
 
 		CoRoutine<void>& operator=(std::coroutine_handle<CoRoutine<void>::promise_type> coroutineHandleNew) {
 			this->coroutineHandle = coroutineHandleNew;
@@ -290,7 +290,7 @@ namespace DiscordCoreAPI {
 			return *this;
 		}
 
-		CoRoutine(std::coroutine_handle<CoRoutine<void>::promise_type> coroutineHandleNew) {
+		explicit CoRoutine(std::coroutine_handle<CoRoutine<void>::promise_type> coroutineHandleNew) {
 			*this = coroutineHandleNew;
 		};
 

@@ -213,7 +213,7 @@ namespace DiscordCoreAPI {
 			workload.relativePath += "?around=" + std::to_string(dataPackage.aroundThisId);
 			if (dataPackage.limit != 0) {
 				workload.relativePath += "&limit=" + std::to_string(dataPackage.limit);
-			} else if (dataPackage.limit == 0) {
+			} else {
 				workload.relativePath += "&limit=1";
 			}
 		} else if (dataPackage.beforeThisId != 0) {

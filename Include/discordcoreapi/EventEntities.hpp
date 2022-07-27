@@ -74,17 +74,17 @@ namespace DiscordCoreInternal {
 			return *this;
 		}
 
-		EventDelegate(EventDelegate<ReturnType, ArgTypes...>&& other) noexcept {
+		explicit EventDelegate(EventDelegate<ReturnType, ArgTypes...>&& other) noexcept {
 			*this = std::move(other);
 		}
 
 		EventDelegate<ReturnType, ArgTypes...>& operator=(const EventDelegate<ReturnType, ArgTypes...>& other) = delete;
 
-		EventDelegate(const EventDelegate<ReturnType, ArgTypes...>& other) = delete;
+		explicit EventDelegate(const EventDelegate<ReturnType, ArgTypes...>& other) = delete;
 
 		EventDelegate<ReturnType, ArgTypes...>& operator=(EventDelegate<ReturnType, ArgTypes...>& other) = delete;
 
-		EventDelegate(EventDelegate<ReturnType, ArgTypes...>& other) = delete;
+		explicit EventDelegate(EventDelegate<ReturnType, ArgTypes...>& other) = delete;
 
 		EventDelegate<ReturnType, ArgTypes...>& operator=(std::function<ReturnType(ArgTypes...)> theFunctionNew) {
 			this->theFunction = theFunctionNew;
@@ -92,7 +92,7 @@ namespace DiscordCoreInternal {
 		}
 
 		/// Constructor, taking a std::function<ReturnType(ArgTypes..)> as an argument. \brief Constructor, taking a std::function<ReturnType(ArgTypes..)> as an argument.
-		EventDelegate(std::function<ReturnType(ArgTypes...)> theFunctionNew) {
+		explicit EventDelegate(std::function<ReturnType(ArgTypes...)> theFunctionNew) {
 			*this = theFunctionNew;
 		}
 
@@ -102,7 +102,7 @@ namespace DiscordCoreInternal {
 		}
 
 		/// Constructor, taking a pointer to a function of type ReturnType(*)(ArgTypes...) as an argument. \brief Constructor, taking a pointer to a function of type ReturnType(*)(ArgTypes...) as an argument.
-		EventDelegate(ReturnType (*theFunctionNew)(ArgTypes...)) {
+		explicit EventDelegate(ReturnType (*theFunctionNew)(ArgTypes...)) {
 			*this = theFunctionNew;
 		}
 
