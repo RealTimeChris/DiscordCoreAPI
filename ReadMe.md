@@ -1,8 +1,8 @@
 # DiscordCoreAPI
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/cfeb498652bb4f269a9d7287c2acaed3)](https://www.codacy.com/gh/RealTimeChris/DiscordCoreAPI/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=RealTimeChris/DiscordCoreAPI&amp;utm_campaign=Badge_Grade)
-[![Discord](https://img.shields.io/discord/931640556814237706?style=flat)](https://discord.gg/adgMqeBuhP) 
-[![Lines of code](https://img.shields.io/tokei/lines/github/realtimechris/discordcoreapi)]
+[![Discord](https://img.shields.io/discord/931640556814237706?style=flat)](https://discord.gg/adgMqeBuhP)
 ![Commit Activity](https://img.shields.io/github/commit-activity/m/realtimechris/discordcoreapi?style=plastic)
+![Lines of code](https://img.shields.io/tokei/lines/github/realtimechris/discordcoreapi)
 
 <p align="center">
  <img src="https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Images/TheLogo.png?raw=true"  width="500">
