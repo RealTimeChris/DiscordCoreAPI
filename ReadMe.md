@@ -1,4 +1,5 @@
 # DiscordCoreAPI
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/7f2d1deb0785481a89f189c2d0d21471)](https://app.codacy.com/gh/RealTimeChris/DiscordCoreAPI?utm_source=github.com&utm_medium=referral&utm_content=RealTimeChris/DiscordCoreAPI&utm_campaign=Badge_Grade_Settings)
 [![Discord](https://img.shields.io/discord/931640556814237706?style=flat)](https://discord.gg/adgMqeBuhP) 
 ![Lines of code](https://img.shields.io/tokei/lines/github/realtimechris/discordcoreapi)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/cfeb498652bb4f269a9d7287c2acaed3)](https://www.codacy.com/gh/RealTimeChris/DiscordCoreAPI/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=RealTimeChris/DiscordCoreAPI&amp;utm_campaign=Badge_Grade)
