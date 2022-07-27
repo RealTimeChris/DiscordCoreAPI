@@ -74,17 +74,17 @@ namespace DiscordCoreInternal {
 			return *this;
 		}
 
-		explicit EventDelegate(EventDelegate<ReturnType, ArgTypes...>&& other) noexcept {
+		EventDelegate(EventDelegate<ReturnType, ArgTypes...>&& other) noexcept {
 			*this = std::move(other);
 		}
 
 		EventDelegate<ReturnType, ArgTypes...>& operator=(const EventDelegate<ReturnType, ArgTypes...>& other) = delete;
 
-		explicit EventDelegate(const EventDelegate<ReturnType, ArgTypes...>& other) = delete;
+		EventDelegate(const EventDelegate<ReturnType, ArgTypes...>& other) = delete;
 
 		EventDelegate<ReturnType, ArgTypes...>& operator=(EventDelegate<ReturnType, ArgTypes...>& other) = delete;
 
-		explicit EventDelegate(EventDelegate<ReturnType, ArgTypes...>& other) = delete;
+		EventDelegate(EventDelegate<ReturnType, ArgTypes...>& other) = delete;
 
 		EventDelegate<ReturnType, ArgTypes...>& operator=(std::function<ReturnType(ArgTypes...)> theFunctionNew) {
 			this->theFunction = theFunctionNew;

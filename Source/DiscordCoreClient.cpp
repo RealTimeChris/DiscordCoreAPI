@@ -64,7 +64,7 @@ namespace DiscordCoreAPI {
 		std::signal(SIGABRT, &signalHandler);
 		std::signal(SIGFPE, &signalHandler);
 		DiscordCoreInternal::SSLConnectionInterface::initialize();
-		this->configManager = configData;
+		this->configManager = ConfigManager{ configData };
 		if (this->configManager.doWePrintFFMPEGSuccessMessages()) {
 			av_log_set_level(AV_LOG_INFO);
 		}
@@ -79,20 +79,20 @@ namespace DiscordCoreAPI {
 				cout << shiftToBrightRed() << "LibSodium failed to initialize!" << reset() << endl << endl;
 			}
 		}
-		this->eventManager.onChannelCreation(&EventHandler::onChannelCreation);
-		this->eventManager.onChannelUpdate(&EventHandler::onChannelUpdate);
-		this->eventManager.onChannelDeletion(&EventHandler::onChannelDeletion);
-		this->eventManager.onGuildCreation(&EventHandler::onGuildCreation);
-		this->eventManager.onGuildUpdate(&EventHandler::onGuildUpdate);
-		this->eventManager.onGuildDeletion(&EventHandler::onGuildDeletion);
-		this->eventManager.onGuildMemberAdd(&EventHandler::onGuildMemberAdd);
-		this->eventManager.onGuildMemberRemove(&EventHandler::onGuildMemberRemove);
-		this->eventManager.onGuildMemberUpdate(&EventHandler::onGuildMemberUpdate);
-		this->eventManager.onRoleCreation(&EventHandler::onRoleCreation);
-		this->eventManager.onRoleUpdate(&EventHandler::onRoleUpdate);
-		this->eventManager.onRoleDeletion(&EventHandler::onRoleDeletion);
-		this->eventManager.onUserUpdate(&EventHandler::onUserUpdate);
-		this->eventManager.onVoiceStateUpdate(&EventHandler::onVoiceStateUpdate);
+		this->eventManager.onChannelCreation(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnChannelCreationData>{ &EventHandler::onChannelCreation });
+		this->eventManager.onChannelUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnChannelUpdateData>{ &EventHandler::onChannelUpdate });
+		this->eventManager.onChannelDeletion(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnChannelDeletionData>{ &EventHandler::onChannelDeletion });
+		this->eventManager.onGuildCreation(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildCreationData>{ &EventHandler::onGuildCreation });
+		this->eventManager.onGuildUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildUpdateData>{ &EventHandler::onGuildUpdate });
+		this->eventManager.onGuildDeletion(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildDeletionData>{ &EventHandler::onGuildDeletion });
+		this->eventManager.onGuildMemberAdd(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildMemberAddData>{ &EventHandler::onGuildMemberAdd });
+		this->eventManager.onGuildMemberRemove(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildMemberRemoveData>{ &EventHandler::onGuildMemberRemove });
+		this->eventManager.onGuildMemberUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildMemberUpdateData>{ &EventHandler::onGuildMemberUpdate });
+		this->eventManager.onRoleCreation(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnRoleCreationData>{ &EventHandler::onRoleCreation });
+		this->eventManager.onRoleUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnRoleUpdateData>{ &EventHandler::onRoleUpdate });
+		this->eventManager.onRoleDeletion(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnRoleDeletionData>{ &EventHandler::onRoleDeletion });
+		this->eventManager.onUserUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnUserUpdateData>{ &EventHandler::onUserUpdate });
+		this->eventManager.onVoiceStateUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnVoiceStateUpdateData>{ &EventHandler::onVoiceStateUpdate });
 		EventHandler::initialize(&this->configManager);
 		this->httpsClient = std::make_unique<DiscordCoreInternal::HttpsClient>(&this->configManager);
 		ApplicationCommands::initialize(this->httpsClient.get());

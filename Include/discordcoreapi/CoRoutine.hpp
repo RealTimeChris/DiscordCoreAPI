@@ -74,7 +74,7 @@ namespace DiscordCoreAPI {
 			}
 
 			CoRoutine<ReturnType> get_return_object() {
-				return std::coroutine_handle<CoRoutine<ReturnType>::promise_type>::from_promise(*this);
+				return CoRoutine<ReturnType>{ std::coroutine_handle<CoRoutine<ReturnType>::promise_type>::from_promise(*this) };
 			}
 
 			std::suspend_never initial_suspend() {
@@ -113,17 +113,17 @@ namespace DiscordCoreAPI {
 			return *this;
 		};
 
-		explicit CoRoutine(CoRoutine<ReturnType>&& other) noexcept {
+		CoRoutine(CoRoutine<ReturnType>&& other) noexcept {
 			*this = std::move(other);
 		};
 
 		CoRoutine<ReturnType>& operator=(const CoRoutine<ReturnType>& other) = delete;
 
-		explicit CoRoutine(const CoRoutine<ReturnType>& other) = delete;
+		CoRoutine(const CoRoutine<ReturnType>& other) = delete;
 
 		CoRoutine<ReturnType>& operator=(CoRoutine<ReturnType>& other) = delete;
 
-		explicit CoRoutine(CoRoutine<ReturnType>& other) = delete;
+		CoRoutine(CoRoutine<ReturnType>& other) = delete;
 
 		CoRoutine<ReturnType>& operator=(std::coroutine_handle<CoRoutine<ReturnType>::promise_type> coroutineHandleNew) {
 			this->coroutineHandle = coroutineHandleNew;
@@ -233,7 +233,7 @@ namespace DiscordCoreAPI {
 			}
 
 			CoRoutine<void> get_return_object() {
-				return std::coroutine_handle<CoRoutine<void>::promise_type>::from_promise(*this);
+				return CoRoutine<void>{ std::coroutine_handle<CoRoutine<void>::promise_type>::from_promise(*this) };
 			}
 
 			std::suspend_never initial_suspend() {
@@ -271,17 +271,17 @@ namespace DiscordCoreAPI {
 			return *this;
 		};
 
-		explicit CoRoutine(CoRoutine<void>&& other) noexcept {
+		CoRoutine(CoRoutine<void>&& other) noexcept {
 			*this = std::move(other);
 		};
 
 		CoRoutine<void>& operator=(const CoRoutine<void>& other) = delete;
 
-		explicit CoRoutine(const CoRoutine<void>& other) = delete;
+		CoRoutine(const CoRoutine<void>& other) = delete;
 
 		CoRoutine<void>& operator=(CoRoutine<void>& other) = delete;
 
-		explicit CoRoutine(CoRoutine<void>& other) = delete;
+		CoRoutine(CoRoutine<void>& other) = delete;
 
 		CoRoutine<void>& operator=(std::coroutine_handle<CoRoutine<void>::promise_type> coroutineHandleNew) {
 			this->coroutineHandle = coroutineHandleNew;

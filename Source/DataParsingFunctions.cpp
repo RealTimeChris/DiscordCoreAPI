@@ -445,7 +445,7 @@ namespace DiscordCoreAPI {
 
 		if (jsonObjectData.contains("features") && !jsonObjectData["features"].is_null()) {
 			for (auto& value: jsonObjectData["features"].get<std::vector<std::string>>()) {
-				pDataStructure->features.push_back(value);
+				pDataStructure->features.push_back(StringWrapper{ value });
 			}
 		}
 
@@ -2215,7 +2215,7 @@ namespace DiscordCoreAPI {
 		if (jsonObjectData.contains("permissions") && !jsonObjectData["permissions"].is_null()) {
 			pDataStructure->permissions.clear();
 			for (auto& value: jsonObjectData["permissions"]) {
-				pDataStructure->permissions.push_back(value.get<std::string>());
+				pDataStructure->permissions.push_back(Permissions{ value.get<std::string>() });
 			}
 		}
 
@@ -2863,7 +2863,7 @@ namespace DiscordCoreAPI {
 
 		if (jsonObjectData.contains("features") && !jsonObjectData["features"].is_null()) {
 			for (auto& value: jsonObjectData["features"].get<std::vector<std::string>>()) {
-				pDataStructure->features.push_back(value);
+				pDataStructure->features.push_back(StringWrapper{ value });
 			}
 		}
 

@@ -409,15 +409,15 @@ namespace DiscordCoreAPI {
 
 		StringWrapper& operator=(StringWrapper&& other) noexcept;
 
-		explicit StringWrapper(StringWrapper&& other) noexcept;
+		StringWrapper(StringWrapper&& other) noexcept;
 
 		StringWrapper& operator=(const StringWrapper& other);
 
-		explicit StringWrapper(const StringWrapper& other);
+		StringWrapper(const StringWrapper& other);
 
 		StringWrapper& operator=(StringWrapper& other) noexcept;
 
-		explicit StringWrapper(StringWrapper& other) noexcept;
+		StringWrapper(StringWrapper& other) noexcept;
 
 		StringWrapper& operator=(const std::string& theString);
 
@@ -473,7 +473,7 @@ namespace DiscordCoreAPI {
 	}
 
 	inline bool operator!=(StringWrapper lhs, const char* rhs) {
-		if (lhs == rhs) {
+		if (static_cast<std::string>(lhs) == rhs) {
 			return false;
 		}
 		return true;
@@ -576,7 +576,7 @@ namespace DiscordCoreAPI {
 			return *this;
 		}
 
-		explicit TimeStamp(const TimeStamp& other) {
+		TimeStamp(const TimeStamp& other) {
 			*this = other;
 		}
 
@@ -592,7 +592,7 @@ namespace DiscordCoreAPI {
 			return *this;
 		}
 
-		explicit TimeStamp(TimeStamp& other) {
+		TimeStamp(TimeStamp& other) {
 			*this = other;
 		}
 
@@ -623,8 +623,8 @@ namespace DiscordCoreAPI {
 			int32_t secondsPerMonth{ secondsPerDay * daysPerMonth };
 			int32_t daysPerYear{ 365 };
 			int32_t secondsPerYear{ secondsPerDay * daysPerYear };
-			int32_t secondsToAdd = (yearsToAdd * secondsPerYear) + (monthsToAdd * secondsPerMonth) + (daysToAdd * secondsPerDay) + (hoursToAdd * secondsPerHour) Permissions +
-				(minutesToAdd * secondsPerMinute);
+			int32_t secondsToAdd =
+				(yearsToAdd * secondsPerYear) + (monthsToAdd * secondsPerMonth) + (daysToAdd * secondsPerDay) + (hoursToAdd * secondsPerHour) + (minutesToAdd * secondsPerMinute);
 			result += secondsToAdd;
 			auto resultTwo = std::localtime(&result);
 			std::string theReturnString{};
@@ -1129,7 +1129,7 @@ namespace DiscordCoreAPI {
 			return *this;
 		}
 
-		explicit StopWatch(StopWatch<TimeType>&& other) noexcept {
+		StopWatch(StopWatch<TimeType>&& other) noexcept {
 			*this = std::move(other);
 		}
 
@@ -1141,7 +1141,7 @@ namespace DiscordCoreAPI {
 			return *this;
 		}
 
-		explicit StopWatch(const StopWatch<TimeType>& other) noexcept {
+		StopWatch(const StopWatch<TimeType>& other) noexcept {
 			*this = other;
 		}
 
@@ -1153,7 +1153,7 @@ namespace DiscordCoreAPI {
 			return *this;
 		}
 
-		explicit StopWatch(StopWatch<TimeType>& other) noexcept {
+		StopWatch(StopWatch<TimeType>& other) noexcept {
 			*this = other;
 		}
 
