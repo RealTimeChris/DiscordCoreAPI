@@ -74,7 +74,7 @@ namespace DiscordCoreInternal {
 			}
 		} else if (jsonData.is_number_integer()) {
 			uint64_t numberOld = jsonData.get<uint64_t>();
-			if (numberOld >= 0 && numberOld <= 127) {
+			if (numberOld <= 127) {
 				uint8_t number = jsonData.get<uint8_t>();
 				ErlPacker::appendSmallIntegerExt(buffer, number);
 			} else if (jsonData.is_number_unsigned() && (numberOld >= std::numeric_limits<uint32_t>::max() - static_cast<size_t>(1))) {
