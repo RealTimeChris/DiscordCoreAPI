@@ -36,9 +36,9 @@ namespace DiscordCoreInternal {
 		std::string baseUrl{ "https://www.youtube.com" };
 		HttpsClient* httpsClient{ nullptr };
 
+		DiscordCoreAPI::Song constructDownloadInfo(DiscordCoreAPI::Song& newSong, int32_t currentRecursionDepth);
+		
 		std::vector<DiscordCoreAPI::Song> collectSearchResults(const std::string& theString);
-
-		DiscordCoreAPI::Song constructDownloadInfo(DiscordCoreAPI::Song& newSong);
 
 		DiscordCoreAPI::Song collectFinalSong(DiscordCoreAPI::Song& newSong);
 

@@ -60,7 +60,7 @@ namespace DiscordCoreInternal {
 		return searchResults;
 	}
 
-	DiscordCoreAPI::Song YouTubeRequestBuilder::constructDownloadInfo(DiscordCoreAPI::Song& newSong) {
+	DiscordCoreAPI::Song YouTubeRequestBuilder::constructDownloadInfo(DiscordCoreAPI::Song& newSong, int32_t currentRecursionDepth) {
 		try {
 			nlohmann::json theRequest{};
 			theRequest["videoId"] = newSong.songId;
@@ -136,8 +136,11 @@ namespace DiscordCoreInternal {
 			newSong.type = DiscordCoreAPI::SongType::YouTube;
 			return newSong;
 		} catch (...) {
-			if (this->configManager->doWePrintHttpsErrorMessages()) {
-				DiscordCoreAPI::reportException("YouTubeRequestBuilder::constructDownloadInfo()");
+			if (currentRecursionDepth <= 10) {
+				currentRecursionDepth++;
+				return this->constructDownloadInfo(newSong, currentRecursionDepth);
+			} else {
+				return {};
 			}
 		}
 		return {};
@@ -145,7 +148,7 @@ namespace DiscordCoreInternal {
 
 	DiscordCoreAPI::Song YouTubeRequestBuilder::collectFinalSong(DiscordCoreAPI::Song& newSong) {
 		newSong.firstDownloadUrl = this->baseUrl + "/watch?v=" + newSong.songId + "&hl=en";
-		newSong = this->constructDownloadInfo(newSong);
+		newSong = this->constructDownloadInfo(newSong, 0);
 		return newSong;
 	}
 
