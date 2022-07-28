@@ -3,7 +3,7 @@
 [![Discord](https://img.shields.io/discord/931640556814237706?color=red&label=Discord%20Server&style=plastic)](https://discord.gg/adgMqeBuhP)
 ![Commit Activity](https://img.shields.io/github/commit-activity/m/realtimechris/discordcoreapi?color=green&label=Commits&style=plastic)
 ![BUild DiscordCoreAPI](https://img.shields.io/github/workflow/status/realtimechris/discordcoreapi/Build-DiscordCoreAPI?label=Build-DiscordCoreAPI&style=plastic)
-![Lines of code](https://img.shields.io/tokei/lines/github/realtimechris/discordcoreapi?style=plastic)
+![Lines of code](https://img.shields.io/tokei/lines/github/realtimechris/discordcoreapi?style=plastic&label=Lines%20of%20Code)
 
 <p align="center">
  <img src="https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Images/TheLogo.png?raw=true"  width="500">
