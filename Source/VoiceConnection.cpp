@@ -92,15 +92,7 @@ namespace DiscordCoreAPI {
 			std::cout << "TIMESTAMP: " << this->timeStamp << std::endl;
 			std::cout << "SAMPLE COUNT: " << bufferToSend.sampleCount << std::endl;
 			this->timeStamp += 960;
-			std::string frameData =
-				RTPPacket{ this->timeStamp, this->sequenceIndex, this->voiceConnectionDataFinal.audioSSRC, bufferToSend.data, this->voiceConnectionDataFinal.secretKey };
-				
-			for (auto& value: frameData) {
-				int32_t valueNew = value & ~(0xffffff00);
-				std::cout << std::hex << ( int )valueNew << ", ";
-			}
-			std::cout << std::endl;
-			return frameData;
+			return RTPPacket{ this->timeStamp, this->sequenceIndex, this->voiceConnectionDataFinal.audioSSRC, bufferToSend.data, this->voiceConnectionDataFinal.secretKey };
 		}
 		return {};
 	}
@@ -338,10 +330,6 @@ namespace DiscordCoreAPI {
 					break;
 				}
 				case VoiceActiveState::Playing: {
-					this->audioData.type = AudioFrameType::Unset;
-					this->audioData.encodedFrameData.data.clear();
-					this->audioData.rawFrameData.data.clear();
-					this->audioDataBuffer.tryReceive(this->audioData);
 					DoubleTimePointNs startingValue{ std::chrono::system_clock::now().time_since_epoch() };
 					DoubleTimePointNs intervalCount{ std::chrono::nanoseconds{ 20000000 } };
 					DoubleTimePointNs targetTime{ startingValue.time_since_epoch() + intervalCount.time_since_epoch() };
@@ -351,7 +339,14 @@ namespace DiscordCoreAPI {
 						this->sendSpeakingMessage(true);
 						this->areWePlaying.store(true);
 					}
+
+					this->audioData.type = AudioFrameType::Unset;
+					this->audioData.encodedFrameData.data.clear();
+					this->audioData.rawFrameData.data.clear();
+					this->audioDataBuffer.tryReceive(this->audioData);
+
 					while (!stopToken.stop_requested() && this->activeState.load() == VoiceActiveState::Playing) {
+						
 						theStopWatch.resetTimer();
 						while (!stopToken.stop_requested() && !DatagramSocketClient::areWeStillConnected()) {
 							if (theStopWatch.hasTimePassed() || this->activeState.load() == VoiceActiveState::Exiting) {
