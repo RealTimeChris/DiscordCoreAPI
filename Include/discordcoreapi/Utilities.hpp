@@ -104,7 +104,7 @@ namespace DiscordCoreInternal {
 	using std::cout;
 	using std::endl;
 
-	struct HttpsWorkloadData;
+	class HttpsWorkloadData;
 	class SoundCloudRequestBuilder;
 	class YouTubeRequestBuilder;
 	class WebSocketSSLShard;
