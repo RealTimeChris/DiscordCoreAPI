@@ -34,7 +34,7 @@ namespace DiscordCoreInternal {
 		static std::string apiKey;
 		DiscordCoreAPI::ConfigManager* configManager{ nullptr };
 		std::string baseUrl{ "https://www.youtube.com" };
-		HttpsClient* httpsClient{ nullptr }; 
+		HttpsClient* httpsClient{ nullptr };
 
 		DiscordCoreAPI::Song constructDownloadInfo(DiscordCoreAPI::Song& newSong, int32_t currentRecursionDepth);
 		
