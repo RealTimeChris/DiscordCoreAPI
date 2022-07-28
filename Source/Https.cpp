@@ -476,80 +476,78 @@ namespace DiscordCoreInternal {
 	}
 
 	HttpsResponseData HttpsClient::getResponse(HttpsConnection& theConnection, RateLimitData& rateLimitData) {
-		DiscordCoreAPI::StopWatch stopWatch{ 7500ms };
-		theConnection.getInputBuffer().clear();
-		theConnection.resetValues();
 		HttpsResponseData theData{};
-		bool doWeReturn{ false };
-		while (true) {
-			auto theResult = theConnection.processIO(10000);
-			if (theResult == ProcessIOResult::SSL_Zero_Return) {
-				doWeReturn = true;
-			} else if (theResult != ProcessIOResult::No_Error && theResult != ProcessIOResult::Select_No_Return) {
-				theData.responseCode = -1;
-				doWeReturn = true;
-			}
-			std::string theString = theConnection.getInputBuffer();
+		try {
+			DiscordCoreAPI::StopWatch stopWatch{ 4500ms };
 			theConnection.getInputBuffer().clear();
-			if (theString.size() > 0) {
-				theConnection.inputBufferReal.insert(theConnection.inputBufferReal.end(), theString.begin(), theString.end());
-			}
-			switch (theData.theCurrentState) {
-				case HttpsState::Collecting_Code: {
-					if (stopWatch.hasTimePassed()) {
-						doWeReturn = true;
-					}
-					theConnection.parseCode(theData, theConnection.inputBufferReal);
-					stopWatch.resetTimer();
-					if (theData.responseCode > 201) {
-						doWeReturn = true;
-					}
-					break;
-				}
-				case HttpsState::Collecting_Headers: {
-					if (stopWatch.hasTimePassed()) {
-						doWeReturn = true;
-					}
-					if (!theConnection.doWeHaveHeaders) {
-						theConnection.parseHeaders(theData, theConnection.inputBufferReal);
-						stopWatch.resetTimer();
-					}
-					break;
-				}
-				case HttpsState::Collecting_Size: {
-					if (stopWatch.hasTimePassed()) {
-						doWeReturn = true;
-					}
-					if (!theConnection.doWeHaveContentSize) {
-						theConnection.clearCRLF(theConnection.inputBufferReal);
-						theConnection.parseSize(theData, theConnection.inputBufferReal);
-						theConnection.clearCRLF(theConnection.inputBufferReal);
-						stopWatch.resetTimer();
-					}
-					break;
-				}
-				case HttpsState::Collecting_Contents: {
-					auto theResult = theConnection.parseChunk(theData, theConnection.inputBufferReal);
-					if ((theData.responseMessage.size() >= theData.contentSize && !theResult) || 
-						(theData.responseCode == -5 && theData.contentSize == -5)) {
-						doWeReturn = true;
-					} else if (stopWatch.hasTimePassed()) {
-						doWeReturn = true;
-
-					} else if (theResult) {
-						stopWatch.resetTimer();
-					}
-					break;
-				}
-				case HttpsState::Complete: {
+			theConnection.resetValues();
+			bool doWeReturn{ false };
+			while (true) {
+				auto theResult = theConnection.processIO(10000);
+				if (theResult == ProcessIOResult::SSL_Zero_Return) {
+					doWeReturn = true;
+				} else if (theResult != ProcessIOResult::No_Error && theResult != ProcessIOResult::Select_No_Return) {
+					theData.responseCode = -1;
 					doWeReturn = true;
 				}
+				std::string theString = theConnection.getInputBuffer();
+				theConnection.getInputBuffer().clear();
+				if (theString.size() > 0) {
+					theConnection.inputBufferReal.insert(theConnection.inputBufferReal.end(), theString.begin(), theString.end());
+				}
+				switch (theData.theCurrentState) {
+					case HttpsState::Collecting_Code: {
+						if (stopWatch.hasTimePassed()) {
+							doWeReturn = true;
+						}
+						theConnection.parseCode(theData, theConnection.inputBufferReal);
+						stopWatch.resetTimer();
+						if (theData.responseCode > 201) {
+							doWeReturn = true;
+						}
+						break;
+					}
+					case HttpsState::Collecting_Headers: {
+						if (stopWatch.hasTimePassed()) {
+							doWeReturn = true;
+						}
+						if (!theConnection.doWeHaveHeaders) {
+							theConnection.parseHeaders(theData, theConnection.inputBufferReal);
+							stopWatch.resetTimer();
+						}
+						break;
+					}
+					case HttpsState::Collecting_Size: {
+						if (stopWatch.hasTimePassed()) {
+							doWeReturn = true;
+						}
+						if (!theConnection.doWeHaveContentSize) {
+							theConnection.clearCRLF(theConnection.inputBufferReal);
+							theConnection.parseSize(theData, theConnection.inputBufferReal);
+							theConnection.clearCRLF(theConnection.inputBufferReal);
+							stopWatch.resetTimer();
+						}
+						break;
+					}
+					case HttpsState::Collecting_Contents: {
+						auto theResult = theConnection.parseChunk(theData, theConnection.inputBufferReal);
+						if ((theData.responseMessage.size() >= theData.contentSize && !theResult) || stopWatch.hasTimePassed() ||
+							(theData.responseCode == -5 && theData.contentSize == -5)) {
+							doWeReturn = true;
+						} else if (theResult) {
+							stopWatch.resetTimer();
+						}
+					}
+				}
+				if (doWeReturn) {
+					break;
+				}
+				std::this_thread::sleep_for(1ms);
 			}
-			if (doWeReturn) {
-				break;
-			}
-			std::this_thread::sleep_for(1ms);
+			return theConnection.finalizeReturnValues(theData, rateLimitData);
+		} catch (...) {
+			theData.responseCode = -1;
+			return theData;
 		}
-		return theConnection.finalizeReturnValues(theData, rateLimitData);
 	}
 }
