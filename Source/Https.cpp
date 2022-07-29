@@ -143,7 +143,6 @@ namespace DiscordCoreInternal {
 					}
 				}
 				theData.responseMessage.insert(theData.responseMessage.end(), other.begin(), other.begin() + other.find("\r\n0\r\n\r\n"));
-				theData.theCurrentState = HttpsState::Complete;
 				return false;
 			} else {
 				return true;
@@ -153,12 +152,10 @@ namespace DiscordCoreInternal {
 				this->parseSize(theData, other);
 			}
 			if (theData.contentSize == 0) {
-				theData.theCurrentState = HttpsState::Complete;
 				return false;
 			}
 			if (other.size() >= static_cast<size_t>(theData.contentSize)) {
 				theData.responseMessage.insert(theData.responseMessage.end(), other.begin(), other.begin() + theData.contentSize);
-				theData.theCurrentState = HttpsState::Complete;
 				return false;
 			}
 			return false;
@@ -535,7 +532,9 @@ namespace DiscordCoreInternal {
 							(theData.responseCode == -5 && theData.contentSize == -5)) {
 							doWeReturn = true;
 						} else if (theResult) {
-							stopWatch.resetTimer();
+							if (stopWatch.hasTimePassed()) {
+								doWeReturn = true;
+							}
 						}
 					}
 				}
