@@ -85,7 +85,8 @@ namespace DiscordCoreAPI {
 		friend class SongAPI;
 
 		VoiceConnection(DiscordCoreInternal::BaseSocketAgent* BaseSocketAgentNew, const DiscordCoreInternal::VoiceConnectInitData& initDataNew,
-			DiscordCoreAPI::ConfigManager* configManagerNew, std::atomic_bool* doWeQuitNew) noexcept;
+			DiscordCoreAPI::ConfigManager* configManagerNew, std::atomic_bool* doWeQuitNew, StreamType streamType = StreamType::None,
+			StreamInfo streamInfo = StreamInfo{}) noexcept;
 
 		VoiceConnection() noexcept;
 
@@ -100,6 +101,7 @@ namespace DiscordCoreAPI {
 		UnboundedMessageBlock<DiscordCoreInternal::VoiceConnectionData> voiceConnectionDataBuffer{};
 		std::atomic<VoiceActiveState> lastActiveState{ VoiceActiveState::Connecting };
 		std::atomic<VoiceActiveState> activeState{ VoiceActiveState::Connecting };
+		std::unique_ptr<DiscordCoreInternal::DatagramSocketClient> targetSocket{};
 		DiscordCoreInternal::VoiceConnectionData voiceConnectionDataFinal{};
 		DiscordCoreInternal::BaseSocketAgent* baseSocketAgent{ nullptr };
 		DiscordCoreInternal::VoiceConnectInitData voiceConnectInitData{};
@@ -114,9 +116,12 @@ namespace DiscordCoreAPI {
 		const int64_t maxReconnectTries{ 10 };
 		int64_t currentReconnectTries{ 0 };
 		Snowflake currentGuildMemberId{};
+		int32_t currentSendTimeStamp{};
 		int64_t heartbeatInterval{ 0 };
+		std::string secretKeySend{};
 		uint16_t sequenceIndex{ 0 };
 		AudioFrameData audioData{};
+		StreamType streamType{};
 		uint32_t timeStamp{ 0 };
 		std::string baseUrl{};
 
@@ -138,8 +143,10 @@ namespace DiscordCoreAPI {
 
 		void runVoice(std::stop_token&) noexcept;
 
-		bool areWeCurrentlyPlaying() noexcept;
+		void parseIncomingVoiceData() noexcept;
 
+		bool areWeCurrentlyPlaying() noexcept;
+		
 		void disconnectInternal() noexcept;
 
 		void onMessageReceived() noexcept;

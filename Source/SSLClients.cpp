@@ -469,6 +469,10 @@ namespace DiscordCoreInternal {
 		return this->bytesRead;
 	}
 
+	DatagramSocketClient::DatagramSocketClient(bool areWeClient) noexcept {
+		this->areWeAClient = areWeClient;
+	}
+
 	bool DatagramSocketClient::connect(const std::string& baseUrlNew, const std::string& portNew) noexcept {
 		this->theAddress.sin_addr.s_addr = inet_addr(baseUrlNew.c_str());
 		this->theAddress.sin_port = DiscordCoreAPI::reverseByteOrder(static_cast<unsigned short>(stoi(portNew)));
@@ -488,9 +492,21 @@ namespace DiscordCoreInternal {
 			return false;
 		}
 
-		if (::connect(this->theSocket, address->ai_addr, static_cast<int32_t>(address->ai_addrlen))) {
-			return false;
-		}
+		if (this->areWeAClient) {
+			if (::connect(this->theSocket, address->ai_addr, static_cast<int32_t>(address->ai_addrlen))) {
+				std::cout << "WERE NOT LEAVING TODAY TODAY TODAY: " << reportError("DataGramSocketClient::connect()") << std::endl;
+				return false;
+			} else {
+				std::cout << "WERE MAYBE LEAVING TODAY TODAY TODAY: " << reportError("DataGramSocketClient::connect()") << std::endl;
+			}
+		} else {
+			if (bind(this->theSocket, address->ai_addr, sizeof(sockaddr))) {
+				std::cout << "WERE NOT LEAVING TODAY TODAY TODAY: " << reportError("DataGramSocketClient::connect()") << std::endl;
+				return false;
+			} else {
+				std::cout << "WERE MAYBE LEAVING TODAY TODAY TODAY: " << reportError("DataGramSocketClient::connect()") << std::endl;
+			}
+		}		
 
 #ifdef _WIN32
 		u_long value02{ 1 };
@@ -517,12 +533,20 @@ namespace DiscordCoreInternal {
 			FD_ZERO(&writeSet);
 			FD_SET(this->theSocket, &writeSet);
 		}
-
-		timeval checkTime{ .tv_usec = waitTimeInms };
+		timeval checkTime{};
+		if (this->areWeAClient) {
+			checkTime.tv_usec = waitTimeInms;
+		} else {
+			checkTime.tv_sec = 10;
+		}
+		
 		if (auto returnValue = select(this->theSocket + 1, &readSet, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
 			this->disconnect();
 			return;
 		} else if (returnValue == 0) {
+			if (!this->areWeAClient) {
+				std::cout << "WER COULDNT READ COULDNT READ COULDNT READ" << std::endl;
+			}
 			return;
 		}
 
@@ -589,11 +613,20 @@ namespace DiscordCoreInternal {
 	void DatagramSocketClient::readDataProcess() noexcept {
 		std::string serverToClientBuffer{};
 		serverToClientBuffer.resize(this->maxBufferSize);
-		auto readBytes{ recv(this->theSocket, serverToClientBuffer.data(), static_cast<int32_t>(serverToClientBuffer.size()), 0) };
+		int32_t readBytes{};
+		if (this->areWeAClient) {
+			readBytes = recv(this->theSocket, serverToClientBuffer.data(), static_cast<int32_t>(serverToClientBuffer.size()), 0);
+		} else {
+			int32_t intSize = sizeof(this->theAddress);
+			readBytes = recvfrom(this->theSocket, serverToClientBuffer.data(), static_cast<int32_t>(serverToClientBuffer.size()), 0, reinterpret_cast<sockaddr*>(&this->theAddress),
+				&intSize);
+		}
+
 		if (readBytes < 0) {
 			this->disconnect();
 			return;
 		} else {
+			std::cout << "READ BYTES: " << readBytes << std::endl;
 			this->inputBuffer.insert(this->inputBuffer.end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
 			this->bytesRead += readBytes;
 		}

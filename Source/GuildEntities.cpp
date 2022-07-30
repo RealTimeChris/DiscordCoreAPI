@@ -104,7 +104,7 @@ namespace DiscordCoreAPI {
 		return data.dump();
 	}
 
-	VoiceConnection* GuildData::connectToVoice(const Snowflake guildMemberId, const Snowflake channelId, bool selfDeaf, bool selfMute) {
+	VoiceConnection* GuildData::connectToVoice(const Snowflake guildMemberId, const Snowflake channelId, bool selfDeaf, bool selfMute, StreamType streamTypeNew, StreamInfo streamInfoNew) {
 		if (getVoiceConnectionMap().contains(this->id) && getVoiceConnectionMap()[this->id] && getVoiceConnectionMap()[this->id]->areWeConnected()) {
 			this->voiceConnectionPtr = getVoiceConnectionMap()[this->id].get();
 			return this->voiceConnectionPtr;
@@ -122,6 +122,8 @@ namespace DiscordCoreAPI {
 			auto theBaseSocketAgentIndex{ static_cast<int32_t>(floor(static_cast<float>(theShardId) / static_cast<float>(currentBaseCount))) };
 			DiscordCoreInternal::VoiceConnectInitData voiceConnectInitData{};
 			voiceConnectInitData.currentShard = theShardId;
+			voiceConnectInitData.streamType = streamTypeNew;
+			voiceConnectInitData.streamInfo = streamInfoNew;
 			voiceConnectInitData.channelId = theChannelId;
 			voiceConnectInitData.guildId = this->id;
 			voiceConnectInitData.userId = this->discordCoreClient->getBotUser().id;

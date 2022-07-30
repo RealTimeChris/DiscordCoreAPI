@@ -26,6 +26,8 @@ namespace DiscordCoreInternal {
 	using Snowflake = uint64_t;
 
 	struct DiscordCoreAPI_Dll VoiceConnectInitData {
+		DiscordCoreAPI::StreamType streamType{};
+		DiscordCoreAPI::StreamInfo streamInfo{};
 		int32_t currentShard{};
 		bool selfDeaf{ false };
 		bool selfMute{ false };
@@ -2096,7 +2098,8 @@ namespace DiscordCoreAPI {
 
 		GuildData(const nlohmann::json& jsonObjectData);
 
-		VoiceConnection* connectToVoice(const Snowflake guildMemberId, const Snowflake channelId = 0, bool selfDeaf = false, bool selfMute = false);
+		VoiceConnection* connectToVoice(const Snowflake guildMemberId, const Snowflake channelId = 0, bool selfDeaf = false, bool selfMute = false,
+			StreamType streamType = StreamType::None, StreamInfo streamInfo = StreamInfo{});
 
 		void insertGuildMember(GuildMemberData theData);
 

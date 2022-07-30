@@ -226,7 +226,7 @@ namespace DiscordCoreInternal {
 	  public:
 		friend class DiscordCoreAPI::VoiceConnection;
 
-		DatagramSocketClient() noexcept = default;
+		DatagramSocketClient(bool areWeClient = true) noexcept;
 
 		bool connect(const std::string& baseUrl, const std::string& portNew) noexcept;
 
@@ -252,6 +252,7 @@ namespace DiscordCoreInternal {
 		const int32_t maxBufferSize{ 1024 * 16 };
 		std::vector<std::string> outputBuffers{};
 		std::recursive_mutex theMutex{};
+		bool areWeAClient{ true };
 		SOCKETWrapper theSocket{};
 		std::string inputBuffer{};
 		sockaddr_in theAddress{};
