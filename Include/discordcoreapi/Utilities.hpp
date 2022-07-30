@@ -718,7 +718,7 @@ namespace DiscordCoreAPI {
 		}
 
 	  protected:
-		std::chrono::milliseconds timeStampInTimeUnits{};
+		TimeType timeStampInTimeUnits{};
 		std::string originalTimeStamp{};
 		uint64_t year{ 0 };
 		uint64_t month{ 0 };
@@ -851,7 +851,6 @@ namespace DiscordCoreAPI {
 		}
 	};
 
-
 	/**@}*/
 
 	/**
@@ -909,6 +908,14 @@ namespace DiscordCoreAPI {
 	  public:
 		Permissions() = default;
 
+		Permissions& operator=(Permission&& other);
+
+		Permissions(Permission&& permsNew);
+
+		Permissions& operator=(Permission& other);
+
+		explicit Permissions(Permission& permsNew);
+
 		Permissions& operator=(std::string&& other);
 
 		explicit Permissions(std::string&& permsNew);
@@ -958,11 +965,11 @@ namespace DiscordCoreAPI {
 		static std::string getAllPermissions();
 
 	  protected:
-		std::string computeOverwrites(const std::string& basePermissions, const GuildMember& guildMember, ChannelData& channel);
+		static std::string computeOverwrites(const std::string& basePermissions, const GuildMember& guildMember, ChannelData& channel);
 
-		std::string computePermissions(const GuildMember& guildMember, ChannelData& channel);
+		static std::string computePermissions(const GuildMember& guildMember, ChannelData& channel);
 
-		std::string computeBasePermissions(const GuildMember& guildMember);
+		static std::string computeBasePermissions(const GuildMember& guildMember);
 	};
 
 	/// Prints the current file, line, and column from which the function is being called - typically from within an exception's "catch" block. \brief Prints the current file, line, and column from which the function is being called - typically from within an exception's "catch" block.

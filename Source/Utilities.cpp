@@ -311,6 +311,27 @@ namespace DiscordCoreAPI {
 		return this->thePtr.get();
 	}
 
+	Permissions& Permissions::operator=(Permission&& other) {
+		StringWrapper theString = StringWrapper{ std::to_string(static_cast<uint32_t>(other)) };
+		*this = theString;
+		std::cout<< "THE PERMS: "<< *this<< std::endl;
+		return *this;
+	}
+
+	Permissions::Permissions(Permission&& permsNew) {
+		*this = std::move(permsNew);
+	}
+
+	Permissions& Permissions::operator=(Permission& other) {
+		StringWrapper theString = StringWrapper{ std::to_string(static_cast<uint32_t>(other)) };
+		*this = theString;
+		return *this;
+	}
+
+	Permissions::Permissions(Permission& permsNew) {
+		*this = permsNew;
+	}
+
 	Permissions& Permissions::operator=(std::string&& other) {
 		if (other.size() == 0) {
 			this->push_back('0');
@@ -347,8 +368,7 @@ namespace DiscordCoreAPI {
 	}
 
 	std::string Permissions::getCurrentChannelPermissions(const GuildMember& guildMember, ChannelData& channel) {
-		Permissions permission{};
-		std::string permsString = permission.computePermissions(guildMember, channel);
+		std::string permsString = Permissions::computePermissions(guildMember, channel);
 		return permsString;
 	}
 
@@ -362,8 +382,7 @@ namespace DiscordCoreAPI {
 	}
 
 	std::string Permissions::getCurrentGuildPermissions(const GuildMember& guildMember) {
-		Permissions permission{};
-		std::string permissions = permission.computeBasePermissions(guildMember);
+		std::string permissions = Permissions::computeBasePermissions(guildMember);
 		return permissions;
 	}
 
