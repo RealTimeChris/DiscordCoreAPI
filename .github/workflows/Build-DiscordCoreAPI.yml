@@ -10,84 +10,84 @@ jobs:
          - name: Update Vcpkg and install other dependencies.
            run: sudo apt-get install nasm &&
                 cd /usr/local/share/vcpkg &&
-                sudo ./bootstrap-vcpkg.sh &&
-                sudo git stash &&
-                sudo git pull &&
-                sudo vcpkg update
+                ./bootstrap-vcpkg.sh &&
+                git stash &&
+                git pull &&
+                vcpkg update
 
          - name: Collect the repo.
-           run: sudo git config --global user.email "40668522+RealTimeChris@users.noreply.github.com" &&
-                sudo git config --global user.name "realtimechris" &&
-                sudo git clone https://realtimechris:${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/realtimechris/DiscordCoreAPI ./DiscordCoreAPI --depth=1
+           run: git config --global user.email "40668522+RealTimeChris@users.noreply.github.com" &&
+                git config --global user.name "realtimechris" &&
+                git clone https://realtimechris:${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/realtimechris/DiscordCoreAPI ./DiscordCoreAPI --depth=1
 
          - name: Construct the original portfile and version file.
            run: cd ./DiscordCoreAPI &&
-                sudo touch ./CMake/Raw-Files/Portfile-The-First.cmake &&
-                sudo touch ./CMake/Raw-Files/Portfile-The-Second.cmake &&
-                sudo touch ./Vcpkg/ports/discordcoreapi/vcpkg.json &&
-                sudo bash -c "cat ./CMake/Raw-Files/Top-Of-Portfile.cmake >> ./CMake/Raw-Files/Portfile-The-First.cmake" &&
-                sudo git rev-parse HEAD | sudo tee ./CMake/Raw-Files/Portfile-The-First.cmake -a &&
-                sudo bash -c "cat ./CMake/Raw-Files/Middle-Of-Portfile.cmake >> ./CMake/Raw-Files/Portfile-The-First.cmake" &&
-                sudo bash -c "echo $'0' >> ./CMake/Raw-Files/Portfile-The-First.cmake" &&
-                sudo bash -c "cat ./CMake/Raw-Files/Bottom-Of-Portfile.cmake >> ./CMake/Raw-Files/Portfile-The-First.cmake" &&
-                sudo bash -c "cat ./CMake/Raw-Files/Top-Of-Version-File.json > ./Vcpkg/ports/discordcoreapi/vcpkg.json" &&
-                sudo date +"\"%Y-%m-%d\"" | sudo tee ./Vcpkg/ports/discordcoreapi/vcpkg.json -a &&
-                sudo truncate -s -1 ./Vcpkg/ports/discordcoreapi/vcpkg.json &&
-                sudo bash -c "cat ./CMake/Raw-Files/Bottom-Of-Version-File.json >> ./Vcpkg/ports/discordcoreapi/vcpkg.json"
+                touch ./CMake/Raw-Files/Portfile-The-First.cmake &&
+                touch ./CMake/Raw-Files/Portfile-The-Second.cmake &&
+                touch ./Vcpkg/ports/discordcoreapi/vcpkg.json &&
+                bash -c "cat ./CMake/Raw-Files/Top-Of-Portfile.cmake >> ./CMake/Raw-Files/Portfile-The-First.cmake" &&
+                git rev-parse HEAD | sudo tee ./CMake/Raw-Files/Portfile-The-First.cmake -a &&
+                bash -c "cat ./CMake/Raw-Files/Middle-Of-Portfile.cmake >> ./CMake/Raw-Files/Portfile-The-First.cmake" &&
+                bash -c "echo $'0' >> ./CMake/Raw-Files/Portfile-The-First.cmake" &&
+                bash -c "cat ./CMake/Raw-Files/Bottom-Of-Portfile.cmake >> ./CMake/Raw-Files/Portfile-The-First.cmake" &&
+                bash -c "cat ./CMake/Raw-Files/Top-Of-Version-File.json > ./Vcpkg/ports/discordcoreapi/vcpkg.json" &&
+                date +"\"%Y-%m-%d\"" | sudo tee ./Vcpkg/ports/discordcoreapi/vcpkg.json -a &&
+                udo truncate -s -1 ./Vcpkg/ports/discordcoreapi/vcpkg.json &&
+                bash -c "cat ./CMake/Raw-Files/Bottom-Of-Version-File.json >> ./Vcpkg/ports/discordcoreapi/vcpkg.json"
 
          - name: Attempt to install the library, to collect the SHA512 value.
            run: cd ./DiscordCoreAPI &&
                 [ -f /usr/local/share/vcpkg/versions/d-/discordcoreapi.json ] && sudo cp -v -R /usr/local/share/vcpkg/versions/d-/discordcoreapi.json ./Vcpkg/versions/d-/discordcoreapi.json || sudo cp -v -R ./Vcpkg/versions/d-/discordcoreapi.json /usr/local/share/vcpkg/versions/d-/discordcoreapi.json  &&
                 [ -f /usr/local/share/vcpkg/ports/discordcoreapi/vcpkg.json ] && echo "File exists." || sudo cp -v -R ./Vcpkg/ports/discordcoreapi/vcpkg.json /usr/local/share/vcpkg/ports/discordcoreapi/vcpkg.json  &&
-                sudo cp -v -R ./CMake/Raw-Files/Portfile-The-First.cmake /usr/local/share/vcpkg/ports/discordcoreapi/portfile.cmake &&
-                sudo /usr/local/share/vcpkg/vcpkg install discordcoreapi:x64-linux | sudo tee InstallOutput.txt || true
+                cp -v -R ./CMake/Raw-Files/Portfile-The-First.cmake /usr/local/share/vcpkg/ports/discordcoreapi/portfile.cmake &&
+                /usr/local/share/vcpkg/vcpkg install discordcoreapi:x64-linux | sudo tee InstallOutput.txt || true
 
          - name: Update the portfile and download/install the library.
            run: cd ./DiscordCoreAPI &&
-                sudo sed -i '/Actual hash/,$!d' InstallOutput.txt &&
-                sudo sed -i 's/^.....................//' InstallOutput.txt &&
-                sudo sed -i '2,250d' InstallOutput.txt &&
-                sudo truncate -s -3 InstallOutput.txt &&
-                sudo bash -c "cat ./CMake/Raw-Files/Top-Of-Portfile.cmake >> ./CMake/Raw-Files/Portfile-The-Second.cmake" &&
-                sudo git rev-parse HEAD | sudo tee ./CMake/Raw-Files/Portfile-The-Second.cmake -a &&
-                sudo bash -c "cat ./CMake/Raw-Files/Middle-Of-Portfile.cmake >> ./CMake/Raw-Files/Portfile-The-Second.cmake" &&
-                sudo bash -c "cat InstallOutput.txt >> ./CMake/Raw-Files/Portfile-The-Second.cmake" &&
-                sudo bash -c "echo $'' >> ./CMake/Raw-Files/Portfile-The-Second.cmake" &&
-                sudo bash -c "cat ./CMake/Raw-Files/Bottom-Of-Portfile.cmake >> ./CMake/Raw-Files/Portfile-The-Second.cmake" &&
-                sudo touch ./Vcpkg/ports/discordcoreapi/portfile.cmake &&
-                sudo cp -v -R ./CMake/Raw-Files/Portfile-The-Second.cmake /usr/local/share/vcpkg/ports/discordcoreapi/portfile.cmake &&
-                sudo cp -v -R ./CMake/Raw-Files/Portfile-The-Second.cmake ./Vcpkg/ports/discordcoreapi/portfile.cmake &&
-                sudo cp -v -R ./Vcpkg/* /usr/local/share/vcpkg &&
+                sed -i '/Actual hash/,$!d' InstallOutput.txt &&
+                sed -i 's/^.....................//' InstallOutput.txt &&
+                sed -i '2,250d' InstallOutput.txt &&
+                truncate -s -3 InstallOutput.txt &&
+                bash -c "cat ./CMake/Raw-Files/Top-Of-Portfile.cmake >> ./CMake/Raw-Files/Portfile-The-Second.cmake" &&
+                git rev-parse HEAD | sudo tee ./CMake/Raw-Files/Portfile-The-Second.cmake -a &&
+                bash -c "cat ./CMake/Raw-Files/Middle-Of-Portfile.cmake >> ./CMake/Raw-Files/Portfile-The-Second.cmake" &&
+                bash -c "cat InstallOutput.txt >> ./CMake/Raw-Files/Portfile-The-Second.cmake" &&
+                bash -c "echo $'' >> ./CMake/Raw-Files/Portfile-The-Second.cmake" &&
+                bash -c "cat ./CMake/Raw-Files/Bottom-Of-Portfile.cmake >> ./CMake/Raw-Files/Portfile-The-Second.cmake" &&
+                touch ./Vcpkg/ports/discordcoreapi/portfile.cmake &&
+                cp -v -R ./CMake/Raw-Files/Portfile-The-Second.cmake /usr/local/share/vcpkg/ports/discordcoreapi/portfile.cmake &&
+                cp -v -R ./CMake/Raw-Files/Portfile-The-Second.cmake ./Vcpkg/ports/discordcoreapi/portfile.cmake &&
+                cp -v -R ./Vcpkg/* /usr/local/share/vcpkg &&
                 cd /usr/local/share/vcpkg &&
-                sudo ./vcpkg format-manifest ./ports/discordcoreapi/vcpkg.json &&
-                sudo git add . &&
-                sudo git commit -m "Updates!"  &&
-                sudo /usr/local/share/vcpkg/vcpkg x-add-version --overwrite-version --all --skip-version-format-check &&
+                ./vcpkg format-manifest ./ports/discordcoreapi/vcpkg.json &&
+                git add . &&
+                git commit -m "Updates!"  &&
+                /usr/local/share/vcpkg/vcpkg x-add-version --overwrite-version --all --skip-version-format-check &&
                 cd ${GITHUB_WORKSPACE}/DiscordCoreAPI &&
-                sudo cp -v -R /usr/local/share/vcpkg/ports/discordcoreapi/vcpkg.json ./Vcpkg/ports/discordcoreapi/vcpkg.json &&
-                sudo cp -v -R /usr/local/share/vcpkg/versions/baseline.json ./Vcpkg/versions/baseline.json &&
-                sudo cp -v -R /usr/local/share/vcpkg/versions/d-/discordcoreapi.json ./Vcpkg/versions/d-/discordcoreapi.json &&
-                sudo /usr/local/share/vcpkg/vcpkg install discordcoreapi:x64-linux &&
-                sudo rm -rf InstallOutput.txt &&
-                sudo rm -rf ./CMake/Raw-Files/Portfile-The-First.cmake &&
-                sudo rm -rf ./CMake/Raw-Files/Portfile-The-Second.cmake &&
-                sudo git add . &&
-                sudo git commit -m "Updates! [skip ci]" &&
-                sudo git config pull.rebase false &&
-                sudo git pull &&
-                sudo git push origin main
+                cp -v -R /usr/local/share/vcpkg/ports/discordcoreapi/vcpkg.json ./Vcpkg/ports/discordcoreapi/vcpkg.json &&
+                cp -v -R /usr/local/share/vcpkg/versions/baseline.json ./Vcpkg/versions/baseline.json &&
+                cp -v -R /usr/local/share/vcpkg/versions/d-/discordcoreapi.json ./Vcpkg/versions/d-/discordcoreapi.json &&
+                /usr/local/share/vcpkg/vcpkg install discordcoreapi:x64-linux &&
+                rm -rf InstallOutput.txt &&
+                rm -rf ./CMake/Raw-Files/Portfile-The-First.cmake &&
+                rm -rf ./CMake/Raw-Files/Portfile-The-Second.cmake &&
+                git add . &&
+                git commit -m "Updates! [skip ci]" &&
+                git config pull.rebase false &&
+                git pull &&
+                git push origin main
                 
          - name: Download, install, and run a template-bot.
-           run: sudo git clone https://github.com/RealTimeChris/Bot-Template-For-DiscordCoreAPI --depth=1 &&
+           run: git clone https://github.com/RealTimeChris/Bot-Template-For-DiscordCoreAPI --depth=1 &&
                 cd Bot-Template-For-DiscordCoreAPI &&
-                sudo touch TempCMake.txt &&
-                sudo bash -c "echo $'set(VCPKG_ROOT_DIR \"/usr/local/share/vcpkg\")' >> TempCMake.txt" &&
-                sudo sed -i '1,2d' CMakeLists.txt &&
-                sudo bash -c "cat CMakeLists.txt >> TempCMake.txt" &&
-                sudo bash -c "cat TempCMake.txt > CMakeLists.txt" &&
-                sudo apt-get install -y ninja-build &&
-                sudo cmake -S . --preset Linux-Release &&
-                sudo cmake --build --preset Linux-Release &&
-                sudo cmake --install ./Build/Release &&
+                touch TempCMake.txt &&
+                bash -c "echo $'set(VCPKG_ROOT_DIR \"/usr/local/share/vcpkg\")' >> TempCMake.txt" &&
+                sed -i '1,2d' CMakeLists.txt &&
+                bash -c "cat CMakeLists.txt >> TempCMake.txt" &&
+                bash -c "cat TempCMake.txt > CMakeLists.txt" &&
+                apt-get install -y ninja-build &&
+                cmake -S . --preset Linux-Release &&
+                cmake --build --preset Linux-Release &&
+                cmake --install ./Build/Release &&
                 cd "Output Files/Release" &&
-                sudo ./DiscordCoreAPI-Bot-Cpp
+                ./DiscordCoreAPI-Bot-Cpp
