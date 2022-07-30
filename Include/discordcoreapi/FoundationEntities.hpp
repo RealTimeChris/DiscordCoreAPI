@@ -3681,13 +3681,13 @@ namespace DiscordCoreAPI {
 	/// Represents a single frame of raw audio data. \brief Represents a single frame of raw audio data.
 	struct DiscordCoreAPI_Dll RawFrameData {
 		std::vector<uint8_t> data{};///< The audio data.
-		int32_t sampleCount{ -1 };///< The number of samples per this frame.
+		uint32_t sampleCount{ static_cast<uint32_t>(-1) };///< The number of samples per this frame.
 	};
 
 	/// Represents a single frame of encoded audio data. \brief Represents a single frame of encoded audio data.
 	struct DiscordCoreAPI_Dll EncodedFrameData {
 		std::vector<uint8_t> data{};///< The audio data.
-		int32_t sampleCount{ -1 };///< The number of samples per this frame.
+		uint32_t sampleCount{ static_cast<uint32_t>(-1) };///< The number of samples per this frame.
 	};
 
 	/// Audio frame types. \brief Audio frame types.

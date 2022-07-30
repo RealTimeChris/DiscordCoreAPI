@@ -113,11 +113,13 @@ namespace DiscordCoreAPI {
 		std::atomic_bool areWeConnectedBool{ false };
 		std::queue<ConnectionPackage> connections{};
 		DiscordCoreInternal::AudioEncoder encoder{};
+		std::queue<std::string> theFrameQueueRaw{};
+		std::queue<EncodedFrameData> frameQueue{};
 		std::atomic_bool areWePlaying{ false };
 		const int64_t maxReconnectTries{ 10 };
 		int64_t currentReconnectTries{ 0 };
 		Snowflake currentGuildMemberId{};
-		int32_t currentSendTimeStamp{};
+		uint32_t currentSendTimeStamp{};
 		int64_t heartbeatInterval{ 0 };
 		std::string secretKeySend{};
 		uint16_t sequenceIndex{ 0 };
