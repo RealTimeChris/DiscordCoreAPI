@@ -102,31 +102,36 @@ namespace DiscordCoreAPI {
 		std::atomic<VoiceActiveState> lastActiveState{ VoiceActiveState::Connecting };
 		std::atomic<VoiceActiveState> activeState{ VoiceActiveState::Connecting };
 		std::unique_ptr<DiscordCoreInternal::DatagramSocketClient> targetSocket{};
-		DiscordCoreInternal::VoiceConnectionData voiceConnectionDataFinal{};
 		DiscordCoreInternal::BaseSocketAgent* baseSocketAgent{ nullptr };
 		DiscordCoreInternal::VoiceConnectInitData voiceConnectInitData{};
+		DiscordCoreInternal::VoiceConnectionData voiceConnectionData{};
 		DiscordCoreInternal::WebSocketSSLShard* baseShard{ nullptr };
 		UnboundedMessageBlock<AudioFrameData> audioDataBuffer{};
 		std::unique_ptr<std::jthread> taskThread01{ nullptr };
 		std::unique_ptr<std::jthread> taskThread02{ nullptr };
 		std::unique_ptr<std::jthread> taskThread03{ nullptr };
+		std::unordered_map<uint32_t, Snowflake> theSSRCMap{};
 		std::atomic_bool areWeConnectedBool{ false };
 		std::queue<ConnectionPackage> connections{};
 		DiscordCoreInternal::AudioEncoder encoder{};
 		std::queue<std::string> theFrameQueueRaw{};
-		std::queue<EncodedFrameData> frameQueue{};
 		std::atomic_bool areWePlaying{ false };
 		const int64_t maxReconnectTries{ 10 };
 		int64_t currentReconnectTries{ 0 };
+		std::string audioEncryptionMode{};
 		Snowflake currentGuildMemberId{};
 		uint32_t currentSendTimeStamp{};
 		int64_t heartbeatInterval{ 0 };
 		std::string secretKeySend{};
 		uint16_t sequenceIndex{ 0 };
 		AudioFrameData audioData{};
+		std::string externalIp{};
 		StreamType streamType{};
 		uint32_t timeStamp{ 0 };
+		std::string voiceIp{};
 		std::string baseUrl{};
+		uint32_t audioSSRC{};
+		std::string port{};
 
 		std::string encryptSingleAudioFrame(const EncodedFrameData& bufferToSend) noexcept;
 
