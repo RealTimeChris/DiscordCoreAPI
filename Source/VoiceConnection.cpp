@@ -356,7 +356,7 @@ namespace DiscordCoreAPI {
 					break;
 				}
 				case VoiceActiveState::Playing: {
-					DoubleTimePointNs startingValue{ std::chrono::steady_clock::now().time_since_epoch() };
+					DoubleTimePointNs startingValue{ std::chrono::system_clock::now().time_since_epoch() };
 					DoubleTimePointNs intervalCount{ std::chrono::nanoseconds{ 20000000 } };
 					DoubleTimePointNs targetTime{ startingValue.time_since_epoch() + intervalCount.time_since_epoch() };
 					int32_t frameCounter{ 0 };
@@ -369,9 +369,9 @@ namespace DiscordCoreAPI {
 					this->audioData.type = AudioFrameType::Unset;
 					this->audioData.encodedFrameData.data.clear();
 					this->audioData.rawFrameData.data.clear();
-					this->audioDataBuffer.tryReceive(this->audioData);
 
 					while (!stopToken.stop_requested() && this->activeState.load() == VoiceActiveState::Playing) {
+						this->audioDataBuffer.tryReceive(this->audioData);
 						if (!this->targetSocket) {
 							while (this->theFrameQueueRaw.size() > 0) {
 								this->theFrameQueueRaw.pop();
@@ -404,7 +404,6 @@ namespace DiscordCoreAPI {
 						if (this->audioData.guildMemberId != 0) {
 							this->currentGuildMemberId = this->audioData.guildMemberId;
 						}
-						this->audioDataBuffer.tryReceive(this->audioData);
 						if (this->audioData.type != AudioFrameType::Unset && this->audioData.type != AudioFrameType::Skip) {
 							std::string newFrame{};
 							if (this->audioData.type == AudioFrameType::RawPCM) {
@@ -418,7 +417,7 @@ namespace DiscordCoreAPI {
 							if (newFrame.size() == 0) {
 								continue;
 							}
-							auto waitTime = targetTime - std::chrono::steady_clock::now();
+							auto waitTime = targetTime - std::chrono::system_clock::now();
 							if (waitTime.count() > 0 && !stopToken.stop_requested() && DatagramSocketClient::areWeStillConnected()) {
 								std::cout << "WERE HERE NOT STAYING NOT STAYING NOT STAYING!" << std::endl;
 								DatagramSocketClient::processIO(1000);
@@ -427,21 +426,25 @@ namespace DiscordCoreAPI {
 									this->theFrameQueueRaw.push(theString);
 								}
 							}
-							waitTime = targetTime - std::chrono::steady_clock::now();
+							waitTime = targetTime - std::chrono::system_clock::now();
 							nanoSleep(static_cast<int64_t>(static_cast<double>(waitTime.count()) * 0.95f));
-							waitTime = targetTime - std::chrono::steady_clock::now();
+							waitTime = targetTime - std::chrono::system_clock::now();
 							if (waitTime.count() > 0) {
 								spinLock(waitTime.count());
 							}
-							startingValue = std::chrono::steady_clock::now();
+							startingValue = std::chrono::system_clock::now();
 							this->sendSingleAudioFrame(newFrame);
-							totalTime += std::chrono::steady_clock::now() - startingValue;
+							this->audioData.encodedFrameData.data.clear();
+							this->audioData.encodedFrameData.sampleCount = 0;
+							this->audioData.rawFrameData.data.clear();
+							this->audioData.rawFrameData.sampleCount = 0;
+							this->audioData.type = AudioFrameType::Unset;
+							totalTime += std::chrono::system_clock::now() - startingValue;
 							auto intervalCountNew =
 								DoubleTimePointNs{ std::chrono::nanoseconds{ 20000000 } - totalTime.time_since_epoch() / frameCounter }.time_since_epoch().count();
 							intervalCount = DoubleTimePointNs{ std::chrono::nanoseconds{ static_cast<uint64_t>(intervalCountNew) } };
-							targetTime = std::chrono::steady_clock::now().time_since_epoch() + intervalCount;
+							targetTime = std::chrono::system_clock::now().time_since_epoch() + intervalCount;
 						} else if (this->audioData.type == AudioFrameType::Skip) {
-							std::cout << "WERE HERE NOT STAYING NOT STAYING NOT STAYING!" << std::endl;
 							SongCompletionEventData completionEventData{};
 							completionEventData.guild = Guilds::getCachedGuildAsync({ .guildId = this->voiceConnectInitData.guildId }).get();
 							if (this->currentGuildMemberId != 0) {
@@ -478,8 +481,68 @@ namespace DiscordCoreAPI {
 				auto theBuffer = this->theFrameQueueRaw.front();
 				this->theFrameQueueRaw.pop();
 				if (theBuffer.size() > 0 && this->secretKeySend.size() > 0) {
-					std::cout << "THE SENT BYTES: " << theBuffer << std::endl;
-					this->targetSocket->writeData(theBuffer);
+					//std::cout << "THE SENT BYTES: " << theBuffer << std::endl;
+					std::vector<uint8_t> packet{};
+					packet.insert(packet.begin(), theBuffer.begin(), theBuffer.end());
+					constexpr size_t headerSize{ 12 };
+					if (packet.size() < headerSize) {
+						return;
+					}
+
+					if (uint8_t payload_type = packet[1] & 0b0111'1111; 72 <= payload_type && payload_type <= 76) {
+						return;
+					}
+
+					{ /* Get the User ID of the speaker */
+						uint32_t speakerSsrc{};
+						std::memcpy(&speakerSsrc, &packet[8], sizeof(uint32_t));
+						speakerSsrc = ntohl(speakerSsrc);
+						auto theUserId = speakerSsrc;
+					}
+
+					/* Get the sequence number of the voice UDP packet */
+					uint16_t theSequence{};
+					std::memcpy(&theSequence, &packet[2], sizeof(uint16_t));
+					theSequence = ntohs(theSequence);
+					/* Get the timestamp of the voice UDP packet */
+					uint32_t theTimeStamp{};
+					std::memcpy(&theTimeStamp, &packet[4], sizeof(uint32_t));
+					theTimeStamp = ntohl(theTimeStamp);
+
+					/* Nonce is the RTP Header with zero padding */
+					uint8_t nonce[24] = { 0 };
+					std::memcpy(nonce, &packet[0], headerSize);
+
+					/* Get the number of CSRC in header */
+					const size_t csrc_count = packet[0] & 0b0000'1111;
+					/* Skip to the encrypted voice data */
+					const ptrdiff_t offset_to_data = headerSize + sizeof(uint32_t) * csrc_count;
+					uint8_t* encryptedData = packet.data() + offset_to_data;
+					const size_t encryptedDataLen = packet.size() - offset_to_data;
+					std::vector<uint8_t> theKey{};
+					theKey.insert(theKey.begin(), this->secretKeySend.begin(), this->secretKeySend.end());
+
+					if (crypto_secretbox_open_easy(encryptedData, encryptedData, encryptedDataLen, nonce, theKey.data())) {
+						return;
+					}
+
+					std::string decryptedDataString{};
+					decryptedDataString.insert(decryptedDataString.begin(), encryptedData, encryptedData + encryptedDataLen);
+
+					if (const bool usesExtension [[maybe_unused]] = (packet[0] >> 4) & 0b0001) {
+						/* Skip the RTP Extensions */
+						size_t extLen = 0;
+						{
+							uint16_t extLengthInWords;
+							memcpy(&extLengthInWords, &decryptedDataString[2], sizeof(uint16_t));
+							extLengthInWords = ntohs(extLengthInWords);
+							extLen = sizeof(uint32_t) * extLengthInWords;
+						}
+						constexpr size_t extHeaderLen = sizeof(uint16_t) * 2;
+						decryptedDataString = decryptedDataString.substr(extHeaderLen + extLen);
+					}
+
+					this->targetSocket->writeData(decryptedDataString);
 				}
 			}
 		} else {
@@ -488,166 +551,25 @@ namespace DiscordCoreAPI {
 				if (theBuffer != this->voiceConnectionDataFinal.secretKey) {
 					std::cout << "THE SECRET KEY: " << theBuffer << std::endl;
 					this->secretKeySend = theBuffer;
-				}
-			}
-			std::cout << "THE RECEVIED BYTES: " << theBuffer.size() << std::endl;
-			std::vector<uint8_t> packet{};
-			packet.insert(packet.begin(), theBuffer.begin(), theBuffer.end());
-			constexpr size_t headerSize{ 12 };
-			if (packet.size() < headerSize) {
-				return;
-			}
-
-			if (uint8_t payload_type = packet[1] & 0b0111'1111; 72 <= payload_type && payload_type <= 76) {
-				return;
-			}
-
-			{ /* Get the User ID of the speaker */
-				uint32_t speakerSsrc{};
-				std::memcpy(&speakerSsrc, &packet[8], sizeof(uint32_t));
-				speakerSsrc = ntohl(speakerSsrc);
-				auto theUserId = speakerSsrc;
-			}
-
-			/* Get the sequence number of the voice UDP packet */
-			uint16_t theSequence{};
-			std::memcpy(&theSequence, &packet[2], sizeof(uint16_t));
-			theSequence = ntohs(theSequence);
-			/* Get the timestamp of the voice UDP packet */
-			uint32_t theTimeStamp{};
-			std::memcpy(&theTimeStamp, &packet[4], sizeof(uint32_t));
-			theTimeStamp = ntohl(theTimeStamp);
-
-			/* Nonce is the RTP Header with zero padding */
-			uint8_t nonce[24] = { 0 };
-			std::memcpy(nonce, &packet[0], headerSize);
-
-			/* Get the number of CSRC in header */
-			const size_t csrcCount = packet[0] & 0b0000'1111;
-			/* Skip to the encrypted voice data */
-			const ptrdiff_t offsetToData = 12;
-			std::vector<uint8_t> encryptedData{};
-			encryptedData.insert(encryptedData.begin(), packet.data() + offsetToData, packet.data() + packet.size() - 1);
-			const size_t encryptedDataLength = packet.size() - offsetToData;
-			std::vector<uint8_t> theKey{};
-			theKey.insert(theKey.begin(), this->secretKeySend.begin(), this->secretKeySend.end());
-			std::vector<uint8_t> decryptedData{};
-			decryptedData.resize(packet.size() - crypto_secretbox_MACBYTES);
-
-			if (crypto_secretbox_open_easy(decryptedData.data(), encryptedData.data(), encryptedDataLength, nonce, theKey.data())) {
-				return;
-			}
-			std::string decryptedDataString{};
-			decryptedDataString.insert(decryptedDataString.begin(), decryptedData.begin(), decryptedData.end());
-
-			if (const bool usesExtension [[maybe_unused]] = (packet[0] >> 4) & 0b0001) {
-				/* Skip the RTP Extensions */
-				size_t extLen = 0;
-				{
-					uint16_t extLengthInWords;
-					memcpy(&extLengthInWords, &decryptedData[2], sizeof(uint16_t));
-					extLengthInWords = ntohs(extLengthInWords);
-					extLen = sizeof(uint32_t) * extLengthInWords;
-				}
-				constexpr size_t extHeaderLen = sizeof(uint16_t) * 2;
-				decryptedDataString = decryptedDataString.substr(extHeaderLen + extLen);
-			}
-
-			// THE END IS HERE
-			/*
-			std::vector<uint8_t> packet{};
-			packet.insert(packet.begin(), theBuffer.begin(), theBuffer.end());
-			constexpr size_t header_size = 12;
-			if (static_cast<size_t>(packet.size()) < header_size) {
-				return;
-			}
-
-			if (uint8_t payload_type = packet[1] & 0b0111'1111; 72 <= payload_type && payload_type <= 76) {
-				return;
-			}
-
-			{ /* Get the User ID of the speaker 
-				uint32_t speaker_ssrc;
-				std::memcpy(&speaker_ssrc, &packet[8], sizeof(uint32_t));
-				speaker_ssrc = ntohl(speaker_ssrc);
-				auto theUserId = speaker_ssrc;
-			}
-			uint16_t theSequence{};
-			/* Get the sequence number of the voice UDP packet 
-			std::memcpy(&theSequence, &packet[2], sizeof(uint16_t));
-			theSequence = ntohs(theSequence);
-			//std::cout << "THE SEQUENCE: " << theSequence << std::endl;
-			//std::cout << "THE TIMESTAMP: " << theTimeStamp << std::endl;
-			/* Get the timestamp of the voice UDP packet 
-			uint32_t theTimeStamp{};
-			std::memcpy(&theTimeStamp, &packet[4], sizeof(uint32_t));
-			theTimeStamp = ntohl(theTimeStamp);
-			
-
-			/* Nonce is the RTP Header with zero padding
-			uint8_t nonce[24] = { 0 };
-			std::memcpy(nonce, &packet[0], header_size);
-
-			/* Get the number of CSRC in header 
-			const size_t csrc_count = packet[0] & 0b0000'1111;
-			/* Skip to the encrypted voice data 
-			const ptrdiff_t offset_to_data = header_size + sizeof(uint32_t) * csrc_count;
-			uint8_t* encrypted_data = packet.data() + offset_to_data;
-			const size_t encrypted_data_len = packet.size() - offset_to_data;
-			std::vector<uint8_t> theKey{};
-			if (this->secretKeySend.size() > 0 && packet.size() > offset_to_data) {
-				theKey.insert(theKey.begin(), this->secretKeySend.begin(), this->secretKeySend.end());
-				if (crypto_secretbox_open_easy(encrypted_data, encrypted_data, encrypted_data_len, nonce, theKey.data())) {
-					/* Invalid Discord RTP payload. 
 					return;
 				}
+				return;
+			}
 
-				std::basic_string_view<uint8_t> decrypted_data{ encrypted_data, encrypted_data_len - crypto_box_MACBYTES };
-				if (const bool uses_extension [[maybe_unused]] = (packet[0] >> 4) & 0b0001) {
-					/* Skip the RTP Extensions 
-					size_t ext_len = 0;
-					{
-						uint16_t ext_len_in_words;
-						memcpy(&ext_len_in_words, &decrypted_data[2], sizeof(uint16_t));
-						ext_len_in_words = ntohs(ext_len_in_words);
-						ext_len = sizeof(uint32_t) * ext_len_in_words;
-					}
-					constexpr size_t ext_header_len = sizeof(uint16_t) * 2;
-					decrypted_data = decrypted_data.substr(ext_header_len + ext_len);
-				}*/
 			AudioFrameData theFrame{};
-			theFrame.encodedFrameData.data.insert(theFrame.encodedFrameData.data.begin(), decryptedDataString.begin(), decryptedDataString.end());
+			theFrame.encodedFrameData.data.insert(theFrame.encodedFrameData.data.begin(), theBuffer.begin(), theBuffer.end());
 			if (this->currentSendTimeStamp == 0) {
 				theFrame.encodedFrameData.sampleCount = 960;
 			} else {
-				theFrame.encodedFrameData.sampleCount = this->currentSendTimeStamp - theTimeStamp;
+				theFrame.encodedFrameData.sampleCount = 960;
 				std::cout << "THE CURRENT SAMPLE COUNT: " << theFrame.encodedFrameData.sampleCount << std::endl;
 			}
-			std::cout << "THE CURRENT TIMESTAMP: " << theTimeStamp << std::endl;
-			this->currentSendTimeStamp = theTimeStamp;
 
 			theFrame.type = AudioFrameType::Encoded;
 			std::cout << "THE LENGTH OF THE RECEIVED DATA: " << theFrame.encodedFrameData.data.size() << std::endl;
-			this->audioDataBuffer.send(theFrame); /*
-			} else {
-				AudioFrameData theFrame{};
-				std::vector<RawFrameData> theFrames{};
-				RawFrameData newFrame{};
-				newFrame.data.push_back(0xf8);
-				newFrame.data.push_back(0xff);
-				theFrames.push_back(newFrame);
-				newFrame.data.push_back(0xfe);
-				auto theFramesNew = this->encoder.encodeFrames(theFrames);
-				theFrame.encodedFrameData.data.insert(theFrame.encodedFrameData.data.begin(), theFramesNew[0].encodedFrameData.data.begin(),
-					theFramesNew[0].encodedFrameData.data.end());
-				theFrame.encodedFrameData.sampleCount = 960;
-				this->currentSendTimeStamp = theTimeStamp;
+			this->audioDataBuffer.send(theFrame); 	
 
-				theFrame.type = AudioFrameType::Encoded;
-				std::cout << "THE LENGTH OF THE RECEIVED DATA: " << theFrame.encodedFrameData.data.size() << std::endl;
-				this->audioDataBuffer.send(theFrame);
-			}
-			*/
+			
 		}
 	}
 
@@ -851,7 +773,7 @@ namespace DiscordCoreAPI {
 		try {
 			if (WebSocketSSLShard::areWeStillConnected() && this->haveWeReceivedHeartbeatAck) {
 				nlohmann::json data{};
-				data["d"] = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
+				data["d"] = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 				data["op"] = int32_t(3);
 				std::string theString{};
 				this->stringifyJsonData(data, theString, DiscordCoreInternal::WebSocketOpCode::Op_Text);
