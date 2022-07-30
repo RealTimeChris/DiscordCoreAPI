@@ -32,7 +32,7 @@ jobs:
                 bash -c "cat ./CMake/Raw-Files/Bottom-Of-Portfile.cmake >> ./CMake/Raw-Files/Portfile-The-First.cmake" &&
                 bash -c "cat ./CMake/Raw-Files/Top-Of-Version-File.json > ./Vcpkg/ports/discordcoreapi/vcpkg.json" &&
                 date +"\"%Y-%m-%d\"" | sudo tee ./Vcpkg/ports/discordcoreapi/vcpkg.json -a &&
-                udo truncate -s -1 ./Vcpkg/ports/discordcoreapi/vcpkg.json &&
+                truncate -s -1 ./Vcpkg/ports/discordcoreapi/vcpkg.json &&
                 bash -c "cat ./CMake/Raw-Files/Bottom-Of-Version-File.json >> ./Vcpkg/ports/discordcoreapi/vcpkg.json"
 
          - name: Attempt to install the library, to collect the SHA512 value.
