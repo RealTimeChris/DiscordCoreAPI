@@ -31,9 +31,9 @@ namespace DiscordCoreAPI {
 
 	using DoubleMilliSecond = std::chrono::duration<double, std::milli>;
 
-	using DoubleTimePointNs = std::chrono::time_point<std::chrono::system_clock, DoubleNanoSecond>;
+	using DoubleTimePointNs = std::chrono::time_point<std::chrono::steady_clock, DoubleNanoSecond>;
 
-	using DoubleTimePointMs = std::chrono::time_point<std::chrono::system_clock, DoubleMilliSecond>;
+	using DoubleTimePointMs = std::chrono::time_point<std::chrono::steady_clock, DoubleMilliSecond>;
 
 	struct RTPPacket {
 		std::vector<uint8_t> audioData{};
@@ -109,6 +109,7 @@ namespace DiscordCoreAPI {
 		UnboundedMessageBlock<AudioFrameData> audioDataBuffer{};
 		std::unique_ptr<std::jthread> taskThread01{ nullptr };
 		std::unique_ptr<std::jthread> taskThread02{ nullptr };
+		std::unique_ptr<std::jthread> taskThread03{ nullptr };
 		std::atomic_bool areWeConnectedBool{ false };
 		std::queue<ConnectionPackage> connections{};
 		DiscordCoreInternal::AudioEncoder encoder{};
@@ -140,6 +141,8 @@ namespace DiscordCoreAPI {
 		void sendSpeakingMessage(const bool isSpeaking) noexcept;
 
 		void runWebSocket(std::stop_token&) noexcept;
+
+		void runBridge(std::stop_token&) noexcept;
 
 		void runVoice(std::stop_token&) noexcept;
 

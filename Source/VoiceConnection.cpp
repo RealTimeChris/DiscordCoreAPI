@@ -279,6 +279,14 @@ namespace DiscordCoreAPI {
 		}
 	}
 
+	void VoiceConnection::runBridge(std::stop_token& theToken) noexcept {
+		while (!theToken.stop_requested()) {
+			std::cout << "WERE CHECKING FCHECKING CHECKING 010101" << std::endl;
+			this->targetSocket->processIO(10000);
+			this->parseIncomingVoiceData();
+		}
+	}
+
 	bool VoiceConnection::collectAndProcessAMessage(VoiceConnectionState stateToWaitFor) noexcept {
 		DiscordCoreAPI::StopWatch theStopWatch{ 2500ms };
 		while (!this->doWeQuit->load() && this->connectionState.load() != stateToWaitFor) {
@@ -346,7 +354,9 @@ namespace DiscordCoreAPI {
 					break;
 				}
 				case VoiceActiveState::Playing: {
-					DoubleTimePointNs startingValue{ std::chrono::system_clock::now().time_since_epoch() };
+					DoubleTimePointNs startingValue{ std::chrono::steady_clock::now().time_since_epoch() };
+					DoubleTimePointNs intervalCount{ std::chrono::nanoseconds{ 20000000 } };
+					DoubleTimePointNs targetTime{ startingValue.time_since_epoch() + intervalCount.time_since_epoch() };
 					int32_t frameCounter{ 0 };
 					DoubleTimePointNs totalTime{ std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::nanoseconds{ 0 }) };
 					if (!this->areWePlaying.load()) {
@@ -360,20 +370,24 @@ namespace DiscordCoreAPI {
 					this->audioDataBuffer.tryReceive(this->audioData);
 
 					while (!stopToken.stop_requested() && this->activeState.load() == VoiceActiveState::Playing) {
-						std::chrono::nanoseconds intervalCount{};
-						if (this->audioData.type == AudioFrameType::Encoded) {
-							intervalCount = std::chrono::nanoseconds{ this->audioData.encodedFrameData.sampleCount / 48000 * 1000000000 };
-						} else {
-							intervalCount = std::chrono::nanoseconds{ this->audioData.rawFrameData.sampleCount / 48000 * 1000000000 };
+						std::cout << "INTERVAL COUNT: " << intervalCount.time_since_epoch().count() << std::endl;
+						
+						if (this->audioData.type == AudioFrameType::Encoded && this->audioData.encodedFrameData.sampleCount > 0) {
+							intervalCount =
+								DoubleTimePointMs{ std::chrono::nanoseconds{ ((static_cast<uint32_t>(this->audioData.encodedFrameData.sampleCount)) * 1000000000ull) / 48000ull } };
+							std::cout << "SAMPLE COUNT 0101: " << this->audioData.encodedFrameData.sampleCount << std::endl;
+							std::cout << "THE VALUE: " << (static_cast<uint32_t>(this->audioData.encodedFrameData.sampleCount) * 1000000000ull) / 48000ull << std::endl;
+							std::cout << "THE VALUE (REAL): " << (960ull * 1000000000ull) / 48000ull << std::endl;
+							std::cout << "INTERVAL COUNT 0101: " << intervalCount.time_since_epoch().count() << std::endl;
+						} else if (this->audioData.rawFrameData.sampleCount > 0) {
+							std::cout << "INTERVAL COUNT: " << intervalCount.time_since_epoch().count() << std::endl;
+							intervalCount = DoubleTimePointMs{ std::chrono::nanoseconds{ (this->audioData.rawFrameData.sampleCount * 1000000000) / 48000 } };
 						}
 						
-						DoubleTimePointNs targetTime{ startingValue.time_since_epoch() + intervalCount };
-						if (this->targetSocket) {
-							std::cout << "WERE CHECKING FCHECKING CHECKING" << std::endl;
-							this->targetSocket->processIO(1000);
-							this->parseIncomingVoiceData();
+						targetTime = DoubleTimePointMs{ startingValue.time_since_epoch() + intervalCount.time_since_epoch() };
+						if (!this->targetSocket) {
+							DatagramSocketClient::getInputBuffer();
 						}
-						DatagramSocketClient::getInputBuffer();
 						theStopWatch.resetTimer();
 						while (!stopToken.stop_requested() && !DatagramSocketClient::areWeStillConnected()) {
 							if (theStopWatch.hasTimePassed() || this->activeState.load() == VoiceActiveState::Exiting) {
@@ -398,23 +412,23 @@ namespace DiscordCoreAPI {
 							if (newFrame.size() == 0) {
 								continue;
 							}
-							auto waitTime = targetTime - std::chrono::system_clock::now();
+							auto waitTime = targetTime - std::chrono::steady_clock::now();
 							if (waitTime.count() > 500000 && !stopToken.stop_requested() && DatagramSocketClient::areWeStillConnected()) {
 								DatagramSocketClient::processIO(10000);
 							}
-							waitTime = targetTime - std::chrono::system_clock::now();
+							waitTime = targetTime - std::chrono::steady_clock::now();
 							nanoSleep(static_cast<int64_t>(static_cast<double>(waitTime.count()) * 0.95f));
-							waitTime = targetTime - std::chrono::system_clock::now();
+							waitTime = targetTime - std::chrono::steady_clock::now();
 							if (waitTime.count() > 0) {
 								spinLock(waitTime.count());
 							}
-							startingValue = std::chrono::system_clock::now();
+							startingValue = std::chrono::steady_clock::now();
 							this->sendSingleAudioFrame(newFrame);
-							totalTime += std::chrono::system_clock::now() - startingValue;
+							totalTime += std::chrono::steady_clock::now() - startingValue;
 							auto intervalCountNew =
 								DoubleTimePointNs{ std::chrono::nanoseconds{ 20000000 } - totalTime.time_since_epoch() / frameCounter }.time_since_epoch().count();
-							intervalCount = std::chrono::nanoseconds{ static_cast<uint64_t>(intervalCountNew) };
-							targetTime = std::chrono::system_clock::now().time_since_epoch() + DoubleTimePointNs{ intervalCount };
+							intervalCount = DoubleTimePointNs{ std::chrono::nanoseconds{ static_cast<uint64_t>(intervalCountNew) } };
+							targetTime = std::chrono::steady_clock::now().time_since_epoch() + intervalCount;
 							this->audioData.type = AudioFrameType::Unset;
 							this->audioData.encodedFrameData.data.clear();
 							this->audioData.rawFrameData.data.clear();
@@ -453,23 +467,27 @@ namespace DiscordCoreAPI {
 
 	void VoiceConnection::parseIncomingVoiceData() noexcept {
 		if (this->streamType == StreamType::Source) {
-			auto theBuffer = DatagramSocketClient::getInputBuffer();
-			std::cout << "THE SENT BYTES: " << theBuffer << std::endl;
-			if (theBuffer.size() > 0 && this->secretKeySend.size() > 0) {
+			std::string theBuffer{};
+			do {
+				auto theBuffer = DatagramSocketClient::getInputBuffer();
 				std::cout << "THE SENT BYTES: " << theBuffer << std::endl;
-				this->targetSocket->writeData(theBuffer);
-			}
+				if (theBuffer.size() > 0 && this->secretKeySend.size() > 0) {
+					std::cout << "THE SENT BYTES: " << theBuffer << std::endl;
+					this->targetSocket->writeData(theBuffer);
+				}
+
+			} while (theBuffer.size() > 0);
 		} else {
 			DatagramSocketClient::getInputBuffer();
 			auto theBuffer = this->targetSocket->getInputBuffer();
-			if (theBuffer.size() == 32) {				
+			if (theBuffer.size() == 32) {
 				if (theBuffer != this->voiceConnectionDataFinal.secretKey) {
 					std::cout << "THE SECRET KEY: " << theBuffer << std::endl;
 					this->secretKeySend = theBuffer;
 				}
 			}
 
-			std::vector<unsigned char> packet{};
+			std::vector<uint8_t> packet{};
 			packet.insert(packet.begin(), theBuffer.begin(), theBuffer.end());
 			constexpr size_t header_size = 12;
 			if (static_cast<size_t>(packet.size()) < header_size) {
@@ -489,13 +507,11 @@ namespace DiscordCoreAPI {
 			uint16_t theSequence{};
 			/* Get the sequence number of the voice UDP packet */
 			std::memcpy(&theSequence, &packet[2], sizeof(theSequence));
-			std::cout << "THE SEQUENCE: " << theSequence << std::endl;
 			theSequence = ntohs(theSequence);
 			std::cout << "THE SEQUENCE: " << theSequence << std::endl;
 			/* Get the timestamp of the voice UDP packet */
 			uint32_t theTimeStamp{};
 			std::memcpy(&theTimeStamp, &packet[4], sizeof(theTimeStamp));
-			std::cout << "THE TIMESTAMP: " << theTimeStamp << std::endl;
 			theTimeStamp = ntohl(theTimeStamp);
 			std::cout << "THE TIMESTAMP: " << theTimeStamp << std::endl;
 
@@ -507,9 +523,9 @@ namespace DiscordCoreAPI {
 			const size_t csrc_count = packet[0] & 0b0000'1111;
 			/* Skip to the encrypted voice data */
 			const ptrdiff_t offset_to_data = header_size + sizeof(uint32_t) * csrc_count;
-			unsigned char* encrypted_data = packet.data() + offset_to_data;
+			uint8_t* encrypted_data = packet.data() + offset_to_data;
 			const size_t encrypted_data_len = packet.size() - offset_to_data;
-			std::vector<unsigned char> theKey{};
+			std::vector<uint8_t> theKey{};
 			if (this->secretKeySend.size() > 0 && packet.size() > offset_to_data) {
 				theKey.insert(theKey.begin(), this->secretKeySend.begin(), this->secretKeySend.end());
 				if (crypto_secretbox_open_easy(encrypted_data, encrypted_data, encrypted_data_len, nonce, theKey.data())) {
@@ -530,21 +546,33 @@ namespace DiscordCoreAPI {
 					constexpr size_t ext_header_len = sizeof(uint16_t) * 2;
 					decrypted_data = decrypted_data.substr(ext_header_len + ext_len);
 				}
-				std::string theString{};
-				theString.insert(theString.begin(), decrypted_data.begin(), decrypted_data.end());
 				AudioFrameData theFrame{};
-				std::vector<uint8_t> theVector{};
-				theVector.insert(theVector.begin(), theBuffer.begin(), theBuffer.end());
-				theFrame.encodedFrameData.data = theVector;
+				theFrame.encodedFrameData.data.insert(theFrame.encodedFrameData.data.begin(), decrypted_data.begin(), decrypted_data.end());
 				if (this->currentSendTimeStamp == 0) {
 					theFrame.encodedFrameData.sampleCount = 960;
-					this->currentSendTimeStamp = theTimeStamp;
 				} else {
 					theFrame.encodedFrameData.sampleCount = (this->currentSendTimeStamp - theTimeStamp) * -1;
-					this->currentSendTimeStamp = theTimeStamp;
 					std::cout << "THE CURRENT SAMPLE COUNT: " << theFrame.encodedFrameData.sampleCount << std::endl;
 				}
-				
+				this->currentSendTimeStamp = theTimeStamp;
+
+				theFrame.type = AudioFrameType::Encoded;
+				std::cout << "THE LENGTH OF THE RECEIVED DATA: " << theFrame.encodedFrameData.data.size() << std::endl;
+				this->audioDataBuffer.send(theFrame);
+			} else {
+				AudioFrameData theFrame{};
+				std::vector<RawFrameData> theFrames{};
+				RawFrameData newFrame{};
+				newFrame.data.push_back(0xf8);
+				newFrame.data.push_back(0xff);
+				newFrame.data.push_back(0xfe);
+				theFrames.push_back(newFrame);
+				auto theFramesNew = this->encoder.encodeFrames(theFrames);
+				theFrame.encodedFrameData.data.insert(theFrame.encodedFrameData.data.begin(), theFramesNew[0].encodedFrameData.data.begin(),
+					theFramesNew[0].encodedFrameData.data.end());
+				theFrame.encodedFrameData.sampleCount = 960;
+				this->currentSendTimeStamp = theTimeStamp;
+
 				theFrame.type = AudioFrameType::Encoded;
 				std::cout << "THE LENGTH OF THE RECEIVED DATA: " << theFrame.encodedFrameData.data.size() << std::endl;
 				this->audioDataBuffer.send(theFrame);
@@ -752,7 +780,7 @@ namespace DiscordCoreAPI {
 		try {
 			if (WebSocketSSLShard::areWeStillConnected() && this->haveWeReceivedHeartbeatAck) {
 				nlohmann::json data{};
-				data["d"] = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+				data["d"] = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
 				data["op"] = int32_t(3);
 				std::string theString{};
 				this->stringifyJsonData(data, theString, DiscordCoreInternal::WebSocketOpCode::Op_Text);
@@ -772,7 +800,6 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::onClosedVoice() noexcept {
-		std::cout << "WERE CLOSING CLOSING CLOSING" << std::endl;
 		this->connectionState.store(VoiceConnectionState::Collecting_Init_Data);
 		if (this->activeState.load() != VoiceActiveState::Exiting && this->currentReconnectTries < this->maxReconnectTries) {
 			this->reconnect();
@@ -875,7 +902,6 @@ namespace DiscordCoreAPI {
 			ConnectionPackage dataPackage{};
 			dataPackage.currentShard = 0;
 			this->connections.push(dataPackage);
-			std::cout << "WERE LEAVING 9292" << std::endl;
 			this->activeState.store(VoiceActiveState::Connecting);
 			if (!this->taskThread01) {
 				this->taskThread01 = std::make_unique<std::jthread>([=, this](std::stop_token stopToken) {
@@ -886,6 +912,12 @@ namespace DiscordCoreAPI {
 			if (!this->taskThread02) {
 				this->taskThread02 = std::make_unique<std::jthread>([=, this](std::stop_token stopToken) {
 					this->runVoice(stopToken);
+				});
+			}
+
+			if (this->streamType != StreamType::None) {
+				this->taskThread03 = std::make_unique<std::jthread>([=, this](std::stop_token stopToken) {
+					this->runBridge(stopToken);
 				});
 			}
 		}
