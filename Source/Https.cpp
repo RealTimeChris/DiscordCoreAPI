@@ -157,8 +157,9 @@ namespace DiscordCoreInternal {
 			if (other.size() >= static_cast<size_t>(theData.contentSize)) {
 				theData.responseMessage.insert(theData.responseMessage.end(), other.begin(), other.begin() + theData.contentSize);
 				return false;
+			} else {
+				return true;
 			}
-			return false;
 		}
 	}
 
@@ -287,8 +288,7 @@ namespace DiscordCoreInternal {
 		this->connectionManager.initialize();
 	};
 
-	template<> void HttpsClient::submitWorkloadAndGetResult<void>(HttpsWorkloadData& workloadNew) {
-		HttpsWorkloadData workload = workloadNew;
+	template<> void HttpsClient::submitWorkloadAndGetResult<void>(const HttpsWorkloadData& workload) {
 		workload.headersToInsert["Authorization"] = "Bot " + this->configManager->getBotToken();
 		workload.headersToInsert["User-Agent"] = "DiscordBot (https://discordcoreapi.com/ 1.0)";
 		if (workload.payloadType == PayloadType::Application_Json) {
@@ -298,7 +298,7 @@ namespace DiscordCoreInternal {
 		}
 		auto returnData = this->httpRequest(workload);
 		if (returnData.responseCode != 200 && returnData.responseCode != 204 && returnData.responseCode != 201) {
-			std::string theErrorMessage{ DiscordCoreAPI::shiftToBrightRed() + workloadNew.callStack + " Https Error; Code: " + std::to_string(returnData.responseCode) +
+			std::string theErrorMessage{ DiscordCoreAPI::shiftToBrightRed() + workload.callStack + " Https Error; Code: " + std::to_string(returnData.responseCode) +
 				", Message: " + returnData.responseMessage + DiscordCoreAPI::reset() + "\n\n" };
 			HttpError theError{ theErrorMessage };
 			theError.errorCode = returnData.responseCode;
@@ -322,7 +322,7 @@ namespace DiscordCoreInternal {
 		return returnData;
 	}
 
-	HttpsResponseData HttpsClient::httpRequest(HttpsWorkloadData& workload) {
+	HttpsResponseData HttpsClient::httpRequest(const HttpsWorkloadData& workload) {
 		if (workload.baseUrl == "") {
 			workload.baseUrl = "https://discord.com/api/v10";
 		}
@@ -528,7 +528,7 @@ namespace DiscordCoreInternal {
 					}
 					case HttpsState::Collecting_Contents: {
 						auto theResult = theConnection.parseChunk(theData, theConnection.inputBufferReal);
-						if ((theData.responseMessage.size() >= theData.contentSize && !theResult) || stopWatch.hasTimePassed() ||
+						if ((theData.responseMessage.size() >= theData.contentSize && !theResult) || stopWatch.hasTimePassed() || !theResult ||
 							(theData.responseCode == -5 && theData.contentSize == -5)) {
 							doWeReturn = true;
 						} else if (theResult) {

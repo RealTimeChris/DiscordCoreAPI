@@ -281,14 +281,14 @@ namespace DiscordCoreInternal {
 		static std::unordered_map<HttpsWorkloadType, std::unique_ptr<std::atomic_int64_t>> workloadIdsInternal;
 		static std::mutex accessMutex;
 
-		std::unordered_map<std::string, std::string> headersToInsert{};
+		mutable std::unordered_map<std::string, std::string> headersToInsert{};
 		PayloadType payloadType{ PayloadType::Application_Json };
 		std::atomic_int64_t thisWorkerId{ 0 };
 		HttpsWorkloadClass workloadClass{};
+		mutable std::string baseUrl{};
 		std::string relativePath{};
 		std::string callStack{};
 		std::string content{};
-		std::string baseUrl{};
 
 		HttpsWorkloadData& operator=(const HttpsWorkloadData& other);
 
