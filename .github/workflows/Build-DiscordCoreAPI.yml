@@ -18,7 +18,7 @@ jobs:
          - name: Collect the repo.
            run: git config --global user.email "40668522+RealTimeChris@users.noreply.github.com" &&
                 git config --global user.name "realtimechris" &&
-                git clone https://realtimechris:${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/realtimechris/DiscordCoreAPI ./DiscordCoreAPI --depth=1
+                git clone https://realtimechris:${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/realtimechris/DiscordCoreAPI ./DiscordCoreAPI --depth=1 
 
          - name: Construct the original portfile and version file.
            run: cd ./DiscordCoreAPI &&
