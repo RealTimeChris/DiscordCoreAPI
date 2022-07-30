@@ -532,9 +532,7 @@ namespace DiscordCoreInternal {
 							(theData.responseCode == -5 && theData.contentSize == -5)) {
 							doWeReturn = true;
 						} else if (theResult) {
-							if (stopWatch.hasTimePassed()) {
-								doWeReturn = true;
-							}
+							stopWatch.resetTimer();
 						}
 					}
 				}
