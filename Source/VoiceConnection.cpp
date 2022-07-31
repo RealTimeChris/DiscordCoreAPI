@@ -501,49 +501,42 @@ namespace DiscordCoreAPI {
 						return;
 					}
 
-					{ 
-						uint32_t speakerSsrc{};
-						std::memcpy(&speakerSsrc, &packet[8], sizeof(uint32_t));
-						speakerSsrc = ntohl(speakerSsrc);
-						auto theUserId = this->theSSRCMap[speakerSsrc];
+					uint16_t theSequence{};
+					std::memcpy(&theSequence, &packet[2], sizeof(uint16_t));
+					theSequence = ntohs(theSequence);
+					uint32_t theTimeStamp{};
+					std::memcpy(&theTimeStamp, &packet[4], sizeof(uint32_t));
+					theTimeStamp = ntohl(theTimeStamp);
 
-						uint16_t theSequence{};
-						std::memcpy(&theSequence, &packet[2], sizeof(uint16_t));
-						theSequence = ntohs(theSequence);
-						uint32_t theTimeStamp{};
-						std::memcpy(&theTimeStamp, &packet[4], sizeof(uint32_t));
-						theTimeStamp = ntohl(theTimeStamp);
+					uint8_t nonce[24] = { 0 };
+					std::memcpy(nonce, &packet[0], headerSize);
 
-						uint8_t nonce[24] = { 0 };
-						std::memcpy(nonce, &packet[0], headerSize);
+					const size_t csrcCount = packet[0] & 0b0000'1111;
+					const ptrdiff_t offsetToData = headerSize + sizeof(uint32_t) * csrcCount;
+					uint8_t* encryptedData = packet.data() + offsetToData;
+					const size_t encryptedDataLen = packet.size() - offsetToData;
+					std::vector<uint8_t> theKey{};
+					theKey.insert(theKey.begin(), this->secretKeySend.begin(), this->secretKeySend.end());
 
-						const size_t csrcCount = packet[0] & 0b0000'1111;
-						const ptrdiff_t offsetToData = headerSize + sizeof(uint32_t) * csrcCount;
-						uint8_t* encryptedData = packet.data() + offsetToData;
-						const size_t encryptedDataLen = packet.size() - offsetToData;
-						std::vector<uint8_t> theKey{};
-						theKey.insert(theKey.begin(), this->secretKeySend.begin(), this->secretKeySend.end());
-
-						if (crypto_secretbox_open_easy(encryptedData, encryptedData, encryptedDataLen, nonce, theKey.data())) {
-							return;
-						}
-
-						std::string decryptedDataString{};
-						decryptedDataString.insert(decryptedDataString.begin(), encryptedData, encryptedData + encryptedDataLen);
-
-						if (const bool usesExtension [[maybe_unused]] = (packet[0] >> 4) & 0b0001) {
-							size_t extLen = 0;
-							{
-								uint16_t extLengthInWords;
-								memcpy(&extLengthInWords, &decryptedDataString[2], sizeof(uint16_t));
-								extLengthInWords = ntohs(extLengthInWords);
-								extLen = sizeof(uint32_t) * extLengthInWords;
-							}
-							constexpr size_t extHeaderLen = sizeof(uint16_t) * 2;
-							decryptedDataString = decryptedDataString.substr(extHeaderLen + extLen);
-						}
-						this->targetSocket->writeData(decryptedDataString);
+					if (crypto_secretbox_open_easy(encryptedData, encryptedData, encryptedDataLen, nonce, theKey.data())) {
+						return;
 					}
+
+					std::string decryptedDataString{};
+					decryptedDataString.insert(decryptedDataString.begin(), encryptedData, encryptedData + encryptedDataLen);
+
+					if (const bool usesExtension [[maybe_unused]] = (packet[0] >> 4) & 0b0001) {
+						size_t extLen = 0;
+						{
+							uint16_t extLengthInWords;
+							memcpy(&extLengthInWords, &decryptedDataString[2], sizeof(uint16_t));
+							extLengthInWords = ntohs(extLengthInWords);
+							extLen = sizeof(uint32_t) * extLengthInWords;
+						}
+						constexpr size_t extHeaderLen = sizeof(uint16_t) * 2;
+						decryptedDataString = decryptedDataString.substr(extHeaderLen + extLen);
+					}
+					this->targetSocket->writeData(decryptedDataString);
 				}
 			}
 		} else {
@@ -738,16 +731,15 @@ namespace DiscordCoreAPI {
 				}
 				this->baseShard->voiceConnectionDataBufferMap[this->voiceConnectInitData.guildId]->clearContents();
 				this->connectionState.store(VoiceConnectionState::Collecting_Init_Data);
-
-				if (this->streamType != StreamType::None) {
-					this->taskThread03 = std::make_unique<std::jthread>([=, this](std::stop_token stopToken) {
-						this->runBridge(stopToken);
-					});
-				}
 				if (this->streamType == StreamType::Destination) {
 					this->targetSocket = std::make_unique<DatagramSocketClient>(false);
 				} else if (this->streamType == StreamType::Source) {
 					this->targetSocket = std::make_unique<DatagramSocketClient>(true);
+				}
+				if (this->streamType != StreamType::None) {
+					this->taskThread03 = std::make_unique<std::jthread>([=, this](std::stop_token stopToken) {
+						this->runBridge(stopToken);
+					});
 				}
 				this->targetSocket->connect(this->theStreamInfo.targetAddress, this->theStreamInfo.targetPort);
 				return;
