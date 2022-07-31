@@ -504,7 +504,7 @@ namespace DiscordCoreInternal {
 				std::cout << "WERE NOT LEAVING TODAY TODAY TODAY: " << reportError("DataGramSocketClient::connect()") << std::endl;
 				return false;
 			} else {
-				std::cout << "WERE MAYBE LEAVING TODAY TODAY TODAY: " << reportError("DataGramSocketClient::connect()") << std::endl;
+				std::cout << "WERE MAYBE LEAVING TODAY TODAY TODAY: 0202" << reportError("DataGramSocketClient::connect()") << std::endl;
 			}
 		}		
 
@@ -627,6 +627,9 @@ namespace DiscordCoreInternal {
 			return;
 		} else {
 			this->inputBuffer.insert(this->inputBuffer.end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
+			if (!this->areWeAClient) {
+				//std::cout << "THE READ STRING: " << this->inputBuffer << std::endl;
+			}
 			this->bytesRead += readBytes;
 		}
 	}

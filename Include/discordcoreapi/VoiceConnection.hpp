@@ -106,6 +106,7 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::VoiceConnectInitData voiceConnectInitData{};
 		DiscordCoreInternal::VoiceConnectionData voiceConnectionData{};
 		DiscordCoreInternal::WebSocketSSLShard* baseShard{ nullptr };
+		UnboundedMessageBlock<AudioFrameData> audioDataBufferReal{};
 		UnboundedMessageBlock<AudioFrameData> audioDataBuffer{};
 		std::unique_ptr<std::jthread> taskThread01{ nullptr };
 		std::unique_ptr<std::jthread> taskThread02{ nullptr };
@@ -125,6 +126,7 @@ namespace DiscordCoreAPI {
 		std::string secretKeySend{};
 		uint16_t sequenceIndex{ 0 };
 		AudioFrameData audioData{};
+		StreamInfo theStreamInfo{};
 		std::string externalIp{};
 		StreamType streamType{};
 		uint32_t timeStamp{ 0 };

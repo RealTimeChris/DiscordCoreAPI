@@ -969,7 +969,6 @@ namespace DiscordCoreInternal {
 
 	void BaseSocketAgent::connectVoiceChannel(VoiceConnectInitData theData) noexcept {
 		std::lock_guard theLock{ this->theMutex };
-		std::cout << "TARGET ADDRESS: " << theData.streamInfo.targetAddress << ", TARGET PORT: " << theData.streamInfo.targetPort << std::endl;
 		this->voiceConnections.push(theData);
 	}
 
@@ -1011,6 +1010,7 @@ namespace DiscordCoreInternal {
 		}
 		this->theVCStopWatch.resetTimer();
 		VoiceConnectInitData theConnectionData = this->voiceConnections.front();
+		std::cout << "THE STREAM TYPE: " << ( int )theConnectionData.streamType << std::endl;
 		this->voiceConnections.pop();
 		DiscordCoreAPI::getVoiceConnectionMap()[theConnectionData.guildId] = std::make_unique<DiscordCoreAPI::VoiceConnection>(this, theConnectionData,
 			&this->discordCoreClient->configManager, this->doWeQuit, theConnectionData.streamType, theConnectionData.streamInfo);
