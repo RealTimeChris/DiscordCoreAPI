@@ -738,16 +738,15 @@ namespace DiscordCoreAPI {
 				}
 				this->baseShard->voiceConnectionDataBufferMap[this->voiceConnectInitData.guildId]->clearContents();
 				this->connectionState.store(VoiceConnectionState::Collecting_Init_Data);
-
-				if (this->streamType != StreamType::None) {
-					this->taskThread03 = std::make_unique<std::jthread>([=, this](std::stop_token stopToken) {
-						this->runBridge(stopToken);
-					});
-				}
 				if (this->streamType == StreamType::Destination) {
 					this->targetSocket = std::make_unique<DatagramSocketClient>(false);
 				} else if (this->streamType == StreamType::Source) {
 					this->targetSocket = std::make_unique<DatagramSocketClient>(true);
+				}
+				if (this->streamType != StreamType::None) {
+					this->taskThread03 = std::make_unique<std::jthread>([=, this](std::stop_token stopToken) {
+						this->runBridge(stopToken);
+					});
 				}
 				this->targetSocket->connect(this->theStreamInfo.targetAddress, this->theStreamInfo.targetPort);
 				return;
