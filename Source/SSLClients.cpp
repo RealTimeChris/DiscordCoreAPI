@@ -607,6 +607,10 @@ namespace DiscordCoreInternal {
 				this->disconnect();
 				return;
 			} else {
+				if (!this->areWeAClient) {
+					std::cout << "WRITTEN BYTES: " << clientToServerString << std::endl;
+				}
+				
 				this->outputBuffers.erase(this->outputBuffers.begin());
 			}
 		}
