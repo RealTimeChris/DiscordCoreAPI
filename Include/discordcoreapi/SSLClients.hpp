@@ -159,7 +159,7 @@ namespace DiscordCoreInternal {
 
 		virtual bool areWeStillConnected() noexcept = 0;
 
-		virtual ~SSLConnectionInterface() noexcept = default;
+		virtual ~SSLConnectionInterface() noexcept;
 
 	  protected:
 		static std::mutex contextMutex;
@@ -246,7 +246,7 @@ namespace DiscordCoreInternal {
 
 		void disconnect() noexcept;
 
-		~DatagramSocketClient() noexcept = default;
+		virtual ~DatagramSocketClient() noexcept;
 
 	  protected:
 		const int32_t maxBufferSize{ 1024 * 16 };

@@ -158,6 +158,10 @@ namespace DiscordCoreInternal {
 		}
 	}
 
+	SSLConnectionInterface::~SSLConnectionInterface() noexcept {
+		std::lock_guard theLock{ this->connectionMutex };
+	}
+
 	void SSLClient::processIO(std::vector<SSLClient*>& theVector, int32_t waitTimeInms) noexcept {
 		int32_t writeNfds{ 0 }, readNfds{ 0 }, finalNfds{ 0 };
 		fd_set writeSet{}, readSet{};
@@ -644,6 +648,10 @@ namespace DiscordCoreInternal {
 		this->theSocket = SOCKET_ERROR;
 		this->inputBuffer.clear();
 		this->outputBuffers.clear();
+	}
+
+	DatagramSocketClient::~DatagramSocketClient() noexcept {
+		std::lock_guard theLock{ this->theMutex };
 	}
 
 	std::mutex SSLConnectionInterface::contextMutex{};
