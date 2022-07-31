@@ -530,10 +530,8 @@ namespace DiscordCoreInternal {
 		std::unique_lock theLock{ this->theMutex };
 		FD_ZERO(&readSet);
 		FD_SET(this->theSocket, &readSet);
-		if (this->outputBuffers.size() > 0) {
-			FD_ZERO(&writeSet);
-			FD_SET(this->theSocket, &writeSet);
-		}
+		FD_ZERO(&writeSet);
+		FD_SET(this->theSocket, &writeSet);
 		timeval checkTime{};
 		if (this->areWeAClient) {
 			checkTime.tv_usec = waitTimeInms;

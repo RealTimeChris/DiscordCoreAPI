@@ -109,6 +109,8 @@ namespace DiscordCoreAPI {
 		this->theStreamInfo = streamInfoNew;
 		this->streamType = streamTypeNew;
 		this->doWeQuit = doWeQuitNew;
+		int32_t theError{};
+		this->theEncoder = opus_encoder_create(48000, 2, OPUS_APPLICATION_AUDIO, &theError);
 	}
 
 	Snowflake VoiceConnection::getChannelId() noexcept {
@@ -582,28 +584,33 @@ namespace DiscordCoreAPI {
 			}
 		} else {
 			auto theBuffer = this->targetSocket->getInputBuffer();
+			std::cout << "THE FRAME SIZE (FAKE): " << theBuffer.size() << std::endl;
 			this->streamString.insert(this->streamString.end(), theBuffer.begin(), theBuffer.end());
-			if (this->offsetIntoStream == 0 && this->streamString.size() > 0) {
-				uint64_t sampleCount{};
+			uint64_t sampleCount{};
+			uint64_t stringSize{};
+			if (this->streamString.size() >= 8) {
 				loadBits(this->streamString, 0, sampleCount);
-				uint64_t stringSize{};
-				loadBits(this->streamString, 8, stringSize);
-				this->offsetIntoStream = stringSize;
-			} else if (this->streamString.size() >= this->offsetIntoStream && this->streamString.size() > 16) {
-				uint64_t sampleCount{};
-				loadBits(this->streamString, 0, sampleCount);
-				uint64_t stringSize{};
-				loadBits(this->streamString, 8, stringSize);
-				this->offsetIntoStream = stringSize;
+				std::cout << "SAMPLE COUNT" << sampleCount << std::endl;
+				if (this->streamString.size() >= 16) {
+					loadBits(this->streamString, 8, stringSize);
+					std::cout << "STRING SIZE" << stringSize << std::endl;
+					this->offsetIntoStream = stringSize;
+				}
+			} 
+			
+			if ((this->offsetIntoStream == 0 && this->streamString.size() > 0) || (this->streamString.size() >= this->offsetIntoStream && this->streamString.size() > 16)) {
+				std::string theStringNew{};
+				theStringNew.insert(theStringNew.begin(), this->streamString.begin() + 16, this->streamString.begin() + this->offsetIntoStream);
 				AudioFrameData theFrame{};
-				theFrame.encodedFrameData.data.insert(theFrame.encodedFrameData.data.begin(), this->streamString.begin() + 16, this->streamString.begin() + this->offsetIntoStream);
+				theFrame.encodedFrameData.data.insert(theFrame.encodedFrameData.data.begin(), theStringNew.begin(), theStringNew.end());
 				//std::cout << "THE STRING: " << this->streamString << std::endl;
 				std::cout << "THE SAMPLE COUNT: " << sampleCount << std::endl;
-				std::cout << "THE FRAME SIZE 0101: " << stringSize << std::endl;
+				std::cout << "THE FRAME SIZE 0202: " << stringSize << std::endl;
 				theFrame.encodedFrameData.sampleCount = sampleCount;
 				theFrame.type = AudioFrameType::Encoded;
 				this->streamString.erase(this->streamString.begin(), this->streamString.begin() + this->offsetIntoStream);
 				this->audioDataBufferReal.send(theFrame);
+				
 			}
 		}
 	}
@@ -975,18 +982,27 @@ namespace DiscordCoreAPI {
 
 			std::vector<opus_int16> downSampleVector{};
 			downSampleVector.resize(5760 * 2);
-			
 			for (int v = 0; v < sampleCount * 2; ++v) {
 				downSampleVector[v] = theVector[v] / this->thePayloads.size();
 			}
-			std::basic_string<int8_t> theFinalString{ reinterpret_cast<int8_t*>(downSampleVector.data()), sampleCount * 2 * sizeof(opus_int16) };
+
+			std::vector<unsigned char> theVectorNew{};
+			theVectorNew.resize(1276);
+			uint64_t sampleCountFinal{};
+			if (sampleCountFinal = opus_encode(this->theEncoder, downSampleVector.data(), 960, theVectorNew.data(), 1276); sampleCountFinal <= 0) {
+				if (this->configManager->doWePrintGeneralErrorMessages()) {
+					std::cout << "Failed to encode the user's voice payload.";
+					return;
+				}
+			}
 			std::string theFinalStringReal{};
-			theFinalStringReal.insert(theFinalStringReal.begin(), theFinalString.begin(), theFinalString.end());
-			DiscordCoreAPI::storeBits(theFinalStringReal, sampleCount);
-			uint64_t theSize = downSampleVector.size() + 8 + 8;
+			DiscordCoreAPI::storeBits(theFinalStringReal, sampleCountFinal);
+			uint64_t theSize = sampleCountFinal + 8 + 8;
 			DiscordCoreAPI::storeBits(theFinalStringReal, theSize);
+			theFinalStringReal.insert(theFinalStringReal.end(), theVectorNew.begin(), theVectorNew.begin() + sampleCountFinal);
 			if (theFinalStringReal.size() > 16) {
 				this->targetSocket->writeData(theFinalStringReal);
+				std::cout << "THE FINAL STRING SIZE: " << theFinalStringReal.size() << std::endl;
 			}
 		}
 	}
