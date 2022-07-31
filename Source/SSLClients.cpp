@@ -474,12 +474,12 @@ namespace DiscordCoreInternal {
 	}
 
 	bool DatagramSocketClient::connect(const std::string& baseUrlNew, const std::string& portNew) noexcept {
-		std::lock_guard theLock{ this->theMutex };
 		this->theAddress.sin_addr.s_addr = inet_addr(baseUrlNew.c_str());
 		this->theAddress.sin_port = DiscordCoreAPI::reverseByteOrder(static_cast<unsigned short>(stoi(portNew)));
 		this->theAddress.sin_family = AF_INET;
 
 		addrinfoWrapper hints{}, address{};
+
 		hints->ai_family = AF_INET;
 		hints->ai_socktype = SOCK_DGRAM;
 		hints->ai_protocol = IPPROTO_UDP;
@@ -518,20 +518,21 @@ namespace DiscordCoreInternal {
 			return false;
 		}
 #endif
-		this->haveWeConnected = true;
 		return true;
 	}
 
 	void DatagramSocketClient::processIO(int32_t waitTimeInms) noexcept {
-		if (this->theSocket == SOCKET_ERROR || !this->haveWeConnected) {
+		if (this->theSocket == SOCKET_ERROR) {
 			return;
 		}
 		fd_set readSet{}, writeSet{};
 		std::unique_lock theLock{ this->theMutex };
 		FD_ZERO(&readSet);
 		FD_SET(this->theSocket, &readSet);
-		FD_ZERO(&writeSet);
-		FD_SET(this->theSocket, &writeSet);
+		if (this->outputBuffers.size() > 0) {
+			FD_ZERO(&writeSet);
+			FD_SET(this->theSocket, &writeSet);
+		}
 		timeval checkTime{};
 		if (this->areWeAClient) {
 			checkTime.tv_usec = waitTimeInms;
@@ -588,7 +589,6 @@ namespace DiscordCoreInternal {
 	}
 
 	bool DatagramSocketClient::areWeStillConnected() noexcept {
-		std::lock_guard theLock{ this->theMutex };
 		if (this->theSocket != SOCKET_ERROR) {
 			return true;
 		} else {
@@ -605,10 +605,6 @@ namespace DiscordCoreInternal {
 				this->disconnect();
 				return;
 			} else {
-				if (!this->areWeAClient) {
-					std::cout << "WRITTEN BYTES: " << clientToServerString << std::endl;
-				}
-				
 				this->outputBuffers.erase(this->outputBuffers.begin());
 			}
 		}
@@ -631,6 +627,9 @@ namespace DiscordCoreInternal {
 			return;
 		} else {
 			this->inputBuffer.insert(this->inputBuffer.end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
+			if (!this->areWeAClient) {
+				//std::cout << "THE READ STRING: " << this->inputBuffer << std::endl;
+			}
 			this->bytesRead += readBytes;
 		}
 	}

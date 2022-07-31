@@ -27,39 +27,6 @@
 
 namespace DiscordCoreAPI {
 
-	struct OpusDecoderWrapper {
-		struct OpusDecoderDeleter {
-			void operator()(OpusDecoder*);
-		};
-
-		OpusDecoderWrapper& operator=(OpusDecoderWrapper&&);
-
-		OpusDecoderWrapper(OpusDecoderWrapper&&);
-
-		OpusDecoderWrapper();
-
-		operator OpusDecoder*();
-
-	  protected:
-		std::unique_ptr<OpusDecoder, OpusDecoderDeleter> thePtr{ nullptr, OpusDecoderDeleter{} };
-
-	};
-
-	struct VoicePayload {
-		std::vector<opus_int16> decodedData{};
-		uint32_t currentTimeStampMax{};
-		uint32_t currentTimeStampMin{};
-		uint16_t currentSequenceMin{};
-		uint16_t currentSequenceMax{};
-		std::string theRawData{};
-	};
-
-	struct VoiceUser {		
-		std::queue<VoicePayload> thePayloads{};
-		OpusDecoderWrapper theDecoder{};
-		Snowflake theUserId{};
-	};
-
 	using DoubleNanoSecond = std::chrono::duration<double, std::nano>;
 
 	using DoubleMilliSecond = std::chrono::duration<double, std::milli>;
@@ -141,11 +108,10 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::WebSocketSSLShard* baseShard{ nullptr };
 		UnboundedMessageBlock<AudioFrameData> audioDataBufferReal{};
 		UnboundedMessageBlock<AudioFrameData> audioDataBuffer{};
-		std::unordered_map<uint32_t, VoiceUser> thePayloads{};
 		std::unique_ptr<std::jthread> taskThread01{ nullptr };
 		std::unique_ptr<std::jthread> taskThread02{ nullptr };
 		std::unique_ptr<std::jthread> taskThread03{ nullptr };
-		DiscordCoreInternal::OpusEncoderWrapper theEncoder{};
+		std::unordered_map<uint32_t, Snowflake> theSSRCMap{};
 		std::atomic_bool areWeConnectedBool{ false };
 		std::queue<ConnectionPackage> connections{};
 		DiscordCoreInternal::AudioEncoder encoder{};
@@ -157,12 +123,10 @@ namespace DiscordCoreAPI {
 		Snowflake currentGuildMemberId{};
 		uint32_t currentSendTimeStamp{};
 		int64_t heartbeatInterval{ 0 };
-		uint64_t offsetIntoStream{};
 		std::string secretKeySend{};
 		uint16_t sequenceIndex{ 0 };
 		AudioFrameData audioData{};
 		StreamInfo theStreamInfo{};
-		std::string streamString{};
 		std::string externalIp{};
 		StreamType streamType{};
 		uint32_t timeStamp{ 0 };
@@ -200,7 +164,7 @@ namespace DiscordCoreAPI {
 		void onMessageReceived() noexcept;
 
 		void connectInternal() noexcept;
-		
+
 		void clearAudioData() noexcept;
 
 		bool areWeConnected() noexcept;
@@ -218,8 +182,6 @@ namespace DiscordCoreAPI {
 		void disconnect() noexcept;
 
 		void reconnect() noexcept;
-
-		void mixAudio() noexcept;
 
 		void connect() noexcept;
 
