@@ -474,12 +474,12 @@ namespace DiscordCoreInternal {
 	}
 
 	bool DatagramSocketClient::connect(const std::string& baseUrlNew, const std::string& portNew) noexcept {
+		std::lock_guard theLock{ this->theMutex };
 		this->theAddress.sin_addr.s_addr = inet_addr(baseUrlNew.c_str());
 		this->theAddress.sin_port = DiscordCoreAPI::reverseByteOrder(static_cast<unsigned short>(stoi(portNew)));
 		this->theAddress.sin_family = AF_INET;
 
 		addrinfoWrapper hints{}, address{};
-
 		hints->ai_family = AF_INET;
 		hints->ai_socktype = SOCK_DGRAM;
 		hints->ai_protocol = IPPROTO_UDP;
@@ -590,6 +590,7 @@ namespace DiscordCoreInternal {
 	}
 
 	bool DatagramSocketClient::areWeStillConnected() noexcept {
+		std::lock_guard theLock{ this->theMutex };
 		if (this->theSocket != SOCKET_ERROR) {
 			return true;
 		} else {
