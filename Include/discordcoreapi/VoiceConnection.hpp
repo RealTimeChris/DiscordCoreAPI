@@ -183,6 +183,8 @@ namespace DiscordCoreAPI {
 
 		void reconnect() noexcept;
 
+		void mixAudio() noexcept;
+
 		void connect() noexcept;
 
 		bool stop() noexcept;

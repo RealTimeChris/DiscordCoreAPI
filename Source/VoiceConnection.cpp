@@ -762,19 +762,16 @@ namespace DiscordCoreAPI {
 				this->baseShard->voiceConnectionDataBufferMap[this->voiceConnectInitData.guildId]->clearContents();
 				this->connectionState.store(VoiceConnectionState::Collecting_Init_Data);
 				if (this->streamType != StreamType::None) {
-					this->taskThread03 = std::make_unique<std::jthread>([=, this](std::stop_token stopToken) {
-						this->runBridge(stopToken);
-					});
-				}
-				std::cout << "WERE HERE THIS IS IT!" << std::endl;
-				if (this->streamType != StreamType::None) {
-					std::cout << "WERE HERE THIS IS IT!" << std::endl;
 					if (this->streamType == StreamType::Source) {
 						this->targetSocket = std::make_unique<DatagramSocketClient>(true);
-						std::cout << "WERE HERE THIS IS IT!" << std::endl;
 					} else {
 						this->targetSocket = std::make_unique<DatagramSocketClient>(false);
 					}
+				}
+				if (this->streamType != StreamType::None) {
+					this->taskThread03 = std::make_unique<std::jthread>([=, this](std::stop_token stopToken) {
+						this->runBridge(stopToken);
+					});
 				}
 				this->targetSocket->connect(this->theStreamInfo.targetAddress, this->theStreamInfo.targetPort);
 				return;
@@ -953,6 +950,9 @@ namespace DiscordCoreAPI {
 		return true;
 	}
 
-	VoiceConnection::~VoiceConnection() noexcept {};
+	VoiceConnection::~VoiceConnection() noexcept {
+		std::lock_guard theLock{ DatagramSocketClient::theMutex };
+		std::lock_guard theLock2{ WebSocketSSLShard::theMutex };
+	};
 
 };
