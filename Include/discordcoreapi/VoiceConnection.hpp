@@ -113,7 +113,6 @@ namespace DiscordCoreAPI {
 		std::unique_ptr<std::jthread> taskThread03{ nullptr };
 		std::unordered_map<uint32_t, Snowflake> theSSRCMap{};
 		std::atomic_bool areWeConnectedBool{ false };
-		std::atomic_bool areWeSendingAudio{ false };
 		std::queue<ConnectionPackage> connections{};
 		DiscordCoreInternal::AudioEncoder encoder{};
 		std::queue<std::string> theFrameQueueRaw{};
