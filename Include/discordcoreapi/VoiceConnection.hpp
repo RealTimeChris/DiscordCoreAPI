@@ -110,8 +110,8 @@ namespace DiscordCoreAPI {
 		UnboundedMessageBlock<AudioFrameData> audioDataBuffer{};
 		std::unique_ptr<std::jthread> taskThread01{ nullptr };
 		std::unique_ptr<std::jthread> taskThread02{ nullptr };
-		std::unique_ptr<std::jthread> taskThread03{ nullptr };
 		std::unordered_map<uint32_t, Snowflake> theSSRCMap{};
+		std::unique_ptr<std::jthread> taskThread03{ nullptr };
 		std::atomic_bool areWeConnectedBool{ false };
 		std::queue<ConnectionPackage> connections{};
 		DiscordCoreInternal::AudioEncoder encoder{};

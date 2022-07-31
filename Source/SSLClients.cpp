@@ -518,11 +518,12 @@ namespace DiscordCoreInternal {
 			return false;
 		}
 #endif
+		this->haveWeConnected = true;
 		return true;
 	}
 
 	void DatagramSocketClient::processIO(int32_t waitTimeInms) noexcept {
-		if (this->theSocket == SOCKET_ERROR) {
+		if (this->theSocket == SOCKET_ERROR || !this->haveWeConnected) {
 			return;
 		}
 		fd_set readSet{}, writeSet{};

@@ -252,6 +252,7 @@ namespace DiscordCoreInternal {
 		const int32_t maxBufferSize{ 1024 * 16 };
 		std::vector<std::string> outputBuffers{};
 		std::recursive_mutex theMutex{};
+		bool haveWeConnected{ false };
 		bool areWeAClient{ true };
 		SOCKETWrapper theSocket{};
 		std::string inputBuffer{};
