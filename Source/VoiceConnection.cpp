@@ -417,6 +417,7 @@ namespace DiscordCoreAPI {
 						} else {
 							this->audioDataBufferReal.tryReceive(this->audioData);
 						}
+						std::cout << "THE FRAME SIZE: " << this->audioData.encodedFrameData.data.size() << std::endl;
 						if (!this->targetSocket) {
 							while (this->theFrameQueueRaw.size() > 0) {
 								this->theFrameQueueRaw.pop();
@@ -549,7 +550,6 @@ namespace DiscordCoreAPI {
 						thePayload.currentTimeStampMin = theTimeStamp;
 					}
 					thePayload.currentTimeStampMax = theTimeStamp;
-					std::cout << "THE TIMESTAMP: " << theTimeStamp << std::endl;
 
 					uint8_t nonce[24] = { 0 };
 					std::memcpy(nonce, &packet[0], headerSize);
@@ -569,30 +569,37 @@ namespace DiscordCoreAPI {
 
 					if (const bool usesExtension [[maybe_unused]] = (packet[0] >> 4) & 0b0001) {
 						size_t extLen = 0;
-						{
-							uint16_t extLengthInWords{ *reinterpret_cast<uint16_t*>(decryptedDataString.data() + 2) };
-							extLengthInWords = ntohs(extLengthInWords);
-							extLen = sizeof(uint32_t) * extLengthInWords;
-						}
+						uint16_t extLengthInWords{ *reinterpret_cast<uint16_t*>(decryptedDataString.data() + 2) };
+						extLengthInWords = ntohs(extLengthInWords);
+						extLen = sizeof(uint32_t) * extLengthInWords;
 						constexpr size_t extHeaderLen = sizeof(uint16_t) * 2;
 						decryptedDataString = decryptedDataString.substr(extHeaderLen + extLen);
 					}
 					thePayload.theRawData.insert(thePayload.theRawData.end(), decryptedDataString.begin(), decryptedDataString.end());
+					std::cout << "THE TIMESTAMP: " << theTimeStamp << std::endl;
 					this->thePayloads[speakerSsrc].thePayloads.push(thePayload);
 				}
 			}
 		} else {
 			auto theBuffer = this->targetSocket->getInputBuffer();
 			this->streamString.insert(this->streamString.end(), theBuffer.begin(), theBuffer.end());
-			if (this->offsetIntoStream == 0 && this->streamString.size() >= this->offsetIntoStream && this->streamString.size() > 16) {
+			if (this->offsetIntoStream == 0 && this->streamString.size() > 0) {
 				uint64_t sampleCount{};
 				loadBits(this->streamString, 0, sampleCount);
 				uint64_t stringSize{};
-				loadBits(this->streamString, 8, sampleCount);
+				loadBits(this->streamString, 8, stringSize);
 				this->offsetIntoStream = stringSize;
-				std::cout << "OFFSET INTO STREAM: " << this->offsetIntoStream << std::endl;
+			} else if (this->streamString.size() >= this->offsetIntoStream && this->streamString.size() > 16) {
+				uint64_t sampleCount{};
+				loadBits(this->streamString, 0, sampleCount);
+				uint64_t stringSize{};
+				loadBits(this->streamString, 8, stringSize);
+				this->offsetIntoStream = stringSize;
 				AudioFrameData theFrame{};
-				theFrame.encodedFrameData.data.insert(theFrame.encodedFrameData.data.begin(), this->streamString.begin(), this->streamString.begin() + this->offsetIntoStream);
+				theFrame.encodedFrameData.data.insert(theFrame.encodedFrameData.data.begin(), this->streamString.begin() + 16, this->streamString.begin() + this->offsetIntoStream);
+				//std::cout << "THE STRING: " << this->streamString << std::endl;
+				std::cout << "THE SAMPLE COUNT: " << sampleCount << std::endl;
+				std::cout << "THE FRAME SIZE 0101: " << stringSize << std::endl;
 				theFrame.encodedFrameData.sampleCount = sampleCount;
 				theFrame.type = AudioFrameType::Encoded;
 				this->streamString.erase(this->streamString.begin(), this->streamString.begin() + this->offsetIntoStream);
@@ -939,47 +946,47 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::mixAudio() noexcept {
-		int64_t sampleCount{};
+		uint64_t sampleCount{};
 		std::vector<opus_int32> theVector{};
 		if (this->thePayloads.size() > 0) {
 			for (auto& [key, value]: this->thePayloads) {
 				if (value.thePayloads.size() > 0) {
 					auto thePayload = value.thePayloads.front();
-					thePayload.decodedData.resize(960 * 2 * 2);
+					thePayload.decodedData.resize(5760 * 2 * 2);
 					value.thePayloads.pop();
-					if (auto sampleCountNew = opus_decode(value.theDecoder, reinterpret_cast<unsigned char*>(thePayload.theRawData.data()), thePayload.theRawData.size(),
-							thePayload.decodedData.data(), 960, 0);
+					if (auto sampleCountNew = opus_decode(value.theDecoder,reinterpret_cast<unsigned char*>(thePayload.theRawData.data()), thePayload.theRawData.size(),
+							thePayload.decodedData.data(), 5760, 0);
 						sampleCountNew <= 0) {
 						if (this->configManager->doWePrintGeneralErrorMessages()) {
 							std::cout << "Failed to decode the user's voice payload.";
+							return;
 						}
 					} else {
-						sampleCount = sampleCountNew;
+						sampleCount = static_cast<uint64_t>(sampleCountNew);
 					}
 					if (sampleCount > theVector.size()) {
-						theVector.resize(sampleCount * 2 * 2);
+						theVector.resize(sampleCount * 2);
 					}
 					for (uint32_t x = 0; x < sampleCount * 2; x++) {
 						theVector[x] += thePayload.decodedData[x];
 					}
 				}
 			}
+
 			std::vector<opus_int16> downSampleVector{};
-			if (sampleCount > 0) {
-				std::cout << "SAMPLE COUNT: " << sampleCount << std::endl;
-			}
-			downSampleVector.resize(sampleCount * 2);
+			downSampleVector.resize(5760 * 2);
+			
 			for (int v = 0; v < sampleCount * 2; ++v) {
 				downSampleVector[v] = theVector[v] / this->thePayloads.size();
 			}
-			std::string theFinalString{};
-			DiscordCoreAPI::storeBits(theFinalString, sampleCount);
-			uint64_t theSize = theFinalString.size();
-			DiscordCoreAPI::storeBits(theFinalString, theSize);
-			theFinalString.insert(theFinalString.end(), downSampleVector.begin(), downSampleVector.end());
-			if (theFinalString.size() > 16) {
-				std::cout << "WERE HERE THIS IS IT! THE FINAL STRING: " << theFinalString << std::endl;
-				this->targetSocket->writeData(theFinalString);
+			std::basic_string<int8_t> theFinalString{ reinterpret_cast<int8_t*>(downSampleVector.data()), sampleCount * 2 * sizeof(opus_int16) };
+			std::string theFinalStringReal{};
+			theFinalStringReal.insert(theFinalStringReal.begin(), theFinalString.begin(), theFinalString.end());
+			DiscordCoreAPI::storeBits(theFinalStringReal, sampleCount);
+			uint64_t theSize = downSampleVector.size() + 8 + 8;
+			DiscordCoreAPI::storeBits(theFinalStringReal, theSize);
+			if (theFinalStringReal.size() > 16) {
+				this->targetSocket->writeData(theFinalStringReal);
 			}
 		}
 	}
