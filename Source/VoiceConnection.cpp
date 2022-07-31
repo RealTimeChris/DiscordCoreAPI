@@ -469,11 +469,6 @@ namespace DiscordCoreAPI {
 							break;
 						}
 
-						DatagramSocketClient::processIO(1000);
-						std::string theString = DatagramSocketClient::getInputBuffer();
-						if (this->streamType == StreamType::Source) {
-							this->theFrameQueueRaw.push(theString);
-						}
 						auto waitTime = targetTime - std::chrono::system_clock::now();
 						nanoSleep(static_cast<int64_t>(static_cast<double>(waitTime.count()) * 0.95f));
 						waitTime = targetTime - std::chrono::system_clock::now();
@@ -482,6 +477,11 @@ namespace DiscordCoreAPI {
 						}
 						startingValue = std::chrono::system_clock::now();
 						this->sendSingleAudioFrame(newFrame);
+						DatagramSocketClient::processIO(1000);
+						std::string theString = DatagramSocketClient::getInputBuffer();
+						if (this->streamType == StreamType::Source) {
+							this->theFrameQueueRaw.push(theString);
+						}
 						this->audioData.encodedFrameData.data.clear();
 						this->audioData.encodedFrameData.sampleCount = 0;
 						this->audioData.rawFrameData.data.clear();
@@ -956,34 +956,35 @@ namespace DiscordCoreAPI {
 		uint64_t sampleCount{};
 		std::vector<opus_int32> theVector{};
 		if (this->thePayloads.size() > 0) {
-			for (auto& [key, value]: this->thePayloads) {
-				if (value.thePayloads.size() > 0) {
-					auto thePayload = value.thePayloads.front();
-					thePayload.decodedData.resize(5760 * 2 * 2);
-					value.thePayloads.pop();
-					if (auto sampleCountNew = opus_decode(value.theDecoder,reinterpret_cast<unsigned char*>(thePayload.theRawData.data()), thePayload.theRawData.size(),
-							thePayload.decodedData.data(), 5760, 0);
-						sampleCountNew <= 0) {
-						if (this->configManager->doWePrintGeneralErrorMessages()) {
-							std::cout << "Failed to decode the user's voice payload.";
-							return;
-						}
-					} else {
-						sampleCount = static_cast<uint64_t>(sampleCountNew);
+			auto theKey = this->thePayloads.begin().operator*().first;
+			auto value = this->thePayloads[theKey].thePayloads;			
+			if (value.size() > 0) {
+				auto thePayload = value.front();
+				thePayload.decodedData.resize(5760 * 2 * 2);
+				value.pop();
+				if (auto sampleCountNew = opus_decode(this->thePayloads[theKey].theDecoder, reinterpret_cast<unsigned char*>(thePayload.theRawData.data()),
+						thePayload.theRawData.size(),
+						thePayload.decodedData.data(), 5760, 0);
+					sampleCountNew <= 0) {
+					if (this->configManager->doWePrintGeneralErrorMessages()) {
+						std::cout << "Failed to decode the user's voice payload.";
+						return;
 					}
-					if (sampleCount > theVector.size()) {
-						theVector.resize(sampleCount * 2);
-					}
-					for (uint32_t x = 0; x < sampleCount * 2; x++) {
-						theVector[x] += thePayload.decodedData[x];
-					}
+				} else {
+					sampleCount = static_cast<uint64_t>(sampleCountNew);
+				}
+				if (sampleCount > theVector.size()) {
+					theVector.resize(sampleCount * 2);
+				}
+				for (uint32_t x = 0; x < sampleCount * 2; x++) {
+					theVector[x] = thePayload.decodedData[x];
 				}
 			}
 
 			std::vector<opus_int16> downSampleVector{};
 			downSampleVector.resize(5760 * 2);
 			for (int v = 0; v < sampleCount * 2; ++v) {
-				downSampleVector[v] = theVector[v] / this->thePayloads.size();
+				downSampleVector[v] = theVector[v] / 1;
 			}
 
 			std::vector<unsigned char> theVectorNew{};
@@ -1004,6 +1005,16 @@ namespace DiscordCoreAPI {
 				this->targetSocket->writeData(theFinalStringReal);
 				std::cout << "THE FINAL STRING SIZE: " << theFinalStringReal.size() << std::endl;
 			}
+
+			AudioFrameData theFrame{};
+			theFrame.encodedFrameData.data.insert(theFrame.encodedFrameData.data.begin(), theFinalStringReal.begin(), theFinalStringReal.end());
+			//std::cout << "THE STRING: " << this->streamString << std::endl;
+			std::cout << "THE SAMPLE COUNT: " << sampleCount << std::endl;
+			theFrame.encodedFrameData.sampleCount = sampleCount;
+			theFrame.type = AudioFrameType::Encoded;
+			this->streamString.erase(this->streamString.begin(), this->streamString.begin() + this->offsetIntoStream);
+			this->audioDataBuffer.send(theFrame);
+
 		}
 	}
 
