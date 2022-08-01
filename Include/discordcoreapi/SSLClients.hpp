@@ -226,7 +226,7 @@ namespace DiscordCoreInternal {
 	  public:
 		friend class DiscordCoreAPI::VoiceConnection;
 
-		DatagramSocketClient(bool areWeClient = true) noexcept;
+		DatagramSocketClient(bool areWeClient) noexcept;
 
 		bool connect(const std::string& baseUrl, const std::string& portNew) noexcept;
 

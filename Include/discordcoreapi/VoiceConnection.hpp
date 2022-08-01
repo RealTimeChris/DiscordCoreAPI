@@ -121,8 +121,6 @@ namespace DiscordCoreAPI {
 			DiscordCoreAPI::ConfigManager* configManagerNew, std::atomic_bool* doWeQuitNew, StreamType streamType = StreamType::None,
 			StreamInfo streamInfo = StreamInfo{}) noexcept;
 
-		VoiceConnection() noexcept;
-
 		/// Collects the currently connected-to voice Channel's id. \brief Collects the currently connected-to voice Channel's id.
 		/// \returns DiscordCoreAPI::Snowflake A Snowflake containing the Channel's id.
 		Snowflake getChannelId() noexcept;

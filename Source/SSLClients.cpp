@@ -498,17 +498,11 @@ namespace DiscordCoreInternal {
 
 		if (this->areWeAClient) {
 			if (::connect(this->theSocket, address->ai_addr, static_cast<int32_t>(address->ai_addrlen))) {
-				std::cout << "WERE NOT LEAVING TODAY TODAY TODAY: " << reportError("DataGramSocketClient::connect()") << std::endl;
 				return false;
-			} else {
-				std::cout << "WERE MAYBE LEAVING TODAY TODAY TODAY: " << reportError("DataGramSocketClient::connect()") << std::endl;
 			}
 		} else {
 			if (bind(this->theSocket, address->ai_addr, sizeof(sockaddr))) {
-				std::cout << "WERE NOT LEAVING TODAY TODAY TODAY: " << reportError("DataGramSocketClient::connect()") << std::endl;
 				return false;
-			} else {
-				std::cout << "WERE MAYBE LEAVING TODAY TODAY TODAY: 0202" << reportError("DataGramSocketClient::connect()") << std::endl;
 			}
 		}		
 
@@ -548,9 +542,6 @@ namespace DiscordCoreInternal {
 			this->disconnect();
 			return;
 		} else if (returnValue == 0) {
-			if (!this->areWeAClient) {
-				std::cout << "WER COULDNT READ COULDNT READ COULDNT READ" << std::endl;
-			}
 			return;
 		}
 
@@ -609,6 +600,9 @@ namespace DiscordCoreInternal {
 				this->disconnect();
 				return;
 			} else {
+				if (!this->areWeAClient) {
+					std::cout << "THE WRITTEN STRING: " << clientToServerString << std::endl;
+				}
 				this->outputBuffers.erase(this->outputBuffers.begin());
 			}
 		}

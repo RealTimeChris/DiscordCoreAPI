@@ -183,7 +183,7 @@ namespace DiscordCoreAPI {
 	void GuildData::initialize() {
 		if (!getVoiceConnectionMap().contains(this->id)) {
 			std::string theShardId{ std::to_string((this->id >> 22) % this->discordCoreClient->configManager.getTotalShardCount()) };
-			getVoiceConnectionMap()[this->id] = std::make_unique<VoiceConnection>();
+			getVoiceConnectionMap()[this->id] = nullptr;
 		}
 		this->voiceConnectionPtr = getVoiceConnectionMap()[this->id].get();
 		if (!getYouTubeAPIMap().contains(this->id)) {
