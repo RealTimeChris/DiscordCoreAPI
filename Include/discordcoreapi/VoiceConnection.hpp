@@ -64,11 +64,11 @@ namespace DiscordCoreAPI {
 
 	struct VoicePayload {
 		std::vector<opus_int16> decodedData{};
+		std::vector<uint8_t> theRawData{};
 		uint32_t currentTimeStampMax{};
 		uint32_t currentTimeStampMin{};
 		uint16_t currentSequenceMin{};
 		uint16_t currentSequenceMax{};
-		std::string theRawData{};
 	};
 
 	struct VoiceUser {		
@@ -151,35 +151,30 @@ namespace DiscordCoreAPI {
 		UnboundedMessageBlock<DiscordCoreInternal::VoiceConnectionData> voiceConnectionDataBuffer{};
 		std::atomic<VoiceActiveState> lastActiveState{ VoiceActiveState::Connecting };
 		std::atomic<VoiceActiveState> activeState{ VoiceActiveState::Connecting };
-		std::unique_ptr<DiscordCoreInternal::DatagramSocketClient> targetSocket{};
+		std::unique_ptr<DiscordCoreInternal::DatagramSocketClient> streamSocket{};
 		DiscordCoreInternal::BaseSocketAgent* baseSocketAgent{ nullptr };
 		DiscordCoreInternal::VoiceConnectInitData voiceConnectInitData{};
 		DiscordCoreInternal::VoiceConnectionData voiceConnectionData{};
 		DiscordCoreInternal::WebSocketSSLShard* baseShard{ nullptr };
-		UnboundedMessageBlock<AudioFrameData> audioDataBufferReal{};
 		UnboundedMessageBlock<AudioFrameData> audioDataBuffer{};
-		std::unordered_map<uint32_t, VoiceUser> thePayloads{};
 		std::unique_ptr<std::jthread> taskThread01{ nullptr };
 		std::unique_ptr<std::jthread> taskThread02{ nullptr };
 		std::unique_ptr<std::jthread> taskThread03{ nullptr };
+		std::unordered_map<uint32_t, VoiceUser> voiceUsers{};
 		std::atomic_bool areWeConnectedBool{ false };
 		std::queue<ConnectionPackage> connections{};
-		DiscordCoreInternal::AudioEncoder encoder{};
-		std::queue<std::string> theFrameQueueRaw{};
+		std::queue<std::string> theFrameQueue{};
 		std::atomic_bool areWePlaying{ false };
 		const int64_t maxReconnectTries{ 10 };
 		int64_t currentReconnectTries{ 0 };
 		std::string audioEncryptionMode{};
 		Snowflake currentGuildMemberId{};
 		OpusEncoderWrapper theEncoder{};
-		uint32_t currentSendTimeStamp{};
 		int64_t heartbeatInterval{ 0 };
-		uint64_t offsetIntoStream{};
 		std::string secretKeySend{};
 		uint16_t sequenceIndex{ 0 };
 		AudioFrameData audioData{};
 		StreamInfo theStreamInfo{};
-		std::string streamString{};
 		std::string externalIp{};
 		StreamType streamType{};
 		uint32_t timeStamp{ 0 };
@@ -195,6 +190,8 @@ namespace DiscordCoreAPI {
 		void sendSingleAudioFrame(std::string& audioDataPacketNew) noexcept;
 
 		UnboundedMessageBlock<AudioFrameData>& getAudioBuffer() noexcept;
+
+		EncodedFrameData encodeSingleAudioFrame(RawFrameData&) noexcept;
 
 		void sendSingleFrame(const AudioFrameData& frameData) noexcept;
 
