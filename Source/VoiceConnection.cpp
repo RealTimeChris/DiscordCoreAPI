@@ -322,30 +322,14 @@ namespace DiscordCoreAPI {
 
 	void VoiceConnection::runBridge(std::stop_token& theToken) noexcept {
 		StopWatch theStopWatch{ 240ms };
-		DoubleTimePointNs startingValue{ std::chrono::system_clock::now().time_since_epoch() };
-		DoubleTimePointNs intervalCount{ std::chrono::nanoseconds{ 10000000 } };
-		DoubleTimePointNs targetTime{ startingValue.time_since_epoch() + intervalCount.time_since_epoch() };
-		int32_t frameCounter{ 0 };
-		DoubleTimePointNs totalTime{ std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::nanoseconds{ 0 }) };
 		while (!theToken.stop_requested()) {
 			this->targetSocket->processIO(100);
 			this->parseIncomingVoiceData();
 			if (theStopWatch.hasTimePassed()) {
-				for (int32_t x = 0; x < 24; x++) {
-					auto waitTime = targetTime - std::chrono::system_clock::now();
-					nanoSleep(static_cast<int64_t>(static_cast<double>(waitTime.count()) * 0.95f));
-					waitTime = targetTime - std::chrono::system_clock::now();
-					if (waitTime.count() > 0) {
-						spinLock(waitTime.count());
-					}
-					this->mixAudio();
-					startingValue = std::chrono::system_clock::now();
-					totalTime += std::chrono::system_clock::now() - startingValue;
-					auto intervalCountNew = DoubleTimePointNs{ std::chrono::nanoseconds{ 20000000 } - totalTime.time_since_epoch() / frameCounter }.time_since_epoch().count();
-					intervalCount = DoubleTimePointNs{ std::chrono::nanoseconds{ static_cast<uint64_t>(intervalCountNew) } };
-					targetTime = std::chrono::system_clock::now().time_since_epoch() + intervalCount;
-				}
 				theStopWatch.resetTimer();
+				for (int32_t x = 0; x < 12; x++) {
+					this->mixAudio();
+				}
 			}
 		}
 	}
@@ -944,42 +928,42 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::mixAudio() noexcept {
+		StopWatch theStopWatch{ 20ms };
 		if (this->thePayloads.size() > 0) {
-			int32_t voiceUserCount{};
+			int16_t voiceUserCount{};
 			std::vector<opus_int32> theUpsampledVector{};
 			uint64_t sampleCount{};
 			for (auto& [key, value]: this->thePayloads) {
 				
 				if (value.thePayloads.size() > 0) {
-					if (value.thePayloads.front().currentTimeStampMax == value.currentTimeStamp) {
-						auto thePayload = value.thePayloads.front();
-						value.thePayloads.pop();
-						thePayload.decodedData.resize(23040);
-						std::vector<unsigned char> theEncodedData{};
-						theEncodedData.resize(1276);
+					auto thePayload = value.thePayloads.front();
+					value.thePayloads.pop();
+					thePayload.decodedData.resize(23040);
+					std::vector<unsigned char> theEncodedData{};
+					theEncodedData.resize(1276);
 
-						sampleCount = opus_decode(value.theDecoder, reinterpret_cast<unsigned char*>(thePayload.theRawData.data()), thePayload.theRawData.size(),
-							thePayload.decodedData.data(), 5760, 0);
-						if (sampleCount <= 0) {
-							std::cout << "Failed to decode user's voice payload." << std::endl;
-						} else {
-							voiceUserCount++;
-							theUpsampledVector.resize(sampleCount * 2);
-							for (uint32_t x = 0; x < sampleCount * 2; x++) {
-								theUpsampledVector[x] += thePayload.decodedData[x];
-							}
-						}
-						value.currentTimeStamp += 960;
+					sampleCount = opus_decode(value.theDecoder, reinterpret_cast<unsigned char*>(thePayload.theRawData.data()), thePayload.theRawData.size(),
+						thePayload.decodedData.data(), 5760, 0);
+					if (sampleCount <= 0) {
+						std::cout << "Failed to decode user's voice payload." << std::endl;
 					} else {
-						value.currentTimeStamp += 960;
+						voiceUserCount++;
+						theUpsampledVector.resize(sampleCount * 2);
+						for (uint32_t x = 0; x < sampleCount * 2; x++) {
+							theUpsampledVector[x] += static_cast<opus_int32>(thePayload.decodedData[x]);
+						}
 					}
+				}
+				if (value.currentTimeStamp != 0 && theStopWatch.hasTimePassed()) {
+					theStopWatch.resetTimer();
+					value.currentTimeStamp += 960;
 				}
 			}
 			if (sampleCount > 0) {
 				std::vector<opus_int16> theDownsampledVector{};
 				theDownsampledVector.resize(sampleCount * 2);
 				for (int32_t x = 0; x < theUpsampledVector.size(); x++) {
-					theDownsampledVector[x] = theUpsampledVector[x] / voiceUserCount;
+					theDownsampledVector[x] = static_cast<opus_int16>(theUpsampledVector[x]) / voiceUserCount;
 				}
 				std::vector<unsigned char> theEncodedData{};
 				theEncodedData.resize(1276);
