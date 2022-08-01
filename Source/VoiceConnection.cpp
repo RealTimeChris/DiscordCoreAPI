@@ -22,6 +22,34 @@
 
 namespace DiscordCoreAPI {
 
+	void OpusEncoderWrapper::OpusEncoderDeleter::operator()(OpusEncoder* other) {
+		if (other) {
+			opus_encoder_destroy(other);
+			other = nullptr;
+		}
+	}
+
+	OpusEncoderWrapper& OpusEncoderWrapper::operator=(OpusEncoderWrapper&& other) {
+		this->thePtr.reset(other.thePtr.release());
+		return *this;
+	}
+
+	OpusEncoderWrapper::OpusEncoderWrapper(OpusEncoderWrapper&& other) {
+		*this = std::move(other);
+	}
+
+	OpusEncoderWrapper::OpusEncoderWrapper() {
+		int32_t error{};
+		this->thePtr.reset(opus_encoder_create(48000, 2, OPUS_APPLICATION_AUDIO, &error));
+		if (error != OPUS_OK) {
+			throw std::runtime_error{ "Failed to create the Opus Encoder" };
+		}
+	}
+
+	OpusEncoderWrapper::operator OpusEncoder*() {
+		return this->thePtr.get();
+	}
+
 	void OpusDecoderWrapper::OpusDecoderDeleter::operator()(OpusDecoder* other) {
 		if (other) {
 			opus_decoder_destroy(other);
@@ -108,8 +136,6 @@ namespace DiscordCoreAPI {
 		this->theStreamInfo = streamInfoNew;
 		this->streamType = streamTypeNew;
 		this->doWeQuit = doWeQuitNew;
-		int32_t error{};
-		this->theEncoder = opus_encoder_create(48000, 2, OPUS_APPLICATION_AUDIO, &error);
 	}
 
 	Snowflake VoiceConnection::getChannelId() noexcept {
@@ -931,7 +957,7 @@ namespace DiscordCoreAPI {
 		StopWatch theStopWatch{ 20ms };
 		if (this->thePayloads.size() > 0) {
 			int16_t voiceUserCount{};
-			std::vector<opus_int32> theUpsampledVector{};
+			std::vector<opus_int16> theUpsampledVector{};
 			uint64_t sampleCount{};
 			for (auto& [key, value]: this->thePayloads) {
 				
@@ -950,7 +976,7 @@ namespace DiscordCoreAPI {
 						voiceUserCount++;
 						theUpsampledVector.resize(sampleCount * 2);
 						for (uint32_t x = 0; x < sampleCount * 2; x++) {
-							theUpsampledVector[x] += static_cast<opus_int32>(thePayload.decodedData[x]);
+							theUpsampledVector[x] += static_cast<opus_int16>(thePayload.decodedData[x]);
 						}
 					}
 				}
@@ -962,12 +988,13 @@ namespace DiscordCoreAPI {
 			if (sampleCount > 0) {
 				std::vector<opus_int16> theDownsampledVector{};
 				theDownsampledVector.resize(sampleCount * 2);
+				std::cout << "VICOE USER COUNT: " << voiceUserCount << std::endl;
 				for (int32_t x = 0; x < theUpsampledVector.size(); x++) {
-					theDownsampledVector[x] = static_cast<opus_int16>(theUpsampledVector[x]) / voiceUserCount;
+					theDownsampledVector[x] = static_cast<opus_int16>(theUpsampledVector[x] / voiceUserCount);
 				}
-				std::vector<unsigned char> theEncodedData{};
+				std::vector<char> theEncodedData{};
 				theEncodedData.resize(1276);
-				auto byteCount = opus_encode(this->theEncoder, theDownsampledVector.data(), 960, theEncodedData.data(), 1276);
+				auto byteCount = opus_encode(this->theEncoder, theDownsampledVector.data(), 960, reinterpret_cast<unsigned char*>(theEncodedData.data()), 1276);
 				if (byteCount <= 0) {
 					std::cout << "Failed to encode user's voice payload." << std::endl;
 				} else {

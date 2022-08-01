@@ -27,6 +27,23 @@
 
 namespace DiscordCoreAPI {
 
+	struct OpusEncoderWrapper {
+		struct OpusEncoderDeleter {
+			void operator()(OpusEncoder*);
+		};
+
+		OpusEncoderWrapper& operator=(OpusEncoderWrapper&&);
+
+		OpusEncoderWrapper(OpusEncoderWrapper&&);
+
+		OpusEncoderWrapper();
+
+		operator OpusEncoder*();
+
+	  protected:
+		std::unique_ptr<OpusEncoder, OpusEncoderDeleter> thePtr{ nullptr, OpusEncoderDeleter{} };
+	};
+
 	struct OpusDecoderWrapper {
 		struct OpusDecoderDeleter {
 			void operator()(OpusDecoder*);
@@ -57,6 +74,7 @@ namespace DiscordCoreAPI {
 	struct VoiceUser {		
 		std::queue<VoicePayload> thePayloads{};
 		OpusDecoderWrapper theDecoder{};
+		OpusEncoderWrapper theEncoder{};
 		uint64_t currentTimeStamp{};
 		Snowflake theUserId{};
 	};
@@ -144,7 +162,6 @@ namespace DiscordCoreAPI {
 		std::unique_ptr<std::jthread> taskThread01{ nullptr };
 		std::unique_ptr<std::jthread> taskThread02{ nullptr };
 		std::unique_ptr<std::jthread> taskThread03{ nullptr };
-		DiscordCoreInternal::OpusEncoderWrapper theEncoder{};
 		std::atomic_bool areWeConnectedBool{ false };
 		std::queue<ConnectionPackage> connections{};
 		DiscordCoreInternal::AudioEncoder encoder{};
@@ -154,6 +171,7 @@ namespace DiscordCoreAPI {
 		int64_t currentReconnectTries{ 0 };
 		std::string audioEncryptionMode{};
 		Snowflake currentGuildMemberId{};
+		OpusEncoderWrapper theEncoder{};
 		uint32_t currentSendTimeStamp{};
 		int64_t heartbeatInterval{ 0 };
 		uint64_t offsetIntoStream{};
