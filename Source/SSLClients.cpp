@@ -600,9 +600,6 @@ namespace DiscordCoreInternal {
 				this->disconnect();
 				return;
 			} else {
-				if (!this->areWeAClient) {
-					std::cout << "THE WRITTEN STRING: " << clientToServerString << std::endl;
-				}
 				this->outputBuffers.erase(this->outputBuffers.begin());
 			}
 		}
@@ -625,9 +622,6 @@ namespace DiscordCoreInternal {
 			return;
 		} else {
 			this->inputBuffer.insert(this->inputBuffer.end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
-			if (!this->areWeAClient) {
-				//std::cout << "THE READ STRING: " << this->inputBuffer << std::endl;
-			}
 			this->bytesRead += readBytes;
 		}
 	}

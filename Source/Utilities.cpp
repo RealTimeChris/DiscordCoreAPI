@@ -314,7 +314,6 @@ namespace DiscordCoreAPI {
 	Permissions& Permissions::operator=(Permission&& other) {
 		StringWrapper theString = StringWrapper{ std::to_string(static_cast<uint32_t>(other)) };
 		*this = theString;
-		std::cout<< "THE PERMS: "<< *this<< std::endl;
 		return *this;
 	}
 
