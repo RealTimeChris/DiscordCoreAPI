@@ -198,10 +198,8 @@ namespace DiscordCoreAPI {
 							if (payload.contains("d") && !payload["d"].is_null()) {
 								if (!payload["d"]["ssrc"].is_null()) {
 									VoiceUser theUser{};
-									if (stoull(payload["d"]["user_id"].get<std::string>()) == 249541646671151104) {
-										theUser.theUserId = stoull(payload["d"]["user_id"].get<std::string>());
-										this->thePayloads[payload["d"]["ssrc"].get<int32_t>()] = std ::move(theUser);
-									}
+									theUser.theUserId = stoull(payload["d"]["user_id"].get<std::string>());
+									this->thePayloads[payload["d"]["ssrc"].get<int32_t>()] = std ::move(theUser);
 								}
 							}
 							break;
@@ -323,10 +321,13 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::runBridge(std::stop_token& theToken) noexcept {
+		StopWatch theStopWatch{ 160ms };
 		while (!theToken.stop_requested()) {
 			this->targetSocket->processIO(1000);
 			this->parseIncomingVoiceData();
-			this->mixAudio();
+			if (theStopWatch.hasTimePassed()) {
+				this->mixAudio();
+			}
 		}
 	}
 
@@ -420,7 +421,6 @@ namespace DiscordCoreAPI {
 							this->audioDataBuffer.tryReceive(this->audioData);
 						} else {
 							this->audioDataBufferReal.tryReceive(this->audioData);
-							std::cout << "THE FRAME REALER: " << this->audioData.encodedFrameData.sampleCount << std::endl;
 						}
 						if (!this->targetSocket) {
 							while (this->theFrameQueueRaw.size() > 0) {
@@ -534,24 +534,23 @@ namespace DiscordCoreAPI {
 						return;
 					}
 					
-					uint32_t speakerSsrc{ *reinterpret_cast<uint32_t*>(packet.data() + 8) };
-					speakerSsrc = ntohl(speakerSsrc);
-					auto theUserId = this->thePayloads[speakerSsrc].theUserId;
-					if (this->thePayloads.size() > 0) {
-						if (theUserId != this->thePayloads.begin().operator*().second.theUserId) {
-							return;
-						}
-					}
 					VoicePayload thePayload{};
 					uint16_t theSequence{ *reinterpret_cast<uint16_t*>(packet.data() + 2) };
 					theSequence = ntohs(theSequence);
-					thePayload.currentSequenceMax = theSequence;
+					thePayload.currentSequenceMin = theSequence;
+					thePayload.currentSequenceMax = theSequence + 1;
 					uint32_t theTimeStamp{ *reinterpret_cast<uint32_t*>(packet.data() + 4) };
 					theTimeStamp = ntohl(theTimeStamp);
-					thePayload.currentTimeStampMax = theTimeStamp;
+					thePayload.currentTimeStampMin = theTimeStamp;
+					thePayload.currentTimeStampMax = theTimeStamp + 960;
+					uint32_t speakerSsrc{ *reinterpret_cast<uint32_t*>(packet.data() + 8) };
+					speakerSsrc = ntohl(speakerSsrc);
 
-					uint8_t nonce[24] = { 0 };
-					std::memcpy(nonce, &packet[0], headerSize);
+					std::vector<uint8_t> nonce{};
+					nonce.resize(24);
+					for (uint32_t x = 0; x < headerSize; x++) {
+						nonce[x] = packet[x];
+					}
 					const size_t csrc_count = packet[0] & 0b0000'1111;
 					const ptrdiff_t offset_to_data = headerSize + sizeof(uint32_t) * csrc_count;
 					uint8_t* encryptedData = packet.data() + offset_to_data;
@@ -559,7 +558,7 @@ namespace DiscordCoreAPI {
 					std::vector<uint8_t> theKey{};
 					theKey.insert(theKey.begin(), this->secretKeySend.begin(), this->secretKeySend.end());
 
-					if (crypto_secretbox_open_easy(encryptedData, encryptedData, encryptedDataLen, nonce, theKey.data())) {
+					if (crypto_secretbox_open_easy(encryptedData, encryptedData, encryptedDataLen, nonce.data(), theKey.data())) {
 						return;
 					}
 
@@ -568,8 +567,7 @@ namespace DiscordCoreAPI {
 
 					if (const bool usesExtension [[maybe_unused]] = (packet[0] >> 4) & 0b0001) {
 						size_t extLen = 0;
-						uint16_t extLengthInWords;
-						memcpy(&extLengthInWords, &decryptedDataString[2], sizeof(uint16_t));
+						uint16_t extLengthInWords{ *reinterpret_cast<uint16_t*>(decryptedDataString.data() + 2) };
 						extLengthInWords = ntohs(extLengthInWords);
 						extLen = sizeof(uint32_t) * extLengthInWords;
 						constexpr size_t extHeaderLen = sizeof(uint16_t) * 2;
@@ -929,7 +927,6 @@ namespace DiscordCoreAPI {
 			std::vector<opus_int32> theUpsampledVector{};
 			uint64_t sampleCount{};
 			for (auto& [key, value]: this->thePayloads) {
-				voiceUserCount++;
 				
 				if (value.thePayloads.size() > 0) {
 					auto thePayload = value.thePayloads.front();
@@ -943,6 +940,7 @@ namespace DiscordCoreAPI {
 					if (sampleCount <= 0) {
 						std::cout << "Failed to decode user's voice payload." << std::endl;
 					} else {
+						voiceUserCount++;
 						theUpsampledVector.resize(sampleCount * 2);
 						for (uint32_t x = 0; x < sampleCount * 2; x++) {
 							theUpsampledVector[x] += thePayload.decodedData[x];
