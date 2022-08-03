@@ -504,7 +504,15 @@ namespace DiscordCoreInternal {
 			if (bind(this->theSocket, address->ai_addr, sizeof(sockaddr))) {
 				return false;
 			}
-		}		
+			std ::cout << "WERE BOUND!" << std::endl;
+			fd_set readSet{};
+			FD_ZERO(&readSet);
+			FD_SET(this->theSocket, &readSet);
+			timeval theTime{};
+			theTime.tv_sec = 3 * 60;
+			select(this->theSocket + 1, &readSet, nullptr, nullptr, &theTime);
+			std ::cout << "WERE CONNECTED!" << std::endl;
+		}
 
 #ifdef _WIN32
 		u_long value02{ 1 };
@@ -615,7 +623,7 @@ namespace DiscordCoreInternal {
 			readBytes = recvfrom(this->theSocket, serverToClientBuffer.data(), static_cast<int32_t>(serverToClientBuffer.size()), 0, reinterpret_cast<sockaddr*>(&this->theAddress),
 				&intSize);
 		}
-		
+		std ::cout << "READ BYTES: " << readBytes << std::endl;
 		if (readBytes < 0) {
 			this->disconnect();
 			return;
