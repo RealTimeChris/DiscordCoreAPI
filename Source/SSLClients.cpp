@@ -608,12 +608,16 @@ namespace DiscordCoreInternal {
 		std::string serverToClientBuffer{};
 		serverToClientBuffer.resize(this->maxBufferSize);
 		int32_t readBytes{};
+#ifdef _WIN32
 		int32_t intSize = sizeof(this->theAddress);
+#else
+		socklen_t intSize = sizeof(this->theAddress);
+#endif
 		if (this->areWeAClient) {
 			readBytes = recv(this->theSocket, serverToClientBuffer.data(), serverToClientBuffer.size(), 0);
 		} else {
 			readBytes = recvfrom(this->theSocket, serverToClientBuffer.data(), static_cast<int32_t>(serverToClientBuffer.size()), 0, reinterpret_cast<sockaddr*>(&this->theAddress),
-				reinterpret_cast<socklen_t*>(&intSize));
+				&intSize);
 		}
 		if (readBytes < 0) {
 			this->disconnect();
