@@ -578,9 +578,12 @@ namespace DiscordCoreInternal {
 
 	std::string DatagramSocketClient::getInputBuffer() noexcept {
 		std::unique_lock theLock{ this->theMutex };
-		std::string theReturnString = std::move(this->inputBuffer);
-		this->inputBuffer.clear();
-		return theReturnString;
+		if (this->inputBuffers.size() > 0) {
+			std::string theReturnString = std::move(this->inputBuffers[0]);
+			this->inputBuffers.erase(this->inputBuffers.begin());
+			return theReturnString;
+		}
+		return std::string{};
 	}
 
 	bool DatagramSocketClient::areWeStillConnected() noexcept {
@@ -609,19 +612,18 @@ namespace DiscordCoreInternal {
 		std::string serverToClientBuffer{};
 		serverToClientBuffer.resize(this->maxBufferSize);
 		int32_t readBytes{};
-		if (this->areWeAClient) {
-			readBytes = recv(this->theSocket, serverToClientBuffer.data(), static_cast<int32_t>(serverToClientBuffer.size()), 0);
-		} else {
-			int32_t intSize = sizeof(this->theAddress);
-			readBytes = recvfrom(this->theSocket, serverToClientBuffer.data(), static_cast<int32_t>(serverToClientBuffer.size()), 0, reinterpret_cast<sockaddr*>(&this->theAddress),
-				&intSize);
-		}
-
+		int32_t intSize = sizeof(this->theAddress);
+		readBytes =
+			recvfrom(this->theSocket, serverToClientBuffer.data(), static_cast<int32_t>(serverToClientBuffer.size()), 0, reinterpret_cast<sockaddr*>(&this->theAddress), &intSize);
+		std::cout << "READ BYTES: " << readBytes << std::endl;
 		if (readBytes < 0) {
 			this->disconnect();
 			return;
 		} else {
-			this->inputBuffer.insert(this->inputBuffer.end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
+			std::cout << "READ BYTES: " << readBytes << std::endl;
+			std::string theString{};
+			theString.insert(theString.end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
+			this->inputBuffers.push_back(theString);
 			this->bytesRead += readBytes;
 		}
 	}
@@ -634,7 +636,7 @@ namespace DiscordCoreInternal {
 	void DatagramSocketClient::disconnect() noexcept {
 		std::unique_lock theLock{ this->theMutex };
 		this->theSocket = SOCKET_ERROR;
-		this->inputBuffer.clear();
+		this->inputBuffers.clear();
 		this->outputBuffers.clear();
 	}
 
