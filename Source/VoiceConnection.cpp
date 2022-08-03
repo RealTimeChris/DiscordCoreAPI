@@ -250,7 +250,7 @@ namespace DiscordCoreAPI {
 							break;
 						}
 						case 13: {
-							if (payload.contains("d")&&!payload["d"].is_null()){
+							if (payload.contains("d") && !payload["d"].is_null()) {
 								if (!payload["d"]["user_id"].is_null()) {
 									auto userId = stoull(payload["d"]["user_id"].get<std::string>());
 									for (auto& [key, value]: this->voiceUsers) {
@@ -355,7 +355,7 @@ namespace DiscordCoreAPI {
 				if (!stopToken.stop_requested() && WebSocketSSLShard::areWeStillConnected() && this->processedMessages.size() > 0) {
 					this->onMessageReceived();
 				}
-				
+
 				std::this_thread::sleep_for(1ms);
 			}
 		} catch (...) {
@@ -381,7 +381,7 @@ namespace DiscordCoreAPI {
 						}
 					} while (theString.size() > 0);
 				}
-				
+
 				if (this->streamType == StreamType::Source) {
 					this->streamSocket->processIO(1);
 					this->parseIncomingVoiceData();
@@ -523,7 +523,6 @@ namespace DiscordCoreAPI {
 								doWeBreak = true;
 								break;
 							}
-
 						}
 						if (doWeBreak) {
 							break;
@@ -534,8 +533,8 @@ namespace DiscordCoreAPI {
 						if (waitTime.count() > 0) {
 							spinLock(waitTime.count());
 						}
-						
-						
+
+
 						startingValue = std::chrono::system_clock::now();
 						if (newFrame.size() > 0) {
 							this->sendSingleAudioFrame(newFrame);
@@ -548,13 +547,11 @@ namespace DiscordCoreAPI {
 						this->audioData.rawFrameData.sampleCount = 0;
 						this->audioData.type = AudioFrameType::Unset;
 						totalTime += std::chrono::system_clock::now() - startingValue;
-						auto intervalCountNew =
-							DoubleTimePointNs{ std::chrono::nanoseconds{ 20000000 } - totalTime.time_since_epoch() / frameCounter }.time_since_epoch().count();
+						auto intervalCountNew = DoubleTimePointNs{ std::chrono::nanoseconds{ 20000000 } - totalTime.time_since_epoch() / frameCounter }.time_since_epoch().count();
 						intervalCount = DoubleTimePointNs{ std::chrono::nanoseconds{ static_cast<uint64_t>(intervalCountNew) } };
 						targetTime = std::chrono::system_clock::now().time_since_epoch() + intervalCount;
-						
 					}
-					
+
 					break;
 				}
 				case VoiceActiveState::Exiting: {
@@ -588,7 +585,7 @@ namespace DiscordCoreAPI {
 					if (uint8_t payload_type = packet[1] & 0b0111'1111; 72 <= payload_type && payload_type <= 76) {
 						return;
 					}
-					
+
 					VoicePayload thePayload{};
 					uint16_t theSequence{ *reinterpret_cast<uint16_t*>(packet.data() + 2) };
 					theSequence = ntohs(theSequence);
@@ -706,7 +703,7 @@ namespace DiscordCoreAPI {
 				this->baseShard->voiceConnectionDataBufferMap[this->voiceConnectInitData.guildId] = &this->voiceConnectionDataBuffer;
 				this->baseShard->voiceConnectionDataBufferMap[this->voiceConnectInitData.guildId]->clearContents();
 				this->baseShard->getVoiceConnectionData(this->voiceConnectInitData);
-				
+
 				if (DiscordCoreAPI::waitForTimeToPass(this->voiceConnectionDataBuffer, this->voiceConnectionData, 10000)) {
 					this->currentReconnectTries++;
 					this->onClosedVoice();
@@ -990,9 +987,8 @@ namespace DiscordCoreAPI {
 			opus_int32 voiceUserCount{};
 			std::vector<opus_int32> theUpsampledVector{};
 			uint64_t sampleCount{};
-			
+
 			for (auto& [key, value]: this->voiceUsers) {
-				
 				if (value.thePayloads.size() > 0) {
 					auto thePayload = value.thePayloads.front();
 					if (value.thePayloads.size() > 0) {

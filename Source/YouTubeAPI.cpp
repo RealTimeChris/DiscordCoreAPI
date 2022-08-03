@@ -369,7 +369,6 @@ namespace DiscordCoreInternal {
 						DiscordCoreAPI::RawFrameData rawFrame{};
 						bool doWeBreak{ false };
 						while (audioDecoder->getFrame(rawFrame)) {
-
 							if (rawFrame.sampleCount == -5) {
 								doWeBreak = true;
 								break;

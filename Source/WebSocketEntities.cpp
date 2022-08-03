@@ -163,7 +163,7 @@ namespace DiscordCoreInternal {
 						 << DiscordCoreAPI::reset() << endl
 						 << endl;
 				}
-				
+
 				return false;
 			}
 			default: {

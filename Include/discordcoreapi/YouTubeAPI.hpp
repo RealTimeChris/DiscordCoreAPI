@@ -37,7 +37,7 @@ namespace DiscordCoreInternal {
 		HttpsClient* httpsClient{ nullptr };
 
 		DiscordCoreAPI::Song constructDownloadInfo(DiscordCoreAPI::Song& newSong, int32_t currentRecursionDepth);
-		
+
 		std::vector<DiscordCoreAPI::Song> collectSearchResults(const std::string& theString);
 
 		DiscordCoreAPI::Song collectFinalSong(DiscordCoreAPI::Song& newSong);

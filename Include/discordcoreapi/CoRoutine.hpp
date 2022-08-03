@@ -43,14 +43,13 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll CoRoutineBase {
 	  public:
-
 		static DiscordCoreInternal::CoRoutineThreadPool threadPool;
 
 		virtual ~CoRoutineBase() = default;
 	};
 
 	/// A CoRoutine - representing a potentially asynchronous operation/function. \brief A CoRoutine - representing a potentially asynchronous operation/function.
-	/// \tparam ReturnType The type of parameter that is returned by the CoRoutine. 
+	/// \tparam ReturnType The type of parameter that is returned by the CoRoutine.
 	template<typename ReturnType> class CoRoutine : public CoRoutineBase {
 	  public:
 		class promise_type {

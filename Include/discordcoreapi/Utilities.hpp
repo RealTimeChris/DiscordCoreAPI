@@ -128,7 +128,6 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll WebSocketClose {
 	  public:
-
 		enum class WebSocketCloseCode : uint16_t {
 			Unset = 1 << 0,///< Unset.
 			Normal_Close = 1 << 1,///< Normal close.
@@ -535,8 +534,7 @@ namespace DiscordCoreAPI {
 					TimeStamp{ stoi(this->originalTimeStamp.substr(0, 4)), stoi(this->originalTimeStamp.substr(5, 6)), stoi(this->originalTimeStamp.substr(8, 9)),
 						stoi(this->originalTimeStamp.substr(11, 12)), stoi(this->originalTimeStamp.substr(14, 15)), stoi(this->originalTimeStamp.substr(17, 18)), theFormatNew };
 				this->timeStampInTimeUnits = TimeType{ static_cast<uint64_t>(timeValue) };
-			}
-			else {
+			} else {
 				this->timeStampInTimeUnits = std::chrono::duration_cast<TimeType>(std::chrono::system_clock::now().time_since_epoch());
 			}
 		}
@@ -1206,7 +1204,7 @@ namespace DiscordCoreAPI {
 			if (theNewTime != 0) {
 				this->maxNumberOfMs = DoubleTimePoint{ TimeType{ theNewTime } };
 			}
-			this->startTime = std::chrono::system_clock::now(); 
+			this->startTime = std::chrono::system_clock::now();
 		}
 
 	  protected:

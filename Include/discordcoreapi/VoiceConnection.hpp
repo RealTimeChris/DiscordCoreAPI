@@ -59,7 +59,6 @@ namespace DiscordCoreAPI {
 
 	  protected:
 		std::unique_ptr<OpusDecoder, OpusDecoderDeleter> thePtr{ nullptr, OpusDecoderDeleter{} };
-
 	};
 
 	struct VoicePayload {
@@ -67,7 +66,7 @@ namespace DiscordCoreAPI {
 		std::vector<uint8_t> theRawData{};
 	};
 
-	struct VoiceUser {		
+	struct VoiceUser {
 		std::queue<VoicePayload> thePayloads{};
 		OpusDecoderWrapper theDecoder{};
 		OpusEncoderWrapper theEncoder{};
@@ -203,13 +202,13 @@ namespace DiscordCoreAPI {
 		void parseIncomingVoiceData() noexcept;
 
 		bool areWeCurrentlyPlaying() noexcept;
-		
+
 		void disconnectInternal() noexcept;
 
 		void onMessageReceived() noexcept;
 
 		void connectInternal() noexcept;
-		
+
 		void clearAudioData() noexcept;
 
 		bool areWeConnected() noexcept;

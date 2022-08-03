@@ -183,8 +183,7 @@ namespace DiscordCoreInternal {
 namespace DiscordCoreAPI {
 
 	std::string DiscordEntity::getCreatedAtTimestamp(TimeFormat timeFormat) {
-		TimeStamp<std::chrono::milliseconds> timeStamp {
-			(static_cast<uint64_t>(this->id) >> 22) + 1420070400000, timeFormat};
+		TimeStamp<std::chrono::milliseconds> timeStamp{ (static_cast<uint64_t>(this->id) >> 22) + 1420070400000, timeFormat };
 		return timeStamp;
 	}
 

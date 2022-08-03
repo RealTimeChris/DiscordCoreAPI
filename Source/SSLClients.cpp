@@ -533,7 +533,7 @@ namespace DiscordCoreInternal {
 		}
 		timeval checkTime{};
 		checkTime.tv_usec = waitTimeInms;
-		
+
 		if (auto returnValue = select(this->theSocket + 1, &readSet, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
 			this->disconnect();
 			return;

@@ -175,7 +175,7 @@ namespace DiscordCoreInternal {
 			uint64_t hexIndex{ 0 };
 			bool isThereHexValues{ false };
 			for (uint64_t x = 0; x < other.size(); x++) {
- 				if (isxdigit(other[x]) != 0 && static_cast<int32_t>(other[x]) != EOF) {
+				if (isxdigit(other[x]) != 0 && static_cast<int32_t>(other[x]) != EOF) {
 					isThereHexValues = true;
 					theValueString.push_back(other[x]);
 				} else {
