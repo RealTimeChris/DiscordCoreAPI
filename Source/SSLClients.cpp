@@ -613,8 +613,13 @@ namespace DiscordCoreInternal {
 		serverToClientBuffer.resize(this->maxBufferSize);
 		int32_t readBytes{};
 		int32_t intSize = sizeof(this->theAddress);
-		readBytes =
-			recvfrom(this->theSocket, serverToClientBuffer.data(), static_cast<int32_t>(serverToClientBuffer.size()), 0, reinterpret_cast<sockaddr*>(&this->theAddress), &intSize);
+		if (this->areWeAClient) {
+			readBytes = recv(this->theSocket, serverToClientBuffer.data(), serverToClientBuffer.size(), 0);
+		} else {
+			readBytes = recvfrom(this->theSocket, serverToClientBuffer.data(), static_cast<int32_t>(serverToClientBuffer.size()), 0, reinterpret_cast<sockaddr*>(&this->theAddress),
+				&intSize);
+		}
+		
 		std::cout << "READ BYTES: " << readBytes << std::endl;
 		if (readBytes < 0) {
 			this->disconnect();
