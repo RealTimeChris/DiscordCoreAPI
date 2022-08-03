@@ -532,11 +532,7 @@ namespace DiscordCoreInternal {
 			FD_SET(this->theSocket, &writeSet);
 		}
 		timeval checkTime{};
-		if (this->areWeAClient) {
-			checkTime.tv_usec = waitTimeInms;
-		} else {
-			checkTime.tv_sec = 10;
-		}
+		checkTime.tv_usec = waitTimeInms;
 		
 		if (auto returnValue = select(this->theSocket + 1, &readSet, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
 			this->disconnect();

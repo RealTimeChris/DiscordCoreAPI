@@ -218,7 +218,6 @@ namespace DiscordCoreAPI {
 								}
 							}
 							this->connectionState.store(VoiceConnectionState::Initializing_DatagramSocket);
-							std::cout << "WEREGOT TGE VOICE IP AND AUDIO SSRC!!" << std::endl;
 							break;
 						}
 						case 4: {
@@ -226,7 +225,6 @@ namespace DiscordCoreAPI {
 								this->secretKeySend.push_back(payload["d"]["secret_key"][x].get<uint8_t>());
 							}
 							this->connectionState.store(VoiceConnectionState::Collecting_Init_Data);
-							std::cout << "WEREGOT THE SECRET KEY!"<< std::endl;
 							break;
 						}
 						case 5: {
@@ -237,7 +235,6 @@ namespace DiscordCoreAPI {
 									this->voiceUsers[payload["d"]["ssrc"].get<int32_t>()] = std ::move(theUser);
 								}
 							}
-							std::cout << "WERE A NEW CHATTER A NEW CHATTER!" << std::endl;
 							break;
 						}
 						case 6: {
@@ -358,6 +355,7 @@ namespace DiscordCoreAPI {
 				if (!stopToken.stop_requested() && WebSocketSSLShard::areWeStillConnected() && this->processedMessages.size() > 0) {
 					this->onMessageReceived();
 				}
+				
 				std::this_thread::sleep_for(1ms);
 			}
 		} catch (...) {
@@ -369,40 +367,44 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::runBridge(std::stop_token& theToken) noexcept {
-		StopWatch theStopWatch{ 15ms };
+		StopWatch theStopWatch{ 20ms };
 		StopWatch theStopWatchTwo{ 150ms };
 		while (!theToken.stop_requested()) {
-			DatagramSocketClient::processIO(1000);
-			if (theStopWatch.hasTimePassed() ) {
-				
-				std ::cout << "TOTAL TIME PASSED: " << theStopWatchTwo.totalTimePassed() << std::endl;
+			
+			
+			if (theStopWatch.hasTimePassed()) {
 				theStopWatch.resetTimer();
-				theStopWatchTwo.resetTimer();
-				std::string theString{};
-				do{
-					theString = DatagramSocketClient::getInputBuffer();
-					if (theString.size() > 0) {
-						this->theFrameQueue.push(theString);
-					}
-				} while (theString.size() > 0);
-				std ::cout << "TOTAL TIME PASSED 0202: " << theStopWatchTwo.totalTimePassed() << std::endl;
+				if (this->streamType == StreamType::Source) {
+					DatagramSocketClient::processIO(1);
+					std::string theString{};
+					do {
+						theString = DatagramSocketClient::getInputBuffer();
+						if (theString.size() > 0) {
+							this->theFrameQueue.push(theString);
+						}
+					} while (theString.size() > 0);
+				}
+				
+				//std::cout << "THE TOTAL TIME PASSED: 0101: " << theStopWatchTwo.totalTimePassed() << std::endl;
 				theStopWatchTwo.resetTimer();
 				
+
+				//std::cout << "THE TOTAL TIME PASSED: 0202: " << theStopWatchTwo.totalTimePassed() << std::endl;
+				theStopWatchTwo.resetTimer();
 				if (this->streamType == StreamType::Source) {
-					
-					std ::cout << "TOTAL TIME PASSED 0303: " << theStopWatchTwo.totalTimePassed() << std::endl;
-					theStopWatchTwo.resetTimer();
+					this->streamSocket->processIO(1);
 					this->parseIncomingVoiceData();
-					std ::cout << "TOTAL TIME PASSED 0404: " << theStopWatchTwo.totalTimePassed() << std::endl;
-					theStopWatchTwo.resetTimer();
 					this->mixAudio();
-					this->streamSocket->processIO(100);
+					//std::cout << "THE TOTAL TIME PASSED: 0303: " << theStopWatchTwo.totalTimePassed() << std::endl;
+					theStopWatchTwo.resetTimer();
 				} else {
-					this->streamSocket->processIO(100);
+					this->streamSocket->processIO(1);
 					this->parseIncomingVoiceData();
+					//std::cout << "THE TOTAL TIME PASSED: 0404: " << theStopWatchTwo.totalTimePassed() << std::endl;
+					theStopWatchTwo.resetTimer();
 				}
 			}
-			std ::cout << "TOTAL TIME PASSED 0505: " << theStopWatchTwo.totalTimePassed() << std::endl;
+			//std::cout << "THE TOTAL TIME PASSED: 0505: " << theStopWatchTwo.totalTimePassed() << std::endl;
 			theStopWatchTwo.resetTimer();
 		}
 	}
@@ -541,10 +543,6 @@ namespace DiscordCoreAPI {
 						if (doWeBreak) {
 							break;
 						}
-												
-
-						std::string theString{};
-						DatagramSocketClient::processIO(1000);
 						auto waitTime = targetTime - std::chrono::system_clock::now();
 						nanoSleep(static_cast<int64_t>(static_cast<double>(waitTime.count()) * 0.95f));
 						waitTime = targetTime - std::chrono::system_clock::now();
@@ -557,6 +555,8 @@ namespace DiscordCoreAPI {
 						if (newFrame.size() > 0) {
 							this->sendSingleAudioFrame(newFrame);
 						}
+
+						DatagramSocketClient::processIO(1000);
 						this->audioData.encodedFrameData.data.clear();
 						this->audioData.encodedFrameData.sampleCount = 0;
 						this->audioData.rawFrameData.data.clear();
@@ -642,7 +642,7 @@ namespace DiscordCoreAPI {
 					}
 					if (decryptedDataString.size() > 0) {
 						thePayload.theRawData.insert(thePayload.theRawData.begin(), decryptedDataString.begin(), decryptedDataString.end() - 16);
-						std::lock_guard theLock{ WebSocketSSLShard::theMutex };
+						std::lock_guard theLock{ DatagramSocketClient::theMutex };
 						this->voiceUsers[speakerSsrc].thePayloads.push(std::move(thePayload));
 					}
 				}
@@ -998,7 +998,6 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::mixAudio() noexcept {
-		std::cout << std::this_thread::get_id() << std::endl;
 		if (this->voiceUsers.size() > 0) {
 			opus_int32 voiceUserCount{};
 			std::vector<opus_int32> theUpsampledVector{};
@@ -1009,7 +1008,7 @@ namespace DiscordCoreAPI {
 				if (value.thePayloads.size() > 0) {
 					auto thePayload = value.thePayloads.front();
 					if (value.thePayloads.size() > 0) {
-						std::lock_guard theLock{ WebSocketSSLShard::theMutex };
+						std::lock_guard theLock{ DatagramSocketClient::theMutex };
 						value.thePayloads.pop();
 					}
 					thePayload.decodedData.resize(23040);
