@@ -613,7 +613,7 @@ namespace DiscordCoreInternal {
 			readBytes = recv(this->theSocket, serverToClientBuffer.data(), serverToClientBuffer.size(), 0);
 		} else {
 			readBytes = recvfrom(this->theSocket, serverToClientBuffer.data(), static_cast<int32_t>(serverToClientBuffer.size()), 0, reinterpret_cast<sockaddr*>(&this->theAddress),
-				&intSize);
+				static_cast<socklen_t*>(&intSize));
 		}
 		std ::cout << "READ BYTES: " << readBytes << std::endl;
 		if (readBytes < 0) {

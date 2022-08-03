@@ -1,14 +1,15 @@
-Pause {#Pause}
-============
-```cpp
+// Pause.hpp - Header for the "pause" command.
+// Aug 19, 2021
+// Chris M.
+// https://github.com/RealTimeChris
+
 #pragma once
 
-#include "Index.hpp"
-#include "HelperFunctions.hpp"
+#include "../HelperFunctions.hpp"
 
-	namespace DiscordCoreAPI {
+namespace DiscordCoreAPI {
 
-	class Pause : public DiscordCoreAPI::BaseFunction {
+	class Pause : public BaseFunction {
 	  public:
 		Pause() {
 			this->commandName = "pause";
@@ -21,105 +22,111 @@ Pause {#Pause}
 			this->helpEmbed = msgEmbed;
 		}
 
-		std::unique_ptr<DiscordCoreAPI::BaseFunction> create() {
+		std::unique_ptr<BaseFunction> create() {
 			return std::make_unique<Pause>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		void execute(BaseFunctionArguments& newArgs) {
 			try {
-				Channel channel = Channels::getCachedChannelAsync({.channelId = args.eventData->getChannelId()}).get();
+				Channel channel = Channels::getCachedChannelAsync({ .channelId = newArgs.eventData.getChannelId() }).get();
 
-				bool areWeInADm = areWeInADM(*args.eventData, channel);
-
-				if (areWeInADm) {
-					return;
-				}
-
-				InputEvents::deleteInputEventResponseAsync(std::make_unique<InputEventData>(*args.eventData)).get();
-
-				Guild guild = Guilds::getCachedGuildAsync({.guildId = args.eventData->getGuildId()}).get();
-
+				Guild guild = Guilds::getCachedGuildAsync({ .guildId = newArgs.eventData.getGuildId() }).get();
 				DiscordGuild discordGuild(guild);
-
-				bool checkIfAllowedInChannel = checkIfAllowedPlayingInChannel(*args.eventData, discordGuild);
-
+				bool checkIfAllowedInChannel = checkIfAllowedPlayingInChannel(newArgs.eventData, discordGuild);
 				if (!checkIfAllowedInChannel) {
 					return;
 				}
 
 				GuildMember guildMember =
-					GuildMembers::getCachedGuildMemberAsync({.guildMemberId = args.eventData->getAuthorId(), .guildId = args.eventData->getGuildId()}).get();
-
-				bool doWeHaveControl = checkIfWeHaveControl(*args.eventData, discordGuild, guildMember);
-
+					GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = newArgs.eventData.getAuthorId(), .guildId = newArgs.eventData.getGuildId() }).get();
+				bool doWeHaveControl = checkIfWeHaveControl(newArgs.eventData, discordGuild, guildMember);
 				if (!doWeHaveControl) {
 					return;
 				}
 
-				VoiceConnection* voiceConnection = guild.connectToVoice(guildMember.voiceData.channelId, true, false);
+				RespondToInputEventData dataPackage00(newArgs.eventData);
+				dataPackage00.setResponseType(InputEventResponseType::Ephemeral_Deferred_Response);
+				InputEvents::respondToInputEventAsync(dataPackage00).get();
+				VoiceConnection* voiceConnection{};
+				VoiceStateData voiceStateData{};
+				if (guild.voiceStates.contains(guildMember.id)) {
+					voiceStateData = guild.voiceStates.at(guildMember.id);
+					voiceConnection = guild.connectToVoice(0, voiceStateData.channelId, true, false);
+				} else {
+					EmbedData newEmbed{};
+					newEmbed.setAuthor(newArgs.eventData.getUserName(), newArgs.eventData.getAvatarUrl());
+					newEmbed.setDescription("------\n__**Sorry, but you need to be in a correct voice channel to issue those commands!**__\n------");
+					newEmbed.setTimeStamp(getTimeAndDate());
+					newEmbed.setTitle("__**Connection Issue:**__");
+					newEmbed.setColor(discordGuild.data.borderColor);
+					RespondToInputEventData dataPackage(newArgs.eventData);
+					dataPackage.setResponseType(InputEventResponseType::Edit_Interaction_Response);
+					dataPackage.addMessageEmbed(newEmbed);
+					InputEvents::respondToInputEventAsync(dataPackage).get();
+					return;
+				}
 				loadPlaylist(discordGuild);
-				if (voiceConnection == nullptr) {
-					EmbedData newEmbed;
-					newEmbed.setAuthor(args.eventData->getUserName(), args.eventData->getAvatarUrl());
+				if (voiceConnection == nullptr || !guild.areWeConnected()) {
+					EmbedData newEmbed{};
+					newEmbed.setAuthor(newArgs.eventData.getUserName(), newArgs.eventData.getAvatarUrl());
 					newEmbed.setDescription("------\n__**Sorry, but there is no voice connection that is currently held by me!**__\n------");
 					newEmbed.setTimeStamp(getTimeAndDate());
 					newEmbed.setTitle("__**Connection Issue:**__");
 					newEmbed.setColor(discordGuild.data.borderColor);
-					RespondToInputEventData dataPackage(*args.eventData);
-					dataPackage.setResponseType(InputEventResponseType::Ephemeral_Interaction_Response);
+					RespondToInputEventData dataPackage(newArgs.eventData);
+					dataPackage.setResponseType(InputEventResponseType::Edit_Interaction_Response);
 					dataPackage.addMessageEmbed(newEmbed);
-					auto newEvent = InputEvents::respondToInputEventAsync(dataPackage);
+					auto newEvent = InputEvents::respondToInputEventAsync(dataPackage).get();
 					return;
 				}
 
-				if (guildMember.voiceData.channelId == 0 || guildMember.voiceData.channelId != voiceConnection->getChannelId()) {
-					EmbedData newEmbed;
-					newEmbed.setAuthor(args.eventData->getUserName(), args.eventData->getAvatarUrl());
+				if (voiceStateData.channelId == 0 || voiceStateData.channelId != voiceConnection->getChannelId()) {
+					EmbedData newEmbed{};
+					newEmbed.setAuthor(newArgs.eventData.getUserName(), newArgs.eventData.getAvatarUrl());
 					newEmbed.setDescription("------\n__**Sorry, but you need to be in a correct voice channel to issue those commands!**__\n------");
 					newEmbed.setTimeStamp(getTimeAndDate());
-					newEmbed.setTitle("__**Pauseping Issue:**__");
+					newEmbed.setTitle("__**Pausing Issue:**__");
 					newEmbed.setColor(discordGuild.data.borderColor);
-					RespondToInputEventData dataPackage(*args.eventData);
-					dataPackage.setResponseType(InputEventResponseType::Ephemeral_Interaction_Response);
+					RespondToInputEventData dataPackage(newArgs.eventData);
+					dataPackage.setResponseType(InputEventResponseType::Edit_Interaction_Response);
 					dataPackage.addMessageEmbed(newEmbed);
-					auto newEvent = InputEvents::respondToInputEventAsync(dataPackage);
+					auto newEvent = InputEvents::respondToInputEventAsync(dataPackage).get();
 					return;
 				}
 
-				if (!guild.areWeConnected() || !SongAPI::areWeCurrentlyPlaying(guild.id)) {
-					std::string msgString = "------\n**There's no music playing to be paused!**\n------";
-					EmbedData msgEmbed;
-					msgEmbed.setAuthor(args.eventData->getUserName(), args.eventData->getAvatarUrl());
-					msgEmbed.setColor(discordGuild.data.borderColor);
-					msgEmbed.setDescription(msgString);
-					msgEmbed.setTimeStamp(getTimeAndDate());
-					msgEmbed.setTitle("__**Pausing Issue:**__");
-					RespondToInputEventData dataPackage(*args.eventData);
-					dataPackage.setResponseType(InputEventResponseType::Ephemeral_Interaction_Response);
-					dataPackage.addMessageEmbed(msgEmbed);
-					auto newEvent = InputEvents::respondToInputEventAsync(dataPackage);
+				if (!SongAPI::areWeCurrentlyPlaying(guild.id)) {
+					EmbedData newEmbed{};
+					newEmbed.setAuthor(newArgs.eventData.getUserName(), newArgs.eventData.getAvatarUrl());
+					newEmbed.setDescription("------\n__**Sorry, but I need to be either playing or paused for this command to be possible!**__\n------");
+					newEmbed.setTimeStamp(getTimeAndDate());
+					newEmbed.setTitle("__**Pausing Issue:**__");
+					newEmbed.setColor(discordGuild.data.borderColor);
+					RespondToInputEventData dataPackage(newArgs.eventData);
+					dataPackage.setResponseType(InputEventResponseType::Edit_Interaction_Response);
+					dataPackage.addMessageEmbed(newEmbed);
+					auto newEvent = InputEvents::respondToInputEventAsync(dataPackage).get();
 					return;
 				}
+
 				SongAPI::pauseToggle(guild.id);
 
 				EmbedData msgEmbed;
-				msgEmbed.setAuthor(args.eventData->getUserName(), args.eventData->getAvatarUrl());
+				msgEmbed.setAuthor(newArgs.eventData.getUserName(), newArgs.eventData.getAvatarUrl());
 				msgEmbed.setColor(discordGuild.data.borderColor);
-				msgEmbed.setDescription("\n------\n__**Songs Remaining In Queue:**__ " + std::to_string(SongAPI::getPlaylist(guild.id).songQueue.size()) +
-										"\n------");
+				msgEmbed.setDescription("\n------\n__**Songs Remaining In Queue:**__ " + std::to_string(SongAPI::getPlaylist(guild.id).songQueue.size()) + "\n------");
 				msgEmbed.setTimeStamp(getTimeAndDate());
 				msgEmbed.setTitle("__**Paused Playback:**__");
-				RespondToInputEventData dataPackage(*args.eventData);
-				dataPackage.setResponseType(InputEventResponseType::Ephemeral_Interaction_Response);
+				RespondToInputEventData dataPackage(newArgs.eventData);
+				dataPackage.setResponseType(InputEventResponseType::Edit_Interaction_Response);
 				dataPackage.addMessageEmbed(msgEmbed);
-				auto newEvent = InputEvents::respondToInputEventAsync(dataPackage);
+				auto newEvent = InputEvents::respondToInputEventAsync(dataPackage).get();
 
 				return;
 			} catch (...) {
-				reportException("Pause::execute Error: ");
+				reportException("Pause::execute()");
 			}
 		}
-		virtual ~Pause();
+		~Pause(){};
 	};
+
 }
-```

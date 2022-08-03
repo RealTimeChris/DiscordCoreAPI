@@ -1,14 +1,15 @@
-NP(Now-Playing) {#NP}
-============
-```cpp
+// Np.hpp - Header for the "now playing" command.
+// Sep 4, 2021
+// Chris M.
+// https://gibhub.com/RealTimeChris
+
 #pragma once
 
-#include "Index.hpp"
-#include "HelperFunctions.hpp"
+#include "../HelperFunctions.hpp"
 
-	namespace DiscordCoreAPI {
+namespace DiscordCoreAPI {
 
-	class Np : public DiscordCoreAPI::BaseFunction {
+	class Np : public BaseFunction {
 	  public:
 		Np() {
 			this->commandName = "np";
@@ -21,47 +22,38 @@ NP(Now-Playing) {#NP}
 			this->helpEmbed = msgEmbed;
 		}
 
-		std::unique_ptr<DiscordCoreAPI::BaseFunction> create() {
+		std::unique_ptr<BaseFunction> create() {
 			return std::make_unique<Np>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		void execute(BaseFunctionArguments& newArgs) {
 			try {
-				Channel channel = Channels::getCachedChannelAsync({.channelId = args.eventData->getChannelId()}).get();
+				Channel channel = Channels::getCachedChannelAsync({ .channelId = newArgs.eventData.getChannelId() }).get();
 
-				bool areWeInADm = areWeInADM(*args.eventData, channel);
-
-				if (areWeInADm) {
-					return;
-				}
-
-				InputEvents::deleteInputEventResponseAsync(std::make_unique<InputEventData>(*args.eventData)).get();
-
-				Guild guild = Guilds::getCachedGuildAsync({.guildId = args.eventData->getGuildId()}).get();
+				Guild guild = Guilds::getCachedGuildAsync({ .guildId = newArgs.eventData.getGuildId() }).get();
 
 				DiscordGuild discordGuild(guild);
 
-				bool checkIfAllowedInChannel = checkIfAllowedPlayingInChannel(*args.eventData, discordGuild);
+				bool checkIfAllowedInChannel = checkIfAllowedPlayingInChannel(newArgs.eventData, discordGuild);
 
 				if (!checkIfAllowedInChannel) {
 					return;
 				}
 
 				GuildMember guildMember =
-					GuildMembers::getCachedGuildMemberAsync({.guildMemberId = args.eventData->getAuthorId(), .guildId = args.eventData->getGuildId()}).get();
+					GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = newArgs.eventData.getAuthorId(), .guildId = newArgs.eventData.getGuildId() }).get();
 
-				bool doWeHaveControl = checkIfWeHaveControl(*args.eventData, discordGuild, guildMember);
+				bool doWeHaveControl = checkIfWeHaveControl(newArgs.eventData, discordGuild, guildMember);
 
 				if (!doWeHaveControl) {
 					return;
 				}
 				loadPlaylist(discordGuild);
-				EmbedData newEmbed;
-				newEmbed.setAuthor(args.eventData->getUserName(), args.eventData->getAvatarUrl());
-				newEmbed.setDescription("__**Title:**__ [" + SongAPI::getCurrentSong(guild.id).songTitle + "](" + SongAPI::getCurrentSong(guild.id).viewUrl +
-										")" + "\n__**Description:**__ " + SongAPI::getCurrentSong(guild.id).description + "\n__**Duration:**__ " +
-										SongAPI::getCurrentSong(guild.id).duration + "\n__**Added By:**__ <@!" +
-										SongAPI::getCurrentSong(guild.id).addedByUserId + "> (" + SongAPI::getCurrentSong(guild.id).addedByUserName + ")");
+				EmbedData newEmbed{};
+				newEmbed.setAuthor(newArgs.eventData.getUserName(), newArgs.eventData.getAvatarUrl());
+				newEmbed.setDescription("__**Title:**__ [" + SongAPI::getCurrentSong(guild.id).songTitle + "](" + SongAPI::getCurrentSong(guild.id).viewUrl + ")" +
+					"\n__**Description:**__ " + SongAPI::getCurrentSong(guild.id).description + "\n__**Duration:**__ " + SongAPI::getCurrentSong(guild.id).duration +
+					"\n__**Added By:**__ <@!" + std::to_string(SongAPI::getCurrentSong(guild.id).addedByUserId) + "> (" + SongAPI::getCurrentSong(guild.id).addedByUserName + ")");
 				newEmbed.setImage(SongAPI::getCurrentSong(guild.id).thumbnailUrl);
 				newEmbed.setTimeStamp(getTimeAndDate());
 				newEmbed.setTitle("__**Now Playing:**__");
@@ -78,18 +70,18 @@ NP(Now-Playing) {#NP}
 				if (!SongAPI::isLoopAllEnabled(guild.id) && !SongAPI::isLoopSongEnabled(guild.id)) {
 					newEmbed.setFooter("❌ Loop-All, ❌ Loop-Song");
 				}
-				RespondToInputEventData dataPackage(*args.eventData);
+				RespondToInputEventData dataPackage(newArgs.eventData);
 				dataPackage.setResponseType(InputEventResponseType::Interaction_Response);
 				dataPackage.addMessageEmbed(newEmbed);
-				auto newEvent02 = InputEvents::respondToInputEventAsync(dataPackage);
+				auto newEvent02 = InputEvents::respondToInputEventAsync(dataPackage).get();
 
 
 				return;
 			} catch (...) {
-				reportException("NP:execute Error: ");
+				reportException("NP:execute()");
 			}
 		}
-		virtual ~Np();
+		~Np(){};
 	};
+
 }
-```

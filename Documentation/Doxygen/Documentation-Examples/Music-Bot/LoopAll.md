@@ -1,13 +1,14 @@
-Loop All {#Loop-All}
-============
-```cpp
+// LoopAll.hpp - Header for the "loop song" command.
+// Aug 19, 2021
+// Chris M.
+// https://github.com/RealTimeChris
+
 #pragma once
 
-#include "Index.hpp"
-#include "HelperFunctions.hpp"
+#include "../HelperFunctions.hpp"
 
-	namespace DiscordCoreAPI {
-	class LoopAll : public DiscordCoreAPI::BaseFunction {
+namespace DiscordCoreAPI {
+	class LoopAll : public BaseFunction {
 	  public:
 		LoopAll() {
 			this->commandName = "loopall";
@@ -20,36 +21,28 @@ Loop All {#Loop-All}
 			this->helpEmbed = msgEmbed;
 		}
 
-		std::unique_ptr<DiscordCoreAPI::BaseFunction> create() {
+		std::unique_ptr<BaseFunction> create() {
 			return std::make_unique<LoopAll>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		void execute(BaseFunctionArguments& newArgs) {
 			try {
-				Channel channel = Channels::getCachedChannelAsync({.channelId = args.eventData->getChannelId()}).get();
+				Channel channel = Channels::getCachedChannelAsync({ .channelId = newArgs.eventData.getChannelId() }).get();
 
-				bool areWeInADm = areWeInADM(*args.eventData, channel);
-
-				if (areWeInADm) {
-					return;
-				}
-
-				InputEvents::deleteInputEventResponseAsync(std::make_unique<InputEventData>(*args.eventData)).get();
-
-				Guild guild = Guilds::getCachedGuildAsync({.guildId = args.eventData->getGuildId()}).get();
+				Guild guild = Guilds::getCachedGuildAsync({ .guildId = newArgs.eventData.getGuildId() }).get();
 
 				DiscordGuild discordGuild(guild);
 
-				bool areWeAllowed = checkIfAllowedPlayingInChannel(*args.eventData, discordGuild);
+				bool areWeAllowed = checkIfAllowedPlayingInChannel(newArgs.eventData, discordGuild);
 
 				if (!areWeAllowed) {
 					return;
 				}
 
 				GuildMember guildMember =
-					GuildMembers::getCachedGuildMemberAsync({.guildMemberId = args.eventData->getAuthorId(), .guildId = args.eventData->getGuildId()}).get();
+					GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = newArgs.eventData.getAuthorId(), .guildId = newArgs.eventData.getGuildId() }).get();
 
-				bool doWeHaveControl = checkIfWeHaveControl(*args.eventData, discordGuild, guildMember);
+				bool doWeHaveControl = checkIfWeHaveControl(newArgs.eventData, discordGuild, guildMember);
 
 				if (!doWeHaveControl) {
 					return;
@@ -61,7 +54,7 @@ Loop All {#Loop-All}
 					SongAPI::setLoopAllStatus(true, guild.id);
 				}
 				EmbedData msgEmbed;
-				msgEmbed.setAuthor(args.eventData->getUserName(), args.eventData->getAvatarUrl());
+				msgEmbed.setAuthor(newArgs.eventData.getUserName(), newArgs.eventData.getAvatarUrl());
 				msgEmbed.setColor(discordGuild.data.borderColor);
 				if (SongAPI::isLoopAllEnabled(guild.id)) {
 					msgEmbed.setDescription("\n------\n__**Looping-All has been enabled!**__\n------\n");
@@ -71,17 +64,17 @@ Loop All {#Loop-All}
 				savePlaylist(discordGuild);
 				msgEmbed.setTimeStamp(getTimeAndDate());
 				msgEmbed.setTitle("__**Looping-All Change:**__");
-				RespondToInputEventData dataPackage(*args.eventData);
+				RespondToInputEventData dataPackage(newArgs.eventData);
 				dataPackage.setResponseType(InputEventResponseType::Ephemeral_Interaction_Response);
 				dataPackage.addMessageEmbed(msgEmbed);
-				auto newEvent = InputEvents::respondToInputEventAsync(dataPackage);
+				auto newEvent = InputEvents::respondToInputEventAsync(dataPackage).get();
 
 				return;
 			} catch (...) {
-				reportException("LoopAll::execute Error: ");
+				reportException("LoopAll::execute()");
 			}
 		}
-		virtual ~LoopAll();
+		~LoopAll(){};
 	};
+
 }
-```

@@ -1,14 +1,15 @@
-Clear {#Clear}
-============
-```cpp
-#pragma once
+// Clear.hpp - Header for the "clear" command.
+// Aug 19, 2021
+// Chris M.
+// https://github.com/RealTimeChris
 
-#include "Index.hpp"
-#include "HelperFunctions.hpp"
+/#pragma once
 
-	namespace DiscordCoreAPI {
+#include "../HelperFunctions.hpp"
 
-	class Clear : public DiscordCoreAPI::BaseFunction {
+namespace DiscordCoreAPI {
+
+	class Clear : public BaseFunction {
 	  public:
 		Clear() {
 			this->commandName = "clear";
@@ -21,36 +22,28 @@ Clear {#Clear}
 			this->helpEmbed = msgEmbed;
 		}
 
-		std::unique_ptr<DiscordCoreAPI::BaseFunction> create() {
+		std::unique_ptr<BaseFunction> create() {
 			return std::make_unique<Clear>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		void execute(BaseFunctionArguments& newArgs) {
 			try {
-				Channel channel = Channels::getCachedChannelAsync({.channelId = args.eventData->getChannelId()}).get();
+				Channel channel = Channels::getCachedChannelAsync({ .channelId = newArgs.eventData.getChannelId() }).get();
 
-				bool areWeInADm = areWeInADM(*args.eventData, channel);
-
-				if (areWeInADm) {
-					return;
-				}
-
-				InputEvents::deleteInputEventResponseAsync(std::make_unique<InputEventData>(*args.eventData)).get();
-
-				Guild guild = Guilds::getCachedGuildAsync({.guildId = args.eventData->getGuildId()}).get();
+				Guild guild = Guilds::getCachedGuildAsync({ .guildId = newArgs.eventData.getGuildId() }).get();
 
 				DiscordGuild discordGuild(guild);
 
-				bool checkIfAllowedInChannel = checkIfAllowedPlayingInChannel(*args.eventData, discordGuild);
+				bool checkIfAllowedInChannel = checkIfAllowedPlayingInChannel(newArgs.eventData, discordGuild);
 
 				if (!checkIfAllowedInChannel) {
 					return;
 				}
 
 				GuildMember guildMember =
-					GuildMembers::getCachedGuildMemberAsync({.guildMemberId = args.eventData->getAuthorId(), .guildId = args.eventData->getGuildId()}).get();
+					GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = newArgs.eventData.getAuthorId(), .guildId = newArgs.eventData.getGuildId() }).get();
 
-				bool doWeHaveControl = checkIfWeHaveControl(*args.eventData, discordGuild, guildMember);
+				bool doWeHaveControl = checkIfWeHaveControl(newArgs.eventData, discordGuild, guildMember);
 
 				if (!doWeHaveControl) {
 					return;
@@ -59,25 +52,25 @@ Clear {#Clear}
 				auto playlist = SongAPI::getPlaylist(guild.id);
 				playlist.songQueue.clear();
 				SongAPI::setPlaylist(playlist, guild.id);
-				savePlaylist(guild);
+				savePlaylist(discordGuild);
 
 				EmbedData msgEmbed;
-				msgEmbed.setAuthor(args.eventData->getUserName(), args.eventData->getAvatarUrl());
+				msgEmbed.setAuthor(newArgs.eventData.getUserName(), newArgs.eventData.getAvatarUrl());
 				msgEmbed.setColor(discordGuild.data.borderColor);
 				msgEmbed.setDescription("\n------\n__**You have cleared the song queue!**__\n------");
 				msgEmbed.setTimeStamp(getTimeAndDate());
 				msgEmbed.setTitle("__**Queue Cleared:**__");
-				RespondToInputEventData dataPackage(*args.eventData);
+				RespondToInputEventData dataPackage(newArgs.eventData);
 				dataPackage.setResponseType(InputEventResponseType::Interaction_Response);
 				dataPackage.addMessageEmbed(msgEmbed);
 				auto newEvent = InputEvents::respondToInputEventAsync(dataPackage).get();
 
 				return;
 			} catch (...) {
-				reportException("Clear::execute Error: ");
+				reportException("Clear::execute()");
 			}
 		}
-		virtual ~Clear();
+		~Clear(){};
 	};
+
 }
-```

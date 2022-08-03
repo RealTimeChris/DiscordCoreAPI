@@ -1,14 +1,15 @@
-Disconnect {#Disconnect}
-============
-```cpp
+// Disconnect.hpp - Header for the "disconnect" std::function.
+// Aug 25, 2021
+// Chris M.
+// https://github.com/RealTimeChris
+
 #pragma once
 
-#include "Index.hpp"
-#include "HelperFunctions.hpp"
+#include "../HelperFunctions.hpp"
 
-	namespace DiscordCoreAPI {
+namespace DiscordCoreAPI {
 
-	class Disconnect : public DiscordCoreAPI::BaseFunction {
+	class Disconnect : public BaseFunction {
 	  public:
 		Disconnect() {
 			this->commandName = "disconnect";
@@ -21,73 +22,64 @@ Disconnect {#Disconnect}
 			this->helpEmbed = msgEmbed;
 		}
 
-		std::unique_ptr<DiscordCoreAPI::BaseFunction> create() {
+		std::unique_ptr<BaseFunction> create() {
 			return std::make_unique<Disconnect>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		void execute(BaseFunctionArguments& newArgs) {
 			try {
-				Channel channel = Channels::getCachedChannelAsync({.channelId = args.eventData->getChannelId()}).get();
+				Channel channel = Channels::getCachedChannelAsync({ .channelId = newArgs.eventData.getChannelId() }).get();
 
-				bool areWeInADm = areWeInADM(*args.eventData, channel);
-
-				if (areWeInADm) {
-					return;
-				}
-
-				InputEvents::deleteInputEventResponseAsync(std::make_unique<InputEventData>(*args.eventData)).get();
-
-				Guild guild = Guilds::getCachedGuildAsync({args.eventData->getGuildId()}).get();
+				GuildData guild = Guilds::getCachedGuildAsync({ newArgs.eventData.getGuildId() }).get();
 				DiscordGuild discordGuild(guild);
 
-				bool areWeAllowed = checkIfAllowedPlayingInChannel(*args.eventData, discordGuild);
+				bool areWeAllowed = checkIfAllowedPlayingInChannel(newArgs.eventData, discordGuild);
 
 				if (!areWeAllowed) {
 					return;
 				}
 
 				GuildMember guildMember =
-					GuildMembers::getCachedGuildMemberAsync({.guildMemberId = args.eventData->getAuthorId(), .guildId = args.eventData->getGuildId()}).get();
+					GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = newArgs.eventData.getAuthorId(), .guildId = newArgs.eventData.getGuildId() }).get();
 
-				bool doWeHaveControl = checkIfWeHaveControl(*args.eventData, discordGuild, guildMember);
+				bool doWeHaveControl = checkIfWeHaveControl(newArgs.eventData, discordGuild, guildMember);
 
 				if (!doWeHaveControl) {
 					return;
 				}
 				if (guild.areWeConnected()) {
-					EmbedData newEmbed;
-					newEmbed.setAuthor(args.eventData->getUserName(), args.eventData->getAvatarUrl());
+					EmbedData newEmbed{};
+					newEmbed.setAuthor(newArgs.eventData.getUserName(), newArgs.eventData.getAvatarUrl());
 					newEmbed.setDescription("------\n__**I'm disconnecting from the voice channel!**__\n------");
 					newEmbed.setTimeStamp(getTimeAndDate());
 					newEmbed.setTitle("__**Disconnected:**__");
 					newEmbed.setColor(discordGuild.data.borderColor);
-					RespondToInputEventData dataPackage(*args.eventData);
+					RespondToInputEventData dataPackage(newArgs.eventData);
 					dataPackage.setResponseType(InputEventResponseType::Interaction_Response);
 					dataPackage.addMessageEmbed(newEmbed);
-					auto newEvent = InputEvents::respondToInputEventAsync(dataPackage);
-					InputEvents::deleteInputEventResponseAsync(std::move(newEvent), 20000);
-					SongAPI::stop(guild.id);
+					auto newEvent = InputEvents::respondToInputEventAsync(dataPackage).get();
+					InputEvents::deleteInputEventResponseAsync(newEvent, 20000);
 					guild.disconnect();
 					savePlaylist(discordGuild);
 				} else {
-					EmbedData newEmbed;
-					newEmbed.setAuthor(args.eventData->getUserName(), args.eventData->getAvatarUrl());
+					EmbedData newEmbed{};
+					newEmbed.setAuthor(newArgs.eventData.getUserName(), newArgs.eventData.getAvatarUrl());
 					newEmbed.setDescription("------\n__**I was already disconnected!**__\n------");
 					newEmbed.setTimeStamp(getTimeAndDate());
 					newEmbed.setTitle("__**Disconnected:**__");
 					newEmbed.setColor(discordGuild.data.borderColor);
-					RespondToInputEventData dataPackage(*args.eventData);
+					RespondToInputEventData dataPackage(newArgs.eventData);
 					dataPackage.setResponseType(InputEventResponseType::Ephemeral_Interaction_Response);
 					dataPackage.addMessageEmbed(newEmbed);
-					auto newEvent = InputEvents::respondToInputEventAsync(dataPackage);
+					auto newEvent = InputEvents::respondToInputEventAsync(dataPackage).get();
 				}
 
 				return;
 			} catch (...) {
-				reportException("Disconnect::execute Error: ");
+				reportException("Disconnect::execute()");
 			}
 		}
-		virtual ~Disconnect();
+		~Disconnect(){};
 	};
+
 }
-```
