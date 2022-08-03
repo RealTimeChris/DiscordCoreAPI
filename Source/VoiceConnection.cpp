@@ -366,21 +366,24 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::runBridge(std::stop_token& theToken) noexcept {
-		StopWatch theStopWatch{ 10ms };
+		StopWatch theStopWatch{ 20ms };
 		while (!theToken.stop_requested()) {
+			std::cout << "WERE A SOURCE WERE A SOURCE 020202" << std::endl;
+			DatagramSocketClient::processIO(1000);
+			std::string theString = DatagramSocketClient::getInputBuffer();
+			if (theString.size() > 0) {
+				std::cout << "WERE A SOURCE WERE A SOURCE 0303: " << theString.size() << std::endl;
+				this->theFrameQueue.push(theString);
+			}
 			this->streamSocket->processIO(100);
 			if (theStopWatch.hasTimePassed() ) {
 				theStopWatch.resetTimer();
-				if (this->streamType == StreamType::Destination) {
-					std::cout << "WERE A SOURCE WERE A DESTINATION" << std::endl;
+				for (int32_t x = 0; x < this->theFrameQueue.size(); x++) {
 					this->parseIncomingVoiceData();
-				} else {
-					for (int32_t x = 0; x < this->theFrameQueue.size(); x++) {
-						this->parseIncomingVoiceData();
-					}
-					if (this->streamType == StreamType::Source) {
-						this->mixAudio();
-					}
+				}
+				if (this->streamType == StreamType::Source) {
+					std::cout << "WERE A SOURCE WERE A SOURCE" << std::endl;
+					this->mixAudio();
 				}
 			}
 		}
@@ -520,32 +523,14 @@ namespace DiscordCoreAPI {
 						if (doWeBreak) {
 							break;
 						}
-												
-
-						std::string theString{};
-						DatagramSocketClient::processIO(1000);
+						
+						DatagramSocketClient::processIO(10000);
 						auto waitTime = targetTime - std::chrono::system_clock::now();
 						nanoSleep(static_cast<int64_t>(static_cast<double>(waitTime.count()) * 0.95f));
 						waitTime = targetTime - std::chrono::system_clock::now();
-						
-						do {
-							if (waitTime.count() > 0) {
-								spinLock(waitTime.count());
-							} else {
-								break;
-							}
-							DatagramSocketClient::processIO(1000);
-							theString = DatagramSocketClient::getInputBuffer();
-							std::cout << "THE STRING SIZE: " << theString.size() << std::endl;
-							if (this->streamType == StreamType::Source) {
-								if (theString.size() > 0) {
-									this->theFrameQueue.push(theString);
-								}
-							}
-						} while (theString.size() > 0);
-						std::cout << "THE STRING IS OVER!" << std::endl;
-							
-						
+						if (waitTime.count() > 0) {
+							spinLock(waitTime.count());
+						}
 						startingValue = std::chrono::system_clock::now();
 						if (newFrame.size() > 0) {
 							this->sendSingleAudioFrame(newFrame);
@@ -601,6 +586,7 @@ namespace DiscordCoreAPI {
 					uint16_t theSequence{ *reinterpret_cast<uint16_t*>(packet.data() + 2) };
 					theSequence = ntohs(theSequence);
 					uint32_t theTimeStamp{ *reinterpret_cast<uint32_t*>(packet.data() + 4) };
+					std::cout << "THE SEQUENCE VALUE: " << theSequence << std::endl;
 					theTimeStamp = ntohl(theTimeStamp);
 					thePayload.currentTimeStamp = theTimeStamp;
 					uint32_t speakerSsrc{ *reinterpret_cast<uint32_t*>(packet.data() + 8) };
@@ -999,6 +985,8 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::mixAudio() noexcept {
+		StopWatch theStopWatch{ 20ms };
+		int32_t originalOffset{};
 		std::cout << std::this_thread::get_id() << std::endl;
 		if (this->voiceUsers.size() > 0) {
 			int16_t voiceUserCount{};
@@ -1009,8 +997,10 @@ namespace DiscordCoreAPI {
 				if (value.thePayloads.size() > 0) {
 					
 					auto thePayload = value.thePayloads.front();
-					std::cout << "WERE HER THIS ISIT!" << std::endl;
-					value.thePayloads.pop();
+					std::cout << "WERE HER THIS ISIT THREAD ID: " << std::this_thread::get_id() << std::endl;
+					if (value.thePayloads.size() > 0) {
+						value.thePayloads.pop();
+					}
 					thePayload.decodedData.resize(23040);
 					std::vector<uint8_t> theVectorToBeDecoded{};
 					theVectorToBeDecoded.insert(theVectorToBeDecoded.begin(), thePayload.theRawData.begin(), thePayload.theRawData.end());
@@ -1029,7 +1019,7 @@ namespace DiscordCoreAPI {
 					std::vector<opus_int16> theDownsampledVector{};
 					theDownsampledVector.resize(sampleCount * 2);
 					for (int32_t x = 0; x < theUpsampledVector.size(); x++) {
-						theDownsampledVector[x] = static_cast<opus_int16>(theUpsampledVector[x]) / voiceUserCount;
+						theDownsampledVector[x] = static_cast<opus_int16>(theUpsampledVector[x]);
 					}
 					std::vector<char> theEncodedData{};
 					theEncodedData.resize(1276);
@@ -1039,6 +1029,13 @@ namespace DiscordCoreAPI {
 					} else {
 						std::string theFinalString{};
 						theFinalString.insert(theFinalString.begin(), theEncodedData.begin(), theEncodedData.begin() + byteCount);
+						AudioFrameData theFrame{};
+						theFrame.encodedFrameData.data.insert(theFrame.encodedFrameData.data.begin(), theFinalString.begin(), theFinalString.end());
+						theFrame.encodedFrameData.sampleCount = 960;
+						theFrame.type = AudioFrameType::Encoded;
+						std::string theString{};
+						theString.insert(theString.begin(), theFrame.encodedFrameData.data.begin(), theFrame.encodedFrameData.data.end());
+						this->audioDataBuffer.send(theFrame);
 						this->streamSocket->writeData(theFinalString);
 					}
 				}
