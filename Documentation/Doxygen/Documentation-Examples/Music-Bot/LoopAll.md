@@ -1,7 +1,6 @@
-// LoopAll.hpp - Header for the "loop song" command.
-// Aug 19, 2021
-// Chris M.
-// https://github.com/RealTimeChris
+Loop All {#Loop-All}
+============
+```cpp
 
 #pragma once
 
@@ -78,3 +77,4 @@ namespace DiscordCoreAPI {
 	};
 
 }
+```

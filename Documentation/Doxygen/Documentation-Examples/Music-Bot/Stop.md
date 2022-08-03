@@ -1,8 +1,6 @@
-// Stop.hpp - Header for the "stop" command.
-// Aug 19, 2021
-// Chris M.
-// https://github.com/RealTimeChris
-
+Stop {#Stop}
+============
+```cpp
 #pragma once
 
 #include "../HelperFunctions.hpp"
@@ -151,3 +149,4 @@ namespace DiscordCoreAPI {
 	};
 
 }
+```

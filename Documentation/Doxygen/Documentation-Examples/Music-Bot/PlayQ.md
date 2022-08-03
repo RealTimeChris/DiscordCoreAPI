@@ -1,7 +1,7 @@
-// PlayQ.hpp - Header for the "play right now" command.
-// Sep 9, 2021
-// Chris M.
-// https://github.com/RealTimeChris
+PlayQ {#Play-Q}
+============
+
+```cpp
 
 #pragma once
 
@@ -355,4 +355,4 @@ namespace DiscordCoreAPI {
 	};
 	std::unordered_map<uint64_t, int64_t> PlayQ::timeOfLastPlay{};
 
-}
+}```

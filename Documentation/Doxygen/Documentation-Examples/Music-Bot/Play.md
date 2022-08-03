@@ -1,7 +1,6 @@
-// Play.hpp - Header for the "play" command.
-// Jun 30, 2021
-// Chris M.
-// https://github.com/RealTimeChris
+Play {#Play}
+============
+```cpp
 
 #pragma once
 
@@ -445,3 +444,4 @@ namespace DiscordCoreAPI {
 	std::unordered_map<int64_t, int64_t> Play::timeOfLastPlay{};
 
 };
+```

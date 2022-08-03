@@ -1,8 +1,6 @@
-// SetMusicChannel.hpp - Header for the "set music channel" command.
-// Jun 30, 2021
-// Chris M.
-// https://github.com/RealTimeChris
-
+Set Music Channel {#SetMusicChannel}
+============
+```cpp
 #pragma once
 
 #include "../HelperFunctions.hpp"
@@ -182,4 +180,4 @@ namespace DiscordCoreAPI {
 		}
 		~SetMusicChannel(){};
 	};
-}
+}```

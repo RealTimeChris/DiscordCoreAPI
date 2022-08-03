@@ -1,7 +1,6 @@
-// Disconnect.hpp - Header for the "disconnect" std::function.
-// Aug 25, 2021
-// Chris M.
-// https://github.com/RealTimeChris
+Disconnect {#Disconnect}
+============
+```cpp
 
 #pragma once
 
@@ -83,3 +82,4 @@ namespace DiscordCoreAPI {
 	};
 
 }
+```

@@ -1,8 +1,6 @@
-// Skip.hpp - Header for the "skip" command.
-// Aug 18, 2021
-// Chris M.
-// https://github.com/RealTimeChris
-
+Skip {#Skip}
+============
+```cpp
 #pragma once
 
 #include "../HelperFunctions.hpp"
@@ -211,3 +209,4 @@ namespace DiscordCoreAPI {
 	};
 	std::unordered_map<uint64_t, int64_t> Skip::timeOfLastSkip{};
 }
+```

@@ -1,7 +1,6 @@
-// Help.hpp - Header for the "help" command.
-// May 20, 2021
-// Chris M.
-// https://github.com/RealTimeChris
+Help {#Help}
+============
+```cpp
 
 #pragma once
 
@@ -212,3 +211,4 @@ namespace DiscordCoreAPI {
 		~Help(){};
 	};
 }
+```

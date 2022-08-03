@@ -1,7 +1,6 @@
-// Np.hpp - Header for the "now playing" command.
-// Sep 4, 2021
-// Chris M.
-// https://gibhub.com/RealTimeChris
+NP(Now-Playing) {#NP}
+============
+```cpp
 
 #pragma once
 
@@ -85,3 +84,4 @@ namespace DiscordCoreAPI {
 	};
 
 }
+```

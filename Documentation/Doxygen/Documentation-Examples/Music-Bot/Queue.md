@@ -1,8 +1,6 @@
-// Queue.hpp - Header for the "Queue" command.
-// Sep 1, 2021
-// Chris M.
-// https://github.com/RealTimeChris
-
+Queue {#Queue}
+============
+```cpp
 #pragma once
 
 #include "../HelperFunctions.hpp"
@@ -451,3 +449,4 @@ namespace DiscordCoreAPI {
 	};
 
 };
+```

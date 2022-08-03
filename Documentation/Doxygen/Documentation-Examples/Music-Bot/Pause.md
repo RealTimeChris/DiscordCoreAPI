@@ -1,7 +1,6 @@
-// Pause.hpp - Header for the "pause" command.
-// Aug 19, 2021
-// Chris M.
-// https://github.com/RealTimeChris
+Pause {#Pause}
+============
+```cpp
 
 #pragma once
 
@@ -130,3 +129,4 @@ namespace DiscordCoreAPI {
 	};
 
 }
+```

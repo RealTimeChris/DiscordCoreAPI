@@ -1,9 +1,6 @@
-// Clear.hpp - Header for the "clear" command.
-// Aug 19, 2021
-// Chris M.
-// https://github.com/RealTimeChris
-
-/#pragma once
+Clear {#Clear}
+============
+```cpp
 
 #include "../HelperFunctions.hpp"
 
@@ -74,3 +71,4 @@ namespace DiscordCoreAPI {
 	};
 
 }
+```
