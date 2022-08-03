@@ -390,6 +390,8 @@ namespace DiscordCoreAPI {
 					this->streamSocket->processIO(1);
 					this->parseIncomingVoiceData();
 				}
+			} else if (this->streamType == StreamType::Source) {
+				std::this_thread::sleep_for(1ms);
 			}
 		}
 	}
@@ -1026,15 +1028,6 @@ namespace DiscordCoreAPI {
 				} else {
 					std::string theFinalString{};
 					theFinalString.insert(theFinalString.begin(), theEncodedData.begin(), theEncodedData.begin() + byteCount);
-					/*
-					AudioFrameData theFrame{};
-					theFrame.encodedFrameData.data.insert(theFrame.encodedFrameData.data.begin(), theFinalString.begin(), theFinalString.end());
-					theFrame.encodedFrameData.sampleCount = 960;
-					theFrame.type = AudioFrameType::Encoded;
-					std::string theString{};
-					theString.insert(theString.begin(), theFrame.encodedFrameData.data.begin(), theFrame.encodedFrameData.data.end());
-					this->audioDataBuffer.send(theFrame);
-					*/
 					this->streamSocket->writeData(theFinalString);
 				}
 			}
