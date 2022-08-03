@@ -95,7 +95,7 @@ namespace DiscordCoreAPI {
 			}
 
 		  protected:
-			UnboundedMessageBlock<std::exception_ptr>* exceptionBuffer{};
+			UnboundedMessageBlock<std::exception_ptr>* exceptionBuffer{ nullptr };
 			std::atomic_bool areWeStoppedBool{ false };
 			std::atomic_bool* areWeDone{ nullptr };
 			ReturnType result{};
