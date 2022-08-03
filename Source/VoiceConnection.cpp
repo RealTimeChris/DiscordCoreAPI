@@ -368,10 +368,7 @@ namespace DiscordCoreAPI {
 
 	void VoiceConnection::runBridge(std::stop_token& theToken) noexcept {
 		StopWatch theStopWatch{ 20ms };
-		StopWatch theStopWatchTwo{ 20ms };
 		while (!theToken.stop_requested()) {
-			
-			
 			if (theStopWatch.hasTimePassed()) {
 				theStopWatch.resetTimer();
 				if (this->streamType == StreamType::Source) {
@@ -385,24 +382,15 @@ namespace DiscordCoreAPI {
 					} while (theString.size() > 0);
 				}
 				
-				//std::cout << "THE TOTAL TIME PASSED: 0101: " << theStopWatchTwo.totalTimePassed() << std::endl;
-				
-
-				//std::cout << "THE TOTAL TIME PASSED: 0202: " << theStopWatchTwo.totalTimePassed() << std::endl;
 				if (this->streamType == StreamType::Source) {
 					this->streamSocket->processIO(1);
 					this->parseIncomingVoiceData();
 					this->mixAudio();
-					//std::cout << "THE TOTAL TIME PASSED: 0303: " << theStopWatchTwo.totalTimePassed() << std::endl;
 				} else {
 					this->streamSocket->processIO(1);
 					this->parseIncomingVoiceData();
-					//std::cout << "THE TOTAL TIME PASSED: 0404: " << theStopWatchTwo.totalTimePassed() << std::endl;
 				}
-				
-			} else {
-				//std::this_thread::sleep_for(100us);
-			}//std::cout << "THE TOTAL TIME PASSED: 0505: " << theStopWatchTwo.totalTimePassed() << std::endl;
+			}
 		}
 	}
 
@@ -614,15 +602,15 @@ namespace DiscordCoreAPI {
 					for (uint32_t x = 0; x < headerSize; x++) {
 						nonce[x] = packet[x];
 					}
-					const size_t csrc_count = packet[0] & 0b0000'1111;
-					const ptrdiff_t offset_to_data = headerSize + sizeof(uint32_t) * csrc_count;
-					uint8_t* encryptedData = packet.data() + offset_to_data;
-					const size_t encryptedDataLen = packet.size() - offset_to_data;
+					const size_t csrcCount = packet[0] & 0b0000'1111;
+					const ptrdiff_t offsetToData = headerSize + sizeof(uint32_t) * csrcCount;
+					uint8_t* encryptedData = packet.data() + offsetToData;
+					const size_t encryptedDataLength = packet.size() - offsetToData;
 					std::vector<uint8_t> theKey{};
 					theKey.insert(theKey.begin(), this->secretKeySend.begin(), this->secretKeySend.end());
 					std::vector<uint8_t> decryptedData{};
-					decryptedData.resize(encryptedDataLen);
-					if (crypto_secretbox_open_easy(decryptedData.data(), encryptedData, encryptedDataLen, nonce.data(), theKey.data())) {
+					decryptedData.resize(encryptedDataLength);
+					if (crypto_secretbox_open_easy(decryptedData.data(), encryptedData, encryptedDataLength, nonce.data(), theKey.data())) {
 						return;
 					}
 
@@ -987,6 +975,9 @@ namespace DiscordCoreAPI {
 	void VoiceConnection::reconnect() noexcept {
 		DatagramSocketClient::disconnect();
 		WebSocketSSLShard::disconnect(true);
+		if (this->taskThread03) {
+			this->taskThread03.reset(nullptr);
+		}
 		this->areWeHeartBeating = false;
 		this->wantWrite = true;
 		this->wantRead = false;
