@@ -75,7 +75,7 @@ jobs:
                 sudo git commit -m "Updates! [skip ci]" &&
                 sudo git config pull.rebase false &&
                 sudo git pull &&
-                sudo git push origin main
+                sudo git push origin main 
                 
          - name: Download, install, and run a template-bot.
            run: sudo git clone https://github.com/RealTimeChris/Bot-Template-For-DiscordCoreAPI --depth=1 &&
