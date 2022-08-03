@@ -390,8 +390,6 @@ namespace DiscordCoreAPI {
 					this->streamSocket->processIO(1);
 					this->parseIncomingVoiceData();
 				}
-			} else if (this->streamType == StreamType::Source) {
-				std::this_thread::sleep_for(1ms);
 			}
 		}
 	}
