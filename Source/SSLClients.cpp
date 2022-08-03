@@ -620,12 +620,10 @@ namespace DiscordCoreInternal {
 				&intSize);
 		}
 		
-		std::cout << "READ BYTES: " << readBytes << std::endl;
 		if (readBytes < 0) {
 			this->disconnect();
 			return;
 		} else {
-			std::cout << "READ BYTES: " << readBytes << std::endl;
 			std::string theString{};
 			theString.insert(theString.end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
 			this->inputBuffers.push_back(theString);

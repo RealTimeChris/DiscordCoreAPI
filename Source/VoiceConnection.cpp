@@ -369,29 +369,41 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::runBridge(std::stop_token& theToken) noexcept {
-		StopWatch theStopWatch{ 20ms };
+		StopWatch theStopWatch{ 15ms };
+		StopWatch theStopWatchTwo{ 150ms };
 		while (!theToken.stop_requested()) {
 			DatagramSocketClient::processIO(1000);
-			this->streamSocket->processIO(100);
 			if (theStopWatch.hasTimePassed() ) {
+				
+				std ::cout << "TOTAL TIME PASSED: " << theStopWatchTwo.totalTimePassed() << std::endl;
 				theStopWatch.resetTimer();
+				theStopWatchTwo.resetTimer();
 				std::string theString{};
 				do{
 					theString = DatagramSocketClient::getInputBuffer();
-					std::cout << "THE STRING'S SIZE: " << theString.size() << std::endl;
 					if (theString.size() > 0) {
 						this->theFrameQueue.push(theString);
 					}
 				} while (theString.size() > 0);
+				std ::cout << "TOTAL TIME PASSED 0202: " << theStopWatchTwo.totalTimePassed() << std::endl;
+				theStopWatchTwo.resetTimer();
 				
-				if (this->streamType == StreamType::Destination) {
-					std::cout << "WERE A SOURCE WERE A DESTINATION" << std::endl;
+				if (this->streamType == StreamType::Source) {
+					
+					std ::cout << "TOTAL TIME PASSED 0303: " << theStopWatchTwo.totalTimePassed() << std::endl;
+					theStopWatchTwo.resetTimer();
 					this->parseIncomingVoiceData();
-				} else {
-					this->parseIncomingVoiceData();
+					std ::cout << "TOTAL TIME PASSED 0404: " << theStopWatchTwo.totalTimePassed() << std::endl;
+					theStopWatchTwo.resetTimer();
 					this->mixAudio();
+					this->streamSocket->processIO(100);
+				} else {
+					this->streamSocket->processIO(100);
+					this->parseIncomingVoiceData();
 				}
 			}
+			std ::cout << "TOTAL TIME PASSED 0505: " << theStopWatchTwo.totalTimePassed() << std::endl;
+			theStopWatchTwo.resetTimer();
 		}
 	}
 
@@ -539,8 +551,7 @@ namespace DiscordCoreAPI {
 						if (waitTime.count() > 0) {
 							spinLock(waitTime.count());
 						}
-						std::cout << "THE STRING IS OVER!" << std::endl;
-							
+						
 						
 						startingValue = std::chrono::system_clock::now();
 						if (newFrame.size() > 0) {
@@ -598,15 +609,8 @@ namespace DiscordCoreAPI {
 					theSequence = ntohs(theSequence);
 					uint32_t theTimeStamp{ *reinterpret_cast<uint32_t*>(packet.data() + 4) };
 					theTimeStamp = ntohl(theTimeStamp);
-					thePayload.currentTimeStamp = theTimeStamp;
 					uint32_t speakerSsrc{ *reinterpret_cast<uint32_t*>(packet.data() + 8) };
 					speakerSsrc = ntohl(speakerSsrc);
-					thePayload.currentTimeStampInMs = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-					if (this->voiceUsers[speakerSsrc].originalTimestamp == 0) {
-						this->voiceUsers[speakerSsrc].originalTimestamp = theTimeStamp;
-						this->voiceUsers[speakerSsrc].originalTimestampInMs =
-							std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-					}
 
 					std::vector<uint8_t> nonce{};
 					nonce.resize(24);
@@ -638,9 +642,8 @@ namespace DiscordCoreAPI {
 					}
 					if (decryptedDataString.size() > 0) {
 						thePayload.theRawData.insert(thePayload.theRawData.begin(), decryptedDataString.begin(), decryptedDataString.end() - 16);
-						std::cout << "THE PAYLOAD ADDED'S SIZE: " << thePayload.theRawData.size() << std::endl;
 						std::lock_guard theLock{ WebSocketSSLShard::theMutex };
-						this->voiceUsers[speakerSsrc].thePayloads.push(thePayload);
+						this->voiceUsers[speakerSsrc].thePayloads.push(std::move(thePayload));
 					}
 				}
 			}
@@ -651,7 +654,7 @@ namespace DiscordCoreAPI {
 			theFrame.encodedFrameData.data.insert(theFrame.encodedFrameData.data.begin(), theBuffer.begin(), theBuffer.end());
 			theFrame.encodedFrameData.sampleCount = 960;
 			theFrame.type = AudioFrameType::Encoded;
-			this->audioDataBuffer.send(theFrame);
+			this->audioDataBuffer.send(std::move(theFrame));
 		}
 	}
 
@@ -848,7 +851,6 @@ namespace DiscordCoreAPI {
 						});
 					}
 				}
-				std::cout << "WERE TOTALLY CONNECTED!:" << std::endl;
 				this->streamSocket->connect(this->theStreamInfo.targetAddress, this->theStreamInfo.targetPort);
 				return;
 			}
@@ -1001,19 +1003,17 @@ namespace DiscordCoreAPI {
 			opus_int32 voiceUserCount{};
 			std::vector<opus_int32> theUpsampledVector{};
 			uint64_t sampleCount{};
-			std::lock_guard theLock{ WebSocketSSLShard::theMutex };
+			
 			for (auto& [key, value]: this->voiceUsers) {
 				
 				if (value.thePayloads.size() > 0) {
 					auto thePayload = value.thePayloads.front();
-					std::cout << "WERE HER THIS ISIT!" << std::endl;
 					if (value.thePayloads.size() > 0) {
+						std::lock_guard theLock{ WebSocketSSLShard::theMutex };
 						value.thePayloads.pop();
 					}
 					thePayload.decodedData.resize(23040);
-					std::vector<uint8_t> theVectorToBeDecoded{};
-					theVectorToBeDecoded.insert(theVectorToBeDecoded.begin(), thePayload.theRawData.begin(), thePayload.theRawData.end());
-					sampleCount = opus_decode(value.theDecoder, theVectorToBeDecoded.data(), theVectorToBeDecoded.size(), thePayload.decodedData.data(), 5760, 0);
+					sampleCount = opus_decode(value.theDecoder, thePayload.theRawData.data(), thePayload.theRawData.size(), thePayload.decodedData.data(), 5760, 0);
 					if (sampleCount <= 0) {
 						std::cout << "Failed to decode user's voice payload." << std::endl;
 					} else {
@@ -1037,9 +1037,9 @@ namespace DiscordCoreAPI {
 				if (byteCount <= 0) {
 					std::cout << "Failed to encode user's voice payload." << std::endl;
 				} else {
-					std::cout << "ENCODED BYTES: " << byteCount << std::endl;
 					std::string theFinalString{};
 					theFinalString.insert(theFinalString.begin(), theEncodedData.begin(), theEncodedData.begin() + byteCount);
+					/*
 					AudioFrameData theFrame{};
 					theFrame.encodedFrameData.data.insert(theFrame.encodedFrameData.data.begin(), theFinalString.begin(), theFinalString.end());
 					theFrame.encodedFrameData.sampleCount = 960;
@@ -1047,6 +1047,7 @@ namespace DiscordCoreAPI {
 					std::string theString{};
 					theString.insert(theString.begin(), theFrame.encodedFrameData.data.begin(), theFrame.encodedFrameData.data.end());
 					this->audioDataBuffer.send(theFrame);
+					*/
 					this->streamSocket->writeData(theFinalString);
 				}
 			}
