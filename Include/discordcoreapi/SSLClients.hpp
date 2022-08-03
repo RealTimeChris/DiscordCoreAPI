@@ -159,7 +159,7 @@ namespace DiscordCoreInternal {
 
 		virtual bool areWeStillConnected() noexcept = 0;
 
-		virtual ~SSLConnectionInterface() noexcept = default;
+		virtual ~SSLConnectionInterface() noexcept;
 
 	  protected:
 		static std::mutex contextMutex;
@@ -226,7 +226,7 @@ namespace DiscordCoreInternal {
 	  public:
 		friend class DiscordCoreAPI::VoiceConnection;
 
-		DatagramSocketClient() noexcept = default;
+		DatagramSocketClient(bool areWeClient) noexcept;
 
 		bool connect(const std::string& baseUrl, const std::string& portNew) noexcept;
 
@@ -246,14 +246,15 @@ namespace DiscordCoreInternal {
 
 		void disconnect() noexcept;
 
-		~DatagramSocketClient() noexcept = default;
+		virtual ~DatagramSocketClient() noexcept;
 
 	  protected:
 		const int32_t maxBufferSize{ 1024 * 16 };
 		std::vector<std::string> outputBuffers{};
+		std::vector<std::string> inputBuffers{};
 		std::recursive_mutex theMutex{};
+		bool areWeAClient{ true };
 		SOCKETWrapper theSocket{};
-		std::string inputBuffer{};
 		sockaddr_in theAddress{};
 		int64_t bytesRead{};
 	};

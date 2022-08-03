@@ -158,6 +158,10 @@ namespace DiscordCoreInternal {
 		}
 	}
 
+	SSLConnectionInterface::~SSLConnectionInterface() noexcept {
+		std::lock_guard theLock{ this->connectionMutex };
+	}
+
 	void SSLClient::processIO(std::vector<SSLClient*>& theVector, int32_t waitTimeInms) noexcept {
 		int32_t writeNfds{ 0 }, readNfds{ 0 }, finalNfds{ 0 };
 		fd_set writeSet{}, readSet{};
@@ -469,6 +473,10 @@ namespace DiscordCoreInternal {
 		return this->bytesRead;
 	}
 
+	DatagramSocketClient::DatagramSocketClient(bool areWeClient) noexcept {
+		this->areWeAClient = areWeClient;
+	}
+
 	bool DatagramSocketClient::connect(const std::string& baseUrlNew, const std::string& portNew) noexcept {
 		this->theAddress.sin_addr.s_addr = inet_addr(baseUrlNew.c_str());
 		this->theAddress.sin_port = DiscordCoreAPI::reverseByteOrder(static_cast<unsigned short>(stoi(portNew)));
@@ -488,9 +496,15 @@ namespace DiscordCoreInternal {
 			return false;
 		}
 
-		if (::connect(this->theSocket, address->ai_addr, static_cast<int32_t>(address->ai_addrlen))) {
-			return false;
-		}
+		if (this->areWeAClient) {
+			if (::connect(this->theSocket, address->ai_addr, static_cast<int32_t>(address->ai_addrlen))) {
+				return false;
+			}
+		} else {
+			if (bind(this->theSocket, address->ai_addr, sizeof(sockaddr))) {
+				return false;
+			}
+		}		
 
 #ifdef _WIN32
 		u_long value02{ 1 };
@@ -517,8 +531,9 @@ namespace DiscordCoreInternal {
 			FD_ZERO(&writeSet);
 			FD_SET(this->theSocket, &writeSet);
 		}
-
-		timeval checkTime{ .tv_usec = waitTimeInms };
+		timeval checkTime{};
+		checkTime.tv_usec = waitTimeInms;
+		
 		if (auto returnValue = select(this->theSocket + 1, &readSet, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
 			this->disconnect();
 			return;
@@ -559,9 +574,12 @@ namespace DiscordCoreInternal {
 
 	std::string DatagramSocketClient::getInputBuffer() noexcept {
 		std::unique_lock theLock{ this->theMutex };
-		std::string theReturnString = std::move(this->inputBuffer);
-		this->inputBuffer.clear();
-		return theReturnString;
+		if (this->inputBuffers.size() > 0) {
+			std::string theReturnString = std::move(this->inputBuffers[0]);
+			this->inputBuffers.erase(this->inputBuffers.begin());
+			return theReturnString;
+		}
+		return std::string{};
 	}
 
 	bool DatagramSocketClient::areWeStillConnected() noexcept {
@@ -589,12 +607,22 @@ namespace DiscordCoreInternal {
 	void DatagramSocketClient::readDataProcess() noexcept {
 		std::string serverToClientBuffer{};
 		serverToClientBuffer.resize(this->maxBufferSize);
-		auto readBytes{ recv(this->theSocket, serverToClientBuffer.data(), static_cast<int32_t>(serverToClientBuffer.size()), 0) };
+		int32_t readBytes{};
+		int32_t intSize = sizeof(this->theAddress);
+		if (this->areWeAClient) {
+			readBytes = recv(this->theSocket, serverToClientBuffer.data(), serverToClientBuffer.size(), 0);
+		} else {
+			readBytes = recvfrom(this->theSocket, serverToClientBuffer.data(), static_cast<int32_t>(serverToClientBuffer.size()), 0, reinterpret_cast<sockaddr*>(&this->theAddress),
+				&intSize);
+		}
+		
 		if (readBytes < 0) {
 			this->disconnect();
 			return;
 		} else {
-			this->inputBuffer.insert(this->inputBuffer.end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
+			std::string theString{};
+			theString.insert(theString.end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
+			this->inputBuffers.push_back(theString);
 			this->bytesRead += readBytes;
 		}
 	}
@@ -607,8 +635,12 @@ namespace DiscordCoreInternal {
 	void DatagramSocketClient::disconnect() noexcept {
 		std::unique_lock theLock{ this->theMutex };
 		this->theSocket = SOCKET_ERROR;
-		this->inputBuffer.clear();
+		this->inputBuffers.clear();
 		this->outputBuffers.clear();
+	}
+
+	DatagramSocketClient::~DatagramSocketClient() noexcept {
+		std::lock_guard theLock{ this->theMutex };
 	}
 
 	std::mutex SSLConnectionInterface::contextMutex{};

@@ -26,6 +26,8 @@ namespace DiscordCoreInternal {
 	using Snowflake = uint64_t;
 
 	struct DiscordCoreAPI_Dll VoiceConnectInitData {
+		DiscordCoreAPI::StreamType streamType{};
+		DiscordCoreAPI::StreamInfo streamInfo{};
 		int32_t currentShard{};
 		bool selfDeaf{ false };
 		bool selfMute{ false };
@@ -35,14 +37,8 @@ namespace DiscordCoreInternal {
 	};
 
 	struct DiscordCoreAPI_Dll VoiceConnectionData {
-		std::string voiceEncryptionMode{};
-		std::string externalIp{};
-		uint32_t audioSSRC{ 0 };
-		std::string secretKey{};
-		std::string voicePort{};
 		std::string sessionId{};
 		std::string endPoint{};
-		std::string voiceIp{};
 		std::string token{};
 	};
 
@@ -2096,7 +2092,8 @@ namespace DiscordCoreAPI {
 
 		GuildData(const nlohmann::json& jsonObjectData);
 
-		VoiceConnection* connectToVoice(const Snowflake guildMemberId, const Snowflake channelId = 0, bool selfDeaf = false, bool selfMute = false);
+		VoiceConnection* connectToVoice(const Snowflake guildMemberId, const Snowflake channelId = 0, bool selfDeaf = false, bool selfMute = false,
+			StreamType streamType = StreamType::None, StreamInfo streamInfo = StreamInfo{});
 
 		void insertGuildMember(GuildMemberData theData);
 
@@ -3678,13 +3675,13 @@ namespace DiscordCoreAPI {
 	/// Represents a single frame of raw audio data. \brief Represents a single frame of raw audio data.
 	struct DiscordCoreAPI_Dll RawFrameData {
 		std::vector<uint8_t> data{};///< The audio data.
-		int32_t sampleCount{ -1 };///< The number of samples per this frame.
+		uint32_t sampleCount{ static_cast<uint32_t>(-1) };///< The number of samples per this frame.
 	};
 
 	/// Represents a single frame of encoded audio data. \brief Represents a single frame of encoded audio data.
 	struct DiscordCoreAPI_Dll EncodedFrameData {
 		std::vector<uint8_t> data{};///< The audio data.
-		int32_t sampleCount{ -1 };///< The number of samples per this frame.
+		uint32_t sampleCount{ static_cast<uint32_t>(-1) };///< The number of samples per this frame.
 	};
 
 	/// Audio frame types. \brief Audio frame types.

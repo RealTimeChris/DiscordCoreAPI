@@ -237,7 +237,7 @@ namespace DiscordCoreInternal {
 
 	void AudioDecoder::run(std::stop_token& stopToken) {
 		if (!this->haveWeBooted) {
-			auto theBuffer = static_cast<unsigned char*>(av_malloc(this->bufferMaxSize));
+			auto theBuffer = static_cast<uint8_t*>(av_malloc(this->bufferMaxSize));
 			if (theBuffer == nullptr) {
 				this->haveWeFailedBool.store(true);
 				if (this->configManager->doWePrintFFMPEGErrorMessages()) {

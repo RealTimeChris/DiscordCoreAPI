@@ -314,7 +314,6 @@ namespace DiscordCoreAPI {
 	Permissions& Permissions::operator=(Permission&& other) {
 		StringWrapper theString = StringWrapper{ std::to_string(static_cast<uint32_t>(other)) };
 		*this = theString;
-		std::cout<< "THE PERMS: "<< *this<< std::endl;
 		return *this;
 	}
 
@@ -706,8 +705,8 @@ namespace DiscordCoreAPI {
 	std::string convertToLowerCase(const std::string& stringToConvert) {
 		std::string newString;
 		for (auto& value: stringToConvert) {
-			if (isupper(static_cast<unsigned char>(value))) {
-				newString += static_cast<char>(tolower(static_cast<unsigned char>(value)));
+			if (isupper(static_cast<uint8_t>(value))) {
+				newString += static_cast<char>(tolower(static_cast<uint8_t>(value)));
 			} else {
 				newString += value;
 			}
@@ -728,7 +727,7 @@ namespace DiscordCoreAPI {
 
 		size_t len_encoded = (theString.size() + 2) / 3 * 4;
 
-		unsigned char trailing_char = url ? '.' : '=';
+		uint8_t trailing_char = url ? '.' : '=';
 
 		const char* base64_chars_ = base64_chars[url];
 
@@ -796,7 +795,7 @@ namespace DiscordCoreAPI {
 			}
 
 			escaped << std::uppercase;
-			escaped << '%' << std::setw(2) << int32_t(static_cast<unsigned char>(c));
+			escaped << '%' << std::setw(2) << int32_t(static_cast<uint8_t>(c));
 			escaped << std::nouppercase;
 		}
 		return escaped.str();

@@ -42,7 +42,7 @@ namespace DiscordCoreInternal {
 	};
 
 	HttpsResponseData HttpsRnRBuilder::finalizeReturnValues(HttpsResponseData& theData, RateLimitData& rateLimitData) {
-		if (theData.responseMessage.size() > 0) {
+		if (theData.responseMessage.size() >= theData.contentSize) {
 			if ((theData.responseMessage[0] == '{' && theData.responseMessage[theData.contentSize - 1] == '}') ||
 				(theData.responseMessage[0] == '[' && theData.responseMessage[theData.contentSize - 1] == ']')) {
 				theData.responseData = nlohmann::json::parse(theData.responseMessage.substr(0, theData.contentSize));
@@ -203,10 +203,10 @@ namespace DiscordCoreInternal {
 			uint64_t lastNumberIndex{ 0 };
 			bool haveWeStarted{ false };
 			for (size_t x = other.find("HTTP/1.") + std::string("HTTP/1.").size() + 1; x < other.size(); x++) {
-				if (!haveWeStarted && (isalnum(static_cast<unsigned char>(other[x])) != 0)) {
+				if (!haveWeStarted && (isalnum(static_cast<uint8_t>(other[x])) != 0)) {
 					firstNumberIndex = x;
 					haveWeStarted = true;
-				} else if (haveWeStarted && (isalnum(static_cast<unsigned char>(other[x])) == 0)) {
+				} else if (haveWeStarted && (isalnum(static_cast<uint8_t>(other[x])) == 0)) {
 					lastNumberIndex = x;
 					break;
 				}
@@ -223,7 +223,7 @@ namespace DiscordCoreInternal {
 	void HttpsRnRBuilder::clearCRLF(std::string& other) {
 		uint64_t theCount{ 0 };
 		for (uint64_t x = 0; x < other.size(); x++) {
-			if (isspace(static_cast<unsigned char>(other[x])) != 0) {
+			if (isspace(static_cast<uint8_t>(other[x])) != 0) {
 				theCount++;
 			} else {
 				break;
