@@ -368,7 +368,7 @@ namespace DiscordCoreAPI {
 
 	void VoiceConnection::runBridge(std::stop_token& theToken) noexcept {
 		StopWatch theStopWatch{ 20ms };
-		StopWatch theStopWatchTwo{ 150ms };
+		StopWatch theStopWatchTwo{ 20ms };
 		while (!theToken.stop_requested()) {
 			
 			
@@ -386,26 +386,23 @@ namespace DiscordCoreAPI {
 				}
 				
 				//std::cout << "THE TOTAL TIME PASSED: 0101: " << theStopWatchTwo.totalTimePassed() << std::endl;
-				theStopWatchTwo.resetTimer();
 				
 
 				//std::cout << "THE TOTAL TIME PASSED: 0202: " << theStopWatchTwo.totalTimePassed() << std::endl;
-				theStopWatchTwo.resetTimer();
 				if (this->streamType == StreamType::Source) {
 					this->streamSocket->processIO(1);
 					this->parseIncomingVoiceData();
 					this->mixAudio();
 					//std::cout << "THE TOTAL TIME PASSED: 0303: " << theStopWatchTwo.totalTimePassed() << std::endl;
-					theStopWatchTwo.resetTimer();
 				} else {
 					this->streamSocket->processIO(1);
 					this->parseIncomingVoiceData();
 					//std::cout << "THE TOTAL TIME PASSED: 0404: " << theStopWatchTwo.totalTimePassed() << std::endl;
-					theStopWatchTwo.resetTimer();
 				}
-			}
-			//std::cout << "THE TOTAL TIME PASSED: 0505: " << theStopWatchTwo.totalTimePassed() << std::endl;
-			theStopWatchTwo.resetTimer();
+				
+			} else {
+				//std::this_thread::sleep_for(100us);
+			}//std::cout << "THE TOTAL TIME PASSED: 0505: " << theStopWatchTwo.totalTimePassed() << std::endl;
 		}
 	}
 
@@ -850,8 +847,8 @@ namespace DiscordCoreAPI {
 							this->runBridge(stopToken);
 						});
 					}
+					this->streamSocket->connect(this->theStreamInfo.targetAddress, this->theStreamInfo.targetPort);
 				}
-				this->streamSocket->connect(this->theStreamInfo.targetAddress, this->theStreamInfo.targetPort);
 				return;
 			}
 		}
