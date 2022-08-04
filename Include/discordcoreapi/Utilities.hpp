@@ -96,7 +96,7 @@ namespace DiscordCoreAPI {
 
 	struct ActivityData;
 
-	enum class StreamType { None = 0, Both = 1 };
+	enum class StreamType { None = 0, Client = 1, Server = 2 };
 	
 	struct StreamInfo {
 		std::string address{};

@@ -226,7 +226,7 @@ namespace DiscordCoreInternal {
 	  public:
 		friend class DiscordCoreAPI::VoiceConnection;
 
-		DatagramSocketClient(bool areWeAStreamSocket) noexcept;
+		DatagramSocketClient(bool areWeAStreamSocket, bool areWeAStreamClient) noexcept;
 
 		bool connect(const std::string& baseUrlNew, const std::string& portNew) noexcept;
 
@@ -256,6 +256,7 @@ namespace DiscordCoreInternal {
 		std::recursive_mutex theMutex{};
 		sockaddr_in theStreamAddress{};
 		bool areWeAStreamSocket{};
+		bool areWeAStreamClient{};
 		SOCKETWrapper theSocket{};
 		int64_t bytesRead{};
 	};

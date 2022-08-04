@@ -126,7 +126,7 @@ namespace DiscordCoreAPI {
 	VoiceConnection::VoiceConnection(DiscordCoreInternal::BaseSocketAgent* BaseSocketAgentNew, const DiscordCoreInternal::VoiceConnectInitData& initDataNew,
 		DiscordCoreAPI::ConfigManager* configManagerNew, std::atomic_bool* doWeQuitNew, StreamType streamTypeNew,  StreamInfo streamInfoNew) noexcept
 		: WebSocketSSLShard(BaseSocketAgentNew->discordCoreClient, &this->connections, BaseSocketAgentNew->currentBaseSocketAgent, initDataNew.currentShard, this->doWeQuit),
-		  DatagramSocketClient(false) {
+		  DatagramSocketClient(false, false) {
 		this->baseShard = BaseSocketAgentNew->sslShards[initDataNew.currentShard].get();
 		this->activeState.store(VoiceActiveState::Connecting);
 		WebSocketSSLShard::connections = &this->connections;
@@ -822,7 +822,11 @@ namespace DiscordCoreAPI {
 				this->baseShard->voiceConnectionDataBufferMap[this->voiceConnectInitData.guildId]->clearContents();
 				this->connectionState.store(VoiceConnectionState::Collecting_Init_Data);
 				if (this->streamType != StreamType::None) {
-					this->streamSocket = std::make_unique<DatagramSocketClient>(true);
+					if (this->streamType == StreamType::Client) {
+						this->streamSocket = std::make_unique<DatagramSocketClient>(true, true);
+					} else {
+						this->streamSocket = std::make_unique<DatagramSocketClient>(true, false);
+					}
 					if (this->taskThread03) {
 						this->taskThread03.reset(nullptr);
 					}

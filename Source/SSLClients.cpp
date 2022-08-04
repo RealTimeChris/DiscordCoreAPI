@@ -476,8 +476,9 @@ namespace DiscordCoreInternal {
 		return this->bytesRead;
 	}
 
-	DatagramSocketClient::DatagramSocketClient(bool areWeAStreamSocketNew) noexcept {
+	DatagramSocketClient::DatagramSocketClient(bool areWeAStreamSocketNew, bool areWeAStreamClientNew) noexcept {
 		this->areWeAStreamSocket = areWeAStreamSocketNew;
+		this->areWeAStreamClient = areWeAStreamClientNew;
 	}
 
 	bool DatagramSocketClient::connect(const std::string& baseUrlNew, const std::string& portNew) noexcept {
