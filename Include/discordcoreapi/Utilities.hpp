@@ -102,6 +102,7 @@ namespace DiscordCoreAPI {
 		std::string targetSendPort{};
 		std::string targetRecvPort{};
 		std::string targetAddress{};
+		std::string recvAddress{};
 	};
 
 };

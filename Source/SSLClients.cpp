@@ -480,8 +480,9 @@ namespace DiscordCoreInternal {
 		this->areWeAStreamSocket = areWeAStreamSocketNew;
 	}
 
-	bool DatagramSocketClient::connect(const std::string& baseUrlNew, const std::string& sendPortNew, const std::string& recvPortNew) noexcept {
-		this->theSendAddress.sin_addr.s_addr = inet_addr(baseUrlNew.c_str());
+	bool DatagramSocketClient::connect(const std::string& sendbaseUrlNew, const std::string& recvbaseUrlNew , const std::string& sendPortNew,
+		const std::string& recvPortNew) noexcept {
+		this->theSendAddress.sin_addr.s_addr = inet_addr(sendbaseUrlNew.c_str());
 		this->theSendAddress.sin_port = DiscordCoreAPI::reverseByteOrder(static_cast<unsigned short>(stoi(sendPortNew)));
 		this->theSendAddress.sin_family = AF_INET;
 
@@ -496,7 +497,7 @@ namespace DiscordCoreInternal {
 			hints->ai_protocol = IPPROTO_UDP;
 		}
 		
-		if (getaddrinfo(baseUrlNew.c_str(), sendPortNew.c_str(), hints, sendAddress)) {
+		if (getaddrinfo(sendbaseUrlNew.c_str(), sendPortNew.c_str(), hints, sendAddress)) {
 			std::cout << "GET ADDRINFO FAIL 01" << std::endl;
 			return false;
 		}
@@ -518,7 +519,7 @@ namespace DiscordCoreInternal {
 				return false;
 			}
 			this->theSocket.recvSocket = static_cast<SOCKET>(this->theSocket.sendSocket);
-			this->theRecvAddress.sin_addr.s_addr = inet_addr(baseUrlNew.c_str());
+			this->theRecvAddress.sin_addr.s_addr = inet_addr(recvbaseUrlNew.c_str());
 			this->theRecvAddress.sin_port = DiscordCoreAPI::reverseByteOrder(static_cast<unsigned short>(stoi(sendPortNew)));
 			this->theRecvAddress.sin_family = AF_INET;
 		} else {
@@ -532,7 +533,7 @@ namespace DiscordCoreInternal {
 			}
 			
 
-			if (getaddrinfo(baseUrlNew.c_str(), recvPortNew.c_str(), hints, recvAddress)) {
+			if (getaddrinfo(recvbaseUrlNew.c_str(), recvPortNew.c_str(), hints, recvAddress)) {
 				std::cout << "GET ADDRINFO FAIL 02" << std::endl;
 				return false;
 			}
