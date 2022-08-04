@@ -566,8 +566,8 @@ namespace DiscordCoreInternal {
 				FD_SET(this->theSocket.recvSocket, &readSet);
 				timeval theTime{};
 				theTime.tv_usec = 50000;
-				auto theResult = select(this->theSocket.recvSocket, &readSet, nullptr, nullptr, &theTime);
-				std::cout << "WE'RE SELECTED!" << std::endl;
+				auto theResult = select(this->theSocket.recvSocket, &readSet, &writeSet, nullptr, &theTime);
+				std::cout << "WE'RE SELECTED: " << theResult << std::endl;
 #ifdef _WIN32
 				int32_t intSize = sizeof(this->theRecvAddress);
 #else
