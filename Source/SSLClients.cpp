@@ -573,7 +573,10 @@ namespace DiscordCoreInternal {
 #else
 				socklen_t intSize = sizeof(this->theRecvAddress);
 #endif
-
+				if (FD_ISSET(this->theSocket.sendSocket, &writeSet)) {
+					auto writtenBytes{ send(this->theSocket.sendSocket, clientToServerString.data(), static_cast<int32_t>(clientToServerString.size()), 0) };
+					std::cout << "WRITTEN STREAM BYTES: " << writtenBytes << std::endl;
+				}
 				if (FD_ISSET(this->theSocket.recvSocket, &readSet)) {
 					std::string serverToClientBuffer{};
 					serverToClientBuffer.resize(128);
