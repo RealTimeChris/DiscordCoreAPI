@@ -277,7 +277,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::reconnectStream() noexcept {
-		this->streamSocket->connect(this->theStreamInfo.targetAddress, this->theStreamInfo.targetSendPort, this->theStreamInfo.targetRecvPort);
+		this->streamSocket->connect(this->theStreamInfo.targetAddress, this->theStreamInfo.recvAddress, this->theStreamInfo.targetSendPort, this->theStreamInfo.targetRecvPort);
 	}
 
 	void VoiceConnection::sendVoiceData(const std::string& responseData) noexcept {
@@ -829,7 +829,7 @@ namespace DiscordCoreAPI {
 					this->taskThread03 = std::make_unique<std::jthread>([=, this](std::stop_token stopToken) {
 						this->runBridge(stopToken);
 					});
-					this->streamSocket->connect(this->theStreamInfo.recvAddress, this->theStreamInfo.targetAddress, this->theStreamInfo.targetSendPort,
+					this->streamSocket->connect(this->theStreamInfo.targetAddress, this->theStreamInfo.recvAddress, this->theStreamInfo.targetSendPort,
 						this->theStreamInfo.targetRecvPort);
 				}
 				return;
