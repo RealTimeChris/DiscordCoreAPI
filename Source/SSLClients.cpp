@@ -525,7 +525,7 @@ namespace DiscordCoreInternal {
 			
 
 			if (auto theResult = ::connect(this->theSocket.sendSocket, sendAddress->ai_addr, static_cast<int32_t>(sendAddress->ai_addrlen)); theResult != 0) {
-				std::cout << "BIND FAIL 0101!" << std::endl;
+				std::cout << "BIND FAIL 0202!" << std::endl;
 				return false;
 			} else if (theResult == 0) {
 				std::cout << "WE'RE CONNECTED!" << std::endl;
@@ -548,7 +548,7 @@ namespace DiscordCoreInternal {
 			clientToServerString = "test string";
 
 			if (auto theResult = bind(this->theSocket.recvSocket, recvAddress->ai_addr, sizeof(sockaddr)); theResult != 0) {
-				std::cout << "BIND FAIL 0101!" << std::endl;
+				std::cout << "BIND FAIL 0303!" << std::endl;
 				return false;
 			} else if (theResult == 0) {
 				std::cout << "WE'RE BOUND!" << std::endl;
@@ -623,7 +623,7 @@ namespace DiscordCoreInternal {
 			std::cout << "DISCONNECTION RETURN!" << std::endl;
 			return;
 		} else if (returnValue == 0) {
-			std::cout << "ZERO SELECT RETURN!" << std::endl;
+			std::cout << "ZERO SELECT RETURN!" << std::endl;  
 			return;
 		} else {
 			if (FD_ISSET(this->theSocket.recvSocket, &readSet)) {

@@ -387,15 +387,15 @@ namespace DiscordCoreAPI {
 				do {
 					theString = DatagramSocketClient::getInputBuffer();
 					if (theString.size() > 0) {
-						std::cout << "THE STRING SIZE: " << theString.size() << std::endl;
+						//std::cout << "THE STRING SIZE: " << theString.size() << std::endl;
 						this->theFrameQueue.push(theString);
-						std::cout << "THE FRAME COUNT: " << this->theFrameQueue.size() << std::endl;
+						//std::cout << "THE FRAME COUNT: " << this->theFrameQueue.size() << std::endl;
 					}
 				} while (theString.size() > 0);
 				this->streamSocket->processIO(1);
-				this->mixAudio();
-				this->streamSocket->processIO(1);
 				this->parseIncomingVoiceData();
+				this->streamSocket->processIO(1);
+				this->mixAudio();
 				this->streamSocket->processIO(1);
 			}
 		}
@@ -631,7 +631,7 @@ namespace DiscordCoreAPI {
 		}
 
 		auto theBuffer = this->streamSocket->getInputBuffer();
-		std::cout << "THE BUFFER SIZE: " << theBuffer.size() << std::endl;
+		//std::cout << "THE BUFFER SIZE: " << theBuffer.size() << std::endl;
 
 		AudioFrameData theFrame{};
 		theFrame.encodedFrameData.data.insert(theFrame.encodedFrameData.data.begin(), theBuffer.begin(), theBuffer.end());
