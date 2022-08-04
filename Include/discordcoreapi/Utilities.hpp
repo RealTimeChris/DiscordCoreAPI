@@ -96,11 +96,12 @@ namespace DiscordCoreAPI {
 
 	struct ActivityData;
 
-	enum class StreamType { None = 0, Source = 1, Destination = 2 };
-
+	enum class StreamType { None = 0, Both = 1 };
+	
 	struct StreamInfo {
+		std::string targetSendPort{};
+		std::string targetRecvPort{};
 		std::string targetAddress{};
-		std::string targetPort{};
 	};
 
 };

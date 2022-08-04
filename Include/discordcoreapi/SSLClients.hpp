@@ -129,6 +129,13 @@ namespace DiscordCoreInternal {
 		std::unique_ptr<SOCKET, SOCKETDeleter> thePtr{ new SOCKET{ SOCKET_ERROR }, SOCKETDeleter{} };
 	};
 
+	struct SOCKETHolder {
+		SOCKETWrapper sendSocket{};
+		SOCKETWrapper recvSocket{};
+		bool areWeDualing{};
+		SOCKET getSocket(bool send);
+	};
+
 	struct DiscordCoreAPI_Dll addrinfoWrapper {
 		addrinfo* operator->();
 
@@ -226,9 +233,9 @@ namespace DiscordCoreInternal {
 	  public:
 		friend class DiscordCoreAPI::VoiceConnection;
 
-		DatagramSocketClient(bool areWeClient) noexcept;
+		DatagramSocketClient() noexcept;
 
-		bool connect(const std::string& baseUrl, const std::string& portNew) noexcept;
+		bool connect(const std::string& baseUrl, const std::string& sendPortNew, const std::string& recvPortNew) noexcept;
 
 		void processIO(int32_t waitTimeInms) noexcept;
 
@@ -253,9 +260,9 @@ namespace DiscordCoreInternal {
 		std::vector<std::string> outputBuffers{};
 		std::vector<std::string> inputBuffers{};
 		std::recursive_mutex theMutex{};
-		bool areWeAClient{ true };
-		SOCKETWrapper theSocket{};
-		sockaddr_in theAddress{};
+		sockaddr_in theRecvAddress{};
+		sockaddr_in theSendAddress{};
+		SOCKETHolder theSocket{};
 		int64_t bytesRead{};
 	};
 }// namespace DiscordCoreInternal

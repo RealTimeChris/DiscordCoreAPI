@@ -131,8 +131,7 @@ namespace DiscordCoreAPI {
 		friend class SongAPI;
 
 		VoiceConnection(DiscordCoreInternal::BaseSocketAgent* BaseSocketAgentNew, const DiscordCoreInternal::VoiceConnectInitData& initDataNew,
-			DiscordCoreAPI::ConfigManager* configManagerNew, std::atomic_bool* doWeQuitNew, StreamType streamType = StreamType::None,
-			StreamInfo streamInfo = StreamInfo{}) noexcept;
+			DiscordCoreAPI::ConfigManager* configManagerNew, std::atomic_bool* doWeQuitNew, StreamType streamTypeNew, StreamInfo streamInfoNew = StreamInfo{}) noexcept;
 
 		/// Collects the currently connected-to voice Channel's id. \brief Collects the currently connected-to voice Channel's id.
 		/// \returns DiscordCoreAPI::Snowflake A Snowflake containing the Channel's id.
@@ -144,8 +143,8 @@ namespace DiscordCoreAPI {
 		std::atomic<VoiceConnectionState> connectionState{ VoiceConnectionState::Collecting_Init_Data };
 		UnboundedMessageBlock<DiscordCoreInternal::VoiceConnectionData> voiceConnectionDataBuffer{};
 		std::atomic<VoiceActiveState> lastActiveState{ VoiceActiveState::Connecting };
-		std::atomic<VoiceActiveState> activeState{ VoiceActiveState::Connecting };
 		std::unique_ptr<DiscordCoreInternal::DatagramSocketClient> streamSocket{};
+		std::atomic<VoiceActiveState> activeState{ VoiceActiveState::Connecting };
 		DiscordCoreInternal::BaseSocketAgent* baseSocketAgent{ nullptr };
 		DiscordCoreInternal::VoiceConnectInitData voiceConnectInitData{};
 		DiscordCoreInternal::VoiceConnectionData voiceConnectionData{};
@@ -165,6 +164,7 @@ namespace DiscordCoreAPI {
 		Snowflake currentGuildMemberId{};
 		OpusEncoderWrapper theEncoder{};
 		int64_t heartbeatInterval{ 0 };
+		std::mutex voiceUserMutex{};
 		std::string secretKeySend{};
 		uint16_t sequenceIndex{ 0 };
 		AudioFrameData audioData{};
@@ -206,6 +206,8 @@ namespace DiscordCoreAPI {
 		void disconnectInternal() noexcept;
 
 		void onMessageReceived() noexcept;
+
+		void reconnectStream() noexcept;
 
 		void connectInternal() noexcept;
 
