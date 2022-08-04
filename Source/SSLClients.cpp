@@ -558,12 +558,16 @@ namespace DiscordCoreInternal {
 			while (!theStopWatch.hasTimePassed()) {
 				auto writtenBytes{ send(this->theSocket.sendSocket, clientToServerString.data(), static_cast<int32_t>(clientToServerString.size()), 0) };
 
+				fd_set writeSet{};
+				FD_ZERO(&writeSet);
+				FD_SET(this->theSocket.sendSocket, &writeSet);
 				fd_set readSet{};
 				FD_ZERO(&readSet);
 				FD_SET(this->theSocket.recvSocket, &readSet);
 				timeval theTime{};
 				theTime.tv_usec = 50000;
 				auto theResult = select(this->theSocket.recvSocket, &readSet, nullptr, nullptr, &theTime);
+				std::cout << "WE'RE SELECTED!" << std::endl;
 #ifdef _WIN32
 				int32_t intSize = sizeof(this->theRecvAddress);
 #else
