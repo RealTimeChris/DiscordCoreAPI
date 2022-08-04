@@ -485,7 +485,7 @@ namespace DiscordCoreInternal {
 		this->theStreamAddress.sin_port = DiscordCoreAPI::reverseByteOrder(static_cast<unsigned short>(stoi(portNew)));
 		this->theStreamAddress.sin_family = AF_INET;
 
-		addrinfoWrapper hints{}, sendAddress{}, recvAddress{};
+		addrinfoWrapper hints{}, sendAddress{};
 		hints->ai_family = AF_INET;
 		hints->ai_socktype = SOCK_DGRAM;
 		hints->ai_protocol = IPPROTO_UDP;
