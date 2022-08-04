@@ -481,6 +481,7 @@ namespace DiscordCoreInternal {
 	}
 
 	bool DatagramSocketClient::connect(const std::string& baseUrlNew, const std::string& portNew) noexcept {
+		std::cout << "ADDRESS: " << baseUrlNew << ", PORT: " << portNew << std::endl;
 		this->theStreamAddress.sin_addr.s_addr = inet_addr(baseUrlNew.c_str());
 		this->theStreamAddress.sin_port = DiscordCoreAPI::reverseByteOrder(static_cast<unsigned short>(stoi(portNew)));
 		this->theStreamAddress.sin_family = AF_INET;
@@ -489,9 +490,9 @@ namespace DiscordCoreInternal {
 		hints->ai_family = AF_INET;
 		hints->ai_socktype = SOCK_DGRAM;
 		hints->ai_protocol = IPPROTO_UDP;
-		
+		std::cout << "ADDRESS: " << baseUrlNew << ", PORT: " << portNew << std::endl;
 		if (getaddrinfo(baseUrlNew.c_str(), portNew.c_str(), hints, sendAddress)) {
-			std::cout << "GET ADDRINFO FAIL 01" << std::endl;
+			std::cout << "GET ADDRINFO FAIL 01" << reportError("DatagramSocketClient::connect()") << std::endl;
 			return false;
 		}
 

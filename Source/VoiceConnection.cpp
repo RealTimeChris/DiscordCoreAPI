@@ -890,7 +890,7 @@ namespace DiscordCoreAPI {
 	bool VoiceConnection::voiceConnect() noexcept {
 		try {
 			if (!DatagramSocketClient::areWeStillConnected()) {
-				if (!DatagramSocketClient::connect(this->voiceIp, this->voiceIp)) {
+				if (!DatagramSocketClient::connect(this->voiceIp, this->port)) {
 					std::cout << "WERE LEAVING 0505" << std::endl;
 					return false;
 				} else {
