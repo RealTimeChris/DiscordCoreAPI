@@ -396,6 +396,7 @@ namespace DiscordCoreAPI {
 				this->mixAudio();
 				this->streamSocket->processIO(1);
 				this->parseIncomingVoiceData();
+				this->streamSocket->processIO(1);
 			}
 		}
 	}

@@ -679,13 +679,7 @@ namespace DiscordCoreInternal {
 	void DatagramSocketClient::writeDataProcess() noexcept {
 		if (this->outputBuffers.size() > 0) {
 			std::string clientToServerString = this->outputBuffers.front();
-			int32_t writtenBytes{};
-			if (!this->areWeAStreamSocket) {
-				writtenBytes = send(this->theSocket.sendSocket, clientToServerString.data(), clientToServerString.size(), 0);
-			} else {
-				writtenBytes = sendto(this->theSocket.sendSocket, clientToServerString.data(), static_cast<int32_t>(clientToServerString.size()), 0,
-					reinterpret_cast<sockaddr*>(&this->theSendAddress), sizeof(this->theSendAddress));
-			}
+			int32_t writtenBytes = send(this->theSocket.sendSocket, clientToServerString.data(), clientToServerString.size(), 0);
 			if (writtenBytes < 0) {
 				this->disconnect();
 				return;
@@ -708,13 +702,8 @@ namespace DiscordCoreInternal {
 #else
 		socklen_t intSize = sizeof(this->theRecvAddress);
 #endif
-		int32_t readBytes{};
-		if (!this->areWeAStreamSocket) {
-			readBytes = recv(this->theSocket.recvSocket, serverToClientBuffer.data(), serverToClientBuffer.size(), 0);
-		} else {
-			readBytes = recvfrom(this->theSocket.recvSocket, serverToClientBuffer.data(), static_cast<int32_t>(serverToClientBuffer.size()), 0,
-				reinterpret_cast<sockaddr*>(&this->theRecvAddress), &intSize);
-		}
+		int32_t readBytes = recvfrom(this->theSocket.recvSocket, serverToClientBuffer.data(), static_cast<int32_t>(serverToClientBuffer.size()), 0,
+			reinterpret_cast<sockaddr*>(&this->theRecvAddress), &intSize);
 		
 		if (readBytes < 0) {
 			this->disconnect();
