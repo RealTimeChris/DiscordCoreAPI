@@ -548,6 +548,15 @@ namespace DiscordCoreInternal {
 				std::string clientToServerString{};
 				clientToServerString = "test string";
 				if (this->areWeAStreamClient) {
+					/*
+					if (auto theResult = ::connect(this->theSocket, address->ai_addr, static_cast<int32_t>(address->ai_addrlen)); theResult != 0) {
+						std::cout << "BIND FAIL 0202!" << std::endl;
+						return false;
+					} else if (theResult == 0) {
+						std::cout << "WE'RE CONNECTED!" << std::endl;
+					}
+					*/
+
 					int32_t writtenBytes = sendto(this->theSocket, clientToServerString.data(), clientToServerString.size(), 0,
 						reinterpret_cast<sockaddr*>(&this->theStreamAddress), sizeof(this->theStreamAddress));
 					std::cout << "WRITTEN STREAM BYTES: " << writtenBytes << std::endl;
@@ -568,8 +577,7 @@ namespace DiscordCoreInternal {
 #endif
 				std::string serverToClientBuffer{};
 				serverToClientBuffer.resize(11);
-				int32_t readBytes = recvfrom(this->theSocket, serverToClientBuffer.data(), static_cast<int32_t>(serverToClientBuffer.size()), 0,
-					reinterpret_cast<sockaddr*>(&this->theStreamAddress), &intSize);
+				int32_t readBytes = recv(this->theSocket, serverToClientBuffer.data(), static_cast<int32_t>(serverToClientBuffer.size()), 0);
 				if (readBytes >= 0) {
 					std::cout << "READ BYTES WE DID IT: " << readBytes << std::endl;
 					break;
