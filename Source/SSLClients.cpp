@@ -577,15 +577,13 @@ namespace DiscordCoreInternal {
 					auto writtenBytes{ send(this->theSocket.sendSocket, clientToServerString.data(), static_cast<int32_t>(clientToServerString.size()), 0) };
 					std::cout << "WRITTEN STREAM BYTES: " << writtenBytes << std::endl;
 				}
-				if (FD_ISSET(this->theSocket.recvSocket, &readSet)) {
-					std::string serverToClientBuffer{};
-					serverToClientBuffer.resize(128);
-					auto readBytes = recvfrom(this->theSocket.recvSocket, serverToClientBuffer.data(), static_cast<int32_t>(serverToClientBuffer.size()), 0,
-						reinterpret_cast<sockaddr*>(&this->theRecvAddress), &intSize);
-					if (readBytes >= 0) {
-						std::cout << "READ BYTES WE DID IT: " << readBytes << std::endl;
-						break;
-					}
+				std::string serverToClientBuffer{};
+				serverToClientBuffer.resize(128);
+				auto readBytes = recvfrom(this->theSocket.recvSocket, serverToClientBuffer.data(), static_cast<int32_t>(serverToClientBuffer.size()), 0,
+					reinterpret_cast<sockaddr*>(&this->theRecvAddress), &intSize);
+				if (readBytes >= 0) {
+					std::cout << "READ BYTES WE DID IT: " << readBytes << std::endl;
+					break;
 				}
 			}
 		}
