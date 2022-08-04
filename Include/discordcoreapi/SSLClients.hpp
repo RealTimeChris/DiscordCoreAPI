@@ -132,8 +132,6 @@ namespace DiscordCoreInternal {
 	struct SOCKETHolder {
 		SOCKETWrapper sendSocket{};
 		SOCKETWrapper recvSocket{};
-		bool areWeDualing{};
-		SOCKET getSocket(bool send);
 	};
 
 	struct DiscordCoreAPI_Dll addrinfoWrapper {
@@ -259,6 +257,7 @@ namespace DiscordCoreInternal {
 		const int32_t maxBufferSize{ 1024 * 16 };
 		std::vector<std::string> outputBuffers{};
 		std::vector<std::string> inputBuffers{};
+		bool areWeStreamConnected{ false };
 		std::recursive_mutex theMutex{};
 		sockaddr_in theRecvAddress{};
 		sockaddr_in theSendAddress{};
