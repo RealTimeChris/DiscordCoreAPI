@@ -508,6 +508,12 @@ namespace DiscordCoreInternal {
 			std::cout << "SOCKET FAIL 02" << std::endl;
 			return false;
 		}
+
+		bool theValue{ true };
+		if (auto theResult = setsockopt(this->theSocket, SOL_SOCKET, SO_REUSEADDR, reinterpret_cast<const char*>(&theValue), sizeof(bool)); theResult != 0) {
+			std::cout << "SETSOCKOPT FAIL 02" << std::endl;
+			return false;
+		}
 		
 		if (!this->areWeAStreamSocket) {
 			/*
@@ -549,7 +555,7 @@ namespace DiscordCoreInternal {
 				
 				if (!this->areWeAStreamClient) {
 					if (auto theResult = bind(this->theSocket, address->ai_addr, sizeof(sockaddr)); theResult != 0) {
-						std::cout << "BIND FAIL 0303!" << std::endl;
+						std::cout << "BIND FAIL 0303: " << reportError("DatagramSocketClient::connect()") << std::endl;
 						return false;
 					} else if (theResult == 0) {
 						std::cout << "WE'RE BOUND!" << std::endl;
