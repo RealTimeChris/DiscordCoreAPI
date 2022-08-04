@@ -377,9 +377,6 @@ namespace DiscordCoreAPI {
 	void VoiceConnection::runBridge(std::stop_token& theToken) noexcept {
 		StopWatch theStopWatch{ 20ms };
 		while (!theToken.stop_requested()) {
-			if (!this->streamSocket->areWeStillConnected()) {
-				this->reconnectStream();
-			}
 			if (theStopWatch.hasTimePassed()) {
 				theStopWatch.resetTimer();
 				DatagramSocketClient::processIO(1);
