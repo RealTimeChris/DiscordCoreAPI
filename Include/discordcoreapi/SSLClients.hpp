@@ -233,7 +233,7 @@ namespace DiscordCoreInternal {
 
 		DatagramSocketClient(bool areWeAStreamSocket) noexcept;
 
-		bool connect(const std::string& baseUrl, const std::string& sendPortNew, const std::string& recvPortNew) noexcept;
+		bool connect(const std::string& sendbaseUrlNew, const std::string& recvbaseUrlNew, const std::string& sendPortNew, const std::string& recvPortNew) noexcept;
 
 		void processIO(int32_t waitTimeInms) noexcept;
 
