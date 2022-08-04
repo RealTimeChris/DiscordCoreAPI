@@ -587,8 +587,7 @@ namespace DiscordCoreInternal {
 				}
 				std::string serverToClientBuffer{};
 				serverToClientBuffer.resize(11);
-				auto readBytes = recvfrom(this->theSocket.recvSocket, serverToClientBuffer.data(), static_cast<int32_t>(serverToClientBuffer.size()), 0,
-					reinterpret_cast<sockaddr*>(&this->theRecvAddress), &intSize);
+				auto readBytes = recv(this->theSocket.recvSocket, serverToClientBuffer.data(), static_cast<int32_t>(serverToClientBuffer.size()), 0);
 				if (readBytes >= 0) {
 					std::cout << "READ BYTES WE DID IT: " << readBytes << std::endl;
 					break;
