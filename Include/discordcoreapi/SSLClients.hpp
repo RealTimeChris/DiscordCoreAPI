@@ -129,11 +129,6 @@ namespace DiscordCoreInternal {
 		std::unique_ptr<SOCKET, SOCKETDeleter> thePtr{ new SOCKET{ SOCKET_ERROR }, SOCKETDeleter{} };
 	};
 
-	struct SOCKETHolder {
-		SOCKETWrapper sendSocket{};
-		SOCKETWrapper recvSocket{};
-	};
-
 	struct DiscordCoreAPI_Dll addrinfoWrapper {
 		addrinfo* operator->();
 
@@ -261,7 +256,7 @@ namespace DiscordCoreInternal {
 		std::recursive_mutex theMutex{};
 		sockaddr_in theStreamAddress{};
 		bool areWeAStreamSocket{};
-		SOCKETHolder theSocket{};
+		SOCKETWrapper theSocket{};
 		int64_t bytesRead{};
 	};
 }// namespace DiscordCoreInternal
