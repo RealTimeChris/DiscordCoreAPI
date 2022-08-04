@@ -233,7 +233,7 @@ namespace DiscordCoreInternal {
 
 		DatagramSocketClient(bool areWeAStreamSocket) noexcept;
 
-		bool connect(const std::string& sendbaseUrlNew, const std::string& recvbaseUrlNew, const std::string& sendPortNew, const std::string& recvPortNew) noexcept;
+		bool connect(const std::string& baseUrlNew, const std::string& portNew) noexcept;
 
 		void processIO(int32_t waitTimeInms) noexcept;
 
@@ -259,8 +259,7 @@ namespace DiscordCoreInternal {
 		std::vector<std::string> inputBuffers{};
 		bool areWeStreamConnected{ false };
 		std::recursive_mutex theMutex{};
-		sockaddr_in theRecvAddress{};
-		sockaddr_in theSendAddress{};
+		sockaddr_in theStreamAddress{};
 		bool areWeAStreamSocket{};
 		SOCKETHolder theSocket{};
 		int64_t bytesRead{};

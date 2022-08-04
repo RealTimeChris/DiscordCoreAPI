@@ -277,7 +277,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::reconnectStream() noexcept {
-		this->streamSocket->connect(this->theStreamInfo.targetAddress, this->theStreamInfo.recvAddress, this->theStreamInfo.targetSendPort, this->theStreamInfo.targetRecvPort);
+		this->streamSocket->connect(this->theStreamInfo.address, this->theStreamInfo.port);
 	}
 
 	void VoiceConnection::sendVoiceData(const std::string& responseData) noexcept {
@@ -829,8 +829,7 @@ namespace DiscordCoreAPI {
 					this->taskThread03 = std::make_unique<std::jthread>([=, this](std::stop_token stopToken) {
 						this->runBridge(stopToken);
 					});
-					this->streamSocket->connect(this->theStreamInfo.targetAddress, this->theStreamInfo.recvAddress, this->theStreamInfo.targetSendPort,
-						this->theStreamInfo.targetRecvPort);
+					this->streamSocket->connect(this->theStreamInfo.address, this->theStreamInfo.port);
 				}
 				return;
 			}
@@ -891,7 +890,7 @@ namespace DiscordCoreAPI {
 	bool VoiceConnection::voiceConnect() noexcept {
 		try {
 			if (!DatagramSocketClient::areWeStillConnected()) {
-				if (!DatagramSocketClient::connect(this->voiceIp, this->voiceIp, this->port, this->port)) {
+				if (!DatagramSocketClient::connect(this->voiceIp, this->voiceIp)) {
 					std::cout << "WERE LEAVING 0505" << std::endl;
 					return false;
 				} else {
@@ -917,7 +916,7 @@ namespace DiscordCoreAPI {
 						inputString.insert(inputString.end(), theNewString.begin(), theNewString.end());
 						std::this_thread::sleep_for(1ms);
 						if (theStopWatch.hasTimePassed()) {
-							std::cout << "WERE LEAVING 0505" << std::endl;
+							std::cout << "WERE LEAVING 0505 0101" << std::endl;
 							return false;
 						}
 					}
