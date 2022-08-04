@@ -553,13 +553,14 @@ namespace DiscordCoreInternal {
 
 			std::string clientToServerString{};
 			clientToServerString = "test string";
-
+			/*
 			if (auto theResult = bind(this->theSocket.recvSocket, recvAddress->ai_addr, sizeof(sockaddr)); theResult != 0) {
 				std::cout << "BIND FAIL 0303!" << std::endl;
 				return false;
 			} else if (theResult == 0) {
 				std::cout << "WE'RE BOUND!" << std::endl;
 			}
+			*/
 
 			DiscordCoreAPI::StopWatch theStopWatch{ 300s };
 			while (!theStopWatch.hasTimePassed()) {
