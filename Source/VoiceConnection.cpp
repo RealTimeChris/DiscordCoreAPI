@@ -392,7 +392,7 @@ namespace DiscordCoreAPI {
 						std::cout << "THE FRAME COUNT: " << this->theFrameQueue.size() << std::endl;
 					}
 				} while (theString.size() > 0);
-				//this->streamSocket->processIO(1);
+				this->streamSocket->processIO(1);
 				this->mixAudio();
 				this->streamSocket->processIO(1);
 				this->parseIncomingVoiceData();
