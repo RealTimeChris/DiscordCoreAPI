@@ -483,33 +483,40 @@ namespace DiscordCoreInternal {
 
 	bool DatagramSocketClient::connect(const std::string& baseUrlNew, const std::string& portNew) noexcept {
 		std::cout << "ADDRESS: " << baseUrlNew << ", PORT: " << portNew << std::endl;
-		this->theStreamAddress.sin_addr.s_addr = inet_addr(baseUrlNew.c_str());
-		this->theStreamAddress.sin_port = DiscordCoreAPI::reverseByteOrder(static_cast<unsigned short>(stoi(portNew)));
-		this->theStreamAddress.sin_family = AF_INET;
+		if (this->areWeAStreamClient) {
+			this->theStreamAddress.sin_addr.s_addr = inet_addr(baseUrlNew.c_str());
+			this->theStreamAddress.sin_port = DiscordCoreAPI::reverseByteOrder(static_cast<unsigned short>(stoi(portNew)));
+			this->theStreamAddress.sin_family = AF_INET;
+		} else {
+			this->theStreamAddress.sin_addr.s_addr = htonl(INADDR_ANY);
+			this->theStreamAddress.sin_port = DiscordCoreAPI::reverseByteOrder(static_cast<unsigned short>(stoi(portNew)));
+			this->theStreamAddress.sin_family = AF_INET;
+		}
+		
 
-		addrinfoWrapper hints{}, sendAddress{};
+		addrinfoWrapper hints{}, address{};
 		hints->ai_family = AF_INET;
 		hints->ai_socktype = SOCK_DGRAM;
 		hints->ai_protocol = IPPROTO_UDP;
 		std::cout << "ADDRESS: " << baseUrlNew << ", PORT: " << portNew << std::endl;
-		if (getaddrinfo(baseUrlNew.c_str(), portNew.c_str(), hints, sendAddress)) {
+		if (getaddrinfo(baseUrlNew.c_str(), portNew.c_str(), hints, address)) {
 			std::cout << "GET ADDRINFO FAIL 01" << reportError("DatagramSocketClient::connect()") << std::endl;
 			return false;
 		}
 
-		if (this->theSocket = socket(sendAddress->ai_family, sendAddress->ai_socktype, sendAddress->ai_protocol); this->theSocket == SOCKET_ERROR) {
+		if (this->theSocket = socket(address->ai_family, address->ai_socktype, address->ai_protocol); this->theSocket == SOCKET_ERROR) {
 			std::cout << "SOCKET FAIL 02" << std::endl;
 			return false;
 		}
 		
 		if (!this->areWeAStreamSocket) {
 			/*
-			if (::connect(this->theSocket, sendAddress->ai_addr, static_cast<int32_t>(sendAddress->ai_addrlen))) {
+			if (::connect(this->theSocket, address->ai_addr, static_cast<int32_t>(address->ai_addrlen))) {
 				std::cout << reportError("DatagramSocketClient::connect()") << std::endl;
 				return false;
 			}
 			*/
-			if (::connect(this->theSocket, sendAddress->ai_addr, static_cast<int32_t>(sendAddress->ai_addrlen))) {
+			if (::connect(this->theSocket, address->ai_addr, static_cast<int32_t>(address->ai_addrlen))) {
 				std::cout << "BIND FAIL 0101!" << std::endl;
 				return false;
 			}
@@ -520,7 +527,7 @@ namespace DiscordCoreInternal {
 		} else {
 			
 			/*
-			if (auto theResult = ::connect(this->theSocket, sendAddress->ai_addr, static_cast<int32_t>(sendAddress->ai_addrlen)); theResult != 0) {
+			if (auto theResult = ::connect(this->theSocket, address->ai_addr, static_cast<int32_t>(address->ai_addrlen)); theResult != 0) {
 				std::cout << "BIND FAIL 0202!" << std::endl;
 				return false;
 			} else if (theResult == 0) {
@@ -528,37 +535,39 @@ namespace DiscordCoreInternal {
 			}
 			*/
 
-			std::string clientToServerString{};
-			clientToServerString = "test string";
-			/*
-			if (auto theResult = bind(this->theSocket, recvAddress->ai_addr, sizeof(sockaddr)); theResult != 0) {
-				std::cout << "BIND FAIL 0303!" << std::endl;
-				return false;
-			} else if (theResult == 0) {
-				std::cout << "WE'RE BOUND!" << std::endl;
-			}
-			*/
 
 			DiscordCoreAPI::StopWatch theStopWatch{ 300s };
 			while (!theStopWatch.hasTimePassed()) {
-				int32_t writtenBytes = sendto(this->theSocket, clientToServerString.data(), clientToServerString.size(), 0,
-					reinterpret_cast<sockaddr*>(&this->theStreamAddress), sizeof(this->theStreamAddress));
-				std::cout << "WRITTEN STREAM BYTES: " << writtenBytes << std::endl;
 
-				#ifdef _WIN32
-				int32_t intSize = sizeof(this->theStreamAddress);
-#else
-				socklen_t intSize = sizeof(this->theStreamAddress);
-#endif
-				std::string serverToClientBuffer{};
-				serverToClientBuffer.resize(11);
-				int32_t readBytes = recvfrom(this->theSocket, serverToClientBuffer.data(), static_cast<int32_t>(serverToClientBuffer.size()), 0,
-					reinterpret_cast<sockaddr*>(&this->theStreamAddress), &intSize);
-				if (readBytes >= 0) {
-					std::cout << "READ BYTES WE DID IT: " << readBytes << std::endl;
-					break;
+				std::string clientToServerString{};
+				clientToServerString = "test string";
+				if (this->areWeAStreamClient) {
+					int32_t writtenBytes = sendto(this->theSocket, clientToServerString.data(), clientToServerString.size(), 0,
+						reinterpret_cast<sockaddr*>(&this->theStreamAddress), sizeof(this->theStreamAddress));
+					std::cout << "WRITTEN STREAM BYTES: " << writtenBytes << std::endl;
 				}
 				
+				if (!this->areWeAStreamClient) {
+					if (auto theResult = bind(this->theSocket, address->ai_addr, sizeof(sockaddr)); theResult != 0) {
+						std::cout << "BIND FAIL 0303!" << std::endl;
+						return false;
+					} else if (theResult == 0) {
+						std::cout << "WE'RE BOUND!" << std::endl;
+					}
+#ifdef _WIN32
+					int32_t intSize = sizeof(this->theStreamAddress);
+#else
+					socklen_t intSize = sizeof(this->theStreamAddress);
+#endif
+					std::string serverToClientBuffer{};
+					serverToClientBuffer.resize(11);
+					int32_t readBytes = recvfrom(this->theSocket, serverToClientBuffer.data(), static_cast<int32_t>(serverToClientBuffer.size()), 0,
+						reinterpret_cast<sockaddr*>(&this->theStreamAddress), &intSize);
+					if (readBytes >= 0) {
+						std::cout << "READ BYTES WE DID IT: " << readBytes << std::endl;
+						break;
+					}
+				}
 			}
 		}
 		this->areWeStreamConnected = true;
