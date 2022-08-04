@@ -620,11 +620,10 @@ namespace DiscordCoreInternal {
 
 		if (auto returnValue = select(theFinalFd + 1, &readSet, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
 			this->disconnect();
+			std::cout << "DISCONNECTION RETURN!" << std::endl;
 			return;
 		} else if (returnValue == 0) {
-			if (!this->areWeAStreamSocket) {
-				std::cout << "ZERO SELECT RETURN!" << std::endl;
-			}
+			std::cout << "ZERO SELECT RETURN!" << std::endl;
 			return;
 		} else {
 			if (FD_ISSET(this->theSocket.recvSocket, &readSet)) {
