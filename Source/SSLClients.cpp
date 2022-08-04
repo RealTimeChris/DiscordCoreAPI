@@ -72,7 +72,10 @@ namespace DiscordCoreInternal {
 	}
 
 	WSADataWrapper::WSADataWrapper() {
-		WSAStartup(MAKEWORD(2, 2), this->thePtr.get());
+		auto returnValue = WSAStartup(MAKEWORD(2, 2), this->thePtr.get());
+		if (returnValue) {
+
+		}
 	}
 #endif
 
@@ -485,7 +488,9 @@ namespace DiscordCoreInternal {
 		return this->bytesRead;
 	}
 
-	DatagramSocketClient::DatagramSocketClient() noexcept {}
+	DatagramSocketClient::DatagramSocketClient(bool areWeAStreamSocketNew) noexcept {
+		this->areWeAStreamSocket = areWeAStreamSocketNew;
+	}
 
 	bool DatagramSocketClient::connect(const std::string& baseUrlNew, const std::string& sendPortNew, const std::string& recvPortNew) noexcept {
 		this->theSendAddress.sin_addr.s_addr = inet_addr(baseUrlNew.c_str());
@@ -493,24 +498,33 @@ namespace DiscordCoreInternal {
 		this->theSendAddress.sin_family = AF_INET;
 
 		addrinfoWrapper hints{}, sendAddress{}, recvAddress{};
-
-		hints->ai_family = AF_INET;
-		hints->ai_socktype = SOCK_DGRAM;
-		hints->ai_protocol = IPPROTO_UDP;
+		if (!this->areWeAStreamSocket) {
+			hints->ai_family = AF_INET;
+			hints->ai_socktype = SOCK_DGRAM;
+			hints->ai_protocol = IPPROTO_UDP;
+		} else {
+			hints->ai_family = AF_INET;
+			hints->ai_socktype = SOCK_DGRAM;
+			hints->ai_protocol = IPPROTO_UDP;
+		}
+		
 
 		if (getaddrinfo(baseUrlNew.c_str(), sendPortNew.c_str(), hints, sendAddress)) {
+			std::cout << "GET ADDRINFO FAIL 01" << std::endl;
 			return false;
 		}
 
 		if (getaddrinfo(baseUrlNew.c_str(), recvPortNew.c_str(), hints, recvAddress)) {
+			std::cout << "GET ADDRINFO FAIL 02" << std::endl;
 			return false;
 		}
 
 		if (this->theSocket.sendSocket = socket(sendAddress->ai_family, sendAddress->ai_socktype, sendAddress->ai_protocol); this->theSocket.sendSocket == SOCKET_ERROR) {
+			std::cout << "SOCKET FAIL 02" << std::endl;
 			return false;
 		}
 		
-		if (sendPortNew == recvPortNew) {
+		if (!this->areWeAStreamSocket) {
 			/*
 			if (::connect(this->theSocket.sendSocket, sendAddress->ai_addr, static_cast<int32_t>(sendAddress->ai_addrlen))) {
 				std::cout << reportError("DatagramSocketClient::connect()") << std::endl;
@@ -521,7 +535,7 @@ namespace DiscordCoreInternal {
 				std::cout << "BIND FAIL 0101!" << std::endl;
 				return false;
 			}
-			this->theSocket.sendSocket = static_cast<SOCKET>(this->theSocket.sendSocket);
+			this->theSocket.recvSocket = static_cast<SOCKET>(this->theSocket.sendSocket);
 			this->theRecvAddress.sin_addr.s_addr = inet_addr(baseUrlNew.c_str());
 			this->theRecvAddress.sin_port = DiscordCoreAPI::reverseByteOrder(static_cast<unsigned short>(stoi(sendPortNew)));
 			this->theRecvAddress.sin_family = AF_INET;
@@ -533,7 +547,7 @@ namespace DiscordCoreInternal {
 			this->theRecvAddress.sin_addr.s_addr = INADDR_ANY;
 			this->theRecvAddress.sin_port = DiscordCoreAPI::reverseByteOrder(static_cast<unsigned short>(stoi(recvPortNew)));
 			this->theRecvAddress.sin_family = AF_UNSPEC;
-			if (this->theSocket.sendSocket = socket(recvAddress->ai_family, recvAddress->ai_socktype, recvAddress->ai_protocol); this->theSocket.sendSocket == SOCKET_ERROR) {
+			if (this->theSocket.recvSocket = socket(recvAddress->ai_family, recvAddress->ai_socktype, recvAddress->ai_protocol); this->theSocket.sendSocket == SOCKET_ERROR) {
 				return false;
 			}
 
@@ -559,7 +573,7 @@ namespace DiscordCoreInternal {
 
 				std::string serverToClientBuffer{};
 				serverToClientBuffer.resize(128);
-				auto readBytes = recvfrom(this->theSocket.sendSocket, serverToClientBuffer.data(), static_cast<int32_t>(serverToClientBuffer.size()), 0,
+				auto readBytes = recvfrom(this->theSocket.recvSocket, serverToClientBuffer.data(), static_cast<int32_t>(serverToClientBuffer.size()), 0,
 					reinterpret_cast<sockaddr*>(&this->theRecvAddress), &intSize);
 
 				if (readBytes >= 0) {
@@ -574,7 +588,7 @@ namespace DiscordCoreInternal {
 		if (ioctlsocket(this->theSocket.sendSocket, FIONBIO, &value02)) {
 			return false;
 		}
-		if (ioctlsocket(this->theSocket.sendSocket, FIONBIO, &value02)) {
+		if (ioctlsocket(this->theSocket.recvSocket, FIONBIO, &value02)) {
 			return false;
 		}
 #else
@@ -595,11 +609,11 @@ namespace DiscordCoreInternal {
 		fd_set readSet{}, writeSet{};
 		std::unique_lock theLock{ this->theMutex };
 		FD_ZERO(&readSet);
-		FD_SET(this->theSocket.sendSocket, &readSet);
+		FD_SET(this->theSocket.recvSocket, &readSet);
 		FD_ZERO(&writeSet);
 		FD_SET(this->theSocket.sendSocket, &writeSet);
-		auto theFinalFd = static_cast<SOCKET>(this->theSocket.sendSocket) > static_cast<SOCKET>(this->theSocket.sendSocket) ? static_cast<SOCKET>(this->theSocket.sendSocket)
-																															: static_cast<SOCKET>(this->theSocket.sendSocket);
+		auto theFinalFd = static_cast<SOCKET>(this->theSocket.sendSocket) > static_cast<SOCKET>(this->theSocket.recvSocket) ? static_cast<SOCKET>(this->theSocket.sendSocket)
+																															: static_cast<SOCKET>(this->theSocket.recvSocket);
 		timeval checkTime{};
 		checkTime.tv_usec = waitTimeInms;
 
@@ -607,12 +621,12 @@ namespace DiscordCoreInternal {
 			this->disconnect();
 			return;
 		} else if (returnValue == 0) {
-			if (this->theSocket.sendSocket == this->theSocket.sendSocket) {
+			if (!this->areWeAStreamSocket) {
 				std::cout << "ZERO SELECT RETURN!" << std::endl;
 			}
 			return;
 		} else {
-			if (FD_ISSET(this->theSocket.sendSocket, &readSet)) {
+			if (FD_ISSET(this->theSocket.recvSocket, &readSet)) {
 				this->readDataProcess();
 			}
 			if (FD_ISSET(this->theSocket.sendSocket, &writeSet)) {
@@ -665,7 +679,7 @@ namespace DiscordCoreInternal {
 		if (this->outputBuffers.size() > 0) {
 			std::string clientToServerString = this->outputBuffers.front();
 			int32_t writtenBytes{};
-			if (this->theSocket.sendSocket == this->theSocket.sendSocket) {
+			if (!this->areWeAStreamSocket) {
 				writtenBytes = send(this->theSocket.sendSocket, clientToServerString.data(), clientToServerString.size(), 0);
 			} else {
 				writtenBytes = sendto(this->theSocket.sendSocket, clientToServerString.data(), static_cast<int32_t>(clientToServerString.size()), 0,
@@ -675,7 +689,7 @@ namespace DiscordCoreInternal {
 				this->disconnect();
 				return;
 			} else {
-				if (this->theSocket.sendSocket == this->theSocket.sendSocket) {
+				if (!this->areWeAStreamSocket) {
 					std::cout << "THE WRITTEN BYTES (REGULAR SOCKET): " << writtenBytes << std::endl;
 				} else {
 					std::cout << "THE WRITTEN BYTES (STREAM SOCKET): " << writtenBytes << std::endl;
@@ -694,10 +708,10 @@ namespace DiscordCoreInternal {
 		socklen_t intSize = sizeof(this->theRecvAddress);
 #endif
 		int32_t readBytes{};
-		if (this->theSocket.sendSocket == this->theSocket.sendSocket) {
-			readBytes = recv(this->theSocket.sendSocket, serverToClientBuffer.data(), serverToClientBuffer.size(), 0);
+		if (!this->areWeAStreamSocket) {
+			readBytes = recv(this->theSocket.recvSocket, serverToClientBuffer.data(), serverToClientBuffer.size(), 0);
 		} else {
-			readBytes = recvfrom(this->theSocket.sendSocket, serverToClientBuffer.data(), static_cast<int32_t>(serverToClientBuffer.size()), 0,
+			readBytes = recvfrom(this->theSocket.recvSocket, serverToClientBuffer.data(), static_cast<int32_t>(serverToClientBuffer.size()), 0,
 				reinterpret_cast<sockaddr*>(&this->theRecvAddress), &intSize);
 		}
 		
@@ -707,7 +721,7 @@ namespace DiscordCoreInternal {
 		} else {
 			std::string theString{};
 			theString.insert(theString.end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
-			if (this->theSocket.sendSocket != this->theSocket.sendSocket) {
+			if (this->areWeAStreamSocket) {
 				std::cout << "THE READBYTES (STREAM SOCKET): " << readBytes << std::endl;
 			} else {
 				std::cout << "THE READBYTES (REGULAR SOCKET): " << readBytes << std::endl;

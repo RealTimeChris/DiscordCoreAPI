@@ -126,7 +126,7 @@ namespace DiscordCoreAPI {
 	VoiceConnection::VoiceConnection(DiscordCoreInternal::BaseSocketAgent* BaseSocketAgentNew, const DiscordCoreInternal::VoiceConnectInitData& initDataNew,
 		DiscordCoreAPI::ConfigManager* configManagerNew, std::atomic_bool* doWeQuitNew, StreamType streamTypeNew,  StreamInfo streamInfoNew) noexcept
 		: WebSocketSSLShard(BaseSocketAgentNew->discordCoreClient, &this->connections, BaseSocketAgentNew->currentBaseSocketAgent, initDataNew.currentShard, this->doWeQuit),
-		  DatagramSocketClient() {
+		  DatagramSocketClient(false) {
 		this->baseShard = BaseSocketAgentNew->sslShards[initDataNew.currentShard].get();
 		this->activeState.store(VoiceActiveState::Connecting);
 		WebSocketSSLShard::connections = &this->connections;
@@ -387,8 +387,9 @@ namespace DiscordCoreAPI {
 				do {
 					theString = DatagramSocketClient::getInputBuffer();
 					if (theString.size() > 0) {
-						//std::cout << "THE STRING SIZE: " << theString.size() << std::endl;
+						std::cout << "THE STRING SIZE: " << theString.size() << std::endl;
 						this->theFrameQueue.push(theString);
+						std::cout << "THE FRAME COUNT: " << this->theFrameQueue.size() << std::endl;
 					}
 				} while (theString.size() > 0);
 				//this->streamSocket->processIO(1);
@@ -488,7 +489,6 @@ namespace DiscordCoreAPI {
 						}
 						theStopWatch.resetTimer();
 						while (!stopToken.stop_requested() && !DatagramSocketClient::areWeStillConnected()) {
-							//std::cout << "WERE LEAVING 0404" << std::endl;
 							if (theStopWatch.hasTimePassed() || this->activeState.load() == VoiceActiveState::Exiting) {
 								return;
 							}
@@ -630,7 +630,7 @@ namespace DiscordCoreAPI {
 		}
 
 		auto theBuffer = this->streamSocket->getInputBuffer();
-		//std::cout << "THE BUFFER SIZE: " << theBuffer.size() << std::endl;
+		std::cout << "THE BUFFER SIZE: " << theBuffer.size() << std::endl;
 
 		AudioFrameData theFrame{};
 		theFrame.encodedFrameData.data.insert(theFrame.encodedFrameData.data.begin(), theBuffer.begin(), theBuffer.end());
@@ -821,7 +821,7 @@ namespace DiscordCoreAPI {
 				this->baseShard->voiceConnectionDataBufferMap[this->voiceConnectInitData.guildId]->clearContents();
 				this->connectionState.store(VoiceConnectionState::Collecting_Init_Data);
 				if (this->streamType != StreamType::None) {
-					this->streamSocket = std::make_unique<DatagramSocketClient>();
+					this->streamSocket = std::make_unique<DatagramSocketClient>(true);
 					if (this->taskThread03) {
 						this->taskThread03.reset(nullptr);
 					}

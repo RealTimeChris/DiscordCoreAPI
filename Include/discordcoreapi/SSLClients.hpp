@@ -233,7 +233,7 @@ namespace DiscordCoreInternal {
 	  public:
 		friend class DiscordCoreAPI::VoiceConnection;
 
-		DatagramSocketClient() noexcept;
+		DatagramSocketClient(bool areWeAStreamSocket) noexcept;
 
 		bool connect(const std::string& baseUrl, const std::string& sendPortNew, const std::string& recvPortNew) noexcept;
 
@@ -262,6 +262,7 @@ namespace DiscordCoreInternal {
 		std::recursive_mutex theMutex{};
 		sockaddr_in theRecvAddress{};
 		sockaddr_in theSendAddress{};
+		bool areWeAStreamSocket{};
 		SOCKETHolder theSocket{};
 		int64_t bytesRead{};
 	};
