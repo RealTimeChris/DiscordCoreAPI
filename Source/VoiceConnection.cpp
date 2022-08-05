@@ -230,12 +230,10 @@ namespace DiscordCoreAPI {
 						case 5: {
 							if (payload.contains("d") && !payload["d"].is_null()) {
 								if (!payload["d"]["ssrc"].is_null()) {
+									VoiceUser theUser{};
 									std::lock_guard theLock00{ this->voiceUserMutex };
-									this->voiceUsers[payload["d"]["ssrc"].get<int32_t>()] = std::make_unique<VoiceUser>();
-									this->voiceUsers[payload["d"]["ssrc"].get<int32_t>()]->theUserId = stoull(payload["d"]["user_id"].get<std::string>());
-									this->voiceUsers[payload["d"]["ssrc"].get<int32_t>()]->theThread = std::jthread{ [=, this](std::stop_token theToken) {
-										this->runVoiceThread(theToken, this->voiceUsers[payload["d"]["ssrc"].get<int32_t>()].get());
-									} };
+									theUser.theUserId = stoull(payload["d"]["user_id"].get<std::string>());
+									this->voiceUsers[payload["d"]["ssrc"].get<int32_t>()] = std ::move(theUser);
 								}
 							}
 							break;
@@ -257,12 +255,8 @@ namespace DiscordCoreAPI {
 								if (!payload["d"]["user_id"].is_null()) {
 									auto userId = stoull(payload["d"]["user_id"].get<std::string>());
 									for (auto& [key, value]: this->voiceUsers) {
-										if (userId == value->theUserId) {
+										if (userId == value.theUserId) {
 											std::lock_guard theLock00{ this->voiceUserMutex };
-											value->theThread.request_stop();
-											if (value->theThread.joinable()) {
-												value->theThread.join();
-											}
 											this->voiceUsers.erase(key);
 											break;
 										}
@@ -305,24 +299,6 @@ namespace DiscordCoreAPI {
 				DiscordCoreAPI::reportException("VoiceConnection::sendVoiceData()");
 			}
 			this->onClosedVoice();
-		}
-	}
-
-	void VoiceConnection::runVoiceThread(std::stop_token&theToken, VoiceUser*theUser) noexcept {
-		while (!theToken.stop_requested()) {
-			VoicePayload thePayload{};
-			while (!theUser->theRecvPayloads.tryReceive(thePayload)) {
-				std::this_thread::sleep_for(1ms);
-			}
-			if (thePayload.theRawData.size() > 0) {
-				thePayload.decodedData.resize(23040);
-				auto sampleCount = opus_decode(theUser->theDecoder, thePayload.theRawData.data(), thePayload.theRawData.size(), thePayload.decodedData.data(), 5760, 0);
-				if (sampleCount <= 0) {
-					std::cout << "Failed to decode user's voice payload." << std::endl;
-				}
-				thePayload.decodedData.resize(sampleCount * 2);
-			}
-			theUser->theSendPayloads.send(thePayload);
 		}
 	}
 
@@ -616,7 +592,6 @@ namespace DiscordCoreAPI {
 					nonce[x] = packet[x];
 				}
 				const size_t csrcCount = packet[0] & 0b0000'1111;
-				std::cout << "THE CSRC COUNT: " << csrcCount << std::endl;
 				const ptrdiff_t offsetToData = headerSize + sizeof(uint32_t) * csrcCount;
 				uint8_t* encryptedData = packet.data() + offsetToData;
 				const size_t encryptedDataLength = packet.size() - offsetToData;
@@ -641,7 +616,8 @@ namespace DiscordCoreAPI {
 				}
 				if ((decryptedDataString.size() - 16) > 0) {
 					thePayload.theRawData.insert(thePayload.theRawData.begin(), decryptedDataString.begin(), decryptedDataString.end() - 16);
-					this->voiceUsers[speakerSsrc]->theRecvPayloads.send(thePayload);
+					std::lock_guard theLock{ DatagramSocketClient::theMutex };
+					this->voiceUsers[speakerSsrc].thePayloads.push(std::move(thePayload));
 				}
 			}
 		}
@@ -998,21 +974,32 @@ namespace DiscordCoreAPI {
 		if (this->voiceUsers.size() > 0) {
 			opus_int32 voiceUserCount{};
 			std::vector<opus_int32> theUpsampledVector{};
+			uint64_t sampleCount{};
 			std::lock_guard theLock00{ this->voiceUserMutex };
 			for (auto& [key, value]: this->voiceUsers) {
-				VoicePayload thePayload{};
-				if (!value->theSendPayloads.tryReceive(thePayload)) {
-					continue;
-				}
-				voiceUserCount++;
-				theUpsampledVector.resize(thePayload.decodedData.size());
-				for (uint32_t x = 0; x < thePayload.decodedData.size(); x++) {
-					theUpsampledVector[x] += static_cast<opus_int32>(thePayload.decodedData[x]);
+				if (value.thePayloads.size() > 0) {
+					std::unique_lock theLock{ DatagramSocketClient::theMutex };
+					VoicePayload thePayload = value.thePayloads.front();
+					if (value.thePayloads.size() > 0) {
+						value.thePayloads.pop();
+					}
+					theLock.unlock();
+					thePayload.decodedData.resize(23040);
+					sampleCount = opus_decode(value.theDecoder, thePayload.theRawData.data(), thePayload.theRawData.size(), thePayload.decodedData.data(), 5760, 0);
+					if (sampleCount <= 0) {
+						std::cout << "Failed to decode user's voice payload." << std::endl;
+					} else {
+						voiceUserCount++;
+						theUpsampledVector.resize(sampleCount * 2);
+						for (uint32_t x = 0; x < sampleCount * 2; x++) {
+							theUpsampledVector[x] += static_cast<opus_int32>(thePayload.decodedData[x]);
+						}
+					}
 				}
 			}
-			if (theUpsampledVector.size() > 0) {
+			if (sampleCount > 0) {
 				std::vector<opus_int16> theDownsampledVector{};
-				theDownsampledVector.resize(theUpsampledVector.size() * 2);
+				theDownsampledVector.resize(sampleCount * 2);
 				for (int32_t x = 0; x < theUpsampledVector.size(); x++) {
 					theDownsampledVector[x] = static_cast<opus_int16>(theUpsampledVector[x] / voiceUserCount);
 				}
