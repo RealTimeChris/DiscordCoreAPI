@@ -534,8 +534,7 @@ namespace DiscordCoreAPI {
 						if (waitTime.count() > 0) {
 							spinLock(waitTime.count());
 						}
-
-						startingValue = std::chrono::system_clock::now();
+ 						startingValue = std::chrono::system_clock::now();
 						if (newFrame.size() > 0) {
 							this->sendSingleAudioFrame(newFrame);
 						}
@@ -622,7 +621,6 @@ namespace DiscordCoreAPI {
 				}
 				if ((decryptedDataString.size() - 16) > 0) {
 					thePayload.theRawData.insert(thePayload.theRawData.begin(), decryptedDataString.begin(), decryptedDataString.end() - 16);
-					std::lock_guard theLock{ DatagramSocketClient::theMutex };
 					this->voiceUsers[speakerSsrc]->thePayloadBuffer.send(thePayload);
 				}
 			}
