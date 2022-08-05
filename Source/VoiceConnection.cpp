@@ -641,7 +641,7 @@ namespace DiscordCoreAPI {
 				}
 				if ((decryptedDataString.size() - 16) > 0) {
 					thePayload.theRawData.insert(thePayload.theRawData.begin(), decryptedDataString.begin(), decryptedDataString.end() - 16);
-					this->voiceUsers[speakerSsrc]->theRecvPayloads.send(std::move(thePayload));
+					this->voiceUsers[speakerSsrc]->theRecvPayloads.send(thePayload);
 				}
 			}
 		}
