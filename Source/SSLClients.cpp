@@ -527,7 +527,7 @@ namespace DiscordCoreInternal {
 				return false;
 			}
 			this->theSocket = static_cast<SOCKET>(this->theSocket);
-			this->theStreamAddress.sin_addr.s_addr = inet_addr(baseUrlNew.c_str());
+			this->theStreamAddress.sin_addr.s_addr = htons(INADDR_ANY);
 			this->theStreamAddress.sin_port = DiscordCoreAPI::reverseByteOrder(static_cast<unsigned short>(stoi(portNew)));
 			this->theStreamAddress.sin_family = AF_INET;
 		} else {
