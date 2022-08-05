@@ -641,11 +641,11 @@ namespace DiscordCoreInternal {
 		if (this->outputBuffers.size() > 0) {
 			std::string clientToServerString = this->outputBuffers.front();
 			int32_t writtenBytes = sendto(this->theSocket, clientToServerString.data(), clientToServerString.size(), 0, this->theStreamTargetAddress, sizeof(sockaddr));
-			if (writtenBytes < 0) {
+			if (writtenBytes < 0 && WSAGetLastError() != WSAEWOULDBLOCK) {
 				std::cout << "WRITE DISCONNECTED!" << std::endl;
 				this->disconnect();
 				return;
-			} else {
+			} else if (writtenBytes > 0) {
 				this->outputBuffers.erase(this->outputBuffers.begin());
 			}
 		}
