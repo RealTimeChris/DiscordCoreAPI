@@ -27,8 +27,8 @@
 
 namespace DiscordCoreAPI {
 
-	struct OpusEncoderWrapper {
-		struct OpusEncoderDeleter {
+	struct DiscordCoreAPI_Dll OpusEncoderWrapper {
+		struct DiscordCoreAPI_Dll OpusEncoderDeleter {
 			void operator()(OpusEncoder*);
 		};
 
@@ -44,8 +44,8 @@ namespace DiscordCoreAPI {
 		std::unique_ptr<OpusEncoder, OpusEncoderDeleter> thePtr{ nullptr, OpusEncoderDeleter{} };
 	};
 
-	struct OpusDecoderWrapper {
-		struct OpusDecoderDeleter {
+	struct DiscordCoreAPI_Dll OpusDecoderWrapper {
+		struct DiscordCoreAPI_Dll OpusDecoderDeleter {
 			void operator()(OpusDecoder*);
 		};
 
@@ -61,15 +61,18 @@ namespace DiscordCoreAPI {
 		std::unique_ptr<OpusDecoder, OpusDecoderDeleter> thePtr{ nullptr, OpusDecoderDeleter{} };
 	};
 
-	struct VoicePayload {
+	struct DiscordCoreAPI_Dll VoicePayload {
 		std::vector<opus_int16> decodedData{};
 		std::vector<uint8_t> theRawData{};
 	};
 
-	struct VoiceUser {
-		std::queue<VoicePayload> thePayloads{};
+	struct DiscordCoreAPI_Dll VoiceUser {
+		UnboundedMessageBlock<VoicePayload> theRecvPayloads{};
+		UnboundedMessageBlock<VoicePayload> theSendPayloads{};
 		OpusDecoderWrapper theDecoder{};
 		OpusEncoderWrapper theEncoder{};
+		std::jthread theThread{};
+		std::mutex theMutex{};
 		Snowflake theUserId{};
 	};
 
@@ -81,7 +84,7 @@ namespace DiscordCoreAPI {
 
 	using DoubleTimePointMs = std::chrono::time_point<std::chrono::system_clock, DoubleMilliSecond>;
 
-	struct RTPPacket {
+	struct DiscordCoreAPI_Dll RTPPacket {
 		std::vector<uint8_t> audioData{};
 		uint8_t version{ 0x80 };
 		uint8_t flags{ 0x78 };
@@ -145,6 +148,7 @@ namespace DiscordCoreAPI {
 		std::atomic<VoiceActiveState> lastActiveState{ VoiceActiveState::Connecting };
 		std::unique_ptr<DiscordCoreInternal::DatagramSocketClient> streamSocket{};
 		std::atomic<VoiceActiveState> activeState{ VoiceActiveState::Connecting };
+		std::unordered_map<uint32_t, std::unique_ptr<VoiceUser>> voiceUsers{};
 		DiscordCoreInternal::BaseSocketAgent* baseSocketAgent{ nullptr };
 		DiscordCoreInternal::VoiceConnectInitData voiceConnectInitData{};
 		DiscordCoreInternal::VoiceConnectionData voiceConnectionData{};
@@ -153,7 +157,6 @@ namespace DiscordCoreAPI {
 		std::unique_ptr<std::jthread> taskThread01{ nullptr };
 		std::unique_ptr<std::jthread> taskThread02{ nullptr };
 		std::unique_ptr<std::jthread> taskThread03{ nullptr };
-		std::unordered_map<uint32_t, VoiceUser> voiceUsers{};
 		std::atomic_bool areWeConnectedBool{ false };
 		std::queue<ConnectionPackage> connections{};
 		std::queue<std::string> theFrameQueue{};
@@ -190,6 +193,8 @@ namespace DiscordCoreAPI {
 		void sendSingleFrame(const AudioFrameData& frameData) noexcept;
 
 		void sendVoiceData(const std::string& responseData) noexcept;
+
+		void runVoiceThread(std::stop_token&, VoiceUser*) noexcept;
 
 		void sendSpeakingMessage(const bool isSpeaking) noexcept;
 
