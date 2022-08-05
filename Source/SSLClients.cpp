@@ -563,8 +563,7 @@ namespace DiscordCoreInternal {
 #endif
 					std::string serverToClientBuffer{};
 					serverToClientBuffer.resize(11);
-					int32_t readBytes = recvfrom(this->theSocket, serverToClientBuffer.data(), static_cast<int32_t>(serverToClientBuffer.size()), 0,
-						reinterpret_cast<sockaddr*>(&this->theStreamAddress), &intSize);
+					int32_t readBytes = recv(this->theSocket, serverToClientBuffer.data(), static_cast<int32_t>(serverToClientBuffer.size()), 0);
 					std::cout << "READ BYTES WE DID IT: " << reportError("datagramsocketclient::connect()") << std::endl;
 					if (readBytes >= 0) {
 						std::cout << "READ BYTES WE DID IT: " << readBytes << std::endl;
