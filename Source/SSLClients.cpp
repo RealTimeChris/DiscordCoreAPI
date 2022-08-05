@@ -555,6 +555,7 @@ namespace DiscordCoreInternal {
 						return false;
 					} else if (theResult == 0) {
 						std::cout << "WE'RE CONNECTED!" << std::endl;
+						break;
 					} /*
 					#ifdef _WIN32
 					int32_t intSize = sizeof(this->theStreamAddress);
