@@ -141,7 +141,7 @@ namespace DiscordCoreInternal {
 		~sockaddrWrapper() = default;
 
 	  protected:
-		sockaddr* thePtr{ new sockaddr{} };
+		sockaddr_in thePtr{};
 	};
 
 	struct DiscordCoreAPI_Dll addrinfoWrapper {
