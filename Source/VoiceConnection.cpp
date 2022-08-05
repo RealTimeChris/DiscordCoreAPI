@@ -78,11 +78,14 @@ namespace DiscordCoreAPI {
 		return this->thePtr.get();
 	}
 
-	AreWeInTimeResult VoicePayload::areWeInTime(int32_t originalGlobalTimeStampInMs, int32_t currentTimeStampInMs, int32_t originalTimeStamp, int32_t currentTimeStamp) {
-		if (currentTimeStampInMs - originalGlobalTimeStampInMs / 20 == currentTimeStamp - originalTimeStamp / 960) {
+	AreWeInTimeResult VoicePayload::areWeInTime(int64_t originalGlobalTimeStampInMs, int64_t currentTimeStampInMs, int32_t originalTimeStamp, int32_t currentTimeStamp) {
+		if ((currentTimeStampInMs - originalGlobalTimeStampInMs / 20) == (currentTimeStamp - originalTimeStamp / 960)) {
 			return AreWeInTimeResult::Now;
-		} else if (currentTimeStampInMs - originalGlobalTimeStampInMs / 20 > currentTimeStamp - originalTimeStamp / 960) {
-			return false;
+		} else if (((currentTimeStampInMs - originalGlobalTimeStampInMs) / 20) > ((currentTimeStamp - originalTimeStamp) / 960)) {
+			std::cout << "VALUE 01: " << ((currentTimeStampInMs - originalGlobalTimeStampInMs) / 20) << ", VALUE 02: " << ((currentTimeStamp - originalTimeStamp) / 960) << std::endl;
+			return AreWeInTimeResult::Not_Yet;
+		} else {
+			return AreWeInTimeResult::Already_Happened;
 		}
 	}
 
@@ -594,6 +597,11 @@ namespace DiscordCoreAPI {
 				theTimeStamp = ntohl(theTimeStamp);
 				uint32_t speakerSsrc{ *reinterpret_cast<uint32_t*>(packet.data() + 8) };
 				speakerSsrc = ntohl(speakerSsrc);
+				if (this->voiceUsers[speakerSsrc].originalTimeStampInMs == 0) {
+					this->voiceUsers[speakerSsrc].originalTimeStampInMs =
+						std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+					this->voiceUsers[speakerSsrc].originalTimeStamp = theTimeStamp;
+				}
 
 				std::vector<uint8_t> nonce{};
 				nonce.resize(24);
@@ -989,8 +997,23 @@ namespace DiscordCoreAPI {
 				if (value.thePayloads.size() > 0) {
 					std::unique_lock theLock{ DatagramSocketClient::theMutex };
 					VoicePayload thePayload = value.thePayloads.front();
-					if (value.thePayloads.size() > 0) {
-						value.thePayloads.pop();
+					auto theResult = thePayload.areWeInTime(value.originalTimeStampInMs,
+						std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count(), value.originalTimeStamp,
+						thePayload.timeStamp);
+					if (theResult == AreWeInTimeResult::Already_Happened) {
+						std::cout << "ALREADY HAPPENED!" << std::endl;
+						if (value.thePayloads.size() > 0) {
+							value.thePayloads.pop();
+						}
+						continue;
+					} else if(theResult == AreWeInTimeResult::Now) {
+						std::cout << "NOW!" << std::endl;
+						if (value.thePayloads.size() > 0) {
+							value.thePayloads.pop();
+						}
+					} else {
+						std::cout << "NOT YET!" << std::endl;
+						continue;
 					}
 					theLock.unlock();
 					thePayload.decodedData.resize(23040);

@@ -66,17 +66,17 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll VoicePayload {
 		std::vector<opus_int16> decodedData{};
 		std::vector<uint8_t> theRawData{};
-		int32_t timeStamp{};
+		uint32_t timeStamp{};
 
-		AreWeInTimeResult areWeInTime(int32_t originalGlobalTimeStampInMs, int32_t currentTimeStampInMs, int32_t originalTimeStamp, int32_t currentTimeStamp);
+		AreWeInTimeResult areWeInTime(int64_t originalGlobalTimeStampInMs, int64_t currentTimeStampInMs, int32_t originalTimeStamp, int32_t currentTimeStamp);
 	};
 
 	struct DiscordCoreAPI_Dll VoiceUser {
 		std::queue<VoicePayload> thePayloads{};
-		int32_t originalTimeStampTicks{};
 		OpusDecoderWrapper theDecoder{};
 		OpusEncoderWrapper theEncoder{};
-		int32_t originalTimeStamp{};
+		int64_t originalTimeStampInMs{};
+		uint32_t originalTimeStamp{};
 		Snowflake theUserId{};
 	};
 
