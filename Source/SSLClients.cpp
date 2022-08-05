@@ -560,21 +560,6 @@ namespace DiscordCoreInternal {
 					int32_t writtenBytes = sendto(this->theSocket, clientToServerString.data(), clientToServerString.size(), 0,
 						reinterpret_cast<sockaddr*>(&this->theStreamAddress), sizeof(this->theStreamAddress));
 					std::cout << "WRITTEN STREAM BYTES: " << writtenBytes << std::endl;
-
-					#ifdef _WIN32
-					int32_t intSize = sizeof(this->theStreamAddress);
-#else
-					socklen_t intSize = sizeof(this->theStreamAddress);
-#endif
-					std::string serverToClientBuffer{};
-					serverToClientBuffer.resize(11);
-					int32_t readBytes = recvfrom(this->theSocket, serverToClientBuffer.data(), static_cast<int32_t>(serverToClientBuffer.size()), 0,
-						reinterpret_cast<sockaddr*>(&this->theStreamAddress), &intSize);
-					std::cout << "READ BYTES WE DID IT: " << reportError("datagramsocketclient::connect()") << std::endl;
-					if (readBytes >= 0) {
-						std::cout << "READ BYTES WE DID IT: " << readBytes << std::endl;
-						break;
-					}
 					
 				} else {
 					if (auto theResult = bind(this->theSocket, ( sockaddr* )&this->theStreamAddress, sizeof(sockaddr)); theResult != 0) {
@@ -584,21 +569,6 @@ namespace DiscordCoreInternal {
 						std::cout << "WE'RE BOUND!" << std::endl;
 					}
 
-					#ifdef _WIN32
-					int32_t intSize = sizeof(this->theStreamAddress);
-#else
-					socklen_t intSize = sizeof(this->theStreamAddress);
-#endif
-					std::string serverToClientBuffer{};
-					serverToClientBuffer.resize(11);
-					int32_t readBytes = recvfrom(this->theSocket, serverToClientBuffer.data(), static_cast<int32_t>(serverToClientBuffer.size()), 0,
-						reinterpret_cast<sockaddr*>(&this->theStreamAddress), &intSize);
-					std::cout << "READ BYTES WE DID IT: " << reportError("datagramsocketclient::connect()") << std::endl;
-					if (readBytes >= 0) {
-						std::cout << "READ BYTES WE DID IT: " << readBytes << std::endl;
-						break;
-					}
-
 					int32_t writtenBytes = sendto(this->theSocket, clientToServerString.data(), clientToServerString.size(), 0,
 						reinterpret_cast<sockaddr*>(&this->theStreamAddress), sizeof(this->theStreamAddress));
 					std::cout << "WRITTEN STREAM BYTES: " << writtenBytes << std::endl;
@@ -606,7 +576,20 @@ namespace DiscordCoreInternal {
 				
 
 				
-
+#ifdef _WIN32
+				int32_t intSize = sizeof(this->theStreamAddress);
+#else
+				socklen_t intSize = sizeof(this->theStreamAddress);
+#endif
+				std::string serverToClientBuffer{};
+				serverToClientBuffer.resize(11);
+				int32_t readBytes = recvfrom(this->theSocket, serverToClientBuffer.data(), static_cast<int32_t>(serverToClientBuffer.size()), 0,
+					reinterpret_cast<sockaddr*>(&this->theStreamAddress), &intSize);
+				std::cout << "READ BYTES WE DID IT: " << reportError("datagramsocketclient::connect()") << std::endl;
+				if (readBytes >= 0) {
+					std::cout << "READ BYTES WE DID IT: " << readBytes << std::endl;
+					break;
+				}
 			}
 		}
 		this->areWeStreamConnected = true;
