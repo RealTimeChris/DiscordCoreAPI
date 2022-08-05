@@ -603,7 +603,6 @@ namespace DiscordCoreInternal {
 		if (dataToWrite.size() > static_cast<size_t>(16 * 1024)) {
 			size_t remainingBytes{ dataToWrite.size() };
 			std::unique_lock theLock{ this->theMutex };
-			std::cout << "THE WRITTEN BYTES: " << dataToWrite << std::endl;
 			while (remainingBytes > 0) {
 				std::string newString{};
 				size_t amountToCollect{};
@@ -618,6 +617,7 @@ namespace DiscordCoreInternal {
 				remainingBytes = dataToWrite.size();
 			}
 		} else {
+			std::cout << "THE WRITTEN BYTES: " << dataToWrite << std::endl;
 			this->outputBuffers.push_back(dataToWrite);
 		}
 	}
@@ -656,7 +656,7 @@ namespace DiscordCoreInternal {
 #endif
 				this->disconnect();
 				return;
-			} else if (writtenBytes > 0) {
+			} else {
 				std::cout << "WRITTEN BYTES: " << writtenBytes << std::endl;
 				this->outputBuffers.erase(this->outputBuffers.begin());
 			}
