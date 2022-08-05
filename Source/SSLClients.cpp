@@ -668,7 +668,7 @@ namespace DiscordCoreInternal {
 			std::cout << "READ DISCONNECTED!" << reportError("readDataProcess()") << std::endl;
 			this->disconnect();
 			return;
-		} else {
+		} else if (readBytes > 0) {
 			std::string theString{};
 			theString.insert(theString.end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
 			this->inputBuffers.push_back(theString);
