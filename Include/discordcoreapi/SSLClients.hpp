@@ -129,6 +129,21 @@ namespace DiscordCoreInternal {
 		std::unique_ptr<SOCKET, SOCKETDeleter> thePtr{ new SOCKET{ SOCKET_ERROR }, SOCKETDeleter{} };
 	};
 
+	struct DiscordCoreAPI_Dll sockaddrWrapper {
+		sockaddr* operator->();
+
+		operator sockaddr_in*();
+
+		operator sockaddr*();
+
+		sockaddrWrapper() = default;
+
+		~sockaddrWrapper() = default;
+
+	  protected:
+		sockaddr* thePtr{ new sockaddr{} };
+	};
+
 	struct DiscordCoreAPI_Dll addrinfoWrapper {
 		addrinfo* operator->();
 
@@ -226,7 +241,7 @@ namespace DiscordCoreInternal {
 	  public:
 		friend class DiscordCoreAPI::VoiceConnection;
 
-		DatagramSocketClient(bool areWeAStreamSocket, bool areWeAStreamClient) noexcept;
+		DatagramSocketClient(DiscordCoreAPI::StreamType streamType) noexcept;
 
 		bool connect(const std::string& baseUrlNew, const std::string& portNew) noexcept;
 
@@ -249,14 +264,14 @@ namespace DiscordCoreInternal {
 		virtual ~DatagramSocketClient() noexcept;
 
 	  protected:
+		sockaddrWrapper theStreamCurrentAddress{};
+		sockaddrWrapper theStreamTargetAddress{};
 		const int32_t maxBufferSize{ 1024 * 16 };
 		std::vector<std::string> outputBuffers{};
 		std::vector<std::string> inputBuffers{};
+		DiscordCoreAPI::StreamType streamType{};
 		bool areWeStreamConnected{ false };
 		std::recursive_mutex theMutex{};
-		sockaddr_in theStreamAddress{};
-		bool areWeAStreamSocket{};
-		bool areWeAStreamClient{};
 		SOCKETWrapper theSocket{};
 		int64_t bytesRead{};
 	};
