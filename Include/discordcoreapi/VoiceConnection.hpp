@@ -67,7 +67,9 @@ namespace DiscordCoreAPI {
 	};
 
 	struct VoiceUser {
-		std::queue<VoicePayload> thePayloads{};
+		UnboundedMessageBlock<std::vector<opus_int16>> theDecodedDataBuffer{};
+		UnboundedMessageBlock<VoicePayload> thePayloadBuffer{};
+		std::unique_ptr<std::jthread> theThread{};
 		OpusDecoderWrapper theDecoder{};
 		OpusEncoderWrapper theEncoder{};
 		Snowflake theUserId{};
@@ -145,6 +147,7 @@ namespace DiscordCoreAPI {
 		std::atomic<VoiceActiveState> lastActiveState{ VoiceActiveState::Connecting };
 		std::unique_ptr<DiscordCoreInternal::DatagramSocketClient> streamSocket{};
 		std::atomic<VoiceActiveState> activeState{ VoiceActiveState::Connecting };
+		std::unordered_map<uint32_t, std::unique_ptr<VoiceUser>> voiceUsers{};
 		DiscordCoreInternal::BaseSocketAgent* baseSocketAgent{ nullptr };
 		DiscordCoreInternal::VoiceConnectInitData voiceConnectInitData{};
 		DiscordCoreInternal::VoiceConnectionData voiceConnectionData{};
@@ -153,7 +156,6 @@ namespace DiscordCoreAPI {
 		std::unique_ptr<std::jthread> taskThread01{ nullptr };
 		std::unique_ptr<std::jthread> taskThread02{ nullptr };
 		std::unique_ptr<std::jthread> taskThread03{ nullptr };
-		std::unordered_map<uint32_t, VoiceUser> voiceUsers{};
 		std::atomic_bool areWeConnectedBool{ false };
 		std::queue<ConnectionPackage> connections{};
 		std::queue<std::string> theFrameQueue{};
@@ -180,6 +182,8 @@ namespace DiscordCoreAPI {
 		std::string encryptSingleAudioFrame(const EncodedFrameData& bufferToSend) noexcept;
 
 		bool collectAndProcessAMessage(VoiceConnectionState stateToWaitFor) noexcept;
+
+		void runVoiceThread(std::stop_token& theToken, VoiceUser* theUser) noexcept;
 
 		void sendSingleAudioFrame(std::string& audioDataPacketNew) noexcept;
 
