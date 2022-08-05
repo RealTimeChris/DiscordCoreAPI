@@ -27,8 +27,8 @@
 
 namespace DiscordCoreAPI {
 
-	struct DiscordCoreAPI_Dll OpusEncoderWrapper {
-		struct DiscordCoreAPI_Dll OpusEncoderDeleter {
+	struct OpusEncoderWrapper {
+		struct OpusEncoderDeleter {
 			void operator()(OpusEncoder*);
 		};
 
@@ -44,8 +44,8 @@ namespace DiscordCoreAPI {
 		std::unique_ptr<OpusEncoder, OpusEncoderDeleter> thePtr{ nullptr, OpusEncoderDeleter{} };
 	};
 
-	struct DiscordCoreAPI_Dll OpusDecoderWrapper {
-		struct DiscordCoreAPI_Dll OpusDecoderDeleter {
+	struct OpusDecoderWrapper {
+		struct OpusDecoderDeleter {
 			void operator()(OpusDecoder*);
 		};
 
@@ -61,22 +61,15 @@ namespace DiscordCoreAPI {
 		std::unique_ptr<OpusDecoder, OpusDecoderDeleter> thePtr{ nullptr, OpusDecoderDeleter{} };
 	};
 
-	enum class AreWeInTimeResult { Not_Yet = 0, Now = 1, Already_Happened = 2 };
-
-	struct DiscordCoreAPI_Dll VoicePayload {
+	struct VoicePayload {
 		std::vector<opus_int16> decodedData{};
 		std::vector<uint8_t> theRawData{};
-		uint32_t timeStamp{};
-
-		AreWeInTimeResult areWeInTime(int64_t originalGlobalTimeStampInMs, int64_t currentTimeStampInMs, uint32_t originalTimeStamp, uint32_t currentTimeStamp);
 	};
 
-	struct DiscordCoreAPI_Dll VoiceUser {
+	struct VoiceUser {
 		std::queue<VoicePayload> thePayloads{};
 		OpusDecoderWrapper theDecoder{};
 		OpusEncoderWrapper theEncoder{};
-		int64_t originalTimeStampInMs{};
-		uint32_t originalTimeStamp{};
 		Snowflake theUserId{};
 	};
 
@@ -88,7 +81,7 @@ namespace DiscordCoreAPI {
 
 	using DoubleTimePointMs = std::chrono::time_point<std::chrono::system_clock, DoubleMilliSecond>;
 
-	struct DiscordCoreAPI_Dll RTPPacket {
+	struct RTPPacket {
 		std::vector<uint8_t> audioData{};
 		uint8_t version{ 0x80 };
 		uint8_t flags{ 0x78 };
@@ -166,7 +159,6 @@ namespace DiscordCoreAPI {
 		std::queue<std::string> theFrameQueue{};
 		std::atomic_bool areWePlaying{ false };
 		const int64_t maxReconnectTries{ 10 };
-		std::atomic_uint32_t timeStamp{ 0 };
 		int64_t currentReconnectTries{ 0 };
 		std::string audioEncryptionMode{};
 		Snowflake currentGuildMemberId{};
@@ -179,6 +171,7 @@ namespace DiscordCoreAPI {
 		StreamInfo theStreamInfo{};
 		std::string externalIp{};
 		StreamType streamType{};
+		uint32_t timeStamp{ 0 };
 		std::string voiceIp{};
 		std::string baseUrl{};
 		uint32_t audioSSRC{};

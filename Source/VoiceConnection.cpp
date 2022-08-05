@@ -78,21 +78,6 @@ namespace DiscordCoreAPI {
 		return this->thePtr.get();
 	}
 
-	AreWeInTimeResult VoicePayload::areWeInTime(int64_t originalGlobalTimeStampInMs, int64_t currentTimeStampInMs, uint32_t originalTimeStamp, uint32_t currentTimeStamp) {
-		if ((currentTimeStampInMs - originalGlobalTimeStampInMs / 20) >= (currentTimeStamp - originalTimeStamp / 960)) {
-			return AreWeInTimeResult::Now;
-		} else if (((currentTimeStampInMs - originalGlobalTimeStampInMs) / 20) > ((currentTimeStamp - originalTimeStamp) / 960)) {
-			std::cout << "VALUE 01: " << ((currentTimeStampInMs - originalGlobalTimeStampInMs) / 20) << ", VALUE 02: " << ((currentTimeStamp - originalTimeStamp) / 960)
-					  << std::endl;
-			return AreWeInTimeResult::Already_Happened;
-			
-		} else {
-			std::cout << "VALUE 01: " << ((currentTimeStampInMs - originalGlobalTimeStampInMs) / 20) << ", VALUE 02: " << ((currentTimeStamp - originalTimeStamp) / 960)
-					  << std::endl;
-			return AreWeInTimeResult::Not_Yet;
-		}
-	}
-
 	RTPPacket::RTPPacket(uint32_t timestampNew, uint16_t sequenceNew, uint32_t ssrcNew, const std::vector<uint8_t>& audioDataNew, const std::string& theKeysNew) {
 		this->audioData = audioDataNew;
 		this->timestamp = timestampNew;
@@ -160,12 +145,11 @@ namespace DiscordCoreAPI {
 	std::string VoiceConnection::encryptSingleAudioFrame(const EncodedFrameData& bufferToSend) noexcept {
 		if (this->secretKeySend.size() > 0) {
 			this->sequenceIndex++;
-			auto theValue = this->timeStamp.load();
-			this->timeStamp.store(theValue + bufferToSend.sampleCount);
-			if (this->timeStamp.load() > INT16_MAX && this->sequenceIndex < 100) {
-				this->timeStamp.store(0);
+			this->timeStamp += bufferToSend.sampleCount;
+			if (this->timeStamp > INT16_MAX && this->sequenceIndex < 100) {
+				this->timeStamp = 0;
 			}
-			return RTPPacket{ this->timeStamp.load(), this->sequenceIndex, this->audioSSRC, bufferToSend.data, this->secretKeySend };
+			return RTPPacket{ this->timeStamp, this->sequenceIndex, this->audioSSRC, bufferToSend.data, this->secretKeySend };
 		}
 		return {};
 	}
@@ -196,7 +180,6 @@ namespace DiscordCoreAPI {
 		if (DatagramSocketClient::areWeStillConnected()) {
 			DatagramSocketClient::writeData(audioDataPacketNew);
 		} else {
-			std::cout << "WERE LEAVING 0202" << std::endl;
 			this->onClosedVoice();
 		}
 	}
@@ -308,7 +291,6 @@ namespace DiscordCoreAPI {
 					std::string theData = responseData;
 					DatagramSocketClient::writeData(theData);
 				} else {
-					std::cout << "WERE LEAVING 0303" << std::endl;
 					this->onClosedVoice();
 				}
 			}
@@ -400,9 +382,7 @@ namespace DiscordCoreAPI {
 				do {
 					theString = DatagramSocketClient::getInputBuffer();
 					if (theString.size() > 0) {
-						//std::cout << "THE STRING SIZE: " << theString.size() << std::endl;
 						this->theFrameQueue.push(theString);
-						//std::cout << "THE FRAME COUNT: " << this->theFrameQueue.size() << std::endl;
 					}
 				} while (theString.size() > 0);
 				this->streamSocket->processIO(1);
@@ -585,7 +565,6 @@ namespace DiscordCoreAPI {
 	void VoiceConnection::parseIncomingVoiceData() noexcept {
 		while (this->theFrameQueue.size() > 0) {
 			auto theBuffer = this->theFrameQueue.front();
-			//std::cout << "THE FRAME QUEUE SIZE: " << this->theFrameQueue.size() << std::endl;
 			this->theFrameQueue.pop();
 			if (theBuffer.size() > 0 && this->secretKeySend.size() > 0) {
 				std::vector<uint8_t> packet{};
@@ -604,14 +583,8 @@ namespace DiscordCoreAPI {
 				theSequence = ntohs(theSequence);
 				uint32_t theTimeStamp{ *reinterpret_cast<uint32_t*>(packet.data() + 4) };
 				theTimeStamp = ntohl(theTimeStamp);
-				thePayload.timeStamp = theTimeStamp;
 				uint32_t speakerSsrc{ *reinterpret_cast<uint32_t*>(packet.data() + 8) };
 				speakerSsrc = ntohl(speakerSsrc);
-				if (this->voiceUsers[speakerSsrc].originalTimeStampInMs == 0) {
-					this->voiceUsers[speakerSsrc].originalTimeStampInMs =
-						std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-					this->voiceUsers[speakerSsrc].originalTimeStamp = theTimeStamp;
-				}
 
 				std::vector<uint8_t> nonce{};
 				nonce.resize(24);
@@ -650,7 +623,6 @@ namespace DiscordCoreAPI {
 		}
 
 		auto theBuffer = this->streamSocket->getInputBuffer();
-		//std::cout << "THE BUFFER SIZE: " << theBuffer.size() << std::endl;
 
 		AudioFrameData theFrame{};
 		theFrame.encodedFrameData.data.insert(theFrame.encodedFrameData.data.begin(), theBuffer.begin(), theBuffer.end());
@@ -910,7 +882,6 @@ namespace DiscordCoreAPI {
 		try {
 			if (!DatagramSocketClient::areWeStillConnected()) {
 				if (!DatagramSocketClient::connect(this->voiceIp, this->port)) {
-					std::cout << "WERE LEAVING 0505" << std::endl;
 					return false;
 				} else {
 					std::string packet{};
@@ -935,7 +906,6 @@ namespace DiscordCoreAPI {
 						inputString.insert(inputString.end(), theNewString.begin(), theNewString.end());
 						std::this_thread::sleep_for(1ms);
 						if (theStopWatch.hasTimePassed()) {
-							std::cout << "WERE LEAVING 0505 0101" << std::endl;
 							return false;
 						}
 					}
@@ -1010,23 +980,8 @@ namespace DiscordCoreAPI {
 				if (value.thePayloads.size() > 0) {
 					std::unique_lock theLock{ DatagramSocketClient::theMutex };
 					VoicePayload thePayload = value.thePayloads.front();
-					auto theResult = thePayload.areWeInTime(value.originalTimeStampInMs,
-						std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count(), value.originalTimeStamp,
-						thePayload.timeStamp);
-					if (theResult == AreWeInTimeResult::Already_Happened) {
-						std::cout << "ALREADY HAPPENED!" << std::endl;
-						if (value.thePayloads.size() > 0) {
-							value.thePayloads.pop();
-						}
-						continue;
-					} else if(theResult == AreWeInTimeResult::Now) {
-						std::cout << "NOW!" << std::endl;
-						if (value.thePayloads.size() > 0) {
-							value.thePayloads.pop();
-						}
-					} else {
-						std::cout << "NOT YET!" << std::endl;
-						continue;
+					if (value.thePayloads.size() > 0) {
+						value.thePayloads.pop();
 					}
 					theLock.unlock();
 					thePayload.decodedData.resize(23040);
