@@ -354,7 +354,7 @@ namespace DiscordCoreAPI {
 					this->heartBeatStopWatch.resetTimer();
 				}
 				if (!stopToken.stop_requested() && WebSocketSSLShard::areWeStillConnected()) {
-					DiscordCoreInternal::SSLClient::processIO(10000);
+					WebSocketSSLShard::processIO(10000);
 				}
 				if (!stopToken.stop_requested() && WebSocketSSLShard::areWeStillConnected() && WebSocketSSLShard::inputBuffer.size() > 0) {
 					this->parseMessage(this);
@@ -728,7 +728,7 @@ namespace DiscordCoreAPI {
 					this->connectInternal();
 					return;
 				}
-				DiscordCoreInternal::SSLClient::processIO(200000);
+				WebSocketSSLShard::processIO(200000);
 				if (!this->parseConnectionHeaders(this)) {
 					this->currentReconnectTries++;
 					this->onClosedVoice();
