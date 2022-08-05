@@ -566,10 +566,6 @@ namespace DiscordCoreInternal {
 		if (this->theSocket == SOCKET_ERROR || this->theSocket == SOCKET_ERROR || !this->areWeStreamConnected) {
 			return;
 		}
-		this->readDataProcess();
-
-		this->writeDataProcess();
-		/*
 		fd_set readSet{}, writeSet{};
 		std::unique_lock theLock{ this->theMutex };
 		FD_ZERO(&readSet);
@@ -588,13 +584,12 @@ namespace DiscordCoreInternal {
 			return;
 		} else {
 			if (FD_ISSET(this->theSocket, &readSet)) {
-				
+				this->readDataProcess();
 			}
 			if (FD_ISSET(this->theSocket, &writeSet)) {
-				
+				this->writeDataProcess();
 			}
 		}
-		*/
 	}
 
 	void DatagramSocketClient::writeData(std::string& dataToWrite) noexcept {
@@ -641,11 +636,10 @@ namespace DiscordCoreInternal {
 		if (this->outputBuffers.size() > 0) {
 			std::string clientToServerString = this->outputBuffers.front();
 			int32_t writtenBytes = sendto(this->theSocket, clientToServerString.data(), clientToServerString.size(), 0, this->theStreamTargetAddress, sizeof(sockaddr));
-			if (writtenBytes < 0 && WSAGetLastError() != WSAEWOULDBLOCK) {
-				std::cout << "WRITE DISCONNECTED!" << std::endl;
+			if (writtenBytes < 0) {
 				this->disconnect();
 				return;
-			} else if (writtenBytes > 0) {
+			} else {
 				this->outputBuffers.erase(this->outputBuffers.begin());
 			}
 		}
@@ -660,15 +654,11 @@ namespace DiscordCoreInternal {
 		socklen_t intSize = sizeof(this->theStreamTargetAddress);
 #endif
 		int32_t readBytes = recvfrom(this->theSocket, serverToClientBuffer.data(), static_cast<int32_t>(serverToClientBuffer.size()), 0, this->theStreamTargetAddress, &intSize);
-#ifdef _WIN32		
-		if (readBytes < 0 && WSAGetLastError() != WSAEWOULDBLOCK) {
-#else
-		if (readBytes < 0) {		
-#endif
-			std::cout << "READ DISCONNECTED!" << reportError("readDataProcess()") << std::endl;
+		
+		if (readBytes < 0) {
 			this->disconnect();
 			return;
-		} else if (readBytes > 0) {
+		} else {
 			std::string theString{};
 			theString.insert(theString.end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
 			this->inputBuffers.push_back(theString);
