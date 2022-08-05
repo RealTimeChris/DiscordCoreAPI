@@ -561,7 +561,7 @@ namespace DiscordCoreInternal {
 					std::cout << "WRITTEN STREAM BYTES: " << writtenBytes << std::endl;
 				}
 
-				if (auto theResult = bind(this->theSocket, address->ai_addr, sizeof(sockaddr)); theResult != 0) {
+				if (auto theResult = bind(this->theSocket, (sockaddr*) & this->theStreamAddress, sizeof(sockaddr)); theResult != 0) {
 					std::cout << "BIND FAIL 0303: " << reportError("DatagramSocketClient::connect()") << std::endl;
 					return false;
 				} else if (theResult == 0) {
