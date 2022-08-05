@@ -211,7 +211,6 @@ namespace DiscordCoreAPI {
 						case 2: {
 							this->audioSSRC = payload["d"]["ssrc"].get<uint32_t>();
 							this->voiceIp = payload["d"]["ip"].get<std::string>();
-							std::cout << "THE VOICE IP: " << this->voiceIp << std::endl;
 							this->port = std::to_string(payload["d"]["port"].get<int64_t>());
 							for (auto& value: payload["d"]["modes"]) {
 								if (value == "xsalsa20_poly1305") {
@@ -354,7 +353,7 @@ namespace DiscordCoreAPI {
 					this->heartBeatStopWatch.resetTimer();
 				}
 				if (!stopToken.stop_requested() && WebSocketSSLShard::areWeStillConnected()) {
-					WebSocketSSLShard::processIO(10000);
+					DiscordCoreInternal::SSLClient::processIO(10000);
 				}
 				if (!stopToken.stop_requested() && WebSocketSSLShard::areWeStillConnected() && WebSocketSSLShard::inputBuffer.size() > 0) {
 					this->parseMessage(this);
@@ -391,8 +390,6 @@ namespace DiscordCoreAPI {
 				this->streamSocket->processIO(1);
 				this->mixAudio();
 				this->streamSocket->processIO(1);
-			} else {
-				std::this_thread::sleep_for(1ms);
 			}
 		}
 	}
@@ -728,7 +725,7 @@ namespace DiscordCoreAPI {
 					this->connectInternal();
 					return;
 				}
-				WebSocketSSLShard::processIO(200000);
+				DiscordCoreInternal::SSLClient::processIO(200000);
 				if (!this->parseConnectionHeaders(this)) {
 					this->currentReconnectTries++;
 					this->onClosedVoice();
