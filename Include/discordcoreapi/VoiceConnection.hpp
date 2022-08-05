@@ -68,7 +68,7 @@ namespace DiscordCoreAPI {
 		std::vector<uint8_t> theRawData{};
 		uint32_t timeStamp{};
 
-		AreWeInTimeResult areWeInTime(int64_t originalGlobalTimeStampInMs, int64_t currentTimeStampInMs, int32_t originalTimeStamp, int32_t currentTimeStamp);
+		AreWeInTimeResult areWeInTime(int64_t originalGlobalTimeStampInMs, int64_t currentTimeStampInMs, uint32_t originalTimeStamp, uint32_t currentTimeStamp);
 	};
 
 	struct DiscordCoreAPI_Dll VoiceUser {
