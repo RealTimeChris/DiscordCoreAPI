@@ -124,6 +124,18 @@ namespace DiscordCoreInternal {
 	SOCKETWrapper::operator SOCKET() {
 		return *this->thePtr;
 	}
+	
+	sockaddr* sockaddrWrapper::operator->() {
+		return this->thePtr;
+	}
+
+	sockaddrWrapper::operator sockaddr_in*() {
+		return reinterpret_cast<sockaddr_in*>(this->thePtr);
+	}
+
+	sockaddrWrapper::operator sockaddr*() {
+		return this->thePtr;
+	}
 
 	addrinfo* addrinfoWrapper::operator->() {
 		return this->thePtr;
