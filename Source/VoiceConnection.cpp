@@ -85,11 +85,12 @@ namespace DiscordCoreAPI {
 		} else if (((currentTimeStampInMs - originalGlobalTimeStampInMs) / 20) > ((currentTimeStamp - originalTimeStamp) / 960)) {
 			std::cout << "VALUE 01: " << ((currentTimeStampInMs - originalGlobalTimeStampInMs) / 20) << ", VALUE 02: " << ((currentTimeStamp - originalTimeStamp) / 960)
 					  << std::endl;
-			return AreWeInTimeResult::Not_Yet;
+			return AreWeInTimeResult::Already_Happened;
+			
 		} else {
 			std::cout << "VALUE 01: " << ((currentTimeStampInMs - originalGlobalTimeStampInMs) / 20) << ", VALUE 02: " << ((currentTimeStamp - originalTimeStamp) / 960)
 					  << std::endl;
-			return AreWeInTimeResult::Already_Happened;
+			return AreWeInTimeResult::Not_Yet;
 		}
 	}
 
