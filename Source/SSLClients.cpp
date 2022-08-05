@@ -484,11 +484,11 @@ namespace DiscordCoreInternal {
 	bool DatagramSocketClient::connect(const std::string& baseUrlNew, const std::string& portNew) noexcept {
 		std::cout << "ADDRESS: " << baseUrlNew << ", PORT: " << portNew << std::endl;
 		if (this->areWeAStreamClient) {
-			this->theStreamAddress.sin_addr.s_addr = inet_addr(baseUrlNew.c_str());
+			this->theStreamAddress.sin_addr.s_addr = htons(INADDR_ANY);
 			this->theStreamAddress.sin_port = DiscordCoreAPI::reverseByteOrder(static_cast<unsigned short>(stoi(portNew)));
 			this->theStreamAddress.sin_family = AF_INET;
 		} else {
-			this->theStreamAddress.sin_addr.s_addr = inet_addr(baseUrlNew.c_str());
+			this->theStreamAddress.sin_addr.s_addr = htons(INADDR_ANY);
 			this->theStreamAddress.sin_port = DiscordCoreAPI::reverseByteOrder(static_cast<unsigned short>(stoi(portNew)));
 			this->theStreamAddress.sin_family = AF_INET;
 		}
