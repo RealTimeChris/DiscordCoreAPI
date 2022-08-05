@@ -546,7 +546,6 @@ namespace DiscordCoreInternal {
 				int32_t readBytes = recvfrom(this->theSocket, serverToClientBuffer.data(), static_cast<int32_t>(serverToClientBuffer.size()), 0,
 					reinterpret_cast<sockaddr*>(&this->theStreamTargetAddress), &intSize);
 				if (readBytes >= 0) {
-					std::cout << "WERE BREAKING BREAKING BREAKING!" << std::endl;
 					break;
 				}
 			}
@@ -584,18 +583,14 @@ namespace DiscordCoreInternal {
 
 		if (auto returnValue = select(theFinalFd + 1, &readSet, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
 			this->disconnect();
-			std::cout << "DISCONNECTION RETURN!" << std::endl;
 			return;
 		} else if (returnValue == 0) {
-			std::cout << "ZERO SELECT RETURN!" << std::endl;  
 			return;
 		} else {
 			if (FD_ISSET(this->theSocket, &readSet)) {
-				std::cout << "WERE HERE READING!" << std::endl;
 				this->readDataProcess();
 			}
 			if (FD_ISSET(this->theSocket, &writeSet)) {
-				std::cout << "WERE HERE WRITING!" << std::endl;
 				this->writeDataProcess();
 			}
 		}
@@ -650,11 +645,6 @@ namespace DiscordCoreInternal {
 				std::cout << reportError("writeDataProcess()") << std::endl;
 				return;
 			} else {
-				if (this->streamType == DiscordCoreAPI::StreamType::Client) {
-					std::cout << "THE WRITTEN BYTES (REGULAR SOCKET): " << writtenBytes << std::endl;
-				} else {
-					std::cout << "THE WRITTEN BYTES (STREAM SOCKET): " << writtenBytes << std::endl;
-				}
 				this->outputBuffers.erase(this->outputBuffers.begin());
 			}
 		}
@@ -677,11 +667,6 @@ namespace DiscordCoreInternal {
 		} else {
 			std::string theString{};
 			theString.insert(theString.end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
-			if (this->streamType == DiscordCoreAPI::StreamType::Client) {
-				std::cout << "THE READBYTES (STREAM SOCKET): " << readBytes << std::endl;
-			} else {
-				std::cout << "THE READBYTES (REGULAR SOCKET): " << readBytes << std::endl;
-			}
 			this->inputBuffers.push_back(theString);
 			this->bytesRead += readBytes;
 		}
