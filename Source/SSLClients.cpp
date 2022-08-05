@@ -498,7 +498,7 @@ namespace DiscordCoreInternal {
 			static_cast<sockaddr_in*>(this->theStreamTargetAddress)->sin_port = DiscordCoreAPI::reverseByteOrder(static_cast<unsigned short>(stoi(portNew)));
 			static_cast<sockaddr_in*>(this->theStreamTargetAddress)->sin_family = AF_INET;
 		} else {
-			static_cast<sockaddr_in*>(this->theStreamTargetAddress)->sin_addr.s_addr = htonl(INADDR_ANY);
+			static_cast<sockaddr_in*>(this->theStreamTargetAddress)->sin_addr.s_addr = inet_addr(baseUrlNew.c_str());
 			static_cast<sockaddr_in*>(this->theStreamTargetAddress)->sin_port = DiscordCoreAPI::reverseByteOrder(static_cast<unsigned short>(stoi(portNew)));
 			static_cast<sockaddr_in*>(this->theStreamTargetAddress)->sin_family = AF_INET;
 		}
@@ -546,6 +546,7 @@ namespace DiscordCoreInternal {
 				int32_t readBytes = recvfrom(this->theSocket, serverToClientBuffer.data(), static_cast<int32_t>(serverToClientBuffer.size()), 0,
 					reinterpret_cast<sockaddr*>(&this->theStreamTargetAddress), &intSize);
 				if (readBytes >= 0) {
+					std::cout << "WERE BREAKING BREAKING BREAKING!" << std::endl;
 					break;
 				}
 			}
