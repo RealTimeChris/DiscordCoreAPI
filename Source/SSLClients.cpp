@@ -532,15 +532,8 @@ namespace DiscordCoreInternal {
 			this->theStreamAddress.sin_port = DiscordCoreAPI::reverseByteOrder(static_cast<unsigned short>(stoi(portNew)));
 			this->theStreamAddress.sin_family = AF_INET;
 		} else {
+
 			
-			/*
-			if (auto theResult = ::connect(this->theSocket, address->ai_addr, static_cast<int32_t>(address->ai_addrlen)); theResult != 0) {
-				std::cout << "BIND FAIL 0202!" << std::endl;
-				return false;
-			} else if (theResult == 0) {
-				std::cout << "WE'RE CONNECTED!" << std::endl;
-			}
-			*/
 
 
 			DiscordCoreAPI::StopWatch theStopWatch{ 300s };
@@ -557,7 +550,12 @@ namespace DiscordCoreInternal {
 					}
 					
 					*/
-
+					if (auto theResult = ::connect(this->theSocket, address->ai_addr, static_cast<int32_t>(address->ai_addrlen)); theResult != 0) {
+						std::cout << "BIND FAIL 0202!" << std::endl;
+						return false;
+					} else if (theResult == 0) {
+						std::cout << "WE'RE CONNECTED!" << std::endl;
+					}
 					#ifdef _WIN32
 					int32_t intSize = sizeof(this->theStreamAddress);
 #else
