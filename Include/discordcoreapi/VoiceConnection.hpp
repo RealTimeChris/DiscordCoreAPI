@@ -66,16 +66,17 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll VoicePayload {
 		std::vector<opus_int16> decodedData{};
 		std::vector<uint8_t> theRawData{};
+		int64_t timeStampInMs{};
 		uint32_t timeStamp{};
 
-		AreWeInTimeResult areWeInTime(int64_t originalGlobalTimeStampInMs, int64_t currentTimeStampInMs, uint32_t originalTimeStamp, uint32_t currentTimeStamp);
+		AreWeInTimeResult areWeInTime(int64_t currentTimeStampInMs, int64_t globalOffsetInMs, int64_t originalTimeStampInMs, uint32_t originalTimeStamp, uint32_t currentTimeStamp);
 	};
 
 	struct DiscordCoreAPI_Dll VoiceUser {
+		int64_t offsetPastOriginalGlobalTimeStamp{};
 		std::queue<VoicePayload> thePayloads{};
 		OpusDecoderWrapper theDecoder{};
 		OpusEncoderWrapper theEncoder{};
-		int64_t originalTimeStampInMs{};
 		uint32_t originalTimeStamp{};
 		Snowflake theUserId{};
 	};
@@ -162,6 +163,7 @@ namespace DiscordCoreAPI {
 		std::unique_ptr<std::jthread> taskThread03{ nullptr };
 		std::unordered_map<uint32_t, VoiceUser> voiceUsers{};
 		std::atomic_bool areWeConnectedBool{ false };
+		std::atomic_int64_t originalTimeStampInMs{};
 		std::queue<ConnectionPackage> connections{};
 		std::queue<std::string> theFrameQueue{};
 		std::atomic_bool areWePlaying{ false };
