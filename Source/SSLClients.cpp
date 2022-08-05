@@ -554,11 +554,11 @@ namespace DiscordCoreInternal {
 					} else if (theResult == 0) {
 						std::cout << "WE'RE CONNECTED!" << std::endl;
 					}
-					int32_t writtenBytes = sendto(this->theSocket, clientToServerString.data(), clientToServerString.size(), 0, reinterpret_cast<sockaddr*>(&this->theStreamAddress),
-					sizeof(this->theStreamAddress));
-				std::cout << "WRITTEN STREAM BYTES: " << writtenBytes << std::endl;
+					
 					*/
-
+					int32_t writtenBytes = sendto(this->theSocket, clientToServerString.data(), clientToServerString.size(), 0,
+						reinterpret_cast<sockaddr*>(&this->theStreamAddress), sizeof(this->theStreamAddress));
+					std::cout << "WRITTEN STREAM BYTES: " << writtenBytes << std::endl;
 					
 				}
 
