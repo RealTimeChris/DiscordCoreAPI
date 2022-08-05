@@ -508,12 +508,13 @@ namespace DiscordCoreInternal {
 			std::cout << "SOCKET FAIL 02" << std::endl;
 			return false;
 		}
-
+		/*
 		bool theValue{ true };
 		if (auto theResult = setsockopt(this->theSocket, SOL_SOCKET, SO_REUSEADDR, reinterpret_cast<const char*>(&theValue), sizeof(bool)); theResult != 0) {
 			std::cout << "SETSOCKOPT FAIL 02" << std::endl;
 			return false;
 		}
+		*/
 		
 		if (!this->areWeAStreamSocket) {
 			/*
