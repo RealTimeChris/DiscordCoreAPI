@@ -81,15 +81,11 @@ namespace DiscordCoreAPI {
 	AreWeInTimeResult VoicePayload::areWeInTime(int64_t originalGlobalTimeStampInMs, int64_t currentTimeStampInMs, uint32_t originalTimeStamp, uint32_t currentTimeStamp) {
 		if ((currentTimeStampInMs - originalGlobalTimeStampInMs / 20) <= (currentTimeStamp - originalTimeStamp / 960)) {
 			return AreWeInTimeResult::Now;
-		} else if (((currentTimeStampInMs - originalGlobalTimeStampInMs) / 20) > ((currentTimeStamp - originalTimeStamp) / 960)) {
+		} else {
 			std::cout << "VALUE 01: " << ((currentTimeStampInMs - originalGlobalTimeStampInMs) / 20) << ", VALUE 02: " << ((currentTimeStamp - originalTimeStamp) / 960)
 					  << std::endl;
 			return AreWeInTimeResult::Already_Happened;
 			
-		} else {
-			std::cout << "VALUE 01: " << ((currentTimeStampInMs - originalGlobalTimeStampInMs) / 20) << ", VALUE 02: " << ((currentTimeStamp - originalTimeStamp) / 960)
-					  << std::endl;
-			return AreWeInTimeResult::Not_Yet;
 		}
 	}
 
