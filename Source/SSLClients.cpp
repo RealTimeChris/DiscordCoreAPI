@@ -567,9 +567,9 @@ namespace DiscordCoreInternal {
 			return;
 		}
 		std::cout << "WERE HERE 0101" << std::endl;
-		this->readDataProcess();
-		std::cout << "WERE HERE 0202" << std::endl;
 		this->writeDataProcess();
+		std::cout << "WERE HERE 0202" << std::endl;
+		this->readDataProcess();
 		std::cout << "WERE HERE 0303" << std::endl;
 		/*
 		fd_set readSet{}, writeSet{};
@@ -603,6 +603,7 @@ namespace DiscordCoreInternal {
 		if (dataToWrite.size() > static_cast<size_t>(16 * 1024)) {
 			size_t remainingBytes{ dataToWrite.size() };
 			std::unique_lock theLock{ this->theMutex };
+			std::cout << "THE WRITTEN BYTES: " << dataToWrite << std::endl;
 			while (remainingBytes > 0) {
 				std::string newString{};
 				size_t amountToCollect{};
