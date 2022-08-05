@@ -320,6 +320,7 @@ namespace DiscordCoreAPI {
 				if (sampleCount <= 0) {
 					std::cout << "Failed to decode user's voice payload." << std::endl;
 				}
+				thePayload.decodedData.resize(sampleCount * 2);
 			}
 			theUser->theSendPayloads.send(thePayload);
 		}
@@ -1009,23 +1010,23 @@ namespace DiscordCoreAPI {
 					theUpsampledVector[x] += static_cast<opus_int32>(thePayload.decodedData[x]);
 				}
 			}
-			
-			std::vector<opus_int16> theDownsampledVector{};
-			theDownsampledVector.resize(theUpsampledVector.size() * 2);
-			for (int32_t x = 0; x < theUpsampledVector.size(); x++) {
-				theDownsampledVector[x] = static_cast<opus_int16>(theUpsampledVector[x] / voiceUserCount);
+			if (theUpsampledVector.size() > 0) {
+				std::vector<opus_int16> theDownsampledVector{};
+				theDownsampledVector.resize(theUpsampledVector.size() * 2);
+				for (int32_t x = 0; x < theUpsampledVector.size(); x++) {
+					theDownsampledVector[x] = static_cast<opus_int16>(theUpsampledVector[x] / voiceUserCount);
+				}
+				std::vector<char> theEncodedData{};
+				theEncodedData.resize(1276);
+				auto byteCount = opus_encode(this->theEncoder, theDownsampledVector.data(), 960, reinterpret_cast<uint8_t*>(theEncodedData.data()), 1276);
+				if (byteCount <= 0) {
+					std::cout << "Failed to encode user's voice payload." << std::endl;
+				} else {
+					std::string theFinalString{};
+					theFinalString.insert(theFinalString.begin(), theEncodedData.begin(), theEncodedData.begin() + byteCount);
+					this->streamSocket->writeData(theFinalString);
+				}
 			}
-			std::vector<char> theEncodedData{};
-			theEncodedData.resize(1276);
-			auto byteCount = opus_encode(this->theEncoder, theDownsampledVector.data(), 960, reinterpret_cast<uint8_t*>(theEncodedData.data()), 1276);
-			if (byteCount <= 0) {
-				std::cout << "Failed to encode user's voice payload." << std::endl;
-			} else {
-				std::string theFinalString{};
-				theFinalString.insert(theFinalString.begin(), theEncodedData.begin(), theEncodedData.begin() + byteCount);
-				this->streamSocket->writeData(theFinalString);
-			}
-			
 		}
 	}
 
