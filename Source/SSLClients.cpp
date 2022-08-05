@@ -508,18 +508,15 @@ namespace DiscordCoreInternal {
 		hints->ai_socktype = SOCK_DGRAM;
 		hints->ai_protocol = IPPROTO_UDP;
 		if (getaddrinfo(baseUrlNew.c_str(), portNew.c_str(), hints, address)) {
-			std::cout << reportError("getaddrinfo()") << std::endl;
 			return false;
 		}
 
 		if (this->theSocket = socket(address->ai_family, address->ai_socktype, address->ai_protocol); this->theSocket == SOCKET_ERROR) {
-			std::cout << reportError("socket()") << std::endl;
 			return false;
 		}
 
 		if (this->streamType == DiscordCoreAPI::StreamType::None || this->streamType == DiscordCoreAPI::StreamType::Client) {
 			if (::connect(this->theSocket, address->ai_addr, static_cast<int32_t>(address->ai_addrlen))) {
-				std::cout << reportError("connect()") << std::endl;
 				return false;
 			}
 		} else {
@@ -529,7 +526,6 @@ namespace DiscordCoreInternal {
 				clientToServerString = "test string";
 
 				if (auto theResult = bind(this->theSocket, this->theStreamTargetAddress, sizeof(sockaddr)); theResult != 0) {
-					std::cout << reportError("bind()") << std::endl;
 					return false;
 				}
 
@@ -642,7 +638,6 @@ namespace DiscordCoreInternal {
 			int32_t writtenBytes = sendto(this->theSocket, clientToServerString.data(), clientToServerString.size(), 0, this->theStreamTargetAddress, sizeof(sockaddr));
 			if (writtenBytes < 0) {
 				this->disconnect();
-				std::cout << reportError("writeDataProcess()") << std::endl;
 				return;
 			} else {
 				this->outputBuffers.erase(this->outputBuffers.begin());
@@ -661,7 +656,6 @@ namespace DiscordCoreInternal {
 		int32_t readBytes = recvfrom(this->theSocket, serverToClientBuffer.data(), static_cast<int32_t>(serverToClientBuffer.size()), 0, this->theStreamTargetAddress, &intSize);
 		
 		if (readBytes < 0) {
-			std::cout << reportError("readDataProcess()") << std::endl;
 			this->disconnect();
 			return;
 		} else {
