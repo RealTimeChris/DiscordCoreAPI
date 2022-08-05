@@ -180,7 +180,6 @@ namespace DiscordCoreAPI {
 		if (DatagramSocketClient::areWeStillConnected()) {
 			DatagramSocketClient::writeData(audioDataPacketNew);
 		} else {
-			std::cout << "WERE LEAVING 0202" << std::endl;
 			this->onClosedVoice();
 		}
 	}
@@ -292,7 +291,6 @@ namespace DiscordCoreAPI {
 					std::string theData = responseData;
 					DatagramSocketClient::writeData(theData);
 				} else {
-					std::cout << "WERE LEAVING 0303" << std::endl;
 					this->onClosedVoice();
 				}
 			}
@@ -384,9 +382,7 @@ namespace DiscordCoreAPI {
 				do {
 					theString = DatagramSocketClient::getInputBuffer();
 					if (theString.size() > 0) {
-						//std::cout << "THE STRING SIZE: " << theString.size() << std::endl;
 						this->theFrameQueue.push(theString);
-						//std::cout << "THE FRAME COUNT: " << this->theFrameQueue.size() << std::endl;
 					}
 				} while (theString.size() > 0);
 				this->streamSocket->processIO(1);
@@ -569,7 +565,6 @@ namespace DiscordCoreAPI {
 	void VoiceConnection::parseIncomingVoiceData() noexcept {
 		while (this->theFrameQueue.size() > 0) {
 			auto theBuffer = this->theFrameQueue.front();
-			//std::cout << "THE FRAME QUEUE SIZE: " << this->theFrameQueue.size() << std::endl;
 			this->theFrameQueue.pop();
 			if (theBuffer.size() > 0 && this->secretKeySend.size() > 0) {
 				std::vector<uint8_t> packet{};
@@ -628,7 +623,6 @@ namespace DiscordCoreAPI {
 		}
 
 		auto theBuffer = this->streamSocket->getInputBuffer();
-		//std::cout << "THE BUFFER SIZE: " << theBuffer.size() << std::endl;
 
 		AudioFrameData theFrame{};
 		theFrame.encodedFrameData.data.insert(theFrame.encodedFrameData.data.begin(), theBuffer.begin(), theBuffer.end());
@@ -888,7 +882,6 @@ namespace DiscordCoreAPI {
 		try {
 			if (!DatagramSocketClient::areWeStillConnected()) {
 				if (!DatagramSocketClient::connect(this->voiceIp, this->port)) {
-					std::cout << "WERE LEAVING 0505" << std::endl;
 					return false;
 				} else {
 					std::string packet{};
@@ -913,7 +906,6 @@ namespace DiscordCoreAPI {
 						inputString.insert(inputString.end(), theNewString.begin(), theNewString.end());
 						std::this_thread::sleep_for(1ms);
 						if (theStopWatch.hasTimePassed()) {
-							std::cout << "WERE LEAVING 0505 0101" << std::endl;
 							return false;
 						}
 					}
