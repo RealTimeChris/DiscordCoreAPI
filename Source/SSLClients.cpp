@@ -642,7 +642,12 @@ namespace DiscordCoreInternal {
 	void DatagramSocketClient::writeDataProcess() noexcept {
 		if (this->outputBuffers.size() > 0) {
 			std::string clientToServerString = this->outputBuffers.front();
-			int32_t writtenBytes = sendto(this->theSocket, clientToServerString.data(), clientToServerString.size(), 0, this->theStreamTargetAddress, sizeof(sockaddr));
+			int32_t writtenBytes{}; 
+			if (this->streamType == DiscordCoreAPI::StreamType::None || this->streamType == DiscordCoreAPI::StreamType::Client) {
+				writtenBytes = send(this->theSocket, clientToServerString.data(), clientToServerString.size(), 0);
+			} else {
+				writtenBytes = sendto(this->theSocket, clientToServerString.data(), clientToServerString.size(), 0, this->theStreamTargetAddress, sizeof(sockaddr));
+			}
 #ifdef _WIN32
 			if (writtenBytes <= 0 && WSAGetLastError() != WSAEWOULDBLOCK) {
 #else
@@ -665,7 +670,13 @@ namespace DiscordCoreInternal {
 #else
 		socklen_t intSize = sizeof(this->theStreamTargetAddress);
 #endif
-		int32_t readBytes = recvfrom(this->theSocket, serverToClientBuffer.data(), static_cast<int32_t>(serverToClientBuffer.size()), 0, this->theStreamTargetAddress, &intSize);
+		int32_t readBytes{};
+		if (this->streamType == DiscordCoreAPI::StreamType::None || this->streamType == DiscordCoreAPI::StreamType::Client) {
+			readBytes = recv(this->theSocket, serverToClientBuffer.data(), serverToClientBuffer.size(), 0);
+		} else {
+			int32_t readBytes =
+				recvfrom(this->theSocket, serverToClientBuffer.data(), static_cast<int32_t>(serverToClientBuffer.size()), 0, this->theStreamTargetAddress, &intSize);
+		}
 
 #ifdef _WIN32
 		if (readBytes <= 0 && WSAGetLastError() != WSAEWOULDBLOCK) {
