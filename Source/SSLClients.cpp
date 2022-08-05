@@ -561,12 +561,20 @@ namespace DiscordCoreInternal {
 					std::cout << "WRITTEN STREAM BYTES: " << writtenBytes << std::endl;
 				}
 
-				if (auto theResult = bind(this->theSocket, (sockaddr*) & this->theStreamAddress, sizeof(sockaddr)); theResult != 0) {
-					std::cout << "BIND FAIL 0303: " << reportError("DatagramSocketClient::connect()") << std::endl;
-					return false;
-				} else if (theResult == 0) {
-					std::cout << "WE'RE BOUND!" << std::endl;
+				if (!this->areWeAStreamClient) {
+					if (auto theResult = bind(this->theSocket, ( sockaddr* )&this->theStreamAddress, sizeof(sockaddr)); theResult != 0) {
+						std::cout << "BIND FAIL 0303: " << reportError("DatagramSocketClient::connect()") << std::endl;
+						return false;
+					} else if (theResult == 0) {
+						std::cout << "WE'RE BOUND!" << std::endl;
+					}
+				} else {
+					if (::connect(this->theSocket, address->ai_addr, static_cast<int32_t>(address->ai_addrlen)) == SOCKET_ERROR) {
+						return false;
+					}
 				}
+
+				
 #ifdef _WIN32
 				int32_t intSize = sizeof(this->theStreamAddress);
 #else
