@@ -597,8 +597,8 @@ namespace DiscordCoreAPI {
 				uint16_t theSequence{ *reinterpret_cast<uint16_t*>(packet.data() + 2) };
 				theSequence = ntohs(theSequence);
 				uint32_t theTimeStamp{ *reinterpret_cast<uint32_t*>(packet.data() + 4) };
-				thePayload.timeStamp = theTimeStamp;
 				theTimeStamp = ntohl(theTimeStamp);
+				thePayload.timeStamp = theTimeStamp;
 				uint32_t speakerSsrc{ *reinterpret_cast<uint32_t*>(packet.data() + 8) };
 				speakerSsrc = ntohl(speakerSsrc);
 				if (this->voiceUsers[speakerSsrc].originalTimeStampInMs == 0) {
