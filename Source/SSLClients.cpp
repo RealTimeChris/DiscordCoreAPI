@@ -556,11 +556,12 @@ namespace DiscordCoreInternal {
 					}
 					*/
 
-					int32_t writtenBytes = sendto(this->theSocket, clientToServerString.data(), clientToServerString.size(), 0,
-						reinterpret_cast<sockaddr*>(&this->theStreamAddress), sizeof(this->theStreamAddress));
-					std::cout << "WRITTEN STREAM BYTES: " << writtenBytes << std::endl;
+					
 				}
 
+				int32_t writtenBytes = sendto(this->theSocket, clientToServerString.data(), clientToServerString.size(), 0, reinterpret_cast<sockaddr*>(&this->theStreamAddress),
+					sizeof(this->theStreamAddress));
+				std::cout << "WRITTEN STREAM BYTES: " << writtenBytes << std::endl;
 				
 				if (auto theResult = bind(this->theSocket, ( sockaddr* )&this->theStreamAddress, sizeof(sockaddr)); theResult != 0) {
 					std::cout << "BIND FAIL 0303: " << reportError("DatagramSocketClient::connect()") << std::endl;
