@@ -78,6 +78,14 @@ namespace DiscordCoreAPI {
 		return this->thePtr.get();
 	}
 
+	AreWeInTimeResult VoicePayload::areWeInTime(int32_t originalGlobalTimeStampInMs, int32_t currentTimeStampInMs, int32_t originalTimeStamp, int32_t currentTimeStamp) {
+		if (currentTimeStampInMs - originalGlobalTimeStampInMs / 20 == currentTimeStamp - originalTimeStamp / 960) {
+			return AreWeInTimeResult::Now;
+		} else if (currentTimeStampInMs - originalGlobalTimeStampInMs / 20 > currentTimeStamp - originalTimeStamp / 960) {
+			return false;
+		}
+	}
+
 	RTPPacket::RTPPacket(uint32_t timestampNew, uint16_t sequenceNew, uint32_t ssrcNew, const std::vector<uint8_t>& audioDataNew, const std::string& theKeysNew) {
 		this->audioData = audioDataNew;
 		this->timestamp = timestampNew;
@@ -145,11 +153,12 @@ namespace DiscordCoreAPI {
 	std::string VoiceConnection::encryptSingleAudioFrame(const EncodedFrameData& bufferToSend) noexcept {
 		if (this->secretKeySend.size() > 0) {
 			this->sequenceIndex++;
-			this->timeStamp += bufferToSend.sampleCount;
-			if (this->timeStamp > INT16_MAX && this->sequenceIndex < 100) {
-				this->timeStamp = 0;
+			auto theValue = this->timeStamp.load();
+			this->timeStamp.store(theValue + bufferToSend.sampleCount);
+			if (this->timeStamp.load() > INT16_MAX && this->sequenceIndex < 100) {
+				this->timeStamp.store(0);
 			}
-			return RTPPacket{ this->timeStamp, this->sequenceIndex, this->audioSSRC, bufferToSend.data, this->secretKeySend };
+			return RTPPacket{ this->timeStamp.load(), this->sequenceIndex, this->audioSSRC, bufferToSend.data, this->secretKeySend };
 		}
 		return {};
 	}
