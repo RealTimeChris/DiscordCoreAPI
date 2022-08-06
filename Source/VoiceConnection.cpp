@@ -995,8 +995,8 @@ namespace DiscordCoreAPI {
 					theLock.unlock();
 					std::cout << "DIFFERENCE IN TIMESTAMPS IN MS: " << ((thePayload.currentTimeStampInMs - value.firstTimeStampInMs)) << std::endl;
 					std::cout << "THE REAL DIFFERENCE: " << (thePayload.currentTimeStamp - value.firstTimeStamp) / 48 << std::endl;
-					if ((thePayload.currentTimeStamp - value.firstTimeStamp) / 48 <= (((thePayload.currentTimeStampInMs - value.firstTimeStampInMs) + 40) * 48) &&
-						(thePayload.currentTimeStamp - value.firstTimeStamp) / 48 >= ((thePayload.currentTimeStampInMs - value.firstTimeStampInMs) - 40) * 48) {
+					if ((thePayload.currentTimeStamp - value.firstTimeStamp) / 48 <= (((thePayload.currentTimeStampInMs - value.firstTimeStampInMs) + 100)) &&
+						(thePayload.currentTimeStamp - value.firstTimeStamp) / 48 >= ((thePayload.currentTimeStampInMs - value.firstTimeStampInMs) - 100)) {
 						if (value.thePayloads.size() > 0) {
 							value.thePayloads.pop();
 						}
