@@ -479,6 +479,7 @@ namespace DiscordCoreAPI {
 					this->audioData.rawFrameData.data.clear();
 
 					while (!stopToken.stop_requested() && this->activeState.load() == VoiceActiveState::Playing) {
+						this->currentTimeStampInMs = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 						this->audioDataBuffer.tryReceive(this->audioData);
 						if (!this->streamSocket) {
 							while (this->theFrameQueue.size() > 0) {
@@ -996,20 +997,33 @@ namespace DiscordCoreAPI {
 				if (value.thePayloads.size() > 0) {
 					std::unique_lock theLock{ DatagramSocketClient::theMutex };
 					VoicePayload thePayload = value.thePayloads.front();
-					if (value.thePayloads.size() > 0) {
-						value.thePayloads.pop();
-					}
+					
 					theLock.unlock();
-					thePayload.decodedData.resize(23040);
-					sampleCount = opus_decode(value.theDecoder, thePayload.theRawData.data(), thePayload.theRawData.size(), thePayload.decodedData.data(), 5760, 0);
-					if (sampleCount <= 0) {
-						std::cout << "Failed to decode user's voice payload." << std::endl;
-					} else {
-						voiceUserCount++;
-						theUpsampledVector.resize(sampleCount * 2);
-						for (uint32_t x = 0; x < sampleCount * 2; x++) {
-							theUpsampledVector[x] += static_cast<opus_int32>(thePayload.decodedData[x]);
+					std::cout << "DIFFERENCE IN TIMESTAMPS IN MS: " << value.currentTimeStampInMs - value.lastTimeStampInMs << std::endl;
+					std::cout << "THE REAL DIFFERENCE: " << static_cast<int32_t>(value.currentTimeStamp - value.lastTimeStamp / 48) + 20 << std::endl;
+					if (value.currentTimeStampInMs - value.lastTimeStampInMs >= 0 &&
+						value.currentTimeStampInMs - value.lastTimeStampInMs <= (value.currentTimeStamp - value.lastTimeStamp / 48) + 20) {
+						if (value.thePayloads.size() > 0) {
+							value.thePayloads.pop();
 						}
+						
+						thePayload.decodedData.resize(23040);
+						sampleCount = opus_decode(value.theDecoder, thePayload.theRawData.data(), thePayload.theRawData.size(), thePayload.decodedData.data(), 5760, 0);
+						if (sampleCount <= 0) {
+							std::cout << "Failed to decode user's voice payload." << std::endl;
+						} else {
+							voiceUserCount++;
+							theUpsampledVector.resize(sampleCount * 2);
+							for (uint32_t x = 0; x < sampleCount * 2; x++) {
+								theUpsampledVector[x] += static_cast<opus_int32>(thePayload.decodedData[x]);
+							}
+						}
+					} else if (value.currentTimeStampInMs - value.lastTimeStampInMs > 20) {
+						if (value.thePayloads.size() > 0) {
+							value.thePayloads.pop();
+						}
+					} else {
+						continue;
 					}
 				}
 			}

@@ -64,7 +64,7 @@ namespace DiscordCoreAPI {
 	struct VoicePayload {
 		std::vector<opus_int16> decodedData{};
 		std::vector<uint8_t> theRawData{};
-		int32_t timeStamp{};
+		uint32_t timeStamp{};
 	};
 
 	struct VoiceUser {
@@ -74,8 +74,8 @@ namespace DiscordCoreAPI {
 		int64_t currentTimeStampInMs{};
 		int64_t firstTimeStampInMs{};
 		int64_t lastTimeStampInMs{};
-		int32_t currentTimeStamp{};
-		int32_t lastTimeStamp{};
+		uint32_t currentTimeStamp{};
+		uint32_t lastTimeStamp{};
 		Snowflake theUserId{};
 	};
 
@@ -169,7 +169,9 @@ namespace DiscordCoreAPI {
 		std::string audioEncryptionMode{};
 		Snowflake currentGuildMemberId{};
 		OpusEncoderWrapper theEncoder{};
+		int64_t currentTimeStampInMs{};
 		int64_t heartbeatInterval{ 0 };
+		int64_t lastTimeStampInMs{};
 		std::mutex voiceUserMutex{};
 		std::string secretKeySend{};
 		uint16_t sequenceIndex{ 0 };
