@@ -638,8 +638,9 @@ namespace DiscordCoreInternal {
 	}
 
 	void DatagramSocketClient::writeDataProcess() noexcept {
-		if (this->outputBuffers.size() > 0) {
+		if (this->outputBuffers.size() > 0 && this->areWeStreamConnected) {
 			std::string clientToServerString = this->outputBuffers.front();
+			std::cout << "ABOUT TO WRITE BYTES: " << std::endl;
 			int32_t writtenBytes = sendto(this->theSocket, clientToServerString.data(), clientToServerString.size(), 0, this->theStreamTargetAddress, sizeof(sockaddr));
 			if (writtenBytes < 0) {
 				this->disconnect();
@@ -654,26 +655,30 @@ namespace DiscordCoreInternal {
 	}
 
 	void DatagramSocketClient::readDataProcess() noexcept {
-		std::string serverToClientBuffer{};
-		serverToClientBuffer.resize(this->maxBufferSize);
+		if (this->areWeStreamConnected) {
+			std::string serverToClientBuffer{};
+			serverToClientBuffer.resize(this->maxBufferSize);
 #ifdef _WIN32
-		int32_t intSize = sizeof(this->theStreamTargetAddress);
+			int32_t intSize = sizeof(this->theStreamTargetAddress);
 #else
-		socklen_t intSize = sizeof(this->theStreamTargetAddress);
+			socklen_t intSize = sizeof(this->theStreamTargetAddress);
 #endif
-		int32_t readBytes = recvfrom(this->theSocket, serverToClientBuffer.data(), static_cast<int32_t>(serverToClientBuffer.size()), 0, this->theStreamTargetAddress, &intSize);
-		
-		if (readBytes < 0) {
-			this->disconnect();
-			return;
-		} else {
-			if (this->streamType != DiscordCoreAPI::StreamType::None) {
-				std::cout << "READ BYTES: " << readBytes << std::endl;
+			std::cout << "ABOUT TO READ BYTES: " << std::endl;
+			int32_t readBytes =
+				recvfrom(this->theSocket, serverToClientBuffer.data(), static_cast<int32_t>(serverToClientBuffer.size()), 0, this->theStreamTargetAddress, &intSize);
+
+			if (readBytes < 0) {
+				this->disconnect();
+				return;
+			} else {
+				if (this->streamType != DiscordCoreAPI::StreamType::None) {
+					std::cout << "READ BYTES: " << readBytes << std::endl;
+				}
+				std::string theString{};
+				theString.insert(theString.end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
+				this->inputBuffers.push_back(theString);
+				this->bytesRead += readBytes;
 			}
-			std::string theString{};
-			theString.insert(theString.end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
-			this->inputBuffers.push_back(theString);
-			this->bytesRead += readBytes;
 		}
 	}
 
