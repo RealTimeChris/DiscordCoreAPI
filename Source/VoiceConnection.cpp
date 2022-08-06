@@ -391,11 +391,12 @@ namespace DiscordCoreAPI {
 				std::cout << "TOTAL TIME PASSED: " << theStopWatch.totalTimePassed() << std::endl;
 				this->lastTimeStampInMs.store(this->currentTimeStampInMs.load());
 				this->currentTimeStampInMs.store(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
+				std::cout << "TOTAL TIME PASSED: " << this->currentTimeStampInMs.load() - this->lastTimeStampInMs.load() << std::endl;
 				this->parseIncomingVoiceData();
-				this->streamSocket->processIO(0);				
+				this->streamSocket->processIO(0);
 				this->mixAudio();
 				this->streamSocket->processIO(0);
-				//std::this_thread::sleep_for(1ms);
+				std::this_thread::sleep_for(1ms);
 			}
 		}
 	}
@@ -589,15 +590,11 @@ namespace DiscordCoreAPI {
 				theTimeStamp = ntohl(theTimeStamp);
 				uint32_t speakerSsrc{ *reinterpret_cast<uint32_t*>(packet.data() + 8) };
 				speakerSsrc = ntohl(speakerSsrc);
-				thePayload.lastTimeStamp = this->lastTimeStampInMs.load();
-				this->voiceUsers[speakerSsrc].lastTimeStampInMs = this->currentTimeStampInMs;
+				thePayload.lastTimeStamp = this->voiceUsers[speakerSsrc].currentTimeStamp;
+				thePayload.lastTimeStampInMs = this->lastTimeStampInMs.load();
 				thePayload.currentTimeStamp = theTimeStamp;
 				thePayload.currentTimeStampInMs = this->currentTimeStampInMs.load();
 				this->voiceUsers[speakerSsrc].currentTimeStamp = theTimeStamp;
-				if (this->voiceUsers[speakerSsrc].firstTimeStampInMs == 0) {
-					this->voiceUsers[speakerSsrc].firstTimeStampInMs = this->currentTimeStampInMs.load();
-					this->voiceUsers[speakerSsrc].firstTimeStamp = theTimeStamp;
-				}
 
 				std::vector<uint8_t> nonce{};
 				nonce.resize(24);
@@ -995,10 +992,10 @@ namespace DiscordCoreAPI {
 					VoicePayload thePayload = value.thePayloads.front();
 
 					theLock.unlock();
-					std::cout << "DIFFERENCE IN TIMESTAMPS IN MS: " << ((thePayload.currentTimeStampInMs - value.lastTimeStampInMs)) << std::endl;
-					std::cout << "THE REAL DIFFERENCE: " << (thePayload.currentTimeStamp - value.firstTimeStamp) / 48 << std::endl;
-					if ((thePayload.currentTimeStamp - thePayload.lastTimeStamp) / 48 <= (((thePayload.currentTimeStampInMs - value.lastTimeStampInMs)) + 40) &&
-						(thePayload.currentTimeStamp - value.firstTimeStamp) / 48 >= ((thePayload.currentTimeStampInMs - value.lastTimeStampInMs)) - 20) {
+					std::cout << "DIFFERENCE IN TIMESTAMPS IN MS: " << ((thePayload.currentTimeStampInMs - thePayload.lastTimeStampInMs)) << std::endl;
+					std::cout << "THE REAL DIFFERENCE: " << (thePayload.currentTimeStamp - thePayload.lastTimeStamp) / 48 << std::endl;
+					if ((thePayload.currentTimeStamp - thePayload.lastTimeStamp) / 48 <= (((thePayload.currentTimeStampInMs - thePayload.lastTimeStampInMs)) + 40) &&
+						(thePayload.currentTimeStamp - thePayload.lastTimeStamp) / 48 >= ((thePayload.currentTimeStampInMs - thePayload.lastTimeStampInMs)) - 20) {
 						if (value.thePayloads.size() > 0) {
 							value.thePayloads.pop();
 						}
