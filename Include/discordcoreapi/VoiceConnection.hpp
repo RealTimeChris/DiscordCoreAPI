@@ -160,6 +160,7 @@ namespace DiscordCoreAPI {
 		std::unordered_map<uint32_t, VoiceUser> voiceUsers{};
 		std::atomic_bool areWeConnectedBool{ false };
 		std::queue<ConnectionPackage> connections{};
+		std::atomic_int64_t currentTimeStampInMs{};
 		std::queue<std::string> theFrameQueue{};
 		std::atomic_bool areWePlaying{ false };
 		const int64_t maxReconnectTries{ 10 };
@@ -167,7 +168,6 @@ namespace DiscordCoreAPI {
 		std::string audioEncryptionMode{};
 		Snowflake currentGuildMemberId{};
 		OpusEncoderWrapper theEncoder{};
-		int64_t currentTimeStampInMs{};
 		int64_t heartbeatInterval{ 0 };
 		int64_t lastTimeStampInMs{};
 		std::mutex voiceUserMutex{};
