@@ -386,10 +386,10 @@ namespace DiscordCoreAPI {
 						this->theFrameQueue.push(theString);
 					}
 				} while (theString.size() > 0);
-				theStopWatch.resetTimer();
-				this->currentTimeStampInMs = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+				theStopWatch.resetTimer();				
 				this->streamSocket->processIO(0);
 				std::cout << "TOTAL TIME PASSED: " << theStopWatch.totalTimePassed() << std::endl;
+				this->currentTimeStampInMs = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 				this->parseIncomingVoiceData();
 				this->streamSocket->processIO(0);				
 				this->mixAudio();
@@ -582,7 +582,6 @@ namespace DiscordCoreAPI {
 				if (uint8_t payload_type = packet[1] & 0b0111'1111; 72 <= payload_type && payload_type <= 76) {
 					return;
 				}
-				this->currentTimeStampInMs = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 				VoicePayload thePayload{};
 				uint16_t theSequence{ *reinterpret_cast<uint16_t*>(packet.data() + 2) };
 				theSequence = ntohs(theSequence);
@@ -996,8 +995,8 @@ namespace DiscordCoreAPI {
 					theLock.unlock();
 					std::cout << "DIFFERENCE IN TIMESTAMPS IN MS: " << ((thePayload.currentTimeStampInMs - value.firstTimeStampInMs)) << std::endl;
 					std::cout << "THE REAL DIFFERENCE: " << (thePayload.currentTimeStamp - value.firstTimeStamp) / 48 << std::endl;
-					if ((thePayload.currentTimeStamp - value.firstTimeStamp) / 48 <= ((thePayload.currentTimeStampInMs - value.firstTimeStampInMs) + 20) &&
-						(thePayload.currentTimeStamp - value.firstTimeStamp) / 48 >= (thePayload.currentTimeStampInMs - value.firstTimeStampInMs) - 20) {
+					if ((thePayload.currentTimeStamp - value.firstTimeStamp) / 48 <= ((thePayload.currentTimeStampInMs - value.firstTimeStampInMs) + 40) &&
+						(thePayload.currentTimeStamp - value.firstTimeStamp) / 48 >= (thePayload.currentTimeStampInMs - value.firstTimeStampInMs) - 40) {
 						if (value.thePayloads.size() > 0) {
 							value.thePayloads.pop();
 						}
@@ -1013,10 +1012,9 @@ namespace DiscordCoreAPI {
 								theUpsampledVector[x] += static_cast<opus_int32>(thePayload.decodedData[x]);
 							}
 						}
+					} else if ((thePayload.currentTimeStamp - value.firstTimeStamp) / 48 < (thePayload.currentTimeStampInMs - value.firstTimeStampInMs - 20)) {
+						value.thePayloads.pop();
 					} else {
-						if (value.thePayloads.size() > 0) {
-							value.thePayloads.pop();
-						}
 						continue;
 					}
 				}
