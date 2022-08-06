@@ -527,10 +527,15 @@ namespace DiscordCoreInternal {
 
 				if (auto theResult = bind(this->theSocket, this->theStreamTargetAddress, sizeof(sockaddr)); theResult != 0) {
 					return false;
+				} else if (theResult == 0) {
+					std::cout << "WEVE BOUND!" << std::endl;
 				}
 
 				int32_t writtenBytes =
 					sendto(this->theSocket, clientToServerString.data(), clientToServerString.size(), 0, this->theStreamTargetAddress, sizeof(this->theStreamTargetAddress));
+				if (writtenBytes > 0) {
+					std::cout << "WEVE WRITTEN!" << std::endl;
+				}
 #ifdef _WIN32
 				int32_t intSize = sizeof(this->theStreamTargetAddress);
 #else
@@ -640,6 +645,9 @@ namespace DiscordCoreInternal {
 				this->disconnect();
 				return;
 			} else {
+				if (this->streamType != DiscordCoreAPI::StreamType::None) {
+					std::cout << "WRITTEN BYTES: " << writtenBytes << std::endl;
+				}
 				this->outputBuffers.erase(this->outputBuffers.begin());
 			}
 		}
@@ -659,6 +667,9 @@ namespace DiscordCoreInternal {
 			this->disconnect();
 			return;
 		} else {
+			if (this->streamType != DiscordCoreAPI::StreamType::None) {
+				std::cout << "READ BYTES: " << readBytes << std::endl;
+			}
 			std::string theString{};
 			theString.insert(theString.end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
 			this->inputBuffers.push_back(theString);
