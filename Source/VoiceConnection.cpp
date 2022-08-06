@@ -995,7 +995,7 @@ namespace DiscordCoreAPI {
 					std::cout << "DIFFERENCE IN TIMESTAMPS IN MS: " << ((thePayload.currentTimeStampInMs - thePayload.lastTimeStampInMs)) << std::endl;
 					std::cout << "THE REAL DIFFERENCE: " << (thePayload.currentTimeStamp - thePayload.lastTimeStamp) / 48 << std::endl;
 					if ((thePayload.currentTimeStamp - thePayload.lastTimeStamp) / 48 <= (((thePayload.currentTimeStampInMs - thePayload.lastTimeStampInMs)) + 40) &&
-						(thePayload.currentTimeStamp - thePayload.lastTimeStamp) / 48 >= ((thePayload.currentTimeStampInMs - thePayload.lastTimeStampInMs))) {
+						(thePayload.currentTimeStamp - thePayload.lastTimeStamp) / 48 >= ((thePayload.currentTimeStampInMs - thePayload.lastTimeStampInMs)) - 20) {
 						if (value.thePayloads.size() > 0) {
 							value.thePayloads.pop();
 						}
@@ -1011,7 +1011,8 @@ namespace DiscordCoreAPI {
 								theUpsampledVector[x] += static_cast<opus_int32>(thePayload.decodedData[x]);
 							}
 						}
-					} else if ((thePayload.currentTimeStamp - thePayload.lastTimeStamp) / 48 >= (((thePayload.currentTimeStampInMs - thePayload.lastTimeStampInMs)) + 40)){
+					} else if ((thePayload.currentTimeStamp - thePayload.lastTimeStamp) / 48 >= (((thePayload.currentTimeStampInMs - thePayload.lastTimeStampInMs)) + 40)) {
+						value.thePayloads.pop();
 						continue;
 					} else {
 						value.thePayloads.pop();
