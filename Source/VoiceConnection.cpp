@@ -995,10 +995,10 @@ namespace DiscordCoreAPI {
 					VoicePayload thePayload = value.thePayloads.front();
 
 					theLock.unlock();
-					std::cout << "DIFFERENCE IN TIMESTAMPS IN MS: " << ((thePayload.currentTimeStampInMs - this->lastTimeStampInMs.load())) << std::endl;
+					std::cout << "DIFFERENCE IN TIMESTAMPS IN MS: " << ((thePayload.currentTimeStampInMs - value.lastTimeStampInMs)) << std::endl;
 					std::cout << "THE REAL DIFFERENCE: " << (thePayload.currentTimeStamp - value.firstTimeStamp) / 48 << std::endl;
-					if ((thePayload.currentTimeStamp - thePayload.lastTimeStamp) / 48 <= (((thePayload.currentTimeStampInMs - this->lastTimeStampInMs.load())) + 40) &&
-						(thePayload.currentTimeStamp - value.firstTimeStamp) / 48 >= ((thePayload.currentTimeStampInMs - this->lastTimeStampInMs.load())) - 20) {
+					if ((thePayload.currentTimeStamp - thePayload.lastTimeStamp) / 48 <= (((thePayload.currentTimeStampInMs - value.lastTimeStampInMs)) + 40) &&
+						(thePayload.currentTimeStamp - value.firstTimeStamp) / 48 >= ((thePayload.currentTimeStampInMs - value.lastTimeStampInMs)) - 20) {
 						if (value.thePayloads.size() > 0) {
 							value.thePayloads.pop();
 						}
