@@ -1014,8 +1014,6 @@ namespace DiscordCoreAPI {
 								theUpsampledVector[x] += static_cast<opus_int32>(thePayload.decodedData[x]);
 							}
 						}
-					} else if ((thePayload.currentTimeStamp - value.firstTimeStamp) / 48 > (thePayload.currentTimeStampInMs - value.firstTimeStampInMs)) {
-						continue;
 					} else {
 						value.thePayloads.pop();
 						continue;
