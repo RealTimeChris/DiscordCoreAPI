@@ -393,7 +393,6 @@ namespace DiscordCoreAPI {
 				this->streamSocket->processIO(0);
 				this->mixAudio();
 				this->streamSocket->processIO(0);
-			} else {
 				std::this_thread::sleep_for(1ms);
 			}
 		}
@@ -590,6 +589,18 @@ namespace DiscordCoreAPI {
 				theTimeStamp = ntohl(theTimeStamp);
 				uint32_t speakerSsrc{ *reinterpret_cast<uint32_t*>(packet.data() + 8) };
 				speakerSsrc = ntohl(speakerSsrc);
+				this->voiceUsers[speakerSsrc].lastTimeStampInMs = this->voiceUsers[speakerSsrc].currentTimeStampInMs;
+				this->voiceUsers[speakerSsrc].currentTimeStampInMs =
+					std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+				this->voiceUsers[speakerSsrc].lastTimeStamp = this->voiceUsers[speakerSsrc].currentTimeStamp;
+				this->voiceUsers[speakerSsrc].currentTimeStamp = theTimeStamp;
+				std::cout << "DIFFERENCE IN TIMESTAMPS: " << this->voiceUsers[speakerSsrc].currentTimeStamp - this->voiceUsers[speakerSsrc].lastTimeStamp << std::endl;
+				std::cout << "DIFFERENCE IN TIMESTAMPS IN MS: " << this->voiceUsers[speakerSsrc].currentTimeStampInMs - this->voiceUsers[speakerSsrc].lastTimeStampInMs
+						  << std::endl;
+				if (this->voiceUsers[speakerSsrc].firstTimeStampInMs == 0) {
+					this->voiceUsers[speakerSsrc].firstTimeStampInMs =
+						std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+				}
 
 				std::vector<uint8_t> nonce{};
 				nonce.resize(24);
