@@ -578,13 +578,9 @@ namespace DiscordCoreAPI {
 					return;
 				}
 
-				if (uint8_t payload_type = packet[1] & 0b0111'1111; 72 <= payload_type && payload_type <= 76) {
+				if (uint8_t payloadType = packet[1] & 0b0111'1111; 72 <= payloadType && payloadType <= 76) {
 					return;
 				}
-				uint16_t theSequence{ *reinterpret_cast<uint16_t*>(packet.data() + 2) };
-				theSequence = ntohs(theSequence);
-				uint32_t theTimeStamp{ *reinterpret_cast<uint32_t*>(packet.data() + 4) };
-				theTimeStamp = ntohl(theTimeStamp);
 				uint32_t speakerSsrc{ *reinterpret_cast<uint32_t*>(packet.data() + 8) };
 				speakerSsrc = ntohl(speakerSsrc);
 
