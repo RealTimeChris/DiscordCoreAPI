@@ -378,7 +378,7 @@ namespace DiscordCoreAPI {
 		while (!theToken.stop_requested()) {
 			if (theStopWatch.hasTimePassed()) {
 				theStopWatch.resetTimer();
-				DatagramSocketClient::processIO(1);
+				DatagramSocketClient::processIO(0);
 				std::string theString{};
 				do {
 					theString = DatagramSocketClient::getInputBuffer();
