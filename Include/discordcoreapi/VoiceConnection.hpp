@@ -64,18 +64,16 @@ namespace DiscordCoreAPI {
 	struct VoicePayload {
 		std::vector<opus_int16> decodedData{};
 		std::vector<uint8_t> theRawData{};
-		uint32_t timeStamp{};
+		int64_t currentTimeStampInMs{};
+		uint32_t currentTimeStamp{};
 	};
 
 	struct VoiceUser {
 		std::queue<VoicePayload> thePayloads{};
 		OpusDecoderWrapper theDecoder{};
 		OpusEncoderWrapper theEncoder{};
-		int64_t currentTimeStampInMs{};
 		int64_t firstTimeStampInMs{};
-		int64_t lastTimeStampInMs{};
-		uint32_t currentTimeStamp{};
-		uint32_t lastTimeStamp{};
+		int64_t firstTimeStamp{};
 		Snowflake theUserId{};
 	};
 
