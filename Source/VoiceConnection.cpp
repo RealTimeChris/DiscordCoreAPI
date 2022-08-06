@@ -211,7 +211,6 @@ namespace DiscordCoreAPI {
 						case 2: {
 							this->audioSSRC = payload["d"]["ssrc"].get<uint32_t>();
 							this->voiceIp = payload["d"]["ip"].get<std::string>();
-							std::cout << "THE VOICE IP: " << this->voiceIp << std::endl;
 							this->port = std::to_string(payload["d"]["port"].get<int64_t>());
 							for (auto& value: payload["d"]["modes"]) {
 								if (value == "xsalsa20_poly1305") {
@@ -387,10 +386,8 @@ namespace DiscordCoreAPI {
 				} 
 				theStopWatch.resetTimer();				
 				this->streamSocket->processIO(0);
-				std::cout << "TOTAL TIME PASSED: " << theStopWatch.totalTimePassed() << std::endl;
 				this->lastTimeStampInMs.store(this->currentTimeStampInMs.load());
 				this->currentTimeStampInMs.store(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
-				std::cout << "TOTAL TIME PASSED: " << this->currentTimeStampInMs.load() - this->lastTimeStampInMs.load() << std::endl;
 				this->parseIncomingVoiceData();
 				this->streamSocket->processIO(0);
 				this->mixAudio();
@@ -619,7 +616,7 @@ namespace DiscordCoreAPI {
 					constexpr size_t extHeaderLen = sizeof(uint16_t) * 2;
 					decryptedDataString = decryptedDataString.substr(extHeaderLen + extLen);
 				}
-				if ((decryptedDataString.size() - 16) > 0) {
+				if (decryptedDataString.size() > 0 && (decryptedDataString.size() - 16) > 0) {
 					theBuffer.theRawData.insert(theBuffer.theRawData.begin(), decryptedDataString.begin(), decryptedDataString.end() - 16);
 					theBuffer.decodedData.resize(23040);
 					auto sampleCount =

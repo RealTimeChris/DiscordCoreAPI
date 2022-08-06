@@ -527,15 +527,10 @@ namespace DiscordCoreInternal {
 
 				if (auto theResult = bind(this->theSocket, this->theStreamTargetAddress, sizeof(sockaddr)); theResult != 0) {
 					return false;
-				} else if (theResult == 0) {
-					std::cout << "WEVE BOUND!" << std::endl;
 				}
 
 				int32_t writtenBytes =
 					sendto(this->theSocket, clientToServerString.data(), clientToServerString.size(), 0, this->theStreamTargetAddress, sizeof(this->theStreamTargetAddress));
-				if (writtenBytes > 0) {
-					std::cout << "WEVE WRITTEN!" << std::endl;
-				}
 #ifdef _WIN32
 				int32_t intSize = sizeof(this->theStreamTargetAddress);
 #else
@@ -640,15 +635,11 @@ namespace DiscordCoreInternal {
 	void DatagramSocketClient::writeDataProcess() noexcept {
 		if (this->outputBuffers.size() > 0 && this->areWeStreamConnected) {
 			std::string clientToServerString = this->outputBuffers.front();
-			std::cout << "ABOUT TO WRITE BYTES: " << std::endl;
 			int32_t writtenBytes = sendto(this->theSocket, clientToServerString.data(), clientToServerString.size(), 0, this->theStreamTargetAddress, sizeof(sockaddr));
 			if (writtenBytes < 0) {
 				this->disconnect();
 				return;
 			} else {
-				if (this->streamType != DiscordCoreAPI::StreamType::None) {
-					std::cout << "WRITTEN BYTES: " << writtenBytes << std::endl;
-				}
 				this->outputBuffers.erase(this->outputBuffers.begin());
 			}
 		}
@@ -663,7 +654,6 @@ namespace DiscordCoreInternal {
 #else
 			socklen_t intSize = sizeof(this->theStreamTargetAddress);
 #endif
-			std::cout << "ABOUT TO READ BYTES: " << std::endl;
 			int32_t readBytes =
 				recvfrom(this->theSocket, serverToClientBuffer.data(), static_cast<int32_t>(serverToClientBuffer.size()), 0, this->theStreamTargetAddress, &intSize);
 
@@ -671,9 +661,6 @@ namespace DiscordCoreInternal {
 				this->disconnect();
 				return;
 			} else {
-				if (this->streamType != DiscordCoreAPI::StreamType::None) {
-					std::cout << "READ BYTES: " << readBytes << std::endl;
-				}
 				std::string theString{};
 				theString.insert(theString.end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
 				this->inputBuffers.push_back(theString);
