@@ -375,14 +375,12 @@ namespace DiscordCoreAPI {
 
 	void VoiceConnection::runBridge(std::stop_token& theToken) noexcept {
 		StopWatch theStopWatch{ 20ms };
-		std::this_thread::sleep_for(120ms);
 		while (!theToken.stop_requested()) {
 			if (theStopWatch.hasTimePassed()) {
 				theStopWatch.resetTimer();
-				DatagramSocketClient::processIO(0);
-				std::string theString{};
 				for (uint32_t x = 0; x < this->voiceUsers.size(); x++) {
-					theString = DatagramSocketClient::getInputBuffer();
+					DatagramSocketClient::processIO(0);
+					std::string theString = DatagramSocketClient::getInputBuffer();
 					VoicePayload thePayload{};
 					thePayload.theRawData.insert(thePayload.theRawData.begin(), theString.begin(), theString.end());
 					this->theFrameQueue.push(thePayload);
