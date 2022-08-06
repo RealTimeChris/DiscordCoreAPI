@@ -64,17 +64,12 @@ namespace DiscordCoreAPI {
 	struct VoicePayload {
 		std::vector<opus_int16> decodedData{};
 		std::vector<uint8_t> theRawData{};
-		int64_t currentTimeStampInMs{};
-		int64_t lastTimeStampInMs{};
-		uint32_t currentTimeStamp{};
-		uint32_t lastTimeStamp{};
 	};
 
 	struct VoiceUser {
 		std::queue<VoicePayload> thePayloads{};
 		OpusDecoderWrapper theDecoder{};
 		OpusEncoderWrapper theEncoder{};
-		uint32_t currentTimeStamp{};
 		Snowflake theUserId{};
 	};
 
@@ -161,9 +156,10 @@ namespace DiscordCoreAPI {
 		std::unordered_map<uint32_t, VoiceUser> voiceUsers{};
 		std::atomic_bool areWeConnectedBool{ false };
 		std::queue<ConnectionPackage> connections{};
+		std::atomic_int64_t originalTimeStampInMs{};
 		std::atomic_int64_t currentTimeStampInMs{};
+		std::queue<VoicePayload> theFrameQueue{};
 		std::atomic_int64_t lastTimeStampInMs{};
-		std::queue<std::string> theFrameQueue{};
 		std::atomic_bool areWePlaying{ false };
 		const int64_t maxReconnectTries{ 10 };
 		int64_t currentReconnectTries{ 0 };
