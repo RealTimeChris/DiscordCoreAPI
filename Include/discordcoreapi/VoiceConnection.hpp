@@ -66,6 +66,7 @@ namespace DiscordCoreAPI {
 		std::vector<uint8_t> theRawData{};
 		int64_t currentTimeStampInMs{};
 		uint32_t currentTimeStamp{};
+		uint32_t lastTimeStamp{};
 	};
 
 	struct VoiceUser {
@@ -73,7 +74,9 @@ namespace DiscordCoreAPI {
 		OpusDecoderWrapper theDecoder{};
 		OpusEncoderWrapper theEncoder{};
 		int64_t firstTimeStampInMs{};
-		int64_t firstTimeStamp{};
+		int64_t lastTimeStampInMs{};
+		uint32_t currentTimeStamp{};
+		uint32_t firstTimeStamp{};
 		Snowflake theUserId{};
 	};
 
@@ -161,6 +164,7 @@ namespace DiscordCoreAPI {
 		std::atomic_bool areWeConnectedBool{ false };
 		std::queue<ConnectionPackage> connections{};
 		std::atomic_int64_t currentTimeStampInMs{};
+		std::atomic_int64_t lastTimeStampInMs{};
 		std::queue<std::string> theFrameQueue{};
 		std::atomic_bool areWePlaying{ false };
 		const int64_t maxReconnectTries{ 10 };
@@ -169,7 +173,6 @@ namespace DiscordCoreAPI {
 		Snowflake currentGuildMemberId{};
 		OpusEncoderWrapper theEncoder{};
 		int64_t heartbeatInterval{ 0 };
-		int64_t lastTimeStampInMs{};
 		std::mutex voiceUserMutex{};
 		std::string secretKeySend{};
 		uint16_t sequenceIndex{ 0 };
