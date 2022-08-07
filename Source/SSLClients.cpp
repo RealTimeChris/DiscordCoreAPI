@@ -530,7 +530,7 @@ namespace DiscordCoreInternal {
 				}
 
 				int32_t writtenBytes =
-					sendto(this->theSocket, clientToServerString.data(), clientToServerString.size(), 0, this->theStreamTargetAddress, sizeof(this->theStreamTargetAddress));
+					sendto(this->theSocket, clientToServerString.data(), static_cast<int32_t>(clientToServerString.size()), 0, this->theStreamTargetAddress, sizeof(this->theStreamTargetAddress));
 #ifdef _WIN32
 				int32_t intSize = sizeof(this->theStreamTargetAddress);
 #else
@@ -635,7 +635,8 @@ namespace DiscordCoreInternal {
 	void DatagramSocketClient::writeDataProcess() noexcept {
 		if (this->outputBuffers.size() > 0 && this->areWeStreamConnected) {
 			std::string clientToServerString = this->outputBuffers.front();
-			int32_t writtenBytes = sendto(this->theSocket, clientToServerString.data(), clientToServerString.size(), 0, this->theStreamTargetAddress, sizeof(sockaddr));
+			int32_t writtenBytes =
+				sendto(this->theSocket, clientToServerString.data(), static_cast<int32_t>(clientToServerString.size()), 0, this->theStreamTargetAddress, sizeof(sockaddr));
 			if (writtenBytes < 0) {
 				this->disconnect();
 				return;

@@ -623,7 +623,7 @@ namespace DiscordCoreAPI {
 					std::lock_guard theLock00{ this->voiceUserMutex };
 					if (this->voiceUsers.contains(speakerSsrc)) {
 						auto sampleCount =
-							opus_decode(this->voiceUsers[speakerSsrc].theDecoder, theBuffer.theRawData.data(), theBuffer.theRawData.size(), theBuffer.decodedData.data(), 5760, 0);
+							opus_decode(this->voiceUsers[speakerSsrc].theDecoder, theBuffer.theRawData.data(), static_cast<opus_int32>(theBuffer.theRawData.size()), theBuffer.decodedData.data(), 5760, 0);
 						if (sampleCount <= 0) {
 							std::cout << "Failed to decode user's voice payload." << std::endl;
 						} else {
