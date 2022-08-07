@@ -385,7 +385,7 @@ namespace DiscordCoreAPI {
 					VoicePayload thePayload{};
 					thePayload.theRawData.insert(thePayload.theRawData.begin(), theString.begin(), theString.end());
 					this->theFrameQueue.push(thePayload);
-				} 
+				}
 				this->streamSocket->processIO(0);
 				this->parseIncomingVoiceData();
 				this->streamSocket->processIO(0);
@@ -996,7 +996,7 @@ namespace DiscordCoreAPI {
 					VoicePayload thePayload = value.thePayloads.front();
 
 					theLock.unlock();
-					
+
 					if (value.thePayloads.size() > 0) {
 						value.thePayloads.pop();
 					}
