@@ -374,6 +374,8 @@ namespace DiscordCoreAPI {
 
 	void VoiceConnection::runBridge(std::stop_token& theToken) noexcept {
 		StopWatch theStopWatch{ 20ms };
+		int32_t timeToWaitInMs{ 20 };
+		int32_t timeTakesToSleep{ 0 };
 		while (!theToken.stop_requested()) {
 			if (theStopWatch.hasTimePassed()) {
 				theStopWatch.resetTimer();
@@ -390,7 +392,15 @@ namespace DiscordCoreAPI {
 				this->mixAudio();
 				this->streamSocket->processIO(0);
 			}
-			std::this_thread::sleep_for(1ms);
+			if (timeTakesToSleep == 0) {
+				theStopWatch.resetTimer();
+			}
+			if (theStopWatch.totalTimePassed() + timeTakesToSleep <= timeToWaitInMs) {
+				std::this_thread::sleep_for(1ms);
+			}
+			if (timeTakesToSleep == 0) {
+				timeTakesToSleep = theStopWatch.totalTimePassed();
+			}
 		}
 	}
 
