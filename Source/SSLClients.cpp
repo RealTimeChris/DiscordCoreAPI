@@ -530,7 +530,7 @@ namespace DiscordCoreInternal {
 				}
 
 				int32_t writtenBytes =
-					sendto(this->theSocket, clientToServerString.data(), static_cast<int32_t>(clientToServerString.size()), 0, this->theStreamTargetAddress, sizeof(this->theStreamTargetAddress));
+					sendto(this->theSocket, clientToServerString.data(), clientToServerString.size(), 0, this->theStreamTargetAddress, sizeof(this->theStreamTargetAddress));
 #ifdef _WIN32
 				int32_t intSize = sizeof(this->theStreamTargetAddress);
 #else
@@ -562,25 +562,16 @@ namespace DiscordCoreInternal {
 		return true;
 	}
 
-	void DatagramSocketClient::processIO(int32_t waitTimeInms, bool readOnly, bool writeOnly) noexcept {
+	void DatagramSocketClient::processIO(int32_t waitTimeInms) noexcept {
 		if (this->theSocket == SOCKET_ERROR || this->theSocket == SOCKET_ERROR || !this->areWeStreamConnected) {
 			return;
 		}
 		fd_set readSet{}, writeSet{};
 		std::unique_lock theLock{ this->theMutex };
-		if (readOnly) {
-			FD_ZERO(&readSet);
-			FD_SET(this->theSocket, &readSet);
-		} else if (writeOnly) {
-			FD_ZERO(&writeSet);
-			FD_SET(this->theSocket, &writeSet);
-		} else if (!readOnly && !writeOnly) {
-			FD_ZERO(&readSet);
-			FD_SET(this->theSocket, &readSet);
-			FD_ZERO(&writeSet);
-			FD_SET(this->theSocket, &writeSet);
-		}
-
+		FD_ZERO(&readSet);
+		FD_SET(this->theSocket, &readSet);
+		FD_ZERO(&writeSet);
+		FD_SET(this->theSocket, &writeSet);
 		auto theFinalFd = static_cast<SOCKET>(this->theSocket) > static_cast<SOCKET>(this->theSocket) ? static_cast<SOCKET>(this->theSocket)
 																															: static_cast<SOCKET>(this->theSocket);
 		timeval checkTime{};
@@ -644,8 +635,7 @@ namespace DiscordCoreInternal {
 	void DatagramSocketClient::writeDataProcess() noexcept {
 		if (this->outputBuffers.size() > 0 && this->areWeStreamConnected) {
 			std::string clientToServerString = this->outputBuffers.front();
-			int32_t writtenBytes =
-				sendto(this->theSocket, clientToServerString.data(), static_cast<int32_t>(clientToServerString.size()), 0, this->theStreamTargetAddress, sizeof(sockaddr));
+			int32_t writtenBytes = sendto(this->theSocket, clientToServerString.data(), clientToServerString.size(), 0, this->theStreamTargetAddress, sizeof(sockaddr));
 			if (writtenBytes < 0) {
 				this->disconnect();
 				return;
