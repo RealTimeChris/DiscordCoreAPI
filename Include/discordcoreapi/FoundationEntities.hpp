@@ -2092,6 +2092,14 @@ namespace DiscordCoreAPI {
 
 		GuildData(const nlohmann::json& jsonObjectData);
 
+		/// For connecting to an individual voice channel. \brief For connecting to an individual voice channel.
+		/// \param guildMemberId An id of the guild member who's current voice channel to connect to.
+		/// \param channelId An id of the voice channel to connect to.
+		/// \param selfDeaf Whether or not to self-deafen the bot.
+		/// \param selfMute Whether or not to self-mute the bot.
+		/// \param streamType For usage with the Vc-to-Vc audio streaming option.
+		/// \param streamInfo For usage with the Vc-to-Vc audio streaming option.
+		/// \returns VoiceConnection* A pointer to the currently held voice connection, or nullptr if it failed to connect.
 		VoiceConnection* connectToVoice(const Snowflake guildMemberId, const Snowflake channelId = 0, bool selfDeaf = false, bool selfMute = false,
 			StreamType streamType = StreamType::None, StreamInfo streamInfo = StreamInfo{});
 

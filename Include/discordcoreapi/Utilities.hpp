@@ -94,13 +94,19 @@
 
 namespace DiscordCoreAPI {
 
-	struct ActivityData;
+	/**
+	 * \addtogroup foundation_entities
+	 * @{
+	 */
 
+	struct ActivityData;
+	/// For selecting the type of streamer that the given bot is, one must be one server and one of client per connection. \brief For selecting the type of streamer that the given bot is, one must be one server and one of client per connection.
 	enum class StreamType { None = 0, Client = 1, Server = 2 };
-	
+
+	/// For connecting two bots to stream the VC contents between the two. \brief For connecting two bots to stream the VC contents between the two.
 	struct StreamInfo {
-		std::string address{};
-		std::string port{};
+		std::string address{};///< The address to connect to.
+		std::string port{};///< The port to connect to.
 	};
 
 };
@@ -126,8 +132,10 @@ namespace DiscordCoreInternal {
 
 	enum class WebSocketOpCode : int8_t { Op_Continuation = 0x00, Op_Text = 0x01, Op_Binary = 0x02, Op_Close = 0x08, Op_Ping = 0x09, Op_Pong = 0x0a };
 
+	/// Websocket close codes. \brief Websocket close codes.
 	class DiscordCoreAPI_Dll WebSocketClose {
 	  public:
+		/// Websocket close codes. \brief Websocket close codes.
 		enum class WebSocketCloseCode : uint16_t {
 			Unset = 1 << 0,///< Unset.
 			Normal_Close = 1 << 1,///< Normal close.
@@ -240,11 +248,6 @@ namespace DiscordCoreAPI {
 	template<typename ReturnType> class CoRoutine;
 
 	std::basic_ostream<char>& operator<<(std::basic_ostream<char>& outputSttream, const std::string& (*theFunction)( void ));
-
-	/**
-	 * \addtogroup foundation_entities
-	 * @{
-	 */
 
 	/// Input event response types. \brief Input event response types.
 	enum class InputEventResponseType : int8_t {
