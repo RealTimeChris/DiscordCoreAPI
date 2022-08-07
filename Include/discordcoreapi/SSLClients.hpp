@@ -237,6 +237,8 @@ namespace DiscordCoreInternal {
 		virtual ~SSLClient() noexcept = default;
 	};
 
+	enum class ProcessIOType { Both = 0, Read_Only = 1, Write_Only = 2 };
+
 	class DiscordCoreAPI_Dll DatagramSocketClient {
 	  public:
 		friend class DiscordCoreAPI::VoiceConnection;
@@ -245,7 +247,7 @@ namespace DiscordCoreInternal {
 
 		bool connect(const std::string& baseUrlNew, const std::string& portNew) noexcept;
 
-		void processIO(int32_t waitTimeInms) noexcept;
+		void processIO(int32_t waitTimeInms, ProcessIOType theType) noexcept;
 
 		void writeData(std::string& data) noexcept;
 

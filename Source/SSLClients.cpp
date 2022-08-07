@@ -561,16 +561,40 @@ namespace DiscordCoreInternal {
 		return true;
 	}
 
-	void DatagramSocketClient::processIO(int32_t waitTimeInms) noexcept {
+	void DatagramSocketClient::processIO(int32_t waitTimeInms, ProcessIOType theType) noexcept {
 		if (this->theSocket == SOCKET_ERROR || this->theSocket == SOCKET_ERROR || !this->areWeStreamConnected) {
 			return;
 		}
 		fd_set readSet{}, writeSet{};
 		std::unique_lock theLock{ this->theMutex };
-		FD_ZERO(&readSet);
-		FD_SET(this->theSocket, &readSet);
-		FD_ZERO(&writeSet);
-		FD_SET(this->theSocket, &writeSet);
+		switch (theType) {
+			case ProcessIOType::Both: {
+				FD_ZERO(&writeSet);
+				FD_SET(this->theSocket, &writeSet);
+			}
+			case ProcessIOType::Read_Only: {
+				FD_ZERO(&readSet);
+				FD_SET(this->theSocket, &readSet);
+				break;
+			}
+			case ProcessIOType::Write_Only: {
+				FD_ZERO(&writeSet);
+				FD_SET(this->theSocket, &writeSet);
+				break;
+			}
+		}
+		if (theType == ProcessIOType::Read_Only) {
+			FD_ZERO(&readSet);
+			FD_SET(this->theSocket, &readSet);
+		} else if (theType == ProcessIOType::Write_Only) {
+			FD_ZERO(&writeSet);
+			FD_SET(this->theSocket, &writeSet);
+		} else {
+			FD_ZERO(&readSet);
+			FD_SET(this->theSocket, &readSet);
+			FD_ZERO(&writeSet);
+			FD_SET(this->theSocket, &writeSet);
+		}
 		auto theFinalFd = static_cast<SOCKET>(this->theSocket) > static_cast<SOCKET>(this->theSocket) ? static_cast<SOCKET>(this->theSocket) : static_cast<SOCKET>(this->theSocket);
 		timeval checkTime{};
 		checkTime.tv_usec = waitTimeInms;

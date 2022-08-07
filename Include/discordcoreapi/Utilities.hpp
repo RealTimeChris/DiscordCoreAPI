@@ -532,13 +532,16 @@ namespace DiscordCoreAPI {
 		}
 
 		void convertTimeStampToTimeUnits(DiscordCoreAPI::TimeFormat theFormatNew) {
-			if (this->originalTimeStamp != "") {
-				TimeStamp<TimeType> timeValue =
-					TimeStamp{ stoi(this->originalTimeStamp.substr(0, 4)), stoi(this->originalTimeStamp.substr(5, 6)), stoi(this->originalTimeStamp.substr(8, 9)),
-						stoi(this->originalTimeStamp.substr(11, 12)), stoi(this->originalTimeStamp.substr(14, 15)), stoi(this->originalTimeStamp.substr(17, 18)), theFormatNew };
-				this->timeStampInTimeUnits = TimeType{ static_cast<uint64_t>(timeValue) };
-			} else {
-				this->timeStampInTimeUnits = std::chrono::duration_cast<TimeType>(std::chrono::system_clock::now().time_since_epoch());
+			try {
+				if (this->originalTimeStamp != "") {
+					TimeStamp<TimeType> timeValue = TimeStamp{ stoi(this->originalTimeStamp.substr(0, 4)), stoi(this->originalTimeStamp.substr(5, 6)),
+						stoi(this->originalTimeStamp.substr(8, 9)), stoi(this->originalTimeStamp.substr(11, 12)), stoi(this->originalTimeStamp.substr(14, 15)),
+						stoi(this->originalTimeStamp.substr(17, 18)), theFormatNew };
+					this->timeStampInTimeUnits = TimeType{ static_cast<uint64_t>(timeValue) };
+				} else {
+					this->timeStampInTimeUnits = std::chrono::duration_cast<TimeType>(std::chrono::system_clock::now().time_since_epoch());
+				}
+			} catch (...) {
 			}
 		}
 
