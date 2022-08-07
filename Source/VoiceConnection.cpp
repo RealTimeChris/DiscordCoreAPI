@@ -1009,9 +1009,9 @@ namespace DiscordCoreAPI {
 							theUpsampledVector.resize(thePayload.decodedData.size());
 						}
 						for (uint32_t x = 0; x < thePayload.decodedData.size(); x++) {
-							if (thePayload.decodedData[x] >= INT16_MAX) {
+							if (thePayload.decodedData[x] >= INT16_MAX - 5) {
 								theUpsampledVector[x] += INT16_MAX;
-							} else if (thePayload.decodedData[x] <= INT16_MIN) {
+							} else if (thePayload.decodedData[x] <= INT16_MIN + 5) {
 								theUpsampledVector[x] += INT16_MIN;
 							} else {
 								theUpsampledVector[x] += static_cast<opus_int32>(thePayload.decodedData[x]);
