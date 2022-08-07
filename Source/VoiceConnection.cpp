@@ -391,15 +391,16 @@ namespace DiscordCoreAPI {
 				this->streamSocket->processIO(0);
 				this->mixAudio();
 				this->streamSocket->processIO(0);
-			}
-			if (timeTakesToSleep == 0) {
-				theStopWatch.resetTimer();
-			}
-			if (theStopWatch.totalTimePassed() + timeTakesToSleep <= timeToWaitInMs) {
-				std::this_thread::sleep_for(1ms);
-			}
-			if (timeTakesToSleep == 0) {
-				timeTakesToSleep = theStopWatch.totalTimePassed();
+
+				if (timeTakesToSleep == 0) {
+					theStopWatch.resetTimer();
+				}
+				if (theStopWatch.totalTimePassed() + timeTakesToSleep <= timeToWaitInMs) {
+					std::this_thread::sleep_for(1ms);
+				}
+				if (timeTakesToSleep == 0) {
+					timeTakesToSleep = theStopWatch.totalTimePassed();
+				}
 			}
 		}
 	}
