@@ -619,14 +619,16 @@ namespace DiscordCoreAPI {
 				if (decryptedDataString.size() > 0 && (decryptedDataString.size() - 16) > 0) {
 					theBuffer.theRawData.insert(theBuffer.theRawData.begin(), decryptedDataString.begin(), decryptedDataString.end() - 16);
 					theBuffer.decodedData.resize(23040);
-					auto sampleCount =
-						opus_decode(this->voiceUsers[speakerSsrc].theDecoder, theBuffer.theRawData.data(), theBuffer.theRawData.size(), theBuffer.decodedData.data(), 5760, 0);
-					if (sampleCount <= 0) {
-						std::cout << "Failed to decode user's voice payload." << std::endl;
-					} else {
-						theBuffer.decodedData.resize(sampleCount * 2);
-						std::lock_guard theLock{ DatagramSocketClient::theMutex };
-						this->voiceUsers[speakerSsrc].thePayloads.push(std::move(theBuffer));
+					std::lock_guard theLock{ DatagramSocketClient::theMutex };
+					if (this->voiceUsers.contains(speakerSsrc)) {
+						auto sampleCount =
+							opus_decode(this->voiceUsers[speakerSsrc].theDecoder, theBuffer.theRawData.data(), theBuffer.theRawData.size(), theBuffer.decodedData.data(), 5760, 0);
+						if (sampleCount <= 0) {
+							std::cout << "Failed to decode user's voice payload." << std::endl;
+						} else {
+							theBuffer.decodedData.resize(sampleCount * 2);
+							this->voiceUsers[speakerSsrc].thePayloads.push(std::move(theBuffer));
+						}
 					}
 				}
 			}
@@ -1008,7 +1010,7 @@ namespace DiscordCoreAPI {
 				std::vector<opus_int16> theDownsampledVector{};
 				theDownsampledVector.resize(theUpsampledVector.size());
 				for (int32_t x = 0; x < theUpsampledVector.size(); x++) {
-					if (theUpsampledVector[x] >= INT16_MAX) {
+					if (theUpsampledVector[x] >= INT16_MAX - 1) {
 						theDownsampledVector[x] = static_cast<opus_int16>(theUpsampledVector[x]) / static_cast<opus_int16>(voiceUserCount);
 					} else {
 						theDownsampledVector[x] = static_cast<opus_int16>(theUpsampledVector[x]);
