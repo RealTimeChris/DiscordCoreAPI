@@ -245,7 +245,7 @@ namespace DiscordCoreInternal {
 
 		bool connect(const std::string& baseUrlNew, const std::string& portNew) noexcept;
 
-		void processIO(int32_t waitTimeInms, bool readOnly, bool writeOnly) noexcept;
+		void processIO(int32_t waitTimeInms) noexcept;
 
 		void writeData(std::string& data) noexcept;
 

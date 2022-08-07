@@ -307,7 +307,7 @@ namespace DiscordCoreAPI {
 		if (!isSpeaking) {
 			theData.type = static_cast<DiscordCoreInternal::SendSpeakingType>(0);
 			this->sendSilence();
-			DatagramSocketClient::processIO(10000, false, true);
+			DatagramSocketClient::processIO(10000);
 		} else {
 			theData.type = DiscordCoreInternal::SendSpeakingType::Microphone;
 			theData.delay = 0;
@@ -380,25 +380,27 @@ namespace DiscordCoreAPI {
 			if (theStopWatch.hasTimePassed()) {
 				theStopWatch.resetTimer();
 				for (uint32_t x = 0; x < this->voiceUsers.size(); x++) {
-					DatagramSocketClient::processIO(0, true, false);
+					DatagramSocketClient::processIO(0);
 					std::string theString = DatagramSocketClient::getInputBuffer();
 					VoicePayload thePayload{};
 					thePayload.theRawData.insert(thePayload.theRawData.begin(), theString.begin(), theString.end());
 					this->theFrameQueue.push(thePayload);
-				}
-				this->streamSocket->processIO(0, false, false);
+				} 
+				this->streamSocket->processIO(0);
 				this->parseIncomingVoiceData();
-				this->streamSocket->processIO(0, false, true);
+				this->streamSocket->processIO(0);
 				this->mixAudio();
-			}
-			if (timeTakesToSleep == 0) {
-				theStopWatch.resetTimer();
-			}
-			if (theStopWatch.totalTimePassed() + timeTakesToSleep <= timeToWaitInMs) {
-				std::this_thread::sleep_for(1ms);
-			}
-			if (timeTakesToSleep == 0) {
-				timeTakesToSleep = theStopWatch.totalTimePassed();
+				this->streamSocket->processIO(0);
+
+				if (timeTakesToSleep == 0) {
+					theStopWatch.resetTimer();
+				}
+				if (theStopWatch.totalTimePassed() + timeTakesToSleep <= timeToWaitInMs) {
+					std::this_thread::sleep_for(1ms);
+				}
+				if (timeTakesToSleep == 0) {
+					timeTakesToSleep = theStopWatch.totalTimePassed();
+				}
 			}
 		}
 	}
@@ -443,7 +445,7 @@ namespace DiscordCoreAPI {
 					this->audioDataBuffer.clearContents();
 					this->clearAudioData();
 					while (!stopToken.stop_requested() && this->activeState.load() == VoiceActiveState::Stopped) {
-						DatagramSocketClient::processIO(10000, false, false);
+						DatagramSocketClient::processIO(1000);
 						if (theSendSilenceStopWatch.hasTimePassed()) {
 							theSendSilenceStopWatch.resetTimer();
 							this->sendSpeakingMessage(true);
@@ -456,7 +458,7 @@ namespace DiscordCoreAPI {
 				case VoiceActiveState::Paused: {
 					this->areWePlaying.store(false);
 					while (!stopToken.stop_requested() && this->activeState.load() == VoiceActiveState::Paused) {
-						DatagramSocketClient::processIO(10000, false, false);
+						DatagramSocketClient::processIO(10000);
 						if (theSendSilenceStopWatch.hasTimePassed()) {
 							theSendSilenceStopWatch.resetTimer();
 							this->sendSpeakingMessage(true);
@@ -539,13 +541,8 @@ namespace DiscordCoreAPI {
 						if (newFrame.size() > 0) {
 							this->sendSingleAudioFrame(newFrame);
 						}
-						if (this->streamType != StreamType::None) {
-							DatagramSocketClient::processIO(10, false, true);
-						} else {
-							DatagramSocketClient::processIO(10, false, false);
-							DatagramSocketClient::getInputBuffer();
-						}
-						
+
+						DatagramSocketClient::processIO(10);
 						this->audioData.encodedFrameData.data.clear();
 						this->audioData.encodedFrameData.sampleCount = 0;
 						this->audioData.rawFrameData.data.clear();
@@ -626,7 +623,7 @@ namespace DiscordCoreAPI {
 					std::lock_guard theLock00{ this->voiceUserMutex };
 					if (this->voiceUsers.contains(speakerSsrc)) {
 						auto sampleCount =
-							opus_decode(this->voiceUsers[speakerSsrc].theDecoder, theBuffer.theRawData.data(), static_cast<opus_int32>(theBuffer.theRawData.size()), theBuffer.decodedData.data(), 5760, 0);
+							opus_decode(this->voiceUsers[speakerSsrc].theDecoder, theBuffer.theRawData.data(), theBuffer.theRawData.size(), theBuffer.decodedData.data(), 5760, 0);
 						if (sampleCount <= 0) {
 							std::cout << "Failed to decode user's voice payload." << std::endl;
 						} else {
@@ -919,7 +916,7 @@ namespace DiscordCoreAPI {
 					std::string inputString{};
 					StopWatch theStopWatch{ 2500ms };
 					while (inputString.size() < 74 && !this->doWeQuit->load() && this->activeState.load() != VoiceActiveState::Exiting) {
-						DatagramSocketClient::processIO(10000, false, false);
+						DatagramSocketClient::processIO(10000);
 						std::string theNewString = DatagramSocketClient::getInputBuffer();
 						inputString.insert(inputString.end(), theNewString.begin(), theNewString.end());
 						std::this_thread::sleep_for(1ms);
@@ -1009,13 +1006,7 @@ namespace DiscordCoreAPI {
 							theUpsampledVector.resize(thePayload.decodedData.size());
 						}
 						for (uint32_t x = 0; x < thePayload.decodedData.size(); x++) {
-							if (thePayload.decodedData[x] >= INT16_MAX - 5) {
-								theUpsampledVector[x] += INT16_MAX;
-							} else if (thePayload.decodedData[x] <= INT16_MIN + 5) {
-								theUpsampledVector[x] += INT16_MIN;
-							} else {
-								theUpsampledVector[x] += static_cast<opus_int32>(thePayload.decodedData[x]);
-							}
+							theUpsampledVector[x] += static_cast<opus_int32>(thePayload.decodedData[x]);
 						}
 					}
 				}
@@ -1024,7 +1015,11 @@ namespace DiscordCoreAPI {
 				std::vector<opus_int16> theDownsampledVector{};
 				theDownsampledVector.resize(theUpsampledVector.size());
 				for (int32_t x = 0; x < theUpsampledVector.size(); x++) {
-					theDownsampledVector[x] = static_cast<opus_int16>(theUpsampledVector[x] / voiceUserCount);
+					if (theUpsampledVector[x] >= INT16_MAX - 1 || theUpsampledVector[x] <= INT16_MIN) {
+						theDownsampledVector[x] = static_cast<opus_int16>(theUpsampledVector[x] / voiceUserCount);
+					} else {
+						theDownsampledVector[x] = static_cast<opus_int16>(theUpsampledVector[x]);
+					}
 				}
 				std::vector<char> theEncodedData{};
 				theEncodedData.resize(1276);
