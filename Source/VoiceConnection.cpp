@@ -619,7 +619,7 @@ namespace DiscordCoreAPI {
 				if (decryptedDataString.size() > 0 && (decryptedDataString.size() - 16) > 0) {
 					theBuffer.theRawData.insert(theBuffer.theRawData.begin(), decryptedDataString.begin(), decryptedDataString.end() - 16);
 					theBuffer.decodedData.resize(23040);
-					std::lock_guard theLock{ DatagramSocketClient::theMutex };
+					std::lock_guard theLock00{ this->voiceUserMutex };
 					if (this->voiceUsers.contains(speakerSsrc)) {
 						auto sampleCount =
 							opus_decode(this->voiceUsers[speakerSsrc].theDecoder, theBuffer.theRawData.data(), theBuffer.theRawData.size(), theBuffer.decodedData.data(), 5760, 0);
