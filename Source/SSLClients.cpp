@@ -62,7 +62,6 @@ namespace DiscordCoreInternal {
 	WSADataWrapper::WSADataWrapper() {
 		auto returnValue = WSAStartup(MAKEWORD(2, 2), this->thePtr.get());
 		if (returnValue) {
-
 		}
 	}
 #endif
@@ -124,7 +123,7 @@ namespace DiscordCoreInternal {
 	SOCKETWrapper::operator SOCKET() {
 		return *this->thePtr;
 	}
-	
+
 	sockaddr* sockaddrWrapper::operator->() {
 		return reinterpret_cast<sockaddr*>(&this->thePtr);
 	}
@@ -502,7 +501,7 @@ namespace DiscordCoreInternal {
 			static_cast<sockaddr_in*>(this->theStreamTargetAddress)->sin_port = DiscordCoreAPI::reverseByteOrder(static_cast<unsigned short>(stoi(portNew)));
 			static_cast<sockaddr_in*>(this->theStreamTargetAddress)->sin_family = AF_INET;
 		}
-		
+
 		addrinfoWrapper hints{}, address{};
 		hints->ai_family = AF_INET;
 		hints->ai_socktype = SOCK_DGRAM;
@@ -546,8 +545,8 @@ namespace DiscordCoreInternal {
 				}
 			}
 		}
-		
-	this->areWeStreamConnected = true;
+
+		this->areWeStreamConnected = true;
 
 #ifdef _WIN32
 		u_long value02{ 1 };
@@ -572,8 +571,7 @@ namespace DiscordCoreInternal {
 		FD_SET(this->theSocket, &readSet);
 		FD_ZERO(&writeSet);
 		FD_SET(this->theSocket, &writeSet);
-		auto theFinalFd = static_cast<SOCKET>(this->theSocket) > static_cast<SOCKET>(this->theSocket) ? static_cast<SOCKET>(this->theSocket)
-																															: static_cast<SOCKET>(this->theSocket);
+		auto theFinalFd = static_cast<SOCKET>(this->theSocket) > static_cast<SOCKET>(this->theSocket) ? static_cast<SOCKET>(this->theSocket) : static_cast<SOCKET>(this->theSocket);
 		timeval checkTime{};
 		checkTime.tv_usec = waitTimeInms;
 
