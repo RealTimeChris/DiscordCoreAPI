@@ -1021,12 +1021,7 @@ namespace DiscordCoreAPI {
 			}
 			if (theUpsampledVector.size() > 0) {
 				for (int32_t x = 0; x < theUpsampledVector.size(); x++) {
-					if (theUpsampledVector[x] >= INT16_MAX - 3 || theUpsampledVector[x] <= INT16_MIN + 3) {
-						opus_int16 theInt = static_cast<opus_int16>(theUpsampledVector[x] / voiceUserCount);
-						theDownsampledVector[x] += theInt;
-					} else {
-						theDownsampledVector[x] = static_cast<opus_int16>(theUpsampledVector[x]);
-					}
+					theDownsampledVector[x] += static_cast<opus_int16>(theUpsampledVector[x] / voiceUserCount);
 				}
 				std::vector<char> theEncodedData{};
 				theEncodedData.resize(1276);
