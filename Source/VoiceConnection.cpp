@@ -625,12 +625,12 @@ namespace DiscordCoreAPI {
 					theBuffer.decodedData.resize(23040);
 					std::lock_guard theLock00{ this->voiceUserMutex };
 					if (this->voiceUsers.contains(speakerSsrc)) {
-						auto sampleCount = opus_decode_float(this->voiceUsers[speakerSsrc].theDecoder, theBuffer.theRawData.data(),
-							static_cast<opus_int32>(theBuffer.theRawData.size()), theBuffer.decodedData.data(), 5760, 0);
+						auto sampleCount = opus_decode(this->voiceUsers[speakerSsrc].theDecoder, theBuffer.theRawData.data(), static_cast<opus_int32>(theBuffer.theRawData.size()),
+							theBuffer.decodedData.data(), 5760, 0);
 						if (sampleCount <= 0) {
 							std::cout << "Failed to decode user's voice payload." << std::endl;
 						} else {
-							std::vector<float> theVector{};
+							std::vector<opus_int16> theVector{};
 							theVector.insert(theVector.begin(), theBuffer.decodedData.begin(), theBuffer.decodedData.begin() + (sampleCount * 2));
 							theBuffer.decodedData.clear();
 							theBuffer.decodedData = std::move(theVector);
@@ -994,14 +994,14 @@ namespace DiscordCoreAPI {
 	void VoiceConnection::mixAudio() noexcept {
 		if (this->voiceUsers.size() > 0) {
 			opus_int32 voiceUserCount{};
-			std::vector<float> theUpsampledVector{};
-			std::vector<float> theDownsampledVector{};
+			std::vector<opus_int16> theUpsampledVector{};
+			std::vector<opus_int16> theDownsampledVector{};
 			std::lock_guard theLock00{ this->voiceUserMutex };
 			for (auto& [key, value]: this->voiceUsers) {
 				if (value.thePayloads.size() > 0) {
 					std::unique_lock theLock{ DatagramSocketClient::theMutex };
 					VoicePayload thePayload = value.thePayloads.front();
-
+					//std::cout << "USER ID: " << value.theUserId << std::endl;
 					theLock.unlock();
 					
 					if (value.thePayloads.size() > 0) {
@@ -1021,16 +1021,21 @@ namespace DiscordCoreAPI {
 			}
 			if (theUpsampledVector.size() > 0) {
 				for (int32_t x = 0; x < theUpsampledVector.size(); x++) {
-					if (theUpsampledVector[x] >= 1.0f || theUpsampledVector[x] <= -1.0f) {
-						float theFloat = theUpsampledVector[x] / voiceUserCount;
-						theDownsampledVector[x] = theFloat;
+					if (theUpsampledVector[x] >= 254) {
+						opus_int16 theInt = theUpsampledVector[x] / voiceUserCount;
+						theDownsampledVector[x] += theUpsampledVector[x] + theInt;
+
+					} else if (theUpsampledVector[x] <= -0.99f) {
+						float theFloat = -0.99f - theUpsampledVector[x];
+
+						theDownsampledVector[x] += theUpsampledVector[x] + theFloat;
 					} else {
 						theDownsampledVector[x] = theUpsampledVector[x];
 					}
 				}
 				std::vector<char> theEncodedData{};
 				theEncodedData.resize(1276);
-				auto byteCount = opus_encode_float(this->theEncoder, theDownsampledVector.data(), 960, reinterpret_cast<uint8_t*>(theEncodedData.data()), 1276);
+				auto byteCount = opus_encode(this->theEncoder, theDownsampledVector.data(), 960, reinterpret_cast<uint8_t*>(theEncodedData.data()), 1276);
 				if (byteCount <= 0) {
 					std::cout << "Failed to encode user's voice payload." << std::endl;
 				} else {

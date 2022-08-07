@@ -62,8 +62,8 @@ namespace DiscordCoreAPI {
 	};
 
 	struct VoicePayload {
+		std::vector<opus_int16> decodedData{};
 		std::vector<uint8_t> theRawData{};
-		std::vector<float> decodedData{};
 	};
 
 	struct VoiceUser {
