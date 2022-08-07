@@ -994,7 +994,7 @@ namespace DiscordCoreAPI {
 	void VoiceConnection::mixAudio() noexcept {
 		if (this->voiceUsers.size() > 0) {
 			opus_int32 voiceUserCount{};
-			std::vector<opus_int16> theUpsampledVector{};
+			std::vector<opus_int32> theUpsampledVector{};
 			std::vector<opus_int16> theDownsampledVector{};
 			std::lock_guard theLock00{ this->voiceUserMutex };
 			for (auto& [key, value]: this->voiceUsers) {
@@ -1014,24 +1014,14 @@ namespace DiscordCoreAPI {
 							theDownsampledVector.resize(theUpsampledVector.size());
 						}
 						for (uint32_t x = 0; x < thePayload.decodedData.size(); x++) {
-							theUpsampledVector[x] += thePayload.decodedData[x];
+							theUpsampledVector[x] += static_cast<opus_int32>(thePayload.decodedData[x]);
 						}
 					}
 				}
 			}
 			if (theUpsampledVector.size() > 0) {
 				for (int32_t x = 0; x < theUpsampledVector.size(); x++) {
-					if (theUpsampledVector[x] >= 254) {
-						opus_int16 theInt = theUpsampledVector[x] / voiceUserCount;
-						theDownsampledVector[x] += theUpsampledVector[x] + theInt;
-
-					} else if (theUpsampledVector[x] <= -0.99f) {
-						float theFloat = -0.99f - theUpsampledVector[x];
-
-						theDownsampledVector[x] += theUpsampledVector[x] + theFloat;
-					} else {
-						theDownsampledVector[x] = theUpsampledVector[x];
-					}
+					theDownsampledVector[x] += static_cast<opus_int16>(theUpsampledVector[x] / voiceUserCount);
 				}
 				std::vector<char> theEncodedData{};
 				theEncodedData.resize(1276);
