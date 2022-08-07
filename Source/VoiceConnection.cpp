@@ -1001,7 +1001,9 @@ namespace DiscordCoreAPI {
 					}
 					if (thePayload.decodedData.size() > 0) {
 						voiceUserCount++;
-						theUpsampledVector.resize(thePayload.decodedData.size());
+						if (theUpsampledVector.size() == 0) {
+							theUpsampledVector.resize(thePayload.decodedData.size());
+						}
 						for (uint32_t x = 0; x < thePayload.decodedData.size(); x++) {
 							theUpsampledVector[x] += static_cast<opus_int32>(thePayload.decodedData[x]);
 						}
