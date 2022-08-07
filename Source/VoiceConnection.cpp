@@ -619,13 +619,13 @@ namespace DiscordCoreAPI {
 				if (decryptedDataString.size() > 0 && (decryptedDataString.size() - 16) > 0) {
 					theBuffer.theRawData.insert(theBuffer.theRawData.begin(), decryptedDataString.begin(), decryptedDataString.end() - 16);
 					theBuffer.decodedData.resize(23040);
+					std::lock_guard theLock{ DatagramSocketClient::theMutex };
 					auto sampleCount =
 						opus_decode(this->voiceUsers[speakerSsrc].theDecoder, theBuffer.theRawData.data(), theBuffer.theRawData.size(), theBuffer.decodedData.data(), 5760, 0);
 					if (sampleCount <= 0) {
 						std::cout << "Failed to decode user's voice payload." << std::endl;
 					} else {
 						theBuffer.decodedData.resize(sampleCount * 2);
-						std::lock_guard theLock{ DatagramSocketClient::theMutex };
 						this->voiceUsers[speakerSsrc].thePayloads.push(std::move(theBuffer));
 					}
 				}
