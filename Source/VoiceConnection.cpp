@@ -541,7 +541,7 @@ namespace DiscordCoreAPI {
 							this->sendSingleAudioFrame(newFrame);
 						}
 
-						DatagramSocketClient::processIO(1000);
+						DatagramSocketClient::processIO(10);
 						this->audioData.encodedFrameData.data.clear();
 						this->audioData.encodedFrameData.sampleCount = 0;
 						this->audioData.rawFrameData.data.clear();
