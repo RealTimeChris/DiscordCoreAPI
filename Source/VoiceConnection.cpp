@@ -384,16 +384,13 @@ namespace DiscordCoreAPI {
 					thePayload.theRawData.insert(thePayload.theRawData.begin(), theString.begin(), theString.end());
 					this->theFrameQueue.push(thePayload);
 				} 
-				theStopWatch.resetTimer();				
 				this->streamSocket->processIO(0);
-				this->lastTimeStampInMs.store(this->currentTimeStampInMs.load());
-				this->currentTimeStampInMs.store(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
 				this->parseIncomingVoiceData();
 				this->streamSocket->processIO(0);
 				this->mixAudio();
 				this->streamSocket->processIO(0);
-				std::this_thread::sleep_for(1ms);
 			}
+			std::this_thread::sleep_for(1ms);
 		}
 	}
 
@@ -476,9 +473,6 @@ namespace DiscordCoreAPI {
 					this->audioData.rawFrameData.data.clear();
 
 					while (!stopToken.stop_requested() && this->activeState.load() == VoiceActiveState::Playing) {
-						if (this->originalTimeStampInMs.load() == 0) {
-							this->originalTimeStampInMs.store(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
-						}
 						this->audioDataBuffer.tryReceive(this->audioData);
 						if (!this->streamSocket) {
 							while (this->theFrameQueue.size() > 0) {
@@ -1004,7 +998,11 @@ namespace DiscordCoreAPI {
 				std::vector<opus_int16> theDownsampledVector{};
 				theDownsampledVector.resize(theUpsampledVector.size());
 				for (int32_t x = 0; x < theUpsampledVector.size(); x++) {
-					theDownsampledVector[x] = static_cast<opus_int16>(theUpsampledVector[x] / voiceUserCount);
+					if (theUpsampledVector[x] >= INT16_MAX) {
+						theDownsampledVector[x] = static_cast<opus_int16>(theUpsampledVector[x]) / static_cast<opus_int16>(voiceUserCount);
+					} else {
+						theDownsampledVector[x] = static_cast<opus_int16>(theUpsampledVector[x]);
+					}
 				}
 				std::vector<char> theEncodedData{};
 				theEncodedData.resize(1276);
