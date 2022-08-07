@@ -1011,7 +1011,7 @@ namespace DiscordCoreAPI {
 				theDownsampledVector.resize(theUpsampledVector.size());
 				for (int32_t x = 0; x < theUpsampledVector.size(); x++) {
 					if (theUpsampledVector[x] >= INT16_MAX - 1 || theUpsampledVector[x] <= INT16_MIN) {
-						theDownsampledVector[x] = static_cast<opus_int16>(theUpsampledVector[x]) / static_cast<opus_int16>(voiceUserCount);
+						theDownsampledVector[x] = static_cast<opus_int16>(theUpsampledVector[x] / voiceUserCount);
 					} else {
 						theDownsampledVector[x] = static_cast<opus_int16>(theUpsampledVector[x]);
 					}
