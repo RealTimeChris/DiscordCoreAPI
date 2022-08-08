@@ -156,7 +156,7 @@ namespace DiscordCoreAPI {
 		std::unordered_map<uint32_t, VoiceUser> voiceUsers{};
 		std::atomic_bool areWeConnectedBool{ false };
 		std::queue<ConnectionPackage> connections{};
-		std::queue<VoicePayload> theFrameQueue{};
+		std::deque<VoicePayload> theFrameQueue{};
 		std::atomic_bool areWePlaying{ false };
 		const int64_t maxReconnectTries{ 10 };
 		int64_t currentReconnectTries{ 0 };

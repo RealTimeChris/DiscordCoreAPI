@@ -24,6 +24,70 @@
 
 namespace DiscordCoreAPI {
 
+	OnGuildCreationData& OnGuildCreationData::operator=(const OnGuildCreationData& other) {
+		this->guild = std::make_unique<GuildData>();
+		*this->guild = *other.guild;
+		return *this;
+	}
+
+	OnGuildCreationData::OnGuildCreationData(const OnGuildCreationData& other) {
+		*this = other;
+	}
+
+	OnGuildCreationData& OnGuildCreationData::operator=(OnGuildCreationData&other) {
+		this->guild = std::make_unique<GuildData>();
+		*this->guild = *other.guild;
+		return *this;
+	}
+
+	OnGuildCreationData::OnGuildCreationData(OnGuildCreationData&other){
+		*this = other;
+	}
+
+	OnGuildUpdateData& OnGuildUpdateData::operator=(const OnGuildUpdateData& other) {
+		this->guildNew = std::make_unique<GuildData>();
+		this->guildOld = std::make_unique<GuildData>();
+		*this->guildNew = *other.guildNew;
+		*this->guildOld = *other.guildOld;
+		return *this;
+	}
+
+	OnGuildUpdateData::OnGuildUpdateData(const OnGuildUpdateData& other) {
+		*this = other;
+	}
+
+	OnGuildUpdateData& OnGuildUpdateData::operator=(OnGuildUpdateData& other) {
+		this->guildNew = std::make_unique<GuildData>();
+		this->guildOld = std::make_unique<GuildData>();
+		*this->guildNew = *other.guildNew;
+		*this->guildOld = *other.guildOld;
+		return *this;
+	}
+
+	OnGuildUpdateData::OnGuildUpdateData(OnGuildUpdateData& other) {
+		*this = other;
+	}
+
+	OnGuildDeletionData& OnGuildDeletionData::operator=(const OnGuildDeletionData& other) {
+		this->guild = std::make_unique<GuildData>();
+		*this->guild = *other.guild;
+		return *this;
+	}
+
+	OnGuildDeletionData::OnGuildDeletionData(const OnGuildDeletionData& other) {
+		*this = other;
+	}
+
+	OnGuildDeletionData& OnGuildDeletionData::operator=(OnGuildDeletionData& other) {
+		this->guild = std::make_unique<GuildData>();
+		*this->guild = *other.guild;
+		return *this;
+	}
+
+	OnGuildDeletionData::OnGuildDeletionData(OnGuildDeletionData& other) {
+		*this = other;
+	}
+	
 	DiscordCoreInternal::EventDelegateToken EventManager::onApplicationCommandsPermissionsUpdate(
 		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnApplicationCommandPermissionsUpdateData> handler) {
 		return this->onApplicationCommandPermissionsUpdateEvent.add(std::move(handler));
@@ -478,7 +542,7 @@ namespace DiscordCoreAPI {
 			Channels::insertChannel(dataPackage.channel);
 			GuildData guild = Guilds::getCachedGuildAsync({ dataPackage.channel.guildId }).get();
 			guild.channels.push_back(dataPackage.channel.id);
-			Guilds::insertGuild(guild);
+			Guilds::insertGuild(std::make_unique<GuildData>(guild));
 		}
 		co_return;
 	}
@@ -501,7 +565,7 @@ namespace DiscordCoreAPI {
 					guild.channels.erase(guild.channels.begin() + x);
 				}
 			}
-			Guilds::insertGuild(guild);
+			Guilds::insertGuild(std::make_unique<GuildData>(guild));
 		}
 		co_return;
 	}
@@ -509,7 +573,7 @@ namespace DiscordCoreAPI {
 	CoRoutine<void> EventHandler::onGuildCreation(OnGuildCreationData dataPackage) {
 		co_await NewThreadAwaitable<void>();
 		if (EventHandler::configManager->doWeCacheGuilds()) {
-			Guilds::insertGuild(dataPackage.guild);
+			Guilds::insertGuild(std::move(dataPackage.guild));
 		}
 		co_return;
 	}
@@ -517,7 +581,7 @@ namespace DiscordCoreAPI {
 	CoRoutine<void> EventHandler::onGuildUpdate(OnGuildUpdateData dataPackage) {
 		co_await NewThreadAwaitable<void>();
 		if (EventHandler::configManager->doWeCacheGuilds()) {
-			Guilds::insertGuild(dataPackage.guildNew);
+			Guilds::insertGuild(std::move(dataPackage.guildNew));
 		}
 		co_return;
 	}
@@ -525,17 +589,17 @@ namespace DiscordCoreAPI {
 	CoRoutine<void> EventHandler::onGuildDeletion(OnGuildDeletionData dataPackage) {
 		co_await NewThreadAwaitable<void>();
 		if (EventHandler::configManager->doWeCacheGuilds()) {
-			for (auto& value: dataPackage.guild.members) {
-				GuildMember guildMember = GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = value, .guildId = dataPackage.guild.id }).get();
+			for (auto& value: dataPackage.guild->members) {
+				GuildMember guildMember = GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = value, .guildId = dataPackage.guild->id }).get();
 				GuildMembers::removeGuildMember(guildMember);
 			}
-			for (auto& value: dataPackage.guild.channels) {
+			for (auto& value: dataPackage.guild->channels) {
 				Channels::removeChannel(value);
 			}
-			for (auto& value: dataPackage.guild.roles) {
+			for (auto& value: dataPackage.guild->roles) {
 				Roles::removeRole(value);
 			}
-			Guilds::removeGuild(dataPackage.guild.id);
+			Guilds::removeGuild(dataPackage.guild->id);
 		}
 		co_return;
 	}
@@ -547,7 +611,7 @@ namespace DiscordCoreAPI {
 			GuildData guild = Guilds::getCachedGuildAsync({ dataPackage.guildMember.guildId }).get();
 			guild.members.push_back(dataPackage.guildMember.id);
 			guild.memberCount++;
-			Guilds::insertGuild(guild);
+			Guilds::insertGuild(std::make_unique<GuildData>(guild));
 		}
 		co_return;
 	}
@@ -565,7 +629,7 @@ namespace DiscordCoreAPI {
 				}
 			}
 			guild.memberCount--;
-			Guilds::insertGuild(guild);
+			Guilds::insertGuild(std::make_unique<GuildData>(guild));
 		}
 		co_return;
 	}
@@ -584,7 +648,7 @@ namespace DiscordCoreAPI {
 			Roles::insertRole(dataPackage.role);
 			GuildData guild = Guilds::getCachedGuildAsync({ dataPackage.guildId }).get();
 			guild.roles.push_back(dataPackage.role.id);
-			Guilds::insertGuild(guild);
+			Guilds::insertGuild(std::make_unique<GuildData>(guild));
 		}
 		co_return;
 	}
@@ -607,7 +671,7 @@ namespace DiscordCoreAPI {
 					guild.roles.erase(guild.roles.begin() + x);
 				}
 			}
-			Guilds::insertGuild(guild);
+			Guilds::insertGuild(std::make_unique<GuildData>(guild));
 		}
 		co_return;
 	}
@@ -625,7 +689,7 @@ namespace DiscordCoreAPI {
 		if (EventHandler::configManager->doWeCacheGuildMembers() && EventHandler::configManager->doWeCacheGuilds()) {
 			GuildData guild = Guilds::getCachedGuildAsync({ .guildId = dataPackage.voiceStateData.guildId }).get();
 			guild.voiceStates[dataPackage.voiceStateData.userId] = dataPackage.voiceStateData;
-			Guilds::insertGuild(guild);
+			Guilds::insertGuild(std::make_unique<GuildData>(guild));
 		}
 		co_return;
 	}

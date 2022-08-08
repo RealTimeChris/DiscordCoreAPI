@@ -376,7 +376,7 @@ namespace DiscordCoreAPI {
 		workload.callStack = "Guilds::createGuildAsync()";
 		auto guildNew = Guilds::httpsClient->submitWorkloadAndGetResult<Guild>(workload);
 		guildNew.discordCoreClient = Guilds::discordCoreClient;
-		Guilds::insertGuild(guildNew);
+		Guilds::insertGuild(std::make_unique<GuildData>(guildNew));
 		co_return guildNew;
 	}
 
@@ -409,7 +409,7 @@ namespace DiscordCoreAPI {
 		if (!Guilds::cache->contains(dataPackage.guildId)) {
 			theLock.unlock();
 			auto guildNew = Guilds::getGuildAsync({ .guildId = dataPackage.guildId }).get();
-			Guilds::insertGuild(guildNew);
+			Guilds::insertGuild(std::make_unique<GuildData>(guildNew));
 			co_return guildNew;
 		} else {
 			co_return *(*Guilds::cache)[dataPackage.guildId];
@@ -831,21 +831,15 @@ namespace DiscordCoreAPI {
 		co_return Guilds::httpsClient->submitWorkloadAndGetResult<void>(workload);
 	}
 
-	void Guilds::insertGuild(GuildData guild) {
+	void Guilds::insertGuild(std::unique_ptr<GuildData> guild) {
 		std::unique_lock theLock{ Guilds::theMutex };
-		if (guild.id == 0) {
+		if (guild->id == 0) {
 			return;
 		}
-		auto newCache = std::make_unique<std::unordered_map<Snowflake, std::unique_ptr<GuildData>>>();
-		for (auto& [key, value]: *Guilds::cache) {
-			(*newCache)[key] = std::move(value);
-		}
-		guild.initialize();
+		guild->initialize();
 		if (Guilds::configManager->doWeCacheGuilds()) {
-			(*newCache)[guild.id] = std::make_unique<GuildData>(guild);
+			(*Guilds::cache)[guild->id] = std::move(guild);
 		}
-		Guilds::cache.reset(nullptr);
-		Guilds::cache = std::move(newCache);
 		std::cout << "GUILD COUNT: " << Guilds::cache->size() << std::endl;
 	}
 

@@ -307,7 +307,7 @@ namespace DiscordCoreAPI {
 		if (!isSpeaking) {
 			theData.type = static_cast<DiscordCoreInternal::SendSpeakingType>(0);
 			this->sendSilence();
-			DatagramSocketClient::processIO(10000, DiscordCoreInternal::ProcessIOType::Write_Only);
+			DatagramSocketClient::processIO(DiscordCoreInternal::ProcessIOType::Write_Only);
 		} else {
 			theData.type = DiscordCoreInternal::SendSpeakingType::Microphone;
 			theData.delay = 0;
@@ -353,9 +353,9 @@ namespace DiscordCoreAPI {
 					this->heartBeatStopWatch.resetTimer();
 				}
 				if (!stopToken.stop_requested() && WebSocketSSLShard::areWeStillConnected()) {
-					WebSocketSSLShard::processIO(10000);
+					WebSocketSSLShard::processIO();
 				}
-				if (!stopToken.stop_requested() && WebSocketSSLShard::areWeStillConnected() && WebSocketSSLShard::inputBuffer.size() > 0) {
+				if (!stopToken.stop_requested() && WebSocketSSLShard::areWeStillConnected() && WebSocketSSLShard::inputBuffer.theBuffer.size() > 0) {
 					this->parseMessage(this);
 				}
 				if (!stopToken.stop_requested() && WebSocketSSLShard::areWeStillConnected() && this->processedMessages.size() > 0) {
@@ -380,17 +380,17 @@ namespace DiscordCoreAPI {
 			if (theStopWatch.hasTimePassed()) {
 				theStopWatch.resetTimer();
 				for (uint32_t x = 0; x < this->voiceUsers.size(); x++) {
-					DatagramSocketClient::processIO(0, DiscordCoreInternal::ProcessIOType::Read_Only);
-					std::string theString = DatagramSocketClient::getInputBuffer();
+					DatagramSocketClient::processIO(DiscordCoreInternal::ProcessIOType::Read_Only);
+					auto& theString = DatagramSocketClient::getInputBuffer();
 					VoicePayload thePayload{};
-					thePayload.theRawData.insert(thePayload.theRawData.begin(), theString.begin(), theString.end());
-					this->theFrameQueue.push(thePayload);
+					thePayload.theRawData.insert(thePayload.theRawData.begin(), theString.theBuffer.begin(), theString.theBuffer.end());
+					this->theFrameQueue.emplace_back(thePayload);
 				}
-				this->streamSocket->processIO(0, DiscordCoreInternal::ProcessIOType::Both);
+				this->streamSocket->processIO(DiscordCoreInternal::ProcessIOType::Both);
 				this->parseIncomingVoiceData();
-				this->streamSocket->processIO(0, DiscordCoreInternal::ProcessIOType::Both);
+				this->streamSocket->processIO(DiscordCoreInternal::ProcessIOType::Both);
 				this->mixAudio();
-				this->streamSocket->processIO(0, DiscordCoreInternal::ProcessIOType::Both);
+				this->streamSocket->processIO(DiscordCoreInternal::ProcessIOType::Both);
 
 				if (timeTakesToSleep == 0) {
 					theStopWatch.resetTimer();
@@ -408,11 +408,11 @@ namespace DiscordCoreAPI {
 	bool VoiceConnection::collectAndProcessAMessage(VoiceConnectionState stateToWaitFor) noexcept {
 		DiscordCoreAPI::StopWatch theStopWatch{ 2500ms };
 		while (!this->doWeQuit->load() && this->connectionState.load() != stateToWaitFor) {
-			WebSocketSSLShard::processIO(10000);
+			WebSocketSSLShard::processIO();
 			if (!WebSocketSSLShard::areWeStillConnected()) {
 				return false;
 			}
-			if (WebSocketSSLShard::inputBuffer.size() > 0) {
+			if (WebSocketSSLShard::inputBuffer.theBuffer.size() > 0) {
 				if (!this->parseMessage(this)) {
 					return false;
 				}
@@ -445,7 +445,7 @@ namespace DiscordCoreAPI {
 					this->audioDataBuffer.clearContents();
 					this->clearAudioData();
 					while (!stopToken.stop_requested() && this->activeState.load() == VoiceActiveState::Stopped) {
-						DatagramSocketClient::processIO(1000, DiscordCoreInternal::ProcessIOType::Both);
+						DatagramSocketClient::processIO(DiscordCoreInternal::ProcessIOType::Both);
 						if (theSendSilenceStopWatch.hasTimePassed()) {
 							theSendSilenceStopWatch.resetTimer();
 							this->sendSpeakingMessage(true);
@@ -458,7 +458,7 @@ namespace DiscordCoreAPI {
 				case VoiceActiveState::Paused: {
 					this->areWePlaying.store(false);
 					while (!stopToken.stop_requested() && this->activeState.load() == VoiceActiveState::Paused) {
-						DatagramSocketClient::processIO(1000, DiscordCoreInternal::ProcessIOType::Both);
+						DatagramSocketClient::processIO(DiscordCoreInternal::ProcessIOType::Both);
 						if (theSendSilenceStopWatch.hasTimePassed()) {
 							theSendSilenceStopWatch.resetTimer();
 							this->sendSpeakingMessage(true);
@@ -487,7 +487,7 @@ namespace DiscordCoreAPI {
 						this->audioDataBuffer.tryReceive(this->audioData);
 						if (!this->streamSocket) {
 							while (this->theFrameQueue.size() > 0) {
-								this->theFrameQueue.pop();
+								this->theFrameQueue.pop_front();
 							}
 						}
 						theStopWatch.resetTimer();
@@ -542,10 +542,10 @@ namespace DiscordCoreAPI {
 							this->sendSingleAudioFrame(newFrame);
 						}
 						if (this->streamType == StreamType::None) {
-							DatagramSocketClient::processIO(10, DiscordCoreInternal::ProcessIOType::Both);
+							DatagramSocketClient::processIO(DiscordCoreInternal::ProcessIOType::Both);
 							DatagramSocketClient::getInputBuffer();
 						} else {
-							DatagramSocketClient::processIO(10, DiscordCoreInternal::ProcessIOType::Write_Only);
+							DatagramSocketClient::processIO(DiscordCoreInternal::ProcessIOType::Write_Only);
 						}
 
 						this->audioData.encodedFrameData.data.clear();
@@ -578,7 +578,7 @@ namespace DiscordCoreAPI {
 	void VoiceConnection::parseIncomingVoiceData() noexcept {
 		while (this->theFrameQueue.size() > 0) {
 			auto theBuffer = this->theFrameQueue.front();
-			this->theFrameQueue.pop();
+			this->theFrameQueue.pop_front();
 			if (theBuffer.theRawData.size() > 0 && this->secretKeySend.size() > 0) {
 				std::vector<uint8_t> packet{};
 				packet.insert(packet.begin(), theBuffer.theRawData.begin(), theBuffer.theRawData.end());
@@ -640,10 +640,10 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-		auto theBuffer = this->streamSocket->getInputBuffer();
+		auto& theBuffer = this->streamSocket->getInputBuffer();
 
 		AudioFrameData theFrame{};
-		theFrame.encodedFrameData.data.insert(theFrame.encodedFrameData.data.begin(), theBuffer.begin(), theBuffer.end());
+		theFrame.encodedFrameData.data.insert(theFrame.encodedFrameData.data.begin(), theBuffer.theBuffer.begin(), theBuffer.theBuffer.end());
 		theFrame.encodedFrameData.sampleCount = 960;
 		theFrame.type = AudioFrameType::Encoded;
 		this->audioDataBuffer.send(std::move(theFrame));
@@ -745,7 +745,7 @@ namespace DiscordCoreAPI {
 					this->connectInternal();
 					return;
 				}
-				WebSocketSSLShard::processIO(200000);
+				WebSocketSSLShard::processIO();
 				if (!this->parseConnectionHeaders(this)) {
 					this->currentReconnectTries++;
 					this->onClosedVoice();
@@ -921,9 +921,9 @@ namespace DiscordCoreAPI {
 					std::string inputString{};
 					StopWatch theStopWatch{ 2500ms };
 					while (inputString.size() < 74 && !this->doWeQuit->load() && this->activeState.load() != VoiceActiveState::Exiting) {
-						DatagramSocketClient::processIO(10000, DiscordCoreInternal::ProcessIOType::Both);
-						std::string theNewString = DatagramSocketClient::getInputBuffer();
-						inputString.insert(inputString.end(), theNewString.begin(), theNewString.end());
+						DatagramSocketClient::processIO(DiscordCoreInternal::ProcessIOType::Both);
+						auto& theNewString = DatagramSocketClient::getInputBuffer();
+						inputString.insert(inputString.end(), theNewString.theBuffer.begin(), theNewString.theBuffer.end());
 						std::this_thread::sleep_for(1ms);
 						if (theStopWatch.hasTimePassed()) {
 							return false;

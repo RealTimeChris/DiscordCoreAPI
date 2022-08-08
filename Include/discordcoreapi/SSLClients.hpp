@@ -67,6 +67,12 @@ namespace DiscordCoreInternal {
 
 	using SOCKET = int32_t;
 
+	struct DataBuffer {
+		int64_t writeOffsetIntoBuffer{};
+		int64_t readOffsetIntoBuffer{};
+		std::string theBuffer{};
+	};
+
 	struct ConnectionError : public std::runtime_error {
 		explicit ConnectionError(const std::string& theString);
 	};
@@ -197,7 +203,7 @@ namespace DiscordCoreInternal {
 
 		virtual ProcessIOResult writeData(const std::string& data, bool priority = false) noexcept = 0;
 
-		virtual std::string getInputBuffer() noexcept = 0;
+		virtual DataBuffer& getInputBuffer() noexcept = 0;
 
 		virtual int64_t getBytesRead() noexcept = 0;
 
@@ -205,8 +211,9 @@ namespace DiscordCoreInternal {
 
 	  protected:
 		int32_t maxBufferSize{ (1024 * 16) - 1 };
-		std::vector<std::string> outputBuffers{};
-		std::string inputBuffer{};
+		std::deque<std::string> outputBuffers{};
+		std::string rawInputBuffer{};
+		DataBuffer inputBuffer{};
 		bool wantWrite{ true };
 		bool wantRead{ false };
 		int64_t bytesRead{ 0 };
@@ -222,13 +229,13 @@ namespace DiscordCoreInternal {
 
 		bool connect(const std::string& baseUrl, const std::string& portNew) noexcept;
 
-		ProcessIOResult processIO(int32_t waitTimeInMs) noexcept;
-
 		ProcessIOResult writeDataProcess() noexcept;
 
 		ProcessIOResult readDataProcess() noexcept;
 
-		std::string getInputBuffer() noexcept;
+		DataBuffer& getInputBuffer() noexcept;
+
+		ProcessIOResult processIO() noexcept;
 
 		bool areWeStillConnected() noexcept;
 
@@ -247,11 +254,11 @@ namespace DiscordCoreInternal {
 
 		bool connect(const std::string& baseUrlNew, const std::string& portNew) noexcept;
 
-		void processIO(int32_t waitTimeInms, ProcessIOType theType) noexcept;
+		void processIO(ProcessIOType theType) noexcept;
 
 		void writeData(std::string& data) noexcept;
 
-		std::string getInputBuffer() noexcept;
+		DataBuffer& getInputBuffer() noexcept;
 
 		bool areWeStillConnected() noexcept;
 
@@ -269,12 +276,13 @@ namespace DiscordCoreInternal {
 		sockaddrWrapper theStreamCurrentAddress{};
 		sockaddrWrapper theStreamTargetAddress{};
 		const int32_t maxBufferSize{ 1024 * 16 };
-		std::vector<std::string> outputBuffers{};
-		std::vector<std::string> inputBuffers{};
+		std::deque<std::string> outputBuffers{};
 		DiscordCoreAPI::StreamType streamType{};
 		bool areWeStreamConnected{ false };
 		std::recursive_mutex theMutex{};
+		std::string rawInputBuffer{};
 		SOCKETWrapper theSocket{};
+		DataBuffer inputBuffer{};
 		int64_t bytesRead{};
 	};
 }// namespace DiscordCoreInternal

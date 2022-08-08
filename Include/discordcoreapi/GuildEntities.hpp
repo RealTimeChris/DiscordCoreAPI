@@ -565,7 +565,7 @@ namespace DiscordCoreAPI {
 		static ConfigManager* configManager;
 		static std::shared_mutex theMutex;
 
-		static void insertGuild(GuildData guild);
+		static void insertGuild(std::unique_ptr<GuildData> guild);
 
 		static void removeGuild(const Snowflake& GuildId);
 	};

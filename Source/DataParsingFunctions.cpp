@@ -37,60 +37,6 @@
 
 namespace DiscordCoreAPI {
 
-	uint8_t get_uint8(simdjson::ondemand::document& j, const char* keyname) {
-		auto k = j.find_field_unordered(keyname);
-		try {
-			return static_cast<uint8_t>(k.value().get_number().value().get_number_type());
-		} catch (...) {
-			return 0;
-		}
-	}
-
-	uint16_t get_uint16(simdjson::ondemand::document& j, const char* keyname) {
-		auto k = j.find_field_unordered(keyname);
-		try {
-			return static_cast<uint16_t>(k.value().get_number().value().get_number_type());
-		} catch (...) {
-			return 0;
-		}
-	}
-
-	uint32_t get_uint32(simdjson::ondemand::document& j, const char* keyname) {
-		auto k = j.find_field_unordered(keyname);
-		try {
-			return k.value().get_int64();
-		} catch (...) {
-			return 0;
-		}
-	}
-
-	uint64_t get_uint64(simdjson::ondemand::document& j, const char* keyname) {
-		auto k = j.find_field_unordered(keyname);
-		try {
-			return k.value().get_int64();
-		} catch (...) {
-			return 0;
-		}
-	}
-
-	bool get_bool(simdjson::ondemand::document& j, const char* keyname) {
-		auto k = j.find_field_unordered(keyname);
-		try {
-			return k.value().get_bool();
-		} catch (...) {
-			return 0;
-		}
-	}
-
-	std::string get_string(simdjson::ondemand::document& j, const char* keyname) {
-		auto k = j.find_field_unordered(keyname);
-		try {
-			return std::string{ k.value().get_string().value() };
-		} catch (...) {
-			return 0;
-		}
-	}
-
 	nlohmann::json get_object(const nlohmann::json& j, const char* keyname) {
 		auto k = j.find(keyname);
 		if (k != j.end()) {
@@ -1767,7 +1713,10 @@ namespace DiscordCoreAPI {
 	}
 
 	void GuildMemberData::parseObject(const nlohmann::json& jsonObjectData, GuildMemberData* pDataStructure) {
-		pDataStructure->roles.insert(pDataStructure->roles.begin(), get_array(jsonObjectData, "roles").begin(), get_array(jsonObjectData, "roles").end());
+		auto theArray = get_array(jsonObjectData, "roles");
+		for (auto& value: theArray) {
+			pDataStructure->roles.push_back(stoull(value.get<std::string>()));
+		}
 
 		pDataStructure->permissions = get_string(jsonObjectData, "permissions");
 
@@ -1821,7 +1770,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void OverWriteData::parseObject(const nlohmann::json& jsonObjectData, OverWriteData* pDataStructure) {
-		pDataStructure->type = static_cast<PermissionOverwritesType>(get_uint8(jsonObjectData, "type"));
+		pDataStructure->type = static_cast<PermissionOverwritesType>(get_uint32(jsonObjectData, "type"));
 
 		pDataStructure->allow = get_string(jsonObjectData, "allow");
 
@@ -2895,73 +2844,6 @@ namespace DiscordCoreAPI {
 		for (auto& value: theArray05) {
 			PresenceUpdateData newData{ value };
 			pDataStructure->presences[newData.user.id] = newData;
-		}
-	}
-
-	void GuildData::parseObject(simdjson::ondemand::document& jsonObjectData, GuildData* pDataStructure) {
-		pDataStructure->id = stoull(get_string(jsonObjectData, "id"));
-
-		std::string iconUrlString = "https://cdn.discordapp.com/";
-		iconUrlString += "icons/" + std::to_string(pDataStructure->id) + "/" + get_string(jsonObjectData, "icon") + ".png";
-		pDataStructure->icon = iconUrlString;
-
-		pDataStructure->name = get_string(jsonObjectData, "name");
-
-		pDataStructure->joinedAt = get_string(jsonObjectData, "joined_at");
-
-		pDataStructure->flags = setBool<int8_t, GuildFlags>(pDataStructure->flags, GuildFlags::Owner, get_bool(jsonObjectData, "owner"));
-
-		pDataStructure->ownerId = stoull(get_string(jsonObjectData, "owner_id"));
-		auto theArray = jsonObjectData["features"].get_array().value();
-		for (int32_t x = 0; x < theArray.count_elements().value(); x++) {
-			pDataStructure->features.push_back(StringWrapper{ std::string{ theArray.at(x).get_string().value() } });
-		}
-
-		auto theArray01 = jsonObjectData["roles"].get_array().value();
-		pDataStructure->roles.clear();
-		for (int32_t x = 0; x < theArray01.count_elements(); x++) {
-			RoleData newData{ theArray01.at(x).get_string().value() };
-			pDataStructure->roles.push_back(newData.id);
-			this->insertRole(newData);
-		}
-
-		pDataStructure->flags = setBool<int8_t, GuildFlags>(pDataStructure->flags, GuildFlags::WidgetEnabled, get_bool(jsonObjectData, "widget_enabled"));
-
-		pDataStructure->flags = setBool<int8_t, GuildFlags>(pDataStructure->flags, GuildFlags::Large, get_bool(jsonObjectData, "large"));
-
-		pDataStructure->flags = setBool<int8_t, GuildFlags>(pDataStructure->flags, GuildFlags::Unavailable, get_bool(jsonObjectData, "unavailable"));
-
-		pDataStructure->memberCount = get_uint32(jsonObjectData, "member_count");
-
-		pDataStructure->voiceStates.clear();
-		auto theArray02 = jsonObjectData["voice_states"].get_array().value();
-		for (int32_t x = 0; x < theArray02.count_elements(); x++) {
-			VoiceStateData newData{ theArray02.at(x).get_string().value() };
-			pDataStructure->voiceStates[newData.userId] = newData;
-		}
-
-		pDataStructure->members.clear();
-		auto theArray03 = jsonObjectData["members"].get_array().value();
-		for (int32_t x = 0; x < theArray03.count_elements(); x++) {
-			GuildMemberData newData{ theArray03.at(x).get_string().value() };
-			newData.guildId = pDataStructure->id;
-			pDataStructure->members.push_back(newData.id);
-			this->insertGuildMember(newData);
-		}
-
-		pDataStructure->channels.clear();
-		auto theArray04 = jsonObjectData["channels"].get_array().value();
-		for (int32_t x = 0; x < theArray04.count_elements(); x++) {
-			ChannelData newData{ theArray04.at(x).get_string().value() };
-			newData.guildId = pDataStructure->id;
-			pDataStructure->channels.push_back(newData.id);
-			this->insertChannel(newData);
-		}
-
-		pDataStructure->presences.clear();
-		auto theArray05 = jsonObjectData["presences"].get_array().value();
-		for (int32_t x = 0; x < theArray05.count_elements(); x++) {
-			PresenceUpdateData newData{ theArray05.at(x).get_string().value() };
 		}
 	}
 

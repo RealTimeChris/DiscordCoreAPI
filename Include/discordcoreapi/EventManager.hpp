@@ -121,18 +121,33 @@ namespace DiscordCoreAPI {
 
 	/// Data that is received as part of a Guild creation event. \brief Data that is received as part of a Guild creation event.
 	struct DiscordCoreAPI_Dll OnGuildCreationData {
-		Guild guild{};///< The new Guild.
+		OnGuildCreationData() = default;
+		OnGuildCreationData& operator=(const OnGuildCreationData&);
+		OnGuildCreationData(const OnGuildCreationData&);
+		OnGuildCreationData& operator=(OnGuildCreationData&);
+		OnGuildCreationData(OnGuildCreationData&);
+		std::unique_ptr<GuildData> guild{};///< The new Guild.
 	};
 
 	/// Data that is received as part of a Guild update event. \brief Data that is received as part of a Guild update event.
 	struct DiscordCoreAPI_Dll OnGuildUpdateData {
-		GuildData guildOld{};///< The old Guild.
-		GuildData guildNew{};///< The new, updated Guild.
+		OnGuildUpdateData() = default;
+		OnGuildUpdateData& operator=(const OnGuildUpdateData&);
+		OnGuildUpdateData(const OnGuildUpdateData&);
+		OnGuildUpdateData& operator=(OnGuildUpdateData&);
+		OnGuildUpdateData(OnGuildUpdateData&);
+		std::unique_ptr<GuildData> guildOld{};///< The old Guild.
+		std::unique_ptr<GuildData> guildNew{};///< The new, updated Guild.
 	};
 
 	/// Data that is received as part of a Guild deletion event. \brief Data that is received as part of a Guild deletion event.
 	struct DiscordCoreAPI_Dll OnGuildDeletionData {
-		Guild guild{};///< The deleted Guild.
+		OnGuildDeletionData() = default;
+		OnGuildDeletionData& operator=(const OnGuildDeletionData&);
+		OnGuildDeletionData(const OnGuildDeletionData&);
+		OnGuildDeletionData& operator=(OnGuildDeletionData&);
+		OnGuildDeletionData(OnGuildDeletionData&);
+		std::unique_ptr<GuildData> guild{};///< The deleted Guild.
 	};
 
 	/// Data that is received as part of a Guild ban add event. \brief Data that is received as part of a Guild ban add event.

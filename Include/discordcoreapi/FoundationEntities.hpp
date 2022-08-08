@@ -2105,7 +2105,6 @@ namespace DiscordCoreAPI {
 			StreamType streamType = StreamType::None, StreamInfo streamInfo = StreamInfo{});
 
 		void insertGuildMember(GuildMemberData theData);
-
 		void insertChannel(ChannelData theData);
 
 		void insertRole(RoleData theData);
@@ -2120,7 +2119,6 @@ namespace DiscordCoreAPI {
 
 	  protected:
 		void parseObject(const nlohmann::json& jsonObjectData, GuildData* pDataStructure);
-		void parseObject(simdjson::ondemand::document& jsonObjectData, GuildData* pDataStructure);
 	};
 
 	class DiscordCoreAPI_Dll GuildDataVector : public DataParser<GuildDataVector> {

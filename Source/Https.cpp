@@ -92,27 +92,24 @@ namespace DiscordCoreInternal {
 		return theReturnString;
 	}
 
-	void HttpsRnRBuilder::parseHeaders(HttpsResponseData& theData, std::string& other) {
+	void HttpsRnRBuilder::parseHeaders(HttpsResponseData& theData, DataBuffer& other) {
 		try {
-			if (other.find("\r\n\r\n") != std::string::npos) {
+			if (other.theBuffer.find("\r\n\r\n") != std::string::npos) {
 				DiscordCoreAPI::StopWatch theStopWatch{ 1500ms };
-				std::string newString{};
-				newString.insert(newString.begin(), other.begin(), other.begin() + other.find("\r\n\r\n") + std::string("\r\n\r\n").size());
-				other.erase(other.begin(), other.begin() + newString.size());
-				while (newString.size() > 0 && newString.find(":") != std::string::npos && newString.find("\r\n") != std::string::npos) {
+				other.readOffsetIntoBuffer += other.theBuffer.find("\r\n\r\n") + std::string("\r\n\r\n").size();
+				while (other.theBuffer.size() > 0 && other.theBuffer.find(":") != std::string::npos && other.theBuffer.find("\r\n") != std::string::npos) {
 					if (theStopWatch.hasTimePassed()) {
 						break;
 					}
 					int64_t currentOffset{ 0 };
-					std::string lineString = newString.substr(0, newString.find("\r\n") + 2);
+					std::string lineString = other.theBuffer.substr(0, other.theBuffer.find("\r\n") + 2);
 					currentOffset = lineString.size();
 					std::string key = lineString.substr(0, lineString.find(":"));
 					std::string value = lineString.substr(lineString.find(":") + 2, lineString.size() - key.size() - 2);
 					value = value.substr(0, value.find("\r\n"));
 					theData.responseHeaders[key] = value;
 					std::string tempString{};
-					tempString.insert(tempString.begin(), newString.begin() + currentOffset, newString.end());
-					newString = tempString;
+					tempString.insert(tempString.begin(), other.theBuffer.begin() + currentOffset, other.theBuffer.end());
 				}
 				if (theData.responseHeaders.contains("Transfer-Encoding") && theData.responseHeaders["Transfer-Encoding"] == "chunked" ||
 					theData.responseHeaders.contains("transfer-encoding") && theData.responseHeaders["transfer-encoding"] == "chunked") {
@@ -126,25 +123,26 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	bool HttpsRnRBuilder::parseChunk(HttpsResponseData& theData, std::string& other) {
+	bool HttpsRnRBuilder::parseChunk(HttpsResponseData& theData, DataBuffer& other) {
 		if (this->isItChunked) {
-			if (other.find("\r\n0\r\n\r\n") != std::string::npos) {
+			if (other.theBuffer.find("\r\n0\r\n\r\n") != std::string::npos) {
 				DiscordCoreAPI::StopWatch theStopWatch{ 1500ms };
-				while (other.find("\r\n") != other.find("\r\n0\r\n\r\n")) {
+				while (other.theBuffer.find("\r\n") != other.theBuffer.find("\r\n0\r\n\r\n")) {
 					if (theStopWatch.hasTimePassed()) {
 						break;
 					}
 					this->clearCRLF(other);
 					this->parseSize(theData, other);
 					this->clearCRLF(other);
-					if (other.find("\r\n") != other.find("\r\n0\r\n\r\n")) {
-						theData.responseMessage.insert(theData.responseMessage.end(), other.begin(), other.begin() + other.find("\r\n"));
-						other.erase(other.begin(), other.begin() + other.find("\r\n") + 2);
+					if (other.theBuffer.find("\r\n") != other.theBuffer.find("\r\n0\r\n\r\n")) {
+						theData.responseMessage.insert(theData.responseMessage.end(), other.theBuffer.begin(), other.theBuffer.begin() + other.theBuffer.find("\r\n"));
+						other.readOffsetIntoBuffer += other.theBuffer.find("\r\n") + 2;
 					}
 				}
-				theData.responseMessage.insert(theData.responseMessage.end(), other.begin(), other.begin() + other.find("\r\n0\r\n\r\n"));
+				theData.responseMessage.insert(theData.responseMessage.end(), other.theBuffer.begin(), other.theBuffer.begin() + other.theBuffer.find("\r\n0\r\n\r\n"));
 				return false;
 			} else {
+				other.readOffsetIntoBuffer = 0;
 				return true;
 			}
 		} else {
@@ -154,16 +152,17 @@ namespace DiscordCoreInternal {
 			if (theData.contentSize == 0) {
 				return false;
 			}
-			if (other.size() >= static_cast<size_t>(theData.contentSize)) {
-				theData.responseMessage.insert(theData.responseMessage.end(), other.begin(), other.begin() + theData.contentSize);
+			if (other.theBuffer.size() >= static_cast<size_t>(theData.contentSize)) {
+				theData.responseMessage.insert(theData.responseMessage.end(), other.theBuffer.begin(), other.theBuffer.begin() + theData.contentSize);
 				return false;
 			} else {
+				other.readOffsetIntoBuffer = 0;
 				return true;
 			}
 		}
 	}
 
-	void HttpsRnRBuilder::parseSize(HttpsResponseData& theData, std::string& other) {
+	void HttpsRnRBuilder::parseSize(HttpsResponseData& theData, DataBuffer& other) {
 		try {
 			if (theData.responseHeaders.contains("Content-Length")) {
 				theData.contentSize = stoll(theData.responseHeaders["Content-Length"]);
@@ -174,10 +173,10 @@ namespace DiscordCoreInternal {
 			std::string theValueString{};
 			uint64_t hexIndex{ 0 };
 			bool isThereHexValues{ false };
-			for (uint64_t x = 0; x < other.size(); x++) {
-				if (isxdigit(other[x]) != 0 && static_cast<int32_t>(other[x]) != EOF) {
+			for (uint64_t x = 0; x < other.theBuffer.size(); x++) {
+				if (isxdigit(other.theBuffer[x]) != 0 && static_cast<int32_t>(other.theBuffer[x]) != EOF) {
 					isThereHexValues = true;
-					theValueString.push_back(other[x]);
+					theValueString.push_back(other.theBuffer[x]);
 				} else {
 					hexIndex = x;
 					break;
@@ -187,7 +186,7 @@ namespace DiscordCoreInternal {
 				theData.contentSize += 0;
 			} else {
 				theData.contentSize += stoll(theValueString, nullptr, 16);
-				other.erase(other.begin(), other.begin() + hexIndex);
+				other.readOffsetIntoBuffer += hexIndex;
 				this->doWeHaveContentSize = true;
 				theData.theCurrentState = HttpsState::Collecting_Contents;
 			}
@@ -196,40 +195,39 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void HttpsRnRBuilder::parseCode(HttpsResponseData& theData, std::string& otherNew) {
-		std::string other = otherNew;
-		if (other.find("HTTP/1.") != std::string::npos) {
+	void HttpsRnRBuilder::parseCode(HttpsResponseData& theData, DataBuffer& other) {
+		if (other.theBuffer.find("HTTP/1.") != std::string::npos) {
 			uint64_t firstNumberIndex{ 0 };
 			uint64_t lastNumberIndex{ 0 };
 			bool haveWeStarted{ false };
-			for (size_t x = other.find("HTTP/1.") + std::string("HTTP/1.").size() + 1; x < other.size(); x++) {
-				if (!haveWeStarted && (isalnum(static_cast<uint8_t>(other[x])) != 0)) {
+			for (size_t x = other.theBuffer.find("HTTP/1.") + std::string("HTTP/1.").size() + 1; x < other.theBuffer.size(); x++) {
+				if (!haveWeStarted && (isalnum(static_cast<uint8_t>(other.theBuffer[x])) != 0)) {
 					firstNumberIndex = x;
 					haveWeStarted = true;
-				} else if (haveWeStarted && (isalnum(static_cast<uint8_t>(other[x])) == 0)) {
+				} else if (haveWeStarted && (isalnum(static_cast<uint8_t>(other.theBuffer[x])) == 0)) {
 					lastNumberIndex = x;
 					break;
 				}
 			}
-			theData.responseCode = stoll(other.substr(firstNumberIndex, lastNumberIndex - firstNumberIndex));
-			otherNew.erase(otherNew.begin(), otherNew.begin() + otherNew.find("\r\n"));
+			theData.responseCode = stoll(other.theBuffer.substr(firstNumberIndex, lastNumberIndex - firstNumberIndex));
+			other.readOffsetIntoBuffer += other.theBuffer.find("\r\n");
 			theData.theCurrentState = HttpsState::Collecting_Headers;
-		} else if (other.size() > 7 && other.find("HTTP/1.") == std::string::npos) {
+		} else if (other.theBuffer.size() > 7 && other.theBuffer.find("HTTP/1.") == std::string::npos) {
 			theData.responseCode = 200;
 			theData.theCurrentState = HttpsState::Collecting_Contents;
 		}
 	}
 
-	void HttpsRnRBuilder::clearCRLF(std::string& other) {
+	void HttpsRnRBuilder::clearCRLF(DataBuffer& other) {
 		uint64_t theCount{ 0 };
-		for (uint64_t x = 0; x < other.size(); x++) {
-			if (isspace(static_cast<uint8_t>(other[x])) != 0) {
+		for (uint64_t x = 0; x < other.theBuffer.size(); x++) {
+			if (isspace(static_cast<uint8_t>(other.theBuffer[x])) != 0) {
 				theCount++;
 			} else {
 				break;
 			}
 		}
-		other.erase(other.begin(), other.begin() + theCount);
+		other.readOffsetIntoBuffer += theCount;
 	}
 
 	void HttpsConnection::disconnect(bool) noexcept {
@@ -242,12 +240,13 @@ namespace DiscordCoreInternal {
 	}
 
 	void HttpsConnection::resetValues() {
+		SSLDataInterface::inputBuffer.writeOffsetIntoBuffer = 0;
+		SSLDataInterface::inputBuffer.readOffsetIntoBuffer = 0;
+		SSLDataInterface::inputBuffer.theBuffer.clear();
 		SSLDataInterface::maxBufferSize = 1024 * 16 - 1;
 		SSLDataInterface::outputBuffers.clear();
-		SSLDataInterface::inputBuffer.clear();
 		this->doWeHaveContentSize = false;
 		SSLDataInterface::bytesRead = 0;
-		this->inputBufferReal.clear();
 		this->doWeHaveHeaders = false;
 		this->isItChunked = false;
 	}
@@ -476,28 +475,22 @@ namespace DiscordCoreInternal {
 		HttpsResponseData theData{};
 		try {
 			DiscordCoreAPI::StopWatch stopWatch{ 4500ms };
-			theConnection.getInputBuffer().clear();
 			theConnection.resetValues();
 			bool doWeReturn{ false };
 			while (true) {
-				auto theResult = theConnection.processIO(10000);
+				auto theResult = theConnection.processIO();
 				if (theResult == ProcessIOResult::SSL_Zero_Return) {
 					doWeReturn = true;
 				} else if (theResult != ProcessIOResult::No_Error && theResult != ProcessIOResult::Select_No_Return) {
 					theData.responseCode = -1;
 					doWeReturn = true;
 				}
-				std::string theString = theConnection.getInputBuffer();
-				theConnection.getInputBuffer().clear();
-				if (theString.size() > 0) {
-					theConnection.inputBufferReal.insert(theConnection.inputBufferReal.end(), theString.begin(), theString.end());
-				}
 				switch (theData.theCurrentState) {
 					case HttpsState::Collecting_Code: {
 						if (stopWatch.hasTimePassed()) {
 							doWeReturn = true;
 						}
-						theConnection.parseCode(theData, theConnection.inputBufferReal);
+						theConnection.parseCode(theData, theConnection.inputBuffer);
 						stopWatch.resetTimer();
 						if (theData.responseCode > 201) {
 							doWeReturn = true;
@@ -509,7 +502,7 @@ namespace DiscordCoreInternal {
 							doWeReturn = true;
 						}
 						if (!theConnection.doWeHaveHeaders) {
-							theConnection.parseHeaders(theData, theConnection.inputBufferReal);
+							theConnection.parseHeaders(theData, theConnection.inputBuffer);
 							stopWatch.resetTimer();
 						}
 						break;
@@ -519,15 +512,15 @@ namespace DiscordCoreInternal {
 							doWeReturn = true;
 						}
 						if (!theConnection.doWeHaveContentSize) {
-							theConnection.clearCRLF(theConnection.inputBufferReal);
-							theConnection.parseSize(theData, theConnection.inputBufferReal);
-							theConnection.clearCRLF(theConnection.inputBufferReal);
+							theConnection.clearCRLF(theConnection.inputBuffer);
+							theConnection.parseSize(theData, theConnection.inputBuffer);
+							theConnection.clearCRLF(theConnection.inputBuffer);
 							stopWatch.resetTimer();
 						}
 						break;
 					}
 					case HttpsState::Collecting_Contents: {
-						auto theResult = theConnection.parseChunk(theData, theConnection.inputBufferReal);
+						auto theResult = theConnection.parseChunk(theData, theConnection.inputBuffer);
 						if ((theData.responseMessage.size() >= theData.contentSize && !theResult) || stopWatch.hasTimePassed() || !theResult ||
 							(theData.responseCode == -5 && theData.contentSize == -5)) {
 							doWeReturn = true;
