@@ -157,21 +157,6 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void SSLConnectionInterface::initialize() {
-		if (SSLConnectionInterface::context = SSL_CTX_new(TLS_client_method()); SSLConnectionInterface::context == nullptr) {
-			throw ConnectionError{ reportSSLError("SSLConnectionInterface::initialize()::SSL_CTX_new()") };
-		}
-
-		if (!SSL_CTX_set_min_proto_version(SSLConnectionInterface::context, TLS1_2_VERSION)) {
-			throw ConnectionError{ reportSSLError("SSLConnectionInterface::initialize()::SSL_CTX_set_min_proto_version()") };
-		}
-
-		auto originalOptions{ SSL_CTX_get_options(SSLConnectionInterface::context) | SSL_OP_IGNORE_UNEXPECTED_EOF };
-		if (SSL_CTX_set_options(SSLConnectionInterface::context, SSL_OP_IGNORE_UNEXPECTED_EOF) != originalOptions) {
-			throw ConnectionError{ reportSSLError("SSLConnectionInterface::initialize()::SSL_CTX_set_options()") };
-		}
-	}
-
 	SSLConnectionInterface::~SSLConnectionInterface() noexcept {
 		std::lock_guard theLock{ this->connectionMutex };
 	}
@@ -235,7 +220,7 @@ namespace DiscordCoreInternal {
 				FD_SET(this->theSocket, &writeSet);
 				writeNfds = this->theSocket > writeNfds ? this->theSocket : writeNfds;
 
-				timeval checkTime{ .tv_usec = 1000 };
+				timeval checkTime{ .tv_sec = 1, .tv_usec = 0 };
 				if (auto returnValue = select(writeNfds + 1, nullptr, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
 					this->disconnect(true);
 					return ProcessIOResult::Select_Failure;
@@ -289,6 +274,19 @@ namespace DiscordCoreInternal {
 		hints->ai_socktype = SOCK_STREAM;
 		hints->ai_protocol = IPPROTO_TCP;
 
+		if (this->context = SSL_CTX_new(TLS_client_method()); this->context == nullptr) {
+			throw ConnectionError{ reportSSLError("SSLConnectionInterface::initialize()::SSL_CTX_new()") };
+		}
+
+		if (!SSL_CTX_set_min_proto_version(this->context, TLS1_2_VERSION)) {
+			throw ConnectionError{ reportSSLError("SSLConnectionInterface::initialize()::SSL_CTX_set_min_proto_version()") };
+		}
+
+		auto originalOptions{ SSL_CTX_get_options(this->context) | SSL_OP_IGNORE_UNEXPECTED_EOF };
+		if (SSL_CTX_set_options(this->context, SSL_OP_IGNORE_UNEXPECTED_EOF) != originalOptions) {
+			throw ConnectionError{ reportSSLError("SSLConnectionInterface::initialize()::SSL_CTX_set_options()") };
+		}
+
 		if (getaddrinfo(stringNew.c_str(), portNew.c_str(), hints, address)) {
 			return false;
 		}
@@ -321,11 +319,9 @@ namespace DiscordCoreInternal {
 			return false;
 		}
 
-		std::unique_lock theLock01{ SSLConnectionInterface::contextMutex };
-		if (this->ssl = SSL_new(SSLConnectionInterface::context); this->ssl == nullptr) {
+		if (this->ssl = SSL_new(this->context); this->ssl == nullptr) {
 			return false;
 		}
-		theLock01.unlock();
 
 		if (SSL_set_fd(this->ssl, this->theSocket) != 1) {
 			return false;
@@ -391,6 +387,8 @@ namespace DiscordCoreInternal {
 	}
 
 	std::string& SSLClient::getInputBuffer() noexcept {
+		std::cout << "READ BYTES: "
+				  << ", WHICH ARE: " << this->inputBuffer << std::endl;
 		return this->inputBuffer;
 	}
 
@@ -447,35 +445,38 @@ namespace DiscordCoreInternal {
 		this->wantRead = false;
 		this->wantWrite = false;
 		if (this->maxBufferSize > 0) {
-			size_t readBytes{ 0 };
-			auto returnValue{ SSL_read_ex(this->ssl, this->rawInputBuffer.data(), this->maxBufferSize, &readBytes) };
-			auto errorValue{ SSL_get_error(this->ssl, returnValue) };
-			switch (errorValue) {
-				case SSL_ERROR_NONE: {
-					if (readBytes > 0) {
-						this->inputBuffer.append(this->rawInputBuffer, readBytes);
-						std::cout << "READ BYTES: " << readBytes << std::endl;
-						this->bytesRead += readBytes;
+			do {
+				size_t readBytes{ 0 };
+				auto returnValue{ SSL_read_ex(this->ssl, this->rawInputBuffer.data(), this->maxBufferSize, &readBytes) };
+				auto errorValue{ SSL_get_error(this->ssl, returnValue) };
+				switch (errorValue) {
+					case SSL_ERROR_NONE: {
+						if (readBytes > 0) {
+							this->inputBuffer.append(this->rawInputBuffer.begin(), this->rawInputBuffer.begin() + readBytes);
+							std::cout << "READ BYTES: " << readBytes << ", WHICH ARE: " << this->inputBuffer << std::endl;
+							this->bytesRead += readBytes;
+						}
+						return ProcessIOResult::No_Error;
 					}
-					return ProcessIOResult::No_Error;
+					case SSL_ERROR_WANT_READ: {
+						this->wantRead = true;
+						return ProcessIOResult::No_Error;
+					}
+					case SSL_ERROR_WANT_WRITE: {
+						this->wantWrite = true;
+						return ProcessIOResult::No_Error;
+					}
+					case SSL_ERROR_ZERO_RETURN: {
+						this->disconnect(true);
+						return ProcessIOResult::SSL_Zero_Return;
+					}
+					default: {
+						this->disconnect(true);
+						return ProcessIOResult::SSL_Error;
+					}
 				}
-				case SSL_ERROR_WANT_READ: {
-					this->wantRead = true;
-					return ProcessIOResult::No_Error;
-				}
-				case SSL_ERROR_WANT_WRITE: {
-					this->wantWrite = true;
-					return ProcessIOResult::No_Error;
-				}
-				case SSL_ERROR_ZERO_RETURN: {
-					this->disconnect(true);
-					return ProcessIOResult::SSL_Zero_Return;
-				}
-				default: {
-					this->disconnect(true);
-					return ProcessIOResult::SSL_Error;
-				}
-			}
+			} while (SSL_pending(this->ssl));
+			
 		} else {
 			return ProcessIOResult::No_Error;
 		}
@@ -687,6 +688,4 @@ namespace DiscordCoreInternal {
 		std::lock_guard theLock{ this->theMutex };
 	}
 
-	std::mutex SSLConnectionInterface::contextMutex{};
-	SSL_CTXWrapper SSLConnectionInterface::context{};
 }

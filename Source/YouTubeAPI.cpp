@@ -288,7 +288,7 @@ namespace DiscordCoreInternal {
 							if (streamSocket->areWeStillConnected()) {
 								bytesReadTotal = streamSocket->getBytesRead() - headerSize;
 								auto& newData = streamSocket->getInputBuffer();
-								headerSize = static_cast<int32_t>(newData.theBuffer.size());
+								headerSize = static_cast<int32_t>(newData.size());
 							}
 						}
 						if (stopToken.stop_requested()) {
@@ -313,8 +313,8 @@ namespace DiscordCoreInternal {
 							return;
 						}
 						auto& streamBuffer = streamSocket->getInputBuffer();
-						if (streamBuffer.theBuffer.size() > 0) {
-							theCurrentString.insert(theCurrentString.end(), streamBuffer.theBuffer.begin(), streamBuffer.theBuffer.end());
+						if (streamBuffer.size() > 0) {
+							theCurrentString.insert(theCurrentString.end(), streamBuffer.begin(), streamBuffer.end());
 							std::string submissionString{};
 							if (theCurrentString.size() >= this->maxBufferSize) {
 								submissionString.insert(submissionString.begin(), theCurrentString.begin(), theCurrentString.begin() + this->maxBufferSize);
@@ -342,8 +342,8 @@ namespace DiscordCoreInternal {
 							return;
 						}
 						auto& newVector = streamSocket->getInputBuffer();
-						if (newVector.theBuffer.size() > 0) {
-							theCurrentString.insert(theCurrentString.end(), newVector.theBuffer.begin(), newVector.theBuffer.end());
+						if (newVector.size() > 0) {
+							theCurrentString.insert(theCurrentString.end(), newVector.begin(), newVector.end());
 							std::string submissionString{};
 							while (theCurrentString.size() > 0) {
 								if (theCurrentString.size() >= this->maxBufferSize) {
