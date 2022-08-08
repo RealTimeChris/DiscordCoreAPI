@@ -178,27 +178,7 @@ namespace DiscordCoreAPI {
 			std::this_thread::sleep_for(5s);
 			return false;
 		}
-		auto baseSocketAgentCount = static_cast<int32_t>(std::thread::hardware_concurrency()) > this->configManager.getTotalShardCount()
-			? this->configManager.getTotalShardCount()
-			: static_cast<int32_t>(std::thread::hardware_concurrency());
-		int32_t shardsPerBaseSocketAgent{ static_cast<int32_t>(floor(static_cast<float>(this->configManager.getTotalShardCount()) / static_cast<float>(baseSocketAgentCount))) };
-		int32_t leftOverShards{ this->configManager.getTotalShardCount() - (shardsPerBaseSocketAgent * baseSocketAgentCount) };
 
-		std::vector<int32_t> shardsPerBaseSocketAgentVect{};
-		for (int32_t x = 0; x < baseSocketAgentCount; x++) {
-			int32_t newShardAmount{};
-			shardsPerBaseSocketAgentVect.push_back(shardsPerBaseSocketAgent);
-			if (leftOverShards == 0) {
-				continue;
-			}
-			newShardAmount = static_cast<int32_t>(ceil(static_cast<float>(leftOverShards) / static_cast<float>(std::thread::hardware_concurrency())));
-			shardsPerBaseSocketAgentVect[x] += newShardAmount;
-
-			if (x == static_cast<int32_t>(std::thread::hardware_concurrency()) - 1) {
-				shardsPerBaseSocketAgentVect[0] += leftOverShards;
-			}
-			leftOverShards -= newShardAmount;
-		}
 		int32_t currentShard{ 0 };
 		if (this->configManager.getConnectionAddress() == "") {
 			this->configManager.setConnectionAddress(gatewayData.url.substr(gatewayData.url.find("wss://") + std::string("wss://").size()));
@@ -207,23 +187,21 @@ namespace DiscordCoreAPI {
 			this->configManager.setConnectionPort("443");
 		}
 
-		for (int32_t x = 0; x < shardsPerBaseSocketAgentVect.size(); x++) {
+		for (int32_t x = 0; x < this->configManager.getTotalShardCount(); x++) {
 			auto thePtr = std::make_unique<DiscordCoreInternal::BaseSocketAgent>(this, &Globals::doWeQuit, x);
 			this->baseSocketAgentMap[std::to_string(x)] = std::move(thePtr);
-			for (int32_t y = 0; y < shardsPerBaseSocketAgentVect[x]; y++) {
-				if (this->configManager.doWePrintGeneralSuccessMessages()) {
-					cout << shiftToBrightBlue() << "Connecting Shard " + std::to_string(currentShard + 1) << " of " << this->configManager.getShardCountForThisProcess()
-						 << std::string(" Shards for this process. (") + std::to_string(currentShard + 1) + " of " + std::to_string(this->configManager.getTotalShardCount()) +
-							std::string(" Shards total across all processes)")
-						 << reset() << endl
-						 << endl;
-				}
-				ConnectionPackage theData{};
-				theData.currentShard = currentShard;
-				theData.currentBaseSocketAgent = x;
-				this->baseSocketAgentMap[std::to_string(x)]->connect(theData);
-				currentShard++;
+			if (this->configManager.doWePrintGeneralSuccessMessages()) {
+				cout << shiftToBrightBlue() << "Connecting Shard " + std::to_string(currentShard + 1) << " of " << this->configManager.getShardCountForThisProcess()
+					 << std::string(" Shards for this process. (") + std::to_string(currentShard + 1) + " of " + std::to_string(this->configManager.getTotalShardCount()) +
+						std::string(" Shards total across all processes)")
+					 << reset() << endl
+					 << endl;
 			}
+			ConnectionPackage theData{};
+			theData.currentShard = currentShard;
+			theData.currentBaseSocketAgent = x;
+			this->baseSocketAgentMap[std::to_string(x)]->connect(theData);
+			currentShard++;
 		}
 		this->currentUser = BotUser{ Users::getCurrentUserAsync().get(), this->baseSocketAgentMap[std::to_string(this->configManager.getStartingShard())].get() };
 		for (auto& value: this->configManager.getFunctionsToExecute()) {

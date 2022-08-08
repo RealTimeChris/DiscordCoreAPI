@@ -127,7 +127,7 @@ namespace DiscordCoreAPI {
 		DiscordCoreAPI::ConfigManager* configManagerNew, std::atomic_bool* doWeQuitNew, StreamType streamTypeNew, StreamInfo streamInfoNew) noexcept
 		: WebSocketSSLShard(BaseSocketAgentNew->discordCoreClient, &this->connections, BaseSocketAgentNew->currentBaseSocketAgent, initDataNew.currentShard, this->doWeQuit),
 		  DatagramSocketClient(StreamType::None) {
-		this->baseShard = BaseSocketAgentNew->sslShards[initDataNew.currentShard].get();
+		this->baseShard = BaseSocketAgentNew->sslShard.get();
 		this->activeState.store(VoiceActiveState::Connecting);
 		WebSocketSSLShard::connections = &this->connections;
 		this->baseSocketAgent = BaseSocketAgentNew;
@@ -698,7 +698,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::connectInternal() noexcept {
-		auto thePtr = this->baseSocketAgent->sslShards[voiceConnectInitData.currentShard].get();
+		auto thePtr = this->baseSocketAgent->sslShard.get();
 		std::unique_lock theLock{ thePtr->theMutex };
 		if (this->connections.size() > 0) {
 			this->connections.pop();
@@ -1037,7 +1037,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::connect() noexcept {
-		if (this->baseSocketAgent->sslShards.contains(this->voiceConnectInitData.currentShard) && this->baseSocketAgent->sslShards[voiceConnectInitData.currentShard]) {
+		if (this->baseSocketAgent->sslShard) {
 			ConnectionPackage dataPackage{};
 			dataPackage.currentShard = 0;
 			this->connections.push(dataPackage);

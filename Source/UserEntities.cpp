@@ -86,38 +86,28 @@ namespace DiscordCoreAPI {
 		nlohmann::json payload = dataPackage;
 		std::string theString{};
 		if (this->baseSocketAgent) {
-			int32_t theIndex{};
-			for (auto& [key, value]: this->baseSocketAgent->sslShards) {
-				theIndex = key;
-				break;
-			}
 			std::string theString{};
-			if (static_cast<DiscordCoreInternal::WebSocketSSLShard*>(this->baseSocketAgent->sslShards[theIndex].get())->dataOpCode ==
+			if (static_cast<DiscordCoreInternal::WebSocketSSLShard*>(this->baseSocketAgent->sslShard.get())->dataOpCode ==
 				DiscordCoreInternal::WebSocketOpCode::Op_Binary) {
-				this->baseSocketAgent->sslShards[theIndex]->stringifyJsonData(payload, theString, DiscordCoreInternal::WebSocketOpCode::Op_Binary);
+				this->baseSocketAgent->sslShard->stringifyJsonData(payload, theString, DiscordCoreInternal::WebSocketOpCode::Op_Binary);
 			} else {
-				this->baseSocketAgent->sslShards[theIndex]->stringifyJsonData(payload, theString, DiscordCoreInternal::WebSocketOpCode::Op_Text);
+				this->baseSocketAgent->sslShard->stringifyJsonData(payload, theString, DiscordCoreInternal::WebSocketOpCode::Op_Text);
 			}
-			this->baseSocketAgent->sslShards[theIndex]->sendMessage(theString, true);
+			this->baseSocketAgent->sslShard->sendMessage(theString, true);
 		}
 	}
 
 	void BotUser::updatePresence(DiscordCoreInternal::UpdatePresenceData& dataPackage) {
 		nlohmann::json payload = dataPackage;
 		if (this->baseSocketAgent) {
-			int32_t theIndex{};
-			for (auto& [key, value]: this->baseSocketAgent->sslShards) {
-				theIndex = key;
-				break;
-			}
 			std::string theString{};
-			if (static_cast<DiscordCoreInternal::WebSocketSSLShard*>(this->baseSocketAgent->sslShards[theIndex].get())->dataOpCode ==
+			if (static_cast<DiscordCoreInternal::WebSocketSSLShard*>(this->baseSocketAgent->sslShard.get())->dataOpCode ==
 				DiscordCoreInternal::WebSocketOpCode::Op_Binary) {
-				this->baseSocketAgent->sslShards[theIndex]->stringifyJsonData(payload, theString, DiscordCoreInternal::WebSocketOpCode::Op_Binary);
+				this->baseSocketAgent->sslShard->stringifyJsonData(payload, theString, DiscordCoreInternal::WebSocketOpCode::Op_Binary);
 			} else {
-				this->baseSocketAgent->sslShards[theIndex]->stringifyJsonData(payload, theString, DiscordCoreInternal::WebSocketOpCode::Op_Text);
+				this->baseSocketAgent->sslShard->stringifyJsonData(payload, theString, DiscordCoreInternal::WebSocketOpCode::Op_Text);
 			}
-			this->baseSocketAgent->sslShards[theIndex]->sendMessage(theString, true);
+			this->baseSocketAgent->sslShard->sendMessage(theString, true);
 		}
 	}
 

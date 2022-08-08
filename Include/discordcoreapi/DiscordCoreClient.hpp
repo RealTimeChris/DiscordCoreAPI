@@ -113,6 +113,7 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::WSADataWrapper theWSAData{};
 #endif
 		CommandController commandController{ this };
+		std::atomic_int32_t theBaseShardCount{};
 		ConfigManager configManager{};
 		EventManager eventManager{};
 		BotUser currentUser{};
