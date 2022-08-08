@@ -20,6 +20,7 @@
 #pragma once
 
 #include <discordcoreapi/Utilities.hpp>
+#include <simdjson.h>
 
 namespace DiscordCoreInternal {
 
@@ -2119,6 +2120,7 @@ namespace DiscordCoreAPI {
 
 	  protected:
 		void parseObject(const nlohmann::json& jsonObjectData, GuildData* pDataStructure);
+		void parseObject(simdjson::ondemand::document& jsonObjectData, GuildData* pDataStructure);
 	};
 
 	class DiscordCoreAPI_Dll GuildDataVector : public DataParser<GuildDataVector> {
