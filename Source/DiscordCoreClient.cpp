@@ -63,7 +63,6 @@ namespace DiscordCoreAPI {
 		std::signal(SIGILL, &signalHandler);
 		std::signal(SIGABRT, &signalHandler);
 		std::signal(SIGFPE, &signalHandler);
-		DiscordCoreInternal::SSLConnectionInterface::initialize();
 		this->configManager = ConfigManager{ configData };
 		if (this->configManager.doWePrintFFMPEGSuccessMessages()) {
 			av_log_set_level(AV_LOG_INFO);
@@ -134,7 +133,13 @@ namespace DiscordCoreAPI {
 			return;
 		}
 		while (!Globals::doWeQuit.load()) {
+			for (auto& [key, value]: this->baseSocketAgentMap) {
+				std::cout << "WERE LAVERY LAVERY LAVERY!" << std::endl;
+				value->sslShard->onMessageReceived();
+			}
+			std::cout << "WERE LAVERY LAVERY LAVERY! (ABOUT TO SLEEP)" << std::endl;
 			std::this_thread::sleep_for(1ms);
+			std::cout << "WERE LAVERY LAVERY LAVERY! (JUST SLEPT)" << std::endl;
 		}
 		if (this->baseSocketAgentMap.contains(std::to_string(this->configManager.getStartingShard())) &&
 			this->baseSocketAgentMap[std::to_string(this->configManager.getStartingShard())]->getTheTask()) {
@@ -200,6 +205,12 @@ namespace DiscordCoreAPI {
 			ConnectionPackage theData{};
 			theData.currentShard = currentShard;
 			theData.currentBaseSocketAgent = x;
+			for (auto& [key, value]: this->baseSocketAgentMap) {
+				std::cout << "WERE LAVERY LAVERY LAVERY! 0202" << std::endl;
+				if (value && value->sslShard) {
+					value->sslShard->onMessageReceived();
+				}			
+			}
 			this->baseSocketAgentMap[std::to_string(x)]->connect(theData);
 			currentShard++;
 		}

@@ -20,6 +20,7 @@
 #include <discordcoreapi/WebSocketEntities.hpp>
 #include <discordcoreapi/EventManager.hpp>
 #include <discordcoreapi/DiscordCoreClient.hpp>
+#include <simdjson.h>
 
 namespace DiscordCoreInternal {
 
@@ -254,7 +255,6 @@ namespace DiscordCoreInternal {
 						this->onClosed();
 						return false;
 					}
-					std::this_thread::sleep_for(1ms);
 					didWeWrite = this->writeData(dataToSend, true);
 				} while (didWeWrite != ProcessIOResult::No_Error);
 				if (didWeWrite != ProcessIOResult::No_Error) {
@@ -328,6 +328,7 @@ namespace DiscordCoreInternal {
 	void WebSocketSSLShard::onMessageReceived() noexcept {
 		if (this->theSSLState.load() == SSLConnectionState::Connected) {
 			try {
+				std::cout << "ON MESSAGE RECEIVED! 0101" << std::endl;
 				std::string messageNew{};
 				if (this->processedMessages.size() > 0) {
 					messageNew = this->processedMessages.front();
@@ -339,7 +340,7 @@ namespace DiscordCoreInternal {
 					return;
 				}
 				nlohmann::json payload{};
-
+				std::cout << "ON MESSAGE RECEIVED! 0202" << std::endl;
 				if (this->configManager->getTextFormat() == DiscordCoreAPI::TextFormat::Etf) {
 					try {
 						payload = this->parseEtfToJson(&messageNew);
@@ -352,7 +353,7 @@ namespace DiscordCoreInternal {
 				} else {
 					payload = nlohmann::json::parse(messageNew);
 				}
-
+				std::cout << "ON MESSAGE RECEIVED! 0303" << std::endl;
 				if (payload.contains("t") && !payload["t"].is_null()) {
 					if (payload["t"] == "RESUMED") {
 						this->theWebSocketState.store(WebSocketSSLShardState::Authenticated);
@@ -373,7 +374,7 @@ namespace DiscordCoreInternal {
 				if (payload.contains("s") && !payload["s"].is_null()) {
 					this->lastNumberReceived = payload["s"].get<int32_t>();
 				}
-
+				std::cout << "ON MESSAGE RECEIVED! 0404" << std::endl;
 				if (payload.contains("op") && !payload["op"].is_null()) {
 					switch (payload["op"].get<int32_t>()) {
 						case 0: {
@@ -1032,7 +1033,7 @@ namespace DiscordCoreInternal {
 				if (this->sslShard) {
 					std::vector<SSLClient*> theVector{};
 					theVector.push_back(this->sslShard.get());
-					SSLClient::processIO(theVector, 10000);
+					SSLClient::processIO(theVector, 100);
 					if (this->sslShard->areWeStillConnected() && this->sslShard->inputBuffer.size() > 0) {
 						this->sslShard->parseMessage(this->sslShard.get());
 					}

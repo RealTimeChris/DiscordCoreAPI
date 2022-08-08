@@ -157,21 +157,6 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void SSLConnectionInterface::initialize() {
-		if (SSLConnectionInterface::context = SSL_CTX_new(TLS_client_method()); SSLConnectionInterface::context == nullptr) {
-			throw ConnectionError{ reportSSLError("SSLConnectionInterface::initialize()::SSL_CTX_new()") };
-		}
-
-		if (!SSL_CTX_set_min_proto_version(SSLConnectionInterface::context, TLS1_2_VERSION)) {
-			throw ConnectionError{ reportSSLError("SSLConnectionInterface::initialize()::SSL_CTX_set_min_proto_version()") };
-		}
-
-		auto originalOptions{ SSL_CTX_get_options(SSLConnectionInterface::context) | SSL_OP_IGNORE_UNEXPECTED_EOF };
-		if (SSL_CTX_set_options(SSLConnectionInterface::context, SSL_OP_IGNORE_UNEXPECTED_EOF) != originalOptions) {
-			throw ConnectionError{ reportSSLError("SSLConnectionInterface::initialize()::SSL_CTX_set_options()") };
-		}
-	}
-
 	SSLConnectionInterface::~SSLConnectionInterface() noexcept {
 		std::lock_guard theLock{ this->connectionMutex };
 	}
@@ -184,7 +169,6 @@ namespace DiscordCoreInternal {
 		bool didWeSetASocket{ false };
 		for (auto& value: theVector) {
 			if (value) {
-				std::unique_lock theLock{ value->connectionMutex };
 				if (value->theSocket != SOCKET_ERROR) {
 					if ((value->outputBuffers.size() > 0 || value->wantWrite) && !value->wantRead) {
 						FD_SET(value->theSocket, &writeSet);
@@ -202,8 +186,8 @@ namespace DiscordCoreInternal {
 			return;
 		}
 
-		timeval checkTime{ .tv_usec = waitTimeInms };
-		if (auto returnValue = select(finalNfds + 1, &readSet, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
+		timeval checkTime{ .tv_sec = 1, .tv_usec = 0 };
+		if (auto returnValue = select(FD_SETSIZE, &readSet, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
 			for (auto& value: theVector) {
 				value->disconnect(true);
 			}
@@ -211,7 +195,6 @@ namespace DiscordCoreInternal {
 		}
 
 		for (auto& value: theVector) {
-			std::unique_lock theLock{ value->connectionMutex };
 			if (FD_ISSET(value->theSocket, &readSet)) {
 				value->readDataProcess();
 			}
@@ -222,7 +205,6 @@ namespace DiscordCoreInternal {
 	}
 
 	ProcessIOResult SSLClient::writeData(const std::string& dataToWrite, bool priority) noexcept {
-		std::unique_lock theLock{ this->connectionMutex };
 		if (this->theSocket == SOCKET_ERROR) {
 			return ProcessIOResult::Disconnected;
 		}
@@ -286,6 +268,19 @@ namespace DiscordCoreInternal {
 		hints->ai_family = AF_INET;
 		hints->ai_socktype = SOCK_STREAM;
 		hints->ai_protocol = IPPROTO_TCP;
+
+		if (this->context = SSL_CTX_new(TLS_client_method()); this->context == nullptr) {
+			return false;
+		}
+
+		if (!SSL_CTX_set_min_proto_version(this->context, TLS1_2_VERSION)) {
+			return false;
+		}
+
+		auto originalOptions{ SSL_CTX_get_options(this->context) | SSL_OP_IGNORE_UNEXPECTED_EOF };
+		if (SSL_CTX_set_options(this->context, SSL_OP_IGNORE_UNEXPECTED_EOF) != originalOptions) {
+			return false;
+		}
 
 		if (getaddrinfo(stringNew.c_str(), portNew.c_str(), hints, address)) {
 			return false;
@@ -362,8 +357,7 @@ namespace DiscordCoreInternal {
 		FD_ZERO(&writeSet);
 		FD_ZERO(&readSet);
 
-		std::unique_lock theLock{ this->connectionMutex };
-		if ((this->outputBuffers.size() > 0 || this->wantWrite) && !this->wantRead) {
+		if (this->outputBuffers.size() > 0) {
 			FD_SET(this->theSocket, &writeSet);
 			writeNfds = this->theSocket > writeNfds ? this->theSocket : writeNfds;
 		}
@@ -371,8 +365,8 @@ namespace DiscordCoreInternal {
 		readNfds = this->theSocket > readNfds ? this->theSocket : readNfds;
 		finalNfds = readNfds > writeNfds ? readNfds : writeNfds;
 
-		timeval checkTime{ .tv_usec = theWaitTimeInms };
-		if (auto returnValue = select(finalNfds + 1, &readSet, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
+		timeval checkTime{ .tv_sec = 1, .tv_usec = 0 };
+		if (auto returnValue = select(FD_SETSIZE, &readSet, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
 			this->disconnect(true);
 			return ProcessIOResult::Select_Failure;
 		} else if (returnValue == 0) {
@@ -389,7 +383,6 @@ namespace DiscordCoreInternal {
 	}
 
 	std::string SSLClient::getInputBuffer() noexcept {
-		std::unique_lock theLock{ this->connectionMutex };
 		std::string theReturnString = std::move(this->inputBuffer);
 		this->inputBuffer.clear();
 		return theReturnString;
@@ -454,8 +447,9 @@ namespace DiscordCoreInternal {
 			auto errorValue{ SSL_get_error(this->ssl, returnValue) };
 			switch (errorValue) {
 				case SSL_ERROR_NONE: {
-					if (readBytes > 0) {
-						this->inputBuffer.insert(this->inputBuffer.end(), serverToClientBuffer.begin(), serverToClientBuffer.begin() + readBytes);
+					if (readBytes > 0) {						
+						this->inputBuffer.insert(this->inputBuffer.end(), serverToClientBuffer.begin(), serverToClientBuffer.end());
+						std::cout << "BYTES READ: " << this->inputBuffer << ", COUNT: " << readBytes << std::endl;
 						this->bytesRead += readBytes;
 					}
 					return ProcessIOResult::No_Error;
@@ -483,7 +477,7 @@ namespace DiscordCoreInternal {
 	}
 
 	int64_t SSLClient::getBytesRead() noexcept {
-		std::unique_lock theLock{ this->connectionMutex };
+		//std::unique_lock theLock{ this->connectionMutex };
 		return this->bytesRead;
 	}
 
@@ -697,5 +691,5 @@ namespace DiscordCoreInternal {
 	}
 
 	std::mutex SSLConnectionInterface::contextMutex{};
-	SSL_CTXWrapper SSLConnectionInterface::context{};
+	//SSL_CTXWrapper SSLConnectionInterface::context{};
 }
