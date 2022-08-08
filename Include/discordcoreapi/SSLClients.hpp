@@ -166,6 +166,8 @@ namespace DiscordCoreInternal {
 	  public:
 		SSLConnectionInterface() noexcept = default;
 
+		static void initialize();
+
 		virtual bool connect(const std::string& baseUrl, const std::string& portNew) = 0;
 
 		virtual void disconnect(bool doWeReconnect) noexcept = 0;
@@ -176,13 +178,12 @@ namespace DiscordCoreInternal {
 
 	  protected:
 		static std::mutex contextMutex;
-		//static SSL_CTXWrapper context;
+		static SSL_CTXWrapper context;
 
 		std::atomic<SSLConnectionState> theSSLState{ SSLConnectionState::Disconnected };
 		std::queue<DiscordCoreAPI::ConnectionPackage>* connections{ nullptr };
 		std::recursive_mutex connectionMutex{};
 		SOCKETWrapper theSocket{};
-		SSL_CTXWrapper context{};
 		SSLWrapper ssl{};
 	};
 

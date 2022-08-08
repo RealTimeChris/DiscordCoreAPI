@@ -33,63 +33,8 @@
 #include <discordcoreapi/ThreadEntities.hpp>
 #include <discordcoreapi/CoRoutine.hpp>
 #include <discordcoreapi/InputEvents.hpp>
-#include <simdjson.h>
 
 namespace DiscordCoreAPI {
-
-	uint8_t get_uint8(const nlohmann::json& j, const char* keyname) {
-		auto k = j.find(keyname);
-		if (k != j.end()) {
-			return !k->is_null() && k->is_number() ? k->get<uint8_t>() : 0;
-		} else {
-			return 0;
-		}
-	}
-
-	uint16_t get_uint16(const nlohmann::json& j, const char* keyname) {
-		auto k = j.find(keyname);
-		if (k != j.end()) {
-			return !k->is_null() && k->is_number() ? k->get<uint16_t>() : 0;
-		} else {
-			return 0;
-		}
-	}
-
-	uint32_t get_uint32(const nlohmann::json& j, const char* keyname) {
-		auto k = j.find(keyname);
-		if (k != j.end()) {
-			return !k->is_null() && k->is_number() ? k->get<uint32_t>() : 0;
-		} else {
-			return 0;
-		}
-	}
-
-	uint64_t get_uint64(const nlohmann::json& j, const char* keyname) {
-		auto k = j.find(keyname);
-		if (k != j.end()) {
-			return !k->is_null() && k->is_number() ? k->get<uint64_t>() : 0;
-		} else {
-			return 0;
-		}
-	}
-
-	bool get_bool(const nlohmann::json& j, const char* keyname) {
-		auto k = j.find(keyname);
-		if (k != j.end()) {
-			return !k->is_null() && k->is_boolean() ? k->get<bool>() : 0;
-		} else {
-			return 0;
-		}
-	}
-
-	std::string get_string(const nlohmann::json& j, const char* keyname) {
-		auto k = j.find(keyname);
-		if (k != j.end()) {
-			return !k->is_null() && k->is_string() ? k->get<std::string>() : std::string{};
-		} else {
-			return std::string{};
-		}
-	}
 
 	void ApplicationCommand::parseObject(const nlohmann::json& jsonObjectData, ApplicationCommand* pDataStructure) {
 		if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
@@ -2890,65 +2835,97 @@ namespace DiscordCoreAPI {
 	}
 
 	void GuildData::parseObject(const nlohmann::json& jsonObjectData, GuildData* pDataStructure) {
-		pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
-
-		std::string iconUrlString = "https://cdn.discordapp.com/";
-		iconUrlString += "icons/" + std::to_string(pDataStructure->id) + "/" + get_string(jsonObjectData, "icon") + ".png";
-		pDataStructure->icon = iconUrlString;
-
-		pDataStructure->name = get_string(jsonObjectData, "name");
-
-		pDataStructure->joinedAt = get_string(jsonObjectData, "joined_at");
-
-		pDataStructure->flags = setBool<int8_t, GuildFlags>(pDataStructure->flags, GuildFlags::Owner, get_bool(jsonObjectData, "owner"));
-
-		pDataStructure->ownerId = stoull(get_string(jsonObjectData, "owner_id"));
-
-		for (auto& value: jsonObjectData["features"].get<std::vector<std::string>>()) {
-			pDataStructure->features.push_back(StringWrapper{ value });
+		if (jsonObjectData.contains("id") && !jsonObjectData["id"].is_null()) {
+			pDataStructure->id = stoull(jsonObjectData["id"].get<std::string>());
 		}
 
-		pDataStructure->roles.clear();
-		for (auto& value: jsonObjectData["roles"]) {
-			RoleData newData{ value };
-			pDataStructure->roles.push_back(newData.id);
-			this->insertRole(newData);
+		if (jsonObjectData.contains("icon") && !jsonObjectData["icon"].is_null()) {
+			std::string iconUrlString = "https://cdn.discordapp.com/";
+			iconUrlString += "icons/" + std::to_string(pDataStructure->id) + "/" + jsonObjectData["icon"].get<std::string>() + ".png";
+			pDataStructure->icon = iconUrlString;
 		}
 
-		pDataStructure->flags = setBool<int8_t, GuildFlags>(pDataStructure->flags, GuildFlags::WidgetEnabled, get_bool(jsonObjectData, "widget_enabled"));
-
-		pDataStructure->flags = setBool<int8_t, GuildFlags>(pDataStructure->flags, GuildFlags::Large, get_bool(jsonObjectData, "large"));
-
-		pDataStructure->flags = setBool<int8_t, GuildFlags>(pDataStructure->flags, GuildFlags::Unavailable, get_bool(jsonObjectData, "unavailable"));
-
-		pDataStructure->memberCount = jsonObjectData["member_count"].get<int32_t>();
-
-		pDataStructure->voiceStates.clear();
-		for (auto& value: jsonObjectData["voice_states"]) {
-			VoiceStateData newData{ value };
-			pDataStructure->voiceStates[newData.userId] = newData;
+		if (jsonObjectData.contains("name") && !jsonObjectData["name"].is_null()) {
+			pDataStructure->name = jsonObjectData["name"].get<std::string>();
 		}
 
-		pDataStructure->members.clear();
-		for (auto& value: jsonObjectData["members"]) {
-			GuildMemberData newData{ value };
-			newData.guildId = pDataStructure->id;
-			pDataStructure->members.push_back(newData.id);
-			this->insertGuildMember(newData);
+		if (jsonObjectData.contains("joined_at") && !jsonObjectData["joined_at"].is_null()) {
+			pDataStructure->joinedAt = jsonObjectData["joined_at"].get<std::string>();
 		}
 
-		pDataStructure->channels.clear();
-		for (auto& value: jsonObjectData["channels"]) {
-			ChannelData newData{ value };
-			newData.guildId = pDataStructure->id;
-			pDataStructure->channels.push_back(newData.id);
-			this->insertChannel(newData);
+		if (jsonObjectData.contains("owner") && !jsonObjectData["owner"].is_null()) {
+			pDataStructure->flags = setBool<int8_t, GuildFlags>(pDataStructure->flags, GuildFlags::Owner, jsonObjectData["owner"].get<bool>());
 		}
 
-		pDataStructure->presences.clear();
-		for (auto& value: jsonObjectData["presences"]) {
-			PresenceUpdateData newData{ value };
-			pDataStructure->presences[newData.user.id] = newData;
+		if (jsonObjectData.contains("owner_id") && !jsonObjectData["owner_id"].is_null()) {
+			pDataStructure->ownerId = stoull(jsonObjectData["owner_id"].get<std::string>());
+		}
+
+		if (jsonObjectData.contains("features") && !jsonObjectData["features"].is_null()) {
+			for (auto& value: jsonObjectData["features"].get<std::vector<std::string>>()) {
+				pDataStructure->features.push_back(StringWrapper{ value });
+			}
+		}
+
+		if (jsonObjectData.contains("roles") && !jsonObjectData["roles"].is_null()) {
+			pDataStructure->roles.clear();
+			for (auto& value: jsonObjectData["roles"]) {
+				RoleData newData{ value };
+				pDataStructure->roles.push_back(newData.id);
+				this->insertRole(newData);
+			}
+		}
+
+		if (jsonObjectData.contains("widget_enabled") && !jsonObjectData["widget_enabled"].is_null()) {
+			pDataStructure->flags = setBool<int8_t, GuildFlags>(pDataStructure->flags, GuildFlags::WidgetEnabled, jsonObjectData["widget_enabled"].get<bool>());
+		}
+
+		if (jsonObjectData.contains("large") && !jsonObjectData["large"].is_null()) {
+			pDataStructure->flags = setBool<int8_t, GuildFlags>(pDataStructure->flags, GuildFlags::Large, jsonObjectData["large"].get<bool>());
+		}
+
+		if (jsonObjectData.contains("unavailable") && !jsonObjectData["unavailable"].is_null()) {
+			pDataStructure->flags = setBool<int8_t, GuildFlags>(pDataStructure->flags, GuildFlags::Unavailable, jsonObjectData["unavailable"].get<bool>());
+		}
+
+		if (jsonObjectData.contains("member_count") && !jsonObjectData["member_count"].is_null()) {
+			pDataStructure->memberCount = jsonObjectData["member_count"].get<int32_t>();
+		}
+
+		if (jsonObjectData.contains("voice_states") && !jsonObjectData["voice_states"].is_null()) {
+			pDataStructure->voiceStates.clear();
+			for (auto& value: jsonObjectData["voice_states"]) {
+				VoiceStateData newData{ value };
+				pDataStructure->voiceStates[newData.userId] = newData;
+			}
+		}
+
+		if (jsonObjectData.contains("members") && !jsonObjectData["members"].is_null()) {
+			pDataStructure->members.clear();
+			for (auto& value: jsonObjectData["members"]) {
+				GuildMemberData newData{ value };
+				newData.guildId = pDataStructure->id;
+				pDataStructure->members.push_back(newData.id);
+				this->insertGuildMember(newData);
+			}
+		}
+
+		if (jsonObjectData.contains("channels") && !jsonObjectData["channels"].is_null()) {
+			pDataStructure->channels.clear();
+			for (auto& value: jsonObjectData["channels"]) {
+				ChannelData newData{ value };
+				newData.guildId = pDataStructure->id;
+				pDataStructure->channels.push_back(newData.id);
+				this->insertChannel(newData);
+			}
+		}
+
+		if (jsonObjectData.contains("presences") && !jsonObjectData["presences"].is_null()) {
+			pDataStructure->presences.clear();
+			for (auto& value: jsonObjectData["presences"]) {
+				PresenceUpdateData newData{ value };
+				pDataStructure->presences[newData.user.id] = newData;
+			}
 		}
 	}
 
