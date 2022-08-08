@@ -71,6 +71,9 @@ namespace DiscordCoreInternal {
 		int64_t writeOffsetIntoBuffer{};
 		int64_t readOffsetIntoBuffer{};
 		std::string theBuffer{};
+		operator const char*();
+		void erase(int32_t offSet);
+		void reset();
 	};
 
 	struct ConnectionError : public std::runtime_error {

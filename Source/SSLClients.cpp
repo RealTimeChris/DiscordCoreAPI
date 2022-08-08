@@ -22,6 +22,19 @@
 
 namespace DiscordCoreInternal {
 
+	DataBuffer::operator const char*() {
+		return this->theBuffer.data() + this->readOffsetIntoBuffer;
+	}
+
+	void DataBuffer::erase(int32_t offSet) {
+		this->readOffsetIntoBuffer += offSet;
+	}
+
+	void DataBuffer::reset() {
+		this->writeOffsetIntoBuffer = 0;
+		this->readOffsetIntoBuffer = 0;
+	}
+
 	std::string reportSSLError(const std::string& errorPosition, int32_t errorValue = 0, SSL* ssl = nullptr) noexcept {
 		std::stringstream theStream{};
 		theStream << DiscordCoreAPI::shiftToBrightRed() << errorPosition << " Error: ";
