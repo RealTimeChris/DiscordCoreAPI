@@ -547,7 +547,7 @@ namespace DiscordCoreAPI {
 						} else {
 							DatagramSocketClient::processIO(10, DiscordCoreInternal::ProcessIOType::Write_Only);
 						}
-						
+
 						this->audioData.encodedFrameData.data.clear();
 						this->audioData.encodedFrameData.sampleCount = 0;
 						this->audioData.rawFrameData.data.clear();
