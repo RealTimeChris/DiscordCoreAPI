@@ -390,7 +390,7 @@ namespace DiscordCoreAPI {
 				this->parseIncomingVoiceData();
 				this->streamSocket->processIO(0, DiscordCoreInternal::ProcessIOType::Both);
 				this->mixAudio();
-				this->streamSocket->processIO(0, DiscordCoreInternal::ProcessIOType::Write_Only);
+				this->streamSocket->processIO(0, DiscordCoreInternal::ProcessIOType::Both);
 
 				if (timeTakesToSleep == 0) {
 					theStopWatch.resetTimer();
