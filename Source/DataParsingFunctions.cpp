@@ -529,9 +529,9 @@ namespace DiscordCoreAPI {
 		if (jsonObjectData.contains("roles") && !jsonObjectData["roles"].is_null()) {
 			pDataStructure->roles.clear();
 			for (auto& value: jsonObjectData["roles"]) {
-				DiscordCoreAPI::RoleData newData{ value };
-				pDataStructure->roles.push_back(newData.id);
-				DiscordCoreAPI::Roles::insertRole(newData);
+				std::unique_ptr<DiscordCoreAPI::RoleData> newData{ std::make_unique<RoleData>(value) };
+				pDataStructure->roles.push_back(newData->id);
+				DiscordCoreAPI::Roles::insertRole(std::move(newData));
 			}
 		}
 
@@ -595,20 +595,20 @@ namespace DiscordCoreAPI {
 		if (jsonObjectData.contains("members") && !jsonObjectData["members"].is_null()) {
 			pDataStructure->members.clear();
 			for (auto& value: jsonObjectData["members"]) {
-				DiscordCoreAPI::GuildMemberData newData{ value };
-				newData.guildId = pDataStructure->id;
-				pDataStructure->members.push_back(newData.id);
-				DiscordCoreAPI::GuildMembers::insertGuildMember(newData);
+				std::unique_ptr<DiscordCoreAPI::GuildMemberData> newData{ std::make_unique<DiscordCoreAPI::GuildMemberData>(value) };
+				newData->guildId = pDataStructure->id;
+				pDataStructure->members.push_back(newData->id);
+				DiscordCoreAPI::GuildMembers::insertGuildMember(std::move(newData));
 			}
 		}
 
 		if (jsonObjectData.contains("channels") && !jsonObjectData["channels"].is_null()) {
 			pDataStructure->channels.clear();
 			for (auto& value: jsonObjectData["channels"]) {
-				DiscordCoreAPI::ChannelData newData{ value };
-				newData.guildId = pDataStructure->id;
-				pDataStructure->channels.push_back(newData.id);
-				DiscordCoreAPI::Channels::insertChannel(newData);
+				std::unique_ptr<DiscordCoreAPI::ChannelData> newData{ std::make_unique<DiscordCoreAPI::ChannelData>(value) };
+				newData->guildId = pDataStructure->id;
+				pDataStructure->channels.push_back(newData->id);
+				DiscordCoreAPI::Channels::insertChannel(std::move(newData));
 			}
 		}
 
@@ -707,11 +707,11 @@ namespace DiscordCoreAPI {
 		}
 
 		if (jsonObjectData.contains("user") && !jsonObjectData["user"].is_null()) {
-			User theUser{ jsonObjectData["user"] };
-			this->insertUser(theUser);
-			pDataStructure->id = theUser.id;
-			pDataStructure->userAvatar = theUser.avatar;
-			pDataStructure->userName = theUser.userName;
+			std::unique_ptr<User> theUser{ std::make_unique<User>(jsonObjectData["user"]) };
+			pDataStructure->id = theUser->id;
+			pDataStructure->userAvatar = theUser->avatar;
+			pDataStructure->userName = theUser->userName;
+			this->insertUser(std::move(theUser));
 		}
 
 		if (jsonObjectData.contains("pending") && !jsonObjectData["pending"].is_null()) {
@@ -1726,11 +1726,11 @@ namespace DiscordCoreAPI {
 
 		pDataStructure->nick = get_string(jsonObjectData, "nick");
 
-		UserData theUser = get_object(jsonObjectData, "user");
-		this->insertUser(theUser);
-		pDataStructure->id = theUser.id;
-		pDataStructure->userAvatar = theUser.avatar;
-		pDataStructure->userName = theUser.userName;
+		std::unique_ptr<UserData> theUser = std::make_unique<UserData>(get_object(jsonObjectData, "user"));
+		pDataStructure->id = theUser->id;
+		pDataStructure->userAvatar = theUser->avatar;
+		pDataStructure->userName = theUser->userName;
+		this->insertUser(std::move(theUser));
 
 		pDataStructure->flags = get_uint8(jsonObjectData, "flags");
 
@@ -2801,9 +2801,9 @@ namespace DiscordCoreAPI {
 		auto theArray02 = get_array(jsonObjectData, "roles");
 		pDataStructure->roles.clear();
 		for (auto& value: theArray02) {
-			RoleData newData{ value };
-			pDataStructure->roles.push_back(newData.id);
-			this->insertRole(newData);
+			std::unique_ptr<RoleData> newData{ std::make_unique<RoleData>(value) };
+			pDataStructure->roles.push_back(newData->id);
+			this->insertRole(std::move(newData));
 		}
 
 		pDataStructure->flags = setBool<int8_t, GuildFlags>(pDataStructure->flags, GuildFlags::WidgetEnabled, get_bool(jsonObjectData, "widget_enabled"));
@@ -2824,19 +2824,19 @@ namespace DiscordCoreAPI {
 		auto theArray04 = get_array(jsonObjectData, "members");
 		pDataStructure->members.clear();
 		for (auto& value: theArray04) {
-			GuildMemberData newData{ value };
-			newData.guildId = pDataStructure->id;
-			pDataStructure->members.push_back(newData.id);
-			this->insertGuildMember(newData);
+			std::unique_ptr<GuildMemberData> newData{ std::make_unique<GuildMemberData>(value) };
+			newData->guildId = pDataStructure->id;
+			pDataStructure->members.push_back(newData->id);
+			this->insertGuildMember(std::move(newData));
 		}
 
 		auto theArray05 = get_array(jsonObjectData, "channels");
 		pDataStructure->channels.clear();
 		for (auto& value: theArray05) {
-			ChannelData newData{ value };
-			newData.guildId = pDataStructure->id;
-			pDataStructure->channels.push_back(newData.id);
-			this->insertChannel(newData);
+			std::unique_ptr<ChannelData> newData{ std::make_unique<ChannelData>(value) };
+			newData->guildId = pDataStructure->id;
+			pDataStructure->channels.push_back(newData->id);
+			this->insertChannel(std::move(newData));
 		}
 
 		auto theArray06 = get_array(jsonObjectData, "presences");

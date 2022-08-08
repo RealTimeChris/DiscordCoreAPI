@@ -304,7 +304,7 @@ namespace DiscordCoreAPI {
 			return;
 		}
 		if (Roles::configManager->doWeCacheRoles()) {
-			(*Roles::cache)[role->id] = std::make_unique<RoleData>(role);
+			(*Roles::cache)[role->id] = std::move(role);
 		}
 	}
 

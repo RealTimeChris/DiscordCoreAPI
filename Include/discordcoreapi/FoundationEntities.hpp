@@ -823,7 +823,7 @@ namespace DiscordCoreAPI {
 
 		GuildMemberData(const nlohmann::json& jsonObjectData);
 
-		void insertUser(UserData theUser);
+		void insertUser(std::unique_ptr<UserData> theUser);
 
 		virtual ~GuildMemberData() = default;
 
@@ -2104,10 +2104,11 @@ namespace DiscordCoreAPI {
 		VoiceConnection* connectToVoice(const Snowflake guildMemberId, const Snowflake channelId = 0, bool selfDeaf = false, bool selfMute = false,
 			StreamType streamType = StreamType::None, StreamInfo streamInfo = StreamInfo{});
 
-		void insertGuildMember(GuildMemberData theData);
-		void insertChannel(ChannelData theData);
+		void insertGuildMember(std::unique_ptr<GuildMemberData> theData);
 
-		void insertRole(RoleData theData);
+		void insertChannel(std::unique_ptr<ChannelData> theData);
+
+		void insertRole(std::unique_ptr<RoleData> theData);
 
 		bool areWeConnected();
 

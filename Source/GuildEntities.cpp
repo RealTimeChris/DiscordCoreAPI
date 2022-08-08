@@ -169,16 +169,16 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	void GuildData::insertChannel(ChannelData theData) {
-		Channels::insertChannel(theData);
+	void GuildData::insertChannel(std::unique_ptr<ChannelData> theData) {
+		Channels::insertChannel(std::move(theData));
 	}
 
-	void GuildData::insertRole(RoleData theData) {
-		Roles::insertRole(theData);
+	void GuildData::insertRole(std::unique_ptr<RoleData> theData) {
+		Roles::insertRole(std::move(theData));
 	}
 
-	void GuildData::insertGuildMember(GuildMemberData theData) {
-		GuildMembers::insertGuildMember(theData);
+	void GuildData::insertGuildMember(std::unique_ptr<GuildMemberData> theData) {
+		GuildMembers::insertGuildMember(std::move(theData));
 	}
 
 	void GuildData::initialize() {

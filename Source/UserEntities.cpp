@@ -172,7 +172,7 @@ namespace DiscordCoreAPI {
 		if (!Users::cache->contains(dataPackage.userId)) {
 			theLock.unlock();
 			auto theUser = getUserAsync(dataPackage).get();
-			Users::insertUser(theUser);
+			Users::insertUser(std::make_unique<UserData>(theUser));
 			co_return theUser;
 
 		} else {
@@ -234,20 +234,14 @@ namespace DiscordCoreAPI {
 		co_return Users::httpsClient->submitWorkloadAndGetResult<AuthorizationInfoData>(workload);
 	}
 
-	void Users::insertUser(UserData user) {
+	void Users::insertUser(std::unique_ptr<UserData> user) {
 		std::unique_lock theLock{ Users::theMutex };
-		if (user.id == 0) {
+		if (user->id == 0) {
 			return;
 		}
-		auto newCache = std::make_unique<std::unordered_map<Snowflake, std::unique_ptr<UserData>>>();
-		for (auto& [key, value]: *Users::cache) {
-			(*newCache)[key] = std::move(value);
-		}
 		if (Users::configManager->doWeCacheUsers()) {
-			(*newCache)[user.id] = std::make_unique<UserData>(user);
+			(*Users::cache)[user->id] = std::move(user);
 		}
-		Users::cache.reset(nullptr);
-		Users::cache = std::move(newCache);
 	}
 
 	std::unique_ptr<std::unordered_map<Snowflake, std::unique_ptr<UserData>>> Users::cache{ std::make_unique<std::unordered_map<Snowflake, std::unique_ptr<UserData>>>() };

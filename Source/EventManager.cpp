@@ -779,13 +779,13 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<void>();
 		if (EventHandler::configManager->doWeCacheChannels()) {
 			Channels::removeChannel(dataPackage.channel->id);
-			GuildData guild = Guilds::getCachedGuildAsync({ dataPackage.channel->guildId }).get();
-			for (uint64_t x = 0; x < guild.channels.size(); x++) {
-				if (guild.channels[x] == dataPackage.channel->id) {
-					guild.channels.erase(guild.channels.begin() + x);
+			GuildData* guild = (*Guilds::cache)[dataPackage.channel->guildId].get();
+			for (uint64_t x = 0; x < guild->channels.size(); x++) {
+				if (guild->channels[x] == dataPackage.channel->id) {
+					guild->channels.erase(guild->channels.begin() + x);
 				}
 			}
-			Guilds::insertGuild(std::make_unique<GuildData>(guild));
+			Guilds::insertGuild(std::make_unique<GuildData>(*guild));
 		}
 		co_return;
 	}
@@ -809,9 +809,12 @@ namespace DiscordCoreAPI {
 	CoRoutine<void> EventHandler::onGuildDeletion(OnGuildDeletionData dataPackage) {
 		co_await NewThreadAwaitable<void>();
 		if (EventHandler::configManager->doWeCacheGuilds()) {
+			GuildMemberId theKey{};
+			theKey.guildId = dataPackage.guild->id;
 			for (auto& value: dataPackage.guild->members) {
-				GuildMember guildMember = GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = value, .guildId = dataPackage.guild->id }).get();
-				GuildMembers::removeGuildMember(guildMember);
+				theKey.guildMemberId = value;
+				GuildMemberData* guildMember = (*GuildMembers::cache)[theKey].get();
+				GuildMembers::removeGuildMember(std::make_unique<GuildMemberData>(*guildMember));
 			}
 			for (auto& value: dataPackage.guild->channels) {
 				Channels::removeChannel(value);
@@ -830,10 +833,10 @@ namespace DiscordCoreAPI {
 			auto guildId = dataPackage.guildMember->guildId;
 			auto guildMemberId = dataPackage.guildMember->id;
 			GuildMembers::insertGuildMember(std::move(dataPackage.guildMember));
-			GuildData guild = Guilds::getCachedGuildAsync({ dataPackage.guildMember.guildId }).get();
-			guild.members.push_back(dataPackage.guildMember.id);
-			guild.memberCount++;
-			Guilds::insertGuild(std::make_unique<GuildData>(guild));
+			GuildData* guild = (*Guilds::cache)[dataPackage.guildMember->guildId].get();
+			guild->members.push_back(guildMemberId);
+			guild->memberCount++;
+			Guilds::insertGuild(std::make_unique<GuildData>(*guild));
 		}
 		co_return;
 	}
@@ -841,17 +844,19 @@ namespace DiscordCoreAPI {
 	CoRoutine<void> EventHandler::onGuildMemberRemove(OnGuildMemberRemoveData dataPackage) {
 		co_await NewThreadAwaitable<void>();
 		if (EventHandler::configManager->doWeCacheGuildMembers()) {
-			GuildMember guildMember = GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = dataPackage.user.id, .guildId = dataPackage.guildId }).get();
-			std::string globalId = std::to_string(guildMember.guildId) + " + " + std::to_string(guildMember.id);
-			GuildMembers::removeGuildMember(guildMember);
-			GuildData guild = Guilds::getCachedGuildAsync({ dataPackage.guildId }).get();
-			for (uint64_t x = 0; x < guild.members.size(); x++) {
-				if (guild.members[x] == dataPackage.user.id) {
-					guild.members.erase(guild.members.begin() + x);
+			GuildMemberId theKey{};
+			theKey.guildMemberId = dataPackage.user->id;
+			theKey.guildId = dataPackage.guildId;
+			GuildMemberData* guildMember = (*GuildMembers::cache)[theKey].get();
+			GuildMembers::removeGuildMember(std::make_unique<GuildMemberData>(*guildMember));
+			GuildData* guild = (*Guilds::cache)[dataPackage.guildId].get();
+			for (uint64_t x = 0; x < guild->members.size(); x++) {
+				if (guild->members[x] == dataPackage.user->id) {
+					guild->members.erase(guild->members.begin() + x);
 				}
 			}
-			guild.memberCount--;
-			Guilds::insertGuild(std::make_unique<GuildData>(guild));
+			guild->memberCount--;
+			Guilds::insertGuild(std::make_unique<GuildData>(*guild));
 		}
 		co_return;
 	}
@@ -859,7 +864,7 @@ namespace DiscordCoreAPI {
 	CoRoutine<void> EventHandler::onGuildMemberUpdate(OnGuildMemberUpdateData dataPackage) {
 		co_await NewThreadAwaitable<void>();
 		if (EventHandler::configManager->doWeCacheGuildMembers()) {
-			GuildMembers::insertGuildMember(dataPackage.guildMemberNew);
+			GuildMembers::insertGuildMember(std::move(dataPackage.guildMemberNew));
 		}
 		co_return;
 	}
@@ -867,10 +872,10 @@ namespace DiscordCoreAPI {
 	CoRoutine<void> EventHandler::onRoleCreation(OnRoleCreationData dataPackage) {
 		co_await NewThreadAwaitable<void>();
 		if (EventHandler::configManager->doWeCacheRoles()) {
-			Roles::insertRole(dataPackage.role);
-			GuildData guild = Guilds::getCachedGuildAsync({ dataPackage.guildId }).get();
-			guild.roles.push_back(dataPackage.role.id);
-			Guilds::insertGuild(std::make_unique<GuildData>(guild));
+			Roles::insertRole(std::move(dataPackage.role));
+			GuildData* guild = (*Guilds::cache)[dataPackage.guildId].get();
+			guild->roles.push_back(dataPackage.role->id);
+			Guilds::insertGuild(std::make_unique<GuildData>(*guild));
 		}
 		co_return;
 	}
@@ -878,7 +883,7 @@ namespace DiscordCoreAPI {
 	CoRoutine<void> EventHandler::onRoleUpdate(OnRoleUpdateData dataPackage) {
 		co_await NewThreadAwaitable<void>();
 		if (EventHandler::configManager->doWeCacheRoles()) {
-			Roles::insertRole(dataPackage.roleNew);
+			Roles::insertRole(std::move(dataPackage.roleNew));
 		}
 		co_return;
 	}
@@ -886,14 +891,14 @@ namespace DiscordCoreAPI {
 	CoRoutine<void> EventHandler::onRoleDeletion(OnRoleDeletionData dataPackage) {
 		co_await NewThreadAwaitable<void>();
 		if (EventHandler::configManager->doWeCacheRoles()) {
-			Roles::removeRole(dataPackage.roleOld.id);
-			GuildData guild = Guilds::getCachedGuildAsync({ dataPackage.guildId }).get();
-			for (uint64_t x = 0; x < guild.roles.size(); x++) {
-				if (guild.roles[x] == dataPackage.roleOld.id) {
-					guild.roles.erase(guild.roles.begin() + x);
+			Roles::removeRole(dataPackage.roleOld->id);
+			GuildData* guild = (*Guilds::cache)[dataPackage.guildId].get();
+			for (uint64_t x = 0; x < guild->roles.size(); x++) {
+				if (guild->roles[x] == dataPackage.roleOld->id) {
+					guild->roles.erase(guild->roles.begin() + x);
 				}
 			}
-			Guilds::insertGuild(std::make_unique<GuildData>(guild));
+			Guilds::insertGuild(std::make_unique<GuildData>(*guild));
 		}
 		co_return;
 	}
@@ -901,7 +906,7 @@ namespace DiscordCoreAPI {
 	CoRoutine<void> EventHandler::onUserUpdate(OnUserUpdateData dataPackage) {
 		co_await NewThreadAwaitable<void>();
 		if (EventHandler::configManager->doWeCacheUsers()) {
-			Users::insertUser(dataPackage.userNew);
+			Users::insertUser(std::move(dataPackage.userNew));
 		}
 		co_return;
 	}
@@ -909,9 +914,9 @@ namespace DiscordCoreAPI {
 	CoRoutine<void> EventHandler::onVoiceStateUpdate(OnVoiceStateUpdateData dataPackage) {
 		co_await NewThreadAwaitable<void>();
 		if (EventHandler::configManager->doWeCacheGuildMembers() && EventHandler::configManager->doWeCacheGuilds()) {
-			GuildData guild = Guilds::getCachedGuildAsync({ .guildId = dataPackage.voiceStateData.guildId }).get();
-			guild.voiceStates[dataPackage.voiceStateData.userId] = dataPackage.voiceStateData;
-			Guilds::insertGuild(std::make_unique<GuildData>(guild));
+			GuildData* guild = (*Guilds::cache)[dataPackage.voiceStateData.guildId].get();
+			guild->voiceStates[dataPackage.voiceStateData.userId] = dataPackage.voiceStateData;
+			Guilds::insertGuild(std::make_unique<GuildData>(*guild));
 		}
 		co_return;
 	}

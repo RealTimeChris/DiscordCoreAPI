@@ -54,8 +54,8 @@ namespace DiscordCoreAPI {
 		return data.dump();
 	}
 
-	void GuildMemberData::insertUser(UserData theUser) {
-		Users::insertUser(theUser);
+	void GuildMemberData::insertUser(std::unique_ptr<UserData> theUser) {
+		Users::insertUser(std::move(theUser));
 	}
 
 	GuildMember& GuildMember::operator=(GuildMemberData&& other) {
@@ -296,7 +296,7 @@ namespace DiscordCoreAPI {
 		if (GuildMembers::configManager->doWeCacheGuildMembers()) {
 			theKey.guildId = guildMember->guildId;
 			theKey.guildMemberId = guildMember->id;
-			(*GuildMembers::cache)[theKey] = std::make_unique<GuildMemberData>(guildMember);
+			(*GuildMembers::cache)[theKey] = std::move(guildMember);
 		}
 	}
 
