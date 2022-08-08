@@ -355,7 +355,7 @@ namespace DiscordCoreAPI {
 				if (!stopToken.stop_requested() && WebSocketSSLShard::areWeStillConnected()) {
 					WebSocketSSLShard::processIO();
 				}
-				if (!stopToken.stop_requested() && WebSocketSSLShard::areWeStillConnected() && WebSocketSSLShard::inputBuffer.theBuffer.size() > 0) {
+				if (!stopToken.stop_requested() && WebSocketSSLShard::areWeStillConnected() && WebSocketSSLShard::inputBuffer.size() > 0) {
 					this->parseMessage(this);
 				}
 				if (!stopToken.stop_requested() && WebSocketSSLShard::areWeStillConnected() && this->processedMessages.size() > 0) {
@@ -381,9 +381,9 @@ namespace DiscordCoreAPI {
 				theStopWatch.resetTimer();
 				for (uint32_t x = 0; x < this->voiceUsers.size(); x++) {
 					DatagramSocketClient::processIO(DiscordCoreInternal::ProcessIOType::Read_Only);
-					auto& theString = DatagramSocketClient::getInputBuffer();
+					std::string theString = DatagramSocketClient::getInputBuffer();
 					VoicePayload thePayload{};
-					thePayload.theRawData.insert(thePayload.theRawData.begin(), theString.theBuffer.begin(), theString.theBuffer.end());
+					thePayload.theRawData.insert(thePayload.theRawData.begin(), theString.begin(), theString.end());
 					this->theFrameQueue.emplace_back(thePayload);
 				}
 				this->streamSocket->processIO(DiscordCoreInternal::ProcessIOType::Both);
@@ -412,7 +412,7 @@ namespace DiscordCoreAPI {
 			if (!WebSocketSSLShard::areWeStillConnected()) {
 				return false;
 			}
-			if (WebSocketSSLShard::inputBuffer.theBuffer.size() > 0) {
+			if (WebSocketSSLShard::inputBuffer.size() > 0) {
 				if (!this->parseMessage(this)) {
 					return false;
 				}
@@ -640,10 +640,10 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-		auto& theBuffer = this->streamSocket->getInputBuffer();
+		auto theBuffer = this->streamSocket->getInputBuffer();
 
 		AudioFrameData theFrame{};
-		theFrame.encodedFrameData.data.insert(theFrame.encodedFrameData.data.begin(), theBuffer.theBuffer.begin(), theBuffer.theBuffer.end());
+		theFrame.encodedFrameData.data.insert(theFrame.encodedFrameData.data.begin(), theBuffer.begin(), theBuffer.end());
 		theFrame.encodedFrameData.sampleCount = 960;
 		theFrame.type = AudioFrameType::Encoded;
 		this->audioDataBuffer.send(std::move(theFrame));
@@ -922,8 +922,8 @@ namespace DiscordCoreAPI {
 					StopWatch theStopWatch{ 2500ms };
 					while (inputString.size() < 74 && !this->doWeQuit->load() && this->activeState.load() != VoiceActiveState::Exiting) {
 						DatagramSocketClient::processIO(DiscordCoreInternal::ProcessIOType::Both);
-						auto& theNewString = DatagramSocketClient::getInputBuffer();
-						inputString.insert(inputString.end(), theNewString.theBuffer.begin(), theNewString.theBuffer.end());
+						std::string theNewString = DatagramSocketClient::getInputBuffer();
+						inputString.insert(inputString.end(), theNewString.begin(), theNewString.end());
 						std::this_thread::sleep_for(1ms);
 						if (theStopWatch.hasTimePassed()) {
 							return false;

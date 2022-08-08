@@ -67,15 +67,6 @@ namespace DiscordCoreInternal {
 
 	using SOCKET = int32_t;
 
-	struct DataBuffer {
-		int64_t writeOffsetIntoBuffer{};
-		int64_t readOffsetIntoBuffer{};
-		std::string theBuffer{};
-		operator const char*();
-		void erase(int32_t offSet);
-		void reset();
-	};
-
 	struct ConnectionError : public std::runtime_error {
 		explicit ConnectionError(const std::string& theString);
 	};
@@ -206,7 +197,7 @@ namespace DiscordCoreInternal {
 
 		virtual ProcessIOResult writeData(const std::string& data, bool priority = false) noexcept = 0;
 
-		virtual DataBuffer& getInputBuffer() noexcept = 0;
+		virtual std::string& getInputBuffer() noexcept = 0;
 
 		virtual int64_t getBytesRead() noexcept = 0;
 
@@ -216,7 +207,7 @@ namespace DiscordCoreInternal {
 		int32_t maxBufferSize{ (1024 * 16) - 1 };
 		std::deque<std::string> outputBuffers{};
 		std::string rawInputBuffer{};
-		DataBuffer inputBuffer{};
+		std::string inputBuffer{};
 		bool wantWrite{ true };
 		bool wantRead{ false };
 		int64_t bytesRead{ 0 };
@@ -236,7 +227,7 @@ namespace DiscordCoreInternal {
 
 		ProcessIOResult readDataProcess() noexcept;
 
-		DataBuffer& getInputBuffer() noexcept;
+		std::string& getInputBuffer() noexcept;
 
 		ProcessIOResult processIO() noexcept;
 
@@ -261,7 +252,7 @@ namespace DiscordCoreInternal {
 
 		void writeData(std::string& data) noexcept;
 
-		DataBuffer& getInputBuffer() noexcept;
+		std::string& getInputBuffer() noexcept;
 
 		bool areWeStillConnected() noexcept;
 
@@ -285,7 +276,7 @@ namespace DiscordCoreInternal {
 		std::recursive_mutex theMutex{};
 		std::string rawInputBuffer{};
 		SOCKETWrapper theSocket{};
-		DataBuffer inputBuffer{};
+		std::string inputBuffer{};
 		int64_t bytesRead{};
 	};
 }// namespace DiscordCoreInternal
