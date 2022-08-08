@@ -458,7 +458,7 @@ namespace DiscordCoreAPI {
 				case VoiceActiveState::Paused: {
 					this->areWePlaying.store(false);
 					while (!stopToken.stop_requested() && this->activeState.load() == VoiceActiveState::Paused) {
-						DatagramSocketClient::processIO(10000, DiscordCoreInternal::ProcessIOType::Both);
+						DatagramSocketClient::processIO(1000, DiscordCoreInternal::ProcessIOType::Both);
 						if (theSendSilenceStopWatch.hasTimePassed()) {
 							theSendSilenceStopWatch.resetTimer();
 							this->sendSpeakingMessage(true);

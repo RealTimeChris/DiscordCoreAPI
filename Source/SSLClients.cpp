@@ -583,18 +583,6 @@ namespace DiscordCoreInternal {
 				break;
 			}
 		}
-		if (theType == ProcessIOType::Read_Only) {
-			FD_ZERO(&readSet);
-			FD_SET(this->theSocket, &readSet);
-		} else if (theType == ProcessIOType::Write_Only) {
-			FD_ZERO(&writeSet);
-			FD_SET(this->theSocket, &writeSet);
-		} else {
-			FD_ZERO(&readSet);
-			FD_SET(this->theSocket, &readSet);
-			FD_ZERO(&writeSet);
-			FD_SET(this->theSocket, &writeSet);
-		}
 		auto theFinalFd = static_cast<SOCKET>(this->theSocket) > static_cast<SOCKET>(this->theSocket) ? static_cast<SOCKET>(this->theSocket) : static_cast<SOCKET>(this->theSocket);
 		timeval checkTime{};
 		checkTime.tv_usec = waitTimeInms;
