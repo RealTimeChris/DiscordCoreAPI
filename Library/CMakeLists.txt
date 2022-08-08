@@ -57,8 +57,7 @@ target_include_directories(
 	"$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Include/>"
 )
 
-find_package(simdjson CONFIG REQUIRED)
-find_package(ffmpeg MODULE REQUIRED)
+find_package(FFMPEG MODULE REQUIRED)
 find_package(NLOHMANN MODULE REQUIRED)
 find_package(OPENSSL MODULE REQUIRED)
 find_package(OPUS MODULE REQUIRED)
@@ -76,7 +75,6 @@ target_link_libraries(
 	$<$<TARGET_EXISTS:OPUS::Opus>:OPUS::Opus>
 	$<$<TARGET_EXISTS:SODIUM::Sodium>:SODIUM::Sodium>
 	$<$<TARGET_EXISTS:Threads::Threads>:Threads::Threads>
-	$<$<TARGET_EXISTS:simdjson::simdjson>:simdjson::simdjson>
 )
 
 target_compile_features(

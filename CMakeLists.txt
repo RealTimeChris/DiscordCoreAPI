@@ -17,8 +17,6 @@
 # https://discordcoreapi.com
 
 # Set these values, if you are not building with VCPKG.
-set(simdjson_DIR "C:/Vcpkg/installed/x64-windows/share/simdjson")
-set(ffmpeg_DIR "C:/Vcpkg/installed/x64-windows/share/ffmpeg")
 set(FFMPEG_INCLUDE_DIR "C:/Vcpkg/installed/x64-windows/include")
 set(FFMPEG_RELEASE_ROOT "C:/Vcpkg/installed/x64-windows/lib")
 set(FFMPEG_DEBUG_ROOT "C:/Vcpkg/installed/x64-windows/debug/lib")
