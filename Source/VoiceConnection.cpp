@@ -386,9 +386,9 @@ namespace DiscordCoreAPI {
 					thePayload.theRawData.insert(thePayload.theRawData.begin(), theString.begin(), theString.end());
 					this->theFrameQueue.push(thePayload);
 				}
-				this->streamSocket->processIO(0, DiscordCoreInternal::ProcessIOType::Read_Only);
+				this->streamSocket->processIO(0, DiscordCoreInternal::ProcessIOType::Both);
 				this->parseIncomingVoiceData();
-				this->streamSocket->processIO(0, DiscordCoreInternal::ProcessIOType::Write_Only);
+				this->streamSocket->processIO(0, DiscordCoreInternal::ProcessIOType::Both);
 				this->mixAudio();
 				this->streamSocket->processIO(0, DiscordCoreInternal::ProcessIOType::Write_Only);
 
