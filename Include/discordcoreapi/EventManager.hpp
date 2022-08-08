@@ -49,7 +49,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Data that is received as part of an AutoModerationRule creation event. \brief Data that is received as part of an AutoModerationRule creation event.
-	struct DiscordCoreAPI_Dll OnAutoModerationRuleCreationData {
+	struct DiscordCoreAPI_Dll OnAutoModerationRuleCreationData {	
 		AutoModerationRule theRule{};
 	};
 
@@ -70,18 +70,33 @@ namespace DiscordCoreAPI {
 
 	/// Data that is received as part of a Channel creation event. \brief Data that is received as part of a Channel creation event.
 	struct DiscordCoreAPI_Dll OnChannelCreationData {
-		Channel channel{};///< The new Channel.
+		OnChannelCreationData() = default;
+		OnChannelCreationData& operator=(const OnChannelCreationData&);
+		OnChannelCreationData(const OnChannelCreationData&);
+		OnChannelCreationData& operator=(OnChannelCreationData&);
+		OnChannelCreationData(OnChannelCreationData&);
+		std::unique_ptr<Channel> channel{};///< The new Channel.
 	};
 
 	/// Data that is received as part of a Channel update event. \brief Data that is received as part of a Channel update event.
 	struct DiscordCoreAPI_Dll OnChannelUpdateData {
-		Channel channelOld{};///< The old Channel.
-		Channel channelNew{};///< The new Channel.
+		OnChannelUpdateData() = default;
+		OnChannelUpdateData& operator=(const OnChannelUpdateData&);
+		OnChannelUpdateData(const OnChannelUpdateData&);
+		OnChannelUpdateData& operator=(OnChannelUpdateData&);
+		OnChannelUpdateData(OnChannelUpdateData&);
+		std::unique_ptr<Channel> channelOld{};///< The old Channel.
+		std::unique_ptr<Channel> channelNew{};///< The new Channel.
 	};
 
 	/// Data that is received as part of a Channel deletion event. \brief Data that is received as part of a Channel deletion event.
 	struct DiscordCoreAPI_Dll OnChannelDeletionData {
-		Channel channel{};///< The deleted Channel.
+		OnChannelDeletionData() = default;
+		OnChannelDeletionData& operator=(const OnChannelDeletionData&);
+		OnChannelDeletionData(const OnChannelDeletionData&);
+		OnChannelDeletionData& operator=(OnChannelDeletionData&);
+		OnChannelDeletionData(OnChannelDeletionData&);
+		std::unique_ptr<Channel> channel{};///< The deleted Channel.
 	};
 
 	/// Data that is received as part of a Channel pins update event. \brief Data that is received as part of a Channel pins update event.
@@ -126,7 +141,7 @@ namespace DiscordCoreAPI {
 		OnGuildCreationData(const OnGuildCreationData&);
 		OnGuildCreationData& operator=(OnGuildCreationData&);
 		OnGuildCreationData(OnGuildCreationData&);
-		std::unique_ptr<GuildData> guild{};///< The new Guild.
+		std::unique_ptr<Guild> guild{};///< The new Guild.
 	};
 
 	/// Data that is received as part of a Guild update event. \brief Data that is received as part of a Guild update event.
@@ -136,8 +151,8 @@ namespace DiscordCoreAPI {
 		OnGuildUpdateData(const OnGuildUpdateData&);
 		OnGuildUpdateData& operator=(OnGuildUpdateData&);
 		OnGuildUpdateData(OnGuildUpdateData&);
-		std::unique_ptr<GuildData> guildOld{};///< The old Guild.
-		std::unique_ptr<GuildData> guildNew{};///< The new, updated Guild.
+		std::unique_ptr<Guild> guildOld{};///< The old Guild.
+		std::unique_ptr<Guild> guildNew{};///< The new, updated Guild.
 	};
 
 	/// Data that is received as part of a Guild deletion event. \brief Data that is received as part of a Guild deletion event.
@@ -147,7 +162,7 @@ namespace DiscordCoreAPI {
 		OnGuildDeletionData(const OnGuildDeletionData&);
 		OnGuildDeletionData& operator=(OnGuildDeletionData&);
 		OnGuildDeletionData(OnGuildDeletionData&);
-		std::unique_ptr<GuildData> guild{};///< The deleted Guild.
+		std::unique_ptr<Guild> guild{};///< The deleted Guild.
 	};
 
 	/// Data that is received as part of a Guild ban add event. \brief Data that is received as part of a Guild ban add event.
@@ -179,20 +194,36 @@ namespace DiscordCoreAPI {
 
 	/// Data that is received as part of a GuildMember add event. \brief Data that is received as part of a GuildMember add event.
 	struct DiscordCoreAPI_Dll OnGuildMemberAddData {
+		OnGuildMemberAddData() = default;
+		OnGuildMemberAddData& operator=(const OnGuildMemberAddData&);
+		OnGuildMemberAddData(const OnGuildMemberAddData&);
+		OnGuildMemberAddData& operator=(OnGuildMemberAddData&);
+		OnGuildMemberAddData(OnGuildMemberAddData&);
 		DiscordCoreClient* discordCoreClient{ nullptr };
-		GuildMember guildMember{};///< The new GuildMember.
+		std::unique_ptr<GuildMember> guildMember{};///< The new GuildMember.
 	};
 
 	/// Data that is received as part of a GuildMember remove event. \brief Data that is received as part of a GuildMember remove event.
 	struct DiscordCoreAPI_Dll OnGuildMemberRemoveData {
+		OnGuildMemberRemoveData() = default;
+		OnGuildMemberRemoveData& operator=(const OnGuildMemberRemoveData&);
+		OnGuildMemberRemoveData(const OnGuildMemberRemoveData&);
+		OnGuildMemberRemoveData& operator=(OnGuildMemberRemoveData&);
+		OnGuildMemberRemoveData(OnGuildMemberRemoveData&);
+		DiscordCoreClient* discordCoreClient{ nullptr };
 		Snowflake guildId{};///< The id of the Guild from which they were removed.
-		User user{};///< The User responseData of the removed GuildMember.
+		std::unique_ptr<User> user{};///< The User responseData of the removed GuildMember.
 	};
 
 	/// Data that is received as part of a GuildMember update event. \brief Data that is received as part of a GuildMember update event.
 	struct DiscordCoreAPI_Dll OnGuildMemberUpdateData {
-		GuildMember guildMemberOld{};///< The old GuildMember.
-		GuildMember guildMemberNew{};///< The new GuildMember.
+		OnGuildMemberUpdateData() = default;
+		OnGuildMemberUpdateData& operator=(const OnGuildMemberUpdateData&);
+		OnGuildMemberUpdateData(const OnGuildMemberUpdateData&);
+		OnGuildMemberUpdateData& operator=(OnGuildMemberUpdateData&);
+		OnGuildMemberUpdateData(OnGuildMemberUpdateData&);
+		std::unique_ptr<GuildMember> guildMemberOld{};///< The old GuildMember.
+		std::unique_ptr<GuildMember> guildMemberNew{};///< The new GuildMember.
 	};
 
 	/// Data that is received as part of a GuildMembers chunk event. \brief Data that is received as part of a GuildMembers chunk event.
@@ -202,21 +233,36 @@ namespace DiscordCoreAPI {
 
 	/// Data that is received as part of a Role creation event. \brief Data that is received as part of a Role creation event.
 	struct DiscordCoreAPI_Dll OnRoleCreationData {
+		OnRoleCreationData() = default;
+		OnRoleCreationData& operator=(const OnRoleCreationData&);
+		OnRoleCreationData(const OnRoleCreationData&);
+		OnRoleCreationData& operator=(OnRoleCreationData&);
+		OnRoleCreationData(OnRoleCreationData&);
 		Snowflake guildId{};///< The id of the Guild within which the Role was created.
-		Role role{};///< The new Role.
+		std::unique_ptr<Role> role{};///< The new Role.
 	};
 
 	/// Data that is received as part of a Role update event. \brief Data that is received as part of a Role update event.
 	struct DiscordCoreAPI_Dll OnRoleUpdateData {
+		OnRoleUpdateData() = default;
+		OnRoleUpdateData& operator=(const OnRoleUpdateData&);
+		OnRoleUpdateData(const OnRoleUpdateData&);
+		OnRoleUpdateData& operator=(OnRoleUpdateData&);
+		OnRoleUpdateData(OnRoleUpdateData&);		
 		Snowflake guildId{};///< The id of the Guild within which the Role was updated.
-		Role roleOld{};///< The old Role.
-		Role roleNew{};///< The new Role.
+		std::unique_ptr<Role> roleOld{};///< The old Role.
+		std::unique_ptr<Role> roleNew{};///< The new Role.
 	};
 
 	/// Data that is received as part of a Role deletion event. \brief Data that is received as part of a Role deletion event.
 	struct DiscordCoreAPI_Dll OnRoleDeletionData {
+		OnRoleDeletionData() = default;
+		OnRoleDeletionData& operator=(const OnRoleDeletionData&);
+		OnRoleDeletionData(const OnRoleDeletionData&);
+		OnRoleDeletionData& operator=(OnRoleDeletionData&);
+		OnRoleDeletionData(OnRoleDeletionData&);	
 		Snowflake guildId{};///< The id of the Guild from which the Role was deleted.
-		Role roleOld{};///< The deleted Role.
+		std::unique_ptr<Role> roleOld{};///< The deleted Role.
 	};
 
 	/// Data that is received as part of an Integration creation event. \brief Data that is received as part of an Integration creation event.
@@ -331,8 +377,13 @@ namespace DiscordCoreAPI {
 
 	/// Data that is received as part of a User update event. \brief Data that is received as part of a User update event.
 	struct DiscordCoreAPI_Dll OnUserUpdateData {
-		UserData userOld{};///< The old User.
-		UserData userNew{};///< The new User.
+		OnUserUpdateData() = default;
+		OnUserUpdateData& operator=(const OnUserUpdateData&);
+		OnUserUpdateData(const OnUserUpdateData&);
+		OnUserUpdateData& operator=(OnUserUpdateData&);
+		OnUserUpdateData(OnUserUpdateData&);	
+		std::unique_ptr<User> userOld{};///< The old User.
+		std::unique_ptr<User> userNew{};///< The new User.
 	};
 
 	/// Data that is received as part of a voice state update event. \brief Data that is received as part of a voice state update event.

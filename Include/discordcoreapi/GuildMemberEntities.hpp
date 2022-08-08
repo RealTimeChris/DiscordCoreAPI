@@ -206,9 +206,9 @@ namespace DiscordCoreAPI {
 		/// \returns A CoRoutine containing GuildMember.
 		static CoRoutine<GuildMember> timeoutGuildMemberAsync(TimeoutGuildMemberData dataPackage);
 
-		static void insertGuildMember(GuildMemberData dataPackage);
+		static void insertGuildMember(std::unique_ptr<GuildMemberData> guildMember);
 
-		static void removeGuildMember(GuildMemberData& globalId);
+		static void removeGuildMember(std::unique_ptr<GuildMemberData> globalId);
 
 	  protected:
 		static std::unique_ptr<std::map<GuildMemberId, std::unique_ptr<GuildMemberData>>> cache;

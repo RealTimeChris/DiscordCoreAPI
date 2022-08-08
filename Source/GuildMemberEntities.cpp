@@ -144,7 +144,7 @@ namespace DiscordCoreAPI {
 		if (!GuildMembers::cache->contains(theKey)) {
 			theLock.unlock();
 			auto theGuildMember = GuildMembers::getGuildMemberAsync(dataPackage).get();
-			GuildMembers::insertGuildMember(theGuildMember);
+			GuildMembers::insertGuildMember(std::make_unique<GuildMember>(theGuildMember));
 			co_return theGuildMember;
 		} else {
 			co_return *(*GuildMembers::cache)[theKey];
@@ -219,7 +219,7 @@ namespace DiscordCoreAPI {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
 		auto guildMember = GuildMembers::httpsClient->submitWorkloadAndGetResult<GuildMember>(workload);
-		GuildMembers::insertGuildMember(guildMember);
+		GuildMembers::insertGuildMember(std::make_unique<GuildMember>(guildMember));
 		co_return guildMember;
 	}
 
@@ -287,30 +287,24 @@ namespace DiscordCoreAPI {
 		co_return GuildMembers::modifyGuildMemberAsync(dataPackage01).get();
 	}
 
-	void GuildMembers::insertGuildMember(GuildMemberData guildMember) {
+	void GuildMembers::insertGuildMember(std::unique_ptr<GuildMemberData> guildMember) {
 		std::unique_lock theLock{ GuildMembers::theMutex };
-		if (guildMember.id == 0) {
+		if (guildMember->id == 0) {
 			return;
-		}
-		auto newCache = std::make_unique<std::map<GuildMemberId, std::unique_ptr<GuildMemberData>>>();
-		for (auto& [key, value]: *GuildMembers::cache) {
-			(*newCache)[key] = std::move(value);
 		}
 		GuildMemberId theKey{};
 		if (GuildMembers::configManager->doWeCacheGuildMembers()) {
-			theKey.guildId = guildMember.guildId;
-			theKey.guildMemberId = guildMember.id;
-			(*newCache)[theKey] = std::make_unique<GuildMemberData>(guildMember);
+			theKey.guildId = guildMember->guildId;
+			theKey.guildMemberId = guildMember->id;
+			(*GuildMembers::cache)[theKey] = std::make_unique<GuildMemberData>(guildMember);
 		}
-		GuildMembers::cache.reset(nullptr);
-		GuildMembers::cache = std::move(newCache);
 	}
 
-	void GuildMembers::removeGuildMember(GuildMemberData& guildMember) {
+	void GuildMembers::removeGuildMember(std::unique_ptr<GuildMemberData> guildMember) {
 		std::unique_lock theLock{ GuildMembers::theMutex };
 		GuildMemberId theKey{};
-		theKey.guildId = guildMember.guildId;
-		theKey.guildMemberId = guildMember.id;
+		theKey.guildId = guildMember->guildId;
+		theKey.guildMemberId = guildMember->id;
 		GuildMembers::cache->erase(theKey);
 	};
 

@@ -166,8 +166,6 @@ namespace DiscordCoreInternal {
 	  public:
 		SSLConnectionInterface() noexcept = default;
 
-		static void initialize();
-
 		virtual bool connect(const std::string& baseUrl, const std::string& portNew) = 0;
 
 		virtual void disconnect(bool doWeReconnect) noexcept = 0;

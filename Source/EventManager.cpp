@@ -24,8 +24,226 @@
 
 namespace DiscordCoreAPI {
 
+	OnUserUpdateData& OnUserUpdateData::operator=(const OnUserUpdateData& other) {
+		this->userNew = std::make_unique<User>();
+		this->userOld = std::make_unique<User>();
+		*this->userNew = *other.userNew;
+		*this->userOld = *other.userOld;
+		return *this;
+	}
+
+	OnUserUpdateData::OnUserUpdateData(const OnUserUpdateData& other) {
+		*this = other;
+	}
+
+	OnUserUpdateData& OnUserUpdateData::operator=(OnUserUpdateData& other) {
+		this->userNew = std::make_unique<User>();
+		this->userOld = std::make_unique<User>();
+		*this->userNew = *other.userNew;
+		*this->userOld = *other.userOld;
+		return *this;
+	}
+
+	OnUserUpdateData::OnUserUpdateData(OnUserUpdateData& other) {
+		*this = other;
+	}
+
+	OnRoleCreationData& OnRoleCreationData::operator=(const OnRoleCreationData& other) {
+		this->role = std::make_unique<Role>();
+		*this->role = *other.role;
+		return *this;
+	}
+
+	OnRoleCreationData::OnRoleCreationData(const OnRoleCreationData& other) {
+		*this = other;
+	}
+
+	OnRoleCreationData& OnRoleCreationData::operator=(OnRoleCreationData& other) {
+		this->role = std::make_unique<Role>();
+		*this->role = *other.role;
+		return *this;
+	}
+
+	OnRoleCreationData::OnRoleCreationData(OnRoleCreationData& other) {
+		*this = other;
+	}
+
+	OnRoleUpdateData& OnRoleUpdateData::operator=(const OnRoleUpdateData& other) {
+		this->roleNew = std::make_unique<Role>();
+		this->roleOld = std::make_unique<Role>();
+		*this->roleNew = *other.roleNew;
+		*this->roleOld = *other.roleOld;
+		return *this;
+	}
+
+	OnRoleUpdateData::OnRoleUpdateData(const OnRoleUpdateData& other) {
+		*this = other;
+	}
+
+	OnRoleUpdateData& OnRoleUpdateData::operator=(OnRoleUpdateData& other) {
+		this->roleNew = std::make_unique<Role>();
+		this->roleOld = std::make_unique<Role>();
+		*this->roleNew = *other.roleNew;
+		*this->roleOld = *other.roleOld;
+		return *this;
+	}
+
+	OnRoleUpdateData::OnRoleUpdateData(OnRoleUpdateData& other) {
+		*this = other;
+	}
+
+	OnRoleDeletionData& OnRoleDeletionData::operator=(const OnRoleDeletionData& other) {
+		this->guildId = other.guildId;
+		*this->roleOld = *other.roleOld;
+		return *this;
+	}
+
+	OnRoleDeletionData::OnRoleDeletionData(const OnRoleDeletionData& other) {
+		*this = other;
+	}
+
+	OnRoleDeletionData& OnRoleDeletionData::operator=(OnRoleDeletionData& other) {
+		this->guildId = other.guildId;
+		*this->roleOld = *other.roleOld;
+		return *this;
+	}
+
+	OnRoleDeletionData::OnRoleDeletionData(OnRoleDeletionData& other) {
+		*this = other;
+	}
+
+	OnChannelCreationData& OnChannelCreationData::operator=(const OnChannelCreationData& other) {
+		this->channel = std::make_unique<Channel>();
+		*this->channel = *other.channel;
+		return *this;
+	}
+
+	OnChannelCreationData::OnChannelCreationData(const OnChannelCreationData& other) {
+		*this = other;
+	}
+
+	OnChannelCreationData& OnChannelCreationData::operator=(OnChannelCreationData& other) {
+		this->channel = std::make_unique<Channel>();
+		*this->channel = *other.channel;
+		return *this;
+	}
+
+	OnChannelCreationData::OnChannelCreationData(OnChannelCreationData& other) {
+		*this = other;
+	}
+
+	OnChannelUpdateData& OnChannelUpdateData::operator=(const OnChannelUpdateData& other) {
+		this->channelNew = std::make_unique<Channel>();
+		this->channelOld = std::make_unique<Channel>();
+		*this->channelNew = *other.channelNew;
+		*this->channelOld = *other.channelOld;
+		return *this;
+	}
+
+	OnChannelUpdateData::OnChannelUpdateData(const OnChannelUpdateData& other) {
+		*this = other;
+	}
+
+	OnChannelUpdateData& OnChannelUpdateData::operator=(OnChannelUpdateData& other) {
+		this->channelNew = std::make_unique<Channel>();
+		this->channelOld = std::make_unique<Channel>();
+		*this->channelNew = *other.channelNew;
+		*this->channelOld = *other.channelOld;
+		return *this;
+	}
+
+	OnChannelUpdateData::OnChannelUpdateData(OnChannelUpdateData& other) {
+		*this = other;
+	}
+
+	OnChannelDeletionData& OnChannelDeletionData::operator=(const OnChannelDeletionData& other) {
+		*this->channel = *other.channel;
+		return *this;
+	}
+
+	OnChannelDeletionData::OnChannelDeletionData(const OnChannelDeletionData& other) {
+		*this = other;
+	}
+
+	OnChannelDeletionData& OnChannelDeletionData::operator=(OnChannelDeletionData& other) {
+		*this->channel = *other.channel;
+		return *this;
+	}
+
+	OnChannelDeletionData::OnChannelDeletionData(OnChannelDeletionData& other) {
+		*this = other;
+	}
+
+	OnGuildMemberAddData& OnGuildMemberAddData::operator=(const OnGuildMemberAddData& other) {
+		this->guildMember = std::make_unique<GuildMember>();
+		this->discordCoreClient = other.discordCoreClient;
+		*this->guildMember = *other.guildMember;
+		return *this;
+	}
+
+	OnGuildMemberAddData::OnGuildMemberAddData(const OnGuildMemberAddData& other) {
+		*this = other;
+	}
+
+	OnGuildMemberAddData& OnGuildMemberAddData::operator=(OnGuildMemberAddData& other) {
+		this->guildMember = std::make_unique<GuildMember>();
+		this->discordCoreClient = other.discordCoreClient;
+		*this->guildMember = *other.guildMember;
+		return *this;
+	}
+
+	OnGuildMemberAddData::OnGuildMemberAddData(OnGuildMemberAddData& other) {
+		*this = other;
+	}
+
+	OnGuildMemberUpdateData& OnGuildMemberUpdateData::operator=(const OnGuildMemberUpdateData& other) {
+		this->guildMemberNew = std::make_unique<GuildMember>();
+		this->guildMemberOld = std::make_unique<GuildMember>();
+		*this->guildMemberNew = *other.guildMemberNew;
+		*this->guildMemberOld = *other.guildMemberOld;
+		return *this;
+	}
+
+	OnGuildMemberUpdateData::OnGuildMemberUpdateData(const OnGuildMemberUpdateData& other) {
+		*this = other;
+	}
+
+	OnGuildMemberUpdateData& OnGuildMemberUpdateData::operator=(OnGuildMemberUpdateData& other) {
+		this->guildMemberNew = std::make_unique<GuildMember>();
+		this->guildMemberOld = std::make_unique<GuildMember>();
+		*this->guildMemberNew = *other.guildMemberNew;
+		*this->guildMemberOld = *other.guildMemberOld;
+		return *this;
+	}
+
+	OnGuildMemberUpdateData::OnGuildMemberUpdateData(OnGuildMemberUpdateData& other) {
+		*this = other;
+	}
+
+	OnGuildMemberRemoveData& OnGuildMemberRemoveData::operator=(const OnGuildMemberRemoveData& other) {
+		this->discordCoreClient = other.discordCoreClient;
+		this->guildId = other.guildId;
+		*this->user = *other.user;
+		return *this;
+	}
+
+	OnGuildMemberRemoveData::OnGuildMemberRemoveData(const OnGuildMemberRemoveData& other) {
+		*this = other;
+	}
+
+	OnGuildMemberRemoveData& OnGuildMemberRemoveData::operator=(OnGuildMemberRemoveData& other) {
+		this->discordCoreClient = other.discordCoreClient;
+		this->guildId = other.guildId;
+		*this->user = *other.user;
+		return *this;
+	}
+
+	OnGuildMemberRemoveData::OnGuildMemberRemoveData(OnGuildMemberRemoveData& other) {
+		*this = other;
+	}
+
 	OnGuildCreationData& OnGuildCreationData::operator=(const OnGuildCreationData& other) {
-		this->guild = std::make_unique<GuildData>();
+		this->guild = std::make_unique<Guild>();
 		*this->guild = *other.guild;
 		return *this;
 	}
@@ -35,7 +253,7 @@ namespace DiscordCoreAPI {
 	}
 
 	OnGuildCreationData& OnGuildCreationData::operator=(OnGuildCreationData&other) {
-		this->guild = std::make_unique<GuildData>();
+		this->guild = std::make_unique<Guild>();
 		*this->guild = *other.guild;
 		return *this;
 	}
@@ -45,8 +263,8 @@ namespace DiscordCoreAPI {
 	}
 
 	OnGuildUpdateData& OnGuildUpdateData::operator=(const OnGuildUpdateData& other) {
-		this->guildNew = std::make_unique<GuildData>();
-		this->guildOld = std::make_unique<GuildData>();
+		this->guildNew = std::make_unique<Guild>();
+		this->guildOld = std::make_unique<Guild>();
 		*this->guildNew = *other.guildNew;
 		*this->guildOld = *other.guildOld;
 		return *this;
@@ -57,8 +275,8 @@ namespace DiscordCoreAPI {
 	}
 
 	OnGuildUpdateData& OnGuildUpdateData::operator=(OnGuildUpdateData& other) {
-		this->guildNew = std::make_unique<GuildData>();
-		this->guildOld = std::make_unique<GuildData>();
+		this->guildNew = std::make_unique<Guild>();
+		this->guildOld = std::make_unique<Guild>();
 		*this->guildNew = *other.guildNew;
 		*this->guildOld = *other.guildOld;
 		return *this;
@@ -69,7 +287,7 @@ namespace DiscordCoreAPI {
 	}
 
 	OnGuildDeletionData& OnGuildDeletionData::operator=(const OnGuildDeletionData& other) {
-		this->guild = std::make_unique<GuildData>();
+		this->guild = std::make_unique<Guild>();
 		*this->guild = *other.guild;
 		return *this;
 	}
@@ -79,7 +297,7 @@ namespace DiscordCoreAPI {
 	}
 
 	OnGuildDeletionData& OnGuildDeletionData::operator=(OnGuildDeletionData& other) {
-		this->guild = std::make_unique<GuildData>();
+		this->guild = std::make_unique<Guild>();
 		*this->guild = *other.guild;
 		return *this;
 	}
@@ -539,10 +757,12 @@ namespace DiscordCoreAPI {
 	CoRoutine<void> EventHandler::onChannelCreation(OnChannelCreationData dataPackage) {
 		co_await NewThreadAwaitable<void>();
 		if (EventHandler::configManager->doWeCacheChannels()) {
-			Channels::insertChannel(dataPackage.channel);
-			GuildData guild = Guilds::getCachedGuildAsync({ dataPackage.channel.guildId }).get();
-			guild.channels.push_back(dataPackage.channel.id);
-			Guilds::insertGuild(std::make_unique<GuildData>(guild));
+			auto guildId = dataPackage.channel->guildId;
+			auto channelId = dataPackage.channel->id;
+			Channels::insertChannel(std::move(dataPackage.channel));
+			GuildData* guild = (*Guilds::cache)[guildId].get();
+			guild->channels.push_back(channelId);
+			Guilds::insertGuild(std::make_unique<GuildData>(*guild));
 		}
 		co_return;
 	}
@@ -550,7 +770,7 @@ namespace DiscordCoreAPI {
 	CoRoutine<void> EventHandler::onChannelUpdate(OnChannelUpdateData dataPackage) {
 		co_await NewThreadAwaitable<void>();
 		if (EventHandler::configManager->doWeCacheChannels()) {
-			Channels::insertChannel(dataPackage.channelNew);
+			Channels::insertChannel(std::move(dataPackage.channelNew));
 		}
 		co_return;
 	}
@@ -558,10 +778,10 @@ namespace DiscordCoreAPI {
 	CoRoutine<void> EventHandler::onChannelDeletion(OnChannelDeletionData dataPackage) {
 		co_await NewThreadAwaitable<void>();
 		if (EventHandler::configManager->doWeCacheChannels()) {
-			Channels::removeChannel(dataPackage.channel.id);
-			GuildData guild = Guilds::getCachedGuildAsync({ dataPackage.channel.guildId }).get();
+			Channels::removeChannel(dataPackage.channel->id);
+			GuildData guild = Guilds::getCachedGuildAsync({ dataPackage.channel->guildId }).get();
 			for (uint64_t x = 0; x < guild.channels.size(); x++) {
-				if (guild.channels[x] == dataPackage.channel.id) {
+				if (guild.channels[x] == dataPackage.channel->id) {
 					guild.channels.erase(guild.channels.begin() + x);
 				}
 			}
@@ -607,7 +827,9 @@ namespace DiscordCoreAPI {
 	CoRoutine<void> EventHandler::onGuildMemberAdd(OnGuildMemberAddData dataPackage) {
 		co_await NewThreadAwaitable<void>();
 		if (EventHandler::configManager->doWeCacheGuildMembers()) {
-			GuildMembers::insertGuildMember(dataPackage.guildMember);
+			auto guildId = dataPackage.guildMember->guildId;
+			auto guildMemberId = dataPackage.guildMember->id;
+			GuildMembers::insertGuildMember(std::move(dataPackage.guildMember));
 			GuildData guild = Guilds::getCachedGuildAsync({ dataPackage.guildMember.guildId }).get();
 			guild.members.push_back(dataPackage.guildMember.id);
 			guild.memberCount++;

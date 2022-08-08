@@ -275,16 +275,16 @@ namespace DiscordCoreInternal {
 		hints->ai_protocol = IPPROTO_TCP;
 
 		if (this->context = SSL_CTX_new(TLS_client_method()); this->context == nullptr) {
-			throw ConnectionError{ reportSSLError("SSLConnectionInterface::initialize()::SSL_CTX_new()") };
+			return false;
 		}
 
 		if (!SSL_CTX_set_min_proto_version(this->context, TLS1_2_VERSION)) {
-			throw ConnectionError{ reportSSLError("SSLConnectionInterface::initialize()::SSL_CTX_set_min_proto_version()") };
+			return false;
 		}
 
 		auto originalOptions{ SSL_CTX_get_options(this->context) | SSL_OP_IGNORE_UNEXPECTED_EOF };
 		if (SSL_CTX_set_options(this->context, SSL_OP_IGNORE_UNEXPECTED_EOF) != originalOptions) {
-			throw ConnectionError{ reportSSLError("SSLConnectionInterface::initialize()::SSL_CTX_set_options()") };
+			return false;
 		}
 
 		if (getaddrinfo(stringNew.c_str(), portNew.c_str(), hints, address)) {
@@ -387,8 +387,6 @@ namespace DiscordCoreInternal {
 	}
 
 	std::string& SSLClient::getInputBuffer() noexcept {
-		std::cout << "READ BYTES: "
-				  << ", WHICH ARE: " << this->inputBuffer << std::endl;
 		return this->inputBuffer;
 	}
 
@@ -453,7 +451,6 @@ namespace DiscordCoreInternal {
 					case SSL_ERROR_NONE: {
 						if (readBytes > 0) {
 							this->inputBuffer.append(this->rawInputBuffer.begin(), this->rawInputBuffer.begin() + readBytes);
-							std::cout << "READ BYTES: " << readBytes << ", WHICH ARE: " << this->inputBuffer << std::endl;
 							this->bytesRead += readBytes;
 						}
 						return ProcessIOResult::No_Error;

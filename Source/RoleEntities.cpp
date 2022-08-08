@@ -291,27 +291,21 @@ namespace DiscordCoreAPI {
 		if (!Roles::cache->contains(dataPackage.roleId)) {
 			theLock.unlock();
 			auto theRole = Roles::getRoleAsync(dataPackage).get();
-			Roles::insertRole(theRole);
+			Roles::insertRole(std::make_unique<Role>(theRole));
 			co_return theRole;
 		} else {
 			co_return *(*Roles::cache)[dataPackage.roleId];
 		}
 	}
 
-	void Roles::insertRole(RoleData role) {
+	void Roles::insertRole(std::unique_ptr<RoleData> role) {
 		std::unique_lock theLock{ Roles::theMutex };
-		if (role.id == 0) {
+		if (role->id == 0) {
 			return;
 		}
-		auto newCache = std::make_unique<std::unordered_map<Snowflake, std::unique_ptr<RoleData>>>();
-		for (auto& [key, value]: *Roles::cache) {
-			(*newCache)[key] = std::move(value);
-		}
 		if (Roles::configManager->doWeCacheRoles()) {
-			(*newCache)[role.id] = std::make_unique<RoleData>(role);
+			(*Roles::cache)[role->id] = std::make_unique<RoleData>(role);
 		}
-		Roles::cache.reset(nullptr);
-		Roles::cache = std::move(newCache);
 	}
 
 	void Roles::removeRole(const Snowflake& roleId) {

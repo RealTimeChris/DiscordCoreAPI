@@ -218,7 +218,7 @@ namespace DiscordCoreAPI {
 		if (!Channels::cache->contains(dataPackage.channelId)) {
 			theLock.unlock();
 			auto theChannel = Channels::getChannelAsync(dataPackage).get();
-			Channels::insertChannel(theChannel);
+			Channels::insertChannel(std::make_unique<Channel>(theChannel));
 			co_return theChannel;
 		} else {
 			co_return *(*Channels::cache)[dataPackage.channelId];
@@ -236,7 +236,7 @@ namespace DiscordCoreAPI {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
 		auto channelNew = Channels::httpsClient->submitWorkloadAndGetResult<Channel>(workload);
-		Channels::insertChannel(channelNew);
+		Channels::insertChannel(std::make_unique<Channel>(channelNew));
 		co_return channelNew;
 	}
 
@@ -338,7 +338,7 @@ namespace DiscordCoreAPI {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
 		auto channelNew = Channels::httpsClient->submitWorkloadAndGetResult<Channel>(workload);
-		Channels::insertChannel(channelNew);
+		Channels::insertChannel(std::make_unique<Channel>(channelNew));
 		co_return channelNew;
 	}
 
@@ -375,20 +375,14 @@ namespace DiscordCoreAPI {
 		co_return Channels::httpsClient->submitWorkloadAndGetResult<VoiceRegionDataVector>(workload);
 	}
 
-	void Channels::insertChannel(ChannelData channel) {
+	void Channels::insertChannel(std::unique_ptr<ChannelData> channel) {
 		std::unique_lock theLock{ Channels::theMutex };
-		if (channel.id == 0) {
+		if (channel->id == 0) {
 			return;
 		}
-		auto newCache = std::make_unique<std::unordered_map<Snowflake, std::unique_ptr<ChannelData>>>();
-		for (auto& [key, value]: *Channels::cache) {
-			(*newCache)[key] = std::move(value);
-		}
 		if (Channels::configManager->doWeCacheChannels()) {
-			(*newCache)[channel.id] = std::make_unique<ChannelData>(channel);
+			(*Channels::cache)[channel->id] = std::move(channel);
 		}
-		Channels::cache.reset(nullptr);
-		Channels::cache = std::move(newCache);
 	}
 
 	void Channels::removeChannel(const Snowflake& channelId) {
