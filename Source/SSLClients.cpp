@@ -470,6 +470,7 @@ namespace DiscordCoreInternal {
 						return ProcessIOResult::SSL_Error;
 					}
 				}
+				std::cout << "SSL IS PENDING!" << std::endl;
 			} while (SSL_pending(this->ssl));
 			
 		} else {

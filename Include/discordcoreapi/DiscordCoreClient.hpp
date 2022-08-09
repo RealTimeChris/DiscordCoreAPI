@@ -118,6 +118,7 @@ namespace DiscordCoreAPI {
 		CommandController commandController{ this };
 		std::atomic_int32_t theBaseShardCount{};
 		ConfigManager configManager{};
+		std::mutex theAccessMutex{};
 		EventManager eventManager{};
 		BotUser currentUser{};
 

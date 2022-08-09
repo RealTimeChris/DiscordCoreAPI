@@ -140,7 +140,9 @@ namespace DiscordCoreInternal {
 					std::string finalMessage{};
 					finalMessage.insert(finalMessage.begin(), theShard->inputBuffer.begin() + theShard->messageOffset,
 						theShard->inputBuffer.begin() + theShard->messageOffset + theShard->messageLength);
+					std::unique_lock theLock{ theShard->discordCoreClient->theAccessMutex };
 					theShard->discordCoreClient->processedMessages.emplace_back(finalMessage);
+					theLock.unlock();
 					theShard->inputBuffer.erase(theShard->inputBuffer.begin(), theShard->inputBuffer.begin() + theShard->messageOffset + theShard->messageLength);
 					return true;
 				}
@@ -278,7 +280,7 @@ namespace DiscordCoreInternal {
 			if ((this->heartBeatStopWatch.hasTimePassed() && this->haveWeReceivedHeartbeatAck) || isImmediate) {
 				this->heartBeatStopWatch.resetTimer();
 				std::cout << "SENDING HEARTBEAT! ";
-				std::cout << "SENDING HEARTBEAT!" << std::endl;
+				std::cout << "SENDING HEARTBEAT! FROM WEBSOCKET: " << this->shard.dump() << std::endl;
 				nlohmann::json heartbeat{};
 				heartbeat["d"] = this->lastNumberReceived;
 				heartbeat["op"] = 1;
@@ -328,8 +330,10 @@ namespace DiscordCoreInternal {
 					bool returnValue{ false };
 					std::string messageNew{};
 					if (this->discordCoreClient->processedMessages.size() > 0) {
+						std::unique_lock theLock{ this->discordCoreClient->theAccessMutex };
 						messageNew = std::move(this->discordCoreClient->processedMessages.front());
 						this->discordCoreClient->processedMessages.pop_front();
+						theLock.unlock();
 						returnValue = true;
 					} else {
 						return false;
