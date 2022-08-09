@@ -162,7 +162,7 @@ namespace DiscordCoreInternal {
 	}
 
 	void SSLClient::processIO(std::vector<SSLClient*>& theVector, int32_t waitTimeInms) noexcept {
-		int32_t writeNfds{ 0 }, readNfds{ 0 }, finalNfds{ 0 };
+		int32_t writeNfds{ 0 }, readNfds{ 0 };
 		fd_set writeSet{}, readSet{};
 		FD_ZERO(&writeSet);
 		FD_ZERO(&readSet);
@@ -174,11 +174,11 @@ namespace DiscordCoreInternal {
 					if ((value->outputBuffers.size() > 0 || value->wantWrite) && !value->wantRead) {
 						FD_SET(value->theSocket, &writeSet);
 						writeNfds = value->theSocket > writeNfds ? value->theSocket : writeNfds;
+					} else {
+						FD_SET(value->theSocket, &readSet);
+						readNfds = value->theSocket > readNfds ? value->theSocket : readNfds;
+						didWeSetASocket = true;
 					}
-					FD_SET(value->theSocket, &readSet);
-					readNfds = value->theSocket > readNfds ? value->theSocket : readNfds;
-					didWeSetASocket = true;
-					finalNfds = readNfds > writeNfds ? readNfds : writeNfds;
 				}
 			}
 		}
@@ -188,7 +188,7 @@ namespace DiscordCoreInternal {
 		}
 
 		timeval checkTime{ .tv_usec = waitTimeInms };
-		if (auto returnValue = select(finalNfds + 1, &readSet, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
+		if (auto returnValue = select(FD_SETSIZE, &readSet, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
 			for (auto& value: theVector) {
 				value->disconnect(true);
 			}
@@ -355,7 +355,7 @@ namespace DiscordCoreInternal {
 			this->disconnect(true);
 			return ProcessIOResult::Disconnected;
 		}
-		int32_t readNfds{ 0 }, writeNfds{ 0 }, finalNfds{ 0 };
+		int32_t readNfds{ 0 }, writeNfds{ 0 };
 		fd_set writeSet{}, readSet{};
 		FD_ZERO(&writeSet);
 		FD_ZERO(&readSet);
@@ -364,13 +364,13 @@ namespace DiscordCoreInternal {
 		if ((this->outputBuffers.size() > 0 || this->wantWrite) && !this->wantRead) {
 			FD_SET(this->theSocket, &writeSet);
 			writeNfds = this->theSocket > writeNfds ? this->theSocket : writeNfds;
+		} else {
+			FD_SET(this->theSocket, &readSet);
+			readNfds = this->theSocket > readNfds ? this->theSocket : readNfds;
 		}
-		FD_SET(this->theSocket, &readSet);
-		readNfds = this->theSocket > readNfds ? this->theSocket : readNfds;
-		finalNfds = readNfds > writeNfds ? readNfds : writeNfds;
 
 		timeval checkTime{ .tv_sec = 1, .tv_usec = 0 };
-		if (auto returnValue = select(finalNfds + 1, &readSet, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
+		if (auto returnValue = select(FD_SETSIZE, &readSet, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
 			this->disconnect(true);
 			return ProcessIOResult::Select_Failure;
 		} else if (returnValue == 0) {
