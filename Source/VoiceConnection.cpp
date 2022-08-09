@@ -192,14 +192,14 @@ namespace DiscordCoreAPI {
 		this->audioDataBuffer.send(frameData);
 	}
 
-	void VoiceConnection::onMessageReceived() noexcept {
+	bool VoiceConnection::onMessageReceived() noexcept {
 		try {
 			std::string theMessage{};
-			if (WebSocketSSLShard::processedMessages.size() > 0) {
-				theMessage = WebSocketSSLShard::processedMessages.front();
-				WebSocketSSLShard::processedMessages.pop();
+			if (this->discordCoreClient->processedMessages.size() > 0) {
+				theMessage = std::move(this->discordCoreClient->processedMessages.front());
+				this->discordCoreClient->processedMessages.pop_front();
 			} else {
-				return;
+				return false;
 			}
 			if (theMessage.size() > 0) {
 				nlohmann::json payload = payload.parse(theMessage);
@@ -267,11 +267,13 @@ namespace DiscordCoreAPI {
 					}
 				}
 			}
+			return true;
 		} catch (...) {
 			if (this->configManager->doWePrintWebSocketErrorMessages()) {
 				DiscordCoreAPI::reportException("VoiceConnection::onMessageReceived()");
 			}
 			this->onClosedVoice();
+			return false;
 		}
 	}
 
@@ -358,7 +360,7 @@ namespace DiscordCoreAPI {
 				if (!stopToken.stop_requested() && WebSocketSSLShard::areWeStillConnected() && WebSocketSSLShard::inputBuffer.size() > 0) {
 					this->parseMessage(this);
 				}
-				if (!stopToken.stop_requested() && WebSocketSSLShard::areWeStillConnected() && this->processedMessages.size() > 0) {
+				if (!stopToken.stop_requested() && WebSocketSSLShard::areWeStillConnected() && this->discordCoreClient->processedMessages.size() > 0) {
 					this->onMessageReceived();
 				}
 
@@ -417,7 +419,7 @@ namespace DiscordCoreAPI {
 					return false;
 				}
 			}
-			if (this->processedMessages.size() > 0) {
+			if (this->discordCoreClient->processedMessages.size() > 0) {
 				this->onMessageReceived();
 				return true;
 			}

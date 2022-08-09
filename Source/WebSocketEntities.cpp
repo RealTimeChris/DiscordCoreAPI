@@ -90,8 +90,6 @@ namespace DiscordCoreInternal {
 				newVector.erase(0, theFindValue + 4);
 				theShard->inputBuffer.clear();
 				theShard->inputBuffer.insert(theShard->inputBuffer.end(), newVector.begin(), newVector.end());
-				std::string finalMessage{};
-				theShard->processedMessages.push(finalMessage);
 				theShard->theWebSocketState.store(WebSocketSSLShardState::Collecting_Hello);
 				return true;
 			}
@@ -145,7 +143,7 @@ namespace DiscordCoreInternal {
 					std::string finalMessage{};
 					finalMessage.insert(finalMessage.begin(), theShard->inputBuffer.begin() + theShard->messageOffset,
 						theShard->inputBuffer.begin() + theShard->messageOffset + theShard->messageLength);
-					theShard->processedMessages.push(finalMessage);
+					theShard->discordCoreClient->processedMessages.emplace_back(finalMessage);
 					theShard->inputBuffer.erase(theShard->inputBuffer.begin(), theShard->inputBuffer.begin() + theShard->messageOffset + theShard->messageLength);
 					return true;
 				}
@@ -311,9 +309,6 @@ namespace DiscordCoreInternal {
 			this->outputBuffers.clear();
 			this->closeCode = 0;
 			this->areWeHeartBeating = false;
-			while (this->processedMessages.size() > 0) {
-				this->processedMessages.pop();
-			}
 			if (this->connections && doWeReconnect) {
 				DiscordCoreAPI::ConnectionPackage theData{};
 				theData.voiceConnectionDataBufferMap = std::move(this->voiceConnectionDataBufferMap);
@@ -325,18 +320,20 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void WebSocketSSLShard::onMessageReceived() noexcept {
+	bool WebSocketSSLShard::onMessageReceived() noexcept {
 		if (this->theSSLState.load() == SSLConnectionState::Connected) {
 			try {
+				bool returnValue{ false };
 				std::string messageNew{};
-				if (this->processedMessages.size() > 0) {
-					messageNew = this->processedMessages.front();
-					this->processedMessages.pop();
+				if (this->discordCoreClient->processedMessages.size() > 0) {
+					messageNew = std::move(this->discordCoreClient->processedMessages.front());
+					this->discordCoreClient->processedMessages.pop_front();
+					returnValue = true;
 				} else {
-					return;
+					return false;
 				}
 				if (messageNew.size() == 0) {
-					return;
+					return false;
 				}
 				nlohmann::json payload{};
 				if (this->configManager->getTextFormat() == DiscordCoreAPI::TextFormat::Etf) {
@@ -346,7 +343,7 @@ namespace DiscordCoreInternal {
 						if (this->configManager->doWePrintGeneralErrorMessages()) {
 							DiscordCoreAPI::reportException("ErlPacker::parseEtfToJson()");
 						}
-						return;
+						return false;
 					}
 				} else {
 					payload = nlohmann::json::parse(messageNew);
@@ -862,7 +859,7 @@ namespace DiscordCoreInternal {
 							}
 							this->areWeResuming = true;
 							this->onClosed();
-							return;
+							return false;
 						}
 						case 9: {
 							if (this->configManager->doWePrintWebSocketErrorMessages()) {
@@ -878,7 +875,7 @@ namespace DiscordCoreInternal {
 								this->areWeResuming = false;
 							}
 							this->onClosed();
-							return;
+							return false;
 						}
 						case 10: {
 							if (payload["d"].contains("heartbeat_interval") && !payload["d"]["heartbeat_interval"].is_null()) {
@@ -897,7 +894,7 @@ namespace DiscordCoreInternal {
 									this->stringifyJsonData(resumePayload, theString, WebSocketOpCode::Op_Text);
 								}
 								if (!this->sendMessage(theString, true)) {
-									return;
+									return false;
 								}
 								this->theWebSocketState.store(WebSocketSSLShardState::Sending_Identify);
 							} else {
@@ -915,7 +912,7 @@ namespace DiscordCoreInternal {
 									this->stringifyJsonData(identityJson, theString, WebSocketOpCode::Op_Text);
 								}
 								if (!this->sendMessage(theString, true)) {
-									return;
+									return false;
 								}
 								this->theWebSocketState.store(WebSocketSSLShardState::Sending_Identify);
 							}
@@ -928,19 +925,21 @@ namespace DiscordCoreInternal {
 						}
 					}
 				}
-
 				if (this->configManager->doWePrintWebSocketSuccessMessages() && !payload.is_null()) {
 					cout << DiscordCoreAPI::shiftToBrightGreen() << "Message received from WebSocket " + this->shard.dump() + std::string(": ") << payload.dump()
 						 << DiscordCoreAPI::reset() << endl
 						 << endl;
 				}
+				return returnValue;
 			} catch (...) {
 				if (this->configManager->doWePrintWebSocketErrorMessages()) {
 					DiscordCoreAPI::reportException("BaseSocketAgent::onMessageReceived()");
 				}
 				this->onClosed();
+				return false;
 			}
 		}
+		return false;
 	}
 
 	void WebSocketSSLShard::onClosed() noexcept {
@@ -1030,13 +1029,6 @@ namespace DiscordCoreInternal {
 					SSLClient::processIO(theVector, 10000);
 					if (this->sslShard->areWeStillConnected() && this->sslShard->inputBuffer.size() > 0) {
 						this->sslShard->parseMessage(this->sslShard.get());
-					}
-					if (this->sslShard->areWeStillConnected() && this->sslShard->processedMessages.size() > 0) {
-						while (this->sslShard->processedMessages.size() > 0 && this->sslShard->areWeStillConnected()) {
-							if (this->sslShard) {
-								this->sslShard->onMessageReceived();
-							}
-						}
 					}
 					if (this->sslShard->areWeStillConnected()) {
 						this->sslShard->checkForAndSendHeartBeat();

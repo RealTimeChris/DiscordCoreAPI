@@ -205,7 +205,7 @@ namespace DiscordCoreAPI {
 
 		void disconnectInternal() noexcept;
 
-		void onMessageReceived() noexcept;
+		bool onMessageReceived() noexcept;
 
 		void reconnectStream() noexcept;
 

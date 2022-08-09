@@ -74,8 +74,10 @@ namespace DiscordCoreAPI {
 	/// DiscordCoreClient - The main class for this library. \brief DiscordCoreClient - The main class for this library.
 	class DiscordCoreAPI_Dll DiscordCoreClient {
 	  public:
+		friend class DiscordCoreInternal::WebSocketMessageHandler;
 		friend class DiscordCoreInternal::WebSocketSSLShard;
 		friend class DiscordCoreInternal::BaseSocketAgent;
+		friend class VoiceConnection;
 		friend class GuildData;
 		friend class Guilds;
 
@@ -112,6 +114,7 @@ namespace DiscordCoreAPI {
 #ifdef _WIN32
 		DiscordCoreInternal::WSADataWrapper theWSAData{};
 #endif
+		std::deque<std::string> processedMessages{};
 		CommandController commandController{ this };
 		std::atomic_int32_t theBaseShardCount{};
 		ConfigManager configManager{};

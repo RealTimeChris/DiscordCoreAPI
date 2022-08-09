@@ -133,6 +133,10 @@ namespace DiscordCoreAPI {
 			return;
 		}
 		while (!Globals::doWeQuit.load()) {
+			for (auto& [key, value] : this->baseSocketAgentMap) {
+				while (value->sslShard->onMessageReceived()) {
+				};
+			}
 			std::this_thread::sleep_for(1ms);
 		}
 		if (this->baseSocketAgentMap.contains(std::to_string(this->configManager.getStartingShard())) &&
@@ -200,6 +204,9 @@ namespace DiscordCoreAPI {
 			theData.currentShard = currentShard;
 			theData.currentBaseSocketAgent = x;
 			this->baseSocketAgentMap[std::to_string(x)]->connect(theData);
+			for (auto& [key, value]: this->baseSocketAgentMap) {
+				while (value->sslShard->onMessageReceived()){};
+			}
 			currentShard++;
 		}
 		this->currentUser = BotUser{ Users::getCurrentUserAsync().get(), this->baseSocketAgentMap[std::to_string(this->configManager.getStartingShard())].get() };

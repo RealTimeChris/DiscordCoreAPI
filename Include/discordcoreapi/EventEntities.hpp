@@ -157,7 +157,6 @@ namespace DiscordCoreInternal {
 		}
 
 		void operator()(ArgTypes... args) {
-			std::lock_guard theLock{ this->theMutex };
 			for (auto& [key, value]: this->theFunctions) {
 				value.theFunction(args...);
 			}
@@ -166,7 +165,6 @@ namespace DiscordCoreInternal {
 	  protected:
 		std::map<EventDelegateToken, EventDelegate<ReturnType, ArgTypes...>> theFunctions{};
 		std::string eventId{};
-		std::mutex theMutex{};
 	};
 
 }// namespace DiscordCoreAPI
