@@ -61,7 +61,7 @@ namespace DiscordCoreInternal {
 		nlohmann::json data{};
 		data["d"]["properties"]["browser"] = "DiscordCoreAPI";
 		data["d"]["properties"]["device"] = "DiscordCoreAPI";
-		data["d"]["shard"] = { this->currentShard, this->numberOfShards };
+		data["d"]["shard"] = { int32_t{ this->currentShard }, int32_t{ this->numberOfShards } };
 		data["d"]["large_threshold"] = 250;
 		data["d"]["intents"] = this->intents;
 		data["d"]["compress"] = false;
@@ -86,6 +86,7 @@ namespace DiscordCoreInternal {
 #else
 		data["d"]["properties"]["os"] = "Linux";
 #endif
+		std::cout << "THE DATA: " << data.dump() << std::endl;
 		return data;
 	}
 

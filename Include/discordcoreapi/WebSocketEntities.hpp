@@ -55,6 +55,7 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll WebSocketSSLShard : public SSLClient, public WebSocketMessageHandler {
 	  public:
+		friend class DiscordCoreAPI::DiscordCoreClient;
 		friend class DiscordCoreAPI::VoiceConnection;
 		friend class WebSocketMessageHandler;
 		friend class DiscordCoreAPI::BotUser;
@@ -102,7 +103,8 @@ namespace DiscordCoreInternal {
 		int64_t messageLength{};
 		int64_t messageOffset{};
 		std::string sessionId{};
-		nlohmann::json shard{};
+		int32_t currentShard{};
+		int32_t totalShards{};
 		Snowflake userId{ 0 };
 	};
 
@@ -137,7 +139,6 @@ namespace DiscordCoreInternal {
 		std::atomic_bool* doWeQuit{ nullptr };
 		const int32_t maxReconnectTries{ 10 };
 		int32_t heartbeatInterval{ 0 };
-		int32_t currentShard{ 0 };
 		std::mutex theMutex{};
 
 		void connectVoiceInternal() noexcept;
