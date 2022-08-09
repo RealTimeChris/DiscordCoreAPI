@@ -872,9 +872,10 @@ namespace DiscordCoreAPI {
 	CoRoutine<void> EventHandler::onRoleCreation(OnRoleCreationData dataPackage) {
 		co_await NewThreadAwaitable<void>();
 		if (EventHandler::configManager->doWeCacheRoles()) {
+			auto roleId = dataPackage.role->id;
 			Roles::insertRole(std::move(dataPackage.role));
 			GuildData* guild = (*Guilds::cache)[dataPackage.guildId].get();
-			guild->roles.push_back(dataPackage.role->id);
+			guild->roles.push_back(roleId);
 			Guilds::insertGuild(std::make_unique<GuildData>(*guild));
 		}
 		co_return;

@@ -411,7 +411,6 @@ namespace DiscordCoreInternal {
 				case SSL_ERROR_NONE: {
 					if (writtenBytes > 0) {
 						this->outputBuffers.erase(this->outputBuffers.begin());
-						std::cout << "WRITTEN BYTES: " << writtenBytes << std::endl;
 					} else {
 						this->outputBuffers[0] = std::move(writeString);
 					}
@@ -661,7 +660,6 @@ namespace DiscordCoreInternal {
 				return;
 			} else {
 				this->inputBuffer.append(this->rawInputBuffer, readBytes);
-				std::cout << "READ BYTES: " << readBytes << std::endl;
 				this->bytesRead += readBytes;
 			}
 		}

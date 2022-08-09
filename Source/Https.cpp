@@ -115,10 +115,6 @@ namespace DiscordCoreInternal {
 					newString = tempString;
 				}
 
-				std::cout << "THE HEADERS";
-				for (auto& [key, value]: theData.responseHeaders) {
-					std::cout << "THE KEY: " << key << ", THE VALUE: " << value << std::endl;
-				}
 				if (theData.responseHeaders.contains("Transfer-Encoding") && theData.responseHeaders["Transfer-Encoding"] == "chunked" ||
 					theData.responseHeaders.contains("transfer-encoding") && theData.responseHeaders["transfer-encoding"] == "chunked") {
 					this->isItChunked = true;
@@ -218,7 +214,6 @@ namespace DiscordCoreInternal {
 			}
 			theData.responseCode = stoll(other.substr(firstNumberIndex, lastNumberIndex - firstNumberIndex));
 			otherNew.erase(otherNew.begin(), otherNew.begin() + otherNew.find("\r\n"));
-			std::cout << "THE CURRENT STRING: " << otherNew << std::endl;
 			theData.theCurrentState = HttpsState::Collecting_Headers;
 		} else if (other.size() > 7 && other.find("HTTP/1.") == std::string::npos) {
 			theData.responseCode = 200;
