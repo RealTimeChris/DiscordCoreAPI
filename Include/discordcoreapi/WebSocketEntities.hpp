@@ -63,8 +63,8 @@ namespace DiscordCoreInternal {
 
 		WebSocketSSLShard() = default;
 
-		WebSocketSSLShard(DiscordCoreAPI::DiscordCoreClient* theClient, std::queue<DiscordCoreAPI::ConnectionPackage>* connectionsNew, int32_t currentBaseSocketAgentNew,
-			int32_t currentShardNew, std::atomic_bool* doWeQuitNew) noexcept;
+		WebSocketSSLShard(DiscordCoreAPI::DiscordCoreClient* theClient, std::queue<DiscordCoreAPI::ConnectionPackage>* connectionsNew, int32_t currentShardNew,
+			std::atomic_bool* doWeQuitNew) noexcept;
 
 		void getVoiceConnectionData(const VoiceConnectInitData& doWeCollect) noexcept;
 
@@ -90,7 +90,6 @@ namespace DiscordCoreInternal {
 		const int32_t maxReconnectTries{ 10 };
 		std::atomic_bool* doWeQuit{ nullptr };
 		bool serverUpdateCollected{ false };
-		int32_t currentBaseSocketAgent{ 0 };
 		int32_t currentReconnectTries{ 0 };
 		bool stateUpdateCollected{ false };
 		bool areWeCollectingData{ false };
@@ -114,7 +113,7 @@ namespace DiscordCoreInternal {
 		friend class DiscordCoreAPI::BotUser;
 		friend class WebSocketSSLShard;
 
-		BaseSocketAgent(DiscordCoreAPI::DiscordCoreClient* discordCoreClientNew, std::atomic_bool* doWeQuitNew, int32_t currentBaseSocketAgentNew) noexcept;
+		BaseSocketAgent(DiscordCoreAPI::DiscordCoreClient* discordCoreClientNew, std::atomic_bool* doWeQuitNew, int32_t currentShardNew) noexcept;
 
 		void connectVoiceChannel(VoiceConnectInitData theData) noexcept;
 
@@ -137,8 +136,8 @@ namespace DiscordCoreInternal {
 		std::unique_ptr<WebSocketSSLShard> sslShard{};
 		std::atomic_bool* doWeQuit{ nullptr };
 		const int32_t maxReconnectTries{ 10 };
-		int32_t currentBaseSocketAgent{ 0 };
 		int32_t heartbeatInterval{ 0 };
+		int32_t currentShard{ 0 };
 		std::mutex theMutex{};
 
 		void connectVoiceInternal() noexcept;

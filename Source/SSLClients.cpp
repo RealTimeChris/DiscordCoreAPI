@@ -403,8 +403,7 @@ namespace DiscordCoreInternal {
 			this->wantRead = false;
 			this->wantWrite = false;
 			size_t writtenBytes{ 0 };
-			std::string writeString{};
-			writeString = std::move(this->outputBuffers.front());
+			std::string writeString = std::move(this->outputBuffers.front());
 			auto returnValue{ SSL_write_ex(this->ssl, writeString.data(), writeString.size(), &writtenBytes) };
 			auto errorValue{ SSL_get_error(this->ssl, returnValue) };
 			switch (errorValue) {

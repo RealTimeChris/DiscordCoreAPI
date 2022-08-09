@@ -197,7 +197,7 @@ namespace DiscordCoreAPI {
 
 		for (int32_t x = 0; x < this->configManager.getTotalShardCount(); x++) {
 			auto thePtr = std::make_unique<DiscordCoreInternal::BaseSocketAgent>(this, &Globals::doWeQuit, x);
-			this->baseSocketAgentMap[std::to_string(x)] = std::move(thePtr);
+			this->baseSocketAgentMap[std::to_string(currentShard)] = std::move(thePtr);
 			if (this->configManager.doWePrintGeneralSuccessMessages()) {
 				cout << shiftToBrightBlue() << "Connecting Shard " + std::to_string(currentShard + 1) << " of " << this->configManager.getShardCountForThisProcess()
 					 << std::string(" Shards for this process. (") + std::to_string(currentShard + 1) + " of " + std::to_string(this->configManager.getTotalShardCount()) +
@@ -207,8 +207,7 @@ namespace DiscordCoreAPI {
 			}
 			ConnectionPackage theData{};
 			theData.currentShard = currentShard;
-			theData.currentBaseSocketAgent = x;
-			this->baseSocketAgentMap[std::to_string(x)]->connect(theData);
+			this->baseSocketAgentMap[std::to_string(currentShard)]->connect(theData);
 			currentShard++;
 		}
 		this->currentUser = BotUser{ Users::getCurrentUserAsync().get(), this->baseSocketAgentMap[std::to_string(this->configManager.getStartingShard())].get() };
