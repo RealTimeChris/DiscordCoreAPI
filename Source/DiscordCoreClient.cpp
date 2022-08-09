@@ -128,16 +128,21 @@ namespace DiscordCoreAPI {
 	}
 
 	void DiscordCoreClient::runBot() {
+		std::jthread theThread{ [this]() {
+			while (!Globals::doWeQuit.load()) {
+				for (auto& [key, value]: this->baseSocketAgentMap) {
+					if (value && value->sslShard) {
+						while (value->sslShard->onMessageReceived()) {
+						};
+					}					
+				}
+				std::this_thread::sleep_for(1ms);
+			}
+		} };
+		theThread.detach();
 		if (!this->instantiateWebSockets()) {
 			Globals::doWeQuit.store(true);
 			return;
-		}
-		while (!Globals::doWeQuit.load()) {
-			for (auto& [key, value] : this->baseSocketAgentMap) {
-				while (value->sslShard->onMessageReceived()) {
-				};
-			}
-			std::this_thread::sleep_for(1ms);
 		}
 		if (this->baseSocketAgentMap.contains(std::to_string(this->configManager.getStartingShard())) &&
 			this->baseSocketAgentMap[std::to_string(this->configManager.getStartingShard())]->getTheTask()) {
@@ -204,9 +209,6 @@ namespace DiscordCoreAPI {
 			theData.currentShard = currentShard;
 			theData.currentBaseSocketAgent = x;
 			this->baseSocketAgentMap[std::to_string(x)]->connect(theData);
-			for (auto& [key, value]: this->baseSocketAgentMap) {
-				while (value->sslShard->onMessageReceived()){};
-			}
 			currentShard++;
 		}
 		this->currentUser = BotUser{ Users::getCurrentUserAsync().get(), this->baseSocketAgentMap[std::to_string(this->configManager.getStartingShard())].get() };
