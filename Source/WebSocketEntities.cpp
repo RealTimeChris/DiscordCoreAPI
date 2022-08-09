@@ -459,6 +459,7 @@ namespace DiscordCoreInternal {
 									std::unique_ptr<DiscordCoreAPI::OnGuildCreationData> dataPackage{ std::make_unique<DiscordCoreAPI::OnGuildCreationData>() };
 									std::unique_ptr<DiscordCoreAPI::Guild> theGuild{ std::make_unique<DiscordCoreAPI::Guild>(payload["d"]) };
 									//dataPackage->guild = DiscordCoreAPI::Guild(*theGuild);
+									theGuild->discordCoreClient = this->discordCoreClient;
 									DiscordCoreAPI::Guilds::insertGuild(std::move(theGuild));
 									dataPackage->guild.discordCoreClient = this->discordCoreClient;
 									this->discordCoreClient->eventManager.onGuildCreationEvent(std::move(*dataPackage));

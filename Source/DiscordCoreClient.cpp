@@ -81,7 +81,7 @@ namespace DiscordCoreAPI {
 		this->eventManager.onChannelCreation(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnChannelCreationData>{ &EventHandler::onChannelCreation });
 		this->eventManager.onChannelUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnChannelUpdateData>{ &EventHandler::onChannelUpdate });
 		this->eventManager.onChannelDeletion(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnChannelDeletionData>{ &EventHandler::onChannelDeletion });
-		this->eventManager.onGuildCreation(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildCreationData>{ &EventHandler::onGuildCreation });
+		//this->eventManager.onGuildCreation(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildCreationData>{ &EventHandler::onGuildCreation });
 		this->eventManager.onGuildUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildUpdateData>{ &EventHandler::onGuildUpdate });
 		this->eventManager.onGuildDeletion(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildDeletionData>{ &EventHandler::onGuildDeletion });
 		this->eventManager.onGuildMemberAdd(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildMemberAddData>{ &EventHandler::onGuildMemberAdd });
