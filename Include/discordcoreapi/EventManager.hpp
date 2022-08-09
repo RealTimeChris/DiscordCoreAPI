@@ -75,7 +75,7 @@ namespace DiscordCoreAPI {
 		OnChannelCreationData(const OnChannelCreationData&);
 		OnChannelCreationData& operator=(OnChannelCreationData&);
 		OnChannelCreationData(OnChannelCreationData&);
-		std::unique_ptr<Channel> channel{};///< The new Channel.
+		Channel channel{};///< The new Channel.
 	};
 
 	/// Data that is received as part of a Channel update event. \brief Data that is received as part of a Channel update event.
@@ -85,8 +85,8 @@ namespace DiscordCoreAPI {
 		OnChannelUpdateData(const OnChannelUpdateData&);
 		OnChannelUpdateData& operator=(OnChannelUpdateData&);
 		OnChannelUpdateData(OnChannelUpdateData&);
-		std::unique_ptr<Channel> channelOld{};///< The old Channel.
-		std::unique_ptr<Channel> channelNew{};///< The new Channel.
+		Channel channelOld{};///< The old Channel.
+		Channel channelNew{};///< The new Channel.
 	};
 
 	/// Data that is received as part of a Channel deletion event. \brief Data that is received as part of a Channel deletion event.
@@ -96,7 +96,7 @@ namespace DiscordCoreAPI {
 		OnChannelDeletionData(const OnChannelDeletionData&);
 		OnChannelDeletionData& operator=(OnChannelDeletionData&);
 		OnChannelDeletionData(OnChannelDeletionData&);
-		std::unique_ptr<Channel> channel{};///< The deleted Channel.
+		Channel channel{};///< The deleted Channel.
 	};
 
 	/// Data that is received as part of a Channel pins update event. \brief Data that is received as part of a Channel pins update event.
@@ -141,7 +141,7 @@ namespace DiscordCoreAPI {
 		OnGuildCreationData(const OnGuildCreationData&);
 		OnGuildCreationData& operator=(OnGuildCreationData&);
 		OnGuildCreationData(OnGuildCreationData&);
-		std::unique_ptr<Guild> guild{};///< The new Guild.
+		Guild guild{};///< The new Guild.
 	};
 
 	/// Data that is received as part of a Guild update event. \brief Data that is received as part of a Guild update event.
@@ -151,8 +151,8 @@ namespace DiscordCoreAPI {
 		OnGuildUpdateData(const OnGuildUpdateData&);
 		OnGuildUpdateData& operator=(OnGuildUpdateData&);
 		OnGuildUpdateData(OnGuildUpdateData&);
-		std::unique_ptr<Guild> guildOld{};///< The old Guild.
-		std::unique_ptr<Guild> guildNew{};///< The new, updated Guild.
+		Guild guildOld{};///< The old Guild.
+		Guild guildNew{};///< The new, updated Guild.
 	};
 
 	/// Data that is received as part of a Guild deletion event. \brief Data that is received as part of a Guild deletion event.
@@ -162,7 +162,7 @@ namespace DiscordCoreAPI {
 		OnGuildDeletionData(const OnGuildDeletionData&);
 		OnGuildDeletionData& operator=(OnGuildDeletionData&);
 		OnGuildDeletionData(OnGuildDeletionData&);
-		std::unique_ptr<Guild> guild{};///< The deleted Guild.
+		Guild guild{};///< The deleted Guild.
 	};
 
 	/// Data that is received as part of a Guild ban add event. \brief Data that is received as part of a Guild ban add event.
@@ -200,7 +200,7 @@ namespace DiscordCoreAPI {
 		OnGuildMemberAddData& operator=(OnGuildMemberAddData&);
 		OnGuildMemberAddData(OnGuildMemberAddData&);
 		DiscordCoreClient* discordCoreClient{ nullptr };
-		std::unique_ptr<GuildMember> guildMember{};///< The new GuildMember.
+		GuildMember guildMember{};///< The new GuildMember.
 	};
 
 	/// Data that is received as part of a GuildMember remove event. \brief Data that is received as part of a GuildMember remove event.
@@ -212,7 +212,7 @@ namespace DiscordCoreAPI {
 		OnGuildMemberRemoveData(OnGuildMemberRemoveData&);
 		DiscordCoreClient* discordCoreClient{ nullptr };
 		Snowflake guildId{};///< The id of the Guild from which they were removed.
-		std::unique_ptr<User> user{};///< The User responseData of the removed GuildMember.
+		User user{};///< The User responseData of the removed GuildMember.
 	};
 
 	/// Data that is received as part of a GuildMember update event. \brief Data that is received as part of a GuildMember update event.
@@ -222,8 +222,8 @@ namespace DiscordCoreAPI {
 		OnGuildMemberUpdateData(const OnGuildMemberUpdateData&);
 		OnGuildMemberUpdateData& operator=(OnGuildMemberUpdateData&);
 		OnGuildMemberUpdateData(OnGuildMemberUpdateData&);
-		std::unique_ptr<GuildMember> guildMemberOld{};///< The old GuildMember.
-		std::unique_ptr<GuildMember> guildMemberNew{};///< The new GuildMember.
+		GuildMember guildMemberOld{};///< The old GuildMember.
+		GuildMember guildMemberNew{};///< The new GuildMember.
 	};
 
 	/// Data that is received as part of a GuildMembers chunk event. \brief Data that is received as part of a GuildMembers chunk event.
@@ -239,7 +239,7 @@ namespace DiscordCoreAPI {
 		OnRoleCreationData& operator=(OnRoleCreationData&);
 		OnRoleCreationData(OnRoleCreationData&);
 		Snowflake guildId{};///< The id of the Guild within which the Role was created.
-		std::unique_ptr<Role> role{};///< The new Role.
+		Role role{};///< The new Role.
 	};
 
 	/// Data that is received as part of a Role update event. \brief Data that is received as part of a Role update event.
@@ -250,8 +250,8 @@ namespace DiscordCoreAPI {
 		OnRoleUpdateData& operator=(OnRoleUpdateData&);
 		OnRoleUpdateData(OnRoleUpdateData&);		
 		Snowflake guildId{};///< The id of the Guild within which the Role was updated.
-		std::unique_ptr<Role> roleOld{};///< The old Role.
-		std::unique_ptr<Role> roleNew{};///< The new Role.
+		Role roleOld{};///< The old Role.
+		Role roleNew{};///< The new Role.
 	};
 
 	/// Data that is received as part of a Role deletion event. \brief Data that is received as part of a Role deletion event.
@@ -262,7 +262,7 @@ namespace DiscordCoreAPI {
 		OnRoleDeletionData& operator=(OnRoleDeletionData&);
 		OnRoleDeletionData(OnRoleDeletionData&);	
 		Snowflake guildId{};///< The id of the Guild from which the Role was deleted.
-		std::unique_ptr<Role> roleOld{};///< The deleted Role.
+		Role roleOld{};///< The deleted Role.
 	};
 
 	/// Data that is received as part of an Integration creation event. \brief Data that is received as part of an Integration creation event.
@@ -382,8 +382,8 @@ namespace DiscordCoreAPI {
 		OnUserUpdateData(const OnUserUpdateData&);
 		OnUserUpdateData& operator=(OnUserUpdateData&);
 		OnUserUpdateData(OnUserUpdateData&);	
-		std::unique_ptr<User> userOld{};///< The old User.
-		std::unique_ptr<User> userNew{};///< The new User.
+		User userOld{};///< The old User.
+		User userNew{};///< The new User.
 	};
 
 	/// Data that is received as part of a voice state update event. \brief Data that is received as part of a voice state update event.
