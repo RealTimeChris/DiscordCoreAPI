@@ -465,21 +465,21 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	GuildMemberData& GuildMemberData::operator=(nlohmann::json&& jsonObjectData) {
+	GuildMemberData& GuildMemberData::operator=(const nlohmann::json& jsonObjectData) {
 		this->parseObject(jsonObjectData, this);
 		return *this;
 	}
 
-	GuildMemberData::GuildMemberData(nlohmann::json&& jsonObjectData) {
+	GuildMemberData::GuildMemberData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
-	VoiceStateData& VoiceStateData::operator=(nlohmann::json&& jsonObjectData) {
+	VoiceStateData& VoiceStateData::operator=(const nlohmann::json& jsonObjectData) {
 		this->parseObject(jsonObjectData, this);
 		return *this;
 	}
 
-	VoiceStateData::VoiceStateData(nlohmann::json&& jsonObjectData) {
+	VoiceStateData::VoiceStateData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
@@ -492,12 +492,12 @@ namespace DiscordCoreAPI {
 		*this = jsonObjectData;
 	}
 
-	ChannelData& ChannelData::operator=(nlohmann::json&& jsonObjectData) {
+	ChannelData& ChannelData::operator=(const nlohmann::json& jsonObjectData) {
 		this->parseObject(jsonObjectData, this);
 		return *this;
 	}
 
-	ChannelData::ChannelData(nlohmann::json&& other) {
+	ChannelData::ChannelData(const nlohmann::json& other) {
 		*this = other;
 	}
 
@@ -519,12 +519,12 @@ namespace DiscordCoreAPI {
 		*this = jsonObjectData;
 	}
 
-	RoleData& RoleData::operator=(nlohmann::json&& jsonObjectData) {
+	RoleData& RoleData::operator=(const nlohmann::json& jsonObjectData) {
 		this->parseObject(jsonObjectData, this);
 		return *this;
 	}
 
-	RoleData::RoleData(nlohmann::json&& jsonObjectData) {
+	RoleData::RoleData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
@@ -879,12 +879,12 @@ namespace DiscordCoreAPI {
 		*this = jsonObjectData;
 	}
 
-	PresenceUpdateData& PresenceUpdateData::operator=(nlohmann::json&& jsonObjectData) {
+	PresenceUpdateData& PresenceUpdateData::operator=(const nlohmann::json& jsonObjectData) {
 		this->parseObject(jsonObjectData, this);
 		return *this;
 	}
 
-	PresenceUpdateData::PresenceUpdateData(nlohmann::json&& jsonObjectData) {
+	PresenceUpdateData::PresenceUpdateData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
@@ -915,12 +915,12 @@ namespace DiscordCoreAPI {
 		*this = jsonObjectData;
 	}
 
-	GuildData& GuildData::operator=(nlohmann::json&& jsonObjectData) {
+	GuildData& GuildData::operator=(const nlohmann::json& jsonObjectData) {
 		this->parseObject(jsonObjectData, this);
 		return *this;
 	}
 
-	GuildData::GuildData(nlohmann::json&& jsonObjectData) {
+	GuildData::GuildData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 

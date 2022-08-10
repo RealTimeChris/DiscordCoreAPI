@@ -20,7 +20,6 @@
 #pragma once
 
 #include <discordcoreapi/Utilities.hpp>
-#include <simdjson.h>
 
 namespace DiscordCoreInternal {
 
@@ -818,9 +817,9 @@ namespace DiscordCoreAPI {
 
 		GuildMemberData() = default;
 
-		GuildMemberData& operator=(nlohmann::json&& jsonObjectData);
+		GuildMemberData& operator=(const nlohmann::json& jsonObjectData);
 
-		GuildMemberData(nlohmann::json&& jsonObjectData);
+		GuildMemberData(const nlohmann::json& jsonObjectData);
 
 		void insertUser(std::unique_ptr<UserData> theUser);
 
@@ -828,7 +827,6 @@ namespace DiscordCoreAPI {
 
 	  protected:
 		void parseObject(const nlohmann::json& jsonObjectData, GuildMemberData* pDataStructure);
-		void parseObject(nlohmann::json&& jsonObjectData, GuildMemberData* pDataStructure);
 	};
 
 	/// Voice state data. \brief Voice state data.
@@ -849,15 +847,14 @@ namespace DiscordCoreAPI {
 
 		VoiceStateData() = default;
 
-		VoiceStateData& operator=(nlohmann::json&& jsonObjectData);
+		VoiceStateData& operator=(const nlohmann::json& jsonObjectData);
 
-		VoiceStateData(nlohmann::json&& jsonObjectData);
+		VoiceStateData(const nlohmann::json& jsonObjectData);
 
 		virtual ~VoiceStateData() = default;
 
 	  protected:
 		void parseObject(const nlohmann::json& jsonObjectData, VoiceStateData* pDataStructure);
-		void parseObject(nlohmann::json&& jsonObjectData, VoiceStateData* pDataStructure);
 	};
 
 	/// Permission overwrites types. \brief Permission overwrites types.
@@ -903,15 +900,14 @@ namespace DiscordCoreAPI {
 
 		ChannelData() = default;
 
-		ChannelData& operator=(nlohmann::json&& jsonObjectData);
+		ChannelData& operator=(const nlohmann::json& jsonObjectData);
 
-		ChannelData(nlohmann::json&& other);
+		ChannelData(const nlohmann::json& other);
 
 		virtual ~ChannelData() = default;
 
 	  protected:
 		void parseObject(const nlohmann::json& jsonObjectData, ChannelData* pDataStructure);
-		void parseObject(nlohmann::json&& jsonObjectData, ChannelData* pDataStructure);
 	};
 
 	/// Data representing an active Thread. \brief Data representing an active Thread.
@@ -964,15 +960,14 @@ namespace DiscordCoreAPI {
 
 		RoleData() = default;
 
-		RoleData& operator=(nlohmann::json&& jsonObjectData);
+		RoleData& operator=(const nlohmann::json& jsonObjectData);
 
-		RoleData(nlohmann::json&& jsonObjectData);
+		RoleData(const nlohmann::json& jsonObjectData);
 
 		virtual ~RoleData() = default;
 
 	  protected:
 		void parseObject(const nlohmann::json& jsonObjectData, RoleData* pDataStructure);
-		void parseObject(nlohmann::json&& jsonObjectData, RoleData* pDataStructure);
 	};
 
 	/// Application command-option types. \brief Application command-option types.
@@ -1939,15 +1934,14 @@ namespace DiscordCoreAPI {
 
 		PresenceUpdateData() = default;
 
-		PresenceUpdateData& operator=(nlohmann::json&& jsonObjectData);
+		PresenceUpdateData& operator=(const nlohmann::json& jsonObjectData);
 
-		PresenceUpdateData(nlohmann::json&& jsonObjectData);
+		PresenceUpdateData(const nlohmann::json& jsonObjectData);
 
 		virtual ~PresenceUpdateData() = default;
 
 	  protected:
 		void parseObject(const nlohmann::json& jsonObjectData, PresenceUpdateData* pDataStructure);
-		void parseObject(nlohmann::json&& jsonObjectData, PresenceUpdateData* pDataStructure);
 	};
 
 	/// Stage instance privacy levels. \brief Stage instance privacy levels.
@@ -2093,9 +2087,9 @@ namespace DiscordCoreAPI {
 
 		GuildData() = default;
 
-		GuildData& operator=(nlohmann::json&& jsonObjectData);
+		GuildData& operator=(const nlohmann::json& jsonObjectData);
 
-		GuildData(nlohmann::json&& jsonObjectData);
+		GuildData(const nlohmann::json& jsonObjectData);
 
 		/// For connecting to an individual voice channel. \brief For connecting to an individual voice channel.
 		/// \param guildMemberId An id of the guild member who's current voice channel to connect to.
@@ -2123,8 +2117,6 @@ namespace DiscordCoreAPI {
 		virtual ~GuildData() = default;
 
 	  protected:
-		void parseObject(nlohmann::json&& jsonObjectData, GuildData* pDataStructure);
-
 		void parseObject(const nlohmann::json& jsonObjectData, GuildData* pDataStructure);
 	};
 
