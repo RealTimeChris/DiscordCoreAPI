@@ -104,6 +104,8 @@ namespace DiscordCoreInternal {
 
 		void disconnect(bool) noexcept;
 
+		void checkStats() noexcept;
+
 		void resetValues();
 
 		virtual ~HttpsConnection() = default;

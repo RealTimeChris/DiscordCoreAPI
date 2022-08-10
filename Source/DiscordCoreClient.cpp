@@ -132,10 +132,11 @@ namespace DiscordCoreAPI {
 			while (!Globals::doWeQuit.load()) {
 				for (auto& [key, value]: this->baseSocketAgentMap) {
 					if (value && value->sslShard) {
-						std::cout << "THE CURRENTLY NAMED SHARD: ";
-						std::cout << value->sslShard->shard << std::endl;
-						while (value->sslShard->onMessageReceived()) {
-						};
+						bool theValue{ true };
+						do {
+							std::unique_lock theLock{ value->theMutex };
+							theValue = value->sslShard->onMessageReceived();
+						} while (theValue);
 					}
 				}
 				std::this_thread::sleep_for(1ms);

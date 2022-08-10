@@ -114,7 +114,6 @@ namespace DiscordCoreAPI {
 #ifdef _WIN32
 		DiscordCoreInternal::WSADataWrapper theWSAData{};
 #endif
-		std::deque<std::string> processedMessages{};
 		CommandController commandController{ this };
 		std::atomic_int32_t theBaseShardCount{};
 		ConfigManager configManager{};

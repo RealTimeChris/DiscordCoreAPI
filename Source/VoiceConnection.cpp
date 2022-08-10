@@ -193,11 +193,12 @@ namespace DiscordCoreAPI {
 	}
 
 	bool VoiceConnection::onMessageReceived() noexcept {
+		std::unique_lock theLock00{ this->voiceUserMutex, std::defer_lock_t{} };
 		try {
 			std::string theMessage{};
-			if (this->discordCoreClient->processedMessages.size() > 0) {
-				theMessage = std::move(this->discordCoreClient->processedMessages.front());
-				this->discordCoreClient->processedMessages.pop_front();
+			if (this->processedMessages.size() > 0) {
+				theMessage = std::move(this->processedMessages.front());
+				this->processedMessages.pop_front();
 			} else {
 				return false;
 			}
@@ -231,9 +232,10 @@ namespace DiscordCoreAPI {
 							if (payload.contains("d") && !payload["d"].is_null()) {
 								if (!payload["d"]["ssrc"].is_null()) {
 									VoiceUser theUser{};
-									std::lock_guard theLock00{ this->voiceUserMutex };
+									theLock00.lock();
 									theUser.theUserId = stoull(payload["d"]["user_id"].get<std::string>());
 									this->voiceUsers[payload["d"]["ssrc"].get<int32_t>()] = std ::move(theUser);
+									theLock00.unlock();
 								}
 							}
 							break;
@@ -256,8 +258,9 @@ namespace DiscordCoreAPI {
 									auto userId = stoull(payload["d"]["user_id"].get<std::string>());
 									for (auto& [key, value]: this->voiceUsers) {
 										if (userId == value.theUserId) {
-											std::lock_guard theLock00{ this->voiceUserMutex };
+											theLock00.lock();
 											this->voiceUsers.erase(key);
+											theLock00.unlock();
 											break;
 										}
 									}
@@ -271,6 +274,9 @@ namespace DiscordCoreAPI {
 		} catch (...) {
 			if (this->configManager->doWePrintWebSocketErrorMessages()) {
 				DiscordCoreAPI::reportException("VoiceConnection::onMessageReceived()");
+			}
+			if (theLock00.owns_lock()) {
+				theLock00.unlock();
 			}
 			this->onClosedVoice();
 			return false;
@@ -360,7 +366,7 @@ namespace DiscordCoreAPI {
 				if (!stopToken.stop_requested() && WebSocketSSLShard::areWeStillConnected() && WebSocketSSLShard::inputBuffer.size() > 0) {
 					this->parseMessage(this);
 				}
-				if (!stopToken.stop_requested() && WebSocketSSLShard::areWeStillConnected() && this->discordCoreClient->processedMessages.size() > 0) {
+				if (!stopToken.stop_requested() && WebSocketSSLShard::areWeStillConnected() && this->processedMessages.size() > 0) {
 					this->onMessageReceived();
 				}
 
@@ -419,7 +425,7 @@ namespace DiscordCoreAPI {
 					return false;
 				}
 			}
-			if (this->discordCoreClient->processedMessages.size() > 0) {
+			if (this->processedMessages.size() > 0) {
 				this->onMessageReceived();
 				return true;
 			}

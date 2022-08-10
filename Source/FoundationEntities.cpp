@@ -86,7 +86,6 @@ namespace DiscordCoreInternal {
 #else
 		data["d"]["properties"]["os"] = "Linux";
 #endif
-		std::cout << "THE DATA: " << data.dump() << std::endl;
 		return data;
 	}
 

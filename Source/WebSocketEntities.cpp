@@ -140,8 +140,8 @@ namespace DiscordCoreInternal {
 					std::string finalMessage{};
 					finalMessage.insert(finalMessage.begin(), theShard->inputBuffer.begin() + theShard->messageOffset,
 						theShard->inputBuffer.begin() + theShard->messageOffset + theShard->messageLength);
-					std::unique_lock theLock{ theShard->discordCoreClient->theAccessMutex };
-					theShard->discordCoreClient->processedMessages.emplace_back(finalMessage);
+					std::unique_lock theLock{ theShard->theMutex };
+					theShard->processedMessages.emplace_back(finalMessage);
 					theLock.unlock();
 					theShard->inputBuffer.erase(theShard->inputBuffer.begin(), theShard->inputBuffer.begin() + theShard->messageOffset + theShard->messageLength);
 					return true;
@@ -240,7 +240,7 @@ namespace DiscordCoreInternal {
 				if (dataToSend.size() == 0) {
 					return false;
 				}
-				if (this->configManager->doWePrintWebSocketSuccessMessages()) {
+				if (true) {
 					cout << DiscordCoreAPI::shiftToBrightBlue() << "Sending WebSocket " + this->shard.dump() + std::string("'s Message: ") << endl
 						 << dataToSend << DiscordCoreAPI::reset();
 				}
@@ -277,30 +277,33 @@ namespace DiscordCoreInternal {
 
 	void WebSocketSSLShard::checkForAndSendHeartBeat(bool isImmediate) noexcept {
 		try {
-			if ((this->heartBeatStopWatch.hasTimePassed()) || isImmediate) {
-				this->heartBeatStopWatch.resetTimer();
-				std::cout << "SENDING HEARTBEAT! ";
-				std::cout << "SENDING HEARTBEAT! FROM WEBSOCKET: " << this->shard.dump() << std::endl;
-				nlohmann::json heartbeat{};
-				heartbeat["d"] = this->lastNumberReceived;
-				heartbeat["op"] = 1;
-				std::string theString{};
-				if (this->dataOpCode == WebSocketOpCode::Op_Binary) {
-					this->stringifyJsonData(heartbeat, theString, WebSocketOpCode::Op_Binary);
-				} else {
-					this->stringifyJsonData(heartbeat, theString, WebSocketOpCode::Op_Text);
-				}
-				if (!this->sendMessage(theString, true)) {
-					return;
-				}
-				this->haveWeReceivedHeartbeatAck = false;
+			std::cout << "SENDING HEARTBEAT! ";
+			std::cout << "SENDING HEARTBEAT! FROM WEBSOCKET: " << this->shard.dump() << " ,LAST NUMBER RECEIVED: " << this->lastNumberReceived << std::endl;
+			nlohmann::json heartbeat{};
+			heartbeat["d"] = this->lastNumberReceived;
+			heartbeat["op"] = 1;
+			std::string theString{};
+			if (this->dataOpCode == WebSocketOpCode::Op_Binary) {
+				this->stringifyJsonData(heartbeat, theString, WebSocketOpCode::Op_Binary);
+			} else {
+				this->stringifyJsonData(heartbeat, theString, WebSocketOpCode::Op_Text);
 			}
+			if (!this->sendMessage(theString, true)) {
+				return;
+			}
+			this->haveWeReceivedHeartbeatAck = false;
+			
 		} catch (...) {
 			if (this->configManager->doWePrintWebSocketErrorMessages()) {
 				DiscordCoreAPI::reportException("BaseSocketAgent::checkForAndSendHeartBeat()");
 			}
 			this->onClosed();
 		}
+	}
+
+	void WebSocketSSLShard::checkStats() noexcept {
+		std::cout << "THE CURRENT SHARD IS ABSOLUTELY: " << this->shard.dump() << std::endl;
+		std::cout << "THE ALST NUMBER RECEIVED IS ABSOLUTELY: " << this->lastNumberReceived << std::endl;
 	}
 
 	void WebSocketSSLShard::disconnect(bool doWeReconnect) noexcept {
@@ -329,10 +332,10 @@ namespace DiscordCoreInternal {
 				try {
 					bool returnValue{ false };
 					std::string messageNew{};
-					if (this->discordCoreClient->processedMessages.size() > 0) {
-						std::unique_lock theLock{ this->discordCoreClient->theAccessMutex };
-						messageNew = std::move(this->discordCoreClient->processedMessages.front());
-						this->discordCoreClient->processedMessages.pop_front();
+					if (this->processedMessages.size() > 0) {
+						std::unique_lock theLock{ this->theMutex };
+						messageNew = std::move(this->processedMessages.front());
+						this->processedMessages.pop_front();
 						theLock.unlock();
 						returnValue = true;
 					} else {
@@ -943,17 +946,14 @@ namespace DiscordCoreInternal {
 								break;
 							}
 							case 11: {
-								cout << DiscordCoreAPI::shiftToBrightGreen() << "Message received from WebSocket " + this->shard.dump() + std::string(": ") << payload.dump()
-									 << DiscordCoreAPI::reset() << endl
-									 << endl;
 								this->haveWeReceivedHeartbeatAck = true;
 								break;
 							}
 						}
 					}
-					if (this->configManager->doWePrintWebSocketSuccessMessages() && !payload.is_null()) {
-						cout << DiscordCoreAPI::shiftToBrightGreen() << "Message received from WebSocket " + this->shard.dump() + std::string(": ") << payload.dump()
-							 << DiscordCoreAPI::reset() << endl
+					if (true) {
+						cout << DiscordCoreAPI::shiftToBrightGreen() << "Message received from WebSocket " + this->shard.dump() + std::string(": ") << DiscordCoreAPI::reset()
+							 << endl
 							 << endl;
 					}
 					return returnValue;
@@ -999,8 +999,9 @@ namespace DiscordCoreInternal {
 			std::this_thread::sleep_for(1ms);
 		}
 		this->discordCoreClient->theStopWatch.resetTimer();
-		std::lock_guard theLock{ this->theMutex };
+		std::unique_lock theLock{ this->theMutex };
 		this->connections.push(thePackage);
+		theLock.unlock();
 		DiscordCoreAPI::StopWatch theStopWatch{ 5000ms };
 		while (!this->sslShard) {
 			if (theStopWatch.hasTimePassed()) {
@@ -1040,9 +1041,11 @@ namespace DiscordCoreInternal {
 	void BaseSocketAgent::run(std::stop_token& stopToken) noexcept {
 		try {
 			while (!stopToken.stop_requested() && !this->doWeQuit->load()) {
+				std::unique_lock theLock{ this->theMutex };
 				if (this->connections.size() > 0) {
 					this->connectInternal();
 				}
+				theLock.unlock();
 				if (this->voiceConnectionsToDisconnect.size() > 0) {
 					this->disconnectVoice();
 				}
@@ -1050,13 +1053,14 @@ namespace DiscordCoreInternal {
 					this->connectVoiceInternal();
 				}
 				if (this->sslShard) {
-					std::vector<SSLClient*> theVector{};
-					theVector.push_back(this->sslShard.get());
-					SSLClient::processIO(theVector, 10000);
+					this->sslShard->processIO();
 					if (this->sslShard->areWeStillConnected() && this->sslShard->inputBuffer.size() > 0) {
 						this->sslShard->parseMessage(this->sslShard.get());
 					}
-					this->sslShard->checkForAndSendHeartBeat();
+					if (this->sslShard->heartBeatStopWatch.hasTimePassed()) {
+						this->sslShard->heartBeatStopWatch.resetTimer();
+						this->sslShard->checkForAndSendHeartBeat();
+					}
 				}
 			}
 		} catch (...) {

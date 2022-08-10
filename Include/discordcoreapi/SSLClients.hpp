@@ -170,6 +170,8 @@ namespace DiscordCoreInternal {
 
 		virtual void disconnect(bool doWeReconnect) noexcept = 0;
 
+		virtual void checkStats() noexcept = 0;
+
 		virtual bool areWeStillConnected() noexcept = 0;
 
 		virtual ~SSLConnectionInterface() noexcept;
@@ -213,7 +215,7 @@ namespace DiscordCoreInternal {
 	  public:
 		SSLClient() noexcept = default;
 
-		static void processIO(std::vector<SSLClient*>& theVector, int32_t waitTimeInms) noexcept;
+		static void processIO(std::vector<SSLClient*>& theVector) noexcept;
 
 		ProcessIOResult writeData(const std::string& dataToWrite, bool priority) noexcept;
 

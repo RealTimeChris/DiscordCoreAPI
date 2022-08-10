@@ -233,6 +233,10 @@ namespace DiscordCoreInternal {
 		other.erase(other.begin(), other.begin() + theCount);
 	}
 
+	void HttpsConnection::checkStats() noexcept {
+
+	}
+
 	void HttpsConnection::disconnect(bool) noexcept {
 		if (this->theSSLState.load() == SSLConnectionState::Connected) {
 			std::unique_lock theLock{ this->connectionMutex };

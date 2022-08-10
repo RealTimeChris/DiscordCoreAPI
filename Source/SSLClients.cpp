@@ -161,7 +161,7 @@ namespace DiscordCoreInternal {
 		std::lock_guard theLock{ this->connectionMutex };
 	}
 
-	void SSLClient::processIO(std::vector<SSLClient*>& theVector, int32_t waitTimeInms) noexcept {
+	void SSLClient::processIO(std::vector<SSLClient*>& theVector) noexcept {
 		int32_t writeNfds{ 0 }, readNfds{ 0 };
 		fd_set writeSet{}, readSet{};
 		FD_ZERO(&writeSet);
@@ -187,7 +187,7 @@ namespace DiscordCoreInternal {
 			return;
 		}
 
-		timeval checkTime{ .tv_usec = waitTimeInms };
+		timeval checkTime{ .tv_sec = 1, .tv_usec = 0 };
 		if (auto returnValue = select(FD_SETSIZE, &readSet, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
 			for (auto& value: theVector) {
 				value->disconnect(true);
@@ -326,11 +326,12 @@ namespace DiscordCoreInternal {
 		if (SSL_set_fd(this->ssl, this->theSocket) != 1) {
 			return false;
 		}
-
-		/* SNI */
+		std::cout << "THE SERVER NAME: " << stringNew << std::endl;
+		/* 
 		if (SSL_set_tlsext_host_name(this->ssl, stringNew.c_str()) != 1) {
 			return false;
 		}
+		*/
 
 		if (SSL_connect(this->ssl) != 1) {
 			return false;
@@ -450,6 +451,7 @@ namespace DiscordCoreInternal {
 						if (readBytes > 0) {
 							this->inputBuffer.append(this->rawInputBuffer.begin(), this->rawInputBuffer.begin() + readBytes);
 							this->bytesRead += readBytes;
+							this->checkStats();
 						}
 						return ProcessIOResult::No_Error;
 					}

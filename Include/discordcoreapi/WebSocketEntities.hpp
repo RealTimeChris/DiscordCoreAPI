@@ -77,6 +77,8 @@ namespace DiscordCoreInternal {
 
 		bool onMessageReceived() noexcept;
 
+		void checkStats() noexcept;
+
 		void onClosed() noexcept;
 
 		~WebSocketSSLShard() noexcept = default;
@@ -86,6 +88,7 @@ namespace DiscordCoreInternal {
 		std::atomic<WebSocketSSLShardState> theWebSocketState{ WebSocketSSLShardState ::Connecting };
 		DiscordCoreAPI::StopWatch<std::chrono::milliseconds> heartBeatStopWatch{ 0ms };
 		DiscordCoreAPI::DiscordCoreClient* discordCoreClient{ nullptr };
+		std::deque<std::string> processedMessages{};
 		VoiceConnectionData voiceConnectionData{};
 		bool haveWeReceivedHeartbeatAck{ true };
 		const int32_t maxReconnectTries{ 10 };
