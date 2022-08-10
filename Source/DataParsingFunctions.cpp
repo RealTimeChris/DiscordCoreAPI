@@ -93,9 +93,9 @@ namespace DiscordCoreAPI {
 	std::string get_string(const nlohmann::json& j, const char* keyname) {
 		auto k = j.find(keyname);
 		if (k != j.end()) {
-			return !k->is_null() && k->is_string() ? std::move(k->get<std::string>()) : std::string{ "0" };
+			return !k->is_null() && k->is_string() ? k->get<std::string>() : "";
 		} else {
-			return std::string{ "0" };
+			return const_cast<char*>("");
 		}
 	}
 

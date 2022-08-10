@@ -141,7 +141,7 @@ namespace DiscordCoreAPI {
 		OnGuildCreationData(const OnGuildCreationData&);
 		OnGuildCreationData& operator=(OnGuildCreationData&);
 		OnGuildCreationData(OnGuildCreationData&);
-		Guild guild{};///< The new Guild.
+		GuildData* guild{};///< The new Guild.
 	};
 
 	/// Data that is received as part of a Guild update event. \brief Data that is received as part of a Guild update event.
@@ -151,8 +151,8 @@ namespace DiscordCoreAPI {
 		OnGuildUpdateData(const OnGuildUpdateData&);
 		OnGuildUpdateData& operator=(OnGuildUpdateData&);
 		OnGuildUpdateData(OnGuildUpdateData&);
-		Guild guildOld{};///< The old Guild.
-		Guild guildNew{};///< The new, updated Guild.
+		std::unique_ptr<GuildData> guildOld{};///< The old Guild.
+		GuildData* guildNew{};///< The new, updated Guild.
 	};
 
 	/// Data that is received as part of a Guild deletion event. \brief Data that is received as part of a Guild deletion event.
@@ -162,7 +162,7 @@ namespace DiscordCoreAPI {
 		OnGuildDeletionData(const OnGuildDeletionData&);
 		OnGuildDeletionData& operator=(OnGuildDeletionData&);
 		OnGuildDeletionData(OnGuildDeletionData&);
-		Guild guild{};///< The deleted Guild.
+		std::unique_ptr<GuildData> guild{};///< The deleted Guild.
 	};
 
 	/// Data that is received as part of a Guild ban add event. \brief Data that is received as part of a Guild ban add event.
@@ -974,12 +974,6 @@ namespace DiscordCoreAPI {
 		static CoRoutine<void> onChannelUpdate(OnChannelUpdateData dataPackage);
 
 		static CoRoutine<void> onChannelDeletion(OnChannelDeletionData dataPackage);
-
-		static CoRoutine<void> onGuildCreation(OnGuildCreationData dataPackage);
-
-		static CoRoutine<void> onGuildUpdate(OnGuildUpdateData dataPackage);
-
-		static CoRoutine<void> onGuildDeletion(OnGuildDeletionData dataPackage);
 
 		static CoRoutine<void> onGuildMemberAdd(OnGuildMemberAddData dataPackage);
 

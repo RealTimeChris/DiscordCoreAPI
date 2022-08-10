@@ -239,8 +239,9 @@ namespace DiscordCoreAPI {
 	}
 
 	OnGuildUpdateData& OnGuildUpdateData::operator=(const OnGuildUpdateData& other) {
+		this->guildOld = std::make_unique<Guild>();
 		this->guildNew = other.guildNew;
-		this->guildOld = other.guildOld;
+		*this->guildOld = *other.guildOld;
 		return *this;
 	}
 
@@ -249,8 +250,9 @@ namespace DiscordCoreAPI {
 	}
 
 	OnGuildUpdateData& OnGuildUpdateData::operator=(OnGuildUpdateData& other) {
+		this->guildOld = std::make_unique<Guild>();
 		this->guildNew = other.guildNew;
-		this->guildOld = other.guildOld;
+		*this->guildOld = *other.guildOld;
 		return *this;
 	}
 
@@ -259,7 +261,8 @@ namespace DiscordCoreAPI {
 	}
 
 	OnGuildDeletionData& OnGuildDeletionData::operator=(const OnGuildDeletionData& other) {
-		this->guild = other.guild;
+		this->guild=std::make_unique<Guild>();
+		*this->guild = *other.guild;
 		return *this;
 	}
 
@@ -268,7 +271,8 @@ namespace DiscordCoreAPI {
 	}
 
 	OnGuildDeletionData& OnGuildDeletionData::operator=(OnGuildDeletionData& other) {
-		this->guild = other.guild;
+		this->guild = std::make_unique<Guild>();
+		*this->guild = *other.guild;
 		return *this;
 	}
 
@@ -756,43 +760,6 @@ namespace DiscordCoreAPI {
 				}
 			}
 			Guilds::insertGuild(std::make_unique<GuildData>(*guild));
-		}
-		co_return;
-	}
-
-	CoRoutine<void> EventHandler::onGuildCreation(OnGuildCreationData dataPackage) {
-		co_await NewThreadAwaitable<void>();
-		if (EventHandler::configManager->doWeCacheGuilds()) {
-			Guilds::insertGuild(std::make_unique<GuildData>(dataPackage.guild));
-		}
-		co_return;
-	}
-
-	CoRoutine<void> EventHandler::onGuildUpdate(OnGuildUpdateData dataPackage) {
-		co_await NewThreadAwaitable<void>();
-		if (EventHandler::configManager->doWeCacheGuilds()) {
-			Guilds::insertGuild(std::make_unique<GuildData>(dataPackage.guildNew));
-		}
-		co_return;
-	}
-
-	CoRoutine<void> EventHandler::onGuildDeletion(OnGuildDeletionData dataPackage) {
-		co_await NewThreadAwaitable<void>();
-		if (EventHandler::configManager->doWeCacheGuilds()) {
-			GuildMemberId theKey{};
-			theKey.guildId = dataPackage.guild.id;
-			for (auto& value: dataPackage.guild.members) {
-				theKey.guildMemberId = value;
-				GuildMemberData* guildMember = (*GuildMembers::cache)[theKey].get();
-				GuildMembers::removeGuildMember(std::make_unique<GuildMemberData>(*guildMember));
-			}
-			for (auto& value: dataPackage.guild.channels) {
-				Channels::removeChannel(value);
-			}
-			for (auto& value: dataPackage.guild.roles) {
-				Roles::removeRole(value);
-			}
-			Guilds::removeGuild(dataPackage.guild.id);
 		}
 		co_return;
 	}
