@@ -136,10 +136,9 @@ namespace DiscordCoreInternal {
 				if (theShard->inputBuffer.size() < static_cast<uint64_t>(theShard->messageOffset) + static_cast<uint64_t>(theShard->messageLength)) {
 					return true;
 				} else {
-					std::cout << "THE TOTAL TIME PASSED 0101: " << theStopWatch.totalTimePassed() << std::endl;
 					theStopWatch.resetTimer();
 					this->onMessageReceived(( std::string& )(theShard->inputBuffer.substr(theShard->messageOffset, theShard->messageLength)), theStopWatch);
-					std::cout << "THE TOTAL TIME PASSED 0606: " << theStopWatch.totalTimePassed() << std::endl;
+					std::cout << "THE TOTAL TIME PASSED 0101: " << theStopWatch.totalTimePassed() << std::endl;
 					theStopWatch.resetTimer();
 					theShard->inputBuffer.erase(theShard->inputBuffer.begin(), theShard->inputBuffer.begin() + theShard->messageOffset + theShard->messageLength);
 					return true;
@@ -337,13 +336,12 @@ namespace DiscordCoreInternal {
 						nlohmann::json payload{};
 						if (this->configManager->getTextFormat() == DiscordCoreAPI::TextFormat::Etf) {
 							try {
-								std::cout << "THE TOTAL TIME PASSED 0202: " << theStopWatch.totalTimePassed() << std::endl;
 								theStopWatch.resetTimer();
 								BufferPack theBuffer{ theStopWatch, theString };
 								theBuffer.theBufferIn = theString.data();
 								theBuffer.bufferLength = theString.size();
 								payload = this->parseEtfToJson(theBuffer);
-								std::cout << "THE TOTAL TIME PASSED 0606: " << theStopWatch.totalTimePassed() << std::endl;
+								std::cout << "THE TOTAL TIME PASSED 0202: " << theStopWatch.totalTimePassed() << std::endl;
 								theStopWatch.resetTimer();
 							} catch (...) {
 								if (this->configManager->doWePrintGeneralErrorMessages()) {
@@ -463,7 +461,6 @@ namespace DiscordCoreInternal {
 											DiscordCoreAPI::GuildData guildNew{};
 											std::unique_ptr<DiscordCoreAPI::OnGuildCreationData> dataPackage{ std::make_unique<DiscordCoreAPI::OnGuildCreationData>() };
 											std::unique_ptr<DiscordCoreAPI::GuildData> theGuild{ std::make_unique<DiscordCoreAPI::GuildData>(std::move(payload["d"])) };
-											std::cout << "THE TOTAL TIME PASSED 0707: " << theStopWatch.totalTimePassed() << std::endl;
 											theStopWatch.resetTimer();
 											Snowflake guildId = theGuild->id;
 											theGuild->discordCoreClient = this->discordCoreClient;
@@ -471,7 +468,7 @@ namespace DiscordCoreInternal {
 											dataPackage->guild = (*DiscordCoreAPI::Guilds::cache)[guildId].get();
 											dataPackage->guild->discordCoreClient = this->discordCoreClient;
 											//this->discordCoreClient->eventManager.onGuildCreationEvent(std::move(*dataPackage));
-											std::cout << "THE TOTAL TIME PASSED 0808:  " << theStopWatch.totalTimePassed() << std::endl;
+											std::cout << "THE TOTAL TIME PASSED 0303:  " << theStopWatch.totalTimePassed() << std::endl;
 											theStopWatch.resetTimer();
 											payload.clear();
 										} else if (payload["t"] == "GUILD_UPDATE") {

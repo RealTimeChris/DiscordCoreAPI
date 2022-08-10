@@ -51,14 +51,11 @@ namespace DiscordCoreInternal {
 
 	nlohmann::json ErlPacker::parseEtfToJson(BufferPack& dataToParse) {
 		ErlPackBuffer buffer{ dataToParse };
-		std::cout << "THE TOTAL TIME PASSED 0303: " << dataToParse.theStopWatch.totalTimePassed() << std::endl;
 		dataToParse.theStopWatch.resetTimer();
 		uint8_t version{};
 		ErlPacker::readBits(buffer, version);
-		std::cout << "THE TOTAL TIME PASSED 0404: " << dataToParse.theStopWatch.totalTimePassed() << std::endl;
 		dataToParse.theStopWatch.resetTimer();
 		auto theReturnValue = ErlPacker::singleValueETFToJson(buffer);
-		std::cout << "THE TOTAL TIME PASSED 0505: " << dataToParse.theStopWatch.totalTimePassed() << std::endl;
 		dataToParse.theStopWatch.resetTimer();
 		return std::move(theReturnValue);
 	}
