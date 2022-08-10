@@ -277,7 +277,7 @@ namespace DiscordCoreInternal {
 
 	void WebSocketSSLShard::checkForAndSendHeartBeat(bool isImmediate) noexcept {
 		try {
-			if ((this->heartBeatStopWatch.hasTimePassed() && this->haveWeReceivedHeartbeatAck) || isImmediate) {
+			if ((this->heartBeatStopWatch.hasTimePassed()) || isImmediate) {
 				this->heartBeatStopWatch.resetTimer();
 				std::cout << "SENDING HEARTBEAT! ";
 				std::cout << "SENDING HEARTBEAT! FROM WEBSOCKET: " << this->shard.dump() << std::endl;
@@ -970,7 +970,6 @@ namespace DiscordCoreInternal {
 	}
 
 	void WebSocketSSLShard::onClosed() noexcept {
-		std::cout << "WERE DISCONNECTING!" << std::endl;
 		if (this->maxReconnectTries > this->currentReconnectTries) {
 			this->disconnect(true);
 		} else {
@@ -999,7 +998,6 @@ namespace DiscordCoreInternal {
 		while (!this->discordCoreClient->theStopWatch.hasTimePassed()) {
 			std::this_thread::sleep_for(1ms);
 		}
-		std::cout << "WERE CONNECTING TO THE NEST WEBSOCKET" << std::endl;
 		this->discordCoreClient->theStopWatch.resetTimer();
 		std::lock_guard theLock{ this->theMutex };
 		this->connections.push(thePackage);
