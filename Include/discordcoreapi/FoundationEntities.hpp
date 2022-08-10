@@ -2087,9 +2087,9 @@ namespace DiscordCoreAPI {
 
 		GuildData() = default;
 
-		GuildData& operator=(const nlohmann::json& jsonObjectData);
+		GuildData& operator=(nlohmann::json&& jsonObjectData);
 
-		GuildData(const nlohmann::json& jsonObjectData);
+		GuildData(nlohmann::json&& jsonObjectData);
 
 		/// For connecting to an individual voice channel. \brief For connecting to an individual voice channel.
 		/// \param guildMemberId An id of the guild member who's current voice channel to connect to.
@@ -2118,6 +2118,7 @@ namespace DiscordCoreAPI {
 
 	  protected:
 		void parseObject(const nlohmann::json& jsonObjectData, GuildData* pDataStructure);
+		void parseObject(nlohmann::json&& jsonObjectData, GuildData* pDataStructure);
 	};
 
 	class DiscordCoreAPI_Dll GuildDataVector : public DataParser<GuildDataVector> {

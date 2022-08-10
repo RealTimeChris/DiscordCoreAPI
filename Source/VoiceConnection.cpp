@@ -364,10 +364,8 @@ namespace DiscordCoreAPI {
 					WebSocketSSLShard::processIO();
 				}
 				if (!stopToken.stop_requested() && WebSocketSSLShard::areWeStillConnected() && WebSocketSSLShard::inputBuffer.size() > 0) {
-					this->parseMessage(this);
-				}
-				if (!stopToken.stop_requested() && WebSocketSSLShard::areWeStillConnected() && this->processedMessages.size() > 0) {
-					this->onMessageReceived();
+					DiscordCoreAPI::StopWatch theStopWatch{ 1000us };
+					this->parseMessage(this, theStopWatch);
 				}
 
 				std::this_thread::sleep_for(1ms);
@@ -414,14 +412,15 @@ namespace DiscordCoreAPI {
 	}
 
 	bool VoiceConnection::collectAndProcessAMessage(VoiceConnectionState stateToWaitFor) noexcept {
-		DiscordCoreAPI::StopWatch theStopWatch{ 2500ms };
+		DiscordCoreAPI::StopWatch theStopWatch{ 25000us };
 		while (!this->doWeQuit->load() && this->connectionState.load() != stateToWaitFor) {
 			WebSocketSSLShard::processIO();
 			if (!WebSocketSSLShard::areWeStillConnected()) {
 				return false;
 			}
 			if (WebSocketSSLShard::inputBuffer.size() > 0) {
-				if (!this->parseMessage(this)) {
+
+				if (!this->parseMessage(this, theStopWatch)) {
 					return false;
 				}
 			}

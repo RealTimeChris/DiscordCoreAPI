@@ -47,18 +47,28 @@ namespace DiscordCoreInternal {
 		Atom_Utf8_Ext = 118,
 		Small_Atom_Utf8_Ext = 119
 	};
-
+	struct BufferPack {
+		BufferPack(DiscordCoreAPI::StopWatch<std::chrono::microseconds>& theStopWatch, std::string& buffer);
+		DiscordCoreAPI::StopWatch<std::chrono::microseconds>& theStopWatch;
+		std::string& buffer;
+		char* theBufferIn{ nullptr };
+		int32_t bufferLength{};
+	};
 	struct DiscordCoreAPI_Dll ErlPackBuffer {
 	  public:
-		std::unique_ptr<std::string> buffer{ std::make_unique<std::string>() };
+		std::string& buffer;
+		int32_t theBufferLength{};
+		char* theBufferIn{ nullptr };
+
+		DiscordCoreAPI::StopWatch<std::chrono::microseconds>& theStopWatch;
 
 		mutable uint64_t offSet{};
 
 		ErlPackBuffer() = default;
 
-		ErlPackBuffer& operator=(std::string& theBuffer);
+		ErlPackBuffer& operator=(BufferPack& thePack) noexcept;
 
-		ErlPackBuffer(std::string&);
+		ErlPackBuffer(BufferPack&);
 
 		ErlPackBuffer& operator=(const ErlPackBuffer&) = delete;
 
@@ -75,7 +85,7 @@ namespace DiscordCoreInternal {
 	  public:
 		std::string parseJsonToEtf(const nlohmann::json&);
 
-		nlohmann::json parseEtfToJson(const std::string& dataToParse);
+		nlohmann::json parseEtfToJson(BufferPack& dataToParse);
 
 	  protected:
 		void singleValueJsonToETF(ErlPackBuffer&, const nlohmann::json&);

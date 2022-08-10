@@ -93,7 +93,7 @@ namespace DiscordCoreInternal {
 		return false;
 	}
 
-	bool WebSocketMessageHandler::parseMessage(WebSocketSSLShard* theShard) noexcept {
+	bool WebSocketMessageHandler::parseMessage(WebSocketSSLShard* theShard, DiscordCoreAPI::StopWatch<std::chrono::microseconds>& theStopWatch) noexcept {
 		if (theShard->inputBuffer.size() < 4) {
 			return true;
 		}
@@ -136,9 +136,11 @@ namespace DiscordCoreInternal {
 				if (theShard->inputBuffer.size() < static_cast<uint64_t>(theShard->messageOffset) + static_cast<uint64_t>(theShard->messageLength)) {
 					return true;
 				} else {
-					std::unique_lock theLock{ theShard->theMutex };
-					this->onMessageReceived(theShard->inputBuffer.substr(theShard->messageOffset, theShard->messageLength));
-					theLock.unlock();
+					std::cout << "THE TOTAL TIME PASSED 0101: " << theStopWatch.totalTimePassed() << std::endl;
+					theStopWatch.resetTimer();
+					this->onMessageReceived(( std::string& )(theShard->inputBuffer.substr(theShard->messageOffset, theShard->messageLength)), theStopWatch);
+					std::cout << "THE TOTAL TIME PASSED 0606: " << theStopWatch.totalTimePassed() << std::endl;
+					theStopWatch.resetTimer();
 					theShard->inputBuffer.erase(theShard->inputBuffer.begin(), theShard->inputBuffer.begin() + theShard->messageOffset + theShard->messageLength);
 					return true;
 				}
@@ -278,11 +280,7 @@ namespace DiscordCoreInternal {
 			heartbeat["d"] = this->lastNumberReceived;
 			heartbeat["op"] = 1;
 			std::string theString{};
-			if (this->dataOpCode == WebSocketOpCode::Op_Binary) {
-				this->stringifyJsonData(heartbeat, theString, WebSocketOpCode::Op_Ping);
-			} else {
-				this->stringifyJsonData(heartbeat, theString, WebSocketOpCode::Op_Text);
-			}
+			this->stringifyJsonData(heartbeat, theString, this->dataOpCode);
 			if (!this->sendMessage(theString, true)) {
 				return;
 			}
@@ -316,7 +314,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	bool WebSocketSSLShard::onMessageReceived(const std::string& theString) noexcept {
+	bool WebSocketSSLShard::onMessageReceived(std::string& theString, DiscordCoreAPI::StopWatch<std::chrono::microseconds>& theStopWatch) noexcept {
 		if (this) {
 			if (this->theSSLState.load() == SSLConnectionState::Connected) {
 				try {
@@ -339,8 +337,14 @@ namespace DiscordCoreInternal {
 						nlohmann::json payload{};
 						if (this->configManager->getTextFormat() == DiscordCoreAPI::TextFormat::Etf) {
 							try {
-								payload = this->parseEtfToJson(theString);
-
+								std::cout << "THE TOTAL TIME PASSED 0202: " << theStopWatch.totalTimePassed() << std::endl;
+								theStopWatch.resetTimer();
+								BufferPack theBuffer{ theStopWatch, theString };
+								theBuffer.theBufferIn = theString.data();
+								theBuffer.bufferLength = theString.size();
+								payload = this->parseEtfToJson(theBuffer);
+								std::cout << "THE TOTAL TIME PASSED 0606: " << theStopWatch.totalTimePassed() << std::endl;
+								theStopWatch.resetTimer();
 							} catch (...) {
 								if (this->configManager->doWePrintGeneralErrorMessages()) {
 									DiscordCoreAPI::reportException("ErlPacker::parseEtfToJson()");
@@ -348,7 +352,12 @@ namespace DiscordCoreInternal {
 								return false;
 							}
 						} else {
-							payload = nlohmann::json::parse(theString);
+							payload = nlohmann::json::parse(std::move(theString));
+						}
+						if (this->configManager->doWePrintWebSocketSuccessMessages()) {
+							cout << DiscordCoreAPI::shiftToBrightGreen() << "Message received from WebSocket " + this->shard.dump() + std::string(": ") << payload.dump()
+								 << DiscordCoreAPI::reset() << endl
+								 << endl;
 						}
 						if (payload.contains("t") && !payload["t"].is_null()) {
 							if (payload["t"] == "RESUMED") {
@@ -453,13 +462,17 @@ namespace DiscordCoreInternal {
 										} else if (payload["t"] == "GUILD_CREATE") {
 											DiscordCoreAPI::GuildData guildNew{};
 											std::unique_ptr<DiscordCoreAPI::OnGuildCreationData> dataPackage{ std::make_unique<DiscordCoreAPI::OnGuildCreationData>() };
-											std::unique_ptr<DiscordCoreAPI::GuildData> theGuild{ std::make_unique<DiscordCoreAPI::GuildData>(payload["d"]) };
+											std::unique_ptr<DiscordCoreAPI::GuildData> theGuild{ std::make_unique<DiscordCoreAPI::GuildData>(std::move(payload["d"])) };
+											std::cout << "THE TOTAL TIME PASSED 0707: " << theStopWatch.totalTimePassed() << std::endl;
+											theStopWatch.resetTimer();
 											Snowflake guildId = theGuild->id;
 											theGuild->discordCoreClient = this->discordCoreClient;
 											DiscordCoreAPI::Guilds::insertGuild(std::move(theGuild));
 											dataPackage->guild = (*DiscordCoreAPI::Guilds::cache)[guildId].get();
 											dataPackage->guild->discordCoreClient = this->discordCoreClient;
-											this->discordCoreClient->eventManager.onGuildCreationEvent(std::move(*dataPackage));
+											//this->discordCoreClient->eventManager.onGuildCreationEvent(std::move(*dataPackage));
+											std::cout << "THE TOTAL TIME PASSED 0808:  " << theStopWatch.totalTimePassed() << std::endl;
+											theStopWatch.resetTimer();
 											payload.clear();
 										} else if (payload["t"] == "GUILD_UPDATE") {
 											std::unique_ptr<DiscordCoreAPI::OnGuildUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnGuildUpdateData>() };
@@ -935,11 +948,7 @@ namespace DiscordCoreInternal {
 										resumeData.lastNumberReceived = this->lastNumberReceived;
 										nlohmann::json resumePayload = resumeData;
 										std::string theString{};
-										if (this->dataOpCode == WebSocketOpCode::Op_Binary) {
-											this->stringifyJsonData(resumePayload, theString, WebSocketOpCode::Op_Binary);
-										} else {
-											this->stringifyJsonData(resumePayload, theString, WebSocketOpCode::Op_Text);
-										}
+										this->stringifyJsonData(resumePayload, theString, this->dataOpCode);
 										if (!this->sendMessage(theString, true)) {
 											return false;
 										}
@@ -953,11 +962,7 @@ namespace DiscordCoreInternal {
 										identityData.presence = this->configManager->getPresenceData();
 										nlohmann::json identityJson = identityData;
 										std::string theString{};
-										if (this->dataOpCode == WebSocketOpCode::Op_Binary) {
-											this->stringifyJsonData(identityJson, theString, WebSocketOpCode::Op_Binary);
-										} else {
-											this->stringifyJsonData(identityJson, theString, WebSocketOpCode::Op_Text);
-										}
+										this->stringifyJsonData(identityJson, theString, this->dataOpCode);
 										if (!this->sendMessage(theString, true)) {
 											return false;
 										}
@@ -968,17 +973,9 @@ namespace DiscordCoreInternal {
 								}
 								case 11: {
 									this->haveWeReceivedHeartbeatAck = true;
-									cout << DiscordCoreAPI::shiftToBrightGreen() << "Message received from WebSocket " + this->shard.dump() + std::string(": ")
-										 << DiscordCoreAPI::reset() << endl
-										 << endl;
 									break;
 								}
 							}
-						}
-						if (this->configManager->doWePrintWebSocketSuccessMessages()) {
-							cout << DiscordCoreAPI::shiftToBrightGreen() << "Message received from WebSocket " + this->shard.dump() + std::string(": ") << DiscordCoreAPI::reset()
-								 << endl
-								 << endl;
 						}
 						return returnValue;
 					}
@@ -1081,7 +1078,9 @@ namespace DiscordCoreInternal {
 				if (this->sslShard) {
 					this->sslShard->processIO();
 					if (this->sslShard->areWeStillConnected() && this->sslShard->inputBuffer.size() > 0) {
-						this->sslShard->parseMessage(this->sslShard.get());
+						DiscordCoreAPI::StopWatch<std::chrono::microseconds> theStopWatch{};
+						theStopWatch.resetTimer();
+						this->sslShard->parseMessage(this->sslShard.get(), theStopWatch);
 					}
 					if (this->sslShard->heartBeatStopWatch.hasTimePassed()) {
 						this->sslShard->heartBeatStopWatch.resetTimer();
@@ -1162,10 +1161,8 @@ namespace DiscordCoreInternal {
 						this->sslShard->parseConnectionHeaders(this->sslShard.get());
 					}
 					if (this->sslShard->areWeStillConnected()) {
-						this->sslShard->parseMessage(this->sslShard.get());
-					}
-					if (this->sslShard->areWeStillConnected()) {
-						this->sslShard->onMessageReceived(this->sslShard->inputBuffer);
+						DiscordCoreAPI::StopWatch<std::chrono::microseconds> theStopWatch{};
+						this->sslShard->parseMessage(this->sslShard.get(), theStopWatch);
 					}
 					std::this_thread::sleep_for(1ms);
 				}

@@ -840,10 +840,8 @@ namespace DiscordCoreAPI {
 		if (Guilds::configManager->doWeCacheGuilds()) {
 			(*Guilds::cache)[guild->id] = std::move(guild);
 		}
-		if (Guilds::cache->size() % 100 == 0) {
-			std::cout << "THE TIME PASSED: " << theStopWatch.totalTimePassed() << std::endl;
-			std::cout << "GUILD COUNT: " << Guilds::cache->size() << std::endl;
-		}
+		std::cout << "THE TIME PASSED: " << theStopWatch.totalTimePassed() << std::endl;
+		std::cout << "GUILD COUNT: " << Guilds::cache->size() << std::endl;
 	}
 
 	void Guilds::removeGuild(const Snowflake& guildId) {

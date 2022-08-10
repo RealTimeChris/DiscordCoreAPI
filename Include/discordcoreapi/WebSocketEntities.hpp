@@ -41,9 +41,9 @@ namespace DiscordCoreInternal {
 
 		bool parseConnectionHeaders(DiscordCoreInternal::WebSocketSSLShard* theShard) noexcept;
 
-		bool parseMessage(DiscordCoreInternal::WebSocketSSLShard* theShard) noexcept;
+		bool parseMessage(DiscordCoreInternal::WebSocketSSLShard* theShard, DiscordCoreAPI::StopWatch<std::chrono::microseconds>& theStopWatch) noexcept;
 
-		virtual bool onMessageReceived(const std::string& theString) noexcept = 0;
+		virtual bool onMessageReceived(std::string& theString, DiscordCoreAPI::StopWatch<std::chrono::microseconds>& theStopWatch) noexcept = 0;
 
 		virtual ~WebSocketMessageHandler() = default;
 
@@ -71,7 +71,7 @@ namespace DiscordCoreInternal {
 
 		bool sendMessage(std::string& dataToSend, bool priority) noexcept;
 
-		bool onMessageReceived(const std::string& theString) noexcept;
+		bool onMessageReceived(std::string& theString, DiscordCoreAPI::StopWatch<std::chrono::microseconds>& theStopWatch) noexcept;
 
 		void checkForAndSendHeartBeat(bool = false) noexcept;
 

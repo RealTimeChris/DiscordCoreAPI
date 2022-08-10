@@ -169,7 +169,6 @@ namespace DiscordCoreInternal {
 		bool didWeSetASocket{ false };
 		for (auto& value: theVector) {
 			if (value) {
-				std::unique_lock theLock{ value->connectionMutex };
 				if (value->theSocket != SOCKET_ERROR) {
 					if ((value->outputBuffers.size() > 0 || value->wantWrite) && !value->wantRead) {
 						FD_SET(value->theSocket, &writeSet);
@@ -196,7 +195,6 @@ namespace DiscordCoreInternal {
 		}
 
 		for (auto& value: theVector) {
-			std::unique_lock theLock{ value->connectionMutex };
 			if (FD_ISSET(value->theSocket, &readSet)) {
 				value->readDataProcess();
 			}
@@ -207,7 +205,6 @@ namespace DiscordCoreInternal {
 	}
 
 	ProcessIOResult SSLClient::writeData(const std::string& dataToWrite, bool priority) noexcept {
-		std::unique_lock theLock{ this->connectionMutex };
 		if (this->theSocket == SOCKET_ERROR) {
 			return ProcessIOResult::Disconnected;
 		}
@@ -256,7 +253,6 @@ namespace DiscordCoreInternal {
 
 	bool SSLClient::connect(const std::string& baseUrl, const std::string& portNew) noexcept {
 		this->rawInputBuffer.resize(this->maxBufferSize);
-		this->inputBuffer.resize(this->maxBufferSize);
 		std::string stringNew{};
 		auto httpsFind = baseUrl.find("https://");
 		auto comFind = baseUrl.find(".com");
@@ -268,7 +264,6 @@ namespace DiscordCoreInternal {
 		} else {
 			stringNew = baseUrl;
 		}
-		std::lock_guard theLock{ this->connectionMutex };
 		addrinfoWrapper hints{}, address{};
 		hints->ai_family = AF_INET;
 		hints->ai_socktype = SOCK_STREAM;
@@ -354,30 +349,28 @@ namespace DiscordCoreInternal {
 		FD_ZERO(&writeSet);
 		FD_ZERO(&readSet);
 
-		std::unique_lock theLock{ this->connectionMutex };
 		if ((this->outputBuffers.size() > 0 || this->wantWrite) && !this->wantRead) {
 			FD_SET(this->theSocket, &writeSet);
 			writeNfds = this->theSocket > writeNfds ? this->theSocket : writeNfds;
-		} else {
-			FD_SET(this->theSocket, &readSet);
-			readNfds = this->theSocket > readNfds ? this->theSocket : readNfds;
 		}
+		FD_SET(this->theSocket, &readSet);
+		readNfds = this->theSocket > readNfds ? this->theSocket : readNfds;
 
-		timeval checkTime{ .tv_sec = 1, .tv_usec = 0 };
+		timeval checkTime{ .tv_sec = 0, .tv_usec = 500000 };
 		if (auto returnValue = select(FD_SETSIZE, &readSet, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
 			this->disconnect(true);
 			return ProcessIOResult::Select_Failure;
 		} else if (returnValue == 0) {
 			return ProcessIOResult::Select_No_Return;
 		}
-
+		ProcessIOResult returnValueFinal{};
 		if (FD_ISSET(this->theSocket, &writeSet)) {
-			return this->writeDataProcess();
+			returnValueFinal = this->writeDataProcess();
 		}
 		if (FD_ISSET(this->theSocket, &readSet)) {
-			return this->readDataProcess();
+			returnValueFinal = this->readDataProcess();
 		}
-		return ProcessIOResult::No_Error;
+		return returnValueFinal;
 	}
 
 	std::string& SSLClient::getInputBuffer() noexcept {
@@ -434,6 +427,7 @@ namespace DiscordCoreInternal {
 	ProcessIOResult SSLClient::readDataProcess() noexcept {
 		this->wantRead = false;
 		this->wantWrite = false;
+		ProcessIOResult returnValueReal{};
 		if (this->maxBufferSize > 0) {
 			do {
 				size_t readBytes{ 0 };
@@ -445,34 +439,39 @@ namespace DiscordCoreInternal {
 							this->inputBuffer.append(this->rawInputBuffer.begin(), this->rawInputBuffer.begin() + readBytes);
 							this->bytesRead += readBytes;
 						}
-						return ProcessIOResult::No_Error;
+						returnValueReal = ProcessIOResult::No_Error;
+						break;
 					}
 					case SSL_ERROR_WANT_READ: {
 						this->wantRead = true;
-						return ProcessIOResult::No_Error;
+						returnValueReal = ProcessIOResult::No_Error;
+						break;
 					}
 					case SSL_ERROR_WANT_WRITE: {
 						this->wantWrite = true;
-						return ProcessIOResult::No_Error;
+						returnValueReal = ProcessIOResult::No_Error;
+						break;
 					}
 					case SSL_ERROR_ZERO_RETURN: {
 						this->disconnect(true);
-						return ProcessIOResult::SSL_Zero_Return;
+						returnValueReal = ProcessIOResult::SSL_Zero_Return;
+						break;
 					}
 					default: {
 						this->disconnect(true);
-						return ProcessIOResult::SSL_Error;
+						returnValueReal = ProcessIOResult::SSL_Error;
+						break;
 					}
 				}
 			} while (SSL_pending(this->ssl));
 			
 		} else {
-			return ProcessIOResult::No_Error;
+			returnValueReal = ProcessIOResult::No_Error;
 		}
+		return returnValueReal;
 	}
 
 	int64_t SSLClient::getBytesRead() noexcept {
-		std::unique_lock theLock{ this->connectionMutex };
 		return this->bytesRead;
 	}
 
@@ -482,7 +481,6 @@ namespace DiscordCoreInternal {
 
 	bool DatagramSocketClient::connect(const std::string& baseUrlNew, const std::string& portNew) noexcept {
 		this->rawInputBuffer.resize(this->maxBufferSize);
-		this->inputBuffer.resize(this->maxBufferSize);
 		if (this->streamType == DiscordCoreAPI::StreamType::None || this->streamType == DiscordCoreAPI::StreamType::Client) {
 			static_cast<sockaddr_in*>(this->theStreamTargetAddress)->sin_addr.s_addr = inet_addr(baseUrlNew.c_str());
 			DiscordCoreAPI::reverseByteOrder(static_cast<unsigned short>(stoi(portNew)), static_cast<sockaddr_in*>(this->theStreamTargetAddress)->sin_port);
@@ -557,7 +555,6 @@ namespace DiscordCoreInternal {
 			return;
 		}
 		fd_set readSet{}, writeSet{};
-		std::unique_lock theLock{ this->theMutex };
 		switch (theType) {
 			case ProcessIOType::Both: {
 				FD_ZERO(&writeSet);
@@ -594,7 +591,6 @@ namespace DiscordCoreInternal {
 	void DatagramSocketClient::writeData(std::string& dataToWrite) noexcept {
 		if (dataToWrite.size() > static_cast<size_t>(16 * 1024)) {
 			size_t remainingBytes{ dataToWrite.size() };
-			std::unique_lock theLock{ this->theMutex };
 			while (remainingBytes > 0) {
 				std::string newString{};
 				size_t amountToCollect{};
@@ -659,12 +655,10 @@ namespace DiscordCoreInternal {
 	}
 
 	int64_t DatagramSocketClient::getBytesRead() noexcept {
-		std::unique_lock theLock{ this->theMutex };
 		return this->bytesRead;
 	}
 
 	void DatagramSocketClient::disconnect() noexcept {
-		std::unique_lock theLock{ this->theMutex };
 		this->theSocket = SOCKET_ERROR;
 		this->theSocket = SOCKET_ERROR;
 		this->rawInputBuffer.clear();

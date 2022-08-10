@@ -915,13 +915,13 @@ namespace DiscordCoreAPI {
 		*this = jsonObjectData;
 	}
 
-	GuildData& GuildData::operator=(const nlohmann::json& jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	GuildData& GuildData::operator=(nlohmann::json&& jsonObjectData) {
+		this->parseObject(std::move(jsonObjectData), this);
 		return *this;
 	}
 
-	GuildData::GuildData(const nlohmann::json& jsonObjectData) {
-		*this = jsonObjectData;
+	GuildData::GuildData(nlohmann::json&& jsonObjectData) {
+		*this = std::move(jsonObjectData);
 	}
 
 	GuildDataVector::operator std::vector<GuildData>() {

@@ -125,12 +125,21 @@ namespace DiscordCoreAPI {
 	}
 
 	void DiscordCoreClient::runBot() {
-		std::jthread theThread{ [this]() {
+		/*
+		std::jthread theThread = std::jthread{ [this]() {
 			while (!Globals::doWeQuit.load()) {
+				for (auto& [key, value]: this->baseSocketAgentMap) {
+					if (value && value->sslShard) {
+						StopWatch<std::chrono::microseconds> theStopWatch{};
+						theStopWatch.resetTimer();
+						value->sslShard->parseMessage(value->sslShard.get(), theStopWatch);
+					}
+				}
 				std::this_thread::sleep_for(1ms);
-			}
+			};
 		} };
 		theThread.detach();
+		*/
 		if (!this->instantiateWebSockets()) {
 			Globals::doWeQuit.store(true);
 			return;
