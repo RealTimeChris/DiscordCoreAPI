@@ -50,15 +50,15 @@ namespace DiscordCoreInternal {
 
 	struct DiscordCoreAPI_Dll ErlPackBuffer {
 	  public:
-		std::string buffer{};
+		std::unique_ptr<std::string> buffer{ std::make_unique<std::string>() };
 
 		mutable uint64_t offSet{};
 
 		ErlPackBuffer() = default;
 
-		ErlPackBuffer& operator=(const std::string*);
+		ErlPackBuffer& operator=(std::string& theBuffer);
 
-		ErlPackBuffer(const std::string*);
+		ErlPackBuffer(std::string&);
 
 		ErlPackBuffer& operator=(const ErlPackBuffer&) = delete;
 
@@ -67,13 +67,15 @@ namespace DiscordCoreInternal {
 		ErlPackBuffer& operator=(ErlPackBuffer&) = delete;
 
 		ErlPackBuffer(ErlPackBuffer&) = delete;
+
+		~ErlPackBuffer();
 	};
 
 	class DiscordCoreAPI_Dll ErlPacker {
 	  public:
 		std::string parseJsonToEtf(const nlohmann::json&);
 
-		nlohmann::json parseEtfToJson(const std::string*);
+		nlohmann::json parseEtfToJson(const std::string& dataToParse);
 
 	  protected:
 		void singleValueJsonToETF(ErlPackBuffer&, const nlohmann::json&);

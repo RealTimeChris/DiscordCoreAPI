@@ -428,6 +428,10 @@ namespace DiscordCoreAPI {
 
 		StringWrapper(StringWrapper& other) noexcept;
 
+		StringWrapper& operator=(const std::string&& theString);
+
+		explicit StringWrapper(const std::string&& theString);
+
 		StringWrapper& operator=(const std::string& theString);
 
 		explicit StringWrapper(const std::string& theString);
@@ -435,6 +439,10 @@ namespace DiscordCoreAPI {
 		StringWrapper& operator=(std::string& theString);
 
 		explicit StringWrapper(std::string& theString);
+
+		StringWrapper& operator=(std::string&& theString);
+
+		explicit StringWrapper(std::string&& theString);
 
 		StringWrapper& operator=(const char* theString);
 
@@ -451,6 +459,7 @@ namespace DiscordCoreAPI {
 		const char* data();
 
 	  protected:
+		std::unique_ptr<const char> thePtrOne{};
 		std::unique_ptr<char[]> thePtr{};
 	};
 
@@ -1034,18 +1043,17 @@ namespace DiscordCoreAPI {
 		return static_cast<StoredAsType>(inputFlag) & static_cast<StoredAsType>(theFlag);
 	}
 
-	template<typename ReturnType> ReturnType reverseByteOrder(ReturnType x) {
+	template<typename ReturnType> void reverseByteOrder(ReturnType x, ReturnType& returnValue) {
 		const uint8_t byteSize{ 8 };
-		ReturnType returnValue{};
 		for (uint32_t y = 0; y < sizeof(ReturnType); y++) {
 			returnValue |= static_cast<ReturnType>(static_cast<uint8_t>(x >> (byteSize * y))) << byteSize * (sizeof(ReturnType) - y - 1);
 		}
-		return returnValue;
 	}
 
-	template<typename ReturnType> void storeBits(std::string& to, ReturnType num) {
+	template<typename ReturnType> void storeBits(std::string& to, ReturnType& num) {
 		const uint8_t byteSize{ 8 };
-		ReturnType newValue = reverseByteOrder(num);
+		ReturnType newValue{};
+		reverseByteOrder(num, newValue);
 		for (uint32_t x = 0; x < sizeof(ReturnType); x++) {
 			to.push_back(static_cast<uint8_t>(newValue >> (byteSize * x)));
 		}

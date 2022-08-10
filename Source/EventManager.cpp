@@ -229,7 +229,7 @@ namespace DiscordCoreAPI {
 		 *this = other;
 	}
 
-	OnGuildCreationData& OnGuildCreationData::operator=(OnGuildCreationData&other) {
+	OnGuildCreationData& OnGuildCreationData::operator=(OnGuildCreationData& other) {
 		this->guild = other.guild;
 		return *this;
 	}

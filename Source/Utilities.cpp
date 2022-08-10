@@ -230,6 +230,34 @@ namespace DiscordCoreAPI {
 		*this = theString;
 	}
 
+	StringWrapper& StringWrapper::operator=(const std::string&& theString) {
+		auto theLength = theString.size();
+		this->thePtr = std::make_unique<char[]>(theLength + 1);
+		for (int32_t x = 0; x < theLength; x++) {
+			this->thePtr[x] = theString[x];
+		}
+		this->thePtr[theLength] = '\0';
+		return *this;
+	}
+
+	StringWrapper::StringWrapper(const std::string&& theString) {
+		*this = theString;
+	}
+
+	StringWrapper& StringWrapper::operator=(std::string&& theString) {
+		auto theLength = theString.size();
+		this->thePtr = std::make_unique<char[]>(theLength + 1);
+		for (int32_t x = 0; x < theLength; x++) {
+			this->thePtr[x] = theString[x];
+		}
+		this->thePtr[theLength] = '\0';
+		return *this;
+	}
+
+	StringWrapper::StringWrapper(std::string&& theString) {
+		*this = theString;
+	}
+
 	StringWrapper& StringWrapper::operator=(std::string& theString) {
 		auto theLength = theString.size();
 		this->thePtr = std::make_unique<char[]>(theLength + 1);

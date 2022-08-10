@@ -23,24 +23,27 @@ namespace DiscordCoreInternal {
 
 	ErlPackError::ErlPackError(const std::string& message) : std::runtime_error(message.c_str()){};
 
-	ErlPackBuffer& ErlPackBuffer::operator=(const std::string* theBuffer) {
-		this->buffer.insert(this->buffer.begin(), theBuffer->begin(), theBuffer->end());
+	ErlPackBuffer& ErlPackBuffer::operator=(std::string& theBuffer) {
+		*this->buffer = std::move(theBuffer);
 		return *this;
 	};
 
-	ErlPackBuffer::ErlPackBuffer(const std::string* theBuffer) {
+	ErlPackBuffer::ErlPackBuffer(std::string& theBuffer) {
 		*this = theBuffer;
 	};
+
+	ErlPackBuffer::~ErlPackBuffer() {}
 
 	std::string ErlPacker::parseJsonToEtf(const nlohmann::json& dataToParse) {
 		ErlPackBuffer buffer{};
 		ErlPacker::appendVersion(buffer);
 		ErlPacker::singleValueJsonToETF(buffer, dataToParse);
-		return buffer.buffer;
+		return std::move(*buffer.buffer);
 	}
 
-	nlohmann::json ErlPacker::parseEtfToJson(const std::string* dataToParse) {
-		ErlPackBuffer buffer{ dataToParse };
+	nlohmann::json ErlPacker::parseEtfToJson(const std::string& dataToParse) {
+		std::string& dataToParseNew = ( std::string& )dataToParse;
+		ErlPackBuffer buffer{ dataToParseNew };
 		uint8_t version{};
 		ErlPacker::readBits(buffer, version);
 		return ErlPacker::singleValueETFToJson(buffer);
@@ -105,7 +108,7 @@ namespace DiscordCoreInternal {
 	}
 
 	void ErlPacker::writeToBuffer(ErlPackBuffer& buffer, const std::string& bytes) {
-		buffer.buffer.insert(buffer.buffer.begin() + buffer.offSet, bytes.begin(), bytes.end());
+		buffer.buffer->insert(buffer.buffer->begin() + buffer.offSet, bytes.begin(), bytes.end());
 		buffer.offSet += static_cast<uint32_t>(bytes.size());
 	}
 
@@ -191,29 +194,29 @@ namespace DiscordCoreInternal {
 
 	template<typename ReturnType> void ErlPacker::readBits(const ErlPackBuffer& buffer, ReturnType& theValue) {
 		const uint8_t byteSize{ 8 };
-		if (buffer.offSet + sizeof(ReturnType) > buffer.buffer.size()) {
+		if (buffer.offSet + sizeof(ReturnType) > buffer.buffer->size()) {
 			throw ErlPackError{ "ErlPacker::readBits() Error: readBits() past end of buffer.\n\n" };
 		}
 		ReturnType newValue{ 0 };
 		for (uint64_t x = 0; x < sizeof(ReturnType); x++) {
-			newValue |= static_cast<ReturnType>(static_cast<uint64_t>(buffer.buffer.data()[buffer.offSet + x]) << (x * static_cast<uint64_t>(byteSize)));
+			newValue |= static_cast<ReturnType>(static_cast<uint64_t>(buffer.buffer->data()[buffer.offSet + x]) << (x * static_cast<uint64_t>(byteSize)));
 		}
 		buffer.offSet += sizeof(ReturnType);
-		theValue = DiscordCoreAPI::reverseByteOrder(newValue);
+		DiscordCoreAPI::reverseByteOrder(newValue, theValue);
 	}
 
 	void ErlPacker::readString(const ErlPackBuffer& buffer, uint32_t& length, std::string& theString) {
-		if (buffer.offSet + static_cast<uint64_t>(length) > buffer.buffer.size()) {
+		if (buffer.offSet + static_cast<uint64_t>(length) > buffer.buffer->size()) {
 			throw ErlPackError{ "ErlPacker::readString() Error: readString() past end of buffer.\n\n" };
 		}
 		std::string str{};
-		str.insert(str.begin(), buffer.buffer.begin() + buffer.offSet, buffer.buffer.begin() + buffer.offSet + length);
+		str.insert(str.begin(), buffer.buffer->begin() + buffer.offSet, buffer.buffer->begin() + buffer.offSet + length);
 		buffer.offSet += length;
 		theString = std::move(str);
 	}
 
 	nlohmann::json ErlPacker::singleValueETFToJson(const ErlPackBuffer& buffer) {
-		if (buffer.offSet >= buffer.buffer.size()) {
+		if (buffer.offSet >= buffer.buffer->size()) {
 			throw ErlPackError{ "ErlPacker::singleValueETFToJson() Error: Read past end of ETF buffer.\n\n" };
 		}
 		uint8_t type{};
@@ -387,7 +390,7 @@ namespace DiscordCoreInternal {
 		uint16_t length{};
 		ErlPacker::readBits(buffer, length);
 		nlohmann::json theArray = nlohmann::json::array();
-		if (static_cast<uint64_t>(buffer.offSet) + length > buffer.buffer.size()) {
+		if (static_cast<uint64_t>(buffer.offSet) + length > buffer.buffer->size()) {
 			throw ErlPackError{ "ErlPacker::parseStringAsList() Error: String list past end of buffer.\n\n" };
 		}
 		for (uint16_t x = 0; x < length; ++x) {

@@ -127,15 +127,6 @@ namespace DiscordCoreAPI {
 	void DiscordCoreClient::runBot() {
 		std::jthread theThread{ [this]() {
 			while (!Globals::doWeQuit.load()) {
-				for (auto& [key, value]: this->baseSocketAgentMap) {
-					if (value && value->sslShard) {
-						bool theValue{ true };
-						do {
-							std::unique_lock theLock{ value->theMutex };
-							theValue = value->sslShard->onMessageReceived();
-						} while (theValue);
-					}
-				}
 				std::this_thread::sleep_for(1ms);
 			}
 		} };
