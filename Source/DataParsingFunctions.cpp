@@ -2795,7 +2795,9 @@ namespace DiscordCoreAPI {
 		pDataStructure->ownerId = stoull(get_string(jsonObjectData, "owner_id"));
 
 		auto theArray = get_array(jsonObjectData, "features");
-		pDataStructure->features.insert(pDataStructure->features.begin(), theArray.begin(), theArray.end());
+		for (auto& value : theArray) {
+			pDataStructure->features.push_back(StringWrapper{ value.get<std::string>() });
+		}
 
 		auto theArray02 = get_array(jsonObjectData, "roles");
 		pDataStructure->roles.clear();
