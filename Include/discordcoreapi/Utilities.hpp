@@ -533,7 +533,7 @@ namespace DiscordCoreAPI {
 
 		void convertTimeStampToTimeUnits(DiscordCoreAPI::TimeFormat theFormatNew) {
 			try {
-				if (this->originalTimeStamp != "") {
+				if (this->originalTimeStamp != "" && this->originalTimeStamp.size() >= 18 && this->originalTimeStamp != "0") {
 					TimeStamp<TimeType> timeValue = TimeStamp{ stoi(this->originalTimeStamp.substr(0, 4)), stoi(this->originalTimeStamp.substr(5, 6)),
 						stoi(this->originalTimeStamp.substr(8, 9)), stoi(this->originalTimeStamp.substr(11, 12)), stoi(this->originalTimeStamp.substr(14, 15)),
 						stoi(this->originalTimeStamp.substr(17, 18)), theFormatNew };

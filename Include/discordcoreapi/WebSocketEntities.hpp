@@ -77,8 +77,6 @@ namespace DiscordCoreInternal {
 
 		bool onMessageReceived() noexcept;
 
-		void checkStats() noexcept;
-
 		void onClosed() noexcept;
 
 		~WebSocketSSLShard() noexcept = default;

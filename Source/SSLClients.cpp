@@ -326,12 +326,10 @@ namespace DiscordCoreInternal {
 		if (SSL_set_fd(this->ssl, this->theSocket) != 1) {
 			return false;
 		}
-		std::cout << "THE SERVER NAME: " << stringNew << std::endl;
-		/* 
+		
 		if (SSL_set_tlsext_host_name(this->ssl, stringNew.c_str()) != 1) {
 			return false;
 		}
-		*/
 
 		if (SSL_connect(this->ssl) != 1) {
 			return false;
@@ -451,7 +449,6 @@ namespace DiscordCoreInternal {
 						if (readBytes > 0) {
 							this->inputBuffer.append(this->rawInputBuffer.begin(), this->rawInputBuffer.begin() + readBytes);
 							this->bytesRead += readBytes;
-							this->checkStats();
 						}
 						return ProcessIOResult::No_Error;
 					}
@@ -472,7 +469,6 @@ namespace DiscordCoreInternal {
 						return ProcessIOResult::SSL_Error;
 					}
 				}
-				std::cout << "SSL IS PENDING!" << std::endl;
 			} while (SSL_pending(this->ssl));
 			
 		} else {

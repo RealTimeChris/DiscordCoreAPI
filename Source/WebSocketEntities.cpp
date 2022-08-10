@@ -277,8 +277,6 @@ namespace DiscordCoreInternal {
 
 	void WebSocketSSLShard::checkForAndSendHeartBeat(bool isImmediate) noexcept {
 		try {
-			std::cout << "SENDING HEARTBEAT! ";
-			std::cout << "SENDING HEARTBEAT! FROM WEBSOCKET: " << this->shard.dump() << " ,LAST NUMBER RECEIVED: " << this->lastNumberReceived << std::endl;
 			nlohmann::json heartbeat{};
 			heartbeat["d"] = this->lastNumberReceived;
 			heartbeat["op"] = 1;
@@ -299,11 +297,6 @@ namespace DiscordCoreInternal {
 			}
 			this->onClosed();
 		}
-	}
-
-	void WebSocketSSLShard::checkStats() noexcept {
-		std::cout << "THE CURRENT SHARD IS ABSOLUTELY: " << this->shard.dump() << std::endl;
-		std::cout << "THE ALST NUMBER RECEIVED IS ABSOLUTELY: " << this->lastNumberReceived << std::endl;
 	}
 
 	void WebSocketSSLShard::disconnect(bool doWeReconnect) noexcept {
@@ -947,11 +940,14 @@ namespace DiscordCoreInternal {
 							}
 							case 11: {
 								this->haveWeReceivedHeartbeatAck = true;
+								cout << DiscordCoreAPI::shiftToBrightGreen() << "Message received from WebSocket " + this->shard.dump() + std::string(": ")
+									 << DiscordCoreAPI::reset() << endl
+									 << endl;
 								break;
 							}
 						}
 					}
-					if (true) {
+					if (this->configManager->doWePrintWebSocketSuccessMessages()) {
 						cout << DiscordCoreAPI::shiftToBrightGreen() << "Message received from WebSocket " + this->shard.dump() + std::string(": ") << DiscordCoreAPI::reset()
 							 << endl
 							 << endl;
@@ -1083,7 +1079,6 @@ namespace DiscordCoreInternal {
 				DiscordCoreAPI::ConnectionPackage connectData = this->connections.front();
 				this->connections.pop();
 				if (!this->sslShard) {
-					std::cout << "THJE CURRENT SHARD REALER: " << connectData.currentShard << std::endl;
 					this->sslShard = std::make_unique<WebSocketSSLShard>(this->discordCoreClient, &this->connections, connectData.currentShard, this->doWeQuit);
 				}
 				this->sslShard->currentReconnectTries = connectData.currentReconnectTries;

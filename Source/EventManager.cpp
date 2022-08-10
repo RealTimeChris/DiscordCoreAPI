@@ -885,9 +885,11 @@ namespace DiscordCoreAPI {
 	CoRoutine<void> EventHandler::onVoiceStateUpdate(OnVoiceStateUpdateData dataPackage) {
 		co_await NewThreadAwaitable<void>();
 		if (EventHandler::configManager->doWeCacheGuildMembers() && EventHandler::configManager->doWeCacheGuilds()) {
-			GuildData* guild = (*Guilds::cache)[dataPackage.voiceStateData.guildId].get();
-			guild->voiceStates[dataPackage.voiceStateData.userId] = dataPackage.voiceStateData;
-			Guilds::insertGuild(std::make_unique<GuildData>(*guild));
+			if (Guilds::cache->contains(dataPackage.voiceStateData.guildId)) {
+				GuildData* guild = (*Guilds::cache)[dataPackage.voiceStateData.guildId].get();
+				guild->voiceStates[dataPackage.voiceStateData.userId] = dataPackage.voiceStateData;
+				Guilds::insertGuild(std::make_unique<GuildData>(*guild));
+			}
 		}
 		co_return;
 	}
