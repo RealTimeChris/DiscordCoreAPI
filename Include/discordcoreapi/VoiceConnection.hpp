@@ -155,6 +155,7 @@ namespace DiscordCoreAPI {
 		std::unique_ptr<std::jthread> taskThread03{ nullptr };
 		std::unordered_map<uint32_t, VoiceUser> voiceUsers{};
 		std::atomic_bool areWeConnectedBool{ false };
+		std::deque<std::string> processedMessages{};
 		std::queue<ConnectionPackage> connections{};
 		std::deque<VoicePayload> theFrameQueue{};
 		std::atomic_bool areWePlaying{ false };

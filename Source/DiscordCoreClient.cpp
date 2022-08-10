@@ -81,6 +81,9 @@ namespace DiscordCoreAPI {
 		this->eventManager.onChannelCreation(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnChannelCreationData>{ &EventHandler::onChannelCreation });
 		this->eventManager.onChannelUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnChannelUpdateData>{ &EventHandler::onChannelUpdate });
 		this->eventManager.onChannelDeletion(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnChannelDeletionData>{ &EventHandler::onChannelDeletion });
+		//this->eventManager.onGuildCreation(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildCreationData>{ &EventHandler::onGuildCreation });
+		//this->eventManager.onGuildUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildUpdateData>{ &EventHandler::onGuildUpdate });
+		//this->eventManager.onGuildDeletion(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildDeletionData>{ &EventHandler::onGuildDeletion });
 		this->eventManager.onGuildMemberAdd(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildMemberAddData>{ &EventHandler::onGuildMemberAdd });
 		this->eventManager.onGuildMemberRemove(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildMemberRemoveData>{ &EventHandler::onGuildMemberRemove });
 		this->eventManager.onGuildMemberUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildMemberUpdateData>{ &EventHandler::onGuildMemberUpdate });
@@ -125,12 +128,25 @@ namespace DiscordCoreAPI {
 	}
 
 	void DiscordCoreClient::runBot() {
+		/*
 		std::jthread theThread{ [this]() {
+		
 			while (!Globals::doWeQuit.load()) {
+				
+				for (auto& [key, value]: this->baseSocketAgentMap) {
+					if (value && value->sslShard) {
+						bool theValue{ true };
+						do {
+							theValue = value->sslShard->onMessageReceived();
+						} while (theValue);
+					}
+				}
+				
 				std::this_thread::sleep_for(1ms);
 			}
 		} };
 		theThread.detach();
+		*/
 		if (!this->instantiateWebSockets()) {
 			Globals::doWeQuit.store(true);
 			return;

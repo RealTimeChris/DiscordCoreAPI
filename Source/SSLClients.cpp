@@ -161,53 +161,7 @@ namespace DiscordCoreInternal {
 		std::lock_guard theLock{ this->connectionMutex };
 	}
 
-	void SSLClient::processIO(std::vector<SSLClient*>& theVector) noexcept {
-		int32_t writeNfds{ 0 }, readNfds{ 0 };
-		fd_set writeSet{}, readSet{};
-		FD_ZERO(&writeSet);
-		FD_ZERO(&readSet);
-		bool didWeSetASocket{ false };
-		for (auto& value: theVector) {
-			if (value) {
-				std::unique_lock theLock{ value->connectionMutex };
-				if (value->theSocket != SOCKET_ERROR) {
-					if ((value->outputBuffers.size() > 0 || value->wantWrite) && !value->wantRead) {
-						FD_SET(value->theSocket, &writeSet);
-						writeNfds = value->theSocket > writeNfds ? value->theSocket : writeNfds;
-					} else {
-						FD_SET(value->theSocket, &readSet);
-						readNfds = value->theSocket > readNfds ? value->theSocket : readNfds;
-						didWeSetASocket = true;
-					}
-				}
-			}
-		}
-
-		if (!didWeSetASocket) {
-			return;
-		}
-
-		timeval checkTime{ .tv_sec = 1, .tv_usec = 0 };
-		if (auto returnValue = select(FD_SETSIZE, &readSet, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
-			for (auto& value: theVector) {
-				value->disconnect(true);
-			}
-			return;
-		}
-
-		for (auto& value: theVector) {
-			std::unique_lock theLock{ value->connectionMutex };
-			if (FD_ISSET(value->theSocket, &readSet)) {
-				value->readDataProcess();
-			}
-			if (FD_ISSET(value->theSocket, &writeSet)) {
-				value->writeDataProcess();
-			}
-		}
-	}
-
 	ProcessIOResult SSLClient::writeData(const std::string& dataToWrite, bool priority) noexcept {
-		std::unique_lock theLock{ this->connectionMutex };
 		if (this->theSocket == SOCKET_ERROR) {
 			return ProcessIOResult::Disconnected;
 		}
@@ -296,9 +250,11 @@ namespace DiscordCoreInternal {
 		}
 		
 		const char optionValue{ true };
+		/*
 		if (setsockopt(this->theSocket, IPPROTO_TCP, TCP_NODELAY, &optionValue, sizeof(int32_t))) {
 			return false;
 		}
+		*/
 
 		if (setsockopt(this->theSocket, SOL_SOCKET, SO_KEEPALIVE, &optionValue, sizeof(int32_t))) {
 			return false;
@@ -349,18 +305,14 @@ namespace DiscordCoreInternal {
 			this->disconnect(true);
 			return ProcessIOResult::Disconnected;
 		}
-		int32_t readNfds{ 0 }, writeNfds{ 0 };
 		fd_set writeSet{}, readSet{};
 		FD_ZERO(&writeSet);
 		FD_ZERO(&readSet);
 
-		std::unique_lock theLock{ this->connectionMutex };
 		if ((this->outputBuffers.size() > 0 || this->wantWrite) && !this->wantRead) {
 			FD_SET(this->theSocket, &writeSet);
-			writeNfds = this->theSocket > writeNfds ? this->theSocket : writeNfds;
 		} else {
 			FD_SET(this->theSocket, &readSet);
-			readNfds = this->theSocket > readNfds ? this->theSocket : readNfds;
 		}
 
 		timeval checkTime{ .tv_sec = 1, .tv_usec = 0 };
@@ -434,41 +386,37 @@ namespace DiscordCoreInternal {
 	ProcessIOResult SSLClient::readDataProcess() noexcept {
 		this->wantRead = false;
 		this->wantWrite = false;
-		if (this->maxBufferSize > 0) {
-			do {
-				size_t readBytes{ 0 };
-				auto returnValue{ SSL_read_ex(this->ssl, this->rawInputBuffer.data(), this->maxBufferSize, &readBytes) };
-				auto errorValue{ SSL_get_error(this->ssl, returnValue) };
-				switch (errorValue) {
-					case SSL_ERROR_NONE: {
-						if (readBytes > 0) {
-							this->inputBuffer.append(this->rawInputBuffer.begin(), this->rawInputBuffer.begin() + readBytes);
-							this->bytesRead += readBytes;
-						}
-						return ProcessIOResult::No_Error;
+		do {
+			size_t readBytes{ 0 };
+			auto returnValue{ SSL_read_ex(this->ssl, this->rawInputBuffer.data(), this->maxBufferSize, &readBytes) };
+			auto errorValue{ SSL_get_error(this->ssl, returnValue) };
+			switch (errorValue) {
+				case SSL_ERROR_NONE: {
+					if (readBytes > 0) {
+						this->inputBuffer.append(this->rawInputBuffer.begin(), this->rawInputBuffer.begin() + readBytes);
+						this->bytesRead += readBytes;
 					}
-					case SSL_ERROR_WANT_READ: {
-						this->wantRead = true;
-						return ProcessIOResult::No_Error;
-					}
-					case SSL_ERROR_WANT_WRITE: {
-						this->wantWrite = true;
-						return ProcessIOResult::No_Error;
-					}
-					case SSL_ERROR_ZERO_RETURN: {
-						this->disconnect(true);
-						return ProcessIOResult::SSL_Zero_Return;
-					}
-					default: {
-						this->disconnect(true);
-						return ProcessIOResult::SSL_Error;
-					}
+					return ProcessIOResult::No_Error;
 				}
-			} while (SSL_pending(this->ssl));
-			
-		} else {
-			return ProcessIOResult::No_Error;
-		}
+				case SSL_ERROR_WANT_READ: {
+					this->wantRead = true;
+					return ProcessIOResult::No_Error;
+				}
+				case SSL_ERROR_WANT_WRITE: {
+					this->wantWrite = true;
+					return ProcessIOResult::No_Error;
+				}
+				case SSL_ERROR_ZERO_RETURN: {
+					this->disconnect(true);
+					return ProcessIOResult::SSL_Zero_Return;
+				}
+				default: {
+					this->disconnect(true);
+					return ProcessIOResult::SSL_Error;
+				}
+			}
+		} while (SSL_pending(this->ssl));
+		return ProcessIOResult::No_Error;
 	}
 
 	int64_t SSLClient::getBytesRead() noexcept {
@@ -482,7 +430,6 @@ namespace DiscordCoreInternal {
 
 	bool DatagramSocketClient::connect(const std::string& baseUrlNew, const std::string& portNew) noexcept {
 		this->rawInputBuffer.resize(this->maxBufferSize);
-		this->inputBuffer.resize(this->maxBufferSize);
 		if (this->streamType == DiscordCoreAPI::StreamType::None || this->streamType == DiscordCoreAPI::StreamType::Client) {
 			static_cast<sockaddr_in*>(this->theStreamTargetAddress)->sin_addr.s_addr = inet_addr(baseUrlNew.c_str());
 			DiscordCoreAPI::reverseByteOrder(static_cast<unsigned short>(stoi(portNew)), static_cast<sockaddr_in*>(this->theStreamTargetAddress)->sin_port);

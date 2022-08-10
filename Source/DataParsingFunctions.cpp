@@ -1720,6 +1720,42 @@ namespace DiscordCoreAPI {
 		pDataStructure->theThreadMemberDatas.shrink_to_fit();
 	}
 
+	void GuildMemberData::parseObject(nlohmann::json&& jsonObjectData, GuildMemberData* pDataStructure) {
+		auto theArray = getArray(jsonObjectData, "roles");
+		for (auto& value: theArray) {
+			pDataStructure->roles.push_back(stoull(value.get<std::string>()));
+		}
+		std::string theString{};
+		getString(jsonObjectData, "permissions", theString);
+		pDataStructure->permissions = std::move(theString);
+
+		std::string theString02{};
+		getString(jsonObjectData, "joined_at", theString02);
+		pDataStructure->joinedAt = std::move(theString02);
+		std::string theString03{};
+		getString(jsonObjectData, "guild_id", theString03);
+		if (theString03 != "") {
+			pDataStructure->guildId = stoull(std::move(theString03));
+		}
+		std::string theString04{};
+		getString(jsonObjectData, "nick", theString04);
+		pDataStructure->nick = std::move(theString04);
+
+		std::unique_ptr<UserData> theUser = std::make_unique<UserData>(getObject(jsonObjectData, "user"));
+		pDataStructure->id = theUser->id;
+		pDataStructure->userAvatar = theUser->avatar;
+		pDataStructure->userName = theUser->userName;
+		this->insertUser(std::move(theUser));
+
+		pDataStructure->flags = getUint8(jsonObjectData, "flags");
+
+		pDataStructure->flags = setBool<int8_t, GuildMemberFlags>(pDataStructure->flags, GuildMemberFlags::Pending, getBool(jsonObjectData, "pending"));
+
+		pDataStructure->flags = setBool<int8_t, GuildMemberFlags>(pDataStructure->flags, GuildMemberFlags::Mute, getBool(jsonObjectData, "mute"));
+
+		pDataStructure->flags = setBool<int8_t, GuildMemberFlags>(pDataStructure->flags, GuildMemberFlags::Deaf, getBool(jsonObjectData, "deaf"));
+	}
+
 	void GuildMemberData::parseObject(const nlohmann::json& jsonObjectData, GuildMemberData* pDataStructure) {
 		auto theArray = getArray(jsonObjectData, "roles");
 		for (auto& value: theArray) {
@@ -1755,6 +1791,36 @@ namespace DiscordCoreAPI {
 		pDataStructure->flags = setBool<int8_t, GuildMemberFlags>(pDataStructure->flags, GuildMemberFlags::Mute, getBool(jsonObjectData, "mute"));
 
 		pDataStructure->flags = setBool<int8_t, GuildMemberFlags>(pDataStructure->flags, GuildMemberFlags::Deaf, getBool(jsonObjectData, "deaf"));
+	}
+
+	void VoiceStateData::parseObject(nlohmann::json&& jsonObjectData, VoiceStateData* pDataStructure) {
+		pDataStructure->guildId = getUint64(jsonObjectData, "guild_id");
+
+		pDataStructure->channelId = getUint64(jsonObjectData, "channel_id");
+
+		pDataStructure->userId = getUint64(jsonObjectData, "user_id");
+
+		pDataStructure->member = getObject(jsonObjectData, "member");
+		std::string theString{};
+		getString(jsonObjectData, "session_id", theString);
+		pDataStructure->sessionId = std::move(theString);
+
+		pDataStructure->deaf = getBool(jsonObjectData, "deaf");
+
+		pDataStructure->mute = getBool(jsonObjectData, "mute");
+
+		pDataStructure->selfDeaf = getBool(jsonObjectData, "self_deaf");
+
+		pDataStructure->selfMute = getBool(jsonObjectData, "self_mute");
+
+		pDataStructure->selfStream = getBool(jsonObjectData, "self_stream");
+
+		pDataStructure->selfVideo = getBool(jsonObjectData, "self_video");
+
+		pDataStructure->suppress = getBool(jsonObjectData, "suppress");
+		std::string theString02{};
+		getString(jsonObjectData, "request_to_speak_timestamp", theString02);
+		pDataStructure->requestToSpeakTimestamp = std::move(theString02);
 	}
 
 	void VoiceStateData::parseObject(const nlohmann::json& jsonObjectData, VoiceStateData* pDataStructure) {
@@ -1800,6 +1866,50 @@ namespace DiscordCoreAPI {
 		std::string theString03{};
 		getString(theJsonData, "id", theString03);
 		pDataStructure->id = stoull(std::move(theString03));
+	}
+
+	void ChannelData::parseObject(nlohmann::json&& jsonObjectData, ChannelData* pDataStructure) {
+		std::string theString{};
+		getString(jsonObjectData, "id", theString);
+		pDataStructure->id = stoull(std::move(theString));
+
+		pDataStructure->flags = getUint8(jsonObjectData, "flags");
+
+		pDataStructure->type = static_cast<ChannelType>(getUint8(jsonObjectData, "type"));
+
+		std::string theString02{};
+		getString(jsonObjectData, "parent_id", theString02);
+		if (theString02 != "") {
+			pDataStructure->parentId = stoull(std::move(theString02));
+		}
+
+		std::string theString03{};
+		getString(jsonObjectData, "guild_id", theString03);
+		if (theString03 != "") {
+			pDataStructure->guildId = stoull(std::move(theString03));
+		}
+
+		pDataStructure->position = getUint32(jsonObjectData, "position");
+
+		auto theArray = getArray(jsonObjectData, "permission_overwrites");
+		pDataStructure->permissionOverwrites.clear();
+		for (auto& value: theArray) {
+			OverWriteData newData{ value };
+			pDataStructure->permissionOverwrites[newData.id] = newData;
+		}
+		std::string theString05{};
+		getString(jsonObjectData, "name", theString05);
+		pDataStructure->name = std::move(theString05);
+
+		pDataStructure->flags = setBool<int8_t, ChannelFlags>(pDataStructure->flags, ChannelFlags::NSFW, getBool(jsonObjectData, "nsfw"));
+
+		std::string theString04{};
+		getString(jsonObjectData, "owner_id", theString04);
+		if (theString04 != "") {
+			pDataStructure->ownerId = stoull(std::move(theString04));
+		}
+
+		pDataStructure->memberCount = getUint32(jsonObjectData, "member_count");
 	}
 
 	void ChannelData::parseObject(const nlohmann::json& jsonObjectData, ChannelData* pDataStructure) {
@@ -1889,6 +1999,39 @@ namespace DiscordCoreAPI {
 		if (jsonObjectData.contains("has_more") && !jsonObjectData["has_more"].is_null()) {
 			pDataStructure->hasMore = jsonObjectData["has_more"].get<bool>();
 		}
+	}
+
+	void RoleData::parseObject(nlohmann::json&& jsonObjectData, RoleData* pDataStructure) {
+		std::string theString01{};
+		getString(jsonObjectData, "id", theString01);
+		pDataStructure->id = stoull(std::move(theString01));
+		std::string theString03{};
+		getString(jsonObjectData, "name", theString03);
+		pDataStructure->name = std::move(theString03);
+
+		std::stringstream theStream{};
+		std::string theString02{};
+		getString(jsonObjectData, "unicode_emoji", theString02);
+		theStream << theString02;
+		for (auto& value: theStream.str()) {
+			pDataStructure->unicodeEmoji.push_back(value);
+		}
+		if (pDataStructure->unicodeEmoji.size() > 3) {
+			pDataStructure->unicodeEmoji = static_cast<std::string>(pDataStructure->unicodeEmoji).substr(1, pDataStructure->unicodeEmoji.size() - 3);
+		}
+
+		pDataStructure->color = getUint32(jsonObjectData, "color");
+
+		pDataStructure->flags = setBool<int8_t, RoleFlags>(pDataStructure->flags, RoleFlags::Hoist, getBool(jsonObjectData, "hoist"));
+
+		pDataStructure->flags = setBool<int8_t, RoleFlags>(pDataStructure->flags, RoleFlags::Managed, getBool(jsonObjectData, "managed"));
+
+		pDataStructure->flags = setBool<int8_t, RoleFlags>(pDataStructure->flags, RoleFlags::Mentionable, getBool(jsonObjectData, "mentionable"));
+
+		pDataStructure->position = getUint32(jsonObjectData, "position");
+		std::string theString04{};
+		getString(jsonObjectData, "permissions", theString04);
+		pDataStructure->permissions = std::move(theString04);
 	}
 
 	void RoleData::parseObject(const nlohmann::json& jsonObjectData, RoleData* pDataStructure) {
@@ -2169,13 +2312,10 @@ namespace DiscordCoreAPI {
 	}
 
 	void MessageActivityData::parseObject(const nlohmann::json& jsonObjectData, MessageActivityData* pDataStructure) {
-		if (jsonObjectData.contains("type") && !jsonObjectData["type"].is_null()) {
-			pDataStructure->type = jsonObjectData["type"].get<MessageActivityType>();
-		}
+		nlohmann::json& theJsonData = ( nlohmann::json& )(jsonObjectData);
+		pDataStructure->type = static_cast<MessageActivityType>(getUint8(jsonObjectData, "type"));
 
-		if (jsonObjectData.contains("party_id") && !jsonObjectData["party_id"].is_null()) {
-			pDataStructure->partyId = jsonObjectData["party_id"].get<std::string>();
-		}
+		 getString(theJsonData, "party_id", pDataStructure->partyId);
 	}
 
 	void BanData::parseObject(const nlohmann::json& jsonObjectData, BanData* pDataStructure) {
@@ -2676,30 +2816,54 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	void PresenceUpdateData::parseObject(const nlohmann::json& jsonObjectData, PresenceUpdateData* pDataStructure) {
-		if (jsonObjectData.contains("user") && !jsonObjectData["user"].is_null()) {
-			pDataStructure->user = jsonObjectData["user"];
-		}
+	void PresenceUpdateData::parseObject(nlohmann::json&& jsonObjectData, PresenceUpdateData* pDataStructure) {
+		pDataStructure->user = UserData(getObject(jsonObjectData, "user"));
 
-		if (jsonObjectData.contains("guild_id") && !jsonObjectData["guild_id"].is_null() && jsonObjectData["guild_id"].get<std::string>() != "") {
-			pDataStructure->guildId = stoull(jsonObjectData["guild_id"].get<std::string>());
-		}
+		std::string theString03{};
+		getString(jsonObjectData, "guild_id", theString03);
+		pDataStructure->guildId = stoull(std::move(theString03));
 
-		if (jsonObjectData.contains("status") && !jsonObjectData["status"].is_null()) {
-			pDataStructure->status = jsonObjectData["status"].get<std::string>();
-		}
+		std::string theString02{};
+		getString(jsonObjectData, "joined_at", theString02);
+		pDataStructure->status = std::move(theString02);
 
-		if (jsonObjectData.contains("activities") && !jsonObjectData["activities"].is_null()) {
+		try {
+			auto theArray02 = getArray(jsonObjectData, "activities");
 			pDataStructure->activities.clear();
-			for (auto& value: jsonObjectData["activities"]) {
-				ActivityData newData{ value };
+			for (auto& value: theArray02) {
+				ActivityData newData{ std::move(value) };
 				pDataStructure->activities.push_back(newData);
 			}
 		}
-
-		if (jsonObjectData.contains("client_status") && !jsonObjectData["client_status"].is_null()) {
-			pDataStructure->clientStatus = jsonObjectData["client_status"];
+		catch (...) {
+			reportException("PresenceUpdateData::parseObject()");
 		}
+		
+
+		pDataStructure->clientStatus = ClientStatusData(getObject(jsonObjectData, "client_status"));
+	}
+
+	void PresenceUpdateData::parseObject(const nlohmann::json& jsonObjectData, PresenceUpdateData* pDataStructure) {
+		nlohmann::json& theJsonData = ( nlohmann::json& )(jsonObjectData);
+
+		pDataStructure->user = UserData(getObject(theJsonData, "user"));
+
+		std::string theString03{};
+		getString(theJsonData, "guild_id", theString03);
+		pDataStructure->guildId = stoull(std::move(theString03));
+
+		std::string theString02{};
+		getString(theJsonData, "joined_at", theString02);
+		pDataStructure->status = std::move(theString02);
+
+		auto theArray02 = getArray(jsonObjectData, "activities");
+		pDataStructure->activities.clear();
+		for (auto& value: theArray02) {
+			ActivityData newData{ std::move(value) };
+			pDataStructure->activities.push_back(newData);
+		}
+
+		pDataStructure->clientStatus = ClientStatusData(getObject(jsonObjectData, "client_status"));
 	}
 
 	void StageInstanceData::parseObject(const nlohmann::json& jsonObjectData, StageInstanceData* pDataStructure) {
@@ -2828,7 +2992,95 @@ namespace DiscordCoreAPI {
 		}
 	}
 
+	void GuildData::parseObject(nlohmann::json&& jsonObjectData, GuildData* pDataStructure) {
+		std::cout << "WERE HERE THIS IS NOT IT!" << std::endl;
+		std::string theString01{};
+		getString(jsonObjectData, "id", theString01);
+		pDataStructure->id = stoull(theString01);
+
+		std::string iconUrlString = "https://cdn.discordapp.com/";
+		std::string theString02{};
+		getString(jsonObjectData, "icon", theString02);
+		iconUrlString += "icons/" + std::to_string(pDataStructure->id) + "/" + theString02 + ".png";
+		pDataStructure->icon = iconUrlString;
+		std::string theString05{};
+		getString(jsonObjectData, "name", theString05);
+		pDataStructure->name = std::move(theString05);
+
+		std::string theString03{};
+		getString(jsonObjectData, "joined_at", theString03);
+		pDataStructure->joinedAt = std::move(theString03);
+
+		pDataStructure->flags = setBool<int8_t, GuildFlags>(pDataStructure->flags, GuildFlags::Owner, getBool(jsonObjectData, "owner"));
+
+		std::string theString04{};
+		getString(jsonObjectData, "owner_id", theString04);
+		pDataStructure->ownerId = stoull(std::move(theString04));
+
+		auto theArray = getArray(jsonObjectData, "features");
+		for (auto& value: theArray) {
+			pDataStructure->features.push_back(StringWrapper{ value.get<std::string>() });
+		}
+
+		auto theArray02 = getArray(jsonObjectData, "roles");
+		pDataStructure->roles.clear();
+		for (auto& value: theArray02) {
+			std::unique_ptr<RoleData> newData{ std::make_unique<RoleData>(std::move(value)) };
+			pDataStructure->roles.push_back(newData->id);
+			this->insertRole(std::move(newData));
+		}
+
+		pDataStructure->flags = setBool<int8_t, GuildFlags>(pDataStructure->flags, GuildFlags::WidgetEnabled, getBool(jsonObjectData, "widget_enabled"));
+
+		pDataStructure->flags = setBool<int8_t, GuildFlags>(pDataStructure->flags, GuildFlags::Large, getBool(jsonObjectData, "large"));
+
+		pDataStructure->flags = setBool<int8_t, GuildFlags>(pDataStructure->flags, GuildFlags::Unavailable, getBool(jsonObjectData, "unavailable"));
+
+		pDataStructure->memberCount = getUint32(jsonObjectData, "member_count");
+
+		auto theArray03 = getArray(jsonObjectData, "voice_states");
+		pDataStructure->voiceStates.clear();
+		for (auto& value: theArray03) {
+			VoiceStateData newData{ std::move(value) };
+			pDataStructure->voiceStates[newData.userId] = newData;
+		}
+		try {
+			auto theArray04 = getArray(jsonObjectData, "members");
+			pDataStructure->members.clear();
+			for (auto& value: theArray04) {
+				std::unique_ptr<GuildMemberData> newData{ std::make_unique<GuildMemberData>(std::move(value)) };
+				newData->guildId = pDataStructure->id;
+				pDataStructure->members.push_back(newData->id);
+				this->insertGuildMember(std::move(newData));
+			}
+		} catch (...) {
+			reportException("GuildData::parseObject::members()");
+		}
+
+		try {
+			auto theArray05 = getArray(jsonObjectData, "channels");
+			pDataStructure->channels.clear();
+			for (auto& value: theArray05) {
+				std::unique_ptr<ChannelData> newData{ std::make_unique<ChannelData>(std::move(value)) };
+				newData->guildId = pDataStructure->id;
+				pDataStructure->channels.push_back(newData->id);
+				this->insertChannel(std::move(newData));
+			}
+		} catch (...) {
+			reportException("GuildData::parseObject::channels()");
+		}
+		
+
+		auto theArray06 = getArray(jsonObjectData, "presences");
+		pDataStructure->presences.clear();
+		for (auto& value: theArray06) {
+			PresenceUpdateData newData{ std::move(value) };
+			pDataStructure->presences[newData.user.id] = newData;
+		}
+	}
+
 	void GuildData::parseObject(const nlohmann::json& jsonObjectData, GuildData* pDataStructure) {
+		std::cout << "WERE HERE THIS IS NOT IT!" << std::endl;
 		nlohmann::json& theJsonData = const_cast<nlohmann::json&>(jsonObjectData);
 		std::string theString01{};
 		getString(theJsonData, "id", theString01);
@@ -2854,17 +3106,22 @@ namespace DiscordCoreAPI {
 		pDataStructure->ownerId = stoull(std::move(theString04));
 
 		auto theArray = getArray(jsonObjectData, "features");
-		for (auto& value : theArray) {
+		for (auto& value: theArray) {
 			pDataStructure->features.push_back(StringWrapper{ value.get<std::string>() });
 		}
 
-		auto theArray02 = getArray(jsonObjectData, "roles");
-		pDataStructure->roles.clear();
-		for (auto& value: theArray02) {
-			std::unique_ptr<RoleData> newData{ std::make_unique<RoleData>(value) };
-			pDataStructure->roles.push_back(newData->id);
-			this->insertRole(std::move(newData));
+		try {
+			auto theArray02 = getArray(jsonObjectData, "roles");
+			pDataStructure->roles.clear();
+			for (auto& value: theArray02) {
+				std::unique_ptr<RoleData> newData{ std::make_unique<RoleData>(std::move(value)) };
+				pDataStructure->roles.push_back(newData->id);
+				this->insertRole(std::move(newData));
+			}
+		} catch (...) {
+			reportException("GuildData::parseObject::roles");
 		}
+		
 
 		pDataStructure->flags = setBool<int8_t, GuildFlags>(pDataStructure->flags, GuildFlags::WidgetEnabled, getBool(jsonObjectData, "widget_enabled"));
 
@@ -2873,12 +3130,12 @@ namespace DiscordCoreAPI {
 		pDataStructure->flags = setBool<int8_t, GuildFlags>(pDataStructure->flags, GuildFlags::Unavailable, getBool(jsonObjectData, "unavailable"));
 
 		pDataStructure->memberCount = getUint32(jsonObjectData, "member_count");
-		
+		/*
 		auto theArray03 = getArray(jsonObjectData, "voice_states");
 		pDataStructure->voiceStates.clear();
 		for (auto& value: theArray03) {
 			VoiceStateData newData{ value };
-			pDataStructure->voiceStates[newData.userId] = std::move(newData);
+			pDataStructure->voiceStates[newData.userId] = newData;
 		}
 		
 		auto theArray04 = getArray(jsonObjectData, "members");
@@ -2901,11 +3158,11 @@ namespace DiscordCoreAPI {
 
 		auto theArray06 = getArray(jsonObjectData, "presences");
 		pDataStructure->presences.clear();
-		for (auto& value: theArray05) {
+		for (auto& value: theArray06) {
 			PresenceUpdateData newData{ value };
-			pDataStructure->presences[newData.user.id] = std::move(newData);
+			pDataStructure->presences[newData.user.id] = newData;
 		}
-		
+		*/
 	}
 
 	void GuildDataVector::parseObject(const nlohmann::json& jsonObjectData, GuildDataVector* pDataStructure) {
