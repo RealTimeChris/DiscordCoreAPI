@@ -999,6 +999,7 @@ namespace DiscordCoreInternal {
 		while (!this->discordCoreClient->theStopWatch.hasTimePassed()) {
 			std::this_thread::sleep_for(1ms);
 		}
+		std::cout << "WERE CONNECTING TO THE NEST WEBSOCKET" << std::endl;
 		this->discordCoreClient->theStopWatch.resetTimer();
 		std::lock_guard theLock{ this->theMutex };
 		this->connections.push(thePackage);

@@ -33,7 +33,6 @@
 #include <discordcoreapi/ThreadEntities.hpp>
 #include <discordcoreapi/CoRoutine.hpp>
 #include <discordcoreapi/InputEvents.hpp>
-#include <simdjson.h>
 
 namespace DiscordCoreAPI {
 
