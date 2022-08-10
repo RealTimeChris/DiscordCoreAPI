@@ -133,11 +133,10 @@ namespace DiscordCoreAPI {
 				for (auto& [key, value]: this->baseSocketAgentMap) {
 					if (value && value->sslShard) {
 						std::cout << "THE CURRENTLY NAMED SHARD: ";
-						std::cout << value->sslShard->currentShard << std::endl;
+						std::cout << value->sslShard->shard << std::endl;
 						while (value->sslShard->onMessageReceived()) {
-
 						};
-					}					
+					}
 				}
 				std::this_thread::sleep_for(1ms);
 			}
@@ -146,6 +145,9 @@ namespace DiscordCoreAPI {
 		if (!this->instantiateWebSockets()) {
 			Globals::doWeQuit.store(true);
 			return;
+		}
+		while (!Globals::doWeQuit.load()) {
+			std::this_thread::sleep_for(1ms);
 		}
 		if (this->baseSocketAgentMap.contains(std::to_string(this->configManager.getStartingShard())) &&
 			this->baseSocketAgentMap[std::to_string(this->configManager.getStartingShard())]->getTheTask()) {
@@ -201,7 +203,7 @@ namespace DiscordCoreAPI {
 		for (int32_t x = 0; x < this->configManager.getTotalShardCount(); x++) {
 			auto thePtr = std::make_unique<DiscordCoreInternal::BaseSocketAgent>(this, &Globals::doWeQuit, x);
 			this->baseSocketAgentMap[std::to_string(currentShard)] = std::move(thePtr);
-			if (this->configManager.doWePrintGeneralSuccessMessages()) {
+			if (true) {
 				cout << shiftToBrightBlue() << "Connecting Shard " + std::to_string(currentShard + 1) << " of " << this->configManager.getShardCountForThisProcess()
 					 << std::string(" Shards for this process. (") + std::to_string(currentShard + 1) + " of " + std::to_string(this->configManager.getTotalShardCount()) +
 						std::string(" Shards total across all processes)")
@@ -210,8 +212,8 @@ namespace DiscordCoreAPI {
 			}
 			ConnectionPackage theData{};
 			theData.currentShard = currentShard;
-			this->baseSocketAgentMap[std::to_string(currentShard)]->connect(theData);
 			currentShard++;
+			this->baseSocketAgentMap[std::to_string(currentShard)]->connect(theData);
 		}
 		this->currentUser = BotUser{ Users::getCurrentUserAsync().get(), this->baseSocketAgentMap[std::to_string(this->configManager.getStartingShard())].get() };
 		for (auto& value: this->configManager.getFunctionsToExecute()) {

@@ -20,7 +20,6 @@
 #pragma once
 
 #include <discordcoreapi/Utilities.hpp>
-#include <simdjson.h>
 
 namespace DiscordCoreInternal {
 
