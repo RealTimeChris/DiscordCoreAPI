@@ -414,6 +414,8 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll StringWrapper {
 	  public:
+		 std::unique_ptr<char[]> thePtr{};
+
 		StringWrapper() = default;
 
 		StringWrapper& operator=(StringWrapper&& other) noexcept;
@@ -454,13 +456,11 @@ namespace DiscordCoreAPI {
 
 		void push_back(char theChar);
 
+		void resize(int64_t newSize);
+
 		size_t size();
 
 		const char* data();
-
-	  protected:
-		std::unique_ptr<const char> thePtrOne{};
-		std::unique_ptr<char[]> thePtr{};
 	};
 
 	inline std::basic_ostream<char>& operator<<(std::basic_ostream<char, std::char_traits<char>>& lhs, const StringWrapper& rhs) {
@@ -811,7 +811,7 @@ namespace DiscordCoreAPI {
 
 		void getTimeSinceEpoch() {
 			TimeType theValue{};
-			for (int32_t x = 1970; x < this->year; x++) {
+			for (int32_t x = 1970; x < this->year; ++x) {
 				theValue += TimeType{ this->secondsInJan };
 				theValue += TimeType{ this->secondsInFeb };
 				theValue += TimeType{ this->secondsInMar };
@@ -1043,9 +1043,16 @@ namespace DiscordCoreAPI {
 		return static_cast<StoredAsType>(inputFlag) & static_cast<StoredAsType>(theFlag);
 	}
 
-	template<typename ReturnType> void reverseByteOrder(ReturnType x, ReturnType& returnValue) {
+	template<typename ReturnType> void reverseByteOrder(ReturnType&& x, ReturnType& returnValue) {
 		const uint8_t byteSize{ 8 };
-		for (uint32_t y = 0; y < sizeof(ReturnType); y++) {
+		for (uint32_t y = 0; y < sizeof(ReturnType); ++y) {
+			returnValue |= static_cast<ReturnType>(static_cast<uint8_t>(x >> (byteSize * y))) << byteSize * (sizeof(ReturnType) - y - 1);
+		}
+	}
+
+	template<typename ReturnType> void reverseByteOrder(ReturnType& x, ReturnType& returnValue) {
+		const uint8_t byteSize{ 8 };
+		for (uint32_t y = 0; y < sizeof(ReturnType); ++y) {
 			returnValue |= static_cast<ReturnType>(static_cast<uint8_t>(x >> (byteSize * y))) << byteSize * (sizeof(ReturnType) - y - 1);
 		}
 	}
@@ -1054,7 +1061,7 @@ namespace DiscordCoreAPI {
 		const uint8_t byteSize{ 8 };
 		ReturnType newValue{};
 		reverseByteOrder(num, newValue);
-		for (uint32_t x = 0; x < sizeof(ReturnType); x++) {
+		for (uint32_t x = 0; x < sizeof(ReturnType); ++x) {
 			to.push_back(static_cast<uint8_t>(newValue >> (byteSize * x)));
 		}
 	}

@@ -311,36 +311,20 @@ namespace DiscordCoreInternal {
 				this->connections->push(theData);
 			}
 		}
-	}
+	};
 
 	bool WebSocketSSLShard::onMessageReceived(std::string& theString, DiscordCoreAPI::StopWatch<std::chrono::microseconds>& theStopWatch) noexcept {
 		if (this) {
 			if (this->theSSLState.load() == SSLConnectionState::Connected) {
 				try {
-					bool returnValue{ false }; /*
-					std::string messageNew{};
-					if (this->processedMessages.size() > 0) {
-						std::unique_lock theLock{ this->theMutex };
-						messageNew = std::move(this->processedMessages.front());
-						this->processedMessages.pop_front();
-						theLock.unlock();
-						returnValue = true;
-					} else {
-						return false;
-					}
-					if (messageNew.size() == 0) {
-						return false;
-					}
-					*/
+					bool returnValue{ false };
 					if (theString.size() > 1) {
 						nlohmann::json payload{};
 						if (this->configManager->getTextFormat() == DiscordCoreAPI::TextFormat::Etf) {
 							try {
 								theStopWatch.resetTimer();
-								BufferPack theBuffer{ theStopWatch, theString };
-								theBuffer.theBufferIn = theString.data();
-								theBuffer.bufferLength = theString.size();
-								payload = this->parseEtfToJson(theBuffer);
+								ErlPackBuffer theBuffer{ theString.data(), theString, static_cast<int32_t>(theString.size()) };
+								payload = std::move(this->parseEtfToJson(theBuffer));
 								std::cout << "THE TOTAL TIME PASSED 0202: " << theStopWatch.totalTimePassed() << std::endl;
 								theStopWatch.resetTimer();
 							} catch (...) {

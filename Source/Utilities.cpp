@@ -184,7 +184,7 @@ namespace DiscordCoreAPI {
 			}
 			auto theLength = theStream.str().size();
 			this->thePtr = std::make_unique<char[]>(theLength + 1);
-			for (uint64_t x = 0; x < theLength; x++) {
+			for (uint64_t x = 0; x < theLength; ++x) {
 				this->thePtr[x] = other.thePtr[x];
 			}
 			this->thePtr[theLength] = '\0';
@@ -204,7 +204,7 @@ namespace DiscordCoreAPI {
 			}
 			auto theLength = theStream.str().size();
 			this->thePtr = std::make_unique<char[]>(theLength + 1);
-			for (uint64_t x = 0; x < theLength; x++) {
+			for (uint64_t x = 0; x < theLength; ++x) {
 				this->thePtr[x] = other.thePtr[x];
 			}
 			this->thePtr[theLength] = '\0';
@@ -219,7 +219,7 @@ namespace DiscordCoreAPI {
 	StringWrapper& StringWrapper::operator=(const std::string& theString) {
 		auto theLength = theString.size();
 		this->thePtr = std::make_unique<char[]>(theLength + 1);
-		for (int32_t x = 0; x < theLength; x++) {
+		for (int32_t x = 0; x < theLength; ++x) {
 			this->thePtr[x] = theString[x];
 		}
 		this->thePtr[theLength] = '\0';
@@ -233,7 +233,7 @@ namespace DiscordCoreAPI {
 	StringWrapper& StringWrapper::operator=(const std::string&& theString) {
 		auto theLength = theString.size();
 		this->thePtr = std::make_unique<char[]>(theLength + 1);
-		for (int32_t x = 0; x < theLength; x++) {
+		for (int32_t x = 0; x < theLength; ++x) {
 			this->thePtr[x] = theString[x];
 		}
 		this->thePtr[theLength] = '\0';
@@ -247,7 +247,7 @@ namespace DiscordCoreAPI {
 	StringWrapper& StringWrapper::operator=(std::string&& theString) {
 		auto theLength = theString.size();
 		this->thePtr = std::make_unique<char[]>(theLength + 1);
-		for (int32_t x = 0; x < theLength; x++) {
+		for (int32_t x = 0; x < theLength; ++x) {
 			this->thePtr[x] = theString[x];
 		}
 		this->thePtr[theLength] = '\0';
@@ -261,7 +261,7 @@ namespace DiscordCoreAPI {
 	StringWrapper& StringWrapper::operator=(std::string& theString) {
 		auto theLength = theString.size();
 		this->thePtr = std::make_unique<char[]>(theLength + 1);
-		for (int32_t x = 0; x < theLength; x++) {
+		for (int32_t x = 0; x < theLength; ++x) {
 			this->thePtr[x] = theString[x];
 		}
 		this->thePtr[theLength] = '\0';
@@ -278,7 +278,7 @@ namespace DiscordCoreAPI {
 			theStream << theString;
 			int64_t theLength = theStream.str().size();
 			this->thePtr = std::make_unique<char[]>(theLength + 1);
-			for (int64_t x = 0; x < theLength; x++) {
+			for (int64_t x = 0; x < theLength; ++x) {
 				this->thePtr[x] = theString[x];
 			}
 			this->thePtr[theLength] = '\0';
@@ -296,7 +296,7 @@ namespace DiscordCoreAPI {
 			theStream << this->thePtr;
 		}
 		std::string theString{};
-		for (uint32_t x = 0; x < theStream.str().size(); x++) {
+		for (uint32_t x = 0; x < theStream.str().size(); ++x) {
 			theString.push_back(theStream.str()[x]);
 		}
 		return theString;
@@ -319,7 +319,7 @@ namespace DiscordCoreAPI {
 		}
 		auto theLength = theStream.str().size();
 		this->thePtr = std::make_unique<char[]>(theLength + 2);
-		for (uint64_t x = 0; x < theLength; x++) {
+		for (uint64_t x = 0; x < theLength; ++x) {
 			this->thePtr[x] = theStream.str()[x];
 		}
 		this->thePtr[theLength] = theChar;
@@ -333,6 +333,18 @@ namespace DiscordCoreAPI {
 		}
 		auto theLength = theStream.str().size();
 		return theLength;
+	}
+
+	void StringWrapper::resize(int64_t newSize) {
+		std::stringstream theOriginalString{};
+		if (this->size() != 0) {
+			theOriginalString << this->thePtr;
+		}
+		this->thePtr = std::make_unique<char[]>(newSize + 1);
+		for (uint64_t x = 0; x < theOriginalString.str().size(); ++x) {
+			this->thePtr[x] = theOriginalString.str()[x];
+		}
+		this->thePtr[theOriginalString.str().size()] = '\0';
 	}
 
 	const char* StringWrapper::data() {
@@ -446,7 +458,7 @@ namespace DiscordCoreAPI {
 		}
 		int64_t permissionsInteger = stoll(static_cast<std::string>(static_cast<StringWrapper>(*this)));
 		if (permissionsInteger & (1ll << 3)) {
-			for (int64_t x = 0; x < 41; x++) {
+			for (int64_t x = 0; x < 41; ++x) {
 				permissionsInteger |= 1ll << x;
 			}
 		}
@@ -583,7 +595,7 @@ namespace DiscordCoreAPI {
 
 	std::string Permissions::getAllPermissions() {
 		int64_t allPerms{ 0 };
-		for (int64_t x = 0; x < 41; x++) {
+		for (int64_t x = 0; x < 41; ++x) {
 			allPerms |= 1ll << x;
 		}
 		std::stringstream stream{};
@@ -720,7 +732,7 @@ namespace DiscordCoreAPI {
 			content += partStart + "name=\"file\"; filename=\"" + files[0].fileName + "\"" + "\r\n\r\n";
 			content += files[0].data;
 		} else {
-			for (uint8_t x = 0; x < files.size(); x++) {
+			for (uint8_t x = 0; x < files.size(); ++x) {
 				content += partStart + "name=\"files[" + std::to_string(x) + "]\"; filename=\"" + files[x].fileName + "\"\r\n\r\n";
 				content += files[x].data;
 				content += "\r\n";
@@ -841,7 +853,7 @@ namespace DiscordCoreAPI {
 		std::string theReturnString{};
 		theReturnString.resize(16);
 		std::mt19937_64 randomEngine{ static_cast<uint64_t>(std::chrono::system_clock::now().time_since_epoch().count()) };
-		for (uint32_t x = 0; x < 16; x++) {
+		for (uint32_t x = 0; x < 16; ++x) {
 			theReturnString[x] = static_cast<uint8_t>((static_cast<float>(randomEngine()) / static_cast<float>(randomEngine.max())) * 255.0f);
 		}
 		theReturnString = base64Encode(theReturnString, false);

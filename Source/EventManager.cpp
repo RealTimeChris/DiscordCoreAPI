@@ -754,7 +754,7 @@ namespace DiscordCoreAPI {
 		if (EventHandler::configManager->doWeCacheChannels()) {
 			Channels::removeChannel(dataPackage.channel.id);
 			GuildData* guild = (*Guilds::cache)[dataPackage.channel.guildId].get();
-			for (uint64_t x = 0; x < guild->channels.size(); x++) {
+			for (uint64_t x = 0; x < guild->channels.size(); ++x) {
 				if (guild->channels[x] == dataPackage.channel.id) {
 					guild->channels.erase(guild->channels.begin() + x);
 				}
@@ -787,7 +787,7 @@ namespace DiscordCoreAPI {
 			GuildMemberData* guildMember = (*GuildMembers::cache)[theKey].get();
 			GuildMembers::removeGuildMember(std::make_unique<GuildMemberData>(*guildMember));
 			GuildData* guild = (*Guilds::cache)[dataPackage.guildId].get();
-			for (uint64_t x = 0; x < guild->members.size(); x++) {
+			for (uint64_t x = 0; x < guild->members.size(); ++x) {
 				if (guild->members[x] == dataPackage.user.id) {
 					guild->members.erase(guild->members.begin() + x);
 				}
@@ -831,7 +831,7 @@ namespace DiscordCoreAPI {
 		if (EventHandler::configManager->doWeCacheRoles()) {
 			Roles::removeRole(dataPackage.roleOld.id);
 			GuildData* guild = (*Guilds::cache)[dataPackage.guildId].get();
-			for (uint64_t x = 0; x < guild->roles.size(); x++) {
+			for (uint64_t x = 0; x < guild->roles.size(); ++x) {
 				if (guild->roles[x] == dataPackage.roleOld.id) {
 					guild->roles.erase(guild->roles.begin() + x);
 				}

@@ -29,6 +29,34 @@
 
 namespace DiscordCoreInternal {
 
+	enum class ErlParserType { Guild = 0 };
+	template<ErlParserType Type> class ErlParser {
+	  public:
+		ErlParser(std::string&){};
+	};
+
+	template<> class ErlParser<ErlParserType::Guild> {
+	  public:
+		ErlParser(std::string& theStringNew) : theString(theStringNew) {
+
+		}
+
+	  protected:
+		std::string& theString;
+		nlohmann::json::number_integer_t memberCount{ 0 };
+		nlohmann::json::number_integer_t flags{ 0 };
+		nlohmann::json::array_t voiceStates{};
+		nlohmann::json::array_t presences{};
+		nlohmann::json::string_t joinedAt{};
+		nlohmann::json::array_t features{};
+		nlohmann::json::array_t channels{};
+		nlohmann::json::string_t ownerId{};
+		nlohmann::json::array_t members{};
+		nlohmann::json::array_t roles{};
+		nlohmann::json::string_t icon{};
+		nlohmann::json::string_t name{};
+	};
+
 	class DiscordCoreAPI_Dll WebSocketMessageHandler : public ErlPacker {
 	  public:
 		WebSocketMessageHandler() = default;

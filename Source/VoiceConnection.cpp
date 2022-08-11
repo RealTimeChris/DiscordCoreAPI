@@ -98,19 +98,19 @@ namespace DiscordCoreAPI {
 			storeBits(header, this->timestamp);
 			storeBits(header, this->ssrc);
 			std::unique_ptr<uint8_t[]> nonceForLibSodium{ std::make_unique<uint8_t[]>(nonceSize) };
-			for (uint8_t x = 0; x < headerSize; x++) {
+			for (uint8_t x = 0; x < headerSize; ++x) {
 				nonceForLibSodium[x] = header[x];
 			}
-			for (uint8_t x = headerSize; x < nonceSize; x++) {
+			for (uint8_t x = headerSize; x < nonceSize; ++x) {
 				nonceForLibSodium[x] = 0;
 			}
 			uint64_t numOfBytes{ headerSize + this->audioData.size() + crypto_secretbox_MACBYTES };
 			std::unique_ptr<uint8_t[]> audioDataPacket{ std::make_unique<uint8_t[]>(numOfBytes) };
-			for (uint8_t x = 0; x < headerSize; x++) {
+			for (uint8_t x = 0; x < headerSize; ++x) {
 				audioDataPacket[x] = header[x];
 			}
 			std::unique_ptr<uint8_t[]> encryptionKeys{ std::make_unique<uint8_t[]>(this->theKeys.size()) };
-			for (uint64_t x = 0; x < this->theKeys.size(); x++) {
+			for (uint64_t x = 0; x < this->theKeys.size(); ++x) {
 				encryptionKeys[x] = this->theKeys[x];
 			}
 			if (crypto_secretbox_easy(audioDataPacket.get() + headerSize, this->audioData.data(), this->audioData.size(), nonceForLibSodium.get(), encryptionKeys.get()) != 0) {
@@ -157,7 +157,7 @@ namespace DiscordCoreAPI {
 	EncodedFrameData VoiceConnection::encodeSingleAudioFrame(RawFrameData& other) noexcept {
 		std::vector<opus_int16> newVector{};
 		newVector.reserve(other.data.size() / 2);
-		for (uint32_t x = 0; x < other.data.size() / 2; x++) {
+		for (uint32_t x = 0; x < other.data.size() / 2; ++x) {
 			opus_int16 newValue{};
 			newValue |= other.data[static_cast<uint64_t>(x) * 2] << 0;
 			newValue |= other.data[static_cast<uint64_t>(x) * 2 + 1] << 8;
@@ -222,7 +222,7 @@ namespace DiscordCoreAPI {
 							break;
 						}
 						case 4: {
-							for (uint32_t x = 0; x < payload["d"]["secret_key"].size(); x++) {
+							for (uint32_t x = 0; x < payload["d"]["secret_key"].size(); ++x) {
 								this->secretKeySend.push_back(payload["d"]["secret_key"][x].get<uint8_t>());
 							}
 							this->connectionState.store(VoiceConnectionState::Collecting_Init_Data);
@@ -385,7 +385,7 @@ namespace DiscordCoreAPI {
 		while (!theToken.stop_requested()) {
 			if (theStopWatch.hasTimePassed()) {
 				theStopWatch.resetTimer();
-				for (uint32_t x = 0; x < this->voiceUsers.size(); x++) {
+				for (uint32_t x = 0; x < this->voiceUsers.size(); ++x) {
 					DatagramSocketClient::processIO(DiscordCoreInternal::ProcessIOType::Read_Only);
 					std::string theString = DatagramSocketClient::getInputBuffer();
 					VoicePayload thePayload{};
@@ -603,7 +603,7 @@ namespace DiscordCoreAPI {
 
 				std::vector<uint8_t> nonce{};
 				nonce.resize(24);
-				for (uint32_t x = 0; x < headerSize; x++) {
+				for (uint32_t x = 0; x < headerSize; ++x) {
 					nonce[x] = packet[x];
 				}
 				const size_t csrcCount = packet[0] & 0b0000'1111;
@@ -1017,7 +1017,7 @@ namespace DiscordCoreAPI {
 						if (theUpsampledVector.size() == 0) {
 							theUpsampledVector.resize(thePayload.decodedData.size());
 						}
-						for (uint32_t x = 0; x < thePayload.decodedData.size(); x++) {
+						for (uint32_t x = 0; x < thePayload.decodedData.size(); ++x) {
 							theUpsampledVector[x] += static_cast<opus_int32>(thePayload.decodedData[x]);
 						}
 					}
@@ -1026,7 +1026,7 @@ namespace DiscordCoreAPI {
 			if (theUpsampledVector.size() > 0) {
 				std::vector<opus_int16> theDownsampledVector{};
 				theDownsampledVector.resize(theUpsampledVector.size());
-				for (int32_t x = 0; x < theUpsampledVector.size(); x++) {
+				for (int32_t x = 0; x < theUpsampledVector.size(); ++x) {
 					theDownsampledVector[x] = static_cast<opus_int16>(theUpsampledVector[x] / voiceUserCount);
 				}
 				std::vector<char> theEncodedData{};

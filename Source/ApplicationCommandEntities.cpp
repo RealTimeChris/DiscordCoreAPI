@@ -37,7 +37,7 @@ namespace DiscordCoreAPI {
 		data["name"] = this->name;
 		data["type"] = this->type;
 		if (this->options.size() > 0) {
-			for (int32_t x = 0; x < this->options.size(); x++) {
+			for (int32_t x = 0; x < this->options.size(); ++x) {
 				data["options"].push_back(nlohmann::json(this->options[x]));
 			}
 		}
@@ -55,7 +55,7 @@ namespace DiscordCoreAPI {
 		data["description"] = this->description;
 		data["name"] = this->name;
 		if (this->options.size() > 0) {
-			for (int32_t x = 0; x < this->options.size(); x++) {
+			for (int32_t x = 0; x < this->options.size(); ++x) {
 				data["options"].push_back(nlohmann::json{ this->options[x] });
 			}
 		}
@@ -74,7 +74,7 @@ namespace DiscordCoreAPI {
 		data["name"] = this->name;
 		data["type"] = this->type;
 		if (this->options.size() > 0) {
-			for (int32_t x = 0; x < this->options.size(); x++) {
+			for (int32_t x = 0; x < this->options.size(); ++x) {
 				data["options"].push_back(nlohmann::json{ this->options[x] });
 			}
 			data["options"] = nlohmann::json{};
@@ -93,7 +93,7 @@ namespace DiscordCoreAPI {
 		data["description"] = this->description;
 		data["name"] = this->name;
 		if (this->options.size() > 0) {
-			for (int32_t x = 0; x < this->options.size(); x++) {
+			for (int32_t x = 0; x < this->options.size(); ++x) {
 				data["options"].push_back(nlohmann::json{ this->options[x] });
 			}
 			data["options"] = nlohmann::json{};
