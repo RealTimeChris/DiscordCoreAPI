@@ -281,6 +281,7 @@ namespace DiscordCoreInternal {
 	}
 
 	nlohmann::json ErlPacker::parseBigint(const ErlPackBuffer& buffer, uint32_t digits) {
+		nlohmann::json jsonData{};
 		uint8_t sign = this->readBits<uint8_t>(buffer);
 		if (digits > 8) {
 			throw ErlPackError{ "ErlPacker::parseBigint() Error: Integers larger than 8 bytes are not supported.\n\n" };
@@ -295,12 +296,12 @@ namespace DiscordCoreInternal {
 		}
 		if (digits <= 4) {
 			if (sign == 0) {
-				nlohmann::json jsonData = std::to_string(value);
+				jsonData = std::to_string(value);
 				return jsonData;
 			}
 			const bool isSignBitAvailable = (value & 1ull << 31ull) == 0;
 			if (isSignBitAvailable) {
-				nlohmann::json jsonData = std::to_string(-static_cast<int32_t>(value));
+				jsonData = std::to_string(-static_cast<int32_t>(value));
 				return jsonData;
 			}
 		}
@@ -311,7 +312,7 @@ namespace DiscordCoreInternal {
 			throw ErlPackError{ "ErlPacker::parseBigint() Error: Parse big integer failed.\n\n" };
 		}
 		const uint8_t length = static_cast<uint8_t>(res);
-		nlohmann::json jsonData = std::string(outBuffer, length);
+		jsonData = std::string(outBuffer, length);
 		return jsonData;
 	}
 

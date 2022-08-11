@@ -62,32 +62,58 @@ namespace DiscordCoreInternal {
 				workload.baseUrl.find(".org") + std::string(".org").size() - std::string("https://").size());
 		}
 		std::string theReturnString{};
-		if (workload.workloadClass == HttpsWorkloadClass::Get || workload.workloadClass == HttpsWorkloadClass::Delete) {
-			if (workload.workloadClass == HttpsWorkloadClass::Get) {
+		switch (workload.workloadClass) {
+			case HttpsWorkloadClass::Get: {
 				theReturnString += "GET " + workload.baseUrl + workload.relativePath + " HTTP/1.1\r\n";
-			} else if (workload.workloadClass == HttpsWorkloadClass::Delete) {
+				for (auto& [key, value]: workload.headersToInsert) {
+					theReturnString += key + ": " + value + "\r\n";
+				}
+				theReturnString += "Connection: Keep-Alive\r\n";
+				theReturnString += "Host: " + baseUrlNew + "\r\n\r\n";
+				break;
+			}
+			case HttpsWorkloadClass::Delete: {
 				theReturnString += "DELETE " + workload.baseUrl + workload.relativePath + " HTTP/1.1\r\n";
+				for (auto& [key, value]: workload.headersToInsert) {
+					theReturnString += key + ": " + value + "\r\n";
+				}
+				theReturnString += "Connection: Keep-Alive\r\n";
+				theReturnString += "Host: " + baseUrlNew + "\r\n\r\n";
+				break;
 			}
-			for (auto& [key, value]: workload.headersToInsert) {
-				theReturnString += key + ": " + value + "\r\n";
-			}
-			theReturnString += "Connection: Keep-Alive\r\n";
-			theReturnString += "Host: " + baseUrlNew + "\r\n\r\n";
-		} else {
-			if (workload.workloadClass == HttpsWorkloadClass::Patch) {
-				theReturnString += "PATCH " + workload.baseUrl + workload.relativePath + " HTTP/1.1\r\n";
-			} else if (workload.workloadClass == HttpsWorkloadClass::Post) {
-				theReturnString += "POST " + workload.baseUrl + workload.relativePath + " HTTP/1.1\r\n";
-			} else if (workload.workloadClass == HttpsWorkloadClass::Put) {
+			case HttpsWorkloadClass::Put: {
 				theReturnString = "PUT " + workload.baseUrl + workload.relativePath + " HTTP/1.1\r\n";
+				for (auto& [key, value]: workload.headersToInsert) {
+					theReturnString += key + ": " + value + "\r\n";
+				}
+				theReturnString += "Connection: Keep-Alive\r\n";
+				theReturnString += "Host: " + baseUrlNew + "\r\n";
+				theReturnString += "Content-Length: " + std::to_string(workload.content.size()) + "\r\n\r\n";
+				theReturnString += workload.content;
+				break;
 			}
-			for (auto& [key, value]: workload.headersToInsert) {
-				theReturnString += key + ": " + value + "\r\n";
+			case HttpsWorkloadClass::Post: {
+				theReturnString += "POST " + workload.baseUrl + workload.relativePath + " HTTP/1.1\r\n";
+				for (auto& [key, value]: workload.headersToInsert) {
+					theReturnString += key + ": " + value + "\r\n";
+				}
+				theReturnString += "Connection: Keep-Alive\r\n";
+				theReturnString += "Host: " + baseUrlNew + "\r\n";
+				theReturnString += "Content-Length: " + std::to_string(workload.content.size()) + "\r\n\r\n";
+				theReturnString += workload.content;
+				break;
 			}
-			theReturnString += "Connection: Keep-Alive\r\n";
-			theReturnString += "Host: " + baseUrlNew + "\r\n";
-			theReturnString += "Content-Length: " + std::to_string(workload.content.size()) + "\r\n\r\n";
-			theReturnString += workload.content;
+			case HttpsWorkloadClass::Patch: {
+				theReturnString += "PATCH " + workload.baseUrl + workload.relativePath + " HTTP/1.1\r\n";
+				for (auto& [key, value]: workload.headersToInsert) {
+					theReturnString += key + ": " + value + "\r\n";
+				}
+				theReturnString += "Connection: Keep-Alive\r\n";
+				theReturnString += "Host: " + baseUrlNew + "\r\n";
+				theReturnString += "Content-Length: " + std::to_string(workload.content.size()) + "\r\n\r\n";
+				theReturnString += workload.content;
+				break;
+			}
 		}
 		return theReturnString;
 	}
@@ -232,6 +258,8 @@ namespace DiscordCoreInternal {
 		}
 		other.erase(other.begin(), other.begin() + theCount);
 	}
+
+	void HttpsConnection::dispatchBuffer(std::string&) noexcept {};
 
 	void HttpsConnection::disconnect(bool) noexcept {
 		if (this->theSSLState.load() == SSLConnectionState::Connected) {
