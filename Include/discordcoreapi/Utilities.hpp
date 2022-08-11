@@ -1043,26 +1043,20 @@ namespace DiscordCoreAPI {
 		return static_cast<StoredAsType>(inputFlag) & static_cast<StoredAsType>(theFlag);
 	}
 
-	template<typename ReturnType> void reverseByteOrder(ReturnType&& x, ReturnType& returnValue) {
+	template<typename ReturnType> ReturnType reverseByteOrder(ReturnType x) {
 		const uint8_t byteSize{ 8 };
+		ReturnType returnValue{};
 		for (uint32_t y = 0; y < sizeof(ReturnType); ++y) {
 			returnValue |= static_cast<ReturnType>(static_cast<uint8_t>(x >> (byteSize * y))) << byteSize * (sizeof(ReturnType) - y - 1);
 		}
+		return returnValue;
 	}
 
-	template<typename ReturnType> void reverseByteOrder(ReturnType& x, ReturnType& returnValue) {
+	template<typename ReturnType> void storeBits(std::string* to, ReturnType num) {
 		const uint8_t byteSize{ 8 };
-		for (uint32_t y = 0; y < sizeof(ReturnType); ++y) {
-			returnValue |= static_cast<ReturnType>(static_cast<uint8_t>(x >> (byteSize * y))) << byteSize * (sizeof(ReturnType) - y - 1);
-		}
-	}
-
-	template<typename ReturnType> void storeBits(std::string& to, ReturnType& num) {
-		const uint8_t byteSize{ 8 };
-		ReturnType newValue{};
-		reverseByteOrder(num, newValue);
+		ReturnType newValue = reverseByteOrder(num);
 		for (uint32_t x = 0; x < sizeof(ReturnType); ++x) {
-			to.push_back(static_cast<uint8_t>(newValue >> (byteSize * x)));
+			to->push_back(static_cast<uint8_t>(newValue >> (byteSize * x)));
 		}
 	}
 

@@ -93,11 +93,11 @@ namespace DiscordCoreInternal {
 
 		void appendVersion(ErlPackBuffer&);
 
-		void appendSmallIntegerExt(ErlPackBuffer&, uint8_t&);
+		void appendSmallIntegerExt(ErlPackBuffer&, uint8_t);
 
-		void appendIntegerExt(ErlPackBuffer&, uint32_t&);
+		void appendIntegerExt(ErlPackBuffer&, uint32_t);
 
-		void appendFloatExt(ErlPackBuffer&, double&);
+		void appendFloatExt(ErlPackBuffer&, double);
 
 		void appendNilExt(ErlPackBuffer&);
 
@@ -107,31 +107,31 @@ namespace DiscordCoreInternal {
 
 		void appendTrue(ErlPackBuffer&);
 
-		void appendUnsignedLongLong(ErlPackBuffer&, uint64_t&);
+		void appendUnsignedLongLong(ErlPackBuffer&, uint64_t);
 
-		void appendBinaryExt(ErlPackBuffer&, const std::string&, uint32_t&);
+		void appendBinaryExt(ErlPackBuffer&, const std::string&, uint32_t);
 
-		void appendListHeader(ErlPackBuffer&, uint32_t&);
+		void appendListHeader(ErlPackBuffer&, uint32_t);
 
-		void appendMapHeader(ErlPackBuffer&, uint32_t&);
+		void appendMapHeader(ErlPackBuffer&, uint32_t);
 
-		template<typename ReturnType> void readBits(const ErlPackBuffer&, ReturnType&);
+		template<typename ReturnType> ReturnType readBits(const ErlPackBuffer& buffer);
 
-		void readString(const ErlPackBuffer&, uint32_t&, std::string&);
+		std::string readString(const ErlPackBuffer&, uint32_t, std::string&);
 
 		nlohmann::json singleValueETFToJson(const ErlPackBuffer&);
 
 		nlohmann::json parseSmallIntegerExt(const ErlPackBuffer&);
 
-		nlohmann::json parseBigint(const ErlPackBuffer&, uint32_t&);
+		nlohmann::json parseBigint(const ErlPackBuffer&, uint32_t);
 
 		nlohmann::json parseIntegerExt(const ErlPackBuffer&);
 
 		nlohmann::json parseFloatExt(const ErlPackBuffer&);
 
-		nlohmann::json processAtom(const std::string&, uint32_t&);
+		nlohmann::json processAtom(const std::string&, uint32_t);
 
-		nlohmann::json parseTuple(const ErlPackBuffer&, uint32_t&);
+		nlohmann::json parseTuple(const ErlPackBuffer&, uint32_t);
 
 		nlohmann::json parseSmallTupleExt(const ErlPackBuffer&);
 
@@ -149,7 +149,7 @@ namespace DiscordCoreInternal {
 
 		nlohmann::json parseLargeBigExt(const ErlPackBuffer&);
 
-		nlohmann::json parseArray(const ErlPackBuffer&, uint32_t&);
+		nlohmann::json parseArray(const ErlPackBuffer&, uint32_t);
 
 		nlohmann::json parseMapExt(const ErlPackBuffer&);
 

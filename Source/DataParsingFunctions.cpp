@@ -90,20 +90,13 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	std::string getString(nlohmann::json* jsonData, const char* keyname) {
-		try {
-			/* Returns empty string if the value is not a string, or is null or not defined */
-			auto result = jsonData->find(keyname);
-			if (result != jsonData->end()) {
-				return !result->is_null() && result->is_string() ? result->get<std::string>() : "";
-			} else {
-				return const_cast<char*>("");
-			}
-			
-		} catch (...) {
-			reportException("getString()");
+	std::string getString(const nlohmann::json* jsonData, const char* keyname) {
+		auto theResult = jsonData->find(keyname);
+		if (theResult != jsonData->end()) {
+			return !theResult->is_null() && theResult->is_string() ? theResult->get<std::string>() : "";
+		} else {
+			return const_cast<char*>("");
 		}
-		return const_cast<char*>("");
 	}
 
 	uint64_t strtoull(std::string&& theString) {
@@ -2808,26 +2801,25 @@ namespace DiscordCoreAPI {
 	}
 
 	void GuildData::parseObject(const nlohmann::json* jsonObjectData, GuildData* pDataStructure) {
-		nlohmann::json* theJsonData = ( nlohmann::json* )jsonObjectData;
 		std::cout << "WERE HERE THIS IS -0303" << std::endl;
-		std::cout << "THE STRING REAL: " << getString(theJsonData, "id") << std::endl;
-		pDataStructure->id = strtoull(getString(theJsonData, "id"));
+		std::cout << "THE STRING REAL: " << getString(jsonObjectData, "id") << std::endl;
+		pDataStructure->id = strtoull(getString(jsonObjectData, "id"));
 
 		std::cout << "WERE HERE THIS IS -0202" << std::endl;
 
 		std::string iconUrlString = "https://cdn.discordapp.com/";
-		iconUrlString += "icons/" + std::to_string(pDataStructure->id) + "/" + getString(theJsonData, "icon") + ".png";
+		iconUrlString += "icons/" + std::to_string(pDataStructure->id) + "/" + getString(jsonObjectData, "icon") + ".png";
 		pDataStructure->icon = iconUrlString;
 
-		pDataStructure->name = getString(theJsonData, "name");
+		pDataStructure->name = getString(jsonObjectData, "name");
 
-		pDataStructure->joinedAt = getString(theJsonData, "joined_at");
+		pDataStructure->joinedAt = getString(jsonObjectData, "joined_at");
 
 		pDataStructure->flags = setBool<int8_t, GuildFlags>(pDataStructure->flags, GuildFlags::Owner, getBool(jsonObjectData, "owner"));
 
 		std::cout << "WERE HERE THIS IS -10101" << std::endl;
 
-		pDataStructure->ownerId = strtoull(getString(theJsonData, "owner_id"));
+		pDataStructure->ownerId = strtoull(getString(jsonObjectData, "owner_id"));
 
 		auto theArray = getArray(jsonObjectData, "features");
 		for (auto& value : theArray) {

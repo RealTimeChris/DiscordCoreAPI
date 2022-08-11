@@ -129,6 +129,7 @@ namespace DiscordCoreInternal {
 		WebSocketClose closeCode{ 0 };
 		WebSocketOpCode dataOpCode{};
 		bool areWeResuming{ false };
+		nlohmann::json payload{};
 		int64_t messageLength{};
 		int64_t messageOffset{};
 		std::string sessionId{};

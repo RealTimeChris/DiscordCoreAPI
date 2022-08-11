@@ -92,11 +92,11 @@ namespace DiscordCoreAPI {
 			const uint8_t headerSize{ 12 };
 			const uint8_t byteSize{ 8 };
 			std::string header{};
-			storeBits(header, this->version);
-			storeBits(header, this->flags);
-			storeBits(header, this->sequence);
-			storeBits(header, this->timestamp);
-			storeBits(header, this->ssrc);
+			storeBits(&header, this->version);
+			storeBits(&header, this->flags);
+			storeBits(&header, this->sequence);
+			storeBits(&header, this->timestamp);
+			storeBits(&header, this->ssrc);
 			std::unique_ptr<uint8_t[]> nonceForLibSodium{ std::make_unique<uint8_t[]>(nonceSize) };
 			for (uint8_t x = 0; x < headerSize; ++x) {
 				nonceForLibSodium[x] = header[x];
