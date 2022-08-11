@@ -133,14 +133,14 @@ namespace DiscordCoreAPI {
 	  public:
 		Reaction() = default;
 
-		Reaction& operator=(const nlohmann::json& jsonObjectData);
+		Reaction& operator=(const nlohmann::json* jsonObjectData);
 
-		Reaction(const nlohmann::json& jsonObjectData);
+		Reaction(const nlohmann::json* jsonObjectData);
 
 		virtual ~Reaction() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json& jsonObjectData, Reaction* pDataStructure);
+		void parseObject(const nlohmann::json* jsonObjectData, Reaction* pDataStructure);
 	};
 
 	class DiscordCoreAPI_Dll ReactionVector : public DataParser<ReactionVector> {
@@ -149,16 +149,16 @@ namespace DiscordCoreAPI {
 
 		operator std::vector<Reaction>();
 
-		ReactionVector& operator=(const nlohmann::json& jsonObjectData);
+		ReactionVector& operator=(const nlohmann::json* jsonObjectData);
 
-		ReactionVector(const nlohmann::json& jsonObjectData);
+		ReactionVector(const nlohmann::json* jsonObjectData);
 
 		virtual ~ReactionVector() = default;
 
 	  protected:
 		std::vector<Reaction> theReactions{};
 
-		void parseObject(const nlohmann::json& jsonObjectData, ReactionVector* pDataStructure);
+		void parseObject(const nlohmann::json* jsonObjectData, ReactionVector* pDataStructure);
 	};
 
 	/**@}*/

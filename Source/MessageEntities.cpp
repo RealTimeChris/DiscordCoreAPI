@@ -144,12 +144,12 @@ namespace DiscordCoreAPI {
 		return data.dump();
 	}
 
-	Message& Message::operator=(const nlohmann::json& jsonObjectData) {
+	Message& Message::operator=(const nlohmann::json* jsonObjectData) {
 		this->parseObject(jsonObjectData, this);
 		return *this;
 	}
 
-	Message::Message(const nlohmann::json& jsonObjectData) {
+	Message::Message(const nlohmann::json* jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
@@ -157,12 +157,12 @@ namespace DiscordCoreAPI {
 		return this->theMessages;
 	}
 
-	MessageVector& MessageVector::operator=(const nlohmann::json& jsonObjectData) {
+	MessageVector& MessageVector::operator=(const nlohmann::json* jsonObjectData) {
 		this->parseObject(jsonObjectData, this);
 		return *this;
 	}
 
-	MessageVector::MessageVector(const nlohmann::json& jsonObjectData) {
+	MessageVector::MessageVector(const nlohmann::json* jsonObjectData) {
 		*this = jsonObjectData;
 	}
 

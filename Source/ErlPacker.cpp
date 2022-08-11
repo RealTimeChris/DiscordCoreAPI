@@ -23,17 +23,20 @@ namespace DiscordCoreInternal {
 
 	ErlPackError::ErlPackError(const std::string& message) : std::runtime_error(message.c_str()){};
 
-	BufferPack::BufferPack(DiscordCoreAPI::StopWatch<std::chrono::microseconds>& theStopWatch, std::string& buffer) : buffer(buffer), theStopWatch(theStopWatch){};
+	BufferPack::BufferPack(char* theBufferIn, std::string& buffer, int64_t theSize) : buffer(buffer){
+		this->theBufferLength = theSize;
+		this->theBufferIn = theBufferIn;
+		
+	};
 
 	ErlPackBuffer& ErlPackBuffer::operator=(BufferPack& theBuffer) noexcept{
-		this->theBufferLength = theBuffer.bufferLength;
-		this->theStopWatch = theBuffer.theStopWatch;
+		this->theBufferLength = theBuffer.theBufferLength;
 		this->theBufferIn = theBuffer.theBufferIn;
 		this->buffer = theBuffer.buffer;
 		return *this;
 	};
 
-	ErlPackBuffer::ErlPackBuffer(BufferPack& theBuffer) : buffer(theBuffer.buffer), theStopWatch(theBuffer.theStopWatch) {
+	ErlPackBuffer::ErlPackBuffer(BufferPack& theBuffer) : buffer(theBuffer.buffer) {
 		*this = theBuffer;
 	};
 
@@ -42,7 +45,7 @@ namespace DiscordCoreInternal {
 	std::string ErlPacker::parseJsonToEtf(const nlohmann::json& dataToParse) {
 		std::string theString{};
 		DiscordCoreAPI::StopWatch<std::chrono::microseconds> theStopWatch{};
-		BufferPack theBuffer{ theStopWatch, theString };
+		BufferPack theBuffer{ theString.data(), theString, static_cast<int64_t>(theString.size()) };
 		ErlPackBuffer buffer{ theBuffer };
 		ErlPacker::appendVersion(buffer);
 		ErlPacker::singleValueJsonToETF(buffer, dataToParse);
@@ -51,12 +54,9 @@ namespace DiscordCoreInternal {
 
 	nlohmann::json ErlPacker::parseEtfToJson(BufferPack& dataToParse) {
 		ErlPackBuffer buffer{ dataToParse };
-		dataToParse.theStopWatch.resetTimer();
 		uint8_t version{};
 		ErlPacker::readBits(buffer, version);
-		dataToParse.theStopWatch.resetTimer();
 		auto theReturnValue = ErlPacker::singleValueETFToJson(buffer);
-		dataToParse.theStopWatch.resetTimer();
 		return std::move(theReturnValue);
 	}
 

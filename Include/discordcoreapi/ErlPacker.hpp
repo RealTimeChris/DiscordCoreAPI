@@ -48,17 +48,34 @@ namespace DiscordCoreInternal {
 		Small_Atom_Utf8_Ext = 119
 	};
 
+	struct BufferPack {
+		BufferPack(char* theBufferIn, std::string& buffer, int64_t theSize);
+		std::string& buffer;
+		int32_t theBufferLength{};
+		char* theBufferIn{ nullptr };
+	};
+
 	struct DiscordCoreAPI_Dll ErlPackBuffer {
 	  public:
-
-		std::string theBufferIn{};
-		mutable uint64_t offSet{};
-		int64_t theBufferLength{};
 		std::string& buffer;
+		int32_t theBufferLength{};
+		char* theBufferIn{ nullptr };
+		mutable nlohmann::json::number_float_t theFloat{};
+		mutable nlohmann::json::number_integer_t theInteger{};
+		mutable nlohmann::json::string_t theString{};
+
+
+		mutable uint64_t offSet{};
 
 		ErlPackBuffer() = default;
 
-		ErlPackBuffer(char* theBuffer, std::string& theBufferReal, int32_t theLength);
+		ErlPackBuffer& operator=(BufferPack& thePack) noexcept;
+
+		ErlPackBuffer(BufferPack&);
+
+		ErlPackBuffer& operator=(ErlPackBuffer&&) noexcept;
+
+		ErlPackBuffer(ErlPackBuffer&&) noexcept;
 
 		ErlPackBuffer& operator=(const ErlPackBuffer&) = delete;
 
@@ -75,7 +92,7 @@ namespace DiscordCoreInternal {
 	  public:
 		std::string parseJsonToEtf(const nlohmann::json&);
 
-		nlohmann::json parseEtfToJson(ErlPackBuffer& dataToParse);
+		nlohmann::json parseEtfToJson(BufferPack& dataToParse);
 
 	  protected:
 		void singleValueJsonToETF(ErlPackBuffer&, const nlohmann::json&);
@@ -108,7 +125,7 @@ namespace DiscordCoreInternal {
 
 		template<typename ReturnType> void readBits(const ErlPackBuffer&, ReturnType&);
 
-		void readString(const ErlPackBuffer& buffer, uint32_t& length, DiscordCoreAPI::StringWrapper& theString);
+		void readString(const ErlPackBuffer&, uint32_t&, std::string&);
 
 		nlohmann::json singleValueETFToJson(const ErlPackBuffer&);
 

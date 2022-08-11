@@ -147,7 +147,7 @@ namespace DiscordCoreInternal {
 				theError.errorCode = returnData.responseCode;
 				throw theError;
 			}
-			ReturnType returnObject{ returnData.responseData };
+			ReturnType returnObject{ &returnData.responseData };
 			return returnObject;
 		}
 

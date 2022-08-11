@@ -113,12 +113,12 @@ namespace DiscordCoreAPI {
 		return newDataArray.dump();
 	}
 
-	ApplicationCommand& ApplicationCommand::operator=(const nlohmann::json& jsonObjectData) {
+	ApplicationCommand& ApplicationCommand::operator=(const nlohmann::json* jsonObjectData) {
 		this->parseObject(jsonObjectData, this);
 		return *this;
 	}
 
-	ApplicationCommand::ApplicationCommand(const nlohmann::json& jsonObjectData) {
+	ApplicationCommand::ApplicationCommand(const nlohmann::json* jsonObjectData) {
 		*this = jsonObjectData;
 	}
 

@@ -22,12 +22,12 @@
 
 namespace DiscordCoreAPI {
 
-	StageInstance& StageInstance::operator=(const nlohmann::json& jsonObjectData) {
+	StageInstance& StageInstance::operator=(const nlohmann::json* jsonObjectData) {
 		this->parseObject(jsonObjectData, this);
 		return *this;
 	}
 
-	StageInstance::StageInstance(const nlohmann::json& jsonObjectData) {
+	StageInstance::StageInstance(const nlohmann::json* jsonObjectData) {
 		*this = jsonObjectData;
 	}
 

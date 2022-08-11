@@ -22,12 +22,12 @@
 
 namespace DiscordCoreAPI {
 
-	Sticker& Sticker::operator=(const nlohmann::json& jsonObjectData) {
+	Sticker& Sticker::operator=(const nlohmann::json* jsonObjectData) {
 		this->parseObject(jsonObjectData, this);
 		return *this;
 	}
 
-	Sticker::Sticker(const nlohmann::json& jsonObjectData) {
+	Sticker::Sticker(const nlohmann::json* jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
@@ -35,12 +35,12 @@ namespace DiscordCoreAPI {
 		return this->theStickers;
 	}
 
-	StickerVector& StickerVector::operator=(const nlohmann::json& jsonObjectData) {
+	StickerVector& StickerVector::operator=(const nlohmann::json* jsonObjectData) {
 		this->parseObject(jsonObjectData, this);
 		return *this;
 	}
 
-	StickerVector::StickerVector(const nlohmann::json& jsonObjectData) {
+	StickerVector::StickerVector(const nlohmann::json* jsonObjectData) {
 		*this = jsonObjectData;
 	}
 

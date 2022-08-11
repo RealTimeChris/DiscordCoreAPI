@@ -149,13 +149,13 @@ namespace DiscordCoreAPI {
 	  public:
 		Message() = default;
 
-		Message& operator=(const nlohmann::json& jsonObjectData);
+		Message& operator=(const nlohmann::json* jsonObjectData);
 
-		Message(const nlohmann::json& jsonObjectData);
+		Message(const nlohmann::json* jsonObjectData);
 
 		virtual ~Message() = default;
 
-		void parseObject(const nlohmann::json& jsonObjectData, Message* pDataStructure);
+		void parseObject(const nlohmann::json* jsonObjectData, Message* pDataStructure);
 	};
 
 	class DiscordCoreAPI_Dll MessageVector : public DataParser<MessageVector> {
@@ -164,16 +164,16 @@ namespace DiscordCoreAPI {
 
 		operator std::vector<Message>();
 
-		MessageVector& operator=(const nlohmann::json& jsonObjectData);
+		MessageVector& operator=(const nlohmann::json* jsonObjectData);
 
-		MessageVector(const nlohmann::json& jsonObjectData);
+		MessageVector(const nlohmann::json* jsonObjectData);
 
 		virtual ~MessageVector() = default;
 
 	  protected:
 		std::vector<Message> theMessages{};
 
-		void parseObject(const nlohmann::json& jsonObjectData, MessageVector* pDataStructure);
+		void parseObject(const nlohmann::json* jsonObjectData, MessageVector* pDataStructure);
 	};
 
 	/**@}*/

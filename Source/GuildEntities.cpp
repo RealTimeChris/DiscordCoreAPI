@@ -250,12 +250,12 @@ namespace DiscordCoreAPI {
 		*this = other;
 	}
 
-	Guild& Guild::operator=(const nlohmann::json& jsonObjectData) {
+	Guild& Guild::operator=(const nlohmann::json* jsonObjectData) {
 		this->parseObject(jsonObjectData, this);
 		return *this;
 	}
 
-	Guild::Guild(const nlohmann::json& jsonObjectData) {
+	Guild::Guild(const nlohmann::json* jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
@@ -263,12 +263,12 @@ namespace DiscordCoreAPI {
 		return this->theGuilds;
 	}
 
-	GuildVector& GuildVector::operator=(const nlohmann::json& jsonObjectData) {
+	GuildVector& GuildVector::operator=(const nlohmann::json* jsonObjectData) {
 		this->parseObject(jsonObjectData, this);
 		return *this;
 	}
 
-	GuildVector::GuildVector(const nlohmann::json& jsonObjectData) {
+	GuildVector::GuildVector(const nlohmann::json* jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
@@ -830,13 +830,18 @@ namespace DiscordCoreAPI {
 		workload.callStack = "Users::leaveGuildAsync()";
 		co_return Guilds::httpsClient->submitWorkloadAndGetResult<void>(workload);
 	}
+
 	StopWatch theStopWatch{ 1s };
+
 	void Guilds::insertGuild(std::unique_ptr<GuildData> guild) {
 		std::unique_lock theLock{ Guilds::theMutex };
 		if (guild->id == 0) {
 			return;
 		}
 		//guild->initialize();
+		if (!guild) {
+			std::cout << "STOP HERE STOP HERE!" << std::endl;
+		}
 		if (Guilds::configManager->doWeCacheGuilds()) {
 			(*Guilds::cache)[guild->id] = std::move(guild);
 		}
