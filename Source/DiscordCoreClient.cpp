@@ -125,6 +125,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void DiscordCoreClient::runBot() {
+		/*
 		std::jthread theThread = std::jthread{ [this]() {
 			while (!Globals::doWeQuit.load()) {
 				for (auto& [key, value]: this->baseSocketAgentMap) {
@@ -138,6 +139,7 @@ namespace DiscordCoreAPI {
 			};
 		} };
 		theThread.detach();
+		*/
 		
 		if (!this->instantiateWebSockets()) {
 			Globals::doWeQuit.store(true);

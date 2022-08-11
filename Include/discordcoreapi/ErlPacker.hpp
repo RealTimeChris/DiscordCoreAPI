@@ -49,21 +49,13 @@ namespace DiscordCoreInternal {
 	};
 
 	struct BufferPack {
-		BufferPack(char* theBufferIn, std::string& buffer, int64_t theSize);
-		std::string& buffer;
-		int32_t theBufferLength{};
-		char* theBufferIn{ nullptr };
+		BufferPack(std::string* buffer);
+		std::string* buffer{ nullptr };
 	};
 
 	struct DiscordCoreAPI_Dll ErlPackBuffer {
 	  public:
-		std::string& buffer;
-		int32_t theBufferLength{};
-		char* theBufferIn{ nullptr };
-		mutable nlohmann::json::number_float_t theFloat{};
-		mutable nlohmann::json::number_integer_t theInteger{};
-		mutable nlohmann::json::string_t theString{};
-
+		std::string* buffer{ nullptr };
 
 		mutable uint64_t offSet{};
 

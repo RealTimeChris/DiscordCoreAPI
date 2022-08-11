@@ -324,11 +324,10 @@ namespace DiscordCoreInternal {
 							try {
 								theStopWatch.resetTimer();
 								std::cout << "THE STRING LENGTH: " << theString.size() << std::endl;
-								BufferPack theBuffer{ theString.data(), theString, static_cast<int64_t>(theString.size()) };
+								BufferPack theBuffer{ &theString };
 								nlohmann::json payload = this->parseEtfToJson(theBuffer);
 								std::cout << "THE TOTAL TIME PASSED 0202: " << theStopWatch.totalTimePassed() << std::endl;
 								payload01 = std::move(payload);
-								std::cout << "THE PAYLOAD: " << payload01.dump() << std::endl;
 								theStopWatch.resetTimer();
 								std::cout << "THE TOTAL TIME PASSED 07897: " << theStopWatch.totalTimePassed() << std::endl;
 							} catch (...) {
@@ -1071,7 +1070,7 @@ namespace DiscordCoreInternal {
 					if (this->sslShard->areWeStillConnected()) {
 						DiscordCoreAPI::StopWatch<std::chrono::microseconds> theStopWatch{};
 						theStopWatch.resetTimer();
-						//this->sslShard->parseMessage(this->sslShard.get(), theStopWatch);
+						this->sslShard->parseMessage(this->sslShard.get(), theStopWatch);
 					}
 					if (this->sslShard->heartBeatStopWatch.hasTimePassed()) {
 						this->sslShard->heartBeatStopWatch.resetTimer();
