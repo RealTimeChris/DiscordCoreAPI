@@ -461,7 +461,6 @@ namespace DiscordCoreInternal {
 											//this->discordCoreClient->eventManager.onGuildCreationEvent(std::move(*dataPackage));
 											std::cout << "THE TOTAL TIME PASSED 2323:  " << theStopWatch.totalTimePassed() << std::endl;
 											theStopWatch.resetTimer();
-											this->payload .clear();
 										} else if (this->payload ["t"] == "GUILD_UPDATE") {
 											std::unique_ptr<DiscordCoreAPI::OnGuildUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnGuildUpdateData>() };
 											std::unique_ptr<DiscordCoreAPI::GuildData> theGuild{ std::make_unique<DiscordCoreAPI::GuildData>(&this->payload ["d"]) };

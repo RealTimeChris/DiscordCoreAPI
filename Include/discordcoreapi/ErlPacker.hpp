@@ -117,7 +117,7 @@ namespace DiscordCoreInternal {
 
 		template<typename ReturnType> ReturnType readBits(const ErlPackBuffer& buffer);
 
-		std::string readString(const ErlPackBuffer&, uint32_t, std::string&);
+		const char* readString(const ErlPackBuffer& buffer, uint32_t length);
 
 		nlohmann::json singleValueETFToJson(const ErlPackBuffer&);
 
@@ -129,7 +129,7 @@ namespace DiscordCoreInternal {
 
 		nlohmann::json parseFloatExt(const ErlPackBuffer&);
 
-		nlohmann::json processAtom(const std::string&, uint32_t);
+		nlohmann::json processAtom(const char* atom, uint32_t length);
 
 		nlohmann::json parseTuple(const ErlPackBuffer&, uint32_t);
 

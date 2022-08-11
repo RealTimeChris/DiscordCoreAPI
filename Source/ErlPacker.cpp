@@ -203,18 +203,18 @@ namespace DiscordCoreInternal {
 		if (buffer.offSet + sizeof(ReturnType) > buffer.buffer->size()) {
 			throw ErlPackError{ "ErlPacker::readBits() Error: readBits() past end of buffer.\n\n" };
 		}
+		auto theValue = *reinterpret_cast<ReturnType*>(buffer.buffer->data() + buffer.offSet);
 		buffer.offSet += sizeof(ReturnType);
-		return DiscordCoreAPI::reverseByteOrder(*reinterpret_cast<ReturnType*>(buffer.buffer->data() + buffer.offSet));
+		return DiscordCoreAPI::reverseByteOrder(theValue);
 	}
 
-	std::string ErlPacker::readString(const ErlPackBuffer& buffer, uint32_t length, std::string& theString) {
+	const char* ErlPacker::readString(const ErlPackBuffer& buffer, uint32_t length) {
 		if (buffer.offSet + static_cast<uint64_t>(length) > buffer.buffer->size()) {
 			throw ErlPackError{ "ErlPacker::readString() Error: readString() past end of buffer.\n\n" };
 		}
-		theString.insert(theString.begin(), buffer.buffer->data() + buffer.offSet, buffer.buffer->data() + buffer.offSet + length);
+		const char* theString{ buffer.buffer->data() + buffer.offSet };
 		buffer.offSet += length;
-		const char* theCharString = buffer.buffer->data() + buffer.offSet;
-		return theCharString;
+		return theString;
 	}
 
 	nlohmann::json ErlPacker::singleValueETFToJson(const ErlPackBuffer& buffer) {
@@ -323,15 +323,11 @@ namespace DiscordCoreInternal {
 
 	nlohmann::json ErlPacker::parseFloatExt(const ErlPackBuffer& buffer) {
 		uint32_t floatLength = 31;
-		std::string floatStr{};
+		const char* floatStr = this->readString(buffer, floatLength);
 		nlohmann::json jsonData{};
-		this->readString(buffer, floatLength, floatStr);
-		if (floatStr.size() == 0) {
-			return jsonData;
-		}
 		double number{};
 		std::vector<char> nullTerminated{};
-		nullTerminated.insert(nullTerminated.begin(), floatStr.begin(), floatStr.begin() + floatLength);
+		nullTerminated.insert(nullTerminated.begin(), floatStr, floatStr + floatLength);
 		auto count = sscanf(nullTerminated.data(), "%lf", &number);
 		if (!count) {
 			return jsonData;
@@ -340,25 +336,25 @@ namespace DiscordCoreInternal {
 		return jsonData;
 	}
 
-	nlohmann::json ErlPacker::processAtom(const std::string& atom, uint32_t length) {
+	nlohmann::json ErlPacker::processAtom(const char* atom, uint32_t length) {
 		nlohmann::json jsonData{};
-		if (atom.size() == 0) {
+		if (length == 0) {
 			return jsonData;
 		}
 		if (length >= 3 && length <= 5) {
-			if (length == 3 && strncmp(atom.data(), "nil", 3) == 0) {
+			if (length == 3 && strncmp(atom, "nil", 3) == 0) {
 				return jsonData;
-			} else if (length == 4 && strncmp(atom.data(), "null", 4) == 0) {
+			} else if (length == 4 && strncmp(atom, "null", 4) == 0) {
 				return jsonData;
-			} else if (length == 4 && strncmp(atom.data(), "true", 4) == 0) {
+			} else if (length == 4 && strncmp(atom, "true", 4) == 0) {
 				jsonData = true;
 				return jsonData;
-			} else if (length == 5 && strncmp(atom.data(), "false", 5) == 0) {
+			} else if (length == 5 && strncmp(atom, "false", 5) == 0) {
 				jsonData = false;
 				return jsonData;
 			}
 		}
-		jsonData = std::string(atom.data(), length);
+		jsonData = std::string{ atom, length };
 		return jsonData;
 	}
 
@@ -406,13 +402,12 @@ namespace DiscordCoreInternal {
 
 	nlohmann::json ErlPacker::parseBinaryExt(const ErlPackBuffer& buffer) {
 		uint32_t length = this->readBits<uint32_t>(buffer);
-		std::string stringNew{};
-		this->readString(buffer, length, stringNew);
-		if (stringNew.size() == 0) {
+		const char* stringNew = this->readString(buffer, length);
+		if (length == 0) {
 			nlohmann::json jsonData{};
 			return jsonData;
 		}
-		nlohmann::json jsonData = std::string(stringNew.data(), length);
+		nlohmann::json jsonData = std::string{ stringNew, length };
 		return jsonData;
 	}
 
@@ -453,16 +448,14 @@ namespace DiscordCoreInternal {
 	nlohmann::json ErlPacker::parseAtomUtf8Ext(const ErlPackBuffer& buffer) {
 		uint16_t length = this->readBits<uint16_t>(buffer);
 		uint32_t lengthNew = length;
-		std::string atom{};
-		this->readString(buffer, lengthNew, atom);
+		const char* atom = this->readString(buffer, lengthNew);
 		return this->processAtom(atom, lengthNew);
 	}
 
 	nlohmann::json ErlPacker::parseSmallAtomUtf8Ext(const ErlPackBuffer& buffer) {
 		uint8_t length = this->readBits<uint8_t>(buffer);
 		uint32_t lengthNew = length;
-		std::string atom{};
-		this->readString(buffer, lengthNew, atom);
+		const char* atom = this->readString(buffer, lengthNew);
 		return this->processAtom(atom, lengthNew);
 	}
 
