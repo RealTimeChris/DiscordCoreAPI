@@ -102,7 +102,7 @@ namespace DiscordCoreInternal {
 		std::string currentBaseUrl{};
 		bool doWeConnect{ true };
 
-		void dispatchBuffer(std::string*) noexcept;
+		void dispatchBuffer(std::string&) noexcept;
 
 		void disconnect(bool) noexcept;
 

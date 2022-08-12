@@ -93,11 +93,11 @@ namespace DiscordCoreInternal {
 		return false;
 	}
 
-	bool WebSocketMessageHandler::parseMessage(WebSocketSSLShard* theShard, std::string* theBuffer, DiscordCoreAPI::StopWatch<std::chrono::microseconds>& theStopWatch) noexcept {
-		if (theBuffer->size() < 4) {
+	bool WebSocketMessageHandler::parseMessage(WebSocketSSLShard* theShard, std::string& theBuffer, DiscordCoreAPI::StopWatch<std::chrono::microseconds>& theStopWatch) noexcept {
+		if (theBuffer.size() < 4) {
 			return true;
 		}
-		auto dataOpCode = static_cast<WebSocketOpCode>((*theBuffer)[0] & ~webSocketFinishBit);
+		auto dataOpCode = static_cast<WebSocketOpCode>(theBuffer[0] & ~webSocketFinishBit);
 		switch (dataOpCode) {
 			case WebSocketOpCode::Op_Continuation:
 				[[fallthrough]];
@@ -108,52 +108,52 @@ namespace DiscordCoreInternal {
 			case WebSocketOpCode::Op_Ping:
 				[[fallthrough]];
 			case WebSocketOpCode::Op_Pong: {
-				uint8_t length01 = (*theBuffer)[1];
+				uint8_t length01 = theBuffer[1];
 				theShard->messageOffset = 2;
 				if (length01 & webSocketMaskBit) {
 					return true;
 				}
 				theShard->messageLength = length01;
 				if (length01 == webSocketPayloadLengthMagicLarge) {
-					if (theBuffer->size() < 8) {
+					if (theBuffer.size() < 8) {
 						return true;
 					}
-					uint8_t length03 = (*theBuffer)[2];
-					uint8_t length04 = (*theBuffer)[3];
+					uint8_t length03 = theBuffer[2];
+					uint8_t length04 = theBuffer[3];
 					theShard->messageLength = static_cast<uint64_t>((length03 << 8) | length04);
 					theShard->messageOffset += 2;
 				} else if (length01 == webSocketPayloadLengthMagicHuge) {
-					if (theBuffer->size() < 10) {
+					if (theBuffer.size() < 10) {
 						return true;
 					}
 					theShard->messageLength = 0;
 					for (int64_t x = 2, shift = 56; x < 10; ++x, shift -= 8) {
-						uint8_t lengthNew = static_cast<uint8_t>((*theBuffer)[x]);
+						uint8_t lengthNew = static_cast<uint8_t>(theBuffer[x]);
 						theShard->messageLength |= static_cast<uint64_t>((lengthNew & static_cast<uint64_t>(0xff)) << static_cast<uint64_t>(shift));
 					}
 					theShard->messageOffset += 8;
 				}
-				if (theBuffer->size() < static_cast<uint64_t>(theShard->messageOffset) + static_cast<uint64_t>(theShard->messageLength)) {
+				if (theBuffer.size() < static_cast<uint64_t>(theShard->messageOffset) + static_cast<uint64_t>(theShard->messageLength)) {
 					return true;
 				} else {
 					theStopWatch.resetTimer();
-					if (!this->onMessageReceived(( std::string& )theBuffer->substr(theShard->messageOffset, theShard->messageLength), theStopWatch)) {
+					if (!this->onMessageReceived(theBuffer.substr(theShard->messageOffset, theShard->messageLength), theStopWatch)) {
 						return false;
 					}
 					theStopWatch.resetTimer();
-					theBuffer->erase(theBuffer->begin(), theBuffer->begin() + theShard->messageOffset + theShard->messageLength);
+					theBuffer.erase(theBuffer.begin(), theBuffer.begin() + theShard->messageOffset + theShard->messageLength);
 					return true;
 				}
 			}
 			case WebSocketOpCode::Op_Close: {
-				uint16_t close = (*theBuffer)[2] & 0xff;
+				uint16_t close = theBuffer[2] & 0xff;
 				close <<= 8;
-				close |= (*theBuffer)[3] & 0xff;
+				close |= theBuffer[3] & 0xff;
 				auto closeCode = close;
 				if (closeCode) {
 					theShard->areWeResuming = true;
 				}
-				theBuffer->erase(theBuffer->begin(), theBuffer->begin() + 4);
+				theBuffer.erase(theBuffer.begin(), theBuffer.begin() + 4);
 				if (this->configManager->doWePrintWebSocketErrorMessages()) {
 					cout << DiscordCoreAPI::shiftToBrightRed() << "WebSocket " + theShard->shard.dump() + " Closed; Code: " << +static_cast<uint16_t>(theShard->closeCode)
 						 << DiscordCoreAPI::reset() << endl
@@ -314,12 +314,12 @@ namespace DiscordCoreInternal {
 		}
 	};
 	
-	void WebSocketSSLShard::dispatchBuffer(std::string* theBuffer) noexcept {
+	void WebSocketSSLShard::dispatchBuffer(std::string& theBuffer) noexcept {
 		DiscordCoreAPI::StopWatch theStopWatch{ 50us };
 		this->parseMessage(this, theBuffer, theStopWatch);
 	}
 
-	bool WebSocketSSLShard::onMessageReceived(std::string& theString, DiscordCoreAPI::StopWatch<std::chrono::microseconds>& theStopWatch) noexcept {
+	bool WebSocketSSLShard::onMessageReceived(const std::string& theString, DiscordCoreAPI::StopWatch<std::chrono::microseconds>& theStopWatch) noexcept {
 		if (this) {
 			if (this->theSSLState.load() == SSLConnectionState::Connected) {
 				try {
@@ -328,7 +328,10 @@ namespace DiscordCoreInternal {
 						if (this->configManager->getTextFormat() == DiscordCoreAPI::TextFormat::Etf) {
 							try {
 								theStopWatch.resetTimer();
-								this->payload = this->parseEtfToJson(theString);
+								std::string theStringNew{};
+								theStringNew = theString;
+								std::cout << "THE TIME TO COPY THE STRING: " << theStopWatch.totalTimePassed() << std::endl;
+								this->payload = this->parseEtfToJson(( std::string& )theString);
 								std::cout << "THE STRING TIME: " << theStopWatch.totalTimePassed() << std::endl;
 								theStopWatch.resetTimer();
 							} catch (...) {

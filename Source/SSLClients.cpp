@@ -429,18 +429,16 @@ namespace DiscordCoreInternal {
 		this->wantWrite = false;
 		ProcessIOResult returnValueReal{};
 		if (this->maxBufferSize > 0) {
-			std::string theString{};
-			theString.resize(this->maxBufferSize);
 			do {
 				size_t readBytes{ 0 };
-				auto returnValue{ SSL_read_ex(this->ssl, theString.data(), this->maxBufferSize, &readBytes) };
+				auto returnValue{ SSL_read_ex(this->ssl, this->rawInputBuffer.data(), this->maxBufferSize, &readBytes) };
 				auto errorValue{ SSL_get_error(this->ssl, returnValue) };
 				switch (errorValue) {
 					case SSL_ERROR_NONE: {
 						if (readBytes > 0) {
-							this->inputBuffer.append(theString.begin(), theString.begin() + readBytes);
+							this->inputBuffer.append(this->rawInputBuffer.begin(), this->rawInputBuffer.begin() + readBytes);
 							this->bytesRead += readBytes;
-							this->dispatchBuffer(&this->inputBuffer);
+							this->dispatchBuffer(this->inputBuffer);
 						}
 						returnValueReal = ProcessIOResult::No_Error;
 						break;

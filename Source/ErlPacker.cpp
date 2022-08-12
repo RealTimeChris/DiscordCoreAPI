@@ -203,27 +203,27 @@ namespace DiscordCoreInternal {
 		if (this->offSet + sizeof(uint16_t) > this->theLength) {
 			throw ErlPackError{ "ErlPacker::readBits() Error: readBits() past end of this->\n\n" };
 		}
-		uint16_t theValue = *reinterpret_cast<uint16_t*>(this->buffer + this->offSet);
+		uint16_t theValue = _byteswap_ushort(*reinterpret_cast<uint16_t*>(this->buffer + this->offSet));
 		this->offSet += sizeof(uint16_t);
-		return _byteswap_ushort(theValue);
+		return theValue;
 	}
 
 	uint32_t ErlPacker::read32Bits() {
 		if (this->offSet + sizeof(uint32_t) > this->theLength) {
 			throw ErlPackError{ "ErlPacker::readBits() Error: readBits() past end of this->\n\n" };
 		}
-		uint32_t theValue = *reinterpret_cast<uint32_t*>(this->buffer + this->offSet);
+		uint32_t theValue = _byteswap_ulong(*reinterpret_cast<uint32_t*>(this->buffer + this->offSet));
 		this->offSet += sizeof(uint32_t);
-		return _byteswap_ulong(theValue);
+		return theValue;
 	}
 
 	uint64_t ErlPacker::read64Bits() {
 		if (this->offSet + sizeof(uint64_t) > this->theLength) {
 			throw ErlPackError{ "ErlPacker::readBits() Error: readBits() past end of this->\n\n" };
 		}
-		uint64_t theValue = *reinterpret_cast<uint64_t*>(this->buffer + this->offSet);
+		uint64_t theValue = _byteswap_uint64(*reinterpret_cast<uint64_t*>(this->buffer + this->offSet));
 		this->offSet += sizeof(uint64_t);
-		return _byteswap_uint64(theValue);
+		return theValue;
 	}
 
 	const char* ErlPacker::readString(uint32_t length) {
@@ -293,9 +293,9 @@ namespace DiscordCoreInternal {
 	}
 
 	nlohmann::json ErlPacker::parseSmallIntegerExt() {
-		uint8_t newValue = this->read8Bits();
-		nlohmann::json jsonData = newValue;
-		return jsonData;
+		nlohmann::json j;
+		j = ( uint8_t )this->read8Bits();
+		return j;
 	}
 
 	nlohmann::json ErlPacker::parseBigint(uint32_t digits) {
@@ -449,17 +449,17 @@ namespace DiscordCoreInternal {
 
 	nlohmann::json ErlPacker::parseMapExt() {
 		const uint32_t length = this->read32Bits();
-		auto theMap = nlohmann::json::object();
+		auto map = nlohmann::json::object();
 		for (uint32_t i = 0; i < length; ++i) {
-			auto key = singleValueETFToJson();
-			auto value = singleValueETFToJson();
+			auto key = this->singleValueETFToJson();
+			auto value = this->singleValueETFToJson();
 			if (key.is_number()) {
-				theMap[std::to_string(key.get<uint64_t>())] = std::move(value);
+				map[std::to_string(key.get<uint64_t>())] = std::move(value);
 			} else {
-				theMap[key.get<std::string>()] = std::move(value);
+				map[key.get<std::string>()] = std::move(value);
 			}
 		}
-		return theMap;
+		return map;
 	}
 
 	nlohmann::json ErlPacker::parseAtomUtf8Ext() {
