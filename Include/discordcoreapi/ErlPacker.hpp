@@ -102,40 +102,223 @@ namespace DiscordCoreInternal {
 
 		nlohmann::json singleValueETFToJson();
 
-		nlohmann::json parseSmallIntegerExt();
+		/**
+	 * @brief Process an 'atom' value.
+	 * An atom is a "label" or constant value within the data,
+	 * such as a key name, nullptr, or false.
+	 * 
+	 * @return nlohmann::json value converted to JSON
+	 * @throw dpp::exception Data stream isn't long enough to fetch requested bits
+	 */
+		//nlohmann::json process_atom(const char* atom, uint16_t length);
 
-		nlohmann::json parseBigint(const uint32_t);
+		/**
+	 * @brief Decode an 'atom' value.
+	 * 
+	 * @return nlohmann::json value converted to JSON
+	 * @throw dpp::exception Data stream isn't long enough to fetch requested bits
+	 */
+		nlohmann::json decode_atom();
 
-		nlohmann::json parseIntegerExt();
+		/**
+	 * @brief Decode a small 'atom' value.
+	 * 
+	 * @return nlohmann::json value converted to JSON
+	 * @throw dpp::exception Data stream isn't long enough to fetch requested bits
+	 */
+		nlohmann::json decode_small_atom();
 
-		nlohmann::json parseFloatExt();
+		/**
+	 * @brief Decode a small integer value (0-255).
+	 * 
+	 * @return nlohmann::json value converted to JSON
+	 * @throw dpp::exception Data stream isn't long enough to fetch requested bits
+	 */
+		nlohmann::json decode_small_integer();
 
-		nlohmann::json processAtom(const char* atom, uint32_t length);
+		/**
+	 * @brief Decode an integer value (-MAXINT -> MAXINT-1).
+	 * 
+	 * @return nlohmann::json value converted to JSON
+	 * @throw dpp::exception Data stream isn't long enough to fetch requested bits
+	 */
+		nlohmann::json decode_integer();
 
-		nlohmann::json parseTuple(const uint32_t);
+		/**
+	 * @brief Decode an array of values.
+	 * 
+	 * @return nlohmann::json values converted to JSON
+	 * @throw dpp::exception Data stream isn't long enough to fetch requested bits
+	 */
+		nlohmann::json decode_array(uint32_t length);
 
-		nlohmann::json parseSmallTupleExt();
+		/**
+	 * @brief Decode a list of values.
+	 * 
+	 * @return nlohmann::json values converted to JSON
+	 * @throw dpp::exception Data stream isn't long enough to fetch requested bits
+	 */
+		nlohmann::json decode_list();
 
-		nlohmann::json parseLargeTupleExt();
+		/**
+	 * @brief Decode a 'tuple' value.
+	 * 
+	 * @return nlohmann::json value converted to JSON
+	 * @throw dpp::exception Data stream isn't long enough to fetch requested bits
+	 */
+		nlohmann::json decode_tuple(uint32_t length);
 
-		nlohmann::json parseNilExt();
+		/**
+	 * @brief Decode a nil 'atom' value.
+	 * 
+	 * @return nlohmann::json value converted to JSON
+	 * @throw dpp::exception Data stream isn't long enough to fetch requested bits
+	 */
+		nlohmann::json decode_nil();
 
-		nlohmann::json parseStringAsList();
+		/**
+	 * @brief Decode a map (object) value.
+	 * Will recurse to evaluate each member variable.
+	 * 
+	 * @return nlohmann::json values converted to JSON
+	 * @throw dpp::exception Data stream isn't long enough to fetch requested bits
+	 */
+		nlohmann::json decode_map();
 
-		nlohmann::json parseListExt();
+		/**
+	 * @brief Decode a floating point numeric value.
+	 * (depreciated in erlang but still expected to be supported)
+	 * 
+	 * @return nlohmann::json value converted to JSON
+	 * @throw dpp::exception Data stream isn't long enough to fetch requested bits
+	 */
+		nlohmann::json decode_float();
 
-		nlohmann::json parseBinaryExt();
+		/**
+	 * @brief Decode a floating type numeric value.
+	 * 
+	 * @return nlohmann::json value converted to JSON
+	 * @throw dpp::exception Data stream isn't long enough to fetch requested bits
+	 */
+		nlohmann::json decode_new_float();
 
-		nlohmann::json parseSmallBigExt();
+		/**
+	 * @brief Decode a 'bigint' value.
+	 * 
+	 * @return nlohmann::json value converted to JSON
+	 * @throw dpp::exception Data stream isn't long enough to fetch requested bits
+	 */
+		nlohmann::json decode_bigint(uint32_t digits);
 
-		nlohmann::json parseLargeBigExt();
+		/**
+	 * @brief Decode a small 'bigint' value.
+	 * 
+	 * @return nlohmann::json value converted to JSON
+	 * @throw dpp::exception Data stream isn't long enough to fetch requested bits
+	 */
+		nlohmann::json decode_bigint_small();
 
-		nlohmann::json parseArray(const uint32_t);
+		/**
+	 * @brief Decode a large 'bigint' value.
+	 * 
+	 * @return nlohmann::json value converted to JSON
+	 * @throw dpp::exception Data stream isn't long enough to fetch requested bits
+	 */
+		nlohmann::json decode_bigint_large();
 
-		nlohmann::json parseMapExt();
+		/**
+	 * @brief Decode a binary value.
+	 * 
+	 * @return nlohmann::json value converted to JSON
+	 * @throw dpp::exception Data stream isn't long enough to fetch requested bits
+	 */
+		nlohmann::json decode_binary();
 
-		nlohmann::json parseAtomUtf8Ext();
+		/**
+	 * @brief Decode a string value.
+	 * 
+	 * @return nlohmann::json value converted to JSON
+	 * @throw dpp::exception Data stream isn't long enough to fetch requested bits
+	 */
+		nlohmann::json decode_string();
 
-		nlohmann::json parseSmallAtomUtf8Ext();
+		/**
+	 * @brief Decode a string list value.
+	 * 
+	 * @return nlohmann::json value converted to JSON
+	 * @throw dpp::exception Data stream isn't long enough to fetch requested bits
+	 */
+		nlohmann::json decode_string_as_list();
+
+		/**
+	 * @brief Decode a 'small tuple' value.
+	 * 
+	 * @return nlohmann::json value converted to JSON
+	 * @throw dpp::exception Data stream isn't long enough to fetch requested bits
+	 */
+		nlohmann::json decode_tuple_small();
+
+		/**
+	 * @brief Decode a 'large tuple' value.
+	 * 
+	 * @return nlohmann::json value converted to JSON
+	 * @throw dpp::exception Data stream isn't long enough to fetch requested bits
+	 */
+		nlohmann::json decode_tuple_large();
+
+		/**
+	 * @brief Decode a compressed value.
+	 * This is a zlib-compressed binary blob which contains another
+	 * ETF object.
+	 * 
+	 * @return nlohmann::json value converted to JSON
+	 * @throw dpp::exception Data stream isn't long enough to fetch requested bits
+	 */
+		//nlohmann::json decode_compressed();
+
+		/**
+	 * @brief Decode a 'reference' value.
+	 * Erlang expects this to be supported, in practice Discord doesn't send these right now.
+	 * 
+	 * @return nlohmann::json value converted to JSON
+	 * @throw dpp::exception Data stream isn't long enough to fetch requested bits
+	 */
+		nlohmann::json decode_reference();
+
+		/**
+	 * @brief Decode a 'new reference' value.
+	 * Erlang expects this to be supported, in practice Discord doesn't send these right now.
+	 * 
+	 * @return nlohmann::json value converted to JSON
+	 * @throw dpp::exception Data stream isn't long enough to fetch requested bits
+	 */
+		nlohmann::json decode_new_reference();
+
+		/**
+	 * @brief Decode a 'port' value.
+	 * Erlang expects this to be supported, in practice Discord doesn't send these right now.
+	 * 
+	 * @return nlohmann::json value converted to JSON
+	 * @throw dpp::exception Data stream isn't long enough to fetch requested bits
+	 */
+		nlohmann::json decode_port();
+
+		/**
+	 * @brief Decode a 'PID' value.
+	 * Erlang expects this to be supported, in practice Discord doesn't send these right now.
+	 * 
+	 * @return nlohmann::json value converted to JSON
+	 * @throw dpp::exception Data stream isn't long enough to fetch requested bits
+	 */
+		nlohmann::json decode_pid();
+
+		/**
+	 * @brief Decode an 'export' value.
+	 * Erlang expects this to be supported, in practice Discord doesn't send these right now.
+	 * 
+	 * @return nlohmann::json value converted to JSON
+	 * @throw dpp::exception Data stream isn't long enough to fetch requested bits
+	 */
+		nlohmann::json decode_export();
 	};
 }// namespace DiscordCoreInternal

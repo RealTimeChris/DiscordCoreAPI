@@ -1043,13 +1043,13 @@ namespace DiscordCoreAPI {
 		return static_cast<StoredAsType>(inputFlag) & static_cast<StoredAsType>(theFlag);
 	}
 	
-	void store8Bits(std::string* to, uint8_t num);
+	void store8Bits(std::string to, uint8_t num);
 	
-	void store16Bits(std::string* to, uint16_t num);
+	void store16Bits(std::string to, uint16_t num);
 	
-	void store32Bits(std::string* to, uint32_t num);
+	void store32Bits(std::string to, uint32_t num);
 	
-	void store64Bits(std::string* to, uint64_t num);
+	void store64Bits(std::string to, uint64_t num);
 
 	template<typename ObjectType>
 	concept Copyable = std::copyable<ObjectType>;

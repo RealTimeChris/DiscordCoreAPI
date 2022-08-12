@@ -920,31 +920,31 @@ namespace DiscordCoreAPI {
 		return timeStamp;
 	}
 
-	void store8Bits(std::string* to, uint8_t num) {
-		to->push_back(num);
+	void store8Bits(std::string to, uint8_t num) {
+		to.push_back(num);
 	}
 
-	void store16Bits(std::string* to, uint16_t num) {
+	void store16Bits(std::string to, uint16_t num) {
 		const uint8_t byteSize{ 8 };
 		uint16_t newValue = _byteswap_ushort(num);
 		for (uint32_t x = 0; x < sizeof(uint16_t); ++x) {
-			to->push_back(static_cast<uint8_t>(newValue >> (byteSize * x)));
+			to.push_back(static_cast<uint8_t>(newValue >> (byteSize * x)));
 		}
 	}
 
-	void store32Bits(std::string* to, uint32_t num) {
+	void store32Bits(std::string to, uint32_t num) {
 		const uint8_t byteSize{ 8 };
 		uint32_t newValue = _byteswap_ulong(num);
 		for (uint32_t x = 0; x < sizeof(uint32_t); ++x) {
-			to->push_back(static_cast<uint8_t>(newValue >> (byteSize * x)));
+			to.push_back(static_cast<uint8_t>(newValue >> (byteSize * x)));
 		}
 	}
 
-	void store64Bits(std::string* to, uint64_t num) {
+	void store64Bits(std::string to, uint64_t num) {
 		const uint8_t byteSize{ 8 };
 		uint64_t newValue = _byteswap_uint64(num);
 		for (uint32_t x = 0; x < sizeof(uint64_t); ++x) {
-			to->push_back(static_cast<uint8_t>(newValue >> (byteSize * x)));
+			to.push_back(static_cast<uint8_t>(newValue >> (byteSize * x)));
 		}
 	}
 

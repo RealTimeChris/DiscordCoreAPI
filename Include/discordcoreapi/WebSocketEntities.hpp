@@ -29,35 +29,7 @@
 
 namespace DiscordCoreInternal {
 
-	enum class ErlParserType { Guild = 0 };
-	template<ErlParserType Type> class ErlParser {
-	  public:
-		ErlParser(std::string&){};
-	};
-
-	template<> class ErlParser<ErlParserType::Guild> {
-	  public:
-		ErlParser(std::string& theStringNew) : theString(theStringNew) {
-
-		}
-
-	  protected:
-		std::string& theString;
-		nlohmann::json::number_integer_t memberCount{ 0 };
-		nlohmann::json::number_integer_t flags{ 0 };
-		nlohmann::json::array_t voiceStates{};
-		nlohmann::json::array_t presences{};
-		nlohmann::json::string_t joinedAt{};
-		nlohmann::json::array_t features{};
-		nlohmann::json::array_t channels{};
-		nlohmann::json::string_t ownerId{};
-		nlohmann::json::array_t members{};
-		nlohmann::json::array_t roles{};
-		nlohmann::json::string_t icon{};
-		nlohmann::json::string_t name{};
-	};
-
-	class DiscordCoreAPI_Dll WebSocketMessageHandler : public ErlPacker {
+	class DiscordCoreAPI_Dll WebSocketMessageHandler : public SSLClient, public ErlPacker {
 	  public:
 		WebSocketMessageHandler() = default;
 
@@ -67,21 +39,23 @@ namespace DiscordCoreInternal {
 
 		void createHeader(std::string& outBuffer, uint64_t sendLength, DiscordCoreInternal::WebSocketOpCode opCode) noexcept;
 
-		bool parseConnectionHeaders(DiscordCoreInternal::WebSocketSSLShard* theShard) noexcept;
+		bool parseConnectionHeaders() noexcept;
 
-		bool parseMessage(WebSocketSSLShard* theShard, std::string& theBuffer, DiscordCoreAPI::StopWatch<std::chrono::microseconds>& theStopWatch) noexcept;
+		bool parseMessage(DiscordCoreAPI::StopWatch<std::chrono::microseconds>& theStopWatch) noexcept;
 
-		virtual bool onMessageReceived(const std::string& theString, DiscordCoreAPI::StopWatch<std::chrono::microseconds>& theStopWatch) noexcept = 0;
+		virtual bool onMessageReceived(DiscordCoreAPI::StopWatch<std::chrono::microseconds>& theStopWatch) noexcept = 0;
 
 		virtual ~WebSocketMessageHandler() = default;
 
 	  protected:
 		DiscordCoreAPI::ConfigManager* configManager{};
+		int64_t messageLength{};
+		int64_t messageOffset{};
 	};
 
 	enum class WebSocketSSLShardState { Connecting = 0, Upgrading = 1, Collecting_Hello = 2, Sending_Identify = 3, Authenticated = 4, Disconnected = 5 };
 
-	class DiscordCoreAPI_Dll WebSocketSSLShard : public SSLClient, public WebSocketMessageHandler {
+	class DiscordCoreAPI_Dll WebSocketSSLShard : public WebSocketMessageHandler {
 	  public:
 		friend class DiscordCoreAPI::DiscordCoreClient;
 		friend class DiscordCoreAPI::VoiceConnection;
@@ -99,13 +73,13 @@ namespace DiscordCoreInternal {
 
 		bool sendMessage(std::string& dataToSend, bool priority) noexcept;
 
-		bool onMessageReceived(const std::string& theString, DiscordCoreAPI::StopWatch<std::chrono::microseconds>& theStopWatch) noexcept;
+		bool onMessageReceived(DiscordCoreAPI::StopWatch<std::chrono::microseconds>& theStopWatch) noexcept;
 
 		void checkForAndSendHeartBeat(bool = false) noexcept;
 
 		void disconnect(bool doWeReconnect) noexcept;
 
-		void dispatchBuffer(std::string& theBuffer) noexcept;
+		void dispatchBuffer() noexcept;
 
 		void onClosed() noexcept;
 
@@ -132,8 +106,6 @@ namespace DiscordCoreInternal {
 		WebSocketOpCode dataOpCode{};
 		bool areWeResuming{ false };
 		nlohmann::json payload{};
-		int64_t messageLength{};
-		int64_t messageOffset{};
 		std::string sessionId{};
 		nlohmann::json shard{};
 		Snowflake userId{ 0 };
