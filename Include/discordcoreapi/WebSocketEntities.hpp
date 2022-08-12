@@ -69,7 +69,7 @@ namespace DiscordCoreInternal {
 
 		bool parseConnectionHeaders(DiscordCoreInternal::WebSocketSSLShard* theShard) noexcept;
 
-		bool parseMessage(WebSocketSSLShard* theShard, std::string& theBuffer, DiscordCoreAPI::StopWatch<std::chrono::microseconds>& theStopWatch) noexcept;
+		bool parseMessage(WebSocketSSLShard* theShard, std::string* theBuffer, DiscordCoreAPI::StopWatch<std::chrono::microseconds>& theStopWatch) noexcept;
 
 		virtual bool onMessageReceived(std::string& theString, DiscordCoreAPI::StopWatch<std::chrono::microseconds>& theStopWatch) noexcept = 0;
 
@@ -105,7 +105,7 @@ namespace DiscordCoreInternal {
 
 		void disconnect(bool doWeReconnect) noexcept;
 
-		void dispatchBuffer(std::string& theBuffer) noexcept;
+		void dispatchBuffer(std::string* theBuffer) noexcept;
 
 		void onClosed() noexcept;
 

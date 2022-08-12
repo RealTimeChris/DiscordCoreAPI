@@ -363,10 +363,6 @@ namespace DiscordCoreAPI {
 				if (!stopToken.stop_requested() && WebSocketSSLShard::areWeStillConnected()) {
 					WebSocketSSLShard::processIO();
 				}
-				if (!stopToken.stop_requested() && WebSocketSSLShard::areWeStillConnected() && WebSocketSSLShard::inputBuffer.size() > 0) {
-					DiscordCoreAPI::StopWatch theStopWatch{ 1000us };
-					this->parseMessage(this, theStopWatch);
-				}
 
 				std::this_thread::sleep_for(1ms);
 			}
@@ -417,12 +413,6 @@ namespace DiscordCoreAPI {
 			WebSocketSSLShard::processIO();
 			if (!WebSocketSSLShard::areWeStillConnected()) {
 				return false;
-			}
-			if (WebSocketSSLShard::inputBuffer.size() > 0) {
-
-				if (!this->parseMessage(this, theStopWatch)) {
-					return false;
-				}
 			}
 			if (this->processedMessages.size() > 0) {
 				this->onMessageReceived();
