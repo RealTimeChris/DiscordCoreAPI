@@ -109,41 +109,39 @@ namespace DiscordCoreInternal {
 				[[fallthrough]];
 			case WebSocketOpCode::Op_Pong: {
 				uint8_t length01 = (*theBuffer)[1];
-				auto messageOffset = 2;
+				theShard->messageOffset = 2;
 				if (length01 & webSocketMaskBit) {
 					return true;
 				}
-				auto messageLength = length01;
+				theShard->messageLength = length01;
 				if (length01 == webSocketPayloadLengthMagicLarge) {
 					if (theBuffer->size() < 8) {
 						return true;
 					}
 					uint8_t length03 = (*theBuffer)[2];
 					uint8_t length04 = (*theBuffer)[3];
-					messageLength = static_cast<uint64_t>((length03 << 8) | length04);
-					messageOffset += 2;
+					theShard->messageLength = static_cast<uint64_t>((length03 << 8) | length04);
+					theShard->messageOffset += 2;
 				} else if (length01 == webSocketPayloadLengthMagicHuge) {
 					if (theBuffer->size() < 10) {
 						return true;
 					}
-					messageLength = 0;
+					theShard->messageLength = 0;
 					for (int64_t x = 2, shift = 56; x < 10; ++x, shift -= 8) {
 						uint8_t lengthNew = static_cast<uint8_t>((*theBuffer)[x]);
-						messageLength |= static_cast<uint64_t>((lengthNew & static_cast<uint64_t>(0xff)) << static_cast<uint64_t>(shift));
+						theShard->messageLength |= static_cast<uint64_t>((lengthNew & static_cast<uint64_t>(0xff)) << static_cast<uint64_t>(shift));
 					}
-					messageOffset += 8;
+					theShard->messageOffset += 8;
 				}
-				if (theBuffer->size() < static_cast<uint64_t>(messageOffset) + static_cast<uint64_t>(messageLength)) {
+				if (theBuffer->size() < static_cast<uint64_t>(theShard->messageOffset) + static_cast<uint64_t>(theShard->messageLength)) {
 					return true;
 				} else {
 					theStopWatch.resetTimer();
-					if (!this->onMessageReceived((std::string&)theBuffer->substr(messageOffset, messageLength), theStopWatch)) {
+					if (!this->onMessageReceived(( std::string& )theBuffer->substr(theShard->messageOffset, theShard->messageLength), theStopWatch)) {
 						return false;
 					}
-					std::cout << "THE INPUT BUFFER: " << theBuffer << std::endl;
-					std::cout << "THE TOTAL TIME PASSED 0101: " << theStopWatch.totalTimePassed() << std::endl;
 					theStopWatch.resetTimer();
-					theBuffer->erase(theBuffer->begin(), theBuffer->begin() + messageOffset + messageLength);
+					theBuffer->erase(theBuffer->begin(), theBuffer->begin() + theShard->messageOffset + theShard->messageLength);
 					return true;
 				}
 			}
@@ -331,7 +329,6 @@ namespace DiscordCoreInternal {
 							try {
 								theStopWatch.resetTimer();
 								std::cout << "THE STRING LENGTH: " << theString.size() << std::endl;
-								std::cout << "THE STRING: " << theString << std::endl;
 								BufferPack theBuffer{ &theString };
 								this->payload = this->parseEtfToJson(theBuffer);
 								std::cout << "THE TOTAL TIME PASSED 0202: " << theStopWatch.totalTimePassed() << std::endl;
@@ -344,7 +341,7 @@ namespace DiscordCoreInternal {
 								return false;
 							}
 						} else {
-							this->payload  = nlohmann::json::parse(std::move(theString));
+							this->payload = nlohmann::json::parse(theString);
 						}
 						
 						if (this->configManager->doWePrintWebSocketSuccessMessages()) {
