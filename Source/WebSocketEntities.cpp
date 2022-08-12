@@ -328,12 +328,9 @@ namespace DiscordCoreInternal {
 						if (this->configManager->getTextFormat() == DiscordCoreAPI::TextFormat::Etf) {
 							try {
 								theStopWatch.resetTimer();
-								std::cout << "THE STRING LENGTH: " << theString.size() << std::endl;
 								BufferPack theBuffer{ &theString };
 								this->payload = this->parseEtfToJson(theBuffer);
-								std::cout << "THE TOTAL TIME PASSED 0202: " << theStopWatch.totalTimePassed() << std::endl;
 								theStopWatch.resetTimer();
-								std::cout << "THE TOTAL TIME PASSED 07897: " << theStopWatch.totalTimePassed() << std::endl;
 							} catch (...) {
 								if (this->configManager->doWePrintGeneralErrorMessages()) {
 									DiscordCoreAPI::reportException("ErlPacker::parseEtfToJson()");
@@ -349,7 +346,6 @@ namespace DiscordCoreInternal {
 								 << DiscordCoreAPI::reset() << endl
 								 << endl;
 						}
-						std::cout << "WERE HERE THIS IS 0606" << std::endl;
 						if (this->payload .contains("t") && !this->payload ["t"].is_null()) {
 							if (this->payload ["t"] == "RESUMED") {
 								this->theWebSocketState.store(WebSocketSSLShardState::Authenticated);
@@ -370,7 +366,6 @@ namespace DiscordCoreInternal {
 						if (this->payload .contains("s") && !this->payload ["s"].is_null()) {
 							this->lastNumberReceived = this->payload ["s"].get<int32_t>();
 						}
-						std::cout << "WERE HERE THIS IS 0707" << std::endl;
 						if (this->payload .contains("op") && !this->payload ["op"].is_null()) {
 							switch (this->payload ["op"].get<int32_t>()) {
 								case 0: {
@@ -451,21 +446,14 @@ namespace DiscordCoreInternal {
 											dataPackage->threadMembersUpdateData = &this->payload ["d"];
 											this->discordCoreClient->eventManager.onThreadMembersUpdateEvent(*dataPackage);
 										} else if (this->payload ["t"] == "GUILD_CREATE") {
-											theStopWatch.resetTimer();
-											std::cout << "THE TOTAL TIME PASSED 05010501:  " << theStopWatch.totalTimePassed() << std::endl;
-											theStopWatch.resetTimer();
 											std::unique_ptr<DiscordCoreAPI::OnGuildCreationData> dataPackage{ std::make_unique<DiscordCoreAPI::OnGuildCreationData>() };
-											std::unique_ptr<DiscordCoreAPI::GuildData> theGuild{ std::make_unique<DiscordCoreAPI::GuildData>(&this->payload ["d"]) };
+											std::unique_ptr<DiscordCoreAPI::GuildData> theGuild{ std::make_unique<DiscordCoreAPI::GuildData>(&this->payload["d"]) };
 											Snowflake guildId = theGuild->id;
-											std::cout << "WERE HERE THIS IS IT THE ID: " << guildId << std::endl;
-											std::cout << "THE TOTAL TIME PASSED 0303:  " << theStopWatch.totalTimePassed() << std::endl;
-											theStopWatch.resetTimer();
 											theGuild->discordCoreClient = this->discordCoreClient;
 											DiscordCoreAPI::Guilds::insertGuild(std::move(theGuild));
 											dataPackage->guild = (*DiscordCoreAPI::Guilds::cache)[guildId].get();
 											dataPackage->guild->discordCoreClient = this->discordCoreClient;
 											//this->discordCoreClient->eventManager.onGuildCreationEvent(std::move(*dataPackage));
-											std::cout << "THE TOTAL TIME PASSED 2323:  " << theStopWatch.totalTimePassed() << std::endl;
 											theStopWatch.resetTimer();
 										} else if (this->payload ["t"] == "GUILD_UPDATE") {
 											std::unique_ptr<DiscordCoreAPI::OnGuildUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnGuildUpdateData>() };
@@ -1151,7 +1139,6 @@ namespace DiscordCoreInternal {
 					if (this->sslShard->areWeStillConnected()) {
 						DiscordCoreAPI::StopWatch<std::chrono::microseconds> theStopWatch{};
 					}
-					std::cout << "WERE HERE THIS IS IT!" << std::endl;
 					std::this_thread::sleep_for(1ms);
 				}
 			}

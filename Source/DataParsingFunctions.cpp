@@ -2786,11 +2786,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void GuildData::parseObject(const nlohmann::json* jsonObjectData, GuildData* pDataStructure) {
-		std::cout << "WERE HERE THIS IS -0303" << std::endl;
-		std::cout << "THE STRING REAL: " << getString(jsonObjectData, "id") << std::endl;
 		pDataStructure->id = strtoull(getString(jsonObjectData, "id"));
-
-		std::cout << "WERE HERE THIS IS -0202" << std::endl;
 
 		std::string iconUrlString = "https://cdn.discordapp.com/";
 		iconUrlString += "icons/" + std::to_string(pDataStructure->id) + "/" + getString(jsonObjectData, "icon") + ".png";
@@ -2802,8 +2798,6 @@ namespace DiscordCoreAPI {
 
 		pDataStructure->flags = setBool<int8_t, GuildFlags>(pDataStructure->flags, GuildFlags::Owner, getBool(jsonObjectData, "owner"));
 
-		std::cout << "WERE HERE THIS IS -10101" << std::endl;
-
 		pDataStructure->ownerId = strtoull(getString(jsonObjectData, "owner_id"));
 
 		if (jsonObjectData->contains("features") && !(*jsonObjectData)["features"].is_null()) {
@@ -2811,8 +2805,7 @@ namespace DiscordCoreAPI {
 				pDataStructure->features.push_back(StringWrapper{ value.get<std::string>() });
 			}
 		}
-		
-		std::cout << "WERE HERE THIS IS IT0101" << std::endl;
+	
 		pDataStructure->flags = setBool<int8_t, GuildFlags>(pDataStructure->flags, GuildFlags::WidgetEnabled, getBool(jsonObjectData, "widget_enabled"));
 
 		pDataStructure->flags = setBool<int8_t, GuildFlags>(pDataStructure->flags, GuildFlags::Large, getBool(jsonObjectData, "large"));

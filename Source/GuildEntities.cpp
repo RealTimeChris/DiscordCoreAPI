@@ -838,10 +838,7 @@ namespace DiscordCoreAPI {
 		if (guild->id == 0) {
 			return;
 		}
-		//guild->initialize();
-		if (!guild) {
-			std::cout << "STOP HERE STOP HERE!" << std::endl;
-		}
+		guild->initialize();
 		if (Guilds::configManager->doWeCacheGuilds()) {
 			(*Guilds::cache)[guild->id] = std::move(guild);
 		}
