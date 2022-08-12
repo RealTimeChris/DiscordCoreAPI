@@ -250,12 +250,12 @@ namespace DiscordCoreAPI {
 		*this = other;
 	}
 
-	Guild& Guild::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	Guild& Guild::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	Guild::Guild(const nlohmann::json* jsonObjectData) {
+	Guild::Guild(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
@@ -263,12 +263,12 @@ namespace DiscordCoreAPI {
 		return this->theGuilds;
 	}
 
-	GuildVector& GuildVector::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	GuildVector& GuildVector::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	GuildVector::GuildVector(const nlohmann::json* jsonObjectData) {
+	GuildVector::GuildVector(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
@@ -838,7 +838,7 @@ namespace DiscordCoreAPI {
 		if (guild->id == 0) {
 			return;
 		}
-		guild->initialize();
+		//guild->initialize();
 		if (Guilds::configManager->doWeCacheGuilds()) {
 			(*Guilds::cache)[guild->id] = std::move(guild);
 		}

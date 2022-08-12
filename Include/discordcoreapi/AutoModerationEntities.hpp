@@ -31,18 +31,18 @@ namespace DiscordCoreAPI {
 	 */
 
 	/// Represents an auto-moderation-rule. \brief Represents an auto-moderation-rule.
-	class DiscordCoreAPI_Dll AutoModerationRule : public AutoModerationRuleData {
+	class DiscordCoreAPI_Dll AutoModerationRule	 : public AutoModerationRuleData {
 	  public:
 		AutoModerationRule() = default;
 
-		AutoModerationRule& operator=(const nlohmann::json* jsonObjectData);
+		AutoModerationRule& operator=(const nlohmann::json& jsonObjectData);
 
-		AutoModerationRule(const nlohmann::json* jsonObjectData);
+		AutoModerationRule(const nlohmann::json& jsonObjectData);
 
 		virtual ~AutoModerationRule() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, AutoModerationRule* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	class DiscordCoreAPI_Dll AutoModerationRuleVector {
@@ -51,16 +51,16 @@ namespace DiscordCoreAPI {
 
 		operator std::vector<AutoModerationRule>();
 
-		AutoModerationRuleVector& operator=(const nlohmann::json* jsonObjectData);
+		AutoModerationRuleVector& operator=(const nlohmann::json& jsonObjectData);
 
-		AutoModerationRuleVector(const nlohmann::json* jsonObjectData);
+		AutoModerationRuleVector(const nlohmann::json& jsonObjectData);
 
 		virtual ~AutoModerationRuleVector() = default;
 
 	  protected:
 		std::vector<AutoModerationRule> theAutoModerationRules{};
 
-		void parseObject(const nlohmann::json* jsonObjectData, AutoModerationRuleVector* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// For listing all of the auto-moderation-rules for a particular Guild. \brief For listing all of the auto-moderation-rules for a particular Guild .
@@ -105,13 +105,13 @@ namespace DiscordCoreAPI {
 
 		AutoModerationActionExecutionEventData() = default;
 
-		AutoModerationActionExecutionEventData& operator=(const nlohmann::json* jsonObjectData);
+		AutoModerationActionExecutionEventData& operator=(const nlohmann::json& jsonObjectData);
 
-		AutoModerationActionExecutionEventData(const nlohmann::json* jsonObjectData);
+		AutoModerationActionExecutionEventData(const nlohmann::json& jsonObjectData);
 
 		virtual ~AutoModerationActionExecutionEventData() = default;
 
-		void parseObject(const nlohmann::json* jsonObjectData, AutoModerationActionExecutionEventData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// For modifying an auto-moderation-rule. \brief For modifying an auto-moderation-rule.

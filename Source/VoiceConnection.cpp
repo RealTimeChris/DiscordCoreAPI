@@ -322,7 +322,7 @@ namespace DiscordCoreAPI {
 			theData.ssrc = this->audioSSRC;
 			nlohmann::json newString = theData;
 			std::string theString{};
-			this->stringifyJsonData(&newString, theString, DiscordCoreInternal::WebSocketOpCode::Op_Text);
+			this->stringifyJsonData(newString, theString, DiscordCoreInternal::WebSocketOpCode::Op_Text);
 			if (!this->sendMessage(theString, true)) {
 				this->onClosedVoice();
 			}
@@ -771,7 +771,7 @@ namespace DiscordCoreAPI {
 				identifyData.connectionData = this->voiceConnectionData;
 				std::string sendVector{};
 				nlohmann::json theJsonData{ identifyData };
-				this->stringifyJsonData(&theJsonData, sendVector, DiscordCoreInternal::WebSocketOpCode::Op_Text);
+				this->stringifyJsonData(theJsonData, sendVector, DiscordCoreInternal::WebSocketOpCode::Op_Text);
 				if (!this->sendMessage(sendVector, true)) {
 					this->currentReconnectTries++;
 					this->onClosedVoice();
@@ -810,7 +810,7 @@ namespace DiscordCoreAPI {
 				protocolPayloadData.voicePort = this->port;
 				nlohmann::json protocolPayloadSelectString = protocolPayloadData;
 				std::string sendVector{};
-				this->stringifyJsonData(&protocolPayloadSelectString, sendVector, DiscordCoreInternal::WebSocketOpCode::Op_Text);
+				this->stringifyJsonData(protocolPayloadSelectString, sendVector, DiscordCoreInternal::WebSocketOpCode::Op_Text);
 				if (!this->sendMessage(sendVector, true)) {
 					this->currentReconnectTries++;
 					this->onClosedVoice();
@@ -871,7 +871,7 @@ namespace DiscordCoreAPI {
 				data["d"] = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 				data["op"] = int32_t(3);
 				std::string theString{};
-				this->stringifyJsonData(&data, theString, DiscordCoreInternal::WebSocketOpCode::Op_Text);
+				this->stringifyJsonData(data, theString, DiscordCoreInternal::WebSocketOpCode::Op_Text);
 				if (!this->sendMessage(theString, true)) {
 					this->onClosedVoice();
 				}

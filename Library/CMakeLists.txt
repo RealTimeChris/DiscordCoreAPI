@@ -63,14 +63,6 @@ find_package(OPENSSL MODULE REQUIRED)
 find_package(OPUS MODULE REQUIRED)
 find_package(SODIUM MODULE REQUIRED)
 
-target_compile_features(
-	"${LIB_NAME}" PUBLIC
-	cxx_constexpr cxx_auto_type cxx_defaulted_functions 
-	cxx_deleted_functions cxx_final cxx_lambdas 
-	cxx_override cxx_thread_local cxx_variadic_templates 
-	cxx_attribute_deprecated
-)
-
 target_link_libraries(
 	"${LIB_NAME}" PUBLIC
 	$<$<TARGET_EXISTS:FFMPEG::AVFormat>:FFMPEG::AVFormat>

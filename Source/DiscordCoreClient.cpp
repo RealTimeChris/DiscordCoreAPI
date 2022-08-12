@@ -145,9 +145,9 @@ namespace DiscordCoreAPI {
 			Globals::doWeQuit.store(true);
 			return;
 		}
-		while (!Globals::doWeQuit.load()) {
-			std::this_thread::sleep_for(1ms);
-		}
+		//while (!Globals::doWeQuit.load()) {
+			//std::this_thread::sleep_for(1ms);
+		//}
 		if (this->baseSocketAgentMap.contains(std::to_string(this->configManager.getStartingShard())) &&
 			this->baseSocketAgentMap[std::to_string(this->configManager.getStartingShard())]->getTheTask()) {
 			if (this->baseSocketAgentMap[std::to_string(this->configManager.getStartingShard())]->getTheTask()->joinable()) {

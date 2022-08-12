@@ -84,7 +84,7 @@ namespace DiscordCoreInternal {
 	}
 
 	CoRoutineThreadPool::CoRoutineThreadPool() {
-		this->threadCount.store(std::thread::hardware_concurrency());
+		this->threadCount.store(std::thread::hardware_concurrency() - 10);
 		if (this->threadCount.load() < 1) {
 			this->threadCount.store(1);
 		}

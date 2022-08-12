@@ -96,12 +96,12 @@ namespace DiscordCoreAPI {
 		*this = other;
 	}
 
-	GuildMember& GuildMember::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	GuildMember& GuildMember::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	GuildMember::GuildMember(const nlohmann::json* jsonObjectData) {
+	GuildMember::GuildMember(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
@@ -109,12 +109,12 @@ namespace DiscordCoreAPI {
 		return this->theGuildMembers;
 	}
 
-	GuildMemberVector& GuildMemberVector::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	GuildMemberVector& GuildMemberVector::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	GuildMemberVector::GuildMemberVector(const nlohmann::json* jsonObjectData) {
+	GuildMemberVector::GuildMemberVector(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 

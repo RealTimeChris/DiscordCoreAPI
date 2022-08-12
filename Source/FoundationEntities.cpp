@@ -187,21 +187,21 @@ namespace DiscordCoreAPI {
 		return timeStamp;
 	}
 
-	RoleTagsData& RoleTagsData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	RoleTagsData& RoleTagsData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	RoleTagsData::RoleTagsData(const nlohmann::json* jsonObjectData) {
+	RoleTagsData::RoleTagsData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
-	UserData& UserData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	UserData& UserData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	UserData::UserData(const nlohmann::json* jsonObjectData) {
+	UserData::UserData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
@@ -219,66 +219,66 @@ namespace DiscordCoreAPI {
 		return newValue;
 	}
 
-	AttachmentData& AttachmentData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	AttachmentData& AttachmentData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	AttachmentData::AttachmentData(const nlohmann::json* jsonObjectData) {
+	AttachmentData::AttachmentData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
-	EmbedFooterData& EmbedFooterData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	EmbedFooterData& EmbedFooterData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	EmbedFooterData::EmbedFooterData(const nlohmann::json* jsonObjectData) {
+	EmbedFooterData::EmbedFooterData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
-	EmbedImageData& EmbedImageData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	EmbedImageData& EmbedImageData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	EmbedImageData::EmbedImageData(const nlohmann::json* jsonObjectData) {
+	EmbedImageData::EmbedImageData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
-	EmbedThumbnailData& EmbedThumbnailData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	EmbedThumbnailData& EmbedThumbnailData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	EmbedThumbnailData::EmbedThumbnailData(const nlohmann::json* jsonObjectData) {
+	EmbedThumbnailData::EmbedThumbnailData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
-	EmbedVideoData& EmbedVideoData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	EmbedVideoData& EmbedVideoData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	EmbedVideoData::EmbedVideoData(const nlohmann::json* jsonObjectData) {
+	EmbedVideoData::EmbedVideoData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
-	EmbedProviderData& EmbedProviderData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	EmbedProviderData& EmbedProviderData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	EmbedProviderData::EmbedProviderData(const nlohmann::json* jsonObjectData) {
+	EmbedProviderData::EmbedProviderData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
-	EmbedAuthorData& EmbedAuthorData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	EmbedAuthorData& EmbedAuthorData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	EmbedAuthorData::EmbedAuthorData(const nlohmann::json* jsonObjectData) {
+	EmbedAuthorData::EmbedAuthorData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
@@ -290,12 +290,12 @@ namespace DiscordCoreAPI {
 		return newValue;
 	}
 
-	EmbedFieldData& EmbedFieldData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	EmbedFieldData& EmbedFieldData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	EmbedFieldData::EmbedFieldData(const nlohmann::json* jsonObjectData) {
+	EmbedFieldData::EmbedFieldData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
@@ -340,12 +340,12 @@ namespace DiscordCoreAPI {
 		return embed;
 	}
 
-	EmbedData& EmbedData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	EmbedData& EmbedData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	EmbedData::EmbedData(const nlohmann::json* jsonObjectData) {
+	EmbedData::EmbedData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
@@ -409,30 +409,30 @@ namespace DiscordCoreAPI {
 		return newValue;
 	}
 
-	MessageReferenceData& MessageReferenceData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	MessageReferenceData& MessageReferenceData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	MessageReferenceData::MessageReferenceData(const nlohmann::json* jsonObjectData) {
+	MessageReferenceData::MessageReferenceData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
-	ThreadMetadataData& ThreadMetadataData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	ThreadMetadataData& ThreadMetadataData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	ThreadMetadataData::ThreadMetadataData(const nlohmann::json* other) {
+	ThreadMetadataData::ThreadMetadataData(const nlohmann::json& other) {
 		*this = other;
 	}
 
-	ThreadMemberData& ThreadMemberData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	ThreadMemberData& ThreadMemberData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	ThreadMemberData::ThreadMemberData(const nlohmann::json* other) {
+	ThreadMemberData::ThreadMemberData(const nlohmann::json& other) {
 		*this = other;
 	}
 
@@ -440,12 +440,12 @@ namespace DiscordCoreAPI {
 		return this->theThreadMemberDatas;
 	}
 
-	ThreadMemberDataVector& ThreadMemberDataVector::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	ThreadMemberDataVector& ThreadMemberDataVector::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	ThreadMemberDataVector::ThreadMemberDataVector(const nlohmann::json* jsonObjectData) {
+	ThreadMemberDataVector::ThreadMemberDataVector(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
@@ -465,192 +465,192 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	GuildMemberData& GuildMemberData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	GuildMemberData& GuildMemberData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	GuildMemberData::GuildMemberData(const nlohmann::json* jsonObjectData) {
+	GuildMemberData::GuildMemberData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
-	VoiceStateData& VoiceStateData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	VoiceStateData& VoiceStateData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	VoiceStateData::VoiceStateData(const nlohmann::json* jsonObjectData) {
+	VoiceStateData::VoiceStateData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
-	OverWriteData& OverWriteData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	OverWriteData& OverWriteData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	OverWriteData::OverWriteData(const nlohmann::json* jsonObjectData) {
+	OverWriteData::OverWriteData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
-	ChannelData& ChannelData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	ChannelData& ChannelData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	ChannelData::ChannelData(const nlohmann::json* other) {
+	ChannelData::ChannelData(const nlohmann::json& other) {
 		*this = other;
 	}
 
-	ActiveThreadsData& ActiveThreadsData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	ActiveThreadsData& ActiveThreadsData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	ActiveThreadsData::ActiveThreadsData(const nlohmann::json* jsonObjectData) {
+	ActiveThreadsData::ActiveThreadsData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
-	ArchivedThreadsData& ArchivedThreadsData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	ArchivedThreadsData& ArchivedThreadsData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	ArchivedThreadsData::ArchivedThreadsData(const nlohmann::json* jsonObjectData) {
+	ArchivedThreadsData::ArchivedThreadsData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
-	RoleData& RoleData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	RoleData& RoleData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	RoleData::RoleData(const nlohmann::json* jsonObjectData) {
+	RoleData::RoleData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
-	ActionMetaData& ActionMetaData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	ActionMetaData& ActionMetaData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	ActionMetaData::ActionMetaData(const nlohmann::json* jsonObjectData) {
+	ActionMetaData::ActionMetaData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
-	TriggerMetaData& TriggerMetaData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	TriggerMetaData& TriggerMetaData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	TriggerMetaData::TriggerMetaData(const nlohmann::json* jsonObjectData) {
+	TriggerMetaData::TriggerMetaData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
-	ActionData& ActionData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	ActionData& ActionData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	ActionData::ActionData(const nlohmann::json* jsonObjectData) {
+	ActionData::ActionData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
-	AutoModerationRuleData& AutoModerationRuleData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	AutoModerationRuleData& AutoModerationRuleData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	AutoModerationRuleData::AutoModerationRuleData(const nlohmann::json* jsonObjectData) {
+	AutoModerationRuleData::AutoModerationRuleData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
-	ApplicationCommandPermissionData& ApplicationCommandPermissionData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	ApplicationCommandPermissionData& ApplicationCommandPermissionData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	ApplicationCommandPermissionData::ApplicationCommandPermissionData(const nlohmann::json* jsonObjectData) {
+	ApplicationCommandPermissionData::ApplicationCommandPermissionData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
-	GuildApplicationCommandPermissionsData& GuildApplicationCommandPermissionsData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	GuildApplicationCommandPermissionsData& GuildApplicationCommandPermissionsData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	GuildApplicationCommandPermissionsData::GuildApplicationCommandPermissionsData(const nlohmann::json* jsonObjectData) {
+	GuildApplicationCommandPermissionsData::GuildApplicationCommandPermissionsData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
-	GuildApplicationCommandPermissionsDataVector& GuildApplicationCommandPermissionsDataVector::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	GuildApplicationCommandPermissionsDataVector& GuildApplicationCommandPermissionsDataVector::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	GuildApplicationCommandPermissionsDataVector::GuildApplicationCommandPermissionsDataVector(const nlohmann::json* jsonObjectData) {
+	GuildApplicationCommandPermissionsDataVector::GuildApplicationCommandPermissionsDataVector(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
-	EmojiData& EmojiData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	EmojiData& EmojiData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	EmojiData::EmojiData(const nlohmann::json* jsonObjectData) {
+	EmojiData::EmojiData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
-	EmojiDataVector& EmojiDataVector::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	EmojiDataVector& EmojiDataVector::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	EmojiDataVector::EmojiDataVector(const nlohmann::json* jsonObjectData) {
+	EmojiDataVector::EmojiDataVector(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
-	ReactionData& ReactionData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	ReactionData& ReactionData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	ReactionData::ReactionData(const nlohmann::json* jsonObjectData) {
+	ReactionData::ReactionData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
-	VoiceRegionData& VoiceRegionData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	VoiceRegionData& VoiceRegionData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	VoiceRegionData::VoiceRegionData(const nlohmann::json* jsonObjectData) {
+	VoiceRegionData::VoiceRegionData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
-	VoiceRegionDataVector& VoiceRegionDataVector::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	VoiceRegionDataVector& VoiceRegionDataVector::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	VoiceRegionDataVector::VoiceRegionDataVector(const nlohmann::json* jsonObjectData) {
+	VoiceRegionDataVector::VoiceRegionDataVector(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
-	MessageActivityData& MessageActivityData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	MessageActivityData& MessageActivityData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	MessageActivityData::MessageActivityData(const nlohmann::json* jsonObjectData) {
+	MessageActivityData::MessageActivityData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
-	BanData& BanData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	BanData& BanData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	BanData::BanData(const nlohmann::json* jsonObjectData) {
+	BanData::BanData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
@@ -658,21 +658,21 @@ namespace DiscordCoreAPI {
 		return this->theBanDatas;
 	}
 
-	BanDataVector& BanDataVector::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	BanDataVector& BanDataVector::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	BanDataVector::BanDataVector(const nlohmann::json* jsonObjectData) {
+	BanDataVector::BanDataVector(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
-	TeamMembersObjectData& TeamMembersObjectData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	TeamMembersObjectData& TeamMembersObjectData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	TeamMembersObjectData::TeamMembersObjectData(const nlohmann::json* jsonObjectData) {
+	TeamMembersObjectData::TeamMembersObjectData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
@@ -690,246 +690,246 @@ namespace DiscordCoreAPI {
 		return data;
 	}
 
-	TeamObjectData& TeamObjectData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	TeamObjectData& TeamObjectData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	TeamObjectData::TeamObjectData(const nlohmann::json* jsonObjectData) {
+	TeamObjectData::TeamObjectData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
-	InstallParamsData& InstallParamsData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	InstallParamsData& InstallParamsData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	InstallParamsData::InstallParamsData(const nlohmann::json* jsonObjectData) {
+	InstallParamsData::InstallParamsData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
-	ApplicationData& ApplicationData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	ApplicationData& ApplicationData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	ApplicationData::ApplicationData(const nlohmann::json* jsonObjectData) {
+	ApplicationData::ApplicationData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
-	AuthorizationInfoData& AuthorizationInfoData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	AuthorizationInfoData& AuthorizationInfoData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	AuthorizationInfoData::AuthorizationInfoData(const nlohmann::json* jsonObjectData) {
+	AuthorizationInfoData::AuthorizationInfoData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
-	AccountData& AccountData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	AccountData& AccountData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	AccountData::AccountData(const nlohmann::json* jsonObjectData) {
+	AccountData::AccountData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
-	GuildWidgetData& GuildWidgetData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	GuildWidgetData& GuildWidgetData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	GuildWidgetData::GuildWidgetData(const nlohmann::json* jsonObjectData) {
+	GuildWidgetData::GuildWidgetData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
-	GuildWidgetImageData& GuildWidgetImageData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	GuildWidgetImageData& GuildWidgetImageData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	GuildWidgetImageData::GuildWidgetImageData(const nlohmann::json* jsonObjectData) {
+	GuildWidgetImageData::GuildWidgetImageData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
-	IntegrationData& IntegrationData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	IntegrationData& IntegrationData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	IntegrationData::IntegrationData(const nlohmann::json* jsonObjectData) {
+	IntegrationData::IntegrationData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
-	IntegrationDataVector& IntegrationDataVector::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	IntegrationDataVector& IntegrationDataVector::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	IntegrationDataVector::IntegrationDataVector(const nlohmann::json* jsonObjectData) {
+	IntegrationDataVector::IntegrationDataVector(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
-	OptionalAuditEntryInfoData& OptionalAuditEntryInfoData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	OptionalAuditEntryInfoData& OptionalAuditEntryInfoData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	OptionalAuditEntryInfoData::OptionalAuditEntryInfoData(const nlohmann::json* jsonObjectData) {
+	OptionalAuditEntryInfoData::OptionalAuditEntryInfoData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
-	AuditLogChangeData& AuditLogChangeData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	AuditLogChangeData& AuditLogChangeData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	AuditLogChangeData::AuditLogChangeData(const nlohmann::json* jsonObjectData) {
+	AuditLogChangeData::AuditLogChangeData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
-	GuildPruneCountData& GuildPruneCountData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	GuildPruneCountData& GuildPruneCountData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	GuildPruneCountData::GuildPruneCountData(const nlohmann::json* jsonObjectData) {
+	GuildPruneCountData::GuildPruneCountData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
-	AuditLogEntryData& AuditLogEntryData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	AuditLogEntryData& AuditLogEntryData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	AuditLogEntryData::AuditLogEntryData(const nlohmann::json* jsonObjectData) {
+	AuditLogEntryData::AuditLogEntryData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
-	PartyData& PartyData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	PartyData& PartyData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	PartyData::PartyData(const nlohmann::json* jsonObjectData) {
+	PartyData::PartyData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
-	AssetsData& AssetsData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	AssetsData& AssetsData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	AssetsData::AssetsData(const nlohmann::json* jsonObjectData) {
+	AssetsData::AssetsData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
-	SecretsData& SecretsData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	SecretsData& SecretsData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	SecretsData::SecretsData(const nlohmann::json* jsonObjectData) {
+	SecretsData::SecretsData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
-	TimestampData& TimestampData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	TimestampData& TimestampData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	TimestampData::TimestampData(const nlohmann::json* jsonObjectData) {
+	TimestampData::TimestampData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
-	ActivityData& ActivityData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	ActivityData& ActivityData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	ActivityData::ActivityData(const nlohmann::json* jsonObjectData) {
+	ActivityData::ActivityData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
-	ClientStatusData& ClientStatusData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	ClientStatusData& ClientStatusData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	ClientStatusData::ClientStatusData(const nlohmann::json* jsonObjectData) {
+	ClientStatusData::ClientStatusData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
-	WelcomeScreenChannelData& WelcomeScreenChannelData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	WelcomeScreenChannelData& WelcomeScreenChannelData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	WelcomeScreenChannelData::WelcomeScreenChannelData(const nlohmann::json* jsonObjectData) {
+	WelcomeScreenChannelData::WelcomeScreenChannelData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
-	WelcomeScreenData& WelcomeScreenData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	WelcomeScreenData& WelcomeScreenData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	WelcomeScreenData::WelcomeScreenData(const nlohmann::json* jsonObjectData) {
+	WelcomeScreenData::WelcomeScreenData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
-	PresenceUpdateData& PresenceUpdateData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	PresenceUpdateData& PresenceUpdateData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	PresenceUpdateData::PresenceUpdateData(const nlohmann::json* jsonObjectData) {
+	PresenceUpdateData::PresenceUpdateData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
-	StageInstanceData& StageInstanceData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	StageInstanceData& StageInstanceData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	StageInstanceData::StageInstanceData(const nlohmann::json* jsonObjectData) {
+	StageInstanceData::StageInstanceData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
-	StickerData& StickerData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	StickerData& StickerData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	StickerData::StickerData(const nlohmann::json* jsonObjectData) {
+	StickerData::StickerData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
-	GuildPreviewData& GuildPreviewData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	GuildPreviewData& GuildPreviewData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	GuildPreviewData::GuildPreviewData(const nlohmann::json* jsonObjectData) {
+	GuildPreviewData::GuildPreviewData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
-	GuildData& GuildData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	GuildData& GuildData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	GuildData::GuildData(const nlohmann::json* jsonObjectData) {
+	GuildData::GuildData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
-	GuildData& GuildData::operator=(nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	GuildData& GuildData::operator=(nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	GuildData::GuildData(nlohmann::json* jsonObjectData) {
+	GuildData::GuildData(nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
@@ -937,39 +937,39 @@ namespace DiscordCoreAPI {
 		return this->theGuildDatas;
 	}
 
-	GuildDataVector& GuildDataVector::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	GuildDataVector& GuildDataVector::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	GuildDataVector::GuildDataVector(const nlohmann::json* jsonObjectData) {
+	GuildDataVector::GuildDataVector(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
-	GuildScheduledEventMetadata& GuildScheduledEventMetadata::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	GuildScheduledEventMetadata& GuildScheduledEventMetadata::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	GuildScheduledEventMetadata::GuildScheduledEventMetadata(const nlohmann::json* jsonObjectData) {
+	GuildScheduledEventMetadata::GuildScheduledEventMetadata(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
-	GuildScheduledEventData& GuildScheduledEventData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	GuildScheduledEventData& GuildScheduledEventData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	GuildScheduledEventData::GuildScheduledEventData(const nlohmann::json* jsonObjectData) {
+	GuildScheduledEventData::GuildScheduledEventData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
-	GuildScheduledEventUserData& GuildScheduledEventUserData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	GuildScheduledEventUserData& GuildScheduledEventUserData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	GuildScheduledEventUserData::GuildScheduledEventUserData(const nlohmann::json* jsonObjectData) {
+	GuildScheduledEventUserData::GuildScheduledEventUserData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
@@ -977,21 +977,21 @@ namespace DiscordCoreAPI {
 		return this->theGuildScheduledEventUserDatas;
 	}
 
-	GuildScheduledEventUserDataVector& GuildScheduledEventUserDataVector::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	GuildScheduledEventUserDataVector& GuildScheduledEventUserDataVector::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	GuildScheduledEventUserDataVector::GuildScheduledEventUserDataVector(const nlohmann::json* jsonObjectData) {
+	GuildScheduledEventUserDataVector::GuildScheduledEventUserDataVector(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
-	InviteData& InviteData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	InviteData& InviteData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	InviteData::InviteData(const nlohmann::json* jsonObjectData) {
+	InviteData::InviteData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
@@ -999,21 +999,21 @@ namespace DiscordCoreAPI {
 		return this->theInviteDatas;
 	}
 
-	InviteDataVector& InviteDataVector::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	InviteDataVector& InviteDataVector::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	InviteDataVector::InviteDataVector(const nlohmann::json* jsonObjectData) {
+	InviteDataVector::InviteDataVector(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
-	GuildTemplateData& GuildTemplateData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	GuildTemplateData& GuildTemplateData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	GuildTemplateData::GuildTemplateData(const nlohmann::json* jsonObjectData) {
+	GuildTemplateData::GuildTemplateData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
@@ -1021,21 +1021,21 @@ namespace DiscordCoreAPI {
 		return this->theGuildTemplateDatas;
 	}
 
-	GuildTemplateDataVector& GuildTemplateDataVector::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	GuildTemplateDataVector& GuildTemplateDataVector::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	GuildTemplateDataVector::GuildTemplateDataVector(const nlohmann::json* jsonObjectData) {
+	GuildTemplateDataVector::GuildTemplateDataVector(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
-	WebHookData& WebHookData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	WebHookData& WebHookData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	WebHookData::WebHookData(const nlohmann::json* jsonObjectData) {
+	WebHookData::WebHookData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
@@ -1043,12 +1043,12 @@ namespace DiscordCoreAPI {
 		return this->theWebHookDatas;
 	}
 
-	WebHookDataVector& WebHookDataVector::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	WebHookDataVector& WebHookDataVector::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	WebHookDataVector::WebHookDataVector(const nlohmann::json* jsonObjectData) {
+	WebHookDataVector::WebHookDataVector(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
@@ -1070,21 +1070,21 @@ namespace DiscordCoreAPI {
 		return AuditLogEntryData();
 	}
 
-	AuditLogData& AuditLogData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	AuditLogData& AuditLogData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	AuditLogData::AuditLogData(const nlohmann::json* jsonObjectData) {
+	AuditLogData::AuditLogData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
-	ReactionRemoveData& ReactionRemoveData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	ReactionRemoveData& ReactionRemoveData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	ReactionRemoveData::ReactionRemoveData(const nlohmann::json* jsonObjectData) {
+	ReactionRemoveData::ReactionRemoveData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
@@ -1096,12 +1096,12 @@ namespace DiscordCoreAPI {
 		return theData;
 	}
 
-	ApplicationCommandOptionChoiceData& ApplicationCommandOptionChoiceData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	ApplicationCommandOptionChoiceData& ApplicationCommandOptionChoiceData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	ApplicationCommandOptionChoiceData::ApplicationCommandOptionChoiceData(const nlohmann::json* jsonObjectData) {
+	ApplicationCommandOptionChoiceData::ApplicationCommandOptionChoiceData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
@@ -1143,21 +1143,21 @@ namespace DiscordCoreAPI {
 		return newOption;
 	}
 
-	ApplicationCommandOptionData& ApplicationCommandOptionData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	ApplicationCommandOptionData& ApplicationCommandOptionData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	ApplicationCommandOptionData::ApplicationCommandOptionData(const nlohmann::json* jsonObjectData) {
+	ApplicationCommandOptionData::ApplicationCommandOptionData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
-	TypingStartData& TypingStartData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	TypingStartData& TypingStartData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	TypingStartData::TypingStartData(const nlohmann::json* jsonObjectData) {
+	TypingStartData::TypingStartData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
@@ -1165,39 +1165,39 @@ namespace DiscordCoreAPI {
 		return this->theFormats;
 	}
 
-	YouTubeFormatVector& YouTubeFormatVector::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	YouTubeFormatVector& YouTubeFormatVector::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	YouTubeFormatVector::YouTubeFormatVector(const nlohmann::json* jsonObjectData) {
+	YouTubeFormatVector::YouTubeFormatVector(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
-	UserCommandInteractionData& UserCommandInteractionData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	UserCommandInteractionData& UserCommandInteractionData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	UserCommandInteractionData::UserCommandInteractionData(const nlohmann::json* jsonObjectData) {
+	UserCommandInteractionData::UserCommandInteractionData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
-	MessageCommandInteractionData& MessageCommandInteractionData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	MessageCommandInteractionData& MessageCommandInteractionData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	MessageCommandInteractionData::MessageCommandInteractionData(const nlohmann::json* jsonObjectData) {
+	MessageCommandInteractionData::MessageCommandInteractionData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
-	ComponentInteractionData& ComponentInteractionData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	ComponentInteractionData& ComponentInteractionData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	ComponentInteractionData::ComponentInteractionData(const nlohmann::json* jsonObjectData) {
+	ComponentInteractionData::ComponentInteractionData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
@@ -1210,12 +1210,12 @@ namespace DiscordCoreAPI {
 		this->guildMemberId = 0;
 	}
 
-	ModalInteractionData& ModalInteractionData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	ModalInteractionData& ModalInteractionData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	ModalInteractionData::ModalInteractionData(const nlohmann::json* jsonObjectData) {
+	ModalInteractionData::ModalInteractionData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
@@ -1228,26 +1228,26 @@ namespace DiscordCoreAPI {
 		return newValue;
 	}
 
-	AllowedMentionsData& AllowedMentionsData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	AllowedMentionsData& AllowedMentionsData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	AllowedMentionsData::AllowedMentionsData(const nlohmann::json* jsonObjectData) {
+	AllowedMentionsData::AllowedMentionsData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
-	SelectOptionData& SelectOptionData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	SelectOptionData& SelectOptionData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	SelectOptionData::SelectOptionData(const nlohmann::json* jsonObjectData) {
+	SelectOptionData::SelectOptionData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
-	ActionRowData& ActionRowData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	ActionRowData& ActionRowData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
@@ -1316,79 +1316,79 @@ namespace DiscordCoreAPI {
 		return theData;
 	}
 
-	ActionRowData::ActionRowData(const nlohmann::json* jsonObjectData) {
+	ActionRowData::ActionRowData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
-	ApplicationCommandData& ApplicationCommandData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	ApplicationCommandData& ApplicationCommandData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	ApplicationCommandData::ApplicationCommandData(const nlohmann::json* jsonObjectData) {
+	ApplicationCommandData::ApplicationCommandData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
-	ChannelMentionData& ChannelMentionData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	ChannelMentionData& ChannelMentionData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	ChannelMentionData::ChannelMentionData(const nlohmann::json* jsonObjectData) {
+	ChannelMentionData::ChannelMentionData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
-	ChannelPinsUpdateEventData& ChannelPinsUpdateEventData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	ChannelPinsUpdateEventData& ChannelPinsUpdateEventData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	ChannelPinsUpdateEventData::ChannelPinsUpdateEventData(const nlohmann::json* jsonObjectData) {
+	ChannelPinsUpdateEventData::ChannelPinsUpdateEventData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
-	ThreadListSyncData& ThreadListSyncData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	ThreadListSyncData& ThreadListSyncData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	ThreadListSyncData::ThreadListSyncData(const nlohmann::json* jsonObjectData) {
+	ThreadListSyncData::ThreadListSyncData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
-	ThreadMembersUpdateData& ThreadMembersUpdateData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	ThreadMembersUpdateData& ThreadMembersUpdateData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	ThreadMembersUpdateData::ThreadMembersUpdateData(const nlohmann::json* jsonObjectData) {
+	ThreadMembersUpdateData::ThreadMembersUpdateData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
-	MessageInteractionData& MessageInteractionData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	MessageInteractionData& MessageInteractionData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	MessageInteractionData::MessageInteractionData(const nlohmann::json* jsonObjectData) {
+	MessageInteractionData::MessageInteractionData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
-	StickerItemData& StickerItemData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	StickerItemData& StickerItemData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	StickerItemData::StickerItemData(const nlohmann::json* jsonObjectData) {
+	StickerItemData::StickerItemData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
-	MessageDataOld& MessageDataOld::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	MessageDataOld& MessageDataOld::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	MessageDataOld::MessageDataOld(const nlohmann::json* jsonObjectData) {
+	MessageDataOld::MessageDataOld(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
@@ -1435,21 +1435,21 @@ namespace DiscordCoreAPI {
 		*this = other;
 	}
 
-	MessageData& MessageData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	MessageData& MessageData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	MessageData::MessageData(const nlohmann::json* jsonObjectData) {
+	MessageData::MessageData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
-	StickerPackData& StickerPackData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	StickerPackData& StickerPackData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	StickerPackData::StickerPackData(const nlohmann::json* jsonObjectData) {
+	StickerPackData::StickerPackData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
@@ -1457,21 +1457,21 @@ namespace DiscordCoreAPI {
 		return this->theStickerPackDatas;
 	}
 
-	StickerPackDataVector& StickerPackDataVector::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	StickerPackDataVector& StickerPackDataVector::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	StickerPackDataVector::StickerPackDataVector(const nlohmann::json* jsonObjectData) {
+	StickerPackDataVector::StickerPackDataVector(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
-	ConnectionData& ConnectionData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	ConnectionData& ConnectionData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	ConnectionData::ConnectionData(const nlohmann::json* jsonObjectData) {
+	ConnectionData::ConnectionData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
@@ -1479,93 +1479,93 @@ namespace DiscordCoreAPI {
 		return this->theConnectionDatas;
 	}
 
-	ConnectionDataVector& ConnectionDataVector::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	ConnectionDataVector& ConnectionDataVector::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	ConnectionDataVector::ConnectionDataVector(const nlohmann::json* jsonObjectData) {
+	ConnectionDataVector::ConnectionDataVector(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
-	ApplicationCommandInteractionDataOption& ApplicationCommandInteractionDataOption::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	ApplicationCommandInteractionDataOption& ApplicationCommandInteractionDataOption::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	ApplicationCommandInteractionDataOption::ApplicationCommandInteractionDataOption(const nlohmann::json* jsonObjectData) {
+	ApplicationCommandInteractionDataOption::ApplicationCommandInteractionDataOption(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
-	ApplicationCommandInteractionData& ApplicationCommandInteractionData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	ApplicationCommandInteractionData& ApplicationCommandInteractionData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	ApplicationCommandInteractionData::ApplicationCommandInteractionData(const nlohmann::json* jsonObjectData) {
+	ApplicationCommandInteractionData::ApplicationCommandInteractionData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
-	InteractionDataData& InteractionDataData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	InteractionDataData& InteractionDataData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	InteractionDataData::InteractionDataData(const nlohmann::json* jsonObjectData) {
+	InteractionDataData::InteractionDataData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
-	InteractionData& InteractionData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	InteractionData& InteractionData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	InteractionData::InteractionData(const nlohmann::json* jsonObjectData) {
+	InteractionData::InteractionData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
-	SessionStartData& SessionStartData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	SessionStartData& SessionStartData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	SessionStartData::SessionStartData(const nlohmann::json* jsonObjectData) {
+	SessionStartData::SessionStartData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
-	GatewayBotData& GatewayBotData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	GatewayBotData& GatewayBotData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	GatewayBotData::GatewayBotData(const nlohmann::json* jsonObjectData) {
+	GatewayBotData::GatewayBotData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
-	GuildEmojisUpdateEventData& GuildEmojisUpdateEventData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	GuildEmojisUpdateEventData& GuildEmojisUpdateEventData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	GuildEmojisUpdateEventData::GuildEmojisUpdateEventData(const nlohmann::json* jsonObjectData) {
+	GuildEmojisUpdateEventData::GuildEmojisUpdateEventData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
-	GuildStickersUpdateEventData& GuildStickersUpdateEventData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	GuildStickersUpdateEventData& GuildStickersUpdateEventData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	GuildStickersUpdateEventData::GuildStickersUpdateEventData(const nlohmann::json* jsonObjectData) {
+	GuildStickersUpdateEventData::GuildStickersUpdateEventData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
-	GuildMembersChunkEventData& GuildMembersChunkEventData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	GuildMembersChunkEventData& GuildMembersChunkEventData::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	GuildMembersChunkEventData::GuildMembersChunkEventData(const nlohmann::json* jsonObjectData) {
+	GuildMembersChunkEventData::GuildMembersChunkEventData(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
@@ -1995,12 +1995,12 @@ namespace DiscordCoreAPI {
 		return data.dump();
 	}
 
-	Song& Song::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	Song& Song::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	Song::Song(const nlohmann::json* jsonObjectData) {
+	Song::Song(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
@@ -2015,7 +2015,7 @@ namespace DiscordCoreAPI {
 		}
 		this->eventData = inputEventData;
 		auto theRawData = inputEventData.getInteractionData().rawData;
-		this->parseObject(&theRawData, this);
+		this->parseObject(theRawData);
 	}
 
 	BaseFunctionArguments::BaseFunctionArguments(CommandData commandDataNew, DiscordCoreClient* discordCoreClientNew) : CommandData(commandDataNew) {

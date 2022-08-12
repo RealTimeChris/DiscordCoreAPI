@@ -314,7 +314,7 @@ namespace DiscordCoreAPI {
 
 	template<typename ObjectType> class DataParser {
 	  public:
-		virtual void parseObject(const nlohmann::json*, ObjectType*) = 0;
+		virtual void parseObject(const nlohmann::json&) = 0;
 
 		virtual ~DataParser() = default;
 	};
@@ -359,14 +359,14 @@ namespace DiscordCoreAPI {
 
 		RoleTagsData() = default;
 
-		RoleTagsData& operator=(const nlohmann::json* jsonObjectData);
+		RoleTagsData& operator=(const nlohmann::json& jsonObjectData);
 
-		RoleTagsData(const nlohmann::json* jsonObjectData);
+		RoleTagsData(const nlohmann::json& jsonObjectData);
 
 		virtual ~RoleTagsData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, RoleTagsData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// User flags. \brief User flags.
@@ -408,14 +408,14 @@ namespace DiscordCoreAPI {
 
 		UserData() = default;
 
-		UserData& operator=(const nlohmann::json* jsonObjectData);
+		UserData& operator=(const nlohmann::json& jsonObjectData);
 
-		UserData(const nlohmann::json* jsonObjectData);
+		UserData(const nlohmann::json& jsonObjectData);
 
 		virtual ~UserData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, UserData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// Attachment data. \brief Attachment data.
@@ -435,14 +435,14 @@ namespace DiscordCoreAPI {
 
 		operator nlohmann::json();
 
-		AttachmentData& operator=(const nlohmann::json* jsonObjectData);
+		AttachmentData& operator=(const nlohmann::json& jsonObjectData);
 
-		AttachmentData(const nlohmann::json* jsonObjectData);
+		AttachmentData(const nlohmann::json& jsonObjectData);
 
 		virtual ~AttachmentData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, AttachmentData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// Sticker format types. \brief Sticker format types.
@@ -459,14 +459,14 @@ namespace DiscordCoreAPI {
 		std::string text{};///< Footer text.
 		EmbedFooterData() = default;
 
-		EmbedFooterData& operator=(const nlohmann::json* jsonObjectData);
+		EmbedFooterData& operator=(const nlohmann::json& jsonObjectData);
 
-		EmbedFooterData(const nlohmann::json* jsonObjectData);
+		EmbedFooterData(const nlohmann::json& jsonObjectData);
 
 		virtual ~EmbedFooterData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, EmbedFooterData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// Embed image data. \brief Embed image data.
@@ -478,14 +478,14 @@ namespace DiscordCoreAPI {
 
 		EmbedImageData() = default;
 
-		EmbedImageData& operator=(const nlohmann::json* jsonObjectData);
+		EmbedImageData& operator=(const nlohmann::json& jsonObjectData);
 
-		EmbedImageData(const nlohmann::json* jsonObjectData);
+		EmbedImageData(const nlohmann::json& jsonObjectData);
 
 		virtual ~EmbedImageData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, EmbedImageData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// Embed thumbnail data. \brief Embed thumbnail data.
@@ -497,14 +497,14 @@ namespace DiscordCoreAPI {
 
 		EmbedThumbnailData() = default;
 
-		EmbedThumbnailData& operator=(const nlohmann::json* jsonObjectData);
+		EmbedThumbnailData& operator=(const nlohmann::json& jsonObjectData);
 
-		EmbedThumbnailData(const nlohmann::json* jsonObjectData);
+		EmbedThumbnailData(const nlohmann::json& jsonObjectData);
 
 		virtual ~EmbedThumbnailData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, EmbedThumbnailData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// Embed video data. \brief Embed video data.
@@ -516,14 +516,14 @@ namespace DiscordCoreAPI {
 
 		EmbedVideoData() = default;
 
-		EmbedVideoData& operator=(const nlohmann::json* jsonObjectData);
+		EmbedVideoData& operator=(const nlohmann::json& jsonObjectData);
 
-		EmbedVideoData(const nlohmann::json* jsonObjectData);
+		EmbedVideoData(const nlohmann::json& jsonObjectData);
 
 		virtual ~EmbedVideoData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, EmbedVideoData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// Embed provider data. \brief Embed provider data.
@@ -533,14 +533,14 @@ namespace DiscordCoreAPI {
 
 		EmbedProviderData() = default;
 
-		EmbedProviderData& operator=(const nlohmann::json* jsonObjectData);
+		EmbedProviderData& operator=(const nlohmann::json& jsonObjectData);
 
-		EmbedProviderData(const nlohmann::json* jsonObjectData);
+		EmbedProviderData(const nlohmann::json& jsonObjectData);
 
 		virtual ~EmbedProviderData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, EmbedProviderData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// Embed author data. \brief Embed author data.
@@ -552,14 +552,14 @@ namespace DiscordCoreAPI {
 
 		EmbedAuthorData() = default;
 
-		EmbedAuthorData& operator=(const nlohmann::json* jsonObjectData);
+		EmbedAuthorData& operator=(const nlohmann::json& jsonObjectData);
 
-		EmbedAuthorData(const nlohmann::json* jsonObjectData);
+		EmbedAuthorData(const nlohmann::json& jsonObjectData);
 
 		virtual ~EmbedAuthorData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, EmbedAuthorData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// Embed field data. \brief Embed field data.
@@ -572,14 +572,14 @@ namespace DiscordCoreAPI {
 
 		operator nlohmann::json();
 
-		EmbedFieldData& operator=(const nlohmann::json* jsonObjectData);
+		EmbedFieldData& operator=(const nlohmann::json& jsonObjectData);
 
-		EmbedFieldData(const nlohmann::json* jsonObjectData);
+		EmbedFieldData(const nlohmann::json& jsonObjectData);
 
 		virtual ~EmbedFieldData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, EmbedFieldData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// Embed types. \brief Embed types.
@@ -613,9 +613,9 @@ namespace DiscordCoreAPI {
 
 		operator nlohmann::json();
 
-		EmbedData& operator=(const nlohmann::json* jsonObjectData);
+		EmbedData& operator=(const nlohmann::json& jsonObjectData);
 
-		EmbedData(const nlohmann::json* jsonObjectData);
+		EmbedData(const nlohmann::json& jsonObjectData);
 
 		/// Sets the author's name and avatar for the embed. \brief Sets the author's name and avatar for the embed.
 		/// \param authorName The author's name.
@@ -669,7 +669,7 @@ namespace DiscordCoreAPI {
 		virtual ~EmbedData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, EmbedData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// Message reference data.\brief Message reference data.
@@ -683,14 +683,14 @@ namespace DiscordCoreAPI {
 
 		operator nlohmann::json();
 
-		MessageReferenceData& operator=(const nlohmann::json* jsonObjectData);
+		MessageReferenceData& operator=(const nlohmann::json& jsonObjectData);
 
-		MessageReferenceData(const nlohmann::json* jsonObjectData);
+		MessageReferenceData(const nlohmann::json& jsonObjectData);
 
 		virtual ~MessageReferenceData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, MessageReferenceData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	enum class MediaType : int8_t { png = 0, gif = 1, jpeg = 2, mpeg = 3, mp3 = 4 };
@@ -728,14 +728,14 @@ namespace DiscordCoreAPI {
 
 		ThreadMetadataData() = default;
 
-		ThreadMetadataData& operator=(const nlohmann::json* jsonObjectData);
+		ThreadMetadataData& operator=(const nlohmann::json& jsonObjectData);
 
-		ThreadMetadataData(const nlohmann::json* other);
+		ThreadMetadataData(const nlohmann::json& other);
 
 		virtual ~ThreadMetadataData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, ThreadMetadataData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// Data for a single member of a Thread. \brief Data for a single member of a Thread.
@@ -747,14 +747,14 @@ namespace DiscordCoreAPI {
 
 		ThreadMemberData() = default;
 
-		ThreadMemberData& operator=(const nlohmann::json* jsonObjectData);
+		ThreadMemberData& operator=(const nlohmann::json& jsonObjectData);
 
-		ThreadMemberData(const nlohmann::json* other);
+		ThreadMemberData(const nlohmann::json& other);
 
 		virtual ~ThreadMemberData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, ThreadMemberData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	class DiscordCoreAPI_Dll ThreadMemberDataVector : public DataParser<ThreadMemberDataVector> {
@@ -763,16 +763,16 @@ namespace DiscordCoreAPI {
 
 		operator std::vector<ThreadMemberData>();
 
-		ThreadMemberDataVector& operator=(const nlohmann::json* jsonObjectData);
+		ThreadMemberDataVector& operator=(const nlohmann::json& jsonObjectData);
 
-		ThreadMemberDataVector(const nlohmann::json* jsonObjectData);
+		ThreadMemberDataVector(const nlohmann::json& jsonObjectData);
 
 		virtual ~ThreadMemberDataVector() = default;
 
 	  protected:
 		std::vector<ThreadMemberData> theThreadMemberDatas{};
 
-		void parseObject(const nlohmann::json* jsonObjectData, ThreadMemberDataVector* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// Thread types. \brief Thread types.
@@ -817,16 +817,16 @@ namespace DiscordCoreAPI {
 
 		GuildMemberData() = default;
 
-		GuildMemberData& operator=(const nlohmann::json* jsonObjectData);
+		GuildMemberData& operator=(const nlohmann::json& jsonObjectData);
 
-		GuildMemberData(const nlohmann::json* jsonObjectData);
+		GuildMemberData(const nlohmann::json& jsonObjectData);
 
 		void insertUser(std::unique_ptr<UserData> theUser);
 
 		virtual ~GuildMemberData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, GuildMemberData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// Voice state data. \brief Voice state data.
@@ -847,14 +847,14 @@ namespace DiscordCoreAPI {
 
 		VoiceStateData() = default;
 
-		VoiceStateData& operator=(const nlohmann::json* jsonObjectData);
+		VoiceStateData& operator=(const nlohmann::json& jsonObjectData);
 
-		VoiceStateData(const nlohmann::json* jsonObjectData);
+		VoiceStateData(const nlohmann::json& jsonObjectData);
 
 		virtual ~VoiceStateData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, VoiceStateData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// Permission overwrites types. \brief Permission overwrites types.
@@ -873,14 +873,14 @@ namespace DiscordCoreAPI {
 
 		OverWriteData() = default;
 
-		OverWriteData& operator=(const nlohmann::json* jsonObjectData);
+		OverWriteData& operator=(const nlohmann::json& jsonObjectData);
 
-		OverWriteData(const nlohmann::json* jsonObjectData);
+		OverWriteData(const nlohmann::json& jsonObjectData);
 
 		virtual ~OverWriteData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, OverWriteData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	enum class ChannelFlags : int8_t { NSFW = 1 << 0 };
@@ -900,14 +900,14 @@ namespace DiscordCoreAPI {
 
 		ChannelData() = default;
 
-		ChannelData& operator=(const nlohmann::json* jsonObjectData);
+		ChannelData& operator=(const nlohmann::json& jsonObjectData);
 
-		ChannelData(const nlohmann::json* other);
+		ChannelData(const nlohmann::json& other);
 
 		virtual ~ChannelData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, ChannelData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// Data representing an active Thread. \brief Data representing an active Thread.
@@ -918,14 +918,14 @@ namespace DiscordCoreAPI {
 
 		ActiveThreadsData() = default;
 
-		ActiveThreadsData& operator=(const nlohmann::json* jsonObjectData);
+		ActiveThreadsData& operator=(const nlohmann::json& jsonObjectData);
 
-		ActiveThreadsData(const nlohmann::json* jsonObjectData);
+		ActiveThreadsData(const nlohmann::json& jsonObjectData);
 
 		virtual ~ActiveThreadsData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, ActiveThreadsData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// Data representing an archived Thread. \brief Data representing an archived Thread.
@@ -936,14 +936,14 @@ namespace DiscordCoreAPI {
 
 		ArchivedThreadsData() = default;
 
-		ArchivedThreadsData& operator=(const nlohmann::json* jsonObjectData);
+		ArchivedThreadsData& operator=(const nlohmann::json& jsonObjectData);
 
-		ArchivedThreadsData(const nlohmann::json* jsonObjectData);
+		ArchivedThreadsData(const nlohmann::json& jsonObjectData);
 
 		virtual ~ArchivedThreadsData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, ArchivedThreadsData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	enum class RoleFlags : int8_t { Mentionable = 1 << 0, Managed = 1 << 1, Hoist = 1 << 2 };
@@ -960,14 +960,14 @@ namespace DiscordCoreAPI {
 
 		RoleData() = default;
 
-		RoleData& operator=(const nlohmann::json* jsonObjectData);
+		RoleData& operator=(const nlohmann::json& jsonObjectData);
 
-		RoleData(const nlohmann::json* jsonObjectData);
+		RoleData(const nlohmann::json& jsonObjectData);
 
 		virtual ~RoleData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, RoleData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// Application command-option types. \brief Application command-option types.
@@ -1026,14 +1026,14 @@ namespace DiscordCoreAPI {
 
 		ActionMetaData() = default;
 
-		ActionMetaData& operator=(const nlohmann::json* jsonObjectData);
+		ActionMetaData& operator=(const nlohmann::json& jsonObjectData);
 
-		ActionMetaData(const nlohmann::json* jsonObjectData);
+		ActionMetaData(const nlohmann::json& jsonObjectData);
 
 		virtual ~ActionMetaData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, ActionMetaData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// Trigger metadata for auto-moderation-rules. \brief Trigger metadata for auto-moderation-rules.
@@ -1043,14 +1043,14 @@ namespace DiscordCoreAPI {
 
 		TriggerMetaData() = default;
 
-		TriggerMetaData& operator=(const nlohmann::json* jsonObjectData);
+		TriggerMetaData& operator=(const nlohmann::json& jsonObjectData);
 
-		TriggerMetaData(const nlohmann::json* jsonObjectData);
+		TriggerMetaData(const nlohmann::json& jsonObjectData);
 
 		virtual ~TriggerMetaData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, TriggerMetaData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// For representing a single auto-moderation-rule-action. \brief For representing a single auto-moderation-rule-action.
@@ -1060,14 +1060,14 @@ namespace DiscordCoreAPI {
 
 		ActionData() = default;
 
-		ActionData& operator=(const nlohmann::json* jsonObjectData);
+		ActionData& operator=(const nlohmann::json& jsonObjectData);
 
-		ActionData(const nlohmann::json* jsonObjectData);
+		ActionData(const nlohmann::json& jsonObjectData);
 
 		virtual ~ActionData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, ActionData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// Represents an auto-moderation-rule. \brief Represents an auto-moderation-rule.
@@ -1086,14 +1086,14 @@ namespace DiscordCoreAPI {
 
 		AutoModerationRuleData() = default;
 
-		AutoModerationRuleData& operator=(const nlohmann::json* jsonObjectData);
+		AutoModerationRuleData& operator=(const nlohmann::json& jsonObjectData);
 
-		AutoModerationRuleData(const nlohmann::json* jsonObjectData);
+		AutoModerationRuleData(const nlohmann::json& jsonObjectData);
 
 		virtual ~AutoModerationRuleData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, AutoModerationRuleData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// Permissions data for an ApplicationCommand. \brief Permissions data for an ApplicationCommand.
@@ -1104,14 +1104,14 @@ namespace DiscordCoreAPI {
 
 		ApplicationCommandPermissionData() = default;
 
-		ApplicationCommandPermissionData& operator=(const nlohmann::json* jsonObjectData);
+		ApplicationCommandPermissionData& operator=(const nlohmann::json& jsonObjectData);
 
-		ApplicationCommandPermissionData(const nlohmann::json* jsonObjectData);
+		ApplicationCommandPermissionData(const nlohmann::json& jsonObjectData);
 
 		virtual ~ApplicationCommandPermissionData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, ApplicationCommandPermissionData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// Represents the Permissions for accessing an ApplicationCommand from within a Guild. \brief Represents the Permissions for accessing an ApplicationCommand from within a Guild.
@@ -1123,14 +1123,14 @@ namespace DiscordCoreAPI {
 
 		GuildApplicationCommandPermissionsData() = default;
 
-		GuildApplicationCommandPermissionsData& operator=(const nlohmann::json* jsonObjectData);
+		GuildApplicationCommandPermissionsData& operator=(const nlohmann::json& jsonObjectData);
 
-		GuildApplicationCommandPermissionsData(const nlohmann::json* jsonObjectData);
+		GuildApplicationCommandPermissionsData(const nlohmann::json& jsonObjectData);
 
 		virtual ~GuildApplicationCommandPermissionsData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, GuildApplicationCommandPermissionsData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	class DiscordCoreAPI_Dll GuildApplicationCommandPermissionsDataVector : public DataParser<GuildApplicationCommandPermissionsDataVector> {
@@ -1139,14 +1139,14 @@ namespace DiscordCoreAPI {
 
 		GuildApplicationCommandPermissionsDataVector() = default;
 
-		GuildApplicationCommandPermissionsDataVector& operator=(const nlohmann::json* jsonObjectData);
+		GuildApplicationCommandPermissionsDataVector& operator=(const nlohmann::json& jsonObjectData);
 
-		GuildApplicationCommandPermissionsDataVector(const nlohmann::json* jsonObjectData);
+		GuildApplicationCommandPermissionsDataVector(const nlohmann::json& jsonObjectData);
 
 		virtual ~GuildApplicationCommandPermissionsDataVector() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, GuildApplicationCommandPermissionsDataVector* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// Data structure representing a single emoji. \brief Data structure representing a single emoji.
@@ -1163,14 +1163,14 @@ namespace DiscordCoreAPI {
 
 		EmojiData() = default;
 
-		EmojiData& operator=(const nlohmann::json* jsonObjectData);
+		EmojiData& operator=(const nlohmann::json& jsonObjectData);
 
-		EmojiData(const nlohmann::json* jsonObjectData);
+		EmojiData(const nlohmann::json& jsonObjectData);
 
 		virtual ~EmojiData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, EmojiData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	class DiscordCoreAPI_Dll EmojiDataVector : public DataParser<EmojiDataVector> {
@@ -1179,14 +1179,14 @@ namespace DiscordCoreAPI {
 
 		EmojiDataVector() = default;
 
-		EmojiDataVector& operator=(const nlohmann::json* jsonObjectData);
+		EmojiDataVector& operator=(const nlohmann::json& jsonObjectData);
 
-		EmojiDataVector(const nlohmann::json* jsonObjectData);
+		EmojiDataVector(const nlohmann::json& jsonObjectData);
 
 		virtual ~EmojiDataVector() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, EmojiDataVector* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// For updating/modifying a given Channel's properties. \brief For updating/modifying a given Channel's properties.
@@ -1220,14 +1220,14 @@ namespace DiscordCoreAPI {
 
 		ReactionData() = default;
 
-		ReactionData& operator=(const nlohmann::json* jsonObjectData);
+		ReactionData& operator=(const nlohmann::json& jsonObjectData);
 
-		ReactionData(const nlohmann::json* jsonObjectData);
+		ReactionData(const nlohmann::json& jsonObjectData);
 
 		virtual ~ReactionData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, ReactionData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// Structure representing Voice Region Data. \brief Structure representing Voice Region Data.
@@ -1240,14 +1240,14 @@ namespace DiscordCoreAPI {
 
 		VoiceRegionData() = default;
 
-		VoiceRegionData& operator=(const nlohmann::json* jsonObjectData);
+		VoiceRegionData& operator=(const nlohmann::json& jsonObjectData);
 
-		VoiceRegionData(const nlohmann::json* jsonObjectData);
+		VoiceRegionData(const nlohmann::json& jsonObjectData);
 
 		virtual ~VoiceRegionData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, VoiceRegionData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	class DiscordCoreAPI_Dll VoiceRegionDataVector : public DataParser<VoiceRegionDataVector> {
@@ -1258,16 +1258,16 @@ namespace DiscordCoreAPI {
 			return this->theVoiceRegionDatas;
 		}
 
-		VoiceRegionDataVector& operator=(const nlohmann::json* jsonObjectData);
+		VoiceRegionDataVector& operator=(const nlohmann::json& jsonObjectData);
 
-		VoiceRegionDataVector(const nlohmann::json* jsonObjectData);
+		VoiceRegionDataVector(const nlohmann::json& jsonObjectData);
 
 		virtual ~VoiceRegionDataVector() = default;
 
 	  protected:
 		std::vector<VoiceRegionData> theVoiceRegionDatas{};
 
-		void parseObject(const nlohmann::json* jsonObjectData, VoiceRegionDataVector* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// Message activity types. \brief Message activity types.
@@ -1285,13 +1285,13 @@ namespace DiscordCoreAPI {
 
 		MessageActivityData() = default;
 
-		MessageActivityData& operator=(const nlohmann::json* jsonObjectData);
+		MessageActivityData& operator=(const nlohmann::json& jsonObjectData);
 
-		MessageActivityData(const nlohmann::json* jsonObjectData);
+		MessageActivityData(const nlohmann::json& jsonObjectData);
 
 		virtual ~MessageActivityData() = default;
 
-		void parseObject(const nlohmann::json* jsonObjectData, MessageActivityData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// Ban data. \brief Ban data.
@@ -1302,14 +1302,14 @@ namespace DiscordCoreAPI {
 
 		BanData() = default;
 
-		BanData& operator=(const nlohmann::json* jsonObjectData);
+		BanData& operator=(const nlohmann::json& jsonObjectData);
 
-		BanData(const nlohmann::json* jsonObjectData);
+		BanData(const nlohmann::json& jsonObjectData);
 
 		virtual ~BanData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, BanData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	class DiscordCoreAPI_Dll BanDataVector : public DataParser<BanDataVector> {
@@ -1318,16 +1318,16 @@ namespace DiscordCoreAPI {
 
 		operator std::vector<BanData>();
 
-		BanDataVector& operator=(const nlohmann::json* jsonObjectData);
+		BanDataVector& operator=(const nlohmann::json& jsonObjectData);
 
-		BanDataVector(const nlohmann::json* jsonObjectData);
+		BanDataVector(const nlohmann::json& jsonObjectData);
 
 		virtual ~BanDataVector() = default;
 
 	  protected:
 		std::vector<BanData> theBanDatas{};
 
-		void parseObject(const nlohmann::json* jsonObjectData, BanDataVector* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// Team members object data. \brief Team members object data.
@@ -1339,14 +1339,14 @@ namespace DiscordCoreAPI {
 
 		TeamMembersObjectData() = default;
 
-		TeamMembersObjectData& operator=(const nlohmann::json* jsonObjectData);
+		TeamMembersObjectData& operator=(const nlohmann::json& jsonObjectData);
 
-		TeamMembersObjectData(const nlohmann::json* jsonObjectData);
+		TeamMembersObjectData(const nlohmann::json& jsonObjectData);
 
 		virtual ~TeamMembersObjectData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, TeamMembersObjectData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// For updating the current voice state. \brief For updating the current voice state.
@@ -1368,14 +1368,14 @@ namespace DiscordCoreAPI {
 
 		TeamObjectData() = default;
 
-		TeamObjectData& operator=(const nlohmann::json* jsonObjectData);
+		TeamObjectData& operator=(const nlohmann::json& jsonObjectData);
 
-		TeamObjectData(const nlohmann::json* jsonObjectData);
+		TeamObjectData(const nlohmann::json& jsonObjectData);
 
 		virtual ~TeamObjectData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, TeamObjectData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// Application flags, for the ApplicationData structure.
@@ -1397,14 +1397,14 @@ namespace DiscordCoreAPI {
 
 		InstallParamsData() = default;
 
-		InstallParamsData& operator=(const nlohmann::json* jsonObjectData);
+		InstallParamsData& operator=(const nlohmann::json& jsonObjectData);
 
-		InstallParamsData(const nlohmann::json* jsonObjectData);
+		InstallParamsData(const nlohmann::json& jsonObjectData);
 
 		virtual ~InstallParamsData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, InstallParamsData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// Application data. \brief Application data.
@@ -1432,14 +1432,14 @@ namespace DiscordCoreAPI {
 
 		ApplicationData() = default;
 
-		ApplicationData& operator=(const nlohmann::json* jsonObjectData);
+		ApplicationData& operator=(const nlohmann::json& jsonObjectData);
 
-		ApplicationData(const nlohmann::json* jsonObjectData);
+		ApplicationData(const nlohmann::json& jsonObjectData);
 
 		virtual ~ApplicationData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, ApplicationData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// Authorization info structure. \brief Authorization info structure.
@@ -1451,14 +1451,14 @@ namespace DiscordCoreAPI {
 
 		AuthorizationInfoData() = default;
 
-		AuthorizationInfoData& operator=(const nlohmann::json* jsonObjectData);
+		AuthorizationInfoData& operator=(const nlohmann::json& jsonObjectData);
 
-		AuthorizationInfoData(const nlohmann::json* jsonObjectData);
+		AuthorizationInfoData(const nlohmann::json& jsonObjectData);
 
 		virtual ~AuthorizationInfoData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, AuthorizationInfoData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// Account data. \brief Account data.
@@ -1468,14 +1468,14 @@ namespace DiscordCoreAPI {
 
 		AccountData() = default;
 
-		AccountData& operator=(const nlohmann::json* jsonObjectData);
+		AccountData& operator=(const nlohmann::json& jsonObjectData);
 
-		AccountData(const nlohmann::json* jsonObjectData);
+		AccountData(const nlohmann::json& jsonObjectData);
 
 		virtual ~AccountData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, AccountData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// Guild Widget Data. \brief Guild Widget Data.
@@ -1485,14 +1485,14 @@ namespace DiscordCoreAPI {
 
 		GuildWidgetData() = default;
 
-		GuildWidgetData& operator=(const nlohmann::json* jsonObjectData);
+		GuildWidgetData& operator=(const nlohmann::json& jsonObjectData);
 
-		GuildWidgetData(const nlohmann::json* jsonObjectData);
+		GuildWidgetData(const nlohmann::json& jsonObjectData);
 
 		virtual ~GuildWidgetData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, GuildWidgetData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// Get Guild Widget Data. \brief Get Guild Widget Data.
@@ -1519,14 +1519,14 @@ namespace DiscordCoreAPI {
 
 		GuildWidgetImageData() = default;
 
-		GuildWidgetImageData& operator=(const nlohmann::json* jsonObjectData);
+		GuildWidgetImageData& operator=(const nlohmann::json& jsonObjectData);
 
-		GuildWidgetImageData(const nlohmann::json* jsonObjectData);
+		GuildWidgetImageData(const nlohmann::json& jsonObjectData);
 
 		virtual ~GuildWidgetImageData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, GuildWidgetImageData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// Integration data. \brief Integration data.
@@ -1549,14 +1549,14 @@ namespace DiscordCoreAPI {
 
 		IntegrationData() = default;
 
-		IntegrationData& operator=(const nlohmann::json* jsonObjectData);
+		IntegrationData& operator=(const nlohmann::json& jsonObjectData);
 
-		IntegrationData(const nlohmann::json* jsonObjectData);
+		IntegrationData(const nlohmann::json& jsonObjectData);
 
 		virtual ~IntegrationData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, IntegrationData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	class DiscordCoreAPI_Dll IntegrationDataVector : public DataParser<IntegrationDataVector> {
@@ -1567,16 +1567,16 @@ namespace DiscordCoreAPI {
 			return this->theIntegrationDatas;
 		}
 
-		IntegrationDataVector& operator=(const nlohmann::json* jsonObjectData);
+		IntegrationDataVector& operator=(const nlohmann::json& jsonObjectData);
 
-		IntegrationDataVector(const nlohmann::json* jsonObjectData);
+		IntegrationDataVector(const nlohmann::json& jsonObjectData);
 
 		virtual ~IntegrationDataVector() = default;
 
 	  protected:
 		std::vector<IntegrationData> theIntegrationDatas{};
 
-		void parseObject(const nlohmann::json* jsonObjectData, IntegrationDataVector* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// Audit log events. \brief Audit log events.
@@ -1649,14 +1649,14 @@ namespace DiscordCoreAPI {
 
 		OptionalAuditEntryInfoData() = default;
 
-		OptionalAuditEntryInfoData& operator=(const nlohmann::json* jsonObjectData);
+		OptionalAuditEntryInfoData& operator=(const nlohmann::json& jsonObjectData);
 
-		OptionalAuditEntryInfoData(const nlohmann::json* jsonObjectData);
+		OptionalAuditEntryInfoData(const nlohmann::json& jsonObjectData);
 
 		virtual ~OptionalAuditEntryInfoData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, OptionalAuditEntryInfoData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// Audit log change data. \brief Audit log change data.
@@ -1667,14 +1667,14 @@ namespace DiscordCoreAPI {
 
 		AuditLogChangeData() = default;
 
-		AuditLogChangeData& operator=(const nlohmann::json* jsonObjectData);
+		AuditLogChangeData& operator=(const nlohmann::json& jsonObjectData);
 
-		AuditLogChangeData(const nlohmann::json* jsonObjectData);
+		AuditLogChangeData(const nlohmann::json& jsonObjectData);
 
 		virtual ~AuditLogChangeData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, AuditLogChangeData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// Guild prune count data. \brief Guild prune count data.
@@ -1683,14 +1683,14 @@ namespace DiscordCoreAPI {
 
 		GuildPruneCountData() = default;
 
-		GuildPruneCountData& operator=(const nlohmann::json* jsonObjectData);
+		GuildPruneCountData& operator=(const nlohmann::json& jsonObjectData);
 
-		GuildPruneCountData(const nlohmann::json* jsonObjectData);
+		GuildPruneCountData(const nlohmann::json& jsonObjectData);
 
 		virtual ~GuildPruneCountData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, GuildPruneCountData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// Audit log entry data. \brief Audit log entry data.
@@ -1706,14 +1706,14 @@ namespace DiscordCoreAPI {
 
 		AuditLogEntryData() = default;
 
-		AuditLogEntryData& operator=(const nlohmann::json* jsonObjectData);
+		AuditLogEntryData& operator=(const nlohmann::json& jsonObjectData);
 
-		AuditLogEntryData(const nlohmann::json* jsonObjectData);
+		AuditLogEntryData(const nlohmann::json& jsonObjectData);
 
 		virtual ~AuditLogEntryData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, AuditLogEntryData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// Party data. \brief Party data.
@@ -1723,14 +1723,14 @@ namespace DiscordCoreAPI {
 
 		PartyData() = default;
 
-		PartyData& operator=(const nlohmann::json* jsonObjectData);
+		PartyData& operator=(const nlohmann::json& jsonObjectData);
 
-		PartyData(const nlohmann::json* jsonObjectData);
+		PartyData(const nlohmann::json& jsonObjectData);
 
 		virtual ~PartyData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, PartyData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// Assets data. \brief Party data.
@@ -1742,14 +1742,14 @@ namespace DiscordCoreAPI {
 
 		AssetsData() = default;
 
-		AssetsData& operator=(const nlohmann::json* jsonObjectData);
+		AssetsData& operator=(const nlohmann::json& jsonObjectData);
 
-		AssetsData(const nlohmann::json* jsonObjectData);
+		AssetsData(const nlohmann::json& jsonObjectData);
 
 		virtual ~AssetsData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, AssetsData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// Secrets data. \brief Secrets data.
@@ -1760,14 +1760,14 @@ namespace DiscordCoreAPI {
 
 		SecretsData() = default;
 
-		SecretsData& operator=(const nlohmann::json* jsonObjectData);
+		SecretsData& operator=(const nlohmann::json& jsonObjectData);
 
-		SecretsData(const nlohmann::json* jsonObjectData);
+		SecretsData(const nlohmann::json& jsonObjectData);
 
 		virtual ~SecretsData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, SecretsData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// Timestamp data. \brief Timestamp data.
@@ -1777,14 +1777,14 @@ namespace DiscordCoreAPI {
 
 		TimestampData() = default;
 
-		TimestampData& operator=(const nlohmann::json* jsonObjectData);
+		TimestampData& operator=(const nlohmann::json& jsonObjectData);
 
-		TimestampData(const nlohmann::json* jsonObjectData);
+		TimestampData(const nlohmann::json& jsonObjectData);
 
 		virtual ~TimestampData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, TimestampData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// Button data. \brief Button data.
@@ -1823,14 +1823,14 @@ namespace DiscordCoreAPI {
 
 		ActivityData() = default;
 
-		ActivityData& operator=(const nlohmann::json* jsonObjectData);
+		ActivityData& operator=(const nlohmann::json& jsonObjectData);
 
-		ActivityData(const nlohmann::json* jsonObjectData);
+		ActivityData(const nlohmann::json& jsonObjectData);
 
 		virtual ~ActivityData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, ActivityData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// Client status data. \brief Client status data.
@@ -1841,14 +1841,14 @@ namespace DiscordCoreAPI {
 
 		ClientStatusData() = default;
 
-		ClientStatusData& operator=(const nlohmann::json* jsonObjectData);
+		ClientStatusData& operator=(const nlohmann::json& jsonObjectData);
 
-		ClientStatusData(const nlohmann::json* jsonObjectData);
+		ClientStatusData(const nlohmann::json& jsonObjectData);
 
 		virtual ~ClientStatusData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, ClientStatusData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// Premium tier levels. \brief Premium tier levels.
@@ -1897,14 +1897,14 @@ namespace DiscordCoreAPI {
 
 		WelcomeScreenChannelData() = default;
 
-		WelcomeScreenChannelData& operator=(const nlohmann::json* jsonObjectData);
+		WelcomeScreenChannelData& operator=(const nlohmann::json& jsonObjectData);
 
-		WelcomeScreenChannelData(const nlohmann::json* jsonObjectData);
+		WelcomeScreenChannelData(const nlohmann::json& jsonObjectData);
 
 		virtual ~WelcomeScreenChannelData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, WelcomeScreenChannelData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// Welcome screen data. \brief Welcome screen data.
@@ -1914,14 +1914,14 @@ namespace DiscordCoreAPI {
 
 		WelcomeScreenData() = default;
 
-		WelcomeScreenData& operator=(const nlohmann::json* jsonObjectData);
+		WelcomeScreenData& operator=(const nlohmann::json& jsonObjectData);
 
-		WelcomeScreenData(const nlohmann::json* jsonObjectData);
+		WelcomeScreenData(const nlohmann::json& jsonObjectData);
 
 		virtual ~WelcomeScreenData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, WelcomeScreenData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// Presence update data. \brief Presence update data.
@@ -1934,14 +1934,14 @@ namespace DiscordCoreAPI {
 
 		PresenceUpdateData() = default;
 
-		PresenceUpdateData& operator=(const nlohmann::json* jsonObjectData);
+		PresenceUpdateData& operator=(const nlohmann::json& jsonObjectData);
 
-		PresenceUpdateData(const nlohmann::json* jsonObjectData);
+		PresenceUpdateData(const nlohmann::json& jsonObjectData);
 
 		virtual ~PresenceUpdateData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, PresenceUpdateData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// Stage instance privacy levels. \brief Stage instance privacy levels.
@@ -1961,14 +1961,14 @@ namespace DiscordCoreAPI {
 
 		StageInstanceData() = default;
 
-		StageInstanceData& operator=(const nlohmann::json* jsonObjectData);
+		StageInstanceData& operator=(const nlohmann::json& jsonObjectData);
 
-		StageInstanceData(const nlohmann::json* jsonObjectData);
+		StageInstanceData(const nlohmann::json& jsonObjectData);
 
 		virtual ~StageInstanceData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, StageInstanceData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// Sticker types. \brief Sticker types.
@@ -1997,14 +1997,14 @@ namespace DiscordCoreAPI {
 
 		StickerData() = default;
 
-		StickerData& operator=(const nlohmann::json* jsonObjectData);
+		StickerData& operator=(const nlohmann::json& jsonObjectData);
 
-		StickerData(const nlohmann::json* jsonObjectData);
+		StickerData(const nlohmann::json& jsonObjectData);
 
 		virtual ~StickerData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, StickerData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// Data representing a single Guild preview. \brief Data representing a single Guild preview.
@@ -2023,14 +2023,14 @@ namespace DiscordCoreAPI {
 
 		GuildPreviewData() = default;
 
-		GuildPreviewData& operator=(const nlohmann::json* jsonObjectData);
+		GuildPreviewData& operator=(const nlohmann::json& jsonObjectData);
 
-		GuildPreviewData(const nlohmann::json* jsonObjectData);
+		GuildPreviewData(const nlohmann::json& jsonObjectData);
 
 		virtual ~GuildPreviewData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, GuildPreviewData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// Afk timeout durations. \brief Afk timeout durations.
@@ -2087,13 +2087,13 @@ namespace DiscordCoreAPI {
 
 		GuildData() = default;
 
-		GuildData& operator=(const nlohmann::json* jsonObjectData);
+		GuildData& operator=(const nlohmann::json& jsonObjectData);
 
-		GuildData(const nlohmann::json* jsonObjectData);
+		GuildData(const nlohmann::json& jsonObjectData);
 
-		GuildData& operator=(nlohmann::json* jsonObjectData);
+		GuildData& operator=(nlohmann::json& jsonObjectData);
 
-		GuildData(nlohmann::json* jsonObjectData);
+		GuildData(nlohmann::json& jsonObjectData);
 
 		/// For connecting to an individual voice channel. \brief For connecting to an individual voice channel.
 		/// \param guildMemberId An id of the guild member who's current voice channel to connect to.
@@ -2121,7 +2121,7 @@ namespace DiscordCoreAPI {
 		virtual ~GuildData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, GuildData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	class DiscordCoreAPI_Dll GuildDataVector : public DataParser<GuildDataVector> {
@@ -2132,16 +2132,16 @@ namespace DiscordCoreAPI {
 
 		operator std::vector<GuildData>();
 
-		GuildDataVector& operator=(const nlohmann::json* jsonObjectData);
+		GuildDataVector& operator=(const nlohmann::json& jsonObjectData);
 
-		GuildDataVector(const nlohmann::json* jsonObjectData);
+		GuildDataVector(const nlohmann::json& jsonObjectData);
 
 		virtual ~GuildDataVector() = default;
 
 	  protected:
 		std::vector<GuildData> theGuildDatas{};
 
-		void parseObject(const nlohmann::json* jsonObjectData, GuildDataVector* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// Guild scheduled event privacy levels. \brief Guild scheduled event privacy levels.
@@ -2172,14 +2172,14 @@ namespace DiscordCoreAPI {
 
 		GuildScheduledEventMetadata() = default;
 
-		GuildScheduledEventMetadata& operator=(const nlohmann::json* jsonObjectData);
+		GuildScheduledEventMetadata& operator=(const nlohmann::json& jsonObjectData);
 
-		GuildScheduledEventMetadata(const nlohmann::json* jsonObjectData);
+		GuildScheduledEventMetadata(const nlohmann::json& jsonObjectData);
 
 		virtual ~GuildScheduledEventMetadata() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, GuildScheduledEventMetadata* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// Data representing a Guild Scheduled Event. \brief Data representing a Guild Scheduled Event.
@@ -2202,14 +2202,14 @@ namespace DiscordCoreAPI {
 
 		GuildScheduledEventData() = default;
 
-		GuildScheduledEventData& operator=(const nlohmann::json* jsonObjectData);
+		GuildScheduledEventData& operator=(const nlohmann::json& jsonObjectData);
 
-		GuildScheduledEventData(const nlohmann::json* jsonObjectData);
+		GuildScheduledEventData(const nlohmann::json& jsonObjectData);
 
 		virtual ~GuildScheduledEventData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, GuildScheduledEventData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// Data representing a single GuildScheduledEventUser. \brief Data representing a single GuildScheduledEventUser.
@@ -2220,14 +2220,14 @@ namespace DiscordCoreAPI {
 
 		GuildScheduledEventUserData() = default;
 
-		GuildScheduledEventUserData& operator=(const nlohmann::json* jsonObjectData);
+		GuildScheduledEventUserData& operator=(const nlohmann::json& jsonObjectData);
 
-		GuildScheduledEventUserData(const nlohmann::json* jsonObjectData);
+		GuildScheduledEventUserData(const nlohmann::json& jsonObjectData);
 
 		virtual ~GuildScheduledEventUserData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, GuildScheduledEventUserData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	class DiscordCoreAPI_Dll GuildScheduledEventUserDataVector : public DataParser<GuildScheduledEventUserDataVector> {
@@ -2236,16 +2236,16 @@ namespace DiscordCoreAPI {
 
 		operator std::vector<GuildScheduledEventUserData>();
 
-		GuildScheduledEventUserDataVector& operator=(const nlohmann::json* jsonObjectData);
+		GuildScheduledEventUserDataVector& operator=(const nlohmann::json& jsonObjectData);
 
-		GuildScheduledEventUserDataVector(const nlohmann::json* jsonObjectData);
+		GuildScheduledEventUserDataVector(const nlohmann::json& jsonObjectData);
 
 		virtual ~GuildScheduledEventUserDataVector() = default;
 
 	  protected:
 		std::vector<GuildScheduledEventUserData> theGuildScheduledEventUserDatas{};
 
-		void parseObject(const nlohmann::json* jsonObjectData, GuildScheduledEventUserDataVector* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// Invite data. \brief Invite data.
@@ -2271,14 +2271,14 @@ namespace DiscordCoreAPI {
 
 		InviteData() = default;
 
-		InviteData& operator=(const nlohmann::json* jsonObjectData);
+		InviteData& operator=(const nlohmann::json& jsonObjectData);
 
-		InviteData(const nlohmann::json* jsonObjectData);
+		InviteData(const nlohmann::json& jsonObjectData);
 
 		virtual ~InviteData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, InviteData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	class DiscordCoreAPI_Dll InviteDataVector : public DataParser<InviteDataVector> {
@@ -2287,16 +2287,16 @@ namespace DiscordCoreAPI {
 
 		operator std::vector<InviteData>();
 
-		InviteDataVector& operator=(const nlohmann::json* jsonObjectData);
+		InviteDataVector& operator=(const nlohmann::json& jsonObjectData);
 
-		InviteDataVector(const nlohmann::json* jsonObjectData);
+		InviteDataVector(const nlohmann::json& jsonObjectData);
 
 		virtual ~InviteDataVector() = default;
 
 	  protected:
 		std::vector<InviteData> theInviteDatas{};
 
-		void parseObject(const nlohmann::json* jsonObjectData, InviteDataVector* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// Represents a Guild Template. \brief Represents a Guild Template.
@@ -2315,14 +2315,14 @@ namespace DiscordCoreAPI {
 
 		GuildTemplateData() = default;
 
-		GuildTemplateData& operator=(const nlohmann::json* jsonObjectData);
+		GuildTemplateData& operator=(const nlohmann::json& jsonObjectData);
 
-		GuildTemplateData(const nlohmann::json* jsonObjectData);
+		GuildTemplateData(const nlohmann::json& jsonObjectData);
 
 		virtual ~GuildTemplateData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, GuildTemplateData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	class DiscordCoreAPI_Dll GuildTemplateDataVector : public DataParser<GuildTemplateDataVector> {
@@ -2331,16 +2331,16 @@ namespace DiscordCoreAPI {
 
 		operator std::vector<GuildTemplateData>();
 
-		GuildTemplateDataVector& operator=(const nlohmann::json* jsonObjectData);
+		GuildTemplateDataVector& operator=(const nlohmann::json& jsonObjectData);
 
-		GuildTemplateDataVector(const nlohmann::json* jsonObjectData);
+		GuildTemplateDataVector(const nlohmann::json& jsonObjectData);
 
 		virtual ~GuildTemplateDataVector() = default;
 
 	  protected:
 		std::vector<GuildTemplateData> theGuildTemplateDatas{};
 
-		void parseObject(const nlohmann::json* jsonObjectData, GuildTemplateDataVector* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// Invite target types. \brief Invite target types.
@@ -2373,14 +2373,14 @@ namespace DiscordCoreAPI {
 
 		WebHookData() = default;
 
-		WebHookData& operator=(const nlohmann::json* jsonObjectData);
+		WebHookData& operator=(const nlohmann::json& jsonObjectData);
 
-		WebHookData(const nlohmann::json* jsonObjectData);
+		WebHookData(const nlohmann::json& jsonObjectData);
 
 		virtual ~WebHookData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, WebHookData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	class DiscordCoreAPI_Dll WebHookDataVector : public DataParser<WebHookDataVector> {
@@ -2389,16 +2389,16 @@ namespace DiscordCoreAPI {
 
 		operator std::vector<WebHookData>();
 
-		WebHookDataVector& operator=(const nlohmann::json* jsonObjectData);
+		WebHookDataVector& operator=(const nlohmann::json& jsonObjectData);
 
-		WebHookDataVector(const nlohmann::json* jsonObjectData);
+		WebHookDataVector(const nlohmann::json& jsonObjectData);
 		virtual ~WebHookDataVector() = default;
 
 
 	  protected:
 		std::vector<WebHookData> theWebHookDatas{};
 
-		void parseObject(const nlohmann::json* jsonObjectData, WebHookDataVector* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// Audit log data. \brief Audit log data.
@@ -2418,14 +2418,14 @@ namespace DiscordCoreAPI {
 
 		AuditLogData() = default;
 
-		AuditLogData& operator=(const nlohmann::json* jsonObjectData);
+		AuditLogData& operator=(const nlohmann::json& jsonObjectData);
 
-		AuditLogData(const nlohmann::json* jsonObjectData);
+		AuditLogData(const nlohmann::json& jsonObjectData);
 
 		virtual ~AuditLogData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, AuditLogData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// For removing a reaction. \brief For removing a reaction.
@@ -2438,14 +2438,14 @@ namespace DiscordCoreAPI {
 
 		ReactionRemoveData() = default;
 
-		ReactionRemoveData& operator=(const nlohmann::json* jsonObjectData);
+		ReactionRemoveData& operator=(const nlohmann::json& jsonObjectData);
 
-		ReactionRemoveData(const nlohmann::json* jsonObjectData);
+		ReactionRemoveData(const nlohmann::json& jsonObjectData);
 
 		virtual ~ReactionRemoveData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, ReactionRemoveData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// For storing Interaction-related values. \brief For storing Interaction-related values.
@@ -2472,14 +2472,14 @@ namespace DiscordCoreAPI {
 
 		operator nlohmann::json();
 
-		ApplicationCommandOptionChoiceData& operator=(const nlohmann::json* jsonObjectData);
+		ApplicationCommandOptionChoiceData& operator=(const nlohmann::json& jsonObjectData);
 
-		ApplicationCommandOptionChoiceData(const nlohmann::json* jsonObjectData);
+		ApplicationCommandOptionChoiceData(const nlohmann::json& jsonObjectData);
 
 		virtual ~ApplicationCommandOptionChoiceData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, ApplicationCommandOptionChoiceData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// Data structure representing an ApplicationCommand's option. \brief Data structure representing an ApplicationCommand's option.
@@ -2501,14 +2501,14 @@ namespace DiscordCoreAPI {
 
 		operator nlohmann::json();
 
-		ApplicationCommandOptionData& operator=(const nlohmann::json* jsonObjectData);
+		ApplicationCommandOptionData& operator=(const nlohmann::json& jsonObjectData);
 
-		ApplicationCommandOptionData(const nlohmann::json* jsonObjectData);
+		ApplicationCommandOptionData(const nlohmann::json& jsonObjectData);
 
 		virtual ~ApplicationCommandOptionData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, ApplicationCommandOptionData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// Representing "TypingStart" data. \brief Representing "TypingStart" data.
@@ -2521,14 +2521,14 @@ namespace DiscordCoreAPI {
 
 		TypingStartData() = default;
 
-		TypingStartData& operator=(const nlohmann::json* jsonObjectData);
+		TypingStartData& operator=(const nlohmann::json& jsonObjectData);
 
-		TypingStartData(const nlohmann::json* jsonObjectData);
+		TypingStartData(const nlohmann::json& jsonObjectData);
 
 		virtual ~TypingStartData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, TypingStartData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	struct DiscordCoreAPI_Dll YouTubeFormat {
@@ -2556,16 +2556,16 @@ namespace DiscordCoreAPI {
 
 		operator std::vector<YouTubeFormat>();
 
-		YouTubeFormatVector& operator=(const nlohmann::json* jsonObjectData);
+		YouTubeFormatVector& operator=(const nlohmann::json& jsonObjectData);
 
-		YouTubeFormatVector(const nlohmann::json* jsonObjectData);
+		YouTubeFormatVector(const nlohmann::json& jsonObjectData);
 
 		virtual ~YouTubeFormatVector() = default;
 
 	  protected:
 		std::vector<YouTubeFormat> theFormats{};
 
-		void parseObject(const nlohmann::json* jsonObjectData, YouTubeFormatVector* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// Application command types. \brief Application command types.
@@ -2581,14 +2581,14 @@ namespace DiscordCoreAPI {
 
 		UserCommandInteractionData() = default;
 
-		UserCommandInteractionData& operator=(const nlohmann::json* jsonObjectData);
+		UserCommandInteractionData& operator=(const nlohmann::json& jsonObjectData);
 
-		UserCommandInteractionData(const nlohmann::json* jsonObjectData);
+		UserCommandInteractionData(const nlohmann::json& jsonObjectData);
 
 		virtual ~UserCommandInteractionData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, UserCommandInteractionData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// Message command interacction data. \brief Message command interacction data.
@@ -2597,14 +2597,14 @@ namespace DiscordCoreAPI {
 
 		MessageCommandInteractionData() = default;
 
-		MessageCommandInteractionData& operator=(const nlohmann::json* jsonObjectData);
+		MessageCommandInteractionData& operator=(const nlohmann::json& jsonObjectData);
 
-		MessageCommandInteractionData(const nlohmann::json* jsonObjectData);
+		MessageCommandInteractionData(const nlohmann::json& jsonObjectData);
 
 		virtual ~MessageCommandInteractionData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, MessageCommandInteractionData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// Component types. \brief Component types.
@@ -2623,14 +2623,14 @@ namespace DiscordCoreAPI {
 
 		ComponentInteractionData() = default;
 
-		ComponentInteractionData& operator=(const nlohmann::json* jsonObjectData);
+		ComponentInteractionData& operator=(const nlohmann::json& jsonObjectData);
 
-		ComponentInteractionData(const nlohmann::json* jsonObjectData);
+		ComponentInteractionData(const nlohmann::json& jsonObjectData);
 
 		virtual ~ComponentInteractionData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, ComponentInteractionData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// Modal interaction data, for inputs from text modals. \brief Modal interaction data, for inputs from text modals.
@@ -2641,14 +2641,14 @@ namespace DiscordCoreAPI {
 
 		ModalInteractionData() = default;
 
-		ModalInteractionData& operator=(const nlohmann::json* jsonObjectData);
+		ModalInteractionData& operator=(const nlohmann::json& jsonObjectData);
 
-		ModalInteractionData(const nlohmann::json* jsonObjectData);
+		ModalInteractionData(const nlohmann::json& jsonObjectData);
 
 		virtual ~ModalInteractionData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, ModalInteractionData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// Allowable mentions for a Message. \brief Allowable mentions for a Message.
@@ -2663,14 +2663,14 @@ namespace DiscordCoreAPI {
 
 		operator nlohmann::json();
 
-		AllowedMentionsData& operator=(const nlohmann::json* jsonObjectData);
+		AllowedMentionsData& operator=(const nlohmann::json& jsonObjectData);
 
-		AllowedMentionsData(const nlohmann::json* jsonObjectData);
+		AllowedMentionsData(const nlohmann::json& jsonObjectData);
 
 		virtual ~AllowedMentionsData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, AllowedMentionsData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// Interaction types. \brief Interaction types.
@@ -2693,14 +2693,14 @@ namespace DiscordCoreAPI {
 
 		SelectOptionData() = default;
 
-		SelectOptionData& operator=(const nlohmann::json* jsonObjectData);
+		SelectOptionData& operator=(const nlohmann::json& jsonObjectData);
 
-		SelectOptionData(const nlohmann::json* jsonObjectData);
+		SelectOptionData(const nlohmann::json& jsonObjectData);
 
 		virtual ~SelectOptionData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, SelectOptionData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// Button styles. \brief Button styles.
@@ -2739,16 +2739,16 @@ namespace DiscordCoreAPI {
 
 		ActionRowData() = default;
 
-		ActionRowData& operator=(const nlohmann::json* jsonObjectData);
+		ActionRowData& operator=(const nlohmann::json& jsonObjectData);
 
 		operator nlohmann::json();
 
-		ActionRowData(const nlohmann::json* jsonObjectData);
+		ActionRowData(const nlohmann::json& jsonObjectData);
 
 		virtual ~ActionRowData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, ActionRowData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// Interaction callback types. \brief Interaction callback types.
@@ -2794,14 +2794,14 @@ namespace DiscordCoreAPI {
 
 		ApplicationCommandData() = default;
 
-		ApplicationCommandData& operator=(const nlohmann::json* jsonObjectData);
+		ApplicationCommandData& operator=(const nlohmann::json& jsonObjectData);
 
-		ApplicationCommandData(const nlohmann::json* jsonObjectData);
+		ApplicationCommandData(const nlohmann::json& jsonObjectData);
 
 		virtual ~ApplicationCommandData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, ApplicationCommandData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// Channel mention data. \brief Channel mention data.
@@ -2813,14 +2813,14 @@ namespace DiscordCoreAPI {
 
 		ChannelMentionData() = default;
 
-		ChannelMentionData& operator=(const nlohmann::json* jsonObjectData);
+		ChannelMentionData& operator=(const nlohmann::json& jsonObjectData);
 
-		ChannelMentionData(const nlohmann::json* jsonObjectData);
+		ChannelMentionData(const nlohmann::json& jsonObjectData);
 
 		virtual ~ChannelMentionData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, ChannelMentionData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// Data for when some Channel pins are updated. \brief Data for when some Channel pins are updated.
@@ -2831,14 +2831,14 @@ namespace DiscordCoreAPI {
 
 		ChannelPinsUpdateEventData() = default;
 
-		ChannelPinsUpdateEventData& operator=(const nlohmann::json* jsonObjectData);
+		ChannelPinsUpdateEventData& operator=(const nlohmann::json& jsonObjectData);
 
-		ChannelPinsUpdateEventData(const nlohmann::json* jsonObjectData);
+		ChannelPinsUpdateEventData(const nlohmann::json& jsonObjectData);
 
 		virtual ~ChannelPinsUpdateEventData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, ChannelPinsUpdateEventData* pDataStructre);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// Data for when threads are synced. \brief Data for when threads are synced.
@@ -2850,14 +2850,14 @@ namespace DiscordCoreAPI {
 
 		ThreadListSyncData() = default;
 
-		ThreadListSyncData& operator=(const nlohmann::json* jsonObjectData);
+		ThreadListSyncData& operator=(const nlohmann::json& jsonObjectData);
 
-		ThreadListSyncData(const nlohmann::json* jsonObjectData);
+		ThreadListSyncData(const nlohmann::json& jsonObjectData);
 
 		virtual ~ThreadListSyncData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, ThreadListSyncData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// Represents a Thread-members-update. \brief Represents a Thread-members-update.
@@ -2870,14 +2870,14 @@ namespace DiscordCoreAPI {
 
 		ThreadMembersUpdateData() = default;
 
-		ThreadMembersUpdateData& operator=(const nlohmann::json* jsonObjectData);
+		ThreadMembersUpdateData& operator=(const nlohmann::json& jsonObjectData);
 
-		ThreadMembersUpdateData(const nlohmann::json* jsonObjectData);
+		ThreadMembersUpdateData(const nlohmann::json& jsonObjectData);
 
 		virtual ~ThreadMembersUpdateData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, ThreadMembersUpdateData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// Message Interaction data. \brief Message Interaction data.
@@ -2890,14 +2890,14 @@ namespace DiscordCoreAPI {
 
 		MessageInteractionData() = default;
 
-		MessageInteractionData& operator=(const nlohmann::json* jsonObjectData);
+		MessageInteractionData& operator=(const nlohmann::json& jsonObjectData);
 
-		MessageInteractionData(const nlohmann::json* jsonObjectData);
+		MessageInteractionData(const nlohmann::json& jsonObjectData);
 
 		virtual ~MessageInteractionData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, MessageInteractionData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// Message types. \brief Message types.
@@ -2966,14 +2966,14 @@ namespace DiscordCoreAPI {
 
 		StickerItemData() = default;
 
-		StickerItemData& operator=(const nlohmann::json* jsonObjectData);
+		StickerItemData& operator=(const nlohmann::json& jsonObjectData);
 
-		StickerItemData(const nlohmann::json* jsonObjectData);
+		StickerItemData(const nlohmann::json& jsonObjectData);
 
 		virtual ~StickerItemData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, StickerItemData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// The core of a Message's data structure. \brief The core of a Message's data structure.
@@ -3011,14 +3011,14 @@ namespace DiscordCoreAPI {
 
 		MessageDataOld() = default;
 
-		MessageDataOld& operator=(const nlohmann::json* jsonObjectData);
+		MessageDataOld& operator=(const nlohmann::json& jsonObjectData);
 
-		MessageDataOld(const nlohmann::json* jsonObjectData);
+		MessageDataOld(const nlohmann::json& jsonObjectData);
 
 		virtual ~MessageDataOld() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, MessageDataOld* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// Data structure representing a single Message. \brief Data structure representing a single Message.
@@ -3032,14 +3032,14 @@ namespace DiscordCoreAPI {
 
 		MessageData() = default;
 
-		MessageData& operator=(const nlohmann::json* jsonObjectData);
+		MessageData& operator=(const nlohmann::json& jsonObjectData);
 
-		MessageData(const nlohmann::json* jsonObjectData);
+		MessageData(const nlohmann::json& jsonObjectData);
 
 		virtual ~MessageData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, MessageData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// Resolved data. \brief Resolved data.
@@ -3064,14 +3064,14 @@ namespace DiscordCoreAPI {
 
 		StickerPackData() = default;
 
-		StickerPackData& operator=(const nlohmann::json* jsonObjectData);
+		StickerPackData& operator=(const nlohmann::json& jsonObjectData);
 
-		StickerPackData(const nlohmann::json* jsonObjectData);
+		StickerPackData(const nlohmann::json& jsonObjectData);
 
 		virtual ~StickerPackData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, StickerPackData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	class DiscordCoreAPI_Dll StickerPackDataVector : public DataParser<StickerPackDataVector> {
@@ -3080,16 +3080,16 @@ namespace DiscordCoreAPI {
 
 		operator std::vector<StickerPackData>();
 
-		StickerPackDataVector& operator=(const nlohmann::json* jsonObjectData);
+		StickerPackDataVector& operator=(const nlohmann::json& jsonObjectData);
 
-		StickerPackDataVector(const nlohmann::json* jsonObjectData);
+		StickerPackDataVector(const nlohmann::json& jsonObjectData);
 
 		virtual ~StickerPackDataVector() = default;
 
 	  protected:
 		std::vector<StickerPackData> theStickerPackDatas{};
 
-		void parseObject(const nlohmann::json* jsonObjectData, StickerPackDataVector* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// Connection visibility types. \brief Connection visibility types.
@@ -3112,14 +3112,14 @@ namespace DiscordCoreAPI {
 
 		ConnectionData() = default;
 
-		ConnectionData& operator=(const nlohmann::json* jsonObjectData);
+		ConnectionData& operator=(const nlohmann::json& jsonObjectData);
 
-		ConnectionData(const nlohmann::json* jsonObjectData);
+		ConnectionData(const nlohmann::json& jsonObjectData);
 
 		virtual ~ConnectionData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, ConnectionData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	class DiscordCoreAPI_Dll ConnectionDataVector : public DataParser<ConnectionDataVector> {
@@ -3128,16 +3128,16 @@ namespace DiscordCoreAPI {
 
 		operator std::vector<ConnectionData>();
 
-		ConnectionDataVector& operator=(const nlohmann::json* jsonObjectData);
+		ConnectionDataVector& operator=(const nlohmann::json& jsonObjectData);
 
-		ConnectionDataVector(const nlohmann::json* jsonObjectData);
+		ConnectionDataVector(const nlohmann::json& jsonObjectData);
 
 		virtual ~ConnectionDataVector() = default;
 
 	  protected:
 		std::vector<ConnectionData> theConnectionDatas{};
 
-		void parseObject(const nlohmann::json* jsonObjectData, ConnectionDataVector* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// ApplicationCommand Interaction data option. \brief ApplicationCommand Interaction data option.
@@ -3152,14 +3152,14 @@ namespace DiscordCoreAPI {
 
 		ApplicationCommandInteractionDataOption() = default;
 
-		ApplicationCommandInteractionDataOption& operator=(const nlohmann::json* jsonObjectData);
+		ApplicationCommandInteractionDataOption& operator=(const nlohmann::json& jsonObjectData);
 
-		ApplicationCommandInteractionDataOption(const nlohmann::json* jsonObjectData);
+		ApplicationCommandInteractionDataOption(const nlohmann::json& jsonObjectData);
 
 		virtual ~ApplicationCommandInteractionDataOption() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, ApplicationCommandInteractionDataOption* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// ApplicationCommand Interaction data. \brief ApplicationCommand Interaction data.
@@ -3173,14 +3173,14 @@ namespace DiscordCoreAPI {
 
 		ApplicationCommandInteractionData() = default;
 
-		ApplicationCommandInteractionData& operator=(const nlohmann::json* jsonObjectData);
+		ApplicationCommandInteractionData& operator=(const nlohmann::json& jsonObjectData);
 
-		ApplicationCommandInteractionData(const nlohmann::json* jsonObjectData);
+		ApplicationCommandInteractionData(const nlohmann::json& jsonObjectData);
 
 		virtual ~ApplicationCommandInteractionData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, ApplicationCommandInteractionData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// Interaction data data. \brief Interaction data data.
@@ -3193,14 +3193,14 @@ namespace DiscordCoreAPI {
 
 		InteractionDataData() = default;
 
-		InteractionDataData& operator=(const nlohmann::json* jsonObjectData);
+		InteractionDataData& operator=(const nlohmann::json& jsonObjectData);
 
-		InteractionDataData(const nlohmann::json* jsonObjectData);
+		InteractionDataData(const nlohmann::json& jsonObjectData);
 
 		virtual ~InteractionDataData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, InteractionDataData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// Interaction data. \brief Interaction data.
@@ -3223,14 +3223,14 @@ namespace DiscordCoreAPI {
 
 		InteractionData() = default;
 
-		InteractionData& operator=(const nlohmann::json* jsonObjectData);
+		InteractionData& operator=(const nlohmann::json& jsonObjectData);
 
-		InteractionData(const nlohmann::json* jsonObjectData);
+		InteractionData(const nlohmann::json& jsonObjectData);
 
 		virtual ~InteractionData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, InteractionData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// Data from the SessionStart info. \brief Data from the SessionStart info.
@@ -3242,14 +3242,14 @@ namespace DiscordCoreAPI {
 
 		SessionStartData() = default;
 
-		SessionStartData& operator=(const nlohmann::json* jsonObjectData);
+		SessionStartData& operator=(const nlohmann::json& jsonObjectData);
 
-		SessionStartData(const nlohmann::json* jsonObjectData);
+		SessionStartData(const nlohmann::json& jsonObjectData);
 
 		virtual ~SessionStartData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, SessionStartData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// Data from the GetGatewatBot endpoint. \brief Data from the GetGatewatBot endpoint.
@@ -3260,14 +3260,14 @@ namespace DiscordCoreAPI {
 
 		GatewayBotData() = default;
 
-		GatewayBotData& operator=(const nlohmann::json* jsonObjectData);
+		GatewayBotData& operator=(const nlohmann::json& jsonObjectData);
 
-		GatewayBotData(const nlohmann::json* jsonObjectData);
+		GatewayBotData(const nlohmann::json& jsonObjectData);
 
 		virtual ~GatewayBotData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, GatewayBotData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// Text input style for modals. \brief Text input style for modals.
@@ -3283,14 +3283,14 @@ namespace DiscordCoreAPI {
 
 		GuildEmojisUpdateEventData() = default;
 
-		GuildEmojisUpdateEventData& operator=(const nlohmann::json* jsonObjectData);
+		GuildEmojisUpdateEventData& operator=(const nlohmann::json& jsonObjectData);
 
-		GuildEmojisUpdateEventData(const nlohmann::json* jsonObjectData);
+		GuildEmojisUpdateEventData(const nlohmann::json& jsonObjectData);
 
 		virtual ~GuildEmojisUpdateEventData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, GuildEmojisUpdateEventData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// Data representing a Guild Sticker Update event. \brief Data representing a Guild Stickers Update event.
@@ -3300,14 +3300,14 @@ namespace DiscordCoreAPI {
 
 		GuildStickersUpdateEventData() = default;
 
-		GuildStickersUpdateEventData& operator=(const nlohmann::json* jsonObjectData);
+		GuildStickersUpdateEventData& operator=(const nlohmann::json& jsonObjectData);
 
-		GuildStickersUpdateEventData(const nlohmann::json* jsonObjectData);
+		GuildStickersUpdateEventData(const nlohmann::json& jsonObjectData);
 
 		virtual ~GuildStickersUpdateEventData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, GuildStickersUpdateEventData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	struct DiscordCoreAPI_Dll GuildMembersChunkEventData : public DataParser<GuildMembersChunkEventData> {
@@ -3321,14 +3321,14 @@ namespace DiscordCoreAPI {
 
 		GuildMembersChunkEventData() = default;
 
-		GuildMembersChunkEventData& operator=(const nlohmann::json* jsonObjectData);
+		GuildMembersChunkEventData& operator=(const nlohmann::json& jsonObjectData);
 
-		GuildMembersChunkEventData(const nlohmann::json* jsonObjectData);
+		GuildMembersChunkEventData(const nlohmann::json& jsonObjectData);
 
 		virtual ~GuildMembersChunkEventData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, GuildMembersChunkEventData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// Data representing an input-event, which is any Message or Interaction that is coming into the bot as an input. \brief Data representing an input-event, which is any Message or Interaction that is coming into the bot as an input.
@@ -3740,9 +3740,9 @@ namespace DiscordCoreAPI {
 
 		Song() = default;
 
-		Song& operator=(const nlohmann::json* jsonObjectData);
+		Song& operator=(const nlohmann::json& jsonObjectData);
 
-		Song(const nlohmann::json* jsonObjectData);
+		Song(const nlohmann::json& jsonObjectData);
 
 		virtual ~Song() = default;
 
@@ -3751,7 +3751,7 @@ namespace DiscordCoreAPI {
 		bool doWeGetSaved{ false };
 		YouTubeFormat format{};
 
-		void parseObject(const nlohmann::json* jsonObjectData, Song* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// Song completion event data. \brief Song completion event data.
@@ -3790,14 +3790,14 @@ namespace DiscordCoreAPI {
 
 		CommandData(InputEventData inputEventData);
 
-		CommandData& operator=(const nlohmann::json* jsonObjectData);
+		CommandData& operator=(const nlohmann::json& jsonObjectData);
 
-		CommandData(const nlohmann::json* jsonObjectData);
+		CommandData(const nlohmann::json& jsonObjectData);
 
 		virtual ~CommandData() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, CommandData* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// Base arguments for the command classes. \brief Base arguments for the command classes.

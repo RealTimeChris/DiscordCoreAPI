@@ -1042,12 +1042,6 @@ namespace DiscordCoreAPI {
 	template<typename StoredAsType, typename FlagType> bool getBool(StoredAsType inputFlag, FlagType theFlag) {
 		return static_cast<StoredAsType>(inputFlag) & static_cast<StoredAsType>(theFlag);
 	}
-
-	uint16_t reverseByteOrder16(uint16_t x);
-	
-	uint32_t reverseByteOrder32(uint32_t x);
-	
-	uint64_t reverseByteOrder64(uint64_t x);
 	
 	void store8Bits(std::string* to, uint8_t num);
 	

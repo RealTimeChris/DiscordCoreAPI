@@ -60,12 +60,12 @@ namespace DiscordCoreAPI {
 		*this = dataNew;
 	}
 
-	User& User::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	User& User::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	User::User(const nlohmann::json* jsonObjectData) {
+	User::User(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
@@ -73,12 +73,12 @@ namespace DiscordCoreAPI {
 		return this->theUsers;
 	}
 
-	UserVector& UserVector::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData, this);
+	UserVector& UserVector::operator=(const nlohmann::json& jsonObjectData) {
+		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	UserVector::UserVector(const nlohmann::json* jsonObjectData) {
+	UserVector::UserVector(const nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
@@ -89,9 +89,9 @@ namespace DiscordCoreAPI {
 			std::string theString{};
 			if (static_cast<DiscordCoreInternal::WebSocketSSLShard*>(this->baseSocketAgent->sslShard.get())->dataOpCode ==
 				DiscordCoreInternal::WebSocketOpCode::Op_Binary) {
-				this->baseSocketAgent->sslShard->stringifyJsonData(&payload, theString, DiscordCoreInternal::WebSocketOpCode::Op_Binary);
+				this->baseSocketAgent->sslShard->stringifyJsonData(payload, theString, DiscordCoreInternal::WebSocketOpCode::Op_Binary);
 			} else {
-				this->baseSocketAgent->sslShard->stringifyJsonData(&payload, theString, DiscordCoreInternal::WebSocketOpCode::Op_Text);
+				this->baseSocketAgent->sslShard->stringifyJsonData(payload, theString, DiscordCoreInternal::WebSocketOpCode::Op_Text);
 			}
 			this->baseSocketAgent->sslShard->sendMessage(theString, true);
 		}
@@ -103,9 +103,9 @@ namespace DiscordCoreAPI {
 			std::string theString{};
 			if (static_cast<DiscordCoreInternal::WebSocketSSLShard*>(this->baseSocketAgent->sslShard.get())->dataOpCode ==
 				DiscordCoreInternal::WebSocketOpCode::Op_Binary) {
-				this->baseSocketAgent->sslShard->stringifyJsonData(&payload, theString, DiscordCoreInternal::WebSocketOpCode::Op_Binary);
+				this->baseSocketAgent->sslShard->stringifyJsonData(payload, theString, DiscordCoreInternal::WebSocketOpCode::Op_Binary);
 			} else {
-				this->baseSocketAgent->sslShard->stringifyJsonData(&payload, theString, DiscordCoreInternal::WebSocketOpCode::Op_Text);
+				this->baseSocketAgent->sslShard->stringifyJsonData(payload, theString, DiscordCoreInternal::WebSocketOpCode::Op_Text);
 			}
 			this->baseSocketAgent->sslShard->sendMessage(theString, true);
 		}

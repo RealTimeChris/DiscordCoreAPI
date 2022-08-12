@@ -304,14 +304,14 @@ namespace DiscordCoreAPI {
 
 		Guild(GuildData&);
 
-		Guild& operator=(const nlohmann::json* jsonObjectData);
+		Guild& operator=(const nlohmann::json& jsonObjectData);
 
-		Guild(const nlohmann::json* jsonObjectData);
+		Guild(const nlohmann::json& jsonObjectData);
 
 		virtual ~Guild() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json* jsonObjectData, Guild* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	class DiscordCoreAPI_Dll GuildVector : public DataParser<GuildVector> {
@@ -322,16 +322,16 @@ namespace DiscordCoreAPI {
 
 		operator std::vector<Guild>();
 
-		GuildVector& operator=(const nlohmann::json* jsonObjectData);
+		GuildVector& operator=(const nlohmann::json& jsonObjectData);
 
-		GuildVector(const nlohmann::json* jsonObjectData);
+		GuildVector(const nlohmann::json& jsonObjectData);
 
 		virtual ~GuildVector() = default;
 
 	  protected:
 		std::vector<Guild> theGuilds{};
 
-		void parseObject(const nlohmann::json* jsonObjectData, GuildVector* pDataStructure);
+		void parseObject(const nlohmann::json& jsonObjectData);
 	};
 
 	/// For modifying the properties of a chosen Guild. \brief For modifying the properties of a chosen Guild.
