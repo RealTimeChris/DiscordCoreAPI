@@ -344,32 +344,31 @@ namespace DiscordCoreInternal {
 			this->disconnect(true);
 			return ProcessIOResult::Disconnected;
 		}
-		int32_t readNfds{ 0 }, writeNfds{ 0 };
 		fd_set writeSet{}, readSet{};
 		FD_ZERO(&writeSet);
 		FD_ZERO(&readSet);
 
 		if ((this->outputBuffers.size() > 0 || this->wantWrite) && !this->wantRead) {
 			FD_SET(this->theSocket, &writeSet);
-			writeNfds = this->theSocket > writeNfds ? this->theSocket : writeNfds;
 		}
 		FD_SET(this->theSocket, &readSet);
-		readNfds = this->theSocket > readNfds ? this->theSocket : readNfds;
 
-		timeval checkTime{ .tv_sec = 0, .tv_usec = 500000 };
+		timeval checkTime{ .tv_sec = 0, .tv_usec = 1000 };
 		if (auto returnValue = select(FD_SETSIZE, &readSet, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
 			this->disconnect(true);
 			return ProcessIOResult::Select_Failure;
 		} else if (returnValue == 0) {
+			this->dispatchBuffer(this->inputBuffer);
 			return ProcessIOResult::Select_No_Return;
 		}
 		ProcessIOResult returnValueFinal{};
-		if (FD_ISSET(this->theSocket, &writeSet)) {
-			returnValueFinal = this->writeDataProcess();
-		}
 		if (FD_ISSET(this->theSocket, &readSet)) {
 			returnValueFinal = this->readDataProcess();
 		}
+		if (FD_ISSET(this->theSocket, &writeSet)) {
+			returnValueFinal = this->writeDataProcess();
+		}
+		this->dispatchBuffer(this->inputBuffer);
 		return returnValueFinal;
 	}
 
@@ -440,7 +439,6 @@ namespace DiscordCoreInternal {
 						if (readBytes > 0) {
 							this->inputBuffer.append(this->rawInputBuffer.begin(), this->rawInputBuffer.begin() + readBytes);
 							this->bytesRead += readBytes;
-							this->dispatchBuffer(this->inputBuffer);
 						}
 						returnValueReal = ProcessIOResult::No_Error;
 						break;
@@ -467,7 +465,6 @@ namespace DiscordCoreInternal {
 					}
 				}
 			} while (SSL_pending(this->ssl));
-			
 		} else {
 			returnValueReal = ProcessIOResult::No_Error;
 		}
