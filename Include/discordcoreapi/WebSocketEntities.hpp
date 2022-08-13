@@ -81,7 +81,7 @@ namespace DiscordCoreInternal {
 
 		void onClosed() noexcept;
 
-		~WebSocketSSLShard() noexcept = default;
+		~WebSocketSSLShard() noexcept;
 
 	  protected:
 		std::unordered_map<Snowflake, DiscordCoreAPI::UnboundedMessageBlock<VoiceConnectionData>*> voiceConnectionDataBufferMap{};
@@ -103,7 +103,6 @@ namespace DiscordCoreInternal {
 		WebSocketClose closeCode{ 0 };
 		WebSocketOpCode dataOpCode{};
 		bool areWeResuming{ false };
-		nlohmann::json payload{};
 		int64_t messageLength{};
 		int64_t messageOffset{};
 		std::string sessionId{};

@@ -137,12 +137,13 @@ namespace DiscordCoreInternal {
 					return true;
 				} else {
 					theStopWatch.resetTimer();
-					if (!this->onMessageReceived(theBuffer.substr(theShard->messageOffset, theShard->messageLength))) {
+					theBuffer.erase(theBuffer.begin(), theBuffer.begin() + theShard->messageOffset);
+					if (!this->onMessageReceived(theBuffer.substr(0, theShard->messageLength))) {
 						return false;
 					}
 					//std::cout << "THIS TIME 0101: " << this->theStopWatch.totalTimePassed() << std::endl;
 					theStopWatch.resetTimer();
-					theBuffer.erase(theBuffer.begin(), theBuffer.begin() + theShard->messageOffset + theShard->messageLength);
+					theBuffer.erase(theBuffer.begin(), theBuffer.begin() + theShard->messageLength);
 					//std::cout << "THIS TIME 0202: " << this->theStopWatch.totalTimePassed() << std::endl;
 					theStopWatch.resetTimer();
 					return true;
@@ -1014,6 +1015,11 @@ namespace DiscordCoreInternal {
 		}
 	}
 
+	WebSocketSSLShard::~WebSocketSSLShard() noexcept {
+		std::lock_guard theLock{ this->connectionMutex };
+		std::lock_guard theLock02{ this->theMutex };
+	}
+
 	BaseSocketAgent::BaseSocketAgent(DiscordCoreAPI::DiscordCoreClient* discordCoreClientNew, std::atomic_bool* doWeQuitNew, int32_t currentShardNew) noexcept {
 		this->configManager = &discordCoreClientNew->configManager;
 		this->discordCoreClient = discordCoreClientNew;
@@ -1184,5 +1190,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	BaseSocketAgent::~BaseSocketAgent() noexcept {};
+	BaseSocketAgent::~BaseSocketAgent() noexcept {
+		std::lock_guard theLock{ this->theMutex };
+	};
 }

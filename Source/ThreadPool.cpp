@@ -134,7 +134,9 @@ namespace DiscordCoreInternal {
 						this->theCoroutineHandles.pop();
 						theLock01.unlock();
 						this->workerThreads[theIndex].areWeCurrentlyWorking.store(true);
-						coroHandle();
+						if (!stopToken.stop_requested()) {
+							coroHandle();
+						}
 						this->workerThreads[theIndex].areWeCurrentlyWorking.store(false);
 					}
 				}

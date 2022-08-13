@@ -2822,7 +2822,6 @@ namespace DiscordCoreAPI {
 				VoiceStateData newData{ value };
 				Snowflake userId = newData.userId;
 				this->voiceStates[userId] = std::move(newData);
-				std::cout << "THE VOICE STATE ID: " << newData.userId << std::endl;
 			}
 		}
 
