@@ -180,6 +180,7 @@ namespace DiscordCoreAPI {
 		if (DatagramSocketClient::areWeStillConnected()) {
 			DatagramSocketClient::writeData(audioDataPacketNew);
 		} else {
+			std::cout << "WERE LEAVING SEND SINGLE AUDIO FRAME 0101" << std::endl;
 			this->onClosedVoice();
 		}
 	}
@@ -192,16 +193,12 @@ namespace DiscordCoreAPI {
 		this->audioDataBuffer.send(frameData);
 	}
 
-	bool VoiceConnection::onMessageReceived() noexcept {
+	bool VoiceConnection::onMessageReceived(const std::string& theString) noexcept {
+		std::cout << "WERE HERE THIS IS NOT IT!" << std::endl;
 		std::unique_lock theLock00{ this->voiceUserMutex, std::defer_lock_t{} };
 		try {
-			std::string theMessage{};
-			if (this->processedMessages.size() > 0) {
-				theMessage = std::move(this->processedMessages.front());
-				this->processedMessages.pop_front();
-			} else {
-				return false;
-			}
+			std::string& theMessage = ( std::string& )theString;
+			std::cout << "THE STRING: " << WebSocketSSLShard::inputBuffer << std::endl;
 			if (theMessage.size() > 0) {
 				nlohmann::json payload = payload.parse(theMessage);
 				if (this->configManager->doWePrintWebSocketSuccessMessages()) {
@@ -219,14 +216,14 @@ namespace DiscordCoreAPI {
 								}
 							}
 							this->connectionState.store(VoiceConnectionState::Initializing_DatagramSocket);
-							break;
+							return true;
 						}
 						case 4: {
 							for (uint32_t x = 0; x < payload["d"]["secret_key"].size(); ++x) {
 								this->secretKeySend.push_back(payload["d"]["secret_key"][x].get<uint8_t>());
 							}
 							this->connectionState.store(VoiceConnectionState::Collecting_Init_Data);
-							break;
+							return true;
 						}
 						case 5: {
 							if (payload.contains("d") && !payload["d"].is_null()) {
@@ -238,11 +235,11 @@ namespace DiscordCoreAPI {
 									theLock00.unlock();
 								}
 							}
-							break;
+							return true;
 						}
 						case 6: {
 							this->haveWeReceivedHeartbeatAck = true;
-							break;
+							return true;
 						}
 						case 8: {
 							if (payload["d"].contains("heartbeat_interval")) {
@@ -250,7 +247,7 @@ namespace DiscordCoreAPI {
 								this->areWeHeartBeating = false;
 								this->connectionState.store(VoiceConnectionState::Sending_Identify);
 							}
-							break;
+							return true;
 						}
 						case 13: {
 							if (payload.contains("d") && !payload["d"].is_null()) {
@@ -261,16 +258,17 @@ namespace DiscordCoreAPI {
 											theLock00.lock();
 											this->voiceUsers.erase(key);
 											theLock00.unlock();
-											break;
+											return true;
 										}
 									}
 								}
 							}
+							return true;
 						}
 					}
 				}
 			}
-			return true;
+			return false;
 		} catch (...) {
 			if (this->configManager->doWePrintWebSocketErrorMessages()) {
 				DiscordCoreAPI::reportException("VoiceConnection::onMessageReceived()");
@@ -299,6 +297,7 @@ namespace DiscordCoreAPI {
 					std::string theData = responseData;
 					DatagramSocketClient::writeData(theData);
 				} else {
+					std::cout << "WERE LEAVING SEND VOICE DATA 0101" << std::endl;
 					this->onClosedVoice();
 				}
 			}
@@ -324,6 +323,7 @@ namespace DiscordCoreAPI {
 			std::string theString{};
 			this->stringifyJsonData(newString, theString, DiscordCoreInternal::WebSocketOpCode::Op_Text);
 			if (!this->sendMessage(theString, true)) {
+				std::cout << "WERE LEAVING SEND SINGLE SPEAKIGN MESSAGE " << std::endl;
 				this->onClosedVoice();
 			}
 		}
@@ -410,16 +410,9 @@ namespace DiscordCoreAPI {
 	bool VoiceConnection::collectAndProcessAMessage(VoiceConnectionState stateToWaitFor) noexcept {
 		DiscordCoreAPI::StopWatch theStopWatch{ 25000us };
 		while (!this->doWeQuit->load() && this->connectionState.load() != stateToWaitFor) {
-			WebSocketSSLShard::processIO();
-			if (!WebSocketSSLShard::areWeStillConnected()) {
-				return false;
-			}
-			if (this->processedMessages.size() > 0) {
-				this->onMessageReceived();
+			auto theResult = WebSocketSSLShard::processIO();
+			if (theResult == DiscordCoreInternal::ProcessIOResult::No_Error) {
 				return true;
-			}
-			if (theStopWatch.hasTimePassed()) {
-				return false;
 			}
 			std::this_thread::sleep_for(1ms);
 		}
@@ -682,8 +675,10 @@ namespace DiscordCoreAPI {
 		}
 		DatagramSocketClient::disconnect();
 		WebSocketSSLShard::disconnect(false);
-		if (this->streamSocket->areWeStillConnected()) {
-			this->streamSocket->disconnect();
+		if (this->streamSocket) {
+			if (this->streamSocket->areWeStillConnected()) {
+				this->streamSocket->disconnect();
+			}
 		}
 		auto thePtr = getSongAPIMap()[this->voiceConnectInitData.guildId].get();
 		if (thePtr) {
@@ -714,6 +709,7 @@ namespace DiscordCoreAPI {
 
 				if (DiscordCoreAPI::waitForTimeToPass(this->voiceConnectionDataBuffer, this->voiceConnectionData, 10000)) {
 					this->currentReconnectTries++;
+					std::cout << "WERE LEAVING 0101" << std::endl;
 					this->onClosedVoice();
 					this->connectInternal();
 					return;
@@ -726,6 +722,7 @@ namespace DiscordCoreAPI {
 			case VoiceConnectionState::Initializing_WebSocket: {
 				if (!WebSocketSSLShard::connect(this->baseUrl, "443")) {
 					this->currentReconnectTries++;
+					std::cout << "WERE LEAVING 0202" << std::endl;
 					this->onClosedVoice();
 					this->connectInternal();
 					return;
@@ -738,17 +735,12 @@ namespace DiscordCoreAPI {
 				this->shard[1] = 1;
 				if (!this->sendMessage(sendVector, true)) {
 					this->currentReconnectTries++;
+					std::cout << "WERE LEAVING 0303" << std::endl;
 					this->onClosedVoice();
 					this->connectInternal();
 					return;
 				}
 				WebSocketSSLShard::processIO();
-				if (!this->parseConnectionHeaders(this)) {
-					this->currentReconnectTries++;
-					this->onClosedVoice();
-					this->connectInternal();
-					return;
-				}
 				this->connectionState.store(VoiceConnectionState::Collecting_Hello);
 				this->connectInternal();
 				break;
@@ -756,6 +748,7 @@ namespace DiscordCoreAPI {
 			case VoiceConnectionState::Collecting_Hello: {
 				if (!this->collectAndProcessAMessage(VoiceConnectionState::Sending_Identify)) {
 					this->currentReconnectTries++;
+					std::cout << "WERE LEAVING 0505" << std::endl;
 					this->onClosedVoice();
 					this->connectInternal();
 					return;
@@ -770,10 +763,10 @@ namespace DiscordCoreAPI {
 				identifyData.connectInitData = this->voiceConnectInitData;
 				identifyData.connectionData = this->voiceConnectionData;
 				std::string sendVector{};
-				nlohmann::json theJsonData{ identifyData };
-				this->stringifyJsonData(theJsonData, sendVector, DiscordCoreInternal::WebSocketOpCode::Op_Text);
+				this->stringifyJsonData(identifyData, sendVector, DiscordCoreInternal::WebSocketOpCode::Op_Text);
 				if (!this->sendMessage(sendVector, true)) {
 					this->currentReconnectTries++;
+					std::cout << "WERE LEAVING 0606" << std::endl;
 					this->onClosedVoice();
 					this->connectInternal();
 					return;
@@ -785,6 +778,7 @@ namespace DiscordCoreAPI {
 			case VoiceConnectionState::Collecting_Ready: {
 				if (!this->collectAndProcessAMessage(VoiceConnectionState::Initializing_DatagramSocket)) {
 					this->currentReconnectTries++;
+					std::cout << "WERE LEAVING 0707" << std::endl;
 					this->onClosedVoice();
 					this->connectInternal();
 					return;
@@ -795,6 +789,7 @@ namespace DiscordCoreAPI {
 			case VoiceConnectionState::Initializing_DatagramSocket: {
 				if (!this->voiceConnect()) {
 					this->currentReconnectTries++;
+					std::cout << "WERE LEAVING 0808" << std::endl;
 					this->onClosedVoice();
 					this->connectInternal();
 					return;
@@ -813,6 +808,7 @@ namespace DiscordCoreAPI {
 				this->stringifyJsonData(protocolPayloadSelectString, sendVector, DiscordCoreInternal::WebSocketOpCode::Op_Text);
 				if (!this->sendMessage(sendVector, true)) {
 					this->currentReconnectTries++;
+					std::cout << "WERE LEAVING 0909" << std::endl;
 					this->onClosedVoice();
 					this->connectInternal();
 					return;
@@ -824,6 +820,7 @@ namespace DiscordCoreAPI {
 			case VoiceConnectionState::Collecting_Session_Description: {
 				if (!this->collectAndProcessAMessage(VoiceConnectionState::Collecting_Init_Data)) {
 					this->currentReconnectTries++;
+					std::cout << "WERE LEAVING 12121212" << std::endl;
 					this->onClosedVoice();
 					this->connectInternal();
 					return;
@@ -873,10 +870,12 @@ namespace DiscordCoreAPI {
 				std::string theString{};
 				this->stringifyJsonData(data, theString, DiscordCoreInternal::WebSocketOpCode::Op_Text);
 				if (!this->sendMessage(theString, true)) {
+					std::cout << "WERE LEAVING SEND HEARTBEAT 0101" << std::endl;
 					this->onClosedVoice();
 				}
 				this->haveWeReceivedHeartbeatAck = false;
 			} else {
+				std::cout << "WERE LEAVING SEND HEARTBEAT 0202" << std::endl;
 				this->onClosedVoice();
 			}
 		} catch (...) {
@@ -889,6 +888,7 @@ namespace DiscordCoreAPI {
 
 	void VoiceConnection::onClosedVoice() noexcept {
 		this->connectionState.store(VoiceConnectionState::Collecting_Init_Data);
+		std::cout << "WERE LEAVING ON CLOSED VOICE" << std::endl;
 		if (this->activeState.load() != VoiceActiveState::Exiting && this->currentReconnectTries < this->maxReconnectTries) {
 			this->reconnect();
 		} else if (this->currentReconnectTries >= this->maxReconnectTries) {
@@ -921,6 +921,7 @@ namespace DiscordCoreAPI {
 					while (inputString.size() < 74 && !this->doWeQuit->load() && this->activeState.load() != VoiceActiveState::Exiting) {
 						DatagramSocketClient::processIO(DiscordCoreInternal::ProcessIOType::Both);
 						std::string theNewString = DatagramSocketClient::getInputBuffer();
+						std::cout << "THE MESSAGE: " << theNewString << ", THE MESSAGE SIZE: " << theNewString.size() << std::endl;
 						inputString.insert(inputString.end(), theNewString.begin(), theNewString.end());
 						std::this_thread::sleep_for(1ms);
 						if (theStopWatch.hasTimePassed()) {
@@ -928,7 +929,8 @@ namespace DiscordCoreAPI {
 						}
 					}
 					std::string message{};
-					message.insert(message.begin(), inputString.begin() + 8, inputString.begin() + 64);
+					message.insert(message.begin(), inputString.begin(), inputString.begin() + 73);
+					std::cout << "THE MESSAGE: " << inputString << ", THE MESSAGE SIZE: " << inputString.size() << std::endl;
 					auto endLineFind = message.find('\u0000', 5);
 					if (endLineFind != std::string::npos) {
 						message = message.substr(0, endLineFind);

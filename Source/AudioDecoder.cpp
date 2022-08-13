@@ -201,7 +201,7 @@ namespace DiscordCoreInternal {
 	int32_t AudioDecoder::FileStreamRead(void* opaque, uint8_t* buf, int32_t) {
 		AudioDecoder* stream = static_cast<AudioDecoder*>(opaque);
 		stream->bytesRead = 0;
-		stream->currentBuffer = std::string();
+		stream->currentBuffer = std::string{};
 		DiscordCoreAPI::RawFrameData frameData{};
 		if (stream->areWeQuitting.load()) {
 			frameData.sampleCount = -5;
@@ -230,9 +230,9 @@ namespace DiscordCoreInternal {
 			frameData.sampleCount = -5;
 			stream->outDataBuffer.send(frameData);
 			stream->areWeQuitting.store(true);
-			return static_cast<int32_t>(stream->bytesRead);
+			return stream->bytesRead;
 		}
-		return static_cast<int32_t>(stream->bytesRead);
+		return stream->bytesRead;
 	}
 
 	void AudioDecoder::run(std::stop_token& stopToken) {
@@ -483,6 +483,10 @@ namespace DiscordCoreInternal {
 		this->inputDataBuffer.send(std::string());
 		this->inputDataBuffer.send(std::string());
 		this->areWeQuitting.store(true);
+		this->taskThread->request_stop();
+		if (this->taskThread->joinable()) {
+			this->taskThread->join();
+		}
 	}
 
 	AudioDecoder::~AudioDecoder() {

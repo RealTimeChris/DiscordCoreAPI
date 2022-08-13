@@ -212,13 +212,11 @@ namespace DiscordCoreInternal {
 		if (data.size() > 0 && this->ssl) {
 			if (priority && data.size() < static_cast<size_t>(16 * 1024)) {
 				fd_set writeSet{};
-				int32_t writeNfds{ 0 };
 				FD_ZERO(&writeSet);
 				FD_SET(this->theSocket, &writeSet);
-				writeNfds = this->theSocket > writeNfds ? this->theSocket : writeNfds;
 
 				timeval checkTime{ .tv_sec = 1, .tv_usec = 0 };
-				if (auto returnValue = select(writeNfds + 1, nullptr, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
+				if (auto returnValue = select(FD_SETSIZE, nullptr, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
 					this->disconnect(true);
 					return ProcessIOResult::Select_Failure;
 				} else if (returnValue == 0) {
@@ -589,6 +587,7 @@ namespace DiscordCoreInternal {
 	}
 
 	void DatagramSocketClient::writeData(std::string& dataToWrite) noexcept {
+		std::cout << "WERE WRITING THIS DATA: " << dataToWrite << std::endl;
 		if (dataToWrite.size() > static_cast<size_t>(16 * 1024)) {
 			size_t remainingBytes{ dataToWrite.size() };
 			while (remainingBytes > 0) {
@@ -614,7 +613,7 @@ namespace DiscordCoreInternal {
 	}
 
 	bool DatagramSocketClient::areWeStillConnected() noexcept {
-		if (this->theSocket != SOCKET_ERROR && this->theSocket != SOCKET_ERROR) {
+		if (this->theSocket != SOCKET_ERROR) {
 			return true;
 		} else {
 			return false;
@@ -629,6 +628,7 @@ namespace DiscordCoreInternal {
 				this->disconnect();
 				return;
 			} else {
+				std::cout << "THE WRITTEN STRING: " << this->outputBuffers[0] << std::endl;
 				this->outputBuffers.erase(this->outputBuffers.begin());
 			}
 		}
@@ -649,6 +649,7 @@ namespace DiscordCoreInternal {
 				return;
 			} else {
 				this->inputBuffer.append(this->rawInputBuffer, readBytes);
+				//std::cout << "THE READ STRING: " << this->inputBuffer << std::endl;
 				this->bytesRead += readBytes;
 			}
 		}

@@ -136,16 +136,11 @@ namespace DiscordCoreInternal {
 				if (theBuffer.size() < static_cast<uint64_t>(theShard->messageOffset) + static_cast<uint64_t>(theShard->messageLength)) {
 					return true;
 				} else {
-					theStopWatch.resetTimer();
 					theBuffer.erase(theBuffer.begin(), theBuffer.begin() + theShard->messageOffset);
 					if (!this->onMessageReceived(theBuffer.substr(0, theShard->messageLength))) {
 						return false;
 					}
-					//std::cout << "THIS TIME 0101: " << this->theStopWatch.totalTimePassed() << std::endl;
-					theStopWatch.resetTimer();
 					theBuffer.erase(theBuffer.begin(), theBuffer.begin() + theShard->messageLength);
-					//std::cout << "THIS TIME 0202: " << this->theStopWatch.totalTimePassed() << std::endl;
-					theStopWatch.resetTimer();
 					return true;
 				}
 			}
@@ -153,8 +148,8 @@ namespace DiscordCoreInternal {
 				uint16_t close = theBuffer[2] & 0xff;
 				close <<= 8;
 				close |= theBuffer[3] & 0xff;
-				auto closeCode = close;
-				if (closeCode) {
+				theShard->closeCode = close;
+				if (theShard->closeCode) {
 					theShard->areWeResuming = true;
 				}
 				theBuffer.erase(theBuffer.begin(), theBuffer.begin() + 4);
@@ -179,10 +174,10 @@ namespace DiscordCoreInternal {
 		this->configManager = &theClient->configManager;
 		this->discordCoreClient = theClient;
 		this->shard.push_back(currentShardNew);
-		this->discordCoreClient->theBaseShardCount.store(this->discordCoreClient->theBaseShardCount.load() + 1);
 		this->connections = connectionsNew;
 		this->doWeQuit = doWeQuitNew;
 		if (theClient) {
+			this->discordCoreClient->theBaseShardCount.store(this->discordCoreClient->theBaseShardCount.load() + 1);
 			this->shard.push_back(this->discordCoreClient->configManager.getTotalShardCount());
 			if (this->discordCoreClient->configManager.getTextFormat() == DiscordCoreAPI::TextFormat::Etf) {
 				this->dataOpCode = WebSocketOpCode::Op_Binary;
@@ -259,6 +254,7 @@ namespace DiscordCoreInternal {
 					}
 					didWeWrite = this->writeData(dataToSend, true);
 				} while (didWeWrite != ProcessIOResult::No_Error);
+				std::cout << "THE RESULT: " << ( int )didWeWrite << std::endl;
 				if (didWeWrite != ProcessIOResult::No_Error) {
 					if (this->configManager->doWePrintWebSocketErrorMessages()) {
 						DiscordCoreAPI::reportException("WebSocketSSLShard::sendMessage()");
@@ -319,11 +315,10 @@ namespace DiscordCoreInternal {
 	};
 	
 	void WebSocketSSLShard::dispatchBuffer(std::string& theBuffer) noexcept {
-		//std::cout << "THE TIME CURRENTLY: (0303): " << this->theStopWatch.totalTimePassed() << std::endl;
-		theStopWatch.resetTimer();
+		if (this->theWebSocketState.load() == WebSocketSSLShardState::Upgrading) {
+			this->parseConnectionHeaders(this);
+		}
 		this->parseMessage(this, theBuffer);
-		//std::cout << "THE TIME CURRENTLY: (0404): " << this->theStopWatch.totalTimePassed() << std::endl;
-		theStopWatch.resetTimer();
 	}
 
 	bool WebSocketSSLShard::onMessageReceived(const std::string& theString) {
@@ -337,10 +332,7 @@ namespace DiscordCoreInternal {
 							
 							try {
 								std::string& theData = ( std::string& )theString;
-								theStopWatch.resetTimer();
 								payloadNew = std::move(this->parseEtfToJson(theData));
-								//std::cout << "THE TIME CURRENTLY: (0101): " << this->theStopWatch.totalTimePassed() << std::endl;
-								theStopWatch.resetTimer();
 							} catch (...) {
 								if (this->configManager->doWePrintGeneralErrorMessages()) {
 									DiscordCoreAPI::reportException("ErlPacker::parseEtfToJson()");
@@ -456,29 +448,16 @@ namespace DiscordCoreInternal {
 											dataPackage->threadMembersUpdateData = payloadNew["d"];
 											this->discordCoreClient->eventManager.onThreadMembersUpdateEvent(*dataPackage);
 										} else if (payloadNew["t"] == "GUILD_CREATE") {
-											theStopWatch.resetTimer();
 											std::unique_ptr<DiscordCoreAPI::OnGuildCreationData> dataPackage{ std::make_unique<DiscordCoreAPI::OnGuildCreationData>() };
 											nlohmann::json& theData = payloadNew["d"];
-											
-											//std::cout << "TIME PASSED 0202: " << theStopWatch.totalTimePassed() << std::endl;
-											theStopWatch.resetTimer();
 											DiscordCoreAPI::GuildData* theGuild = new DiscordCoreAPI::GuildData{ std::move(theData) };
-											//std::cout << "TIME PASSED 0303: " << theStopWatch.totalTimePassed() << std::endl;
-											theStopWatch.resetTimer();
 											Snowflake guildId = theGuild->id;
 											theGuild->discordCoreClient = this->discordCoreClient;
-											//std::cout << "TIME PASSED 0404: " << theStopWatch.totalTimePassed() << std::endl;
-											theStopWatch.resetTimer();
 											auto theGuildNew = std::make_unique<DiscordCoreAPI::GuildData>();
-											//std::cout << "TIME PASSED 0505: " << theStopWatch.totalTimePassed() << std::endl;
-											theStopWatch.resetTimer();
 											theGuildNew.reset(theGuild);
 											DiscordCoreAPI::Guilds::insertGuild(std::move(theGuildNew));
-											//std::cout << "TIME PASSED 0606: " << theStopWatch.totalTimePassed() << std::endl;
 											dataPackage->guild = DiscordCoreAPI::Guilds::cache[guildId].get();
 											dataPackage->guild->discordCoreClient = this->discordCoreClient;
-											//this->discordCoreClient->eventManager.onGuildCreationEvent(std::move(*dataPackage));
-											theStopWatch.resetTimer();
 										} else if (payloadNew["t"] == "GUILD_UPDATE") {
 											std::unique_ptr<DiscordCoreAPI::OnGuildUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnGuildUpdateData>() };
 											std::unique_ptr<DiscordCoreAPI::GuildData> theGuild{ std::make_unique<DiscordCoreAPI::GuildData>(payloadNew["d"]) };
@@ -644,8 +623,6 @@ namespace DiscordCoreInternal {
 											}
 											this->discordCoreClient->eventManager.onIntegrationDeletionEvent(*dataPackage);
 										} else if (payloadNew["t"] == "INTERACTION_CREATE") {
-											//std::cout << "THE TIME CURRENTLY: (0202): " << this->theStopWatch.totalTimePassed() << std::endl;
-											theStopWatch.resetTimer();
 											std::unique_ptr<DiscordCoreAPI::InteractionData> interactionData{ std::make_unique<DiscordCoreAPI::InteractionData>() };
 											*interactionData = payloadNew["d"];
 											std::unique_ptr<DiscordCoreAPI::InputEventData> eventData{ std::make_unique<DiscordCoreAPI::InputEventData>(*interactionData) };
@@ -658,11 +635,7 @@ namespace DiscordCoreInternal {
 												dataPackage->interactionData = *interactionData;
 												std::unique_ptr<DiscordCoreAPI::CommandData> commandData{ std::make_unique<DiscordCoreAPI::CommandData>(*eventData) };
 												DiscordCoreAPI::CommandData commandDataNew = *commandData;
-												//std::cout << "THE TIME CURRENTLY: (0303): " << this->theStopWatch.totalTimePassed() << std::endl;
-												theStopWatch.resetTimer();
 												this->discordCoreClient->commandController.checkForAndRunCommand(commandDataNew);
-												//std::cout << "THE TIME CURRENTLY: (0404): " << this->theStopWatch.totalTimePassed() << std::endl;
-												theStopWatch.resetTimer();
 												this->discordCoreClient->eventManager.onInteractionCreationEvent(*dataPackage);
 												std::unique_ptr<DiscordCoreAPI::OnInputEventCreationData> eventCreationData{
 													std::make_unique<DiscordCoreAPI::OnInputEventCreationData>()
@@ -988,8 +961,6 @@ namespace DiscordCoreInternal {
 								}
 							}
 						}
-						//std::cout << "THE TIME CURRENTLY: (0808): " << this->theStopWatch.totalTimePassed() << std::endl;
-						theStopWatch.resetTimer();
 						return returnValue;
 					}
 
@@ -1094,11 +1065,7 @@ namespace DiscordCoreInternal {
 					this->connectVoiceInternal();
 				}
 				if (this->sslShard) {
-					////std::cout << "THE TIME CURRENTLY: (0707): " << this->sslShard->theStopWatch.totalTimePassed() << std::endl;
-					this->sslShard->theStopWatch.resetTimer();
 					this->sslShard->processIO();
-					////std::cout << "THE TIME CURRENTLY: (0606): " << this->sslShard->theStopWatch.totalTimePassed() << std::endl;
-					this->sslShard->theStopWatch.resetTimer();
 					if (this->sslShard->heartBeatStopWatch.hasTimePassed()) {
 						this->sslShard->heartBeatStopWatch.resetTimer();
 						this->sslShard->checkForAndSendHeartBeat();
@@ -1174,9 +1141,6 @@ namespace DiscordCoreInternal {
 						break;
 					}
 					this->sslShard->processIO();
-					if (this->sslShard->areWeStillConnected()) {
-						this->sslShard->parseConnectionHeaders(this->sslShard.get());
-					}
 					if (this->sslShard->areWeStillConnected()) {
 						DiscordCoreAPI::StopWatch<std::chrono::microseconds> theStopWatch{};
 					}

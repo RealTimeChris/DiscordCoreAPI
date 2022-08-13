@@ -71,7 +71,7 @@ namespace DiscordCoreInternal {
 
 		bool sendMessage(std::string& dataToSend, bool priority) noexcept;
 
-		bool onMessageReceived(const std::string& theString);
+		virtual bool onMessageReceived(const std::string& theString);
 
 		void checkForAndSendHeartBeat(bool = false) noexcept;
 

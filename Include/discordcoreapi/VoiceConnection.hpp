@@ -181,6 +181,8 @@ namespace DiscordCoreAPI {
 
 		bool collectAndProcessAMessage(VoiceConnectionState stateToWaitFor) noexcept;
 
+		virtual bool onMessageReceived(const std::string& theString) noexcept;
+
 		void sendSingleAudioFrame(std::string& audioDataPacketNew) noexcept;
 
 		UnboundedMessageBlock<AudioFrameData>& getAudioBuffer() noexcept;
@@ -204,8 +206,6 @@ namespace DiscordCoreAPI {
 		bool areWeCurrentlyPlaying() noexcept;
 
 		void disconnectInternal() noexcept;
-
-		bool onMessageReceived() noexcept;
 
 		void reconnectStream() noexcept;
 
