@@ -155,8 +155,8 @@ namespace DiscordCoreInternal {
 	struct DiscordCoreAPI_Dll BuildAudioDecoderData {
 	  public:
 		DiscordCoreAPI::ConfigManager* configManager{ nullptr };
-		uint32_t totalFileSize{ 0 };
-		uint32_t bufferMaxSize{ 0 };
+		uint64_t totalFileSize{ 0 };
+		uint64_t bufferMaxSize{ 0 };
 	};
 
 	class DiscordCoreAPI_Dll AudioDecoder {
@@ -174,7 +174,7 @@ namespace DiscordCoreInternal {
 		~AudioDecoder();
 
 	  protected:
-		uint32_t audioStreamIndex{ 0 }, bufferMaxSize{ 0 }, bytesRead{ 0 }, totalFileSize{ 0 };
+		uint64_t audioStreamIndex{ 0 }, bufferMaxSize{ 8192 }, bytesRead{ 0 }, totalFileSize{ 0 };
 		DiscordCoreAPI::UnboundedMessageBlock<DiscordCoreAPI::RawFrameData> outDataBuffer{};
 		DiscordCoreAPI::UnboundedMessageBlock<std::string> inputDataBuffer{};
 		DiscordCoreAPI::ConfigManager* configManager{ nullptr };
