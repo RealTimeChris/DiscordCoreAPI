@@ -560,7 +560,7 @@ namespace DiscordCoreAPI {
 		static CoRoutine<void> leaveGuildAsync(LeaveGuildData dataPackage);
 
 	  protected:
-		static std::unique_ptr<std::unordered_map<Snowflake, std::unique_ptr<GuildData>>> cache;
+		static std::unordered_map<Snowflake, std::unique_ptr<GuildData>> cache;
 		static DiscordCoreInternal::HttpsClient* httpsClient;
 		static DiscordCoreClient* discordCoreClient;
 		static ConfigManager* configManager;

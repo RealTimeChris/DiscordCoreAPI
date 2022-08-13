@@ -141,13 +141,13 @@ namespace DiscordCoreAPI {
 		theKey.guildId = dataPackage.guildId;
 		theKey.guildMemberId = dataPackage.guildMemberId;
 		std::shared_lock theLock{ GuildMembers::theMutex };
-		if (!GuildMembers::cache->contains(theKey)) {
+		if (!GuildMembers::cache.contains(theKey)) {
 			theLock.unlock();
 			auto theGuildMember = GuildMembers::getGuildMemberAsync(dataPackage).get();
 			GuildMembers::insertGuildMember(std::make_unique<GuildMember>(theGuildMember));
 			co_return theGuildMember;
 		} else {
-			co_return *(*GuildMembers::cache)[theKey];
+			co_return *GuildMembers::cache[theKey];
 		}
 	}
 
@@ -296,7 +296,7 @@ namespace DiscordCoreAPI {
 		if (GuildMembers::configManager->doWeCacheGuildMembers()) {
 			theKey.guildId = guildMember->guildId;
 			theKey.guildMemberId = guildMember->id;
-			(*GuildMembers::cache)[theKey] = std::move(guildMember);
+			GuildMembers::cache.emplace(std::make_pair(theKey, std::move(guildMember)));
 		}
 	}
 
@@ -305,10 +305,10 @@ namespace DiscordCoreAPI {
 		GuildMemberId theKey{};
 		theKey.guildId = guildMember->guildId;
 		theKey.guildMemberId = guildMember->id;
-		GuildMembers::cache->erase(theKey);
+		GuildMembers::cache.erase(theKey);
 	};
 
-	std::unique_ptr<std::map<GuildMemberId, std::unique_ptr<GuildMemberData>>> GuildMembers::cache{ std::make_unique<std::map<GuildMemberId, std::unique_ptr<GuildMemberData>>>() };
+	std::map<GuildMemberId, std::unique_ptr<GuildMemberData>> GuildMembers::cache{};
 	DiscordCoreInternal::HttpsClient* GuildMembers::httpsClient{ nullptr };
 	ConfigManager* GuildMembers::configManager{ nullptr };
 	std::shared_mutex GuildMembers::theMutex{};

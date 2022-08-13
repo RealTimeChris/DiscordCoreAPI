@@ -302,7 +302,7 @@ namespace DiscordCoreAPI {
 		static void removeChannel(const uint64_t& channelId);
 
 	  protected:
-		static std::unique_ptr<std::unordered_map<Snowflake, std::unique_ptr<ChannelData>>> cache;
+		static std::unordered_map<Snowflake, std::unique_ptr<ChannelData>> cache;
 		static DiscordCoreInternal::HttpsClient* httpsClient;
 		static ConfigManager* configManager;
 		static std::shared_mutex theMutex;

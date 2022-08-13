@@ -475,7 +475,7 @@ namespace DiscordCoreInternal {
 											theGuildNew.reset(theGuild);
 											DiscordCoreAPI::Guilds::insertGuild(std::move(theGuildNew));
 											//std::cout << "TIME PASSED 0606: " << theStopWatch.totalTimePassed() << std::endl;
-											dataPackage->guild = (*DiscordCoreAPI::Guilds::cache)[guildId].get();
+											dataPackage->guild = DiscordCoreAPI::Guilds::cache[guildId].get();
 											dataPackage->guild->discordCoreClient = this->discordCoreClient;
 											//this->discordCoreClient->eventManager.onGuildCreationEvent(std::move(*dataPackage));
 											theStopWatch.resetTimer();
@@ -491,7 +491,7 @@ namespace DiscordCoreInternal {
 											theKey.guildId = dataPackage->guildOld->id;
 											for (auto& value: dataPackage->guildOld->members) {
 												theKey.guildMemberId = value;
-												DiscordCoreAPI::GuildMemberData* guildMember = (*DiscordCoreAPI::GuildMembers::cache)[theKey].get();
+												DiscordCoreAPI::GuildMemberData* guildMember = DiscordCoreAPI::GuildMembers::cache[theKey].get();
 												DiscordCoreAPI::GuildMembers::removeGuildMember(std::make_unique<DiscordCoreAPI::GuildMemberData>(*guildMember));
 											}
 											for (auto& value: dataPackage->guildOld->channels) {
