@@ -193,9 +193,11 @@ namespace DiscordCoreInternal {
 	}
 
 	void AudioDecoder::startMe() {
-		this->taskThread = std::make_unique<std::jthread>([=, this](std::stop_token stopToken) {
-			this->run(stopToken);
-		});
+		if (!this->taskThread) {
+			this->taskThread = std::make_unique<std::jthread>([=, this](std::stop_token stopToken) {
+				this->run(stopToken);
+			});
+		}
 	};
 
 	int32_t AudioDecoder::FileStreamRead(void* opaque, uint8_t* buf, int32_t) {

@@ -238,11 +238,10 @@ namespace DiscordCoreInternal {
 				return;
 			}
 			std::string theCurrentString{};
-			audioDecoder->startMe();
 			while (bytesToRead > 0) {
+				audioDecoder->startMe();
 				streamSocket->processIO();
 				std::cout << "WERE LEAVING LEAVING LEAVING! 0202" << std::endl;
-				std::this_thread::sleep_for(1ms);
 				if (bytesSubmittedPrevious == bytesReadTotal) {
 					currentReruns++;
 				} else {
