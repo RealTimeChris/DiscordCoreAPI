@@ -125,7 +125,7 @@ namespace DiscordCoreAPI {
 
 	VoiceConnection::VoiceConnection(DiscordCoreInternal::BaseSocketAgent* BaseSocketAgentNew, const DiscordCoreInternal::VoiceConnectInitData& initDataNew,
 		DiscordCoreAPI::ConfigManager* configManagerNew, std::atomic_bool* doWeQuitNew, StreamType streamTypeNew, StreamInfo streamInfoNew) noexcept
-		: WebSocketSSLShard(BaseSocketAgentNew->discordCoreClient, &this->connections, initDataNew.currentShard, this->doWeQuit,false),
+		: WebSocketSSLShard(BaseSocketAgentNew->discordCoreClient, &this->connections, initDataNew.currentShard, this->doWeQuit, false, (1024 * 16) - 1),
 		  DatagramSocketClient(StreamType::None) {
 		this->baseShard = BaseSocketAgentNew->sslShard.get();
 		this->activeState.store(VoiceActiveState::Connecting);

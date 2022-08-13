@@ -259,9 +259,9 @@ namespace DiscordCoreInternal {
 		other.erase(other.begin(), other.begin() + theCount);
 	}
 
-	HttpsConnection::HttpsConnection() : SSLClient(false){};
+	HttpsConnection::HttpsConnection() : SSLClient(false, (1024 * 16) - 1){};
 
-	void HttpsConnection::dispatchBuffer(std::string&) noexcept {};
+	void HttpsConnection::dispatchBuffer(const std::string&) noexcept {};
 
 	void HttpsConnection::disconnect(bool) noexcept {
 		if (this->theSSLState.load() == SSLConnectionState::Connected) {
@@ -504,6 +504,7 @@ namespace DiscordCoreInternal {
 
 	HttpsResponseData HttpsClient::getResponse(HttpsConnection& theConnection, RateLimitData& rateLimitData) {
 		HttpsResponseData theData{};
+		std::lock_guard theLock{ theConnection.connectionMutex };
 		try {
 			DiscordCoreAPI::StopWatch stopWatch{ 4500ms };
 			theConnection.getInputBuffer().clear();

@@ -104,7 +104,7 @@ namespace DiscordCoreInternal {
 
 		HttpsConnection();
 
-		void dispatchBuffer(std::string&) noexcept;
+		void dispatchBuffer(const std::string&) noexcept;
 
 		void disconnect(bool) noexcept;
 

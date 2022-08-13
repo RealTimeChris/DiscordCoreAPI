@@ -157,12 +157,17 @@ namespace DiscordCoreInternal {
 		}
 	}
 
+	SSLDataInterface::SSLDataInterface(int32_t maxBufferSizeNew) noexcept {
+		this->maxBufferSize = maxBufferSizeNew;
+	}
+
 	SSLConnectionInterface::~SSLConnectionInterface() noexcept {
 		std::lock_guard theLock{ this->connectionMutex };
 	}
 
-	SSLClient::SSLClient(bool areWeAStreamSocketNew) noexcept {
+	SSLClient::SSLClient(bool areWeAStreamSocketNew, int32_t maxBufferSizeNew) noexcept : SSLDataInterface(maxBufferSizeNew) {
 		this->areWeAStreamSocket = areWeAStreamSocketNew;
+		this->maxBufferSize = maxBufferSizeNew;
 	}
 
 	void SSLClient::processIO(std::vector<SSLClient*>& theVector) noexcept {
@@ -378,6 +383,10 @@ namespace DiscordCoreInternal {
 		return returnValueFinal;
 	}
 
+	std::string SSLClient::getInputBufferCopy() noexcept {
+		return this->inputBuffer;
+	}
+
 	std::string& SSLClient::getInputBuffer() noexcept {
 		return this->inputBuffer;
 	}
@@ -390,7 +399,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void SSLClient::dispatchBuffer(std::string& theBuffer) noexcept {}
+	void SSLClient::dispatchBuffer(const std::string& theBuffer) noexcept {}
 
 	ProcessIOResult SSLClient::writeDataProcess() noexcept {
 		if (this->outputBuffers.size() > 0) {

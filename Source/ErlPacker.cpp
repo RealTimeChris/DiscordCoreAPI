@@ -39,9 +39,7 @@ namespace DiscordCoreInternal {
 		this->theIncrement = 0;
 		this->buffer = ( uint8_t* )dataToParse.data();
 		uint8_t version = this->read8Bits();
-		//std::cout << "THE RESULT TIME: " << this->theStopWatch.totalTimePassed() << std::endl;
-		this->theStopWatch.resetTimer();
-		return std::move(this->singleValueETFToJson());
+		return this->singleValueETFToJson();
 	}
 
 	void ErlPacker::singleValueJsonToETF(const nlohmann::json& jsonData) {
@@ -223,11 +221,12 @@ namespace DiscordCoreInternal {
 		return val;
 	}
 
-	const char* ErlPacker::readString(uint32_t length) {
+	std::string ErlPacker::readString(uint32_t length) {
 		if (this->offSet + length > this->theLength) {
 			throw ErlPackError{ "ErlPacker::readString() Error: readString() past end of this->\n\n" };
 		}
-		const char* theString{ ( char* )(this->buffer + this->offSet) };
+		std::string theString{};
+		theString.insert(theString.begin(), this->buffer + this->offSet, this->buffer + this->offSet + length);
 		this->offSet += length;
 		return theString;
 	}
@@ -386,11 +385,11 @@ namespace DiscordCoreInternal {
 
 	nlohmann::json ErlPacker::parseFloatExt() {
 		uint32_t floatLength = 31;
-		const char* floatStr = this->readString(floatLength);
+		std::string floatStr = this->readString(floatLength);
 		nlohmann::json jsonData{};
 		double number{};
 		std::vector<char> nullTerminated{};
-		nullTerminated.insert(nullTerminated.begin(), floatStr, floatStr + floatLength);
+		nullTerminated.insert(nullTerminated.begin(), floatStr.data(), floatStr.data() + floatLength);
 		auto count = sscanf(nullTerminated.data(), "%lf", &number);
 		if (!count) {
 			return jsonData;
@@ -467,14 +466,12 @@ namespace DiscordCoreInternal {
 		const auto length = this->read32Bits();
 		//std::cout << "THE TIME TO READ 32 BITS: " << this->theStopWatch.totalTimePassed() << std::endl;
 		//this->theStopWatch.resetTimer();
-		const char* string = this->readString(length);
+		std::string string = this->readString(length);
 		//std::cout << "THE TIME TO READ STRING: " << this->theStopWatch.totalTimePassed() << std::endl;
-		if (string == NULL) {
-			nlohmann::json theData{};
-			return std::move(theData);
+		if (string.size() == 0) {
+			return nlohmann::json{};
 		}
-		nlohmann::json theData = std::string{ string, length };
-		return std::move(theData);
+		return string;
 	}
 
 	nlohmann::json ErlPacker::parseSmallBigExt() {
@@ -514,15 +511,15 @@ namespace DiscordCoreInternal {
 	nlohmann::json ErlPacker::parseAtomUtf8Ext() {
 		uint16_t length = this->read16Bits();
 		uint32_t lengthNew = length;
-		const char* atom = this->readString(lengthNew);
-		return this->processAtom(atom, lengthNew);
+		std::string atom = this->readString(lengthNew);
+		return this->processAtom(atom.data(), lengthNew);
 	}
 
 	nlohmann::json ErlPacker::parseSmallAtomUtf8Ext() {
 		uint8_t length = this->read8Bits();
 		uint32_t lengthNew = length;
-		const char* atom = this->readString(lengthNew);
-		return this->processAtom(atom, lengthNew);
+		std::string atom = this->readString(lengthNew);
+		return this->processAtom(atom.data(), lengthNew);
 	}
 
 }

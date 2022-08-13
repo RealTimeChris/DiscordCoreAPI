@@ -185,7 +185,7 @@ namespace DiscordCoreInternal {
 	}
 
 	void AudioDecoder::submitDataForDecoding(std::string dataToDecode) {
-		this->inputDataBuffer.send(dataToDecode);
+		this->inputDataBuffer.send(std::move(dataToDecode));
 	}
 
 	bool AudioDecoder::haveWeFailed() {

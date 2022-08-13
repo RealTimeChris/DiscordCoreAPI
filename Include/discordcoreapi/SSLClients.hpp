@@ -174,10 +174,11 @@ namespace DiscordCoreInternal {
 
 		virtual ~SSLConnectionInterface() noexcept;
 
+		std::recursive_mutex connectionMutex{};
+
 	  protected:
 		std::atomic<SSLConnectionState> theSSLState{ SSLConnectionState::Disconnected };
 		std::queue<DiscordCoreAPI::ConnectionPackage>* connections{ nullptr };
-		std::recursive_mutex connectionMutex{};
 		SOCKETWrapper theSocket{};
 		SSL_CTXWrapper context{};
 		SSLWrapper ssl{};
@@ -189,9 +190,11 @@ namespace DiscordCoreInternal {
 	  public:
 		friend class HttpsClient;
 
-		SSLDataInterface() noexcept = default;
+		SSLDataInterface(int32_t maxBufferSize) noexcept;
 
 		virtual ProcessIOResult writeData(const std::string& data, bool priority = false) noexcept = 0;
+
+		virtual std::string getInputBufferCopy() noexcept = 0;
 
 		virtual std::string& getInputBuffer() noexcept = 0;
 
@@ -211,7 +214,7 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll SSLClient : public SSLDataInterface, public SSLConnectionInterface {
 	  public:
-		SSLClient(bool areWeAStreamSocket) noexcept;
+		SSLClient(bool areWeAStreamSocket, int32_t maxBufferSize) noexcept;
 
 		static void processIO(std::vector<SSLClient*>& theVector) noexcept;
 
@@ -221,9 +224,11 @@ namespace DiscordCoreInternal {
 
 		ProcessIOResult writeDataProcess() noexcept;
 
-		virtual void dispatchBuffer(std::string& theBuffer) noexcept;
+		virtual void dispatchBuffer(const std::string& theBuffer) noexcept;
 
 		ProcessIOResult readDataProcess() noexcept;
+
+		std::string getInputBufferCopy() noexcept;
 
 		std::string& getInputBuffer() noexcept;
 

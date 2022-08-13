@@ -202,7 +202,7 @@ namespace DiscordCoreInternal {
 
 	void YouTubeAPI::downloadAndStreamAudio(const DiscordCoreAPI::Song& newSong, std::stop_token& stopToken, int32_t currentReconnectTries) {
 		try {
-			std::unique_ptr<WebSocketSSLShard> streamSocket{ std::make_unique<WebSocketSSLShard>(nullptr, nullptr, 0, nullptr, true) };
+			std::unique_ptr<WebSocketSSLShard> streamSocket{ std::make_unique<WebSocketSSLShard>(nullptr, nullptr, 0, nullptr, true, 8192) };
 			auto bytesRead{ static_cast<int32_t>(streamSocket->getBytesRead()) };
 			if (newSong.finalDownloadUrls.size() > 0) {
 				if (!streamSocket->connect(newSong.finalDownloadUrls[0].urlPath, "443")) {
@@ -211,15 +211,16 @@ namespace DiscordCoreInternal {
 			} else {
 				return;
 			}
+			std::cout << "THE URL: " << newSong.finalDownloadUrls[0].urlPath << std::endl;
 			bool areWeDoneHeaders{ false };
-			int64_t remainingDownloadContentLength{ newSong.contentLength };
-			int64_t bytesToRead{ this->maxBufferSize };
-			int64_t bytesSubmittedPrevious{ 0 };
-			int64_t bytesReadTotal{ 0 };
-			const int8_t maxReruns{ 35 };
-			int8_t currentReruns{ 0 };
-			int32_t counter{ 0 };
-			int32_t headerSize{ 0 };
+			uint64_t remainingDownloadContentLength{ static_cast<uint64_t>(newSong.contentLength) };
+			uint64_t bytesToRead{ static_cast<uint64_t>(this->maxBufferSize) };
+			uint64_t bytesSubmittedPrevious{ 0 };
+			uint64_t bytesReadTotal{ 0 };
+			const uint8_t maxReruns{ 35 };
+			uint8_t currentReruns{ 0 };
+			uint32_t counter{ 0 };
+			uint32_t headerSize{ 0 };
 			BuildAudioDecoderData dataPackage{};
 			dataPackage.totalFileSize = static_cast<uint64_t>(newSong.contentLength);
 			dataPackage.bufferMaxSize = this->maxBufferSize;
@@ -295,7 +296,8 @@ namespace DiscordCoreInternal {
 						if (!stopToken.stop_requested()) {
 							if (streamSocket->areWeStillConnected()) {
 								bytesReadTotal = streamSocket->getBytesRead() - headerSize;
-								auto& newData = streamSocket->getInputBuffer();
+								std::string newData = streamSocket->getInputBuffer();
+								streamSocket->getInputBuffer().clear();
 								headerSize = static_cast<int32_t>(newData.size());
 							}
 						}
@@ -323,7 +325,8 @@ namespace DiscordCoreInternal {
 							this->weFailedToDownloadOrDecode(newSong, stopToken, currentReconnectTries);
 							return;
 						}
-						auto& streamBuffer = streamSocket->getInputBuffer();
+						std::string streamBuffer = streamSocket->getInputBuffer();
+						streamSocket->getInputBuffer().clear();
 						std::cout << "THE VECTOR SIZE: " << streamBuffer.size() << std::endl;
 						if (streamBuffer.size() > 0) {
 							theCurrentString.insert(theCurrentString.end(), streamBuffer.begin(), streamBuffer.end());
@@ -356,7 +359,8 @@ namespace DiscordCoreInternal {
 							this->weFailedToDownloadOrDecode(newSong, stopToken, currentReconnectTries);
 							return;
 						}
-						auto& newVector = streamSocket->getInputBuffer();
+						std::string newVector = streamSocket->getInputBuffer();
+						streamSocket->getInputBuffer().clear();
 						std::cout << "THE VECTOR SIZE: " << newVector.size() << std::endl;
 						if (newVector.size() > 0) {
 							theCurrentString.insert(theCurrentString.end(), newVector.begin(), newVector.end());
@@ -414,6 +418,7 @@ namespace DiscordCoreInternal {
 				}
 				counter++;
 			}
+			std::cout << "WERE FINALLY LEAVING FINALLY LEAVING!" << std::endl;
 			DiscordCoreAPI::RawFrameData frameData01{};
 			while (audioDecoder->getFrame(frameData01)) {
 			};

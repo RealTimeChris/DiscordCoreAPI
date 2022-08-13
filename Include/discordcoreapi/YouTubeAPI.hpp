@@ -60,7 +60,7 @@ namespace DiscordCoreInternal {
 	  protected:
 		DiscordCoreAPI::DiscordCoreClient* discordCoreClient{ nullptr };
 		DiscordCoreAPI::Snowflake guildId{};
-		const int32_t maxBufferSize{ 8192 };
+		const uint64_t maxBufferSize{ 8192 };
 		DiscordCoreAPI::Song theSong{};
 	};
 

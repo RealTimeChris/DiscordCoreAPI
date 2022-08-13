@@ -119,7 +119,7 @@ namespace DiscordCoreInternal {
 			});
 			this->workerThreads[this->currentIndex.load()] = std::move(workerThread);
 		}
-		this->theCoroutineHandles.push(coro);
+		this->theCoroutineHandles.emplace_back(coro);
 		this->coroHandleCount.store(this->coroHandleCount.load() + 1);
 	}
 
@@ -131,7 +131,7 @@ namespace DiscordCoreInternal {
 					if (this->theCoroutineHandles.size() > 0) {
 						std::coroutine_handle<> coroHandle = this->theCoroutineHandles.front();
 						this->coroHandleCount.store(this->coroHandleCount.load() - 1);
-						this->theCoroutineHandles.pop();
+						this->theCoroutineHandles.pop_front();
 						theLock01.unlock();
 						this->workerThreads[theIndex].areWeCurrentlyWorking.store(true);
 						if (!stopToken.stop_requested()) {

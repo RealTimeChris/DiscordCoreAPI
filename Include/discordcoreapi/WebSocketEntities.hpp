@@ -65,7 +65,7 @@ namespace DiscordCoreInternal {
 		WebSocketSSLShard() = default;
 
 		WebSocketSSLShard(DiscordCoreAPI::DiscordCoreClient* theClient, std::queue<DiscordCoreAPI::ConnectionPackage>* connectionsNew, int32_t currentShardNew,
-			std::atomic_bool* doWeQuitNew, bool areWeAStreamSocket) noexcept;
+			std::atomic_bool* doWeQuitNew, bool areWeAStreamSocket, int32_t maxBufferSizeNew) noexcept;
 
 		void getVoiceConnectionData(const VoiceConnectInitData& doWeCollect) noexcept;
 
@@ -77,7 +77,7 @@ namespace DiscordCoreInternal {
 
 		void disconnect(bool doWeReconnect) noexcept;
 
-		void dispatchBuffer(std::string& theBuffer) noexcept;
+		void dispatchBuffer(const std::string& theBuffer) noexcept;
 
 		void onClosed() noexcept;
 

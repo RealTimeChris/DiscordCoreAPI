@@ -101,7 +101,7 @@ namespace DiscordCoreInternal {
 
 		uint64_t read64Bits();
 
-		const char* readString(uint32_t length);
+		std::string readString(uint32_t length);
 
 		nlohmann::json singleValueETFToJson();
 

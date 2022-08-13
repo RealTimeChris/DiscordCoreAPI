@@ -156,7 +156,13 @@ namespace DiscordCoreInternal {
 			}
 		}
 
-		void operator()(ArgTypes... args) {
+		void operator()(ArgTypes&&... args) {
+			for (auto& [key, value]: this->theFunctions) {
+				value.theFunction(std::move(args...));
+			}
+		}
+
+		void operator()(ArgTypes&... args) {
 			for (auto& [key, value]: this->theFunctions) {
 				value.theFunction(args...);
 			}

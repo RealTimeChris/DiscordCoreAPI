@@ -48,6 +48,7 @@
 #include <discordcoreapi/WebHookEntities.hpp>
 #include <discordcoreapi/WebSocketEntities.hpp>
 #include <discordcoreapi/YouTubeAPI.hpp>
+#include <concepts>
 
 namespace DiscordCoreAPI {
 
@@ -66,6 +67,9 @@ namespace DiscordCoreAPI {
 	DiscordCoreAPI_Dll YouTubeAPIMap& getYouTubeAPIMap();
 
 	DiscordCoreAPI_Dll SongAPIMap& getSongAPIMap();
+
+	template<typename ObjectType>
+	concept Derived = std::derived_from<ObjectType, EventType>;
 
 	/**
 	 * \addtogroup main_endpoints
@@ -111,6 +115,7 @@ namespace DiscordCoreAPI {
 		std::unordered_map<std::string, std::unique_ptr<DiscordCoreInternal::BaseSocketAgent>> baseSocketAgentMap{};
 		std::unique_ptr<DiscordCoreInternal::HttpsClient> httpsClient{ nullptr };
 		StopWatch<std::chrono::milliseconds> theStopWatch{ 5100ms };
+		std::deque<std::unique_ptr<EventData>> theEventQueue{};
 #ifdef _WIN32
 		DiscordCoreInternal::WSADataWrapper theWSAData{};
 #endif
@@ -121,9 +126,15 @@ namespace DiscordCoreAPI {
 		EventManager eventManager{};
 		BotUser currentUser{};
 
+		void insertEvent(std::unique_ptr<EventData> theJsonData);
+		
+		void dispatchEvent(std::unique_ptr<EventData> theEvent);
+
 		GatewayBotData getGateWayBot();
 
 		bool instantiateWebSockets();
+
+		void dispatchEventWrapper();
 	};
 	/**@}*/
 }// namespace DiscordCoreAPI

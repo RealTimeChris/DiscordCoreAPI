@@ -3729,7 +3729,7 @@ namespace DiscordCoreAPI {
 		std::string html5PlayerFile{};
 		std::string addedByUserName{};///< The User name of the individual who added this Song to the playlist.
 		std::string thumbnailUrl{};///< The Url of the thumbnail image of this Song.
-		int32_t contentLength{ 0 };
+		uint64_t contentLength{ 0 };
 		std::string html5Player{};
 		std::string description{};///< A description of the Song.
 		Snowflake addedByUserId{};///< The User id of the individual who added this Song to the playlist.

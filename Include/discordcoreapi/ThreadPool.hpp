@@ -111,7 +111,7 @@ namespace DiscordCoreInternal {
 
 	  private:
 		std::unordered_map<int64_t, WorkerThread> workerThreads{};
-		std::queue<std::coroutine_handle<>> theCoroutineHandles{};
+		std::deque<std::coroutine_handle<>> theCoroutineHandles{};
 		std::atomic_int64_t coroHandleCount{ 0 };
 		std::atomic_int64_t currentCount{ 0 };
 		std::atomic_int64_t currentIndex{ 0 };
