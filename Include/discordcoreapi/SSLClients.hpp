@@ -164,17 +164,17 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll SSLConnectionInterface {
 	  public:
+		std::recursive_mutex accessMutex{};
+
 		SSLConnectionInterface() noexcept = default;
 
-		virtual bool connect(const std::string& baseUrl, const std::string& portNew) = 0;
+		virtual const bool connect(const std::string& baseUrl, const std::string& portNew) = 0;
 
 		virtual void disconnect(bool doWeReconnect) noexcept = 0;
 
-		virtual bool areWeStillConnected() noexcept = 0;
+		virtual const bool areWeStillConnected() noexcept = 0;
 
 		virtual ~SSLConnectionInterface() noexcept;
-
-		std::recursive_mutex connectionMutex{};
 
 	  protected:
 		std::atomic<SSLConnectionState> theSSLState{ SSLConnectionState::Disconnected };
@@ -220,7 +220,7 @@ namespace DiscordCoreInternal {
 
 		ProcessIOResult writeData(const std::string& dataToWrite, bool priority) noexcept;
 
-		bool connect(const std::string& baseUrl, const std::string& portNew) noexcept;
+		const bool connect(const std::string& baseUrl, const std::string& portNew) noexcept;
 
 		ProcessIOResult writeDataProcess() noexcept;
 
@@ -234,7 +234,7 @@ namespace DiscordCoreInternal {
 
 		ProcessIOResult processIO() noexcept;
 
-		bool areWeStillConnected() noexcept;
+		const bool areWeStillConnected() noexcept;
 
 		int64_t getBytesRead() noexcept;
 

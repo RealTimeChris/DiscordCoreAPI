@@ -118,7 +118,7 @@ namespace DiscordCoreInternal {
 		std::atomic_uint32_t threadCount{};
 		std::mutex theMutex{};
 
-		void threadFunction(std::stop_token& stopToken, int64_t theIndex);
+		void threadFunction(std::stop_token stopToken, int64_t theIndex);
 	};
 	/**@}*/
 }// namespace DiscordCoreAPI

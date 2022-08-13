@@ -162,7 +162,7 @@ namespace DiscordCoreInternal {
 	}
 
 	SSLConnectionInterface::~SSLConnectionInterface() noexcept {
-		std::lock_guard theLock{ this->connectionMutex };
+		std::lock_guard theLock{ this->accessMutex };
 	}
 
 	SSLClient::SSLClient(bool areWeAStreamSocketNew, int32_t maxBufferSizeNew) noexcept : SSLDataInterface(maxBufferSizeNew) {
@@ -258,7 +258,7 @@ namespace DiscordCoreInternal {
 		return ProcessIOResult::Nothing_To_Write;
 	}
 
-	bool SSLClient::connect(const std::string& baseUrl, const std::string& portNew) noexcept {
+	const bool SSLClient::connect(const std::string& baseUrl, const std::string& portNew) noexcept {
 		this->rawInputBuffer.resize(this->maxBufferSize);
 		std::string stringNew{};
 		auto httpsFind = baseUrl.find("https://");
@@ -347,7 +347,7 @@ namespace DiscordCoreInternal {
 	}
 
 	ProcessIOResult SSLClient::processIO() noexcept {
-		if (this->theSocket == SOCKET_ERROR) {
+		if (static_cast<const SOCKET>(this->theSocket) == SOCKET_ERROR) {
 			this->disconnect(true);
 			return ProcessIOResult::Disconnected;
 		}
@@ -356,9 +356,9 @@ namespace DiscordCoreInternal {
 		FD_ZERO(&readSet);
 
 		if ((this->outputBuffers.size() > 0 || this->wantWrite) && !this->wantRead) {
-			FD_SET(this->theSocket, &writeSet);
+			FD_SET(static_cast<const SOCKET>(this->theSocket), &writeSet);
 		}
-		FD_SET(this->theSocket, &readSet);
+		FD_SET(static_cast<const SOCKET>(this->theSocket), &readSet);
 
 		timeval checkTime{ .tv_sec = 0, .tv_usec = 1000 };
 		if (auto returnValue = select(FD_SETSIZE, &readSet, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
@@ -384,7 +384,7 @@ namespace DiscordCoreInternal {
 	}
 
 	std::string SSLClient::getInputBufferCopy() noexcept {
-		std::unique_lock theLock{ this->connectionMutex };
+		std::unique_lock theLock{ this->accessMutex };
 		std::string theString = std::move(this->inputBuffer);
 		this->inputBuffer.clear();
 		return theString;
@@ -394,8 +394,8 @@ namespace DiscordCoreInternal {
 		return this->inputBuffer;
 	}
 
-	bool SSLClient::areWeStillConnected() noexcept {
-		if (this->theSocket == SOCKET_ERROR) {
+	const bool SSLClient::areWeStillConnected() noexcept {
+		if (static_cast<const SOCKET>(this->theSocket) == SOCKET_ERROR) {
 			return false;
 		} else {
 			return true;
@@ -453,7 +453,7 @@ namespace DiscordCoreInternal {
 				switch (errorValue) {
 					case SSL_ERROR_NONE: {
 						if (readBytes > 0) {
-							std::unique_lock theLock{ this->connectionMutex };
+							std::unique_lock theLock{ this->accessMutex };
 							this->inputBuffer.append(this->rawInputBuffer.begin(), this->rawInputBuffer.begin() + readBytes);
 							this->bytesRead += readBytes;
 						}

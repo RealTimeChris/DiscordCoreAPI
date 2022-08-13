@@ -265,7 +265,7 @@ namespace DiscordCoreInternal {
 
 	void HttpsConnection::disconnect(bool) noexcept {
 		if (this->theSSLState.load() == SSLConnectionState::Connected) {
-			std::unique_lock theLock{ this->connectionMutex };
+			std::unique_lock theLock{ this->accessMutex };
 			this->theSSLState.store(SSLConnectionState::Disconnected);
 			this->theSocket = SOCKET_ERROR;
 		}
@@ -504,7 +504,7 @@ namespace DiscordCoreInternal {
 
 	HttpsResponseData HttpsClient::getResponse(HttpsConnection& theConnection, RateLimitData& rateLimitData) {
 		HttpsResponseData theData{};
-		std::lock_guard theLock{ theConnection.connectionMutex };
+		std::lock_guard theLock{ theConnection.accessMutex };
 		try {
 			DiscordCoreAPI::StopWatch stopWatch{ 4500ms };
 			theConnection.getInputBuffer().clear();

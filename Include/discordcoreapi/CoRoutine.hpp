@@ -136,13 +136,19 @@ namespace DiscordCoreAPI {
 		};
 
 		~CoRoutine() {
+			std::cout << "WERE COUROUTINING! 0101" << std::endl;
 			if (this && this->coroutineHandle) {
+				std::cout << "WERE COUROUTINING! 0202" << std::endl;
 				this->coroutineHandle.promise().exceptionBuffer = nullptr;
 				this->coroutineHandle.promise().areWeDone = nullptr;
+				std::cout << "WERE COUROUTINING! 0303" << std::endl;
 				if (this->coroutineHandle.done()) {
 					this->coroutineHandle.destroy();
+					std::cout << "WERE COUROUTINING! 0404" << std::endl;
 				}
+				std::cout << "WERE COUROUTINING! 0505" << std::endl;
 				this->exceptionBuffer.reset(nullptr);
+				std::cout << "WERE COUROUTINING! 0606" << std::endl;
 				this->areWeDone.reset(nullptr);
 			}
 		}
@@ -294,13 +300,19 @@ namespace DiscordCoreAPI {
 		};
 
 		~CoRoutine() {
+			std::cout << "WERE COUROUTINING! 0101" << std::endl;
 			if (this && this->coroutineHandle) {
+				std::cout << "WERE COUROUTINING! 0202" << std::endl;
 				this->coroutineHandle.promise().exceptionBuffer = nullptr;
 				this->coroutineHandle.promise().areWeDone = nullptr;
+				std::cout << "WERE COUROUTINING! 0303" << std::endl;
 				if (this->coroutineHandle.done()) {
 					this->coroutineHandle.destroy();
+					std::cout << "WERE COUROUTINING! 0404" << std::endl;
 				}
+				std::cout << "WERE COUROUTINING! 0505" << std::endl;
 				this->exceptionBuffer.reset(nullptr);
+				std::cout << "WERE COUROUTINING! 0606" << std::endl;
 				this->areWeDone.reset(nullptr);
 			}
 		}

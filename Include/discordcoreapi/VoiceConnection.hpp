@@ -195,11 +195,11 @@ namespace DiscordCoreAPI {
 
 		void sendSpeakingMessage(const bool isSpeaking) noexcept;
 
-		void runWebSocket(std::stop_token&) noexcept;
+		void runWebSocket(std::stop_token) noexcept;
 
-		void runBridge(std::stop_token&) noexcept;
+		void runBridge(std::stop_token) noexcept;
 
-		void runVoice(std::stop_token&) noexcept;
+		void runVoice(std::stop_token) noexcept;
 
 		void parseIncomingVoiceData() noexcept;
 

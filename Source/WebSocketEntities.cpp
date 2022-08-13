@@ -296,7 +296,7 @@ namespace DiscordCoreInternal {
 
 	void WebSocketSSLShard::disconnect(bool doWeReconnect) noexcept {
 		if (this->theSSLState.load() == SSLConnectionState::Connected) {
-			std::unique_lock theLock{ this->connectionMutex };
+			std::unique_lock theLock{ this->accessMutex };
 			this->theSSLState.store(SSLConnectionState::Disconnected);
 			this->theWebSocketState.store(WebSocketSSLShardState::Disconnected);
 			this->theSocket = SOCKET_ERROR;
@@ -331,8 +331,7 @@ namespace DiscordCoreInternal {
 						if (this->configManager->getTextFormat() == DiscordCoreAPI::TextFormat::Etf) {
 							
 							try {
-								std::string& theData = ( std::string& )theString;
-								payloadNew = std::move(this->parseEtfToJson(theData));
+								payloadNew = std::move(this->parseEtfToJson(( std::string& )theString));
 							} catch (...) {
 								if (this->configManager->doWePrintGeneralErrorMessages()) {
 									DiscordCoreAPI::reportException("ErlPacker::parseEtfToJson()");
@@ -344,6 +343,7 @@ namespace DiscordCoreInternal {
 						}
 						
 						if (this->configManager->doWePrintWebSocketSuccessMessages()) {
+							std::lock_guard theLock{ this->discordCoreClient->theAccessMutex };
 							cout << DiscordCoreAPI::shiftToBrightGreen() << "Message received from WebSocket " + this->shard.dump() + std::string(": ") << payloadNew.dump()
 								 << DiscordCoreAPI::reset() << endl
 								 << endl;
@@ -465,12 +465,10 @@ namespace DiscordCoreInternal {
 										} else if (payloadNew["t"] == "GUILD_CREATE") {
 											std::unique_ptr<DiscordCoreAPI::OnGuildCreationData> dataPackage{ std::make_unique<DiscordCoreAPI::OnGuildCreationData>() };
 											nlohmann::json& theData = payloadNew["d"];
-											DiscordCoreAPI::GuildData* theGuild = new DiscordCoreAPI::GuildData{ std::move(theData) };
+											auto theGuild = std::make_unique<DiscordCoreAPI::GuildData>(theData);
 											Snowflake guildId = theGuild->id;
 											theGuild->discordCoreClient = this->discordCoreClient;
-											auto theGuildNew = std::make_unique<DiscordCoreAPI::GuildData>();
-											theGuildNew.reset(theGuild);
-											DiscordCoreAPI::Guilds::insertGuild(std::move(theGuildNew));
+											DiscordCoreAPI::Guilds::insertGuild(std::move(theGuild));
 											dataPackage->guild = DiscordCoreAPI::Guilds::cache[guildId].get();
 											dataPackage->guild->discordCoreClient = this->discordCoreClient;
 											this->discordCoreClient->insertEvent(std::move(dataPackage));
@@ -947,6 +945,7 @@ namespace DiscordCoreInternal {
 								}
 								case 7: {
 									if (this->configManager->doWePrintWebSocketErrorMessages()) {
+										std::lock_guard theLock{ this->discordCoreClient->theAccessMutex };
 										cout << DiscordCoreAPI::shiftToBrightBlue() << "Shard " + this->shard.dump() + " Reconnecting (Type 7)!" << DiscordCoreAPI::reset() << endl
 											 << endl;
 									}
@@ -956,6 +955,7 @@ namespace DiscordCoreInternal {
 								}
 								case 9: {
 									if (this->configManager->doWePrintWebSocketErrorMessages()) {
+										std::lock_guard theLock{ this->discordCoreClient->theAccessMutex };
 										cout << DiscordCoreAPI::shiftToBrightBlue() << "Shard " + this->shard.dump() + " Reconnecting (Type 9)!" << DiscordCoreAPI::reset() << endl
 											 << endl;
 									}
@@ -1039,7 +1039,7 @@ namespace DiscordCoreInternal {
 	}
 
 	WebSocketSSLShard::~WebSocketSSLShard() noexcept {
-		std::lock_guard theLock{ this->connectionMutex };
+		std::lock_guard theLock{ this->accessMutex };
 		std::lock_guard theLock02{ this->theMutex };
 	}
 
@@ -1102,7 +1102,7 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::getVoiceConnectionMap()[theConnectionData.guildId]->connect();
 	}
 
-	void BaseSocketAgent::run(std::stop_token& stopToken) noexcept {
+	void BaseSocketAgent::run(std::stop_token stopToken) noexcept {
 		try {
 			while (!stopToken.stop_requested() && !this->doWeQuit->load()) {
 				std::unique_lock theLock{ this->theMutex };
