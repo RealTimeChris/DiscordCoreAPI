@@ -387,6 +387,7 @@ namespace DiscordCoreInternal {
 						DiscordCoreAPI::RawFrameData rawFrame{};
 						bool doWeBreak{ false };
 						while (audioDecoder->getFrame(rawFrame)) {
+							std::cout << "THE FRAME SIZE: " << rawFrame.data.size() << std::endl;
 							if (rawFrame.sampleCount == -5) {
 								doWeBreak = true;
 								break;
