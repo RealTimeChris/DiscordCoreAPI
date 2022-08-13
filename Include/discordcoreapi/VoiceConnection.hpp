@@ -29,16 +29,16 @@ namespace DiscordCoreAPI {
 
 	struct OpusEncoderWrapper {
 		struct OpusEncoderDeleter {
-			void operator()(OpusEncoder*) noexcept;
+			void operator()(OpusEncoder*);
 		};
 
-		OpusEncoderWrapper& operator=(OpusEncoderWrapper&&) noexcept;
+		OpusEncoderWrapper& operator=(OpusEncoderWrapper&&);
 
-		OpusEncoderWrapper(OpusEncoderWrapper&&) noexcept;
+		OpusEncoderWrapper(OpusEncoderWrapper&&);
 
-		OpusEncoderWrapper() noexcept;
+		OpusEncoderWrapper();
 
-		operator OpusEncoder*() noexcept;
+		operator OpusEncoder*();
 
 	  protected:
 		std::unique_ptr<OpusEncoder, OpusEncoderDeleter> thePtr{ nullptr, OpusEncoderDeleter{} };
@@ -46,16 +46,16 @@ namespace DiscordCoreAPI {
 
 	struct OpusDecoderWrapper {
 		struct OpusDecoderDeleter {
-			void operator()(OpusDecoder*) noexcept;
+			void operator()(OpusDecoder*);
 		};
 
-		OpusDecoderWrapper& operator=(OpusDecoderWrapper&&) noexcept;
+		OpusDecoderWrapper& operator=(OpusDecoderWrapper&&);
 
-		OpusDecoderWrapper(OpusDecoderWrapper&&) noexcept;
+		OpusDecoderWrapper(OpusDecoderWrapper&&);
 
-		OpusDecoderWrapper() noexcept;
+		OpusDecoderWrapper();
 
-		operator OpusDecoder*() noexcept;
+		operator OpusDecoder*();
 
 	  protected:
 		std::unique_ptr<OpusDecoder, OpusDecoderDeleter> thePtr{ nullptr, OpusDecoderDeleter{} };
@@ -181,7 +181,7 @@ namespace DiscordCoreAPI {
 
 		bool collectAndProcessAMessage(VoiceConnectionState stateToWaitFor) noexcept;
 
-		bool onMessageReceived(const std::string& theString) noexcept;
+		virtual bool onMessageReceived(const std::string& theString) noexcept;
 
 		void sendSingleAudioFrame(std::string& audioDataPacketNew) noexcept;
 

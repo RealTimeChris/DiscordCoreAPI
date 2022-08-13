@@ -43,7 +43,7 @@ namespace DiscordCoreInternal {
 
 		bool parseMessage(WebSocketSSLShard* theShard, std::string& theBuffer) noexcept;
 
-		virtual bool onMessageReceived(const std::string& theString) noexcept = 0;
+		virtual bool onMessageReceived(const std::string& theString) = 0;
 
 		virtual ~WebSocketMessageHandler() = default;
 
@@ -71,13 +71,13 @@ namespace DiscordCoreInternal {
 
 		bool sendMessage(std::string& dataToSend, bool priority) noexcept;
 
-		bool onMessageReceived(const std::string& theString) noexcept;
-
-		void dispatchBuffer(const std::string& theBuffer) noexcept;
+		virtual bool onMessageReceived(const std::string& theString);
 
 		void checkForAndSendHeartBeat(bool = false) noexcept;
 
 		void disconnect(bool doWeReconnect) noexcept;
+
+		void dispatchBuffer(const std::string& theBuffer) noexcept;
 
 		void onClosed() noexcept;
 

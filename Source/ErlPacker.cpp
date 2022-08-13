@@ -221,15 +221,11 @@ namespace DiscordCoreInternal {
 		return val;
 	}
 
-	std::string  ErlPacker::readString(uint32_t length) {
+	const char* ErlPacker::readString(uint32_t length) {
 		if (this->offSet + length > this->theLength) {
 			throw ErlPackError{ "ErlPacker::readString() Error: readString() past end of this->\n\n" };
 		}
-		std::string theString{};
-		theString.resize(length);
-		for (int32_t x = 0; x < length; ++x) {
-			theString[x] = this->buffer[this->offSet + x];
-		}
+		const char* theString{ ( char* )(this->buffer + this->offSet) };
 		this->offSet += length;
 		return theString;
 	}
@@ -388,11 +384,11 @@ namespace DiscordCoreInternal {
 
 	nlohmann::json ErlPacker::parseFloatExt() {
 		uint32_t floatLength = 31;
-		std::string floatStr = this->readString(floatLength);
+		const char* floatStr = this->readString(floatLength);
 		nlohmann::json jsonData{};
 		double number{};
 		std::vector<char> nullTerminated{};
-		nullTerminated.insert(nullTerminated.begin(), floatStr.data(), floatStr.data() + floatLength);
+		nullTerminated.insert(nullTerminated.begin(), floatStr, floatStr + floatLength);
 		auto count = sscanf(nullTerminated.data(), "%lf", &number);
 		if (!count) {
 			return jsonData;
@@ -466,12 +462,12 @@ namespace DiscordCoreInternal {
 	
 	nlohmann::json ErlPacker::parseBinaryExt() {
 		//this->theStopWatch.resetTimer();
-		auto length = this->read32Bits();
+		const auto length = this->read32Bits();
 		//std::cout << "THE TIME TO READ 32 BITS: " << this->theStopWatch.totalTimePassed() << std::endl;
 		//this->theStopWatch.resetTimer();
-		std::string string = this->readString(length);
+		const char* string = this->readString(length);
 		//std::cout << "THE TIME TO READ STRING: " << this->theStopWatch.totalTimePassed() << std::endl;
-		if (string.size() == 0) {
+		if (string == NULL) {
 			nlohmann::json theData{};
 			return std::move(theData);
 		}
@@ -516,15 +512,15 @@ namespace DiscordCoreInternal {
 	nlohmann::json ErlPacker::parseAtomUtf8Ext() {
 		uint16_t length = this->read16Bits();
 		uint32_t lengthNew = length;
-		std::string atom = this->readString(lengthNew);
-		return this->processAtom(atom.data(), lengthNew);
+		const char* atom = this->readString(lengthNew);
+		return this->processAtom(atom, lengthNew);
 	}
 
 	nlohmann::json ErlPacker::parseSmallAtomUtf8Ext() {
 		uint8_t length = this->read8Bits();
 		uint32_t lengthNew = length;
-		std::string atom = this->readString(lengthNew);
-		return this->processAtom(atom.data(), lengthNew);
+		const char* atom = this->readString(lengthNew);
+		return this->processAtom(atom, lengthNew);
 	}
 
 }
