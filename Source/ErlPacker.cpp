@@ -18,47 +18,14 @@
 /// \file ErlPacker.cpp
 
 #include <discordcoreapi/ErlPacker.hpp>
+#include<discordcoreapi/SSLClients.hpp>
 
-
-
-#ifdef _WIN32
-	#if defined(ntohs)
-		#define etf_byte_order_16(x) ntohs(x)
-	#elif defined(_byteswap_ushort) || (defined(_MSC_VER) && _MSC_VER >= 1400)
-		#define etf_byte_order_16(x) (( uint16_t )_byteswap_ushort(( unsigned short )x))
-	#else
-		#define etf_byte_order_16(x) ((((( uint16_t )x) << 8)) | (((( uint16_t )x) >> 8)))
-	#endif
-#else
-	#define etf_byte_order_16(x) ntohs(x)
-#endif
-
-#ifdef _WIN32
-	#if defined(ntohl)
-		#define etf_byte_order_32(x) ntohl(x)
-	#elif defined(_byteswap_ulong) || (defined(_MSC_VER) && _MSC_VER >= 1400)
-		#define etf_byte_order_32(x) (( uint32_t )_byteswap_ulong(( unsigned long )x))
-	#else
-		#define etf_byte_order_32(x) ((((( uint32_t )x) << 24)) | (((( uint32_t )x) << 8) & 0x00ff0000U) | (((( uint32_t )x) >> 8) & 0x0000ff00U) | (((( uint32_t )x) >> 24)))
-	#endif
-#else
-	#define etf_byte_order_32(x) ntohl(x)
-#endif
-
-#if defined(_byteswap_uint64) || (defined(_MSC_VER) && _MSC_VER >= 1400)
-	#define etf_byte_order_64(x) (_byteswap_uint64(x))
-#elif defined(bswap_64)
-	#define etf_byte_order_64(x) bswap_64(x)
-#elif defined(__DARWIN_OSSwapInt64)
-	#define etf_byte_order_64(x) __DARWIN_OSSwapInt64(x)
-#elif defined(__linux__)
-	#define etf_byte_order_64(x) be64toh(x)
-#else
-	#define etf_byte_order_64(x) \
-		((((( uint64_t )x) << 56)) | (((( uint64_t )x) << 40) & 0x00ff000000000000ULL) | (((( uint64_t )x) << 24) & 0x0000ff0000000000ULL) | \
-			(((( uint64_t )x) << 8) & 0x000000ff00000000ULL) | (((( uint64_t )x) >> 8) & 0x00000000ff000000ULL) | (((( uint64_t )x) >> 24) & 0x0000000000ff0000ULL) | \
-			(((( uint64_t )x) >> 40) & 0x000000000000ff00ULL) | (((( uint64_t )x) >> 56)))
-#endif
+#define etfReverseByteOrder16(x) ntohs(x)
+#define etfReverseByteOrder32(x) ntohl(x)
+#define etfReverseByteOrder64(x) \
+	((((( uint64_t )x) << 56)) | (((( uint64_t )x) << 40) & 0x00ff000000000000ULL) | (((( uint64_t )x) << 24) & 0x0000ff0000000000ULL) | \
+		(((( uint64_t )x) << 8) & 0x000000ff00000000ULL) | (((( uint64_t )x) >> 8) & 0x00000000ff000000ULL) | (((( uint64_t )x) >> 24) & 0x0000000000ff0000ULL) | \
+		(((( uint64_t )x) >> 40) & 0x000000000000ff00ULL) | (((( uint64_t )x) >> 56)))
 
 namespace DiscordCoreInternal {
 
@@ -79,7 +46,7 @@ namespace DiscordCoreInternal {
 		this->theIncrement = 0;
 		this->buffer = ( uint8_t* )dataToParse.data();
 		uint8_t version = this->read8Bits();
-		std::cout << "THE RESULT TIME: " << this->theStopWatch.totalTimePassed() << std::endl;
+		//std::cout << "THE RESULT TIME: " << this->theStopWatch.totalTimePassed() << std::endl;
 		this->theStopWatch.resetTimer();
 		return std::move(this->singleValueETFToJson());
 	}
@@ -240,7 +207,7 @@ namespace DiscordCoreInternal {
 		if (this->offSet + sizeof(uint16_t) > this->theLength) {
 			throw std::runtime_error("ETF: read_16_bits() past end of buffer");
 		}
-		uint16_t val = etf_byte_order_16(*reinterpret_cast<const uint16_t*>(this->buffer + offSet));
+		uint16_t val = etfReverseByteOrder16(*reinterpret_cast<const uint16_t*>(this->buffer + offSet));
 		offSet += sizeof(uint16_t);
 		return val;
 	}
@@ -249,7 +216,7 @@ namespace DiscordCoreInternal {
 		if (this->offSet+ sizeof(uint32_t) > this->theLength) {
 			throw std::runtime_error("ETF: read_32_bits() past end of buffer");
 		}
-		uint32_t val = etf_byte_order_32(*reinterpret_cast<const uint32_t*>(this->buffer + offSet));
+		uint32_t val = etfReverseByteOrder32(*reinterpret_cast<const uint32_t*>(this->buffer + offSet));
 		offSet += sizeof(uint32_t);
 		return val;
 	}
@@ -258,7 +225,7 @@ namespace DiscordCoreInternal {
 		if (this->offSet + sizeof(uint64_t) > this->theLength) {
 			throw std::runtime_error("ETF: read_64_bits() past end of buffer");
 		}
-		uint64_t val = etf_byte_order_64(*reinterpret_cast<const uint64_t*>(this->buffer + offSet));
+		uint64_t val = etfReverseByteOrder64(*reinterpret_cast<const uint64_t*>(this->buffer + offSet));
 		offSet += sizeof(uint64_t);
 		return val;
 	}
@@ -501,7 +468,7 @@ namespace DiscordCoreInternal {
 		}
 		return theArray;
 	}
-
+	
 	nlohmann::json ErlPacker::parseBinaryExt() {
 		//this->theStopWatch.resetTimer();
 		const auto length = this->read32Bits();

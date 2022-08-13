@@ -331,7 +331,7 @@ namespace DiscordCoreInternal {
 								std::string& theData = ( std::string& )theString;
 								theStopWatch.resetTimer();
 								payloadNew = std::move(this->parseEtfToJson(theData));
-								std::cout << "THE STRING TIME: " << theStopWatch.totalTimePassed() << std::endl;
+								//std::cout << "THE STRING TIME: " << theStopWatch.totalTimePassed() << std::endl;
 								theStopWatch.resetTimer();
 							} catch (...) {
 								if (this->configManager->doWePrintGeneralErrorMessages()) {
@@ -452,24 +452,24 @@ namespace DiscordCoreInternal {
 											std::unique_ptr<DiscordCoreAPI::OnGuildCreationData> dataPackage{ std::make_unique<DiscordCoreAPI::OnGuildCreationData>() };
 											nlohmann::json& theData = payloadNew["d"];
 											
-											std::cout << "TIME PASSED 0202: " << theStopWatch.totalTimePassed() << std::endl;
+											//std::cout << "TIME PASSED 0202: " << theStopWatch.totalTimePassed() << std::endl;
 											theStopWatch.resetTimer();
 											DiscordCoreAPI::GuildData* theGuild = new DiscordCoreAPI::GuildData{ std::move(theData) };
-											std::cout << "TIME PASSED 0303: " << theStopWatch.totalTimePassed() << std::endl;
+											//std::cout << "TIME PASSED 0303: " << theStopWatch.totalTimePassed() << std::endl;
 											theStopWatch.resetTimer();
 											Snowflake guildId = theGuild->id;
 											theGuild->discordCoreClient = this->discordCoreClient;
-											std::cout << "TIME PASSED 0404: " << theStopWatch.totalTimePassed() << std::endl;
+											//std::cout << "TIME PASSED 0404: " << theStopWatch.totalTimePassed() << std::endl;
 											theStopWatch.resetTimer();
 											auto theGuildNew = std::make_unique<DiscordCoreAPI::GuildData>();
-											std::cout << "TIME PASSED 0505: " << theStopWatch.totalTimePassed() << std::endl;
+											//std::cout << "TIME PASSED 0505: " << theStopWatch.totalTimePassed() << std::endl;
 											theStopWatch.resetTimer();
 											theGuildNew.reset(theGuild);
 											DiscordCoreAPI::Guilds::insertGuild(std::move(theGuildNew));
-											std::cout << "TIME PASSED 0606: " << theStopWatch.totalTimePassed() << std::endl;
-											//dataPackage->guild = (*DiscordCoreAPI::Guilds::cache)[guildId].get();
-											//dataPackage->guild->discordCoreClient = this->discordCoreClient;
-											//this->discordCoreClient->eventManager.onGuildCreationEvent(std::move(*dataPackage));
+											//std::cout << "TIME PASSED 0606: " << theStopWatch.totalTimePassed() << std::endl;
+											dataPackage->guild = (*DiscordCoreAPI::Guilds::cache)[guildId].get();
+											dataPackage->guild->discordCoreClient = this->discordCoreClient;
+											this->discordCoreClient->eventManager.onGuildCreationEvent(std::move(*dataPackage));
 											theStopWatch.resetTimer();
 										} else if (payloadNew["t"] == "GUILD_UPDATE") {
 											std::unique_ptr<DiscordCoreAPI::OnGuildUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnGuildUpdateData>() };
