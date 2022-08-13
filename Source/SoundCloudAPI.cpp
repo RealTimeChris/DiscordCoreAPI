@@ -212,7 +212,7 @@ namespace DiscordCoreInternal {
 		try {
 			int32_t counter{ 0 };
 			BuildAudioDecoderData dataPackage{};
-			HttpsConnection theConnection{};
+			HttpsConnection theConnection{ };
 			dataPackage.totalFileSize = static_cast<uint64_t>(newSong.contentLength);
 			dataPackage.bufferMaxSize = this->maxBufferSize;
 			dataPackage.configManager = this->configManager;

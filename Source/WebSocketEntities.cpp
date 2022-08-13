@@ -168,8 +168,8 @@ namespace DiscordCoreInternal {
 	}
 
 	WebSocketSSLShard::WebSocketSSLShard(DiscordCoreAPI::DiscordCoreClient* theClient, std::queue<DiscordCoreAPI::ConnectionPackage>* connectionsNew, int32_t currentShardNew,
-		std::atomic_bool* doWeQuitNew) noexcept
-		: WebSocketMessageHandler(&theClient->configManager) {
+		std::atomic_bool* doWeQuitNew, bool areWeAStreamSocket) noexcept
+		: WebSocketMessageHandler(&theClient->configManager), SSLClient(areWeAStreamSocket) {
 		this->heartBeatStopWatch = DiscordCoreAPI::StopWatch<std::chrono::milliseconds>{ 10000ms };
 		this->configManager = &theClient->configManager;
 		this->discordCoreClient = theClient;
@@ -1092,7 +1092,7 @@ namespace DiscordCoreInternal {
 				DiscordCoreAPI::ConnectionPackage connectData = this->connections.front();
 				this->connections.pop();
 				if (!this->sslShard) {
-					this->sslShard = std::make_unique<WebSocketSSLShard>(this->discordCoreClient, &this->connections, connectData.currentShard, this->doWeQuit);
+					this->sslShard = std::make_unique<WebSocketSSLShard>(this->discordCoreClient, &this->connections, connectData.currentShard, this->doWeQuit, false);
 				}
 				this->sslShard->currentReconnectTries = connectData.currentReconnectTries;
 				this->sslShard->currentReconnectTries++;

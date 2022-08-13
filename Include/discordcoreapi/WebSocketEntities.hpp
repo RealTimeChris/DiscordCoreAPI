@@ -65,7 +65,7 @@ namespace DiscordCoreInternal {
 		WebSocketSSLShard() = default;
 
 		WebSocketSSLShard(DiscordCoreAPI::DiscordCoreClient* theClient, std::queue<DiscordCoreAPI::ConnectionPackage>* connectionsNew, int32_t currentShardNew,
-			std::atomic_bool* doWeQuitNew) noexcept;
+			std::atomic_bool* doWeQuitNew, bool areWeAStreamSocket) noexcept;
 
 		void getVoiceConnectionData(const VoiceConnectInitData& doWeCollect) noexcept;
 

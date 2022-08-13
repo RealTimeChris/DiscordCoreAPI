@@ -202,7 +202,7 @@ namespace DiscordCoreInternal {
 
 	void YouTubeAPI::downloadAndStreamAudio(const DiscordCoreAPI::Song& newSong, std::stop_token& stopToken, int32_t currentReconnectTries) {
 		try {
-			std::unique_ptr<WebSocketSSLShard> streamSocket{ std::make_unique<WebSocketSSLShard>(nullptr, nullptr, 0, nullptr) };
+			std::unique_ptr<WebSocketSSLShard> streamSocket{ std::make_unique<WebSocketSSLShard>(nullptr, nullptr, 0, nullptr, true) };
 			auto bytesRead{ static_cast<int32_t>(streamSocket->getBytesRead()) };
 			if (newSong.finalDownloadUrls.size() > 0) {
 				if (!streamSocket->connect(newSong.finalDownloadUrls[0].urlPath, "443")) {
@@ -284,7 +284,7 @@ namespace DiscordCoreInternal {
 							return;
 						}
 						remainingDownloadContentLength = newSong.contentLength - bytesReadTotal;
-						streamSocket->processIO();
+						std::cout << "THE PROCESSIO RESULT: " << ( int )streamSocket->processIO() << std::endl;
 						if (!streamSocket->areWeStillConnected()) {
 							std::cout << "WERE LEAVING LEAVING LEAVING! 0303" << std::endl;
 							audioDecoder.reset(nullptr);
@@ -315,7 +315,7 @@ namespace DiscordCoreInternal {
 						return;
 					}
 					if (counter == 0) {
-						streamSocket->processIO();
+						std::cout << "THE PROCESSIO RESULT: " << ( int )streamSocket->processIO() << std::endl;
 						if (!streamSocket->areWeStillConnected()) {
 							std::cout << "WERE LEAVING LEAVING LEAVING! 0404" << std::endl;
 							audioDecoder.reset(nullptr);
@@ -324,6 +324,7 @@ namespace DiscordCoreInternal {
 							return;
 						}
 						auto& streamBuffer = streamSocket->getInputBuffer();
+						std::cout << "THE VECTOR SIZE: " << streamBuffer.size() << std::endl;
 						if (streamBuffer.size() > 0) {
 							theCurrentString.insert(theCurrentString.end(), streamBuffer.begin(), streamBuffer.end());
 							std::string submissionString{};
@@ -347,7 +348,7 @@ namespace DiscordCoreInternal {
 							return;
 						}
 						remainingDownloadContentLength = newSong.contentLength - bytesReadTotal;
-						streamSocket->processIO();
+						std::cout << "THE PROCESSIO RESULT: " << ( int )streamSocket->processIO() << std::endl;
 						if (!streamSocket->areWeStillConnected()) {
 							std::cout << "WERE LEAVING LEAVING LEAVING! 06060606" << std::endl;
 							audioDecoder.reset(nullptr);
@@ -356,6 +357,7 @@ namespace DiscordCoreInternal {
 							return;
 						}
 						auto& newVector = streamSocket->getInputBuffer();
+						std::cout << "THE VECTOR SIZE: " << newVector.size() << std::endl;
 						if (newVector.size() > 0) {
 							theCurrentString.insert(theCurrentString.end(), newVector.begin(), newVector.end());
 							std::string submissionString{};

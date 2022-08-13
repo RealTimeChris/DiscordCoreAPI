@@ -217,6 +217,7 @@ namespace DiscordCoreInternal {
 		}
 		if (stream->currentBuffer.size() > 0) {
 			stream->bytesRead = stream->currentBuffer.size();
+			std::cout << "THE BYTES WE'VE READ ARE: " << stream->currentBuffer.size() << std::endl;
 		} else {
 			frameData.sampleCount = -5;
 			stream->outDataBuffer.send(frameData);

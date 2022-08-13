@@ -211,7 +211,7 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll SSLClient : public SSLDataInterface, public SSLConnectionInterface {
 	  public:
-		SSLClient() noexcept = default;
+		SSLClient(bool areWeAStreamSocket) noexcept;
 
 		static void processIO(std::vector<SSLClient*>& theVector) noexcept;
 
@@ -234,6 +234,9 @@ namespace DiscordCoreInternal {
 		int64_t getBytesRead() noexcept;
 
 		virtual ~SSLClient() noexcept = default;
+
+	  protected:
+		bool areWeAStreamSocket{ false };
 	};
 
 	enum class ProcessIOType { Both = 0, Read_Only = 1, Write_Only = 2 };

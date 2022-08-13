@@ -259,6 +259,8 @@ namespace DiscordCoreInternal {
 		other.erase(other.begin(), other.begin() + theCount);
 	}
 
+	HttpsConnection::HttpsConnection() : SSLClient(false){};
+
 	void HttpsConnection::dispatchBuffer(std::string&) noexcept {};
 
 	void HttpsConnection::disconnect(bool) noexcept {

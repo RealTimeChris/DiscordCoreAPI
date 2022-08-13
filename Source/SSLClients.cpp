@@ -161,6 +161,10 @@ namespace DiscordCoreInternal {
 		std::lock_guard theLock{ this->connectionMutex };
 	}
 
+	SSLClient::SSLClient(bool areWeAStreamSocketNew) noexcept {
+		this->areWeAStreamSocket = areWeAStreamSocketNew;
+	}
+
 	void SSLClient::processIO(std::vector<SSLClient*>& theVector) noexcept {
 		int32_t writeNfds{ 0 }, readNfds{ 0 };
 		fd_set writeSet{}, readSet{};
@@ -356,7 +360,9 @@ namespace DiscordCoreInternal {
 			this->disconnect(true);
 			return ProcessIOResult::Select_Failure;
 		} else if (returnValue == 0) {
-			this->dispatchBuffer(this->inputBuffer);
+			if (!this->areWeAStreamSocket) {
+				this->dispatchBuffer(this->inputBuffer);
+			}
 			return ProcessIOResult::Select_No_Return;
 		}
 		ProcessIOResult returnValueFinal{};
@@ -366,7 +372,9 @@ namespace DiscordCoreInternal {
 		if (FD_ISSET(this->theSocket, &writeSet)) {
 			returnValueFinal = this->writeDataProcess();
 		}
-		this->dispatchBuffer(this->inputBuffer);
+		if (!this->areWeAStreamSocket) {
+			this->dispatchBuffer(this->inputBuffer);
+		}
 		return returnValueFinal;
 	}
 
