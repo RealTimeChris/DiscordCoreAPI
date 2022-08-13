@@ -67,13 +67,6 @@
 #include <queue>
 #include <map>
 
-#define etfReverseByteOrder16(x) ntohs(x)
-#define etfReverseByteOrder32(x) ntohl(x)
-#define etfReverseByteOrder64(x) \
-	((((( uint64_t )x) << 56)) | (((( uint64_t )x) << 40) & 0x00ff000000000000ULL) | (((( uint64_t )x) << 24) & 0x0000ff0000000000ULL) | \
-		(((( uint64_t )x) << 8) & 0x000000ff00000000ULL) | (((( uint64_t )x) >> 8) & 0x00000000ff000000ULL) | (((( uint64_t )x) >> 24) & 0x0000000000ff0000ULL) | \
-		(((( uint64_t )x) >> 40) & 0x000000000000ff00ULL) | (((( uint64_t )x) >> 56)))
-
 /**
  * \defgroup main_endpoints Main Endpoints
  * \brief For all of the Discord API's endpoints.
@@ -133,6 +126,12 @@ namespace DiscordCoreInternal {
 	class HttpsClient;
 	class YouTubeAPI;
 
+	uint64_t ntohostlong(uint64_t const net);
+
+	uint32_t ntohostint(uint32_t const net);
+
+	uint16_t ntohostshort(uint16_t const net);
+	
 	template<typename T> inline auto utCast(T x) -> std::enable_if_t<std::is_enum_v<T>, std::underlying_type_t<T>> {
 		return static_cast<std::underlying_type_t<T>>(x);
 	}

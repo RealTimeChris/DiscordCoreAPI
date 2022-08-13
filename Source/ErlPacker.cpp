@@ -198,7 +198,7 @@ namespace DiscordCoreInternal {
 		if (this->offSet + sizeof(uint16_t) > this->theLength) {
 			throw std::runtime_error("ETF: read_16_bits() past end of buffer");
 		}
-		uint16_t val = etfReverseByteOrder16(*reinterpret_cast<const uint16_t*>(this->buffer + offSet));
+		uint16_t val = ntohostshort(*reinterpret_cast<const uint16_t*>(this->buffer + offSet));
 		offSet += sizeof(uint16_t);
 		return val;
 	}
@@ -207,7 +207,7 @@ namespace DiscordCoreInternal {
 		if (this->offSet+ sizeof(uint32_t) > this->theLength) {
 			throw std::runtime_error("ETF: read_32_bits() past end of buffer");
 		}
-		uint32_t val = etfReverseByteOrder32(*reinterpret_cast<const uint32_t*>(this->buffer + offSet));
+		uint32_t val = ntohostint(*reinterpret_cast<const uint32_t*>(this->buffer + offSet));
 		offSet += sizeof(uint32_t);
 		return val;
 	}
@@ -216,17 +216,16 @@ namespace DiscordCoreInternal {
 		if (this->offSet + sizeof(uint64_t) > this->theLength) {
 			throw std::runtime_error("ETF: read_64_bits() past end of buffer");
 		}
-		uint64_t val = etfReverseByteOrder64(*reinterpret_cast<const uint64_t*>(this->buffer + offSet));
+		uint64_t val = ntohostlong(*reinterpret_cast<const uint64_t*>(this->buffer + offSet));
 		offSet += sizeof(uint64_t);
 		return val;
 	}
 
-	std::string ErlPacker::readString(uint32_t length) {
+	const char* ErlPacker::readString(uint32_t length) {
 		if (this->offSet + length > this->theLength) {
 			throw ErlPackError{ "ErlPacker::readString() Error: readString() past end of this->\n\n" };
 		}
-		std::string theString{};
-		theString.insert(theString.begin(), this->buffer + this->offSet, this->buffer + this->offSet + length);
+		const char* theString{ ( char* )(this->buffer + this->offSet) };
 		this->offSet += length;
 		return theString;
 	}
@@ -385,11 +384,11 @@ namespace DiscordCoreInternal {
 
 	nlohmann::json ErlPacker::parseFloatExt() {
 		uint32_t floatLength = 31;
-		std::string floatStr = this->readString(floatLength);
+		const char* floatStr = this->readString(floatLength);
 		nlohmann::json jsonData{};
 		double number{};
 		std::vector<char> nullTerminated{};
-		nullTerminated.insert(nullTerminated.begin(), floatStr.data(), floatStr.data() + floatLength);
+		nullTerminated.insert(nullTerminated.begin(), floatStr, floatStr + floatLength);
 		auto count = sscanf(nullTerminated.data(), "%lf", &number);
 		if (!count) {
 			return jsonData;
@@ -466,12 +465,14 @@ namespace DiscordCoreInternal {
 		const auto length = this->read32Bits();
 		//std::cout << "THE TIME TO READ 32 BITS: " << this->theStopWatch.totalTimePassed() << std::endl;
 		//this->theStopWatch.resetTimer();
-		std::string string = this->readString(length);
+		const char* string = this->readString(length);
 		//std::cout << "THE TIME TO READ STRING: " << this->theStopWatch.totalTimePassed() << std::endl;
-		if (string.size() == 0) {
-			return nlohmann::json{};
+		if (string == NULL) {
+			nlohmann::json theData{};
+			return std::move(theData);
 		}
-		return string;
+		nlohmann::json theData = std::string{ string, length };
+		return std::move(theData);
 	}
 
 	nlohmann::json ErlPacker::parseSmallBigExt() {
@@ -511,15 +512,15 @@ namespace DiscordCoreInternal {
 	nlohmann::json ErlPacker::parseAtomUtf8Ext() {
 		uint16_t length = this->read16Bits();
 		uint32_t lengthNew = length;
-		std::string atom = this->readString(lengthNew);
-		return this->processAtom(atom.data(), lengthNew);
+		const char* atom = this->readString(lengthNew);
+		return this->processAtom(atom, lengthNew);
 	}
 
 	nlohmann::json ErlPacker::parseSmallAtomUtf8Ext() {
 		uint8_t length = this->read8Bits();
 		uint32_t lengthNew = length;
-		std::string atom = this->readString(lengthNew);
-		return this->processAtom(atom.data(), lengthNew);
+		const char* atom = this->readString(lengthNew);
+		return this->processAtom(atom, lengthNew);
 	}
 
 }

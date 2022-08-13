@@ -185,7 +185,7 @@ namespace DiscordCoreInternal {
 	}
 
 	void AudioDecoder::submitDataForDecoding(std::string dataToDecode) {
-		this->inputDataBuffer.send(std::move(dataToDecode));
+		this->inputDataBuffer.send(dataToDecode);
 	}
 
 	bool AudioDecoder::haveWeFailed() {
@@ -215,6 +215,7 @@ namespace DiscordCoreInternal {
 			stream->areWeQuitting.store(true);
 			return AVERROR_EOF;
 		}
+		std::cout << "OUR SIZE: " << stream->currentBuffer.size() << std::endl;
 		if (stream->currentBuffer.size() > 0) {
 			stream->bytesRead = stream->currentBuffer.size();
 		} else {
@@ -390,7 +391,7 @@ namespace DiscordCoreInternal {
 				}
 				return;
 			}
-
+			std::cout << "THE FRAME SIZE: " << std::endl;
 			while (!stopToken.stop_requested() && !this->areWeQuitting.load() && av_read_frame(this->formatContext, this->packet) == 0) {
 				if (this->packet->stream_index == this->audioStreamIndex) {
 					int32_t returnValue = avcodec_send_packet(this->audioDecodeContext, this->packet);
@@ -431,6 +432,7 @@ namespace DiscordCoreInternal {
 							rawFrame.data[x] = this->newFrame->extended_data[0][x];
 						}
 						rawFrame.sampleCount = newFrame->nb_samples;
+						std::cout << "THE FRAME SIZE: " << rawFrame.data.size() << std::endl;
 						this->outDataBuffer.send(rawFrame);
 						int64_t sampleCount = swr_get_delay(this->swrContext, this->newFrame->sample_rate);
 						if (sampleCount > 0) {
