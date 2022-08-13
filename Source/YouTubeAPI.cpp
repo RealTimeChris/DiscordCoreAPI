@@ -265,89 +265,89 @@ namespace DiscordCoreInternal {
 					this->weFailedToDownloadOrDecode(newSong, stopToken, currentReconnectTries);
 					return;
 				} else {
-					if (!areWeDoneHeaders) {
-						if (stopToken.stop_requested()) {
-							std::cout << "WERE LEAVING LEAVING LEAVING! 04040404" << std::endl;
-							audioDecoder.reset(nullptr);
-							streamSocket->disconnect(false);
-							return;
-						}
-						remainingDownloadContentLength = newSong.contentLength - bytesReadTotal;
-						std::cout << "THE PROCESSIO RESULT: " << ( int )streamSocket->processIO() << std::endl;
-						if (!streamSocket->areWeStillConnected()) {
-							std::cout << "WERE LEAVING LEAVING LEAVING! 0303" << std::endl;
-							audioDecoder.reset(nullptr);
-							streamSocket->disconnect(false);
-							this->weFailedToDownloadOrDecode(newSong, stopToken, currentReconnectTries);
-							return;
-						}
-						if (!stopToken.stop_requested()) {
-							if (streamSocket->areWeStillConnected()) {
-								bytesReadTotal = streamSocket->getBytesRead() - headerSize;
-								std::string newData = streamSocket->getInputBufferCopy();
-								streamSocket->getInputBuffer().clear();
-								std::cout << "THE HEADERS: " << newData << std::endl;
-								headerSize = static_cast<int32_t>(newData.size());
-							}
-						}
-						remainingDownloadContentLength = newSong.contentLength - bytesReadTotal;
-						areWeDoneHeaders = true;
+				if (!areWeDoneHeaders) {
+					if (stopToken.stop_requested()) {
+						std::cout << "WERE LEAVING LEAVING LEAVING! 04040404" << std::endl;
+						audioDecoder.reset(nullptr);
+						streamSocket->disconnect(false);
+						return;
 					}
+					remainingDownloadContentLength = newSong.contentLength - bytesReadTotal;
 					std::cout << "THE PROCESSIO RESULT: " << ( int )streamSocket->processIO() << std::endl;
-					std::string streamBuffer = streamSocket->getInputBufferCopy();
-					streamSocket->getInputBuffer().clear();
-					
-					if (streamBuffer.size() > 0) {
-						std::cout << "THE VECTOR SIZE: " << streamBuffer.size() << std::endl;
-						theCurrentString.insert(theCurrentString.end(), streamBuffer.begin(), streamBuffer.end());
-						std::string submissionString{};
-						while (theCurrentString.size() > 0) {
-							if (theCurrentString.size() >= this->maxBufferSize) {
-								submissionString.insert(submissionString.begin(), theCurrentString.begin(), theCurrentString.begin() + this->maxBufferSize);
-								theCurrentString.erase(theCurrentString.begin(), theCurrentString.begin() + this->maxBufferSize);
-							} else {
-								submissionString = theCurrentString;
-								theCurrentString.erase(theCurrentString.begin(), theCurrentString.end());
-							}
-							audioDecoder->submitDataForDecoding(submissionString);
-							if (counter == 0) {
-								bytesReadTotal = streamSocket->getBytesRead() - headerSize;
-								audioDecoder->startMe();
-							} else {
-								bytesReadTotal = streamSocket->getBytesRead();
-							}
+					if (!streamSocket->areWeStillConnected()) {
+						std::cout << "WERE LEAVING LEAVING LEAVING! 0303" << std::endl;
+						audioDecoder.reset(nullptr);
+						streamSocket->disconnect(false);
+						this->weFailedToDownloadOrDecode(newSong, stopToken, currentReconnectTries);
+						return;
+					}
+					if (!stopToken.stop_requested()) {
+						if (streamSocket->areWeStillConnected()) {
+							bytesReadTotal = streamSocket->getBytesRead() - headerSize;
+							std::string newData = streamSocket->getInputBufferCopy();
+							streamSocket->getInputBuffer().clear();
+							std::cout << "THE HEADERS: " << newData << std::endl;
+							headerSize = static_cast<int32_t>(newData.size());
 						}
 					}
-				
-					std::vector<DiscordCoreAPI::RawFrameData> frames{};
-					DiscordCoreAPI::RawFrameData rawFrame{};
-					bool doWeBreak{ false };
-					while (audioDecoder->getFrame(rawFrame)) {
-						std::cout << "THE FRAME SIZE: " << rawFrame.data.size() << std::endl;
-						if (rawFrame.sampleCount == -5) {
-							doWeBreak = true;
-							break;
-						}
-						if (rawFrame.data.size() != 0) {
-							frames.push_back(rawFrame);
-						}
-					}
-					if (doWeBreak) {
-						continue;
-					}
-					auto encodedFrames = audioEncoder.encodeFrames(frames);
-					for (auto& value: encodedFrames) {
-						value.guildMemberId = newSong.addedByUserId;
-						DiscordCoreAPI::getVoiceConnectionMap()[this->guildId]->audioDataBuffer.send(value);
-					}
-					}
-					if (remainingDownloadContentLength >= this->maxBufferSize) {
-						bytesToRead = this->maxBufferSize;
-					} else {
-						bytesToRead = remainingDownloadContentLength;
-					}
-					counter++;
+					remainingDownloadContentLength = newSong.contentLength - bytesReadTotal;
+					areWeDoneHeaders = true;
 				}
+				std::cout << "THE PROCESSIO RESULT: " << ( int )streamSocket->processIO() << std::endl;
+				std::string streamBuffer = streamSocket->getInputBufferCopy();
+				streamSocket->getInputBuffer().clear();
+					
+				if (streamBuffer.size() > 0) {
+					std::cout << "THE VECTOR SIZE: " << streamBuffer.size() << std::endl;
+					theCurrentString.insert(theCurrentString.end(), streamBuffer.begin(), streamBuffer.end());
+					while (theCurrentString.size() > 0) {
+						std::string submissionString{};
+						if (theCurrentString.size() >= this->maxBufferSize) {
+							submissionString.insert(submissionString.begin(), theCurrentString.begin(), theCurrentString.begin() + this->maxBufferSize);
+							theCurrentString.erase(theCurrentString.begin(), theCurrentString.begin() + this->maxBufferSize);
+						} else {
+							submissionString = theCurrentString;
+							theCurrentString.erase(theCurrentString.begin(), theCurrentString.end());
+						}
+						audioDecoder->submitDataForDecoding(submissionString);
+					}
+				}
+				if (counter == 0) {
+					bytesReadTotal = streamSocket->getBytesRead() - headerSize;
+					audioDecoder->startMe();
+				} else {
+					bytesReadTotal = streamSocket->getBytesRead();
+				}
+				
+				std::vector<DiscordCoreAPI::RawFrameData> frames{};
+				DiscordCoreAPI::RawFrameData rawFrame{};
+				bool doWeBreak{ false };
+				while (audioDecoder->getFrame(rawFrame)) {
+					std::cout << "THE FRAME SIZE: " << rawFrame.data.size() << std::endl;
+					if (rawFrame.sampleCount == -5) {
+						doWeBreak = true;
+						break;
+					}
+					if (rawFrame.data.size() != 0) {
+						frames.push_back(rawFrame);
+					}
+				}
+				if (doWeBreak) {
+					continue;
+				}
+				auto encodedFrames = audioEncoder.encodeFrames(frames);
+				for (auto& value: encodedFrames) {
+					value.guildMemberId = newSong.addedByUserId;
+					DiscordCoreAPI::getVoiceConnectionMap()[this->guildId]->audioDataBuffer.send(value);
+				}
+				}
+				if (remainingDownloadContentLength >= this->maxBufferSize) {
+					bytesToRead = this->maxBufferSize;
+				} else {
+					bytesToRead = remainingDownloadContentLength;
+				}
+				counter++;
+			}
 				
 			
 			std::cout << "WERE FINALLY LEAVING FINALLY LEAVING!" << std::endl;

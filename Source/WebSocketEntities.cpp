@@ -254,7 +254,6 @@ namespace DiscordCoreInternal {
 					}
 					didWeWrite = this->writeData(dataToSend, true);
 				} while (didWeWrite != ProcessIOResult::No_Error);
-				std::cout << "THE RESULT: " << ( int )didWeWrite << std::endl;
 				if (didWeWrite != ProcessIOResult::No_Error) {
 					if (this->configManager->doWePrintWebSocketErrorMessages()) {
 						DiscordCoreAPI::reportException("WebSocketSSLShard::sendMessage()");

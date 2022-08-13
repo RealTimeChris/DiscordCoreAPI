@@ -201,18 +201,19 @@ namespace DiscordCoreInternal {
 	int32_t AudioDecoder::FileStreamRead(void* opaque, uint8_t* buf, int32_t) {
 		AudioDecoder* stream = static_cast<AudioDecoder*>(opaque);
 		stream->bytesRead = 0;
-		stream->currentBuffer = std::string{};
 		DiscordCoreAPI::RawFrameData frameData{};
 		if (stream->areWeQuitting.load()) {
 			frameData.sampleCount = -5;
 			stream->outDataBuffer.send(frameData);
 			stream->areWeQuitting.store(true);
+			stream->currentBuffer.clear();
 			return AVERROR_EOF;
 		}
 		if (DiscordCoreAPI::waitForTimeToPass(stream->inputDataBuffer, stream->currentBuffer, stream->refreshTimeForBuffer.load())) {
 			frameData.sampleCount = -5;
 			stream->outDataBuffer.send(frameData);
 			stream->areWeQuitting.store(true);
+			stream->currentBuffer.clear();
 			return AVERROR_EOF;
 		}
 		std::cout << "OUR SIZE: " << stream->currentBuffer.size() << std::endl;
@@ -222,6 +223,7 @@ namespace DiscordCoreInternal {
 			frameData.sampleCount = -5;
 			stream->outDataBuffer.send(frameData);
 			stream->areWeQuitting.store(true);
+			stream->currentBuffer.clear();
 			return AVERROR_EOF;
 		}
 		for (int32_t x = 0; x < stream->bytesRead; ++x) {
@@ -231,8 +233,10 @@ namespace DiscordCoreInternal {
 			frameData.sampleCount = -5;
 			stream->outDataBuffer.send(frameData);
 			stream->areWeQuitting.store(true);
+			stream->currentBuffer.clear();
 			return stream->bytesRead;
 		}
+		stream->currentBuffer.clear();
 		return stream->bytesRead;
 	}
 
