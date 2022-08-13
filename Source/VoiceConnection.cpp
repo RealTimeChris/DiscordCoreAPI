@@ -92,11 +92,11 @@ namespace DiscordCoreAPI {
 			const uint8_t headerSize{ 12 };
 			const uint8_t byteSize{ 8 };
 			std::string header{};
-			store8Bits(header, this->version);
-			store8Bits(header, this->flags);
-			store16Bits(header, this->sequence);
-			store32Bits(header, this->timestamp);
-			store32Bits(header, this->ssrc);
+			store8Bits(&header, this->version);
+			store8Bits(&header, this->flags);
+			store16Bits(&header, this->sequence);
+			store32Bits(&header, this->timestamp);
+			store32Bits(&header, this->ssrc);
 			std::unique_ptr<uint8_t[]> nonceForLibSodium{ std::make_unique<uint8_t[]>(nonceSize) };
 			for (uint8_t x = 0; x < headerSize; ++x) {
 				nonceForLibSodium[x] = header[x];
@@ -743,7 +743,7 @@ namespace DiscordCoreAPI {
 					return;
 				}
 				WebSocketSSLShard::processIO();
-				if (!this->parseConnectionHeaders()) {
+				if (!this->parseConnectionHeaders(this)) {
 					this->currentReconnectTries++;
 					this->onClosedVoice();
 					this->connectInternal();

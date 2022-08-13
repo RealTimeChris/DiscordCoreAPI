@@ -385,6 +385,8 @@ namespace DiscordCoreInternal {
 		}
 	}
 
+	void SSLClient::dispatchBuffer(std::string& theBuffer) noexcept {}
+
 	ProcessIOResult SSLClient::writeDataProcess() noexcept {
 		if (this->outputBuffers.size() > 0) {
 			this->wantRead = false;
@@ -438,7 +440,7 @@ namespace DiscordCoreInternal {
 						if (readBytes > 0) {
 							this->inputBuffer.append(this->rawInputBuffer.begin(), this->rawInputBuffer.begin() + readBytes);
 							this->bytesRead += readBytes;
-							this->dispatchBuffer();
+							this->dispatchBuffer(this->inputBuffer);
 						}
 						returnValueReal = ProcessIOResult::No_Error;
 						break;

@@ -29,7 +29,7 @@
 
 namespace DiscordCoreInternal {
 
-	class DiscordCoreAPI_Dll WebSocketMessageHandler : public SSLClient, public ErlPacker {
+	class DiscordCoreAPI_Dll WebSocketMessageHandler : public ErlPacker {
 	  public:
 		WebSocketMessageHandler() = default;
 
@@ -39,23 +39,21 @@ namespace DiscordCoreInternal {
 
 		void createHeader(std::string& outBuffer, uint64_t sendLength, DiscordCoreInternal::WebSocketOpCode opCode) noexcept;
 
-		bool parseConnectionHeaders() noexcept;
+		bool parseConnectionHeaders(DiscordCoreInternal::WebSocketSSLShard* theShard) noexcept;
 
-		bool parseMessage(DiscordCoreAPI::StopWatch<std::chrono::microseconds>& theStopWatch) noexcept;
+		bool parseMessage(WebSocketSSLShard* theShard, std::string& theBuffer) noexcept;
 
-		virtual bool onMessageReceived(DiscordCoreAPI::StopWatch<std::chrono::microseconds>& theStopWatch) noexcept = 0;
+		virtual bool onMessageReceived(const std::string& theString) = 0;
 
 		virtual ~WebSocketMessageHandler() = default;
 
 	  protected:
 		DiscordCoreAPI::ConfigManager* configManager{};
-		int64_t messageLength{};
-		int64_t messageOffset{};
 	};
 
 	enum class WebSocketSSLShardState { Connecting = 0, Upgrading = 1, Collecting_Hello = 2, Sending_Identify = 3, Authenticated = 4, Disconnected = 5 };
 
-	class DiscordCoreAPI_Dll WebSocketSSLShard : public WebSocketMessageHandler {
+	class DiscordCoreAPI_Dll WebSocketSSLShard : public SSLClient, public WebSocketMessageHandler {
 	  public:
 		friend class DiscordCoreAPI::DiscordCoreClient;
 		friend class DiscordCoreAPI::VoiceConnection;
@@ -73,13 +71,13 @@ namespace DiscordCoreInternal {
 
 		bool sendMessage(std::string& dataToSend, bool priority) noexcept;
 
-		bool onMessageReceived(DiscordCoreAPI::StopWatch<std::chrono::microseconds>& theStopWatch) noexcept;
+		bool onMessageReceived(const std::string& theString);
 
 		void checkForAndSendHeartBeat(bool = false) noexcept;
 
 		void disconnect(bool doWeReconnect) noexcept;
 
-		void dispatchBuffer() noexcept;
+		void dispatchBuffer(std::string& theBuffer) noexcept;
 
 		void onClosed() noexcept;
 
@@ -106,6 +104,8 @@ namespace DiscordCoreInternal {
 		WebSocketOpCode dataOpCode{};
 		bool areWeResuming{ false };
 		nlohmann::json payload{};
+		int64_t messageLength{};
+		int64_t messageOffset{};
 		std::string sessionId{};
 		nlohmann::json shard{};
 		Snowflake userId{ 0 };

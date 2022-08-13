@@ -81,20 +81,23 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	bool WebSocketMessageHandler::parseConnectionHeaders() noexcept {
-		auto theFindValue = this->inputBuffer.find("\r\n\r\n");
-		if (theFindValue != std::string::npos) {
-			this->inputBuffer.erase(0, theFindValue + 4);
-			return true;
+	bool WebSocketMessageHandler::parseConnectionHeaders(WebSocketSSLShard* theShard) noexcept {
+		if (theShard->theSSLState.load() == SSLConnectionState::Connected && theShard->theWebSocketState.load() == WebSocketSSLShardState::Upgrading) {
+			auto theFindValue = theShard->getInputBuffer().find("\r\n\r\n");
+			if (theFindValue != std::string::npos) {
+				theShard->getInputBuffer().erase(0, theFindValue + 4);
+				theShard->theWebSocketState.store(WebSocketSSLShardState::Collecting_Hello);
+				return true;
+			}
 		}
 		return false;
 	}
 
-	bool WebSocketMessageHandler::parseMessage(DiscordCoreAPI::StopWatch<std::chrono::microseconds>& theStopWatch) noexcept {
-		if (this->inputBuffer.size() < 4) {
+	bool WebSocketMessageHandler::parseMessage(WebSocketSSLShard* theShard, std::string& theBuffer) noexcept {
+		if (theBuffer.size() < 4) {
 			return true;
 		}
-		auto dataOpCode = static_cast<WebSocketOpCode>(this->inputBuffer[0] & ~webSocketFinishBit);
+		auto dataOpCode = static_cast<WebSocketOpCode>(theBuffer[0] & ~webSocketFinishBit);
 		switch (dataOpCode) {
 			case WebSocketOpCode::Op_Continuation:
 				[[fallthrough]];
@@ -105,54 +108,56 @@ namespace DiscordCoreInternal {
 			case WebSocketOpCode::Op_Ping:
 				[[fallthrough]];
 			case WebSocketOpCode::Op_Pong: {
-				uint8_t length01 = this->inputBuffer[1];
-				this->messageOffset = 2;
+				uint8_t length01 = theBuffer[1];
+				theShard->messageOffset = 2;
 				if (length01 & webSocketMaskBit) {
 					return true;
 				}
-				this->messageLength = length01;
+				theShard->messageLength = length01;
 				if (length01 == webSocketPayloadLengthMagicLarge) {
-					if (this->inputBuffer.size() < 8) {
+					if (theBuffer.size() < 8) {
 						return true;
 					}
-					uint8_t length03 = this->inputBuffer[2];
-					uint8_t length04 = this->inputBuffer[3];
-					this->messageLength = static_cast<uint64_t>((length03 << 8) | length04);
-					this->messageOffset += 2;
+					uint8_t length03 = theBuffer[2];
+					uint8_t length04 = theBuffer[3];
+					theShard->messageLength = static_cast<uint64_t>((length03 << 8) | length04);
+					theShard->messageOffset += 2;
 				} else if (length01 == webSocketPayloadLengthMagicHuge) {
-					if (this->inputBuffer.size() < 10) {
+					if (theBuffer.size() < 10) {
 						return true;
 					}
-					this->messageLength = 0;
+					theShard->messageLength = 0;
 					for (int64_t x = 2, shift = 56; x < 10; ++x, shift -= 8) {
-						uint8_t lengthNew = static_cast<uint8_t>(this->inputBuffer[x]);
-						this->messageLength |= static_cast<uint64_t>((lengthNew & static_cast<uint64_t>(0xff)) << static_cast<uint64_t>(shift));
+						uint8_t lengthNew = static_cast<uint8_t>(theBuffer[x]);
+						theShard->messageLength |= static_cast<uint64_t>((lengthNew & static_cast<uint64_t>(0xff)) << static_cast<uint64_t>(shift));
 					}
-					this->messageOffset += 8;
+					theShard->messageOffset += 8;
 				}
-				if (this->inputBuffer.size() < static_cast<uint64_t>(this->messageOffset) + static_cast<uint64_t>(this->messageLength)) {
+				if (theBuffer.size() < static_cast<uint64_t>(theShard->messageOffset) + static_cast<uint64_t>(theShard->messageLength)) {
 					return true;
 				} else {
 					theStopWatch.resetTimer();
-					this->inputBuffer.erase(this->inputBuffer.begin(), this->inputBuffer.begin() + this->messageOffset);
-					if (!this->onMessageReceived(theStopWatch)) {
+					if (!this->onMessageReceived(theBuffer.substr(theShard->messageOffset, theShard->messageLength))) {
 						return false;
 					}
 					theStopWatch.resetTimer();
-					this->inputBuffer.erase(this->inputBuffer.begin(), this->inputBuffer.begin() + this->messageLength);
+					theBuffer.erase(theBuffer.begin(), theBuffer.begin() + theShard->messageOffset + theShard->messageLength);
 					return true;
 				}
 			}
 			case WebSocketOpCode::Op_Close: {
-				uint16_t close = this->inputBuffer[2] & 0xff;
+				uint16_t close = theBuffer[2] & 0xff;
 				close <<= 8;
-				close |= this->inputBuffer[3] & 0xff;
+				close |= theBuffer[3] & 0xff;
 				auto closeCode = close;
 				if (closeCode) {
+					theShard->areWeResuming = true;
 				}
-				this->inputBuffer.erase(this->inputBuffer.begin(), this->inputBuffer.begin() + 4);
+				theBuffer.erase(theBuffer.begin(), theBuffer.begin() + 4);
 				if (this->configManager->doWePrintWebSocketErrorMessages()) {
-					cout << DiscordCoreAPI::shiftToBrightRed() << "WebSocket " << " Closed; Code: " << +static_cast<uint16_t>(closeCode) << DiscordCoreAPI::reset() << endl << endl;
+					cout << DiscordCoreAPI::shiftToBrightRed() << "WebSocket " + theShard->shard.dump() + " Closed; Code: " << +static_cast<uint16_t>(theShard->closeCode)
+						 << DiscordCoreAPI::reset() << endl
+						 << endl;
 				}
 
 				return false;
@@ -309,29 +314,24 @@ namespace DiscordCoreInternal {
 		}
 	};
 	
-	void WebSocketSSLShard::dispatchBuffer()noexcept {
-		DiscordCoreAPI::StopWatch theStopWatch{ 50us };
-		this->parseMessage(theStopWatch);
+	void WebSocketSSLShard::dispatchBuffer(std::string& theBuffer) noexcept {
+		this->parseMessage(this, theBuffer);
 	}
 
-	bool WebSocketSSLShard::onMessageReceived( DiscordCoreAPI::StopWatch<std::chrono::microseconds>& theStopWatch) noexcept {
+	bool WebSocketSSLShard::onMessageReceived(const std::string& theString) {
 		if (this) {
 			if (this->theSSLState.load() == SSLConnectionState::Connected) {
 				try {
 					bool returnValue{ true };
-					if (this->inputBuffer.size() > 1) {
+					if (theString.size() > 1) {
+						nlohmann::json payloadNew{};
 						if (this->configManager->getTextFormat() == DiscordCoreAPI::TextFormat::Etf) {
+							
 							try {
+								std::string& theData = ( std::string& )theString;
 								theStopWatch.resetTimer();
-								std::string theStringNew{};
-								theStringNew.insert(theStringNew.begin(), this->inputBuffer.begin(), this->inputBuffer.end());
-								std::cout << "THE TIME TO COPY THE STRING: " << theStopWatch.totalTimePassed() << std::endl;
-								theStopWatch.resetTimer();
-								this->payload = this->parseEtfToJson(this->inputBuffer);
-								std::cout << "THE TIME TO PARSE THE STRING: " << theStopWatch.totalTimePassed() << std::endl;
-								theStopWatch.resetTimer();
-								theStringNew.clear();
-								std::cout << "THE TIME TO CLEAR THE STRING: " << theStopWatch.totalTimePassed() << std::endl;
+								payloadNew = std::move(this->parseEtfToJson(theData));
+								std::cout << "THE STRING TIME: " << theStopWatch.totalTimePassed() << std::endl;
 								theStopWatch.resetTimer();
 							} catch (...) {
 								if (this->configManager->doWePrintGeneralErrorMessages()) {
@@ -340,24 +340,24 @@ namespace DiscordCoreInternal {
 								return false;
 							}
 						} else {
-							this->payload = nlohmann::json::parse(this->inputBuffer);
+							payloadNew= nlohmann::json::parse(theString);
 						}
 						
 						if (this->configManager->doWePrintWebSocketSuccessMessages()) {
-							cout << DiscordCoreAPI::shiftToBrightGreen() << "Message received from WebSocket " + this->shard.dump() + std::string(": ") << this->payload .dump()
+							cout << DiscordCoreAPI::shiftToBrightGreen() << "Message received from WebSocket " + this->shard.dump() + std::string(": ") << payloadNew.dump()
 								 << DiscordCoreAPI::reset() << endl
 								 << endl;
 						}
-						if (this->payload .contains("t") && !this->payload ["t"].is_null()) {
-							if (this->payload ["t"] == "RESUMED") {
+						if (payloadNew.contains("t") && !payloadNew["t"].is_null()) {
+							if (payloadNew["t"] == "RESUMED") {
 								this->theWebSocketState.store(WebSocketSSLShardState::Authenticated);
 								this->currentReconnectTries = 0;
 							}
 
-							if (this->payload ["t"] == "READY") {
+							if (payloadNew["t"] == "READY") {
 								this->theWebSocketState.store(WebSocketSSLShardState::Authenticated);
-								this->sessionId = this->payload ["d"]["session_id"].get<std::string>();
-								DiscordCoreAPI::UserData theUser{ this->payload["d"]["user"] };
+								this->sessionId = payloadNew["d"]["session_id"].get<std::string>();
+								DiscordCoreAPI::UserData theUser{ payloadNew["d"]["user"] };
 								this->discordCoreClient->currentUser =
 									DiscordCoreAPI::BotUser{ theUser, this->discordCoreClient->baseSocketAgentMap[std::to_string(this->shard[0].get<int32_t>())].get() };
 								DiscordCoreAPI::Users::insertUser(std::make_unique<DiscordCoreAPI::UserData>(theUser));
@@ -365,95 +365,96 @@ namespace DiscordCoreInternal {
 							}
 						}
 
-						if (this->payload .contains("s") && !this->payload ["s"].is_null()) {
-							this->lastNumberReceived = this->payload ["s"].get<int32_t>();
+						if (payloadNew.contains("s") && !payloadNew["s"].is_null()) {
+							this->lastNumberReceived = payloadNew["s"].get<int32_t>();
 						}
-						if (this->payload .contains("op") && !this->payload ["op"].is_null()) {
-							switch (this->payload ["op"].get<int32_t>()) {
+						if (payloadNew.contains("op") && !payloadNew["op"].is_null()) {
+							switch (payloadNew["op"].get<int32_t>()) {
 								case 0: {
-									if (this->payload .contains("d") && !this->payload ["d"].is_null() && this->payload .contains("t") && !this->payload ["t"].is_null()) {
-										if (this->payload ["t"] == "APPLICATION_COMMAND_PERMISSIONS_UPDATE") {
+									if (payloadNew.contains("d") && !payloadNew["d"].is_null() && payloadNew.contains("t") && !payloadNew["t"].is_null()) {
+										if (payloadNew["t"] == "APPLICATION_COMMAND_PERMISSIONS_UPDATE") {
 											std::unique_ptr<DiscordCoreAPI::OnApplicationCommandPermissionsUpdateData> dataPackage {
 												std::make_unique<DiscordCoreAPI::OnApplicationCommandPermissionsUpdateData>()
 											};
-											dataPackage->permissionData = this->payload["d"];
+											dataPackage->permissionData = payloadNew["d"];
 											this->discordCoreClient->eventManager.onApplicationCommandPermissionsUpdateEvent(*dataPackage);
-										} else if (this->payload ["t"] == "AUTO_MODERATION_RULE_CREATE") {
+										} else if (payloadNew["t"] == "AUTO_MODERATION_RULE_CREATE") {
 											std::unique_ptr<DiscordCoreAPI::OnAutoModerationRuleCreationData> dataPackage{
 												std::make_unique<DiscordCoreAPI::OnAutoModerationRuleCreationData>()
 											};
-											dataPackage->theRule = this->payload["d"];
+											dataPackage->theRule = payloadNew["d"];
 											this->discordCoreClient->eventManager.onAutoModerationRuleCreationEvent(*dataPackage);
-										} else if (this->payload ["t"] == "AUTO_MODERATION_RULE_UPDATE") {
+										} else if (payloadNew["t"] == "AUTO_MODERATION_RULE_UPDATE") {
 											std::unique_ptr<DiscordCoreAPI::OnAutoModerationRuleUpdateData> dataPackage{
 												std::make_unique<DiscordCoreAPI::OnAutoModerationRuleUpdateData>()
 											};
-											dataPackage->theRule = this->payload["d"];
+											dataPackage->theRule = payloadNew["d"];
 											this->discordCoreClient->eventManager.onAutoModerationRuleUpdateEvent(*dataPackage);
-										} else if (this->payload ["t"] == "AUTO_MODERATION_RULE_DELETE") {
+										} else if (payloadNew["t"] == "AUTO_MODERATION_RULE_DELETE") {
 											std::unique_ptr<DiscordCoreAPI::OnAutoModerationRuleDeletionData> dataPackage{
 												std::make_unique<DiscordCoreAPI::OnAutoModerationRuleDeletionData>()
 											};
-											dataPackage->theRule = this->payload["d"];
+											dataPackage->theRule = payloadNew["d"];
 											this->discordCoreClient->eventManager.onAutoModerationRuleDeletionEvent(*dataPackage);
-										} else if (this->payload ["t"] == "AUTO_MODERATION_ACTION_EXECUTION") {
+										} else if (payloadNew["t"] == "AUTO_MODERATION_ACTION_EXECUTION") {
 											std::unique_ptr<DiscordCoreAPI::OnAutoModerationActionExecutionData> dataPackage{
 												std::make_unique<DiscordCoreAPI::OnAutoModerationActionExecutionData>()
 											};
-											dataPackage->theData = this->payload["d"];
+											dataPackage->theData = payloadNew["d"];
 											this->discordCoreClient->eventManager.onAutoModerationActionExecutionEvent(*dataPackage);
-										} else if (this->payload ["t"] == "CHANNEL_CREATE") {
+										} else if (payloadNew["t"] == "CHANNEL_CREATE") {
 											std::unique_ptr<DiscordCoreAPI::OnChannelCreationData> dataPackage{ std::make_unique<DiscordCoreAPI::OnChannelCreationData>() };
-											dataPackage->channel = this->payload["d"];
+											dataPackage->channel = payloadNew["d"];
 											this->discordCoreClient->eventManager.onChannelCreationEvent(*dataPackage);
-										} else if (this->payload ["t"] == "CHANNEL_UPDATE") {
+										} else if (payloadNew["t"] == "CHANNEL_UPDATE") {
 											std::unique_ptr<DiscordCoreAPI::OnChannelUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnChannelUpdateData>() };
-											if (this->payload ["d"].contains("id") && !this->payload ["d"]["id"].is_null()) {
+											if (payloadNew["d"].contains("id") && !payloadNew["d"]["id"].is_null()) {
 												dataPackage->channelOld = DiscordCoreAPI::Channel(
-													DiscordCoreAPI::Channels::getCachedChannelAsync({ .channelId = stoull(this->payload ["d"]["id"].get<std::string>()) }).get());
+													DiscordCoreAPI::Channels::getCachedChannelAsync({ .channelId = stoull(payloadNew["d"]["id"].get<std::string>()) }).get());
 												dataPackage->channelNew = DiscordCoreAPI::Channel(dataPackage->channelOld);
 											}
-											dataPackage->channelNew = this->payload["d"];
+											dataPackage->channelNew = payloadNew["d"];
 											this->discordCoreClient->eventManager.onChannelUpdateEvent(*dataPackage);
-										} else if (this->payload ["t"] == "CHANNEL_DELETE") {
+										} else if (payloadNew["t"] == "CHANNEL_DELETE") {
 											std::unique_ptr<DiscordCoreAPI::OnChannelDeletionData> dataPackage{ std::make_unique<DiscordCoreAPI::OnChannelDeletionData>() };
-											dataPackage->channel = this->payload["d"];
+											dataPackage->channel = payloadNew["d"];
 											this->discordCoreClient->eventManager.onChannelDeletionEvent(*dataPackage);
-										} else if (this->payload ["t"] == "CHANNEL_PINS_UPDATE") {
+										} else if (payloadNew["t"] == "CHANNEL_PINS_UPDATE") {
 											std::unique_ptr<DiscordCoreAPI::OnChannelPinsUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnChannelPinsUpdateData>() };
-											dataPackage->dataPackage = this->payload["d"];
+											dataPackage->dataPackage = payloadNew["d"];
 											this->discordCoreClient->eventManager.onChannelPinsUpdateEvent(*dataPackage);
-										} else if (this->payload ["t"] == "THREAD_CREATE") {
+										} else if (payloadNew["t"] == "THREAD_CREATE") {
 											std::unique_ptr<DiscordCoreAPI::OnThreadCreationData> dataPackage{ std::make_unique<DiscordCoreAPI::OnThreadCreationData>() };
-											dataPackage->thread = this->payload["d"];
+											dataPackage->thread = payloadNew["d"];
 											this->discordCoreClient->eventManager.onThreadCreationEvent(*dataPackage);
-										} else if (this->payload ["t"] == "THREAD_UPATE") {
+										} else if (payloadNew["t"] == "THREAD_UPATE") {
 											std::unique_ptr<DiscordCoreAPI::OnThreadUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnThreadUpdateData>() };
-											dataPackage->thread = this->payload["d"];
+											dataPackage->thread = payloadNew["d"];
 											this->discordCoreClient->eventManager.onThreadUpdateEvent(*dataPackage);
-										} else if (this->payload ["t"] == "THREAD_DELETE") {
+										} else if (payloadNew["t"] == "THREAD_DELETE") {
 											std::unique_ptr<DiscordCoreAPI::OnThreadDeletionData> dataPackage{ std::make_unique<DiscordCoreAPI::OnThreadDeletionData>() };
-											dataPackage->thread = this->payload["d"];
+											dataPackage->thread = payloadNew["d"];
 											this->discordCoreClient->eventManager.onThreadDeletionEvent(*dataPackage);
-										} else if (this->payload ["t"] == "THREAD_LIST_SYNC") {
+										} else if (payloadNew["t"] == "THREAD_LIST_SYNC") {
 											std::unique_ptr<DiscordCoreAPI::OnThreadListSyncData> dataPackage{ std::make_unique<DiscordCoreAPI::OnThreadListSyncData>() };
-											dataPackage->threadListSyncData = this->payload["d"];
+											dataPackage->threadListSyncData = payloadNew["d"];
 											this->discordCoreClient->eventManager.onThreadListSyncEvent(*dataPackage);
-										} else if (this->payload ["t"] == "THREAD_MEMBER_UPDATE") {
+										} else if (payloadNew["t"] == "THREAD_MEMBER_UPDATE") {
 											std::unique_ptr<DiscordCoreAPI::OnThreadMemberUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnThreadMemberUpdateData>() };
-											dataPackage->threadMember = this->payload["d"];
+											dataPackage->threadMember = payloadNew["d"];
 											this->discordCoreClient->eventManager.onThreadMemberUpdateEvent(*dataPackage);
-										} else if (this->payload ["t"] == "THREAD_MEMBERS_UPDATE") {
+										} else if (payloadNew["t"] == "THREAD_MEMBERS_UPDATE") {
 											std::unique_ptr<DiscordCoreAPI::OnThreadMembersUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnThreadMembersUpdateData>() };
-											dataPackage->threadMembersUpdateData = this->payload["d"];
+											dataPackage->threadMembersUpdateData = payloadNew["d"];
 											this->discordCoreClient->eventManager.onThreadMembersUpdateEvent(*dataPackage);
-										} else if (this->payload ["t"] == "GUILD_CREATE") {
+										} else if (payloadNew["t"] == "GUILD_CREATE") {
 											theStopWatch.resetTimer();
 											std::unique_ptr<DiscordCoreAPI::OnGuildCreationData> dataPackage{ std::make_unique<DiscordCoreAPI::OnGuildCreationData>() };
+											nlohmann::json& theData = payloadNew["d"];
 											
 											std::cout << "TIME PASSED 0202: " << theStopWatch.totalTimePassed() << std::endl;
 											theStopWatch.resetTimer();
-											DiscordCoreAPI::GuildData* theGuild = new DiscordCoreAPI::GuildData{ this->payload["d"] };
+											DiscordCoreAPI::GuildData* theGuild = new DiscordCoreAPI::GuildData{ std::move(theData) };
 											std::cout << "TIME PASSED 0303: " << theStopWatch.totalTimePassed() << std::endl;
 											theStopWatch.resetTimer();
 											Snowflake guildId = theGuild->id;
@@ -470,12 +471,12 @@ namespace DiscordCoreInternal {
 											//dataPackage->guild->discordCoreClient = this->discordCoreClient;
 											//this->discordCoreClient->eventManager.onGuildCreationEvent(std::move(*dataPackage));
 											theStopWatch.resetTimer();
-										} else if (this->payload ["t"] == "GUILD_UPDATE") {
+										} else if (payloadNew["t"] == "GUILD_UPDATE") {
 											std::unique_ptr<DiscordCoreAPI::OnGuildUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnGuildUpdateData>() };
-											std::unique_ptr<DiscordCoreAPI::GuildData> theGuild{ std::make_unique<DiscordCoreAPI::GuildData>(this->payload["d"]) };
-											if (this->payload ["d"].contains("id") && !this->payload ["d"]["id"].is_null()) {
+											std::unique_ptr<DiscordCoreAPI::GuildData> theGuild{ std::make_unique<DiscordCoreAPI::GuildData>(payloadNew["d"]) };
+											if (payloadNew["d"].contains("id") && !payloadNew["d"]["id"].is_null()) {
 												dataPackage->guildOld = std::make_unique<DiscordCoreAPI::GuildData>(DiscordCoreAPI::Guild(
-													DiscordCoreAPI::Guilds::getCachedGuildAsync({ .guildId = stoull(this->payload ["d"]["id"].get<std::string>()) }).get()));
+													DiscordCoreAPI::Guilds::getCachedGuildAsync({ .guildId = stoull(payloadNew["d"]["id"].get<std::string>()) }).get()));
 												dataPackage->guildNew = theGuild.get();
 											}
 											DiscordCoreAPI::GuildMemberId theKey{};
@@ -493,150 +494,150 @@ namespace DiscordCoreInternal {
 											}
 											DiscordCoreAPI::Guilds::insertGuild(std::move(theGuild));
 											this->discordCoreClient->eventManager.onGuildUpdateEvent(std::move(*dataPackage));
-										} else if (this->payload ["t"] == "GUILD_DELETE") {
+										} else if (payloadNew["t"] == "GUILD_DELETE") {
 											std::unique_ptr<DiscordCoreAPI::OnGuildDeletionData> dataPackage{ std::make_unique<DiscordCoreAPI::OnGuildDeletionData>() };
-											dataPackage->guild = std::make_unique<DiscordCoreAPI::GuildData>(this->payload["d"]);
+											dataPackage->guild = std::make_unique<DiscordCoreAPI::GuildData>(payloadNew["d"]);
 											DiscordCoreAPI::Guilds::removeGuild(dataPackage->guild->id);
 											this->discordCoreClient->eventManager.onGuildDeletionEvent(*dataPackage);
-										} else if (this->payload ["t"] == "GUILD_BAN_ADD") {
+										} else if (payloadNew["t"] == "GUILD_BAN_ADD") {
 											std::unique_ptr<DiscordCoreAPI::OnGuildBanAddData> dataPackage{ std::make_unique<DiscordCoreAPI::OnGuildBanAddData>() };
-											if (this->payload ["d"].contains("guild_id") && !this->payload ["d"]["guild_id"].is_null()) {
-												dataPackage->guildId = stoull(this->payload ["d"]["guild_id"].get<std::string>());
+											if (payloadNew["d"].contains("guild_id") && !payloadNew["d"]["guild_id"].is_null()) {
+												dataPackage->guildId = stoull(payloadNew["d"]["guild_id"].get<std::string>());
 											}
-											if (this->payload ["d"].contains("user") && !this->payload ["d"]["user"].is_null()) {
+											if (payloadNew["d"].contains("user") && !payloadNew["d"]["user"].is_null()) {
 												DiscordCoreAPI::User newData{};
-												newData = this->payload["d"]["user"];
+												newData = payloadNew["d"]["user"];
 												dataPackage->user = newData;
 											}
 											this->discordCoreClient->eventManager.onGuildBanAddEvent(*dataPackage);
-										} else if (this->payload ["t"] == "GUILD_BAN_REMOVE") {
+										} else if (payloadNew["t"] == "GUILD_BAN_REMOVE") {
 											std::unique_ptr<DiscordCoreAPI::OnGuildBanRemoveData> dataPackage{ std::make_unique<DiscordCoreAPI::OnGuildBanRemoveData>() };
-											if (this->payload ["d"].contains("guild_id") && !this->payload ["d"]["guild_id"].is_null()) {
-												dataPackage->guildId = stoull(this->payload ["d"]["guild_id"].get<std::string>());
+											if (payloadNew["d"].contains("guild_id") && !payloadNew["d"]["guild_id"].is_null()) {
+												dataPackage->guildId = stoull(payloadNew["d"]["guild_id"].get<std::string>());
 											}
-											if (this->payload ["d"].contains("user") && !this->payload ["d"]["user"].is_null()) {
+											if (payloadNew["d"].contains("user") && !payloadNew["d"]["user"].is_null()) {
 												DiscordCoreAPI::User newData{};
-												newData = this->payload["d"]["user"];
+												newData = payloadNew["d"]["user"];
 												dataPackage->user = newData;
 											}
 											this->discordCoreClient->eventManager.onGuildBanRemoveEvent(*dataPackage);
-										} else if (this->payload ["t"] == "GUILD_EMOJIS_UPDATE") {
+										} else if (payloadNew["t"] == "GUILD_EMOJIS_UPDATE") {
 											std::unique_ptr<DiscordCoreAPI::OnGuildEmojisUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnGuildEmojisUpdateData>() };
-											dataPackage->updateData = this->payload["d"];
+											dataPackage->updateData = payloadNew["d"];
 											this->discordCoreClient->eventManager.onGuildEmojisUpdateEvent(*dataPackage);
-										} else if (this->payload ["t"] == "GUILD_STICKERS_UPDATE") {
+										} else if (payloadNew["t"] == "GUILD_STICKERS_UPDATE") {
 											std::unique_ptr<DiscordCoreAPI::OnGuildStickersUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnGuildStickersUpdateData>() };
-											dataPackage->updateData = this->payload["d"];
+											dataPackage->updateData = payloadNew["d"];
 											this->discordCoreClient->eventManager.onGuildStickersUpdateEvent(*dataPackage);
-										} else if (this->payload ["t"] == "GUILD_INTEGRATIONS_UPDATE") {
+										} else if (payloadNew["t"] == "GUILD_INTEGRATIONS_UPDATE") {
 											std::unique_ptr<DiscordCoreAPI::OnGuildIntegrationsUpdateData> dataPackage{
 												std::make_unique<DiscordCoreAPI::OnGuildIntegrationsUpdateData>()
 											};
-											if (this->payload ["d"].contains("guild_id") && !this->payload ["d"]["guild_id"].is_null()) {
-												dataPackage->guildId = stoull(this->payload ["d"]["guild_id"].get<std::string>());
+											if (payloadNew["d"].contains("guild_id") && !payloadNew["d"]["guild_id"].is_null()) {
+												dataPackage->guildId = stoull(payloadNew["d"]["guild_id"].get<std::string>());
 											}
 											this->discordCoreClient->eventManager.onGuildIntegrationsUpdateEvent(*dataPackage);
-										} else if (this->payload ["t"] == "GUILD_MEMBER_ADD") {
+										} else if (payloadNew["t"] == "GUILD_MEMBER_ADD") {
 											std::unique_ptr<DiscordCoreAPI::OnGuildMemberAddData> dataPackage{ std::make_unique<DiscordCoreAPI::OnGuildMemberAddData>() };
-											if (this->payload ["d"].contains("guild_id") && !this->payload ["d"]["guild_id"].is_null()) {
-												dataPackage->guildMember.guildId = stoull(this->payload ["d"]["guild_id"].get<std::string>());
+											if (payloadNew["d"].contains("guild_id") && !payloadNew["d"]["guild_id"].is_null()) {
+												dataPackage->guildMember.guildId = stoull(payloadNew["d"]["guild_id"].get<std::string>());
 											}
-											dataPackage->guildMember = this->payload["d"];
+											dataPackage->guildMember = payloadNew["d"];
 											dataPackage->discordCoreClient = this->discordCoreClient;
 											this->discordCoreClient->eventManager.onGuildMemberAddEvent(*dataPackage);
-										} else if (this->payload ["t"] == "GUILD_MEMBER_REMOVE") {
+										} else if (payloadNew["t"] == "GUILD_MEMBER_REMOVE") {
 											std::unique_ptr<DiscordCoreAPI::OnGuildMemberRemoveData> dataPackage{ std::make_unique<DiscordCoreAPI::OnGuildMemberRemoveData>() };
-											if (this->payload ["d"].contains("guild_id") && !this->payload ["d"]["guild_id"].is_null()) {
-												dataPackage->guildId = stoull(this->payload ["d"]["guild_id"].get<std::string>());
+											if (payloadNew["d"].contains("guild_id") && !payloadNew["d"]["guild_id"].is_null()) {
+												dataPackage->guildId = stoull(payloadNew["d"]["guild_id"].get<std::string>());
 											}
-											if (this->payload ["d"].contains("user") && !this->payload ["d"]["user"].is_null()) {
-												dataPackage->user = DiscordCoreAPI::User(this->payload["d"]["user"]);
+											if (payloadNew["d"].contains("user") && !payloadNew["d"]["user"].is_null()) {
+												dataPackage->user = DiscordCoreAPI::User(payloadNew["d"]["user"]);
 											}
 											this->discordCoreClient->eventManager.onGuildMemberRemoveEvent(*dataPackage);
-										} else if (this->payload ["t"] == "GUILD_MEMBER_UPDATE") {
+										} else if (payloadNew["t"] == "GUILD_MEMBER_UPDATE") {
 											std::unique_ptr<DiscordCoreAPI::OnGuildMemberUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnGuildMemberUpdateData>() };
-											if (this->payload ["d"].contains("guild_id") && !this->payload ["d"]["guild_id"].is_null()) {
-												dataPackage->guildMemberNew.guildId = stoull(this->payload ["d"]["guild_id"].get<std::string>());
+											if (payloadNew["d"].contains("guild_id") && !payloadNew["d"]["guild_id"].is_null()) {
+												dataPackage->guildMemberNew.guildId = stoull(payloadNew["d"]["guild_id"].get<std::string>());
 											}
-											if (this->payload ["d"].contains("user") && this->payload ["d"]["user"].contains("id") && !this->payload ["d"]["user"]["id"].is_null()) {
+											if (payloadNew["d"].contains("user") && payloadNew["d"]["user"].contains("id") && !payloadNew["d"]["user"]["id"].is_null()) {
 												dataPackage->guildMemberOld = DiscordCoreAPI::GuildMember(DiscordCoreAPI::GuildMembers::getCachedGuildMemberAsync(
-													{ .guildMemberId = stoull(this->payload ["d"]["user"]["id"].get<std::string>()),
-														.guildId = stoull(this->payload ["d"]["guild_id"].get<std::string>()) })
+													{ .guildMemberId = stoull(payloadNew["d"]["user"]["id"].get<std::string>()),
+														.guildId = stoull(payloadNew["d"]["guild_id"].get<std::string>()) })
 																											  .get());
 												dataPackage->guildMemberNew = DiscordCoreAPI::GuildMember(dataPackage->guildMemberOld);
 											}
-											dataPackage->guildMemberNew = this->payload["d"];
+											dataPackage->guildMemberNew = payloadNew["d"];
 											this->discordCoreClient->eventManager.onGuildMemberUpdateEvent(*dataPackage);
-										} else if (this->payload ["t"] == "GUILD_MEMBERS_CHUNK") {
+										} else if (payloadNew["t"] == "GUILD_MEMBERS_CHUNK") {
 											std::unique_ptr<DiscordCoreAPI::OnGuildMembersChunkData> dataPackage{ std::make_unique<DiscordCoreAPI::OnGuildMembersChunkData>() };
-											dataPackage->chunkEventData = this->payload["d"];
+											dataPackage->chunkEventData = payloadNew["d"];
 											this->discordCoreClient->eventManager.onGuildMembersChunkEvent(*dataPackage);
-										} else if (this->payload ["t"] == "GUILD_ROLE_CREATE") {
+										} else if (payloadNew["t"] == "GUILD_ROLE_CREATE") {
 											std::unique_ptr<DiscordCoreAPI::OnRoleCreationData> dataPackage{ std::make_unique<DiscordCoreAPI::OnRoleCreationData>() };
-											if (this->payload ["d"].contains("role") && !this->payload ["d"]["role"].is_null()) {
-												dataPackage->role = this->payload["d"]["role"];
+											if (payloadNew["d"].contains("role") && !payloadNew["d"]["role"].is_null()) {
+												dataPackage->role = payloadNew["d"]["role"];
 											}
-											if (this->payload ["d"].contains("guild_id") && !this->payload ["d"]["guild_id"].is_null()) {
-												dataPackage->guildId = stoull(this->payload ["d"]["guild_id"].get<std::string>());
+											if (payloadNew["d"].contains("guild_id") && !payloadNew["d"]["guild_id"].is_null()) {
+												dataPackage->guildId = stoull(payloadNew["d"]["guild_id"].get<std::string>());
 											}
 											this->discordCoreClient->eventManager.onRoleCreationEvent(*dataPackage);
-										} else if (this->payload ["t"] == "GUILD_ROLE_UPDATE") {
+										} else if (payloadNew["t"] == "GUILD_ROLE_UPDATE") {
 											std::unique_ptr<DiscordCoreAPI::OnRoleUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnRoleUpdateData>() };
-											if (this->payload ["d"].contains("guild_id") && !this->payload ["d"]["guild_id"].is_null()) {
-												dataPackage->guildId = stoull(this->payload ["d"]["guild_id"].get<std::string>());
+											if (payloadNew["d"].contains("guild_id") && !payloadNew["d"]["guild_id"].is_null()) {
+												dataPackage->guildId = stoull(payloadNew["d"]["guild_id"].get<std::string>());
 											}
-											dataPackage->roleNew = this->payload["d"]["role"];
-											if (this->payload ["d"].contains("role") && !this->payload ["d"]["role"].is_null()) {
+											dataPackage->roleNew = payloadNew["d"]["role"];
+											if (payloadNew["d"].contains("role") && !payloadNew["d"]["role"].is_null()) {
 												dataPackage->roleOld = DiscordCoreAPI::Role(DiscordCoreAPI::Roles::getCachedRoleAsync(
-													{ .guildId = dataPackage->guildId, .roleId = stoull(this->payload ["d"]["role"]["id"].get<std::string>()) })
+													{ .guildId = dataPackage->guildId, .roleId = stoull(payloadNew["d"]["role"]["id"].get<std::string>()) })
 																								.get());
 												dataPackage->roleNew = DiscordCoreAPI::Role(dataPackage->roleOld);
 											}
 											this->discordCoreClient->eventManager.onRoleUpdateEvent(*dataPackage);
-										} else if (this->payload ["t"] == "GUILD_ROLE_DELETE") {
+										} else if (payloadNew["t"] == "GUILD_ROLE_DELETE") {
 											std::unique_ptr<DiscordCoreAPI::OnRoleDeletionData> dataPackage{ std::make_unique<DiscordCoreAPI::OnRoleDeletionData>() };
-											if (this->payload ["d"].contains("guild_id") && !this->payload ["d"]["guild_id"].is_null()) {
-												dataPackage->guildId = stoull(this->payload ["d"]["guild_id"].get<std::string>());
+											if (payloadNew["d"].contains("guild_id") && !payloadNew["d"]["guild_id"].is_null()) {
+												dataPackage->guildId = stoull(payloadNew["d"]["guild_id"].get<std::string>());
 											}
-											if (this->payload ["d"].contains("role_id") && !this->payload ["d"]["role_id"].is_null()) {
+											if (payloadNew["d"].contains("role_id") && !payloadNew["d"]["role_id"].is_null()) {
 												dataPackage->roleOld = DiscordCoreAPI::Role(DiscordCoreAPI::Roles::getCachedRoleAsync(
-													{ .guildId = dataPackage->guildId, .roleId = stoull(this->payload ["d"]["role_id"].get<std::string>()) })
+													{ .guildId = dataPackage->guildId, .roleId = stoull(payloadNew["d"]["role_id"].get<std::string>()) })
 																								.get());
 											}
 											this->discordCoreClient->eventManager.onRoleDeletionEvent(*dataPackage);
-										} else if (this->payload ["t"] == "INTEGRATION_CREATE") {
+										} else if (payloadNew["t"] == "INTEGRATION_CREATE") {
 											std::unique_ptr<DiscordCoreAPI::OnIntegrationCreationData> dataPackage{ std::make_unique<DiscordCoreAPI::OnIntegrationCreationData>() };
-											if (this->payload ["d"].contains("guild_id") && !this->payload ["d"]["guild_id"].is_null()) {
-												dataPackage->guildId = stoull(this->payload ["d"]["guild_id"].get<std::string>());
+											if (payloadNew["d"].contains("guild_id") && !payloadNew["d"]["guild_id"].is_null()) {
+												dataPackage->guildId = stoull(payloadNew["d"]["guild_id"].get<std::string>());
 											}
-											if (this->payload ["d"].contains("integration") && !this->payload ["d"]["integration"].is_null()) {
-												dataPackage->integrationData = this->payload["d"]["integration"];
+											if (payloadNew["d"].contains("integration") && !payloadNew["d"]["integration"].is_null()) {
+												dataPackage->integrationData = payloadNew["d"]["integration"];
 											}
 											this->discordCoreClient->eventManager.onIntegrationCreationEvent(*dataPackage);
-										} else if (this->payload ["t"] == "INTEGRATION_UPDATE") {
+										} else if (payloadNew["t"] == "INTEGRATION_UPDATE") {
 											std::unique_ptr<DiscordCoreAPI::OnIntegrationUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnIntegrationUpdateData>() };
-											if (this->payload ["d"].contains("guild_id") && !this->payload ["d"]["guild_id"].is_null()) {
-												dataPackage->guildId = stoull(this->payload ["d"]["guild_id"].get<std::string>());
+											if (payloadNew["d"].contains("guild_id") && !payloadNew["d"]["guild_id"].is_null()) {
+												dataPackage->guildId = stoull(payloadNew["d"]["guild_id"].get<std::string>());
 											}
-											if (this->payload ["d"].contains("integration") && !this->payload ["d"]["integration"].is_null()) {
-												dataPackage->integrationData = this->payload["d"]["integration"];
+											if (payloadNew["d"].contains("integration") && !payloadNew["d"]["integration"].is_null()) {
+												dataPackage->integrationData = payloadNew["d"]["integration"];
 											}
 											this->discordCoreClient->eventManager.onIntegrationUpdateEvent(*dataPackage);
-										} else if (this->payload ["t"] == "INTEGRATION_DELETE") {
+										} else if (payloadNew["t"] == "INTEGRATION_DELETE") {
 											std::unique_ptr<DiscordCoreAPI::OnIntegrationDeletionData> dataPackage{ std::make_unique<DiscordCoreAPI::OnIntegrationDeletionData>() };
-											if (this->payload ["d"].contains("guild_id") && !this->payload ["d"]["guild_id"].is_null()) {
-												dataPackage->guildId = stoull(this->payload ["d"]["guild_id"].get<std::string>());
+											if (payloadNew["d"].contains("guild_id") && !payloadNew["d"]["guild_id"].is_null()) {
+												dataPackage->guildId = stoull(payloadNew["d"]["guild_id"].get<std::string>());
 											}
-											if (this->payload ["d"].contains("application_id") && !this->payload ["d"]["application_id"].is_null()) {
-												dataPackage->applicationId = stoull(this->payload ["d"]["application_id"].get<std::string>());
+											if (payloadNew["d"].contains("application_id") && !payloadNew["d"]["application_id"].is_null()) {
+												dataPackage->applicationId = stoull(payloadNew["d"]["application_id"].get<std::string>());
 											}
-											if (this->payload ["d"].contains("id") && !this->payload ["d"]["id"].is_null()) {
-												dataPackage->id = stoull(this->payload ["d"]["id"].get<std::string>());
+											if (payloadNew["d"].contains("id") && !payloadNew["d"]["id"].is_null()) {
+												dataPackage->id = stoull(payloadNew["d"]["id"].get<std::string>());
 											}
 											this->discordCoreClient->eventManager.onIntegrationDeletionEvent(*dataPackage);
-										} else if (this->payload ["t"] == "INTERACTION_CREATE") {
+										} else if (payloadNew["t"] == "INTERACTION_CREATE") {
 											std::unique_ptr<DiscordCoreAPI::InteractionData> interactionData{ std::make_unique<DiscordCoreAPI::InteractionData>() };
-											*interactionData = this->payload["d"];
+											*interactionData = payloadNew["d"];
 											std::unique_ptr<DiscordCoreAPI::InputEventData> eventData{ std::make_unique<DiscordCoreAPI::InputEventData>(*interactionData) };
 											if (interactionData->type == DiscordCoreAPI::InteractionType::Application_Command) {
 												eventData->responseType = DiscordCoreAPI::InputEventResponseType::Unset;
@@ -714,25 +715,25 @@ namespace DiscordCoreInternal {
 												this->discordCoreClient->eventManager.onAutoCompleteEntryEvent(*autocompleteEntryData);
 												this->discordCoreClient->eventManager.onInteractionCreationEvent(*dataPackage);
 											}
-										} else if (this->payload ["t"] == "INVITE_CREATE") {
+										} else if (payloadNew["t"] == "INVITE_CREATE") {
 											std::unique_ptr<DiscordCoreAPI::OnInviteCreationData> dataPackage{ std::make_unique<DiscordCoreAPI::OnInviteCreationData>() };
-											dataPackage->invite = this->payload["d"];
+											dataPackage->invite = payloadNew["d"];
 											this->discordCoreClient->eventManager.onInviteCreationEvent(*dataPackage);
-										} else if (this->payload ["t"] == "INVITE_DELETE") {
+										} else if (payloadNew["t"] == "INVITE_DELETE") {
 											std::unique_ptr<DiscordCoreAPI::OnInviteDeletionData> dataPackage{ std::make_unique<DiscordCoreAPI::OnInviteDeletionData>() };
-											if (this->payload ["d"].contains("channel_id") && !this->payload ["d"]["channel_id"].is_null()) {
-												dataPackage->channelId = stoull(this->payload ["d"]["channel_id"].get<std::string>());
+											if (payloadNew["d"].contains("channel_id") && !payloadNew["d"]["channel_id"].is_null()) {
+												dataPackage->channelId = stoull(payloadNew["d"]["channel_id"].get<std::string>());
 											}
-											if (this->payload ["d"].contains("guild_id") && !this->payload ["d"]["guild_id"].is_null()) {
-												dataPackage->guildId = stoull(this->payload ["d"]["guild_id"].get<std::string>());
+											if (payloadNew["d"].contains("guild_id") && !payloadNew["d"]["guild_id"].is_null()) {
+												dataPackage->guildId = stoull(payloadNew["d"]["guild_id"].get<std::string>());
 											}
-											if (this->payload ["d"].contains("code") && !this->payload ["d"]["code"].is_null()) {
-												dataPackage->code = this->payload ["d"]["code"];
+											if (payloadNew["d"].contains("code") && !payloadNew["d"]["code"].is_null()) {
+												dataPackage->code = payloadNew["d"]["code"];
 											}
 											this->discordCoreClient->eventManager.onInviteDeletionEvent(*dataPackage);
-										} else if (this->payload ["t"] == "MESSAGE_CREATE") {
+										} else if (payloadNew["t"] == "MESSAGE_CREATE") {
 											std::unique_ptr<DiscordCoreAPI::Message> message{ std::make_unique<DiscordCoreAPI::Message>() };
-											*message = this->payload["d"];
+											*message = payloadNew["d"];
 											std::unique_ptr<DiscordCoreAPI::OnMessageCreationData> dataPackage{ std::make_unique<DiscordCoreAPI::OnMessageCreationData>() };
 											dataPackage->message = *message;
 											for (auto& [key, value]: DiscordCoreAPI::MessageCollector::messagesBufferMap) {
@@ -748,153 +749,153 @@ namespace DiscordCoreInternal {
 											std::unique_ptr<DiscordCoreAPI::OnInputEventCreationData> eventCreationData{
 												std::make_unique<DiscordCoreAPI::OnInputEventCreationData>()
 											};
-										} else if (this->payload ["t"] == "MESSAGE_UPDATE") {
+										} else if (payloadNew["t"] == "MESSAGE_UPDATE") {
 											std::unique_ptr<DiscordCoreAPI::OnMessageUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnMessageUpdateData>() };
-											dataPackage->messageNew = this->payload["d"];
+											dataPackage->messageNew = payloadNew["d"];
 											for (auto& [key, value]: DiscordCoreAPI::MessageCollector::messagesBufferMap) {
 												value->send(dataPackage->messageNew);
 											}
 											this->discordCoreClient->eventManager.onMessageUpdateEvent(*dataPackage);
-										} else if (this->payload ["t"] == "MESSAGE_DELETE") {
+										} else if (payloadNew["t"] == "MESSAGE_DELETE") {
 											std::unique_ptr<DiscordCoreAPI::OnMessageDeletionData> dataPackage{ std::make_unique<DiscordCoreAPI::OnMessageDeletionData>() };
-											if (this->payload ["d"].contains("guild_id") && !this->payload ["d"]["guild_id"].is_null()) {
-												dataPackage->guildId = stoull(this->payload ["d"]["guild_id"].get<std::string>());
+											if (payloadNew["d"].contains("guild_id") && !payloadNew["d"]["guild_id"].is_null()) {
+												dataPackage->guildId = stoull(payloadNew["d"]["guild_id"].get<std::string>());
 											}
-											if (this->payload ["d"].contains("channel_id") && !this->payload ["d"]["channel_id"].is_null()) {
-												dataPackage->channelId = stoull(this->payload ["d"]["channel_id"].get<std::string>());
+											if (payloadNew["d"].contains("channel_id") && !payloadNew["d"]["channel_id"].is_null()) {
+												dataPackage->channelId = stoull(payloadNew["d"]["channel_id"].get<std::string>());
 											}
-											if (this->payload ["d"].contains("id") && !this->payload ["d"]["id"].is_null()) {
-												dataPackage->messageId = stoull(this->payload ["d"]["id"].get<std::string>());
+											if (payloadNew["d"].contains("id") && !payloadNew["d"]["id"].is_null()) {
+												dataPackage->messageId = stoull(payloadNew["d"]["id"].get<std::string>());
 											}
 											this->discordCoreClient->eventManager.onMessageDeletionEvent(*dataPackage);
-										} else if (this->payload ["t"] == "MESSAGE_DELETE_BULK") {
+										} else if (payloadNew["t"] == "MESSAGE_DELETE_BULK") {
 											std::unique_ptr<DiscordCoreAPI::OnMessageDeleteBulkData> dataPackage{ std::make_unique<DiscordCoreAPI::OnMessageDeleteBulkData>() };
-											if (this->payload ["d"].contains("channel_id") && !this->payload ["d"]["channel_id"].is_null()) {
-												dataPackage->channelId = stoull(this->payload ["d"]["channel_id"].get<std::string>());
+											if (payloadNew["d"].contains("channel_id") && !payloadNew["d"]["channel_id"].is_null()) {
+												dataPackage->channelId = stoull(payloadNew["d"]["channel_id"].get<std::string>());
 											}
-											if (this->payload ["d"].contains("guild_id") && !this->payload ["d"]["guild_id"].is_null()) {
-												dataPackage->guildId = stoull(this->payload ["d"]["guild_id"].get<std::string>());
+											if (payloadNew["d"].contains("guild_id") && !payloadNew["d"]["guild_id"].is_null()) {
+												dataPackage->guildId = stoull(payloadNew["d"]["guild_id"].get<std::string>());
 											}
-											if (this->payload ["d"].contains("ids") && !this->payload ["d"]["ids"].is_null()) {
-												for (auto& value: this->payload ["d"]["ids"]) {
+											if (payloadNew["d"].contains("ids") && !payloadNew["d"]["ids"].is_null()) {
+												for (auto& value: payloadNew["d"]["ids"]) {
 													dataPackage->ids.push_back(stoull(value.get<std::string>()));
 												}
 											}
 											this->discordCoreClient->eventManager.onMessageDeleteBulkEvent(*dataPackage);
-										} else if (this->payload ["t"] == "MESSAGE_REACTION_ADD") {
+										} else if (payloadNew["t"] == "MESSAGE_REACTION_ADD") {
 											std::unique_ptr<DiscordCoreAPI::OnReactionAddData> dataPackage{ std::make_unique<DiscordCoreAPI::OnReactionAddData>() };
-											dataPackage->reaction = this->payload["d"];
+											dataPackage->reaction = payloadNew["d"];
 											this->discordCoreClient->eventManager.onReactionAddEvent(*dataPackage);
-										} else if (this->payload ["t"] == "MESSAGE_REACTION_REMOVE") {
+										} else if (payloadNew["t"] == "MESSAGE_REACTION_REMOVE") {
 											std::unique_ptr<DiscordCoreAPI::OnReactionRemoveData> dataPackage{ std::make_unique<DiscordCoreAPI::OnReactionRemoveData>() };
-											dataPackage->reactionRemoveData = this->payload["d"];
+											dataPackage->reactionRemoveData = payloadNew["d"];
 											this->discordCoreClient->eventManager.onReactionRemoveEvent(*dataPackage);
-										} else if (this->payload ["t"] == "MESSAGE_REACTION_REMOVE_ALL") {
+										} else if (payloadNew["t"] == "MESSAGE_REACTION_REMOVE_ALL") {
 											std::unique_ptr<DiscordCoreAPI::OnReactionRemoveAllData> dataPackage{ std::make_unique<DiscordCoreAPI::OnReactionRemoveAllData>() };
-											if (this->payload ["d"].contains("channel_id") && !this->payload ["d"]["channel_id"].is_null()) {
-												dataPackage->channelId = stoull(this->payload ["d"]["channel_id"].get<std::string>());
+											if (payloadNew["d"].contains("channel_id") && !payloadNew["d"]["channel_id"].is_null()) {
+												dataPackage->channelId = stoull(payloadNew["d"]["channel_id"].get<std::string>());
 											}
-											if (this->payload ["d"].contains("message_id") && !this->payload ["d"]["message_id"].is_null()) {
-												dataPackage->messageId = stoull(this->payload ["d"]["message_id"].get<std::string>());
+											if (payloadNew["d"].contains("message_id") && !payloadNew["d"]["message_id"].is_null()) {
+												dataPackage->messageId = stoull(payloadNew["d"]["message_id"].get<std::string>());
 											}
-											if (this->payload ["d"].contains("guild_id") && !this->payload ["d"]["guild_id"].is_null()) {
-												dataPackage->guildId = stoull(this->payload ["d"]["guild_id"].get<std::string>());
+											if (payloadNew["d"].contains("guild_id") && !payloadNew["d"]["guild_id"].is_null()) {
+												dataPackage->guildId = stoull(payloadNew["d"]["guild_id"].get<std::string>());
 											}
 											this->discordCoreClient->eventManager.onReactionRemoveAllEvent(*dataPackage);
-										} else if (this->payload ["t"] == "MESSAGE_REACTION_REMOVE_EMOJI") {
+										} else if (payloadNew["t"] == "MESSAGE_REACTION_REMOVE_EMOJI") {
 											std::unique_ptr<DiscordCoreAPI::OnReactionRemoveEmojiData> dataPackage{ std::make_unique<DiscordCoreAPI::OnReactionRemoveEmojiData>() };
-											if (this->payload ["d"].contains("channel_id") && !this->payload ["d"]["channel_id"].is_null()) {
-												dataPackage->channelId = stoull(this->payload ["d"]["channel_id"].get<std::string>());
+											if (payloadNew["d"].contains("channel_id") && !payloadNew["d"]["channel_id"].is_null()) {
+												dataPackage->channelId = stoull(payloadNew["d"]["channel_id"].get<std::string>());
 											}
-											if (this->payload ["d"].contains("message_id") && !this->payload ["d"]["message_id"].is_null()) {
-												dataPackage->messageId = stoull(this->payload ["d"]["message_id"].get<std::string>());
+											if (payloadNew["d"].contains("message_id") && !payloadNew["d"]["message_id"].is_null()) {
+												dataPackage->messageId = stoull(payloadNew["d"]["message_id"].get<std::string>());
 											}
-											if (this->payload ["d"].contains("guild_id") && !this->payload ["d"]["guild_id"].is_null()) {
-												dataPackage->guildId = stoull(this->payload ["d"]["guild_id"].get<std::string>());
+											if (payloadNew["d"].contains("guild_id") && !payloadNew["d"]["guild_id"].is_null()) {
+												dataPackage->guildId = stoull(payloadNew["d"]["guild_id"].get<std::string>());
 											}
-											dataPackage->emoji = this->payload["d"]["emoji"];
+											dataPackage->emoji = payloadNew["d"]["emoji"];
 											this->discordCoreClient->eventManager.onReactionRemoveEmojiEvent(*dataPackage);
-										} else if (this->payload ["t"] == "PRESENCE_UPDATE") {
+										} else if (payloadNew["t"] == "PRESENCE_UPDATE") {
 											std::unique_ptr<DiscordCoreAPI::OnPresenceUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnPresenceUpdateData>() };
-											dataPackage->presenceData = this->payload["d"];
+											dataPackage->presenceData = payloadNew["d"];
 											this->discordCoreClient->eventManager.onPresenceUpdateEvent(*dataPackage);
-										} else if (this->payload ["t"] == "STAGE_INSTANCE_CREATE") {
+										} else if (payloadNew["t"] == "STAGE_INSTANCE_CREATE") {
 											std::unique_ptr<DiscordCoreAPI::OnStageInstanceCreationData> dataPackage{
 												std::make_unique<DiscordCoreAPI::OnStageInstanceCreationData>()
 											};
-											dataPackage->stageInstance = this->payload["d"];
+											dataPackage->stageInstance = payloadNew["d"];
 											this->discordCoreClient->eventManager.onStageInstanceCreationEvent(*dataPackage);
-										} else if (this->payload ["t"] == "STAGE_INSTANCE_UPDATE") {
+										} else if (payloadNew["t"] == "STAGE_INSTANCE_UPDATE") {
 											std::unique_ptr<DiscordCoreAPI::OnStageInstanceUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnStageInstanceUpdateData>() };
-											dataPackage->stageInstance = this->payload["d"];
+											dataPackage->stageInstance = payloadNew["d"];
 											this->discordCoreClient->eventManager.onStageInstanceUpdateEvent(*dataPackage);
-										} else if (this->payload ["t"] == "STAGE_INSTANCE_DELETE") {
+										} else if (payloadNew["t"] == "STAGE_INSTANCE_DELETE") {
 											std::unique_ptr<DiscordCoreAPI::OnStageInstanceDeletionData> dataPackage{
 												std::make_unique<DiscordCoreAPI::OnStageInstanceDeletionData>()
 											};
-											dataPackage->stageInstance = this->payload["d"];
+											dataPackage->stageInstance = payloadNew["d"];
 											this->discordCoreClient->eventManager.onStageInstanceDeletionEvent(*dataPackage);
-										} else if (this->payload ["t"] == "TYPING_START") {
+										} else if (payloadNew["t"] == "TYPING_START") {
 											std::unique_ptr<DiscordCoreAPI::OnTypingStartData> dataPackage{ std::make_unique<DiscordCoreAPI::OnTypingStartData>() };
-											dataPackage->typingStartData = this->payload["d"];
+											dataPackage->typingStartData = payloadNew["d"];
 											this->discordCoreClient->eventManager.onTypingStartEvent(*dataPackage);
-										} else if (this->payload ["t"] == "USER_UPDATE") {
+										} else if (payloadNew["t"] == "USER_UPDATE") {
 											std::unique_ptr<DiscordCoreAPI::OnUserUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnUserUpdateData>() };
-											dataPackage->userNew = DiscordCoreAPI::User(this->payload["d"]["user"]);
+											dataPackage->userNew = DiscordCoreAPI::User(payloadNew["d"]["user"]);
 											dataPackage->userOld = DiscordCoreAPI::User(DiscordCoreAPI::Users::getCachedUserAsync({ .userId = dataPackage->userNew.id }).get());
 											this->discordCoreClient->eventManager.onUserUpdateEvent(*dataPackage);
-										} else if (this->payload ["t"] == "VOICE_STATE_UPDATE") {
+										} else if (payloadNew["t"] == "VOICE_STATE_UPDATE") {
 											if (this->areWeCollectingData && !this->stateUpdateCollected && !this->serverUpdateCollected &&
-												this->payload ["d"]["member"]["user"]["id"] == std::to_string(this->userId)) {
+												payloadNew["d"]["member"]["user"]["id"] == std::to_string(this->userId)) {
 												this->voiceConnectionData = VoiceConnectionData{};
-												this->voiceConnectionData.sessionId = this->payload ["d"]["session_id"].get<std::string>();
+												this->voiceConnectionData.sessionId = payloadNew["d"]["session_id"].get<std::string>();
 												this->stateUpdateCollected = true;
 											} else if (this->areWeCollectingData && !this->stateUpdateCollected) {
-												this->voiceConnectionData.sessionId = this->payload ["d"]["session_id"].get<std::string>();
-												if (this->voiceConnectionDataBufferMap.contains(stoull(this->payload ["d"]["guild_id"].get<std::string>()))) {
-													this->voiceConnectionDataBufferMap[stoull(this->payload ["d"]["guild_id"].get<std::string>())]->send(this->voiceConnectionData);
+												this->voiceConnectionData.sessionId = payloadNew["d"]["session_id"].get<std::string>();
+												if (this->voiceConnectionDataBufferMap.contains(stoull(payloadNew["d"]["guild_id"].get<std::string>()))) {
+													this->voiceConnectionDataBufferMap[stoull(payloadNew["d"]["guild_id"].get<std::string>())]->send(this->voiceConnectionData);
 												}
 												this->serverUpdateCollected = false;
 												this->stateUpdateCollected = false;
 												this->areWeCollectingData = false;
 											}
 											std::unique_ptr<DiscordCoreAPI::OnVoiceStateUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnVoiceStateUpdateData>() };
-											dataPackage->voiceStateData = this->payload["d"];
+											dataPackage->voiceStateData = payloadNew["d"];
 											this->discordCoreClient->eventManager.onVoiceStateUpdateEvent(*dataPackage);
-										} else if (this->payload ["t"] == "VOICE_SERVER_UPDATE") {
+										} else if (payloadNew["t"] == "VOICE_SERVER_UPDATE") {
 											if (this->areWeCollectingData && !this->serverUpdateCollected && !this->stateUpdateCollected) {
 												this->voiceConnectionData = VoiceConnectionData{};
-												this->voiceConnectionData.endPoint = this->payload ["d"]["endpoint"].get<std::string>();
-												this->voiceConnectionData.token = this->payload ["d"]["token"].get<std::string>();
+												this->voiceConnectionData.endPoint = payloadNew["d"]["endpoint"].get<std::string>();
+												this->voiceConnectionData.token = payloadNew["d"]["token"].get<std::string>();
 												this->serverUpdateCollected = true;
 											} else if (this->areWeCollectingData && !this->serverUpdateCollected) {
-												this->voiceConnectionData.endPoint = this->payload ["d"]["endpoint"].get<std::string>();
-												this->voiceConnectionData.token = this->payload ["d"]["token"].get<std::string>();
-												if (this->voiceConnectionDataBufferMap.contains(stoull(this->payload ["d"]["guild_id"].get<std::string>()))) {
-													this->voiceConnectionDataBufferMap[stoull(this->payload ["d"]["guild_id"].get<std::string>())]->send(this->voiceConnectionData);
+												this->voiceConnectionData.endPoint = payloadNew["d"]["endpoint"].get<std::string>();
+												this->voiceConnectionData.token = payloadNew["d"]["token"].get<std::string>();
+												if (this->voiceConnectionDataBufferMap.contains(stoull(payloadNew["d"]["guild_id"].get<std::string>()))) {
+													this->voiceConnectionDataBufferMap[stoull(payloadNew["d"]["guild_id"].get<std::string>())]->send(this->voiceConnectionData);
 												}
 												this->serverUpdateCollected = false;
 												this->stateUpdateCollected = false;
 												this->areWeCollectingData = false;
 											}
 											std::unique_ptr<DiscordCoreAPI::OnVoiceServerUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnVoiceServerUpdateData>() };
-											if (this->payload ["d"].contains("endpoint") && !this->payload ["d"]["endpoint"].is_null()) {
-												dataPackage->endpoint = this->payload ["d"]["endpoint"];
+											if (payloadNew["d"].contains("endpoint") && !payloadNew["d"]["endpoint"].is_null()) {
+												dataPackage->endpoint = payloadNew["d"]["endpoint"];
 											}
-											if (this->payload ["d"].contains("guild_id") && !this->payload ["d"]["guild_id"].is_null()) {
-												dataPackage->guildId = stoull(this->payload ["d"]["guild_id"].get<std::string>());
+											if (payloadNew["d"].contains("guild_id") && !payloadNew["d"]["guild_id"].is_null()) {
+												dataPackage->guildId = stoull(payloadNew["d"]["guild_id"].get<std::string>());
 											}
-											if (this->payload ["d"].contains("token") && !this->payload ["d"]["token"].is_null()) {
-												dataPackage->token = this->payload ["d"]["token"];
+											if (payloadNew["d"].contains("token") && !payloadNew["d"]["token"].is_null()) {
+												dataPackage->token = payloadNew["d"]["token"];
 											}
 											this->discordCoreClient->eventManager.onVoiceServerUpdateEvent(*dataPackage);
-										} else if (this->payload ["t"] == "WEBHOOKS_UPDATE") {
+										} else if (payloadNew["t"] == "WEBHOOKS_UPDATE") {
 											std::unique_ptr<DiscordCoreAPI::OnWebhookUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnWebhookUpdateData>() };
-											if (this->payload ["d"].contains("channel_id") && !this->payload ["d"]["channel_id"].is_null()) {
-												dataPackage->channelId = stoull(this->payload ["d"]["channel_id"].get<std::string>());
+											if (payloadNew["d"].contains("channel_id") && !payloadNew["d"]["channel_id"].is_null()) {
+												dataPackage->channelId = stoull(payloadNew["d"]["channel_id"].get<std::string>());
 											}
-											if (this->payload ["d"].contains("guild_id") && !this->payload ["d"]["guild_id"].is_null()) {
-												dataPackage->guildId = stoull(this->payload ["d"]["guild_id"].get<std::string>());
+											if (payloadNew["d"].contains("guild_id") && !payloadNew["d"]["guild_id"].is_null()) {
+												dataPackage->guildId = stoull(payloadNew["d"]["guild_id"].get<std::string>());
 											}
 											this->discordCoreClient->eventManager.onWebhookUpdateEvent(*dataPackage);
 										}
@@ -923,7 +924,7 @@ namespace DiscordCoreInternal {
 									int32_t numOfMsToWait = static_cast<int32_t>(
 										1000.0f + ((static_cast<float>(randomEngine()) / static_cast<float>(randomEngine.max())) * static_cast<float>(4000.0f)));
 									std::this_thread::sleep_for(std::chrono::milliseconds{ numOfMsToWait });
-									if (this->payload ["d"] == true) {
+									if (payloadNew["d"] == true) {
 										this->areWeResuming = true;
 									} else {
 										this->areWeResuming = false;
@@ -932,9 +933,9 @@ namespace DiscordCoreInternal {
 									return true;
 								}
 								case 10: {
-									if (this->payload ["d"].contains("heartbeat_interval") && !this->payload ["d"]["heartbeat_interval"].is_null()) {
+									if (payloadNew["d"].contains("heartbeat_interval") && !payloadNew["d"]["heartbeat_interval"].is_null()) {
 										this->heartBeatStopWatch =
-											DiscordCoreAPI::StopWatch<std::chrono::milliseconds>{ std::chrono::milliseconds{ this->payload ["d"]["heartbeat_interval"] } };
+											DiscordCoreAPI::StopWatch<std::chrono::milliseconds>{ std::chrono::milliseconds{ payloadNew["d"]["heartbeat_interval"] } };
 										this->areWeHeartBeating = true;
 									}
 									if (this->areWeResuming) {
@@ -1149,8 +1150,7 @@ namespace DiscordCoreInternal {
 					}
 					this->sslShard->processIO();
 					if (this->sslShard->areWeStillConnected()) {
-						this->sslShard->parseConnectionHeaders();
-						this->sslShard->theWebSocketState.store(WebSocketSSLShardState::Collecting_Hello);
+						this->sslShard->parseConnectionHeaders(this->sslShard.get());
 					}
 					if (this->sslShard->areWeStillConnected()) {
 						DiscordCoreAPI::StopWatch<std::chrono::microseconds> theStopWatch{};
