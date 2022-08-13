@@ -22,23 +22,23 @@
 
 namespace DiscordCoreAPI {
 
-	void OpusEncoderWrapper::OpusEncoderDeleter::operator()(OpusEncoder* other) {
+	void OpusEncoderWrapper::OpusEncoderDeleter::operator()(OpusEncoder* other) noexcept {
 		if (other) {
 			opus_encoder_destroy(other);
 			other = nullptr;
 		}
 	}
 
-	OpusEncoderWrapper& OpusEncoderWrapper::operator=(OpusEncoderWrapper&& other) {
+	OpusEncoderWrapper& OpusEncoderWrapper::operator=(OpusEncoderWrapper&& other) noexcept {
 		this->thePtr.reset(other.thePtr.release());
 		return *this;
 	}
 
-	OpusEncoderWrapper::OpusEncoderWrapper(OpusEncoderWrapper&& other) {
+	OpusEncoderWrapper::OpusEncoderWrapper(OpusEncoderWrapper&& other) noexcept {
 		*this = std::move(other);
 	}
 
-	OpusEncoderWrapper::OpusEncoderWrapper() {
+	OpusEncoderWrapper::OpusEncoderWrapper() noexcept {
 		int32_t error{};
 		this->thePtr.reset(opus_encoder_create(48000, 2, OPUS_APPLICATION_AUDIO, &error));
 		if (error != OPUS_OK) {
@@ -46,27 +46,27 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	OpusEncoderWrapper::operator OpusEncoder*() {
+	OpusEncoderWrapper::operator OpusEncoder*() noexcept {
 		return this->thePtr.get();
 	}
 
-	void OpusDecoderWrapper::OpusDecoderDeleter::operator()(OpusDecoder* other) {
+	void OpusDecoderWrapper::OpusDecoderDeleter::operator()(OpusDecoder* other) noexcept {
 		if (other) {
 			opus_decoder_destroy(other);
 			other = nullptr;
 		}
 	}
 
-	OpusDecoderWrapper& OpusDecoderWrapper::operator=(OpusDecoderWrapper&& other) {
+	OpusDecoderWrapper& OpusDecoderWrapper::operator=(OpusDecoderWrapper&& other) noexcept {
 		this->thePtr.reset(other.thePtr.release());
 		return *this;
 	}
 
-	OpusDecoderWrapper::OpusDecoderWrapper(OpusDecoderWrapper&& other) {
+	OpusDecoderWrapper::OpusDecoderWrapper(OpusDecoderWrapper&& other) noexcept {
 		*this = std::move(other);
 	}
 
-	OpusDecoderWrapper::OpusDecoderWrapper() {
+	OpusDecoderWrapper::OpusDecoderWrapper() noexcept {
 		int32_t error{};
 		this->thePtr.reset(opus_decoder_create(48000, 2, &error));
 		if (error != OPUS_OK) {
@@ -74,7 +74,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	OpusDecoderWrapper::operator OpusDecoder*() {
+	OpusDecoderWrapper::operator OpusDecoder*() noexcept {
 		return this->thePtr.get();
 	}
 
@@ -361,7 +361,7 @@ namespace DiscordCoreAPI {
 					this->heartBeatStopWatch.resetTimer();
 				}
 				if (!stopToken.stop_requested() && WebSocketSSLShard::areWeStillConnected()) {
-					WebSocketSSLShard::processIO();
+					static_cast<WebSocketSSLShard*>(static_cast<VoiceConnection*>(this))->processIO();
 				}
 
 				std::this_thread::sleep_for(1ms);
@@ -703,6 +703,7 @@ namespace DiscordCoreAPI {
 		}
 		switch (this->connectionState.load()) {
 			case VoiceConnectionState::Collecting_Init_Data: {
+				std::cout << "WERE CONNECTING CONNECTING 0101" << std::endl;
 				this->baseShard->voiceConnectionDataBufferMap[this->voiceConnectInitData.guildId] = &this->voiceConnectionDataBuffer;
 				this->baseShard->voiceConnectionDataBufferMap[this->voiceConnectInitData.guildId]->clearContents();
 				this->baseShard->getVoiceConnectionData(this->voiceConnectInitData);
@@ -914,7 +915,7 @@ namespace DiscordCoreAPI {
 					packet[5] = static_cast<uint8_t>(this->audioSSRC >> 16);
 					packet[6] = static_cast<uint8_t>(this->audioSSRC >> 8);
 					packet[7] = static_cast<uint8_t>(this->audioSSRC);
-					DatagramSocketClient::getInputBuffer();
+					DatagramSocketClient::getInputBuffer().clear();
 					DatagramSocketClient::writeData(packet);
 					std::string inputString{};
 					StopWatch theStopWatch{ 2500ms };

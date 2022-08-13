@@ -668,7 +668,7 @@ namespace DiscordCoreInternal {
 				return;
 			} else {
 				this->inputBuffer.append(this->rawInputBuffer, readBytes);
-				//std::cout << "THE READ STRING: " << this->inputBuffer << std::endl;
+				std::cout << "THE READ STRING: " << this->inputBuffer << std::endl;
 				this->bytesRead += readBytes;
 			}
 		}

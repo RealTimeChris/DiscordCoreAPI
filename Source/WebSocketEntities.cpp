@@ -97,6 +97,7 @@ namespace DiscordCoreInternal {
 		if (theBuffer.size() < 4) {
 			return true;
 		}
+		std::cout << "PARSING THE MESSAGE: " << std::endl;
 		auto dataOpCode = static_cast<WebSocketOpCode>(theBuffer[0] & ~webSocketFinishBit);
 		switch (dataOpCode) {
 			case WebSocketOpCode::Op_Continuation:
@@ -191,6 +192,7 @@ namespace DiscordCoreInternal {
 		if (this->theWebSocketState.load() == WebSocketSSLShardState::Authenticated) {
 			try {
 				int32_t theCurrentIndex = this->shard[0];
+				std::cout << "WERE CONNECTING 02022" << std::endl;
 				DiscordCoreAPI::UpdateVoiceStateData dataPackage{};
 				dataPackage.channelId = 0;
 				dataPackage.guildId = doWeCollect.guildId;
@@ -204,6 +206,7 @@ namespace DiscordCoreInternal {
 				if (!this->sendMessage(theString, true)) {
 					return;
 				}
+				std::cout << "WERE CONNECTING 030303" << std::endl;
 				if (doWeCollect.channelId == 0) {
 					return;
 				}
@@ -215,6 +218,7 @@ namespace DiscordCoreInternal {
 				if (!this->sendMessage(theString02, true)) {
 					return;
 				}
+				std::cout << "WERE CONNECTING 0404" << std::endl;
 				DiscordCoreAPI::StopWatch<std::chrono::milliseconds> theStopWatch{ 5500ms };
 				while (this->areWeCollectingData) {
 					if (theStopWatch.hasTimePassed()) {
@@ -222,6 +226,7 @@ namespace DiscordCoreInternal {
 					}
 					std::this_thread::sleep_for(1ms);
 				}
+				std::cout << "WERE CONNECTING 0505" << std::endl;
 			} catch (...) {
 				if (this->configManager->doWePrintWebSocketErrorMessages()) {
 					DiscordCoreAPI::reportException("BaseSocketAgent::getVoiceConnectionData()");
@@ -252,7 +257,7 @@ namespace DiscordCoreInternal {
 						this->onClosed();
 						return false;
 					}
-					didWeWrite = this->writeData(dataToSend, true);
+					didWeWrite = this->writeData(dataToSend, priority);
 				} while (didWeWrite != ProcessIOResult::No_Error);
 				if (didWeWrite != ProcessIOResult::No_Error) {
 					if (this->configManager->doWePrintWebSocketErrorMessages()) {
@@ -314,13 +319,14 @@ namespace DiscordCoreInternal {
 	};
 	
 	void WebSocketSSLShard::dispatchBuffer(const std::string& theBuffer) noexcept {
+		//std::cout << "DISPATCHING THE BUFFER!" << std::endl;
 		if (this->theWebSocketState.load() == WebSocketSSLShardState::Upgrading) {
 			this->parseConnectionHeaders(this);
 		}
 		this->parseMessage(this, ( std::string& )theBuffer);
 	}
 
-	bool WebSocketSSLShard::onMessageReceived(const std::string& theString) {
+	bool WebSocketSSLShard::onMessageReceived(const std::string& theString) noexcept {
 		if (this) {
 			if (this->theSSLState.load() == SSLConnectionState::Connected) {
 				try {
