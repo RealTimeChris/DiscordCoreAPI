@@ -224,7 +224,7 @@ namespace DiscordCoreInternal {
 
 		ProcessIOResult writeDataProcess() noexcept;
 
-		virtual void dispatchBuffer(const std::string& theBuffer) noexcept;
+		virtual void dispatchBuffer(const std::string& theBuffer) noexcept = 0;
 
 		ProcessIOResult readDataProcess() noexcept;
 

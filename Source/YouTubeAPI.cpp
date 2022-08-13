@@ -296,8 +296,8 @@ namespace DiscordCoreInternal {
 						if (!stopToken.stop_requested()) {
 							if (streamSocket->areWeStillConnected()) {
 								bytesReadTotal = streamSocket->getBytesRead() - headerSize;
-								std::string newData = streamSocket->getInputBuffer();
-								streamSocket->getInputBuffer().clear();
+								std::string newData = streamSocket->getInputBufferCopy();
+								streamSocket->getInputBufferCopy().clear();
 								headerSize = static_cast<int32_t>(newData.size());
 							}
 						}
@@ -325,8 +325,8 @@ namespace DiscordCoreInternal {
 							this->weFailedToDownloadOrDecode(newSong, stopToken, currentReconnectTries);
 							return;
 						}
-						std::string streamBuffer = streamSocket->getInputBuffer();
-						streamSocket->getInputBuffer().clear();
+						std::string streamBuffer = streamSocket->getInputBufferCopy();
+						streamSocket->getInputBufferCopy().clear();
 						std::cout << "THE VECTOR SIZE: " << streamBuffer.size() << std::endl;
 						if (streamBuffer.size() > 0) {
 							theCurrentString.insert(theCurrentString.end(), streamBuffer.begin(), streamBuffer.end());
@@ -359,8 +359,8 @@ namespace DiscordCoreInternal {
 							this->weFailedToDownloadOrDecode(newSong, stopToken, currentReconnectTries);
 							return;
 						}
-						std::string newVector = streamSocket->getInputBuffer();
-						streamSocket->getInputBuffer().clear();
+						std::string newVector = streamSocket->getInputBufferCopy();
+						streamSocket->getInputBufferCopy().clear();
 						std::cout << "THE VECTOR SIZE: " << newVector.size() << std::endl;
 						if (newVector.size() > 0) {
 							theCurrentString.insert(theCurrentString.end(), newVector.begin(), newVector.end());

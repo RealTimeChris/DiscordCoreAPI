@@ -384,7 +384,10 @@ namespace DiscordCoreInternal {
 	}
 
 	std::string SSLClient::getInputBufferCopy() noexcept {
-		return this->inputBuffer;
+		std::unique_lock theLock{ this->connectionMutex };
+		std::string theString = std::move(this->inputBuffer);
+		this->inputBuffer.clear();
+		return theString;
 	}
 
 	std::string& SSLClient::getInputBuffer() noexcept {
@@ -398,8 +401,6 @@ namespace DiscordCoreInternal {
 			return true;
 		}
 	}
-
-	void SSLClient::dispatchBuffer(const std::string& theBuffer) noexcept {}
 
 	ProcessIOResult SSLClient::writeDataProcess() noexcept {
 		if (this->outputBuffers.size() > 0) {
@@ -452,6 +453,7 @@ namespace DiscordCoreInternal {
 				switch (errorValue) {
 					case SSL_ERROR_NONE: {
 						if (readBytes > 0) {
+							std::unique_lock theLock{ this->connectionMutex };
 							this->inputBuffer.append(this->rawInputBuffer.begin(), this->rawInputBuffer.begin() + readBytes);
 							this->bytesRead += readBytes;
 						}
