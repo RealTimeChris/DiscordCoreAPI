@@ -926,7 +926,7 @@ namespace DiscordCoreAPI {
 
 	void store16Bits(std::string* to, uint16_t num) {
 		const uint8_t byteSize{ 8 };
-		uint16_t newValue = _byteswap_ushort(num);
+		uint16_t newValue = etfReverseByteOrder16(num);
 		for (uint32_t x = 0; x < sizeof(uint16_t); ++x) {
 			to->push_back(static_cast<uint8_t>(newValue >> (byteSize * x)));
 		}
@@ -934,7 +934,7 @@ namespace DiscordCoreAPI {
 
 	void store32Bits(std::string* to, uint32_t num) {
 		const uint8_t byteSize{ 8 };
-		uint32_t newValue = _byteswap_ulong(num);
+		uint32_t newValue = etfReverseByteOrder32(num);
 		for (uint32_t x = 0; x < sizeof(uint32_t); ++x) {
 			to->push_back(static_cast<uint8_t>(newValue >> (byteSize * x)));
 		}
@@ -942,7 +942,7 @@ namespace DiscordCoreAPI {
 
 	void store64Bits(std::string* to, uint64_t num) {
 		const uint8_t byteSize{ 8 };
-		uint64_t newValue = _byteswap_uint64(num);
+		uint64_t newValue = etfReverseByteOrder64(num);
 		for (uint32_t x = 0; x < sizeof(uint64_t); ++x) {
 			to->push_back(static_cast<uint8_t>(newValue >> (byteSize * x)));
 		}
