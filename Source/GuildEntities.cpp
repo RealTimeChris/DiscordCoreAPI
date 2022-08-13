@@ -838,7 +838,7 @@ namespace DiscordCoreAPI {
 		if (guild->id == 0) {
 			return;
 		}
-		//guild->initialize();
+		guild->initialize();
 		if (Guilds::configManager->doWeCacheGuilds()) {
 			Guilds::cache->emplace(std::make_pair(guild->id, std::move(guild)));
 		}
