@@ -81,22 +81,24 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	bool WebSocketMessageHandler::parseConnectionHeaders(WebSocketSSLShard* theShard) noexcept {
-		if (theShard->theSSLState.load() == SSLConnectionState::Connected && theShard->theWebSocketState.load() == WebSocketSSLShardState::Upgrading) {
+	bool WebSocketMessageHandler::parseConnectionHeaders(SSLClient* theShard) noexcept {
+		if (static_cast<WebSocketSSLShard*>(theShard)->theSSLState.load() == SSLConnectionState::Connected &&
+			static_cast<WebSocketSSLShard*>(theShard)->theWebSocketState.load() == WebSocketSSLShardState::Upgrading) {
 			auto theFindValue = theShard->getInputBuffer().find("\r\n\r\n");
 			if (theFindValue != std::string::npos) {
 				theShard->getInputBuffer().erase(0, theFindValue + 4);
-				theShard->theWebSocketState.store(WebSocketSSLShardState::Collecting_Hello);
+				static_cast<WebSocketSSLShard*>(theShard)->theWebSocketState.store(WebSocketSSLShardState::Collecting_Hello);
 				return true;
 			}
 		}
 		return false;
 	}
 
-	bool WebSocketMessageHandler::parseMessage(WebSocketSSLShard* theShard, std::string& theBuffer) noexcept {
+	bool WebSocketMessageHandler::parseMessage(SSLClient* theShard, std::string& theBuffer) noexcept {
 		if (theBuffer.size() < 4) {
 			return true;
 		}
+		std::cout << "PARSING THE MESSAGE: " << std::endl;
 		auto dataOpCode = static_cast<WebSocketOpCode>(theBuffer[0] & ~webSocketFinishBit);
 		switch (dataOpCode) {
 			case WebSocketOpCode::Op_Continuation:
@@ -109,38 +111,38 @@ namespace DiscordCoreInternal {
 				[[fallthrough]];
 			case WebSocketOpCode::Op_Pong: {
 				uint8_t length01 = theBuffer[1];
-				theShard->messageOffset = 2;
+				static_cast<WebSocketSSLShard*>(theShard)->messageOffset = 2;
 				if (length01 & webSocketMaskBit) {
 					return true;
 				}
-				theShard->messageLength = length01;
+				static_cast<WebSocketSSLShard*>(theShard)->messageLength = length01;
 				if (length01 == webSocketPayloadLengthMagicLarge) {
 					if (theBuffer.size() < 8) {
 						return true;
 					}
 					uint8_t length03 = theBuffer[2];
 					uint8_t length04 = theBuffer[3];
-					theShard->messageLength = static_cast<uint64_t>((length03 << 8) | length04);
-					theShard->messageOffset += 2;
+					static_cast<WebSocketSSLShard*>(theShard)->messageLength = static_cast<uint64_t>((length03 << 8) | length04);
+					static_cast<WebSocketSSLShard*>(theShard)->messageOffset += 2;
 				} else if (length01 == webSocketPayloadLengthMagicHuge) {
 					if (theBuffer.size() < 10) {
 						return true;
 					}
-					theShard->messageLength = 0;
+					static_cast<WebSocketSSLShard*>(theShard)->messageLength = 0;
 					for (int64_t x = 2, shift = 56; x < 10; ++x, shift -= 8) {
 						uint8_t lengthNew = static_cast<uint8_t>(theBuffer[x]);
-						theShard->messageLength |= static_cast<uint64_t>((lengthNew & static_cast<uint64_t>(0xff)) << static_cast<uint64_t>(shift));
+						static_cast<WebSocketSSLShard*>(theShard)->messageLength |= static_cast<uint64_t>((lengthNew & static_cast<uint64_t>(0xff)) << static_cast<uint64_t>(shift));
 					}
-					theShard->messageOffset += 8;
+					static_cast<WebSocketSSLShard*>(theShard)->messageOffset += 8;
 				}
-				if (theBuffer.size() < static_cast<uint64_t>(theShard->messageOffset) + static_cast<uint64_t>(theShard->messageLength)) {
+				if (theBuffer.size() < static_cast<uint64_t>(static_cast<WebSocketSSLShard*>(theShard)->messageOffset) + static_cast<uint64_t>(static_cast<WebSocketSSLShard*>(theShard)->messageLength)) {
 					return true;
 				} else {
-					theBuffer.erase(theBuffer.begin(), theBuffer.begin() + theShard->messageOffset);
-					if (!this->onMessageReceived(theBuffer.substr(0, theShard->messageLength))) {
+					theBuffer.erase(theBuffer.begin(), theBuffer.begin() + static_cast<WebSocketSSLShard*>(theShard)->messageOffset);
+					if (!this->onMessageReceived(theBuffer.substr(0, static_cast<WebSocketSSLShard*>(theShard)->messageLength))) {
 						return false;
 					}
-					theBuffer.erase(theBuffer.begin(), theBuffer.begin() + theShard->messageLength);
+					theBuffer.erase(theBuffer.begin(), theBuffer.begin() + static_cast<WebSocketSSLShard*>(theShard)->messageLength);
 					return true;
 				}
 			}
@@ -148,13 +150,13 @@ namespace DiscordCoreInternal {
 				uint16_t close = theBuffer[2] & 0xff;
 				close <<= 8;
 				close |= theBuffer[3] & 0xff;
-				theShard->closeCode = close;
-				if (theShard->closeCode) {
-					theShard->areWeResuming = true;
+				static_cast<WebSocketSSLShard*>(theShard)->closeCode = close;
+				if (static_cast<WebSocketSSLShard*>(theShard)->closeCode) {
+					static_cast<WebSocketSSLShard*>(theShard)->areWeResuming = true;
 				}
 				theBuffer.erase(theBuffer.begin(), theBuffer.begin() + 4);
 				if (this->configManager->doWePrintWebSocketErrorMessages()) {
-					cout << DiscordCoreAPI::shiftToBrightRed() << "WebSocket " + theShard->shard.dump() + " Closed; Code: " << +static_cast<uint16_t>(theShard->closeCode)
+					cout << DiscordCoreAPI::shiftToBrightRed() << "WebSocket " + static_cast<WebSocketSSLShard*>(theShard)->shard.dump() + " Closed; Code: " << +static_cast<uint16_t>(static_cast<WebSocketSSLShard*>(theShard)->closeCode)
 						 << DiscordCoreAPI::reset() << endl
 						 << endl;
 				}
@@ -191,6 +193,7 @@ namespace DiscordCoreInternal {
 		if (this->theWebSocketState.load() == WebSocketSSLShardState::Authenticated) {
 			try {
 				int32_t theCurrentIndex = this->shard[0];
+				std::cout << "WERE CONNECTING 02022" << std::endl;
 				DiscordCoreAPI::UpdateVoiceStateData dataPackage{};
 				dataPackage.channelId = 0;
 				dataPackage.guildId = doWeCollect.guildId;
@@ -204,6 +207,7 @@ namespace DiscordCoreInternal {
 				if (!this->sendMessage(theString, true)) {
 					return;
 				}
+				std::cout << "WERE CONNECTING 030303" << std::endl;
 				if (doWeCollect.channelId == 0) {
 					return;
 				}
@@ -215,6 +219,7 @@ namespace DiscordCoreInternal {
 				if (!this->sendMessage(theString02, true)) {
 					return;
 				}
+				std::cout << "WERE CONNECTING 0404" << std::endl;
 				DiscordCoreAPI::StopWatch<std::chrono::milliseconds> theStopWatch{ 5500ms };
 				while (this->areWeCollectingData) {
 					if (theStopWatch.hasTimePassed()) {
@@ -222,6 +227,7 @@ namespace DiscordCoreInternal {
 					}
 					std::this_thread::sleep_for(1ms);
 				}
+				std::cout << "WERE CONNECTING 0505" << std::endl;
 			} catch (...) {
 				if (this->configManager->doWePrintWebSocketErrorMessages()) {
 					DiscordCoreAPI::reportException("BaseSocketAgent::getVoiceConnectionData()");
@@ -252,9 +258,8 @@ namespace DiscordCoreInternal {
 						this->onClosed();
 						return false;
 					}
-					didWeWrite = this->writeData(dataToSend, true);
+					didWeWrite = this->writeData(dataToSend, priority);
 				} while (didWeWrite != ProcessIOResult::No_Error);
-				std::cout << "THE RESULT: " << ( int )didWeWrite << std::endl;
 				if (didWeWrite != ProcessIOResult::No_Error) {
 					if (this->configManager->doWePrintWebSocketErrorMessages()) {
 						DiscordCoreAPI::reportException("WebSocketSSLShard::sendMessage()");
@@ -315,13 +320,14 @@ namespace DiscordCoreInternal {
 	};
 	
 	void WebSocketSSLShard::dispatchBuffer(const std::string& theBuffer) noexcept {
+		//std::cout << "DISPATCHING THE BUFFER!" << std::endl;
 		if (this->theWebSocketState.load() == WebSocketSSLShardState::Upgrading) {
 			this->parseConnectionHeaders(this);
 		}
-		this->parseMessage(this, ( std::string& )theBuffer);
+		this->parseMessage(this, ( std::string& )this->inputBuffer);
 	}
 
-	bool WebSocketSSLShard::onMessageReceived(const std::string& theString) {
+	bool WebSocketSSLShard::onMessageReceived(const std::string& theString) noexcept {
 		if (this) {
 			if (this->theSSLState.load() == SSLConnectionState::Connected) {
 				try {
@@ -1117,7 +1123,7 @@ namespace DiscordCoreInternal {
 					this->connectVoiceInternal();
 				}
 				if (this->sslShard) {
-					this->sslShard->processIO();
+					this->sslShard->processIO(1000);
 					if (this->sslShard->heartBeatStopWatch.hasTimePassed()) {
 						this->sslShard->heartBeatStopWatch.resetTimer();
 						this->sslShard->checkForAndSendHeartBeat();
@@ -1193,7 +1199,7 @@ namespace DiscordCoreInternal {
 					if (this->sslShard->theWebSocketState.load() == WebSocketSSLShardState::Collecting_Hello) {
 						break;
 					}
-					this->sslShard->processIO();
+					this->sslShard->processIO(1000);
 					if (this->sslShard->areWeStillConnected()) {
 						DiscordCoreAPI::StopWatch<std::chrono::microseconds> theStopWatch{};
 					}

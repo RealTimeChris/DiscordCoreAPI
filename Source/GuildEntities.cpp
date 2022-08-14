@@ -157,7 +157,7 @@ namespace DiscordCoreAPI {
 			updateVoiceData.selfMute = false;
 			updateVoiceData.guildId = this->id;
 			this->discordCoreClient->getBotUser().updateVoiceStatus(updateVoiceData);
-			getVoiceConnectionMap()[this->id]->disconnect();
+			getVoiceConnectionMap()[this->id]->disconnect(false);
 			StopWatch theStopWatch{ 10000ms };
 			while (getVoiceConnectionMap()[this->id]->areWeConnectedBool.load()) {
 				std::this_thread::sleep_for(1ms);

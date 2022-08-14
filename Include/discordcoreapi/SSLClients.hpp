@@ -216,8 +216,6 @@ namespace DiscordCoreInternal {
 	  public:
 		SSLClient(bool areWeAStreamSocket, int32_t maxBufferSize) noexcept;
 
-		static void processIO(std::vector<SSLClient*>& theVector) noexcept;
-
 		ProcessIOResult writeData(const std::string& dataToWrite, bool priority) noexcept;
 
 		const bool connect(const std::string& baseUrl, const std::string& portNew) noexcept;
@@ -228,11 +226,13 @@ namespace DiscordCoreInternal {
 
 		ProcessIOResult readDataProcess() noexcept;
 
+		virtual void disconnect(bool doWeReconnect) noexcept = 0;
+
 		std::string getInputBufferCopy() noexcept;
 
 		std::string& getInputBuffer() noexcept;
 
-		ProcessIOResult processIO() noexcept;
+		ProcessIOResult processIO(int64_t microsecondsToWait) noexcept;
 
 		const bool areWeStillConnected() noexcept;
 

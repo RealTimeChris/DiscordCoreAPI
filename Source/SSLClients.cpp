@@ -170,49 +170,6 @@ namespace DiscordCoreInternal {
 		this->maxBufferSize = maxBufferSizeNew;
 	}
 
-	void SSLClient::processIO(std::vector<SSLClient*>& theVector) noexcept {
-		int32_t writeNfds{ 0 }, readNfds{ 0 };
-		fd_set writeSet{}, readSet{};
-		FD_ZERO(&writeSet);
-		FD_ZERO(&readSet);
-		bool didWeSetASocket{ false };
-		for (auto& value: theVector) {
-			if (value) {
-				if (value->theSocket != SOCKET_ERROR) {
-					if ((value->outputBuffers.size() > 0 || value->wantWrite) && !value->wantRead) {
-						FD_SET(value->theSocket, &writeSet);
-						writeNfds = value->theSocket > writeNfds ? value->theSocket : writeNfds;
-					} else {
-						FD_SET(value->theSocket, &readSet);
-						readNfds = value->theSocket > readNfds ? value->theSocket : readNfds;
-						didWeSetASocket = true;
-					}
-				}
-			}
-		}
-
-		if (!didWeSetASocket) {
-			return;
-		}
-
-		timeval checkTime{ .tv_sec = 1, .tv_usec = 0 };
-		if (auto returnValue = select(FD_SETSIZE, &readSet, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
-			for (auto& value: theVector) {
-				value->disconnect(true);
-			}
-			return;
-		}
-
-		for (auto& value: theVector) {
-			if (FD_ISSET(value->theSocket, &readSet)) {
-				value->readDataProcess();
-			}
-			if (FD_ISSET(value->theSocket, &writeSet)) {
-				value->writeDataProcess();
-			}
-		}
-	}
-
 	ProcessIOResult SSLClient::writeData(const std::string& dataToWrite, bool priority) noexcept {
 		if (this->theSocket == SOCKET_ERROR) {
 			return ProcessIOResult::Disconnected;
@@ -346,7 +303,7 @@ namespace DiscordCoreInternal {
 		return true;
 	}
 
-	ProcessIOResult SSLClient::processIO() noexcept {
+	ProcessIOResult SSLClient::processIO(int64_t microsecondsToWait) noexcept {
 		if (static_cast<const SOCKET>(this->theSocket) == SOCKET_ERROR) {
 			this->disconnect(true);
 			return ProcessIOResult::Disconnected;
@@ -360,7 +317,7 @@ namespace DiscordCoreInternal {
 		}
 		FD_SET(static_cast<const SOCKET>(this->theSocket), &readSet);
 
-		timeval checkTime{ .tv_sec = 0, .tv_usec = 1000 };
+		timeval checkTime{ .tv_sec = 0, .tv_usec = static_cast<long>(microsecondsToWait) };
 		if (auto returnValue = select(FD_SETSIZE, &readSet, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
 			this->disconnect(true);
 			return ProcessIOResult::Select_Failure;
@@ -668,7 +625,7 @@ namespace DiscordCoreInternal {
 				return;
 			} else {
 				this->inputBuffer.append(this->rawInputBuffer, readBytes);
-				//std::cout << "THE READ STRING: " << this->inputBuffer << std::endl;
+				std::cout << "THE READ STRING: " << this->inputBuffer << std::endl;
 				this->bytesRead += readBytes;
 			}
 		}

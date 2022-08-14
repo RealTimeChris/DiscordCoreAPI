@@ -29,16 +29,16 @@ namespace DiscordCoreAPI {
 
 	struct OpusEncoderWrapper {
 		struct OpusEncoderDeleter {
-			void operator()(OpusEncoder*);
+			void operator()(OpusEncoder*) noexcept;
 		};
 
-		OpusEncoderWrapper& operator=(OpusEncoderWrapper&&);
+		OpusEncoderWrapper& operator=(OpusEncoderWrapper&&) noexcept;
 
-		OpusEncoderWrapper(OpusEncoderWrapper&&);
+		OpusEncoderWrapper(OpusEncoderWrapper&&) noexcept;
 
-		OpusEncoderWrapper();
+		OpusEncoderWrapper() noexcept;
 
-		operator OpusEncoder*();
+		operator OpusEncoder*() noexcept;
 
 	  protected:
 		std::unique_ptr<OpusEncoder, OpusEncoderDeleter> thePtr{ nullptr, OpusEncoderDeleter{} };
@@ -46,16 +46,16 @@ namespace DiscordCoreAPI {
 
 	struct OpusDecoderWrapper {
 		struct OpusDecoderDeleter {
-			void operator()(OpusDecoder*);
+			void operator()(OpusDecoder*) noexcept;
 		};
 
-		OpusDecoderWrapper& operator=(OpusDecoderWrapper&&);
+		OpusDecoderWrapper& operator=(OpusDecoderWrapper&&) noexcept;
 
-		OpusDecoderWrapper(OpusDecoderWrapper&&);
+		OpusDecoderWrapper(OpusDecoderWrapper&&) noexcept;
 
-		OpusDecoderWrapper();
+		OpusDecoderWrapper() noexcept;
 
-		operator OpusDecoder*();
+		operator OpusDecoder*() noexcept;
 
 	  protected:
 		std::unique_ptr<OpusDecoder, OpusDecoderDeleter> thePtr{ nullptr, OpusDecoderDeleter{} };
@@ -121,7 +121,9 @@ namespace DiscordCoreAPI {
 	 * @{
 	 */
 	/// VoiceConnection class - represents the connection to a given voice Channel. \brief VoiceConnection class - represents the connection to a given voice Channel.
-	class DiscordCoreAPI_Dll VoiceConnection : public DiscordCoreInternal::WebSocketSSLShard, public DiscordCoreInternal::DatagramSocketClient {
+	class DiscordCoreAPI_Dll VoiceConnection : public DiscordCoreInternal::SSLClient,
+											   public DiscordCoreInternal::WebSocketMessageHandler,
+											   public DiscordCoreInternal::DatagramSocketClient {
 	  public:
 		friend class DiscordCoreInternal::BaseSocketAgent;
 		friend class DiscordCoreInternal::SoundCloudAPI;
@@ -140,8 +142,10 @@ namespace DiscordCoreAPI {
 		~VoiceConnection() noexcept;
 
 	  protected:
+		std::atomic<DiscordCoreInternal::WebSocketSSLShardState> theWebSocketState{ DiscordCoreInternal::WebSocketSSLShardState::Connecting };
 		std::atomic<VoiceConnectionState> connectionState{ VoiceConnectionState::Collecting_Init_Data };
 		UnboundedMessageBlock<DiscordCoreInternal::VoiceConnectionData> voiceConnectionDataBuffer{};
+		DiscordCoreAPI::StopWatch<std::chrono::milliseconds> heartBeatStopWatch{ 0ms };
 		std::atomic<VoiceActiveState> lastActiveState{ VoiceActiveState::Connecting };
 		std::unique_ptr<DiscordCoreInternal::DatagramSocketClient> streamSocket{};
 		std::atomic<VoiceActiveState> activeState{ VoiceActiveState::Connecting };
@@ -154,14 +158,19 @@ namespace DiscordCoreAPI {
 		std::unique_ptr<std::jthread> taskThread02{ nullptr };
 		std::unique_ptr<std::jthread> taskThread03{ nullptr };
 		std::unordered_map<uint32_t, VoiceUser> voiceUsers{};
+		DiscordCoreInternal::WebSocketClose closeCode{ 0 };
+		DiscordCoreInternal::WebSocketOpCode dataOpCode{};
 		std::atomic_bool areWeConnectedBool{ false };
 		std::queue<ConnectionPackage> connections{};
 		std::deque<VoicePayload> theFrameQueue{};
+		bool haveWeReceivedHeartbeatAck{ true };
 		std::atomic_bool areWePlaying{ false };
+		std::atomic_bool* doWeQuit{ nullptr };
 		const int64_t maxReconnectTries{ 10 };
 		int64_t currentReconnectTries{ 0 };
 		std::string audioEncryptionMode{};
 		Snowflake currentGuildMemberId{};
+		bool areWeHeartBeating{ false };
 		OpusEncoderWrapper theEncoder{};
 		int64_t heartbeatInterval{ 0 };
 		std::mutex voiceUserMutex{};
@@ -181,9 +190,9 @@ namespace DiscordCoreAPI {
 
 		bool collectAndProcessAMessage(VoiceConnectionState stateToWaitFor) noexcept;
 
-		virtual bool onMessageReceived(const std::string& theString) noexcept;
-
 		void sendSingleAudioFrame(std::string& audioDataPacketNew) noexcept;
+
+		bool sendMessage(std::string& dataToSend, bool priority) noexcept;
 
 		UnboundedMessageBlock<AudioFrameData>& getAudioBuffer() noexcept;
 
@@ -191,9 +200,15 @@ namespace DiscordCoreAPI {
 
 		void sendSingleFrame(const AudioFrameData& frameData) noexcept;
 
+		bool onMessageReceived(const std::string& theString) noexcept;
+
 		void sendVoiceData(const std::string& responseData) noexcept;
 
+		void dispatchBuffer(const std::string& theBuffer) noexcept;
+
 		void sendSpeakingMessage(const bool isSpeaking) noexcept;
+
+		void disconnect(bool doWeReconnect) noexcept;
 
 		void runWebSocket(std::stop_token) noexcept;
 
@@ -224,8 +239,6 @@ namespace DiscordCoreAPI {
 		void sendSilence() noexcept;
 
 		void pauseToggle() noexcept;
-
-		void disconnect() noexcept;
 
 		void reconnect() noexcept;
 

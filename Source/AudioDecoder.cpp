@@ -193,26 +193,30 @@ namespace DiscordCoreInternal {
 	}
 
 	void AudioDecoder::startMe() {
-		this->taskThread = std::make_unique<std::jthread>([=, this](std::stop_token stopToken) {
-			this->run(stopToken);
-		});
+		if (!this->taskThread.get()) {
+			std::cout << "WERE STARTING STARTING" << std::endl;
+			this->taskThread = std::make_unique<std::jthread>([=, this](std::stop_token stopToken) {
+				this->run(stopToken);
+			});
+		}
 	};
 
 	int32_t AudioDecoder::FileStreamRead(void* opaque, uint8_t* buf, int32_t) {
 		AudioDecoder* stream = static_cast<AudioDecoder*>(opaque);
 		stream->bytesRead = 0;
-		stream->currentBuffer = std::string{};
 		DiscordCoreAPI::RawFrameData frameData{};
 		if (stream->areWeQuitting.load()) {
 			frameData.sampleCount = -5;
 			stream->outDataBuffer.send(frameData);
 			stream->areWeQuitting.store(true);
+			stream->currentBuffer.clear();
 			return AVERROR_EOF;
 		}
 		if (DiscordCoreAPI::waitForTimeToPass(stream->inputDataBuffer, stream->currentBuffer, stream->refreshTimeForBuffer.load())) {
 			frameData.sampleCount = -5;
 			stream->outDataBuffer.send(frameData);
 			stream->areWeQuitting.store(true);
+			stream->currentBuffer.clear();
 			return AVERROR_EOF;
 		}
 		std::cout << "OUR SIZE: " << stream->currentBuffer.size() << std::endl;
@@ -222,6 +226,7 @@ namespace DiscordCoreInternal {
 			frameData.sampleCount = -5;
 			stream->outDataBuffer.send(frameData);
 			stream->areWeQuitting.store(true);
+			stream->currentBuffer.clear();
 			return AVERROR_EOF;
 		}
 		for (int32_t x = 0; x < stream->bytesRead; ++x) {
@@ -231,8 +236,10 @@ namespace DiscordCoreInternal {
 			frameData.sampleCount = -5;
 			stream->outDataBuffer.send(frameData);
 			stream->areWeQuitting.store(true);
+			stream->currentBuffer.clear();
 			return stream->bytesRead;
 		}
+		stream->currentBuffer.clear();
 		return stream->bytesRead;
 	}
 
@@ -247,7 +254,7 @@ namespace DiscordCoreInternal {
 				return;
 			}
 
-			this->ioContext = avio_alloc_context(theBuffer, static_cast<int32_t>(this->bufferMaxSize - 1), 0, this, &AudioDecoder::FileStreamRead, 0, 0);
+			this->ioContext = avio_alloc_context(theBuffer, static_cast<int32_t>(this->bufferMaxSize), 0, this, &AudioDecoder::FileStreamRead, 0, 0);
 
 			if (this->ioContext == nullptr) {
 				this->haveWeFailedBool.store(true);
