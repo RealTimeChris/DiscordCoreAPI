@@ -252,13 +252,13 @@ namespace DiscordCoreInternal {
 		return newValue;
 	}
 
-	void ErlPacker::readString(uint32_t length, std::string& theString) {
+	const char* ErlPacker::readString(uint32_t length) {
 		if (this->offSet + static_cast<uint64_t>(length) > this->buffer.size()) {
 			throw ErlPackError{ "ErlPacker::readString() Error: readString() past end of buffer.\n\n" };
 		}
 		const char* theStringNew = this->buffer.data() + this->offSet;
 		this->offSet += length;
-		theString = theStringNew;
+		return theStringNew;
 	}
 
 	nlohmann::json ErlPacker::singleValueETFToJson() {
@@ -367,15 +367,14 @@ namespace DiscordCoreInternal {
 
 	nlohmann::json ErlPacker::parseFloatExt() {
 		uint32_t floatLength = 31;
-		std::string floatStr{};
 		nlohmann::json jsonData{};
-		ErlPacker::readString(floatLength, floatStr);
-		if (floatStr.size() == 0) {
+		auto theStringNew = ErlPacker::readString(floatLength);
+		if (theStringNew == nullptr) {
 			return jsonData;
 		}
 		double number{};
 		std::vector<char> nullTerminated{};
-		nullTerminated.insert(nullTerminated.begin(), floatStr.begin(), floatStr.begin() + floatLength);
+		nullTerminated.insert(nullTerminated.begin(), theStringNew, theStringNew + floatLength);
 		auto count = sscanf(nullTerminated.data(), "%lf", &number);
 		if (!count) {
 			return jsonData;
@@ -384,25 +383,25 @@ namespace DiscordCoreInternal {
 		return jsonData;
 	}
 
-	nlohmann::json ErlPacker::processAtom(const std::string& atom, uint32_t length) {
+	nlohmann::json ErlPacker::processAtom(const char* atom, uint32_t length) {
 		nlohmann::json jsonData{};
-		if (atom.size() == 0) {
+		if (atom == nullptr) {
 			return jsonData;
 		}
 		if (length >= 3 && length <= 5) {
-			if (length == 3 && strncmp(atom.data(), "nil", 3) == 0) {
+			if (length == 3 && strncmp(atom, "nil", 3) == 0) {
 				return jsonData;
-			} else if (length == 4 && strncmp(atom.data(), "null", 4) == 0) {
+			} else if (length == 4 && strncmp(atom, "null", 4) == 0) {
 				return jsonData;
-			} else if (length == 4 && strncmp(atom.data(), "true", 4) == 0) {
+			} else if (length == 4 && strncmp(atom, "true", 4) == 0) {
 				jsonData = true;
 				return jsonData;
-			} else if (length == 5 && strncmp(atom.data(), "false", 5) == 0) {
+			} else if (length == 5 && strncmp(atom, "false", 5) == 0) {
 				jsonData = false;
 				return jsonData;
 			}
 		}
-		jsonData = std::string(atom.data(), length);
+		jsonData = std::string(atom, length);
 		return jsonData;
 	}
 
@@ -450,13 +449,12 @@ namespace DiscordCoreInternal {
 
 	nlohmann::json ErlPacker::parseBinaryExt() {
 		uint32_t length = ErlPacker::read32Bits();
-		std::string stringNew{};
-		ErlPacker::readString(length, stringNew);
-		if (stringNew.size() == 0) {
+		auto stringNew = ErlPacker::readString(length);
+		if (stringNew == nullptr) {
 			nlohmann::json jsonData{};
 			return jsonData;
 		}
-		nlohmann::json jsonData = std::string(stringNew.data(), length);
+		nlohmann::json jsonData = std::string(stringNew, length);
 		return jsonData;
 	}
 
@@ -483,9 +481,8 @@ namespace DiscordCoreInternal {
 		uint32_t length = ErlPacker::read32Bits();
 		std::unordered_map<nlohmann::json, nlohmann::json> theMap{};
 		for (uint32_t x = 0; x < length; ++x) {
-			const nlohmann::json key = ErlPacker::singleValueETFToJson();
-			const nlohmann::json value = ErlPacker::singleValueETFToJson();
-			theMap[key] = value;
+			nlohmann::json key = ErlPacker::singleValueETFToJson();
+			theMap[key] = ErlPacker::singleValueETFToJson();
 		}
 		return theMap;
 	}
@@ -493,16 +490,14 @@ namespace DiscordCoreInternal {
 	nlohmann::json ErlPacker::parseAtomUtf8Ext() {
 		uint16_t length = ErlPacker::read16Bits();
 		uint32_t lengthNew = length;
-		std::string atom{};
-		ErlPacker::readString(lengthNew, atom);
+		auto atom = ErlPacker::readString(lengthNew);
 		return ErlPacker::processAtom(atom, lengthNew);
 	}
 
 	nlohmann::json ErlPacker::parseSmallAtomUtf8Ext() {
 		uint8_t length = ErlPacker::read8Bits();
 		uint32_t lengthNew = length;
-		std::string atom{};
-		ErlPacker::readString(lengthNew, atom);
+		auto atom = ErlPacker::readString(lengthNew);
 		return ErlPacker::processAtom(atom, lengthNew);
 	}
 
