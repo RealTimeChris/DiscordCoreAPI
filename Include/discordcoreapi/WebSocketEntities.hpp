@@ -41,9 +41,9 @@ namespace DiscordCoreInternal {
 
 		bool parseConnectionHeaders(DiscordCoreInternal::WebSocketSSLShard* theShard) noexcept;
 
-		bool parseMessage(DiscordCoreInternal::WebSocketSSLShard* theShard) noexcept;
-
 		virtual bool onMessageReceived(const std::string& theString) noexcept = 0;
+
+		bool parseMessage(DiscordCoreInternal::SSLClient* theShard) noexcept;
 
 		virtual ~WebSocketMessageHandler() = default;
 

@@ -1655,6 +1655,36 @@ namespace DiscordCoreAPI {
 		return this->interactionData->message;
 	}
 
+	RawFrameData& RawFrameData::operator=(RawFrameData&& other) {
+		this->sampleCount = other.sampleCount;
+		this->data = std::move(other.data);
+		return *this;
+	}
+
+	RawFrameData::RawFrameData(RawFrameData&&other) {
+		*this = std::move(other);
+	}
+
+	RawFrameData& RawFrameData::operator=(const RawFrameData& other) {
+		this->sampleCount = other.sampleCount;
+		this->data = other.data;
+		return *this;
+	}
+
+	RawFrameData::RawFrameData(const RawFrameData& other) {
+		*this = other;
+	}
+
+	RawFrameData& RawFrameData::operator=(RawFrameData& other) {
+		this->sampleCount = other.sampleCount;
+		this->data = other.data;
+		return *this;
+	}
+
+	RawFrameData::RawFrameData(RawFrameData& other) {
+		*this = other;
+	}
+
 	RespondToInputEventData& RespondToInputEventData::operator=(InteractionData& dataPackage) {
 		this->applicationId = dataPackage.applicationId;
 		this->interactionToken = dataPackage.token;

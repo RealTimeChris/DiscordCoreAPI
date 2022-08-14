@@ -306,7 +306,7 @@ namespace DiscordCoreInternal {
 			frameData.type = DiscordCoreAPI::AudioFrameType::Skip;
 			frameData.rawFrameData.sampleCount = 0;
 			frameData.encodedFrameData.sampleCount = 0;
-			DiscordCoreAPI::getVoiceConnectionMap()[this->guildId]->audioDataBuffer.send(frameData);
+			DiscordCoreAPI::getVoiceConnectionMap()[this->guildId]->audioDataBuffer.send(std::move(frameData));
 		} catch (...) {
 			if (this->configManager->doWePrintHttpsErrorMessages()) {
 				DiscordCoreAPI::reportException("SoundCloudAPI::downloadAndStreamAudio()");

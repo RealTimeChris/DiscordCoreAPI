@@ -248,7 +248,7 @@ namespace DiscordCoreInternal {
 					frameData.type = DiscordCoreAPI::AudioFrameType::Skip;
 					frameData.rawFrameData.sampleCount = 0;
 					frameData.encodedFrameData.sampleCount = 0;
-					DiscordCoreAPI::getVoiceConnectionMap()[this->guildId]->audioDataBuffer.send(frameData);
+					DiscordCoreAPI::getVoiceConnectionMap()[this->guildId]->audioDataBuffer.send(std::move(frameData));
 					audioDecoder.reset(nullptr);
 					streamSocket->disconnect(false);
 					return;
@@ -344,8 +344,8 @@ namespace DiscordCoreInternal {
 						std::string newVector = streamSocket->getInputBufferCopy();
 						if (newVector.size() > 0) {
 							theCurrentString.insert(theCurrentString.end(), newVector.begin(), newVector.end());
-							std::string submissionString{};
 							while (theCurrentString.size() > 0) {
+								std::string submissionString{};
 								if (theCurrentString.size() >= this->maxBufferSize) {
 									submissionString.insert(submissionString.begin(), theCurrentString.begin(), theCurrentString.begin() + this->maxBufferSize);
 									theCurrentString.erase(theCurrentString.begin(), theCurrentString.begin() + this->maxBufferSize);
@@ -404,7 +404,7 @@ namespace DiscordCoreInternal {
 			frameData.type = DiscordCoreAPI::AudioFrameType::Skip;
 			frameData.rawFrameData.sampleCount = 0;
 			frameData.encodedFrameData.sampleCount = 0;
-			DiscordCoreAPI::getVoiceConnectionMap()[this->guildId]->audioDataBuffer.send(frameData);
+			DiscordCoreAPI::getVoiceConnectionMap()[this->guildId]->audioDataBuffer.send(std::move(frameData));
 		} catch (...) {
 			if (this->configManager->doWePrintWebSocketErrorMessages()) {
 				DiscordCoreAPI::reportException("YouTubeAPI::downloadAndStreamAudio()");
