@@ -527,7 +527,7 @@ namespace DiscordCoreInternal {
 												.get());
 										dataPackage->guildMemberNew = std::make_unique<DiscordCoreAPI::GuildMemberData>(*dataPackage->guildMemberOld);
 									}
-									dataPackage->guildMemberNew = payload["d"];
+									*dataPackage->guildMemberNew = payload["d"];
 									this->discordCoreClient->eventManager.onGuildMemberUpdateEvent(*dataPackage);
 								} else if (payload["t"] == "GUILD_MEMBERS_CHUNK") {
 									std::unique_ptr<DiscordCoreAPI::OnGuildMembersChunkData> dataPackage{ std::make_unique<DiscordCoreAPI::OnGuildMembersChunkData>() };
