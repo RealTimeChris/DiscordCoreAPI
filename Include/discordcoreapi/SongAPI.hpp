@@ -41,7 +41,7 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::EventDelegateToken eventToken{};
 		Playlist playlist{};
 
-		SongAPI(const Snowflake& guildId);
+		SongAPI(const uint64_t& guildId);
 
 		/// For setting up behavior in response to a completed song. \brief For setting up behavior in response to a completed song
 		/// \param handler A delegate taking a SongCompletionEventData structure as an argument.

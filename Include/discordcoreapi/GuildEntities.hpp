@@ -373,7 +373,6 @@ namespace DiscordCoreAPI {
 	/// An interface class for the Guild related Discord endpoints. \brief An interface class for the Guild related Discord endpoints.
 	class DiscordCoreAPI_Dll Guilds {
 	  public:
-		friend class DiscordCoreInternal::WebSocketSSLShard;
 		friend class DiscordCoreInternal::BaseSocketAgent;
 		friend class DiscordCoreClient;
 		friend class EventHandler;
@@ -560,7 +559,7 @@ namespace DiscordCoreAPI {
 		static CoRoutine<void> leaveGuildAsync(LeaveGuildData dataPackage);
 
 	  protected:
-		static std::unordered_map<Snowflake, std::unique_ptr<GuildData>> cache;
+		static std::unique_ptr<std::unordered_map<Snowflake, std::unique_ptr<GuildData>>> cache;
 		static DiscordCoreInternal::HttpsClient* httpsClient;
 		static DiscordCoreClient* discordCoreClient;
 		static ConfigManager* configManager;

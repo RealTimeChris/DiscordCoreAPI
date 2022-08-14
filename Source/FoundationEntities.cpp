@@ -61,7 +61,7 @@ namespace DiscordCoreInternal {
 		nlohmann::json data{};
 		data["d"]["properties"]["browser"] = "DiscordCoreAPI";
 		data["d"]["properties"]["device"] = "DiscordCoreAPI";
-		data["d"]["shard"] = { int32_t{ this->currentShard }, int32_t{ this->numberOfShards } };
+		data["d"]["shard"] = { this->currentShard, this->numberOfShards };
 		data["d"]["large_threshold"] = 250;
 		data["d"]["intents"] = this->intents;
 		data["d"]["compress"] = false;
@@ -924,15 +924,6 @@ namespace DiscordCoreAPI {
 		*this = jsonObjectData;
 	}
 
-	GuildData& GuildData::operator=(nlohmann::json& jsonObjectData) {
-		this->parseObject(jsonObjectData);
-		return *this;
-	}
-
-	GuildData::GuildData(nlohmann::json& jsonObjectData) {
-		*this = jsonObjectData;
-	}
-
 	GuildDataVector::operator std::vector<GuildData>() {
 		return this->theGuildDatas;
 	}
@@ -1124,7 +1115,7 @@ namespace DiscordCoreAPI {
 		newOption["options"] = nlohmann::json{};
 		newOption["choices"] = nlohmann::json{};
 		if (this->choices.size() > 0) {
-			for (int32_t x = 0; x < this->choices.size(); ++x) {
+			for (int32_t x = 0; x < this->choices.size(); x++) {
 				nlohmann::json jsonValue{};
 				jsonValue["name_localizations"] = this->choices[x].nameLocalizations;
 				jsonValue["value"] = this->choices[x].value;
@@ -2014,8 +2005,7 @@ namespace DiscordCoreAPI {
 			this->optionsArgs.push_back(std::to_string(inputEventData.interactionData->data.userInteractionData.targetId));
 		}
 		this->eventData = inputEventData;
-		auto theRawData = inputEventData.getInteractionData().rawData;
-		this->parseObject(theRawData);
+		this->parseObject(inputEventData.getInteractionData().rawData);
 	}
 
 	BaseFunctionArguments::BaseFunctionArguments(CommandData commandDataNew, DiscordCoreClient* discordCoreClientNew) : CommandData(commandDataNew) {

@@ -157,7 +157,7 @@ namespace DiscordCoreAPI {
 			updateVoiceData.selfMute = false;
 			updateVoiceData.guildId = this->id;
 			this->discordCoreClient->getBotUser().updateVoiceStatus(updateVoiceData);
-			getVoiceConnectionMap()[this->id]->disconnect(false);
+			getVoiceConnectionMap()[this->id]->disconnect();
 			StopWatch theStopWatch{ 10000ms };
 			while (getVoiceConnectionMap()[this->id]->areWeConnectedBool.load()) {
 				std::this_thread::sleep_for(1ms);
@@ -384,7 +384,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<std::vector<GuildData>>();
 		std::shared_lock theLock{ Guilds::theMutex };
 		GuildDataVector guildVector{};
-		for (auto& [key, value]: Guilds::cache) {
+		for (auto& [key, value]: *Guilds::cache) {
 			value->discordCoreClient = Guilds::discordCoreClient;
 			guildVector.theGuildDatas.push_back(*value);
 		}
@@ -406,13 +406,13 @@ namespace DiscordCoreAPI {
 	CoRoutine<GuildData> Guilds::getCachedGuildAsync(GetGuildData dataPackage) {
 		co_await NewThreadAwaitable<GuildData>();
 		std::shared_lock theLock{ Guilds::theMutex };
-		if (!Guilds::cache.contains(dataPackage.guildId)) {
+		if (!Guilds::cache->contains(dataPackage.guildId)) {
 			theLock.unlock();
 			auto guildNew = Guilds::getGuildAsync({ .guildId = dataPackage.guildId }).get();
 			Guilds::insertGuild(std::make_unique<GuildData>(guildNew));
 			co_return guildNew;
 		} else {
-			co_return *Guilds::cache[dataPackage.guildId];
+			co_return *(*Guilds::cache)[dataPackage.guildId];
 		}
 	}
 
@@ -519,7 +519,7 @@ namespace DiscordCoreAPI {
 			workload.relativePath += "?days=" + std::to_string(dataPackage.days);
 			if (dataPackage.includeRoles.size() > 0) {
 				workload.relativePath += "&include_roles=";
-				for (int32_t x = 0; x < dataPackage.includeRoles.size(); ++x) {
+				for (int32_t x = 0; x < dataPackage.includeRoles.size(); x++) {
 					workload.relativePath += std::to_string(dataPackage.includeRoles[x]);
 					if (x < dataPackage.includeRoles.size() - 1) {
 						workload.relativePath += ",";
@@ -528,7 +528,7 @@ namespace DiscordCoreAPI {
 			}
 		} else if (dataPackage.includeRoles.size() > 0) {
 			workload.relativePath += "?include_roles=";
-			for (int32_t x = 0; x < dataPackage.includeRoles.size(); ++x) {
+			for (int32_t x = 0; x < dataPackage.includeRoles.size(); x++) {
 				workload.relativePath += std::to_string(dataPackage.includeRoles[x]);
 				if (x < dataPackage.includeRoles.size() - 1) {
 					workload.relativePath += ",";
@@ -831,8 +831,6 @@ namespace DiscordCoreAPI {
 		co_return Guilds::httpsClient->submitWorkloadAndGetResult<void>(workload);
 	}
 
-	StopWatch theStopWatch{ 1s };
-
 	void Guilds::insertGuild(std::unique_ptr<GuildData> guild) {
 		std::unique_lock theLock{ Guilds::theMutex };
 		if (guild->id == 0) {
@@ -840,18 +838,17 @@ namespace DiscordCoreAPI {
 		}
 		guild->initialize();
 		if (Guilds::configManager->doWeCacheGuilds()) {
-			Guilds::cache.emplace(std::make_pair(guild->id, std::move(guild)));
+			(*Guilds::cache)[guild->id] = std::move(guild);
 		}
-		std::cout << "THE TIME PASSED: " << theStopWatch.totalTimePassed() << std::endl;
-		std::cout << "GUILD COUNT: " << Guilds::cache.size() << std::endl;
+		std::cout << "GUILD COUNT: " << Guilds::cache->size() << std::endl;
 	}
 
 	void Guilds::removeGuild(const Snowflake& guildId) {
 		std::unique_lock theLock{ Guilds::theMutex };
-		Guilds::cache.erase(guildId);
+		Guilds::cache->erase(guildId);
 	};
 
-	std::unordered_map<Snowflake, std::unique_ptr<GuildData>> Guilds::cache{};
+	std::unique_ptr<std::unordered_map<Snowflake, std::unique_ptr<GuildData>>> Guilds::cache{ std::make_unique<std::unordered_map<Snowflake, std::unique_ptr<GuildData>>>() };
 	DiscordCoreInternal::HttpsClient* Guilds::httpsClient{ nullptr };
 	DiscordCoreClient* Guilds::discordCoreClient{ nullptr };
 	ConfigManager* Guilds::configManager{ nullptr };

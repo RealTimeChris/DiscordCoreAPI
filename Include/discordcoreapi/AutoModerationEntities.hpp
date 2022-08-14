@@ -31,7 +31,7 @@ namespace DiscordCoreAPI {
 	 */
 
 	/// Represents an auto-moderation-rule. \brief Represents an auto-moderation-rule.
-	class DiscordCoreAPI_Dll AutoModerationRule	 : public AutoModerationRuleData {
+	class DiscordCoreAPI_Dll AutoModerationRule : public AutoModerationRuleData {
 	  public:
 		AutoModerationRule() = default;
 

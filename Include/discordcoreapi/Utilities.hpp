@@ -126,12 +126,6 @@ namespace DiscordCoreInternal {
 	class HttpsClient;
 	class YouTubeAPI;
 
-	uint64_t ntohostlong(uint64_t const net);
-
-	uint32_t ntohostint(uint32_t const net);
-
-	uint16_t ntohostshort(uint16_t const net);
-	
 	template<typename T> inline auto utCast(T x) -> std::enable_if_t<std::is_enum_v<T>, std::underlying_type_t<T>> {
 		return static_cast<std::underlying_type_t<T>>(x);
 	}
@@ -420,8 +414,6 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll StringWrapper {
 	  public:
-		 std::unique_ptr<char[]> thePtr{};
-
 		StringWrapper() = default;
 
 		StringWrapper& operator=(StringWrapper&& other) noexcept;
@@ -436,10 +428,6 @@ namespace DiscordCoreAPI {
 
 		StringWrapper(StringWrapper& other) noexcept;
 
-		StringWrapper& operator=(const std::string&& theString);
-
-		explicit StringWrapper(const std::string&& theString);
-
 		StringWrapper& operator=(const std::string& theString);
 
 		explicit StringWrapper(const std::string& theString);
@@ -447,10 +435,6 @@ namespace DiscordCoreAPI {
 		StringWrapper& operator=(std::string& theString);
 
 		explicit StringWrapper(std::string& theString);
-
-		StringWrapper& operator=(std::string&& theString);
-
-		explicit StringWrapper(std::string&& theString);
 
 		StringWrapper& operator=(const char* theString);
 
@@ -462,11 +446,12 @@ namespace DiscordCoreAPI {
 
 		void push_back(char theChar);
 
-		void resize(int64_t newSize);
-
 		size_t size();
 
 		const char* data();
+
+	  protected:
+		std::unique_ptr<char[]> thePtr{};
 	};
 
 	inline std::basic_ostream<char>& operator<<(std::basic_ostream<char, std::char_traits<char>>& lhs, const StringWrapper& rhs) {
@@ -548,7 +533,7 @@ namespace DiscordCoreAPI {
 
 		void convertTimeStampToTimeUnits(DiscordCoreAPI::TimeFormat theFormatNew) {
 			try {
-				if (this->originalTimeStamp != "" && this->originalTimeStamp.size() >= 18 && this->originalTimeStamp != "0") {
+				if (this->originalTimeStamp != "") {
 					TimeStamp<TimeType> timeValue = TimeStamp{ stoi(this->originalTimeStamp.substr(0, 4)), stoi(this->originalTimeStamp.substr(5, 6)),
 						stoi(this->originalTimeStamp.substr(8, 9)), stoi(this->originalTimeStamp.substr(11, 12)), stoi(this->originalTimeStamp.substr(14, 15)),
 						stoi(this->originalTimeStamp.substr(17, 18)), theFormatNew };
@@ -817,7 +802,7 @@ namespace DiscordCoreAPI {
 
 		void getTimeSinceEpoch() {
 			TimeType theValue{};
-			for (int32_t x = 1970; x < this->year; ++x) {
+			for (int32_t x = 1970; x < this->year; x++) {
 				theValue += TimeType{ this->secondsInJan };
 				theValue += TimeType{ this->secondsInFeb };
 				theValue += TimeType{ this->secondsInMar };
@@ -1048,14 +1033,23 @@ namespace DiscordCoreAPI {
 	template<typename StoredAsType, typename FlagType> bool getBool(StoredAsType inputFlag, FlagType theFlag) {
 		return static_cast<StoredAsType>(inputFlag) & static_cast<StoredAsType>(theFlag);
 	}
-	
-	void store8Bits(std::string* to, uint8_t num);
-	
-	void store16Bits(std::string* to, uint16_t num);
-	
-	void store32Bits(std::string* to, uint32_t num);
-	
-	void store64Bits(std::string* to, uint64_t num);
+
+	template<typename ReturnType> ReturnType reverseByteOrder(ReturnType x) {
+		const uint8_t byteSize{ 8 };
+		ReturnType returnValue{};
+		for (uint32_t y = 0; y < sizeof(ReturnType); y++) {
+			returnValue |= static_cast<ReturnType>(static_cast<uint8_t>(x >> (byteSize * y))) << byteSize * (sizeof(ReturnType) - y - 1);
+		}
+		return returnValue;
+	}
+
+	template<typename ReturnType> void storeBits(std::string& to, ReturnType num) {
+		const uint8_t byteSize{ 8 };
+		ReturnType newValue = reverseByteOrder(num);
+		for (uint32_t x = 0; x < sizeof(ReturnType); x++) {
+			to.push_back(static_cast<uint8_t>(newValue >> (byteSize * x)));
+		}
+	}
 
 	template<typename ObjectType>
 	concept Copyable = std::copyable<ObjectType>;

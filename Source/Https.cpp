@@ -62,58 +62,32 @@ namespace DiscordCoreInternal {
 				workload.baseUrl.find(".org") + std::string(".org").size() - std::string("https://").size());
 		}
 		std::string theReturnString{};
-		switch (workload.workloadClass) {
-			case HttpsWorkloadClass::Get: {
+		if (workload.workloadClass == HttpsWorkloadClass::Get || workload.workloadClass == HttpsWorkloadClass::Delete) {
+			if (workload.workloadClass == HttpsWorkloadClass::Get) {
 				theReturnString += "GET " + workload.baseUrl + workload.relativePath + " HTTP/1.1\r\n";
-				for (auto& [key, value]: workload.headersToInsert) {
-					theReturnString += key + ": " + value + "\r\n";
-				}
-				theReturnString += "Connection: Keep-Alive\r\n";
-				theReturnString += "Host: " + baseUrlNew + "\r\n\r\n";
-				break;
-			}
-			case HttpsWorkloadClass::Delete: {
+			} else if (workload.workloadClass == HttpsWorkloadClass::Delete) {
 				theReturnString += "DELETE " + workload.baseUrl + workload.relativePath + " HTTP/1.1\r\n";
-				for (auto& [key, value]: workload.headersToInsert) {
-					theReturnString += key + ": " + value + "\r\n";
-				}
-				theReturnString += "Connection: Keep-Alive\r\n";
-				theReturnString += "Host: " + baseUrlNew + "\r\n\r\n";
-				break;
 			}
-			case HttpsWorkloadClass::Put: {
-				theReturnString = "PUT " + workload.baseUrl + workload.relativePath + " HTTP/1.1\r\n";
-				for (auto& [key, value]: workload.headersToInsert) {
-					theReturnString += key + ": " + value + "\r\n";
-				}
-				theReturnString += "Connection: Keep-Alive\r\n";
-				theReturnString += "Host: " + baseUrlNew + "\r\n";
-				theReturnString += "Content-Length: " + std::to_string(workload.content.size()) + "\r\n\r\n";
-				theReturnString += workload.content;
-				break;
+			for (auto& [key, value]: workload.headersToInsert) {
+				theReturnString += key + ": " + value + "\r\n";
 			}
-			case HttpsWorkloadClass::Post: {
-				theReturnString += "POST " + workload.baseUrl + workload.relativePath + " HTTP/1.1\r\n";
-				for (auto& [key, value]: workload.headersToInsert) {
-					theReturnString += key + ": " + value + "\r\n";
-				}
-				theReturnString += "Connection: Keep-Alive\r\n";
-				theReturnString += "Host: " + baseUrlNew + "\r\n";
-				theReturnString += "Content-Length: " + std::to_string(workload.content.size()) + "\r\n\r\n";
-				theReturnString += workload.content;
-				break;
-			}
-			case HttpsWorkloadClass::Patch: {
+			theReturnString += "Connection: Keep-Alive\r\n";
+			theReturnString += "Host: " + baseUrlNew + "\r\n\r\n";
+		} else {
+			if (workload.workloadClass == HttpsWorkloadClass::Patch) {
 				theReturnString += "PATCH " + workload.baseUrl + workload.relativePath + " HTTP/1.1\r\n";
-				for (auto& [key, value]: workload.headersToInsert) {
-					theReturnString += key + ": " + value + "\r\n";
-				}
-				theReturnString += "Connection: Keep-Alive\r\n";
-				theReturnString += "Host: " + baseUrlNew + "\r\n";
-				theReturnString += "Content-Length: " + std::to_string(workload.content.size()) + "\r\n\r\n";
-				theReturnString += workload.content;
-				break;
+			} else if (workload.workloadClass == HttpsWorkloadClass::Post) {
+				theReturnString += "POST " + workload.baseUrl + workload.relativePath + " HTTP/1.1\r\n";
+			} else if (workload.workloadClass == HttpsWorkloadClass::Put) {
+				theReturnString = "PUT " + workload.baseUrl + workload.relativePath + " HTTP/1.1\r\n";
 			}
+			for (auto& [key, value]: workload.headersToInsert) {
+				theReturnString += key + ": " + value + "\r\n";
+			}
+			theReturnString += "Connection: Keep-Alive\r\n";
+			theReturnString += "Host: " + baseUrlNew + "\r\n";
+			theReturnString += "Content-Length: " + std::to_string(workload.content.size()) + "\r\n\r\n";
+			theReturnString += workload.content;
 		}
 		return theReturnString;
 	}
@@ -201,7 +175,7 @@ namespace DiscordCoreInternal {
 			std::string theValueString{};
 			uint64_t hexIndex{ 0 };
 			bool isThereHexValues{ false };
-			for (uint64_t x = 0; x < other.size(); ++x) {
+			for (uint64_t x = 0; x < other.size(); x++) {
 				if (isxdigit(other[x]) != 0 && static_cast<int32_t>(other[x]) != EOF) {
 					isThereHexValues = true;
 					theValueString.push_back(other[x]);
@@ -229,7 +203,7 @@ namespace DiscordCoreInternal {
 			uint64_t firstNumberIndex{ 0 };
 			uint64_t lastNumberIndex{ 0 };
 			bool haveWeStarted{ false };
-			for (size_t x = other.find("HTTP/1.") + std::string("HTTP/1.").size() + 1; x < other.size(); ++x) {
+			for (size_t x = other.find("HTTP/1.") + std::string("HTTP/1.").size() + 1; x < other.size(); x++) {
 				if (!haveWeStarted && (isalnum(static_cast<uint8_t>(other[x])) != 0)) {
 					firstNumberIndex = x;
 					haveWeStarted = true;
@@ -249,7 +223,7 @@ namespace DiscordCoreInternal {
 
 	void HttpsRnRBuilder::clearCRLF(std::string& other) {
 		uint64_t theCount{ 0 };
-		for (uint64_t x = 0; x < other.size(); ++x) {
+		for (uint64_t x = 0; x < other.size(); x++) {
 			if (isspace(static_cast<uint8_t>(other[x])) != 0) {
 				theCount++;
 			} else {
@@ -259,13 +233,9 @@ namespace DiscordCoreInternal {
 		other.erase(other.begin(), other.begin() + theCount);
 	}
 
-	HttpsConnection::HttpsConnection() : SSLClient(false, (1024 * 16) - 1){};
-
-	void HttpsConnection::dispatchBuffer(const std::string&) noexcept {};
-
 	void HttpsConnection::disconnect(bool) noexcept {
 		if (this->theSSLState.load() == SSLConnectionState::Connected) {
-			std::unique_lock theLock{ this->accessMutex };
+			std::unique_lock theLock{ this->connectionMutex };
 			this->theSSLState.store(SSLConnectionState::Disconnected);
 			this->theSocket = SOCKET_ERROR;
 		}
@@ -504,14 +474,13 @@ namespace DiscordCoreInternal {
 
 	HttpsResponseData HttpsClient::getResponse(HttpsConnection& theConnection, RateLimitData& rateLimitData) {
 		HttpsResponseData theData{};
-		std::lock_guard theLock{ theConnection.accessMutex };
 		try {
 			DiscordCoreAPI::StopWatch stopWatch{ 4500ms };
 			theConnection.getInputBuffer().clear();
 			theConnection.resetValues();
 			bool doWeReturn{ false };
 			while (true) {
-				auto theResult = theConnection.processIO(10000);
+				auto theResult = theConnection.processIO();
 				if (theResult == ProcessIOResult::SSL_Zero_Return) {
 					doWeReturn = true;
 				} else if (theResult != ProcessIOResult::No_Error && theResult != ProcessIOResult::Select_No_Return) {

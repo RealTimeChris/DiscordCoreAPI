@@ -288,13 +288,13 @@ namespace DiscordCoreAPI {
 	CoRoutine<RoleData> Roles::getCachedRoleAsync(GetRoleData dataPackage) {
 		co_await NewThreadAwaitable<RoleData>();
 		std::shared_lock theLock{ Roles::theMutex };
-		if (!Roles::cache.contains(dataPackage.roleId)) {
+		if (!Roles::cache->contains(dataPackage.roleId)) {
 			theLock.unlock();
 			auto theRole = Roles::getRoleAsync(dataPackage).get();
 			Roles::insertRole(std::make_unique<Role>(theRole));
 			co_return theRole;
 		} else {
-			co_return *Roles::cache[dataPackage.roleId];
+			co_return *(*Roles::cache)[dataPackage.roleId];
 		}
 	}
 
@@ -304,16 +304,16 @@ namespace DiscordCoreAPI {
 			return;
 		}
 		if (Roles::configManager->doWeCacheRoles()) {
-			Roles::cache.emplace(std::make_pair(role->id, std::move(role)));
+			(*Roles::cache)[role->id] = std::move(role);
 		}
 	}
 
 	void Roles::removeRole(const Snowflake& roleId) {
 		std::unique_lock theLock{ Roles::theMutex };
-		Roles::cache.erase(roleId);
+		Roles::cache->erase(roleId);
 	};
 
-	std::unordered_map<Snowflake, std::unique_ptr<RoleData>> Roles::cache{};
+	std::unique_ptr<std::unordered_map<Snowflake, std::unique_ptr<RoleData>>> Roles::cache{ std::make_unique<std::unordered_map<Snowflake, std::unique_ptr<RoleData>>>() };
 	DiscordCoreInternal::HttpsClient* Roles::httpsClient{ nullptr };
 	ConfigManager* Roles::configManager{ nullptr };
 	std::shared_mutex Roles::theMutex{};

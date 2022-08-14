@@ -102,10 +102,6 @@ namespace DiscordCoreInternal {
 		std::string currentBaseUrl{};
 		bool doWeConnect{ true };
 
-		HttpsConnection();
-
-		void dispatchBuffer(const std::string&) noexcept;
-
 		void disconnect(bool) noexcept;
 
 		void resetValues();

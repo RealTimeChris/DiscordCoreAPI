@@ -48,97 +48,102 @@ namespace DiscordCoreInternal {
 		Small_Atom_Utf8_Ext = 119
 	};
 
+	struct DiscordCoreAPI_Dll ErlPackBuffer {
+	  public:
+		std::string& buffer;
+
+		mutable uint64_t offSet{};
+
+		ErlPackBuffer() = default;
+
+		ErlPackBuffer& operator=(std::string&);
+
+		ErlPackBuffer(std::string&);
+
+		ErlPackBuffer& operator=(const ErlPackBuffer&) = delete;
+
+		ErlPackBuffer(const ErlPackBuffer&) = delete;
+
+		ErlPackBuffer& operator=(ErlPackBuffer&) = delete;
+
+		ErlPackBuffer(ErlPackBuffer&) = delete;
+	};
+
 	class DiscordCoreAPI_Dll ErlPacker {
 	  public:
-		ErlPacker() = default;
-
-		DiscordCoreAPI::StopWatch<std::chrono::microseconds> theStopWatch{};
-
 		std::string parseJsonToEtf(const nlohmann::json&);
 
-		nlohmann::json parseEtfToJson(std::string& dataToParse);
+		nlohmann::json parseEtfToJson(std::string&);
 
 	  protected:
-		std::string bufferOut{};
-		uint8_t* buffer{ nullptr };
-		mutable uint64_t offSet{};
-		int64_t theLength{ 0 };
-		int64_t theIncrement{ 0 };
+		void singleValueJsonToETF(ErlPackBuffer&, const nlohmann::json&);
 
-		void singleValueJsonToETF(const nlohmann::json&);
+		void writeToBuffer(ErlPackBuffer&, const std::string&);
 
-		void writeToBuffer(const std::string&);
+		void appendVersion(ErlPackBuffer&);
 
-		void appendVersion();
+		void appendSmallIntegerExt(ErlPackBuffer&, uint8_t&);
 
-		void appendSmallIntegerExt(uint8_t);
+		void appendIntegerExt(ErlPackBuffer&, uint32_t&);
 
-		void appendIntegerExt(uint32_t);
+		void appendFloatExt(ErlPackBuffer&, double&);
 
-		void appendFloatExt(double);
+		void appendNilExt(ErlPackBuffer&);
 
-		void appendNilExt();
+		void appendNil(ErlPackBuffer&);
 
-		void appendNil();
+		void appendFalse(ErlPackBuffer&);
 
-		void appendFalse();
+		void appendTrue(ErlPackBuffer&);
 
-		void appendTrue();
+		void appendUnsignedLongLong(ErlPackBuffer&, uint64_t&);
 
-		void appendUnsignedLongLong(uint64_t);
+		void appendBinaryExt(ErlPackBuffer&, const std::string&, uint32_t&);
 
-		void appendBinaryExt(const std::string&, uint32_t);
+		void appendListHeader(ErlPackBuffer&, uint32_t&);
 
-		void appendListHeader(uint32_t);
+		void appendMapHeader(ErlPackBuffer&, uint32_t&);
 
-		void appendMapHeader(uint32_t);
+		template<typename ReturnType> void readBits(const ErlPackBuffer&, ReturnType&);
 
-		uint8_t read8Bits();
+		void readString(const ErlPackBuffer&, uint32_t&, std::string&);
 
-		uint16_t read16Bits();
+		nlohmann::json singleValueETFToJson(const ErlPackBuffer&);
 
-		uint32_t read32Bits();
+		nlohmann::json parseSmallIntegerExt(const ErlPackBuffer&);
 
-		uint64_t read64Bits();
+		nlohmann::json parseBigint(const ErlPackBuffer&, uint32_t&);
 
-		const char* readString(uint32_t length);
+		nlohmann::json parseIntegerExt(const ErlPackBuffer&);
 
-		nlohmann::json singleValueETFToJson();
+		nlohmann::json parseFloatExt(const ErlPackBuffer&);
 
-		nlohmann::json parseSmallIntegerExt();
+		nlohmann::json processAtom(const std::string&, uint32_t&);
 
-		nlohmann::json parseBigint(const uint32_t);
+		nlohmann::json parseTuple(const ErlPackBuffer&, uint32_t&);
 
-		nlohmann::json parseIntegerExt();
+		nlohmann::json parseSmallTupleExt(const ErlPackBuffer&);
 
-		nlohmann::json parseFloatExt();
-
-		nlohmann::json processAtom(const char* atom, uint32_t length);
-
-		nlohmann::json parseTuple(const uint32_t);
-
-		nlohmann::json parseSmallTupleExt();
-
-		nlohmann::json parseLargeTupleExt();
+		nlohmann::json parseLargeTupleExt(const ErlPackBuffer&);
 
 		nlohmann::json parseNilExt();
 
-		nlohmann::json parseStringAsList();
+		nlohmann::json parseStringAsList(const ErlPackBuffer&);
 
-		nlohmann::json parseListExt();
+		nlohmann::json parseListExt(const ErlPackBuffer&);
 
-		nlohmann::json parseBinaryExt();
+		nlohmann::json parseBinaryExt(const ErlPackBuffer&);
 
-		nlohmann::json parseSmallBigExt();
+		nlohmann::json parseSmallBigExt(const ErlPackBuffer&);
 
-		nlohmann::json parseLargeBigExt();
+		nlohmann::json parseLargeBigExt(const ErlPackBuffer&);
 
-		nlohmann::json parseArray(const uint32_t);
+		nlohmann::json parseArray(const ErlPackBuffer&, uint32_t&);
 
-		nlohmann::json parseMapExt();
+		nlohmann::json parseMapExt(const ErlPackBuffer&);
 
-		nlohmann::json parseAtomUtf8Ext();
+		nlohmann::json parseAtomUtf8Ext(const ErlPackBuffer&);
 
-		nlohmann::json parseSmallAtomUtf8Ext();
+		nlohmann::json parseSmallAtomUtf8Ext(const ErlPackBuffer&);
 	};
 }// namespace DiscordCoreInternal

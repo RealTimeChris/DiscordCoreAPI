@@ -193,57 +193,49 @@ namespace DiscordCoreInternal {
 	}
 
 	void AudioDecoder::startMe() {
-		if (!this->taskThread.get()) {
-			std::cout << "WERE STARTING STARTING" << std::endl;
-			this->taskThread = std::make_unique<std::jthread>([=, this](std::stop_token stopToken) {
-				this->run(stopToken);
-			});
-		}
+		this->taskThread = std::make_unique<std::jthread>([=, this](std::stop_token stopToken) {
+			this->run(stopToken);
+		});
 	};
 
 	int32_t AudioDecoder::FileStreamRead(void* opaque, uint8_t* buf, int32_t) {
 		AudioDecoder* stream = static_cast<AudioDecoder*>(opaque);
 		stream->bytesRead = 0;
+		stream->currentBuffer = std::string();
 		DiscordCoreAPI::RawFrameData frameData{};
 		if (stream->areWeQuitting.load()) {
 			frameData.sampleCount = -5;
 			stream->outDataBuffer.send(frameData);
 			stream->areWeQuitting.store(true);
-			stream->currentBuffer.clear();
 			return AVERROR_EOF;
 		}
 		if (DiscordCoreAPI::waitForTimeToPass(stream->inputDataBuffer, stream->currentBuffer, stream->refreshTimeForBuffer.load())) {
 			frameData.sampleCount = -5;
 			stream->outDataBuffer.send(frameData);
 			stream->areWeQuitting.store(true);
-			stream->currentBuffer.clear();
 			return AVERROR_EOF;
 		}
-		std::cout << "OUR SIZE: " << stream->currentBuffer.size() << std::endl;
 		if (stream->currentBuffer.size() > 0) {
 			stream->bytesRead = stream->currentBuffer.size();
 		} else {
 			frameData.sampleCount = -5;
 			stream->outDataBuffer.send(frameData);
 			stream->areWeQuitting.store(true);
-			stream->currentBuffer.clear();
 			return AVERROR_EOF;
 		}
-		for (int32_t x = 0; x < stream->bytesRead; ++x) {
+		for (int32_t x = 0; x < stream->bytesRead; x++) {
 			buf[x] = stream->currentBuffer[x];
 		}
 		if (stream->ioContext->buf_ptr - stream->ioContext->buffer >= stream->totalFileSize) {
 			frameData.sampleCount = -5;
 			stream->outDataBuffer.send(frameData);
 			stream->areWeQuitting.store(true);
-			stream->currentBuffer.clear();
-			return stream->bytesRead;
+			return static_cast<int32_t>(stream->bytesRead);
 		}
-		stream->currentBuffer.clear();
-		return stream->bytesRead;
+		return static_cast<int32_t>(stream->bytesRead);
 	}
 
-	void AudioDecoder::run(std::stop_token stopToken) {
+	void AudioDecoder::run(std::stop_token& stopToken) {
 		if (!this->haveWeBooted) {
 			auto theBuffer = static_cast<uint8_t*>(av_malloc(this->bufferMaxSize));
 			if (theBuffer == nullptr) {
@@ -254,7 +246,7 @@ namespace DiscordCoreInternal {
 				return;
 			}
 
-			this->ioContext = avio_alloc_context(theBuffer, static_cast<int32_t>(this->bufferMaxSize), 0, this, &AudioDecoder::FileStreamRead, 0, 0);
+			this->ioContext = avio_alloc_context(theBuffer, static_cast<int32_t>(this->bufferMaxSize - 1), 0, this, &AudioDecoder::FileStreamRead, 0, 0);
 
 			if (this->ioContext == nullptr) {
 				this->haveWeFailedBool.store(true);
@@ -398,7 +390,7 @@ namespace DiscordCoreInternal {
 				}
 				return;
 			}
-			std::cout << "THE FRAME SIZE: " << std::endl;
+
 			while (!stopToken.stop_requested() && !this->areWeQuitting.load() && av_read_frame(this->formatContext, this->packet) == 0) {
 				if (this->packet->stream_index == this->audioStreamIndex) {
 					int32_t returnValue = avcodec_send_packet(this->audioDecodeContext, this->packet);
@@ -435,11 +427,10 @@ namespace DiscordCoreInternal {
 						int32_t unpadded_linesize = this->newFrame->nb_samples * av_get_bytes_per_sample(static_cast<AVSampleFormat>(this->newFrame->format)) * 2;
 						DiscordCoreAPI::RawFrameData rawFrame{};
 						rawFrame.data.resize(unpadded_linesize);
-						for (int32_t x = 0; x < unpadded_linesize; ++x) {
+						for (int32_t x = 0; x < unpadded_linesize; x++) {
 							rawFrame.data[x] = this->newFrame->extended_data[0][x];
 						}
 						rawFrame.sampleCount = newFrame->nb_samples;
-						std::cout << "THE FRAME SIZE: " << rawFrame.data.size() << std::endl;
 						this->outDataBuffer.send(rawFrame);
 						int64_t sampleCount = swr_get_delay(this->swrContext, this->newFrame->sample_rate);
 						if (sampleCount > 0) {
@@ -449,7 +440,7 @@ namespace DiscordCoreInternal {
 							swr_convert_frame(this->swrContext, this->newFrame, nullptr);
 							DiscordCoreAPI::RawFrameData rawFrame02{};
 							rawFrame02.data.resize(*this->newFrame->linesize);
-							for (int32_t x = 0; x < *this->newFrame->linesize; ++x) {
+							for (int32_t x = 0; x < *this->newFrame->linesize; x++) {
 								rawFrame02.data[x] = this->newFrame->extended_data[0][x];
 							}
 							rawFrame02.sampleCount = newFrame->nb_samples;
@@ -492,10 +483,6 @@ namespace DiscordCoreInternal {
 		this->inputDataBuffer.send(std::string());
 		this->inputDataBuffer.send(std::string());
 		this->areWeQuitting.store(true);
-		this->taskThread->request_stop();
-		if (this->taskThread->joinable()) {
-			this->taskThread->join();
-		}
 	}
 
 	AudioDecoder::~AudioDecoder() {

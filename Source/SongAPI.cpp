@@ -39,7 +39,7 @@ namespace DiscordCoreAPI {
 		if (this->playlist.isLoopSongEnabled) {
 			if (this->playlist.songQueue.size() > 1 && this->playlist.currentSong.songId == "") {
 				this->playlist.currentSong = this->playlist.songQueue[0];
-				for (int32_t x = 0; x < this->playlist.songQueue.size(); ++x) {
+				for (int32_t x = 0; x < this->playlist.songQueue.size(); x++) {
 					if (x == this->playlist.songQueue.size() - 1) {
 						break;
 					}
@@ -63,7 +63,7 @@ namespace DiscordCoreAPI {
 		} else if (this->playlist.isLoopAllEnabled) {
 			if (this->playlist.songQueue.size() > 1 && this->playlist.currentSong.songId == "") {
 				this->playlist.currentSong = this->playlist.songQueue[0];
-				for (int32_t x = 0; x < this->playlist.songQueue.size(); ++x) {
+				for (int32_t x = 0; x < this->playlist.songQueue.size(); x++) {
 					if (x == this->playlist.songQueue.size() - 1) {
 						break;
 					}
@@ -74,7 +74,7 @@ namespace DiscordCoreAPI {
 			} else if (this->playlist.songQueue.size() > 0 && this->playlist.currentSong.songId != "") {
 				Song tempSong02 = this->playlist.currentSong;
 				this->playlist.currentSong = this->playlist.songQueue[0];
-				for (int32_t x = 0; x < this->playlist.songQueue.size(); ++x) {
+				for (int32_t x = 0; x < this->playlist.songQueue.size(); x++) {
 					if (x == this->playlist.songQueue.size() - 1) {
 						break;
 					}
@@ -94,7 +94,7 @@ namespace DiscordCoreAPI {
 		} else {
 			if (this->playlist.songQueue.size() > 0 && (this->playlist.currentSong.songId != "" || this->playlist.currentSong.songId == "")) {
 				this->playlist.currentSong = this->playlist.songQueue[0];
-				for (int32_t x = 0; x < this->playlist.songQueue.size() - 1; ++x) {
+				for (int32_t x = 0; x < this->playlist.songQueue.size() - 1; x++) {
 					this->playlist.songQueue[x] = this->playlist.songQueue[static_cast<int64_t>(x + static_cast<int64_t>(1))];
 				}
 				this->playlist.songQueue.erase(this->playlist.songQueue.end() - 1, this->playlist.songQueue.end());
@@ -160,7 +160,7 @@ namespace DiscordCoreAPI {
 		std::vector<Song> newVector{};
 		int32_t vector01Used{ 0 };
 		int32_t vector02Used{ 0 };
-		for (int32_t x = 0; x < totalLength; ++x) {
+		for (int32_t x = 0; x < totalLength; x++) {
 			if ((vector01Used < vector01.size() - 1) && (x % 2 == 0) && vector01.size() > 0) {
 				vector01[vector01Used].type = SongType::SoundCloud;
 				newVector.push_back(vector01[vector01Used]);

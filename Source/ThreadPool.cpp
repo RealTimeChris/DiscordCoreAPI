@@ -84,11 +84,11 @@ namespace DiscordCoreInternal {
 	}
 
 	CoRoutineThreadPool::CoRoutineThreadPool() {
-		this->threadCount.store(std::thread::hardware_concurrency() / 2);
+		this->threadCount.store(std::thread::hardware_concurrency());
 		if (this->threadCount.load() < 1) {
 			this->threadCount.store(1);
 		}
-		for (uint32_t x = 0; x < this->threadCount.load(); ++x) {
+		for (uint32_t x = 0; x < this->threadCount.load(); x++) {
 			WorkerThread workerThread{};
 			this->currentIndex.store(this->currentIndex.load() + 1);
 			this->currentCount.store(this->currentCount.load() + 1);
@@ -119,11 +119,11 @@ namespace DiscordCoreInternal {
 			});
 			this->workerThreads[this->currentIndex.load()] = std::move(workerThread);
 		}
-		this->theCoroutineHandles.emplace_back(coro);
+		this->theCoroutineHandles.push(coro);
 		this->coroHandleCount.store(this->coroHandleCount.load() + 1);
 	}
 
-	void CoRoutineThreadPool::threadFunction(std::stop_token stopToken, int64_t theIndex) {
+	void CoRoutineThreadPool::threadFunction(std::stop_token& stopToken, int64_t theIndex) {
 		while (!stopToken.stop_requested()) {
 			if (this->coroHandleCount.load() > 0) {
 				std::unique_lock theLock01{ this->theMutex, std::defer_lock_t{} };
@@ -131,12 +131,10 @@ namespace DiscordCoreInternal {
 					if (this->theCoroutineHandles.size() > 0) {
 						std::coroutine_handle<> coroHandle = this->theCoroutineHandles.front();
 						this->coroHandleCount.store(this->coroHandleCount.load() - 1);
-						this->theCoroutineHandles.pop_front();
+						this->theCoroutineHandles.pop();
 						theLock01.unlock();
 						this->workerThreads[theIndex].areWeCurrentlyWorking.store(true);
-						if (!stopToken.stop_requested()) {
-							coroHandle();
-						}
+						coroHandle();
 						this->workerThreads[theIndex].areWeCurrentlyWorking.store(false);
 					}
 				}

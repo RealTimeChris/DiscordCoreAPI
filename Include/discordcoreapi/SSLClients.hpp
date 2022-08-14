@@ -164,21 +164,20 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll SSLConnectionInterface {
 	  public:
-		std::recursive_mutex accessMutex{};
-
 		SSLConnectionInterface() noexcept = default;
 
-		virtual const bool connect(const std::string& baseUrl, const std::string& portNew) = 0;
+		virtual bool connect(const std::string& baseUrl, const std::string& portNew) = 0;
 
 		virtual void disconnect(bool doWeReconnect) noexcept = 0;
 
-		virtual const bool areWeStillConnected() noexcept = 0;
+		virtual bool areWeStillConnected() noexcept = 0;
 
 		virtual ~SSLConnectionInterface() noexcept;
 
 	  protected:
 		std::atomic<SSLConnectionState> theSSLState{ SSLConnectionState::Disconnected };
 		std::queue<DiscordCoreAPI::ConnectionPackage>* connections{ nullptr };
+		std::recursive_mutex connectionMutex{};
 		SOCKETWrapper theSocket{};
 		SSL_CTXWrapper context{};
 		SSLWrapper ssl{};
@@ -190,7 +189,7 @@ namespace DiscordCoreInternal {
 	  public:
 		friend class HttpsClient;
 
-		SSLDataInterface(int32_t maxBufferSize) noexcept;
+		SSLDataInterface() noexcept = default;
 
 		virtual ProcessIOResult writeData(const std::string& data, bool priority = false) noexcept = 0;
 
@@ -214,34 +213,29 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll SSLClient : public SSLDataInterface, public SSLConnectionInterface {
 	  public:
-		SSLClient(bool areWeAStreamSocket, int32_t maxBufferSize) noexcept;
+		SSLClient() noexcept = default;
+
+		static void processIO(std::vector<SSLClient*>& theVector, int32_t waitTimeInms) noexcept;
 
 		ProcessIOResult writeData(const std::string& dataToWrite, bool priority) noexcept;
 
-		const bool connect(const std::string& baseUrl, const std::string& portNew) noexcept;
+		bool connect(const std::string& baseUrl, const std::string& portNew) noexcept;
 
 		ProcessIOResult writeDataProcess() noexcept;
 
-		virtual void dispatchBuffer(const std::string& theBuffer) noexcept = 0;
-
 		ProcessIOResult readDataProcess() noexcept;
-
-		virtual void disconnect(bool doWeReconnect) noexcept = 0;
 
 		std::string getInputBufferCopy() noexcept;
 
 		std::string& getInputBuffer() noexcept;
 
-		ProcessIOResult processIO(int64_t microsecondsToWait) noexcept;
+		ProcessIOResult processIO() noexcept;
 
-		const bool areWeStillConnected() noexcept;
+		bool areWeStillConnected() noexcept;
 
 		int64_t getBytesRead() noexcept;
 
 		virtual ~SSLClient() noexcept = default;
-
-	  protected:
-		bool areWeAStreamSocket{ false };
 	};
 
 	enum class ProcessIOType { Both = 0, Read_Only = 1, Write_Only = 2 };

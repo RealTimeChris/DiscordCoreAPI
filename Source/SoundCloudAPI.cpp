@@ -184,7 +184,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void SoundCloudAPI::weFailedToDownloadOrDecode(const DiscordCoreAPI::Song& newSong, std::stop_token stopToken, int32_t currentReconnectTries) {
+	void SoundCloudAPI::weFailedToDownloadOrDecode(const DiscordCoreAPI::Song& newSong, std::stop_token& stopToken, int32_t currentReconnectTries) {
 		currentReconnectTries++;
 		DiscordCoreAPI::GuildMember guildMember =
 			DiscordCoreAPI::GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = newSong.addedByUserId, .guildId = this->guildId }).get();
@@ -208,11 +208,11 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void SoundCloudAPI::downloadAndStreamAudio(const DiscordCoreAPI::Song& newSong, std::stop_token stopToken, int32_t currentReconnectTries) {
+	void SoundCloudAPI::downloadAndStreamAudio(const DiscordCoreAPI::Song& newSong, std::stop_token& stopToken, int32_t currentReconnectTries) {
 		try {
 			int32_t counter{ 0 };
 			BuildAudioDecoderData dataPackage{};
-			HttpsConnection theConnection{ };
+			HttpsConnection theConnection{};
 			dataPackage.totalFileSize = static_cast<uint64_t>(newSong.contentLength);
 			dataPackage.bufferMaxSize = this->maxBufferSize;
 			dataPackage.configManager = this->configManager;
@@ -257,14 +257,14 @@ namespace DiscordCoreInternal {
 					std::this_thread::sleep_for(1ms);
 					std::string newerVector{};
 					if (amountToSubmitRemaining >= this->maxBufferSize) {
-						for (int64_t x = 0; x < this->maxBufferSize; ++x) {
+						for (int64_t x = 0; x < this->maxBufferSize; x++) {
 							newerVector.push_back(result.responseMessage[amountSubmitted]);
 							amountSubmitted++;
 							amountToSubmitRemaining--;
 						}
 					} else {
 						amountToSubmitRemainingFinal = amountToSubmitRemaining;
-						for (int64_t x = 0; x < amountToSubmitRemainingFinal; ++x) {
+						for (int64_t x = 0; x < amountToSubmitRemainingFinal; x++) {
 							newerVector.push_back(result.responseMessage[amountSubmitted]);
 							amountSubmitted++;
 							amountToSubmitRemaining--;
