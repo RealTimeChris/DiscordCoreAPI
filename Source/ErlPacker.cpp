@@ -256,10 +256,9 @@ namespace DiscordCoreInternal {
 		if (this->offSet + static_cast<uint64_t>(length) > this->buffer.size()) {
 			throw ErlPackError{ "ErlPacker::readString() Error: readString() past end of buffer.\n\n" };
 		}
-		std::string string{};
-		string.insert(string.begin(), this->buffer.begin() + this->offSet, this->buffer.begin() + this->offSet + length);
+		const char* theStringNew = this->buffer.data() + this->offSet;
 		this->offSet += length;
-		theString = std::move(string);
+		theString = theStringNew;
 	}
 
 	nlohmann::json ErlPacker::singleValueETFToJson() {

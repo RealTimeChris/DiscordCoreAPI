@@ -42,7 +42,7 @@ namespace DiscordCoreAPI {
 		int32_t error{};
 		this->thePtr.reset(opus_encoder_create(48000, 2, OPUS_APPLICATION_AUDIO, &error));
 		if (error != OPUS_OK) {
-			throw std::runtime_error{ "Failed to create the Opus Encoder" };
+			std::cout << "Failed to create the Opus Encoder." << std::endl;
 		}
 	}
 
@@ -70,7 +70,7 @@ namespace DiscordCoreAPI {
 		int32_t error{};
 		this->thePtr.reset(opus_decoder_create(48000, 2, &error));
 		if (error != OPUS_OK) {
-			throw std::runtime_error{ "Failed to create the Opus Decoder" };
+			std::cout << "Failed to create the Opus Decoder." << std::endl;
 		}
 	}
 
