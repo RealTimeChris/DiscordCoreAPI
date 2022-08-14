@@ -330,8 +330,10 @@ namespace DiscordCoreInternal {
 					
 					if (this->configManager->getTextFormat() == DiscordCoreAPI::TextFormat::Etf) {
 						try {
-							std::string& theData = ( std::string& )theString;
-							payload = this->parseEtfToJson(theData);
+							//DiscordCoreAPI::StopWatch theStopWatch{ 50us };
+							//theStopWatch.resetTimer();
+							payload = this->parseEtfToJson(theString);
+							//std::cout << "THE TIME TO COMPLETE: " << theStopWatch.totalTimePassed() << std::endl;
 						} catch (...) {
 							if (this->configManager->doWePrintGeneralErrorMessages()) {
 								DiscordCoreAPI::reportException("ErlPacker::parseEtfToJson()");
