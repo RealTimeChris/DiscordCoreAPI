@@ -308,7 +308,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	void Roles::removeRole(const Snowflake& roleId) {
+	void Roles::removeRole(const Snowflake roleId) {
 		std::unique_lock theLock{ Roles::theMutex };
 		Roles::cache->erase(roleId);
 	};

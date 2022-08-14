@@ -385,7 +385,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	void Channels::removeChannel(const Snowflake& channelId) {
+	void Channels::removeChannel(const Snowflake channelId) {
 		std::unique_lock theLock{ Channels::theMutex };
 		Channels::cache->erase(channelId);
 	};

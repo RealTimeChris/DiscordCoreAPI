@@ -1043,7 +1043,7 @@ namespace DiscordCoreAPI {
 		*this = jsonObjectData;
 	}
 
-	auto AuditLogData::getAuditLogData(const Snowflake& userIdOfChanger, AuditLogEvent auditLogType) {
+	auto AuditLogData::getAuditLogData(const Snowflake userIdOfChanger, AuditLogEvent auditLogType) {
 		for (auto& value: this->auditLogEntries) {
 			if (value.id == userIdOfChanger && value.actionType == auditLogType) {
 				return value;
@@ -1052,7 +1052,7 @@ namespace DiscordCoreAPI {
 		return AuditLogEntryData();
 	}
 
-	auto AuditLogData::getAuditLogData(AuditLogEvent auditLogType, const Snowflake& userIdOfTarget) {
+	auto AuditLogData::getAuditLogData(AuditLogEvent auditLogType, const Snowflake userIdOfTarget) {
 		for (auto& value: this->auditLogEntries) {
 			if (value.targetId == userIdOfTarget && value.actionType == auditLogType) {
 				return value;
@@ -1837,7 +1837,7 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	RespondToInputEventData& RespondToInputEventData::setTargetUserID(const uint64_t& targetUserIdNew) {
+	RespondToInputEventData& RespondToInputEventData::setTargetUserID(const Snowflake targetUserIdNew) {
 		this->targetUserId = targetUserIdNew;
 		return *this;
 	}

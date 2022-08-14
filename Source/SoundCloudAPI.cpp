@@ -175,7 +175,7 @@ namespace DiscordCoreInternal {
 		return clientIdNew;
 	}
 
-	SoundCloudAPI::SoundCloudAPI(DiscordCoreAPI::ConfigManager* configManagerNew, HttpsClient* httpsClient, const DiscordCoreAPI::Snowflake& guildIdNew) {
+	SoundCloudAPI::SoundCloudAPI(DiscordCoreAPI::ConfigManager* configManagerNew, HttpsClient* httpsClient, const DiscordCoreAPI::Snowflake guildIdNew) {
 		this->configManager = configManagerNew;
 		this->httpsClient = httpsClient;
 		this->guildId = guildIdNew;

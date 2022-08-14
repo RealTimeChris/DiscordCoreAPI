@@ -2412,9 +2412,9 @@ namespace DiscordCoreAPI {
 		std::vector<ChannelData> threads{};///< Array of thread-specific channel objects.
 		std::vector<UserData> users{};///< Array of user objects.
 
-		auto getAuditLogData(const Snowflake& userIdOfChanger, AuditLogEvent auditLogType);
+		auto getAuditLogData(const Snowflake userIdOfChanger, AuditLogEvent auditLogType);
 
-		auto getAuditLogData(AuditLogEvent auditLogType, const Snowflake& userIdOfTarget);
+		auto getAuditLogData(AuditLogEvent auditLogType, const Snowflake userIdOfTarget);
 
 		AuditLogData() = default;
 
@@ -3534,7 +3534,7 @@ namespace DiscordCoreAPI {
 		/// For setting the direct-Message User target of a response. \brief For setting the direct-Message User target of a response.
 		/// \param targetUserIdNew A string, containing the target User's id.
 		/// \returns RespondToInputEventData& A reference to this data structure.
-		RespondToInputEventData& setTargetUserID(const Snowflake& targetUserIdNew);
+		RespondToInputEventData& setTargetUserID(const Snowflake targetUserIdNew);
 
 	  protected:
 		std::vector<ApplicationCommandOptionChoiceData> choices{};

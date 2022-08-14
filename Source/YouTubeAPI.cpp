@@ -167,7 +167,7 @@ namespace DiscordCoreInternal {
 		return apiKey;
 	}
 
-	YouTubeAPI::YouTubeAPI(DiscordCoreAPI::ConfigManager* configManagerNew, HttpsClient* httpsClientNew, const DiscordCoreAPI::Snowflake& guildIdNew) {
+	YouTubeAPI::YouTubeAPI(DiscordCoreAPI::ConfigManager* configManagerNew, HttpsClient* httpsClientNew, const DiscordCoreAPI::Snowflake guildIdNew) {
 		this->configManager = configManagerNew;
 		this->httpsClient = httpsClientNew;
 		this->guildId = guildIdNew;

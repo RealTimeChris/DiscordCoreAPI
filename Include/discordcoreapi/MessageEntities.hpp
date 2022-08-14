@@ -50,7 +50,7 @@ namespace DiscordCoreAPI {
 		friend class InputEvents;
 		friend class Messages;
 
-		CreateMessageData(const uint64_t& channelIdNew);
+		CreateMessageData(const Snowflake channelIdNew);
 
 		CreateMessageData(RespondToInputEventData dataPackage);
 

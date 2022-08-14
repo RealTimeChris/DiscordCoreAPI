@@ -299,7 +299,7 @@ namespace DiscordCoreAPI {
 
 		static void insertChannel(std::unique_ptr<ChannelData> channel);
 
-		static void removeChannel(const uint64_t& channelId);
+		static void removeChannel(const Snowflake channelId);
 
 	  protected:
 		static std::unique_ptr<std::unordered_map<Snowflake, std::unique_ptr<ChannelData>>> cache;

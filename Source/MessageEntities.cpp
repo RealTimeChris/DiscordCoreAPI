@@ -24,7 +24,7 @@
 
 namespace DiscordCoreAPI {
 
-	CreateMessageData::CreateMessageData(const uint64_t& channelIdNew) {
+	CreateMessageData::CreateMessageData(const Snowflake channelIdNew) {
 		this->channelId = channelIdNew;
 	}
 

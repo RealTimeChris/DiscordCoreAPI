@@ -25,11 +25,11 @@
 
 namespace DiscordCoreAPI {
 
-	SongAPI::SongAPI(const Snowflake& guildId) {
+	SongAPI::SongAPI(const Snowflake guildId) {
 		this->guildId = guildId;
 	}
 
-	void SongAPI::onSongCompletion(std::function<CoRoutine<void>(SongCompletionEventData)> handler, const Snowflake& guildId) {
+	void SongAPI::onSongCompletion(std::function<CoRoutine<void>(SongCompletionEventData)> handler, const Snowflake guildId) {
 		SongAPI* returnValue = getSongAPIMap()[guildId].get();
 		returnValue->onSongCompletionEvent.remove(returnValue->eventToken);
 		returnValue->eventToken = returnValue->onSongCompletionEvent.add(DiscordCoreInternal::EventDelegate<CoRoutine<void>, SongCompletionEventData>{ handler });
@@ -109,15 +109,15 @@ namespace DiscordCoreAPI {
 		return false;
 	}
 
-	bool SongAPI::play(const Snowflake& guildId) {
+	bool SongAPI::play(const Snowflake guildId) {
 		return getVoiceConnectionMap()[guildId]->play();
 	}
 
-	void SongAPI::pauseToggle(const Snowflake& guildId) {
+	void SongAPI::pauseToggle(const Snowflake guildId) {
 		getVoiceConnectionMap()[guildId]->pauseToggle();
 	}
 
-	bool SongAPI::areWeCurrentlyPlaying(const Snowflake& guildId) {
+	bool SongAPI::areWeCurrentlyPlaying(const Snowflake guildId) {
 		return getVoiceConnectionMap()[guildId]->areWeCurrentlyPlaying();
 	}
 
@@ -137,7 +137,7 @@ namespace DiscordCoreAPI {
 		getVoiceConnectionMap()[guildMember.guildId]->audioDataBuffer.send(frameData);
 	}
 
-	void SongAPI::stop(const Snowflake& guildId) {
+	void SongAPI::stop(const Snowflake guildId) {
 		getVoiceConnectionMap()[guildId]->stop();
 		getSongAPIMap()[guildId]->cancelCurrentSong();
 		std::vector<Song> newVector02;
@@ -153,7 +153,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	std::vector<Song> SongAPI::searchForSong(const std::string& searchQuery, const Snowflake& guildId) {
+	std::vector<Song> SongAPI::searchForSong(const std::string& searchQuery, const Snowflake guildId) {
 		auto vector01 = getSoundCloudAPIMap()[guildId]->searchForSong(searchQuery);
 		auto vector02 = getYouTubeAPIMap()[guildId]->searchForSong(searchQuery);
 		int32_t totalLength = static_cast<int32_t>(vector01.size() + vector02.size());
@@ -174,23 +174,23 @@ namespace DiscordCoreAPI {
 		return newVector;
 	}
 
-	void SongAPI::setLoopAllStatus(bool enabled, const Snowflake& guildId) {
+	void SongAPI::setLoopAllStatus(bool enabled, const Snowflake guildId) {
 		getSongAPIMap()[guildId]->playlist.isLoopAllEnabled = enabled;
 	}
 
-	bool SongAPI::isLoopAllEnabled(const Snowflake& guildId) {
+	bool SongAPI::isLoopAllEnabled(const Snowflake guildId) {
 		return getSongAPIMap()[guildId]->playlist.isLoopAllEnabled;
 	}
 
-	void SongAPI::setLoopSongStatus(bool enabled, const Snowflake& guildId) {
+	void SongAPI::setLoopSongStatus(bool enabled, const Snowflake guildId) {
 		getSongAPIMap()[guildId]->playlist.isLoopSongEnabled = enabled;
 	}
 
-	bool SongAPI::isLoopSongEnabled(const Snowflake& guildId) {
+	bool SongAPI::isLoopSongEnabled(const Snowflake guildId) {
 		return getSongAPIMap()[guildId]->playlist.isLoopSongEnabled;
 	}
 
-	bool SongAPI::isThereAnySongs(const Snowflake& guildId) {
+	bool SongAPI::isThereAnySongs(const Snowflake guildId) {
 		if (!getSongAPIMap().contains(guildId)) {
 			getSongAPIMap()[guildId] = std::make_unique<SongAPI>(guildId);
 		}
@@ -217,21 +217,21 @@ namespace DiscordCoreAPI {
 		return song;
 	}
 
-	void SongAPI::setPlaylist(const Playlist& playlistNew, const Snowflake& guildId) {
+	void SongAPI::setPlaylist(const Playlist& playlistNew, const Snowflake guildId) {
 		getSongAPIMap()[guildId]->playlist = playlistNew;
 	}
 
-	Playlist SongAPI::getPlaylist(const Snowflake& guildId) {
+	Playlist SongAPI::getPlaylist(const Snowflake guildId) {
 		return getSongAPIMap()[guildId]->playlist;
 	}
 
-	void SongAPI::modifyQueue(int32_t firstSongPosition, int32_t secondSongPosition, const Snowflake& guildId) {
+	void SongAPI::modifyQueue(int32_t firstSongPosition, int32_t secondSongPosition, const Snowflake guildId) {
 		Song tempSong = getSongAPIMap()[guildId]->playlist.songQueue[firstSongPosition];
 		getSongAPIMap()[guildId]->playlist.songQueue[firstSongPosition] = getSongAPIMap()[guildId]->playlist.songQueue[secondSongPosition];
 		getSongAPIMap()[guildId]->playlist.songQueue[secondSongPosition] = tempSong;
 	}
 
-	Song SongAPI::getCurrentSong(const Snowflake& guildId) {
+	Song SongAPI::getCurrentSong(const Snowflake guildId) {
 		if (getSongAPIMap()[guildId]->playlist.currentSong.songId != "") {
 			return getSongAPIMap()[guildId]->playlist.currentSong;
 		} else if (getSongAPIMap()[guildId]->playlist.songQueue.size() > 0) {
@@ -241,7 +241,7 @@ namespace DiscordCoreAPI {
 		};
 	}
 
-	void SongAPI::setCurrentSong(const Song& song, const Snowflake& guildId) {
+	void SongAPI::setCurrentSong(const Song& song, const Snowflake guildId) {
 		getSongAPIMap()[guildId]->playlist.currentSong = song;
 	}
 

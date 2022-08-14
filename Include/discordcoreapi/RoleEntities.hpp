@@ -234,7 +234,7 @@ namespace DiscordCoreAPI {
 
 		static void insertRole(std::unique_ptr<RoleData> role);
 
-		static void removeRole(const uint64_t& roleId);
+		static void removeRole(const Snowflake roleId);
 
 	  protected:
 		static std::unique_ptr<std::unordered_map<Snowflake, std::unique_ptr<RoleData>>> cache;

@@ -842,7 +842,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	void Guilds::removeGuild(const Snowflake& guildId) {
+	void Guilds::removeGuild(const Snowflake guildId) {
 		std::unique_lock theLock{ Guilds::theMutex };
 		Guilds::cache->erase(guildId);
 	};

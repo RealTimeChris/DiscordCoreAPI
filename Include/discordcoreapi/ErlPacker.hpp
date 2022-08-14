@@ -76,7 +76,7 @@ namespace DiscordCoreInternal {
 
 		void appendIntegerExt(uint32_t);
 
-		void appendFloatExt(double&);
+		void appendFloatExt(double);
 
 		void appendNilExt();
 

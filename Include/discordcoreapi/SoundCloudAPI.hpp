@@ -50,7 +50,7 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll SoundCloudAPI : public SoundCloudRequestBuilder {
 	  public:
-		SoundCloudAPI(DiscordCoreAPI::ConfigManager* configManagerNew, HttpsClient* httpsClient, const Snowflake& guildId);
+		SoundCloudAPI(DiscordCoreAPI::ConfigManager* configManagerNew, HttpsClient* httpsClient, const Snowflake guildId);
 
 		void weFailedToDownloadOrDecode(const DiscordCoreAPI::Song& newSong, std::stop_token stopToken, int32_t currentReconnectTries);
 

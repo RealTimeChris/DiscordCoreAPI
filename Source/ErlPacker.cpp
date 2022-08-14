@@ -150,7 +150,7 @@ namespace DiscordCoreInternal {
 		ErlPacker::writeToBuffer(bufferNew);
 	}
 
-	void ErlPacker::appendFloatExt(double& value) {
+	void ErlPacker::appendFloatExt(double value) {
 		std::string bufferNew{ static_cast<uint8_t>(ETFTokenType::Float_Ext) };
 		void* doubleValue{ &value };
 		DiscordCoreAPI::storeBits(bufferNew, *static_cast<uint64_t*>(doubleValue));

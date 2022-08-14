@@ -47,7 +47,7 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll YouTubeAPI : public YouTubeRequestBuilder {
 	  public:
-		YouTubeAPI(DiscordCoreAPI::ConfigManager*, HttpsClient* httpsClient, const Snowflake& guildId);
+		YouTubeAPI(DiscordCoreAPI::ConfigManager*, HttpsClient* httpsClient, const Snowflake guildId);
 
 		void weFailedToDownloadOrDecode(const DiscordCoreAPI::Song& newSong, std::stop_token stopToken, int32_t currentReconnectTries);
 

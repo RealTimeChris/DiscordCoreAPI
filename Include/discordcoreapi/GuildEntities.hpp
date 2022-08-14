@@ -567,7 +567,7 @@ namespace DiscordCoreAPI {
 
 		static void insertGuild(std::unique_ptr<GuildData> guild);
 
-		static void removeGuild(const Snowflake& GuildId);
+		static void removeGuild(const Snowflake GuildId);
 	};
 	/**@}*/
 }// namespace DiscordCoreAPI
