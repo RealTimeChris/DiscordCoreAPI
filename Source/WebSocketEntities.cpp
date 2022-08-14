@@ -131,7 +131,7 @@ namespace DiscordCoreInternal {
 						return true;
 					}
 					theShard->messageLength = 0;
-					for (int64_t x = 2, shift = 56; x < 10; ++x, shift -= 8) {
+					for (uint64_t x = 2, shift = 56; x < 10; ++x, shift -= 8) {
 						uint8_t lengthNew = static_cast<uint8_t>(theShard->inputBuffer[x]);
 						theShard->messageLength |= static_cast<uint64_t>((lengthNew & static_cast<uint64_t>(0xff)) << static_cast<uint64_t>(shift));
 					}
@@ -141,8 +141,9 @@ namespace DiscordCoreInternal {
 					return true;
 				} else {
 					std::cout << "THE LENGTH: " << theShard->messageLength << ", THE OFFSET: " << theShard->messageOffset << std::endl;
-					theShard->processedMessages.emplace_back(( std::string& )theShard->inputBuffer.substr(theShard->messageOffset, theShard->messageLength));
+					this->onMessageReceived(theShard->inputBuffer.substr(theShard->messageOffset, theShard->messageLength));
 					theShard->inputBuffer.erase(theShard->inputBuffer.begin(), theShard->inputBuffer.begin() + theShard->messageOffset + theShard->messageLength);
+					
 					return true;
 				}
 			}
@@ -317,23 +318,19 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	bool WebSocketSSLShard::onMessageReceived() noexcept {
+	bool WebSocketSSLShard::onMessageReceived(const std::string& theString) noexcept {
 		if (this->theSSLState.load() == SSLConnectionState::Connected) {
 			try {
 				bool returnValue{ false };
 				nlohmann::json payload{};
-				if (this->processedMessages.size() > 0) {
-					std::reference_wrapper<std::string> messageNew = std::move(this->processedMessages.front());
-					this->processedMessages.pop_front();
+				if (theString.size() > 0) {
 					returnValue = true;
-					if (messageNew.get().size() == 0) {
-						return false;
-					}
 					
 					if (this->configManager->getTextFormat() == DiscordCoreAPI::TextFormat::Etf) {
 						try {
-							std::cout << "WERE HERE THIS IS IT!" << messageNew.get().size() << std::endl;
-							payload = this->parseEtfToJson(messageNew);
+							std::cout << "WERE HERE THIS IS IT: " << theString.size() << std::endl;
+							std::string& theData = ( std::string& )theString;
+							payload = this->parseEtfToJson(theData);
 						} catch (...) {
 							if (this->configManager->doWePrintGeneralErrorMessages()) {
 								DiscordCoreAPI::reportException("ErlPacker::parseEtfToJson()");
@@ -341,7 +338,7 @@ namespace DiscordCoreInternal {
 							return false;
 						}
 					} else {
-						payload = nlohmann::json::parse(messageNew.get());
+						payload = nlohmann::json::parse(theString);
 					}
 				} else {
 					return false;
@@ -1011,7 +1008,7 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::getVoiceConnectionMap()[theConnectionData.guildId]->connect();
 	}
 
-	void BaseSocketAgent::run(std::stop_token& stopToken) noexcept {
+	void BaseSocketAgent::run(std::stop_token stopToken) noexcept {
 		try {
 			while (!stopToken.stop_requested() && !this->doWeQuit->load()) {
 				if (this->connections.size() > 0) {
@@ -1029,9 +1026,6 @@ namespace DiscordCoreInternal {
 					SSLClient::processIO(theVector, 10000);
 					if (this->sslShard->areWeStillConnected() && this->sslShard->inputBuffer.size() > 0) {
 						this->sslShard->parseMessage(this->sslShard.get());
-					}
-					if (this->sslShard->processedMessages.size() > 0) {
-						this->sslShard->onMessageReceived();
 					}
 					if (this->sslShard->areWeStillConnected()) {
 						this->sslShard->checkForAndSendHeartBeat();
@@ -1111,9 +1105,6 @@ namespace DiscordCoreInternal {
 					}
 					if (this->sslShard->areWeStillConnected()) {
 						this->sslShard->parseMessage(this->sslShard.get());
-					}
-					if (this->sslShard->areWeStillConnected()) {
-						this->sslShard->onMessageReceived();
 					}
 					std::this_thread::sleep_for(1ms);
 				}

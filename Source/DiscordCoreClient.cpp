@@ -225,9 +225,6 @@ namespace DiscordCoreAPI {
 			ConnectionPackage theData{};
 			theData.currentShard = currentShard;
 			this->baseSocketAgentMap[std::to_string(x)]->connect(theData);
-			for (auto& [key, value]: this->baseSocketAgentMap) {
-				while (value->sslShard->onMessageReceived()){};
-			}
 			currentShard++;
 		}
 		this->currentUser = BotUser{ Users::getCurrentUserAsync().get(), this->baseSocketAgentMap[std::to_string(this->configManager.getStartingShard())].get() };

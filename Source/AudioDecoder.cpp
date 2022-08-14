@@ -235,7 +235,7 @@ namespace DiscordCoreInternal {
 		return static_cast<int32_t>(stream->bytesRead);
 	}
 
-	void AudioDecoder::run(std::stop_token& stopToken) {
+	void AudioDecoder::run(std::stop_token stopToken) {
 		if (!this->haveWeBooted) {
 			auto theBuffer = static_cast<uint8_t*>(av_malloc(this->bufferMaxSize));
 			if (theBuffer == nullptr) {

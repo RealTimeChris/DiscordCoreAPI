@@ -49,9 +49,9 @@ namespace DiscordCoreInternal {
 	  public:
 		YouTubeAPI(DiscordCoreAPI::ConfigManager*, HttpsClient* httpsClient, const Snowflake& guildId);
 
-		void weFailedToDownloadOrDecode(const DiscordCoreAPI::Song& newSong, std::stop_token& stopToken, int32_t currentReconnectTries);
+		void weFailedToDownloadOrDecode(const DiscordCoreAPI::Song& newSong, std::stop_token stopToken, int32_t currentReconnectTries);
 
-		void downloadAndStreamAudio(const DiscordCoreAPI::Song& newSong, std::stop_token& stopToken, int32_t currentReconnectTries);
+		void downloadAndStreamAudio(const DiscordCoreAPI::Song& newSong, std::stop_token stopToken, int32_t currentReconnectTries);
 
 		std::vector<DiscordCoreAPI::Song> searchForSong(const std::string& searchQuery);
 

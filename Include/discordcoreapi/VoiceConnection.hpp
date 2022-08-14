@@ -191,21 +191,21 @@ namespace DiscordCoreAPI {
 
 		void sendVoiceData(const std::string& responseData) noexcept;
 
+		bool onMessageReceived(const std::string theString) noexcept;
+
 		void sendSpeakingMessage(const bool isSpeaking) noexcept;
 
-		void runWebSocket(std::stop_token&) noexcept;
+		void runWebSocket(std::stop_token) noexcept;
 
-		void runBridge(std::stop_token&) noexcept;
+		void runBridge(std::stop_token) noexcept;
 
-		void runVoice(std::stop_token&) noexcept;
+		void runVoice(std::stop_token) noexcept;
 
 		void parseIncomingVoiceData() noexcept;
 
 		bool areWeCurrentlyPlaying() noexcept;
 
 		void disconnectInternal() noexcept;
-
-		bool onMessageReceived() noexcept;
 
 		void reconnectStream() noexcept;
 

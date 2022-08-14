@@ -192,17 +192,11 @@ namespace DiscordCoreAPI {
 		this->audioDataBuffer.send(frameData);
 	}
 
-	bool VoiceConnection::onMessageReceived() noexcept {
+	bool VoiceConnection::onMessageReceived(const std::string theString) noexcept {
 		try {
 			std::string theMessage{};
-			if (this->processedMessages.size() > 0) {
-				theMessage = std::move(this->processedMessages.front());
-				this->processedMessages.pop_front();
-			} else {
-				return false;
-			}
 			if (theMessage.size() > 0) {
-				nlohmann::json payload = payload.parse(theMessage);
+				nlohmann::json payload = payload.parse(theString);
 				if (this->configManager->doWePrintWebSocketSuccessMessages()) {
 					cout << DiscordCoreAPI::shiftToBrightGreen() << "Message received from Voice WebSocket: " << theMessage << DiscordCoreAPI::reset() << endl << endl;
 				}
@@ -323,7 +317,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	void VoiceConnection::runWebSocket(std::stop_token& stopToken) noexcept {
+	void VoiceConnection::runWebSocket(std::stop_token stopToken) noexcept {
 		try {
 			while (!stopToken.stop_requested() && !this->doWeQuit->load() && this->activeState.load() != VoiceActiveState::Exiting) {
 				if (!stopToken.stop_requested() && WebSocketSSLShard::connections->size() > 0) {
@@ -360,9 +354,6 @@ namespace DiscordCoreAPI {
 				if (!stopToken.stop_requested() && WebSocketSSLShard::areWeStillConnected() && WebSocketSSLShard::inputBuffer.size() > 0) {
 					this->parseMessage(this);
 				}
-				if (!stopToken.stop_requested() && WebSocketSSLShard::areWeStillConnected() && this->processedMessages.size() > 0) {
-					this->onMessageReceived();
-				}
 
 				std::this_thread::sleep_for(1ms);
 			}
@@ -374,7 +365,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	void VoiceConnection::runBridge(std::stop_token& theToken) noexcept {
+	void VoiceConnection::runBridge(std::stop_token theToken) noexcept {
 		StopWatch theStopWatch{ 20ms };
 		int32_t timeToWaitInMs{ 20 };
 		int32_t timeTakesToSleep{ 0 };
@@ -419,10 +410,6 @@ namespace DiscordCoreAPI {
 					return false;
 				}
 			}
-			if (this->processedMessages.size() > 0) {
-				this->onMessageReceived();
-				return true;
-			}
 			if (theStopWatch.hasTimePassed()) {
 				return false;
 			}
@@ -431,7 +418,7 @@ namespace DiscordCoreAPI {
 		return false;
 	}
 
-	void VoiceConnection::runVoice(std::stop_token& stopToken) noexcept {
+	void VoiceConnection::runVoice(std::stop_token stopToken) noexcept {
 		StopWatch theStopWatch{ 20000ms };
 		StopWatch theSendSilenceStopWatch{ 5000ms };
 		while (!stopToken.stop_requested() && !this->doWeQuit->load() && this->activeState.load() != VoiceActiveState::Exiting) {

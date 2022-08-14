@@ -43,7 +43,7 @@ namespace DiscordCoreInternal {
 
 		bool parseMessage(DiscordCoreInternal::WebSocketSSLShard* theShard) noexcept;
 
-		virtual bool onMessageReceived() noexcept = 0;
+		virtual bool onMessageReceived(const std::string& theString) noexcept = 0;
 
 		virtual ~WebSocketMessageHandler() = default;
 
@@ -74,7 +74,7 @@ namespace DiscordCoreInternal {
 
 		void disconnect(bool doWeReconnect) noexcept;
 
-		bool onMessageReceived() noexcept;
+		bool onMessageReceived(const std::string& theString) noexcept;
 
 		void onClosed() noexcept;
 
@@ -84,7 +84,6 @@ namespace DiscordCoreInternal {
 		std::unordered_map<Snowflake, DiscordCoreAPI::UnboundedMessageBlock<VoiceConnectionData>*> voiceConnectionDataBufferMap{};
 		std::atomic<WebSocketSSLShardState> theWebSocketState{ WebSocketSSLShardState::Connecting };
 		DiscordCoreAPI::StopWatch<std::chrono::milliseconds> heartBeatStopWatch{ 0ms };
-		std::deque<std::reference_wrapper<std::string>> processedMessages{};
 		DiscordCoreAPI::DiscordCoreClient* discordCoreClient{ nullptr };
 		VoiceConnectionData voiceConnectionData{};
 		bool haveWeReceivedHeartbeatAck{ true };
@@ -144,7 +143,7 @@ namespace DiscordCoreInternal {
 
 		void connectVoiceInternal() noexcept;
 
-		void run(std::stop_token&) noexcept;
+		void run(std::stop_token) noexcept;
 
 		void disconnectVoice() noexcept;
 
