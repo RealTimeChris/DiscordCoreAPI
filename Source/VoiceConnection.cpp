@@ -189,7 +189,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::sendSingleFrame(const AudioFrameData& frameData) noexcept {
-		this->audioDataBuffer.send(std::move(frameData));
+		this->audioDataBuffer.send(frameData);
 	}
 
 	bool VoiceConnection::onMessageReceived(const std::string& theString) noexcept {
