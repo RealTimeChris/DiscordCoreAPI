@@ -87,7 +87,6 @@ namespace DiscordCoreInternal {
 			std::string newVector = theShard->getInputBuffer();
 			auto theFindValue = newVector.find("\r\n\r\n");
 			if (theFindValue != std::string::npos) {
-				std::cout << "THE INPUT BUFFER: " << newVector << std::endl;
 				theShard->inputBuffer.clear();
 				theShard->theWebSocketState.store(WebSocketSSLShardState::Collecting_Hello);
 				return true;
@@ -100,7 +99,6 @@ namespace DiscordCoreInternal {
 		if (static_cast<WebSocketSSLShard*>(theShard)->inputBuffer.size() < 4) {
 			return true;
 		}
-		//std::cout << "THE INPUT BUFFER02: " << theShard->inputBuffer << std::endl;
 		static_cast<WebSocketSSLShard*>(theShard)->dataOpCode = static_cast<WebSocketOpCode>(static_cast<WebSocketSSLShard*>(theShard)->inputBuffer[0] & ~webSocketFinishBit);
 		switch (static_cast<WebSocketSSLShard*>(theShard)->dataOpCode) {
 			case WebSocketOpCode::Op_Continuation:
@@ -147,7 +145,6 @@ namespace DiscordCoreInternal {
 					static_cast<WebSocketSSLShard*>(theShard)->inputBuffer.erase(static_cast<WebSocketSSLShard*>(theShard)->inputBuffer.begin(),
 						static_cast<WebSocketSSLShard*>(theShard)->inputBuffer.begin() + static_cast<WebSocketSSLShard*>(theShard)->messageOffset +
 							static_cast<WebSocketSSLShard*>(theShard)->messageLength);
-					std::cout << "WERE LEAVING LEAVING GONE!" << std::boolalpha << theValue << std::endl;
 					return theValue;
 				}
 			}
@@ -333,7 +330,6 @@ namespace DiscordCoreInternal {
 					
 					if (this->configManager->getTextFormat() == DiscordCoreAPI::TextFormat::Etf) {
 						try {
-							std::cout << "WERE HERE THIS IS IT: " << theString.size() << std::endl;
 							std::string& theData = ( std::string& )theString;
 							payload = this->parseEtfToJson(theData);
 						} catch (...) {
@@ -948,7 +944,6 @@ namespace DiscordCoreInternal {
 			this->disconnect(true);
 		} else {
 			if (this->doWeQuit) {
-				std ::cout << "WERE QUITTING QUITTING QUITTING!" << std::endl;
 				this->doWeQuit->store(true);
 			}
 		}
@@ -960,7 +955,6 @@ namespace DiscordCoreInternal {
 		this->discordCoreClient = discordCoreClientNew;
 		this->doWeQuit = doWeQuitNew;
 		this->taskThread = std::make_unique<std::jthread>([this](std::stop_token stopToken) {
-			std::cout << "THE CURRENT COUNT: " << this->discordCoreClient->theBaseShardCount.load() << std::endl;
 			this->run(stopToken);
 		});
 	}

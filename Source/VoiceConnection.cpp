@@ -194,7 +194,6 @@ namespace DiscordCoreAPI {
 
 	bool VoiceConnection::onMessageReceived(const std::string& theString) noexcept {
 		try {
-			std::cout << "WERE HERE THIS IS IT: " << theString << std::endl;
 			if (theString.size() > 0) {
 				nlohmann::json payload = payload.parse(theString);
 				if (this->configManager->doWePrintWebSocketSuccessMessages()) {
@@ -403,20 +402,16 @@ namespace DiscordCoreAPI {
 		while (!this->doWeQuit->load() && this->connectionState.load() != stateToWaitFor) {
 			WebSocketSSLShard::processIO();
 			if (!WebSocketSSLShard::areWeStillConnected()) {
-				std::cout << "THE WEBSOCKET FAILURE! 0303" << std::endl;
 				return false;
 			}
 			if (WebSocketSSLShard::inputBuffer.size() > 0) {
-				std::cout << "THE WEBSOCKET SUCCESS! 0101" << std::endl;
 				if (!this->parseMessage(this)) {
 					return false;
 				} else {
-					std::cout << "THE WEBSOCKET SUCCESS! 0202" << std::endl;
 					return true;
 				}
 			}
 			if (theStopWatch.hasTimePassed()) {
-				std::cout << "THE WEBSOCKET FAILURE! 0404" << std::endl;
 				return false;
 			}
 			std::this_thread::sleep_for(1ms);
@@ -742,7 +737,6 @@ namespace DiscordCoreAPI {
 				}
 				WebSocketSSLShard::processIO();
 				if (!this->parseConnectionHeaders(this)) {
-					std::cout << "THE WEBSOCKET FAILURE! 0101" << std::endl;
 					this->currentReconnectTries++;
 					this->onClosedVoice();
 					this->connectInternal();
@@ -754,7 +748,6 @@ namespace DiscordCoreAPI {
 			}
 			case VoiceConnectionState::Collecting_Hello: {
 				if (!this->collectAndProcessAMessage(VoiceConnectionState::Sending_Identify)) {
-					std::cout << "THE WEBSOCKET FAILURE! 0202" << std::endl;
 					this->currentReconnectTries++;
 					this->onClosedVoice();
 					this->connectInternal();
@@ -773,7 +766,6 @@ namespace DiscordCoreAPI {
 				this->stringifyJsonData(identifyData, sendVector, DiscordCoreInternal::WebSocketOpCode::Op_Text);
 				if (!this->sendMessage(sendVector, true)) {
 					this->currentReconnectTries++;
-					std::cout << "THE WEBSOCKET FAILURE! 0505" << std::endl;
 					this->onClosedVoice();
 					this->connectInternal();					
 					return;
@@ -785,7 +777,6 @@ namespace DiscordCoreAPI {
 			case VoiceConnectionState::Collecting_Ready: {
 				if (!this->collectAndProcessAMessage(VoiceConnectionState::Initializing_DatagramSocket)) {
 					this->currentReconnectTries++;
-					std::cout << "THE WEBSOCKET FAILURE! 0606" << std::endl;
 					this->onClosedVoice();
 					this->connectInternal();
 					return;
