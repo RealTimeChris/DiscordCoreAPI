@@ -399,7 +399,7 @@ namespace DiscordCoreAPI {
 					this->sendHeartBeat();
 					this->heartBeatStopWatch.resetTimer();
 				}
-				if (!stopToken.stop_requested() && SSLClient::SSLClient::areWeStillConnected()) {
+				if (!stopToken.stop_requested() && SSLClient::areWeStillConnected()) {
 					SSLClient::processIO(1000);
 				}
 
@@ -738,7 +738,7 @@ namespace DiscordCoreAPI {
 
 	void VoiceConnection::connectInternal() noexcept {
 		auto thePtr = this->baseSocketAgent->sslShard.get();
-		std::unique_lock theLock{ thePtr->theMutex };
+		//std::unique_lock theLock{ thePtr->theMutex };
 		if (this->connections.size() > 0) {
 			this->connections.pop();
 		}
@@ -1113,9 +1113,6 @@ namespace DiscordCoreAPI {
 		return true;
 	}
 
-	VoiceConnection::~VoiceConnection() noexcept {
-		std::lock_guard theLock{ DatagramSocketClient::theMutex };
-		std::lock_guard theLock2{ SSLClient::accessMutex };
-	};
+	VoiceConnection::~VoiceConnection() noexcept {};
 
 };

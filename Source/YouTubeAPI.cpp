@@ -326,7 +326,9 @@ namespace DiscordCoreInternal {
 								theCurrentString.clear();
 							}
 							bytesReadTotal = streamSocket->getBytesRead() - headerSize;
-							audioDecoder->submitDataForDecoding(submissionString);
+							if (submissionString.size() > 0) {
+								audioDecoder->submitDataForDecoding(submissionString);
+							}
 						}
 						audioDecoder->startMe();
 					} else if (counter > 0) {
@@ -355,8 +357,10 @@ namespace DiscordCoreInternal {
 									submissionString = std::move(theCurrentString);
 									theCurrentString.clear();
 								}
-								audioDecoder->submitDataForDecoding(submissionString);
-								bytesReadTotal = streamSocket->getBytesRead() - headerSize;
+								if (submissionString.size() > 0) {
+									audioDecoder->submitDataForDecoding(submissionString);
+									bytesReadTotal = streamSocket->getBytesRead() - headerSize;
+								}
 							}
 						}
 						if (stopToken.stop_requested()) {

@@ -1044,10 +1044,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	WebSocketSSLShard::~WebSocketSSLShard() noexcept {
-		std::lock_guard theLock{ this->accessMutex };
-		std::lock_guard theLock02{ this->theMutex };
-	}
+	WebSocketSSLShard::~WebSocketSSLShard() noexcept {}
 
 	BaseSocketAgent::BaseSocketAgent(DiscordCoreAPI::DiscordCoreClient* discordCoreClientNew, std::atomic_bool* doWeQuitNew, int32_t currentShardNew) noexcept {
 		this->configManager = &discordCoreClientNew->configManager;
