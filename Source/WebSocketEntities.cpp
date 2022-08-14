@@ -20,7 +20,6 @@
 #include <discordcoreapi/WebSocketEntities.hpp>
 #include <discordcoreapi/EventManager.hpp>
 #include <discordcoreapi/DiscordCoreClient.hpp>
-#include <simdjson.h>
 
 namespace DiscordCoreInternal {
 
