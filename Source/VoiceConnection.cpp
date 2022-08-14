@@ -675,7 +675,7 @@ namespace DiscordCoreAPI {
 		}
 		DatagramSocketClient::disconnect();
 		WebSocketSSLShard::disconnect(false);
-		if (this->streamSocket->areWeStillConnected()) {
+		if (this->streamSocket && this->streamSocket->areWeStillConnected()) {
 			this->streamSocket->disconnect();
 		}
 		auto thePtr = getSongAPIMap()[this->voiceConnectInitData.guildId].get();
