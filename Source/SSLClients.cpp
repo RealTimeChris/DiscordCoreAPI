@@ -612,20 +612,18 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void DatagramSocketClient::writeData(std::string& dataToWrite) noexcept {
+	void DatagramSocketClient::writeData(std::string dataToWrite) noexcept {
 		if (dataToWrite.size() > static_cast<size_t>(16 * 1024)) {
 			size_t remainingBytes{ dataToWrite.size() };
 			std::unique_lock theLock{ this->theMutex };
 			while (remainingBytes > 0) {
-				std::string newString{};
 				size_t amountToCollect{};
 				if (dataToWrite.size() >= static_cast<size_t>(1024 * 16)) {
 					amountToCollect = static_cast<size_t>(1024 * 16);
 				} else {
 					amountToCollect = dataToWrite.size();
 				}
-				newString.insert(newString.begin(), dataToWrite.begin(), dataToWrite.begin() + amountToCollect);
-				this->outputBuffers.emplace_back(newString);
+				this->outputBuffers.emplace_back(dataToWrite.substr(0, amountToCollect));
 				dataToWrite.erase(dataToWrite.begin(), dataToWrite.begin() + amountToCollect);
 				remainingBytes = dataToWrite.size();
 			}
@@ -648,8 +646,8 @@ namespace DiscordCoreInternal {
 
 	void DatagramSocketClient::writeDataProcess() noexcept {
 		if (this->outputBuffers.size() > 0 && this->areWeStreamConnected) {
-			std::string clientToServerString = this->outputBuffers.front();
-			int32_t writtenBytes = sendto(this->theSocket, clientToServerString.data(), clientToServerString.size(), 0, this->theStreamTargetAddress, sizeof(sockaddr));
+			std::string clientToServerString = std::move(this->outputBuffers.front());
+			int32_t writtenBytes{ sendto(this->theSocket, clientToServerString.data(), clientToServerString.size(), 0, this->theStreamTargetAddress, sizeof(sockaddr)) };
 			if (writtenBytes < 0) {
 				this->disconnect();
 				return;

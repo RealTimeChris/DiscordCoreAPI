@@ -1082,23 +1082,30 @@ namespace DiscordCoreAPI {
 
 		/// Sends an object of type ObjectType to the "recipient". \brief Sends an object of type ObjectType to the "recipient".
 		/// \param theObject An object of ObjectType.
-		void send(ObjectType theObject) {
+		void send(const ObjectType&& theObject) {
 			std::lock_guard theLock{ this->accessMutex };
 			this->theQueue.push(std::move(theObject));
 		}
 
 		/// Sends an object of type ObjectType to the "recipient". \brief Sends an object of type ObjectType to the "recipient".
 		/// \param theObject An object of ObjectType.
-		void send(std::reference_wrapper<const ObjectType> theObject) {
+		void send(ObjectType&& theObject) {
+			std::lock_guard theLock{ this->accessMutex };
+			this->theQueue.push(std::move(theObject));
+		}
+
+		/// Sends an object of type ObjectType to the "recipient". \brief Sends an object of type ObjectType to the "recipient".
+		/// \param theObject An object of ObjectType.
+		void send(const ObjectType& theObject) {
 			std::lock_guard theLock{ this->accessMutex };
 			this->theQueue.push(theObject);
 		}
 
 		/// Sends an object of type ObjectType to the "recipient". \brief Sends an object of type ObjectType to the "recipient".
 		/// \param theObject An object of ObjectType.
-		void send(std::reference_wrapper<ObjectType> theObject) {
+		void send(ObjectType& theObject) {
 			std::lock_guard theLock{ this->accessMutex };
-			this->theQueue.push(std::move(theObject));
+			this->theQueue.push(theObject);
 		}
 
 		/// Clears the contents of the messaging block. \brief Clears the contents of the messaging block.

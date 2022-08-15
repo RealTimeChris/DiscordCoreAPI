@@ -191,9 +191,9 @@ namespace DiscordCoreAPI {
 
 		bool onMessageReceived(const std::string& theString) noexcept;
 
-		void sendVoiceData(const std::string& responseData) noexcept;
-
 		void sendSpeakingMessage(const bool isSpeaking) noexcept;
+
+		void sendVoiceData(std::string& responseData) noexcept;
 
 		void runWebSocket(std::stop_token) noexcept;
 

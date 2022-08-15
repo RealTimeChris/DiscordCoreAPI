@@ -185,7 +185,7 @@ namespace DiscordCoreInternal {
 	}
 
 	void AudioDecoder::submitDataForDecoding(std::string dataToDecode) {
-		this->inputDataBuffer.send(dataToDecode);
+		this->inputDataBuffer.send(std::move(dataToDecode));
 	}
 
 	bool AudioDecoder::haveWeFailed() {
@@ -431,7 +431,7 @@ namespace DiscordCoreInternal {
 							rawFrame.data[x] = this->newFrame->extended_data[0][x];
 						}
 						rawFrame.sampleCount = newFrame->nb_samples;
-						this->outDataBuffer.send(rawFrame);
+						this->outDataBuffer.send(std::move(rawFrame));
 						int64_t sampleCount = swr_get_delay(this->swrContext, this->newFrame->sample_rate);
 						if (sampleCount > 0) {
 							if (!swr_is_initialized(this->swrContext)) {
@@ -444,7 +444,7 @@ namespace DiscordCoreInternal {
 								rawFrame02.data[x] = this->newFrame->extended_data[0][x];
 							}
 							rawFrame02.sampleCount = newFrame->nb_samples;
-							this->outDataBuffer.send(rawFrame02);
+							this->outDataBuffer.send(std::move(rawFrame02));
 						}
 						if (returnValue < 0 || newFrame->nb_samples == 0) {
 							this->haveWeFailedBool.store(true);

@@ -324,7 +324,7 @@ namespace DiscordCoreInternal {
 								theCurrentString.erase(theCurrentString.begin(), theCurrentString.end());
 							}
 							bytesReadTotal = streamSocket->getBytesRead() - headerSize;
-							audioDecoder->submitDataForDecoding(submissionString);
+							audioDecoder->submitDataForDecoding(std::move(submissionString));
 						}
 						audioDecoder->startMe();
 					} else if (counter > 0) {
@@ -353,7 +353,7 @@ namespace DiscordCoreInternal {
 									submissionString = theCurrentString;
 									theCurrentString.erase(theCurrentString.begin(), theCurrentString.end());
 								}
-								audioDecoder->submitDataForDecoding(submissionString);
+								audioDecoder->submitDataForDecoding(std::move(submissionString));
 								bytesReadTotal = streamSocket->getBytesRead() - headerSize;
 							}
 						}
@@ -371,7 +371,7 @@ namespace DiscordCoreInternal {
 								break;
 							}
 							if (rawFrame.data.size() != 0) {
-								frames.push_back(rawFrame);
+								frames.emplace_back(std::move(rawFrame));
 							}
 						}
 						if (stopToken.stop_requested()) {
@@ -382,7 +382,7 @@ namespace DiscordCoreInternal {
 						if (doWeBreak) {
 							continue;
 						}
-						auto encodedFrames = audioEncoder.encodeFrames(frames);
+						auto encodedFrames = audioEncoder.encodeFrames(std::move(frames));
 						for (auto& value: encodedFrames) {
 							value.guildMemberId = newSong.addedByUserId;
 							DiscordCoreAPI::getVoiceConnectionMap()[this->guildId]->audioDataBuffer.send(value);

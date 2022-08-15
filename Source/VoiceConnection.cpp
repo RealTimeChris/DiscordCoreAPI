@@ -178,7 +178,7 @@ namespace DiscordCoreAPI {
 
 	void VoiceConnection::sendSingleAudioFrame(std::string& audioDataPacketNew) noexcept {
 		if (DatagramSocketClient::areWeStillConnected()) {
-			DatagramSocketClient::writeData(audioDataPacketNew);
+			DatagramSocketClient::writeData(std::move(audioDataPacketNew));
 		} else {
 			this->onClosedVoice();
 		}
@@ -274,7 +274,7 @@ namespace DiscordCoreAPI {
 		this->streamSocket->connect(this->theStreamInfo.address, this->theStreamInfo.port);
 	}
 
-	void VoiceConnection::sendVoiceData(const std::string& responseData) noexcept {
+	void VoiceConnection::sendVoiceData(std::string& responseData) noexcept {
 		try {
 			if (responseData.size() == 0) {
 				if (this->configManager->doWePrintWebSocketErrorMessages()) {
@@ -283,8 +283,7 @@ namespace DiscordCoreAPI {
 				return;
 			} else {
 				if (DatagramSocketClient::areWeStillConnected()) {
-					std::string theData = responseData;
-					DatagramSocketClient::writeData(theData);
+					DatagramSocketClient::writeData(std::move(responseData));
 				} else {
 					this->onClosedVoice();
 				}
@@ -907,7 +906,7 @@ namespace DiscordCoreAPI {
 					packet[6] = static_cast<uint8_t>(this->audioSSRC >> 8);
 					packet[7] = static_cast<uint8_t>(this->audioSSRC);
 					DatagramSocketClient::getInputBuffer();
-					DatagramSocketClient::writeData(packet);
+					DatagramSocketClient::writeData(std::move(packet));
 					std::string inputString{};
 					StopWatch theStopWatch{ 2500ms };
 					while (inputString.size() < 74 && !this->doWeQuit->load() && this->activeState.load() != VoiceActiveState::Exiting) {

@@ -39,7 +39,7 @@ namespace DiscordCoreInternal {
 		this->encoder = opus_encoder_create(this->sampleRate, this->nChannels, OPUS_APPLICATION_AUDIO, &error);
 	}
 
-	std::vector<DiscordCoreAPI::AudioFrameData> AudioEncoder::encodeFrames(std::vector<DiscordCoreAPI::RawFrameData>& rawFrames) {
+	std::vector<DiscordCoreAPI::AudioFrameData> AudioEncoder::encodeFrames(std::vector<DiscordCoreAPI::RawFrameData> rawFrames) {
 		std::vector<DiscordCoreAPI::AudioFrameData> newData{};
 		newData.reserve(rawFrames.size());
 		for (int32_t x = 0; x < rawFrames.size(); x++) {

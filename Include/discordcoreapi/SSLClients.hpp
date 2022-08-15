@@ -250,7 +250,7 @@ namespace DiscordCoreInternal {
 
 		void processIO(ProcessIOType theType) noexcept;
 
-		void writeData(std::string& data) noexcept;
+		void writeData(std::string data) noexcept;
 
 		std::string& getInputBuffer() noexcept;
 
