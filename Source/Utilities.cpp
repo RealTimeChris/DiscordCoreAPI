@@ -929,7 +929,7 @@ namespace DiscordCoreAPI {
 
 	void store32Bits(std::string& to, uint32_t num) {
 		const uint8_t byteSize{ 8 };
-		uint32_t newValue = reverseByteOrder16(num);
+		uint32_t newValue = reverseByteOrder32(num);
 		for (uint32_t x = 0; x < sizeof(uint32_t); x++) {
 			to.push_back(static_cast<uint8_t>(newValue >> (byteSize * x)));
 		}
@@ -937,7 +937,7 @@ namespace DiscordCoreAPI {
 
 	void store64Bits(std::string& to, uint64_t num) {
 		const uint8_t byteSize{ 8 };
-		uint64_t newValue = reverseByteOrder16(num);
+		uint64_t newValue = reverseByteOrder64(num);
 		for (uint64_t x = 0; x < sizeof(uint64_t); x++) {
 			to.push_back(static_cast<uint8_t>(newValue >> (byteSize * x)));
 		}
