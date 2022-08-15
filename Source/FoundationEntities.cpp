@@ -160,8 +160,8 @@ namespace DiscordCoreInternal {
 		if (!HttpsWorkloadData::workloadIdsExternal.contains(theType)) {
 			std::unique_ptr<std::atomic_int64_t> theInt{ std::make_unique<std::atomic_int64_t>() };
 			std::unique_ptr<std::atomic_int64_t> theInt02{ std::make_unique<std::atomic_int64_t>() };
-			HttpsWorkloadData::workloadIdsExternal.insert_or_assign(theType, std::move(theInt));
-			HttpsWorkloadData::workloadIdsInternal.insert_or_assign(theType, std::move(theInt02));
+			HttpsWorkloadData::workloadIdsExternal[theType] = std::move(theInt);
+			HttpsWorkloadData::workloadIdsInternal[theType] = std::move(theInt02);
 		}
 		this->thisWorkerId.store(HttpsWorkloadData::incrementAndGetWorkloadId(theType));
 		this->workloadType = theType;
@@ -1989,7 +1989,7 @@ namespace DiscordCoreAPI {
 		return data.dump();
 	}
 
-	AudioFrameData& AudioFrameData::operator=(AudioFrameData&& other) {
+	AudioFrameData& AudioFrameData::operator=(AudioFrameData&& other) noexcept {
 		this->guildMemberId = other.guildMemberId;
 		this->sampleCount = other.sampleCount;
 		this->data = std::move(other.data);
@@ -1997,11 +1997,11 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	AudioFrameData::AudioFrameData(AudioFrameData&& other) {
+	AudioFrameData::AudioFrameData(AudioFrameData&& other) noexcept {
 		*this = std::move(other);
 	}
 
-	AudioFrameData& AudioFrameData::operator=(AudioFrameData& other) {
+	AudioFrameData& AudioFrameData::operator=(AudioFrameData& other) noexcept {
 		this->guildMemberId = other.guildMemberId;
 		this->sampleCount = other.sampleCount;
 		this->data = other.data;
@@ -2009,7 +2009,7 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	AudioFrameData::AudioFrameData(AudioFrameData& other) {
+	AudioFrameData::AudioFrameData(AudioFrameData& other) noexcept {
 		*this = other;
 	}
 

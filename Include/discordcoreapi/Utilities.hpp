@@ -517,15 +517,15 @@ namespace DiscordCoreAPI {
 		std::vector<uint8_t> data{};///< The audio data.
 		uint64_t guildMemberId{ 0 };///< GuildMemberId for the sending GuildMember.
 
-		AudioFrameData& operator=(AudioFrameData&&);
+		AudioFrameData& operator=(AudioFrameData&&) noexcept;
 
-		AudioFrameData(AudioFrameData&&);
+		AudioFrameData(AudioFrameData&&) noexcept;
 
-		AudioFrameData& operator=(AudioFrameData&);
+		AudioFrameData& operator=(AudioFrameData&) noexcept;
 
-		AudioFrameData(AudioFrameData&);
+		AudioFrameData(AudioFrameData&) noexcept;
 
-		AudioFrameData() = default;
+		AudioFrameData() noexcept = default;
 
 		void clearData();
 	};
