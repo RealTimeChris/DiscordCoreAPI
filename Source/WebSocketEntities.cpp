@@ -1258,7 +1258,7 @@ namespace DiscordCoreInternal {
 					this->connectVoiceInternal();
 				}
 				if (this->sslShard) {
-					this->sslShard->processIO(1000000);
+					this->sslShard->processIO(1000);
 					if (this->sslShard->areWeStillConnected() && this->sslShard->inputBuffer.size() > 0) {
 						this->sslShard->parseMessage(this->sslShard.get());
 					}
