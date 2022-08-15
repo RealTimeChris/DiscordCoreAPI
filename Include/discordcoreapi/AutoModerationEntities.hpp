@@ -35,14 +35,14 @@ namespace DiscordCoreAPI {
 	  public:
 		AutoModerationRule() = default;
 
-		AutoModerationRule& operator=(const nlohmann::json& jsonObjectData);
+		AutoModerationRule& operator=(nlohmann::json& jsonObjectData);
 
-		AutoModerationRule(const nlohmann::json& jsonObjectData);
+		AutoModerationRule(nlohmann::json& jsonObjectData);
 
 		virtual ~AutoModerationRule() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json& jsonObjectData);
+		void parseObject(nlohmann::json& jsonObjectData);
 	};
 
 	class DiscordCoreAPI_Dll AutoModerationRuleVector {
@@ -51,16 +51,16 @@ namespace DiscordCoreAPI {
 
 		operator std::vector<AutoModerationRule>();
 
-		AutoModerationRuleVector& operator=(const nlohmann::json& jsonObjectData);
+		AutoModerationRuleVector& operator=(nlohmann::json& jsonObjectData);
 
-		AutoModerationRuleVector(const nlohmann::json& jsonObjectData);
+		AutoModerationRuleVector(nlohmann::json& jsonObjectData);
 
 		virtual ~AutoModerationRuleVector() = default;
 
 	  protected:
 		std::vector<AutoModerationRule> theAutoModerationRules{};
 
-		void parseObject(const nlohmann::json& jsonObjectData);
+		void parseObject(nlohmann::json& jsonObjectData);
 	};
 
 	/// For listing all of the auto-moderation-rules for a particular Guild. \brief For listing all of the auto-moderation-rules for a particular Guild .
@@ -105,13 +105,13 @@ namespace DiscordCoreAPI {
 
 		AutoModerationActionExecutionEventData() = default;
 
-		AutoModerationActionExecutionEventData& operator=(const nlohmann::json& jsonObjectData);
+		AutoModerationActionExecutionEventData& operator=(nlohmann::json& jsonObjectData);
 
-		AutoModerationActionExecutionEventData(const nlohmann::json& jsonObjectData);
+		AutoModerationActionExecutionEventData(nlohmann::json& jsonObjectData);
 
 		virtual ~AutoModerationActionExecutionEventData() = default;
 
-		void parseObject(const nlohmann::json& jsonObjectData);
+		void parseObject(nlohmann::json& jsonObjectData);
 	};
 
 	/// For modifying an auto-moderation-rule. \brief For modifying an auto-moderation-rule.

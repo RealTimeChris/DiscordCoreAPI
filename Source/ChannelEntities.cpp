@@ -93,12 +93,12 @@ namespace DiscordCoreAPI {
 		return data.dump();
 	}
 
-	Channel& Channel::operator=(const nlohmann::json& jsonObjectData) {
+	Channel& Channel::operator=(nlohmann::json& jsonObjectData) {
 		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	Channel::Channel(const nlohmann::json& jsonObjectData) {
+	Channel::Channel(nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
@@ -146,12 +146,12 @@ namespace DiscordCoreAPI {
 		return this->theChannels;
 	}
 
-	ChannelVector& ChannelVector::operator=(const nlohmann::json& jsonObjectData) {
+	ChannelVector& ChannelVector::operator=(nlohmann::json& jsonObjectData) {
 		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	ChannelVector::ChannelVector(const nlohmann::json& jsonObjectData) {
+	ChannelVector::ChannelVector(nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
