@@ -242,8 +242,8 @@ namespace DiscordCoreInternal {
 					return false;
 				}
 				if (this->configManager->doWePrintWebSocketSuccessMessages()) {
-					cout << DiscordCoreAPI::shiftToBrightBlue() << "Sending WebSocket " + this->shard.dump() + std::string("'s Message: ") << endl
-						 << dataToSend << DiscordCoreAPI::reset();
+					cout << DiscordCoreAPI::shiftToBrightBlue() << "Sending WebSocket " + this->shard.dump() + std::string("'s Message: ") << dataToSend << endl
+						 << DiscordCoreAPI::reset();
 				}
 				ProcessIOResult didWeWrite{ false };
 				DiscordCoreAPI::StopWatch theStopWatch{ 5000ms };
@@ -328,10 +328,10 @@ namespace DiscordCoreInternal {
 					
 					if (this->configManager->getTextFormat() == DiscordCoreAPI::TextFormat::Etf) {
 						try {
-							DiscordCoreAPI::StopWatch theStopWatch{ 50us };
-							theStopWatch.resetTimer();
+							//DiscordCoreAPI::StopWatch theStopWatch{ 50us };
+							//theStopWatch.resetTimer();
 							payload = this->parseEtfToJson(WebSocketSSLShard::inputBuffer.substr(offSet, length));
-							std::cout << "THE TIME TO COMPLETE: " << theStopWatch.totalTimePassed() << std::endl;
+							//std::cout << "THE TIME TO COMPLETE: " << theStopWatch.totalTimePassed() << std::endl;
 						} catch (...) {
 							if (this->configManager->doWePrintGeneralErrorMessages()) {
 								DiscordCoreAPI::reportException("ErlPacker::parseEtfToJson()");
@@ -883,11 +883,7 @@ namespace DiscordCoreInternal {
 								resumeData.lastNumberReceived = this->lastNumberReceived;
 								nlohmann::json resumePayload = resumeData;
 								std::string theString{};
-								if (this->dataOpCode == WebSocketOpCode::Op_Binary) {
-									this->stringifyJsonData(resumePayload, theString, WebSocketOpCode::Op_Binary);
-								} else {
-									this->stringifyJsonData(resumePayload, theString, WebSocketOpCode::Op_Text);
-								}
+								this->stringifyJsonData(resumePayload, theString, this->dataOpCode);
 								if (!this->sendMessage(theString, true)) {
 									returnValue = true;
 								}
@@ -901,11 +897,7 @@ namespace DiscordCoreInternal {
 								identityData.presence = this->configManager->getPresenceData();
 								nlohmann::json identityJson = identityData;
 								std::string theString{};
-								if (this->dataOpCode == WebSocketOpCode::Op_Binary) {
-									this->stringifyJsonData(identityJson, theString, WebSocketOpCode::Op_Binary);
-								} else {
-									this->stringifyJsonData(identityJson, theString, WebSocketOpCode::Op_Text);
-								}
+								this->stringifyJsonData(identityJson, theString, this->dataOpCode);
 								if (!this->sendMessage(theString, true)) {
 									returnValue = true;
 								}
