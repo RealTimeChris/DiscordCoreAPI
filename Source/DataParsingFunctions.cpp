@@ -90,7 +90,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	uint64_t strtoull(const std::string&& theString) {
+	uint64_t strtoull(const std::string& theString) {
 		if (theString != "") {
 			return stoull(theString);
 		} else {
