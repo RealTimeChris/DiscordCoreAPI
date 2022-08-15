@@ -31,6 +31,122 @@ namespace DiscordCoreInternal {
 	constexpr uint8_t webSocketFinishBit{ (1u << 7u) };
 	constexpr uint8_t webSocketMaskBit{ (1u << 7u) };
 
+	EventConverter::EventConverter(std::string theNewEvent) {
+		this->theEvent = theNewEvent;
+	}
+
+	EventConverter::operator int32_t() {
+		if (this->theEvent == "APPLICATION_COMMAND_PERMISSIONS_UPDATE") {
+			return 1;
+		} else if (this->theEvent == "AUTO_MODERATION_RULE_CREATE") {
+			return 2;
+		} else if (this->theEvent == "AUTO_MODERATION_RULE_UPDATE") {
+			return 3;
+		} else if (this->theEvent == "AUTO_MODERATION_RULE_DELETE") {
+			return 4;
+		} else if (this->theEvent == "AUTO_MODERATION_ACTION_EXECUTION") {
+			return 5;
+		} else if (this->theEvent == "CHANNEL_CREATE") {
+			return 6;
+		} else if (this->theEvent == "CHANNEL_UPDATE") {
+			return 7;
+		} else if (this->theEvent == "CHANNEL_DELETE") {
+			return 8;
+		} else if (this->theEvent == "CHANNEL_PINS_UPDATE") {
+			return 9;
+		} else if (this->theEvent == "THREAD_CREATE") {
+			return 10;
+		} else if (this->theEvent == "THREAD_UPATE") {
+			return 11;
+		} else if (this->theEvent == "THREAD_DELETE") {
+			return 12;
+		} else if (this->theEvent == "THREAD_LIST_SYNC") {
+			return 13;
+		} else if (this->theEvent == "THREAD_MEMBER_UPDATE") {
+			return 14;
+		} else if (this->theEvent == "THREAD_MEMBERS_UPDATE") {
+			return 15;
+		} else if (this->theEvent == "GUILD_CREATE") {
+			return 16;
+		} else if (this->theEvent == "GUILD_UPDATE") {
+			return 17;
+		} else if (this->theEvent == "GUILD_DELETE") {
+			return 18;
+		} else if (this->theEvent == "GUILD_BAN_ADD") {
+			return 19;
+		} else if (this->theEvent == "GUILD_BAN_REMOVE") {
+			return 20;
+		} else if (this->theEvent == "GUILD_EMOJIS_UPDATE") {
+			return 21;
+		} else if (this->theEvent == "GUILD_STICKERS_UPDATE") {
+			return 22;
+		} else if (this->theEvent == "GUILD_INTEGRATIONS_UPDATE") {
+			return 23;
+		} else if (this->theEvent == "GUILD_MEMBER_ADD") {
+			return 24;
+		} else if (this->theEvent == "GUILD_MEMBER_REMOVE") {
+			return 25;
+		} else if (this->theEvent == "GUILD_MEMBER_UPDATE") {
+			return 26;
+		} else if (this->theEvent == "GUILD_MEMBERS_CHUNK") {
+			return 27;
+		} else if (this->theEvent == "GUILD_ROLE_CREATE") {
+			return 28;
+		} else if (this->theEvent == "GUILD_ROLE_UPDATE") {
+			return 29;
+		} else if (this->theEvent == "GUILD_ROLE_DELETE") {
+			return 30;
+		} else if (this->theEvent == "INTEGRATION_CREATE") {
+			return 31;
+		} else if (this->theEvent == "INTEGRATION_UPDATE") {
+			return 32;
+		} else if (this->theEvent == "INTEGRATION_DELETE") {
+			return 33;
+		} else if (this->theEvent == "INTERACTION_CREATE") {
+			return 34;
+		} else if (this->theEvent == "INVITE_CREATE") {
+			return 35;
+		} else if (this->theEvent == "INVITE_DELETE") {
+			return 36;
+		} else if (this->theEvent == "MESSAGE_CREATE") {
+			return 37;
+		} else if (this->theEvent == "MESSAGE_UPDATE") {
+			return 38;
+		} else if (this->theEvent == "MESSAGE_DELETE") {
+			return 39;
+		} else if (this->theEvent == "MESSAGE_DELETE_BULK") {
+			return 40;
+		} else if (this->theEvent == "MESSAGE_REACTION_ADD") {
+			return 41;
+		} else if (this->theEvent == "MESSAGE_REACTION_REMOVE") {
+			return 42;
+		} else if (this->theEvent == "MESSAGE_REACTION_REMOVE_ALL") {
+			return 43;
+		} else if (this->theEvent == "MESSAGE_REACTION_REMOVE_EMOJI") {
+			return 44;
+		} else if (this->theEvent == "PRESENCE_UPDATE") {
+			return 45;
+		} else if (this->theEvent == "STAGE_INSTANCE_CREATE") {
+			return 46;
+		} else if (this->theEvent == "STAGE_INSTANCE_UPDATE") {
+			return 47;
+		} else if (this->theEvent == "STAGE_INSTANCE_DELETE") {
+			return 48;
+		} else if (this->theEvent == "TYPING_START") {
+			return 49;
+		} else if (this->theEvent == "USER_UPDATE") {
+			return 50;
+		} else if (this->theEvent == "VOICE_STATE_UPDATE") {
+			return 51;
+		} else if (this->theEvent == "VOICE_SERVER_UPDATE") {
+			return 52;
+		} else if (this->theEvent == "WEBHOOKS_UPDATE") {
+			return 53;
+		} else {
+			return 0;
+		}
+	}
+
 	WebSocketMessageHandler::WebSocketMessageHandler(DiscordCoreAPI::ConfigManager* configManagerNew) {
 		this->configManager = configManagerNew;
 	}
@@ -173,7 +289,6 @@ namespace DiscordCoreInternal {
 	WebSocketSSLShard::WebSocketSSLShard(DiscordCoreAPI::DiscordCoreClient* theClient, std::queue<DiscordCoreAPI::ConnectionPackage>* connectionsNew,
 		int32_t currentBaseSocketAgentNew, int32_t currentShardNew, std::atomic_bool* doWeQuitNew) noexcept
 		: WebSocketMessageHandler(&theClient->configManager) {
-		this->heartBeatStopWatch = DiscordCoreAPI::StopWatch<std::chrono::milliseconds>{ 10000ms };
 		this->currentBaseSocketAgent = currentBaseSocketAgentNew;
 		this->configManager = &theClient->configManager;
 		this->discordCoreClient = theClient;
@@ -315,133 +430,6 @@ namespace DiscordCoreInternal {
 				theData.currentShard = this->shard[0];
 				this->connections->push(theData);
 			}
-		}
-	}
-
-	class EventConverter {
-	  public:
-		EventConverter(std::string theEventNew);
-
-		operator int32_t();
-
-	  protected:
-		std::string theEvent{};
-
-	};
-
-	EventConverter::EventConverter(std::string theNewEvent) {
-		this->theEvent = theNewEvent;
-	}
-
-	EventConverter::operator int32_t() {
-		if (this->theEvent == "APPLICATION_COMMAND_PERMISSIONS_UPDATE") {
-			return 1;
-		} else if (this->theEvent == "AUTO_MODERATION_RULE_CREATE") {
-			return 2;
-		} else if (this->theEvent == "AUTO_MODERATION_RULE_UPDATE") {
-			return 3;
-		} else if (this->theEvent == "AUTO_MODERATION_RULE_DELETE") {
-			return 4;
-		} else if (this->theEvent == "AUTO_MODERATION_ACTION_EXECUTION") {
-			return 5;
-		} else if (this->theEvent == "CHANNEL_CREATE") {
-			return 6;
-		} else if (this->theEvent == "CHANNEL_UPDATE") {
-			return 7;
-		} else if (this->theEvent == "CHANNEL_DELETE") {
-			return 8;
-		} else if (this->theEvent == "CHANNEL_PINS_UPDATE") {
-			return 9;
-		} else if (this->theEvent == "THREAD_CREATE") {
-			return 10;
-		} else if (this->theEvent == "THREAD_UPATE") {
-			return 11;
-		} else if (this->theEvent == "THREAD_DELETE") {
-			return 12;
-		} else if (this->theEvent == "THREAD_LIST_SYNC") {
-			return 13;
-		} else if (this->theEvent == "THREAD_MEMBER_UPDATE") {
-			return 14;
-		} else if (this->theEvent == "THREAD_MEMBERS_UPDATE") {
-			return 15;
-		} else if (this->theEvent == "GUILD_CREATE") {
-			return 16;
-		} else if (this->theEvent == "GUILD_UPDATE") {
-			return 17;
-		} else if (this->theEvent == "GUILD_DELETE") {
-			return 18;
-		} else if (this->theEvent == "GUILD_BAN_ADD") {
-			return 19;
-		} else if (this->theEvent == "GUILD_BAN_REMOVE") {
-			return 20;
-		} else if (this->theEvent == "GUILD_EMOJIS_UPDATE") {
-			return 21;
-		} else if (this->theEvent == "GUILD_STICKERS_UPDATE") {
-			return 22;
-		} else if (this->theEvent == "GUILD_INTEGRATIONS_UPDATE") {
-			return 23;
-		} else if (this->theEvent == "GUILD_MEMBER_ADD") {
-			return 24;
-		} else if (this->theEvent == "GUILD_MEMBER_REMOVE") {
-			return 25;
-		} else if (this->theEvent == "GUILD_MEMBER_UPDATE") {
-			return 26;
-		} else if (this->theEvent == "GUILD_MEMBERS_CHUNK") {
-			return 27;
-		} else if (this->theEvent == "GUILD_ROLE_CREATE") {
-			return 28;
-		} else if (this->theEvent == "GUILD_ROLE_UPDATE") {
-			return 29;
-		} else if (this->theEvent == "GUILD_ROLE_DELETE") {
-			return 30;
-		} else if (this->theEvent == "INTEGRATION_CREATE") {
-			return 31;
-		} else if (this->theEvent == "INTEGRATION_UPDATE") {
-			return 32;
-		} else if (this->theEvent == "INTEGRATION_DELETE") {
-			return 33;
-		} else if (this->theEvent == "INTERACTION_CREATE") {
-			return 34;
-		} else if (this->theEvent == "INVITE_CREATE") {
-			return 35;
-		} else if (this->theEvent == "INVITE_DELETE") {
-			return 36;
-		} else if (this->theEvent == "MESSAGE_CREATE") {
-			return 37;
-		} else if (this->theEvent == "MESSAGE_UPDATE") {
-			return 38;
-		} else if (this->theEvent == "MESSAGE_DELETE") {
-			return 39;
-		} else if (this->theEvent == "MESSAGE_DELETE_BULK") {
-			return 40;
-		} else if (this->theEvent == "MESSAGE_REACTION_ADD") {
-			return 41;
-		} else if (this->theEvent == "MESSAGE_REACTION_REMOVE") {
-			return 42;
-		} else if (this->theEvent == "MESSAGE_REACTION_REMOVE_ALL") {
-			return 43;
-		} else if (this->theEvent == "MESSAGE_REACTION_REMOVE_EMOJI") {
-			return 44;
-		} else if (this->theEvent == "PRESENCE_UPDATE") {
-			return 45;
-		} else if (this->theEvent == "STAGE_INSTANCE_CREATE") {
-			return 46;
-		} else if (this->theEvent == "STAGE_INSTANCE_UPDATE") {
-			return 47;
-		} else if (this->theEvent == "STAGE_INSTANCE_DELETE") {
-			return 48;
-		} else if (this->theEvent == "TYPING_START") {
-			return 49;
-		} else if (this->theEvent == "USER_UPDATE") {
-			return 50;
-		} else if (this->theEvent == "VOICE_STATE_UPDATE") {
-			return 51;
-		} else if (this->theEvent == "VOICE_SERVER_UPDATE") {
-			return 52;
-		} else if (this->theEvent == "WEBHOOKS_UPDATE") {
-			return 53;
-		} else {
-			return 0;
 		}
 	}
 
@@ -796,75 +784,90 @@ namespace DiscordCoreInternal {
 										std::unique_ptr<DiscordCoreAPI::InteractionData> interactionData{ std::make_unique<DiscordCoreAPI::InteractionData>() };
 										*interactionData = payload["d"];
 										std::unique_ptr<DiscordCoreAPI::InputEventData> eventData{ std::make_unique<DiscordCoreAPI::InputEventData>(*interactionData) };
-										if (interactionData->type == DiscordCoreAPI::InteractionType::Application_Command) {
-											eventData->responseType = DiscordCoreAPI::InputEventResponseType::Unset;
-											*eventData->interactionData = *interactionData;
-											std::unique_ptr<DiscordCoreAPI::OnInteractionCreationData> dataPackage{ std::make_unique<DiscordCoreAPI::OnInteractionCreationData>() };
-											dataPackage->interactionData = *interactionData;
-											std::unique_ptr<DiscordCoreAPI::CommandData> commandData{ std::make_unique<DiscordCoreAPI::CommandData>(*eventData) };
-											DiscordCoreAPI::CommandData commandDataNew = *commandData;
-											this->discordCoreClient->commandController.checkForAndRunCommand(commandDataNew);
-											this->discordCoreClient->eventManager.onInteractionCreationEvent(*dataPackage);
-											std::unique_ptr<DiscordCoreAPI::OnInputEventCreationData> eventCreationData{
-												std::make_unique<DiscordCoreAPI::OnInputEventCreationData>()
-											};
-											eventCreationData->inputEventData = *eventData;
-											this->discordCoreClient->eventManager.onInputEventCreationEvent(*eventCreationData);
-										} else if (interactionData->type == DiscordCoreAPI::InteractionType::Message_Component) {
-											if (interactionData->data.componentData.componentType == DiscordCoreAPI::ComponentType::Button) {
+										switch (interactionData->type) {
+											case DiscordCoreAPI::InteractionType::Application_Command: {
 												eventData->responseType = DiscordCoreAPI::InputEventResponseType::Unset;
 												*eventData->interactionData = *interactionData;
 												std::unique_ptr<DiscordCoreAPI::OnInteractionCreationData> dataPackage{
 													std::make_unique<DiscordCoreAPI::OnInteractionCreationData>()
 												};
 												dataPackage->interactionData = *interactionData;
-												if (DiscordCoreAPI::ButtonCollector::buttonInteractionBufferMap.contains(
-														std::to_string(eventData->getChannelId()) + std::to_string(eventData->getMessageId()))) {
-													DiscordCoreAPI::ButtonCollector::buttonInteractionBufferMap[std::to_string(eventData->getChannelId()) +
-														std::to_string(eventData->getMessageId())]
-														->send(*interactionData);
-												}
+												std::unique_ptr<DiscordCoreAPI::CommandData> commandData{ std::make_unique<DiscordCoreAPI::CommandData>(*eventData) };
+												DiscordCoreAPI::CommandData commandDataNew = *commandData;
+												this->discordCoreClient->commandController.checkForAndRunCommand(commandDataNew);
 												this->discordCoreClient->eventManager.onInteractionCreationEvent(*dataPackage);
-											} else if (interactionData->data.componentData.componentType == DiscordCoreAPI::ComponentType::SelectMenu) {
+												std::unique_ptr<DiscordCoreAPI::OnInputEventCreationData> eventCreationData{
+													std::make_unique<DiscordCoreAPI::OnInputEventCreationData>()
+												};
+												eventCreationData->inputEventData = *eventData;
+												this->discordCoreClient->eventManager.onInputEventCreationEvent(*eventCreationData);
+											}
+											case DiscordCoreAPI::InteractionType::Message_Component: {
+												switch (interactionData->data.componentData.componentType) {
+													case DiscordCoreAPI::ComponentType::Button: {
+														eventData->responseType = DiscordCoreAPI::InputEventResponseType::Unset;
+														*eventData->interactionData = *interactionData;
+														std::unique_ptr<DiscordCoreAPI::OnInteractionCreationData> dataPackage{
+															std::make_unique<DiscordCoreAPI::OnInteractionCreationData>()
+														};
+														dataPackage->interactionData = *interactionData;
+														if (DiscordCoreAPI::ButtonCollector::buttonInteractionBufferMap.contains(
+																std::to_string(eventData->getChannelId()) + std::to_string(eventData->getMessageId()))) {
+															DiscordCoreAPI::ButtonCollector::buttonInteractionBufferMap[std::to_string(eventData->getChannelId()) +
+																std::to_string(eventData->getMessageId())]
+																->send(*interactionData);
+														}
+														this->discordCoreClient->eventManager.onInteractionCreationEvent(*dataPackage);
+													}
+													case DiscordCoreAPI::ComponentType::SelectMenu: {
+														eventData->responseType = DiscordCoreAPI::InputEventResponseType::Unset;
+														*eventData->interactionData = *interactionData;
+														std::unique_ptr<DiscordCoreAPI::OnInteractionCreationData> dataPackage{
+															std::make_unique<DiscordCoreAPI::OnInteractionCreationData>()
+														};
+														dataPackage->interactionData = *interactionData;
+														if (DiscordCoreAPI::SelectMenuCollector::selectMenuInteractionBufferMap.contains(
+																std::to_string(eventData->getChannelId()) + std::to_string(eventData->getMessageId()))) {
+															DiscordCoreAPI::SelectMenuCollector::selectMenuInteractionBufferMap[std::to_string(eventData->getChannelId()) +
+																std::to_string(eventData->getMessageId())]
+																->send(*interactionData);
+														}
+														this->discordCoreClient->eventManager.onInteractionCreationEvent(*dataPackage);
+													}
+												}
+											}
+											case DiscordCoreAPI::InteractionType::Modal_Submit: {
 												eventData->responseType = DiscordCoreAPI::InputEventResponseType::Unset;
 												*eventData->interactionData = *interactionData;
 												std::unique_ptr<DiscordCoreAPI::OnInteractionCreationData> dataPackage{
 													std::make_unique<DiscordCoreAPI::OnInteractionCreationData>()
 												};
 												dataPackage->interactionData = *interactionData;
-												if (DiscordCoreAPI::SelectMenuCollector::selectMenuInteractionBufferMap.contains(
-														std::to_string(eventData->getChannelId()) + std::to_string(eventData->getMessageId()))) {
-													DiscordCoreAPI::SelectMenuCollector::selectMenuInteractionBufferMap[std::to_string(eventData->getChannelId()) +
-														std::to_string(eventData->getMessageId())]
-														->send(*interactionData);
+												std::unique_ptr<DiscordCoreAPI::OnInputEventCreationData> eventCreationData{
+													std::make_unique<DiscordCoreAPI::OnInputEventCreationData>()
+												};
+												eventCreationData->inputEventData = *eventData;
+												if (DiscordCoreAPI::ModalCollector::modalInteractionBufferMap.contains(std::to_string(eventData->getChannelId()))) {
+													DiscordCoreAPI::ModalCollector::modalInteractionBufferMap[std::to_string(eventData->getChannelId())]->send(
+														eventData->getInteractionData());
 												}
 												this->discordCoreClient->eventManager.onInteractionCreationEvent(*dataPackage);
 											}
-										} else if (interactionData->type == DiscordCoreAPI::InteractionType::Modal_Submit) {
-											eventData->responseType = DiscordCoreAPI::InputEventResponseType::Unset;
-											*eventData->interactionData = *interactionData;
-											std::unique_ptr<DiscordCoreAPI::OnInteractionCreationData> dataPackage{ std::make_unique<DiscordCoreAPI::OnInteractionCreationData>() };
-											dataPackage->interactionData = *interactionData;
-											std::unique_ptr<DiscordCoreAPI::OnInputEventCreationData> eventCreationData{
-												std::make_unique<DiscordCoreAPI::OnInputEventCreationData>()
-											};
-											eventCreationData->inputEventData = *eventData;
-											if (DiscordCoreAPI::ModalCollector::modalInteractionBufferMap.contains(std::to_string(eventData->getChannelId()))) {
-												DiscordCoreAPI::ModalCollector::modalInteractionBufferMap[std::to_string(eventData->getChannelId())]->send(
-													eventData->getInteractionData());
+										
+											case DiscordCoreAPI::InteractionType::Application_Command_Autocomplete: {
+												eventData->responseType = DiscordCoreAPI::InputEventResponseType::Unset;
+												*eventData->interactionData = *interactionData;
+												std::unique_ptr<DiscordCoreAPI::OnInteractionCreationData> dataPackage{
+													std::make_unique<DiscordCoreAPI::OnInteractionCreationData>()
+												};
+												dataPackage->interactionData = *interactionData;
+												std::unique_ptr<DiscordCoreAPI::OnAutoCompleteEntryData> autocompleteEntryData{
+													std::make_unique<DiscordCoreAPI::OnAutoCompleteEntryData>()
+												};
+												autocompleteEntryData->inputEvent = *eventData;
+												this->discordCoreClient->eventManager.onAutoCompleteEntryEvent(*autocompleteEntryData);
+												this->discordCoreClient->eventManager.onInteractionCreationEvent(*dataPackage);
 											}
-											this->discordCoreClient->eventManager.onInteractionCreationEvent(*dataPackage);
-										} else if (interactionData->type == DiscordCoreAPI::InteractionType::Application_Command_Autocomplete) {
-											eventData->responseType = DiscordCoreAPI::InputEventResponseType::Unset;
-											*eventData->interactionData = *interactionData;
-											std::unique_ptr<DiscordCoreAPI::OnInteractionCreationData> dataPackage{ std::make_unique<DiscordCoreAPI::OnInteractionCreationData>() };
-											dataPackage->interactionData = *interactionData;
-											std::unique_ptr<DiscordCoreAPI::OnAutoCompleteEntryData> autocompleteEntryData{
-												std::make_unique<DiscordCoreAPI::OnAutoCompleteEntryData>()
-											};
-											autocompleteEntryData->inputEvent = *eventData;
-											this->discordCoreClient->eventManager.onAutoCompleteEntryEvent(*autocompleteEntryData);
-											this->discordCoreClient->eventManager.onInteractionCreationEvent(*dataPackage);
 										}
 									}
 									case 35: {
@@ -1086,6 +1089,7 @@ namespace DiscordCoreInternal {
 									break;
 								}
 							}
+							break;
 						}
 						case 1: {
 							this->checkForAndSendHeartBeat(true);
@@ -1117,6 +1121,7 @@ namespace DiscordCoreInternal {
 						}
 						case 10: {
 							if (payload["d"].contains("heartbeat_interval") && !payload["d"]["heartbeat_interval"].is_null()) {
+								this->areWeHeartBeating = true;
 								this->heartBeatStopWatch = DiscordCoreAPI::StopWatch<std::chrono::milliseconds>{ std::chrono::milliseconds{ payload["d"]["heartbeat_interval"] } };
 							}
 							if (this->areWeResuming) {
@@ -1253,16 +1258,12 @@ namespace DiscordCoreInternal {
 					this->connectVoiceInternal();
 				}
 				if (this->sslShard) {
-					this->sslShard->processIO();
+					this->sslShard->processIO(1000000);
 					if (this->sslShard->areWeStillConnected() && this->sslShard->inputBuffer.size() > 0) {
 						this->sslShard->parseMessage(this->sslShard.get());
 					}
 					if (this->sslShard->areWeStillConnected()) {
 						this->sslShard->checkForAndSendHeartBeat();
-						if (this->sslShard && this->heartbeatInterval != 0 && !this->sslShard->areWeHeartBeating) {
-							this->sslShard->areWeHeartBeating = true;
-							this->sslShard->heartBeatStopWatch = DiscordCoreAPI::StopWatch{ std::chrono::milliseconds{ this->heartbeatInterval } };
-						}
 					}
 				}
 			}
@@ -1329,7 +1330,7 @@ namespace DiscordCoreInternal {
 					if (this->sslShard->theWebSocketState.load() == WebSocketSSLShardState::Collecting_Hello) {
 						break;
 					}
-					this->sslShard->processIO();
+					this->sslShard->processIO(1000000);
 					if (this->sslShard->areWeStillConnected()) {
 						this->sslShard->parseConnectionHeaders(this->sslShard.get());
 					}

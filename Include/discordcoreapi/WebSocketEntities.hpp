@@ -29,6 +29,16 @@
 
 namespace DiscordCoreInternal {
 
+	class EventConverter {
+	  public:
+		EventConverter(std::string theEventNew);
+
+		operator int32_t();
+
+	  protected:
+		std::string theEvent{};
+	};
+
 	class DiscordCoreAPI_Dll WebSocketMessageHandler : public ErlPacker {
 	  public:
 		WebSocketMessageHandler() = default;
@@ -83,7 +93,7 @@ namespace DiscordCoreInternal {
 	  protected:
 		std::unordered_map<Snowflake, DiscordCoreAPI::UnboundedMessageBlock<VoiceConnectionData>*> voiceConnectionDataBufferMap{};
 		std::atomic<WebSocketSSLShardState> theWebSocketState{ WebSocketSSLShardState::Connecting };
-		DiscordCoreAPI::StopWatch<std::chrono::milliseconds> heartBeatStopWatch{ 0ms };
+		DiscordCoreAPI::StopWatch<std::chrono::milliseconds> heartBeatStopWatch{ 20000ms };
 		DiscordCoreAPI::DiscordCoreClient* discordCoreClient{ nullptr };
 		VoiceConnectionData voiceConnectionData{};
 		bool haveWeReceivedHeartbeatAck{ true };

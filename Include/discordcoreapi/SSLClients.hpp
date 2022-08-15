@@ -219,6 +219,8 @@ namespace DiscordCoreInternal {
 
 		bool connect(const std::string& baseUrl, const std::string& portNew) noexcept;
 
+		ProcessIOResult processIO(int32_t msToWait) noexcept;
+
 		ProcessIOResult writeDataProcess() noexcept;
 
 		ProcessIOResult readDataProcess() noexcept;
@@ -226,8 +228,6 @@ namespace DiscordCoreInternal {
 		std::string getInputBufferCopy() noexcept;
 
 		std::string& getInputBuffer() noexcept;
-
-		ProcessIOResult processIO() noexcept;
 
 		bool areWeStillConnected() noexcept;
 

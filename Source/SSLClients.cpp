@@ -304,7 +304,7 @@ namespace DiscordCoreInternal {
 		return true;
 	}
 
-	ProcessIOResult SSLClient::processIO() noexcept {
+	ProcessIOResult SSLClient::processIO(int32_t msToWait) noexcept {
 		if (this->theSocket == SOCKET_ERROR) {
 			this->disconnect(true);
 			return ProcessIOResult::Disconnected;
@@ -323,7 +323,7 @@ namespace DiscordCoreInternal {
 		readNfds = this->theSocket > readNfds ? this->theSocket : readNfds;
 		finalNfds = readNfds > writeNfds ? readNfds : writeNfds;
 
-		timeval checkTime{ .tv_sec = 1, .tv_usec = 0 };
+		timeval checkTime{ .tv_sec = 0, .tv_usec = msToWait };
 		if (auto returnValue = select(finalNfds + 1, &readSet, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
 			this->disconnect(true);
 			return ProcessIOResult::Select_Failure;
