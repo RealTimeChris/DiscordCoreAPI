@@ -50,7 +50,7 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll ErlPacker {
 	  public:
-		std::string parseJsonToEtf(const nlohmann::json&);
+		std::string parseJsonToEtf(nlohmann::json&);
 
 		nlohmann::json parseEtfToJson(std::string&& dataToParse);
 
@@ -66,7 +66,7 @@ namespace DiscordCoreInternal {
 
 		mutable uint64_t offSet{};
 
-		void singleValueJsonToETF(const nlohmann::json&);
+		void singleValueJsonToETF(nlohmann::json&);
 
 		void writeToBuffer(const std::string&);
 

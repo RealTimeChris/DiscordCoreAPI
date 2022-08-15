@@ -32,7 +32,7 @@ namespace DiscordCoreInternal {
 
 	ErlPacker::ErlPacker(std::string& theBuffer) : buffer(( std::string& )theBuffer){};
 
-	std::string ErlPacker::parseJsonToEtf(const nlohmann::json& dataToParse) {
+	std::string ErlPacker::parseJsonToEtf(nlohmann::json& dataToParse) {
 		std::string theString{};
 		this->buffer = theString;
 		this->offSet = 0;
@@ -48,7 +48,7 @@ namespace DiscordCoreInternal {
 		return ErlPacker::singleValueETFToJson();
 	}
 
-	void ErlPacker::singleValueJsonToETF(const nlohmann::json& jsonData) {
+	void ErlPacker::singleValueJsonToETF(nlohmann::json& jsonData) {
 		if (jsonData.is_array()) {
 			uint32_t length = static_cast<uint32_t>(jsonData.size());
 			if (length == 0) {

@@ -177,14 +177,14 @@ namespace DiscordCoreAPI {
 	  public:
 		ApplicationCommand() = default;
 
-		ApplicationCommand& operator=(const nlohmann::json& jsonObjectData);
+		ApplicationCommand& operator=(nlohmann::json& jsonObjectData);
 
-		ApplicationCommand(const nlohmann::json& jsonObjectData);
+		ApplicationCommand(nlohmann::json& jsonObjectData);
 
 		virtual ~ApplicationCommand() = default;
 
 	  protected:
-		void parseObject(const nlohmann::json& jsonObjectData);
+		void parseObject(nlohmann::json& jsonObjectData);
 	};
 
 	/**@}*/
