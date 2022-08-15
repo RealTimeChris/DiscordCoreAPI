@@ -192,12 +192,13 @@ namespace DiscordCoreAPI {
 		this->audioDataBuffer.send(frameData);
 	}
 
-	bool VoiceConnection::onMessageReceived(const std::string& theString) noexcept {
+	bool VoiceConnection::onMessageReceived(int64_t offSet, int64_t length) noexcept {
 		try {
-			if (theString.size() > 0) {
-				nlohmann::json payload = payload.parse(theString);
+			if (WebSocketSSLShard::inputBuffer.size() > 0) {
+				nlohmann::json payload = payload.parse(WebSocketSSLShard::inputBuffer.substr(offSet, length));
 				if (this->configManager->doWePrintWebSocketSuccessMessages()) {
-					cout << DiscordCoreAPI::shiftToBrightGreen() << "Message received from Voice WebSocket: " << theString << DiscordCoreAPI::reset() << endl << endl;
+					cout << DiscordCoreAPI::shiftToBrightGreen() << "Message received from Voice WebSocket: " << WebSocketSSLShard::inputBuffer << DiscordCoreAPI::reset() << endl
+						 << endl;
 				}
 				if (payload.contains("op") && !payload["op"].is_null()) {
 					switch (payload["op"].get<int32_t>()) {

@@ -52,13 +52,13 @@ namespace DiscordCoreInternal {
 	  public:
 		std::string parseJsonToEtf(const nlohmann::json&);
 
-		nlohmann::json parseEtfToJson(const std::string&);
+		nlohmann::json parseEtfToJson(std::string&& dataToParse);
 
 		ErlPacker();
 
-		ErlPacker& operator=(const std::string&);
+		ErlPacker& operator=(std::string&);
 
-		ErlPacker(const std::string&);
+		ErlPacker(std::string&);
 
 	  protected:
 		std::string bufferRef;
