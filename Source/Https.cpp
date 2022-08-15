@@ -496,7 +496,7 @@ namespace DiscordCoreInternal {
 						}
 						theConnection.parseCode(theData, theConnection.getInputBuffer());
 						stopWatch.resetTimer();
-						if (theData.responseCode > 201 && theData.responseCode != 429) {
+						if (theData.responseCode == 204) {
 							doWeReturn = true;
 						}
 						break;

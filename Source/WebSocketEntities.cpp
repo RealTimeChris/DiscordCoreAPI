@@ -440,7 +440,7 @@ namespace DiscordCoreInternal {
 				nlohmann::json payload{};
 				if (WebSocketSSLShard::inputBuffer.size() > 0) {
 					returnValue = true;
-					
+
 					if (this->configManager->getTextFormat() == DiscordCoreAPI::TextFormat::Etf) {
 						try {
 							//DiscordCoreAPI::StopWatch theStopWatch{ 50us };
@@ -459,7 +459,7 @@ namespace DiscordCoreInternal {
 				} else {
 					returnValue = true;
 				}
-				
+
 				if (payload.contains("t") && !payload["t"].is_null()) {
 					if (payload["t"] == "RESUMED") {
 						this->theWebSocketState.store(WebSocketSSLShardState::Authenticated);
@@ -516,7 +516,6 @@ namespace DiscordCoreInternal {
 										};
 										dataPackage->theRule = payload["d"];
 										this->discordCoreClient->eventManager.onAutoModerationRuleDeletionEvent(*dataPackage);
-
 									}
 									case 5: {
 										std::unique_ptr<DiscordCoreAPI::OnAutoModerationActionExecutionData> dataPackage{
@@ -853,7 +852,7 @@ namespace DiscordCoreInternal {
 												}
 												this->discordCoreClient->eventManager.onInteractionCreationEvent(*dataPackage);
 											}
-										
+
 											case DiscordCoreAPI::InteractionType::Application_Command_Autocomplete: {
 												eventData->responseType = DiscordCoreAPI::InputEventResponseType::Unset;
 												*eventData->interactionData = *interactionData;

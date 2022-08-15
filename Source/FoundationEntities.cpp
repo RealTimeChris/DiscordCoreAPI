@@ -1666,7 +1666,7 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	RawFrameData::RawFrameData(RawFrameData&&other) {
+	RawFrameData::RawFrameData(RawFrameData&& other) {
 		*this = std::move(other);
 	}
 

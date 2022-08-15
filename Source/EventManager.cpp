@@ -252,13 +252,13 @@ namespace DiscordCoreAPI {
 		*this = other;
 	}
 
-	OnGuildCreationData& OnGuildCreationData::operator=(OnGuildCreationData&other) {
+	OnGuildCreationData& OnGuildCreationData::operator=(OnGuildCreationData& other) {
 		this->guild = std::make_unique<Guild>();
 		*this->guild = *other.guild;
 		return *this;
 	}
 
-	OnGuildCreationData::OnGuildCreationData(OnGuildCreationData&other){
+	OnGuildCreationData::OnGuildCreationData(OnGuildCreationData& other) {
 		*this = other;
 	}
 
@@ -305,7 +305,7 @@ namespace DiscordCoreAPI {
 	OnGuildDeletionData::OnGuildDeletionData(OnGuildDeletionData& other) {
 		*this = other;
 	}
-	
+
 	DiscordCoreInternal::EventDelegateToken EventManager::onApplicationCommandsPermissionsUpdate(
 		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnApplicationCommandPermissionsUpdateData> handler) {
 		return this->onApplicationCommandPermissionsUpdateEvent.add(std::move(handler));

@@ -329,20 +329,20 @@ namespace DiscordCoreInternal {
 			return ProcessIOResult::Select_Failure;
 		} else if (returnValue == 0) {
 			return ProcessIOResult::Select_No_Return;
-		}
-
-		if (FD_ISSET(this->theSocket, &writeSet)) {
-			return this->writeDataProcess();
-		}
-		if (FD_ISSET(this->theSocket, &readSet)) {
-			return this->readDataProcess();
+		} else {
+			if (FD_ISSET(this->theSocket, &writeSet)) {
+				return this->writeDataProcess();
+			}
+			if (FD_ISSET(this->theSocket, &readSet)) {
+				return this->readDataProcess();
+			}
 		}
 		return ProcessIOResult::No_Error;
 	}
 
 	std::string SSLClient::getInputBufferCopy() noexcept {
 		std::lock_guard theLock{ this->connectionMutex };
-		std::string theString = this->inputBuffer;
+		std::string theString = std::move(this->inputBuffer);
 		this->inputBuffer.clear();
 		return theString;
 	}
@@ -364,15 +364,12 @@ namespace DiscordCoreInternal {
 			this->wantRead = false;
 			this->wantWrite = false;
 			size_t writtenBytes{ 0 };
-			std::string writeString{ std::move(this->outputBuffers.front()) };
-			auto returnValue{ SSL_write_ex(this->ssl, writeString.data(), writeString.size(), &writtenBytes) };
+			auto returnValue{ SSL_write_ex(this->ssl, this->outputBuffers.front().data(), this->outputBuffers.front().size(), &writtenBytes) };
 			auto errorValue{ SSL_get_error(this->ssl, returnValue) };
 			switch (errorValue) {
 				case SSL_ERROR_NONE: {
 					if (writtenBytes > 0) {
 						this->outputBuffers.erase(this->outputBuffers.begin());
-					} else {
-						this->outputBuffers[0] = std::move(writeString);
 					}
 					return ProcessIOResult::No_Error;
 				}
@@ -402,47 +399,42 @@ namespace DiscordCoreInternal {
 		this->wantRead = false;
 		this->wantWrite = false;
 		ProcessIOResult returnValueReal{};
-		if (this->maxBufferSize > 0) {
-			do {
-				size_t readBytes{ 0 };
-				auto returnValue{ SSL_read_ex(this->ssl, this->rawInputBuffer.data(), this->maxBufferSize, &readBytes) };
-				auto errorValue{ SSL_get_error(this->ssl, returnValue) };
-				switch (errorValue) {
-					case SSL_ERROR_NONE: {
-						if (readBytes > 0) {
-							std::lock_guard theLock{ this->connectionMutex };
-							this->inputBuffer.append(this->rawInputBuffer.begin(), this->rawInputBuffer.begin() + readBytes);
-							this->bytesRead += readBytes;
-						}
-						returnValueReal = ProcessIOResult::No_Error;
-						break;
+		do {
+			size_t readBytes{ 0 };
+			auto returnValue{ SSL_read_ex(this->ssl, this->rawInputBuffer.data(), this->maxBufferSize, &readBytes) };
+			auto errorValue{ SSL_get_error(this->ssl, returnValue) };
+			switch (errorValue) {
+				case SSL_ERROR_NONE: {
+					if (readBytes > 0) {
+						std::lock_guard theLock{ this->connectionMutex };
+						this->inputBuffer.append(this->rawInputBuffer.data(), this->rawInputBuffer.data() + readBytes);
+						this->bytesRead += readBytes;
 					}
-					case SSL_ERROR_WANT_READ: {
-						this->wantRead = true;
-						returnValueReal = ProcessIOResult::No_Error;
-						break;
-					}
-					case SSL_ERROR_WANT_WRITE: {
-						this->wantWrite = true;
-						returnValueReal = ProcessIOResult::No_Error;
-						break;
-					}
-					case SSL_ERROR_ZERO_RETURN: {
-						this->disconnect(true);
-						returnValueReal = ProcessIOResult::SSL_Zero_Return;
-						break;
-					}
-					default: {
-						this->disconnect(true);
-						returnValueReal = ProcessIOResult::SSL_Error;
-						break;
-					}
+					returnValueReal = ProcessIOResult::No_Error;
+					break;
 				}
-			} while (SSL_pending(this->ssl));
-			
-		} else {
-			returnValueReal = ProcessIOResult::No_Error;
-		}
+				case SSL_ERROR_WANT_READ: {
+					this->wantRead = true;
+					returnValueReal = ProcessIOResult::No_Error;
+					break;
+				}
+				case SSL_ERROR_WANT_WRITE: {
+					this->wantWrite = true;
+					returnValueReal = ProcessIOResult::No_Error;
+					break;
+				}
+				case SSL_ERROR_ZERO_RETURN: {
+					this->disconnect(true);
+					returnValueReal = ProcessIOResult::SSL_Zero_Return;
+					break;
+				}
+				default: {
+					this->disconnect(true);
+					returnValueReal = ProcessIOResult::SSL_Error;
+					break;
+				}
+			}
+		} while (SSL_pending(this->ssl));
 		return returnValueReal;
 	}
 
@@ -549,8 +541,8 @@ namespace DiscordCoreInternal {
 				break;
 			}
 		}
-		timeval checkTime{ .tv_sec = 0, .tv_usec = 5000 };
 
+		timeval checkTime{ .tv_sec = 0, .tv_usec = 5000 };
 		if (auto returnValue = select(FD_SETSIZE, &readSet, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
 			this->disconnect();
 			return;
@@ -600,14 +592,12 @@ namespace DiscordCoreInternal {
 
 	void DatagramSocketClient::writeDataProcess() noexcept {
 		if (this->outputBuffers.size() > 0 && this->areWeStreamConnected) {
-			std::string clientToServerString = std::move(this->outputBuffers.front());
-			int32_t writtenBytes{ sendto(this->theSocket, clientToServerString.data(), clientToServerString.size(), 0, this->theStreamTargetAddress, sizeof(sockaddr)) };
+			int32_t writtenBytes{ sendto(this->theSocket, this->outputBuffers.front().data(), this->outputBuffers.front().size(), 0, this->theStreamTargetAddress,
+				sizeof(sockaddr)) };
 			if (writtenBytes < 0) {
 				this->disconnect();
-				clientToServerString.clear();
 				return;
 			} else {
-				clientToServerString.clear();
 				this->outputBuffers.erase(this->outputBuffers.begin());
 			}
 		}
@@ -620,8 +610,8 @@ namespace DiscordCoreInternal {
 #else
 			socklen_t intSize = sizeof(this->theStreamTargetAddress);
 #endif
-			int32_t readBytes =
-				recvfrom(this->theSocket, this->rawInputBuffer.data(), static_cast<int32_t>(this->rawInputBuffer.size()), 0, this->theStreamTargetAddress, &intSize);
+			int32_t readBytes{ recvfrom(this->theSocket, this->rawInputBuffer.data(), static_cast<int32_t>(this->rawInputBuffer.size()), 0, this->theStreamTargetAddress,
+				&intSize) };
 
 			if (readBytes < 0) {
 				this->disconnect();
@@ -640,7 +630,9 @@ namespace DiscordCoreInternal {
 
 	void DatagramSocketClient::disconnect() noexcept {
 		std::unique_lock theLock{ this->theMutex };
-		this->theSocket = SOCKET_ERROR;
+		std::cout << "THE WRITTEN BYTES: " << std::endl;
+		shutdown(this->theSocket, SD_BOTH);
+		closesocket(this->theSocket);
 		this->theSocket = SOCKET_ERROR;
 		this->rawInputBuffer.clear();
 		this->outputBuffers.clear();

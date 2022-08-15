@@ -49,7 +49,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Data that is received as part of an AutoModerationRule creation event. \brief Data that is received as part of an AutoModerationRule creation event.
-	struct DiscordCoreAPI_Dll OnAutoModerationRuleCreationData {	
+	struct DiscordCoreAPI_Dll OnAutoModerationRuleCreationData {
 		AutoModerationRule theRule{};
 	};
 
@@ -248,7 +248,7 @@ namespace DiscordCoreAPI {
 		OnRoleUpdateData& operator=(const OnRoleUpdateData&);
 		OnRoleUpdateData(const OnRoleUpdateData&);
 		OnRoleUpdateData& operator=(OnRoleUpdateData&);
-		OnRoleUpdateData(OnRoleUpdateData&);		
+		OnRoleUpdateData(OnRoleUpdateData&);
 		Snowflake guildId{};///< The id of the Guild within which the Role was updated.
 		std::unique_ptr<RoleData> roleOld{};///< The old Role.
 		std::unique_ptr<RoleData> roleNew{};///< The new Role.
@@ -260,7 +260,7 @@ namespace DiscordCoreAPI {
 		OnRoleDeletionData& operator=(const OnRoleDeletionData&);
 		OnRoleDeletionData(const OnRoleDeletionData&);
 		OnRoleDeletionData& operator=(OnRoleDeletionData&);
-		OnRoleDeletionData(OnRoleDeletionData&);	
+		OnRoleDeletionData(OnRoleDeletionData&);
 		Snowflake guildId{};///< The id of the Guild from which the Role was deleted.
 		std::unique_ptr<RoleData> roleOld{};///< The deleted Role.
 	};
@@ -381,7 +381,7 @@ namespace DiscordCoreAPI {
 		OnUserUpdateData& operator=(const OnUserUpdateData&);
 		OnUserUpdateData(const OnUserUpdateData&);
 		OnUserUpdateData& operator=(OnUserUpdateData&);
-		OnUserUpdateData(OnUserUpdateData&);	
+		OnUserUpdateData(OnUserUpdateData&);
 		std::unique_ptr<UserData> userOld{};///< The old User.
 		std::unique_ptr<UserData> userNew{};///< The new User.
 	};

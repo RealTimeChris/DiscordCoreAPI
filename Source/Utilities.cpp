@@ -884,7 +884,7 @@ namespace DiscordCoreAPI {
 		uint8_t data[8]{};
 		memcpy(&data, &net, sizeof(net));
 
-		return static_cast<uint64_t>(data[7]) << 0 | static_cast<uint64_t>(data[6]) << 8| static_cast<uint64_t>(data[5]) << 16 | static_cast<uint64_t>(data[4]) << 24 |
+		return static_cast<uint64_t>(data[7]) << 0 | static_cast<uint64_t>(data[6]) << 8 | static_cast<uint64_t>(data[5]) << 16 | static_cast<uint64_t>(data[4]) << 24 |
 			static_cast<uint64_t>(data[3]) << 32 | static_cast<uint64_t>(data[2]) << 40 | static_cast<uint64_t>(data[1]) << 48 | static_cast<uint64_t>(data[0]) << 56;
 	}
 

@@ -1021,11 +1021,11 @@ namespace DiscordCoreAPI {
 	DiscordCoreAPI_Dll std::string getTimeAndDate();
 
 	DiscordCoreAPI_Dll uint64_t ntohostlong(const uint64_t net);
-	
+
 	DiscordCoreAPI_Dll uint32_t ntohostint(const uint32_t net);
-	
+
 	DiscordCoreAPI_Dll uint16_t ntohostshort(const uint16_t net);
-	
+
 	DiscordCoreAPI_Dll uint16_t reverseByteOrder16(uint16_t x);
 
 	DiscordCoreAPI_Dll uint32_t reverseByteOrder32(uint32_t x);
@@ -1033,13 +1033,13 @@ namespace DiscordCoreAPI {
 	DiscordCoreAPI_Dll uint64_t reverseByteOrder64(uint64_t x);
 
 	DiscordCoreAPI_Dll void store8Bits(std::string& to, uint8_t num);
-	
+
 	DiscordCoreAPI_Dll void store16Bits(std::string& to, uint16_t num);
 
 	DiscordCoreAPI_Dll void store32Bits(std::string& to, uint32_t num);
-	
+
 	DiscordCoreAPI_Dll void store64Bits(std::string& to, uint64_t num);
-	
+
 	template<typename StoredAsType, typename FlagType> StoredAsType setBool(StoredAsType inputFlag, FlagType theFlag, bool enabled) {
 		if (enabled) {
 			inputFlag |= static_cast<StoredAsType>(theFlag);
