@@ -902,6 +902,11 @@ namespace DiscordCoreAPI {
 		return static_cast<uint16_t>(data[1]) << 0 | static_cast<uint16_t>(data[0]) << 8;
 	}
 
+	void store8Bits(std::string& to, uint8_t num) {
+		const uint8_t byteSize{ 8 };
+		to.push_back(num);
+	}
+
 	void store16Bits(std::string& to, uint16_t num) {
 		const uint8_t byteSize{ 8 };
 		uint16_t newValue = reverseByteOrder16(num);

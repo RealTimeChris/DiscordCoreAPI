@@ -1052,11 +1052,8 @@ namespace DiscordCoreAPI {
 		return ntohostlong(x);
 	}
 
-	void store8Bits(std::string& to, uint8_t num) {
-		const uint8_t byteSize{ 8 };
-		to.push_back(num);
-	}
-
+	void store8Bits(std::string& to, uint8_t num);
+	
 	void store16Bits(std::string& to, uint16_t num);
 
 	void store32Bits(std::string& to, uint32_t num);
