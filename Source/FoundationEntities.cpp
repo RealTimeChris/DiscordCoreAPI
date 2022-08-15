@@ -1107,15 +1107,18 @@ namespace DiscordCoreAPI {
 		newOption["description_localizations"] = this->descriptionLocalizations;
 		newOption["name_localizations"] = this->nameLocalizations;
 		newOption["description"] = this->description;
-		newOption["min_value"] = this->minValue;
-		newOption["max_value"] = this->maxValue;
+		if (maxValue != 0) {
+			newOption["min_value"] = this->minValue;
+		}
+		if (maxValue != 0) {
+			newOption["max_value"] = this->maxValue;
+		}
 		newOption["required"] = this->required;
 		newOption["name"] = this->name;
 		newOption["type"] = this->type;
-		newOption["options"] = nlohmann::json{};
-		newOption["choices"] = nlohmann::json{};
 		if (this->choices.size() > 0) {
 			for (int32_t x = 0; x < this->choices.size(); x++) {
+				newOption["choices"] = nlohmann::json{};
 				nlohmann::json jsonValue{};
 				jsonValue["name_localizations"] = this->choices[x].nameLocalizations;
 				jsonValue["value"] = this->choices[x].value;
@@ -1127,8 +1130,10 @@ namespace DiscordCoreAPI {
 			newOption["autocomplete"] = this->autocomplete;
 		}
 		if (this->options.size() > 0) {
-			for (auto& value: options) {
+			newOption["options"] = nlohmann::json{};
+			for (auto& value: this->options) {
 				nlohmann::json theData = value;
+				newOption["options"].push_back(theData);
 			}
 		}
 		return newOption;
