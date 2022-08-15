@@ -161,14 +161,13 @@ namespace DiscordCoreInternal {
 		std::lock_guard theLock{ this->connectionMutex };
 	}
 
-	ProcessIOResult SSLClient::writeData(const std::string& dataToWrite, bool priority) noexcept {
+	ProcessIOResult SSLClient::writeData(std::string& dataToWrite, bool priority) noexcept {
 		std::unique_lock theLock{ this->connectionMutex };
 		if (this->theSocket == SOCKET_ERROR) {
 			return ProcessIOResult::Disconnected;
 		}
-		std::string data = dataToWrite;
-		if (data.size() > 0 && this->ssl) {
-			if (priority && data.size() < static_cast<size_t>(16 * 1024)) {
+		if (dataToWrite.size() > 0 && this->ssl) {
+			if (priority && dataToWrite.size() < static_cast<size_t>(16 * 1024)) {
 				fd_set writeSet{};
 				int32_t writeNfds{ 0 };
 				FD_ZERO(&writeSet);
@@ -182,26 +181,26 @@ namespace DiscordCoreInternal {
 				} else if (returnValue == 0) {
 					return ProcessIOResult::Select_No_Return;
 				}
-				this->outputBuffers.emplace_back(data);
+				this->outputBuffers.emplace_back(dataToWrite);
 				return this->writeDataProcess();
 			} else {
-				if (data.size() > static_cast<size_t>(16 * 1024)) {
-					size_t remainingBytes{ data.size() };
+				if (dataToWrite.size() > static_cast<size_t>(16 * 1024)) {
+					size_t remainingBytes{ dataToWrite.size() };
 					while (remainingBytes > 0) {
 						std::string newString{};
 						size_t amountToCollect{};
-						if (data.size() >= static_cast<size_t>(1024 * 16)) {
+						if (dataToWrite.size() >= static_cast<size_t>(1024 * 16)) {
 							amountToCollect = static_cast<size_t>(1024 * 16);
 						} else {
-							amountToCollect = data.size();
+							amountToCollect = dataToWrite.size();
 						}
-						newString.insert(newString.begin(), data.begin(), data.begin() + amountToCollect);
+						newString.insert(newString.begin(), dataToWrite.begin(), dataToWrite.begin() + amountToCollect);
 						this->outputBuffers.emplace_back(newString);
-						data.erase(data.begin(), data.begin() + amountToCollect);
-						remainingBytes = data.size();
+						dataToWrite.erase(dataToWrite.begin(), dataToWrite.begin() + amountToCollect);
+						remainingBytes = dataToWrite.size();
 					}
 				} else {
-					this->outputBuffers.emplace_back(data);
+					this->outputBuffers.emplace_back(dataToWrite);
 				}
 				return ProcessIOResult::No_Error;
 			}
