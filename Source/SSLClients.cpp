@@ -161,51 +161,6 @@ namespace DiscordCoreInternal {
 		std::lock_guard theLock{ this->connectionMutex };
 	}
 
-	void SSLClient::processIO(std::vector<SSLClient*>& theVector, int32_t waitTimeInms) noexcept {
-		int32_t writeNfds{ 0 }, readNfds{ 0 }, finalNfds{ 0 };
-		fd_set writeSet{}, readSet{};
-		FD_ZERO(&writeSet);
-		FD_ZERO(&readSet);
-		bool didWeSetASocket{ false };
-		for (auto& value: theVector) {
-			if (value) {
-				std::unique_lock theLock{ value->connectionMutex };
-				if (value->theSocket != SOCKET_ERROR) {
-					if ((value->outputBuffers.size() > 0 || value->wantWrite) && !value->wantRead) {
-						FD_SET(value->theSocket, &writeSet);
-						writeNfds = value->theSocket > writeNfds ? value->theSocket : writeNfds;
-					}
-					FD_SET(value->theSocket, &readSet);
-					readNfds = value->theSocket > readNfds ? value->theSocket : readNfds;
-					didWeSetASocket = true;
-					finalNfds = readNfds > writeNfds ? readNfds : writeNfds;
-				}
-			}
-		}
-
-		if (!didWeSetASocket) {
-			return;
-		}
-
-		timeval checkTime{ .tv_usec = waitTimeInms };
-		if (auto returnValue = select(finalNfds + 1, &readSet, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
-			for (auto& value: theVector) {
-				value->disconnect(true);
-			}
-			return;
-		}
-
-		for (auto& value: theVector) {
-			std::unique_lock theLock{ value->connectionMutex };
-			if (FD_ISSET(value->theSocket, &readSet)) {
-				value->readDataProcess();
-			}
-			if (FD_ISSET(value->theSocket, &writeSet)) {
-				value->writeDataProcess();
-			}
-		}
-	}
-
 	ProcessIOResult SSLClient::writeData(const std::string& dataToWrite, bool priority) noexcept {
 		std::unique_lock theLock{ this->connectionMutex };
 		if (this->theSocket == SOCKET_ERROR) {

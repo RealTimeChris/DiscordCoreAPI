@@ -187,9 +187,9 @@ namespace DiscordCoreAPI {
 
 		EncodedFrameData encodeSingleAudioFrame(RawFrameData&) noexcept;
 
-		void sendSingleFrame(const AudioFrameData& frameData) noexcept;
+		bool onMessageReceived(int64_t offSet, int64_t length) noexcept;
 
-		bool onMessageReceived(const std::string& theString) noexcept;
+		void sendSingleFrame(const AudioFrameData& frameData) noexcept;
 
 		void sendSpeakingMessage(const bool isSpeaking) noexcept;
 
