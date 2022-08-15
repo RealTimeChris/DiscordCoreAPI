@@ -292,22 +292,20 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<void> Messages::deleteMessageAsync(DeleteMessageData dataPackage) {
-		std::unique_ptr<DiscordCoreInternal::HttpsWorkloadData> workload{ nullptr };
+		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Delete_Message_Old };
 		bool hasTimeElapsedNew = dataPackage.timeStamp.hasTimeElapsed(14, 0, 0);
-		if (hasTimeElapsedNew) {
-			workload = std::make_unique<DiscordCoreInternal::HttpsWorkloadData>(DiscordCoreInternal::HttpsWorkloadType::Delete_Message_Old);
-		} else {
-			workload = std::make_unique<DiscordCoreInternal::HttpsWorkloadData>(DiscordCoreInternal::HttpsWorkloadType::Delete_Message);
+		if (!hasTimeElapsedNew) {
+			workload = DiscordCoreInternal::HttpsWorkloadType::Delete_Message;
 		}
 		co_await NewThreadAwaitable<void>();
 		std::this_thread::sleep_for(std::chrono::milliseconds{ dataPackage.timeDelay });
-		workload->workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Delete;
-		workload->relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/messages/" + std::to_string(dataPackage.messageId);
-		workload->callStack = "Messages::deleteMessageAsync()";
+		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Delete;
+		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/messages/" + std::to_string(dataPackage.messageId);
+		workload.callStack = "Messages::deleteMessageAsync()";
 		if (dataPackage.reason != "") {
-			workload->headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
+			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
-		co_return Messages::httpsClient->submitWorkloadAndGetResult<void>(*workload);
+		co_return Messages::httpsClient->submitWorkloadAndGetResult<void>(workload);
 	}
 
 	CoRoutine<void> Messages::deleteMessagesBulkAsync(DeleteMessagesBulkData dataPackage) {

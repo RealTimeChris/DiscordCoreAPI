@@ -31,18 +31,18 @@ namespace DiscordCoreInternal {
 			rateLimitData.bucket = headersNew["x-ratelimit-bucket"];
 		}
 		if (headersNew.contains("x-ratelimit-reset-after")) {
-			rateLimitData.msRemain.store(static_cast<int64_t>(ceil(stod(headersNew["x-ratelimit-reset-after"]) * 1000.0f)));
+			rateLimitData.msRemain.store(static_cast<int64_t>(ceil(stod(headersNew["x-ratelimit-reset-after"])) * 1000.0f));
 		}
 		if (headersNew.contains("x-ratelimit-remaining")) {
 			rateLimitData.getsRemaining.store(static_cast<int64_t>(stoi(headersNew["x-ratelimit-remaining"])));
-			if (rateLimitData.getsRemaining.load() <= 1) {
-				rateLimitData.doWeWait.store(true);
-			}
+		}
+		if (rateLimitData.getsRemaining.load() <= 1 || rateLimitData.areWeASpecialBucket.load()) {
+			rateLimitData.doWeWait.store(true);
 		}
 	};
 
 	HttpsResponseData HttpsRnRBuilder::finalizeReturnValues(HttpsResponseData& theData, RateLimitData& rateLimitData) {
-		if (theData.responseMessage.size() >= theData.contentSize) {
+		if (theData.responseMessage.size() >= theData.contentSize && theData.contentSize > 0) {
 			if ((theData.responseMessage[0] == '{' && theData.responseMessage[theData.contentSize - 1] == '}') ||
 				(theData.responseMessage[0] == '[' && theData.responseMessage[theData.contentSize - 1] == ']')) {
 				theData.responseData = nlohmann::json::parse(theData.responseMessage.substr(0, theData.contentSize));
@@ -407,7 +407,9 @@ namespace DiscordCoreInternal {
 			}
 		} else {
 			if (returnData.responseCode == 429) {
-				rateLimitData.msRemain.store(static_cast<int64_t>(ceil(nlohmann::json::parse(returnData.responseMessage)["retry_after"].get<double>())) * 1000);
+				if (returnData.responseMessage.size() > 0 && nlohmann::json::parse(returnData.responseMessage).contains("retry_after")) {
+					rateLimitData.msRemain.store(static_cast<int64_t>(ceil(nlohmann::json::parse(returnData.responseMessage)["retry_after"].get<double>())) * 1000);
+				}
 				rateLimitData.didWeHitRateLimit.store(true);
 				rateLimitData.sampledTimeInMs.store(
 					static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count()));
@@ -494,7 +496,7 @@ namespace DiscordCoreInternal {
 						}
 						theConnection.parseCode(theData, theConnection.getInputBuffer());
 						stopWatch.resetTimer();
-						if (theData.responseCode > 201) {
+						if (theData.responseCode > 201 && theData.responseCode != 429) {
 							doWeReturn = true;
 						}
 						break;
@@ -539,7 +541,7 @@ namespace DiscordCoreInternal {
 			return theConnection.finalizeReturnValues(theData, rateLimitData);
 		} catch (...) {
 			theData.responseCode = -1;
-			return theData;
+			return theConnection.finalizeReturnValues(theData, rateLimitData);
 		}
 	}
 }
