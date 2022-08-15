@@ -1020,6 +1020,26 @@ namespace DiscordCoreAPI {
 	/// \returns std::string A string containing the current date-time stamp.
 	DiscordCoreAPI_Dll std::string getTimeAndDate();
 
+	uint64_t ntohostlong(const uint64_t net);
+	
+	uint32_t ntohostint(const uint32_t net);
+	
+	uint16_t ntohostshort(const uint16_t net);
+	
+	uint16_t reverseByteOrder16(uint16_t x);
+
+	uint32_t reverseByteOrder32(uint32_t x);
+
+	uint64_t reverseByteOrder64(uint64_t x);
+
+	void store8Bits(std::string& to, uint8_t num);
+	
+	void store16Bits(std::string& to, uint16_t num);
+
+	void store32Bits(std::string& to, uint32_t num);
+	
+	void store64Bits(std::string& to, uint64_t num);
+	
 	template<typename StoredAsType, typename FlagType> StoredAsType setBool(StoredAsType inputFlag, FlagType theFlag, bool enabled) {
 		if (enabled) {
 			inputFlag |= static_cast<StoredAsType>(theFlag);
@@ -1034,32 +1054,6 @@ namespace DiscordCoreAPI {
 		return static_cast<StoredAsType>(inputFlag) & static_cast<StoredAsType>(theFlag);
 	}
 
-	uint64_t ntohostlong(const uint64_t net);
-	
-	uint32_t ntohostint(const uint32_t net);
-	
-	uint16_t ntohostshort(const uint16_t net);
-	
-	uint16_t reverseByteOrder16(uint16_t x) {
-		return ntohostshort(x);
-	}
-
-	uint32_t reverseByteOrder32(uint32_t x) {
-		return ntohostint(x);
-	}
-
-	uint64_t reverseByteOrder64(uint64_t x) {
-		return ntohostlong(x);
-	}
-
-	void store8Bits(std::string& to, uint8_t num);
-	
-	void store16Bits(std::string& to, uint16_t num);
-
-	void store32Bits(std::string& to, uint32_t num);
-	
-	void store64Bits(std::string& to, uint64_t num);
-	
 	template<typename ObjectType>
 	concept Copyable = std::copyable<ObjectType>;
 
