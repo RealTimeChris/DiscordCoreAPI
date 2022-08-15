@@ -650,8 +650,10 @@ namespace DiscordCoreInternal {
 			int32_t writtenBytes{ sendto(this->theSocket, clientToServerString.data(), clientToServerString.size(), 0, this->theStreamTargetAddress, sizeof(sockaddr)) };
 			if (writtenBytes < 0) {
 				this->disconnect();
+				clientToServerString.clear();
 				return;
 			} else {
+				clientToServerString.clear();
 				this->outputBuffers.erase(this->outputBuffers.begin());
 			}
 		}

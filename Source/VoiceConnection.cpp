@@ -532,7 +532,7 @@ namespace DiscordCoreAPI {
 						}
 						if (this->streamType == StreamType::None) {
 							DatagramSocketClient::processIO(DiscordCoreInternal::ProcessIOType::Both);
-							DatagramSocketClient::getInputBuffer();
+							DatagramSocketClient::getInputBuffer().clear();
 						} else {
 							DatagramSocketClient::processIO(DiscordCoreInternal::ProcessIOType::Write_Only);
 						}
