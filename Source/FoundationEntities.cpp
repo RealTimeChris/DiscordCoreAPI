@@ -39,7 +39,7 @@ namespace DiscordCoreInternal {
 			}
 			dataNew["name"] = value.name;
 			dataNew["type"] = value.type;
-			data["d"]["activities"].push_back(dataNew);
+			data["d"]["activities"].emplace_back(dataNew);
 		}
 		data["d"]["status"] = this->status;
 		data["d"]["since"] = nullptr;
@@ -74,7 +74,7 @@ namespace DiscordCoreInternal {
 			}
 			dataNew["name"] = value.name;
 			dataNew["type"] = value.type;
-			dataNewReal["activities"].push_back(dataNew);
+			dataNewReal["activities"].emplace_back(dataNew);
 		}
 		dataNewReal["status"] = this->presence.status;
 		dataNewReal["since"] = nullptr;
@@ -302,7 +302,7 @@ namespace DiscordCoreAPI {
 	EmbedData::operator nlohmann::json() {
 		nlohmann::json fields{};
 		for (auto& value2: this->fields) {
-			fields.push_back(value2);
+			fields.emplace_back(value2);
 		}
 		int32_t colorValInt = stol(this->hexColorValue, 0, 16);
 		std::stringstream stream;
@@ -371,7 +371,7 @@ namespace DiscordCoreAPI {
 		field.Inline = Inline;
 		field.value = value;
 		field.name = name;
-		this->fields.push_back(field);
+		this->fields.emplace_back(field);
 		return *this;
 	}
 
@@ -1123,7 +1123,7 @@ namespace DiscordCoreAPI {
 				jsonValue["name_localizations"] = this->choices[x].nameLocalizations;
 				jsonValue["value"] = this->choices[x].value;
 				jsonValue["name"] = this->choices[x].name;
-				newOption["choices"].push_back(jsonValue);
+				newOption["choices"].emplace_back(jsonValue);
 			}
 		}
 		if (newOption["choices"].size() == 0) {
@@ -1133,7 +1133,7 @@ namespace DiscordCoreAPI {
 			newOption["options"] = nlohmann::json{};
 			for (auto& value: this->options) {
 				nlohmann::json theData = value;
-				newOption["options"].push_back(theData);
+				newOption["options"].emplace_back(theData);
 			}
 		}
 		return newOption;
@@ -1198,12 +1198,10 @@ namespace DiscordCoreAPI {
 	}
 
 	void AudioFrameData::clearData() {
-		this->encodedFrameData.sampleCount = -1;
-		this->encodedFrameData.data.clear();
-		this->rawFrameData.sampleCount = -1;
 		this->type = AudioFrameType::Unset;
-		this->rawFrameData.data.clear();
 		this->guildMemberId = 0;
+		this->sampleCount = -1;
+		this->data.clear();
 	}
 
 	ModalInteractionData& ModalInteractionData::operator=(nlohmann::json& jsonObjectData) {
@@ -1264,7 +1262,7 @@ namespace DiscordCoreAPI {
 				component["style"] = valueNew.style;
 				component["type"] = valueNew.type;
 				component["url"] = valueNew.url;
-				components.push_back(component);
+				components.emplace_back(component);
 			} else if (valueNew.type == ComponentType::SelectMenu) {
 				nlohmann::json optionsArray{};
 				for (auto& value01: valueNew.options) {
@@ -1280,7 +1278,7 @@ namespace DiscordCoreAPI {
 					option["default"] = value01._default;
 					option["label"] = value01.label;
 					option["value"] = value01.value;
-					optionsArray.push_back(option);
+					optionsArray.emplace_back(option);
 				};
 				nlohmann::json component{};
 				component["placeholder"] = valueNew.placeholder;
@@ -1290,7 +1288,7 @@ namespace DiscordCoreAPI {
 				component["disabled"] = valueNew.disabled;
 				component["options"] = optionsArray;
 				component["type"] = valueNew.type;
-				components.push_back(component);
+				components.emplace_back(component);
 
 			} else if (valueNew.type == ComponentType::TextInput) {
 				nlohmann::json component{};
@@ -1303,7 +1301,7 @@ namespace DiscordCoreAPI {
 				component["label"] = valueNew.label;
 				component["value"] = valueNew.value;
 				component["type"] = valueNew.type;
-				components.push_back(component);
+				components.emplace_back(component);
 			}
 		}
 		nlohmann::json theData{};
@@ -1660,36 +1658,6 @@ namespace DiscordCoreAPI {
 		return this->interactionData->message;
 	}
 
-	RawFrameData& RawFrameData::operator=(RawFrameData&& other) {
-		this->sampleCount = other.sampleCount;
-		this->data = std::move(other.data);
-		return *this;
-	}
-
-	RawFrameData::RawFrameData(RawFrameData&& other) {
-		*this = std::move(other);
-	}
-
-	RawFrameData& RawFrameData::operator=(const RawFrameData& other) {
-		this->sampleCount = other.sampleCount;
-		this->data = other.data;
-		return *this;
-	}
-
-	RawFrameData::RawFrameData(const RawFrameData& other) {
-		*this = other;
-	}
-
-	RawFrameData& RawFrameData::operator=(RawFrameData& other) {
-		this->sampleCount = other.sampleCount;
-		this->data = other.data;
-		return *this;
-	}
-
-	RawFrameData::RawFrameData(RawFrameData& other) {
-		*this = other;
-	}
-
 	RespondToInputEventData& RespondToInputEventData::operator=(InteractionData& dataPackage) {
 		this->applicationId = dataPackage.applicationId;
 		this->interactionToken = dataPackage.token;
@@ -1721,7 +1689,7 @@ namespace DiscordCoreAPI {
 		const std::string& emojiName, Snowflake emojiId, const std::string& url) {
 		if (this->components.size() == 0) {
 			ActionRowData actionRowData;
-			this->components.push_back(actionRowData);
+			this->components.emplace_back(actionRowData);
 		}
 		if (this->components.size() < 5) {
 			if (this->components[this->components.size() - 1].components.size() < 5) {
@@ -1734,10 +1702,10 @@ namespace DiscordCoreAPI {
 				component.disabled = disabled;
 				component.emoji.id = emojiId;
 				component.url = url;
-				this->components[this->components.size() - 1].components.push_back(component);
+				this->components[this->components.size() - 1].components.emplace_back(component);
 			} else if (this->components[this->components.size() - 1].components.size() == 5) {
 				ActionRowData actionRowData;
-				this->components.push_back(actionRowData);
+				this->components.emplace_back(actionRowData);
 			}
 		}
 		return *this;
@@ -1747,7 +1715,7 @@ namespace DiscordCoreAPI {
 		const std::string& placeholder, int32_t maxValues, int32_t minValues) {
 		if (this->components.size() == 0) {
 			ActionRowData actionRowData;
-			this->components.push_back(actionRowData);
+			this->components.emplace_back(actionRowData);
 		}
 		if (this->components.size() < 5) {
 			if (this->components[this->components.size() - 1].components.size() < 5) {
@@ -1759,10 +1727,10 @@ namespace DiscordCoreAPI {
 				componentData.disabled = disabled;
 				componentData.customId = customIdNew;
 				componentData.options = options;
-				this->components[this->components.size() - 1].components.push_back(componentData);
+				this->components[this->components.size() - 1].components.emplace_back(componentData);
 			} else if (this->components[this->components.size() - 1].components.size() == 5) {
 				ActionRowData actionRowData;
-				this->components.push_back(actionRowData);
+				this->components.emplace_back(actionRowData);
 			}
 		}
 		return *this;
@@ -1774,7 +1742,7 @@ namespace DiscordCoreAPI {
 		this->customId = topCustomIdNew;
 		if (this->components.size() == 0) {
 			ActionRowData actionRowData;
-			this->components.push_back(actionRowData);
+			this->components.emplace_back(actionRowData);
 		}
 		if (this->components.size() < 5) {
 			if (this->components[this->components.size() - 1].components.size() < 5) {
@@ -1788,17 +1756,17 @@ namespace DiscordCoreAPI {
 				component.label = label;
 				component.required = required;
 				component.placeholder = placeholder;
-				this->components[this->components.size() - 1].components.push_back(component);
+				this->components[this->components.size() - 1].components.emplace_back(component);
 			} else if (this->components[this->components.size() - 1].components.size() == 5) {
 				ActionRowData actionRowData;
-				this->components.push_back(actionRowData);
+				this->components.emplace_back(actionRowData);
 			}
 		}
 		return *this;
 	}
 
 	RespondToInputEventData& RespondToInputEventData::addFile(File theFile) {
-		this->files.push_back(theFile);
+		this->files.emplace_back(theFile);
 		return *this;
 	}
 
@@ -1813,12 +1781,12 @@ namespace DiscordCoreAPI {
 	}
 
 	RespondToInputEventData& RespondToInputEventData::addComponentRow(ActionRowData dataPackage) {
-		this->components.push_back(dataPackage);
+		this->components.emplace_back(dataPackage);
 		return *this;
 	}
 
 	RespondToInputEventData& RespondToInputEventData::addMessageEmbed(EmbedData dataPackage) {
-		this->embeds.push_back(dataPackage);
+		this->embeds.emplace_back(dataPackage);
 		return *this;
 	}
 
@@ -1838,7 +1806,7 @@ namespace DiscordCoreAPI {
 		choiceData.nameLocalizations = theNameLocalizations;
 		choiceData.value = theValue;
 		choiceData.name = theName;
-		this->choices.push_back(choiceData);
+		this->choices.emplace_back(choiceData);
 		return *this;
 	}
 
@@ -1851,7 +1819,7 @@ namespace DiscordCoreAPI {
 		const std::string& emojiName, Snowflake emojiId, const std::string& url) {
 		if (this->components.size() == 0) {
 			ActionRowData actionRowData;
-			this->components.push_back(actionRowData);
+			this->components.emplace_back(actionRowData);
 		}
 		if (this->components.size() < 5) {
 			if (this->components[this->components.size() - 1].components.size() < 5) {
@@ -1864,10 +1832,10 @@ namespace DiscordCoreAPI {
 				component.disabled = disabled;
 				component.emoji.id = emojiId;
 				component.url = url;
-				this->components[this->components.size() - 1].components.push_back(component);
+				this->components[this->components.size() - 1].components.emplace_back(component);
 			} else if (this->components[this->components.size() - 1].components.size() == 5) {
 				ActionRowData actionRowData;
-				this->components.push_back(actionRowData);
+				this->components.emplace_back(actionRowData);
 			}
 		}
 		return *this;
@@ -1877,7 +1845,7 @@ namespace DiscordCoreAPI {
 		int32_t maxValues, int32_t minValues) {
 		if (this->components.size() == 0) {
 			ActionRowData actionRowData;
-			this->components.push_back(actionRowData);
+			this->components.emplace_back(actionRowData);
 		}
 		if (this->components.size() < 5) {
 			if (this->components[this->components.size() - 1].components.size() < 5) {
@@ -1889,10 +1857,10 @@ namespace DiscordCoreAPI {
 				componentData.disabled = disabled;
 				componentData.customId = customIdNew;
 				componentData.options = options;
-				this->components[this->components.size() - 1].components.push_back(componentData);
+				this->components[this->components.size() - 1].components.emplace_back(componentData);
 			} else if (this->components[this->components.size() - 1].components.size() == 5) {
 				ActionRowData actionRowData;
-				this->components.push_back(actionRowData);
+				this->components.emplace_back(actionRowData);
 			}
 		}
 		return *this;
@@ -1904,7 +1872,7 @@ namespace DiscordCoreAPI {
 		this->customId = topCustomIdNew;
 		if (this->components.size() == 0) {
 			ActionRowData actionRowData;
-			this->components.push_back(actionRowData);
+			this->components.emplace_back(actionRowData);
 		}
 		if (this->components.size() < 5) {
 			if (this->components[this->components.size() - 1].components.size() < 5) {
@@ -1918,17 +1886,17 @@ namespace DiscordCoreAPI {
 				component.label = label;
 				component.required = required;
 				component.placeholder = placeholder;
-				this->components[this->components.size() - 1].components.push_back(component);
+				this->components[this->components.size() - 1].components.emplace_back(component);
 			} else if (this->components[this->components.size() - 1].components.size() == 5) {
 				ActionRowData actionRowData;
-				this->components.push_back(actionRowData);
+				this->components.emplace_back(actionRowData);
 			}
 		}
 		return *this;
 	}
 
 	MessageResponseBase& MessageResponseBase::addFile(File theFile) {
-		this->files.push_back(theFile);
+		this->files.emplace_back(theFile);
 		return *this;
 	}
 
@@ -1938,12 +1906,12 @@ namespace DiscordCoreAPI {
 	}
 
 	MessageResponseBase& MessageResponseBase::addComponentRow(ActionRowData dataPackage) {
-		this->components.push_back(dataPackage);
+		this->components.emplace_back(dataPackage);
 		return *this;
 	}
 
 	MessageResponseBase& MessageResponseBase::addMessageEmbed(EmbedData dataPackage) {
-		this->embeds.push_back(dataPackage);
+		this->embeds.emplace_back(dataPackage);
 		return *this;
 	}
 
@@ -1978,13 +1946,13 @@ namespace DiscordCoreAPI {
 	InteractionResponseData::operator std::string() {
 		nlohmann::json data{};
 		for (auto& value: this->data.attachments) {
-			data["data"]["attachments"].push_back(DiscordCoreAPI::AttachmentData{ value });
+			data["data"]["attachments"].emplace_back(DiscordCoreAPI::AttachmentData{ value });
 		}
 		if (this->data.components.size() == 0) {
 			data["data"]["components"] = nlohmann::json::array();
 		} else {
 			for (auto& value: this->data.components) {
-				data["data"]["components"].push_back(value);
+				data["data"]["components"].emplace_back(value);
 			}
 		}
 		data["data"]["allowed_mentions"] = DiscordCoreAPI::AllowedMentionsData{ this->data.allowedMentions };
@@ -1995,7 +1963,7 @@ namespace DiscordCoreAPI {
 				theValue["name"] = value.name;
 				theValue["name_localizations"] = value.nameLocalizations;
 				theValue["value"] = value.value;
-				theArray.push_back(theValue);
+				theArray.emplace_back(theValue);
 			}
 			data["data"]["choices"] = theArray;
 		}
@@ -2003,7 +1971,7 @@ namespace DiscordCoreAPI {
 			data["data"]["embeds"] = nlohmann::json::array();
 		} else {
 			for (auto& value: this->data.embeds) {
-				data["data"]["embeds"].push_back(DiscordCoreAPI::EmbedData{ value });
+				data["data"]["embeds"].emplace_back(DiscordCoreAPI::EmbedData{ value });
 			}
 		}
 		if (this->data.customId != "") {
@@ -2021,6 +1989,30 @@ namespace DiscordCoreAPI {
 		return data.dump();
 	}
 
+	AudioFrameData& AudioFrameData::operator=(AudioFrameData&& other) {
+		this->guildMemberId = other.guildMemberId;
+		this->sampleCount = other.sampleCount;
+		this->data = std::move(other.data);
+		this->type = other.type;
+		return *this;
+	}
+
+	AudioFrameData::AudioFrameData(AudioFrameData&& other) {
+		*this = std::move(other);
+	}
+
+	AudioFrameData& AudioFrameData::operator=(AudioFrameData& other) {
+		this->guildMemberId = other.guildMemberId;
+		this->sampleCount = other.sampleCount;
+		this->data = other.data;
+		this->type = other.type;
+		return *this;
+	}
+
+	AudioFrameData::AudioFrameData(AudioFrameData& other) {
+		*this = other;
+	}
+
 	Song& Song::operator=(nlohmann::json& jsonObjectData) {
 		this->parseObject(jsonObjectData);
 		return *this;
@@ -2035,9 +2027,9 @@ namespace DiscordCoreAPI {
 			this->commandName = inputEventData.interactionData->data.applicationCommandData.name;
 		}
 		if (inputEventData.interactionData->data.messageInteractionData.targetId != 0) {
-			this->optionsArgs.push_back(std::to_string(inputEventData.interactionData->data.messageInteractionData.targetId));
+			this->optionsArgs.emplace_back(std::to_string(inputEventData.interactionData->data.messageInteractionData.targetId));
 		} else if (inputEventData.interactionData->data.userInteractionData.targetId != 0) {
-			this->optionsArgs.push_back(std::to_string(inputEventData.interactionData->data.userInteractionData.targetId));
+			this->optionsArgs.emplace_back(std::to_string(inputEventData.interactionData->data.userInteractionData.targetId));
 		}
 		this->eventData = inputEventData;
 		this->parseObject(( nlohmann::json& )inputEventData.getInteractionData().rawData);

@@ -124,7 +124,7 @@ namespace DiscordCoreAPI {
 	void SongAPI::skip(const GuildMember& guildMember) {
 		getSongAPIMap()[guildMember.guildId]->cancelCurrentSong();
 		if (SongAPI::isLoopAllEnabled(guildMember.guildId) || SongAPI::isLoopSongEnabled(guildMember.guildId)) {
-			getSongAPIMap()[guildMember.guildId]->playlist.songQueue.push_back(getSongAPIMap()[guildMember.guildId]->playlist.currentSong);
+			getSongAPIMap()[guildMember.guildId]->playlist.songQueue.emplace_back(getSongAPIMap()[guildMember.guildId]->playlist.currentSong);
 			SongAPI::setCurrentSong(Song(), guildMember.guildId);
 		} else {
 			SongAPI::setCurrentSong(Song(), guildMember.guildId);
@@ -141,9 +141,9 @@ namespace DiscordCoreAPI {
 		getVoiceConnectionMap()[guildId]->stop();
 		getSongAPIMap()[guildId]->cancelCurrentSong();
 		std::vector<Song> newVector02;
-		newVector02.push_back(getSongAPIMap()[guildId]->playlist.currentSong);
+		newVector02.emplace_back(getSongAPIMap()[guildId]->playlist.currentSong);
 		for (auto& value: getSongAPIMap()[guildId]->playlist.songQueue) {
-			newVector02.push_back(value);
+			newVector02.emplace_back(value);
 		}
 		getSongAPIMap()[guildId]->playlist.songQueue = newVector02;
 		auto returnValue = getSongAPIMap()[guildId].get();
@@ -163,11 +163,11 @@ namespace DiscordCoreAPI {
 		for (int32_t x = 0; x < totalLength; x++) {
 			if ((vector01Used < vector01.size() - 1) && (x % 2 == 0) && vector01.size() > 0) {
 				vector01[vector01Used].type = SongType::SoundCloud;
-				newVector.push_back(vector01[vector01Used]);
+				newVector.emplace_back(vector01[vector01Used]);
 				vector01Used++;
 			} else if (vector02Used < vector02.size() - 1 && vector02.size() > 0) {
 				vector02[vector02Used].type = SongType::YouTube;
-				newVector.push_back(vector02[vector02Used]);
+				newVector.emplace_back(vector02[vector02Used]);
 				vector02Used++;
 			}
 		}
@@ -213,7 +213,7 @@ namespace DiscordCoreAPI {
 		song.addedByUserId = guildMember.id;
 		StringWrapper theString = guildMember.userName;
 		song.addedByUserName = theString;
-		getSongAPIMap()[guildMember.guildId]->playlist.songQueue.push_back(song);
+		getSongAPIMap()[guildMember.guildId]->playlist.songQueue.emplace_back(song);
 		return song;
 	}
 

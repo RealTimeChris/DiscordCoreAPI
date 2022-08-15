@@ -32,11 +32,11 @@ namespace DiscordCoreAPI {
 		this->channelId = dataPackage.channelId;
 		this->addAllowedMentions(dataPackage.allowedMentions);
 		for (auto& value: dataPackage.components) {
-			this->components.push_back(value);
+			this->components.emplace_back(value);
 		}
 		this->addContent(dataPackage.content);
 		for (auto& value: dataPackage.embeds) {
-			this->embeds.push_back(value);
+			this->embeds.emplace_back(value);
 		}
 		this->tts = dataPackage.tts;
 	}
@@ -48,7 +48,7 @@ namespace DiscordCoreAPI {
 	CreateMessageData::operator std::string() {
 		nlohmann::json data{};
 		for (auto& value: this->attachments) {
-			data["attachments"].push_back(value);
+			data["attachments"].emplace_back(value);
 		}
 		if (this->messageReference.messageId != 0) {
 			data["message_reference"] = this->messageReference;
@@ -57,18 +57,18 @@ namespace DiscordCoreAPI {
 			data["components"] = nlohmann::json::array();
 		} else {
 			for (auto& value: this->components) {
-				data["components"].push_back(value);
+				data["components"].emplace_back(value);
 			}
 		}
 		data["allowed_mentions"] = this->allowedMentions;
 		for (auto& value: this->stickerIds) {
-			data["sticker_ids"].push_back(value);
+			data["sticker_ids"].emplace_back(value);
 		}
 		if (this->embeds.size() == 0) {
 			data["embeds"] = nlohmann::json::array();
 		} else {
 			for (auto& value: this->embeds) {
-				data["embeds"].push_back(value);
+				data["embeds"].emplace_back(value);
 			}
 		}
 		if (this->content != "") {
@@ -83,11 +83,11 @@ namespace DiscordCoreAPI {
 		this->targetUserId = dataPackage.targetUserId;
 		this->addAllowedMentions(dataPackage.allowedMentions);
 		for (auto& value: dataPackage.components) {
-			this->components.push_back(value);
+			this->components.emplace_back(value);
 		}
 		this->addContent(dataPackage.content);
 		for (auto& value: dataPackage.embeds) {
-			this->embeds.push_back(value);
+			this->embeds.emplace_back(value);
 		}
 		this->channelId = dataPackage.targetUserId;
 		this->tts = dataPackage.tts;
@@ -103,24 +103,24 @@ namespace DiscordCoreAPI {
 		this->channelId = dataPackage.channelId;
 		this->messageId = dataPackage.messageId;
 		for (auto& value: dataPackage.components) {
-			this->components.push_back(value);
+			this->components.emplace_back(value);
 		}
 		this->content = dataPackage.content;
 		for (auto& value: dataPackage.embeds) {
-			this->embeds.push_back(value);
+			this->embeds.emplace_back(value);
 		}
 	}
 
 	EditMessageData::operator std::string() {
 		nlohmann::json data{};
 		for (auto& value: this->attachments) {
-			data["attachments"].push_back(value);
+			data["attachments"].emplace_back(value);
 		}
 		if (this->components.size() == 0) {
 			data["components"] = nlohmann::json::array();
 		} else {
 			for (auto& value: this->components) {
-				data["components"].push_back(value);
+				data["components"].emplace_back(value);
 			}
 		}
 		data["allowed_mentions"] = this->allowedMentions;
@@ -128,7 +128,7 @@ namespace DiscordCoreAPI {
 			data["embeds"] = nlohmann::json::array();
 		} else {
 			for (auto& value: this->embeds) {
-				data["embeds"].push_back(value);
+				data["embeds"].emplace_back(value);
 			}
 		}
 		if (this->content != "") {
@@ -184,7 +184,7 @@ namespace DiscordCoreAPI {
 			Message message{};
 			waitForTimeToPass<Message>(this->messagesBuffer, message, static_cast<int32_t>(this->msToCollectFor - elapsedTime));
 			if (this->filteringFunction(message)) {
-				this->messageReturnData.messages.push_back(message);
+				this->messageReturnData.messages.emplace_back(message);
 			}
 			if (static_cast<int32_t>(this->messageReturnData.messages.size()) >= this->quantityOfMessageToCollect) {
 				break;

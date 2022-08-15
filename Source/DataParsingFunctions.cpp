@@ -155,7 +155,7 @@ namespace DiscordCoreAPI {
 			this->options.clear();
 			for (auto& value: jsonObjectData["options"]) {
 				ApplicationCommandOptionData newData{ value };
-				this->options.push_back(newData);
+				this->options.emplace_back(newData);
 			}
 		}
 	}
@@ -235,13 +235,13 @@ namespace DiscordCoreAPI {
 			this->actions.clear();
 			for (auto& value: jsonObjectData["actions"]) {
 				ActionData newData{ value };
-				this->actions.push_back(newData);
+				this->actions.emplace_back(newData);
 			}
 		}
 
 		if (jsonObjectData.contains("exempt_roles") && !jsonObjectData["exempt_roles"].is_null()) {
 			for (auto& value: jsonObjectData["exempt_roles"]) {
-				this->exemptRoles.push_back(value.get<uint64_t>());
+				this->exemptRoles.emplace_back(value.get<uint64_t>());
 			}
 		}
 
@@ -251,7 +251,7 @@ namespace DiscordCoreAPI {
 
 		if (jsonObjectData.contains("exempt_channels") && !jsonObjectData["exempt_channels"].is_null()) {
 			for (auto& value: jsonObjectData["exempt_channels"]) {
-				this->exemptChannels.push_back(value.get<uint64_t>());
+				this->exemptChannels.emplace_back(value.get<uint64_t>());
 			}
 		}
 
@@ -264,7 +264,7 @@ namespace DiscordCoreAPI {
 		this->theAutoModerationRules.reserve(jsonObjectData.size());
 		for (auto& value: jsonObjectData) {
 			DiscordCoreAPI::AutoModerationRule newData{ value };
-			this->theAutoModerationRules.push_back(newData);
+			this->theAutoModerationRules.emplace_back(newData);
 		}
 		this->theAutoModerationRules.shrink_to_fit();
 	}
@@ -401,7 +401,7 @@ namespace DiscordCoreAPI {
 		this->theChannels.reserve(jsonObjectData.size());
 		for (auto& value: jsonObjectData) {
 			DiscordCoreAPI::Channel newData{ value };
-			this->theChannels.push_back(newData);
+			this->theChannels.emplace_back(newData);
 		}
 		this->theChannels.shrink_to_fit();
 	}
@@ -505,7 +505,7 @@ namespace DiscordCoreAPI {
 
 		if (jsonObjectData.contains("features") && !jsonObjectData["features"].is_null()) {
 			for (auto& value: jsonObjectData["features"].get<std::vector<std::string>>()) {
-				this->features.push_back(StringWrapper{ value });
+				this->features.emplace_back(StringWrapper{ value });
 			}
 		}
 
@@ -517,7 +517,7 @@ namespace DiscordCoreAPI {
 			this->roles.clear();
 			for (auto& value: jsonObjectData["roles"]) {
 				std::unique_ptr<DiscordCoreAPI::RoleData> newData{ std::make_unique<RoleData>(value) };
-				this->roles.push_back(newData->id);
+				this->roles.emplace_back(newData->id);
 				DiscordCoreAPI::Roles::insertRole(std::move(newData));
 			}
 		}
@@ -582,7 +582,7 @@ namespace DiscordCoreAPI {
 			for (auto& value: jsonObjectData["members"]) {
 				std::unique_ptr<DiscordCoreAPI::GuildMemberData> newData{ std::make_unique<DiscordCoreAPI::GuildMemberData>(value) };
 				newData->guildId = this->id;
-				this->members.push_back(newData->id);
+				this->members.emplace_back(newData->id);
 				DiscordCoreAPI::GuildMembers::insertGuildMember(std::move(newData));
 			}
 		}
@@ -592,7 +592,7 @@ namespace DiscordCoreAPI {
 			for (auto& value: jsonObjectData["channels"]) {
 				std::unique_ptr<DiscordCoreAPI::ChannelData> newData{ std::make_unique<DiscordCoreAPI::ChannelData>(value) };
 				newData->guildId = this->id;
-				this->channels.push_back(newData->id);
+				this->channels.emplace_back(newData->id);
 				DiscordCoreAPI::Channels::insertChannel(std::move(newData));
 			}
 		}
@@ -646,7 +646,7 @@ namespace DiscordCoreAPI {
 		this->theGuilds.reserve(jsonObjectData.size());
 		for (auto& value: jsonObjectData) {
 			DiscordCoreAPI::Guild newData{ value };
-			this->theGuilds.push_back(newData);
+			this->theGuilds.emplace_back(newData);
 		}
 		this->theGuilds.shrink_to_fit();
 	}
@@ -659,7 +659,7 @@ namespace DiscordCoreAPI {
 		if (jsonObjectData.contains("roles") && !jsonObjectData["roles"].is_null()) {
 			this->roles.clear();
 			for (auto& value: jsonObjectData["roles"].get<std::vector<std::string>>()) {
-				this->roles.push_back(stoull(value));
+				this->roles.emplace_back(stoull(value));
 			}
 		}
 
@@ -716,7 +716,7 @@ namespace DiscordCoreAPI {
 		this->theGuildMembers.reserve(jsonObjectData.size());
 		for (auto& value: jsonObjectData) {
 			DiscordCoreAPI::GuildMember newData{ value };
-			this->theGuildMembers.push_back(newData);
+			this->theGuildMembers.emplace_back(newData);
 		}
 		this->theGuildMembers.shrink_to_fit();
 	}
@@ -828,14 +828,14 @@ namespace DiscordCoreAPI {
 			this->mentions.clear();
 			for (auto& value: jsonObjectData["mentions"]) {
 				UserData newData{ value };
-				this->mentions.push_back(newData);
+				this->mentions.emplace_back(newData);
 			}
 		}
 
 		if (jsonObjectData.contains("mention_roles") && !jsonObjectData["mention_roles"].is_null()) {
 			this->mentionRoles.clear();
 			for (auto& value: jsonObjectData["mention_roles"]) {
-				this->mentionRoles.push_back(value.get<std::string>());
+				this->mentionRoles.emplace_back(value.get<std::string>());
 			}
 		}
 
@@ -843,7 +843,7 @@ namespace DiscordCoreAPI {
 			this->mentionChannels.clear();
 			for (auto& value: jsonObjectData["mention_channels"]) {
 				ChannelMentionData newData{ value };
-				this->mentionChannels.push_back(newData);
+				this->mentionChannels.emplace_back(newData);
 			}
 		}
 
@@ -851,7 +851,7 @@ namespace DiscordCoreAPI {
 			this->attachments.clear();
 			for (auto& value: jsonObjectData["attachments"]) {
 				AttachmentData newData{ value };
-				this->attachments.push_back(newData);
+				this->attachments.emplace_back(newData);
 			}
 		}
 
@@ -859,7 +859,7 @@ namespace DiscordCoreAPI {
 			this->embeds.clear();
 			for (auto& value: jsonObjectData["embeds"]) {
 				EmbedData newData{ value };
-				this->embeds.push_back(newData);
+				this->embeds.emplace_back(newData);
 			}
 		}
 
@@ -867,7 +867,7 @@ namespace DiscordCoreAPI {
 			this->reactions.clear();
 			for (auto& value: jsonObjectData["reactions"]) {
 				ReactionData newData{ value };
-				this->reactions.push_back(newData);
+				this->reactions.emplace_back(newData);
 			}
 		}
 
@@ -911,7 +911,7 @@ namespace DiscordCoreAPI {
 			this->stickerItems.clear();
 			for (auto& value: jsonObjectData["sticker_items"]) {
 				StickerItemData newData{ value };
-				this->stickerItems.push_back(newData);
+				this->stickerItems.emplace_back(newData);
 			}
 		}
 
@@ -919,7 +919,7 @@ namespace DiscordCoreAPI {
 			this->stickers.clear();
 			for (auto& value: jsonObjectData["stickers"]) {
 				StickerData newData{ value };
-				this->stickers.push_back(newData);
+				this->stickers.emplace_back(newData);
 			}
 		}
 
@@ -931,7 +931,7 @@ namespace DiscordCoreAPI {
 			this->components.clear();
 			for (auto& value: jsonObjectData["components"]) {
 				ActionRowData newData{ value };
-				this->components.push_back(newData);
+				this->components.emplace_back(newData);
 			}
 		}
 
@@ -944,7 +944,7 @@ namespace DiscordCoreAPI {
 		this->theMessages.reserve(jsonObjectData.size());
 		for (auto& value: jsonObjectData) {
 			DiscordCoreAPI::Message newData{ value };
-			this->theMessages.push_back(newData);
+			this->theMessages.emplace_back(newData);
 		}
 		this->theMessages.shrink_to_fit();
 	}
@@ -987,7 +987,7 @@ namespace DiscordCoreAPI {
 		this->theReactions.reserve(jsonObjectData.size());
 		for (auto& value: jsonObjectData) {
 			DiscordCoreAPI::Reaction newData{ value };
-			this->theReactions.push_back(newData);
+			this->theReactions.emplace_back(newData);
 		}
 		this->theReactions.shrink_to_fit();
 	}
@@ -1051,7 +1051,7 @@ namespace DiscordCoreAPI {
 		this->theRoles.reserve(jsonObjectData.size());
 		for (auto& value: jsonObjectData) {
 			DiscordCoreAPI::Role newData{ value };
-			this->theRoles.push_back(newData);
+			this->theRoles.emplace_back(newData);
 		}
 		this->theRoles.shrink_to_fit();
 	}
@@ -1132,7 +1132,7 @@ namespace DiscordCoreAPI {
 		this->theStickers.reserve(jsonObjectData.size());
 		for (auto& value: jsonObjectData) {
 			DiscordCoreAPI::Sticker newData{ value };
-			this->theStickers.push_back(newData);
+			this->theStickers.emplace_back(newData);
 		}
 		this->theStickers.shrink_to_fit();
 	}
@@ -1320,7 +1320,7 @@ namespace DiscordCoreAPI {
 		this->theUsers.reserve(jsonObjectData.size());
 		for (auto& value: jsonObjectData) {
 			DiscordCoreAPI::User newData{ value };
-			this->theUsers.push_back(newData);
+			this->theUsers.emplace_back(newData);
 		}
 		this->theUsers.shrink_to_fit();
 	}
@@ -1379,7 +1379,7 @@ namespace DiscordCoreAPI {
 		this->theWebHooks.reserve(jsonObjectData.size());
 		for (auto& value: jsonObjectData) {
 			DiscordCoreAPI::WebHook newData{ value };
-			this->theWebHooks.push_back(newData);
+			this->theWebHooks.emplace_back(newData);
 		}
 		this->theWebHooks.shrink_to_fit();
 	}
@@ -1623,7 +1623,7 @@ namespace DiscordCoreAPI {
 			this->fields.clear();
 			for (auto& value: jsonObjectData["fields"]) {
 				EmbedFieldData newData{ value };
-				this->fields.push_back(newData);
+				this->fields.emplace_back(newData);
 			}
 		}
 	}
@@ -1690,7 +1690,7 @@ namespace DiscordCoreAPI {
 		this->theThreadMemberDatas.reserve(jsonObjectData.size());
 		for (auto& value: jsonObjectData) {
 			DiscordCoreAPI::ThreadMemberData newData{ value };
-			this->theThreadMemberDatas.push_back(newData);
+			this->theThreadMemberDatas.emplace_back(newData);
 		}
 		this->theThreadMemberDatas.shrink_to_fit();
 	}
@@ -1698,7 +1698,7 @@ namespace DiscordCoreAPI {
 	void GuildMemberData::parseObject(nlohmann::json& jsonObjectData) {
 		if (jsonObjectData.contains("roles") && !jsonObjectData["roles"].is_null()) {
 			for (auto& value: jsonObjectData["roles"])
-				this->roles.push_back(stoull(value.get<std::string>()));
+				this->roles.emplace_back(stoull(value.get<std::string>()));
 		}
 
 		this->permissions = getString(jsonObjectData, "permissions");
@@ -1800,7 +1800,7 @@ namespace DiscordCoreAPI {
 			this->threads.clear();
 			for (auto& value: jsonObjectData["threads"]) {
 				ChannelData newData{ value };
-				this->threads.push_back(newData);
+				this->threads.emplace_back(newData);
 			}
 		}
 
@@ -1808,7 +1808,7 @@ namespace DiscordCoreAPI {
 			this->members.clear();
 			for (auto& value: jsonObjectData["members"]) {
 				ThreadMemberData newData{};
-				this->members.push_back(newData);
+				this->members.emplace_back(newData);
 			}
 		}
 
@@ -1822,7 +1822,7 @@ namespace DiscordCoreAPI {
 			this->threads.clear();
 			for (auto& value: jsonObjectData["threads"]) {
 				ChannelData newData{ value };
-				this->threads.push_back(newData);
+				this->threads.emplace_back(newData);
 			}
 		}
 
@@ -1830,7 +1830,7 @@ namespace DiscordCoreAPI {
 			this->members.clear();
 			for (auto& value: jsonObjectData["members"]) {
 				ThreadMemberData newData{ value };
-				this->members.push_back(newData);
+				this->members.emplace_back(newData);
 			}
 		}
 
@@ -1879,13 +1879,13 @@ namespace DiscordCoreAPI {
 	void TriggerMetaData::parseObject(nlohmann::json& jsonObjectData) {
 		if (jsonObjectData.contains("keyword_filter") && !jsonObjectData["keyword_filter"].is_null()) {
 			for (auto& value: jsonObjectData["keyword_filter"]) {
-				this->keywordFilter.push_back(value.get<std::string>());
+				this->keywordFilter.emplace_back(value.get<std::string>());
 			}
 		}
 
 		if (jsonObjectData.contains("presets") && !jsonObjectData["presets"].is_null()) {
 			for (auto& value: jsonObjectData["presets"]) {
-				this->presets.push_back(static_cast<KeywordPresetType>(value.get<uint64_t>()));
+				this->presets.emplace_back(static_cast<KeywordPresetType>(value.get<uint64_t>()));
 			}
 		}
 	}
@@ -1928,13 +1928,13 @@ namespace DiscordCoreAPI {
 		if (jsonObjectData.contains("actions") && !jsonObjectData["actions"].is_null()) {
 			for (auto& value: jsonObjectData["actions"]) {
 				ActionData newData{ value };
-				this->actions.push_back(newData);
+				this->actions.emplace_back(newData);
 			}
 		}
 
 		if (jsonObjectData.contains("exempt_roles") && !jsonObjectData["exempt_roles"].is_null()) {
 			for (auto& value: jsonObjectData["exempt_roles"]) {
-				this->exemptRoles.push_back(value.get<Snowflake>());
+				this->exemptRoles.emplace_back(value.get<Snowflake>());
 			}
 		}
 
@@ -1944,7 +1944,7 @@ namespace DiscordCoreAPI {
 
 		if (jsonObjectData.contains("exempt_channels") && !jsonObjectData["exempt_channels"].is_null()) {
 			for (auto& value: jsonObjectData["exempt_channels"]) {
-				this->exemptChannels.push_back(value.get<Snowflake>());
+				this->exemptChannels.emplace_back(value.get<Snowflake>());
 			}
 		}
 
@@ -1984,7 +1984,7 @@ namespace DiscordCoreAPI {
 			this->permissions.clear();
 			for (auto& value: jsonObjectData["permissions"]) {
 				ApplicationCommandPermissionData newData{ value };
-				this->permissions.push_back(newData);
+				this->permissions.emplace_back(newData);
 			}
 		}
 	}
@@ -1993,7 +1993,7 @@ namespace DiscordCoreAPI {
 		this->theGuildApplicationCommandPermissionsDatas.clear();
 		for (auto& value: jsonObjectData) {
 			DiscordCoreAPI::GuildApplicationCommandPermissionsData newData{ value };
-			this->theGuildApplicationCommandPermissionsDatas.push_back(newData);
+			this->theGuildApplicationCommandPermissionsDatas.emplace_back(newData);
 		}
 	}
 
@@ -2010,7 +2010,7 @@ namespace DiscordCoreAPI {
 			this->roles.clear();
 			for (auto& value: jsonObjectData["roles"]) {
 				RoleData newData{ value };
-				this->roles.push_back(newData);
+				this->roles.emplace_back(newData);
 			}
 		}
 
@@ -2039,7 +2039,7 @@ namespace DiscordCoreAPI {
 		this->theEmojiDatas.reserve(jsonObjectData.size());
 		for (auto& value: jsonObjectData) {
 			DiscordCoreAPI::EmojiData newData{ value };
-			this->theEmojiDatas.push_back(newData);
+			this->theEmojiDatas.emplace_back(newData);
 		}
 		this->theEmojiDatas.shrink_to_fit();
 	}
@@ -2104,7 +2104,7 @@ namespace DiscordCoreAPI {
 		this->theVoiceRegionDatas.reserve(jsonObjectData.size());
 		for (auto& value: jsonObjectData) {
 			DiscordCoreAPI::VoiceRegionData newData{ value };
-			this->theVoiceRegionDatas.push_back(newData);
+			this->theVoiceRegionDatas.emplace_back(newData);
 		}
 		this->theVoiceRegionDatas.shrink_to_fit();
 	}
@@ -2133,7 +2133,7 @@ namespace DiscordCoreAPI {
 		this->theBanDatas.reserve(jsonObjectData.size());
 		for (auto& value: jsonObjectData) {
 			DiscordCoreAPI::BanData newData{ value };
-			this->theBanDatas.push_back(newData);
+			this->theBanDatas.emplace_back(newData);
 		}
 		this->theBanDatas.shrink_to_fit();
 	}
@@ -2150,7 +2150,7 @@ namespace DiscordCoreAPI {
 		if (jsonObjectData.contains("permissions") && !jsonObjectData["permissions"].is_null()) {
 			this->permissions.clear();
 			for (auto& value: jsonObjectData["permissions"]) {
-				this->permissions.push_back(Permissions{ value.get<std::string>() });
+				this->permissions.emplace_back(Permissions{ value.get<std::string>() });
 			}
 		}
 
@@ -2172,7 +2172,7 @@ namespace DiscordCoreAPI {
 			this->members.clear();
 			for (auto& value: jsonObjectData["members"]) {
 				TeamMembersObjectData newData{ value };
-				this->members.push_back(newData);
+				this->members.emplace_back(newData);
 			}
 		}
 
@@ -2219,7 +2219,7 @@ namespace DiscordCoreAPI {
 		if (jsonObjectData.contains("rpc_origins") && !jsonObjectData["rpc_origins"].is_null()) {
 			this->rpcOrigins.clear();
 			for (auto& value: jsonObjectData["rpc_origins"]) {
-				this->rpcOrigins.push_back(value.get<std::string>());
+				this->rpcOrigins.emplace_back(value.get<std::string>());
 			}
 		}
 
@@ -2386,7 +2386,7 @@ namespace DiscordCoreAPI {
 		this->theIntegrationDatas.reserve(jsonObjectData.size());
 		for (auto& value: jsonObjectData) {
 			DiscordCoreAPI::IntegrationData newData{ value };
-			this->theIntegrationDatas.push_back(newData);
+			this->theIntegrationDatas.emplace_back(newData);
 		}
 		this->theIntegrationDatas.shrink_to_fit();
 	}
@@ -2454,7 +2454,7 @@ namespace DiscordCoreAPI {
 			this->changes.clear();
 			for (auto& value: jsonObjectData["changes"]) {
 				AuditLogChangeData newData{ value };
-				this->changes.push_back(newData);
+				this->changes.emplace_back(newData);
 			}
 		}
 
@@ -2612,7 +2612,7 @@ namespace DiscordCoreAPI {
 			this->welcomeChannels.clear();
 			for (auto& value: jsonObjectData["welcome_channels"]) {
 				WelcomeScreenChannelData newData{ value };
-				this->welcomeChannels.push_back(newData);
+				this->welcomeChannels.emplace_back(newData);
 			}
 		}
 	}
@@ -2634,7 +2634,7 @@ namespace DiscordCoreAPI {
 			this->activities.clear();
 			for (auto& value: jsonObjectData["activities"]) {
 				ActivityData newData{ value };
-				this->activities.push_back(newData);
+				this->activities.emplace_back(newData);
 			}
 		}
 
@@ -2732,7 +2732,7 @@ namespace DiscordCoreAPI {
 			this->emojis.clear();
 			for (auto& value: jsonObjectData["emojis"]) {
 				EmojiData newData{ value };
-				this->emojis.push_back(newData);
+				this->emojis.emplace_back(newData);
 			}
 		}
 
@@ -2740,7 +2740,7 @@ namespace DiscordCoreAPI {
 			this->emojis.clear();
 			for (auto& value: jsonObjectData["stickers"]) {
 				StickerData newData{ value };
-				this->stickers.push_back(newData);
+				this->stickers.emplace_back(newData);
 			}
 		}
 
@@ -2786,7 +2786,7 @@ namespace DiscordCoreAPI {
 
 		if (jsonObjectData.contains("features") && !jsonObjectData["features"].is_null()) {
 			for (auto& value: jsonObjectData["features"]) {
-				this->features.push_back(StringWrapper{ value.get<std::string>() });
+				this->features.emplace_back(StringWrapper{ value.get<std::string>() });
 			}
 		}
 
@@ -2802,7 +2802,7 @@ namespace DiscordCoreAPI {
 			this->roles.clear();
 			for (auto& value: jsonObjectData["roles"]) {
 				std::unique_ptr<DiscordCoreAPI::RoleData> newData{ std::make_unique<RoleData>(value) };
-				this->roles.push_back(newData->id);
+				this->roles.emplace_back(newData->id);
 				DiscordCoreAPI::Roles::insertRole(std::move(newData));
 			}
 		}
@@ -2820,7 +2820,7 @@ namespace DiscordCoreAPI {
 			for (auto& value: jsonObjectData["members"]) {
 				std::unique_ptr<DiscordCoreAPI::GuildMemberData> newData{ std::make_unique<DiscordCoreAPI::GuildMemberData>(value) };
 				newData->guildId = this->id;
-				this->members.push_back(newData->id);
+				this->members.emplace_back(newData->id);
 				DiscordCoreAPI::GuildMembers::insertGuildMember(std::move(newData));
 			}
 		}
@@ -2830,7 +2830,7 @@ namespace DiscordCoreAPI {
 			for (auto& value: jsonObjectData["channels"]) {
 				std::unique_ptr<DiscordCoreAPI::ChannelData> newData{ std::make_unique<DiscordCoreAPI::ChannelData>(value) };
 				newData->guildId = this->id;
-				this->channels.push_back(newData->id);
+				this->channels.emplace_back(newData->id);
 				DiscordCoreAPI::Channels::insertChannel(std::move(newData));
 			}
 		}
@@ -2848,7 +2848,7 @@ namespace DiscordCoreAPI {
 		this->theGuildDatas.reserve(jsonObjectData.size());
 		for (auto& value: jsonObjectData) {
 			DiscordCoreAPI::GuildData newData{ value };
-			this->theGuildDatas.push_back(newData);
+			this->theGuildDatas.emplace_back(newData);
 		}
 		this->theGuildDatas.shrink_to_fit();
 	}
@@ -2939,7 +2939,7 @@ namespace DiscordCoreAPI {
 		this->theGuildScheduledEventUserDatas.reserve(jsonObjectData.size());
 		for (auto& value: jsonObjectData) {
 			DiscordCoreAPI::GuildScheduledEventUserData newData{ value };
-			this->theGuildScheduledEventUserDatas.push_back(newData);
+			this->theGuildScheduledEventUserDatas.emplace_back(newData);
 		}
 		this->theGuildScheduledEventUserDatas.shrink_to_fit();
 	}
@@ -3024,7 +3024,7 @@ namespace DiscordCoreAPI {
 		this->theInviteDatas.reserve(jsonObjectData.size());
 		for (auto& value: jsonObjectData) {
 			DiscordCoreAPI::InviteData newData{ value };
-			this->theInviteDatas.push_back(newData);
+			this->theInviteDatas.emplace_back(newData);
 		}
 		this->theInviteDatas.shrink_to_fit();
 	}
@@ -3079,7 +3079,7 @@ namespace DiscordCoreAPI {
 		this->theGuildTemplateDatas.reserve(jsonObjectData.size());
 		for (auto& value: jsonObjectData) {
 			DiscordCoreAPI::GuildTemplateData newData{ value };
-			this->theGuildTemplateDatas.push_back(newData);
+			this->theGuildTemplateDatas.emplace_back(newData);
 		}
 		this->theGuildTemplateDatas.shrink_to_fit();
 	}
@@ -3138,7 +3138,7 @@ namespace DiscordCoreAPI {
 		this->theWebHookDatas.reserve(jsonObjectData.size());
 		for (auto& value: jsonObjectData) {
 			DiscordCoreAPI::WebHookData newData{ value };
-			this->theWebHookDatas.push_back(newData);
+			this->theWebHookDatas.emplace_back(newData);
 		}
 		this->theWebHookDatas.shrink_to_fit();
 	}
@@ -3148,7 +3148,7 @@ namespace DiscordCoreAPI {
 			this->webhooks.clear();
 			for (auto& value: jsonObjectData["webhooks"]) {
 				WebHookData newData{ value };
-				this->webhooks.push_back(newData);
+				this->webhooks.emplace_back(newData);
 			}
 		}
 
@@ -3156,7 +3156,7 @@ namespace DiscordCoreAPI {
 			this->webhooks.clear();
 			for (auto& value: jsonObjectData["guild_scheduled_events"]) {
 				GuildScheduledEventData newData{ value };
-				this->guildScheduledEvents.push_back(newData);
+				this->guildScheduledEvents.emplace_back(newData);
 			}
 		}
 
@@ -3164,7 +3164,7 @@ namespace DiscordCoreAPI {
 			this->users.clear();
 			for (auto& value: jsonObjectData["auto_moderation_rules"]) {
 				AutoModerationRuleData newData{ value };
-				this->autoModerationRules.push_back(newData);
+				this->autoModerationRules.emplace_back(newData);
 			}
 		}
 
@@ -3172,7 +3172,7 @@ namespace DiscordCoreAPI {
 			this->users.clear();
 			for (auto& value: jsonObjectData["users"]) {
 				UserData newData{ value };
-				this->users.push_back(newData);
+				this->users.emplace_back(newData);
 			}
 		}
 
@@ -3180,7 +3180,7 @@ namespace DiscordCoreAPI {
 			this->auditLogEntries.clear();
 			for (auto& value: jsonObjectData["audit_log_entries"]) {
 				AuditLogEntryData newData{ value };
-				this->auditLogEntries.push_back(newData);
+				this->auditLogEntries.emplace_back(newData);
 			}
 		}
 
@@ -3188,7 +3188,7 @@ namespace DiscordCoreAPI {
 			this->integrations.clear();
 			for (auto& value: jsonObjectData["integrations"]) {
 				IntegrationData newData{ value };
-				this->integrations.push_back(newData);
+				this->integrations.emplace_back(newData);
 			}
 		}
 
@@ -3196,7 +3196,7 @@ namespace DiscordCoreAPI {
 			this->threads.clear();
 			for (auto& value: jsonObjectData["threads"]) {
 				ChannelData newData{ value };
-				this->threads.push_back(newData);
+				this->threads.emplace_back(newData);
 			}
 		}
 	}
@@ -3275,7 +3275,7 @@ namespace DiscordCoreAPI {
 		if (jsonObjectData.contains("channel_types") && !jsonObjectData["channel_types"].is_null()) {
 			this->channelTypes.clear();
 			for (auto& value: jsonObjectData["channel_types"]) {
-				this->channelTypes.push_back(value);
+				this->channelTypes.emplace_back(value);
 			}
 		}
 
@@ -3304,7 +3304,7 @@ namespace DiscordCoreAPI {
 				this->options.clear();
 				for (auto& value: jsonObjectData["options"]) {
 					ApplicationCommandOptionData newData{ value };
-					this->options.push_back(newData);
+					this->options.emplace_back(newData);
 				}
 			}
 		} else {
@@ -3312,7 +3312,7 @@ namespace DiscordCoreAPI {
 				this->choices.clear();
 				for (auto& value: jsonObjectData["choices"]) {
 					ApplicationCommandOptionChoiceData newData{ value };
-					this->choices.push_back(newData);
+					this->choices.emplace_back(newData);
 				}
 			}
 		}
@@ -3417,7 +3417,7 @@ namespace DiscordCoreAPI {
 						newData.downloadUrl = value["url"];
 					}
 
-					this->theFormats.push_back(newData);
+					this->theFormats.emplace_back(newData);
 				}
 			}
 
@@ -3491,7 +3491,7 @@ namespace DiscordCoreAPI {
 					} else if (value.contains("url") && !value["url"].is_null()) {
 						newData.downloadUrl = value["url"];
 					}
-					this->theFormats.push_back(newData);
+					this->theFormats.emplace_back(newData);
 				}
 			}
 		}
@@ -3513,7 +3513,7 @@ namespace DiscordCoreAPI {
 		if (jsonObjectData.contains("values") && !jsonObjectData["values"].is_null()) {
 			this->values.clear();
 			for (auto& value: jsonObjectData["values"]) {
-				this->values.push_back(value);
+				this->values.emplace_back(value);
 			}
 		}
 
@@ -3544,21 +3544,21 @@ namespace DiscordCoreAPI {
 		if (jsonObjectData.contains("parse") && !jsonObjectData["parse"].is_null()) {
 			this->parse.clear();
 			for (auto& value: jsonObjectData["parse"]) {
-				this->parse.push_back(value.get<std::string>());
+				this->parse.emplace_back(value.get<std::string>());
 			}
 		}
 
 		if (jsonObjectData.contains("roles") && !jsonObjectData["roles"].is_null()) {
 			this->roles.clear();
 			for (auto& value: jsonObjectData["roles"]) {
-				this->roles.push_back(value.get<std::string>());
+				this->roles.emplace_back(value.get<std::string>());
 			}
 		}
 
 		if (jsonObjectData.contains("users") && !jsonObjectData["users"].is_null()) {
 			this->users.clear();
 			for (auto& value: jsonObjectData["users"]) {
-				this->users.push_back(value.get<std::string>());
+				this->users.emplace_back(value.get<std::string>());
 			}
 		}
 
@@ -3645,7 +3645,7 @@ namespace DiscordCoreAPI {
 				if (value.contains("options") && !value["options"].is_null()) {
 					for (auto& value02: value["options"]) {
 						SelectOptionData newerData{ value };
-						newData.options.push_back(newerData);
+						newData.options.emplace_back(newerData);
 					}
 				}
 
@@ -3657,7 +3657,7 @@ namespace DiscordCoreAPI {
 					newData.minValues = value["min_values"].get<int32_t>();
 				}
 
-				this->components.push_back(newData);
+				this->components.emplace_back(newData);
 			}
 		}
 	}
@@ -3719,7 +3719,7 @@ namespace DiscordCoreAPI {
 			this->options.clear();
 			for (auto& value: jsonObjectData["options"]) {
 				ApplicationCommandOptionData newData{ value };
-				this->options.push_back(newData);
+				this->options.emplace_back(newData);
 			}
 		}
 	}
@@ -3764,7 +3764,7 @@ namespace DiscordCoreAPI {
 		if (jsonObjectData.contains("channel_ids") && !jsonObjectData["channel_ids"].is_null()) {
 			this->channelIds.clear();
 			for (auto& value: jsonObjectData["channel_ids"]) {
-				this->channelIds.push_back(value.get<std::string>());
+				this->channelIds.emplace_back(value.get<std::string>());
 			}
 		}
 
@@ -3772,7 +3772,7 @@ namespace DiscordCoreAPI {
 			this->members.clear();
 			for (auto& value: jsonObjectData["members"]) {
 				ThreadMemberData newData{ value };
-				this->members.push_back(newData);
+				this->members.emplace_back(newData);
 			}
 		}
 
@@ -3780,7 +3780,7 @@ namespace DiscordCoreAPI {
 			this->threads.clear();
 			for (auto& value: jsonObjectData["threads"]) {
 				ChannelData newData{ value };
-				this->threads.push_back(newData);
+				this->threads.emplace_back(newData);
 			}
 		}
 	}
@@ -3802,14 +3802,14 @@ namespace DiscordCoreAPI {
 			this->addedMembers.clear();
 			for (auto& value: jsonObjectData["added_members"]) {
 				ThreadMemberData newData{ value };
-				this->addedMembers.push_back(newData);
+				this->addedMembers.emplace_back(newData);
 			}
 		}
 
 		if (jsonObjectData.contains("removed_member_ids") && !jsonObjectData["removed_member_ids"].is_null()) {
 			this->removedMemberIds.clear();
 			for (auto& value: jsonObjectData["removed_member_ids"]) {
-				this->removedMemberIds.push_back(value);
+				this->removedMemberIds.emplace_back(value);
 			}
 		}
 	}
@@ -3895,14 +3895,14 @@ namespace DiscordCoreAPI {
 				this->mentions.clear();
 				for (auto& value: jsonObjectData["mentions"]) {
 					UserData newData{ value };
-					this->mentions.push_back(newData);
+					this->mentions.emplace_back(newData);
 				}
 			}
 
 			if (jsonObjectData.contains("mention_roles") && !jsonObjectData["mention_roles"].is_null()) {
 				this->mentionRoles.clear();
 				for (auto& value: jsonObjectData["mention_roles"]) {
-					this->mentionRoles.push_back(value.get<std::string>());
+					this->mentionRoles.emplace_back(value.get<std::string>());
 				}
 			}
 
@@ -3910,7 +3910,7 @@ namespace DiscordCoreAPI {
 				this->mentionChannels.clear();
 				for (auto& value: jsonObjectData["mention_channels"]) {
 					ChannelMentionData newData{ value };
-					this->mentionChannels.push_back(newData);
+					this->mentionChannels.emplace_back(newData);
 				}
 			}
 
@@ -3918,7 +3918,7 @@ namespace DiscordCoreAPI {
 				this->attachments.clear();
 				for (auto& value: jsonObjectData["attachments"]) {
 					AttachmentData newData{ value };
-					this->attachments.push_back(newData);
+					this->attachments.emplace_back(newData);
 				}
 			}
 
@@ -3926,7 +3926,7 @@ namespace DiscordCoreAPI {
 				this->embeds.clear();
 				for (auto& value: jsonObjectData["embeds"]) {
 					EmbedData newData{ value };
-					this->embeds.push_back(newData);
+					this->embeds.emplace_back(newData);
 				}
 			}
 
@@ -3934,7 +3934,7 @@ namespace DiscordCoreAPI {
 				this->reactions.clear();
 				for (auto& value: jsonObjectData["reactions"]) {
 					ReactionData newData{ value };
-					this->reactions.push_back(newData);
+					this->reactions.emplace_back(newData);
 				}
 			}
 
@@ -3978,7 +3978,7 @@ namespace DiscordCoreAPI {
 				this->stickerItems.clear();
 				for (auto& value: jsonObjectData["sticker_items"]) {
 					StickerItemData newData{ value };
-					this->stickerItems.push_back(newData);
+					this->stickerItems.emplace_back(newData);
 				}
 			}
 
@@ -3986,7 +3986,7 @@ namespace DiscordCoreAPI {
 				this->stickers.clear();
 				for (auto& value: jsonObjectData["stickers"]) {
 					StickerData newData{ value };
-					this->stickers.push_back(newData);
+					this->stickers.emplace_back(newData);
 				}
 			}
 
@@ -3998,7 +3998,7 @@ namespace DiscordCoreAPI {
 				this->components.clear();
 				for (auto& value: jsonObjectData["components"]) {
 					ActionRowData newData{ value };
-					this->components.push_back(newData);
+					this->components.emplace_back(newData);
 				}
 			}
 
@@ -4053,14 +4053,14 @@ namespace DiscordCoreAPI {
 			this->mentions.clear();
 			for (auto& value: jsonObjectData["mentions"]) {
 				UserData newData{ value };
-				this->mentions.push_back(newData);
+				this->mentions.emplace_back(newData);
 			}
 		}
 
 		if (jsonObjectData.contains("mention_roles") && !jsonObjectData["mention_roles"].is_null()) {
 			this->mentionRoles.clear();
 			for (auto& value: jsonObjectData["mention_roles"]) {
-				this->mentionRoles.push_back(value.get<std::string>());
+				this->mentionRoles.emplace_back(value.get<std::string>());
 			}
 		}
 
@@ -4068,7 +4068,7 @@ namespace DiscordCoreAPI {
 			this->mentionChannels.clear();
 			for (auto& value: jsonObjectData["mention_channels"]) {
 				ChannelMentionData newData{ value };
-				this->mentionChannels.push_back(newData);
+				this->mentionChannels.emplace_back(newData);
 			}
 		}
 
@@ -4076,7 +4076,7 @@ namespace DiscordCoreAPI {
 			this->attachments.clear();
 			for (auto& value: jsonObjectData["attachments"]) {
 				AttachmentData newData{ value };
-				this->attachments.push_back(newData);
+				this->attachments.emplace_back(newData);
 			}
 		}
 
@@ -4084,7 +4084,7 @@ namespace DiscordCoreAPI {
 			this->embeds.clear();
 			for (auto& value: jsonObjectData["embeds"]) {
 				EmbedData newData{ value };
-				this->embeds.push_back(newData);
+				this->embeds.emplace_back(newData);
 			}
 		}
 
@@ -4092,7 +4092,7 @@ namespace DiscordCoreAPI {
 			this->reactions.clear();
 			for (auto& value: jsonObjectData["reactions"]) {
 				ReactionData newData{ value };
-				this->reactions.push_back(newData);
+				this->reactions.emplace_back(newData);
 			}
 		}
 
@@ -4136,7 +4136,7 @@ namespace DiscordCoreAPI {
 			this->stickerItems.clear();
 			for (auto& value: jsonObjectData["sticker_items"]) {
 				StickerItemData newData{ value };
-				this->stickerItems.push_back(newData);
+				this->stickerItems.emplace_back(newData);
 			}
 		}
 
@@ -4144,7 +4144,7 @@ namespace DiscordCoreAPI {
 			this->stickers.clear();
 			for (auto& value: jsonObjectData["stickers"]) {
 				StickerData newData{ value };
-				this->stickers.push_back(newData);
+				this->stickers.emplace_back(newData);
 			}
 		}
 
@@ -4156,7 +4156,7 @@ namespace DiscordCoreAPI {
 			this->components.clear();
 			for (auto& value: jsonObjectData["components"]) {
 				ActionRowData newData{ value };
-				this->components.push_back(newData);
+				this->components.emplace_back(newData);
 			}
 		}
 
@@ -4170,7 +4170,7 @@ namespace DiscordCoreAPI {
 			this->stickers.clear();
 			for (auto& value: jsonObjectData["stickers"]) {
 				StickerData newData{ value };
-				this->stickers.push_back(newData);
+				this->stickers.emplace_back(newData);
 			}
 		}
 
@@ -4203,7 +4203,7 @@ namespace DiscordCoreAPI {
 		this->theStickerPackDatas.reserve(jsonObjectData.size());
 		for (auto& value: jsonObjectData) {
 			DiscordCoreAPI::StickerPackData newData{ value };
-			this->theStickerPackDatas.push_back(newData);
+			this->theStickerPackDatas.emplace_back(newData);
 		}
 		this->theStickerPackDatas.shrink_to_fit();
 	}
@@ -4245,7 +4245,7 @@ namespace DiscordCoreAPI {
 			this->integrations.clear();
 			for (auto& value: jsonObjectData["integrations"]) {
 				IntegrationData newData{ value };
-				this->integrations.push_back(newData);
+				this->integrations.emplace_back(newData);
 			}
 		}
 	}
@@ -4254,7 +4254,7 @@ namespace DiscordCoreAPI {
 		this->theConnectionDatas.reserve(jsonObjectData.size());
 		for (auto& value: jsonObjectData) {
 			DiscordCoreAPI::ConnectionData newData{ value };
-			this->theConnectionDatas.push_back(newData);
+			this->theConnectionDatas.emplace_back(newData);
 		}
 		this->theConnectionDatas.shrink_to_fit();
 	}
@@ -4288,7 +4288,7 @@ namespace DiscordCoreAPI {
 			this->options.clear();
 			for (auto& value: jsonObjectData["options"]) {
 				ApplicationCommandInteractionDataOption newData{ value };
-				this->options.push_back(newData);
+				this->options.emplace_back(newData);
 			}
 		}
 	}
@@ -4314,7 +4314,7 @@ namespace DiscordCoreAPI {
 			this->options.clear();
 			for (auto& value: jsonObjectData["options"]) {
 				ApplicationCommandInteractionDataOption newData{ value };
-				this->options.push_back(newData);
+				this->options.emplace_back(newData);
 			}
 		}
 
@@ -4493,7 +4493,7 @@ namespace DiscordCoreAPI {
 			this->emojis.clear();
 			for (auto& value: jsonObjectData["emojis"]) {
 				EmojiData newData{ value };
-				this->emojis.push_back(newData);
+				this->emojis.emplace_back(newData);
 			}
 		}
 	}
@@ -4507,7 +4507,7 @@ namespace DiscordCoreAPI {
 			this->stickers.clear();
 			for (auto& value: jsonObjectData["stickers"]) {
 				StickerData newData{ value };
-				this->stickers.push_back(newData);
+				this->stickers.emplace_back(newData);
 			}
 		}
 	}
@@ -4533,14 +4533,14 @@ namespace DiscordCoreAPI {
 			this->presences.clear();
 			for (auto& value: jsonObjectData["presences"]) {
 				PresenceUpdateData newData{ value };
-				this->presences.push_back(newData);
+				this->presences.emplace_back(newData);
 			}
 		}
 
 		if (jsonObjectData.contains("not_found") && !jsonObjectData["not_found"].is_null()) {
 			this->notFound.clear();
 			for (auto& value: jsonObjectData["not_found"]) {
-				this->notFound.push_back(value);
+				this->notFound.emplace_back(value);
 			}
 		}
 
@@ -4548,7 +4548,7 @@ namespace DiscordCoreAPI {
 			this->members.clear();
 			for (auto& value: jsonObjectData["members"]) {
 				GuildMemberData newData{ value };
-				this->members.push_back(newData);
+				this->members.emplace_back(newData);
 			}
 		}
 	}
@@ -4572,11 +4572,11 @@ namespace DiscordCoreAPI {
 				if (value.contains("value") && !value["value"].is_null()) {
 					auto& newValueNew = value["value"];
 					if (newValueNew.is_string()) {
-						this->optionsArgs.push_back(newValueNew);
+						this->optionsArgs.emplace_back(newValueNew);
 					} else if (newValueNew.is_number()) {
-						this->optionsArgs.push_back(std::to_string(newValueNew.get<int64_t>()));
+						this->optionsArgs.emplace_back(std::to_string(newValueNew.get<int64_t>()));
 					} else if (newValueNew.is_boolean()) {
-						this->optionsArgs.push_back(std::to_string(newValueNew.get<bool>()));
+						this->optionsArgs.emplace_back(std::to_string(newValueNew.get<bool>()));
 					}
 				}
 			}

@@ -39,38 +39,26 @@ namespace DiscordCoreInternal {
 		this->encoder = opus_encoder_create(this->sampleRate, this->nChannels, OPUS_APPLICATION_AUDIO, &error);
 	}
 
-	std::vector<DiscordCoreAPI::AudioFrameData> AudioEncoder::encodeFrames(std::vector<DiscordCoreAPI::RawFrameData> rawFrames) {
-		std::vector<DiscordCoreAPI::AudioFrameData> newData{};
-		newData.reserve(rawFrames.size());
-		for (int32_t x = 0; x < rawFrames.size(); x++) {
-			DiscordCoreAPI::AudioFrameData frameData{};
-			frameData.type = DiscordCoreAPI::AudioFrameType::Encoded;
-			frameData.encodedFrameData = encodeSingleAudioFrame(rawFrames[x]);
-			newData.push_back(frameData);
-		}
-		rawFrames.clear();
-		return newData;
-	}
-
-	DiscordCoreAPI::EncodedFrameData AudioEncoder::encodeSingleAudioFrame(DiscordCoreAPI::RawFrameData& inputFrame) {
+	DiscordCoreAPI::AudioFrameData AudioEncoder::encodeSingleAudioFrame(DiscordCoreAPI::AudioFrameData& inputFrame) {
 		std::vector<opus_int16> newVector{};
-		newVector.reserve(inputFrame.data.size() / 2);
 		for (uint32_t x = 0; x < inputFrame.data.size() / 2; x++) {
 			opus_int16 newValue{};
 			newValue |= inputFrame.data[static_cast<uint64_t>(x) * 2] << 0;
 			newValue |= inputFrame.data[static_cast<uint64_t>(x) * 2 + 1] << 8;
-			newVector.push_back(newValue);
+			newVector.emplace_back(newValue);
 		}
 		newVector.shrink_to_fit();
 		std::vector<uint8_t> newBuffer{};
 		newBuffer.resize(this->maxBufferSize);
 		int32_t count = opus_encode(this->encoder, newVector.data(), inputFrame.sampleCount, newBuffer.data(), this->maxBufferSize);
 		if (count <= 0 || count > newBuffer.size()) {
-			return DiscordCoreAPI::EncodedFrameData();
+			return DiscordCoreAPI::AudioFrameData();
 		}
-		DiscordCoreAPI::EncodedFrameData encodedFrame{};
+		DiscordCoreAPI::AudioFrameData encodedFrame{};
 		encodedFrame.data.insert(encodedFrame.data.begin(), newBuffer.begin(), newBuffer.begin() + count);
 		encodedFrame.sampleCount = inputFrame.sampleCount;
+		encodedFrame.type = DiscordCoreAPI::AudioFrameType::Encoded;
+		encodedFrame.guildMemberId = inputFrame.guildMemberId;
 		return encodedFrame;
 	}
 }

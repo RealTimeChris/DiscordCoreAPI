@@ -64,7 +64,7 @@ namespace DiscordCoreAPI {
 			newData["channel_id"] = std::to_string(value.channelId);
 			newData["type"] = value.type;
 			newData["id"] = std::to_string(value.id);
-			overwrites.push_back(newData);
+			overwrites.emplace_back(newData);
 		}
 		data["default_auto_archive_duration"] = this->defaultAutoArchiveDuration;
 		data["rate_limit_per_user"] = this->rateLimitPerUser;
@@ -88,7 +88,7 @@ namespace DiscordCoreAPI {
 			}
 			dataNew["position"] = value.position;
 			dataNew["id"] = std::to_string(value.id);
-			data.push_back(dataNew);
+			data.emplace_back(dataNew);
 		}
 		return data.dump();
 	}
@@ -177,7 +177,7 @@ namespace DiscordCoreAPI {
 			newData["channel_id"] = value.channelId;
 			newData["type"] = value.type;
 			newData["id"] = value.id;
-			permOws.push_back(newData);
+			permOws.emplace_back(newData);
 		}
 		nlohmann::json data{};
 		data["default_auto_archive_duration"] = this->channelData.defaultAutoArchiveDuration;

@@ -42,7 +42,7 @@ namespace DiscordCoreAPI {
 		} else {
 			nlohmann::json roleIdArray{};
 			for (auto& value: this->roleIds) {
-				roleIdArray.push_back(value);
+				roleIdArray.emplace_back(value);
 			}
 			data["roles"] = roleIdArray;
 		}

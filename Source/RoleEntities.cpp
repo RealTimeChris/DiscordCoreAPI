@@ -48,7 +48,7 @@ namespace DiscordCoreAPI {
 			nlohmann::json data{};
 			data["position"] = value.rolePosition;
 			data["id"] = std::to_string(value.roleId);
-			dataArray.push_back(data);
+			dataArray.emplace_back(data);
 		}
 		return dataArray.dump();
 	}
@@ -206,20 +206,20 @@ namespace DiscordCoreAPI {
 				if (value.position <= dataPackage.newPosition && value.position > newRole.position) {
 					newData.roleId = value.id;
 					newData.rolePosition = value.position - 1;
-					dataPackage.rolePositions.push_back(newData);
+					dataPackage.rolePositions.emplace_back(newData);
 				}
 			} else {
 				if (value.position >= dataPackage.newPosition && value.position < newRole.position) {
 					newData.roleId = value.id;
 					newData.rolePosition = value.position + 1;
-					dataPackage.rolePositions.push_back(newData);
+					dataPackage.rolePositions.emplace_back(newData);
 				}
 			}
 		}
 		RolePositionData newDataPos;
 		newDataPos.roleId = dataPackage.roleId;
 		newDataPos.rolePosition = dataPackage.newPosition;
-		dataPackage.rolePositions.push_back(newDataPos);
+		dataPackage.rolePositions.emplace_back(newDataPos);
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/roles";
 		workload.content = dataPackage;
@@ -262,7 +262,7 @@ namespace DiscordCoreAPI {
 		for (auto& value: rolesVector) {
 			for (auto& value2: dataPackage.guildMember.roles) {
 				if (value2 == value.id) {
-					rolesVectorNew.push_back(value);
+					rolesVectorNew.emplace_back(value);
 				}
 			}
 		}

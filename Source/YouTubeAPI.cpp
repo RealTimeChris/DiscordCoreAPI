@@ -53,7 +53,7 @@ namespace DiscordCoreInternal {
 					DiscordCoreAPI::Song searchResult{ value["videoRenderer"] };
 					searchResult.type = DiscordCoreAPI::SongType::YouTube;
 					searchResult.viewUrl = this->baseUrl + "/watch?v=" + searchResult.songId + "&hl=en";
-					searchResults.push_back(searchResult);
+					searchResults.emplace_back(searchResult);
 				}
 			}
 		}
@@ -246,8 +246,7 @@ namespace DiscordCoreInternal {
 				if (currentReruns >= maxReruns) {
 					DiscordCoreAPI::AudioFrameData frameData{};
 					frameData.type = DiscordCoreAPI::AudioFrameType::Skip;
-					frameData.rawFrameData.sampleCount = 0;
-					frameData.encodedFrameData.sampleCount = 0;
+					frameData.sampleCount = 0;
 					DiscordCoreAPI::getVoiceConnectionMap()[this->guildId]->audioDataBuffer.send(std::move(frameData));
 					audioDecoder.reset(nullptr);
 					streamSocket->disconnect(false);
@@ -362,10 +361,11 @@ namespace DiscordCoreInternal {
 							streamSocket->disconnect(false);
 							return;
 						}
-						std::vector<DiscordCoreAPI::RawFrameData> frames{};
-						DiscordCoreAPI::RawFrameData rawFrame{};
+						std::vector<DiscordCoreAPI::AudioFrameData> frames{};
 						bool doWeBreak{ false };
-						while (audioDecoder->getFrame(rawFrame)) {
+						while (!doWeBreak) {
+							DiscordCoreAPI::AudioFrameData rawFrame{};
+							doWeBreak = !audioDecoder->getFrame(rawFrame);
 							if (rawFrame.sampleCount == -5) {
 								doWeBreak = true;
 								break;
@@ -382,10 +382,10 @@ namespace DiscordCoreInternal {
 						if (doWeBreak) {
 							continue;
 						}
-						auto encodedFrames = audioEncoder.encodeFrames(std::move(frames));
-						for (auto& value: encodedFrames) {
-							value.guildMemberId = newSong.addedByUserId;
-							DiscordCoreAPI::getVoiceConnectionMap()[this->guildId]->audioDataBuffer.send(value);
+						for (auto& value: frames) {
+							auto encodedFrame = audioEncoder.encodeSingleAudioFrame(value);
+							encodedFrame.guildMemberId = newSong.addedByUserId;
+							DiscordCoreAPI::getVoiceConnectionMap()[this->guildId]->audioDataBuffer.send(std::move(encodedFrame));
 						}
 					}
 					if (remainingDownloadContentLength >= this->maxBufferSize) {
@@ -396,14 +396,13 @@ namespace DiscordCoreInternal {
 				}
 				counter++;
 			}
-			DiscordCoreAPI::RawFrameData frameData01{};
+			DiscordCoreAPI::AudioFrameData frameData01{};
 			while (audioDecoder->getFrame(frameData01)) {
 			};
 			audioDecoder.reset(nullptr);
 			DiscordCoreAPI::AudioFrameData frameData{};
 			frameData.type = DiscordCoreAPI::AudioFrameType::Skip;
-			frameData.rawFrameData.sampleCount = 0;
-			frameData.encodedFrameData.sampleCount = 0;
+			frameData.sampleCount = 0;
 			DiscordCoreAPI::getVoiceConnectionMap()[this->guildId]->audioDataBuffer.send(std::move(frameData));
 		} catch (...) {
 			if (this->configManager->doWePrintWebSocketErrorMessages()) {

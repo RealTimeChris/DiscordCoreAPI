@@ -761,7 +761,7 @@ namespace DiscordCoreAPI {
 			auto channelId = dataPackage.channel->id;
 			Channels::insertChannel(std::move(dataPackage.channel));
 			GuildData* guild = (*Guilds::cache)[guildId].get();
-			guild->channels.push_back(channelId);
+			guild->channels.emplace_back(channelId);
 			Guilds::insertGuild(std::make_unique<GuildData>(*guild));
 		}
 		co_return;
@@ -834,7 +834,7 @@ namespace DiscordCoreAPI {
 			auto guildMemberId = dataPackage.guildMember->id;
 			GuildMembers::insertGuildMember(std::move(dataPackage.guildMember));
 			GuildData* guild = (*Guilds::cache)[dataPackage.guildMember->guildId].get();
-			guild->members.push_back(guildMemberId);
+			guild->members.emplace_back(guildMemberId);
 			guild->memberCount++;
 			Guilds::insertGuild(std::make_unique<GuildData>(*guild));
 		}
@@ -875,7 +875,7 @@ namespace DiscordCoreAPI {
 			auto roleId = dataPackage.role->id;
 			Roles::insertRole(std::move(dataPackage.role));
 			GuildData* guild = (*Guilds::cache)[dataPackage.guildId].get();
-			guild->roles.push_back(roleId);
+			guild->roles.emplace_back(roleId);
 			Guilds::insertGuild(std::make_unique<GuildData>(*guild));
 		}
 		co_return;

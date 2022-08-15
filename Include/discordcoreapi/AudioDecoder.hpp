@@ -163,7 +163,7 @@ namespace DiscordCoreInternal {
 	  public:
 		AudioDecoder(const BuildAudioDecoderData& dataPackage);
 
-		bool getFrame(DiscordCoreAPI::RawFrameData& dataPackage);
+		bool getFrame(DiscordCoreAPI::AudioFrameData& dataPackage);
 
 		void submitDataForDecoding(std::string dataToDecode);
 
@@ -175,7 +175,7 @@ namespace DiscordCoreInternal {
 
 	  protected:
 		int64_t audioStreamIndex{ 0 }, bufferMaxSize{ 0 }, bytesRead{ 0 }, totalFileSize{ 0 };
-		DiscordCoreAPI::UnboundedMessageBlock<DiscordCoreAPI::RawFrameData> outDataBuffer{};
+		DiscordCoreAPI::UnboundedMessageBlock<DiscordCoreAPI::AudioFrameData> outDataBuffer{};
 		DiscordCoreAPI::UnboundedMessageBlock<std::string> inputDataBuffer{};
 		DiscordCoreAPI::ConfigManager* configManager{ nullptr };
 		std::atomic_int32_t refreshTimeForBuffer{ 10000 };

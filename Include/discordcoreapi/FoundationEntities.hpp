@@ -3679,42 +3679,6 @@ namespace DiscordCoreAPI {
 	 * @{
 	 */
 
-	/// Represents a single frame of raw audio data. \brief Represents a single frame of raw audio data.
-	struct DiscordCoreAPI_Dll RawFrameData {
-		RawFrameData() = default;
-		RawFrameData& operator=(RawFrameData&&);
-		RawFrameData(RawFrameData&&);
-		RawFrameData& operator=(const RawFrameData&);
-		RawFrameData(const RawFrameData&);
-		RawFrameData& operator=(RawFrameData&);
-		RawFrameData(RawFrameData&);
-		std::vector<uint8_t> data{};///< The audio data.
-		uint32_t sampleCount{ static_cast<uint32_t>(-1) };///< The number of samples per this frame.
-	};
-
-	/// Represents a single frame of encoded audio data. \brief Represents a single frame of encoded audio data.
-	struct DiscordCoreAPI_Dll EncodedFrameData {
-		std::vector<uint8_t> data{};///< The audio data.
-		uint32_t sampleCount{ static_cast<uint32_t>(-1) };///< The number of samples per this frame.
-	};
-
-	/// Audio frame types. \brief Audio frame types.
-	enum class AudioFrameType : int8_t {
-		Unset = 0,///< Unset.
-		Encoded = 1,///< Encoded.
-		RawPCM = 2,///< Raw PCM.
-		Skip = 3///< Skip.
-	};
-
-	/// Represents a single frame of audio data. \brief Represents a single frame of audio data.
-	struct DiscordCoreAPI_Dll AudioFrameData {
-		AudioFrameType type{ AudioFrameType::Unset };///< The type of audio frame.
-		EncodedFrameData encodedFrameData{};///< To be filled if it's already encoded.
-		Snowflake guildMemberId{};///< The Id of the GuildMember from which it was sent.
-		RawFrameData rawFrameData{};///< To be filled if it's raw audio data.
-
-		void clearData();
-	};
 
 	/// A song from the various platforms. \brief A song from the various platforms.
 	class DiscordCoreAPI_Dll Song : public DataParser<Song> {

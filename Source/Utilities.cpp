@@ -577,7 +577,7 @@ namespace DiscordCoreAPI {
 
 		std::vector<RoleData> guildMemberRoles{};
 		for (auto& value: guildMember.roles) {
-			guildMemberRoles.push_back(Roles::getCachedRoleAsync({ .guildId = guildMember.guildId, .roleId = value }).get());
+			guildMemberRoles.emplace_back(Roles::getCachedRoleAsync({ .guildId = guildMember.guildId, .roleId = value }).get());
 		}
 		int64_t allow{ 0 };
 		int64_t deny{ 0 };
@@ -611,7 +611,7 @@ namespace DiscordCoreAPI {
 		}
 		std::vector<RoleData> guildRoles{};
 		for (auto& value: guild.roles) {
-			guildRoles.push_back(Roles::getCachedRoleAsync({ .guildId = guild.id, .roleId = value }).get());
+			guildRoles.emplace_back(Roles::getCachedRoleAsync({ .guildId = guild.id, .roleId = value }).get());
 		}
 		RoleData roleEveryone{};
 		for (auto& value: guildRoles) {
@@ -628,7 +628,7 @@ namespace DiscordCoreAPI {
 		getRolesData.guildId = guildMember.guildId;
 		std::vector<RoleData> guildMemberRoles{};
 		for (auto& value: guildMember.roles) {
-			guildMemberRoles.push_back(Roles::getCachedRoleAsync({ .guildId = guild.id, .roleId = value }).get());
+			guildMemberRoles.emplace_back(Roles::getCachedRoleAsync({ .guildId = guild.id, .roleId = value }).get());
 		}
 		for (auto& value: guildMemberRoles) {
 			permissions |= stoll(static_cast<std::string>(static_cast<StringWrapper>(value.permissions)));

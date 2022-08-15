@@ -44,7 +44,7 @@ namespace DiscordCoreAPI {
 			newData["name"] = std::string{ value.name };
 			newData["id"] = value.id;
 			newData["type"] = value.type;
-			data["channels"].push_back(newData);
+			data["channels"].emplace_back(newData);
 		}
 		for (auto& value: this->roles) {
 			nlohmann::json newData{};
@@ -58,7 +58,7 @@ namespace DiscordCoreAPI {
 			newData["hoist"] = DiscordCoreAPI::getBool<int8_t, DiscordCoreAPI::RoleFlags>(value.flags, DiscordCoreAPI::RoleFlags::Hoist);
 			newData["color"] = value.color;
 			newData["name"] = value.name;
-			data["roles"].push_back(newData);
+			data["roles"].emplace_back(newData);
 		}
 		if (this->systemChannelId != 0) {
 			data["system_channel_id"] = this->systemChannelId;
@@ -95,7 +95,7 @@ namespace DiscordCoreAPI {
 			if (value.emojiId != 0) {
 				newData["emoji_id"] = std::to_string(value.emojiId);
 			}
-			channelsArray.push_back(newData);
+			channelsArray.emplace_back(newData);
 		}
 		nlohmann::json data{};
 		data["description"] = this->description;
@@ -286,7 +286,7 @@ namespace DiscordCoreAPI {
 		this->description = dataPackage.description;
 		this->afkTimeout = dataPackage.afkTimeOut;
 		for (auto& value: dataPackage.features) {
-			this->features.push_back(value);
+			this->features.emplace_back(value);
 		}
 		this->ownerId = dataPackage.ownerId;
 		this->guildId = dataPackage.id;
@@ -386,7 +386,7 @@ namespace DiscordCoreAPI {
 		GuildDataVector guildVector{};
 		for (auto& [key, value]: *Guilds::cache) {
 			value->discordCoreClient = Guilds::discordCoreClient;
-			guildVector.theGuildDatas.push_back(*value);
+			guildVector.theGuildDatas.emplace_back(*value);
 		}
 		co_return guildVector;
 	}

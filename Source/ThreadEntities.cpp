@@ -44,16 +44,16 @@ namespace DiscordCoreAPI {
 		nlohmann::json data{};
 		data["message"]["allowed_mentions"] = DiscordCoreAPI::AllowedMentionsData{ this->message.allowedMentions };
 		for (auto& value: this->message.attachments) {
-			data["message"]["attachments"].push_back(value);
+			data["message"]["attachments"].emplace_back(value);
 		}
 		for (auto& value: this->message.components) {
-			data["message"]["components"].push_back(value);
+			data["message"]["components"].emplace_back(value);
 		}
 		for (auto& value: this->message.stickerIds) {
-			data["message"]["sticker_ids"].push_back(value);
+			data["message"]["sticker_ids"].emplace_back(value);
 		}
 		for (auto& value: this->message.embeds) {
-			data["message"]["embeds"].push_back(value);
+			data["message"]["embeds"].emplace_back(value);
 		}
 		if (this->message.content != "") {
 			data["message"]["content"] = this->message.content;

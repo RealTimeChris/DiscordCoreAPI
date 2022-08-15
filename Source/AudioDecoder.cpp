@@ -173,7 +173,7 @@ namespace DiscordCoreInternal {
 		this->totalFileSize = dataPackage.totalFileSize;
 	}
 
-	bool AudioDecoder::getFrame(DiscordCoreAPI::RawFrameData& dataPackage) {
+	bool AudioDecoder::getFrame(DiscordCoreAPI::AudioFrameData& dataPackage) {
 		if (!this->areWeQuitting.load()) {
 			if (this->outDataBuffer.tryReceive(dataPackage)) {
 				if (dataPackage.sampleCount != -1) {
@@ -202,16 +202,16 @@ namespace DiscordCoreInternal {
 		AudioDecoder* stream = static_cast<AudioDecoder*>(opaque);
 		stream->bytesRead = 0;
 		stream->currentBuffer = std::string();
-		DiscordCoreAPI::RawFrameData frameData{};
+		DiscordCoreAPI::AudioFrameData frameData{};
 		if (stream->areWeQuitting.load()) {
 			frameData.sampleCount = -5;
-			stream->outDataBuffer.send(frameData);
+			stream->outDataBuffer.send(std::move(frameData));
 			stream->areWeQuitting.store(true);
 			return AVERROR_EOF;
 		}
 		if (DiscordCoreAPI::waitForTimeToPass(stream->inputDataBuffer, stream->currentBuffer, stream->refreshTimeForBuffer.load())) {
 			frameData.sampleCount = -5;
-			stream->outDataBuffer.send(frameData);
+			stream->outDataBuffer.send(std::move(frameData));
 			stream->areWeQuitting.store(true);
 			return AVERROR_EOF;
 		}
@@ -219,7 +219,7 @@ namespace DiscordCoreInternal {
 			stream->bytesRead = stream->currentBuffer.size();
 		} else {
 			frameData.sampleCount = -5;
-			stream->outDataBuffer.send(frameData);
+			stream->outDataBuffer.send(std::move(frameData));
 			stream->areWeQuitting.store(true);
 			return AVERROR_EOF;
 		}
@@ -228,7 +228,7 @@ namespace DiscordCoreInternal {
 		}
 		if (stream->ioContext->buf_ptr - stream->ioContext->buffer >= stream->totalFileSize) {
 			frameData.sampleCount = -5;
-			stream->outDataBuffer.send(frameData);
+			stream->outDataBuffer.send(std::move(frameData));
 			stream->areWeQuitting.store(true);
 			return static_cast<int32_t>(stream->bytesRead);
 		}
@@ -425,7 +425,8 @@ namespace DiscordCoreInternal {
 						this->newFrame->pts = frame->pts;
 						swr_convert_frame(this->swrContext, this->newFrame, this->frame);
 						int32_t unpadded_linesize = this->newFrame->nb_samples * av_get_bytes_per_sample(static_cast<AVSampleFormat>(this->newFrame->format)) * 2;
-						DiscordCoreAPI::RawFrameData rawFrame{};
+						DiscordCoreAPI::AudioFrameData rawFrame{};
+						rawFrame.type = DiscordCoreAPI ::AudioFrameType::RawPCM;
 						rawFrame.data.resize(unpadded_linesize);
 						for (int32_t x = 0; x < unpadded_linesize; x++) {
 							rawFrame.data[x] = this->newFrame->extended_data[0][x];
@@ -438,7 +439,8 @@ namespace DiscordCoreInternal {
 								swr_init(this->swrContext);
 							}
 							swr_convert_frame(this->swrContext, this->newFrame, nullptr);
-							DiscordCoreAPI::RawFrameData rawFrame02{};
+							DiscordCoreAPI::AudioFrameData rawFrame02{};
+							rawFrame02.type = DiscordCoreAPI ::AudioFrameType::RawPCM;
 							rawFrame02.data.resize(*this->newFrame->linesize);
 							for (int32_t x = 0; x < *this->newFrame->linesize; x++) {
 								rawFrame02.data[x] = this->newFrame->extended_data[0][x];

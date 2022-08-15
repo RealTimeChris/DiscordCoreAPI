@@ -43,15 +43,13 @@ namespace DiscordCoreInternal {
 	  public:
 		AudioEncoder();
 
-		std::vector<DiscordCoreAPI::AudioFrameData> encodeFrames(std::vector<DiscordCoreAPI::RawFrameData> rawFrames);
+		DiscordCoreAPI::AudioFrameData encodeSingleAudioFrame(DiscordCoreAPI::AudioFrameData& inputFrame);
 
 	  protected:
 		const int32_t maxBufferSize{ 1276 };
 		const int32_t sampleRate{ 48000 };
 		OpusEncoderWrapper encoder{};
 		const int32_t nChannels{ 2 };
-
-		DiscordCoreAPI::EncodedFrameData encodeSingleAudioFrame(DiscordCoreAPI::RawFrameData& inputFrame);
 	};
 
 }// namespace DiscordCoreAPI

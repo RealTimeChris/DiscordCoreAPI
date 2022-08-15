@@ -51,7 +51,7 @@ namespace DiscordCoreInternal {
 						newString += "t500x500.jpg";
 						newSong.thumbnailUrl = newString;
 					}
-					results.push_back(newSong);
+					results.emplace_back(newSong);
 				}
 			}
 			return results;
@@ -97,7 +97,7 @@ namespace DiscordCoreInternal {
 					DiscordCoreAPI::DownloadUrl downloadUrl{};
 					downloadUrl.urlPath = newString03;
 					downloadUrl.contentSize = secondNumber - firstNumber01;
-					newSong.finalDownloadUrls.push_back(downloadUrl);
+					newSong.finalDownloadUrls.emplace_back(downloadUrl);
 				}
 				for (auto& value: newSong.finalDownloadUrls) {
 					newSong.contentLength += value.contentSize;
@@ -117,7 +117,7 @@ namespace DiscordCoreInternal {
 				DiscordCoreAPI::DownloadUrl downloadUrl{};
 				downloadUrl.contentSize = static_cast<int32_t>(((valueBitRate * valueLength) / 8) - 193);
 				downloadUrl.urlPath = newSong.secondDownloadUrl;
-				newSong.finalDownloadUrls.push_back(downloadUrl);
+				newSong.finalDownloadUrls.emplace_back(downloadUrl);
 			}
 			return newSong;
 		} catch (...) {
@@ -150,11 +150,11 @@ namespace DiscordCoreInternal {
 		newerString = returnData.responseMessage;
 		std::string newString = newerString.substr(newerString.find("crossorigin src=") + newString01.size());
 		std::string newString02 = newString.substr(1, newString.find(".js") + 2);
-		assetPaths.push_back(newString02);
+		assetPaths.emplace_back(newString02);
 		while (newString.find("crossorigin src=") != std::string::npos) {
 			std::string newString03 = newString.substr(1, newString.find(".js") + 2);
 			newString = newString.substr(newString.find("crossorigin src=") + newString01.size());
-			assetPaths.push_back(newString03);
+			assetPaths.emplace_back(newString03);
 		}
 		HttpsWorkloadData dataPackage03{ HttpsWorkloadType::SoundCloudGetSearchResults };
 		dataPackage03.baseUrl = assetPaths[5];
@@ -275,21 +275,28 @@ namespace DiscordCoreInternal {
 				if (counter == 0) {
 					audioDecoder->startMe();
 				}
-				std::vector<DiscordCoreAPI::RawFrameData> frames{};
-				DiscordCoreAPI::RawFrameData rawFrame{};
-				while (audioDecoder->getFrame(rawFrame)) {
+				std::vector<DiscordCoreAPI::AudioFrameData> frames{};
+				bool doWeBreak{ false };
+				while (!doWeBreak) {
+					DiscordCoreAPI::AudioFrameData rawFrame{};
+					doWeBreak = !audioDecoder->getFrame(rawFrame);
+					if (rawFrame.sampleCount == -5) {
+						doWeBreak = true;
+						break;
+					}
 					if (rawFrame.data.size() != 0) {
-						frames.push_back(rawFrame);
+						frames.emplace_back(std::move(rawFrame));
 					}
 				}
 				if (stopToken.stop_requested()) {
 					audioDecoder.reset(nullptr);
 					return;
 				} else {
-					auto encodedFrames = audioEncoder.encodeFrames(frames);
-					for (auto& value: encodedFrames) {
-						value.guildMemberId = newSong.addedByUserId;
-						DiscordCoreAPI::getVoiceConnectionMap()[this->guildId]->audioDataBuffer.send(value);
+					
+					for (auto& value: frames) {
+						auto encodedFrame = audioEncoder.encodeSingleAudioFrame(value);
+						encodedFrame.guildMemberId = newSong.addedByUserId;
+						DiscordCoreAPI::getVoiceConnectionMap()[this->guildId]->audioDataBuffer.send(std::move(encodedFrame));
 					}
 				}
 				if (stopToken.stop_requested()) {
@@ -298,14 +305,13 @@ namespace DiscordCoreInternal {
 				}
 				counter++;
 			}
-			DiscordCoreAPI::RawFrameData frameData01{};
+			DiscordCoreAPI::AudioFrameData frameData01{};
 			while (audioDecoder->getFrame(frameData01)) {
 			};
 			audioDecoder.reset(nullptr);
 			DiscordCoreAPI::AudioFrameData frameData{};
 			frameData.type = DiscordCoreAPI::AudioFrameType::Skip;
-			frameData.rawFrameData.sampleCount = 0;
-			frameData.encodedFrameData.sampleCount = 0;
+			frameData.sampleCount = 0;
 			DiscordCoreAPI::getVoiceConnectionMap()[this->guildId]->audioDataBuffer.send(std::move(frameData));
 		} catch (...) {
 			if (this->configManager->doWePrintHttpsErrorMessages()) {

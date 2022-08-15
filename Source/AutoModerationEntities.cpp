@@ -29,17 +29,17 @@ namespace DiscordCoreAPI {
 			dataNew["metadata"]["channel_id"] = value.metadata.channelId;
 			dataNew["metadata"]["duration_seconds"] = value.metadata.durationSeconds;
 			dataNew["type"] = value.type;
-			data["actions"].push_back(dataNew);
+			data["actions"].emplace_back(dataNew);
 		}
 		data["enabled"] = this->enabled;
 		data["event_type"] = this->eventType;
 		data["exempt_channels"];
 		for (auto& value: this->exemptChannels) {
-			data["exempt_channels"].push_back(value);
+			data["exempt_channels"].emplace_back(value);
 		}
 		data["exempt_roles"];
 		for (auto& value: this->exemptRoles) {
-			data["exempt_roles"].push_back(value);
+			data["exempt_roles"].emplace_back(value);
 		}
 		data["name"] = this->name;
 		data["trigger_metadata"]["keyword_filter"] = this->triggerMetadata.keywordFilter;
@@ -65,17 +65,17 @@ namespace DiscordCoreAPI {
 			dataNew["metadata"]["channel_id"] = value.metadata.channelId;
 			dataNew["metadata"]["duration_seconds"] = value.metadata.durationSeconds;
 			dataNew["type"] = value.type;
-			data["actions"].push_back(dataNew);
+			data["actions"].emplace_back(dataNew);
 		}
 		data["enabled"] = this->enabled;
 		data["event_type"] = this->eventType;
 		data["exempt_channels"];
 		for (auto& value: this->exemptChannels) {
-			data["exempt_channels"].push_back(value);
+			data["exempt_channels"].emplace_back(value);
 		}
 		data["exempt_roles"];
 		for (auto& value: this->exemptRoles) {
-			data["exempt_roles"].push_back(value);
+			data["exempt_roles"].emplace_back(value);
 		}
 		data["name"] = this->name;
 		data["trigger_metadata"]["keyword_filter"] = this->triggerMetadata.keywordFilter;

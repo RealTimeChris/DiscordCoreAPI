@@ -28,7 +28,7 @@ namespace DiscordCoreAPI {
 		nlohmann::json data{};
 		nlohmann::json rolesArray{};
 		for (auto& value: this->roles) {
-			rolesArray.push_back(value);
+			rolesArray.emplace_back(value);
 		}
 		data["image"] = this->imageDataFinal;
 		data["name"] = this->name;
@@ -40,7 +40,7 @@ namespace DiscordCoreAPI {
 		nlohmann::json data{};
 		nlohmann::json rolesArray{};
 		for (auto& value: this->roles) {
-			rolesArray.push_back(value);
+			rolesArray.emplace_back(value);
 		}
 		data["name"] = this->name;
 		data["roles"] = rolesArray;

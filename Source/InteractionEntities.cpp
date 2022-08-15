@@ -29,7 +29,7 @@ namespace DiscordCoreAPI {
 		const std::string& emojiName, Snowflake emojiId, const std::string& url) {
 		if (this->data.data.components.size() == 0) {
 			ActionRowData actionRowData;
-			this->data.data.components.push_back(actionRowData);
+			this->data.data.components.emplace_back(actionRowData);
 		}
 		if (this->data.data.components.size() < 5) {
 			if (this->data.data.components[this->data.data.components.size() - 1].components.size() < 5) {
@@ -42,10 +42,10 @@ namespace DiscordCoreAPI {
 				component.disabled = disabled;
 				component.emoji.id = emojiId;
 				component.url = url;
-				this->data.data.components[this->data.data.components.size() - 1].components.push_back(component);
+				this->data.data.components[this->data.data.components.size() - 1].components.emplace_back(component);
 			} else if (this->data.data.components[this->data.data.components.size() - 1].components.size() == 5) {
 				ActionRowData actionRowData;
-				this->data.data.components.push_back(actionRowData);
+				this->data.data.components.emplace_back(actionRowData);
 			}
 		}
 		return *this;
@@ -55,7 +55,7 @@ namespace DiscordCoreAPI {
 		const std::string& placeholder, int32_t maxValues, int32_t minValues) {
 		if (this->data.data.components.size() == 0) {
 			ActionRowData actionRowData;
-			this->data.data.components.push_back(actionRowData);
+			this->data.data.components.emplace_back(actionRowData);
 		}
 		if (this->data.data.components.size() < 5) {
 			if (this->data.data.components[this->data.data.components.size() - 1].components.size() < 5) {
@@ -67,10 +67,10 @@ namespace DiscordCoreAPI {
 				componentData.disabled = disabled;
 				componentData.customId = customIdNew;
 				componentData.options = options;
-				this->data.data.components[this->data.data.components.size() - 1].components.push_back(componentData);
+				this->data.data.components[this->data.data.components.size() - 1].components.emplace_back(componentData);
 			} else if (this->data.data.components[this->data.data.components.size() - 1].components.size() == 5) {
 				ActionRowData actionRowData;
-				this->data.data.components.push_back(actionRowData);
+				this->data.data.components.emplace_back(actionRowData);
 			}
 		}
 		return *this;
@@ -82,7 +82,7 @@ namespace DiscordCoreAPI {
 		this->data.data.customId = topCustomIdNew;
 		if (this->data.data.components.size() == 0) {
 			ActionRowData actionRowData;
-			this->data.data.components.push_back(actionRowData);
+			this->data.data.components.emplace_back(actionRowData);
 		}
 		if (this->data.data.components.size() < 5) {
 			if (this->data.data.components[this->data.data.components.size() - 1].components.size() < 5) {
@@ -96,17 +96,17 @@ namespace DiscordCoreAPI {
 				component.label = label;
 				component.required = required;
 				component.placeholder = placeholder;
-				this->data.data.components[this->data.data.components.size() - 1].components.push_back(component);
+				this->data.data.components[this->data.data.components.size() - 1].components.emplace_back(component);
 			} else if (this->data.data.components[this->data.data.components.size() - 1].components.size() == 5) {
 				ActionRowData actionRowData;
-				this->data.data.components.push_back(actionRowData);
+				this->data.data.components.emplace_back(actionRowData);
 			}
 		}
 		return *this;
 	}
 
 	InteractionResponseBase& InteractionResponseBase::addFile(const File& theFile) {
-		this->data.data.files.push_back(theFile);
+		this->data.data.files.emplace_back(theFile);
 		return *this;
 	}
 
@@ -116,7 +116,7 @@ namespace DiscordCoreAPI {
 	}
 
 	InteractionResponseBase& InteractionResponseBase::addComponentRow(const ActionRowData& dataPackage) {
-		this->data.data.components.push_back(dataPackage);
+		this->data.data.components.emplace_back(dataPackage);
 		return *this;
 	}
 
@@ -126,7 +126,7 @@ namespace DiscordCoreAPI {
 	}
 
 	InteractionResponseBase& InteractionResponseBase::addMessageEmbed(const EmbedData& dataPackage) {
-		this->data.data.embeds.push_back(dataPackage);
+		this->data.data.embeds.emplace_back(dataPackage);
 		return *this;
 	}
 
@@ -570,7 +570,7 @@ namespace DiscordCoreAPI {
 					response->userId = selectMenuInteractionData->user.id;
 					*response->interactionData = *this->interactionData;
 					response->values = std::vector<std::string>{ "empty" };
-					this->responseVector.push_back(*response);
+					this->responseVector.emplace_back(*response);
 					break;
 				}
 				if (selectMenuInteractionData->user.id != this->userId) {
@@ -580,7 +580,7 @@ namespace DiscordCoreAPI {
 					embedData->setTitle("__**Permission Issue:**__");
 					embedData->setTimeStamp(getTimeAndDate());
 					embedData->setDescription("Sorry, but that menu can only be selected by <@" + std::to_string(this->userId) + ">!");
-					createResponseData->data.data.embeds.push_back(*embedData);
+					createResponseData->data.data.embeds.emplace_back(*embedData);
 					createResponseData->data.data.flags = 64;
 					createResponseData->data.type = InteractionCallbackType::Channel_Message_With_Source;
 					Interactions::createInteractionResponseAsync(*createResponseData).get();
@@ -594,7 +594,7 @@ namespace DiscordCoreAPI {
 					response->userId = selectMenuInteractionData->user.id;
 					response->values = this->interactionData->data.componentData.values;
 					*response->interactionData = *selectMenuInteractionData;
-					this->responseVector.push_back(*response);
+					this->responseVector.emplace_back(*response);
 					this->currentCollectedSelectMenuCount++;
 					theStopWatch.resetTimer();
 					if (this->maxCollectedSelectMenuCount > 1 && this->currentCollectedSelectMenuCount < this->maxCollectedSelectMenuCount - 1) {
@@ -620,7 +620,7 @@ namespace DiscordCoreAPI {
 					response->userId = selectMenuInteractionData->user.id;
 					*response->interactionData = *this->interactionData;
 					response->values = std::vector<std::string>{ "empty" };
-					this->responseVector.push_back(*response);
+					this->responseVector.emplace_back(*response);
 					break;
 				}
 				*this->interactionData = *selectMenuInteractionData;
@@ -632,7 +632,7 @@ namespace DiscordCoreAPI {
 				response->userId = selectMenuInteractionData->user.id;
 				*response->interactionData = *selectMenuInteractionData;
 				response->values = this->interactionData->data.componentData.values;
-				this->responseVector.push_back(*response);
+				this->responseVector.emplace_back(*response);
 				this->currentCollectedSelectMenuCount++;
 				theStopWatch.resetTimer();
 				if (this->maxCollectedSelectMenuCount > 1 && this->currentCollectedSelectMenuCount < this->maxCollectedSelectMenuCount - 1) {
@@ -696,7 +696,7 @@ namespace DiscordCoreAPI {
 					response->messageId = this->messageId;
 					response->userId = buttonInteractionData->user.id;
 					*response->interactionData = *this->interactionData;
-					this->responseVector.push_back(*response);
+					this->responseVector.emplace_back(*response);
 					break;
 				}
 				if (buttonInteractionData->user.id != this->userId) {
@@ -706,7 +706,7 @@ namespace DiscordCoreAPI {
 					embedData->setTitle("__**Permission Issue:**__");
 					embedData->setTimeStamp(getTimeAndDate());
 					embedData->setDescription("Sorry, but that button can only be pressed by <@" + std::to_string(this->userId) + ">!");
-					createResponseData->data.data.embeds.push_back(*embedData);
+					createResponseData->data.data.embeds.emplace_back(*embedData);
 					createResponseData->data.data.flags = 64;
 					createResponseData->data.type = InteractionCallbackType::Channel_Message_With_Source;
 					Interactions::createInteractionResponseAsync(*createResponseData).get();
@@ -719,7 +719,7 @@ namespace DiscordCoreAPI {
 					response->messageId = this->messageId;
 					response->userId = buttonInteractionData->user.id;
 					*response->interactionData = *buttonInteractionData;
-					this->responseVector.push_back(*response);
+					this->responseVector.emplace_back(*response);
 					this->currentCollectedButtonCount++;
 					theStopWatch.resetTimer();
 					if (this->maxCollectedButtonCount > 1 && this->currentCollectedButtonCount < this->maxCollectedButtonCount) {
@@ -744,7 +744,7 @@ namespace DiscordCoreAPI {
 					response->messageId = this->messageId;
 					response->userId = buttonInteractionData->user.id;
 					*response->interactionData = *buttonInteractionData;
-					this->responseVector.push_back(*response);
+					this->responseVector.emplace_back(*response);
 					break;
 				}
 				*this->interactionData = *buttonInteractionData;
@@ -755,7 +755,7 @@ namespace DiscordCoreAPI {
 				response->messageId = this->messageId;
 				response->userId = buttonInteractionData->user.id;
 				*response->interactionData = *buttonInteractionData;
-				this->responseVector.push_back(*response);
+				this->responseVector.emplace_back(*response);
 				this->currentCollectedButtonCount++;
 				theStopWatch.resetTimer();
 				if (this->maxCollectedButtonCount > 1 && this->currentCollectedButtonCount < this->maxCollectedButtonCount) {

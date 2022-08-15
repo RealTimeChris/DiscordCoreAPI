@@ -243,7 +243,7 @@ namespace DiscordCoreInternal {
 	}
 
 	void HttpsConnection::resetValues() {
-		SSLDataInterface::maxBufferSize = 1024 * 16 - 1;
+		SSLDataInterface::maxBufferSize = (1024 * 16) - 1;
 		SSLDataInterface::outputBuffers.clear();
 		SSLDataInterface::inputBuffer.clear();
 		this->doWeHaveContentSize = false;
@@ -430,6 +430,7 @@ namespace DiscordCoreInternal {
 			httpsConnection.resetValues();
 			if (httpsConnection.currentReconnectTries >= httpsConnection.maxReconnectTries) {
 				httpsConnection.currentReconnectTries = 0;
+				httpsConnection.disconnect(true);
 				return HttpsResponseData{};
 			}
 			if (workload.baseUrl != httpsConnection.currentBaseUrl || !httpsConnection.areWeStillConnected() || httpsConnection.doWeConnect) {

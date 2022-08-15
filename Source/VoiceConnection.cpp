@@ -78,8 +78,8 @@ namespace DiscordCoreAPI {
 		return this->thePtr.get();
 	}
 
-	RTPPacket::RTPPacket(uint32_t timestampNew, uint16_t sequenceNew, uint32_t ssrcNew, const std::vector<uint8_t>& audioDataNew, const std::string& theKeysNew) noexcept {
-		this->audioData = audioDataNew;
+	RTPPacket::RTPPacket(uint32_t timestampNew, uint16_t sequenceNew, uint32_t ssrcNew, std::vector<uint8_t>& audioDataNew, const std::string& theKeysNew) noexcept {
+		this->audioData = std::move(audioDataNew);
 		this->timestamp = timestampNew;
 		this->sequence = sequenceNew;
 		this->theKeys = theKeysNew;
@@ -142,7 +142,7 @@ namespace DiscordCoreAPI {
 		return this->voiceConnectInitData.channelId;
 	}
 
-	std::string VoiceConnection::encryptSingleAudioFrame(const EncodedFrameData& bufferToSend) noexcept {
+	std::string VoiceConnection::encryptSingleAudioFrame(AudioFrameData& bufferToSend) noexcept {
 		if (this->secretKeySend.size() > 0) {
 			this->sequenceIndex++;
 			this->timeStamp += bufferToSend.sampleCount;
@@ -154,23 +154,22 @@ namespace DiscordCoreAPI {
 		return {};
 	}
 
-	EncodedFrameData VoiceConnection::encodeSingleAudioFrame(RawFrameData& other) noexcept {
+	AudioFrameData VoiceConnection::encodeSingleAudioFrame(AudioFrameData& other) noexcept {
 		std::vector<opus_int16> newVector{};
-		newVector.reserve(other.data.size() / 2);
 		for (uint32_t x = 0; x < other.data.size() / 2; x++) {
 			opus_int16 newValue{};
 			newValue |= other.data[static_cast<uint64_t>(x) * 2] << 0;
 			newValue |= other.data[static_cast<uint64_t>(x) * 2 + 1] << 8;
-			newVector.push_back(newValue);
+			newVector.emplace_back(newValue);
 		}
 		newVector.shrink_to_fit();
 		std::vector<uint8_t> newBuffer{};
 		newBuffer.resize(1276);
 		int32_t count = opus_encode(this->theEncoder, newVector.data(), other.sampleCount, newBuffer.data(), 1276);
 		if (count <= 0 || count > newBuffer.size()) {
-			return EncodedFrameData{};
+			return AudioFrameData{};
 		}
-		DiscordCoreAPI::EncodedFrameData encodedFrame{};
+		AudioFrameData encodedFrame{};
 		encodedFrame.data.insert(encodedFrame.data.begin(), newBuffer.begin(), newBuffer.begin() + count);
 		encodedFrame.sampleCount = other.sampleCount;
 		return encodedFrame;
@@ -188,8 +187,8 @@ namespace DiscordCoreAPI {
 		return this->audioDataBuffer;
 	}
 
-	void VoiceConnection::sendSingleFrame(const AudioFrameData& frameData) noexcept {
-		this->audioDataBuffer.send(frameData);
+	void VoiceConnection::sendSingleFrame(AudioFrameData& frameData) noexcept {
+		this->audioDataBuffer.send(std::move(frameData));
 	}
 
 	bool VoiceConnection::onMessageReceived(int64_t offSet, int64_t length) noexcept {
@@ -478,8 +477,7 @@ namespace DiscordCoreAPI {
 					}
 
 					this->audioData.type = AudioFrameType::Encoded;
-					this->audioData.encodedFrameData.data.clear();
-					this->audioData.rawFrameData.data.clear();
+					this->audioData.data.clear();
 
 					while (!stopToken.stop_requested() && this->activeState.load() == VoiceActiveState::Playing) {
 						this->audioDataBuffer.tryReceive(this->audioData);
@@ -503,12 +501,12 @@ namespace DiscordCoreAPI {
 						bool doWeBreak{ false };
 						switch (this->audioData.type) {
 							case AudioFrameType::RawPCM: {
-								auto encodedFrameData = this->encodeSingleAudioFrame(this->audioData.rawFrameData);
+								auto encodedFrameData = this->encodeSingleAudioFrame(this->audioData);
 								newFrame = this->encryptSingleAudioFrame(encodedFrameData);
 								break;
 							}
 							case AudioFrameType::Encoded: {
-								newFrame = this->encryptSingleAudioFrame(this->audioData.encodedFrameData);
+								newFrame = this->encryptSingleAudioFrame(this->audioData);
 								break;
 							}
 							case AudioFrameType::Skip: {
@@ -546,10 +544,8 @@ namespace DiscordCoreAPI {
 							DatagramSocketClient::processIO(DiscordCoreInternal::ProcessIOType::Write_Only);
 						}
 
-						this->audioData.encodedFrameData.data.clear();
-						this->audioData.encodedFrameData.sampleCount = 0;
-						this->audioData.rawFrameData.data.clear();
-						this->audioData.rawFrameData.sampleCount = 0;
+						this->audioData.data.clear();
+						this->audioData.sampleCount = 0;
 						this->audioData.type = AudioFrameType::Unset;
 						totalTime += std::chrono::system_clock::now() - startingValue;
 						auto intervalCountNew = DoubleTimePointNs{ std::chrono::nanoseconds{ 20000000 } - totalTime.time_since_epoch() / frameCounter }.time_since_epoch().count();
@@ -641,8 +637,8 @@ namespace DiscordCoreAPI {
 		std::string theBuffer = this->streamSocket->getInputBuffer();
 
 		AudioFrameData theFrame{};
-		theFrame.encodedFrameData.data.insert(theFrame.encodedFrameData.data.begin(), theBuffer.begin(), theBuffer.end());
-		theFrame.encodedFrameData.sampleCount = 960;
+		theFrame.data.insert(theFrame.data.begin(), theBuffer.begin(), theBuffer.end());
+		theFrame.sampleCount = 960;
 		theFrame.type = AudioFrameType::Encoded;
 		this->audioDataBuffer.send(std::move(theFrame));
 	}
@@ -696,8 +692,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::connectInternal() noexcept {
-		auto thePtr = this->baseSocketAgent->sslShard.get();
-		std::unique_lock theLock{ thePtr->theMutex };
+		std::unique_lock theLock{ WebSocketSSLShard::theMutex };
 		if (this->connections.size() > 0) {
 			this->connections.pop();
 		}
@@ -848,9 +843,8 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::clearAudioData() noexcept {
-		if (this->audioData.encodedFrameData.data.size() != 0 && this->audioData.rawFrameData.data.size() != 0) {
-			this->audioData.encodedFrameData.data.clear();
-			this->audioData.rawFrameData.data.clear();
+		if (this->audioData.data.size() != 0) {
+			this->audioData.data.clear();
 			this->audioData = AudioFrameData();
 		}
 		AudioFrameData frameData{};
@@ -952,10 +946,10 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::sendSilence() noexcept {
-		EncodedFrameData newFrame{};
-		newFrame.data.push_back(0xf8);
-		newFrame.data.push_back(0xff);
-		newFrame.data.push_back(0xfe);
+		AudioFrameData newFrame{};
+		newFrame.data.emplace_back(0xf8);
+		newFrame.data.emplace_back(0xff);
+		newFrame.data.emplace_back(0xfe);
 		auto theFrame = this->encryptSingleAudioFrame(newFrame);
 		this->sendSingleAudioFrame(theFrame);
 	}

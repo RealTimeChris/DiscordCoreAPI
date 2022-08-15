@@ -90,7 +90,7 @@ namespace DiscordCoreAPI {
 		uint16_t sequence{};
 		uint32_t ssrc{};
 
-		RTPPacket(uint32_t timestampNew, uint16_t sequenceNew, uint32_t ssrcNew, const std::vector<uint8_t>& audioDataNew, const std::string& theKeys) noexcept;
+		RTPPacket(uint32_t timestampNew, uint16_t sequenceNew, uint32_t ssrcNew, std::vector<uint8_t>& audioDataNew, const std::string& theKeys) noexcept;
 
 		operator std::string() noexcept;
 	};
@@ -153,7 +153,7 @@ namespace DiscordCoreAPI {
 		std::unique_ptr<std::jthread> taskThread01{ nullptr };
 		std::unique_ptr<std::jthread> taskThread02{ nullptr };
 		std::unique_ptr<std::jthread> taskThread03{ nullptr };
-		std::unordered_map<uint32_t, VoiceUser> voiceUsers{};
+		std::unordered_map<uint64_t, VoiceUser> voiceUsers{};
 		std::atomic_bool areWeConnectedBool{ false };
 		std::queue<ConnectionPackage> connections{};
 		std::deque<VoicePayload> theFrameQueue{};
@@ -164,8 +164,8 @@ namespace DiscordCoreAPI {
 		Snowflake currentGuildMemberId{};
 		OpusEncoderWrapper theEncoder{};
 		int64_t heartbeatInterval{ 0 };
-		std::mutex voiceUserMutex{};
 		std::string secretKeySend{};
+		std::mutex voiceUserMutex{};
 		uint16_t sequenceIndex{ 0 };
 		AudioFrameData audioData{};
 		StreamInfo theStreamInfo{};
@@ -177,19 +177,19 @@ namespace DiscordCoreAPI {
 		uint32_t audioSSRC{};
 		std::string port{};
 
-		std::string encryptSingleAudioFrame(const EncodedFrameData& bufferToSend) noexcept;
-
 		bool collectAndProcessAMessage(VoiceConnectionState stateToWaitFor) noexcept;
+
+		std::string encryptSingleAudioFrame(AudioFrameData& bufferToSend) noexcept;
 
 		void sendSingleAudioFrame(std::string& audioDataPacketNew) noexcept;
 
 		UnboundedMessageBlock<AudioFrameData>& getAudioBuffer() noexcept;
 
-		EncodedFrameData encodeSingleAudioFrame(RawFrameData&) noexcept;
+		AudioFrameData encodeSingleAudioFrame(AudioFrameData&) noexcept;
 
 		bool onMessageReceived(int64_t offSet, int64_t length) noexcept;
 
-		void sendSingleFrame(const AudioFrameData& frameData) noexcept;
+		void sendSingleFrame(AudioFrameData& frameData) noexcept;
 
 		void sendSpeakingMessage(const bool isSpeaking) noexcept;
 

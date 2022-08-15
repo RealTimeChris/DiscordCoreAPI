@@ -498,6 +498,41 @@ namespace DiscordCoreAPI {
 	/**@}*/
 
 	/**
+	 * \addtogroup voice_connection
+	 * @{
+	 */
+
+	/// Audio frame types. \brief Audio frame types.
+	enum class AudioFrameType : int8_t {
+		Unset = 0,///< Unset.
+		Encoded = 1,///< Encoded.
+		RawPCM = 2,///< Raw PCM.
+		Skip = 3///< Skip.
+	};
+
+	/// Represents a single frame of audio data. \brief Represents a single frame of audio data.
+	struct DiscordCoreAPI_Dll AudioFrameData {
+		uint64_t sampleCount{ static_cast<uint64_t>(-1) };///< The number of samples per this frame.
+		AudioFrameType type{ AudioFrameType::Unset };///< The type of audio frame.
+		std::vector<uint8_t> data{};///< The audio data.
+		uint64_t guildMemberId{ 0 };///< GuildMemberId for the sending GuildMember.
+
+		AudioFrameData& operator=(AudioFrameData&&);
+
+		AudioFrameData(AudioFrameData&&);
+
+		AudioFrameData& operator=(AudioFrameData&);
+
+		AudioFrameData(AudioFrameData&);
+
+		AudioFrameData() = default;
+
+		void clearData();
+	};
+
+	/**@}*/
+
+	/**
 	 * \addtogroup utilities
 	 * @{
 	 */
@@ -1055,11 +1090,11 @@ namespace DiscordCoreAPI {
 	}
 
 	template<typename ObjectType>
-	concept Copyable = std::copyable<ObjectType>;
+	concept CopyableOrMovable = std::copyable<ObjectType> || std::movable<ObjectType>;
 
 	/// A thread-safe messaging block for data-structures. \brief A thread-safe messaging block for data-structures.
 	/// \tparam ObjectType The type of object that will be sent over the message block.
-	template<Copyable ObjectType> class UnboundedMessageBlock {
+	template<CopyableOrMovable ObjectType> class UnboundedMessageBlock {
 	  public:
 		UnboundedMessageBlock<ObjectType>& operator=(UnboundedMessageBlock<ObjectType>&& other) noexcept {
 			if (this != &other) {
@@ -1087,34 +1122,34 @@ namespace DiscordCoreAPI {
 		/// \param theObject An object of ObjectType.
 		void send(const ObjectType&& theObject) {
 			std::lock_guard theLock{ this->accessMutex };
-			this->theQueue.push(std::move(theObject));
+			this->theQueue.emplace_back(std::move(theObject));
 		}
 
 		/// Sends an object of type ObjectType to the "recipient". \brief Sends an object of type ObjectType to the "recipient".
 		/// \param theObject An object of ObjectType.
 		void send(ObjectType&& theObject) {
 			std::lock_guard theLock{ this->accessMutex };
-			this->theQueue.push(std::move(theObject));
+			this->theQueue.emplace_back(std::move(theObject));
 		}
 
 		/// Sends an object of type ObjectType to the "recipient". \brief Sends an object of type ObjectType to the "recipient".
 		/// \param theObject An object of ObjectType.
 		void send(const ObjectType& theObject) {
 			std::lock_guard theLock{ this->accessMutex };
-			this->theQueue.push(theObject);
+			this->theQueue.emplace_back(theObject);
 		}
 
 		/// Sends an object of type ObjectType to the "recipient". \brief Sends an object of type ObjectType to the "recipient".
 		/// \param theObject An object of ObjectType.
 		void send(ObjectType& theObject) {
 			std::lock_guard theLock{ this->accessMutex };
-			this->theQueue.push(theObject);
+			this->theQueue.emplace_back(theObject);
 		}
 
 		/// Clears the contents of the messaging block. \brief Clears the contents of the messaging block.
 		void clearContents() {
 			std::lock_guard theLock{ this->accessMutex };
-			this->theQueue = std::queue<ObjectType>{};
+			this->theQueue = std::deque<ObjectType>{};
 		}
 
 		/// Tries to receive an object of type ObjectType to be placed into a reference. \brief Tries to receive an object of type ObjectType to be placed into a reference.
@@ -1124,7 +1159,7 @@ namespace DiscordCoreAPI {
 			std::lock_guard theLock{ this->accessMutex };
 			if (this->theQueue.size() > 0) {
 				theObject = std::move(this->theQueue.front());
-				this->theQueue.pop();
+				this->theQueue.pop_front();
 				return true;
 			} else {
 				return false;
@@ -1132,7 +1167,7 @@ namespace DiscordCoreAPI {
 		}
 
 	  protected:
-		std::queue<ObjectType> theQueue{};
+		std::deque<ObjectType> theQueue{};
 		std::mutex accessMutex{};
 	};
 

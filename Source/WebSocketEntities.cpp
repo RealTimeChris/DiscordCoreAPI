@@ -292,12 +292,12 @@ namespace DiscordCoreInternal {
 		this->currentBaseSocketAgent = currentBaseSocketAgentNew;
 		this->configManager = &theClient->configManager;
 		this->discordCoreClient = theClient;
-		this->shard.push_back(currentShardNew);
+		this->shard.emplace_back(currentShardNew);
 		this->connections = connectionsNew;
 		this->doWeQuit = doWeQuitNew;
 		if (theClient) {
 			this->discordCoreClient->theBaseShardCount.store(this->discordCoreClient->theBaseShardCount.load() + 1);
-			this->shard.push_back(this->discordCoreClient->configManager.getTotalShardCount());
+			this->shard.emplace_back(this->discordCoreClient->configManager.getTotalShardCount());
 			if (this->discordCoreClient->configManager.getTextFormat() == DiscordCoreAPI::TextFormat::Etf) {
 				this->dataOpCode = WebSocketOpCode::Op_Binary;
 			} else {
@@ -939,7 +939,7 @@ namespace DiscordCoreInternal {
 										}
 										if (payload["d"].contains("ids") && !payload["d"]["ids"].is_null()) {
 											for (auto& value: payload["d"]["ids"]) {
-												dataPackage->ids.push_back(stoull(value.get<std::string>()));
+												dataPackage->ids.emplace_back(stoull(value.get<std::string>()));
 											}
 										}
 										this->discordCoreClient->eventManager.onMessageDeleteBulkEvent(*dataPackage);

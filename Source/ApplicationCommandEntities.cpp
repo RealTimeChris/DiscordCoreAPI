@@ -38,7 +38,7 @@ namespace DiscordCoreAPI {
 		data["type"] = this->type;
 		if (this->options.size() > 0) {
 			for (int32_t x = 0; x < this->options.size(); x++) {
-				data["options"].push_back(nlohmann::json(this->options[x]));
+				data["options"].emplace_back(nlohmann::json(this->options[x]));
 			}
 		}
 		return data.dump();
@@ -56,7 +56,7 @@ namespace DiscordCoreAPI {
 		data["name"] = this->name;
 		if (this->options.size() > 0) {
 			for (int32_t x = 0; x < this->options.size(); x++) {
-				data["options"].push_back(nlohmann::json{ this->options[x] });
+				data["options"].emplace_back(nlohmann::json{ this->options[x] });
 			}
 		}
 		return data.dump();
@@ -75,7 +75,7 @@ namespace DiscordCoreAPI {
 		data["type"] = this->type;
 		if (this->options.size() > 0) {
 			for (int32_t x = 0; x < this->options.size(); x++) {
-				data["options"].push_back(nlohmann::json{ this->options[x] });
+				data["options"].emplace_back(nlohmann::json{ this->options[x] });
 			}
 			data["options"] = nlohmann::json{};
 		}
@@ -94,7 +94,7 @@ namespace DiscordCoreAPI {
 		data["name"] = this->name;
 		if (this->options.size() > 0) {
 			for (int32_t x = 0; x < this->options.size(); x++) {
-				data["options"].push_back(nlohmann::json{ this->options[x] });
+				data["options"].emplace_back(nlohmann::json{ this->options[x] });
 			}
 			data["options"] = nlohmann::json{};
 		}
@@ -108,7 +108,7 @@ namespace DiscordCoreAPI {
 			newData["permission"] = value.permission;
 			newData["type"] = value.type;
 			newData["id"] = std::to_string(value.id);
-			newDataArray.push_back(newData);
+			newDataArray.emplace_back(newData);
 		}
 		return newDataArray.dump();
 	}
@@ -211,14 +211,14 @@ namespace DiscordCoreAPI {
 			dataPackageNew.description = value.description;
 			dataPackageNew.name = value.name;
 			for (auto& value01: value.options) {
-				dataPackageNew.options.push_back(value01);
+				dataPackageNew.options.emplace_back(value01);
 			}
 			dataPackageNew.type = static_cast<ApplicationCommandType>(value.type);
-			newVector.push_back(dataPackageNew);
+			newVector.emplace_back(dataPackageNew);
 		}
 		for (auto& value: newVector) {
 			std::string newData = value;
-			newDataArray.push_back(std::string{ newData });
+			newDataArray.emplace_back(std::string{ newData });
 		}
 		nlohmann::json dataNew = newDataArray;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Put;
@@ -315,14 +315,14 @@ namespace DiscordCoreAPI {
 			dataPackageNew.description = value.description;
 			dataPackageNew.name = value.name;
 			for (auto& value01: value.options) {
-				dataPackageNew.options.push_back(value01);
+				dataPackageNew.options.emplace_back(value01);
 			}
 			dataPackageNew.type = static_cast<ApplicationCommandType>(value.type);
-			newVector.push_back(dataPackageNew);
+			newVector.emplace_back(dataPackageNew);
 		}
 		for (auto& value: newVector) {
 			std::string newData = value;
-			newDataArray.push_back(newData);
+			newDataArray.emplace_back(newData);
 		}
 		nlohmann::json dataNew = newDataArray;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Put;
