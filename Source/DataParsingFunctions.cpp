@@ -84,7 +84,7 @@ namespace DiscordCoreAPI {
 	std::string getString(nlohmann::json& jsonData, const char* keyname) {
 		auto theResult = jsonData.find(keyname);
 		if (theResult != jsonData.end()) {
-			return !theResult->is_null() && theResult->is_string() ? std::move(jsonData[keyname]) : "";
+			return !theResult->is_null() && theResult->is_string() ? std::string{ std::move(jsonData[keyname]) } : "";
 		} else {
 			return const_cast<char*>("");
 		}
@@ -1408,7 +1408,7 @@ namespace DiscordCoreAPI {
 		this->id = strtoull(getString(jsonObjectData, "id"));
 
 		this->discriminator = getString(jsonObjectData, "discriminator");
-			
+		
 		std::string theString02 = getString(jsonObjectData, "avatar");
 		std::string avatarString = "https://cdn.discordapp.com/avatars/" + std::to_string(this->id) + "/" + std::move(theString02);
 		this->avatar = std::move(avatarString);
