@@ -1034,23 +1034,35 @@ namespace DiscordCoreAPI {
 		return static_cast<StoredAsType>(inputFlag) & static_cast<StoredAsType>(theFlag);
 	}
 
-	template<typename ReturnType> ReturnType reverseByteOrder(ReturnType x) {
-		const uint8_t byteSize{ 8 };
-		ReturnType returnValue{};
-		for (uint32_t y = 0; y < sizeof(ReturnType); y++) {
-			returnValue |= static_cast<ReturnType>(static_cast<uint8_t>(x >> (byteSize * y))) << byteSize * (sizeof(ReturnType) - y - 1);
-		}
-		return returnValue;
+	uint64_t ntohostlong(const uint64_t net);
+	
+	uint32_t ntohostint(const uint32_t net);
+	
+	uint16_t ntohostshort(const uint16_t net);
+	
+	uint16_t reverseByteOrder16(uint16_t x) {
+		return ntohostshort(x);
 	}
 
-	template<typename ReturnType> void storeBits(std::string& to, ReturnType num) {
-		const uint8_t byteSize{ 8 };
-		ReturnType newValue = reverseByteOrder(num);
-		for (uint32_t x = 0; x < sizeof(ReturnType); x++) {
-			to.push_back(static_cast<uint8_t>(newValue >> (byteSize * x)));
-		}
+	uint32_t reverseByteOrder32(uint32_t x) {
+		return ntohostint(x);
 	}
 
+	uint64_t reverseByteOrder64(uint64_t x) {
+		return ntohostlong(x);
+	}
+
+	void store8Bits(std::string& to, uint8_t num) {
+		const uint8_t byteSize{ 8 };
+		to.push_back(num);
+	}
+
+	void store16Bits(std::string& to, uint16_t num);
+
+	void store32Bits(std::string& to, uint32_t num);
+	
+	void store64Bits(std::string& to, uint64_t num);
+	
 	template<typename ObjectType>
 	concept Copyable = std::copyable<ObjectType>;
 

@@ -21,28 +21,6 @@
 
 namespace DiscordCoreInternal {
 
-	uint64_t ntohostlong(uint64_t const net) {
-		uint8_t data[8] = {};
-		memcpy(&data, &net, sizeof(net));
-
-		return (( uint64_t )data[7] << 0) | (( uint64_t )data[6] << 8) | (( uint64_t )data[5] << 16) | (( uint64_t )data[4] << 24) | (( uint64_t )data[3] << 32) |
-			(( uint64_t )data[2] << 40) | (( uint64_t )data[1] << 48) | (( uint64_t )data[0] << 56);
-	}
-
-	uint32_t ntohostint(uint32_t const net) {
-		uint8_t data[4] = {};
-		memcpy(&data, &net, sizeof(net));
-
-		return (( uint32_t )data[3] << 0) | (( uint32_t )data[2] << 8) | (( uint32_t )data[1] << 16) | (( uint32_t )data[0] << 24);
-	}
-
-	uint16_t ntohostshort(uint16_t const net) {
-		uint8_t data[4] = {};
-		memcpy(&data, &net, sizeof(net));
-
-		return (( uint16_t )data[1] << 0) | (( uint16_t )data[0] << 8);
-	}
-
 	ErlPackError::ErlPackError(const std::string& message) : std::runtime_error(message.c_str()){};
 
 	ErlPacker::ErlPacker() : buffer(bufferRef){};
@@ -146,14 +124,14 @@ namespace DiscordCoreInternal {
 	void ErlPacker::appendIntegerExt(uint32_t value) {
 		std::string bufferNew{ static_cast<uint8_t>(ETFTokenType::Integer_Ext) };
 		uint32_t newValue{ 1 };
-		DiscordCoreAPI::storeBits(bufferNew, value);
+		DiscordCoreAPI::store32Bits(bufferNew, value);
 		ErlPacker::writeToBuffer(bufferNew);
 	}
 
 	void ErlPacker::appendFloatExt(double value) {
 		std::string bufferNew{ static_cast<uint8_t>(ETFTokenType::Float_Ext) };
 		void* doubleValue{ &value };
-		DiscordCoreAPI::storeBits(bufferNew, *static_cast<uint64_t*>(doubleValue));
+		DiscordCoreAPI::store64Bits(bufferNew, *static_cast<uint64_t*>(doubleValue));
 		ErlPacker::writeToBuffer(bufferNew);
 	}
 
@@ -196,20 +174,20 @@ namespace DiscordCoreInternal {
 
 	void ErlPacker::appendBinaryExt(const std::string& bytes, uint32_t size) {
 		std::string bufferNew{ static_cast<uint8_t>(ETFTokenType::Binary_Ext) };
-		DiscordCoreAPI::storeBits(bufferNew, size);
+		DiscordCoreAPI::store32Bits(bufferNew, size);
 		ErlPacker::writeToBuffer(bufferNew);
 		ErlPacker::writeToBuffer(bytes);
 	}
 
 	void ErlPacker::appendListHeader(uint32_t size) {
 		std::string bufferNew{ static_cast<uint8_t>(ETFTokenType::List_Ext) };
-		DiscordCoreAPI::storeBits(bufferNew, size);
+		DiscordCoreAPI::store32Bits(bufferNew, size);
 		ErlPacker::writeToBuffer(bufferNew);
 	}
 
 	void ErlPacker::appendMapHeader(uint32_t size) {
 		std::string bufferNew{ static_cast<uint8_t>(ETFTokenType::Map_Ext) };
-		DiscordCoreAPI::storeBits(bufferNew, size);
+		DiscordCoreAPI::store32Bits(bufferNew, size);
 		ErlPacker::writeToBuffer(bufferNew);
 	}
 
@@ -228,7 +206,7 @@ namespace DiscordCoreInternal {
 		}
 		uint16_t newValue = *reinterpret_cast<uint16_t*>(this->buffer.data() + this->offSet);
 		this->offSet += sizeof(uint16_t);
-		return ntohostshort(newValue);
+		return DiscordCoreAPI::ntohostshort(newValue);
 	}
 
 	uint32_t ErlPacker::read32Bits() {
@@ -237,7 +215,7 @@ namespace DiscordCoreInternal {
 		}
 		uint32_t newValue = *reinterpret_cast<uint32_t*>(this->buffer.data() + this->offSet);
 		this->offSet += sizeof(uint32_t);
-		return ntohostint(newValue);
+		return DiscordCoreAPI::ntohostint(newValue);
 	}
 
 	uint64_t ErlPacker::read64Bits() {
@@ -246,7 +224,7 @@ namespace DiscordCoreInternal {
 		}
 		uint64_t newValue = *reinterpret_cast<uint64_t*>(this->buffer.data() + this->offSet);
 		this->offSet += sizeof(uint64_t);
-		return ntohostlong(newValue);
+		return DiscordCoreAPI::ntohostlong(newValue);
 	}
 
 	const char* ErlPacker::readString(uint32_t length) {

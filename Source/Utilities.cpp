@@ -880,4 +880,49 @@ namespace DiscordCoreAPI {
 		return timeStamp;
 	}
 
+	uint64_t ntohostlong(const uint64_t net) {
+		uint8_t data[8]{};
+		memcpy(&data, &net, sizeof(net));
+
+		return static_cast<uint64_t>(data[7]) << 0 | static_cast<uint64_t>(data[6]) << 8| static_cast<uint64_t>(data[5]) << 16 | static_cast<uint64_t>(data[4]) << 24 |
+			static_cast<uint64_t>(data[3]) << 32 | static_cast<uint64_t>(data[2]) << 40 | static_cast<uint64_t>(data[1]) << 48 | static_cast<uint64_t>(data[0]) << 56;
+	}
+
+	uint32_t ntohostint(const uint32_t net) {
+		uint8_t data[4]{};
+		memcpy(&data, &net, sizeof(net));
+
+		return static_cast<uint32_t>(data[3]) << 0 | static_cast<uint32_t>(data[2]) << 8 | static_cast<uint32_t>(data[1]) << 16 | static_cast<uint32_t>(data[0]) << 24;
+	}
+
+	uint16_t ntohostshort(const uint16_t net) {
+		uint8_t data[2]{};
+		memcpy(&data, &net, sizeof(net));
+
+		return static_cast<uint16_t>(data[1]) << 0 | static_cast<uint16_t>(data[0]) << 8;
+	}
+
+	void store16Bits(std::string& to, uint16_t num) {
+		const uint8_t byteSize{ 8 };
+		uint16_t newValue = reverseByteOrder16(num);
+		for (uint32_t x = 0; x < sizeof(uint16_t); x++) {
+			to.push_back(static_cast<uint8_t>(newValue >> (byteSize * x)));
+		}
+	}
+
+	void store32Bits(std::string& to, uint32_t num) {
+		const uint8_t byteSize{ 8 };
+		uint32_t newValue = reverseByteOrder16(num);
+		for (uint32_t x = 0; x < sizeof(uint32_t); x++) {
+			to.push_back(static_cast<uint8_t>(newValue >> (byteSize * x)));
+		}
+	}
+
+	void store64Bits(std::string& to, uint64_t num) {
+		const uint8_t byteSize{ 8 };
+		uint64_t newValue = reverseByteOrder16(num);
+		for (uint64_t x = 0; x < sizeof(uint64_t); x++) {
+			to.push_back(static_cast<uint8_t>(newValue >> (byteSize * x)));
+		}
+	}
 };
