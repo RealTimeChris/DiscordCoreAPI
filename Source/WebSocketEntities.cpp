@@ -251,8 +251,9 @@ namespace DiscordCoreInternal {
 					}
 					static_cast<WebSocketSSLShard*>(theShard)->messageOffset += 8;
 				}
-				if (static_cast<WebSocketSSLShard*>(theShard)->inputBuffer.size() < static_cast<uint64_t>(static_cast<WebSocketSSLShard*>(theShard)->messageOffset) +
-						static_cast<uint64_t>(static_cast<WebSocketSSLShard*>(theShard)->messageLength)) {
+				if (static_cast<WebSocketSSLShard*>(theShard)->inputBuffer.size() > 0 &&
+					static_cast<WebSocketSSLShard*>(theShard)->inputBuffer.size() < static_cast<uint64_t>(static_cast<WebSocketSSLShard*>(theShard)->messageOffset) +
+							static_cast<uint64_t>(static_cast<WebSocketSSLShard*>(theShard)->messageLength)) {
 					return true;
 				} else {
 					auto theValue = this->onMessageReceived(static_cast<WebSocketSSLShard*>(theShard)->messageOffset, static_cast<WebSocketSSLShard*>(theShard)->messageLength);
