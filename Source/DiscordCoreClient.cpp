@@ -51,32 +51,51 @@ namespace DiscordCoreAPI {
 		Globals::doWeQuit.store(true);
 	}
 
+	SIGTERMError::SIGTERMError(std::string theString) : std::runtime_error(theString){};
+
+	SIGSEGVError::SIGSEGVError(std::string theString) : std::runtime_error(theString){};
+
+	SIGINTError::SIGINTError(std::string theString) : std::runtime_error(theString){};
+
+	SIGILLError::SIGILLError(std::string theString) : std::runtime_error(theString){};
+
+	SIGABRTError::SIGABRTError(std::string theString) : std::runtime_error(theString){};
+
+	SIGFPEError::SIGFPEError(std::string theString) : std::runtime_error(theString){};
+
 	void signalHandler(int32_t theValue) {
-		switch (theValue) {
-			case SIGTERM: {
-				std::cout << "Exiting for: SIGTERM." << std::endl;
-				break;
+		try {
+			switch (theValue) {
+				case SIGTERM: {
+					throw SIGTERMError{ "Exiting for: SIGTERM.\n" };
+					break;
+				}
+				case SIGSEGV: {
+					throw SIGSEGVError{ "Exiting for: SIGSEGV.\n" };
+					break;
+				}
+				case SIGINT: {
+					throw SIGINTError{ "Exiting for: SIGINT.\n" };
+					break;
+				}
+				case SIGILL: {
+					throw SIGILLError{ "Exiting for: SIGILL.\n" };
+					break;
+				}
+				case SIGABRT: {
+					throw SIGABRTError{ "Exiting for: SIGABRT.\n" };
+					break;
+				}
+				case SIGFPE: {
+					throw SIGFPEError{ "Exiting for: SIGFPE.\n" };
+					break;
+				}
 			}
-			case SIGSEGV: {
-				std::cout << "Exiting for: SIGSEGV." << std::endl;
-				break;
-			}
-			case SIGINT: {
-				std::cout << "Exiting for: SIGINT." << std::endl;
-				break;
-			}
-			case SIGILL: {
-				std::cout << "Exiting for: SIGILL." << std::endl;
-				break;
-			}
-			case SIGABRT: {
-				std::cout << "Exiting for: SIGABRT." << std::endl;
-				break;
-			}
-			case SIGFPE: {
-				std::cout << "Exiting for: SIGFPE." << std::endl;
-				break;
-			}
+		} catch (SIGINTError& e) {
+			reportException("signalHandler()");
+			std::exit(EXIT_SUCCESS);
+		} catch (...) {
+			reportException("signalHandler()");
 		}
 		std::exit(EXIT_FAILURE);
 	}

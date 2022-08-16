@@ -51,6 +51,36 @@
 
 namespace DiscordCoreAPI {
 
+	class SIGTERMError : public std::runtime_error {
+	  public:
+		SIGTERMError(std::string theString);
+	};
+
+	class SIGSEGVError : public std::runtime_error {
+	  public:
+		SIGSEGVError(std::string theString);
+	};
+
+	class SIGINTError : public std::runtime_error {
+	  public:
+		SIGINTError(std::string theString);
+	};
+
+	class SIGILLError : public std::runtime_error {
+	  public:
+		SIGILLError(std::string theString);
+	};
+
+	class SIGABRTError : public std::runtime_error {
+	  public:
+		SIGABRTError(std::string theString);
+	};
+
+	class SIGFPEError : public std::runtime_error {
+	  public:
+		SIGFPEError(std::string theString);
+	};
+
 	using VoiceConnectionMap = std::unordered_map<uint64_t, std::unique_ptr<VoiceConnection>>;
 
 	using SoundCloudAPIMap = std::unordered_map<uint64_t, std::unique_ptr<DiscordCoreInternal::SoundCloudAPI>>;

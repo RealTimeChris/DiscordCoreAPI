@@ -121,12 +121,14 @@ namespace DiscordCoreInternal {
 
 		SOCKETWrapper& operator=(SOCKET other);
 
+		operator SOCKET*();
+
 		operator SOCKET();
 
 		SOCKETWrapper() = default;
 
 	  protected:
-		std::unique_ptr<SOCKET, SOCKETDeleter> thePtr{ new SOCKET{ SOCKET_ERROR }, SOCKETDeleter{} };
+		std::unique_ptr<SOCKET, SOCKETDeleter> thePtr{ nullptr, SOCKETDeleter{} };
 	};
 
 	struct DiscordCoreAPI_Dll sockaddrWrapper {
@@ -265,9 +267,9 @@ namespace DiscordCoreInternal {
 		virtual ~DatagramSocketClient() noexcept;
 
 	  protected:
+		const int32_t maxBufferSize{ (1024 * 16) - 1 };
 		sockaddrWrapper theStreamCurrentAddress{};
 		sockaddrWrapper theStreamTargetAddress{};
-		const int32_t maxBufferSize{ 1024 * 16 };
 		std::deque<std::string> outputBuffers{};
 		DiscordCoreAPI::StreamType streamType{};
 		bool areWeStreamConnected{ false };
