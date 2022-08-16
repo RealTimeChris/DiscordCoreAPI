@@ -353,7 +353,7 @@ namespace DiscordCoreInternal {
 									theCurrentString.clear();
 								}
 								audioDecoder->submitDataForDecoding(std::move(submissionString));
-								bytesReadTotal = streamSocket->getBytesRead() - headerSize;
+								bytesReadTotal = streamSocket->getBytesRead();
 							}
 						}
 						if (stopToken.stop_requested()) {
@@ -382,7 +382,6 @@ namespace DiscordCoreInternal {
 						for (auto& value: frames) {
 							auto encodedFrame = audioEncoder.encodeSingleAudioFrame(value);
 							encodedFrame.guildMemberId = newSong.addedByUserId;
-							std::cout << "THE SENT SIZE: " << encodedFrame.data.size() << std::endl;
 							DiscordCoreAPI::getVoiceConnectionMap()[this->guildId]->audioDataBuffer.send(std::move(encodedFrame));
 						}
 					}
