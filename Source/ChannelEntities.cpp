@@ -215,13 +215,13 @@ namespace DiscordCoreAPI {
 	CoRoutine<ChannelData> Channels::getCachedChannelAsync(GetChannelData dataPackage) {
 		co_await NewThreadAwaitable<ChannelData>();
 		std::shared_lock theLock{ Channels::theMutex };
-		if (!Channels::cache->contains(dataPackage.channelId)) {
+		if (!Channels::cache.contains(dataPackage.channelId)) {
 			theLock.unlock();
 			auto theChannel = Channels::getChannelAsync(dataPackage).get();
 			Channels::insertChannel(std::make_unique<Channel>(theChannel));
 			co_return theChannel;
 		} else {
-			co_return *(*Channels::cache)[dataPackage.channelId];
+			co_return *Channels::cache[dataPackage.channelId];
 		}
 	}
 
@@ -381,16 +381,16 @@ namespace DiscordCoreAPI {
 			return;
 		}
 		if (Channels::configManager->doWeCacheChannels()) {
-			(*Channels::cache)[channel->id] = std::move(channel);
+			Channels::cache[channel->id] = std::move(channel);
 		}
 	}
 
 	void Channels::removeChannel(const Snowflake channelId) {
 		std::unique_lock theLock{ Channels::theMutex };
-		Channels::cache->erase(channelId);
+		Channels::cache.erase(channelId);
 	};
 
-	std::unique_ptr<std::unordered_map<Snowflake, std::unique_ptr<ChannelData>>> Channels::cache{ std::make_unique<std::unordered_map<Snowflake, std::unique_ptr<ChannelData>>>() };
+	std::unordered_map<Snowflake, std::unique_ptr<ChannelData>> Channels::cache{};
 	DiscordCoreInternal::HttpsClient* Channels::httpsClient{ nullptr };
 	ConfigManager* Channels::configManager{ nullptr };
 	std::shared_mutex Channels::theMutex{};

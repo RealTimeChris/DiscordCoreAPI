@@ -167,14 +167,14 @@ namespace DiscordCoreAPI {
 	CoRoutine<UserData> Users::getCachedUserAsync(GetUserData dataPackage) {
 		co_await NewThreadAwaitable<UserData>();
 		std::shared_lock theLock{ Users::theMutex };
-		if (!Users::cache->contains(dataPackage.userId)) {
+		if (!Users::cache.contains(dataPackage.userId)) {
 			theLock.unlock();
 			auto theUser = getUserAsync(dataPackage).get();
 			Users::insertUser(std::make_unique<UserData>(theUser));
 			co_return theUser;
 
 		} else {
-			co_return *(*Users::cache)[dataPackage.userId];
+			co_return *Users::cache[dataPackage.userId];
 		}
 	}
 
@@ -238,11 +238,11 @@ namespace DiscordCoreAPI {
 			return;
 		}
 		if (Users::configManager->doWeCacheUsers()) {
-			(*Users::cache)[user->id] = std::move(user);
+			Users::cache[user->id] = std::move(user);
 		}
 	}
 
-	std::unique_ptr<std::unordered_map<Snowflake, std::unique_ptr<UserData>>> Users::cache{ std::make_unique<std::unordered_map<Snowflake, std::unique_ptr<UserData>>>() };
+	std::unordered_map<Snowflake, std::unique_ptr<UserData>> Users::cache{};
 	DiscordCoreInternal::HttpsClient* Users::httpsClient{ nullptr };
 	ConfigManager* Users::configManager{ nullptr };
 	std::shared_mutex Users::theMutex{};
