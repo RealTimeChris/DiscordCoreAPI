@@ -93,6 +93,7 @@ namespace DiscordCoreAPI {
 	}
 
 	OnRoleDeletionData& OnRoleDeletionData::operator=(const OnRoleDeletionData& other) {
+		this->roleOld = std::make_unique<RoleData>();
 		this->guildId = other.guildId;
 		*this->roleOld = *other.roleOld;
 		return *this;
@@ -103,6 +104,7 @@ namespace DiscordCoreAPI {
 	}
 
 	OnRoleDeletionData& OnRoleDeletionData::operator=(OnRoleDeletionData& other) {
+		this->roleOld = std::make_unique<RoleData>();
 		this->guildId = other.guildId;
 		*this->roleOld = *other.roleOld;
 		return *this;
@@ -157,6 +159,7 @@ namespace DiscordCoreAPI {
 	}
 
 	OnChannelDeletionData& OnChannelDeletionData::operator=(const OnChannelDeletionData& other) {
+		this->channel = std::make_unique<ChannelData>();
 		*this->channel = *other.channel;
 		return *this;
 	}
@@ -166,6 +169,7 @@ namespace DiscordCoreAPI {
 	}
 
 	OnChannelDeletionData& OnChannelDeletionData::operator=(OnChannelDeletionData& other) {
+		this->channel = std::make_unique<ChannelData>();
 		*this->channel = *other.channel;
 		return *this;
 	}

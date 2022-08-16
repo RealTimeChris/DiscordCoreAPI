@@ -627,8 +627,8 @@ namespace DiscordCoreInternal {
 										if (payload["d"].contains("id") && !payload["d"]["id"].is_null()) {
 											dataPackage->guildOld = std::make_unique<DiscordCoreAPI::GuildData>(
 												DiscordCoreAPI::Guilds::getCachedGuildAsync({ .guildId = stoull(payload["d"]["id"].get<std::string>()) }).get());
-											dataPackage->guildNew =
-												std::make_unique<DiscordCoreAPI::GuildData>(DiscordCoreAPI::Guilds::getCachedGuildAsync({ .guildId = payload["d"]["id"] }).get());
+											dataPackage->guildNew = std::make_unique<DiscordCoreAPI::GuildData>(
+												DiscordCoreAPI::Guilds::getCachedGuildAsync({ .guildId = stoull(payload["d"]["id"].get<std::string>()) }).get());
 										}
 										if (this->discordCoreClient->configManager.doWeCacheGuilds()) {
 											DiscordCoreAPI::Guilds::insertGuild(std::make_unique<DiscordCoreAPI::GuildData>(*dataPackage->guildNew));
