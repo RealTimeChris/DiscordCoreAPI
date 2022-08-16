@@ -965,39 +965,5 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::Event<CoRoutine<void>, OnWebhookUpdateData> onWebhookUpdateEvent{};
 	};
 	/**@}*/
-	class DiscordCoreAPI_Dll EventHandler {
-	  public:
-		static void initialize(ConfigManager* config);
-
-		static CoRoutine<void> onChannelCreation(OnChannelCreationData dataPackage);
-
-		static CoRoutine<void> onChannelUpdate(OnChannelUpdateData dataPackage);
-
-		static CoRoutine<void> onChannelDeletion(OnChannelDeletionData dataPackage);
-
-		static CoRoutine<void> onGuildCreation(OnGuildCreationData dataPackage);
-
-		static CoRoutine<void> onGuildUpdate(OnGuildUpdateData dataPackage);
-
-		static CoRoutine<void> onGuildDeletion(OnGuildDeletionData dataPackage);
-
-		static CoRoutine<void> onGuildMemberAdd(OnGuildMemberAddData dataPackage);
-
-		static CoRoutine<void> onGuildMemberRemove(OnGuildMemberRemoveData dataPackage);
-
-		static CoRoutine<void> onGuildMemberUpdate(OnGuildMemberUpdateData dataPackage);
-
-		static CoRoutine<void> onRoleCreation(OnRoleCreationData dataPackage);
-
-		static CoRoutine<void> onRoleUpdate(OnRoleUpdateData dataPackage);
-
-		static CoRoutine<void> onRoleDeletion(OnRoleDeletionData dataPackage);
-
-		static CoRoutine<void> onUserUpdate(OnUserUpdateData dataPackage);
-
-		static CoRoutine<void> onVoiceStateUpdate(OnVoiceStateUpdateData dataPackage);
-
-	  protected:
-		static ConfigManager* configManager;
-	};
+	
 }// namespace DiscordCoreAPI

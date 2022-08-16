@@ -297,7 +297,6 @@ namespace DiscordCoreAPI {
 	  public:
 		friend class DiscordCoreInternal::BaseSocketAgent;
 		friend class DiscordCoreClient;
-		friend class EventHandler;
 		friend class EventManager;
 
 		static void initialize(DiscordCoreInternal::HttpsClient*);

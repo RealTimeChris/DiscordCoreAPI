@@ -224,7 +224,6 @@ namespace DiscordCoreAPI {
 	class ActionRowData;
 	class Interactions;
 	class EventManager;
-	class EventHandler;
 	class GuildMembers;
 	class GuildMember;
 	class ChannelData;

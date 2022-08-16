@@ -216,8 +216,8 @@ namespace DiscordCoreAPI {
 	/// An interface class for the Channel related endpoints. \brief An interface class for the Channel-related endpoints.
 	class DiscordCoreAPI_Dll Channels {
 	  public:
+		friend class DiscordCoreInternal::WebSocketSSLShard;
 		friend class DiscordCoreClient;
-		friend class EventHandler;
 		friend class Guild;
 
 		static void initialize(DiscordCoreInternal::HttpsClient*, ConfigManager* configManager);

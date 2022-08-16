@@ -176,8 +176,8 @@ namespace DiscordCoreAPI {
 	/// An interface class for the Role related Discord endpoints. \brief An interface class for the Role related Discord endpoints.
 	class DiscordCoreAPI_Dll Roles {
 	  public:
+		friend class DiscordCoreInternal::WebSocketSSLShard;
 		friend class DiscordCoreClient;
-		friend class EventHandler;
 		friend class Guild;
 
 		static void initialize(DiscordCoreInternal::HttpsClient*, ConfigManager* configManagerNew);

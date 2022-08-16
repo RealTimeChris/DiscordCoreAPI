@@ -123,21 +123,6 @@ namespace DiscordCoreAPI {
 				cout << shiftToBrightRed() << "LibSodium failed to initialize!" << reset() << endl << endl;
 			}
 		}
-		this->eventManager.onChannelCreation(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnChannelCreationData>{ &EventHandler::onChannelCreation });
-		this->eventManager.onChannelUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnChannelUpdateData>{ &EventHandler::onChannelUpdate });
-		this->eventManager.onChannelDeletion(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnChannelDeletionData>{ &EventHandler::onChannelDeletion });
-		this->eventManager.onGuildCreation(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildCreationData>{ &EventHandler::onGuildCreation });
-		this->eventManager.onGuildUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildUpdateData>{ &EventHandler::onGuildUpdate });
-		this->eventManager.onGuildDeletion(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildDeletionData>{ &EventHandler::onGuildDeletion });
-		this->eventManager.onGuildMemberAdd(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildMemberAddData>{ &EventHandler::onGuildMemberAdd });
-		this->eventManager.onGuildMemberRemove(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildMemberRemoveData>{ &EventHandler::onGuildMemberRemove });
-		this->eventManager.onGuildMemberUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildMemberUpdateData>{ &EventHandler::onGuildMemberUpdate });
-		this->eventManager.onRoleCreation(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnRoleCreationData>{ &EventHandler::onRoleCreation });
-		this->eventManager.onRoleUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnRoleUpdateData>{ &EventHandler::onRoleUpdate });
-		this->eventManager.onRoleDeletion(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnRoleDeletionData>{ &EventHandler::onRoleDeletion });
-		this->eventManager.onUserUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnUserUpdateData>{ &EventHandler::onUserUpdate });
-		this->eventManager.onVoiceStateUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnVoiceStateUpdateData>{ &EventHandler::onVoiceStateUpdate });
-		EventHandler::initialize(&this->configManager);
 		this->httpsClient = std::make_unique<DiscordCoreInternal::HttpsClient>(&this->configManager);
 		ApplicationCommands::initialize(this->httpsClient.get());
 		AutoModerationRules::initialize(this->httpsClient.get());

@@ -3337,7 +3337,6 @@ namespace DiscordCoreAPI {
 		friend class DiscordCoreInternal::BaseSocketAgent;
 		friend class RespondToInputEventData;
 		friend class DiscordCoreClient;
-		friend class EventHandler;
 		friend class CommandData;
 		friend class InputEvents;
 

@@ -107,6 +107,9 @@ namespace DiscordCoreInternal {
 	}
 
 	void ErlPacker::writeToBuffer(const std::string& bytes) {
+		if (this->offSet > this->buffer.size()) {
+			this->buffer.resize(this->offSet);
+		}
 		this->buffer.insert(this->buffer.begin() + this->offSet, bytes.begin(), bytes.end());
 		this->offSet += static_cast<uint32_t>(bytes.size());
 	}

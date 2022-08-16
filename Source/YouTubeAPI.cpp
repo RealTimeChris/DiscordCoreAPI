@@ -286,8 +286,8 @@ namespace DiscordCoreInternal {
 						if (!stopToken.stop_requested()) {
 							if (streamSocket->areWeStillConnected()) {
 								bytesReadTotal = streamSocket->getBytesRead() - headerSize;
-								std::string newData = streamSocket->getInputBufferCopy();
-								headerSize = static_cast<int32_t>(newData.size());
+								std::string streamBuffer = streamSocket->getInputBufferCopy();
+								headerSize = static_cast<int32_t>(streamBuffer.size());
 							}
 						}
 						if (stopToken.stop_requested()) {
@@ -304,7 +304,7 @@ namespace DiscordCoreInternal {
 						return;
 					}
 					if (counter == 0) {
-						streamSocket->processIO(1000000);
+						streamSocket->processIO(10000);
 						if (!streamSocket->areWeStillConnected()) {
 							audioDecoder.reset(nullptr);
 							streamSocket->disconnect(false);
@@ -313,16 +313,16 @@ namespace DiscordCoreInternal {
 						}
 						std::string streamBuffer = streamSocket->getInputBufferCopy();
 						if (streamBuffer.size() > 0) {
-							theCurrentString.insert(theCurrentString.end(), streamBuffer.begin(), streamBuffer.end());
+							theCurrentString.insert(theCurrentString.end(), streamBuffer.data(), streamBuffer.data() + streamBuffer.size());
 							std::string submissionString{};
 							if (theCurrentString.size() >= this->maxBufferSize) {
-								submissionString.insert(submissionString.begin(), theCurrentString.begin(), theCurrentString.begin() + this->maxBufferSize);
+								submissionString.insert(submissionString.begin(), theCurrentString.data(), theCurrentString.data() + this->maxBufferSize);
 								theCurrentString.erase(theCurrentString.begin(), theCurrentString.begin() + this->maxBufferSize);
 							} else {
 								submissionString = std::move(theCurrentString);
 								theCurrentString.clear();
 							}
-							bytesReadTotal = streamSocket->getBytesRead() - headerSize;
+							bytesReadTotal = streamSocket->getBytesRead();
 							audioDecoder->submitDataForDecoding(std::move(submissionString));
 						}
 						audioDecoder->startMe();
@@ -333,20 +333,20 @@ namespace DiscordCoreInternal {
 							return;
 						}
 						remainingDownloadContentLength = newSong.contentLength - bytesReadTotal;
-						streamSocket->processIO(1000000);
+						streamSocket->processIO(10000);
 						if (!streamSocket->areWeStillConnected()) {
 							audioDecoder.reset(nullptr);
 							streamSocket->disconnect(false);
 							this->weFailedToDownloadOrDecode(newSong, stopToken, currentReconnectTries);
 							return;
 						}
-						std::string newVector = streamSocket->getInputBufferCopy();
-						if (newVector.size() > 0) {
-							theCurrentString.insert(theCurrentString.end(), newVector.begin(), newVector.end());
+						std::string streamBuffer = streamSocket->getInputBufferCopy();
+						if (streamBuffer.size() > 0) {
+							theCurrentString.insert(theCurrentString.end(), streamBuffer.data(), streamBuffer.data() + streamBuffer.size());
 							while (theCurrentString.size() > 0) {
 								std::string submissionString{};
 								if (theCurrentString.size() >= this->maxBufferSize) {
-									submissionString.insert(submissionString.begin(), theCurrentString.begin(), theCurrentString.begin() + this->maxBufferSize);
+									submissionString.insert(submissionString.begin(), theCurrentString.data(), theCurrentString.data() + this->maxBufferSize);
 									theCurrentString.erase(theCurrentString.begin(), theCurrentString.begin() + this->maxBufferSize);
 								} else {
 									submissionString = std::move(theCurrentString);
