@@ -23,36 +23,29 @@ namespace DiscordCoreInternal {
 
 	ErlPackError::ErlPackError(const std::string& message) : std::runtime_error(message.c_str()){};
 
-	ErlPacker::ErlPacker() : buffer(&bufferRef){};
+	ErlPacker::ErlPacker() : buffer(bufferRef){};
 
 	ErlPacker& ErlPacker::operator=(std::string& theBuffer) {
-		this->buffer.release();
-		this->buffer.reset(&theBuffer);
+		this->buffer = theBuffer;
 		return *this;
 	}
 
-	ErlPacker::ErlPacker(std::string& theBuffer) : buffer(&theBuffer){};
+	ErlPacker::ErlPacker(std::string& theBuffer) : buffer(( std::string& )theBuffer){};
 
 	std::string ErlPacker::parseJsonToEtf(nlohmann::json& dataToParse) {
 		std::string theString{};
-		this->buffer.release();
-		this->buffer.reset(&theString);
+		this->buffer = theString;
 		this->offSet = 0;
 		ErlPacker::appendVersion();
 		ErlPacker::singleValueJsonToETF(dataToParse);
-		return *this->buffer;
+		return this->buffer;
 	}
 
 	nlohmann::json ErlPacker::parseEtfToJson(std::string&& dataToParse) {
 		this->offSet = 0;
-		this->buffer.release();
-		this->buffer.reset(&dataToParse);
+		this->buffer = dataToParse;
 		uint8_t version = ErlPacker::read8Bits();
 		return ErlPacker::singleValueETFToJson();
-	}
-
-	ErlPacker::~ErlPacker() {
-		this->buffer.release();
 	}
 
 	void ErlPacker::singleValueJsonToETF(nlohmann::json& jsonData) {
@@ -114,10 +107,10 @@ namespace DiscordCoreInternal {
 	}
 
 	void ErlPacker::writeToBuffer(const std::string& bytes) {
-		if (this->offSet > this->buffer->size()) {
-			this->buffer->resize(this->offSet);
+		if (this->offSet > this->buffer.size()) {
+			this->buffer.resize(this->offSet);
 		}
-		this->buffer->insert(this->buffer->begin() + this->offSet, bytes.begin(), bytes.end());
+		this->buffer.insert(this->buffer.begin() + this->offSet, bytes.begin(), bytes.end());
 		this->offSet += static_cast<uint32_t>(bytes.size());
 	}
 
@@ -202,53 +195,53 @@ namespace DiscordCoreInternal {
 	}
 
 	uint8_t ErlPacker::read8Bits() {
-		if (this->offSet + sizeof(uint8_t) > this->buffer->size()) {
-			throw ErlPackError{ "ErlPacker::readBits() Error: readBits() past end of the buffer->\n\n" };
+		if (this->offSet + sizeof(uint8_t) > this->buffer.size()) {
+			throw ErlPackError{ "ErlPacker::readBits() Error: readBits() past end of the buffer.\n\n" };
 		}
-		uint8_t newValue = *reinterpret_cast<uint8_t*>(this->buffer->data() + this->offSet);
+		uint8_t newValue = *reinterpret_cast<uint8_t*>(this->buffer.data() + this->offSet);
 		this->offSet += sizeof(uint8_t);
 		return newValue;
 	}
 
 	uint16_t ErlPacker::read16Bits() {
-		if (this->offSet + sizeof(uint16_t) > this->buffer->size()) {
-			throw ErlPackError{ "ErlPacker::readBits() Error: readBits() past end of the buffer->\n\n" };
+		if (this->offSet + sizeof(uint16_t) > this->buffer.size()) {
+			throw ErlPackError{ "ErlPacker::readBits() Error: readBits() past end of the buffer.\n\n" };
 		}
-		uint16_t newValue = *reinterpret_cast<uint16_t*>(this->buffer->data() + this->offSet);
+		uint16_t newValue = *reinterpret_cast<uint16_t*>(this->buffer.data() + this->offSet);
 		this->offSet += sizeof(uint16_t);
 		return DiscordCoreAPI::ntohostshort(newValue);
 	}
 
 	uint32_t ErlPacker::read32Bits() {
-		if (this->offSet + sizeof(uint32_t) > this->buffer->size()) {
-			throw ErlPackError{ "ErlPacker::readBits() Error: readBits() past end of the buffer->\n\n" };
+		if (this->offSet + sizeof(uint32_t) > this->buffer.size()) {
+			throw ErlPackError{ "ErlPacker::readBits() Error: readBits() past end of the buffer.\n\n" };
 		}
-		uint32_t newValue = *reinterpret_cast<uint32_t*>(this->buffer->data() + this->offSet);
+		uint32_t newValue = *reinterpret_cast<uint32_t*>(this->buffer.data() + this->offSet);
 		this->offSet += sizeof(uint32_t);
 		return DiscordCoreAPI::ntohostint(newValue);
 	}
 
 	uint64_t ErlPacker::read64Bits() {
-		if (this->offSet + sizeof(uint64_t) > this->buffer->size()) {
-			throw ErlPackError{ "ErlPacker::readBits() Error: readBits() past end of the buffer->\n\n" };
+		if (this->offSet + sizeof(uint64_t) > this->buffer.size()) {
+			throw ErlPackError{ "ErlPacker::readBits() Error: readBits() past end of the buffer.\n\n" };
 		}
-		uint64_t newValue = *reinterpret_cast<uint64_t*>(this->buffer->data() + this->offSet);
+		uint64_t newValue = *reinterpret_cast<uint64_t*>(this->buffer.data() + this->offSet);
 		this->offSet += sizeof(uint64_t);
 		return DiscordCoreAPI::ntohostlong(newValue);
 	}
 
 	const char* ErlPacker::readString(uint32_t length) {
-		if (this->offSet + static_cast<uint64_t>(length) > this->buffer->size()) {
-			throw ErlPackError{ "ErlPacker::readString() Error: readString() past end of buffer->\n\n" };
+		if (this->offSet + static_cast<uint64_t>(length) > this->buffer.size()) {
+			throw ErlPackError{ "ErlPacker::readString() Error: readString() past end of buffer.\n\n" };
 		}
-		const char* theStringNew = this->buffer->data() + this->offSet;
+		const char* theStringNew = this->buffer.data() + this->offSet;
 		this->offSet += length;
 		return theStringNew;
 	}
 
 	nlohmann::json ErlPacker::singleValueETFToJson() {
-		if (this->offSet >= this->buffer->size()) {
-			throw ErlPackError{ "ErlPacker::singleValueETFToJson() Error: Read past end of ETF buffer->\n\n" };
+		if (this->offSet >= this->buffer.size()) {
+			throw ErlPackError{ "ErlPacker::singleValueETFToJson() Error: Read past end of ETF buffer.\n\n" };
 		}
 		uint8_t type = ErlPacker::read8Bits();
 		switch (static_cast<ETFTokenType>(type)) {
@@ -403,8 +396,8 @@ namespace DiscordCoreInternal {
 	nlohmann::json ErlPacker::parseStringAsList() {
 		uint16_t length = ErlPacker::read16Bits();
 		nlohmann::json theArray = nlohmann::json::array();
-		if (static_cast<uint64_t>(this->offSet) + length > this->buffer->size()) {
-			throw ErlPackError{ "ErlPacker::parseStringAsList() Error: String list past end of buffer->\n\n" };
+		if (static_cast<uint64_t>(this->offSet) + length > this->buffer.size()) {
+			throw ErlPackError{ "ErlPacker::parseStringAsList() Error: String list past end of buffer.\n\n" };
 		}
 		for (uint16_t x = 0; x < length; ++x) {
 			theArray.emplace_back(ErlPacker::parseSmallIntegerExt());

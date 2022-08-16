@@ -566,7 +566,7 @@ namespace DiscordCoreAPI {
 						if (sampleCount <= 0) {
 							std::cout << "Failed to decode user's voice payload." << std::endl;
 						} else {
-							theBuffer.decodedData.resize(static_cast<uint64_t>(sampleCount * 2));
+							theBuffer.decodedData.resize(static_cast<uint64_t>(sampleCount) * 2);
 							this->voiceUsers[speakerSsrc].thePayloads.push(std::move(theBuffer));
 						}
 					}

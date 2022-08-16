@@ -54,7 +54,7 @@ namespace DiscordCoreAPI {
 	}
 
 	AudioEncoder::AudioEncoder() {
-		int32_t error;
+		int32_t error{};
 		this->encoder = opus_encoder_create(this->sampleRate, this->nChannels, OPUS_APPLICATION_AUDIO, &error);
 	}
 
