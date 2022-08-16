@@ -35,14 +35,11 @@ namespace DiscordCoreInternal {
 		Integer_Ext = 98,
 		Float_Ext = 99,
 		Atom_Ext = 100,
-		Small_Tuple_Ext = 104,
-		Large_Tuple_Ext = 105,
 		Nil_Ext = 106,
 		String_Ext = 107,
 		List_Ext = 108,
 		Binary_Ext = 109,
 		Small_Big_Ext = 110,
-		Large_Big_Ext = 111,
 		Map_Ext = 116,
 		Atom_Utf8_Ext = 118,
 		Small_Atom_Utf8_Ext = 119
@@ -118,10 +115,6 @@ namespace DiscordCoreInternal {
 
 		nlohmann::json parseTuple(uint32_t);
 
-		nlohmann::json parseSmallTupleExt();
-
-		nlohmann::json parseLargeTupleExt();
-
 		nlohmann::json parseNilExt();
 
 		nlohmann::json parseStringAsList();
@@ -129,10 +122,6 @@ namespace DiscordCoreInternal {
 		nlohmann::json parseListExt();
 
 		nlohmann::json parseBinaryExt();
-
-		nlohmann::json parseSmallBigExt();
-
-		nlohmann::json parseLargeBigExt();
 
 		nlohmann::json parseArray(uint32_t);
 
