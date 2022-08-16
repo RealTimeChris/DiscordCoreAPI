@@ -257,6 +257,12 @@ namespace DiscordCoreInternal {
 			case ETFTokenType::Atom_Ext: {
 				return ErlPacker::parseAtomUtf8Ext();
 			}
+			case ETFTokenType::Small_Tuple_Ext: {
+				return ErlPacker::parseSmallTupleExt();
+			}
+			case ETFTokenType::Large_Tuple_Ext: {
+				return ErlPacker::parseLargeTupleExt();
+			}
 			case ETFTokenType::Nil_Ext: {
 				return ErlPacker::parseNilExt();
 			}
@@ -268,6 +274,12 @@ namespace DiscordCoreInternal {
 			}
 			case ETFTokenType::Binary_Ext: {
 				return ErlPacker::parseBinaryExt();
+			}
+			case ETFTokenType::Small_Big_Ext: {
+				return ErlPacker::parseSmallBigExt();
+			}
+			case ETFTokenType::Large_Big_Ext: {
+				return ErlPacker::parseLargeBigExt();
 			}
 			case ETFTokenType::Map_Ext: {
 				return ErlPacker::parseMapExt();
@@ -367,6 +379,16 @@ namespace DiscordCoreInternal {
 		return theValue;
 	}
 
+	nlohmann::json ErlPacker::parseSmallTupleExt() {
+		nlohmann::json theValue = ErlPacker::parseTuple(ErlPacker::read8Bits());
+		return theValue;
+	}
+
+	nlohmann::json ErlPacker::parseLargeTupleExt() {
+		nlohmann::json theValue = ErlPacker::parseTuple(ErlPacker::read32Bits());
+		return theValue;
+	}
+
 	nlohmann::json ErlPacker::parseNilExt() {
 		return nlohmann::json();
 	}
@@ -401,6 +423,16 @@ namespace DiscordCoreInternal {
 			return nlohmann::json{};
 		}
 		nlohmann::json theValue = std::string{ stringNew, length };
+		return theValue;
+	}
+
+	nlohmann::json ErlPacker::parseSmallBigExt() {
+		nlohmann::json theValue = ErlPacker::parseBigint(ErlPacker::read8Bits());
+		return theValue;
+	}
+
+	nlohmann::json ErlPacker::parseLargeBigExt() {
+		nlohmann::json theValue = ErlPacker::parseBigint(ErlPacker::read32Bits());
 		return theValue;
 	}
 
