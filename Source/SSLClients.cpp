@@ -105,12 +105,8 @@ namespace DiscordCoreInternal {
 	void SOCKETWrapper::SOCKETDeleter::operator()(SOCKET* other) {
 		if (other) {
 #ifdef _WIN32
-			if (auto theValue = shutdown(*other, SD_BOTH)) {
-				std::cout << reportError("SOCKETWrapper::SOCKETDeleter::operator(); shutdown()") << std::endl;
-			}
-			if (closesocket(*other)) {
-				std::cout << reportError("SOCKETWrapper::SOCKETDeleter::operator(); closesocket()") << std::endl;
-			}
+			shutdown(*other, SD_BOTH);
+			closesocket(*other);
 #else
 			shutdown(*other, SHUT_RDWR);
 			close(*other);
@@ -237,10 +233,6 @@ namespace DiscordCoreInternal {
 		hints->ai_family = AF_INET;
 		hints->ai_socktype = SOCK_STREAM;
 		hints->ai_protocol = IPPROTO_TCP;
-
-		if (baseUrl.find("discord.media") != std::string::npos) {
-			std::cout << "WERE CONNECTING TO THE TCP SOCKET!" << std::endl;
-		}
 		
 		if (this->context = SSL_CTX_new(TLS_client_method()); this->context == nullptr) {
 			return false;
@@ -469,7 +461,6 @@ namespace DiscordCoreInternal {
 			static_cast<sockaddr_in*>(this->theStreamTargetAddress)->sin_port = DiscordCoreAPI::reverseByteOrder16(static_cast<unsigned short>(stoi(portNew)));
 			static_cast<sockaddr_in*>(this->theStreamTargetAddress)->sin_family = AF_INET;
 		}
-		std::cout << "WERE CONNECTING TO THE UDP SOCKET!" << std::endl;
 		addrinfoWrapper hints{}, address{};
 		hints->ai_family = AF_INET;
 		hints->ai_socktype = SOCK_DGRAM;
@@ -555,18 +546,14 @@ namespace DiscordCoreInternal {
 		timeval checkTime{ .tv_sec = 0, .tv_usec = 500000 };
 		if (auto returnValue = select(FD_SETSIZE, &readSet, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
 			this->disconnect();
-			std::cout << "WERE PROCESSING PROCESSING! (AND DISCONNECT)" << std::endl;
 			return;
 		} else if (returnValue == 0) {
-			std::cout << "WERE PROCESSING PROCESSING! (AND ZERO)" << std::endl;
 			return;
 		} else {
 			if (FD_ISSET(this->theSocket, &readSet)) {
-				std::cout << "WERE PROCESSING PROCESSING! (AND READ)" << std::endl;
 				this->readDataProcess();
 			}
 			if (FD_ISSET(this->theSocket, &writeSet)) {
-				std::cout << "WERE PROCESSING PROCESSING! (AND WRITE)" << std::endl;
 				this->writeDataProcess();
 			}
 		}
