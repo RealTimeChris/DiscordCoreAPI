@@ -545,7 +545,7 @@ namespace DiscordCoreInternal {
 									}
 									case 8: {
 										std::unique_ptr<DiscordCoreAPI::OnChannelDeletionData> dataPackage{ std::make_unique<DiscordCoreAPI::OnChannelDeletionData>() };
-										dataPackage->channel = payload["d"];
+										dataPackage->channel = std::make_unique<DiscordCoreAPI::ChannelData>(payload["d"]);
 										this->discordCoreClient->eventManager.onChannelDeletionEvent(*dataPackage);
 										break;
 									}
@@ -613,7 +613,7 @@ namespace DiscordCoreInternal {
 									}
 									case 18: {
 										std::unique_ptr<DiscordCoreAPI::OnGuildDeletionData> dataPackage{ std::make_unique<DiscordCoreAPI::OnGuildDeletionData>() };
-										dataPackage->guild = payload["d"];
+										dataPackage->guild = std::make_unique<DiscordCoreAPI::GuildData>(payload["d"]);
 										this->discordCoreClient->eventManager.onGuildDeletionEvent(*dataPackage);
 										break;
 									}
