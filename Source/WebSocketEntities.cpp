@@ -444,10 +444,10 @@ namespace DiscordCoreInternal {
 
 					if (this->configManager->getTextFormat() == DiscordCoreAPI::TextFormat::Etf) {
 						try {
-							DiscordCoreAPI::StopWatch theStopWatch{ 50us };
-							theStopWatch.resetTimer();
+							//DiscordCoreAPI::StopWatch theStopWatch{ 50us };
+							//theStopWatch.resetTimer();
 							payload = this->parseEtfToJson(WebSocketSSLShard::inputBuffer.substr(offSet, length));
-							std::cout << "THE TIME TO COMPLETE: " << theStopWatch.totalTimePassed() << std::endl;
+							//std::cout << "THE TIME TO COMPLETE: " << theStopWatch.totalTimePassed() << std::endl;
 						} catch (...) {
 							if (this->configManager->doWePrintGeneralErrorMessages()) {
 								DiscordCoreAPI::reportException("ErlPacker::parseEtfToJson()");
@@ -743,10 +743,10 @@ namespace DiscordCoreInternal {
 									}
 									case 26: {
 										if (this->discordCoreClient->configManager.doWeCacheGuildMembers()) {
-											auto oldGuildMember =
-												DiscordCoreAPI::GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = stoull(payload["d"]["user"]["id"].get<std::string>()),
-																											.guildId = stoull(payload["d"]["id"].get<std::string>()) })
-													.get();
+											auto oldGuildMember = DiscordCoreAPI::GuildMembers::getCachedGuildMemberAsync(
+												{ .guildMemberId = stoull(payload["d"]["user"]["id"].get<std::string>()),
+													.guildId = stoull(payload["d"]["guild_id"].get<std::string>()) })
+																		.get();
 											DiscordCoreAPI::GuildMemberId theKey{};
 											theKey.guildMemberId = oldGuildMember.id;
 											theKey.guildId = oldGuildMember.guildId;
