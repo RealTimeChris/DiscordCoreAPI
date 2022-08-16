@@ -384,7 +384,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<std::vector<GuildData>>();
 		std::shared_lock theLock{ Guilds::theMutex };
 		GuildDataVector guildVector{};
-		for (auto& [key, value]: *Guilds::cache) {
+		for (auto& [key, value]: Guilds::cache) {
 			value->discordCoreClient = Guilds::discordCoreClient;
 			guildVector.theGuildDatas.emplace_back(*value);
 		}
@@ -406,13 +406,13 @@ namespace DiscordCoreAPI {
 	CoRoutine<GuildData> Guilds::getCachedGuildAsync(GetGuildData dataPackage) {
 		co_await NewThreadAwaitable<GuildData>();
 		std::shared_lock theLock{ Guilds::theMutex };
-		if (!Guilds::cache->contains(dataPackage.guildId)) {
+		if (!Guilds::cache.contains(dataPackage.guildId)) {
 			theLock.unlock();
 			auto guildNew = Guilds::getGuildAsync({ .guildId = dataPackage.guildId }).get();
 			Guilds::insertGuild(std::make_unique<GuildData>(guildNew));
 			co_return guildNew;
 		} else {
-			co_return *(*Guilds::cache)[dataPackage.guildId];
+			co_return *Guilds::cache[dataPackage.guildId];
 		}
 	}
 
@@ -839,17 +839,17 @@ namespace DiscordCoreAPI {
 		}
 		guild->initialize();
 		if (Guilds::configManager->doWeCacheGuilds()) {
-			(*Guilds::cache)[guild->id] = std::move(guild);
-			//std::cout << "THE GUILD COUNT: " << Guilds::cache->size() << ", THE TIME: " << theStopWatch.totalTimePassed() << std::endl;
+			Guilds::cache[guild->id] = std::move(guild);
+			std::cout << "THE GUILD COUNT: " << Guilds::cache.size() << ", THE TIME: " << theStopWatch.totalTimePassed() << std::endl;
 		}
 	}
 
 	void Guilds::removeGuild(const Snowflake guildId) {
 		std::unique_lock theLock{ Guilds::theMutex };
-		Guilds::cache->erase(guildId);
+		Guilds::cache.erase(guildId);
 	};
 
-	std::unique_ptr<std::unordered_map<Snowflake, std::unique_ptr<GuildData>>> Guilds::cache{ std::make_unique<std::unordered_map<Snowflake, std::unique_ptr<GuildData>>>() };
+	std::unordered_map<Snowflake, std::unique_ptr<GuildData>> Guilds::cache{};
 	DiscordCoreInternal::HttpsClient* Guilds::httpsClient{ nullptr };
 	DiscordCoreClient* Guilds::discordCoreClient{ nullptr };
 	ConfigManager* Guilds::configManager{ nullptr };
