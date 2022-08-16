@@ -183,8 +183,6 @@ namespace DiscordCoreAPI {
 
 		std::string encryptSingleAudioFrame(AudioFrameData& bufferToSend) noexcept;
 
-		void sendSingleAudioFrame(std::string& audioDataPacketNew) noexcept;
-
 		UnboundedMessageBlock<AudioFrameData>& getAudioBuffer() noexcept;
 
 		AudioFrameData encodeSingleAudioFrame(AudioFrameData&) noexcept;

@@ -455,7 +455,10 @@ namespace DiscordCoreInternal {
 							returnValue = true;
 						}
 					} else {
+						DiscordCoreAPI::StopWatch theStopWatch{ 50us };
+						theStopWatch.resetTimer();
 						payload = nlohmann::json::parse(WebSocketSSLShard::inputBuffer.substr(offSet, length));
+						std::cout << "THE TIME TO COMPLETE: " << theStopWatch.totalTimePassed() << std::endl;
 					}
 				} else {
 					returnValue = true;
@@ -1269,7 +1272,7 @@ namespace DiscordCoreInternal {
 	}
 
 	void BaseSocketAgent::connectVoiceChannel(VoiceConnectInitData theData) noexcept {
-		std::lock_guard theLock{ this->theConnectDisconnectMutex };
+		std::unique_lock theLock{ this->theConnectDisconnectMutex };
 		this->voiceConnections.push(theData);
 	}
 
@@ -1278,7 +1281,7 @@ namespace DiscordCoreInternal {
 			std::this_thread::sleep_for(1ms);
 		}
 		this->discordCoreClient->theStopWatch.resetTimer();
-		std::lock_guard theLock{ this->theConnectDisconnectMutex };
+		std::unique_lock theLock{ this->theConnectDisconnectMutex };
 		this->connections.push(thePackage);
 		DiscordCoreAPI::StopWatch theStopWatch{ 5000ms };
 		while (!this->sslShard) {
@@ -1319,7 +1322,7 @@ namespace DiscordCoreInternal {
 	void BaseSocketAgent::run(std::stop_token stopToken) noexcept {
 		try {
 			while (!stopToken.stop_requested() && !this->doWeQuit->load()) {
-				{ std::lock_guard theLock{ this->theConnectDisconnectMutex };
+				{ std::unique_lock theLock{ this->theConnectDisconnectMutex };
 					if (this->voiceConnectionsToDisconnect.size() > 0) {
 						this->disconnectVoice();
 					}
@@ -1348,7 +1351,7 @@ namespace DiscordCoreInternal {
 	}
 
 	void BaseSocketAgent::disconnectVoice() noexcept {
-		std::lock_guard theLock{ this->theConnectDisconnectMutex };
+		std::unique_lock theLock{ this->theConnectDisconnectMutex };
 		uint64_t theDCData = this->voiceConnectionsToDisconnect.front();
 		this->voiceConnectionsToDisconnect.pop();
 		DiscordCoreAPI::getVoiceConnectionMap()[theDCData]->disconnectInternal();

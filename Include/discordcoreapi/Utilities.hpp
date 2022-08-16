@@ -511,8 +511,8 @@ namespace DiscordCoreAPI {
 
 	/// Represents a single frame of audio data. \brief Represents a single frame of audio data.
 	struct DiscordCoreAPI_Dll AudioFrameData {
-		uint64_t sampleCount{ static_cast<uint64_t>(-1) };///< The number of samples per this frame.
 		AudioFrameType type{ AudioFrameType::Unset };///< The type of audio frame.
+		uint64_t sampleCount{ -1ull };///< The number of samples per this frame.
 		std::vector<uint8_t> data{};///< The audio data.
 		uint64_t guildMemberId{ 0 };///< GuildMemberId for the sending GuildMember.
 
@@ -1120,34 +1120,34 @@ namespace DiscordCoreAPI {
 		/// Sends an object of type ObjectType to the "recipient". \brief Sends an object of type ObjectType to the "recipient".
 		/// \param theObject An object of ObjectType.
 		void send(const ObjectType&& theObject) {
-			std::lock_guard theLock{ this->accessMutex };
+			std::unique_lock theLock{ this->accessMutex };
 			this->theQueue.emplace_back(std::move(theObject));
 		}
 
 		/// Sends an object of type ObjectType to the "recipient". \brief Sends an object of type ObjectType to the "recipient".
 		/// \param theObject An object of ObjectType.
 		void send(ObjectType&& theObject) {
-			std::lock_guard theLock{ this->accessMutex };
+			std::unique_lock theLock{ this->accessMutex };
 			this->theQueue.emplace_back(std::move(theObject));
 		}
 
 		/// Sends an object of type ObjectType to the "recipient". \brief Sends an object of type ObjectType to the "recipient".
 		/// \param theObject An object of ObjectType.
 		void send(const ObjectType& theObject) {
-			std::lock_guard theLock{ this->accessMutex };
+			std::unique_lock theLock{ this->accessMutex };
 			this->theQueue.emplace_back(theObject);
 		}
 
 		/// Sends an object of type ObjectType to the "recipient". \brief Sends an object of type ObjectType to the "recipient".
 		/// \param theObject An object of ObjectType.
 		void send(ObjectType& theObject) {
-			std::lock_guard theLock{ this->accessMutex };
+			std::unique_lock theLock{ this->accessMutex };
 			this->theQueue.emplace_back(theObject);
 		}
 
 		/// Clears the contents of the messaging block. \brief Clears the contents of the messaging block.
 		void clearContents() {
-			std::lock_guard theLock{ this->accessMutex };
+			std::unique_lock theLock{ this->accessMutex };
 			this->theQueue = std::deque<ObjectType>{};
 		}
 
@@ -1155,7 +1155,7 @@ namespace DiscordCoreAPI {
 		/// \param theObject A reference of type ObjectType for placing the potentially received object.
 		/// \returns bool A bool, denoting whether or not we received an object.
 		bool tryReceive(ObjectType& theObject) {
-			std::lock_guard theLock{ this->accessMutex };
+			std::unique_lock theLock{ this->accessMutex };
 			if (this->theQueue.size() > 0) {
 				theObject = std::move(this->theQueue.front());
 				this->theQueue.pop_front();
@@ -1215,7 +1215,7 @@ namespace DiscordCoreAPI {
 		StopWatch() = default;
 
 		StopWatch<TimeType>& operator=(TimeType maxNumberOfMsNew) {
-			std::lock_guard theLock{ this->theMutex };
+			std::unique_lock theLock{ this->theMutex };
 			this->maxNumberOfMs = DoubleTimePoint{ maxNumberOfMsNew };
 			this->startTime = std::chrono::system_clock::now();
 			return *this;
@@ -1226,14 +1226,14 @@ namespace DiscordCoreAPI {
 		}
 
 		uint64_t totalTimePassed() {
-			std::lock_guard theLock{ this->theMutex };
+			std::unique_lock theLock{ this->theMutex };
 			auto elapsedTime = std::chrono::duration_cast<TimeType>(std::chrono::system_clock::now().time_since_epoch()) -
 				std::chrono::duration_cast<TimeType>(this->startTime.time_since_epoch());
 			return elapsedTime.count();
 		}
 
 		bool hasTimePassed() {
-			std::lock_guard theLock{ this->theMutex };
+			std::unique_lock theLock{ this->theMutex };
 			DoubleTimeDuration elapsedTime = std::chrono::system_clock::now() - this->startTime;
 			if (elapsedTime >= this->maxNumberOfMs.time_since_epoch()) {
 				return true;
@@ -1243,7 +1243,7 @@ namespace DiscordCoreAPI {
 		}
 
 		void resetTimer(uint64_t theNewTime = 0) {
-			std::lock_guard theLock{ this->theMutex };
+			std::unique_lock theLock{ this->theMutex };
 			if (theNewTime != 0) {
 				this->maxNumberOfMs = DoubleTimePoint{ TimeType{ theNewTime } };
 			}
