@@ -178,7 +178,7 @@ namespace DiscordCoreAPI {
 
 	void VoiceConnection::sendSingleAudioFrame(std::string& audioDataPacketNew) noexcept {
 		if (DatagramSocketClient::areWeStillConnected()) {
-			DatagramSocketClient::writeData(audioDataPacketNew);
+			DatagramSocketClient::writeData(std::move(audioDataPacketNew));
 		}
 	}
 
@@ -191,6 +191,7 @@ namespace DiscordCoreAPI {
 	}
 
 	bool VoiceConnection::onMessageReceived(int64_t offSet, int64_t length) noexcept {
+		std::unique_lock theLock00{ this->voiceUserMutex, std::defer_lock_t{} };
 		try {
 			std::string theMessage = WebSocketSSLShard::inputBuffer.substr(offSet, length);
 			if (theMessage.size() > 0) {
@@ -223,9 +224,11 @@ namespace DiscordCoreAPI {
 							if (payload.contains("d") && !payload["d"].is_null()) {
 								if (!payload["d"]["ssrc"].is_null()) {
 									VoiceUser theUser{};
-									std::lock_guard theLock00{ this->voiceUserMutex };
 									theUser.theUserId = stoull(payload["d"]["user_id"].get<std::string>());
-									this->voiceUsers[payload["d"]["ssrc"].get<int32_t>()] = std ::move(theUser);
+									std::unique_lock theLock01{ this->voiceUserMutex };
+									theLock00.swap(theLock01);
+									this->voiceUsers[payload["d"]["ssrc"].get<int32_t>()] = std::move(theUser);
+									theLock00.unlock();
 								}
 							}
 							break;
@@ -248,8 +251,10 @@ namespace DiscordCoreAPI {
 									auto userId = stoull(payload["d"]["user_id"].get<std::string>());
 									for (auto& [key, value]: this->voiceUsers) {
 										if (userId == value.theUserId) {
-											std::lock_guard theLock00{ this->voiceUserMutex };
+											std::unique_lock theLock01{ this->voiceUserMutex };
+											theLock00.swap(theLock01);
 											this->voiceUsers.erase(key);
+											theLock00.unlock();
 											break;
 										}
 									}
@@ -321,6 +326,7 @@ namespace DiscordCoreAPI {
 
 	void VoiceConnection::runWebSocket(std::stop_token stopToken) noexcept {
 		try {
+			/*
 		theStart:
 			this->areWeReady01.store(true);
 			while (!this->areWeReady02.load()) {
@@ -329,6 +335,7 @@ namespace DiscordCoreAPI {
 			while (this->connections.size() <= 0) {
 				std::this_thread::sleep_for(1ms);
 			}
+			*/
 			while (!stopToken.stop_requested() && !this->doWeQuit->load() && this->activeState.load() != VoiceActiveState::Exiting) {
 				if (!stopToken.stop_requested() && WebSocketSSLShard::connections->size() > 0) {
 					StopWatch theStopWatch{ 10000ms };
@@ -363,9 +370,6 @@ namespace DiscordCoreAPI {
 				}
 				if (!stopToken.stop_requested() && WebSocketSSLShard::areWeStillConnected() && WebSocketSSLShard::inputBuffer.size() > 0) {
 					this->parseMessage(this);
-				}
-				if (this->doWeReconnect.load()) {
-					goto theStart;
 				}
 
 				std::this_thread::sleep_for(1ms);
@@ -434,10 +438,12 @@ namespace DiscordCoreAPI {
 
 	void VoiceConnection::runVoice(std::stop_token stopToken) noexcept {
 	theStart:
+		/*
 		this->areWeReady02.store(true);
 		while (this->areWeReady01.load() == false && !stopToken.stop_requested()) {
 			std::this_thread::sleep_for(1ms);
 		}
+		*/
 		StopWatch theStopWatch{ 20000ms };
 		StopWatch theSendSilenceStopWatch{ 5000ms };
 		while (!stopToken.stop_requested() && !this->doWeQuit->load() && this->activeState.load() != VoiceActiveState::Exiting) {
@@ -494,6 +500,7 @@ namespace DiscordCoreAPI {
 
 					while (!stopToken.stop_requested() && this->activeState.load() == VoiceActiveState::Playing) {
 						this->audioDataBuffer.tryReceive(this->audioData);
+						std::cout << "THE RECEIVED SIZE: " << this->audioData.data.size() << std::endl;
 						if (!this->streamSocket) {
 							while (this->theFrameQueue.size() > 0) {
 								this->theFrameQueue.pop_front();
@@ -502,6 +509,7 @@ namespace DiscordCoreAPI {
 						theStopWatch.resetTimer();
 						while (!stopToken.stop_requested() && !DatagramSocketClient::areWeStillConnected()) {
 							if (theStopWatch.hasTimePassed() || this->activeState.load() == VoiceActiveState::Exiting) {
+								this->areWePlaying.store(false);
 								return;
 							}
 							std::this_thread::sleep_for(1ms);
@@ -556,9 +564,7 @@ namespace DiscordCoreAPI {
 						} else {
 							DatagramSocketClient::processIO(DiscordCoreInternal::ProcessIOType::Write_Only);
 						}
-						if (this->doWeReconnect.load()) {
-							goto theStart;
-						}
+
 						this->audioData.data.clear();
 						this->audioData.sampleCount = 0;
 						this->audioData.type = AudioFrameType::Unset;
@@ -699,11 +705,20 @@ namespace DiscordCoreAPI {
 		}
 		auto thePtr = getSongAPIMap()[this->voiceConnectInitData.guildId].get();
 		if (thePtr) {
+			if (thePtr->taskThread && thePtr->taskThread->joinable()) {
+				thePtr->taskThread->request_stop();
+				thePtr->taskThread->join();
+				thePtr->taskThread.reset(nullptr);
+			}
 			thePtr->onSongCompletionEvent.remove(thePtr->eventToken);
 		}
+		this->sequenceIndex = 0;
+		this->timeStamp = 0;
 		this->areWeConnectedBool.store(false);
 		this->connectionState.store(VoiceConnectionState::Collecting_Init_Data);
+		this->lastActiveState.store(VoiceActiveState::Connecting);
 		this->activeState.store(VoiceActiveState::Connecting);
+		this->areWePlaying.store(false);
 	}
 
 	void VoiceConnection::connectInternal() noexcept {
@@ -712,9 +727,9 @@ namespace DiscordCoreAPI {
 		if (this->connections.size() > 0) {
 			this->connections.pop();
 		}
-		this->areWeReady01.store(false);
-		this->areWeReady02.store(false);
-		this->doWeReconnect.store(false);
+		//this->areWeReady01.store(false);
+		//this->areWeReady02.store(false);
+		//this->doWeReconnect.store(false);
 		if (this->currentReconnectTries >= this->maxReconnectTries) {
 			this->doWeQuit->store(true);
 			if (this->configManager->doWePrintWebSocketErrorMessages()) {

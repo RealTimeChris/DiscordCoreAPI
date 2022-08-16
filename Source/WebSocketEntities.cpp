@@ -419,6 +419,8 @@ namespace DiscordCoreInternal {
 			this->theSocket = SOCKET_ERROR;
 			this->inputBuffer.clear();
 			this->outputBuffers.clear();
+			this->wantWrite = true;
+			this->wantRead = false;
 			this->closeCode = 0;
 			this->areWeHeartBeating = false;
 			if (this->connections && doWeReconnect) {

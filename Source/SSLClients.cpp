@@ -545,19 +545,19 @@ namespace DiscordCoreInternal {
 		timeval checkTime{ .tv_sec = 0, .tv_usec = 5000 };
 		if (auto returnValue = select(FD_SETSIZE, &readSet, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
 			this->disconnect();
-			//std::cout << "WERE PROCESSING PROCESSING! (AND DISCONNECT)" << std::endl;
+			std::cout << "WERE PROCESSING PROCESSING! (AND DISCONNECT)" << std::endl;
 			return;
 		} else if (returnValue == 0) {
-			//std::cout << "WERE PROCESSING PROCESSING! (AND ZERO)" << std::endl;
+			std::cout << "WERE PROCESSING PROCESSING! (AND ZERO)" << std::endl;
 			return;
 		} else {
 			
 			if (FD_ISSET(this->theSocket, &readSet)) {
-				//std::cout << "WERE PROCESSING PROCESSING! (AND READ)" << std::endl;
+				std::cout << "WERE PROCESSING PROCESSING! (AND READ)" << std::endl;
 				this->readDataProcess();
 			}
 			if (FD_ISSET(this->theSocket, &writeSet)) {
-				//std::cout << "WERE PROCESSING PROCESSING! (AND WRITE)" << std::endl;
+				std::cout << "WERE PROCESSING PROCESSING! (AND WRITE)" << std::endl;
 				this->writeDataProcess();
 			}
 		}

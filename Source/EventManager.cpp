@@ -222,6 +222,7 @@ namespace DiscordCoreAPI {
 
 	OnGuildMemberRemoveData& OnGuildMemberRemoveData::operator=(const OnGuildMemberRemoveData& other) {
 		this->discordCoreClient = other.discordCoreClient;
+		this->user = std::make_unique<UserData>();
 		this->guildId = other.guildId;
 		*this->user = *other.user;
 		return *this;
@@ -233,6 +234,7 @@ namespace DiscordCoreAPI {
 
 	OnGuildMemberRemoveData& OnGuildMemberRemoveData::operator=(OnGuildMemberRemoveData& other) {
 		this->discordCoreClient = other.discordCoreClient;
+		this->user = std::make_unique<UserData>();
 		this->guildId = other.guildId;
 		*this->user = *other.user;
 		return *this;
