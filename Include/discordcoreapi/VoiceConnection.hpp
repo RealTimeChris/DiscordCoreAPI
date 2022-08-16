@@ -166,7 +166,6 @@ namespace DiscordCoreAPI {
 		std::string audioEncryptionMode{};
 		Snowflake currentGuildMemberId{};
 		OpusEncoderWrapper theEncoder{};
-		int64_t heartbeatInterval{ 0 };
 		std::string secretKeySend{};
 		std::mutex voiceUserMutex{};
 		uint16_t sequenceIndex{ 0 };

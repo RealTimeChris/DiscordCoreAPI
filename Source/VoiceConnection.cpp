@@ -213,9 +213,11 @@ namespace DiscordCoreAPI {
 							return true;
 						}
 						case 4: {
+							std::string theSecretKey{};
 							for (uint32_t x = 0; x < payload["d"]["secret_key"].size(); x++) {
-								this->secretKeySend.push_back(payload["d"]["secret_key"][x].get<uint8_t>());
+								theSecretKey.push_back(payload["d"]["secret_key"][x].get<uint8_t>());
 							}
+							this->secretKeySend = theSecretKey;
 							this->connectionState.store(VoiceConnectionState::Collecting_Init_Data);
 							return true;
 						}
@@ -236,8 +238,8 @@ namespace DiscordCoreAPI {
 						}
 						case 8: {
 							if (payload["d"].contains("heartbeat_interval")) {
-								this->heartbeatInterval = static_cast<int32_t>(payload["d"]["heartbeat_interval"].get<float>());
-								this->areWeHeartBeating = false;
+								this->heartBeatStopWatch = StopWatch{ std::chrono::milliseconds{ static_cast<int32_t>(payload["d"]["heartbeat_interval"].get<float>()) } };
+								this->areWeHeartBeating = true;
 								this->connectionState.store(VoiceConnectionState::Sending_Identify);
 							}
 							return true;
@@ -339,10 +341,6 @@ namespace DiscordCoreAPI {
 					this->sendSpeakingMessage(true);
 					this->activeState.store(this->lastActiveState.load());
 				}
-				if (!stopToken.stop_requested() && this->heartbeatInterval != 0 && !this->areWeHeartBeating) {
-					this->areWeHeartBeating = true;
-					this->heartBeatStopWatch = StopWatch{ std::chrono::milliseconds{ this->heartbeatInterval } };
-				}
 				if (!stopToken.stop_requested() && WebSocketSSLShard::areWeStillConnected() && this->heartBeatStopWatch.hasTimePassed() && this->areWeHeartBeating) {
 					this->sendHeartBeat();
 					this->heartBeatStopWatch.resetTimer();
@@ -374,6 +372,7 @@ namespace DiscordCoreAPI {
 				for (uint32_t x = 0; x < this->voiceUsers.size(); x++) {
 					DatagramSocketClient::processIO(DiscordCoreInternal::ProcessIOType::Both);
 					std::string theString = DatagramSocketClient::getInputBuffer();
+					DatagramSocketClient::getInputBuffer().clear();
 					VoicePayload thePayload{};
 					thePayload.theRawData.insert(thePayload.theRawData.begin(), theString.begin(), theString.end());
 					this->theFrameQueue.emplace_back(thePayload);
@@ -526,11 +525,12 @@ namespace DiscordCoreAPI {
 						if (newFrame.size() > 0) {
 							this->sendSingleAudioFrame(newFrame);
 						}
-						if (this->streamType != StreamType::None) {
+						if (this->streamType == StreamType::None) {
 							DatagramSocketClient::processIO(DiscordCoreInternal::ProcessIOType::Both);
+							DatagramSocketClient::getInputBuffer().clear();
 						} else {
 							DatagramSocketClient::processIO(DiscordCoreInternal::ProcessIOType::Write_Only);
-							DatagramSocketClient::getInputBuffer().clear();
+							
 						}
 						
 						this->audioData.data.clear();
