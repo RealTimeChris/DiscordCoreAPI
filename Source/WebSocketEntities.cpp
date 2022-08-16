@@ -444,10 +444,10 @@ namespace DiscordCoreInternal {
 
 					if (this->configManager->getTextFormat() == DiscordCoreAPI::TextFormat::Etf) {
 						try {
-							//DiscordCoreAPI::StopWatch theStopWatch{ 50us };
-							//theStopWatch.resetTimer();
+							DiscordCoreAPI::StopWatch theStopWatch{ 50us };
+							theStopWatch.resetTimer();
 							payload = this->parseEtfToJson(WebSocketSSLShard::inputBuffer.substr(offSet, length));
-							//std::cout << "THE TIME TO COMPLETE: " << theStopWatch.totalTimePassed() << std::endl;
+							std::cout << "THE TIME TO COMPLETE: " << theStopWatch.totalTimePassed() << std::endl;
 						} catch (...) {
 							if (this->configManager->doWePrintGeneralErrorMessages()) {
 								DiscordCoreAPI::reportException("ErlPacker::parseEtfToJson()");
@@ -492,7 +492,7 @@ namespace DiscordCoreInternal {
 											std::make_unique<DiscordCoreAPI::OnApplicationCommandPermissionsUpdateData>(payload["d"])
 										};
 										dataPackage->permissionData = payload["d"];
-										this->discordCoreClient->eventManager.onApplicationCommandPermissionsUpdateEvent(std::move(*dataPackage));
+										this->discordCoreClient->eventManager.onApplicationCommandPermissionsUpdateEvent(*dataPackage);
 										break;
 									}
 									case 2: {
@@ -500,7 +500,7 @@ namespace DiscordCoreInternal {
 											std::make_unique<DiscordCoreAPI::OnAutoModerationRuleCreationData>()
 										};
 										dataPackage->theRule = payload["d"];
-										this->discordCoreClient->eventManager.onAutoModerationRuleCreationEvent(std::move(*dataPackage));
+										this->discordCoreClient->eventManager.onAutoModerationRuleCreationEvent(*dataPackage);
 										break;
 									}
 									case 3: {
@@ -508,7 +508,7 @@ namespace DiscordCoreInternal {
 											std::make_unique<DiscordCoreAPI::OnAutoModerationRuleUpdateData>()
 										};
 										dataPackage->theRule = payload["d"];
-										this->discordCoreClient->eventManager.onAutoModerationRuleUpdateEvent(std::move(*dataPackage));
+										this->discordCoreClient->eventManager.onAutoModerationRuleUpdateEvent(*dataPackage);
 										break;
 									}
 									case 4: {
@@ -516,48 +516,47 @@ namespace DiscordCoreInternal {
 											std::make_unique<DiscordCoreAPI::OnAutoModerationRuleDeletionData>()
 										};
 										dataPackage->theRule = payload["d"];
-										this->discordCoreClient->eventManager.onAutoModerationRuleDeletionEvent(std::move(*dataPackage));
+										this->discordCoreClient->eventManager.onAutoModerationRuleDeletionEvent(*dataPackage);
 									}
 									case 5: {
 										std::unique_ptr<DiscordCoreAPI::OnAutoModerationActionExecutionData> dataPackage{
 											std::make_unique<DiscordCoreAPI::OnAutoModerationActionExecutionData>()
 										};
 										dataPackage->theData = payload["d"];
-										this->discordCoreClient->eventManager.onAutoModerationActionExecutionEvent(std::move(*dataPackage));
+										this->discordCoreClient->eventManager.onAutoModerationActionExecutionEvent(*dataPackage);
 										break;
 									}
 									case 6: {
-										std::unique_ptr<DiscordCoreAPI::OnChannelCreationData> dataPackage{ std::make_unique<DiscordCoreAPI::OnChannelCreationData>() };
-										dataPackage->channel = std::make_unique<DiscordCoreAPI::ChannelData>(payload["d"]);
 										if (this->discordCoreClient->configManager.doWeCacheChannels()) {
+											DiscordCoreAPI::Channels::insertChannel(std::make_unique<DiscordCoreAPI::ChannelData>(payload["d"]));
+											std::unique_ptr<DiscordCoreAPI::OnChannelCreationData> dataPackage{ std::make_unique<DiscordCoreAPI::OnChannelCreationData>(
+												(*DiscordCoreAPI::Channels::cache)[stoull(payload["d"]["id"].get<std::string>())].get()) };
+											dataPackage->channel = (*DiscordCoreAPI::Channels::cache)[stoull(payload["d"]["id"].get<std::string>())].get();
 											auto guildId = dataPackage->channel->guildId;
 											auto channelId = dataPackage->channel->id;
-											DiscordCoreAPI::Channels::insertChannel(std::make_unique<DiscordCoreAPI::ChannelData>(*dataPackage->channel));
 											DiscordCoreAPI::GuildData* guild = (*DiscordCoreAPI::Guilds::cache)[guildId].get();
 											guild->channels.emplace_back(channelId);
 											DiscordCoreAPI::Guilds::insertGuild(std::make_unique<DiscordCoreAPI::GuildData>(*guild));
+											this->discordCoreClient->eventManager.onChannelCreationEvent(*dataPackage);
 										}
-										this->discordCoreClient->eventManager.onChannelCreationEvent(std::move(*dataPackage));
 										break;
 									}
 									case 7: {
-										std::unique_ptr<DiscordCoreAPI::OnChannelUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnChannelUpdateData>() };
-										if (payload["d"].contains("id") && !payload["d"]["id"].is_null()) {
-											dataPackage->channelOld = std::make_unique<DiscordCoreAPI::ChannelData>(
-												DiscordCoreAPI::Channels::getCachedChannelAsync({ .channelId = stoull(payload["d"]["id"].get<std::string>()) }).get());
-											dataPackage->channelNew = std::make_unique<DiscordCoreAPI::ChannelData>(*dataPackage->channelOld);
-										}
 										if (this->discordCoreClient->configManager.doWeCacheChannels()) {
-											DiscordCoreAPI::Channels::insertChannel(std::make_unique<DiscordCoreAPI::ChannelData>(*dataPackage->channelNew));
+											auto oldChannel = DiscordCoreAPI::Channels::getCachedChannelAsync({ .channelId = stoull(payload["d"]["id"].get<std::string>()) }).get();
+											DiscordCoreAPI::Channels::insertChannel(std::make_unique<DiscordCoreAPI::ChannelData>(payload["d"]));
+											std::unique_ptr<DiscordCoreAPI::OnChannelUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnChannelUpdateData>(
+												(*DiscordCoreAPI::Channels::cache)[stoull(payload["d"]["id"].get<std::string>())].get(),
+												std::make_unique<DiscordCoreAPI::ChannelData>(oldChannel)) };
+											this->discordCoreClient->eventManager.onChannelUpdateEvent(*dataPackage);
 										}
-										*dataPackage->channelNew = payload["d"];
-										this->discordCoreClient->eventManager.onChannelUpdateEvent(std::move(*dataPackage));
 										break;
 									}
 									case 8: {
-										std::unique_ptr<DiscordCoreAPI::OnChannelDeletionData> dataPackage{ std::make_unique<DiscordCoreAPI::OnChannelDeletionData>() };
-										dataPackage->channel = std::make_unique<DiscordCoreAPI::ChannelData>(payload["d"]);
 										if (this->discordCoreClient->configManager.doWeCacheChannels()) {
+											std::unique_ptr<DiscordCoreAPI::OnChannelDeletionData> dataPackage{ std::make_unique<DiscordCoreAPI::OnChannelDeletionData>(
+												std::make_unique<DiscordCoreAPI::ChannelData>(
+													DiscordCoreAPI::Channels::getCachedChannelAsync({ .channelId = stoull(payload["d"]["id"].get<std::string>()) }).get())) };
 											DiscordCoreAPI::Channels::removeChannel(dataPackage->channel->id);
 											DiscordCoreAPI::GuildData* guild = (*DiscordCoreAPI::Guilds::cache)[dataPackage->channel->guildId].get();
 											for (uint64_t x = 0; x < guild->channels.size(); x++) {
@@ -566,81 +565,77 @@ namespace DiscordCoreInternal {
 												}
 											}
 											DiscordCoreAPI::Guilds::insertGuild(std::make_unique<DiscordCoreAPI::GuildData>(*guild));
+											this->discordCoreClient->eventManager.onChannelDeletionEvent(*dataPackage);
 										}
-										this->discordCoreClient->eventManager.onChannelDeletionEvent(std::move(*dataPackage));
 										break;
 									}
 									case 9: {
 										std::unique_ptr<DiscordCoreAPI::OnChannelPinsUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnChannelPinsUpdateData>() };
 										dataPackage->dataPackage = payload["d"];
-										this->discordCoreClient->eventManager.onChannelPinsUpdateEvent(std::move(*dataPackage));
+										this->discordCoreClient->eventManager.onChannelPinsUpdateEvent(*dataPackage);
 										break;
 									}
 									case 10: {
 										std::unique_ptr<DiscordCoreAPI::OnThreadCreationData> dataPackage{ std::make_unique<DiscordCoreAPI::OnThreadCreationData>() };
 										dataPackage->thread = payload["d"];
-										this->discordCoreClient->eventManager.onThreadCreationEvent(std::move(*dataPackage));
+										this->discordCoreClient->eventManager.onThreadCreationEvent(*dataPackage);
 										break;
 									}
 									case 11: {
 										std::unique_ptr<DiscordCoreAPI::OnThreadUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnThreadUpdateData>() };
 										dataPackage->thread = payload["d"];
-										this->discordCoreClient->eventManager.onThreadUpdateEvent(std::move(*dataPackage));
+										this->discordCoreClient->eventManager.onThreadUpdateEvent(*dataPackage);
 										break;
 									}
 									case 12: {
 										std::unique_ptr<DiscordCoreAPI::OnThreadDeletionData> dataPackage{ std::make_unique<DiscordCoreAPI::OnThreadDeletionData>() };
 										dataPackage->thread = payload["d"];
-										this->discordCoreClient->eventManager.onThreadDeletionEvent(std::move(*dataPackage));
+										this->discordCoreClient->eventManager.onThreadDeletionEvent(*dataPackage);
 										break;
 									}
 									case 13: {
 										std::unique_ptr<DiscordCoreAPI::OnThreadListSyncData> dataPackage{ std::make_unique<DiscordCoreAPI::OnThreadListSyncData>() };
 										dataPackage->threadListSyncData = payload["d"];
-										this->discordCoreClient->eventManager.onThreadListSyncEvent(std::move(*dataPackage));
+										this->discordCoreClient->eventManager.onThreadListSyncEvent(*dataPackage);
 										break;
 									}
 									case 14: {
 										std::unique_ptr<DiscordCoreAPI::OnThreadMemberUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnThreadMemberUpdateData>() };
 										dataPackage->threadMember = payload["d"];
-										this->discordCoreClient->eventManager.onThreadMemberUpdateEvent(std::move(*dataPackage));
+										this->discordCoreClient->eventManager.onThreadMemberUpdateEvent(*dataPackage);
 										break;
 									}
 									case 15: {
 										std::unique_ptr<DiscordCoreAPI::OnThreadMembersUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnThreadMembersUpdateData>() };
 										dataPackage->threadMembersUpdateData = payload["d"];
-										this->discordCoreClient->eventManager.onThreadMembersUpdateEvent(std::move(*dataPackage));
+										this->discordCoreClient->eventManager.onThreadMembersUpdateEvent(*dataPackage);
 										break;
 									}
 									case 16: {
-										std::unique_ptr<DiscordCoreAPI::OnGuildCreationData> dataPackage{ std::make_unique<DiscordCoreAPI::OnGuildCreationData>() };
-										dataPackage->guild = std::make_unique<DiscordCoreAPI::GuildData>(payload["d"]);
-										dataPackage->guild->discordCoreClient = this->discordCoreClient;
 										if (this->discordCoreClient->configManager.doWeCacheGuilds()) {
-											DiscordCoreAPI::Guilds::insertGuild(std::make_unique<DiscordCoreAPI::GuildData>(*dataPackage->guild));
+											DiscordCoreAPI::Guilds::insertGuild(std::make_unique<DiscordCoreAPI::GuildData>(payload["d"]));
+											std::unique_ptr<DiscordCoreAPI::OnGuildCreationData> dataPackage{ std::make_unique<DiscordCoreAPI::OnGuildCreationData>(
+												(*DiscordCoreAPI::Guilds::cache)[stoull(payload["d"]["id"].get<std::string>())].get(), this->discordCoreClient) };
+											this->discordCoreClient->eventManager.onGuildCreationEvent(*dataPackage);
 										}
-										this->discordCoreClient->eventManager.onGuildCreationEvent(std::move(*dataPackage));
 										break;
 									}
 									case 17: {
-										std::unique_ptr<DiscordCoreAPI::OnGuildUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnGuildUpdateData>() };
-										if (payload["d"].contains("id") && !payload["d"]["id"].is_null()) {
-											dataPackage->guildOld = std::make_unique<DiscordCoreAPI::GuildData>(
-												DiscordCoreAPI::Guilds::getCachedGuildAsync({ .guildId = stoull(payload["d"]["id"].get<std::string>()) }).get());
-											dataPackage->guildNew = std::make_unique<DiscordCoreAPI::GuildData>(
-												DiscordCoreAPI::Guilds::getCachedGuildAsync({ .guildId = stoull(payload["d"]["id"].get<std::string>()) }).get());
-										}
 										if (this->discordCoreClient->configManager.doWeCacheGuilds()) {
-											DiscordCoreAPI::Guilds::insertGuild(std::make_unique<DiscordCoreAPI::GuildData>(*dataPackage->guildNew));
+											auto oldGuild = DiscordCoreAPI::Guilds::getCachedGuildAsync({ .guildId = stoull(payload["d"]["id"].get<std::string>()) }).get();
+											DiscordCoreAPI::Guilds::insertGuild(std::make_unique<DiscordCoreAPI::GuildData>(payload["d"]));
+											std::unique_ptr<DiscordCoreAPI::OnGuildUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnGuildUpdateData>(
+												(*DiscordCoreAPI::Guilds::cache)[stoull(payload["d"]["id"].get<std::string>())].get(),
+												std::make_unique<DiscordCoreAPI::GuildData>(oldGuild), this->discordCoreClient) };
+											this->discordCoreClient->eventManager.onGuildUpdateEvent(*dataPackage);
 										}
-										*dataPackage->guildNew = payload["d"];
-										this->discordCoreClient->eventManager.onGuildUpdateEvent(std::move(*dataPackage));
 										break;
 									}
 									case 18: {
-										std::unique_ptr<DiscordCoreAPI::OnGuildDeletionData> dataPackage{ std::make_unique<DiscordCoreAPI::OnGuildDeletionData>() };
-										dataPackage->guild = std::make_unique<DiscordCoreAPI::GuildData>(payload["d"]);
 										if (this->discordCoreClient->configManager.doWeCacheGuilds()) {
+											auto oldGuild = DiscordCoreAPI::Guilds::getCachedGuildAsync({ .guildId = stoull(payload["d"]["id"].get<std::string>()) }).get();
+											std::unique_ptr<DiscordCoreAPI::OnGuildDeletionData> dataPackage{ std::make_unique<DiscordCoreAPI::OnGuildDeletionData>(
+												std::make_unique<DiscordCoreAPI::GuildData>(oldGuild)) };
 											DiscordCoreAPI::GuildMemberId theKey{};
 											theKey.guildId = dataPackage->guild->id;
 											for (auto& value: dataPackage->guild->members) {
@@ -655,8 +650,8 @@ namespace DiscordCoreInternal {
 												DiscordCoreAPI::Roles::removeRole(value);
 											}
 											DiscordCoreAPI::Guilds::removeGuild(dataPackage->guild->id);
+											this->discordCoreClient->eventManager.onGuildDeletionEvent(*dataPackage);
 										}
-										this->discordCoreClient->eventManager.onGuildDeletionEvent(std::move(*dataPackage));
 										break;
 									}
 									case 19: {
@@ -667,7 +662,7 @@ namespace DiscordCoreInternal {
 										if (payload["d"].contains("user") && !payload["d"]["user"].is_null()) {
 											dataPackage->user = payload["d"]["user"];
 										}
-										this->discordCoreClient->eventManager.onGuildBanAddEvent(std::move(*dataPackage));
+										this->discordCoreClient->eventManager.onGuildBanAddEvent(*dataPackage);
 										break;
 									}
 									case 20: {
@@ -678,19 +673,19 @@ namespace DiscordCoreInternal {
 										if (payload["d"].contains("user") && !payload["d"]["user"].is_null()) {
 											dataPackage->user = payload["d"]["user"];
 										}
-										this->discordCoreClient->eventManager.onGuildBanRemoveEvent(std::move(*dataPackage));
+										this->discordCoreClient->eventManager.onGuildBanRemoveEvent(*dataPackage);
 										break;
 									}
 									case 21: {
 										std::unique_ptr<DiscordCoreAPI::OnGuildEmojisUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnGuildEmojisUpdateData>() };
 										dataPackage->updateData = payload["d"];
-										this->discordCoreClient->eventManager.onGuildEmojisUpdateEvent(std::move(*dataPackage));
+										this->discordCoreClient->eventManager.onGuildEmojisUpdateEvent(*dataPackage);
 										break;
 									}
 									case 22: {
 										std::unique_ptr<DiscordCoreAPI::OnGuildStickersUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnGuildStickersUpdateData>() };
 										dataPackage->updateData = payload["d"];
-										this->discordCoreClient->eventManager.onGuildStickersUpdateEvent(std::move(*dataPackage));
+										this->discordCoreClient->eventManager.onGuildStickersUpdateEvent(*dataPackage);
 										break;
 									}
 									case 23: {
@@ -700,38 +695,31 @@ namespace DiscordCoreInternal {
 										if (payload["d"].contains("guild_id") && !payload["d"]["guild_id"].is_null()) {
 											dataPackage->guildId = stoull(payload["d"]["guild_id"].get<std::string>());
 										}
-										this->discordCoreClient->eventManager.onGuildIntegrationsUpdateEvent(std::move(*dataPackage));
+										this->discordCoreClient->eventManager.onGuildIntegrationsUpdateEvent(*dataPackage);
 										break;
 									}
 									case 24: {
-										std::unique_ptr<DiscordCoreAPI::OnGuildMemberAddData> dataPackage{ std::make_unique<DiscordCoreAPI::OnGuildMemberAddData>() };
-										if (payload["d"].contains("guild_id") && !payload["d"]["guild_id"].is_null()) {
-											dataPackage->guildMember = std::make_unique<DiscordCoreAPI::GuildMemberData>(payload["d"]);
-											dataPackage->guildMember->guildId = stoull(payload["d"]["guild_id"].get<std::string>());
-										}
-
 										if (this->discordCoreClient->configManager.doWeCacheGuildMembers()) {
+											DiscordCoreAPI::GuildMemberId theKey{};
+											theKey.guildMemberId = stoull(payload["d"]["user"]["id"].get<std::string>());
+											theKey.guildId = stoull(payload["d"]["guild_id"].get<std::string>());
+											DiscordCoreAPI::GuildMembers::insertGuildMember(std::make_unique<DiscordCoreAPI::GuildMemberData>(payload["d"]));
+											std::unique_ptr<DiscordCoreAPI::OnGuildMemberAddData> dataPackage{ std::make_unique<DiscordCoreAPI::OnGuildMemberAddData>(
+												(*DiscordCoreAPI::GuildMembers::cache)[theKey].get(), this->discordCoreClient) };
+											dataPackage->guildMember = (*DiscordCoreAPI::GuildMembers::cache)[theKey].get();
 											auto guildId = dataPackage->guildMember->guildId;
 											auto guildMemberId = dataPackage->guildMember->id;
-											DiscordCoreAPI::GuildMembers::insertGuildMember(std::make_unique<DiscordCoreAPI::GuildMemberData>(*dataPackage->guildMember));
-											DiscordCoreAPI::GuildData* guild = (*DiscordCoreAPI::Guilds::cache)[dataPackage->guildMember->guildId].get();
+											DiscordCoreAPI::GuildData* guild = (*DiscordCoreAPI::Guilds::cache)[guildId].get();
 											guild->members.emplace_back(guildMemberId);
-											guild->memberCount++;
 											DiscordCoreAPI::Guilds::insertGuild(std::make_unique<DiscordCoreAPI::GuildData>(*guild));
+											this->discordCoreClient->eventManager.onGuildMemberAddEvent(*dataPackage);
 										}
-										dataPackage->discordCoreClient = this->discordCoreClient;
-										this->discordCoreClient->eventManager.onGuildMemberAddEvent(std::move(*dataPackage));
-										break;
 									}
 									case 25: {
-										std::unique_ptr<DiscordCoreAPI::OnGuildMemberRemoveData> dataPackage{ std::make_unique<DiscordCoreAPI::OnGuildMemberRemoveData>() };
-										if (payload["d"].contains("guild_id") && !payload["d"]["guild_id"].is_null()) {
-											dataPackage->guildId = stoull(payload["d"]["guild_id"].get<std::string>());
-										}
-										if (payload["d"].contains("user") && !payload["d"]["user"].is_null()) {
-											dataPackage->user = std::make_unique<DiscordCoreAPI::UserData>(payload["d"]["user"]);
-										}
 										if (this->discordCoreClient->configManager.doWeCacheGuildMembers()) {
+											std::unique_ptr<DiscordCoreAPI::OnGuildMemberRemoveData> dataPackage{ std::make_unique<DiscordCoreAPI::OnGuildMemberRemoveData>(
+												std::make_unique<DiscordCoreAPI::UserData>(payload["d"]["user"]), this->discordCoreClient,
+												stoull(payload["d"]["guild_id"].get<std::string>())) };
 											DiscordCoreAPI::GuildMemberId theKey{};
 											theKey.guildMemberId = dataPackage->user->id;
 											theKey.guildId = dataPackage->guildId;
@@ -745,93 +733,74 @@ namespace DiscordCoreInternal {
 											}
 											guild->memberCount--;
 											DiscordCoreAPI::Guilds::insertGuild(std::make_unique<DiscordCoreAPI::GuildData>(*guild));
+											this->discordCoreClient->eventManager.onGuildMemberRemoveEvent(*dataPackage);
 										}
-										this->discordCoreClient->eventManager.onGuildMemberRemoveEvent(std::move(*dataPackage));
 										break;
 									}
 									case 26: {
-										std::unique_ptr<DiscordCoreAPI::OnGuildMemberUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnGuildMemberUpdateData>() };
-										if (payload["d"].contains("guild_id") && !payload["d"]["guild_id"].is_null()) {
-											dataPackage->guildMemberNew = std::make_unique<DiscordCoreAPI::GuildMemberData>(payload["d"]);
-											dataPackage->guildMemberNew->guildId = stoull(payload["d"]["guild_id"].get<std::string>());
-										}
-										if (payload["d"].contains("user") && payload["d"]["user"].contains("id") && !payload["d"]["user"]["id"].is_null()) {
-											dataPackage->guildMemberOld = std::make_unique<DiscordCoreAPI::GuildMemberData>(
-												DiscordCoreAPI::GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = stoull(payload["d"]["user"]["id"].get<std::string>()),
-																											.guildId = stoull(payload["d"]["guild_id"].get<std::string>()) })
-													.get());
-											dataPackage->guildMemberNew = std::make_unique<DiscordCoreAPI::GuildMemberData>(*dataPackage->guildMemberOld);
-										}
 										if (this->discordCoreClient->configManager.doWeCacheGuildMembers()) {
-											DiscordCoreAPI::GuildMembers::insertGuildMember(std::make_unique<DiscordCoreAPI::GuildMemberData>(*dataPackage->guildMemberNew));
+											auto oldGuildMember =
+												DiscordCoreAPI::GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = stoull(payload["d"]["user"]["id"].get<std::string>()),
+																											.guildId = stoull(payload["d"]["id"].get<std::string>()) })
+													.get();
+											DiscordCoreAPI::GuildMemberId theKey{};
+											theKey.guildMemberId = oldGuildMember.id;
+											theKey.guildId = oldGuildMember.guildId;
+											DiscordCoreAPI::GuildMembers::insertGuildMember(std::make_unique<DiscordCoreAPI::GuildMemberData>(payload["d"]));
+											std::unique_ptr<DiscordCoreAPI::OnGuildMemberUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnGuildMemberUpdateData>(
+												(*DiscordCoreAPI::GuildMembers::cache)[theKey].get(), std::make_unique<DiscordCoreAPI::GuildMemberData>(oldGuildMember)) };
+											this->discordCoreClient->eventManager.onGuildMemberUpdateEvent(*dataPackage);
 										}
-										*dataPackage->guildMemberNew = payload["d"];
-										this->discordCoreClient->eventManager.onGuildMemberUpdateEvent(std::move(*dataPackage));
 										break;
 									}
 									case 27: {
 										std::unique_ptr<DiscordCoreAPI::OnGuildMembersChunkData> dataPackage{ std::make_unique<DiscordCoreAPI::OnGuildMembersChunkData>() };
 										dataPackage->chunkEventData = payload["d"];
-										this->discordCoreClient->eventManager.onGuildMembersChunkEvent(std::move(*dataPackage));
+										this->discordCoreClient->eventManager.onGuildMembersChunkEvent(*dataPackage);
 										break;
 									}
 									case 28: {
-										std::unique_ptr<DiscordCoreAPI::OnRoleCreationData> dataPackage{ std::make_unique<DiscordCoreAPI::OnRoleCreationData>() };
-										if (payload["d"].contains("role") && !payload["d"]["role"].is_null()) {
-											dataPackage->role = std::make_unique<DiscordCoreAPI::RoleData>(payload["d"]["role"]);
-										}
-										if (payload["d"].contains("guild_id") && !payload["d"]["guild_id"].is_null()) {
-											dataPackage->guildId = stoull(payload["d"]["guild_id"].get<std::string>());
-										}
 										if (this->discordCoreClient->configManager.doWeCacheRoles()) {
+											DiscordCoreAPI::Roles::insertRole(std::make_unique<DiscordCoreAPI::RoleData>(payload["d"]));
+											std::unique_ptr<DiscordCoreAPI::OnRoleCreationData> dataPackage{ std::make_unique<DiscordCoreAPI::OnRoleCreationData>(
+												(*DiscordCoreAPI::Roles::cache)[stoull(payload["d"]["id"].get<std::string>())].get(),
+												stoull(payload["d"]["guild_id"].get<std::string>())) };
+											dataPackage->role = (*DiscordCoreAPI::Roles::cache)[stoull(payload["d"]["id"].get<std::string>())].get();
+											auto guildId = dataPackage->guildId;
 											auto roleId = dataPackage->role->id;
-											DiscordCoreAPI::Roles::insertRole(std::make_unique<DiscordCoreAPI::RoleData>(*dataPackage->role));
-											DiscordCoreAPI::GuildData* guild = (*DiscordCoreAPI::Guilds::cache)[dataPackage->guildId].get();
+											DiscordCoreAPI::GuildData* guild = (*DiscordCoreAPI::Guilds::cache)[guildId].get();
 											guild->roles.emplace_back(roleId);
 											DiscordCoreAPI::Guilds::insertGuild(std::make_unique<DiscordCoreAPI::GuildData>(*guild));
+											this->discordCoreClient->eventManager.onRoleCreationEvent(*dataPackage);
 										}
-										this->discordCoreClient->eventManager.onRoleCreationEvent(std::move(*dataPackage));
 										break;
 									}
 									case 29: {
-										std::unique_ptr<DiscordCoreAPI::OnRoleUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnRoleUpdateData>() };
-										if (payload["d"].contains("guild_id") && !payload["d"]["guild_id"].is_null()) {
-											dataPackage->guildId = stoull(payload["d"]["guild_id"].get<std::string>());
-										}
-										if (payload["d"].contains("role") && !payload["d"]["role"].is_null()) {
-											dataPackage->roleOld = std::make_unique<DiscordCoreAPI::RoleData>(DiscordCoreAPI::Roles::getCachedRoleAsync(
-												{ .guildId = dataPackage->guildId, .roleId = stoull(payload["d"]["role"]["id"].get<std::string>()) })
-																												  .get());
-											dataPackage->roleNew = std::make_unique<DiscordCoreAPI::RoleData>(*dataPackage->roleOld);
-										}
-										*dataPackage->roleNew = payload["d"]["role"];
 										if (this->discordCoreClient->configManager.doWeCacheRoles()) {
-											DiscordCoreAPI::Roles::insertRole(std::make_unique<DiscordCoreAPI::RoleData>(*dataPackage->roleNew));
+											auto oldRole = DiscordCoreAPI::Roles::getCachedRoleAsync({ .roleId = stoull(payload["d"]["id"].get<std::string>()) }).get();
+											DiscordCoreAPI::Roles::insertRole(std::make_unique<DiscordCoreAPI::RoleData>(payload["d"]));
+											std::unique_ptr<DiscordCoreAPI::OnRoleUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnRoleUpdateData>(
+												(*DiscordCoreAPI::Roles::cache)[stoull(payload["d"]["id"].get<std::string>())].get(),
+												std::make_unique<DiscordCoreAPI::RoleData>(oldRole), stoull(payload["d"]["guild_id"].get<std::string>())) };
+											this->discordCoreClient->eventManager.onRoleUpdateEvent(*dataPackage);
 										}
-										this->discordCoreClient->eventManager.onRoleUpdateEvent(std::move(*dataPackage));
-										break;
 									}
 									case 30: {
-										std::unique_ptr<DiscordCoreAPI::OnRoleDeletionData> dataPackage{ std::make_unique<DiscordCoreAPI::OnRoleDeletionData>() };
-										if (payload["d"].contains("guild_id") && !payload["d"]["guild_id"].is_null()) {
-											dataPackage->guildId = stoull(payload["d"]["guild_id"].get<std::string>());
-										}
-										if (payload["d"].contains("role_id") && !payload["d"]["role_id"].is_null()) {
-											dataPackage->roleOld = std::make_unique<DiscordCoreAPI::RoleData>(DiscordCoreAPI::Roles::getCachedRoleAsync(
-												{ .guildId = dataPackage->guildId, .roleId = stoull(payload["d"]["role_id"].get<std::string>()) })
-																												  .get());
-										}
 										if (this->discordCoreClient->configManager.doWeCacheRoles()) {
-											DiscordCoreAPI::Roles::removeRole(dataPackage->roleOld->id);
+											std::unique_ptr<DiscordCoreAPI::OnRoleDeletionData> dataPackage{ std::make_unique<DiscordCoreAPI::OnRoleDeletionData>(
+												std::make_unique<DiscordCoreAPI::RoleData>(
+													DiscordCoreAPI::Roles::getCachedRoleAsync({ .roleId = stoull(payload["d"]["id"].get<std::string>()) }).get()),
+												stoull(payload["d"]["guild_id"].get<std::string>())) };
+											DiscordCoreAPI::Roles::removeRole(dataPackage->role->id);
 											DiscordCoreAPI::GuildData* guild = (*DiscordCoreAPI::Guilds::cache)[dataPackage->guildId].get();
 											for (uint64_t x = 0; x < guild->roles.size(); x++) {
-												if (guild->roles[x] == dataPackage->roleOld->id) {
+												if (guild->roles[x] == dataPackage->role->id) {
 													guild->roles.erase(guild->roles.begin() + x);
 												}
 											}
 											DiscordCoreAPI::Guilds::insertGuild(std::make_unique<DiscordCoreAPI::GuildData>(*guild));
+											this->discordCoreClient->eventManager.onRoleDeletionEvent(*dataPackage);
 										}
-										this->discordCoreClient->eventManager.onRoleDeletionEvent(std::move(*dataPackage));
 										break;
 									}
 									case 31: {
@@ -842,7 +811,7 @@ namespace DiscordCoreInternal {
 										if (payload["d"].contains("integration") && !payload["d"]["integration"].is_null()) {
 											dataPackage->integrationData = payload["d"]["integration"];
 										}
-										this->discordCoreClient->eventManager.onIntegrationCreationEvent(std::move(*dataPackage));
+										this->discordCoreClient->eventManager.onIntegrationCreationEvent(*dataPackage);
 										break;
 									}
 									case 32: {
@@ -853,7 +822,7 @@ namespace DiscordCoreInternal {
 										if (payload["d"].contains("integration") && !payload["d"]["integration"].is_null()) {
 											dataPackage->integrationData = payload["d"]["integration"];
 										}
-										this->discordCoreClient->eventManager.onIntegrationUpdateEvent(std::move(*dataPackage));
+										this->discordCoreClient->eventManager.onIntegrationUpdateEvent(*dataPackage);
 										break;
 									}
 									case 33: {
@@ -867,7 +836,7 @@ namespace DiscordCoreInternal {
 										if (payload["d"].contains("id") && !payload["d"]["id"].is_null()) {
 											dataPackage->id = stoull(payload["d"]["id"].get<std::string>());
 										}
-										this->discordCoreClient->eventManager.onIntegrationDeletionEvent(std::move(*dataPackage));
+										this->discordCoreClient->eventManager.onIntegrationDeletionEvent(*dataPackage);
 										break;
 									}
 									case 34: {
@@ -885,7 +854,7 @@ namespace DiscordCoreInternal {
 												std::unique_ptr<DiscordCoreAPI::CommandData> commandData{ std::make_unique<DiscordCoreAPI::CommandData>(*eventData) };
 												DiscordCoreAPI::CommandData commandDataNew = *commandData;
 												this->discordCoreClient->commandController.checkForAndRunCommand(commandDataNew);
-												this->discordCoreClient->eventManager.onInteractionCreationEvent(std::move(*dataPackage));
+												this->discordCoreClient->eventManager.onInteractionCreationEvent(*dataPackage);
 												std::unique_ptr<DiscordCoreAPI::OnInputEventCreationData> eventCreationData{
 													std::make_unique<DiscordCoreAPI::OnInputEventCreationData>()
 												};
@@ -907,7 +876,7 @@ namespace DiscordCoreInternal {
 																std::to_string(eventData->getMessageId())]
 																->send(*interactionData);
 														}
-														this->discordCoreClient->eventManager.onInteractionCreationEvent(std::move(*dataPackage));
+														this->discordCoreClient->eventManager.onInteractionCreationEvent(*dataPackage);
 													}
 													case DiscordCoreAPI::ComponentType::SelectMenu: {
 														eventData->responseType = DiscordCoreAPI::InputEventResponseType::Unset;
@@ -922,7 +891,7 @@ namespace DiscordCoreInternal {
 																std::to_string(eventData->getMessageId())]
 																->send(*interactionData);
 														}
-														this->discordCoreClient->eventManager.onInteractionCreationEvent(std::move(*dataPackage));
+														this->discordCoreClient->eventManager.onInteractionCreationEvent(*dataPackage);
 													}
 												}
 											}
@@ -941,7 +910,7 @@ namespace DiscordCoreInternal {
 													DiscordCoreAPI::ModalCollector::modalInteractionBufferMap[std::to_string(eventData->getChannelId())]->send(
 														eventData->getInteractionData());
 												}
-												this->discordCoreClient->eventManager.onInteractionCreationEvent(std::move(*dataPackage));
+												this->discordCoreClient->eventManager.onInteractionCreationEvent(*dataPackage);
 											}
 
 											case DiscordCoreAPI::InteractionType::Application_Command_Autocomplete: {
@@ -956,14 +925,14 @@ namespace DiscordCoreInternal {
 												};
 												autocompleteEntryData->inputEvent = *eventData;
 												this->discordCoreClient->eventManager.onAutoCompleteEntryEvent(*autocompleteEntryData);
-												this->discordCoreClient->eventManager.onInteractionCreationEvent(std::move(*dataPackage));
+												this->discordCoreClient->eventManager.onInteractionCreationEvent(*dataPackage);
 											}
 										}
 									}
 									case 35: {
 										std::unique_ptr<DiscordCoreAPI::OnInviteCreationData> dataPackage{ std::make_unique<DiscordCoreAPI::OnInviteCreationData>() };
 										dataPackage->invite = payload["d"];
-										this->discordCoreClient->eventManager.onInviteCreationEvent(std::move(*dataPackage));
+										this->discordCoreClient->eventManager.onInviteCreationEvent(*dataPackage);
 										break;
 									}
 									case 36: {
@@ -977,7 +946,7 @@ namespace DiscordCoreInternal {
 										if (payload["d"].contains("code") && !payload["d"]["code"].is_null()) {
 											dataPackage->code = payload["d"]["code"];
 										}
-										this->discordCoreClient->eventManager.onInviteDeletionEvent(std::move(*dataPackage));
+										this->discordCoreClient->eventManager.onInviteDeletionEvent(*dataPackage);
 										break;
 									}
 									case 37: {
@@ -988,7 +957,7 @@ namespace DiscordCoreInternal {
 										for (auto& [key, value]: DiscordCoreAPI::MessageCollector::messagesBufferMap) {
 											value->send(*message);
 										}
-										this->discordCoreClient->eventManager.onMessageCreationEvent(std::move(*dataPackage));
+										this->discordCoreClient->eventManager.onMessageCreationEvent(*dataPackage);
 										if (message->content.find("!registerapplicationcommands") != std::string::npos) {
 											std::unique_ptr<DiscordCoreAPI::CommandData> commandData{ std::make_unique<DiscordCoreAPI::CommandData>() };
 											commandData->commandName = "registerapplicationcommands";
@@ -1003,7 +972,7 @@ namespace DiscordCoreInternal {
 										for (auto& [key, value]: DiscordCoreAPI::MessageCollector::messagesBufferMap) {
 											value->send(dataPackage->messageNew);
 										}
-										this->discordCoreClient->eventManager.onMessageUpdateEvent(std::move(*dataPackage));
+										this->discordCoreClient->eventManager.onMessageUpdateEvent(*dataPackage);
 										break;
 									}
 									case 39: {
@@ -1017,7 +986,7 @@ namespace DiscordCoreInternal {
 										if (payload["d"].contains("id") && !payload["d"]["id"].is_null()) {
 											dataPackage->messageId = stoull(payload["d"]["id"].get<std::string>());
 										}
-										this->discordCoreClient->eventManager.onMessageDeletionEvent(std::move(*dataPackage));
+										this->discordCoreClient->eventManager.onMessageDeletionEvent(*dataPackage);
 										break;
 									}
 									case 40: {
@@ -1033,19 +1002,19 @@ namespace DiscordCoreInternal {
 												dataPackage->ids.emplace_back(stoull(value.get<std::string>()));
 											}
 										}
-										this->discordCoreClient->eventManager.onMessageDeleteBulkEvent(std::move(*dataPackage));
+										this->discordCoreClient->eventManager.onMessageDeleteBulkEvent(*dataPackage);
 										break;
 									}
 									case 41: {
 										std::unique_ptr<DiscordCoreAPI::OnReactionAddData> dataPackage{ std::make_unique<DiscordCoreAPI::OnReactionAddData>() };
 										dataPackage->reaction = payload["d"];
-										this->discordCoreClient->eventManager.onReactionAddEvent(std::move(*dataPackage));
+										this->discordCoreClient->eventManager.onReactionAddEvent(*dataPackage);
 										break;
 									}
 									case 42: {
 										std::unique_ptr<DiscordCoreAPI::OnReactionRemoveData> dataPackage{ std::make_unique<DiscordCoreAPI::OnReactionRemoveData>() };
 										dataPackage->reactionRemoveData = payload["d"];
-										this->discordCoreClient->eventManager.onReactionRemoveEvent(std::move(*dataPackage));
+										this->discordCoreClient->eventManager.onReactionRemoveEvent(*dataPackage);
 										break;
 									}
 									case 43: {
@@ -1059,7 +1028,7 @@ namespace DiscordCoreInternal {
 										if (payload["d"].contains("guild_id") && !payload["d"]["guild_id"].is_null()) {
 											dataPackage->guildId = stoull(payload["d"]["guild_id"].get<std::string>());
 										}
-										this->discordCoreClient->eventManager.onReactionRemoveAllEvent(std::move(*dataPackage));
+										this->discordCoreClient->eventManager.onReactionRemoveAllEvent(*dataPackage);
 										break;
 									}
 									case 44: {
@@ -1074,48 +1043,48 @@ namespace DiscordCoreInternal {
 											dataPackage->guildId = stoull(payload["d"]["guild_id"].get<std::string>());
 										}
 										dataPackage->emoji = payload["d"]["emoji"];
-										this->discordCoreClient->eventManager.onReactionRemoveEmojiEvent(std::move(*dataPackage));
+										this->discordCoreClient->eventManager.onReactionRemoveEmojiEvent(*dataPackage);
 										break;
 									}
 									case 45: {
 										std::unique_ptr<DiscordCoreAPI::OnPresenceUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnPresenceUpdateData>() };
 										dataPackage->presenceData = payload["d"];
-										this->discordCoreClient->eventManager.onPresenceUpdateEvent(std::move(*dataPackage));
+										this->discordCoreClient->eventManager.onPresenceUpdateEvent(*dataPackage);
 										break;
 									}
 									case 46: {
 										std::unique_ptr<DiscordCoreAPI::OnStageInstanceCreationData> dataPackage{ std::make_unique<DiscordCoreAPI::OnStageInstanceCreationData>() };
 										dataPackage->stageInstance = payload["d"];
-										this->discordCoreClient->eventManager.onStageInstanceCreationEvent(std::move(*dataPackage));
+										this->discordCoreClient->eventManager.onStageInstanceCreationEvent(*dataPackage);
 										break;
 									}
 									case 47: {
 										std::unique_ptr<DiscordCoreAPI::OnStageInstanceUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnStageInstanceUpdateData>() };
 										dataPackage->stageInstance = payload["d"];
-										this->discordCoreClient->eventManager.onStageInstanceUpdateEvent(std::move(*dataPackage));
+										this->discordCoreClient->eventManager.onStageInstanceUpdateEvent(*dataPackage);
 										break;
 									}
 									case 48: {
 										std::unique_ptr<DiscordCoreAPI::OnStageInstanceDeletionData> dataPackage{ std::make_unique<DiscordCoreAPI::OnStageInstanceDeletionData>() };
 										dataPackage->stageInstance = payload["d"];
-										this->discordCoreClient->eventManager.onStageInstanceDeletionEvent(std::move(*dataPackage));
+										this->discordCoreClient->eventManager.onStageInstanceDeletionEvent(*dataPackage);
 										break;
 									}
 									case 49: {
 										std::unique_ptr<DiscordCoreAPI::OnTypingStartData> dataPackage{ std::make_unique<DiscordCoreAPI::OnTypingStartData>() };
 										dataPackage->typingStartData = payload["d"];
-										this->discordCoreClient->eventManager.onTypingStartEvent(std::move(*dataPackage));
+										this->discordCoreClient->eventManager.onTypingStartEvent(*dataPackage);
 										break;
 									}
 									case 50: {
-										std::unique_ptr<DiscordCoreAPI::OnUserUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnUserUpdateData>() };
-										dataPackage->userNew = std::make_unique<DiscordCoreAPI::UserData>(payload["d"]["user"]);
-										dataPackage->userOld =
-											std::make_unique<DiscordCoreAPI::UserData>(DiscordCoreAPI::Users::getCachedUserAsync({ .userId = dataPackage->userNew->id }).get());
 										if (this->discordCoreClient->configManager.doWeCacheUsers()) {
-											DiscordCoreAPI::Users::insertUser(std::make_unique<DiscordCoreAPI::UserData>(*dataPackage->userNew));
+											auto oldUser = DiscordCoreAPI::Users::getCachedUserAsync({ .userId = stoull(payload["d"]["id"].get<std::string>()) }).get();
+											DiscordCoreAPI::Users::insertUser(std::make_unique<DiscordCoreAPI::UserData>(payload["d"]));
+											std::unique_ptr<DiscordCoreAPI::OnUserUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnUserUpdateData>(
+												(*DiscordCoreAPI::Users::cache)[stoull(payload["d"]["id"].get<std::string>())].get(),
+												std::make_unique<DiscordCoreAPI::UserData>(oldUser)) };
+											this->discordCoreClient->eventManager.onUserUpdateEvent(*dataPackage);
 										}
-										this->discordCoreClient->eventManager.onUserUpdateEvent(std::move(*dataPackage));
 										break;
 									}
 									case 51: {
@@ -1140,7 +1109,7 @@ namespace DiscordCoreInternal {
 											guild.voiceStates[dataPackage->voiceStateData.userId] = dataPackage->voiceStateData;
 											DiscordCoreAPI::Guilds::insertGuild(std::make_unique<DiscordCoreAPI::GuildData>(guild));
 										}
-										this->discordCoreClient->eventManager.onVoiceStateUpdateEvent(std::move(*dataPackage));
+										this->discordCoreClient->eventManager.onVoiceStateUpdateEvent(*dataPackage);
 										break;
 									}
 									case 52: {
@@ -1169,7 +1138,7 @@ namespace DiscordCoreInternal {
 										if (payload["d"].contains("token") && !payload["d"]["token"].is_null()) {
 											dataPackage->token = payload["d"]["token"];
 										}
-										this->discordCoreClient->eventManager.onVoiceServerUpdateEvent(std::move(*dataPackage));
+										this->discordCoreClient->eventManager.onVoiceServerUpdateEvent(*dataPackage);
 										break;
 									}
 									case 53: {
@@ -1180,7 +1149,7 @@ namespace DiscordCoreInternal {
 										if (payload["d"].contains("guild_id") && !payload["d"]["guild_id"].is_null()) {
 											dataPackage->guildId = stoull(payload["d"]["guild_id"].get<std::string>());
 										}
-										this->discordCoreClient->eventManager.onWebhookUpdateEvent(std::move(*dataPackage));
+										this->discordCoreClient->eventManager.onWebhookUpdateEvent(*dataPackage);
 										break;
 									}
 

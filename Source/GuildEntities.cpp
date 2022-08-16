@@ -831,7 +831,7 @@ namespace DiscordCoreAPI {
 		co_return Guilds::httpsClient->submitWorkloadAndGetResult<void>(workload);
 	}
 
-	//StopWatch theStopWatch{ 5s };
+	StopWatch theStopWatch{ 5s };
 	void Guilds::insertGuild(std::unique_ptr<GuildData> guild) {
 		std::unique_lock theLock{ Guilds::theMutex };
 		if (guild->id == 0) {
@@ -840,7 +840,7 @@ namespace DiscordCoreAPI {
 		guild->initialize();
 		if (Guilds::configManager->doWeCacheGuilds()) {
 			(*Guilds::cache)[guild->id] = std::move(guild);
-			//std::cout << "THE GUILD COUNT: " << Guilds::cache->size() << ", THE TIME: " << theStopWatch.totalTimePassed() << std::endl;
+			std::cout << "THE GUILD COUNT: " << Guilds::cache->size() << ", THE TIME: " << theStopWatch.totalTimePassed() << std::endl;
 		}
 	}
 
