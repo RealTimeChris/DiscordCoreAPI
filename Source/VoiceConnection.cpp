@@ -431,6 +431,7 @@ namespace DiscordCoreAPI {
 					this->clearAudioData();
 					while (!stopToken.stop_requested() && this->activeState.load() == VoiceActiveState::Stopped) {
 						DatagramSocketClient::processIO(DiscordCoreInternal::ProcessIOType::Both);
+						DatagramSocketClient::getInputBuffer().clear();
 						if (theSendSilenceStopWatch.hasTimePassed()) {
 							theSendSilenceStopWatch.resetTimer();
 							this->sendSpeakingMessage(true);
@@ -444,6 +445,7 @@ namespace DiscordCoreAPI {
 					this->areWePlaying.store(false);
 					while (!stopToken.stop_requested() && this->activeState.load() == VoiceActiveState::Paused) {
 						DatagramSocketClient::processIO(DiscordCoreInternal::ProcessIOType::Both);
+						DatagramSocketClient::getInputBuffer().clear();
 						if (theSendSilenceStopWatch.hasTimePassed()) {
 							theSendSilenceStopWatch.resetTimer();
 							this->sendSpeakingMessage(true);
