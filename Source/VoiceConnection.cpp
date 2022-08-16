@@ -1022,14 +1022,19 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::disconnect() noexcept {
-		std::lock_guard theLock{ this->baseSocketAgent->theMutex };
+		std::lock_guard theLock{ this->baseSocketAgent->theConnectDisconnectMutex };
 		this->baseSocketAgent->voiceConnectionsToDisconnect.push(this->voiceConnectInitData.guildId);
 		this->activeState.store(VoiceActiveState::Exiting);
 	}
 
 	void VoiceConnection::reconnect() noexcept {
+		std::cout << "WERE RECONNECTING!" << std::endl;
+		std::lock_guard theLock{ this->baseSocketAgent->theConnectDisconnectMutex };
+		VoiceConnection::disconnect();
+		DiscordCoreInternal::VoiceConnectInitData theData{ this->voiceConnectInitData };
+		this->baseSocketAgent->voiceConnections.push(theData);
 		this->activeState.store(VoiceActiveState::Connecting);
-		WebSocketSSLShard::disconnect(true);
+		WebSocketSSLShard::disconnect(false);
 		DatagramSocketClient::disconnect();
 		if (this->taskThread03) {
 			this->taskThread03.reset(nullptr);

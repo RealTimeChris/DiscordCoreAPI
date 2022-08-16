@@ -1177,7 +1177,6 @@ namespace DiscordCoreInternal {
 	}
 
 	void WebSocketSSLShard::onClosed() noexcept {
-		std::cout << "WERE HERE THIS IS IT!" << std::endl;
 		if (this->maxReconnectTries > this->currentReconnectTries) {
 			this->disconnect(true);
 		} else {
@@ -1198,7 +1197,7 @@ namespace DiscordCoreInternal {
 	}
 
 	void BaseSocketAgent::connectVoiceChannel(VoiceConnectInitData theData) noexcept {
-		std::lock_guard theLock{ this->theMutex };
+		std::lock_guard theLock{ this->theConnectDisconnectMutex };
 		this->voiceConnections.push(theData);
 	}
 
@@ -1207,7 +1206,7 @@ namespace DiscordCoreInternal {
 			std::this_thread::sleep_for(1ms);
 		}
 		this->discordCoreClient->theStopWatch.resetTimer();
-		std::lock_guard theLock{ this->theMutex };
+		std::lock_guard theLock{ this->theConnectDisconnectMutex };
 		this->connections.push(thePackage);
 		DiscordCoreAPI::StopWatch theStopWatch{ 5000ms };
 		while (!this->sslShard) {
@@ -1240,24 +1239,24 @@ namespace DiscordCoreInternal {
 		this->theVCStopWatch.resetTimer();
 		VoiceConnectInitData theConnectionData = this->voiceConnections.front();
 		this->voiceConnections.pop();
-		if (!DiscordCoreAPI::getVoiceConnectionMap()[theConnectionData.guildId]) {
-			DiscordCoreAPI::getVoiceConnectionMap()[theConnectionData.guildId] = std::make_unique<DiscordCoreAPI::VoiceConnection>(this, theConnectionData,
-				&this->discordCoreClient->configManager, this->doWeQuit, theConnectionData.streamType, theConnectionData.streamInfo);
-		}
+		DiscordCoreAPI::getVoiceConnectionMap()[theConnectionData.guildId] = std::make_unique<DiscordCoreAPI::VoiceConnection>(this, theConnectionData,
+			&this->discordCoreClient->configManager, this->doWeQuit, theConnectionData.streamType, theConnectionData.streamInfo);
 		DiscordCoreAPI::getVoiceConnectionMap()[theConnectionData.guildId]->connect();
 	}
 
 	void BaseSocketAgent::run(std::stop_token stopToken) noexcept {
 		try {
 			while (!stopToken.stop_requested() && !this->doWeQuit->load()) {
+				{ std::lock_guard theLock{ this->theConnectDisconnectMutex };
+					if (this->voiceConnectionsToDisconnect.size() > 0) {
+						this->disconnectVoice();
+					}
+					if (this->voiceConnections.size() > 0) {
+						this->connectVoiceInternal();
+					}
+				}
 				if (this->connections.size() > 0) {
 					this->connectInternal();
-				}
-				if (this->voiceConnectionsToDisconnect.size() > 0) {
-					this->disconnectVoice();
-				}
-				if (this->voiceConnections.size() > 0) {
-					this->connectVoiceInternal();
 				}
 				if (this->sslShard) {
 					this->sslShard->processIO(1000);
@@ -1277,7 +1276,7 @@ namespace DiscordCoreInternal {
 	}
 
 	void BaseSocketAgent::disconnectVoice() noexcept {
-		std::lock_guard theLock{ this->theMutex };
+		std::lock_guard theLock{ this->theConnectDisconnectMutex };
 		uint64_t theDCData = this->voiceConnectionsToDisconnect.front();
 		this->voiceConnectionsToDisconnect.pop();
 		DiscordCoreAPI::getVoiceConnectionMap()[theDCData]->disconnectInternal();
