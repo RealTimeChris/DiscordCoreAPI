@@ -217,8 +217,6 @@ namespace DiscordCoreAPI {
 
 		void sendHeartBeat() noexcept;
 
-		void onClosedVoice() noexcept;
-
 		bool voiceConnect() noexcept;
 
 		void sendSilence() noexcept;
@@ -228,6 +226,8 @@ namespace DiscordCoreAPI {
 		void disconnect() noexcept;
 
 		void reconnect() noexcept;
+
+		void onClosed() noexcept;
 
 		void mixAudio() noexcept;
 

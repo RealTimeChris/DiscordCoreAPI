@@ -259,7 +259,7 @@ namespace DiscordCoreInternal {
 					static_cast<WebSocketSSLShard*>(theShard)->inputBuffer.erase(static_cast<WebSocketSSLShard*>(theShard)->inputBuffer.begin(),
 						static_cast<WebSocketSSLShard*>(theShard)->inputBuffer.begin() + static_cast<WebSocketSSLShard*>(theShard)->messageOffset +
 							static_cast<WebSocketSSLShard*>(theShard)->messageLength);
-					return theValue;
+					return false;
 				}
 			}
 			case WebSocketOpCode::Op_Close: {
@@ -277,13 +277,11 @@ namespace DiscordCoreInternal {
 						 << +static_cast<uint16_t>(static_cast<WebSocketSSLShard*>(theShard)->closeCode) << DiscordCoreAPI::reset() << endl
 						 << endl;
 				}
-
+				this->onClosed();
 				return false;
 			}
-			default: {
-				return true;
-			}
 		}
+		return true;
 	}
 
 	WebSocketSSLShard::WebSocketSSLShard(DiscordCoreAPI::DiscordCoreClient* theClient, std::queue<DiscordCoreAPI::ConnectionPackage>* connectionsNew,
@@ -1239,8 +1237,10 @@ namespace DiscordCoreInternal {
 		this->theVCStopWatch.resetTimer();
 		VoiceConnectInitData theConnectionData = this->voiceConnections.front();
 		this->voiceConnections.pop();
-		DiscordCoreAPI::getVoiceConnectionMap()[theConnectionData.guildId] = std::make_unique<DiscordCoreAPI::VoiceConnection>(this, theConnectionData,
-			&this->discordCoreClient->configManager, this->doWeQuit, theConnectionData.streamType, theConnectionData.streamInfo);
+		if (!DiscordCoreAPI::getVoiceConnectionMap()[theConnectionData.guildId]) {
+			DiscordCoreAPI::getVoiceConnectionMap()[theConnectionData.guildId] = std::make_unique<DiscordCoreAPI::VoiceConnection>(this, theConnectionData,
+				&this->discordCoreClient->configManager, this->doWeQuit, theConnectionData.streamType, theConnectionData.streamInfo);
+		}
 		DiscordCoreAPI::getVoiceConnectionMap()[theConnectionData.guildId]->connect();
 	}
 

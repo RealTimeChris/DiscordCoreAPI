@@ -55,6 +55,8 @@ namespace DiscordCoreInternal {
 
 		bool parseMessage(DiscordCoreInternal::SSLClient* theShard) noexcept;
 
+		virtual void onClosed() noexcept = 0;
+
 		virtual ~WebSocketMessageHandler() = default;
 
 	  protected:

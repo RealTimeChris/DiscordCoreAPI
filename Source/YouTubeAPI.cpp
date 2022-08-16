@@ -319,8 +319,8 @@ namespace DiscordCoreInternal {
 								submissionString.insert(submissionString.begin(), theCurrentString.begin(), theCurrentString.begin() + this->maxBufferSize);
 								theCurrentString.erase(theCurrentString.begin(), theCurrentString.begin() + this->maxBufferSize);
 							} else {
-								submissionString = theCurrentString;
-								theCurrentString.erase(theCurrentString.begin(), theCurrentString.end());
+								submissionString = std::move(theCurrentString);
+								theCurrentString.clear();
 							}
 							bytesReadTotal = streamSocket->getBytesRead() - headerSize;
 							audioDecoder->submitDataForDecoding(std::move(submissionString));
@@ -349,8 +349,8 @@ namespace DiscordCoreInternal {
 									submissionString.insert(submissionString.begin(), theCurrentString.begin(), theCurrentString.begin() + this->maxBufferSize);
 									theCurrentString.erase(theCurrentString.begin(), theCurrentString.begin() + this->maxBufferSize);
 								} else {
-									submissionString = theCurrentString;
-									theCurrentString.erase(theCurrentString.begin(), theCurrentString.end());
+									submissionString = std::move(theCurrentString);
+									theCurrentString.clear();
 								}
 								audioDecoder->submitDataForDecoding(std::move(submissionString));
 								bytesReadTotal = streamSocket->getBytesRead() - headerSize;
@@ -378,9 +378,6 @@ namespace DiscordCoreInternal {
 							audioDecoder.reset(nullptr);
 							streamSocket->disconnect(false);
 							return;
-						}
-						if (doWeBreak) {
-							continue;
 						}
 						for (auto& value: frames) {
 							auto encodedFrame = audioEncoder.encodeSingleAudioFrame(value);
