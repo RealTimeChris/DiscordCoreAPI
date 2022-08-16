@@ -21,7 +21,6 @@
 
 #include <discordcoreapi/FoundationEntities.hpp>
 #include <discordcoreapi/AudioDecoder.hpp>
-#include <discordcoreapi/AudioEncoder.hpp>
 #include <discordcoreapi/CoRoutine.hpp>
 
 namespace DiscordCoreInternal {

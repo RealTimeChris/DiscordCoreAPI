@@ -20,7 +20,6 @@
 #pragma once
 
 #include <discordcoreapi/AudioDecoder.hpp>
-#include <discordcoreapi/AudioEncoder.hpp>
 #include <discordcoreapi/CoRoutine.hpp>
 #include <discordcoreapi/Https.hpp>
 

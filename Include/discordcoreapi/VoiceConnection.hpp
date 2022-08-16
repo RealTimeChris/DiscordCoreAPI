@@ -27,23 +27,6 @@
 
 namespace DiscordCoreAPI {
 
-	struct OpusEncoderWrapper {
-		struct OpusEncoderDeleter {
-			void operator()(OpusEncoder*) noexcept;
-		};
-
-		OpusEncoderWrapper& operator=(OpusEncoderWrapper&&) noexcept;
-
-		OpusEncoderWrapper(OpusEncoderWrapper&&) noexcept;
-
-		OpusEncoderWrapper() noexcept;
-
-		operator OpusEncoder*() noexcept;
-
-	  protected:
-		std::unique_ptr<OpusEncoder, OpusEncoderDeleter> thePtr{ nullptr, OpusEncoderDeleter{} };
-	};
-
 	struct OpusDecoderWrapper {
 		struct OpusDecoderDeleter {
 			void operator()(OpusDecoder*) noexcept;
@@ -157,20 +140,17 @@ namespace DiscordCoreAPI {
 		std::atomic_bool areWeConnectedBool{ false };
 		std::queue<ConnectionPackage> connections{};
 		std::deque<VoicePayload> theFrameQueue{};
-		std::atomic_bool doWeReconnect{ false };
 		std::atomic_bool areWePlaying{ false };
-		std::atomic_bool areWeReady01{ false };
-		std::atomic_bool areWeReady02{ false };
 		const int64_t maxReconnectTries{ 10 };
 		int64_t currentReconnectTries{ 0 };
 		std::string audioEncryptionMode{};
 		Snowflake currentGuildMemberId{};
-		OpusEncoderWrapper theEncoder{};
 		std::string secretKeySend{};
 		std::mutex voiceUserMutex{};
 		uint16_t sequenceIndex{ 0 };
 		AudioFrameData audioData{};
 		StreamInfo theStreamInfo{};
+		AudioEncoder theEncoder{};
 		std::string externalIp{};
 		StreamType streamType{};
 		uint32_t timeStamp{ 0 };
@@ -184,8 +164,6 @@ namespace DiscordCoreAPI {
 		std::string encryptSingleAudioFrame(AudioFrameData& bufferToSend) noexcept;
 
 		UnboundedMessageBlock<AudioFrameData>& getAudioBuffer() noexcept;
-
-		AudioFrameData encodeSingleAudioFrame(AudioFrameData&) noexcept;
 
 		bool onMessageReceived(int64_t offSet, int64_t length) noexcept;
 

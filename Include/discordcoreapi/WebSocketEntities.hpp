@@ -97,6 +97,7 @@ namespace DiscordCoreInternal {
 		std::atomic<WebSocketSSLShardState> theWebSocketState{ WebSocketSSLShardState::Connecting };
 		DiscordCoreAPI::StopWatch<std::chrono::milliseconds> heartBeatStopWatch{ 20000ms };
 		DiscordCoreAPI::DiscordCoreClient* discordCoreClient{ nullptr };
+		std::recursive_mutex theConnectionMutex{};
 		VoiceConnectionData voiceConnectionData{};
 		bool haveWeReceivedHeartbeatAck{ true };
 		const uint32_t maxReconnectTries{ 10 };
@@ -107,7 +108,6 @@ namespace DiscordCoreInternal {
 		bool stateUpdateCollected{ false };
 		bool areWeCollectingData{ false };
 		uint32_t lastNumberReceived{ 0 };
-		std::recursive_mutex theMutex{};
 		bool areWeHeartBeating{ false };
 		WebSocketClose closeCode{ 0 };
 		WebSocketOpCode dataOpCode{};

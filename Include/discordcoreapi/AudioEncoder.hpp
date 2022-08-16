@@ -22,18 +22,22 @@
 #include <discordcoreapi/FoundationEntities.hpp>
 #include <opus/opus.h>
 
-namespace DiscordCoreInternal {
+namespace DiscordCoreAPI {
 
-	struct DiscordCoreAPI_Dll OpusEncoderWrapper {
-		struct DiscordCoreAPI_Dll OpusEncoderDeleter {
-			void operator()(OpusEncoder* other);
+	struct OpusEncoderWrapper {
+		struct OpusEncoderDeleter {
+			void operator()(OpusEncoder*) noexcept;
 		};
 
-		OpusEncoderWrapper& operator=(OpusEncoder* other);
+		OpusEncoderWrapper& operator=(OpusEncoderWrapper&&) noexcept;
 
-		operator OpusEncoder*();
+		OpusEncoderWrapper(OpusEncoderWrapper&&) noexcept;
 
-		OpusEncoderWrapper() = default;
+		OpusEncoderWrapper(OpusEncoder*) noexcept;
+
+		OpusEncoderWrapper() noexcept;
+
+		operator OpusEncoder*() noexcept;
 
 	  protected:
 		std::unique_ptr<OpusEncoder, OpusEncoderDeleter> thePtr{ nullptr, OpusEncoderDeleter{} };
@@ -44,6 +48,8 @@ namespace DiscordCoreInternal {
 		AudioEncoder();
 
 		DiscordCoreAPI::AudioFrameData encodeSingleAudioFrame(DiscordCoreAPI::AudioFrameData& inputFrame);
+
+		DiscordCoreAPI::AudioFrameData encodeSingleAudioFrame(std::vector<opus_int16>& inputFrame);
 
 	  protected:
 		const int32_t maxBufferSize{ 1276 };

@@ -21,6 +21,7 @@
 #include <discordcoreapi/Https.hpp>
 #include <discordcoreapi/DiscordCoreClient.hpp>
 #include <discordcoreapi/SSLClients.hpp>
+#include <discordcoreapi/AudioEncoder.hpp>
 #include <discordcoreapi/VoiceConnection.hpp>
 
 namespace DiscordCoreInternal {
@@ -226,7 +227,7 @@ namespace DiscordCoreInternal {
 			dataPackage.bufferMaxSize = this->maxBufferSize;
 			dataPackage.configManager = this->configManager;
 			std::unique_ptr<AudioDecoder> audioDecoder = std::make_unique<AudioDecoder>(dataPackage);
-			AudioEncoder audioEncoder{};
+			DiscordCoreAPI::AudioEncoder audioEncoder{};
 			std::string theString = newSong.finalDownloadUrls[1].urlPath;
 			streamSocket->writeData(theString, false);
 			streamSocket->processIO(1000000);

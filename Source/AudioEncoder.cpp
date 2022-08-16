@@ -19,24 +19,57 @@
 
 #include <discordcoreapi/AudioEncoder.hpp>
 
-namespace DiscordCoreInternal {
+namespace DiscordCoreAPI {
 
-	void OpusEncoderWrapper::OpusEncoderDeleter::operator()(OpusEncoder* other) {
-		opus_encoder_destroy(other);
+	void OpusEncoderWrapper::OpusEncoderDeleter::operator()(OpusEncoder* other) noexcept {
+		if (other) {
+			opus_encoder_destroy(other);
+			other = nullptr;
+		}
 	}
 
-	OpusEncoderWrapper& OpusEncoderWrapper::operator=(OpusEncoder* other) {
-		this->thePtr.reset(other);
+	OpusEncoderWrapper& OpusEncoderWrapper::operator=(OpusEncoderWrapper&& other) noexcept {
+		this->thePtr.reset(other.thePtr.release());
 		return *this;
 	}
 
-	OpusEncoderWrapper::operator OpusEncoder*() {
+	OpusEncoderWrapper::OpusEncoderWrapper(OpusEncoderWrapper&& other) noexcept {
+		*this = std::move(other);
+	}
+
+	OpusEncoderWrapper::OpusEncoderWrapper() noexcept {
+		int32_t error{};
+		this->thePtr.reset(opus_encoder_create(48000, 2, OPUS_APPLICATION_AUDIO, &error));
+		if (error != OPUS_OK) {
+			std::cout << "Failed to create the Opus Encoder" << std::endl;
+		}
+	}
+
+	OpusEncoderWrapper::operator OpusEncoder*() noexcept {
 		return this->thePtr.get();
+	}
+
+	OpusEncoderWrapper::OpusEncoderWrapper(OpusEncoder* other) noexcept {
+		this->thePtr.reset(other);
 	}
 
 	AudioEncoder::AudioEncoder() {
 		int32_t error;
 		this->encoder = opus_encoder_create(this->sampleRate, this->nChannels, OPUS_APPLICATION_AUDIO, &error);
+	}
+
+	DiscordCoreAPI::AudioFrameData AudioEncoder::encodeSingleAudioFrame(std::vector<opus_int16>& inputFrame) {
+		std::vector<uint8_t> newBuffer{};
+		newBuffer.resize(this->maxBufferSize);
+		int32_t count = opus_encode(this->encoder, inputFrame.data(), inputFrame.size() / 2, newBuffer.data(), this->maxBufferSize);
+		if (count <= 0 || count > newBuffer.size()) {
+			return DiscordCoreAPI::AudioFrameData();
+		}
+		DiscordCoreAPI::AudioFrameData encodedFrame{};
+		encodedFrame.data.insert(encodedFrame.data.begin(), newBuffer.begin(), newBuffer.begin() + count);
+		encodedFrame.sampleCount = inputFrame.size() / 2;
+		encodedFrame.type = DiscordCoreAPI::AudioFrameType::Encoded;
+		return encodedFrame;
 	}
 
 	DiscordCoreAPI::AudioFrameData AudioEncoder::encodeSingleAudioFrame(DiscordCoreAPI::AudioFrameData& inputFrame) {
