@@ -179,8 +179,6 @@ namespace DiscordCoreAPI {
 	void VoiceConnection::sendSingleAudioFrame(std::string& audioDataPacketNew) noexcept {
 		if (DatagramSocketClient::areWeStillConnected()) {
 			DatagramSocketClient::writeData(audioDataPacketNew);
-		} else {
-			this->onClosed();
 		}
 	}
 
@@ -266,6 +264,7 @@ namespace DiscordCoreAPI {
 			if (this->configManager->doWePrintWebSocketErrorMessages()) {
 				reportException("VoiceConnection::onMessageReceived()");
 			}
+			std::cout << "WERE HERE THIS IS NOT IT! 0303" << std::endl;
 			this->onClosed();
 			return false;
 		}
@@ -287,13 +286,15 @@ namespace DiscordCoreAPI {
 					std::string theData = responseData;
 					DatagramSocketClient::writeData(theData);
 				} else {
-					this->onClosed();
+					std::cout << "WERE HERE THIS IS NOT IT! 0404" << std::endl;
+			this->onClosed();
 				}
 			}
 		} catch (...) {
 			if (this->configManager->doWePrintWebSocketErrorMessages()) {
 				reportException("VoiceConnection::sendVoiceData()");
 			}
+			std::cout << "WERE HERE THIS IS NOT IT! 0505" << std::endl;
 			this->onClosed();
 		}
 	}
@@ -312,13 +313,22 @@ namespace DiscordCoreAPI {
 			std::string theString{};
 			this->stringifyJsonData(newString, theString, DiscordCoreInternal::WebSocketOpCode::Op_Text);
 			if (!this->sendMessage(theString, true)) {
-				this->onClosed();
+				std::cout << "WERE HERE THIS IS NOT IT! 0606" << std::endl;
+			this->onClosed();
 			}
 		}
 	}
 
 	void VoiceConnection::runWebSocket(std::stop_token stopToken) noexcept {
 		try {
+		theStart:
+			this->areWeReady01.store(true);
+			while (!this->areWeReady02.load()) {
+				std::this_thread::sleep_for(1ms);
+			}
+			while (this->connections.size() <= 0) {
+				std::this_thread::sleep_for(1ms);
+			}
 			while (!stopToken.stop_requested() && !this->doWeQuit->load() && this->activeState.load() != VoiceActiveState::Exiting) {
 				if (!stopToken.stop_requested() && WebSocketSSLShard::connections->size() > 0) {
 					StopWatch theStopWatch{ 10000ms };
@@ -354,6 +364,9 @@ namespace DiscordCoreAPI {
 				if (!stopToken.stop_requested() && WebSocketSSLShard::areWeStillConnected() && WebSocketSSLShard::inputBuffer.size() > 0) {
 					this->parseMessage(this);
 				}
+				if (this->doWeReconnect.load()) {
+					goto theStart;
+				}
 
 				std::this_thread::sleep_for(1ms);
 			}
@@ -361,6 +374,7 @@ namespace DiscordCoreAPI {
 			if (this->configManager->doWePrintWebSocketErrorMessages()) {
 				reportException("VoiceConnection::run()");
 			}
+			std::cout << "WERE HERE THIS IS NOT IT! 0707" << std::endl;
 			this->onClosed();
 		}
 	}
@@ -419,6 +433,11 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::runVoice(std::stop_token stopToken) noexcept {
+	theStart:
+		this->areWeReady02.store(true);
+		while (this->areWeReady01.load() == false && !stopToken.stop_requested()) {
+			std::this_thread::sleep_for(1ms);
+		}
 		StopWatch theStopWatch{ 20000ms };
 		StopWatch theSendSilenceStopWatch{ 5000ms };
 		while (!stopToken.stop_requested() && !this->doWeQuit->load() && this->activeState.load() != VoiceActiveState::Exiting) {
@@ -435,6 +454,7 @@ namespace DiscordCoreAPI {
 					this->clearAudioData();
 					while (!stopToken.stop_requested() && this->activeState.load() == VoiceActiveState::Stopped) {
 						DatagramSocketClient::processIO(DiscordCoreInternal::ProcessIOType::Both);
+						DatagramSocketClient::getInputBuffer().clear();
 						if (theSendSilenceStopWatch.hasTimePassed()) {
 							theSendSilenceStopWatch.resetTimer();
 							this->sendSpeakingMessage(true);
@@ -448,6 +468,7 @@ namespace DiscordCoreAPI {
 					this->areWePlaying.store(false);
 					while (!stopToken.stop_requested() && this->activeState.load() == VoiceActiveState::Paused) {
 						DatagramSocketClient::processIO(DiscordCoreInternal::ProcessIOType::Both);
+						DatagramSocketClient::getInputBuffer().clear();
 						if (theSendSilenceStopWatch.hasTimePassed()) {
 							theSendSilenceStopWatch.resetTimer();
 							this->sendSpeakingMessage(true);
@@ -531,11 +552,13 @@ namespace DiscordCoreAPI {
 						}
 						if (this->streamType == StreamType::None) {
 							DatagramSocketClient::processIO(DiscordCoreInternal::ProcessIOType::Both);
-							DatagramSocketClient::getInputBuffer();
+							DatagramSocketClient::getInputBuffer().clear();
 						} else {
 							DatagramSocketClient::processIO(DiscordCoreInternal::ProcessIOType::Write_Only);
 						}
-
+						if (this->doWeReconnect.load()) {
+							goto theStart;
+						}
 						this->audioData.data.clear();
 						this->audioData.sampleCount = 0;
 						this->audioData.type = AudioFrameType::Unset;
@@ -669,9 +692,9 @@ namespace DiscordCoreAPI {
 			}
 			this->taskThread03.reset(nullptr);
 		}
-		DatagramSocketClient::disconnect();
 		WebSocketSSLShard::disconnect(false);
-		if (this->streamSocket->areWeStillConnected()) {
+		DatagramSocketClient::disconnect();
+		if (this->streamSocket && this->streamSocket->areWeStillConnected()) {
 			this->streamSocket->disconnect();
 		}
 		auto thePtr = getSongAPIMap()[this->voiceConnectInitData.guildId].get();
@@ -689,6 +712,9 @@ namespace DiscordCoreAPI {
 		if (this->connections.size() > 0) {
 			this->connections.pop();
 		}
+		this->areWeReady01.store(false);
+		this->areWeReady02.store(false);
+		this->doWeReconnect.store(false);
 		if (this->currentReconnectTries >= this->maxReconnectTries) {
 			this->doWeQuit->store(true);
 			if (this->configManager->doWePrintWebSocketErrorMessages()) {
@@ -703,7 +729,8 @@ namespace DiscordCoreAPI {
 
 				if (waitForTimeToPass(this->voiceConnectionDataBuffer, this->voiceConnectionData, 10000)) {
 					this->currentReconnectTries++;
-					this->onClosed();
+					std::cout << "WERE HERE THIS IS NOT IT! 0808" << std::endl;
+			this->onClosed();
 					this->connectInternal();
 					return;
 				}
@@ -715,7 +742,8 @@ namespace DiscordCoreAPI {
 			case VoiceConnectionState::Initializing_WebSocket: {
 				if (!WebSocketSSLShard::connect(this->baseUrl, "443")) {
 					this->currentReconnectTries++;
-					this->onClosed();
+					std::cout << "WERE HERE THIS IS NOT IT! 0909" << std::endl;
+			this->onClosed();
 					this->connectInternal();
 					return;
 				}
@@ -727,14 +755,16 @@ namespace DiscordCoreAPI {
 				this->shard[1] = 1;
 				if (!this->sendMessage(sendVector, true)) {
 					this->currentReconnectTries++;
-					this->onClosed();
+					std::cout << "WERE HERE THIS IS NOT IT! 1010" << std::endl;
+			this->onClosed();
 					this->connectInternal();
 					return;
 				}
 				WebSocketSSLShard::processIO(1000000);
 				if (!this->parseConnectionHeaders(this)) {
 					this->currentReconnectTries++;
-					this->onClosed();
+					std::cout << "WERE HERE THIS IS NOT IT! 1111" << std::endl;
+			this->onClosed();
 					this->connectInternal();
 					return;
 				}
@@ -745,7 +775,8 @@ namespace DiscordCoreAPI {
 			case VoiceConnectionState::Collecting_Hello: {
 				if (!this->collectAndProcessAMessage(VoiceConnectionState::Sending_Identify)) {
 					this->currentReconnectTries++;
-					this->onClosed();
+					std::cout << "WERE HERE THIS IS NOT IT! 1212" << std::endl;
+			this->onClosed();
 					this->connectInternal();
 					return;
 				}
@@ -760,10 +791,11 @@ namespace DiscordCoreAPI {
 				identifyData.connectionData = this->voiceConnectionData;
 				std::string sendVector{};
 				nlohmann::json theData{ identifyData };
-				this->stringifyJsonData(theData, sendVector, DiscordCoreInternal::WebSocketOpCode::Op_Text);
+				this->stringifyJsonData(theData[0], sendVector, DiscordCoreInternal::WebSocketOpCode::Op_Text);
 				if (!this->sendMessage(sendVector, true)) {
 					this->currentReconnectTries++;
-					this->onClosed();
+					std::cout << "WERE HERE THIS IS NOT IT! 1313" << std::endl;
+			this->onClosed();
 					this->connectInternal();
 					return;
 				}
@@ -774,7 +806,8 @@ namespace DiscordCoreAPI {
 			case VoiceConnectionState::Collecting_Ready: {
 				if (!this->collectAndProcessAMessage(VoiceConnectionState::Initializing_DatagramSocket)) {
 					this->currentReconnectTries++;
-					this->onClosed();
+					std::cout << "WERE HERE THIS IS NOT IT! 1414" << std::endl;
+			this->onClosed();
 					this->connectInternal();
 					return;
 				}
@@ -784,7 +817,8 @@ namespace DiscordCoreAPI {
 			case VoiceConnectionState::Initializing_DatagramSocket: {
 				if (!this->voiceConnect()) {
 					this->currentReconnectTries++;
-					this->onClosed();
+					std::cout << "WERE HERE THIS IS NOT IT! 1515" << std::endl;
+			this->onClosed();
 					this->connectInternal();
 					return;
 				}
@@ -802,7 +836,8 @@ namespace DiscordCoreAPI {
 				this->stringifyJsonData(protocolPayloadSelectString, sendVector, DiscordCoreInternal::WebSocketOpCode::Op_Text);
 				if (!this->sendMessage(sendVector, true)) {
 					this->currentReconnectTries++;
-					this->onClosed();
+					std::cout << "WERE HERE THIS IS NOT IT! 1616" << std::endl;
+			this->onClosed();
 					this->connectInternal();
 					return;
 				}
@@ -813,7 +848,8 @@ namespace DiscordCoreAPI {
 			case VoiceConnectionState::Collecting_Session_Description: {
 				if (!this->collectAndProcessAMessage(VoiceConnectionState::Collecting_Init_Data)) {
 					this->currentReconnectTries++;
-					this->onClosed();
+					std::cout << "WERE HERE THIS IS NOT IT! 1717" << std::endl;
+			this->onClosed();
 					this->connectInternal();
 					return;
 				}
@@ -835,7 +871,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::clearAudioData() noexcept {
-		if (this->audioData.data.size() != 0 && this->audioData.data.size() != 0) {
+		if (this->audioData.data.size() != 0) {
 			this->audioData.data.clear();
 			this->audioData.guildMemberId = 0;
 			this->audioData.sampleCount = 0;
@@ -864,23 +900,28 @@ namespace DiscordCoreAPI {
 				std::string theString{};
 				this->stringifyJsonData(data, theString, DiscordCoreInternal::WebSocketOpCode::Op_Text);
 				if (!this->sendMessage(theString, true)) {
-					this->onClosed();
+					std::cout << "WERE HERE THIS IS NOT IT! 1818" << std::endl;
+			this->onClosed();
 				}
 				this->haveWeReceivedHeartbeatAck = false;
 			} else {
-				this->onClosed();
+				std::cout << "WERE HERE THIS IS NOT IT! 1919" << std::endl;
+			this->onClosed();
 			}
 		} catch (...) {
 			if (this->configManager->doWePrintWebSocketErrorMessages()) {
 				reportException("VoiceConnection::sendHeartBeat()");
 			}
+			std::cout << "WERE HERE THIS IS NOT IT! 2020" << std::endl;
 			this->onClosed();
 		}
 	}
 
 	void VoiceConnection::onClosed() noexcept {
+		std::cout << "WERE HERE THIS IS IT!!0101" << std::endl;
 		this->connectionState.store(VoiceConnectionState::Collecting_Init_Data);
 		if (this->activeState.load() != VoiceActiveState::Exiting && this->currentReconnectTries < this->maxReconnectTries) {
+			std::cout << "WERE HERE THIS IS IT!!0202" << std::endl;
 			this->reconnect();
 		} else if (this->currentReconnectTries >= this->maxReconnectTries) {
 			this->disconnect();
@@ -906,20 +947,24 @@ namespace DiscordCoreAPI {
 					packet[6] = static_cast<uint8_t>(this->audioSSRC >> 8);
 					packet[7] = static_cast<uint8_t>(this->audioSSRC);
 					DatagramSocketClient::getInputBuffer();
-					DatagramSocketClient::writeData(packet);
+					DatagramSocketClient::writeData(std::move(packet));
 					std::string inputString{};
-					StopWatch theStopWatch{ 2500ms };
+					StopWatch theStopWatch{ 3500ms };
+					theStopWatch.resetTimer();
 					while (inputString.size() < 74 && !this->doWeQuit->load() && this->activeState.load() != VoiceActiveState::Exiting) {
 						DatagramSocketClient::processIO(DiscordCoreInternal::ProcessIOType::Both);
-						std::string theNewString = DatagramSocketClient::getInputBuffer();
-						inputString.insert(inputString.end(), theNewString.begin(), theNewString.end());
+						inputString.insert(inputString.end(), DatagramSocketClient::getInputBuffer().data(),
+							DatagramSocketClient::getInputBuffer().data() + DatagramSocketClient::getInputBuffer().size());
+						std::cout << "THE STRING SIZE: " << inputString.size() << std::endl;
+						DatagramSocketClient::getInputBuffer().clear();
 						std::this_thread::sleep_for(1ms);
 						if (theStopWatch.hasTimePassed()) {
 							return false;
 						}
 					}
+					std::cout << "THE STRING: " << inputString << std::endl;
 					std::string message{};
-					message.insert(message.begin(), inputString.begin() + 8, inputString.begin() + 64);
+					message.insert(message.begin(), inputString.data() + 8, inputString.data() + 64);
 					auto endLineFind = message.find('\u0000', 5);
 					if (endLineFind != std::string::npos) {
 						message = message.substr(0, endLineFind);
@@ -936,6 +981,7 @@ namespace DiscordCoreAPI {
 			if (this->configManager->doWePrintWebSocketErrorMessages()) {
 				reportException("VoiceConnection::voiceConnect()");
 			}
+			std::cout << "WERE HERE THIS IS NOT IT! 2121" << std::endl;
 			this->onClosed();
 			return false;
 		}
@@ -967,14 +1013,13 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::reconnect() noexcept {
-		DatagramSocketClient::disconnect();
+		this->activeState.store(VoiceActiveState::Connecting);
 		WebSocketSSLShard::disconnect(true);
+		DatagramSocketClient::disconnect();
 		if (this->taskThread03) {
 			this->taskThread03.reset(nullptr);
 		}
 		this->areWeHeartBeating = false;
-		this->wantWrite = true;
-		this->wantRead = false;
 		this->currentReconnectTries++;
 		this->areWeConnectedBool.store(false);
 	}

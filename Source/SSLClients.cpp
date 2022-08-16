@@ -210,7 +210,6 @@ namespace DiscordCoreInternal {
 
 	bool SSLClient::connect(const std::string& baseUrl, const std::string& portNew) noexcept {
 		this->rawInputBuffer.resize(this->maxBufferSize);
-		this->inputBuffer.resize(this->maxBufferSize);
 		std::string stringNew{};
 		auto httpsFind = baseUrl.find("https://");
 		auto comFind = baseUrl.find(".com");
@@ -449,7 +448,6 @@ namespace DiscordCoreInternal {
 
 	bool DatagramSocketClient::connect(const std::string& baseUrlNew, const std::string& portNew) noexcept {
 		this->rawInputBuffer.resize(this->maxBufferSize);
-		this->inputBuffer.resize(this->maxBufferSize);
 		if (this->streamType == DiscordCoreAPI::StreamType::None || this->streamType == DiscordCoreAPI::StreamType::Client) {
 			static_cast<sockaddr_in*>(this->theStreamTargetAddress)->sin_addr.s_addr = inet_addr(baseUrlNew.c_str());
 			static_cast<sockaddr_in*>(this->theStreamTargetAddress)->sin_port = DiscordCoreAPI::reverseByteOrder16(static_cast<unsigned short>(stoi(portNew)));
@@ -527,7 +525,7 @@ namespace DiscordCoreInternal {
 		std::unique_lock theLock{ this->theMutex };
 		switch (theType) {
 			case ProcessIOType::Both: {
-				std::cout << "WERE PROCESSING PROCESSING! (BOTH BOTH)" << std::endl;
+				//std::cout << "WERE PROCESSING PROCESSING! (BOTH BOTH)" << std::endl;
 				FD_ZERO(&writeSet);
 				FD_SET(this->theSocket, &writeSet);
 			}
@@ -542,24 +540,24 @@ namespace DiscordCoreInternal {
 				break;
 			}
 		}
-		std::cout << "WERE PROCESSING PROCESSING!" << std::endl;
+		//std::cout << "WERE PROCESSING PROCESSING!" << std::endl;
 
 		timeval checkTime{ .tv_sec = 0, .tv_usec = 5000 };
 		if (auto returnValue = select(FD_SETSIZE, &readSet, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
 			this->disconnect();
-			std::cout << "WERE PROCESSING PROCESSING! (AND DISCONNECT)" << std::endl;
+			//std::cout << "WERE PROCESSING PROCESSING! (AND DISCONNECT)" << std::endl;
 			return;
 		} else if (returnValue == 0) {
-			std::cout << "WERE PROCESSING PROCESSING! (AND ZERO)" << std::endl;
+			//std::cout << "WERE PROCESSING PROCESSING! (AND ZERO)" << std::endl;
 			return;
 		} else {
 			
 			if (FD_ISSET(this->theSocket, &readSet)) {
-				std::cout << "WERE PROCESSING PROCESSING! (AND READ)" << std::endl;
+				//std::cout << "WERE PROCESSING PROCESSING! (AND READ)" << std::endl;
 				this->readDataProcess();
 			}
 			if (FD_ISSET(this->theSocket, &writeSet)) {
-				std::cout << "WERE PROCESSING PROCESSING! (AND WRITE)" << std::endl;
+				//std::cout << "WERE PROCESSING PROCESSING! (AND WRITE)" << std::endl;
 				this->writeDataProcess();
 			}
 		}
@@ -605,7 +603,7 @@ namespace DiscordCoreInternal {
 				this->disconnect();
 				return;
 			} else {
-				std::cout << "WRITTEN BYTES: " << this->outputBuffers.front() << std::endl;
+				//std::cout << "WRITTEN BYTES: " << this->outputBuffers.front() << std::endl;
 				this->outputBuffers.erase(this->outputBuffers.begin());
 			}
 		}
@@ -627,7 +625,8 @@ namespace DiscordCoreInternal {
 			} else {
 				this->inputBuffer.append(this->rawInputBuffer.begin(), this->rawInputBuffer.begin() + readBytes);
 				std::cout << "READ BYTES: " << readBytes << std::endl;
-				std::cout << "READ BYTES: " << this->inputBuffer << std::endl;
+				std::cout << "THE INPUT BUFFER: " << this->inputBuffer << std::endl;
+				//std::cout << "READ BYTES: " << this->inputBuffer << std::endl;
 				this->bytesRead += readBytes;
 			}
 		}
@@ -643,8 +642,8 @@ namespace DiscordCoreInternal {
 		std::cout << "THE WRITTEN BYTES: " << std::endl;
 		shutdown(this->theSocket, SD_BOTH);
 		closesocket(this->theSocket);
-		this->areWeStreamConnected = false;
 		this->theSocket = SOCKET_ERROR;
+		this->areWeStreamConnected = false;
 		this->inputBuffer.clear();
 	}
 

@@ -1175,6 +1175,7 @@ namespace DiscordCoreInternal {
 	}
 
 	void WebSocketSSLShard::onClosed() noexcept {
+		std::cout << "WERE HERE THIS IS IT!" << std::endl;
 		if (this->maxReconnectTries > this->currentReconnectTries) {
 			this->disconnect(true);
 		} else {

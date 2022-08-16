@@ -157,7 +157,10 @@ namespace DiscordCoreAPI {
 		std::atomic_bool areWeConnectedBool{ false };
 		std::queue<ConnectionPackage> connections{};
 		std::deque<VoicePayload> theFrameQueue{};
+		std::atomic_bool doWeReconnect{ false };
 		std::atomic_bool areWePlaying{ false };
+		std::atomic_bool areWeReady01{ false };
+		std::atomic_bool areWeReady02{ false };
 		const int64_t maxReconnectTries{ 10 };
 		int64_t currentReconnectTries{ 0 };
 		std::string audioEncryptionMode{};
