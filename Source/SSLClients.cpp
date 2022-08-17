@@ -238,10 +238,12 @@ namespace DiscordCoreInternal {
 			return false;
 		}
 
+#ifdef SSL_OP_IGNORE_UNEXPECTED_EOF
 		auto originalOptions{ SSL_CTX_get_options(this->context) | SSL_OP_IGNORE_UNEXPECTED_EOF };
 		if (SSL_CTX_set_options(this->context, SSL_OP_IGNORE_UNEXPECTED_EOF) != originalOptions) {
 			return false;
 		}
+#endif
 
 		if (getaddrinfo(stringNew.c_str(), portNew.c_str(), hints, address)) {
 			return false;
