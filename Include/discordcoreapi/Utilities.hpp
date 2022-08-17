@@ -1119,23 +1119,9 @@ namespace DiscordCoreAPI {
 
 		/// Sends an object of type ObjectType to the "recipient". \brief Sends an object of type ObjectType to the "recipient".
 		/// \param theObject An object of ObjectType.
-		void send(const ObjectType&& theObject) {
-			std::unique_lock theLock{ this->accessMutex };
-			this->theQueue.emplace_back(std::move(theObject));
-		}
-
-		/// Sends an object of type ObjectType to the "recipient". \brief Sends an object of type ObjectType to the "recipient".
-		/// \param theObject An object of ObjectType.
 		void send(ObjectType&& theObject) {
 			std::unique_lock theLock{ this->accessMutex };
 			this->theQueue.emplace_back(std::move(theObject));
-		}
-
-		/// Sends an object of type ObjectType to the "recipient". \brief Sends an object of type ObjectType to the "recipient".
-		/// \param theObject An object of ObjectType.
-		void send(const ObjectType& theObject) {
-			std::unique_lock theLock{ this->accessMutex };
-			this->theQueue.emplace_back(theObject);
 		}
 
 		/// Sends an object of type ObjectType to the "recipient". \brief Sends an object of type ObjectType to the "recipient".
