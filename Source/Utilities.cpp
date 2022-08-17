@@ -28,6 +28,7 @@
 #include <discordcoreapi/CoRoutine.hpp>
 #include <discordcoreapi/InputEvents.hpp>
 #include <discordcoreapi/Utilities.hpp>
+#include <string>
 
 namespace DiscordCoreInternal {
 
@@ -351,6 +352,58 @@ namespace DiscordCoreAPI {
 		} else {
 			return toHex(this->lowBits) + toHex(this->highBits);
 		}
+	}
+
+	AvatarUrl& AvatarUrl::operator=(const AvatarUrl& other) {
+		if (this != &other && other.theString) {
+			std::stringstream theStringNew{};
+			theStringNew << other.theString;
+			this->theString = std::make_unique<char[]>(theStringNew.str().size());
+			for (uint32_t x = 0; x < theStringNew.str().size(); ++x) {
+				this->theString[x] = theStringNew.str()[x];
+			}
+		}
+		return *this;
+	}
+
+	AvatarUrl::AvatarUrl(const AvatarUrl& other) {
+		*this = other;
+	}
+
+	AvatarUrl& AvatarUrl::operator=(AvatarUrl&other) {
+		if (this != &other && other.theString) {
+			std::stringstream theStringNew{};
+			theStringNew << other.theString;
+			this->theString = std::make_unique<char[]>(theStringNew.str().size());
+			for (uint32_t x = 0; x < theStringNew.str().size(); ++x) {
+				this->theString[x] = theStringNew.str()[x];
+			}
+		}
+		return *this;
+	}
+
+	AvatarUrl::AvatarUrl(AvatarUrl& other) {
+		*this = other;
+	}
+
+	AvatarUrl::AvatarUrl(std::string& other, DiscordCoreAPI::Snowflake userId, DiscordCoreAPI::Snowflake guildId) noexcept {
+		this->set(other);
+		std::string theStringNew{ "https://cdn.discordapp.com/" };
+		if (guildId != 0) {
+			theStringNew += "guilds/" + std::to_string(guildId) + "/users/" + std::to_string(userId) + "/avatars/" + other;
+		} else {
+			theStringNew += "avatars/" + std::to_string(userId) + "/" + other;
+		}
+		this->theString = std::make_unique<char[]>(theStringNew.size());
+		for (uint32_t x = 0; x < theStringNew.size(); ++x) {
+			this->theString[x] = theStringNew[x];
+		}
+	}
+
+	AvatarUrl::operator std::string() {
+		std::stringstream theString{};
+		theString << this->theString;
+		return theString.str();
 	}
 
 	AudioFrameData& AudioFrameData::operator=(AudioFrameData&& other) noexcept {

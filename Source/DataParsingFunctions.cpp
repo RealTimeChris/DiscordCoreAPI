@@ -510,7 +510,7 @@ namespace DiscordCoreAPI {
 			for (auto& value: (*jsonObjectData)["voice_states"]) {
 				std::unique_ptr<VoiceStateData> theData{ std::make_unique<VoiceStateData>(&value) };
 				VoiceStateId theKey{};
-				theKey.guildId = theData->guildId;
+				theKey.guildId = this->id;
 				theKey.guildMemberId = theData->userId;
 				Guilds::voiceStateCache[theKey] = std::move(theData);
 			}
@@ -1217,8 +1217,8 @@ namespace DiscordCoreAPI {
 		}
 
 		if (jsonObjectData->contains("avatar") && !(*jsonObjectData)["avatar"].is_null()) {
-			std::string avatarString = "https://cdn.discordapp.com/avatars/" + std::to_string(this->id) + "/" + (*jsonObjectData)["avatar"].get<std::string>();
-			this->avatar = avatarString;
+			auto theString = (*jsonObjectData)["avatar"].get<std::string>();
+			this->avatar = AvatarUrl(theString, this->id, 0);
 		}
 
 		if (jsonObjectData->contains("bot") && !(*jsonObjectData)["bot"].is_null()) {
@@ -1340,7 +1340,8 @@ namespace DiscordCoreAPI {
 
 		this->discriminator = getString(jsonObjectData, "discriminator");
 
-		this->avatar = getString(jsonObjectData, "avatar");
+		auto theString = getString(jsonObjectData, "avatar");
+		this->avatar = AvatarUrl(theString, this->id, 0);
 
 		this->flags = setBool<int32_t, UserFlags>(this->flags, UserFlags::Bot, getBool(jsonObjectData, "bot"));
 
@@ -2746,8 +2747,8 @@ namespace DiscordCoreAPI {
 				for (auto& value: (*jsonObjectData)["voice_states"]) {
 					std::unique_ptr<VoiceStateData> theData{ std::make_unique<VoiceStateData>(&value) };
 					VoiceStateId theKey{};
-					theKey.guildId = theData->guildId;
-					std::cout << "GUILD ID: " << theData->guildId << std::endl;
+					theKey.guildId = this->id;
+					std::cout << "GUILD ID: " << theKey.guildId << std::endl;
 					theKey.guildMemberId = theData->userId;
 					std::cout << "USER ID: " << theData->userId << std::endl;
 					Guilds::voiceStateCache[theKey] = std::move(theData);
