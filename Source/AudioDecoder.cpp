@@ -223,7 +223,7 @@ namespace DiscordCoreInternal {
 			stream->areWeQuitting.store(true);
 			return AVERROR_EOF;
 		}
-		for (int32_t x = 0; x < stream->bytesRead; x++) {
+		for (int32_t x = 0; x < stream->bytesRead; ++x) {
 			buf[x] = stream->currentBuffer[x];
 		}
 		if (stream->ioContext->buf_ptr - stream->ioContext->buffer >= stream->totalFileSize) {
@@ -428,7 +428,7 @@ namespace DiscordCoreInternal {
 						DiscordCoreAPI::AudioFrameData rawFrame{};
 						rawFrame.type = DiscordCoreAPI ::AudioFrameType::RawPCM;
 						rawFrame.data.resize(unpadded_linesize);
-						for (int32_t x = 0; x < unpadded_linesize; x++) {
+						for (int32_t x = 0; x < unpadded_linesize; ++x) {
 							rawFrame.data[x] = this->newFrame->extended_data[0][x];
 						}
 						rawFrame.sampleCount = newFrame->nb_samples;
@@ -442,7 +442,7 @@ namespace DiscordCoreInternal {
 							DiscordCoreAPI::AudioFrameData rawFrame02{};
 							rawFrame02.type = DiscordCoreAPI ::AudioFrameType::RawPCM;
 							rawFrame02.data.resize(*this->newFrame->linesize);
-							for (int32_t x = 0; x < *this->newFrame->linesize; x++) {
+							for (int32_t x = 0; x < *this->newFrame->linesize; ++x) {
 								rawFrame02.data[x] = this->newFrame->extended_data[0][x];
 							}
 							rawFrame02.sampleCount = newFrame->nb_samples;

@@ -1117,8 +1117,8 @@ namespace DiscordCoreAPI {
 		newOption["name"] = this->name;
 		newOption["type"] = this->type;
 		if (this->choices.size() > 0) {
-			for (int32_t x = 0; x < this->choices.size(); x++) {
-				newOption["choices"] = nlohmann::json{};
+			newOption["choices"] = nlohmann::json{};
+			for (int32_t x = 0; x < this->choices.size(); ++x) {
 				nlohmann::json jsonValue{};
 				jsonValue["name_localizations"] = this->choices[x].nameLocalizations;
 				jsonValue["value"] = this->choices[x].value;

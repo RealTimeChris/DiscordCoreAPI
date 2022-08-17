@@ -73,7 +73,7 @@ namespace DiscordCoreAPI {
 
 	DiscordCoreAPI::AudioFrameData AudioEncoder::encodeSingleAudioFrame(DiscordCoreAPI::AudioFrameData& inputFrame) {
 		std::vector<opus_int16> newVector{};
-		for (uint64_t x = 0; x < inputFrame.data.size() / 2; x++) {
+		for (uint64_t x = 0; x < inputFrame.data.size() / 2; ++x) {
 			opus_int16 newValue{};
 			newValue |= inputFrame.data[x * 2] << 0;
 			newValue |= inputFrame.data[x * 2 + 1] << 8;

@@ -88,7 +88,7 @@ namespace DiscordCoreInternal {
 		if (this->threadCount.load() < 1) {
 			this->threadCount.store(1);
 		}
-		for (uint32_t x = 0; x < this->threadCount.load(); x++) {
+		for (uint32_t x = 0; x < this->threadCount.load(); ++x) {
 			WorkerThread workerThread{};
 			this->currentIndex.store(this->currentIndex.load() + 1);
 			this->currentCount.store(this->currentCount.load() + 1);

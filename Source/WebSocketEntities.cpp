@@ -519,7 +519,7 @@ namespace DiscordCoreInternal {
 													DiscordCoreAPI::Channels::getCachedChannelAsync({ .channelId = stoull(payload["d"]["id"].get<std::string>()) }).get())) };
 											DiscordCoreAPI::Channels::removeChannel(dataPackage->channel->id);
 											DiscordCoreAPI::GuildData* guild = DiscordCoreAPI::Guilds::cache[dataPackage->channel->guildId].get();
-											for (uint64_t x = 0; x < guild->channels.size(); x++) {
+											for (uint64_t x = 0; x < guild->channels.size(); ++x) {
 												if (guild->channels[x] == dataPackage->channel->id) {
 													guild->channels.erase(guild->channels.begin() + x);
 												}
@@ -690,7 +690,7 @@ namespace DiscordCoreInternal {
 											DiscordCoreAPI::GuildMemberData* guildMember = DiscordCoreAPI::GuildMembers::cache[theKey].get();
 											DiscordCoreAPI::GuildMembers::removeGuildMember(std::make_unique<DiscordCoreAPI::GuildMemberData>(*guildMember));
 											DiscordCoreAPI::GuildData* guild = DiscordCoreAPI::Guilds::cache[dataPackage->guildId].get();
-											for (uint64_t x = 0; x < guild->members.size(); x++) {
+											for (uint64_t x = 0; x < guild->members.size(); ++x) {
 												if (guild->members[x] == dataPackage->user->id) {
 													guild->members.erase(guild->members.begin() + x);
 												}
@@ -757,7 +757,7 @@ namespace DiscordCoreInternal {
 												stoull(payload["d"]["guild_id"].get<std::string>())) };
 											DiscordCoreAPI::Roles::removeRole(dataPackage->role->id);
 											DiscordCoreAPI::GuildData* guild = DiscordCoreAPI::Guilds::cache[dataPackage->guildId].get();
-											for (uint64_t x = 0; x < guild->roles.size(); x++) {
+											for (uint64_t x = 0; x < guild->roles.size(); ++x) {
 												if (guild->roles[x] == dataPackage->role->id) {
 													guild->roles.erase(guild->roles.begin() + x);
 												}

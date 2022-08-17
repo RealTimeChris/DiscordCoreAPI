@@ -519,7 +519,7 @@ namespace DiscordCoreAPI {
 			workload.relativePath += "?days=" + std::to_string(dataPackage.days);
 			if (dataPackage.includeRoles.size() > 0) {
 				workload.relativePath += "&include_roles=";
-				for (int32_t x = 0; x < dataPackage.includeRoles.size(); x++) {
+				for (int32_t x = 0; x < dataPackage.includeRoles.size(); ++x) {
 					workload.relativePath += std::to_string(dataPackage.includeRoles[x]);
 					if (x < dataPackage.includeRoles.size() - 1) {
 						workload.relativePath += ",";
@@ -528,7 +528,7 @@ namespace DiscordCoreAPI {
 			}
 		} else if (dataPackage.includeRoles.size() > 0) {
 			workload.relativePath += "?include_roles=";
-			for (int32_t x = 0; x < dataPackage.includeRoles.size(); x++) {
+			for (int32_t x = 0; x < dataPackage.includeRoles.size(); ++x) {
 				workload.relativePath += std::to_string(dataPackage.includeRoles[x]);
 				if (x < dataPackage.includeRoles.size() - 1) {
 					workload.relativePath += ",";

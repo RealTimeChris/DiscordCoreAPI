@@ -836,7 +836,7 @@ namespace DiscordCoreAPI {
 
 		void getTimeSinceEpoch() {
 			TimeType theValue{};
-			for (int32_t x = 1970; x < this->year; x++) {
+			for (int32_t x = 1970; x < this->year; ++x) {
 				theValue += TimeType{ this->secondsInJan };
 				theValue += TimeType{ this->secondsInFeb };
 				theValue += TimeType{ this->secondsInMar };
@@ -1068,7 +1068,7 @@ namespace DiscordCoreAPI {
 	template<typename ReturnType> void storeBits(std::string& to, ReturnType num) {
 		const uint8_t byteSize{ 8 };
 		ReturnType newValue = reverseByteOrder(num);
-		for (uint32_t x = 0; x < sizeof(ReturnType); x++) {
+		for (uint32_t x = 0; x < sizeof(ReturnType); ++x) {
 			to.push_back(static_cast<uint8_t>(newValue >> (byteSize * x)));
 		}
 	}
