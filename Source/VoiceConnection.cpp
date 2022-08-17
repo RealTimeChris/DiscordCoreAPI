@@ -484,7 +484,6 @@ namespace DiscordCoreAPI {
 							DatagramSocketClient::getInputBuffer().clear();
 						} else {
 							DatagramSocketClient::processIO(DiscordCoreInternal::ProcessIOType::Write_Only);
-							
 						}
 						
 						this->audioData.data.clear();
